@@ -138,6 +138,8 @@ async def create_checkout_session(
     metadata: dict,
     application_fee_minor: int = 0,
     receipt_email: str | None = None,
+    client_reference_id: str | None = None,
+    idempotency_key: str | None = None,
 ) -> tuple[str, str]:
     """Оплата на счёт студии → (session_id, client_secret).
 
@@ -150,6 +152,15 @@ async def create_checkout_session(
 
     `embedded_page` — новое имя бывшего `embedded`; старое значение API отвергает
     начиная с версии 2026-07-29 (её и шлёт stripe==15.4.0).
+
+    `client_reference_id` — id НАШЕЙ попытки оплаты. Он же уезжает в метаданные:
+    поле читается прямо из объекта сессии в вебхуке, а метаданные переживают
+    любые правки формата полей. По нему заявка находится обратно, даже если id
+    сессии мы записать не успели (routers/checkout/stripe_pay.apply_paid).
+
+    `idempotency_key` — ключ той же попытки. Повтор запроса (двойной клик,
+    ретрай сети, потерянный HTTP-ответ) возвращает ТУ ЖЕ сессию вместо второй:
+    иначе у одной заявки оказывалось бы две платёжные формы.
     """
     intent_data = _payment_intent_data(application_fee_minor, receipt_email)
     session = await asyncio.to_thread(
@@ -168,6 +179,8 @@ async def create_checkout_session(
         metadata=metadata,
         stripe_account=account_id,
         **({"payment_intent_data": intent_data} if intent_data else {}),
+        **({"client_reference_id": client_reference_id} if client_reference_id else {}),
+        **({"idempotency_key": idempotency_key} if idempotency_key else {}),
     )
     return session.id, session.client_secret
 
@@ -182,6 +195,8 @@ async def create_hosted_checkout_session(
     cancel_url: str,
     application_fee_minor: int = 0,
     receipt_email: str | None = None,
+    client_reference_id: str | None = None,
+    idempotency_key: str | None = None,
 ) -> tuple[str, str]:
     """Оплата на счёт студии → (session_id, url) хостед-страницы Stripe.
 
@@ -189,6 +204,10 @@ async def create_hosted_checkout_session(
     живёт в модалке Velora), здесь клиент мини-приложения уходит на страницу
     Stripe снаружи (`tg.openLink`, без Stripe.js на клиенте) и возвращается по
     `success_url`/`cancel_url` — поэтому обычный hosted-режим, не embedded.
+
+    `client_reference_id` и `idempotency_key` — то же самое и ровно за тем же,
+    что у встроенной формы кассы: обратная ссылка на нашу заявку и защита от
+    второй сессии на одну попытку оплаты.
     """
     intent_data = _payment_intent_data(application_fee_minor, receipt_email)
     session = await asyncio.to_thread(
@@ -207,8 +226,48 @@ async def create_hosted_checkout_session(
         cancel_url=cancel_url,
         stripe_account=account_id,
         **({"payment_intent_data": intent_data} if intent_data else {}),
+        **({"client_reference_id": client_reference_id} if client_reference_id else {}),
+        **({"idempotency_key": idempotency_key} if idempotency_key else {}),
     )
     return session.id, session.url
+
+
+async def fetch_session(session_id: str, account_id: str):
+    """Сессия Checkout целиком — для сверки потерянных оплат.
+
+    `session_paid` отвечает только «оплачено или нет», а сверке нужны ещё статус
+    самой сессии (`expired` — заявку пора закрывать) и суммы: провести продажу по
+    сессии, у которой сумма разошлась с заявкой, нельзя.
+    """
+    return await asyncio.to_thread(
+        stripe.checkout.Session.retrieve, session_id, stripe_account=account_id,
+    )
+
+
+async def find_session_by_reference(
+    account_id: str, reference: str, created_after: int,
+) -> str | None:
+    """id сессии по НАШЕМУ `client_reference_id`, или None. Спасение осиротевших.
+
+    Нужна ровно в одном случае: сессия у Stripe создана, а её id мы записать не
+    успели (упал процесс между ответом Stripe и коммитом). Заявка при этом
+    существует — она резервируется ПЕРВОЙ, — но найти её сессию по id нечем.
+
+    Фильтра по `client_reference_id` у `Session.list` в этой версии API НЕТ
+    (проверено по SessionListParams: created, customer, payment_intent,
+    payment_link, status, subscription). Поэтому перебираем сессии аккаунта,
+    созданные не раньше самой заявки, и сверяем ссылку сами. Окно узкое (заявка
+    старше нескольких минут и без id — событие редкое), перебор ограничен сотней
+    записей на страницу и одним аккаунтом.
+    """
+    sessions = await asyncio.to_thread(
+        stripe.checkout.Session.list,
+        created={"gte": created_after}, limit=100, stripe_account=account_id,
+    )
+    for session in (getattr(sessions, "data", None) or []):
+        if getattr(session, "client_reference_id", None) == reference:
+            return session.id
+    return None
 
 
 async def session_id_for_payment_intent(payment_intent: str, account_id: str) -> str | None:

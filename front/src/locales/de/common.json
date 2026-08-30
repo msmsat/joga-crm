@@ -108,7 +108,9 @@
       "client_not_found": "Kunde nicht gefunden",
       "account_not_found": "Konto nicht gefunden",
       "card_unavailable": "Kartenzahlung ist noch nicht verfügbar",
-      "promo_expired": "Der Aktionscode ist nicht mehr gültig"
+      "promo_expired": "Der Aktionscode ist nicht mehr gültig",
+      "balance_changed": "Punkte oder Guthaben wurden bereits anderswo ausgegeben — Zahlung neu berechnen",
+      "attempt_in_progress": "Eine Zahlung für diesen Verkauf läuft bereits — Ergebnis abwarten oder Seite neu laden"
     },
     "billing": {
       "tax_details_required": "Ergänzen Sie das Land des Studios in den Rechnungsdaten — ohne es kann keine Rechnung ausgestellt werden",
@@ -121,7 +123,8 @@
       "vat_unavailable": "Das VIES-Register antwortet gerade nicht — versuchen Sie es später oder speichern Sie ohne Nummer",
       "vat_country_mismatch": "Die USt-IdNr. muss mit dem Code des gewählten Landes beginnen",
       "commission_unsettled": "Begleichen Sie zuerst die Provision aus Offline-Verkäufen: Klicken Sie im Provisionsblock auf „Jetzt zahlen“. Sobald diese Rechnung bezahlt ist, können Sie auf einen Festtarif wechseln.",
-      "billing_profile_required": "Ergänzen Sie Ihre Rechnungsdaten — die Provisionsrechnung wird darauf ausgestellt."
+      "billing_profile_required": "Ergänzen Sie Ihre Rechnungsdaten — die Provisionsrechnung wird darauf ausgestellt.",
+      "combo_switch_requires_payment": "Der Wechsel vom Tarif „Fix + Prozent“ zum Fixtarif ist kostenpflichtig: auf „Bezahlen“ klicken, Fixtarif wählen und den Zeitraum bezahlen."
     },
     "loyalty": {
       "cert_not_found": "Gutschein nicht gefunden",

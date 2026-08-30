@@ -108,7 +108,9 @@
       "client_not_found": "Клијент није пронађен",
       "account_not_found": "Рачун није пронађен",
       "card_unavailable": "Плаћање картицом још није доступно",
-      "promo_expired": "Промо код више не важи"
+      "promo_expired": "Промо код више не важи",
+      "balance_changed": "Bodovi ili depozit su već potrošeni drugde — ponovo izračunajte plaćanje",
+      "attempt_in_progress": "Plaćanje za ovu prodaju je već u toku — sačekajte rezultat ili osvežite"
     },
     "billing": {
       "tax_details_required": "Додајте државу студија у податке за фактуру — без ње се фактура не може издати",
@@ -121,7 +123,8 @@
       "vat_unavailable": "Регистар VIES тренутно не одговара — покушајте касније или сачувајте без броја",
       "vat_country_mismatch": "ПДВ број мора почети ознаком изабране државе",
       "commission_unsettled": "Прво измирите провизију за офлајн продају: притисните „Плати одмах” у блоку провизије. Када та фактура буде плаћена, можете прећи на фиксни пакет.",
-      "billing_profile_required": "Додајте своје податке за наплату — фактура за провизију се издаје на њих."
+      "billing_profile_required": "Додајте своје податке за наплату — фактура за провизију се издаје на њих.",
+      "combo_switch_requires_payment": "Prelazak sa tarife „fiksno + procenat” na fiksnu se plaća: pritisnite „Plati”, izaberite fiksnu tarifu i platite period."
     },
     "loyalty": {
       "cert_not_found": "Ваучер није пронађен",

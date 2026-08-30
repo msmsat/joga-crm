@@ -1011,6 +1011,49 @@ async def fetch_invoice(stripe_invoice_id: str):
     return await asyncio.to_thread(stripe.Invoice.retrieve, stripe_invoice_id)
 
 
+async def invoice_id_for_payment(
+    payment_intent: str | None = None, charge_id: str | None = None,
+) -> str | None:
+    """id счёта Stripe, оплаченного этим платежом, или None. ОБРАТНОЕ направление.
+
+    Зачем вообще запрос, если раньше хватало поля. С API 2026-07-29 у `Charge`
+    БОЛЬШЕ НЕТ поля `invoice` (проверено по SDK 15.4.0: единственное упоминание
+    слова в объекте — докстринг про `receipt_url`), и у `PaymentIntent` его тоже
+    нет. Тот же переезд, что унёс `Invoice.charge`/`Invoice.payment_intent` в
+    список `Invoice.payments`.
+
+    Цена ошибки здесь максимальная: обработчик `charge.refunded` читал ровно это
+    поле и на пустом значении молча выходил — то есть возврат за тариф НЕ
+    переводил счёт в refunded, НЕ снимал доход из леджера и НЕ отменял подписку.
+    Студия получала деньги назад и продолжала пользоваться оплаченным периодом.
+
+    Идём штатным обратным путём этой версии API: список платежей счёта умеет
+    фильтроваться по платежу (`InvoicePaymentListParamsPayment.payment_intent` —
+    «Only return invoice payments associated by this payment intent ID»).
+
+    Знаем только charge — сперва достаём из него интент: `Charge.payment_intent`
+    в API остался, в отличие от `Charge.invoice`.
+    """
+    if not payment_intent and charge_id:
+        charge = await asyncio.to_thread(stripe.Charge.retrieve, charge_id)
+        intent = getattr(charge, "payment_intent", None)
+        payment_intent = intent if isinstance(intent, str) else getattr(intent, "id", None)
+    if not payment_intent:
+        return None
+
+    payments = await asyncio.to_thread(
+        stripe.InvoicePayment.list,
+        payment={"type": "payment_intent", "payment_intent": payment_intent},
+        limit=1,
+    )
+    for row in (getattr(payments, "data", None) or []):
+        invoice = getattr(row, "invoice", None)
+        invoice_id = invoice if isinstance(invoice, str) else getattr(invoice, "id", None)
+        if invoice_id:
+            return invoice_id
+    return None
+
+
 async def refund_target_for_invoice(stripe_invoice_id: str) -> dict | None:
     """Аргументы для Refund.create по оплаченному счёту, или None.
 
@@ -1059,11 +1102,25 @@ async def refund_target_for_legacy_order(order_id: str) -> dict | None:
     return {"payment_intent": intent_id} if intent_id else None
 
 
-async def refund(target: dict) -> None:
+async def refund(target: dict, *, idempotency_key: str | None = None) -> None:
     """Полный возврат платежа. `target` — {"payment_intent": …} или {"charge": …},
     как их отдаёт refund_target_for_invoice. Итог продублируется событием
-    `charge.refunded`, поэтому статус счёта здесь не трогаем — его двигает apply_status."""
-    await asyncio.to_thread(stripe.Refund.create, **target)
+    `charge.refunded`, поэтому статус счёта здесь не трогаем — его двигает apply_status.
+
+    `idempotency_key` — ключ БИЗНЕС-операции, а не запроса: «возврат по вот этому
+    счёту». Два параллельных нажатия «Вернуть» и ретрай после таймаута проходят
+    гварду по статусу счёта оба (статус двигает вебхук, а он придёт позже) и
+    уходят в Stripe дважды. От двойного возврата денег нас сейчас спасает только
+    сам Stripe — он отвергает повторный полный возврат уже возвращённого платежа,
+    — то есть защита живёт на чужой стороне и проверить её нам нечем. С ключом
+    повтор возвращает ОТВЕТ ПЕРВОГО вызова, и второго возврата не существует в
+    принципе. Транзиентные сбои (500 от Stripe) под ключом не кэшируются и
+    остаются повторяемыми.
+    """
+    await asyncio.to_thread(
+        stripe.Refund.create, **target,
+        **({"idempotency_key": idempotency_key} if idempotency_key else {}),
+    )
 
 
 def parse_webhook(payload: bytes, signature: str) -> dict | None:

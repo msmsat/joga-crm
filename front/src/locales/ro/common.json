@@ -108,7 +108,9 @@
       "client_not_found": "Clientul nu a fost găsit",
       "account_not_found": "Contul nu a fost găsit",
       "card_unavailable": "Plata cu cardul nu este încă disponibilă",
-      "promo_expired": "Codul promoțional nu mai este valabil"
+      "promo_expired": "Codul promoțional nu mai este valabil",
+      "balance_changed": "Punctele sau depozitul au fost deja folosite în altă parte — recalculați plata",
+      "attempt_in_progress": "O plată pentru această vânzare este deja în curs — așteptați rezultatul sau reîmprospătați"
     },
     "billing": {
       "tax_details_required": "Adăugați țara studioului în datele de facturare — fără ea factura nu poate fi emisă",
@@ -121,7 +123,8 @@
       "vat_unavailable": "Registrul VIES nu răspunde momentan — încercați mai târziu sau salvați fără cod",
       "vat_country_mismatch": "Codul de TVA trebuie să înceapă cu codul țării selectate",
       "commission_unsettled": "Achitați mai întâi comisionul pentru vânzările offline: apăsați „Plătește acum” în blocul de comision. După plata acelei facturi puteți trece la un abonament fix.",
-      "billing_profile_required": "Completați datele de facturare — factura de comision se emite pe ele."
+      "billing_profile_required": "Completați datele de facturare — factura de comision se emite pe ele.",
+      "combo_switch_requires_payment": "Trecerea de la tariful „fix + procent” la unul fix se plătește: apăsați „Plătiți”, alegeți un tarif fix și achitați perioada."
     },
     "loyalty": {
       "cert_not_found": "Voucherul nu a fost găsit",

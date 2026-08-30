@@ -5,12 +5,14 @@
 import asyncio
 
 from fastapi import HTTPException
+from sqlalchemy import Update
 
 import routers.clients.loyalty as L
 
 
 class _Card:
     def __init__(self, bal=0, deposit=0):
+        self.id = 1
         self.points_balance = bal
         self.deposit_balance = deposit
 
@@ -29,11 +31,26 @@ class _R:
         return self._v
 
 
+class _Rows:
+    """Результат UPDATE: сколько строк он реально задел."""
+    def __init__(self, rowcount):
+        self.rowcount = rowcount
+
+
 class _DB:
-    """execute() отдаёт значения из seq по порядку вызовов."""
-    def __init__(self, seq):
+    """execute() отдаёт значения из seq по порядку вызовов.
+
+    UPDATE обрабатывается ОТДЕЛЬНО и всерьёз: остаток теперь сдвигается атомарным
+    `SET x = x + :delta WHERE x + :delta >= 0`, и заглушка обязана вести себя так
+    же — иначе тесты на отказ при нехватке проверяли бы несуществующий код.
+    Дельту и колонку достаём из скомпилированного запроса, а не угадываем.
+    """
+
+    def __init__(self, seq, card=None):
         self._seq = list(seq)
         self.added = []
+        # Карта, к которой применяется UPDATE. По умолчанию — первая из seq.
+        self._card = card or next((x for x in seq if isinstance(x, _Card)), None)
 
     def add(self, x):
         self.added.append(x)
@@ -41,7 +58,19 @@ class _DB:
     async def flush(self):
         pass
 
-    async def execute(self, _q):
+    async def refresh(self, _obj):
+        pass
+
+    async def execute(self, q):
+        if isinstance(q, Update):
+            compiled = q.compile()
+            column = "points_balance" if "points_balance" in str(compiled) else "deposit_balance"
+            delta = compiled.params[f"{column}_1"]
+            current = getattr(self._card, column)
+            if current + delta < 0:
+                return _Rows(0)
+            setattr(self._card, column, current + delta)
+            return _Rows(1)
         return _R(self._seq.pop(0))
 
 

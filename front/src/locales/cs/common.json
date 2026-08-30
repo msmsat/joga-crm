@@ -108,7 +108,9 @@
       "client_not_found": "Klient nenalezen",
       "account_not_found": "Účet nenalezen",
       "card_unavailable": "Platba kartou zatím není dostupná",
-      "promo_expired": "Promo kód už neplatí"
+      "promo_expired": "Promo kód už neplatí",
+      "balance_changed": "Body nebo depozit už byly utraceny jinde — přepočítejte platbu",
+      "attempt_in_progress": "Platba za tento prodej už probíhá — počkejte na výsledek nebo obnovte stránku"
     },
     "billing": {
       "tax_details_required": "Doplňte zemi studia do fakturačních údajů — bez ní nelze fakturu vystavit",
@@ -121,7 +123,8 @@
       "vat_unavailable": "Registr VIES právě neodpovídá — zkuste to později nebo uložte bez čísla",
       "vat_country_mismatch": "DIČ musí začínat kódem zvolené země",
       "commission_unsettled": "Nejdřív vyrovnejte provizi z offline prodejů: stiskněte „Zaplatit teď“ v bloku provize. Jakmile bude faktura uhrazena, můžete přejít na pevný tarif.",
-      "billing_profile_required": "Doplňte fakturační údaje — faktura za provizi se vystavuje na ně."
+      "billing_profile_required": "Doplňte fakturační údaje — faktura za provizi se vystavuje na ně.",
+      "combo_switch_requires_payment": "Přechod z tarifu „fix + procento“ na fixní se platí: klikněte na „Zaplatit“, vyberte fixní tarif a uhraďte období."
     },
     "loyalty": {
       "cert_not_found": "Poukaz nenalezen",

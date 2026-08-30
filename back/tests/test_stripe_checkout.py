@@ -270,7 +270,10 @@ class _NullDB:
 
 
 def _webhook(body: bytes, signature: str, applied: list, db: _NullDB):
-    async def _fake_apply_paid(_db, session_id, *, account_id=None):
+    # `attempt_id` — ссылка на нашу заявку (client_reference_id сессии), по ней
+    # вебхук находит её, если id сессии записать не успели. Заглушка обязана
+    # принимать его, иначе тест проверял бы TypeError вместо проведения оплаты.
+    async def _fake_apply_paid(_db, session_id, *, account_id=None, attempt_id=None):
         applied.append((session_id, account_id))
         return True
 

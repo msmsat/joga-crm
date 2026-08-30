@@ -350,6 +350,17 @@ async def _ensure_studio_customer(db: AsyncSession, plan: StudioBillingPlan) -> 
     уходил с полным чешским НДС вместо reverse charge — переплата, которую студии
     потом возвращать через поддержку.
     """
+    # Тот же замок, что в оплате тарифа (routers/billing/checkout._ensure_customer),
+    # и по той же причине: клиент у студии ровно один. Здесь спорят не две вкладки,
+    # а месячный проход и оформление оплаты — владелец жмёт «Оплатить» ровно тогда,
+    # когда ему пришёл счёт за комиссию. Второй Customer означал бы подписку на
+    # одном, а счета постоплаты на другом.
+    await db.execute(
+        select(StudioBillingPlan)
+        .where(StudioBillingPlan.studio_id == plan.studio_id)
+        .with_for_update()
+        .execution_options(populate_existing=True)
+    )
     if plan.stripe_customer_id:
         return plan.stripe_customer_id
 
@@ -1021,6 +1032,25 @@ async def _run_billing_pass(session_maker: async_sessionmaker) -> int:
         except Exception:
             await db.rollback()
             logger.exception("Автосверка подписок со Stripe не выполнена")
+
+    # Сверка ОПЛАТ КЛИЕНТОВ студий (Connect) — сюда же, и это не мелочь в общей
+    # куче. Покупка абонемента в мини-приложении проводится ТОЛЬКО вебхуком: ни
+    # кнопки «подтвердить», ни кассира у клиента нет. Потерянное событие означало
+    # «деньги на счету студии, абонемента нет», и обнаруживалось это по жалобе.
+    # Теперь застрявшая заявка перепроверяется у Stripe тем же путём проведения,
+    # что и вебхук (общий apply_paid под блокировкой строки).
+    async with session_maker() as db:
+        try:
+            from routers.checkout.stripe_pay import reconcile_pending
+
+            applied = await reconcile_pending(db)
+            if applied:
+                logger.warning(
+                    "Сверка оплат: проведено %s оплат, по которым не дошёл вебхук", applied,
+                )
+        except Exception:
+            await db.rollback()
+            logger.exception("Сверка оплат клиентов не выполнена")
 
     # Досверка номеров НДС, принятых при молчащем реестре ЕС, — сюда же и по той же
     # причине: раз в час, в одном процессе, под тем же локом. До неё плательщик

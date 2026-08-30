@@ -108,7 +108,9 @@
       "client_not_found": "Müşteri bulunamadı",
       "account_not_found": "Hesap bulunamadı",
       "card_unavailable": "Kartla ödeme henüz kullanılamıyor",
-      "promo_expired": "Promosyon kodu artık geçerli değil"
+      "promo_expired": "Promosyon kodu artık geçerli değil",
+      "balance_changed": "Puanlar veya depozito başka bir yerde harcandı — ödemeyi yeniden hesaplayın",
+      "attempt_in_progress": "Bu satış için bir ödeme zaten sürüyor — sonucu bekleyin veya sayfayı yenileyin"
     },
     "billing": {
       "tax_details_required": "Fatura bilgilerine stüdyonun ülkesini ekleyin — bu olmadan fatura kesilemez",
@@ -121,7 +123,8 @@
       "vat_unavailable": "VIES kaydı şu anda yanıt vermiyor — daha sonra deneyin ya da numarasız kaydedin",
       "vat_country_mismatch": "KDV numarası seçilen ülkenin koduyla başlamalı",
       "commission_unsettled": "Önce çevrimdışı satış komisyonunu kapatın: komisyon bloğundaki \"Şimdi öde\" düğmesine basın. O fatura ödendiğinde sabit pakete geçebilirsiniz.",
-      "billing_profile_required": "Fatura bilgilerinizi ekleyin — komisyon faturası bunlara kesilir."
+      "billing_profile_required": "Fatura bilgilerinizi ekleyin — komisyon faturası bunlara kesilir.",
+      "combo_switch_requires_payment": "«Sabit + yüzde» tarifesinden sabit tarifeye geçiş ücretlidir: «Öde» düğmesine basın, sabit bir tarife seçin ve dönemi ödeyin."
     },
     "loyalty": {
       "cert_not_found": "Hediye çeki bulunamadı",

@@ -40,7 +40,7 @@ from .checkout import (
     router as checkout_router, _metadata, _has_live_subscription, _live_plan_name,
     billing_profile, COMMISSION_UNSETTLED,
 )
-from .webhook import router as webhook_router, apply_status, mirror_invoice
+from .webhook import router as webhook_router, apply_status, mirror_invoice, _renew_months
 from .refunds import router as refunds_router
 
 logger = logging.getLogger(__name__)
@@ -73,6 +73,18 @@ OFFLINE_TERMS = {
     "min_monthly": MIN_MONTHLY_FEE,
     "currency": stripe_billing.CURRENCY.upper(),
 }
+# Отказ переключить комбо на фиксированный тариф даром. Смена модели здесь —
+# настройка, а этот переход стоит денег: у комбо половинный Price, и без оплаты
+# студия получила бы полный тариф за уже уплаченную половину. Адрес кнопки в
+# тексте не случаен — рассчитаться можно тут же, на той же странице.
+COMBO_SWITCH_REQUIRES_PAYMENT = {
+    "code": "billing.combo_switch_requires_payment",
+    "message": (
+        "Переход с тарифа «фикс + процент» на фиксированный оплачивается: "
+        "нажмите «Оплатить», выберите фиксированный тариф и оплатите период"
+    ),
+}
+
 router = APIRouter()
 router.include_router(checkout_router)
 router.include_router(webhook_router)
@@ -562,6 +574,25 @@ async def activate_model(
         if await offline_fee_billing.has_unsettled_commission(db, ctx.studio_id):
             raise HTTPException(status_code=409, detail=COMMISSION_UNSETTLED)
 
+    # Уход с комбо на ЧИСТУЮ подписку — тоже ПОКУПКА, а не настройка. Зеркало
+    # жалобы 14.08.2026, закрытой ниже с другой стороны: у комбо ПОЛОВИННЫЙ Price
+    # (plans.COMBO_FIXED), и студия, оплатившая период комбо, этим запросом
+    # получала полный тариф за половину денег — оплаченный период не
+    # перевыставляется (`proration_behavior="none"` без якоря), а обязательство
+    # платить процент с оборота снимается тут же (`percent_rate = None`). Год
+    # безлимита стоил 756 €, а по этой схеме — 378 € и ни цента комиссии.
+    #
+    # Расчёт по комиссии (гейт выше) дыру НЕ закрывал: у студии без офлайн-продаж
+    # долга нет вовсе, а минимальный месячный платёж на комбо не выставляется
+    # никогда (offline_fee_billing._bill_minimum берёт только «процент»).
+    #
+    # Переход идёт обычной оплатой — `POST /billing/checkout` с `combo=false`: там
+    # он стоит полной цены периода (checkout._switch_now), а режим поднимает уже
+    # ОПЛАТА (webhook._apply_paid_mode), ровно как ступень тарифа в `_activate`.
+    # Живой подписки нет — переходить не с чего и дарить нечего, пускаем как есть.
+    if previous_mode == "combo" and body.mode == "subscription" and _has_live_subscription(row):
+        raise HTTPException(status_code=409, detail=COMBO_SWITCH_REQUIRES_PAYMENT)
+
     # Комбо — ПОКУПКА, а не настройка, и здесь она НЕ происходит НИКОГДА. Прежний
     # код включал режим прямо тут: нажал «соглашаюсь» — и подписка переехала на
     # половинный Price, а надпись в шапке сменилась на «Комбо», хотя не заплачено
@@ -858,6 +889,15 @@ async def sync_invoice(
     Истина о платеже по-прежнему у Stripe: тянем счёт по stripe_invoice_id и
     применяем тем же переходом, что и вебхук (apply_status). Счёт без счёта Stripe
     (legacy, до перехода на подписки) остаётся как был.
+
+    ТЕМ ЖЕ переходом — значит и с теми же аргументами. `renew_months` читается из
+    метаданных счёта Stripe ровно там же, где их читает вебхук (`_renew_months`):
+    без него ручная сверка счёта ПРОДЛЕНИЯ отмечала счёт оплаченным, писала доход
+    в леджер и слала чек — но срок подписки не двигала вовсе. То есть студия
+    платила за 12 месяцев и не получала ни одного, причём именно в том сценарии,
+    ради которого эта кнопка и существует: событие не доехало. Автосверка
+    (`reconcile_subscriptions`) это не подберёт — она зеркалит подписку у Stripe, а
+    Stripe о нашем продлении узнаёт только из этого вызова.
     """
     inv = (await db.execute(select(BillingInvoice).where(
         BillingInvoice.id == invoice_id,
@@ -883,7 +923,7 @@ async def sync_invoice(
 
     status = getattr(stripe_invoice, "status", None)
     if status == "paid":
-        await apply_status(db, inv, "paid")
+        await apply_status(db, inv, "paid", renew_months=_renew_months(stripe_invoice))
     elif status in ("uncollectible", "void"):
         await apply_status(db, inv, "failed")
     else:

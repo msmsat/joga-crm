@@ -108,7 +108,9 @@
       "client_not_found": "Az ügyfél nem található",
       "account_not_found": "A számla nem található",
       "card_unavailable": "A kártyás fizetés még nem érhető el",
-      "promo_expired": "A promóciós kód már nem érvényes"
+      "promo_expired": "A promóciós kód már nem érvényes",
+      "balance_changed": "A pontokat vagy az előleget máshol már felhasználták — számolja újra a fizetést",
+      "attempt_in_progress": "Ehhez az eladáshoz már folyamatban van egy fizetés — várja meg vagy frissítsen"
     },
     "billing": {
       "tax_details_required": "Adja meg a stúdió országát a számlázási adatoknál — enélkül nem állítható ki számla",
@@ -121,7 +123,8 @@
       "vat_unavailable": "A VIES nyilvántartás most nem válaszol — próbálja később, vagy mentsen szám nélkül",
       "vat_country_mismatch": "Az adószámnak a kiválasztott ország kódjával kell kezdődnie",
       "commission_unsettled": "Előbb rendezze az offline értékesítés jutalékát: nyomja meg a „Fizetés most” gombot a jutalék blokkban. Ha az a számla ki van fizetve, átválthat fix csomagra.",
-      "billing_profile_required": "Adja meg a számlázási adatait — a jutalékszámla ezekre készül."
+      "billing_profile_required": "Adja meg a számlázási adatait — a jutalékszámla ezekre készül.",
+      "combo_switch_requires_payment": "A „fix + százalék” csomagról fix csomagra váltás fizetős: nyomja meg a „Fizetés” gombot, válasszon fix csomagot és fizesse ki az időszakot."
     },
     "loyalty": {
       "cert_not_found": "Az utalvány nem található",

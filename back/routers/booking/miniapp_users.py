@@ -26,6 +26,9 @@ from models import (
 # место, где цена превращается в «сколько снять деньгами», а `consume_quote` —
 # единственное, где списываются сертификат, депозит и баллы.
 from routers.checkout.router import _quote, consume_quote, reject_dead_promo
+from uuid import uuid4
+
+from routers.checkout.stripe_pay import ATTEMPT_KEY, _require_open, reserve_checkout
 from routers.clients.referrals import _unique_invite_code
 from routers.clients.subscriptions import attach_subscription
 from schemas._base import BaseSchema, OptPhone
@@ -527,31 +530,15 @@ async def create_checkout_session(
     # в младших единицах, что уходит в Stripe (см. services/platform_fee.py).
     fee_minor = await platform_fee.fee_for_studio(db, client.studio_id, amount_minor)
 
-    try:
-        session_id, url = await stripe_connect.create_hosted_checkout_session(
-            account_id=stripe_channel.account_id,
-            amount_minor=amount_minor,
-            currency=currency,
-            description=package.name,
-            metadata={
-                "studio_id": str(client.studio_id),
-                "client_id": str(client.id),
-                "package_id": str(package.id),
-            },
-            success_url=f"{return_base}paysuccess",
-            cancel_url=f"{return_base}paycancel",
-            application_fee_minor=fee_minor,
-            # Квитанцию клиенту отправит сам Stripe от лица студии. Почты у
-            # клиента может не быть (вход по Telegram) — тогда просто без чека.
-            receipt_email=client.email,
-        )
-    except Exception as exc:
-        raise HTTPException(status_code=502, detail="Stripe отклонил запрос") from exc
-
-    db.add(StripeCheckout(
+    # Заявку резервируем ДО похода в Stripe — тот же порядок, что у кассы
+    # (routers/checkout/stripe_pay.create_session) и по той же причине: иначе
+    # падение между ответом Stripe и коммитом оставляет живую платёжную страницу
+    # без заявки в CRM. Здесь это дороже вдвойне: у покупки из мини-приложения
+    # нет ни кнопки «подтвердить», ни кассира — только вебхук и сверка.
+    checkout, needs_session = await reserve_checkout(
+        db,
         studio_id=client.studio_id,
-        user_id=None,
-        session_id=session_id,
+        user_id=None,                       # не кассир: клиент купил абонемент сам
         account_id=stripe_channel.account_id,
         # Храним ЗАПРОС (чем клиент собрался платить), а не посчитанный итог —
         # так же, как заявка кассира (stripe_pay.create_session). Вебхук
@@ -570,7 +557,45 @@ async def create_checkout_session(
         # откатывает баллы (stripe_pay._revert_loyalty).
         amount=quote.total_price,
         application_fee=fee_minor,
-    ))
-    await db.commit()
+    )
+
+    try:
+        if needs_session:
+            session_id, url = await stripe_connect.create_hosted_checkout_session(
+                account_id=stripe_channel.account_id,
+                amount_minor=amount_minor,
+                currency=currency,
+                description=package.name,
+                metadata={
+                    "studio_id": str(client.studio_id),
+                    "client_id": str(client.id),
+                    "package_id": str(package.id),
+                    ATTEMPT_KEY: checkout.attempt_id,
+                },
+                success_url=f"{return_base}paysuccess",
+                cancel_url=f"{return_base}paycancel",
+                application_fee_minor=fee_minor,
+                # Квитанцию клиенту отправит сам Stripe от лица студии. Почты у
+                # клиента может не быть (вход по Telegram) — тогда просто без чека.
+                receipt_email=client.email,
+                client_reference_id=checkout.attempt_id,
+                # Одна попытка — одна сессия. Двойной тап по «Оплатить» и ретрай
+                # сети вернут ту же страницу вместо второй платёжной формы.
+                idempotency_key=f"cs:{checkout.attempt_id}",
+            )
+            checkout.session_id = session_id
+            await db.commit()
+        else:
+            # Повтор в окне попытки — отдаём ту же страницу, а не вторую.
+            session = await stripe_connect.fetch_session(
+                checkout.session_id, stripe_channel.account_id,
+            )
+            _require_open(session, checkout)
+            url = session.url
+    except Exception as exc:
+        # Заявку НЕ отменяем: сессия могла быть создана, а потеряться могла наша
+        # сторона ответа. Оставленную в pending подберёт сверка
+        # (stripe_pay.reconcile_pending) — по client_reference_id.
+        raise HTTPException(status_code=502, detail="Stripe отклонил запрос") from exc
 
     return CheckoutSessionResponse(url=url)

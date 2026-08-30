@@ -7,11 +7,12 @@ POST инициирует возврат в Stripe; сам откат (счёт�
 import logging
 from datetime import datetime, timedelta
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
 from database import get_db
+from ratelimit import limiter
 from dependencies import require_role, StudioContext
 from models import BillingInvoice
 from services import stripe_billing
@@ -36,7 +37,12 @@ REFUND_WINDOW_DAYS = 14
 
 
 @router.post("/invoices/{invoice_id}/refund")
+# Каждый вызов инициирует движение денег в Stripe. Возврат нажимают единицы раз,
+# а не потоком; от двойного возврата защищает ключ идемпотентности ниже, лимит —
+# только от зациклившегося ретрая.
+@limiter.limit("10/minute")
 async def refund_invoice(
+    request: Request,
     invoice_id: int,
     ctx: StudioContext = Depends(require_role("owner")),
     db: AsyncSession = Depends(get_db),
@@ -80,7 +86,11 @@ async def refund_invoice(
             target = None
         if not target:
             raise RuntimeError("у счёта нет платежа, пригодного для возврата")
-        await stripe_billing.refund(target)
+        # Ключ идемпотентности — по НАШЕМУ счёту: два нажатия «Вернуть» подряд и
+        # ретрай после таймаута обязаны дать РОВНО ОДИН возврат. Гварда по статусу
+        # выше это не обеспечивает: `refunded` проставляет вебхук, а он придёт уже
+        # после того, как второй запрос уйдёт в Stripe.
+        await stripe_billing.refund(target, idempotency_key=f"rf:{invoice.id}")
     except Exception as exc:
         logger.exception("Возврат не удался, счёт %s", invoice.id)
         raise HTTPException(status_code=502, detail={

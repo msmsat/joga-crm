@@ -213,7 +213,28 @@ class StripeCheckout(Base):
     # Кассир, начавший продажу — от его имени пойдёт запись в ленту событий.
     # NULL — заявка мини-приложения, клиент купил абонемент сам.
     user_id: Mapped[Optional[int]] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=True)
-    session_id: Mapped[str] = mapped_column(String(200), unique=True, index=True)
+    # НАШ идентификатор попытки оплаты, uuid4. Заводится ДО похода в Stripe и
+    # уезжает туда в `client_reference_id` и в метаданные сессии.
+    #
+    # Зачем он вообще нужен. Сессия Stripe создаётся раньше, чем мы успеваем
+    # записать её id: упади процесс или БД в этом окне — сессия жива, клиент по
+    # ней платит, а заявки в CRM нет вовсе. Вебхук такую оплату не находит
+    # («заявка не найдена»), деньги садятся на счёт студии, продажи не случается,
+    # и узнать об этом можно только из банка. Сначала резервируем строку у себя,
+    # потом идём в Stripe — тот же порядок, что у счетов постоплаты
+    # (services/offline_fee_billing._bill), и по той же причине.
+    #
+    # Значение генерирует ТОЛЬКО сервер: принять его снаружи значит дать
+    # возможность приклеиться к чужой заявке.
+    attempt_id: Mapped[Optional[str]] = mapped_column(
+        String(64), unique=True, index=True, nullable=True,
+    )
+    # id сессии Stripe. NULL, пока Stripe её не вернул (и навсегда, если вернуть
+    # не успел). Связь в этом случае восстанавливается по `attempt_id` — и
+    # вебхуком (stripe_pay.apply_paid), и сверкой (stripe_pay.reconcile_pending).
+    session_id: Mapped[Optional[str]] = mapped_column(
+        String(200), unique=True, index=True, nullable=True,
+    )
     account_id: Mapped[str] = mapped_column(String(60))
     payload: Mapped[dict] = mapped_column(JSON)
     amount: Mapped[int] = mapped_column(Integer)

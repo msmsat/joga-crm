@@ -108,7 +108,9 @@
       "client_not_found": "Client introuvable",
       "account_not_found": "Compte introuvable",
       "card_unavailable": "Le paiement par carte n'est pas encore disponible",
-      "promo_expired": "Le code promo n'est plus valable"
+      "promo_expired": "Le code promo n'est plus valable",
+      "balance_changed": "Les points ou l'acompte ont déjà été utilisés ailleurs — recalculez le paiement",
+      "attempt_in_progress": "Un paiement est déjà en cours pour cette vente — attendez le résultat ou actualisez"
     },
     "billing": {
       "tax_details_required": "Ajoutez le pays du studio dans les informations de facturation — sans lui, la facture ne peut pas être émise",
@@ -121,7 +123,8 @@
       "vat_unavailable": "Le registre VIES ne répond pas pour le moment — réessayez plus tard ou enregistrez sans numéro",
       "vat_country_mismatch": "Le numéro de TVA doit commencer par le code du pays sélectionné",
       "commission_unsettled": "Réglez d'abord la commission sur les ventes hors ligne : appuyez sur « Payer maintenant » dans le bloc commission. Une fois cette facture payée, vous pourrez passer à un forfait fixe.",
-      "billing_profile_required": "Ajoutez vos informations de facturation — la facture de commission est établie à leur nom."
+      "billing_profile_required": "Ajoutez vos informations de facturation — la facture de commission est établie à leur nom.",
+      "combo_switch_requires_payment": "Passer du forfait « fixe + pourcentage » à un forfait fixe est payant : cliquez sur « Payer », choisissez un forfait fixe et réglez la période."
     },
     "loyalty": {
       "cert_not_found": "Bon cadeau introuvable",

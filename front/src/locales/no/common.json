@@ -108,7 +108,9 @@
       "client_not_found": "Kunden ble ikke funnet",
       "account_not_found": "Kontoen ble ikke funnet",
       "card_unavailable": "Kortbetaling er ikke tilgjengelig ennå",
-      "promo_expired": "Kampanjekoden er ikke lenger gyldig"
+      "promo_expired": "Kampanjekoden er ikke lenger gyldig",
+      "balance_changed": "Poengene eller depositumet er allerede brukt et annet sted — beregn betalingen på nytt",
+      "attempt_in_progress": "En betaling for dette salget pågår allerede — vent på resultatet eller oppdater"
     },
     "billing": {
       "tax_details_required": "Legg til studioets land i fakturaopplysningene — uten det kan ikke fakturaen utstedes",
@@ -121,7 +123,8 @@
       "vat_unavailable": "VIES-registeret svarer ikke akkurat nå — prøv igjen senere eller lagre uten nummer",
       "vat_country_mismatch": "MVA-nummeret må begynne med koden til valgt land",
       "commission_unsettled": "Gjør først opp provisjonen for offline salg: trykk \"Betal nå\" i provisjonsblokken. Når den fakturaen er betalt, kan du gå over til et fast abonnement.",
-      "billing_profile_required": "Legg til faktureringsopplysningene dine — provisjonsfakturaen utstedes til dem."
+      "billing_profile_required": "Legg til faktureringsopplysningene dine — provisjonsfakturaen utstedes til dem.",
+      "combo_switch_requires_payment": "Å bytte fra «fast + prosent»-planen til en fast plan koster penger: trykk «Betal», velg en fast plan og betal for perioden."
     },
     "loyalty": {
       "cert_not_found": "Gavekortet ble ikke funnet",

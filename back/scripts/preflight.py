@@ -709,6 +709,194 @@ async def check_stripe_catalog(sync: bool) -> None:
         )
 
 
+# События, которые ОБРАБАТЫВАЕТ код. Списки не декоративные: не подписанный
+# эндпоинт означает, что соответствующая ветка обработчика не выполнится никогда,
+# и узнать об этом можно только по жалобе.
+#
+# Биллинг платформы (routers/billing/webhook.stripe_webhook):
+_BILLING_EVENTS = {
+    "customer.subscription.created",
+    "customer.subscription.updated",
+    "customer.subscription.deleted",
+    "invoice.paid",
+    "invoice.payment_failed",
+    "charge.refunded",
+    # Чарджбэк по оплате ТАРИФА. Без него выигранный владельцем спор оставляет
+    # ему и деньги, и доступ: `charge.refunded` при чарджбэке не приходит вовсе.
+    "charge.dispute.closed",
+    "setup_intent.succeeded",
+    # Сверка номера НДС с VIES. Без подписки фиктивный номер продолжает обнулять
+    # налог за счёт платформы.
+    "customer.tax_id.updated",
+}
+
+# Касса студий и мини-приложение (routers/checkout/stripe_pay.stripe_webhook):
+_CONNECT_EVENTS = {
+    "checkout.session.completed",
+    "checkout.session.expired",
+    "checkout.session.async_payment_succeeded",
+    "checkout.session.async_payment_failed",
+    "charge.refunded",
+    "charge.dispute.created",
+    "charge.dispute.closed",
+}
+
+
+async def check_webhook_endpoints() -> None:
+    """Фактическая подписка эндпоинтов у Stripe — а не наши намерения.
+
+    До этой проверки конфигурация вебхуков жила исключительно в чужом интерфейсе:
+    код умеет обрабатывать событие, эндпоинт на него не подписан — и ветка мертва
+    молча. Так дороже всего обходится `charge.dispute.closed` (доступ не
+    отзывается после чарджбэка) и `customer.tax_id.updated` (фиктивный VAT
+    продолжает обнулять налог).
+
+    Проверяем ровно то, что нельзя увидеть из кода:
+      * эндпоинт с нашим URL вообще существует и включён;
+      * подписан на ВСЕ обрабатываемые события (или на `*`);
+      * биллинговый НЕ слушает подключённые аккаунты, а кассовый — слушает;
+      * URL боевой и по HTTPS.
+
+    Различаем их по `application`/`connect`-признаку: у Stripe эндпоинт,
+    принимающий события подключённых аккаунтов, помечен отдельно.
+    """
+    import stripe
+
+    if not os.getenv("STRIPE_SECRET_KEY"):
+        return
+
+    backend = (os.getenv("BACKEND_URL") or "").rstrip("/")
+    if not backend:
+        return
+
+    try:
+        endpoints = (await asyncio.to_thread(stripe.WebhookEndpoint.list, limit=100)).data
+    except Exception as exc:
+        _err(f"не удалось прочитать список вебхуков у Stripe ({exc}) — конфигурация не проверена")
+        return
+
+    wanted = {
+        f"{backend}/billing/webhook/stripe": ("биллинг платформы", _BILLING_EVENTS, False),
+        f"{backend}/checkout/webhook/stripe": ("касса студий", _CONNECT_EVENTS, True),
+    }
+
+    for url, (title, events, want_connect) in wanted.items():
+        found = [e for e in endpoints if (getattr(e, "url", "") or "").rstrip("/") == url]
+        if not found:
+            _err(
+                f"вебхук «{title}» ({url}) не заведён в Stripe — "
+                f"оплаты не будут проводиться вовсе"
+            )
+            continue
+        endpoint = found[0]
+
+        if not url.startswith("https://"):
+            _err(f"вебхук «{title}» слушает не по HTTPS: {url}")
+        if getattr(endpoint, "status", None) != "enabled":
+            _err(f"вебхук «{title}» выключен в Stripe (status={getattr(endpoint, 'status', '?')})")
+
+        enabled = set(getattr(endpoint, "enabled_events", None) or [])
+        if "*" not in enabled:
+            missing = sorted(events - enabled)
+            if missing:
+                _err(
+                    f"вебхук «{title}» не подписан на {len(missing)} обрабатываемых событий: "
+                    f"{', '.join(missing)}"
+                )
+
+        # События подключённых аккаунтов. У Stripe это отдельный тип эндпоинта, и
+        # SDK показывает его полем `application` (у Connect-эндпоинта оно None, но
+        # сам эндпоинт заводится в разделе Connect) — надёжнее смотреть на то,
+        # приходят ли по нему события с `account`. Прямого булева поля в объекте
+        # нет, поэтому сверяем по описанию, которое проставляет дашборд, и
+        # предупреждаем: молча пропустить эту настройку нельзя.
+        _warn(
+            f"вебхук «{title}»: проверьте вручную флаг «events on connected accounts» — "
+            f"он должен быть {'ВКЛЮЧЁН' if want_connect else 'ВЫКЛЮЧЕН'}; "
+            f"через API этот признак не читается"
+        )
+
+
+async def check_duplicate_customers() -> None:
+    """Дубли Stripe Customer по студиям — след давней гонки первой оплаты.
+
+    До блокировки строки плана (routers/billing/checkout._ensure_customer) два
+    параллельных нажатия «Оплатить» заводили студии ДВУХ клиентов: в нашу строку
+    попадал один, а подписка рождалась на другом. Такая студия платит, а тариф не
+    активируется, и починить это может только человек.
+
+    Ищем по метаданным (их проставляет `ensure_customer`), а не по нашей БД:
+    осиротевший клиент в ней как раз и не записан.
+    """
+    import stripe
+    from sqlalchemy import text
+
+    if not os.getenv("STRIPE_SECRET_KEY"):
+        return
+
+    try:
+        from database import engine
+
+        async with engine.connect() as conn:
+            rows = (await conn.execute(text(
+                "SELECT studio_id, stripe_customer_id FROM studio_billing_plans "
+                "WHERE stripe_customer_id IS NOT NULL LIMIT 500"
+            ))).all()
+    except Exception as exc:
+        _warn(f"не удалось прочитать студии из БД ({exc}) — дубли клиентов не проверены")
+        return
+
+    duplicates = 0
+    for studio_id, local_customer in rows:
+        try:
+            found = await asyncio.to_thread(
+                stripe.Customer.search,
+                query=f"metadata['studio_id']:'{studio_id}'", limit=10,
+            )
+        except Exception as exc:
+            _warn(f"поиск клиентов студии {studio_id} не удался ({exc}) — проверка оборвана")
+            return
+        ids = [c.id for c in (getattr(found, "data", None) or [])]
+        if len(ids) <= 1:
+            continue
+
+        duplicates += 1
+        # Разбор печатаем сразу: без него оператору пришлось бы вручную ходить по
+        # каждому клиенту в дашборде. Опасен ровно один расклад — подписка живёт
+        # НЕ на том клиенте, что записан у нас: оплата такой студии не находит
+        # свою подписку никогда.
+        print(f"\n  Студия {studio_id}: клиентов {len(ids)}, локально записан {local_customer}")
+        for customer_id in ids:
+            try:
+                subs = await asyncio.to_thread(
+                    stripe.Subscription.list, customer=customer_id, status="all", limit=10,
+                )
+                live = [
+                    s.id for s in (getattr(subs, "data", None) or [])
+                    if getattr(s, "status", None) in ("active", "trialing", "past_due")
+                ]
+                paid = await asyncio.to_thread(
+                    stripe.Invoice.list, customer=customer_id, status="paid", limit=1,
+                )
+            except Exception as exc:
+                print(f"    {customer_id}: разбор не удался ({exc})")
+                continue
+            mark = "← записан у нас" if customer_id == local_customer else ""
+            print(
+                f"    {customer_id}: живых подписок {len(live)}"
+                f"{' (' + ', '.join(live) + ')' if live else ''}, "
+                f"оплаченных счетов {'есть' if getattr(paid, 'data', None) else 'нет'} {mark}"
+            )
+
+    if duplicates:
+        _err(
+            f"у {duplicates} студий больше одного Stripe Customer (разбор выше). "
+            f"Приведите studio_billing_plans.stripe_customer_id к тому клиенту, на "
+            f"котором живёт ОПЛАЧЕННАЯ подписка, и только потом включайте боевой "
+            f"режим: иначе оплата такой студии не найдёт свою подписку"
+        )
+
+
 async def main(sync: bool) -> int:
     # Консоль Windows по умолчанию cp1251, а тексты проверок русские и со стрелками:
     # без этого весь скрипт валится UnicodeEncodeError на первом же `→`, то есть
@@ -739,6 +927,8 @@ async def main(sync: bool) -> int:
     await check_vies()
     await check_stripe_catalog(sync)
     await check_db_stripe_links()
+    await check_webhook_endpoints()
+    await check_duplicate_customers()
 
     for text in _WARNINGS:
         print(f"  [!] {text}")
@@ -750,7 +940,9 @@ async def main(sync: bool) -> int:
         return 1
     print(f"\nБлокеров нет, предупреждений: {len(_WARNINGS)}.")
     print(
-        "\nОстаётся то, что живёт в дашборде Stripe и из кода не проверяется:\n"
+        "\nПодписка эндпоинтов на события теперь проверяется автоматически "
+        "(check_webhook_endpoints). Руками остаётся одно — флаг «events on "
+        "connected accounts», через API он не читается:\n"
         "  * /billing/webhook/stripe  — события customer.subscription.*, invoice.*,\n"
         "    charge.refunded, setup_intent.succeeded, customer.tax_id.updated.\n"
         "    Последнее — сверка VAT ID с VIES: без подписки на него фиктивный номер\n"

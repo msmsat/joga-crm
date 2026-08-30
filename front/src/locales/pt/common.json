@@ -108,7 +108,9 @@
       "client_not_found": "Cliente não encontrado",
       "account_not_found": "Conta não encontrada",
       "card_unavailable": "O pagamento com cartão ainda não está disponível",
-      "promo_expired": "O código promocional já não é válido"
+      "promo_expired": "O código promocional já não é válido",
+      "balance_changed": "Os pontos ou o depósito já foram gastos noutro local — recalcule o pagamento",
+      "attempt_in_progress": "Já está em curso um pagamento para esta venda — aguarde o resultado ou atualize"
     },
     "billing": {
       "tax_details_required": "Adicione o país do estúdio nos dados de faturação — sem ele a fatura não pode ser emitida",
@@ -121,7 +123,8 @@
       "vat_unavailable": "O registo VIES não está a responder neste momento — tente mais tarde ou guarde sem número",
       "vat_country_mismatch": "O número de IVA tem de começar pelo código do país selecionado",
       "commission_unsettled": "Liquide primeiro a comissão das vendas offline: prima \"Pagar agora\" no bloco da comissão. Assim que essa fatura estiver paga, pode passar para um plano fixo.",
-      "billing_profile_required": "Adicione os seus dados de faturação — a fatura da comissão é emitida em nome deles."
+      "billing_profile_required": "Adicione os seus dados de faturação — a fatura da comissão é emitida em nome deles.",
+      "combo_switch_requires_payment": "Mudar do plano «fixo + percentagem» para um plano fixo é uma compra: carregue em «Pagar», escolha um plano fixo e pague o período."
     },
     "loyalty": {
       "cert_not_found": "Vale-oferta não encontrado",

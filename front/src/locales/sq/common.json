@@ -108,7 +108,9 @@
       "client_not_found": "Klienti nuk u gjet",
       "account_not_found": "Llogaria nuk u gjet",
       "card_unavailable": "Pagesa me kartë ende nuk është e disponueshme",
-      "promo_expired": "Kodi promocional nuk vlen më"
+      "promo_expired": "Kodi promocional nuk vlen më",
+      "balance_changed": "Pikët ose depozita janë shpenzuar tashmë diku tjetër — rillogaritni pagesën",
+      "attempt_in_progress": "Një pagesë për këtë shitje është tashmë në proces — prisni rezultatin ose rifreskoni"
     },
     "billing": {
       "tax_details_required": "Shtoni shtetin e studios te të dhënat e faturimit — pa të fatura nuk lëshohet",
@@ -121,7 +123,8 @@
       "vat_unavailable": "Regjistri VIES nuk po përgjigjet për momentin — provoni më vonë ose ruani pa numër",
       "vat_country_mismatch": "Numri i TVSH-së duhet të fillojë me kodin e shtetit të zgjedhur",
       "commission_unsettled": "Shlyeni fillimisht komisionin e shitjeve offline: shtypni \"Paguaj tani\" te blloku i komisionit. Pasi ajo faturë të paguhet, mund të kaloni në një plan fiks.",
-      "billing_profile_required": "Shtoni të dhënat e faturimit — fatura e komisionit lëshohet mbi to."
+      "billing_profile_required": "Shtoni të dhënat e faturimit — fatura e komisionit lëshohet mbi to.",
+      "combo_switch_requires_payment": "Kalimi nga plani «fiks + përqindje» në një plan fiks paguhet: shtypni «Paguaj», zgjidhni një plan fiks dhe paguani periudhën."
     },
     "loyalty": {
       "cert_not_found": "Certifikata nuk u gjet",

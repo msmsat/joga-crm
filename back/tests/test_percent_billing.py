@@ -372,12 +372,19 @@ def _run_refund(invoice):
     async def _target(_invoice_id):
         return {"payment_intent": "pi_1"}
 
-    async def _refund(_target):
+    # `idempotency_key` — ключ бизнес-операции «возврат по этому счёту»
+    # (routers/billing/refunds): без **kwargs заглушка падала бы TypeError и
+    # выдавала «Stripe отклонил возврат» там, где гварды на самом деле пропустили.
+    async def _refund(_target, **_kw):
         return None
 
     SB.refund_target_for_invoice, SB.refund = _target, _refund
+    # Ручка под лимитером: зовём распакованную и подсовываем пустой Request —
+    # лимит к гвардам возврата отношения не имеет, а без этого тест проверял бы
+    # сигнатуру декоратора вместо самих гвардов.
+    fn = getattr(R.refund_invoice, "__wrapped__", R.refund_invoice)
     try:
-        asyncio.run(R.refund_invoice(1, SimpleNamespace(studio_id=7), _db(invoice)))
+        asyncio.run(fn(SimpleNamespace(), 1, SimpleNamespace(studio_id=7), _db(invoice)))
         return None
     except HTTPException as exc:
         return exc.detail["code"] if isinstance(exc.detail, dict) else exc.detail

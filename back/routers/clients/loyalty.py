@@ -8,7 +8,7 @@
 from datetime import date, datetime, timedelta
 
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy import func
+from sqlalchemy import func, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
@@ -39,14 +39,48 @@ async def _get_or_create_card(client_id: int, studio_id: int, db: AsyncSession) 
     return card
 
 
+async def _shift_balance(
+    db: AsyncSession, card: ClientLoyaltyCard, column, delta: int, denied: str,
+) -> None:
+    """Сдвинуть остаток АТОМАРНО, одним UPDATE, и не дать ему уйти в минус.
+
+    Почему не `card.points_balance += delta` в питоне. Это read-modify-write:
+    две параллельные операции по одному клиенту читают ОДИН остаток и обе пишут
+    от него — последняя запись побеждает, и одно из изменений пропадает. На
+    тратах это двойное списание (250 баллов оплачивают две покупки), на
+    начислениях — потерянный бонус, а в обе стороны — журнал транзакций, который
+    больше не сходится с остатком. Гасить их порознь блокировками в каждом
+    вызывающем нельзя: `apply_points_change` зовут из десятка мест — касса,
+    вебхук Stripe, мини-приложение, рефералка, откат возврата, сгорание баллов,
+    ручной бонус, — и забытая блокировка вернула бы дыру целиком.
+
+    `UPDATE … SET x = x + :delta WHERE x + :delta >= 0` считает от актуального
+    значения В МОМЕНТ ЗАПИСИ. Второй UPDATE ждёт блокировки строки, а после неё
+    Postgres перечитывает строку и проверяет условие заново (EvalPlanQual) —
+    поэтому «хватило обоим» невозможно: `rowcount == 0` и есть отказ.
+
+    Обновлённый объект перечитываем: вызывающие читают остаток сразу после
+    (`_revert_loyalty` обрезает возврат по нему, эндпоинты отдают его в ответе).
+    """
+    result = await db.execute(
+        update(ClientLoyaltyCard)
+        .where(ClientLoyaltyCard.id == card.id, column + delta >= 0)
+        .values({column: column + delta})
+    )
+    if result.rowcount == 0:
+        raise HTTPException(status_code=400, detail=denied)
+    await db.refresh(card)
+
+
 async def apply_points_change(
     client_id: int, studio_id: int, points: int, description: str, db: AsyncSession
 ) -> ClientLoyaltyCard:
     """Меняет баланс и пишет транзакцию. Минус на балансе — 400. НЕ коммитит."""
     card = await _get_or_create_card(client_id, studio_id, db)
-    if card.points_balance + points < 0:
-        raise HTTPException(status_code=400, detail="Недостаточно баллов на балансе")
-    card.points_balance += points
+    await _shift_balance(
+        db, card, ClientLoyaltyCard.points_balance, points,
+        "Недостаточно баллов на балансе",
+    )
     db.add(LoyaltyPointTransaction(
         studio_id=studio_id, client_id=client_id, points=points, description=description,
     ))
@@ -152,9 +186,10 @@ async def apply_deposit_change(
     (booking/public.py) — там кассового счёта нет, это не платёж, а бонус.
     """
     card = await _get_or_create_card(client_id, studio_id, db)
-    if card.deposit_balance + amount < 0:
-        raise HTTPException(status_code=400, detail="Недостаточно средств на депозите")
-    card.deposit_balance += amount
+    await _shift_balance(
+        db, card, ClientLoyaltyCard.deposit_balance, amount,
+        "Недостаточно средств на депозите",
+    )
     db.add(DepositTransaction(
         studio_id=studio_id, client_id=client_id, amount=amount, description=description,
     ))

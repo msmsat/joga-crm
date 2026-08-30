@@ -6,12 +6,13 @@ from dataclasses import dataclass
 from datetime import date, datetime
 from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
 from activity import log_activity
 from database import get_db
+from ratelimit import limiter
 from dependencies import get_current_user, require_role, StudioContext
 from models import (
     Account, Client, ClientLoyaltyCard, ClientPayment, GiftCertificate, Lesson, Operation, Service,
@@ -176,7 +177,62 @@ async def consume_quote(db: AsyncSession, studio_id: int, client_id: int, quote:
     ней возврат оплаты кладёт всё назад. Пересчитать её при возврате нельзя:
     сертификат к тому моменту уже "used", а баллы списаны, и `_quote` дал бы
     другие числа.
+
+    ЗАПИРАЕМ ТО, ЧТО ТРАТИМ, и перепроверяем остаток уже под блокировкой. `_quote`
+    считает по НЕЗАПЕРТОМУ чтению, и две параллельные оплаты одного клиента (две
+    вкладки мини-приложения, клиент и кассир одновременно, ретрай сети поверх
+    первого запроса) обе видят один и тот же остаток и обе доходят сюда. Дальше
+    `apply_points_change` делает read-modify-write в питоне: оба списания считают
+    от старого баланса, последняя запись побеждает — и 250 баллов оплачивают ДВА
+    абонемента. С сертификатом ещё нагляднее: обе видят "active", обе гасят один и
+    тот же документ, выдано два. Самый дорогой вариант — пакет, полностью покрытый
+    баллами/сертификатом (miniapp `_grant_fully_covered`): Stripe там не участвует
+    вовсе, то есть второй абонемент достаётся бесплатно и целиком.
     """
+    # Порядок блокировок один и тот же везде (карта → сертификат): встречный
+    # порядок в другом месте дал бы взаимную блокировку на денежном пути.
+    if quote.deposit_applied > 0 or quote.bonuses_applied > 0:
+        card = (await db.execute(
+            select(ClientLoyaltyCard)
+            .where(ClientLoyaltyCard.client_id == client_id)
+            .with_for_update()
+            .execution_options(populate_existing=True)
+        )).scalar_one_or_none()
+        # populate_existing обязателен: карту уже читали и `_quote`, и начисление
+        # баллов за эту же покупку — без него ORM вернул бы её из identity map с
+        # остатком, посчитанным ДО чужого списания, и блокировка стала бы
+        # бесполезной (тот же капкан, что в checkout/stripe_pay.apply_paid).
+        if card is None or (
+            card.deposit_balance < quote.deposit_applied
+            or card.points_balance < quote.bonuses_applied
+        ):
+            raise HTTPException(status_code=409, detail={
+                "code": "checkout.balance_changed",
+                "message": "Баллы или депозит уже потрачены — пересчитайте оплату",
+            })
+
+    if quote.certificate_applied > 0:
+        certificate = (await db.execute(
+            select(GiftCertificate)
+            # studio_id рядом с первичным ключом — не паранойя, а тот же отбор,
+            # каким сертификат нашёлся в `_quote`: код уникален глобально, и
+            # выборка «по id, чей угодно» однажды переживёт правку соседней ветки.
+            .where(
+                GiftCertificate.id == quote.certificate.id,
+                GiftCertificate.studio_id == studio_id,
+            )
+            .with_for_update()
+            .execution_options(populate_existing=True)
+        )).scalar_one_or_none()
+        # Тот же текст и код, что у проверки в `_quote`: для клиента это одна и та
+        # же причина — сертификат уже погашен, просто узнали мы её на шаг позже.
+        if certificate is None or certificate.status != "active":
+            raise HTTPException(status_code=400, detail={
+                "code": "loyalty.cert_used",
+                "message": "Сертификат уже погашен или недействителен",
+            })
+        quote.certificate = certificate
+
     if quote.deposit_applied > 0:
         await apply_deposit_change(
             client_id, studio_id, -quote.deposit_applied, "Оплата депозитом", db,
@@ -351,7 +407,12 @@ async def calculate(
 
 
 @router.post("/pay", response_model=CheckoutPayResult, status_code=201)
+# Проведение оплаты наличными: двигает деньги, начисляет абонемент, гасит баллы
+# и сертификат. Лимит — предохранитель от зациклившегося ретрая и угнанного
+# токена; от двойного проведения защищают блокировки в consume_quote, а не он.
+@limiter.limit("30/minute")
 async def pay(
+    request: Request,
     body: CheckoutPayRequest,
     ctx: StudioContext = Depends(require_role("owner", "admin")),
     current_user: User = Depends(get_current_user),

@@ -108,7 +108,9 @@
       "client_not_found": "Nie znaleziono klienta",
       "account_not_found": "Nie znaleziono konta",
       "card_unavailable": "Płatność kartą nie jest jeszcze dostępna",
-      "promo_expired": "Kod promocyjny stracił ważność"
+      "promo_expired": "Kod promocyjny stracił ważność",
+      "balance_changed": "Punkty lub depozyt zostały już wykorzystane gdzie indziej — przelicz płatność ponownie",
+      "attempt_in_progress": "Płatność za tę sprzedaż już trwa — poczekaj na wynik lub odśwież stronę"
     },
     "billing": {
       "tax_details_required": "Dodaj kraj studia w danych do faktury — bez niego faktury nie da się wystawić",
@@ -121,7 +123,8 @@
       "vat_unavailable": "Rejestr VIES w tej chwili nie odpowiada — spróbuj później lub zapisz bez numeru",
       "vat_country_mismatch": "Numer VAT musi zaczynać się kodem wybranego kraju",
       "commission_unsettled": "Najpierw rozlicz prowizję od sprzedaży offline: naciśnij „Zapłać teraz” w bloku prowizji. Gdy ta faktura zostanie opłacona, możesz przejść na plan stały.",
-      "billing_profile_required": "Uzupełnij dane do faktury — faktura za prowizję jest wystawiana na nie."
+      "billing_profile_required": "Uzupełnij dane do faktury — faktura za prowizję jest wystawiana na nie.",
+      "combo_switch_requires_payment": "Przejście z taryfy „stała + procent” na stałą jest płatne: kliknij „Zapłać”, wybierz taryfę stałą i opłać okres."
     },
     "loyalty": {
       "cert_not_found": "Nie znaleziono bonu",

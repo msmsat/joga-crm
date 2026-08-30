@@ -108,7 +108,9 @@
       "client_not_found": "Client not found",
       "account_not_found": "Account not found",
       "card_unavailable": "Card payment is not available yet",
-      "promo_expired": "Promo code is no longer valid"
+      "promo_expired": "Promo code is no longer valid",
+      "balance_changed": "The points or deposit were already spent elsewhere — recalculate the payment",
+      "attempt_in_progress": "A payment for this sale is already in progress — wait for the result or refresh"
     },
     "billing": {
       "tax_details_required": "Add the studio country in the invoice details — the invoice can't be issued without it",
@@ -121,7 +123,8 @@
       "vat_unavailable": "The VIES registry isn't responding right now — try again later or save without a number",
       "vat_country_mismatch": "The VAT number must start with the selected country's code",
       "commission_unsettled": "Settle the offline-sales commission first: press \"Pay now\" in the commission block. Once that invoice is paid you can move to a fixed plan.",
-      "billing_profile_required": "Add your billing details — the commission invoice is issued to them."
+      "billing_profile_required": "Add your billing details — the commission invoice is issued to them.",
+      "combo_switch_requires_payment": "Moving from the fixed + percent plan to a fixed one is a purchase: press \"Pay\", pick a fixed plan and pay for the period."
     },
     "loyalty": {
       "cert_not_found": "Certificate not found",

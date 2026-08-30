@@ -108,7 +108,9 @@
       "client_not_found": "Klijent nije pronađen",
       "account_not_found": "Račun nije pronađen",
       "card_unavailable": "Plaćanje karticom još nije dostupno",
-      "promo_expired": "Promo kod više ne vrijedi"
+      "promo_expired": "Promo kod više ne vrijedi",
+      "balance_changed": "Bodovi ili polog već su potrošeni drugdje — ponovno izračunajte plaćanje",
+      "attempt_in_progress": "Plaćanje za ovu prodaju već je u tijeku — pričekajte rezultat ili osvježite"
     },
     "billing": {
       "tax_details_required": "Dodajte državu studija u podatke za račun — bez nje se račun ne može izdati",
@@ -121,7 +123,8 @@
       "vat_unavailable": "Registar VIES trenutačno ne odgovara — pokušajte kasnije ili spremite bez broja",
       "vat_country_mismatch": "PDV broj mora počinjati oznakom odabrane države",
       "commission_unsettled": "Najprije podmirite proviziju za offline prodaju: pritisnite „Plati sada” u bloku provizije. Kad taj račun bude plaćen, možete prijeći na fiksni paket.",
-      "billing_profile_required": "Dodajte podatke za naplatu — račun za proviziju izdaje se na njih."
+      "billing_profile_required": "Dodajte podatke za naplatu — račun za proviziju izdaje se na njih.",
+      "combo_switch_requires_payment": "Prelazak s tarife „fiksno + postotak” na fiksnu se plaća: pritisnite „Plati”, odaberite fiksnu tarifu i platite razdoblje."
     },
     "loyalty": {
       "cert_not_found": "Poklon-bon nije pronađen",

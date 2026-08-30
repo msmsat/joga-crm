@@ -108,7 +108,9 @@
       "client_not_found": "Asiakasta ei löytynyt",
       "account_not_found": "Tiliä ei löytynyt",
       "card_unavailable": "Korttimaksu ei ole vielä käytettävissä",
-      "promo_expired": "Kampanjakoodi ei ole enää voimassa"
+      "promo_expired": "Kampanjakoodi ei ole enää voimassa",
+      "balance_changed": "Pisteet tai talletus on jo käytetty muualla — laske maksu uudelleen",
+      "attempt_in_progress": "Tämän myynnin maksu on jo käynnissä — odota tulosta tai päivitä sivu"
     },
     "billing": {
       "tax_details_required": "Lisää studion maa laskutustietoihin — ilman sitä laskua ei voi muodostaa",
@@ -121,7 +123,8 @@
       "vat_unavailable": "VIES-rekisteri ei vastaa juuri nyt — yritä myöhemmin tai tallenna ilman numeroa",
       "vat_country_mismatch": "ALV-numeron on alettava valitun maan tunnuksella",
       "commission_unsettled": "Maksa ensin offline-myynnin provisio: paina provisiolohkossa \"Maksa nyt\". Kun lasku on maksettu, voit siirtyä kiinteään tilaukseen.",
-      "billing_profile_required": "Lisää laskutustietosi — provisiolasku muodostetaan niille."
+      "billing_profile_required": "Lisää laskutustietosi — provisiolasku muodostetaan niille.",
+      "combo_switch_requires_payment": "Siirtyminen «kiinteä + prosentti» -paketista kiinteään on maksullinen: paina «Maksa», valitse kiinteä paketti ja maksa jakso."
     },
     "loyalty": {
       "cert_not_found": "Lahjakorttia ei löytynyt",

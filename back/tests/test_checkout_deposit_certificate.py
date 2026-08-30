@@ -5,6 +5,7 @@
 Запуск из back/:  python -m tests.test_checkout_deposit_certificate
 """
 import asyncio
+from types import SimpleNamespace
 import importlib
 import secrets
 import warnings
@@ -24,6 +25,13 @@ from models import (
 from schemas.checkout import CheckoutPayRequest
 
 CO = importlib.import_module("routers.checkout.router")
+
+
+# Ручка под лимитером — зовём распакованную и подставляем пустой Request.
+# Ограничение частоты к расчёту и проведению оплаты отношения не имеет.
+def _pay(body, ctx, current_user, db):
+    fn = getattr(CO.pay, "__wrapped__", CO.pay)
+    return fn(SimpleNamespace(), body, ctx, current_user, db)
 
 
 def _user():
@@ -79,7 +87,7 @@ async def _run():
             account_id=account.id, use_deposit=True, certificate_code=code,
             payment_method="cash",
         )
-        result = await CO.pay(body, _ctx(sid), current_user, db)
+        result = await _pay(body, _ctx(sid), current_user, db)
 
         assert result.total_price == 300
         assert result.deposit_applied == 400
@@ -115,7 +123,7 @@ async def _run():
             account_id=account.id, use_deposit=True, certificate_code=code,
             payment_method="card",  # метод не важен — остаток полностью покрыт
         )
-        result = await CO.pay(body, _ctx(sid), current_user, db)
+        result = await _pay(body, _ctx(sid), current_user, db)
 
         assert result.total_price == 0
         assert result.certificate_applied == 500
@@ -148,7 +156,7 @@ async def _run():
             account_id=account.id, certificate_code=code, payment_method="cash",
         )
         try:
-            await CO.pay(body, _ctx(sid), current_user, db)
+            await _pay(body, _ctx(sid), current_user, db)
             raise AssertionError("ожидали 400")
         except HTTPException as e:
             assert e.status_code == 400
@@ -168,7 +176,7 @@ async def _run():
             account_id=account.id, use_deposit=True, payment_method="card",
         )
         try:
-            await CO.pay(body, _ctx(sid), current_user, db)
+            await _pay(body, _ctx(sid), current_user, db)
             raise AssertionError("ожидали 400")
         except HTTPException as e:
             assert e.status_code == 400

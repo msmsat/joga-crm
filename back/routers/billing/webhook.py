@@ -156,6 +156,42 @@ def _period_end(subscription) -> int | None:
     return getattr(subscription, "current_period_end", None)
 
 
+def _period_start(subscription) -> int | None:
+    """Начало ТЕКУЩЕГО периода подписки. Там же, где и конец, — у позиции.
+
+    Нужно ровно для одного: привязать grace неоплаченной подписки к неподвижной
+    точке. `now` для этого не годится — Stripe шлёт `customer.subscription.updated`
+    на каждую попытку списания, и отсчёт от «сейчас» продлевал бы бесплатный
+    доступ на каждом таком событии.
+    """
+    items = getattr(subscription, "items", None)
+    data = getattr(items, "data", None) if items is not None else None
+    if data:
+        start = getattr(data[0], "current_period_start", None)
+        if start:
+            return start
+    return getattr(subscription, "current_period_start", None)
+
+
+# Сколько времени подписка живёт НЕОПЛАЧЕННОЙ, прежде чем доступ закроется.
+#
+# Число не выдумано: это `stripe_billing.DAYS_UNTIL_DUE` — срок, который продукт
+# и так даёт на оплату выставленного счёта (легаси-подписки на send_invoice
+# платятся банковским переводом, и он идёт днями). Взять меньше значит закрыть
+# доступ честно платящей студии, пока её перевод в пути.
+#
+# Зачем потолок вообще. Гейт (dependencies.require_active_subscription) сознательно
+# пускает `past_due` — «деньги в пути». Но зеркало двигало `expires_at` на конец
+# НОВОГО периода даже тогда, когда списание не прошло: у годового тарифа это год
+# бесплатного доступа за неоплаченный счёт. Ограничивал только dunning Stripe, то
+# есть галочка в чужом интерфейсе, где вариант «оставить past_due» существует и
+# превращает ошибку настройки в бессрочный бесплатный продукт.
+#
+# Отсчёт от НАЧАЛА неоплаченного периода, а не от «сейчас»: иначе каждое событие
+# о неудачной попытке списания продлевало бы окно, и оно не кончалось бы никогда.
+PAST_DUE_GRACE = timedelta(days=stripe_billing.DAYS_UNTIL_DUE)
+
+
 # Интервал Stripe → месяцев в нём. Обратное к stripe_catalog._INTERVALS; сверка
 # двух таблиц держится ассертом в self-check ниже.
 _MONTHS_PER_INTERVAL = {"month": 1, "year": 12}
@@ -422,6 +458,8 @@ async def stripe_webhook(request: Request):
                 await _handle_invoice(db, event_type, obj)
             elif event_type == "charge.refunded":
                 await _handle_refund(db, obj)
+            elif event_type == "charge.dispute.closed":
+                await _handle_dispute(db, obj)
             elif event_type == "setup_intent.succeeded":
                 await _handle_setup_intent(db, obj)
             elif event_type == "customer.tax_id.updated":
@@ -486,6 +524,28 @@ async def _handle_subscription(db: AsyncSession, event_type: str, obj) -> None:
     await db.commit()
 
 
+def _past_due_limit(subscription, period_end: datetime) -> datetime:
+    """Докуда пускать студию с НЕОПЛАЧЕННОЙ подпиской.
+
+    Не дальше, чем `PAST_DUE_GRACE` от начала неоплаченного периода, и не дальше
+    конца самого периода. Оплата пройдёт — Stripe пришлёт `active`, и срок
+    вернётся к полному концу периода этой же функцией мимо ветки.
+
+    Начало периода не прочиталось — НЕ продлеваем вовсе: пусть лучше платящая
+    студия упрётся в 402 и нажмёт «Оплатить» (счёт открыт, деньги примут), чем
+    неоплаченная подписка получит период целиком из-за нечитаемого поля.
+    """
+    start = _period_start(subscription)
+    if not start:
+        logger.error(
+            "Stripe billing: у неоплаченной подписки %s не читается начало периода — "
+            "срок не продлеваем",
+            getattr(subscription, "id", "?"),
+        )
+        return datetime.utcnow()
+    return min(period_end, datetime.utcfromtimestamp(start) + PAST_DUE_GRACE)
+
+
 def _mirror_subscription_state(plan: StudioBillingPlan, subscription) -> None:
     """Состояние подписки у Stripe → строка студии. Ничего не коммитит.
 
@@ -505,7 +565,10 @@ def _mirror_subscription_state(plan: StudioBillingPlan, subscription) -> None:
     elif plan.status in ("active", "past_due"):
         period_end = _period_end(subscription)
         if period_end:
-            plan.expires_at = datetime.utcfromtimestamp(period_end)
+            expires_at = datetime.utcfromtimestamp(period_end)
+            if plan.status == "past_due":
+                expires_at = _past_due_limit(subscription, expires_at)
+            plan.expires_at = expires_at
         else:
             logger.error(
                 "Stripe billing: не удалось прочитать конец периода подписки %s — "
@@ -708,20 +771,7 @@ async def _handle_refund(db: AsyncSession, obj) -> None:
     `customer.subscription.deleted` — сами его тут не проставляем, чтобы переход был
     один и тот же независимо от того, откуда пришёл возврат.
     """
-    intent = getattr(obj, "payment_intent", None)
-    intent_id = intent if isinstance(intent, str) else getattr(intent, "id", None)
-    stripe_invoice_id = getattr(obj, "invoice", None)
-    stripe_invoice_id = (
-        stripe_invoice_id if isinstance(stripe_invoice_id, str)
-        else getattr(stripe_invoice_id, "id", None)
-    )
-    if not stripe_invoice_id:
-        logger.info("Stripe billing: возврат %s не привязан к счёту", intent_id)
-        return
-
-    invoice = (await db.execute(
-        select(BillingInvoice).where(BillingInvoice.stripe_invoice_id == stripe_invoice_id)
-    )).scalar_one_or_none()
+    invoice = await _invoice_of_payment(db, obj, "возврат")
     if invoice is None:
         return
 
@@ -738,12 +788,93 @@ async def _handle_refund(db: AsyncSession, obj) -> None:
         )
         return
 
-    await apply_status(db, invoice, "refunded")
+    await _reverse_invoice(db, invoice, "возврат")
+
+
+def _payment_ids(obj) -> tuple[str | None, str | None]:
+    """(payment_intent, charge) из Charge или Dispute. Оба поля — id или объект."""
+    def _id(value):
+        return value if isinstance(value, str) else getattr(value, "id", None)
+
+    intent_id = _id(getattr(obj, "payment_intent", None))
+    # У Charge платёж — он сам; у Dispute ссылка лежит в поле `charge`.
+    charge_id = _id(getattr(obj, "charge", None))
+    if charge_id is None and getattr(obj, "object", None) == "charge":
+        charge_id = getattr(obj, "id", None)
+    return intent_id, charge_id
+
+
+async def _invoice_of_payment(db: AsyncSession, obj, what: str) -> BillingInvoice | None:
+    """Наша строка счёта по платежу из события (Charge или Dispute), или None.
+
+    Порядок ровно такой и не случаен:
+
+    1. `obj.invoice` — быстрый путь и только он. Поле живо у эндпоинтов, чья
+       версия API старше 2026-07-29; полагаться на него нельзя (см. ниже), но и
+       выбрасывать незачем — это бесплатный ответ без похода в сеть.
+    2. Запрос к Stripe (`stripe_billing.invoice_id_for_payment`). С API
+       2026-07-29 у `Charge` поля `invoice` НЕТ ВООБЩЕ, и прежний код на этом
+       молча выходил: возврат за тариф не переводил счёт в refunded, не снимал
+       доход из леджера и НЕ ОТМЕНЯЛ ПОДПИСКУ. Студия получала деньги назад и
+       доигрывала оплаченный период бесплатно. Тест это не ловил — он сам
+       подкладывал в фейковый Charge поле `invoice`, которого в проде нет.
+
+    Сбой запроса НЕ проглатываем: обработчик отдаст 500, Stripe повторит. Тихо
+    выйти значит потерять отзыв доступа насовсем.
+    """
+    stripe_invoice_id = getattr(obj, "invoice", None)
+    stripe_invoice_id = (
+        stripe_invoice_id if isinstance(stripe_invoice_id, str)
+        else getattr(stripe_invoice_id, "id", None)
+    )
+    intent_id, charge_id = _payment_ids(obj)
+    if not stripe_invoice_id:
+        stripe_invoice_id = await stripe_billing.invoice_id_for_payment(intent_id, charge_id)
+
+    if not stripe_invoice_id:
+        logger.info(
+            "Stripe billing: %s по платежу %s/%s не привязан к счёту", what, intent_id, charge_id,
+        )
+        return None
+
+    invoice = (await db.execute(
+        select(BillingInvoice).where(BillingInvoice.stripe_invoice_id == stripe_invoice_id)
+    )).scalar_one_or_none()
+    if invoice is None:
+        logger.info("Stripe billing: счёт %s из события (%s) не наш", stripe_invoice_id, what)
+    return invoice
+
+
+async def _reverse_invoice(db: AsyncSession, invoice: BillingInvoice, what: str) -> None:
+    """Деньги ушли обратно: счёт в refunded, тариф отозвать. Общее для возврата и
+    проигранного чарджбэка.
+
+    Одна функция на оба, потому что для студии это один и тот же исход: денег у
+    платформы нет. Разъехавшись, две ветки дали бы разный доступ за одно и то же,
+    а разбирать пришлось бы по логам.
+
+    Подписку отменяет ТОЛЬКО счёт за тариф. Комиссию с офлайн-продаж и
+    минимальный месячный платёж самообслуживание возвращать не даёт вовсе
+    (`refunds.REFUNDABLE_KIND`) — их возвращает поддержка руками, и это штатный
+    путь. Без проверки вида студия за возвращённую ей переплату получала бы
+    ОТМЕНУ ПОДПИСКИ: доступ закрывался в наказание за нашу же ошибку в счёте.
+
+    Идемпотентно: `apply_status` под блокировкой строки отвергает повторный
+    перевод в refunded (статус конечный), поэтому ретрай события, чарджбэк
+    поверх возврата и возврат поверх чарджбэка ничего не удваивают — ни
+    компенсирующую строку в леджере, ни отмену подписки.
+    """
+    if not await apply_status(db, invoice, "refunded"):
+        logger.info(
+            "Stripe billing: счёт %s уже в статусе %s — %s повторно не применяем",
+            invoice.id, invoice.status, what,
+        )
+        return
 
     if invoice.kind != "subscription":
         logger.info(
-            "Stripe billing: возвращён счёт %s вида %s — подписку студии %s не трогаем",
-            invoice.id, invoice.kind, invoice.studio_id,
+            "Stripe billing: %s счёта %s вида %s — подписку студии %s не трогаем",
+            what, invoice.id, invoice.kind, invoice.studio_id,
         )
         return
 
@@ -754,7 +885,56 @@ async def _handle_refund(db: AsyncSession, obj) -> None:
         try:
             await stripe_billing.cancel_subscription(plan.stripe_subscription_id)
         except Exception:
-            logger.exception("Stripe billing: не удалось отменить подписку %s", plan.stripe_subscription_id)
+            # Уже отменённая подписка, пропавший объект, сеть. Счёт к этому моменту
+            # переведён и закоммичен — ронять обработку значит получить ретрай уже
+            # применённого события; расхождение подберёт reconcile_subscriptions.
+            logger.exception(
+                "Stripe billing: не удалось отменить подписку %s", plan.stripe_subscription_id,
+            )
+
+
+# Исход спора, при котором деньги окончательно ушли плательщику. Всё остальное —
+# `won` (деньги остались у платформы), `prevented` (спор не состоялся) и
+# промежуточные `needs_response`/`under_review`/`warning_*` — доступ НЕ трогает.
+# Отзывать его по `charge.dispute.created` нельзя: спор ещё можно выиграть, и
+# студия осталась бы без оплаченного тарифа из-за одного лишь запроса в банк.
+_DISPUTE_LOST = "lost"
+
+
+async def _handle_dispute(db: AsyncSession, obj) -> None:
+    """Чарджбэк по оплате ТАРИФА закрыт. Проигранный — отзывает тариф.
+
+    Зачем отдельно от `charge.refunded`: при возврате платёж назад инициируем мы,
+    и Stripe присылает `charge.refunded`. При чарджбэке деньги забирает БАНК,
+    события `charge.refunded` не будет вовсе — приходит только
+    `charge.dispute.closed`. Без этой ветки владелец оспаривал списание за тариф,
+    выигрывал у банка и продолжал пользоваться продуктом до конца периода: деньги
+    у него, доступ тоже.
+
+    `data.object` здесь Dispute, а не Charge: у него свой `status`, ссылка на
+    платёж (`payment_intent`, с 2026-07-29 присутствует прямо в объекте) и на
+    `charge`. Суммы Dispute к сравнению «вернули всё или часть» НЕ пригодны:
+    оспаривается конкретное списание целиком, поэтому проверки долей тут нет и
+    быть не должно.
+
+    Касса студии разбирает свои споры отдельно и по тем же правилам
+    (checkout/stripe_pay._close_dispute) — там деньги студии, здесь деньги
+    платформы, и общего состояния у них нет.
+    """
+    status = getattr(obj, "status", None)
+    if status != _DISPUTE_LOST:
+        logger.info("Stripe billing: спор в статусе %s — доступ не трогаем", status)
+        return
+
+    invoice = await _invoice_of_payment(db, obj, "чарджбэк")
+    if invoice is None:
+        return
+
+    logger.warning(
+        "Stripe billing: чарджбэк по счёту %s студии %s проигран — тариф отзываем",
+        invoice.id, invoice.studio_id,
+    )
+    await _reverse_invoice(db, invoice, "чарджбэк")
 
 
 async def reconcile_subscriptions(db: AsyncSession) -> int:
@@ -922,6 +1102,29 @@ async def _extend_paid_period(db: AsyncSession, invoice: BillingInvoice, months:
     )
 
 
+def _transition_allowed(current: str, target: str) -> bool:
+    """Разрешён ли переход счёта current → target.
+
+    Отдельной функцией, потому что правило проверяется ДВАЖДЫ: дёшево, до похода в
+    БД, и ещё раз под блокировкой строки (см. `apply_status`). Две копии условий
+    однажды разъехались бы, и разъехались бы именно на денежном пути.
+    """
+    if target not in ("paid", "failed", "refunded"):
+        return False
+    if current == target:
+        return False
+    # Оплаченный счёт назад в неоплаченный не роняем: событие о неудачной попытке
+    # может прийти уже ПОСЛЕ успешной оплаты другим способом. Для past_due это
+    # важнее вдвойне — иначе отставшее событие заблокировало бы рассчитавшуюся студию.
+    if current == "paid" and target == "failed":
+        return False
+    # Возврат — конечное состояние. Без этой строки ручная сверка по возвращённому
+    # счёту начисляла бы период второй раз — уже без денег.
+    if current == "refunded":
+        return False
+    return True
+
+
 async def apply_status(
     db: AsyncSession, invoice: BillingInvoice, status: str, *,
     subscription=None, renew_months: int | None = None,
@@ -932,18 +1135,46 @@ async def apply_status(
     тот же, откуда бы правда ни пришла. Идемпотентно — повтор конечного статуса по
     уже переведённому счёту ничего не делает, поэтому ретраи Stripe не начисляют
     тариф дважды.
+
+    Идемпотентности по одному лишь `invoice.status` НЕ ХВАТАЕТ, и это не теория.
+    Stripe доставляет событие повторно и может доставить его ПАРАЛЛЕЛЬНО (ретрай
+    уходит, пока первая доставка ещё в обработке); ту же функцию из соседнего
+    запроса дёргает ручная сверка счёта. Два обработчика читают `pending`
+    одновременно, оба проходят проверку и оба доходят до продления — а оно НЕ
+    идемпотентно: купленные месяцы прибавляются к текущему концу периода, то есть
+    студия получает вдвое больше оплаченного времени (плюс второй чек и вторая
+    запись активации). Поэтому переход сериализуется блокировкой строки —
+    тот же приём, что у заявки кассы (checkout/stripe_pay.apply_paid), и по той же
+    причине.
     """
-    if invoice.status == status:
+    # Быстрый отказ до похода в БД: повтор уже применённого статуса — самый частый
+    # случай (ретрай Stripe по обработанному событию), и лочить ради него строку не
+    # за чем.
+    if not _transition_allowed(invoice.status, status):
         return False
-    # Оплаченный счёт назад в неоплаченный не роняем: событие о неудачной попытке
-    # может прийти уже ПОСЛЕ успешной оплаты другим способом. Для past_due это
-    # важнее вдвойне — иначе отставшее событие заблокировало бы рассчитавшуюся студию.
-    if invoice.status == "paid" and status == "failed":
-        return False
-    # Возврат — конечное состояние. Без этой строки ручная сверка по возвращённому
-    # счёту начисляла бы период второй раз — уже без денег.
-    if invoice.status == "refunded":
-        return False
+
+    # Блокировка + ПОВТОРНОЕ чтение того же состояния под ней. populate_existing
+    # обязателен: строка уже лежит в identity map этой сессии со старым статусом, и
+    # без него ORM вернул бы её из кэша — строка заперта, а решение принято по
+    # устаревшему значению (ровно тот капкан, что описан в stripe_pay.apply_paid).
+    #
+    # Строки может не быть (счёт-заглушка в self-check и в стабах тестов) — тогда
+    # работаем по переданному объекту, как раньше.
+    locked = (await db.execute(
+        select(BillingInvoice)
+        .where(BillingInvoice.id == invoice.id)
+        .with_for_update()
+        .execution_options(populate_existing=True)
+    )).scalar_one_or_none()
+    if locked is not None:
+        invoice = locked
+        if not _transition_allowed(invoice.status, status):
+            # Успел другой обработчик — второй раз ни период, ни доход, ни чек.
+            logger.info(
+                "Stripe billing: счёт %s уже в статусе %s — повторный переход в %s пропущен",
+                invoice.id, invoice.status, status,
+            )
+            return False
 
     if status == "paid":
         invoice.status = "paid"
@@ -975,8 +1206,6 @@ async def apply_status(
                 -invoice.amount, stripe_billing.CURRENCY,
                 f"rev:in:{invoice.stripe_invoice_id}",
             )
-    else:
-        return False
 
     await db.commit()
 
@@ -1189,24 +1418,50 @@ if __name__ == "__main__":
     # Нет ни того ни другого — None, и вызывающая сторона обязана залогировать, не молчать.
     assert _period_end(types.SimpleNamespace(items=None)) is None
 
-    # apply_status: ветки без похода в БД — повтор конечного статуса, откат paid, мусор.
-    _fake_db = types.SimpleNamespace(commit=lambda: asyncio.sleep(0))
+    # apply_status: повтор конечного статуса, откат paid, мусор.
+    #
+    # execute отдаёт «строки нет»: под pytest/self-check БД недоступна, а
+    # блокировка строки (`SELECT … FOR UPDATE`) на отсутствующей строке
+    # законно возвращает None — apply_status тогда работает по переданному
+    # объекту. Счётчик _locks сторожит главное: блокировка обязана браться на
+    # КАЖДОМ реальном переходе, иначе параллельная доставка вебхука снова
+    # начислит период дважды.
+    _locks = []
+    _fake_db = types.SimpleNamespace(
+        commit=lambda: asyncio.sleep(0),
+        execute=lambda q: _lock_probe(q),
+    )
+
+    async def _lock_probe(_q):
+        _locks.append(1)
+        return types.SimpleNamespace(scalar_one_or_none=lambda: None)
+
     # kind/stripe_invoice_id — то, по чему ветвится снятие дохода из леджера при
-    # возврате. Пустая ссылка на счёт Stripe значит «снимать нечего», и ни одна
-    # ветка ниже до записи в БД не доходит (у _fake_db нет execute — если дойдёт,
-    # self-check упадёт, и это ровно та защита, которая тут нужна).
+    # возврате. Пустая ссылка на счёт Stripe значит «снимать нечего».
     _inv = lambda status: types.SimpleNamespace(  # noqa: E731
-        status=status, kind="subscription", stripe_invoice_id=None, amount=3900, studio_id=1,
+        id=1, status=status, kind="subscription", stripe_invoice_id=None,
+        amount=3900, studio_id=1,
     )
 
     assert asyncio.run(apply_status(_fake_db, _inv("paid"), "paid")) is False
     assert asyncio.run(apply_status(_fake_db, _inv("refunded"), "refunded")) is False
     assert asyncio.run(apply_status(_fake_db, _inv("failed"), "failed")) is False
     assert asyncio.run(apply_status(_fake_db, _inv("pending"), "processing")) is False
+    # Отказы выше решены до БД: лочить строку ради ретрая по уже применённому
+    # событию незачем.
+    assert _locks == [], "блокировка взята на переходе, который и так отвергнут"
 
     _declined = _inv("pending")
     assert asyncio.run(apply_status(_fake_db, _declined, "failed")) is True
     assert _declined.status == "failed"
+    assert len(_locks) == 1, "реальный переход прошёл без блокировки строки"
+
+    # Переход разрешён ровно теми же правилами до блокировки и под ней.
+    assert _transition_allowed("pending", "paid") is True
+    assert _transition_allowed("paid", "paid") is False
+    assert _transition_allowed("paid", "failed") is False
+    assert _transition_allowed("refunded", "paid") is False
+    assert _transition_allowed("pending", "processing") is False
 
     # Неудачная попытка не должна обнулять уже прошедшую оплату.
     _paid = _inv("paid")
