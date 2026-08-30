@@ -175,9 +175,17 @@ async def _cleanup(ids: dict) -> None:
         await db.commit()
 
 
-async def _run(ids, what, *, studio=None, text="", now=NOW) -> R.SearchResult:
+async def _run(ids, what, *, studio=None, text=None, now=NOW,
+               previous=None, thread=None) -> R.SearchResult:
+    """Текст человека синтезируется из самих упоминаний, если не задан явно:
+    здесь проверяется РАЗРЕШЕНИЕ слов в идентификаторы, а происхождение — в
+    tests/test_response_plan.py, отдельным набором."""
+    if text is None:
+        text = " ".join(m.surface for m in (
+            *what.service_mentions, *what.trainer_mentions, *what.branch_mentions))
     async with async_session_maker() as db:
-        return await R.resolve(db, studio or ids["a"], what, user_text=text, reference_now=now)
+        return await R.resolve(db, studio or ids["a"], what, user_text=text,
+                               reference_now=now, previous=previous, thread_id=thread)
 
 
 def _found(result) -> set:
@@ -226,64 +234,64 @@ async def _matrix(ids: dict) -> None:
     assert _found(morning) == {ids["morning"]}
 
     # ── E: точное название услуги -> идентификатор.
-    stretch = await _run(ids, intent(date="tomorrow", service_terms=[{"text": "стретчинг"}]))
+    stretch = await _run(ids, intent(date="tomorrow", service_mentions=[{"surface": "стретчинг"}]))
     assert list(stretch.query.service_ids) == [ids["a_stretch"]], stretch.query
     assert _found(stretch) == {ids["morning"], ids["evening"]}
 
     # ── G: тренер по имени -> идентификатор. Падеж и порядок слов не мешают.
     for said in ("Валерия", "валерии", "Ким Валерия"):
-        who = await _run(ids, intent(date="tomorrow", trainer_terms=[{"text": said}]))
+        who = await _run(ids, intent(date="tomorrow", trainer_mentions=[{"surface": said}]))
         assert list(who.query.trainer_ids) == [ids["a_valeria"]], (said, who.query)
 
     # ── I: филиал по названию, городу и адресу.
     for said, branch in (("Вацлавская", "a_vaclav"), ("Карлин", "a_karlin"),
                          ("Václavské", "a_vaclav")):
-        where = await _run(ids, intent(date="tomorrow", branch_terms=[{"text": said}]))
+        where = await _run(ids, intent(date="tomorrow", branch_mentions=[{"surface": said}]))
         assert list(where.query.branch_ids) == [ids[branch]], (said, where.query)
     # Город называет оба филиала сразу — это неоднозначность, а не выбор первого.
-    praha = await _run(ids, intent(date="tomorrow", branch_terms=[{"text": "Praha"}]))
+    praha = await _run(ids, intent(date="tomorrow", branch_mentions=[{"surface": "Praha"}]))
     assert praha.outcome is R.Outcome.AMBIGUOUS, praha.outcome
     assert praha.ambiguities[0].kind is R.EntityKind.BRANCH
 
     # ── J: те же слова в чужой студии дают ДРУГИЕ идентификаторы и другие
     # занятия. Кандидатов чужой студии резолвер не видит вовсе.
-    mine = await _run(ids, intent(date="tomorrow", service_terms=[{"text": "стретчинг"}],
-                                  trainer_terms=[{"text": "Валерия"}]))
-    theirs = await _run(ids, intent(date="tomorrow", service_terms=[{"text": "стретчинг"}],
-                                    trainer_terms=[{"text": "Валерия"}]), studio=ids["b"])
+    mine = await _run(ids, intent(date="tomorrow", service_mentions=[{"surface": "стретчинг"}],
+                                  trainer_mentions=[{"surface": "Валерия"}]))
+    theirs = await _run(ids, intent(date="tomorrow", service_mentions=[{"surface": "стретчинг"}],
+                                    trainer_mentions=[{"surface": "Валерия"}]), studio=ids["b"])
     assert _found(mine) == {ids["evening"]} and _found(theirs) == {ids["foreign"]}
     assert mine.query.service_ids != theirs.query.service_ids
     assert ids["foreign"] not in _found(mine) and ids["evening"] not in _found(theirs)
 
     # ── K: неизвестная услуга -> NOT_FOUND, а не «вот вам похожее».
-    unknown = await _run(ids, intent(date="tomorrow", service_terms=[{"text": "бокс"}]))
+    unknown = await _run(ids, intent(date="tomorrow", service_mentions=[{"surface": "бокс"}]))
     assert unknown.outcome is R.Outcome.NOT_FOUND, unknown.outcome
     assert unknown.not_found[0].term == "бокс" and unknown.lessons == []
 
     # ── L: опечатка. Политика: мягкий проход по началу слова — и только если
     # точный не нашёл никого.
-    typo = await _run(ids, intent(date="tomorrow", service_terms=[{"text": "стретчнг"}]))
+    typo = await _run(ids, intent(date="tomorrow", service_mentions=[{"surface": "стретчнг"}]))
     assert list(typo.query.service_ids) == [ids["a_stretch"]], typo.query
     # Далёкая опечатка похожим не подменяется.
-    assert (await _run(ids, intent(date="tomorrow", service_terms=[{"text": "пилатес"}]))
+    assert (await _run(ids, intent(date="tomorrow", service_mentions=[{"surface": "пилатес"}]))
             ).outcome is R.Outcome.NOT_FOUND
 
     # ── M/N: обязательное против желательного.
     required = await _run(ids, intent(
-        date="tomorrow", service_terms=[{"text": "стретчинг"}],
-        trainer_terms=[{"text": "Валерия", "importance": "required"}]))
+        date="tomorrow", service_mentions=[{"surface": "стретчинг"}],
+        trainer_mentions=[{"surface": "Валерия", "importance": "required"}]))
     assert _found(required) == {ids["evening"]}, _found(required)
     # «Лучше у Анны» + стретчинг: у Анны стретчинг утром — он и первый.
     preferred = await _run(ids, intent(
-        date="tomorrow", service_terms=[{"text": "стретчинг"}],
-        trainer_terms=[{"text": "Анна", "importance": "preferred"}]))
+        date="tomorrow", service_mentions=[{"surface": "стретчинг"}],
+        trainer_mentions=[{"surface": "Анна", "importance": "preferred"}]))
     assert preferred.lessons[0].lesson_id == ids["morning"], preferred.lessons
 
     # ── N: пожелание не сбылось -> оно снимается, обязательное остаётся.
     relaxed = await _run(ids, intent(
         date="on", date_from={"day": 15, "month": 5, "year": 2027},
-        service_terms=[{"text": "йога"}],
-        trainer_terms=[{"text": "Валерия", "importance": "preferred"}]))
+        service_mentions=[{"surface": "йога"}],
+        trainer_mentions=[{"surface": "Валерия", "importance": "preferred"}]))
     assert _found(relaxed) == {ids["saturday"]}, _found(relaxed)
     assert relaxed.relaxed == ["Валерия"], relaxed.relaxed
     assert list(relaxed.query.service_ids) == [ids["a_yoga"]], "обязательное сняли"
@@ -292,8 +300,8 @@ async def _matrix(ids: dict) -> None:
     # Непонятое ПОЖЕЛАНИЕ поиску не мешает и снятым не числится: снять можно
     # только то, что применяли.
     vague = await _run(ids, intent(
-        date="tomorrow", service_terms=[{"text": "стретчинг"}],
-        trainer_terms=[{"text": "Кирилл", "importance": "preferred"}]))
+        date="tomorrow", service_mentions=[{"surface": "стретчинг"}],
+        trainer_mentions=[{"surface": "Кирилл", "importance": "preferred"}]))
     assert vague.outcome is R.Outcome.OK, vague.outcome
     assert _found(vague) == {ids["morning"], ids["evening"]}
     assert vague.relaxed == [], vague.relaxed
@@ -303,7 +311,7 @@ async def _matrix(ids: dict) -> None:
     # «ничего», а не чужая йога.
     kept = await _run(ids, intent(
         date="on", date_from={"day": 15, "month": 5, "year": 2027},
-        service_terms=[{"text": "стретчинг"}]))
+        service_mentions=[{"surface": "стретчинг"}]))
     assert kept.outcome is R.Outcome.NO_RESULTS, kept.outcome
     assert kept.lessons == [] and kept.relaxed == []
 
@@ -374,7 +382,7 @@ async def _ambiguity(ids: dict) -> None:
         twin_service_id, twin_user_id = twin_service.id, twin_user.id
     try:
         # ── F: две услуги с одним названием — не выбираем ни одной.
-        two = await _run(ids, intent(date="tomorrow", service_terms=[{"text": "Стретчинг"}]))
+        two = await _run(ids, intent(date="tomorrow", service_mentions=[{"surface": "Стретчинг"}]))
         assert two.outcome is R.Outcome.AMBIGUOUS, two.outcome
         assert two.query is None and two.lessons == []
         amb = two.ambiguities[0]
@@ -384,12 +392,12 @@ async def _ambiguity(ids: dict) -> None:
         assert len({c.label for c in amb.candidates}) == 2, amb.candidates
 
         # ── H: две Валерии — то же самое.
-        both = await _run(ids, intent(date="tomorrow", trainer_terms=[{"text": "Валерия"}]))
+        both = await _run(ids, intent(date="tomorrow", trainer_mentions=[{"surface": "Валерия"}]))
         assert both.outcome is R.Outcome.AMBIGUOUS, both.outcome
         assert {c.id for c in both.ambiguities[0].candidates} == {
             ids["a_valeria"], twin_user_id}
         # Фамилия снимает неоднозначность — сервер не переспрашивает зря.
-        one = await _run(ids, intent(date="tomorrow", trainer_terms=[{"text": "Валерия Ким"}]))
+        one = await _run(ids, intent(date="tomorrow", trainer_mentions=[{"surface": "Валерия Ким"}]))
         assert list(one.query.trainer_ids) == [ids["a_valeria"]], one.query
     finally:
         async with async_session_maker() as db:
@@ -418,7 +426,7 @@ async def _hostile(ids: dict) -> None:
                                reference_now=NOW)).outcome is R.Outcome.PARSE_FAILED
         # ── S: выдуманное значение перечисления.
         for bad in ({"date": "послезавтра"}, {"daypart": "ночью"},
-                    {"service_terms": [{"text": "х", "importance": "0.37"}]},
+                    {"service_mentions": [{"surface": "х", "importance": "0.37"}]},
                     {"time_from": "утром"}):
             assert (await R.search(db, ids["a"], bad, reference_now=NOW)
                     ).outcome is R.Outcome.PARSE_FAILED, bad
@@ -459,7 +467,9 @@ async def _hostile(ids: dict) -> None:
     assert declared.outcome is R.Outcome.UNSUPPORTED_CONSTRAINT, declared.outcome
     assert declared.lessons == [] and declared.query is None
     # Модель промолчала — сервер видит исключение в тексте сам.
-    silent = await _run(ids, intent(date="tomorrow", trainer_terms=[{"text": "Валерия"}]),
+    # Упоминание — ДОСЛОВНО из текста («Валерии»), иначе разбор отклонит уже
+    # проверка происхождения: модель обязана цитировать, а не склонять.
+    silent = await _run(ids, intent(date="tomorrow", trainer_mentions=[{"surface": "Валерии"}]),
                         text="что есть завтра, только не у Валерии")
     assert silent.outcome is R.Outcome.UNSUPPORTED_CONSTRAINT, silent.outcome
     # ── H9: «в любое время кроме утра» — тоже исключение.
@@ -485,10 +495,10 @@ async def _hostile(ids: dict) -> None:
         moved.name = "Йога Айенгара"
         await db.commit()
     try:
-        renamed = await _run(ids, intent(date="tomorrow", service_terms=[{"text": "Йога"}]))
+        renamed = await _run(ids, intent(date="tomorrow", service_mentions=[{"surface": "Йога"}]))
         # Начало слова совпало — услуга та же, идентификатор тот же.
         assert list(renamed.query.service_ids) == [ids["a_yoga"]], renamed.query
-        gone = await _run(ids, intent(date="tomorrow", service_terms=[{"text": "Пилатес"}]))
+        gone = await _run(ids, intent(date="tomorrow", service_mentions=[{"surface": "Пилатес"}]))
         assert gone.outcome is R.Outcome.NOT_FOUND
     finally:
         async with async_session_maker() as db:
@@ -505,22 +515,29 @@ GOLDEN: list[tuple[str, dict, dict]] = [
     ("Что есть завтра?", {"date": "tomorrow"}, {"date_from": "TOMORROW"}),
     ("Хочу завтра после 18", {"date": "tomorrow", "time_from": "18:00"},
      {"date_from": "TOMORROW", "time_from": "18:00"}),
-    ("Стретчинг завтра", {"date": "tomorrow", "service_terms": [{"text": "стретчинг"}]},
+    ("Стретчинг завтра", {"date": "tomorrow", "service_mentions": [{"surface": "стретчинг"}]},
      {"service": "a_stretch"}),
-    ("У Валерии", {"trainer_terms": [{"text": "Валерия"}]}, {"trainer": "a_valeria"}),
+    ("У Валерии", {"trainer_mentions": [{"surface": "Валерии"}]}, {"trainer": "a_valeria"}),
     ("Стретчинг у Валерии завтра вечером",
-     {"date": "tomorrow", "daypart": "evening", "service_terms": [{"text": "стретчинг"}],
-      "trainer_terms": [{"text": "Валерия"}]}, {"lessons": ["evening"]}),
-    ("В Праге завтра утром",
-     {"date": "tomorrow", "daypart": "morning", "branch_terms": [{"text": "Praha"}]},
+     {"date": "tomorrow", "daypart": "evening", "service_mentions": [{"surface": "стретчинг"}],
+      "trainer_mentions": [{"surface": "Валерии"}]}, {"lessons": ["evening"]}),
+    # Филиалы студии названы латиницей (город "Praha") — так их и пишут в
+    # чешских чатах. Слово подходит обоим филиалам, и это неоднозначность.
+    ("Что есть в Praha завтра утром",
+     {"date": "tomorrow", "daypart": "morning", "branch_mentions": [{"surface": "Praha"}]},
      {"outcome": "AMBIGUOUS"}),
+    # А кириллическое «в Праге» до латинского "Praha" не доходит: транслитерации
+    # в продукте нет, и придумывать её здесь нельзя — честное «не нашла».
+    ("В Праге завтра", {"date": "tomorrow", "branch_mentions": [{"surface": "Праге"}]},
+     {"outcome": "NOT_FOUND"}),
     ("На Вацлавской завтра",
-     {"date": "tomorrow", "branch_terms": [{"text": "Вацлавская"}]}, {"branch": "a_vaclav"}),
+     {"date": "tomorrow", "branch_mentions": [{"surface": "Вацлавской"}]},
+     {"branch": "a_vaclav"}),
     ("Лучше у Валерии завтра",
-     {"date": "tomorrow", "trainer_terms": [{"text": "Валерия", "importance": "preferred"}]},
+     {"date": "tomorrow", "trainer_mentions": [{"surface": "Валерии", "importance": "preferred"}]},
      {"first": "noon"}),
     ("Только у Валерии завтра",
-     {"date": "tomorrow", "trainer_terms": [{"text": "Валерия", "importance": "required"}]},
+     {"date": "tomorrow", "trainer_mentions": [{"surface": "Валерии", "importance": "required"}]},
      {"lessons": ["noon", "evening"]}),
     ("В субботу", {"date": "weekend"}, {"lessons": ["saturday"]}),
     ("29 августа", {"date": "on", "date_from": {"day": 29, "month": 8}},
@@ -528,11 +545,12 @@ GOLDEN: list[tuple[str, dict, dict]] = [
     ("Что сегодня?", {"date": "today"}, {"lessons": ["today_late"]}),
     ("На следующей неделе", {"date": "next_week"}, {"lessons": ["next_week"]}),
     ("Йога завтра, где есть места",
-     {"date": "tomorrow", "service_terms": [{"text": "йога"}], "only_with_free_spots": True},
+     {"date": "tomorrow", "service_mentions": [{"surface": "йога"}], "only_with_free_spots": True},
      {"without": "full"}),
     ("Завтра до 10", {"date": "tomorrow", "time_to": "10:00"}, {"lessons": ["morning"]}),
-    ("Хочу бокс", {"service_terms": [{"text": "бокс"}]}, {"outcome": "NOT_FOUND"}),
-    ("Не у Валерии", {"trainer_terms": [{"text": "Валерия"}], "unsupported": ["не у Валерии"]},
+    ("Хочу бокс", {"service_mentions": [{"surface": "бокс"}]}, {"outcome": "NOT_FOUND"}),
+    ("Не у Валерии", {"trainer_mentions": [{"surface": "Валерии"}],
+                      "unsupported": ["не у Валерии"]},
      {"outcome": "UNSUPPORTED_CONSTRAINT"}),
     ("Занятие с видом на море и чтобы играла Beyoncé",
      {"unsupported": ["вид на море", "музыка Beyoncé"]},
@@ -540,11 +558,11 @@ GOLDEN: list[tuple[str, dict, dict]] = [
     # Украинский: продукт живёт на пяти языках, и разбор обязан работать на них.
     ("Що є завтра?", {"date": "tomorrow"}, {"date_from": "TOMORROW"}),
     ("Стретчинг завтра ввечері",
-     {"date": "tomorrow", "daypart": "evening", "service_terms": [{"text": "стретчинг"}]},
+     {"date": "tomorrow", "daypart": "evening", "service_mentions": [{"surface": "стретчинг"}]},
      {"lessons": ["evening"]}),
-    ("У Валерії завтра", {"date": "tomorrow", "trainer_terms": [{"text": "Валерії"}]},
+    ("У Валерії завтра", {"date": "tomorrow", "trainer_mentions": [{"surface": "Валерії"}]},
      {"trainer": "a_valeria"}),
-    ("Йога у суботу", {"date": "weekend", "service_terms": [{"text": "йога"}]},
+    ("Йога у суботу", {"date": "weekend", "service_mentions": [{"surface": "йога"}]},
      {"lessons": ["saturday"]}),
     # Английский. Период и время суток — понятия, а не названия: они разбираются
     # на любом языке, потому что превращает их в даты сервер.
@@ -555,7 +573,7 @@ GOLDEN: list[tuple[str, dict, dict]] = [
     # а не повод угадать: услуги студии названы так, как их назвал владелец,
     # переводить их некому и нечем (P1.4 §21, перевод — это P1.5).
     ("Stretching tomorrow",
-     {"date": "tomorrow", "service_terms": [{"text": "Stretching"}]},
+     {"date": "tomorrow", "service_mentions": [{"surface": "Stretching"}]},
      {"outcome": "NOT_FOUND"}),
 ]
 
@@ -613,8 +631,8 @@ def test_model_schema_holds_no_server_facts():
 def test_model_schema_is_closed():
     """§32/§33: лишнее поле и выдуманное значение обязаны падать."""
     assert UserSearchIntent.model_config.get("extra") == "forbid"
-    from services.search_intent import Term
-    assert Term.model_config.get("extra") == "forbid"
+    from services.search_intent import Mention
+    assert Mention.model_config.get("extra") == "forbid"
     assert R.parse_intent({"date": "tomorrow"}) is not None
     assert R.parse_intent({"date": "tomorrow", "whatever": 1}) is None
 

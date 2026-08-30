@@ -30,7 +30,8 @@
 """
 import asyncio
 import logging
-from datetime import timedelta
+from dataclasses import dataclass
+from datetime import datetime, timedelta
 from typing import NamedTuple
 
 from sqlalchemy import delete, exists, func, select, update
@@ -237,13 +238,17 @@ async def _transport(db, studio_id: int, channel: str) -> str:
     return ""
 
 
-async def _handle(work: Claim) -> dict | None:
+async def _handle(work: Claim, thread_id: int) -> "AgentTurn":
     """Провести ход и вернуть НАМЕРЕНИЕ ответить, ничего не отправляя.
 
-    Возвращает канонический смысл ответа — {"text": ..., "button": ...} — или
-    None, если отвечать не нужно (агент выключен, квота, антиспам, пустой
-    ответ). Отправкой занимается очередь исходящих: с P0.4 воркер агента в сеть
-    с сообщениями не ходит вовсе.
+    Возвращает канонический смысл ответа и — для пути P1.5 — условия разговора
+    со списком показанных вариантов. Всё это ляжет ОДНОЙ транзакцией выше:
+    отправка и память обязаны появляться вместе, иначе возможен список,
+    которого человек не получал.
+
+    Пустой payload — отвечать не нужно (агент выключен, квота, антиспам).
+    Отправкой занимается очередь исходящих: с P0.4 воркер агента в сеть с
+    сообщениями не ходит вовсе.
 
     Импорты локальные: роутеры зовут этот модуль, обратный импорт на уровне
     модуля дал бы цикл.
@@ -260,10 +265,54 @@ async def _handle(work: Claim) -> dict | None:
         # тем же путём, что и ответ агента: иначе у нас снова два способа
         # отправить сообщение и одно из них без durable-гарантии.
         async with async_session_maker() as db:
-            return await greeting(db, work.studio_id)
+            return AgentTurn(await greeting(db, work.studio_id))
+
+    search_turn = await _search_turn(work, thread_id)
+    if search_turn is not None:
+        return search_turn
 
     text = await produce_reply(work.studio_id, work.channel, work.sender, work.text, token)
-    return {"text": text} if text else None
+    return AgentTurn({"text": text} if text else None)
+
+
+@dataclass(frozen=True)
+class AgentTurn:
+    """Что записать по итогам хода: ответ и, для пути P1.5, память разговора."""
+    payload: dict | None = None
+    state: object = None
+    shown: tuple = ()
+    new_search: bool = False
+    # Момент, от которого ход считал даты. Один на весь ход: срок ссылок и
+    # границы «завтра» обязаны быть посчитаны по одним часам.
+    now: datetime | None = None
+
+
+async def _search_turn(work: Claim, thread_id: int):
+    """Путь P1.5: расписание через типизированный поиск. None — путь выключен
+    или модель не дала разбора, и ход идёт прежней дорогой.
+
+    Флаг решает ровно одно: заводить ли НОВЫЕ разговоры этим путём. Уже
+    записанные состояния, ссылки и очередь исходящих обслуживаются всегда —
+    выключение не должно ломать кнопки, которые человек уже видит.
+    """
+    from services import agent_search, feature_flags
+
+    async with async_session_maker() as db:
+        if not await feature_flags.is_enabled(
+                db, work.studio_id, feature_flags.StudioFeature.AGENT_SEARCH_V2):
+            return None
+
+    raw = await agent_search.parse(work.text)
+    if raw is None:
+        return None
+
+    async with async_session_maker() as db:
+        turn = await agent_search.turn(
+            db, studio_id=work.studio_id, thread_id=thread_id,
+            channel=work.channel, text=work.text, raw=raw)
+        await db.rollback()
+    return AgentTurn(turn.payload, turn.state, tuple(turn.shown), turn.new_search,
+                     turn.reference_now)
 
 
 async def process(work: Claim, owner: str) -> str:
@@ -293,7 +342,7 @@ async def process(work: Claim, owner: str) -> str:
 
     try:
         async with asyncio.timeout(AGENT_DEADLINE_SECONDS):
-            intent = await _handle(work)
+            turn = await _handle(work, thread_id)
     except Exception as exc:
         async with async_session_maker() as db:
             await threads.release(db, lease)
@@ -314,10 +363,19 @@ async def process(work: Claim, owner: str) -> str:
             logger.warning("thread_fencing_rejected job_id=%s thread_id=%s lease_seq=%s",
                            work.job_id, thread_id, lease.seq)
             return "stale"
-        if intent:
+        if turn.payload:
             await outbound.enqueue(
                 db, studio_id=work.studio_id, thread_id=thread_id,
-                dedup_key=outbound.reply_key(work.job_id), payload=intent,
+                dedup_key=outbound.reply_key(work.job_id), payload=turn.payload,
+            )
+        if turn.state is not None:
+            # Память разговора ложится ТОЙ ЖЕ транзакцией, что и ответ. Порознь
+            # они дали бы состояние «сервер считает варианты показанными, а
+            # человек их не получил» — ровно то, чего быть не должно.
+            from services import search_state
+            await search_state.commit(
+                db, studio_id=work.studio_id, thread_id=thread_id, state=turn.state,
+                shown=turn.shown, now=turn.now, new_search=turn.new_search,
             )
         closed = await finish(db, work.job_id, work.token)
         await threads.release(db, lease)

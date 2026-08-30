@@ -27,6 +27,14 @@ def render(chat_id: int, payload: dict) -> dict:
     body = {"chat_id": chat_id, "text": payload["text"]}
     if payload.get("parse_mode"):
         body["parse_mode"] = payload["parse_mode"]
+    rows = _option_rows(payload.get("options"))
+    if rows:
+        # Кнопки вариантов поиска (P1.5). В callback_data уходит НЕПРОЗРАЧНАЯ
+        # ссылка и действие из закрытого списка — ни lesson_id, ни service_id
+        # тут не появляется. Лимит Telegram на callback_data — 64 байта, наш
+        # токен из 32 символов вместе с коротким действием в него укладывается.
+        body["reply_markup"] = {"inline_keyboard": rows}
+        return body
     button = payload.get("button")
     if not button:
         return body
@@ -36,6 +44,27 @@ def render(chat_id: int, payload: dict) -> dict:
     else:
         body["text"] = f"{body['text']}\n\n{url}"
     return body
+
+
+# Одна кнопка в ряд: подписи вариантов длинные, в два столбца они обрезаются.
+_MAX_BUTTONS = 8
+_CALLBACK_LIMIT = 64
+
+
+def _option_rows(options) -> list:
+    """Варианты ответа -> ряды inline-клавиатуры.
+
+    Не влезло в лимит callback_data — кнопки нет, но вариант остаётся в тексте
+    под своим номером: потерять кнопку не страшно, потерять сообщение целиком
+    (Telegram отвергает всю отправку) — страшно.
+    """
+    rows = []
+    for option in (options or [])[:_MAX_BUTTONS]:
+        data = option["action"] if not option.get("ref") else f"{option['action']}:{option['ref']}"
+        if len(data.encode()) > _CALLBACK_LIMIT:
+            continue
+        rows.append([{"text": option["label"], "callback_data": data}])
+    return rows
 
 
 async def send(token: str, recipient: str, payload: dict) -> SendResult:
@@ -95,6 +124,19 @@ if __name__ == "__main__":
                          "button": {"text": "Записаться", "url": "https://x.test/s/1"}})
     assert https["reply_markup"]["inline_keyboard"][0][0]["web_app"]["url"] == "https://x.test/s/1"
     assert https["parse_mode"] == "HTML"
+
+    # Варианты поиска: непрозрачная ссылка на кнопке, идентификатора занятия нет.
+    picked = render(555, {"text": "Вот что есть:", "options": [
+        {"action": "view_option", "ref": "opt_abc", "label": "1. 18:30"},
+        {"action": "show_more", "ref": None, "label": "Показать ещё"},
+    ]})
+    keyboard = picked["reply_markup"]["inline_keyboard"]
+    assert [b[0]["callback_data"] for b in keyboard] == ["view_option:opt_abc", "show_more"]
+    assert all(len(b[0]["callback_data"].encode()) <= _CALLBACK_LIMIT for b in keyboard)
+    # Слишком длинная ссылка кнопкой не становится, но сообщение уходит.
+    long = render(555, {"text": "t", "options": [
+        {"action": "view_option", "ref": "x" * 80, "label": "1"}]})
+    assert "reply_markup" not in long and long["text"] == "t"
 
     # http: кнопки нет, но ссылка есть — иначе Telegram отверг бы всё сообщение.
     http = render(555, {"text": "Привет", "button": {"text": "Записаться", "url": "http://localhost/s/1"}})
