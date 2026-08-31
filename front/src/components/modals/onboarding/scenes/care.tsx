@@ -16,9 +16,9 @@ export function BeautyScene() {
         <Morph poses={[line([216, 128], [244, 128])]} w={4} />
       </g>
 
-      <rect x="118" y="100" width="11" height="44" rx="5" style={{ fill: GEAR }} />
-      <rect x="116" y="138" width="60" height="10" rx="4" style={{ fill: GEAR }} />
-      <path d="M146 148 L146 164 M128 166 L164 166 M136 158 L156 158" strokeWidth="3" strokeLinecap="round" style={{ fill: "none", stroke: GEAR }} />
+      <rect x="118" y="100" width="11" height="44" rx="5" style={{ fill: GEAR_SOFT }} />
+      <rect x="116" y="138" width="60" height="10" rx="4" style={{ fill: GEAR_SOFT }} />
+      <path d="M146 148 L146 164 M128 166 L164 166 M136 158 L156 158" strokeWidth="3" strokeLinecap="round" style={{ fill: "none", stroke: GEAR_SOFT }} />
 
       <Morph far poses={[line([136, 141], [164, 145], [166, 164], [176, 166])]} />
       <Morph far poses={[line([139, 111], [136, 127], [146, 136])]} />
