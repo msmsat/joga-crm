@@ -2,7 +2,14 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <!-- Набор и порядок важны: Safari не понимает SVG в rel=icon и берёт .ico,
+         остальные браузеры выбирают SVG как более подходящий тип. Без .ico
+         Safari не находил ничего и рисовал во вкладке первую букву домена.
+         apple-touch-icon нужен отдельно: без него «На экран Домой» на iPhone
+         кладёт скриншот страницы вместо знака. -->
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <!-- viewport-fit=cover — чтобы нижняя панель навигации на iPhone могла
          подложить env(safe-area-inset-bottom) под индикатор жестов. -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />

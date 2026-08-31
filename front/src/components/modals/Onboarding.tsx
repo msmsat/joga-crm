@@ -5,11 +5,12 @@ import "../../App.css";
 import { isValidPhoneNumber } from "react-phone-number-input";
 import {
   Logo, StepIndicator, PremiumSelect, LANGUAGES, browserTimezone,
-  Illustration1, Illustration2, Illustration3, Illustration4, Illustration5,
+  Illustration1, Illustration3, Illustration4, Illustration5,
 } from "../UI";
 import { authApi, studioApi } from '../../api';
 import StepIdentity from "./onboarding/StepIdentity";
 import StepActivity from "./onboarding/StepActivity";
+import ActivityScene from "./onboarding/scenes";
 import StepContact from "./onboarding/StepContact";
 import StepSettings from "./onboarding/StepSettings";
 import StepSchedule from "./onboarding/StepSchedule";
@@ -274,7 +275,7 @@ export default function OnboardingPage() {
           padding: "16px 0", position: "relative", zIndex: 1, overflow: "hidden",
         }}>
           {step === 1 && <Illustration1 studioName={data.studioName} logoPreviewUrl={data.logoPreviewUrl} />}
-          {step === 2 && <Illustration2 activityType={data.activityType} />}
+          {step === 2 && <ActivityScene activityType={data.activityType} />}
           {step === 3 && <Illustration3 phone={data.phone} email={data.email} address={data.address} />}
           {step === 4 && <Illustration4 timezone={data.timezone} currency={data.currency} language={data.language} />}
           {step === 5 && <Illustration5 workingHours={data.workingHours} />}

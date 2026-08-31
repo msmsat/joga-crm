@@ -534,6 +534,17 @@ class StudioBillingPlan(Base):
         DateTime(timezone=False), nullable=True,
     )
 
+    # Когда подписка ВПЕРВЫЕ осталась неоплаченной. Якорь льготного срока при
+    # past_due — и он обязан быть НАШИМ, а не полем Stripe. Раньше срок считался
+    # от `current_period_start` подписки, но смена тарифа идёт с
+    # `billing_cycle_anchor="now"` (checkout._switch_now) и переставляет начало
+    # периода на сегодня: сотня отклонённых попыток «Оплатить» давала сотню новых
+    # льготных окон, и неоплаченная студия работала бесконечно. Сбрасывается
+    # только в `active` — то есть когда Stripe подтвердил, что деньги прошли.
+    past_due_since: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=False), nullable=True,
+    )
+
     auto_renewal: Mapped[bool] = mapped_column(Boolean, default=True)
     email_receipt_enabled: Mapped[bool] = mapped_column(Boolean, default=True)
     notify_before_days: Mapped[int] = mapped_column(Integer, default=3)

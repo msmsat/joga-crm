@@ -151,6 +151,17 @@ if os.path.isfile(_MINIAPP_INDEX):
     async def miniapp_icons():
         return FileResponse(os.path.join(_MINIAPP_DIST, "icons.svg"))
 
+    # Растровые иконки: Safari не понимает SVG в rel=icon, а iOS без
+    # apple-touch-icon кладёт на домашний экран скриншот страницы. Без этих
+    # двух маршрутов оба файла отдавали бы 404 — раздача тут поштучная.
+    @app.get("/favicon.ico", include_in_schema=False)
+    async def miniapp_favicon_ico():
+        return FileResponse(os.path.join(_MINIAPP_DIST, "favicon.ico"))
+
+    @app.get("/apple-touch-icon.png", include_in_schema=False)
+    async def miniapp_apple_touch_icon():
+        return FileResponse(os.path.join(_MINIAPP_DIST, "apple-touch-icon.png"))
+
     # Единственный маршрут самого приложения: студию оно читает из пути
     # (miniapp/src/lib/entry.ts), роутера внутри нет — экраны переключаются
     # состоянием, поэтому других путей отдавать не нужно.

@@ -244,6 +244,11 @@ async def fetch_session(session_id: str, account_id: str):
     )
 
 
+# Предел перебора при поиске осиротевшей сессии. Сто страниц по сто записей:
+# заведомо больше, чем аккаунт успевает создать за окно сверки, и заведомо конечно.
+_SCAN_LIMIT = 10_000
+
+
 async def find_session_by_reference(
     account_id: str, reference: str, created_after: int,
 ) -> str | None:
@@ -256,18 +261,36 @@ async def find_session_by_reference(
     Фильтра по `client_reference_id` у `Session.list` в этой версии API НЕТ
     (проверено по SessionListParams: created, customer, payment_intent,
     payment_link, status, subscription). Поэтому перебираем сессии аккаунта,
-    созданные не раньше самой заявки, и сверяем ссылку сами. Окно узкое (заявка
-    старше нескольких минут и без id — событие редкое), перебор ограничен сотней
-    записей на страницу и одним аккаунтом.
+    созданные не раньше самой заявки, и сверяем ссылку сами.
+
+    Перебор идёт ПО СТРАНИЦАМ (`auto_paging_iter`), а не по первой сотне: у
+    занятого зала за минуты между падением и сверкой набирается больше сотни
+    сессий, и нужная оказывалась на второй странице — то есть терялась молча.
+    Предел всё же есть (`_SCAN_LIMIT`), иначе одна осиротевшая заявка увела бы
+    часовой воркер в бесконечную выгрузку; упёрлись в него — пишем об этом в лог,
+    а не возвращаем тихое «не нашли».
     """
-    sessions = await asyncio.to_thread(
-        stripe.checkout.Session.list,
-        created={"gte": created_after}, limit=100, stripe_account=account_id,
-    )
-    for session in (getattr(sessions, "data", None) or []):
-        if getattr(session, "client_reference_id", None) == reference:
-            return session.id
-    return None
+    def _scan() -> tuple[str | None, int, bool]:
+        seen = 0
+        pages = stripe.checkout.Session.list(
+            created={"gte": created_after}, limit=100, stripe_account=account_id,
+        )
+        for session in pages.auto_paging_iter():
+            seen += 1
+            if getattr(session, "client_reference_id", None) == reference:
+                return session.id, seen, False
+            if seen >= _SCAN_LIMIT:
+                return None, seen, True
+        return None, seen, False
+
+    session_id, seen, exhausted = await asyncio.to_thread(_scan)
+    if exhausted:
+        logger.warning(
+            "Stripe Connect: осиротевшая сессия %s не найдена за %s записей аккаунта %s — "
+            "перебор упёрся в предел, заявку закроет срок жизни",
+            reference, seen, account_id,
+        )
+    return session_id
 
 
 async def session_id_for_payment_intent(payment_intent: str, account_id: str) -> str | None:

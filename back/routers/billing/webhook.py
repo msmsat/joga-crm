@@ -26,6 +26,9 @@ from services import stripe_billing, stripe_catalog
 from .plans import PLANS, PERIOD_DISCOUNTS, COMBO_FIXED, COMBO_PERCENT_RATE, canon
 
 logger = logging.getLogger(__name__)
+
+# Правило «когда 200 — ложь» одно на обе платёжные системы продукта.
+from services.webhook_guard import MalformedEvent, require as _require  # noqa: E402,F401
 router = APIRouter()
 
 # Статус подписки у Stripe → наш, который читает пейволл.
@@ -487,9 +490,14 @@ async def stripe_webhook(request: Request):
 
 async def _handle_subscription(db: AsyncSession, event_type: str, obj) -> None:
     """Зеркалирование статуса и срока подписки."""
-    plan = await find_plan_by_subscription(db, obj["id"], _customer_id(obj))
+    subscription_id = getattr(obj, "id", None)
+    # Без id нельзя даже спросить базу — это не «чужая подписка», это нечитаемое
+    # событие. Раньше сюда прилетал KeyError и 500 выходил случайно; теперь это
+    # осознанное правило, а не побочный эффект обращения по ключу.
+    _require(subscription_id, event_type, obj, "у подписки нет id")
+    plan = await find_plan_by_subscription(db, subscription_id, _customer_id(obj))
     if plan is None:
-        logger.info("Stripe billing: подписка %s не привязана к студии", obj["id"])
+        logger.info("Stripe billing: подписка %s не привязана к студии", subscription_id)
         return
 
     if event_type == "customer.subscription.deleted":
@@ -524,26 +532,37 @@ async def _handle_subscription(db: AsyncSession, event_type: str, obj) -> None:
     await db.commit()
 
 
-def _past_due_limit(subscription, period_end: datetime) -> datetime:
+def _past_due_limit(plan: StudioBillingPlan, subscription, period_end: datetime) -> datetime:
     """Докуда пускать студию с НЕОПЛАЧЕННОЙ подпиской.
 
-    Не дальше, чем `PAST_DUE_GRACE` от начала неоплаченного периода, и не дальше
-    конца самого периода. Оплата пройдёт — Stripe пришлёт `active`, и срок
+    Не дальше, чем `PAST_DUE_GRACE` от НАЧАЛА НЕОПЛАТЫ, и не дальше конца самого
+    периода. Оплата пройдёт — Stripe пришлёт `active`, якорь снимется, и срок
     вернётся к полному концу периода этой же функцией мимо ветки.
 
-    Начало периода не прочиталось — НЕ продлеваем вовсе: пусть лучше платящая
-    студия упрётся в 402 и нажмёт «Оплатить» (счёт открыт, деньги примут), чем
-    неоплаченная подписка получит период целиком из-за нечитаемого поля.
+    Якорь запоминается ОДИН раз, в `plan.past_due_since`, и дальше берётся только
+    оттуда. Это принципиально: считать его каждый раз от `current_period_start`
+    подписки нельзя, потому что владелец переставляет начало периода сам — смена
+    тарифа идёт с `billing_cycle_anchor="now"` (checkout._switch_now). Пока срок
+    считался от Stripe, каждая отклонённая карта начинала новое льготное окно, и
+    неоплаченная студия работала сколько угодно долго, нажимая «Оплатить».
+
+    Начало периода не прочиталось — НЕ продлеваем вовсе и якорь НЕ ставим: пусть
+    лучше платящая студия упрётся в 402 и нажмёт «Оплатить» (счёт открыт, деньги
+    примут), чем неоплаченная подписка получит льготу из-за нечитаемого поля.
     """
-    start = _period_start(subscription)
-    if not start:
-        logger.error(
-            "Stripe billing: у неоплаченной подписки %s не читается начало периода — "
-            "срок не продлеваем",
-            getattr(subscription, "id", "?"),
-        )
-        return datetime.utcnow()
-    return min(period_end, datetime.utcfromtimestamp(start) + PAST_DUE_GRACE)
+    anchor = plan.past_due_since
+    if anchor is None:
+        start = _period_start(subscription)
+        if not start:
+            logger.error(
+                "Stripe billing: у неоплаченной подписки %s не читается начало периода — "
+                "срок не продлеваем",
+                getattr(subscription, "id", "?"),
+            )
+            return datetime.utcnow()
+        anchor = datetime.utcfromtimestamp(start)
+        plan.past_due_since = anchor
+    return min(period_end, anchor + PAST_DUE_GRACE)
 
 
 def _mirror_subscription_state(plan: StudioBillingPlan, subscription) -> None:
@@ -555,6 +574,11 @@ def _mirror_subscription_state(plan: StudioBillingPlan, subscription) -> None:
     сознательно не выдал, — и наоборот.
     """
     plan.status = map_subscription_status(getattr(subscription, "status", ""))
+    if plan.status == "active":
+        # Деньги прошли — льготный якорь снят, следующая неоплата начнёт новое окно.
+        # Снимаем ТОЛЬКО здесь: `pending`/`expired` оплатой не являются, а через них
+        # можно было бы прокрутить подписку и обнулить срок, ничего не заплатив.
+        plan.past_due_since = None
     # Автопродление — тоже состояние подписки у Stripe, а не наша настройка: владелец
     # мог выключить его кнопкой в CRM (router.update_autopay), а мог отменить подписку
     # прямо в письме Stripe или в его портале. Зеркалим, чтобы «Автоматическое
@@ -567,7 +591,7 @@ def _mirror_subscription_state(plan: StudioBillingPlan, subscription) -> None:
         if period_end:
             expires_at = datetime.utcfromtimestamp(period_end)
             if plan.status == "past_due":
-                expires_at = _past_due_limit(subscription, expires_at)
+                expires_at = _past_due_limit(plan, subscription, expires_at)
             plan.expires_at = expires_at
         else:
             logger.error(
@@ -588,9 +612,19 @@ async def _handle_invoice(db: AsyncSession, event_type: str, obj) -> None:
     что подписка из счёта обязана принадлежать студии в нашей БД, а Price заведён
     нами (services/stripe_catalog.py).
     """
-    plan = await find_plan_by_subscription(db, _subscription_id(obj), _customer_id(obj))
+    subscription_id, customer_id = _subscription_id(obj), _customer_id(obj)
+    # У НАСТОЯЩЕГО счёта Stripe клиент есть всегда. Нет ни его, ни подписки —
+    # значит мы не разобрали тело, а не «счёт чужой»; отвечать 200 нельзя.
+    _require(
+        subscription_id or customer_id, event_type, obj,
+        "в счёте нет ни подписки, ни клиента — определить студию нечем",
+    )
+    plan = await find_plan_by_subscription(db, subscription_id, customer_id)
     if plan is None:
-        logger.info("Stripe billing: счёт %s не привязан к подписке студии", obj["id"])
+        logger.info(
+            "Stripe billing: счёт %s не привязан к подписке студии",
+            getattr(obj, "id", None),
+        )
         return
 
     currency = getattr(obj, "currency", None)
@@ -829,6 +863,14 @@ async def _invoice_of_payment(db: AsyncSession, obj, what: str) -> BillingInvoic
     )
     intent_id, charge_id = _payment_ids(obj)
     if not stripe_invoice_id:
+        # Ни счёта, ни платёжного намерения, ни списания — обратный поиск начать
+        # не с чего. Это НЕ «платёж не наш»: чужой платёж мы узнаём, спросив
+        # Stripe и получив пустой ответ. Здесь спросить нечем, а тихий выход
+        # означал бы потерянный отзыв доступа после возврата или чарджбэка.
+        _require(
+            intent_id or charge_id, what, obj,
+            "в событии нет ни счёта, ни payment_intent, ни charge",
+        )
         stripe_invoice_id = await stripe_billing.invoice_id_for_payment(intent_id, charge_id)
 
     if not stripe_invoice_id:
@@ -922,6 +964,10 @@ async def _handle_dispute(db: AsyncSession, obj) -> None:
     платформы, и общего состояния у них нет.
     """
     status = getattr(obj, "status", None)
+    # Весь разбор ниже держится на статусе: `lost` отзывает тариф, остальные нет.
+    # Пустой статус — не «спор не проигран», а нечитаемое событие: ответив на него
+    # 200, мы бы навсегда потеряли отзыв доступа по проигранному чарджбэку.
+    _require(status, "charge.dispute.closed", obj, "у спора нет статуса")
     if status != _DISPUTE_LOST:
         logger.info("Stripe billing: спор в статусе %s — доступ не трогаем", status)
         return

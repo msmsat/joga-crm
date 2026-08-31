@@ -9,6 +9,16 @@
 		reverse_proxy api:8000
 	}
 
+	# Иконка вкладки идёт мимо try_files: отсутствующий /favicon.ico иначе
+	# вернулся бы index.html-ом с кодом 200, а Safari принимает такой ответ за
+	# битую картинку и рисует первую букву домена вместо логотипа. Здесь нет
+	# файла — честный 404. Caddy сортирует handle по точности пути, так что
+	# этот блок срабатывает раньше общего.
+	handle /favicon.ico {
+		root * /srv
+		file_server
+	}
+
 	handle {
 		root * /srv
 		try_files {path} /index.html

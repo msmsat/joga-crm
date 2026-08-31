@@ -817,6 +817,128 @@ async def check_webhook_endpoints() -> None:
         )
 
 
+def _customer_studio_id(customer) -> str | None:
+    """`metadata['studio_id']` клиента, если он там есть.
+
+    `metadata` у SDK — не dict: у пустого объекта нет ни `.get`, ни распаковки,
+    оба падают. Поэтому читаем через `to_dict()` и только его.
+    """
+    meta = getattr(customer, "metadata", None)
+    if meta is None:
+        return None
+    try:
+        data = meta.to_dict() if hasattr(meta, "to_dict") else dict(meta)
+    except Exception:
+        return None
+    value = data.get("studio_id")
+    return str(value) if value not in (None, "") else None
+
+
+async def _customer_facts(customer_id: str) -> tuple[list[str], int]:
+    """Живые подписки и число оплаченных счетов клиента."""
+    import stripe
+
+    subs = await asyncio.to_thread(
+        stripe.Subscription.list, customer=customer_id, status="all", limit=20,
+    )
+    live = [
+        s.id for s in (getattr(subs, "data", None) or [])
+        if getattr(s, "status", None) in ("active", "trialing", "past_due", "unpaid")
+    ]
+    paid = await asyncio.to_thread(
+        stripe.Invoice.list, customer=customer_id, status="paid", limit=20,
+    )
+    return live, len(getattr(paid, "data", None) or [])
+
+
+_CUSTOMER_SWEEP_LIMIT = 2000
+
+
+async def check_customer_sweep() -> None:
+    """Дубли Stripe Customer — со стороны Stripe, без нашей БД.
+
+    Отдельная проверка, а не часть `check_duplicate_customers`, ровно потому, что
+    та опирается на две вещи разом: доступную БД и метку `studio_id` у клиента.
+    На боевом аккаунте не совпало НИ ОДНО: база из этого окружения недоступна, а
+    метки нет ни у одного из заведённых клиентов — то есть проверка молча
+    отвечала «дублей нет», ничего не проверив. Молчаливый PASS хуже отсутствия
+    проверки, поэтому сюда вынесен разбор, которому нужен только Stripe.
+
+    Клиент без `studio_id` — это ещё не дубль, но и сопоставить его со студией
+    нечем. Такие группируем по email: одна почта на нескольких клиентов, у
+    которых есть деньги, — тот самый опасный расклад, когда оплата уходит не на
+    того клиента, что записан у нас.
+    """
+    import stripe
+
+    if not os.getenv("STRIPE_SECRET_KEY"):
+        return
+
+    try:
+        customers = []
+        for customer in (await asyncio.to_thread(
+            lambda: list(stripe.Customer.list(limit=100).auto_paging_iter())
+        )):
+            customers.append(customer)
+            if len(customers) >= _CUSTOMER_SWEEP_LIMIT:
+                _warn(
+                    f"клиентов на аккаунте больше {_CUSTOMER_SWEEP_LIMIT} — "
+                    f"проверены только первые, остальные НЕ смотрели"
+                )
+                break
+    except Exception as exc:
+        _warn(f"не удалось перечислить клиентов Stripe ({exc}) — дубли не проверены")
+        return
+
+    by_studio: dict[str, list] = {}
+    unlabelled = []
+    for customer in customers:
+        studio_id = _customer_studio_id(customer)
+        if studio_id is None:
+            unlabelled.append(customer)
+        else:
+            by_studio.setdefault(studio_id, []).append(customer)
+
+    for studio_id, items in sorted(by_studio.items()):
+        if len(items) <= 1:
+            continue
+        _err(f"у студии {studio_id} несколько клиентов Stripe: {len(items)}")
+        for customer in items:
+            live, paid = await _customer_facts(customer.id)
+            print(f"      {customer.id}: живых подписок {len(live)} {live}, оплаченных счетов {paid}")
+
+    if not unlabelled:
+        return
+
+    # Метки нет — сопоставить со студией нечем. Само по себе это не дубль
+    # (клиенты могли родиться до того, как метку стали ставить), но проверку по
+    # studio_id для них можно только объявить несостоявшейся.
+    _warn(
+        f"у {len(unlabelled)} из {len(customers)} клиентов Stripe нет metadata.studio_id — "
+        f"для них дубли по студии не проверяются; сверьте вручную"
+    )
+    by_email: dict[str, list] = {}
+    for customer in unlabelled:
+        email = (getattr(customer, "email", None) or "").strip().lower()
+        if email:
+            by_email.setdefault(email, []).append(customer)
+    for email, items in sorted(by_email.items()):
+        if len(items) <= 1:
+            continue
+        facts = []
+        for customer in items:
+            live, paid = await _customer_facts(customer.id)
+            facts.append((customer.id, live, paid))
+        with_money = [f for f in facts if f[1] or f[2]]
+        head = f"одна почта на {len(items)} клиентов Stripe без studio_id"
+        if len(with_money) > 1:
+            _err(f"{head}, и деньги есть у {len(with_money)} из них — оплата может уходить не тому клиенту")
+        else:
+            _warn(f"{head} (деньги есть у {len(with_money)}) — проверьте, что это разные студии")
+        for customer_id, live, paid in facts:
+            print(f"      {customer_id}: живых подписок {len(live)} {live}, оплаченных счетов {paid}")
+
+
 async def check_duplicate_customers() -> None:
     """Дубли Stripe Customer по студиям — след давней гонки первой оплаты.
 
@@ -929,6 +1051,7 @@ async def main(sync: bool) -> int:
     await check_db_stripe_links()
     await check_webhook_endpoints()
     await check_duplicate_customers()
+    await check_customer_sweep()
 
     for text in _WARNINGS:
         print(f"  [!] {text}")

@@ -231,10 +231,16 @@ def test_a_won_chargeback_takes_nothing_away(monkeypatch):
 
 def test_an_unfinished_dispute_takes_nothing_away(monkeypatch):
     """Пока спор идёт, доступ не трогаем: `charge.dispute.created` и
-    промежуточные статусы — не исход. `prevented` — тоже не потеря денег."""
+    промежуточные статусы — не исход. `prevented` — тоже не потеря денег.
+
+    Неизвестный статус тоже остаётся тихим: он ПРОЧИТАН и просто не равен `lost`.
+    А вот пустого статуса в этом списке больше нет — раньше он молча попадал в ту
+    же ветку «ничего не делаем», то есть проигранный спор с нечитаемым телом
+    получал 200 и терялся навсегда. Теперь это отдельный случай, см.
+    test_malformed_dispute_closed_is_never_answered_with_200."""
     for status in (
         "needs_response", "under_review", "warning_needs_response",
-        "warning_under_review", "warning_closed", "prevented", None, "какой-то новый",
+        "warning_under_review", "warning_closed", "prevented", "какой-то новый",
     ):
         cancelled = _stub_stripe(monkeypatch)
         invoice = _invoice()
@@ -366,10 +372,12 @@ def _subscription(status, start_days_ago, period_days):
     )
 
 
-def _mirror(subscription):
-    plan = SimpleNamespace(
-        studio_id=7, status="active", expires_at=None, auto_renewal=True,
-    )
+def _mirror(subscription, plan=None):
+    if plan is None:
+        plan = SimpleNamespace(
+            studio_id=7, status="active", expires_at=None, auto_renewal=True,
+            past_due_since=None,
+        )
     WH._mirror_subscription_state(plan, subscription)
     return plan
 
@@ -836,3 +844,267 @@ def test_the_webhooks_are_never_rate_limited():
     for fn in (WH.stripe_webhook, SP.stripe_webhook):
         assert "limiter.limit" not in inspect.getsource(fn), fn.__name__
     assert "limiter" not in inspect.getsource(SP.reconcile_pending)
+
+
+# ─── 12. ПОВТОРНЫЙ GRACE: смена тарифа не должна печатать льготные окна ────────
+#
+# `_switch_now` (routers/billing/checkout.py) переставляет подписку с
+# `billing_cycle_anchor="now"`, то есть двигает `current_period_start` на сегодня.
+# Пока льготный срок считался от этого поля, каждая отклонённая карта начинала
+# новые 14 дней — и неоплаченная студия работала вечно, нажимая «Оплатить».
+# Якорь теперь свой (`plan.past_due_since`) и снимается только оплатой.
+
+def _switch_now_cycle(plan, day):
+    """То, что делает с подпиской одна нажатая и отклонённая «Оплата».
+
+    Ровно то же самое, что `change_subscription_price(billing_cycle_anchor="now")`:
+    период начинается сегодня, деньги не прошли — статус остался `past_due`.
+    """
+    now = datetime.now(timezone.utc) + timedelta(days=day)
+    item = SimpleNamespace(
+        current_period_start=int(now.timestamp()),
+        current_period_end=int((now + timedelta(days=365)).timestamp()),
+    )
+    subscription = SimpleNamespace(
+        id="sub_1", status="past_due", cancel_at_period_end=False,
+        items=SimpleNamespace(data=[item]),
+    )
+    return _mirror(subscription, plan)
+
+
+def test_a_hundred_failed_switch_attempts_do_not_extend_the_grace():
+    """Главный инвариант этого прохода: сто отклонённых попыток оплаты не сдвигают
+    конечный срок ни на секунду.
+
+    Каждая попытка переставляет период у Stripe на «сегодня». Считай мы льготу от
+    подписки — сотая попытка дала бы 14 дней от сотого дня, то есть бесконечный
+    бесплатный доступ по цене ста нажатий."""
+    plan = SimpleNamespace(
+        studio_id=7, status="active", expires_at=None, auto_renewal=True,
+        past_due_since=None,
+    )
+    _switch_now_cycle(plan, day=0)
+    first_deadline = plan.expires_at
+    anchor = plan.past_due_since
+    assert anchor is not None, "якорь неоплаты не проставлен"
+
+    for day in range(1, 101):
+        _switch_now_cycle(plan, day)
+
+    assert plan.status == "past_due"
+    assert plan.past_due_since == anchor, "якорь переехал"
+    assert plan.expires_at == first_deadline, (
+        f"сто попыток сдвинули срок: было {first_deadline}, стало {plan.expires_at}"
+    )
+    # И он по-прежнему укладывается в обещанные продуктом дни от ПЕРВОЙ неоплаты.
+    assert plan.expires_at <= anchor + WH.PAST_DUE_GRACE
+
+
+def test_a_real_payment_clears_the_anchor_and_restores_the_full_period():
+    """Заплатил — льгота кончилась и началась заново с полного периода. Иначе
+    честно платящая студия навсегда осталась бы с урезанным сроком."""
+    plan = SimpleNamespace(
+        studio_id=7, status="active", expires_at=None, auto_renewal=True,
+        past_due_since=None,
+    )
+    _switch_now_cycle(plan, day=0)
+    assert plan.past_due_since is not None
+
+    _mirror(_subscription("active", start_days_ago=0, period_days=365), plan)
+    assert plan.past_due_since is None, "якорь не снят после оплаты"
+    assert plan.expires_at > datetime.utcnow() + timedelta(days=300)
+
+
+def test_pending_and_expired_do_not_clear_the_anchor():
+    """`pending` (незавершённый 3-D Secure) и `expired` оплатой НЕ являются.
+    Снимай мы якорь на них — его можно было бы обнулить, прокрутив подписку через
+    незавершённое оформление, и льгота выдавалась бы снова и снова."""
+    for status in ("incomplete", "canceled"):
+        plan = SimpleNamespace(
+            studio_id=7, status="active", expires_at=None, auto_renewal=True,
+            past_due_since=None,
+        )
+        _switch_now_cycle(plan, day=0)
+        anchor = plan.past_due_since
+        _mirror(_subscription(status, start_days_ago=0, period_days=365), plan)
+        assert plan.past_due_since == anchor, f"{status} снял якорь неоплаты"
+
+
+def test_the_anchor_is_not_planted_when_the_period_is_unreadable():
+    """Нечитаемое начало периода не должно становиться якорем «сейчас» — иначе
+    сломанное поле само выдавало бы полную льготу."""
+    broken = SimpleNamespace(
+        id="sub_1", status="past_due", cancel_at_period_end=False,
+        items=SimpleNamespace(data=[SimpleNamespace(
+            current_period_start=None,
+            current_period_end=int((datetime.now(timezone.utc) + timedelta(days=365)).timestamp()),
+        )]),
+    )
+    plan = _mirror(broken)
+    assert plan.past_due_since is None
+    assert plan.expires_at <= datetime.utcnow() + timedelta(minutes=1)
+
+
+# ─── 13. ПАГИНАЦИЯ ПОИСКА ОСИРОТЕВШЕЙ СЕССИИ ──────────────────────────────────
+#
+# `find_session_by_reference` перебирал ПЕРВУЮ СОТНЮ сессий аккаунта. У занятого
+# зала за минуты между падением и сверкой их набирается больше, и нужная молча
+# терялась — заявка закрывалась как осиротевшая, хотя деньги приняты.
+
+import services.stripe_connect as SC
+
+
+class _Page:
+    """`ListObject` Stripe в той части, которой пользуется код: постраничный обход."""
+
+    def __init__(self, rows, page_size=100):
+        self._rows, self._page = rows, page_size
+        self.pages_served = 0
+
+    def auto_paging_iter(self):
+        for i, row in enumerate(self._rows):
+            if i % self._page == 0:
+                self.pages_served += 1
+            yield row
+
+
+def _sessions(total, target_at=None, reference="att_target"):
+    rows = [SimpleNamespace(id=f"cs_{i}", client_reference_id=f"att_other_{i}")
+            for i in range(total)]
+    if target_at is not None:
+        rows[target_at] = SimpleNamespace(id="cs_target", client_reference_id=reference)
+    return rows
+
+
+def _find(monkeypatch, rows):
+    page = _Page(rows)
+    seen = {}
+
+    def _list(**kw):
+        seen.update(kw)
+        return page
+
+    monkeypatch.setattr(SC.stripe.checkout.Session, "list", _list)
+    found = _run(SC.find_session_by_reference("acct_1", "att_target", created_after=1000))
+    return found, page, seen
+
+
+def test_the_orphan_search_finds_a_session_on_the_first_page(monkeypatch):
+    found, page, seen = _find(monkeypatch, _sessions(50, target_at=10))
+    assert found == "cs_target"
+    assert seen["stripe_account"] == "acct_1"
+    assert seen["created"] == {"gte": 1000}
+
+
+def test_the_orphan_search_finds_session_101(monkeypatch):
+    """Первая запись ЗА первой страницей. Ровно тот случай, который терялся."""
+    found, page, _ = _find(monkeypatch, _sessions(200, target_at=100))
+    assert found == "cs_target"
+    assert page.pages_served >= 2, "вторая страница даже не запрашивалась"
+
+
+def test_the_orphan_search_finds_session_250(monkeypatch):
+    """Третья страница — чтобы перебор не оказался «ровно две страницы»."""
+    found, page, _ = _find(monkeypatch, _sessions(400, target_at=249))
+    assert found == "cs_target"
+    assert page.pages_served >= 3
+
+
+def test_the_orphan_search_returns_none_when_the_session_is_absent(monkeypatch):
+    """Нет — значит нет: сессии не существует, заявку закроет срок жизни."""
+    found, page, _ = _find(monkeypatch, _sessions(250, target_at=None))
+    assert found is None
+
+
+def test_the_orphan_search_stops_at_the_limit_and_says_so(monkeypatch, caplog):
+    """Предел перебора обязан быть громким. Молчаливое усечение читалось бы как
+    «сессии нет», а это ровно противоположный вывод."""
+    monkeypatch.setattr(SC, "_SCAN_LIMIT", 150)
+    with caplog.at_level("WARNING"):
+        found, _, _ = _find(monkeypatch, _sessions(400, target_at=300))
+    assert found is None
+    assert any("предел" in r.message.lower() or "предел" in str(r.args).lower()
+               or "перебор" in r.message.lower() for r in caplog.records), caplog.text
+
+
+# ─── 14. FAIL-CLOSED: 200 только по ПРОЧИТАННОМУ признаку ─────────────────────
+#
+# Нашёл подписанный HTTP-прогон: `invoice.paid` с телом, из которого не читается
+# ни клиент, ни подписка, получал HTTP 200. Для Stripe 200 значит «принято» —
+# ретрая не будет, и оплата теряется навсегда. Выглядело это как штатное «счёт не
+# наш», потому что оба случая давали один и тот же `plan is None`.
+#
+# Правило: «не наше» — законный 200; «не смогли прочитать, чьё это» — 500 и ретрай.
+
+from services.webhook_guard import MalformedEvent
+
+
+def _raises_malformed(coro):
+    with pytest.raises(MalformedEvent):
+        _run(coro)
+
+
+def test_malformed_invoice_paid_is_never_answered_with_200():
+    """Счёт без клиента и без подписки опознать нечем."""
+    obj = SimpleNamespace(id="in_broken")
+    _raises_malformed(WH._handle_invoice(None, "invoice.paid", obj))
+
+
+def test_malformed_invoice_payment_failed_is_never_answered_with_200():
+    obj = SimpleNamespace(id="in_broken")
+    _raises_malformed(WH._handle_invoice(None, "invoice.payment_failed", obj))
+
+
+def test_malformed_charge_refunded_is_never_answered_with_200():
+    """Возврат без ссылок на платёж: спросить Stripe, какой это счёт, нечем.
+    Тихий выход означал бы, что деньги вернули, а доступ не отобрали."""
+    obj = SimpleNamespace(id=None, object="charge", amount=100, amount_refunded=100)
+    _raises_malformed(WH._handle_refund(None, obj))
+
+
+def test_malformed_dispute_closed_is_never_answered_with_200():
+    """Весь разбор спора держится на статусе. Пустой статус — не «спор не
+    проигран», а нечитаемое событие."""
+    obj = SimpleNamespace(id="dp_broken")
+    _raises_malformed(WH._handle_dispute(None, obj))
+
+
+def test_a_dispute_without_a_payment_reference_is_never_answered_with_200():
+    """Статус есть и он `lost`, а ссылки на платёж нет — искать счёт не по чему."""
+    obj = SimpleNamespace(id="dp_broken", status="lost")
+    _raises_malformed(WH._handle_dispute(None, obj))
+
+
+def test_malformed_subscription_event_is_never_answered_with_200():
+    """Раньше сюда прилетал KeyError и 500 выходил случайно. Теперь это правило."""
+    obj = SimpleNamespace()
+    _raises_malformed(
+        WH._handle_subscription(None, "customer.subscription.updated", obj)
+    )
+
+
+def test_a_foreign_but_readable_invoice_is_still_a_quiet_200():
+    """Обратная половина правила, без неё фикс превратился бы в «ретраить всё».
+    Клиент прочитан, студия по нему не нашлась — событие действительно чужое."""
+    class _NoPlan:
+        async def execute(self, *_a, **_kw):
+            return SimpleNamespace(scalar_one_or_none=lambda: None)
+
+    _run(WH._handle_invoice(_NoPlan(), "invoice.paid",
+                            SimpleNamespace(id="in_1", customer="cus_someone_else")))
+
+
+def test_a_dispute_in_progress_is_still_a_quiet_200():
+    """Промежуточный статус спора — законное «пока ничего не делаем»."""
+    for status in ("warning_needs_response", "under_review", "won"):
+        _run(WH._handle_dispute(None, SimpleNamespace(id="dp_1", status=status)))
+
+
+def test_the_guard_is_shared_by_both_payment_systems():
+    """Инвариант обязан быть ОДНИМ: две копии разъезжаются молча, а разница здесь
+    стоит потерянной оплаты."""
+    import routers.checkout.stripe_pay as _SP
+    import services.webhook_guard as _G
+
+    assert WH._require is _G.require
+    assert _SP._require is _G.require

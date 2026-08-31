@@ -132,12 +132,17 @@ export default function GeneralTab() {
             ) : logoSrc ? (
               <>
                 <img src={logoSrc} alt="Logo" style={{
-                  width: "100%", height: "100%", objectFit: "cover",
+                  width: "100%", height: "100%", objectFit: "cover", borderRadius: "inherit",
                   transition: "transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)",
                   transform: logoHover ? "scale(1.06)" : "scale(1)",
                 }} />
+                {/* borderRadius: "inherit" у картинки и у затемнения — форму держит
+                    не только overflow: hidden родителя. Композитный слой-потомок
+                    (у обоих своя transition) на части связок GPU/браузера выходит
+                    из-под скругления предка: наружу лезли квадратные углы, снизу
+                    чёрные из-за градиента затемнения. */}
                 <div style={{
-                  position: "absolute", inset: 0,
+                  position: "absolute", inset: 0, borderRadius: "inherit",
                   background: "linear-gradient(0deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.1) 55%, transparent 100%)",
                   display: "flex", alignItems: "center", justifyContent: "center",
                   opacity: logoHover ? 1 : 0, transition: "opacity 0.25s ease", color: "white"

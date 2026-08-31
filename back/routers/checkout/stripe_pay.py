@@ -45,6 +45,9 @@ from .router import _get_client_package, _quote, consume_quote, perform_pay, rej
 
 logger = logging.getLogger(__name__)
 
+# То же правило, что у биллинга платформы: 200 только по ПРОЧИТАННОМУ признаку.
+from services.webhook_guard import require as _require  # noqa: E402
+
 # `completed` — обычная карта. `async_payment_succeeded` — отложенные методы
 # (банковский перевод, SEPA): у них completed приходит ещё неоплаченным, и без
 # второго типа события такая оплата не провелась бы в CRM никогда.
@@ -688,7 +691,13 @@ async def stripe_webhook(request: Request):
     if event["type"] in _PAID_EVENTS:
         # Оплата может быть отложенной (банковский перевод) — проводим только
         # когда деньги реально списаны.
-        if getattr(obj, "payment_status", None) == "paid":
+        # `unpaid`/`no_payment_required` — законные состояния (деньги ещё в пути,
+        # придёт async_payment_succeeded), на них 200 правилен. А вот ОТСУТСТВИЕ
+        # поля значит, что мы не разобрали сессию: промолчав, мы потеряли бы
+        # оплату навсегда — ретрая после 200 не будет.
+        payment_status = getattr(obj, "payment_status", None)
+        _require(payment_status, event["type"], obj, "у сессии нет payment_status")
+        if payment_status == "paid":
             async with async_session_maker() as db:
                 try:
                     await apply_paid(
@@ -885,12 +894,16 @@ async def _close_dispute(dispute, account_id: str | None) -> None:
     * промежуточные статусы (`warning_*`, `under_review`) не трогаем — спор ещё идёт.
     """
     status = getattr(dispute, "status", None)
+    # Промежуточный статус — законный «пока ничего не делаем». Пустой статус —
+    # нечитаемое событие: проигранный спор так и остался бы неоткаченным.
+    _require(status, _DISPUTE_CLOSED_EVENT, dispute, "у спора нет статуса")
     if status not in ("won", "lost"):
         logger.info("Stripe: спор в промежуточном статусе %s — заявку не трогаем", status)
         return
 
     intent = getattr(dispute, "payment_intent", None)
     intent_id = intent if isinstance(intent, str) else getattr(intent, "id", None)
+    _require(intent_id, _DISPUTE_CLOSED_EVENT, dispute, "в споре нет payment_intent")
     session_id = await _checkout_for_payment(intent_id, account_id, _DISPUTE_CLOSED_EVENT)
     if session_id is None:
         return
@@ -1137,6 +1150,10 @@ async def _mark_reversed(charge, event_type: str, account_id: str | None) -> Non
     выигранный возвращает заявку в `paid`, проигранный откатывает продажу.
     """
     payment_intent = getattr(charge, "payment_intent", None)
+    # Без ссылки на платёж искать заявку не по чему. «Платёж вне кассы CRM» — это
+    # ответ, полученный ПОИСКОМ; здесь же поиск не начинался, и тихий выход
+    # означал бы невозвращённую продажу при возврате денег клиенту.
+    _require(payment_intent, event_type, charge, "в событии нет payment_intent")
     session_id = await _checkout_for_payment(payment_intent, account_id, event_type)
     if session_id is None:
         logger.info("Stripe: %s по платежу %s вне кассы CRM", event_type, payment_intent)
