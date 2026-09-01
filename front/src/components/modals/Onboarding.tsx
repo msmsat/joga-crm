@@ -148,7 +148,16 @@ export default function OnboardingPage() {
       if (responseData.access_token) {
         setActiveToken(responseData.access_token);
       }
-      window.location.href = "/dashboard";
+      // Сразу на «Тариф и оплата», а не на дашборд. У только что созданной студии
+      // подписки нет, и дашборд ей всё равно не покажут: разделы данных закрыты
+      // гейтом подписки (402 → api/client.ts перебрасывает сюда же), а пейволл в
+      // DashboardLayout уводит на биллинг следом. Заход через /dashboard стоил
+      // лишнего кадра с монтированием «Обзора»: тот успевал выстрелить запросами
+      // аналитики, получить на них отказ и показать карточку «не удалось
+      // загрузить» — прямо под окном акции, которое едет поверх. Ведём на
+      // конечную точку сразу; дальше вход в кабинет обычный, это только выход
+      // из онбординга (в т.ч. для второй студии — у неё подписки тоже ещё нет).
+      window.location.href = "/dashboard/billing";
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : t("onboarding:wizard.networkError");
       setErrorModal({ visible: true, message: msg });

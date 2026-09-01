@@ -854,6 +854,23 @@ async def _customer_facts(customer_id: str) -> tuple[list[str], int]:
 _CUSTOMER_SWEEP_LIMIT = 2000
 
 
+async def _local_customer_ids() -> dict[str, str] | None:
+    """{studio_id: записанный у нас Customer} или None, если БД недоступна."""
+    from sqlalchemy import text
+
+    try:
+        from database import engine
+
+        async with engine.connect() as conn:
+            rows = (await conn.execute(text(
+                "SELECT studio_id, stripe_customer_id FROM studio_billing_plans "
+                "WHERE stripe_customer_id IS NOT NULL LIMIT 5000"
+            ))).all()
+        return {str(studio_id): customer_id for studio_id, customer_id in rows}
+    except Exception:
+        return None
+
+
 async def check_customer_sweep() -> None:
     """Дубли Stripe Customer — со стороны Stripe, без нашей БД.
 
@@ -899,13 +916,52 @@ async def check_customer_sweep() -> None:
         else:
             by_studio.setdefault(studio_id, []).append(customer)
 
+    local = await _local_customer_ids()
+
     for studio_id, items in sorted(by_studio.items()):
         if len(items) <= 1:
             continue
-        _err(f"у студии {studio_id} несколько клиентов Stripe: {len(items)}")
+
+        facts = {}
         for customer in items:
-            live, paid = await _customer_facts(customer.id)
-            print(f"      {customer.id}: живых подписок {len(live)} {live}, оплаченных счетов {paid}")
+            facts[customer.id] = await _customer_facts(customer.id)
+
+        # Опасен НЕ сам дубль, а ровно один расклад: подписка (или деньги) живёт
+        # не на том клиенте, что записан у нас. Тогда следующая оплата студии не
+        # найдёт свою подписку. Если же записан именно тот клиент, у которого
+        # подписка, а остальные пусты — это след старой гонки, мусор в аккаунте:
+        # убрать стоит, но боевой режим он не ломает.
+        recorded = (local or {}).get(str(studio_id))
+        with_live = [cid for cid, (live, _paid) in facts.items() if live]
+        elsewhere = [cid for cid in with_live if cid != recorded]
+
+        if local is None:
+            _err(
+                f"у студии {studio_id} несколько клиентов Stripe: {len(items)}; "
+                f"какой из них записан у нас — не проверить, БД недоступна"
+            )
+        elif recorded is None:
+            _err(
+                f"у студии {studio_id} несколько клиентов Stripe: {len(items)}, "
+                f"а в нашей строке не записан НИ ОДИН — оплата не найдёт подписку"
+            )
+        elif elsewhere:
+            _err(
+                f"у студии {studio_id} живая подписка НЕ на том клиенте, что записан у нас: "
+                f"записан {recorded}, подписка у {', '.join(elsewhere)}"
+            )
+        else:
+            _warn(
+                f"у студии {studio_id} несколько клиентов Stripe: {len(items)}, "
+                f"но записан верный ({recorded}) и подписка именно на нём; "
+                f"остальные пусты — это мусор старой гонки, доступ он не ломает"
+            )
+
+        for customer in items:
+            live, paid = facts[customer.id]
+            mark = " <-- записан у нас" if customer.id == recorded else ""
+            print(f"      {customer.id}: живых подписок {len(live)} {live}, "
+                  f"оплаченных счетов {paid}{mark}")
 
     if not unlabelled:
         return
@@ -969,6 +1025,7 @@ async def check_duplicate_customers() -> None:
         return
 
     duplicates = 0
+    dangerous = 0
     for studio_id, local_customer in rows:
         try:
             found = await asyncio.to_thread(
@@ -986,7 +1043,12 @@ async def check_duplicate_customers() -> None:
         # Разбор печатаем сразу: без него оператору пришлось бы вручную ходить по
         # каждому клиенту в дашборде. Опасен ровно один расклад — подписка живёт
         # НЕ на том клиенте, что записан у нас: оплата такой студии не находит
-        # свою подписку никогда.
+        # свою подписку никогда. Сам по себе лишний клиент доступ не ломает, и
+        # блокировать боевой режим из-за мусора в аккаунте эта проверка не должна:
+        # раньше она блокировала, и разница между «оплата уйдёт не туда» и
+        # «в аккаунте лишняя пустая карточка» просто терялась.
+        holders: list[str] = []
+        unresolved = False
         print(f"\n  Студия {studio_id}: клиентов {len(ids)}, локально записан {local_customer}")
         for customer_id in ids:
             try:
@@ -998,24 +1060,44 @@ async def check_duplicate_customers() -> None:
                     if getattr(s, "status", None) in ("active", "trialing", "past_due")
                 ]
                 paid = await asyncio.to_thread(
-                    stripe.Invoice.list, customer=customer_id, status="paid", limit=1,
+                    stripe.Invoice.list, customer=customer_id, status="paid", limit=20,
                 )
             except Exception as exc:
                 print(f"    {customer_id}: разбор не удался ({exc})")
+                unresolved = True
                 continue
+            # «Держатель» — клиент, потеря связи с которым что-то стоит: у него
+            # живая подписка или РЕАЛЬНО заплаченные деньги. Счёт на ноль (полная
+            # скидка, пробный период, кредит-нота) оплатой не является: считать
+            # его деньгами значит блокировать боевой режим из-за пустой карточки.
+            money = any(getattr(i, "amount_paid", 0) > 0 for i in (getattr(paid, "data", None) or []))
+            if live or money:
+                holders.append(customer_id)
             mark = "← записан у нас" if customer_id == local_customer else ""
             print(
                 f"    {customer_id}: живых подписок {len(live)}"
                 f"{' (' + ', '.join(live) + ')' if live else ''}, "
-                f"оплаченных счетов {'есть' if getattr(paid, 'data', None) else 'нет'} {mark}"
+                f"оплаченных счетов {len(getattr(paid, 'data', None) or [])}"
+                f"{' (на сумму)' if money else ' (все на ноль)'} {mark}"
             )
 
-    if duplicates:
+        # Не смогли разобрать хотя бы одного — считаем опасным: безопасность здесь
+        # доказывается, а не предполагается.
+        if unresolved or any(h != local_customer for h in holders):
+            dangerous += 1
+
+    if dangerous:
         _err(
-            f"у {duplicates} студий больше одного Stripe Customer (разбор выше). "
-            f"Приведите studio_billing_plans.stripe_customer_id к тому клиенту, на "
-            f"котором живёт ОПЛАЧЕННАЯ подписка, и только потом включайте боевой "
+            f"у {dangerous} студий ОПЛАЧЕННАЯ подписка живёт не на том Stripe Customer, "
+            f"что записан в studio_billing_plans.stripe_customer_id (разбор выше). "
+            f"Приведите ссылку к нужному клиенту, и только потом включайте боевой "
             f"режим: иначе оплата такой студии не найдёт свою подписку"
+        )
+    elif duplicates:
+        _warn(
+            f"у {duplicates} студий больше одного Stripe Customer, но записанный у нас "
+            f"клиент — тот самый, на котором деньги и подписка. Доступ это не ломает; "
+            f"лишние карточки стоит убрать в дашборде, когда будет удобно"
         )
 
 
