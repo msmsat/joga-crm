@@ -37,13 +37,16 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import date, datetime
+from datetime import date, datetime, time
 from typing import NamedTuple, Optional, Sequence
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from models import Hall, Lesson, Reservation, Service, Studio, StudioBranch, StudioMember
+from models import (
+    BranchWorkingHours, Hall, Lesson, Reservation, Service, Studio, StudioBranch,
+    StudioMember, StudioWorkingHours,
+)
 from services import lesson_time, studio_time
 from services.members import full_name
 
@@ -86,6 +89,10 @@ class ServiceRef(NamedTuple):
     duration_min: int
     price: int
     category: Optional[str]
+    # Описание направления, написанное ВЛАДЕЛЬЦЕМ. Публичное: витрина отдаёт
+    # его гостю без всякой авторизации (routers/booking/public.PublicService).
+    # Наш текст его не дополняет — показываем ровно то, что написали.
+    description: Optional[str] = None
 
 
 class TrainerRef(NamedTuple):
@@ -97,6 +104,17 @@ class TrainerRef(NamedTuple):
 
 
 class StudioRef(NamedTuple):
+    """Карточка студии — и одновременно СПИСОК РАЗРЕШЁННОГО клиенту.
+
+    Полей ровно столько, сколько человеку снаружи можно показать. Отдавать
+    сюда ORM-строку целиком нельзя: в `Studio` лежат налоговый номер, ключи
+    интеграций и платёжные реквизиты, и «сериализуем объект, лишнее не
+    покажем» — это решение, принятое один раз и забытое навсегда.
+
+    Контакты и адрес публичны и сегодня: их отдаёт витрина мини-приложения
+    (`routers/booking/miniapp_studio.StudioInfo`) — это те же телефон, почта и
+    сайт из Настроек → Общие, по которым клиент и связывается со студией.
+    """
     id: int
     name: str
     timezone: Optional[str]
@@ -105,6 +123,13 @@ class StudioRef(NamedTuple):
     timezone_verified: bool
     currency: Optional[str]
     language: Optional[str]
+    phone: Optional[str] = None
+    email: Optional[str] = None
+    website: Optional[str] = None
+    # Адрес самой студии. Это ЗАПАСНОЙ источник местоположения: филиалов может
+    # не быть вовсе (см. `branches`), и тогда отвечать нечем, кроме него.
+    address: Optional[str] = None
+    city: Optional[str] = None
 
 
 async def studio(db: AsyncSession, studio_id: int) -> Optional[StudioRef]:
@@ -112,7 +137,9 @@ async def studio(db: AsyncSession, studio_id: int) -> Optional[StudioRef]:
     if row is None:
         return None
     what = studio_time.clock(row)
-    return StudioRef(row.id, row.name, row.tz_iana, what.verified, row.currency, row.language)
+    return StudioRef(row.id, row.name, row.tz_iana, what.verified, row.currency,
+                     row.language, row.phone, row.email, row.website,
+                     row.address, row.city)
 
 
 async def branches(db: AsyncSession, studio_id: int) -> list[BranchRef]:
@@ -135,7 +162,8 @@ async def services(db: AsyncSession, studio_id: int) -> list[ServiceRef]:
     rows = (await db.execute(
         select(Service).where(Service.studio_id == studio_id).order_by(Service.id)
     )).scalars().all()
-    return [ServiceRef(s.id, s.name, s.duration_min, s.price, s.category) for s in rows]
+    return [ServiceRef(s.id, s.name, s.duration_min, s.price, s.category, s.description)
+            for s in rows]
 
 
 async def trainers(db: AsyncSession, studio_id: int) -> list[TrainerRef]:
@@ -152,6 +180,60 @@ async def trainers(db: AsyncSession, studio_id: int) -> list[TrainerRef]:
         .order_by(StudioMember.user_id)
     )).scalars().all()
     return [TrainerRef(m.user_id, full_name(m), m.status == "active") for m in rows]
+
+
+class DayHours(NamedTuple):
+    """Рабочее окно одного дня. `day` — 0=понедельник, как в БД."""
+    day: int
+    opens: time
+    closes: time
+
+
+async def working_hours(db: AsyncSession, studio_id: int) -> dict[Optional[int], tuple[DayHours, ...]]:
+    """Часы работы: `{branch_id: дни}` плюс `{None: дни}` — часы самой студии.
+
+    Два источника, потому что их два в продукте: Каталог → Филиалы задаёт часы
+    каждому адресу (`BranchWorkingHours`), Настройки → Часы работы — часы
+    студии целиком (`StudioWorkingHours`). Ни один из них не «главнее»: у
+    студии без филиалов есть только вторые, у сети — только первые имеют смысл,
+    потому что открыты адреса по-разному.
+
+    Закрытые дни не возвращаются вовсе: «закрыто» — это отсутствие окна, а не
+    окно нулевой длины. Неразборчивое время («9-00», пустая строка) молча
+    отбрасывается: показать человеку часы, которых мы не смогли прочитать,
+    хуже, чем не показать никаких.
+    """
+    out: dict[Optional[int], list[DayHours]] = {}
+    branch_ids = (
+        select(StudioBranch.id).where(StudioBranch.studio_id == studio_id).scalar_subquery()
+    )
+    rows = (await db.execute(
+        select(BranchWorkingHours).where(BranchWorkingHours.branch_id.in_(branch_ids))
+    )).scalars().all()
+    for row in rows:
+        day = _day_hours(row)
+        if day is not None:
+            out.setdefault(row.branch_id, []).append(day)
+
+    studio_rows = (await db.execute(
+        select(StudioWorkingHours).where(StudioWorkingHours.studio_id == studio_id)
+    )).scalars().all()
+    for row in studio_rows:
+        day = _day_hours(row)
+        if day is not None:
+            out.setdefault(None, []).append(day)
+
+    return {key: tuple(sorted(days)) for key, days in out.items()}
+
+
+def _day_hours(row) -> Optional[DayHours]:
+    if not row.is_open or not (0 <= row.day_of_week <= 6):
+        return None
+    try:
+        return DayHours(row.day_of_week, time.fromisoformat(row.open_time),
+                        time.fromisoformat(row.close_time))
+    except (TypeError, ValueError):
+        return None
 
 
 # ─── Занятия ─────────────────────────────────────────────────────────────────

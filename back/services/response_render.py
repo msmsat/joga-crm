@@ -22,9 +22,10 @@ from __future__ import annotations
 from datetime import date, datetime
 from typing import Optional
 
+from services import information as I
 from services import response_texts as T
 from services.i18n import pick, resolve
-from services.notifier import _MONTHS
+from services.notifier import _MONTHS, _fmt_amount
 from services.response_plan import (
     ActionKind, CopyIntent, PlanKind, ResponseAction, ResponseOption, ResponsePlan,
 )
@@ -52,7 +53,22 @@ _COPY: dict[CopyIntent, dict] = {
     CopyIntent.OPTION_NONE_SHOWN: T.OPTION_NONE_SHOWN,
     CopyIntent.NEED_HUMAN: T.NEED_HUMAN,
     CopyIntent.AI_UNAVAILABLE: T.AI_UNAVAILABLE,
+    CopyIntent.INFO_LOCATION: T.INFO_LOCATION,
+    CopyIntent.INFO_LOCATION_MANY: T.INFO_LOCATION_MANY,
+    CopyIntent.INFO_BRANCHES: T.INFO_BRANCHES,
+    CopyIntent.INFO_HOURS: T.INFO_HOURS,
+    CopyIntent.INFO_OPEN_NOW: T.INFO_OPEN_NOW,
+    CopyIntent.INFO_CONTACT: T.INFO_CONTACT,
+    CopyIntent.INFO_SERVICES: T.INFO_SERVICES,
+    CopyIntent.INFO_TRAINERS: T.INFO_TRAINERS,
+    CopyIntent.INFO_SERVICE_PRICE: T.INFO_SERVICE_PRICE,
+    CopyIntent.INFO_SERVICE_INFO: T.INFO_SERVICE_INFO,
+    CopyIntent.INFO_NOT_CONFIGURED: T.INFO_NOT_CONFIGURED,
 }
+
+# Уточняющие вопросы: варианты нумеруются, чтобы человек назвал номер словом.
+_CLARIFY = (CopyIntent.CLARIFY_SERVICE, CopyIntent.CLARIFY_TRAINER,
+            CopyIntent.CLARIFY_BRANCH)
 
 _BUTTON = {
     ActionKind.SHOW_MORE: T.BUTTON_SHOW_MORE,
@@ -80,6 +96,16 @@ def fmt_time(when: datetime) -> str:
 
 def fmt_duration(minutes: int, lang: str) -> str:
     return f"{minutes} {pick(T.MINUTES, lang)}"
+
+
+def fmt_amount(amount: int, currency: str) -> str:
+    """«500 Kč». Форматирование денег в продукте одно на всех — то же, что в
+    письмах и в витрине (`notifier._fmt_amount`). Второй таблицы символов валют
+    заводить нельзя: разойдясь, они дадут одну цену в двух видах.
+
+    Валюта берётся из карточки студии и никогда не угадывается по стране.
+    """
+    return _fmt_amount(amount, currency)
 
 
 def fmt_spots(free: int, lang: str) -> str:
@@ -134,6 +160,9 @@ def render(plan: ResponsePlan, *, lang: str, channel: str = "telegram") -> dict:
         parts.append("")
         parts.append("\n".join(f"{i}. {c.label}"
                                for i, c in enumerate(plan.candidates, start=1)))
+    if plan.facts is not None:
+        parts.append("")
+        parts.append(fact_lines(plan.facts, lang, copy=plan.copy_intent))
     if plan.has_more and plan.total_count:
         parts.append("")
         parts.append(pick(T.MORE, lang).format(total=plan.total_count))
@@ -143,6 +172,84 @@ def render(plan: ResponsePlan, *, lang: str, channel: str = "telegram") -> dict:
     if buttons:
         payload["options"] = buttons
     return payload
+
+
+# ─── Справочные факты (P1.6) ─────────────────────────────────────────────────
+
+def fact_lines(facts, lang: str, *, copy: Optional[CopyIntent] = None) -> str:
+    """Типизированный факт -> строки ответа. Каждый символ пришёл из базы.
+
+    Ветка на каждый вид факта, а не обход полей: вид факта, которого продукт не
+    знает, сюда не попадёт — его просто нечем создать.
+    """
+    if isinstance(facts, I.LocationFacts):
+        return "\n".join(_place(p) for p in facts.places)
+    if isinstance(facts, I.HoursFacts):
+        return "\n\n".join(_hours(p, lang) for p in facts.places)
+    if isinstance(facts, I.ContactFacts):
+        rows = [v for v in (facts.phone, facts.email, facts.website) if v]
+        # Контакты приложены к «не знаю» — там нужна своя подпись, иначе
+        # телефон повиснет под фразой без объяснения, зачем он.
+        if copy is not CopyIntent.INFO_CONTACT:
+            rows = [pick(T.INFO_CONTACT, lang), *rows]
+        return "\n".join(rows)
+    if isinstance(facts, I.PriceFacts):
+        return "\n".join(
+            f"{i.name} — {fmt_amount(i.price, i.currency)} · {fmt_duration(i.duration_min, lang)}"
+            for i in facts.items)
+    if isinstance(facts, I.OwnerTextFacts):
+        # Текст владельца — дословно. Ни сокращений, ни «улучшений»: это его
+        # слова о своей студии, и дополнять их нам нечем.
+        return "\n\n".join(f"{item.title}\n{item.text}" for item in facts.items)
+    if isinstance(facts, I.NameListFacts):
+        if copy in _CLARIFY:
+            return "\n".join(f"{i}. {n}" for i, n in enumerate(facts.names, start=1))
+        return "\n".join(facts.names)
+    raise TypeError(f"нечем показать факт: {type(facts).__name__}")
+
+
+def _place(place: I.PlaceRef) -> str:
+    where = ", ".join(p for p in (place.city, place.address) if p)
+    return f"{place.name} — {where}" if place.name and where else (place.name or where)
+
+
+def _hours(place: I.PlaceHours, lang: str) -> str:
+    """Часы одного места: либо неделя, либо «сейчас открыто» с сегодняшним окном."""
+    head = f"{place.name}:" if place.name else ""
+    if place.open_now is None:
+        body = "\n".join(_week_lines(place.week, lang))
+    else:
+        state = pick(T.OPEN_NOW_YES if place.open_now else T.OPEN_NOW_NO, lang)
+        today = (pick(T.TODAY_HOURS, lang).format(hours=_span(place.today))
+                 if place.today else pick(T.DAY_OFF, lang))
+        body = f"{state} · {today}"
+        return f"{place.name} — {body}" if place.name else body
+    return f"{head}\n{body}" if head else body
+
+
+def _week_lines(week, lang: str) -> list[str]:
+    """«Пн–Пт 09:00–21:00». Подряд идущие одинаковые дни сливаются в диапазон.
+
+    Закрытый день в неделю не приходит вовсе, и разрыв в номерах дней рвёт
+    диапазон: «Пн–Вт, Чт–Пт» вместо неверного «Пн–Пт» со средой внутри.
+    """
+    names = pick(T.WEEKDAYS, lang)
+    groups: list[list] = []
+    for day in sorted(week, key=lambda d: d.day):
+        span = (day.opens, day.closes)
+        if groups and groups[-1][2] == span and groups[-1][1] == day.day - 1:
+            groups[-1][1] = day.day
+        else:
+            groups.append([day.day, day.day, span])
+    out = []
+    for first, last, (opens, closes) in groups:
+        label = names[first] if first == last else f"{names[first]}–{names[last]}"
+        out.append(f"{label} {opens.strftime('%H:%M')}–{closes.strftime('%H:%M')}")
+    return out
+
+
+def _span(day) -> str:
+    return f"{day.opens.strftime('%H:%M')}–{day.closes.strftime('%H:%M')}"
 
 
 def _headline(plan: ResponsePlan, lang: str) -> str:

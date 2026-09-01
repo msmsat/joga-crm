@@ -23,8 +23,8 @@ from datetime import datetime, timezone
 from typing import Optional
 
 from services import (
-    ai_language, catalog, llm, response_plan, response_render, search_intent,
-    search_resolver, search_state,
+    ai_language, catalog, information, llm, response_plan, response_render,
+    search_intent, search_resolver, search_state,
 )
 from services.ai_usage import record_usage
 from services.search_state import CanonicalState
@@ -51,8 +51,22 @@ _SYSTEM = (
     "Даты не вычисляй: скажи словом (today, tomorrow, weekend...), их посчитает "
     "сервер по календарю студии.\n"
     "Отрицание («не у Валерии», «кроме утра») и всё, чего схема не выражает, "
-    "клади дословно в unsupported и не пытайся выразить остальными полями."
+    "клади дословно в unsupported и не пытайся выразить остальными полями.\n"
+    "Спрашивают не про расписание, а про саму студию (адрес, часы, контакты, "
+    "цену, перечень направлений или тренеров) — заполни info.kind и больше "
+    "ничего про поиск. Ответа не пиши: факты подставит сервер. Всё, чего в "
+    "info.kind нет (парковка, что взять с собой, здоровье, «подойдёт ли мне»), "
+    "— это info.kind=unsupported."
 )
+
+# Как считается расход этого хода в общем журнале (`ai_usage.tools`). Второго
+# счётчика в продукте нет; различать пути надо, потому что справка и поиск
+# стоят одинаково, а приносят разное — и «модель не разобралась» тоже надо
+# уметь посчитать, иначе непонятно, за что заплачено.
+ROUTE_SEARCH = "search"
+ROUTE_INFO = "information"
+ROUTE_NEED_HUMAN = "need_human"
+ROUTE_PARSE_FAILED = "parse_failed"
 
 
 @dataclass(frozen=True)
@@ -96,7 +110,9 @@ async def parse(text: str, *, studio_id: int, surface: str = "telegram",
 
     Расход пишется в общий журнал (`ai_usage`) — второго счётчика в продукте
     нет и не будет. Один ход = ОДНА строка: цикла инструментов здесь не бывает,
-    и стоимость ответа считается умножением, а не выгрузкой.
+    и стоимость ответа считается умножением, а не выгрузкой. В поле `tools`
+    едет не имя инструмента (оно одно на все ходы и ничего не различает), а
+    ПУТЬ хода: поиск, справка, «к человеку», «не разобрались».
     """
     if not llm.is_configured():
         return None
@@ -111,18 +127,31 @@ async def parse(text: str, *, studio_id: int, surface: str = "telegram",
         logger.exception("search parse: модель не ответила")
         return None
     latency_ms = int((time.monotonic() - started) * 1000)
+    call = next((c for c in (reply.tool_calls or []) if c.name == _TOOL_NAME), None)
+    raw = None
+    if call is not None:
+        try:
+            raw = (json.loads(call.arguments)
+                   if isinstance(call.arguments, str) else call.arguments)
+        except (TypeError, ValueError):
+            raw = None
     if reply.usage is not None:
         await record_usage(studio_id, reply.usage, surface=surface, billable=True,
-                           sender_ref=sender_ref, tools=_TOOL_NAME, iterations=1)
-    call = next((c for c in (reply.tool_calls or []) if c.name == _TOOL_NAME), None)
-    logger.info("search_parse studio_id=%s parsed=%s latency_ms=%s",
-                studio_id, call is not None, latency_ms)
-    if call is None:
-        return None
-    try:
-        return json.loads(call.arguments) if isinstance(call.arguments, str) else call.arguments
-    except (TypeError, ValueError):
-        return None
+                           sender_ref=sender_ref, tools=route_of(raw), iterations=1)
+    logger.info("search_parse studio_id=%s parsed=%s route=%s latency_ms=%s",
+                studio_id, raw is not None, route_of(raw), latency_ms)
+    return raw
+
+
+def route_of(raw) -> str:
+    """Каким путём пошёл ход — для журнала расхода. Текста человека здесь нет."""
+    intent = search_resolver.parse_intent(raw)
+    if intent is None:
+        return ROUTE_PARSE_FAILED
+    if intent.info is None:
+        return ROUTE_SEARCH
+    return (ROUTE_NEED_HUMAN if intent.info.kind is search_intent.InfoKind.UNSUPPORTED
+            else ROUTE_INFO)
 
 
 async def turn(db, *, studio_id: int, thread_id: Optional[int], channel: str,
@@ -134,27 +163,37 @@ async def turn(db, *, studio_id: int, thread_id: Optional[int], channel: str,
     структура, а слова берутся из таблиц переводов по решению сервера.
     """
     now = now or datetime.now(UTC)
-    previous = None
-    if thread_id is not None:
-        previous = (await search_state.load(db, thread_id, now=now)).state
-
-    result = await search_resolver.search(
-        db, studio_id, raw, user_text=text, reference_now=now,
-        previous=previous, thread_id=thread_id,
-    )
 
     # Язык ответа — тем же резолвером, что и везде в продукте: вторая копия
     # правила разошлась бы с первой.
-    if lang is None:
+    async def language() -> str:
+        if lang is not None:
+            return lang
         ref = await catalog.studio(db, studio_id)
-        lang = ai_language.resolve(
+        return ai_language.resolve(
             [{"role": "user", "text": text}],
             studio_language=ref.language if ref else None) or "ru"
+
+    # МАРШРУТИЗАЦИЯ РЕШАЕТСЯ ЗДЕСЬ, А НЕ МОДЕЛЬЮ. Модель лишь называет вид
+    # вопроса; куда идти — справка или расписание — определяет сервер по
+    # структуре разбора. Ошибись модель, худшее, что случится, — человек
+    # получит уточнение или «спросите студию», но не выдуманный факт.
+    intent = search_resolver.parse_intent(raw)
+    if intent is not None and intent.info is not None:
+        return await _info_turn(db, studio_id, thread_id, channel,
+                                intent, text, await language(), now)
+
+    result = await search_resolver.search(
+        db, studio_id, raw, user_text=text, reference_now=now,
+        previous=(await search_state.load(db, thread_id, now=now)).state
+        if thread_id is not None else None,
+        thread_id=thread_id,
+    )
 
     show_branch = response_plan.needs_branch(result.lessons)
     refs = search_state.new_tokens(len(result.lessons) or (1 if result.selected else 0))
     plan = response_plan.build(result, refs=refs, show_branch=show_branch)
-    payload = response_render.render(plan, lang=lang, channel=channel)
+    payload = response_render.render(plan, lang=await language(), channel=channel)
 
     logger.info(
         "response_plan_built studio_id=%s thread_id=%s kind=%s copy=%s "
@@ -172,6 +211,29 @@ async def turn(db, *, studio_id: int, thread_id: Optional[int], channel: str,
         plan_kind=plan.kind.value, outcome=result.outcome.value,
         reference_now=now.replace(tzinfo=None),
     )
+
+
+async def _info_turn(db, studio_id: int, thread_id, channel: str,
+                     intent, text: str, lang: str, now: datetime) -> Turn:
+    """Справочный ход: адрес, часы, цена, перечни — или честное «не знаю».
+
+    СОСТОЯНИЕ ПОИСКА НЕ ТРОГАЕТСЯ ВОВСЕ. Ни применяется — вопрос «где вы
+    находитесь» не должен отфильтроваться по вчерашнему «стретчинг вечером», —
+    ни сбрасывается: человек, спросивший посреди подбора про адрес, не
+    отказался от найденного списка и вправе следом сказать «второй». Поэтому
+    `state=None` и `shown=()`: транзакция выше просто не станет их писать.
+    """
+    result = await information.resolve(db, studio_id, intent,
+                                       user_text=text, reference_now=now)
+    plan = response_plan.build_info(result)
+    logger.info(
+        "info_plan_built studio_id=%s thread_id=%s kind=%s copy=%s outcome=%s",
+        studio_id, thread_id, plan.kind.value, plan.copy_intent.value,
+        result.outcome.value,
+    )
+    return Turn(payload=response_render.render(plan, lang=lang, channel=channel),
+                plan_kind=plan.kind.value, outcome=result.outcome.value,
+                reference_now=now.replace(tzinfo=None))
 
 
 async def callback(db, *, studio_id: int, thread_id: int, token: str, channel: str,

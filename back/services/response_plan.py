@@ -25,7 +25,8 @@ from datetime import datetime
 from enum import Enum
 from typing import Optional, Sequence
 
-from services import catalog, search_state
+from services import catalog, information, search_state
+from services.information import InfoKind, InfoOutcome, InfoResult
 from services.search_resolver import EntityKind, Outcome, SearchResult
 
 # Версия представления. Сохранённый план старого выпуска должен остаться
@@ -46,6 +47,12 @@ class PlanKind(str, Enum):
     OPTION_UNAVAILABLE = "option_unavailable"
     NEED_HUMAN = "need_human"
     AI_UNAVAILABLE = "ai_unavailable"
+    # Справка о студии: адрес, часы, контакты, цена, перечни (P1.6).
+    INFORMATION = "information"
+    # Факт такого вида продукт знает, а студия его не заполнила. Отдельный вид,
+    # а не NEED_HUMAN: тут владельцу есть что поправить, а человеку — что
+    # услышать вместо «спросите студию».
+    INFO_UNAVAILABLE = "info_unavailable"
 
 
 class CopyIntent(str, Enum):
@@ -71,6 +78,19 @@ class CopyIntent(str, Enum):
     OPTION_NONE_SHOWN = "option.none_shown"
     NEED_HUMAN = "need_human"
     AI_UNAVAILABLE = "ai_unavailable"
+    # Справка (P1.6). Вид ответа выводится из ИСХОДА чтения канонического
+    # источника — модель к этому выбору не допускается и здесь.
+    INFO_LOCATION = "info.location"
+    INFO_LOCATION_MANY = "info.location_many"
+    INFO_BRANCHES = "info.branches"
+    INFO_HOURS = "info.hours"
+    INFO_OPEN_NOW = "info.open_now"
+    INFO_CONTACT = "info.contact"
+    INFO_SERVICES = "info.services"
+    INFO_TRAINERS = "info.trainers"
+    INFO_SERVICE_PRICE = "info.service_price"
+    INFO_SERVICE_INFO = "info.service_info"
+    INFO_NOT_CONFIGURED = "info.not_configured"
 
 
 class ActionKind(str, Enum):
@@ -132,6 +152,11 @@ class ResponsePlan:
     missing_terms: list[str] = field(default_factory=list)
     # Что показать в вопросе «которая из них». Подписи собрал сервер.
     candidates: list[ResponseAction] = field(default_factory=list)
+    # Справочный факт (P1.6) — ТИПИЗИРОВАННЫЙ: адрес, часы, контакты, цена,
+    # перечень имён или текст владельца. Не `dict[str, Any]`: словарь принял бы
+    # {"parking": "free"} из ответа модели и донёс бы его человеку, а тип
+    # «парковка» в продукте не существует и появиться здесь не может.
+    facts: Optional[information.Facts] = None
     plan_version: int = PLAN_VERSION
 
     def shown(self) -> list[tuple[str, int]]:
@@ -263,3 +288,71 @@ def needs_branch(lessons: Sequence[catalog.LessonFacts]) -> bool:
 def informational(kind: PlanKind, copy: CopyIntent) -> ResponsePlan:
     """План без вариантов: справка о студии, передача человеку, отказ ИИ."""
     return ResponsePlan(kind, copy)
+
+
+# ─── Справка (P1.6) ──────────────────────────────────────────────────────────
+
+_INFO_COPY = {
+    InfoKind.BRANCHES: CopyIntent.INFO_BRANCHES,
+    InfoKind.HOURS: CopyIntent.INFO_HOURS,
+    InfoKind.OPEN_NOW: CopyIntent.INFO_OPEN_NOW,
+    InfoKind.CONTACT: CopyIntent.INFO_CONTACT,
+    InfoKind.SERVICES: CopyIntent.INFO_SERVICES,
+    InfoKind.TRAINERS: CopyIntent.INFO_TRAINERS,
+    InfoKind.SERVICE_PRICE: CopyIntent.INFO_SERVICE_PRICE,
+    InfoKind.SERVICE_INFO: CopyIntent.INFO_SERVICE_INFO,
+}
+
+
+def build_info(result: InfoResult) -> ResponsePlan:
+    """Исход справки -> план ответа. Тоже чисто: ни базы, ни модели.
+
+    КНОПОК ЗДЕСЬ НЕТ НИ ОДНОЙ, и это осознанно. Нажатие на inline-кнопку
+    приходит в Telegram отдельным обновлением `callback_query`, а входящего
+    обработчика для него в продукте ещё нет (проверено поиском: `callback_query`
+    не встречается нигде). Кнопка, которая ничего не делает, — обещание
+    интерфейса, которого система не исполняет; уточнения печатаем списком, и
+    человек отвечает словом.
+    """
+    kind, outcome = result.kind, result.outcome
+
+    if outcome is InfoOutcome.PARSE_FAILED:
+        return ResponsePlan(PlanKind.PARSE_FAILURE, CopyIntent.SEARCH_PARSE_FAILED)
+
+    if outcome is InfoOutcome.TIMEZONE_UNVERIFIED:
+        return ResponsePlan(PlanKind.TIMEZONE_REQUIRED, CopyIntent.TIMEZONE_REQUIRED)
+
+    if outcome is InfoOutcome.AMBIGUOUS:
+        found = result.ambiguity
+        return ResponsePlan(
+            PlanKind.CLARIFICATION, _CLARIFY_COPY[found.kind],
+            missing_terms=[found.term] if found.term else [],
+            facts=information.NameListFacts(tuple(c.label for c in found.candidates)),
+        )
+
+    if outcome is InfoOutcome.NOT_FOUND:
+        entity = EntityKind.BRANCH if kind in (InfoKind.LOCATION, InfoKind.BRANCHES,
+                                               InfoKind.HOURS, InfoKind.OPEN_NOW) \
+            else EntityKind.SERVICE
+        return ResponsePlan(PlanKind.ENTITY_NOT_FOUND, _NOT_FOUND_COPY[entity],
+                            missing_terms=list(result.missing))
+
+    if outcome is InfoOutcome.UNSUPPORTED:
+        # Продукт такого факта не знает. Ни общих знаний, ни догадок — только
+        # честное «спросите студию» и, если известно, как именно.
+        return ResponsePlan(PlanKind.NEED_HUMAN, CopyIntent.NEED_HUMAN,
+                            facts=_contact_or_none(result))
+
+    if outcome is InfoOutcome.NOT_CONFIGURED:
+        return ResponsePlan(PlanKind.INFO_UNAVAILABLE, CopyIntent.INFO_NOT_CONFIGURED,
+                            facts=_contact_or_none(result))
+
+    copy = _INFO_COPY.get(kind)
+    if copy is None:                       # LOCATION: один адрес или несколько
+        places = result.facts.places if isinstance(result.facts, information.LocationFacts) else ()
+        copy = CopyIntent.INFO_LOCATION if len(places) <= 1 else CopyIntent.INFO_LOCATION_MANY
+    return ResponsePlan(PlanKind.INFORMATION, copy, facts=result.facts)
+
+
+def _contact_or_none(result: InfoResult):
+    return result.contact if (result.contact and result.contact.known()) else None

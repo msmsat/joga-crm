@@ -190,12 +190,19 @@ OPTION_NONE_SHOWN = {
 # Вопросы, ответа на которые нет ни в одном каноническом поле: что взять с
 # собой, есть ли парковка, можно ли беременным, подойдёт ли после травмы.
 # Догадка тут стоит здоровья, поэтому — к человеку.
+#
+# «ПЕРЕДАМ ВАШ ВОПРОС» ЗДЕСЬ НЕ ПИШЕТСЯ. Передавать некому и нечем: механизма
+# перевода разговора на сотрудника в продукте нет — ни режима «отвечает
+# человек», ни входящих в CRM, ни уведомления владельцу о заданном вопросе
+# (проверено поиском по репозиторию, P1.6 §39). Обещание, которого система не
+# исполняет, хуже честного «спросите студию»: человек будет ждать ответа,
+# который никто не готовит. Появится handoff — поменяется и эта строка.
 NEED_HUMAN = {
-    "ru": "Это лучше уточнить у студии — передам ваш вопрос.",
-    "en": "The studio can answer that best — I'll pass your question on.",
-    "uk": "Це краще уточнити у студії — передам ваше запитання.",
-    "cs": "Na to vám lépe odpoví studio — předám váš dotaz.",
-    "de": "Das beantwortet das Studio am besten — ich gebe Ihre Frage weiter.",
+    "ru": "Про это лучше спросить саму студию — у меня такого не записано.",
+    "en": "That's one for the studio — I don't have it on file.",
+    "uk": "Про це краще запитати саму студію — у мене такого не записано.",
+    "cs": "Na to se zeptejte přímo studia — to u sebe nemám.",
+    "de": "Das fragen Sie am besten direkt im Studio — dazu habe ich nichts.",
 }
 
 AI_UNAVAILABLE = {
@@ -205,6 +212,141 @@ AI_UNAVAILABLE = {
     "cs": "Teď nemohu odpovědět. Zkuste to později nebo napište studiu.",
     "de": "Ich kann gerade nicht antworten. Bitte später oder direkt beim Studio.",
 }
+
+# ─── Справка о студии (P1.6) ─────────────────────────────────────────────────
+#
+# Каждая строка ниже — только ОБРАМЛЕНИЕ. Сам факт (адрес, часы, цена, имена)
+# подставляет рендерер из того, что прочитал сервер; выдумать его здесь нечем.
+
+INFO_LOCATION = {
+    "ru": "Мы находимся здесь:",
+    "en": "You'll find us here:",
+    "uk": "Ми знаходимося тут:",
+    "cs": "Najdete nás tady:",
+    "de": "Sie finden uns hier:",
+}
+
+INFO_LOCATION_MANY = {
+    "ru": "У нас несколько адресов:",
+    "en": "We have several locations:",
+    "uk": "У нас кілька адрес:",
+    "cs": "Máme několik poboček:",
+    "de": "Wir haben mehrere Standorte:",
+}
+
+INFO_BRANCHES = {
+    "ru": "Наши филиалы:",
+    "en": "Our locations:",
+    "uk": "Наші філії:",
+    "cs": "Naše pobočky:",
+    "de": "Unsere Standorte:",
+}
+
+INFO_HOURS = {
+    "ru": "Часы работы:",
+    "en": "Opening hours:",
+    "uk": "Години роботи:",
+    "cs": "Otevírací doba:",
+    "de": "Öffnungszeiten:",
+}
+
+INFO_OPEN_NOW = {
+    "ru": "Сейчас:",
+    "en": "Right now:",
+    "uk": "Зараз:",
+    "cs": "Právě teď:",
+    "de": "Gerade jetzt:",
+}
+
+OPEN_NOW_YES = {
+    "ru": "открыто", "en": "open", "uk": "відчинено",
+    "cs": "otevřeno", "de": "geöffnet",
+}
+
+OPEN_NOW_NO = {
+    "ru": "закрыто", "en": "closed", "uk": "зачинено",
+    "cs": "zavřeno", "de": "geschlossen",
+}
+
+# Сегодня рабочего окна нет вовсе — это не «закрыто до вечера», это выходной.
+DAY_OFF = {
+    "ru": "сегодня выходной",
+    "en": "closed today",
+    "uk": "сьогодні вихідний",
+    "cs": "dnes zavřeno",
+    "de": "heute geschlossen",
+}
+
+TODAY_HOURS = {
+    "ru": "сегодня {hours}",
+    "en": "today {hours}",
+    "uk": "сьогодні {hours}",
+    "cs": "dnes {hours}",
+    "de": "heute {hours}",
+}
+
+INFO_CONTACT = {
+    "ru": "Связаться со студией:",
+    "en": "How to reach the studio:",
+    "uk": "Зв'язатися зі студією:",
+    "cs": "Kontakt na studio:",
+    "de": "So erreichen Sie das Studio:",
+}
+
+INFO_SERVICES = {
+    "ru": "Вот наши направления:",
+    "en": "Here are our classes:",
+    "uk": "Ось наші напрямки:",
+    "cs": "Tady jsou naše lekce:",
+    "de": "Das sind unsere Kurse:",
+}
+
+INFO_TRAINERS = {
+    "ru": "У нас ведут:",
+    "en": "Our trainers:",
+    "uk": "У нас ведуть:",
+    "cs": "Naši lektoři:",
+    "de": "Unsere Trainer:",
+}
+
+INFO_SERVICE_PRICE = {
+    "ru": "Стоимость:",
+    "en": "Prices:",
+    "uk": "Вартість:",
+    "cs": "Ceny:",
+    "de": "Preise:",
+}
+
+# Дальше идёт текст ВЛАДЕЛЬЦА, и человеку об этом честно говорится: ответ
+# написали в студии, а не мы.
+INFO_SERVICE_INFO = {
+    "ru": "Вот что пишет студия:",
+    "en": "Here's what the studio says:",
+    "uk": "Ось що пише студія:",
+    "cs": "Studio k tomu píše:",
+    "de": "Das schreibt das Studio dazu:",
+}
+
+# Продукт такой факт знает, а студия его не заполнила. Это ДРУГОЙ ответ, чем
+# «Velora про такое вообще не знает»: тут есть чему появиться позже.
+INFO_NOT_CONFIGURED = {
+    "ru": "Этого у меня пока не записано.",
+    "en": "I don't have that on file yet.",
+    "uk": "Цього у мене поки не записано.",
+    "cs": "To u sebe zatím nemám.",
+    "de": "Das habe ich noch nicht hinterlegt.",
+}
+
+# Дни недели, коротко. Своя таблица, а не locale: серверная локаль на проде C,
+# и strftime отдал бы «Mon» чешской студии. Порядок — 0=понедельник, как в БД.
+WEEKDAYS = {
+    "ru": ("Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"),
+    "en": ("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"),
+    "uk": ("Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Нд"),
+    "cs": ("Po", "Út", "St", "Čt", "Pá", "So", "Ne"),
+    "de": ("Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"),
+}
+
 
 # ─── Подписи кнопок ──────────────────────────────────────────────────────────
 
@@ -267,12 +409,16 @@ if __name__ == "__main__":
         assert forms["ru"][spots_form(n, "ru")].format(n=n) == want, (n, want)
     assert forms["en"][spots_form(1, "en")].format(n=1) == "1 spot"
     assert forms["en"][spots_form(4, "en")].format(n=4) == "4 spots"
+    assert set(WEEKDAYS) == set(LANGS)
+    assert all(len(v) == 7 for v in WEEKDAYS.values()), "дней в неделе семь"
     for name, table in tables.items():
         assert set(table) == set(LANGS), f"{name}: {sorted(set(LANGS) - set(table))}"
-    # Технических слов в тексте для человека быть не может.
+    # Технических слов в тексте для человека быть не может. Таблицы, где на язык
+    # приходится несколько строк (дни недели), разворачиваем.
     for name, table in tables.items():
-        for text in table.values():
-            low = text.lower()
-            for banned in ("timezone", "iana", "parse", "ambiguous", "null", "error"):
-                assert banned not in low, f"{name}: техническое слово «{banned}»"
+        for value in table.values():
+            for text in (value if isinstance(value, tuple) else (value,)):
+                low = text.lower()
+                for banned in ("timezone", "iana", "parse", "ambiguous", "null", "error"):
+                    assert banned not in low, f"{name}: техническое слово «{banned}»"
     print(f"response_texts self-check ok ({len(tables)} таблиц)")
