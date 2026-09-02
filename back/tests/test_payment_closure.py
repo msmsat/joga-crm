@@ -48,6 +48,7 @@ from types import SimpleNamespace
 import pytest
 from fastapi import HTTPException
 from sqlalchemy import Update
+from sqlalchemy.exc import MissingGreenlet
 
 import routers.billing.webhook as WH
 import routers.booking.miniapp_users as MU
@@ -451,12 +452,58 @@ def test_the_grace_length_is_the_products_own_promise():
 
 # ─── 6. сверка потерянных оплат клиентов (P2-B) ───────────────────────────────
 
+class _ExpiringRow:
+    """ORM-объект внутри async-сессии.
+
+    `Session.rollback()` обесценивает ВЕСЬ identity map — безусловно, флаг
+    `expire_on_commit=False` его не касается (sqlalchemy/orm/session.py,
+    `_restore_snapshot(dirty_only=False)`). После этого обращение к любому полю
+    требует нового SELECT, а синхронный доступ к атрибуту в async-сессии сходить
+    в БД не может. Ровно это и моделируем: за откатом любое `row.id` падает
+    MissingGreenlet.
+    """
+
+    def __init__(self, source):
+        self.__dict__["_data"] = dict(vars(source))
+        self.__dict__["_expired"] = False
+
+    def _expire(self):
+        self.__dict__["_expired"] = True
+
+    def __getattr__(self, name):
+        if self.__dict__["_expired"]:
+            raise MissingGreenlet(
+                "greenlet_spawn has not been called; can't call await_only() here"
+            )
+        try:
+            return self.__dict__["_data"][name]
+        except KeyError:
+            raise AttributeError(name) from None
+
+
 class _ReconDB:
-    """Сессия под `reconcile_pending`: отдаёт список заявок и применяет UPDATE."""
+    """Сессия под `reconcile_pending`: отдаёт список заявок и применяет UPDATE.
+
+    Сессия помнит, ЧТО она отдала наружу, потому что от этого зависит поведение
+    отката. Колоночный select отдаёт обычные кортежи — они живут своей жизнью и
+    транзакции не касаются. Select по сущности отдаёт ORM-объекты, и вот их
+    откат обесценивает.
+    """
 
     def __init__(self, rows):
         self._rows = rows
         self.commits = 0
+        self._handed_out = []
+
+    def _snapshot(self):
+        """Колоночный select: копии значений, не связанные с сессией."""
+        return [SimpleNamespace(**vars(row)) for row in self._rows]
+
+    def _entities(self):
+        """Select по сущности: живые ORM-объекты под присмотром сессии."""
+        rows = [_ExpiringRow(row) for row in self._rows]
+        self._handed_out.extend(rows)
+        return rows
 
     async def execute(self, query):
         if isinstance(query, Update):
@@ -465,13 +512,17 @@ class _ReconDB:
                 if row.status == "pending":
                     row.status = "cancelled"
             return SimpleNamespace(rowcount=1)
-        return SimpleNamespace(scalars=lambda: SimpleNamespace(all=lambda: list(self._rows)))
+        return SimpleNamespace(
+            all=self._snapshot,
+            scalars=lambda: SimpleNamespace(all=self._entities),
+        )
 
     async def commit(self):
         self.commits += 1
 
     async def rollback(self):
-        pass
+        for row in self._handed_out:
+            row._expire()
 
 
 def _pending(**kw):
@@ -616,6 +667,45 @@ def test_an_old_orphan_is_finally_closed(monkeypatch):
     rows = [_pending(session_id=None, created_at=datetime.utcnow() - timedelta(days=3))]
     assert _run(SP.reconcile_pending(_ReconDB(rows))) == 0
     assert rows[0].status == "cancelled"
+
+
+def test_a_broken_row_does_not_take_the_whole_pass_down(monkeypatch):
+    """Сбой по одной заявке не должен уносить проход целиком — и дело тут не в
+    `try/except`, он в цикле был с самого начала.
+
+    Ловушка в откате. `apply_paid` при отвергнутой оплате делает `db.rollback()`,
+    и то же делает обработчик сбоя ниже. Откат обесценивает ВСЕ ORM-объекты,
+    выбранные ДО цикла, поэтому следующее обращение к `row.session_id` уходило за
+    новым SELECT'ом и падало MissingGreenlet — причём и в самом обработчике, на
+    `row.id` внутри logger.exception, то есть мимо `except`. Наружу улетало
+    вторичное исключение, унося и настоящую причину сбоя (её не успевали
+    записать), и все оставшиеся заявки. Проход валился раз в час, пока заявка
+    висела в pending.
+    """
+    seen = []
+
+    async def fake_fetch(session_id, account_id):
+        seen.append(session_id)
+        if session_id == "cs_broken":
+            raise RuntimeError("аккаунт студии не ответил")
+        return SimpleNamespace(payment_status="paid", status="complete")
+
+    applied = []
+
+    async def fake_apply(db, session_id, *, account_id=None, attempt_id=None):
+        applied.append(session_id)
+        return True
+
+    monkeypatch.setattr(SP.stripe_connect, "fetch_session", fake_fetch)
+    monkeypatch.setattr(SP, "apply_paid", fake_apply)
+
+    rows = [
+        _pending(id=1, session_id="cs_broken", attempt_id="att_1"),
+        _pending(id=2, session_id="cs_ok", attempt_id="att_2"),
+    ]
+    assert _run(SP.reconcile_pending(_ReconDB(rows))) == 1
+    assert seen == ["cs_broken", "cs_ok"], "проход встал на первой же ошибке"
+    assert applied == ["cs_ok"]
 
 
 def test_the_reservation_happens_before_the_stripe_call():

@@ -253,7 +253,8 @@
     "join": "I'm in",
     "leave": "Can't make it",
     "you_first": "You're first — waiting for others",
-    "where": "Where to go"
+    "where": "Where to go",
+    "studio_suggests": "We usually go here"
   },
   "historyModal": {
     "tag": "Finances",

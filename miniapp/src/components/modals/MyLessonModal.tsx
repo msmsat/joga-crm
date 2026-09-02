@@ -166,7 +166,12 @@ export default function MyLessonModal({
           у них общее: страница обновляет занятие ответом сервера. */}
       {!isPast && lesson && lesson.coffee.enabled && onCoffeeChange && (
         <div className="mt-3 rounded-[18px] bg-background px-4 py-3.5">
-          <CoffeeStrip flush lessonId={lesson.id} coffee={lesson.coffee} onChange={onCoffeeChange} />
+          <CoffeeStrip
+            variant="sheet"
+            lessonId={lesson.id}
+            coffee={lesson.coffee}
+            onChange={onCoffeeChange}
+          />
         </div>
       )}
 

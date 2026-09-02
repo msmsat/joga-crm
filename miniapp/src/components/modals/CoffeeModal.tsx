@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Sheet, SheetAction } from '../ui/Sheet';
 import { useTelegram } from '../../hooks/useTelegram';
 import { joinCoffee, type CoffeeState } from '../../api/lessons';
+import CoffeeSpots from '../coffee/CoffeeSpots';
 
 interface CoffeeModalProps {
   isOpen: boolean;
@@ -30,6 +31,10 @@ interface CoffeeModalProps {
  *
  * Кнопки равновесные. «Не сегодня» не серая и не мельче — отказ обязан стоить
  * столько же, сколько согласие, иначе получается давление, а не приглашение.
+ *
+ * Места студии стоят ДО кнопок, а не после согласия: звать на кофе, не говоря
+ * куда, — половина приглашения. Это рекомендация владельца («наше место»), она
+ * никого не выдаёт и порога в два человека не ждёт.
  */
 export default function CoffeeModal({
   isOpen,
@@ -44,6 +49,7 @@ export default function CoffeeModal({
   const [isSending, setIsSending] = useState(false);
 
   const alreadyGoing = coffee?.count ?? 0;
+  const spots = coffee?.spots ?? [];
 
   const join = async () => {
     if (lessonId === null || isSending) return;
@@ -167,13 +173,25 @@ export default function CoffeeModal({
           {t('coffeeModal.subtitle')}
         </motion.p>
 
+        {/* Куда зовут. Список приходит в том же объекте coffee, что и счётчик. */}
+        {spots.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.55, ease: [0.16, 1, 0.3, 1] }}
+            className="mt-6 w-full border-t border-foreground/6 pt-5"
+          >
+            <CoffeeSpots spots={spots} title={t('coffee.studio_suggests')} tone="sheet" />
+          </motion.div>
+        )}
+
         {/* Имён здесь нет намеренно: пока человек не согласился, он видит только
             цифру — имена участниц открываются взаимно (гейт на сервере). */}
         {alreadyGoing > 0 && (
           <motion.p
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.55, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 0.5, delay: 0.65, ease: [0.16, 1, 0.3, 1] }}
             className="mt-4 rounded-full bg-brand/12 px-4 py-2 text-[12.5px] font-extrabold text-brand"
           >
             {t('coffeeModal.already_going', { n: alreadyGoing })}

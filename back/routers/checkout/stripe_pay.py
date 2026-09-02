@@ -770,12 +770,26 @@ async def reconcile_pending(db: AsyncSession) -> int:
     вразнобой, ради чего весь этот проход и существует.
     """
     cutoff = datetime.utcnow() - RECONCILE_AFTER
+    # Колонками, а НЕ сущностью. В цикле есть откаты — свой в обработчике сбоя и
+    # чужой внутри apply_paid, — а `Session.rollback()` обесценивает весь identity
+    # map безусловно: `expire_on_commit=False` касается только коммита. Держи мы
+    # тут ORM-объекты, первый же откат превращал бы `row.session_id` в поход за
+    # SELECT'ом, а синхронный доступ к атрибуту в async-сессии сходить в БД не
+    # может — MissingGreenlet, причём и на `row.id` в самом логгере, то есть мимо
+    # `except`. Проход уносило целиком вместе с причиной сбоя. Обычные кортежи
+    # транзакции не принадлежат и переживают любой откат.
     rows = (await db.execute(
-        select(StripeCheckout).where(
+        select(
+            StripeCheckout.id,
+            StripeCheckout.session_id,
+            StripeCheckout.attempt_id,
+            StripeCheckout.account_id,
+            StripeCheckout.created_at,
+        ).where(
             StripeCheckout.status == "pending",
             StripeCheckout.created_at < cutoff,
         ).order_by(StripeCheckout.id).limit(200)
-    )).scalars().all()
+    )).all()
 
     applied = 0
     for row in rows:

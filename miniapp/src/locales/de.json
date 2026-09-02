@@ -253,7 +253,8 @@
     "join": "Ich bin dabei",
     "leave": "Schaffe ich nicht",
     "you_first": "Sie sind die erste Person — warten wir auf die anderen",
-    "where": "Wohin es geht"
+    "where": "Wohin es geht",
+    "studio_suggests": "Wir gehen meist hierhin"
   },
   "historyModal": {
     "tag": "Finanzen",

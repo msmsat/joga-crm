@@ -46,10 +46,6 @@ router = APIRouter()
 
 DEFAULT_HALL_COLOR = "#FCAE91"
 
-# Сколько человек должно согласиться, чтобы затея состоялась: одной идти не с кем,
-# поэтому до порога не показываем места и не шлём напоминание после занятия.
-COFFEE_MIN_GROUP = 2
-
 
 class CoffeeParticipant(BaseSchema):
     """Участница кофе глазами другой участницы: имя и цвет аватара, больше ничего.
@@ -75,7 +71,8 @@ class CoffeeState(BaseSchema):
     joined: bool = False
     # Непусто только при joined=True — см. _coffee_map.
     participants: list[CoffeeParticipant] = []
-    # Непусто только при count >= COFFEE_MIN_GROUP: одной идти некуда.
+    # Рекомендация студии, а не награда за согласие: непусто по любому
+    # занятию с бронью, даже когда не согласился ещё никто.
     spots: list[CoffeeSpot] = []
 
 
@@ -263,7 +260,12 @@ async def _coffee_map(
                 for cid, name, avatar_color in people
                 if cid != client_id
             ] if joined else [],
-            spots=spots if len(people) >= COFFEE_MIN_GROUP else [],
+            # Места порогом не режутся. Это публичный совет студии, а не
+            # чьи-то данные: пряча его до второго согласившегося, мы звали
+            # на кофе, не говоря куда, — и первая согласившаяся не видела
+            # мест вообще. Порог в два человека остался там, где он про
+            # людей: в рассылке c13 (daily_notify._COFFEE_MIN_GROUP).
+            spots=spots,
         )
     return state
 

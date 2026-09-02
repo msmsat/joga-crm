@@ -135,21 +135,35 @@ async def _run():
         assert state["participants"] == [] and state["spots"] == [], state
         assert state["enabled"] is True, state
 
-    # ─── Порог: места появляются со второго человека ──────────────────────────
-    async with _case() as (db, _, lesson, (anya, marina, _)):
+    # ─── Места — рекомендация студии, а не награда за согласие ────────────────
+    # Их видит каждая, у кого есть бронь: приглашение «останешься на кофе?»
+    # должно звать в названное место, а не в пустоту. Порог в два человека
+    # остался там, где он про людей, а не про места, — в рассылке c13.
+    async with _case() as (db, studio_id, lesson, (anya, marina, _)):
+
+        # Ещё никто не согласился — места уже показаны.
+        rules = await ML.load_rules(db, studio_id)
+        state = (await ML._coffee_map(db, [lesson.id], anya.id, rules, {lesson.id}))[lesson.id]
+        assert state["count"] == 0, state
+        assert state["joined"] is False, state
+        assert [s["name"] for s in state["spots"]] == ["Kofein", "Skog"], (
+            f"рекомендация студии спрятана до первого согласия: {state}"
+        )
 
         state = await ML._set_coffee(db, anya, lesson.id, True)
         assert state.count == 1, state
-        assert state.spots == [], f"одной идти некуда, а места показаны: {state}"
+        assert [s.name for s in state.spots] == ["Kofein", "Skog"], (
+            f"одна согласилась — места пропали: {state}"
+        )
 
         state = await ML._set_coffee(db, marina, lesson.id, True)
         assert state.count == 2, state
         assert [s.name for s in state.spots] == ["Kofein", "Skog"], state
 
-        # Передумала — счётчик падает, места снова прячутся.
+        # Передумала — счётчик падает, но рекомендация студии остаётся.
         state = await ML._set_coffee(db, marina, lesson.id, False)
         assert state.count == 1, state
-        assert state.spots == [], state
+        assert [s.name for s in state.spots] == ["Kofein", "Skog"], state
 
     # ─── Отменённая бронь выпадает из списка сама ─────────────────────────────
     async with _case() as (db, _, lesson, (anya, marina, _)):
