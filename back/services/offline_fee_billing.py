@@ -44,7 +44,7 @@ from models import (
     BillingInvoice, FxRate, OfflineTransactionFee, PlatformRevenueLedger,
     StudioBillingPlan, Studio, StudioMember, User,
 )
-from services import stripe_billing
+from services import billing_tax, stripe_billing
 
 logger = logging.getLogger(__name__)
 
@@ -575,13 +575,44 @@ async def _issue_to_stripe(
         "period": invoice.period or "",
         "invoice_id": str(invoice.id),
     }
+    # Налог решаем ОДИН раз на документ и тем же входом, что и оплата тарифа:
+    # разные решения по одной студии в один месяц — это счёт с налогом и фактура
+    # без него у одного плательщика.
+    tax = await billing_tax.application(db, invoice.studio_id, invoice.kind)
+    await billing_tax.sync_customer_exempt(customer_id, tax)
+    snapshot = billing_tax.snapshot(tax, invoice.amount, stripe_billing.CURRENCY)
+    for field, value in snapshot.items():
+        setattr(invoice, field, value)
+
     if invoice.kind == "online_fee":
+        # ОТДЕЛЬНОЕ ФИНАНСОВОЕ РЕШЕНИЕ, а не ошибка кода. Свою долю Stripe удержал в
+        # момент платежа клиента — это НЕТТО. Если сверху начисляется налог, документ
+        # объявляет полученной сумму БОЛЬШЕ удержанной, а `paid_out_of_band` говорит
+        # «эти деньги уже у нас». Про налоговую часть это неправда.
+        #
+        # Чинить догадкой нельзя ни в одну сторону: уменьшить комиссию — значит молча
+        # изменить цену услуги, увеличить удержание — значит списать со студии деньги,
+        # о которых с ней не договаривались. Поэтому расхождение ГРОМКО показывается и
+        # выносится владельцу, а документ выпускается как прежде: это поведение
+        # существовало и при автоматическом расчёте Stripe, и менять его молча —
+        # ровно та самая догадка.
+        if snapshot.get("tax_amount"):
+            logger.error(
+                "Онлайн-комиссия: студия %s, фактура за %s — удержано %s %s (нетто), "
+                "а документ объявляет оплаченными %s %s с налогом %s. Расхождение "
+                "нетто/брутто требует решения владельца: пересмотреть ставку комиссии "
+                "или порядок удержания",
+                invoice.studio_id, invoice.period, invoice.amount,
+                stripe_billing.CURRENCY, invoice.amount + snapshot["tax_amount"],
+                stripe_billing.CURRENCY, snapshot["tax_amount"],
+            )
         stripe_invoice = await stripe_billing.create_settled_invoice(
             customer_id=customer_id,
             amount=invoice.amount,
             currency=stripe_billing.CURRENCY,
             description=description,
             metadata=metadata,
+            tax=tax,
         )
         # Локальную строку закрываем здесь же. Событие `invoice.paid` по этому
         # счёту придёт следом, но apply_status на уже закрытом счёте выходит
@@ -599,6 +630,7 @@ async def _issue_to_stripe(
             description=description,
             days_until_due=GRACE_DAYS,
             metadata=metadata,
+            tax=tax,
         )
         # Срок — ТОЛЬКО здесь, и только после того, как счёт реально выдан. Строка
         # создаётся с пустым due_at (см. `_bill`), а `suspension_reason` блокирует
@@ -884,8 +916,17 @@ async def _finish_pending(db: AsyncSession) -> int:
     а денег бы никто не попросил — и студия при этом была бы заблокирована по
     `due_at` за счёт, которого никогда не видела.
     """
-    pending = (await db.execute(
-        select(BillingInvoice).where(
+    # Идентификаторами, а НЕ сущностями. Ниже в цикле есть откат, а
+    # `Session.rollback()` обесценивает весь identity map безусловно:
+    # `expire_on_commit=False` касается только коммита. Держи мы тут ORM-объекты,
+    # первый же сбой превращал бы `invoice.id` в обработчике — и
+    # `invoice.studio_id` на следующем витке — в поход за SELECT'ом, которого
+    # синхронный доступ к атрибуту в async-сессии сделать не может
+    # (MissingGreenlet). Досылку уносило целиком, вместе с настоящей причиной
+    # сбоя: обработчик падал раньше, чем успевал её записать. Тот же приём, что в
+    # daily_notify.run_daily_notify и scenario_runner.run_due_scenarios.
+    pending_ids = (await db.execute(
+        select(BillingInvoice.id).where(
             BillingInvoice.kind.in_(("offline_fee", "min_fee", "online_fee")),
             BillingInvoice.stripe_invoice_id.is_(None),
             BillingInvoice.status == "pending",
@@ -893,7 +934,12 @@ async def _finish_pending(db: AsyncSession) -> int:
     )).scalars().all()
 
     done = 0
-    for invoice in pending:
+    for invoice_id in pending_ids:
+        # Перечитываем на каждом витке: предыдущий откат мог обесценить строку, и
+        # это законный await, в отличие от обращения к полю.
+        invoice = await db.get(BillingInvoice, invoice_id)
+        if invoice is None:
+            continue
         plan = (await db.execute(
             select(StudioBillingPlan).where(StudioBillingPlan.studio_id == invoice.studio_id)
         )).scalar_one_or_none()
@@ -916,7 +962,8 @@ async def _finish_pending(db: AsyncSession) -> int:
             done += 1
         except Exception:
             await db.rollback()
-            logger.exception("Офлайн-комиссии: недовыставленный счёт %s не дослан", invoice.id)
+            # invoice_id, а не invoice.id: строку только что обесценил откат.
+            logger.exception("Офлайн-комиссии: недовыставленный счёт %s не дослан", invoice_id)
     return done
 
 
@@ -1032,6 +1079,21 @@ async def _run_billing_pass(session_maker: async_sessionmaker) -> int:
         except Exception:
             await db.rollback()
             logger.exception("Автосверка подписок со Stripe не выполнена")
+
+    # Налог на подписках — здесь же и по той же причине. Это ГЛАВНЫЙ механизм
+    # правильного налога на автопродлении: счёт очередного периода Stripe собирает
+    # сам, из состояния подписки, и нашего кода в тот момент рядом нет. Значит
+    # состояние подписки обязано быть верным ЗАРАНЕЕ, а не чиниться вебхуком по
+    # факту — вебхук может не дойти, а счёт всё равно выставится.
+    async with session_maker() as db:
+        try:
+            from routers.billing.webhook import sync_subscription_taxes
+
+            if await sync_subscription_taxes(db):
+                logger.info("Налог: налоговые настройки подписок обновлены")
+        except Exception:
+            await db.rollback()
+            logger.exception("Налог: синхронизация подписок не выполнена")
 
     # Сверка ОПЛАТ КЛИЕНТОВ студий (Connect) — сюда же, и это не мелочь в общей
     # куче. Покупка абонемента в мини-приложении проводится ТОЛЬКО вебхуком: ни

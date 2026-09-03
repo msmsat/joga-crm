@@ -886,7 +886,7 @@ def is_our_template(name: str) -> bool:
     return name.startswith(_NAME_PREFIX)
 
 
-def url_button(event_id: str, lang: str, studio_id: int | None) -> dict | None:
+def url_button(event_id: str, lang: str, studio_ref: int | str | None) -> dict | None:
     """Кнопка «открыть раздел» под карточкой, либо None — кнопки не будет.
 
     Адрес и подпись общие с письмом (email_layout.section_url/section_label):
@@ -896,28 +896,29 @@ def url_button(event_id: str, lang: str, studio_id: int | None) -> dict | None:
     Meta заворачивает ВЕСЬ шаблон, а не только кнопку, — и студия осталась бы
     вообще без уведомления ради ссылки, по которой всё равно никто не пройдёт.
     """
-    if studio_id is None:
+    if studio_ref is None:
         return None
-    url = email_layout.section_url(event_id, studio_id)
+    url = email_layout.section_url(event_id, studio_ref)
     label = email_layout.section_label(event_id, lang)
     if not url or not label or not url.startswith("https://"):
         return None
     return {"type": "URL", "text": label, "url": url}
 
 
-def build_payload(event_id: str, lang: str, studio_id: int | None = None) -> dict:
+def build_payload(event_id: str, lang: str, studio_ref: int | str | None = None) -> dict:
     """Тело POST /{waba_id}/message_templates для одного события и языка.
 
-    studio_id нужен только кнопке: адрес раздела свой у каждой студии. Без него
-    шаблон создаётся без кнопки — так работает самопроверка и любой вызов, где
-    студия неизвестна.
+    studio_ref нужен только кнопке: адрес раздела свой у каждой студии. Это
+    публичный код студии (services/studio_link) — тот же, что в ссылке
+    мини-приложения. Без него шаблон создаётся без кнопки — так работает
+    самопроверка и любой вызов, где студия неизвестна.
     """
     tpl = WA_TEMPLATES[event_id]
     body: dict[str, Any] = {"type": "BODY", "text": tpl.body[lang]}
     if tpl.slots:  # шаблон без переменных примера не имеет, и пустой Meta не примет
         body["example"] = {"body_text": [tpl.example[lang]]}
     components: list[dict] = [body, {"type": "FOOTER", "text": _FOOTER[lang]}]
-    button = url_button(event_id, lang, studio_id)
+    button = url_button(event_id, lang, studio_ref)
     if button:
         components.append({"type": "BUTTONS", "buttons": [button]})
     return {
@@ -1013,7 +1014,7 @@ if __name__ == "__main__":
 
     # Кнопка появляется только при публичном адресе — на дев-URL её нет.
     email_layout.MINIAPP_URL = "https://app.velora.cz"
-    _with_button = build_payload("c1", "de", studio_id=42)["components"][-1]
+    _with_button = build_payload("c1", "de", studio_ref=42)["components"][-1]
     assert _with_button["type"] == "BUTTONS"
     assert _with_button["buttons"][0]["url"] == "https://app.velora.cz/s/42?tab=my"
     assert _with_button["buttons"][0]["text"] == "Meine Buchungen"

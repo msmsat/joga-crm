@@ -32,6 +32,7 @@ from models import (
     StripeCheckout, Studio, StudioPromoCode, StudioSubscriptionProgramConfig,
     SubscriptionPackage,
 )
+from services.studio_link import public_ref
 
 CO = importlib.import_module("routers.checkout.router")
 MU = importlib.import_module("routers.booking.miniapp_users")
@@ -92,21 +93,23 @@ async def _run():
     # вернув с дев-сервера на боевой домен, мы просим человека войти заново.
     async with async_session_maker() as db:
         sid, package, client = await _setup(db)
+        # В ссылку идёт публичный код студии, а не её id (services/studio_link).
+        ref = await public_ref(db, sid)
         saved = {k: os.environ.get(k) for k in ("MINIAPP_URL", "CORS_ORIGINS")}
         os.environ["MINIAPP_URL"] = "https://api.example.online"
         os.environ["CORS_ORIGINS"] = "http://localhost:5174,https://api.example.online"
         try:
             base = await MU._checkout_return_base(db, client, False, _Req("http://localhost:5174"))
-            assert base == f"http://localhost:5174/s/{sid}?pay=", base
+            assert base == f"http://localhost:5174/s/{ref}?pay=", base
 
             # Origin не из белого списка — открытый редирект со страницы Stripe.
             # Падаем в MINIAPP_URL, а не идём куда сказали.
             base = await MU._checkout_return_base(db, client, False, _Req("https://evil.example"))
-            assert base == f"https://api.example.online/s/{sid}?pay=", base
+            assert base == f"https://api.example.online/s/{ref}?pay=", base
 
             # Origin вообще не пришёл — прежнее поведение.
             base = await MU._checkout_return_base(db, client, False, _Req())
-            assert base == f"https://api.example.online/s/{sid}?pay=", base
+            assert base == f"https://api.example.online/s/{ref}?pay=", base
         finally:
             # Env глобальный на весь прогон pytest — не утекаем в соседние файлы.
             for key, value in saved.items():
@@ -247,6 +250,11 @@ async def _run():
             select(ClientSubscription).where(ClientSubscription.client_id == client.id)
         )).scalar_one()
         await db.delete(sub)
+        # И заявку тоже. Оставленная в `pending`, она попадает в
+        # stripe_pay.reconcile_pending на боевом сервере, который смотрит в эту же
+        # dev-БД: сверка идёт с НАСТОЯЩИМ ключом в аккаунт `acct_test`, получает
+        # PermissionError и раз в час поднимает тревогу на пустом месте.
+        await db.delete(checkout)
         await db.commit()
 
     # ─── Возврат оплаты возвращает и баллы, и депозит, и сертификат ─────────
@@ -311,6 +319,7 @@ async def _run():
         assert card.points_balance == 100 and card.deposit_balance == 200
 
         await db.delete(sub)
+        await db.delete(checkout)      # см. выше: иначе заявка живёт в БД вечно
         await db.commit()
 
     # ─── Вебхук: сумма разошлась со списанной → продажу не проводим ──────────

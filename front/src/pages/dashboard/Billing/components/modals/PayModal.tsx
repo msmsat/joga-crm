@@ -78,6 +78,21 @@ export default function PayModal({
   // (легаси-план) выводим как есть — предупреждение важнее красивого названия.
   const currentName = preview?.current_plan ? planLabel(preview.current_plan, t) : '';
 
+  // Налоговая строка модалки. Все варианты приходят с сервера готовыми: фронт
+  // только подписывает их словами, не считая ничего сам.
+  const outcome = preview?.tax_outcome ?? 'stripe_auto';
+  const taxLine = outcome === 'taxable' && preview
+    ? { label: t('payModal.taxLine', { rate: preview.tax_rate_percent }), value: money(preview.tax_amount) }
+    : outcome === 'reverse_charge'
+      ? { label: t('payModal.taxLabel'), value: t('payModal.reverseCharge') }
+      : outcome === 'out_of_scope' || outcome === 'exempt'
+        ? { label: t('payModal.taxLabel'), value: money(0) }
+        : null;
+  const taxTotal = outcome === 'taxable' && preview ? money(preview.total_with_tax) : null;
+  const taxNote = outcome === 'stripe_auto' || outcome === 'requires_review'
+    ? t('upgrade.vatNote')
+    : t('payModal.taxServerNote');
+
   const title = kind === 'renewal'
     ? t('payModal.titleRenew', { plan: planName })
     : kind === 'switch'
@@ -112,10 +127,37 @@ export default function PayModal({
               {money(total)}
             </span>
           </div>
+          {/* Налог показывает СЕРВЕР — тем же решением, которым выставит счёт.
+              Своей ставки у фронта нет: она разошлась бы со счётом в тот день,
+              когда у плательщика поменяется страна или статус. */}
+          {taxLine && (
+            <div style={{ display: 'flex', justifyContent: 'space-between', gap: '16px', alignItems: 'baseline', marginTop: '6px' }}>
+              <span style={{ fontSize: '12px', color: 'var(--muted)' }}>{taxLine.label}</span>
+              <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--onyx)' }}>{taxLine.value}</span>
+            </div>
+          )}
+          {taxTotal && (
+            <div style={{ display: 'flex', justifyContent: 'space-between', gap: '16px', alignItems: 'baseline', marginTop: '6px' }}>
+              <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--onyx)' }}>
+                {t('payModal.totalWithTax')}
+              </span>
+              <span style={{ fontSize: '16px', fontWeight: 800, color: 'var(--onyx)' }}>{taxTotal}</span>
+            </div>
+          )}
           <div style={{ fontSize: '11px', color: 'var(--muted)', lineHeight: 1.45, marginTop: '8px' }}>
-            {t('upgrade.vatNote')}
+            {taxNote}
           </div>
         </div>
+
+        {/* Решения по налогу нет — сумму нельзя показывать как окончательную, и
+            оплату сервер всё равно не оформит (409 billing.tax_review_required).
+            Молча показать «итого без налога» значило бы пообещать цену, которой
+            не будет. */}
+        {preview?.tax_outcome === 'requires_review' && (
+          <div style={{ padding: '12px 16px', background: 'rgba(216,140,154,0.1)', border: '1px solid rgba(216,140,154,0.3)', borderRadius: '12px', fontSize: '12px', color: 'var(--onyx)', lineHeight: '1.6' }}>
+            {t('payModal.taxReview')}
+          </div>
+        )}
 
         {/* Смена тарифа сжигает остаток текущего периода целиком: новый период
             платится с нуля, зачёта нет. Предупреждаем ДО оплаты — после неё

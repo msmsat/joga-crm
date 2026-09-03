@@ -2,9 +2,15 @@
  * Точка входа в мини-приложение: откуда взялись студия и реферальный код.
  *
  * Источников два, и приложение обязано понимать оба:
- *  - Telegram — `start_param` из deep link `t.me/<bot>?startapp=s42` (или
- *    `s42_refABC123` для реферальной ссылки, код всегда хвостом после студии);
- *  - браузер / Instagram / QR — путь `/s/42` и `?ref=ABC123`.
+ *  - Telegram — `start_param` из deep link `t.me/<bot>?startapp=sk3m9x2ptqv`
+ *    (или `sk3m9x2ptqv_refABC123` для реферальной ссылки, код приглашения
+ *    всегда хвостом после студии);
+ *  - браузер / Instagram / QR — путь `/s/k3m9x2ptqv` и `?ref=ABC123`.
+ *
+ * Студия названа своим публичным кодом — случайными буквами и цифрами
+ * (back/services/studio_link.py). Числовые ссылки старого вида (`/s/42`)
+ * приложение по-прежнему понимает и передаёт серверу как есть: они уже
+ * разошлись по перепискам, и ломать их нельзя. Поэтому тип — строка.
  *
  * Раньше разбор жил прямо в App.tsx и знал только про Telegram — из-за этого
  * заход по обычной ссылке всегда упирался в экран «откройте в Telegram»: сама
@@ -12,7 +18,7 @@
  */
 
 export type Entry = {
-  studioId: number | null;
+  studioRef: string | null;
   referralCode?: string;
   /** Внутри Telegram: определяет и способ входа, и куда Stripe вернёт с оплаты. */
   inTelegram: boolean;
@@ -31,13 +37,13 @@ const TABS = ['home', 'sched', 'my', 'club', 'prof'];
  * сессии нет. Модульная переменная, а не проп: единственный, кому это нужно, —
  * обёртка над fetch, и тащить студию до неё через все страницы незачем.
  */
-let guestStudioId: number | null = null;
+let guestStudioRef: string | null = null;
 
-export const setGuestStudio = (studioId: number | null) => {
-  guestStudioId = studioId;
+export const setGuestStudio = (studioRef: string | null) => {
+  guestStudioRef = studioRef;
 };
 
-export const getGuestStudio = (): number | null => guestStudioId;
+export const getGuestStudio = (): string | null => guestStudioRef;
 
 /**
  * Последняя студия, которую приложение реально открывало.
@@ -54,19 +60,21 @@ export const getGuestStudio = (): number | null => guestStudioId;
  */
 const STUDIO_KEY = 'velora.studio';
 
-export function rememberStudio(studioId: number) {
+export function rememberStudio(studioRef: string | number) {
   try {
-    localStorage.setItem(STUDIO_KEY, String(studioId));
+    localStorage.setItem(STUDIO_KEY, String(studioRef));
   } catch {
     // Приватный режим/выключенный сторадж: просто не запомним — прежний путь
     // по ссылке от этого не ломается.
   }
 }
 
-function recallStudio(): number | null {
+function recallStudio(): string | null {
   try {
-    const stored = Number(localStorage.getItem(STUDIO_KEY));
-    return Number.isInteger(stored) && stored > 0 ? stored : null;
+    const stored = localStorage.getItem(STUDIO_KEY);
+    // Только то, из чего состоят ссылки: код студии либо её прежний номер.
+    // Всё остальное — мусор, оставшийся от чужой версии приложения.
+    return stored && /^[A-Za-z0-9]+$/.test(stored) ? stored : null;
   } catch {
     return null;
   }
@@ -78,30 +86,32 @@ export function readTab(): string | undefined {
 }
 
 function parseStartParam(startParam: string | undefined) {
-  if (!startParam) return { studioId: null, referralCode: undefined };
-  const studio = /^s(\d+)/.exec(startParam);
+  // `s<код студии>` до первого `_`: реферальный хвост `_ref<код>` в код студии
+  // не попадает, потому что `_` в него не входит.
+  if (!startParam) return { studioRef: null, referralCode: undefined };
+  const studio = /^s([A-Za-z0-9]+)/.exec(startParam);
   const ref = /_ref([A-Za-z0-9]+)$/.exec(startParam);
   return {
-    studioId: studio ? Number(studio[1]) : null,
+    studioRef: studio ? studio[1] : null,
     referralCode: ref ? ref[1] : undefined,
   };
 }
 
 export function readEntry(startParam: string | undefined, inTelegram: boolean): Entry {
   const fromTelegram = parseStartParam(startParam);
-  if (fromTelegram.studioId !== null) {
+  if (fromTelegram.studioRef !== null) {
     return { ...fromTelegram, inTelegram };
   }
 
-  // `/s/42` — путь, а не query: ссылку студия кладёт в bio Instagram и на
-  // сайт, она должна читаться как адрес, а не как техническая строка.
-  const fromPath = /^\/s\/(\d+)/.exec(window.location.pathname);
+  // `/s/k3m9x2ptqv` — путь, а не query: ссылку студия кладёт в bio Instagram и
+  // на сайт, она должна читаться как адрес, а не как техническая строка.
+  const fromPath = /^\/s\/([A-Za-z0-9]+)/.exec(window.location.pathname);
   const ref = new URLSearchParams(window.location.search).get('ref');
   return {
     // Ссылки нет — берём студию, в которой человек уже был. Выход из аккаунта
     // не должен выкидывать его из студии: он остаётся тем же гостем, которому
     // открыты расписание и запись, а не «человеком без ссылки».
-    studioId: fromPath ? Number(fromPath[1]) : recallStudio(),
+    studioRef: fromPath ? fromPath[1] : recallStudio(),
     referralCode: ref || undefined,
     inTelegram,
   };

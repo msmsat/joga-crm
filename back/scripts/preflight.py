@@ -39,6 +39,15 @@ def _is_local(url: str | None) -> bool:
     return urlparse(url or "").hostname in ("localhost", "127.0.0.1", None)
 
 
+def _db_target(url: str | None) -> tuple:
+    """Хост, порт и имя базы — по ним сравниваем базы. Строки не годятся: у одной
+    и той же базы отличаются драйвер, регистр и параметры подключения."""
+    if not url:
+        return ()
+    p = urlparse(url)
+    return (p.hostname or "", p.port or 5432, (p.path or "").lstrip("/").lower())
+
+
 def check_urls() -> None:
     """Адреса, на которые ходят Stripe и браузер.
 
@@ -75,6 +84,56 @@ def check_stripe_keys() -> None:
         _err("STRIPE_SECRET_KEY и STRIPE_PUBLISHABLE_KEY из РАЗНЫХ режимов (test/live)")
     if not secret_live:
         _warn("Stripe в ТЕСТОВОМ режиме — настоящие деньги не принимаются")
+
+
+def check_environment_split() -> None:
+    """Назначение окружения, режим Stripe и целевая база должны сходиться.
+
+    Проверка появилась по факту. В сентябре 2026 локальный сервер держал БОЕВОЙ
+    ключ `sk_live_` и смотрел в локальную базу `localyoga`, куда писали тесты.
+    Тесты оставляли там заявки с `account_id='acct_test'`, сверка оплат раз в час
+    спрашивала о них Stripe боевым ключом, получала PermissionError и слала
+    тревогу в Telegram — двое суток. Ни одна прежняя проверка этого не видела:
+    по отдельности и ключ, и база были «правильные».
+
+    APP_ENV — единственная новая переменная (`dev` | `prod`), она же и есть
+    «явно заданное назначение». Хост базы — дополнительный признак: localhost под
+    боевым ключом это разработка, что бы ни было написано в APP_ENV.
+    """
+    env = (os.getenv("APP_ENV") or "").strip().lower()
+    secret = os.getenv("STRIPE_SECRET_KEY", "")
+    live = secret.startswith("sk_live_") or secret.startswith("rk_live_")
+    db_url = os.getenv("DATABASE_URL")
+    db_local = _is_local(db_url)
+
+    if env not in ("dev", "prod"):
+        _warn(
+            f"APP_ENV={os.getenv('APP_ENV') or '(не задан)'} — назначение окружения не "
+            "объявлено; проверить связку «ключ ↔ база» можно только по косвенным признакам"
+        )
+
+    if live and db_local:
+        _err(
+            "БОЕВОЙ ключ Stripe при базе на localhost — так тестовые данные попадают "
+            "под настоящий ключ (сентябрь 2026: заявки acct_test и тревоги раз в час). "
+            "Либо ключ тестовый, либо база не локальная"
+        )
+    if env == "dev" and live:
+        _err("APP_ENV=dev с боевым ключом Stripe — в разработке нужен sk_test_")
+    if env == "prod" and db_local:
+        _err(f"APP_ENV=prod, а DATABASE_URL смотрит на localhost ({db_url})")
+
+    test_db = os.getenv("TEST_DATABASE_URL")
+    if not test_db:
+        _warn(
+            "TEST_DATABASE_URL не задан — pytest не запустится (database.py), "
+            "а без своей базы тесты писали бы в базу приложения"
+        )
+    elif _db_target(test_db) == _db_target(db_url):
+        _err(
+            "TEST_DATABASE_URL и DATABASE_URL — одна и та же база: тесты затрут "
+            "данные приложения"
+        )
 
 
 def check_webhook_secrets() -> None:
@@ -406,17 +465,66 @@ async def check_stripe_payment_methods() -> None:
             )
 
 
-async def check_stripe_tax() -> None:
-    """Stripe Tax. Настройки у test и live РАЗНЫЕ — включённый в тесте ничего не значит.
+async def check_tax_mode() -> None:
+    """Ручной налоговый режим: готова ли политика и заведены ли ставки.
 
-    Все счета платформы уходят с `automatic_tax={"enabled": True}`
-    (services/stripe_billing.py). Пока Tax не активирован, Stripe отвечает на них
-    400, то есть не работает ни оплата тарифа, ни счёт за комиссию — целиком.
+    Проверка появилась вместе с уходом от платного Stripe Tax. Смысл её ровно
+    обратный прежней: раньше preflight ТРЕБОВАЛ включённого Stripe Tax, потому что
+    без него счёт с `automatic_tax` не выставлялся вовсе. Теперь налог считаем сами,
+    и блокером становится другое — незаполненная налоговая политика и отсутствующие
+    на аккаунте Tax Rate. Оба случая означают одно: ни один счёт не выставится,
+    потому что решения нет, а наугад его принимать нельзя.
     """
-    import stripe
-    from services import stripe_connect
+    from services import stripe_connect, tax_policy, tax_rates
+
+    if not tax_policy.manual_mode():
+        _warn(
+            f"BILLING_TAX_MODE={tax_policy.mode()} — налог считает ПЛАТНЫЙ Stripe Tax "
+            f"(комиссия берётся при финализации каждого счёта, включая неоплаченные). "
+            f"Ручной режим включается BILLING_TAX_MODE=manual"
+        )
+        return
+
+    for gap in tax_policy.readiness():
+        _err(f"ручной налоговый режим не готов: {gap}")
 
     if not stripe_connect.configured():
+        return
+    try:
+        for gap in await tax_rates.catalogue_gaps():
+            _err(f"ручной налоговый режим не готов: {gap}")
+    except Exception as exc:
+        _err(f"не удалось прочитать Tax Rates аккаунта ({exc}) — проверьте вручную")
+
+
+async def check_stripe_tax() -> None:
+    """Настройки Stripe Tax. Нужны ТОЛЬКО в режиме `stripe_auto`.
+
+    Настройки у test и live РАЗНЫЕ — включённый в тесте ничего не значит. Пока
+    режим автоматический, счета уходят с `automatic_tax={"enabled": True}`, и без
+    активированного Tax Stripe отвечает на них 400: не работает ни оплата тарифа,
+    ни счёт за комиссию.
+
+    В ручном режиме проверка становится справочной: налоговые регистрации мы НЕ
+    удаляем (они нужны отчётности и мониторингу порогов), а сами по себе они денег
+    не стоят — комиссия берётся за расчёт по документу с включённым automatic_tax,
+    а такие документы мы больше не выставляем.
+    """
+    import stripe
+    from services import stripe_connect, tax_policy
+
+    if not stripe_connect.configured():
+        return
+
+    if tax_policy.manual_mode():
+        try:
+            settings = await asyncio.to_thread(stripe.tax.Settings.retrieve)
+            print(
+                f"  Stripe Tax остаётся настроенным (status={settings.status}), но расчёт по "
+                f"нашим документам выключен — комиссия за automatic tax не начисляется"
+            )
+        except Exception:
+            print("  Stripe Tax не используется (ручной режим)")
         return
 
     try:
@@ -565,7 +673,7 @@ async def check_tax_registrations() -> None:
 
     Одна регистрация (страна продавца) — рабочая конфигурация, и покупателю из другой
     страны ЕС при ней уходит ДОМАШНЯЯ ставка продавца, а не ноль. Проверено вызовами
-    `tax.Calculation` на боевом ключе при единственной регистрации CZ: PL, DE и SK без
+    `tax.Calculation` на боевом ключе (исторический замер 13.08.2026; повторять на боевом ключе НЕЛЬЗЯ — вызов платный): PL, DE и SK без
     номера НДС дали 21 % `standard_rated`; ноль был только там, где номер НДС указан
     (`reverse_charge`) и вне ЕС (`not_collecting`).
 
@@ -1115,6 +1223,7 @@ async def main(sync: bool) -> int:
     check_secret_key()
     check_urls()
     check_stripe_keys()
+    check_environment_split()
     check_webhook_secrets()
     check_billing_currency()
     check_smtp()
@@ -1125,6 +1234,7 @@ async def main(sync: bool) -> int:
     await check_ai_credits()
     await check_stripe_account()
     await check_stripe_payment_methods()
+    await check_tax_mode()
     await check_stripe_tax()
     await check_tax_registrations()
     await check_invoice_tax_id()

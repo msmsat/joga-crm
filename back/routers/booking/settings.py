@@ -19,6 +19,7 @@ from schemas.settings.booking import (
     BookingSettingsRead, BookingSettingsUpdate,
     BookingChannelRead, BookingChannelUpdate,
 )
+from services.studio_link import public_ref
 from services.telegram_bot import connect_telegram_bot, disconnect_telegram_bot, verify_bot_token
 # Адрес мини-приложения один на проект — берём тот же, которым бот отвечает на
 # /start, а не второй getenv: разъехавшись, они дадут владельцу ссылку, ведущую
@@ -31,10 +32,15 @@ _CHANNEL_TYPES = {"telegram", "instagram", "whatsapp", "web"}
 _TG_TOKEN_RE = re.compile(r"^\d{6,12}:[A-Za-z0-9_-]{30,50}$")
 
 
-def _read(row: StudioBookingSettings) -> BookingSettingsRead:
-    """Настройки + вычисляемая ссылка на мини-приложение (/s/{studio_id})."""
+def _read(row: StudioBookingSettings, ref: str) -> BookingSettingsRead:
+    """Настройки + вычисляемая ссылка на мини-приложение (/s/{public_code}).
+
+    `ref` — публичный код студии, а не её id: по ссылке из этого поля студия
+    зовёт клиентов, и порядковый номер строки в базе там не нужен никому
+    (services/studio_link).
+    """
     return BookingSettingsRead.model_validate(row).model_copy(
-        update={"miniapp_url": f"{MINIAPP_URL}/s/{row.studio_id}"}
+        update={"miniapp_url": f"{MINIAPP_URL}/s/{ref}"}
     )
 
 
@@ -61,7 +67,7 @@ async def get_booking_settings(
         db.add(row)
         await db.commit()
         await db.refresh(row)
-    return _read(row)
+    return _read(row, await public_ref(db, row.studio_id))
 
 
 @router.patch("/settings", response_model=BookingSettingsRead)
@@ -80,7 +86,7 @@ async def update_booking_settings(
         setattr(row, field, value)
     await db.commit()
     await db.refresh(row)
-    return _read(row)
+    return _read(row, await public_ref(db, row.studio_id))
 
 
 @router.get("/channels", response_model=List[BookingChannelRead])

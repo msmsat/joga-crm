@@ -21,9 +21,16 @@ import os
 import stripe
 from dotenv import load_dotenv
 
+from services import stripe_env
+
 load_dotenv()
 
 logger = logging.getLogger(__name__)
+
+# Тот же страж, что в stripe_billing: боевой ключ на машине разработчика не должен
+# заводить аккаунты студий и платёжные сессии. Кричим на импорте, останавливаем —
+# в guard_write у каждой записи.
+stripe_env.log_status()
 
 stripe.api_key = os.getenv("STRIPE_SECRET_KEY", "")
 WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET", "")
@@ -54,6 +61,7 @@ async def create_account(email: str | None) -> str:
     другой страны сюда нужно прокинуть код страны, но в Studio такого поля нет
     (в онбординге спрашивается только часовой пояс/валюта/язык).
     """
+    stripe_env.guard_write("создание подключённого аккаунта")
     account = await asyncio.to_thread(stripe.Account.create, type="standard", email=email)
     return account.id
 
@@ -162,6 +170,7 @@ async def create_checkout_session(
     ретрай сети, потерянный HTTP-ответ) возвращает ТУ ЖЕ сессию вместо второй:
     иначе у одной заявки оказывалось бы две платёжные формы.
     """
+    stripe_env.guard_write("создание платёжной сессии студии")
     intent_data = _payment_intent_data(application_fee_minor, receipt_email)
     session = await asyncio.to_thread(
         stripe.checkout.Session.create,
@@ -209,6 +218,7 @@ async def create_hosted_checkout_session(
     что у встроенной формы кассы: обратная ссылка на нашу заявку и защита от
     второй сессии на одну попытку оплаты.
     """
+    stripe_env.guard_write("создание платёжной страницы студии")
     intent_data = _payment_intent_data(application_fee_minor, receipt_email)
     session = await asyncio.to_thread(
         stripe.checkout.Session.create,

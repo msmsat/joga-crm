@@ -311,7 +311,13 @@
     "switched": "Tarif gewechselt: nichts zu zahlen — der Wechsel wurde durch den Rest des laufenden Zeitraums gedeckt.",
     "renewNote": "Das verlängert denselben Tarif: Die gekauften Monate werden zu Ihrem aktuellen bezahlten Zeitraum addiert. Nichts verfällt.",
     "cardNote": "Kartenzahlung auf der sicheren Stripe-Seite · Rückerstattung binnen 7 Tagen",
-    "freeUntil": "Bis {{date}} wird nichts abgebucht: Sie haben noch {{count}} Tag(e) aus Ihrem bereits bezahlten Zeitraum. Die Abrechnung beginnt an diesem Datum."
+    "freeUntil": "Bis {{date}} wird nichts abgebucht: Sie haben noch {{count}} Tag(e) aus Ihrem bereits bezahlten Zeitraum. Die Abrechnung beginnt an diesem Datum.",
+    "taxLabel": "USt.",
+    "taxLine": "USt. {{rate}} %",
+    "reverseCharge": "Reverse charge",
+    "totalWithTax": "Gesamt inkl. USt.",
+    "taxServerNote": "Die Steuer wurde aus Ihren Rechnungsdaten berechnet. Der Betrag steht so auch auf der Rechnung.",
+    "taxReview": "Die Steuer konnte aus Ihren Rechnungsdaten nicht bestimmt werden — der Betrag ist ohne sie, und die Zahlung kann nicht abgeschlossen werden. Prüfen Sie Land und Adresse des Zahlers oder wenden Sie sich an den Support."
   },
   "offlineFee": {
     "title": "Gebühr auf Offline-Verkäufe",

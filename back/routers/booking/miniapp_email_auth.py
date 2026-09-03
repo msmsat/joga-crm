@@ -43,6 +43,7 @@ from services.contacts import contact_taken, normalize, normalized_column
 from services.email_layout import code_block
 from services.i18n import pick, resolve
 from services.mailer import send_email
+from services.studio_link import StudioRef, require_studio_id
 
 from .miniapp import (
     ClientAuthResponse, ClientAuthUser, _create_pending_referral,
@@ -62,7 +63,9 @@ _BAD_CODE = "Неверный или истёкший код"
 
 
 class EmailCodeRequest(BaseSchema):
-    studio_id: int
+    # Публичный код студии из ссылки `/s/<code>`; число тоже принимается — так
+    # приходят старые ссылки (services/studio_link).
+    studio_id: StudioRef
     email: NormEmail
 
 
@@ -76,7 +79,8 @@ class EmailCodeResponse(BaseSchema):
 
 
 class EmailVerifyRequest(BaseSchema):
-    studio_id: int
+    # Публичный код студии — см. EmailCodeRequest.
+    studio_id: StudioRef
     email: NormEmail
     code: str
     # Только для нового клиента; у существующего игнорируется, чтобы вход по
@@ -140,6 +144,9 @@ async def request_email_code(
     """Код подтверждения на почту. Строка одна на пару (студия, email):
     повторный запрос затирает предыдущий код, а не копит параллельно валидные.
     """
+    # Код из ссылки разрешаем один раз, на входе: дальше по функции studio_id —
+    # обычный int (services/studio_link).
+    body.studio_id = await require_studio_id(db, body.studio_id)
     studio = (await db.execute(
         select(Studio).where(Studio.id == body.studio_id)
     )).scalar_one_or_none()
@@ -217,6 +224,7 @@ async def verify_email_code(
     db: AsyncSession = Depends(get_db),
 ):
     """Код верен → вход в карточку клиента (или привязка почты, если уже вошёл)."""
+    body.studio_id = await require_studio_id(db, body.studio_id)
     await _consume_code(db, body.studio_id, body.email, body.code)
 
     if current is not None:

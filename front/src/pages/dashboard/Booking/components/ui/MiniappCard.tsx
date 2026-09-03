@@ -32,7 +32,7 @@ export function MiniappCard({ url }: { url: string }) {
     toast.success(t('toasts.linkCopied'))
   }
 
-  // Схему прячем: «api.jogaua.online/s/12» читается, «https://…» — просто шум.
+  // Схему прячем: «api.jogaua.online/s/k3m9x2ptqv» читается, «https://…» — просто шум.
   const pretty = url.replace(/^https?:\/\//, '')
 
   function printQr() {

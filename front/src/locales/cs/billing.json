@@ -313,7 +313,13 @@
     "switched": "Tarif změněn: není co platit — přechod pokryl zbytek aktuálního období.",
     "renewNote": "Jde o obnovení stejného tarifu: zakoupené měsíce se přičtou k aktuálnímu zaplacenému období. Nic nepropadá.",
     "cardNote": "Platba kartou na zabezpečené stránce Stripe · vrácení do 7 dnů",
-    "freeUntil": "Do {{date}} se nic nestrhává: zbývá vám {{count}} dní už zaplaceného období. Fakturace začne tímto dnem."
+    "freeUntil": "Do {{date}} se nic nestrhává: zbývá vám {{count}} dní už zaplaceného období. Fakturace začne tímto dnem.",
+    "taxLabel": "DPH",
+    "taxLine": "DPH {{rate}} %",
+    "reverseCharge": "Reverse charge",
+    "totalWithTax": "Celkem s DPH",
+    "taxServerNote": "Daň je spočítána z vašich fakturačních údajů. Stejná částka bude na faktuře.",
+    "taxReview": "Daň podle vašich údajů se nepodařilo určit — částka je bez ní a platbu nelze dokončit. Zkontrolujte zemi a adresu plátce, nebo napište podpoře."
   },
   "offlineFee": {
     "title": "Poplatek z offline prodejů",

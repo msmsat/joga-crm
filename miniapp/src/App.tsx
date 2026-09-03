@@ -74,7 +74,7 @@ export default function App() {
   const [loyalty, setLoyalty] = useState<LoyaltyOverview | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   // Студия известна, сессии нет → пускаем гостем: витрина открыта, вход
-  // спросит сама бронь. Студия неизвестна (голый адрес без `/s/<id>` и без
+  // спросит сама бронь. Студия неизвестна (голый адрес без `/s/<code>` и без
   // deep-link) → показать нечего: в какой кабинет пускать, приложение не знает.
   // useMemo, а не голый вызов: ссылка на entry уходит в зависимости boot-эффекта,
   // и пересоздание объекта на каждый рендер гоняло бы авторизацию по кругу.
@@ -105,11 +105,13 @@ export default function App() {
       // на <html>, их видит и то, что рисуется вне React (оверлеи, фон body).
       applyBranding(data.studio.accent_color, data.studio.dark_mode);
       applyDefaultLanguage(data.studio.language);
-      // Студию запоминаем здесь, а не из ссылки: тут она подтверждена сервером
-      // и известна даже когда ссылки не было вовсе (студию назвал токен).
-      // Без этого выход из аккаунта на голом адресе терял её вместе с токеном.
-      rememberStudio(data.studio.id);
-      setGuestStudio(data.studio.id);
+      // Студию запоминаем здесь, а не в разборе ссылки: тут она подтверждена
+      // сервером и известна даже когда ссылки не было вовсе (студию назвал
+      // токен). Без этого выход из аккаунта на голом адресе терял её вместе с
+      // токеном. Код из ссылки сильнее номера из ответа: по нему студия зовёт
+      // клиентов, и именно он должен остаться в памяти приложения.
+      rememberStudio(entry.studioRef ?? data.studio.id);
+      setGuestStudio(entry.studioRef ?? String(data.studio.id));
       setCatalog(data);
     } catch (error) {
       console.error('Не вдалося завантажити дані студії:', error);
@@ -129,7 +131,7 @@ export default function App() {
   useEffect(() => {
     // Студию из ссылки api/client.ts подставляет в запросы, пока сессии нет:
     // гостю сервер не может взять её из токена. Ставим до первого запроса.
-    setGuestStudio(entry.studioId);
+    setGuestStudio(entry.studioRef);
 
     if (tg) {
       tg.ready();
@@ -149,7 +151,7 @@ export default function App() {
         // только .name (home.tsx), остальное подтянется из /global/me, когда
         // экраны его запросят (профиль уже это делает).
         setUser({ name: session.name } as UserResponse);
-      } else if (entry.studioId === null) {
+      } else if (entry.studioRef === null) {
         // Ни сессии, ни студии — единственный тупик, который остался.
         setNoStudio(true);
         setIsLoading(false);
@@ -160,7 +162,7 @@ export default function App() {
         try {
           const { token, user: authedUser } = await authTelegram({
             init_data: tg.initData,
-            studio_id: entry.studioId,
+            studio_id: entry.studioRef,
             referral_code: entry.referralCode,
           });
           saveSession({ token, name: authedUser.name });
@@ -240,10 +242,10 @@ export default function App() {
   // вместо входа привязал бы введённую почту текущей карточке (см. api/auth.ts).
   // После входа — перезагрузка: весь кабинет (расписание, абонемент, лояльность)
   // загружен под прежний токен, и чинить это по кускам дороже, чем начать заново.
-  if (isAddingAccount && entry.studioId) {
+  if (isAddingAccount && entry.studioRef) {
     return (
       <Auth
-        studioId={entry.studioId}
+        studioRef={entry.studioRef}
         anonymous
         onCancel={() => setIsAddingAccount(false)}
         onDone={(authedUser, token) => {
@@ -254,7 +256,7 @@ export default function App() {
     );
   }
 
-  // Студии нет вовсе: открыли голый адрес без `/s/<id>` и без deep-link.
+  // Студии нет вовсе: открыли голый адрес без `/s/<code>` и без deep-link.
   // Единственное, что можно честно сказать — нужна ссылка студии.
   if (noStudio) {
     return (
@@ -414,12 +416,12 @@ export default function App() {
           брони с выбранным занятием и ковриком, и размонтировать его значит
           потерять всё, что человек уже выбрал. Свой фон обязателен по той же
           причине — сквозь прозрачный экран входа просвечивало бы расписание. */}
-      {authGate && entry.studioId !== null && (
+      {authGate && entry.studioRef !== null && (
         // zIndex в той же шкале, что у листов кита (Sheet: 200 + layer*10), и
         // выше их всех: под входом может стоять открытая бронь со своим листом.
         <div className="fixed inset-0 overflow-y-auto bg-background" style={{ zIndex: 300 }}>
           <Auth
-            studioId={entry.studioId}
+            studioRef={entry.studioRef}
             referralCode={entry.referralCode}
             onCancel={() => {
               setPendingBooking(null);

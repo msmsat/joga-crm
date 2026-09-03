@@ -34,6 +34,7 @@ from routers.loyalty.cards import _get_or_create_levels, _level_for
 from schemas._base import BaseSchema
 from services.notifier import _fmt_amount, _studio_prefs
 from services.points import DEFAULT_POINT_VALUE, point_value_of
+from services.studio_link import public_ref
 
 from .miniapp import get_current_client
 
@@ -303,7 +304,7 @@ async def get_loyalty_overview(
             trigger_condition=referral_config.trigger_condition,
             invite_code=client.invite_code,
             invite_link=(
-                f"https://t.me/{bot_username}?startapp=s{studio_id}_ref{client.invite_code}"
+                f"https://t.me/{bot_username}?startapp=s{await public_ref(db, studio_id)}_ref{client.invite_code}"
                 if bot_username else None
             ),
             invited_count=invited_count,

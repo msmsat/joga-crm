@@ -47,6 +47,7 @@ from activity import log_activity
 from database import get_db
 from dependencies import SUSPENDED_DETAIL
 from services import platform_fee
+from services.studio_link import StudioRef, require_studio_id
 from services.referral import fire_referral
 from ratelimit import limiter
 from models import BookingChannelConfig, Client, ReferralRecord
@@ -87,7 +88,10 @@ def verify_init_data(init_data: str, bot_token: str) -> dict[str, str]:
 
 class CheckUserRequest(BaseSchema):
     tg_id: int
-    studio_id: int
+    # Публичный код студии из ссылки (`/s/<code>`); число тоже принимается —
+    # так приходят старые ссылки и старые сборки мини-приложения
+    # (services/studio_link).
+    studio_id: StudioRef
 
 
 class CheckUserResponse(BaseSchema):
@@ -96,9 +100,10 @@ class CheckUserResponse(BaseSchema):
 
 class TelegramAuthRequest(BaseSchema):
     init_data: str
-    studio_id: int
-    # Реферальный код из start_param (`s<studio_id>_ref<code>` — код всегда
-    # хвостом после студии, парсинг studio_id регексом с якорем только слева
+    # Публичный код студии из ссылки — см. CheckUserRequest.
+    studio_id: StudioRef
+    # Реферальный код из start_param (`s<studio_code>_ref<code>` — код всегда
+    # хвостом после студии, парсинг кода студии регексом с якорем только слева
     # его не задевает). Учитывается только при создании НОВОГО клиента.
     referral_code: Optional[str] = None
 
@@ -153,6 +158,7 @@ async def check_user(
     body: CheckUserRequest,
     db: AsyncSession = Depends(get_db),
 ):
+    body.studio_id = await require_studio_id(db, body.studio_id)
     exists = (await db.execute(
         select(Client.id).where(Client.tg_id == body.tg_id, Client.studio_id == body.studio_id)
     )).scalars().first() is not None
@@ -171,6 +177,9 @@ async def auth_telegram(
     Единственная ручка входа в мини-приложение: заменяет собой прежние
     check-user/register, которые доверяли голому tg_id из тела запроса.
     """
+    # Дальше по функции studio_id — обычный int: код из ссылки разрешаем один
+    # раз, на входе (services/studio_link).
+    body.studio_id = await require_studio_id(db, body.studio_id)
     channel = (await db.execute(
         select(BookingChannelConfig).where(
             BookingChannelConfig.studio_id == body.studio_id,
@@ -313,22 +322,23 @@ async def get_current_client(
 
 
 class Viewer(NamedTuple):
-    """Кто смотрит витрину студии: клиент с токеном или гость по ссылке `/s/<id>`.
+    """Кто смотрит витрину студии: клиент с токеном или гость по ссылке `/s/<code>`.
 
     Гость появился потому, что занятие выбирают ДО регистрации: расписание и
     каталог человек видит без аккаунта, а имя студия узнаёт в момент брони —
     `POST /reservations` как был, так и остаётся за `get_current_client`.
 
     Токена у гостя нет, взять `studio_id` неоткуда — он называет студию сам,
-    query-параметром. Никакой авторизации это не даёт: тем же параметром любой
-    открывает витрину любой студии, ровно как публичные `/public/{id}/*`.
+    query-параметром: публичным кодом из ссылки (services/studio_link).
+    Никакой авторизации это не даёт: тем же параметром любой открывает витрину
+    любой студии, ровно как публичные `/public/{code}/*`.
     """
     client: Optional[Client]
     studio_id: int
 
 
 async def get_viewer(
-    studio_id: Optional[int] = None,
+    studio_id: Optional[str] = None,
     token: Optional[str] = Depends(client_oauth2_scheme),
     db: AsyncSession = Depends(get_db),
 ) -> Viewer:
@@ -340,11 +350,12 @@ async def get_viewer(
         return Viewer(client, client.studio_id)
     if studio_id is None:
         raise HTTPException(status_code=401, detail="Недействительный токен")
+    resolved = await require_studio_id(db, studio_id)
     # Тот же гейт, что и у клиента с токеном: студия, отключённая за неоплату,
     # не показывает расписание, на которое всё равно не записаться.
-    if await platform_fee.studio_suspended(db, studio_id):
+    if await platform_fee.studio_suspended(db, resolved):
         raise HTTPException(status_code=402, detail=SUSPENDED_DETAIL)
-    return Viewer(None, studio_id)
+    return Viewer(None, resolved)
 
 
 if __name__ == "__main__":

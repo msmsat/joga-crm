@@ -24,6 +24,7 @@ from schemas.loyalty import (
     CampaignCreate, CampaignResult, RetentionMonth, RetentionRead, SegmentClientPreview, SegmentRead,
 )
 from services.email_layout import MINIAPP_URL, button
+from services.studio_link import ref_of
 from services.loyalty_matching import SEGMENT_MATCHERS, match_segment
 from services.mailer import send_email
 from services.notifier import notify
@@ -85,10 +86,12 @@ async def run_campaign(
 
     # Письмо кампании приходит клиенту ОТ СТУДИИ: её имя в шапке и кнопка в её
     # кабинет — иначе рассылка выглядит письмом от незнакомой CRM.
-    studio_name = (await db.execute(
-        select(Studio.name).where(Studio.id == ctx.studio_id)
-    )).scalar_one_or_none() or "Velora"
-    open_app = button("Открыть приложение", f"{MINIAPP_URL}/s/{ctx.studio_id}")
+    studio_row = (await db.execute(
+        select(Studio.name, Studio.public_code).where(Studio.id == ctx.studio_id)
+    )).first()
+    studio_name = (studio_row.name if studio_row else None) or "Velora"
+    # Ссылка — по публичному коду студии (services/studio_link).
+    open_app = button("Открыть приложение", f"{MINIAPP_URL}/s/{ref_of(studio_row, ctx.studio_id)}")
 
     processed = 0
     emails_sent = 0

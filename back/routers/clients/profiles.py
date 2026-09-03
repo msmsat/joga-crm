@@ -1,5 +1,5 @@
 from dataclasses import asdict
-from datetime import date, datetime, timedelta
+from datetime import date, datetime
 from typing import Literal, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -15,7 +15,7 @@ from database import get_db
 from dependencies import get_current_user, require_role, StudioContext
 from models import (
     Account, ActivityLog, Client, ClientNote, ClientPayment, ClientSubscription,
-    Lesson, LoyaltyPointTransaction, ReferralRecord, Reservation, StudioClientSegmentConfig,
+    Lesson, LoyaltyPointTransaction, ReferralRecord, Reservation, Studio, StudioClientSegmentConfig,
     StudioSubscriptionProgramConfig, SubscriptionPackage, User,
 )
 from routers.clients._scope import client_scope
@@ -25,7 +25,7 @@ from routers.finances.accounts import get_or_create_default_account
 from services.booking_access import (
     assert_can_book, commit_reservation, next_free_spot, resolve_coverage,
 )
-from services.booking_rules import load_rules
+from services.booking_rules import assert_staff_bookable, load_rules
 from services.client_segments import (
     CATEGORY_KEYS, DEFAULT_RULES, SegmentRules, category_condition, get_segment_rules, resolve_status,
 )
@@ -1018,9 +1018,11 @@ async def book_lesson(
         raise HTTPException(status_code=404, detail="Занятие не найдено")
     if lesson.status == "cancelled":
         raise HTTPException(status_code=400, detail="Занятие отменено — запись невозможна")
-    # Записать менее чем за 2 часа до начала нельзя (то же правило, что в Журнале).
-    if lesson.start_time < datetime.now() + timedelta(hours=2):
-        raise HTTPException(status_code=400, detail="Записать на занятие можно не позднее чем за 2 часа до начала")
+    # То же правило, что в Журнале: за стойкой мешает только уже прошедшее
+    # занятие, а окно самостоятельной записи клиента здесь не применяется
+    # (services/booking_rules, «Полномочия студии за стойкой»).
+    studio = await db.get(Studio, studio_id)
+    assert_staff_bookable(lesson, studio)
 
     spot = await next_free_spot(db, lesson)
     if spot is None:

@@ -312,11 +312,16 @@ _PAGE_LABEL = {
 }
 
 
-def section_url(event_id: str, studio_id: int) -> str | None:
-    """Адрес раздела, о котором письмо. None — для события раздела нет."""
+def section_url(event_id: str, studio_ref: int | str) -> str | None:
+    """Адрес раздела, о котором письмо. None — для события раздела нет.
+
+    `studio_ref` — то, чем студия называется в публичной ссылке: её
+    `public_code` (services/studio_link). Числовой id тоже работает — так
+    открываются письма, разосланные до появления кода.
+    """
     tab = _CLIENT_TAB.get(event_id)
     if tab:
-        return f"{MINIAPP_URL}/s/{studio_id}?tab={tab}"
+        return f"{MINIAPP_URL}/s/{studio_ref}?tab={tab}"
     page = _CRM_PAGE.get(event_id)
     return f"{WEB_APP_URL}/dashboard/{page}" if page else None
 
@@ -335,9 +340,9 @@ def section_label(event_id: str, lang: str = "ru") -> str | None:
     return labels.get(lang) or labels["en"]
 
 
-def cta(event_id: str, studio_id: int, lang: str = "ru") -> str:
+def cta(event_id: str, studio_ref: int | str, lang: str = "ru") -> str:
     """Готовая кнопка «открыть раздел» под событие или "" — если раздела нет."""
-    url = section_url(event_id, studio_id)
+    url = section_url(event_id, studio_ref)
     label = section_label(event_id, lang)
     if not url or not label:
         return ""

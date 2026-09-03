@@ -22,6 +22,7 @@ from schemas._base import BaseSchema
 from services.booking_rules import load_rules
 from services.notifier import _fmt_amount
 from services.pricing import resolve_price
+from services.studio_link import require_studio_id
 
 from .miniapp import Viewer, get_viewer
 
@@ -145,21 +146,25 @@ class StudioBrand(BaseSchema):
     dark_mode: bool
 
 
-@router.get("/public/{studio_id}/brand", response_model=StudioBrand)
+@router.get("/public/{studio_ref}/brand", response_model=StudioBrand)
 @limiter.limit("30/minute")
 async def get_studio_brand(
     request: Request,
-    studio_id: int,
+    studio_ref: str,
     db: AsyncSession = Depends(get_db),
 ):
     """Витрина студии для экрана входа — без токена, потому что токена там ещё
-    нет: человек только что открыл ссылку `/s/<studio_id>` в браузере и должен
+    нет: человек только что открыл ссылку `/s/<code>` в браузере и должен
     увидеть, в чей кабинет он входит, ДО того как вводить почту. Ответ строго
     публичный (то же, что видно на вывеске), никаких данных клиентов.
+
+    `studio_ref` — публичный код студии из той же ссылки (services/studio_link);
+    числовой id принимается ради ссылок, разосланных до его появления.
 
     Полный каталог (`GET /studio`) остаётся за токеном — он отдаёт цены,
     расписание и пакеты, это уже не витрина.
     """
+    studio_id = await require_studio_id(db, studio_ref)
     studio = (await db.execute(select(Studio).where(Studio.id == studio_id))).scalar_one_or_none()
     if studio is None:
         raise HTTPException(status_code=404, detail="Студия не найдена")
@@ -185,7 +190,7 @@ async def get_studio_catalog(
     db: AsyncSession = Depends(get_db),
 ):
     """Витрина студии. Токен не обязателен: занятие выбирают до регистрации, и
-    гость, пришедший по ссылке `/s/<id>`, обязан увидеть филиалы, услуги и
+    гость, пришедший по ссылке `/s/<code>`, обязан увидеть филиалы, услуги и
     правила записи. Клиентского здесь ровно одно поле — цена пакета со скидкой
     (см. ниже), и она считается только когда клиент есть."""
     studio_id = viewer.studio_id
@@ -193,7 +198,7 @@ async def get_studio_catalog(
     studio = (await db.execute(
         select(Studio).where(Studio.id == studio_id)
     )).scalar_one_or_none()
-    # Гость называет студию сам — id из ссылки может быть каким угодно.
+    # Гость называет студию сам — код из ссылки может быть каким угодно.
     if studio is None:
         raise HTTPException(status_code=404, detail="Студия не найдена")
     rules = await load_rules(db, studio_id)

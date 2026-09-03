@@ -19,6 +19,7 @@ import stripe
 from dotenv import load_dotenv
 
 from routers.billing.plans import PLANS, PERIOD_DISCOUNTS, amount_for, combo_amount_for
+from services import stripe_env
 
 load_dotenv()
 
@@ -89,6 +90,7 @@ async def _ensure_product(plan_id: str, name: str, combo: bool = False) -> str:
     try:
         await asyncio.to_thread(stripe.Product.retrieve, product_id)
     except stripe.InvalidRequestError:
+        stripe_env.guard_write(f"создание продукта {product_id}")
         await asyncio.to_thread(
             stripe.Product.create,
             id=product_id,
@@ -134,6 +136,7 @@ async def _ensure_price(
 
     # Цена/валюта/интервал разошлись с каталогом — Price неизменяем, заводим новый.
     # transfer_lookup_key снимает ключ со старого и архивирует его сам.
+    stripe_env.guard_write(f"создание Price {key}")
     price = await asyncio.to_thread(
         stripe.Price.create,
         product=product_id,

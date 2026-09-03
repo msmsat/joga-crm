@@ -41,11 +41,13 @@
 """
 import asyncio
 import inspect
+import logging
 import sys
 from datetime import datetime, timedelta, timezone
 from types import SimpleNamespace
 
 import pytest
+import stripe
 from fastapi import HTTPException
 from sqlalchemy import Update
 from sqlalchemy.exc import MissingGreenlet
@@ -495,22 +497,31 @@ class _ReconDB:
         self.commits = 0
         self._handed_out = []
 
+    def _pending_rows(self):
+        """Отбор как в самом запросе: проход берёт только `pending`. Без этого
+        повторный проход в тесте видел бы уже закрытую заявку, а в проде нет."""
+        return [row for row in self._rows if row.status == "pending"]
+
     def _snapshot(self):
         """Колоночный select: копии значений, не связанные с сессией."""
-        return [SimpleNamespace(**vars(row)) for row in self._rows]
+        return [SimpleNamespace(**vars(row)) for row in self._pending_rows()]
 
     def _entities(self):
         """Select по сущности: живые ORM-объекты под присмотром сессии."""
-        rows = [_ExpiringRow(row) for row in self._rows]
+        rows = [_ExpiringRow(row) for row in self._pending_rows()]
         self._handed_out.extend(rows)
         return rows
 
     async def execute(self, query):
         if isinstance(query, Update):
-            # Единственный UPDATE в проходе — закрытие заявки.
+            # Закрытие заявки. Статус читаем из самого запроса: проход закрывает
+            # заявки в РАЗНЫЕ состояния, и подменять их одним «cancelled» значит
+            # не проверять ровно то, что различает эти случаи.
+            params = query.compile().params
+            target = params.get("id_1")
             for row in self._rows:
-                if row.status == "pending":
-                    row.status = "cancelled"
+                if row.status == "pending" and (target is None or row.id == target):
+                    row.status = params["status"]
             return SimpleNamespace(rowcount=1)
         return SimpleNamespace(
             all=self._snapshot,
@@ -708,6 +719,108 @@ def test_a_broken_row_does_not_take_the_whole_pass_down(monkeypatch):
     assert applied == ["cs_ok"]
 
 
+def test_an_unreachable_account_is_not_hammered_every_hour(monkeypatch, caplog):
+    """Ключ платформы не имеет доступа к аккаунту студии — но заявка молодая.
+
+    Доступ мог пропасть на минуту: ротация ключа, сбой у Stripe. Терять из-за
+    этого живую заявку нельзя, поэтому её не трогаем. И тревогу не поднимаем:
+    сверка ходит раз в час, а схлопывание повторов в alerts живёт десять минут,
+    так что каждый такой проход давал бы отдельное сообщение.
+    """
+    _stub_connect(monkeypatch, raises=stripe.PermissionError("no access to acct_test"))
+    rows = [_pending()]
+    with caplog.at_level(logging.WARNING, logger=SP.logger.name):
+        assert _run(SP.reconcile_pending(_ReconDB(rows))) == 0
+    assert rows[0].status == "pending", "заявка закрыта из-за минутной потери доступа"
+    assert not [r for r in caplog.records if r.levelno >= logging.ERROR], "поднята тревога"
+
+
+def test_a_permanently_unreachable_account_is_parked_for_a_human(monkeypatch, caplog):
+    """Доступа к аккаунту нет сутки с лишним — это уже навсегда.
+
+    Приложение отключили в Stripe или аккаунта не существует вовсе. Ретрай этого
+    не починит НИКОГДА: заявка висела бы в pending вечно, каждый час поднимая
+    одну и ту же тревогу, и в этом шуме тонули бы настоящие. Закрываем — и ровно
+    одним сообщением зовём человека.
+
+    `failed`, а не `cancelled`: утверждать, что денег не было, мы не можем —
+    читать этот аккаунт больше нечем.
+    """
+    _stub_connect(monkeypatch, raises=stripe.PermissionError("no access to acct_test"))
+    rows = [_pending(created_at=datetime.utcnow() - timedelta(days=3))]
+    with caplog.at_level(logging.WARNING, logger=SP.logger.name):
+        assert _run(SP.reconcile_pending(_ReconDB(rows))) == 0
+    assert rows[0].status == "failed", rows[0].status
+    errors = [r for r in caplog.records if r.levelno >= logging.ERROR]
+    assert len(errors) == 1, f"тревог {len(errors)}, а заявка выбирается один раз"
+    assert "acct_1" in errors[0].getMessage(), "в тревоге не назван аккаунт"
+
+
+def test_an_unreachable_account_does_not_stop_the_other_rows(monkeypatch):
+    """Недоступный аккаунт одной студии не имеет права остановить сверку остальных
+    — ради этого проход и существует."""
+    async def fake_fetch(session_id, account_id):
+        if account_id == "acct_dead":
+            raise stripe.PermissionError("no access")
+        return SimpleNamespace(payment_status="paid", status="complete")
+
+    applied = []
+
+    async def fake_apply(db, session_id, *, account_id=None, attempt_id=None):
+        applied.append(session_id)
+        return True
+
+    monkeypatch.setattr(SP.stripe_connect, "fetch_session", fake_fetch)
+    monkeypatch.setattr(SP, "apply_paid", fake_apply)
+
+    rows = [
+        _pending(id=1, session_id="cs_dead", attempt_id="att_1", account_id="acct_dead"),
+        _pending(id=2, session_id="cs_ok", attempt_id="att_2"),
+    ]
+    assert _run(SP.reconcile_pending(_ReconDB(rows))) == 1
+    assert applied == ["cs_ok"]
+
+
+def test_a_parked_request_is_never_picked_up_again(monkeypatch, caplog):
+    """Повторный проход не трогает то, что закрыл предыдущий.
+
+    На этом и держится обещание «одна тревога, а не одна в час»: заявка уходит из
+    `pending`, и следующий отбор её уже не видит. Проверяем двумя проходами
+    подряд — вторым Stripe не спрашивается вовсе.
+    """
+    calls = []
+
+    async def fake_fetch(session_id, account_id):
+        calls.append(session_id)
+        raise stripe.PermissionError("no access to acct_test")
+
+    monkeypatch.setattr(SP.stripe_connect, "fetch_session", fake_fetch)
+
+    rows = [_pending(created_at=datetime.utcnow() - timedelta(days=3))]
+    db = _ReconDB(rows)
+
+    with caplog.at_level(logging.WARNING, logger=SP.logger.name):
+        assert _run(SP.reconcile_pending(db)) == 0
+        assert rows[0].status == "failed"
+        first_errors = len([r for r in caplog.records if r.levelno >= logging.ERROR])
+
+        assert _run(SP.reconcile_pending(db)) == 0
+        total_errors = len([r for r in caplog.records if r.levelno >= logging.ERROR])
+
+    assert len(calls) == 1, f"Stripe спрошен {len(calls)} раза — заявку выбрали повторно"
+    assert first_errors == 1 and total_errors == 1, "второй проход поднял вторую тревогу"
+    assert rows[0].status == "failed", "статус переписан повторным проходом"
+
+
+def test_a_paid_request_is_out_of_reach_of_the_pass(monkeypatch):
+    """Проведённую заявку сверка не трогает ни при каких ответах Stripe: отбор
+    идёт по `pending`, и статус — единственное, что её защищает."""
+    _stub_connect(monkeypatch, raises=stripe.PermissionError("no access"))
+    rows = [_pending(status="paid", created_at=datetime.utcnow() - timedelta(days=3))]
+    assert _run(SP.reconcile_pending(_ReconDB(rows))) == 0
+    assert rows[0].status == "paid"
+
+
 def test_the_reservation_happens_before_the_stripe_call():
     """Порядок и есть исправление: строка заявки коммитится ДО создания сессии.
     Обратный порядок — то самое окно, в котором оплата теряется целиком."""
@@ -795,6 +908,9 @@ def test_preflight_checks_are_actually_wired_into_the_run():
     src = inspect.getsource(preflight.main)
     assert "check_webhook_endpoints()" in src
     assert "check_duplicate_customers()" in src
+    # Связка «назначение окружения ↔ режим ключа ↔ база»: именно её отсутствие
+    # позволило боевому ключу смотреть в локальную базу с тестовыми заявками.
+    assert "check_environment_split()" in src
 
 
 # ─── 8. третий проход red team: новые поверхности ─────────────────────────────

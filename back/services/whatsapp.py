@@ -33,6 +33,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from models import StudioIntegration
+from services.studio_link import public_ref
 
 logger = logging.getLogger(__name__)
 
@@ -165,7 +166,7 @@ async def refresh_payment_status(db: AsyncSession, integ: StudioIntegration) -> 
 
 
 async def sync_templates(
-    token: str, waba_id: str, *, studio_id: int | None = None, langs: tuple[str, ...] | None = None,
+    token: str, waba_id: str, *, studio_ref: int | str | None = None, langs: tuple[str, ...] | None = None,
 ) -> dict[str, int]:
     """Заводит на WABA студии все 40 шаблонов на нужных языках. -> счётчики итогов.
 
@@ -175,8 +176,9 @@ async def sync_templates(
     и потом мозолили бы владельцу глаза отказами на языках, которых его студия
     в глаза не видела.
 
-    studio_id нужен кнопке «открыть раздел»: её адрес свой у каждой студии
-    (whatsapp_templates.url_button). Без него шаблоны создаются без кнопки.
+    studio_ref нужен кнопке «открыть раздел»: её адрес свой у каждой студии —
+    это публичный код студии из ссылки мини-приложения (services/studio_link,
+    whatsapp_templates.url_button). Без него шаблоны создаются без кнопки.
 
     Идемпотентна: уже существующий шаблон Meta отклоняет ошибкой, и это не сбой —
     просто считаем его в `exists`. Создание никому НЕ пишет: шаблон уходит на
@@ -200,7 +202,7 @@ async def sync_templates(
                 try:
                     async with session.post(
                         f"{GRAPH}/{waba_id}/message_templates",
-                        json=build_payload(event_id, lang, studio_id), headers=headers,
+                        json=build_payload(event_id, lang, studio_ref), headers=headers,
                     ) as resp:
                         if resp.status == 200:
                             result["created"] += 1
@@ -231,7 +233,8 @@ async def sync_templates_for_studio(db: AsyncSession, integ: StudioIntegration) 
     config = dict(integ.config or {})
     result = await sync_templates(
         config.get("token", ""), config.get("waba_id") or "",
-        studio_id=integ.studio_id, langs=(await _wa_lang(db, integ.studio_id),),
+        studio_ref=await public_ref(db, integ.studio_id),
+        langs=(await _wa_lang(db, integ.studio_id),),
     )
     config["templates_synced_at"] = datetime.utcnow().isoformat()
     config["templates_result"] = result

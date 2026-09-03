@@ -34,6 +34,7 @@ from routers.clients.subscriptions import attach_subscription
 from schemas._base import BaseSchema, OptPhone
 from services import platform_fee, stripe_connect
 from services.notifier import _fmt_amount, _studio_prefs
+from services.studio_link import public_ref
 
 from .miniapp import get_current_client, verify_init_data
 
@@ -367,7 +368,7 @@ async def _checkout_return_base(
         web_base = origin
 
     if not in_telegram and web_base:
-        return f"{web_base}/s/{client.studio_id}?pay="
+        return f"{web_base}/s/{await public_ref(db, client.studio_id)}?pay="
 
     telegram_channel = (await db.execute(
         select(BookingChannelConfig).where(

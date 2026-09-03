@@ -25,6 +25,7 @@ from services.client_agent import (
     reply,
     tools_for_client,
 )
+from services.studio_link import public_ref
 
 _TG_ID = 987654321
 _PHONE = "+420777000222"
@@ -184,7 +185,9 @@ async def _run():
             # здесь врёт после первого же круга.
             context = next(m["content"] for m in script2.calls[0]["messages"]
                            if "Ссылка на приложение" in m["content"])
-            assert f"/s/{ids['a']}" in context
+            # Ссылка — по публичному коду студии, а не по её id
+            # (back/services/studio_link.py).
+            assert f"/s/{await public_ref(db, ids['a'])}" in context
             assert "Адрес: Testovaci 1, Praha" in context
             assert "Телефон: +420777000111" in context
             # Часы работы — то, на чём агент раньше отговаривался ссылкой:

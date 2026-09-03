@@ -23,7 +23,9 @@ async function apiFetch<T>(path: string, options: ApiOptions = {}): Promise<T> {
   // её сами. Так открытые ручки витрины (каталог, расписание) отвечают ещё до
   // регистрации, а закрытые как отвечали 401, так и отвечают.
   const guestStudio = session ? null : getGuestStudio();
-  const query = guestStudio === null ? '' : `${path.includes('?') ? '&' : '?'}studio_id=${guestStudio}`;
+  const query = guestStudio === null
+    ? ''
+    : `${path.includes('?') ? '&' : '?'}studio_id=${encodeURIComponent(guestStudio)}`;
 
   const response = await fetch(`${BASE_URL}${path}${query}`, {
     ...rest,

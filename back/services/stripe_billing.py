@@ -45,9 +45,17 @@ from urllib.parse import urlparse
 import stripe
 from dotenv import load_dotenv
 
+from services import stripe_env
+from services.tax_rates import TaxApplication
+
 load_dotenv()
 
 logger = logging.getLogger(__name__)
+
+# Крикнуть на старте, если ключ не годится этому окружению. Приложение НЕ роняем —
+# останавливает изменяющие вызовы `stripe_env.guard_write` ниже, точечно и с
+# объяснением, что именно остановлено.
+stripe_env.log_status()
 
 # Тот же ключ платформы, что у Connect: аккаунт Velora один. Присваивание
 # глобальное и идемпотентное — какой бы модуль ни импортировался первым,
@@ -148,6 +156,94 @@ def invoice_payment_settings() -> dict:
         "payment_method_types": list(INVOICE_PAYMENT_METHODS),
         "payment_method_options": INVOICE_PAYMENT_OPTIONS,
     }
+
+
+def tax_params(tax: TaxApplication | None) -> dict:
+    """Налоговые параметры документа по принятому решению.
+
+    Одно место на все счета и сессии — иначе один путь уедет с ручной ставкой, а
+    соседний продолжит звать платный расчёт, и разницу заметит только баланс.
+
+    `automatic_tax` выставляется ЯВНО в обоих режимах, включая `False`. Умолчания
+    тут недостаточно: значение наследуется от подписки, а у заведённых по прежней
+    схеме подписок в нём стоит `enabled=true` — не сказав обратного, счёт продления
+    снова ушёл бы через платный расчёт.
+
+    Ручной и автоматический режимы взаимоисключающи по построению: `rate_ids` у
+    автоматического всегда пусты, и одновременно налог дважды не начислится.
+    """
+    if tax is None or tax.automatic:
+        return {"automatic_tax": {"enabled": True}}
+    return {
+        "automatic_tax": {"enabled": False},
+        # Ставки документа. У ручного режима без reverse charge их ровно одна; при
+        # reverse charge и вне охвата — ни одной, и налоговой строки не будет.
+        "default_tax_rates": list(tax.rate_ids),
+    }
+
+
+def _rates_or_clear(rate_ids) -> list | str:
+    """Список ставок для Stripe, а для пустого — пустая СТРОКА.
+
+    У подписки и её позиций Stripe различает «ставок нет» и «ставки убрать»: снятие
+    задаётся пустой строкой (`Literal['']|List[str]` в SDK и в описании параметра).
+    Пустой список на снятие не годится — прежние ставки останутся, и подписка,
+    переведённая на reverse charge, продолжила бы начислять 21 %.
+    """
+    return list(rate_ids) if rate_ids else ""
+
+
+def _subscription_tax_params(tax: TaxApplication) -> dict:
+    """Налоговые параметры САМОЙ подписки — то, что унаследуют счета автопродлений.
+
+    Ключевое место всей миграции. Счёт очередного периода Stripe создаёт сам, без
+    нашего кода: `default_tax_rates` он берёт у подписки. Значит правильный налог на
+    автопродлении обеспечивается не вебхуком, который может не дойти, а состоянием
+    подписки, которое мы поддерживаем при каждом изменении.
+    """
+    if tax.automatic:
+        return {"automatic_tax": {"enabled": True}, "default_tax_rates": ""}
+    return {"automatic_tax": {"enabled": False}, "default_tax_rates": _rates_or_clear(tax.rate_ids)}
+
+
+async def set_subscription_tax(subscription_id: str, tax: TaxApplication):
+    """Привести налоговые настройки существующей подписки к решению. Идемпотентно.
+
+    Отдельная функция, потому что зовут её три разных сценария: сверка после смены
+    налогового профиля студии, обработка вебхука и миграция уже заведённых подписок.
+    Прораций не создаёт — меняются только налоговые поля, цена и позиции не трогаются
+    (`proration_behavior="none"` на всякий случай: пустая правка не должна однажды
+    родить счёт на копейку из-за изменившегося умолчания Stripe).
+    """
+    stripe_env.guard_write("правка налоговых настроек подписки")
+    subscription = await asyncio.to_thread(stripe.Subscription.retrieve, subscription_id)
+    item_id = subscription["items"].data[0].id
+    return await asyncio.to_thread(
+        stripe.Subscription.modify,
+        subscription_id,
+        proration_behavior="none",
+        # Ставки позиции перекрывают ставки подписки, поэтому чистим и их: иначе
+        # прежняя ставка на позиции пережила бы смену режима незамеченной.
+        items=[{"id": item_id, "tax_rates": _rates_or_clear(tax.rate_ids if tax.manual else ())}],
+        **_subscription_tax_params(tax),
+    )
+
+
+def item_tax_params(tax: TaxApplication | None) -> dict:
+    """Налоговые поля ПОЗИЦИИ счёта.
+
+    Позиция важнее документа: заданные у неё ставки перекрывают `default_tax_rates`
+    счёта (docs.stripe.com/tax/tax-rates). Поэтому в ручном режиме ставим их именно
+    здесь — иначе достаточно было бы одной забытой позиции с чужими ставками, чтобы
+    сумма разошлась с нашим снимком.
+
+    `tax_code` в ручном режиме не передаём вовсе: это подсказка для Stripe Tax, и
+    при выключенном автоматическом расчёте она ни на что не влияет, а в документе
+    выглядит как признак того, что расчёт всё ещё чужой.
+    """
+    if tax is None or tax.automatic:
+        return {"tax_behavior": TAX_BEHAVIOR, "tax_code": TAX_CODE}
+    return {"tax_behavior": TAX_BEHAVIOR, "tax_rates": list(tax.rate_ids)}
 
 
 async def ensure_customer(
@@ -265,7 +361,7 @@ async def delete_tax_id(customer_id: str, tax_id: str) -> bool:
 
     Номер вводит сам плательщик на странице Checkout (`tax_id_collection`), и
     reverse charge Stripe Tax применяет по ФОРМАТУ номера, не дожидаясь сверки с
-    VIES — проверено вызовами `tax.Calculation` на боевом ключе, не по докам:
+    VIES — проверено вызовами `tax.Calculation` на боевом ключе (исторический замер 13.08.2026; повторять на боевом ключе НЕЛЬЗЯ — вызов платный):
     `DE000000000` обнуляет налог ровно так же, как настоящий `DE811907980` (оба дали
     39.00 вместо 47.19). Сверка идёт асинхронно и приезжает вебхуком
     `customer.tax_id.updated`; в test-режиме она не выполняется вовсе — статус
@@ -311,6 +407,7 @@ async def create_subscription_checkout(
     cancel_url: str,
     *,
     trial_end: int | None = None,
+    tax: TaxApplication | None = None,
 ) -> tuple[str, str]:
     """Страница оплаты подписки картой → (session_id, url).
 
@@ -320,10 +417,15 @@ async def create_subscription_checkout(
 
     Что и почему тут стоит:
 
-    * `automatic_tax` — ставку определяет Stripe по адресу плательщика и его
-      статусу. Он же знает ставку каждой страны ЕС, применяет reverse charge и
-      печатает на фактуре «Reverse charge» там, где он применён. Своей таблицы
-      ставок в проекте нет и быть не должно.
+    * `automatic_tax` — в режиме `stripe_auto` ставку определяет Stripe (платно, по
+      факту финализации счёта). В режиме `manual` он выключается ЯВНО, а ставка
+      приезжает готовой в `tax`: считает её `services/tax_policy`, объекты Tax Rate
+      подбирает `services/tax_rates`. Значение «по умолчанию» тут не годится —
+      подписка наследует свой флаг, и молчание означало бы прежний платный расчёт.
+    * `subscription_data.default_tax_rates` — ставки уезжают НА ПОДПИСКУ, а не
+      только на первый счёт. Это и есть механизм, которым облагаются будущие
+      автопродления: Stripe создаёт счёт цикла сам, нашего кода в этот момент рядом
+      нет, и `default_tax_rates` счёта он берёт у подписки.
     * `tax_id_collection` тут НЕТ, и это главное отличие от прежней схемы. Пока
       номер НДС спрашивал Checkout, любой мог вписать туда правдоподобный мусор и
       получить счёт без налога: Stripe Tax обнуляет НДС по ФОРМАТУ номера, а его
@@ -344,9 +446,12 @@ async def create_subscription_checkout(
 
     Номер карты к нам не попадает ни на каком шаге — только cus_…/pm_… и маска.
     """
+    stripe_env.guard_write("создание Checkout Session подписки")
     subscription_data: dict = {"metadata": metadata}
     if trial_end is not None:
         subscription_data["trial_end"] = trial_end
+    if tax is not None and tax.manual:
+        subscription_data["default_tax_rates"] = list(tax.rate_ids)
 
     session = await asyncio.to_thread(
         stripe.checkout.Session.create,
@@ -355,7 +460,7 @@ async def create_subscription_checkout(
         line_items=[{"price": price_id, "quantity": 1}],
         subscription_data=subscription_data,
         metadata=metadata,
-        automatic_tax={"enabled": True},
+        automatic_tax={"enabled": tax is None or tax.automatic},
         customer_update={"address": "auto", "name": "auto"},
         success_url=success_url,
         cancel_url=cancel_url,
@@ -439,6 +544,7 @@ async def drop_credit_balance(customer_id: str) -> int:
 async def change_subscription_price(
     subscription_id: str, price_id: str, metadata: dict | None = None,
     *, proration_behavior: str = "none", billing_cycle_anchor: str | None = None,
+    tax: TaxApplication | None = None,
 ):
     """Смена тарифа или периода на существующей подписке. Всегда НЕМЕДЛЕННАЯ.
 
@@ -462,6 +568,7 @@ async def change_subscription_price(
     возвращаются к Business — платный функционал бесплатно; при повышении —
     наоборот, студия платит Business и откатывается на Start.
     """
+    stripe_env.guard_write("смена тарифа подписки")
     subscription = await asyncio.to_thread(stripe.Subscription.retrieve, subscription_id)
     item_id = subscription["items"].data[0].id
     params: dict = {
@@ -469,6 +576,13 @@ async def change_subscription_price(
         "proration_behavior": proration_behavior,
         "expand": ["latest_invoice"],
     }
+    # Налог обновляем ВМЕСТЕ с ценой, а не отдельным вызовом: между двумя запросами
+    # подписка успевает выставить счёт прорации, и он ушёл бы по прежним правилам.
+    # Позиция подписки при этом чистится явно — ставки позиции перекрывают
+    # `default_tax_rates`, и оставленная там прежняя ставка пережила бы смену режима.
+    if tax is not None:
+        params.update(_subscription_tax_params(tax))
+        params["items"][0]["tax_rates"] = _rates_or_clear(tax.rate_ids if tax.manual else ())
     if metadata is not None:
         params["metadata"] = metadata
     if billing_cycle_anchor is not None:
@@ -700,6 +814,7 @@ async def extend_subscription(subscription_id: str, price_id: str, trial_end: in
 async def create_fee_invoice(
     customer_id: str, amount: int, currency: str, description: str,
     days_until_due: int, metadata: dict, collection_method: str = "send_invoice",
+    tax: TaxApplication | None = None,
 ):
     """Счёт на конкретную сумму → ФИНАЛИЗИРОВАННЫЙ Invoice. Офлайн-комиссия и
     продление уже оплаченного тарифа.
@@ -722,6 +837,7 @@ async def create_fee_invoice(
     Финализируем сами: у финализированного счёта сразу есть номер, PDF и
     hosted-ссылка — их надо показать студии и зеркалить в БД.
     """
+    stripe_env.guard_write("создание счёта")
     invoice = await asyncio.to_thread(
         stripe.Invoice.create,
         customer=customer_id,
@@ -730,11 +846,10 @@ async def create_fee_invoice(
         **({"days_until_due": days_until_due} if collection_method == "send_invoice" else {}),
         auto_advance=True,
         pending_invoice_items_behavior="exclude",
-        # Налог считает Stripe Tax, как и у счетов за тариф. Раньше его тут не было
-        # вовсе: комиссия уходила студии без НДС, а подписка — с ним. Одна и та же
-        # платформа не может продавать одной студии часть услуг с налогом, а часть
-        # без; недобранный НДС при этом — обязательство Velora, а не студии.
-        automatic_tax={"enabled": True},
+        # Налог — тем же решением, что и у счетов за тариф. Одна и та же платформа
+        # не может продавать одной студии часть услуг с налогом, а часть без;
+        # недобранный НДС при этом — обязательство Velora, а не студии.
+        **tax_params(tax),
         # Карта (а с ней Apple Pay и Google Pay) и банковский перевод — оба сразу.
         # Без явного списка счёт наследует способы у подписки, а у заведённых по
         # прежней схеме там один перевод, и страница открывалась без карты.
@@ -748,14 +863,13 @@ async def create_fee_invoice(
         amount=amount,
         currency=currency,
         description=description,
-        # ОБЯЗАТЕЛЬНО вместе с automatic_tax на счёте. Позиция, заданная голой
-        # суммой, порождает у Stripe одноразовый Price без признака обложения, и
-        # налоговый расчёт отваливается целиком: «The price … does not have a tax
-        # behavior set». Признак и категория — те же, что у Prices подписки
-        # (services/stripe_catalog берёт их отсюда), иначе комиссия облагалась бы
-        # иначе, чем тариф, у одного и того же продавца.
-        tax_behavior=TAX_BEHAVIOR,
-        tax_code=TAX_CODE,
+        # `tax_behavior` обязателен в ОБОИХ режимах. Позиция, заданная голой суммой,
+        # порождает у Stripe одноразовый Price без признака обложения, и расчёт
+        # отваливается целиком: «The price … does not have a tax behavior set».
+        # `exclusive` — тот же признак, что у Prices подписки (services/stripe_catalog
+        # берёт его отсюда), иначе комиссия облагалась бы иначе, чем тариф, у одного
+        # и того же продавца. В ручном режиме сюда же уезжают сами ставки.
+        **item_tax_params(tax),
     )
     finalized = await asyncio.to_thread(stripe.Invoice.finalize_invoice, invoice.id)
     # Письмо со счётом — отдельным вызовом: финализация сама его не шлёт, а
@@ -774,6 +888,7 @@ async def create_fee_invoice(
 
 async def create_settled_invoice(
     customer_id: str, amount: int, currency: str, description: str, metadata: dict,
+    tax: TaxApplication | None = None,
 ):
     """Фактура за деньги, которые УЖЕ получены → финализированный и закрытый Invoice.
 
@@ -794,6 +909,7 @@ async def create_settled_invoice(
     InvoiceItem без него становится отложенным и приклеится к следующему счёту
     подписки, раздув сумму за тариф на величину комиссии.
     """
+    stripe_env.guard_write("выпуск фактуры за удержанную комиссию")
     invoice = await asyncio.to_thread(
         stripe.Invoice.create,
         customer=customer_id,
@@ -802,9 +918,9 @@ async def create_settled_invoice(
         days_until_due=DAYS_UNTIL_DUE,
         auto_advance=False,
         pending_invoice_items_behavior="exclude",
-        # Налог считает Stripe Tax — фактура за комиссию такой же документ, как
-        # счёт за тариф, и выпустить её без НДС нельзя.
-        automatic_tax={"enabled": True},
+        # Налог — тем же решением, что у счёта за тариф: фактура за комиссию такой
+        # же документ, и выпустить её без налоговой строки нельзя.
+        **tax_params(tax),
         metadata=metadata,
     )
     await asyncio.to_thread(
@@ -814,14 +930,9 @@ async def create_settled_invoice(
         amount=amount,
         currency=currency,
         description=description,
-        # ОБЯЗАТЕЛЬНО вместе с automatic_tax на счёте. Позиция, заданная голой
-        # суммой, порождает у Stripe одноразовый Price без признака обложения, и
-        # налоговый расчёт отваливается целиком: «The price … does not have a tax
-        # behavior set». Признак и категория — те же, что у Prices подписки
-        # (services/stripe_catalog берёт их отсюда), иначе комиссия облагалась бы
-        # иначе, чем тариф, у одного и того же продавца.
-        tax_behavior=TAX_BEHAVIOR,
-        tax_code=TAX_CODE,
+        # См. create_fee_invoice: признак обложения обязателен в обоих режимах, а в
+        # ручном сюда же уезжают ставки — позиция перекрывает `default_tax_rates`.
+        **item_tax_params(tax),
     )
     finalized = await asyncio.to_thread(stripe.Invoice.finalize_invoice, invoice.id)
     return await asyncio.to_thread(
@@ -829,7 +940,7 @@ async def create_settled_invoice(
     )
 
 
-async def open_or_new_invoice(customer_id: str, subscription_id: str):
+async def open_or_new_invoice(customer_id: str, subscription_id: str, tax: TaxApplication | None = None):
     """Счёт, который студии реально надо оплатить прямо сейчас, или None.
 
     Зачем не `subscription.latest_invoice`: при смене тарифа посреди периода Stripe
@@ -857,7 +968,7 @@ async def open_or_new_invoice(customer_id: str, subscription_id: str):
         "customer": customer_id,
         "subscription": subscription_id,
         "collection_method": method,
-        "automatic_tax": {"enabled": True},
+        **tax_params(tax),
         # КРИТИЧНО: по умолчанию Stripe ИСКЛЮЧАЕТ отложенные позиции из нового счёта
         # (_invoice_create_params.py: «Defaults to exclude if the parameter is omitted»).
         # Прорация за апгрейд лежит именно в них — без include счёт выйдет пустым,
@@ -1140,6 +1251,12 @@ def parse_webhook(payload: bytes, signature: str) -> dict | None:
 
 
 if __name__ == "__main__":
+    # Самопроверка сети не касается — все вызовы Stripe ниже подменены, — но страж
+    # ключей об этом не знает и справедливо останавливает запись на боевом ключе.
+    # Подставляем заведомо тестовые: проверяем СОСТАВ параметров, а не аккаунт.
+    os.environ["STRIPE_SECRET_KEY"] = "sk_test_selfcheck"
+    os.environ["STRIPE_PUBLISHABLE_KEY"] = "pk_test_selfcheck"
+
     # Без секрета вебхука любое событие отбрасывается, а не принимается на веру.
     _saved, WEBHOOK_SECRET = WEBHOOK_SECRET, ""
     assert parse_webhook(b'{"type":"invoice.paid"}', "sig") is None
@@ -1185,6 +1302,25 @@ if __name__ == "__main__":
     assert "tax_id_collection" not in _session, "VAT снова спрашивают у Stripe — дыра мимо VIES"
     assert _session["customer_update"] == {"address": "auto", "name": "auto"}
     assert "billing_address_collection" not in _session, "auto по умолчанию: улицу у физлица не спрашиваем"
+
+    # Ручной режим на той же странице: платный расчёт выключается ЯВНО, а ставки
+    # уезжают НА ПОДПИСКУ — иначе счета автопродлений останутся без налога.
+    from services.tax_rates import TaxApplication as _TaxApp
+
+    _session.clear()
+    asyncio.run(create_subscription_checkout(
+        "cus_A", "price_1", {}, "s", "c",
+        tax=_TaxApp(automatic=False, rate_ids=("txr_1",), customer_tax_exempt="none", decision=None),
+    ))
+    assert _session["automatic_tax"] == {"enabled": False}, "в ручном режиме платный расчёт обязан быть выключен явно"
+    assert _session["subscription_data"]["default_tax_rates"] == ["txr_1"]
+    assert "tax_id_collection" not in _session, "ручной режим не повод возвращать дыру мимо VIES"
+    _session.clear()
+    asyncio.run(create_subscription_checkout(
+        "cus_A", "price_1", {}, "s", "c",
+        tax=_TaxApp(automatic=False, rate_ids=(), customer_tax_exempt="reverse", decision=None),
+    ))
+    assert _session["subscription_data"]["default_tax_rates"] == [], "reverse charge — без ставки, отметку печатает Stripe по tax_exempt"
     # Ключ идемпотентности: разные студии не сталкиваются, а двойной клик — да.
     _first = _session["idempotency_key"]
     _session.clear()

@@ -16,6 +16,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from database import get_db
 from models import BookingChannelConfig, Studio
 from services import inbound
+from services.studio_link import ref_of
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -63,13 +64,15 @@ async def greeting(db, studio_id: int) -> dict:
     """
     # Studio.name не nullable в схеме, но здесь мы вне транзакции создания
     # студии — пустая строка на всякий случай не рвёт фразу знаком «« »».
-    studio_name = (await db.execute(
-        select(Studio.name).where(Studio.id == studio_id))).scalar_one_or_none() or ""
+    studio = (await db.execute(
+        select(Studio.name, Studio.public_code).where(Studio.id == studio_id))).first()
+    studio_name = (studio.name if studio else None) or ""
     name_part = f" «{escape(studio_name, quote=False)}»" if studio_name else ""
     return {
         "text": _START_INTRO.format(studio_name=name_part) + _START_CTA,
         "parse_mode": "HTML",
-        "button": {"text": _BUTTON_TEXT, "url": f"{MINIAPP_URL}/s/{studio_id}"},
+        # Ссылка — по публичному коду студии, а не по её id (services/studio_link).
+        "button": {"text": _BUTTON_TEXT, "url": f"{MINIAPP_URL}/s/{ref_of(studio, studio_id)}"},
     }
 
 

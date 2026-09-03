@@ -1,4 +1,4 @@
-from datetime import date, datetime, timedelta
+from datetime import date, datetime
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import func, select, update
@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_db
 from dependencies import get_current_user, get_scoped_lesson, get_studio_context, StudioContext
-from models import Client, ClientPayment, Reservation, User
+from models import Client, ClientPayment, Reservation, Studio, User
 # Долг за занятие гасит тот же движок, что и касса: см. pay_reservation ниже.
 from routers.checkout.router import perform_pay
 from schemas.checkout import CheckoutPayRequest
@@ -14,7 +14,7 @@ from schemas.schedule.reservations import ReservationCreate, ReservationPayReque
 from services.booking_access import (
     assert_can_book, commit_reservation, next_free_spot, resolve_coverage,
 )
-from services.booking_rules import load_rules
+from services.booking_rules import assert_staff_bookable, assert_staff_cancellable, load_rules
 from services.notifier import lesson_context, notify
 from services.subscription_charge import (
     activate_pending_after_visit, charge_reservation, notify_subscription_remaining,
@@ -44,10 +44,14 @@ async def create_reservation(
     # публичной брони, public.py: cancelled → 404), значит и c1/a1/t1 не шлём.
     if lesson.status == "cancelled":
         raise HTTPException(status_code=400, detail="Занятие отменено — запись невозможна")
-    # Записать менее чем за 2 часа до начала нельзя (правило Журнала).
-    # ponytail: фикс-окно 2ч; вынести в настройки студии — если попросят.
-    if lesson.start_time < datetime.now() + timedelta(hours=2):
-        raise HTTPException(status_code=400, detail="Записать на занятие можно не позднее чем за 2 часа до начала")
+    # Запись за стойкой: администратора держит только то, что занятие уже
+    # прошло (services/booking_rules, раздел «Полномочия студии за стойкой»).
+    # Окно «не позднее чем за N минут» — правило САМОСТОЯТЕЛЬНОЙ записи
+    # клиента; к человеку, который пришёл за 20 минут на свободное место, оно
+    # отношения не имеет, и раньше стоявшее здесь фикс-окно в 2 часа заставляло
+    # администратора либо отказывать ему, либо вести мимо CRM.
+    studio = await db.get(Studio, ctx.studio_id)
+    assert_staff_bookable(lesson, studio)
 
     client = (await db.execute(
         select(Client).where(Client.id == body.client_id, Client.studio_id == ctx.studio_id)
@@ -141,15 +145,16 @@ async def cancel_reservation(
     if reservation.status == "cancelled":
         raise HTTPException(status_code=409, detail="Запись уже отменена")
 
-    # Снять клиента менее чем за 2 часа до начала нельзя (правило Журнала). Из-за
-    # этого события a2/t2 «отмена <1ч/<2ч» больше не могут сработать отсюда —
-    # блок удалён; если понадобятся, их надо врезать в другой путь отмены.
-    # ponytail: фикс-окно 2ч; вынести в настройки студии — если попросят.
-    # Неподтверждённая бронь (pending) из-под этого правила выведена: отклонить
-    # заявку студия обязана мочь в любой момент — иначе за два часа до занятия
-    # она превращается в бронь, которую нельзя ни подтвердить, ни снять.
-    if reservation.status != "pending" and lesson.start_time < datetime.now() + timedelta(hours=2):
-        raise HTTPException(status_code=400, detail="Снять с занятия можно не позднее чем за 2 часа до начала")
+    # Снятие за стойкой: пока занятие не кончилось — можно, место надо
+    # освободить, пока оно ещё кому-то нужно. Исключения (pending, attended) и
+    # обоснование — services/booking_rules, «Полномочия студии за стойкой».
+    #
+    # События a2/t2 «клиент отменил в последний момент» отсюда по-прежнему не
+    # уходят, и теперь это выбор, а не следствие запрета: снял клиента сам
+    # администратор — рассказывать администратору о его же действии незачем.
+    # Их живой путь — отмена клиентом из мини-приложения (miniapp_lessons.py).
+    studio = await db.get(Studio, ctx.studio_id)
+    assert_staff_cancellable(reservation, lesson, studio)
 
     reservation.status = "cancelled"
     reservation.cancelled_at = datetime.now()

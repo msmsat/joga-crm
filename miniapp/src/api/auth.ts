@@ -15,7 +15,8 @@ export interface UserResponse {
 
 export interface AuthTelegramRequest {
   init_data: string;
-  studio_id: number;
+  /** Публичный код студии из ссылки — строка, не номер (см. lib/entry.ts). */
+  studio_id: string;
   referral_code?: string;
 }
 
@@ -47,7 +48,7 @@ export interface EmailCodeResponse {
 }
 
 export interface VerifyEmailRequest {
-  studio_id: number;
+  studio_id: string;
   email: string;
   code: string;
   name?: string;
@@ -59,13 +60,13 @@ export interface VerifyEmailRequest {
  * logo_url резолвим до абсолютного URL (см. resolveImageUrl) — тот же фикс,
  * что и в getStudioCatalog.
  */
-export const getStudioBrand = async (studioId: number): Promise<StudioBrand> => {
-  const brand = await apiGet<StudioBrand>(`/global/public/${studioId}/brand`);
+export const getStudioBrand = async (studioRef: string): Promise<StudioBrand> => {
+  const brand = await apiGet<StudioBrand>(`/global/public/${encodeURIComponent(studioRef)}/brand`);
   return { ...brand, logo_url: resolveImageUrl(brand.logo_url) ?? null };
 };
 
-export const requestEmailCode = (studioId: number, email: string): Promise<EmailCodeResponse> =>
-  apiPost('/global/auth/email/request', { studio_id: studioId, email });
+export const requestEmailCode = (studioRef: string, email: string): Promise<EmailCodeResponse> =>
+  apiPost('/global/auth/email/request', { studio_id: studioRef, email });
 
 /**
  * Сверка кода. Без сессии — вход/регистрация; с живой сессией apiPost сам

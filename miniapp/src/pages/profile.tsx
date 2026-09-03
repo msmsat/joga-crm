@@ -153,7 +153,9 @@ export default function Profile({
   if (isLinkEmailOpen && catalog) {
     return (
       <Auth
-        studioId={catalog.studio.id}
+        // Студия здесь известна номером — каталог отдаёт id, а не публичный
+        // код; сервер принимает и его (back/services/studio_link.py).
+        studioRef={String(catalog.studio.id)}
         linkMode
         onDone={() => {
           setIsLinkEmailOpen(false);

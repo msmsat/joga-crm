@@ -28,14 +28,15 @@ import { applyBranding, applyDefaultLanguage } from '../lib/branding';
  * кабинет должен вернуться на место.
  */
 export default function Auth({
-  studioId,
+  studioRef,
   referralCode,
   linkMode = false,
   anonymous = false,
   onDone,
   onCancel,
 }: {
-  studioId: number;
+  /** Публичный код студии из ссылки (lib/entry.ts). */
+  studioRef: string;
   referralCode?: string;
   linkMode?: boolean;
   anonymous?: boolean;
@@ -56,7 +57,7 @@ export default function Auth({
   useEffect(() => {
     // Витрина студии — единственное, что можно показать до входа. Провал не
     // блокирует форму: шапка останется нейтральной, войти всё равно можно.
-    getStudioBrand(studioId)
+    getStudioBrand(studioRef)
       .then((data) => {
         setBrand(data);
         // Фирменный цвет и тёмная тема — с первого экрана: логинится клиент
@@ -65,7 +66,7 @@ export default function Auth({
         applyDefaultLanguage(data.language);
       })
       .catch(() => {});
-  }, [studioId]);
+  }, [studioRef]);
 
   useEffect(() => {
     if (step === 'code') codeInput.current?.focus();
@@ -75,7 +76,7 @@ export default function Auth({
     setBusy(true);
     setError(null);
     try {
-      const { is_new } = await requestEmailCode(studioId, email.trim());
+      const { is_new } = await requestEmailCode(studioRef, email.trim());
       // В режиме привязки имя не спрашиваем никогда: карточка уже существует,
       // и переименовывать её подтверждением почты нечестно.
       setNeedsName(is_new && !linkMode);
@@ -93,7 +94,7 @@ export default function Auth({
     try {
       const { token, user } = await verifyEmailCode(
         {
-          studio_id: studioId,
+          studio_id: studioRef,
           email: email.trim(),
           code: code.trim(),
           name: needsName ? name.trim() : undefined,

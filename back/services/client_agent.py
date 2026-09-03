@@ -33,6 +33,7 @@ from services import ai_language, contacts, llm
 from services.ai_quota import check_ai_quota
 from services.ai_tools import as_tool_message, sanitize_external
 from services.ai_usage import record_usage
+from services.studio_link import ref_of
 
 logger = logging.getLogger(__name__)
 
@@ -288,7 +289,8 @@ def _context_prompt(studio: Studio | None, client: Client | None, today: date, s
     Адрес, телефон и часы инструментом не отдаются намеренно: это поля уже
     загруженной студии, а инструмент за ними стоил бы лишний круг к модели —
     те самые секунды ожидания в мессенджере. Ссылка на приложение здесь по той
-    же причине: она не данные, а константа MINIAPP_URL + /s/{studio_id}, и
+    же причине: она не данные, а константа MINIAPP_URL + публичный код студии
+    (services/studio_link), и
     когда её приходилось спрашивать инструментом, модель на дешёвом уровне
     вместо вызова просто выдумывала адрес вида «velora.test».
 
@@ -299,7 +301,7 @@ def _context_prompt(studio: Studio | None, client: Client | None, today: date, s
         f"Студия: {studio.name if studio else ''}",
         f"Сегодня: {today.isoformat()}",
         f"Валюта: {(studio.currency if studio else None) or 'EUR'}",
-        f"Ссылка на приложение студии (записаться, абонемент): {MINIAPP_URL}/s/{studio_id}",
+        f"Ссылка на приложение студии (записаться, абонемент): {MINIAPP_URL}/s/{ref_of(studio, studio_id)}",
     ]
     # Пустые поля не печатаем вовсе: строка «Адрес: None» — приглашение
     # ответить клиенту «None».

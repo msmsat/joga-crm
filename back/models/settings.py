@@ -624,6 +624,35 @@ class BillingInvoice(Base):
     # из самой CRM (services/offline_fee_billing._send_reminders).
     reminder_sent_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=False), nullable=True)
 
+    # --- Налоговый снимок на момент выставления ----------------------------
+    # Именно СНИМОК, а не ссылка на профиль плательщика: реквизиты меняются, номер
+    # НДС аннулируют, ставки пересматривают — а документ, однажды выставленный,
+    # обязан оставаться объяснимым тем правилом, по которому его посчитали.
+    # Пересчитывать историю по текущему профилю нельзя ни при каких условиях.
+    #
+    # Заполняются в ручном налоговом режиме (services/billing_tax.snapshot). У
+    # счетов, выставленных при automatic tax, здесь NULL — и это честный признак
+    # «считал Stripe, разбираться в его выгрузках».
+    #
+    # taxable / reverse_charge / exempt / out_of_scope — исходы решения. Ноль в
+    # tax_amount сам по себе ничего не объясняет: у reverse_charge и у освобождения
+    # он одинаковый, а основания разные, и в фактуре они выглядят по-разному.
+    tax_outcome: Mapped[Optional[str]] = mapped_column(String(24), nullable=True)
+    # Машинный код правила: domestic_standard_rate, eu_b2b_reverse_charge и т.д.
+    tax_basis: Mapped[Optional[str]] = mapped_column(String(48), nullable=True)
+    tax_rate_percent: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    # Налог в МЛАДШИХ единицах tax_currency. Сумма счёта (amount) остаётся НЕТТО:
+    # цены каталога заданы без налога, и смешивать их значило бы менять смысл поля,
+    # на которое смотрит вся остальная бухгалтерия.
+    tax_amount: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    tax_currency: Mapped[Optional[str]] = mapped_column(String(3), nullable=True)
+    tax_jurisdiction: Mapped[Optional[str]] = mapped_column(String(8), nullable=True)
+    # Версия набора правил (services/tax_policy.RULESET_VERSION).
+    tax_ruleset_version: Mapped[Optional[str]] = mapped_column(String(32), nullable=True)
+    # Короткий след «на чём основано»: режим, юрисдикция, состояние проверки VAT,
+    # применённые Tax Rate. Номера НДС и персональных данных здесь нет.
+    tax_evidence: Mapped[Optional[str]] = mapped_column(String(400), nullable=True)
+
     studio: Mapped["Studio"] = relationship(back_populates="billing_invoices")
     user: Mapped[Optional["User"]] = relationship(back_populates="billing_invoices")
 

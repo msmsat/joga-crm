@@ -204,6 +204,51 @@
 **Backend (Layered API):**
 - `routers/` (Endpoints) -> `schemas.py` (Pydantic validation) -> `models.py` (SQLAlchemy ORM) -> `database.py`.
 
+
+### 💶 Налог платформенного биллинга (контур A)
+
+Налог по счетам **Velora → студия** считает СВОЙ модуль, а не платный Stripe Tax.
+Переключатель — `BILLING_TAX_MODE`: `stripe_auto` (прежнее поведение, по умолчанию)
+или `manual`. Смена режима — сознательное действие администратора, а не следствие
+выката кода.
+
+| Модуль | Ответственность |
+|---|---|
+| `back/services/tax_policy.py` | Правила и арифметика. Ни Stripe, ни БД, ни сети. Пять исходов: `taxable`, `reverse_charge`, `exempt`, `out_of_scope`, `requires_review` |
+| `back/services/tax_rates.py` | Перевод решения в параметры Stripe: подбор ручных Tax Rate, `Customer.tax_exempt`. Второй копии правил здесь нет |
+| `back/services/billing_tax.py` | Единый вход для всех денежных путей: собрать профиль → решить → оформить → снять снимок |
+| `back/services/stripe_env.py` | Страж режима ключей: боевой ключ не работает вне production и под pytest |
+| `scripts/sync_tax_rates.py` | Идемпотентное заведение Tax Rate. dry-run по умолчанию |
+| `scripts/migrate_tax_mode.py` | Разбор существующих объектов Stripe перед переходом. dry-run по умолчанию |
+
+**Правила, которые нельзя нарушать:**
+
+1. `requires_review` — это НЕ ноль. Документ в этом состоянии не выставляется вовсе;
+   счёт без налога хуже отсутствующего. Ноль бывает у четырёх РАЗНЫХ исходов, и
+   схлопывать их в одно число запрещено — у каждого своя строка в декларации.
+2. Бизнес-факты (страна продавца, статус плательщика, режим B2C, порог 10 000 €)
+   в коде не выводятся. Они приходят из `BILLING_SELLER_*` / `BILLING_EU_B2C_SCHEME`
+   и активируются только `BILLING_TAX_POLICY_CONFIRMED == tax_policy.RULESET_VERSION`.
+   Правило «оборот в нашей базе меньше порога» реализовывать НЕЛЬЗЯ: порог считается
+   по всему обороту бизнеса и по двум годам.
+3. Налог на **автопродлении** держится на состоянии ПОДПИСКИ
+   (`default_tax_rates`), которое поддерживает ежечасный `sync_subscription_taxes`.
+   Вебхук `invoice.created` — вторая линия, а не единственная: событие может не дойти,
+   а счёт всё равно выставится.
+4. Ставки на позиции перекрывают ставки документа — проставляем ОБЕ.
+   Снятие ставок задаётся пустой **строкой**, пустой список ничего не убирает.
+5. Reverse charge оформляется `Customer.tax_exempt="reverse"` (Stripe печатает отметку
+   на PDF), а НЕ ставкой 0 %.
+6. Tax Rate заводит только `scripts/sync_tax_rates.py`. Путь выставления счёта их
+   лишь ищет: `percentage`/`country` у существующего объекта неизменяемы.
+7. Контур B (Connect, оплаты клиентов студиям) налога платформы не касается вообще.
+8. Платные `/v1/tax/calculations` и `/v1/tax/transactions` не зовём нигде и никогда —
+   это отдельная статья расходов, и выключением `automatic_tax` она не лечится.
+
+*Проверки:* `pytest tests/test_tax_policy.py tests/test_manual_tax_billing.py
+tests/test_manual_tax_renewal.py tests/test_stripe_env_guard.py`;
+готовность режима — `python -m scripts.preflight`.
+
 ---
 
 ## 🎨 6. UI/UX Design System (Strict adherence required)

@@ -31,7 +31,8 @@ from .plans import (
     PLANS, PERIOD_DISCOUNTS, PERCENT_ONLY_RATE, COMBO_PERCENT_RATE, COMBO_FIXED,
     MIN_MONTHLY_FEE, TRIAL_DAYS, TRIAL_PLAN, amount_for, canon, tier,
 )
-from services import offline_fee_billing, platform_fee, stripe_billing, stripe_catalog, vies
+from services.tax_rates import TaxRateMissing, TaxReviewRequired
+from services import billing_tax, offline_fee_billing, platform_fee, stripe_billing, stripe_catalog, vies
 from activity import log_activity
 from services.exporter import csv_stream
 from services.i18n import pick
@@ -440,6 +441,7 @@ async def get_billing_stats(
 
 async def _reconcile_subscription(
     row: StudioBillingPlan, body: ActivateModelRequest, ctx: StudioContext,
+    db: AsyncSession | None = None,
 ) -> None:
     """Привести подписку Stripe в соответствие с только что выбранным режимом.
 
@@ -487,12 +489,17 @@ async def _reconcile_subscription(
         return
 
     price_id = await stripe_catalog.price_id(plan_id, period_months, body.mode == "combo")
+    # Налог едет ТЕМ ЖЕ запросом, что и новый Price: смена режима может породить
+    # счёт прорации немедленно, и отдельный вызов оставил бы окно, в котором он
+    # считается по прежним правилам.
+    tax = await billing_tax.application(db, ctx.studio_id, "subscription") if db is not None else None
     # Метаданные обязаны ехать вместе с новым Price: ступень тарифа на продлении
     # поднимает webhook._activate по ним (см. change_subscription_price).
     await stripe_billing.change_subscription_price(
         row.stripe_subscription_id, price_id,
         _metadata(ctx, plan_id, period_months, body.mode),
         proration_behavior="none",
+        tax=tax,
     )
 
 
@@ -657,9 +664,18 @@ async def activate_model(
         # Комбо-покупка подписку не трогает: её переставит оплата. Всё остальное —
         # настройка, и Stripe обязан узнать о ней сразу.
         if not combo_purchase:
-            await _reconcile_subscription(row, body, ctx)
+            await _reconcile_subscription(row, body, ctx, db)
     except HTTPException:
         raise
+    except (TaxReviewRequired, TaxRateMissing) as exc:
+        # Налоговое решение не принято — это НЕ отказ Stripe. Отдать здесь 502
+        # значило бы отправить владельца искать поломку у платёжного провайдера,
+        # которой там нет: чинится это реквизитами плательщика или подтверждением
+        # налоговой политики. Тот же код и тот же текст, что в оформлении оплаты
+        # (routers/billing/checkout._tax_http_error).
+        from .checkout import _tax_http_error
+
+        raise _tax_http_error(exc) from exc
     except Exception as exc:
         logger.exception("Смена режима: подписка студии %s не перенастроена", ctx.studio_id)
         raise HTTPException(status_code=502, detail={
@@ -935,12 +951,38 @@ async def sync_invoice(
 
 # Локализация CSV-экспорта (задача 4) — {cur} подставляется символом валюты студии,
 # сумма без символа в каждой ячейке, иначе колонка перестаёт быть числовой для Excel.
+# Колонки налога добавлены вместе с ручным расчётом: бухгалтеру нужна не только
+# сумма счёта, но и налоговая база, налог и ОСНОВАНИЕ его отсутствия. Ноль в колонке
+# налога сам по себе не отвечает на вопрос «почему ноль» — у reverse charge и у
+# продажи за пределы ЕС он одинаковый, а в декларации это разные строки.
+#
+# Это дополнение к штатным выгрузкам Stripe (Tax Rates → экспорт по позициям и по
+# счетам), а не замена им: параллельную налоговую систему мы не строим.
 _EXPORT_HEADERS = {
-    "ru": ["Дата", "Тариф", "Период", "Сумма, {cur}", "Метод", "Статус"],
-    "en": ["Date", "Plan", "Period", "Amount, {cur}", "Method", "Status"],
-    "uk": ["Дата", "Тариф", "Період", "Сума, {cur}", "Метод", "Статус"],
-    "cs": ["Datum", "Tarif", "Období", "Částka, {cur}", "Metoda", "Stav"],
-    "de": ["Datum", "Tarif", "Zeitraum", "Betrag, {cur}", "Methode", "Status"],
+    "ru": ["Дата", "Тариф", "Период", "Сумма без налога, {cur}", "Метод", "Статус",
+           "Ставка, %", "Налог, {cur}", "Итого, {cur}", "Основание", "Юрисдикция"],
+    "en": ["Date", "Plan", "Period", "Net amount, {cur}", "Method", "Status",
+           "Rate, %", "Tax, {cur}", "Total, {cur}", "Tax basis", "Jurisdiction"],
+    "uk": ["Дата", "Тариф", "Період", "Сума без податку, {cur}", "Метод", "Статус",
+           "Ставка, %", "Податок, {cur}", "Разом, {cur}", "Підстава", "Юрисдикція"],
+    "cs": ["Datum", "Tarif", "Období", "Částka bez daně, {cur}", "Metoda", "Stav",
+           "Sazba, %", "Daň, {cur}", "Celkem, {cur}", "Důvod", "Jurisdikce"],
+    "de": ["Datum", "Tarif", "Zeitraum", "Nettobetrag, {cur}", "Methode", "Status",
+           "Satz, %", "Steuer, {cur}", "Gesamt, {cur}", "Grundlage", "Jurisdiktion"],
+}
+
+# Исход налогового решения → подпись для бухгалтера. Ключи — services/tax_policy.
+_EXPORT_TAX_OUTCOME = {
+    "ru": {"taxable": "Облагается", "reverse_charge": "Reverse charge",
+           "exempt": "Освобождено", "out_of_scope": "Вне сферы НДС ЕС"},
+    "en": {"taxable": "Taxable", "reverse_charge": "Reverse charge",
+           "exempt": "Exempt", "out_of_scope": "Outside EU VAT scope"},
+    "uk": {"taxable": "Оподатковується", "reverse_charge": "Reverse charge",
+           "exempt": "Звільнено", "out_of_scope": "Поза сферою ПДВ ЄС"},
+    "cs": {"taxable": "Zdanitelné", "reverse_charge": "Reverse charge",
+           "exempt": "Osvobozeno", "out_of_scope": "Mimo DPH EU"},
+    "de": {"taxable": "Steuerpflichtig", "reverse_charge": "Reverse charge",
+           "exempt": "Befreit", "out_of_scope": "Außerhalb der EU-USt"},
 }
 _EXPORT_METHOD = {
     # `stripe` — онлайн-комиссия: денег студия не переводила, их удержал Stripe из
@@ -987,6 +1029,10 @@ async def export_invoices_csv(
 
     def _rows():
         for inv in rows:
+            # Пустые налоговые колонки означают «снимка нет»: счёт выставлен, когда
+            # налог считал Stripe. Подставлять туда сегодняшнее правило нельзя —
+            # это переписывание истории, а не заполнение пробела.
+            tax_amount = inv.tax_amount
             yield [
                 inv.paid_at.strftime("%d.%m.%Y") if inv.paid_at else "",
                 inv.plan_name,
@@ -994,6 +1040,11 @@ async def export_invoices_csv(
                 f"{inv.amount / 100:.2f}",
                 pick(_EXPORT_METHOD, lang).get(inv.payment_method, inv.payment_method or ""),
                 pick(_EXPORT_STATUS, lang).get(inv.status, inv.status),
+                f"{inv.tax_rate_percent:g}" if inv.tax_rate_percent is not None else "",
+                f"{tax_amount / 100:.2f}" if tax_amount is not None else "",
+                f"{(inv.amount + tax_amount) / 100:.2f}" if tax_amount is not None else "",
+                pick(_EXPORT_TAX_OUTCOME, lang).get(inv.tax_outcome, inv.tax_outcome or ""),
+                inv.tax_jurisdiction or "",
             ]
 
     fname = f"velora-invoices-{datetime.utcnow().strftime('%Y-%m-%d')}.csv"

@@ -35,6 +35,7 @@ from models import (
 )
 from services import agent_jobs, inbound
 from services.inbound import Admission, admit
+from services.studio_link import public_ref
 
 _NAME_A = "TEST-INBOUND-A"
 _NAME_B = "TEST-INBOUND-B"
@@ -457,7 +458,11 @@ async def _run():
             greet = await admit(inbound.TELEGRAM, f"{a}:9100", a, inbound.MESSAGE, "555", "/start", {})
             work = await _claim(greet.job_id)
             intent = (await agent_jobs._handle(work, 0)).payload
-            assert intent["button"]["url"].endswith(f"/s/{a}"), intent
+            # Кнопка ведёт по публичному коду студии, а не по её id
+            # (back/services/studio_link.py).
+            async with async_session_maker() as db:
+                studio_ref = await public_ref(db, a)
+            assert intent["button"]["url"].endswith(f"/s/{studio_ref}"), intent
             assert "text" in intent and intent["text"]
 
             ask = await admit(inbound.TELEGRAM, f"{a}:9101", a, inbound.MESSAGE, "555", "цены?", {})

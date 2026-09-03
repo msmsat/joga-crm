@@ -11,6 +11,7 @@
 у зеркала есть страховка — `reconcile_subscriptions`, которую раз в час зовёт
 фоновый проход в services/offline_fee_billing.py.
 """
+import asyncio
 import calendar
 import logging
 from datetime import datetime, timedelta, timezone
@@ -22,7 +23,10 @@ from sqlalchemy.future import select
 
 from database import async_session_maker
 from models import Studio, StudioBillingPlan, BillingInvoice, PaymentCard, StudioMember, User
-from services import stripe_billing, stripe_catalog
+import stripe
+
+from services import billing_tax, stripe_billing, stripe_catalog, tax_policy
+from services.tax_rates import TaxRateMissing, TaxReviewRequired
 from .plans import PLANS, PERIOD_DISCOUNTS, COMBO_FIXED, COMBO_PERCENT_RATE, canon
 
 logger = logging.getLogger(__name__)
@@ -635,6 +639,12 @@ async def _handle_invoice(db: AsyncSession, event_type: str, obj) -> None:
         )
         return
 
+    # Черновик счёта автопродления: единственное окно, в котором налог ещё можно
+    # поправить. Дальше Stripe финализирует его сам, и с финализацией приходит
+    # комиссия за расчёт — в автоматическом режиме платная, в ручном бесплатная, но
+    # неверная ставка после финализации уже не правится ничем, кроме кредит-ноты.
+    await _ensure_draft_tax(db, plan, obj)
+
     invoice = await mirror_invoice(db, plan, obj)
 
     status = _INVOICE_STATUS.get(event_type)
@@ -645,6 +655,123 @@ async def _handle_invoice(db: AsyncSession, event_type: str, obj) -> None:
         await apply_status(db, invoice, status, renew_months=_renew_months(obj))
     else:
         await db.commit()
+
+
+async def _ensure_draft_tax(db: AsyncSession, plan: StudioBillingPlan, stripe_invoice) -> None:
+    """Проверить и поправить налог у ЧЕРНОВИКА счёта, созданного самим Stripe.
+
+    Зачем вообще. Счёт очередного периода Stripe выставляет без нашего участия:
+    нашего кода в этот момент рядом нет, а `default_tax_rates` он берёт у подписки.
+    Основной механизм правильного налога на автопродлении — именно состояние
+    подписки, и его поддерживает `sync_subscription_taxes` независимо от вебхуков.
+    Эта функция — ВТОРАЯ линия: она ловит случай, когда налоговый профиль студии
+    поменялся между продлениями, а подписку обновить не успели.
+
+    Почему это не «надёжная блокировка». Событие может не дойти, прийти с задержкой
+    или быть обработано после финализации — Stripe даёт на черновик около часа
+    (docs.stripe.com/invoicing/integration/workflow-transitions). Поэтому проверка
+    здесь дублирует состояние подписки, а не заменяет его.
+
+    Решения нет (`requires_review`) — снимаем `auto_advance`. Счёт остаётся
+    черновиком: он не финализируется, значит не выставляется студии и не порождает
+    ни налоговой строки, ни комиссии за расчёт. Это сознательный размен: лучше
+    остановленное продление, о котором кричит лог, чем документ с наугад выбранным
+    налогом. Разбирается вручную, автоматического «ну ладно, без налога» здесь нет.
+    """
+    if not tax_policy.manual_mode():
+        return
+    if getattr(stripe_invoice, "status", None) != "draft":
+        return
+    invoice_id = getattr(stripe_invoice, "id", None)
+    if not invoice_id:
+        return
+
+    try:
+        tax = await billing_tax.application(db, plan.studio_id, "subscription")
+    except (TaxReviewRequired, TaxRateMissing) as exc:
+        logger.error(
+            "Налог: черновик счёта %s студии %s остановлен (auto_advance=false) — %s. "
+            "Продление не выставится, пока решение не принято",
+            invoice_id, plan.studio_id, exc,
+        )
+        await asyncio.to_thread(stripe.Invoice.modify, invoice_id, auto_advance=False)
+        return
+
+    current = [
+        getattr(rate, "id", rate)
+        for rate in (getattr(stripe_invoice, "default_tax_rates", None) or [])
+    ]
+    if list(tax.rate_ids) == current:
+        return
+
+    logger.info(
+        "Налог: черновик счёта %s студии %s приведён к текущему решению (%s → %s)",
+        invoice_id, plan.studio_id, current, list(tax.rate_ids),
+    )
+    await billing_tax.sync_customer_exempt(plan.stripe_customer_id, tax)
+    await asyncio.to_thread(
+        stripe.Invoice.modify,
+        invoice_id,
+        automatic_tax={"enabled": False},
+        default_tax_rates=stripe_billing._rates_or_clear(tax.rate_ids),
+    )
+
+
+async def sync_subscription_taxes(db: AsyncSession) -> int:
+    """Привести налоговые настройки живых подписок к текущему решению. → сколько правок.
+
+    ГЛАВНЫЙ механизм налога на автопродлениях, и он сознательно не зависит от
+    вебхуков: счёт очередного периода Stripe собирает из состояния подписки, поэтому
+    правильным должно быть именно оно. Проход идёт раз в час вместе с остальной
+    сверкой (services/offline_fee_billing) — то есть налоговый профиль, изменившийся
+    между периодами, доезжает до подписки задолго до следующего счёта.
+
+    Студию, по которой решения нет, НЕ трогаем: подписка остаётся с последним
+    известным верным набором ставок, а разбирательство идёт по логу. Стереть ставки
+    «на всякий случай» значило бы выставить следующий счёт без налога.
+    """
+    if not tax_policy.manual_mode():
+        return 0
+
+    rows = (await db.execute(
+        select(StudioBillingPlan).where(
+            StudioBillingPlan.stripe_subscription_id.is_not(None),
+            StudioBillingPlan.status.in_(("active", "past_due")),
+        )
+    )).scalars().all()
+
+    changed = 0
+    for plan in rows:
+        try:
+            tax = await billing_tax.application(db, plan.studio_id, "subscription")
+        except (TaxReviewRequired, TaxRateMissing) as exc:
+            logger.warning(
+                "Налог: подписка студии %s не синхронизирована — %s", plan.studio_id, exc,
+            )
+            continue
+        try:
+            subscription = await asyncio.to_thread(
+                stripe.Subscription.retrieve, plan.stripe_subscription_id,
+            )
+            current = [
+                getattr(rate, "id", rate)
+                for rate in (getattr(subscription, "default_tax_rates", None) or [])
+            ]
+            automatic = bool(getattr(getattr(subscription, "automatic_tax", None), "enabled", False))
+            if current == list(tax.rate_ids) and not automatic:
+                continue
+            await billing_tax.sync_customer_exempt(plan.stripe_customer_id, tax)
+            await stripe_billing.set_subscription_tax(plan.stripe_subscription_id, tax)
+            changed += 1
+            logger.info(
+                "Налог: подписка студии %s переведена на ручные ставки %s (было %s, automatic_tax=%s)",
+                plan.studio_id, list(tax.rate_ids), current, automatic,
+            )
+        except Exception:
+            logger.exception(
+                "Налог: подписку студии %s синхронизировать не удалось", plan.studio_id,
+            )
+    return changed
 
 
 def _renew_months(stripe_invoice) -> int | None:
@@ -721,7 +848,8 @@ async def _handle_tax_id(db: AsyncSession, obj) -> None:
     Почему вообще нельзя ждать сверки Stripe: Stripe Tax применяет reverse charge
     (0 % НДС для юрлица из другой страны ЕС) по ФОРМАТУ номера, не дожидаясь её —
     `DE000000000` обнуляет налог ровно так же, как настоящий номер (проверено
-    вызовами tax.Calculation на боевом ключе, см. stripe_billing.delete_tax_id).
+    вызовами tax.Calculation на боевом ключе (исторический замер 13.08.2026; повторять на боевом ключе НЕЛЬЗЯ — вызов платный),
+    см. stripe_billing.delete_tax_id).
     Само событие приезжает уже ПОСЛЕ оплаты. Если права продавать без НДС не было,
     21 % налоговая снимет с ПЛАТФОРМЫ, а не со студии: деньги за тариф те же, а НДС
     из них вычтут. Отсюда правило — убрать номер до следующего счёта.

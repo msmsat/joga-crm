@@ -308,7 +308,13 @@
     "switched": "Plan changed: nothing to pay — the switch was covered by what is left of the current period.",
     "renewNote": "This renews the same plan: the months you buy are added to your current paid period. Nothing is forfeited.",
     "cardNote": "Card payment on Stripe's secure page · 7-day refund",
-    "freeUntil": "Nothing is charged until {{date}}: you still have {{count}} day(s) of your already paid period. Billing starts on that date."
+    "freeUntil": "Nothing is charged until {{date}}: you still have {{count}} day(s) of your already paid period. Billing starts on that date.",
+    "taxLabel": "VAT",
+    "taxLine": "VAT {{rate}}%",
+    "reverseCharge": "Reverse charge",
+    "totalWithTax": "Total incl. VAT",
+    "taxServerNote": "Tax calculated from your billing details. The invoice will show the same amount.",
+    "taxReview": "We could not determine the tax for your billing details, so the total is shown without it and payment cannot be completed. Check the payer country and address, or contact support."
   },
   "offlineFee": {
     "title": "Offline sales fee",

@@ -229,9 +229,13 @@ def _reconcile(row, body, *, price_key="velora_s15_12m"):
     async def fake_price_id(plan, months, combo):
         return f"price_{plan}_{months}_{'combo' if combo else 'sub'}"
 
-    async def fake_change(sub_id, price, metadata, *, proration_behavior="create_prorations"):
+    async def fake_change(sub_id, price, metadata, *, proration_behavior="create_prorations", tax=None):
+        # `tax` едет вместе с ценой: смена режима может выставить счёт прорации
+        # немедленно, и налог обязан приехать тем же запросом (см.
+        # stripe_billing.change_subscription_price).
         calls["changed"] = (sub_id, price, metadata)
         calls["proration"] = proration_behavior
+        calls["tax"] = tax
 
     saved = (SB.cancel_subscription, SB.subscription_price_key, SC.price_id, SB.change_subscription_price)
     SB.cancel_subscription, SB.subscription_price_key = fake_cancel, fake_key

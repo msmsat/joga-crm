@@ -27,13 +27,14 @@ from sqlalchemy.future import select
 from ratelimit import limiter
 from database import get_db
 from dependencies import require_role, StudioContext
-from models import StudioBillingPlan
+from models import BillingInvoice, StudioBillingPlan
 from models.studio import Studio
 from models.user import User
 from schemas.settings.billing import (
     CheckoutRequest, CheckoutResponse, CheckoutPreviewRead, BillingProfileRead,
 )
-from services import offline_fee_billing, stripe_billing, stripe_catalog
+from services import billing_tax, offline_fee_billing, stripe_billing, stripe_catalog
+from services.tax_rates import TaxRateMissing, TaxReviewRequired
 from .plans import (
     PLANS, PERIOD_DISCOUNTS, COMBO_PERCENT_RATE, amount_for, combo_amount_for, tier,
 )
@@ -54,6 +55,34 @@ _STRIPE_ERROR = {
     "code": "billing.stripe_error",
     "message": "Stripe отклонил запрос",
 }
+
+# Налоговое решение не принято: данных или подтверждённых правил не хватает
+# (services/tax_policy). Это НЕ отказ платежа и НЕ неоплата студии — документ просто
+# не может быть выставлен, пока человек не дозаполнит реквизиты или не подтвердит
+# правила. Отдельный код обязателен: 502 «Stripe отклонил запрос» отправил бы
+# владельца искать поломку у Stripe, которой там нет.
+_TAX_REVIEW = {
+    "code": "billing.tax_review_required",
+    "message": (
+        "Оплату нельзя оформить: не определён налог по вашим реквизитам. "
+        "Проверьте страну и адрес плательщика, а если они заполнены — напишите в поддержку"
+    ),
+}
+
+
+def _tax_http_error(exc: Exception) -> HTTPException:
+    """Налоговая заминка → понятный 409 вместо «Stripe отклонил запрос».
+
+    409, а не 422: тело запроса верное, состояние системы — нет.
+    """
+    if isinstance(exc, TaxReviewRequired):
+        logger.warning(
+            "Налог: документ не выставлен — %s (%s)",
+            exc.decision.review_reason, exc.decision.basis,
+        )
+    else:
+        logger.error("Налог: ставка не найдена на аккаунте Stripe — %s", exc)
+    return HTTPException(status_code=409, detail=_TAX_REVIEW)
 
 # Отказ уйти с постоплаты, не рассчитавшись. Один на два входа — оформление оплаты
 # ниже и `POST /billing/model` (router.activate_model импортирует отсюда): запрет
@@ -379,7 +408,7 @@ def _is_renewal(plan: StudioBillingPlan, requested_plan: str, current_plan: str)
 
 async def _renewal_invoice(
     db: AsyncSession, ctx: StudioContext, plan: StudioBillingPlan, customer_id: str,
-    body_plan: str, period_months: int, combo: bool,
+    body_plan: str, period_months: int, combo: bool, tax=None,
 ):
     """Счёт на продление уже оплаченного тарифа. Подписку НЕ трогает.
 
@@ -399,9 +428,47 @@ async def _renewal_invoice(
     """
     amount = (combo_amount_for if combo else amount_for)(body_plan, period_months)
     name = PLANS[body_plan]["name"]
+
+    # Повтор нажатия «Оплатить» не должен рождать ВТОРОЙ долг. Ключ идемпотентности
+    # Stripe тут не помогает: он живёт минуты, а владелец возвращается к неоплаченному
+    # счёту через час и через день. Поэтому идемпотентность — бизнесовая: если по
+    # этому же тарифу и периоду уже висит неоплаченный счёт, отдаём ЕГО.
+    #
+    # Строка плана заперта на время поиска: два параллельных клика иначе оба видят
+    # «счёта нет» и оба его создают. Замок тот же, что у _ensure_customer, и спорят
+    # за него только оплаты ОДНОЙ студии.
+    await db.execute(
+        select(StudioBillingPlan)
+        .where(StudioBillingPlan.studio_id == ctx.studio_id)
+        .with_for_update()
+        .execution_options(populate_existing=True)
+    )
+    existing = (await db.execute(
+        select(BillingInvoice).where(
+            BillingInvoice.studio_id == ctx.studio_id,
+            BillingInvoice.kind == "subscription",
+            BillingInvoice.status == "pending",
+            BillingInvoice.plan_name == body_plan,
+            BillingInvoice.period_months == period_months,
+            BillingInvoice.stripe_invoice_id.is_not(None),
+        ).order_by(BillingInvoice.id.desc())
+    )).scalars().first()
+    if existing is not None:
+        reused = await stripe_billing.fetch_invoice(existing.stripe_invoice_id)
+        # Только ОТКРЫТЫЙ счёт годится к переиспользованию. Оплаченный означает, что
+        # вебхук ещё не доехал, и отдавать его как «вот счёт на оплату» нельзя;
+        # аннулированный — что его закрыли осознанно.
+        if getattr(reused, "status", None) == "open":
+            logger.info(
+                "Продление: студии %s отдан уже выставленный счёт %s вместо второго",
+                ctx.studio_id, existing.stripe_invoice_id,
+            )
+            return reused
+
     subscription = await stripe_billing.fetch_subscription(plan.stripe_subscription_id)
     collection_method = getattr(subscription, "collection_method", None) or "send_invoice"
     return await stripe_billing.create_fee_invoice(
+        tax=tax,
         customer_id=customer_id,
         amount=amount,
         currency=stripe_billing.CURRENCY,
@@ -420,7 +487,7 @@ async def _renewal_invoice(
 
 async def _switch_now(
     db: AsyncSession, plan: StudioBillingPlan, customer_id: str, price_id: str,
-    metadata: dict,
+    metadata: dict, tax=None,
 ) -> str | None:
     """Немедленный переход на другой тариф → ссылка на выставленный счёт.
 
@@ -450,6 +517,10 @@ async def _switch_now(
         # аргументов, что у смены модели в router._reconcile_subscription, — одно
         # правило перехода на весь продукт.
         proration_behavior="none", billing_cycle_anchor="now",
+        # Налог уезжает ТЕМ ЖЕ запросом. Отдельным вызовом было бы окно, в котором
+        # подписка уже на новой цене, а счёт прорации ещё считается по прежним
+        # правилам, — и этот счёт Stripe выставляет немедленно.
+        tax=tax,
     )
     # Кредит на балансе гасим и здесь: у студий, успевших перейти по прежней схеме
     # с прорацией, он мог остаться и молча оплатил бы следующие счета.
@@ -536,6 +607,16 @@ async def create_checkout(
 
     metadata = _metadata(ctx, body.plan, body.period_months, "combo" if combo else "subscription")
 
+    # Налог решаем ДО первого обращения к Stripe и один раз на всю ветку: три пути
+    # ниже (страница Checkout, счёт продления, смена тарифа) обязаны получить одно и
+    # то же решение, иначе один и тот же плательщик в один и тот же день увидит счёт
+    # с налогом и счёт без него.
+    try:
+        tax = await billing_tax.application(db, ctx.studio_id, "subscription")
+        await billing_tax.sync_customer_exempt(customer_id, tax)
+    except (TaxReviewRequired, TaxRateMissing) as exc:
+        raise _tax_http_error(exc) from exc
+
     try:
         price_id = await stripe_catalog.price_id(body.plan, body.period_months, combo)
         if _is_renewal(plan, body.plan, await _live_plan_name(plan)) and combo == (
@@ -545,7 +626,7 @@ async def create_checkout(
             # не трогаем. Смена модели на том же тарифе продлением НЕ является —
             # у комбо другой Price, и его надо именно переставить (_switch_now).
             stripe_invoice = await _renewal_invoice(
-                db, ctx, plan, customer_id, body.plan, body.period_months, combo,
+                db, ctx, plan, customer_id, body.plan, body.period_months, combo, tax,
             )
             from .webhook import mirror_invoice
 
@@ -563,7 +644,7 @@ async def create_checkout(
             # для оплаты нет. Подставлять сюда адрес своей же страницы нельзя —
             # это была бы перезагрузка вместо результата (и уход на боевой домен,
             # когда WEB_APP_URL смотрит на прод).
-            url = await _switch_now(db, plan, customer_id, price_id, metadata)
+            url = await _switch_now(db, plan, customer_id, price_id, metadata, tax)
             return CheckoutResponse(checkout_url=url)
 
         session_id, url = await stripe_billing.create_subscription_checkout(
@@ -573,6 +654,7 @@ async def create_checkout(
             success_url=_RETURN_URL,
             cancel_url=f"{WEB_APP_URL}/dashboard/billing",
             trial_end=_trial_end(plan),
+            tax=tax,
         )
     except HTTPException:
         raise
@@ -628,6 +710,18 @@ async def preview_checkout(
     gross = (combo_amount_for if combo else amount_for)(plan, period_months)
     currency = stripe_billing.CURRENCY.upper()
 
+    # Налог — тем же решением, которым выставится счёт. Ни один платный вызов сюда
+    # не приходит: в ручном режиме считаем сами, в автоматическом честно отвечаем,
+    # что ставку определит страница Stripe.
+    tax_view = await billing_tax.preview(db, ctx.studio_id, "subscription", gross, currency)
+    tax_fields = dict(
+        tax_outcome=tax_view.outcome,
+        tax_rate_percent=tax_view.rate_percent,
+        tax_amount=tax_view.tax,
+        total_with_tax=tax_view.gross,
+        tax_review_reason=tax_view.review_reason,
+    )
+
     if not stripe_billing.configured() or not _has_live_subscription(row):
         # Подписки нет — но оплаченный остаток (триал, прежний период) может быть, и
         # тогда списывать начнут не сегодня: `_trial_end` даёт новой подписке
@@ -636,7 +730,7 @@ async def preview_checkout(
         starts_at = _trial_end(row)
         free_at = datetime.utcfromtimestamp(starts_at) if starts_at else None
         return CheckoutPreviewRead(
-            kind="new", gross=gross, total=gross, currency=currency,
+            kind="new", gross=gross, total=gross, currency=currency, **tax_fields,
             free_until=free_at.isoformat() if free_at else None,
             # Вверх по календарю: пока дата не наступила, «остался 1 день» честнее нуля.
             free_days=(
@@ -659,7 +753,7 @@ async def preview_checkout(
         # прибавляются к оплаченному сроку.
         return CheckoutPreviewRead(
             kind="renewal", current_plan=current_name, gross=gross,
-            total=gross, currency=currency,
+            total=gross, currency=currency, **tax_fields,
         )
 
     # Смена тарифа: новый период оплачивается ЦЕЛИКОМ, остаток прежнего сгорает
@@ -669,7 +763,7 @@ async def preview_checkout(
     # лишний способ сорвать открытие модалки.
     return CheckoutPreviewRead(
         kind="switch", current_plan=current_name, gross=gross,
-        total=gross, currency=currency,
+        total=gross, currency=currency, **tax_fields,
     )
 
 

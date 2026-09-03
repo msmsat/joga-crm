@@ -190,7 +190,9 @@ export interface CheckoutResponse {
 }
 
 /** Расчёт для модалки оплаты: что спишется и что при этом теряется.
- *  Суммы в копейках и БЕЗ налога — его считает Stripe Tax на своей странице. */
+ *  Суммы в копейках. `total` — БЕЗ налога (цены каталога заданы exclusive),
+ *  `total_with_tax` — с налогом, посчитанным СЕРВЕРОМ тем же решением, которым
+ *  потом выставится счёт. */
 export interface CheckoutPreview {
   /** new — подписки нет; renewal — тот же тариф, месяцы прибавляются к сроку;
    *  switch — смена тарифа: новый период платится целиком, остаток прежнего
@@ -205,4 +207,20 @@ export interface CheckoutPreview {
   free_until: string | null
   /** Сколько дней до первого списания — считает сервер, теми же часами. */
   free_days: number
+
+  /** Исход налогового решения СЕРВЕРА (services/tax_policy). Своей налоговой
+   *  арифметики на фронте нет и быть не должно: разошедшиеся цифры в модалке и в
+   *  счёте — это спор с клиентом о сумме.
+   *  taxable — налог начисляется; reverse_charge — платит покупатель;
+   *  exempt — освобождение; out_of_scope — вне европейского НДС;
+   *  requires_review — решения нет, итог показывать окончательным нельзя;
+   *  stripe_auto — прежний режим, ставку определит страница Stripe. */
+  tax_outcome: 'taxable' | 'reverse_charge' | 'exempt' | 'out_of_scope'
+    | 'requires_review' | 'stripe_auto'
+  tax_rate_percent: number
+  tax_amount: number
+  /** Итог с налогом. Равен total, когда налога нет или его считает Stripe. */
+  total_with_tax: number
+  /** Короткая причина, если решения нет. Показывается вместо итоговой суммы. */
+  tax_review_reason: string | null
 }

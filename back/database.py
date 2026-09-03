@@ -1,5 +1,6 @@
 import os
 import sys
+from urllib.parse import urlsplit
 from dotenv import load_dotenv
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
 from sqlalchemy.pool import NullPool
@@ -8,6 +9,53 @@ from sqlalchemy.pool import NullPool
 load_dotenv(override=True)
 
 DATABASE_URL = os.getenv("DATABASE_URL")
+
+
+def db_key(url: str | None) -> tuple:
+    """Хост, порт и имя базы. По ним и решаем, одна это база или разные: строки
+    сравнивать нельзя — у одной и той же базы отличаются драйвер, регистр и
+    параметры подключения."""
+    if not url:
+        return ()
+    parts = urlsplit(url)
+    return (parts.hostname or "", parts.port or 5432, (parts.path or "").lstrip("/").lower())
+
+
+def resolve_database_url(app_url: str | None, test_url: str | None, *, under_pytest: bool) -> str | None:
+    """Какой базой пользоваться. Под pytest — ТОЛЬКО своей, и это не удобство.
+
+    Тесты пишут в БД, и до сентября 2026 писали в ту же, что и работающее
+    приложение. `tests/test_miniapp_checkout.py` оставлял там заявки в `pending`
+    с `account_id='acct_test'`, а сверка оплат (routers/checkout/stripe_pay.
+    reconcile_pending) раз в час спрашивала о них БОЕВЫМ ключом Stripe, получала
+    PermissionError и слала тревогу в Telegram — двое суток на пустом месте.
+
+    Отдельной функцией, а не парой `if` по месту, ровно чтобы её можно было
+    проверить тестом: `.env` с боевыми секретами ради этого править нельзя, а
+    непроверенная защита — это обещание, а не защита.
+
+    Бросает RuntimeError ДО создания движка: при неверной настройке соединения с
+    базой приложения не случается вовсе.
+    """
+    if not under_pytest:
+        return app_url
+    if not test_url:
+        raise RuntimeError(
+            "TEST_DATABASE_URL не задан, а тесты пишут в БД — без своей базы они "
+            "загрязняют базу приложения. Пропишите её в .env (см. .env.example) и "
+            "создайте схему: python -m scripts.init_test_db"
+        )
+    if db_key(test_url) == db_key(app_url):
+        raise RuntimeError(
+            "TEST_DATABASE_URL и DATABASE_URL — одна и та же база "
+            f"({db_key(app_url)[2]}). Тесты затирают данные приложения."
+        )
+    return test_url
+
+
+DATABASE_URL = resolve_database_url(
+    DATABASE_URL, os.getenv("TEST_DATABASE_URL"), under_pytest="pytest" in sys.modules,
+)
 
 # Железобетонный фикс драйвера для асинхронности
 if DATABASE_URL and DATABASE_URL.startswith("postgresql://"):

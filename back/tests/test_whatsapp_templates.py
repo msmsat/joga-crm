@@ -186,10 +186,10 @@ def test_payload_button_only_on_public_url(monkeypatch):
     кнопку, — студия осталась бы вообще без уведомления ради мёртвой ссылки.
     """
     monkeypatch.setattr(email_layout, "MINIAPP_URL", "http://localhost:5174")
-    assert len(build_payload("c1", "ru", studio_id=7)["components"]) == 2
+    assert len(build_payload("c1", "ru", studio_ref=7)["components"]) == 2
 
     monkeypatch.setattr(email_layout, "MINIAPP_URL", "https://app.velora.cz")
-    buttons = build_payload("c1", "cs", studio_id=7)["components"][-1]
+    buttons = build_payload("c1", "cs", studio_ref=7)["components"][-1]
     assert buttons["type"] == "BUTTONS"
     button = buttons["buttons"][0]
     assert button == {"type": "URL", "text": "Moje rezervace",
@@ -199,7 +199,7 @@ def test_payload_button_only_on_public_url(monkeypatch):
 
 def test_payload_button_for_staff_leads_to_crm(monkeypatch):
     monkeypatch.setattr(email_layout, "WEB_APP_URL", "https://crm.velora.cz")
-    buttons = build_payload("o6", "de", studio_id=7)["components"][-1]
+    buttons = build_payload("o6", "de", studio_ref=7)["components"][-1]
     assert buttons["buttons"][0]["url"] == "https://crm.velora.cz/dashboard/billing"
     assert buttons["buttons"][0]["text"] == "Tarif und Zahlung"
 

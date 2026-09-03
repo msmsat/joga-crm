@@ -165,8 +165,10 @@ if os.path.isfile(_MINIAPP_INDEX):
     # Единственный маршрут самого приложения: студию оно читает из пути
     # (miniapp/src/lib/entry.ts), роутера внутри нет — экраны переключаются
     # состоянием, поэтому других путей отдавать не нужно.
-    @app.get("/s/{studio_id}", include_in_schema=False)
-    async def miniapp_index(studio_id: int):
+    @app.get("/s/{studio_ref}", include_in_schema=False)
+    async def miniapp_index(studio_ref: str):
+        # Студию отсюда не проверяем: страница одна на все студии, а какая это
+        # студия, мини-приложение спросит у API само (services/studio_link).
         return FileResponse(_MINIAPP_INDEX)
 
 

@@ -62,6 +62,7 @@ from models import Client, Hall, Lesson, Studio, StudioIntegration, StudioMember
 from services import email_layout, notify_texts, outbox
 from services.i18n import pick, resolve
 from services.mailer import send_email
+from services.studio_link import ref_of
 
 load_dotenv()
 logger = logging.getLogger(__name__)
@@ -126,6 +127,25 @@ class Recipient(NamedTuple):
     name: str | None = None
 
 
+async def _studio_prefs_and_ref(db: AsyncSession, studio_id: int) -> tuple[str, str, str]:
+    """(язык, валюта, публичный код) студии — ОДНОЙ выборкой.
+
+    Код нужен кнопке «открыть раздел»: ссылка ведёт в мини-приложение студии, а
+    оно адресуется публичным кодом, не id (services/studio_link). Берём его тем
+    же запросом, что язык и валюту, а не вторым: уведомление и так стоит похода
+    в сеть, лишний круг к БД на каждое письмо здесь ни к чему.
+    """
+    row = (await db.execute(
+        select(Studio.language, Studio.currency, Studio.public_code)
+        .where(Studio.id == studio_id)
+    )).first()
+    return (
+        resolve(row.language if row else None),
+        (row.currency if row else None) or "RUB",
+        ref_of(row, studio_id),
+    )
+
+
 async def _studio_prefs(db: AsyncSession, studio_id: int) -> tuple[str, str]:
     """(язык, валюта) студии; дефолты ("ru", "RUB") — поля nullable.
 
@@ -133,10 +153,8 @@ async def _studio_prefs(db: AsyncSession, studio_id: int) -> tuple[str, str]:
     Telegram, шаблоны WhatsApp и выгрузки переведены на один и тот же набор.
     Язык студии вне набора (pl, fr) приводится к английскому, а не к русскому.
     """
-    row = (await db.execute(
-        select(Studio.language, Studio.currency).where(Studio.id == studio_id)
-    )).first()
-    return resolve(row.language if row else None), (row.currency if row else None) or "RUB"
+    lang, currency, _ref = await _studio_prefs_and_ref(db, studio_id)
+    return lang, currency
 
 
 async def _wa_lang(db: AsyncSession, studio_id: int) -> str:
@@ -441,7 +459,8 @@ def _event_markup(event_id: str | None, context: dict[str, Any], studio, studio_
         minutes=int(context.get("duration_min") or 60),
         place=getattr(studio, "name", "") or "",
         address=getattr(studio, "address", "") or "",
-        url=email_layout.section_url(event_id, studio_id) or "",
+        # Ссылка на студию — по её публичному коду (services/studio_link).
+        url=email_layout.section_url(event_id, ref_of(studio, studio_id)) or "",
     )
 
 
@@ -463,7 +482,7 @@ async def _deliver_once(
         # карточку студии с собой.
         studio = (await db.execute(
             select(Studio.name, Studio.address, Studio.phone, Studio.email,
-                   Studio.timezone, Studio.language)
+                   Studio.timezone, Studio.language, Studio.public_code)
             .where(Studio.id == studio_id)
         )).first()
         lang = resolve(studio.language if studio else None)
@@ -785,7 +804,7 @@ async def notify(
     try:
         from services.notification_resolver import resolve_channels  # локальный импорт — иначе цикл notifier<->resolver
 
-        lang, currency = await _studio_prefs(db, studio_id)
+        lang, currency, studio_ref = await _studio_prefs_and_ref(db, studio_id)
         rendered = _render(event_id, context, lang, currency)
         if rendered is None:
             return False  # нет шаблона под событие
@@ -793,7 +812,7 @@ async def notify(
         # Кнопка «открыть раздел» — в письме своя, у шаблона WhatsApp своя
         # (утверждённая вместе с ним, см. whatsapp_templates.url_button). В
         # Telegram уходит голый text, туда ссылка не попадает.
-        html += email_layout.cta(event_id, studio_id, lang)
+        html += email_layout.cta(event_id, studio_ref, lang)
         tg = tg_format(event_id, subject, text)  # эмодзи + жирный заголовок, HTML
         # Локальный импорт по той же причине, что и resolve_channels выше: цикл
         # notifier <- notification_catalog <- whatsapp_templates.

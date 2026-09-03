@@ -5,10 +5,25 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from .base import Base
 
 
+def _public_code() -> str:
+    """Код для ссылки мини-приложения. Генератор лежит в services/studio_link,
+    здесь только импорт по месту: модели не должны тянуть за собой сервисы на
+    уровне модуля (services импортируют models)."""
+    from services.studio_link import generate_public_code
+    return generate_public_code()
+
+
 class Studio(Base):
     __tablename__ = "studios"
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
+
+    # Как студия называется в публичной ссылке (`/s/<public_code>`) — случайные
+    # буквы и цифры вместо порядкового id. Подробности и разрешение ссылки —
+    # services/studio_link.py.
+    public_code: Mapped[Optional[str]] = mapped_column(
+        String(16), unique=True, index=True, nullable=True, default=_public_code,
+    )
 
     name: Mapped[str] = mapped_column(String(150))
     phone: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)

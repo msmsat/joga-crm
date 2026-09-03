@@ -6,6 +6,9 @@
    уникальном индексе, а `_finish_pending` выпускал студии второй документ за тот
    же месяц. Ссылка на нашу строку теперь едет в метаданных счёта.
 
+3. **Досылка невыставленных счетов роняла проход целиком.** Откат внутри цикла
+   обесценивает ORM-объекты, выбранные до него, — см. раздел 3.
+
 2. **Откат дохода платформы.** Возврат и проигранный спор снимают ранее
    записанный доход компенсирующей строкой. Сумму по онлайн-комиссии берём У
    STRIPE: вернулась она студии или осталась у платформы — решает студия галкой в
@@ -16,6 +19,9 @@
 import asyncio
 from types import SimpleNamespace
 
+from sqlalchemy.exc import MissingGreenlet
+
+import services.offline_fee_billing as OFB
 from routers.billing.webhook import _adopt_local_invoice
 from routers.checkout import stripe_pay as SP
 
@@ -162,3 +168,123 @@ if __name__ == "__main__":
     test_nothing_withheld_means_no_stripe_call()
     test_stripe_failure_does_not_break_the_refund()
     print("ALL PASS — леджер и гонка выпуска счёта")
+
+
+# --------------------------------------------------------------------------
+# 3. Досылка счетов: сбой по одному не имеет права уносить проход целиком
+# --------------------------------------------------------------------------
+
+class _ExpiringInvoice:
+    """ORM-объект внутри async-сессии.
+
+    `Session.rollback()` обесценивает ВЕСЬ identity map — безусловно, флаг
+    `expire_on_commit=False` его не касается (sqlalchemy/orm/session.py,
+    `_restore_snapshot(dirty_only=False)`). Дальше обращение к любому полю
+    требует нового SELECT, а синхронный доступ к атрибуту в async-сессии сходить
+    в БД не может. Ровно это и моделируем: за откатом `invoice.id` падает
+    MissingGreenlet.
+    """
+
+    def __init__(self, **fields):
+        self.__dict__["_data"] = fields
+        self.__dict__["_expired"] = False
+
+    def _expire(self):
+        self.__dict__["_expired"] = True
+
+    def _revive(self):
+        """db.get() перечитывает строку — это законный await, объект оживает."""
+        self.__dict__["_expired"] = False
+
+    def __getattr__(self, name):
+        if self.__dict__["_expired"]:
+            raise MissingGreenlet(
+                "greenlet_spawn has not been called; can't call await_only() here"
+            )
+        try:
+            return self.__dict__["_data"][name]
+        except KeyError:
+            raise AttributeError(name) from None
+
+
+class _FinishDB:
+    """Сессия под `_finish_pending`. Отвечает по таблице в запросе.
+
+    Сессия помнит, что отдала наружу: колоночный select отдаёт обычные значения
+    (их откат не касается), select по сущности — живые объекты, которые откат
+    обесценивает.
+    """
+
+    def __init__(self, invoices, plan):
+        self.invoices = invoices
+        self.plan = plan
+        self.rollbacks = 0
+
+    async def execute(self, query):
+        sql = str(query)
+        if "count(" in sql:
+            return SimpleNamespace(scalar=lambda: 3)
+        if "studio_billing_plans" in sql:
+            return SimpleNamespace(scalar_one_or_none=lambda: self.plan)
+        if "billing_invoices" in sql:
+            # Колоночный select (только id) против select по сущности.
+            columns = [c["name"] for c in query.column_descriptions]
+            if columns == ["id"]:
+                return SimpleNamespace(
+                    scalars=lambda: SimpleNamespace(
+                        all=lambda: [inv.id for inv in self.invoices]
+                    )
+                )
+            return SimpleNamespace(
+                scalars=lambda: SimpleNamespace(all=lambda: list(self.invoices))
+            )
+        raise AssertionError(f"неожиданный запрос: {sql}")
+
+    async def get(self, _model, pk):
+        for inv in self.invoices:
+            if inv.__dict__["_data"]["id"] == pk:
+                inv._revive()
+                return inv
+        return None
+
+    async def commit(self):
+        pass
+
+    async def rollback(self):
+        self.rollbacks += 1
+        for inv in self.invoices:
+            inv._expire()
+
+
+def test_a_failed_reissue_does_not_take_the_whole_pass_down(monkeypatch):
+    """Сбой по одному счёту не должен уносить досылку целиком.
+
+    Дело не в `try/except` — он тут был. Ловушка в откате: он обесценивает все
+    ORM-объекты, выбранные ДО цикла, и следующее `invoice.id` уходит за SELECT'ом,
+    падая MissingGreenlet. Причём падает и сам обработчик ошибки, на `invoice.id`
+    внутри logger.exception, — то есть мимо `except`. Наружу улетало вторичное
+    исключение, унося и настоящую причину сбоя, и все оставшиеся счета. Раз в час,
+    пока счёт висит невыставленным.
+    """
+    invoices = [
+        _ExpiringInvoice(id=1, studio_id=7, kind="offline_fee", amount=500),
+        _ExpiringInvoice(id=2, studio_id=7, kind="offline_fee", amount=700),
+    ]
+    db = _FinishDB(invoices, plan=SimpleNamespace(studio_id=7))
+
+    issued = []
+
+    async def fake_issue(_db, invoice, customer_id, description):
+        if invoice.id == 1:
+            raise RuntimeError("Stripe не ответил")
+        issued.append(invoice.id)
+
+    async def fake_customer(_db, _plan):
+        return "cus_1"
+
+    monkeypatch.setattr(OFB, "_issue_to_stripe", fake_issue)
+    monkeypatch.setattr(OFB, "_ensure_studio_customer", fake_customer)
+
+    assert asyncio.run(OFB._finish_pending(db)) == 1
+    assert issued == [2], "досылка встала на первом же сбое"
+    assert db.rollbacks == 1

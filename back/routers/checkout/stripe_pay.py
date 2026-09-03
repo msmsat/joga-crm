@@ -20,6 +20,7 @@ import time
 from datetime import date, datetime, timedelta, timezone
 from uuid import uuid4
 
+import stripe
 from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy import update
 from sqlalchemy.exc import IntegrityError
@@ -872,6 +873,43 @@ async def reconcile_pending(db: AsyncSession) -> int:
         except HTTPException:
             # Бизнес-правило отвергло проведение — apply_paid уже пометил заявку
             # failed и закричал в лог. Это разбор вручную, а не повод падать.
+            continue
+        except stripe.PermissionError:
+            # Ключ платформы не имеет доступа к аккаунту студии: приложение
+            # отключили на стороне Stripe, либо такого аккаунта нет вовсе.
+            #
+            # Это НЕ временный сбой, и ретрай его не починит никогда. Без
+            # отдельной ветки такая заявка оставалась бы в pending навсегда и
+            # каждый час поднимала одну и ту же тревогу — а в этом шуме тонут
+            # настоящие. Сверка ходит раз в час, схлопывание повторов в
+            # services/alerts живёт десять минут, так что схлопнуться они не
+            # могут по построению.
+            await db.rollback()
+            if datetime.utcnow() - row.created_at <= ORPHAN_CLOSE_AFTER:
+                # Ждём тот же срок, что и осиротевшая сессия: доступ мог пропасть
+                # на минуту (ротация ключа, сбой у Stripe), и терять из-за этого
+                # живую заявку нельзя. warning, а не error — тревогу поднимаем
+                # один раз и ниже, когда станет ясно, что это навсегда.
+                logger.warning(
+                    "Сверка оплат: аккаунт %s заявки %s недоступен ключу платформы",
+                    row.account_id, row.id,
+                )
+                continue
+            # `failed`, а не `cancelled`: утверждать, что денег не было, мы не
+            # можем — читать этот аккаунт больше нечем. Тот же смысл, что у
+            # отвергнутого проведения выше: разбор вручную.
+            await db.execute(
+                update(StripeCheckout)
+                .where(StripeCheckout.id == row.id, StripeCheckout.status == "pending")
+                .values(status="failed")
+            )
+            await db.commit()
+            logger.error(
+                "Сверка оплат: заявка %s закрыта — аккаунт %s недоступен ключу платформы "
+                "(приложение отключили в Stripe либо аккаунта не существует). Если студия "
+                "принимала оплаты, проверьте платежи этого аккаунта вручную",
+                row.id, row.account_id,
+            )
             continue
         except Exception:
             await db.rollback()
