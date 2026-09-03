@@ -117,7 +117,7 @@
       },
       "spots": {
         "label": "Vart ska de bjudas",
-        "sub": "Upp till tre ställen nära studion. Visas först när två eller fler är med",
+        "sub": "Upp till fem ställen nära studion. Så länge listan är tom är funktionen av",
         "namePlaceholder": "Namn",
         "addressPlaceholder": "Adress",
         "urlPlaceholder": "Kartlänk",

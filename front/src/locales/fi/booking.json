@@ -117,7 +117,7 @@
       },
       "spots": {
         "label": "Minne kutsua",
-        "sub": "Enintään kolme paikkaa studion lähellä. Näytetään vasta, kun mukana on kaksi tai useampi",
+        "sub": "Enintään viisi paikkaa studion lähellä. Kun lista on tyhjä, toiminto on pois käytöstä",
         "namePlaceholder": "Nimi",
         "addressPlaceholder": "Osoite",
         "urlPlaceholder": "Karttalinkki",

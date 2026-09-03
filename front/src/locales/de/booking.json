@@ -117,7 +117,7 @@
       },
       "spots": {
         "label": "Wohin einladen",
-        "sub": "Bis zu drei Orte in der Nähe des Studios. Werden erst gezeigt, wenn zwei oder mehr mitmachen",
+        "sub": "Bis zu fünf Orte in Studionähe. Solange die Liste leer ist, ist die Funktion aus",
         "namePlaceholder": "Name",
         "addressPlaceholder": "Adresse",
         "urlPlaceholder": "Kartenlink",

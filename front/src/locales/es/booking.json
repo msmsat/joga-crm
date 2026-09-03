@@ -117,7 +117,7 @@
       },
       "spots": {
         "label": "Dónde invitarlos",
-        "sub": "Hasta tres sitios cerca del estudio. Solo se muestran cuando se apuntan dos o más",
+        "sub": "Hasta cinco lugares cerca del estudio. Mientras la lista esté vacía, la función está desactivada",
         "namePlaceholder": "Nombre",
         "addressPlaceholder": "Dirección",
         "urlPlaceholder": "Enlace al mapa",

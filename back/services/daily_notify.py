@@ -375,7 +375,7 @@ async def _run_coffee(db: AsyncSession, window_start: datetime, window_end: date
         if lesson.studio_id not in rules_cache:
             rules_cache[lesson.studio_id] = await load_rules(db, lesson.studio_id)
         rules = rules_cache[lesson.studio_id]
-        if not rules.coffee_enabled:
+        if not rules.coffee_live:
             continue
 
         # status != cancelled, а не == active: к этому моменту администратор уже

@@ -117,7 +117,7 @@
       },
       "spots": {
         "label": "Où les inviter",
-        "sub": "Jusqu'à trois adresses près du studio. Affichées seulement quand deux personnes ou plus ont rejoint",
+        "sub": "Jusqu'à cinq adresses près du studio. Tant que la liste est vide, la fonction est désactivée",
         "namePlaceholder": "Nom",
         "addressPlaceholder": "Adresse",
         "urlPlaceholder": "Lien vers la carte",

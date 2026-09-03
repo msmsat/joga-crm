@@ -222,7 +222,7 @@ async def _coffee_map(
 
     Выключенная механика не стоит ничего: ни запроса, ни джойна к клиентам.
     """
-    if not rules.coffee_enabled or not lesson_ids:
+    if not rules.coffee_live or not lesson_ids:
         return {}
 
     rows = (await db.execute(
@@ -759,7 +759,7 @@ async def _set_coffee(db: AsyncSession, client: Client, lesson_id: int, value: b
     тап по «Я за» не должен быть ошибкой.
     """
     rules = await load_rules(db, client.studio_id)
-    if not rules.coffee_enabled:
+    if not rules.coffee_live:
         raise HTTPException(status_code=403, detail="Кофе после занятия выключен студией")
 
     reservation = await _own_active_reservation(db, client, lesson_id)

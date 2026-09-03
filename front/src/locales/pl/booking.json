@@ -117,7 +117,7 @@
       },
       "spots": {
         "label": "Gdzie ich zaprosić",
-        "sub": "Do trzech miejsc blisko studia. Pokazują się dopiero, gdy dołączą dwie osoby lub więcej",
+        "sub": "Do pięciu miejsc w pobliżu studia. Dopóki lista jest pusta, funkcja jest wyłączona",
         "namePlaceholder": "Nazwa",
         "addressPlaceholder": "Adres",
         "urlPlaceholder": "Link do mapy",

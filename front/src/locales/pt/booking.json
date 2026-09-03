@@ -117,7 +117,7 @@
       },
       "spots": {
         "label": "Onde os convidar",
-        "sub": "Até três locais perto do estúdio. Só aparecem quando dois ou mais aderem",
+        "sub": "Até cinco locais perto do estúdio. Enquanto a lista estiver vazia, a função fica desativada",
         "namePlaceholder": "Nome",
         "addressPlaceholder": "Morada",
         "urlPlaceholder": "Link do mapa",

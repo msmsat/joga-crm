@@ -117,7 +117,7 @@
       },
       "spots": {
         "label": "Nereye davet edilecek",
-        "sub": "Stüdyoya yakın en fazla üç mekân. Yalnızca iki ya da daha fazla kişi katılınca görünür",
+        "sub": "Stüdyoya yakın en fazla beş mekân. Liste boşken özellik kapalıdır",
         "namePlaceholder": "Ad",
         "addressPlaceholder": "Adres",
         "urlPlaceholder": "Harita bağlantısı",

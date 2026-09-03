@@ -117,7 +117,7 @@
       },
       "spots": {
         "label": "Kam je pozvat",
-        "sub": "Až tři podniky poblíž studia. Zobrazí se, teprve když se přidají dva a více lidí",
+        "sub": "Až pět podniků poblíž studia. Dokud je seznam prázdný, funkce je vypnutá",
         "namePlaceholder": "Název",
         "addressPlaceholder": "Adresa",
         "urlPlaceholder": "Odkaz na mapu",

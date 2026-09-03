@@ -117,7 +117,7 @@
       },
       "spots": {
         "label": "Unde să-i invitați",
-        "sub": "Până la trei locuri lângă studio. Apar doar când se alătură doi sau mai mulți",
+        "sub": "Până la cinci locuri lângă studio. Cât timp lista e goală, funcția este dezactivată",
         "namePlaceholder": "Nume",
         "addressPlaceholder": "Adresă",
         "urlPlaceholder": "Link către hartă",

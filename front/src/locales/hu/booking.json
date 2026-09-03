@@ -117,7 +117,7 @@
       },
       "spots": {
         "label": "Hová hívja őket",
-        "sub": "Legfeljebb három hely a stúdió közelében. Csak akkor jelennek meg, ha ketten vagy többen csatlakoznak",
+        "sub": "Legfeljebb öt hely a stúdió közelében. Amíg a lista üres, a funkció ki van kapcsolva",
         "namePlaceholder": "Név",
         "addressPlaceholder": "Cím",
         "urlPlaceholder": "Térképlink",

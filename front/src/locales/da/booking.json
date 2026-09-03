@@ -117,7 +117,7 @@
       },
       "spots": {
         "label": "Hvor skal de mødes",
-        "sub": "Op til tre steder tæt på studiet. Vises først, når to eller flere er med",
+        "sub": "Op til fem steder nær studiet. Så længe listen er tom, er funktionen slået fra",
         "namePlaceholder": "Navn",
         "addressPlaceholder": "Adresse",
         "urlPlaceholder": "Link til kort",

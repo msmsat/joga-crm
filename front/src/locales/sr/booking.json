@@ -117,7 +117,7 @@
       },
       "spots": {
         "label": "Куда их позвати",
-        "sub": "До три места у близини студија. Приказују се тек када се придруже двоје или више",
+        "sub": "Do pet mesta blizu studija. Dok je lista prazna, funkcija je isključena",
         "namePlaceholder": "Назив",
         "addressPlaceholder": "Адреса",
         "urlPlaceholder": "Линк ка мапи",

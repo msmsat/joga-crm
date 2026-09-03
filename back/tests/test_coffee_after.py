@@ -208,12 +208,35 @@ async def _run():
         except HTTPException as exc:
             assert exc.status_code == 403, exc
 
-    # ─── Студия без заданных мест: NULL не роняет выдачу ──────────────────────
+    # ─── Студия без заданных мест: механика спит ──────────────────────────────
+    # Пустой список — это «выключено» наравне с тумблером: звать остаться, не
+    # имея что предложить, — половина приглашения. Заодно это снимает разнобой
+    # дефолтов колонки (false в миграции против true в модели).
     async with _case(spots=None) as (db, studio_id, lesson, (anya, marina, _)):
-        await ML._set_coffee(db, anya, lesson.id, True)
-        state = await ML._set_coffee(db, marina, lesson.id, True)
-        assert state.count == 2, state
-        assert state.spots == [], state
+        rules = await ML.load_rules(db, studio_id)
+        assert rules.coffee_enabled is True, "тумблер тут ни при чём — проверяем именно места"
+        assert rules.coffee_live is False, "студия без мест считается работающей"
+
+        assert await ML._coffee_map(db, [lesson.id], anya.id, rules) == {},             "механика без мест всё равно ходила в базу"
+
+        try:
+            await ML._set_coffee(db, anya, lesson.id, True)
+            raise AssertionError("согласие принято у студии без единого места")
+        except HTTPException as exc:
+            assert exc.status_code == 403, exc
+
+        # Первая же заведённая кофейня включает механику обратно — отдельного
+        # действия владельца для этого не требуется.
+        row = (await db.execute(
+            ML.select(StudioBookingSettings).where(
+                StudioBookingSettings.studio_id == studio_id,
+            )
+        )).scalar_one()
+        row.coffee_spots = [{"name": "Kofein", "address": "Ptasinskeho 2", "url": None}]
+        await db.flush()
+        assert (await ML.load_rules(db, studio_id)).coffee_live is True,             "первая кофейня не включила механику"
+        row.coffee_spots = None
+        await db.flush()
 
         # Та же NULL-колонка глазами CRM. Проверка появилась по факту 500 на
         # GET /booking/settings: `_read` подменял None на [] через model_copy,
@@ -224,7 +247,9 @@ async def _run():
                 StudioBookingSettings.studio_id == studio_id,
             )
         )).scalar_one()
-        assert BS._read(row).coffee_spots == [], "NULL в coffee_spots роняет чтение настроек"
+        # Второй аргумент — публичный код студии для miniapp_url (services/
+        # studio_link.public_ref); к кофе он отношения не имеет.
+        assert BS._read(row, "test").coffee_spots == [], "NULL в coffee_spots роняет чтение настроек"
 
     # ─── Ссылку на место пишет владелец, а открывает её клиент ────────────────
     # Схема — граница доверия: `javascript:` в этом поле = чужой скрипт в webview
@@ -247,6 +272,24 @@ async def _run():
     assert CoffeeSpotInput(name="X", url="maps.example/k").url == "https://maps.example/k"
     assert CoffeeSpotInput(name="X", url="  ").url is None
     assert CoffeeSpotInput(name="X").url is None
+
+    # ─── Предел списка мест ───────────────────────────────────────────────────
+    from schemas.settings.booking import BookingSettingsUpdate
+
+    five = [{"name": f"Cafe {i}"} for i in range(5)]
+    assert len(BookingSettingsUpdate(coffee_spots=five).coffee_spots) == 5, "пять мест не прошли"
+
+    try:
+        BookingSettingsUpdate(coffee_spots=[{"name": f"Cafe {i}"} for i in range(6)])
+        raise AssertionError("шестое место сохранилось")
+    except ValidationError:
+        pass
+
+    # Безымянные строки владелец оставляет, добавив поле и передумав: они
+    # отбрасываются ДО проверки предела, иначе шесть строк с одной пустой
+    # падали бы с ошибкой вместо тихого сохранения пяти.
+    padded = five + [{"name": "   "}]
+    assert len(BookingSettingsUpdate(coffee_spots=padded).coffee_spots) == 5,         "пустая строка сверх пяти уронила сохранение"
 
 
 def test_coffee_after():

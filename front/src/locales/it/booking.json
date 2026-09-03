@@ -117,7 +117,7 @@
       },
       "spots": {
         "label": "Dove invitarli",
-        "sub": "Fino a tre locali vicino allo studio. Compaiono solo quando aderiscono in due o più",
+        "sub": "Fino a cinque locali vicino allo studio. Finché l'elenco è vuoto, la funzione è disattivata",
         "namePlaceholder": "Nome",
         "addressPlaceholder": "Indirizzo",
         "urlPlaceholder": "Link alla mappa",

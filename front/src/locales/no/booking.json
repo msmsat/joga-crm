@@ -117,7 +117,7 @@
       },
       "spots": {
         "label": "Hvor skal de møtes",
-        "sub": "Inntil tre steder nær studioet. Vises først når to eller flere er med",
+        "sub": "Opptil fem steder nær studioet. Så lenge listen er tom, er funksjonen av",
         "namePlaceholder": "Navn",
         "addressPlaceholder": "Adresse",
         "urlPlaceholder": "Kartlenke",

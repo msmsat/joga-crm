@@ -62,7 +62,7 @@
       },
       "spots": {
         "label": "Where to invite them",
-        "sub": "Up to three places near the studio. Shown only once two or more have joined",
+        "sub": "Up to five spots near the studio. While the list is empty, the feature is off",
         "namePlaceholder": "Name",
         "addressPlaceholder": "Address",
         "urlPlaceholder": "Map link",

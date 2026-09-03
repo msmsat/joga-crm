@@ -9,9 +9,9 @@ from schemas._base import BaseSchema
 
 _TIME_RE = re.compile(r"^\d{2}:\d{2}$")
 
-# Больше трёх мест владелец всё равно не выберет осмысленно, а список из десяти
-# кофеен превращает подсказку в справочник.
-_MAX_COFFEE_SPOTS = 3
+# Список из десяти кофеен превращает подсказку в справочник, поэтому предел
+# есть. Пустой список — это «выключено» (BookingRules.coffee_live), а не ошибка.
+_MAX_COFFEE_SPOTS = 5
 
 
 class CoffeeSpotInput(BaseSchema):
