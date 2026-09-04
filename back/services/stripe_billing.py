@@ -45,12 +45,21 @@ from urllib.parse import urlparse
 import stripe
 from dotenv import load_dotenv
 
-from services import stripe_env
+from services import stripe_env, tax_policy
 from services.tax_rates import TaxApplication
 
 load_dotenv()
 
 logger = logging.getLogger(__name__)
+
+
+class TaxDecisionMissing(RuntimeError):
+    """В ручном режиме путь дошёл до Stripe без налогового решения.
+
+    Отдельный класс, потому что это дефект интеграции, а не проблема данных
+    студии: чинится кодом, а не реквизитами плательщика.
+    """
+
 
 # Крикнуть на старте, если ключ не годится этому окружению. Приложение НЕ роняем —
 # останавливает изменяющие вызовы `stripe_env.guard_write` ниже, точечно и с
@@ -171,15 +180,30 @@ def tax_params(tax: TaxApplication | None) -> dict:
 
     Ручной и автоматический режимы взаимоисключающи по построению: `rate_ids` у
     автоматического всегда пусты, и одновременно налог дважды не начислится.
+
+    Ставку сюда НЕ кладём. У Stripe ставки позиции перекрывают `default_tax_rates`
+    документа, то есть одновременная простановка в обоих местах налог не удваивает,
+    — но оставляет два источника правды об одном числе. Для наших счетов позиция
+    ровно одна и мы её создаём сами, поэтому ставка живёт на позиции
+    (`item_tax_params`), а документ несёт только выключенный автоматический расчёт.
+    У подписок наоборот: позиций мы не создаём, и ставка живёт на самой подписке
+    (`_subscription_tax_params`). В обоих случаях источник ОДИН.
+
+    `tax is None` в ручном режиме — это ОШИБКА, а не «как раньше». Молчаливый
+    возврат к платному расчёту на пути, который забыли научить передавать решение,
+    выглядит рабочим и обнаруживается только в балансе через сутки. Fail-closed:
+    лучше упавший запрос, чем тихо включённый платный налог.
     """
-    if tax is None or tax.automatic:
+    if tax is None:
+        if tax_policy.manual_mode():
+            raise TaxDecisionMissing(
+                "ручной налоговый режим включён, но в запрос к Stripe не передано "
+                "налоговое решение — путь не подключён к services/billing_tax"
+            )
         return {"automatic_tax": {"enabled": True}}
-    return {
-        "automatic_tax": {"enabled": False},
-        # Ставки документа. У ручного режима без reverse charge их ровно одна; при
-        # reverse charge и вне охвата — ни одной, и налоговой строки не будет.
-        "default_tax_rates": list(tax.rate_ids),
-    }
+    if tax.automatic:
+        return {"automatic_tax": {"enabled": True}}
+    return {"automatic_tax": {"enabled": False}}
 
 
 def _rates_or_clear(rate_ids) -> list | str:
@@ -200,6 +224,10 @@ def _subscription_tax_params(tax: TaxApplication) -> dict:
     нашего кода: `default_tax_rates` он берёт у подписки. Значит правильный налог на
     автопродлении обеспечивается не вебхуком, который может не дойти, а состоянием
     подписки, которое мы поддерживаем при каждом изменении.
+
+    Ставка стоит ЗДЕСЬ и только здесь: позиции подписки мы не создаём (их собирает
+    Stripe из Price), и `tax_rates` позиции очищаются отдельно в `set_subscription_tax`
+    и `change_subscription_price` — чтобы источник ставки был один.
     """
     if tax.automatic:
         return {"automatic_tax": {"enabled": True}, "default_tax_rates": ""}
@@ -222,9 +250,10 @@ async def set_subscription_tax(subscription_id: str, tax: TaxApplication):
         stripe.Subscription.modify,
         subscription_id,
         proration_behavior="none",
-        # Ставки позиции перекрывают ставки подписки, поэтому чистим и их: иначе
-        # прежняя ставка на позиции пережила бы смену режима незамеченной.
-        items=[{"id": item_id, "tax_rates": _rates_or_clear(tax.rate_ids if tax.manual else ())}],
+        # Ставки позиции ВСЕГДА чистим. Они перекрывают ставки подписки, то есть
+        # оставленная там ставка и пережила бы смену режима незамеченной, и стала бы
+        # вторым источником правды об одном числе. Источник один — сама подписка.
+        items=[{"id": item_id, "tax_rates": ""}],
         **_subscription_tax_params(tax),
     )
 
@@ -241,7 +270,14 @@ def item_tax_params(tax: TaxApplication | None) -> dict:
     при выключенном автоматическом расчёте она ни на что не влияет, а в документе
     выглядит как признак того, что расчёт всё ещё чужой.
     """
-    if tax is None or tax.automatic:
+    if tax is None:
+        if tax_policy.manual_mode():
+            raise TaxDecisionMissing(
+                "ручной налоговый режим включён, но позиция счёта создаётся без "
+                "налогового решения"
+            )
+        return {"tax_behavior": TAX_BEHAVIOR, "tax_code": TAX_CODE}
+    if tax.automatic:
         return {"tax_behavior": TAX_BEHAVIOR, "tax_code": TAX_CODE}
     return {"tax_behavior": TAX_BEHAVIOR, "tax_rates": list(tax.rate_ids)}
 
@@ -582,7 +618,8 @@ async def change_subscription_price(
     # `default_tax_rates`, и оставленная там прежняя ставка пережила бы смену режима.
     if tax is not None:
         params.update(_subscription_tax_params(tax))
-        params["items"][0]["tax_rates"] = _rates_or_clear(tax.rate_ids if tax.manual else ())
+        # Позицию чистим всегда — ставка живёт на подписке (см. set_subscription_tax).
+        params["items"][0]["tax_rates"] = ""
     if metadata is not None:
         params["metadata"] = metadata
     if billing_cycle_anchor is not None:

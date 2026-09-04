@@ -33,7 +33,6 @@
   },
   "limits": {
     "staff": "Staff",
-    "clients": "Client records",
     "ai": "Velora AI requests",
     "unlimited": "Unlimited"
   },

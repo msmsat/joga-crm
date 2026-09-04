@@ -182,8 +182,6 @@
     "rows": {
       "seats": "Співробітники",
       "perSeat": "За одного співробітника",
-      "clients": "Клієнтів у базі",
-      "clientsUpTo": "до {{value}}",
       "ai": "Звернень до Velora AI",
       "aiPerMonth": "{{value}} / міс",
       "modules": "Модулів",

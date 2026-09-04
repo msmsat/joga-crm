@@ -189,10 +189,14 @@ def test_our_invoices_carry_manual_rates_and_no_paid_calculation(manual, rec, ki
 
     created = [c for c in calls["create"] if "customer" in c and "collection_method" in c][0]
     assert created["automatic_tax"] == {"enabled": False}
-    assert created["default_tax_rates"] == [RATE]
+    # Источник ставки ОДИН. У Stripe позиция перекрывает документ, поэтому две
+    # простановки налог не удваивают — но оставляют два места, где число может
+    # разойтись. Для наших счетов позиция ровно одна, и ставка живёт на ней.
+    assert "default_tax_rates" not in created, "ставка продублирована на документе и на позиции"
 
     item = [c for c in calls["create"] if "invoice" in c][0]
     assert item["tax_rates"] == [RATE]
+    assert len(item["tax_rates"]) == 1, "ставка приложена больше одного раза"
     assert item["tax_behavior"] == SB.TAX_BEHAVIOR, "смысл цены «без налога» обязан сохраниться"
     assert "tax_code" not in item, "категория Stripe Tax в ручном режиме только путает"
 
@@ -209,16 +213,27 @@ def test_stripe_auto_mode_keeps_the_previous_payload(rec, monkeypatch):
     assert "default_tax_rates" not in created
     item = [c for c in calls["create"] if "invoice" in c][0]
     assert item["tax_code"] == SB.TAX_CODE
+    assert "tax_rates" not in item
 
 
-def test_none_means_previous_behaviour_everywhere():
-    """Незаполненный аргумент — прежнее поведение, а не «без налога».
-
-    Это страховка от забытой врезки: путь, который не научили передавать решение,
-    обязан вести себя как раньше, а не выставлять счета без налога.
-    """
+def test_none_keeps_previous_behaviour_only_in_automatic_mode(monkeypatch):
+    """В прежнем режиме незаполненный аргумент — прежнее поведение."""
+    monkeypatch.delenv("BILLING_TAX_MODE", raising=False)
     assert SB.tax_params(None) == {"automatic_tax": {"enabled": True}}
     assert SB.item_tax_params(None)["tax_code"] == SB.TAX_CODE
+
+
+def test_missing_decision_in_manual_mode_fails_closed(manual):
+    """Путь без налогового решения в ручном режиме ПАДАЕТ, а не включает платный расчёт.
+
+    Это защита от забытой врезки. Молчаливый возврат к `automatic_tax=true` выглядит
+    рабочим и обнаруживается только в балансе через сутки — то есть ровно так, как
+    обнаружилась исходная проблема.
+    """
+    with pytest.raises(SB.TaxDecisionMissing):
+        SB.tax_params(None)
+    with pytest.raises(SB.TaxDecisionMissing):
+        SB.item_tax_params(None)
 
 
 # --- 3. смена тарифа и подписка --------------------------------------------------
@@ -234,8 +249,10 @@ def test_switching_plan_moves_tax_in_the_same_request(manual, rec):
     asyncio.run(SB.change_subscription_price("sub_1", "price_2", {"plan": "pro"}, tax=_apply()))
     body = rec.last("modify")
     assert body["automatic_tax"] == {"enabled": False}
+    # У подписки источник ставки — она сама: позиции собирает Stripe из Price,
+    # поэтому их налоговые ставки ЧИСТЯТСЯ, а не дублируют подписку.
     assert body["default_tax_rates"] == [RATE]
-    assert body["items"][0]["tax_rates"] == [RATE]
+    assert body["items"][0]["tax_rates"] == "", "ставка продублирована на подписке и на её позиции"
 
 
 def test_clearing_rates_uses_empty_string_not_empty_list(manual, rec):

@@ -33,7 +33,6 @@
   },
   "limits": {
     "staff": "Zaměstnanci",
-    "clients": "Klientů v databázi",
     "ai": "Dotazů na Velora AI",
     "unlimited": "Bez omezení"
   },

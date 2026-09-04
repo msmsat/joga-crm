@@ -22,7 +22,6 @@ const SEAT_BASE = 15;   // € / мес за MIN_SEATS мест
 const SEAT_STEP = 5;    // + за каждое место сверх минимума
 const UNLIMITED_PRICE = 120;
 const UNLIMITED_AI = 5000;
-const CLIENTS_PER_SEAT = 100;
 const AI_PER_SEAT = 150;
 /** Позиция ползунка за последней ступенью — безлимит («∞» на конце линии). */
 const UNLIMITED_POS = MAX_SEATS + 1;
@@ -63,11 +62,12 @@ export function Pricing() {
   const models = t("pricing.models", { returnObjects: true }) as { title: string; price: string; desc: string }[];
 
   // Что именно даёт выбранная ступень — теми же числами, что считает _limits().
+  // Строки про клиентов здесь нет: тарифом база не ограничена (plans._limits),
+  // и «до N клиентов» на витрине обещало бы потолок, которого в продукте нет.
   const rows: [string, string, boolean?][] = [
     seats === null
       ? [t("pricing.rows.seats"), t("pricing.unlimited")]
       : [t("pricing.rows.perSeat"), t("pricing.amountPerMonth", { value: money(round2(perMonth / seats)) })],
-    [t("pricing.rows.clients"), seats === null ? t("pricing.unlimited") : t("pricing.rows.clientsUpTo", { value: count(seats * CLIENTS_PER_SEAT) })],
     [t("pricing.rows.ai"), t("pricing.rows.aiPerMonth", { value: count(seats === null ? UNLIMITED_AI : seats * AI_PER_SEAT) })],
     [t("pricing.rows.modules"), t("pricing.rows.modulesAll")],
   ];

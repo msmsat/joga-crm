@@ -33,7 +33,6 @@
   },
   "limits": {
     "staff": "Mitarbeitende",
-    "clients": "Kunden in der Datenbank",
     "ai": "Velora-AI-Anfragen",
     "unlimited": "Unbegrenzt"
   },

@@ -90,15 +90,14 @@ export default function PlanCalculator({
         value: `${formatMoney(Math.round((monthly / seats) * 100) / 100, currency)} ${t('planCards.perMonth')}`,
       }
       : { label: t('limits.staff'), value: t('limits.unlimited') },
+    // Строки «Клиенты» здесь нет намеренно: база клиентов тарифом не
+    // ограничена ни на одной ступени (plans._limits), и говорить о ней в
+    // перечне того, что ступень даёт, значит намекать на потолок.
     {
-      label: t('limits.clients'),
+      label: t('limits.ai'),
       // Лимиты берём только у ступени, которая реально приехала с сервера: у
       // ненайденной они читались бы как null, то есть «без ограничений», —
       // а это обещание, а не заглушка.
-      value: !info ? DASH : info.clients == null ? t('limits.unlimited') : count(info.clients),
-    },
-    {
-      label: t('limits.ai'),
       value: !info ? DASH : info.ai == null ? t('limits.unlimited') : `${count(info.ai)} ${t('planCards.perMonth')}`,
     },
     {

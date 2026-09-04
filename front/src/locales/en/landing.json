@@ -241,8 +241,6 @@
     "rows": {
       "seats": "Team",
       "perSeat": "Per person",
-      "clients": "Clients in the base",
-      "clientsUpTo": "up to {{value}}",
       "ai": "Velora AI requests",
       "aiPerMonth": "{{value}} / mo",
       "modules": "Modules",

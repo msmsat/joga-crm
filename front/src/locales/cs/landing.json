@@ -246,8 +246,6 @@
     "rows": {
       "seats": "Tým",
       "perSeat": "Za jednoho člověka",
-      "clients": "Klientů v databázi",
-      "clientsUpTo": "až {{value}}",
       "ai": "Dotazů na Velora AI",
       "aiPerMonth": "{{value}} / měs",
       "modules": "Modulů",

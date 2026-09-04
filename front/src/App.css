@@ -1094,6 +1094,16 @@
 .nav-item.active { background: rgba(252,174,145,0.15); color: var(--text); }
 .nav-item.active::before { content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 3px; height: 18px; background: var(--accent); border-radius: 0 3px 3px 0; }
 .nav-icon { width: 18px; height: 18px; flex-shrink: 0; opacity: 0.6; }
+/* Подпись занимает всё, что осталось от иконки и бейджа, и обрывается
+   многоточием. Без min-width:0 flex-элемент не ужимается короче своего текста:
+   немецкое «Benachrichtigungen» при --sidebar 196px выезжало за границу меню и
+   выталкивало счётчик. line-height задан явно — overflow:hidden режет по
+   строчному боксу, и на «auto» подрезались хвосты у «у» и «g». */
+.nav-item .nav-label {
+  flex: 1; min-width: 0;
+  line-height: 1.35;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
 .nav-item.active .nav-icon, .nav-item:hover .nav-icon { opacity: 1; }
 .nav-badge { margin-left: auto; background: var(--accent); color: white; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 20px; min-width: 18px; text-align: center; flex-shrink: 0; }
 /* «NEW» у Velora AI — тот же бейдж, только градиентом и капсом */
@@ -1118,11 +1128,14 @@
 .sidebar.is-rail .user-pill-caret,
 .sidebar.is-rail .journal-sub { display: none; }
 
-.sidebar.is-rail .sidebar-logo { padding: 20px 0 16px; text-align: center; }
+/* Нижний отступ меньше верхнего намеренно: у тумблера 30px бокса против 17px
+   иконки, ~6.5px пустоты снизу — свои. 8px + 6.5px даёт над линией те же
+   ~14px, что и над знаком сверху; при равных числах низ выглядел провалом. */
+.sidebar.is-rail .sidebar-logo { padding: 14px 0 8px; text-align: center; }
 .sidebar.is-rail .sidebar-logo .logo-name { justify-content: center; gap: 0; }
 .sidebar.is-rail .sidebar-mark { width: 26px; height: 26px; }
 
-.sidebar.is-rail .sidebar-nav { padding: 12px 8px; }
+.sidebar.is-rail .sidebar-nav { padding: 8px 8px 12px; }
 .sidebar.is-rail .nav-item { justify-content: center; gap: 0; padding: 10px 0; }
 .sidebar.is-rail .nav-icon { width: 19px; height: 19px; }
 /* Счётчик клиентов в рельсе не влезает строкой — становится точкой-индикатором */
@@ -1144,6 +1157,7 @@
    кнопки уезжала под контент и ловилась мышью только по краю. Места в шапке хватает. */
 .sidebar-logo .logo-row { display: flex; align-items: center; gap: 8px; }
 .sidebar-logo .logo-name { flex: 1; min-width: 0; }
+.sidebar-logo .logo-name .nav-label { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .sidebar-toggle {
   flex-shrink: 0;
   /* Квадрат один в один с фирменным знаком слева — ряд читается как пара */
@@ -1165,10 +1179,11 @@
   outline: none; border-color: var(--accent);
   box-shadow: 0 0 0 3px rgba(252,174,145,0.22);
 }
-/* В рельсе рядом со знаком кнопке не встать — уходит под него.
-   Отступ намеренно щедрый (20px): знак и кнопка — разные сущности,
-   слипшийся столбик читался бы как один элемент. */
-.sidebar.is-rail .logo-row { flex-direction: column; gap: 20px; }
+/* В рельсе рядом со знаком кнопке не встать — уходит под него. Столбик из
+   знака и кнопки при щедрых отступах давал шапку в 112px — выше развёрнутой,
+   и первый раздел начинался почти на середине экрана. 12px хватает, чтобы
+   знак и кнопка не слиплись в один элемент, а список поднялся на 22px. */
+.sidebar.is-rail .logo-row { flex-direction: column; gap: 10px; }
 .sidebar.is-rail .sidebar-toggle { width: 30px; height: 30px; }
 @media (prefers-reduced-motion: reduce) {
   .sidebar, .sidebar-toggle { transition: none; }
@@ -1178,8 +1193,10 @@
 .sidebar-journal { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: linear-gradient(135deg, rgba(252,174,145,0.2) 0%, rgba(249,160,139,0.1) 100%); border-radius: var(--radius-sm); cursor: pointer; transition: all 0.18s; border: 1px solid rgba(252,174,145,0.3); margin-bottom: 8px; }
 .sidebar-journal:hover { background: rgba(252,174,145,0.25); }
 .journal-icon { width: 32px; height: 32px; background: var(--accent); border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.sidebar-journal .nav-label { flex: 1; min-width: 0; }
 .journal-text { font-size: 12px; font-weight: 600; color: var(--text); }
 .journal-sub { font-size: 10px; color: var(--text3); }
+.journal-text, .journal-sub { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .user-pill {
   display: flex; align-items: center; gap: 8px;
   padding: 8px 10px;

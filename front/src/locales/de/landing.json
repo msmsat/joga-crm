@@ -242,8 +242,6 @@
     "rows": {
       "seats": "Team",
       "perSeat": "Pro Person",
-      "clients": "Kunden in der Datenbank",
-      "clientsUpTo": "bis {{value}}",
       "ai": "Anfragen an Velora AI",
       "aiPerMonth": "{{value}} / Mon.",
       "modules": "Module",

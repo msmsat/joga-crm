@@ -14,10 +14,11 @@ import { queryKeys } from '../../../../api/queryKeys';
 import { useToast } from '../../../../components/ui/index';
 
 // Лимиты ступени — те же, что считает plans._limits на сервере: их показывает
-// панель итога («клиентов в базе», «обращений к Velora AI»). null = безлимит.
+// панель итога («обращений к Velora AI»). null = безлимит. Клиентов тут нет:
+// тарифом они не ограничены, и поле бы всегда приезжало пустым.
 export type PlanInfo = {
   name: string; monthly: number;
-  staffLimit: number | null; clients: number | null; ai: number | null;
+  staffLimit: number | null; ai: number | null;
 };
 
 // Режим тарифа в БД ↔ плитка в интерфейсе. Комбо на сервере зовётся "combo",
@@ -410,7 +411,7 @@ export function useBillingCalculator() {
     () => Object.fromEntries(catalog.map(p => [
       p.id, {
         name: planLabel(p.id, t), monthly: p.price / 100,
-        staffLimit: p.limits.staff, clients: p.limits.clients, ai: p.limits.ai_requests,
+        staffLimit: p.limits.staff, ai: p.limits.ai_requests,
       },
     ])) as Record<PlanType, PlanInfo>,
     [catalog, t],

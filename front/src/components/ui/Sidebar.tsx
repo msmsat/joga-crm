@@ -138,8 +138,11 @@ export function Sidebar({ role }: SidebarProps) {
               </button>
             )}
           </div>
+          {/* block у тултипа обязателен: без него якорь inline-flex шириной в
+              текст, и max-width:100% у бейджа ничего не ограничивает — длинное
+              название студии уезжало за край меню без многоточия. */}
           {studio?.name && (
-            <Tooltip label={t('tooltips.studioName', { name: studio.name })} side="bottom">
+            <Tooltip label={t('tooltips.studioName', { name: studio.name })} side="bottom" block>
               <div className="studio-badge">{studio.name}</div>
             </Tooltip>
           )}

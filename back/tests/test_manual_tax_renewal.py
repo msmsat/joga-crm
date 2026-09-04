@@ -180,8 +180,10 @@ def test_subscription_sync_is_the_primary_mechanism(manual, monkeypatch):
     """Подписка переводится на ручные ставки без всякого вебхука.
 
     Это и есть ответ на «событие может не дойти»: счёт автопродления соберётся из
-    состояния подписки, а его поддерживает ежечасный проход.
+    состояния подписки, а его поддерживает ежечасный проход — но только когда
+    миграция существующих объектов разрешена явно.
     """
+    monkeypatch.setenv("BILLING_TAX_MIGRATE_EXISTING", "1")
     changed = {}
     ready = _app()
 
@@ -214,6 +216,7 @@ def test_subscription_sync_is_the_primary_mechanism(manual, monkeypatch):
 def test_subscription_sync_skips_studios_without_a_decision(manual, monkeypatch):
     """Студию без решения НЕ трогаем: стереть ставки «на всякий случай» значит
     выставить следующий счёт без налога."""
+    monkeypatch.setenv("BILLING_TAX_MIGRATE_EXISTING", "1")
     touched = []
 
     async def _app_for(db, studio_id, kind):
@@ -234,6 +237,7 @@ def test_subscription_sync_skips_studios_without_a_decision(manual, monkeypatch)
 
 def test_subscription_sync_is_idempotent(manual, monkeypatch):
     """Уже переведённую подписку второй раз не трогаем — иначе каждый час правка."""
+    monkeypatch.setenv("BILLING_TAX_MIGRATE_EXISTING", "1")
     touched = []
     ready = _app()
 
@@ -389,3 +393,156 @@ def test_paid_invoice_is_not_reused_as_something_to_pay(monkeypatch):
     ))
     assert result.id == "in_new"
     assert len(created) == 1
+
+
+# --- 5. tax_exempt — состояние КЛИЕНТА: доказываем, что оно не течёт ----------------
+
+def test_domestic_invoice_after_reverse_charge_resets_the_customer(manual, monkeypatch):
+    """Чешский счёт ПОСЛЕ reverse-charge счёта обязан снова облагаться.
+
+    Главная опасность выбранного механизма: `Customer.tax_exempt` живёт на клиенте,
+    а не на документе. Забыть сбросить его — значит навсегда освободить студию от
+    налога после одной трансграничной операции. Проверяем ровно эту
+    последовательность, а не каждый случай по отдельности.
+    """
+    applied = []
+
+    async def _modify(customer_id, **kw):
+        applied.append(kw.get("tax_exempt"))
+    monkeypatch.setattr(BT.stripe.Customer, "modify", lambda cid, **kw: applied.append(kw.get("tax_exempt")))
+
+    asyncio.run(BT.sync_customer_exempt("cus_1", _app("DE", TP.VAT_VERIFIED)))
+    asyncio.run(BT.sync_customer_exempt("cus_1", _app("CZ")))
+
+    assert applied == [TR.EXEMPT_REVERSE, TR.EXEMPT_NONE], (
+        "после reverse charge статус клиента не вернулся к обычному обложению"
+    )
+
+
+def test_every_outcome_writes_an_explicit_exempt_state(manual):
+    """У каждого исхода есть ЯВНОЕ значение `tax_exempt`, а не «оставим как было».
+
+    Пропуск записи означал бы, что статус остаётся от прошлого документа — то есть
+    именно та утечка, которой мы боимся.
+    """
+    assert _app("CZ").customer_tax_exempt == TR.EXEMPT_NONE
+    assert _app("DE", TP.VAT_VERIFIED).customer_tax_exempt == TR.EXEMPT_REVERSE
+    # Вне ЕС: налоговой строки быть не должно, но и «освобождён» это не тот случай.
+    import os
+    os.environ["BILLING_NON_EU_SUPPLY_CONFIRMED"] = "true"
+    try:
+        assert _app("US").customer_tax_exempt == TR.EXEMPT_NONE
+    finally:
+        os.environ.pop("BILLING_NON_EU_SUPPLY_CONFIRMED", None)
+
+
+def test_concurrent_documents_share_the_customer_state(manual):
+    """Известное ограничение, зафиксированное тестом, а не забытое.
+
+    Два документа одного клиента, создаваемых одновременно с РАЗНЫМИ исходами,
+    делят одно поле `tax_exempt`. Наш биллинг такой ситуации не создаёт: документы
+    по студии выставляются последовательно и под блокировкой строки плана. Тест
+    закрепляет допущение — если оно однажды перестанет быть верным, сюда придут
+    читать.
+    """
+    reverse = _app("DE", TP.VAT_VERIFIED)
+    domestic = _app("CZ")
+    assert reverse.customer_tax_exempt != domestic.customer_tax_exempt
+    # Снимок операции хранит ПРИМЕНЁННЫЙ статус — по нему видно, каким он был в
+    # момент выпуска, а не какой стоит у клиента сейчас.
+    assert "exempt=reverse" in BT._evidence_line(reverse)
+    assert "exempt=" not in BT._evidence_line(domestic)
+
+
+# --- 6. фоновая задача не мигрирует боевые подписки скрытно -------------------------
+
+def test_hourly_job_does_not_migrate_without_an_explicit_flag(manual, monkeypatch):
+    """Смена BILLING_TAX_MODE НЕ должна сама по себе переписывать живые подписки.
+
+    Иначе production-миграция случилась бы побочным эффектом правки переменной
+    окружения: без dry-run, без манифеста и без согласования.
+    """
+    monkeypatch.delenv("BILLING_TAX_MIGRATE_EXISTING", raising=False)
+    touched = []
+    monkeypatch.setattr(WH.stripe_billing, "set_subscription_tax",
+                        lambda *a, **kw: touched.append(a))
+
+    class _DB:
+        async def execute(self, *_a, **_kw):
+            raise AssertionError("проход не должен был даже читать подписки")
+
+    assert asyncio.run(WH.sync_subscription_taxes(_DB())) == 0
+    assert touched == []
+
+
+def test_explicit_flag_enables_migration(manual, monkeypatch):
+    """С явным флагом проход работает — иначе миграцию нечем выполнить."""
+    monkeypatch.setenv("BILLING_TAX_MIGRATE_EXISTING", "1")
+    ready = _app()
+    changed = []
+
+    async def _app_for(db, studio_id, kind):
+        return ready
+    monkeypatch.setattr(BT, "application", _app_for)
+
+    async def _exempt(customer_id, app):
+        pass
+    monkeypatch.setattr(BT, "sync_customer_exempt", _exempt)
+
+    async def _set(sub_id, app):
+        changed.append(sub_id)
+    monkeypatch.setattr(WH.stripe_billing, "set_subscription_tax", _set)
+    monkeypatch.setattr(
+        stripe.Subscription, "retrieve",
+        lambda sid, **kw: SimpleNamespace(
+            id=sid, default_tax_rates=[], automatic_tax=SimpleNamespace(enabled=True),
+        ),
+    )
+
+    class _DB:
+        async def execute(self, *_a, **_kw):
+            return SimpleNamespace(scalars=lambda: SimpleNamespace(all=lambda: [_plan()]))
+
+    assert asyncio.run(WH.sync_subscription_taxes(_DB())) == 1
+    assert changed == ["sub_1"]
+
+
+# --- 7. нетто/брутто по онлайн-комиссии блокирует выпуск ----------------------------
+
+def test_online_fee_invoice_is_blocked_while_net_gross_is_unresolved(manual, monkeypatch):
+    """Документ, не сходящийся с реально полученными деньгами, не выпускается.
+
+    Stripe удержал НЕТТО. Фактура с налогом объявила бы оплаченной большую сумму —
+    и попала бы в учёт обеих сторон. До решения владельца это стоп, а не запись в лог.
+    """
+    import services.offline_fee_billing as OFB
+
+    monkeypatch.setattr(OFB, "_ONLINE_FEE_TAX_MODEL", "")
+    ready = _app()
+    snap = BT.snapshot(ready, 4500, "eur")
+    assert snap["tax_amount"] > 0, "проверяем именно случай с налогом"
+
+    async def _app_for(db, studio_id, kind):
+        return ready
+    monkeypatch.setattr(OFB.billing_tax, "application", _app_for)
+
+    async def _exempt(customer_id, app):
+        pass
+    monkeypatch.setattr(OFB.billing_tax, "sync_customer_exempt", _exempt)
+
+    issued = []
+    monkeypatch.setattr(OFB.stripe_billing, "create_settled_invoice",
+                        lambda **kw: issued.append(kw))
+
+    invoice = SimpleNamespace(
+        id=1, studio_id=1, kind="online_fee", period="2026-08", amount=4500,
+        status="pending", due_at=None,
+    )
+
+    class _DB:
+        async def commit(self):
+            pass
+
+    with pytest.raises(OFB.OnlineFeeTaxModelUndecided):
+        asyncio.run(OFB._issue_to_stripe(_DB(), invoice, "cus_1", "комиссия"))
+    assert issued == [], "документ выпустился при нерешённом расхождении"
