@@ -168,6 +168,36 @@ class InfoIntent(BaseModel):
     kind: InfoKind
 
 
+class PersonalKind(str, Enum):
+    """Личное — то, что нельзя показать, не зная, КТО спрашивает (P2).
+
+    Список закрыт и короток: каждый вид отвечает канонической выборкой по
+    карточке клиента, а не «чем-нибудь про пользователя». Права здесь нет —
+    право выдаёт сервер по таблице (`services/identity.MINIMUM`), и никакое
+    значение этого перечисления само по себе доступа не даёт.
+    """
+    # «Какие у меня записи», «когда моё занятие».
+    MY_BOOKINGS = "my_bookings"
+    # «Сколько занятий осталось», «когда кончается абонемент».
+    MY_SUBSCRIPTION = "my_subscription"
+    # «Это я», «привяжите меня», «моя почта такая-то» — просьба подтвердить
+    # личность. Сам по себе повод НИЧЕГО не открывает: он лишь начинает
+    # серверную проверку.
+    VERIFY_ME = "verify_me"
+
+
+class PersonalIntent(BaseModel):
+    """Личный вопрос. Модель называет ВИД вопроса — и ничего больше.
+
+    Ни `client_id`, ни имени, ни статуса «подтверждён»: кто это и что ему
+    можно, решает сервер, читая базу. Скомпрометированная модель может здесь
+    только неверно понять просьбу.
+    """
+    model_config = ConfigDict(extra="forbid")
+
+    kind: PersonalKind
+
+
 class UserSearchIntent(BaseModel):
     """Разобранное намерение человека — весь ответ модели о поиске.
 
@@ -216,6 +246,17 @@ class UserSearchIntent(BaseModel):
     # найденный список.
     info: Optional[InfoIntent] = None
 
+    # Личный вопрос (P2): «мои записи», «мой абонемент», «это я». Заполнено —
+    # ход личный, и первым делом сервер спрашивает не базу, а право.
+    personal: Optional[PersonalIntent] = None
+
+    # Контакт, НАЗВАННЫЙ человеком в этом сообщении: «моя почта katya@…».
+    # Это `Mention` — то есть ДОСЛОВНЫЙ кусок сообщения, с той же проверкой
+    # происхождения, что у услуги и тренера. Названный контакт не доказывает
+    # ничего: он только адрес, по которому сервер отправит код. Владение
+    # доказывает код, а не заявление.
+    contact: Optional[Mention] = None
+
     # Всё, что человек попросил, а схема выразить не умеет: отрицание («не у
     # Валерии», «кроме утра»), настроение, музыка, вид из окна. Пиши сюда
     # дословно и НЕ пытайся выразить это оставшимися полями — молча
@@ -224,7 +265,9 @@ class UserSearchIntent(BaseModel):
 
 
 def mentions(intent: UserSearchIntent) -> list[Mention]:
-    return [*intent.service_mentions, *intent.trainer_mentions, *intent.branch_mentions]
+    named = [intent.contact] if intent.contact is not None else []
+    return [*intent.service_mentions, *intent.trainer_mentions,
+            *intent.branch_mentions, *named]
 
 
 def json_schema() -> dict:

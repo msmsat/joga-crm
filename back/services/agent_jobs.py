@@ -90,6 +90,10 @@ class Claim(NamedTuple):
     channel: str
     sender: str
     text: str
+    # Что именно пришло: сообщение человека или нажатие нашей же кнопки
+    # (services/inbound.MESSAGE / CALLBACK). Умолчание — сообщение: так старые
+    # вызовы и тесты продолжают значить ровно то, что значили.
+    event_type: str = "message"
 
 
 def _interval(seconds: int):
@@ -140,7 +144,8 @@ async def claim_next(db, owner: str, job_ids: list[int] | None = None) -> Claim 
         select(InboundEvent).join(AgentJob, AgentJob.inbound_event_id == InboundEvent.id)
         .where(AgentJob.id == picked)
     )).scalar_one()
-    work = Claim(picked, token, event.studio_id, event.provider, event.sender_ref, event.text)
+    work = Claim(picked, token, event.studio_id, event.provider, event.sender_ref,
+                 event.text, event.event_type)
     await db.commit()
     logger.info("job_claimed job_id=%s attempt=%s studio_id=%s owner=%s",
                 work.job_id, work.token, work.studio_id, owner)
@@ -255,7 +260,12 @@ async def _handle(work: Claim, thread_id: int) -> "AgentTurn":
     """
     from routers.booking.telegram_webhook import _is_start, greeting
     from services.client_agent import produce_reply
-    from services.inbound import TELEGRAM
+    from services.inbound import CALLBACK, TELEGRAM
+
+    if work.event_type == CALLBACK:
+        # Нажатие нашей же кнопки. Детерминированный путь: ни модели, ни флага —
+        # кнопка, которую человек уже видит, обязана работать всегда.
+        return await _callback_turn(work, thread_id)
 
     async with async_session_maker() as db:
         token = await _transport(db, work.studio_id, work.channel)
@@ -287,20 +297,61 @@ class AgentTurn:
     now: datetime | None = None
 
 
+async def _callback_turn(work: Claim, thread_id: int) -> "AgentTurn":
+    """Нажатие -> детерминированный ответ. Модель на этом пути не зовётся.
+
+    Язык берём из настроек студии: текста человека здесь нет вовсе, и угадывать
+    его по нажатию нечем.
+    """
+    from services import agent_search, ai_language, catalog
+
+    async with async_session_maker() as db:
+        ref = await catalog.studio(db, work.studio_id)
+        lang = ai_language.resolve([], studio_language=ref.language if ref else None).code
+        turn = await agent_search.callback(
+            db, studio_id=work.studio_id, thread_id=thread_id, data=work.text,
+            channel=work.channel, lang=lang)
+        await db.rollback()
+    return AgentTurn(turn.payload, turn.state, tuple(turn.shown), turn.new_search,
+                     turn.reference_now)
+
+
 async def _search_turn(work: Claim, thread_id: int):
-    """Путь P1.5: расписание через типизированный поиск. None — путь выключен
-    или модель не дала разбора, и ход идёт прежней дорогой.
+    """Путь P1.5/P1.6/P2: расписание, справка и личные данные. None — путь
+    выключен или модель не дала разбора, и ход идёт прежней дорогой.
 
     Флаг решает ровно одно: заводить ли НОВЫЕ разговоры этим путём. Уже
     записанные состояния, ссылки и очередь исходящих обслуживаются всегда —
-    выключение не должно ломать кнопки, которые человек уже видит.
+    выключение не должно ломать кнопки, которые человек уже видит, и не должно
+    оставлять висеть выданный код подтверждения.
     """
-    from services import agent_search, feature_flags
+    from services import agent_search, ai_language, catalog, feature_flags, identity
 
     async with async_session_maker() as db:
         if not await feature_flags.is_enabled(
                 db, work.studio_id, feature_flags.StudioFeature.AGENT_SEARCH_V2):
             return None
+        # Внешняя личность заводится ДО модели и независимо от того, что она
+        # ответит: это факт о доставке события, а не о содержании сообщения.
+        # Ничего при этом не доказывается — уровень остаётся ANONYMOUS.
+        row = await identity.observe(db, studio_id=work.studio_id,
+                                     channel=work.channel, subject=work.sender)
+        identity_id = row.id
+        ref = await catalog.studio(db, work.studio_id)
+        studio_language = ref.language if ref else None
+        await db.commit()
+
+    # ШЕСТЬ ЦИФР — ЭТО КОД, И МОДЕЛЬ ЗДЕСЬ НЕ НУЖНА. Спрашивать её, «не код ли
+    # это», значило бы платить за ответ, который полностью определён текстом, и
+    # ставить модель на самый чувствительный шаг разговора.
+    if agent_search.looks_like_code(work.text):
+        lang = ai_language.resolve([], studio_language=studio_language).code
+        async with async_session_maker() as db:
+            turn = await agent_search.code_turn(
+                db, studio_id=work.studio_id, identity_id=identity_id,
+                channel=work.channel, text=work.text, lang=lang)
+        return AgentTurn(turn.payload, turn.state, tuple(turn.shown),
+                         turn.new_search, turn.reference_now)
 
     raw = await agent_search.parse(work.text, studio_id=work.studio_id,
                                    surface=work.channel, sender_ref=work.sender)
@@ -310,7 +361,8 @@ async def _search_turn(work: Claim, thread_id: int):
     async with async_session_maker() as db:
         turn = await agent_search.turn(
             db, studio_id=work.studio_id, thread_id=thread_id,
-            channel=work.channel, text=work.text, raw=raw)
+            channel=work.channel, text=work.text, raw=raw,
+            identity_id=identity_id)
         await db.rollback()
     return AgentTurn(turn.payload, turn.state, tuple(turn.shown), turn.new_search,
                      turn.reference_now)

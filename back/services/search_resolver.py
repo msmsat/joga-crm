@@ -176,8 +176,12 @@ def check_provenance(user_text: str, intent: UserSearchIntent) -> list[str]:
     """
     haystack = normalize(user_text)
     bad: list[str] = []
+    # Контакт (P2) проверяется здесь же и по тому же правилу: «мой email
+    # такой-то» обязано быть сказано человеком, иначе код улетит по адресу,
+    # который придумала модель.
+    named = [intent.contact] if intent.contact is not None else []
     for mention in (*intent.service_mentions, *intent.trainer_mentions,
-                    *intent.branch_mentions):
+                    *intent.branch_mentions, *named):
         surface = normalize(mention.surface)
         if not surface or surface not in haystack:
             bad.append(mention.surface)

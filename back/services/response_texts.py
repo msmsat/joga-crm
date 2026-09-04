@@ -185,6 +185,17 @@ OPTION_NONE_SHOWN = {
     "de": "Ich habe noch nichts gezeigt. Wonach suchen Sie?",
 }
 
+# «Начать заново» — нажатая кнопка сброса. Отдельные слова, а не «я ещё
+# ничего не показывала»: список был, человек сам его закрыл.
+RESET_DONE = {
+    "ru": "Хорошо, начнём заново. Что ищем?",
+    "en": "Sure, let's start over. What are you looking for?",
+    "uk": "Гаразд, почнімо заново. Що шукаємо?",
+    "cs": "Dobře, začneme znovu. Co hledáte?",
+    "de": "Gut, fangen wir neu an. Wonach suchen Sie?",
+}
+
+
 # ─── Не наше дело ────────────────────────────────────────────────────────────
 
 # Вопросы, ответа на которые нет ни в одном каноническом поле: что взять с
@@ -345,6 +356,167 @@ WEEKDAYS = {
     "uk": ("Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Нд"),
     "cs": ("Po", "Út", "St", "Čt", "Pá", "So", "Ne"),
     "de": ("Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"),
+}
+
+
+# ─── Личность (P2) ───────────────────────────────────────────────────────────
+#
+# Ни одна фраза здесь не подтверждает и не опровергает, что такой клиент у
+# студии есть: «мы нашли ваш аккаунт» — это ответ на вопрос, которого человек
+# не задавал, и подсказка тому, кто перебирает чужие адреса.
+
+AUTH_CONTACT_NEEDED = {
+    "ru": "Чтобы открыть ваши данные, напишите email, на который оформлена "
+          "запись в студии — я пришлю на него код.",
+    "en": "To open your details, send the email the studio has on file — "
+          "I'll send a code to it.",
+    "uk": "Щоб відкрити ваші дані, напишіть email, на який оформлено запис у "
+          "студії — я надішлю на нього код.",
+    "cs": "Abych mohla otevřít vaše údaje, napište e-mail, který má studio "
+          "v evidenci — pošlu na něj kód.",
+    "de": "Um Ihre Daten zu öffnen, schreiben Sie die E-Mail, die das Studio "
+          "hinterlegt hat — ich sende einen Code dorthin.",
+}
+
+AUTH_VERIFY_NEEDED = {
+    "ru": "Личные данные показываю только после подтверждения. Напишите ваш "
+          "email — пришлю на него код.",
+    "en": "I only share personal details after confirmation. Send your email "
+          "and I'll send a code to it.",
+    "uk": "Особисті дані показую лише після підтвердження. Напишіть ваш "
+          "email — надішлю на нього код.",
+    "cs": "Osobní údaje ukazuji až po potvrzení. Napište svůj e-mail a pošlu "
+          "na něj kód.",
+    "de": "Persönliche Daten zeige ich erst nach Bestätigung. Schreiben Sie "
+          "Ihre E-Mail, ich sende einen Code dorthin.",
+}
+
+AUTH_REVOKED = {
+    "ru": "Доступ к данным аккаунта закрыт. Подтвердите email заново или "
+          "обратитесь в студию.",
+    "en": "Access to the account details is closed. Confirm your email again "
+          "or contact the studio.",
+    "uk": "Доступ до даних акаунта закрито. Підтвердіть email заново або "
+          "зверніться до студії.",
+    "cs": "Přístup k údajům účtu je uzavřen. Potvrďte e-mail znovu nebo se "
+          "obraťte na studio.",
+    "de": "Der Zugriff auf die Kontodaten ist gesperrt. Bestätigen Sie Ihre "
+          "E-Mail erneut oder wenden Sie sich an das Studio.",
+}
+
+AUTH_CLIENT_UNAVAILABLE = {
+    "ru": "Сейчас не получается открыть данные аккаунта. Это лучше уточнить "
+          "у студии.",
+    "en": "I can't open the account details right now. The studio can help "
+          "with this.",
+    "uk": "Зараз не вдається відкрити дані акаунта. Це краще уточнити "
+          "у студії.",
+    "cs": "Teď se údaje účtu otevřít nedaří. Na to vám lépe odpoví studio.",
+    "de": "Die Kontodaten lassen sich gerade nicht öffnen. Das Studio hilft "
+          "Ihnen dabei.",
+}
+
+# Один и тот же ответ на «код отправлен» и «такого клиента нет». Разные ответы
+# превратили бы чат в справочник о том, кто ходит в эту студию.
+VERIFICATION_SENT = {
+    "ru": "Если такой email у студии есть, код уже отправлен. Пришлите его "
+          "сюда — шесть цифр.",
+    "en": "If the studio has that email, the code is on its way. Send it "
+          "here — six digits.",
+    "uk": "Якщо такий email у студії є, код уже надіслано. Надішліть його "
+          "сюди — шість цифр.",
+    "cs": "Pokud studio takový e-mail má, kód je na cestě. Pošlete ho sem — "
+          "šest číslic.",
+    "de": "Wenn das Studio diese E-Mail hat, ist der Code unterwegs. Schicken "
+          "Sie ihn hierher — sechs Ziffern.",
+}
+
+VERIFICATION_RATE_LIMITED = {
+    "ru": "Код уже отправляли только что. Подождите минуту и попросите ещё раз.",
+    "en": "A code was just sent. Please wait a minute and ask again.",
+    "uk": "Код уже надсилали щойно. Зачекайте хвилину і попросіть ще раз.",
+    "cs": "Kód jsme právě poslali. Počkejte minutu a požádejte znovu.",
+    "de": "Ein Code wurde gerade gesendet. Warten Sie eine Minute und fragen "
+          "Sie erneut.",
+}
+
+VERIFICATION_BAD_CONTACT = {
+    "ru": "Это не похоже на email. Напишите адрес целиком — вида имя@почта.ру",
+    "en": "That doesn't look like an email. Send the full address — "
+          "name@mail.com",
+    "uk": "Це не схоже на email. Напишіть адресу повністю — вигляду "
+          "ім'я@пошта.ua",
+    "cs": "Tohle nevypadá jako e-mail. Napište celou adresu — jmeno@posta.cz",
+    "de": "Das sieht nicht nach einer E-Mail aus. Schreiben Sie die ganze "
+          "Adresse — name@mail.de",
+}
+
+VERIFICATION_FAILED = {
+    "ru": "Код не подошёл. Проверьте цифры или попросите новый.",
+    "en": "That code didn't work. Check the digits or ask for a new one.",
+    "uk": "Код не підійшов. Перевірте цифри або попросіть новий.",
+    "cs": "Kód nesedí. Zkontrolujte číslice nebo si vyžádejte nový.",
+    "de": "Der Code passt nicht. Prüfen Sie die Ziffern oder fordern Sie "
+          "einen neuen an.",
+}
+
+VERIFICATION_SUCCEEDED = {
+    "ru": "Готово, узнала вас.",
+    "en": "Done, I recognise you now.",
+    "uk": "Готово, упізнала вас.",
+    "cs": "Hotovo, teď vás poznávám.",
+    "de": "Fertig, jetzt erkenne ich Sie.",
+}
+
+PERSONAL_BOOKINGS = {
+    "ru": "Ваши ближайшие записи:", "en": "Your upcoming bookings:",
+    "uk": "Ваші найближчі записи:", "cs": "Vaše nejbližší rezervace:",
+    "de": "Ihre nächsten Buchungen:",
+}
+
+PERSONAL_BOOKINGS_NONE = {
+    "ru": "Ближайших записей у вас нет.", "en": "You have no upcoming bookings.",
+    "uk": "Найближчих записів у вас немає.", "cs": "Nemáte žádné nadcházející rezervace.",
+    "de": "Sie haben keine anstehenden Buchungen.",
+}
+
+PERSONAL_SUBSCRIPTION = {
+    "ru": "Ваш абонемент:", "en": "Your pass:", "uk": "Ваш абонемент:",
+    "cs": "Vaše permanentka:", "de": "Ihre Karte:",
+}
+
+PERSONAL_SUBSCRIPTION_NONE = {
+    "ru": "Действующего абонемента у вас сейчас нет.",
+    "en": "You don't have an active pass right now.",
+    "uk": "Чинного абонемента у вас зараз немає.",
+    "cs": "Nyní nemáte platnou permanentku.",
+    "de": "Sie haben derzeit keine aktive Karte.",
+}
+
+# Ждёт подтверждения тренером: место держится, решение студии ещё не принято.
+BOOKING_PENDING = {
+    "ru": "ждёт подтверждения", "en": "awaiting confirmation",
+    "uk": "чекає підтвердження", "cs": "čeká na potvrzení",
+    "de": "wartet auf Bestätigung",
+}
+
+SUBSCRIPTION_FROZEN = {
+    "ru": "заморожен", "en": "frozen", "uk": "заморожений",
+    "cs": "zmrazená", "de": "eingefroren",
+}
+
+SUBSCRIPTION_UNTIL = {
+    "ru": "до {day}", "en": "until {day}", "uk": "до {day}",
+    "cs": "do {day}", "de": "bis {day}",
+}
+
+# Осталось занятий. Формы множественного числа — как у мест.
+CLASSES_LEFT_FORMS = {
+    "ru": ("осталось {n} занятие", "осталось {n} занятия", "осталось {n} занятий"),
+    "uk": ("залишилось {n} заняття", "залишилось {n} заняття", "залишилось {n} занять"),
+    "cs": ("zbývá {n} lekce", "zbývají {n} lekce", "zbývá {n} lekcí"),
+    "en": ("{n} class left", "{n} classes left", "{n} classes left"),
+    "de": ("{n} Einheit übrig", "{n} Einheiten übrig", "{n} Einheiten übrig"),
 }
 
 

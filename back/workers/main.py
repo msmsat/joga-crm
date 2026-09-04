@@ -71,14 +71,20 @@ async def _purge_search_state() -> None:
     """
     from datetime import datetime, timezone
 
-    from services import search_state
+    from services import identity, search_state
 
     async with async_session_maker() as db:
         removed = await search_state.purge(db, now=datetime.now(timezone.utc))
+        # Просроченные коды подтверждения — тем же проходом и НЕЗАВИСИМО от
+        # флага: код, который некому погасить, живёт вечно, а это код доступа
+        # к чужой карточке.
+        codes = await identity.purge_codes(db)
         await db.commit()
     if removed:
         logger.info("option_ref_expired removed=%s ttl_minutes=%s",
                     removed, search_state.TTL_MINUTES)
+    if codes:
+        logger.info("verification_code_expired removed=%s", codes)
 
 
 class Worker:

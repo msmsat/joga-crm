@@ -4,6 +4,8 @@ from .studio_branch import StudioBranch, BranchWorkingHours
 from .studio_member import StudioMember
 from .user import User, UserConsent
 from .client import Client, ClientEmailOtp, ClientSubscription, ClientPayment, ClientNote, StudioClientSegmentConfig
+from .identity import CustomerIdentity
+from .proposal import ActionProposal
 from .schedule import Hall, Lesson, Reservation
 from .service import Service, ServiceScheduleSlot
 from .settings import (

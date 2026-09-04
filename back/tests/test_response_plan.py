@@ -286,16 +286,17 @@ async def _plans(ids: dict) -> None:
                             raw(date="tomorrow", branch_mentions=[{"surface": "Praha"}]))
     assert plan.kind is PlanKind.CLARIFICATION
     assert plan.copy_intent is CopyIntent.CLARIFY_BRANCH
-    assert plan.options == [] and len(plan.candidates) == 2
-    assert all(c.kind is ActionKind.PICK_CANDIDATE for c in plan.candidates)
-    assert {c.label for c in plan.candidates} == {"Вацлавская, Praha", "Карлин, Praha"}
+    # Кандидаты — СПИСОК ИМЁН, а не кнопки: кнопка «выбрать эту» несла бы в
+    # теле нажатия внутренний идентификатор филиала.
+    assert plan.options == [] and plan.actions == []
+    assert set(plan.facts.names) == {"Вацлавская, Praha", "Карлин, Praha"}
 
     # R4: услуги нет — и никаких «вам, наверное, подойдёт».
     missing, plan = await _plan(ids, "хочу бокс завтра",
                                 raw(date="tomorrow", service_mentions=[{"surface": "бокс"}]))
     assert plan.kind is PlanKind.ENTITY_NOT_FOUND
     assert plan.copy_intent is CopyIntent.SERVICE_NOT_FOUND
-    assert plan.options == [] and plan.candidates == []
+    assert plan.options == [] and plan.facts is None
 
     # R5: обязательное условие дало ноль — оно НЕ снимается.
     zero, plan = await _plan(
@@ -525,7 +526,7 @@ async def _selection(ids: dict) -> None:
     # Нажатая кнопка — та же сущность, но без единого вызова модели.
     async with async_session_maker() as db:
         turn = await agent_search.callback(
-            db, studio_id=ids["a"], thread_id=ids["t1"], token=token,
+            db, studio_id=ids["a"], thread_id=ids["t1"], data=f"view_option:{token}",
             channel="telegram", lang="ru", now=NOW)
     assert "Стретчинг" in turn.payload["text"] or "Йога" in turn.payload["text"]
     assert turn.outcome == "SELECTION"

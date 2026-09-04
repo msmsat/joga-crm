@@ -25,7 +25,7 @@ from datetime import datetime
 from enum import Enum
 from typing import Optional, Sequence
 
-from services import catalog, information, search_state
+from services import catalog, identity, information, personal, search_state
 from services.information import InfoKind, InfoOutcome, InfoResult
 from services.search_resolver import EntityKind, Outcome, SearchResult
 
@@ -53,6 +53,15 @@ class PlanKind(str, Enum):
     # а не NEED_HUMAN: тут владельцу есть что поправить, а человеку — что
     # услышать вместо «спросите студию».
     INFO_UNAVAILABLE = "info_unavailable"
+    # ── Личность (P2) ───────────────────────────────────────────────────────
+    # Права не хватило. Ответа по существу в таком плане нет вовсе: пока
+    # личность не доказана, показывать нечего — и «мы нашли ваш аккаунт» это
+    # тоже данные, которых человеку напротив ещё не положено.
+    AUTH_REQUIRED = "auth_required"
+    # Шаг подтверждения: код выдан, код не подошёл, код принят.
+    VERIFICATION = "verification"
+    # Личные данные — после доказательства и только они.
+    PERSONAL = "personal"
 
 
 class CopyIntent(str, Enum):
@@ -62,6 +71,7 @@ class CopyIntent(str, Enum):
     SEARCH_FOUND_SEVERAL = "search.found_several"
     SEARCH_RELAXED_PREFERENCE = "search.relaxed_preference"
     SEARCH_NO_RESULTS = "search.no_results"
+    SEARCH_RESET = "search.reset"
     CLARIFY_SERVICE = "search.clarify_service"
     CLARIFY_TRAINER = "search.clarify_trainer"
     CLARIFY_BRANCH = "search.clarify_branch"
@@ -91,6 +101,24 @@ class CopyIntent(str, Enum):
     INFO_SERVICE_PRICE = "info.service_price"
     INFO_SERVICE_INFO = "info.service_info"
     INFO_NOT_CONFIGURED = "info.not_configured"
+    # ── Личность (P2). Всё выводит сервер по исходу проверки права ──────────
+    # «Не знаю, кто вы» — контакт ещё не назван.
+    AUTH_CONTACT_NEEDED = "auth.contact_needed"
+    # Кандидат найден по контакту, но это ещё не доказательство. Ни имени, ни
+    # почты, ни числа записей в этой фразе быть не может: человек напротив
+    # пока НЕ доказан, и подсказка выдала бы ему чужую карточку.
+    AUTH_VERIFY_NEEDED = "auth.verify_needed"
+    AUTH_REVOKED = "auth.revoked"
+    AUTH_CLIENT_UNAVAILABLE = "auth.client_unavailable"
+    VERIFICATION_SENT = "auth.code_sent"
+    VERIFICATION_RATE_LIMITED = "auth.code_rate_limited"
+    VERIFICATION_BAD_CONTACT = "auth.bad_contact"
+    VERIFICATION_FAILED = "auth.code_failed"
+    VERIFICATION_SUCCEEDED = "auth.verified"
+    PERSONAL_BOOKINGS = "personal.bookings"
+    PERSONAL_BOOKINGS_NONE = "personal.bookings_none"
+    PERSONAL_SUBSCRIPTION = "personal.subscription"
+    PERSONAL_SUBSCRIPTION_NONE = "personal.subscription_none"
 
 
 class ActionKind(str, Enum):
@@ -99,7 +127,6 @@ class ActionKind(str, Enum):
     VIEW_OPTION = "view_option"
     SHOW_MORE = "show_more"
     RESET_SEARCH = "reset_search"
-    PICK_CANDIDATE = "pick_candidate"
 
 
 @dataclass(frozen=True)
@@ -150,13 +177,11 @@ class ResponsePlan:
     relaxed: list[str] = field(default_factory=list)
     # Что не нашлось и что не поддержано — для уточняющего ответа.
     missing_terms: list[str] = field(default_factory=list)
-    # Что показать в вопросе «которая из них». Подписи собрал сервер.
-    candidates: list[ResponseAction] = field(default_factory=list)
     # Справочный факт (P1.6) — ТИПИЗИРОВАННЫЙ: адрес, часы, контакты, цена,
     # перечень имён или текст владельца. Не `dict[str, Any]`: словарь принял бы
     # {"parking": "free"} из ответа модели и донёс бы его человеку, а тип
     # «парковка» в продукте не существует и появиться здесь не может.
-    facts: Optional[information.Facts] = None
+    facts: Optional[information.Facts | personal.Facts] = None
     plan_version: int = PLAN_VERSION
 
     def shown(self) -> list[tuple[str, int]]:
@@ -205,12 +230,14 @@ def build(result: SearchResult, *, refs: Optional[Sequence[str]] = None,
 
     if result.outcome is Outcome.AMBIGUOUS:
         first = result.ambiguities[0]
+        # Список имён, а не кнопки. Кнопка «выбрать эту услугу» несла бы в теле
+        # нажатия `service:12` — внутренний идентификатор наружу, ровно то, что
+        # P1.4 запрещал модели. Человек отвечает словом, и слово проходит
+        # обычную проверку происхождения.
         return ResponsePlan(
             PlanKind.CLARIFICATION, _CLARIFY_COPY[first.kind],
             missing_terms=[first.term],
-            candidates=[ResponseAction(ActionKind.PICK_CANDIDATE,
-                                       ref=f"{first.kind.value}:{c.id}", label=c.label)
-                        for c in first.candidates],
+            facts=information.NameListFacts(tuple(c.label for c in first.candidates)),
         )
 
     if result.outcome is Outcome.NOT_FOUND:
@@ -356,3 +383,66 @@ def build_info(result: InfoResult) -> ResponsePlan:
 
 def _contact_or_none(result: InfoResult):
     return result.contact if (result.contact and result.contact.known()) else None
+
+
+# ─── Личность (P2) ───────────────────────────────────────────────────────────
+#
+# КНОПОК ЗДЕСЬ НЕТ. Кнопка «это я» была бы одним нажатием между чужим чатом и
+# чужим абонементом: нажать её может кто угодно, кто держит в руках телефон, а
+# доказательством нажатие не является. Подтверждение идёт словами и кодом.
+
+_AUTH_COPY = {
+    identity.Decision.IDENTITY_REQUIRED: CopyIntent.AUTH_CONTACT_NEEDED,
+    identity.Decision.VERIFICATION_REQUIRED: CopyIntent.AUTH_VERIFY_NEEDED,
+    identity.Decision.IDENTITY_REVOKED: CopyIntent.AUTH_REVOKED,
+    identity.Decision.CLIENT_UNAVAILABLE: CopyIntent.AUTH_CLIENT_UNAVAILABLE,
+}
+
+_CHALLENGE_COPY = {
+    identity.ChallengeOutcome.SENT: CopyIntent.VERIFICATION_SENT,
+    # «Такого клиента нет» наружу НЕ выходит: ответ тот же, что на успех.
+    # Иначе перебор адресов по одному отвечал бы, кто ходит в эту студию.
+    identity.ChallengeOutcome.NO_CANDIDATE: CopyIntent.VERIFICATION_SENT,
+    identity.ChallengeOutcome.RATE_LIMITED: CopyIntent.VERIFICATION_RATE_LIMITED,
+    identity.ChallengeOutcome.INVALID_CONTACT: CopyIntent.VERIFICATION_BAD_CONTACT,
+}
+
+_VERIFY_COPY = {
+    identity.VerifyOutcome.VERIFIED: CopyIntent.VERIFICATION_SUCCEEDED,
+    identity.VerifyOutcome.INVALID: CopyIntent.VERIFICATION_FAILED,
+    identity.VerifyOutcome.CLIENT_UNAVAILABLE: CopyIntent.AUTH_CLIENT_UNAVAILABLE,
+    identity.VerifyOutcome.ALREADY_LINKED_ELSEWHERE: CopyIntent.AUTH_CLIENT_UNAVAILABLE,
+}
+
+
+def build_auth(decision: identity.Decision) -> ResponsePlan:
+    """Права не хватило -> что человеку сделать дальше.
+
+    ЧЕГО В ЭТОМ ПЛАНЕ НЕТ: имени клиента, его почты, числа его записей и даже
+    подтверждения, что такая карточка существует. Пока личность не доказана,
+    любая такая подробность — выдача чужих данных тому, кто просто написал в
+    чат с чужого телефона.
+    """
+    return ResponsePlan(PlanKind.AUTH_REQUIRED, _AUTH_COPY[decision])
+
+
+def build_challenge(result: identity.Challenge) -> ResponsePlan:
+    """Код отправлен (или не отправлен — снаружи это одно и то же)."""
+    return ResponsePlan(PlanKind.VERIFICATION, _CHALLENGE_COPY[result.outcome])
+
+
+def build_verified(result: identity.Verified) -> ResponsePlan:
+    return ResponsePlan(PlanKind.VERIFICATION, _VERIFY_COPY[result.outcome])
+
+
+def build_personal(facts) -> ResponsePlan:
+    """Личные факты -> план. Право к этому моменту УЖЕ проверено сервером:
+    сюда просто нечего передать, не получив `client_id` из разрешения."""
+    if isinstance(facts, personal.BookingsFacts):
+        copy = (CopyIntent.PERSONAL_BOOKINGS if facts.items
+                else CopyIntent.PERSONAL_BOOKINGS_NONE)
+    else:
+        copy = (CopyIntent.PERSONAL_SUBSCRIPTION if facts.items
+                else CopyIntent.PERSONAL_SUBSCRIPTION_NONE)
+    return ResponsePlan(PlanKind.PERSONAL, copy,
+                        facts=facts if facts.items else None)

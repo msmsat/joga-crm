@@ -38,7 +38,7 @@ from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.exc import IntegrityError
 
 from database import async_session_maker
-from models import ChannelThread, OutboundMessage
+from models import ChannelThread, CustomerIdentity, OutboundMessage
 from services import channels
 from services.threads import DB_NOW
 
@@ -71,6 +71,10 @@ class Claimed(NamedTuple):
     channel: str
     recipient: str
     payload: dict
+    # Откуда взялось сообщение. «agent» — ответ на СОБСТВЕННОЕ сообщение
+    # человека, то есть операционный. Всё остальное считается рекламным, и
+    # разрешение на него спрашивается в момент отправки (см. `allowed`).
+    origin: str = "agent"
 
 
 def reply_key(job_id: int) -> str:
@@ -149,7 +153,8 @@ async def claim_next(db, worker: str, ids: list[int] | None = None) -> Claimed |
             .values(status=SENDING, attempt=OutboundMessage.attempt + 1,
                     locked_by=worker[:64], locked_at=DB_NOW)
             .returning(OutboundMessage.id, OutboundMessage.attempt, OutboundMessage.studio_id,
-                       OutboundMessage.thread_id, OutboundMessage.payload)
+                       OutboundMessage.thread_id, OutboundMessage.payload,
+                       OutboundMessage.origin)
         )).one_or_none()
     except IntegrityError:
         # Частичный UNIQUE отбил вторую одновременную отправку в тред. Это не
@@ -169,7 +174,7 @@ async def claim_next(db, worker: str, ids: list[int] | None = None) -> Claimed |
     logger.info("outbound_claimed outbound_id=%s attempt=%s thread_id=%s worker=%s",
                 row.id, row.attempt, row.thread_id, worker)
     return Claimed(row.id, row.attempt, row.studio_id, row.thread_id,
-                   thread.channel, thread.sender_ref, row.payload)
+                   thread.channel, thread.sender_ref, row.payload, row.origin)
 
 
 async def _finalize(db, message: Claimed, **values) -> bool:
@@ -245,6 +250,44 @@ async def record(db, message: Claimed, result: channels.SendResult) -> str:
     return "retry"
 
 
+# Origin'ы, которые являются ОТВЕТОМ на собственное сообщение человека. Такое
+# сообщение не требует рекламного согласия — оно требуется на то, чего человек
+# не просил.
+TRANSACTIONAL_ORIGINS = ("agent",)
+
+
+async def allowed(message: Claimed) -> bool:
+    """Можно ли отправить это сообщение ПРЯМО СЕЙЧАС.
+
+    Операционный ответ (человек написал — мы отвечаем) разрешён всегда: молчать
+    в ответ на прямой вопрос было бы не защитой приватности, а поломкой. Всё
+    остальное — рассылки, напоминания «просто так», акции — спрашивает
+    согласие у личности, и спрашивает в момент отправки.
+
+    СЕЙЧАС В ОЧЕРЕДЬ ПОПАДАЕТ ТОЛЬКО ОПЕРАЦИОННОЕ, поэтому лишнего запроса эта
+    проверка не делает. Но граница стоит в коде, а не в обещании: первое же
+    рекламное сообщение упрётся в неё, а не в чью-то память о том, что тут
+    надо было спросить.
+    """
+    if message.origin in TRANSACTIONAL_ORIGINS:
+        return True
+    from services import identity
+
+    async with async_session_maker() as db:
+        row = (await db.execute(
+            select(CustomerIdentity.id).where(
+                CustomerIdentity.studio_id == message.studio_id,
+                CustomerIdentity.channel == message.channel,
+                CustomerIdentity.subject == message.recipient,
+            )
+        )).scalar_one_or_none()
+        if row is None:
+            # Личности нет — согласия тоже нет. Рекламу незнакомцу не шлём.
+            return False
+        return await identity.may_send(db, studio_id=message.studio_id,
+                                       identity_id=row, promotional=True)
+
+
 async def deliver(message: Claimed, transport: str) -> str:
     """Одна попытка: сеть, затем короткая транзакция с исходом.
 
@@ -252,6 +295,17 @@ async def deliver(message: Claimed, transport: str) -> str:
     """
     from services.channels import instagram, telegram, whatsapp
     from services.inbound import INSTAGRAM, TELEGRAM, WHATSAPP
+
+    if not await allowed(message):
+        # Согласие спрашивается ЗДЕСЬ, а не при постановке в очередь: между тем
+        # и другим проходит время, и отозванное «пишите мне» обязано
+        # остановить сообщение, которое ещё не ушло.
+        async with async_session_maker() as db:
+            await _finalize(db, message, status=FAILED, error="согласие отозвано")
+            await db.commit()
+        logger.info("outbound_consent_blocked outbound_id=%s studio_id=%s",
+                    message.id, message.studio_id)
+        return FAILED
 
     sender = {TELEGRAM: telegram.send, INSTAGRAM: instagram.send, WHATSAPP: whatsapp.send}
     send = sender.get(message.channel)

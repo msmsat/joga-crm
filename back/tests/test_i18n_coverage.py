@@ -84,11 +84,17 @@ _FLAT_TABLES = {
     # «где-то в response_texts».
     **{f"response_texts.{name}": table
        for name, table in vars(reply_texts).items()
-       if name.isupper() and isinstance(table, dict) and name != "SPOTS_FORMS"},
+       if name.isupper() and isinstance(table, dict)
+       and not name.endswith("_FORMS")},
 }
 
 # Формы множественного числа: не «язык → строка», а «язык → три строки».
-_FORM_TABLES = {"response_texts.SPOTS_FORMS": reply_texts.SPOTS_FORMS}
+# Собираются по суффиксу: новая таблица форм попадает под проверку сама, без
+# правки этого файла — забытая означала бы «4 занятий» в боевом ответе.
+_FORM_TABLES = {f"response_texts.{name}": table
+                for name, table in vars(reply_texts).items()
+                if name.isupper() and isinstance(table, dict) and name.endswith("_FORMS")}
+assert len(_FORM_TABLES) >= 2, _FORM_TABLES
 
 # Таблицы «ключ → (язык → значение)»: событие, действие, вид выгрузки.
 _NESTED_TABLES = {

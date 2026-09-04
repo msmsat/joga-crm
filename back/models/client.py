@@ -160,3 +160,22 @@ class ClientEmailOtp(Base):
     code_hash: Mapped[str] = mapped_column(String(255))
     expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=False))
     attempts: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
+
+    # ── Подтверждение личности в мессенджере (P2) ───────────────────────────
+    # Тот же код, тот же ящик, тот же срок — но выданный НЕ на форму входа, а
+    # по просьбе из чата. Второй OTP-подсистемы в продукте не появляется.
+    #
+    # Код ПРИВЯЗАН к тому, кто его просил, и к тому, кого он подтверждает.
+    # Без этой привязки код, полученный на свою почту, подтверждал бы что
+    # угодно: «код верен» — не ответ на вопрос «чей это аккаунт».
+    identity_id: Mapped[Optional[int]] = mapped_column(
+        ForeignKey("customer_identities.id", ondelete="CASCADE"), nullable=True)
+    # Карточка-кандидат на момент ВЫДАЧИ кода. Клиента удалили или он сменил
+    # почту, пока письмо шло, — код больше ничего не подтверждает: SET NULL и
+    # снимок адреса в `email` рядом делают это проверяемым.
+    client_id: Mapped[Optional[int]] = mapped_column(
+        ForeignKey("clients.id", ondelete="SET NULL"), nullable=True)
+    # Когда код отправляли в последний раз — для паузы между «пришлите ещё».
+    # Без неё «отправить код» становится кнопкой рассылки по чужому ящику.
+    last_sent_at: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=False), nullable=True)

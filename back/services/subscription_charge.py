@@ -11,6 +11,7 @@
 from datetime import date, timedelta
 from typing import Optional
 
+from sqlalchemy import update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
@@ -35,9 +36,34 @@ async def charge_reservation(
     if sub is None or reservation.subscription_id is not None:
         return None
 
-    sub.used_classes += 1
+    # СПИСАНИЕ ДЕЛАЕТ БАЗА, А НЕ PYTHON. `sub.used_classes += 1` читает число в
+    # процессе и пишет обратно: два одновременных запроса читают одну и ту же
+    # семёрку из восьми и оба записывают восьмёрку — одно занятие оплачивает
+    # две брони. Условие `used_classes < total_classes` стоит В САМОМ UPDATE,
+    # поэтому за последнее занятие борются не два процесса, а два запроса к
+    # строке, и выигрывает ровно один.
+    #
+    # Замок на клиенте (`booking_access.lock_client`) сериализует записи одного
+    # человека и этого почти всегда достаточно. Почти — не аргумент для денег:
+    # абонемент можно списать и путём, который замка не берёт, а условие в
+    # UPDATE верно независимо от того, кто и откуда пришёл.
+    charged = (await db.execute(
+        update(ClientSubscription)
+        .where(ClientSubscription.id == sub.id,
+               ClientSubscription.used_classes < ClientSubscription.total_classes)
+        .values(used_classes=ClientSubscription.used_classes + 1)
+        .returning(ClientSubscription.used_classes, ClientSubscription.total_classes)
+    )).first()
+    if charged is None:
+        # Занятия кончились между выбором абонемента и списанием. Молча
+        # записать «бесплатно» нельзя — это подарок за счёт студии.
+        return None
+    used, total = charged
+    # ORM держит ту же строку в своей карте объектов; без синхронизации она
+    # осталась бы со старым числом и перезаписала бы наш UPDATE на flush.
+    await db.refresh(sub)
     reservation.subscription_id = sub.id
-    remaining = sub.total_classes - sub.used_classes
+    remaining = total - used
     # Абонемент из очереди не закрываем: он ещё не начинал срок, и пометка
     # "finished" здесь сломала бы и активацию (она ждёт status == "pending"), и
     # возврат при отмене (тот поднимает "finished" обратно в "active", выдав
@@ -140,17 +166,41 @@ async def refund_reservation(db: AsyncSession, reservation: Reservation) -> None
     """
     await clear_debt(db, reservation)
 
-    if reservation.subscription_id is None:
+    sub_id = reservation.subscription_id
+    if sub_id is None:
         return
 
-    sub = await db.get(ClientSubscription, reservation.subscription_id)
-    reservation.subscription_id = None  # снимаем ссылку до проверки — второй возврат уже no-op
-    if sub is None:
+    # ССЫЛКА ЗАБИРАЕТСЯ, А НЕ СТИРАЕТСЯ. Снять её присваиванием мало: две
+    # одновременные отмены одной брони (клиент нажал «отменить» и админ снял
+    # его же в Журнале) обе увидят ссылку живой и обе вернут занятие — из
+    # восьми потраченных станет шесть. Условие «ссылка ещё та самая» стоит В
+    # UPDATE, поэтому забрать её может ровно один, и возврат случается один
+    # раз на одно списание.
+    claimed = (await db.execute(
+        update(Reservation)
+        .where(Reservation.id == reservation.id,
+               Reservation.subscription_id == sub_id)
+        .values(subscription_id=None)
+        .returning(Reservation.id)
+    )).scalar_one_or_none()
+    reservation.subscription_id = None      # ORM в согласии со строкой
+    if claimed is None:
         return
 
-    sub.used_classes = max(0, sub.used_classes - 1)
-    if sub.status == "finished" and sub.used_classes < sub.total_classes:
-        sub.status = "active"
+    restored = (await db.execute(
+        update(ClientSubscription)
+        .where(ClientSubscription.id == sub_id, ClientSubscription.used_classes > 0)
+        .values(used_classes=ClientSubscription.used_classes - 1)
+        .returning(ClientSubscription.used_classes, ClientSubscription.total_classes)
+    )).first()
+    if restored is None:
+        return
+    sub = await db.get(ClientSubscription, sub_id)
+    if sub is not None:
+        await db.refresh(sub)
+        used, total = restored
+        if sub.status == "finished" and used < total:
+            sub.status = "active"
 
 
 async def notify_subscription_remaining(

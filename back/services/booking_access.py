@@ -13,7 +13,7 @@ from sqlalchemy.future import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import HTTPException
 
-from models import ClientSubscription, Lesson, Reservation, SubscriptionPackage
+from models import Client, ClientSubscription, Lesson, Reservation, SubscriptionPackage
 from services.booking_rules import BookingRules
 from services.catalog import OCCUPIES_SPOT
 
@@ -204,10 +204,41 @@ async def trial_applies(
     return booked is None
 
 
+async def lock_client(db: AsyncSession, client_id: int) -> bool:
+    """Сериализовать записи ОДНОГО клиента. False — карточки нет.
+
+    ЗАЧЕМ. Три решения о новой брони читают базу и только потом пишут:
+    подходит ли абонемент, положено ли подаренное занятие, нет ли уже такой
+    брони. Между чтением и вставкой влезает второй запрос того же человека —
+    два устройства, двойной тап, агент и мини-приложение одновременно, — и оба
+    видят одну и ту же картину «ещё можно». Результат: два подарка вместо
+    одного и два списания с последнего занятия абонемента.
+
+    Замок на СТРОКЕ КЛИЕНТА, а не на занятии: все три решения относятся к
+    человеку, а не к занятию. Место в зале защищено своим средством —
+    уникальным индексом на (занятие, коврик), и второй замок ему не нужен.
+
+    Держится до конца транзакции вызывающего. Транзакция записи короткая и без
+    сети, поэтому очередь на этой строке — микросекунды; два РАЗНЫХ клиента не
+    ждут друг друга вовсе.
+    """
+    found = (await db.execute(
+        select(Client.id).where(Client.id == client_id).with_for_update()
+    )).scalar_one_or_none()
+    return found is not None
+
+
 async def resolve_coverage(
-    db: AsyncSession, client_id: int, lesson: Lesson, rules: BookingRules
+    db: AsyncSession, client_id: int, lesson: Lesson, rules: BookingRules,
+    *, lock: bool = True,
 ) -> tuple[Optional[ClientSubscription], bool]:
     """Чем покрыта новая бронь: `(абонемент, пробное)`.
+
+    ПЕРВЫМ ДЕЛОМ БЕРЁТ ЗАМОК НА КЛИЕНТА (`lock_client`). Это единственная
+    функция, через которую проходят ВСЕ четыре точки записи (Журнал, карточка
+    клиента, мини-приложение, веб-виджет), и потому единственное место, где
+    сериализацию можно завести один раз вместо четырёх. Без неё «подарок» и
+    «последнее занятие абонемента» достаются двум одновременным запросам.
 
     Одно решение на все четыре точки записи (Журнал, карточка клиента,
     мини-приложение, веб-виджет) — разъехавшись, они выдали бы подарок дважды
@@ -220,6 +251,8 @@ async def resolve_coverage(
     Абонемент важнее подарка: купивший уже не пробует, и списывать с него
     занятие правильнее, чем дарить визит поверх оплаченного пакета.
     """
+    if lock:
+        await lock_client(db, client_id)
     sub = await find_eligible_subscription(db, client_id, lesson)
     if sub is not None:
         return sub, False

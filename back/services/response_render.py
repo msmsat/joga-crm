@@ -23,6 +23,7 @@ from datetime import date, datetime
 from typing import Optional
 
 from services import information as I
+from services import personal as P
 from services import response_texts as T
 from services.i18n import pick, resolve
 from services.notifier import _MONTHS, _fmt_amount
@@ -37,6 +38,20 @@ _COPY: dict[CopyIntent, dict] = {
     CopyIntent.SEARCH_FOUND_SEVERAL: T.FOUND_SEVERAL,
     CopyIntent.SEARCH_RELAXED_PREFERENCE: T.RELAXED,
     CopyIntent.SEARCH_NO_RESULTS: T.NO_RESULTS,
+    CopyIntent.SEARCH_RESET: T.RESET_DONE,
+    CopyIntent.AUTH_CONTACT_NEEDED: T.AUTH_CONTACT_NEEDED,
+    CopyIntent.AUTH_VERIFY_NEEDED: T.AUTH_VERIFY_NEEDED,
+    CopyIntent.AUTH_REVOKED: T.AUTH_REVOKED,
+    CopyIntent.AUTH_CLIENT_UNAVAILABLE: T.AUTH_CLIENT_UNAVAILABLE,
+    CopyIntent.VERIFICATION_SENT: T.VERIFICATION_SENT,
+    CopyIntent.VERIFICATION_RATE_LIMITED: T.VERIFICATION_RATE_LIMITED,
+    CopyIntent.VERIFICATION_BAD_CONTACT: T.VERIFICATION_BAD_CONTACT,
+    CopyIntent.VERIFICATION_FAILED: T.VERIFICATION_FAILED,
+    CopyIntent.VERIFICATION_SUCCEEDED: T.VERIFICATION_SUCCEEDED,
+    CopyIntent.PERSONAL_BOOKINGS: T.PERSONAL_BOOKINGS,
+    CopyIntent.PERSONAL_BOOKINGS_NONE: T.PERSONAL_BOOKINGS_NONE,
+    CopyIntent.PERSONAL_SUBSCRIPTION: T.PERSONAL_SUBSCRIPTION,
+    CopyIntent.PERSONAL_SUBSCRIPTION_NONE: T.PERSONAL_SUBSCRIPTION_NONE,
     CopyIntent.CLARIFY_SERVICE: T.CLARIFY_SERVICE,
     CopyIntent.CLARIFY_TRAINER: T.CLARIFY_TRAINER,
     CopyIntent.CLARIFY_BRANCH: T.CLARIFY_BRANCH,
@@ -154,12 +169,6 @@ def render(plan: ResponsePlan, *, lang: str, channel: str = "telegram") -> dict:
         parts.append("")
         parts.append("\n\n".join(
             option_lines(o, lang, numbered=numbered) for o in plan.options))
-    if plan.candidates:
-        # Подписи кандидатов собрал сервер из каталога — это имена тренеров и
-        # названия услуг, а не текст модели.
-        parts.append("")
-        parts.append("\n".join(f"{i}. {c.label}"
-                               for i, c in enumerate(plan.candidates, start=1)))
     if plan.facts is not None:
         parts.append("")
         parts.append(fact_lines(plan.facts, lang, copy=plan.copy_intent))
@@ -201,11 +210,39 @@ def fact_lines(facts, lang: str, *, copy: Optional[CopyIntent] = None) -> str:
         # Текст владельца — дословно. Ни сокращений, ни «улучшений»: это его
         # слова о своей студии, и дополнять их нам нечем.
         return "\n\n".join(f"{item.title}\n{item.text}" for item in facts.items)
+    if isinstance(facts, P.BookingsFacts):
+        return "\n\n".join(_booking(item, lang) for item in facts.items)
+    if isinstance(facts, P.SubscriptionFacts):
+        return "\n".join(_subscription(item, lang) for item in facts.items)
     if isinstance(facts, I.NameListFacts):
         if copy in _CLARIFY:
             return "\n".join(f"{i}. {n}" for i, n in enumerate(facts.names, start=1))
         return "\n".join(facts.names)
     raise TypeError(f"нечем показать факт: {type(facts).__name__}")
+
+
+def _booking(item: P.BookingFact, lang: str) -> str:
+    """Одна запись клиента. Каждое слово — из каталога, кроме двух подписей."""
+    head = f"{fmt_day(item.local_start.date(), lang)}, {fmt_time(item.local_start)}"
+    head = f"{head} · {item.service_name}"
+    if item.pending:
+        head = f"{head} ({pick(T.BOOKING_PENDING, lang)})"
+    tail = [item.trainer_name, fmt_duration(item.duration_min, lang)]
+    if item.branch_name:
+        tail.append(item.branch_name)
+    return f"{head}\n{' · '.join(t for t in tail if t)}"
+
+
+def _subscription(item: P.SubscriptionFact, lang: str) -> str:
+    """«Пилатес 8 — осталось 3 занятия, до 14 июня». Число из базы, форма — по
+    языку: «3 занятий» выдаёт машину."""
+    forms = pick(T.CLASSES_LEFT_FORMS, lang)
+    left = forms[T.spots_form(item.left, lang)].format(n=item.left)
+    parts = [item.kind, left,
+             pick(T.SUBSCRIPTION_UNTIL, lang).format(day=fmt_day(item.expires_at, lang))]
+    if item.frozen:
+        parts.append(pick(T.SUBSCRIPTION_FROZEN, lang))
+    return " · ".join(parts)
 
 
 def _place(place: I.PlaceRef) -> str:
@@ -273,9 +310,6 @@ def _buttons(plan: ResponsePlan, lang: str, channel: str) -> list[dict]:
         # человек называет номер словами. Смысл тот же.
         return []
     out: list[dict] = []
-    for candidate in plan.candidates:
-        out.append({"action": candidate.kind.value, "ref": candidate.ref,
-                    "label": candidate.label})
     for option in plan.options:
         out.append({"action": ActionKind.VIEW_OPTION.value, "ref": option.ref,
                     "label": f"{option.ordinal}. {fmt_time(option.local_start)}"})

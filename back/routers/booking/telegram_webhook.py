@@ -118,9 +118,21 @@ async def telegram_webhook(
     except ValueError:
         return {"ok": True}
 
-    message = update.get("message") or {}
-    chat_id = (message.get("chat") or {}).get("id")
-    text = message.get("text") or ""
+    query = update.get("callback_query") or {}
+    if query:
+        # Нажатие кнопки. Тред тот же, что у переписки, поэтому и ключ тот же —
+        # чат, а не отправитель: в группе кнопку жмёт человек, а разговор ведёт
+        # чат. `from.id` берём только когда сообщения в апдейте нет вовсе.
+        chat_id = ((query.get("message") or {}).get("chat") or {}).get("id")
+        if chat_id is None:
+            chat_id = (query.get("from") or {}).get("id")
+        text = query.get("data") or ""
+        event_type = inbound.CALLBACK
+    else:
+        message = update.get("message") or {}
+        chat_id = (message.get("chat") or {}).get("id")
+        text = message.get("text") or ""
+        event_type = inbound.MESSAGE
     if chat_id is None or not text:
         return {"ok": True}
 
@@ -142,13 +154,13 @@ async def telegram_webhook(
     update_id = update.get("update_id")
     admission = await inbound.admit(
         inbound.TELEGRAM, f"{studio_id}:{update_id}" if update_id is not None else None,
-        studio_id, inbound.MESSAGE, str(chat_id), text, update,
+        studio_id, event_type, str(chat_id), text, update,
     )
     if not admission.accepted:
         # Повтор той же доставки. Ответ обычный 200: 4xx/5xx заставили бы
         # Telegram ретраить её снова и снова. Работа по оригиналу жива.
         logger.info("telegram webhook: повтор апдейта отброшен, studio_id=%s", studio_id)
-        return {"ok": True}
+        return _ack(query)
 
     # Обе ветки — и приветствие на /start, и ответ ассистента — исполняет одна
     # работа (services/agent_jobs::_handle). Раньше приветствие уходило прямо
@@ -156,7 +168,24 @@ async def telegram_webhook(
     # Ответственность web на этом закончилась: работа лежит в БД, её возьмёт
     # процесс-исполнитель (`python -m workers.main`). Запускать агента здесь
     # значило бы снова привязать ответ клиенту к жизни web-реплики.
-    return {"ok": True}
+    return _ack(query)
+
+
+def _ack(query: dict) -> dict:
+    """Протокольное подтверждение нажатия — ОТДЕЛЬНО от делового ответа.
+
+    Telegram крутит «часики» на кнопке, пока бот не ответил на callback_query, и
+    ждать этого он не станет столько, сколько идёт ход агента. Гасим их прямо
+    ТЕЛОМ ОТВЕТА на вебхук: провайдер разрешает вернуть в нём вызов метода, и
+    отдельного похода в сеть из веб-запроса не возникает.
+
+    Деловой ответ — сообщение с вариантами — идёт своей дорогой: durable-работа,
+    план, очередь исходящих. Смешивать эти два ответа нельзя: протокольный
+    обязан быть мгновенным, деловой — надёжным.
+    """
+    if not query:
+        return {"ok": True}
+    return {"method": "answerCallbackQuery", "callback_query_id": query.get("id")}
 
 
 if __name__ == "__main__":
