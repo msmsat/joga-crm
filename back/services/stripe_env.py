@@ -36,6 +36,21 @@ MODE_TEST = "test"
 MODE_UNKNOWN = "unknown"
 
 ENV_PRODUCTION = "production"
+ENV_DEVELOPMENT = "development"
+
+# Короткие формы, которыми окружение объявляют на самом деле: так написано в
+# `.env.example` и этого же требует `scripts/preflight.py` (`dev` | `prod`).
+# Пока их тут не было, `APP_ENV=prod` на боевом сервере означало «не production»
+# — и `guard_write` останавливал ВЕСЬ приём денег: подписки, счета, Connect.
+#
+# Список, а не проверка «начинается с prod»: `production_backup` или `prod-copy`
+# боевым сервером не являются, и молча пропускать их к живому ключу нельзя.
+_ENV_ALIASES = {
+    "dev": ENV_DEVELOPMENT,
+    "development": ENV_DEVELOPMENT,
+    "prod": ENV_PRODUCTION,
+    "production": ENV_PRODUCTION,
+}
 
 # Локальные хосты: если BACKEND_URL смотрит сюда, машина заведомо не боевая.
 _LOCAL_HOSTS = {"localhost", "127.0.0.1", "::1", "0.0.0.0", ""}
@@ -73,6 +88,10 @@ def under_pytest() -> bool:
 def app_env() -> str:
     """Окружение процесса. Явное `APP_ENV` главнее любых догадок.
 
+    Короткие формы (`dev`, `prod`) и длинные (`development`, `production`) значат
+    одно и то же — см. `_ENV_ALIASES`. Одно назначение, записанное двумя словами,
+    не может давать разный результат: именно это и было причиной блокировки прода.
+
     Неполная настройка НЕ должна ронять прод, поэтому вывод по умолчанию
     консервативен ровно в одну сторону: локальный адрес — это разработка, всё
     остальное — production. То есть забытая переменная на боевом сервере ничего не
@@ -81,7 +100,10 @@ def app_env() -> str:
     """
     declared = (os.getenv("APP_ENV") or "").strip().lower()
     if declared:
-        return declared
+        # Незнакомое значение возвращаем как есть: оно не равно ENV_PRODUCTION,
+        # то есть боевой ключ останется заблокированным. Опечатка в переменной
+        # обязана вести к отказу, а не к молчаливому разрешению.
+        return _ENV_ALIASES.get(declared, declared)
     if under_pytest():
         return "test"
     host = urlparse(os.getenv("BACKEND_URL", "http://localhost:8000")).hostname

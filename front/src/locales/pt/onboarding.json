@@ -22,7 +22,7 @@
     },
     "activity": {
       "title": "Atividade",
-      "desc": "Escolha uma área para adaptarmos o CRM a si."
+      "desc": "Marque as áreas do estúdio — dentro de uma só secção."
     },
     "contact": {
       "title": "Contactos",
@@ -52,18 +52,48 @@
   },
   "activity": {
     "title": "Tipo de atividade",
-    "subtitle": "Escolha uma área — vamos adaptar o CRM a si",
+    "subtitle": "Marque tudo o que faz — dentro de uma só secção",
     "comingSoon": "Em breve: barbearia, fitness, dança e mais",
     "types": {
-      "yoga": {
-        "label": "Ioga",
-        "description": "Hatha, Ashtanga, Vinyasa"
-      },
-      "pilates": {
-        "label": "Pilates",
-        "description": "Reformer, pilates de solo"
-      }
-    }
+      "yoga": "Yoga",
+      "pilates": "Pilates",
+      "stretching": "Alongamento",
+      "barre": "Barre",
+      "meditation": "Meditação e respiração",
+      "gym": "Ginásio",
+      "crossfit": "CrossFit e funcional",
+      "martial_arts": "Artes marciais",
+      "dance": "Dança",
+      "swimming": "Natação",
+      "kids_sport": "Desporto infantil",
+      "personal_training": "Treino pessoal",
+      "barbershop": "Barbearia",
+      "hair_salon": "Cabeleireiro",
+      "makeup": "Maquilhagem",
+      "nails": "Unhas",
+      "brows_lashes": "Sobrancelhas e pestanas",
+      "cosmetology": "Cosmetologia",
+      "hair_removal": "Depilação e sugaring",
+      "tattoo": "Tatuagem e piercing",
+      "massage": "Massagem",
+      "manual_therapy": "Terapia manual",
+      "osteopathy": "Osteopatia",
+      "physio": "Reabilitação e fisioterapia",
+      "nutrition": "Nutrição",
+      "spa": "Spa",
+      "sauna": "Sauna e hammam",
+      "wraps": "Envolvimentos corporais",
+      "other": "Outro"
+    },
+    "groups": {
+      "studio": "Aulas de grupo no estúdio",
+      "sport": "Fitness e desporto",
+      "beauty": "Beleza e barbearia",
+      "recovery": "Massagem e recuperação",
+      "relax": "Spa e relaxamento",
+      "other": "Outro"
+    },
+    "selectAll": "Selecionar toda a secção"
   },
   "contact": {
     "title": "Dados de contacto",

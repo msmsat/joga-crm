@@ -22,7 +22,7 @@
     },
     "activity": {
       "title": "Tätigkeit",
-      "desc": "Wählen Sie eine Richtung, damit wir das CRM anpassen können."
+      "desc": "Markieren Sie die Richtungen Ihres Studios — innerhalb eines Bereichs."
     },
     "contact": {
       "title": "Kontakte",
@@ -52,61 +52,47 @@
   },
   "activity": {
     "title": "Art der Tätigkeit",
-    "subtitle": "Wählen Sie eine Richtung — wir passen das CRM für Sie an",
+    "subtitle": "Markieren Sie alles, was Sie anbieten — innerhalb eines Bereichs",
     "types": {
-      "yoga": {
-        "label": "Yoga",
-        "description": "Hatha, Ashtanga, Vinyasa"
-      },
-      "pilates": {
-        "label": "Pilates",
-        "description": "Reformer, Matten-Pilates"
-      },
-      "stretching": {
-        "label": "Stretching",
-        "description": "Flexibilität, Spagat"
-      },
-      "bodybar": {
-        "label": "Bodybar",
-        "description": "Training mit Gymnastikstab"
-      },
-      "fitness": {
-        "label": "Fitness & Gym",
-        "description": "Krafttraining, Gruppenkurse"
-      },
-      "crossfit": {
-        "label": "CrossFit",
-        "description": "Funktionelles Training"
-      },
-      "dance": {
-        "label": "Tanz",
-        "description": "Choreografie, moderne Stile"
-      },
-      "martial_arts": {
-        "label": "Kampfsport",
-        "description": "Boxen, MMA, Ringen"
-      },
-      "swimming": {
-        "label": "Schwimmen",
-        "description": "Pool, Aquafitness"
-      },
-      "massage_spa": {
-        "label": "Massage & SPA",
-        "description": "Massage, Körperarbeit"
-      },
-      "beauty": {
-        "label": "Beauty",
-        "description": "Barbershop, Salon, Nägel"
-      },
-      "meditation": {
-        "label": "Meditation",
-        "description": "Atemübungen, Achtsamkeit"
-      },
-      "other": {
-        "label": "Sonstiges",
-        "description": "Eigenes Format"
-      }
-    }
+      "yoga": "Yoga",
+      "pilates": "Pilates",
+      "stretching": "Stretching",
+      "barre": "Barre",
+      "meditation": "Meditation & Atemarbeit",
+      "gym": "Fitnessstudio",
+      "crossfit": "CrossFit & Functional",
+      "martial_arts": "Kampfsport",
+      "dance": "Tanz",
+      "swimming": "Schwimmen",
+      "kids_sport": "Kindersport",
+      "personal_training": "Personal Training",
+      "barbershop": "Barbershop",
+      "hair_salon": "Friseursalon",
+      "makeup": "Make-up",
+      "nails": "Nagelstudio",
+      "brows_lashes": "Brauen & Wimpern",
+      "cosmetology": "Kosmetik",
+      "hair_removal": "Waxing & Sugaring",
+      "tattoo": "Tattoo & Piercing",
+      "massage": "Massage",
+      "manual_therapy": "Manuelle Therapie",
+      "osteopathy": "Osteopathie",
+      "physio": "Reha & Physiotherapie",
+      "nutrition": "Ernährungsberatung",
+      "spa": "Spa",
+      "sauna": "Sauna & Hamam",
+      "wraps": "Körperpackungen",
+      "other": "Sonstiges"
+    },
+    "groups": {
+      "studio": "Gruppenkurse im Studio",
+      "sport": "Fitness & Sport",
+      "beauty": "Beauty & Barbershop",
+      "recovery": "Massage & Regeneration",
+      "relax": "Spa & Entspannung",
+      "other": "Sonstiges"
+    },
+    "selectAll": "Ganzen Bereich auswählen"
   },
   "contact": {
     "title": "Kontaktdaten",

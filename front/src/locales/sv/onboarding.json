@@ -22,7 +22,7 @@
     },
     "activity": {
       "title": "Verksamhet",
-      "desc": "Välj en inriktning så anpassar vi CRM:et åt dig."
+      "desc": "Markera studions inriktningar — inom ett och samma avsnitt."
     },
     "contact": {
       "title": "Kontakt",
@@ -52,18 +52,48 @@
   },
   "activity": {
     "title": "Typ av verksamhet",
-    "subtitle": "Välj en inriktning — vi anpassar CRM:et åt dig",
+    "subtitle": "Markera allt ni erbjuder — inom ett och samma avsnitt",
     "comingSoon": "Snart: barbershop, träning, dans och mer",
     "types": {
-      "yoga": {
-        "label": "Yoga",
-        "description": "Hatha, Ashtanga, Vinyasa"
-      },
-      "pilates": {
-        "label": "Pilates",
-        "description": "Reformer, mattpilates"
-      }
-    }
+      "yoga": "Yoga",
+      "pilates": "Pilates",
+      "stretching": "Stretching",
+      "barre": "Barre",
+      "meditation": "Meditation och andning",
+      "gym": "Gym",
+      "crossfit": "CrossFit och funktionell",
+      "martial_arts": "Kampsport",
+      "dance": "Dans",
+      "swimming": "Simning",
+      "kids_sport": "Barnidrott",
+      "personal_training": "Personlig träning",
+      "barbershop": "Barbershop",
+      "hair_salon": "Frisör",
+      "makeup": "Makeup",
+      "nails": "Naglar",
+      "brows_lashes": "Bryn och fransar",
+      "cosmetology": "Kosmetologi",
+      "hair_removal": "Vaxning och sugaring",
+      "tattoo": "Tatuering och piercing",
+      "massage": "Massage",
+      "manual_therapy": "Manuell terapi",
+      "osteopathy": "Osteopati",
+      "physio": "Rehab och fysioterapi",
+      "nutrition": "Kostrådgivning",
+      "spa": "Spa",
+      "sauna": "Bastu och hammam",
+      "wraps": "Kroppsinpackningar",
+      "other": "Annat"
+    },
+    "groups": {
+      "studio": "Gruppass i studion",
+      "sport": "Träning och sport",
+      "beauty": "Skönhet och barberare",
+      "recovery": "Massage och återhämtning",
+      "relax": "Spa och avkoppling",
+      "other": "Annat"
+    },
+    "selectAll": "Välj hela avsnittet"
   },
   "contact": {
     "title": "Kontaktuppgifter",

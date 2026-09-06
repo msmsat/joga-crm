@@ -1,0 +1,182 @@
+import { FAR, GEAR, GEAR_SOFT, MINT, NEAR, SNAP, line } from "./kit";
+import { Couch, Drift, Floor, Gear, Head, Lying, Morph, Move } from "./rig";
+
+// Раздел «Массаж и восстановление»: работа идёт по телу, а не по внешности,
+// поэтому темп здесь везде медленнее, чем в «Красоте», а амплитуда меньше.
+// Массаж (MassageScene) лежит в studio.tsx — он был первым в этом ряду.
+
+/** Лежащая НА ЖИВОТЕ фигура: спина открыта, голова повёрнута набок. */
+function Prone({ dur = "5.6s" }: { dur?: string }) {
+  return (
+    <g>
+      <Morph far poses={[line([176, 140], [206, 144], [232, 146], [240, 140])]} />
+      <Morph far poses={[line([114, 138], [124, 148], [138, 152])]} />
+      <Morph poses={[line([176, 136], [206, 140], [232, 142], [240, 136])]} />
+      <Morph w={6} dur={dur} poses={[
+        "M176 136 Q146 132 114 133",
+        "M176 136 Q146 129.5 114 131.5",
+        "M176 136 Q146 132 114 133",
+      ]} />
+      <Morph poses={[line([114, 134], [126, 144], [142, 147])]} />
+    </g>
+  );
+}
+
+// ── Мануальная терапия: короткий толчок ──────────────────────────────────────
+// Девять десятых цикла ладони просто лежат и нащупывают — и только потом идёт
+// толчок на 0.08 цикла. Приём весь в этой паузе: без неё вышло бы разминание,
+// то есть массаж, а не мануальная работа.
+const MAN = "5.2s";
+const MNT = [0, 0.5, 0.72, 0.8, 0.86, 0.96, 1];
+
+export function ManualTherapyScene() {
+  return (
+    <g>
+      <Couch />
+      <Prone dur={MAN} />
+      <Head at={[[88, 132]]} tilt={[-18]} face={-1} />
+
+      <Move dur={MAN} keys={MNT} ease={SNAP}
+        at={[[150, 118], [150, 120], [150, 121], [150, 128], [150, 122], [150, 118], [150, 118]]}>
+        <ellipse cx="-7" cy="0" rx="8" ry="4.6" style={{ fill: GEAR }} />
+        <ellipse cx="7" cy="2" rx="8" ry="4.6" style={{ fill: GEAR }} opacity="0.8" />
+        <Gear d="M-9 -4 L-13 -14 M7 -2 L11 -12" w={3.4} soft />
+      </Move>
+
+      {/* Щелчок: две короткие искры, живущие только в момент толчка */}
+      <Drift from={[136, 126]} to={[126, 112]} dur={MAN} fade={[0, 0, 0.45, 0]}>
+        <path d="M-4 0 L4 0 M0 -4 L0 4" stroke={NEAR} strokeWidth="1.8" strokeLinecap="round" />
+      </Drift>
+      <Drift from={[166, 126]} to={[178, 114]} dur={MAN} fade={[0, 0, 0.35, 0]}>
+        <path d="M-3 0 L3 0 M0 -3 L0 3" stroke={FAR} strokeWidth="1.6" strokeLinecap="round" />
+      </Drift>
+    </g>
+  );
+}
+
+// ── Остеопатия: держать и ждать ──────────────────────────────────────────────
+// Самая тихая сцена набора: ладони под затылком, тело качается на 2 пикселя за
+// девять секунд. Здесь нечего показывать движением — показывается доверие.
+const OST = "9s";
+
+export function OsteopathyScene() {
+  return (
+    <g>
+      <Couch />
+      <Lying dur={OST} />
+
+      <Move dur={OST} at={[[0, 0], [0, -1.6], [0, 0]]}>
+        <Head at={[[100, 126]]} tilt={[-4]} face={-1} />
+      </Move>
+
+      <Move dur={OST} at={[[0, 0], [0, -1.6], [0, 0]]}>
+        <ellipse cx="92" cy="136" rx="7.6" ry="4.4" style={{ fill: GEAR }} />
+        <ellipse cx="104" cy="139" rx="7.6" ry="4.4" style={{ fill: GEAR }} opacity="0.8" />
+        <Gear d="M88 140 L78 150 M102 143 L94 154" w={3.4} soft />
+      </Move>
+
+      <circle cx="100" cy="126" r="26" fill="none" stroke={MINT} strokeWidth="1.2" opacity="0.22">
+        <animate attributeName="r" values="20;30;20" dur={OST} repeatCount="indefinite"
+          calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1" />
+        <animate attributeName="opacity" values="0.24;0.06;0.24" dur={OST} repeatCount="indefinite" />
+      </circle>
+    </g>
+  );
+}
+
+// ── Реабилитация: лента сопротивления ────────────────────────────────────────
+// Лента натягивается вместе с рукой и провисает вместе с ней: это одна кривая на
+// тех же кадрах. Провис на возврате — единственный признак, что она резиновая.
+const PHY = "4s";
+const PT = [0, 0.34, 0.46, 0.8, 1];
+
+export function PhysioScene() {
+  return (
+    <g>
+      <Floor />
+      <Gear d="M56 60 L56 168" w={3} soft />
+      <circle cx="56" cy="72" r="4" style={{ fill: GEAR }} />
+
+      <Morph far poses={[line([166, 114], [176, 141], [178, 167], [188, 169])]} />
+      <Morph far dur={PHY} keys={PT} poses={[
+        line([166, 86], [148, 96], [126, 96]),
+        line([166, 86], [152, 92], [134, 88]),
+        line([166, 86], [152, 92], [134, 88]),
+        line([166, 86], [148, 96], [126, 96]),
+        line([166, 86], [148, 96], [126, 96]),
+      ]} />
+
+      <Morph poses={[line([166, 114], [156, 141], [154, 167], [144, 169])]} />
+      <Morph w={6} dur={PHY} keys={PT} poses={[
+        line([166, 114], [166, 84]),
+        line([167, 114], [168, 84]),
+        line([167, 114], [168, 84]),
+        line([166, 114], [166, 84]),
+        line([166, 114], [166, 84]),
+      ]} />
+      <Head dur={PHY} keys={PT}
+        at={[[166, 66], [168, 66], [168, 66], [166, 66], [166, 66]]}
+        tilt={[0, -5, -5, 0, 0]} face={-1} />
+      <Morph dur={PHY} keys={PT} poses={[
+        line([166, 86], [144, 92], [120, 92]),
+        line([166, 86], [150, 86], [130, 80]),
+        line([166, 86], [150, 86], [130, 80]),
+        line([166, 86], [144, 92], [120, 92]),
+        line([166, 86], [144, 92], [120, 92]),
+      ]} />
+
+      {/* Лента: провисает в исходном кадре, звенит натянутой на пике */}
+      <Morph color={MINT} w={3} op={0.8} dur={PHY} keys={PT} poses={[
+        "M56 72 Q88 94 120 92",
+        "M56 72 Q93 78 130 80",
+        "M56 72 Q93 78 130 80",
+        "M56 72 Q88 94 120 92",
+        "M56 72 Q88 94 120 92",
+      ]} />
+    </g>
+  );
+}
+
+// ── Диетология: тарелка и разговор ───────────────────────────────────────────
+// Единственная сцена раздела без прикосновения: человек сидит за столом, а
+// работа видна в тарелке — сектор набирается и держится. Это приём, а не процедура.
+const NUT = "6s";
+
+export function NutritionScene() {
+  return (
+    <g>
+      <Floor />
+      <rect x="96" y="130" width="120" height="9" rx="4" style={{ fill: GEAR }} />
+      <Gear d="M112 139 L112 168 M200 139 L200 168" w={2.6} />
+
+      <Morph far poses={[line([164, 126], [186, 134], [188, 158])]} />
+      <Morph far poses={[line([164, 102], [150, 118], [136, 126])]} />
+      <Morph poses={[line([164, 126], [188, 131], [190, 158])]} />
+      <Morph w={6} dur={NUT} poses={[
+        line([164, 126], [164, 98]),
+        line([164, 127], [164, 99]),
+        line([164, 126], [164, 98]),
+      ]} />
+      <Head dur={NUT} at={[[164, 80], [164, 81], [163, 80], [164, 80]]} tilt={[0, 6, -4, 0]} face={-1} />
+      <Morph dur={NUT} poses={[
+        line([164, 102], [146, 116], [132, 124]),
+        line([164, 103], [144, 114], [128, 120]),
+        line([164, 102], [146, 116], [132, 124]),
+      ]} />
+
+      {/* Тарелка сверху: сектор дорисовывается и остаётся — это и есть план */}
+      <ellipse cx="122" cy="126" rx="20" ry="7" style={{ fill: "rgb(var(--ink))", fillOpacity: 0.05 }} />
+      <ellipse cx="122" cy="126" rx="20" ry="7" fill="none" strokeWidth="1.6" style={{ stroke: GEAR }} />
+      <path d="M122 126 L142 126 A20 7 0 0 1 122 133 Z" fill={NEAR} opacity="0.45">
+        <animate attributeName="opacity" values="0;0.45;0.45;0" keyTimes="0;0.3;0.85;1" dur={NUT} repeatCount="indefinite" />
+      </path>
+      <path d="M122 126 L102 126 A20 7 0 0 0 116 132.6 Z" fill={MINT} opacity="0.5">
+        <animate attributeName="opacity" values="0;0.5;0.5;0" keyTimes="0;0.45;0.85;1" dur={NUT} repeatCount="indefinite" />
+      </path>
+
+      <Drift from={[122, 120]} to={[116, 100]} dur="5.4s" fade={[0, 0.3, 0]}>
+        <path d="M0 0 q4 -5 0 -10" fill="none" stroke={GEAR_SOFT} strokeWidth="1.6" strokeLinecap="round" />
+      </Drift>
+    </g>
+  );
+}

@@ -22,7 +22,7 @@
     },
     "activity": {
       "title": "Działalność",
-      "desc": "Wybierz kierunek, żebyśmy dopasowali CRM do Ciebie."
+      "desc": "Zaznacz kierunki studia — w obrębie jednej sekcji."
     },
     "contact": {
       "title": "Kontakt",
@@ -52,18 +52,48 @@
   },
   "activity": {
     "title": "Rodzaj działalności",
-    "subtitle": "Wybierz kierunek — dopasujemy CRM do Ciebie",
+    "subtitle": "Zaznacz wszystko, czym się zajmujesz — w obrębie jednej sekcji",
     "comingSoon": "Wkrótce: barbershop, fitness, taniec i więcej",
     "types": {
-      "yoga": {
-        "label": "Joga",
-        "description": "Hatha, Ashtanga, Vinyasa"
-      },
-      "pilates": {
-        "label": "Pilates",
-        "description": "Reformer, pilates na macie"
-      }
-    }
+      "yoga": "Joga",
+      "pilates": "Pilates",
+      "stretching": "Stretching",
+      "barre": "Barre",
+      "meditation": "Medytacja i oddech",
+      "gym": "Siłownia",
+      "crossfit": "CrossFit i trening funkcjonalny",
+      "martial_arts": "Sporty walki",
+      "dance": "Taniec",
+      "swimming": "Pływanie",
+      "kids_sport": "Sport dziecięcy",
+      "personal_training": "Trening personalny",
+      "barbershop": "Barbershop",
+      "hair_salon": "Fryzjer",
+      "makeup": "Makijaż",
+      "nails": "Paznokcie",
+      "brows_lashes": "Brwi i rzęsy",
+      "cosmetology": "Kosmetologia",
+      "hair_removal": "Depilacja i sugaring",
+      "tattoo": "Tatuaż i piercing",
+      "massage": "Masaż",
+      "manual_therapy": "Terapia manualna",
+      "osteopathy": "Osteopatia",
+      "physio": "Rehabilitacja i fizjoterapia",
+      "nutrition": "Dietetyka",
+      "spa": "Spa",
+      "sauna": "Sauna i hammam",
+      "wraps": "Okłady i owijania",
+      "other": "Inne"
+    },
+    "groups": {
+      "studio": "Zajęcia grupowe w studiu",
+      "sport": "Fitness i sport",
+      "beauty": "Uroda i barbershop",
+      "recovery": "Masaż i regeneracja",
+      "relax": "Spa i relaks",
+      "other": "Inne"
+    },
+    "selectAll": "Zaznacz całą sekcję"
   },
   "contact": {
     "title": "Dane kontaktowe",

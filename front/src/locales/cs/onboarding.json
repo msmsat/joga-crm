@@ -22,7 +22,7 @@
     },
     "activity": {
       "title": "Činnost",
-      "desc": "Vyberte zaměření, ať vám CRM přizpůsobíme."
+      "desc": "Označte zaměření studia — v rámci jedné sekce."
     },
     "contact": {
       "title": "Kontakty",
@@ -52,61 +52,47 @@
   },
   "activity": {
     "title": "Typ činnosti",
-    "subtitle": "Vyberte zaměření — CRM vám přizpůsobíme",
+    "subtitle": "Označte vše, čemu se věnujete — v rámci jedné sekce",
     "types": {
-      "yoga": {
-        "label": "Jóga",
-        "description": "Hatha, Ashtanga, Vinyasa"
-      },
-      "pilates": {
-        "label": "Pilates",
-        "description": "Reformer, pilates na podložce"
-      },
-      "stretching": {
-        "label": "Strečink",
-        "description": "Flexibilita, provazec"
-      },
-      "bodybar": {
-        "label": "Bodybar",
-        "description": "Cvičení s gymnastickou tyčí"
-      },
-      "fitness": {
-        "label": "Fitness a posilovna",
-        "description": "Silový trénink, skupinové lekce"
-      },
-      "crossfit": {
-        "label": "CrossFit",
-        "description": "Funkční trénink"
-      },
-      "dance": {
-        "label": "Tanec",
-        "description": "Choreografie, moderní styly"
-      },
-      "martial_arts": {
-        "label": "Bojové sporty",
-        "description": "Box, MMA, zápas"
-      },
-      "swimming": {
-        "label": "Plavání",
-        "description": "Bazén, aquafitness"
-      },
-      "massage_spa": {
-        "label": "Masáže a SPA",
-        "description": "Masáže, tělesné praktiky"
-      },
-      "beauty": {
-        "label": "Krása",
-        "description": "Barbershop, salon, nehty"
-      },
-      "meditation": {
-        "label": "Meditace",
-        "description": "Dechová cvičení, mindfulness"
-      },
-      "other": {
-        "label": "Jiné",
-        "description": "Vlastní formát"
-      }
-    }
+      "yoga": "Jóga",
+      "pilates": "Pilates",
+      "stretching": "Strečink",
+      "barre": "Barre",
+      "meditation": "Meditace a dýchání",
+      "gym": "Posilovna",
+      "crossfit": "CrossFit a funkční trénink",
+      "martial_arts": "Bojové sporty",
+      "dance": "Tanec",
+      "swimming": "Plavání",
+      "kids_sport": "Dětský sport",
+      "personal_training": "Osobní trénink",
+      "barbershop": "Barbershop",
+      "hair_salon": "Kadeřnictví",
+      "makeup": "Líčení",
+      "nails": "Nehtové studio",
+      "brows_lashes": "Obočí a řasy",
+      "cosmetology": "Kosmetika",
+      "hair_removal": "Epilace a cukrová pasta",
+      "tattoo": "Tetování a piercing",
+      "massage": "Masáže",
+      "manual_therapy": "Manuální terapie",
+      "osteopathy": "Osteopatie",
+      "physio": "Rehabilitace a fyzioterapie",
+      "nutrition": "Výživové poradenství",
+      "spa": "Spa",
+      "sauna": "Sauna a hammam",
+      "wraps": "Zábaly",
+      "other": "Jiné"
+    },
+    "groups": {
+      "studio": "Skupinové lekce ve studiu",
+      "sport": "Fitness a sport",
+      "beauty": "Krása a barbershop",
+      "recovery": "Masáže a regenerace",
+      "relax": "Spa a relaxace",
+      "other": "Jiné"
+    },
+    "selectAll": "Vybrat celou sekci"
   },
   "contact": {
     "title": "Kontaktní údaje",

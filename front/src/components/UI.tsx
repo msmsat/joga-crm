@@ -405,167 +405,94 @@ export function ErrorAlert({ message }: { message?: string }) {
   );
 }
 
-export const ACTIVITY_TYPES = [
+// Шаг «Деятельность» в онбординге. Направления разложены по разделам, и раздел —
+// это не отрасль, а МЕХАНИКА ЗАПИСИ: групповое занятие по расписанию, приём у
+// мастера, процедура в помещении. Барбершоп, массаж и SPA поэтому лежат в разных
+// разделах, хотя отраслевой справочник свёл бы их в одну «красоту».
+//
+// Выбор множественный, но ТОЛЬКО внутри одного раздела: студия работает по одной
+// механике, а смешанный набор («йога + барбершоп») дал бы противоречивую настройку
+// журнала и онлайн-записи. Отметка в чужом разделе переносит выбор целиком —
+// см. StepActivity, там же галочка «весь раздел» у заголовка.
+//
+// Подписи — onboarding:activity.types.<id>, заголовки — onboarding:activity.groups.<id>,
+// сцены-иллюстрации — modals/onboarding/scenes/index.tsx (ключи те же id).
+export const ACTIVITY_SECTIONS = [
   {
-    id: "yoga",
+    id: "studio",
     icon: (
-      <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+      <svg width="26" height="26" viewBox="0 0 36 36" fill="none">
         <circle cx="18" cy="7" r="3.5" stroke="currentColor" strokeWidth="1.7"/>
         <path d="M18 10.5 L18 20" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/>
         <path d="M18 15 L11 21" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/>
         <path d="M18 15 L25 21" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/>
         <path d="M7 30 C10 23 15 22 18 22 C21 22 26 23 29 30" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/>
-        <path d="M5 31.5 Q18 35 31 31.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" opacity="0.45"/>
       </svg>
     ),
+    items: ["yoga", "pilates", "stretching", "barre", "meditation"],
   },
   {
-    id: "pilates",
+    id: "sport",
     icon: (
-      <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
-        <circle cx="5.5" cy="20" r="3.5" stroke="currentColor" strokeWidth="1.7"/>
-        <path d="M9 20 L22 20" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/>
-        <path d="M22 20 L22 10" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/>
-        <path d="M19 10 L25 10" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/>
-        <path d="M13 20 L13 27" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/>
-        <path d="M10 27 L16 27" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/>
-        <path d="M3 26 L33 26" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" opacity="0.35"/>
-      </svg>
-    ),
-  },
-  {
-    id: "stretching",
-    icon: (
-      <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
-        <circle cx="14" cy="8" r="3" stroke="currentColor" strokeWidth="1.7"/>
-        <path d="M14 11 L18 18" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/>
-        <path d="M18 18 L28 22" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/>
-        <path d="M18 18 L12 26" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/>
-        <path d="M14 12 L8 17" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/>
-        <path d="M15 12 L23 8" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/>
-        <path d="M5 31.5 Q18 35 31 31.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" opacity="0.45"/>
-      </svg>
-    ),
-  },
-  {
-    id: "bodybar",
-    icon: (
-      <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
-        <circle cx="18" cy="7" r="3.5" stroke="currentColor" strokeWidth="1.7"/>
-        <path d="M18 10.5 L18 20" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/>
-        <path d="M18 15 L11 21" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/>
-        <path d="M18 15 L25 21" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/>
-        <path d="M9 11 L27 11" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/>
-        <path d="M18 11 L18 12" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/>
-        <circle cx="9" cy="11" r="1.6" stroke="currentColor" strokeWidth="1.5"/>
-        <circle cx="27" cy="11" r="1.6" stroke="currentColor" strokeWidth="1.5"/>
-        <path d="M5 31.5 Q18 35 31 31.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" opacity="0.45"/>
-      </svg>
-    ),
-  },
-  {
-    id: "fitness",
-    icon: (
-      <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+      <svg width="26" height="26" viewBox="0 0 36 36" fill="none">
         <rect x="8" y="13" width="5" height="10" rx="2" stroke="currentColor" strokeWidth="1.7"/>
         <rect x="23" y="13" width="5" height="10" rx="2" stroke="currentColor" strokeWidth="1.7"/>
         <path d="M13 18 L23 18" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round"/>
-        <path d="M5 31.5 Q18 35 31 31.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" opacity="0.45"/>
       </svg>
     ),
-  },
-  {
-    id: "crossfit",
-    icon: (
-      <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
-        <path d="M14 11 Q18 5 22 11" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/>
-        <path d="M14 11 L14 15" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/>
-        <path d="M22 11 L22 15" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/>
-        <path d="M12 24 C12 17 14 14 18 14 C22 14 24 17 24 24 C24 28 21 30 18 30 C15 30 12 28 12 24 Z" stroke="currentColor" strokeWidth="1.7"/>
-        <path d="M5 31.5 Q18 35 31 31.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" opacity="0.45"/>
-      </svg>
-    ),
-  },
-  {
-    id: "dance",
-    icon: (
-      <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
-        <circle cx="18" cy="7" r="3.5" stroke="currentColor" strokeWidth="1.7"/>
-        <path d="M18 10.5 L18 19" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/>
-        <path d="M18 19 L11 28" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/>
-        <path d="M18 19 L27 15" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/>
-        <path d="M18 13 L11 10" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/>
-        <path d="M18 13 L27 17" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/>
-        <path d="M5 31.5 Q18 35 31 31.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" opacity="0.45"/>
-      </svg>
-    ),
-  },
-  {
-    id: "martial_arts",
-    icon: (
-      <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
-        <path d="M12 24 C9 24 8 20 9 16 C10 12 14 10 18 10 C23 10 26 13 26 18 C26 22 23 25 19 25 L14 25 C13 25 12 24.6 12 24 Z" stroke="currentColor" strokeWidth="1.7"/>
-        <path d="M12 25 L12 29 Q18 31 24 29 L24 25" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/>
-        <path d="M13 16 L13 21 M18 15 L18 21 M23 16 L23 21" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" opacity="0.5"/>
-      </svg>
-    ),
-  },
-  {
-    id: "swimming",
-    icon: (
-      <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
-        <circle cx="12" cy="10" r="2.6" stroke="currentColor" strokeWidth="1.7"/>
-        <path d="M12 13 L20 18 L28 13" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M4 24 Q8 20 12 24 T20 24 T28 24 T36 24" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/>
-        <path d="M4 30 Q8 26 12 30 T20 30 T28 30 T36 30" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" opacity="0.45"/>
-      </svg>
-    ),
-  },
-  {
-    id: "massage_spa",
-    icon: (
-      <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
-        <ellipse cx="18" cy="27" rx="9" ry="3" stroke="currentColor" strokeWidth="1.7"/>
-        <ellipse cx="18" cy="20.5" rx="6.5" ry="2.5" stroke="currentColor" strokeWidth="1.7"/>
-        <ellipse cx="18" cy="15" rx="4.5" ry="2.1" stroke="currentColor" strokeWidth="1.7"/>
-        <path d="M17 9 Q19 7 17 5 Q15 3 17 1.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" opacity="0.5"/>
-      </svg>
-    ),
+    items: ["gym", "crossfit", "martial_arts", "dance", "swimming", "kids_sport", "personal_training"],
   },
   {
     id: "beauty",
     icon: (
-      <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+      <svg width="26" height="26" viewBox="0 0 36 36" fill="none">
         <circle cx="10" cy="9" r="3" stroke="currentColor" strokeWidth="1.7"/>
         <circle cx="10" cy="27" r="3" stroke="currentColor" strokeWidth="1.7"/>
         <path d="M12.3 11 L28 27" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/>
         <path d="M12.3 25 L28 9" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/>
       </svg>
     ),
+    items: ["barbershop", "hair_salon", "makeup", "nails", "brows_lashes", "cosmetology", "hair_removal", "tattoo"],
   },
   {
-    id: "meditation",
+    id: "recovery",
     icon: (
-      <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
-        <circle cx="18" cy="8" r="3.2" stroke="currentColor" strokeWidth="1.7"/>
-        <path d="M18 11.2 L18 17" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/>
-        <path d="M18 17 Q10 17 8 22" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/>
-        <path d="M18 17 Q26 17 28 22" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/>
-        <path d="M18 13.5 Q12 15.5 10 20" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/>
-        <path d="M18 13.5 Q24 15.5 26 20" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/>
-        <path d="M5 31.5 Q18 35 31 31.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" opacity="0.45"/>
+      <svg width="26" height="26" viewBox="0 0 36 36" fill="none">
+        <path d="M6 24 L30 24" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/>
+        <path d="M10 24 L10 30 M26 24 L26 30" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/>
+        <ellipse cx="14" cy="17" rx="4.5" ry="2.6" stroke="currentColor" strokeWidth="1.7"/>
+        <ellipse cx="23" cy="17" rx="4.5" ry="2.6" stroke="currentColor" strokeWidth="1.7"/>
       </svg>
     ),
+    items: ["massage", "manual_therapy", "osteopathy", "physio", "nutrition"],
+  },
+  {
+    id: "relax",
+    icon: (
+      <svg width="26" height="26" viewBox="0 0 36 36" fill="none">
+        <path d="M18 4 C18 4 27 15 27 21 A9 9 0 0 1 9 21 C9 15 18 4 18 4 Z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round"/>
+        <path d="M14 21 A4 4 0 0 0 18 25" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+      </svg>
+    ),
+    items: ["spa", "sauna", "wraps"],
   },
   {
     id: "other",
     icon: (
-      <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+      <svg width="26" height="26" viewBox="0 0 36 36" fill="none">
         <path d="M18 5 L20.5 15.5 L31 18 L20.5 20.5 L18 31 L15.5 20.5 L5 18 L15.5 15.5 Z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round"/>
       </svg>
     ),
+    items: ["other"],
   },
 ];
+
+/** Плоский перечень всех id — порядок совпадает с порядком на экране. */
+export const ACTIVITY_TYPES = ACTIVITY_SECTIONS.flatMap(s => s.items);
+
+/** Раздел, которому принадлежит направление. Выбор не может пересечь эту границу. */
+export const sectionOfActivity = (id: string) =>
+  ACTIVITY_SECTIONS.find(s => s.items.includes(id))?.id;
 
 export const WEEK_START_OPTIONS = [
   { value: "monday" },

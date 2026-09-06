@@ -22,7 +22,7 @@
     },
     "activity": {
       "title": "Virksomhet",
-      "desc": "Velg en retning, så tilpasser vi CRM-et til deg."
+      "desc": "Merk studioets områder — innenfor én seksjon."
     },
     "contact": {
       "title": "Kontakt",
@@ -52,18 +52,48 @@
   },
   "activity": {
     "title": "Type virksomhet",
-    "subtitle": "Velg en retning — vi tilpasser CRM-et til deg",
+    "subtitle": "Merk alt dere tilbyr — innenfor én seksjon",
     "comingSoon": "Kommer snart: barbershop, trening, dans og mer",
     "types": {
-      "yoga": {
-        "label": "Yoga",
-        "description": "Hatha, Ashtanga, Vinyasa"
-      },
-      "pilates": {
-        "label": "Pilates",
-        "description": "Reformer, mattepilates"
-      }
-    }
+      "yoga": "Yoga",
+      "pilates": "Pilates",
+      "stretching": "Tøying",
+      "barre": "Barre",
+      "meditation": "Meditasjon og pust",
+      "gym": "Treningssenter",
+      "crossfit": "CrossFit og funksjonell",
+      "martial_arts": "Kampsport",
+      "dance": "Dans",
+      "swimming": "Svømming",
+      "kids_sport": "Barneidrett",
+      "personal_training": "Personlig trening",
+      "barbershop": "Barbershop",
+      "hair_salon": "Frisør",
+      "makeup": "Sminke",
+      "nails": "Negler",
+      "brows_lashes": "Bryn og vipper",
+      "cosmetology": "Kosmetologi",
+      "hair_removal": "Voksing og sugaring",
+      "tattoo": "Tatovering og piercing",
+      "massage": "Massasje",
+      "manual_therapy": "Manuell terapi",
+      "osteopathy": "Osteopati",
+      "physio": "Rehabilitering og fysioterapi",
+      "nutrition": "Ernæring",
+      "spa": "Spa",
+      "sauna": "Badstue og hammam",
+      "wraps": "Kroppsinnpakninger",
+      "other": "Annet"
+    },
+    "groups": {
+      "studio": "Gruppetimer i studioet",
+      "sport": "Trening og sport",
+      "beauty": "Skjønnhet og barbershop",
+      "recovery": "Massasje og restitusjon",
+      "relax": "Spa og avslapning",
+      "other": "Annet"
+    },
+    "selectAll": "Velg hele seksjonen"
   },
   "contact": {
     "title": "Kontaktopplysninger",

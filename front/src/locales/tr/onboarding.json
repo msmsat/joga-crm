@@ -22,7 +22,7 @@
     },
     "activity": {
       "title": "Faaliyet",
-      "desc": "CRM'i size göre uyarlayabilmemiz için bir alan seçin."
+      "desc": "Stüdyonuzun alanlarını işaretleyin — tek bir bölüm içinde."
     },
     "contact": {
       "title": "İletişim",
@@ -52,18 +52,48 @@
   },
   "activity": {
     "title": "Faaliyet türü",
-    "subtitle": "Bir alan seçin — CRM'i size göre uyarlayalım",
+    "subtitle": "Yaptığınız her şeyi işaretleyin — tek bir bölüm içinde",
     "comingSoon": "Yakında: berber, fitness, dans ve daha fazlası",
     "types": {
-      "yoga": {
-        "label": "Yoga",
-        "description": "Hatha, Ashtanga, Vinyasa"
-      },
-      "pilates": {
-        "label": "Pilates",
-        "description": "Reformer, mat pilates"
-      }
-    }
+      "yoga": "Yoga",
+      "pilates": "Pilates",
+      "stretching": "Esneme",
+      "barre": "Barre",
+      "meditation": "Meditasyon ve nefes",
+      "gym": "Spor salonu",
+      "crossfit": "CrossFit ve fonksiyonel",
+      "martial_arts": "Dövüş sporları",
+      "dance": "Dans",
+      "swimming": "Yüzme",
+      "kids_sport": "Çocuk sporu",
+      "personal_training": "Kişisel antrenman",
+      "barbershop": "Berber",
+      "hair_salon": "Kuaför",
+      "makeup": "Makyaj",
+      "nails": "Tırnak",
+      "brows_lashes": "Kaş ve kirpik",
+      "cosmetology": "Kozmetoloji",
+      "hair_removal": "Ağda ve şeker ağdası",
+      "tattoo": "Dövme ve piercing",
+      "massage": "Masaj",
+      "manual_therapy": "Manuel terapi",
+      "osteopathy": "Osteopati",
+      "physio": "Rehabilitasyon ve fizyoterapi",
+      "nutrition": "Beslenme",
+      "spa": "Spa",
+      "sauna": "Sauna ve hamam",
+      "wraps": "Vücut sargısı",
+      "other": "Diğer"
+    },
+    "groups": {
+      "studio": "Stüdyoda grup dersleri",
+      "sport": "Fitness ve spor",
+      "beauty": "Güzellik ve berber",
+      "recovery": "Masaj ve toparlanma",
+      "relax": "Spa ve dinlenme",
+      "other": "Diğer"
+    },
+    "selectAll": "Tüm bölümü seç"
   },
   "contact": {
     "title": "İletişim bilgileri",

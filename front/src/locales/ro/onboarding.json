@@ -22,7 +22,7 @@
     },
     "activity": {
       "title": "Activitate",
-      "desc": "Alegeți o direcție ca să adaptăm CRM-ul pentru dvs."
+      "desc": "Bifați direcțiile studioului — în cadrul unei singure secțiuni."
     },
     "contact": {
       "title": "Contacte",
@@ -52,18 +52,48 @@
   },
   "activity": {
     "title": "Tipul de activitate",
-    "subtitle": "Alegeți o direcție — vom adapta CRM-ul pentru dvs.",
+    "subtitle": "Bifați tot ce faceți — în cadrul unei singure secțiuni",
     "comingSoon": "În curând: frizerie, fitness, dans și altele",
     "types": {
-      "yoga": {
-        "label": "Yoga",
-        "description": "Hatha, Ashtanga, Vinyasa"
-      },
-      "pilates": {
-        "label": "Pilates",
-        "description": "Reformer, pilates la sol"
-      }
-    }
+      "yoga": "Yoga",
+      "pilates": "Pilates",
+      "stretching": "Stretching",
+      "barre": "Barre",
+      "meditation": "Meditație și respirație",
+      "gym": "Sală de fitness",
+      "crossfit": "CrossFit și funcțional",
+      "martial_arts": "Arte marțiale",
+      "dance": "Dans",
+      "swimming": "Înot",
+      "kids_sport": "Sport pentru copii",
+      "personal_training": "Antrenament personal",
+      "barbershop": "Frizerie",
+      "hair_salon": "Coafor",
+      "makeup": "Machiaj",
+      "nails": "Manichiură",
+      "brows_lashes": "Sprâncene și gene",
+      "cosmetology": "Cosmetologie",
+      "hair_removal": "Epilare și sugaring",
+      "tattoo": "Tatuaje și piercing",
+      "massage": "Masaj",
+      "manual_therapy": "Terapie manuală",
+      "osteopathy": "Osteopatie",
+      "physio": "Recuperare și fizioterapie",
+      "nutrition": "Nutriție",
+      "spa": "Spa",
+      "sauna": "Saună și hammam",
+      "wraps": "Împachetări corporale",
+      "other": "Altceva"
+    },
+    "groups": {
+      "studio": "Cursuri de grup în studio",
+      "sport": "Fitness și sport",
+      "beauty": "Frumusețe și frizerie",
+      "recovery": "Masaj și recuperare",
+      "relax": "Spa și relaxare",
+      "other": "Altceva"
+    },
+    "selectAll": "Selectați toată secțiunea"
   },
   "contact": {
     "title": "Date de contact",

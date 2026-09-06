@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import type { P } from "./kit";
-import { BONE, FAR, GEAR, GEAR_SOFT, HEAD_R, MINT, NEAR, splines, times, useStill } from "./kit";
+import { BONE, FAR, GEAR, GEAR_SOFT, HEAD_R, MINT, NEAR, line, splines, times, useStill } from "./kit";
 
 // ── Примитивы человечка ───────────────────────────────────────────────────────
 // Позы задаются кадрами пути (animate по d), а не поворотами суставов: так каждый
@@ -155,6 +155,36 @@ export function Drift({ from, to, dur, delay = "0s", fade = [0, 0.7, 0], childre
         )}
         {children}
       </g>
+    </g>
+  );
+}
+
+
+/** Кушетка кабинета: её делят массаж, косметология, эпиляция и мануальные практики. */
+export function Couch() {
+  return (
+    <g>
+      <Floor />
+      <rect x="56" y="140" width="188" height="12" rx="5" style={{ fill: GEAR }} />
+      <Gear d="M76 152 L76 172 M224 152 L224 172" w={2.6} />
+      <rect x="60" y="136" width="26" height="6" rx="3" style={{ fill: GEAR }} opacity="0.7" />
+    </g>
+  );
+}
+
+/** Лежащая на спине фигура: голова слева, работает только дыхание в груди. */
+export function Lying({ dur = "5.4s" }: { dur?: string }) {
+  return (
+    <g>
+      <Morph far poses={[line([176, 136], [206, 140], [232, 142], [240, 136])]} />
+      <Morph far poses={[line([120, 134], [136, 126], [152, 130])]} />
+      <Morph poses={[line([176, 132], [206, 136], [232, 138], [240, 132])]} />
+      <Morph w={6} dur={dur} poses={[
+        "M176 132 Q148 128 120 130",
+        "M176 132 Q148 125 120 128",
+        "M176 132 Q148 128 120 130",
+      ]} />
+      <Morph poses={[line([120, 131], [138, 123], [156, 128])]} />
     </g>
   );
 }

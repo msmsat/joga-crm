@@ -95,6 +95,45 @@ def test_production_config_is_not_broken_by_a_missing_app_env(monkeypatch):
     assert ENV.is_safe(), "боевой сервер с боевым ключом — нормальная конфигурация"
 
 
+@pytest.mark.parametrize("declared", ["prod", "production"])
+def test_short_and_long_production_forms_mean_the_same(monkeypatch, declared):
+    """`APP_ENV=prod` — форма из .env.example и scripts/preflight.py.
+
+    Пока страж знал только `production`, она означала «не боевой сервер», и
+    guard_write останавливал ВЕСЬ приём денег: подписки, счета, Connect. Тест
+    существует ровно поэтому — оба написания обязаны давать один результат.
+    """
+    monkeypatch.setenv("APP_ENV", declared)
+    _keys(monkeypatch, "sk_live_abc")
+    monkeypatch.setattr(ENV, "under_pytest", lambda: False)
+    assert ENV.app_env() == ENV.ENV_PRODUCTION
+    assert ENV.is_safe(), f"APP_ENV={declared} остановил бы боевой биллинг"
+    ENV.guard_write("создание Checkout Session подписки")  # не кидает
+
+
+@pytest.mark.parametrize("declared", ["dev", "development"])
+def test_short_and_long_development_forms_both_block(monkeypatch, declared):
+    """Обратная сторона: сокращение не должно ОСЛАБЛЯТЬ защиту на машине разработчика."""
+    monkeypatch.setenv("APP_ENV", declared)
+    _keys(monkeypatch, "sk_live_abc")
+    assert ENV.app_env() == "development"
+    with pytest.raises(ENV.StripeKeyModeError):
+        ENV.guard_write()
+
+
+@pytest.mark.parametrize("declared", ["prodd", "production_backup", "staging"])
+def test_unknown_env_value_does_not_open_the_gate(monkeypatch, declared):
+    """Опечатка и «почти прод» обязаны вести к отказу, а не к молчаливому разрешению.
+
+    Поэтому сопоставление идёт по списку, а не по «начинается с prod»: копия
+    боевого сервера — не боевой сервер.
+    """
+    monkeypatch.setenv("APP_ENV", declared)
+    _keys(monkeypatch, "sk_live_abc")
+    monkeypatch.setattr(ENV, "under_pytest", lambda: False)
+    assert not ENV.is_safe()
+
+
 def test_localhost_backend_is_treated_as_development(monkeypatch):
     monkeypatch.setenv("BACKEND_URL", "http://localhost:8000")
     monkeypatch.setattr(ENV, "under_pytest", lambda: False)

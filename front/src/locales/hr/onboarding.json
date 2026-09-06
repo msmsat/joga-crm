@@ -22,7 +22,7 @@
     },
     "activity": {
       "title": "Djelatnost",
-      "desc": "Odaberite smjer kako bismo prilagodili CRM za vas."
+      "desc": "Označite smjerove studija — unutar jednog odjeljka."
     },
     "contact": {
       "title": "Kontakti",
@@ -52,18 +52,48 @@
   },
   "activity": {
     "title": "Vrsta djelatnosti",
-    "subtitle": "Odaberite smjer — prilagodit ćemo CRM za vas",
+    "subtitle": "Označite sve čime se bavite — unutar jednog odjeljka",
     "comingSoon": "Uskoro: brijačnica, fitnes, ples i još",
     "types": {
-      "yoga": {
-        "label": "Joga",
-        "description": "Hatha, Ashtanga, Vinyasa"
-      },
-      "pilates": {
-        "label": "Pilates",
-        "description": "Reformer, pilates na strunjači"
-      }
-    }
+      "yoga": "Joga",
+      "pilates": "Pilates",
+      "stretching": "Istezanje",
+      "barre": "Barre",
+      "meditation": "Meditacija i disanje",
+      "gym": "Teretana",
+      "crossfit": "CrossFit i funkcionalni",
+      "martial_arts": "Borilački sportovi",
+      "dance": "Ples",
+      "swimming": "Plivanje",
+      "kids_sport": "Dječji sport",
+      "personal_training": "Osobni trening",
+      "barbershop": "Brijačnica",
+      "hair_salon": "Frizerski salon",
+      "makeup": "Šminkanje",
+      "nails": "Nokti",
+      "brows_lashes": "Obrve i trepavice",
+      "cosmetology": "Kozmetologija",
+      "hair_removal": "Depilacija i sugaring",
+      "tattoo": "Tetovaže i piercing",
+      "massage": "Masaža",
+      "manual_therapy": "Manualna terapija",
+      "osteopathy": "Osteopatija",
+      "physio": "Rehabilitacija i fizioterapija",
+      "nutrition": "Nutricionizam",
+      "spa": "Spa",
+      "sauna": "Sauna i hamam",
+      "wraps": "Oblozi za tijelo",
+      "other": "Ostalo"
+    },
+    "groups": {
+      "studio": "Grupni satovi u studiju",
+      "sport": "Fitness i sport",
+      "beauty": "Ljepota i brijačnica",
+      "recovery": "Masaža i oporavak",
+      "relax": "Spa i opuštanje",
+      "other": "Ostalo"
+    },
+    "selectAll": "Odaberi cijeli odjeljak"
   },
   "contact": {
     "title": "Kontakt podaci",

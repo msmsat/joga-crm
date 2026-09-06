@@ -28,7 +28,11 @@ class Studio(Base):
     name: Mapped[str] = mapped_column(String(150))
     phone: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
     business_type: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
-    business_subtype: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
+    # Направления студии одной строкой через запятую — их выбирают набором в
+    # онбординге («йога, пилатес, массаж»), потому что механики записи у них разные
+    # и одним значением бизнес не описывается. 500 символов, а не 50: полный набор
+    # из двадцати пяти id в старую колонку не помещался.
+    business_subtype: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
     description: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
     email: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     website: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)

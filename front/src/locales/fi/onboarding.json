@@ -22,7 +22,7 @@
     },
     "activity": {
       "title": "Toimiala",
-      "desc": "Valitse suunta, niin räätälöimme CRM:n sinulle."
+      "desc": "Merkitse studion suunnat — yhden osion sisällä."
     },
     "contact": {
       "title": "Yhteystiedot",
@@ -52,18 +52,48 @@
   },
   "activity": {
     "title": "Toiminnan tyyppi",
-    "subtitle": "Valitse suunta — räätälöimme CRM:n sinulle",
+    "subtitle": "Merkitse kaikki, mitä teette — yhden osion sisällä",
     "comingSoon": "Pian: parturi, kuntosali, tanssi ja muuta",
     "types": {
-      "yoga": {
-        "label": "Jooga",
-        "description": "Hatha, Ashtanga, Vinyasa"
-      },
-      "pilates": {
-        "label": "Pilates",
-        "description": "Reformer, mattapilates"
-      }
-    }
+      "yoga": "Jooga",
+      "pilates": "Pilates",
+      "stretching": "Venyttely",
+      "barre": "Barre",
+      "meditation": "Meditaatio ja hengitys",
+      "gym": "Kuntosali",
+      "crossfit": "CrossFit ja toiminnallinen",
+      "martial_arts": "Kamppailulajit",
+      "dance": "Tanssi",
+      "swimming": "Uinti",
+      "kids_sport": "Lasten liikunta",
+      "personal_training": "Personal training",
+      "barbershop": "Parturi",
+      "hair_salon": "Kampaamo",
+      "makeup": "Meikkaus",
+      "nails": "Kynnet",
+      "brows_lashes": "Kulmat ja ripset",
+      "cosmetology": "Kosmetologia",
+      "hair_removal": "Vahaus ja sokerointi",
+      "tattoo": "Tatuoinnit ja lävistykset",
+      "massage": "Hieronta",
+      "manual_therapy": "Manuaalinen terapia",
+      "osteopathy": "Osteopatia",
+      "physio": "Kuntoutus ja fysioterapia",
+      "nutrition": "Ravintovalmennus",
+      "spa": "Spa",
+      "sauna": "Sauna ja hammam",
+      "wraps": "Kääreet",
+      "other": "Muu"
+    },
+    "groups": {
+      "studio": "Ryhmätunnit studiolla",
+      "sport": "Kuntoilu ja urheilu",
+      "beauty": "Kauneus ja parturi",
+      "recovery": "Hieronta ja palautuminen",
+      "relax": "Spa ja rentoutuminen",
+      "other": "Muu"
+    },
+    "selectAll": "Valitse koko osio"
   },
   "contact": {
     "title": "Yhteystiedot",

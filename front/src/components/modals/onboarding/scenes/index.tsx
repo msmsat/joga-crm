@@ -3,26 +3,56 @@ import { useTranslation } from "react-i18next";
 import { StillCtx, useReducedMotion } from "./kit";
 import { Ambient } from "./rig";
 import { MeditationScene, PilatesScene, StretchingScene, YogaScene } from "./mat";
-import { BodybarScene, CrossfitScene, FitnessScene, MartialScene } from "./gym";
+import { BodybarScene, CrossfitScene, FitnessScene, KidsSportScene, MartialScene, PersonalTrainingScene } from "./gym";
 import { DanceScene, MassageScene, SwimmingScene } from "./studio";
 import { BeautyScene, IdleScene, OtherScene } from "./care";
+import {
+  BarbershopScene, BrowsLashesScene, CosmetologyScene, HairRemovalScene,
+  MakeupScene, NailsScene, TattooScene,
+} from "./beauty";
+import { ManualTherapyScene, NutritionScene, OsteopathyScene, PhysioScene } from "./recovery";
+import { SaunaScene, SpaScene, WrapsScene } from "./relax";
 
-// Иллюстрация второго шага онбординга: у каждого направления своя сцена, но
-// человечек во всех один и тот же — узнаётся по голове с пучком и по толщине
-// костей. Ключи совпадают с id из ACTIVITY_TYPES (components/UI.tsx).
+// Иллюстрация второго шага онбординга: у КАЖДОГО направления своя сцена — общих
+// не осталось. Человечек во всех один и тот же, узнаётся по голове с пучком и по
+// толщине костей; меняется только хореография и инвентарь. Выбор на шаге
+// множественный, а сцена одна: показываем последнее отмеченное направление.
+// Ключи совпадают с id из ACTIVITY_SECTIONS (components/UI.tsx).
 const SCENES: Partial<Record<string, () => ReactElement>> = {
+  // Групповые занятия в студии
   yoga: YogaScene,
   pilates: PilatesScene,
   stretching: StretchingScene,
-  bodybar: BodybarScene,
-  fitness: FitnessScene,
-  crossfit: CrossfitScene,
-  dance: DanceScene,
-  martial_arts: MartialScene,
-  swimming: SwimmingScene,
-  massage_spa: MassageScene,
-  beauty: BeautyScene,
+  barre: BodybarScene,
   meditation: MeditationScene,
+  // Фитнес и спорт
+  gym: FitnessScene,
+  crossfit: CrossfitScene,
+  martial_arts: MartialScene,
+  dance: DanceScene,
+  swimming: SwimmingScene,
+  kids_sport: KidsSportScene,
+  personal_training: PersonalTrainingScene,
+  // Красота
+  barbershop: BarbershopScene,
+  hair_salon: BeautyScene,
+  makeup: MakeupScene,
+  nails: NailsScene,
+  brows_lashes: BrowsLashesScene,
+  cosmetology: CosmetologyScene,
+  hair_removal: HairRemovalScene,
+  tattoo: TattooScene,
+  // Массаж и восстановление
+  massage: MassageScene,
+  manual_therapy: ManualTherapyScene,
+  osteopathy: OsteopathyScene,
+  physio: PhysioScene,
+  nutrition: NutritionScene,
+  // SPA и релакс
+  spa: SpaScene,
+  sauna: SaunaScene,
+  wraps: WrapsScene,
+  // Своё направление
   other: OtherScene,
 };
 
@@ -46,7 +76,7 @@ export default function ActivityScene({ activityType }: { activityType: string }
             fill={Scene ? "#AAAAAA" : "#CCCCCC"}
           >
             {Scene
-              ? t(`onboarding:activity.types.${activityType}.label`)
+              ? t(`onboarding:activity.types.${activityType}`)
               : t("onboarding:illustration.chooseDirection")}
           </text>
         </g>

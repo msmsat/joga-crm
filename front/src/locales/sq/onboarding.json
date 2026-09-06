@@ -22,7 +22,7 @@
     },
     "activity": {
       "title": "Veprimtaria",
-      "desc": "Zgjidhni një drejtim që ta përshtatim CRM-në për ju."
+      "desc": "Shënoni drejtimet e studios — brenda një seksioni të vetëm."
     },
     "contact": {
       "title": "Kontaktet",
@@ -52,18 +52,48 @@
   },
   "activity": {
     "title": "Lloji i veprimtarisë",
-    "subtitle": "Zgjidhni një drejtim — do ta përshtatim CRM-në për ju",
+    "subtitle": "Shënoni gjithçka që bëni — brenda një seksioni të vetëm",
     "comingSoon": "Së shpejti: berber, fitnes, vallëzim e më shumë",
     "types": {
-      "yoga": {
-        "label": "Joga",
-        "description": "Hatha, Ashtanga, Vinyasa"
-      },
-      "pilates": {
-        "label": "Pilates",
-        "description": "Reformer, pilates në dysheme"
-      }
-    }
+      "yoga": "Joga",
+      "pilates": "Pilates",
+      "stretching": "Shtrirje",
+      "barre": "Barre",
+      "meditation": "Meditim dhe frymëmarrje",
+      "gym": "Palestër",
+      "crossfit": "CrossFit dhe funksional",
+      "martial_arts": "Arte marciale",
+      "dance": "Vallëzim",
+      "swimming": "Not",
+      "kids_sport": "Sport për fëmijë",
+      "personal_training": "Trajnim personal",
+      "barbershop": "Berber",
+      "hair_salon": "Parukeri",
+      "makeup": "Grim",
+      "nails": "Thonj",
+      "brows_lashes": "Vetulla dhe qerpikë",
+      "cosmetology": "Kozmetologji",
+      "hair_removal": "Depilim dhe sugaring",
+      "tattoo": "Tatuazh dhe piercing",
+      "massage": "Masazh",
+      "manual_therapy": "Terapi manuale",
+      "osteopathy": "Osteopati",
+      "physio": "Rehabilitim dhe fizioterapi",
+      "nutrition": "Ushqyerje",
+      "spa": "Spa",
+      "sauna": "Sauna dhe hamam",
+      "wraps": "Mbështjellje trupi",
+      "other": "Tjetër"
+    },
+    "groups": {
+      "studio": "Klasa në grup në studio",
+      "sport": "Fitnes dhe sport",
+      "beauty": "Bukuri dhe berber",
+      "recovery": "Masazh dhe rikuperim",
+      "relax": "Spa dhe relaks",
+      "other": "Tjetër"
+    },
+    "selectAll": "Zgjidh të gjithë seksionin"
   },
   "contact": {
     "title": "Të dhënat e kontaktit",

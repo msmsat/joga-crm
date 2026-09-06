@@ -22,7 +22,7 @@
     },
     "activity": {
       "title": "Activité",
-      "desc": "Choisissez une orientation pour que nous adaptions le CRM."
+      "desc": "Cochez les orientations du studio — dans une seule section."
     },
     "contact": {
       "title": "Contacts",
@@ -52,18 +52,48 @@
   },
   "activity": {
     "title": "Type d'activité",
-    "subtitle": "Choisissez une orientation — nous adapterons le CRM",
+    "subtitle": "Cochez tout ce que vous proposez — dans une seule section",
     "comingSoon": "Bientôt : barbier, fitness, danse et plus encore",
     "types": {
-      "yoga": {
-        "label": "Yoga",
-        "description": "Hatha, Ashtanga, Vinyasa"
-      },
-      "pilates": {
-        "label": "Pilates",
-        "description": "Reformer, Pilates au sol"
-      }
-    }
+      "yoga": "Yoga",
+      "pilates": "Pilates",
+      "stretching": "Stretching",
+      "barre": "Barre",
+      "meditation": "Méditation et respiration",
+      "gym": "Salle de sport",
+      "crossfit": "CrossFit et functional",
+      "martial_arts": "Arts martiaux",
+      "dance": "Danse",
+      "swimming": "Natation",
+      "kids_sport": "Sport enfants",
+      "personal_training": "Coaching personnel",
+      "barbershop": "Barbier",
+      "hair_salon": "Coiffure",
+      "makeup": "Maquillage",
+      "nails": "Ongles",
+      "brows_lashes": "Sourcils et cils",
+      "cosmetology": "Cosmétologie",
+      "hair_removal": "Épilation et sugaring",
+      "tattoo": "Tatouage et piercing",
+      "massage": "Massage",
+      "manual_therapy": "Thérapie manuelle",
+      "osteopathy": "Ostéopathie",
+      "physio": "Rééducation et kinésithérapie",
+      "nutrition": "Nutrition",
+      "spa": "Spa",
+      "sauna": "Sauna et hammam",
+      "wraps": "Enveloppements",
+      "other": "Autre"
+    },
+    "groups": {
+      "studio": "Cours collectifs en studio",
+      "sport": "Fitness et sport",
+      "beauty": "Beauté et barbier",
+      "recovery": "Massage et récupération",
+      "relax": "Spa et détente",
+      "other": "Autre"
+    },
+    "selectAll": "Sélectionner toute la section"
   },
   "contact": {
     "title": "Coordonnées",

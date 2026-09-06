@@ -22,7 +22,7 @@
     },
     "activity": {
       "title": "Attività",
-      "desc": "Scegli un ambito così adattiamo il CRM a te."
+      "desc": "Seleziona gli ambiti dello studio — all'interno di una sola sezione."
     },
     "contact": {
       "title": "Contatti",
@@ -52,18 +52,48 @@
   },
   "activity": {
     "title": "Tipo di attività",
-    "subtitle": "Scegli un ambito — adatteremo il CRM a te",
+    "subtitle": "Seleziona tutto ciò che offri — all'interno di una sola sezione",
     "comingSoon": "Presto: barbiere, fitness, danza e altro",
     "types": {
-      "yoga": {
-        "label": "Yoga",
-        "description": "Hatha, Ashtanga, Vinyasa"
-      },
-      "pilates": {
-        "label": "Pilates",
-        "description": "Reformer, pilates a corpo libero"
-      }
-    }
+      "yoga": "Yoga",
+      "pilates": "Pilates",
+      "stretching": "Stretching",
+      "barre": "Barre",
+      "meditation": "Meditazione e respiro",
+      "gym": "Palestra",
+      "crossfit": "CrossFit e functional",
+      "martial_arts": "Arti marziali",
+      "dance": "Danza",
+      "swimming": "Nuoto",
+      "kids_sport": "Sport per bambini",
+      "personal_training": "Personal training",
+      "barbershop": "Barbiere",
+      "hair_salon": "Parrucchiere",
+      "makeup": "Trucco",
+      "nails": "Unghie",
+      "brows_lashes": "Sopracciglia e ciglia",
+      "cosmetology": "Cosmetologia",
+      "hair_removal": "Epilazione e sugaring",
+      "tattoo": "Tatuaggi e piercing",
+      "massage": "Massaggi",
+      "manual_therapy": "Terapia manuale",
+      "osteopathy": "Osteopatia",
+      "physio": "Riabilitazione e fisioterapia",
+      "nutrition": "Nutrizione",
+      "spa": "Spa",
+      "sauna": "Sauna e hammam",
+      "wraps": "Impacchi corpo",
+      "other": "Altro"
+    },
+    "groups": {
+      "studio": "Corsi di gruppo in studio",
+      "sport": "Fitness e sport",
+      "beauty": "Bellezza e barbiere",
+      "recovery": "Massaggi e recupero",
+      "relax": "Spa e relax",
+      "other": "Altro"
+    },
+    "selectAll": "Seleziona tutta la sezione"
   },
   "contact": {
     "title": "Dati di contatto",

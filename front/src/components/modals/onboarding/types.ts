@@ -10,7 +10,9 @@ export interface OnboardingData {
   description: string;
   logoFile: File | null;
   logoPreviewUrl: string;
-  activityType: string;
+  /** Направления студии, id из ACTIVITY_TYPES. Выбор множественный; на сервер
+   *  уходят одним полем activityType через запятую (business_subtype — String(50)). */
+  activityTypes: string[];
   phone: string;
   address: string;
   email: string;

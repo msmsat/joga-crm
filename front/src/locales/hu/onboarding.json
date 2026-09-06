@@ -22,7 +22,7 @@
     },
     "activity": {
       "title": "Tevékenység",
-      "desc": "Válasszon irányt, hogy a CRM-et Önre szabhassuk."
+      "desc": "Jelölje meg a stúdió irányait — egyetlen szakaszon belül."
     },
     "contact": {
       "title": "Elérhetőségek",
@@ -52,18 +52,48 @@
   },
   "activity": {
     "title": "Tevékenység típusa",
-    "subtitle": "Válasszon irányt — a CRM-et Önre szabjuk",
+    "subtitle": "Jelöljön meg mindent, amivel foglalkoznak — egyetlen szakaszon belül",
     "comingSoon": "Hamarosan: borbély, fitnesz, tánc és még több",
     "types": {
-      "yoga": {
-        "label": "Jóga",
-        "description": "Hatha, Ashtanga, Vinyasa"
-      },
-      "pilates": {
-        "label": "Pilates",
-        "description": "Reformer, szőnyeges pilates"
-      }
-    }
+      "yoga": "Jóga",
+      "pilates": "Pilates",
+      "stretching": "Nyújtás",
+      "barre": "Barre",
+      "meditation": "Meditáció és légzés",
+      "gym": "Konditerem",
+      "crossfit": "CrossFit és funkcionális",
+      "martial_arts": "Küzdősportok",
+      "dance": "Tánc",
+      "swimming": "Úszás",
+      "kids_sport": "Gyereksport",
+      "personal_training": "Személyi edzés",
+      "barbershop": "Barbershop",
+      "hair_salon": "Fodrászat",
+      "makeup": "Smink",
+      "nails": "Körmök",
+      "brows_lashes": "Szemöldök és szempilla",
+      "cosmetology": "Kozmetika",
+      "hair_removal": "Gyantázás és cukorpaszta",
+      "tattoo": "Tetoválás és piercing",
+      "massage": "Masszázs",
+      "manual_therapy": "Manuálterápia",
+      "osteopathy": "Oszteopátia",
+      "physio": "Rehabilitáció és gyógytorna",
+      "nutrition": "Táplálkozási tanácsadás",
+      "spa": "Spa",
+      "sauna": "Szauna és hamam",
+      "wraps": "Testpakolások",
+      "other": "Egyéb"
+    },
+    "groups": {
+      "studio": "Csoportos órák a stúdióban",
+      "sport": "Fitnesz és sport",
+      "beauty": "Szépség és borbély",
+      "recovery": "Masszázs és regeneráció",
+      "relax": "Spa és pihenés",
+      "other": "Egyéb"
+    },
+    "selectAll": "Teljes szakasz kijelölése"
   },
   "contact": {
     "title": "Elérhetőségi adatok",

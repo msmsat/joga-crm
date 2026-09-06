@@ -16,11 +16,26 @@
     "gotIt": "Got it"
   },
   "steps": {
-    "identity": { "title": "About the studio", "desc": "Name, description and visual style of your brand." },
-    "activity": { "title": "Activity", "desc": "Choose a direction so we can tailor the CRM for you." },
-    "contact": { "title": "Contacts", "desc": "Address, phone and links for your clients." },
-    "settings": { "title": "Settings", "desc": "Region, currency and date format." },
-    "schedule": { "title": "Working hours", "desc": "Set the days and hours your studio operates." }
+    "identity": {
+      "title": "About the studio",
+      "desc": "Name, description and visual style of your brand."
+    },
+    "activity": {
+      "title": "Activity",
+      "desc": "Tick what your studio does — all within one section."
+    },
+    "contact": {
+      "title": "Contacts",
+      "desc": "Address, phone and links for your clients."
+    },
+    "settings": {
+      "title": "Settings",
+      "desc": "Region, currency and date format."
+    },
+    "schedule": {
+      "title": "Working hours",
+      "desc": "Set the days and hours your studio operates."
+    }
   },
   "identity": {
     "welcome": "Welcome",
@@ -37,22 +52,47 @@
   },
   "activity": {
     "title": "Type of activity",
-    "subtitle": "Choose a direction — we'll tailor the CRM for you",
+    "subtitle": "Tick everything you do — all within one section",
     "types": {
-      "yoga": { "label": "Yoga", "description": "Hatha, Ashtanga, Vinyasa" },
-      "pilates": { "label": "Pilates", "description": "Reformer, mat Pilates" },
-      "stretching": { "label": "Stretching", "description": "Flexibility, splits" },
-      "bodybar": { "label": "Bodybar", "description": "Gymnastic stick workouts" },
-      "fitness": { "label": "Fitness & gym", "description": "Strength training, group classes" },
-      "crossfit": { "label": "CrossFit", "description": "Functional training" },
-      "dance": { "label": "Dance", "description": "Choreography, modern styles" },
-      "martial_arts": { "label": "Martial arts", "description": "Boxing, MMA, wrestling" },
-      "swimming": { "label": "Swimming", "description": "Pool, aqua fitness" },
-      "massage_spa": { "label": "Massage & spa", "description": "Massage, bodywork" },
-      "beauty": { "label": "Beauty", "description": "Barbershop, salon, nails" },
-      "meditation": { "label": "Meditation", "description": "Breathwork, mindfulness" },
-      "other": { "label": "Other", "description": "Your own format" }
-    }
+      "yoga": "Yoga",
+      "pilates": "Pilates",
+      "stretching": "Stretching",
+      "barre": "Barre",
+      "meditation": "Meditation & breathwork",
+      "gym": "Gym",
+      "crossfit": "CrossFit & functional",
+      "martial_arts": "Martial arts",
+      "dance": "Dance",
+      "swimming": "Swimming",
+      "kids_sport": "Kids sport",
+      "personal_training": "Personal training",
+      "barbershop": "Barbershop",
+      "hair_salon": "Hair salon",
+      "makeup": "Makeup",
+      "nails": "Nails",
+      "brows_lashes": "Brows & lashes",
+      "cosmetology": "Cosmetology",
+      "hair_removal": "Waxing & sugaring",
+      "tattoo": "Tattoo & piercing",
+      "massage": "Massage",
+      "manual_therapy": "Manual therapy",
+      "osteopathy": "Osteopathy",
+      "physio": "Rehab & physiotherapy",
+      "nutrition": "Nutrition",
+      "spa": "Spa",
+      "sauna": "Sauna & hammam",
+      "wraps": "Body wraps",
+      "other": "Other"
+    },
+    "groups": {
+      "studio": "Group classes in the studio",
+      "sport": "Fitness & sport",
+      "beauty": "Beauty & barbershop",
+      "recovery": "Massage & recovery",
+      "relax": "Spa & relaxation",
+      "other": "Other"
+    },
+    "selectAll": "Select the whole section"
   },
   "contact": {
     "title": "Contact details",
@@ -105,11 +145,24 @@
       "UTC+2": "Kyiv, Athens, Cairo (UTC+2)"
     },
     "currencies": {
-      "RUB": "Ruble", "USD": "Dollar", "EUR": "Euro", "KZT": "Tenge",
-      "UAH": "Hryvnia", "GBP": "Pound", "AED": "Dirham", "TRY": "Lira",
-      "CZK": "Czech Koruna", "PLN": "Złoty", "HUF": "Forint", "RON": "Leu",
-      "BGN": "Lev", "SEK": "Swedish Krona", "NOK": "Norwegian Krone",
-      "DKK": "Danish Krone", "CHF": "Swiss Franc", "ISK": "Icelandic Króna",
+      "RUB": "Ruble",
+      "USD": "Dollar",
+      "EUR": "Euro",
+      "KZT": "Tenge",
+      "UAH": "Hryvnia",
+      "GBP": "Pound",
+      "AED": "Dirham",
+      "TRY": "Lira",
+      "CZK": "Czech Koruna",
+      "PLN": "Złoty",
+      "HUF": "Forint",
+      "RON": "Leu",
+      "BGN": "Lev",
+      "SEK": "Swedish Krona",
+      "NOK": "Norwegian Krone",
+      "DKK": "Danish Krone",
+      "CHF": "Swiss Franc",
+      "ISK": "Icelandic Króna",
       "RSD": "Serbian Dinar"
     }
   },

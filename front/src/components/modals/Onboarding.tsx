@@ -44,7 +44,7 @@ export default function OnboardingPage() {
     description: "",
     logoFile: null,
     logoPreviewUrl: "",
-    activityType: "",
+    activityTypes: [],
     phone: "",
     address: "",
     email: "",
@@ -124,7 +124,7 @@ export default function OnboardingPage() {
         studioName: data.studioName,
         description: data.description || null,
         logoUrl,
-        activityType: data.activityType,
+        activityType: data.activityTypes.join(","),
         phone: data.phone,
         address: data.address || null,
         email: data.email || null,
@@ -179,7 +179,7 @@ export default function OnboardingPage() {
   }, [errorModal.visible]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const canProceed1 = data.studioName.trim().length >= 2;
-  const canProceed2 = data.activityType !== "";
+  const canProceed2 = data.activityTypes.length > 0;
   const canProceed3 = !!data.phone && isValidPhoneNumber(data.phone);
   const canProceed4 = !!(data.timezone && data.language && data.currency);
   const canProceed5 = true;
@@ -284,7 +284,7 @@ export default function OnboardingPage() {
           padding: "16px 0", position: "relative", zIndex: 1, overflow: "hidden",
         }}>
           {step === 1 && <Illustration1 studioName={data.studioName} logoPreviewUrl={data.logoPreviewUrl} />}
-          {step === 2 && <ActivityScene activityType={data.activityType} />}
+          {step === 2 && <ActivityScene activityType={data.activityTypes[data.activityTypes.length - 1] ?? ""} />}
           {step === 3 && <Illustration3 phone={data.phone} email={data.email} address={data.address} />}
           {step === 4 && <Illustration4 timezone={data.timezone} currency={data.currency} language={data.language} />}
           {step === 5 && <Illustration5 workingHours={data.workingHours} />}

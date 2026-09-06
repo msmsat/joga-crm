@@ -22,7 +22,7 @@
     },
     "activity": {
       "title": "Actividad",
-      "desc": "Elige una especialidad para que adaptemos el CRM a ti."
+      "desc": "Marca las especialidades del estudio — dentro de una sola sección."
     },
     "contact": {
       "title": "Contacto",
@@ -52,18 +52,48 @@
   },
   "activity": {
     "title": "Tipo de actividad",
-    "subtitle": "Elige una especialidad — adaptaremos el CRM a ti",
+    "subtitle": "Marca todo lo que ofreces — dentro de una sola sección",
     "comingSoon": "Próximamente: barbería, fitness, danza y más",
     "types": {
-      "yoga": {
-        "label": "Yoga",
-        "description": "Hatha, Ashtanga, Vinyasa"
-      },
-      "pilates": {
-        "label": "Pilates",
-        "description": "Reformer, pilates en suelo"
-      }
-    }
+      "yoga": "Yoga",
+      "pilates": "Pilates",
+      "stretching": "Estiramientos",
+      "barre": "Barre",
+      "meditation": "Meditación y respiración",
+      "gym": "Gimnasio",
+      "crossfit": "CrossFit y funcional",
+      "martial_arts": "Artes marciales",
+      "dance": "Baile",
+      "swimming": "Natación",
+      "kids_sport": "Deporte infantil",
+      "personal_training": "Entrenamiento personal",
+      "barbershop": "Barbería",
+      "hair_salon": "Peluquería",
+      "makeup": "Maquillaje",
+      "nails": "Uñas",
+      "brows_lashes": "Cejas y pestañas",
+      "cosmetology": "Cosmetología",
+      "hair_removal": "Depilación y sugaring",
+      "tattoo": "Tatuaje y piercing",
+      "massage": "Masaje",
+      "manual_therapy": "Terapia manual",
+      "osteopathy": "Osteopatía",
+      "physio": "Rehabilitación y fisioterapia",
+      "nutrition": "Nutrición",
+      "spa": "Spa",
+      "sauna": "Sauna y hammam",
+      "wraps": "Envolturas corporales",
+      "other": "Otro"
+    },
+    "groups": {
+      "studio": "Clases grupales en el estudio",
+      "sport": "Fitness y deporte",
+      "beauty": "Belleza y barbería",
+      "recovery": "Masaje y recuperación",
+      "relax": "Spa y relajación",
+      "other": "Otro"
+    },
+    "selectAll": "Seleccionar toda la sección"
   },
   "contact": {
     "title": "Datos de contacto",

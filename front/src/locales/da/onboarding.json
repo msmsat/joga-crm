@@ -22,7 +22,7 @@
     },
     "activity": {
       "title": "Aktivitet",
-      "desc": "Vælg en retning, så vi kan tilpasse CRM'et til dig."
+      "desc": "Markér studiets områder — inden for én sektion."
     },
     "contact": {
       "title": "Kontakt",
@@ -52,18 +52,48 @@
   },
   "activity": {
     "title": "Type af aktivitet",
-    "subtitle": "Vælg en retning — vi tilpasser CRM'et til dig",
+    "subtitle": "Markér alt, I tilbyder — inden for én sektion",
     "comingSoon": "Snart: barbershop, fitness, dans og mere",
     "types": {
-      "yoga": {
-        "label": "Yoga",
-        "description": "Hatha, Ashtanga, Vinyasa"
-      },
-      "pilates": {
-        "label": "Pilates",
-        "description": "Reformer, måttepilates"
-      }
-    }
+      "yoga": "Yoga",
+      "pilates": "Pilates",
+      "stretching": "Udstrækning",
+      "barre": "Barre",
+      "meditation": "Meditation og vejrtrækning",
+      "gym": "Fitnesscenter",
+      "crossfit": "CrossFit og funktionel",
+      "martial_arts": "Kampsport",
+      "dance": "Dans",
+      "swimming": "Svømning",
+      "kids_sport": "Børneidræt",
+      "personal_training": "Personlig træning",
+      "barbershop": "Barbershop",
+      "hair_salon": "Frisør",
+      "makeup": "Makeup",
+      "nails": "Negle",
+      "brows_lashes": "Bryn og vipper",
+      "cosmetology": "Kosmetologi",
+      "hair_removal": "Voksbehandling og sugaring",
+      "tattoo": "Tatovering og piercing",
+      "massage": "Massage",
+      "manual_therapy": "Manuel terapi",
+      "osteopathy": "Osteopati",
+      "physio": "Genoptræning og fysioterapi",
+      "nutrition": "Ernæring",
+      "spa": "Spa",
+      "sauna": "Sauna og hammam",
+      "wraps": "Kropsindpakninger",
+      "other": "Andet"
+    },
+    "groups": {
+      "studio": "Holdtræning i studiet",
+      "sport": "Fitness og sport",
+      "beauty": "Skønhed og barbershop",
+      "recovery": "Massage og restitution",
+      "relax": "Spa og afslapning",
+      "other": "Andet"
+    },
+    "selectAll": "Vælg hele sektionen"
   },
   "contact": {
     "title": "Kontaktoplysninger",
