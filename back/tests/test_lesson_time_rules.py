@@ -18,6 +18,11 @@ class _User:
     id = 1
 
 
+class _Studio:
+    """HB-06: `schedule_guard.lock_studio` — первый SELECT в create/update_lesson."""
+    strict_schedule_enabled = False
+
+
 class _Lesson:
     def __init__(self, start_time, status="confirmed"):
         self.id = 1
@@ -36,6 +41,11 @@ class _Lesson:
         self.service_id = None
         self.cancel_reason = None
         self.clients_notified = False
+        # HB-04: новые поля Lesson (branch_id/booking_mode/tz_iana, HB-02) —
+        # фейковый объект должен нести их, как реальная ORM-модель.
+        self.branch_id = None
+        self.booking_mode = "event"
+        self.tz_iana = None
 
 
 class _R:
@@ -108,7 +118,7 @@ def test_create_more_than_3h_ok_passes_time_check():
     body = LessonCreateRequest(
         service_id=1, teacher_id=1, start_time=datetime.now() + timedelta(hours=4),
     )
-    db = _DB([None])  # _teacher_name_in_studio: тренер не найден → 404, не 400
+    db = _DB([_Studio(), None])  # lock_studio, затем _teacher_name_in_studio: тренер не найден → 404, не 400
     try:
         asyncio.run(L.create_lesson(body, _ctx(), db))
         raise AssertionError("ожидали 404 (тренер не найден)")
@@ -119,7 +129,7 @@ def test_create_more_than_3h_ok_passes_time_check():
 # ─── 2. Изменение занятия, начинающегося раньше чем через 2 часа ────────────
 def test_update_lesson_starting_soon_rejected():
     lesson = _Lesson(start_time=datetime.now() + timedelta(minutes=90))
-    db = _DB([lesson])  # get_scoped_lesson
+    db = _DB([_Studio(), lesson])  # lock_studio, get_scoped_lesson
     body = LessonUpdateRequest(price=100)
     _expect_400(L.update_lesson(1, body, _ctx(), db), "2 часа")
     assert db.committed is False
@@ -128,14 +138,14 @@ def test_update_lesson_starting_soon_rejected():
 def test_update_new_start_time_within_2h_rejected():
     """Занятие ещё далеко, но новое время переноса попадает в окно <2ч."""
     lesson = _Lesson(start_time=datetime.now() + timedelta(hours=10))
-    db = _DB([lesson])
+    db = _DB([_Studio(), lesson])  # lock_studio, get_scoped_lesson
     body = LessonUpdateRequest(start_time=datetime.now() + timedelta(minutes=30))
     _expect_400(L.update_lesson(1, body, _ctx(), db), "2 часа")
 
 
 def test_update_far_lesson_ok_passes_time_check():
     lesson = _Lesson(start_time=datetime.now() + timedelta(hours=10))
-    db = _DB([lesson, 0])  # get_scoped_lesson, затем _booked_count после правок
+    db = _DB([_Studio(), lesson, 0])  # lock_studio, get_scoped_lesson, затем _booked_count после правок
     body = LessonUpdateRequest(price=500)
     result = asyncio.run(L.update_lesson(1, body, _ctx(), db))
     assert result.price == 500
@@ -149,7 +159,7 @@ def test_update_far_lesson_ok_passes_time_check():
 # ─── 2b. Отменённое занятие: править нельзя, кроме cancel_reason (эпик V4-7, задача 6) ──
 def test_update_cancelled_lesson_rejected():
     lesson = _Lesson(start_time=datetime.now() + timedelta(hours=10), status="cancelled")
-    db = _DB([lesson])  # get_scoped_lesson; guard срабатывает раньше второго execute
+    db = _DB([_Studio(), lesson])  # lock_studio, get_scoped_lesson; guard срабатывает раньше следующего execute
     body = LessonUpdateRequest(price=500)
     _expect_400(L.update_lesson(1, body, _ctx(), db), "отменено")
     assert db.committed is False
@@ -157,7 +167,7 @@ def test_update_cancelled_lesson_rejected():
 
 def test_update_cancelled_lesson_cancel_reason_only_ok():
     lesson = _Lesson(start_time=datetime.now() + timedelta(hours=10), status="cancelled")
-    db = _DB([lesson, 0])  # get_scoped_lesson, затем _booked_count
+    db = _DB([_Studio(), lesson, 0])  # lock_studio, get_scoped_lesson, затем _booked_count
     body = LessonUpdateRequest(cancel_reason="Клиент попросил перенос")
     result = asyncio.run(L.update_lesson(1, body, _ctx(), db))
     assert lesson.cancel_reason == "Клиент попросил перенос"

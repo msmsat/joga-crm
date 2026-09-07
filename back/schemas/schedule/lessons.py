@@ -24,6 +24,12 @@ class LessonRead(BaseSchema):
     booked_count: int = 0
     cancel_reason: Optional[str] = None
     clients_notified: bool = False
+    # HB-02/04: снимок механики и филиала. `branch_id` синхронизируется с
+    # Hall.branch_id роутером при создании/переносе (routers/schedule/lessons.py)
+    # — для hall-less занятия остаётся None, догадкой не заполняется (§6.1).
+    branch_id: Optional[int] = None
+    booking_mode: str = "event"
+    tz_iana: Optional[str] = None
 
     # Загружается из ORM-связи, но не сериализуется — резерв для подсчёта booked_count,
     # если эндпоинт не посчитал его сам (напр. через selectinload вместо GROUP BY).

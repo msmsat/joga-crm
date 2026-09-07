@@ -9,14 +9,14 @@ from sqlalchemy.orm import selectinload
 from database import get_db
 from dependencies import require_role, StudioContext
 from models import (
-    Hall, Lesson, Reservation, Service, StaffDayOverride, StaffWorkingHours,
-    Studio, StudioMember, User,
+    Hall, Lesson, Reservation, Service, StaffBranchAssignment, StaffDayOverride,
+    StaffWorkingHours, Studio, StudioBranch, StudioMember, User,
 )
 from schemas import (
     StaffCreate, StaffUpdate,
     StaffListResponse, StaffProfileResponse, StaffMutateResponse,
 )
-from schemas.staff.staff import StaffWorkingHoursItem
+from schemas.staff.staff import StaffBranchItem, StaffWorkingHoursItem
 from security import get_password_hash
 from services.contacts import (
     ensure_user_contacts_free, normalize, normalized_column,
@@ -25,6 +25,7 @@ from services.invites import send_invite
 from services.members import full_name
 from services.notifier import notify
 from services.plan_limits import check_plan_limit
+from services import schedule_guard
 
 router = APIRouter()
 
@@ -111,6 +112,38 @@ async def _replace_schedule(
         ))
 
     await _resync_future_day_marks(user_id, studio_id, db)
+
+
+async def _resolve_branches(branch_ids: list[int], studio_id: int, db: AsyncSession) -> list[StudioBranch]:
+    """Филиалы по id, скоуп студии. Чужой/несуществующий id → 404 (образец —
+    `_resolve_services`)."""
+    if not branch_ids:
+        return []
+    result = await db.execute(
+        select(StudioBranch).where(StudioBranch.id.in_(branch_ids), StudioBranch.studio_id == studio_id)
+    )
+    branches = result.scalars().all()
+    if len(branches) != len(set(branch_ids)):
+        raise HTTPException(status_code=404, detail="Филиал не найден")
+    return list(branches)
+
+
+async def _replace_branch_assignments(
+    user_id: int, studio_id: int, branches: list[StudioBranch], db: AsyncSession
+) -> None:
+    """Полная замена назначений сотрудника на филиалы В ЭТОЙ студии (HB-05).
+
+    Скоуп по studio_id обязателен — та же причина, что у `_replace_schedule`:
+    у человека в двух студиях два независимых набора филиалов.
+    """
+    await db.execute(
+        delete(StaffBranchAssignment).where(
+            StaffBranchAssignment.user_id == user_id,
+            StaffBranchAssignment.studio_id == studio_id,
+        )
+    )
+    for branch in branches:
+        db.add(StaffBranchAssignment(user_id=user_id, studio_id=studio_id, branch_id=branch.id))
 
 
 async def _resync_future_day_marks(user_id: int, studio_id: int, db: AsyncSession) -> None:
@@ -391,6 +424,15 @@ async def get_staff_profile(
         for wh in wh_result.scalars().all()
     ]
 
+    # HB-05: филиалы для Resource-записи — только этой студии.
+    branches_result = await db.execute(
+        select(StudioBranch)
+        .join(StaffBranchAssignment, StaffBranchAssignment.branch_id == StudioBranch.id)
+        .where(StaffBranchAssignment.user_id == staff_id, StaffBranchAssignment.studio_id == studio_id)
+        .order_by(StudioBranch.id)
+    )
+    branches = [{"id": b.id, "name": b.name} for b in branches_result.scalars().all()]
+
     return {
         "id": user.id,
         "name": membership.name,
@@ -419,6 +461,7 @@ async def get_staff_profile(
         "services": services,
         "today_schedule": today_schedule,
         "week_working_hours": week_working_hours,
+        "branches": branches,
     }
 
 
@@ -431,9 +474,12 @@ async def create_staff(
     db: AsyncSession = Depends(get_db),
 ):
     studio_id = ctx.studio_id
+    # HB-06: замок студии — до любой правки состава/графика команды (§6.2).
+    await schedule_guard.lock_studio(db, studio_id)
     await check_plan_limit(db, studio_id, "staff")
 
     services = await _resolve_services(data.service_ids, studio_id, db)
+    branches = await _resolve_branches(data.branch_ids, studio_id, db)
 
     # Аккаунт с таким email уже есть → это ТОТ ЖЕ человек, а не ошибка: имя и
     # фото теперь студийные, и владельцу есть куда положить введённое — в
@@ -498,6 +544,7 @@ async def create_staff(
     )
     db.add(membership)
     await _replace_schedule(user.id, studio_id, data.schedule, db)
+    await _replace_branch_assignments(user.id, studio_id, branches, db)
     await db.commit()
     await db.refresh(user)
     await db.refresh(membership)
@@ -541,6 +588,8 @@ async def update_staff(
     db: AsyncSession = Depends(get_db),
 ):
     studio_id = ctx.studio_id
+    # HB-06: замок студии — до любой правки состава/графика команды (§6.2).
+    studio = await schedule_guard.lock_studio(db, studio_id)
     user_result = await db.execute(
         select(User, StudioMember)
         .join(StudioMember, StudioMember.user_id == User.id)
@@ -574,6 +623,7 @@ async def update_staff(
     )
 
     services = await _resolve_services(data.service_ids, studio_id, db)
+    branches = await _resolve_branches(data.branch_ids, studio_id, db)
 
     role_changed = data.role is not None and membership.role != data.role
 
@@ -592,6 +642,12 @@ async def update_staff(
     if data.role is not None:
         membership.role = data.role
     await _replace_schedule(user.id, studio_id, data.schedule, db)
+    await _replace_branch_assignments(user.id, studio_id, branches, db)
+    # Новые часы/назначения уже видны этой транзакции (flush) — проверяем,
+    # что будущие resource-записи специалиста всё ещё попадают в них (§6.2 п.5).
+    await db.flush()
+    conflicts = await schedule_guard.assert_future_assignments_valid(db, studio, user_id=user.id)
+    schedule_guard.raise_if_conflicts(conflicts)
     await db.commit()
     await db.refresh(user)
 

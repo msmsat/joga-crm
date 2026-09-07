@@ -52,6 +52,11 @@ class StudioFeature(str, Enum):
     AGENT_IDENTITY_LINKING = "agent_identity_linking"
     AGENT_BOOKING_WRITES = "agent_booking_writes"
     AGENT_PAYMENTS = "agent_payments"
+    # Гибридная запись (docs/EPIC_HYBRID_BOOKING_IMPLEMENTATION.md, §6.6).
+    # По умолчанию выключен у всех студий. Включение планируется только для
+    # пилотной студии после аудита наследия (HB-24) — массового переключения
+    # этим флагом не будет.
+    HYBRID_BOOKING = "hybrid_booking"
 
 
 def _require_feature(flag) -> "StudioFeature":

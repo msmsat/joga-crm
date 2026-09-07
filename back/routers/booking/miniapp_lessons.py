@@ -93,6 +93,19 @@ class MiniappLesson(BaseSchema):
     badge: str
     taken_spots: list[int]
     is_booked_by_user: bool
+    # HB-04: числовые тождества карточки — одинаковое название услуги/тренера
+    # не должно смешиваться на клиенте (AC-01). `teacher_id` — users.id, тот
+    # же, что и в Журнале; None — занятие без тренера (наследие).
+    service_id: Optional[int] = None
+    teacher_id: Optional[int] = None
+    # None — у занятия нет зала и филиал не подтверждён (hall-less история,
+    # §6.1). Не подставляется первым филиалом студии ни при каких условиях.
+    branch_id: Optional[int] = None
+    # Событийный список отдаёт только event (resource исключён на уровне
+    # catalog.visible_lessons); поле остаётся на карточке ради `/lessons/my`,
+    # где MiniappLesson переиспользуется для личной истории (HB-21).
+    booking_mode: str = "event"
+    tz_iana: Optional[str] = None
     # Занятие проходит все правила онлайн-записи студии (запись включена, окно
     # дней, минимум времени до начала, часы работы виджета). False — карточка в
     # расписании видна, но кнопка записи не работает: убирать занятие из списка
@@ -179,6 +192,11 @@ def _lesson_fields(
         # Пустой словарь схема развернёт в CoffeeState() с enabled=False —
         # ровно то, что нужно студии с выключенной механикой.
         coffee=coffee or {},
+        service_id=lesson.service_id,
+        teacher_id=lesson.teacher_id,
+        branch_id=lesson.branch_id,
+        booking_mode=lesson.booking_mode,
+        tz_iana=lesson.tz_iana,
     )
 
 
@@ -283,19 +301,40 @@ async def lessons_by_date(
     target_date: date,
     viewer: Viewer = Depends(get_viewer),
     db: AsyncSession = Depends(get_db),
+    # Именованные ПОСЛЕ viewer/db, а не перед ними: часть вызывающего кода
+    # (тесты, прямой вызов роутера в Python) зовёт эту функцию позиционно —
+    # `lessons_by_date(date, viewer, db)`. FastAPI резолвит query-параметры
+    # по имени независимо от места в сигнатуре, HTTP это не затрагивает.
+    service_id: Optional[int] = None,
+    branch_id: Optional[int] = None,
+    teacher_id: Optional[int] = None,
 ):
     """Расписание дня. Токен не обязателен: занятие выбирают ДО регистрации, и
     гость по ссылке `/s/<id>` видит тот же список, что и клиент. Клиентские
     поля у него пустые — своей брони, кофе и подарка первого занятия нет
-    ровно потому, что нет карточки; `None in set()` даёт это само собой."""
+    ровно потому, что нет карточки; `None in set()` даёт это само собой.
+
+    HB-04: `service_id`/`branch_id`/`teacher_id` — серверные фильтры отбора
+    (MA-02/MA-03), не текстовый поиск по имени. Скоуп студии обеспечен тем же
+    условием `catalog.visible_lessons`, что и раньше — фильтры лишь СУЖАЮТ
+    его же выборку, чужую студию через них не достать (id проверяются по
+    Lesson.studio_id ниже, а не по факту существования где-либо в базе)."""
     client_id = viewer.client.id if viewer.client else None
     day_start, day_end = lesson_time.local_day_bounds(target_date)
+
+    conditions = catalog.visible_lessons(viewer.studio_id, day_start, day_end)
+    if service_id is not None:
+        conditions.append(Lesson.service_id == service_id)
+    if branch_id is not None:
+        conditions.append(Lesson.branch_id == branch_id)
+    if teacher_id is not None:
+        conditions.append(Lesson.teacher_id == teacher_id)
 
     lessons = (await db.execute(
         select(Lesson)
         # Условие видимости — общее с каталогом (services/catalog), а не своё:
         # ассистент обязан видеть ровно то же расписание, что и клиент здесь.
-        .where(*catalog.visible_lessons(viewer.studio_id, day_start, day_end))
+        .where(*conditions)
         .order_by(Lesson.start_time)
     )).scalars().all()
     if not lessons:
@@ -351,6 +390,9 @@ async def next_lesson(
         .where(
             Lesson.studio_id == viewer.studio_id,
             Lesson.status != "cancelled",
+            # HB-04: предложение "ближайшее занятие" — это выбираемое событие,
+            # не приватный resource-интервал существующей брони (§6.1).
+            Lesson.booking_mode != "resource",
             Lesson.start_time >= earliest,
             Lesson.start_time <= latest,
         )

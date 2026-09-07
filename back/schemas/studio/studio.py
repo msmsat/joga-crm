@@ -1,6 +1,7 @@
 from typing import Optional
-from pydantic import EmailStr, model_validator
+from pydantic import EmailStr, Field, model_validator
 from schemas._base import BaseSchema
+from schemas.schedule.hybrid import ServiceBookingMode, TerminologyProfile
 
 
 class StudioRead(BaseSchema):
@@ -108,6 +109,18 @@ class ServiceRead(BaseSchema):
     bookings_count: int
     revenue_total: int
     bookings_last_30d: int = 0
+    # HB-02/03: механика записи. `service_type` (group/individual) остаётся
+    # форматом обслуживания и не выводит booking_mode — они читаются отдельно.
+    booking_mode: ServiceBookingMode = "event"
+    buffer_before_min: int = 0
+    buffer_after_min: int = 0
+    is_bookable: bool = True
+    terminology_profile: Optional[TerminologyProfile] = None
+
+
+def reject_resource_group_combo(service_type: Optional[str], booking_mode: Optional[str]) -> None:
+    if booking_mode == "resource" and service_type == "group":
+        raise ValueError("resource-услуга не может быть групповой (service_type=group)")
 
 
 class ServiceCreate(BaseSchema):
@@ -119,6 +132,18 @@ class ServiceCreate(BaseSchema):
     service_type: Optional[str] = None
     color: Optional[str] = None
     max_clients: Optional[int] = None
+    booking_mode: ServiceBookingMode = "event"
+    buffer_before_min: int = Field(0, ge=0, le=240)
+    buffer_after_min: int = Field(0, ge=0, le=240)
+    is_bookable: bool = True
+    terminology_profile: Optional[TerminologyProfile] = None
+
+    @model_validator(mode="after")
+    def _validate_resource_shape(self) -> "ServiceCreate":
+        reject_resource_group_combo(self.service_type, self.booking_mode)
+        if self.booking_mode == "resource" and not (1 <= self.duration_min <= 1440):
+            raise ValueError("длительность resource-услуги должна быть от 1 до 1440 минут")
+        return self
 
 
 class ServiceUpdate(BaseSchema):
@@ -130,6 +155,11 @@ class ServiceUpdate(BaseSchema):
     service_type: Optional[str] = None
     color: Optional[str] = None
     max_clients: Optional[int] = None
+    booking_mode: Optional[ServiceBookingMode] = None
+    buffer_before_min: Optional[int] = Field(None, ge=0, le=240)
+    buffer_after_min: Optional[int] = Field(None, ge=0, le=240)
+    is_bookable: Optional[bool] = None
+    terminology_profile: Optional[TerminologyProfile] = None
 
 
 class ServiceWeekSlot(BaseSchema):

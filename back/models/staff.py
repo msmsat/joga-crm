@@ -1,6 +1,10 @@
-from datetime import date as date_type
+from datetime import date as date_type, datetime
+from typing import Optional
 
-from sqlalchemy import Integer, String, Boolean, Date, ForeignKey, UniqueConstraint
+from sqlalchemy import (
+    CheckConstraint, DateTime, Index, Integer, String, Boolean, Date, ForeignKey,
+    UniqueConstraint,
+)
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base import Base
@@ -47,3 +51,44 @@ class StaffDayOverride(Base):
     studio_id: Mapped[int] = mapped_column(ForeignKey("studios.id", ondelete="CASCADE"), index=True)
     day: Mapped[date_type] = mapped_column(Date)
     is_working: Mapped[bool] = mapped_column(Boolean, default=True)
+
+
+class StaffBranchAssignment(Base):
+    """К каким филиалам привязан сотрудник для Resource-записи (HB-05+).
+
+    Нет строки — нет Resource-доступности сотрудника в этом филиале.
+    Принадлежность НЕ выводится из последней брони/занятия — только из
+    явного назначения владельца (docs/EPIC_HYBRID_BOOKING_IMPLEMENTATION.md §4.3).
+    """
+
+    __tablename__ = "staff_branch_assignments"
+    __table_args__ = (
+        UniqueConstraint("studio_id", "user_id", "branch_id", name="uq_staff_branch_assignment"),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    studio_id: Mapped[int] = mapped_column(ForeignKey("studios.id", ondelete="CASCADE"), index=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    branch_id: Mapped[int] = mapped_column(ForeignKey("studio_branches.id", ondelete="CASCADE"), index=True)
+
+
+class StaffBusyInterval(Base):
+    """Перерыв/отсутствие сотрудника — интервал, который HB-05/08 вычитают
+    из Resource-доступности. Клиентских данных не содержит (§6.1).
+    """
+
+    __tablename__ = "staff_busy_intervals"
+    __table_args__ = (
+        CheckConstraint("end_time > start_time", name="check_staff_busy_interval_positive"),
+        Index("ix_staff_busy_interval_studio_user_start", "studio_id", "user_id", "start_time"),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    studio_id: Mapped[int] = mapped_column(ForeignKey("studios.id", ondelete="CASCADE"), index=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    # Местное время сотрудника/студии со снимком зоны — тот же контракт, что
+    # у Lesson.start_time/tz_iana (services/lesson_time), не UTC.
+    start_time: Mapped[datetime] = mapped_column(DateTime(timezone=False))
+    end_time: Mapped[datetime] = mapped_column(DateTime(timezone=False))
+    tz_iana: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
+    reason: Mapped[Optional[str]] = mapped_column(String(200), nullable=True)

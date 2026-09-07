@@ -1,5 +1,5 @@
 from typing import List, Optional
-from sqlalchemy import Integer, String
+from sqlalchemy import Boolean, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base import Base
@@ -80,6 +80,26 @@ class Studio(Base):
     first_day_of_week: Mapped[Optional[str]] = mapped_column(String(10), nullable=True)
 
     journal_time_step: Mapped[int] = mapped_column(Integer, default=15)
+
+    # Гибридная запись (HB-01+, docs/EPIC_HYBRID_BOOKING_IMPLEMENTATION.md §6.1).
+    # event — только группы по расписанию (сегодняшнее поведение и дефолт
+    # старой/новой студии); resource — только услуги по свободному времени
+    # специалиста; hybrid — оба сразу. Управляет каталогом; сама механика
+    # записи решается по этому полю, а не по названию/направлению бизнеса.
+    booking_mode: Mapped[str] = mapped_column(String(16), default="event", server_default="event")
+    # Пресет отраслевых терминов интерфейса (generic/fitness/beauty) —
+    # готовый набор фраз (services/terminology.py, HB-14), не алгоритм
+    # словоизменения и не парсинг business_subtype.
+    terminology_profile: Mapped[str] = mapped_column(String(16), default="generic", server_default="generic")
+    # Растёт при сохранении любых настроек, влияющих на условия записи.
+    # Клиентский провайдер (front/miniapp, HB-16) сверяет её, чтобы не
+    # показать устаревшие условия из кэша после смены студии/языка/режима.
+    booking_config_version: Mapped[int] = mapped_column(Integer, default=1, server_default="1")
+    # Строгая занятость: единый Studio-lock и запрет пересечений специалиста/
+    # зала (services/schedule_guard.py, HB-06). Обязательное условие для
+    # resource/hybrid; после появления resource-интервалов автоматически не
+    # выключается — иначе уже выданные интервалы остались бы без защиты.
+    strict_schedule_enabled: Mapped[bool] = mapped_column(Boolean, default=False, server_default="false")
 
     # Core
     branches: Mapped[List["StudioBranch"]] = relationship(back_populates="studio", cascade="all, delete-orphan")

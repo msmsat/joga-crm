@@ -8,6 +8,7 @@ from .identity import CustomerIdentity
 from .proposal import ActionProposal
 from .schedule import Hall, Lesson, Reservation
 from .service import Service, ServiceScheduleSlot
+from .booking_quote import BookingQuote
 from .settings import (
     StudioWorkingHours,
     StudioNotificationSettings,
@@ -31,7 +32,7 @@ from .settings import (
     UserSession,
     StudioIntegration,
 )
-from .staff import StaffWorkingHours, StaffDayOverride
+from .staff import StaffWorkingHours, StaffDayOverride, StaffBranchAssignment, StaffBusyInterval
 from .finances import (
     Account,
     Operation,
@@ -88,6 +89,7 @@ __all__ = [
     "Reservation",
     "Service",
     "ServiceScheduleSlot",
+    "BookingQuote",
     "StudioWorkingHours",
     "StudioNotificationSettings",
     "NotificationEventToggle",
@@ -105,6 +107,8 @@ __all__ = [
     "StudioIntegration",
     "StaffWorkingHours",
     "StaffDayOverride",
+    "StaffBranchAssignment",
+    "StaffBusyInterval",
     "Account",
     "Operation",
     "Counterparty",

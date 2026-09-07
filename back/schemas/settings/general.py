@@ -3,6 +3,18 @@ from typing import Literal, Optional
 from pydantic import EmailStr, Field, field_validator
 
 from schemas._base import BaseSchema
+from schemas.schedule.hybrid import BookingCapabilities, BookingMode, TerminologyProfile
+
+
+def _default_booking_capabilities() -> BookingCapabilities:
+    """Заведомо переопределяется роутером (`model_copy`, как `miniapp_url` в
+    schemas/settings/booking.py) — нужен только, чтобы `model_validate(studio)`
+    не падал на required-поле, которого нет как атрибута у ORM-объекта.
+    Значения совпадают с дефолтом свежей студии (models/studio.py)."""
+    return BookingCapabilities(
+        booking_mode="event", terminology_profile="generic",
+        booking_config_version=1, strict_schedule_enabled=False,
+    )
 
 # Три списка ниже 1-в-1 совпадают с components/UI.tsx (CURRENCIES/LANGUAGES/
 # TIMEZONES) — тем же онбординг заполняет Studio при регистрации, и Настройки
@@ -57,6 +69,10 @@ class GeneralRead(BaseSchema):
     date_format: Optional[str] = None
     first_day_of_week: Optional[str] = None
     journal_time_step: int
+    # Безопасный блок: какие сценарии записи доступны студии сейчас. Нужен
+    # всем ролям одинаково (админ и тренер видят Журнал и обязаны понимать,
+    # event ли перед ними занятие или resource) — HB-14/16.
+    booking_capabilities: BookingCapabilities = Field(default_factory=_default_booking_capabilities)
 
 
 class GeneralReadPublic(BaseSchema):
@@ -70,6 +86,7 @@ class GeneralReadPublic(BaseSchema):
     date_format: Optional[str] = None
     first_day_of_week: Optional[str] = None
     journal_time_step: int
+    booking_capabilities: BookingCapabilities = Field(default_factory=_default_booking_capabilities)
 
 
 class GeneralUpdate(BaseSchema):
@@ -122,6 +139,12 @@ class GeneralUpdate(BaseSchema):
     first_day_of_week: Optional[FirstDayOfWeek] = None
     timezone: Optional[Timezone] = None
     journal_time_step: Optional[JournalTimeStep] = None
+    # HB-03: режим записи и отраслевой пресет. `booking_mode` пока
+    # ПРИНИМАЕТ только "event" на сервере (routers/settings/general.py) —
+    # resource/hybrid ждут HB-07/HB-24; тип здесь шире сознательно, чтобы
+    # владелец получал понятную 409, а не 422 "невозможное значение".
+    booking_mode: Optional[BookingMode] = None
+    terminology_profile: Optional[TerminologyProfile] = None
 
     @field_validator("country")
     @classmethod

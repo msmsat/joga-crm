@@ -11,14 +11,16 @@ from sqlalchemy.orm import selectinload
 from database import get_db
 from dependencies import require_role, StudioContext
 from models import (
-    Hall, Lesson, Reservation, StaffDayOverride, StaffWorkingHours, StudioMember, User,
+    Hall, Lesson, Reservation, StaffBusyInterval, StaffDayOverride, StaffWorkingHours,
+    StudioMember, User,
 )
 from schemas import (
     StaffWeekScheduleResponse, StaffMonthScheduleResponse,
     StaffTodayScheduleResponse, StaffCancelLessonResponse,
     StaffDayOverrideItem, StaffDayOverrideRequest,
 )
-from services import booking
+from schemas.staff.staff import StaffBusyIntervalCreate, StaffBusyIntervalItem
+from services import booking, schedule_guard
 
 router = APIRouter()
 
@@ -230,6 +232,8 @@ async def set_day_override(
 ):
     """Отметить дату как рабочую/выходную. `is_working=null` — снять отметку."""
     studio_id = ctx.studio_id
+    # HB-06: замок студии — до любой правки графика (§6.2 п.5).
+    studio = await schedule_guard.lock_studio(db, studio_id)
     await _assert_staff_in_studio(staff_id, studio_id, db)
 
     try:
@@ -271,10 +275,101 @@ async def set_day_override(
             is_working=payload.is_working,
         ))
 
+    if payload.is_working is False:
+        # Закрытие дня может обрезать доступность НИЖЕ уже принятой
+        # resource-записи (§6.2 п.5) — открытие дня такой риск не несёт.
+        await db.flush()
+        conflicts = await schedule_guard.assert_future_assignments_valid(
+            db, studio, user_id=staff_id)
+        schedule_guard.raise_if_conflicts(conflicts)
+
     await db.commit()
 
     # is_working в ответе — то, что отметил владелец; null означает «по графику».
     return {"date": day.isoformat(), "is_working": bool(payload.is_working)}
+
+
+# ─── /staff/{staff_id}/schedule/busy — перерывы/отсутствия (HB-05) ───────────
+#
+# Отдельный CRUD, а не поле карточки сотрудника: интервалов у человека может
+# быть много и на разные даты, это расписание, а не профиль. Читает и меняет
+# `services/resource_hours.available_intervals` (HB-08 добавит поверх учёт
+# уже поставленных Lesson — здесь только собственная занятость специалиста).
+
+@router.get("/{staff_id}/schedule/busy", response_model=list[StaffBusyIntervalItem])
+async def list_busy_intervals(
+    staff_id: int,
+    date_from: Optional[date] = Query(default=None),
+    date_to: Optional[date] = Query(default=None),
+    ctx: StudioContext = Depends(require_role("owner")),
+    db: AsyncSession = Depends(get_db),
+):
+    studio_id = ctx.studio_id
+    await _assert_staff_in_studio(staff_id, studio_id, db)
+
+    conditions = [
+        StaffBusyInterval.user_id == staff_id,
+        StaffBusyInterval.studio_id == studio_id,
+    ]
+    if date_from is not None:
+        conditions.append(StaffBusyInterval.end_time > datetime.combine(date_from, datetime.min.time()))
+    if date_to is not None:
+        conditions.append(StaffBusyInterval.start_time < datetime.combine(date_to, datetime.min.time()) + timedelta(days=1))
+
+    rows = (await db.execute(
+        select(StaffBusyInterval).where(*conditions).order_by(StaffBusyInterval.start_time)
+    )).scalars().all()
+    return rows
+
+
+@router.post("/{staff_id}/schedule/busy", status_code=201, response_model=StaffBusyIntervalItem)
+async def create_busy_interval(
+    staff_id: int,
+    payload: StaffBusyIntervalCreate,
+    ctx: StudioContext = Depends(require_role("owner")),
+    db: AsyncSession = Depends(get_db),
+):
+    studio_id = ctx.studio_id
+    studio = await schedule_guard.lock_studio(db, studio_id)
+    await _assert_staff_in_studio(staff_id, studio_id, db)
+
+    row = StaffBusyInterval(
+        user_id=staff_id, studio_id=studio_id,
+        start_time=payload.start_time, end_time=payload.end_time,
+        reason=payload.reason,
+    )
+    db.add(row)
+    await db.flush()
+    conflicts = await schedule_guard.assert_future_assignments_valid(db, studio, user_id=staff_id)
+    schedule_guard.raise_if_conflicts(conflicts)
+    await db.commit()
+    await db.refresh(row)
+    return row
+
+
+@router.delete("/{staff_id}/schedule/busy/{interval_id}", response_model=dict)
+async def delete_busy_interval(
+    staff_id: int,
+    interval_id: int,
+    ctx: StudioContext = Depends(require_role("owner")),
+    db: AsyncSession = Depends(get_db),
+):
+    studio_id = ctx.studio_id
+    await _assert_staff_in_studio(staff_id, studio_id, db)
+
+    row = (await db.execute(
+        select(StaffBusyInterval).where(
+            StaffBusyInterval.id == interval_id,
+            StaffBusyInterval.user_id == staff_id,
+            StaffBusyInterval.studio_id == studio_id,
+        )
+    )).scalar_one_or_none()
+    if row is None:
+        raise HTTPException(status_code=404, detail="Интервал не найден")
+
+    await db.delete(row)
+    await db.commit()
+    return {"ok": True}
 
 
 # ─── GET /staff/{staff_id}/schedule/today ─────────────────────────────────────

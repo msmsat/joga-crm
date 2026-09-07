@@ -19,6 +19,7 @@ from models import (
     StudioBranch, SubscriptionPackage,
 )
 from schemas._base import BaseSchema
+from schemas.schedule.hybrid import BookingCapabilities
 from services.booking_rules import load_rules
 from services.notifier import _fmt_amount
 from services.pricing import resolve_price
@@ -82,6 +83,10 @@ class ServiceInfo(BaseSchema):
     price_str: str
     duration_min: int
     color: Optional[str]
+    # HB-03/04: механика записи услуги — MA-01 использует её, чтобы в hybrid-
+    # студии разделить предложения на event/resource, а не по service_type
+    # или имени.
+    booking_mode: str = "event"
 
 
 class PackageInfo(BaseSchema):
@@ -108,6 +113,9 @@ class StudioCatalog(BaseSchema):
     services: list[ServiceInfo]
     packages: list[PackageInfo]
     can_pay_online: bool
+    # Безопасный блок §6.4 — тот же тип, что и в CRM (routers/settings/general.py),
+    # один источник формы данных для обеих поверхностей.
+    booking_capabilities: BookingCapabilities
 
 
 def _discount_label(base_price: int, final_price: int) -> Optional[str]:
@@ -308,6 +316,7 @@ async def get_studio_catalog(
                 price_str=_fmt_amount(service.price, currency),
                 duration_min=service.duration_min,
                 color=service.color,
+                booking_mode=service.booking_mode,
             )
             for service in services
         ],
@@ -326,4 +335,10 @@ async def get_studio_catalog(
             for package in packages
         ],
         can_pay_online=can_pay_online,
+        booking_capabilities=BookingCapabilities(
+            booking_mode=studio.booking_mode,
+            terminology_profile=studio.terminology_profile,
+            booking_config_version=studio.booking_config_version,
+            strict_schedule_enabled=studio.strict_schedule_enabled,
+        ),
     )

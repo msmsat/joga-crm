@@ -57,18 +57,27 @@ OCCUPIES_SPOT = Reservation.status != "cancelled"
 
 
 def visible_lessons(studio_id: int, day_from: datetime, day_to: datetime) -> list:
-    """Условия «занятие видно клиенту» — общие для витрины и каталога.
+    """Условия «занятие видно клиенту как выбираемое событие» — общие для
+    витрины и каталога (и, через `catalog.lessons`, для поиска ассистента —
+    services/search_resolver.py).
 
     Ровно то, что фильтрует расписание мини-приложения, и ничего сверх:
     отменённое занятие не показываем, остальное показываем. Отдельного
     «скрыто / не опубликовано» в продукте нет, и выдумывать его здесь нельзя —
     каталог обязан показывать то же, что клиент видит своими глазами.
 
+    HB-04: resource-занятие (техническое occasion под одну confirm-транзакцию,
+    HB-10) сюда не входит — оно не «одно из группы, куда можно записаться ещё
+    раз», а приватный интервал уже существующей брони. Его наличие видно в
+    личной истории клиента (`/lessons/my`, отдельный запрос без этого фильтра)
+    и в Журнале, но не в списке «выбери событие» (§6.1, докстринг задачи HB-04).
+
     Границы — СТЕННОЕ время студии, полуоткрытый интервал [from, to).
     """
     return [
         Lesson.studio_id == studio_id,
         Lesson.status != "cancelled",
+        Lesson.booking_mode != "resource",
         Lesson.start_time >= day_from,
         Lesson.start_time < day_to,
     ]
@@ -263,13 +272,20 @@ class LessonFacts:
     """Занятие как факт — без единой оценки и без единого придуманного поля."""
     lesson_id: int
     studio_id: int
-    # None — у занятия нет зала, а значит и филиала. Не «главный», а неизвестно.
+    # Источник — Lesson.branch_id (HB-02), НЕ Hall.branch_id: у resource-занятия
+    # филиал обязателен, а зала может не быть вовсе (§6.1, AC-29). Для старого
+    # event с залом оба значения совпадают — их синхронизирует миграция HB-02
+    # и CHECK-ограничение модели. None — у занятия нет зала и филиал не
+    # подтверждён (hall-less история); не «главный», а неизвестно.
     branch_id: Optional[int]
     hall_id: Optional[int]
     # None — наследие: занятия заводились до того, как услуга стала обязательной.
     service_id: Optional[int]
     # `users.id`. None — занятие без тренера (наследие).
     trainer_id: Optional[int]
+    # HB-02/03: снимок механики (event/resource) и подтверждённая зона занятия.
+    booking_mode: str
+    tz_iana: Optional[str]
 
     # Подпись занятия, как её видит клиент: снимок названия услуги на момент
     # создания. Для поиска по смыслу брать service_id, не эту строку.
@@ -328,15 +344,10 @@ async def lessons(db: AsyncSession, query: LessonQuery) -> list[LessonFacts]:
     if query.trainer_ids:
         conditions.append(Lesson.teacher_id.in_(_ids(query.trainer_ids, "trainer_ids")))
     if query.branch_ids:
-        # Филиал занятия живёт на зале, а не на занятии, — поэтому подзапрос по
-        # залам. Условие по studio_id внутри обязательно: без него филиал чужой
-        # студии дотянулся бы до наших занятий через собственные залы.
-        conditions.append(Lesson.hall_id.in_(
-            select(Hall.id).where(
-                Hall.studio_id == query.studio_id,
-                Hall.branch_id.in_(_ids(query.branch_ids, "branch_ids")),
-            )
-        ))
+        # HB-04: фильтр по Lesson.branch_id напрямую, не через зал — иначе
+        # resource-занятие без зала (branch_id есть, hall_id нет, AC-29)
+        # молча выпадало бы из отбора по филиалу.
+        conditions.append(Lesson.branch_id.in_(_ids(query.branch_ids, "branch_ids")))
 
     # Связанные сущности приезжают ОДНИМ запросом — иначе сотня занятий
     # означала бы сотню походов за тренером и сотню за залом. Все четыре
@@ -345,7 +356,10 @@ async def lessons(db: AsyncSession, query: LessonQuery) -> list[LessonFacts]:
     rows = (await db.execute(
         select(Lesson, Hall, StudioBranch, Service, StudioMember)
         .outerjoin(Hall, (Hall.id == Lesson.hall_id) & (Hall.studio_id == query.studio_id))
-        .outerjoin(StudioBranch, (StudioBranch.id == Hall.branch_id)
+        # Филиал — по Lesson.branch_id (HB-02), не по Hall.branch_id: у старого
+        # event с залом они синхронизированы, а resource без зала иначе
+        # остался бы без имени филиала при живом branch_id.
+        .outerjoin(StudioBranch, (StudioBranch.id == Lesson.branch_id)
                    & (StudioBranch.studio_id == query.studio_id))
         .outerjoin(Service, (Service.id == Lesson.service_id)
                    & (Service.studio_id == query.studio_id))
@@ -371,10 +385,17 @@ def _facts(row, taken: dict[int, list[int]]) -> LessonFacts:
     return LessonFacts(
         lesson_id=lesson.id,
         studio_id=lesson.studio_id,
+        # Из ДЖОЙНА, не из сырой колонки: сам join уже проверяет
+        # StudioBranch.studio_id == query.studio_id (см. lessons() выше). Так
+        # чужой branch_id, оказавшийся в строке в обход единственного
+        # писателя (тест test_catalog._hostile), не просочится наружу —
+        # прочитать его отсюда честно нечем, а не "мы ему верим".
         branch_id=branch.id if branch is not None else None,
         hall_id=hall.id if hall is not None else None,
         service_id=service.id if service is not None else None,
         trainer_id=lesson.teacher_id,
+        booking_mode=lesson.booking_mode,
+        tz_iana=lesson.tz_iana,
         display_name=lesson.name,
         service_name=service.name if service is not None else None,
         # Подпись с членства, если человек ещё в студии; иначе — снимок,

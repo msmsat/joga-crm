@@ -20,6 +20,11 @@ class _User:
     id = 1
 
 
+class _Studio:
+    """HB-06: `schedule_guard.lock_studio` — первый SELECT в create/update_lesson."""
+    strict_schedule_enabled = False
+
+
 class _Member:
     def __init__(self, role, name="Sad", last_name="Mat"):
         self.role = role
@@ -99,20 +104,20 @@ def _create_body(teacher_id=2):
 
 
 def test_create_on_owner_rejected():
-    db = _DB([_Member(role="owner")])
+    db = _DB([_Studio(), _Member(role="owner")])  # lock_studio, затем роль
     _expect_400(L.create_lesson(_create_body(), _ctx(), db), "не тренер")
     assert db.committed is False
 
 
 def test_create_on_admin_rejected():
-    db = _DB([_Member(role="admin")])
+    db = _DB([_Studio(), _Member(role="admin")])  # lock_studio, затем роль
     _expect_400(L.create_lesson(_create_body(), _ctx(), db), "не тренер")
     assert db.committed is False
 
 
 def test_create_on_trainer_passes_role_check():
     """Роль подходит — проверка пропускает дальше (падаем уже на услуге)."""
-    db = _DB([_Member(role="trainer"), None])  # услуги в фейковой студии нет → 404
+    db = _DB([_Studio(), _Member(role="trainer"), None])  # lock_studio, роль ok, услуги в фейковой студии нет → 404
     try:
         asyncio.run(L.create_lesson(_create_body(), _ctx(), db))
         raise AssertionError("ожидали 404 (услуга не найдена)")
@@ -121,7 +126,7 @@ def test_create_on_trainer_passes_role_check():
 
 
 def test_update_teacher_to_owner_rejected():
-    db = _DB([_Lesson(), _Member(role="owner")])  # get_scoped_lesson, затем проверка роли
+    db = _DB([_Studio(), _Lesson(), _Member(role="owner")])  # lock_studio, get_scoped_lesson, затем проверка роли
     _expect_400(L.update_lesson(1, LessonUpdateRequest(teacher_id=2), _ctx(), db), "не тренер")
     assert db.committed is False
 

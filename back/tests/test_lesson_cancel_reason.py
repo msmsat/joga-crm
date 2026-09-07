@@ -17,6 +17,11 @@ class _User:
     id = 1
 
 
+class _Studio:
+    """HB-06: `schedule_guard.lock_studio` — первый SELECT в update_lesson."""
+    strict_schedule_enabled = False
+
+
 class _Lesson:
     def __init__(self, start_time, status="confirmed"):
         self.id = 1
@@ -35,6 +40,11 @@ class _Lesson:
         self.service_id = None
         self.cancel_reason = None
         self.clients_notified = False
+        # HB-04: новые поля Lesson (branch_id/booking_mode/tz_iana, HB-02) —
+        # фейковый объект должен нести их, как реальная ORM-модель.
+        self.branch_id = None
+        self.booking_mode = "event"
+        self.tz_iana = None
 
 
 class _R:
@@ -105,7 +115,7 @@ def test_update_cancel_reason_only_bypasses_time_rule():
     """Занятие уже в прошлом/отменено — обычный PATCH был бы заблокирован (задача 1),
     но правка только cancel_reason разрешена явно (задача 1, п.4 + задача 2, п.3)."""
     lesson = _Lesson(start_time=datetime.now() - timedelta(hours=5), status="cancelled")
-    db = _DB([lesson, 0])  # get_scoped_lesson, затем _booked_count
+    db = _DB([_Studio(), lesson, 0])  # lock_studio, get_scoped_lesson, затем _booked_count
     body = LessonUpdateRequest(cancel_reason="Причина уточнена постфактум")
     result = asyncio.run(L.update_lesson(1, body, _ctx(), db))
     assert lesson.cancel_reason == "Причина уточнена постфактум"
@@ -117,7 +127,7 @@ def test_update_cancel_reason_plus_other_field_still_blocked_when_soon():
     """Если среди присланных полей есть что-то, кроме cancel_reason, — правило
     времени применяется как обычно (guard не должен пропускать лишнее)."""
     lesson = _Lesson(start_time=datetime.now() + timedelta(minutes=30))
-    db = _DB([lesson])
+    db = _DB([_Studio(), lesson])  # lock_studio, get_scoped_lesson
     body = LessonUpdateRequest(cancel_reason="x", price=100)
     try:
         asyncio.run(L.update_lesson(1, body, _ctx(), db))
