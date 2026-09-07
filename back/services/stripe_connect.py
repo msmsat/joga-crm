@@ -340,6 +340,24 @@ async def refunded_application_fee(charge_id: str, account_id: str) -> int:
     return int(getattr(application_fee, "amount_refunded", 0) or 0)
 
 
+async def expire_session(session_id: str, account_id: str):
+    """Закрыть открытую платёжную форму — ОПЕРАЦИЯ, а не факт.
+
+    Единственный способ отменить Checkout: платёжное намерение сессии Stripe
+    отменять запрещает (`POST /v1/checkout/sessions/:id/expire`). Просрочить
+    можно ТОЛЬКО сессию в статусе `open` — на `complete` и `expired` Stripe
+    отвечает ошибкой, и это правильный ответ: закрывать оплаченную форму нечем.
+
+    Ошибку НЕ глушим: вызывающий обязан различать «закрыли» и «не смогли». Наш
+    локальный таймер не доказывает, что денег не было, — доказывает только
+    ответ Stripe (services/booking_payment.sweep об этом же).
+    """
+    stripe_env.guard_write("закрытие платёжной формы студии")
+    return await asyncio.to_thread(
+        stripe.checkout.Session.expire, session_id, stripe_account=account_id,
+    )
+
+
 async def session_paid(session_id: str, account_id: str) -> bool:
     """Оплачена ли сессия — спрашиваем Stripe, фронту на слово не верим."""
     session = await asyncio.to_thread(

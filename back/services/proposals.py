@@ -29,7 +29,7 @@ from __future__ import annotations
 import logging
 import secrets
 from dataclasses import dataclass
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from enum import Enum
 from typing import Optional, Sequence
 
@@ -92,10 +92,26 @@ class Confirmed:
     reservation_id: Optional[int] = None
     status: Optional[str] = None
     terms: Optional[Terms] = None
+    # Карточка, которой досталась бронь. Берётся из ПРАВА, а не из предложения:
+    # оплату дальше заводят на неё, и подставить сюда чужую нельзя.
+    client_id: Optional[int] = None
 
 
 def _now() -> datetime:
     return datetime.utcnow()
+
+
+def _naive(moment: Optional[datetime]) -> datetime:
+    """Момент к виду, в котором его хранит БД: наивный UTC.
+
+    Колонки времени в проекте без зоны, и класть в них значение с зоной
+    asyncpg отказывается прямо на вставке. Приводим ОДИН раз на входе, а не в
+    каждом сравнении: забытое приведение здесь — падение на живом сообщении.
+    """
+    if moment is None:
+        return _now()
+    return (moment.astimezone(timezone.utc).replace(tzinfo=None)
+            if moment.tzinfo else moment)
 
 
 async def offer_booking(db: AsyncSession, *, studio_id: int, thread_id: int,
@@ -108,7 +124,7 @@ async def offer_booking(db: AsyncSession, *, studio_id: int, thread_id: int,
     слово «да» становится двусмысленным ровно тогда, когда цена ошибки — чужая
     бронь.
     """
-    moment = now or _now()
+    moment = _naive(now)
     await supersede(db, studio_id=studio_id, thread_id=thread_id)
     row = ActionProposal(
         studio_id=studio_id, thread_id=thread_id, identity_id=identity_id,
@@ -143,7 +159,7 @@ async def supersede(db: AsyncSession, *, studio_id: int, thread_id: int) -> int:
 async def live(db: AsyncSession, *, studio_id: int, thread_id: int,
                now: Optional[datetime] = None) -> list[ActionProposal]:
     """Живые предложения разговора — те, на которые «да» ещё что-то значит."""
-    moment = now or _now()
+    moment = _naive(now)
     return list((await db.execute(
         select(ActionProposal).where(
             ActionProposal.studio_id == studio_id,
@@ -155,23 +171,25 @@ async def live(db: AsyncSession, *, studio_id: int, thread_id: int,
 
 
 async def confirm_by_token(db: AsyncSession, *, studio_id: int, thread_id: int,
-                           token: str, now: Optional[datetime] = None) -> Confirmed:
+                           token: str, now: Optional[datetime] = None,
+                           allow_hold: bool = False) -> Confirmed:
     """Нажатая кнопка «Записаться». Модель на этом пути не участвует."""
     row = (await db.execute(
         select(ActionProposal).where(
             ActionProposal.token == token,
             ActionProposal.studio_id == studio_id,
             ActionProposal.thread_id == thread_id,
-        ).with_for_update()
+        ).with_for_update().execution_options(populate_existing=True)
     )).scalar_one_or_none()
     if row is None:
         # Чужая студия, чужой разговор, выдуманный токен — снаружи одно и то же.
         return Confirmed(ConfirmOutcome.UNKNOWN)
-    return await _execute(db, row, now=now)
+    return await _execute(db, row, now=now, allow_hold=allow_hold)
 
 
 async def confirm_only_live(db: AsyncSession, *, studio_id: int, thread_id: int,
-                            now: Optional[datetime] = None) -> Confirmed:
+                            now: Optional[datetime] = None,
+                            allow_hold: bool = False) -> Confirmed:
     """Согласие СЛОВОМ («да», «давай»). Работает, только если предложение одно.
 
     Двух живых предложений быть не должно (`offer_booking` гасит прежние), но
@@ -185,21 +203,38 @@ async def confirm_only_live(db: AsyncSession, *, studio_id: int, thread_id: int,
         logger.info("proposal_ambiguous studio_id=%s thread_id=%s count=%s",
                     studio_id, thread_id, len(rows))
         return Confirmed(ConfirmOutcome.AMBIGUOUS)
+    # `populate_existing` ОБЯЗАТЕЛЕН вместе с блокировкой. Строка уже загружена
+    # в эту же сессию запросом `live()` выше, и без него ORM вернёт объект из
+    # своей карты со СТАРЫМ статусом: строка блокируется, а решение
+    # принимается по устаревшему значению — два одновременных «да» оба видят
+    # предложение живым и оба заводят бронь. Тот же капкан и по той же причине,
+    # что в `stripe_pay.apply_paid`.
     locked = (await db.execute(
-        select(ActionProposal).where(ActionProposal.id == rows[0].id).with_for_update()
+        select(ActionProposal).where(ActionProposal.id == rows[0].id)
+        .with_for_update().execution_options(populate_existing=True)
     )).scalar_one()
-    return await _execute(db, locked, now=now)
+    return await _execute(db, locked, now=now, allow_hold=allow_hold)
 
 
 async def _execute(db: AsyncSession, row: ActionProposal, *,
-                   now: Optional[datetime]) -> Confirmed:
-    """Общий путь подтверждения. Строка уже заблокирована вызывающим."""
-    moment = now or _now()
+                   now: Optional[datetime], allow_hold: bool = False) -> Confirmed:
+    """Общий путь подтверждения. Строка уже заблокирована вызывающим.
+
+    `allow_hold` — можно ли держать место под оплату картой. Решает вызывающий
+    (агент смотрит на флаг раскатки `AGENT_PAYMENTS`), потому что решение это
+    про раскатку, а не про бизнес-правило: без него платное занятие честно
+    отвечает «нужна оплата», а не заводит бронь, которую нечем оплатить.
+    """
+    moment = _naive(now)
     if row.status != Status.PENDING.value:
         # Второй «да» на то же предложение. Не переигрываем: повторное нажатие
         # не должно завести вторую бронь.
+        # Второй «да» на то же предложение. Возвращаем СВОЮ бронь: ход выше
+        # переиздаёт по ней ссылку на оплату, если та ещё держится, — иначе
+        # оборванная оплата не имела бы способа возобновиться.
         return Confirmed(ConfirmOutcome.ALREADY_RESOLVED,
-                         reservation_id=row.created_reservation_id)
+                         reservation_id=row.created_reservation_id,
+                         client_id=row.client_id)
     if row.expires_at <= moment:
         row.status = Status.EXPIRED.value
         row.resolved_at = moment
@@ -227,7 +262,8 @@ async def _execute(db: AsyncSession, row: ActionProposal, *,
     shown = Terms.from_json(row.terms)
     result = await booking.create(
         db, studio_id=row.studio_id, client_id=client_id,
-        lesson_id=row.lesson_id, source="agent", shown=shown, now=now)
+        lesson_id=row.lesson_id, source="agent", shown=shown, now=now,
+        hold_for_payment=allow_hold)
     row.resolved_at = moment
     if result.outcome is not Outcome.OK:
         row.status = Status.FAILED.value
@@ -241,13 +277,13 @@ async def _execute(db: AsyncSession, row: ActionProposal, *,
     logger.info("proposal_confirmed studio_id=%s proposal_id=%s reservation_id=%s",
                 row.studio_id, row.id, result.reservation_id)
     return Confirmed(ConfirmOutcome.DONE, reservation_id=result.reservation_id,
-                     status=result.status, terms=result.terms)
+                     status=result.status, terms=result.terms, client_id=client_id)
 
 
 async def purge(db: AsyncSession, *, now: Optional[datetime] = None) -> int:
     """Пометить протухшие предложения. Работает НЕЗАВИСИМО от флага: живое
     предложение, которое некому закрыть, висит вечно."""
-    moment = now or _now()
+    moment = _naive(now)
     rows = (await db.execute(
         update(ActionProposal)
         .where(ActionProposal.status == Status.PENDING.value,

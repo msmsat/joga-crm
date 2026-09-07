@@ -26,9 +26,9 @@ from database import get_db
 from ratelimit import limiter
 from models import Client, ClientPayment, Hall, Lesson, Reservation, Studio
 from schemas._base import BaseSchema
-from services.booking_access import (
-    commit_reservation, coverage_gap, resolve_coverage, trial_applies,
-)
+from services import booking
+from services.booking_access import coverage_gap, trial_applies
+from services.booking_http import reject
 from services import catalog, lesson_time
 from services.booking_rules import (
     BookingRules, assert_bookable, booking_window, is_bookable, load_rules,
@@ -548,23 +548,19 @@ async def create_reservation(
     if not (1 <= body.spot_number <= lesson.total_spots):
         raise HTTPException(status_code=400, detail="Неверный номер места")
 
-    active = (await db.execute(
-        select(Reservation).where(
-            Reservation.lesson_id == body.lesson_id,
-            Reservation.status != "cancelled",
-        )
-    )).scalars().all()
-    if len(active) >= lesson.total_spots:
-        raise HTTPException(status_code=400, detail="Все места заняты")
-    if not rules.repeat_booking_allowed and any(r.client_id == client.id for r in active):
-        raise HTTPException(status_code=409, detail="Вы уже записаны на это занятие")
-    if any(r.spot_number == body.spot_number for r in active):
-        # Именно эта строка — плановый текст ошибки, уже понятный мини-приложению
-        # (см. блок 3 EPIC_MA_REAL_BACKEND, api/user.ts:156 показывает detail как есть).
-        raise HTTPException(status_code=409, detail="Це місце вже зайняте")
-
-    sub, is_trial = await resolve_coverage(db, client.id, lesson, rules)
-    if rules.prefill_on_booking and sub is None and not is_trial:
+    # ПЕРЕХОД ДЕЛАЕТ ДОМЕН (services/booking). Роутер остаётся тем, чем должен
+    # быть: авторизация клиента, разбор тела, свои слова в ответе и свои
+    # уведомления. Ёмкость, покрытие, подарок, дубль и списание — не его дело,
+    # и теперь их нельзя случайно посчитать здесь иначе, чем в Журнале.
+    #
+    # `allow_payment=True`: оплата на месте — это долг (`open_debt`), а не
+    # карта, и для мини-приложения она всегда была законным исходом.
+    result = await booking.create(
+        db, studio_id=client.studio_id, client_id=client.id,
+        lesson_id=body.lesson_id, source="telegram", spot_number=body.spot_number,
+        allow_payment=True,
+    )
+    if result.outcome is booking.Outcome.NO_FUNDING:
         # Текст свой, а не из assert_can_book (Журнал): там он обращён к
         # администратору («у клиента нет абонемента»), а читать его будет сам
         # клиент, и следующий его шаг — купить абонемент в этом же приложении.
@@ -582,41 +578,34 @@ async def create_reservation(
         else:
             detail = "Для записи нужен действующий абонемент — оформите его в профиле"
         raise HTTPException(status_code=402, detail=detail)
+    reject(result,
+           NO_CAPACITY=(400, "Все места заняты"),
+           ALREADY_BOOKED=(409, "Вы уже записаны на это занятие"),
+           # Плановый текст мини-приложения: фронт показывает detail как есть
+           # (api/user.ts:156). Меняя его, ломаем чужой интерфейс.
+           SPOT_TAKEN=(409, "Це місце вже зайняте"))
 
     # Оплата на месте — единственная запись, за которую студия ждёт наличные от
     # человека, которого пока не видела. Телефон обязателен именно здесь: без
     # него ни позвонить, ни написать, а бронь держит место в зале. 428 («нужно
     # предусловие») — по нему мини-приложение открывает шит с номером, а не
     # показывает ошибку записи: пользователю нечего исправлять в самой записи.
-    if sub is None and not is_trial and lesson.price > 0 and not client.phone:
+    if (result.terms.funding.kind is booking.FundingKind.PAY
+            and result.terms.funding.price > 0 and not client.phone):
+        await db.rollback()
         raise HTTPException(
             status_code=428,
             detail="Для записи с оплатой на месте нужен номер телефона",
         )
 
-    reservation = Reservation(
-        client_id=client.id,
-        lesson_id=body.lesson_id,
-        spot_number=body.spot_number,
-        status="pending" if rules.trainer_confirmation_required else "active",
-        booking_channel="telegram",
-        is_trial=is_trial,
-    )
-    db.add(reservation)
-    remaining = await charge_reservation(db, client.studio_id, reservation, sub)
-    # Абонемента нет и подарка нет — клиент платит в студии: долг заводится
-    # сразу, а не в момент визита. Так он виден клиенту в «Моих занятиях» ещё
-    # до занятия, а отмена по правилам студии снимает его вместе с бронью.
-    await open_debt(db, reservation, lesson)
     # Тот же реферальный триггер, что и у публичного виджета (booking/public.py):
     # друг, пришедший по ссылке из Telegram, записывается ИМЕННО здесь, и без
     # этого вызова пригласивший не получал бонус вовсе — самый частый путь был
     # единственным неподключённым.
     await fire_referral(db, client.studio_id, client.id, "first_visit", referred_name=client.name)
-    # Текст тот же, что у проверки выше: между ней и вставкой коврик мог занять
-    # второй клиент, и приложение обязано сказать об этом теми же словами.
-    await commit_reservation(db, conflict_detail="Це місце вже зайняте")
-    await db.refresh(reservation)
+    await db.commit()
+    reservation = await db.get(Reservation, result.reservation_id)
+    remaining = result.remaining
 
     # c1 «Запись подтверждена» уходит только за подтверждённой бронью: пока
     # студия не одобрила, подтверждать нечего. Клиент видит статус «ожидает» в
@@ -663,21 +652,14 @@ async def cancel_reservation(
 
     deadline_min = (await load_rules(db, client.studio_id)).cancellation_deadline_min
     studio = (await db.execute(select(Studio).where(Studio.id == client.studio_id))).scalar_one_or_none()
-    # «Не позднее чем за N минут» — это N ПРОШЕДШИХ минут. Разность стенного
-    # времени в ночь перевода стрелок дала бы на час больше или меньше, а часы
-    # процесса вообще не имеют отношения к студии (P1.2).
-    left = lesson_time.until(lesson, studio)
-    too_late = (left < timedelta(minutes=deadline_min) if left is not None
-                else lesson.start_time < lesson_time.local_now(studio) + timedelta(minutes=deadline_min))
-    if too_late:
-        raise HTTPException(
-            status_code=400,
-            detail=f"Отменить запись можно не позднее чем за {deadline_min} минут до начала",
-        )
-
-    reservation.status = "cancelled"
-    reservation.cancelled_at = datetime.now()
-    await refund_reservation(db, reservation)  # занятие возвращается на абонемент
+    # Окно отмены («не позднее чем за N минут») считает домен и считает по
+    # НАСТОЯЩЕМУ времени: разность стенного в ночь перевода стрелок даёт час
+    # лишний или недостающий, а часы процесса к студии отношения не имеют.
+    result = await booking.cancel(
+        db, studio_id=client.studio_id, reservation_id=reservation.id,
+        actor="client", client_id=client.id, by=booking.Actor.CLIENT)
+    reject(result, WINDOW_CLOSED=(
+        400, f"Отменить запись можно не позднее чем за {deadline_min} минут до начала"))
     await db.commit()
     await db.refresh(reservation)
 

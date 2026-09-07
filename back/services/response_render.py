@@ -28,7 +28,8 @@ from services import response_texts as T
 from services.i18n import pick, resolve
 from services.notifier import _MONTHS, _fmt_amount
 from services.response_plan import (
-    ActionKind, CopyIntent, PlanKind, ResponseAction, ResponseOption, ResponsePlan,
+    ActionKind, BookingTerms, CopyIntent, PlanKind, ResponseAction, ResponseOption,
+    ResponsePlan,
 )
 
 # Один и тот же смысл — одна и та же таблица. Отдельная ветка на каждый исход
@@ -52,6 +53,23 @@ _COPY: dict[CopyIntent, dict] = {
     CopyIntent.PERSONAL_BOOKINGS_NONE: T.PERSONAL_BOOKINGS_NONE,
     CopyIntent.PERSONAL_SUBSCRIPTION: T.PERSONAL_SUBSCRIPTION,
     CopyIntent.PERSONAL_SUBSCRIPTION_NONE: T.PERSONAL_SUBSCRIPTION_NONE,
+    CopyIntent.BOOKING_OFFER: T.BOOKING_OFFER,
+    CopyIntent.BOOKING_OFFER_APPROVAL: T.BOOKING_OFFER_APPROVAL,
+    CopyIntent.BOOKING_DONE: T.BOOKING_DONE,
+    CopyIntent.BOOKING_PENDING: T.BOOKING_PENDING,
+    CopyIntent.BOOKING_NO_CAPACITY: T.BOOKING_NO_CAPACITY,
+    CopyIntent.BOOKING_ALREADY: T.BOOKING_ALREADY,
+    CopyIntent.BOOKING_WINDOW_CLOSED: T.BOOKING_WINDOW_CLOSED,
+    CopyIntent.BOOKING_NO_FUNDING: T.BOOKING_NO_FUNDING,
+    CopyIntent.BOOKING_TERMS_CHANGED: T.BOOKING_TERMS_CHANGED,
+    CopyIntent.BOOKING_LESSON_GONE: T.BOOKING_LESSON_GONE,
+    CopyIntent.BOOKING_PAYMENT_REQUIRED: T.BOOKING_PAYMENT_REQUIRED,
+    CopyIntent.BOOKING_NOTHING_TO_CONFIRM: T.BOOKING_NOTHING_TO_CONFIRM,
+    CopyIntent.BOOKING_AMBIGUOUS: T.BOOKING_AMBIGUOUS,
+    CopyIntent.BOOKING_EXPIRED: T.BOOKING_EXPIRED,
+    CopyIntent.BOOKING_PAYMENT_OPEN: T.BOOKING_PAYMENT_OPEN,
+    CopyIntent.BOOKING_PAYMENT_PENDING: T.BOOKING_PAYMENT_PENDING,
+    CopyIntent.BOOKING_PAYMENT_EXPIRED: T.BOOKING_PAYMENT_EXPIRED,
     CopyIntent.CLARIFY_SERVICE: T.CLARIFY_SERVICE,
     CopyIntent.CLARIFY_TRAINER: T.CLARIFY_TRAINER,
     CopyIntent.CLARIFY_BRANCH: T.CLARIFY_BRANCH,
@@ -88,6 +106,7 @@ _CLARIFY = (CopyIntent.CLARIFY_SERVICE, CopyIntent.CLARIFY_TRAINER,
 _BUTTON = {
     ActionKind.SHOW_MORE: T.BUTTON_SHOW_MORE,
     ActionKind.RESET_SEARCH: T.BUTTON_RESET,
+    ActionKind.CONFIRM_BOOKING: T.BUTTON_CONFIRM_BOOKING,
 }
 
 # Каналы, где кнопок нет вовсе: там варианты нумеруются, и человек называет
@@ -180,6 +199,13 @@ def render(plan: ResponsePlan, *, lang: str, channel: str = "telegram") -> dict:
     buttons = _buttons(plan, lang, channel)
     if buttons:
         payload["options"] = buttons
+    if plan.payment_url:
+        # Оплата — ссылка, а не колбэк: платит человек на странице Stripe, и в
+        # чат это не возвращается. Каналы такую кнопку уже умеют
+        # (services/channels): Telegram рисует её, WhatsApp и Instagram
+        # дописывают адрес в текст — второй способ показать ссылку не нужен.
+        payload["button"] = {"text": pick(T.BUTTON_PAY, lang),
+                             "url": plan.payment_url}
     return payload
 
 
@@ -210,6 +236,8 @@ def fact_lines(facts, lang: str, *, copy: Optional[CopyIntent] = None) -> str:
         # Текст владельца — дословно. Ни сокращений, ни «улучшений»: это его
         # слова о своей студии, и дополнять их нам нечем.
         return "\n\n".join(f"{item.title}\n{item.text}" for item in facts.items)
+    if isinstance(facts, BookingTerms):
+        return _terms(facts.terms, lang)
     if isinstance(facts, P.BookingsFacts):
         return "\n\n".join(_booking(item, lang) for item in facts.items)
     if isinstance(facts, P.SubscriptionFacts):
@@ -219,6 +247,31 @@ def fact_lines(facts, lang: str, *, copy: Optional[CopyIntent] = None) -> str:
             return "\n".join(f"{i}. {n}" for i, n in enumerate(facts.names, start=1))
         return "\n".join(facts.names)
     raise TypeError(f"нечем показать факт: {type(facts).__name__}")
+
+
+def _terms(terms, lang: str) -> str:
+    """Условия записи словами. Каждое значение — из каталога и из домена.
+
+    Основание оплаты называется ЯВНО: «по абонементу» и «первое занятие в
+    подарок» это не одно и то же, и человек, соглашающийся на подарок, должен
+    видеть именно его.
+    """
+    from services.booking import FundingKind
+
+    head = f"{fmt_day(terms.local_start.date(), lang)}, {fmt_time(terms.local_start)}"
+    head = f"{head} · {terms.service_name}"
+    tail = [terms.trainer_name]
+    if terms.branch_name:
+        tail.append(terms.branch_name)
+    money = {
+        FundingKind.SUBSCRIPTION: lambda: pick(T.BOOKING_BY_SUBSCRIPTION, lang),
+        FundingKind.TRIAL: lambda: pick(T.BOOKING_BY_TRIAL, lang),
+        FundingKind.FREE: lambda: pick(T.BOOKING_BY_FREE, lang),
+        FundingKind.PAY: lambda: pick(T.BOOKING_BY_PAY, lang).format(
+            amount=fmt_amount(terms.funding.price, terms.funding.currency)),
+    }[terms.funding.kind]()
+    tail.append(money)
+    return f"{head}\n{' · '.join(t for t in tail if t)}"
 
 
 def _booking(item: P.BookingFact, lang: str) -> str:
@@ -315,7 +368,10 @@ def _buttons(plan: ResponsePlan, lang: str, channel: str) -> list[dict]:
                     "label": f"{option.ordinal}. {fmt_time(option.local_start)}"})
     for action in plan.actions:
         if action.kind in _BUTTON:
-            out.append({"action": action.kind.value, "ref": None,
+            # `ref` берём У ДЕЙСТВИЯ, а не подставляем None: «показать ещё» и
+            # «начать заново» ссылки не несут, а «записаться» несёт — и без неё
+            # кнопка приходит обратно без предложения, к которому относится.
+            out.append({"action": action.kind.value, "ref": action.ref,
                         "label": pick(_BUTTON[action.kind], lang)})
     return out
 

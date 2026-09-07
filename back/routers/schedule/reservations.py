@@ -11,14 +11,13 @@ from models import Client, ClientPayment, Reservation, Studio, User
 from routers.checkout.router import perform_pay
 from schemas.checkout import CheckoutPayRequest
 from schemas.schedule.reservations import ReservationCreate, ReservationPayRequest, ReservationRead
-from services.booking_access import (
-    assert_can_book, commit_reservation, next_free_spot, resolve_coverage,
-)
-from services.booking_rules import assert_staff_bookable, assert_staff_cancellable, load_rules
+from services import booking
+from services.booking_access import assert_can_book
+from services.booking_http import reject
+from services.booking_rules import assert_staff_bookable, load_rules
 from services.notifier import lesson_context, notify
 from services.subscription_charge import (
-    activate_pending_after_visit, charge_reservation, notify_subscription_remaining,
-    refund_reservation,
+    activate_pending_after_visit, notify_subscription_remaining,
 )
 
 router = APIRouter()
@@ -59,43 +58,31 @@ async def create_reservation(
     if client is None:
         raise HTTPException(status_code=404, detail="Клиент не найден")
 
-    spot = await next_free_spot(db, lesson)
-    if spot is None:
-        raise HTTPException(status_code=400, detail="Все места заняты")
-
-    duplicate = (await db.execute(
-        select(Reservation.id).where(
-            Reservation.client_id == body.client_id,
-            Reservation.lesson_id == body.lesson_id,
-            Reservation.status != "cancelled",
-        )
-    )).scalar_one_or_none()
-    if duplicate is not None:
-        raise HTTPException(status_code=409, detail="Клиент уже записан на это занятие")
-
-    # Пробное занятие снимает гейт абонемента: новичка, которому студия дарит
-    # первый визит, администратор обязан мочь записать — покупать ему пока
-    # нечего, а без этого «Первое занятие бесплатно» работало бы только онлайн.
-    rules = await load_rules(db, ctx.studio_id)
-    sub, is_trial = await resolve_coverage(db, body.client_id, lesson, rules)
-    if sub is None and not is_trial:
-        # Подходящего абонемента нет и подарок не положен — assert_can_book
-        # здесь всегда бросает; зовём её ради точной причины отказа («истекает
-        # раньше занятия» / «не подходит для этого занятия» / «нет абонемента»).
-        await assert_can_book(db, body.client_id, lesson)
-
-    reservation = Reservation(
-        client_id=body.client_id,
-        lesson_id=body.lesson_id,
-        spot_number=spot,
-        status="active",
-        booking_channel="manual",
-        is_trial=is_trial,
+    # ПЕРЕХОД ДЕЛАЕТ ДОМЕН. Роутер отвечает за право, разбор запроса и HTTP;
+    # что такое «мест нет», «уже записан» и «чем оплачено» — знает
+    # services/booking, и знает одинаково для Журнала, витрины и ассистента.
+    #
+    # actor=STAFF: окно самостоятельной записи к стойке не относится — его
+    # заменяет `assert_staff_bookable` выше. require_funding=True: Журнал
+    # записывает по абонементу либо по подарку, разовую продажу проводит касса.
+    result = await booking.create(
+        db, studio_id=ctx.studio_id, client_id=body.client_id,
+        lesson_id=body.lesson_id, source="manual",
+        actor=booking.Actor.STAFF, require_funding=True,
     )
-    db.add(reservation)
-    remaining = await charge_reservation(db, ctx.studio_id, reservation, sub)
-    await commit_reservation(db, conflict_detail="Это место только что заняли")
-    await db.refresh(reservation)
+    if result.outcome is booking.Outcome.NO_FUNDING:
+        # Причину отказа называем прежними словами: «истекает раньше занятия» /
+        # «не подходит для этого занятия» / «нет абонемента». Домен знает, что
+        # покрытия нет; за формулировкой идём туда же, куда и раньше.
+        await assert_can_book(db, body.client_id, lesson)
+    reject(result,
+           NO_CAPACITY=(400, "Все места заняты"),
+           ALREADY_BOOKED=(409, "Клиент уже записан на это занятие"),
+           SPOT_TAKEN=(409, "Это место только что заняли"),
+           WINDOW_CLOSED=(400, "Занятие уже закончилось — записать на него нельзя"))
+    await db.commit()
+    reservation = await db.get(Reservation, result.reservation_id)
+    remaining = result.remaining
 
     client_full_name = f"{client.name} {client.last_name or ''}".strip()
     lesson_ctx = await lesson_context(db, lesson)
@@ -153,12 +140,11 @@ async def cancel_reservation(
     # уходят, и теперь это выбор, а не следствие запрета: снял клиента сам
     # администратор — рассказывать администратору о его же действии незачем.
     # Их живой путь — отмена клиентом из мини-приложения (miniapp_lessons.py).
-    studio = await db.get(Studio, ctx.studio_id)
-    assert_staff_cancellable(reservation, lesson, studio)
-
-    reservation.status = "cancelled"
-    reservation.cancelled_at = datetime.now()
-    await refund_reservation(db, reservation)  # занятие возвращается на абонемент
+    result = await booking.cancel(
+        db, studio_id=ctx.studio_id, reservation_id=reservation_id,
+        actor=f"staff:{ctx.role}", by=booking.Actor.STAFF)
+    reject(result, ALREADY_CANCELLED=(409, "Запись уже отменена"),
+           WINDOW_CLOSED=(400, "Занятие уже закончилось — снять с него нельзя"))
     await db.commit()
     await db.refresh(reservation)
 
@@ -205,7 +191,13 @@ async def confirm_reservation(
         raise HTTPException(status_code=409, detail="Запись отменена")
 
     if reservation.status == "pending":
-        reservation.status = "active"
+        # Подтверждение — тоже переход домена: он же перечитывает, живо ли
+        # занятие и жив ли клиент (решение приходит через минуты и часы).
+        result = await booking.approve(
+            db, studio_id=ctx.studio_id, reservation_id=reservation_id,
+            actor=f"staff:{ctx.role}")
+        reject(result, LESSON_UNAVAILABLE=(409, "Занятие отменено"),
+               ALREADY_CANCELLED=(409, "Запись отменена"))
         await db.commit()
         await db.refresh(reservation)
 

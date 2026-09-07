@@ -70,7 +70,13 @@ class Reservation(Base):
     # pending — «Подтверждение тренером» в правилах записи: место уже держится,
     # решение студии ещё нет (routers/booking/miniapp_lessons.create_reservation).
     __table_args__ = (
-        CheckConstraint("status IN ('active', 'pending', 'cancelled', 'attended')", name="check_reservation_status"),
+        # hold — место держится под НЕОПЛАЧЕННУЮ бронь (P4). Ёмкость оно
+        # занимает (иначе последнее место продадут второму, пока первый
+        # платит), подтверждённой записью НЕ является, посещением стать не
+        # может: сперва деньги, потом визит.
+        CheckConstraint(
+            "status IN ('active', 'pending', 'hold', 'cancelled', 'attended')",
+            name="check_reservation_status"),
         # Один коврик — один человек. Частичный: отменённые брони копятся на том
         # же месте, и без условия вторая запись на освободившийся коврик была бы
         # невозможна. Проверка «место свободно» в роутерах остаётся ради внятной

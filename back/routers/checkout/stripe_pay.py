@@ -39,7 +39,7 @@ from schemas.checkout import (
     CheckoutConfirmRequest, CheckoutConfirmResult, CheckoutPayRequest, CheckoutSessionResult,
 )
 from routers.clients.subscriptions import attach_subscription
-from services import platform_fee, stripe_connect
+from services import booking_payment, platform_fee, stripe_connect, stripe_env
 from services.notifier import notify_payment
 
 from .router import _get_client_package, _quote, consume_quote, perform_pay, reject_dead_promo, resolve_account
@@ -552,7 +552,46 @@ async def apply_paid(
     # пометка, заявка снова pending и повтор сработает.
     checkout.status = "paid"
     try:
-        if checkout.user_id is None:
+        if booking_payment.is_booking(checkout):
+            # Оплата ЗАНЯТИЯ (P4): место держится статусом `hold`, деньги
+            # переводят его в запись, а доход уходит в Финансы тем же движком,
+            # что и продажа занятия за наличные (`perform_pay`). Всё это —
+            # ОДНОЙ транзакцией: оплаченная запись без дохода и доход без
+            # записи одинаково неприемлемы, а падение между ними возможно
+            # ровно тогда, когда их разделили на два коммита.
+            settled = await booking_payment.settle(db, checkout)
+            if settled is booking_payment.Settlement.ALREADY:
+                # Бронь стала записью не от этих денег: место отдали иначе
+                # (студия подтвердила заявку, администратор отметил приход).
+                # Оставить оплату себе молча нельзя — это возврат.
+                raise HTTPException(status_code=409, detail={
+                    "code": "checkout.booking_already_granted",
+                    "message": "Место уже отдано без этой оплаты — нужен возврат",
+                })
+            if settled is booking_payment.Settlement.MISMATCH:
+                raise HTTPException(status_code=400, detail={
+                    "code": "checkout.booking_mismatch",
+                    "message": "Оплата не соответствует брони — нужен разбор",
+                })
+            if settled is booking_payment.Settlement.DUPLICATE:
+                # За одну бронь заплачено дважды. Впитать второй платёж в ту же
+                # запись нельзя — это молча оставленные себе чужие деньги.
+                raise HTTPException(status_code=409, detail={
+                    "code": "checkout.booking_duplicate_payment",
+                    "message": "Повторная оплата той же брони — нужен возврат",
+                })
+            if settled is booking_payment.Settlement.UNFULFILLABLE:
+                # Деньги пришли за бронь, которую уже не исполнить (занятие
+                # отменили, бронь сняли). Молча «активировать» нечего, и молча
+                # забыть тоже: заявка уходит в разбор с возвратом.
+                raise HTTPException(status_code=409, detail={
+                    "code": "checkout.booking_unfulfillable",
+                    "message": "Занятие недоступно — оплату нужно вернуть",
+                })
+            # Доход и коммит — внутри: `perform_pay` закрывает транзакцию сам,
+            # и закрывает её вместе с переводом брони, сделанным выше.
+            await booking_payment.record_income(db, checkout)
+        elif checkout.user_id is None:
             # Заявка мини-приложения: клиент купил абонемент сам, не через
             # кассу — своя проводка, а не CheckoutPayRequest кассира.
             await _apply_client_subscription_purchase(db, checkout)
@@ -685,6 +724,18 @@ async def stripe_webhook(request: Request):
     # data.object — Session у событий об оплате и Charge у событий о возврате.
     obj = event["data"]["object"]
     account_id = getattr(event, "account", None)
+    # РЕЖИМ КЛЮЧА. Событие тестового режима не должно закрывать боевую заявку,
+    # и наоборот: суммы там ненастоящие, а заявка — настоящая. Обычно такое
+    # событие не проходит подпись (у режимов разные секреты), но «обычно» про
+    # деньги не аргумент. Поля нет (легаси-событие, заглушка) — не судим.
+    livemode = getattr(event, "livemode", None)
+    expected = stripe_env.expects_livemode()
+    if livemode is not None and expected is not None and bool(livemode) != expected:
+        logger.error(
+            "Stripe: событие в режиме livemode=%s пришло на ключ livemode=%s — "
+            "отброшено, проверьте секреты вебхуков", livemode, expected,
+        )
+        return {"status": "ignored"}
     # У StripeObject (stripe 15.x) НЕТ метода .get() — это не dict. Обращение к
     # возможно отсутствующему полю только через getattr с дефолтом, иначе
     # AttributeError роняет хендлер в 500 ещё до проведения, и Stripe трое суток
@@ -1139,7 +1190,15 @@ async def _revert_sale(
     """
     await _reverse_platform_fee(db, checkout, charge_id)
 
-    if checkout.subscription_id is not None:
+    if booking_payment.is_booking(checkout):
+        # У занятия нет абонемента, зато есть МЕСТО: деньги вернули — держать
+        # его за человеком больше не за что. Всё остальное откатывается общим
+        # путём ниже и должно им откатываться: оплата занятия проводится тем же
+        # `perform_pay`, что и продажа у стойки, поэтому в Финансах есть доход,
+        # на счёте — сумма, а у клиента — баллы. Своей ветки отката здесь нет
+        # намеренно: она разошлась бы с проводкой на первой же правке.
+        await booking_payment.release_refunded(db, checkout)
+    elif checkout.subscription_id is not None:
         sub = (await db.execute(
             select(ClientSubscription).where(ClientSubscription.id == checkout.subscription_id)
         )).scalar_one_or_none()

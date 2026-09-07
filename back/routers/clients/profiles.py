@@ -22,16 +22,16 @@ from routers.clients._scope import client_scope
 from routers.clients.loyalty import expire_points
 from routers.clients.subscriptions import attach_subscription
 from routers.finances.accounts import get_or_create_default_account
-from services.booking_access import (
-    assert_can_book, commit_reservation, next_free_spot, resolve_coverage,
-)
+from services import booking
+from services.booking_access import assert_can_book
+from services.booking_http import reject
 from services.booking_rules import assert_staff_bookable, load_rules
 from services.client_segments import (
     CATEGORY_KEYS, DEFAULT_RULES, SegmentRules, category_condition, get_segment_rules, resolve_status,
 )
 from services.contacts import contact_taken, ensure_client_contacts_free
 from services.referral import fire_referral
-from services.subscription_charge import charge_reservation, notify_subscription_remaining
+from services.subscription_charge import notify_subscription_remaining
 from schemas import (
     ActionMessageOut,
     ActivityPointOut,
@@ -1024,46 +1024,30 @@ async def book_lesson(
     studio = await db.get(Studio, studio_id)
     assert_staff_bookable(lesson, studio)
 
-    spot = await next_free_spot(db, lesson)
-    if spot is None:
-        raise HTTPException(status_code=400, detail="Все места заняты")
-
-    duplicate = (await db.execute(
-        select(Reservation).where(
-            Reservation.client_id == client_id,
-            Reservation.lesson_id == body.lesson_id,
-            Reservation.status == "active",
-        )
-    )).scalar_one_or_none()
-    if duplicate:
-        raise HTTPException(status_code=400, detail="Клиент уже записан на это занятие")
-
-    # Пробное занятие снимает гейт абонемента — то же правило, что в Журнале
-    # (routers/schedule/reservations.py): подарок обязан работать везде, откуда
-    # клиента записывают, иначе он зависит от того, какую кнопку нажал админ.
-    rules = await load_rules(db, studio_id)
-    sub, is_trial = await resolve_coverage(db, client_id, lesson, rules)
-    if sub is None and not is_trial:
-        await assert_can_book(db, client_id, lesson)  # здесь всегда бросает — ради точной причины
-
-    reservation = Reservation(
-        client_id=client_id,
-        lesson_id=body.lesson_id,
-        spot_number=spot,
-        status="active",
-        booking_channel="manual",
-        is_trial=is_trial,
+    # ПЕРЕХОД ДЕЛАЕТ ДОМЕН — тот же, что в Журнале, и с теми же параметрами:
+    # запись из карточки клиента и запись из расписания обязаны отличаться
+    # только кнопкой, а не правилами (подарок раньше зависел от того, какую
+    # из них нажал администратор).
+    result = await booking.create(
+        db, studio_id=studio_id, client_id=client_id, lesson_id=body.lesson_id,
+        source="manual", actor=booking.Actor.STAFF, require_funding=True,
     )
-    db.add(reservation)
-    remaining = await charge_reservation(db, studio_id, reservation, sub)
-    await db.flush()  # нужен reservation.id для ленты
+    if result.outcome is booking.Outcome.NO_FUNDING:
+        await assert_can_book(db, client_id, lesson)  # здесь всегда бросает — ради точной причины
+    reject(result,
+           NO_CAPACITY=(400, "Все места заняты"),
+           ALREADY_BOOKED=(400, "Клиент уже записан на это занятие"),
+           SPOT_TAKEN=(409, "Это место только что заняли"),
+           WINDOW_CLOSED=(400, "Занятие уже закончилось — записать на него нельзя"))
+    reservation = await db.get(Reservation, result.reservation_id)
+    remaining = result.remaining
     log_activity(
         db, studio_id, "booking",
         title=f"Запись на «{lesson.name}»",
         actor_name=f"{current_user.name} {current_user.last_name or ''}".strip(),
         entity_type="reservation", entity_id=reservation.id,
     )
-    await commit_reservation(db, conflict_detail="Это место только что заняли")
+    await db.commit()
     await db.refresh(reservation)
     await notify_subscription_remaining(db, studio_id, client_id, remaining)
     return BookingCreatedOut(id=reservation.id, message="Запись создана")
