@@ -1128,10 +1128,12 @@
 .sidebar.is-rail .user-pill-caret,
 .sidebar.is-rail .journal-sub { display: none; }
 
-/* Нижний отступ меньше верхнего намеренно: у тумблера 30px бокса против 17px
-   иконки, ~6.5px пустоты снизу — свои. 8px + 6.5px даёт над линией те же
-   ~14px, что и над знаком сверху; при равных числах низ выглядел провалом. */
-.sidebar.is-rail .sidebar-logo { padding: 14px 0 8px; text-align: center; }
+/* Нижний отступ считается ПО ИКОНКЕ, а не по боксу кнопки: у тумблера 30px
+   бокса против 17px иконки, то есть ~6.5px пустоты сверху и снизу уже свои.
+   Цель — тот же зазор, что между знаком и кнопкой: там `gap: 10px` плюс те же
+   6.5px, глазом 16.5px. Значит снизу 10px + 6.5px — шапка читается как столбик
+   с одним шагом. Менять этот отступ и `gap` у .is-rail .logo-row нужно вместе. */
+.sidebar.is-rail .sidebar-logo { padding: 14px 0 10px; text-align: center; }
 .sidebar.is-rail .sidebar-logo .logo-name { justify-content: center; gap: 0; }
 .sidebar.is-rail .sidebar-mark { width: 26px; height: 26px; }
 
