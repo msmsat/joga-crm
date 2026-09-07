@@ -40,17 +40,24 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from models import Client, Lesson, Reservation, Studio
-from services import catalog, lesson_time, studio_time
+from services import catalog, lesson_time, pricing, studio_time
 from services.booking_access import (
     lock_client, next_free_spot, resolve_coverage,
 )
-from services.booking_rules import BookingRules, booking_window, load_rules, within_widget_hours
+from services.booking_rules import (
+    BookingRules, booking_window, lesson_finished, load_rules, within_widget_hours,
+)
 from services.catalog import OCCUPIES_SPOT
 from services.subscription_charge import (
     charge_reservation, clear_debt, open_debt, refund_reservation,
 )
 
 logger = logging.getLogger(__name__)
+
+# Имя частичного уникального индекса «один коврик — один человек»
+# (models/schedule.Reservation). По нему и только по нему нарушение целостности
+# читается как «место уже заняли».
+_SPOT_INDEX = "uq_reservation_spot_active"
 
 
 class Outcome(str, Enum):
@@ -70,6 +77,8 @@ class Outcome(str, Enum):
     PAYMENT_NOT_AVAILABLE = "PAYMENT_NOT_AVAILABLE"
     NOT_FOUND = "NOT_FOUND"                        # брони нет / не ваша
     ALREADY_CANCELLED = "ALREADY_CANCELLED"
+    # Клиент отмечен пришедшим: визит состоялся, и отменять его нечем.
+    ATTENDED = "ATTENDED"
 
 
 class FundingKind(str, Enum):
@@ -77,6 +86,20 @@ class FundingKind(str, Enum):
     TRIAL = "trial"
     FREE = "free"          # занятие бесплатное по прайсу
     PAY = "pay"            # платит на месте либо картой
+
+
+class Actor(str, Enum):
+    """КТО записывает. От этого зависит окно записи, и только оно.
+
+    Правила «не позднее чем за два часа», «не дальше чем на неделю вперёд» и
+    «только в часы виджета» — это правила САМОСТОЯТЕЛЬНОЙ записи клиента.
+    К администратору, сажающему человека на свободное место за двадцать минут
+    до начала, они отношения не имеют: студия распоряжается своим залом сама
+    (см. `booking_rules.assert_staff_bookable`). Единственный запрет за стойкой
+    — занятие уже прошло: посадить человека в зал задним числом нельзя.
+    """
+    CLIENT = "client"
+    STAFF = "staff"
 
 
 @dataclass(frozen=True)
@@ -116,9 +139,19 @@ class Terms:
     branch_name: Optional[str]
     funding: Funding
     approval_required: bool
+    # Цена ЗАНЯТИЯ по прайсу. `funding.price` — цена ЭТОГО КЛИЕНТА, она же
+    # платится картой; здесь лежит то, из чего она посчитана.
+    #
+    # Зачем хранить обе. Скидка клиента и цена занятия меняются по разным
+    # причинам и означают разное: правку прайса делает студия — это изменение
+    # УСЛОВИЙ ЗАНЯТИЯ, и открытая оплата по нему недействительна; смену скидки
+    # делает студия клиенту — уже заключённый договор она не переписывает
+    # (§46, §49 задания). Различить их можно, только зная обе цены.
+    base_price: int = 0
 
     def to_json(self) -> dict:
         return {
+            "base_price": self.base_price,
             "lesson_id": self.lesson_id,
             "local_start": self.local_start.isoformat(),
             "service_name": self.service_name,
@@ -147,6 +180,10 @@ class Terms:
                                 funding["subscription_id"], int(funding["price"]),
                                 funding["currency"]),
                 approval_required=bool(raw["approval_required"]),
+                # Снимок прежнего выпуска цены прайса не знал. Считать её
+                # равной клиентской — единственное безопасное чтение: так
+                # «цена не менялась» останется правдой для старой записи.
+                base_price=int(raw.get("base_price", funding["price"])),
             )
         except (KeyError, TypeError, ValueError):
             # Условия записаны другой версией кода. Считать их совпадающими
@@ -175,7 +212,8 @@ class Result:
 
 
 async def quote(db: AsyncSession, *, studio_id: int, client_id: int, lesson_id: int,
-                now: Optional[datetime] = None) -> Quote:
+                now: Optional[datetime] = None, actor: Actor = Actor.CLIENT,
+                require_funding: Optional[bool] = None) -> Quote:
     """Условия записи на СЕЙЧАС — для предложения человеку. Только чтение.
 
     Отдельная функция, а не «create с флагом»: предложение показывают до
@@ -185,7 +223,8 @@ async def quote(db: AsyncSession, *, studio_id: int, client_id: int, lesson_id: 
     # на нём строку значило бы притормаживать чужую настоящую запись ради
     # нашего «а что если».
     checked = await _check(db, studio_id=studio_id, client_id=client_id,
-                           lesson_id=lesson_id, now=now, spot_number=None, lock=False)
+                           lesson_id=lesson_id, now=now, spot_number=None, lock=False,
+                           actor=actor, require_funding=require_funding)
     if checked.outcome is not Outcome.OK:
         return Quote(checked.outcome)
     return Quote(Outcome.OK, checked.terms, checked.spot,
@@ -206,12 +245,21 @@ class _Checked:
 
 async def _check(db: AsyncSession, *, studio_id: int, client_id: int, lesson_id: int,
                  now: Optional[datetime], spot_number: Optional[int],
-                 lock: bool = True) -> _Checked:
+                 lock: bool = True, actor: Actor = Actor.CLIENT,
+                 require_funding: Optional[bool] = None) -> _Checked:
     """ПОЛНАЯ проверка всего, что могло измениться. Читает; не пишет.
 
     Порядок не случаен: сначала то, что не зависит от человека (занятие, окно
     записи), потом то, что зависит (клиент, покрытие, место). Так самый частый
     отказ — «занятие уже прошло» — не требует замка на клиенте.
+
+    `require_funding` — чем поверхность считает бронь без абонемента:
+      None  — по настройке студии «Предоплата при записи» (мини-приложение);
+      True  — покрытие обязательно всегда (Журнал: администратор записывает по
+              абонементу, а разовую продажу проводит касса);
+      False — не требуется никогда (веб-виджет: там платят на месте).
+    Три разных ответа существовали в продукте и до этого модуля; здесь они
+    названы, а не растворены по роутерам.
     """
     lesson = (await db.execute(
         select(Lesson).where(Lesson.id == lesson_id, Lesson.studio_id == studio_id)
@@ -227,13 +275,19 @@ async def _check(db: AsyncSession, *, studio_id: int, client_id: int, lesson_id:
 
     rules = await load_rules(db, studio_id)
     wall = lesson_time.local_now(studio, now)
-    if not rules.booking_active:
-        return _Checked(Outcome.WINDOW_CLOSED)
-    lower, upper = booking_window(rules, wall)
-    if not (lower <= lesson.start_time <= upper):
-        return _Checked(Outcome.WINDOW_CLOSED)
-    if not within_widget_hours(rules, lesson.start_time):
-        return _Checked(Outcome.WINDOW_CLOSED)
+    if actor is Actor.STAFF:
+        # За стойкой окно записи не действует — действует только физика:
+        # закончившееся занятие уже нельзя посетить.
+        if lesson_finished(lesson, studio, now):
+            return _Checked(Outcome.WINDOW_CLOSED, lesson, rules)
+    else:
+        if not rules.booking_active:
+            return _Checked(Outcome.WINDOW_CLOSED, lesson, rules)
+        lower, upper = booking_window(rules, wall)
+        if not (lower <= lesson.start_time <= upper):
+            return _Checked(Outcome.WINDOW_CLOSED, lesson, rules)
+        if not within_widget_hours(rules, lesson.start_time):
+            return _Checked(Outcome.WINDOW_CLOSED, lesson, rules)
 
     client = (await db.execute(
         select(Client).where(Client.id == client_id, Client.studio_id == studio_id)
@@ -271,10 +325,21 @@ async def _check(db: AsyncSession, *, studio_id: int, client_id: int, lesson_id:
     elif lesson.price <= 0:
         funding = Funding(FundingKind.FREE, None, 0, currency)
     else:
-        if rules.prefill_on_booking:
-            # Студия требует покрытие до занятия, а его нет.
+        needs = rules.prefill_on_booking if require_funding is None else require_funding
+        if needs:
+            # Покрытие обязательно, а его нет.
             return _Checked(Outcome.NO_FUNDING, lesson, rules)
-        funding = Funding(FundingKind.PAY, None, lesson.price, currency)
+        # ЦЕНА КЛИЕНТА, А НЕ ПРАЙС. Скидка студии, персональный оффер и скидка
+        # новичка — часть договора; взять с человека полную цену, когда у него
+        # есть скидка, значит взять лишнее.
+        payable = await client_price(db, studio_id=studio_id, client_id=client_id,
+                                     base_price=lesson.price)
+        if payable <= 0:
+            # Скидка покрыла занятие целиком. Платить нечего — значит и
+            # платёжного пути нет: ни формы, ни долга.
+            funding = Funding(FundingKind.FREE, None, 0, currency)
+        else:
+            funding = Funding(FundingKind.PAY, None, payable, currency)
 
     facts = await catalog.lesson(db, studio_id, lesson.id)
     if facts is None:
@@ -287,11 +352,70 @@ async def _check(db: AsyncSession, *, studio_id: int, client_id: int, lesson_id:
         branch_name=facts.branch_name,
         funding=funding,
         approval_required=bool(rules.trainer_confirmation_required),
+        base_price=int(lesson.price or 0),
     )
     checked = _Checked(Outcome.OK, lesson, rules, terms, spot)
     checked.subscription = subscription
     checked.is_trial = is_trial
     return checked
+
+
+async def client_price(db: AsyncSession, *, studio_id: int, client_id: int,
+                       base_price: int) -> int:
+    """Сколько это занятие стоит ИМЕННО ЭТОМУ клиенту. Только чтение.
+
+    ЕДИНСТВЕННЫЙ ОТВЕТ НА ВОПРОС «сколько человек согласился заплатить».
+    Считает его тот же `services/pricing.resolve_price`, которым считает касса
+    (`routers/checkout/router._quote`): скидка студии, персональный оффер,
+    скидка новичка по рефералке — по правилу «самая выгодная, без стека».
+    Второго движка цен в продукте нет и заводить его нельзя — разъехавшись,
+    они дадут одну цену в предложении и другую в кассе.
+
+    Баллы, депозит и сертификат сюда НЕ входят: это средства оплаты, которые
+    человек выбирает у стойки, а не цена. У кассы они появляются флагами
+    запроса; в разговоре их выбрать негде, и молча тратить чужие баллы за
+    человека нельзя.
+
+    Ничего не помечает использованным: одноразовые скидки гасит `consume_quote`
+    в момент состоявшейся продажи. Предложение — ещё не продажа.
+    """
+    resolved = await pricing.resolve_price(db, studio_id, client_id, base_price)
+    return resolved.final_price
+
+
+def lesson_part(terms: Terms) -> list:
+    """Часть условий, зависящая ТОЛЬКО от занятия, — в виде, пригодном для JSON.
+
+    ОДНО ОПРЕДЕЛЕНИЕ НА ДВА ВОПРОСА, и в этом весь смысл функции:
+
+      * «изменилось ли то, ради чего человек соглашался» — между показом и
+        записью (`material_change` ниже);
+      * «остаётся ли открытая оплата действительной» — между созданием
+        платёжной формы и её оплатой (`services/booking_payment`).
+
+    Вопрос один и тот же, и второго определения «условия изменились» в продукте
+    быть не должно: разъехавшись, они дают оплату за 19:00 и посадку на 20:30.
+    """
+    return [terms.lesson_id, terms.local_start.isoformat(), terms.service_name,
+            terms.trainer_name, terms.branch_name, terms.base_price]
+
+
+async def lesson_part_now(db: AsyncSession, *, studio_id: int,
+                          lesson_id: int) -> Optional[list]:
+    """Тот же снимок занятия, пересчитанный из каталога СЕЙЧАС.
+
+    None — занятия больше нет или оно отменено (`catalog.lessons` отменённые не
+    отдаёт вовсе). Для открытой оплаты это тот же ответ, что и «условия
+    изменились»: исполнить её нечем.
+    """
+    facts = await catalog.lesson(db, studio_id, lesson_id)
+    if facts is None:
+        return None
+    price = (await db.execute(
+        select(Lesson.price).where(Lesson.id == lesson_id)
+    )).scalar_one_or_none()
+    return [lesson_id, facts.local_start.isoformat(), facts.display_name,
+            facts.trainer_name, facts.branch_name, int(price or 0)]
 
 
 def material_change(shown: Optional[Terms], current: Terms) -> bool:
@@ -303,11 +427,7 @@ def material_change(shown: Optional[Terms], current: Terms) -> bool:
     """
     if shown is None:
         return False
-    return not (shown.lesson_id == current.lesson_id
-                and shown.local_start == current.local_start
-                and shown.service_name == current.service_name
-                and shown.trainer_name == current.trainer_name
-                and shown.branch_name == current.branch_name
+    return not (lesson_part(shown) == lesson_part(current)
                 and shown.approval_required == current.approval_required
                 and current.funding.same_as(shown.funding))
 
@@ -316,7 +436,10 @@ async def create(db: AsyncSession, *, studio_id: int, client_id: int, lesson_id:
                  source: str, spot_number: Optional[int] = None,
                  shown: Optional[Terms] = None,
                  now: Optional[datetime] = None,
-                 allow_payment: bool = False) -> Result:
+                 allow_payment: bool = False,
+                 hold_for_payment: bool = False,
+                 actor: Actor = Actor.CLIENT,
+                 require_funding: Optional[bool] = None) -> Result:
     """Записать клиента на занятие. ЕДИНСТВЕННЫЙ переход «брони не было → есть».
 
     НЕ КОММИТИТ: вызывающий закрывает транзакцию сам — вместе со своим
@@ -327,7 +450,8 @@ async def create(db: AsyncSession, *, studio_id: int, client_id: int, lesson_id:
     `TERMS_CHANGED`: подтверждали не это.
     """
     checked = await _check(db, studio_id=studio_id, client_id=client_id,
-                           lesson_id=lesson_id, now=now, spot_number=spot_number)
+                           lesson_id=lesson_id, now=now, spot_number=spot_number,
+                           actor=actor, require_funding=require_funding)
     if checked.outcome is not Outcome.OK:
         logger.info("booking_rejected studio_id=%s lesson_id=%s outcome=%s source=%s",
                     studio_id, lesson_id, checked.outcome.value, source)
@@ -340,16 +464,30 @@ async def create(db: AsyncSession, *, studio_id: int, client_id: int, lesson_id:
         return Result(Outcome.TERMS_CHANGED, terms=terms)
 
     if terms.funding.kind is FundingKind.PAY and terms.funding.price > 0 \
-            and not allow_payment:
-        # Платить надо картой, а этот путь денег не умеет. Полусостояния не
-        # заводим: ни брони, ни платежа (§53).
+            and not allow_payment and not hold_for_payment:
+        # Платить надо, а этот путь денег не умеет ни картой, ни на месте.
+        # Полусостояния не заводим: ни брони, ни платежа.
         return Result(Outcome.PAYMENT_REQUIRED, terms=terms)
 
+    # СТАТУС — ЭТО ОБЕЩАНИЕ, и оно должно быть правдой:
+    #   pending — студия ещё не одобрила. Одобрение ПЕРВЕЕ денег: брать оплату
+    #             за бронь, которую могут отклонить, значит потом её возвращать;
+    #   hold    — место держится, пока человек платит картой. Записью это ещё
+    #             не является, и говорить «вы записаны» здесь нельзя;
+    #   active  — состоялось.
+    paying = (hold_for_payment and terms.funding.kind is FundingKind.PAY
+              and terms.funding.price > 0)
+    if terms.approval_required:
+        status = "pending"
+    elif paying:
+        status = "hold"
+    else:
+        status = "active"
     reservation = Reservation(
         client_id=client_id,
         lesson_id=lesson_id,
         spot_number=checked.spot,
-        status="pending" if terms.approval_required else "active",
+        status=status,
         booking_channel=source,
         is_trial=checked.is_trial,
     )
@@ -360,13 +498,23 @@ async def create(db: AsyncSession, *, studio_id: int, client_id: int, lesson_id:
         # нельзя — это подарок за счёт студии.
         await db.rollback()
         return Result(Outcome.NO_FUNDING)
-    await open_debt(db, reservation, checked.lesson)
+    if status != "hold":
+        # Долг «оплата на месте» — альтернатива карте, а не дополнение к ней.
+        # Заведи его под карточную бронь, и человек заплатит дважды.
+        # Долг выставляется по ЦЕНЕ КЛИЕНТА: касса при погашении пересчитает
+        # ровно её (`perform_pay` -> `_quote`), и показывать до этого прайс
+        # значило бы обещать человеку не ту сумму.
+        await open_debt(db, reservation, checked.lesson, amount=terms.funding.price)
     try:
         await db.flush()
-    except IntegrityError:
-        # Коврик заняли между проверкой и вставкой. Последнее слово — за
-        # уникальным индексом, а не за нашим SELECT'ом.
+    except IntegrityError as exc:
         await db.rollback()
+        # ТОЛЬКО индекс коврика значит «место заняли». Любое другое нарушение
+        # целостности — наша ошибка (несогласованный CHECK, битая ссылка), и
+        # выдавать её за «мест нет» значит прятать поломку за правдоподобным
+        # ответом: человек уйдёт искать другое занятие, а чинить будет нечего.
+        if _SPOT_INDEX not in str(getattr(exc, "orig", exc)):
+            raise
         logger.info("capacity_conflict studio_id=%s lesson_id=%s", studio_id, lesson_id)
         return Result(Outcome.SPOT_TAKEN)
 
@@ -378,12 +526,26 @@ async def create(db: AsyncSession, *, studio_id: int, client_id: int, lesson_id:
 async def cancel(db: AsyncSession, *, studio_id: int, reservation_id: int,
                  actor: str, reason: Optional[str] = None,
                  client_id: Optional[int] = None,
-                 now: Optional[datetime] = None) -> Result:
+                 now: Optional[datetime] = None,
+                 by: Actor = Actor.STAFF,
+                 enforce_policy: bool = True) -> Result:
     """Отменить бронь. Идемпотентно: вторая отмена — тот же безопасный исход.
 
     МЕСТО ОСВОБОЖДАЕТСЯ ВСЕГДА. Поздняя отмена может стоить клиенту занятия
     абонемента (это решает студия своими правилами), но держать за ним коврик,
     на который он не придёт, — наказание не его, а тех, кто хотел записаться.
+
+    ДВА РАЗНЫХ ПРАВИЛА, И ОБА СУЩЕСТВОВАЛИ ДО ЭТОГО МОДУЛЯ:
+      STAFF   — пока занятие не кончилось, снять можно в любой момент;
+                `pending` снимается всегда (иначе неподтверждённая заявка после
+                занятия становится вечной), `attended` — никогда (визит уже
+                состоялся, и возврат занятия стёр бы его из посещаемости);
+      CLIENT  — окно студии «не позднее чем за N минут» (`cancellation_
+                deadline_min`), считанное по НАСТОЯЩЕМУ времени, а не по
+                разности стенных.
+
+    `enforce_policy=False` — отмена не по просьбе человека, а следствие: студия
+    отменила само занятие, и снимать с него людей надо независимо от окон.
     """
     reservation = (await db.execute(
         select(Reservation)
@@ -400,6 +562,24 @@ async def cancel(db: AsyncSession, *, studio_id: int, reservation_id: int,
     if reservation.status == "cancelled":
         return Result(Outcome.ALREADY_CANCELLED, reservation.id, reservation.status)
 
+    if enforce_policy:
+        lesson = await db.get(Lesson, reservation.lesson_id)
+        studio = await db.get(Studio, studio_id)
+        if by is Actor.STAFF:
+            if reservation.status == "attended":
+                return Result(Outcome.ATTENDED, reservation.id, reservation.status)
+            if reservation.status != "pending" and lesson_finished(lesson, studio, now):
+                return Result(Outcome.WINDOW_CLOSED, reservation.id, reservation.status)
+        else:
+            rules = await load_rules(db, studio_id)
+            left = lesson_time.until(lesson, studio, now)
+            deadline = timedelta(minutes=rules.cancellation_deadline_min)
+            too_late = (left < deadline if left is not None
+                        else lesson.start_time
+                        < lesson_time.local_now(studio, now) + deadline)
+            if too_late:
+                return Result(Outcome.WINDOW_CLOSED, reservation.id, reservation.status)
+
     await refund_reservation(db, reservation)
     reservation.status = "cancelled"
     reservation.cancelled_at = datetime.utcnow()
@@ -408,6 +588,44 @@ async def cancel(db: AsyncSession, *, studio_id: int, reservation_id: int,
     logger.info("booking_cancelled studio_id=%s reservation_id=%s actor=%s",
                 studio_id, reservation_id, actor)
     return Result(Outcome.OK, reservation.id, "cancelled")
+
+
+async def activate_paid(db: AsyncSession, *, studio_id: int,
+                        reservation_id: int) -> Result:
+    """Оплата подтверждена -> место, которое держалось, становится записью.
+
+    Переход живёт ЗДЕСЬ, а не в платёжном мосте, по той же причине, по которой
+    здесь живут все остальные: состояние брони меняет домен брони. Мост
+    (`services/booking_payment`) отвечает за другое — доказать, что заплатили
+    именно за эту бронь, именно столько и именно в этой студии.
+
+    Идемпотентно: второй вебхук, возврат на success_url и фоновая сверка
+    приходят сюда втроём, и двое из них обязаны быть безобидны.
+    """
+    reservation = (await db.execute(
+        select(Reservation)
+        .join(Lesson, Lesson.id == Reservation.lesson_id)
+        .where(Reservation.id == reservation_id, Lesson.studio_id == studio_id)
+        .with_for_update(of=Reservation)
+    )).scalar_one_or_none()
+    if reservation is None:
+        return Result(Outcome.NOT_FOUND)
+    if reservation.status == "cancelled":
+        return Result(Outcome.ALREADY_CANCELLED, reservation.id, "cancelled")
+    if reservation.status != "hold":
+        # Уже активна (или ждёт одобрения) — повтор ничего не меняет.
+        return Result(Outcome.OK, reservation.id, reservation.status)
+
+    lesson = await db.get(Lesson, reservation.lesson_id)
+    if lesson is None or lesson.status == "cancelled":
+        # Занятие отменили, пока человек платил. Деньги пришли, сажать некуда:
+        # решение — возврат, а не тихая активация.
+        return Result(Outcome.LESSON_UNAVAILABLE, reservation.id, reservation.status)
+
+    reservation.status = "active"
+    logger.info("booking_activated_by_payment studio_id=%s reservation_id=%s",
+                studio_id, reservation_id)
+    return Result(Outcome.OK, reservation.id, "active")
 
 
 async def approve(db: AsyncSession, *, studio_id: int, reservation_id: int,

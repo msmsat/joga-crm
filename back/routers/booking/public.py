@@ -19,12 +19,13 @@ from ratelimit import limiter
 from models import Client, Service, Lesson, Reservation
 from schemas._base import BaseSchema, Phone
 from services import catalog
-from services.booking_access import commit_reservation, next_free_spot, resolve_coverage
+from services import booking
+from services.booking_http import reject
 from services.booking_rules import assert_bookable, booking_window, load_rules, within_widget_hours
 from services.contacts import normalize, normalized_column
 from services.notifier import lesson_context, notify
 from services.referral import fire_referral
-from services.subscription_charge import charge_reservation, notify_subscription_remaining, open_debt
+from services.subscription_charge import notify_subscription_remaining
 
 router = APIRouter()
 
@@ -204,41 +205,24 @@ async def public_reserve(
             entity_type="client", entity_id=client.id,
         )
 
-    spot = await next_free_spot(db, lesson)
-    if spot is None:
-        raise HTTPException(status_code=400, detail="Все места заняты")
-
-    if not rules.repeat_booking_allowed:
-        duplicate = (await db.execute(
-            select(Reservation.id).where(
-                Reservation.client_id == client.id,
-                Reservation.lesson_id == body.lesson_id,
-                Reservation.status != "cancelled",
-            ).limit(1)
-        )).scalar_one_or_none()
-        if duplicate is not None:
-            raise HTTPException(status_code=400, detail="Вы уже записаны на это занятие")
-
-    # Публичная бронь не гейтится абонементом (новый клиент записывается без него),
-    # поэтому списываем только если подходящий абонемент есть. Пробное занятие
-    # виджету доступно на общих правилах: он и есть главный вход новых клиентов,
-    # ради которых подарок и включают.
-    sub, is_trial = await resolve_coverage(db, client.id, lesson, rules)
-
-    reservation = Reservation(
-        client_id=client.id,
-        lesson_id=body.lesson_id,
-        spot_number=spot,
-        status="pending" if rules.trainer_confirmation_required else "active",
-        booking_channel="web",
-        is_trial=is_trial,
+    # ПЕРЕХОД ДЕЛАЕТ ДОМЕН. Виджет — самая «тонкая» из четырёх точек записи:
+    # у него нет ни авторизации, ни абонементного гейта (новый клиент приходит
+    # без абонемента), и именно поэтому важно, чтобы ёмкость, подарок, дубль и
+    # списание он считал ТЕМИ ЖЕ правилами, что Журнал и мини-приложение.
+    #
+    # require_funding=False: платит на месте — это долг (`open_debt`), а не
+    # отказ; гейта телефона здесь нет, форма виджета его и так требует.
+    result = await booking.create(
+        db, studio_id=studio_id, client_id=client.id, lesson_id=body.lesson_id,
+        source="web", require_funding=False, allow_payment=True,
     )
-    db.add(reservation)
-    remaining = await charge_reservation(db, studio_id, reservation, sub)
-    # Ни абонемента, ни подарка — клиент платит в студии. Гейта телефона здесь
-    # нет: форма виджета его и так требует (ReserveRequest.phone).
-    await open_debt(db, reservation, lesson)
-    await db.flush()  # нужен reservation.id для ленты
+    reject(result,
+           NO_CAPACITY=(400, "Все места заняты"),
+           ALREADY_BOOKED=(400, "Вы уже записаны на это занятие"),
+           SPOT_TAKEN=(409, "Это место только что заняли"))
+    reservation = await db.get(Reservation, result.reservation_id)
+    remaining = result.remaining
+    is_trial = reservation.is_trial
     log_activity(
         db, studio_id, "booking",
         title=f"Онлайн-запись на «{lesson.name}»",
@@ -251,7 +235,7 @@ async def public_reserve(
     if not is_new_client:
         await fire_referral(db, studio_id, client.id, "first_visit", referred_name=client.name)
 
-    await commit_reservation(db, conflict_detail="Это место только что заняли")
+    await db.commit()
     await db.refresh(reservation)
 
     # «Запись подтверждена» — только за подтверждённой бронью: при включённом

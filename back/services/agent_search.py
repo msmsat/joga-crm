@@ -24,8 +24,9 @@ from datetime import datetime, timezone
 from typing import Optional
 
 from services import (
-    ai_language, catalog, identity, information, llm, personal, response_plan,
-    response_render, search_intent, search_resolver, search_state,
+    ai_language, booking, booking_payment, catalog, identity, information, llm,
+    personal, proposals, response_plan, response_render, search_intent,
+    search_resolver, search_state,
 )
 from services.ai_usage import record_usage
 from services.search_state import CanonicalState
@@ -72,6 +73,7 @@ ROUTE_INFO = "information"
 ROUTE_NEED_HUMAN = "need_human"
 ROUTE_PARSE_FAILED = "parse_failed"
 ROUTE_PERSONAL = "personal"
+ROUTE_BOOKING = "booking"
 
 
 @dataclass(frozen=True)
@@ -154,6 +156,9 @@ def route_of(raw) -> str:
     if intent is None:
         return ROUTE_PARSE_FAILED
     if intent.personal is not None:
+        if intent.personal.kind in (search_intent.PersonalKind.BOOK_LESSON,
+                                    search_intent.PersonalKind.CONFIRM):
+            return ROUTE_BOOKING
         return ROUTE_PERSONAL
     if intent.info is None:
         return ROUTE_SEARCH
@@ -191,6 +196,12 @@ async def turn(db, *, studio_id: int, thread_id: Optional[int], channel: str,
     # структуре разбора. Ошибись модель, худшее, что случится, — человек
     # получит уточнение или «спросите студию», но не выдуманный факт.
     intent = search_resolver.parse_intent(raw)
+    if intent is not None and intent.personal is not None             and intent.personal.kind is search_intent.PersonalKind.BOOK_LESSON:
+        return await _booking_turn(db, studio_id, thread_id, identity_id, channel,
+                                   intent, await language(), now)
+    if intent is not None and intent.personal is not None             and intent.personal.kind is search_intent.PersonalKind.CONFIRM:
+        return await _confirm_turn(db, studio_id, thread_id, channel,
+                                   await language(), now)
     if intent is not None and intent.personal is not None:
         return await _personal_turn(db, studio_id, identity_id, channel,
                                     intent, text, await language(), now)
@@ -280,7 +291,8 @@ def parse_action(data: str) -> Optional[tuple[response_plan.ActionKind, Optional
         kind = response_plan.ActionKind(head)
     except ValueError:
         return None
-    if kind is response_plan.ActionKind.VIEW_OPTION:
+    if kind in (response_plan.ActionKind.VIEW_OPTION,
+                response_plan.ActionKind.CONFIRM_BOOKING):
         return (kind, ref) if ref and _SEPARATOR not in ref else None
     return (kind, None) if not ref else None
 
@@ -328,13 +340,6 @@ async def _reset_search(db, *, studio_id, thread_id, ref, now, lang, channel) ->
                                        response_plan.CopyIntent.SEARCH_RESET)
     return _turn(plan, "RESET", now, lang=lang, channel=channel,
                  state=CanonicalState(), shown=[], new_search=True)
-
-
-HANDLERS = {
-    response_plan.ActionKind.VIEW_OPTION: _view_option,
-    response_plan.ActionKind.SHOW_MORE: _show_more,
-    response_plan.ActionKind.RESET_SEARCH: _reset_search,
-}
 
 
 def _turn(plan, outcome: str, now: datetime, *, lang: str, channel: str,
@@ -553,3 +558,226 @@ def _turn_payload(payload: dict, outcome: str, now: datetime) -> Turn:
     return Turn(payload=payload, plan_kind=response_plan.PlanKind.VERIFICATION.value,
                 outcome=outcome,
                 reference_now=now.replace(tzinfo=None) if now.tzinfo else now)
+
+
+# ─── Запись через ассистента (P3) ────────────────────────────────────────────
+#
+# ПУТЬ ЦЕЛИКОМ:
+#
+#   «что есть завтра после 18»  -> поиск (P1.4) -> варианты с ссылками (P1.5)
+#   «запиши на второй»          -> ссылка/номер -> занятие  (СЕРВЕР)
+#                               -> право (P2)   -> условия  (booking.quote)
+#                               -> ПРЕДЛОЖЕНИЕ (ничего не меняет)
+#   «да» / кнопка               -> подтверждение без модели
+#                               -> право заново, условия заново
+#                               -> booking.create
+#
+# Модель на этом пути называет ровно две вещи: «человек просит записаться» и
+# «человек согласен». Ни занятия, ни клиента, ни цены она не выбирает — их
+# определяет сервер по показанному списку и по своей базе.
+
+
+async def _lesson_from_reference(db, *, studio_id: int, thread_id: Optional[int],
+                                 intent, now: datetime) -> Optional[int]:
+    """Какое занятие человек имеет в виду. Только по СЕРВЕРНОЙ ссылке.
+
+    Два законных источника, и оба серверные: порядковый номер из показанного
+    списка («второй») и непрозрачный токен нажатой кнопки. Названия занятия
+    модель дать не может — в схеме такого поля нет.
+    """
+    if thread_id is None or intent.selection is None:
+        return None
+    pick = await search_state.by_ordinal(
+        db, studio_id=studio_id, thread_id=thread_id,
+        ordinal=intent.selection.ordinal, now=now)
+    return pick.lesson_id
+
+
+async def _booking_turn(db, studio_id: int, thread_id: Optional[int],
+                        identity_id: Optional[int], channel: str, intent,
+                        lang: str, now: datetime) -> Turn:
+    """«Запиши меня» -> предложение с условиями. НИЧЕГО НЕ БРОНИРУЕТ.
+
+    Порядок проверок не случаен: сперва право (P2), потом условия. Человеку,
+    который ещё не подтвердил личность, показывать занятия его карточки нельзя
+    — а условия записи это уже про него, а не про расписание.
+    """
+    allowed = await identity.require(db, studio_id=studio_id, identity_id=identity_id,
+                                     capability=identity.Capability.BOOK_WITH_CREDIT)
+    if allowed.decision is not identity.Decision.OK:
+        row = (await identity.load(db, studio_id=studio_id, identity_id=identity_id)
+               if identity_id is not None else None)
+        if row is not None and row.revoked_at is None:
+            await identity.remember_intent(db, row,
+                                           identity.Capability.BOOK_WITH_CREDIT)
+            await db.commit()
+        plan = response_plan.build_auth(allowed.decision)
+        return _turn(plan, allowed.decision.value, now, lang=lang, channel=channel)
+
+    lesson_id = await _lesson_from_reference(
+        db, studio_id=studio_id, thread_id=thread_id, intent=intent, now=now)
+    if lesson_id is None:
+        # Не на что записываться: списка не показывали либо он устарел.
+        plan = response_plan.build_confirm_problem(
+            response_plan.CopyIntent.BOOKING_NOTHING_TO_CONFIRM)
+        return _turn(plan, "NO_REFERENCE", now, lang=lang, channel=channel)
+
+    offered = await booking.quote(db, studio_id=studio_id, client_id=allowed.client_id,
+                                  lesson_id=lesson_id, now=now)
+    if offered.outcome is not booking.Outcome.OK:
+        plan = response_plan.build_booking(booking.Result(offered.outcome))
+        return _turn(plan, offered.outcome.value, now, lang=lang, channel=channel)
+
+    offer = await proposals.offer_booking(
+        db, studio_id=studio_id, thread_id=thread_id, identity_id=identity_id,
+        client_id=allowed.client_id, lesson_id=lesson_id, terms=offered.terms, now=now)
+    await db.commit()
+    plan = response_plan.build_offer(offered.terms, ref=offer.token)
+    logger.info("proposal_offered studio_id=%s thread_id=%s lesson_id=%s approval=%s",
+                studio_id, thread_id, lesson_id, offered.terms.approval_required)
+    return _turn(plan, "OFFERED", now, lang=lang, channel=channel)
+
+
+async def _payments_enabled(db, studio_id: int) -> bool:
+    """Можно ли ЗАВОДИТЬ новые карточные оплаты записи. Только чтение, без сети.
+
+    Три условия, и каждое о своём: раскатка этапа (флаг), подключённый аккаунт
+    студии и настроенный ключ платформы. Спрашиваем ДО того, как занять место:
+    иначе бронь встала бы в `hold` под оплату, которой негде случиться, и
+    держала бы коврик до разбора.
+
+    Флаг гейтит ТОЛЬКО это. Ни проведение уже начатых оплат, ни их сверку, ни
+    возвраты он не выключает (services/booking_payment.sweep).
+    """
+    from services import feature_flags, stripe_connect
+
+    if not stripe_connect.configured():
+        return False
+    if not await feature_flags.is_enabled(
+            db, studio_id, feature_flags.StudioFeature.AGENT_PAYMENTS):
+        return False
+    return await booking_payment.account_for(db, studio_id) is not None
+
+
+async def _payment_turn(db, *, studio_id: int, thread_id: int, reservation_id: int,
+                        client_id: int, terms, channel: str, lang: str,
+                        now: datetime):
+    """Место занято под оплату -> ссылка человеку. None — платить уже нечем.
+
+    Сеть живёт ЗДЕСЬ и только здесь, вне транзакции подтверждения: она уже
+    закоммичена ходом выше. Ссылку собирает платёжный домен из состояния
+    заявки — ни модель, ни этот модуль адрес платёжной страницы не составляют.
+    """
+    payable = await booking_payment.pay_link(
+        db, studio_id=studio_id, reservation_id=reservation_id,
+        client_id=client_id, channel=channel, thread_id=thread_id)
+    if payable.outcome is booking_payment.PayOutcome.STALE:
+        return None
+    if payable.outcome is booking_payment.PayOutcome.OPEN:
+        plan = response_plan.build_payment(
+            terms, response_plan.CopyIntent.BOOKING_PAYMENT_OPEN, url=payable.url)
+        return _turn(plan, "PAYMENT_OPEN", now, lang=lang, channel=channel)
+    # PENDING и UNAVAILABLE: форма уже открыта либо Stripe не ответил. В обоих
+    # случаях деньги могли двинуться, и «оплата не прошла» было бы неправдой —
+    # место держится, разбор доведёт (services/booking_payment.sweep).
+    plan = response_plan.build_payment(
+        terms, response_plan.CopyIntent.BOOKING_PAYMENT_PENDING)
+    return _turn(plan, payable.outcome.value, now, lang=lang, channel=channel)
+
+
+async def _confirm_turn(db, studio_id: int, thread_id: Optional[int], channel: str,
+                        lang: str, now: datetime,
+                        token: Optional[str] = None) -> Turn:
+    """Согласие: нажатием кнопки либо словом. Модель на этом шаге не участвует.
+
+    Слово «да» исполняет предложение, только если оно ОДНО. Двух живых не
+    бывает по построению (`offer_booking` гасит прежние), но если они как-то
+    оказались — сервер не угадывает: цена ошибки здесь чужая бронь.
+
+    ПЛАТНОЕ ЗАНЯТИЕ. Место занимается статусом `hold`, и только если оплату
+    вообще есть где провести (`_payments_enabled`). Записью это ещё не
+    является: «вы записаны» скажет проведение оплаты, а не согласие.
+    """
+    if thread_id is None:
+        plan = response_plan.build_confirm_problem(
+            response_plan.CopyIntent.BOOKING_NOTHING_TO_CONFIRM)
+        return _turn(plan, "NO_THREAD", now, lang=lang, channel=channel)
+
+    paying = await _payments_enabled(db, studio_id)
+    if token is not None:
+        done = await proposals.confirm_by_token(
+            db, studio_id=studio_id, thread_id=thread_id, token=token, now=now,
+            allow_hold=paying)
+    else:
+        done = await proposals.confirm_only_live(
+            db, studio_id=studio_id, thread_id=thread_id, now=now,
+            allow_hold=paying)
+
+    if done.outcome is proposals.ConfirmOutcome.DONE:
+        await db.commit()
+        if done.status == "hold":
+            paid = await _payment_turn(
+                db, studio_id=studio_id, thread_id=thread_id,
+                reservation_id=done.reservation_id, client_id=done.client_id,
+                terms=done.terms, channel=channel, lang=lang, now=now)
+            if paid is not None:
+                return paid
+        plan = response_plan.build_booking(booking.Result(
+            booking.Outcome.OK, done.reservation_id, done.status, done.terms))
+        return _turn(plan, "BOOKED", now, lang=lang, channel=channel)
+
+    if done.outcome is proposals.ConfirmOutcome.REJECTED:
+        await db.commit()          # исход предложения записан, брони нет
+        plan = response_plan.build_booking(booking.Result(done.reason, terms=done.terms))
+        return _turn(plan, done.reason.value, now, lang=lang, channel=channel)
+
+    if done.outcome is proposals.ConfirmOutcome.AUTH_REQUIRED:
+        await db.commit()
+        plan = response_plan.build_auth(identity.Decision.VERIFICATION_REQUIRED)
+        return _turn(plan, "AUTH_REQUIRED", now, lang=lang, channel=channel)
+
+    await db.commit()
+    if (done.outcome is proposals.ConfirmOutcome.ALREADY_RESOLVED
+            and done.reservation_id is not None):
+        # Повтор согласия по броне, которая всё ещё ждёт оплаты: переиздаём
+        # ссылку вместо «подтверждать нечего». Оборванная оплата обязана иметь
+        # способ возобновиться — второй формы при этом не заводится, ключ
+        # попытки детерминирован.
+        again = await _payment_turn(
+            db, studio_id=studio_id, thread_id=thread_id,
+            reservation_id=done.reservation_id, client_id=done.client_id,
+            terms=None, channel=channel, lang=lang, now=now)
+        if again is not None:
+            return again
+    copy = {
+        proposals.ConfirmOutcome.EXPIRED: response_plan.CopyIntent.BOOKING_EXPIRED,
+        proposals.ConfirmOutcome.AMBIGUOUS: response_plan.CopyIntent.BOOKING_AMBIGUOUS,
+        proposals.ConfirmOutcome.ALREADY_RESOLVED:
+            response_plan.CopyIntent.BOOKING_NOTHING_TO_CONFIRM,
+        proposals.ConfirmOutcome.UNKNOWN:
+            response_plan.CopyIntent.BOOKING_NOTHING_TO_CONFIRM,
+    }[done.outcome]
+    plan = response_plan.build_confirm_problem(copy)
+    return _turn(plan, done.outcome.value, now, lang=lang, channel=channel)
+
+
+async def _confirm_booking_action(db, *, studio_id, thread_id, ref, now, lang,
+                                  channel) -> Turn:
+    """Нажатая кнопка «Записаться». Детерминированно, без модели."""
+    if not ref:
+        plan = response_plan.build_confirm_problem(
+            response_plan.CopyIntent.BOOKING_NOTHING_TO_CONFIRM)
+        return _turn(plan, "NO_REF", now, lang=lang, channel=channel)
+    return await _confirm_turn(db, studio_id, thread_id, channel, lang, now, token=ref)
+
+
+# Реестр действий собирается в КОНЦЕ файла: обработчик подтверждения записи
+# определён ниже поиска, и словарь наверху ссылался бы на ещё не созданное имя.
+# Полнота реестра проверяется тестом (tests/test_callbacks) — кнопки без
+# обработчика в продукте быть не может.
+HANDLERS = {
+    response_plan.ActionKind.VIEW_OPTION: _view_option,
+    response_plan.ActionKind.SHOW_MORE: _show_more,
+    response_plan.ActionKind.RESET_SEARCH: _reset_search,
+    response_plan.ActionKind.CONFIRM_BOOKING: _confirm_booking_action,
+}

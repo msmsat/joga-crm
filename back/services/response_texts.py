@@ -520,6 +520,196 @@ CLASSES_LEFT_FORMS = {
 }
 
 
+# ─── Запись (P3) ─────────────────────────────────────────────────────────────
+#
+# Ни одна фраза здесь не называет запись состоявшейся раньше, чем она
+# состоялась. «Вы записаны» и «заявка отправлена» — разные новости: человек,
+# услышавший первое вместо второго, приедет на занятие, где его не ждут.
+
+BOOKING_OFFER = {
+    "ru": "Записываю на это занятие:",
+    "en": "Booking you for this class:",
+    "uk": "Записую на це заняття:",
+    "cs": "Rezervuji vám tuto lekci:",
+    "de": "Ich buche Sie für diese Stunde:",
+}
+
+BOOKING_OFFER_APPROVAL = {
+    "ru": "Отправляю заявку на это занятие — студия подтвердит:",
+    "en": "Sending a request for this class — the studio will confirm:",
+    "uk": "Надсилаю заявку на це заняття — студія підтвердить:",
+    "cs": "Posílám žádost o tuto lekci — studio ji potvrdí:",
+    "de": "Ich sende eine Anfrage für diese Stunde — das Studio bestätigt sie:",
+}
+
+# Чем платим. Основание, а не только сумма: «по абонементу» и «подарок» это
+# разные вещи, и подменять одно другим нельзя (services/booking.Funding).
+BOOKING_BY_SUBSCRIPTION = {
+    "ru": "по абонементу", "en": "with your pass", "uk": "за абонементом",
+    "cs": "z permanentky", "de": "mit Ihrer Karte",
+}
+
+BOOKING_BY_TRIAL = {
+    "ru": "первое занятие в подарок", "en": "first class on the house",
+    "uk": "перше заняття в подарунок", "cs": "první lekce jako dárek",
+    "de": "erste Stunde geschenkt",
+}
+
+BOOKING_BY_FREE = {
+    "ru": "бесплатно", "en": "free", "uk": "безкоштовно",
+    "cs": "zdarma", "de": "kostenlos",
+}
+
+# Где именно платить — решается ПОСЛЕ согласия: картой по ссылке, если студия
+# подключила приём оплат и этап раскатан, иначе на месте. Формулировка обязана
+# быть верной в обоих случаях: обещать «оплата в студии» и следом прислать
+# платёжную ссылку — это два разных обещания в одном разговоре.
+BOOKING_BY_PAY = {
+    "ru": "оплата — {amount}", "en": "payment — {amount}",
+    "uk": "оплата — {amount}", "cs": "platba — {amount}",
+    "de": "Zahlung — {amount}",
+}
+
+BOOKING_CONFIRM_HINT = {
+    "ru": "Записывать?", "en": "Shall I book it?", "uk": "Записувати?",
+    "cs": "Mám rezervovat?", "de": "Soll ich buchen?",
+}
+
+BOOKING_DONE = {
+    "ru": "Готово, вы записаны.", "en": "Done, you're booked.",
+    "uk": "Готово, вас записано.", "cs": "Hotovo, máte rezervaci.",
+    "de": "Fertig, Sie sind gebucht.",
+}
+
+BOOKING_PENDING = {
+    "ru": "Заявка отправлена — студия подтвердит запись.",
+    "en": "Request sent — the studio will confirm your booking.",
+    "uk": "Заявку надіслано — студія підтвердить запис.",
+    "cs": "Žádost odeslána — studio rezervaci potvrdí.",
+    "de": "Anfrage gesendet — das Studio bestätigt die Buchung.",
+}
+
+BOOKING_NO_CAPACITY = {
+    "ru": "Мест на это занятие уже нет.",
+    "en": "That class is full now.",
+    "uk": "Місць на це заняття вже немає.",
+    "cs": "Tato lekce je už plná.",
+    "de": "Diese Stunde ist jetzt voll.",
+}
+
+BOOKING_ALREADY = {
+    "ru": "Вы уже записаны на это занятие.",
+    "en": "You're already booked for that class.",
+    "uk": "Ви вже записані на це заняття.",
+    "cs": "Na tuto lekci už rezervaci máte.",
+    "de": "Für diese Stunde sind Sie bereits gebucht.",
+}
+
+BOOKING_WINDOW_CLOSED = {
+    "ru": "Запись на это занятие закрыта.",
+    "en": "Booking for that class is closed.",
+    "uk": "Запис на це заняття закрито.",
+    "cs": "Rezervace na tuto lekci je uzavřená.",
+    "de": "Die Buchung für diese Stunde ist geschlossen.",
+}
+
+BOOKING_NO_FUNDING = {
+    "ru": "Для записи нужен действующий абонемент — это лучше решить со студией.",
+    "en": "You need an active pass for this — the studio can help with that.",
+    "uk": "Для запису потрібен чинний абонемент — це краще вирішити зі студією.",
+    "cs": "K rezervaci je potřeba platná permanentka — s tím vám pomůže studio.",
+    "de": "Dafür brauchen Sie eine gültige Karte — das klärt das Studio mit Ihnen.",
+}
+
+BOOKING_TERMS_CHANGED = {
+    "ru": "Занятие изменилось с тех пор, как я его показала. Посмотрим заново?",
+    "en": "The class changed since I showed it. Shall we look again?",
+    "uk": "Заняття змінилося відтоді, як я його показала. Подивимось заново?",
+    "cs": "Lekce se od zobrazení změnila. Podíváme se znovu?",
+    "de": "Die Stunde hat sich seit der Anzeige geändert. Schauen wir noch mal?",
+}
+
+BOOKING_LESSON_GONE = {
+    "ru": "Этого занятия больше нет в расписании.",
+    "en": "That class is no longer in the schedule.",
+    "uk": "Цього заняття більше немає в розкладі.",
+    "cs": "Tato lekce už v rozvrhu není.",
+    "de": "Diese Stunde steht nicht mehr im Plan.",
+}
+
+BOOKING_PAYMENT_REQUIRED = {
+    "ru": "Это занятие оплачивается — оформить оплату пока можно только в студии.",
+    "en": "That class is paid — for now payment goes through the studio.",
+    "uk": "Це заняття оплачується — оформити оплату наразі можна лише в студії.",
+    "cs": "Tato lekce je placená — platbu zatím vyřídíte ve studiu.",
+    "de": "Diese Stunde ist kostenpflichtig — die Zahlung läuft vorerst über das Studio.",
+}
+
+# ─── Оплата занятия картой (P4) ──────────────────────────────────────────────
+#
+# СЛОВА СООТВЕТСТВУЮТ СОСТОЯНИЮ, и здесь это стоит денег. «Оплата не прошла» на
+# неизвестном ответе банка — неправда: деньги могут быть уже списаны. Поэтому
+# отдельная формулировка на «идёт» и отдельная на «точно нет».
+
+BOOKING_PAYMENT_OPEN = {
+    "ru": "Место держу за вами — осталось оплатить занятие.",
+    "en": "I'm holding your spot — just complete the payment.",
+    "uk": "Місце тримаю за вами — лишилося оплатити заняття.",
+    "cs": "Místo vám držím — zbývá lekci zaplatit.",
+    "de": "Ich halte Ihren Platz — es fehlt nur noch die Zahlung.",
+}
+
+BOOKING_PAYMENT_PENDING = {
+    "ru": "Оплата уже начата — как только банк ответит, подтвержу запись.",
+    "en": "The payment is already under way — I'll confirm as soon as the bank replies.",
+    "uk": "Оплату вже розпочато — щойно банк відповість, підтверджу запис.",
+    "cs": "Platba už probíhá — jakmile banka odpoví, rezervaci potvrdím.",
+    "de": "Die Zahlung läuft bereits — sobald die Bank antwortet, bestätige ich die Buchung.",
+}
+
+BOOKING_PAYMENT_EXPIRED = {
+    "ru": "Время на оплату вышло, место освободилось. Подобрать занятие заново?",
+    "en": "The payment window closed and the spot was released. Shall I look again?",
+    "uk": "Час на оплату вийшов, місце звільнилося. Підібрати заняття заново?",
+    "cs": "Čas na platbu vypršel a místo se uvolnilo. Mám hledat znovu?",
+    "de": "Die Zahlungsfrist ist abgelaufen, der Platz ist wieder frei. Soll ich neu suchen?",
+}
+
+BUTTON_PAY = {
+    "ru": "Оплатить", "en": "Pay", "uk": "Сплатити",
+    "cs": "Zaplatit", "de": "Bezahlen",
+}
+
+BOOKING_NOTHING_TO_CONFIRM = {
+    "ru": "Подтверждать пока нечего. Что ищем?",
+    "en": "There's nothing to confirm yet. What are you looking for?",
+    "uk": "Підтверджувати поки нічого. Що шукаємо?",
+    "cs": "Zatím není co potvrdit. Co hledáte?",
+    "de": "Es gibt noch nichts zu bestätigen. Wonach suchen Sie?",
+}
+
+BOOKING_AMBIGUOUS = {
+    "ru": "Не поняла, какое именно занятие. Назовите номер из списка.",
+    "en": "I'm not sure which class you mean. Please give the number from the list.",
+    "uk": "Не зрозуміла, яке саме заняття. Назвіть номер зі списку.",
+    "cs": "Nevím, kterou lekci myslíte. Řekněte číslo ze seznamu.",
+    "de": "Ich weiß nicht, welche Stunde Sie meinen. Nennen Sie die Nummer aus der Liste.",
+}
+
+BOOKING_EXPIRED = {
+    "ru": "Предложение устарело — посмотрим расписание заново?",
+    "en": "That offer has expired — shall we check the schedule again?",
+    "uk": "Пропозиція застаріла — подивимось розклад заново?",
+    "cs": "Nabídka vypršela — podíváme se do rozvrhu znovu?",
+    "de": "Das Angebot ist abgelaufen — schauen wir noch mal in den Plan?",
+}
+
+BUTTON_CONFIRM_BOOKING = {
+    "ru": "Записаться", "en": "Book it", "uk": "Записатися",
+    "cs": "Rezervovat", "de": "Buchen",
+}
+
+
 # ─── Подписи кнопок ──────────────────────────────────────────────────────────
 
 BUTTON_SHOW_MORE = {

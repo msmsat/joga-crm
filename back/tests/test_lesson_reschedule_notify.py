@@ -77,10 +77,20 @@ class _Client:
 
 
 class _Reservation:
-    """Фейк Reservation для cancel_lesson: каскад отмены мутирует объект и
-    зовёт refund_reservation, который сразу выходит при subscription_id=None и
-    debt_payment_id=None (без похода в БД) — этим и упрощаем мок."""
+    """Фейк Reservation для cancel_lesson.
+
+    Каскад отмены зовёт домен (services/booking.cancel) с
+    `enforce_policy=False`: тот находит бронь одним запросом и зовёт
+    `refund_reservation`, который сразу выходит при subscription_id=None и
+    debt_payment_id=None — без похода в БД. Этим мок и остаётся коротким:
+    здесь проверяются УВЕДОМЛЕНИЯ об отмене, а механика самой отмены — в
+    tests/test_booking_domain.py на настоящей базе.
+    """
+    _next = [1]
+
     def __init__(self, client_id):
+        self.id = _Reservation._next[0]
+        _Reservation._next[0] += 1
         self.client_id = client_id
         self.status = "active"
         self.cancelled_at = None
@@ -301,9 +311,11 @@ def test_non_reschedule_field_does_not_trigger_notify():
 # ─── cancel_lesson: результат notify c3 агрегируется в clients_notified ─────
 def test_cancel_sets_notified_true_when_client_notified():
     lesson = _Lesson(start_time=datetime.now() + timedelta(hours=5))
+    booked = _Reservation(7)
     db = _DB([
         lesson,                      # get_scoped_lesson
-        [_Reservation(7)],           # select Reservation (booked, каскад отмены)
+        [booked],                    # select Reservation (booked, каскад отмены)
+        booked,                      # booking.cancel находит ту же бронь
     ])
     calls = []
 

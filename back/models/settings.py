@@ -290,8 +290,10 @@ class OutboundMessage(Base):
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     studio_id: Mapped[int] = mapped_column(ForeignKey("studios.id", ondelete="CASCADE"), index=True)
     thread_id: Mapped[int] = mapped_column(ForeignKey("channel_threads.id", ondelete="CASCADE"))
-    # Кто породил сообщение. Сегодня всегда agent; колонка есть, потому что
-    # передача диалога человеку изменит правила отправки, а не схему.
+    # Кто породил сообщение: agent — ход ассистента, payment — подтверждение
+    # после проведённой оплаты занятия (services/booking_payment). Колонка
+    # различает их, потому что передача диалога человеку изменит правила
+    # отправки, а не схему.
     origin: Mapped[str] = mapped_column(String(10), default="agent")
     # Канонический смысл ответа: {"text": str, "button": {"text","url"} | None}.
     payload: Mapped[dict] = mapped_column(JSON)

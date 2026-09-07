@@ -25,7 +25,7 @@ from datetime import datetime
 from enum import Enum
 from typing import Optional, Sequence
 
-from services import catalog, identity, information, personal, search_state
+from services import booking, catalog, identity, information, personal, search_state
 from services.information import InfoKind, InfoOutcome, InfoResult
 from services.search_resolver import EntityKind, Outcome, SearchResult
 
@@ -62,6 +62,12 @@ class PlanKind(str, Enum):
     VERIFICATION = "verification"
     # Личные данные — после доказательства и только они.
     PERSONAL = "personal"
+    # ── Запись (P3) ─────────────────────────────────────────────────────────
+    # Условия записи показаны, согласия ещё нет. В бизнесе не изменилось
+    # ничего: предложение — это предложение.
+    BOOKING_OFFER = "booking_offer"
+    # Согласие исполнено (или не исполнено — причина типизирована).
+    BOOKING_RESULT = "booking_result"
 
 
 class CopyIntent(str, Enum):
@@ -119,6 +125,34 @@ class CopyIntent(str, Enum):
     PERSONAL_BOOKINGS_NONE = "personal.bookings_none"
     PERSONAL_SUBSCRIPTION = "personal.subscription"
     PERSONAL_SUBSCRIPTION_NONE = "personal.subscription_none"
+    # ── Запись (P3). Всё выводит сервер из исхода домена ────────────────────
+    # Показ условий перед согласием: чем платим и нужно ли одобрение студии.
+    BOOKING_OFFER = "booking.offer"
+    BOOKING_OFFER_APPROVAL = "booking.offer_approval"
+    # Записан — окончательно.
+    BOOKING_DONE = "booking.done"
+    # Заявка отправлена: студия ещё не одобрила. «Вы записаны» здесь сказать
+    # нельзя — человек придёт, а места за ним нет.
+    BOOKING_PENDING = "booking.pending"
+    BOOKING_NO_CAPACITY = "booking.no_capacity"
+    BOOKING_ALREADY = "booking.already"
+    BOOKING_WINDOW_CLOSED = "booking.window_closed"
+    BOOKING_NO_FUNDING = "booking.no_funding"
+    BOOKING_TERMS_CHANGED = "booking.terms_changed"
+    BOOKING_LESSON_GONE = "booking.lesson_gone"
+    BOOKING_PAYMENT_REQUIRED = "booking.payment_required"
+    BOOKING_NOTHING_TO_CONFIRM = "booking.nothing_to_confirm"
+    BOOKING_AMBIGUOUS = "booking.ambiguous"
+    BOOKING_EXPIRED = "booking.expired"
+    # ── Оплата занятия картой (P4) ──────────────────────────────────────────
+    # Место держится, ссылка на оплату выдана. «Вы записаны» здесь сказать
+    # нельзя: бронь в `hold`, и записью она станет только от денег.
+    BOOKING_PAYMENT_OPEN = "booking.payment_open"
+    # Ответа платёжной системы ещё нет. НЕ «оплата не прошла»: на неизвестном
+    # ответе банка деньги могут быть уже списаны.
+    BOOKING_PAYMENT_PENDING = "booking.payment_pending"
+    # Форма закрыта, денег не было, место вернулось залу.
+    BOOKING_PAYMENT_EXPIRED = "booking.payment_expired"
 
 
 class ActionKind(str, Enum):
@@ -127,6 +161,9 @@ class ActionKind(str, Enum):
     VIEW_OPTION = "view_option"
     SHOW_MORE = "show_more"
     RESET_SEARCH = "reset_search"
+    # «Записаться» — согласие на показанное предложение. В теле нажатия едет
+    # непрозрачная ссылка на предложение, а не занятие и не клиент.
+    CONFIRM_BOOKING = "confirm_booking"
 
 
 @dataclass(frozen=True)
@@ -163,6 +200,14 @@ class ResponseAction:
 
 
 @dataclass(frozen=True)
+class BookingTerms:
+    """Условия записи как ФАКТ ответа. Обёртка, а не голый `booking.Terms`:
+    рендерер отличает виды фактов по типу, и запись обязана быть таким же
+    типом, как адрес или абонемент."""
+    terms: "booking.Terms"
+
+
+@dataclass(frozen=True)
 class ResponsePlan:
     """Ответ как СМЫСЛ. Ни телеграмного, ни инстаграмного здесь ничего нет."""
     kind: PlanKind
@@ -181,7 +226,11 @@ class ResponsePlan:
     # перечень имён или текст владельца. Не `dict[str, Any]`: словарь принял бы
     # {"parking": "free"} из ответа модели и донёс бы его человеку, а тип
     # «парковка» в продукте не существует и появиться здесь не может.
-    facts: Optional[information.Facts | personal.Facts] = None
+    facts: Optional[information.Facts | personal.Facts | "BookingTerms"] = None
+    # Ссылка на оплату. Её собирает ТОЛЬКО сервер из состояния заявки
+    # (`services/booking_payment`): ни модель, ни человек адрес платёжной
+    # страницы назвать не могут — иначе кнопка «Оплатить» ведёт куда угодно.
+    payment_url: Optional[str] = None
     plan_version: int = PLAN_VERSION
 
     def shown(self) -> list[tuple[str, int]]:
@@ -446,3 +495,80 @@ def build_personal(facts) -> ResponsePlan:
                 else CopyIntent.PERSONAL_SUBSCRIPTION_NONE)
     return ResponsePlan(PlanKind.PERSONAL, copy,
                         facts=facts if facts.items else None)
+
+
+# ─── Запись (P3) ─────────────────────────────────────────────────────────────
+
+_BOOKING_COPY = {
+    booking.Outcome.NO_CAPACITY: CopyIntent.BOOKING_NO_CAPACITY,
+    booking.Outcome.SPOT_TAKEN: CopyIntent.BOOKING_NO_CAPACITY,
+    booking.Outcome.ALREADY_BOOKED: CopyIntent.BOOKING_ALREADY,
+    booking.Outcome.WINDOW_CLOSED: CopyIntent.BOOKING_WINDOW_CLOSED,
+    booking.Outcome.NO_FUNDING: CopyIntent.BOOKING_NO_FUNDING,
+    booking.Outcome.TERMS_CHANGED: CopyIntent.BOOKING_TERMS_CHANGED,
+    booking.Outcome.LESSON_UNAVAILABLE: CopyIntent.BOOKING_LESSON_GONE,
+    booking.Outcome.CLIENT_UNAVAILABLE: CopyIntent.AUTH_CLIENT_UNAVAILABLE,
+    booking.Outcome.PAYMENT_REQUIRED: CopyIntent.BOOKING_PAYMENT_REQUIRED,
+    booking.Outcome.PAYMENT_NOT_AVAILABLE: CopyIntent.BOOKING_PAYMENT_REQUIRED,
+    booking.Outcome.OVERLAP: CopyIntent.BOOKING_ALREADY,
+    booking.Outcome.NOT_FOUND: CopyIntent.BOOKING_NOTHING_TO_CONFIRM,
+    booking.Outcome.ALREADY_CANCELLED: CopyIntent.BOOKING_NOTHING_TO_CONFIRM,
+    booking.Outcome.ATTENDED: CopyIntent.BOOKING_NOTHING_TO_CONFIRM,
+}
+
+
+def build_offer(terms: booking.Terms, *, ref: str) -> ResponsePlan:
+    """Условия записи перед согласием. НИЧЕГО НЕ ПРОИСХОДИТ.
+
+    Формулировка зависит от того, нужно ли одобрение студии: «записываю» и
+    «отправляю заявку» — разные обещания, и обещать первое, когда правда
+    второе, значит отправить человека туда, где его не ждут.
+    """
+    copy = (CopyIntent.BOOKING_OFFER_APPROVAL if terms.approval_required
+            else CopyIntent.BOOKING_OFFER)
+    return ResponsePlan(
+        PlanKind.BOOKING_OFFER, copy, facts=BookingTerms(terms),
+        actions=[ResponseAction(ActionKind.CONFIRM_BOOKING, ref=ref)],
+    )
+
+
+def build_booking(result: booking.Result) -> ResponsePlan:
+    """Исход перехода -> план. Статус НАЗЫВАЕТСЯ ТОТ, ЧТО ЕСТЬ.
+
+    `pending` — это «заявка отправлена», а не «вы записаны». Разница не в
+    вежливости: за неподтверждённой заявкой места может не оказаться, и человек,
+    услышавший «вы записаны», приедет зря.
+    """
+    if result.outcome is booking.Outcome.OK:
+        # СЛОВО СООТВЕТСТВУЕТ СТАТУСУ, и таблица здесь одна на все пути.
+        # `hold` — это НЕ запись: место держится под неоплаченную бронь, и
+        # сказать про неё «вы записаны» нельзя ни из какой ветки. Обычно такой
+        # ответ собирает платёжный ход (`agent_search._payment_turn`), но
+        # полагаться на то, что он всегда успеет, значит держать запрет на
+        # порядке вызовов, а не на смысле.
+        copy = {"pending": CopyIntent.BOOKING_PENDING,
+                "hold": CopyIntent.BOOKING_PAYMENT_PENDING,
+                }.get(result.status, CopyIntent.BOOKING_DONE)
+        return ResponsePlan(PlanKind.BOOKING_RESULT, copy,
+                            facts=BookingTerms(result.terms) if result.terms else None)
+    return ResponsePlan(PlanKind.BOOKING_RESULT,
+                        _BOOKING_COPY.get(result.outcome,
+                                          CopyIntent.BOOKING_NOTHING_TO_CONFIRM))
+
+
+def build_payment(terms: Optional["booking.Terms"], copy: CopyIntent, *,
+                  url: Optional[str] = None) -> ResponsePlan:
+    """Оплата занятия: что сказать и куда нажать.
+
+    Ссылка приходит готовой из платёжного домена. Здесь она только кладётся в
+    план — собирать её тут было бы вторым местом, где рождается платёжный
+    адрес.
+    """
+    return ResponsePlan(PlanKind.BOOKING_RESULT, copy,
+                        facts=BookingTerms(terms) if terms else None,
+                        payment_url=url)
+
+
+def build_confirm_problem(copy: CopyIntent) -> ResponsePlan:
+    """Согласие не к чему применить: нечего подтверждать, устарело, неясно."""
+    return ResponsePlan(PlanKind.BOOKING_RESULT, copy)

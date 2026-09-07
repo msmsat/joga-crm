@@ -46,6 +46,12 @@ _IDLE_SLEEP = 1.0
 _ERROR_BACKOFF = (1, 2, 5, 10, 30)
 # Чистку гоняем редко: она про срок хранения, а не про скорость ответа.
 _PURGE_EVERY_SECONDS = 3600
+# Разбор оплат — своим, коротким сроком. Он про ДЕНЬГИ и про занятое место:
+# занятие подвинули в 19:05, а форма оплаты за старое время висит открытой, и
+# ждать до следующего часа значит держать чужой коврик и чужие деньги в
+# неопределённости. Проход дешёвый: при отсутствии незакрытых заявок это два
+# индексных запроса и ни одного похода в сеть.
+_SWEEP_EVERY_SECONDS = 120
 # Сколько отправок идёт одновременно. Ограничение обязательно: без него на
 # всплеске очереди воркер создал бы задачу на каждое сообщение и утопил бы и
 # пул соединений, и лимиты провайдера. Число небольшое и намеренно константа —
@@ -85,6 +91,35 @@ async def _purge_search_state() -> None:
                     removed, search_state.TTL_MINUTES)
     if codes:
         logger.info("verification_code_expired removed=%s", codes)
+
+
+async def _watch_stale_holds() -> None:
+    """Разбор броней, которые держат место под неразрешённую оплату.
+
+    ЭТОТ ПРОХОД НЕ ОСВОБОЖДАЕТ МЕСТО ПО ТАЙМЕРУ. Местный срок не доказывает,
+    что человек не заплатил, — он доказывает, что пора спросить у платёжной
+    системы. Спрашивает `booking_payment.sweep`: он читает состояние формы у
+    Stripe, закрывает её (`expire` — единственный способ отменить Checkout) и
+    только по ОТВЕТУ решает, освободить место, провести оплату или оставить
+    разбираться. Освободить раньше значит получить деньги за бронь, которой
+    уже нет.
+
+    Работает НЕЗАВИСИМО ОТ ФЛАГА `AGENT_PAYMENTS`: флаг решает, заводить ли
+    НОВЫЕ оплаты. Уже начатые обязаны быть доведены до конца — иначе
+    выключение раскатки бросает чужие деньги.
+    """
+    from services import booking_payment, proposals
+
+    async with async_session_maker() as db:
+        counts = await booking_payment.sweep(db)
+        expired = await proposals.purge(db)
+        await db.commit()
+    if any(counts.values()):
+        # Не ошибка, а итог разбора: сколько мест вернулось залу, сколько оплат
+        # провелось и сколько осталось без однозначного ответа Stripe.
+        logger.warning("hold_too_old %s", counts)
+    if expired:
+        logger.info("proposal_expired removed=%s", expired)
 
 
 class Worker:
@@ -158,6 +193,7 @@ class Worker:
         logger.info("worker_started owner=%s", self.owner)
         failures = 0
         purge_due = 0.0
+        sweep_due = 0.0
         while not self.stopping.is_set():
             try:
                 now = asyncio.get_running_loop().time()
@@ -169,6 +205,9 @@ class Worker:
                     # Попытки, чей процесс умер, возвращаем в очередь. Отдельного
                     # лока не нужно: это один идемпотентный UPDATE по сроку.
                     await outbound.reclaim_stale()
+                if now >= sweep_due:
+                    sweep_due = now + _SWEEP_EVERY_SECONDS
+                    await _watch_stale_holds()
 
                 if not await self._one():
                     await self._sleep(_IDLE_SLEEP)

@@ -243,9 +243,13 @@ async def _scope(ids, who):
     assert (await _confirm(ids, "z" * 32)).outcome is ConfirmOutcome.UNKNOWN
     assert await _reservations(ids) == 0
 
-    # Токен не несёт ни одного внутреннего идентификатора.
-    assert str(ids["lesson"]) not in offer.token
-    assert str(ids["katya"]) not in offer.token
+    # Токен СЛУЧАЕН, а не выведен из идентификаторов. Проверять вхождение
+    # подстроки бессмысленно — на свежей базе id бывает однозначным, и цифра
+    # «5» встретится в любых 32 случайных символах. Проверяем то, что важно:
+    # два предложения на ОДНО занятие получают разные токены, то есть по
+    # чужому токену соседний не угадывается.
+    twin = await _offer(ids, who)
+    assert twin.token != offer.token and len(offer.token) >= 30
 
 
 # ─── Протухшее предложение ───────────────────────────────────────────────────

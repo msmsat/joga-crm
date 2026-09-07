@@ -20,7 +20,7 @@ from services import gcal
 from services.booking_access import can_book
 from services.members import full_name
 from services.notifier import lesson_context, notify
-from services.subscription_charge import refund_reservation
+from services import booking
 from services.working_hours import assert_within_working_hours
 
 logger = logging.getLogger(__name__)
@@ -673,11 +673,15 @@ async def cancel_lesson(
 
     lesson.status = "cancelled"
     lesson.cancel_reason = body.reason
-    now = datetime.now()
+    # Снятие людей с отменённого занятия — тоже переход домена, но БЕЗ окон:
+    # это не просьба человека, а следствие решения студии, и «поздно отменять»
+    # к нему не относится (`enforce_policy=False`). Правило одно на все пути:
+    # возврат занятия на абонемент и снятие долга живут в домене, а не в
+    # четырёх копиях цикла.
     for reservation in reservations:
-        reservation.status = "cancelled"
-        reservation.cancelled_at = now
-        await refund_reservation(db, reservation)
+        await booking.cancel(
+            db, studio_id=ctx.studio_id, reservation_id=reservation.id,
+            actor=f"staff:{ctx.role}", reason=body.reason, enforce_policy=False)
     await db.commit()
 
     lesson_ctx = await lesson_context(db, lesson)

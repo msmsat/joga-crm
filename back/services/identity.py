@@ -430,9 +430,14 @@ async def submit_code(db: AsyncSession, identity: CustomerIdentity,
         await db.commit()
         return Verified(VerifyOutcome.INVALID)
 
+    # Хэш читаем ДО коммита счётчика. После `commit()` объект в сессии
+    # обесценивается, и обращение к полю сходило бы за ним в базу заново — а
+    # к тому моменту строку мог забрать одновременный ввод того же кода, и
+    # честная проверка превращалась бы в отказ по случайности.
+    code_hash, row_id = row.code_hash, row.id
     row.attempts += 1
     await db.commit()
-    if not verify_password(code, row.code_hash):
+    if not verify_password(code, code_hash):
         logger.info("identity_verification_failed studio_id=%s identity_id=%s",
                     identity.studio_id, identity.id)
         return Verified(VerifyOutcome.INVALID)
@@ -441,7 +446,7 @@ async def submit_code(db: AsyncSession, identity: CustomerIdentity,
     # того же верного кода не находит строки и получает обычный отказ.
     claimed = (await db.execute(
         ClientEmailOtp.__table__.delete()
-        .where(ClientEmailOtp.id == row.id)
+        .where(ClientEmailOtp.id == row_id)
         .returning(ClientEmailOtp.client_id, ClientEmailOtp.email)
     )).first()
     await db.commit()

@@ -18,7 +18,7 @@ from schemas import (
     StaffTodayScheduleResponse, StaffCancelLessonResponse,
     StaffDayOverrideItem, StaffDayOverrideRequest,
 )
-from services.subscription_charge import refund_reservation
+from services import booking
 
 router = APIRouter()
 
@@ -354,11 +354,14 @@ async def cancel_lesson(
         raise HTTPException(status_code=409, detail="Занятие уже отменено")
 
     lesson.status = "cancelled"
+    # Тот же переход домена, что и при отмене занятия из Журнала: занятие
+    # возвращается на абонемент, долг снимается, окна отмены не применяются —
+    # людей снимает не их решение, а решение студии.
     for reservation in lesson.reservations:
         if reservation.status != "cancelled":
-            reservation.status = "cancelled"
-            reservation.cancelled_at = datetime.now()
-            await refund_reservation(db, reservation)  # занятие возвращается на абонемент
+            await booking.cancel(
+                db, studio_id=lesson.studio_id, reservation_id=reservation.id,
+                actor="staff", reason="занятие отменено", enforce_policy=False)
 
     await db.commit()
 

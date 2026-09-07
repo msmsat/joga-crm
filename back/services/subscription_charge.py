@@ -103,7 +103,8 @@ async def activate_pending_after_visit(db: AsyncSession, reservation: Reservatio
 
 
 async def open_debt(
-    db: AsyncSession, reservation: Reservation, lesson: Lesson
+    db: AsyncSession, reservation: Reservation, lesson: Lesson,
+    *, amount: Optional[int] = None,
 ) -> Optional[ClientPayment]:
     """Долг за бронь, которую нечем оплатить, — «оплата на месте».
 
@@ -120,12 +121,16 @@ async def open_debt(
     """
     if reservation.subscription_id is not None or reservation.is_trial:
         return None
-    if lesson.price <= 0 or reservation.debt_payment_id is not None:
+    # `amount` — цена ЭТОГО КЛИЕНТА (services/booking.client_price). Без неё
+    # берётся прайс, как было до появления скидок на этом пути. Ноль означает
+    # «платить нечего»: скидка покрыла занятие целиком, и долг заводить не за что.
+    owed = lesson.price if amount is None else amount
+    if owed <= 0 or reservation.debt_payment_id is not None:
         return None
 
     debt = ClientPayment(
         client_id=reservation.client_id,
-        amount=lesson.price,
+        amount=owed,
         description=f"Занятие «{lesson.name}» {lesson.start_time.strftime('%d.%m %H:%M')}",
         status="pending",
         action_type="lesson",
