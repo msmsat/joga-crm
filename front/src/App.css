@@ -1129,10 +1129,11 @@
 .sidebar.is-rail .journal-sub { display: none; }
 
 /* Нижний отступ считается ПО ИКОНКЕ, а не по боксу кнопки: у тумблера 30px
-   бокса против 17px иконки, то есть ~6.5px пустоты снизу уже свои. Прежние 8px
-   давали над линией ~14.5px — рядом с плотным списком разделов это читалось как
-   провал под кнопкой. 2px + 6.5px ≈ 8.5px: линия идёт сразу под тумблером. */
-.sidebar.is-rail .sidebar-logo { padding: 14px 0 2px; text-align: center; }
+   бокса против 17px иконки, то есть ~6.5px пустоты сверху и снизу уже свои.
+   Цель — тот же зазор, что между знаком и кнопкой: там `gap: 10px` плюс те же
+   6.5px, глазом 16.5px. Значит снизу 10px + 6.5px — шапка читается как столбик
+   с одним шагом. Менять этот отступ и `gap` у .is-rail .logo-row нужно вместе. */
+.sidebar.is-rail .sidebar-logo { padding: 14px 0 10px; text-align: center; }
 .sidebar.is-rail .sidebar-logo .logo-name { justify-content: center; gap: 0; }
 .sidebar.is-rail .sidebar-mark { width: 26px; height: 26px; }
 
