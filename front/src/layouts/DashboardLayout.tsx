@@ -12,7 +12,7 @@ import PhoneGate from '../components/PhoneGate';
 import { useMe } from '../hooks/useMe';
 import { getUserRoleFromToken } from '../utils/auth';
 import { billingApi } from '../api/billing/billing.api';
-import type { BillingPlan } from '../api/billing/billing.types';
+import { hasBillingAccess } from '../lib/billingAccess';
 import SubscriptionBanner from '../components/SubscriptionBanner';
 import { useStudioSettings } from '../hooks/useStudioCurrency';
 import { settingsApi } from '../api/settings/settings.api';
@@ -21,8 +21,6 @@ import i18n from '../i18n';
 // Важно: путь с /index — иначе на Windows импорт папки ui сталкивается с UI.tsx по регистру.
 import { Sidebar, Navbar, ErrorBoundary } from '../components/ui/index';
 
-// Активная подписка = trial или active; всё прочее (none, истёкшая) → пейволл.
-const ACTIVE_STATUSES = ['trial', 'active'];
 // Разделы, доступные без активной подписки: тариф (чтобы оплатить) и профиль.
 const PAYWALL_ALLOWED = ['/dashboard/billing', '/dashboard/profile'];
 
@@ -81,16 +79,16 @@ export default function DashboardLayout() {
   const currentPath = location.pathname.replace(/\/$/, '');
   const paymentReturn = new URLSearchParams(location.search).get('payment') === 'return';
 
-  const [plan, setPlan] = useState<BillingPlan | null | undefined>(undefined);
+  // Общий кэш со страницей оплаты: активация сразу снимает старый пейволл.
+  const { data: plan, refetch: refetchPlan } = useQuery({
+    queryKey: queryKeys.billingPlan,
+    queryFn: () => billingApi.getPlan(),
+    enabled: role === 'owner',
+  });
   useEffect(() => {
-    if (role !== 'owner') return;
-    // Перечитываем и при возврате с оплаты: вебхук мог активировать подписку, иначе
-    // после ухода со страницы биллинга стухший план ложно вернул бы юзера на пейволл.
-    billingApi.getPlan()
-      .then(setPlan)
-      .catch(() => setPlan(null)); // ошибку глотаем — не запираем на сбое сети
-  }, [role, paymentReturn]);
-  const subActive = plan ? ACTIVE_STATUSES.includes(plan.status) : undefined;
+    if (role === 'owner' && paymentReturn) void refetchPlan();
+  }, [role, paymentReturn, refetchPlan]);
+  const subActive = plan ? hasBillingAccess(plan) : undefined;
 
   // Окно с акцией. Доступность считает сервер (trial_available): акция открыта
   // до первой оплаты и закрывается ею навсегда — своей проверки по статусу тут
@@ -99,7 +97,7 @@ export default function DashboardLayout() {
   // перезахода акция напомнит о себе снова — сгореть она не может, та же кнопка
   // лежит на «Тарифе и оплате».
   const [trialDeclined, setTrialDeclined] = useState(false);
-  const offerTrial = !!plan?.trial_available && !trialDeclined;
+  const offerTrial = !!plan?.trial_available && plan.billing_mode !== 'percent' && !trialDeclined;
 
   // Пока окно открыто, пейволл молчит: иначе владелец читал бы предложение
   // поверх страницы оплаты, на которую его уже уволокло, — а согласие как раз

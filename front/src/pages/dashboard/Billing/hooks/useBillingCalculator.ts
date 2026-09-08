@@ -1,5 +1,5 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import type { BillingMode, PlanType, PlanPeriod, BillingTab, BillingPlan, Invoice } from '../types';
 import type {
@@ -91,7 +91,11 @@ export function useBillingCalculator() {
   const [paymentReturn] = useState(
     () => new URLSearchParams(window.location.search).get('payment') === 'return',
   );
-  const [plan, setPlan] = useState<BillingPlan | null>(null);
+  const { data: plan = null } = useQuery({
+    queryKey: queryKeys.billingPlan,
+    queryFn: () => billingApi.getPlan(),
+  });
+  const setPlan = (next: BillingPlan) => qc.setQueryData(queryKeys.billingPlan, next);
   // Инвойсы и карты (эпик B6) — единый источник в хуке вместо локальных фетчей в табах,
   // чтобы фокус-рефетч и возврат с оплаты освежали оба таба, даже если открыт третий.
   const [invoices, setInvoices] = useState<Invoice[]>([]);
@@ -119,8 +123,11 @@ export function useBillingCalculator() {
   // дальше выбор ступени — за пользователем.
   const planSyncedRef = useRef(false);
   const modeSyncedRef = useRef(false);
-  const loadPlan = () => billingApi.getPlan().then(p => {
-    setPlan(p);
+  const loadPlan = useCallback(() => qc.fetchQuery({
+    queryKey: queryKeys.billingPlan,
+    queryFn: () => billingApi.getPlan(),
+    staleTime: 0,
+  }).then(p => {
     // Оплаченная модель. Подставлять тариф надо ИМЕННО в неё, а не в открытую
     // сейчас плитку: комбо «Старт» не делает «Старт» выбранным и в подписке.
     const paidMode = p?.billing_mode ? MODE_FROM_SERVER[p.billing_mode] : undefined;
@@ -136,7 +143,7 @@ export function useBillingCalculator() {
       setBillingMode(paidMode);
       modeSyncedRef.current = true;
     }
-  }).catch(() => {});
+  }).catch(() => {}), [qc]);
   // /dashboard/billing показывает всю историю без своей пагинации — берём верхнюю
   // границу бэка (задача 3, ?limit=999999 → 422), не 12-строчный дефолт вкладки Настроек.
   const loadInvoices = () =>
@@ -163,7 +170,7 @@ export function useBillingCalculator() {
       // Убираем ?payment=return из URL, чтобы обновление страницы не показало баннер снова.
       window.history.replaceState(null, '', window.location.pathname);
     }
-  }, [paymentReturn]);
+  }, [paymentReturn, loadPlan]);
 
   // ponytail: фокус-рефетч, а не polling (React Query не вводим, §3.2) — добавить
   // setInterval, если понадобится live-обновление при постоянно открытой вкладке.
@@ -177,7 +184,7 @@ export function useBillingCalculator() {
       window.removeEventListener('focus', onFocus);
       document.removeEventListener('visibilitychange', onFocus);
     };
-  }, []);
+  }, [loadPlan]);
 
   // Переключение тарифной модели (эпик B3): без разового платежа, ответ сразу в стейт — без F5.
   // `onDone` вызывается ТОЛЬКО на успехе: связка «активировать комбо → сразу оплатить»
@@ -200,7 +207,9 @@ export function useBillingCalculator() {
     if (modelBusy) return;
     setModelBusy(true);
     billingApi.activateModel(body)
-      .then(res => {
+      .then(async res => {
+        // Старый GET не должен перезаписать подтверждённую активацию.
+        await qc.cancelQueries({ queryKey: queryKeys.billingPlan });
         setPlan(res); loadStats(); loadInvoices();
         // Виджет комиссии живёт на своём кэше react-query (staleTime 30 c) и сам
         // о смене модели не узнаёт: включив процент, владелец видел прежние

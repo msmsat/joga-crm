@@ -170,7 +170,7 @@
       "status": {
         "paid": "Zaplaceno",
         "pending": "Čeká",
-        "failed": "Neúspěšné",
+        "failed": "Nezaplaceno",
         "refunded": "Vráceno"
       }
     },

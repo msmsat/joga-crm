@@ -19,6 +19,10 @@ function translate(t: TFunction, key: string): string {
 
 export function errorMessage(err: unknown, t: TFunction): string {
   if (err instanceof ApiError) {
+    // Неоплата — понятный статус тарифа, а не сырое «failed».
+    if (err.code === 'subscription_expired') return t('billing:banner.unpaid');
+    if (err.code === 'billing.suspended') return t('billing:banner.suspended');
+    if (err.status === 402 && !err.code) return t('billing:banner.unpaid');
     if (err.code) {
       const translated = translate(t, `common:errors.${err.code}`)
       if (translated) return translated

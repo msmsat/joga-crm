@@ -168,7 +168,7 @@
       "status": {
         "paid": "Bezahlt",
         "pending": "Ausstehend",
-        "failed": "Fehlgeschlagen",
+        "failed": "Nicht bezahlt",
         "refunded": "Erstattet"
       }
     },

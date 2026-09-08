@@ -41,7 +41,9 @@
     "renews": "Ihr {{plan}}-Abo verlängert sich am {{date}}",
     "expires": "Ihr {{plan}}-Abo endet am {{date}}",
     "choosePlan": "Tarif wählen",
-    "dismiss": "Ausblenden"
+    "dismiss": "Ausblenden",
+    "unpaid": "Ihr Tarif ist nicht bezahlt. Bezahlen Sie ihn unter Tarif & Zahlung, um fortzufahren.",
+    "suspended": "Der Zugriff ist wegen einer überfälligen Tarifrechnung gesperrt. Bezahlen Sie diese unter Tarif & Zahlung."
   },
   "paymentReturn": {
     "done": "Zahlung erfolgreich — der Tarif {{plan}} ist aktiv.",
@@ -67,7 +69,9 @@
     "percentRate": "{{rate}} % vom Umsatz",
     "modePercent": "Prozenttarif",
     "modeFixed": "Fest",
-    "modeCombo": "Kombi"
+    "modeCombo": "Kombi",
+    "unpaid": "Tarif nicht bezahlt",
+    "awaitingPayment": "Zahlung ausstehend"
   },
   "mode": {
     "title": "Abrechnungsmodell",
@@ -279,7 +283,7 @@
   "status": {
     "paid": "Bezahlt",
     "pending": "Ausstehend",
-    "failed": "Fehlgeschlagen",
+    "failed": "Nicht bezahlt",
     "refunded": "Erstattet"
   },
   "empty": {

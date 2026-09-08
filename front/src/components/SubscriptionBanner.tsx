@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import type { BillingPlan } from '../api/billing/billing.types';
 import { billingApi } from '../api/billing/billing.api';
 import { planLabel } from '../lib/plan';
+import { hasBillingAccess } from '../lib/billingAccess';
 
 // Баннер «подписка заканчивается/обновится» за 3 дня (задача 12c). Только owner —
 // план и карты тянутся с owner-only эндпоинтов; у остальных ролей план = null.
@@ -29,7 +30,7 @@ export default function SubscriptionBanner({ plan }: { plan: BillingPlan | null 
   // читается при рендере — дублировать его в state незачем.
   const [closed, setClosed] = useState(false);
 
-  const expiresAt = plan?.expires_at ?? null;
+  const expiresAt = plan?.billing_mode === 'percent' ? null : plan?.expires_at ?? null;
   const daysLeft = expiresAt ? daysUntil(expiresAt) : Infinity;
   const show = expiresAt !== null && daysLeft <= WARN_DAYS && daysLeft >= 0;
 
@@ -38,6 +39,20 @@ export default function SubscriptionBanner({ plan }: { plan: BillingPlan | null 
     billingApi.getPaymentCards().then((c) => setHasCard(c.length > 0)).catch(() => setHasCard(false));
   }, [show]);
 
+  if (plan && !hasBillingAccess(plan)) {
+    return (
+      <div role="status" className="sub-banner" style={{
+        padding: '12px var(--content-pad, 24px)', color: 'var(--text)',
+        background: 'rgba(216,140,154,0.12)', fontSize: '13.5px',
+      }}>
+        {t('banner.unpaid')}{' '}
+        <button onClick={() => navigate('/dashboard/billing')} style={{
+          border: 0, background: 'transparent', color: 'inherit',
+          font: 'inherit', fontWeight: 700, textDecoration: 'underline', cursor: 'pointer',
+        }}>{t('pay')}</button>
+      </div>
+    );
+  }
   if (!plan || !show || closed || isDismissed(expiresAt!)) return null;
 
   const isTrial = plan.status === 'trial';

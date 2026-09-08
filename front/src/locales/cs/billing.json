@@ -41,7 +41,9 @@
     "renews": "Předplatné {{plan}} se obnoví {{date}}",
     "expires": "Předplatné {{plan}} končí {{date}}",
     "choosePlan": "Vybrat tarif",
-    "dismiss": "Skrýt"
+    "dismiss": "Skrýt",
+    "unpaid": "Tarif není zaplacen. Pro pokračování jej uhraďte v sekci Tarif a platba.",
+    "suspended": "Přístup je pozastaven kvůli neuhrazené faktuře po splatnosti. Uhraďte ji v sekci Tarif a platba."
   },
   "paymentReturn": {
     "done": "Platba proběhla — tarif {{plan}} je aktivní.",
@@ -67,7 +69,9 @@
     "percentRate": "{{rate}} % z tržeb",
     "modePercent": "Procentní tarif",
     "modeFixed": "Pevný",
-    "modeCombo": "Kombinovaný"
+    "modeCombo": "Kombinovaný",
+    "unpaid": "Tarif není zaplacen",
+    "awaitingPayment": "Čeká na platbu"
   },
   "mode": {
     "title": "Model platby",
@@ -280,7 +284,7 @@
   "status": {
     "paid": "Zaplaceno",
     "pending": "Čeká",
-    "failed": "Neúspěšné",
+    "failed": "Nezaplaceno",
     "refunded": "Vráceno"
   },
   "empty": {

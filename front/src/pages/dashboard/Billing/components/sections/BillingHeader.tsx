@@ -8,6 +8,7 @@ import AnimatedCounter from '../ui/AnimatedCounter';
 import { usePhone } from '../../../../../hooks/usePhone';
 import { getCurrencySymbol } from '../../../../../components/UI';
 import { formatMoney } from '../../../../../lib/money';
+import { billingStatusKey, hasBillingAccess } from '../../../../../lib/billingAccess';
 
 interface Props {
   currency?: string;
@@ -50,18 +51,16 @@ export default function BillingHeader({ currency, activeTab, setActiveTab, anima
 
   // Текущая подписка студии: имя тарифа — из каталога (в БД лежит id), срок и цена — из подписки.
   // status=none приходит до первой оплаты — тогда показываем «нет подписки», а не выдуманный Pro.
-  const active = plan && plan.status !== 'none' ? plan : null;
-  const expiresAt = active?.expires_at ? new Date(active.expires_at) : null;
+  const active = plan && (plan.billing_mode === 'percent' || plan.status !== 'none') ? plan : null;
+  const expiresAt = active?.billing_mode !== 'percent' && active?.expires_at ? new Date(active.expires_at) : null;
   // trial — тоже рабочая подписка (выдаётся на онбординге), а не «истёк».
-  const live = active?.status === 'active' || active?.status === 'trial';
+  const live = !!active && hasBillingAccess(active);
   const until = expiresAt?.toLocaleDateString(i18n.language || 'en', { day: 'numeric', month: 'long', year: 'numeric' });
   const statusLabel = !active
     ? t('header.noPlan')
-    : !live
-    ? t('header.expired')
-    : until
+    : until && live && active.status !== 'past_due'
     ? t(active.status === 'trial' ? 'header.trialUntil' : 'header.activeUntil', { date: until })
-    : t(active.status === 'trial' ? 'header.trial' : 'header.active');
+    : t(billingStatusKey(active));
   // Крупная строка шапки. На проценте это САМА МОДЕЛЬ, а не ступень тарифа: платит
   // студия долей с оборота, ступень ей ничего не стоит и ни на что не влияет.
   // На фиксе и комбо ступень как раз и есть то, за что платят, — её и показываем.

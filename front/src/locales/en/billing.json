@@ -41,7 +41,9 @@
     "renews": "Your {{plan}} subscription renews on {{date}}",
     "expires": "Your {{plan}} subscription ends on {{date}}",
     "choosePlan": "Choose a plan",
-    "dismiss": "Dismiss"
+    "dismiss": "Dismiss",
+    "unpaid": "Your plan has not been paid. To continue, pay in Plans & billing.",
+    "suspended": "Access is suspended because a plan invoice is overdue. Pay it in Plans & billing."
   },
   "paymentReturn": {
     "done": "Payment went through — the {{plan}} plan is active.",
@@ -67,7 +69,9 @@
     "percentRate": "{{rate}}% of sales",
     "modePercent": "Percentage plan",
     "modeFixed": "Fixed",
-    "modeCombo": "Combo"
+    "modeCombo": "Combo",
+    "unpaid": "Plan not paid",
+    "awaitingPayment": "Awaiting payment"
   },
   "mode": {
     "title": "Payment model",
@@ -276,7 +280,7 @@
   "status": {
     "paid": "Paid",
     "pending": "Pending",
-    "failed": "Failed",
+    "failed": "Not paid",
     "refunded": "Refunded"
   },
   "empty": {

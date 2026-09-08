@@ -9,6 +9,7 @@ import { billingApi } from "../../../../../api/billing/billing.api";
 import { useBillingCurrency } from "../../../../../hooks/useBillingCurrency";
 import { formatMoney } from "../../../../../lib/money";
 import { planLabel } from "../../../../../lib/plan";
+import { billingStatusKey, hasBillingAccess } from "../../../../../lib/billingAccess";
 import type { useBilling } from "../../hooks/useBilling";
 
 type BillingTabProps = ReturnType<typeof useBilling>;
@@ -63,7 +64,7 @@ export default function BillingTab({ plan, invoices, cards, setAutopay }: Billin
   const p = plan.data;
 
   // Студия без подписки (до первой оплаты) — CTA вместо пустых полей, не голая карточка.
-  if (p.plan_name === "none") {
+  if (p.plan_name === "none" && p.billing_mode !== 'percent') {
     return (
       <EmptyState
         title={t('billing.plan.noSubscription')}
@@ -99,11 +100,11 @@ export default function BillingTab({ plan, invoices, cards, setAutopay }: Billin
             {t('billing.plan.title')}
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: "14px", marginBottom: "16px" }}>
-            <div style={{ fontSize: "32px", fontWeight: 900, color: "white", letterSpacing: "-1px" }}>{planLabel(p.plan_name, tBilling)}</div>
-            <StatusBadge type={p.status === "active" ? "active" : p.status === "trial" ? "info" : "warning"}>{t(`billing.status.${p.status}`)}</StatusBadge>
+            <div style={{ fontSize: "32px", fontWeight: 900, color: "white", letterSpacing: "-1px" }}>{p.billing_mode === 'percent' ? tBilling('header.modePercent') : planLabel(p.plan_name, tBilling)}</div>
+            <StatusBadge type={hasBillingAccess(p) ? "active" : "warning"}>{tBilling(billingStatusKey(p))}</StatusBadge>
           </div>
           <div style={{ display: "flex", gap: "32px", marginBottom: "28px", flexWrap: "wrap" }}>
-            {p.expires_at && (
+            {p.billing_mode !== 'percent' && p.expires_at && (
               <div style={{ fontSize: "12.5px", color: "rgba(255,255,255,0.55)" }}>
                 {t('billing.plan.expiresAt', { date: fmtDate(p.expires_at) })}
               </div>
