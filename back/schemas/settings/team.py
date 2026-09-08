@@ -34,6 +34,8 @@ class StaffCreate(BaseSchema):
     service_ids: list[int] = []
     photo_url: Optional[str] = None
     schedule: list[StaffWorkingHoursItem] = []
+    # HB-05: филиалы, где сотрудник доступен для Resource-записи.
+    branch_ids: list[int] = []
 
 
 class StaffUpdate(BaseSchema):
@@ -51,6 +53,7 @@ class StaffUpdate(BaseSchema):
     service_ids: list[int] = []
     photo_url: Optional[str] = None
     schedule: list[StaffWorkingHoursItem] = []
+    branch_ids: list[int] = []
 
 
 class StaffMessageRequest(BaseSchema):

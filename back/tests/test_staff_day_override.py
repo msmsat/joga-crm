@@ -41,6 +41,9 @@ class _DB:
     async def execute(self, _q):
         return _R(self._results.pop(0))
 
+    async def flush(self):
+        pass
+
     def add(self, obj):
         self.added.append(obj)
 
@@ -57,6 +60,10 @@ PAST = date.today() - timedelta(days=1)
 MEMBER = object()      # членство сотрудника в студии найдено
 BOOKING = (17,)        # строка активной записи на этот день
 NOTHING = None
+# HB-06: `schedule_guard.lock_studio` — первый SELECT в set_day_override.
+# strict_schedule_enabled=False — assert_future_assignments_valid не делает
+# больше ни одного запроса (короткое замыкание на самом входе функции).
+STUDIO = SimpleNamespace(id=1, strict_schedule_enabled=False)
 
 
 def _call(db, is_working, day=None):
@@ -66,7 +73,7 @@ def _call(db, is_working, day=None):
 
 
 def test_creates_override():
-    db = _DB(MEMBER, NOTHING, NOTHING)   # членство, записей нет, отметки ещё нет
+    db = _DB(STUDIO, MEMBER, NOTHING, NOTHING)   # lock_studio, членство, записей нет, отметки ещё нет
     res = _call(db, False)
     assert len(db.added) == 1 and db.added[0].is_working is False
     assert db.added[0].day == FUTURE
@@ -75,7 +82,7 @@ def test_creates_override():
 
 def test_updates_existing_override():
     existing = StaffDayOverride(user_id=7, studio_id=1, day=FUTURE, is_working=False)
-    db = _DB(MEMBER, existing)           # рабочий день записи не проверяет
+    db = _DB(STUDIO, MEMBER, existing)   # lock_studio, членство; рабочий день записи не проверяет
     _call(db, True)
     assert existing.is_working is True
     assert not db.added and not db.deleted and db.commits == 1
@@ -83,13 +90,13 @@ def test_updates_existing_override():
 
 def test_null_clears_override():
     existing = StaffDayOverride(user_id=7, studio_id=1, day=FUTURE, is_working=True)
-    db = _DB(MEMBER, existing)
+    db = _DB(STUDIO, MEMBER, existing)
     _call(db, None)
     assert db.deleted == [existing] and not db.added and db.commits == 1
 
 
 def test_day_off_blocked_when_booked():
-    db = _DB(MEMBER, BOOKING)
+    db = _DB(STUDIO, MEMBER, BOOKING)
     with pytest.raises(Exception) as e:
         _call(db, False)
     assert getattr(e.value, "status_code", None) == 409
@@ -97,7 +104,7 @@ def test_day_off_blocked_when_booked():
 
 
 def test_past_day_rejected():
-    db = _DB(MEMBER)
+    db = _DB(STUDIO, MEMBER)
     with pytest.raises(Exception) as e:
         _call(db, True, day=PAST.isoformat())
     assert getattr(e.value, "status_code", None) == 409
@@ -105,7 +112,7 @@ def test_past_day_rejected():
 
 
 def test_bad_date_rejected():
-    db = _DB(MEMBER)
+    db = _DB(STUDIO, MEMBER)
     with pytest.raises(Exception) as e:
         _call(db, True, day="14.08.2026")
     assert getattr(e.value, "status_code", None) == 422

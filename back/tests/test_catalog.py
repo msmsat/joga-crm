@@ -111,11 +111,20 @@ async def _seed() -> dict:
         ids["users"] = [t1, t2, t_b]
         await db.flush()
 
+        # HB-04: branch_id теперь читается с Lesson напрямую, не с зала через
+        # join (§6.1) — тот же hall→branch, что и у миграции backfill.
+        _hall_branch = {
+            hall_v.id: vaclav.id, hall_k.id: karlin.id,
+            hall_off.id: karlin.id, hall_b.id: b_branch.id,
+        }
+
         def _lesson(**kw):
             base = dict(name="Стретчинг", teacher_name="Анна Новак", duration_min=60,
                         price=500, level="all", equipment="mat", total_spots=8,
                         status="confirmed", tz_iana="Europe/Prague")
             base.update(kw)
+            if "branch_id" not in base and base.get("hall_id") is not None:
+                base["branch_id"] = _hall_branch.get(base["hall_id"])
             return Lesson(**base)
 
         full = _lesson(studio_id=a.id, hall_id=hall_v.id, service_id=s1.id,
@@ -436,7 +445,7 @@ async def _hostile(ids: dict) -> None:
     async with async_session_maker() as db:
         broken = [
             Lesson(studio_id=ids["studio_a"], name=title, teacher_name="Анна Новак",
-                   hall_id=ids["hall_v"], service_id=ids["service_1"],
+                   hall_id=ids["hall_v"], branch_id=ids["branch_vaclav"], service_id=ids["service_1"],
                    teacher_id=ids["trainer_1"], tz_iana="Europe/Prague",
                    start_time=datetime.combine(day, datetime.min.time()).replace(hour=2, minute=30),
                    duration_min=60, price=500, level="all", equipment="mat",
@@ -542,9 +551,13 @@ async def _no_mixed_state(ids: dict) -> None:
     after = datetime(DAY.year, DAY.month, DAY.day, 18, 0)
     async with async_session_maker() as writer:
         lesson = await writer.get(Lesson, ids["karlin"])
-        # Одной транзакцией: время и зал (а значит и филиал) переезжают вместе.
+        # Одной транзакцией: время, зал И филиал переезжают вместе — ровно то,
+        # что делает настоящий писатель (routers/schedule/lessons.py, HB-04):
+        # branch_id больше не выводится из зала на лету, его синхронизирует
+        # тот, кто меняет hall_id.
         lesson.start_time = after
         lesson.hall_id = ids["hall_v"]
+        lesson.branch_id = ids["branch_vaclav"]
         await writer.commit()
 
     async with async_session_maker() as db:

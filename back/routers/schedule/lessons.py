@@ -20,7 +20,7 @@ from services import gcal
 from services.booking_access import can_book
 from services.members import full_name
 from services.notifier import lesson_context, notify
-from services import booking
+from services import booking, schedule_guard
 from services.working_hours import assert_within_working_hours
 
 logger = logging.getLogger(__name__)
@@ -33,6 +33,10 @@ _LESSON_FIELDS = (
     "id", "name", "teacher_name", "teacher_id", "hall_id", "start_time",
     "duration_min", "price", "level", "equipment", "total_spots",
     "service_id", "status", "cancel_reason", "clients_notified",
+    # HB-04: branch_id/booking_mode/tz_iana — уже есть на модели (HB-02), но
+    # без этой строки они не долетали бы до ответа: _lesson_read собирает
+    # dict по явному списку, а не ORM-объект целиком.
+    "branch_id", "booking_mode", "tz_iana",
 )
 
 
@@ -278,12 +282,16 @@ async def _teacher_name_in_studio(teacher_id: int, studio_id: int, db: AsyncSess
     return full_name(member)
 
 
-async def _assert_hall_in_studio(hall_id: int, studio_id: int, db: AsyncSession) -> None:
+async def _assert_hall_in_studio(hall_id: int, studio_id: int, db: AsyncSession) -> Optional[int]:
+    """Зал должен принадлежать студии — иначе 404. Возвращает `Hall.branch_id`
+    (HB-04): event-занятие с залом обязано хранить тот же branch_id, что и
+    зал, а не выводить его на лету при каждом чтении (§6.1)."""
     hall = (await db.execute(
-        select(Hall.id).where(Hall.id == hall_id, Hall.studio_id == studio_id)
-    )).scalar_one_or_none()
+        select(Hall.id, Hall.branch_id).where(Hall.id == hall_id, Hall.studio_id == studio_id)
+    )).one_or_none()
     if hall is None:
         raise HTTPException(status_code=404, detail="Зал не найден в студии")
+    return hall.branch_id
 
 
 async def _booked_count(lesson_id: int, db: AsyncSession) -> int:
@@ -434,15 +442,29 @@ async def create_lesson(
             detail="Создавать занятие можно не позднее чем за 3 часа до начала",
         )
 
+    # HB-06: замок студии — ПЕРВЫЙ шаг порядка блокировок (§6.2), берётся и
+    # при strict=false (иначе включение strict могло бы разминуться с уже
+    # идущей командой). Держится до commit/rollback этого запроса.
+    studio = await schedule_guard.lock_studio(db, ctx.studio_id)
+
     teacher_name = await _teacher_name_in_studio(body.teacher_id, ctx.studio_id, db)
+    branch_id = None
     if body.hall_id is not None:
-        await _assert_hall_in_studio(body.hall_id, ctx.studio_id, db)
+        branch_id = await _assert_hall_in_studio(body.hall_id, ctx.studio_id, db)
     service = await _service_in_studio(body.service_id, ctx.studio_id, db)
     await assert_within_working_hours(
         db, ctx.studio_id,
         start_time=body.start_time, duration_min=body.duration_min,
         teacher_id=body.teacher_id, hall_id=body.hall_id,
     )
+    if studio.strict_schedule_enabled:
+        # Для strict конфликт возвращается ДО записи в БД (§6.2 п.6) — легаси
+        # `_notify_schedule_conflict` ниже в этом случае не зовём вовсе.
+        await schedule_guard.assert_interval_free(
+            db, studio, teacher_id=body.teacher_id, hall_id=body.hall_id,
+            start=body.start_time,
+            end=body.start_time + timedelta(minutes=body.duration_min),
+        )
 
     tz_snapshot = await _pin_timezone(db, ctx.studio_id, body.start_time)
 
@@ -453,6 +475,7 @@ async def create_lesson(
         teacher_id=body.teacher_id,
         teacher_name=teacher_name,
         hall_id=body.hall_id,
+        branch_id=branch_id,
         start_time=body.start_time,
         duration_min=body.duration_min,
         total_spots=body.total_spots,
@@ -468,7 +491,10 @@ async def create_lesson(
     await db.commit()
     await db.refresh(lesson)
 
-    await _notify_schedule_conflict(db, ctx.studio_id, lesson)
+    if not studio.strict_schedule_enabled:
+        # Легаси-сценарий: конфликт (если есть) уже записан, эта студия его
+        # только замечает постфактум и уведомляет админа (§1.2 "Занятость").
+        await _notify_schedule_conflict(db, ctx.studio_id, lesson)
     _schedule_gcal_push(background_tasks, ctx.studio_id, lesson.id)
 
     # Новое занятие — записей нет, booked_count = 0.
@@ -488,6 +514,10 @@ async def update_lesson(
     if ctx.role == "trainer":
         raise HTTPException(status_code=403, detail="Расписание меняют владелец и администратор")
 
+    # HB-06: замок студии ПЕРВЫМ — до чтения самого занятия, поэтому его не
+    # нужно перечитывать отдельно после захвата (первый SELECT уже видит
+    # актуальное состояние).
+    studio = await schedule_guard.lock_studio(db, ctx.studio_id)
     lesson = await get_scoped_lesson(lesson_id, ctx, db)
     fields = body.model_dump(exclude_unset=True)
 
@@ -539,8 +569,14 @@ async def update_lesson(
         if "price" not in fields:
             lesson.price = service.price
 
-    if fields.get("hall_id") is not None:
-        await _assert_hall_in_studio(fields["hall_id"], ctx.studio_id, db)
+    if "hall_id" in fields:
+        # Зал меняется (или снимается) — branch_id синхронизируется вместе с
+        # ним в этом же fields-словаре (§6.1): без этого перенос в другой
+        # филиал молча оставлял бы занятие числящимся в прежнем.
+        if fields["hall_id"] is not None:
+            fields["branch_id"] = await _assert_hall_in_studio(fields["hall_id"], ctx.studio_id, db)
+        else:
+            fields["branch_id"] = None
 
     # Занятие двигают (время/длительность) или меняют занятого им человека/зал —
     # новая комбинация должна попадать в рабочие часы всех троих. Правку, которая
@@ -554,6 +590,18 @@ async def update_lesson(
             teacher_id=fields.get("teacher_id", lesson.teacher_id),
             hall_id=fields.get("hall_id", lesson.hall_id),
         )
+        if studio.strict_schedule_enabled:
+            # Для strict конфликт возвращается ДО записи в БД (§6.2 п.6) —
+            # легаси a7 ниже в этом случае не зовём вовсе.
+            eff_start = fields.get("start_time", lesson.start_time)
+            eff_duration = fields.get("duration_min", lesson.duration_min)
+            await schedule_guard.assert_interval_free(
+                db, studio,
+                teacher_id=fields.get("teacher_id", lesson.teacher_id),
+                hall_id=fields.get("hall_id", lesson.hall_id),
+                start=eff_start, end=eff_start + timedelta(minutes=eff_duration),
+                exclude_lesson_id=lesson.id,
+            )
 
     if "start_time" in fields:
         # Занятие двигают: заново проверяем местное время и перезакрепляем
@@ -600,8 +648,10 @@ async def update_lesson(
                 "start_time": lesson.start_time.strftime("%d.%m %H:%M"),
             })
 
-        # a7: перенос мог столкнуть занятие с другим по тому же тренеру/залу.
-        await _notify_schedule_conflict(db, ctx.studio_id, lesson)
+        if not studio.strict_schedule_enabled:
+            # a7: перенос мог столкнуть занятие с другим по тому же тренеру/залу
+            # (легаси-сценарий — под strict конфликт уже отклонён выше).
+            await _notify_schedule_conflict(db, ctx.studio_id, lesson)
 
         await db.commit()
         await db.refresh(lesson)

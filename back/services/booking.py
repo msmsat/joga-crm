@@ -40,7 +40,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from models import Client, Lesson, Reservation, Studio
-from services import catalog, lesson_time, pricing, studio_time
+from services import catalog, lesson_time, pricing, schedule_guard, studio_time
 from services.booking_access import (
     lock_client, next_free_spot, resolve_coverage,
 )
@@ -448,7 +448,13 @@ async def create(db: AsyncSession, *, studio_id: int, client_id: int, lesson_id:
 
     `shown` — условия, которые человек видел. Разошлись с текущими — отказ
     `TERMS_CHANGED`: подтверждали не это.
+
+    HB-06: замок студии — ПЕРВЫЙ шаг, до всего остального (§6.2). Берётся и
+    при strict=false (иначе включение strict могло бы разминуться с уже
+    идущей командой) — `_check` ниже читает Lesson/Studio/Client заново, уже
+    под замком, поэтому отдельного refresh не требуется.
     """
+    await schedule_guard.lock_studio(db, studio_id)
     checked = await _check(db, studio_id=studio_id, client_id=client_id,
                            lesson_id=lesson_id, now=now, spot_number=spot_number,
                            actor=actor, require_funding=require_funding)
@@ -546,7 +552,10 @@ async def cancel(db: AsyncSession, *, studio_id: int, reservation_id: int,
 
     `enforce_policy=False` — отмена не по просьбе человека, а следствие: студия
     отменила само занятие, и снимать с него людей надо независимо от окон.
+
+    HB-06: замок студии — ПЕРВЫЙ шаг (§6.2), до блокировки Reservation ниже.
     """
+    await schedule_guard.lock_studio(db, studio_id)
     reservation = (await db.execute(
         select(Reservation)
         .join(Lesson, Lesson.id == Reservation.lesson_id)
@@ -688,7 +697,12 @@ async def reschedule(db: AsyncSession, *, studio_id: int, reservation_id: int,
     Занятие абонемента возвращается и списывается снова — на новое занятие мог
     подойти другой абонемент, и переносить ссылку вслепую значило бы оплатить
     йогу пакетом для стретчинга.
+
+    HB-06: замок студии — ПЕРВЫЙ шаг, до блокировки исходной Reservation
+    (`create` ниже возьмёт его повторно для целевого занятия — тот же замок
+    той же транзакции, второй раз он не блокирует и не бросает).
     """
+    await schedule_guard.lock_studio(db, studio_id)
     source = (await db.execute(
         select(Reservation)
         .join(Lesson, Lesson.id == Reservation.lesson_id)

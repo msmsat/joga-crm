@@ -396,17 +396,126 @@ def _miniapp_my_lessons_lacks_reservation_id():
 
 
 def _public_widget_contract_locked():
-    """Старый публичный виджет (без токена) — поля ответа не должны сместиться
-    при появлении discriminated union HB-13."""
+    """Старый публичный виджет (без токена) — старые поля ответа не должны
+    ИСЧЕЗНУТЬ или переименоваться. HB-04 осознанно ДОБАВИЛ `booking_mode`
+    (PublicService) и `service_id`/`branch_id`/`teacher_id`/`booking_mode`/
+    `tz_iana` (PublicSlot) — это ожидаемое расширение контракта (AC-01/AC-29),
+    поэтому здесь фиксируется набор ПОСЛЕ HB-04, а не набор до него."""
     assert set(public_router.PublicService.model_fields) == {
         "id", "name", "description", "price", "duration_min", "category", "color",
+        "booking_mode",
     }
     assert set(public_router.PublicSlot.model_fields) == {
         "lesson_id", "name", "start_time", "duration_min", "price", "level", "free_spots",
+        "service_id", "branch_id", "teacher_id", "booking_mode", "tz_iana",
     }
     assert set(public_router.ReserveResponse.model_fields) == {
         "reservation_id", "lesson_name", "start_time",
     }
+
+
+# ─── HB-04, AC-01: одинаковые названия услуг/филиалов не смешиваются ─────────
+
+async def _same_names_discriminated_by_id(ids):
+    """Две услуги и два филиала с ОДИНАКОВЫМ названием — фильтр и карточка
+    обязаны опираться на числовой id (service_id/branch_id), не на имя.
+    AC-01: "выбор первой передаёт её id; вторая не появляется в результатах"."""
+    from starlette.requests import Request
+
+    from ratelimit import limiter
+
+    miniapp = importlib.import_module("routers.booking.miniapp")
+    limiter.enabled = False  # см. tests/test_miniapp_guest.py: slowapi требует настоящий Request
+
+    def _req() -> Request:
+        return Request({
+            "type": "http", "method": "GET", "path": "/", "headers": [],
+            "query_string": b"", "client": ("127.0.0.1", 0),
+        })
+
+    async with async_session_maker() as db:
+        studio = Studio(name=f"{_TAG}-DUP-{ids['studio']}", tz_iana="Europe/Prague", currency="CZK")
+        db.add(studio)
+        await db.flush()
+        db.add(StudioBookingSettings(studio_id=studio.id, booking_window_days=30,
+                                     min_booking_advance_min=1, widget_work_start="00:00",
+                                     widget_work_end="00:00"))
+        branch_a = StudioBranch(studio_id=studio.id, name="Филиал")
+        branch_b = StudioBranch(studio_id=studio.id, name="Филиал")  # то же имя
+        db.add_all([branch_a, branch_b])
+        await db.flush()
+        hall_a = Hall(studio_id=studio.id, branch_id=branch_a.id, name="Зал A", capacity=8)
+        hall_b = Hall(studio_id=studio.id, branch_id=branch_b.id, name="Зал B", capacity=8)
+        teacher = User(email=f"dup-{ids['studio']}@test.local", hashed_password="x", name="T")
+        db.add_all([hall_a, hall_b, teacher])
+        await db.flush()
+        db.add(StudioMember(user_id=teacher.id, studio_id=studio.id, role="trainer",
+                            status="active", name="T", last_name="T"))
+        service_a = Service(studio_id=studio.id, name="Стретчинг", price=500, duration_min=60)
+        service_b = Service(studio_id=studio.id, name="Стретчинг", price=700, duration_min=90)  # то же имя
+        db.add_all([service_a, service_b])
+        await db.flush()
+
+        lesson_a = Lesson(studio_id=studio.id, name="Стретчинг", teacher_name="T",
+                          teacher_id=teacher.id, hall_id=hall_a.id, branch_id=branch_a.id,
+                          service_id=service_a.id, tz_iana="Europe/Prague",
+                          start_time=datetime.combine(TOMORROW, time(10, 0)),
+                          duration_min=60, price=500, level="", equipment="", total_spots=8,
+                          status="confirmed")
+        lesson_b = Lesson(studio_id=studio.id, name="Стретчинг", teacher_name="T",
+                          teacher_id=teacher.id, hall_id=hall_b.id, branch_id=branch_b.id,
+                          service_id=service_b.id, tz_iana="Europe/Prague",
+                          start_time=datetime.combine(TOMORROW, time(11, 0)),
+                          duration_min=90, price=700, level="", equipment="", total_spots=8,
+                          status="confirmed")
+        db.add_all([lesson_a, lesson_b])
+        await db.commit()
+        studio_id = studio.id
+        sa_id, sb_id = service_a.id, service_b.id
+        ba_id, bb_id = branch_a.id, branch_b.id
+        la_id, lb_id = lesson_a.id, lesson_b.id
+
+    try:
+        guest = miniapp.Viewer(None, studio_id)
+
+        # Фильтр по service_id — вторая услуга (то же имя) не появляется.
+        async with async_session_maker() as db:
+            by_service = await miniapp_lessons.lessons_by_date(TOMORROW, guest, db, service_id=sa_id)
+        assert {c.id for c in by_service} == {la_id}, by_service
+        assert by_service[0].service_id == sa_id
+
+        # Фильтр по branch_id — аналогично, по числовому id, не по имени.
+        async with async_session_maker() as db:
+            by_branch = await miniapp_lessons.lessons_by_date(TOMORROW, guest, db, branch_id=bb_id)
+        assert {c.id for c in by_branch} == {lb_id}, by_branch
+        assert by_branch[0].branch_id == bb_id
+
+        # Без фильтра — обе карточки видны, каждая со СВОИМ id, не спутаны.
+        async with async_session_maker() as db:
+            both = await miniapp_lessons.lessons_by_date(TOMORROW, guest, db)
+        by_id = {c.id: c for c in both}
+        assert by_id[la_id].service_id == sa_id and by_id[la_id].branch_id == ba_id
+        assert by_id[lb_id].service_id == sb_id and by_id[lb_id].branch_id == bb_id
+
+        # Тот же контроль на старом публичном виджете (public.py).
+        async with async_session_maker() as db:
+            public_by_service = await public_router.public_slots(
+                request=_req(), studio_id=studio_id, service_id=sb_id, on_date=None, db=db)
+        assert {s.lesson_id for s in public_by_service} == {lb_id}
+        assert public_by_service[0].service_id == sb_id
+        assert public_by_service[0].branch_id == bb_id
+    finally:
+        async with async_session_maker() as db:
+            await db.execute(delete(Lesson).where(Lesson.studio_id == studio_id))
+            await db.execute(delete(Service).where(Service.studio_id == studio_id))
+            await db.execute(delete(Hall).where(Hall.studio_id == studio_id))
+            await db.execute(delete(StudioBranch).where(StudioBranch.studio_id == studio_id))
+            await db.execute(delete(StudioMember).where(StudioMember.studio_id == studio_id))
+            await db.execute(delete(Studio).where(Studio.id == studio_id))
+            await db.execute(delete(User).where(User.email == f"dup-{ids['studio']}@test.local"))
+            await db.execute(delete(StudioBookingSettings).where(
+                StudioBookingSettings.studio_id == studio_id))
+            await db.commit()
 
 
 def test_hybrid_static_contracts_locked():
@@ -435,6 +544,7 @@ def test_hybrid_compatibility_against_the_database():
             await _free_lesson(ids)
             await _wipe(ids)
             await _crm_id_contract(ids)
+            await _same_names_discriminated_by_id(ids)
         finally:
             await _cleanup(ids)
 

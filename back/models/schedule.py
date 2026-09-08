@@ -29,7 +29,32 @@ class Hall(Base):
 
 class Lesson(Base):
     __tablename__ = "lessons"
-    __table_args__ = (CheckConstraint("status IN ('confirmed', 'pending', 'cancelled')", name="check_lesson_status"),)
+    __table_args__ = (
+        CheckConstraint("status IN ('confirmed', 'pending', 'cancelled')", name="check_lesson_status"),
+        CheckConstraint("booking_mode IN ('event', 'resource')", name="check_lesson_booking_mode"),
+        CheckConstraint(
+            "buffer_before_min >= 0 AND buffer_after_min >= 0",
+            name="check_lesson_buffers_non_negative",
+        ),
+        # resource — технический интервал ОДНОГО специалиста и ОДНОГО клиента:
+        # вместимость 1, и обязаны быть известны услуга, мастер, филиал и
+        # зона (без неё AC-22 разрешает считать момент). Все существующие
+        # строки — booking_mode='event' по умолчанию миграции HB-02, поэтому
+        # условие проверяется только для НОВЫХ resource-записей (HB-10+).
+        CheckConstraint(
+            "booking_mode <> 'resource' OR ("
+            "total_spots = 1 AND service_id IS NOT NULL AND teacher_id IS NOT NULL "
+            "AND branch_id IS NOT NULL AND tz_iana IS NOT NULL)",
+            name="check_lesson_resource_requires_fields",
+        ),
+        # Историческая длительность не гарантирована — добавлена NOT VALID в
+        # миграции HB-02 (см. её текст): новые/изменённые строки обязаны
+        # пройти проверку, старые нарушения НЕ исправляются догадкой, а ждут
+        # отчёта HB-24 (hybrid_booking_audit.py).
+        CheckConstraint("duration_min > 0", name="check_lesson_duration_positive"),
+        Index("ix_lesson_studio_teacher_start", "studio_id", "teacher_id", "start_time"),
+        Index("ix_lesson_studio_branch_start", "studio_id", "branch_id", "start_time"),
+    )
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     studio_id: Mapped[int] = mapped_column(ForeignKey("studios.id", ondelete="CASCADE"), index=True)
@@ -37,6 +62,13 @@ class Lesson(Base):
     teacher_name: Mapped[str] = mapped_column(String(100))
     teacher_id: Mapped[Optional[int]] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True)
     hall_id: Mapped[Optional[int]] = mapped_column(ForeignKey("halls.id", ondelete="SET NULL"), nullable=True, index=True)
+    # Филиал занятия. Для event с залом заполняется по Hall.branch_id при
+    # миграции (HB-02 п.2) и обязан совпадать с ним и дальше (§6.1); для
+    # hall-less event остаётся NULL — угадывать филиал по последней записи
+    # запрещено. Для resource обязателен (см. CHECK выше).
+    branch_id: Mapped[Optional[int]] = mapped_column(
+        ForeignKey("studio_branches.id", ondelete="SET NULL"), nullable=True, index=True,
+    )
     # МЕСТНОЕ СТЕННОЕ время студии, не UTC. Занятие — событие по часам на стене:
     # «вторник, 19:00» обязано быть 19:00 и зимой, и летом.
     start_time: Mapped[datetime] = mapped_column(DateTime(timezone=False))
@@ -57,6 +89,19 @@ class Lesson(Base):
     cancel_reason: Mapped[Optional[str]] = mapped_column(String(300), nullable=True)
     clients_notified: Mapped[bool] = mapped_column(Boolean, default=False)
     gcal_event_id: Mapped[Optional[str]] = mapped_column(String(120), nullable=True, index=True)
+
+    # HB-02: снимок механики на момент создания занятия — event (группа/
+    # заранее заведённый разовый приём) или resource (техническое occasion
+    # под одну confirm-транзакцию, HB-10). Буферы — минуты ДО/ПОСЛЕ занятого
+    # интервала (уборка зала, переход мастера); у старых event они 0, что и
+    # означает «буферов не было».
+    booking_mode: Mapped[str] = mapped_column(String(16), default="event", server_default="event")
+    buffer_before_min: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
+    buffer_after_min: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
+    # Оптимистическая версия — растёт при каждом переносе resource-интервала
+    # (HB-12). Confirm/reschedule сверяют её под Studio-lock: расхождение
+    # значит, что запись успели тронуть между показом и подтверждением.
+    version: Mapped[int] = mapped_column(Integer, default=1, server_default="1")
 
     studio: Mapped["Studio"] = relationship(back_populates="lessons")
     hall: Mapped[Optional["Hall"]] = relationship(back_populates="lessons")

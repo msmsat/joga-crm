@@ -1,4 +1,6 @@
+from datetime import datetime
 from typing import Optional, List, Dict
+from pydantic import model_validator
 from schemas._base import BaseSchema
 from schemas.common import Page
 
@@ -7,6 +9,32 @@ class StaffHall(BaseSchema):
     id: int
     name: str
     color: Optional[str] = None
+
+
+class StaffBranchItem(BaseSchema):
+    """Назначение сотрудника на филиал (HB-05) — Resource-доступность вне
+    этого списка не считается: нет строки, нет доступности (§4.3)."""
+    id: int
+    name: str
+
+
+class StaffBusyIntervalItem(BaseSchema):
+    id: int
+    start_time: datetime
+    end_time: datetime
+    reason: Optional[str] = None
+
+
+class StaffBusyIntervalCreate(BaseSchema):
+    start_time: datetime
+    end_time: datetime
+    reason: Optional[str] = None
+
+    @model_validator(mode="after")
+    def _end_after_start(self) -> "StaffBusyIntervalCreate":
+        if self.end_time <= self.start_time:
+            raise ValueError("Конец перерыва должен быть позже начала")
+        return self
 
 
 class StaffServiceItem(BaseSchema):
@@ -96,6 +124,8 @@ class StaffProfileResponse(BaseSchema):
     services: List[StaffServiceItem]
     today_schedule: List[StaffTodayLesson]
     week_working_hours: List[StaffWorkingHoursItem]
+    # HB-05: филиалы, где сотрудник доступен для Resource-записи.
+    branches: List[StaffBranchItem] = []
 
 
 class StaffMutateResponse(BaseSchema):

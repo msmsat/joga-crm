@@ -41,6 +41,11 @@ class _User:
     id = 1
 
 
+class _Studio:
+    """HB-06: `schedule_guard.lock_studio` — первый SELECT в update_lesson."""
+    strict_schedule_enabled = False
+
+
 class _Lesson:
     def __init__(self, start_time, status="confirmed"):
         self.id = 1
@@ -59,6 +64,11 @@ class _Lesson:
         self.service_id = None
         self.cancel_reason = None
         self.clients_notified = False
+        # HB-04: новые поля Lesson (branch_id/booking_mode/tz_iana, HB-02) —
+        # фейковый объект должен нести их, как реальная ORM-модель.
+        self.branch_id = None
+        self.booking_mode = "event"
+        self.tz_iana = None
 
 
 class _StudioPrefs:
@@ -207,6 +217,7 @@ def test_reschedule_with_client_sets_notified_true_when_email_enabled():
     lesson = _Lesson(start_time=datetime.now() + timedelta(hours=10))
     new_start = datetime.now() + timedelta(hours=20)
     db = _DB([
+        _Studio(),                   # lock_studio
         lesson,                      # get_scoped_lesson
         None, None, None,            # гейт рабочих часов: студия / отметка даты / график тренера
         None,                        # студия для снимка зоны (P1.2): None → зона не подтверждена
@@ -237,7 +248,7 @@ def test_reschedule_with_client_notified_false_when_channel_disabled():
     lesson = _Lesson(start_time=datetime.now() + timedelta(hours=10))
     new_start = datetime.now() + timedelta(hours=20)
     # None×3 — гейт рабочих часов, ещё один None — студия для снимка зоны (P1.2)
-    db = _DB([lesson, None, None, None, None, [7], [], 0])
+    db = _DB([_Studio(), lesson, None, None, None, None, [7], [], 0])
 
     async def fake_notify(db_, studio_id, role, event_id, context=None):
         return False  # ни один канал не доставил (например, все выключены)
@@ -260,7 +271,7 @@ def test_reschedule_without_clients_stays_false_no_notify_call():
     lesson = _Lesson(start_time=datetime.now() + timedelta(hours=10))
     new_start = datetime.now() + timedelta(hours=20)
     # None×3 — гейт рабочих часов, ещё один None — студия для снимка зоны (P1.2)
-    db = _DB([lesson, None, None, None, None, [], [], 0])
+    db = _DB([_Studio(), lesson, None, None, None, None, [], [], 0])
     calls = []
 
     async def fake_notify(db_, studio_id, role, event_id, context=None):
@@ -285,7 +296,7 @@ def test_reschedule_cancelled_lesson_rejected():
     уведомлений) — 400 раньше похода в БД за клиентами, правка не применяется."""
     lesson = _Lesson(start_time=datetime.now() + timedelta(hours=10), status="cancelled")
     new_start = datetime.now() + timedelta(hours=20)
-    db = _DB([lesson])  # get_scoped_lesson — guard срабатывает раньше следующего execute
+    db = _DB([_Studio(), lesson])  # lock_studio, get_scoped_lesson — guard срабатывает раньше следующего execute
     body = LessonUpdateRequest(start_time=new_start)
     try:
         asyncio.run(L.update_lesson(1, body, _ctx(), db))
@@ -301,7 +312,7 @@ def test_reschedule_cancelled_lesson_rejected():
 def test_non_reschedule_field_does_not_trigger_notify():
     """price не входит в reschedule_fields — notify-блок вообще не заходит."""
     lesson = _Lesson(start_time=datetime.now() + timedelta(hours=10))
-    db = _DB([lesson, 0])  # get_scoped_lesson, финальный _booked_count — и всё
+    db = _DB([_Studio(), lesson, 0])  # lock_studio, get_scoped_lesson, финальный _booked_count — и всё
     body = LessonUpdateRequest(price=777)
     result = asyncio.run(L.update_lesson(1, body, _ctx(), db))
     assert result.price == 777
@@ -315,6 +326,7 @@ def test_cancel_sets_notified_true_when_client_notified():
     db = _DB([
         lesson,                      # get_scoped_lesson
         [booked],                    # select Reservation (booked, каскад отмены)
+        _Studio(),                   # booking.cancel: lock_studio (HB-06)
         booked,                      # booking.cancel находит ту же бронь
     ])
     calls = []

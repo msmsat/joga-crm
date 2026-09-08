@@ -18,6 +18,11 @@ class _User:
     id = 1
 
 
+class _Studio:
+    """HB-06: `schedule_guard.lock_studio` — первый SELECT в create/update_lesson."""
+    strict_schedule_enabled = False
+
+
 class _Lesson:
     def __init__(self, start_time, status="confirmed", service_id=None):
         self.id = 1
@@ -36,6 +41,11 @@ class _Lesson:
         self.service_id = service_id
         self.cancel_reason = None
         self.clients_notified = False
+        # HB-04: новые поля Lesson (branch_id/booking_mode/tz_iana, HB-02) —
+        # фейковый объект должен нести их, как реальная ORM-модель.
+        self.branch_id = None
+        self.booking_mode = "event"
+        self.tz_iana = None
 
 
 class _Service:
@@ -92,6 +102,11 @@ class _DB:
             obj.id = 1
         if getattr(obj, "clients_notified", None) is None:
             obj.clients_notified = False
+        # HB-02: booking_mode — ORM client-side default (default="event"),
+        # который реальный flush применяет сам; фейковая сессия ничего не
+        # флашит, поэтому в памяти он остался бы None (не строкой "event").
+        if getattr(obj, "booking_mode", None) is None:
+            obj.booking_mode = "event"
 
     async def execute(self, _q):
         return _R(self._seq.pop(0))
@@ -119,10 +134,11 @@ def test_create_denormalizes_name_from_service():
     body = LessonCreateRequest(
         service_id=1, teacher_id=1, start_time=datetime.now() + timedelta(hours=4),
     )
-    # teacher, service, гейт рабочих часов (студия / отметка даты / недельный
-    # график тренера — графика нет, не ограничивает), студия для снимка зоны
-    # (P1.2: None → зона не подтверждена, снимок не ставится), a7 conflict → []
-    db = _DB([_Teacher(), _Service(id=1, name="Хатха-йога"), None, None, None, None, []])
+    # lock_studio, teacher, service, гейт рабочих часов (студия / отметка даты /
+    # недельный график тренера — графика нет, не ограничивает), студия для
+    # снимка зоны (P1.2: None → зона не подтверждена, снимок не ставится),
+    # a7 conflict → []
+    db = _DB([_Studio(), _Teacher(), _Service(id=1, name="Хатха-йога"), None, None, None, None, []])
     result = asyncio.run(L.create_lesson(body, _ctx(), db))
     assert result.name == "Хатха-йога"
     assert db.committed is True
@@ -134,7 +150,7 @@ def test_create_denormalizes_price_from_service():
     body = LessonCreateRequest(
         service_id=1, teacher_id=1, start_time=datetime.now() + timedelta(hours=4),
     )
-    db = _DB([_Teacher(), _Service(id=1, name="Хатха-йога", price=1500), None, None, None, None, []])
+    db = _DB([_Studio(), _Teacher(), _Service(id=1, name="Хатха-йога", price=1500), None, None, None, None, []])
     assert asyncio.run(L.create_lesson(body, _ctx(), db)).price == 1500
 
 
@@ -142,7 +158,7 @@ def test_create_explicit_price_wins_over_service():
     body = LessonCreateRequest(
         service_id=1, teacher_id=1, start_time=datetime.now() + timedelta(hours=4), price=0,
     )
-    db = _DB([_Teacher(), _Service(id=1, price=1500), None, None, None, None, []])
+    db = _DB([_Studio(), _Teacher(), _Service(id=1, price=1500), None, None, None, None, []])
     assert asyncio.run(L.create_lesson(body, _ctx(), db)).price == 0
 
 
@@ -150,7 +166,7 @@ def test_create_service_not_in_studio_404():
     body = LessonCreateRequest(
         service_id=99, teacher_id=1, start_time=datetime.now() + timedelta(hours=4),
     )
-    db = _DB([_Teacher(), None])  # teacher ok, service не найдена в студии
+    db = _DB([_Studio(), _Teacher(), None])  # lock_studio, teacher ok, service не найдена в студии
     try:
         asyncio.run(L.create_lesson(body, _ctx(), db))
         raise AssertionError("ожидали 404")
@@ -164,6 +180,7 @@ def test_create_service_not_in_studio_404():
 def test_update_service_id_recomputes_name():
     lesson = _Lesson(start_time=datetime.now() + timedelta(hours=10), service_id=1)
     db = _DB([
+        _Studio(),                      # lock_studio
         lesson,                        # get_scoped_lesson
         _Service(id=2, name="Стретчинг", price=2000),  # _service_in_studio
         0,                              # финальный _booked_count
@@ -178,7 +195,7 @@ def test_update_service_id_recomputes_name():
 
 def test_update_service_not_in_studio_404():
     lesson = _Lesson(start_time=datetime.now() + timedelta(hours=10), service_id=1)
-    db = _DB([lesson, None])  # get_scoped_lesson, service не найдена
+    db = _DB([_Studio(), lesson, None])  # lock_studio, get_scoped_lesson, service не найдена
     body = LessonUpdateRequest(service_id=99)
     try:
         asyncio.run(L.update_lesson(1, body, _ctx(), db))

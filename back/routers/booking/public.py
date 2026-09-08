@@ -43,6 +43,10 @@ class PublicService(BaseSchema):
     duration_min: int
     category: Optional[str]
     color: Optional[str]
+    # HB-03/04: механика записи услуги — витрина использует её, чтобы
+    # разделить предложения на event/resource в hybrid-студии (MA-01), не
+    # разбирая service_type или название.
+    booking_mode: str = "event"
 
 
 class PublicSlot(BaseSchema):
@@ -53,6 +57,13 @@ class PublicSlot(BaseSchema):
     price: int
     level: str
     free_spots: int
+    # HB-04: числовые тождества карточки (AC-01) — одинаковые названия услуг
+    # и филиалов не смешиваются, если выбор идёт по этим полям, а не по name.
+    service_id: Optional[int] = None
+    branch_id: Optional[int] = None
+    teacher_id: Optional[int] = None
+    booking_mode: str = "event"
+    tz_iana: Optional[str] = None
 
 
 @router.get("/public/{studio_id}/services", response_model=List[PublicService])
@@ -70,6 +81,8 @@ async def public_slots(
     request: Request,
     studio_id: int,
     service_id: Optional[int] = None,
+    branch_id: Optional[int] = None,
+    teacher_id: Optional[int] = None,
     on_date: Optional[date] = Query(None, alias="date"),
     db: AsyncSession = Depends(get_db),
 ):
@@ -107,11 +120,16 @@ async def public_slots(
             Lesson.id.label("lesson_id"), Lesson.name, Lesson.start_time,
             Lesson.duration_min, Lesson.price, Lesson.level,
             (Lesson.total_spots - booked).label("free_spots"),
+            Lesson.service_id, Lesson.branch_id, Lesson.teacher_id,
+            Lesson.booking_mode, Lesson.tz_iana,
         )
         .outerjoin(booked_sq, booked_sq.c.lesson_id == Lesson.id)
         .where(
             Lesson.studio_id == studio_id,
             Lesson.status != "cancelled",
+            # HB-04: старый публичный виджет предлагает выбираемые события —
+            # resource-интервал существующей брони сюда не относится (§6.1).
+            Lesson.booking_mode != "resource",
             Lesson.start_time >= lower,
             Lesson.start_time < upper,
             Lesson.total_spots - booked > 0,
@@ -120,6 +138,10 @@ async def public_slots(
     )
     if service_id is not None:
         stmt = stmt.where(Lesson.service_id == service_id)
+    if branch_id is not None:
+        stmt = stmt.where(Lesson.branch_id == branch_id)
+    if teacher_id is not None:
+        stmt = stmt.where(Lesson.teacher_id == teacher_id)
 
     rows = (await db.execute(stmt)).mappings().all()
     # Часы работы виджета — фильтр по времени суток, в SQL их не выразить одним

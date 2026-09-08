@@ -1,5 +1,8 @@
 from schemas.staff.staff import (
     StaffHall,
+    StaffBranchItem,
+    StaffBusyIntervalItem,
+    StaffBusyIntervalCreate,
     StaffWorkingHoursItem,
     StaffTodayLesson,
     StaffMonthLesson,
@@ -21,6 +24,9 @@ from schemas.staff.staff import (
 
 __all__ = [
     "StaffHall",
+    "StaffBranchItem",
+    "StaffBusyIntervalItem",
+    "StaffBusyIntervalCreate",
     "StaffWorkingHoursItem",
     "StaffTodayLesson",
     "StaffMonthLesson",
