@@ -324,6 +324,7 @@ def test_cancel_sets_notified_true_when_client_notified():
     lesson = _Lesson(start_time=datetime.now() + timedelta(hours=5))
     booked = _Reservation(7)
     db = _DB([
+        _Studio(),                   # cancel_lesson: lock_studio before child rows
         lesson,                      # get_scoped_lesson
         [booked],                    # select Reservation (booked, каскад отмены)
         _Studio(),                   # booking.cancel: lock_studio (HB-06)
@@ -351,7 +352,7 @@ def test_cancel_no_clients_stays_false():
     """Без записанных клиентов клиентский c3 не зовётся, но тренер (t9) всё
     равно узнаёт об отмене своего занятия — не зависит от booked_client_ids."""
     lesson = _Lesson(start_time=datetime.now() + timedelta(hours=5))
-    db = _DB([lesson, []])  # get_scoped_lesson, reservations (пусто)
+    db = _DB([_Studio(), lesson, []])  # lock_studio, lesson, reservations
     calls = []
 
     async def fake_notify(db_, studio_id, role, event_id, context=None):

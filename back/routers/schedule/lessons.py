@@ -22,6 +22,7 @@ from services.members import full_name
 from services.notifier import lesson_context, notify
 from services import booking, schedule_guard
 from services.working_hours import assert_within_working_hours
+from services.schedule_guard import lock_studio
 
 logger = logging.getLogger(__name__)
 
@@ -601,6 +602,9 @@ async def update_lesson(
                 hall_id=fields.get("hall_id", lesson.hall_id),
                 start=eff_start, end=eff_start + timedelta(minutes=eff_duration),
                 exclude_lesson_id=lesson.id,
+                buffer_before_min=lesson.buffer_before_min,
+                buffer_after_min=lesson.buffer_after_min,
+                tz_iana=studio.tz_iana if "start_time" in fields else lesson.tz_iana,
             )
 
     if "start_time" in fields:
@@ -673,6 +677,7 @@ async def delete_lesson(
     копить мусорные отменённые занятия, а не для стирания истории — поэтому
     занятие с активными записями удалить нельзя.
     """
+    await lock_studio(db, ctx.studio_id)
     if ctx.role == "trainer":
         raise HTTPException(status_code=403, detail="Расписание меняют владелец и администратор")
 
@@ -701,6 +706,7 @@ async def cancel_lesson(
     staff/schedule.py cancel_lesson. Каждой снятой записи возвращаем занятие на
     абонемент — отмена занятия студией не должна стоить клиенту посещения.
     """
+    await lock_studio(db, ctx.studio_id)
     if ctx.role == "trainer":
         raise HTTPException(status_code=403, detail="Расписание меняют владелец и администратор")
 

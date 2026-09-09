@@ -41,6 +41,7 @@ from services.subscription_charge import (
 )
 
 from .miniapp import Viewer, get_current_client, get_viewer
+from services.schedule_guard import lock_studio
 
 router = APIRouter()
 
@@ -570,10 +571,12 @@ async def create_reservation(
         сразу (иначе его займут, пока студия думает), занятие с абонемента тоже
         списывается сразу и возвращается при отклонении — `refund_reservation`.
     """
+    await lock_studio(db, client.studio_id)
     lesson = (await db.execute(
         select(Lesson).where(
             Lesson.id == body.lesson_id,
             Lesson.studio_id == client.studio_id,
+            Lesson.booking_mode == "event",
             Lesson.status != "cancelled",
         )
     )).scalar_one_or_none()
@@ -689,6 +692,7 @@ async def cancel_reservation(
     client: Client = Depends(get_current_client),
     db: AsyncSession = Depends(get_db),
 ):
+    await lock_studio(db, client.studio_id)
     reservation = await _own_active_reservation(db, client, lesson_id)
     lesson = await _studio_lesson(db, client, lesson_id)
 

@@ -20,7 +20,8 @@ from schemas import (
     StaffDayOverrideItem, StaffDayOverrideRequest,
 )
 from schemas.staff.staff import StaffBusyIntervalCreate, StaffBusyIntervalItem
-from services import booking, schedule_guard
+from services import booking, schedule_guard, booking_time
+from services.schedule_guard import lock_studio
 
 router = APIRouter()
 
@@ -275,9 +276,9 @@ async def set_day_override(
             is_working=payload.is_working,
         ))
 
-    if payload.is_working is False:
+    if payload.is_working is not True:
         # Закрытие дня может обрезать доступность НИЖЕ уже принятой
-        # resource-записи (§6.2 п.5) — открытие дня такой риск не несёт.
+        # записи (§6.2 п.5); возврат к недельному графику тоже может закрыть день.
         await db.flush()
         conflicts = await schedule_guard.assert_future_assignments_valid(
             db, studio, user_id=staff_id)
@@ -333,10 +334,13 @@ async def create_busy_interval(
     studio = await schedule_guard.lock_studio(db, studio_id)
     await _assert_staff_in_studio(staff_id, studio_id, db)
 
+    if booking_time.resolve_interval(payload.start_time, payload.end_time, studio.tz_iana) is None:
+        raise HTTPException(422, detail="Укажите однозначное местное время и часовой пояс студии")
     row = StaffBusyInterval(
         user_id=staff_id, studio_id=studio_id,
         start_time=payload.start_time, end_time=payload.end_time,
         reason=payload.reason,
+        tz_iana=studio.tz_iana,
     )
     db.add(row)
     await db.flush()
@@ -354,6 +358,7 @@ async def delete_busy_interval(
     ctx: StudioContext = Depends(require_role("owner")),
     db: AsyncSession = Depends(get_db),
 ):
+    await lock_studio(db, ctx.studio_id)
     studio_id = ctx.studio_id
     await _assert_staff_in_studio(staff_id, studio_id, db)
 
@@ -429,6 +434,7 @@ async def cancel_lesson(
     ctx: StudioContext = Depends(require_role("owner")),
     db: AsyncSession = Depends(get_db),
 ):
+    await lock_studio(db, ctx.studio_id)
     studio_id = ctx.studio_id
     await _assert_staff_in_studio(staff_id, studio_id, db)
 

@@ -929,6 +929,10 @@ def test_a_foreign_account_cannot_hijack_a_reserved_request(monkeypatch):
         async def execute(self, query):
             sql = str(query)
             row = victim if "stripe_checkouts" in sql and "session_id IS NULL" in sql else None
+            if row is victim and "SELECT stripe_checkouts.studio_id" in sql:
+                row = victim.studio_id
+            if "FROM studios" in sql:
+                row = SimpleNamespace(id=victim.studio_id)
             return SimpleNamespace(scalar_one_or_none=lambda: row)
 
         async def commit(self):

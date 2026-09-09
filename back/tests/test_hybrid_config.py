@@ -171,7 +171,7 @@ async def _version_bumps_on_service_relevant_changes_only(studio_id: int) -> Non
         v1 = (await get_general_settings(ctx=owner, db=db)).booking_capabilities.booking_config_version
     assert v1 == v0 + 1, "новая услуга — изменение каталога записи"
 
-    # Цена/цвет — не условие записи.
+    # Цена меняет условия записи; цвет сам по себе не меняет.
     async with async_session_maker() as db:
         await update_service(
             service_id=service.id, data=ServiceUpdate(price=600, color="#FCAE91"),
@@ -179,7 +179,11 @@ async def _version_bumps_on_service_relevant_changes_only(studio_id: int) -> Non
         )
     async with async_session_maker() as db:
         v2 = (await get_general_settings(ctx=owner, db=db)).booking_capabilities.booking_config_version
-    assert v2 == v1, "цена/цвет не относятся к условиям записи"
+    assert v2 == v1 + 1, "изменение цены инвалидирует условия записи"
+    async with async_session_maker() as db:
+        await update_service(service_id=service.id, data=ServiceUpdate(color="#000000"), ctx=owner, db=db)
+    async with async_session_maker() as db:
+        assert (await get_general_settings(ctx=owner, db=db)).booking_capabilities.booking_config_version == v2
 
     # is_bookable — условие записи.
     async with async_session_maker() as db:

@@ -39,6 +39,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from models import ActionProposal
 from services import booking, identity
 from services.booking import Outcome, Terms
+from services.schedule_guard import lock_studio
 
 logger = logging.getLogger(__name__)
 
@@ -174,6 +175,7 @@ async def confirm_by_token(db: AsyncSession, *, studio_id: int, thread_id: int,
                            token: str, now: Optional[datetime] = None,
                            allow_hold: bool = False) -> Confirmed:
     """Нажатая кнопка «Записаться». Модель на этом пути не участвует."""
+    await lock_studio(db, studio_id)
     row = (await db.execute(
         select(ActionProposal).where(
             ActionProposal.token == token,
@@ -196,6 +198,7 @@ async def confirm_only_live(db: AsyncSession, *, studio_id: int, thread_id: int,
     если они как-то оказались, угадывать нельзя: «да» относится к одному из
     них, и ошибиться значит записать человека не на то занятие.
     """
+    await lock_studio(db, studio_id)
     rows = await live(db, studio_id=studio_id, thread_id=thread_id, now=now)
     if not rows:
         return Confirmed(ConfirmOutcome.UNKNOWN)

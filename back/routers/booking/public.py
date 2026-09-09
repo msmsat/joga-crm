@@ -26,6 +26,7 @@ from services.contacts import normalize, normalized_column
 from services.notifier import lesson_context, notify
 from services.referral import fire_referral
 from services.subscription_charge import notify_subscription_remaining
+from services.schedule_guard import lock_studio
 
 router = APIRouter()
 
@@ -186,12 +187,14 @@ async def public_reserve(
     публичную запись новым клиентам совсем. Настройка работает в кабинете
     клиента (мини-приложение), где абонемент есть что купить.
     """
+    await lock_studio(db, studio_id)
     rules = await load_rules(db, studio_id)
 
     lesson = (await db.execute(
         select(Lesson).where(
             Lesson.id == body.lesson_id,
             Lesson.studio_id == studio_id,
+            Lesson.booking_mode == "event",
             Lesson.status != "cancelled",
         )
     )).scalar_one_or_none()

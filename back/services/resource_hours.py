@@ -35,8 +35,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from models import (
     BranchWorkingHours, StaffBranchAssignment, StaffBusyInterval, StaffDayOverride,
-    StaffWorkingHours, StudioMember, StudioWorkingHours,
+    StaffWorkingHours, StudioMember, StudioWorkingHours, Studio,
 )
+from services import booking_time, studio_time
 
 Interval = tuple[datetime, datetime]
 
@@ -111,7 +112,7 @@ def _intersect_all(groups: list[list[Interval]]) -> list[Interval]:
         result = merged
         if not result:
             return []
-    return sorted(result)
+    return booking_time.merge_intervals(result)
 
 
 def _subtract(intervals: list[Interval], busy: list[Interval]) -> list[Interval]:
@@ -144,6 +145,12 @@ async def _weekly_intervals(
             model.day_of_week.in_({day.weekday(), yesterday.weekday()}),
         )
     )).scalars().all()
+    return weekly_intervals(rows, day)
+
+
+def weekly_intervals(rows, day: date) -> tuple[list[Interval], bool]:
+    """Pure weekly-hours calculation shared by single-day and batched loaders."""
+    yesterday = day - timedelta(days=1)
     by_dow = {row.day_of_week: row for row in rows}
     known = day.weekday() in by_dow or yesterday.weekday() in by_dow
     if not known:
@@ -184,8 +191,6 @@ async def _staff_intervals(
             StaffWorkingHours.day_of_week.in_({day.weekday(), yesterday.weekday()}),
         )
     )).scalars().all()
-    hours_by_dow = {row.day_of_week: row for row in hours_rows}
-
     override_rows = (await db.execute(
         select(StaffDayOverride).where(
             StaffDayOverride.user_id == user_id,
@@ -193,6 +198,13 @@ async def _staff_intervals(
             StaffDayOverride.day.in_([day, yesterday]),
         )
     )).scalars().all()
+    return staff_intervals(hours_rows, override_rows, day)
+
+
+def staff_intervals(hours_rows, override_rows, day: date) -> tuple[list[Interval], Optional[str]]:
+    """Pure staff hours/overrides calculation; no per-slot database reads."""
+    yesterday = day - timedelta(days=1)
+    hours_by_dow = {row.day_of_week: row for row in hours_rows}
     override_by_day = {row.day: row.is_working for row in override_rows}
 
     if override_by_day.get(day) is False:
@@ -211,7 +223,7 @@ async def _staff_intervals(
             continue
         if row is not None:
             known = True
-            if row.is_open:
+            if override is True or row.is_open:
                 interval = _to_interval(row.open_time, row.close_time, anchor)
                 if interval is not None:
                     candidates.append(interval)
@@ -270,13 +282,22 @@ async def available_intervals(
         return ResourceDayWindow([], None)
 
     window = (datetime.combine(day, time.min), datetime.combine(day + timedelta(days=1), time.min))
+    studio = (await db.execute(select(Studio).where(Studio.id == studio_id))).scalar_one()
+    if not studio_time.clock(studio).verified:
+        return ResourceDayWindow([], CONFIG_INCOMPLETE)
     busy_rows = (await db.execute(
-        select(StaffBusyInterval.start_time, StaffBusyInterval.end_time).where(
+        select(StaffBusyInterval).where(
             StaffBusyInterval.studio_id == studio_id,
             StaffBusyInterval.user_id == user_id,
-            StaffBusyInterval.start_time < window[1],
-            StaffBusyInterval.end_time > window[0],
+            StaffBusyInterval.start_time < window[1] + timedelta(days=2),
+            StaffBusyInterval.end_time > window[0] - timedelta(days=2),
         )
-    )).all()
-    free = _subtract(combined, [(row.start_time, row.end_time) for row in busy_rows])
+    )).scalars().all()
+    busy = []
+    for row in busy_rows:
+        resolved = booking_time.resolve_interval(row.start_time, row.end_time, row.tz_iana)
+        if resolved is None:
+            return ResourceDayWindow([], CONFIG_INCOMPLETE)
+        busy.append(tuple(studio_time.to_local(t, studio).replace(tzinfo=None) for t in resolved))
+    free = _subtract(combined, busy)
     return ResourceDayWindow(free, None)

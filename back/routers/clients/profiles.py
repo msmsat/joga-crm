@@ -64,6 +64,7 @@ from schemas.common import Page
 from services.plan_limits import check_plan_limit
 from services.notifier import notify
 from services.points import point_value_of
+from services.schedule_guard import lock_studio
 
 router = APIRouter()
 
@@ -818,6 +819,7 @@ async def update_client(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
+    await lock_studio(db, ctx.studio_id)
     studio_id = ctx.studio_id
     client = await _get_client_or_404(client_id, ctx, db)
     patch = body.model_dump(exclude_unset=True)
@@ -1008,6 +1010,7 @@ async def book_lesson(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
+    await lock_studio(db, ctx.studio_id)
     studio_id = ctx.studio_id
     await _get_client_or_404(client_id, ctx, db)
 
@@ -1113,6 +1116,7 @@ async def delete_client(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
+    await lock_studio(db, ctx.studio_id)
     studio_id = ctx.studio_id
     client = await _get_client_or_404(client_id, ctx, db)
     await db.delete(client)

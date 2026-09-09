@@ -51,6 +51,7 @@ from services.catalog import OCCUPIES_SPOT
 from services.subscription_charge import (
     charge_reservation, clear_debt, open_debt, refund_reservation,
 )
+from services.schedule_guard import lock_studio
 
 logger = logging.getLogger(__name__)
 
@@ -263,12 +264,13 @@ async def _check(db: AsyncSession, *, studio_id: int, client_id: int, lesson_id:
     """
     lesson = (await db.execute(
         select(Lesson).where(Lesson.id == lesson_id, Lesson.studio_id == studio_id)
+        .execution_options(populate_existing=True)
     )).scalar_one_or_none()
-    if lesson is None or lesson.status == "cancelled":
+    if lesson is None or lesson.status == "cancelled" or lesson.booking_mode != "event":
         return _Checked(Outcome.LESSON_UNAVAILABLE)
 
     studio = (await db.execute(
-        select(Studio).where(Studio.id == studio_id)
+        select(Studio).where(Studio.id == studio_id).execution_options(populate_existing=True)
     )).scalar_one_or_none()
     if studio is None:
         return _Checked(Outcome.LESSON_UNAVAILABLE)
@@ -291,6 +293,7 @@ async def _check(db: AsyncSession, *, studio_id: int, client_id: int, lesson_id:
 
     client = (await db.execute(
         select(Client).where(Client.id == client_id, Client.studio_id == studio_id)
+        .execution_options(populate_existing=True)
     )).scalar_one_or_none()
     if client is None or not client.is_active:
         return _Checked(Outcome.CLIENT_UNAVAILABLE)
@@ -452,7 +455,7 @@ async def create(db: AsyncSession, *, studio_id: int, client_id: int, lesson_id:
     HB-06: замок студии — ПЕРВЫЙ шаг, до всего остального (§6.2). Берётся и
     при strict=false (иначе включение strict могло бы разминуться с уже
     идущей командой) — `_check` ниже читает Lesson/Studio/Client заново, уже
-    под замком, поэтому отдельного refresh не требуется.
+    под замком с populate_existing, чтобы обновить identity map.
     """
     await schedule_guard.lock_studio(db, studio_id)
     checked = await _check(db, studio_id=studio_id, client_id=client_id,
@@ -561,6 +564,7 @@ async def cancel(db: AsyncSession, *, studio_id: int, reservation_id: int,
         .join(Lesson, Lesson.id == Reservation.lesson_id)
         .where(Reservation.id == reservation_id, Lesson.studio_id == studio_id)
         .with_for_update(of=Reservation)
+        .execution_options(populate_existing=True)
     )).scalar_one_or_none()
     if reservation is None:
         return Result(Outcome.NOT_FOUND)
@@ -572,7 +576,7 @@ async def cancel(db: AsyncSession, *, studio_id: int, reservation_id: int,
         return Result(Outcome.ALREADY_CANCELLED, reservation.id, reservation.status)
 
     if enforce_policy:
-        lesson = await db.get(Lesson, reservation.lesson_id)
+        lesson = await db.get(Lesson, reservation.lesson_id, populate_existing=True)
         studio = await db.get(Studio, studio_id)
         if by is Actor.STAFF:
             if reservation.status == "attended":
@@ -611,11 +615,13 @@ async def activate_paid(db: AsyncSession, *, studio_id: int,
     Идемпотентно: второй вебхук, возврат на success_url и фоновая сверка
     приходят сюда втроём, и двое из них обязаны быть безобидны.
     """
+    await lock_studio(db, studio_id)
     reservation = (await db.execute(
         select(Reservation)
         .join(Lesson, Lesson.id == Reservation.lesson_id)
         .where(Reservation.id == reservation_id, Lesson.studio_id == studio_id)
         .with_for_update(of=Reservation)
+        .execution_options(populate_existing=True)
     )).scalar_one_or_none()
     if reservation is None:
         return Result(Outcome.NOT_FOUND)
@@ -625,7 +631,7 @@ async def activate_paid(db: AsyncSession, *, studio_id: int,
         # Уже активна (или ждёт одобрения) — повтор ничего не меняет.
         return Result(Outcome.OK, reservation.id, reservation.status)
 
-    lesson = await db.get(Lesson, reservation.lesson_id)
+    lesson = await db.get(Lesson, reservation.lesson_id, populate_existing=True)
     if lesson is None or lesson.status == "cancelled":
         # Занятие отменили, пока человек платил. Деньги пришли, сажать некуда:
         # решение — возврат, а не тихая активация.
@@ -647,11 +653,13 @@ async def approve(db: AsyncSession, *, studio_id: int, reservation_id: int,
     иначе ожидание решения студии стоило бы клиенту очереди. Пересчитывается
     то, что от него не зависит: живо ли занятие и жив ли клиент.
     """
+    await lock_studio(db, studio_id)
     reservation = (await db.execute(
         select(Reservation)
         .join(Lesson, Lesson.id == Reservation.lesson_id)
         .where(Reservation.id == reservation_id, Lesson.studio_id == studio_id)
         .with_for_update(of=Reservation)
+        .execution_options(populate_existing=True)
     )).scalar_one_or_none()
     if reservation is None:
         return Result(Outcome.NOT_FOUND)
@@ -661,10 +669,10 @@ async def approve(db: AsyncSession, *, studio_id: int, reservation_id: int,
         # Уже подтверждена (или отмечена посещённой) — повтор безопасен.
         return Result(Outcome.OK, reservation.id, reservation.status)
 
-    lesson = await db.get(Lesson, reservation.lesson_id)
+    lesson = await db.get(Lesson, reservation.lesson_id, populate_existing=True)
     if lesson is None or lesson.status == "cancelled":
         return Result(Outcome.LESSON_UNAVAILABLE)
-    client = await db.get(Client, reservation.client_id)
+    client = await db.get(Client, reservation.client_id, populate_existing=True)
     if client is None or not client.is_active:
         return Result(Outcome.CLIENT_UNAVAILABLE)
 
@@ -708,6 +716,7 @@ async def reschedule(db: AsyncSession, *, studio_id: int, reservation_id: int,
         .join(Lesson, Lesson.id == Reservation.lesson_id)
         .where(Reservation.id == reservation_id, Lesson.studio_id == studio_id)
         .with_for_update(of=Reservation)
+        .execution_options(populate_existing=True)
     )).scalar_one_or_none()
     if source is None:
         return Result(Outcome.NOT_FOUND)

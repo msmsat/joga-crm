@@ -80,6 +80,7 @@ _FIELDS = tuple(BookingRules.__dataclass_fields__)
 async def load_rules(db: AsyncSession, studio_id: int) -> BookingRules:
     row = (await db.execute(
         select(StudioBookingSettings).where(StudioBookingSettings.studio_id == studio_id)
+        .execution_options(populate_existing=True)
     )).scalar_one_or_none()
     if row is None:
         return BookingRules()

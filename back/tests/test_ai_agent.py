@@ -439,6 +439,34 @@ def test_ai_agent_stream():
     asyncio.run(_run_stream())
 
 
+def test_stream_endpoint_counts_admission_once_and_returns_quota():
+    """Проверяем SSE-роутер целиком, включая допуск и событие quota для UI."""
+    import json
+    from routers.ai.chat import stream_message
+    from schemas.ai import ChatMessageCreate
+    async def run():
+        real_stream = llm.chat_stream
+        ids = await _seed()
+        try:
+            _StreamingLLM({'chunks': ['Здравствуйте!']}).install()
+            async with async_session_maker() as db:
+                ctx = await _ctx(db, ids['owner_id'], ids['sid'], 'owner')
+                response = await stream_message.__wrapped__(
+                    request=None, session_id=ids['session_id'],
+                    body=ChatMessageCreate(text='Привет'), ctx=ctx, db=db)
+                chunks = [chunk async for chunk in response.body_iterator]
+            quota_events = [chunk for chunk in chunks if chunk.startswith('event: quota\n')]
+            assert len(quota_events) == 1
+            quota = json.loads(quota_events[0].split('data: ', 1)[1])
+            assert quota == {'used': 1, 'limit': 7500, 'trial': False}
+            assert await _usage_rows(ids['sid']) == (1, 1)
+            assert any(chunk.startswith('event: done\n') for chunk in chunks)
+        finally:
+            llm.chat_stream = real_stream
+            await _cleanup(ids['sid'])
+    asyncio.run(run())
+
+
 if __name__ == "__main__":
     test_ai_agent_loop()
     test_ai_agent_stream()
@@ -490,11 +518,12 @@ async def _run_quota_blocks_before_model():
     llm.chat = _boom
     try:
         async with async_session_maker() as db:
-            # Тариф Pro: 1500 обращений. Дешевле упереться в денежный потолок.
-            db.add(AIUsage(
-                studio_id=sid, surface="crm", model="anthropic/claude-opus-5",
-                cost_micro=13_000_000, billable=False,
-            ))
+            # Новый контракт ограничивает запросы, а не стоимость модели.
+            plan = (await db.execute(select(StudioBillingPlan).where(
+                StudioBillingPlan.studio_id == sid))).scalar_one()
+            plan.plan_name = "s2"
+            db.add_all([AIUsage(studio_id=sid, surface="crm", model="test",
+                                cost_micro=0, billable=True) for _ in range(1000)])
             await db.commit()
 
         async with async_session_maker() as db:
@@ -507,7 +536,7 @@ async def _run_quota_blocks_before_model():
                 raise AssertionError("запрос прошёл при исчерпанном потолке")
             except HTTPException as exc:
                 assert exc.status_code == 429
-                assert exc.detail["code"] == "ai_cost_cap", exc.detail
+                assert exc.detail["code"] == "ai_quota_exceeded", exc.detail
         assert not called
     finally:
         llm.chat = real_chat

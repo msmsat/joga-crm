@@ -61,7 +61,7 @@ def _service_read(service: Service, bookings_last_30d: int = 0) -> ServiceRead:
 # услуги не должна выглядеть для клиента как смена условий записи.
 _BOOKING_RELEVANT_SERVICE_FIELDS = frozenset({
     "booking_mode", "buffer_before_min", "buffer_after_min", "is_bookable",
-    "terminology_profile",
+    "terminology_profile", "price", "duration_min",
 })
 
 

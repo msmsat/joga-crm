@@ -207,7 +207,7 @@
     "ig_not_connected": "Instagram ist noch nicht verbunden.",
     "wa_not_connected": "Die WhatsApp-Nummer ist noch nicht verbunden — verbinden Sie sie unter Benachrichtigungen.",
     "assistant_unavailable": "Der Assistent ist vorübergehend nicht verfügbar — bitte später erneut versuchen.",
-    "trial_exhausted": "Sie haben alle Test-KI-Anfragen aufgebraucht. Der Assistent ist noch in der Beta — melden Sie sich bei uns, wenn Sie ein höheres Limit brauchen.",
+    "trial_exhausted": "Sie haben alle 500 Testanfragen an den KI-Assistenten verbraucht. Wählen Sie einen kostenpflichtigen Tarif, um fortzufahren.",
     "quota_exceeded": "Sie haben alle KI-Anfragen dieses Tarifs aufgebraucht. Das Limit wird zu Monatsbeginn zurückgesetzt — oder wechseln Sie den Tarif."
   },
   "toasts": {
@@ -280,11 +280,13 @@
     "update_staff": "Teammitglied wird aktualisiert…"
   },
   "quota": {
-    "trialLow": "Ihre Test-KI-Anfragen gehen zur Neige.",
-    "label": "KI-Anfragen",
+    "trialLow": "Nur noch wenige Testanfragen übrig.",
+    "label": "Anfragen an den KI-Assistenten",
     "value": "{{used}} von {{limit}}",
     "low": "Sie nähern sich dem Monatslimit.",
-    "upgrade": "Tarif upgraden"
+    "upgrade": "Tarif wählen",
+    "monthPeriod": "Pro Kalendermonat (UTC)",
+    "trialPeriod": "Für den gesamten Testzeitraum"
   },
   "rating": {
     "up": "Gute Antwort",

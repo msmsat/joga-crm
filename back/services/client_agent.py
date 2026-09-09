@@ -30,7 +30,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from database import async_session_maker
 from models import Client, Studio, StudioAISettings
 from services import ai_language, contacts, llm
-from services.ai_quota import check_ai_quota
 from services.ai_tools import as_tool_message, sanitize_external
 from services.ai_usage import record_usage
 from services.studio_link import ref_of
@@ -486,7 +485,7 @@ async def produce_reply(studio_id: int, channel: str, sender: str, text: str,
     этом месте стоял прямой вызов Telegram/Meta, и между ним и коммитом было
     окно, в котором ответ либо задваивался, либо пропадал.
 
-    None — отвечать не нужно: агент выключен, квота, антиспам, нерабочие часы
+    None — отвечать не нужно: агент выключен, антиспам, нерабочие часы
     или модель не дала текста. Это законный исход хода, а не сбой.
 
     Сессия своя и короткая: get_db отдаёт сессию через yield и закрывает её на
@@ -503,13 +502,7 @@ async def produce_reply(studio_id: int, channel: str, sender: str, text: str,
         if not await should_reply(db, studio_id, settings, channel, sender):
             return None
 
-        # Резерв владельца: последняя пятая часть месячного запаса
-        # принадлежит CRM, а не толпе в директе.
-        try:
-            await check_ai_quota(db, studio_id, reserve_pct=20)
-        except Exception as exc:
-            logger.info("client agent silent, quota: studio=%s channel=%s %s", studio_id, channel, exc)
-            return None
+        # ИИ-админ в клиентских каналах не ограничен квотой CRM-ассистента.
 
         client = await identify(db, studio_id, channel, sender)
         await _before_network(db)

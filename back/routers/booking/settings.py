@@ -25,6 +25,7 @@ from services.telegram_bot import connect_telegram_bot, disconnect_telegram_bot,
 # /start, а не второй getenv: разъехавшись, они дадут владельцу ссылку, ведущую
 # не туда, куда ведёт кнопка в Telegram.
 from .telegram_webhook import MINIAPP_URL
+from services.schedule_guard import lock_studio
 
 router = APIRouter()
 
@@ -59,6 +60,7 @@ async def get_booking_settings(
     ctx: StudioContext = Depends(require_role("owner")),
     db: AsyncSession = Depends(get_db),
 ):
+    await lock_studio(db, ctx.studio_id)
     row = (await db.execute(
         select(StudioBookingSettings).where(StudioBookingSettings.studio_id == ctx.studio_id)
     )).scalar_one_or_none()
@@ -76,14 +78,19 @@ async def update_booking_settings(
     ctx: StudioContext = Depends(require_role("owner")),
     db: AsyncSession = Depends(get_db),
 ):
+    studio = await lock_studio(db, ctx.studio_id)
     row = (await db.execute(
         select(StudioBookingSettings).where(StudioBookingSettings.studio_id == ctx.studio_id)
     )).scalar_one_or_none()
     if row is None:
         row = StudioBookingSettings(studio_id=ctx.studio_id)
         db.add(row)
-    for field, value in body.model_dump(exclude_unset=True).items():
+    changes = body.model_dump(exclude_unset=True)
+    changed = any(getattr(row, field) != value for field, value in changes.items())
+    for field, value in changes.items():
         setattr(row, field, value)
+    if changed:
+        studio.booking_config_version += 1
     await db.commit()
     await db.refresh(row)
     return _read(row, await public_ref(db, row.studio_id))

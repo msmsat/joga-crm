@@ -116,7 +116,10 @@ def _run_reverse(application_fee, refunded, charge_id="ch_1"):
     SP.stripe_connect.refunded_application_fee = fake_fee
     SP.platform_fee.record_revenue = fake_record
     try:
-        asyncio.run(SP._reverse_platform_fee(db, checkout, charge_id))
+        async def reverse():
+            amount = await SP._read_refunded_fee(checkout, charge_id)
+            await SP._reverse_platform_fee(db, checkout, amount)
+        asyncio.run(reverse())
     finally:
         (SP.stripe_connect.refunded_application_fee, SP.platform_fee.record_revenue) = saved
     return recorded

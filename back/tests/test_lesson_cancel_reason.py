@@ -93,7 +93,7 @@ def _ctx(role="owner"):
 # ─── cancel_lesson сохраняет причину ─────────────────────────────────────────
 def test_cancel_with_reason_persists_it():
     lesson = _Lesson(start_time=datetime.now() + timedelta(hours=5))
-    db = _DB([lesson, [], None])  # get_scoped_lesson, client_id-ы, UPDATE Reservation
+    db = _DB([_Studio(), lesson, [], None])  # Studio lock, scoped Lesson, reservations
     body = LessonCancelRequest(reason="Клиент заболел")
     result = asyncio.run(L.cancel_lesson(1, body=body, ctx=_ctx(), db=db))
     assert lesson.cancel_reason == "Клиент заболел"
@@ -104,7 +104,7 @@ def test_cancel_with_reason_persists_it():
 def test_cancel_without_reason_defaults_to_none():
     """Тело запроса по умолчанию пустое {} — reason остаётся None, ничего не падает."""
     lesson = _Lesson(start_time=datetime.now() + timedelta(hours=5))
-    db = _DB([lesson, [], None])
+    db = _DB([_Studio(), lesson, [], None])
     result = asyncio.run(L.cancel_lesson(1, ctx=_ctx(), db=db))
     assert lesson.cancel_reason is None
     assert db.committed is True

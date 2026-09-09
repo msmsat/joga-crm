@@ -26,6 +26,7 @@ from services.members import full_name
 from services.notifier import notify
 from services.plan_limits import check_plan_limit
 from services import schedule_guard
+from services.schedule_guard import lock_studio
 
 router = APIRouter()
 
@@ -642,7 +643,8 @@ async def update_staff(
     if data.role is not None:
         membership.role = data.role
     await _replace_schedule(user.id, studio_id, data.schedule, db)
-    await _replace_branch_assignments(user.id, studio_id, branches, db)
+    if "branch_ids" in data.model_fields_set:
+        await _replace_branch_assignments(user.id, studio_id, branches, db)
     # Новые часы/назначения уже видны этой транзакции (flush) — проверяем,
     # что будущие resource-записи специалиста всё ещё попадают в них (§6.2 п.5).
     await db.flush()
@@ -668,6 +670,7 @@ async def delete_staff(
     ctx: StudioContext = Depends(require_role("owner")),
     db: AsyncSession = Depends(get_db),
 ):
+    studio = await lock_studio(db, ctx.studio_id)
     studio_id = ctx.studio_id
     _, membership = await _get_staff_member(staff_id, studio_id, db)
 
@@ -680,6 +683,9 @@ async def delete_staff(
             raise HTTPException(status_code=403, detail="Нельзя удалить единственного владельца студии")
 
     await db.delete(membership)
+    await db.flush()
+    schedule_guard.raise_if_conflicts(
+        await schedule_guard.assert_future_assignments_valid(db, studio, user_id=staff_id))
     await db.commit()
 
     return {"ok": True}

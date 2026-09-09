@@ -11,6 +11,8 @@ from schemas.studio import StudioRead, BranchCreate, BranchUpdate, BranchListIte
 from schemas.schedule import HallCreate, HallUpdate
 from .media import router as media_router
 from .services import router as services_router
+from services.schedule_guard import lock_studio
+from services import schedule_guard
 
 router = APIRouter()
 router.include_router(media_router)
@@ -47,6 +49,7 @@ async def create_branch(
     ctx: StudioContext = Depends(require_role("owner")),
     db: AsyncSession = Depends(get_db),
 ):
+    await lock_studio(db, ctx.studio_id)
     studio_id = ctx.studio_id
     branch = StudioBranch(studio_id=studio_id, **data.model_dump())
     db.add(branch)
@@ -83,6 +86,7 @@ async def update_branch(
     ctx: StudioContext = Depends(require_role("owner")),
     db: AsyncSession = Depends(get_db),
 ):
+    studio = await lock_studio(db, ctx.studio_id)
     branch = await _get_branch_or_404(branch_id, ctx.studio_id, db)
     fields = data.model_dump(exclude_unset=True, exclude={"working_hours"})
     for field, value in fields.items():
@@ -102,6 +106,9 @@ async def update_branch(
                 open_time=wh.open_time,
                 close_time=wh.close_time,
             ))
+        await db.flush()
+        await schedule_guard.assert_studio_assignments_valid(db, studio)
+        studio.booking_config_version += 1
     await db.commit()
     await db.refresh(branch, attribute_names=["halls"])
     return BranchListItem(
@@ -120,7 +127,9 @@ async def delete_branch(
     ctx: StudioContext = Depends(require_role("owner")),
     db: AsyncSession = Depends(get_db),
 ):
+    studio = await lock_studio(db, ctx.studio_id)
     branch = await _get_branch_or_404(branch_id, ctx.studio_id, db)
+    await schedule_guard.assert_catalog_entity_removable(db, studio, branch_id=branch_id)
     # Зал физически живёт внутри филиала, поэтому уезжает вместе с ним. FK стоит
     # на SET NULL: без этой строки зал оставался «ничейным» — Каталог показывает
     # залы только внутри филиала, а журнал берёт их из /schedule/halls по студии,
@@ -138,6 +147,7 @@ async def create_hall(
     ctx: StudioContext = Depends(require_role("owner")),
     db: AsyncSession = Depends(get_db),
 ):
+    await lock_studio(db, ctx.studio_id)
     await _get_branch_or_404(branch_id, ctx.studio_id, db)
     hall = Hall(studio_id=ctx.studio_id, branch_id=branch_id, **data.model_dump())
     db.add(hall)
@@ -176,6 +186,7 @@ async def update_hall(
     ctx: StudioContext = Depends(require_role("owner")),
     db: AsyncSession = Depends(get_db),
 ):
+    await lock_studio(db, ctx.studio_id)
     hall = await _get_hall_or_404(hall_id, ctx.studio_id, db)
     for field, value in data.model_dump(exclude_unset=True).items():
         setattr(hall, field, value)
@@ -190,7 +201,9 @@ async def delete_hall(
     ctx: StudioContext = Depends(require_role("owner")),
     db: AsyncSession = Depends(get_db),
 ):
+    studio = await lock_studio(db, ctx.studio_id)
     hall = await _get_hall_or_404(hall_id, ctx.studio_id, db)
+    await schedule_guard.assert_catalog_entity_removable(db, studio, hall_id=hall_id)
     await db.delete(hall)
     await db.commit()
 

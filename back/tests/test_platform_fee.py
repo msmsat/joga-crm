@@ -167,7 +167,7 @@ class _LedgerDB:
     """Отдаёт заявку на первый select, студию на второй. Считает commit'ы."""
 
     def __init__(self, checkout, studio):
-        self._answers = [checkout, studio]
+        self._answers = [checkout.studio_id, studio, checkout, studio]
         self.commits = 0
 
     async def execute(self, _q):

@@ -202,6 +202,7 @@ async def _break_splits_shift(ids):
             studio_id=ids["studio"], user_id=ids["teacher"],
             start_time=datetime(2027, 6, 16, 13, 0), end_time=datetime(2027, 6, 16, 14, 0),
             reason="обед",
+            tz_iana="Europe/Prague",
         ))
         await db.commit()
     result = await _query(ids)

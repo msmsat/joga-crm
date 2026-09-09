@@ -22,6 +22,7 @@ router = APIRouter()
 # задача прямо требует не путать смену витрины со сменой условий записи.
 _BOOKING_RELEVANT_STUDIO_FIELDS = frozenset({
     "booking_mode", "terminology_profile", "strict_schedule_enabled",
+    "tz_iana", "timezone", "currency", "journal_time_step",
 })
 
 
@@ -97,6 +98,9 @@ async def update_general_settings(
     )
     for field, value in changes.items():
         setattr(studio, field, value)
+    if {"tz_iana", "timezone"} & changes.keys():
+        await db.flush()
+        await schedule_guard.assert_studio_assignments_valid(db, studio)
     if touched_booking_config:
         await bump_booking_config_version(db, studio)
     await db.commit()

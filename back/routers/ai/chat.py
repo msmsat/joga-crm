@@ -23,7 +23,8 @@ from schemas.ai import (
     PlanExecuteIn,
     SendMessageResponse,
 )
-from services.ai_quota import TRIAL_LIMIT, ai_quota_status, check_ai_quota
+from services.ai_quota import ai_quota_details, check_ai_quota, admit_ai_request
+from services import llm
 from services.ai_plan import (
     decode_plan_token, merge_answers, run_plan, run_undo, summarize, summarize_undo,
 )
@@ -248,6 +249,7 @@ async def send_message(
     # Квота — ДО обращения к модели: исчерпанный запас не должен стоить платформе
     # ни одного вызова провайдера.
     await check_ai_quota(db, ctx.studio_id)
+    admission = await admit_ai_request(ctx.studio_id, ctx.user.id) if llm.is_configured() else None
 
     # Одна транзакция на пару сообщений: user-сообщение только flush (не commit),
     # чтобы при падении generate_reply откатилось целиком — без вопроса-сироты.
@@ -274,6 +276,7 @@ async def send_message(
         current_page=body.current_page,
         viewport=body.viewport,
         current_entity=body.current_entity,
+        quota_admission=admission,
     )
 
     assistant_message = AIChatMessage(
@@ -303,6 +306,7 @@ def _sse(event: str, data: object) -> str:
 async def _agent_stream(
     session_id: int, text: str, current_page: str | None, user_id: int,
     studio_id: int, role: str, viewport: str | None = None, current_entity=None,
+    quota_admission: tuple[int, str] | None = None,
 ):
     """Тело SSE-потока.
 
@@ -341,7 +345,7 @@ async def _agent_stream(
                 ctx, db, settings, history,
                 session_id=session.id, studio_language=studio.language,
                 current_page=current_page, viewport=viewport,
-                current_entity=current_entity, stream=True,
+                current_entity=current_entity, stream=True, quota_admission=quota_admission,
             ):
                 if kind == "result":
                     result = data
@@ -373,8 +377,7 @@ async def _agent_stream(
 
         if result.plan_proposal:
             yield _sse("plan_proposal", result.plan_proposal)
-        used, limit = await ai_quota_status(db, ctx.studio_id)
-        yield _sse("quota", {"used": used, "limit": limit, "trial": bool(TRIAL_LIMIT)})
+        yield _sse("quota", await ai_quota_details(db, ctx.studio_id))
         yield _sse("done", {"user_id": user_message.id, "assistant_id": assistant_message.id})
 
 
@@ -398,11 +401,12 @@ async def stream_message(
     # Квота и доступ — до старта потока: внутри генератора HTTP-статус уже не
     # поменять, там остаётся только событие error.
     await check_ai_quota(db, ctx.studio_id)
+    admission = await admit_ai_request(ctx.studio_id, ctx.user.id) if llm.is_configured() else None
 
     return StreamingResponse(
         _agent_stream(
             session_id, text, body.current_page, ctx.user.id, ctx.studio_id, ctx.role,
-            viewport=body.viewport, current_entity=body.current_entity,
+            viewport=body.viewport, current_entity=body.current_entity, quota_admission=admission,
         ),
         media_type="text/event-stream",
         headers={

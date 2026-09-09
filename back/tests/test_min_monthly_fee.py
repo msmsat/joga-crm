@@ -280,7 +280,12 @@ def _run_dispute(status, checkout):
 
     class _DB:
         async def execute(self, _q):
-            return SimpleNamespace(scalar_one_or_none=lambda: checkout)
+            value = SimpleNamespace(id=checkout.studio_id) if "FROM studios" in str(_q) else checkout
+            return SimpleNamespace(scalar_one_or_none=lambda: value)
+
+        async def refresh(self, row, *, with_for_update=False):
+            assert row is checkout
+            assert with_for_update is True
 
         async def commit(self):
             pass

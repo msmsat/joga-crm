@@ -693,6 +693,7 @@ async def agent_events(
     current_entity=None,
     surface: str = "crm",
     stream: bool = False,
+    quota_admission: tuple[int, str] | None = None,
 ) -> AsyncIterator[tuple[str, object]]:
     """Цикл «модель ↔ инструменты» как поток событий. history — последние 20
     сообщений сессии.
@@ -723,7 +724,7 @@ async def agent_events(
 
     # ДО первого вызова модели и ПОСЛЕ проверки провайдера: без ключа вызовов
     # не будет вовсе, и идентификатор указывал бы в пустоту.
-    request_id = uuid.uuid4().hex
+    request_id = quota_admission[1] if quota_admission else uuid.uuid4().hex
     messages = await build_messages(ctx, db, settings, history, studio_language,
                                     current_page, viewport, current_entity, language)
     logger.info("ai language: studio=%s surface=%s lang=%s source=%s request=%s",
@@ -773,6 +774,7 @@ async def agent_events(
             escalation_from_model=escalation[1] if escalation else None,
             request_id=request_id,
             response_language=language.code, language_source=language.source,
+            quota_usage_id=quota_admission[0] if quota_admission and step == 0 else None,
         )
         escalation = None
         if reply.text:

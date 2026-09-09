@@ -93,7 +93,7 @@ export interface AIStudioFact {
 }
 
 // GET /ai/quota — остаток обращений к ИИ: за календарный месяц по тарифу либо,
-// пока trial === true, пробный запас на всё время (тариф его не поднимает).
+// trial === true: запас на весь триал; после оплаты действуют месячные лимиты.
 export interface AIQuota {
   used: number
   limit: number

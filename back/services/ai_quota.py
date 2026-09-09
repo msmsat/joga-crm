@@ -1,179 +1,106 @@
-"""Квота ИИ (эпик AI-5, задача 3).
+"""Квота CRM-ассистента, общая для студии. ИИ-админ ее не расходует.
 
-Поверх месячных тарифных лимитов лежит пробный потолок TRIAL_LIMIT — обращения
-студии за всё время (см. ниже). Пока он включён, до тарифных потолков дело не
-доходит: 150 меньше самой нижней ступени.
-
-Два тарифных потолка, кончается тот, что раньше:
-  * `ai_requests`   — число обращений (billable-строк AIUsage) за календарный месяц;
-  * `ai_cost_micro` — себестоимость в микро-$ за тот же месяц (решение 9).
-
-Второй нужен потому, что стоимость обращения различается в 6 раз: 5000 вопросов
-на Business по FAST — это ~21 % MRR, а если каждый уйдёт в эскалацию — больше,
-чем платит тариф. Это страховка от аномалии, а не рабочий лимит: в норме студия
-упирается в число вопросов.
-
-# ponytail: календарный месяц вместо периода подписки — на месяц-в-месяц оплате
-# совпадает; привязать к expires_at, если появятся длинные периоды со сдвигом.
+Платные тарифы: календарный месяц UTC. Триал: весь пробный период.
+Один принятый запрос = одна billable-строка, независимо от числа LLM-шагов.
+Себестоимость учитывается, но не сокращает обещанное число запросов.
 """
-import os
-from datetime import datetime
+import uuid
+from datetime import datetime, timezone
 
 from fastapi import HTTPException
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from database import async_session_maker
 from models import AIUsage, StudioBillingPlan
-from routers.billing.plans import PLANS, UNLIMITED, canon
-
-# Пробный потолок поверх тарифного: N обращений на студию ЗА ВСЁ ВРЕМЯ, а не в
-# месяц. Пока ассистент не обкатан, тарифные 300–5000 вопросов в месяц — это счёт
-# провайдеру за качество, в котором мы сами не уверены. Кончается первым: 150 < 300.
-# AI_TRIAL_LIMIT=0 в окружении снимает потолок и возвращает чистые тарифные лимиты.
-TRIAL_LIMIT = int(os.getenv("AI_TRIAL_LIMIT") or 150)   # пустая переменная = дефолт, а не падение на старте
-
-# Студия без строки StudioBillingPlan (до онбординга) не получает ИИ вовсе.
-# check_plan_limit в таком случае пускает — у лимитов сотрудников это безопасно,
-# у денег нет: «нет тарифа = безлимитный ИИ» — дыра в деньгах.
-_NO_PLAN = {"ai_requests": 0, "ai_cost_micro": 0}
+from routers.billing.plans import AI_TRIAL_REQUESTS, AI_PERCENT_REQUESTS, PLANS, canon
 
 
 def _month_start() -> datetime:
-    now = datetime.utcnow()
-    return now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    return datetime.now(timezone.utc).replace(
+        day=1, hour=0, minute=0, second=0, microsecond=0, tzinfo=None)
+
+
+def _is_trial(plan: StudioBillingPlan | None) -> bool:
+    # trial_started_at остается и после оплаты; проверяем до canon(free_trial).
+    # На проценте plan_name/status могут остаться от триала: режим применяется
+    # без подписки и имеет приоритет, как в существующем subscription gate.
+    return (plan is not None and plan.billing_mode != "percent"
+            and (plan.plan_name == "free_trial" or plan.status == "trial"))
 
 
 def _limits_for(plan: StudioBillingPlan | None) -> dict:
-    """Лимиты ИИ по состоянию тарифа. Дату подписки здесь не проверяем: это
-    territория гейта require_active_subscription, а у тарифа «только процент»
-    expires_at навсегда в прошлом — своя проверка выдала бы ему 429 на первом
-    же вопросе (та же ловушка, что в plan_limits.py:50-54)."""
     if plan is None:
-        return _NO_PLAN
+        return {"ai_requests": 0}
+    if _is_trial(plan):
+        return {"ai_requests": AI_TRIAL_REQUESTS}
     if plan.billing_mode == "percent":
-        # Верхняя ступень: на проценте ступени у студии НЕТ (её не показывает
-        # шапка биллинга, карточки тарифов на этой модели не рендерятся, апгрейда
-        # нет), а плата идёт долей с оборота — и студия на проценте платит от
-        # 39 €/мес до сумм выше Business. Нижняя ступень тут была ошибкой того же
-        # рода, что и потолок сотрудников по невидимому plan_name (см.
-        # services/plan_limits): «Улучшите тариф» на 300-м вопросе, а улучшать
-        # нечего. Числа Business, а не безлимит: потолок себестоимости — страховка
-        # от аномалии на деньгах провайдера, её нет НИ У ОДНОГО тарифа (решения
-        # 6 и 9 эпика AI-5), и снимать её тарифу с минимальным платежом в 39 €
-        # значит разрешить месячный счёт провайдеру больше выручки со студии.
-        return PLANS[UNLIMITED]["limits"]
-    # combo — полноценный тариф с половинным фиксом, лимиты своего plan_name.
-    # Неизвестный план (none и пр.) — нижняя ступень, а НЕ безлимит: у денег
-    # безлимит опасен.
-    return (PLANS.get(canon(plan.plan_name)) or next(iter(PLANS.values())))["limits"]
+        return {"ai_requests": AI_PERCENT_REQUESTS}
+    limits = PLANS.get(canon(plan.plan_name))
+    return {"ai_requests": limits["limits"]["ai_requests"] if limits else 0}
 
 
-async def _usage(db: AsyncSession, studio_id: int, since: datetime | None) -> tuple[int, int]:
-    """(billable-обращений, потрачено микро-$) с момента `since`; None — за всё время.
+async def _plan(db: AsyncSession, studio_id: int):
+    return (await db.execute(select(StudioBillingPlan).where(
+        StudioBillingPlan.studio_id == studio_id
+    ).execution_options(populate_existing=True))).scalar_one_or_none()
 
-    Один запрос по составному индексу (studio_id, created_at): считаем вопросы
-    и деньги разом — вопросы только по billable, деньги по всем вызовам.
-    """
-    q = (
-        select(
-            func.count().filter(AIUsage.billable.is_(True)),
-            func.coalesce(func.sum(AIUsage.cost_micro), 0),
-        )
-        .select_from(AIUsage)
-        .where(AIUsage.studio_id == studio_id)
+
+async def _quota_for(db: AsyncSession, studio_id: int, plan) -> dict:
+    trial = _is_trial(plan)
+    since = plan.trial_started_at if trial else _month_start()
+    query = select(func.count()).select_from(AIUsage).where(
+        AIUsage.studio_id == studio_id,
+        AIUsage.surface == "crm",
+        AIUsage.billable.is_(True),
     )
     if since is not None:
-        q = q.where(AIUsage.created_at >= since)
-    row = (await db.execute(q)).one()
-    return int(row[0] or 0), int(row[1] or 0)
+        query = query.where(AIUsage.created_at >= since)
+    used = (await db.execute(query)).scalar_one()
+    return {"used": used, "limit": _limits_for(plan)["ai_requests"], "trial": trial}
+
+
+async def ai_quota_details(db: AsyncSession, studio_id: int) -> dict:
+    return await _quota_for(db, studio_id, await _plan(db, studio_id))
 
 
 async def ai_quota_status(db: AsyncSession, studio_id: int) -> tuple[int, int]:
-    """(использовано, лимит) обращений — для UI (задача 11).
-
-    Пока включён пробный потолок, показываем именно его: он кончается первым, и
-    «12 из 1500» рядом с отказом на 150-м вопросе — прямая ложь в интерфейсе.
-    """
-    if TRIAL_LIMIT:
-        used, _ = await _usage(db, studio_id, None)
-        return used, TRIAL_LIMIT
-    plan = (await db.execute(
-        select(StudioBillingPlan).where(StudioBillingPlan.studio_id == studio_id)
-    )).scalar_one_or_none()
-    used, _ = await _usage(db, studio_id, _month_start())
-    return used, _limits_for(plan)["ai_requests"]
+    quota = await ai_quota_details(db, studio_id)
+    return quota["used"], quota["limit"]
 
 
-async def check_ai_quota(db: AsyncSession, studio_id: int, reserve_pct: int = 0) -> None:
-    """429, если запас кончился. Тихо — если есть.
-
-    reserve_pct — сколько процентов запаса НЕ отдавать вызывающему. Клиентский
-    агент (задача 12) зовёт с reserve_pct=20: последние 20 % месячного запаса
-    остаются владельцу, чтобы толпа в директе не выключила ИИ внутри CRM.
-
-    # ponytail: проверка и запись не в одной транзакции — два одновременных
-    # вопроса на границе лимита могут пройти оба; перерасход на единицы запросов
-    # дешевле блокировки на каждом вопросе.
-    """
-    share = (100 - max(0, min(reserve_pct, 100))) / 100
-
-    if TRIAL_LIMIT:
-        total, _ = await _usage(db, studio_id, None)
-        if total >= TRIAL_LIMIT * share:
-            raise HTTPException(status_code=429, detail={
-                "code": "ai_trial_exhausted",
-                "message": f"Пробные {TRIAL_LIMIT} обращений к ИИ израсходованы.",
-                "used": total,
-                "limit": TRIAL_LIMIT,
-            })
-
-    plan = (await db.execute(
-        select(StudioBillingPlan).where(StudioBillingPlan.studio_id == studio_id)
-    )).scalar_one_or_none()
-    limits = _limits_for(plan)
-
-    used, spent = await _usage(db, studio_id, _month_start())
-
-    limit = limits["ai_requests"]
-    if used >= limit * share:
+def _check(quota: dict) -> None:
+    if quota["used"] >= quota["limit"]:
         raise HTTPException(status_code=429, detail={
-            "code": "ai_quota_exceeded",
-            "message": "Лимит обращений к ИИ на этом тарифе исчерпан. Улучшите тариф.",
-            "used": used,
-            "limit": limit,
-        })
-
-    cap = limits["ai_cost_micro"]
-    if spent >= cap * share:
-        # Отдельный код, чтобы в логе было видно: упёрлись в деньги, а не в
-        # счётчик вопросов. Первое — аномалия для разбора, второе — норма тарифа.
-        raise HTTPException(status_code=429, detail={
-            "code": "ai_cost_cap",
-            "message": "Лимит обращений к ИИ на этом тарифе исчерпан. Улучшите тариф.",
-            "used": used,
-            "limit": limit,
+            "code": "ai_trial_exhausted" if quota["trial"] else "ai_quota_exceeded",
+            "message": "Лимит запросов к ИИ-ассистенту исчерпан.",
+            "used": quota["used"], "limit": quota["limit"],
         })
 
 
-if __name__ == "__main__":
-    # Самопроверка без БД: разбор состояний тарифа — ровно то место, где в первой
-    # редакции эпика студия получала безлимитный ИИ в двух случаях из трёх.
-    class _P:
-        def __init__(self, mode, name):
-            self.billing_mode, self.plan_name = mode, name
+async def check_ai_quota(db: AsyncSession, studio_id: int) -> None:
+    """Read-only проверка. Для допуска платного вызова нужен admit_ai_request."""
+    _check(await ai_quota_details(db, studio_id))
 
-    from routers.billing.plans import PLANS, TRIAL_PLAN
 
-    assert _limits_for(None)["ai_requests"] == 0                              # нет тарифа — не безлимит
-    # Триал и прежние имена каталога читаются через canon: в БД они лежат до сих пор.
-    assert _limits_for(_P("subscription", "free_trial"))["ai_requests"] == PLANS[TRIAL_PLAN]["limits"]["ai_requests"]
-    assert _limits_for(_P("subscription", "pro"))["ai_requests"] == PLANS[TRIAL_PLAN]["limits"]["ai_requests"]
-    assert _limits_for(_P("percent", "s3"))["ai_requests"] == 5000             # процент — по верхней ступени
-    assert _limits_for(_P("combo", "unlimited"))["ai_requests"] == 5000        # комбо — свой план
-    assert _limits_for(_P("subscription", "s7"))["ai_requests"] == 7 * 150     # ступень платит за свои места
-    # Неизвестный план — НИЖНЯЯ ступень, а не безлимит: у денег безлимит опасен.
-    assert _limits_for(_P("subscription", "none"))["ai_requests"] == PLANS["s2"]["limits"]["ai_requests"]
-    assert _limits_for(_P("subscription", "unlimited"))["ai_cost_micro"] == 12000 * 1200
+async def admit_ai_request(studio_id: int, user_id: int | None) -> tuple[int, str]:
+    """Атомарно занять запрос ДО сети отдельной короткой транзакцией.
 
-    assert _month_start().day == 1 and _month_start().hour == 0
-    print("ai_quota self-check ok")
+    Замок тарифа сериализует последние запросы между процессами. Первый ответ
+    провайдера заполнит эту строку через record_usage. Сбой уже принятого
+    запроса не позволяет обходить лимит повторами. Смена тарифа не стирает учет.
+    """
+    async with async_session_maker() as db:
+        plan = (await db.execute(select(StudioBillingPlan).where(
+            StudioBillingPlan.studio_id == studio_id
+        ).with_for_update())).scalar_one_or_none()
+        _check(await _quota_for(db, studio_id, plan))
+        request_id = uuid.uuid4().hex
+        row = AIUsage(studio_id=studio_id, user_id=user_id, surface="crm",
+                      model="pending", billable=True, request_id=request_id,
+                      created_at=datetime.now(timezone.utc).replace(tzinfo=None))
+        db.add(row)
+        await db.flush()
+        row_id = row.id
+        await db.commit()
+        return row_id, request_id

@@ -497,6 +497,17 @@ async def apply_paid(
     ровно тогда, когда id сессии в заявку записать не успели: без неё оплаченная
     сессия остаётся «не найденной» навсегда.
     """
+    # Сначала студия, затем финансовая строка: cancel берет замки в этом же
+    # порядке. Первый SELECT определяет только scope, не состояние платежа.
+    from services.schedule_guard import lock_studio
+    scope = (await db.execute(select(StripeCheckout.studio_id).where(
+        StripeCheckout.session_id == session_id))).scalar_one_or_none()
+    if scope is None and attempt_id:
+        scope = (await db.execute(select(StripeCheckout.studio_id).where(
+            StripeCheckout.attempt_id == attempt_id,
+            StripeCheckout.session_id.is_(None)))).scalar_one_or_none()
+    if scope is not None:
+        await lock_studio(db, scope)
     # populate_existing обязателен вместе с блокировкой: в /confirm заявка уже
     # загружена в ЭТУ же сессию, и без него ORM вернёт объект из identity map со
     # старым status='pending' — строка блокируется, а решение принимается по
@@ -1022,16 +1033,20 @@ async def _close_dispute(dispute, account_id: str | None) -> None:
             logger.info("Stripe: исход спора по заявке %s — она не в статусе disputed", session_id)
             return
 
+        charge = getattr(dispute, "charge", None)
+        charge_id = charge if isinstance(charge, str) else getattr(charge, "id", None)
+        refunded_fee = await _read_refunded_fee(checkout, charge_id) if status == "lost" else 0
+        from services.schedule_guard import lock_studio
+        await lock_studio(db, checkout.studio_id)
+        await db.refresh(checkout, with_for_update=True)
+        if checkout.status != "disputed":
+            return
         if status == "won":
             checkout.status = "paid"
             title = f"Чарджбэк на {checkout.amount} оспорен успешно — продажа в силе"
         else:
             checkout.status = "chargeback"
-            charge = getattr(dispute, "charge", None)
-            await _revert_sale(
-                db, checkout,
-                charge if isinstance(charge, str) else getattr(charge, "id", None),
-            )
+            await _revert_sale(db, checkout, refunded_fee)
             title = f"Чарджбэк на {checkout.amount} проигран: абонемент погашен, деньги списаны со счёта"
 
         log_activity(
@@ -1132,8 +1147,19 @@ async def _restore_consumed(db: AsyncSession, checkout: StripeCheckout) -> None:
     checkout.payload = payload
 
 
+async def _read_refunded_fee(checkout: StripeCheckout, charge_id: str | None) -> int:
+    """Read Stripe before taking any booking or financial row locks."""
+    if not charge_id or checkout.application_fee <= 0:
+        return 0
+    try:
+        return await stripe_connect.refunded_application_fee(charge_id, checkout.account_id)
+    except Exception:
+        logger.exception("Леджер: не удалось узнать судьбу комиссии по заявке %s", checkout.session_id)
+        return 0
+
+
 async def _reverse_platform_fee(
-    db: AsyncSession, checkout: StripeCheckout, charge_id: str | None,
+    db: AsyncSession, checkout: StripeCheckout, refunded: int | None,
 ) -> None:
     """Снять из леджера долю платформы, которую Stripe вернул вместе с платежом.
 
@@ -1149,17 +1175,7 @@ async def _reverse_platform_fee(
     Ошибку глушим: возврат уже проведён, и упавший запрос к Stripe не повод
     откатывать погашенный абонемент. Расхождение видно в логе.
     """
-    if checkout.application_fee <= 0 or not charge_id:
-        return
-    try:
-        refunded = await stripe_connect.refunded_application_fee(charge_id, checkout.account_id)
-    except Exception:
-        logger.exception(
-            "Леджер: не удалось узнать судьбу комиссии по заявке %s — строка не снята",
-            checkout.session_id,
-        )
-        return
-    if refunded <= 0:
+    if not refunded or refunded <= 0:
         return
 
     studio = (await db.execute(
@@ -1175,7 +1191,7 @@ async def _reverse_platform_fee(
 
 
 async def _revert_sale(
-    db: AsyncSession, checkout: StripeCheckout, charge_id: str | None = None,
+    db: AsyncSession, checkout: StripeCheckout, refunded_fee: int | None = 0,
 ) -> None:
     """Откатить проведённую продажу по полному возврату. Не коммитит.
 
@@ -1188,7 +1204,7 @@ async def _revert_sale(
     запись в Финансах задним числом не стирают — иначе отчёты за закрытый период
     начинают меняться сами по себе.
     """
-    await _reverse_platform_fee(db, checkout, charge_id)
+    await _reverse_platform_fee(db, checkout, refunded_fee)
 
     if booking_payment.is_booking(checkout):
         # У занятия нет абонемента, зато есть МЕСТО: деньги вернули — держать
@@ -1284,10 +1300,16 @@ async def _mark_reversed(charge, event_type: str, account_id: str | None) -> Non
             logger.info("Stripe: %s по заявке %s не в статусе paid", event_type, session_id)
             return
 
-        checkout.status = status
         reverted = status == "refunded" and _is_full_refund(charge)
+        refunded_fee = await _read_refunded_fee(checkout, charge["id"]) if reverted else 0
+        from services.schedule_guard import lock_studio
+        await lock_studio(db, checkout.studio_id)
+        await db.refresh(checkout, with_for_update=True)
+        if checkout.status != "paid":
+            return
+        checkout.status = status
         if reverted:
-            await _revert_sale(db, checkout, charge["id"])
+            await _revert_sale(db, checkout, refunded_fee)
         log_activity(
             db, checkout.studio_id, "payment",
             title=(

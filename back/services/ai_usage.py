@@ -9,6 +9,7 @@
 дорогие, в них больше всего итераций и эскалаций.
 """
 import logging
+from sqlalchemy import update
 
 from database import async_session_maker
 from models import AIUsage
@@ -33,6 +34,7 @@ async def record_usage(
     request_id: str | None = None,
     response_language: str | None = None,
     language_source: str | None = None,
+    quota_usage_id: int | None = None,
 ) -> None:
     """Пишет строку расхода своей сессией и коммитит сразу.
 
@@ -59,7 +61,7 @@ async def record_usage(
     # профиль покажет, что 3-4 коротких коммита на вопрос заметны.
     try:
         async with async_session_maker() as db:
-            db.add(AIUsage(
+            values = dict(
                 studio_id=studio_id,
                 user_id=user_id,
                 surface=surface,
@@ -78,7 +80,20 @@ async def record_usage(
                 request_id=request_id,
                 response_language=response_language,
                 language_source=language_source,
-            ))
+            )
+            if quota_usage_id is None:
+                db.add(AIUsage(**values))
+            else:
+                # Допуск уже посчитан ДО вызова модели. Заполняем ту же строку,
+                # сохраняя дату допуска: запрос на стыке месяцев считается один раз.
+                result = await db.execute(update(AIUsage).where(
+                    AIUsage.id == quota_usage_id,
+                    AIUsage.studio_id == studio_id,
+                    AIUsage.request_id == request_id,
+                    AIUsage.surface == "crm",
+                ).values(**values))
+                if result.rowcount != 1:
+                    raise RuntimeError("AI quota admission not found")
             await db.commit()
     except Exception:
         logger.exception(

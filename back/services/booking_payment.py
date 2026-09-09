@@ -243,6 +243,7 @@ async def settle(db: AsyncSession, checkout: StripeCheckout) -> Settlement:
         .where(Reservation.id == reservation_id,
                Lesson.studio_id == checkout.studio_id)
         .with_for_update(of=Reservation)
+        .execution_options(populate_existing=True)
     )).scalar_one_or_none()
     if reservation is None:
         logger.warning("payment_mismatch studio_id=%s checkout_id=%s reason=no_reservation",
@@ -506,6 +507,7 @@ async def unfulfillable_reason(db: AsyncSession, checkout: StripeCheckout, *,
         .join(Lesson, Lesson.id == Reservation.lesson_id)
         .where(Reservation.id == reservation_id,
                Lesson.studio_id == checkout.studio_id)
+        .execution_options(populate_existing=True)
     )).scalar_one_or_none()
     if reservation is None or reservation.status == "cancelled":
         return "booking_gone"
@@ -842,7 +844,7 @@ async def sweep(db: AsyncSession, *, now: Optional[datetime] = None,
             continue
         handled += 1
         try:
-            counts[await _resolve(db, checkout, reason)] += 1
+            counts[await _resolve(db, checkout, reason, now=now)] += 1
         except Exception:
             await db.rollback()
             logger.exception("payment_sweep_failed checkout_id=%s", checkout.id)
@@ -858,11 +860,23 @@ async def sweep(db: AsyncSession, *, now: Optional[datetime] = None,
 _KEEP_BOOKING = frozenset({"booking_gone", "no_longer_waiting", "no_reservation"})
 
 
-async def _resolve(db: AsyncSession, checkout: StripeCheckout, reason: str) -> str:
+async def _resolve(db: AsyncSession, checkout: StripeCheckout, reason: str, *,
+                   now: Optional[datetime] = None) -> str:
     """Разобрать ОДНУ заявку. Возвращает ключ исхода для счётчиков `sweep`."""
     from services import stripe_connect
     from routers.checkout.stripe_pay import apply_paid
+    from services.schedule_guard import lock_studio
 
+    await lock_studio(db, checkout.studio_id)
+    await db.refresh(checkout, with_for_update=True)
+    if checkout.status != "pending":
+        await db.commit()
+        return "settled" if checkout.status == "paid" else "reconciling"
+    current_reason = await unfulfillable_reason(db, checkout, now=now)
+    if current_reason is None:
+        await db.commit()
+        return "reconciling"
+    reason = current_reason
     reservation_id = (checkout.payload or {}).get("reservation_id")
     if reason != "stale":
         # Отметка ставится ПЕРВОЙ и переживает перезапуск: исполнить эту оплату
@@ -872,7 +886,8 @@ async def _resolve(db: AsyncSession, checkout: StripeCheckout, reason: str) -> s
         # доказывает, что денег не было. Пометь мы такую заявку — пришедшая
         # через секунду оплата была бы отвергнута собственной уборкой.
         _mark_void(checkout, reason)
-        await db.commit()
+    # Release the Studio/checkout locks before any Stripe request, including stale holds.
+    await db.commit()
 
     if not checkout.session_id:
         # Форма могла быть создана, а её id мы записать не успели. Связь
@@ -919,11 +934,16 @@ async def _resolve(db: AsyncSession, checkout: StripeCheckout, reason: str) -> s
         status = "expired"
 
     if status == "expired":
+        await lock_studio(db, checkout.studio_id)
+        await db.refresh(checkout, with_for_update=True)
+        if checkout.status != "pending":
+            await db.commit()
+            return "settled" if checkout.status == "paid" else "reconciling"
         checkout.status = "cancelled"
-        await db.commit()
         if reservation_id and reason not in _KEEP_BOOKING:
             return await _release(db, studio_id=checkout.studio_id,
                                   reservation_id=reservation_id, reason=reason)
+        await db.commit()
         return "released"
 
     # `complete`, но не `paid` — отложенный метод оплаты в пути (банковский
@@ -957,6 +977,14 @@ async def _release(db: AsyncSession, *, studio_id: int, reservation_id: int,
     Снимает бронь ДОМЕН (`booking.cancel`): платёжный мост состояние брони не
     пишет ни здесь, ни где-либо ещё.
     """
+    from services.schedule_guard import lock_studio
+    await lock_studio(db, studio_id)
+    reservation = (await db.execute(select(Reservation).join(Lesson).where(
+        Reservation.id == reservation_id, Lesson.studio_id == studio_id,
+    ).execution_options(populate_existing=True))).scalar_one_or_none()
+    if reservation is None or reservation.status != "hold":
+        await db.commit()
+        return "released"
     result = await booking.cancel(db, studio_id=studio_id, reservation_id=reservation_id,
                                   actor="payment", reason=f"оплата: {reason}",
                                   enforce_policy=False)

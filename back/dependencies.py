@@ -166,6 +166,7 @@ async def get_scoped_lesson(lesson_id: int, ctx: StudioContext, db: AsyncSession
 
     lesson = (await db.execute(
         select(Lesson).where(Lesson.id == lesson_id, Lesson.studio_id == ctx.studio_id)
+        .execution_options(populate_existing=True)
     )).scalar_one_or_none()
     if lesson is None:
         raise HTTPException(status_code=404, detail="Занятие не найдено")

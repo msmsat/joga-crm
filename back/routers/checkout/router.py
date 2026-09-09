@@ -30,6 +30,7 @@ from services.members import member_name
 from services.notifier import notify_payment
 from services.points import client_point_value, redeem_points
 from services.pricing import resolve_price
+from services.schedule_guard import lock_studio
 
 router = APIRouter(prefix="/checkout")
 
@@ -452,6 +453,7 @@ async def perform_pay(
     чтобы завести вторую. Иначе в истории клиента остались бы обе — вечный долг
     рядом с оплатой того же занятия.
     """
+    await lock_studio(db, studio_id)
     client, package = await _get_client_package(db, studio_id, body.client_id, body.product_id, body.product_type)
 
     account = await resolve_account(

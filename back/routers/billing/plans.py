@@ -17,6 +17,9 @@ MIN_SEATS = 2
 MAX_SEATS = 20
 UNLIMITED = "unlimited"
 UNLIMITED_PRICE = 12000
+AI_TRIAL_REQUESTS = 500
+AI_PERCENT_REQUESTS = 1500
+AI_REQUESTS_PER_SEAT = 500
 
 
 def plan_id(seats: int | None) -> str:
@@ -41,8 +44,8 @@ def _limits(seats: int | None, price: int) -> dict:
 
     clients       — потолка НЕТ ни на одной ступени, см. комментарий ниже;
     ai_requests   — обращений к ИИ в месяц (витрина, PlanLimits);
-    ai_cost_micro — потолок себестоимости в микро-$, ~12 % MRR. ВНУТРЕННИЙ:
-                    в PlanLimits не выносится — студии он ничего не говорит.
+    ai_cost_micro — внутренний ориентир себестоимости, ~12 % MRR, не квота.
+                    Не блокирует ассистента и не выносится в PlanLimits.
     """
     return {
         "staff": seats,
@@ -60,7 +63,7 @@ def _limits(seats: int | None, price: int) -> dict:
         # одинаково для любой сущности, и вернуть ограничение — правка одной
         # строки здесь, а не восстановление механизма.
         "clients": None,
-        "ai_requests": 5000 if seats is None else seats * 150,
+        "ai_requests": (MAX_SEATS if seats is None else seats) * AI_REQUESTS_PER_SEAT,
         # price в центах → 12 % от MRR в микро-долларах: price/100 * 0.12 * 1e6.
         "ai_cost_micro": price * 1200,
     }

@@ -1,243 +1,186 @@
-"""Квота ИИ (эпик AI-5, задача 3): месячный запас обращений и денежный потолок.
-
-Проверяем то, что ломается молча и стоит денег: студия без тарифа с безлимитным
-ИИ, процентная студия с 429 на первом же вопросе, записи прошлого месяца в
-текущем счётчике, резерв владельца, который не отсекает клиентского агента.
-
-Реальная БД, ручная чистка. Запуск из back/:  python -m tests.test_ai_quota
-"""
+"""Тарифные квоты CRM и атомарный допуск, на защищенной PostgreSQL test DB."""
 import asyncio
-import warnings
-from contextlib import contextmanager
+from contextlib import asynccontextmanager
 from datetime import datetime, timedelta
+from types import SimpleNamespace
 
-warnings.filterwarnings("ignore")
-
+import pytest
 from fastapi import HTTPException
-from sqlalchemy import delete, select
+from sqlalchemy import delete, insert, select
 
 from database import async_session_maker
 from models import AIUsage, Studio, StudioBillingPlan
-from services import ai_quota
-from services.ai_quota import _limits_for, ai_quota_status, check_ai_quota
-
-_STUDIO_NAME = "TEST-AI-QUOTA"
-
-
-@contextmanager
-def _trial(limit: int):
-    """Пробный потолок на время теста. Тарифные проверки гоняем с limit=0: 150
-    меньше любой месячной ступени, иначе они упираются в него и ступени не видно."""
-    saved = ai_quota.TRIAL_LIMIT
-    ai_quota.TRIAL_LIMIT = limit
-    try:
-        yield
-    finally:
-        ai_quota.TRIAL_LIMIT = saved
+from services.ai_quota import (
+    _limits_for, _month_start, admit_ai_request, ai_quota_details, check_ai_quota,
+)
+from services.ai_usage import record_usage
+from services.llm import LLMUsage
 
 
-async def _seed(plan_name: str | None, billing_mode: str = "subscription") -> int:
+@asynccontextmanager
+async def studio(name='s2', mode='subscription', status='active'):
     async with async_session_maker() as db:
-        studio = Studio(name=_STUDIO_NAME)
-        db.add(studio)
+        row = Studio(name='TEST-AI-QUOTA')
+        db.add(row)
         await db.flush()
-        if plan_name is not None:
-            db.add(StudioBillingPlan(
-                studio_id=studio.id,
-                plan_name=plan_name,
-                billing_mode=billing_mode,
-                # У процентного тарифа срок навсегда в прошлом — проверка квоты
-                # не имеет права на нём спотыкаться (plan_limits.py:50-54).
-                expires_at=datetime.utcnow() - timedelta(days=365),
-            ))
+        sid = row.id
+        if name is not None:
+            db.add(StudioBillingPlan(studio_id=sid, plan_name=name, billing_mode=mode,
+                status=status, trial_started_at=_month_start()-timedelta(days=3)))
         await db.commit()
-        return studio.id
+    try:
+        yield sid
+    finally:
+        async with async_session_maker() as db:
+            for model in (AIUsage, StudioBillingPlan):
+                await db.execute(delete(model).where(model.studio_id == sid))
+            await db.execute(delete(Studio).where(Studio.id == sid))
+            await db.commit()
 
 
-async def _cleanup(studio_id: int) -> None:
+async def add_usage(sid, count, **kwargs):
     async with async_session_maker() as db:
-        await db.execute(delete(AIUsage).where(AIUsage.studio_id == studio_id))
-        await db.execute(delete(StudioBillingPlan).where(StudioBillingPlan.studio_id == studio_id))
-        await db.execute(delete(Studio).where(Studio.id == studio_id))
-        await db.commit()
-
-
-async def _add_usage(studio_id: int, count: int, *, billable=True, cost=0, days_ago=0) -> None:
-    when = datetime.utcnow() - timedelta(days=days_ago)
-    async with async_session_maker() as db:
-        for _ in range(count):
-            db.add(AIUsage(
-                studio_id=studio_id, surface="crm", model="google/gemini-3-flash",
-                prompt_tokens=0, cached_tokens=0, completion_tokens=0,
-                cost_micro=cost, billable=billable, created_at=when,
-            ))
+        await db.execute(insert(AIUsage), [dict(studio_id=sid, surface='crm',
+            model='test', billable=True, **kwargs) for _ in range(count)])
         await db.commit()
 
 
-async def _expect_429(studio_id: int, code: str, reserve_pct: int = 0) -> None:
-    async with async_session_maker() as db:
-        try:
-            await check_ai_quota(db, studio_id, reserve_pct=reserve_pct)
-        except HTTPException as exc:
-            assert exc.status_code == 429, exc.status_code
-            assert exc.detail["code"] == code, exc.detail
-            return
-    raise AssertionError(f"ожидали 429 {code}, запрос прошёл")
+@pytest.mark.parametrize('mode', ['subscription', 'combo'])
+@pytest.mark.parametrize('seats', range(2, 21))
+def test_each_paid_seat(mode, seats):
+    plan = SimpleNamespace(plan_name=f's{seats}', billing_mode=mode, status='active')
+    assert _limits_for(plan)['ai_requests'] == seats * 500
 
 
-async def _expect_ok(studio_id: int, reserve_pct: int = 0) -> None:
-    async with async_session_maker() as db:
-        await check_ai_quota(db, studio_id, reserve_pct=reserve_pct)
+@pytest.mark.parametrize('mode,name,status,limit', [
+    ('subscription', 'free_trial', 'trial', 500),
+    ('subscription', 'free_trial', 'pending', 500),
+    ('percent', 's2', 'active', 1500),
+    ('percent', 'unlimited', 'active', 1500),
+    ('percent', 'free_trial', 'trial', 1500),
+    ('subscription', 'unlimited', 'active', 10000),
+    ('combo', 'unlimited', 'active', 10000),
+    ('subscription', 'pro', 'active', 7500),
+    ('subscription', 'business', 'active', 10000),
+    ('subscription', 'none', 'active', 0),
+])
+def test_special_plans(mode, name, status, limit):
+    assert _limits_for(SimpleNamespace(plan_name=name, billing_mode=mode, status=status))['ai_requests'] == limit
+    assert _limits_for(None)['ai_requests'] == 0
 
 
-async def _run_requests_limit():
-    """Старт: 300 billable-записей -> 301-й запрос даёт 429; прошлый месяц не в счёт."""
-    studio_id = await _seed("s2")
-    try:
-        await _expect_ok(studio_id)
-        await _add_usage(studio_id, 299)
-        await _expect_ok(studio_id)
-        await _add_usage(studio_id, 1)
-        await _expect_429(studio_id, "ai_quota_exceeded")
-
-        async with async_session_maker() as db:
-            used, limit = await ai_quota_status(db, studio_id)
-        assert (used, limit) == (300, 300), (used, limit)
-    finally:
-        await _cleanup(studio_id)
-
-
-async def _run_ignores_other_rows():
-    """Не-billable вызовы цикла и записи прошлого месяца квоту не жгут."""
-    studio_id = await _seed("s2")
-    try:
-        # 40 дней назад — гарантированно прошлый календарный месяц.
-        await _add_usage(studio_id, 400, days_ago=40)
-        await _add_usage(studio_id, 400, billable=False)
-        async with async_session_maker() as db:
-            used, _ = await ai_quota_status(db, studio_id)
-        assert used == 0, used
-        await _expect_ok(studio_id)
-    finally:
-        await _cleanup(studio_id)
+def test_month_scope_admin_usage_and_cost_do_not_spend_assistant_quota():
+    async def run():
+        async with studio() as sid, studio() as other:
+            await add_usage(sid, 1000, created_at=_month_start()-timedelta(seconds=1))
+            await add_usage(other, 1000)
+            async with async_session_maker() as db:
+                db.add_all([AIUsage(studio_id=sid, surface=channel, model='test',
+                    billable=True, cost_micro=100_000_000)
+                    for channel in ['telegram', 'instagram', 'whatsapp']])
+                db.add(AIUsage(studio_id=sid, surface='crm', model='test',
+                               billable=False, cost_micro=100_000_000))
+                await db.commit()
+                assert await ai_quota_details(db, sid) == dict(used=0, limit=1000, trial=False)
+                await check_ai_quota(db, sid)
+    asyncio.run(run())
 
 
-async def _run_percent_plan():
-    """Процентная студия не падает на проверке подписки и живёт по ВЕРХНЕЙ ступени.
-
-    Ступени у неё нет вовсе (её не показывает биллинг, апгрейда у модели нет), а
-    платит она долей с оборота — от 39 €/мес и выше Business. Нижняя ступень
-    упирала такую студию в «Улучшите тариф» на 300-м вопросе, при том что улучшать
-    нечего; ровно тот же дефект, что потолок сотрудников по невидимому plan_name."""
-    studio_id = await _seed("s2", billing_mode="percent")
-    try:
-        await _expect_ok(studio_id)
-        async with async_session_maker() as db:
-            _, limit = await ai_quota_status(db, studio_id)
-        assert limit == 5000, limit   # верхняя ступень, а не Старт из plan_name
-    finally:
-        await _cleanup(studio_id)
-
-
-async def _run_no_plan_row():
-    """Студия без строки StudioBillingPlan получает отказ, а не безлимит."""
-    studio_id = await _seed(None)
-    try:
-        await _expect_429(studio_id, "ai_quota_exceeded")
-        async with async_session_maker() as db:
-            used, limit = await ai_quota_status(db, studio_id)
-        assert (used, limit) == (0, 0), (used, limit)
-    finally:
-        await _cleanup(studio_id)
+@pytest.mark.parametrize('name,mode,status,limit,code', [
+    ('s2', 'subscription', 'active', 1000, 'ai_quota_exceeded'),
+    ('s2', 'percent', 'active', 1500, 'ai_quota_exceeded'),
+    ('s3', 'combo', 'active', 1500, 'ai_quota_exceeded'),
+    ('free_trial', 'subscription', 'trial', 500, 'ai_trial_exhausted'),
+])
+def test_exact_boundary_and_status(name, mode, status, limit, code):
+    async def run():
+        async with studio(name, mode, status) as sid:
+            await add_usage(sid, limit-1)
+            async with async_session_maker() as db:
+                await check_ai_quota(db, sid)
+            await add_usage(sid, 1)
+            async with async_session_maker() as db:
+                with pytest.raises(HTTPException) as exc:
+                    await check_ai_quota(db, sid)
+                assert exc.value.status_code == 429 and exc.value.detail['code'] == code
+                assert await ai_quota_details(db, sid) == dict(used=limit, limit=limit, trial=status=='trial')
+    asyncio.run(run())
 
 
-async def _run_cost_cap():
-    """Денежный потолок срабатывает до вызова модели и отличим по коду."""
-    studio_id = await _seed("s2")
-    try:
-        # Одна строка, но дорогая: вопросов мало, денег потрачено сверх потолка.
-        await _add_usage(studio_id, 1, billable=False, cost=5_000_000)
-        await _expect_429(studio_id, "ai_cost_cap")
-    finally:
-        await _cleanup(studio_id)
+def test_trial_cross_month_and_upgrade():
+    async def run():
+        async with studio('free_trial', status='trial') as sid:
+            await add_usage(sid, 500, created_at=_month_start()-timedelta(days=1))
+            # Before trial activation is not part of its quota.
+            await add_usage(sid, 10, created_at=_month_start()-timedelta(days=10))
+            async with async_session_maker() as db:
+                assert await ai_quota_details(db, sid) == dict(used=500, limit=500, trial=True)
+                plan = (await db.execute(select(StudioBillingPlan).where(StudioBillingPlan.studio_id==sid))).scalar_one()
+                plan.plan_name, plan.status = 's2', 'active'
+                await db.commit()
+                assert await ai_quota_details(db, sid) == dict(used=0, limit=1000, trial=False)
+                await check_ai_quota(db, sid)
+    asyncio.run(run())
 
 
-async def _run_reserve():
-    """reserve_pct=20 отсекает клиентского агента раньше, чем владельца."""
-    studio_id = await _seed("s2")
-    try:
-        await _add_usage(studio_id, 240)          # ровно 80 % от 300
-        await _expect_429(studio_id, "ai_quota_exceeded", reserve_pct=20)
-        await _expect_ok(studio_id)               # владельцу запас ещё остался
-    finally:
-        await _cleanup(studio_id)
+def test_last_request_atomic_and_recorded_once():
+    async def run():
+        async with studio() as sid:
+            await add_usage(sid, 999)
+            ready = asyncio.Event()
+            async def admit():
+                await ready.wait()
+                return await admit_ai_request(sid, None)
+            tasks = [asyncio.create_task(admit()) for _ in range(2)]
+            ready.set()
+            results = await asyncio.gather(*tasks, return_exceptions=True)
+            accepted = [r for r in results if isinstance(r, tuple)]
+            rejected = [r for r in results if isinstance(r, HTTPException)]
+            assert len(accepted) == len(rejected) == 1
+            assert rejected[0].status_code == 429
+            row_id, request_id = accepted[0]
+            await record_usage(sid, LLMUsage(model='test', prompt_tokens=10,
+                cached_tokens=0, completion_tokens=5, cost_micro=30), surface='crm',
+                billable=True, request_id=request_id, quota_usage_id=row_id)
+            async with async_session_maker() as db:
+                assert (await ai_quota_details(db, sid))['used'] == 1000
+                row = await db.get(AIUsage, row_id)
+                assert row.model == 'test' and row.cost_micro == 30
+    asyncio.run(run())
 
 
-async def _run_trial_cap():
-    """Пробный потолок бьёт раньше тарифного и считает за ВСЁ время, а не за месяц.
-
-    Business (5000 в месяц) с записями прошлого месяца: по тарифу запас нетронут,
-    по пробному — исчерпан. UI обязан показывать именно пробные числа."""
-    studio_id = await _seed("unlimited")
-    try:
-        await _add_usage(studio_id, 149, days_ago=40)   # прошлый месяц — потолок сквозной
-        await _expect_ok(studio_id)
-        await _add_usage(studio_id, 1)
-        await _expect_429(studio_id, "ai_trial_exhausted")
-
-        async with async_session_maker() as db:
-            used, limit = await ai_quota_status(db, studio_id)
-        assert (used, limit) == (150, 150), (used, limit)
-    finally:
-        await _cleanup(studio_id)
+def test_no_plan_cannot_admit():
+    async def run():
+        async with studio(None) as sid:
+            with pytest.raises(HTTPException) as exc:
+                await admit_ai_request(sid, None)
+            assert exc.value.status_code == 429
+    asyncio.run(run())
 
 
-def test_ai_quota_plan_states():
-    """Разбор состояний тарифа — без БД: в двух случаях из трёх первая редакция
-    эпика давала безлимитный ИИ."""
-    class _P:
-        def __init__(self, mode, name):
-            self.billing_mode, self.plan_name = mode, name
-
-    assert _limits_for(None)["ai_requests"] == 0
-    # Триал и прежние имена каталога (start/pro/business) читаются через canon:
-    # в БД они лежат у всех, кто платил до перехода на ступени-места.
-    assert _limits_for(_P("subscription", "free_trial"))["ai_requests"] == 2250
-    assert _limits_for(_P("subscription", "pro"))["ai_requests"] == 2250
-    assert _limits_for(_P("percent", "s2"))["ai_requests"] == 5000
-    # Потолок себестоимости на проценте остаётся: безлимит расходов платформы не
-    # обещан НИ ОДНОМУ тарифу, а минимальный платёж на проценте — 15 €/мес.
-    assert _limits_for(_P("percent", "s2"))["ai_cost_micro"] == 12000 * 1200
-    assert _limits_for(_P("combo", "unlimited"))["ai_requests"] == 5000
-    assert _limits_for(_P("subscription", "none"))["ai_requests"] == 300
-
-
-def _plan_test(fn):
-    def wrapper():
-        with _trial(0):
-            asyncio.run(fn())
-    return wrapper
-
-
-test_ai_quota_requests_limit = _plan_test(_run_requests_limit)
-test_ai_quota_ignores_other_rows = _plan_test(_run_ignores_other_rows)
-test_ai_quota_percent_plan = _plan_test(_run_percent_plan)
-test_ai_quota_no_plan_row = _plan_test(_run_no_plan_row)
-test_ai_quota_cost_cap = _plan_test(_run_cost_cap)
-test_ai_quota_reserve = _plan_test(_run_reserve)
-
-
-def test_ai_quota_trial_cap():
-    with _trial(150):
-        asyncio.run(_run_trial_cap())
-
-
-if __name__ == "__main__":
-    test_ai_quota_plan_states()
-    for fn in (
-        test_ai_quota_requests_limit, test_ai_quota_ignores_other_rows,
-        test_ai_quota_percent_plan, test_ai_quota_no_plan_row,
-        test_ai_quota_cost_cap, test_ai_quota_reserve, test_ai_quota_trial_cap,
-    ):
-        fn()
-    print("ALL PASS")
+@pytest.mark.parametrize('channel', ['telegram', 'instagram', 'whatsapp'])
+def test_ai_admin_answers_with_exhausted_assistant_quota(monkeypatch, channel):
+    from models import StudioAISettings
+    from services import client_agent, llm
+    calls = []
+    async def allowed(*args, **kwargs):
+        return True
+    async def answer(*args, **kwargs):
+        calls.append(1)
+        return llm.LLMReply('Welcome', [], LLMUsage(model='test', prompt_tokens=1,
+            cached_tokens=0, completion_tokens=1, cost_micro=1))
+    monkeypatch.setattr(client_agent, 'should_reply', allowed)
+    monkeypatch.setattr(llm, 'chat', answer)
+    monkeypatch.setattr(llm, 'is_configured', lambda: True)
+    async def run():
+        async with studio() as sid:
+            await add_usage(sid, 1000)
+            async with async_session_maker() as db:
+                db.add(StudioAISettings(studio_id=sid, tg_enabled=True, ig_enabled=True,
+                    wa_enabled=True, ig_off_hours_only=False))
+                await db.commit()
+            result = await client_agent.produce_reply(sid, channel, '123456', 'Hello')
+            assert result == 'Welcome' and calls
+            async with async_session_maker() as db:
+                assert (await ai_quota_details(db, sid))['used'] == 1000
+    asyncio.run(run())

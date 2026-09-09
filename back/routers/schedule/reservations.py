@@ -19,6 +19,7 @@ from services.notifier import lesson_context, notify
 from services.subscription_charge import (
     activate_pending_after_visit, notify_subscription_remaining,
 )
+from services.schedule_guard import lock_studio
 
 router = APIRouter()
 
@@ -223,6 +224,7 @@ async def attend_reservation(
     Скоуп занятия (404 чужая студия / 403 тренер на чужом) — get_scoped_lesson.
     Повторная отметка идемпотентна: статус уже attended — просто возвращаем запись.
     """
+    await lock_studio(db, ctx.studio_id)
     reservation = (await db.execute(
         select(Reservation).where(Reservation.id == reservation_id)
     )).scalar_one_or_none()
@@ -296,6 +298,7 @@ async def pay_reservation(
     Деньги берут владелец и администратор: тренер отмечает посещение, но кассу
     не ведёт (ТЗ 2.3).
     """
+    await lock_studio(db, ctx.studio_id)
     if ctx.role == "trainer":
         raise HTTPException(status_code=403, detail="Принимать оплату могут владелец и администратор")
 

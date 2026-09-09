@@ -178,7 +178,7 @@ def test_update_cancelled_lesson_cancel_reason_only_ok():
 # ─── 3. Отмена занятия, начинающегося раньше чем через 2 часа ───────────────
 def test_cancel_lesson_starting_soon_rejected():
     lesson = _Lesson(start_time=datetime.now() + timedelta(minutes=119))
-    db = _DB([lesson])  # get_scoped_lesson
+    db = _DB([_Studio(), lesson])  # lock_studio, get_scoped_lesson
     _expect_400(L.cancel_lesson(1, ctx=_ctx(), db=db), "2 часа")
     assert db.committed is False
 
@@ -186,7 +186,7 @@ def test_cancel_lesson_starting_soon_rejected():
 def test_cancel_far_lesson_ok_passes_time_check():
     lesson = _Lesson(start_time=datetime.now() + timedelta(hours=5))
     # get_scoped_lesson, select client_id (уведомления), UPDATE Reservation (каскад)
-    db = _DB([lesson, [], None])
+    db = _DB([_Studio(), lesson, [], None])
     result = asyncio.run(L.cancel_lesson(1, ctx=_ctx(), db=db))
     assert lesson.status == "cancelled"
     assert db.committed is True

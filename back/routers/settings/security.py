@@ -27,6 +27,7 @@ from services.i18n import pick
 from services.mailer import send_email
 from services.notifier import _studio_prefs
 from services.sessions import hash_token, revoke_sessions
+from services.schedule_guard import lock_studio
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -254,6 +255,7 @@ async def wipe_data(
     db: AsyncSession = Depends(get_db),
     _otp: None = Depends(require_otp("delete_data")),
 ):
+    await lock_studio(db, ctx.studio_id)
     await _check_confirm_name(db, ctx.studio_id, body.confirm_name)
 
     deleted: dict[str, int] = {}
@@ -302,6 +304,7 @@ async def delete_account(
     db: AsyncSession = Depends(get_db),
     _otp: None = Depends(require_otp("delete_account")),
 ):
+    await lock_studio(db, ctx.studio_id)
     await _check_confirm_name(db, ctx.studio_id, body.confirm_name)
 
     other_owner = (await db.execute(

@@ -34,7 +34,9 @@ from fastapi import HTTPException
 from sqlalchemy import or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from models import Lesson, Studio
+from models import Lesson, Studio, StaffBusyInterval, StudioMember, Service, User
+from services import working_hours
+from services import booking_time
 from services import lesson_time, resource_hours, studio_time
 
 
@@ -43,7 +45,7 @@ async def lock_studio(db: AsyncSession, studio_id: int) -> Studio:
     вызывающего. 404, если студии нет (тот же ответ, что у любого чужого id
     в проекте — не подсказывать существование чужой строки)."""
     studio = (await db.execute(
-        select(Studio).where(Studio.id == studio_id).with_for_update()
+        select(Studio).where(Studio.id == studio_id).with_for_update().execution_options(populate_existing=True)
     )).scalar_one_or_none()
     if studio is None:
         raise HTTPException(status_code=404, detail="Студия не найдена")
@@ -68,6 +70,7 @@ async def assert_interval_free(
     start: datetime, end: datetime,
     buffer_before_min: int = 0, buffer_after_min: int = 0,
     exclude_lesson_id: Optional[int] = None,
+    tz_iana: Optional[str] = None,
 ) -> None:
     """409, если `[start-buffer_before; end+buffer_after)` пересекает
     существующее неотменённое занятие ТОГО ЖЕ мастера (в ЛЮБОМ филиале
@@ -88,8 +91,10 @@ async def assert_interval_free(
     if teacher_id is None and hall_id is None:
         return
 
-    new_start = _instant_or_none(start - timedelta(minutes=buffer_before_min), studio)
-    new_end = _instant_or_none(end + timedelta(minutes=buffer_after_min), studio)
+    resolved = booking_time.resolve_interval(
+        start - timedelta(minutes=buffer_before_min), end + timedelta(minutes=buffer_after_min),
+        tz_iana or studio.tz_iana)
+    new_start, new_end = resolved if resolved else (None, None)
     if new_start is None or new_end is None:
         raise HTTPException(
             status_code=409,
@@ -114,11 +119,17 @@ async def assert_interval_free(
     for other in (await db.execute(stmt)).scalars().all():
         when = lesson_time.resolve(other, studio)
         if when.instant is None:
+            if not booking_time.possibly_overlaps(
+                other.start_time - timedelta(minutes=other.buffer_before_min),
+                other.start_time + timedelta(minutes=other.duration_min + other.buffer_after_min),
+                new_start, new_end):
+                continue
             raise HTTPException(
                 status_code=409,
                 detail=f"Занятие #{other.id} без подтверждённого момента времени — "
                        "строгая проверка занятости невозможна",
             )
+
         other_start = when.instant - timedelta(minutes=other.buffer_before_min)
         other_end = when.instant + timedelta(minutes=other.duration_min + other.buffer_after_min)
         if other_start < new_end and new_start < other_end:
@@ -131,6 +142,20 @@ async def assert_interval_free(
                     "params": {"lesson_id": other.id, "resource": resource},
                 },
             )
+
+
+    if teacher_id is not None:
+        rows = (await db.execute(select(StaffBusyInterval).where(
+            StaffBusyInterval.studio_id == studio.id, StaffBusyInterval.user_id == teacher_id,
+            StaffBusyInterval.start_time < new_end + timedelta(days=2),
+            StaffBusyInterval.end_time > new_start - timedelta(days=2),
+        ))).scalars().all()
+        for row in rows:
+            interval = booking_time.resolve_interval(row.start_time, row.end_time, row.tz_iana)
+            if interval is None or (interval[0] < new_end and new_start < interval[1]):
+                raise HTTPException(409, detail={"code": "SLOT_UNAVAILABLE",
+                    "message": "Специалист недоступен в выбранное время",
+                    "params": {"busy_interval_id": row.id}})
 
 
 @dataclass(frozen=True)
@@ -163,9 +188,8 @@ async def assert_future_assignments_valid(
     conditions = [
         Lesson.studio_id == studio.id,
         Lesson.teacher_id == user_id,
-        Lesson.booking_mode == "resource",
         Lesson.status != "cancelled",
-        Lesson.start_time >= lesson_time.local_now(studio),
+        Lesson.start_time >= lesson_time.local_now(studio) - timedelta(days=2),
     ]
     if branch_id is not None:
         conditions.append(Lesson.branch_id == branch_id)
@@ -174,16 +198,89 @@ async def assert_future_assignments_valid(
         return []
 
     conflicts: list[AssignmentConflict] = []
+    member = (await db.execute(select(StudioMember).where(
+        StudioMember.studio_id == studio.id, StudioMember.user_id == user_id
+    ).execution_options(populate_existing=True))).scalar_one_or_none()
+    service_ids = set((await db.execute(select(Service.id).join(User.services).where(
+        User.id == user_id, Service.studio_id == studio.id))).scalars().all())
     for row in rows:
-        window = await resource_hours.available_intervals(
-            db, studio_id=studio.id, user_id=user_id, branch_id=row.branch_id,
-            day=row.start_time.date(),
-        )
-        start, end = row.start_time, row.start_time + timedelta(minutes=row.duration_min)
-        fits = any(s <= start and end <= e for s, e in window.intervals)
+        interval = booking_time.resolve_interval(
+            row.start_time - timedelta(minutes=row.buffer_before_min),
+            row.start_time + timedelta(minutes=row.duration_min + row.buffer_after_min), row.tz_iana)
+        if interval is None:
+            conflicts.append(AssignmentConflict(row.id, row.start_time))
+            continue
+        start, end = (studio_time.to_local(t, studio).replace(tzinfo=None) for t in interval)
+        if end <= lesson_time.local_now(studio):
+            continue
+        if member is None or member.status != "active" or member.role != "trainer":
+            conflicts.append(AssignmentConflict(row.id, row.start_time))
+            continue
+        if row.booking_mode == "event":
+            try:
+                await working_hours.assert_within_working_hours(db, studio.id,
+                    start_time=start, duration_min=int((end-start).total_seconds()//60),
+                    teacher_id=user_id, hall_id=row.hall_id)
+                await assert_interval_free(db, studio, teacher_id=user_id, hall_id=row.hall_id,
+                    start=start, end=end, exclude_lesson_id=row.id)
+            except HTTPException:
+                conflicts.append(AssignmentConflict(row.id, row.start_time))
+            continue
+        if row.service_id not in service_ids:
+            conflicts.append(AssignmentConflict(row.id, row.start_time))
+            continue
+        intervals = []
+        day = start.date()
+        while day <= end.date():
+            window = await resource_hours.available_intervals(
+                db, studio_id=studio.id, user_id=user_id, branch_id=row.branch_id, day=day)
+            intervals.extend(window.intervals)
+            day += timedelta(days=1)
+        fits = any(s <= start and end <= e for s, e in booking_time.merge_intervals(intervals))
         if not fits:
             conflicts.append(AssignmentConflict(row.id, row.start_time))
     return conflicts
+
+
+async def assert_studio_assignments_valid(db: AsyncSession, studio: Studio) -> None:
+    """Validate shared hours/timezone edits against every affected specialist."""
+    if not studio.strict_schedule_enabled:
+        return
+    teacher_ids = (await db.execute(select(Lesson.teacher_id).where(
+        Lesson.studio_id == studio.id,
+        Lesson.status != "cancelled",
+        Lesson.teacher_id.is_not(None),
+        Lesson.start_time >= lesson_time.local_now(studio) - timedelta(days=2),
+    ).distinct())).scalars().all()
+    conflicts = []
+    for teacher_id in teacher_ids:
+        conflicts.extend(await assert_future_assignments_valid(db, studio, user_id=teacher_id))
+    raise_if_conflicts(conflicts)
+
+
+async def assert_catalog_entity_removable(db: AsyncSession, studio: Studio, *,
+                                         branch_id: int | None = None,
+                                         hall_id: int | None = None) -> None:
+    """Keep Resource snapshots readable and strict future events assigned."""
+    from models import Hall
+    scope = Lesson.hall_id == hall_id
+    if branch_id is not None:
+        scope = or_(Lesson.branch_id == branch_id, Lesson.hall_id.in_(
+            select(Hall.id).where(Hall.studio_id == studio.id, Hall.branch_id == branch_id)))
+    protected = Lesson.booking_mode == "resource"
+    if studio.strict_schedule_enabled:
+        from sqlalchemy import and_
+        protected = or_(protected, and_(
+            Lesson.status != "cancelled",
+            Lesson.start_time >= lesson_time.local_now(studio) - timedelta(days=2)))
+    ids = (await db.execute(select(Lesson.id).where(
+        Lesson.studio_id == studio.id, scope, protected).order_by(Lesson.id).limit(100)
+    )).scalars().all()
+    if ids:
+        raise HTTPException(status_code=409, detail={
+            "code": "CATALOG_ENTITY_IN_USE", "params": {"lesson_ids": list(ids)},
+            "message": "Филиал или зал используется в записях",
+        })
 
 
 def raise_if_conflicts(conflicts: Sequence[AssignmentConflict]) -> None:
@@ -194,7 +291,7 @@ def raise_if_conflicts(conflicts: Sequence[AssignmentConflict]) -> None:
         status_code=409,
         detail={
             "code": "FUTURE_ASSIGNMENT_CONFLICT",
-            "message": "Изменение конфликтует с будущими resource-записями специалиста",
+            "message": "Изменение конфликтует с будущими записями специалиста",
             "params": {"lesson_ids": [c.lesson_id for c in conflicts]},
         },
     )

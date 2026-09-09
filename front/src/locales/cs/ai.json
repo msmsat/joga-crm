@@ -207,7 +207,7 @@
     "ig_not_connected": "Instagram zatím není připojen.",
     "wa_not_connected": "Číslo WhatsApp zatím není připojeno — připojte ho v Oznámeních.",
     "assistant_unavailable": "Asistent je dočasně nedostupný — zkuste to prosím později.",
-    "trial_exhausted": "Vyčerpali jste všechny zkušební AI dotazy. Asistent je stále v beta verzi — ozvěte se nám, pokud potřebujete vyšší limit.",
+    "trial_exhausted": "Vyčerpali jste všech 500 zkušebních dotazů AI asistentovi. Pokračujte výběrem placeného tarifu.",
     "quota_exceeded": "Vyčerpali jste všechny AI dotazy v tomto tarifu. Limit se obnoví na začátku měsíce — nebo přejděte na vyšší tarif."
   },
   "toasts": {
@@ -280,11 +280,13 @@
     "update_staff": "Aktualizuji zaměstnance…"
   },
   "quota": {
-    "trialLow": "Zkušební AI dotazy vám docházejí.",
-    "label": "AI dotazy",
+    "trialLow": "Zbývá málo zkušebních dotazů.",
+    "label": "Dotazy AI asistentovi",
     "value": "{{used}} z {{limit}}",
     "low": "Blížíte se měsíčnímu limitu.",
-    "upgrade": "Zvýšit tarif"
+    "upgrade": "Vybrat tarif",
+    "monthPeriod": "Za kalendářní měsíc (UTC)",
+    "trialPeriod": "Za celé zkušební období"
   },
   "rating": {
     "up": "Dobrá odpověď",

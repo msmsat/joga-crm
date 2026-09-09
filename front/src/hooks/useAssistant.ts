@@ -27,8 +27,7 @@ const MAX_MESSAGE_LENGTH = 4000;
 function assistantErrorMessage(err: unknown, t: TFunction): string {
   if (err instanceof ApiError) {
     if (err.message === 'assistant_unavailable') return t('ai:errors.assistant_unavailable');
-    // Пробный потолок — отдельным текстом: тариф его не поднимает, и совет
-    // «улучшите тариф» из quota_exceeded здесь стоил бы владельцу денег зря.
+    // Пробные запросы не обновляются ежемесячно; платный тариф снимает триал.
     if (err.code === 'ai_trial_exhausted') return t('ai:errors.trial_exhausted');
     if (err.code === 'ai_quota_exceeded' || err.code === 'ai_cost_cap') {
       return t('ai:errors.quota_exceeded');
