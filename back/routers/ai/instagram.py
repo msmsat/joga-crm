@@ -310,12 +310,28 @@ async def instagram_webhook(
     except ValueError:
         return {"ok": True}
 
-    for account_id, sender_igsid, text, message in _incoming_messages(payload):
+    messages = _incoming_messages(payload)
+    if not messages:
+        # Meta шлёт в тот же вебхук эхо наших ответов, отметки о прочтении и
+        # реакции. Это НЕ ошибка — но и не «ничего не пришло»: без этой строки
+        # разбор упирается в 200 OK, за которым не видно, было ли там сообщение.
+        logger.info("instagram webhook: в теле нет текстовых сообщений (эхо/прочтение/вложение)")
+
+    for account_id, sender_igsid, text, message in messages:
         settings = (await db.execute(
             select(StudioAISettings).where(StudioAISettings.ig_user_id == account_id)
         )).scalar_one_or_none()
         # Тумблер агента на странице AI — источник правды: выключен, значит молчим.
         if settings is None or not settings.ig_enabled or not settings.ig_token:
+            # Молча отбрасывать нельзя: снаружи это неотличимо от «Meta ничего не
+            # присылала», а причины разные и чинятся в разных местах. Токен не
+            # печатаем, только факт его наличия.
+            logger.warning(
+                "instagram webhook: сообщение отброшено, аккаунт=%s, студия=%s, "
+                "агент_включён=%s, токен_есть=%s",
+                account_id, getattr(settings, "studio_id", None),
+                getattr(settings, "ig_enabled", None), bool(getattr(settings, "ig_token", None)),
+            )
             continue
         # Приём — после проверки подписи и опознания студии, перед побочным
         # действием. Ключ — mid, идентификатор сообщения у Meta: он стабилен

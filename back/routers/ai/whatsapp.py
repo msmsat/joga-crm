@@ -314,9 +314,23 @@ async def whatsapp_webhook(
     except ValueError:
         return {"ok": True}
 
-    for phone_number_id, sender, text, message in _incoming_messages(payload):
+    messages = _incoming_messages(payload)
+    if not messages:
+        # Статусы доставки («доставлено», «прочитано») приходят в тот же вебхук
+        # и сообщениями не являются. Отличать их от «клиент написал, а мы
+        # потеряли» по 200 OK невозможно — отсюда строка.
+        logger.info("whatsapp webhook: в теле нет текстовых сообщений (статусы доставки/вложения)")
+
+    for phone_number_id, sender, text, message in messages:
         found = await _studio_by_phone_number_id(db, phone_number_id)
         if found is None:
+            # Номер, с которого пришло, не совпал ни с одной подключённой
+            # интеграцией wa_notify. Самая частая причина молчания после смены
+            # номера в Meta — и до этой строки она была не видна ничем.
+            logger.warning(
+                "whatsapp webhook: номер %s не найден среди подключённых студий",
+                phone_number_id,
+            )
             continue
         studio_id, _ = found   # токен ответа работа достаёт сама, см. agent_jobs._transport
         settings = (await db.execute(
@@ -324,6 +338,10 @@ async def whatsapp_webhook(
         )).scalar_one_or_none()
         # Тумблер агента на странице AI — источник правды: выключен, значит молчим.
         if settings is None or not settings.wa_enabled:
+            logger.warning(
+                "whatsapp webhook: сообщение отброшено, студия=%s, агент_включён=%s",
+                studio_id, getattr(settings, "wa_enabled", None),
+            )
             continue
         # Приём — после проверки подписи и опознания студии, перед побочным
         # действием. Ключ — wamid, идентификатор сообщения у Meta: он стабилен

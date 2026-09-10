@@ -1,3 +1,4 @@
+import logging
 import os
 from contextlib import asynccontextmanager
 
@@ -38,6 +39,18 @@ from fastapi import Depends
 # не вешаем; для /ai (в отличие от /booking) гейт целиком переехал внутрь
 # routers/ai/router.py, где применяется по каждому подроутеру отдельно.
 _sub_gate = [Depends(require_active_subscription)]
+
+# Логи приложения. Без этой строки uvicorn настраивает ТОЛЬКО свои логгеры, а
+# всё, что пишут роутеры и сервисы через logging.getLogger(__name__), уходит в
+# корневой логгер без обработчика — то есть в никуда. Наружу пробивались одни
+# access-логи, и разобрать по журналу, принял вебхук сообщение клиента или молча
+# отбросил, было физически нечем: воркер свой basicConfig имеет (workers/main.py),
+# а web — нет. Уровень задаётся LOG_LEVEL, чтобы менять его без правки кода.
+logging.basicConfig(
+    level=os.getenv("LOG_LEVEL", "INFO").upper(),
+    format="%(asctime)s %(levelname)s %(name)s %(message)s",
+)
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
