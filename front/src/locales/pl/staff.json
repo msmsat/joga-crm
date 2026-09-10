@@ -278,5 +278,16 @@
     "pendingHint": "Profil otworzy się, gdy pracownik zaakceptuje zaproszenie",
     "resendInvite": "Wyślij zaproszenie ponownie",
     "cancelInvite": "Anuluj dołączenie"
+  },
+  "availability": {
+    "branches": "Dostępny w oddziałach",
+    "branchesHint": "Bez przypisania specjalista nie jest proponowany do rezerwacji indywidualnej w tym oddziale.",
+    "noBranches": "Brak oddziałów",
+    "breaks": "Przerwy i nieobecności",
+    "breaksHint": "Czas lokalny studia. Interwał jest odejmowany od dostępności w tym dniu.",
+    "from": "Od",
+    "to": "Do",
+    "reason": "Powód",
+    "reasonPlaceholder": "np. obiad"
   }
 }

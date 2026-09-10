@@ -46,6 +46,9 @@ class _Lesson:
         self.branch_id = None
         self.booking_mode = "event"
         self.tz_iana = None
+        # HB-22: версия интервала есть на модели и уходит в ответ
+        # (expected_version при переносе) — фейк обязан её нести.
+        self.version = 1
 
 
 class _Service:

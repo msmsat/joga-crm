@@ -92,5 +92,18 @@
     "expenses": "Kostnader",
     "avgCheck": "Snittköp",
     "profit": "Vinst"
+  },
+  "bookingModes": {
+    "title": "Bokningsmodeller",
+    "event": "Evenemang",
+    "resource": "Individuellt",
+    "events": "Evenemang",
+    "bookings": "Bokningar",
+    "attended": "Närvaro",
+    "pending": "Väntar på bekräftelse",
+    "hold": "Väntar på betalning",
+    "cancelled": "Avbokat",
+    "utilization": "Beläggning",
+    "noData": "Inga data"
   }
 }

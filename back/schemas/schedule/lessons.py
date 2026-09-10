@@ -30,6 +30,9 @@ class LessonRead(BaseSchema):
     branch_id: Optional[int] = None
     booking_mode: str = "event"
     tz_iana: Optional[str] = None
+    # Версия интервала: журнал отправляет её как expected_version при переносе
+    # индивидуальной записи (§6.5). У event не используется.
+    version: int = 1
 
     # Загружается из ORM-связи, но не сериализуется — резерв для подсчёта booked_count,
     # если эндпоинт не посчитал его сам (напр. через selectinload вместо GROUP BY).

@@ -278,5 +278,16 @@
     "pendingHint": "Le profil s'ouvre dès que l'employé accepte l'invitation",
     "resendInvite": "Renvoyer l'invitation",
     "cancelInvite": "Annuler l'adhésion"
+  },
+  "availability": {
+    "branches": "Disponible dans les établissements",
+    "branchesHint": "Sans affectation, le spécialiste n’est pas proposé à la réservation individuelle dans cet établissement.",
+    "noBranches": "Aucun établissement",
+    "breaks": "Pauses et absences",
+    "breaksHint": "Heure locale du studio. L’intervalle est retiré de la disponibilité ce jour-là.",
+    "from": "De",
+    "to": "À",
+    "reason": "Motif",
+    "reasonPlaceholder": "ex. déjeuner"
   }
 }

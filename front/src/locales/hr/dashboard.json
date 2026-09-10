@@ -92,5 +92,18 @@
     "expenses": "Troškovi",
     "avgCheck": "Prosječan račun",
     "profit": "Dobit"
+  },
+  "bookingModes": {
+    "title": "Modeli rezervacija",
+    "event": "Događaji",
+    "resource": "Individualno",
+    "events": "Događaji",
+    "bookings": "Rezervacije",
+    "attended": "Dolasci",
+    "pending": "Čekaju potvrdu",
+    "hold": "Čekaju plaćanje",
+    "cancelled": "Otkazano",
+    "utilization": "Popunjenost",
+    "noData": "Nema podataka"
   }
 }

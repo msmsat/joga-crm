@@ -92,5 +92,18 @@
     "expenses": "Shpenzime",
     "avgCheck": "Fatura mesatare",
     "profit": "Fitimi"
+  },
+  "bookingModes": {
+    "title": "Modelet e rezervimeve",
+    "event": "Ngjarje",
+    "resource": "Individuale",
+    "events": "Ngjarje",
+    "bookings": "Rezervime",
+    "attended": "Pjesëmarrje",
+    "pending": "Presin konfirmim",
+    "hold": "Presin pagesë",
+    "cancelled": "Anuluar",
+    "utilization": "Ngarkesa",
+    "noData": "Pa të dhëna"
   }
 }

@@ -93,5 +93,18 @@
     "expenses": "Koszty",
     "avgCheck": "Średni koszyk",
     "profit": "Zysk"
+  },
+  "bookingModes": {
+    "title": "Modele rezerwacji",
+    "event": "Wydarzenia",
+    "resource": "Indywidualnie",
+    "events": "Wydarzenia",
+    "bookings": "Rezerwacje",
+    "attended": "Obecności",
+    "pending": "Oczekują potwierdzenia",
+    "hold": "Oczekują płatności",
+    "cancelled": "Anulowane",
+    "utilization": "Obłożenie",
+    "noData": "Brak danych"
   }
 }

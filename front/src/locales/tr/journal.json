@@ -4,7 +4,9 @@
     "trainers": "Eğitmenler",
     "halls": "Salonlar",
     "day": "Gün",
-    "week": "Hafta"
+    "week": "Hafta",
+    "resourceBooking": "Bireysel",
+    "noHall": "Salonsuz"
   },
   "daySummary": {
     "classesToday": "bugün ders",
@@ -89,7 +91,9 @@
       "title": "Hizmet oluşturulsun mu?",
       "message": "Aradığınız hizmeti bulamıyor musunuz? Katalog'da oluşturun.",
       "confirm": "Katalog'a git"
-    }
+    },
+    "reschedule": "Ertele",
+    "loading": "Yükleniyor…"
   },
   "addClientModal": {
     "title": "Müşteri ekle",
@@ -145,7 +149,8 @@
       "createLesson": "ders oluşturma",
       "bookClient": "müşteri kaydı",
       "bookClients": "müşteri kaydı ({{count}})"
-    }
+    },
+    "resourceUseReschedule": "Bireysel randevu karttaki «Ertele» düğmesiyle taşınır"
   },
   "loadError": {
     "title": "Yüklenemedi",
@@ -156,5 +161,20 @@
     "message_one": "{{count}} müşteriye iptal bildirimi gidecek.",
     "message_other": "{{count}} müşteriye iptal bildirimi gidecek.",
     "confirm": "Dersi iptal et"
+  },
+  "resourceBooking": {
+    "title": "Bireysel randevu",
+    "service": "Hizmet",
+    "branch": "Şube",
+    "client": "Müşteri",
+    "date": "Tarih",
+    "slot": "Saat",
+    "time": "Saat",
+    "staff": "Uzman",
+    "duration": "Süre, dk",
+    "price": "Fiyat",
+    "noSlots": "Bu tarihte boş saat yok",
+    "configIncomplete": "Bu hizmetin takvimi henüz ayarlanmadı",
+    "moveTitle": "Randevuyu erteleme"
   }
 }

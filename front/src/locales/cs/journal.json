@@ -5,7 +5,8 @@
     "halls": "Sály",
     "day": "Den",
     "week": "Týden",
-    "resourceBooking": "Individuálně"
+    "resourceBooking": "Individuálně",
+    "noHall": "Bez sálu"
   },
   "daySummary": {
     "classesToday": "lekcí dnes",
@@ -91,7 +92,9 @@
       "title": "Vytvořit službu?",
       "message": "Nenašli jste potřebnou službu? Vytvořte ji v Katalogu.",
       "confirm": "Přejít do Katalogu"
-    }
+    },
+    "reschedule": "Přesunout",
+    "loading": "Načítání…"
   },
   "addClientModal": {
     "title": "Přidat klienta",
@@ -149,7 +152,8 @@
       "createLesson": "vytvoření lekce",
       "bookClient": "přihlášení klienta",
       "bookClients": "přihlášení klientů ({{count}})"
-    }
+    },
+    "resourceUseReschedule": "Individuální rezervaci přesunete tlačítkem „Přesunout“ v kartě"
   },
   "loadError": {
     "title": "Načtení se nezdařilo",
@@ -174,6 +178,7 @@
     "duration": "Délka, min",
     "price": "Cena",
     "noSlots": "V tento den není volný čas",
-    "configIncomplete": "Rozvrh této služby zatím není nastaven"
+    "configIncomplete": "Rozvrh této služby zatím není nastaven",
+    "moveTitle": "Přesun rezervace"
   }
 }

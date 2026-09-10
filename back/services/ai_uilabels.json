@@ -650,6 +650,13 @@
     "cs": "Odebrat z lekce",
     "de": "Aus dem Kurs entfernen"
   },
+  "journal:bookingPopup.reschedule": {
+    "ru": "Перенести",
+    "en": "Reschedule",
+    "uk": "Перенести",
+    "cs": "Přesunout",
+    "de": "Verschieben"
+  },
   "journal:bookingPopup.trialLesson": {
     "ru": "Пробное",
     "en": "Trial",
@@ -692,6 +699,20 @@
     "cs": "Nová lekce",
     "de": "Neuer Kurs"
   },
+  "journal:resourceBooking.moveTitle": {
+    "ru": "Перенос записи",
+    "en": "Reschedule booking",
+    "uk": "Перенесення запису",
+    "cs": "Přesun rezervace",
+    "de": "Buchung verschieben"
+  },
+  "journal:resourceBooking.title": {
+    "ru": "Индивидуальная запись",
+    "en": "Individual booking",
+    "uk": "Індивідуальний запис",
+    "cs": "Individuální rezervace",
+    "de": "Individuelle Buchung"
+  },
   "journal:toasts.lessonMoved": {
     "ru": "Занятие перенесено",
     "en": "Lesson moved",
@@ -705,6 +726,20 @@
     "uk": "Недостатньо прав, щоб змінювати розклад",
     "cs": "Nedostatečná oprávnění ke změně rozvrhu",
     "de": "Nicht genug Rechte, um den Plan zu ändern"
+  },
+  "journal:toolbar.noHall": {
+    "ru": "Без зала",
+    "en": "No room",
+    "uk": "Без зали",
+    "cs": "Bez sálu",
+    "de": "Ohne Raum"
+  },
+  "journal:toolbar.resourceBooking": {
+    "ru": "Индивидуально",
+    "en": "Individual",
+    "uk": "Індивідуально",
+    "cs": "Individuálně",
+    "de": "Individuell"
   },
   "journal:toolbar.today": {
     "ru": "Сегодня",

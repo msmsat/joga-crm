@@ -4,7 +4,9 @@
     "trainers": "Trajnerët",
     "halls": "Sallat",
     "day": "Ditë",
-    "week": "Javë"
+    "week": "Javë",
+    "resourceBooking": "Individuale",
+    "noHall": "Pa sallë"
   },
   "daySummary": {
     "classesToday": "mësime sot",
@@ -89,7 +91,9 @@
       "title": "Të krijohet një shërbim?",
       "message": "Nuk e gjeni shërbimin që ju duhet? Krijojeni te Katalogu.",
       "confirm": "Shko te Katalogu"
-    }
+    },
+    "reschedule": "Zhvendos",
+    "loading": "Po ngarkohet…"
   },
   "addClientModal": {
     "title": "Shto klient",
@@ -145,7 +149,8 @@
       "createLesson": "krijim mësimi",
       "bookClient": "regjistrim klienti",
       "bookClients": "regjistrim klientësh ({{count}})"
-    }
+    },
+    "resourceUseReschedule": "Rezervimet individuale zhvendosen me «Zhvendos» në kartelë"
   },
   "loadError": {
     "title": "Ngarkimi dështoi",
@@ -156,5 +161,20 @@
     "message_one": "{{count}} klient do të marrë njoftim për anulimin.",
     "message_other": "{{count}} klientë do të marrin njoftim për anulimin.",
     "confirm": "Anulo mësimin"
+  },
+  "resourceBooking": {
+    "title": "Rezervim individual",
+    "service": "Shërbimi",
+    "branch": "Dega",
+    "client": "Klienti",
+    "date": "Data",
+    "slot": "Ora",
+    "time": "Ora",
+    "staff": "Specialisti",
+    "duration": "Kohëzgjatja, min",
+    "price": "Çmimi",
+    "noSlots": "Në këtë datë nuk ka orar të lirë",
+    "configIncomplete": "Orari i këtij shërbimi ende nuk është vendosur",
+    "moveTitle": "Zhvendosja e rezervimit"
   }
 }

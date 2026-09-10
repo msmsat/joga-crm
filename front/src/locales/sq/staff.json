@@ -278,5 +278,16 @@
     "pendingHint": "Profili hapet sapo punonjësi ta pranojë ftesën",
     "resendInvite": "Dërgo ftesën sërish",
     "cancelInvite": "Anulo bashkimin"
+  },
+  "availability": {
+    "branches": "I disponueshëm në degë",
+    "branchesHint": "Pa caktim specialisti nuk ofrohet për rezervim individual në atë degë.",
+    "noBranches": "Ende nuk ka degë",
+    "breaks": "Pushime dhe mungesa",
+    "breaksHint": "Ora lokale e studios. Intervali zbritet nga disponueshmëria e asaj dite.",
+    "from": "Nga",
+    "to": "Deri",
+    "reason": "Arsyeja",
+    "reasonPlaceholder": "p.sh. drekë"
   }
 }

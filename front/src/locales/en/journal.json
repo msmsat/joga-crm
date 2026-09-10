@@ -5,7 +5,8 @@
     "halls": "Halls",
     "day": "Day",
     "week": "Week",
-    "resourceBooking": "Individual"
+    "resourceBooking": "Individual",
+    "noHall": "No room"
   },
   "daySummary": {
     "classesToday": "classes today",
@@ -90,7 +91,9 @@
       "title": "Create a service?",
       "message": "Can't find the service you need? Go to Catalog to create it.",
       "confirm": "Go to Catalog"
-    }
+    },
+    "reschedule": "Reschedule",
+    "loading": "Loading…"
   },
   "addClientModal": {
     "title": "Add client",
@@ -146,7 +149,8 @@
       "createLesson": "create lesson",
       "bookClient": "book client",
       "bookClients": "book clients ({{count}})"
-    }
+    },
+    "resourceUseReschedule": "Individual bookings are moved via «Reschedule» in the booking card"
   },
   "loadError": {
     "title": "Failed to load",
@@ -170,6 +174,7 @@
     "duration": "Duration, min",
     "price": "Price",
     "noSlots": "No free time on this date",
-    "configIncomplete": "The schedule for this service is not set up yet"
+    "configIncomplete": "The schedule for this service is not set up yet",
+    "moveTitle": "Reschedule booking"
   }
 }

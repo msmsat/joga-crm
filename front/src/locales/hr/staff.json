@@ -278,5 +278,16 @@
     "pendingHint": "Profil se otvara čim zaposlenik prihvati pozivnicu",
     "resendInvite": "Pošalji pozivnicu ponovno",
     "cancelInvite": "Otkaži pridruživanje"
+  },
+  "availability": {
+    "branches": "Dostupan u poslovnicama",
+    "branchesHint": "Bez dodjele stručnjak se ne nudi za individualnu rezervaciju u toj poslovnici.",
+    "noBranches": "Još nema poslovnica",
+    "breaks": "Pauze i izostanci",
+    "breaksHint": "Lokalno vrijeme studija. Interval se oduzima od dostupnosti tog dana.",
+    "from": "Od",
+    "to": "Do",
+    "reason": "Razlog",
+    "reasonPlaceholder": "npr. ručak"
   }
 }

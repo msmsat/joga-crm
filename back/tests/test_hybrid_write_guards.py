@@ -90,3 +90,99 @@ def test_payment_sweeper_does_not_cancel_already_attended_booking():
         finally:
             await seed._cleanup(ids)
     asyncio.run(run())
+
+
+def test_lesson_update_cannot_move_a_resource_interval():
+    """HB-22 п.3 / §6.5: перенос индивидуальной записи — только общий сервис.
+
+    `PATCH /schedule/lessons/{id}` не знает ни про expected_version, ни про окно
+    отмены, ни про незавершённую оплату. Разрешить ему двигать resource-интервал
+    значит завести вторую, более слабую реализацию переноса — и закрыть надо
+    сам маршрут, а не кнопку в интерфейсе: тем же путём ходят прямой HTTP и
+    инструменты ассистента.
+
+    Проверяется и обратное: неденежные правки той же строки (причина отмены)
+    остаются разрешёнными, иначе запрет превратился бы в «resource нельзя
+    трогать вовсе».
+    """
+    from datetime import timedelta
+    from fastapi import BackgroundTasks, HTTPException
+
+    import routers.schedule.lessons as lessons_router
+    from dependencies import StudioContext
+    from schemas.schedule.lessons import LessonUpdateRequest
+
+    async def run():
+        ids = await seed._seed()
+        try:
+            async with async_session_maker() as db:
+                lesson = await db.get(Lesson, ids["big"])
+                original = lesson.start_time
+                moved = original + timedelta(hours=1)
+                # CHECK требует у resource и услугу, и мастера, и филиал —
+                # выставляем всё, что просит база, одним UPDATE без autoflush.
+                await db.execute(Lesson.__table__.update().where(Lesson.id == ids["big"]).values(
+                    booking_mode="resource", total_spots=1, branch_id=ids["branch"]))
+                await db.commit()
+
+            ctx = StudioContext(user=None, studio_id=ids["studio"], role="owner")
+            async with async_session_maker() as db:
+                try:
+                    await lessons_router.update_lesson(
+                        lesson_id=ids["big"], body=LessonUpdateRequest(start_time=moved),
+                        background_tasks=BackgroundTasks(), ctx=ctx, db=db)
+                    raise AssertionError("перенос resource через update_lesson должен быть отклонён")
+                except HTTPException as exc:
+                    assert exc.status_code == 409, exc.status_code
+                    assert exc.detail["code"] == "RESOURCE_MOVE_REQUIRES_QUOTE", exc.detail
+
+            # Строка не сдвинулась: отказ пришёл ДО записи.
+            async with async_session_maker() as db:
+                assert (await db.get(Lesson, ids["big"])).start_time == original
+        finally:
+            await seed._cleanup(ids)
+    asyncio.run(run())
+
+
+def test_lesson_list_reports_real_mode_and_version_not_schema_defaults():
+    """Список журнала обязан отдавать ФАКТИЧЕСКИЕ booking_mode и version.
+
+    `GET /schedule/lessons` собирает ответ из СВОЕГО перечня колонок, а не из
+    `_LESSON_FIELDS`, и `LessonRead` молча добирает отсутствующее дефолтами
+    (`event`, `1`). Пока колонок не хватало, журнал считал resource-интервал
+    обычным событием: счётчик участников рисовался, растягивание разрешалось,
+    кнопка переноса не появлялась, а `expected_version` всегда уходил равным
+    единице. Тест сравнивает ответ с БАЗОЙ, а не со схемой.
+    """
+    from datetime import timedelta
+    from dependencies import StudioContext
+    import routers.schedule.lessons as lessons_router
+
+    async def run():
+        ids = await seed._seed()
+        try:
+            async with async_session_maker() as db:
+                lesson = await db.get(Lesson, ids["big"])
+                day = lesson.start_time.date()
+                await db.execute(Lesson.__table__.update().where(Lesson.id == ids["big"]).values(
+                    booking_mode="resource", total_spots=1, branch_id=ids["branch"], version=7))
+                await db.commit()
+
+            ctx = StudioContext(user=None, studio_id=ids["studio"], role="owner")
+            async with async_session_maker() as db:
+                # Прямой вызов роутера: значения Query() FastAPI не подставляет.
+                rows = await lessons_router.list_lessons(
+                    date_from=day, date_to=day + timedelta(days=1),
+                    hall_id=None, ctx=ctx, db=db)
+            found = next(r for r in rows if r.id == ids["big"])
+            assert found.booking_mode == "resource", found.booking_mode
+            assert found.version == 7, found.version
+            assert found.branch_id == ids["branch"], found.branch_id
+            assert found.tz_iana is not None, "снимок зоны обязан долетать до журнала"
+
+            # Соседнее событие остаётся событием — фильтр не «красит всё подряд».
+            other = next(r for r in rows if r.id != ids["big"])
+            assert other.booking_mode == "event", other.booking_mode
+        finally:
+            await seed._cleanup(ids)
+    asyncio.run(run())

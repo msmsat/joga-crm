@@ -4,7 +4,9 @@
     "trainers": "Instrutores",
     "halls": "Salas",
     "day": "Dia",
-    "week": "Semana"
+    "week": "Semana",
+    "resourceBooking": "Individual",
+    "noHall": "Sem sala"
   },
   "daySummary": {
     "classesToday": "aulas hoje",
@@ -89,7 +91,9 @@
       "title": "Criar um serviço?",
       "message": "Não encontra o serviço que precisa? Crie-o no Catálogo.",
       "confirm": "Ir para o Catálogo"
-    }
+    },
+    "reschedule": "Reagendar",
+    "loading": "A carregar…"
   },
   "addClientModal": {
     "title": "Adicionar cliente",
@@ -145,7 +149,8 @@
       "createLesson": "criação de aula",
       "bookClient": "inscrição de cliente",
       "bookClients": "inscrição de clientes ({{count}})"
-    }
+    },
+    "resourceUseReschedule": "As marcações individuais movem-se com «Reagendar» na ficha"
   },
   "loadError": {
     "title": "Não foi possível carregar",
@@ -156,5 +161,20 @@
     "message_one": "{{count}} cliente vai receber aviso de cancelamento.",
     "message_other": "{{count}} clientes vão receber aviso de cancelamento.",
     "confirm": "Cancelar aula"
+  },
+  "resourceBooking": {
+    "title": "Marcação individual",
+    "service": "Serviço",
+    "branch": "Filial",
+    "client": "Cliente",
+    "date": "Data",
+    "slot": "Hora",
+    "time": "Hora",
+    "staff": "Profissional",
+    "duration": "Duração, min",
+    "price": "Preço",
+    "noSlots": "Não há horário livre nesta data",
+    "configIncomplete": "O horário deste serviço ainda não está configurado",
+    "moveTitle": "Reagendar marcação"
   }
 }

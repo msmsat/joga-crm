@@ -278,5 +278,16 @@
     "pendingHint": "O perfil abre quando o funcionário aceitar o convite",
     "resendInvite": "Enviar o convite novamente",
     "cancelInvite": "Cancelar adesão"
+  },
+  "availability": {
+    "branches": "Disponível nas filiais",
+    "branchesHint": "Sem atribuição o profissional não é oferecido para marcação individual nessa filial.",
+    "noBranches": "Ainda não há filiais",
+    "breaks": "Pausas e ausências",
+    "breaksHint": "Hora local do estúdio. O intervalo é subtraído da disponibilidade nesse dia.",
+    "from": "De",
+    "to": "Até",
+    "reason": "Motivo",
+    "reasonPlaceholder": "ex. almoço"
   }
 }

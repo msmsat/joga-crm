@@ -4,7 +4,9 @@
     "trainers": "Istruttori",
     "halls": "Sale",
     "day": "Giorno",
-    "week": "Settimana"
+    "week": "Settimana",
+    "resourceBooking": "Individuale",
+    "noHall": "Senza sala"
   },
   "daySummary": {
     "classesToday": "lezioni oggi",
@@ -89,7 +91,9 @@
       "title": "Creare un servizio?",
       "message": "Non trovi il servizio che ti serve? Crealo nel Catalogo.",
       "confirm": "Vai al Catalogo"
-    }
+    },
+    "reschedule": "Sposta",
+    "loading": "Caricamento…"
   },
   "addClientModal": {
     "title": "Aggiungi cliente",
@@ -145,7 +149,8 @@
       "createLesson": "creazione lezione",
       "bookClient": "iscrizione cliente",
       "bookClients": "iscrizione clienti ({{count}})"
-    }
+    },
+    "resourceUseReschedule": "Le prenotazioni individuali si spostano con «Sposta» nella scheda"
   },
   "loadError": {
     "title": "Caricamento non riuscito",
@@ -156,5 +161,20 @@
     "message_one": "{{count}} cliente riceverà l'avviso di annullamento.",
     "message_other": "{{count}} clienti riceveranno l'avviso di annullamento.",
     "confirm": "Annulla la lezione"
+  },
+  "resourceBooking": {
+    "title": "Prenotazione individuale",
+    "service": "Servizio",
+    "branch": "Sede",
+    "client": "Cliente",
+    "date": "Data",
+    "slot": "Ora",
+    "time": "Ora",
+    "staff": "Professionista",
+    "duration": "Durata, min",
+    "price": "Prezzo",
+    "noSlots": "Nessun orario libero in questa data",
+    "configIncomplete": "Il calendario di questo servizio non è ancora configurato",
+    "moveTitle": "Sposta prenotazione"
   }
 }

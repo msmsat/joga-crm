@@ -4,7 +4,9 @@
     "trainers": "Oktatók",
     "halls": "Termek",
     "day": "Nap",
-    "week": "Hét"
+    "week": "Hét",
+    "resourceBooking": "Egyéni",
+    "noHall": "Terem nélkül"
   },
   "daySummary": {
     "classesToday": "óra ma",
@@ -89,7 +91,9 @@
       "title": "Létrehoz egy szolgáltatást?",
       "message": "Nem találja a kívánt szolgáltatást? Hozza létre a Katalógusban.",
       "confirm": "Tovább a Katalógusba"
-    }
+    },
+    "reschedule": "Áthelyezés",
+    "loading": "Betöltés…"
   },
   "addClientModal": {
     "title": "Ügyfél hozzáadása",
@@ -145,7 +149,8 @@
       "createLesson": "óra létrehozása",
       "bookClient": "ügyfél jelentkeztetése",
       "bookClients": "ügyfelek jelentkeztetése ({{count}})"
-    }
+    },
+    "resourceUseReschedule": "Az egyéni foglalást a kártya „Áthelyezés” gombjával mozgatod"
   },
   "loadError": {
     "title": "A betöltés nem sikerült",
@@ -156,5 +161,20 @@
     "message_one": "{{count}} ügyfél kap értesítést a lemondásról.",
     "message_other": "{{count}} ügyfél kap értesítést a lemondásról.",
     "confirm": "Óra lemondása"
+  },
+  "resourceBooking": {
+    "title": "Egyéni foglalás",
+    "service": "Szolgáltatás",
+    "branch": "Telephely",
+    "client": "Ügyfél",
+    "date": "Dátum",
+    "slot": "Időpont",
+    "time": "Időpont",
+    "staff": "Szakember",
+    "duration": "Időtartam, perc",
+    "price": "Ár",
+    "noSlots": "Ezen a napon nincs szabad időpont",
+    "configIncomplete": "Ennek a szolgáltatásnak az órarendje még nincs beállítva",
+    "moveTitle": "Foglalás áthelyezése"
   }
 }

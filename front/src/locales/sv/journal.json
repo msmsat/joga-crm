@@ -4,7 +4,9 @@
     "trainers": "Instruktörer",
     "halls": "Salar",
     "day": "Dag",
-    "week": "Vecka"
+    "week": "Vecka",
+    "resourceBooking": "Individuellt",
+    "noHall": "Utan sal"
   },
   "daySummary": {
     "classesToday": "pass i dag",
@@ -89,7 +91,9 @@
       "title": "Skapa en tjänst?",
       "message": "Hittar du inte tjänsten du behöver? Skapa den i Katalogen.",
       "confirm": "Gå till Katalogen"
-    }
+    },
+    "reschedule": "Flytta",
+    "loading": "Laddar…"
   },
   "addClientModal": {
     "title": "Lägg till kund",
@@ -145,7 +149,8 @@
       "createLesson": "skapande av pass",
       "bookClient": "anmälan av kund",
       "bookClients": "anmälan av kunder ({{count}})"
-    }
+    },
+    "resourceUseReschedule": "Individuella bokningar flyttas med «Flytta» i kortet"
   },
   "loadError": {
     "title": "Kunde inte läsas in",
@@ -156,5 +161,20 @@
     "message_one": "{{count}} kund får besked om inställningen.",
     "message_other": "{{count}} kunder får besked om inställningen.",
     "confirm": "Ställ in passet"
+  },
+  "resourceBooking": {
+    "title": "Individuell bokning",
+    "service": "Tjänst",
+    "branch": "Filial",
+    "client": "Kund",
+    "date": "Datum",
+    "slot": "Tid",
+    "time": "Tid",
+    "staff": "Specialist",
+    "duration": "Längd, min",
+    "price": "Pris",
+    "noSlots": "Ingen ledig tid detta datum",
+    "configIncomplete": "Schemat för den här tjänsten är inte uppsatt ännu",
+    "moveTitle": "Flytta bokning"
   }
 }

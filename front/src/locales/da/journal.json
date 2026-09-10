@@ -4,7 +4,9 @@
     "trainers": "Undervisere",
     "halls": "Sale",
     "day": "Dag",
-    "week": "Uge"
+    "week": "Uge",
+    "resourceBooking": "Individuelt",
+    "noHall": "Uden sal"
   },
   "daySummary": {
     "classesToday": "hold i dag",
@@ -89,7 +91,9 @@
       "title": "Opret en ydelse?",
       "message": "Kan du ikke finde den rette ydelse? Opret den i Kataloget.",
       "confirm": "Gå til Katalog"
-    }
+    },
+    "reschedule": "Flyt",
+    "loading": "Indlæser…"
   },
   "addClientModal": {
     "title": "Tilføj kunde",
@@ -145,7 +149,8 @@
       "createLesson": "oprettelse af hold",
       "bookClient": "tilmelding af kunde",
       "bookClients": "tilmelding af kunder ({{count}})"
-    }
+    },
+    "resourceUseReschedule": "Individuelle bookinger flyttes med «Flyt» i kortet"
   },
   "loadError": {
     "title": "Kunne ikke indlæses",
@@ -156,5 +161,20 @@
     "message_one": "{{count}} kunde får besked om aflysningen.",
     "message_other": "{{count}} kunder får besked om aflysningen.",
     "confirm": "Aflys holdet"
+  },
+  "resourceBooking": {
+    "title": "Individuel booking",
+    "service": "Ydelse",
+    "branch": "Afdeling",
+    "client": "Kunde",
+    "date": "Dato",
+    "slot": "Tid",
+    "time": "Tid",
+    "staff": "Specialist",
+    "duration": "Varighed, min",
+    "price": "Pris",
+    "noSlots": "Ingen ledig tid på denne dato",
+    "configIncomplete": "Skemaet for denne ydelse er endnu ikke sat op",
+    "moveTitle": "Flyt booking"
   }
 }

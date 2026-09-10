@@ -4,7 +4,9 @@
     "trainers": "Instruktører",
     "halls": "Saler",
     "day": "Dag",
-    "week": "Uke"
+    "week": "Uke",
+    "resourceBooking": "Individuelt",
+    "noHall": "Uten sal"
   },
   "daySummary": {
     "classesToday": "økter i dag",
@@ -89,7 +91,9 @@
       "title": "Opprette en tjeneste?",
       "message": "Finner du ikke tjenesten du trenger? Opprett den i Katalogen.",
       "confirm": "Gå til Katalogen"
-    }
+    },
+    "reschedule": "Flytt",
+    "loading": "Laster…"
   },
   "addClientModal": {
     "title": "Legg til kunde",
@@ -145,7 +149,8 @@
       "createLesson": "oppretting av økt",
       "bookClient": "påmelding av kunde",
       "bookClients": "påmelding av kunder ({{count}})"
-    }
+    },
+    "resourceUseReschedule": "Individuelle bookinger flyttes med «Flytt» i kortet"
   },
   "loadError": {
     "title": "Kunne ikke laste",
@@ -156,5 +161,20 @@
     "message_one": "{{count}} kunde får varsel om avlysningen.",
     "message_other": "{{count}} kunder får varsel om avlysningen.",
     "confirm": "Avlys økten"
+  },
+  "resourceBooking": {
+    "title": "Individuell booking",
+    "service": "Tjeneste",
+    "branch": "Avdeling",
+    "client": "Kunde",
+    "date": "Dato",
+    "slot": "Tid",
+    "time": "Tid",
+    "staff": "Spesialist",
+    "duration": "Varighet, min",
+    "price": "Pris",
+    "noSlots": "Ingen ledig tid denne datoen",
+    "configIncomplete": "Timeplanen for denne tjenesten er ikke satt opp ennå",
+    "moveTitle": "Flytt booking"
   }
 }

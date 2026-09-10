@@ -92,5 +92,18 @@
     "expenses": "Utgifter",
     "avgCheck": "Gj.sn. salg",
     "profit": "Overskudd"
+  },
+  "bookingModes": {
+    "title": "Bookingmodeller",
+    "event": "Arrangementer",
+    "resource": "Individuelt",
+    "events": "Arrangementer",
+    "bookings": "Bookinger",
+    "attended": "Oppmøter",
+    "pending": "Venter på bekreftelse",
+    "hold": "Venter på betaling",
+    "cancelled": "Avlyst",
+    "utilization": "Belegg",
+    "noData": "Ingen data"
   }
 }

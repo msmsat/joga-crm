@@ -27,18 +27,24 @@ type Props = {
   /** Карточка клиента открывает эту же форму с предвыбранным человеком. */
   clientId?: number | null;
   defaultDate?: string;
+  /** Перенос существующей брони: тот же выбор времени, другая пара команд.
+   *  `version` уходит как expected_version — чужая правка между показом и
+   *  подтверждением обязана дать VERSION_CONFLICT, а не переписать интервал. */
+  move?: { reservationId: number; version: number; serviceId: number; branchId: number | null } | null;
 };
 
 const iso = (date: Date) =>
   `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 
-export function ResourceBookingModal({ onClose, onCreated, clientId = null, defaultDate }: Props) {
+export function ResourceBookingModal({ onClose, onCreated, clientId = null, defaultDate, move = null }: Props) {
   const { t } = useTranslation(['journal', 'common']);
   const toast = useToast();
   const terms = useBusinessTerms('resource');
 
-  const [serviceId, setServiceId] = useState<number | null>(null);
-  const [branchId, setBranchId] = useState<number | null>(null);
+  // Услуга и филиал переноса заданы самой бронью: перенос — это другое ВРЕМЯ
+  // той же услуги (§6.5), выбирать их заново нечего.
+  const [serviceId, setServiceId] = useState<number | null>(move?.serviceId ?? null);
+  const [branchId, setBranchId] = useState<number | null>(move?.branchId ?? null);
   const [client, setClient] = useState<number | null>(clientId);
   const [date, setDate] = useState(defaultDate ?? iso(new Date()));
   const [quote, setQuote] = useState<QuoteRead | null>(null);
@@ -73,10 +79,13 @@ export function ResourceBookingModal({ onClose, onCreated, clientId = null, defa
   const pick = async (slot: AvailabilitySlot) => {
     if (serviceId == null || branchId == null || client == null) return;
     try {
-      setQuote(await hybridApi.quote({
-        booking_mode: 'resource', client_id: client, service_id: serviceId,
+      const request = {
+        booking_mode: 'resource' as const, client_id: client, service_id: serviceId,
         branch_id: branchId, teacher_id: slot.teacher_ids[0] ?? null, starts_at: slot.starts_at,
-      }));
+      };
+      setQuote(move
+        ? await hybridApi.moveQuote(move.reservationId, request)
+        : await hybridApi.quote(request));
     } catch (err) {
       toast.error(errorMessage(err, t));
     }
@@ -86,7 +95,8 @@ export function ResourceBookingModal({ onClose, onCreated, clientId = null, defa
     if (!quote || saving) return;
     setSaving(true);
     try {
-      await hybridApi.confirm(quote.quote_id);
+      if (move) await hybridApi.move(move.reservationId, quote.quote_id, move.version);
+      else await hybridApi.confirm(quote.quote_id);
       onCreated();
       onClose();
     } catch (err) {
@@ -106,22 +116,26 @@ export function ResourceBookingModal({ onClose, onCreated, clientId = null, defa
   return (
     <ModalShell size="sm" onClose={onClose} maxWidth="640px">
       <ModalHeader
-        title={t('journal:resourceBooking.title')}
+        title={t(move ? 'journal:resourceBooking.moveTitle' : 'journal:resourceBooking.title')}
         subtitle={terms.ready ? terms.message('choose_offering') : undefined}
       />
       <ModalBody>
         <div style={{ display: 'grid', gap: '12px' }}>
-          <div>
-            <label className="vk-label">{t('journal:resourceBooking.service')}</label>
-            <Select value={serviceId ? String(serviceId) : ''} onChange={v => { setServiceId(Number(v)); setQuote(null); }}
-                    options={bookable.map(s => ({ value: String(s.id), label: s.name }))} />
-          </div>
-          <div>
-            <label className="vk-label">{t('journal:resourceBooking.branch')}</label>
-            <Select value={branchId ? String(branchId) : ''} onChange={v => { setBranchId(Number(v)); setQuote(null); }}
-                    options={branches.map(b => ({ value: String(b.id), label: b.name }))} />
-          </div>
-          {clientId == null && (
+          {!move && (
+            <>
+              <div>
+                <label className="vk-label">{t('journal:resourceBooking.service')}</label>
+                <Select value={serviceId ? String(serviceId) : ''} onChange={v => { setServiceId(Number(v)); setQuote(null); }}
+                        options={bookable.map(s => ({ value: String(s.id), label: s.name }))} />
+              </div>
+              <div>
+                <label className="vk-label">{t('journal:resourceBooking.branch')}</label>
+                <Select value={branchId ? String(branchId) : ''} onChange={v => { setBranchId(Number(v)); setQuote(null); }}
+                        options={branches.map(b => ({ value: String(b.id), label: b.name }))} />
+              </div>
+            </>
+          )}
+          {clientId == null && !move && (
             <div>
               <label className="vk-label">{t('journal:resourceBooking.client')}</label>
               <Select value={client ? String(client) : ''} onChange={v => { setClient(Number(v)); setQuote(null); }}

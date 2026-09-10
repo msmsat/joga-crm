@@ -278,5 +278,16 @@
     "pendingHint": "El perfil se abrirá cuando el empleado acepte la invitación",
     "resendInvite": "Enviar la invitación de nuevo",
     "cancelInvite": "Cancelar incorporación"
+  },
+  "availability": {
+    "branches": "Disponible en sucursales",
+    "branchesHint": "Sin asignación el profesional no se ofrece para reserva individual en esa sucursal.",
+    "noBranches": "Aún no hay sucursales",
+    "breaks": "Descansos y ausencias",
+    "breaksHint": "Hora local del estudio. El intervalo se resta de la disponibilidad ese día.",
+    "from": "Desde",
+    "to": "Hasta",
+    "reason": "Motivo",
+    "reasonPlaceholder": "p. ej. comida"
   }
 }

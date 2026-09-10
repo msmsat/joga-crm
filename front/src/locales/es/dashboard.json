@@ -92,5 +92,18 @@
     "expenses": "Gastos",
     "avgCheck": "Ticket medio",
     "profit": "Beneficio"
+  },
+  "bookingModes": {
+    "title": "Modelos de reserva",
+    "event": "Eventos",
+    "resource": "Individual",
+    "events": "Eventos",
+    "bookings": "Reservas",
+    "attended": "Asistencias",
+    "pending": "Pendientes de confirmar",
+    "hold": "Pendientes de pago",
+    "cancelled": "Canceladas",
+    "utilization": "Ocupación",
+    "noData": "Sin datos"
   }
 }

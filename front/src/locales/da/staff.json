@@ -278,5 +278,16 @@
     "pendingHint": "Profilen åbner, når medarbejderen accepterer invitationen",
     "resendInvite": "Send invitationen igen",
     "cancelInvite": "Annuller tilmeldingen"
+  },
+  "availability": {
+    "branches": "Tilgængelig i afdelinger",
+    "branchesHint": "Uden tilknytning tilbydes specialisten ikke til individuel booking i den afdeling.",
+    "noBranches": "Ingen afdelinger endnu",
+    "breaks": "Pauser og fravær",
+    "breaksHint": "Studiets lokale tid. Intervallet trækkes fra tilgængeligheden den dag.",
+    "from": "Fra",
+    "to": "Til",
+    "reason": "Årsag",
+    "reasonPlaceholder": "fx frokost"
   }
 }

@@ -92,5 +92,18 @@
     "expenses": "Kiadások",
     "avgCheck": "Átlagos kosárérték",
     "profit": "Nyereség"
+  },
+  "bookingModes": {
+    "title": "Foglalási modellek",
+    "event": "Események",
+    "resource": "Egyéni",
+    "events": "Események",
+    "bookings": "Foglalások",
+    "attended": "Megjelenések",
+    "pending": "Megerősítésre vár",
+    "hold": "Fizetésre vár",
+    "cancelled": "Lemondva",
+    "utilization": "Kihasználtság",
+    "noData": "Nincs adat"
   }
 }

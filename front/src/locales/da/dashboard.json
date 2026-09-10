@@ -92,5 +92,18 @@
     "expenses": "Udgifter",
     "avgCheck": "Gns. salg",
     "profit": "Overskud"
+  },
+  "bookingModes": {
+    "title": "Bookingmodeller",
+    "event": "Begivenheder",
+    "resource": "Individuelt",
+    "events": "Begivenheder",
+    "bookings": "Bookinger",
+    "attended": "Fremmøder",
+    "pending": "Afventer bekræftelse",
+    "hold": "Afventer betaling",
+    "cancelled": "Aflyst",
+    "utilization": "Belægning",
+    "noData": "Ingen data"
   }
 }

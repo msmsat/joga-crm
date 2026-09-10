@@ -4,7 +4,9 @@
     "trainers": "Monitores",
     "halls": "Salas",
     "day": "Día",
-    "week": "Semana"
+    "week": "Semana",
+    "resourceBooking": "Individual",
+    "noHall": "Sin sala"
   },
   "daySummary": {
     "classesToday": "clases hoy",
@@ -89,7 +91,9 @@
       "title": "¿Crear un servicio?",
       "message": "¿No encuentras el servicio que necesitas? Créalo en el Catálogo.",
       "confirm": "Ir al Catálogo"
-    }
+    },
+    "reschedule": "Reprogramar",
+    "loading": "Cargando…"
   },
   "addClientModal": {
     "title": "Añadir cliente",
@@ -145,7 +149,8 @@
       "createLesson": "crear clase",
       "bookClient": "inscribir cliente",
       "bookClients": "inscribir clientes ({{count}})"
-    }
+    },
+    "resourceUseReschedule": "Las reservas individuales se mueven con «Reprogramar» en la ficha"
   },
   "loadError": {
     "title": "No se pudo cargar",
@@ -156,5 +161,20 @@
     "message_one": "{{count}} cliente recibirá el aviso de cancelación.",
     "message_other": "{{count}} clientes recibirán el aviso de cancelación.",
     "confirm": "Cancelar la clase"
+  },
+  "resourceBooking": {
+    "title": "Reserva individual",
+    "service": "Servicio",
+    "branch": "Sucursal",
+    "client": "Cliente",
+    "date": "Fecha",
+    "slot": "Hora",
+    "time": "Hora",
+    "staff": "Profesional",
+    "duration": "Duración, min",
+    "price": "Precio",
+    "noSlots": "No hay hueco libre en esta fecha",
+    "configIncomplete": "El horario de este servicio aún no está configurado",
+    "moveTitle": "Reprogramar reserva"
   }
 }

@@ -92,5 +92,18 @@
     "expenses": "Despesas",
     "avgCheck": "Ticket médio",
     "profit": "Lucro"
+  },
+  "bookingModes": {
+    "title": "Modelos de marcação",
+    "event": "Eventos",
+    "resource": "Individual",
+    "events": "Eventos",
+    "bookings": "Marcações",
+    "attended": "Presenças",
+    "pending": "A aguardar confirmação",
+    "hold": "A aguardar pagamento",
+    "cancelled": "Canceladas",
+    "utilization": "Ocupação",
+    "noData": "Sem dados"
   }
 }

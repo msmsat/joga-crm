@@ -4,7 +4,9 @@
     "trainers": "Trenerzy",
     "halls": "Sale",
     "day": "Dzień",
-    "week": "Tydzień"
+    "week": "Tydzień",
+    "resourceBooking": "Indywidualnie",
+    "noHall": "Bez sali"
   },
   "daySummary": {
     "classesToday": "zajęć dziś",
@@ -91,7 +93,9 @@
       "title": "Utworzyć usługę?",
       "message": "Nie znajdujesz potrzebnej usługi? Utwórz ją w Katalogu.",
       "confirm": "Przejdź do Katalogu"
-    }
+    },
+    "reschedule": "Przenieś",
+    "loading": "Ładowanie…"
   },
   "addClientModal": {
     "title": "Dodaj klienta",
@@ -151,7 +155,8 @@
       "createLesson": "utworzenie zajęć",
       "bookClient": "zapisanie klienta",
       "bookClients": "zapisanie klientów ({{count}})"
-    }
+    },
+    "resourceUseReschedule": "Rezerwację indywidualną przenosi się przyciskiem „Przenieś” w karcie"
   },
   "loadError": {
     "title": "Nie udało się wczytać",
@@ -164,5 +169,20 @@
     "message_many": "{{count}} klientów dostanie powiadomienie o odwołaniu.",
     "message_other": "{{count}} klientów dostanie powiadomienie o odwołaniu.",
     "confirm": "Odwołaj zajęcia"
+  },
+  "resourceBooking": {
+    "title": "Rezerwacja indywidualna",
+    "service": "Usługa",
+    "branch": "Oddział",
+    "client": "Klient",
+    "date": "Data",
+    "slot": "Godzina",
+    "time": "Godzina",
+    "staff": "Specjalista",
+    "duration": "Czas trwania, min",
+    "price": "Cena",
+    "noSlots": "W tym dniu nie ma wolnych godzin",
+    "configIncomplete": "Grafik tej usługi nie jest jeszcze skonfigurowany",
+    "moveTitle": "Przeniesienie rezerwacji"
   }
 }

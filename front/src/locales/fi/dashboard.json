@@ -92,5 +92,18 @@
     "expenses": "Kulut",
     "avgCheck": "Keskiostos",
     "profit": "Voitto"
+  },
+  "bookingModes": {
+    "title": "Varausmallit",
+    "event": "Tapahtumat",
+    "resource": "Yksilöllinen",
+    "events": "Tapahtumat",
+    "bookings": "Varaukset",
+    "attended": "Käynnit",
+    "pending": "Odottaa vahvistusta",
+    "hold": "Odottaa maksua",
+    "cancelled": "Peruttu",
+    "utilization": "Käyttöaste",
+    "noData": "Ei tietoja"
   }
 }

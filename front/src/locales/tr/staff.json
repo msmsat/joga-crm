@@ -278,5 +278,16 @@
     "pendingHint": "Çalışan daveti kabul ettiğinde profil açılır",
     "resendInvite": "Daveti yeniden gönder",
     "cancelInvite": "Katılımı iptal et"
+  },
+  "availability": {
+    "branches": "Şubelerde uygun",
+    "branchesHint": "Atama olmadan uzman o şubede bireysel randevuya sunulmaz.",
+    "noBranches": "Henüz şube yok",
+    "breaks": "Molalar ve devamsızlık",
+    "breaksHint": "Stüdyonun yerel saati. Aralık o günkü uygunluktan düşülür.",
+    "from": "Başlangıç",
+    "to": "Bitiş",
+    "reason": "Sebep",
+    "reasonPlaceholder": "örn. öğle yemeği"
   }
 }

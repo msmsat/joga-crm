@@ -4,7 +4,9 @@
     "trainers": "Antrenori",
     "halls": "Săli",
     "day": "Zi",
-    "week": "Săptămână"
+    "week": "Săptămână",
+    "resourceBooking": "Individual",
+    "noHall": "Fără sală"
   },
   "daySummary": {
     "classesToday": "ședințe azi",
@@ -90,7 +92,9 @@
       "title": "Creați un serviciu?",
       "message": "Nu găsiți serviciul dorit? Creați-l în Catalog.",
       "confirm": "Mergi la Catalog"
-    }
+    },
+    "reschedule": "Reprogramează",
+    "loading": "Se încarcă…"
   },
   "addClientModal": {
     "title": "Adaugă client",
@@ -148,7 +152,8 @@
       "createLesson": "crearea ședinței",
       "bookClient": "înscrierea unui client",
       "bookClients": "înscrierea clienților ({{count}})"
-    }
+    },
+    "resourceUseReschedule": "Programările individuale se mută cu «Reprogramează» din fișă"
   },
   "loadError": {
     "title": "Încărcarea a eșuat",
@@ -160,5 +165,20 @@
     "message_few": "{{count}} clienți vor primi notificare de anulare.",
     "message_other": "{{count}} de clienți vor primi notificare de anulare.",
     "confirm": "Anulează ședința"
+  },
+  "resourceBooking": {
+    "title": "Programare individuală",
+    "service": "Serviciu",
+    "branch": "Filială",
+    "client": "Client",
+    "date": "Data",
+    "slot": "Ora",
+    "time": "Ora",
+    "staff": "Specialist",
+    "duration": "Durată, min",
+    "price": "Preț",
+    "noSlots": "În această zi nu există interval liber",
+    "configIncomplete": "Orarul acestui serviciu nu este încă configurat",
+    "moveTitle": "Reprogramarea programării"
   }
 }

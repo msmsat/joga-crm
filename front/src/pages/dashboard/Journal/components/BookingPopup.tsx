@@ -29,6 +29,8 @@ interface BookingPopupProps {
   popupRef: React.RefObject<HTMLDivElement | null>;
   popupPos: { x: number; y: number };
   canEdit: boolean;
+  /** HB-22: перенос индивидуальной записи — общий сервис с версией. */
+  onReschedule?: (booking: Booking, reservationId: number, clientId: number) => void;
   timeStep: number;
   setPopupBooking: (b: Booking | null) => void;
   isEditingBooking: boolean;
@@ -50,6 +52,7 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
   popupRef,
   popupPos,
   canEdit,
+  onReschedule,
   timeStep,
   setPopupBooking,
   isEditingBooking,
@@ -67,6 +70,7 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
   const navigate = useNavigate();
   const { t } = useTranslation('journal');
   const isCancelled = popupBooking.status === 'cancelled';
+  const isResource = popupBooking.bookingMode === 'resource';
 
   // Стейты редактирования
   const [editStartInput, setEditStartInput] = useState('');
@@ -722,7 +726,27 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
           </>
         ) : (
           <>
-            {canEdit && (
+            {/* HB-22 п.3: у индивидуальной записи один клиент и одна услуга —
+                добавлять сюда некого, а перенос идёт через подтверждение нового
+                времени (quote + expected_version), а не через правку занятия. */}
+            {canEdit && isResource && (
+              <button
+                className="bp-btn primary text-btn"
+                // Список записанных грузится асинхронно, а перенос без клиента
+                // и брони невозможен. Кнопка ждёт данные видимо, а не молча:
+                // «нажал — ничего не произошло» человек читает как поломку.
+                disabled={!bookedClients?.[0]?.reservation_id}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  const target = bookedClients?.[0];
+                  if (target) onReschedule?.(popupBooking, target.reservation_id, target.client_id);
+                }}
+              >
+                <Icons.Edit /> {bookedClients ? t('bookingPopup.reschedule') : t('bookingPopup.loading')}
+              </button>
+            )}
+
+            {canEdit && !isResource && (
               <>
                 <button className="bp-btn primary text-btn" onClick={(e) => { e.stopPropagation(); setIsAddingClient(true); }}>
                   <Icons.UserPlus /> {t('bookingPopup.add')}
@@ -741,10 +765,13 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
                   <Icons.Edit /> {t('bookingPopup.edit')}
                 </button>
 
-                <button className="bp-btn danger icon-only" title={t('bookingPopup.deleteLesson')} onClick={() => deleteBooking(popupBooking.id)}>
-                  <Icons.Trash />
-                </button>
               </>
+            )}
+
+            {canEdit && (
+              <button className="bp-btn danger icon-only" title={t('bookingPopup.deleteLesson')} onClick={() => deleteBooking(popupBooking.id)}>
+                <Icons.Trash />
+              </button>
             )}
           </>
         )}

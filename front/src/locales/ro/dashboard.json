@@ -93,5 +93,18 @@
     "expenses": "Cheltuieli",
     "avgCheck": "Bon mediu",
     "profit": "Profit"
+  },
+  "bookingModes": {
+    "title": "Modele de programare",
+    "event": "Evenimente",
+    "resource": "Individual",
+    "events": "Evenimente",
+    "bookings": "Programări",
+    "attended": "Prezențe",
+    "pending": "Așteaptă confirmarea",
+    "hold": "Așteaptă plata",
+    "cancelled": "Anulate",
+    "utilization": "Grad de ocupare",
+    "noData": "Fără date"
   }
 }

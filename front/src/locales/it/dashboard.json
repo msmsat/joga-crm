@@ -92,5 +92,18 @@
     "expenses": "Spese",
     "avgCheck": "Scontrino medio",
     "profit": "Utile"
+  },
+  "bookingModes": {
+    "title": "Modelli di prenotazione",
+    "event": "Eventi",
+    "resource": "Individuale",
+    "events": "Eventi",
+    "bookings": "Prenotazioni",
+    "attended": "Presenze",
+    "pending": "In attesa di conferma",
+    "hold": "In attesa di pagamento",
+    "cancelled": "Annullate",
+    "utilization": "Occupazione",
+    "noData": "Nessun dato"
   }
 }

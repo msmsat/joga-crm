@@ -278,5 +278,16 @@
     "pendingHint": "Profilen öppnas när den anställde accepterar inbjudan",
     "resendInvite": "Skicka inbjudan igen",
     "cancelInvite": "Avbryt anslutning"
+  },
+  "availability": {
+    "branches": "Tillgänglig på filialer",
+    "branchesHint": "Utan koppling erbjuds specialisten inte för individuell bokning på den filialen.",
+    "noBranches": "Inga filialer ännu",
+    "breaks": "Raster och frånvaro",
+    "breaksHint": "Studions lokala tid. Intervallet dras från tillgängligheten den dagen.",
+    "from": "Från",
+    "to": "Till",
+    "reason": "Orsak",
+    "reasonPlaceholder": "t.ex. lunch"
   }
 }

@@ -218,6 +218,11 @@ export function useDragAndDrop({
     booking?: Booking
   ) => {
     e.stopPropagation();
+    // HB-22 п.3: индивидуальную запись мышью не двигают и не растягивают —
+    // ни время, ни длительность нельзя менять мимо quote и версии (§4.2/§6.5).
+    // Вторая линия к отсечке в BookingCard: сюда приходят и ручки растягивания,
+    // которые `booking` передают всегда.
+    if (booking?.bookingMode === 'resource') return;
     const el = e.currentTarget as HTMLElement;
     const rect = el.getBoundingClientRect();
     const offsetYInsideCard = type === 'move' ? e.clientY - rect.top : 0;

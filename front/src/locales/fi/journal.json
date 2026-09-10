@@ -4,7 +4,9 @@
     "trainers": "Ohjaajat",
     "halls": "Salit",
     "day": "Päivä",
-    "week": "Viikko"
+    "week": "Viikko",
+    "resourceBooking": "Yksilöllinen",
+    "noHall": "Ei salia"
   },
   "daySummary": {
     "classesToday": "tuntia tänään",
@@ -89,7 +91,9 @@
       "title": "Luodaanko palvelu?",
       "message": "Etkö löydä tarvitsemaasi palvelua? Luo se Luettelossa.",
       "confirm": "Siirry Luetteloon"
-    }
+    },
+    "reschedule": "Siirrä",
+    "loading": "Ladataan…"
   },
   "addClientModal": {
     "title": "Lisää asiakas",
@@ -145,7 +149,8 @@
       "createLesson": "tunnin luonti",
       "bookClient": "asiakkaan ilmoittautuminen",
       "bookClients": "asiakkaiden ilmoittautuminen ({{count}})"
-    }
+    },
+    "resourceUseReschedule": "Yksilövaraus siirretään kortin «Siirrä»-painikkeella"
   },
   "loadError": {
     "title": "Lataaminen epäonnistui",
@@ -156,5 +161,20 @@
     "message_one": "{{count}} asiakas saa ilmoituksen peruutuksesta.",
     "message_other": "{{count}} asiakasta saa ilmoituksen peruutuksesta.",
     "confirm": "Peru tunti"
+  },
+  "resourceBooking": {
+    "title": "Yksilövaraus",
+    "service": "Palvelu",
+    "branch": "Toimipiste",
+    "client": "Asiakas",
+    "date": "Päivä",
+    "slot": "Aika",
+    "time": "Aika",
+    "staff": "Ammattilainen",
+    "duration": "Kesto, min",
+    "price": "Hinta",
+    "noSlots": "Tänä päivänä ei ole vapaita aikoja",
+    "configIncomplete": "Tämän palvelun aikataulua ei ole vielä määritetty",
+    "moveTitle": "Varauksen siirto"
   }
 }

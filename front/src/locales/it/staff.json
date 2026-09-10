@@ -278,5 +278,16 @@
     "pendingHint": "Il profilo si apre appena il dipendente accetta l'invito",
     "resendInvite": "Invia di nuovo l'invito",
     "cancelInvite": "Annulla l'adesione"
+  },
+  "availability": {
+    "branches": "Disponibile nelle sedi",
+    "branchesHint": "Senza assegnazione il professionista non viene proposto per la prenotazione individuale in quella sede.",
+    "noBranches": "Nessuna sede",
+    "breaks": "Pause e assenze",
+    "breaksHint": "Ora locale dello studio. L’intervallo viene sottratto dalla disponibilità di quel giorno.",
+    "from": "Da",
+    "to": "A",
+    "reason": "Motivo",
+    "reasonPlaceholder": "es. pranzo"
   }
 }

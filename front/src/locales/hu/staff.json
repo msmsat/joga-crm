@@ -278,5 +278,16 @@
     "pendingHint": "A profil akkor nyílik meg, ha a munkatárs elfogadja a meghívót",
     "resendInvite": "Meghívó újraküldése",
     "cancelInvite": "Csatlakozás megszakítása"
+  },
+  "availability": {
+    "branches": "Elérhető telephelyeken",
+    "branchesHint": "Hozzárendelés nélkül a szakembert nem ajánljuk egyéni foglalásra azon a telephelyen.",
+    "noBranches": "Még nincs telephely",
+    "breaks": "Szünetek és távollét",
+    "breaksHint": "A stúdió helyi ideje. Az intervallum levonódik az aznapi elérhetőségből.",
+    "from": "Ettől",
+    "to": "Eddig",
+    "reason": "Ok",
+    "reasonPlaceholder": "pl. ebéd"
   }
 }

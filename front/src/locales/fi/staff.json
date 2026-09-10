@@ -278,5 +278,16 @@
     "pendingHint": "Profiili aukeaa, kun työntekijä hyväksyy kutsun",
     "resendInvite": "Lähetä kutsu uudelleen",
     "cancelInvite": "Peru liittyminen"
+  },
+  "availability": {
+    "branches": "Saatavilla toimipisteissä",
+    "branchesHint": "Ilman liitosta ammattilaista ei tarjota yksilövaraukseen kyseisessä toimipisteessä.",
+    "noBranches": "Ei vielä toimipisteitä",
+    "breaks": "Tauot ja poissaolot",
+    "breaksHint": "Studion paikallinen aika. Väli vähennetään sen päivän saatavuudesta.",
+    "from": "Alkaen",
+    "to": "Asti",
+    "reason": "Syy",
+    "reasonPlaceholder": "esim. lounas"
   }
 }

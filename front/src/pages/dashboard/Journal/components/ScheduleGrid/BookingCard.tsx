@@ -35,12 +35,12 @@ export const BookingCard: React.FC<BookingCardProps> = ({
   // должна спокойно открыться. Раньше тост «нет прав» выскакивал прямо на
   // pointerdown, то есть на каждый обычный клик по своему же занятию. Теперь
   // ждём реального сдвига: потащил — сказали, что нельзя; кликнул — открыли.
-  const warnOnDragAttempt = (e: React.PointerEvent) => {
+  const warnOnDragAttempt = (e: React.PointerEvent, message: string) => {
     const startX = e.clientX;
     const startY = e.clientY;
     const onMove = (ev: PointerEvent) => {
       if (Math.abs(ev.clientX - startX) + Math.abs(ev.clientY - startY) < DRAG_SLOP_PX) return;
-      showToast(t('toasts.noPermission'));
+      showToast(message);
       stop();
     };
     const stop = () => {
@@ -83,7 +83,15 @@ export const BookingCard: React.FC<BookingCardProps> = ({
       onPointerDown={e => {
         if (b.status === 'cancelled') return;
         if (!canEdit) {
-          warnOnDragAttempt(e);
+          warnOnDragAttempt(e, t('toasts.noPermission'));
+          return;
+        }
+        // HB-22 п.3: индивидуальную запись перетаскиванием не двигают — сервер
+        // отклоняет такой PATCH (RESOURCE_MOVE_REQUIRES_QUOTE), потому что у
+        // перетаскивания нет ни версии, ни проверки оплаты. Говорим об этом
+        // на попытке сдвига, а не молча возвращаем карточку на место.
+        if (isResource) {
+          warnOnDragAttempt(e, t('toasts.resourceUseReschedule'));
           return;
         }
         initDrag(e, b.id, 'move');
@@ -145,7 +153,9 @@ export const BookingCard: React.FC<BookingCardProps> = ({
         </div>
       )}
 
-      {isSelected && !isDragging && canEdit && b.status !== 'cancelled' && (
+      {/* Ручки растягивания — только у события: длительность индивидуальной
+          услуги задана каталогом, а не мышью (HB-22 п.3). */}
+      {isSelected && !isDragging && canEdit && !isResource && b.status !== 'cancelled' && (
         <>
           <div 
             style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 24, cursor: 'ns-resize', zIndex: 1000 }} 

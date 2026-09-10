@@ -4,7 +4,9 @@
     "trainers": "Тренери",
     "halls": "Сале",
     "day": "Дан",
-    "week": "Недеља"
+    "week": "Недеља",
+    "resourceBooking": "Individualno",
+    "noHall": "Bez sale"
   },
   "daySummary": {
     "classesToday": "термина данас",
@@ -90,7 +92,9 @@
       "title": "Да креирамо услугу?",
       "message": "Не налазите потребну услугу? Креирајте је у Каталогу.",
       "confirm": "Иди у Каталог"
-    }
+    },
+    "reschedule": "Premesti",
+    "loading": "Učitavanje…"
   },
   "addClientModal": {
     "title": "Додај клијента",
@@ -148,7 +152,8 @@
       "createLesson": "креирање термина",
       "bookClient": "пријава клијента",
       "bookClients": "пријава клијената ({{count}})"
-    }
+    },
+    "resourceUseReschedule": "Individualno zakazivanje premeštate dugmetom «Premesti» u kartici"
   },
   "loadError": {
     "title": "Учитавање није успело",
@@ -160,5 +165,20 @@
     "message_few": "{{count}} клијента ће добити обавештење о отказивању.",
     "message_other": "{{count}} клијената ће добити обавештење о отказивању.",
     "confirm": "Откажи термин"
+  },
+  "resourceBooking": {
+    "title": "Individualno zakazivanje",
+    "service": "Usluga",
+    "branch": "Filijala",
+    "client": "Klijent",
+    "date": "Datum",
+    "slot": "Vreme",
+    "time": "Vreme",
+    "staff": "Stručnjak",
+    "duration": "Trajanje, min",
+    "price": "Cena",
+    "noSlots": "Na ovaj datum nema slobodnog termina",
+    "configIncomplete": "Raspored ove usluge još nije postavljen",
+    "moveTitle": "Premeštanje zakazivanja"
   }
 }

@@ -4,6 +4,8 @@ Uses repository test DB guards and exact-ID fixture cleanup; no application edit
 import asyncio
 from datetime import datetime, timedelta
 
+from fastapi import HTTPException
+
 import test_schedule_guard as sg
 import test_resource_hours as rh
 from database import async_session_maker
@@ -163,6 +165,43 @@ def test_old_unknown_timezone_does_not_block_unrelated_future():
                 await schedule_guard.assert_interval_free(db, studio,
                     teacher_id=ids['teacher'], hall_id=ids['hall'],
                     start=datetime(2027, 6, 16, 12), end=datetime(2027, 6, 16, 13))
+        finally:
+            await sg._cleanup(ids)
+    asyncio.run(run())
+
+
+def test_long_legacy_interval_still_blocks_despite_the_bounded_scan():
+    """Отбор конфликтов ограничен по времени ради производительности —
+    и обязан оставаться корректным.
+
+    Занятие на трое суток начинается ЗАДОЛГО до кандидата и всё равно его
+    накрывает. Наивная граница «start_time между кандидатом ± запас» такую
+    строку потеряла бы, и мастер оказался бы занят дважды. Условие в
+    `assert_interval_free` считается по фактической длительности строки,
+    поэтому длина легаси на отбор не влияет.
+    """
+    async def run():
+        ids = await sg._seed(strict=True)
+        try:
+            async with async_session_maker() as db:
+                studio = await schedule_guard.lock_studio(db, ids['studio'])
+                db.add(Lesson(studio_id=ids['studio'], name='Retreat', teacher_name='T',
+                    teacher_id=ids['teacher'], service_id=ids['service'], hall_id=ids['hall'],
+                    branch_id=ids['branch'], start_time=datetime(2027, 6, 14, 9),
+                    tz_iana='Europe/Prague', duration_min=3 * 24 * 60, total_spots=8,
+                    price=100, level='', equipment=''))
+                await db.flush()
+                try:
+                    await schedule_guard.assert_interval_free(db, studio,
+                        teacher_id=ids['teacher'], hall_id=None,
+                        start=datetime(2027, 6, 16, 12), end=datetime(2027, 6, 16, 13))
+                    raise AssertionError('трёхсуточное занятие обязано перекрыть кандидата')
+                except HTTPException as exc:
+                    assert exc.status_code == 409, exc.status_code
+                # А несвязанная дата за пределами интервала — свободна.
+                await schedule_guard.assert_interval_free(db, studio,
+                    teacher_id=ids['teacher'], hall_id=None,
+                    start=datetime(2027, 7, 20, 12), end=datetime(2027, 7, 20, 13))
         finally:
             await sg._cleanup(ids)
     asyncio.run(run())

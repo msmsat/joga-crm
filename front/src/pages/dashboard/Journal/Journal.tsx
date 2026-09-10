@@ -19,6 +19,7 @@ import { Grid } from './components/ScheduleGrid/Grid';
 import { GridSkeleton } from './components/ScheduleGrid/GridSkeleton';
 import { LoadError } from './components/LoadError';
 import { BookingPopup } from './components/BookingPopup';
+import { NO_HALL_COLUMN } from './constants';
 import { useServiceOptions } from './hooks/useServiceOptions';
 import { NewBookingModal } from './components/modals/NewBookingModal';
 import { ResourceBookingModal } from './components/modals/ResourceBookingModal';
@@ -70,6 +71,10 @@ export default function Journal() {
   const [newBookingSlot, setNewBookingSlot] = useState<{ trainer: number; timeStart: number; timeEnd: number; columnIndex?: number } | null>(null);
   const [showNewForm, setShowNewForm] = useState(false);
   const [showResourceBooking, setShowResourceBooking] = useState(false);
+  const [moveTarget, setMoveTarget] = useState<{
+    reservationId: number; clientId: number; version: number;
+    serviceId: number; branchId: number | null;
+  } | null>(null);
   // Кнопка индивидуальной записи появляется, только когда такая услуга есть:
   // иначе она вела бы в форму без единого варианта.
   const { services: journalServices } = useServiceOptions();
@@ -152,7 +157,12 @@ export default function Journal() {
 
   // Видимые колонки: всё, что пользователь не скрыл в тулбаре/правой панели.
   const visibleTrainers = trainers.filter(t => !hiddenTrainers.includes(t.id));
-  const visibleHalls = hallNames.filter(h => !hiddenHalls.includes(h));
+  // HB-22 п.4: колонка «Без зала» появляется, только если такие занятия есть —
+  // пустая колонка на каждом экране была бы шумом.
+  const visibleHalls = [
+    ...hallNames.filter(h => !hiddenHalls.includes(h)),
+    ...(bookings.some(b => !b.hall) ? [NO_HALL_COLUMN] : []),
+  ];
 
   // Фоновая ошибка (данные в кэше уже есть — сетка на экране, refetch просто
   // не удался): не ломаем сетку, только тост. Первую загрузку ловит LoadError.
@@ -542,6 +552,8 @@ export default function Journal() {
       // Этот путь создаёт СОБЫТИЕ. Индивидуальная запись идёт через quote и
       // confirm (ResourceBookingModal), а не через создание занятия.
       bookingMode: 'event',
+      version: 1,
+      branchId: hall?.branch_id ?? null,
     };
 
     const createPayload: LessonCreate = {
@@ -776,6 +788,16 @@ export default function Journal() {
           onAddClients={confirmAddClients} // Изменено здесь
           showToast={showToast}
           pushHistoryEntry={history.push}
+          onReschedule={(booking, reservationId, clientId) => {
+            setPopupBooking(null);
+            setMoveTarget({
+              reservationId,
+              clientId,
+              version: booking.version ?? 1,
+              serviceId: booking.serviceId!,
+              branchId: booking.branchId,
+            });
+          }}
         />
       )}
 
@@ -801,6 +823,15 @@ export default function Journal() {
       {showResourceBooking && (
         <ResourceBookingModal
           onClose={() => setShowResourceBooking(false)}
+          onCreated={mutations.invalidate}
+        />
+      )}
+
+      {moveTarget && (
+        <ResourceBookingModal
+          clientId={moveTarget.clientId}
+          move={moveTarget}
+          onClose={() => setMoveTarget(null)}
           onCreated={mutations.invalidate}
         />
       )}

@@ -278,5 +278,16 @@
     "pendingHint": "Profilen åpnes når den ansatte godtar invitasjonen",
     "resendInvite": "Send invitasjonen på nytt",
     "cancelInvite": "Avbryt tilknytning"
+  },
+  "availability": {
+    "branches": "Tilgjengelig i avdelinger",
+    "branchesHint": "Uten tilknytning tilbys ikke spesialisten til individuell booking i den avdelingen.",
+    "noBranches": "Ingen avdelinger ennå",
+    "breaks": "Pauser og fravær",
+    "breaksHint": "Studioets lokale tid. Intervallet trekkes fra tilgjengeligheten den dagen.",
+    "from": "Fra",
+    "to": "Til",
+    "reason": "Årsak",
+    "reasonPlaceholder": "f.eks. lunsj"
   }
 }

@@ -3,7 +3,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { BookingCard } from './BookingCard';
 import type { Booking, JournalColumn, Trainer } from '../../types';
-import { TIMES } from '../../constants';
+import { NO_HALL_COLUMN, TIMES } from '../../constants';
 import { getBookingLayouts, formatIndexToTimeStr, weekdayShort } from '../../utils';
 import type { DragState } from '../../hooks/useDragAndDrop';
 
@@ -78,7 +78,7 @@ export const Grid: React.FC<GridProps> = ({
 
                 return bDate === dateStr;
             }
-            return isTrainerMode ? b.trainer === (trainer!.id) : b.hall === hallName;
+            return isTrainerMode ? b.trainer === (trainer!.id) : (b.hall || NO_HALL_COLUMN) === hallName;
         });
 
         const avoidHeaderAnimation = calendarView === 'week' && transitionReason === 'mode';
@@ -194,7 +194,7 @@ export const Grid: React.FC<GridProps> = ({
                       );
                   })() : (
                   <>
-                      <div className="j-hdr-name" style={{ fontSize: 14, fontWeight: 800, color: 'var(--onyx)' }}>{hallName}</div>
+                      <div className="j-hdr-name" style={{ fontSize: 14, fontWeight: 800, color: 'var(--onyx)' }}>{hallName === NO_HALL_COLUMN ? t('toolbar.noHall') : hallName}</div>
                       <div className="j-hdr-sub" style={{ fontSize: 11, color: 'var(--muted)', fontWeight: 600 }}>{colBookings.length} {t('grid.classesToday')}</div>
                   </>
               ))}
@@ -225,7 +225,7 @@ export const Grid: React.FC<GridProps> = ({
                 const bDate = b.date || `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}-${String(new Date().getDate()).padStart(2, '0')}`;
                 return bDate === dateStr;
               }
-              return isTrainerMode ? b.trainer === trainer!.id : b.hall === hallName;
+              return isTrainerMode ? b.trainer === trainer!.id : (b.hall || NO_HALL_COLUMN) === hallName;
             });
 
             const layouts = getBookingLayouts(colBookings);

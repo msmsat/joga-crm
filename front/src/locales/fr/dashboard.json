@@ -92,5 +92,18 @@
     "expenses": "Dépenses",
     "avgCheck": "Panier moyen",
     "profit": "Bénéfice"
+  },
+  "bookingModes": {
+    "title": "Modèles de réservation",
+    "event": "Événements",
+    "resource": "Individuel",
+    "events": "Événements",
+    "bookings": "Réservations",
+    "attended": "Présences",
+    "pending": "En attente de confirmation",
+    "hold": "En attente de paiement",
+    "cancelled": "Annulées",
+    "utilization": "Taux d’occupation",
+    "noData": "Aucune donnée"
   }
 }

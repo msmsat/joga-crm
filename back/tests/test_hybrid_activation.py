@@ -21,7 +21,7 @@ from datetime import datetime, timedelta
 
 import pytest
 from fastapi import HTTPException
-from sqlalchemy import delete
+from sqlalchemy import delete, select
 
 from database import async_session_maker
 from models import (Client, Hall, Lesson, Reservation, Service, StaffBranchAssignment,
@@ -47,7 +47,7 @@ async def _seed(**studio_kw) -> dict:
         db.add(branch)
         await db.flush()
         hall = Hall(studio_id=studio.id, branch_id=branch.id, name="H", capacity=10)
-        teacher = User(email=f"act-{stamp}@test.local", hashed_password="x", name="T")
+        teacher = User(email=f"act-{stamp}@example.com", hashed_password="x", name="T")
         db.add_all([hall, teacher])
         await db.flush()
         db.add(StudioMember(user_id=teacher.id, studio_id=studio.id, role="trainer",
@@ -221,6 +221,50 @@ def test_audit_cli_is_read_only_and_reports_by_exit_code(clean_studio, capsys):
 
     with pytest.raises(SystemExit):
         cli.main([])
+
+
+def test_saving_a_profile_without_branch_ids_keeps_existing_assignments(clean_studio):
+    """Ревью HB-00…06, п.2: отсутствие поля ≠ пустой список — НА РОУТЕРЕ.
+
+    Старый экран сотрудников не знает про `branch_ids`. Если сохранение
+    карточки трактует отсутствие поля как «стереть все назначения», обычная
+    правка имени молча лишает специалиста Resource-доступности во всех филиалах.
+
+    Проверяется сам путь сохранения, а не значение по умолчанию у Pydantic:
+    схема отдаёт `[]` в обоих случаях, и различает их только `model_fields_set`
+    внутри `update_staff`. Тест на схеме прошёл бы и после удаления этой ветки.
+    """
+    from dependencies import StudioContext
+    from routers.staff.profiles import update_staff
+    from schemas.settings.team import StaffUpdate
+
+    ids = clean_studio
+    ctx = StudioContext(user=None, studio_id=ids["studio"], role="owner")
+
+    async def assignments():
+        async with async_session_maker() as db:
+            return sorted((await db.execute(select(StaffBranchAssignment.branch_id).where(
+                StaffBranchAssignment.studio_id == ids["studio"]))).scalars().all())
+
+    async def save(**extra):
+        async with async_session_maker() as db:
+            user = await db.get(User, ids["teacher"])
+            body = StaffUpdate(name="T", last_name="T", email=user.email, **extra)
+            await update_staff(staff_id=ids["teacher"], data=body, ctx=ctx, db=db)
+
+    assert asyncio.run(assignments()) == [ids["branch"]]
+
+    # Поля нет вовсе — назначения обязаны уцелеть.
+    asyncio.run(save())
+    assert asyncio.run(assignments()) == [ids["branch"]], "сохранение без branch_ids стёрло назначения"
+
+    # Явный список — применяется как есть.
+    asyncio.run(save(branch_ids=[ids["branch"]]))
+    assert asyncio.run(assignments()) == [ids["branch"]]
+
+    # Явный ПУСТОЙ список — это осознанное «нигде не доступен», и он стирает.
+    asyncio.run(save(branch_ids=[]))
+    assert asyncio.run(assignments()) == [], "явный пустой список обязан снимать назначения"
 
 
 def test_service_used_by_resource_cannot_be_deleted_or_switched(clean_studio):

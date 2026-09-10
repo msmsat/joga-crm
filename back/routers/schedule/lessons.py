@@ -38,14 +38,20 @@ _LESSON_FIELDS = (
     # без этой строки они не долетали бы до ответа: _lesson_read собирает
     # dict по явному списку, а не ORM-объект целиком.
     "branch_id", "booking_mode", "tz_iana",
+    # HB-22: версия нужна журналу, чтобы отправить expected_version при
+    # переносе — без неё перенос не смог бы отличить свежую карточку от
+    # уже изменённой кем-то другим.
+    "version",
 )
 
 
 def _lesson_read(lesson: Lesson, booked_count: int) -> LessonRead:
-    return LessonRead.model_validate({
-        **{c: getattr(lesson, c) for c in _LESSON_FIELDS},
-        "booked_count": booked_count,
-    })
+    fields = {c: getattr(lesson, c) for c in _LESSON_FIELDS}
+    # `version` заполняется значением по умолчанию только при INSERT: у
+    # объекта, ещё не долетевшего до базы, атрибут пуст. Отдавать 500 из-за
+    # этого нельзя — до первой правки версия и есть первая.
+    fields["version"] = fields.get("version") or 1
+    return LessonRead.model_validate({**fields, "booked_count": booked_count})
 
 router = APIRouter()
 
@@ -85,6 +91,13 @@ async def list_lessons(
             Lesson.hall_id, Lesson.start_time, Lesson.duration_min, Lesson.price,
             Lesson.level, Lesson.equipment, Lesson.total_spots, Lesson.service_id,
             Lesson.status, Lesson.cancel_reason, Lesson.clients_notified,
+            # HB-04/HB-22: перечень колонок здесь СВОЙ, отдельный от
+            # `_LESSON_FIELDS`, и молча добирает недостающее дефолтами схемы.
+            # Без этих четырёх журнал получал `booking_mode='event'` и
+            # `version=1` на КАЖДОЙ строке — то есть весь разбор механики в
+            # интерфейсе (карточка без счётчика, запрет растягивания, перенос
+            # по версии, колонка «Без зала») не срабатывал никогда.
+            Lesson.branch_id, Lesson.booking_mode, Lesson.tz_iana, Lesson.version,
             Service.color.label("service_color"),
             func.coalesce(booked_sq.c.booked_count, 0).label("booked_count"),
         )
@@ -578,6 +591,20 @@ async def update_lesson(
             fields["branch_id"] = await _assert_hall_in_studio(fields["hall_id"], ctx.studio_id, db)
         else:
             fields["branch_id"] = None
+
+    # HB-22 п.3 / §6.5: интервал индивидуальной записи двигается ТОЛЬКО общим
+    # сервисом переноса (`services/resource_reschedule`). Здесь нет ни проверки
+    # версии, ни окна отмены, ни PAYMENT_IN_PROGRESS, ни инкремента version —
+    # разрешить этот путь значит завести вторую, более слабую реализацию
+    # переноса. Отказ закрывает и UI, и прямой HTTP, и инструмент ассистента.
+    if lesson.booking_mode == "resource" and {
+        "start_time", "duration_min", "teacher_id", "hall_id", "total_spots",
+    } & fields.keys():
+        raise HTTPException(status_code=409, detail={
+            "code": "RESOURCE_MOVE_REQUIRES_QUOTE",
+            "message": "Индивидуальную запись переносят через подтверждение нового времени",
+            "params": {"lesson_id": lesson.id},
+        })
 
     # Занятие двигают (время/длительность) или меняют занятого им человека/зал —
     # новая комбинация должна попадать в рабочие часы всех троих. Правку, которая

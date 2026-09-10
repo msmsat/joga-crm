@@ -92,5 +92,18 @@
     "expenses": "Giderler",
     "avgCheck": "Ortalama sepet",
     "profit": "Kâr"
+  },
+  "bookingModes": {
+    "title": "Randevu modelleri",
+    "event": "Etkinlikler",
+    "resource": "Bireysel",
+    "events": "Etkinlik",
+    "bookings": "Randevu",
+    "attended": "Katılım",
+    "pending": "Onay bekliyor",
+    "hold": "Ödeme bekliyor",
+    "cancelled": "İptal",
+    "utilization": "Doluluk",
+    "noData": "Veri yok"
   }
 }

@@ -5,7 +5,8 @@
     "halls": "Räume",
     "day": "Tag",
     "week": "Woche",
-    "resourceBooking": "Individuell"
+    "resourceBooking": "Individuell",
+    "noHall": "Ohne Raum"
   },
   "daySummary": {
     "classesToday": "Kurse heute",
@@ -90,7 +91,9 @@
       "title": "Leistung erstellen?",
       "message": "Die gewünschte Leistung fehlt? Legen Sie sie im Katalog an.",
       "confirm": "Zum Katalog"
-    }
+    },
+    "reschedule": "Verschieben",
+    "loading": "Wird geladen…"
   },
   "addClientModal": {
     "title": "Kunde hinzufügen",
@@ -146,7 +149,8 @@
       "createLesson": "Kurs erstellen",
       "bookClient": "Kunde anmelden",
       "bookClients": "Kunden anmelden ({{count}})"
-    }
+    },
+    "resourceUseReschedule": "Individuelle Buchungen verschiebt man über «Verschieben» in der Karte"
   },
   "loadError": {
     "title": "Laden fehlgeschlagen",
@@ -170,6 +174,7 @@
     "duration": "Dauer, Min",
     "price": "Preis",
     "noSlots": "An diesem Tag ist keine Zeit frei",
-    "configIncomplete": "Der Zeitplan dieser Leistung ist noch nicht eingerichtet"
+    "configIncomplete": "Der Zeitplan dieser Leistung ist noch nicht eingerichtet",
+    "moveTitle": "Buchung verschieben"
   }
 }

@@ -278,5 +278,16 @@
     "pendingHint": "Profilul se deschide după ce angajatul acceptă invitația",
     "resendInvite": "Trimite invitația din nou",
     "cancelInvite": "Anulează alăturarea"
+  },
+  "availability": {
+    "branches": "Disponibil în filiale",
+    "branchesHint": "Fără alocare specialistul nu este oferit pentru programare individuală în acea filială.",
+    "noBranches": "Încă nu există filiale",
+    "breaks": "Pauze și absențe",
+    "breaksHint": "Ora locală a studioului. Intervalul se scade din disponibilitatea din acea zi.",
+    "from": "De la",
+    "to": "Până la",
+    "reason": "Motiv",
+    "reasonPlaceholder": "ex. prânz"
   }
 }

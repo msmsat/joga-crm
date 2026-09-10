@@ -31,7 +31,7 @@ from datetime import datetime, timedelta
 from typing import Optional, Sequence
 
 from fastapi import HTTPException
-from sqlalchemy import or_, select
+from sqlalchemy import or_, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from models import Lesson, Studio, StaffBusyInterval, StudioMember, Service, User
@@ -108,10 +108,21 @@ async def assert_interval_free(
     if hall_id is not None:
         conditions.append(Lesson.hall_id == hall_id)
 
+    # Отбор ограничен по времени тем же консервативным запасом в двое суток,
+    # что и `possibly_overlaps`: ни один существующий IANA-offset не сдвигает
+    # момент дальше. Без границы каждый create читал бы ВСЮ историю мастера —
+    # на студии с десятками тысяч занятий это скан под замком студии.
+    # Условие считается по фактической длительности и буферам самой строки,
+    # поэтому длинное legacy-занятие из выборки не выпадает.
+    margin = timedelta(days=2)
     stmt = select(Lesson).where(
         Lesson.studio_id == studio.id,
         Lesson.status != "cancelled",
         or_(*conditions),
+        Lesson.start_time - Lesson.buffer_before_min * text("INTERVAL '1 minute'")
+        < new_end.replace(tzinfo=None) + margin,
+        Lesson.start_time + (Lesson.duration_min + Lesson.buffer_after_min) * text("INTERVAL '1 minute'")
+        > new_start.replace(tzinfo=None) - margin,
     )
     if exclude_lesson_id is not None:
         stmt = stmt.where(Lesson.id != exclude_lesson_id)

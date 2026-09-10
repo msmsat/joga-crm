@@ -4,7 +4,9 @@
     "trainers": "Coachs",
     "halls": "Salles",
     "day": "Jour",
-    "week": "Semaine"
+    "week": "Semaine",
+    "resourceBooking": "Individuel",
+    "noHall": "Sans salle"
   },
   "daySummary": {
     "classesToday": "cours aujourd'hui",
@@ -89,7 +91,9 @@
       "title": "Créer une prestation ?",
       "message": "Vous ne trouvez pas la prestation voulue ? Créez-la dans le Catalogue.",
       "confirm": "Aller au Catalogue"
-    }
+    },
+    "reschedule": "Reporter",
+    "loading": "Chargement…"
   },
   "addClientModal": {
     "title": "Ajouter un client",
@@ -145,7 +149,8 @@
       "createLesson": "création du cours",
       "bookClient": "inscription d'un client",
       "bookClients": "inscription de clients ({{count}})"
-    }
+    },
+    "resourceUseReschedule": "Les réservations individuelles se déplacent via « Reporter » dans la fiche"
   },
   "loadError": {
     "title": "Échec du chargement",
@@ -156,5 +161,20 @@
     "message_one": "{{count}} client recevra un avis d'annulation.",
     "message_other": "{{count}} clients recevront un avis d'annulation.",
     "confirm": "Annuler le cours"
+  },
+  "resourceBooking": {
+    "title": "Réservation individuelle",
+    "service": "Prestation",
+    "branch": "Établissement",
+    "client": "Client",
+    "date": "Date",
+    "slot": "Heure",
+    "time": "Heure",
+    "staff": "Spécialiste",
+    "duration": "Durée, min",
+    "price": "Prix",
+    "noSlots": "Aucun créneau libre à cette date",
+    "configIncomplete": "Le planning de cette prestation n’est pas encore configuré",
+    "moveTitle": "Reporter la réservation"
   }
 }

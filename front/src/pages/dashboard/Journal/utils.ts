@@ -243,6 +243,8 @@ export const lessonToBooking = (l: Lesson, halls: Hall[], colorByTeacher: Map<nu
     clientsNotified: l.clients_notified,
     serviceId: l.service_id,
     bookingMode: l.booking_mode ?? 'event',
+    version: l.version ?? 1,
+    branchId: l.branch_id ?? null,
   };
 };
 
