@@ -173,7 +173,9 @@ export default function Auth({
               onChange={(e) => setEmail(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && emailValid && !busy && submitEmail()}
               placeholder="you@example.com"
-              className="w-full rounded-2xl border border-border bg-card px-4 py-3.5 text-[15px] font-medium text-foreground outline-none transition-shadow placeholder:text-muted-foreground/60 focus:border-brand focus:shadow-brand"
+              // 16px — порог iOS: с меньшим кеглем Safari увеличивает страницу
+              // при фокусе в поле (см. комментарий в index.css).
+              className="w-full rounded-2xl border border-border bg-card px-4 py-3.5 text-[16px] font-medium text-foreground outline-none transition-shadow placeholder:text-muted-foreground/60 focus:border-brand focus:shadow-brand"
             />
           ) : (
             <>
@@ -184,7 +186,9 @@ export default function Auth({
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder={t('auth.name_placeholder')}
-                  className="w-full rounded-2xl border border-border bg-card px-4 py-3.5 text-[15px] font-medium text-foreground outline-none transition-shadow placeholder:text-muted-foreground/60 focus:border-brand focus:shadow-brand"
+                  // 16px — порог iOS: с меньшим кеглем Safari увеличивает страницу
+              // при фокусе в поле (см. комментарий в index.css).
+              className="w-full rounded-2xl border border-border bg-card px-4 py-3.5 text-[16px] font-medium text-foreground outline-none transition-shadow placeholder:text-muted-foreground/60 focus:border-brand focus:shadow-brand"
                 />
               )}
               <input

@@ -2,6 +2,9 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { MotionConfig } from 'framer-motion'
 import './index.css'
+// До первого кадра: `--app-h` должна стоять раньше, чем React нарисует раму,
+// иначе первый кадр уедет по запасному `100dvh` и тут же поправится.
+import './lib/appHeight'
 import App from './App.tsx'
 import './i18n';
 

@@ -116,7 +116,12 @@ export function Sheet({
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          className="fixed inset-0 flex items-end justify-center dt:items-center dt:p-8"
+          /* `app-sheet` задаёт на телефоне ту же замороженную высоту, что у
+             рамы приложения (index.css). Без неё низ листа привязан к окну
+             браузера, и кнопка в подвале ездила бы вместе с нижней панелью
+             Instagram ровно так же, как ездило меню. На десктопе класс пустой,
+             работает `inset-0`. */
+          className="app-sheet fixed inset-0 flex items-end justify-center dt:items-center dt:p-8"
           style={{ zIndex: 200 + layer * 10 }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -155,7 +160,10 @@ export function Sheet({
               'relative flex w-full max-w-[520px] flex-col overflow-hidden bg-card',
               'rounded-t-[28px] shadow-[0_-16px_48px_-12px_rgba(26,26,26,0.28)]',
               'dt:max-w-[560px] dt:rounded-[28px] dt:shadow-[0_32px_80px_-24px_rgba(26,26,26,0.45)]',
-              tall ? 'h-[92dvh] dt:h-[78dvh]' : 'max-h-[88dvh] dt:max-h-[82dvh]',
+              // Проценты от подложки, а не dvh: подложке рост уже отмерен, а
+              // dvh переспросил бы браузер про низ экрана — и на телефоне снова
+              // поехал бы за его панелью. На десктопе dvh честный, там оставлен.
+              tall ? 'h-[92%] dt:h-[78dvh]' : 'max-h-[88%] dt:max-h-[82dvh]',
             ].join(' ')}
           >
             {/* Тёплое свечение под шапкой: лист не должен читаться белым листом

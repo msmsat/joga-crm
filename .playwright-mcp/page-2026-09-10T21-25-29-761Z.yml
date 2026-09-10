@@ -1,0 +1,9 @@
+- generic [active] [ref=f1e1]:
+  - figure "BarbershopScene" [ref=f1e2]
+  - figure "BeautyScene" [ref=f1e39]
+  - figure "BrowsLashesScene" [ref=f1e86]
+  - figure "CosmetologyScene" [ref=f1e118]
+  - figure "HairRemovalScene" [ref=f1e154]
+  - figure "MakeupScene" [ref=f1e183]
+  - figure "NailsScene" [ref=f1e220]
+  - figure "TattooScene" [ref=f1e255]

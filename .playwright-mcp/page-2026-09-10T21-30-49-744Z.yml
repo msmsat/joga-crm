@@ -1,0 +1,21 @@
+- generic [active] [ref=f6e1]:
+  - generic [ref=f6e2]:
+    - figure "PilatesScene t=0" [ref=f6e3]
+    - figure "PilatesScene t=1.4" [ref=f6e27]
+    - figure "PilatesScene t=2.8" [ref=f6e51]
+    - figure "PilatesScene t=4.2" [ref=f6e75]
+  - generic [ref=f6e99]:
+    - figure "StretchingScene t=0" [ref=f6e100]
+    - figure "StretchingScene t=1.4" [ref=f6e113]
+    - figure "StretchingScene t=2.8" [ref=f6e127]
+    - figure "StretchingScene t=4.2" [ref=f6e141]
+  - generic [ref=f6e155]:
+    - figure "MeditationScene t=0" [ref=f6e156]
+    - figure "MeditationScene t=1.4" [ref=f6e185]
+    - figure "MeditationScene t=2.8" [ref=f6e214]
+    - figure "MeditationScene t=4.2" [ref=f6e243]
+  - generic [ref=f6e272]:
+    - figure "SpaScene t=0" [ref=f6e273]
+    - figure "SpaScene t=1.4" [ref=f6e303]
+    - figure "SpaScene t=2.8" [ref=f6e333]
+    - figure "SpaScene t=4.2" [ref=f6e363]

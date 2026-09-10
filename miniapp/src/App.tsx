@@ -67,9 +67,9 @@ export default function App() {
   const [wantsSubscription, setWantsSubscription] = useState(false);
   const { tg } = useTelegram();
   const isDesktop = useIsDesktop();
-  // Оболочка приложения. На телефоне прокручивается она, а не документ, —
+  // Область прокрутки приложения. На телефоне прокручивается она, а не документ, —
   // значит и «наверх» при смене раздела просить надо её (см. `switchTab`).
-  const shell = useRef<HTMLDivElement>(null);
+  const scroller = useRef<HTMLDivElement>(null);
 
   const [user, setUser] = useState<UserResponse | null>(null);
   const [catalog, setCatalog] = useState<StudioCatalog | null>(null);
@@ -203,7 +203,7 @@ export default function App() {
     // (`.app-scroll`, см. index.css). Зовём оба: лишний вызов — пустой ход,
     // ветвление по ширине окна здесь было бы дороже.
     window.scrollTo({ top: 0 });
-    shell.current?.scrollTo({ top: 0 });
+    scroller.current?.scrollTo({ top: 0 });
   };
 
   /**
@@ -367,17 +367,21 @@ export default function App() {
   // Фона на этом узле быть не должно: подложка стоит на -z-10, а собственный
   // фон родителя закрасил бы её (фон страницы приходит из body, index.css).
   //
-  // Прокрутка разная по ширине окна, и это не косметика.
+  // Два узла вместо одного, и это не косметика.
   // Десктоп — документ целиком: своя область прокрутки внутри окна означала бы
-  // вторую полосу и отказ от колеса там, где курсор вышел за её границы.
-  // Телефон — эта самая оболочка (`.app-scroll` в index.css): пока листался
-  // документ, Safari и вебвью Instagram сворачивали и разворачивали свою нижнюю
-  // панель на каждом жесте, окно меняло высоту, и капсула меню внизу дёргалась
-  // вместе с ним. Класс переключает не JS, а медиазапрос, — на десктопе он
-  // не задаёт ни высоты, ни overflow, и всё остаётся как было.
+  // вторую полосу и отказ от колеса там, где курсор вышел за её границы. Оба
+  // класса там пустые, всё остаётся как было.
+  // Телефон — неподвижная рама `.app-shell` ростом в замороженное окно
+  // (lib/appHeight.ts) и прокрутка `.app-scroll` внутри неё. Меню висит на РАМЕ,
+  // а не на окне браузера, поэтому панель Safari или Instagram может ездить
+  // сколько угодно — капсула этого не заметит. Раньше меню было `fixed`, то есть
+  // приклеено к окну, и ездило вместе с панелью на каждом жесте.
+  // Переключает всё медиазапрос, а не JS: раскладка обязана быть верной в
+  // первом же кадре.
   return (
     <BusinessTermsProvider catalog={catalog}>
-    <div ref={shell} className="app-scroll relative">
+    <div className="app-shell relative">
+      <div ref={scroller} className="app-scroll relative">
       <AmbientBackdrop tint={catalog?.studio.accent_color ?? '#F9A08B'} />
 
       <div className="flex">
@@ -422,7 +426,10 @@ export default function App() {
           ))}
         </div>
       </div>
+      </div>
 
+      {/* Снаружи `.app-scroll` намеренно: внутри прокрутки капсула уехала бы
+          вверх вместе с содержимым, а на раме она стоит неподвижно. */}
       {!isDesktop && <BottomNav active={screenTab} onSelect={switchTab} items={navItems} />}
 
       {/* Вход — поверх кабинета, а не вместо него: под ним стоит открытый лист

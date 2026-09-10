@@ -30,14 +30,16 @@ export default function BottomNav({ active, onSelect, items }: Props) {
   const { t } = useTranslation();
 
   return (
-    /* fixed, а не absolute: прокручивается оболочка вокруг, и привязанная к
-       её содержимому капсула уехала бы вверх вместе с ним. Стоит намертво
-       только потому, что документ на телефоне не прокручивается (index.css):
-       иначе Safari сворачивал бы свою нижнюю панель, менял высоту окна — и
-       капсула ездила бы вслед за ней. */
+    /* absolute, а не fixed: `fixed` привязывает низ капсулы к ОКНУ БРАУЗЕРА, а
+       окно меняет высоту каждый раз, когда Safari или вебвью Instagram прячет
+       и показывает свою нижнюю панель, — капсула ездила вслед за ней на каждом
+       жесте. Здесь низ отмеряется от неподвижной рамы `.app-shell` (App.tsx)
+       ростом в замороженное окно (lib/appHeight.ts): панель может ездить
+       сколько угодно, капсула стоит. Рама лежит СНАРУЖИ прокрутки, поэтому
+       вверх вместе с содержимым капсула тоже не уедет. */
     /* Отступ снизу одним объявлением: `pb-safe` рядом с `pb-4` перебивал его
        и капсула ложилась на самую кромку экрана. */
-    <div className="pointer-events-none fixed inset-x-0 bottom-0 z-30 px-4 pb-[calc(1rem_+_env(safe-area-inset-bottom,0px))]">
+    <div className="pointer-events-none absolute inset-x-0 bottom-0 z-30 px-4 pb-[calc(1rem_+_env(safe-area-inset-bottom,0px))]">
       <nav className="pointer-events-auto flex items-stretch gap-1 rounded-full bg-card p-1.5 shadow-lift ring-1 ring-inset ring-border">
         {items.map((item) => {
           const isActive = active === item.id;

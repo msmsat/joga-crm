@@ -93,7 +93,9 @@ export default function PhoneSheet({ isOpen, onClose, onSaved, layer = 1 }: Prop
         placeholder={t('phoneSheet.placeholder')}
         disabled={isSaving}
         autoComplete="tel"
-        className="mt-3 w-full rounded-[16px] bg-background px-4 py-3.5 text-[14px] font-semibold text-foreground outline-none ring-1 ring-inset ring-transparent transition placeholder:font-medium placeholder:text-muted-foreground/70 focus:ring-brand/50 disabled:opacity-50"
+        // 16px — порог iOS: с меньшим кеглем Safari увеличивает страницу при
+        // фокусе в поле (см. комментарий в index.css).
+        className="mt-3 w-full rounded-[16px] bg-background px-4 py-3.5 text-[16px] font-semibold text-foreground outline-none ring-1 ring-inset ring-transparent transition placeholder:font-medium placeholder:text-muted-foreground/70 focus:ring-brand/50 disabled:opacity-50"
       />
 
       {error && (

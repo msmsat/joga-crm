@@ -15,8 +15,10 @@ interface Props {
   disabled: boolean;
 }
 
+// 16px — не выбор дизайна, а порог iOS: при фокусе в поле с кеглем меньше 16px
+// Safari увеличивает всю страницу (см. комментарий в index.css).
 const inputClass =
-  'w-full rounded-[16px] bg-background px-4 py-3.5 text-[14px] font-semibold text-foreground ' +
+  'w-full rounded-[16px] bg-background px-4 py-3.5 text-[16px] font-semibold text-foreground ' +
   'placeholder:font-medium placeholder:text-muted-foreground/70 outline-none ' +
   'ring-1 ring-inset ring-transparent transition focus:ring-brand/50 disabled:opacity-50';
 

@@ -1,0 +1,21 @@
+- generic [active] [ref=f9e1]:
+  - generic [ref=f9e2]:
+    - figure "KidsSportScene t=0" [ref=f9e3]
+    - figure "KidsSportScene t=0.9" [ref=f9e23]
+    - figure "KidsSportScene t=1.8" [ref=f9e43]
+    - figure "KidsSportScene t=2.7" [ref=f9e63]
+  - generic [ref=f9e83]:
+    - figure "PersonalTrainingScene t=0" [ref=f9e84]
+    - figure "PersonalTrainingScene t=0.9" [ref=f9e109]
+    - figure "PersonalTrainingScene t=1.8" [ref=f9e135]
+    - figure "PersonalTrainingScene t=2.7" [ref=f9e160]
+  - generic [ref=f9e185]:
+    - figure "OtherScene t=0" [ref=f9e186]
+    - figure "OtherScene t=0.9" [ref=f9e204]
+    - figure "OtherScene t=1.8" [ref=f9e222]
+    - figure "OtherScene t=2.7" [ref=f9e240]
+  - generic [ref=f9e258]:
+    - figure "WrapsScene t=0" [ref=f9e259]
+    - figure "WrapsScene t=0.9" [ref=f9e288]
+    - figure "WrapsScene t=1.8" [ref=f9e317]
+    - figure "WrapsScene t=2.7" [ref=f9e346]

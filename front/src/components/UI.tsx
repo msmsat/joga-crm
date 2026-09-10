@@ -509,20 +509,21 @@ export const BUSINESS_CATEGORIES = [
   { id: "other", icon: "✦", label: "Другое", subtypes: ["Фотостудия", "Коворкинг", "Квест-комната", "Бьюти-бокс", "Иное"] },
 ];
 
-// Все целые офсеты, по порядку и без дыр: начинаем с UTC+3 (домашний пояс) и
-// идём на восток — +4 … +14, за линией перемены дат -11 … -1, и обратно к дому
-// через 0, +1, +2. Список значений обязан совпадать с Literal Timezone в
+// Все целые офсеты, по порядку и без дыр: начинаем на час впереди Берлина
+// (UTC+2, Киев) и идём вниз — Берлин, Лондон, дальше на запад через Нью-Йорк к
+// Гавайям (-11), за линией перемены дат +14 и обратно к дому через +3.
+// Список значений обязан совпадать с Literal Timezone в
 // back/schemas/settings/general.py, подписи — ключи onboarding:settings.timezones.
 // Получасовых поясов (+5:30) нет намеренно: офсет парсится как int часов
 // (services/daily_notify.py:_studio_tz).
 export const TIMEZONES = [
-  { value: "UTC+3" }, { value: "UTC+4" }, { value: "UTC+5" }, { value: "UTC+6" },
-  { value: "UTC+7" }, { value: "UTC+8" }, { value: "UTC+9" }, { value: "UTC+10" },
-  { value: "UTC+11" }, { value: "UTC+12" }, { value: "UTC+13" }, { value: "UTC+14" },
-  { value: "UTC-11" }, { value: "UTC-10" }, { value: "UTC-9" }, { value: "UTC-8" },
-  { value: "UTC-7" }, { value: "UTC-6" }, { value: "UTC-5" }, { value: "UTC-4" },
-  { value: "UTC-3" }, { value: "UTC-2" }, { value: "UTC-1" },
-  { value: "UTC+0" }, { value: "UTC+1" }, { value: "UTC+2" },
+  { value: "UTC+2" }, { value: "UTC+1" }, { value: "UTC+0" },
+  { value: "UTC-1" }, { value: "UTC-2" }, { value: "UTC-3" }, { value: "UTC-4" },
+  { value: "UTC-5" }, { value: "UTC-6" }, { value: "UTC-7" }, { value: "UTC-8" },
+  { value: "UTC-9" }, { value: "UTC-10" }, { value: "UTC-11" },
+  { value: "UTC+14" }, { value: "UTC+13" }, { value: "UTC+12" }, { value: "UTC+11" },
+  { value: "UTC+10" }, { value: "UTC+9" }, { value: "UTC+8" }, { value: "UTC+7" },
+  { value: "UTC+6" }, { value: "UTC+5" }, { value: "UTC+4" }, { value: "UTC+3" },
 ];
 
 // Стартовый пояс = пояс браузера: человеку остаётся согласиться, а не искать свой.
