@@ -98,11 +98,11 @@
     "de": "Wer und was"
   },
   "ai:quota.label": {
-    "ru": "Запросов к ИИ",
-    "en": "AI requests",
-    "uk": "Запити до ШІ",
-    "cs": "AI dotazy",
-    "de": "KI-Anfragen"
+    "ru": "Запросы к ИИ-ассистенту",
+    "en": "AI assistant requests",
+    "uk": "Запити до ШІ-асистента",
+    "cs": "Dotazy AI asistentovi",
+    "de": "Anfragen an den KI-Assistenten"
   },
   "ai:settings.title": {
     "ru": "Настройки AI",
@@ -117,6 +117,20 @@
     "uk": "Перевірити й підключити",
     "cs": "Ověřit a připojit",
     "de": "Prüfen und verbinden"
+  },
+  "ai:whatsapp.connectButton": {
+    "ru": "Подключить WhatsApp",
+    "en": "Connect WhatsApp",
+    "uk": "Підключити WhatsApp",
+    "cs": "Připojit WhatsApp",
+    "de": "WhatsApp verbinden"
+  },
+  "ai:whatsapp.disconnect": {
+    "ru": "Отключить",
+    "en": "Disconnect",
+    "uk": "Відключити",
+    "cs": "Odpojit",
+    "de": "Trennen"
   },
   "billing:method.portal.cta": {
     "ru": "Открыть у Stripe",
