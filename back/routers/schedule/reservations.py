@@ -224,7 +224,6 @@ async def attend_reservation(
     Скоуп занятия (404 чужая студия / 403 тренер на чужом) — get_scoped_lesson.
     Повторная отметка идемпотентна: статус уже attended — просто возвращаем запись.
     """
-    await lock_studio(db, ctx.studio_id)
     reservation = (await db.execute(
         select(Reservation).where(Reservation.id == reservation_id)
     )).scalar_one_or_none()
@@ -233,8 +232,23 @@ async def attend_reservation(
 
     lesson = await get_scoped_lesson(reservation.lesson_id, ctx, db)  # 404/403 по студии/роли
 
-    if reservation.status != "attended":
-        reservation.status = "attended"
+    # ПЕРЕХОД ДЕЛАЕТ ДОМЕН — он же берёт замок студии и знает, из каких
+    # состояний визит вообще возможен: отменённую бронь нельзя воскресить
+    # посещением, а неоплаченный `hold` нельзя объявить состоявшимся визитом
+    # (§4.2). Раньше эта строка стояла здесь голым присваиванием.
+    was_attended = reservation.status == "attended"
+    result = await booking.attend(db, studio_id=ctx.studio_id, reservation_id=reservation_id)
+    if result.outcome is booking.Outcome.ALREADY_CANCELLED:
+        raise HTTPException(status_code=409, detail="Запись отменена — отметить посещение нельзя")
+    if result.outcome is booking.Outcome.PAYMENT_REQUIRED:
+        raise HTTPException(
+            status_code=409,
+            detail="Бронь ждёт оплаты картой — отметить посещение можно после подтверждения оплаты",
+        )
+    if result.outcome is not booking.Outcome.OK:
+        raise HTTPException(status_code=404, detail="Запись не найдена")
+
+    if not was_attended:
         # last_visit_date нужен retention/рефералке (Эпик 3/4). Обновляем только при
         # переходе — повторная отметка ничего не трогает (идемпотентность).
         await db.execute(

@@ -21,6 +21,10 @@ _SITES = (
     "routers/booking/miniapp_lessons.py",
     "routers/booking/public.py",
     "routers/schedule/reservations.py",
+    # Переходы брони живут в домене, и статусы пишет он: журнал больше не
+    # присваивает `attended` сам (services/booking.attend). Без этого файла
+    # список сканируемых мест опустел бы, а проверка — молча обессмыслилась.
+    "services/booking.py",
 )
 
 

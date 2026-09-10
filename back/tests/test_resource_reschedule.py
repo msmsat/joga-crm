@@ -5,8 +5,10 @@ import pytest
 from fastapi import HTTPException
 
 import test_resource_booking as resource
+import test_resource_booking as base
 from database import async_session_maker
-from models import Lesson, Reservation
+from models import Client, Lesson, Reservation
+from services import booking, booking_quotes as quotes, resource_reschedule
 from services import resource_reschedule as moves
 
 enabled = resource.enabled
@@ -76,4 +78,50 @@ def test_conflict_keeps_original_interval_and_card_hold_cannot_move():
             assert error.value.detail["code"] == "PAYMENT_IN_PROGRESS"
         finally:
             await resource.cleanup(ids)
+    asyncio.run(run())
+
+
+def test_move_rejects_a_foreign_or_cancelled_reservation():
+    """AC-24: чужую бронь не переносят, отменённую — не воскрешают переносом.
+
+    Обе проверки на СЕРВЕРЕ: кнопку переноса интерфейс чужой брони и так не
+    покажет, но ручка зовётся по `reservation_id`, и перебор номеров не должен
+    давать ни доступа, ни подсказки о существовании строки.
+    """
+    async def run():
+        ids = await base.seed()
+        try:
+            created = await base.confirm(ids, await base.quote(ids))
+            async with async_session_maker() as db:
+                stranger = Client(studio_id=ids["studio"], name="Stranger")
+                db.add(stranger)
+                await db.commit()
+                stranger_id = stranger.id
+
+            outsider = quotes.Actor(ids["studio"], stranger_id)
+            async with async_session_maker() as db:
+                try:
+                    await resource_reschedule.create_quote(
+                        db, outsider, created["reservation_id"], base.request(ids), now=base.NOW)
+                    raise AssertionError("чужая бронь не должна переноситься")
+                except HTTPException as exc:
+                    assert exc.status_code == 404, exc.status_code
+
+            # Отменённая бронь: перенос обязан отказать, а не «оживить» её.
+            async with async_session_maker() as db:
+                result = await booking.cancel(db, studio_id=ids["studio"],
+                    reservation_id=created["reservation_id"], actor="test", enforce_policy=False)
+                assert result.outcome is booking.Outcome.OK
+                await db.commit()
+            async with async_session_maker() as db:
+                try:
+                    await resource_reschedule.create_quote(
+                        db, base.actor(ids), created["reservation_id"], base.request(ids), now=base.NOW)
+                    raise AssertionError("отменённая бронь не должна переноситься")
+                except HTTPException as exc:
+                    assert exc.status_code == 409, exc.status_code
+            async with async_session_maker() as db:
+                assert (await db.get(Reservation, created["reservation_id"])).status == "cancelled"
+        finally:
+            await base.cleanup(ids)
     asyncio.run(run())

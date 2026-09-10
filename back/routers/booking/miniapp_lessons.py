@@ -202,7 +202,12 @@ def _lesson_fields(
         trial_available=trial_available,
         # Пустой словарь схема развернёт в CoffeeState() с enabled=False —
         # ровно то, что нужно студии с выключенной механикой.
-        coffee=coffee or {},
+        #
+        # У resource кофе нет ПО СМЫСЛУ: «останьтесь с группой» обращено к
+        # группе, а в индивидуальной записи человек один. Гасим здесь, в
+        # источнике данных, а не в каждом экране: иначе очередной новый список
+        # снова покажет клиенту предложение выпить кофе после его массажа.
+        coffee=(coffee or {}) if lesson.booking_mode == "event" else {},
         service_id=lesson.service_id,
         teacher_id=lesson.teacher_id,
         branch_id=lesson.branch_id,
@@ -857,7 +862,12 @@ async def _set_coffee(db: AsyncSession, client: Client, lesson_id: int, value: b
         raise HTTPException(status_code=403, detail="Кофе после занятия выключен студией")
 
     reservation = await _own_active_reservation(db, client, lesson_id)
-    await _studio_lesson(db, client, lesson_id)
+    lesson = await _studio_lesson(db, client, lesson_id)
+    if lesson.booking_mode != "event":
+        # Групповая механика к индивидуальной записи не применяется. Скрыть
+        # кнопку в интерфейсе недостаточно: ручку зовут по ID, и без этой
+        # проверки в базе копился бы `coffee=true` у броней, где компании нет.
+        raise HTTPException(status_code=403, detail="Кофе после занятия — только для групповых занятий")
 
     if reservation.coffee != value:
         reservation.coffee = value

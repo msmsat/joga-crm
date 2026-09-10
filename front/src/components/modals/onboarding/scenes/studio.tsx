@@ -97,7 +97,9 @@ export function SwimmingScene() {
         <path d={WAVE} fill="none" stroke={MINT} strokeWidth="1.2" opacity="0.12" />
       </Move>
 
-      <Move at={[[170, 121]]}>
+      {/* Руки вращаются вокруг ПЛЕЧА (корпус кончается на 186), а не вокруг
+          середины спины — иначе рука растёт из лопаток. */}
+      <Move at={[[180, 121]]}>
         <Move dur={SWM} keys={STROKE} spin={[180, 240, 300, 360, 450, 540]}>
           <Morph far op={0.32} poses={[line([0, 0], [18, 11], [36, 5])]} />
           <circle cx="36" cy="5" r="3.6" fill={FAR} opacity="0.32" />
@@ -118,7 +120,7 @@ export function SwimmingScene() {
       <Head dur={SWM} keys={[0, 0.45, 0.62, 0.8, 1]}
         at={[[196, 116], [196, 116], [197, 112], [196, 116], [196, 116]]}
         tilt={[0, 0, -18, 0, 0]} />
-      <Move at={[[176, 118]]}>
+      <Move at={[[184, 118]]}>
         <Move dur={SWM} keys={STROKE} spin={[0, 60, 120, 180, 270, 360]}>
           <Morph poses={[line([0, 0], [18, 11], [36, 5])]} />
           <circle cx="36" cy="5" r="3.6" fill={NEAR} />
@@ -141,6 +143,8 @@ export function SwimmingScene() {
 // ── Массаж и SPA ─────────────────────────────────────────────────────────────
 // Тело почти неподвижно — это и есть сюжет: работает только дыхание. Ладони
 // проходят вдоль спины по очереди, с задержкой, как настоящее поглаживание.
+// Руки мастера — нейтральные, как и весь инвентарь: персиковый в наборе значит
+// «это тот самый человечек», и вторая пара персиковых рук ломала бы правило.
 const SPA = "5.4s";
 
 export function MassageScene() {
@@ -160,13 +164,14 @@ export function MassageScene() {
         "M176 136 Q146 129.5 114 131.5",
         "M176 136 Q146 132 114 133",
       ]} />
-      <Head at={[[88, 132]]} tilt={[-18]} face={-1} />
+      <Head at={[[94, 132]]} tilt={[-18]} face={-1} />
       <Morph poses={[line([114, 134], [126, 144], [142, 147])]} />
 
       <rect x="160" y="126" width="46" height="15" rx="6" fill={MINT} opacity="0.22" />
-      <ellipse cx="128" cy="127" rx="5.6" ry="3.4" style={{ fill: GEAR }} />
-      <ellipse cx="141" cy="125.6" rx="5.6" ry="3.4" style={{ fill: GEAR }} />
-      <ellipse cx="154" cy="126.4" rx="5.6" ry="3.4" style={{ fill: GEAR }} />
+      {/* Камни ЛЕЖАТ на спине: их низ (cy+ry) совпадает с верхней кромкой кости */}
+      <ellipse cx="128" cy="127.4" rx="5.6" ry="3.4" style={{ fill: GEAR }} />
+      <ellipse cx="141" cy="126.6" rx="5.6" ry="3.4" style={{ fill: GEAR }} />
+      <ellipse cx="154" cy="127.6" rx="5.6" ry="3.4" style={{ fill: GEAR }} />
 
       <Drift from={[128, 122]} to={[124, 96]} dur="5s" fade={[0, 0.32, 0]}>
         <path d="M0 0 q5 -6 0 -12 q-5 -6 0 -12" fill="none" stroke={MINT} strokeWidth="1.6" strokeLinecap="round" />
@@ -175,11 +180,13 @@ export function MassageScene() {
         <path d="M0 0 q-5 -6 0 -12 q5 -6 0 -12" fill="none" stroke={MINT} strokeWidth="1.6" strokeLinecap="round" />
       </Drift>
 
-      <Drift from={[170, 124]} to={[118, 120]} dur="4.4s" fade={[0, 0.85, 0]}>
-        <rect x="-6" y="-4" width="12" height="8" rx="3.6" fill={NEAR} />
+      {/* Ладони идут ПО спине: нижняя кромка ладони лежит на кости, а не парит
+          над ней. Дальняя — ниже ближней, поэтому видно, что рук две. */}
+      <Drift from={[170, 129]} to={[118, 127]} dur="4.4s" fade={[0, 0.9, 0]}>
+        <rect x="-6" y="-4" width="12" height="8" rx="3.6" style={{ fill: GEAR }} />
       </Drift>
-      <Drift from={[172, 132]} to={[120, 128]} dur="4.4s" delay="1.6s" fade={[0, 0.7, 0]}>
-        <rect x="-6" y="-4" width="12" height="8" rx="3.6" fill={FAR} />
+      <Drift from={[172, 136]} to={[120, 133]} dur="4.4s" delay="1.6s" fade={[0, 0.7, 0]}>
+        <rect x="-6" y="-4" width="12" height="8" rx="3.6" style={{ fill: GEAR }} />
       </Drift>
     </g>
   );

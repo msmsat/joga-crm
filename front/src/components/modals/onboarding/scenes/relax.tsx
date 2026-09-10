@@ -60,21 +60,13 @@ export function SaunaScene() {
   return (
     <g>
       <Floor />
-      {/* Полок: две доски одна над другой */}
-      <rect x="60" y="138" width="128" height="9" rx="3" style={{ fill: GEAR }} />
-      <rect x="60" y="158" width="128" height="7" rx="3" style={{ fill: GEAR_SOFT }} />
-      <Gear d="M70 147 L70 168 M178 147 L178 168" w={2.6} />
+      {/* Полок: две доски одна над другой, нижняя — подставка под стопы */}
+      <rect x="56" y="138" width="120" height="9" rx="3" style={{ fill: GEAR }} />
+      <rect x="56" y="158" width="120" height="7" rx="3" style={{ fill: GEAR_SOFT }} />
+      <Gear d="M68 147 L68 168 M166 147 L166 168" w={2.6} />
 
       <Morph far poses={[line([120, 138], [100, 148], [98, 162])]} />
-      <Morph far dur={SAU} keys={ST} poses={[
-        line([120, 114], [104, 126], [96, 138]),
-        line([120, 114], [104, 126], [96, 138]),
-        line([120, 114], [104, 126], [96, 138]),
-        line([120, 114], [104, 126], [96, 138]),
-        line([120, 114], [104, 126], [96, 138]),
-        line([120, 114], [104, 126], [96, 138]),
-        line([120, 114], [104, 126], [96, 138]),
-      ]} />
+      <Morph far poses={[line([120, 114], [104, 126], [96, 138])]} />
       <Morph poses={[line([120, 138], [96, 146], [94, 162])]} />
       <Morph w={6} dur={SAU} poses={[
         line([120, 138], [120, 110]),
@@ -83,36 +75,39 @@ export function SaunaScene() {
       ]} />
       <Head dur={SAU} at={[[120, 92], [120, 93], [120, 92]]} tilt={[0, 4, 0]} />
 
-      {/* Рука с ковшом: наклон и возврат */}
+      {/* Ковш на ДЛИННОЙ ручке: рука держит её у себя, чаша висит над камнями.
+          Иначе человек держал бы саму чашу, а поддавать было бы некуда — до
+          каменки полкадра. Наклон 22° опускает чашу ровно на камни. */}
       <Morph dur={SAU} keys={ST} poses={[
-        line([120, 114], [140, 118], [156, 112]),
-        line([120, 114], [144, 112], [164, 106]),
-        line([120, 114], [144, 112], [164, 106]),
-        line([120, 114], [144, 112], [164, 106]),
-        line([120, 114], [142, 115], [160, 110]),
-        line([120, 114], [140, 118], [156, 112]),
-        line([120, 114], [140, 118], [156, 112]),
+        line([120, 114], [140, 108], [154, 98]),
+        line([120, 114], [142, 106], [158, 100]),
+        line([120, 114], [142, 106], [158, 100]),
+        line([120, 114], [142, 106], [158, 100]),
+        line([120, 114], [141, 107], [156, 99]),
+        line([120, 114], [140, 108], [154, 98]),
+        line([120, 114], [140, 108], [154, 98]),
       ]} />
       <Move dur={SAU} keys={ST}
-        at={[[156, 112], [164, 106], [164, 106], [164, 106], [160, 110], [156, 112], [156, 112]]}
-        spin={[0, 0, 46, 0, 0, 0, 0]}>
-        <path d="M0 0 q10 0 10 8 q0 6 -10 6 q-10 0 -10 -6 q0 -8 10 -8 Z" style={{ fill: GEAR }} />
-        <Gear d="M-9 -1 L-22 -6" w={2.4} />
+        at={[[154, 98], [158, 100], [158, 100], [158, 100], [156, 99], [154, 98], [154, 98]]}
+        spin={[0, 0, 22, 0, 0, 0, 0]}>
+        <Gear d="M2 0 L24 3" w={2.4} />
+        <path d="M24 2 q10 0 10 7 q0 6 -9 6 q-10 0 -10 -6 q0 -7 9 -7 Z" style={{ fill: GEAR }} />
       </Move>
 
-      {/* Каменка */}
-      <rect x="196" y="120" width="46" height="34" rx="6" fill="none" strokeWidth="2.4" style={{ stroke: GEAR }} />
-      <ellipse cx="208" cy="126" rx="6" ry="3.4" style={{ fill: GEAR }} />
-      <ellipse cx="221" cy="124" rx="6" ry="3.4" style={{ fill: GEAR }} />
-      <ellipse cx="232" cy="127" rx="5.4" ry="3.2" style={{ fill: GEAR }} />
+      {/* Каменка стоит на полу, камни лежат в её устье */}
+      <rect x="180" y="118" width="48" height="50" rx="6" fill="none" strokeWidth="2.4" style={{ stroke: GEAR }} />
+      <Gear d="M192 148 L216 148" w={2.4} soft />
+      <ellipse cx="191" cy="116" rx="6" ry="3.4" style={{ fill: GEAR }} />
+      <ellipse cx="204" cy="114" rx="6" ry="3.4" style={{ fill: GEAR }} />
+      <ellipse cx="216" cy="117" rx="5.4" ry="3.2" style={{ fill: GEAR }} />
 
-      <Drift from={[210, 118]} to={[200, 62]} dur={SAU} fade={[0, 0, 0.42, 0]}>
+      <Drift from={[194, 112]} to={[186, 58]} dur={SAU} fade={[0, 0, 0.42, 0]}>
         <path d="M0 0 q6 -8 0 -16 q-6 -8 0 -16" fill="none" stroke={MINT} strokeWidth="1.8" strokeLinecap="round" />
       </Drift>
-      <Drift from={[228, 120]} to={[240, 66]} dur={SAU} fade={[0, 0, 0.34, 0]}>
+      <Drift from={[212, 113]} to={[222, 62]} dur={SAU} fade={[0, 0, 0.34, 0]}>
         <path d="M0 0 q-6 -8 0 -16 q6 -8 0 -16" fill="none" stroke={MINT} strokeWidth="1.6" strokeLinecap="round" />
       </Drift>
-      <Drift from={[220, 116]} to={[216, 58]} dur="5.6s" delay="1.4s" fade={[0, 0.2, 0]}>
+      <Drift from={[204, 110]} to={[200, 54]} dur="5.6s" delay="1.4s" fade={[0, 0.2, 0]}>
         <path d="M0 0 q5 -7 0 -14" fill="none" stroke={MINT} strokeWidth="1.4" strokeLinecap="round" />
       </Drift>
     </g>

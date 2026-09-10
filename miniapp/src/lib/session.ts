@@ -52,10 +52,20 @@ export const getSession = (): Session | null => read<Session | null>(KEY, null);
 /** Аккаунты устройства, активный первым. */
 export const getAccounts = (): Session[] => read<Session[]>(ACCOUNTS, []);
 
+/**
+ * Сессия сменилась — сообщаем подписчикам (BusinessTermsProvider слушает, чтобы
+ * не показать термины прошлой студии). `localStorage` этот модуль подменяет
+ * заглушкой и в Node (session.check.ts), а вот `window` там нет вовсе, поэтому
+ * событие отправляется только когда есть кому его услышать.
+ */
+function announceSessionChange() {
+  if (typeof window !== 'undefined') window.dispatchEvent(new Event('session-changed'));
+}
+
 /** Вход или переключение: сессия становится активной и поднимается в списке. */
 export function saveSession(session: Session) {
   localStorage.setItem(KEY, JSON.stringify(session));
-  window.dispatchEvent(new Event('session-changed'));
+  announceSessionChange();
   const id = accountId(session.token);
   writeAccounts([session, ...getAccounts().filter((a) => accountId(a.token) !== id)]);
 }
@@ -67,7 +77,7 @@ export function saveSession(session: Session) {
 export function clearSession() {
   const active = getSession();
   localStorage.removeItem(KEY);
-  window.dispatchEvent(new Event('session-changed'));
+  announceSessionChange();
   if (active) {
     const id = accountId(active.token);
     writeAccounts(getAccounts().filter((a) => accountId(a.token) !== id));

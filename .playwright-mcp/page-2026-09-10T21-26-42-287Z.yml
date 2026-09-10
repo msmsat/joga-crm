@@ -1,9 +1,0 @@
-- generic [active] [ref=f2e1]:
-  - figure "BeautyScene t=0" [ref=f2e2]
-  - figure "BeautyScene t=0.8" [ref=f2e43]
-  - figure "BeautyScene t=1.6" [ref=f2e84]
-  - figure "BeautyScene t=2.4" [ref=f2e125]
-  - figure "BeautyScene t=3.2" [ref=f2e166]
-  - figure "BeautyScene t=4" [ref=f2e207]
-  - figure "BeautyScene t=4.8" [ref=f2e248]
-  - figure "BeautyScene t=5.6" [ref=f2e289]

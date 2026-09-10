@@ -151,3 +151,26 @@ def test_batch_loader_filters_assignments_and_finds_long_legacy_interval(monkeyp
                 await db.commit()
             await fixtures._cleanup(ids)
     asyncio.run(run())
+
+
+def test_booking_window_limits_the_client_but_not_the_desk():
+    """§6.2 п.7: горизонт, advance и часы виджета — правила САМОСТОЯТЕЛЬНОЙ
+    записи клиента. У стойки запрет один — занятие уже прошло
+    (`booking_rules.assert_staff_bookable`).
+
+    Пока горизонт применялся ко всем, администратор не мог записать клиента
+    дальше `booking_window_days` (по умолчанию 7): availability отдавал пустой
+    список без всякой причины, и CRM выглядела сломанной.
+    """
+    data = snapshot()
+    data.rules = BookingRules(min_booking_advance_min=0, booking_window_days=7,
+                              widget_work_start="00:00", widget_work_end="00:00")
+    # Сегодня — за месяц до запрашиваемого дня: он заведомо за горизонтом.
+    far_now = datetime.combine(DAY - timedelta(days=30), datetime.min.time(), timezone.utc)
+
+    assert slots(data, now=far_now, client=True).slots == [], "клиенту дальше горизонта нельзя"
+    assert slots(data, now=far_now, client=False).slots, "стойке горизонт клиента не указ"
+
+    # Прошлое закрыто обоим: запись задним числом — испорченные данные.
+    past_now = datetime.combine(DAY + timedelta(days=1), datetime.min.time(), timezone.utc)
+    assert slots(data, now=past_now, client=False).slots == []

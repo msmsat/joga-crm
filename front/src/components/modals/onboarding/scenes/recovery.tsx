@@ -34,20 +34,25 @@ export function ManualTherapyScene() {
     <g>
       <Couch />
       <Prone dur={MAN} />
-      <Head at={[[88, 132]]} tilt={[-18]} face={-1} />
+      {/* Голова вплотную к плечам: на 88 между ней и корпусом оставался просвет
+          в десять пикселей — вдвое больше, чем у стоящей фигуры. */}
+      <Head at={[[94, 132]]} tilt={[-18]} face={-1} />
 
+      {/* Ладони ЛЕЖАТ на спине: низ ладони (cy+ry) совпадает с верхней кромкой
+          кости спины, а толчок вдавливает её на три пикселя. Висящие над телом
+          руки читались бы как пассы, а не как приём. */}
       <Move dur={MAN} keys={MNT} ease={SNAP}
-        at={[[150, 118], [150, 120], [150, 121], [150, 128], [150, 122], [150, 118], [150, 118]]}>
+        at={[[150, 123], [150, 124], [150, 124.5], [150, 127], [150, 125], [150, 123], [150, 123]]}>
         <ellipse cx="-7" cy="0" rx="8" ry="4.6" style={{ fill: GEAR }} />
         <ellipse cx="7" cy="2" rx="8" ry="4.6" style={{ fill: GEAR }} opacity="0.8" />
         <Gear d="M-9 -4 L-13 -14 M7 -2 L11 -12" w={3.4} soft />
       </Move>
 
       {/* Щелчок: две короткие искры, живущие только в момент толчка */}
-      <Drift from={[136, 126]} to={[126, 112]} dur={MAN} fade={[0, 0, 0.45, 0]}>
+      <Drift from={[138, 128]} to={[128, 114]} dur={MAN} fade={[0, 0, 0.45, 0]}>
         <path d="M-4 0 L4 0 M0 -4 L0 4" stroke={NEAR} strokeWidth="1.8" strokeLinecap="round" />
       </Drift>
-      <Drift from={[166, 126]} to={[178, 114]} dur={MAN} fade={[0, 0, 0.35, 0]}>
+      <Drift from={[164, 128]} to={[176, 116]} dur={MAN} fade={[0, 0, 0.35, 0]}>
         <path d="M-3 0 L3 0 M0 -3 L0 3" stroke={FAR} strokeWidth="1.6" strokeLinecap="round" />
       </Drift>
     </g>
@@ -65,14 +70,17 @@ export function OsteopathyScene() {
       <Couch />
       <Lying dur={OST} />
 
+      {/* Ладони рисуются ДО головы: они заходят под череп со стороны терапевта
+          (он сидит за головой, слева), а не лежат поверх лица. Запястья уходят
+          влево, за край кадра, — там его плечи. */}
       <Move dur={OST} at={[[0, 0], [0, -1.6], [0, 0]]}>
-        <Head at={[[100, 126]]} tilt={[-4]} face={-1} />
+        <ellipse cx="88" cy="130" rx="7.6" ry="4.4" style={{ fill: GEAR }} />
+        <ellipse cx="90" cy="139" rx="7.6" ry="4.4" style={{ fill: GEAR }} opacity="0.8" />
+        <Gear d="M81 128 L70 124 M83 137 L72 135" w={3.4} soft />
       </Move>
 
       <Move dur={OST} at={[[0, 0], [0, -1.6], [0, 0]]}>
-        <ellipse cx="92" cy="136" rx="7.6" ry="4.4" style={{ fill: GEAR }} />
-        <ellipse cx="104" cy="139" rx="7.6" ry="4.4" style={{ fill: GEAR }} opacity="0.8" />
-        <Gear d="M88 140 L78 150 M102 143 L94 154" w={3.4} soft />
+        <Head at={[[100, 126]]} tilt={[-4]} face={-1} />
       </Move>
 
       <circle cx="100" cy="126" r="26" fill="none" stroke={MINT} strokeWidth="1.2" opacity="0.22">
@@ -146,35 +154,41 @@ export function NutritionScene() {
   return (
     <g>
       <Floor />
-      <rect x="96" y="130" width="120" height="9" rx="4" style={{ fill: GEAR }} />
-      <Gear d="M112 139 L112 168 M200 139 L200 168" w={2.6} />
+      <rect x="88" y="130" width="88" height="9" rx="4" style={{ fill: GEAR }} />
+      <Gear d="M100 139 L100 168 M150 139 L150 168" w={2.6} />
 
-      <Morph far poses={[line([164, 126], [186, 134], [188, 158])]} />
-      <Morph far poses={[line([164, 102], [150, 118], [136, 126])]} />
-      <Morph poses={[line([164, 126], [188, 131], [190, 158])]} />
+      {/* Стул: сиденье на высоте таза (138), стопы достают до пола. Без него
+          человек сидел бы на воздухе, а столешница шла бы сквозь него. */}
+      <rect x="182" y="138" width="40" height="7" rx="3" style={{ fill: GEAR_SOFT }} />
+      <rect x="216" y="108" width="6" height="32" rx="3" style={{ fill: GEAR_SOFT }} />
+      <Gear d="M190 145 L190 168 M214 145 L214 168" w={2.6} soft />
+
+      <Morph far poses={[line([196, 138], [180, 145], [178, 166], [168, 168])]} />
+      <Morph far poses={[line([194, 112], [180, 126], [170, 136])]} />
+      <Morph poses={[line([196, 138], [176, 144], [174, 166], [164, 168])]} />
       <Morph w={6} dur={NUT} poses={[
-        line([164, 126], [164, 98]),
-        line([164, 127], [164, 99]),
-        line([164, 126], [164, 98]),
+        line([196, 138], [194, 110]),
+        line([196, 139], [194, 111]),
+        line([196, 138], [194, 110]),
       ]} />
-      <Head dur={NUT} at={[[164, 80], [164, 81], [163, 80], [164, 80]]} tilt={[0, 6, -4, 0]} face={-1} />
+      <Head dur={NUT} at={[[192, 92], [192, 93], [191, 92], [192, 92]]} tilt={[0, 6, -4, 0]} face={-1} />
       <Morph dur={NUT} poses={[
-        line([164, 102], [146, 116], [132, 124]),
-        line([164, 103], [144, 114], [128, 120]),
-        line([164, 102], [146, 116], [132, 124]),
+        line([194, 112], [176, 124], [160, 130]),
+        line([194, 113], [174, 122], [156, 128]),
+        line([194, 112], [176, 124], [160, 130]),
       ]} />
 
       {/* Тарелка сверху: сектор дорисовывается и остаётся — это и есть план */}
-      <ellipse cx="122" cy="126" rx="20" ry="7" style={{ fill: "rgb(var(--ink))", fillOpacity: 0.05 }} />
-      <ellipse cx="122" cy="126" rx="20" ry="7" fill="none" strokeWidth="1.6" style={{ stroke: GEAR }} />
-      <path d="M122 126 L142 126 A20 7 0 0 1 122 133 Z" fill={NEAR} opacity="0.45">
+      <ellipse cx="136" cy="128" rx="20" ry="7" style={{ fill: "rgb(var(--ink))", fillOpacity: 0.05 }} />
+      <ellipse cx="136" cy="128" rx="20" ry="7" fill="none" strokeWidth="1.6" style={{ stroke: GEAR }} />
+      <path d="M136 128 L156 128 A20 7 0 0 1 136 135 Z" fill={NEAR} opacity="0.45">
         <animate attributeName="opacity" values="0;0.45;0.45;0" keyTimes="0;0.3;0.85;1" dur={NUT} repeatCount="indefinite" />
       </path>
-      <path d="M122 126 L102 126 A20 7 0 0 0 116 132.6 Z" fill={MINT} opacity="0.5">
+      <path d="M136 128 L116 128 A20 7 0 0 0 130 134.6 Z" fill={MINT} opacity="0.5">
         <animate attributeName="opacity" values="0;0.5;0.5;0" keyTimes="0;0.45;0.85;1" dur={NUT} repeatCount="indefinite" />
       </path>
 
-      <Drift from={[122, 120]} to={[116, 100]} dur="5.4s" fade={[0, 0.3, 0]}>
+      <Drift from={[136, 122]} to={[130, 102]} dur="5.4s" fade={[0, 0.3, 0]}>
         <path d="M0 0 q4 -5 0 -10" fill="none" stroke={GEAR_SOFT} strokeWidth="1.6" strokeLinecap="round" />
       </Drift>
     </g>

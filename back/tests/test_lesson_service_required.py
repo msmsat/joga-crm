@@ -52,12 +52,17 @@ class _Lesson:
 
 
 class _Service:
-    def __init__(self, id=1, studio_id=1, name="Пилатес", color="#F9A08B", price=1500):
+    def __init__(self, id=1, studio_id=1, name="Пилатес", color="#F9A08B", price=1500,
+                 booking_mode="event"):
         self.id = id
         self.studio_id = studio_id
         self.name = name
         self.color = color
         self.price = price
+        # HB-22: механика услуги есть на модели и проверяется при создании и
+        # смене услуги занятия (resource нельзя поставить событием) — фейк
+        # обязан её нести, иначе тест доказывает поведение несуществующей строки.
+        self.booking_mode = booking_mode
 
 
 class _Teacher:

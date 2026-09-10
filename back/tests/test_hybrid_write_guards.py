@@ -6,7 +6,7 @@ from sqlalchemy import select
 
 import test_booking_domain as seed
 from database import async_session_maker
-from models import Lesson, Reservation, Studio
+from models import Client, Lesson, Reservation, Studio
 from services import booking, booking_payment, schedule_guard
 
 
@@ -183,6 +183,95 @@ def test_lesson_list_reports_real_mode_and_version_not_schema_defaults():
             # Соседнее событие остаётся событием — фильтр не «красит всё подряд».
             other = next(r for r in rows if r.id != ids["big"])
             assert other.booking_mode == "event", other.booking_mode
+        finally:
+            await seed._cleanup(ids)
+    asyncio.run(run())
+
+
+def test_group_only_features_are_refused_for_an_individual_booking():
+    """Групповое к индивидуальной записи не применяется — НА СЕРВЕРЕ.
+
+    «Останьтесь на кофе с группой» у записи, где человек один, — не косметика
+    интерфейса: ручка зовётся по ID, и пока отказа не было, в базе копился бы
+    `coffee=true` у броней без компании. Скрытая кнопка это не закрывает.
+    """
+    from fastapi import HTTPException
+
+    import routers.booking.miniapp_lessons as miniapp
+
+    async def run():
+        ids = await seed._seed()
+        try:
+            async with async_session_maker() as db:
+                await db.execute(Lesson.__table__.update().where(Lesson.id == ids["big"]).values(
+                    booking_mode="resource", total_spots=1, branch_id=ids["branch"]))
+                row = Reservation(lesson_id=ids["big"], client_id=ids["katya"],
+                                  spot_number=1, status="active")
+                db.add(row)
+                await db.commit()
+                client = await db.get(Client, ids["katya"])
+
+            async with async_session_maker() as db:
+                try:
+                    await miniapp._set_coffee(db, client, ids["big"], True)
+                    raise AssertionError("кофе на индивидуальной записи должен быть отклонён")
+                except HTTPException as exc:
+                    assert exc.status_code == 403, exc.status_code
+
+            # Состояние не изменилось: отказ пришёл ДО записи.
+            async with async_session_maker() as db:
+                assert (await db.get(Reservation, row.id)).coffee is False
+        finally:
+            await seed._cleanup(ids)
+    asyncio.run(run())
+
+
+def test_attendance_cannot_resurrect_a_cancelled_booking_or_skip_payment():
+    """§4.2: `hold` нельзя отметить посещённым до подтверждённой оплаты,
+    а отменённую бронь нельзя воскресить визитом.
+
+    Отметка посещения была ЕДИНСТВЕННЫМ переходом брони без правил домена —
+    роутер журнала присваивал `attended` из любого состояния. Обе дыры
+    достижимы: `hold` — прямо кнопкой «Отметить посещение», `cancelled` —
+    прямым вызовом ручки.
+    """
+    async def run():
+        ids = await seed._seed()
+        try:
+            async with async_session_maker() as db:
+                held = Reservation(lesson_id=ids["big"], client_id=ids["katya"],
+                                   spot_number=1, status="hold")
+                gone = Reservation(lesson_id=ids["big"], client_id=ids["oleg"],
+                                   spot_number=2, status="cancelled")
+                db.add_all([held, gone])
+                await db.commit()
+                held_id, gone_id = held.id, gone.id
+
+            async with async_session_maker() as db:
+                paying = await booking.attend(db, studio_id=ids["studio"], reservation_id=held_id)
+                dropped = await booking.attend(db, studio_id=ids["studio"], reservation_id=gone_id)
+                await db.commit()
+            assert paying.outcome is booking.Outcome.PAYMENT_REQUIRED, paying.outcome
+            assert dropped.outcome is booking.Outcome.ALREADY_CANCELLED, dropped.outcome
+
+            async with async_session_maker() as db:
+                assert (await db.get(Reservation, held_id)).status == "hold"
+                assert (await db.get(Reservation, gone_id)).status == "cancelled"
+
+            # Обычная бронь отмечается, и повтор безопасен.
+            async with async_session_maker() as db:
+                live = Reservation(lesson_id=ids["big"], client_id=ids["katya"],
+                                   spot_number=3, status="active")
+                db.add(live)
+                await db.commit()
+                live_id = live.id
+            async with async_session_maker() as db:
+                first = await booking.attend(db, studio_id=ids["studio"], reservation_id=live_id)
+                second = await booking.attend(db, studio_id=ids["studio"], reservation_id=live_id)
+                await db.commit()
+            assert first.outcome is booking.Outcome.OK and second.outcome is booking.Outcome.OK
+            async with async_session_maker() as db:
+                assert (await db.get(Reservation, live_id)).status == "attended"
         finally:
             await seed._cleanup(ids)
     asyncio.run(run())

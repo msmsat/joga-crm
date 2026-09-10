@@ -6,6 +6,11 @@ from datetime import date, datetime, time, timedelta, timezone
 from services import booking_time, resource_hours, studio_time
 from services.booking_rules import BookingRules, within_widget_hours
 
+# Потолок административной выдачи слотов. Не бизнес-правило студии, а предел
+# здравого смысла: расписание на два года вперёд никто не ведёт, а без всякой
+# границы запрос «покажи свободное время» на далёкую дату считался бы всерьёз.
+MAX_STAFF_HORIZON_DAYS = 400
+
 
 @dataclass
 class AvailabilityData:
@@ -97,7 +102,14 @@ def generate(data: AvailabilityData, *, date_from: date, date_to: date,
         return Availability([], "no_eligible_staff")
     instant_now = now.astimezone(timezone.utc).replace(tzinfo=None)
     local_now = studio_time.to_local(now, studio).replace(tzinfo=None)
-    horizon = local_now + timedelta(days=rules.booking_window_days)
+    # Горизонт, минимальный advance и часы виджета — правила САМОСТОЯТЕЛЬНОЙ
+    # записи клиента (§6.2 п.7), и к стойке они не относятся: у студии
+    # единственный запрет — занятие уже прошло (booking_rules.
+    # assert_staff_bookable). Пока горизонт применялся ко всем, администратор
+    # не мог записать клиента дальше `booking_window_days` (по умолчанию 7):
+    # availability просто отдавал пустой список без объяснения.
+    horizon = (local_now + timedelta(days=rules.booking_window_days)
+               if client else local_now + timedelta(days=MAX_STAFF_HORIZON_DAYS))
     starts = defaultdict(list)
     incomplete = False
     for teacher_id in sorted(data.teacher_ids):

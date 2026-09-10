@@ -40,19 +40,23 @@ export function BarbershopScene() {
 
       <Head dur="4.4s" at={[[146, 90], [146, 90], [147, 91], [146, 90]]} tilt={[0, -5, 3, 0]} />
 
+      {/* Машинку держат ЛЕЖА: корпус уходит вправо, к руке мастера, а ножевой
+          блок (трапеция) развёрнут к виску и всё время лежит на линии волос —
+          поворот на 78° и есть эта посадка. Иначе получилась бы железка,
+          вибрирующая рядом с головой. */}
       <Move dur="4.4s" keys={[0, 0.42, 0.5, 0.92, 1]}
-        at={[[166, 100], [164, 82], [164, 82], [166, 100], [166, 100]]}
-        spin={[24, 14, 14, 24, 24]}>
+        at={[[169, 96], [170, 81], [170, 81], [169, 96], [169, 96]]}
+        spin={[78, 72, 72, 78, 78]}>
         <Move dur="0.16s" ease={HOLD} at={[[0, 0], [0.6, -0.6], [0, 0]]}>
           <rect x="-5" y="-10" width="10" height="19" rx="4" style={{ fill: GEAR }} />
           <path d="M-6 9 L6 9 L4 14 L-4 14 Z" style={{ fill: GEAR }} />
         </Move>
       </Move>
 
-      <Drift from={[158, 96]} to={[152, 146]} dur="2.8s" fade={[0, 0.5, 0]}>
+      <Drift from={[156, 94]} to={[150, 146]} dur="2.8s" fade={[0, 0.5, 0]}>
         <path d="M0 0 q-3.5 4 0 8" fill="none" stroke={FAR} strokeWidth="1.5" strokeLinecap="round" />
       </Drift>
-      <Drift from={[164, 90]} to={[172, 148]} dur="3.4s" delay="1.4s" fade={[0, 0.4, 0]}>
+      <Drift from={[157, 86]} to={[166, 148]} dur="3.4s" delay="1.4s" fade={[0, 0.4, 0]}>
         <path d="M0 0 q3 4 0 8" fill="none" stroke={FAR} strokeWidth="1.4" strokeLinecap="round" />
       </Drift>
     </g>
@@ -85,17 +89,20 @@ export function MakeupScene() {
       <circle cx="204" cy="128" r="4" fill={FAR} opacity="0.45" />
       <circle cx="214" cy="128" r="4" fill={MINT} opacity="0.4" />
 
+      {/* Кисть собрана вдоль оси: ворс в точке (0,0), ручка уходит по +x к руке
+          мастера. Поэтому точка Move — это КОНЧИК ворса, и он ведёт по скуле
+          (радиус головы 12, кончик на 11.5 — касание, а не полёт рядом). */}
       <Move dur={MUP} keys={MT} ease={SNAP}
-        at={[[164, 84], [166, 98], [164, 84], [168, 96], [166, 84], [170, 94], [164, 84], [164, 84]]}
-        spin={[-38, -26, -38, -24, -38, -22, -38, -38]}>
-        <Gear d="M-6 8 L-18 22" w={3} />
-        <path d="M0 0 q6 4 2 9 q-4 5 -8 -1 Z" style={{ fill: NEAR }} opacity="0.85" />
+        at={[[156, 85], [156, 96], [156, 85], [157, 95], [155, 85], [157, 94], [156, 85], [156, 85]]}
+        spin={[-34, -26, -34, -24, -34, -22, -34, -34]}>
+        <path d="M0 0 q4.5 -3.2 9 -1.2 q-4.5 4.2 -9 1.2 Z" style={{ fill: NEAR }} opacity="0.85" />
+        <Gear d="M8 -0.8 L22 -2.4" w={3} />
       </Move>
 
-      <Drift from={[160, 92]} to={[166, 74]} dur="3.6s" fade={[0, 0.3, 0]}>
+      <Drift from={[158, 90]} to={[166, 72]} dur="3.6s" fade={[0, 0.3, 0]}>
         <circle r="2.4" fill={FAR} />
       </Drift>
-      <Drift from={[168, 96]} to={[176, 80]} dur="4.2s" delay="1.5s" fade={[0, 0.24, 0]}>
+      <Drift from={[157, 95]} to={[168, 80]} dur="4.2s" delay="1.5s" fade={[0, 0.24, 0]}>
         <circle r="1.8" fill={NEAR} />
       </Drift>
     </g>
@@ -112,35 +119,44 @@ export function NailsScene() {
   return (
     <g>
       <Floor />
-      <rect x="86" y="132" width="130" height="9" rx="4" style={{ fill: GEAR }} />
-      <Gear d="M100 141 L100 168 M204 141 L204 168" w={2.6} />
 
-      {/* Лампа над столом */}
-      <Gear d="M196 132 L196 76 Q196 66 182 66" w={2.4} soft />
-      <path d="M158 62 L188 62 L182 74 L164 74 Z" style={{ fill: GEAR }} />
-      <ellipse cx="173" cy="98" rx="26" ry="18" fill={NEAR} opacity="0.09" />
+      {/* Табурет: клиент на нём сидит, стопы на полу. Стол начинается за
+          коленями — иначе столешница прошла бы сквозь сидящего насквозь. */}
+      <rect x="88" y="138" width="42" height="7" rx="3" style={{ fill: GEAR_SOFT }} />
+      <Gear d="M109 145 L109 168 M98 168 L120 168" w={2.6} soft />
 
-      <Morph far poses={[line([116, 128], [96, 136], [94, 158])]} />
-      <Morph poses={[line([116, 128], [94, 133], [92, 158])]} />
-      <Morph w={6} poses={[line([116, 128], [114, 102])]} />
-      <Head at={[[112, 84]]} tilt={[16]} />
-      <Morph far poses={[line([114, 106], [128, 122], [146, 128])]} />
+      <rect x="140" y="130" width="94" height="9" rx="4" style={{ fill: GEAR }} />
+      <Gear d="M152 139 L152 168 M224 139 L224 168" w={2.6} />
+
+      {/* Лампа: свет доходит до столешницы и ложится пятном под кистью —
+          иначе он висел бы облаком в воздухе, ни на чём. */}
+      <Gear d="M226 130 L226 74 Q226 62 214 62 L168 62" w={2.4} soft />
+      <path d="M154 56 L182 56 L176 70 L160 70 Z" style={{ fill: GEAR }} />
+      <path d="M160 70 L144 130 L184 130 L176 70 Z" fill={NEAR} opacity="0.05" />
+      <ellipse cx="164" cy="130" rx="24" ry="4.5" fill={NEAR} opacity="0.1" />
+
+      <Morph far poses={[line([110, 138], [134, 143], [136, 166], [146, 168])]} />
+      <Morph poses={[line([110, 138], [130, 144], [132, 166], [142, 168])]} />
+      <Morph w={6} poses={[line([110, 138], [112, 110])]} />
+      <Head at={[[110, 92]]} tilt={[14]} />
+      <Morph far poses={[line([112, 114], [122, 128], [134, 138])]} />
 
       {/* Вытянутая рука и ладонь на столе */}
-      <Morph poses={[line([114, 106], [134, 118], [156, 128])]} />
-      <Morph w={3.4} poses={[line([156, 128], [168, 126])]} />
-      <Morph w={3.4} poses={[line([156, 128], [169, 129])]} />
-      <Morph w={3.4} poses={[line([156, 128], [168, 132])]} />
-      <Morph w={3.4} poses={[line([156, 129], [165, 135])]} />
+      <Morph poses={[line([112, 112], [130, 122], [152, 128])]} />
+      <Morph w={2.8} poses={[line([154, 127], [168, 123])]} />
+      <Morph w={2.8} poses={[line([154, 128], [169, 127])]} />
+      <Morph w={2.8} poses={[line([154, 129], [168, 131])]} />
+      <Morph w={2.8} poses={[line([154, 130], [164, 134])]} />
 
+      {/* Пилка: кончик у ногтя, ручка уходит вверх-вправо — туда, где рука мастера */}
       <Move dur={NAI} keys={[0, 0.3, 0.42, 0.72, 0.84, 1]}
-        at={[[178, 118], [166, 124], [178, 116], [167, 126], [178, 118], [178, 118]]}
-        spin={[42, 34, 42, 32, 42, 42]}>
-        <Gear d="M4 6 L16 20" w={2.6} />
-        <path d="M0 0 q-4 3 -1 7 q3 4 5 -1 Z" style={{ fill: NEAR }} />
+        at={[[170, 124], [164, 126], [170, 124], [165, 127], [170, 124], [170, 124]]}
+        spin={[-28, -24, -28, -22, -28, -28]}>
+        <path d="M0 0 q4 -2.6 8.5 -1 q-4 3.6 -8.5 1 Z" style={{ fill: NEAR }} />
+        <Gear d="M7.5 -0.8 L20 -3" w={2.6} />
       </Move>
 
-      <Drift from={[168, 120]} to={[172, 106]} dur="3.8s" fade={[0, 0.34, 0]}>
+      <Drift from={[169, 120]} to={[175, 106]} dur="3.8s" fade={[0, 0.34, 0]}>
         <path d="M0 -5 L1.4 -1.4 L5 0 L1.4 1.4 L0 5 L-1.4 1.4 L-5 0 L-1.4 -1.4 Z" fill={FAR} />
       </Drift>
     </g>
@@ -150,6 +166,8 @@ export function NailsScene() {
 // ── Брови и ресницы: пинцет ──────────────────────────────────────────────────
 // Пинцет подходит, замирает и делает короткий щипок — по паузе перед движением
 // и узнаётся точная работа. Голова при этом не шевелится вовсе.
+const BRW = [0, 0.34, 0.44, 0.5, 0.58, 0.9, 1];
+
 export function BrowsLashesScene() {
   return (
     <g>
@@ -157,15 +175,20 @@ export function BrowsLashesScene() {
       <Lying />
       <Head at={[[100, 126]]} tilt={[-4]} face={-1} />
 
-      <Move dur="3.8s" keys={[0, 0.34, 0.44, 0.5, 0.58, 0.9, 1]}
-        at={[[104, 100], [102, 114], [102, 116], [102, 112], [102, 115], [104, 100], [104, 100]]}
-        spin={[-24, -18, -18, -18, -18, -24, -24]} ease={SNAP}>
+      {/* Кончики браншей вынесены на 16 px от точки Move, поэтому опорной точкой
+          считается ИМЕННО кончик: он останавливается на брови (верх головы, r=12),
+          а не проваливается в череп. На щипке правая бранша доворачивается к левой
+          — смыкание и есть весь приём. */}
+      <Move dur="3.8s" keys={BRW} ease={SNAP} spin={[-14]}
+        at={[[91, 95], [91, 99], [91, 100], [91, 100], [91, 97], [91, 95], [91, 95]]}>
         <Gear d="M0 0 L-3 16" w={2.2} />
-        <Gear d="M0 0 L3 16" w={2.2} />
+        <Move dur="3.8s" keys={BRW} ease={SNAP} spin={[0, 0, 0, 14, 14, 0, 0]}>
+          <Gear d="M0 0 L3 16" w={2.2} />
+        </Move>
         <Gear d="M-1 -2 L1 -2" w={3.4} />
       </Move>
 
-      <Drift from={[112, 112]} to={[122, 132]} dur="3.8s" fade={[0, 0.5, 0]}>
+      <Drift from={[94, 110]} to={[104, 92]} dur="3.8s" fade={[0, 0.5, 0]}>
         <path d="M0 0 q4 3 6 8" fill="none" stroke={FAR} strokeWidth="1.4" strokeLinecap="round" />
       </Drift>
     </g>
@@ -181,18 +204,22 @@ export function CosmetologyScene() {
       <Couch />
       <Lying dur="6.2s" />
       <Head at={[[100, 126]]} tilt={[-4]} face={-1} />
-      <path d="M88 116 Q100 110 113 117 L112 134 Q99 139 89 133 Z" fill={MINT} opacity="0.22" />
-      <path d="M88 116 Q100 110 113 117 L112 134 Q99 139 89 133 Z" fill="none" strokeWidth="1.2" style={{ stroke: GEAR_SOFT }} />
+      {/* Маска лежит на ЛИЦЕ — это левая половина головы (человек смотрит влево),
+          а не вся голова: закрасить круг целиком значило бы перекрасить человека. */}
+      <path d="M100 114 A12 12 0 0 0 100 138 Z" fill={MINT} opacity="0.3" />
+      <path d="M100 114 A12 12 0 0 0 100 138 Z" fill="none" strokeWidth="1.2" style={{ stroke: GEAR_SOFT }} />
 
-      <Gear d="M148 96 Q126 94 112 102" w={2.4} soft />
-      <Move at={[[148, 96]]}>
-        <rect x="-4" y="-10" width="9" height="20" rx="4" style={{ fill: GEAR }} />
+      {/* Вапоризатор стоит на полу и держит сопло над лицом на своём кронштейне:
+          раструб развёрнут К ЛИЦУ, поэтому пар идёт от него, а не сам по себе. */}
+      <Gear d="M48 168 L48 96 Q48 86 60 86 L74 88" w={2.4} soft />
+      <Move at={[[78, 96]]} spin={[-32]}>
+        <rect x="-4.5" y="-10" width="9" height="20" rx="4" style={{ fill: GEAR }} />
       </Move>
 
-      <Drift from={[110, 104]} to={[96, 82]} dur="5s" fade={[0, 0.34, 0]}>
+      <Drift from={[88, 108]} to={[78, 80]} dur="5s" fade={[0, 0.34, 0]}>
         <path d="M0 0 q5 -6 0 -12 q-5 -6 0 -12" fill="none" stroke={MINT} strokeWidth="1.6" strokeLinecap="round" />
       </Drift>
-      <Drift from={[118, 106]} to={[112, 80]} dur="6.4s" delay="2s" fade={[0, 0.28, 0]}>
+      <Drift from={[96, 106]} to={[94, 78]} dur="6.4s" delay="2s" fade={[0, 0.28, 0]}>
         <path d="M0 0 q-5 -6 0 -12 q5 -6 0 -12" fill="none" stroke={MINT} strokeWidth="1.6" strokeLinecap="round" />
       </Drift>
     </g>
@@ -206,6 +233,7 @@ const EPI = "4.6s";
 const ET = [0, 0.42, 0.62, 0.68, 0.74, 0.88, 1];
 
 export function HairRemovalScene() {
+  const still = useStill();
   return (
     <g>
       <Couch />
@@ -234,13 +262,21 @@ export function HairRemovalScene() {
       <Head at={[[100, 126]]} tilt={[-4]} face={-1} />
       <Morph poses={[line([120, 131], [138, 123], [156, 128])]} />
 
+      {/* Полоска лежит ВДОЛЬ голени (наклон -20° — это её собственный угол), а не
+          поперёк воздуха рядом. После рывка она гаснет и возвращается уже невидимой:
+          иначе на возврате видно, как она едет обратно на ногу. */}
       <Move dur={EPI} keys={ET} ease={SNAP}
-        at={[[206, 122], [214, 126], [214, 126], [216, 108], [220, 92], [206, 122], [206, 122]]}
-        spin={[-8, -8, -8, 18, 42, -8, -8]}>
-        <rect x="-11" y="-4" width="22" height="8" rx="3" fill={NEAR} opacity="0.8" />
+        at={[[215, 126], [215, 126], [215, 126], [219, 108], [226, 90], [215, 126], [215, 126]]}
+        spin={[-20, -20, -20, 4, 34, -20, -20]}>
+        <rect x="-11" y="-4" width="22" height="8" rx="3" fill={NEAR} opacity="0.8">
+          {!still && (
+            <animate attributeName="opacity" values="0.8;0.8;0.8;0.8;0;0;0.8;0.8"
+              keyTimes="0;0.62;0.68;0.74;0.8;0.88;0.94;1" dur={EPI} repeatCount="indefinite" />
+          )}
+        </rect>
       </Move>
 
-      <Drift from={[218, 110]} to={[228, 92]} dur="4.6s" fade={[0, 0.4, 0]}>
+      <Drift from={[220, 104]} to={[230, 88]} dur="4.6s" fade={[0, 0.4, 0]}>
         <path d="M-4 0 L4 0 M0 -4 L0 4" stroke={FAR} strokeWidth="1.6" strokeLinecap="round" />
       </Drift>
     </g>
@@ -252,7 +288,10 @@ export function HairRemovalScene() {
 // ноль синхронно с проходом. Это единственная сцена, где остаётся след, — в ней
 // весь смысл ремесла.
 const TAT = "5.2s";
-const TATL = 46;
+// Длина линии, а не «с запасом»: dashoffset доходит до нуля ровно тогда, когда
+// машинка добирается до конца предплечья. С произвольным числом рисунок
+// дорисовывался бы раньше, чем инструмент останавливается.
+const TATL = 25;
 
 export function TattooScene() {
   const still = useStill();
@@ -260,8 +299,9 @@ export function TattooScene() {
     <g>
       <Floor />
       <Chair />
-      <rect x="86" y="124" width="58" height="9" rx="4" style={{ fill: GEAR }} />
-      <Gear d="M112 133 L112 168" w={2.6} />
+      {/* Подставка кончается ДО корпуса: длиннее — и она резала бы сидящего пополам */}
+      <rect x="86" y="124" width="48" height="9" rx="4" style={{ fill: GEAR }} />
+      <Gear d="M100 133 L100 168" w={2.6} />
 
       <Morph far poses={[line([136, 141], [164, 145], [166, 164], [176, 166])]} />
       <Morph far poses={[line([139, 111], [136, 127], [146, 136])]} />
@@ -269,11 +309,14 @@ export function TattooScene() {
       <Morph w={6} poses={[line([140, 138], [142, 108])]} />
       <Head at={[[146, 90]]} tilt={[-12]} face={-1} />
 
-      {/* Предплечье на подставке — рабочая поверхность сцены */}
-      <Morph poses={[line([142, 112], [124, 116], [98, 116])]} />
+      {/* Предплечье ЛЕЖИТ на подставке (её верх — 124, кость идёт по 120) */}
+      <Morph poses={[line([142, 112], [122, 119], [96, 120])]} />
 
+      {/* Линия ложится НА кожу, поэтому она тёмная: персиковым по персиковому
+          свежая работа была бы не видна вовсе. */}
       <path
-        d="M100 112 Q113 106 126 112" fill="none" stroke={NEAR} strokeWidth="2.4" strokeLinecap="round"
+        d="M102 120 Q114 116 126 120" fill="none" strokeWidth="2.4" strokeLinecap="round"
+        style={{ stroke: "rgb(var(--ink))" }} opacity="0.45"
         strokeDasharray={TATL} strokeDashoffset={still ? TATL * 0.35 : TATL}
       >
         {!still && (
@@ -284,7 +327,7 @@ export function TattooScene() {
       </path>
 
       <Move dur={TAT} keys={[0, 0.72, 0.88, 1]}
-        at={[[100, 100], [126, 100], [126, 100], [100, 100]]}
+        at={[[102, 107], [126, 107], [126, 107], [102, 107]]}
         spin={[16, -16, -16, 16]}>
         <Move dur="0.14s" ease={HOLD} at={[[0, 0], [0.6, 0.4], [0, 0]]}>
           <rect x="-5" y="-16" width="10" height="18" rx="4" style={{ fill: GEAR }} />

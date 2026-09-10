@@ -10,10 +10,12 @@ export function BeautyScene() {
     <g>
       <Floor />
       <rect x="200" y="38" width="60" height="112" rx="30" strokeWidth="2.2" style={{ fill: "rgb(var(--ink))", fillOpacity: 0.03, stroke: GEAR_SOFT }} />
+      {/* Отражение — тот же силуэт, отражённый относительно клиента: x' = 376 - x.
+          Поэтому в зеркале сидит человек с пеньюаром, а не абстрактная фигура. */}
       <g opacity="0.18">
-        <Head at={[[230, 84]]} face={-1} />
-        <Morph poses={[line([230, 102], [230, 126])]} w={6} />
-        <Morph poses={[line([216, 128], [244, 128])]} w={4} />
+        <Morph poses={[line([236, 138], [234, 108])]} w={6} />
+        <path d="M240 108 Q230 104 220 108 L212 144 Q230 148 248 144 Z" fill={MINT} opacity="0.7" />
+        <Head at={[[230, 90]]} face={-1} />
       </g>
 
       <rect x="118" y="100" width="11" height="44" rx="5" style={{ fill: GEAR_SOFT }} />
@@ -31,24 +33,29 @@ export function BeautyScene() {
 
       <Head dur="5.6s" at={[[146, 90], [146, 90], [147, 91], [146, 90], [146, 90]]} tilt={[0, -4, 0, 4, 0]} />
 
+      {/* Ножницы: КОЛЬЦА со стороны мастера (справа), лезвия смотрят в волосы.
+          Шарнир идёт по дуге в 24 px от центра головы, а лезвия длиной 13 —
+          значит их концы всё время лежат ровно на линии волос, а не режут
+          воздух рядом. Поворот на каждой станции доворачивает лезвия к голове. */}
       <Move dur="5.6s"
-        at={[[168, 82], [173, 91], [167, 100], [161, 87], [168, 82]]}
-        spin={[-8, 2, 10, -4, -8]}>
-        <circle cx="-7.5" cy="-4.6" r="3.4" fill="none" strokeWidth="1.8" style={{ stroke: GEAR }} />
-        <path d="M-4.5 -3.4 L13 -4.6" strokeWidth="2" strokeLinecap="round" style={{ fill: "none", stroke: GEAR }} />
-        <Move dur="0.9s" spin={[0, -15, 0]}>
-          <circle cx="-7.5" cy="4.6" r="3.4" fill="none" strokeWidth="1.8" style={{ stroke: GEAR }} />
-          <path d="M-4.5 3.4 L13 4.6" strokeWidth="2" strokeLinecap="round" style={{ fill: "none", stroke: GEAR }} />
+        at={[[168, 78], [172, 90], [168, 102], [176, 84], [168, 78]]}
+        spin={[-28, 0, 28, -12, -28]}>
+        <circle cx="7.5" cy="-4.6" r="3.4" fill="none" strokeWidth="1.8" style={{ stroke: GEAR }} />
+        <path d="M4.5 -3.4 L-13 -4.6" strokeWidth="2" strokeLinecap="round" style={{ fill: "none", stroke: GEAR }} />
+        <Move dur="0.9s" spin={[0, 22, 0]}>
+          <circle cx="7.5" cy="4.6" r="3.4" fill="none" strokeWidth="1.8" style={{ stroke: GEAR }} />
+          <path d="M4.5 3.4 L-13 4.6" strokeWidth="2" strokeLinecap="round" style={{ fill: "none", stroke: GEAR }} />
         </Move>
       </Move>
 
-      <Drift from={[166, 96]} to={[170, 142]} dur="2.6s" fade={[0, 0.55, 0]}>
+      {/* Срезанные пряди падают оттуда, где сомкнулись лезвия, — на пеньюар */}
+      <Drift from={[156, 86]} to={[150, 146]} dur="2.6s" fade={[0, 0.55, 0]}>
         <path d="M0 0 q3.5 4 0 8" fill="none" stroke={FAR} strokeWidth="1.6" strokeLinecap="round" />
       </Drift>
-      <Drift from={[158, 92]} to={[152, 144]} dur="3.1s" delay="1.2s" fade={[0, 0.45, 0]}>
+      <Drift from={[158, 94]} to={[164, 148]} dur="3.1s" delay="1.2s" fade={[0, 0.45, 0]}>
         <path d="M0 0 q-3.5 4 0 8" fill="none" stroke={FAR} strokeWidth="1.6" strokeLinecap="round" />
       </Drift>
-      <Drift from={[170, 100]} to={[178, 146]} dur="2.9s" delay="2.4s" fade={[0, 0.4, 0]}>
+      <Drift from={[156, 100]} to={[152, 150]} dur="2.9s" delay="2.4s" fade={[0, 0.4, 0]}>
         <path d="M0 0 q3 5 0 9" fill="none" stroke={FAR} strokeWidth="1.4" strokeLinecap="round" />
       </Drift>
     </g>

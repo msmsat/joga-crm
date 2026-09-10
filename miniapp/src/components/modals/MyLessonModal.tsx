@@ -66,33 +66,56 @@ export default function MyLessonModal({
   const isPending = !isPast && (lesson as UpcomingLessonResponse | null)?.status === 'pending';
 
   const resource = lesson?.booking_mode === 'resource';
+  // `eventOnly` — признак у самого факта, а не позиция в массиве. Раньше
+  // лишнее отсекалось по ИНДЕКСУ (`index === 3`): любая вставка нового факта
+  // в середину молча показывала бы индивидуальной записи не то поле.
+  // Уровень, инвентарь и номер коврика — свойства групповой сетки: у
+  // индивидуальной услуги уровня нет, а «коврик №1» сообщает лишь то, что
+  // клиент один.
   const facts = [
     {
+      eventOnly: true,
       label: t('bookingModal.level'),
       value: lesson?.level
         ? t(`lesson.level.${lesson.level}`, { defaultValue: lesson.level })
         : '—',
     },
     {
+      eventOnly: true,
       label: t('bookingModal.equipment'),
       value: lesson?.equipment
         ? t(`lesson.equipment.${lesson.equipment}`, { defaultValue: lesson.equipment })
         : '—',
     },
     {
+      eventOnly: true,
       label: t('mylessons.spot'),
       value: lesson ? `№${lesson.spot_number}` : '—',
     },
     isPast
       ? {
+          eventOnly: false,
           label: t('mylessons.duration'),
           value: `${lesson?.duration_min ?? 0} ${t('common.minutes')}`,
         }
       : {
+          eventOnly: false,
           label: t('mylessons.until_start'),
           value: countdown || t('mylessons.counting_time'),
         },
-  ].filter((_, index) => !resource || index === 3);
+    // У индивидуальной записи вместо коврика и уровня показываем то, что для
+    // неё и есть содержание: кто принимает и сколько это длится.
+    ...(resource
+      ? [
+          { eventOnly: false, label: t('resource.staff'), value: lesson?.teacher ?? '—' },
+          {
+            eventOnly: false,
+            label: t('resource.duration'),
+            value: `${lesson?.duration_min ?? 0} ${t('common.minutes')}`,
+          },
+        ]
+      : []),
+  ].filter(fact => !(resource && fact.eventOnly));
 
   const initials = (lesson?.teacher ?? '')
     .split(' ')

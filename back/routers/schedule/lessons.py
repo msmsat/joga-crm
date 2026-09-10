@@ -466,6 +466,19 @@ async def create_lesson(
     if body.hall_id is not None:
         branch_id = await _assert_hall_in_studio(body.hall_id, ctx.studio_id, db)
     service = await _service_in_studio(body.service_id, ctx.studio_id, db)
+    # §4.4: у resource-услуги интервал возникает при ПОДТВЕРЖДЕНИИ записи и
+    # принадлежит одному клиенту. Поставить её в расписание событием — значит
+    # завести групповое занятие с чужой механикой: вместимость, буферы и
+    # длительность у неё заданы каталогом, а место в нём занимали бы как в
+    # группе. Отбор в выпадающем списке журнала это уже не показывает, но
+    # закрывать надо маршрут: тем же путём ходят прямой HTTP и инструмент
+    # ассистента `update_lesson`/`create_lesson`.
+    if service.booking_mode == "resource":
+        raise HTTPException(status_code=409, detail={
+            "code": "SERVICE_IS_INDIVIDUAL",
+            "message": "Услуга записывается индивидуально — используйте запись на услугу, а не создание занятия",
+            "params": {"service_id": service.id},
+        })
     await assert_within_working_hours(
         db, ctx.studio_id,
         start_time=body.start_time, duration_min=body.duration_min,
@@ -570,14 +583,30 @@ async def update_lesson(
                 detail=f"Мест не может быть меньше числа записанных ({booked})",
             )
 
+    # Услуга читается ОДИН раз: и проверка механики, и денормализация имени с
+    # ценой работают с одной строкой. Два SELECT'а на одну правку — лишний
+    # поход в базу под замком студии.
+    service = None
+    if fields.get("service_id") is not None:
+        service = await _service_in_studio(fields["service_id"], ctx.studio_id, db)
+        # §4.4: индивидуальная услуга не может стать групповым событием
+        # подменой service_id — её интервал создаёт подтверждение записи, а не
+        # расписание. Проверка ДО присваиваний: отказ не должен оставлять
+        # объект наполовину изменённым, даже если транзакция и так откатится.
+        if service.booking_mode == "resource" and fields["service_id"] != lesson.service_id:
+            raise HTTPException(status_code=409, detail={
+                "code": "SERVICE_IS_INDIVIDUAL",
+                "message": "Услуга записывается индивидуально — её нельзя поставить событием",
+                "params": {"service_id": service.id},
+            })
+
     old_teacher_id = lesson.teacher_id
 
     if "teacher_id" in fields:
         new_teacher_id = fields["teacher_id"]
         lesson.teacher_name = await _teacher_name_in_studio(new_teacher_id, ctx.studio_id, db)
 
-    if "service_id" in fields and fields["service_id"] is not None:
-        service = await _service_in_studio(fields["service_id"], ctx.studio_id, db)
+    if service is not None:
         lesson.name = service.name
         # Услугу поменяли — цена едет за ней, если её не прислали явно.
         if "price" not in fields:

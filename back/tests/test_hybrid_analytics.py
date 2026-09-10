@@ -172,3 +172,28 @@ def test_zero_denominator_is_not_zero_percent(seeded):
     rows = asyncio.run(run())
     assert rows["event"].utilization_pct is None
     assert rows["resource"].utilization_pct is None
+
+
+def test_overview_endpoint_actually_returns_the_booking_mode_breakdown(seeded):
+    """`OverviewRead.booking_modes` объявлен со значением по умолчанию `[]`.
+
+    Значит, если роутер перестанет его заполнять, ответ останется валидным, а
+    блок на дашборде просто исчезнет — молча, без единой ошибки сборки. Ровно
+    так уже случилось с `GET /schedule/lessons`. Поэтому проверяется НЕ вызов
+    `booking_mode_slices`, а поле в ответе самого эндпоинта.
+    """
+    from dependencies import StudioContext
+    from routers.analytics.overview import analytics_overview
+
+    async def run():
+        async with async_session_maker() as db:
+            ctx = StudioContext(user=None, studio_id=seeded["studio"], role="owner")
+            return await analytics_overview(f=_filters(seeded), ctx=ctx, db=db)
+
+    overview = asyncio.run(run())
+    modes = {row.booking_mode: row for row in overview.booking_modes}
+    assert set(modes) == {"event", "resource"}, overview.booking_modes
+    # Числа те же, что у прямого расчёта: ответ не «пустая заглушка нужной формы».
+    assert modes["event"].bookings == 5 and modes["event"].attended == 2
+    assert modes["resource"].events == 1 and modes["resource"].bookings == 1
+    assert modes["event"].utilization_pct == 30.0

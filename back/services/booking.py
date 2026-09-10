@@ -683,6 +683,48 @@ async def activate_paid(db: AsyncSession, *, studio_id: int,
     return Result(Outcome.OK, reservation.id, "active")
 
 
+async def attend(db: AsyncSession, *, studio_id: int, reservation_id: int) -> Result:
+    """Клиент пришёл. Единственный переход «бронь → визит».
+
+    ПОЧЕМУ ЗДЕСЬ, А НЕ В РОУТЕРЕ. До этого отметку ставил напрямую роутер
+    журнала, и она была единственным переходом брони без правил домена:
+    `status = "attended"` выполнялся из ЛЮБОГО состояния. Два следствия, оба
+    настоящие:
+
+      * `hold` → `attended`: карточная бронь, за которую ещё не заплатили,
+        становилась состоявшимся визитом. §4.2 эпика прямо запрещает это —
+        «сперва деньги, потом визит»;
+      * `cancelled` → `attended`: отменённая бронь воскресала визитом, минуя
+        и возврат абонемента, и освобождение места.
+
+    Идемпотентно: повторная отметка — тот же безопасный исход. Замок студии
+    первым шагом, как у всех остальных переходов (§6.2).
+    """
+    await lock_studio(db, studio_id)
+    reservation = (await db.execute(
+        select(Reservation)
+        .join(Lesson, Lesson.id == Reservation.lesson_id)
+        .where(Reservation.id == reservation_id, Lesson.studio_id == studio_id)
+        .with_for_update(of=Reservation)
+        .execution_options(populate_existing=True)
+    )).scalar_one_or_none()
+    if reservation is None:
+        return Result(Outcome.NOT_FOUND)
+    if reservation.status == "attended":
+        return Result(Outcome.OK, reservation.id, "attended")
+    if reservation.status == "cancelled":
+        return Result(Outcome.ALREADY_CANCELLED, reservation.id, "cancelled")
+    if reservation.status == "hold":
+        # Место держится под неоплаченную карту. Разрешить визит — значит
+        # подарить занятие и потерять деньги: сверка потом освободит бронь,
+        # а посещение уже записано.
+        return Result(Outcome.PAYMENT_REQUIRED, reservation.id, reservation.status)
+
+    reservation.status = "attended"
+    logger.info("booking_attended studio_id=%s reservation_id=%s", studio_id, reservation_id)
+    return Result(Outcome.OK, reservation.id, "attended")
+
+
 async def approve(db: AsyncSession, *, studio_id: int, reservation_id: int,
                   actor: str, now: Optional[datetime] = None) -> Result:
     """Подтвердить ждущую бронь. Переход делает СТУДИЯ, не клиент.

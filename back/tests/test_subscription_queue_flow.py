@@ -6,6 +6,8 @@
 Запуск из back/:  python -m pytest tests/test_subscription_queue_flow.py
 """
 import asyncio
+
+import pytest
 import warnings
 from datetime import date, datetime, timedelta
 
@@ -20,7 +22,30 @@ from routers.clients.subscriptions import attach_subscription
 from services.booking_access import find_eligible_subscription
 from services.subscription_charge import activate_pending_after_visit, charge_reservation
 
+
+import routers.clients.subscriptions as subscriptions_router
+import services.subscription_charge as subscription_charge
+
 TODAY = date.today()
+
+@pytest.fixture(autouse=True)
+def frozen_today(monkeypatch):
+    """Дата фиксируется на время теста.
+
+    `TODAY` вычислялся при ИМПОРТЕ модуля, а продакшн зовёт `date.today()` в
+    момент действия: прогон, пересекший полночь, сравнивал вчера с сегодня и
+    падал на ровном месте. Подменяем сам источник даты в модулях, которые её
+    читают, — поведение продакшена при этом не меняется, меняется только то,
+    что тест перестаёт зависеть от времени запуска.
+    """
+    class _Frozen(date):
+        @classmethod
+        def today(cls):
+            return TODAY
+
+    monkeypatch.setattr(subscriptions_router, "date", _Frozen)
+    monkeypatch.setattr(subscription_charge, "date", _Frozen)
+
 DURATION = 30
 
 
