@@ -4,3 +4,5 @@ pytest==9.1.1
 # Без него pytest молча ПРОПУСКАЕТ `async def`-тесты (tests/test_danger_zone.py).
 # Режим включается в pytest.ini: asyncio_mode = auto.
 pytest-asyncio==1.4.0
+# ASGI HTTP contract tests (no running server or external requests).
+httpx==0.28.1

@@ -180,7 +180,10 @@ const createVariantsWithTransition = (
 ): Variants => {
   if (!transition) return baseVariants;
 
-  const { exit: _, ...mainTransition } = transition;
+  // exit разбирается отдельной веткой ниже — из основного transition он
+  // убирается, но само значение здесь не нужно, поэтому и переменной нет.
+  const mainTransition = { ...transition };
+  delete mainTransition.exit;
 
   return {
     ...baseVariants,

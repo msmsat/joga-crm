@@ -55,6 +55,7 @@ export const getAccounts = (): Session[] => read<Session[]>(ACCOUNTS, []);
 /** Вход или переключение: сессия становится активной и поднимается в списке. */
 export function saveSession(session: Session) {
   localStorage.setItem(KEY, JSON.stringify(session));
+  window.dispatchEvent(new Event('session-changed'));
   const id = accountId(session.token);
   writeAccounts([session, ...getAccounts().filter((a) => accountId(a.token) !== id)]);
 }
@@ -66,6 +67,7 @@ export function saveSession(session: Session) {
 export function clearSession() {
   const active = getSession();
   localStorage.removeItem(KEY);
+  window.dispatchEvent(new Event('session-changed'));
   if (active) {
     const id = accountId(active.token);
     writeAccounts(getAccounts().filter((a) => accountId(a.token) !== id));

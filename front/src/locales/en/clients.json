@@ -10,14 +10,30 @@
     "birthday": "Birthday"
   },
   "categoriesInfo": {
-    "all": { "text": "The full client list of the studio, with no status filter applied." },
-    "vip": { "text": "Successful payments totalling 50,000+ or 30+ visits. VIP can also be pinned manually in the client card — a manual pin holds regardless of the amounts." },
-    "active": { "text": "At least one visit in the last 60 days. Based on attendance marked in the journal — the status updates itself, no need to set it by hand." },
-    "new": { "text": "The first 15 days from the registration date — whether the client was added manually or came through online booking. On day 16 they automatically move to Active or Inactive." },
-    "has_subscription": { "text": "Has a live subscription: not expired, not frozen, classes remaining. Updates immediately on purchase, on each class used, and when it expires." },
-    "inactive": { "text": "No visits in the last 60 days — or never visited at all and more than 15 days have passed since registration." },
-    "frozen": { "text": "Freezing via the button in the client card — the only status set by hand. After unfreezing the client returns to their automatic status." },
-    "birthday": { "text": "Whose birthday is today — day and month match, year is ignored. The list refreshes automatically every day." }
+    "all": {
+      "text": "The full client list of the studio, with no status filter applied."
+    },
+    "vip": {
+      "text": "Successful payments totalling 50,000+ or 30+ visits. VIP can also be pinned manually in the client card — a manual pin holds regardless of the amounts."
+    },
+    "active": {
+      "text": "At least one visit in the last 60 days. Based on attendance marked in the journal — the status updates itself, no need to set it by hand."
+    },
+    "new": {
+      "text": "The first 15 days from the registration date — whether the client was added manually or came through online booking. On day 16 they automatically move to Active or Inactive."
+    },
+    "has_subscription": {
+      "text": "Has a live subscription: not expired, not frozen, classes remaining. Updates immediately on purchase, on each class used, and when it expires."
+    },
+    "inactive": {
+      "text": "No visits in the last 60 days — or never visited at all and more than 15 days have passed since registration."
+    },
+    "frozen": {
+      "text": "Freezing via the button in the client card — the only status set by hand. After unfreezing the client returns to their automatic status."
+    },
+    "birthday": {
+      "text": "Whose birthday is today — day and month match, year is ignored. The list refreshes automatically every day."
+    }
   },
   "status": {
     "active": "Active",
@@ -189,7 +205,10 @@
       "scopeRenewal": "for renewal",
       "grantTitle": "Grant a personal discount",
       "grantValue": "Discount size",
-      "grantType": { "percent": "Percent (%)", "amount": "Amount (₽)" },
+      "grantType": {
+        "percent": "Percent (%)",
+        "amount": "Amount (₽)"
+      },
       "grantValidUntil": "Valid until",
       "grantSubmit": "Grant",
       "cancelConfirmTitle": "Cancel discount?",
@@ -204,15 +223,28 @@
       "compactTitle": "Activity (3 mo.)",
       "clickForDetails": "Click for details",
       "detailedTitle": "Detailed activity",
-      "periods": { "month3": "3 mo", "month6": "6 mo" },
+      "periods": {
+        "month3": "3 mo",
+        "month6": "6 mo"
+      },
       "visitsInPeriod": "Visits in period",
       "visitsTooltip": "{{count}} visits",
       "emptyState": "No visits in this period",
       "insightTitle": "Average attendance",
       "insightBody": "{{avg}} visits per month on average over the selected period.",
       "months": {
-        "jan": "Jan", "feb": "Feb", "mar": "Mar", "apr": "Apr", "may": "May", "jun": "Jun",
-        "jul": "Jul", "aug": "Aug", "sep": "Sep", "oct": "Oct", "nov": "Nov", "dec": "Dec"
+        "jan": "Jan",
+        "feb": "Feb",
+        "mar": "Mar",
+        "apr": "Apr",
+        "may": "May",
+        "jun": "Jun",
+        "jul": "Jul",
+        "aug": "Aug",
+        "sep": "Sep",
+        "oct": "Oct",
+        "nov": "Nov",
+        "dec": "Dec"
       }
     },
     "tags": {
@@ -228,7 +260,15 @@
       "delete": "Delete"
     },
     "events": {
-      "filterTabs": { "all": "All", "payment": "Payments", "visit": "Visits", "booking": "Bookings", "cancel": "Cancellations", "bonus": "Bonuses", "freeze": "Freezes" },
+      "filterTabs": {
+        "all": "All",
+        "payment": "Payments",
+        "visit": "Visits",
+        "booking": "Bookings",
+        "cancel": "Cancellations",
+        "bonus": "Bonuses",
+        "freeze": "Freezes"
+      },
       "empty": "No events"
     },
     "notes": {
@@ -248,7 +288,8 @@
       "noLessons": "No lessons on this day",
       "full": "No spots",
       "confirm": "Book →",
-      "noSubscription": "Client has no available subscription for booking"
+      "noSubscription": "Client has no available subscription for booking",
+      "individual": "Individual service"
     },
     "bonusPanel": {
       "title": "Grant bonus"
@@ -263,13 +304,29 @@
       "clientAdded": "Client added"
     },
     "bonusOptions": {
-      "p200": { "label": "+200 points", "description": "Add to loyalty balance" },
-      "p500": { "label": "+500 points", "description": "Add to loyalty balance" },
-      "p1000": { "label": "+1000 points", "description": "Add to loyalty balance" }
+      "p200": {
+        "label": "+200 points",
+        "description": "Add to loyalty balance"
+      },
+      "p500": {
+        "label": "+500 points",
+        "description": "Add to loyalty balance"
+      },
+      "p1000": {
+        "label": "+1000 points",
+        "description": "Add to loyalty balance"
+      }
     }
   },
   "tags": {
-    "suggested": ["Trial", "VIP", "Referral", "Online", "Group", "Personal"]
+    "suggested": [
+      "Trial",
+      "VIP",
+      "Referral",
+      "Online",
+      "Group",
+      "Personal"
+    ]
   },
   "addModal": {
     "title": "New client",
@@ -280,10 +337,22 @@
     "stepCounter": "Step {{current}} of {{total}}",
     "trustSignal": "Data is protected and visible only to administrators",
     "steps": {
-      "1": { "title": "Personal details", "sub": "Enter the client's contact information" },
-      "2": { "title": "Profile details", "sub": "Additional information (optional)" },
-      "3": { "title": "Subscription", "sub": "Choose a subscription type and add a note" },
-      "4": { "title": "All set!", "sub": "Review the details and add the client" }
+      "1": {
+        "title": "Personal details",
+        "sub": "Enter the client's contact information"
+      },
+      "2": {
+        "title": "Profile details",
+        "sub": "Additional information (optional)"
+      },
+      "3": {
+        "title": "Subscription",
+        "sub": "Choose a subscription type and add a note"
+      },
+      "4": {
+        "title": "All set!",
+        "sub": "Review the details and add the client"
+      }
     },
     "step1": {
       "previewLabel": "New client · Preview",

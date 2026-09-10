@@ -35,7 +35,8 @@
     "phoneTaken": "Tämä puhelinnumero on jo käytössä",
     "emailInStudio": "Tämä henkilö työskentelee jo studiossasi",
     "phoneInStudio": "Tämä henkilö työskentelee jo studiossasi",
-    "accountWillBeLinked": "Tällä yhteystiedolla on jo tili — se liitetään studioosi"
+    "accountWillBeLinked": "Tällä yhteystiedolla on jo tili — se liitetään studioosi",
+    "range": "Oltava välillä {{min}}–{{max}}"
   },
   "status": {
     "online": "Verkossa",

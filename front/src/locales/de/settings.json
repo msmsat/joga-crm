@@ -59,6 +59,46 @@
         "Montag",
         "Sonntag"
       ]
+    },
+    "booking": {
+      "title": "Buchungsmodell",
+      "subtitle": "Wie Kundinnen und Kunden bei Ihnen buchen",
+      "mode": "Buchungsmodell",
+      "modeHint": "Termine — die Kundin bucht einen Kurs aus dem Plan. Individuell — sie wählt Fachkraft und Zeit. Gemischt — beides zugleich.",
+      "profile": "Branchenwörter",
+      "profileHint": "Wählt die Wörter für Fachkräfte und Angebote. Nur die Formulierung ändert sich — Rollen, Preise und Buchungsmodell bleiben.",
+      "strict": "Strenger Kalender",
+      "strictHint": "Verhindert Doppelbelegung von Fachkraft oder exklusivem Raum. Vor individueller Buchung erforderlich.",
+      "modes": {
+        "event": "Termine",
+        "resource": "Individuell",
+        "hybrid": "Gemischt"
+      },
+      "profiles": {
+        "generic": "Neutral",
+        "fitness": "Fitness",
+        "beauty": "Beauty"
+      },
+      "preview": {
+        "event": "Termin",
+        "resource": "Individuell"
+      },
+      "errors": {
+        "AUDIT_BLOCKED": "Der Kalender enthält Buchungen, die mit dem strengen Modus unvereinbar sind.",
+        "STRICT_SCHEDULE_REQUIRED": "Aktivieren Sie zuerst den strengen Kalender.",
+        "RESOURCE_HISTORY_EXISTS": "Der strenge Kalender lässt sich nicht abschalten: Es gibt individuelle Buchungen."
+      },
+      "findings": {
+        "overlap": "Überschneidende Buchungen",
+        "unknown_timezone": "Unbekannte Zeitzone",
+        "undefined_branch": "Filiale nicht gesetzt",
+        "invalid_duration": "Ungültige Dauer",
+        "invalid_resource_row": "Unvollständige individuelle Buchung",
+        "missing_branch_assignment": "Fachkraft ist der Filiale nicht zugeordnet",
+        "missing_working_hours": "Fachkraft hat keine Arbeitszeiten",
+        "inactive_specialist": "Fachkraft ist inaktiv",
+        "other": "Prüfung nötig"
+      }
     }
   },
   "appearance": {

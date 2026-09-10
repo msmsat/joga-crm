@@ -162,6 +162,8 @@ export function useJournalMutations(lessonsKey: readonly unknown[]) {
     payMut.mutateAsync({ reservationId, method });
 
   return {
+    /** HB-22: новые команды (quote/confirm) обновляют журнал так же. */
+    invalidate,
     updateLesson,
     cancelLesson,
     createLesson,

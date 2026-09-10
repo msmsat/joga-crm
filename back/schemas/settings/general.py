@@ -73,10 +73,12 @@ class GeneralRead(BaseSchema):
     # всем ролям одинаково (админ и тренер видят Журнал и обязаны понимать,
     # event ли перед ними занятие или resource) — HB-14/16.
     booking_capabilities: BookingCapabilities = Field(default_factory=_default_booking_capabilities)
+    terminology: Optional[dict] = None
 
 
 class GeneralReadPublic(BaseSchema):
     """Урезанный ответ не-owner (админ/тренер): без контактов и адреса студии."""
+    terminology: Optional[dict] = None
     name: str
     logo_url: Optional[str] = None
     timezone: Optional[str] = None
@@ -145,6 +147,10 @@ class GeneralUpdate(BaseSchema):
     # владелец получал понятную 409, а не 422 "невозможное значение".
     booking_mode: Optional[BookingMode] = None
     terminology_profile: Optional[TerminologyProfile] = None
+    # Строгое расписание — обязательное условие resource/hybrid (§6.1).
+    # Включение и выключение проходят аудит наследия под замком студии
+    # (services/hybrid_audit.assert_can_activate), поэтому здесь только тип.
+    strict_schedule_enabled: Optional[bool] = None
 
     @field_validator("country")
     @classmethod

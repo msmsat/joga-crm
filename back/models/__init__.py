@@ -8,6 +8,7 @@ from .identity import CustomerIdentity
 from .proposal import ActionProposal
 from .schedule import Hall, Lesson, Reservation
 from .service import Service, ServiceScheduleSlot
+from .booking_notification import BookingNotificationIntent
 from .booking_quote import BookingQuote
 from .settings import (
     StudioWorkingHours,
@@ -89,6 +90,7 @@ __all__ = [
     "Reservation",
     "Service",
     "ServiceScheduleSlot",
+    "BookingNotificationIntent",
     "BookingQuote",
     "StudioWorkingHours",
     "StudioNotificationSettings",

@@ -35,7 +35,8 @@
     "phoneTaken": "Acest număr de telefon este deja folosit",
     "emailInStudio": "Această persoană lucrează deja în studioul dvs.",
     "phoneInStudio": "Această persoană lucrează deja în studioul dvs.",
-    "accountWillBeLinked": "Există deja un cont cu acest contact — va fi asociat studioului dvs."
+    "accountWillBeLinked": "Există deja un cont cu acest contact — va fi asociat studioului dvs.",
+    "range": "Trebuie să fie între {{min}} și {{max}}"
   },
   "status": {
     "online": "Online",

@@ -44,11 +44,30 @@ class OverviewKpiSet(BaseSchema):
     fill_rate: Kpi
 
 
+class BookingModeSlice(BaseSchema):
+    """Разрез дашборда по модели записи (HB-23, §4.1).
+
+    `events` — число интервалов расписания, `bookings` — число записей клиентов:
+    одно групповое занятие с десятью участниками это 1 и 10, индивидуальная
+    запись — 1 и 1. `hold`/`pending` показаны отдельно и НЕ входят ни в
+    посещения, ни в выручку. `utilization_pct=None` — знаменателя нет
+    («Нет данных»), а не ноль загрузки."""
+    booking_mode: str
+    events: int
+    bookings: int
+    attended: int
+    pending: int
+    hold: int
+    cancelled: int
+    utilization_pct: Optional[float] = None
+
+
 class OverviewRead(BaseSchema):
     kpi: OverviewKpiSet
     revenue_structure: list[RevenueStructureRow]
     client_dynamics: ClientDynamics
     insights: list[Insight]
+    booking_modes: list[BookingModeSlice] = []
 
 
 class MyKpi(Kpi):

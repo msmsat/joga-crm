@@ -11,8 +11,10 @@ import type { Studio } from '../../api/studio';
 type Props = {
   isOpen: boolean;
   onClose: () => void;
-  /** Ключ услуги/направления — он же `lesson.name` */
-  serviceId: string | null;
+  /** HB-19: числовой ID услуги. Название — отдельная подпись (`serviceName`):
+   *  фильтр по `lesson.name` смешивал две одноимённые услуги разных филиалов. */
+  serviceId: number | null;
+  serviceName?: string | null;
   /** Студия, в контексте которой смотрим расписание (null — студия одна) */
   studio: Studio | null;
   onLessonPick: (lesson: LessonResponse) => void;
@@ -36,6 +38,7 @@ export default function ServiceScheduleSheet({
   isOpen,
   onClose,
   serviceId,
+  serviceName,
   studio,
   onLessonPick,
   refreshKey = 0,
@@ -54,10 +57,13 @@ export default function ServiceScheduleSheet({
     const load = async () => {
       setIsLoading(true);
       try {
-        const data = await getLessonsByDate(isoDate(date));
-        // ponytail: студию фильтровать нечем — LessonResponse её не отдаёт.
-        // Отсекаем по услуге; студия пока только контекст в шапке листа.
-        if (!cancelled) setLessons(data.filter((lesson) => lesson.name === serviceId));
+        // Отбор делает СЕРВЕР по числовым ID (HB-04): одноимённые услуги
+        // разных филиалов больше не сливаются в один список.
+        const data = await getLessonsByDate(isoDate(date), {
+          service_id: serviceId,
+          branch_id: studio?.id ?? null,
+        });
+        if (!cancelled) setLessons(data);
       } catch (error) {
         console.error('Помилка завантаження розкладу послуги:', error);
         if (!cancelled) setLessons([]);
@@ -70,7 +76,7 @@ export default function ServiceScheduleSheet({
     return () => {
       cancelled = true;
     };
-  }, [isOpen, serviceId, date, refreshKey]);
+  }, [isOpen, serviceId, studio?.id, date, refreshKey]);
 
   return (
     <Sheet
@@ -79,9 +85,7 @@ export default function ServiceScheduleSheet({
       layer={layer}
       tall
       kicker={studio ? studio.name : t('studio.schedule')}
-      title={
-        serviceId ? t(`lesson.name.${serviceId}`, { defaultValue: serviceId }) : t('studio.schedule')
-      }
+      title={serviceName ?? t('studio.schedule')}
       subtitle={studio?.address ?? undefined}
     >
       <div className="-mx-6">

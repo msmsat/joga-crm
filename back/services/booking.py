@@ -35,12 +35,12 @@ from datetime import datetime, timedelta
 from enum import Enum
 from typing import Optional
 
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from models import Client, Lesson, Reservation, Studio
-from services import catalog, lesson_time, pricing, schedule_guard, studio_time
+from services import booking_notifications, catalog, lesson_time, pricing, schedule_guard, studio_time
 from services.booking_access import (
     lock_client, next_free_spot, resolve_coverage,
 )
@@ -247,7 +247,7 @@ class _Checked:
 async def _check(db: AsyncSession, *, studio_id: int, client_id: int, lesson_id: int,
                  now: Optional[datetime], spot_number: Optional[int],
                  lock: bool = True, actor: Actor = Actor.CLIENT,
-                 require_funding: Optional[bool] = None) -> _Checked:
+                 require_funding: Optional[bool] = None, _resource: bool = False) -> _Checked:
     """ПОЛНАЯ проверка всего, что могло измениться. Читает; не пишет.
 
     Порядок не случаен: сначала то, что не зависит от человека (занятие, окно
@@ -266,7 +266,7 @@ async def _check(db: AsyncSession, *, studio_id: int, client_id: int, lesson_id:
         select(Lesson).where(Lesson.id == lesson_id, Lesson.studio_id == studio_id)
         .execution_options(populate_existing=True)
     )).scalar_one_or_none()
-    if lesson is None or lesson.status == "cancelled" or lesson.booking_mode != "event":
+    if lesson is None or lesson.status == "cancelled" or (lesson.booking_mode != "event" and not _resource):
         return _Checked(Outcome.LESSON_UNAVAILABLE)
 
     studio = (await db.execute(
@@ -318,33 +318,13 @@ async def _check(db: AsyncSession, *, studio_id: int, client_id: int, lesson_id:
             return _Checked(Outcome.SPOT_TAKEN)
         spot = spot_number
 
-    subscription, is_trial = await resolve_coverage(db, client_id, lesson, rules,
-                                                    lock=lock)
-    currency = studio.currency or "RUB"
-    if subscription is not None:
-        funding = Funding(FundingKind.SUBSCRIPTION, subscription.id, 0, currency)
-    elif is_trial:
-        funding = Funding(FundingKind.TRIAL, None, 0, currency)
-    elif lesson.price <= 0:
-        funding = Funding(FundingKind.FREE, None, 0, currency)
-    else:
-        needs = rules.prefill_on_booking if require_funding is None else require_funding
-        if needs:
-            # Покрытие обязательно, а его нет.
-            return _Checked(Outcome.NO_FUNDING, lesson, rules)
-        # ЦЕНА КЛИЕНТА, А НЕ ПРАЙС. Скидка студии, персональный оффер и скидка
-        # новичка — часть договора; взять с человека полную цену, когда у него
-        # есть скидка, значит взять лишнее.
-        payable = await client_price(db, studio_id=studio_id, client_id=client_id,
-                                     base_price=lesson.price)
-        if payable <= 0:
-            # Скидка покрыла занятие целиком. Платить нечего — значит и
-            # платёжного пути нет: ни формы, ни долга.
-            funding = Funding(FundingKind.FREE, None, 0, currency)
-        else:
-            funding = Funding(FundingKind.PAY, None, payable, currency)
+    funding, subscription, is_trial = await resolve_funding(
+        db, studio=studio, client_id=client_id, lesson=lesson, rules=rules,
+        lock=lock, require_funding=require_funding)
+    if funding is None:
+        return _Checked(Outcome.NO_FUNDING, lesson, rules)
 
-    facts = await catalog.lesson(db, studio_id, lesson.id)
+    facts = await catalog.lesson(db, studio_id, lesson.id, include_resource=_resource)
     if facts is None:
         return _Checked(Outcome.LESSON_UNAVAILABLE)
     terms = Terms(
@@ -361,6 +341,44 @@ async def _check(db: AsyncSession, *, studio_id: int, client_id: int, lesson_id:
     checked.subscription = subscription
     checked.is_trial = is_trial
     return checked
+
+
+async def resolve_funding(db: AsyncSession, *, studio, client_id: int, lesson,
+                          rules: BookingRules, lock: bool = False,
+                          require_funding: Optional[bool] = None):
+    """Shared funding resolver for persisted events and unsaved resource candidates.
+
+    The candidate needs service_id/start_time/price, not a database Lesson ID.
+    Does not debit subscriptions or create a reservation.
+    """
+    studio_id = studio.id
+    subscription, is_trial = await resolve_coverage(db, client_id, lesson, rules,
+                                                    lock=lock)
+    currency = studio.currency or "RUB"
+    if subscription is not None:
+        funding = Funding(FundingKind.SUBSCRIPTION, subscription.id, 0, currency)
+    elif is_trial:
+        funding = Funding(FundingKind.TRIAL, None, 0, currency)
+    elif lesson.price <= 0:
+        funding = Funding(FundingKind.FREE, None, 0, currency)
+    else:
+        needs = rules.prefill_on_booking if require_funding is None else require_funding
+        if needs:
+            # Покрытие обязательно, а его нет.
+            return None, None, False
+        # ЦЕНА КЛИЕНТА, А НЕ ПРАЙС. Скидка студии, персональный оффер и скидка
+        # новичка — часть договора; взять с человека полную цену, когда у него
+        # есть скидка, значит взять лишнее.
+        payable = await client_price(db, studio_id=studio_id, client_id=client_id,
+                                     base_price=lesson.price)
+        if payable <= 0:
+            # Скидка покрыла занятие целиком. Платить нечего — значит и
+            # платёжного пути нет: ни формы, ни долга.
+            funding = Funding(FundingKind.FREE, None, 0, currency)
+        else:
+            funding = Funding(FundingKind.PAY, None, payable, currency)
+
+    return funding, subscription, is_trial
 
 
 async def client_price(db: AsyncSession, *, studio_id: int, client_id: int,
@@ -411,7 +429,7 @@ async def lesson_part_now(db: AsyncSession, *, studio_id: int,
     отдаёт вовсе). Для открытой оплаты это тот же ответ, что и «условия
     изменились»: исполнить её нечем.
     """
-    facts = await catalog.lesson(db, studio_id, lesson_id)
+    facts = await catalog.lesson(db, studio_id, lesson_id, include_resource=True)
     if facts is None:
         return None
     price = (await db.execute(
@@ -442,7 +460,7 @@ async def create(db: AsyncSession, *, studio_id: int, client_id: int, lesson_id:
                  allow_payment: bool = False,
                  hold_for_payment: bool = False,
                  actor: Actor = Actor.CLIENT,
-                 require_funding: Optional[bool] = None) -> Result:
+                 require_funding: Optional[bool] = None, _resource: bool = False) -> Result:
     """Записать клиента на занятие. ЕДИНСТВЕННЫЙ переход «брони не было → есть».
 
     НЕ КОММИТИТ: вызывающий закрывает транзакцию сам — вместе со своим
@@ -460,7 +478,7 @@ async def create(db: AsyncSession, *, studio_id: int, client_id: int, lesson_id:
     await schedule_guard.lock_studio(db, studio_id)
     checked = await _check(db, studio_id=studio_id, client_id=client_id,
                            lesson_id=lesson_id, now=now, spot_number=spot_number,
-                           actor=actor, require_funding=require_funding)
+                           actor=actor, require_funding=require_funding, _resource=_resource)
     if checked.outcome is not Outcome.OK:
         logger.info("booking_rejected studio_id=%s lesson_id=%s outcome=%s source=%s",
                     studio_id, lesson_id, checked.outcome.value, source)
@@ -507,7 +525,7 @@ async def create(db: AsyncSession, *, studio_id: int, client_id: int, lesson_id:
         # нельзя — это подарок за счёт студии.
         await db.rollback()
         return Result(Outcome.NO_FUNDING)
-    if status != "hold":
+    if not paying:
         # Долг «оплата на месте» — альтернатива карте, а не дополнение к ней.
         # Заведи его под карточную бронь, и человек заплатит дважды.
         # Долг выставляется по ЦЕНЕ КЛИЕНТА: касса при погашении пересчитает
@@ -529,7 +547,13 @@ async def create(db: AsyncSession, *, studio_id: int, client_id: int, lesson_id:
 
     logger.info("booking_created studio_id=%s lesson_id=%s status=%s funding=%s source=%s",
                 studio_id, lesson_id, reservation.status, terms.funding.kind.value, source)
-    return Result(Outcome.OK, reservation.id, reservation.status, terms, remaining)
+    result = Result(Outcome.OK, reservation.id, reservation.status, terms, remaining)
+    # HB-25: намерение уведомить — в ЭТОЙ транзакции. Откат брони уносит его
+    # с собой, а успешный commit гарантирует попытку воркера даже если
+    # процесс умрёт сразу после.
+    await booking_notifications.record_result(db, studio_id=studio_id, result=result,
+                                              lesson=checked.lesson)
+    return result
 
 
 async def cancel(db: AsyncSession, *, studio_id: int, reservation_id: int,
@@ -575,6 +599,7 @@ async def cancel(db: AsyncSession, *, studio_id: int, reservation_id: int,
     if reservation.status == "cancelled":
         return Result(Outcome.ALREADY_CANCELLED, reservation.id, reservation.status)
 
+    lesson = None
     if enforce_policy:
         lesson = await db.get(Lesson, reservation.lesson_id, populate_existing=True)
         studio = await db.get(Studio, studio_id)
@@ -598,9 +623,18 @@ async def cancel(db: AsyncSession, *, studio_id: int, reservation_id: int,
     reservation.cancelled_at = datetime.utcnow()
     if reason:
         reservation.cancellation_reason = reason[:300]
+    # An individual booking owns its interval. Event cancellations only free a seat.
+    await db.execute(update(Lesson).where(Lesson.id == reservation.lesson_id,
+        Lesson.studio_id == studio_id, Lesson.booking_mode == "resource",
+        Lesson.status != "cancelled").values(status="cancelled", version=Lesson.version + 1))
     logger.info("booking_cancelled studio_id=%s reservation_id=%s actor=%s",
                 studio_id, reservation_id, actor)
-    return Result(Outcome.OK, reservation.id, "cancelled")
+    result = Result(Outcome.OK, reservation.id, "cancelled")
+    # Версия занятия тут не несёт смысла и намеренно не дочитывается ради неё
+    # отдельным запросом: отменить бронь можно ровно один раз (выше возврат
+    # ALREADY_CANCELLED), поэтому ключ уникален и без неё.
+    await booking_notifications.record_result(db, studio_id=studio_id, result=result, lesson=lesson)
+    return result
 
 
 async def activate_paid(db: AsyncSession, *, studio_id: int,
@@ -640,6 +674,12 @@ async def activate_paid(db: AsyncSession, *, studio_id: int,
     reservation.status = "active"
     logger.info("booking_activated_by_payment studio_id=%s reservation_id=%s",
                 studio_id, reservation_id)
+    # Отдельный код события: pending → hold → active НЕ меняет версию занятия,
+    # и без него активация после одобрения слилась бы с самим одобрением
+    # в один уникальный ключ (HB-25 п.4).
+    await booking_notifications.record(db, studio_id=studio_id, reservation_id=reservation.id,
+                                       lesson_version=lesson.version or 1,
+                                       event_code="booking_activated")
     return Result(Outcome.OK, reservation.id, "active")
 
 
@@ -676,10 +716,21 @@ async def approve(db: AsyncSession, *, studio_id: int, reservation_id: int,
     if client is None or not client.is_active:
         return Result(Outcome.CLIENT_UNAVAILABLE)
 
-    reservation.status = "active"
+    # New quote commands retain the chosen payment path across approval.
+    # A pending card booking must first become a hold, never an unpaid active visit.
+    from models import BookingQuote
+    snapshots = (await db.execute(select(BookingQuote.terms).where(
+        BookingQuote.studio_id == studio_id, BookingQuote.reservation_id == reservation_id,
+        BookingQuote.consumed_at.is_not(None)).order_by(BookingQuote.created_at))).scalars().all()
+    card_pending = any(s.get("payment_method") == "card"
+        and s.get("domain", {}).get("funding", {}).get("kind") == FundingKind.PAY.value
+        and s.get("domain", {}).get("funding", {}).get("price", 0) > 0 for s in snapshots)
+    reservation.status = "hold" if card_pending else "active"
     logger.info("booking_approved studio_id=%s reservation_id=%s actor=%s",
                 studio_id, reservation_id, actor)
-    return Result(Outcome.OK, reservation.id, "active")
+    result = Result(Outcome.OK, reservation.id, reservation.status)
+    await booking_notifications.record_result(db, studio_id=studio_id, result=result, lesson=lesson)
+    return result
 
 
 async def reject(db: AsyncSession, *, studio_id: int, reservation_id: int,

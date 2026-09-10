@@ -59,6 +59,46 @@
         "Monday",
         "Sunday"
       ]
+    },
+    "booking": {
+      "title": "Booking model",
+      "subtitle": "How clients book you",
+      "mode": "Booking model",
+      "modeHint": "Events — clients sign up for a scheduled class. Individual — the client picks a specialist and a time. Mixed — both at once.",
+      "profile": "Industry wording",
+      "profileHint": "Chooses the words for staff and offerings. It changes wording only — never roles, prices or the booking model.",
+      "strict": "Strict schedule",
+      "strictHint": "Forbids double-booking a specialist or an exclusive room. Required before individual booking can be turned on.",
+      "modes": {
+        "event": "Events",
+        "resource": "Individual",
+        "hybrid": "Mixed"
+      },
+      "profiles": {
+        "generic": "Neutral",
+        "fitness": "Fitness",
+        "beauty": "Beauty"
+      },
+      "preview": {
+        "event": "Event",
+        "resource": "Individual"
+      },
+      "errors": {
+        "AUDIT_BLOCKED": "The schedule contains bookings that are not compatible with a strict schedule.",
+        "STRICT_SCHEDULE_REQUIRED": "Turn on the strict schedule first.",
+        "RESOURCE_HISTORY_EXISTS": "The strict schedule cannot be turned off: the studio has individual bookings."
+      },
+      "findings": {
+        "overlap": "Overlapping bookings",
+        "unknown_timezone": "Unknown time zone",
+        "undefined_branch": "Branch not set",
+        "invalid_duration": "Invalid duration",
+        "invalid_resource_row": "Incomplete individual booking",
+        "missing_branch_assignment": "Specialist is not assigned to the branch",
+        "missing_working_hours": "Specialist has no working hours",
+        "inactive_specialist": "Specialist is inactive",
+        "other": "Needs review"
+      }
     }
   },
   "appearance": {

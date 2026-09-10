@@ -65,13 +65,23 @@ _BOOKING_RELEVANT_SERVICE_FIELDS = frozenset({
 })
 
 
-def _assert_mode_available(booking_mode: Optional[str]) -> None:
-    """Resource у услуги пока недоступен никому — см. общий гейт §HB-03."""
+def _assert_mode_available(booking_mode: Optional[str], studio) -> None:
+    """Общий гейт §HB-03/HB-24 плюс условие включения из §6.6.
+
+    Resource-услуга без строгого расписания бессмысленна и опасна: её
+    интервал никто не защищает от двойной продажи. Порядок раскатки —
+    сначала strict у студии (аудит наследия), потом resource-каталог.
+    """
     if booking_mode is not None and booking_mode not in AVAILABLE_BOOKING_MODES:
         raise HTTPException(
             status_code=409,
-            detail="Resource-запись пока недоступна — модуль в разработке",
+            detail="Этот режим записи недоступен в текущей версии",
         )
+    if booking_mode == "resource" and not studio.strict_schedule_enabled:
+        raise HTTPException(status_code=409, detail={
+            "code": "STRICT_SCHEDULE_REQUIRED",
+            "message": "Сначала включите строгое расписание студии",
+            "params": {}})
 
 
 async def _bookings_last_30d_by_service(studio_id: int, db: AsyncSession) -> dict[int, int]:
@@ -129,7 +139,7 @@ async def create_service(
     # HB-06: замок студии — до правки каталога (§6.2 п.4: изменение услуги
     # выполняется под тем же замком, что confirm брони).
     studio = await schedule_guard.lock_studio(db, ctx.studio_id)
-    _assert_mode_available(data.booking_mode)
+    _assert_mode_available(data.booking_mode, studio)
     service = Service(studio_id=ctx.studio_id, **data.model_dump())
     db.add(service)
     # Новая услуга сразу меняет каталог, доступный для записи.
@@ -151,11 +161,13 @@ async def update_service(
     studio = await schedule_guard.lock_studio(db, ctx.studio_id)
     service = await _get_service_or_404(service_id, ctx.studio_id, db)
     changes = data.model_dump(exclude_unset=True)
-    _assert_mode_available(changes.get("booking_mode"))
+    _assert_mode_available(changes.get("booking_mode"), studio)
     # Комбинация проверяется по ЭФФЕКТИВНЫМ значениям (патч частичный — новое
     # поле могло не прийти вовсе, а сочетаться с уже сохранённым).
     effective_service_type = changes.get("service_type", service.service_type)
     effective_booking_mode = changes.get("booking_mode", service.booking_mode)
+    if effective_booking_mode != service.booking_mode:
+        await schedule_guard.assert_service_mode_changeable(db, studio, service)
     try:
         reject_resource_group_combo(effective_service_type, effective_booking_mode)
     except ValueError as exc:
@@ -185,6 +197,9 @@ async def delete_service(
 
     studio = await schedule_guard.lock_studio(db, ctx.studio_id)
     service = await _get_service_or_404(service_id, ctx.studio_id, db)
+    # Resource-история держит услугу обязательной ссылкой (§6.1) — 409 вместо
+    # нарушения CHECK при ON DELETE SET NULL.
+    await schedule_guard.assert_service_removable(db, studio, service_id)
     await db.delete(service)
     # Удалённая услуга больше не участвует в каталоге записи.
     await bump_booking_config_version(db, studio)

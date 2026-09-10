@@ -23,7 +23,12 @@ export function useServiceOptions() {
   const canCreateService = getUserRoleFromToken() === 'owner';
 
   const options: SelectOption[] = useMemo(() => {
-    const serviceOptions = services.map(s => ({ value: String(s.id), label: s.name }));
+    // HB-22: создание СОБЫТИЯ предлагает только event-услуги. Поставить
+    // resource-услугу в расписание вручную нельзя — её интервал появляется
+    // при подтверждении записи, и заранее созданный дубль занял бы мастера.
+    const serviceOptions = services
+      .filter(s => s.booking_mode !== 'resource')
+      .map(s => ({ value: String(s.id), label: s.name }));
     if (!canCreateService) return serviceOptions;
     return [...serviceOptions, { value: CREATE_SERVICE_OPTION, label: t('createService') }];
   }, [services, canCreateService, t]);

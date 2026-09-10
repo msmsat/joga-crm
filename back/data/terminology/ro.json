@@ -1,0 +1,84 @@
+{
+  "version": 1,
+  "locale": "ro",
+  "profiles": {
+    "generic": {
+      "staff": {
+        "singular": "specialist",
+        "plural": "specialiști",
+        "accusative": "un specialist"
+      },
+      "offering": {
+        "event": {
+          "singular": "eveniment",
+          "plural": "evenimente",
+          "accusative": "un eveniment"
+        },
+        "resource": {
+          "singular": "serviciu",
+          "plural": "servicii",
+          "accusative": "un serviciu"
+        }
+      },
+      "messages": {
+        "choose_staff": "Alegeți {{staff.accusative}}",
+        "choose_offering": "Alegeți {{offering.accusative}}",
+        "empty_slots": "Nu există ore disponibile",
+        "my_bookings": "Rezervările mele",
+        "confirm_booking": "Confirmă rezervarea"
+      }
+    },
+    "fitness": {
+      "staff": {
+        "singular": "antrenor",
+        "plural": "antrenori",
+        "accusative": "un antrenor"
+      },
+      "offering": {
+        "event": {
+          "singular": "curs",
+          "plural": "cursuri",
+          "accusative": "un curs"
+        },
+        "resource": {
+          "singular": "serviciu",
+          "plural": "servicii",
+          "accusative": "un serviciu"
+        }
+      },
+      "messages": {
+        "choose_staff": "Alegeți {{staff.accusative}}",
+        "choose_offering": "Alegeți {{offering.accusative}}",
+        "empty_slots": "Nu există ore disponibile",
+        "my_bookings": "Rezervările mele",
+        "confirm_booking": "Confirmă rezervarea"
+      }
+    },
+    "beauty": {
+      "staff": {
+        "singular": "specialist",
+        "plural": "specialiști",
+        "accusative": "un specialist"
+      },
+      "offering": {
+        "event": {
+          "singular": "eveniment",
+          "plural": "evenimente",
+          "accusative": "un eveniment"
+        },
+        "resource": {
+          "singular": "serviciu",
+          "plural": "servicii",
+          "accusative": "un serviciu"
+        }
+      },
+      "messages": {
+        "choose_staff": "Alegeți {{staff.accusative}}",
+        "choose_offering": "Alegeți {{offering.accusative}}",
+        "empty_slots": "Nu există ore disponibile",
+        "my_bookings": "Rezervările mele",
+        "confirm_booking": "Confirmă rezervarea"
+      }
+    }
+  }
+}

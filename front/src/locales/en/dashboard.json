@@ -48,13 +48,29 @@
     "namePlaceholder": "Task name…",
     "cancel": "Cancel",
     "submit": "Add",
-    "priority": { "low": "Low", "medium": "Medium", "high": "High" },
-    "priorityHint": { "low": "Low priority", "medium": "Medium priority", "high": "High priority" },
-    "tags": {
-      "Клиент": "Client", "Финансы": "Finance", "Лиды": "Leads",
-      "Отчёты": "Reports", "Журнал": "Journal", "Персонал": "Staff"
+    "priority": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High"
     },
-    "scope": { "mine": "Mine", "admins": "Admins", "trainers": "Trainers" },
+    "priorityHint": {
+      "low": "Low priority",
+      "medium": "Medium priority",
+      "high": "High priority"
+    },
+    "tags": {
+      "Клиент": "Client",
+      "Финансы": "Finance",
+      "Лиды": "Leads",
+      "Отчёты": "Reports",
+      "Журнал": "Journal",
+      "Персонал": "Staff"
+    },
+    "scope": {
+      "mine": "Mine",
+      "admins": "Admins",
+      "trainers": "Trainers"
+    },
     "assigneePlaceholder": "Select an employee",
     "deleteTitle": "Delete task?",
     "deleteMessage": "This action cannot be undone."
@@ -76,5 +92,18 @@
     "expenses": "Expenses",
     "avgCheck": "Avg. check",
     "profit": "Profit"
+  },
+  "bookingModes": {
+    "title": "Booking models",
+    "event": "Events",
+    "resource": "Individual",
+    "events": "Events",
+    "bookings": "Bookings",
+    "attended": "Attended",
+    "pending": "Awaiting confirmation",
+    "hold": "Awaiting payment",
+    "cancelled": "Cancelled",
+    "utilization": "Utilization",
+    "noData": "No data"
   }
 }

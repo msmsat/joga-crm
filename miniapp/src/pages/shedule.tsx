@@ -98,7 +98,7 @@ export default function Shedule({ catalog, onBuySubscription, onNeedAuth }: Shed
      загруженный список, пока идёт запрос. Скелет остаётся ровно для двух
      случаев — первый заход, когда показывать нечего, и по-настоящему долгий
      ответ. Промежуточного «занятия → заглушки → занятия» больше нет. */
-  const cached = dayCache.get(day);
+  const cached = dayCache.get(`${day}|${filters.studioId}`);
   // useMemo ради постоянной ссылки: пустой список иначе создавался бы заново
   // каждый рендер и обнулял три useMemo ниже (фильтры и видимый список).
   const dayClasses = useMemo(() => cached ?? loaded?.lessons ?? [], [cached, loaded]);
@@ -122,6 +122,9 @@ export default function Shedule({ catalog, onBuySubscription, onNeedAuth }: Shed
   useEffect(() => {
     let cancelled = false;
     const wanted = isoDate(date);
+    // Филиал участвует в КЛЮЧЕ кэша: без него список одного филиала показался
+    // бы как список другого при переключении (HB-19 п.2).
+    const key = `${wanted}|${filters.studioId}`;
 
     // Первая же бронь обесценивает все дни разом — занятые места есть в каждой
     // карточке. Поэтому кэш сбрасывается целиком, а не по одному дню.
@@ -138,9 +141,9 @@ export default function Shedule({ catalog, onBuySubscription, onNeedAuth }: Shed
       if (!cancelled) setSlowDay(wanted);
     }, SKELETON_DELAY_MS);
 
-    getLessonsByDate(wanted)
+    getLessonsByDate(wanted, { branch_id: filters.studioId || null })
       .then((data) => {
-        dayCache.set(wanted, data);
+        dayCache.set(key, data);
         if (!cancelled) setLoaded((prev) => ({ day: wanted, lessons: data, first: prev === null }));
       })
       .catch((error) => {
@@ -155,14 +158,21 @@ export default function Shedule({ catalog, onBuySubscription, onNeedAuth }: Shed
       cancelled = true;
       window.clearTimeout(timer);
     };
-  }, [date, lessonsVersion]);
+  }, [date, filters.studioId, lessonsVersion]);
 
   // Варианты фильтров собираются из самого дня: показывать «Олену», которой
   // сегодня нет в расписании, — это выбор, ведущий в пустоту.
-  const services = useMemo(
-    () => [...new Set(dayClasses.map((lesson) => lesson.name).filter(Boolean))],
-    [dayClasses],
-  );
+  // HB-19: услуга в фильтре — числовой ID, подпись отдельно. Два одноимённых
+  // направления перестают быть одним пунктом списка.
+  const services = useMemo(() => {
+    const seen = new Map<number, string>();
+    dayClasses.forEach((lesson) => {
+      if (lesson.service_id != null && !seen.has(lesson.service_id)) {
+        seen.set(lesson.service_id, lesson.name);
+      }
+    });
+    return [...seen.entries()].map(([id, name]) => ({ id, name }));
+  }, [dayClasses]);
   const teachers = useMemo(
     () => [...new Set(dayClasses.map((lesson) => lesson.teacher).filter(Boolean))],
     [dayClasses],
@@ -172,7 +182,7 @@ export default function Shedule({ catalog, onBuySubscription, onNeedAuth }: Shed
     () =>
       dayClasses.filter(
         (lesson) =>
-          (!filters.service || lesson.name === filters.service) &&
+          (!filters.service || lesson.service_id === filters.service) &&
           (!filters.teacher || lesson.teacher === filters.teacher),
       ),
     [dayClasses, filters],
@@ -344,7 +354,16 @@ export default function Shedule({ catalog, onBuySubscription, onNeedAuth }: Shed
         isOpen={isFilterOpen}
         onClose={() => setIsFilterOpen(false)}
         value={filters}
-        onChange={setFilters}
+        onChange={(next) =>
+          // Смена филиала — смена контекста: услуга и специалист прошлого
+          // филиала перестают существовать, и оставлять их выбранными значит
+          // показывать пустой список без объяснения (HB-19 п.2).
+          setFilters(
+            next.studioId !== filters.studioId
+              ? { ...next, service: null, teacher: null }
+              : next,
+          )
+        }
         studios={branches}
         isMultiStudio={isMultiStudio}
         services={services}

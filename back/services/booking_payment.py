@@ -190,6 +190,9 @@ async def start(db: AsyncSession, *, studio_id: int, reservation_id: int,
     параметрами Stripe запрещает прямо (идемпотентность сверяет параметры).
     """
     from routers.checkout.stripe_pay import reserve_checkout
+    from services.schedule_guard import lock_studio
+
+    await lock_studio(db, studio_id)
 
     payload = payload_for(reservation_id=reservation_id, client_id=client_id,
                           lesson_id=lesson_id, amount=terms.funding.price,
@@ -666,19 +669,22 @@ async def pay_link(db: AsyncSession, *, studio_id: int, reservation_id: int,
     """
     from services import stripe_connect
     from routers.checkout.stripe_pay import ATTEMPT_KEY
+    from services.schedule_guard import lock_studio
 
+    await lock_studio(db, studio_id)
     reservation = (await db.execute(
         select(Reservation)
         .join(Lesson, Lesson.id == Reservation.lesson_id)
         .where(Reservation.id == reservation_id, Lesson.studio_id == studio_id)
+        .execution_options(populate_existing=True)
     )).scalar_one_or_none()
     if (reservation is None or reservation.status != "hold"
             or reservation.client_id != client_id):
         return Payable(PayOutcome.STALE)
 
-    lesson = await db.get(Lesson, reservation.lesson_id)
+    lesson = await db.get(Lesson, reservation.lesson_id, populate_existing=True)
     studio = await db.get(Studio, studio_id)
-    client = await db.get(Client, client_id)
+    client = await db.get(Client, client_id, populate_existing=True)
     if (lesson is None or lesson.status == "cancelled" or studio is None
             or client is None or not client.is_active):
         return Payable(PayOutcome.STALE)

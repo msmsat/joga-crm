@@ -1,0 +1,84 @@
+{
+  "version": 1,
+  "locale": "en",
+  "profiles": {
+    "generic": {
+      "staff": {
+        "singular": "specialist",
+        "plural": "specialists",
+        "accusative": "specialist"
+      },
+      "offering": {
+        "event": {
+          "singular": "event",
+          "plural": "events",
+          "accusative": "event"
+        },
+        "resource": {
+          "singular": "service",
+          "plural": "services",
+          "accusative": "service"
+        }
+      },
+      "messages": {
+        "choose_staff": "Choose {{staff.accusative}}",
+        "choose_offering": "Choose {{offering.accusative}}",
+        "empty_slots": "No available times",
+        "my_bookings": "My bookings",
+        "confirm_booking": "Confirm booking"
+      }
+    },
+    "fitness": {
+      "staff": {
+        "singular": "trainer",
+        "plural": "trainers",
+        "accusative": "trainer"
+      },
+      "offering": {
+        "event": {
+          "singular": "class",
+          "plural": "classes",
+          "accusative": "class"
+        },
+        "resource": {
+          "singular": "service",
+          "plural": "services",
+          "accusative": "service"
+        }
+      },
+      "messages": {
+        "choose_staff": "Choose {{staff.accusative}}",
+        "choose_offering": "Choose {{offering.accusative}}",
+        "empty_slots": "No available times",
+        "my_bookings": "My bookings",
+        "confirm_booking": "Confirm booking"
+      }
+    },
+    "beauty": {
+      "staff": {
+        "singular": "professional",
+        "plural": "professionals",
+        "accusative": "professional"
+      },
+      "offering": {
+        "event": {
+          "singular": "event",
+          "plural": "events",
+          "accusative": "event"
+        },
+        "resource": {
+          "singular": "service",
+          "plural": "services",
+          "accusative": "service"
+        }
+      },
+      "messages": {
+        "choose_staff": "Choose {{staff.accusative}}",
+        "choose_offering": "Choose {{offering.accusative}}",
+        "empty_slots": "No available times",
+        "my_bookings": "My bookings",
+        "confirm_booking": "Confirm booking"
+      }
+    }
+  }
+}

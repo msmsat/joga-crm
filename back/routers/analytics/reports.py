@@ -19,6 +19,7 @@ from schemas.analytics.reports import (
 )
 from ._filters import (
     bucket_key,
+    join_hall,
     check_report_range,
     date_bucket,
     fill_series,
@@ -215,7 +216,7 @@ async def metric_series(
             .where(*lesson_conds(f, sid), status_cond)
         )
         if f.branch_id is not None:
-            stmt = stmt.join(Hall, Lesson.hall_id == Hall.id)
+            stmt = join_hall(stmt)
     else:  # new_clients
         bucket = func.date_trunc(group, Client.registration_date)
         stmt = (
@@ -247,7 +248,7 @@ async def _fill_rate_series(f: ReportFilters, sid: int, group: str, db: AsyncSes
         .where(*lesson_conds(f, sid))
     )
     if f.branch_id is not None:
-        stmt = stmt.join(Hall, Lesson.hall_id == Hall.id)
+        stmt = join_hall(stmt)
     rows = (await db.execute(stmt.group_by("period", Lesson.id).order_by("period"))).all()
 
     totals: dict[str, list[int]] = {}

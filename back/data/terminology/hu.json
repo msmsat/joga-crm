@@ -1,0 +1,84 @@
+{
+  "version": 1,
+  "locale": "hu",
+  "profiles": {
+    "generic": {
+      "staff": {
+        "singular": "szakember",
+        "plural": "szakemberek",
+        "accusative": "szakembert"
+      },
+      "offering": {
+        "event": {
+          "singular": "esemény",
+          "plural": "események",
+          "accusative": "eseményt"
+        },
+        "resource": {
+          "singular": "szolgáltatás",
+          "plural": "szolgáltatások",
+          "accusative": "szolgáltatást"
+        }
+      },
+      "messages": {
+        "choose_staff": "Válasszon {{staff.accusative}}",
+        "choose_offering": "Válasszon {{offering.accusative}}",
+        "empty_slots": "Nincs szabad időpont",
+        "my_bookings": "Foglalásaim",
+        "confirm_booking": "Foglalás megerősítése"
+      }
+    },
+    "fitness": {
+      "staff": {
+        "singular": "edző",
+        "plural": "edzők",
+        "accusative": "edzőt"
+      },
+      "offering": {
+        "event": {
+          "singular": "óra",
+          "plural": "órák",
+          "accusative": "órát"
+        },
+        "resource": {
+          "singular": "szolgáltatás",
+          "plural": "szolgáltatások",
+          "accusative": "szolgáltatást"
+        }
+      },
+      "messages": {
+        "choose_staff": "Válasszon {{staff.accusative}}",
+        "choose_offering": "Válasszon {{offering.accusative}}",
+        "empty_slots": "Nincs szabad időpont",
+        "my_bookings": "Foglalásaim",
+        "confirm_booking": "Foglalás megerősítése"
+      }
+    },
+    "beauty": {
+      "staff": {
+        "singular": "szakember",
+        "plural": "szakemberek",
+        "accusative": "szakembert"
+      },
+      "offering": {
+        "event": {
+          "singular": "esemény",
+          "plural": "események",
+          "accusative": "eseményt"
+        },
+        "resource": {
+          "singular": "szolgáltatás",
+          "plural": "szolgáltatások",
+          "accusative": "szolgáltatást"
+        }
+      },
+      "messages": {
+        "choose_staff": "Válasszon {{staff.accusative}}",
+        "choose_offering": "Válasszon {{offering.accusative}}",
+        "empty_slots": "Nincs szabad időpont",
+        "my_bookings": "Foglalásaim",
+        "confirm_booking": "Foglalás megerősítése"
+      }
+    }
+  }
+}

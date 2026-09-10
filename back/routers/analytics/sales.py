@@ -27,6 +27,7 @@ from schemas.analytics.reports import (
     SalesSeriesPoint,
 )
 from ._filters import (
+    shift_range,
     bucket_key,
     date_bucket,
     fill_series,
@@ -174,10 +175,7 @@ async def _product_rows(f: ReportFilters, sid: int, prev_from: date, prev_to: da
         .order_by(func.sum(Operation.amount).desc())
     )).all()
 
-    prev_f = ReportFilters(
-        date_from=prev_from, date_to=prev_to,
-        branch_id=f.branch_id, hall_id=f.hall_id, trainer_id=f.trainer_id, service_id=f.service_id,
-    )
+    prev_f = shift_range(f, prev_from, prev_to)
     prev_revenue_rows = (await db.execute(
         select(Operation.product_id, func.coalesce(func.sum(Operation.amount), 0))
         .where(*op_conds(prev_f, sid), Operation.type == "in")
@@ -295,10 +293,7 @@ async def analytics_sales(
 ):
     sid = ctx.studio_id
     prev_from, prev_to = prev_range(f)
-    prev_f = ReportFilters(
-        date_from=prev_from, date_to=prev_to,
-        branch_id=f.branch_id, hall_id=f.hall_id, trainer_id=f.trainer_id, service_id=f.service_id,
-    )
+    prev_f = shift_range(f, prev_from, prev_to)
 
     revenue, sales_count = await _revenue_count(f, sid, db)
     prev_revenue, prev_sales_count = await _revenue_count(prev_f, sid, db)

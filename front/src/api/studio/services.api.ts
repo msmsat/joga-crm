@@ -1,4 +1,5 @@
 import { client } from '../client'
+import type { ServiceBookingMode, TerminologyProfile } from '../booking/hybrid.types'
 
 // Зеркало бэкенд-схемы ServiceRead (back/schemas/studio/studio.py).
 export interface ServiceRead {
@@ -14,6 +15,14 @@ export interface ServiceRead {
   bookings_count: number
   revenue_total: number
   bookings_last_30d: number
+  // HB-15: механика записи — отдельное поле, а не вывод из service_type.
+  // Формат обслуживания (group/individual) и механика (event/resource) —
+  // разные оси, и выводить одну из другой запрещено (§4.4).
+  booking_mode: ServiceBookingMode
+  buffer_before_min: number
+  buffer_after_min: number
+  is_bookable: boolean
+  terminology_profile: TerminologyProfile | null
 }
 
 export interface ServiceCreate {
@@ -25,6 +34,11 @@ export interface ServiceCreate {
   service_type?: string | null
   color?: string | null
   max_clients?: number | null
+  booking_mode?: ServiceBookingMode
+  buffer_before_min?: number
+  buffer_after_min?: number
+  is_bookable?: boolean
+  terminology_profile?: TerminologyProfile | null
 }
 
 export type ServiceUpdate = Partial<ServiceCreate>

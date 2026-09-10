@@ -1,8 +1,11 @@
+import i18n from '../i18n';
+import type { BookingCapabilities, Terminology, BookingMode, TerminologyProfile } from './hybrid.types';
 import { apiGet, resolveImageUrl } from './client';
 
 // Повторяет back/routers/booking/miniapp_studio.py — StudioCatalog и вложенные схемы
 
 export interface StudioInfo {
+  tz_iana: string | null;
   id: number;
   name: string;
   currency: string;
@@ -52,6 +55,12 @@ export interface Studio {
 }
 
 export interface StudioService {
+  booking_mode: BookingMode;
+  service_type: 'group' | 'individual';
+  buffer_before_min: number;
+  buffer_after_min: number;
+  is_bookable: boolean;
+  terminology_profile: TerminologyProfile | null;
   id: number;
   name: string;
   price: number;
@@ -76,6 +85,8 @@ export interface SubscriptionPackageInfo {
 }
 
 export interface StudioCatalog {
+  booking_capabilities: BookingCapabilities;
+  terminology: Terminology;
   studio: StudioInfo;
   rules: BookingRules;
   branches: Studio[];
@@ -90,8 +101,8 @@ export interface StudioCatalog {
  * резолвим до абсолютного URL здесь же, один раз на весь каталог, чтобы ни
  * один из потребителей (DesktopNav, HomeGreeting, StudioCard) не забыл это сделать.
  */
-export const getStudioCatalog = async (): Promise<StudioCatalog> => {
-  const catalog = await apiGet<StudioCatalog>('/global/studio');
+export const getStudioCatalog = async (locale = i18n.language): Promise<StudioCatalog> => {
+  const catalog = await apiGet<StudioCatalog>(`/global/studio?locale=${encodeURIComponent(locale)}`);
   return {
     ...catalog,
     studio: { ...catalog.studio, logo_url: resolveImageUrl(catalog.studio.logo_url) ?? null },

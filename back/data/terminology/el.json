@@ -1,0 +1,84 @@
+{
+  "version": 1,
+  "locale": "el",
+  "profiles": {
+    "generic": {
+      "staff": {
+        "singular": "ειδικός",
+        "plural": "ειδικοί",
+        "accusative": "ειδικό"
+      },
+      "offering": {
+        "event": {
+          "singular": "εκδήλωση",
+          "plural": "εκδηλώσεις",
+          "accusative": "εκδήλωση"
+        },
+        "resource": {
+          "singular": "υπηρεσία",
+          "plural": "υπηρεσίες",
+          "accusative": "υπηρεσία"
+        }
+      },
+      "messages": {
+        "choose_staff": "Επιλέξτε {{staff.accusative}}",
+        "choose_offering": "Επιλέξτε {{offering.accusative}}",
+        "empty_slots": "Δεν υπάρχουν διαθέσιμες ώρες",
+        "my_bookings": "Οι κρατήσεις μου",
+        "confirm_booking": "Επιβεβαίωση κράτησης"
+      }
+    },
+    "fitness": {
+      "staff": {
+        "singular": "προπονητής",
+        "plural": "προπονητές",
+        "accusative": "προπονητή"
+      },
+      "offering": {
+        "event": {
+          "singular": "μάθημα",
+          "plural": "μαθήματα",
+          "accusative": "μάθημα"
+        },
+        "resource": {
+          "singular": "υπηρεσία",
+          "plural": "υπηρεσίες",
+          "accusative": "υπηρεσία"
+        }
+      },
+      "messages": {
+        "choose_staff": "Επιλέξτε {{staff.accusative}}",
+        "choose_offering": "Επιλέξτε {{offering.accusative}}",
+        "empty_slots": "Δεν υπάρχουν διαθέσιμες ώρες",
+        "my_bookings": "Οι κρατήσεις μου",
+        "confirm_booking": "Επιβεβαίωση κράτησης"
+      }
+    },
+    "beauty": {
+      "staff": {
+        "singular": "επαγγελματίας",
+        "plural": "επαγγελματίες",
+        "accusative": "επαγγελματία"
+      },
+      "offering": {
+        "event": {
+          "singular": "εκδήλωση",
+          "plural": "εκδηλώσεις",
+          "accusative": "εκδήλωση"
+        },
+        "resource": {
+          "singular": "υπηρεσία",
+          "plural": "υπηρεσίες",
+          "accusative": "υπηρεσία"
+        }
+      },
+      "messages": {
+        "choose_staff": "Επιλέξτε {{staff.accusative}}",
+        "choose_offering": "Επιλέξτε {{offering.accusative}}",
+        "empty_slots": "Δεν υπάρχουν διαθέσιμες ώρες",
+        "my_bookings": "Οι κρατήσεις μου",
+        "confirm_booking": "Επιβεβαίωση κράτησης"
+      }
+    }
+  }
+}

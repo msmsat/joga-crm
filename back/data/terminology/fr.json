@@ -1,0 +1,84 @@
+{
+  "version": 1,
+  "locale": "fr",
+  "profiles": {
+    "generic": {
+      "staff": {
+        "singular": "spécialiste",
+        "plural": "spécialistes",
+        "accusative": "un spécialiste"
+      },
+      "offering": {
+        "event": {
+          "singular": "événement",
+          "plural": "événements",
+          "accusative": "un événement"
+        },
+        "resource": {
+          "singular": "prestation",
+          "plural": "prestations",
+          "accusative": "une prestation"
+        }
+      },
+      "messages": {
+        "choose_staff": "Choisissez {{staff.accusative}}",
+        "choose_offering": "Choisissez {{offering.accusative}}",
+        "empty_slots": "Aucun créneau disponible",
+        "my_bookings": "Mes réservations",
+        "confirm_booking": "Confirmer la réservation"
+      }
+    },
+    "fitness": {
+      "staff": {
+        "singular": "coach",
+        "plural": "coachs",
+        "accusative": "un coach"
+      },
+      "offering": {
+        "event": {
+          "singular": "cours",
+          "plural": "cours",
+          "accusative": "un cours"
+        },
+        "resource": {
+          "singular": "prestation",
+          "plural": "prestations",
+          "accusative": "une prestation"
+        }
+      },
+      "messages": {
+        "choose_staff": "Choisissez {{staff.accusative}}",
+        "choose_offering": "Choisissez {{offering.accusative}}",
+        "empty_slots": "Aucun créneau disponible",
+        "my_bookings": "Mes réservations",
+        "confirm_booking": "Confirmer la réservation"
+      }
+    },
+    "beauty": {
+      "staff": {
+        "singular": "professionnel",
+        "plural": "professionnels",
+        "accusative": "un professionnel"
+      },
+      "offering": {
+        "event": {
+          "singular": "événement",
+          "plural": "événements",
+          "accusative": "un événement"
+        },
+        "resource": {
+          "singular": "prestation",
+          "plural": "prestations",
+          "accusative": "une prestation"
+        }
+      },
+      "messages": {
+        "choose_staff": "Choisissez {{staff.accusative}}",
+        "choose_offering": "Choisissez {{offering.accusative}}",
+        "empty_slots": "Aucun créneau disponible",
+        "my_bookings": "Mes réservations",
+        "confirm_booking": "Confirmer la réservation"
+      }
+    }
+  }
+}

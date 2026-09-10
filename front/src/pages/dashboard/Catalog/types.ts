@@ -1,3 +1,5 @@
+import type { ServiceBookingMode, TerminologyProfile } from '../../../api/booking/hybrid.types';
+
 export type CatalogTab = 'studios' | 'services' | 'subscriptions';
 
 export interface Hall {
@@ -45,4 +47,11 @@ export interface Service {
   bookings_total: number;
   revenue_total: number;
   bookings_last_30d: number;
+  // HB-15: механика записи приходит с сервера отдельным полем. Выводить её из
+  // `type` запрещено: индивидуальный формат ещё не значит выбор времени.
+  booking_mode: ServiceBookingMode;
+  buffer_before_min: number;
+  buffer_after_min: number;
+  is_bookable: boolean;
+  terminology_profile: TerminologyProfile | null;
 }

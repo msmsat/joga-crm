@@ -4,7 +4,8 @@
     "trainers": "Trainer",
     "halls": "Räume",
     "day": "Tag",
-    "week": "Woche"
+    "week": "Woche",
+    "resourceBooking": "Individuell"
   },
   "daySummary": {
     "classesToday": "Kurse heute",
@@ -156,5 +157,19 @@
     "message_one": "{{count}} Kunde erhält eine Stornierungsmitteilung.",
     "message_other": "{{count}} Kunden erhalten eine Stornierungsmitteilung.",
     "confirm": "Kurs stornieren"
+  },
+  "resourceBooking": {
+    "title": "Individuelle Buchung",
+    "service": "Leistung",
+    "branch": "Filiale",
+    "client": "Kunde",
+    "date": "Datum",
+    "slot": "Zeit",
+    "time": "Zeit",
+    "staff": "Fachkraft",
+    "duration": "Dauer, Min",
+    "price": "Preis",
+    "noSlots": "An diesem Tag ist keine Zeit frei",
+    "configIncomplete": "Der Zeitplan dieser Leistung ist noch nicht eingerichtet"
   }
 }

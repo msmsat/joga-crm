@@ -1,0 +1,84 @@
+{
+  "version": 1,
+  "locale": "sq",
+  "profiles": {
+    "generic": {
+      "staff": {
+        "singular": "specialist",
+        "plural": "specialistë",
+        "accusative": "specialist"
+      },
+      "offering": {
+        "event": {
+          "singular": "aktivitet",
+          "plural": "aktivitete",
+          "accusative": "aktivitet"
+        },
+        "resource": {
+          "singular": "shërbim",
+          "plural": "shërbime",
+          "accusative": "shërbim"
+        }
+      },
+      "messages": {
+        "choose_staff": "Zgjidhni {{staff.accusative}}",
+        "choose_offering": "Zgjidhni {{offering.accusative}}",
+        "empty_slots": "Nuk ka orare të lira",
+        "my_bookings": "Rezervimet e mia",
+        "confirm_booking": "Konfirmo rezervimin"
+      }
+    },
+    "fitness": {
+      "staff": {
+        "singular": "trajner",
+        "plural": "trajnerë",
+        "accusative": "trajner"
+      },
+      "offering": {
+        "event": {
+          "singular": "orë mësimi",
+          "plural": "orë mësimi",
+          "accusative": "orë mësimi"
+        },
+        "resource": {
+          "singular": "shërbim",
+          "plural": "shërbime",
+          "accusative": "shërbim"
+        }
+      },
+      "messages": {
+        "choose_staff": "Zgjidhni {{staff.accusative}}",
+        "choose_offering": "Zgjidhni {{offering.accusative}}",
+        "empty_slots": "Nuk ka orare të lira",
+        "my_bookings": "Rezervimet e mia",
+        "confirm_booking": "Konfirmo rezervimin"
+      }
+    },
+    "beauty": {
+      "staff": {
+        "singular": "profesionist",
+        "plural": "profesionistë",
+        "accusative": "profesionist"
+      },
+      "offering": {
+        "event": {
+          "singular": "aktivitet",
+          "plural": "aktivitete",
+          "accusative": "aktivitet"
+        },
+        "resource": {
+          "singular": "shërbim",
+          "plural": "shërbime",
+          "accusative": "shërbim"
+        }
+      },
+      "messages": {
+        "choose_staff": "Zgjidhni {{staff.accusative}}",
+        "choose_offering": "Zgjidhni {{offering.accusative}}",
+        "empty_slots": "Nuk ka orare të lira",
+        "my_bookings": "Rezervimet e mia",
+        "confirm_booking": "Konfirmo rezervimin"
+      }
+    }
+  }
+}

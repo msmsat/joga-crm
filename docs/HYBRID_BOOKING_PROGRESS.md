@@ -281,7 +281,102 @@
 
 ## HB-07. Закрыть обходы guards и автоматических действий
 
-**Статус:** NOT_STARTED
+**Статус:** IN_PROGRESS — реализация расширена после независимого ревью; актуальные изменения и результаты повторной приемки в `HYBRID_BOOKING_EXECUTION.md`.
 **Зависимости:** HB-06 (готово)
 
 Следующий шаг — начать эту задачу: через граф кода найти ВСЕ вызовы booking-переходов и запись в Lesson/Reservation/графики (`back/routers/booking/public.py`, `back/routers/booking/miniapp_lessons.py`, `back/routers/clients/profiles.py`, `back/services/proposals.py`, `back/services/ai_tools.py`, `back/services/booking_payment.py`, `back/routers/checkout/stripe_pay.py`, `back/workers/main.py`); зафиксировать список путей и guard для каждого в progress-файле; подключить страховку в местах, реально способных затронуть strict-студию; проверить `approve`/`reject`/`activate_paid`/освобождение hold — для них замок Studio должен браться прежде Reservation/StripeCheckout там, где операция меняет расписание, с перестройкой границы транзакции, если платёжный путь уже взял финансовую блокировку.
+
+---
+
+# Сессия 10.09.2026 — Claude (Opus 5), VSCode. Завершение HB-07…HB-27
+
+Точка отсчёта: рабочее дерево после сессий Codex. Полный backend до правок —
+**1496 passed, 0 failed** (`cd back && venv\Scripts\python.exe -m pytest tests -q`, 275.95 s).
+Alembic: одна голова `6cdd4f27a359`. Dev-БД (`yogoko_db`) стоит на `f061d8187ad4`
+и НЕ мигрировалась (чужие данные, отдельное поручение); тестовая база ставится из
+моделей (`python -m scripts.init_test_db`).
+
+## HB-23. Дашборд и аналитика — DONE
+
+**Изменено:** `back/routers/analytics/_filters.py` (фильтр `booking_mode`,
+`join_hall` вместо INNER JOIN, `shift_range`), `overview.py`, `reports.py`,
+`retention.py`, `utilization.py`, `team.py`, `sales.py`,
+`back/schemas/analytics/reports.py` (`BookingModeSlice`).
+**Создано:** `back/routers/analytics/booking_modes.py`, `back/tests/test_hybrid_analytics.py`.
+
+- AC-29: беззальная resource-запись больше не отсеивается на JOIN — фильтр
+  филиала берёт `Lesson.branch_id`, зал остаётся запасным путём для наследия.
+- §4.1: событий ≠ записей (`count(distinct Lesson.id)` против `count(Reservation.id)`),
+  `pending`/`hold` отдельными числами и вне посещений; загрузка event по местам,
+  resource — по объединённым интервалам с буферами против рабочего времени
+  за вычетом групп и отсутствий; нулевой знаменатель = `null`, не 0 %.
+- Запросы пакетные: число SELECT не зависит от длины периода и числа мастеров.
+
+**Проверки:** `pytest tests/test_hybrid_analytics.py` — 5 passed;
+срез analytics/report/team/sales/utilization/retention — 55 passed.
+
+## HB-24. Аудит наследия и безопасное включение — DONE
+
+**Создано:** `back/services/hybrid_audit.py`, `back/scripts/hybrid_booking_audit.py`,
+`back/tests/test_hybrid_activation.py`.
+**Изменено:** `back/schemas/schedule/hybrid.py` (`AVAILABLE_BOOKING_MODES` открыт),
+`back/routers/settings/general.py` (`assert_can_activate` под уже взятым замком),
+`back/schemas/settings/general.py` (`strict_schedule_enabled` в PATCH),
+`back/routers/studio/services.py` (resource-услуга требует strict; защита
+удаления и смены механики), `back/services/schedule_guard.py`
+(`assert_service_removable`, `assert_service_mode_changeable`),
+`back/tests/test_hybrid_config.py` (контракт HB-03 обновлён под HB-24).
+
+- Аудит находит: `overlap`, `unknown_timezone`, `undefined_branch`,
+  `invalid_duration`, `invalid_resource_row`, `missing_branch_assignment`,
+  `missing_working_hours`, `inactive_specialist`. Ничего не чинит.
+- Включение strict/resource повторяет проверки в транзакции включения;
+  resource без strict — 409 `STRICT_SCHEDULE_REQUIRED`; strict нельзя снять,
+  пока есть resource-интервалы (409 `RESOURCE_HISTORY_EXISTS`); откат режима
+  в `event` разрешён и обслуживание существующих броней сохраняется (QA-26).
+- Скрипт read-only, `--studio-id` обязателен, контактов клиентов в выводе нет,
+  код возврата 1 при блокирующих находках.
+
+**Проверки:** `pytest tests/test_hybrid_activation.py` — 7 passed;
+`tests/test_hybrid_config.py` — 2 passed.
+
+## HB-25. Уведомления как durable-намерение — DONE
+
+**Создано:** `back/models/booking_notification.py`,
+`back/services/booking_notifications.py`,
+`back/migrations/versions/b3f7a1d4c209_hb25_booking_notification_intents.py`,
+`back/tests/test_hybrid_notifications.py`.
+**Изменено:** `back/models/__init__.py`, `back/services/booking.py`
+(`record_result` в create/cancel/approve, отдельный код на `activate_paid`),
+`back/services/resource_reschedule.py`, `back/services/outbox.py` и
+`back/services/notifier.py` (причинный ключ дедупликации вместо календарного
+часа), `back/workers/main.py` (разбор намерений тем же коротким проходом),
+`back/services/hybrid_http.py` + оба `hybrid.py`-роутера (экспорт в GCal
+после commit через BackgroundTasks).
+
+- Ключ `(reservation_id, lesson_version, event_code)`; `pending → hold → active`
+  различается кодом, перенос — версией занятия.
+- Откат транзакции перехода уносит намерение; commit гарантирует попытку.
+- 5 попыток, интервалы 10/30/60/300/300 с, затем terminal `failed` с диагностикой.
+- Сеть только в воркере, после commit, вне замка студии.
+
+**Миграция:** `b3f7a1d4c209` (одна новая таблица, ничего существующего не
+трогает). `alembic heads` → `b3f7a1d4c209` (одна голова).
+
+**Проверки:** `pytest tests/test_hybrid_notifications.py` — 7 passed;
+срез notif/booking/outbox/payment/saga/lesson/agent/ai — 622 passed.
+Полный backend после HB-23…25 — **1514 passed, 1 failed** (устаревшая заглушка
+`fake_claim` в `tests/test_deliver.py` без нового `causal`; подпись дополнена,
+поведенческие проверки не тронуты) → повторный прогон файла 2 passed.
+
+## HB-17. Настройки и каталог CRM — DONE
+
+**Создано:** `front/src/pages/dashboard/Settings/components/tabs/BookingModelCard.tsx`.
+**Изменено:** `GeneralTab.tsx` (карточка только владельцу), `EditService.tsx`
+(механика записи, буферы, доступность, вместимость скрыта у resource),
+`front/src/api/studio/services.api.ts`, `front/src/pages/dashboard/Catalog/types.ts`,
+`useCatalogList.ts`, `front/src/components/ui/modal/Segmented.tsx` (`disabled`),
+локали `settings.json`/`catalog.json`/`common.json`.
+
+**Проверки:** `npm run build` — успешно; `python scripts/i18n/verify.py` —
+27 расхождений, все ПРЕДСУЩЕСТВУЮЩИЕ (тот же список, что до правок).

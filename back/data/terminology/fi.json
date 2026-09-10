@@ -1,0 +1,84 @@
+{
+  "version": 1,
+  "locale": "fi",
+  "profiles": {
+    "generic": {
+      "staff": {
+        "singular": "asiantuntija",
+        "plural": "asiantuntijat",
+        "accusative": "asiantuntija"
+      },
+      "offering": {
+        "event": {
+          "singular": "tapahtuma",
+          "plural": "tapahtumat",
+          "accusative": "tapahtuma"
+        },
+        "resource": {
+          "singular": "palvelu",
+          "plural": "palvelut",
+          "accusative": "palvelu"
+        }
+      },
+      "messages": {
+        "choose_staff": "Valitse {{staff.accusative}}",
+        "choose_offering": "Valitse {{offering.accusative}}",
+        "empty_slots": "Ei vapaita aikoja",
+        "my_bookings": "Omat varaukset",
+        "confirm_booking": "Vahvista varaus"
+      }
+    },
+    "fitness": {
+      "staff": {
+        "singular": "ohjaaja",
+        "plural": "ohjaajat",
+        "accusative": "ohjaaja"
+      },
+      "offering": {
+        "event": {
+          "singular": "tunti",
+          "plural": "tunnit",
+          "accusative": "tunti"
+        },
+        "resource": {
+          "singular": "palvelu",
+          "plural": "palvelut",
+          "accusative": "palvelu"
+        }
+      },
+      "messages": {
+        "choose_staff": "Valitse {{staff.accusative}}",
+        "choose_offering": "Valitse {{offering.accusative}}",
+        "empty_slots": "Ei vapaita aikoja",
+        "my_bookings": "Omat varaukset",
+        "confirm_booking": "Vahvista varaus"
+      }
+    },
+    "beauty": {
+      "staff": {
+        "singular": "ammattilainen",
+        "plural": "ammattilaiset",
+        "accusative": "ammattilainen"
+      },
+      "offering": {
+        "event": {
+          "singular": "tapahtuma",
+          "plural": "tapahtumat",
+          "accusative": "tapahtuma"
+        },
+        "resource": {
+          "singular": "palvelu",
+          "plural": "palvelut",
+          "accusative": "palvelu"
+        }
+      },
+      "messages": {
+        "choose_staff": "Valitse {{staff.accusative}}",
+        "choose_offering": "Valitse {{offering.accusative}}",
+        "empty_slots": "Ei vapaita aikoja",
+        "my_bookings": "Omat varaukset",
+        "confirm_booking": "Vahvista varaus"
+      }
+    }
+  }
+}

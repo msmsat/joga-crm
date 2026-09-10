@@ -61,6 +61,46 @@
         "Pondělí",
         "Neděle"
       ]
+    },
+    "booking": {
+      "title": "Model rezervací",
+      "subtitle": "Jak se k vám klienti objednávají",
+      "mode": "Model rezervací",
+      "modeHint": "Události — klient se přihlásí na lekci v rozvrhu. Individuálně — klient si vybere specialistu a čas. Smíšeně — obojí najednou.",
+      "profile": "Oborová slova",
+      "profileHint": "Vybírá slova pro specialisty a služby. Mění se jen formulace — role, ceny ani model rezervací ne.",
+      "strict": "Přísný rozvrh",
+      "strictHint": "Zakazuje obsadit specialistu nebo výhradní sál dvakrát. Je nutný před zapnutím individuálních rezervací.",
+      "modes": {
+        "event": "Události",
+        "resource": "Individuálně",
+        "hybrid": "Smíšeně"
+      },
+      "profiles": {
+        "generic": "Neutrálně",
+        "fitness": "Fitness",
+        "beauty": "Krása"
+      },
+      "preview": {
+        "event": "Událost",
+        "resource": "Individuálně"
+      },
+      "errors": {
+        "AUDIT_BLOCKED": "V rozvrhu jsou rezervace neslučitelné s přísným režimem.",
+        "STRICT_SCHEDULE_REQUIRED": "Nejprve zapněte přísný rozvrh.",
+        "RESOURCE_HISTORY_EXISTS": "Přísný rozvrh nelze vypnout: studio má individuální rezervace."
+      },
+      "findings": {
+        "overlap": "Překryv rezervací",
+        "unknown_timezone": "Neznámé časové pásmo",
+        "undefined_branch": "Není určena pobočka",
+        "invalid_duration": "Neplatná délka",
+        "invalid_resource_row": "Neúplná individuální rezervace",
+        "missing_branch_assignment": "Specialista není přiřazen k pobočce",
+        "missing_working_hours": "Specialista nemá pracovní dobu",
+        "inactive_specialist": "Specialista je neaktivní",
+        "other": "Vyžaduje kontrolu"
+      }
     }
   },
   "appearance": {

@@ -142,7 +142,17 @@
       "priceShort": "Cena",
       "durationShort": "Délka",
       "statSeats": "Místa",
-      "colorHint": "Lekce jsou v mřížce deníku zvýrazněné touto barvou."
+      "colorHint": "Lekce jsou v mřížce deníku zvýrazněné touto barvou.",
+      "bookingMode": "Mechanika rezervace",
+      "bookingModeEvent": "Přihlášení na lekci",
+      "bookingModeResource": "Výběr času",
+      "bookingModeEventHint": "Klient se přihlásí na lekci, kterou už máte v rozvrhu.",
+      "bookingModeResourceHint": "Klient si vybere specialistu a volný čas; interval ({{offering}}) vznikne při potvrzení.",
+      "bookable": "Lze rezervovat",
+      "bookableOn": "Ano",
+      "bookableOff": "Ne",
+      "bufferBefore": "Rezerva před",
+      "bufferAfter": "Rezerva po"
     },
     "package": {
       "titleNew": "Nový balíček",

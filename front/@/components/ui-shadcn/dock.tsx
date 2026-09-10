@@ -150,4 +150,7 @@ const DockIcon = ({
 
 DockIcon.displayName = "DockIcon"
 
-export { Dock, DockIcon, dockVariants }
+// dockVariants наружу не экспортируется: правило react-refresh требует, чтобы
+// файл с компонентами экспортировал только компоненты, а вне этого файла
+// вариант никем не используется (проверено поиском по репозиторию).
+export { Dock, DockIcon }

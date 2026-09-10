@@ -1,3 +1,6 @@
+import { useBusinessTerms } from '../hooks/useBusinessTerms';
+import { useResourceBooking } from '../hooks/useResourceBooking';
+import ResourceBookingSheet from '../components/booking/ResourceBookingSheet';
 import { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
@@ -16,7 +19,7 @@ import {
   type UpcomingLessonResponse,
   type PastLessonResponse,
 } from '../api/lessons';
-import { cancelLesson, rateLesson } from '../api/user';
+import { cancelReservation, rateReservation } from '../api/user';
 import { useTelegram } from '../hooks/useTelegram';
 import { notify } from '../lib/notify';
 import { bumpLessons, useLessonsVersion } from '../lib/revision';
@@ -25,9 +28,14 @@ type MyLesson = UpcomingLessonResponse | PastLessonResponse;
 
 export default function MyLessons() {
   const { t, i18n } = useTranslation();
+  const business = useBusinessTerms();
+  // Перенос идёт тем же выбором времени, что и новая запись, — другая пара
+  // серверных команд внутри (quote переноса + expected_version).
+  const resource = useResourceBooking();
   const { tg, vibrateLight, vibrateMedium } = useTelegram();
 
   const [upcoming, setUpcoming] = useState<UpcomingLessonResponse[]>([]);
+  const [cancelled, setCancelled] = useState<PastLessonResponse[]>([]);
   const [past, setPast] = useState<PastLessonResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -57,10 +65,11 @@ export default function MyLessons() {
         const data = await getMyLessons();
         setUpcoming(data.upcoming);
         setPast(data.past);
+        setCancelled(data.cancelled);
 
         const initialRatings: { [key: number]: number } = {};
         data.past.forEach((lesson) => {
-          if (lesson.rating) initialRatings[lesson.id] = lesson.rating;
+          if (lesson.rating) initialRatings[lesson.reservation_id] = lesson.rating;
         });
         setRatings(initialRatings);
       } catch (err) {
@@ -82,7 +91,7 @@ export default function MyLessons() {
       const next: { [key: number]: string } = {};
 
       upcoming.forEach((lesson) => {
-        const diff = new Date(lesson.start_time).getTime() - now;
+        const diff = new Date(lesson.starts_at ?? lesson.start_time).getTime() - now;
         next[lesson.id] =
           diff > 0
             ? t('mylessons.remaining', {
@@ -112,6 +121,7 @@ export default function MyLessons() {
     };
   }, [anchor, mode]);
 
+  const periodCancelled = useMemo(() => cancelled.filter((lesson) => inPeriod(lesson.start_time)), [cancelled, inPeriod]);
   const periodPast = useMemo(
     () => past.filter((lesson) => inPeriod(lesson.start_time)),
     [past, inPeriod],
@@ -156,15 +166,13 @@ export default function MyLessons() {
     );
   };
 
-  /** Отмена записи. Список перечитываем, а не фильтруем по lesson_id: при
-   *  включённой «Повторной записи» броней на одно занятие бывает две, сервер
-   *  снимает последнюю, а фильтр убрал бы с экрана обе. */
+  /** Отмена выбранной брони; соседняя запись на то же занятие сохраняется. */
   const cancelBooking = async () => {
     if (!activeLesson) return;
 
     setIsProcessing(true);
     try {
-      await cancelLesson(activeLesson.id);
+      await cancelReservation(activeLesson.reservation_id);
       // Освободившееся место видно и в расписании — объявляем изменение всем.
       bumpLessons();
       setIsModalOpen(false);
@@ -192,8 +200,10 @@ export default function MyLessons() {
     }
 
     try {
-      await rateLesson(classId, rating);
+      await rateReservation(classId, rating);
+      bumpLessons();
     } catch (error) {
+      setRatings((current) => ({ ...current, [classId]: past.find((item) => item.reservation_id === classId)?.rating ?? 0 }));
       console.error('Не вдалося зберегти оцінку:', error);
       notify(error instanceof Error ? error.message : t('mylessons.save_review_error'));
     }
@@ -213,7 +223,7 @@ export default function MyLessons() {
 
   return (
     <>
-      <ScreenHeader title={t('mylessons.title')} />
+      <ScreenHeader title={business.message('my_bookings')} />
 
       {/* Полоса управления периодом и сводка — друг под другом на всех
           ширинах: один столбец сверху вниз читается без переучивания. */}
@@ -276,7 +286,7 @@ export default function MyLessons() {
             </>
           }
         />
-      ) : periodUpcoming.length === 0 && periodPast.length === 0 ? (
+      ) : periodUpcoming.length === 0 && periodPast.length === 0 && periodCancelled.length === 0 ? (
         <EmptyState
           title={t('mylessons.no_lessons_period')}
           hint={t('mylessons.no_lessons_period_hint')}
@@ -297,17 +307,17 @@ export default function MyLessons() {
                     // Коврик в ключе: при «Повторной записи» у одного занятия
                     // бывает две брони, и по одному lesson_id React увидел бы
                     // дубль ключа и склеил карточки.
-                    key={`upcoming-${cls.id}-${cls.spot_number}`}
+                    key={cls.reservation_id}
                     index={i}
                     title={translateName(cls.name)}
                     statusLabel={
                       cls.status === 'pending'
                         ? t('mylessons.awaiting_confirmation')
-                        : t('mylessons.status.upcoming')
+                        : cls.status === 'hold' ? t('mylessons.status.hold') : t('mylessons.status.upcoming')
                     }
                     statusTone={cls.status === 'pending' ? 'brand' : 'neutral'}
                     meta={`${formatDate(cls.start_time)}, ${cls.time} · ${cls.teacher}`}
-                    matLabel={t('mylessons.mat_label', { spot: cls.spot_number })}
+                    matLabel={cls.booking_mode === 'resource' ? '' : t('mylessons.mat_label', { spot: cls.spot_number })}
                     countdown={countdowns[cls.id] || t('mylessons.counting_time')}
                     {...(cls.debt > 0
                       ? { paymentLabel: t('mylessons.unpaid', { amount: cls.debt_str }), paymentTone: 'debt' as const }
@@ -315,7 +325,7 @@ export default function MyLessons() {
                         ? { paymentLabel: t('mylessons.trial'), paymentTone: 'trial' as const }
                         : {})}
                     onOpen={() => openLesson(cls, false)}
-                    footer={
+                    footer={cls.booking_mode === 'event' &&
                       <CoffeeStrip
                         lessonId={cls.id}
                         coffee={cls.coffee}
@@ -323,6 +333,22 @@ export default function MyLessons() {
                       />
                     }
                   />
+                ))}
+              </div>
+            </>
+          )}
+
+          {periodCancelled.length > 0 && (
+            <>
+              <SectionLabel trailing={String(periodCancelled.length)}>{t('mylessons.status.cancelled')}</SectionLabel>
+              <div className="flex flex-col gap-3 px-5 dt:gap-4">
+                {periodCancelled.map((item) => (
+                  <button key={item.reservation_id} type="button" onClick={() => openLesson(item, true)}
+                    className="rounded-[22px] bg-card p-5 text-left shadow-soft">
+                    <div className="font-bold text-card-foreground">{translateName(item.name)}</div>
+                    <div className="mt-2 text-sm text-muted-foreground">{formatDate(item.start_time)}, {item.time} · {item.teacher}</div>
+                    <div className="mt-2 text-xs text-muted-foreground">{t('mylessons.status.cancelled')}</div>
+                  </button>
                 ))}
               </div>
             </>
@@ -336,16 +362,16 @@ export default function MyLessons() {
               <div className="flex flex-col gap-3 px-5 dt:gap-4">
                 {periodPast.map((cls, i) => (
                   <PastCard
-                    key={`past-${cls.id}-${cls.spot_number}`}
+                    key={cls.reservation_id}
                     index={i}
-                    lessonId={cls.id}
+                    lessonId={cls.reservation_id}
                     title={translateName(cls.name)}
                     statusLabel={t('mylessons.status.past')}
                     meta={`${formatDate(cls.start_time)}, ${cls.time} · ${cls.teacher}`}
                     ratingLabel={t('mylessons.your_rating')}
-                    rating={ratings[cls.id] || 0}
+                    rating={ratings[cls.reservation_id] || 0}
                     bouncing={bouncing}
-                    onRate={(star) => rateClass(cls.id, star)}
+                    onRate={(star) => rateClass(cls.reservation_id, star)}
                     onOpen={() => openLesson(cls, true)}
                   />
                 ))}
@@ -355,6 +381,8 @@ export default function MyLessons() {
         </>
       )}
 
+      <ResourceBookingSheet flow={resource} layer={2} />
+
       <MyLessonModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -363,11 +391,23 @@ export default function MyLessons() {
         title={translateName(activeLesson?.name)}
         dateLabel={activeLesson ? formatDate(activeLesson.start_time) : ''}
         countdown={activeLesson ? countdowns[activeLesson.id] : undefined}
-        rating={activeLesson ? ratings[activeLesson.id] || 0 : 0}
+        rating={activeLesson ? ratings[activeLesson.reservation_id] || 0 : 0}
         bouncing={bouncing}
-        onRate={activeLesson ? (star) => rateClass(activeLesson.id, star) : undefined}
+        onRate={activeLesson?.allowed_actions.includes('rate') ? (star) => rateClass(activeLesson.reservation_id, star) : undefined}
         isProcessing={isProcessing}
-        onCancel={cancelBooking}
+        onCancel={activeLesson?.allowed_actions.includes('cancel') ? cancelBooking : undefined}
+        onReschedule={
+          activeLesson?.allowed_actions.includes('reschedule') && activeLesson.service_id
+            ? () => {
+                setIsModalOpen(false);
+                resource.open(
+                  { id: activeLesson.service_id!, name: activeLesson.name },
+                  activeLesson.branch_id,
+                  { reservationId: activeLesson.reservation_id, version: activeLesson.version },
+                );
+              }
+            : undefined
+        }
         onCoffeeChange={
           activeLesson ? (state) => applyCoffee(activeLesson.id, state) : undefined
         }

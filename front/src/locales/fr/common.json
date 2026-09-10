@@ -35,7 +35,8 @@
     "phoneTaken": "Ce numéro de téléphone est déjà utilisé",
     "emailInStudio": "Cette personne travaille déjà dans votre studio",
     "phoneInStudio": "Cette personne travaille déjà dans votre studio",
-    "accountWillBeLinked": "Un compte avec ce contact existe déjà — il sera rattaché à votre studio"
+    "accountWillBeLinked": "Un compte avec ce contact existe déjà — il sera rattaché à votre studio",
+    "range": "Doit être entre {{min}} et {{max}}"
   },
   "status": {
     "online": "En ligne",

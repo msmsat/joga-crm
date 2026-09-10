@@ -160,6 +160,13 @@ export const bookLesson = (data: BookLessonRequest): Promise<ReservationResponse
 export const cancelLesson = (lessonId: number): Promise<ReservationResponse> =>
   apiPost(`/global/reservations/${lessonId}/cancel`);
 
+/** Explicit booking identity; legacy lesson-based clients keep their old URL. */
+export const cancelReservation = (reservationId: number): Promise<unknown> =>
+  apiPost(`/global/bookings/${reservationId}/cancel`);
+
+export const rateReservation = (reservationId: number, rating: number): Promise<ReservationResponse> =>
+  apiPost(`/global/bookings/${reservationId}/rate`, { rating });
+
 /**
  * Зберігає номер телефону клієнта — передумова запису з оплатою на місці.
  *

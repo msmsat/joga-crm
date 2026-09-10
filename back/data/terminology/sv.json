@@ -1,0 +1,84 @@
+{
+  "version": 1,
+  "locale": "sv",
+  "profiles": {
+    "generic": {
+      "staff": {
+        "singular": "specialist",
+        "plural": "specialister",
+        "accusative": "specialist"
+      },
+      "offering": {
+        "event": {
+          "singular": "evenemang",
+          "plural": "evenemang",
+          "accusative": "evenemang"
+        },
+        "resource": {
+          "singular": "tjänst",
+          "plural": "tjänster",
+          "accusative": "tjänst"
+        }
+      },
+      "messages": {
+        "choose_staff": "Välj {{staff.accusative}}",
+        "choose_offering": "Välj {{offering.accusative}}",
+        "empty_slots": "Inga lediga tider",
+        "my_bookings": "Mina bokningar",
+        "confirm_booking": "Bekräfta bokning"
+      }
+    },
+    "fitness": {
+      "staff": {
+        "singular": "tränare",
+        "plural": "tränare",
+        "accusative": "tränare"
+      },
+      "offering": {
+        "event": {
+          "singular": "pass",
+          "plural": "pass",
+          "accusative": "pass"
+        },
+        "resource": {
+          "singular": "tjänst",
+          "plural": "tjänster",
+          "accusative": "tjänst"
+        }
+      },
+      "messages": {
+        "choose_staff": "Välj {{staff.accusative}}",
+        "choose_offering": "Välj {{offering.accusative}}",
+        "empty_slots": "Inga lediga tider",
+        "my_bookings": "Mina bokningar",
+        "confirm_booking": "Bekräfta bokning"
+      }
+    },
+    "beauty": {
+      "staff": {
+        "singular": "specialist",
+        "plural": "specialister",
+        "accusative": "specialist"
+      },
+      "offering": {
+        "event": {
+          "singular": "evenemang",
+          "plural": "evenemang",
+          "accusative": "evenemang"
+        },
+        "resource": {
+          "singular": "tjänst",
+          "plural": "tjänster",
+          "accusative": "tjänst"
+        }
+      },
+      "messages": {
+        "choose_staff": "Välj {{staff.accusative}}",
+        "choose_offering": "Välj {{offering.accusative}}",
+        "empty_slots": "Inga lediga tider",
+        "my_bookings": "Mina bokningar",
+        "confirm_booking": "Bekräfta bokning"
+      }
+    }
+  }
+}

@@ -242,6 +242,7 @@ export const lessonToBooking = (l: Lesson, halls: Hall[], colorByTeacher: Map<nu
     cancelReason: l.cancel_reason,
     clientsNotified: l.clients_notified,
     serviceId: l.service_id,
+    bookingMode: l.booking_mode ?? 'event',
   };
 };
 
@@ -255,7 +256,7 @@ export const indexToDateTime = (dateStr: string, idx: number) => {
 // Самопроверка переходника (только dev-сборка)
 if (import.meta.env.DEV) {
   const b = lessonToBooking(
-    { id: 1, name: 'Т', teacher_id: 5, teacher_name: null, hall_id: 2, start_time: '2026-07-12T08:30:00', duration_min: 90, price: 0, total_spots: 8, booked_count: 3, status: 'confirmed', level: null, cancel_reason: null, clients_notified: false, service_id: 3, service_color: '#F9A08B' },
+    { id: 1, name: 'Т', teacher_id: 5, teacher_name: null, hall_id: 2, start_time: '2026-07-12T08:30:00', duration_min: 90, price: 0, total_spots: 8, booked_count: 3, status: 'confirmed', level: null, cancel_reason: null, clients_notified: false, service_id: 3, service_color: '#F9A08B', branch_id: null, booking_mode: 'event', tz_iana: null },
     [{ id: 2, name: 'Зал 1', branch_id: null, color: '', capacity: 8, is_online: false, is_active: true }],
     new Map([[5, '#5BAB72']]),
   );

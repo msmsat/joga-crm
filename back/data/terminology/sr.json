@@ -1,0 +1,84 @@
+{
+  "version": 1,
+  "locale": "sr",
+  "profiles": {
+    "generic": {
+      "staff": {
+        "singular": "специјалиста",
+        "plural": "специјалисти",
+        "accusative": "специјалисту"
+      },
+      "offering": {
+        "event": {
+          "singular": "догађај",
+          "plural": "догађаји",
+          "accusative": "догађај"
+        },
+        "resource": {
+          "singular": "услуга",
+          "plural": "услуге",
+          "accusative": "услугу"
+        }
+      },
+      "messages": {
+        "choose_staff": "Изаберите {{staff.accusative}}",
+        "choose_offering": "Изаберите {{offering.accusative}}",
+        "empty_slots": "Нема слободних термина",
+        "my_bookings": "Моје резервације",
+        "confirm_booking": "Потврди резервацију"
+      }
+    },
+    "fitness": {
+      "staff": {
+        "singular": "тренер",
+        "plural": "тренери",
+        "accusative": "тренера"
+      },
+      "offering": {
+        "event": {
+          "singular": "час",
+          "plural": "часови",
+          "accusative": "час"
+        },
+        "resource": {
+          "singular": "услуга",
+          "plural": "услуге",
+          "accusative": "услугу"
+        }
+      },
+      "messages": {
+        "choose_staff": "Изаберите {{staff.accusative}}",
+        "choose_offering": "Изаберите {{offering.accusative}}",
+        "empty_slots": "Нема слободних термина",
+        "my_bookings": "Моје резервације",
+        "confirm_booking": "Потврди резервацију"
+      }
+    },
+    "beauty": {
+      "staff": {
+        "singular": "специјалиста",
+        "plural": "специјалисти",
+        "accusative": "специјалисту"
+      },
+      "offering": {
+        "event": {
+          "singular": "догађај",
+          "plural": "догађаји",
+          "accusative": "догађај"
+        },
+        "resource": {
+          "singular": "услуга",
+          "plural": "услуге",
+          "accusative": "услугу"
+        }
+      },
+      "messages": {
+        "choose_staff": "Изаберите {{staff.accusative}}",
+        "choose_offering": "Изаберите {{offering.accusative}}",
+        "empty_slots": "Нема слободних термина",
+        "my_bookings": "Моје резервације",
+        "confirm_booking": "Потврди резервацију"
+      }
+    }
+  }
+}

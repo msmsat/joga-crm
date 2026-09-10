@@ -17,6 +17,10 @@ export interface StaffCreate {
   service_ids?: number[]
   photo_url?: string | null
   schedule?: StaffWorkingHoursItem[]
+  // HB-18: филиалы, в которых специалист доступен для индивидуальной записи.
+  // Поле НЕОБЯЗАТЕЛЬНОЕ и отсутствие ≠ пустой список: сервер стирает
+  // назначения только когда список прислан явно (routers/staff/profiles.py).
+  branch_ids?: number[]
 }
 
 // role необязателен: у владельца роль не меняется — поле просто не отправляем.
@@ -37,6 +41,20 @@ export interface StaffHall {
   id: number
   name: string
   color: string | null
+}
+
+export interface StaffBranchRef {
+  id: number
+  name: string
+}
+
+/** Перерыв/отсутствие: местное время студии со снимком зоны (HB-05). */
+export interface StaffBusyInterval {
+  id: number
+  start_time: string
+  end_time: string
+  reason: string | null
+  tz_iana: string | null
 }
 
 export interface StaffService {
@@ -128,6 +146,7 @@ export interface StaffProfile extends StaffListItem {
   services: StaffService[]
   today_schedule: StaffTodayLesson[]
   week_working_hours: StaffWorkingHoursItem[]
+  branches: StaffBranchRef[]
 }
 
 // ─── Mutation responses ───────────────────────────────────────────────────────

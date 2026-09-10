@@ -117,7 +117,9 @@
     "lesson_started": "Der Kurs hat begonnen",
     "status": {
       "upcoming": "Geplant",
-      "past": "Absolviert"
+      "past": "Absolviert",
+      "hold": "Zahlung ausstehend",
+      "cancelled": "Storniert"
     },
     "your_rating": "Ihre Bewertung",
     "counting_time": "Zeit wird berechnet...",
@@ -138,7 +140,8 @@
     "no_lessons_period_hint": "Blättern Sie mit den Pfeilen — vielleicht war es früher",
     "awaiting_confirmation": "Wartet auf Bestätigung",
     "unpaid": "Offen · {{amount}}",
-    "trial": "Probestunde"
+    "trial": "Probestunde",
+    "reschedule": "Verschieben"
   },
   "schedule": {
     "title": "Stundenplan",
@@ -428,5 +431,45 @@
       "order_steps": "Rabatt → Gutschein → Guthaben → Punkte → der Rest per Karte.",
       "order_note": "Es wird nur so viel genutzt wie nötig: haben Sie mehr Punkte als der Preis, bleibt der Rest auf Ihrem Konto."
     }
+  },
+  "resource": {
+    "kicker": "Individuell",
+    "confirm": "Bestätigen",
+    "confirming": "Wird bestätigt…",
+    "done": "Fertig",
+    "time": "Zeit",
+    "staff": "Fachkraft",
+    "branch": "Filiale",
+    "duration": "Dauer",
+    "price": "Preis",
+    "status": "Status",
+    "pay": "Bezahlen",
+    "changeTime": "Zeit ändern",
+    "loadError": "Freie Zeiten konnten nicht geladen werden",
+    "bookError": "Die Buchung konnte nicht erstellt werden",
+    "funding": {
+      "subscription": "Über Abo",
+      "trial": "Erste Stunde gratis",
+      "free": "Kostenlos",
+      "pay": "Zahlung"
+    },
+    "next": {
+      "wait_approval": "Das Studio muss diese Buchung noch bestätigen.",
+      "pay": "Der Platz wird bis zur Zahlung gehalten.",
+      "none": ""
+    },
+    "statusValue": {
+      "active": "Gebucht",
+      "pending": "Wartet auf Bestätigung",
+      "hold": "Wartet auf Zahlung",
+      "attended": "Besucht",
+      "cancelled": "Storniert"
+    },
+    "reason": {
+      "config_incomplete": "Der Zeitplan dieser Leistung ist noch nicht eingerichtet"
+    }
+  },
+  "units": {
+    "min": "Min"
   }
 }

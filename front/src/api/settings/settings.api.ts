@@ -35,8 +35,8 @@ function dataExportQuery(kind: DataExportKind, params?: DataExportParams): strin
 }
 
 export const settingsApi = {
-  getGeneral: () =>
-    client.get<GeneralSettings>('/settings/general'),
+  getGeneral: (locale?: string) =>
+    client.get<GeneralSettings>(`/settings/general${locale ? `?locale=${encodeURIComponent(locale)}` : ''}`),
 
   updateGeneral: (payload: GeneralUpdate) =>
     client.patch<GeneralSettings>('/settings/general', payload),

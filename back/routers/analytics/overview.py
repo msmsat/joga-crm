@@ -15,7 +15,10 @@ from schemas.analytics.reports import (
     OverviewRead,
     RevenueStructureRow,
 )
+from .booking_modes import booking_mode_slices
 from ._filters import (
+    join_hall,
+    shift_range,
     needs_hall_join,
     ReportFilters,
     lesson_conds,
@@ -52,7 +55,7 @@ async def _period_kpi(f: ReportFilters, sid: int, db: AsyncSession) -> dict[str,
     def _lesson_join(stmt, outer: bool):
         stmt = stmt.select_from(Lesson).join(Reservation, Reservation.lesson_id == Lesson.id, isouter=outer)
         if needs_hall_join(f):
-            stmt = stmt.join(Hall, Lesson.hall_id == Hall.id)
+            stmt = join_hall(stmt)
         return stmt.where(*conds)
 
     attendance = (await db.execute(
@@ -85,16 +88,13 @@ async def _period_kpi(f: ReportFilters, sid: int, db: AsyncSession) -> dict[str,
 
 
 async def _attended_client_ids(f: ReportFilters, sid: int, d_from: date, d_to: date, db: AsyncSession) -> set[int]:
-    shifted = ReportFilters(
-        date_from=d_from, date_to=d_to,
-        branch_id=f.branch_id, hall_id=f.hall_id, trainer_id=f.trainer_id, service_id=f.service_id,
-    )
+    shifted = shift_range(f, d_from, d_to)
     conds = lesson_conds(shifted, sid)
     stmt = select(func.distinct(Reservation.client_id)).select_from(Lesson).join(
         Reservation, Reservation.lesson_id == Lesson.id
     )
     if needs_hall_join(shifted):
-        stmt = stmt.join(Hall, Lesson.hall_id == Hall.id)
+        stmt = join_hall(stmt)
     ids = (await db.execute(stmt.where(*conds, Reservation.status == "attended"))).scalars().all()
     return set(ids)
 
@@ -275,10 +275,7 @@ async def analytics_overview(
 ):
     sid = ctx.studio_id
     prev_from, prev_to = prev_range(f)
-    prev_f = ReportFilters(
-        date_from=prev_from, date_to=prev_to,
-        branch_id=f.branch_id, hall_id=f.hall_id, trainer_id=f.trainer_id, service_id=f.service_id,
-    )
+    prev_f = shift_range(f, prev_from, prev_to)
 
     curr = await _period_kpi(f, sid, db)
     prev = await _period_kpi(prev_f, sid, db)
@@ -293,6 +290,7 @@ async def analytics_overview(
 
     revenue_structure = await _revenue_structure(f, sid, db)
     client_dynamics = await _client_dynamics(f, sid, prev_from, prev_to, db)
+    booking_modes = await booking_mode_slices(f, sid, db)
 
     insights: list[Insight] = []
     for insight in (
@@ -308,4 +306,5 @@ async def analytics_overview(
         revenue_structure=revenue_structure,
         client_dynamics=client_dynamics,
         insights=insights[:3],
+        booking_modes=booking_modes,
     )

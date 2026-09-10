@@ -21,6 +21,7 @@ from models import (
 from schemas._base import BaseSchema
 from schemas.schedule.hybrid import BookingCapabilities
 from services.booking_rules import load_rules
+from services import terminology
 from services.notifier import _fmt_amount
 from services.pricing import resolve_price
 from services.studio_link import require_studio_id
@@ -32,6 +33,7 @@ router = APIRouter()
 
 class StudioInfo(BaseSchema):
     id: int
+    tz_iana: Optional[str] = None
     name: str
     currency: str
     logo_url: Optional[str]
@@ -87,6 +89,11 @@ class ServiceInfo(BaseSchema):
     # студии разделить предложения на event/resource, а не по service_type
     # или имени.
     booking_mode: str = "event"
+    service_type: str = "group"
+    buffer_before_min: int = 0
+    buffer_after_min: int = 0
+    is_bookable: bool = True
+    terminology_profile: Optional[str] = None
 
 
 class PackageInfo(BaseSchema):
@@ -116,6 +123,7 @@ class StudioCatalog(BaseSchema):
     # Безопасный блок §6.4 — тот же тип, что и в CRM (routers/settings/general.py),
     # один источник формы данных для обеих поверхностей.
     booking_capabilities: BookingCapabilities
+    terminology: dict
 
 
 def _discount_label(base_price: int, final_price: int) -> Optional[str]:
@@ -196,6 +204,7 @@ async def get_studio_catalog(
     request: Request,
     viewer: Viewer = Depends(get_viewer),
     db: AsyncSession = Depends(get_db),
+    locale: str | None = None,
 ):
     """Витрина студии. Токен не обязателен: занятие выбирают до регистрации, и
     гость, пришедший по ссылке `/s/<code>`, обязан увидеть филиалы, услуги и
@@ -274,6 +283,7 @@ async def get_studio_catalog(
     return StudioCatalog(
         studio=StudioInfo(
             id=studio.id,
+            tz_iana=studio.tz_iana,
             name=studio.name,
             currency=currency,
             logo_url=rules.widget_logo_url or studio.logo_url,
@@ -317,6 +327,11 @@ async def get_studio_catalog(
                 duration_min=service.duration_min,
                 color=service.color,
                 booking_mode=service.booking_mode,
+                service_type=service.service_type,
+                buffer_before_min=service.buffer_before_min,
+                buffer_after_min=service.buffer_after_min,
+                is_bookable=service.is_bookable,
+                terminology_profile=service.terminology_profile,
             )
             for service in services
         ],
@@ -335,6 +350,7 @@ async def get_studio_catalog(
             for package in packages
         ],
         can_pay_online=can_pay_online,
+        terminology=terminology.configuration(studio, locale),
         booking_capabilities=BookingCapabilities(
             booking_mode=studio.booking_mode,
             terminology_profile=studio.terminology_profile,

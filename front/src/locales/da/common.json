@@ -35,7 +35,8 @@
     "phoneTaken": "Dette telefonnummer er allerede optaget",
     "emailInStudio": "Denne person arbejder allerede i dit studie",
     "phoneInStudio": "Denne person arbejder allerede i dit studie",
-    "accountWillBeLinked": "Der findes allerede en konto med denne kontakt — den bliver knyttet til dit studie"
+    "accountWillBeLinked": "Der findes allerede en konto med denne kontakt — den bliver knyttet til dit studie",
+    "range": "Skal være mellem {{min}} og {{max}}"
   },
   "status": {
     "online": "Online",

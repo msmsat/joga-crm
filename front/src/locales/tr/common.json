@@ -35,7 +35,8 @@
     "phoneTaken": "Bu telefon numarası zaten kullanılıyor",
     "emailInStudio": "Bu kişi zaten stüdyonuzda çalışıyor",
     "phoneInStudio": "Bu kişi zaten stüdyonuzda çalışıyor",
-    "accountWillBeLinked": "Bu iletişim bilgisiyle bir hesap zaten var — stüdyonuza bağlanacak"
+    "accountWillBeLinked": "Bu iletişim bilgisiyle bir hesap zaten var — stüdyonuza bağlanacak",
+    "range": "{{min}} ile {{max}} arasında olmalı"
   },
   "status": {
     "online": "Çevrimiçi",

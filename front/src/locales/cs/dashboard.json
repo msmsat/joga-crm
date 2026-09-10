@@ -93,5 +93,18 @@
     "expenses": "Náklady",
     "avgCheck": "Průměrná útrata",
     "profit": "Zisk"
+  },
+  "bookingModes": {
+    "title": "Modely rezervací",
+    "event": "Události",
+    "resource": "Individuálně",
+    "events": "Událostí",
+    "bookings": "Rezervací",
+    "attended": "Návštěv",
+    "pending": "Čeká na potvrzení",
+    "hold": "Čeká na platbu",
+    "cancelled": "Zrušeno",
+    "utilization": "Vytížení",
+    "noData": "Nejsou data"
   }
 }

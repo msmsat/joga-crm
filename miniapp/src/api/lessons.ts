@@ -34,6 +34,11 @@ export interface CoffeeState {
 
 export interface LessonResponse {
   id: number;
+  booking_mode: 'event' | 'resource';
+  service_id: number | null;
+  teacher_id: number | null;
+  branch_id: number | null;
+  tz_iana: string | null;
   name: string;
   level: string;
   equipment: string;
@@ -67,6 +72,11 @@ export interface LessonResponse {
 
 /** Оплата брони: подарок студии либо долг «оплатить на месте». */
 interface LessonPayment {
+  reservation_id: number;
+  version: number;
+  starts_at: string | null;
+  allowed_actions: ('cancel' | 'rate' | 'reschedule' | 'pay')[];
+  status: 'active' | 'pending' | 'hold' | 'attended' | 'cancelled';
   is_trial: boolean;
   /** 0 — покрыто абонементом, подарено или уже оплачено. */
   debt: number;
@@ -77,7 +87,6 @@ interface LessonPayment {
 export interface UpcomingLessonResponse extends LessonResponse, LessonPayment {
   spot_number: number;
   /** "pending" — бронь ждёт подтверждения студии, место уже держится. */
-  status: 'active' | 'pending';
 }
 
 // Схема для прошедших занятий (наследует всё + добавляет коврик и оценку)
@@ -90,6 +99,7 @@ export interface PastLessonResponse extends LessonResponse, LessonPayment {
 export interface MyLessonsResponse {
   upcoming: UpcomingLessonResponse[];
   past: PastLessonResponse[];
+  cancelled: PastLessonResponse[];
 }
 
 // ==========================================
@@ -109,8 +119,17 @@ export const getNextLesson = async (): Promise<LessonResponse | null> =>
  * Фронтенд має передавати дату у форматі YYYY-MM-DD (наприклад: '2026-05-19').
  * Ендпоінт: GET /global/lessons/date/{target_date}
  */
-export const getLessonsByDate = (targetDate: string): Promise<LessonResponse[]> =>
-  apiGet(`/global/lessons/date/${targetDate}`);
+export const getLessonsByDate = (
+  targetDate: string,
+  filters?: { service_id?: number | null; branch_id?: number | null; teacher_id?: number | null },
+): Promise<LessonResponse[]> => {
+  const params = new URLSearchParams();
+  Object.entries(filters ?? {}).forEach(([key, value]) => {
+    if (value != null) params.set(key, String(value));
+  });
+  const qs = params.toString();
+  return apiGet(`/global/lessons/date/${targetDate}${qs ? `?${qs}` : ''}`);
+};
 
 /**
  * Отримує списки майбутніх і минулих занять поточного клієнта (з токена).

@@ -1,0 +1,84 @@
+{
+  "version": 1,
+  "locale": "cs",
+  "profiles": {
+    "generic": {
+      "staff": {
+        "singular": "specialista",
+        "plural": "specialisté",
+        "accusative": "specialistu"
+      },
+      "offering": {
+        "event": {
+          "singular": "událost",
+          "plural": "události",
+          "accusative": "událost"
+        },
+        "resource": {
+          "singular": "služba",
+          "plural": "služby",
+          "accusative": "službu"
+        }
+      },
+      "messages": {
+        "choose_staff": "Vyberte {{staff.accusative}}",
+        "choose_offering": "Vyberte {{offering.accusative}}",
+        "empty_slots": "Žádné volné termíny",
+        "my_bookings": "Moje rezervace",
+        "confirm_booking": "Potvrdit rezervaci"
+      }
+    },
+    "fitness": {
+      "staff": {
+        "singular": "trenér",
+        "plural": "trenéři",
+        "accusative": "trenéra"
+      },
+      "offering": {
+        "event": {
+          "singular": "lekce",
+          "plural": "lekce",
+          "accusative": "lekci"
+        },
+        "resource": {
+          "singular": "služba",
+          "plural": "služby",
+          "accusative": "službu"
+        }
+      },
+      "messages": {
+        "choose_staff": "Vyberte {{staff.accusative}}",
+        "choose_offering": "Vyberte {{offering.accusative}}",
+        "empty_slots": "Žádné volné termíny",
+        "my_bookings": "Moje rezervace",
+        "confirm_booking": "Potvrdit rezervaci"
+      }
+    },
+    "beauty": {
+      "staff": {
+        "singular": "specialista",
+        "plural": "specialisté",
+        "accusative": "specialistu"
+      },
+      "offering": {
+        "event": {
+          "singular": "událost",
+          "plural": "události",
+          "accusative": "událost"
+        },
+        "resource": {
+          "singular": "služba",
+          "plural": "služby",
+          "accusative": "službu"
+        }
+      },
+      "messages": {
+        "choose_staff": "Vyberte {{staff.accusative}}",
+        "choose_offering": "Vyberte {{offering.accusative}}",
+        "empty_slots": "Žádné volné termíny",
+        "my_bookings": "Moje rezervace",
+        "confirm_booking": "Potvrdit rezervaci"
+      }
+    }
+  }
+}

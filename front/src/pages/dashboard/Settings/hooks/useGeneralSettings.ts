@@ -24,6 +24,7 @@ export function useGeneralSettings() {
     mutationFn: (patch: GeneralUpdate) => settingsApi.updateGeneral(patch),
     onSuccess: (data, patch) => {
       qc.setQueryData(queryKeys.studioSettings, data);
+      void qc.invalidateQueries({ queryKey: ['businessTerms'] });
       // Смена языка — сразу переключаем интерфейс, не дожидаясь перезахода.
       if (patch.language && patch.language !== i18n.language) {
         i18n.changeLanguage(patch.language);

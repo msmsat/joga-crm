@@ -1,0 +1,84 @@
+{
+  "version": 1,
+  "locale": "pt",
+  "profiles": {
+    "generic": {
+      "staff": {
+        "singular": "especialista",
+        "plural": "especialistas",
+        "accusative": "um especialista"
+      },
+      "offering": {
+        "event": {
+          "singular": "evento",
+          "plural": "eventos",
+          "accusative": "um evento"
+        },
+        "resource": {
+          "singular": "serviço",
+          "plural": "serviços",
+          "accusative": "um serviço"
+        }
+      },
+      "messages": {
+        "choose_staff": "Escolha {{staff.accusative}}",
+        "choose_offering": "Escolha {{offering.accusative}}",
+        "empty_slots": "Sem horários disponíveis",
+        "my_bookings": "As minhas reservas",
+        "confirm_booking": "Confirmar reserva"
+      }
+    },
+    "fitness": {
+      "staff": {
+        "singular": "instrutor",
+        "plural": "instrutores",
+        "accusative": "um instrutor"
+      },
+      "offering": {
+        "event": {
+          "singular": "aula",
+          "plural": "aulas",
+          "accusative": "uma aula"
+        },
+        "resource": {
+          "singular": "serviço",
+          "plural": "serviços",
+          "accusative": "um serviço"
+        }
+      },
+      "messages": {
+        "choose_staff": "Escolha {{staff.accusative}}",
+        "choose_offering": "Escolha {{offering.accusative}}",
+        "empty_slots": "Sem horários disponíveis",
+        "my_bookings": "As minhas reservas",
+        "confirm_booking": "Confirmar reserva"
+      }
+    },
+    "beauty": {
+      "staff": {
+        "singular": "profissional",
+        "plural": "profissionais",
+        "accusative": "um profissional"
+      },
+      "offering": {
+        "event": {
+          "singular": "evento",
+          "plural": "eventos",
+          "accusative": "um evento"
+        },
+        "resource": {
+          "singular": "serviço",
+          "plural": "serviços",
+          "accusative": "um serviço"
+        }
+      },
+      "messages": {
+        "choose_staff": "Escolha {{staff.accusative}}",
+        "choose_offering": "Escolha {{offering.accusative}}",
+        "empty_slots": "Sem horários disponíveis",
+        "my_bookings": "As minhas reservas",
+        "confirm_booking": "Confirmar reserva"
+      }
+    }
+  }
+}

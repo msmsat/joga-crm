@@ -19,7 +19,9 @@ import { Grid } from './components/ScheduleGrid/Grid';
 import { GridSkeleton } from './components/ScheduleGrid/GridSkeleton';
 import { LoadError } from './components/LoadError';
 import { BookingPopup } from './components/BookingPopup';
+import { useServiceOptions } from './hooks/useServiceOptions';
 import { NewBookingModal } from './components/modals/NewBookingModal';
+import { ResourceBookingModal } from './components/modals/ResourceBookingModal';
 import { AddClientModal } from './components/modals/AddClientModal';
 import { useToast, ConfirmModal } from '../../../components/ui/index';
 import { getUserRoleFromToken } from '../../../utils/auth';
@@ -67,6 +69,11 @@ export default function Journal() {
   const [addModalBooking] = useState<Booking | null>(null);
   const [newBookingSlot, setNewBookingSlot] = useState<{ trainer: number; timeStart: number; timeEnd: number; columnIndex?: number } | null>(null);
   const [showNewForm, setShowNewForm] = useState(false);
+  const [showResourceBooking, setShowResourceBooking] = useState(false);
+  // Кнопка индивидуальной записи появляется, только когда такая услуга есть:
+  // иначе она вела бы в форму без единого варианта.
+  const { services: journalServices } = useServiceOptions();
+  const hasResourceServices = journalServices.some(s => s.booking_mode === 'resource' && s.is_bookable);
   // 🔥 Стейт формы создания живёт здесь — сетка получает живой объект для превью (задача 3 V4-4)
   const [newForm, setNewForm] = useState({ serviceId: null as number | null, title: '', hall: '', maxClients: '8' });
   const [timeStep, setTimeStep] = useState<number>(15); // 🔥 Шаг времени в минутах (по умолчанию 15)
@@ -532,6 +539,9 @@ export default function Journal() {
       cancelReason: null,
       clientsNotified: false,
       serviceId: form.serviceId,
+      // Этот путь создаёт СОБЫТИЕ. Индивидуальная запись идёт через quote и
+      // confirm (ResourceBookingModal), а не через создание занятия.
+      bookingMode: 'event',
     };
 
     const createPayload: LessonCreate = {
@@ -657,6 +667,7 @@ export default function Journal() {
             handleDateInputSubmit={handleDateInputSubmit}
             setIsEditingDate={setIsEditingDate}
             setDateInputVal={setDateInputVal}
+            onResourceBooking={hasResourceServices ? () => setShowResourceBooking(true) : undefined}
           />
 
           {/* ── СВОДКА ДНЯ ── */}
@@ -782,6 +793,15 @@ export default function Journal() {
           timeStep={timeStep}
           closeNewForm={closeNewForm}
           onCreate={createLessonFromModal}
+        />
+      )}
+
+      {/* HB-22: «записать на индивидуальную услугу» — отдельная команда, не
+          создание события. Проходит теми же quote/confirm, что Mini-app. */}
+      {showResourceBooking && (
+        <ResourceBookingModal
+          onClose={() => setShowResourceBooking(false)}
+          onCreated={mutations.invalidate}
         />
       )}
 

@@ -66,7 +66,11 @@ export const BookingCard: React.FC<BookingCardProps> = ({
   const top = startOffset + 1; 
   const height = (activeEnd - activeStart) * 72 - 2;
   
-  const fillRatio = b.maxClients > 0 ? b.clients / b.maxClients : 0;
+  // HB-22: у индивидуальной записи участник ровно один, и счётчик «1/1»
+  // сообщает не заполненность, а шум. Определяется механикой с сервера,
+  // а не вместимостью: событие на одно место остаётся событием.
+  const isResource = b.bookingMode === 'resource';
+  const fillRatio = !isResource && b.maxClients > 0 ? b.clients / b.maxClients : 0;
   const isFull = fillRatio >= 1;
 
   const isSelected = popupBooking?.id === b.id;
@@ -115,7 +119,7 @@ export const BookingCard: React.FC<BookingCardProps> = ({
           height > 36 && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: '10px', opacity: 0.75 }}>
               <Icons.Users />
-              <span>{b.clients}{b.maxClients > 0 ? `/${b.maxClients}` : ''}</span>
+              <span>{isResource ? '' : `${b.clients}${b.maxClients > 0 ? `/${b.maxClients}` : ''}`}</span>
               {isFull && <span style={{ marginLeft: 2, fontSize: 9, fontWeight: 700, background: b.color, color: 'white', borderRadius: 4, padding: '1px 4px' }}>FULL</span>}
             </div>
           )

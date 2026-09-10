@@ -27,6 +27,9 @@ type Props = {
   onRate?: (star: number) => void;
   isProcessing?: boolean;
   onCancel?: () => void;
+  /** HB-21: перенос индивидуальной записи. Кнопки нет, пока сервер не
+   *  положил `reschedule` в allowed_actions этой брони. */
+  onReschedule?: () => void;
   onCoffeeChange?: (state: CoffeeState) => void;
 };
 
@@ -55,12 +58,14 @@ export default function MyLessonModal({
   onRate,
   isProcessing = false,
   onCancel,
+  onReschedule,
   onCoffeeChange,
 }: Props) {
   const { t } = useTranslation();
 
   const isPending = !isPast && (lesson as UpcomingLessonResponse | null)?.status === 'pending';
 
+  const resource = lesson?.booking_mode === 'resource';
   const facts = [
     {
       label: t('bookingModal.level'),
@@ -87,7 +92,7 @@ export default function MyLessonModal({
           label: t('mylessons.until_start'),
           value: countdown || t('mylessons.counting_time'),
         },
-  ];
+  ].filter((_, index) => !resource || index === 3);
 
   const initials = (lesson?.teacher ?? '')
     .split(' ')
@@ -103,10 +108,19 @@ export default function MyLessonModal({
       footer={
         // У прошедшего занятия действий нет: отменять нечего, а оценка стоит
         // в самом листе — кнопкой во всю ширину её делать не за что.
-        !isPast && onCancel ? (
-          <SheetAction tone="danger" onClick={onCancel} disabled={isProcessing}>
-            {isProcessing ? t('bookingModal.processing') : t('bookingModal.cancel_booking')}
-          </SheetAction>
+        !isPast && (onCancel || onReschedule) ? (
+          <div className="flex flex-col gap-2.5">
+            {onReschedule && (
+              <SheetAction onClick={onReschedule} disabled={isProcessing}>
+                {t('mylessons.reschedule')}
+              </SheetAction>
+            )}
+            {onCancel && (
+              <SheetAction tone="danger" onClick={onCancel} disabled={isProcessing}>
+                {isProcessing ? t('bookingModal.processing') : t('bookingModal.cancel_booking')}
+              </SheetAction>
+            )}
+          </div>
         ) : undefined
       }
     >
@@ -182,7 +196,7 @@ export default function MyLessonModal({
           </div>
           <div className="mt-0.5">
             <RatingStars
-              lessonId={lesson.id}
+              lessonId={lesson.reservation_id}
               rating={rating}
               bouncing={bouncing}
               onRate={onRate}

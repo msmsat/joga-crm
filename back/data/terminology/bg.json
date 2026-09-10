@@ -1,0 +1,84 @@
+{
+  "version": 1,
+  "locale": "bg",
+  "profiles": {
+    "generic": {
+      "staff": {
+        "singular": "специалист",
+        "plural": "специалисти",
+        "accusative": "специалист"
+      },
+      "offering": {
+        "event": {
+          "singular": "събитие",
+          "plural": "събития",
+          "accusative": "събитие"
+        },
+        "resource": {
+          "singular": "услуга",
+          "plural": "услуги",
+          "accusative": "услуга"
+        }
+      },
+      "messages": {
+        "choose_staff": "Изберете {{staff.accusative}}",
+        "choose_offering": "Изберете {{offering.accusative}}",
+        "empty_slots": "Няма свободни часове",
+        "my_bookings": "Моите резервации",
+        "confirm_booking": "Потвърдете резервацията"
+      }
+    },
+    "fitness": {
+      "staff": {
+        "singular": "треньор",
+        "plural": "треньори",
+        "accusative": "треньор"
+      },
+      "offering": {
+        "event": {
+          "singular": "занятие",
+          "plural": "занятия",
+          "accusative": "занятие"
+        },
+        "resource": {
+          "singular": "услуга",
+          "plural": "услуги",
+          "accusative": "услуга"
+        }
+      },
+      "messages": {
+        "choose_staff": "Изберете {{staff.accusative}}",
+        "choose_offering": "Изберете {{offering.accusative}}",
+        "empty_slots": "Няма свободни часове",
+        "my_bookings": "Моите резервации",
+        "confirm_booking": "Потвърдете резервацията"
+      }
+    },
+    "beauty": {
+      "staff": {
+        "singular": "специалист",
+        "plural": "специалисти",
+        "accusative": "специалист"
+      },
+      "offering": {
+        "event": {
+          "singular": "събитие",
+          "plural": "събития",
+          "accusative": "събитие"
+        },
+        "resource": {
+          "singular": "услуга",
+          "plural": "услуги",
+          "accusative": "услуга"
+        }
+      },
+      "messages": {
+        "choose_staff": "Изберете {{staff.accusative}}",
+        "choose_offering": "Изберете {{offering.accusative}}",
+        "empty_slots": "Няма свободни часове",
+        "my_bookings": "Моите резервации",
+        "confirm_booking": "Потвърдете резервацията"
+      }
+    }
+  }
+}

@@ -36,6 +36,7 @@ from services.loyalty_matching import (
     seg_referrers,
 )
 from ._filters import (
+    join_hall,
     lesson_conds,
     needs_hall_join,
     op_conds,
@@ -140,7 +141,7 @@ async def _attended_client_ids(f: ReportFilters, sid: int, d_from: date, d_to: d
         Reservation, Reservation.lesson_id == Lesson.id
     )
     if needs_hall_join(shifted):
-        stmt = stmt.join(Hall, Lesson.hall_id == Hall.id)
+        stmt = join_hall(stmt)
     ids = (await db.execute(stmt.where(*conds, Reservation.status == "attended"))).scalars().all()
     return set(ids)
 
@@ -228,7 +229,7 @@ async def _weekly(f: ReportFilters, sid: int, db: AsyncSession) -> list[WeeklyPo
         .join(Client, Client.id == Reservation.client_id)
     )
     if needs_hall_join(f):
-        returning_stmt = returning_stmt.join(Hall, Lesson.hall_id == Hall.id)
+        returning_stmt = join_hall(returning_stmt)
     returning_rows = (await db.execute(
         returning_stmt
         .where(*lesson_conds(f, sid), Reservation.status == "attended", Client.registration_date < start_dt)
@@ -462,7 +463,7 @@ async def analytics_clients_report_week(
             .join(Lesson, Lesson.id == Reservation.lesson_id)
         )
         if needs_hall_join(week_f):
-            stmt = stmt.join(Hall, Lesson.hall_id == Hall.id)
+            stmt = join_hall(stmt)
         rows = (await db.execute(
             stmt.where(
                 *lesson_conds(week_f, sid),

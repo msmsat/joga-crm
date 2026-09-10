@@ -29,7 +29,8 @@ from schemas.analytics.reports import (
     UtilizationKpi,
     UtilizationRead,
 )
-from ._filters import ReportFilters, lesson_conds, noshow_cond, occupied_expr, pct, prev_range, report_filters
+from ._filters import (ReportFilters, join_hall, lesson_conds, noshow_cond, occupied_expr, pct,
+                       prev_range, report_filters, shift_range)
 
 router = APIRouter()
 
@@ -51,10 +52,7 @@ def _needs_hall_join(f: ReportFilters) -> bool:
 
 async def _kpi(f: ReportFilters, sid: int, db: AsyncSession) -> UtilizationKpi:
     prev_from, prev_to = prev_range(f)
-    prev_f = ReportFilters(
-        date_from=prev_from, date_to=prev_to,
-        branch_id=f.branch_id, hall_id=f.hall_id, trainer_id=f.trainer_id, service_id=f.service_id,
-    )
+    prev_f = shift_range(f, prev_from, prev_to)
 
     async def _fill_and_free(filt: ReportFilters) -> tuple[float, int]:
         conds = lesson_conds(filt, sid)
@@ -62,7 +60,7 @@ async def _kpi(f: ReportFilters, sid: int, db: AsyncSession) -> UtilizationKpi:
             Reservation, Reservation.lesson_id == Lesson.id, isouter=True
         )
         if _needs_hall_join(filt):
-            stmt = stmt.join(Hall, Lesson.hall_id == Hall.id)
+            stmt = join_hall(stmt)
         rows = (await db.execute(stmt.where(*conds).group_by(Lesson.id))).all()
         occupied = sum(int(o or 0) for o, _ in rows)
         capacity = sum(int(c or 0) for _, c in rows)
@@ -77,7 +75,7 @@ async def _kpi(f: ReportFilters, sid: int, db: AsyncSession) -> UtilizationKpi:
         conds = lesson_conds(filt, sid, include_cancelled=True)
         stmt = select(func.count(Lesson.id)).where(*conds, Lesson.status == "cancelled")
         if _needs_hall_join(filt):
-            stmt = stmt.select_from(Lesson).join(Hall, Lesson.hall_id == Hall.id)
+            stmt = join_hall(stmt.select_from(Lesson))
         return int((await db.execute(stmt)).scalar_one())
 
     cancels = await _cancels(f)
@@ -89,7 +87,7 @@ async def _kpi(f: ReportFilters, sid: int, db: AsyncSession) -> UtilizationKpi:
             Reservation, Reservation.lesson_id == Lesson.id
         )
         if _needs_hall_join(filt):
-            stmt = stmt.join(Hall, Lesson.hall_id == Hall.id)
+            stmt = join_hall(stmt)
         return int((await db.execute(stmt.where(*conds, noshow_cond()))).scalar_one())
 
     noshows = await _noshows(f)
@@ -102,7 +100,7 @@ async def _kpi(f: ReportFilters, sid: int, db: AsyncSession) -> UtilizationKpi:
             Reservation, Reservation.lesson_id == Lesson.id, isouter=True
         )
         if _needs_hall_join(filt):
-            stmt = stmt.join(Hall, Lesson.hall_id == Hall.id)
+            stmt = join_hall(stmt)
         rows = (await db.execute(
             stmt.where(*conds, Lesson.start_time < func.now())
             .group_by(Lesson.id)
@@ -138,7 +136,7 @@ async def _heatmap_rows(f: ReportFilters, sid: int, db: AsyncSession) -> list:
         .join(Reservation, Reservation.lesson_id == Lesson.id, isouter=True)
     )
     if _needs_hall_join(f):
-        stmt = stmt.join(Hall, Lesson.hall_id == Hall.id)
+        stmt = join_hall(stmt)
     stmt = stmt.where(*conds).group_by(
         weekday, hour, Lesson.id, Lesson.name, Lesson.hall_id, Lesson.price
     )
@@ -210,7 +208,7 @@ async def _chronic_low(f: ReportFilters, sid: int, db: AsyncSession) -> list[Chr
         .join(Reservation, Reservation.lesson_id == Lesson.id, isouter=True)
     )
     if _needs_hall_join(f):
-        stmt = stmt.join(Hall, Lesson.hall_id == Hall.id)
+        stmt = join_hall(stmt)
     rows = (await db.execute(
         stmt.where(*conds).group_by(Lesson.name, weekday, hour, week_bucket, Lesson.id)
     )).all()
@@ -256,7 +254,7 @@ async def _halls(f: ReportFilters, sid: int, db: AsyncSession) -> list[HallUtilR
         .join(Reservation, Reservation.lesson_id == Lesson.id, isouter=True)
     )
     if _needs_hall_join(f):
-        stmt = stmt.join(Hall, Lesson.hall_id == Hall.id)
+        stmt = join_hall(stmt)
     rows = (await db.execute(
         stmt.where(*conds, Lesson.hall_id.isnot(None))
         .group_by(Lesson.hall_id, Lesson.start_time, Lesson.id)
@@ -326,7 +324,7 @@ async def _losses(f: ReportFilters, sid: int, db: AsyncSession) -> LossSlices:
         *lesson_conds(f, sid, include_cancelled=True), Lesson.status == "cancelled"
     )
     if _needs_hall_join(f):
-        cancel_stmt = cancel_stmt.select_from(Lesson).join(Hall, Lesson.hall_id == Hall.id)
+        cancel_stmt = join_hall(cancel_stmt.select_from(Lesson))
     cancel_rows = (await db.execute(cancel_stmt)).all()
     for hour_v, name, service_id, teacher_id, total_spots in cancel_rows:
         spots = int(total_spots or 0)
@@ -341,7 +339,7 @@ async def _losses(f: ReportFilters, sid: int, db: AsyncSession) -> LossSlices:
         .where(*lesson_conds(f, sid), noshow_cond())
     )
     if _needs_hall_join(f):
-        noshow_stmt = noshow_stmt.join(Hall, Lesson.hall_id == Hall.id)
+        noshow_stmt = join_hall(noshow_stmt)
     noshow_rows = (await db.execute(noshow_stmt)).all()
     for hour_v, name, service_id, teacher_id in noshow_rows:
         for entry in (bump(by_hour, int(hour_v)), bump(by_service, (name, service_id)), bump(by_trainer, teacher_id)):
@@ -429,7 +427,7 @@ async def _insights(
             .join(Reservation, Reservation.lesson_id == Lesson.id, isouter=True)
         )
         if _needs_hall_join(f):
-            stmt = stmt.join(Hall, Lesson.hall_id == Hall.id)
+            stmt = join_hall(stmt)
         rows = (await db.execute(
             stmt.where(*conds).group_by(weekday, hour, week_bucket, Lesson.id)
         )).all()

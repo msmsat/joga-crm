@@ -26,6 +26,19 @@ _METHODS = {"POST", "PATCH", "PUT", "DELETE"}
 # Маршрут → почему у него НЕТ инструмента. Причина обязательна: строка «нет
 # инструмента» без объяснения через полгода неотличима от забывчивости.
 UI_ONLY: dict[str, str] = {
+    # Quotes are bound to the authenticated human and expire after five minutes.
+    # Existing AI event commands remain on their own guarded domain entry points.
+    "POST /global/booking-quotes": "персональный предпросмотр условий самим клиентом",
+    "POST /global/bookings": "клиент подтверждает показанные ему условия quote",
+    "POST /global/bookings/{reservation_id}/cancel": "клиент отменяет выбранную конкретную бронь",
+    "POST /global/bookings/{reservation_id}/rate": "оценка конкретной брони — мнение клиента",
+    "POST /global/reservations/{reservation_id}/reschedule-quotes": "клиент выбирает новый слот в календаре",
+    "POST /global/reservations/{reservation_id}/reschedule": "клиент подтверждает новые условия переноса",
+    "POST /schedule/booking-quotes": "персональный quote привязан к сотруднику, открывшему форму записи",
+    "POST /schedule/bookings": "подтверждение сотрудником показанных в форме условий и оплаты",
+    "POST /schedule/reservations/{reservation_id}/cancel": "конкретная бронь отменяется из карточки журнала",
+    "POST /schedule/reservations/{reservation_id}/reschedule-quotes": "предпросмотр переноса при выборе слота в журнале",
+    "POST /schedule/reservations/{reservation_id}/reschedule": "подтверждение переноса с версией из открытой карточки",
     # ── Сам ассистент: настраивать себя и отвечать за свой транспорт он не должен
     "POST /ai/actions/execute": "исполнение подтверждённого действия — это и есть кнопка человека",
     "POST /ai/actions/execute-plan": "исполнение подтверждённой пачки — та же кнопка человека, "

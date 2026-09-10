@@ -288,7 +288,8 @@
       "noLessons": "An diesem Tag gibt es keine Kurse",
       "full": "Keine Plätze",
       "confirm": "Buchen →",
-      "noSubscription": "Der Kunde hat keine verfügbare Karte für die Buchung"
+      "noSubscription": "Der Kunde hat keine verfügbare Karte für die Buchung",
+      "individual": "Individuelle Leistung"
     },
     "bonusPanel": {
       "title": "Bonus gewähren"

@@ -1,0 +1,84 @@
+{
+  "version": 1,
+  "locale": "tr",
+  "profiles": {
+    "generic": {
+      "staff": {
+        "singular": "uzman",
+        "plural": "uzmanlar",
+        "accusative": "uzman"
+      },
+      "offering": {
+        "event": {
+          "singular": "etkinlik",
+          "plural": "etkinlikler",
+          "accusative": "etkinlik"
+        },
+        "resource": {
+          "singular": "hizmet",
+          "plural": "hizmetler",
+          "accusative": "hizmet"
+        }
+      },
+      "messages": {
+        "choose_staff": "{{staff.accusative}} seçin",
+        "choose_offering": "{{offering.accusative}} seçin",
+        "empty_slots": "Uygun saat yok",
+        "my_bookings": "Rezervasyonlarım",
+        "confirm_booking": "Rezervasyonu onayla"
+      }
+    },
+    "fitness": {
+      "staff": {
+        "singular": "eğitmen",
+        "plural": "eğitmenler",
+        "accusative": "eğitmen"
+      },
+      "offering": {
+        "event": {
+          "singular": "ders",
+          "plural": "dersler",
+          "accusative": "ders"
+        },
+        "resource": {
+          "singular": "hizmet",
+          "plural": "hizmetler",
+          "accusative": "hizmet"
+        }
+      },
+      "messages": {
+        "choose_staff": "{{staff.accusative}} seçin",
+        "choose_offering": "{{offering.accusative}} seçin",
+        "empty_slots": "Uygun saat yok",
+        "my_bookings": "Rezervasyonlarım",
+        "confirm_booking": "Rezervasyonu onayla"
+      }
+    },
+    "beauty": {
+      "staff": {
+        "singular": "uzman",
+        "plural": "uzmanlar",
+        "accusative": "uzman"
+      },
+      "offering": {
+        "event": {
+          "singular": "etkinlik",
+          "plural": "etkinlikler",
+          "accusative": "etkinlik"
+        },
+        "resource": {
+          "singular": "hizmet",
+          "plural": "hizmetler",
+          "accusative": "hizmet"
+        }
+      },
+      "messages": {
+        "choose_staff": "{{staff.accusative}} seçin",
+        "choose_offering": "{{offering.accusative}} seçin",
+        "empty_slots": "Uygun saat yok",
+        "my_bookings": "Rezervasyonlarım",
+        "confirm_booking": "Rezervasyonu onayla"
+      }
+    }
+  }
+}

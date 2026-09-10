@@ -1,3 +1,4 @@
+import BusinessTermsProvider from './components/BusinessTermsProvider';
 import { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
@@ -364,6 +365,7 @@ export default function App() {
   // области со своей полосой внутри окна. Меню держится на месте через
   // sticky, а не потому, что контент прокручивается отдельно от него.
   return (
+    <BusinessTermsProvider catalog={catalog}>
     <div className="relative">
       <AmbientBackdrop tint={catalog?.studio.accent_color ?? '#F9A08B'} />
 
@@ -440,5 +442,6 @@ export default function App() {
         </div>
       )}
     </div>
+    </BusinessTermsProvider>
   );
 }

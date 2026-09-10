@@ -288,7 +288,8 @@
       "noLessons": "Tento den nejsou žádné lekce",
       "full": "Žádná místa",
       "confirm": "Rezervovat →",
-      "noSubscription": "Klient nemá dostupnou permanentku pro rezervaci"
+      "noSubscription": "Klient nemá dostupnou permanentku pro rezervaci",
+      "individual": "Individuální služba"
     },
     "bonusPanel": {
       "title": "Udělit bonus"

@@ -148,11 +148,25 @@ export interface OverviewKpiSet {
   fill_rate: Kpi
 }
 
+/** HB-23/§4.1: события ≠ записи; pending/hold отдельно и вне посещений;
+ *  utilization_pct = null означает «нет данных», а не нулевую загрузку. */
+export interface BookingModeSlice {
+  booking_mode: 'event' | 'resource'
+  events: number
+  bookings: number
+  attended: number
+  pending: number
+  hold: number
+  cancelled: number
+  utilization_pct: number | null
+}
+
 export interface OverviewRead {
   kpi: OverviewKpiSet
   revenue_structure: RevenueStructureRow[]
   client_dynamics: ClientDynamics
   insights: Insight[]
+  booking_modes: BookingModeSlice[]
 }
 
 // ─── R2: вкладка «Продажи» ─────────────────────────────────────────────────

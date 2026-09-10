@@ -27,6 +27,12 @@ export interface Lesson {
   clients_notified: boolean
   service_id: number | null
   service_color: string | null
+  // HB-15: снимок механики и филиала. Определять модель по total_spots === 1
+  // запрещено — заранее созданное событие на одно место остаётся событием.
+  branch_id: number | null
+  booking_mode: 'event' | 'resource'
+  tz_iana: string | null
+  version?: number
 }
 
 export interface LessonCreate {

@@ -35,7 +35,8 @@
     "phoneTaken": "Ky numër telefoni është tashmë i zënë",
     "emailInStudio": "Ky person punon tashmë në studion tuaj",
     "phoneInStudio": "Ky person punon tashmë në studion tuaj",
-    "accountWillBeLinked": "Një llogari me këtë kontakt ekziston tashmë — do të lidhet me studion tuaj"
+    "accountWillBeLinked": "Një llogari me këtë kontakt ekziston tashmë — do të lidhet me studion tuaj",
+    "range": "Duhet të jetë nga {{min}} deri {{max}}"
   },
   "status": {
     "online": "Online",

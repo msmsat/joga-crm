@@ -375,24 +375,14 @@ async def _crm_id_contract(ids):
     assert created.id == result.reservation_id
 
 
-def _miniapp_my_lessons_lacks_reservation_id():
-    """Статически фиксируем известный разрыв: список «мои занятия» отдаёт
-    только id занятия. Как только кто-то добавит `reservation_id` в схему —
-    этот тест начнёт падать, и его нужно будет ПЕРЕПИСАТЬ (это HB-21), а не
-    молча удалить."""
-    upcoming_fields = set(miniapp_lessons.MiniappUpcomingLesson.model_fields)
-    past_fields = set(miniapp_lessons.MiniappPastLesson.model_fields)
-    assert "reservation_id" not in upcoming_fields, (
-        "HB-21 добавил reservation_id в MiniappUpcomingLesson — обнови "
-        "docs/HYBRID_BOOKING_PROGRESS.md (HB-01) и этот тест")
-    assert "reservation_id" not in past_fields
-    assert "id" in upcoming_fields and "id" in past_fields  # это id ЗАНЯТИЯ
-
-    # cancel/rate сегодня принимают lesson_id, не reservation_id.
-    cancel_src = inspect.getsource(miniapp_lessons.cancel_reservation)
-    rate_src = inspect.getsource(miniapp_lessons.rate_reservation)
-    assert "lesson_id: int" in cancel_src
-    assert "lesson_id: int" in rate_src
+def _miniapp_my_lessons_reservation_identity():
+    """HB-21 adds concrete identity without removing the legacy lesson contract."""
+    for schema in (miniapp_lessons.MiniappUpcomingLesson, miniapp_lessons.MiniappPastLesson):
+        assert {"id", "reservation_id", "status", "version", "starts_at", "allowed_actions"} <= set(schema.model_fields)
+    assert "cancelled" in miniapp_lessons.MiniappMyLessons.model_fields
+    assert "lesson_id: int" in inspect.getsource(miniapp_lessons.cancel_reservation)
+    assert "lesson_id: int" in inspect.getsource(miniapp_lessons.rate_reservation)
+    assert "reservation_id: int" in inspect.getsource(miniapp_lessons.rate_booking)
 
 
 def _public_widget_contract_locked():
@@ -519,7 +509,7 @@ async def _same_names_discriminated_by_id(ids):
 
 
 def test_hybrid_static_contracts_locked():
-    _miniapp_my_lessons_lacks_reservation_id()
+    _miniapp_my_lessons_reservation_identity()
     _public_widget_contract_locked()
 
 

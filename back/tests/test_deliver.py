@@ -64,7 +64,9 @@ async def _run():
 
     logged = []
 
-    async def fake_claim(studio_id, event_id, channel, recipient, context):
+    async def fake_claim(studio_id, event_id, channel, recipient, context, causal=None):
+        # causal (HB-25) — причинный ключ дедупликации: у прямых вызовов
+        # deliver() его нет, и подпись обязана это допускать.
         logged.append((channel, event_id))
         return 1  # строка занята, слать надо
 

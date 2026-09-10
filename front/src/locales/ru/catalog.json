@@ -142,7 +142,17 @@
       "priceShort": "Цена",
       "durationShort": "Длительность",
       "statSeats": "Мест",
-      "colorHint": "Этим цветом занятие подсвечивается в сетке журнала."
+      "colorHint": "Этим цветом занятие подсвечивается в сетке журнала.",
+      "bookingMode": "Механика записи",
+      "bookingModeEvent": "Запись на занятие",
+      "bookingModeResource": "Выбор времени",
+      "bookingModeEventHint": "Клиент записывается на занятие, которое вы уже поставили в расписание.",
+      "bookingModeResourceHint": "Клиент выбирает специалиста и свободное время; интервал ({{offering}}) создаётся при подтверждении.",
+      "bookable": "Доступна для записи",
+      "bookableOn": "Да",
+      "bookableOff": "Нет",
+      "bufferBefore": "Буфер до",
+      "bufferAfter": "Буфер после"
     },
     "package": {
       "titleNew": "Новый пакет",

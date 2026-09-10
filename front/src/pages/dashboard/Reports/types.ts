@@ -60,6 +60,9 @@ export interface ReportFiltersParams {
   hall_id?: number;
   trainer_id?: number;
   service_id?: number;
+  /** HB-23: разрез по модели записи. Не передан — обе модели вместе, как было
+   *  до эпика: добавленный фильтр не меняет числа тем, кто его не шлёт. */
+  booking_mode?: 'event' | 'resource';
 }
 
 /** @deprecated под старые mock-вкладки; новый тулбар использует ReportPeriod */

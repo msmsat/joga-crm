@@ -11,6 +11,7 @@ import { settingsApi } from "../../api/settings/settings.api";
 import { resolveImageUrl } from "../../api/client";
 import { getCurrencySymbol } from "../UI";
 import { useContactCheck } from "../../hooks/useContactCheck";
+import StaffAvailabilitySection from "./StaffAvailabilitySection";
 
 // ─── TYPES ────────────────────────────────────────────────────────────────────
 interface ScheduleDay { enabled: boolean; from: string; to: string; }
@@ -29,6 +30,8 @@ export interface StaffMember {
   schedule?: Record<string, ScheduleDay>;
   photo_url?: string;
   service_ids?: number[];
+  /** HB-18: филиалы, где специалист доступен для индивидуальной записи. */
+  branch_ids?: number[];
   /** true — сотрудник принял приглашение и владеет аккаунтом: его email и телефон
    *  студия больше не правит (PUT /staff вернёт 403), это личные контакты. */
   is_active?: boolean;
@@ -361,16 +364,21 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
     schedule: Record<string, ScheduleDay>;
     photo_url?: string;
     serviceIds: number[];
+    branchIds: number[];
   }>({
     id: 0, name: "", last_name: "", phone: "", email: "", role: "",
     avatar_gradient: "", is_online: true, salary: "", rate_type: "",
-    schedule: { ...defaultSchedule }, serviceIds: [],
+    schedule: { ...defaultSchedule }, serviceIds: [], branchIds: [],
   });
+  const [availableBranches, setAvailableBranches] = useState<{ id: number; name: string }[]>([]);
 
   // Загрузка услуг студии для пилюль вкладки «Роль»
   useEffect(() => {
     if (isOpen) {
       servicesApi.list().then(setAvailableServices).catch(() => setAvailableServices([]));
+      studioApi.getBranches()
+        .then(rows => setAvailableBranches(rows.map(b => ({ id: b.id, name: b.name }))))
+        .catch(() => setAvailableBranches([]));
     }
   }, [isOpen]);
 
@@ -395,6 +403,7 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
         schedule:       staff.schedule ?? { ...defaultSchedule },
         photo_url:      staff.photo_url,
         serviceIds:     staff.service_ids ?? [],
+        branchIds:      staff.branch_ids ?? [],
       });
       setPhotoPreview(resolveImageUrl(staff.photo_url));
       setShowDeleteConfirm(false);
@@ -442,6 +451,9 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
         ...form,
         rate: form.salary ? parseFloat(form.salary) : undefined,
         service_ids: form.role === "trainer" ? form.serviceIds : [],
+        // Назначения филиалов имеют смысл только у специалиста: администратор
+        // в Resource-доступности не участвует.
+        branch_ids: form.role === "trainer" ? form.branchIds : [],
       });
       setSaving(false);
       setSaved(true);
@@ -1260,6 +1272,18 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
                       </div>
                     ))}
                   </div>
+
+                  {/* HB-18: филиалы и перерывы — предпосылка Resource-доступности.
+                      Пустой недельный график сам по себе означает не «круглосуточно»,
+                      а незавершённую настройку (см. resource_hours: CONFIG_INCOMPLETE). */}
+                  {form.role === "trainer" && form.id > 0 && (
+                    <StaffAvailabilitySection
+                      staffId={form.id}
+                      branches={availableBranches}
+                      selected={form.branchIds}
+                      onSelectedChange={ids => set("branchIds", ids)}
+                    />
+                  )}
 
                   {/* Schedule rows */}
                   <div style={{ border: "1.5px solid rgba(var(--ink),0.08)", borderRadius: "14px", overflow: "hidden" }}>

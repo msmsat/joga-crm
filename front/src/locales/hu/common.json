@@ -35,7 +35,8 @@
     "phoneTaken": "Ez a telefonszám már foglalt",
     "emailInStudio": "Ez a személy már az Ön stúdiójában dolgozik",
     "phoneInStudio": "Ez a személy már az Ön stúdiójában dolgozik",
-    "accountWillBeLinked": "Ezzel az elérhetőséggel már létezik fiók — a stúdiójához lesz kapcsolva"
+    "accountWillBeLinked": "Ezzel az elérhetőséggel már létezik fiók — a stúdiójához lesz kapcsolva",
+    "range": "{{min}} és {{max}} között lehet"
   },
   "status": {
     "online": "Online",

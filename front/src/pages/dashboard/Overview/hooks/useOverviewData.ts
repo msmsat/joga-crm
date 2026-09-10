@@ -128,6 +128,16 @@ export function useOverviewData() {
     staleTime: STALE,
   });
 
+  // HB-23: разрез event/resource. Отдельный запрос, а не поле summary:
+  // summary — старый контракт, и менять его форму ради нового блока значит
+  // трогать всех его потребителей.
+  const bookingModes = useQuery({
+    queryKey: ['overview-booking-modes', range.date_from, range.date_to],
+    queryFn: () => analyticsApi.getOverview(range),
+    enabled: isOwner,
+    staleTime: STALE,
+  });
+
   const series = useQuery({
     queryKey: queryKeys.overviewSeries(seriesMetric ?? 'none', group, seriesFrom, seriesTo),
     queryFn: () => analyticsApi.getSeries({ metric: seriesMetric!, group, date_from: seriesFrom, date_to: seriesTo }),
@@ -175,6 +185,7 @@ export function useOverviewData() {
     period, setPeriod, series: series.data ?? [],
     trainers: trainers.data ?? [], services: services.data ?? [],
     events: activity.data ?? [],
+    bookingModes: bookingModes.data?.booking_modes ?? [],
     currencySymbol,
     // tasks/setTasks здесь БОЛЬШЕ НЕТ — вынесены в useOverviewTasks.ts (временная заглушка до D4)
   };

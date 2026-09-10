@@ -102,6 +102,7 @@ class _Reservation:
         self.id = _Reservation._next[0]
         _Reservation._next[0] += 1
         self.client_id = client_id
+        self.lesson_id = 1
         self.status = "active"
         self.cancelled_at = None
         self.subscription_id = None
@@ -329,6 +330,8 @@ def test_cancel_sets_notified_true_when_client_notified():
         [booked],                    # select Reservation (booked, каскад отмены)
         _Studio(),                   # booking.cancel: lock_studio (HB-06)
         booked,                      # booking.cancel находит ту же бронь
+        None,                        # conditional cancellation of the private resource interval
+        None,                        # HB-25: INSERT намерения уведомить об отмене
     ])
     calls = []
 

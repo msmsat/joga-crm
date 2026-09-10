@@ -92,5 +92,18 @@
     "expenses": "Ausgaben",
     "avgCheck": "Ø Bon",
     "profit": "Gewinn"
+  },
+  "bookingModes": {
+    "title": "Buchungsmodelle",
+    "event": "Termine",
+    "resource": "Individuell",
+    "events": "Termine",
+    "bookings": "Buchungen",
+    "attended": "Besuche",
+    "pending": "Wartet auf Bestätigung",
+    "hold": "Wartet auf Zahlung",
+    "cancelled": "Storniert",
+    "utilization": "Auslastung",
+    "noData": "Keine Daten"
   }
 }

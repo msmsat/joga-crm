@@ -6,6 +6,7 @@ import AnalyticsChart from './components/widgets/AnalyticsChart';
 import TasksWidget from './components/widgets/TasksWidget';
 import TodayLessons from './components/widgets/TodayLessons';
 import RecentEventsBoard from './components/widgets/RecentEventsBoard';
+import { BookingModesBoard } from './components/BookingModesBoard';
 import SummaryWidgets from './components/widgets/SummaryWidgets';
 import { errorMessage } from '../../../api/errorMessage';
 import { Button, EmptyState, useToast } from '../../../components/ui/index';
@@ -80,6 +81,8 @@ export default function Overview() {
         {/* Виджет задач доступен всем ролям — своя RBAC-фильтрация внутри (D2/D4) */}
         <TasksWidget />
       </div>
+
+      {canSeeStudioData && !studioDataError && <BookingModesBoard rows={d.bookingModes} />}
 
       {canSeeStudioData && !studioDataError && <RecentEventsBoard events={d.events} />}
 

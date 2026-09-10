@@ -1,0 +1,105 @@
+{
+  "$defs": {
+    "Forms": {
+      "additionalProperties": false,
+      "properties": {
+        "singular": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[^<>{}]+$",
+          "title": "Singular",
+          "type": "string"
+        },
+        "plural": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[^<>{}]+$",
+          "title": "Plural",
+          "type": "string"
+        },
+        "accusative": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[^<>{}]+$",
+          "title": "Accusative",
+          "type": "string"
+        }
+      },
+      "required": [
+        "singular",
+        "plural",
+        "accusative"
+      ],
+      "title": "Forms",
+      "type": "object"
+    },
+    "Offerings": {
+      "additionalProperties": false,
+      "properties": {
+        "event": {
+          "$ref": "#/$defs/Forms"
+        },
+        "resource": {
+          "$ref": "#/$defs/Forms"
+        }
+      },
+      "required": [
+        "event",
+        "resource"
+      ],
+      "title": "Offerings",
+      "type": "object"
+    },
+    "Profile": {
+      "additionalProperties": false,
+      "properties": {
+        "staff": {
+          "$ref": "#/$defs/Forms"
+        },
+        "offering": {
+          "$ref": "#/$defs/Offerings"
+        },
+        "messages": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Messages",
+          "type": "object"
+        }
+      },
+      "required": [
+        "staff",
+        "offering",
+        "messages"
+      ],
+      "title": "Profile",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "const": 1,
+      "title": "Version",
+      "type": "integer"
+    },
+    "locale": {
+      "title": "Locale",
+      "type": "string"
+    },
+    "profiles": {
+      "additionalProperties": {
+        "$ref": "#/$defs/Profile"
+      },
+      "title": "Profiles",
+      "type": "object"
+    }
+  },
+  "required": [
+    "version",
+    "locale",
+    "profiles"
+  ],
+  "title": "PresetFile",
+  "type": "object"
+}

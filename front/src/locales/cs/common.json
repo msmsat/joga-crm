@@ -35,7 +35,8 @@
     "phoneTaken": "Toto telefonní číslo je již obsazené",
     "emailInStudio": "Tento člověk už ve vašem studiu pracuje",
     "phoneInStudio": "Tento člověk už ve vašem studiu pracuje",
-    "accountWillBeLinked": "Účet s tímto kontaktem už existuje — bude propojen s vaším studiem"
+    "accountWillBeLinked": "Účet s tímto kontaktem už existuje — bude propojen s vaším studiem",
+    "range": "Povoleno od {{min}} do {{max}}"
   },
   "status": {
     "online": "Online",

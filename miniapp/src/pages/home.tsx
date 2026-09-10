@@ -8,6 +8,7 @@ import StudioPickerSheet from '../components/home/StudioPickerSheet';
 import NextLessonCard from '../components/home/NextLessonCard';
 import DirectionsRail from '../components/home/DirectionsRail';
 import ServiceScheduleSheet from '../components/schedule/ServiceScheduleSheet';
+import ResourceBookingSheet from '../components/booking/ResourceBookingSheet';
 import { SectionLabel } from '../components/ui/SectionLabel';
 import { ListSkeleton } from '../components/ui/ListSkeleton';
 import { Badge } from '../components/ui/Badge';
@@ -26,9 +27,10 @@ import {
   type LessonResponse,
   type UpcomingLessonResponse,
 } from '../api/lessons';
-import type { Studio, StudioCatalog } from '../api/studio';
+import type { Studio, StudioCatalog, StudioService } from '../api/studio';
 import { useTelegram } from '../hooks/useTelegram';
 import { useLessonBooking } from '../hooks/useLessonBooking';
+import { useResourceBooking } from '../hooks/useResourceBooking';
 
 interface HomeProps {
   user: UserResponse | null;
@@ -69,9 +71,12 @@ export default function Home({
   // Лист выбора филиала. Открывается только из направления: клиент уже выбрал,
   // ЧТО, осталось решить где. Отдельного входа «посмотреть все студии» нет —
   // для этого есть карточка студии выше, тап по ней открывает саму студию.
-  const [pendingService, setPendingService] = useState<string | null>(null);
+  const [pendingService, setPendingService] = useState<StudioService | null>(null);
   const [openedStudio, setOpenedStudio] = useState<Studio | null>(null);
-  const [schedule, setSchedule] = useState<{ serviceId: string; studio: Studio | null } | null>(null);
+  // HB-19: выбранная услуга хранится ЦЕЛИКОМ — нужен и числовой ID для отбора,
+  // и название для подписи. Смена филиала обязана сбросить выбор: расписание
+  // прошлого филиала не должно оставаться на экране как текущее.
+  const [schedule, setSchedule] = useState<{ service: StudioService; studio: Studio | null } | null>(null);
 
   // Два источника главной карточки: ближайшее занятие студии (предложение,
   // видно и гостю) и ближайшая СВОЯ бронь клиента. Своя сильнее — см. `hero`.
@@ -125,6 +130,7 @@ export default function Home({
   // Запись и отмена — общие с расписанием (useLessonBooking). Перечитать после
   // них и «ближайшее занятие», и открытый лист услуги хук просит сам, подняв
   // версию: обе величины уже висят на ней.
+  const resource = useResourceBooking({ onNeedAuth });
   const booking = useLessonBooking({
     messages: {
       bookError: t('home.booking_error'),
@@ -146,12 +152,23 @@ export default function Home({
 
   // Направление ведёт в расписание услуги. Студию спрашиваем только тогда,
   // когда их правда несколько — иначе вопрос без выбора.
-  const openDirection = (serviceId: string) => {
+  // HB-20: механика услуги решает, КУДА ведёт направление. Событие открывает
+  // расписание, индивидуальная услуга — выбор времени. Определяется полем
+  // `booking_mode` с сервера, а не по `service_type` и не по вместимости.
+  const openService = (service: StudioService, studio: Studio | null) => {
+    if (service.booking_mode === 'resource') {
+      resource.open(service, studio?.id ?? branches[0]?.id ?? null);
+    } else {
+      setSchedule({ service, studio });
+    }
+  };
+
+  const openDirection = (service: StudioService) => {
     vibrateMedium();
     if (isMultiStudio) {
-      setPendingService(serviceId);
+      setPendingService(service);
     } else {
-      setSchedule({ serviceId, studio: null });
+      openService(service, branches[0] ?? null);
     }
   };
 
@@ -159,7 +176,7 @@ export default function Home({
     if (!pendingService) return;
 
     setActiveStudioId(studio.id);
-    setSchedule({ serviceId: pendingService, studio });
+    openService(pendingService, studio);
     setPendingService(null);
   };
 
@@ -355,19 +372,20 @@ export default function Home({
         services={catalog?.services ?? []}
         isLiked={openedStudio ? liked.includes(openedStudio.id) : false}
         onToggleLike={() => openedStudio && handleLike(openedStudio.id)}
-        onServicePick={(service) =>
-          setSchedule({ serviceId: service.name, studio: openedStudio })
-        }
+        onServicePick={(service) => openService(service, openedStudio)}
       />
 
       <ServiceScheduleSheet
         isOpen={schedule !== null}
         onClose={() => setSchedule(null)}
-        serviceId={schedule?.serviceId ?? null}
+        serviceId={schedule?.service.id ?? null}
+        serviceName={schedule ? t(`lesson.name.${schedule.service.name}`, { defaultValue: schedule.service.name }) : null}
         studio={schedule?.studio ?? null}
         refreshKey={lessonsVersion}
         onLessonPick={booking.openModal}
       />
+
+      <ResourceBookingSheet flow={resource} layer={2} />
 
       <BookingModal
         isOpen={booking.isModalOpen}

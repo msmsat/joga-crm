@@ -4,7 +4,8 @@
     "trainers": "Trenéři",
     "halls": "Sály",
     "day": "Den",
-    "week": "Týden"
+    "week": "Týden",
+    "resourceBooking": "Individuálně"
   },
   "daySummary": {
     "classesToday": "lekcí dnes",
@@ -160,5 +161,19 @@
     "message_few": "{{count}} klienti dostanou oznámení o zrušení.",
     "message_other": "{{count}} klientů dostane oznámení o zrušení.",
     "confirm": "Zrušit lekci"
+  },
+  "resourceBooking": {
+    "title": "Individuální rezervace",
+    "service": "Služba",
+    "branch": "Pobočka",
+    "client": "Klient",
+    "date": "Datum",
+    "slot": "Čas",
+    "time": "Čas",
+    "staff": "Specialista",
+    "duration": "Délka, min",
+    "price": "Cena",
+    "noSlots": "V tento den není volný čas",
+    "configIncomplete": "Rozvrh této služby zatím není nastaven"
   }
 }

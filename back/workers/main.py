@@ -107,8 +107,17 @@ async def _watch_stale_holds() -> None:
     Работает НЕЗАВИСИМО ОТ ФЛАГА `AGENT_PAYMENTS`: флаг решает, заводить ли
     НОВЫЕ оплаты. Уже начатые обязаны быть доведены до конца — иначе
     выключение раскатки бросает чужие деньги.
+
+    Тем же проходом разгребаются намерения уведомить о переходах брони
+    (HB-25): у них тот же короткий срок актуальности и та же цена задержки.
     """
-    from services import booking_payment, proposals
+    from services import booking_notifications, booking_payment, proposals
+
+    # HB-25: намерения уведомить о переходах брони — тем же коротким проходом.
+    # Сеть здесь, ПОСЛЕ commit доменной транзакции и вне замка студии.
+    notified = await booking_notifications.run_due()
+    if any(notified.values()):
+        logger.info("booking_notifications %s", notified)
 
     async with async_session_maker() as db:
         counts = await booking_payment.sweep(db)

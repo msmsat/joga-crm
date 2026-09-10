@@ -30,6 +30,9 @@ interface ToolbarProps {
   setDateInputVal: (val: string) => void;
   setCalendarView: (val: 'day' | 'week') => void;
   onGoToToday: () => void;
+  /** HB-22: вход в индивидуальную запись. Кнопки нет, пока у студии нет ни
+   *  одной услуги с механикой resource — иначе она вела бы в пустую форму. */
+  onResourceBooking?: () => void;
 }
 
 export const Toolbar: React.FC<ToolbarProps> = ({
@@ -52,7 +55,8 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   setIsEditingDate,
   setDateInputVal,
   setCalendarView,
-  onGoToToday
+  onGoToToday,
+  onResourceBooking,
 }) => {
   const { t, i18n } = useTranslation('journal');
   return (
@@ -124,6 +128,13 @@ export const Toolbar: React.FC<ToolbarProps> = ({
         <Icons.Today />
         <span className="j-today-label">{t('toolbar.today')}</span>
       </button>
+
+      {onResourceBooking && (
+        <button className="btn-ghost-sm" onClick={onResourceBooking} title={t('toolbar.resourceBooking')}>
+          <Icons.Plus />
+          <span className="j-today-label">{t('toolbar.resourceBooking')}</span>
+        </button>
+      )}
 
       <div className="j-sep" style={{ width: 1, height: 20, background: 'var(--border)', flexShrink: 0 }} />
 

@@ -6,6 +6,8 @@ import { Button, EmptyState, Input, Select, useToast } from "../../../../../comp
 import { CURRENCY_OPTIONS, LANGUAGES, TIMEZONES } from "../../../../../components/UI";
 import { resolveImageUrl } from "../../../../../api/client";
 import { useGeneralSettings } from "../../hooks/useGeneralSettings";
+import BookingModelCard from "./BookingModelCard";
+import { getUserRoleFromToken } from "../../../../../utils/auth";
 import type { GeneralSettings, GeneralUpdate } from "../../../../../api/settings/settings.types";
 
 // logo_url — отдельный аплоад (uploadLogo), journal_time_step — без UI в этой задаче.
@@ -223,6 +225,11 @@ export default function GeneralTab() {
           </div>
         </div>
       </div>
+
+      {/* Модель записи и терминология — только владельцу: сервер отвечает 403
+          администратору на тот же PATCH, и показывать ему рычаг, который не
+          сработает, значит обещать несуществующее право (§4.4/AC-24). */}
+      {getUserRoleFromToken() === 'owner' && <BookingModelCard data={data} save={save} />}
     </div>
   );
 }

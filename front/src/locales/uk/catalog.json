@@ -142,7 +142,17 @@
       "priceShort": "Ціна",
       "durationShort": "Тривалість",
       "statSeats": "Місця",
-      "colorHint": "Заняття підсвічуються цим кольором у сітці журналу."
+      "colorHint": "Заняття підсвічуються цим кольором у сітці журналу.",
+      "bookingMode": "Механіка запису",
+      "bookingModeEvent": "Запис на заняття",
+      "bookingModeResource": "Вибір часу",
+      "bookingModeEventHint": "Клієнт записується на заняття, яке ви вже поставили в розклад.",
+      "bookingModeResourceHint": "Клієнт обирає фахівця і вільний час; інтервал ({{offering}}) створюється під час підтвердження.",
+      "bookable": "Доступна для запису",
+      "bookableOn": "Так",
+      "bookableOff": "Ні",
+      "bufferBefore": "Буфер до",
+      "bufferAfter": "Буфер після"
     },
     "package": {
       "titleNew": "Новий пакет",

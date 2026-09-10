@@ -1,0 +1,84 @@
+{
+  "version": 1,
+  "locale": "de",
+  "profiles": {
+    "generic": {
+      "staff": {
+        "singular": "Fachkraft",
+        "plural": "Fachkräfte",
+        "accusative": "Fachkraft"
+      },
+      "offering": {
+        "event": {
+          "singular": "Veranstaltung",
+          "plural": "Veranstaltungen",
+          "accusative": "Veranstaltung"
+        },
+        "resource": {
+          "singular": "Leistung",
+          "plural": "Leistungen",
+          "accusative": "Leistung"
+        }
+      },
+      "messages": {
+        "choose_staff": "{{staff.accusative}} auswählen",
+        "choose_offering": "{{offering.accusative}} auswählen",
+        "empty_slots": "Keine freien Termine",
+        "my_bookings": "Meine Buchungen",
+        "confirm_booking": "Buchung bestätigen"
+      }
+    },
+    "fitness": {
+      "staff": {
+        "singular": "Trainer",
+        "plural": "Trainer",
+        "accusative": "Trainer"
+      },
+      "offering": {
+        "event": {
+          "singular": "Kurs",
+          "plural": "Kurse",
+          "accusative": "Kurs"
+        },
+        "resource": {
+          "singular": "Leistung",
+          "plural": "Leistungen",
+          "accusative": "Leistung"
+        }
+      },
+      "messages": {
+        "choose_staff": "{{staff.accusative}} auswählen",
+        "choose_offering": "{{offering.accusative}} auswählen",
+        "empty_slots": "Keine freien Termine",
+        "my_bookings": "Meine Buchungen",
+        "confirm_booking": "Buchung bestätigen"
+      }
+    },
+    "beauty": {
+      "staff": {
+        "singular": "Fachkraft",
+        "plural": "Fachkräfte",
+        "accusative": "Fachkraft"
+      },
+      "offering": {
+        "event": {
+          "singular": "Veranstaltung",
+          "plural": "Veranstaltungen",
+          "accusative": "Veranstaltung"
+        },
+        "resource": {
+          "singular": "Leistung",
+          "plural": "Leistungen",
+          "accusative": "Leistung"
+        }
+      },
+      "messages": {
+        "choose_staff": "{{staff.accusative}} auswählen",
+        "choose_offering": "{{offering.accusative}} auswählen",
+        "empty_slots": "Keine freien Termine",
+        "my_bookings": "Meine Buchungen",
+        "confirm_booking": "Buchung bestätigen"
+      }
+    }
+  }
+}

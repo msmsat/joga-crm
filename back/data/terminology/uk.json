@@ -1,0 +1,84 @@
+{
+  "version": 1,
+  "locale": "uk",
+  "profiles": {
+    "generic": {
+      "staff": {
+        "singular": "спеціаліст",
+        "plural": "спеціалісти",
+        "accusative": "спеціаліста"
+      },
+      "offering": {
+        "event": {
+          "singular": "подія",
+          "plural": "події",
+          "accusative": "подію"
+        },
+        "resource": {
+          "singular": "послуга",
+          "plural": "послуги",
+          "accusative": "послугу"
+        }
+      },
+      "messages": {
+        "choose_staff": "Виберіть {{staff.accusative}}",
+        "choose_offering": "Виберіть {{offering.accusative}}",
+        "empty_slots": "Немає доступного часу",
+        "my_bookings": "Мої записи",
+        "confirm_booking": "Підтвердити запис"
+      }
+    },
+    "fitness": {
+      "staff": {
+        "singular": "тренер",
+        "plural": "тренери",
+        "accusative": "тренера"
+      },
+      "offering": {
+        "event": {
+          "singular": "заняття",
+          "plural": "заняття",
+          "accusative": "заняття"
+        },
+        "resource": {
+          "singular": "послуга",
+          "plural": "послуги",
+          "accusative": "послугу"
+        }
+      },
+      "messages": {
+        "choose_staff": "Виберіть {{staff.accusative}}",
+        "choose_offering": "Виберіть {{offering.accusative}}",
+        "empty_slots": "Немає доступного часу",
+        "my_bookings": "Мої записи",
+        "confirm_booking": "Підтвердити запис"
+      }
+    },
+    "beauty": {
+      "staff": {
+        "singular": "майстер",
+        "plural": "майстри",
+        "accusative": "майстра"
+      },
+      "offering": {
+        "event": {
+          "singular": "подія",
+          "plural": "події",
+          "accusative": "подію"
+        },
+        "resource": {
+          "singular": "послуга",
+          "plural": "послуги",
+          "accusative": "послугу"
+        }
+      },
+      "messages": {
+        "choose_staff": "Виберіть {{staff.accusative}}",
+        "choose_offering": "Виберіть {{offering.accusative}}",
+        "empty_slots": "Немає доступного часу",
+        "my_bookings": "Мої записи",
+        "confirm_booking": "Підтвердити запис"
+      }
+    }
+  }
+}

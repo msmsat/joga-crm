@@ -1,0 +1,84 @@
+{
+  "version": 1,
+  "locale": "da",
+  "profiles": {
+    "generic": {
+      "staff": {
+        "singular": "specialist",
+        "plural": "specialister",
+        "accusative": "specialist"
+      },
+      "offering": {
+        "event": {
+          "singular": "begivenhed",
+          "plural": "begivenheder",
+          "accusative": "begivenhed"
+        },
+        "resource": {
+          "singular": "ydelse",
+          "plural": "ydelser",
+          "accusative": "ydelse"
+        }
+      },
+      "messages": {
+        "choose_staff": "Vælg {{staff.accusative}}",
+        "choose_offering": "Vælg {{offering.accusative}}",
+        "empty_slots": "Ingen ledige tider",
+        "my_bookings": "Mine bookinger",
+        "confirm_booking": "Bekræft booking"
+      }
+    },
+    "fitness": {
+      "staff": {
+        "singular": "træner",
+        "plural": "trænere",
+        "accusative": "træner"
+      },
+      "offering": {
+        "event": {
+          "singular": "hold",
+          "plural": "hold",
+          "accusative": "hold"
+        },
+        "resource": {
+          "singular": "ydelse",
+          "plural": "ydelser",
+          "accusative": "ydelse"
+        }
+      },
+      "messages": {
+        "choose_staff": "Vælg {{staff.accusative}}",
+        "choose_offering": "Vælg {{offering.accusative}}",
+        "empty_slots": "Ingen ledige tider",
+        "my_bookings": "Mine bookinger",
+        "confirm_booking": "Bekræft booking"
+      }
+    },
+    "beauty": {
+      "staff": {
+        "singular": "specialist",
+        "plural": "specialister",
+        "accusative": "specialist"
+      },
+      "offering": {
+        "event": {
+          "singular": "begivenhed",
+          "plural": "begivenheder",
+          "accusative": "begivenhed"
+        },
+        "resource": {
+          "singular": "ydelse",
+          "plural": "ydelser",
+          "accusative": "ydelse"
+        }
+      },
+      "messages": {
+        "choose_staff": "Vælg {{staff.accusative}}",
+        "choose_offering": "Vælg {{offering.accusative}}",
+        "empty_slots": "Ingen ledige tider",
+        "my_bookings": "Mine bookinger",
+        "confirm_booking": "Bekræft booking"
+      }
+    }
+  }
+}

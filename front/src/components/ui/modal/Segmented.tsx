@@ -9,12 +9,14 @@ export interface SegmentedProps<T extends string> {
   value: T;
   options: SegmentedOption<T>[];
   onChange: (v: T) => void;
+  /** Значение продиктовано другим полем — переключать нечего. */
+  disabled?: boolean;
 }
 
 // Переключатель из 2–3 взаимоисключающих значений: белая «таблетка» едет под
 // активным сегментом. Замена дропдауна там, где вариантов мало и их видно все
 // сразу (тип услуги: групповая/индивидуальная).
-export function Segmented<T extends string>({ label, value, options, onChange }: SegmentedProps<T>) {
+export function Segmented<T extends string>({ label, value, options, onChange, disabled }: SegmentedProps<T>) {
   const idx = Math.max(0, options.findIndex(o => o.value === value));
   const w = 100 / options.length;
   return (
@@ -28,6 +30,7 @@ export function Segmented<T extends string>({ label, value, options, onChange }:
             type="button"
             role="tab"
             aria-selected={o.value === value}
+            disabled={disabled}
             onClick={() => onChange(o.value)}
             className={`vk-seg-btn${o.value === value ? ' is-on' : ''}`}
           >

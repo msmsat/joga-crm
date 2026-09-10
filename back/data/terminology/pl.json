@@ -1,0 +1,84 @@
+{
+  "version": 1,
+  "locale": "pl",
+  "profiles": {
+    "generic": {
+      "staff": {
+        "singular": "specjalista",
+        "plural": "specjaliści",
+        "accusative": "specjalistę"
+      },
+      "offering": {
+        "event": {
+          "singular": "wydarzenie",
+          "plural": "wydarzenia",
+          "accusative": "wydarzenie"
+        },
+        "resource": {
+          "singular": "usługa",
+          "plural": "usługi",
+          "accusative": "usługę"
+        }
+      },
+      "messages": {
+        "choose_staff": "Wybierz {{staff.accusative}}",
+        "choose_offering": "Wybierz {{offering.accusative}}",
+        "empty_slots": "Brak wolnych terminów",
+        "my_bookings": "Moje rezerwacje",
+        "confirm_booking": "Potwierdź rezerwację"
+      }
+    },
+    "fitness": {
+      "staff": {
+        "singular": "trener",
+        "plural": "trenerzy",
+        "accusative": "trenera"
+      },
+      "offering": {
+        "event": {
+          "singular": "zajęcia",
+          "plural": "zajęcia",
+          "accusative": "zajęcia"
+        },
+        "resource": {
+          "singular": "usługa",
+          "plural": "usługi",
+          "accusative": "usługę"
+        }
+      },
+      "messages": {
+        "choose_staff": "Wybierz {{staff.accusative}}",
+        "choose_offering": "Wybierz {{offering.accusative}}",
+        "empty_slots": "Brak wolnych terminów",
+        "my_bookings": "Moje rezerwacje",
+        "confirm_booking": "Potwierdź rezerwację"
+      }
+    },
+    "beauty": {
+      "staff": {
+        "singular": "specjalista",
+        "plural": "specjaliści",
+        "accusative": "specjalistę"
+      },
+      "offering": {
+        "event": {
+          "singular": "wydarzenie",
+          "plural": "wydarzenia",
+          "accusative": "wydarzenie"
+        },
+        "resource": {
+          "singular": "usługa",
+          "plural": "usługi",
+          "accusative": "usługę"
+        }
+      },
+      "messages": {
+        "choose_staff": "Wybierz {{staff.accusative}}",
+        "choose_offering": "Wybierz {{offering.accusative}}",
+        "empty_slots": "Brak wolnych terminów",
+        "my_bookings": "Moje rezerwacje",
+        "confirm_booking": "Potwierdź rezerwację"
+      }
+    }
+  }
+}

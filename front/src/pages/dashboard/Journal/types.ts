@@ -32,4 +32,6 @@ export interface Booking {
   cancelReason: string | null;
   clientsNotified: boolean;
   serviceId: number | null;
+  /** HB-22: карточка индивидуальной записи не рисует счётчик участников. */
+  bookingMode: 'event' | 'resource';
 }

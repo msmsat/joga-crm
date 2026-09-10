@@ -5,9 +5,13 @@ import type { Studio } from '../../api/studio';
 
 export type Filters = {
   studioId: number;
-  service: string | null;
+  /** HB-19: числовой ID услуги. По названию два одноимённых направления
+   *  разных филиалов сливались в один пункт и один фильтр. */
+  service: number | null;
   teacher: string | null;
 };
+
+export type ServiceOption = { id: number; name: string };
 
 type Props = {
   isOpen: boolean;
@@ -17,7 +21,7 @@ type Props = {
   studios: Studio[];
   isMultiStudio: boolean;
   /** Варианты собраны из реально загруженных занятий, а не из справочника. */
-  services: string[];
+  services: ServiceOption[];
   teachers: string[];
   resultCount: number;
 };
@@ -118,11 +122,11 @@ export default function FilterSheet({
         </Chip>
         {services.map((service) => (
           <Chip
-            key={service}
-            isActive={value.service === service}
-            onClick={() => onChange({ ...value, service })}
+            key={service.id}
+            isActive={value.service === service.id}
+            onClick={() => onChange({ ...value, service: service.id })}
           >
-            {t(`lesson.name.${service}`, { defaultValue: service })}
+            {t(`lesson.name.${service.name}`, { defaultValue: service.name })}
           </Chip>
         ))}
       </Group>

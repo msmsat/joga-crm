@@ -1,4 +1,8 @@
+import type { BookingCapabilities, Terminology, StudioBookingMode, TerminologyProfile } from '../booking/hybrid.types';
 export interface GeneralSettings {
+  tz_iana: string | null;
+  booking_capabilities: BookingCapabilities;
+  terminology: Terminology | null;
   name: string
   description: string | null
   phone: string | null
@@ -25,7 +29,7 @@ export interface GeneralSettings {
 }
 
 // Поля, доступные для PATCH — logo_url пишется отдельным эндпоинтом (studioApi.uploadStudioLogo).
-export type GeneralUpdate = Partial<Omit<GeneralSettings, 'logo_url'>>
+export type GeneralUpdate = Partial<Omit<GeneralSettings, 'logo_url' | 'booking_capabilities' | 'terminology'>> & { booking_mode?: StudioBookingMode; terminology_profile?: TerminologyProfile; strict_schedule_enabled?: boolean }
 
 export interface AppearanceSettings {
   theme: string | null

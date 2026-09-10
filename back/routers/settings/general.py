@@ -5,7 +5,7 @@ from database import get_db
 from dependencies import StudioContext, get_current_user, get_studio_context, require_role
 from models import Studio, User
 from schemas.schedule.hybrid import AVAILABLE_BOOKING_MODES, BookingCapabilities
-from services import schedule_guard
+from services import hybrid_audit, schedule_guard, terminology
 from schemas.settings.general import (
     AppearanceRead,
     AppearanceUpdate,
@@ -61,15 +61,16 @@ async def bump_booking_config_version(db: AsyncSession, studio: Studio) -> None:
 async def get_general_settings(
     ctx: StudioContext = Depends(get_studio_context),
     db: AsyncSession = Depends(get_db),
+    locale: str | None = None,
 ):
     studio = await _get_studio(ctx.studio_id, db)
     capabilities = _capabilities(studio)
     if ctx.role == "owner":
         return GeneralRead.model_validate(studio).model_copy(
-            update={"booking_capabilities": capabilities})
+            update={"booking_capabilities": capabilities, "terminology": terminology.configuration(studio, locale)})
     # Не-owner (admin/trainer): без контактов и адреса студии (ТЗ эпика 2, задача 1).
     return GeneralReadPublic.model_validate(studio).model_copy(
-        update={"booking_capabilities": capabilities})
+        update={"booking_capabilities": capabilities, "terminology": terminology.configuration(studio, locale)})
 
 
 @router.patch("/general", response_model=GeneralRead)
@@ -78,18 +79,16 @@ async def update_general_settings(
     background: BackgroundTasks,
     ctx: StudioContext = Depends(require_role("owner")),
     db: AsyncSession = Depends(get_db),
+    locale: str | None = None,
 ):
     # HB-06: замок студии — до любой правки конфигурации записи (§6.2).
     studio = await schedule_guard.lock_studio(db, ctx.studio_id)
     was_lang = studio.language
     changes = body.model_dump(exclude_unset=True)
-    # Resource/hybrid у студии пока недоступны никому — HB-07 (единый замок)
-    # и HB-24 (аудит наследия) ещё не готовы. Владелец может свободно менять
-    # терминологию и профиль, но не механику записи.
     if "booking_mode" in changes and changes["booking_mode"] not in AVAILABLE_BOOKING_MODES:
         raise HTTPException(
             status_code=409,
-            detail="Resource- и hybrid-запись пока недоступны — модуль в разработке",
+            detail="Этот режим записи недоступен в текущей версии",
         )
     touched_booking_config = any(
         field in changes and getattr(studio, field) != value
@@ -101,6 +100,11 @@ async def update_general_settings(
     if {"tz_iana", "timezone"} & changes.keys():
         await db.flush()
         await schedule_guard.assert_studio_assignments_valid(db, studio)
+    # HB-24 п.3: проверки включения повторяются здесь, под уже взятым замком
+    # студии, а не по отчёту, снятому владельцем минуту назад.
+    if {"booking_mode", "strict_schedule_enabled"} & changes.keys():
+        await db.flush()
+        await hybrid_audit.assert_can_activate(db, studio, changes)
     if touched_booking_config:
         await bump_booking_config_version(db, studio)
     await db.commit()
@@ -113,7 +117,7 @@ async def update_general_settings(
 
         background.add_task(sync_templates_on_connect, ctx.studio_id)
     return GeneralRead.model_validate(studio).model_copy(
-        update={"booking_capabilities": _capabilities(studio)})
+        update={"booking_capabilities": _capabilities(studio), "terminology": terminology.configuration(studio, locale)})
 
 
 @router.get("/appearance", response_model=AppearanceRead)

@@ -438,17 +438,22 @@ async def taken_spots(db: AsyncSession, lesson_ids: Sequence[int]) -> dict[int, 
     return out
 
 
-async def lesson(db: AsyncSession, studio_id: int, lesson_id: int) -> Optional[LessonFacts]:
+async def lesson(db: AsyncSession, studio_id: int, lesson_id: int, *,
+                 include_resource: bool = False) -> Optional[LessonFacts]:
     """Одно занятие СВОЕЙ студии. Чужое — None, а не «нашлось по id».
 
     Отдельная функция, а не фильтр в `lessons`: у поштучного вопроса нет
     диапазона дат, а спросить по id прошедшее занятие вполне законно.
     """
-    start = (await db.execute(
-        select(Lesson.start_time).where(Lesson.id == lesson_id, Lesson.studio_id == studio_id)
-    )).scalar_one_or_none()
-    if start is None:
+    conditions = [Lesson.id == lesson_id, Lesson.studio_id == studio_id, Lesson.status != "cancelled"]
+    if not include_resource:
+        conditions.append(Lesson.booking_mode == "event")
+    row = (await db.execute(select(Lesson, Hall, StudioBranch, Service, StudioMember)
+        .outerjoin(Hall, (Hall.id == Lesson.hall_id) & (Hall.studio_id == studio_id))
+        .outerjoin(StudioBranch, (StudioBranch.id == Lesson.branch_id) & (StudioBranch.studio_id == studio_id))
+        .outerjoin(Service, (Service.id == Lesson.service_id) & (Service.studio_id == studio_id))
+        .outerjoin(StudioMember, (StudioMember.user_id == Lesson.teacher_id) & (StudioMember.studio_id == studio_id))
+        .where(*conditions).execution_options(populate_existing=True))).first()
+    if row is None:
         return None
-    day = start.date()
-    found = await lessons(db, LessonQuery(studio_id=studio_id, date_from=day, date_to=day))
-    return next((facts for facts in found if facts.lesson_id == lesson_id), None)
+    return _facts(row, await taken_spots(db, [lesson_id]))

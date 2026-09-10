@@ -15,6 +15,7 @@ import { useStudioCurrency } from '../../../../hooks/useStudioCurrency';
 import { getStudioRole } from '../../../../utils/auth';
 import { getCurrencySymbol } from '../../../../components/UI';
 import { ConfirmModal } from '../../../../components/ui/index';
+import { ResourceBookingModal } from '../../Journal/components/modals/ResourceBookingModal';
 
 // ─── SVG ICONS ────────────────────────────────────────────────────────────────
 const IconPhone = () => (
@@ -409,6 +410,7 @@ function ClientPanel({ client, profile, onClose, onDelete }: {
   const isOwner = role === 'owner';
   const currency = getCurrencySymbol(useStudioCurrency());
   const [activeTab,    setActiveTab]    = useState<'info' | 'events' | 'notes' | 'wallet'>('info');
+  const [resourceBookingOpen, setResourceBookingOpen] = useState(false);
   const [tagInput,     setTagInput]     = useState('');
   const [regValue,     setRegValue]     = useState(client.registration_date ?? '');
   const [editingReg,   setEditingReg]   = useState(false);
@@ -927,6 +929,14 @@ function ClientPanel({ client, profile, onClose, onDelete }: {
             })}
           </div>
 
+          {/* HB-22 п.5: индивидуальная запись из карточки идёт теми же
+              quote/confirm, что и везде, с предвыбранным клиентом. Отдельного
+              маршрута с прямым INSERT здесь нет. */}
+          <button
+            onClick={() => setResourceBookingOpen(true)}
+            style={{ width: '100%', padding: '10px', borderRadius: '10px', border: '1px solid var(--border)', background: 'transparent', color: 'var(--text2)', fontSize: '12px', fontWeight: 700, cursor: 'pointer', fontFamily: 'Manrope', marginBottom: '8px' }}
+          >{t('panel.bookingPanel.individual')}</button>
+
           <button
             onClick={actions.confirmBooking}
             disabled={actions.bookingLessonId == null}
@@ -936,6 +946,14 @@ function ClientPanel({ client, profile, onClose, onDelete }: {
       )}
 
       {/* П.14 — BONUS PANEL */}
+      {resourceBookingOpen && (
+        <ResourceBookingModal
+          clientId={client.id}
+          onClose={() => setResourceBookingOpen(false)}
+          onCreated={() => actions.toggleBooking()}
+        />
+      )}
+
       {actions.showBonus && (
         <div style={{ padding: '14px 20px', borderTop: '1px solid var(--border)', background: 'var(--bg-card)', animation: 'panelSlideIn 0.3s ease both', flexShrink: 0 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>

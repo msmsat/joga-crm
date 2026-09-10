@@ -4,7 +4,8 @@
     "trainers": "Тренеры",
     "halls": "Залы",
     "day": "День",
-    "week": "Неделя"
+    "week": "Неделя",
+    "resourceBooking": "Индивидуально"
   },
   "daySummary": {
     "classesToday": "занятий сегодня",
@@ -130,7 +131,6 @@
     "attendanceMarked": "Посещение отмечено",
     "paymentAccepted": "Оплата принята",
     "bookingConfirmed": "Запись подтверждена",
-    "bookingConfirmed": "Запись подтверждена",
     "clientRemoved": "Клиент снят с занятия",
     "lessonUpdated": "Занятие обновлено",
     "lessonAdded": "Занятие добавлено",
@@ -165,5 +165,19 @@
     "message_many": "{{count}} клиентов получат уведомление об отмене.",
     "message_other": "{{count}} клиентов получат уведомление об отмене.",
     "confirm": "Отменить занятие"
+  },
+  "resourceBooking": {
+    "title": "Индивидуальная запись",
+    "service": "Услуга",
+    "branch": "Филиал",
+    "client": "Клиент",
+    "date": "Дата",
+    "slot": "Время",
+    "time": "Время",
+    "staff": "Специалист",
+    "duration": "Длительность, мин",
+    "price": "Стоимость",
+    "noSlots": "На эту дату свободного времени нет",
+    "configIncomplete": "Расписание этой услуги ещё не настроено"
   }
 }

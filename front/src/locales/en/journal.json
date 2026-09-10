@@ -4,7 +4,8 @@
     "trainers": "Trainers",
     "halls": "Halls",
     "day": "Day",
-    "week": "Week"
+    "week": "Week",
+    "resourceBooking": "Individual"
   },
   "daySummary": {
     "classesToday": "classes today",
@@ -156,5 +157,19 @@
     "message_one": "{{count}} client will get a cancellation notice.",
     "message_other": "{{count}} clients will get a cancellation notice.",
     "confirm": "Cancel lesson"
+  },
+  "resourceBooking": {
+    "title": "Individual booking",
+    "service": "Service",
+    "branch": "Branch",
+    "client": "Client",
+    "date": "Date",
+    "slot": "Time",
+    "time": "Time",
+    "staff": "Specialist",
+    "duration": "Duration, min",
+    "price": "Price",
+    "noSlots": "No free time on this date",
+    "configIncomplete": "The schedule for this service is not set up yet"
   }
 }

@@ -5,8 +5,10 @@
 
   * `booking_capabilities` сериализуется предсказуемо и одинаковой формы в
     CRM (`GET /settings/general`, обе роли) и safe-блок доступен всем;
-  * запись resource/hybrid НЕ разрешена сервером ни студии, ни услуге —
-    HB-07/HB-24 ещё не готовы (AVAILABLE_BOOKING_MODES);
+  * запись resource/hybrid разрешается сервером только после включения
+    строгого расписания (AVAILABLE_BOOKING_MODES + hybrid_audit, HB-24):
+    без него и студия, и услуга получают 409 STRICT_SCHEDULE_REQUIRED,
+    а после включения — сохраняются;
   * `booking_config_version` растёт только при изменении относящихся к
     записи настроек — смена логотипа/цвета/цены её не трогает;
   * каталог отклоняет null/неизвестный режим, буфер вне диапазона,
@@ -47,7 +49,9 @@ from services.feature_flags import StudioFeature, is_enabled
 
 async def _seed() -> int:
     async with async_session_maker() as db:
-        studio = Studio(name="TEST-HYBRID-CONFIG-STUDIO", currency="CZK")
+        # tz_iana обязателен: без подтверждённой зоны аудит HB-24 законно
+        # блокирует включение строгого расписания (AC-22).
+        studio = Studio(name="TEST-HYBRID-CONFIG-STUDIO", currency="CZK", tz_iana="Europe/Prague")
         db.add(studio)
         await db.commit()
         return studio.id
@@ -84,7 +88,9 @@ async def _capabilities_read_by_all_roles(studio_id: int) -> None:
 
 # ─── Resource/hybrid недоступны ни студии, ни услуге ──────────────────────────
 
-async def _studio_resource_mode_rejected(studio_id: int) -> None:
+async def _studio_resource_mode_needs_strict_schedule(studio_id: int) -> None:
+    """HB-24 заменил «модуль в разработке» на условие включения: resource/hybrid
+    отклоняются, пока у студии выключено строгое расписание (§6.6 п.5)."""
     owner = StudioContext(user=None, studio_id=studio_id, role="owner")
     for mode in ("resource", "hybrid"):
         async with async_session_maker() as db:
@@ -93,9 +99,10 @@ async def _studio_resource_mode_rejected(studio_id: int) -> None:
                     body=GeneralUpdate(booking_mode=mode),
                     background=BackgroundTasks(), ctx=owner, db=db,
                 )
-                raise AssertionError(f"{mode} должен быть отклонён")
+                raise AssertionError(f"{mode} должен быть отклонён без strict")
             except HTTPException as exc:
                 assert exc.status_code == 409, exc.status_code
+                assert exc.detail["code"] == "STRICT_SCHEDULE_REQUIRED", exc.detail
 
     # "event" явно — не ошибка (уже дефолт, но владелец может прислать его же).
     async with async_session_maker() as db:
@@ -104,9 +111,10 @@ async def _studio_resource_mode_rejected(studio_id: int) -> None:
             background=BackgroundTasks(), ctx=owner, db=db,
         )
     assert ok.booking_capabilities.booking_mode == "event"
+    assert ok.booking_capabilities.strict_schedule_enabled is False
 
 
-async def _service_resource_mode_rejected(studio_id: int) -> None:
+async def _service_resource_mode_needs_strict_schedule(studio_id: int) -> None:
     owner = StudioContext(user=None, studio_id=studio_id, role="owner")
     async with async_session_maker() as db:
         try:
@@ -115,9 +123,48 @@ async def _service_resource_mode_rejected(studio_id: int) -> None:
                                    booking_mode="resource"),
                 ctx=owner, db=db,
             )
-            raise AssertionError("resource-услуга должна быть отклонена")
+            raise AssertionError("resource-услуга без strict должна быть отклонена")
         except HTTPException as exc:
             assert exc.status_code == 409, exc.status_code
+            assert exc.detail["code"] == "STRICT_SCHEDULE_REQUIRED", exc.detail
+
+
+async def _resource_becomes_available_after_activation(studio_id: int) -> None:
+    """Обратная сторона того же контракта: после включения strict у чистой
+    студии владелец заводит resource-услугу и режим — иначе проверка выше
+    доказывала бы лишь то, что путь закрыт навсегда."""
+    owner = StudioContext(user=None, studio_id=studio_id, role="owner")
+    async with async_session_maker() as db:
+        strict = await update_general_settings(
+            body=GeneralUpdate(strict_schedule_enabled=True),
+            background=BackgroundTasks(), ctx=owner, db=db,
+        )
+    assert strict.booking_capabilities.strict_schedule_enabled is True
+
+    async with async_session_maker() as db:
+        service = await create_service(
+            data=ServiceCreate(name="Resource", price=100, duration_min=60,
+                               service_type="individual", booking_mode="resource"),
+            ctx=owner, db=db,
+        )
+    assert service.booking_mode == "resource"
+
+    async with async_session_maker() as db:
+        hybrid_on = await update_general_settings(
+            body=GeneralUpdate(booking_mode="hybrid"),
+            background=BackgroundTasks(), ctx=owner, db=db,
+        )
+    assert hybrid_on.booking_capabilities.booking_mode == "hybrid"
+
+    # Возврат к исходному состоянию — остальные проверки набора считают
+    # студию event-студией без строгого расписания.
+    async with async_session_maker() as db:
+        await delete_service(service_id=service.id, ctx=owner, db=db)
+    async with async_session_maker() as db:
+        await update_general_settings(
+            body=GeneralUpdate(booking_mode="event", strict_schedule_enabled=False),
+            background=BackgroundTasks(), ctx=owner, db=db,
+        )
 
 
 # ─── booking_config_version: растёт только на relevant-полях ─────────────────
@@ -320,8 +367,9 @@ def test_hybrid_config_against_the_database():
         studio_id = await _seed()
         try:
             await _capabilities_read_by_all_roles(studio_id)
-            await _studio_resource_mode_rejected(studio_id)
-            await _service_resource_mode_rejected(studio_id)
+            await _studio_resource_mode_needs_strict_schedule(studio_id)
+            await _service_resource_mode_needs_strict_schedule(studio_id)
+            await _resource_becomes_available_after_activation(studio_id)
             await _version_bumps_on_relevant_changes_only(studio_id)
             await _version_bumps_on_service_relevant_changes_only(studio_id)
             await _service_update_effective_combo_rejected(studio_id)

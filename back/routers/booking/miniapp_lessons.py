@@ -14,7 +14,7 @@
 и публичной записи (`routers/booking/public.py`): расхождение логики между
 ними и мини-приложением означает разъехавшиеся остатки абонементов.
 """
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
@@ -120,6 +120,10 @@ class MiniappLesson(BaseSchema):
 
 
 class MiniappUpcomingLesson(MiniappLesson):
+    reservation_id: int
+    version: int = 1
+    starts_at: Optional[datetime] = None
+    allowed_actions: list[str] = []
     spot_number: int
     # "active" — бронь подтверждена, "pending" — студия включила подтверждение
     # тренером и бронь ждёт решения (место при этом уже держится).
@@ -133,6 +137,11 @@ class MiniappUpcomingLesson(MiniappLesson):
 
 
 class MiniappPastLesson(MiniappLesson):
+    reservation_id: int
+    status: str
+    version: int = 1
+    starts_at: Optional[datetime] = None
+    allowed_actions: list[str] = []
     spot_number: int
     rating: Optional[int]
     is_trial: bool = False
@@ -143,6 +152,7 @@ class MiniappPastLesson(MiniappLesson):
 class MiniappMyLessons(BaseSchema):
     upcoming: list[MiniappUpcomingLesson]
     past: list[MiniappPastLesson]
+    cancelled: list[MiniappPastLesson] = []
 
 
 def _badge(total_spots: int, taken: int) -> str:
@@ -435,7 +445,7 @@ async def my_lessons(
     rows = (await db.execute(
         select(Reservation, Lesson)
         .join(Lesson, Lesson.id == Reservation.lesson_id)
-        .where(Reservation.client_id == client.id, Reservation.status != "cancelled")
+        .where(Reservation.client_id == client.id, Lesson.studio_id == client.studio_id)
     )).all()
     if not rows:
         return MiniappMyLessons(upcoming=[], past=[])
@@ -461,9 +471,10 @@ async def my_lessons(
             )).all()
         }
 
-    now = datetime.now()
+    studio = await db.get(Studio, client.studio_id)
     upcoming: list[MiniappUpcomingLesson] = []
     past: list[MiniappPastLesson] = []
+    cancelled: list[MiniappPastLesson] = []
 
     for reservation, lesson in rows:
         fields = _lesson_fields(
@@ -476,15 +487,46 @@ async def my_lessons(
             coffee.get(lesson.id),
         )
         debt = debts.get(reservation.debt_payment_id, 0) if reservation.debt_payment_id else 0
+        left = lesson_time.until(lesson, studio)
+        if left is None:
+            left = lesson.start_time - lesson_time.local_now(studio)
+        when = lesson_time.resolve(lesson, studio)
+        # HB-21: что клиент МОЖЕТ сделать с этой бронью, решает сервер — UI
+        # лишь отражает список. Иначе правила окна отмены пришлось бы держать
+        # в двух местах, и они бы разошлись.
+        actions = []
+        in_window = left >= timedelta(minutes=rules.cancellation_deadline_min) and left > timedelta(0)
+        if reservation.status in {"active", "pending", "hold"} and in_window:
+            actions.append("cancel")
+        # Перенос — только у индивидуальной записи: у события перенос означает
+        # другое занятие и другую бронь (§6.5), и это отдельный сценарий.
+        # `hold` исключён: незавершённая оплата блокирует перенос
+        # (PAYMENT_IN_PROGRESS в resource_reschedule).
+        if (lesson.booking_mode == "resource" and reservation.status in {"active", "pending"}
+                and in_window):
+            actions.append("reschedule")
+        if reservation.status == "hold":
+            actions.append("pay")
+        if reservation.status in {"active", "attended"} and left < timedelta(0):
+            actions.append("rate")
         paid_fields = dict(
+            reservation_id=reservation.id,
+            version=lesson.version,
+            starts_at=when.instant.replace(tzinfo=timezone.utc) if when.instant is not None else None,
+            allowed_actions=actions,
             is_trial=reservation.is_trial,
             debt=debt,
             debt_str=_fmt_amount(debt, currency) if debt else "",
         )
-        if lesson.start_time < now:
+        if reservation.status == "cancelled":
+            cancelled.append(MiniappPastLesson(
+                **fields, **paid_fields, spot_number=reservation.spot_number,
+                rating=reservation.rating, status=reservation.status,
+            ))
+        elif left < timedelta(0):
             past.append(MiniappPastLesson(
                 **fields, **paid_fields,
-                spot_number=reservation.spot_number, rating=reservation.rating,
+                spot_number=reservation.spot_number, rating=reservation.rating, status=reservation.status,
             ))
         else:
             upcoming.append(MiniappUpcomingLesson(
@@ -495,7 +537,8 @@ async def my_lessons(
     upcoming.sort(key=lambda lesson: lesson.start_time)
     past.sort(key=lambda lesson: lesson.start_time, reverse=True)
 
-    return MiniappMyLessons(upcoming=upcoming, past=past)
+    cancelled.sort(key=lambda lesson: lesson.start_time, reverse=True)
+    return MiniappMyLessons(upcoming=upcoming, past=past, cancelled=cancelled)
 
 
 class ReservationCreateRequest(BaseSchema):
@@ -718,6 +761,7 @@ async def cancel_reservation(
     # действии незачем (reservations.py), а вот сам клиент отменяет по окну своей студии
     # (cancellation_deadline_min): выставила 30 минут — поздние отмены реальны,
     # оставила дефолтные 240 — эти два события просто не наступают.
+    left = lesson_time.until(lesson, studio)
     hours_left = ((left if left is not None
                    else lesson.start_time - lesson_time.local_now(studio)).total_seconds() / 3600)
     client_name = f"{client.name} {client.last_name or ''}".strip()
@@ -755,10 +799,32 @@ async def rate_reservation(
     reservation = await _own_active_reservation(db, client, lesson_id)
     lesson = await _studio_lesson(db, client, lesson_id)
 
-    if lesson.start_time >= datetime.now():
+    return await _rate_owned(db, client, reservation, lesson, body.rating)
+
+
+@router.post("/bookings/{reservation_id}/rate", response_model=MiniappReservation)
+@limiter.limit("10/minute")
+async def rate_booking(
+    request: Request, reservation_id: int, body: RateReservationRequest,
+    client: Client = Depends(get_current_client), db: AsyncSession = Depends(get_db),
+):
+    reservation = (await db.execute(select(Reservation).join(Lesson).where(
+        Reservation.id == reservation_id, Reservation.client_id == client.id,
+        Lesson.studio_id == client.studio_id, Reservation.status.in_(("active", "attended")),
+    ))).scalar_one_or_none()
+    if reservation is None:
+        raise HTTPException(status_code=404, detail="NOT_FOUND")
+    lesson = await _studio_lesson(db, client, reservation.lesson_id)
+    return await _rate_owned(db, client, reservation, lesson, body.rating)
+
+
+async def _rate_owned(db, client, reservation, lesson, rating):
+    studio = await db.get(Studio, client.studio_id)
+    started = lesson_time.has_started(lesson, studio)
+    if started is False or (started is None and lesson.start_time >= lesson_time.local_now(studio)):
         raise HTTPException(status_code=403, detail="Оценить можно только прошедшее занятие")
 
-    reservation.rating = body.rating
+    reservation.rating = rating
     await db.commit()
     await db.refresh(reservation)
 
@@ -769,7 +835,7 @@ async def rate_reservation(
         await notify(db, client.studio_id, "trainer", "t7", {
             "trainer_id": lesson.teacher_id,
             "client_name": f"{client.name} {client.last_name or ''}".strip(),
-            "rating": body.rating,
+            "rating": rating,
             "lesson_name": lesson.name,
         })
 

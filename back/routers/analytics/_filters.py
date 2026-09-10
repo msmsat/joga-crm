@@ -1,14 +1,15 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import date, datetime, time, timedelta
 from typing import Callable, Literal, TypeVar
 
 from fastapi import HTTPException, Query
-from sqlalchemy import cast, func
+from sqlalchemy import and_, cast, func, or_
 from sqlalchemy.types import DateTime
 
 from models import Hall, Lesson, Operation, Reservation
 
 Group = Literal["hour", "day", "week", "month"]
+BookingMode = Literal["event", "resource"]
 T = TypeVar("T")
 
 # Раньше 2025 данных в продукте нет, а дата вроде 0002-05-01 (браузер шлёт такое,
@@ -28,6 +29,9 @@ class ReportFilters:
     hall_id: int | None
     trainer_id: int | None
     service_id: int | None
+    # HB-23: разрез event/resource. None — обе модели вместе, как было до эпика:
+    # добавленный фильтр не должен менять числа тем, кто его не передал.
+    booking_mode: BookingMode | None = None
 
 
 def check_report_range(date_from: date, date_to: date) -> None:
@@ -49,6 +53,7 @@ def report_filters(
     hall_id: int | None = Query(None),
     trainer_id: int | None = Query(None),
     service_id: int | None = Query(None),
+    booking_mode: BookingMode | None = Query(None),
 ) -> ReportFilters:
     """Единые query-параметры отчётов — Depends на всех эндпоинтах."""
     check_report_range(date_from, date_to)
@@ -59,7 +64,14 @@ def report_filters(
         hall_id=hall_id,
         trainer_id=trainer_id,
         service_id=service_id,
+        booking_mode=booking_mode,
     )
+
+
+def shift_range(f: ReportFilters, date_from: date, date_to: date) -> ReportFilters:
+    """Тот же набор фильтров на другом периоде. Раньше каждый вызывающий
+    пересобирал ReportFilters вручную и терял поля, добавленные позже."""
+    return replace(f, date_from=date_from, date_to=date_to)
 
 
 def prev_range(f: ReportFilters) -> tuple[date, date]:
@@ -98,14 +110,28 @@ def lesson_conds(f: ReportFilters, sid: int, *, include_cancelled: bool = False)
         conds.append(Lesson.teacher_id == f.trainer_id)
     if f.service_id is not None:
         conds.append(Lesson.service_id == f.service_id)
+    if f.booking_mode is not None:
+        conds.append(Lesson.booking_mode == f.booking_mode)
     if f.branch_id is not None:
-        conds.append(Hall.branch_id == f.branch_id)
+        # HB-23/AC-29: филиал берётся у самого занятия, а зал — только запасной
+        # путь для наследия, где branch_id не заполнен. Индивидуальная запись
+        # без зала обязана оставаться в срезе филиала, а не исчезать на JOIN.
+        conds.append(or_(
+            Lesson.branch_id == f.branch_id,
+            and_(Lesson.branch_id.is_(None), Hall.branch_id == f.branch_id),
+        ))
     return conds
 
 
 def needs_hall_join(f: ReportFilters) -> bool:
     """branch_id фильтрует по Hall.branch_id — Hall нужно джойнить только тогда."""
     return f.branch_id is not None
+
+
+def join_hall(stmt):
+    """LEFT JOIN, а не INNER: беззальная resource-запись обязана дожить до
+    условия фильтра (`lesson_conds`), а не отсеяться самим соединением."""
+    return stmt.join(Hall, Lesson.hall_id == Hall.id, isouter=True)
 
 
 def op_conds(f: ReportFilters, sid: int) -> list:

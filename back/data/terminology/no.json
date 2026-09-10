@@ -1,0 +1,84 @@
+{
+  "version": 1,
+  "locale": "no",
+  "profiles": {
+    "generic": {
+      "staff": {
+        "singular": "spesialist",
+        "plural": "spesialister",
+        "accusative": "spesialist"
+      },
+      "offering": {
+        "event": {
+          "singular": "arrangement",
+          "plural": "arrangementer",
+          "accusative": "arrangement"
+        },
+        "resource": {
+          "singular": "tjeneste",
+          "plural": "tjenester",
+          "accusative": "tjeneste"
+        }
+      },
+      "messages": {
+        "choose_staff": "Velg {{staff.accusative}}",
+        "choose_offering": "Velg {{offering.accusative}}",
+        "empty_slots": "Ingen ledige tider",
+        "my_bookings": "Mine bestillinger",
+        "confirm_booking": "Bekreft bestilling"
+      }
+    },
+    "fitness": {
+      "staff": {
+        "singular": "trener",
+        "plural": "trenere",
+        "accusative": "trener"
+      },
+      "offering": {
+        "event": {
+          "singular": "time",
+          "plural": "timer",
+          "accusative": "time"
+        },
+        "resource": {
+          "singular": "tjeneste",
+          "plural": "tjenester",
+          "accusative": "tjeneste"
+        }
+      },
+      "messages": {
+        "choose_staff": "Velg {{staff.accusative}}",
+        "choose_offering": "Velg {{offering.accusative}}",
+        "empty_slots": "Ingen ledige tider",
+        "my_bookings": "Mine bestillinger",
+        "confirm_booking": "Bekreft bestilling"
+      }
+    },
+    "beauty": {
+      "staff": {
+        "singular": "fagperson",
+        "plural": "fagpersoner",
+        "accusative": "fagperson"
+      },
+      "offering": {
+        "event": {
+          "singular": "arrangement",
+          "plural": "arrangementer",
+          "accusative": "arrangement"
+        },
+        "resource": {
+          "singular": "tjeneste",
+          "plural": "tjenester",
+          "accusative": "tjeneste"
+        }
+      },
+      "messages": {
+        "choose_staff": "Velg {{staff.accusative}}",
+        "choose_offering": "Velg {{offering.accusative}}",
+        "empty_slots": "Ingen ledige tider",
+        "my_bookings": "Mine bestillinger",
+        "confirm_booking": "Bekreft bestilling"
+      }
+    }
+  }
+}

@@ -278,5 +278,16 @@
     "pendingHint": "The profile opens once the employee accepts the invitation",
     "resendInvite": "Send the invitation again",
     "cancelInvite": "Cancel joining"
+  },
+  "availability": {
+    "branches": "Available at branches",
+    "branchesHint": "Without an assignment the specialist is not offered for individual booking at that branch.",
+    "noBranches": "No branches yet",
+    "breaks": "Breaks and time off",
+    "breaksHint": "Local studio time. The interval is subtracted from availability on that date.",
+    "from": "From",
+    "to": "To",
+    "reason": "Reason",
+    "reasonPlaceholder": "e.g. lunch"
   }
 }

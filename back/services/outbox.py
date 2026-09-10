@@ -63,6 +63,7 @@ def recipient_address(channel: str, recipient) -> str | None:
 
 def dedup_key(
     studio_id: int, event_id: str | None, channel: str, address: str | None, context: dict | None,
+    causal: str | None = None,
 ) -> str:
     """Ключ «то же самое сообщение»: студия + событие + канал + получатель +
     содержимое + час.
@@ -77,9 +78,14 @@ def dedup_key(
     разных сценария одному клиенту в один час сольются в один ключ и второй не
     уедет. См. services/scenario_runner.py.
     """
+    # `causal` — идентичность ДОМЕННОГО события, названная вызывающим
+    # (services/booking_notifications). Есть она — час в ключ не входит вовсе:
+    # повтор воркера через десять минут обязан попасть в ту же строку, а не
+    # отправить второе сообщение только потому, что сменился час. Нет её —
+    # прежнее поведение с часом, см. докстринг модуля.
     payload = json.dumps(context or {}, sort_keys=True, ensure_ascii=False, default=str)
-    hour = datetime.utcnow().strftime("%Y%m%d%H")
-    material = f"{studio_id}|{event_id or ''}|{channel}|{address or ''}|{payload}|{hour}"
+    marker = causal or datetime.utcnow().strftime("%Y%m%d%H")
+    material = f"{studio_id}|{event_id or ''}|{channel}|{address or ''}|{payload}|{marker}"
     return hashlib.sha256(material.encode("utf-8")).hexdigest()
 
 
@@ -89,6 +95,7 @@ async def claim(
     channel: str,
     recipient,
     context: dict | None,
+    causal: str | None = None,
 ) -> int | None:
     """Занимает строку журнала под отправку.
 
@@ -101,7 +108,7 @@ async def claim(
     и она видна по `logger.exception`. Сознательный fail-open.
     """
     address = recipient_address(channel, recipient)
-    key = dedup_key(studio_id, event_id, channel, address, context)
+    key = dedup_key(studio_id, event_id, channel, address, context, causal)
     try:
         async with async_session_maker() as db:
             inserted = (await db.execute(
@@ -188,5 +195,11 @@ if __name__ == "__main__":
     assert dedup_key(**base, context=ctx) != dedup_key(**{**base, "event_id": "c1"}, context=ctx)
     # Контекст с несериализуемым значением не должен ронять отправку (default=str).
     assert len(dedup_key(**base, context={"when": datetime(2026, 8, 7, 10, 0)})) == 64
+
+    # Причинный ключ вытесняет час: тот же повтор через час — тот же ключ.
+    causal = dedup_key(**base, context=ctx, causal="intent:1")
+    assert causal == dedup_key(**base, context=ctx, causal="intent:1")
+    assert causal != dedup_key(**base, context=ctx, causal="intent:2")
+    assert causal != dedup_key(**base, context=ctx)
 
     print("outbox self-check ok")

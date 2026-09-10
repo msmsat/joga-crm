@@ -278,5 +278,16 @@
     "pendingHint": "Profil se otevře, jakmile zaměstnanec pozvánku přijme",
     "resendInvite": "Odeslat pozvánku znovu",
     "cancelInvite": "Zrušit připojení"
+  },
+  "availability": {
+    "branches": "Dostupný na pobočkách",
+    "branchesHint": "Bez přiřazení se specialista na této pobočce k individuální rezervaci nenabízí.",
+    "noBranches": "Zatím žádné pobočky",
+    "breaks": "Přestávky a nepřítomnost",
+    "breaksHint": "Místní čas studia. Interval se odečte z dostupnosti v daný den.",
+    "from": "Od",
+    "to": "Do",
+    "reason": "Důvod",
+    "reasonPlaceholder": "např. oběd"
   }
 }

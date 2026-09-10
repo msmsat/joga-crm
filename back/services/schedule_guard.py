@@ -283,6 +283,44 @@ async def assert_catalog_entity_removable(db: AsyncSession, studio: Studio, *,
         })
 
 
+async def assert_service_mode_changeable(db: AsyncSession, studio: Studio, service) -> None:
+    """§4.4: сменить механику услуги при живых будущих занятиях нельзя.
+
+    Копия услуги — допустимый путь; история при этом сохраняется. Ищем сами
+    занятия, а не брони: пустая группа тоже занимает специалиста, и её режим
+    менять так же нельзя.
+    """
+    ids = (await db.execute(select(Lesson.id).where(
+        Lesson.studio_id == studio.id, Lesson.service_id == service.id,
+        Lesson.status != "cancelled",
+        Lesson.start_time >= lesson_time.local_now(studio) - timedelta(days=2),
+    ).order_by(Lesson.id).limit(100))).scalars().all()
+    if ids:
+        raise HTTPException(status_code=409, detail={
+            "code": "SERVICE_MODE_LOCKED",
+            "message": "У услуги есть будущие занятия — создайте копию с новой механикой",
+            "params": {"lesson_ids": list(ids)}})
+
+
+async def assert_service_removable(db: AsyncSession, studio: Studio, service_id: int) -> None:
+    """Resource-история ссылается на услугу обязательным полем.
+
+    `Lesson.service_id` объявлен `ON DELETE SET NULL`, а CHECK
+    `check_lesson_resource_requires_fields` требует у resource-интервала
+    непустую услугу: удаление услуги уронило бы вставку/обновление такой
+    строки уже на уровне базы. Понятный 409 здесь — вместо CHECK-ошибки
+    там (§6.1). Правильный путь для владельца — `is_bookable=false`.
+    """
+    ids = (await db.execute(select(Lesson.id).where(
+        Lesson.studio_id == studio.id, Lesson.service_id == service_id,
+        Lesson.booking_mode == "resource").order_by(Lesson.id).limit(100))).scalars().all()
+    if ids:
+        raise HTTPException(status_code=409, detail={
+            "code": "SERVICE_IN_USE",
+            "message": "Услуга используется индивидуальными записями — снимите её с записи вместо удаления",
+            "params": {"lesson_ids": list(ids)}})
+
+
 def raise_if_conflicts(conflicts: Sequence[AssignmentConflict]) -> None:
     """409 с перечнем — общий хвост для вызывающих `assert_future_assignments_valid`."""
     if not conflicts:

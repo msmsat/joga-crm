@@ -861,6 +861,7 @@ export default function Staff() {
           service_ids: profile.services.map(s => s.id),
           photo_url: profile.photo_url ?? undefined,
           schedule: workingHoursToSchedule(weekHoursOf(profile)),
+          branch_ids: profile.branches?.map(b => b.id) ?? [],
         } : null}
         onClose={() => setIsEditModalOpen(false)}
         onSave={async (updated) => {
@@ -877,6 +878,10 @@ export default function Staff() {
               service_ids: updated.service_ids ?? [],
               photo_url: updated.photo_url,
               schedule: scheduleToWorkingHours(updated.schedule),
+              // Присылаем ТОЛЬКО когда список пришёл из формы: сервер отличает
+              // отсутствие поля от явно пустого списка и без этого стёр бы
+              // назначения при сохранении из старого экрана.
+              ...(updated.branch_ids ? { branch_ids: updated.branch_ids } : {}),
             });
             refetchProfile();
             // График изменился — будущие отметки пересобраны на бэке, календарь

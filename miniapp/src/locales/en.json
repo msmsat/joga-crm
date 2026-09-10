@@ -117,7 +117,9 @@
     "lesson_started": "Lesson has started",
     "status": {
       "upcoming": "Planned",
-      "past": "Completed"
+      "past": "Completed",
+      "hold": "Awaiting payment",
+      "cancelled": "Cancelled"
     },
     "your_rating": "Your rating",
     "counting_time": "Counting time...",
@@ -138,7 +140,8 @@
     "no_lessons_period_hint": "Use the arrows — they might be earlier",
     "awaiting_confirmation": "Awaiting confirmation",
     "unpaid": "Unpaid · {{amount}}",
-    "trial": "Trial class"
+    "trial": "Trial class",
+    "reschedule": "Reschedule"
   },
   "schedule": {
     "title": "Schedule",
@@ -428,5 +431,45 @@
       "order_steps": "Discount → certificate → deposit → points → the rest paid by card.",
       "order_note": "Only what is needed is used: if you have more points than the price, the rest stays on your balance."
     }
+  },
+  "resource": {
+    "kicker": "Individual",
+    "confirm": "Confirm",
+    "confirming": "Confirming…",
+    "done": "Done",
+    "time": "Time",
+    "staff": "Specialist",
+    "branch": "Branch",
+    "duration": "Duration",
+    "price": "Price",
+    "status": "Status",
+    "pay": "Pay",
+    "changeTime": "Change time",
+    "loadError": "Could not load available times",
+    "bookError": "Could not create the booking",
+    "funding": {
+      "subscription": "By membership",
+      "trial": "First visit free",
+      "free": "Free",
+      "pay": "Payment"
+    },
+    "next": {
+      "wait_approval": "The studio still has to confirm this booking.",
+      "pay": "The place is held until payment.",
+      "none": ""
+    },
+    "statusValue": {
+      "active": "Booked",
+      "pending": "Awaiting confirmation",
+      "hold": "Awaiting payment",
+      "attended": "Visited",
+      "cancelled": "Cancelled"
+    },
+    "reason": {
+      "config_incomplete": "The schedule for this service is not set up yet"
+    }
+  },
+  "units": {
+    "min": "min"
   }
 }

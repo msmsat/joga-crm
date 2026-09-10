@@ -117,7 +117,9 @@
     "lesson_started": "Lekce začala",
     "status": {
       "upcoming": "Naplánováno",
-      "past": "Proběhlo"
+      "past": "Proběhlo",
+      "hold": "Čeká na platbu",
+      "cancelled": "Zrušeno"
     },
     "your_rating": "Tvoje hodnocení",
     "counting_time": "Odpočítávání času...",
@@ -138,7 +140,8 @@
     "no_lessons_period_hint": "Posuňte se šipkami — mohly být dříve",
     "awaiting_confirmation": "Čeká na potvrzení",
     "unpaid": "Nezaplaceno · {{amount}}",
-    "trial": "Zkušební lekce"
+    "trial": "Zkušební lekce",
+    "reschedule": "Přesunout"
   },
   "schedule": {
     "title": "Rozvrh",
@@ -428,5 +431,45 @@
       "order_steps": "Sleva → certifikát → depozit → body → zbytek zaplatíte kartou.",
       "order_note": "Odečte se přesně tolik, kolik je potřeba: pokud máte bodů víc než cena, zbytek zůstane na účtu."
     }
+  },
+  "resource": {
+    "kicker": "Individuálně",
+    "confirm": "Potvrdit",
+    "confirming": "Potvrzujeme…",
+    "done": "Hotovo",
+    "time": "Čas",
+    "staff": "Specialista",
+    "branch": "Pobočka",
+    "duration": "Délka",
+    "price": "Cena",
+    "status": "Stav",
+    "pay": "Zaplatit",
+    "changeTime": "Změnit čas",
+    "loadError": "Volné časy se nepodařilo načíst",
+    "bookError": "Rezervaci se nepodařilo vytvořit",
+    "funding": {
+      "subscription": "Z permanentky",
+      "trial": "První lekce zdarma",
+      "free": "Zdarma",
+      "pay": "Platba"
+    },
+    "next": {
+      "wait_approval": "Studio musí rezervaci ještě potvrdit.",
+      "pay": "Místo držíme do zaplacení.",
+      "none": ""
+    },
+    "statusValue": {
+      "active": "Rezervováno",
+      "pending": "Čeká na potvrzení",
+      "hold": "Čeká na platbu",
+      "attended": "Navštíveno",
+      "cancelled": "Zrušeno"
+    },
+    "reason": {
+      "config_incomplete": "Rozvrh této služby zatím není nastaven"
+    }
+  },
+  "units": {
+    "min": "min"
   }
 }

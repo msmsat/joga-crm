@@ -7,6 +7,7 @@ from .miniapp_lessons import router as miniapp_lessons_router
 from .miniapp_users import router as miniapp_users_router
 from .miniapp_studio import router as miniapp_studio_router
 from .miniapp_loyalty import router as miniapp_loyalty_router
+from .hybrid import router as hybrid_router
 
 # Combine all miniapp routers into a single router
 miniapp_router = APIRouter()
@@ -16,5 +17,6 @@ miniapp_router.include_router(miniapp_lessons_router)
 miniapp_router.include_router(miniapp_users_router)
 miniapp_router.include_router(miniapp_studio_router)
 miniapp_router.include_router(miniapp_loyalty_router)
+miniapp_router.include_router(hybrid_router)
 
 __all__ = ["router", "miniapp_router"]

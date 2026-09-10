@@ -35,7 +35,8 @@
     "phoneTaken": "Dette telefonnummeret er allerede i bruk",
     "emailInStudio": "Denne personen jobber allerede i studioet ditt",
     "phoneInStudio": "Denne personen jobber allerede i studioet ditt",
-    "accountWillBeLinked": "Det finnes allerede en konto med denne kontakten — den blir knyttet til studioet ditt"
+    "accountWillBeLinked": "Det finnes allerede en konto med denne kontakten — den blir knyttet til studioet ditt",
+    "range": "Må være mellom {{min}} og {{max}}"
   },
   "status": {
     "online": "Pålogget",

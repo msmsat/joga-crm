@@ -30,6 +30,7 @@ from schemas.analytics.reports import (
     TrainerTopLesson,
 )
 from ._filters import (
+    shift_range,
     date_bucket,
     lesson_conds,
     noshow_cond,
@@ -314,10 +315,7 @@ async def analytics_team(
 ):
     sid = ctx.studio_id
     prev_from, prev_to = prev_range(f)
-    prev_f = ReportFilters(
-        date_from=prev_from, date_to=prev_to,
-        branch_id=f.branch_id, hall_id=f.hall_id, trainer_id=f.trainer_id, service_id=f.service_id,
-    )
+    prev_f = shift_range(f, prev_from, prev_to)
 
     trainers, votes_by_trainer = await _build_trainer_rows(f, sid, db)
     prev_trainers, _prev_votes = await _build_trainer_rows(prev_f, sid, db)
@@ -399,10 +397,7 @@ async def analytics_team_trainer_detail(
     if exists is None:
         raise HTTPException(status_code=404, detail="Тренер не найден")
 
-    trainer_f = ReportFilters(
-        date_from=f.date_from, date_to=f.date_to,
-        branch_id=f.branch_id, hall_id=f.hall_id, trainer_id=id, service_id=f.service_id,
-    )
+    trainer_f = replace(f, trainer_id=id)
 
     # op_conds(trainer_f) даёт и trainer_id == id, и фильтр по услуге вкладки —
     # остальные блоки дровера считаются под тем же trainer_f (lesson_conds).

@@ -5,7 +5,9 @@ import type { StudioService } from '../../api/studio';
 
 type Props = {
   services: StudioService[];
-  onSelect: (serviceId: string, label: string) => void;
+  /** HB-19: наверх уходит сама услуга — у неё есть числовой ID.
+   *  Название остаётся ПОДПИСЬЮ: две услуги могут называться одинаково. */
+  onSelect: (service: StudioService, label: string) => void;
 };
 
 // Иконки закреплены за теми же ключами, что и `lesson.name.*` в locales/*.json —
@@ -70,7 +72,7 @@ export default function DirectionsRail({ services, onSelect }: Props) {
             transition={{ duration: 0.4, delay: 0.18 + i * 0.04, ease: [0.16, 1, 0.3, 1] }}
           >
             <Press
-              onClick={() => onSelect(service.name, label)}
+              onClick={() => onSelect(service, label)}
               role="button"
               tabIndex={0}
               className={`flex h-11 shrink-0 cursor-pointer items-center gap-2 rounded-full bg-card pr-4 shadow-soft ring-1 ring-inset ring-transparent transition-shadow duration-300 dt:h-[52px] dt:gap-2.5 dt:pr-5 dt:hover:shadow-lift dt:hover:ring-brand/30 ${

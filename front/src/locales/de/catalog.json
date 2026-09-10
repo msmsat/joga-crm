@@ -142,7 +142,17 @@
       "priceShort": "Preis",
       "durationShort": "Dauer",
       "statSeats": "Plätze",
-      "colorHint": "Kurse werden im Journalraster mit dieser Farbe hervorgehoben."
+      "colorHint": "Kurse werden im Journalraster mit dieser Farbe hervorgehoben.",
+      "bookingMode": "Buchungsmechanik",
+      "bookingModeEvent": "Anmeldung zum Kurs",
+      "bookingModeResource": "Zeit wählen",
+      "bookingModeEventHint": "Kundinnen melden sich zu einem Kurs an, den Sie bereits geplant haben.",
+      "bookingModeResourceHint": "Die Kundin wählt Fachkraft und freie Zeit; das Intervall ({{offering}}) entsteht bei der Bestätigung.",
+      "bookable": "Buchbar",
+      "bookableOn": "Ja",
+      "bookableOff": "Nein",
+      "bufferBefore": "Puffer davor",
+      "bufferAfter": "Puffer danach"
     },
     "package": {
       "titleNew": "Neues Paket",

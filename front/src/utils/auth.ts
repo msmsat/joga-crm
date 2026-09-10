@@ -80,6 +80,13 @@ export function getActiveToken(): string | null {
   return localStorage.getItem(TOKEN_KEY);
 }
 
+/** Cache scope only; the API always verifies tenant and role itself. */
+export function getActiveContextKey(): string {
+  const token = getActiveToken();
+  const data = token ? decodeToken(token) : null;
+  return data ? `${data.studio_id ?? ''}:${data.sub ?? ''}:${data.role ?? ''}` : '';
+}
+
 export function getUserRoleFromToken(): string | null {
   const token = getActiveToken();
   if (!token) return null;
@@ -137,6 +144,7 @@ function saveAccounts(accounts: StoredAccount[]): void {
  */
 export function setActiveToken(token: string): void {
   localStorage.setItem(TOKEN_KEY, token);
+  window.dispatchEvent(new Event('auth-context-changed'));
   // Сменилась личность — кэш квери набит данными прежней (тема, студии, профиль).
   // Без этого дефолтный staleTime 30s держит на экране чужой кабинет до полминуты.
   // Чистим здесь, а не на каждом входе: точек входа восемь, забыть — вопрос времени.
@@ -212,6 +220,7 @@ export function forgetAccount(email: string): void {
 export function clearActiveToken(): void {
   const email = getActiveEmail();
   localStorage.removeItem(TOKEN_KEY);
+  window.dispatchEvent(new Event('auth-context-changed'));
   // Указатели на чаты ИИ (страница и панель) — они от прошлого аккаунта.
   localStorage.removeItem('ai_active_session:page');
   localStorage.removeItem('ai_active_session:drawer');

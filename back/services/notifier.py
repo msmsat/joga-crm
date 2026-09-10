@@ -341,6 +341,7 @@ async def deliver(
     db: AsyncSession, channel: str, recipient: "Recipient | Client", subject: str, text: str, html: str,
     *, studio_id: int, tg_text: str | None = None, wa_template: dict | None = None,
     event_id: str | None = None, context: dict[str, Any] | None = None,
+    causal: str | None = None,
 ) -> bool:
     """Единый диспетчер каналов доставки (V5-5, задача 6; N-2, задача 4; N-9,
     задача 2): email, telegram и whatsapp реально шлют по реквизитам студии.
@@ -361,7 +362,7 @@ async def deliver(
     исходом. event_id и context нужны только журналу: из них считается ключ
     дедупликации и по ним потом отвечают студии, что и когда ей уходило.
     """
-    log_id = await outbox.claim(studio_id, event_id, channel, recipient, context)
+    log_id = await outbox.claim(studio_id, event_id, channel, recipient, context, causal)
     if log_id is None:
         # Уже доставлено либо уходит прямо сейчас в соседнем процессе. True, а не
         # False: для вызывающего (clients_notified) сообщение состоялось, и
@@ -800,7 +801,10 @@ async def notify(
     администратора для ЭТОГО вызова — когда вызывающий тут же шлёт владельцу
     собственную версию того же факта и без этого владелец получил бы два письма
     об одном событии (см. _NO_OWNER_FALLBACK)."""
-    context = context or {}
+    context = dict(context or {})
+    # Идентичность доменного события (HB-25). В шаблоны она не попадает —
+    # снимается здесь и уходит только в ключ дедупликации журнала отправок.
+    causal = context.pop("_causal", None)
     try:
         from services.notification_resolver import resolve_channels  # локальный импорт — иначе цикл notifier<->resolver
 
@@ -834,6 +838,10 @@ async def notify(
             # считается ключ дедупликации и по ним же студии потом отвечают,
             # что именно ей уходило (services/outbox.py).
             log = {"event_id": event_id, "context": context}
+            if causal is not None:
+                # Ключ уходит вниз ТОЛЬКО когда вызывающий его назвал: у
+                # остальных путей сигнатура deliver() не меняется.
+                log["causal"] = causal
             if "email" in channels and r.email:
                 sent = await deliver(db, "email", r, subject, text, html, studio_id=studio_id, **log) or sent
             if "telegram" in channels and r.tg_id:

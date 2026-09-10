@@ -12,7 +12,7 @@
     для всех схем этого файла — лишнее поле в запросе (например, клиентская
     цена или длительность) обязано быть отклонено, а не тихо проигнорировано.
 """
-from datetime import datetime
+from datetime import date, datetime
 from typing import Annotated, Literal, Optional, Union
 
 from pydantic import ConfigDict, Field
@@ -26,13 +26,13 @@ BookingMode = Literal["event", "resource", "hybrid"]
 ServiceBookingMode = Literal["event", "resource"]
 TerminologyProfile = Literal["generic", "fitness", "beauty"]
 
-# Пока не готовы HB-07 (единый замок и закрытие обходов) и HB-24 (аудит
-# наследия перед включением) — сервер не разрешает НИКОМУ, ни одной студии,
-# завести resource/hybrid ни на уровне студии, ни на уровне услуги. Это не
-# бизнес-правило конкретной студии, а готовность самого кода: множество,
-# а не одна проверка "== event", чтобы расширение в HB-24 было заменой этой
-# строки, а не поиском по файлам, где условие продублировано текстом.
-AVAILABLE_BOOKING_MODES: frozenset[str] = frozenset({"event"})
+# Готовность САМОГО КОДА к режиму, а не разрешение конкретной студии. Открыто
+# после HB-07 (единый замок закрыл обходы) и HB-24 (аудит наследия + проверки
+# включения под замком): `services/hybrid_audit.assert_can_activate` не даст
+# завести resource, пока у студии выключено строгое расписание или в будущем
+# расписании остались неизвестные зоны и пересечения. Само по себе это
+# множество ничего не включает — оно лишь перестало запрещать.
+AVAILABLE_BOOKING_MODES: frozenset[str] = frozenset({"event", "resource", "hybrid"})
 
 
 class HybridSchema(BaseSchema):
@@ -51,24 +51,98 @@ class BookingCapabilities(HybridSchema):
 
 class EventQuoteRequest(HybridSchema):
     booking_mode: Literal["event"]
-    lesson_id: int
-    spot_number: Optional[int] = None
+    lesson_id: int = Field(gt=0)
+    spot_number: Optional[int] = Field(default=None, gt=0)
+    payment_method: Literal["venue", "card"] = "venue"
 
 
 class ResourceQuoteRequest(HybridSchema):
     booking_mode: Literal["resource"]
-    service_id: int
-    branch_id: int
+    service_id: int = Field(gt=0)
+    branch_id: int = Field(gt=0)
     # None — «Любой специалист» (§3.3): сервер сам выбирает подходящего по
     # минимальному teacher_id среди свободных, показ мастера — после выбора
     # времени, а не до.
-    teacher_id: Optional[int] = None
+    teacher_id: Optional[int] = Field(default=None, gt=0)
     # Точный момент из ответа availability — не локальное время и не строка,
     # которую можно было бы получить копированием чужого запроса вручную.
     starts_at: datetime
+    payment_method: Literal["venue", "card"] = "venue"
 
 
 BookingQuoteRequest = Annotated[
     Union[EventQuoteRequest, ResourceQuoteRequest],
     Field(discriminator="booking_mode"),
 ]
+
+
+class CrmEventQuoteRequest(EventQuoteRequest):
+    client_id: int = Field(gt=0)
+
+
+class CrmResourceQuoteRequest(ResourceQuoteRequest):
+    client_id: int = Field(gt=0)
+    hall_id: Optional[int] = Field(default=None, gt=0)
+
+
+CrmQuoteRequest = Annotated[Union[CrmEventQuoteRequest, CrmResourceQuoteRequest], Field(discriminator="booking_mode")]
+
+
+class ConfirmRequest(HybridSchema):
+    quote_id: str = Field(min_length=36, max_length=36)
+
+
+class RescheduleConfirmRequest(ConfirmRequest):
+    expected_version: int = Field(gt=0)
+
+
+class AvailabilityQuery(HybridSchema):
+    service_id: int = Field(gt=0)
+    branch_id: int = Field(gt=0)
+    date_from: date
+    date_to: date
+    teacher_id: Optional[int] = Field(default=None, gt=0)
+
+
+class AvailabilitySlot(HybridSchema):
+    starts_at: datetime
+    local_start: datetime
+    tz_iana: str
+    teacher_ids: list[int]
+
+
+class AvailabilityRead(HybridSchema):
+    slots: list[AvailabilitySlot]
+    reason: Optional[str] = None
+
+
+class CrmAvailabilityQuery(AvailabilityQuery):
+    # Зал выбирает только CRM (§HB-13 п.5): в Mini-app ресурсом по умолчанию
+    # является мастер, и предлагать клиенту выбор зала первая версия не должна.
+    # Без этого поля админский предпросмотр слотов расходился бы с quote,
+    # который зал учитывает.
+    hall_id: Optional[int] = Field(default=None, gt=0)
+
+
+class PublicAvailabilityQuery(AvailabilityQuery):
+    # Public studio code is resolved exclusively by get_viewer, not used as a numeric tenant ID.
+    studio_id: Optional[str] = None
+
+
+class QuoteRead(HybridSchema):
+    quote_id: str
+    expires_at: datetime
+    booking_mode: ServiceBookingMode
+    terms: dict
+    next_action: Literal["none", "wait_approval", "pay"]
+    reservation_id: Optional[int] = None
+
+
+class BookingRead(HybridSchema):
+    reservation_id: int
+    lesson_id: int
+    booking_mode: ServiceBookingMode
+    status: Literal["active", "pending", "hold", "attended", "cancelled"]
+    version: int
+    next_action: Literal["none", "wait_approval", "pay"]
+    payment_url: Optional[str] = None
