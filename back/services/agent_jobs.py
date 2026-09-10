@@ -217,14 +217,17 @@ async def requeue_busy(db, job_id: int, token: int) -> None:
 
 # ─── Исполнение ──────────────────────────────────────────────────────────────
 
-async def _transport(db, studio_id: int, channel: str) -> str:
+async def _transport(db, studio_id: int, channel: str):
     """Реквизиты канала для ответа. Выводятся из studio_id, а НЕ хранятся в
-    событии: это боевые токены, и в журнале приёма им не место."""
+    событии: это боевые токены, и в журнале приёма им не место.
+
+    Строка у Telegram и WhatsApp, Credentials у Instagram — см. `_instagram`.
+    """
     from models import BookingChannelConfig, StudioIntegration
     from services.inbound import INSTAGRAM, TELEGRAM, WHATSAPP
 
     if channel == INSTAGRAM:
-        return ""   # client_agent._send берёт ig_token из настроек студии сам
+        return await _instagram(db, studio_id)
     if channel == TELEGRAM:
         row = (await db.execute(select(BookingChannelConfig).where(
             BookingChannelConfig.studio_id == studio_id,
@@ -241,6 +244,50 @@ async def _transport(db, studio_id: int, channel: str) -> str:
         config = (row.config or {}) if row else {}
         return f"{config.get('phone_number_id', '')}|{config.get('token', '')}"
     return ""
+
+
+async def _instagram(db, studio_id: int):
+    """Реквизиты Instagram Direct: токен, аккаунт и ВЕРСИЯ Graph API.
+
+    Не строка, в отличие от соседей: у Instagram две несовместимые версии API,
+    и по одному токену их не различить. Токен из OAuth на странице AI ходит на
+    graph.instagram.com и адресует аккаунт как `me`; токен, введённый руками в
+    Настройках → Интеграции, — на graph.facebook.com и по числовому id. Ошибка
+    в выборе версии — не деградация, а отказ отправки.
+
+    Пустая строка (канал не подключён) остаётся законным исходом: её транспорт
+    отличает от реквизитов и отвечает PERMANENT, не ходя в сеть.
+    """
+    from models import StudioAISettings, StudioIntegration
+    from services.channels.instagram import Credentials
+    from services.instagram_account import FB_LOGIN_API, IG_LOGIN_API
+
+    row = (await db.execute(select(StudioIntegration).where(
+        StudioIntegration.studio_id == studio_id,
+        StudioIntegration.integration_type == "ig_dm",
+        StudioIntegration.is_connected == True,  # noqa: E712
+    ))).scalar_one_or_none()
+    config = (row.config or {}) if row else {}
+    token = config.get("token") or ""
+    # У строк, заведённых до появления ключа, версии нет — это Facebook Login
+    # (services/instagram_account: ручная форма была первой).
+    api = config.get("api") or FB_LOGIN_API
+    account = str(config.get("ig_user_id") or "")
+
+    if not token:
+        # Строки ig_dm нет вовсе: аккаунт подключён до services/instagram_account,
+        # которое завело вторую таблицу. В StudioAISettings токен пишут только
+        # OAuth и его продление, то есть это всегда Instagram Login.
+        settings = (await db.execute(select(StudioAISettings).where(
+            StudioAISettings.studio_id == studio_id
+        ))).scalar_one_or_none()
+        if settings is None or not settings.ig_token:
+            return ""
+        token, api, account = settings.ig_token, IG_LOGIN_API, str(settings.ig_user_id or "")
+
+    # `me` — не сокращение ради краткости: id аккаунта у Instagram Login лежит в
+    # другом пространстве имён, чем ждёт graph.instagram.com в пути запроса.
+    return Credentials(token=token, account_id="me" if api == IG_LOGIN_API else account, api=api)
 
 
 async def _handle(work: Claim, thread_id: int) -> "AgentTurn":

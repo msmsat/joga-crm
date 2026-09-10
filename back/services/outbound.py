@@ -288,10 +288,14 @@ async def allowed(message: Claimed) -> bool:
                                        identity_id=row, promotional=True)
 
 
-async def deliver(message: Claimed, transport: str) -> str:
+async def deliver(message: Claimed, transport) -> str:
     """Одна попытка: сеть, затем короткая транзакция с исходом.
 
     Между ними открытой транзакции нет — это и есть весь смысл разделения.
+
+    `transport` непрозрачен и принадлежит каналу: строка у Telegram и WhatsApp,
+    Credentials у Instagram (agent_jobs._transport). Разбирать его здесь нельзя —
+    иначе знание о реквизитах каждого канала расползётся на два места.
     """
     from services.channels import instagram, telegram, whatsapp
     from services.inbound import INSTAGRAM, TELEGRAM, WHATSAPP
