@@ -85,7 +85,10 @@ export function Sheet({
     if (!isOpen) return;
 
     openCount += 1;
-    document.body.style.overflow = 'hidden';
+    // Класс, а не `body.style.overflow`: на телефоне документ и так заперт, а
+    // прокручивается оболочка `.app-scroll`. Что именно запереть, решает одно
+    // правило в index.css — здесь про это знать не нужно.
+    document.body.classList.add('is-locked');
 
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
@@ -104,7 +107,7 @@ export function Sheet({
       // exit-анимации; если лист успели открыть заново, openCount к этому
       // моменту уже не 0, и снятие не сработает.
       setTimeout(() => {
-        if (openCount === 0) document.body.style.overflow = '';
+        if (openCount === 0) document.body.classList.remove('is-locked');
       }, isDesktop ? 180 : 240);
     };
   }, [isOpen, onClose, isDesktop]);
