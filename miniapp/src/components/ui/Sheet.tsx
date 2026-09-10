@@ -138,6 +138,7 @@ export function Sheet({
                 : { type: 'spring', stiffness: 330, damping: 34, mass: 0.9 }
             }
             drag={isDesktop ? false : 'y'}
+            dragListener={false}
             dragControls={dragControls}
             dragConstraints={{ top: 0, bottom: 0 }}
             dragElastic={{ top: 0, bottom: 0.5 }}
@@ -171,6 +172,7 @@ export function Sheet({
                  собственное панорамирование браузера ровно в полосе шапки, и
                  контент листа ниже остаётся обычной прокручиваемой областью. */
               style={isDesktop ? undefined : { touchAction: 'none' }}
+              onPointerDown={isDesktop ? undefined : startDrag}
             >
               {/* Ручка смахивания — жест только пальцем: мышью тянуть нечего,
                   а полоска без функции читается как мусор в макете. */}
