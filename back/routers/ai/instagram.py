@@ -275,6 +275,36 @@ def _incoming_messages(payload: dict) -> list[tuple[str, str, str, dict]]:
     return out
 
 
+def _describe(payload: dict) -> str:
+    """Из чего состояло тело вебхука — БЕЗ содержимого.
+
+    Ни текста, ни IGSID: только виды событий. Отвечает ровно на тот вопрос, на
+    который «200 OK» не отвечает, — прислала Meta сообщение клиента или своё
+    служебное событие (эхо нашего же ответа, отметку о прочтении, реакцию).
+    Виды разделены, потому что чинятся они по-разному: эхо значит, что писали
+    С аккаунта студии, а не НА него, и это не поломка вовсе.
+    """
+    kinds: list[str] = []
+    for entry in payload.get("entry") or []:
+        for event in entry.get("messaging") or []:
+            message = event.get("message")
+            if isinstance(message, dict):
+                parts = ["сообщение"]
+                if message.get("is_echo"):
+                    parts.append("эхо-нашего-ответа")
+                if not message.get("text"):
+                    parts.append("без-текста")
+                kinds.append("+".join(parts))
+            else:
+                kinds.append(next((key for key in ("read", "reaction", "postback")
+                                   if key in event), "неизвестное"))
+        # Тело вида entry[].changes — другой формат подписки. Ждём messaging,
+        # и если Meta шлёт changes, то до разбора сообщений мы не доходим вовсе.
+        for change in entry.get("changes") or []:
+            kinds.append(f"changes:{change.get('field')}")
+    return ", ".join(kinds) or "пусто"
+
+
 @webhook_router.get("/instagram/webhook")
 async def verify_instagram_webhook(
     mode: str | None = Query(None, alias="hub.mode"),
@@ -315,7 +345,7 @@ async def instagram_webhook(
         # Meta шлёт в тот же вебхук эхо наших ответов, отметки о прочтении и
         # реакции. Это НЕ ошибка — но и не «ничего не пришло»: без этой строки
         # разбор упирается в 200 OK, за которым не видно, было ли там сообщение.
-        logger.info("instagram webhook: в теле нет текстовых сообщений (эхо/прочтение/вложение)")
+        logger.info("instagram webhook: текстовых сообщений нет; пришло: %s", _describe(payload))
 
     for account_id, sender_igsid, text, message in messages:
         settings = (await db.execute(
@@ -370,4 +400,13 @@ if __name__ == "__main__":
     ]}]}
     assert _incoming_messages(event) == [("999", "111", "Привет", {"mid": "m1", "text": "Привет"})]
     assert _incoming_messages({}) == []
+
+    # Разбор вида события: он и объясняет молчание, когда сообщений нет.
+    assert _describe(event) == "сообщение, сообщение+эхо-нашего-ответа, read"
+    assert _describe({}) == "пусто"
+    assert _describe({"entry": [{"messaging": [{"message": {"mid": "m", "attachments": []}}]}]}) \
+        == "сообщение+без-текста"
+    assert _describe({"entry": [{"changes": [{"field": "comments"}]}]}) == "changes:comments"
+    # Содержимое наружу не уходит: в описании нет ни текста, ни IGSID.
+    assert "Привет" not in _describe(event) and "111" not in _describe(event)
     print("instagram webhook self-check ok")

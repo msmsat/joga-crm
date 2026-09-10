@@ -60,6 +60,13 @@ _UNKNOWN_RETRIES = 1
 # Срок хранения текста ответа: тот же, что у принятых событий. Это переписка
 # клиента чужого бизнеса.
 _RETENTION = timedelta(days=30)
+# Ширина колонки provider_message_id. Обрезаем ПО НЕЙ, а не по вкусу: id у
+# провайдера — ниточка к статусам доставки, а не ключ, и усечённый идентификатор
+# несравнимо лучше исключения на записи исхода. Цена такого исключения измерена:
+# ответ уже отправлен, строка застревает в `sending`, а `sending` в треде
+# блокирует ВСЮ дальнейшую переписку (_blocked ниже) — клиент перестаёт получать
+# ответы совсем. Так Instagram со своими 164 символами запер живой диалог.
+_PROVIDER_ID_LEN = 255
 
 
 class Claimed(NamedTuple):
@@ -209,7 +216,8 @@ async def record(db, message: Claimed, result: channels.SendResult) -> str:
 
     if result.outcome == channels.ACCEPTED:
         ok = await _finalize(db, message, status=ACCEPTED, accepted_at=DB_NOW,
-                             provider_message_id=result.provider_message_id,
+                             provider_message_id=(result.provider_message_id or None)
+                             and result.provider_message_id[:_PROVIDER_ID_LEN],
                              locked_by=None, last_error=None)
         if ok:
             logger.info("outbound_accepted outbound_id=%s provider_message_id=%s",

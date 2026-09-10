@@ -309,7 +309,13 @@ class OutboundMessage(Base):
     locked_by: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
     locked_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=False), nullable=True)
     # id сообщения у провайдера. Единственная ниточка к его статусам доставки.
-    provider_message_id: Mapped[Optional[str]] = mapped_column(String(128), nullable=True)
+    # 255, а не 128: Instagram возвращает mid длиной 164 символа, и на записи
+    # исхода UPDATE падал с StringDataRightTruncation. Ответ при этом БЫЛ уже
+    # отправлен, строка оставалась `sending`, а `sending` в треде блокирует
+    # весь разговор (services/outbound._blocked) — то есть одно сообщение
+    # молча запирало переписку целиком. Запас против 164 намеренный: длину mid
+    # Meta нигде не гарантирует.
+    provider_message_id: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=False), server_default=func.now(), index=True)
     accepted_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=False), nullable=True)
     # Код и короткая причина. Тело ответа провайдера целиком сюда не кладём: там

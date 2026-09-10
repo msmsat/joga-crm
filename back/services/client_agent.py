@@ -140,6 +140,7 @@ async def _call(name: str, args: dict, db: AsyncSession, studio_id: int, client:
     """Инструменты клиента. client берётся из опознания, а НЕ из аргументов
     модели: «мой абонемент» — это опознанный отправитель, а не число, которое
     назвала модель."""
+    from routers.booking.miniapp import Viewer
     from routers.booking.miniapp_lessons import lessons_by_date, my_lessons
     from routers.booking.miniapp_users import get_my_subscriptions
     from routers.booking.public import public_services
@@ -159,10 +160,13 @@ async def _call(name: str, args: dict, db: AsyncSession, studio_id: int, client:
                 on_date = date.fromisoformat(str(args.get("on_date") or ""))
             except ValueError:
                 return {"error": "Дата должна быть в формате ГГГГ-ММ-ДД."}
-            # lessons_by_date ходит от имени клиента (client.studio_id) — для
-            # незнакомца собираем «клиента-призрака» только со студией: своих
-            # данных в нём нет, а расписание студии публично.
-            rows = await lessons_by_date(target_date=on_date, client=client or _GhostClient(studio_id), db=db)
+            # lessons_by_date смотрит на расписание глазами Viewer — клиента с
+            # токеном ЛИБО гостя по ссылке. Гость это ровно наш незнакомец:
+            # расписание студии публично, а клиентские поля (своя бронь) у него
+            # пустые сами собой. Раньше сюда передавался `client=` — параметра с
+            # таким именем у роутера нет с появления Viewer, и инструмент падал
+            # с TypeError на КАЖДОМ вызове: агент не мог назвать ни одного занятия.
+            rows = await lessons_by_date(target_date=on_date, viewer=Viewer(client, studio_id), db=db)
             return {"items": [r.model_dump(mode="json") for r in rows][:50]}
         if name == "get_my_bookings":
             return {"bookings": (await my_lessons(client=client, db=db)).model_dump(mode="json")}
@@ -173,16 +177,6 @@ async def _call(name: str, args: dict, db: AsyncSession, studio_id: int, client:
         logger.exception("client tool failed: tool=%s studio=%s", name, studio_id)
         return {"error": "Не удалось получить данные."}
     return {"error": f"Инструмента «{name}» не существует"}
-
-
-class _GhostClient:
-    """Незнакомец: у него есть только студия. Персональные инструменты ему не
-    отдаются вовсе (tools_for_client), а публичное расписание считается по
-    studio_id — единственному полю, которое здесь читается."""
-
-    def __init__(self, studio_id: int):
-        self.studio_id = studio_id
-        self.id = 0
 
 
 def _row(obj) -> dict:

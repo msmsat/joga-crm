@@ -102,6 +102,26 @@ def _incoming_messages(payload: dict) -> list[tuple[str, str, str, dict]]:
     return out
 
 
+def _describe(payload: dict) -> str:
+    """Из чего состояло тело вебхука — БЕЗ содержимого: ни текста, ни номера.
+
+    Статус доставки и сообщение клиента приходят в один и тот же вебхук и дают
+    одинаковый «200 OK». Разделять их обязательно: «пришли только статусы»
+    значит, что клиент нам не писал, а вовсе не что мы его потеряли.
+    """
+    kinds: list[str] = []
+    for entry in payload.get("entry") or []:
+        for change in entry.get("changes") or []:
+            value = change.get("value") or {}
+            for status in value.get("statuses") or []:
+                kinds.append(f"статус:{status.get('status')}")
+            for message in value.get("messages") or []:
+                kinds.append(f"сообщение:{message.get('type')}")
+            if not value.get("statuses") and not value.get("messages"):
+                kinds.append(f"изменение:{change.get('field')}")
+    return ", ".join(kinds) or "пусто"
+
+
 async def _studio_by_phone_number_id(db: AsyncSession, phone_number_id: str) -> tuple[int, str] | None:
     """(studio_id, token) подключённой интеграции wa_notify с этим номером.
     # ponytail: перебор подключённых интеграций в Python вместо JSON-запроса —
@@ -319,7 +339,7 @@ async def whatsapp_webhook(
         # Статусы доставки («доставлено», «прочитано») приходят в тот же вебхук
         # и сообщениями не являются. Отличать их от «клиент написал, а мы
         # потеряли» по 200 OK невозможно — отсюда строка.
-        logger.info("whatsapp webhook: в теле нет текстовых сообщений (статусы доставки/вложения)")
+        logger.info("whatsapp webhook: текстовых сообщений нет; пришло: %s", _describe(payload))
 
     for phone_number_id, sender, text, message in messages:
         found = await _studio_by_phone_number_id(db, phone_number_id)
@@ -387,6 +407,13 @@ if __name__ == "__main__":
         ("999", "79990000000", "Привет", {"from": "79990000000", "type": "text", "text": {"body": "Привет"}}),
     ]
     assert _incoming_messages({}) == []
+
+    # Разбор вида события: статус доставки и сообщение клиента дают одинаковый
+    # 200 OK, и различить их можно только так.
+    assert _describe(event) == "сообщение:text, сообщение:image, статус:delivered"
+    assert _describe({}) == "пусто"
+    # Содержимое наружу не уходит: ни текста, ни номера отправителя.
+    assert "Привет" not in _describe(event) and "79990000000" not in _describe(event)
 
     # Возврат строго по белому списку: чужой back не должен делать из callback
     # открытый редирект.
