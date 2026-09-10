@@ -117,12 +117,13 @@ export function InstagramConnect({
 // Номер один на студию (он же канал Уведомлений), но подключить его можно и
 // отсюда — Embedded Signup: окно Meta вместо ручного токена и Phone Number ID.
 export function WhatsappConnect({
-  number, connected, isConnecting, onConnect,
+  number, connected, isConnecting, onConnect, onDisconnect,
 }: {
   number: string;
   connected: boolean;
   isConnecting: boolean;
   onConnect: () => void;
+  onDisconnect: () => void;
 }) {
   const { t } = useTranslation('ai');
 
@@ -133,6 +134,9 @@ export function WhatsappConnect({
         <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
           <ConnectedBadge>{number}</ConnectedBadge>
           <span className="text-[12.5px] font-semibold text-muted-foreground">{t('common:status.connected')}</span>
+          <button type="button" className={`ml-auto ${LINK_BTN}`} onClick={onDisconnect}>
+            {t('whatsapp.disconnect')}
+          </button>
         </div>
       ) : (
         <div className="flex flex-wrap items-center gap-4">

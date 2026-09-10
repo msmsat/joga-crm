@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
 import { aiApi } from '../../../../api/ai/ai.api';
+import { settingsApi } from '../../../../api/settings/settings.api';
 import { ApiError } from '../../../../api/client';
 import { queryKeys } from '../../../../api/queryKeys';
 import { invalidateChannelGroup } from '../../../../api/channelGroup';
@@ -103,7 +104,7 @@ export function useAIAgent() {
     mutation.mutate({ [`${PREFIX[channel]}_enabled`]: !agentConfig[channel].enabled } as Partial<AISettings>);
   }, [mutation, agentConfig]);
 
-  // Тон/лимит/офчасы/промпт — «Сохранить» шлёт только реально изменённые поля.
+  // При закрытии модалки отправляем только реально изменённые поля.
   const saveChannelFields = useCallback((draft: AgentConfig) => {
     if (!settings) return;
     const patch: Partial<AISettings> = {};
@@ -162,12 +163,22 @@ export function useAIAgent() {
     onError: (err) => toast.error(aiErrorText(err, t)),
   });
 
+  const disconnectWhatsappMutation = useMutation({
+    mutationFn: () => settingsApi.disconnectIntegration('whatsapp'),
+    onSuccess: () => {
+      // Номер общий для AI-агента, Уведомлений и страницы Интеграций.
+      invalidateChannelGroup(qc);
+      toast.success(t('whatsapp.disconnectedToast'));
+    },
+    onError: (err) => toast.error(aiErrorText(err, t)),
+  });
+
   return {
-    aiSettings, agentConfig, isSaving: mutation.isPending,
+    aiSettings, agentConfig,
     // Настройки ещё не загрузились — модалку не открываем: локальный draft внутри
     // засеется от agentConfig в момент маунта, и до появления настоящих данных
-    // это будет EMPTY_AGENT_CONFIG (пустой промпт), который «Сохранить» перезапишет
-    // поверх настоящего.
+    // это будет EMPTY_AGENT_CONFIG (пустой промпт), который закрытие модалки
+    // перезапишет поверх настоящего.
     isLoaded: settings !== undefined,
     // Гейт тумблера (AI-3, задача 1/2): источник правды — реально сохранённый в БД
     // токен, а не то, что человек сейчас печатает в поле и ещё не проверил.
@@ -189,5 +200,6 @@ export function useAIAgent() {
     disconnectInstagram: () => disconnectInstagramMutation.mutateAsync(),
     connectWhatsapp: () => connectWhatsappMutation.mutate(),
     isConnectingWhatsapp: connectWhatsappMutation.isPending,
+    disconnectWhatsapp: async () => { await disconnectWhatsappMutation.mutateAsync(); },
   };
 }

@@ -16,10 +16,11 @@ from datetime import datetime, timedelta
 from urllib.parse import urlencode
 
 import aiohttp
-from fastapi import APIRouter, BackgroundTasks, Depends, Query, Request
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, Request
 from fastapi.responses import JSONResponse, PlainTextResponse, RedirectResponse
 from jose import JWTError, jwt
 from sqlalchemy import select
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_db
@@ -58,6 +59,8 @@ async def get_instagram_oauth_url(
     back: str = Query(_DEFAULT_RETURN),
     ctx: StudioContext = Depends(require_role("owner")),
 ):
+    if not IG_APP_ID or not IG_APP_SECRET or not IG_REDIRECT_URI:
+        raise HTTPException(status_code=503, detail="ig_not_configured")
     state = jwt.encode(
         {
             "studio_id": ctx.studio_id,
@@ -93,12 +96,21 @@ def _decode_state(state: str | None) -> tuple[int | None, str]:
     if not state:
         return None, fallback
     try:
-        payload = jwt.decode(state, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(state, SECRET_KEY, algorithms=[ALGORITHM], options={"require_exp": True})
     except JWTError:
         return None, fallback
-    if payload.get("purpose") != _STATE_PURPOSE:
+    studio_id = payload.get("studio_id")
+    if payload.get("purpose") != _STATE_PURPOSE or type(studio_id) is not int or studio_id <= 0:
         return None, fallback
-    return payload.get("studio_id"), _RETURN_PAGES.get(payload.get("back"), fallback)
+    back = payload.get("back")
+    return studio_id, _RETURN_PAGES.get(back, fallback) if isinstance(back, str) else fallback
+
+
+def _token(data: dict) -> str:
+    value = data.get("access_token") if isinstance(data, dict) else None
+    if not isinstance(value, str) or not value.strip():
+        raise ValueError("invalid_token_response")
+    return value
 
 
 async def _exchange_code_for_token(code: str) -> str:
@@ -117,7 +129,7 @@ async def _exchange_code_for_token(code: str) -> str:
         ) as resp:
             resp.raise_for_status()
             data = await resp.json()
-            return data["access_token"]
+            return _token(data)
 
 
 async def _exchange_long_lived_token(short_token: str) -> tuple[str, int]:
@@ -130,7 +142,11 @@ async def _exchange_long_lived_token(short_token: str) -> tuple[str, int]:
         ) as resp:
             resp.raise_for_status()
             data = await resp.json()
-            return data["access_token"], data["expires_in"]
+            token = _token(data)
+            expires_in = data.get("expires_in")
+            if type(expires_in) is not int or not 0 < expires_in <= 366 * 86400:
+                raise ValueError("invalid_token_expiry")
+            return token, expires_in
 
 
 async def _fetch_ig_profile(token: str) -> tuple[str, str]:
@@ -142,7 +158,15 @@ async def _fetch_ig_profile(token: str) -> tuple[str, str]:
         ) as resp:
             resp.raise_for_status()
             data = await resp.json()
-            return str(data["user_id"]), data["username"]
+            user_id = data.get("user_id") if isinstance(data, dict) else None
+            username = data.get("username") if isinstance(data, dict) else None
+            if (
+                type(user_id) not in (str, int) or not str(user_id).isascii()
+                or not str(user_id).isdigit() or not 0 < len(str(user_id)) <= 50
+                or not isinstance(username, str) or not username.strip() or len(username) > 100
+            ):
+                raise ValueError("invalid_profile_response")
+            return str(user_id), username
 
 
 async def _subscribe_webhooks(token: str) -> None:
@@ -152,9 +176,26 @@ async def _subscribe_webhooks(token: str) -> None:
     async with aiohttp.ClientSession(timeout=timeout) as session:
         async with session.post(
             f"{IG_GRAPH}/me/subscribed_apps",
-            params={"subscribed_fields": "messages", "access_token": token},
+            headers={"Authorization": f"Bearer {token}"},
+            data={"subscribed_fields": "messages"},
         ) as resp:
             resp.raise_for_status()
+            data = await resp.json()
+            if not isinstance(data, dict) or data.get("success") is not True:
+                raise ValueError("webhook_subscription_not_confirmed")
+
+
+def _oauth_error(back: str, reason: str) -> RedirectResponse:
+    return RedirectResponse(f"{WEB_APP_URL}{back}?{urlencode({'ig': 'error', 'ig_reason': reason})}")
+
+
+def _log_oauth_failure(stage: str, studio_id: int, exc: Exception) -> None:
+    # aiohttp exception strings/tracebacks contain request URLs, including tokens
+    # and the app secret. Log only controlled context and HTTP status.
+    logger.warning(
+        "instagram_oauth_failed stage=%s studio_id=%s error_type=%s status=%s",
+        stage, studio_id, type(exc).__name__, getattr(exc, "status", None),
+    )
 
 
 @callback_router.get("/instagram/callback")
@@ -167,29 +208,33 @@ async def instagram_oauth_callback(
 ):
     studio_id, back = _decode_state(state)
     if studio_id is None or not code:
-        return RedirectResponse(f"{WEB_APP_URL}{back}?ig=error")
+        return _oauth_error(back, "invalid_state" if studio_id is None else "authorization_denied")
 
+    stage = "token_exchange_failed"
     try:
         short_token = await _exchange_code_for_token(code)
         long_token, expires_in = await _exchange_long_lived_token(short_token)
+        stage = "profile_failed"
         ig_user_id, username = await _fetch_ig_profile(long_token)
-    except (aiohttp.ClientError, TimeoutError, KeyError, ValueError):
-        logger.exception("instagram_oauth_callback: token exchange failed for studio_id=%s", studio_id)
-        return RedirectResponse(f"{WEB_APP_URL}{back}?ig=error")
-
-    # Подписка отдельным шагом: упала — подключение всё равно состоялось, токен валиден.
-    # Повторится при следующем подключении; событий до этого не будет — видно по логу.
-    try:
+        stage = "subscription_failed"
         await _subscribe_webhooks(long_token)
-    except (aiohttp.ClientError, TimeoutError):
-        logger.exception("instagram_oauth_callback: subscribed_apps failed for studio_id=%s", studio_id)
+    except (aiohttp.ClientError, TimeoutError, KeyError, ValueError, TypeError) as exc:
+        _log_oauth_failure(stage, studio_id, exc)
+        return _oauth_error(back, stage)
 
-    # Одно подключение на обе поверхности: авто-ответчик и канал Уведомлений.
-    await connect_instagram_account(
-        db, studio_id,
-        token=long_token, ig_user_id=ig_user_id, username=username,
-        expires_at=datetime.utcnow() + timedelta(seconds=expires_in),
-    )
+    # Only show a connected account once delivery is subscribed and both local
+    # surfaces have committed together. A failed reconnect preserves old settings.
+    try:
+        await connect_instagram_account(
+            db, studio_id,
+            token=long_token, ig_user_id=ig_user_id, username=username,
+            expires_at=datetime.utcnow() + timedelta(seconds=expires_in),
+        )
+    except (HTTPException, SQLAlchemyError) as exc:
+        await db.rollback()
+        reason = "account_in_use" if isinstance(exc, HTTPException) and exc.detail == "ig_account_in_use" else "connection_failed"
+        _log_oauth_failure(reason, studio_id, exc)
+        return _oauth_error(back, reason)
 
     return RedirectResponse(f"{WEB_APP_URL}{back}?ig=connected")
 

@@ -46,7 +46,11 @@
     "instructionStep3": "The number is connected once — the same one is used for client notifications; come back here and switch the auto-responder on",
     "connectButton": "Connect WhatsApp",
     "connectedToast": "WhatsApp number connected",
-    "connectErrorToast": "Could not connect the WhatsApp number"
+    "connectErrorToast": "Could not connect the WhatsApp number",
+    "disconnect": "Disconnect",
+    "disconnectedToast": "WhatsApp disconnected",
+    "disconnectConfirmTitle": "Disconnect WhatsApp?",
+    "disconnectConfirmMessage": "The number will also be disconnected from studio notifications and integrations."
   },
   "history": {
     "title": "Chat history",

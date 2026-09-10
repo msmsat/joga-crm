@@ -27,10 +27,10 @@ export default function AIPage() {
     undoAction, undoPending,
   } = useDrawerChat('page');
   const {
-    agentConfig, aiSettings, isSaving, isLoaded, tgConnected, tgChannelActive, isVerifyingTelegram,
+    agentConfig, aiSettings, isLoaded, tgConnected, tgChannelActive, isVerifyingTelegram,
     igConnected, isConnectingInstagram, waConnected,
     toggleChannel, updateAISettings, saveChannelFields, verifyTelegram, disconnectTelegram,
-    connectInstagram, disconnectInstagram, connectWhatsapp, isConnectingWhatsapp,
+    connectInstagram, disconnectInstagram, connectWhatsapp, isConnectingWhatsapp, disconnectWhatsapp,
   } = useAIAgent();
   const [agentModalOpen, setAgentModalOpen] = useState(false);
   // Телефон показывает интерфейс AI-дровера вместо двух колонок — набор
@@ -77,7 +77,6 @@ export default function AIPage() {
   const agentModal = (
     <AgentSetupModal
       config={agentConfig}
-      isSaving={isSaving}
       tgConnected={tgConnected}
       isVerifyingTelegram={isVerifyingTelegram}
       igConnected={igConnected}
@@ -85,6 +84,7 @@ export default function AIPage() {
       waConnected={waConnected}
       isConnectingWhatsapp={isConnectingWhatsapp}
       onConnectWhatsapp={connectWhatsapp}
+      onDisconnectWhatsapp={disconnectWhatsapp}
       onToggleChannel={toggleChannel}
       onSave={saveChannelFields}
       onVerifyTelegram={verifyTelegram}

@@ -46,7 +46,11 @@
     "instructionStep3": "Номер подключится один раз — он же используется для уведомлений клиентам; вернитесь сюда и включите автоответчик",
     "connectButton": "Подключить WhatsApp",
     "connectedToast": "Номер WhatsApp подключён",
-    "connectErrorToast": "Не удалось подключить номер WhatsApp"
+    "connectErrorToast": "Не удалось подключить номер WhatsApp",
+    "disconnect": "Отключить",
+    "disconnectedToast": "WhatsApp отключён",
+    "disconnectConfirmTitle": "Отключить WhatsApp?",
+    "disconnectConfirmMessage": "Номер будет отключён также от уведомлений и интеграций студии."
   },
   "history": {
     "title": "История чатов",

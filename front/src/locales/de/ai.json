@@ -46,7 +46,11 @@
     "instructionStep3": "Die Nummer wird einmal verbunden — dieselbe wird für Kundenbenachrichtigungen genutzt; kommen Sie hierher zurück und schalten Sie den Autoresponder ein",
     "connectButton": "WhatsApp verbinden",
     "connectedToast": "WhatsApp-Nummer verbunden",
-    "connectErrorToast": "Die WhatsApp-Nummer konnte nicht verbunden werden"
+    "connectErrorToast": "Die WhatsApp-Nummer konnte nicht verbunden werden",
+    "disconnect": "Trennen",
+    "disconnectedToast": "WhatsApp getrennt",
+    "disconnectConfirmTitle": "WhatsApp trennen?",
+    "disconnectConfirmMessage": "Die Nummer wird auch von Benachrichtigungen und Studiointegrationen getrennt."
   },
   "history": {
     "title": "Chatverlauf",

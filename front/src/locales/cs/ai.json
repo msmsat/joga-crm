@@ -46,7 +46,11 @@
     "instructionStep3": "Číslo se připojuje jednou — stejné se používá pro upozornění klientům; vraťte se sem a zapněte automat",
     "connectButton": "Připojit WhatsApp",
     "connectedToast": "Číslo WhatsApp je připojeno",
-    "connectErrorToast": "Číslo WhatsApp se nepodařilo připojit"
+    "connectErrorToast": "Číslo WhatsApp se nepodařilo připojit",
+    "disconnect": "Odpojit",
+    "disconnectedToast": "WhatsApp byl odpojen",
+    "disconnectConfirmTitle": "Odpojit WhatsApp?",
+    "disconnectConfirmMessage": "Číslo bude odpojeno také od upozornění a integrací studia."
   },
   "history": {
     "title": "Historie chatů",

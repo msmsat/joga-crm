@@ -18,8 +18,8 @@ interface PromptPaneProps {
 }
 
 // Личность агента в одном месте: инструкция + тон + лимит ответа. Тон и лимит
-// общие для Telegram/Instagram/WhatsApp (на сервере поля per-channel, «Сохранить»
-// пишет одно значение во все три — см. AgentSetupModal).
+// общие для Telegram/Instagram/WhatsApp (на сервере поля per-channel; при закрытии
+// модалки одно значение записывается во все три — см. AgentSetupModal).
 export default function PromptPane({
   systemPrompt, tone, maxLength, onPromptChange, onToneChange, onMaxLengthChange,
 }: PromptPaneProps) {

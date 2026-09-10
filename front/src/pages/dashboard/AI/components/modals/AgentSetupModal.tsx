@@ -1,19 +1,17 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ConfirmModal } from '../../../../../components/ui/index';
-import { Button } from '@/components/ui-shadcn/button';
 import { cn } from '@/lib/utils';
 import type { AgentChannel, AgentConfig, AgentTone } from '../../types';
 import PulseRingSVG from '../animations/PulseRingSVG';
 import WaveformSVG from '../animations/WaveformSVG';
 import ChannelPane from './ChannelPane';
 import PromptPane from './PromptPane';
-import { CTA, TelegramConnect, InstagramConnect, WhatsappConnect } from './ConnectAreas';
+import { TelegramConnect, InstagramConnect, WhatsappConnect } from './ConnectAreas';
 
 interface AgentSetupModalProps {
   config: AgentConfig;
-  isSaving: boolean;
   tgConnected: boolean;
   isVerifyingTelegram: boolean;
   igConnected: boolean;
@@ -21,6 +19,7 @@ interface AgentSetupModalProps {
   waConnected: boolean;
   isConnectingWhatsapp: boolean;
   onConnectWhatsapp: () => void;
+  onDisconnectWhatsapp: () => Promise<void>;
   onToggleChannel: (channel: AgentChannel) => void;
   onSave: (draft: AgentConfig) => void;
   onVerifyTelegram: (token: string) => void;
@@ -61,23 +60,16 @@ const ICONS: Record<Tab, React.ReactNode> = {
 // прокручивается внутри себя — модалка не «прыгает» при переключении вкладок.
 // Тон и лимит ответа общие для всех каналов и живут на вкладке промпта.
 export default function AgentSetupModal({
-  config, isSaving, tgConnected, isVerifyingTelegram, igConnected, isConnectingInstagram,
-  waConnected, isConnectingWhatsapp, onConnectWhatsapp, onToggleChannel, onSave,
+  config, tgConnected, isVerifyingTelegram, igConnected, isConnectingInstagram,
+  waConnected, isConnectingWhatsapp, onConnectWhatsapp, onDisconnectWhatsapp, onToggleChannel, onSave,
   onVerifyTelegram, onDisconnectTelegram, onConnectInstagram, onDisconnectInstagram, onClose,
 }: AgentSetupModalProps) {
   const { t } = useTranslation('ai');
   const [activeTab, setActiveTab] = useState<Tab>('telegram');
-  // Тон/лимит/офчасы/промпт правятся локально до «Сохранить» — enabled/статистика
-  // всегда берутся из живого config (тумблер шлёт PATCH сразу, см. useAIAgent).
+  // Тон/лимит/офчасы/промпт правятся локально и сохраняются при закрытии;
+  // enabled/статистика всегда берутся из живого config.
   const [draft, setDraft] = useState<AgentConfig>(config);
-  const [confirmDisconnect, setConfirmDisconnect] = useState<'telegram' | 'instagram' | null>(null);
-
-  useEffect(() => {
-    // Esc над открытым подтверждением закрывает только его (ConfirmModal кита).
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape' && !confirmDisconnect) onClose(); };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [onClose, confirmDisconnect]);
+  const [confirmDisconnect, setConfirmDisconnect] = useState<AgentChannel | null>(null);
 
   const updateChannel = (channel: AgentChannel, field: string, value: string | number | boolean | AgentTone) =>
     setDraft(prev => ({ ...prev, [channel]: { ...prev[channel], [field]: value } }));
@@ -95,6 +87,18 @@ export default function AgentSetupModal({
   const maxLengthInvalid = (n: number) => n < 50 || n > 4000;
   const canSave = !maxLengthInvalid(draft.telegram.maxLength) && !maxLengthInvalid(draft.instagram.maxLength)
     && !maxLengthInvalid(draft.whatsapp.maxLength);
+
+  const closeAndSave = useCallback(() => {
+    if (canSave) onSave(draft);
+    onClose();
+  }, [canSave, draft, onClose, onSave]);
+
+  useEffect(() => {
+    // Esc над открытым подтверждением закрывает только его (ConfirmModal кита).
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape' && !confirmDisconnect) closeAndSave(); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [closeAndSave, confirmDisconnect]);
 
   // username/статистика — только для чтения (заполняются verify-эндпоинтом и
   // счётчиками), поэтому берутся из живого config; token остаётся в draft, пока
@@ -128,7 +132,7 @@ export default function AgentSetupModal({
   return (
     <div
       className="fixed inset-0 z-[1000] flex animate-in items-center justify-center bg-[rgba(0,0,0,0.5)] p-4 fade-in duration-200 max-[767px]:items-end max-[767px]:p-0"
-      onClick={e => e.target === e.currentTarget && onClose()}
+      onClick={e => e.target === e.currentTarget && closeAndSave()}
     >
       {/* Фон карточки — жемчужный (--v-background), белыми остаются только
           внутренние секции: иначе белое на белом сливается. */}
@@ -204,7 +208,7 @@ export default function AgentSetupModal({
           <div className="flex items-center gap-4 px-7 pt-6 pb-4 max-[767px]:px-4 max-[767px]:pt-4 max-[767px]:pb-3">
             <div className="text-[17px] font-extrabold tracking-[-0.02em] text-foreground">{activeLabel}</div>
             <button
-              onClick={onClose}
+              onClick={closeAndSave}
               className="ml-auto grid size-8 shrink-0 place-items-center rounded-lg border border-border text-muted-foreground transition-colors hover:bg-foreground/[0.04] hover:text-foreground"
             >
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
@@ -293,6 +297,7 @@ export default function AgentSetupModal({
                         connected={waConnected}
                         isConnecting={isConnectingWhatsapp}
                         onConnect={onConnectWhatsapp}
+                        onDisconnect={() => setConfirmDisconnect('whatsapp')}
                       />
                     }
                   />
@@ -312,14 +317,6 @@ export default function AgentSetupModal({
             </AnimatePresence>
           </div>
 
-          <div className="flex shrink-0 items-center justify-end gap-2.5 border-t border-border px-7 py-4 max-[767px]:px-4 max-[767px]:pb-[calc(1rem+env(safe-area-inset-bottom))]">
-            <Button variant="ghost" onClick={onClose} className="h-10 rounded-xl px-4 text-[13.5px] font-semibold text-muted-foreground hover:bg-foreground/[0.04] hover:text-foreground">
-              {t('common:buttons.cancel')}
-            </Button>
-            <Button onClick={() => onSave(draft)} disabled={isSaving || !canSave} className={CTA}>
-              {isSaving ? t('common:buttons.saving') : t('common:buttons.save')}
-            </Button>
-          </div>
         </div>
       </div>
 
@@ -329,7 +326,9 @@ export default function AgentSetupModal({
           title={t(`${confirmDisconnect}.disconnectConfirmTitle`)}
           message={t(`${confirmDisconnect}.disconnectConfirmMessage`)}
           confirmText={t(`${confirmDisconnect}.disconnect`)}
-          onConfirm={confirmDisconnect === 'telegram' ? handleDisconnectTelegram : onDisconnectInstagram}
+          onConfirm={confirmDisconnect === 'telegram'
+            ? handleDisconnectTelegram
+            : confirmDisconnect === 'instagram' ? onDisconnectInstagram : onDisconnectWhatsapp}
           onClose={() => setConfirmDisconnect(null)}
         />
       )}
