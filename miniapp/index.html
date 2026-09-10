@@ -11,6 +11,12 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <!-- Оттенок, которым вебвью красит СВОИ поверхности: резинку переката за
+         нижним краем документа и полосу под сворачивающейся панелью. Значения
+         равны --v-background из index.css. Дефолт стоит здесь, чтобы полоса
+         была верной уже в первом кадре; студийную тёмную тему подменяет
+         lib/branding.ts, когда придёт каталог. -->
+    <meta name="theme-color" content="#F4F2EF" />
     <title>Velora</title>
     <!-- SDK Telegram: обычный (не module) скрипт, поэтому выполняется ДО main.tsx —
          hooks/useTelegram.ts читает window.Telegram.WebApp на импорте модуля.

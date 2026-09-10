@@ -1,6 +1,6 @@
-import { useEffect, type ReactNode } from 'react';
+import { useEffect, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion, useDragControls } from 'framer-motion';
 import { useTelegram } from '../../hooks/useTelegram';
 import { useIsDesktop } from '../../hooks/useIsDesktop';
 
@@ -41,6 +41,22 @@ let openCount = 0;
  *
  * Затемнение без backdrop-filter намеренно — блюр во весь экран роняет первый
  * кадр открытия на телефонах, и лист «залипает» перед выездом.
+ *
+ * ⚠️ СМАХИВАНИЕ ТЯНЕТСЯ ТОЛЬКО ЗА ШАПКУ, и это не вкусовщина.
+ * `drag="y"` на самой панели заставлял framer-motion писать ей инлайновый
+ * `touch-action: pan-x` (render/html/use-props.mjs). Значение перекрывает
+ * ВЕСЬ поддомен листа, включая область контента с `overflow-y-auto`:
+ * эффективное действие касания — пересечение по цепочке предков, а pan-x
+ * запрещает вертикальное панорамирование. Замерено настоящими событиями
+ * касания на листе фильтров: с pan-x палец двигал scrollTop на 0 px из 122,
+ * без него — на 121 из 122. То есть длинные листы (фильтры, абонементы,
+ * оплата) пальцем не листались вообще.
+ *
+ * `dragListener={false}` — единственный ключ, который отключает эту запись
+ * (framer проверяет ровно `props.drag && props.dragListener !== false`), а сам
+ * жест переезжает на шапку через `dragControls`. Шапке нужен собственный
+ * `touch-action: none`: иначе браузер начнёт своё панорамирование и отменит
+ * pointermove у framer, не дав листу поехать.
  */
 export function Sheet({
   isOpen,
@@ -55,6 +71,15 @@ export function Sheet({
 }: Props) {
   const { vibrateLight } = useTelegram();
   const isDesktop = useIsDesktop();
+  const dragControls = useDragControls();
+
+  /** Тянуть лист — да; нажимать крестик — нет. Без этой отсечки жест начинался
+   *  бы прямо на кнопке закрытия и съедал бы у неё клик. */
+  const startDrag = (event: ReactPointerEvent) => {
+    if (isDesktop) return;
+    if ((event.target as HTMLElement).closest('button')) return;
+    dragControls.start(event);
+  };
 
   useEffect(() => {
     if (!isOpen) return;
@@ -113,6 +138,7 @@ export function Sheet({
                 : { type: 'spring', stiffness: 330, damping: 34, mass: 0.9 }
             }
             drag={isDesktop ? false : 'y'}
+            dragControls={dragControls}
             dragConstraints={{ top: 0, bottom: 0 }}
             dragElastic={{ top: 0, bottom: 0.5 }}
             onDragEnd={(_, info) => {
@@ -139,7 +165,13 @@ export function Sheet({
               }}
             />
 
-            <div className="relative shrink-0 px-6 pt-3">
+            <div
+              className="relative shrink-0 px-6 pt-3"
+              /* touch-action только здесь, а не на всей панели: `none` гасит
+                 собственное панорамирование браузера ровно в полосе шапки, и
+                 контент листа ниже остаётся обычной прокручиваемой областью. */
+              style={isDesktop ? undefined : { touchAction: 'none' }}
+            >
               {/* Ручка смахивания — жест только пальцем: мышью тянуть нечего,
                   а полоска без функции читается как мусор в макете. */}
               <div

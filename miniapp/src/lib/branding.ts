@@ -49,6 +49,31 @@ export function applyBranding(accentColor?: string | null, darkMode?: boolean | 
 
   // Тёмная тема виджета — тот же класс `.dark`, под который написан index.css.
   root.classList.toggle('dark', Boolean(darkMode));
+
+  // Тема решена — пересобираем и `theme-color`. Меняется только он: `color-scheme`
+  // приходит из CSS вместе с классом `.dark`, второй раз задавать его не нужно.
+  applyThemeColor(Boolean(darkMode));
+}
+
+/** Фон студии (`--v-background` из index.css) в двух темах. */
+const SURFACE = { light: '#F4F2EF', dark: '#121212' } as const;
+
+/**
+ * Оттенок, которым вебвью красит СВОИ поверхности — резинку переката за нижним
+ * краем документа и полосу под сворачивающейся панелью браузера.
+ *
+ * Внутри WhatsApp и Instagram эта полоса не принадлежит документу: закрасить её
+ * фоном body или min-height нельзя, цвет берётся отсюда. Без меты вебвью красил
+ * её белым, и тёмная студия внизу упиралась в белый экран.
+ */
+function applyThemeColor(darkMode: boolean): void {
+  let meta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
+  if (!meta) {
+    meta = document.createElement('meta');
+    meta.name = 'theme-color';
+    document.head.appendChild(meta);
+  }
+  meta.content = darkMode ? SURFACE.dark : SURFACE.light;
 }
 
 /** Человек выбрал язык сам. Пишем СВОЙ ключ, а не полагаемся на `i18nextLng`:

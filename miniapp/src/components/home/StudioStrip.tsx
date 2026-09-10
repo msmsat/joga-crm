@@ -46,6 +46,7 @@ export default function StudioStrip({ studio, onOpen, accentColor }: Props) {
               src={studio.photo_url ?? undefined}
               alt=""
               loading="lazy"
+              decoding="async"
               onError={() => setImageFailed(true)}
               className="h-full w-full object-cover"
             />
