@@ -1,4 +1,5 @@
 import { clearActiveToken, getActiveToken } from '../utils/auth'
+import { reactTo401 } from '../lib/authFailure'
 
 const BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8000'
 
@@ -83,11 +84,18 @@ async function request<T>(method: string, path: string, options: RequestOptions 
     body: options.form ?? (options.body !== undefined ? JSON.stringify(options.body) : undefined),
   })
 
-  // 401 — сессия мертва: выбрасываем токен и уводим на вход. Кроме случая, когда
-  // вызывающий проверяет ЧУЖОЙ токен (переключатель аккаунтов): там 401 означает
-  // «эта запись связки протухла», и стирать активную рабочую сессию нельзя.
+  // 401 — по умолчанию «сессия мертва»: выбрасываем токен и уводим на вход.
+  // Кого это не касается — публичный запрос (`auth: false`, токена не посылали)
+  // и проверка ЧУЖОГО токена — решает `reactTo401` (lib/authFailure.ts, там же
+  // разобрано почему). Главное следствие: неверный пароль на /auth/login больше
+  // не перезагружает страницу входа и не выкидывает из текущего аккаунта.
   if (res.status === 401) {
-    if (options.allowUnauthorized) throw new ApiError(401, 'Сессия истекла')
+    if (reactTo401(options) === 'report') {
+      // Сообщение берём с сервера, а не пишем «Сессия истекла»: на входе это
+      // «Неверный email, телефон или пароль», и прочитать надо именно его.
+      const data: unknown = await res.json().catch(() => null)
+      throw new ApiError(401, data ? normalizeError(data) : 'Сессия истекла', detailCode(data))
+    }
     clearActiveToken()
     window.location.href = '/login'
     throw new ApiError(401, 'Сессия истекла')

@@ -13,6 +13,7 @@
     "check:landing": "node scripts/check-landing-anchors.mjs",
     "check:uimap": "node scripts/check-uimap.mjs",
     "check:ai": "node scripts/check-ai-intents.mjs",
+    "check:auth": "node scripts/check-auth-401.mjs",
     "check:i18n": "python scripts/i18n/verify.py",
     "check:billing": "node scripts/check-billing-access.mjs",
     "check:scenes": "node scripts/check-scenes.mjs"
