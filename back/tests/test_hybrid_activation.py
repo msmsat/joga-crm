@@ -286,3 +286,46 @@ def test_service_used_by_resource_cannot_be_deleted_or_switched(clean_studio):
                     out.append(exc.detail["code"])
             return out
     assert asyncio.run(run()) == ["SERVICE_IN_USE", "SERVICE_MODE_LOCKED"]
+
+
+def test_specialist_with_future_bookings_cannot_be_removed(clean_studio):
+    """§4.3: удаление специалиста при будущих обязательствах отклоняется
+    с перечнем конфликтов, история не удаляется.
+
+    Проверяется МАРШРУТ, а не сама `assert_future_assignments_valid`: функция
+    покрыта отдельно, но между ней и кнопкой «удалить» лежит роутер, и именно
+    он решает, звать ли её и что делать с результатом.
+    """
+    from dependencies import StudioContext
+    from routers.staff.profiles import delete_staff
+
+    ids = clean_studio
+    assert asyncio.run(_activate(ids, {"strict_schedule_enabled": True})) is None
+    lesson_id = _add(ids, _lesson(ids, start_time=_future(11), booking_mode="resource",
+                                  total_spots=1, service_id=ids["service"], hall_id=None))[0]
+    _add(ids, Reservation(client_id=ids["client"], lesson_id=lesson_id, spot_number=1, status="active"))
+
+    async def remove():
+        async with async_session_maker() as db:
+            ctx = StudioContext(user=None, studio_id=ids["studio"], role="owner")
+            try:
+                await delete_staff(staff_id=ids["teacher"], ctx=ctx, db=db)
+                return None
+            except HTTPException as exc:
+                await db.rollback()
+                return exc
+
+    failure = asyncio.run(remove())
+    assert failure is not None and failure.status_code == 409, failure
+    assert failure.detail["code"] == "FUTURE_ASSIGNMENT_CONFLICT", failure.detail
+    assert lesson_id in failure.detail["params"]["lesson_ids"], failure.detail
+
+    async def survived():
+        async with async_session_maker() as db:
+            member = (await db.execute(select(StudioMember).where(
+                StudioMember.studio_id == ids["studio"],
+                StudioMember.user_id == ids["teacher"]))).scalar_one_or_none()
+            lesson = await db.get(Lesson, lesson_id)
+            return member is not None, lesson.status
+    # Ни профиль, ни запись не должны пострадать от отклонённого удаления.
+    assert asyncio.run(survived()) == (True, "confirmed")
