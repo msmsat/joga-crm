@@ -313,7 +313,8 @@
     "my_lessons": "Meine Kurse",
     "profile": "Profil",
     "client_area": "Kundenbereich",
-    "club": "Club"
+    "club": "Club",
+    "book": "Buchen"
   },
   "account": {
     "title": "Konto",
@@ -471,5 +472,27 @@
   },
   "units": {
     "min": "Min"
+  },
+  "booking": {
+    "title": "Termin buchen",
+    "stepBranch": "Standort",
+    "stepService": "Leistung",
+    "stepMaster": "Fachkraft",
+    "duration": "{{min}} Min.",
+    "pickService": "Leistung wählen",
+    "anyMaster": "Beliebige Fachkraft",
+    "anyMasterHint": "Frühester freier Termin",
+    "firstFree": "Frei ab {{time}}",
+    "noFreeTime": "Keine freien Zeiten",
+    "noMasters": "An diesem Tag arbeitet niemand",
+    "noMastersHint": "Versuchen Sie einen anderen Tag",
+    "reason": {
+      "config_incomplete": "Der Zeitplan dieser Leistung ist noch nicht eingerichtet",
+      "no_eligible_staff": "Diese Leistung bietet noch niemand an",
+      "booking_closed": "Online-Buchung ist geschlossen",
+      "error": "Laden fehlgeschlagen. Bitte erneut versuchen",
+      "no_services": "Das Studio hat noch keine buchbaren Leistungen hinzugefügt"
+    },
+    "allBusy": "An diesem Tag sind alle Fachkräfte ausgebucht."
   }
 }

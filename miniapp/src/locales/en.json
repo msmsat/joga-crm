@@ -313,7 +313,8 @@
     "my_lessons": "My Lessons",
     "profile": "Profile",
     "client_area": "Client area",
-    "club": "Club"
+    "club": "Club",
+    "book": "Book"
   },
   "account": {
     "title": "Account",
@@ -471,5 +472,27 @@
   },
   "units": {
     "min": "min"
+  },
+  "booking": {
+    "title": "Book a visit",
+    "stepBranch": "Location",
+    "stepService": "Service",
+    "stepMaster": "Specialist",
+    "duration": "{{min}} min",
+    "pickService": "Choose a service",
+    "anyMaster": "Any specialist",
+    "anyMasterHint": "Earliest available time",
+    "firstFree": "Free from {{time}}",
+    "noFreeTime": "Fully booked",
+    "noMasters": "Nobody works on this day",
+    "noMastersHint": "Try another day",
+    "reason": {
+      "config_incomplete": "This service's schedule is not set up yet",
+      "no_eligible_staff": "Nobody provides this service yet",
+      "booking_closed": "Online booking is closed",
+      "error": "Could not load. Please try again",
+      "no_services": "The studio has not added bookable services yet"
+    },
+    "allBusy": "Every specialist is fully booked on this day."
   }
 }

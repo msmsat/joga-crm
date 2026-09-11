@@ -69,6 +69,15 @@ export const NAV_ITEMS: NavItem[] = [
 /**
  * Пункты для текущей студии. «Клуб» скрыт, пока владелец не включил программу
  * лояльности: вкладка, за которой всегда пусто, — худший вид пустого состояния.
+ *
+ * У студии с одной лишь индивидуальной записью вкладка называется
+ * «Записаться», а не «Расписание»: расписания групп там нет и не будет
+ * (services/catalog.py исключает индивидуальные интервалы из публичного
+ * списка), а подпись обязана обещать то, что за ней действительно есть.
  */
-export const visibleNavItems = (hasLoyalty: boolean): NavItem[] =>
-  hasLoyalty ? NAV_ITEMS : NAV_ITEMS.filter((item) => item.id !== 'club');
+export const visibleNavItems = (hasLoyalty: boolean, bookingMode: string = 'event'): NavItem[] => {
+  const items = hasLoyalty ? NAV_ITEMS : NAV_ITEMS.filter((item) => item.id !== 'club');
+  if (bookingMode !== 'resource') return items;
+  return items.map((item) =>
+    item.id === 'sched' ? { ...item, labelKey: 'nav.book' } : item);
+};

@@ -44,6 +44,15 @@ export type ResourceTarget = {
 /** Перенос существующей брони: тот же выбор времени, другая пара команд. */
 export type MoveTarget = { reservationId: number; version: number };
 
+/**
+ * С чем открывать лист, когда мастер и день выбраны ДО него (экран «Записатись»).
+ *
+ * Отдельным аргументом, а не вызовом `setTeacherId`/`setDate` следом: `open`
+ * их сбрасывает, и «открыть, потом доставить» работало бы только по удачному
+ * порядку в одном батче. Здесь это одно намерение и одно состояние.
+ */
+export type OpenPreset = { teacherId?: number | null; date?: Date };
+
 type Options = {
   /** Гость дошёл до quote: поднимаем существующий вход и повторяем шаг. */
   onNeedAuth?: (retry: () => void) => void;
@@ -72,17 +81,18 @@ export function useResourceBooking({ onNeedAuth }: Options = {}) {
 
   const sequence = useRef(0);
 
-  const open = (picked: ResourceTarget, branch: number | null, moving: MoveTarget | null = null) => {
+  const open = (picked: ResourceTarget, branch: number | null, moving: MoveTarget | null = null,
+                preset: OpenPreset = {}) => {
     setService(picked);
     setMove(moving);
     setBranchId(branch);
-    setTeacherId(null);
+    setTeacherId(preset.teacherId ?? null);
     setSlots([]);
     setReason(null);
     setQuote(null);
     setBooking(null);
     setStep('select_time');
-    setDate(new Date());
+    setDate(preset.date ?? new Date());
     vibrateMedium();
   };
 

@@ -353,7 +353,8 @@ export default function App() {
     club: <Club data={loyalty} onUseCertificate={useCertificate} />,
   };
 
-  const navItems = visibleNavItems(Boolean(loyalty?.enabled));
+  const navItems = visibleNavItems(
+    Boolean(loyalty?.enabled), catalog?.booking_capabilities.booking_mode);
 
   // 5️⃣ КОГДА ДАННЫЕ ПОЛУЧЕНЫ — ЗАПУСКАЕМ НАШЕ ПРИЛОЖЕНИЕ И ПЕРЕДАЕМ ЮЗЕРА В HOME
   //

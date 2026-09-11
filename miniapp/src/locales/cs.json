@@ -313,7 +313,8 @@
     "my_lessons": "Moje lekce",
     "profile": "Profil",
     "client_area": "Klientská zóna",
-    "club": "Klub"
+    "club": "Klub",
+    "book": "Objednat se"
   },
   "account": {
     "title": "Účet",
@@ -471,5 +472,27 @@
   },
   "units": {
     "min": "min"
+  },
+  "booking": {
+    "title": "Objednat se",
+    "stepBranch": "Pobočka",
+    "stepService": "Služba",
+    "stepMaster": "Specialista",
+    "duration": "{{min}} min",
+    "pickService": "Vyberte službu",
+    "anyMaster": "Kdokoli z týmu",
+    "anyMasterHint": "Nejbližší volný čas",
+    "firstFree": "Volno od {{time}}",
+    "noFreeTime": "Obsazeno",
+    "noMasters": "Tento den nikdo nepracuje",
+    "noMastersHint": "Zkuste jiný den",
+    "reason": {
+      "config_incomplete": "Rozvrh této služby ještě není nastaven",
+      "no_eligible_staff": "Tuto službu zatím nikdo neposkytuje",
+      "booking_closed": "Online rezervace jsou uzavřeny",
+      "error": "Načtení se nezdařilo. Zkuste to znovu",
+      "no_services": "Studio zatím nepřidalo služby k rezervaci"
+    },
+    "allBusy": "Tento den jsou všichni specialisté obsazeni."
   }
 }

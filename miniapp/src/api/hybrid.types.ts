@@ -27,6 +27,16 @@ export type QuoteRequest = EventQuoteRequest | ResourceQuoteRequest;
 export interface AvailabilityQuery { service_id: number; branch_id: number; date_from: string; date_to: string; teacher_id?: number }
 export interface AvailabilitySlot { starts_at: string; local_start: string; tz_iana: string; teacher_ids: number[] }
 export interface AvailabilityRead { slots: AvailabilitySlot[]; reason: string | null }
+export interface StaffDayQuery { service_id: number; branch_id: number; date: string }
+/** `works` и `free_count` — разные вопросы: занятая смена даёт `works: true,
+ *  free_count: 0`, выходной — `works: false`. Первое рисуется серой карточкой,
+ *  второе не показывается вовсе. `first_free` — местное время студии строкой,
+ *  без смещения: читается срезом, а не через `new Date()` (AC-21). */
+export interface StaffDayMember {
+  teacher_id: number; name: string; last_name: string | null; photo_url: string | null;
+  works: boolean; reason: string | null; free_count: number; first_free: string | null;
+}
+export interface StaffDayRead { staff: StaffDayMember[]; reason: string | null }
 export type BookingStatus = 'active' | 'pending' | 'hold' | 'attended' | 'cancelled';
 export type NextAction = 'none' | 'wait_approval' | 'pay';
 export interface BookingRead { reservation_id: number; lesson_id: number; booking_mode: BookingMode; status: BookingStatus; version: number; next_action: NextAction; payment_url: string | null }

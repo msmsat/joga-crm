@@ -1,4 +1,5 @@
 """Bounded, batched availability loader shared by CRM, Mini-app and confirm."""
+from dataclasses import dataclass
 from datetime import date, datetime, time, timedelta, timezone
 
 from fastapi import HTTPException
@@ -10,7 +11,12 @@ from models import (BranchWorkingHours, Hall, Lesson, Service, StaffBranchAssign
 from models.base import user_services
 from schemas.schedule import hybrid
 from services.booking_rules import load_rules
-from services.resource_slots import Availability, AvailabilityData, generate
+from services.resource_slots import Availability, AvailabilityData, by_staff, generate
+
+
+#: Запас, с которым снимок захватывает соседние сутки. Больше, чем нужно
+#: реально (−3/+4), чтобы добавленный день запаса не пришлось искать снова.
+SNAPSHOT_MARGIN = timedelta(days=7)
 
 
 def reject(code, status=409):
@@ -21,6 +27,13 @@ async def load(db, *, studio_id: int, service_id: int, branch_id: int,
                date_from: date, date_to: date, teacher_id: int | None = None,
                hall_id: int | None = None, exclude_lesson_id: int | None = None) -> AvailabilityData:
     if not 1 <= (date_to - date_from).days + 1 <= 31:
+        reject("INVALID_DATE_RANGE", 422)
+    # Снимок берётся с запасом в несколько суток по обе стороны от запрошенных
+    # дней (ниже: −3/+4 у занятий, −2/+1 у отметок). У края календаря это
+    # сложение выходит за пределы `date`, и необработанный OverflowError
+    # превращал `9999-12-31` в 500 на ГОСТЕВОМ запросе. Отказ должен быть тем
+    # же, что и у любого другого негодного диапазона.
+    if not date.min + SNAPSHOT_MARGIN <= date_from or not date_to <= date.max - SNAPSHOT_MARGIN:
         reject("INVALID_DATE_RANGE", 422)
     studio = (await db.execute(select(Studio).where(Studio.id == studio_id)
         .execution_options(populate_existing=True))).scalar_one_or_none()
@@ -89,3 +102,52 @@ async def availability(db, *, now: datetime | None = None, client: bool = True, 
     data = await load(db, **scope)
     return generate(data, date_from=scope["date_from"], date_to=scope["date_to"],
                     now=now or datetime.now(timezone.utc), client=client)
+
+
+@dataclass(frozen=True)
+class StaffDayMember:
+    teacher_id: int
+    name: str
+    last_name: str | None
+    photo_url: str | None
+    works: bool
+    reason: str | None
+    free: list[datetime]
+
+
+@dataclass(frozen=True)
+class StaffDayReport:
+    staff: list[StaffDayMember]
+    reason: str | None = None
+
+
+async def staff_day(db, *, studio_id: int, service_id: int, branch_id: int, day: date,
+                    now: datetime | None = None, client: bool = True) -> StaffDayReport:
+    """Мастера услуги на календарный день — со смен, а не только со свободного времени.
+
+    Тот же загруженный снимок, что и у `availability`: число запросов не зависит
+    от числа мастеров. Обхода по мастерам здесь нет и быть не должно — поштучный
+    вызов `resource_hours.available_intervals` на каждого дал бы N запросов там,
+    где хватает одного снимка.
+
+    Имя и фото берутся из `StudioMember`, а НЕ из `users`: в каждой студии у
+    человека своё имя и своё фото (см. докстринг модели).
+    """
+    data = await load(db, studio_id=studio_id, service_id=service_id, branch_id=branch_id,
+                     date_from=day, date_to=day)
+    report = by_staff(data, day=day, now=now or datetime.now(timezone.utc), client=client)
+    if not report.staff:
+        return StaffDayReport([], report.reason)
+    members = {row.user_id: row for row in (await db.execute(select(StudioMember).where(
+        StudioMember.studio_id == studio_id,
+        StudioMember.user_id.in_([entry.teacher_id for entry in report.staff]),
+    ))).scalars().all()}
+    staff = []
+    for entry in report.staff:
+        member = members.get(entry.teacher_id)
+        if member is None:
+            continue  # Членство исчезло между снимком и этим запросом.
+        staff.append(StaffDayMember(
+            teacher_id=entry.teacher_id, name=member.name, last_name=member.last_name,
+            photo_url=member.photo_url, works=entry.works, reason=entry.reason, free=entry.free))
+    return StaffDayReport(staff, report.reason)

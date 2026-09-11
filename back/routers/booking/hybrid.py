@@ -8,7 +8,8 @@ from database import get_db
 from models import Client
 from ratelimit import limiter
 from schemas.schedule.hybrid import (PublicAvailabilityQuery, AvailabilityRead, BookingQuoteRequest,
-    BookingRead, ConfirmRequest, QuoteRead, RescheduleConfirmRequest, ResourceQuoteRequest)
+    BookingRead, ConfirmRequest, PublicStaffDayQuery, QuoteRead, RescheduleConfirmRequest,
+    ResourceQuoteRequest, StaffDayMemberRead, StaffDayRead)
 from services import booking_quotes as quotes, hybrid_http, resource_availability, resource_booking, resource_reschedule
 from .miniapp import Viewer, get_current_client, get_viewer
 
@@ -25,6 +26,27 @@ async def availability(request: Request, query: Annotated[PublicAvailabilityQuer
                        viewer: Viewer = Depends(get_viewer), db: AsyncSession = Depends(get_db)):
     return await resource_availability.availability(db, studio_id=viewer.studio_id,
                                                   **query.model_dump(exclude={"studio_id"}))
+
+
+@router.get("/staff-day", response_model=StaffDayRead)
+@limiter.limit("60/minute")
+async def staff_day(request: Request, query: Annotated[PublicStaffDayQuery, Query()],
+                    viewer: Viewer = Depends(get_viewer), db: AsyncSession = Depends(get_db)):
+    """Кто из мастеров работает в этот день и сколько у каждого свободного времени.
+
+    Отдельно от `/availability` потому, что тот вычитает занятость и склеивает
+    мастеров: «работает, но занят» в его ответе неотличимо от выходного. Клиенту
+    эта разница нужна — занятого он показывает серым, а не прячет.
+    """
+    report = await resource_availability.staff_day(
+        db, studio_id=viewer.studio_id, service_id=query.service_id,
+        branch_id=query.branch_id, day=query.date)
+    return StaffDayRead(reason=report.reason, staff=[
+        StaffDayMemberRead(
+            teacher_id=row.teacher_id, name=row.name, last_name=row.last_name,
+            photo_url=row.photo_url, works=row.works, reason=row.reason,
+            free_count=len(row.free), first_free=row.free[0] if row.free else None)
+        for row in report.staff])
 
 
 @router.post("/booking-quotes", response_model=QuoteRead, status_code=201)

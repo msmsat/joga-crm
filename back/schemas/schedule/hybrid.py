@@ -129,6 +129,46 @@ class PublicAvailabilityQuery(AvailabilityQuery):
     studio_id: Optional[str] = None
 
 
+class StaffDayQuery(HybridSchema):
+    """Мастера услуги на ОДИН день. Диапазона здесь нет намеренно: вопрос «кто
+    сегодня работает» задаётся про конкретный день, а неделя мастеров — это
+    другой экран и другой ответ."""
+    service_id: int = Field(gt=0)
+    branch_id: int = Field(gt=0)
+    date: date
+
+
+class PublicStaffDayQuery(StaffDayQuery):
+    studio_id: Optional[str] = None
+
+
+class StaffDayMemberRead(HybridSchema):
+    """Мастер в списке дня.
+
+    `works` и `free_count` — РАЗНЫЕ вопросы, и схлопывать их нельзя: занятая
+    смена даёт `works=true, free_count=0`, выходной — `works=false,
+    free_count=0`. Клиент по ним рисует серую карточку «нет свободного времени»
+    против полного отсутствия мастера в списке.
+
+    `first_free` — наивное стенное время студии, без смещения (как `local_start`
+    у слота): мини-приложение показывает его срезом строки, не пропуская через
+    часовой пояс телефона.
+    """
+    teacher_id: int
+    name: str
+    last_name: Optional[str] = None
+    photo_url: Optional[str] = None
+    works: bool
+    reason: Optional[str] = None
+    free_count: int
+    first_free: Optional[datetime] = None
+
+
+class StaffDayRead(HybridSchema):
+    staff: list[StaffDayMemberRead]
+    reason: Optional[str] = None
+
+
 class QuoteRead(HybridSchema):
     quote_id: str
     expires_at: datetime

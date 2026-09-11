@@ -9,6 +9,9 @@ import CoffeeModal from '../components/modals/CoffeeModal';
 import WeekRail from '../components/schedule/WeekRail';
 import LessonCard from '../components/schedule/LessonCard';
 import FilterSheet, { type Filters } from '../components/schedule/FilterSheet';
+import ResourceBookingSheet from '../components/booking/ResourceBookingSheet';
+import BookingFlow from './booking/BookingFlow';
+import { useResourceBooking } from '../hooks/useResourceBooking';
 import { ScreenHeader } from '../components/ui/ScreenHeader';
 import { ListSkeleton } from '../components/ui/ListSkeleton';
 import { EmptyState } from '../components/ui/EmptyState';
@@ -60,6 +63,18 @@ export default function Shedule({ catalog, onBuySubscription, onNeedAuth }: Shed
   const isMultiStudio = branches.length > 1;
   const rules = catalog?.rules ?? null;
 
+  /**
+   * Режим студии решает, ЧТО это за экран (MA-01, §4.4).
+   *
+   * `event` — расписание занятий, как и было. `resource` — запись к мастеру:
+   * список занятий тут показывать нечего, сервер намеренно исключает
+   * индивидуальные интервалы из публичного перечня (services/catalog.py,
+   * §6.1) — чужая стрижка не событие, куда можно присоединиться. `hybrid` —
+   * и то, и другое: сначала запись, под ней расписание групп.
+   */
+  const mode = catalog?.booking_capabilities.booking_mode ?? 'event';
+  const isResource = mode === 'resource';
+
   // Последний день открытого расписания — «Запись открыта на N дней» из
   // настроек студии. Ленту недель дальше не листаем.
   const maxDate = useMemo(() => {
@@ -108,6 +123,10 @@ export default function Shedule({ catalog, onBuySubscription, onNeedAuth }: Shed
   const { vibrateLight } = useTelegram();
   const { t, i18n } = useTranslation();
 
+  // Расчёт, quote и подтверждение — тот же путь, что у записи с главной:
+  // экран добавляет шаги ДО выбора времени, а не вторую механику брони.
+  const resource = useResourceBooking({ onNeedAuth });
+
   // Запись и отмена — общие с главной (useLessonBooking): один сценарий, две
   // страницы. Здесь остаётся только то, что у расписания своё, — список дня.
   const booking = useLessonBooking({
@@ -120,6 +139,10 @@ export default function Shedule({ catalog, onBuySubscription, onNeedAuth }: Shed
   });
 
   useEffect(() => {
+    // Студии с одной лишь индивидуальной записью список занятий не нужен:
+    // сервер вернёт пустой массив на любой день, и это был бы запрос на
+    // каждое перелистывание ради заведомо пустого ответа.
+    if (isResource) return;
     let cancelled = false;
     const wanted = isoDate(date);
     // Филиал участвует в КЛЮЧЕ кэша: без него список одного филиала показался
@@ -158,7 +181,7 @@ export default function Shedule({ catalog, onBuySubscription, onNeedAuth }: Shed
       cancelled = true;
       window.clearTimeout(timer);
     };
-  }, [date, filters.studioId, lessonsVersion]);
+  }, [date, filters.studioId, lessonsVersion, isResource]);
 
   // Варианты фильтров собираются из самого дня: показывать «Олену», которой
   // сегодня нет в расписании, — это выбор, ведущий в пустоту.
@@ -197,7 +220,7 @@ export default function Shedule({ catalog, onBuySubscription, onNeedAuth }: Shed
     <>
       <ScreenHeader
         kicker={date.toLocaleDateString(i18n.language, { month: 'long', year: 'numeric' })}
-        title={t('schedule.title')}
+        title={isResource ? t('booking.title') : t('schedule.title')}
         action={
           !isToday ? (
             <motion.button
@@ -248,6 +271,20 @@ export default function Shedule({ catalog, onBuySubscription, onNeedAuth }: Shed
         </div>
       )}
 
+      {/* Запись к мастеру. У hybrid-студии стоит НАД расписанием групп:
+          записаться — действие, расписание — справка. */}
+      {mode !== 'event' && (
+        <BookingFlow
+          catalog={catalog}
+          branchId={filters.studioId}
+          onBranchChange={(id) => setFilters({ ...filters, studioId: id, service: null, teacher: null })}
+          date={date}
+          resource={resource}
+        />
+      )}
+
+      {mode !== 'resource' && (
+      <>
       {/* Панель фильтров ростом в одну строку: на телефоне вертикаль дороже
           удобства, поэтому выбранное показано чипами, а сам выбор — в листе. */}
       <div className="flex gap-2 overflow-x-auto px-5 pt-5 dt:flex-wrap dt:gap-2.5 dt:overflow-visible dt:pt-8">
@@ -349,6 +386,8 @@ export default function Shedule({ catalog, onBuySubscription, onNeedAuth }: Shed
           </div>
         )}
       </div>
+      </>
+      )}
 
       <FilterSheet
         isOpen={isFilterOpen}
@@ -412,6 +451,24 @@ export default function Shedule({ catalog, onBuySubscription, onNeedAuth }: Shed
         coffee={booking.coffee}
         onJoined={bumpLessons}
         layer={1}
+      />
+
+      {/* Выбор времени и подтверждение — существующий лист. Мастер и услуга уже
+          названы, поэтому слоты в нём принадлежат конкретному человеку. */}
+      <ResourceBookingSheet flow={resource} layer={2} />
+
+      <PhoneSheet
+        isOpen={resource.needsPhone}
+        onClose={resource.closePhone}
+        onSaved={resource.retryAfterPhone}
+        layer={3}
+      />
+
+      <SubscriptionSheet
+        isOpen={resource.needsSubscription !== null}
+        onClose={resource.closeSubscription}
+        message={resource.needsSubscription}
+        onBuy={() => { resource.closeSubscription(); onBuySubscription(); }}
       />
     </>
   );
