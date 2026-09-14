@@ -121,11 +121,13 @@ export const getNextLesson = async (): Promise<LessonResponse | null> =>
  */
 export const getLessonsByDate = (
   targetDate: string,
-  filters?: { service_id?: number | null; branch_id?: number | null; teacher_id?: number | null },
+  filters?: { service_id?: number | null; branch_id?: number | number[] | null; teacher_id?: number | null },
 ): Promise<LessonResponse[]> => {
   const params = new URLSearchParams();
   Object.entries(filters ?? {}).forEach(([key, value]) => {
-    if (value != null) params.set(key, String(value));
+    if (value == null) return;
+    // Несколько филиалов — повтором ключа: `?branch_id=1&branch_id=2`.
+    (Array.isArray(value) ? value : [value]).forEach((item) => params.append(key, String(item)));
   });
   const qs = params.toString();
   return apiGet(`/global/lessons/date/${targetDate}${qs ? `?${qs}` : ''}`);

@@ -2,33 +2,35 @@ import { useEffect, useState } from 'react';
 import { hybridApi } from '../api/hybrid.api';
 import type { ResourceStaffMember } from '../api/hybrid.types';
 import type { ApiError } from '../api/client';
+import { branchesOfKey, branchKey } from '../lib/branchSelection';
 
 /**
- * Мастера филиала для экрана «Записатись» — ВСЕ, без фильтра по услуге.
+ * Мастера выбранных филиалов для экрана «Записатись» — ВСЕ, без фильтра по услуге.
+ * Пустой выбор — «Все филиалы»: запрос уходит без `branch_id`.
  *
  * Фильтр по услуге делается на экране по `service_ids`: один ответ сервера
  * обслуживает и «Усі послуги», и любой чип, и переключение чипов не стоит
  * запроса и скелета. Сервер свою проверку делает дальше — в quote и confirm.
  *
  * ОТВЕТ ПОМЕЧЕН СВОИМ ЗАПРОСОМ. Хранится не «список», а «список вместе с
- * филиалом и попыткой, по которым его спросили»: ответ прошлого филиала не
- * отрисуется, даже если приедет последним.
+ * выбором филиалов и попыткой, по которым его спросили»: ответ прошлого выбора
+ * не отрисуется, даже если приедет последним.
  *
  * «ЕЩЁ НЕ ЗНАЕМ» — НЕ «НИКОГО НЕТ». До ответа `staff === null`, и экран обязан
  * показывать загрузку, а не пустое состояние.
  */
 type Loaded = { key: string; staff: ResourceStaffMember[] | null; reason: string | null; error: ApiError | null };
 
-export function useResourceStaff(branchId: number | null) {
+export function useResourceStaff(branchIds: number[]) {
   const [loaded, setLoaded] = useState<Loaded | null>(null);
   const [attempt, setAttempt] = useState(0);
-  const key = branchId ? `${branchId}|${attempt}` : null;
+  const branches = branchKey(branchIds);
+  const key = `${branches}|${attempt}`;
 
   useEffect(() => {
-    if (key === null || branchId === null) return;
     let cancelled = false;
     hybridApi
-      .resourceStaff({ branch_id: branchId })
+      .resourceStaff(branches ? { branch_id: branchesOfKey(branches) } : {})
       .then((data) => {
         if (!cancelled) setLoaded({ key, staff: data.staff, reason: data.reason, error: null });
       })
@@ -38,7 +40,7 @@ export function useResourceStaff(branchId: number | null) {
     return () => {
       cancelled = true;
     };
-  }, [key, branchId]);
+  }, [key, branches]);
 
   const fresh = loaded && loaded.key === key ? loaded : null;
   return {
@@ -46,7 +48,7 @@ export function useResourceStaff(branchId: number | null) {
     staff: fresh?.staff ?? null,
     reason: fresh?.reason ?? null,
     error: fresh?.error ?? null,
-    isLoading: key !== null && fresh === null,
+    isLoading: fresh === null,
     retry: () => setAttempt((value) => value + 1),
   };
 }

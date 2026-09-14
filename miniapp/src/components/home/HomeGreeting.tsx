@@ -11,7 +11,8 @@ type Props = {
   /** Та же часть дня, из которой собрано `greeting`: глиф обязан совпадать со
       словом, иначе над «Добрым утром» светит месяц. */
   daypart: Daypart;
-  /** Имя клиента, у гостя — тёплое обращение студии (`home.guest_name`). */
+  /** Имя клиента. Пусто (гость, имя не указано) — строки с именем нет вовсе:
+      обращение вместо имени читалось как чужое. */
   name: string;
   /**
    * Гость. Ему в шапку встаёт выбор языка: на телефоне бокового меню с
@@ -101,7 +102,7 @@ export default function HomeGreeting({ greeting, daypart, name, isGuest }: Props
             >
               {DAYPART_GLYPH[daypart]}
             </svg>
-            {greeting},
+            {greeting}{name && ','}
           </span>
 
           <span className="ml-auto shrink-0 text-[10.5px] font-bold uppercase tracking-[0.18em] text-muted-foreground dt:text-[11px]">
@@ -114,9 +115,9 @@ export default function HomeGreeting({ greeting, daypart, name, isGuest }: Props
             одной фразой. Обрезка расширена вниз на 0.16em и тем же значением
             подтянута назад: иначе «р» и «у» лишились бы хвостов, а высота блока
             выросла бы на пустое место.
-            Две строки максимум вместо многоточия: у немцев обращение к гостю —
-            целая фраза («Schön, dass Sie da sind»), и обрезка вместо неё
-            выглядела бы поломкой, а не длинным именем.
+            Две строки максимум вместо многоточия: длинное имя, оборванное
+            на полуслове, выглядело бы поломкой.
+            Имени нет (гость) — строки нет вовсе, а не пустой этаж шапки.
 
             ПОЧЕМУ 0.5с И ИМЕННО ЭТА КРИВАЯ. Здесь стояло 0.8с с [0.16,1,0.3,1]
             — экспонентой, которая проходит 99% пути за первые 40% времени.
@@ -125,16 +126,18 @@ export default function HomeGreeting({ greeting, daypart, name, isGuest }: Props
             края обрезки — «лагает в конце». Дело не в кадрах: в хвосте такой
             кривой их и нечем заполнить. Кубическая кривая тратит время
             пропорционально пути, поэтому доводки на месте у неё нет. */}
-        <div className="-mb-[0.16em] mt-1 overflow-hidden pb-[0.16em]">
-          <motion.h1
-            initial={{ y: reduce ? 0 : '125%' }}
-            animate={{ y: 0 }}
-            transition={{ duration: 0.5, delay: 0.05, ease: [0.33, 1, 0.68, 1] }}
-            className="line-clamp-2 text-[30px] font-extrabold leading-[1.06] tracking-[-0.035em] text-foreground dt:text-[38px]"
-          >
-            {name}
-          </motion.h1>
-        </div>
+        {name && (
+          <div className="-mb-[0.16em] mt-1 overflow-hidden pb-[0.16em]">
+            <motion.h1
+              initial={{ y: reduce ? 0 : '125%' }}
+              animate={{ y: 0 }}
+              transition={{ duration: 0.5, delay: 0.05, ease: [0.33, 1, 0.68, 1] }}
+              className="line-clamp-2 text-[30px] font-extrabold leading-[1.06] tracking-[-0.035em] text-foreground dt:text-[38px]"
+            >
+              {name}
+            </motion.h1>
+          </div>
+        )}
 
         {/* Девиз дня — язык меток разделов («НАПРЯМКИ», «НАЙБЛИЖЧЕ ЗАНЯТТЯ»),
             поднятый до акцента: тот же кегль и трекинг, но персиком и жирным.

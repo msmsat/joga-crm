@@ -480,6 +480,11 @@ async def _same_names_discriminated_by_id(ids):
         assert {c.id for c in by_branch} == {lb_id}, by_branch
         assert by_branch[0].branch_id == bb_id
 
+        # Несколько филиалов разом — занятия каждого из них.
+        async with async_session_maker() as db:
+            several = await miniapp_lessons.lessons_by_date(TOMORROW, guest, db, branch_id=[ba_id, bb_id])
+        assert {c.id for c in several} == {la_id, lb_id}, several
+
         # Без фильтра — обе карточки видны, каждая со СВОИМ id, не спутаны.
         async with async_session_maker() as db:
             both = await miniapp_lessons.lessons_by_date(TOMORROW, guest, db)

@@ -18,6 +18,8 @@ type Props = {
    * вставать мгновенно — см. `entrance` в pages/shedule.tsx.
    */
   entrance?: boolean;
+  /** Филиал занятия — когда в расписании выбрано несколько студий или «Все». */
+  place?: string;
   onClick: () => void;
 };
 
@@ -36,6 +38,7 @@ export default function LessonCard({
   availableLabel,
   index,
   entrance = true,
+  place,
   onClick,
 }: Props) {
   const { t } = useTranslation();
@@ -89,6 +92,16 @@ export default function LessonCard({
           <div className="mt-2.5 truncate text-[16px] font-extrabold leading-tight tracking-[-0.015em] text-card-foreground dt:mt-3 dt:text-[18px]">
             {title}
           </div>
+
+          {place && (
+            <div className="mt-1 flex min-w-0 items-center gap-1 text-[12px] font-semibold text-muted-foreground">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3 w-3 shrink-0">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
+                <circle cx="12" cy="10" r="3" />
+              </svg>
+              <span className="truncate">{place}</span>
+            </div>
+          )}
 
           <div className="mt-3 flex items-center justify-between gap-3">
             <div className="flex min-w-0 items-center gap-2">

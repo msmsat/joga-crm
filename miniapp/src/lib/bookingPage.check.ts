@@ -11,9 +11,10 @@ import { readFileSync } from 'node:fs';
 import type { ResourceStaffMember } from '../api/hybrid.types';
 import type { StudioService } from '../api/studio';
 import {
-  ANY, bookingPageReducer, choiceServices, initialBookingPage, masterPills, offeredServices,
-  reconcile, sheetStep, showAnyMaster, teacherIdOf, visibleStaff, type BookingPageState,
+  ANY, bookingPageReducer, branchOptions, choiceServices, initialBookingPage, masterPills, offeredServices,
+  reconcile, sheetStep, showAnyMaster, staffBranches, teacherIdOf, visibleStaff, type BookingPageState,
 } from './bookingPage.ts';
+import { ALL_BRANCHES, branchesOfKey, branchKey, knownBranches, toggleBranch } from './branchSelection.ts';
 import {
   addDays, availabilityQuery, dayList, dayPart, daysBetween, firstDayWithSlots, firstFreeByTeacher,
   groupByDay, groupByPart, lastBookableDay, pageCount, pageRange, relativeDay, studioToday, timeOf,
@@ -24,8 +25,8 @@ const service = (id: number, name: string, over: Partial<StudioService> = {}): S
   is_bookable: true, terminology_profile: null, price: 500, price_str: '500 Kč', duration_min: 45,
   color: null, ...over,
 });
-const member = (teacher_id: number, name: string, service_ids: number[]): ResourceStaffMember => ({
-  teacher_id, name, last_name: null, photo_url: null, department: null, service_ids,
+const member = (teacher_id: number, name: string, service_ids: number[], branch_ids: number[] = [171]): ResourceStaffMember => ({
+  teacher_id, name, last_name: null, photo_url: null, department: null, service_ids, branch_ids,
 });
 
 // Каталог в порядке сервера (по названию) + то, чего на экране быть не должно.
@@ -55,7 +56,7 @@ const check = (title: string, run: () => void) => {
 const act = (state: BookingPageState, ...actions: Parameters<typeof bookingPageReducer>[1][]) =>
   actions.reduce(bookingPageReducer, state);
 
-const start = initialBookingPage(171);
+const start = initialBookingPage(ALL_BRANCHES);
 
 // ─── 1. Мастера без услуги ────────────────────────────────────────────────────
 check('без услуги видны все мастера филиала', () => {
@@ -99,10 +100,10 @@ check('мастер без выбранной услуги открывает в
   assert.equal(sheetStep(state), 'service');
   assert.equal(state.sheet?.canPickService, true);
   assert.deepEqual(choiceServices(10, staff, services).map((s) => s.id), [1, 2, 3, 4]);
-  const picked = act(state, { type: 'pickService', serviceId: 2 });
+  const picked = act(state, { type: 'pickService', serviceId: 2, staff });
   assert.equal(sheetStep(picked), 'time');
   assert.equal(picked.serviceId, 2, 'выбранная в листе услуга становится фильтром страницы');
-  const back = act(picked, { type: 'backToServices' });
+  const back = act(picked, { type: 'back' });
   assert.equal(sheetStep(back), 'service');
   assert.equal(back.serviceId, null);
   assert.equal(back.master, 10);
@@ -112,14 +113,14 @@ check('у мастера одна услуга — лишнего шага не�
   assert.equal(sheetStep(state), 'time');
   assert.equal(state.sheet?.serviceId, 1);
   assert.equal(state.sheet?.canPickService, false);
-  assert.equal(act(state, { type: 'backToServices' }), state, 'назад некуда');
+  assert.equal(act(state, { type: 'back' }), state, 'назад некуда');
 });
 
 // ─── 6. Мастер с услугой → сразу время ────────────────────────────────────────
 check('мастер при выбранной услуге открывает сразу время', () => {
   const state = act(start, { type: 'service', serviceId: 3, staff }, { type: 'openMaster', master: 30, staff, services });
   assert.equal(sheetStep(state), 'time');
-  assert.deepEqual(state.sheet, { master: 30, serviceId: 3, canPickService: false });
+  assert.deepEqual(state.sheet, { master: 30, serviceId: 3, canPickService: false, branchId: 171, canPickBranch: false });
 });
 
 // ─── 7. «Любой мастер» очищает teacher_id ─────────────────────────────────────
@@ -152,7 +153,7 @@ check('закрытие листа сохраняет услугу и масте
   const state = act(
     start,
     { type: 'openMaster', master: 10, staff, services },
-    { type: 'pickService', serviceId: 4 },
+    { type: 'pickService', serviceId: 4, staff },
     { type: 'close' },
   );
   assert.equal(state.sheet, null);
@@ -166,15 +167,70 @@ check('после записи мастер снят, фильтр услуги 
 
 // ─── 9. Смена услуги сбрасывает несовместимого мастера ────────────────────────
 check('смена услуги: несовместимый мастер сброшен, совместимый сохранён', () => {
-  const chosen = act(start, { type: 'openMaster', master: 10, staff, services }, { type: 'pickService', serviceId: 3 }, { type: 'close' });
+  const chosen = act(start, { type: 'openMaster', master: 10, staff, services }, { type: 'pickService', serviceId: 3, staff }, { type: 'close' });
   assert.equal(act(chosen, { type: 'service', serviceId: 1, staff }).master, 10, 'Анна делает бороду');
   const olgaChosen = act(start, { type: 'service', serviceId: 3, staff }, { type: 'openMaster', master: 30, staff, services }, { type: 'close' });
   assert.equal(act(olgaChosen, { type: 'service', serviceId: 1, staff }).master, null, 'Ольга бороду не делает');
   assert.equal(act(olgaChosen, { type: 'service', serviceId: null, staff }).master, 30, 'без фильтра она на месте');
 });
-check('смена филиала сбрасывает всё', () => {
+check('смена филиалов снимает мастера и лист, услугу оставляет сверке', () => {
   const chosen = act(start, { type: 'service', serviceId: 3, staff }, { type: 'openMaster', master: 30, staff, services });
-  assert.deepEqual(act(chosen, { type: 'branch', branchId: 172 }), initialBookingPage(172));
+  const moved = act(chosen, { type: 'branches', branchIds: [172] });
+  assert.deepEqual(moved, { ...initialBookingPage([172]), serviceId: 3 });
+  assert.equal(act(moved, { type: 'branches', branchIds: [172] }), moved, 'тот же выбор — то же состояние');
+  assert.equal(reconcile(moved, [boris], services).serviceId, null, 'услуги в новом списке нет — фильтр не показан');
+});
+
+// ─── Филиалы: «все» или любые из них ──────────────────────────────────────────
+check('выбор филиалов: «все» по умолчанию, любые из них, пустым не бывает', () => {
+  const all = [171, 172, 173];
+  assert.deepEqual(start.branchIds, ALL_BRANCHES, 'экран открывается на «всех»');
+  const one = toggleBranch(ALL_BRANCHES, 172, all);
+  assert.deepEqual(one, [172]);
+  const two = toggleBranch(one, 171, all);
+  assert.deepEqual(two, [171, 172], 'в порядке каталога, а не касаний');
+  assert.deepEqual(toggleBranch(two, 173, all), ALL_BRANCHES, 'все три — это «все»');
+  assert.deepEqual(toggleBranch(one, 172, all), ALL_BRANCHES, 'снят последний — снова «все»');
+  assert.deepEqual(knownBranches([172, 999], all), [172], 'исчезнувший филиал не выбран');
+  assert.equal(branchKey([172, 171]), '171,172');
+  assert.deepEqual(branchesOfKey(branchKey([172, 171])), [171, 172]);
+  assert.deepEqual(branchesOfKey(''), ALL_BRANCHES);
+});
+check('мастер из нескольких выбранных филиалов спрашивает адрес перед временем', () => {
+  const vera = member(40, 'Віра', [3], [171, 172]);
+  const team = [...staff, vera];
+  const opened = act(start, { type: 'openMaster', master: 40, staff: team, services });
+  assert.equal(sheetStep(opened), 'branch');
+  assert.deepEqual(branchOptions(40, 3, team), [171, 172]);
+  const placed = act(opened, { type: 'pickBranch', branchId: 172 });
+  assert.deepEqual([sheetStep(placed), placed.sheet?.branchId], ['time', 172]);
+  const back = act(placed, { type: 'back' });
+  assert.equal(sheetStep(back), 'branch', 'назад — к адресу');
+  assert.equal(act(back, { type: 'back' }), back, 'услуга у мастера одна — дальше назад некуда');
+});
+check('путь «услуга → адрес → время» и назад по тем же шагам', () => {
+  const team = [member(10, 'Анна', [3, 1, 2, 4], [171, 172]), boris, olga];
+  const opened = act(start, { type: 'openMaster', master: 10, staff: team, services });
+  assert.equal(sheetStep(opened), 'service');
+  const serviced = act(opened, { type: 'pickService', serviceId: 2, staff: team });
+  assert.equal(sheetStep(serviced), 'branch');
+  const timed = act(serviced, { type: 'pickBranch', branchId: 171 });
+  assert.equal(sheetStep(timed), 'time');
+  assert.equal(sheetStep(act(timed, { type: 'back' })), 'branch');
+  const toServices = act(timed, { type: 'back' }, { type: 'back' });
+  assert.equal(sheetStep(toServices), 'service');
+  assert.deepEqual([toServices.serviceId, toServices.sheet?.branchId], [null, null]);
+});
+check('«любой мастер» спрашивает адрес, только если услугу делают в разных филиалах', () => {
+  const team = [anna, boris, member(30, 'Ольга', [3, 5, 6], [172])];
+  assert.deepEqual(staffBranches(team), [171, 172]);
+  // Стрижка: Анна в 171, Ольга в 172 — адресов два.
+  const haircutAny = act(start, { type: 'service', serviceId: 3, staff: team }, { type: 'openMaster', master: ANY, staff: team, services });
+  assert.equal(sheetStep(haircutAny), 'branch');
+  assert.deepEqual(branchOptions(ANY, 3, team), [171, 172]);
+  // Борода: Анна и Борис, оба в 171 — адрес известен сразу.
+  const beardAny = act(start, { type: 'service', serviceId: 1, staff: team }, { type: 'openMaster', master: ANY, staff: team, services });
+  assert.deepEqual([sheetStep(beardAny), beardAny.sheet?.branchId], ['time', 171]);
 });
 check('свежий список мастеров не показывает исчезнувший выбор', () => {
   const chosen = act(start, { type: 'service', serviceId: 2, staff }, { type: 'openMaster', master: 10, staff, services }, { type: 'close' });

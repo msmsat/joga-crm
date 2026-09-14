@@ -1,10 +1,12 @@
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Sheet, SheetAction } from '../ui/Sheet';
+import { ALL_BRANCHES, toggleBranch } from '../../lib/branchSelection';
 import type { Studio } from '../../api/studio';
 
 export type Filters = {
-  studioId: number;
+  /** Выбранные студии (филиалы). Пустой список — «Все». */
+  studioIds: number[];
   /** HB-19: числовой ID услуги. По названию два одноимённых направления
    *  разных филиалов сливались в один пункт и один фильтр. */
   service: number | null;
@@ -39,6 +41,7 @@ function Chip({
   return (
     <motion.button
       type="button"
+      aria-pressed={isActive}
       onClick={onClick}
       whileTap={{ scale: 0.94 }}
       transition={{ type: 'spring', stiffness: 440, damping: 28 }}
@@ -76,6 +79,7 @@ export default function FilterSheet({
   resultCount,
 }: Props) {
   const { t } = useTranslation();
+  const studioIds = studios.map((studio) => studio.id);
 
   return (
     <Sheet
@@ -87,7 +91,7 @@ export default function FilterSheet({
         <div className="flex gap-2.5">
           <button
             type="button"
-            onClick={() => onChange({ studioId: studios[0]?.id ?? value.studioId, service: null, teacher: null })}
+            onClick={() => onChange({ studioIds: ALL_BRANCHES, service: null, teacher: null })}
             className="flex shrink-0 items-center justify-center rounded-[18px] bg-muted px-5 py-4 text-[14px] font-extrabold text-foreground"
           >
             {t('schedule.reset')}
@@ -100,15 +104,21 @@ export default function FilterSheet({
         </div>
       }
     >
-      {/* Студия здесь не фильтр, а переключение контекста: расписание всегда
-          принадлежит одной студии. Поэтому «Усі» в этой группе нет. */}
+      {/* Студии — множественный выбор: «Все» или любые из них. Снять последнюю
+          нельзя — выбор сам возвращается к «Все» (lib/branchSelection.ts). */}
       {isMultiStudio && (
         <Group label={t('schedule.filter_studio')}>
+          <Chip
+            isActive={value.studioIds.length === 0}
+            onClick={() => onChange({ ...value, studioIds: ALL_BRANCHES })}
+          >
+            {t('schedule.filter_all')}
+          </Chip>
           {studios.map((studio) => (
             <Chip
               key={studio.id}
-              isActive={value.studioId === studio.id}
-              onClick={() => onChange({ ...value, studioId: studio.id })}
+              isActive={value.studioIds.includes(studio.id)}
+              onClick={() => onChange({ ...value, studioIds: toggleBranch(value.studioIds, studio.id, studioIds) })}
             >
               {studio.name}
             </Chip>

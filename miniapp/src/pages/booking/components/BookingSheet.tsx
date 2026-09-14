@@ -3,25 +3,29 @@ import { Sheet } from '../../../components/ui/Sheet';
 import { useResourceSheet } from '../../../components/booking/useResourceSheet';
 import { useBusinessTerms } from '../../../hooks/useBusinessTerms';
 import ServiceStep from './ServiceStep';
-import { ANY, choiceServices, fullName, sheetStep, type BookingPageState } from '../../../lib/bookingPage';
+import BranchStep from './BranchStep';
+import { ANY, branchOptions, choiceServices, fullName, sheetStep, type BookingPageState } from '../../../lib/bookingPage';
 import type { ResourceStaffMember } from '../../../api/hybrid.types';
-import type { StudioService } from '../../../api/studio';
+import type { Studio, StudioService } from '../../../api/studio';
 import type { useResourceBooking } from '../../../hooks/useResourceBooking';
 
 type Props = {
   state: BookingPageState;
   staff: ResourceStaffMember[];
   services: StudioService[];
+  branches: Studio[];
   flow: ReturnType<typeof useResourceBooking>;
   onPickService: (service: StudioService) => void;
+  onPickBranch: (branchId: number) => void;
   onBack: () => void;
   onClose: () => void;
   onBooked: () => void;
 };
 
 /**
- * Лист экрана «Записатись»: услуга мастера (если её ещё нет) → день и время →
- * условия → итог.
+ * Лист экрана «Записатись»: услуга мастера (если её ещё нет) → адрес (если
+ * мастер принимает в нескольких выбранных филиалах) → день и время → условия →
+ * итог.
  *
  * ПОЛНОЭКРАННЫЙ ЛИСТ СНИЗУ, А НЕ ОТДЕЛЬНАЯ СТРАНИЦА И НЕ ДИАЛОГ. Сравнивались
  * три варианта. Страница — лишний переход и потеря списка под пальцем: чтобы
@@ -40,17 +44,34 @@ type Props = {
  * Состояние листа — у страницы (`lib/bookingPage.ts`), день/слот/quote — у
  * домена записи (`useResourceBooking`). Этот компонент только соединяет их.
  */
-export default function BookingSheet({ state, staff, services, flow, onPickService, onBack, onClose, onBooked }: Props) {
+export default function BookingSheet({
+  state, staff, services, branches, flow, onPickService, onPickBranch, onBack, onClose, onBooked,
+}: Props) {
   const { t } = useTranslation();
   const terms = useBusinessTerms('resource');
   const step = sheetStep(state);
   const sheet = state.sheet;
   const member = sheet && sheet.master !== ANY ? staff.find((row) => row.teacher_id === sheet.master) ?? null : null;
   const parts = useResourceSheet(flow, { onOtherMaster: onClose, onDone: onBooked });
-  const choosing = step === 'service' && sheet !== null;
+  // Шаги до времени — свои (услуга, адрес); время и дальше — общие части листа.
+  const choosing = (step === 'service' || step === 'branch') && sheet !== null;
+  const serviceId = sheet?.serviceId ?? null;
+  const service = serviceId !== null ? services.find((row) => row.id === serviceId) ?? null : null;
+  const places = step === 'branch' && sheet && serviceId !== null
+    ? branches.filter((branch) => branchOptions(sheet.master, serviceId, staff).includes(branch.id))
+    : [];
+  const canBack = sheet !== null && (step === 'branch'
+    ? sheet.canPickService
+    : step === 'time' && flow.step === 'select_time' && (sheet.canPickBranch || sheet.canPickService));
 
   // Смахнули лист после записи — это тоже «готово», а не «передумал».
   const close = flow.step === 'done' ? onBooked : onClose;
+
+  const subtitle = step === 'branch' && service
+    ? t(`lesson.name.${service.name}`, { defaultValue: service.name })
+    : choosing
+      ? member?.department ?? (member ? undefined : t('booking.anyMasterHint'))
+      : parts.subtitle;
 
   return (
     <Sheet
@@ -60,12 +81,17 @@ export default function BookingSheet({ state, staff, services, flow, onPickServi
       tall
       kicker={choosing ? terms.staff?.singular ?? t('booking.stepMaster') : parts.kicker}
       title={choosing ? (member ? fullName(member) : t('booking.anyMaster')) : parts.title}
-      subtitle={choosing ? member?.department ?? (member ? undefined : t('booking.anyMasterHint')) : parts.subtitle}
+      subtitle={subtitle}
       footer={choosing ? undefined : parts.footer}
-      onBack={!choosing && sheet?.canPickService && flow.step === 'select_time' ? onBack : undefined}
+      onBack={canBack ? onBack : undefined}
       backLabel={t('resource.back')}
     >
-      {choosing ? (
+      {step === 'branch' ? (
+        <>
+          <p className="pb-4 text-[13px] font-semibold text-muted-foreground">{t('booking.pickBranch')}</p>
+          <BranchStep options={places} onPick={onPickBranch} />
+        </>
+      ) : step === 'service' && sheet ? (
         <>
           <p className="pb-4 text-[13px] font-semibold text-muted-foreground">
             {terms.ready ? terms.message('choose_offering') : t('booking.pickService')}

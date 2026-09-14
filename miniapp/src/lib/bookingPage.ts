@@ -1,16 +1,21 @@
 /**
  * Экран «Записатись» как конечный автомат, а не набор разрозненных useState.
  *
- * СОСТОЯНИЕ: филиал · услуга-фильтр (или «все») · выбранный мастер (или «любой»)
- * · открытый лист. День, слот и quote живут в `useResourceBooking` — это домен
- * записи, общий с главной и «Моими записями»; здесь только то, КАК человек к
- * нему пришёл.
+ * СОСТОЯНИЕ: филиалы (или «все») · услуга-фильтр (или «все») · выбранный
+ * мастер (или «любой») · открытый лист. День, слот и quote живут в
+ * `useResourceBooking` — это домен записи, общий с главной и «Моими записями»;
+ * здесь только то, КАК человек к нему пришёл.
  *
  * ДВА ПУТИ К ОДНОМУ ЛИСТУ:
  *   A. услуга → мастер → время: лист открывается сразу на времени;
  *   B. мастер → его услуга → время: лист начинается с услуг ЭТОГО мастера.
  * Без услуги время не спросить — длительность, цена и сама доступность зависят
  * от неё. Поэтому мастер без услуги ведёт в выбор услуги, а не в календарь.
+ *
+ * ФИЛИАЛОВ ВЫБРАНО НЕСКОЛЬКО, А ВРЕМЯ — ПО ОДНОМУ АДРЕСУ. Мастера собираются со
+ * всех выбранных филиалов, но слоты и бронь сервер считает для конкретного.
+ * Мастер (или «любой») с несколькими адресами получает в листе шаг «где» между
+ * услугой и временем; с одним адресом шага нет.
  *
  * УСЛУГА — ФИЛЬТР, А НЕ ШАГ. Без неё видны все мастера, с ней — только те, кто
  * её оказывает. Смена услуги сбрасывает мастера, только если он её не делает.
@@ -30,10 +35,15 @@ export interface BookingSheetState {
   serviceId: number | null;
   /** Есть ли куда вернуться: лист открыт с мастера, и выбирать было из чего. */
   canPickService: boolean;
+  /** `null` при известной услуге — адресов несколько, лист спрашивает где. */
+  branchId: number | null;
+  /** Спрашивали ли адрес: назад со времени ведёт к нему. */
+  canPickBranch: boolean;
 }
 
 export interface BookingPageState {
-  branchId: number | null;
+  /** Выбранные филиалы. Пустой список — «Все» (lib/branchSelection.ts). */
+  branchIds: number[];
   /** Фильтр мастеров. `null` — «Усі послуги». */
   serviceId: number | null;
   /** Остаётся выбранным после закрытия листа — человек видит, к кому шёл. */
@@ -42,16 +52,17 @@ export interface BookingPageState {
 }
 
 export type BookingPageAction =
-  | { type: 'branch'; branchId: number }
+  | { type: 'branches'; branchIds: number[] }
   | { type: 'service'; serviceId: number | null; staff: ResourceStaffMember[] }
   | { type: 'openMaster'; master: MasterChoice; staff: ResourceStaffMember[]; services: StudioService[] }
-  | { type: 'pickService'; serviceId: number }
-  | { type: 'backToServices' }
+  | { type: 'pickService'; serviceId: number; staff: ResourceStaffMember[] }
+  | { type: 'pickBranch'; branchId: number }
+  | { type: 'back' }
   | { type: 'close' }
   | { type: 'booked' };
 
-export const initialBookingPage = (branchId: number | null): BookingPageState => ({
-  branchId, serviceId: null, master: null, sheet: null,
+export const initialBookingPage = (branchIds: number[]): BookingPageState => ({
+  branchIds, serviceId: null, master: null, sheet: null,
 });
 
 export const fullName = (member: ResourceStaffMember): string =>
@@ -70,6 +81,10 @@ export const offers = (member: ResourceStaffMember, serviceId: number): boolean 
 export const visibleStaff = (staff: ResourceStaffMember[], serviceId: number | null): ResourceStaffMember[] =>
   serviceId === null ? staff : staff.filter((member) => offers(member, serviceId));
 
+/** Филиалы, где принимает хоть кто-то из этих мастеров, — по возрастанию id. */
+export const staffBranches = (staff: ResourceStaffMember[]): number[] =>
+  [...new Set(staff.flatMap((member) => member.branch_ids))].sort((a, b) => a - b);
+
 /**
  * Услуги, которые здесь есть смысл предлагать: из каталога, в его порядке, и
  * только те, что оказывает хоть кто-то из этих мастеров. Услуга без мастера в
@@ -80,13 +95,24 @@ export function offeredServices(staff: ResourceStaffMember[], services: StudioSe
   return services.filter((service) => isBookableResource(service) && offered.has(service.id));
 }
 
-/** Услуги под выбор в листе: у мастера — его, у «любого» — все услуги филиала. */
+/** Услуги под выбор в листе: у мастера — его, у «любого» — все услуги филиалов. */
 export function choiceServices(
   choice: MasterChoice, staff: ResourceStaffMember[], services: StudioService[],
 ): StudioService[] {
   if (choice === ANY) return offeredServices(staff, services);
   const member = staff.find((row) => row.teacher_id === choice);
   return member ? offeredServices([member], services) : [];
+}
+
+/**
+ * Куда можно прийти на эту услугу: у мастера — его филиалы из выбранных, у
+ * «любого» — филиалы всех, кто её оказывает.
+ */
+export function branchOptions(choice: MasterChoice, serviceId: number, staff: ResourceStaffMember[]): number[] {
+  const members = choice === ANY
+    ? visibleStaff(staff, serviceId)
+    : staff.filter((row) => row.teacher_id === choice && offers(row, serviceId));
+  return staffBranches(members);
 }
 
 /**
@@ -109,13 +135,33 @@ export const showAnyMaster = (visible: ResourceStaffMember[]): boolean => visibl
 export const teacherIdOf = (choice: MasterChoice | null): number | null =>
   choice === null || choice === ANY ? null : choice;
 
-export const sheetStep = (state: BookingPageState): 'service' | 'time' | null =>
-  state.sheet === null ? null : state.sheet.serviceId === null ? 'service' : 'time';
+export const sheetStep = (state: BookingPageState): 'service' | 'branch' | 'time' | null =>
+  state.sheet === null
+    ? null
+    : state.sheet.serviceId === null
+      ? 'service'
+      : state.sheet.branchId === null ? 'branch' : 'time';
+
+/** Лист с услугой: один адрес — сразу он, несколько — шаг выбора адреса. */
+function withService(
+  sheet: BookingSheetState, serviceId: number | null, staff: ResourceStaffMember[], canPickService: boolean,
+): BookingSheetState {
+  if (serviceId === null) return { ...sheet, serviceId, canPickService, branchId: null, canPickBranch: false };
+  const places = branchOptions(sheet.master, serviceId, staff);
+  return {
+    ...sheet, serviceId, canPickService,
+    branchId: places.length === 1 ? places[0] : null,
+    canPickBranch: places.length > 1,
+  };
+}
+
+const sameBranches = (a: number[], b: number[]): boolean =>
+  a.length === b.length && a.every((id) => b.includes(id));
 
 /**
  * Состояние с поправкой на свежий список мастеров — вычислением, без записи.
  *
- * Список перечитывается (другой филиал, чужая правка графика), и выбранные
+ * Список перечитывается (другие филиалы, чужая правка графика), и выбранные
  * услуга или мастер могли из него исчезнуть. Хранить «исправленное» значение
  * эффектом значило бы лишний рендер и гонку с кликом; достаточно не показывать
  * то, чего уже нет. `staff === null` — ответа ещё нет, решать нечего.
@@ -137,10 +183,13 @@ export function reconcile(
 
 export function bookingPageReducer(state: BookingPageState, action: BookingPageAction): BookingPageState {
   switch (action.type) {
-    case 'branch':
-      // Филиал — смена контекста (MA-01): мастера и услуги прошлого адреса
-      // здесь не существуют, оставлять их выбранными нельзя.
-      return action.branchId === state.branchId ? state : initialBookingPage(action.branchId);
+    case 'branches':
+      // Филиалы — смена контекста (MA-01): мастер и лист прошлого выбора здесь
+      // могут не существовать. Фильтр услуги остаётся — если в новом списке её
+      // никто не делает, `reconcile` её просто не покажет.
+      return sameBranches(action.branchIds, state.branchIds)
+        ? state
+        : { ...initialBookingPage(action.branchIds), serviceId: state.serviceId };
 
     case 'service': {
       // Повторное касание активного чипа снимает фильтр.
@@ -159,11 +208,12 @@ export function bookingPageReducer(state: BookingPageState, action: BookingPageA
         : null;
       // Одна услуга у мастера — выбирать нечего, лишнего шага нет.
       const serviceId = current ?? (options.length === 1 ? options[0].id : null);
+      const blank = { master: action.master, serviceId: null, canPickService: false, branchId: null, canPickBranch: false };
       return {
         ...state,
         master: action.master,
         serviceId,
-        sheet: { master: action.master, serviceId, canPickService: current === null && options.length > 1 },
+        sheet: withService(blank, serviceId, action.staff, current === null && options.length > 1),
       };
     }
 
@@ -171,15 +221,32 @@ export function bookingPageReducer(state: BookingPageState, action: BookingPageA
       // Выбранная в листе услуга становится и фильтром страницы: закрыв лист,
       // человек видит ровно тот выбор, с которым шёл.
       return state.sheet
-        ? { ...state, serviceId: action.serviceId, sheet: { ...state.sheet, serviceId: action.serviceId } }
+        ? {
+          ...state,
+          serviceId: action.serviceId,
+          sheet: withService(state.sheet, action.serviceId, action.staff, state.sheet.canPickService),
+        }
         : state;
 
-    case 'backToServices':
-      // Назад к услугам можно только если лист с них и начинался — тогда и
-      // фильтра до открытия не было.
-      return state.sheet?.canPickService
-        ? { ...state, serviceId: null, sheet: { ...state.sheet, serviceId: null } }
+    case 'pickBranch':
+      return state.sheet && state.sheet.serviceId !== null
+        ? { ...state, sheet: { ...state.sheet, branchId: action.branchId } }
         : state;
+
+    case 'back': {
+      // Назад — только на шаг, который человек действительно проходил: к
+      // адресу, если его спрашивали, иначе к услугам, если лист с них начинался
+      // (тогда и фильтра до открытия не было).
+      const sheet = state.sheet;
+      if (!sheet) return state;
+      if (sheet.branchId !== null && sheet.canPickBranch) {
+        return { ...state, sheet: { ...sheet, branchId: null } };
+      }
+      if (sheet.serviceId !== null && sheet.canPickService) {
+        return { ...state, serviceId: null, sheet: { ...sheet, serviceId: null, branchId: null, canPickBranch: false } };
+      }
+      return state;
+    }
 
     case 'close':
       return state.sheet ? { ...state, sheet: null } : state;

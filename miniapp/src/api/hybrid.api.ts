@@ -5,15 +5,20 @@ const base = '/global';
 
 const search = (query: object) => {
   const params = new URLSearchParams();
-  Object.entries(query).forEach(([key, value]) => { if (value != null) params.set(key, String(value)); });
+  Object.entries(query).forEach(([key, value]) => {
+    if (value == null) return;
+    // Список — повтором ключа: `?branch_id=1&branch_id=2`.
+    (Array.isArray(value) ? value : [value]).forEach((item) => params.append(key, String(item)));
+  });
   return params;
 };
 
 export const hybridApi = {
   availability: (query: AvailabilityQuery): Promise<AvailabilityRead> =>
     apiGet(`${base}/availability?${search(query)}`),
-  /** Мастера филиала и их услуги — без дня. Услуга, если передана, только
-   *  сужает список; время каждого считает `availability` уже в листе. */
+  /** Мастера выбранных филиалов (без выбора — всех) и их услуги — без дня.
+   *  Услуга, если передана, только сужает список; время каждого считает
+   *  `availability` уже в листе. */
   resourceStaff: (query: ResourceStaffQuery): Promise<ResourceStaffRead> =>
     apiGet(`${base}/resource-staff?${search(query)}`),
   quote: (body: QuoteRequest) => apiPost<QuoteRead>(`${base}/booking-quotes`, body),

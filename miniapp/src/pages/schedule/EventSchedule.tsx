@@ -17,6 +17,7 @@ import { getLessonsByDate, type LessonResponse } from '../../api/lessons';
 import { useTelegram } from '../../hooks/useTelegram';
 import { useLessonBooking } from '../../hooks/useLessonBooking';
 import { bumpLessons, useLessonsVersion } from '../../lib/revision';
+import { ALL_BRANCHES, branchesOfKey, branchKey, knownBranches } from '../../lib/branchSelection';
 import type { StudioCatalog } from '../../api/studio';
 
 /** `Date` → `YYYY-MM-DD` без ухода в UTC (иначе вечером день съезжает назад). */
@@ -94,18 +95,22 @@ export default function EventSchedule({ catalog, onBuySubscription, onNeedAuth, 
   // сделанных на главной, он узнаёт из общей версии (см. lib/revision.ts).
   const lessonsVersion = useLessonsVersion();
 
+  // Пустой выбор студий — «Все»: с него расписание и открывается.
   const [filters, setFilters] = useState<Filters>({
-    studioId: branches[0]?.id ?? 0,
+    studioIds: ALL_BRANCHES,
     service: null,
     teacher: null,
   });
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  // Каталог мог перечитаться без одного из филиалов — выбранным он не считается.
+  const studioIds = knownBranches(filters.studioIds, branches.map((branch) => branch.id));
+  const studiosKey = branchKey(studioIds);
 
   /* Что на экране: день из кэша — сразу, в тот же кадр; иначе последний
      загруженный список, пока идёт запрос. Скелет остаётся ровно для двух
      случаев — первый заход, когда показывать нечего, и по-настоящему долгий
      ответ. Промежуточного «занятия → заглушки → занятия» больше нет. */
-  const cached = dayCache.get(`${day}|${filters.studioId}`);
+  const cached = dayCache.get(`${day}|${studiosKey}`);
   // useMemo ради постоянной ссылки: пустой список иначе создавался бы заново
   // каждый рендер и обнулял три useMemo ниже (фильтры и видимый список).
   const dayClasses = useMemo(() => cached ?? loaded?.lessons ?? [], [cached, loaded]);
@@ -129,9 +134,9 @@ export default function EventSchedule({ catalog, onBuySubscription, onNeedAuth, 
   useEffect(() => {
     let cancelled = false;
     const wanted = isoDate(date);
-    // Филиал участвует в КЛЮЧЕ кэша: без него список одного филиала показался
-    // бы как список другого при переключении (HB-19 п.2).
-    const key = `${wanted}|${filters.studioId}`;
+    // Выбор филиалов участвует в КЛЮЧЕ кэша: без него список одного филиала
+    // показался бы как список другого при переключении (HB-19 п.2).
+    const key = `${wanted}|${studiosKey}`;
 
     // Первая же бронь обесценивает все дни разом — занятые места есть в каждой
     // карточке. Поэтому кэш сбрасывается целиком, а не по одному дню.
@@ -148,7 +153,7 @@ export default function EventSchedule({ catalog, onBuySubscription, onNeedAuth, 
       if (!cancelled) setSlowDay(wanted);
     }, SKELETON_DELAY_MS);
 
-    getLessonsByDate(wanted, { branch_id: filters.studioId || null })
+    getLessonsByDate(wanted, { branch_id: studiosKey ? branchesOfKey(studiosKey) : null })
       .then((data) => {
         dayCache.set(key, data);
         if (!cancelled) setLoaded((prev) => ({ day: wanted, lessons: data, first: prev === null }));
@@ -165,7 +170,7 @@ export default function EventSchedule({ catalog, onBuySubscription, onNeedAuth, 
       cancelled = true;
       window.clearTimeout(timer);
     };
-  }, [date, filters.studioId, lessonsVersion]);
+  }, [date, studiosKey, lessonsVersion]);
 
   // Варианты фильтров собираются из самого дня: показывать «Олену», которой
   // сегодня нет в расписании, — это выбор, ведущий в пустоту.
@@ -196,7 +201,11 @@ export default function EventSchedule({ catalog, onBuySubscription, onNeedAuth, 
   );
 
   const activeCount = (filters.service ? 1 : 0) + (filters.teacher ? 1 : 0);
-  const studioName = branches.find((s) => s.id === filters.studioId)?.name ?? '';
+  const studioLabel = studioIds.length === 0
+    ? t('schedule.all_studios')
+    : branches.filter((s) => studioIds.includes(s.id)).map((s) => s.name).join(', ');
+  // Филиал на карточке — когда из фильтра не ясно, где проходит занятие.
+  const showPlace = isMultiStudio && studioIds.length !== 1;
 
   const isToday = isSameDay(date, new Date());
 
@@ -284,8 +293,8 @@ export default function EventSchedule({ catalog, onBuySubscription, onNeedAuth, 
               <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
               <circle cx="12" cy="10" r="3" />
             </svg>
-            <span className="whitespace-nowrap text-[12px] font-bold text-foreground">
-              {studioName}
+            <span className="max-w-[220px] truncate whitespace-nowrap text-[12px] font-bold text-foreground">
+              {studioLabel}
             </span>
           </span>
         )}
@@ -330,6 +339,7 @@ export default function EventSchedule({ catalog, onBuySubscription, onNeedAuth, 
               lesson={cl}
               index={i}
               entrance={entrance}
+              place={showPlace ? branches.find((s) => s.id === cl.branch_id)?.name : undefined}
               title={cl.name ? t(`lesson.name.${cl.name}`, { defaultValue: cl.name }) : ''}
               bookedLabel={t('schedule.booked')}
               almostFullLabel={t('schedule.almost_full')}
@@ -350,13 +360,13 @@ export default function EventSchedule({ catalog, onBuySubscription, onNeedAuth, 
       <FilterSheet
         isOpen={isFilterOpen}
         onClose={() => setIsFilterOpen(false)}
-        value={filters}
+        value={{ ...filters, studioIds }}
         onChange={(next) =>
-          // Смена филиала — смена контекста: услуга и специалист прошлого
-          // филиала перестают существовать, и оставлять их выбранными значит
-          // показывать пустой список без объяснения (HB-19 п.2).
+          // Смена филиалов — смена контекста: услуга и специалист прошлого
+          // выбора могут перестать существовать, и оставлять их выбранными
+          // значит показывать пустой список без объяснения (HB-19 п.2).
           setFilters(
-            next.studioId !== filters.studioId
+            branchKey(next.studioIds) !== studiosKey
               ? { ...next, service: null, teacher: null }
               : next,
           )

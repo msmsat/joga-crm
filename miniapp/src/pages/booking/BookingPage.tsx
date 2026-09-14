@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { SectionLabel } from '../../components/ui/SectionLabel';
 import { ListSkeleton } from '../../components/ui/ListSkeleton';
@@ -7,14 +7,16 @@ import { EmptyState } from '../../components/ui/EmptyState';
 import { useBusinessTerms } from '../../hooks/useBusinessTerms';
 import { useResourceStaff } from '../../hooks/useResourceStaff';
 import { useNearestSlots } from '../../hooks/useNearestSlots';
-import { useTelegram } from '../../hooks/useTelegram';
 import ServiceFilter from './components/ServiceFilter';
+import BranchFilter from './components/BranchFilter';
 import MasterCard, { AnyMasterCard } from './components/MasterCard';
 import BookingSheet from './components/BookingSheet';
 import {
   ANY, bookingPageReducer, fullName, initialBookingPage, isBookableResource, masterPills, offeredServices,
-  reconcile, showAnyMaster, teacherIdOf, visibleStaff, type BookingPageAction, type MasterChoice,
+  reconcile, showAnyMaster, staffBranches, teacherIdOf, visibleStaff,
+  type BookingPageAction, type BookingSheetState, type MasterChoice,
 } from '../../lib/bookingPage';
+import { ALL_BRANCHES, knownBranches } from '../../lib/branchSelection';
 import { dayOf, formatDay, lastBookableDay, relativeDay, studioToday, timeOf } from '../../lib/slots';
 import type { StudioCatalog, StudioService } from '../../api/studio';
 import type { useResourceBooking } from '../../hooks/useResourceBooking';
@@ -32,12 +34,25 @@ const personIcon = (
 );
 
 /**
+ * Место карточки в списке. Смена услуги убирает одних мастеров и возвращает
+ * других: без этого ушедшие пропадали мгновенно, а оставшиеся рывком
+ * перескакивали на их место. Уходящая карточка гаснет вне потока (`popLayout`),
+ * остальные доезжают до новых мест. Только позиция — растянутый по высоте
+ * текст выглядел бы хуже рывка. Появление — у самой карточки (MasterCard).
+ */
+const slot = {
+  layout: 'position',
+  exit: { opacity: 0, scale: 0.97 },
+  transition: { duration: 0.32, ease: [0.16, 1, 0.3, 1] },
+} as const;
+
+/**
  * «Записатись» для индивидуальной записи: к кому и на что — на одном экране.
  *
- * Сверху узкая строка услуг-фильтров, сразу под ней мастера. День и время на
- * этом экране не показываются вовсе: пока человек не выбрал мастера, календарь
- * отвечает на вопрос, которого он ещё не задавал. Время — в листе, после
- * касания мастера (BookingSheet).
+ * Сверху филиалы («Все» или любые из них), под ними узкая строка
+ * услуг-фильтров, дальше мастера. День и время на этом экране не показываются
+ * вовсе: пока человек не выбрал мастера, календарь отвечает на вопрос, которого
+ * он ещё не задавал. Время — в листе, после касания мастера (BookingSheet).
  *
  * Список мастеров не зависит ни от дня, ни от их занятости: мастер, у которого
  * сегодня нет окна, всё равно тот, к кому можно записаться. Услуга фильтрует
@@ -46,23 +61,29 @@ const personIcon = (
 export default function BookingPage({ catalog, resource }: Props) {
   const { t, i18n } = useTranslation();
   const terms = useBusinessTerms('resource');
-  const { vibrateLight } = useTelegram();
   const branches = catalog?.branches ?? [];
   const services = catalog?.services ?? [];
 
-  const [page, setPage] = useState(() => initialBookingPage(branches[0]?.id ?? null));
-  // Каталог мог доехать позже первого рендера (перечитан после входа).
-  const branchId = branches.some((branch) => branch.id === page.branchId) ? page.branchId : branches[0]?.id ?? null;
+  const [page, setPage] = useState(() => initialBookingPage(ALL_BRANCHES));
+  // Каталог мог доехать позже первого рендера (перечитан после входа): филиал,
+  // которого в нём нет, выбранным не считается.
+  const branchIds = knownBranches(page.branchIds, branches.map((branch) => branch.id));
 
-  const { staff, reason, error, isLoading, retry } = useResourceStaff(branchId);
-  const view = reconcile({ ...page, branchId }, staff, services);
+  const { staff, reason, error, isLoading, retry } = useResourceStaff(branchIds);
+  const view = reconcile({ ...page, branchIds }, staff, services);
   const list = staff ?? [];
   const offered = offeredServices(list, services);
   const visible = visibleStaff(list, view.serviceId);
 
   const today = studioToday(catalog?.studio.tz_iana);
-  const { nearest, earliest } = useNearestSlots(
-    view.serviceId, branchId, today, lastBookableDay(today, catalog?.rules.booking_window_days));
+  const { nearest, earliest, isLoading: nearestLoading } = useNearestSlots(
+    view.serviceId, staffBranches(visible), today, lastBookableDay(today, catalog?.rules.booking_window_days));
+
+  // Адрес на карточке — только когда из выбора не ясно, где мастер принимает.
+  const showPlaces = branches.length > 1 && branchIds.length !== 1;
+  const placeOf = (ids: number[]) => showPlaces
+    ? branches.filter((branch) => ids.includes(branch.id)).map((branch) => branch.name).join(', ')
+    : undefined;
 
   /** Переход автомата. Считается от того, что на экране, — от сверенного состояния. */
   const apply = (action: BookingPageAction) => {
@@ -71,30 +92,30 @@ export default function BookingPage({ catalog, resource }: Props) {
     return next;
   };
 
-  const openTime = (master: MasterChoice, serviceId: number) => {
-    const service = services.find((row) => row.id === serviceId);
-    if (!service || !branchId) return;
-    const member = master === ANY ? null : list.find((row) => row.teacher_id === master) ?? null;
+  /** Время открывается, когда известны и услуга, и адрес. */
+  const openTime = (sheet: BookingSheetState | null) => {
+    if (!sheet || sheet.serviceId === null || sheet.branchId === null) return;
+    const service = services.find((row) => row.id === sheet.serviceId);
+    if (!service) return;
+    const member = sheet.master === ANY ? null : list.find((row) => row.teacher_id === sheet.master) ?? null;
     resource.open(
       {
         id: service.id, name: service.name, terminology_profile: service.terminology_profile,
         duration_min: service.duration_min, price_str: service.price_str,
       },
-      branchId,
+      sheet.branchId,
       null,
-      { teacherId: teacherIdOf(master), teacherName: member ? fullName(member) : null },
+      { teacherId: teacherIdOf(sheet.master), teacherName: member ? fullName(member) : null },
     );
   };
 
-  const openMaster = (master: MasterChoice) => {
-    const next = apply({ type: 'openMaster', master, staff: list, services });
-    if (next.sheet?.serviceId != null) openTime(next.sheet.master, next.sheet.serviceId);
-  };
+  const openMaster = (master: MasterChoice) =>
+    openTime(apply({ type: 'openMaster', master, staff: list, services }).sheet);
 
-  const pickService = (service: StudioService) => {
-    const next = apply({ type: 'pickService', serviceId: service.id });
-    if (next.sheet) openTime(next.sheet.master, service.id);
-  };
+  const pickService = (service: StudioService) =>
+    openTime(apply({ type: 'pickService', serviceId: service.id, staff: list }).sheet);
+
+  const pickBranch = (branchId: number) => openTime(apply({ type: 'pickBranch', branchId }).sheet);
 
   const when = (localStart: string) => {
     const day = dayOf(localStart);
@@ -112,35 +133,12 @@ export default function BookingPage({ catalog, resource }: Props) {
 
   return (
     <>
-      {/* Филиал — не фильтр, а смена контекста: мастера принадлежат адресу. */}
-      {branches.length > 1 && (
-        <div className="flex gap-2 overflow-x-auto px-5 pt-6 dt:flex-wrap dt:overflow-visible">
-          {branches.map((branch) => {
-            const active = branch.id === branchId;
-            return (
-              <motion.button
-                key={branch.id}
-                type="button"
-                aria-pressed={active}
-                onClick={() => {
-                  vibrateLight();
-                  apply({ type: 'branch', branchId: branch.id });
-                }}
-                whileTap={{ scale: 0.95 }}
-                className={`flex h-10 shrink-0 items-center gap-1.5 rounded-full pl-3 pr-4 text-[12.5px] font-bold tracking-[-0.01em] ${
-                  active ? 'bg-foreground text-background' : 'bg-card text-foreground shadow-soft'
-                }`}
-              >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5 opacity-70">
-                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
-                  <circle cx="12" cy="10" r="3" />
-                </svg>
-                {branch.name}
-              </motion.button>
-            );
-          })}
-        </div>
-      )}
+      {/* Филиалы — смена контекста: мастера принадлежат адресу. */}
+      <BranchFilter
+        branches={branches}
+        selected={branchIds}
+        onChange={(next) => apply({ type: 'branches', branchIds: next })}
+      />
 
       <ServiceFilter
         services={offered}
@@ -153,7 +151,8 @@ export default function BookingPage({ catalog, resource }: Props) {
         {terms.staff?.plural ?? t('booking.masters')}
       </SectionLabel>
 
-      <div className="flex flex-col gap-2.5 px-5 dt:gap-3">
+      {/* `relative` — точка отсчёта для уходящих карточек (`popLayout`). */}
+      <div className="relative flex flex-col gap-2.5 px-5 dt:gap-3">
         {isLoading ? (
           <ListSkeleton rows={3} flush />
         ) : error ? (
@@ -179,27 +178,33 @@ export default function BookingPage({ catalog, resource }: Props) {
             </PillButton>
           </div>
         ) : (
-          <>
+          <AnimatePresence mode="popLayout">
             {showAnyMaster(visible) && (
-              <AnyMasterCard
-                nearest={nearest === null ? undefined : earliest ? when(earliest) : null}
-                selected={view.master === ANY}
-                onClick={() => openMaster(ANY)}
-              />
+              <motion.div key="any" {...slot}>
+                <AnyMasterCard
+                  nearest={nearest === null ? undefined : earliest ? when(earliest) : null}
+                  loading={nearestLoading}
+                  selected={view.master === ANY}
+                  onClick={() => openMaster(ANY)}
+                />
+              </motion.div>
             )}
             {visible.map((member, index) => (
-              <MasterCard
-                key={member.teacher_id}
-                member={member}
-                index={index + 1}
-                pills={masterPills(member, services, view.serviceId)}
-                highlight={view.serviceId}
-                nearest={hint(member.teacher_id)}
-                selected={view.master === member.teacher_id}
-                onClick={() => openMaster(member.teacher_id)}
-              />
+              <motion.div key={member.teacher_id} {...slot}>
+                <MasterCard
+                  member={member}
+                  index={index + 1}
+                  pills={masterPills(member, services, view.serviceId)}
+                  highlight={view.serviceId}
+                  place={placeOf(member.branch_ids)}
+                  nearest={hint(member.teacher_id)}
+                  loading={nearestLoading}
+                  selected={view.master === member.teacher_id}
+                  onClick={() => openMaster(member.teacher_id)}
+                />
+              </motion.div>
             ))}
-          </>
+          </AnimatePresence>
         )}
       </div>
 
@@ -207,10 +212,12 @@ export default function BookingPage({ catalog, resource }: Props) {
         state={view}
         staff={list}
         services={services}
+        branches={branches}
         flow={resource}
         onPickService={pickService}
+        onPickBranch={pickBranch}
         onBack={() => {
-          apply({ type: 'backToServices' });
+          apply({ type: 'back' });
           resource.close();
         }}
         onClose={() => {

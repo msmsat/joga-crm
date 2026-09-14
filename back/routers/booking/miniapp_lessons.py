@@ -15,9 +15,9 @@
 ними и мини-приложением означает разъехавшиеся остатки абонементов.
 """
 from datetime import date, datetime, timedelta, timezone
-from typing import Optional
+from typing import Annotated, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Request, Response
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response
 from pydantic import Field
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
@@ -322,7 +322,9 @@ async def lessons_by_date(
     # `lessons_by_date(date, viewer, db)`. FastAPI резолвит query-параметры
     # по имени независимо от места в сигнатуре, HTTP это не затрагивает.
     service_id: Optional[int] = None,
-    branch_id: Optional[int] = None,
+    # Несколько филиалов — повтором ключа (`?branch_id=1&branch_id=2`); без
+    # него — все. Python-вызов может передать и одно число.
+    branch_id: Annotated[Optional[list[int]], Query()] = None,
     teacher_id: Optional[int] = None,
 ):
     """Расписание дня. Токен не обязателен: занятие выбирают ДО регистрации, и
@@ -341,8 +343,9 @@ async def lessons_by_date(
     conditions = catalog.visible_lessons(viewer.studio_id, day_start, day_end)
     if service_id is not None:
         conditions.append(Lesson.service_id == service_id)
-    if branch_id is not None:
-        conditions.append(Lesson.branch_id == branch_id)
+    branches = [branch_id] if isinstance(branch_id, int) else branch_id
+    if branches:
+        conditions.append(Lesson.branch_id.in_(branches))
     if teacher_id is not None:
         conditions.append(Lesson.teacher_id == teacher_id)
 

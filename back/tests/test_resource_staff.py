@@ -37,7 +37,7 @@ warnings.filterwarnings("ignore")
 
 DAY = hours.DAY  # среда, 2027-06-16
 
-MEMBER_FIELDS = {"teacher_id", "name", "last_name", "photo_url", "department", "service_ids"}
+MEMBER_FIELDS = {"teacher_id", "name", "last_name", "photo_url", "department", "service_ids", "branch_ids"}
 
 
 @pytest.fixture(autouse=True)
@@ -243,6 +243,40 @@ def test_without_a_service_every_master_of_the_branch_comes_with_own_services():
     _run(scenario)
 
 
+# ─── Несколько филиалов или все: мастера вместе со своими адресами ────────────
+
+def test_several_branches_or_none_merge_masters_and_name_their_branches():
+    async def scenario(ids, http):
+        a, b = ids["branch_a"], ids["branch_b"]
+        both = await http.get("/global/resource-staff", params=[("branch_id", a), ("branch_id", b)])
+        assert both.status_code == 200, both.text
+        rows = _by_id(both.json())
+        assert set(rows) == {ids["teacher"], ids["boris"], ids["olga"]}, rows
+        assert all(set(row) == MEMBER_FIELDS for row in both.json()["staff"])
+        assert (rows[ids["teacher"]]["branch_ids"], rows[ids["olga"]]["branch_ids"]) == ([a], [b])
+
+        # Без филиала — все филиалы студии: те же мастера, с теми же адресами.
+        everyone = await http.get("/global/resource-staff")
+        assert everyone.status_code == 200, everyone.text
+        assert {k: v["branch_ids"] for k, v in _by_id(everyone.json()).items() if k in rows} == {
+            k: v["branch_ids"] for k, v in rows.items()}
+
+        # Мастер в двух филиалах — одна карточка, услуги не задваиваются.
+        async with async_session_maker() as db:
+            db.add(StaffBranchAssignment(studio_id=ids["studio"], user_id=ids["boris"], branch_id=b))
+            await db.commit()
+        boris = _by_id((await http.get("/global/resource-staff",
+                                       params=[("branch_id", a), ("branch_id", b)])).json())[ids["boris"]]
+        assert (boris["branch_ids"], boris["service_ids"]) == (sorted([a, b]), [ids["beard"]])
+        # Выбран один филиал — у мастера только он, хотя адресов у него два.
+        assert _by_id(await _staff(http, ids, branch="branch_b"))[ids["boris"]]["branch_ids"] == [b]
+
+        # Чужой филиал среди своих — отказ целиком, а не «половина списка».
+        mixed = await http.get("/global/resource-staff", params=[("branch_id", a), ("branch_id", ids["other_branch"])])
+        assert mixed.status_code == 404
+    _run(scenario)
+
+
 # ─── 3. С услугой: только те, кто её оказывает ────────────────────────────────
 
 def test_service_filter_keeps_only_masters_who_provide_it():
@@ -288,7 +322,7 @@ def test_query_count_does_not_depend_on_the_number_of_masters(monkeypatch):
 
                 monkeypatch.setattr(db, "execute", counted)
                 report = await resource_availability.resource_staff(
-                    db, studio_id=ids["studio"], branch_id=ids["branch_a"])
+                    db, studio_id=ids["studio"], branch_ids=[ids["branch_a"]])
                 return len(report.staff), len(queries)
 
         few, few_queries = await measure()

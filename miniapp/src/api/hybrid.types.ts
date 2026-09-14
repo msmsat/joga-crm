@@ -36,13 +36,15 @@ export type QuoteRequest = EventQuoteRequest | ResourceQuoteRequest;
 export interface AvailabilityQuery { service_id: number; branch_id: number; date_from: string; date_to: string; teacher_id?: number }
 export interface AvailabilitySlot { starts_at: string; local_start: string; tz_iana: string; teacher_ids: number[] }
 export interface AvailabilityRead { slots: AvailabilitySlot[]; reason: string | null }
-export interface ResourceStaffQuery { branch_id: number; service_id?: number }
-/** Мастер филиала для экрана «Записатись» (`GET /global/resource-staff`).
+/** `branch_id` не передан — мастера всех филиалов студии. */
+export interface ResourceStaffQuery { branch_id?: number[]; service_id?: number }
+/** Мастер для экрана «Записатись» (`GET /global/resource-staff`).
  *  `service_ids` — ВСЕ его услуги, на которые можно записаться, даже когда
- *  список отфильтрован по одной. `department` — должность из CRM. */
+ *  список отфильтрован по одной. `branch_ids` — его филиалы из запрошенных.
+ *  `department` — должность из CRM. */
 export interface ResourceStaffMember {
   teacher_id: number; name: string; last_name: string | null; photo_url: string | null;
-  department: string | null; service_ids: number[];
+  department: string | null; service_ids: number[]; branch_ids: number[];
 }
 export interface ResourceStaffRead { staff: ResourceStaffMember[]; reason: string | null }
 export type BookingStatus = 'active' | 'pending' | 'hold' | 'attended' | 'cancelled';

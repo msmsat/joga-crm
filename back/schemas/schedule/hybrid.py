@@ -199,8 +199,11 @@ class ResourceStaffQuery(HybridSchema):
     конкретная дата у него занята — время он выбирает уже внутри листа.
     `service_id` — фильтр: без него приходят все, с ним — только те, кто её
     оказывает.
+
+    `branch_id` — выбор клиента, повтором ключа (`?branch_id=1&branch_id=2`).
+    Без него — все филиалы студии: экран открывается на «Все».
     """
-    branch_id: int = Field(gt=0)
+    branch_id: Optional[list[int]] = None
     service_id: Optional[int] = Field(default=None, gt=0)
 
 
@@ -223,6 +226,9 @@ class ResourceStaffMemberRead(HybridSchema):
     photo_url: Optional[str] = None
     department: Optional[str] = None
     service_ids: list[int]
+    # Филиалы мастера из запрошенных: время и бронь считаются по одному адресу,
+    # и мастеру из нескольких мини-приложение даёт выбрать, куда идти.
+    branch_ids: list[int]
 
 
 class ResourceStaffRead(HybridSchema):

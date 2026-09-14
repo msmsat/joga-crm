@@ -10,12 +10,16 @@ import type { StudioService } from '../../../api/studio';
 type Nearest = {
   /** `undefined` — подсказки нет вовсе (услуга не выбрана); `null` — окон нет. */
   nearest?: string | null;
+  /** Время для новой услуги ещё считается: строка держит место заглушкой. */
+  loading?: boolean;
 };
 
 type Props = Nearest & {
   member: ResourceStaffMember;
   pills: { shown: StudioService[]; more: number };
   highlight: number | null;
+  /** Филиалы мастера — когда выбрано несколько или «Все». */
+  place?: string;
   selected: boolean;
   index: number;
   onClick: () => void;
@@ -47,7 +51,7 @@ const chevron = (
  * Время здесь — только подсказка. Мастер без свободного окна на ближайшие дни
  * остаётся в списке: день ещё не выбран, и его отсутствие было бы неправдой.
  */
-export default function MasterCard({ member, pills, highlight, nearest, selected, index, onClick }: Props) {
+export default function MasterCard({ member, pills, highlight, place, nearest, loading, selected, index, onClick }: Props) {
   const { t } = useTranslation();
   const [broken, setBroken] = useState(false);
   const photo = broken ? undefined : resolveImageUrl(member.photo_url);
@@ -83,7 +87,16 @@ export default function MasterCard({ member, pills, highlight, nearest, selected
             {member.department && (
               <div className="mt-0.5 truncate text-[12.5px] font-semibold text-muted-foreground">{member.department}</div>
             )}
-            <NearestLine nearest={nearest} />
+            {place && (
+              <div className="mt-0.5 flex min-w-0 items-center gap-1 text-[12px] font-semibold text-muted-foreground">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3 w-3 shrink-0">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
+                  <circle cx="12" cy="10" r="3" />
+                </svg>
+                <span className="truncate">{place}</span>
+              </div>
+            )}
+            <NearestLine nearest={nearest} loading={loading} />
           </div>
 
           {chevron}
@@ -124,7 +137,7 @@ export default function MasterCard({ member, pills, highlight, nearest, selected
 }
 
 /** «Будь-який майстер»: время важнее человека — выбор мастера лишний шаг (MA-05). */
-export function AnyMasterCard({ nearest, selected, onClick }: Nearest & { selected: boolean; onClick: () => void }) {
+export function AnyMasterCard({ nearest, loading, selected, onClick }: Nearest & { selected: boolean; onClick: () => void }) {
   const { t } = useTranslation();
   return (
     <motion.div {...entrance(0)}>
@@ -146,10 +159,10 @@ export function AnyMasterCard({ nearest, selected, onClick }: Nearest & { select
         </span>
         <div className="min-w-0 flex-1 self-center">
           <div className="text-[15.5px] font-extrabold tracking-[-0.015em] text-card-foreground">{t('booking.anyMaster')}</div>
-          {nearest === undefined ? (
+          {nearest === undefined && !loading ? (
             <div className="mt-0.5 text-[12.5px] font-semibold text-muted-foreground">{t('booking.anyMasterHint')}</div>
           ) : (
-            <NearestLine nearest={nearest} />
+            <NearestLine nearest={nearest} loading={loading} />
           )}
         </div>
         {chevron}
@@ -158,8 +171,20 @@ export function AnyMasterCard({ nearest, selected, onClick }: Nearest & { select
   );
 }
 
-function NearestLine({ nearest }: Nearest) {
+function NearestLine({ nearest, loading }: Nearest) {
   const { t } = useTranslation();
+  if (loading) {
+    // Та же строка по высоте: пробел задаёт её, полоска лишь рисуется поверх.
+    return (
+      <div aria-hidden="true" className="mt-1 flex items-center gap-1.5 text-[12.5px] font-bold">
+        <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-muted-foreground/25" />
+        <span className="relative w-28">
+          &nbsp;
+          <span className="absolute inset-x-0 top-1/2 h-2.5 -translate-y-1/2 animate-pulse rounded-full bg-muted" />
+        </span>
+      </div>
+    );
+  }
   if (nearest === undefined) return null;
   return (
     <div

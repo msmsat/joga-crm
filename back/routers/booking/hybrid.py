@@ -33,7 +33,7 @@ async def availability(request: Request, query: Annotated[PublicAvailabilityQuer
 @limiter.limit("60/minute")
 async def resource_staff(request: Request, query: Annotated[PublicResourceStaffQuery, Query()],
                          viewer: Viewer = Depends(get_viewer), db: AsyncSession = Depends(get_db)):
-    """Мастера филиала вместе с их индивидуальными услугами — экран «Записатись».
+    """Мастера выбранных филиалов (без выбора — всех) с их услугами — экран «Записатись».
 
     Отдельно от `/staff-day`: тот отвечает про смены и свободное время ОДНОГО
     дня одной услуги, а этому экрану не нужно ни то, ни другое. Фильтр по
@@ -41,11 +41,12 @@ async def resource_staff(request: Request, query: Annotated[PublicResourceStaffQ
     что мастер её оказывает (`resource_availability.load`).
     """
     report = await resource_availability.resource_staff(
-        db, studio_id=viewer.studio_id, branch_id=query.branch_id, service_id=query.service_id)
+        db, studio_id=viewer.studio_id, branch_ids=query.branch_id, service_id=query.service_id)
     return ResourceStaffRead(reason=report.reason, staff=[
         ResourceStaffMemberRead(
             teacher_id=row.teacher_id, name=row.name, last_name=row.last_name,
-            photo_url=row.photo_url, department=row.department, service_ids=row.service_ids)
+            photo_url=row.photo_url, department=row.department, service_ids=row.service_ids,
+            branch_ids=row.branch_ids)
         for row in report.staff])
 
 

@@ -52,7 +52,22 @@ async def _require_branch(db, studio_id: int, branch_id: int) -> None:
         reject("NOT_FOUND", 404)
 
 
-def _eligible_staff(query, *, studio_id: int, branch_id: int):
+async def _require_branches(db, studio_id: int, branch_ids: list[int] | None) -> list[int]:
+    """Филиалы студии для списка мастеров: названные или, без них, все.
+
+    Чужой id среди своих — тот же отказ, что у одного чужого филиала: иначе
+    список молча показал бы мастеров «части» запроса.
+    """
+    query = select(StudioBranch.id).where(StudioBranch.studio_id == studio_id)
+    if branch_ids is not None:
+        query = query.where(StudioBranch.id.in_(branch_ids))
+    found = list((await db.execute(query.order_by(StudioBranch.id))).scalars().all())
+    if branch_ids is not None and set(found) != set(branch_ids):
+        reject("NOT_FOUND", 404)
+    return found
+
+
+def _eligible_staff(query, *, studio_id: int, branch_ids: list[int]):
     """Кто вообще принимает индивидуальную запись в этом филиале.
 
     ОДНО правило на расчёт времени (`load`), на quote/confirm (они зовут `load`)
@@ -64,7 +79,7 @@ def _eligible_staff(query, *, studio_id: int, branch_id: int):
     """
     return query.join(StaffBranchAssignment, StaffBranchAssignment.user_id == StudioMember.user_id).where(
         StudioMember.studio_id == studio_id, StudioMember.status == "active", StudioMember.role == "trainer",
-        StaffBranchAssignment.studio_id == studio_id, StaffBranchAssignment.branch_id == branch_id)
+        StaffBranchAssignment.studio_id == studio_id, StaffBranchAssignment.branch_id.in_(branch_ids))
 
 
 async def load(db, *, studio_id: int, service_id: int, branch_id: int,
@@ -89,7 +104,7 @@ async def load(db, *, studio_id: int, service_id: int, branch_id: int,
             reject("NOT_FOUND", 404)
     staff_query = _eligible_staff(select(StudioMember.user_id).join(user_services,
         user_services.c.user_id == StudioMember.user_id).where(user_services.c.service_id == service_id),
-        studio_id=studio_id, branch_id=branch_id)
+        studio_id=studio_id, branch_ids=[branch_id])
     if teacher_id is not None:
         staff_query = staff_query.where(StudioMember.user_id == teacher_id)
     teachers = list((await db.execute(staff_query.distinct())).scalars().all())
@@ -187,6 +202,7 @@ class ResourceStaffMember:
     photo_url: str | None
     department: str | None
     service_ids: list[int]
+    branch_ids: list[int]
 
 
 @dataclass(frozen=True)
@@ -195,30 +211,35 @@ class ResourceStaff:
     reason: str | None = None
 
 
-async def resource_staff(db, *, studio_id: int, branch_id: int,
+async def resource_staff(db, *, studio_id: int, branch_ids: list[int] | None = None,
                          service_id: int | None = None) -> ResourceStaff:
-    """Мастера филиала и их индивидуальные услуги — без дня.
+    """Мастера выбранных филиалов и их индивидуальные услуги — без дня.
+
+    `branch_ids` — выбор клиента: один филиал, несколько или `None` — все
+    филиалы студии. У мастера `branch_ids` — те из запрошенных, где он
+    принимает: время и бронь всегда считаются по ОДНОМУ адресу, и мастеру из
+    нескольких филиалов мини-приложение даёт выбрать, куда идти.
 
     Отказы те же, что у `load`: студия без resource-режима или strict, чужая
     или недоступная для записи услуга, чужой филиал. Иначе список показал бы
     мастеров там, где выбрать время всё равно нельзя.
 
-    ОДИН запрос на всех мастеров вместе с услугами: строка на пару
-    «мастер × услуга», сборка в памяти. Поштучный поход за услугами каждого
-    мастера — ровно тот N+1, от которого этот экран обязан быть свободен.
+    ОДИН запрос на всех мастеров вместе с услугами и филиалами: строка на
+    «мастер × услуга × филиал», сборка в памяти. Поштучный поход за услугами
+    каждого мастера — ровно тот N+1, от которого этот экран обязан быть свободен.
     """
     await _resource_studio(db, studio_id)
     if service_id is not None:
         await _resource_service(db, studio_id, service_id)
-    await _require_branch(db, studio_id, branch_id)
+    branches = await _require_branches(db, studio_id, branch_ids)
     # Условия «услуга доступна для записи» — те же, что в `_resource_service`,
     # только в SQL: NULL у service_type — не группа.
-    query = _eligible_staff(select(StudioMember, Service.id).join(user_services,
+    query = _eligible_staff(select(StudioMember, Service.id, StaffBranchAssignment.branch_id).join(user_services,
         user_services.c.user_id == StudioMember.user_id).join(Service,
         Service.id == user_services.c.service_id).where(
         Service.studio_id == studio_id, Service.booking_mode == "resource", Service.is_bookable.is_(True),
         or_(Service.service_type.is_(None), Service.service_type != "group")),
-        studio_id=studio_id, branch_id=branch_id)
+        studio_id=studio_id, branch_ids=branches)
     if service_id is not None:
         # Фильтр сужает МАСТЕРОВ, а не их услуги: карточка по-прежнему
         # показывает всё, что мастер делает.
@@ -226,13 +247,20 @@ async def resource_staff(db, *, studio_id: int, branch_id: int,
             select(user_services.c.user_id).where(user_services.c.service_id == service_id)))
     rows = (await db.execute(query.order_by(
         StudioMember.name, StudioMember.last_name, StudioMember.user_id, Service.name, Service.id,
+        StaffBranchAssignment.branch_id,
     ).execution_options(populate_existing=True))).all()
 
-    grouped: dict[int, tuple[object, list[int]]] = {}
-    for member, own_service in rows:
-        grouped.setdefault(member.user_id, (member, []))[1].append(own_service)
+    # Мастер из двух филиалов даёт каждую услугу дважды — в карточке она одна.
+    grouped: dict[int, tuple[object, list[int], list[int]]] = {}
+    for member, own_service, branch in rows:
+        _, own_services, own_branches = grouped.setdefault(member.user_id, (member, [], []))
+        if own_service not in own_services:
+            own_services.append(own_service)
+        if branch not in own_branches:
+            own_branches.append(branch)
     staff = [ResourceStaffMember(
         teacher_id=member.user_id, name=member.name, last_name=member.last_name,
-        photo_url=member.photo_url, department=member.department, service_ids=services)
-        for member, services in grouped.values()]
+        photo_url=member.photo_url, department=member.department, service_ids=own_services,
+        branch_ids=sorted(own_branches))
+        for member, own_services, own_branches in grouped.values()]
     return ResourceStaff(staff, None if staff else "no_eligible_staff")

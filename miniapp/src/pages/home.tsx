@@ -339,7 +339,7 @@ export default function Home({
         key={visitKey}
         greeting={t(`home.greeting_${daypart}`)}
         daypart={daypart}
-        name={user?.name || t('home.guest_name')}
+        name={user?.name ?? ''}
         isGuest={!isAuthed}
       />
 
