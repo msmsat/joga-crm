@@ -18,6 +18,9 @@ type Props = {
   tall?: boolean;
   /** Поверх другого листа (оплата поверх выбора абонемента). */
   layer?: number;
+  /** Шаг назад внутри листа (время → услуга). Нет — кнопки нет. */
+  onBack?: () => void;
+  backLabel?: string;
 };
 
 // Листов может быть два один над другим (оплата поверх абонементов), поэтому
@@ -68,6 +71,8 @@ export function Sheet({
   footer,
   tall = false,
   layer = 0,
+  onBack,
+  backLabel = 'Back',
 }: Props) {
   const { vibrateLight } = useTelegram();
   const isDesktop = useIsDesktop();
@@ -211,10 +216,26 @@ export function Sheet({
                 </svg>
               </motion.button>
 
+              {/* Назад — зеркально крестику и того же размера: шаг внутри
+                  листа, а не закрытие. Под пальцем левого края на телефоне. */}
+              {onBack && (
+                <motion.button
+                  type="button"
+                  onClick={onBack}
+                  whileTap={{ scale: 0.9 }}
+                  aria-label={backLabel}
+                  className="absolute left-5 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-muted text-muted-foreground"
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round" className="h-[17px] w-[17px]">
+                    <polyline points="15 18 9 12 15 6" />
+                  </svg>
+                </motion.button>
+              )}
+
               {(kicker || title || subtitle) && (
                 <div className="pr-12 pt-5">
                   {kicker && (
-                    <div className="text-[10.5px] font-extrabold uppercase tracking-[0.22em] text-brand">
+                    <div className={`text-[10.5px] font-extrabold uppercase tracking-[0.22em] text-brand ${onBack ? 'pl-10' : ''}`}>
                       {kicker}
                     </div>
                   )}

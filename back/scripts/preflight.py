@@ -337,7 +337,7 @@ def check_legal_docs() -> None:
     import legal
 
     static = Path(__file__).resolve().parent.parent / "static"
-    for name in ("terms.html", "privacy.html"):
+    for name in ("terms.html", "privacy.html", "cookies.html"):
         path = static / name
         if not path.exists():
             _err(f"static/{name} отсутствует — ссылка из формы регистрации ведёт в 404")

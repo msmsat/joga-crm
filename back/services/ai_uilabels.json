@@ -496,6 +496,20 @@
     "cs": "Přidat klienta",
     "de": "Kunde hinzufügen"
   },
+  "cookies:profile.button": {
+    "ru": "Настройки cookie",
+    "en": "Cookie settings",
+    "uk": "Налаштування cookie",
+    "cs": "Nastavení cookies",
+    "de": "Cookie-Einstellungen"
+  },
+  "cookies:settings.functional.title": {
+    "ru": "Вход через Google",
+    "en": "Sign in with Google",
+    "uk": "Вхід через Google",
+    "cs": "Přihlášení přes Google",
+    "de": "Anmeldung mit Google"
+  },
   "dashboard:events.title": {
     "ru": "Последние события",
     "en": "Recent events",

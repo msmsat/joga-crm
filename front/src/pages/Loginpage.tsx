@@ -4,7 +4,8 @@ import "../App.css"; // Обязательный импорт глобальны
 import { Orbs, Logo, InputField, IdentifierTabs, type IdentifierMode, PrimaryBtn,
    Divider, Checkbox, SocialProof, PasswordStrength, ErrorAlert, PhoneField } from "../components/UI";
 import { isValidPhoneNumber } from "react-phone-number-input";
-import { GoogleLogin } from '@react-oauth/google';
+import { GoogleSignIn } from '../components/cookies/GoogleSignIn';
+import { openCookieSettings } from '../utils/cookieConsent';
 import { authApi, ApiError } from '../api';
 import { setActiveToken } from '../utils/auth';
 import { LEGAL_FOOTER_LINKS, LEGAL_LINK_PROPS, PRIVACY_URL, TERMS_URL } from '../utils/legal';
@@ -285,21 +286,16 @@ export default function LoginPage() {
             {mode !== "forgot" && mode !== "login2fa" && (
               <>
                 <div style={{ display: "flex", justifyContent: "center", width: "100%" }}>  
-                  <GoogleLogin
+                  {/* Скрипт Google грузится только после согласия на его cookie —
+                      до него GoogleSignIn рисует свою кнопку того же размера. */}
+                  <GoogleSignIn
                       /* Ширина кнопки Google — жёсткий пиксель внутри iframe:
                          320 не влезает в карточку на 320px-экране и вылезает
                          за край. Считаем один раз при монтировании — поворот
                          экрана в форме входа переживём. */
-                      width={String(Math.min(320, window.innerWidth - 76))}
-                      onSuccess={(credentialResponse) => {
-                          if (credentialResponse.credential) {
-                          handleGoogleSuccess(credentialResponse.credential);
-                          }
-                      }}
-                      onError={() => {
-                          setSubmitError("Google авторизация не удалась");
-                      }}
-                      useOneTap
+                      width={Math.min(320, window.innerWidth - 76)}
+                      onCredential={(credential) => handleGoogleSuccess(credential)}
+                      onError={() => setSubmitError("Google авторизация не удалась")}
                   />
                 </div>
 
@@ -535,12 +531,15 @@ export default function LoginPage() {
         <div style={{ fontSize: "12px", color: "rgba(102,102,102,0.5)" }}>
           © 2026 Velora. Все права защищены.
         </div>
-        <div style={{ display: "flex", gap: "20px", fontSize: "12px" }}>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "20px", fontSize: "12px" }}>
           {LEGAL_FOOTER_LINKS.map(({ label, href }) => (
             <a key={label} href={href} {...LEGAL_LINK_PROPS} style={{ color: "rgba(102,102,102,0.6)", textDecoration: "none", transition: "color 0.2s" }} onMouseOver={(e) => e.currentTarget.style.color = "var(--onyx)"} onMouseOut={(e) => e.currentTarget.style.color = "rgba(102,102,102,0.6)"}>
               {label}
             </a>
           ))}
+          <button type="button" onClick={openCookieSettings} style={{ background: "none", border: "none", padding: 0, font: "inherit", cursor: "pointer", color: "rgba(102,102,102,0.6)", transition: "color 0.2s" }} onMouseOver={(e) => e.currentTarget.style.color = "var(--onyx)"} onMouseOut={(e) => e.currentTarget.style.color = "rgba(102,102,102,0.6)"}>
+            Настройки cookie
+          </button>
         </div>
       </footer>
     </div>

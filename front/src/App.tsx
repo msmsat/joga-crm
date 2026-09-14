@@ -12,6 +12,7 @@ import RegisterPage from './pages/Registerpage';
 import OnboardingPage from './components/modals/Onboarding';
 import SelectCrm from './pages/SelectCrm';
 import JoinPage from './pages/JoinPage';
+import { CookieConsentRoot } from './components/cookies/CookieConsentRoot';
 import { clearActiveToken, getActiveToken, rememberAccountName } from './utils/auth';
 
 import DashboardLayout from './layouts/DashboardLayout';
@@ -121,6 +122,9 @@ export default function App() {
       {/* Тёмная тема — свойство кабинета: вне /dashboard класс снимается всегда,
           кем бы он ни был поставлен (см. DarkClassGuard). */}
       <DarkClassGuard />
+      {/* Согласие на cookie: плашка на любой странице до первого выбора, окно
+          настроек — из подвалов и профиля (utils/cookieConsent.ts). */}
+      <CookieConsentRoot />
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />

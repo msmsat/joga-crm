@@ -1,5 +1,5 @@
 import { apiGet, apiPost } from './client';
-import type { AvailabilityQuery, AvailabilityRead, BookingRead, QuoteRead, QuoteRequest, ResourceQuoteRequest, StaffDayQuery, StaffDayRead } from './hybrid.types';
+import type { AvailabilityQuery, AvailabilityRead, BookingRead, QuoteRead, QuoteRequest, ResourceQuoteRequest, ResourceStaffQuery, ResourceStaffRead } from './hybrid.types';
 
 const base = '/global';
 
@@ -12,11 +12,10 @@ const search = (query: object) => {
 export const hybridApi = {
   availability: (query: AvailabilityQuery): Promise<AvailabilityRead> =>
     apiGet(`${base}/availability?${search(query)}`),
-  /** Мастера услуги на один день: кто на смене и сколько у кого свободного
-   *  времени. `availability` на это ответить не может — он вычитает занятость
-   *  и склеивает мастеров, и занятый становится неотличим от выходного. */
-  staffDay: (query: StaffDayQuery): Promise<StaffDayRead> =>
-    apiGet(`${base}/staff-day?${search(query)}`),
+  /** Мастера филиала и их услуги — без дня. Услуга, если передана, только
+   *  сужает список; время каждого считает `availability` уже в листе. */
+  resourceStaff: (query: ResourceStaffQuery): Promise<ResourceStaffRead> =>
+    apiGet(`${base}/resource-staff?${search(query)}`),
   quote: (body: QuoteRequest) => apiPost<QuoteRead>(`${base}/booking-quotes`, body),
   readQuote: (id: string) => apiGet<QuoteRead | BookingRead>(`${base}/booking-quotes/${encodeURIComponent(id)}`),
   confirm: (quote_id: string) => apiPost<BookingRead>(`${base}/bookings`, { quote_id }),

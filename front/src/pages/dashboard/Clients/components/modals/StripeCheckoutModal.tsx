@@ -1,6 +1,9 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { loadStripe } from '@stripe/stripe-js';
+// /pure: Stripe.js грузится, только когда вызван loadStripe, — то есть когда
+// кассир открыл оплату картой. Обычный импорт подключал скрипт Stripe (и его
+// cookie) побочным эффектом у каждого, кто открыл любую страницу, даже лендинг.
+import { loadStripe } from '@stripe/stripe-js/pure';
 import { EmbeddedCheckout, EmbeddedCheckoutProvider } from '@stripe/react-stripe-js';
 import { ApiError } from '../../../../../api/client';
 import { checkoutApi } from '../../../../../api/checkout';

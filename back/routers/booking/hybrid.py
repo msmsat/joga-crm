@@ -8,8 +8,9 @@ from database import get_db
 from models import Client
 from ratelimit import limiter
 from schemas.schedule.hybrid import (PublicAvailabilityQuery, AvailabilityRead, BookingQuoteRequest,
-    BookingRead, ConfirmRequest, PublicStaffDayQuery, QuoteRead, RescheduleConfirmRequest,
-    ResourceQuoteRequest, StaffDayMemberRead, StaffDayRead)
+    BookingRead, ConfirmRequest, PublicResourceStaffQuery, PublicStaffDayQuery, QuoteRead,
+    RescheduleConfirmRequest, ResourceQuoteRequest, ResourceStaffMemberRead, ResourceStaffRead,
+    StaffDayMemberRead, StaffDayRead)
 from services import booking_quotes as quotes, hybrid_http, resource_availability, resource_booking, resource_reschedule
 from .miniapp import Viewer, get_current_client, get_viewer
 
@@ -26,6 +27,26 @@ async def availability(request: Request, query: Annotated[PublicAvailabilityQuer
                        viewer: Viewer = Depends(get_viewer), db: AsyncSession = Depends(get_db)):
     return await resource_availability.availability(db, studio_id=viewer.studio_id,
                                                   **query.model_dump(exclude={"studio_id"}))
+
+
+@router.get("/resource-staff", response_model=ResourceStaffRead)
+@limiter.limit("60/minute")
+async def resource_staff(request: Request, query: Annotated[PublicResourceStaffQuery, Query()],
+                         viewer: Viewer = Depends(get_viewer), db: AsyncSession = Depends(get_db)):
+    """Мастера филиала вместе с их индивидуальными услугами — экран «Записатись».
+
+    Отдельно от `/staff-day`: тот отвечает про смены и свободное время ОДНОГО
+    дня одной услуги, а этому экрану не нужно ни то, ни другое. Фильтр по
+    услуге — удобство интерфейса; quote и confirm всё равно заново проверяют,
+    что мастер её оказывает (`resource_availability.load`).
+    """
+    report = await resource_availability.resource_staff(
+        db, studio_id=viewer.studio_id, branch_id=query.branch_id, service_id=query.service_id)
+    return ResourceStaffRead(reason=report.reason, staff=[
+        ResourceStaffMemberRead(
+            teacher_id=row.teacher_id, name=row.name, last_name=row.last_name,
+            photo_url=row.photo_url, department=row.department, service_ids=row.service_ids)
+        for row in report.staff])
 
 
 @router.get("/staff-day", response_model=StaffDayRead)

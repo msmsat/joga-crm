@@ -23,6 +23,50 @@ def reject(code, status=409):
     raise HTTPException(status_code=status, detail={"code": code})
 
 
+async def _resource_studio(db, studio_id: int):
+    studio = (await db.execute(select(Studio).where(Studio.id == studio_id)
+        .execution_options(populate_existing=True))).scalar_one_or_none()
+    if studio is None:
+        reject("NOT_FOUND", 404)
+    if "resource" not in hybrid.AVAILABLE_BOOKING_MODES or studio.booking_mode not in {"resource", "hybrid"}:
+        reject("BOOKING_MODE_DISABLED")
+    if not studio.strict_schedule_enabled:
+        reject("STRICT_SCHEDULE_REQUIRED")
+    return studio
+
+
+async def _resource_service(db, studio_id: int, service_id: int):
+    service = (await db.execute(select(Service).where(Service.id == service_id,
+        Service.studio_id == studio_id).execution_options(populate_existing=True))).scalar_one_or_none()
+    if service is None:
+        reject("NOT_FOUND", 404)
+    if service.booking_mode != "resource" or not service.is_bookable or service.service_type == "group":
+        reject("SERVICE_UNAVAILABLE")
+    return service
+
+
+async def _require_branch(db, studio_id: int, branch_id: int) -> None:
+    branch = (await db.execute(select(StudioBranch.id).where(
+        StudioBranch.id == branch_id, StudioBranch.studio_id == studio_id))).scalar_one_or_none()
+    if branch is None:
+        reject("NOT_FOUND", 404)
+
+
+def _eligible_staff(query, *, studio_id: int, branch_id: int):
+    """Кто вообще принимает индивидуальную запись в этом филиале.
+
+    ОДНО правило на расчёт времени (`load`), на quote/confirm (они зовут `load`)
+    и на список мастеров для клиента (`resource_staff`). Две копии разошлись бы
+    при первой же правке: список показал бы мастера, у которого сервер потом не
+    найдёт ни одного слота, — или спрятал бы того, к кому запись проходит.
+    Активное членство с ролью trainer (владелец-мастер — отдельная модель, §2)
+    и явное назначение на филиал; услуги каждый вызывающий добавляет сам.
+    """
+    return query.join(StaffBranchAssignment, StaffBranchAssignment.user_id == StudioMember.user_id).where(
+        StudioMember.studio_id == studio_id, StudioMember.status == "active", StudioMember.role == "trainer",
+        StaffBranchAssignment.studio_id == studio_id, StaffBranchAssignment.branch_id == branch_id)
+
+
 async def load(db, *, studio_id: int, service_id: int, branch_id: int,
                date_from: date, date_to: date, teacher_id: int | None = None,
                hall_id: int | None = None, exclude_lesson_id: int | None = None) -> AvailabilityData:
@@ -35,35 +79,17 @@ async def load(db, *, studio_id: int, service_id: int, branch_id: int,
     # же, что и у любого другого негодного диапазона.
     if not date.min + SNAPSHOT_MARGIN <= date_from or not date_to <= date.max - SNAPSHOT_MARGIN:
         reject("INVALID_DATE_RANGE", 422)
-    studio = (await db.execute(select(Studio).where(Studio.id == studio_id)
-        .execution_options(populate_existing=True))).scalar_one_or_none()
-    if studio is None:
-        reject("NOT_FOUND", 404)
-    if "resource" not in hybrid.AVAILABLE_BOOKING_MODES or studio.booking_mode not in {"resource", "hybrid"}:
-        reject("BOOKING_MODE_DISABLED")
-    if not studio.strict_schedule_enabled:
-        reject("STRICT_SCHEDULE_REQUIRED")
-    service = (await db.execute(select(Service).where(Service.id == service_id,
-        Service.studio_id == studio_id).execution_options(populate_existing=True))).scalar_one_or_none()
-    if service is None:
-        reject("NOT_FOUND", 404)
-    if service.booking_mode != "resource" or not service.is_bookable or service.service_type == "group":
-        reject("SERVICE_UNAVAILABLE")
-    branch = (await db.execute(select(StudioBranch.id).where(
-        StudioBranch.id == branch_id, StudioBranch.studio_id == studio_id))).scalar_one_or_none()
-    if branch is None:
-        reject("NOT_FOUND", 404)
+    studio = await _resource_studio(db, studio_id)
+    service = await _resource_service(db, studio_id, service_id)
+    await _require_branch(db, studio_id, branch_id)
     if hall_id is not None:
         hall = (await db.execute(select(Hall.id).where(Hall.id == hall_id,
             Hall.studio_id == studio_id, Hall.branch_id == branch_id, Hall.is_active.is_(True)))).scalar_one_or_none()
         if hall is None:
             reject("NOT_FOUND", 404)
-    staff_query = select(StudioMember.user_id).join(user_services,
-        user_services.c.user_id == StudioMember.user_id).join(StaffBranchAssignment,
-        StaffBranchAssignment.user_id == StudioMember.user_id).where(
-        StudioMember.studio_id == studio_id, StudioMember.status == "active", StudioMember.role == "trainer",
-        user_services.c.service_id == service_id, StaffBranchAssignment.studio_id == studio_id,
-        StaffBranchAssignment.branch_id == branch_id)
+    staff_query = _eligible_staff(select(StudioMember.user_id).join(user_services,
+        user_services.c.user_id == StudioMember.user_id).where(user_services.c.service_id == service_id),
+        studio_id=studio_id, branch_id=branch_id)
     if teacher_id is not None:
         staff_query = staff_query.where(StudioMember.user_id == teacher_id)
     teachers = list((await db.execute(staff_query.distinct())).scalars().all())
@@ -151,3 +177,62 @@ async def staff_day(db, *, studio_id: int, service_id: int, branch_id: int, day:
             teacher_id=entry.teacher_id, name=member.name, last_name=member.last_name,
             photo_url=member.photo_url, works=entry.works, reason=entry.reason, free=entry.free))
     return StaffDayReport(staff, report.reason)
+
+
+@dataclass(frozen=True)
+class ResourceStaffMember:
+    teacher_id: int
+    name: str
+    last_name: str | None
+    photo_url: str | None
+    department: str | None
+    service_ids: list[int]
+
+
+@dataclass(frozen=True)
+class ResourceStaff:
+    staff: list[ResourceStaffMember]
+    reason: str | None = None
+
+
+async def resource_staff(db, *, studio_id: int, branch_id: int,
+                         service_id: int | None = None) -> ResourceStaff:
+    """Мастера филиала и их индивидуальные услуги — без дня.
+
+    Отказы те же, что у `load`: студия без resource-режима или strict, чужая
+    или недоступная для записи услуга, чужой филиал. Иначе список показал бы
+    мастеров там, где выбрать время всё равно нельзя.
+
+    ОДИН запрос на всех мастеров вместе с услугами: строка на пару
+    «мастер × услуга», сборка в памяти. Поштучный поход за услугами каждого
+    мастера — ровно тот N+1, от которого этот экран обязан быть свободен.
+    """
+    await _resource_studio(db, studio_id)
+    if service_id is not None:
+        await _resource_service(db, studio_id, service_id)
+    await _require_branch(db, studio_id, branch_id)
+    # Условия «услуга доступна для записи» — те же, что в `_resource_service`,
+    # только в SQL: NULL у service_type — не группа.
+    query = _eligible_staff(select(StudioMember, Service.id).join(user_services,
+        user_services.c.user_id == StudioMember.user_id).join(Service,
+        Service.id == user_services.c.service_id).where(
+        Service.studio_id == studio_id, Service.booking_mode == "resource", Service.is_bookable.is_(True),
+        or_(Service.service_type.is_(None), Service.service_type != "group")),
+        studio_id=studio_id, branch_id=branch_id)
+    if service_id is not None:
+        # Фильтр сужает МАСТЕРОВ, а не их услуги: карточка по-прежнему
+        # показывает всё, что мастер делает.
+        query = query.where(StudioMember.user_id.in_(
+            select(user_services.c.user_id).where(user_services.c.service_id == service_id)))
+    rows = (await db.execute(query.order_by(
+        StudioMember.name, StudioMember.last_name, StudioMember.user_id, Service.name, Service.id,
+    ).execution_options(populate_existing=True))).all()
+
+    grouped: dict[int, tuple[object, list[int]]] = {}
+    for member, own_service in rows:
+        grouped.setdefault(member.user_id, (member, []))[1].append(own_service)
+    staff = [ResourceStaffMember(
+        teacher_id=member.user_id, name=member.name, last_name=member.last_name,
+        photo_url=member.photo_url, department=member.department, service_ids=services)
+        for member, services in grouped.values()]
+    return ResourceStaff(staff, None if staff else "no_eligible_staff")

@@ -15,6 +15,9 @@ import { getGuestStudio } from '../lib/entry';
 // вторым аккаунтом с того же устройства обязан идти анонимно.
 type ApiOptions = Omit<RequestInit, 'body'> & { body?: unknown; anon?: boolean };
 
+/** Ошибка API: HTTP-код и, если сервер его назвал, машинный код отказа. */
+export type ApiError = Error & { status?: number; code?: string };
+
 async function apiFetch<T>(path: string, options: ApiOptions = {}): Promise<T> {
   const { body, headers, anon, ...rest } = options;
   const session = getSession();
@@ -59,8 +62,11 @@ async function apiFetch<T>(path: string, options: ApiOptions = {}): Promise<T> {
     // номер», и мини-приложение обязано открыть шит с телефоном, а не показать
     // ошибку. Отличать это по тексту сообщения — путь к поломке на первом же
     // переводе формулировки.
-    const error = new Error(message) as Error & { status?: number };
+    const error = new Error(message) as ApiError;
     error.status = response.status;
+    // Код отказа гибридной записи (`{"detail": {"code": "SLOT_UNAVAILABLE"}}`).
+    // Текста у таких отказов нет намеренно — перевод живёт в словарях по коду.
+    if (typeof errorData?.detail?.code === 'string') error.code = errorData.detail.code;
     throw error;
   }
 

@@ -438,12 +438,10 @@
     "confirm": "Bestätigen",
     "confirming": "Wird bestätigt…",
     "done": "Fertig",
-    "time": "Zeit",
     "staff": "Fachkraft",
     "branch": "Filiale",
     "duration": "Dauer",
     "price": "Preis",
-    "status": "Status",
     "pay": "Bezahlen",
     "changeTime": "Zeit ändern",
     "loadError": "Freie Zeiten konnten nicht geladen werden",
@@ -466,8 +464,30 @@
       "attended": "Besucht",
       "cancelled": "Storniert"
     },
-    "reason": {
-      "config_incomplete": "Der Zeitplan dieser Leistung ist noch nicht eingerichtet"
+    "back": "Zurück",
+    "moreDays": "Weiter",
+    "noSlotsDay": "An diesem Tag ist nichts frei",
+    "nextFree": "Nächster freier Termin: {{when}}",
+    "noSlotsRange": "An diesen Tagen ist nichts frei",
+    "noSlotsWindow": "Noch keine freien Termine",
+    "noSlotsWindowHint": "Versuchen Sie eine andere Fachkraft oder schauen Sie später wieder vorbei.",
+    "showMoreDays": "Nächste Tage anzeigen",
+    "otherMaster": "Andere Fachkraft wählen",
+    "parts": {
+      "morning": "Vormittag",
+      "afternoon": "Nachmittag",
+      "evening": "Abend"
+    },
+    "errors": {
+      "SLOT_UNAVAILABLE": "Dieser Termin wurde gerade vergeben. Bitte wählen Sie einen anderen — die Liste ist aktualisiert.",
+      "QUOTE_EXPIRED": "Die Zeit zur Bestätigung ist abgelaufen. Bitte wählen Sie den Termin erneut.",
+      "TERMS_CHANGED": "Die Buchungsbedingungen haben sich geändert. Bitte wählen Sie den Termin erneut.",
+      "TERMS_REFRESHED": "Die Bedingungen wurden aktualisiert — bitte prüfen und erneut bestätigen.",
+      "CONFIG_INCOMPLETE": "Der Zeitplan wird noch eingerichtet. Bitte versuchen Sie es etwas später.",
+      "VERSION_CONFLICT": "Die Buchung wurde gerade geändert. Bitte öffnen Sie sie erneut.",
+      "NOT_FOUND": "Diese Leistung oder Buchung wurde nicht gefunden. Bitte laden Sie die Seite neu.",
+      "BOOKING_CLOSED": "Die Online-Buchung ist gerade geschlossen.",
+      "UNKNOWN": "Die Buchung konnte nicht erstellt werden. Bitte erneut versuchen."
     }
   },
   "units": {
@@ -475,17 +495,11 @@
   },
   "booking": {
     "title": "Termin buchen",
-    "stepBranch": "Standort",
-    "stepService": "Leistung",
     "stepMaster": "Fachkraft",
     "duration": "{{min}} Min.",
     "pickService": "Leistung wählen",
     "anyMaster": "Beliebige Fachkraft",
     "anyMasterHint": "Frühester freier Termin",
-    "firstFree": "Frei ab {{time}}",
-    "noFreeTime": "Keine freien Zeiten",
-    "noMasters": "An diesem Tag arbeitet niemand",
-    "noMastersHint": "Versuchen Sie einen anderen Tag",
     "reason": {
       "config_incomplete": "Der Zeitplan dieser Leistung ist noch nicht eingerichtet",
       "no_eligible_staff": "Diese Leistung bietet noch niemand an",
@@ -493,6 +507,26 @@
       "error": "Laden fehlgeschlagen. Bitte erneut versuchen",
       "no_services": "Das Studio hat noch keine buchbaren Leistungen hinzugefügt"
     },
-    "allBusy": "An diesem Tag sind alle Fachkräfte ausgebucht."
+    "allServices": "Alle Leistungen",
+    "masters": "Fachkräfte",
+    "moreServices": "+{{n}} weitere",
+    "nearest": "Nächster Termin: {{when}}",
+    "noNearest": "In den nächsten Tagen nichts frei",
+    "today": "heute",
+    "tomorrow": "morgen",
+    "selected": "ausgewählt",
+    "retry": "Erneut versuchen",
+    "loadError": "Fachkräfte konnten nicht geladen werden",
+    "unavailable": "Die Online-Buchung bei Fachkräften ist noch nicht geöffnet",
+    "unavailableHint": "Das Studio richtet den Zeitplan ein. Schauen Sie etwas später wieder vorbei.",
+    "noStaff": "Noch keine Fachkräfte zur Buchung",
+    "noStaffHint": "Das Studio hat diesem Standort noch keine Fachkräfte zugewiesen.",
+    "noStaffForService": "Diese Leistung bietet hier noch niemand an",
+    "showAllMasters": "Alle Fachkräfte anzeigen",
+    "noServicesForMaster": "Diese Fachkraft hat noch keine buchbaren Leistungen",
+    "segment": {
+      "resource": "Einzeltermin",
+      "event": "Gruppenplan"
+    }
   }
 }

@@ -438,12 +438,10 @@
     "confirm": "Confirm",
     "confirming": "Confirming…",
     "done": "Done",
-    "time": "Time",
     "staff": "Specialist",
     "branch": "Branch",
     "duration": "Duration",
     "price": "Price",
-    "status": "Status",
     "pay": "Pay",
     "changeTime": "Change time",
     "loadError": "Could not load available times",
@@ -466,8 +464,30 @@
       "attended": "Visited",
       "cancelled": "Cancelled"
     },
-    "reason": {
-      "config_incomplete": "The schedule for this service is not set up yet"
+    "back": "Back",
+    "moreDays": "More",
+    "noSlotsDay": "No free time on this day",
+    "nextFree": "Next available: {{when}}",
+    "noSlotsRange": "No free time on these days",
+    "noSlotsWindow": "No free time yet",
+    "noSlotsWindowHint": "Try another specialist or check back later.",
+    "showMoreDays": "Show next days",
+    "otherMaster": "Choose another specialist",
+    "parts": {
+      "morning": "Morning",
+      "afternoon": "Afternoon",
+      "evening": "Evening"
+    },
+    "errors": {
+      "SLOT_UNAVAILABLE": "This time was just taken. Please pick another one — the list is updated.",
+      "QUOTE_EXPIRED": "The time to confirm has run out. Please pick a time again.",
+      "TERMS_CHANGED": "The booking terms have changed. Please pick a time again.",
+      "TERMS_REFRESHED": "The terms were updated — please review them and confirm again.",
+      "CONFIG_INCOMPLETE": "The schedule is still being set up. Please try again a bit later.",
+      "VERSION_CONFLICT": "This booking was just changed. Please open it again.",
+      "NOT_FOUND": "Could not find this service or booking. Please refresh the page.",
+      "BOOKING_CLOSED": "Online booking is closed right now.",
+      "UNKNOWN": "Could not create the booking. Please try again."
     }
   },
   "units": {
@@ -475,17 +495,11 @@
   },
   "booking": {
     "title": "Book a visit",
-    "stepBranch": "Location",
-    "stepService": "Service",
     "stepMaster": "Specialist",
     "duration": "{{min}} min",
     "pickService": "Choose a service",
     "anyMaster": "Any specialist",
     "anyMasterHint": "Earliest available time",
-    "firstFree": "Free from {{time}}",
-    "noFreeTime": "Fully booked",
-    "noMasters": "Nobody works on this day",
-    "noMastersHint": "Try another day",
     "reason": {
       "config_incomplete": "This service's schedule is not set up yet",
       "no_eligible_staff": "Nobody provides this service yet",
@@ -493,6 +507,26 @@
       "error": "Could not load. Please try again",
       "no_services": "The studio has not added bookable services yet"
     },
-    "allBusy": "Every specialist is fully booked on this day."
+    "allServices": "All services",
+    "masters": "Specialists",
+    "moreServices": "+{{n}} more",
+    "nearest": "Next: {{when}}",
+    "noNearest": "No free time in the coming days",
+    "today": "today",
+    "tomorrow": "tomorrow",
+    "selected": "selected",
+    "retry": "Try again",
+    "loadError": "Could not load specialists",
+    "unavailable": "Online booking with specialists is not open yet",
+    "unavailableHint": "The studio is setting up its schedule. Please check back a little later.",
+    "noStaff": "No specialists available for booking yet",
+    "noStaffHint": "The studio has not assigned specialists to this location yet.",
+    "noStaffForService": "Nobody provides this service here yet",
+    "showAllMasters": "Show all specialists",
+    "noServicesForMaster": "This specialist has no bookable services yet",
+    "segment": {
+      "resource": "Individual",
+      "event": "Group schedule"
+    }
   }
 }

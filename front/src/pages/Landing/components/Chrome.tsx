@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { LogoMark } from "../../../components/Icons";
 import { getActiveToken } from "../../../utils/auth";
-import { PRIVACY_URL, TERMS_URL, DPA_URL, LEGAL_LINK_PROPS, SUPPORT_WHATSAPP, SUPPORT_WHATSAPP_URL } from "../../../utils/legal";
+import { openCookieSettings } from "../../../utils/cookieConsent";
+import { PRIVACY_URL, TERMS_URL, COOKIES_URL, DPA_URL, LEGAL_LINK_PROPS, SUPPORT_WHATSAPP, SUPPORT_WHATSAPP_URL } from "../../../utils/legal";
 import { LangSwitch } from "./LangSwitch";
 
 const LINKS = [
@@ -13,6 +14,9 @@ const LINKS = [
   { href: "#faq", key: "faq" },
 ];
 
+// Пункт подвала — ссылка или действие на месте (окно настроек cookie).
+type FooterItem = { key: string; href: string } | { key: string; action: () => void };
+
 // Каждая ссылка ведёт в свой раздел страницы, а не наверх: якоря глав живут в
 // самих секциях (#product, #booking, #ai, …), у каждой есть scroll-mt под
 // плавающую шапку. Пунктов-заглушек в подвале быть не должно — колонка
@@ -21,7 +25,7 @@ const LINKS = [
 //
 // Подписи берутся из локали (`footer.columns.*`), а не из LEGAL_DOC_LINKS:
 // тот список русский и обслуживает ещё непереведённые страницы входа.
-const FOOTER_COLUMNS: [string, { key: string; href: string }[]][] = [
+const FOOTER_COLUMNS: [string, FooterItem[]][] = [
   ["product", [
     { key: "features", href: "#product" },
     { key: "modules", href: "#modules" },
@@ -38,7 +42,11 @@ const FOOTER_COLUMNS: [string, { key: string; href: string }[]][] = [
   ["docs", [
     { key: "terms", href: TERMS_URL },
     { key: "privacy", href: PRIVACY_URL },
+    { key: "cookies", href: COOKIES_URL },
     { key: "dpa", href: DPA_URL },
+    // Кнопка, а не ссылка: отозвать согласие должно быть так же просто, как
+    // дать, — окно открывается прямо здесь, без ухода со страницы.
+    { key: "cookieSettings", action: openCookieSettings },
     { key: "support", href: SUPPORT_WHATSAPP_URL },
   ]],
 ];
@@ -146,15 +154,25 @@ export function LandingFooter() {
                   {t(`footer.columns.${column}.title`)}
                 </p>
                 <ul className="mt-5 space-y-3">
-                  {items.map(({ key, href }) => (
-                    <li key={key}>
-                      <a
-                        href={href}
-                        {...(href.startsWith("#") ? {} : LEGAL_LINK_PROPS)}
-                        className="text-[13px] text-white/45 transition-colors hover:text-white"
-                      >
-                        {t(`footer.columns.${column}.${key}`)}
-                      </a>
+                  {items.map((item) => (
+                    <li key={item.key}>
+                      {"action" in item ? (
+                        <button
+                          type="button"
+                          onClick={item.action}
+                          className="cursor-pointer text-left text-[13px] text-white/45 transition-colors hover:text-white"
+                        >
+                          {t(`footer.columns.${column}.${item.key}`)}
+                        </button>
+                      ) : (
+                        <a
+                          href={item.href}
+                          {...(item.href.startsWith("#") ? {} : LEGAL_LINK_PROPS)}
+                          className="text-[13px] text-white/45 transition-colors hover:text-white"
+                        >
+                          {t(`footer.columns.${column}.${item.key}`)}
+                        </a>
+                      )}
                     </li>
                   ))}
                 </ul>

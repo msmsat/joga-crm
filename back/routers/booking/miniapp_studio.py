@@ -89,7 +89,10 @@ class ServiceInfo(BaseSchema):
     # студии разделить предложения на event/resource, а не по service_type
     # или имени.
     booking_mode: str = "event"
-    service_type: str = "group"
+    # NULL — законное значение колонки: CRM создаёт услугу без формата
+    # (`ServiceCreate.service_type: Optional`). Обязательная строка роняла
+    # ВЕСЬ каталог в 500 — а это первая ручка, которую зовёт мини-приложение.
+    service_type: Optional[str] = None
     buffer_before_min: int = 0
     buffer_after_min: int = 0
     is_bookable: bool = True

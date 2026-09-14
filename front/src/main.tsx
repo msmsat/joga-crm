@@ -1,16 +1,22 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
+// Manrope — из бандла, а не с fonts.googleapis.com: запрос шрифта у Google
+// передавал ему IP каждого посетителя без согласия (так решил LG München I,
+// 3 O 17493/20). Начертания — те, что есть у гарнитуры: 900 не отдавал и Google.
+import '@fontsource/manrope/400.css'
+import '@fontsource/manrope/500.css'
+import '@fontsource/manrope/600.css'
+import '@fontsource/manrope/700.css'
+import '@fontsource/manrope/800.css'
 import './index.css'
 import App from './App.tsx'
-import { GoogleOAuthProvider } from '@react-oauth/google';
 import './i18n';
 
-const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-
+// GoogleOAuthProvider здесь больше не оборачивает приложение: он грузил скрипт
+// Google на КАЖДОЙ странице. Теперь он в components/cookies/GoogleSignIn —
+// только на входе и только после согласия.
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-      <App />
-    </GoogleOAuthProvider>
+    <App />
   </StrictMode>,
 )

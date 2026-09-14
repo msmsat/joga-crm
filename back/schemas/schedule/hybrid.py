@@ -191,6 +191,45 @@ class StaffDayRead(HybridSchema):
     reason: Optional[str] = None
 
 
+class ResourceStaffQuery(HybridSchema):
+    """Мастера филиала для экрана «Записатись» — без дня и, возможно, без услуги.
+
+    Дня здесь нет намеренно: список отвечает на «к кому я могу записаться», а не
+    на «кто свободен сегодня». Мастер не пропадает из списка оттого, что одна
+    конкретная дата у него занята — время он выбирает уже внутри листа.
+    `service_id` — фильтр: без него приходят все, с ним — только те, кто её
+    оказывает.
+    """
+    branch_id: int = Field(gt=0)
+    service_id: Optional[int] = Field(default=None, gt=0)
+
+
+class PublicResourceStaffQuery(ResourceStaffQuery):
+    studio_id: Optional[str] = None
+
+
+class ResourceStaffMemberRead(HybridSchema):
+    """Мастер и ВСЕ его индивидуальные услуги в студии.
+
+    `service_ids` — только то, на что клиент реально может записаться
+    (resource, `is_bookable`, не группа), в порядке названий. При фильтре по
+    услуге список не сужается: карточка показывает, что ещё делает мастер.
+    `department` — должность из CRM («Master Barber»), та же, что в карточке
+    сотрудника. Имя и фото — из StudioMember этой студии, не из users.
+    """
+    teacher_id: int
+    name: str
+    last_name: Optional[str] = None
+    photo_url: Optional[str] = None
+    department: Optional[str] = None
+    service_ids: list[int]
+
+
+class ResourceStaffRead(HybridSchema):
+    staff: list[ResourceStaffMemberRead]
+    reason: Optional[str] = None
+
+
 class QuoteRead(HybridSchema):
     quote_id: str
     expires_at: datetime

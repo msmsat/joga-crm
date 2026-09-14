@@ -339,7 +339,7 @@ export default function App() {
         onNeedAuth={requireAuth}
       />
     ),
-    my: <MyLessons />,
+    my: <MyLessons catalog={catalog} />,
     prof: (
       <Profile
         catalog={catalog}

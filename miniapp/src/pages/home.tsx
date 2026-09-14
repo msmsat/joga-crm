@@ -130,7 +130,7 @@ export default function Home({
   // Запись и отмена — общие с расписанием (useLessonBooking). Перечитать после
   // них и «ближайшее занятие», и открытый лист услуги хук просит сам, подняв
   // версию: обе величины уже висят на ней.
-  const resource = useResourceBooking({ onNeedAuth });
+  const resource = useResourceBooking({ onNeedAuth, catalog });
   const booking = useLessonBooking({
     messages: {
       bookError: t('home.booking_error'),

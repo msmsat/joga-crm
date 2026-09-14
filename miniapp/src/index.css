@@ -1,7 +1,8 @@
 @import "tailwindcss";
 
-/* Manrope подключён <link>'ом в index.html, а не @import'ом: @import внутри CSS
-   выстраивает водопад (шрифт не запрашивается, пока не распарсится стиль). */
+/* Manrope — из @fontsource в main.tsx: файлы шрифта едут в бандле, а не с
+   fonts.googleapis.com, и IP посетителя Google не получает. @import сюда не
+   переносить — он выстроил бы водопад загрузки. */
 
 /* dark-режим по классу — Telegram отдаёт тему пользователя в colorScheme */
 @custom-variant dark (&:is(.dark *));

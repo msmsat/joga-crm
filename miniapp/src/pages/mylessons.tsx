@@ -1,6 +1,7 @@
 import { useBusinessTerms } from '../hooks/useBusinessTerms';
 import { useResourceBooking } from '../hooks/useResourceBooking';
 import ResourceBookingSheet from '../components/booking/ResourceBookingSheet';
+import type { StudioCatalog } from '../api/studio';
 import { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
@@ -26,12 +27,14 @@ import { bumpLessons, useLessonsVersion } from '../lib/revision';
 
 type MyLesson = UpcomingLessonResponse | PastLessonResponse;
 
-export default function MyLessons() {
+export default function MyLessons({ catalog = null }: { catalog?: StudioCatalog | null }) {
   const { t, i18n } = useTranslation();
   const business = useBusinessTerms();
   // Перенос идёт тем же выбором времени, что и новая запись, — другая пара
   // серверных команд внутри (quote переноса + expected_version).
-  const resource = useResourceBooking();
+  // Каталог — ради пояса студии и горизонта записи: лента дней переноса
+  // обязана начинаться с «сегодня» студии и не уходить за её окно.
+  const resource = useResourceBooking({ catalog });
   const { tg, vibrateLight, vibrateMedium } = useTelegram();
 
   const [upcoming, setUpcoming] = useState<UpcomingLessonResponse[]>([]);

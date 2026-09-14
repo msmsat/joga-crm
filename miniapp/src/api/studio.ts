@@ -56,7 +56,8 @@ export interface Studio {
 
 export interface StudioService {
   booking_mode: BookingMode;
-  service_type: 'group' | 'individual';
+  /** null — формат не задан в CRM (наследие): не группа. */
+  service_type: 'group' | 'individual' | null;
   buffer_before_min: number;
   buffer_after_min: number;
   is_bookable: boolean;

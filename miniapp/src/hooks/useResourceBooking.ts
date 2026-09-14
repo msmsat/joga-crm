@@ -1,144 +1,187 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { hybridApi } from '../api/hybrid.api';
-import type { AvailabilitySlot, BookingRead, QuoteRead } from '../api/hybrid.types';
-import type { TerminologyProfile } from '../api/hybrid.types';
+import type { ApiError } from '../api/client';
+import type { AvailabilitySlot, BookingRead, QuoteRead, TerminologyProfile } from '../api/hybrid.types';
+import type { StudioCatalog } from '../api/studio';
 import { getSession } from '../lib/session';
 import { bumpLessons } from '../lib/revision';
-import { notify } from '../lib/notify';
 import { spawnPetals } from '../lib/petals';
+import {
+  availabilityQuery, dayList, firstDayWithSlots, groupByDay, lastBookableDay, pageCount, pageRange,
+  studioToday, type IsoDay,
+} from '../lib/slots';
 import { useTelegram } from './useTelegram';
 
 /**
- * HB-20: индивидуальная запись — выбор специалиста и времени.
+ * Индивидуальная запись: день, время, условия, подтверждение.
  *
- * СОСТОЯНИЯ: `select_time → quote → confirming → active | pending | hold`.
- * Ошибка и просроченный quote возвращают на шаг выбора времени, а не в начало:
- * человек уже выбрал услугу, и заставлять выбирать её заново — наказание за
- * нашу же гонку.
+ * СОСТОЯНИЯ: `select_time → quote → confirming → done`. Ошибка и просроченный
+ * quote возвращают на выбор времени, а не в начало: услугу и мастера человек
+ * уже выбрал, и заставлять выбирать их заново — наказание за нашу же гонку.
  *
- * ИСТОЧНИК ВРЕМЕНИ — ТОЛЬКО API. Ни собственного календаря, ни «рабочих часов»
- * в этом файле нет: доступность считает сервер по графикам, буферам, чужой
- * занятости и переводу часов (§6.2). Клиент передаёт обратно ТОТ ЖЕ
- * `starts_at`, который получил, — не своё локальное время.
+ * ВРЕМЯ ГРУЗИТСЯ СТРАНИЦАМИ ДНЕЙ, А НЕ ПО ОДНОМУ ДНЮ. Один запрос на две недели
+ * даёт сразу и ленту дней с отметкой «есть время», и ближайший свободный день,
+ * и мгновенное переключение дня без скелета. Дальше горизонта студии
+ * (`booking_window_days`) лента не идёт.
  *
- * УСТАРЕВШИЙ ОТВЕТ НЕ ПЕРЕЗАПИСЫВАЕТ ТЕКУЩИЙ СПИСОК. Каждому запросу выдаётся
- * номер; ответ с чужим номером выбрасывается. Иначе медленный ответ прошлого
- * филиала приезжал бы поверх нового (HB-20 п.3).
+ * ИСТОЧНИК ВРЕМЕНИ — ТОЛЬКО API. Доступность считает сервер; клиент возвращает
+ * ТОТ ЖЕ `starts_at`, который получил, а день и час показывает срезом строки
+ * `local_start` (lib/slots.ts). «Сегодня» — в поясе студии.
  *
- * ЦЕНУ, ДЛИТЕЛЬНОСТЬ И МАСТЕРА НАЗЫВАЕТ СЕРВЕР. Здесь их нет даже в типах
- * запроса: quote возвращает канонические условия, confirm принимает только
- * `quote_id`.
+ * УСТАРЕВШИЙ ОТВЕТ НЕ ПЕРЕЗАПИСЫВАЕТ ТЕКУЩИЙ. Страницы хранятся вместе с
+ * ключом выбора (услуга, филиал, мастер, попытка): ответ прошлого мастера не
+ * отрисуется под новым.
+ *
+ * ЦЕНУ, ДЛИТЕЛЬНОСТЬ И МАСТЕРА НАЗЫВАЕТ СЕРВЕР: quote возвращает канонические
+ * условия, confirm принимает только `quote_id`.
  */
 export type ResourceStep = 'select_time' | 'quote' | 'confirming' | 'done';
 
-/** Минимум, который нужен листу: ID для отбора, название для подписи и
- *  необязательный пресет терминологии услуги. Полный каталог здесь не нужен —
- *  «мои записи» его не грузят. */
+/** Минимум, который нужен листу. Длительность и цена — для подзаголовка:
+ *  «Мои записи» каталог не грузят, и там строка просто короче. */
 export type ResourceTarget = {
   id: number;
   name: string;
   terminology_profile?: TerminologyProfile | null;
+  duration_min?: number;
+  price_str?: string;
 };
 
 /** Перенос существующей брони: тот же выбор времени, другая пара команд. */
 export type MoveTarget = { reservationId: number; version: number };
 
 /**
- * С чем открывать лист, когда мастер и день выбраны ДО него (экран «Записатись»).
- *
- * Отдельным аргументом, а не вызовом `setTeacherId`/`setDate` следом: `open`
- * их сбрасывает, и «открыть, потом доставить» работало бы только по удачному
- * порядку в одном батче. Здесь это одно намерение и одно состояние.
+ * С чем открывать лист, когда мастер выбран ДО него (экран «Записатись»).
+ * Одним аргументом с `open`, а не вызовами следом: `open` сбрасывает прошлый
+ * выбор, и «открыть, потом доставить» работало бы только по удачному порядку.
  */
-export type OpenPreset = { teacherId?: number | null; date?: Date };
+export type OpenPreset = { teacherId?: number | null; teacherName?: string | null };
+
+/** Сообщение в листе: код отказа сервера или своё пояснение. Не `alert` —
+ *  модальный диалог поверх листа закрывал бы именно то, что надо исправить. */
+export type ResourceNotice = { code: string; tone: 'error' | 'info' };
 
 type Options = {
   /** Гость дошёл до quote: поднимаем существующий вход и повторяем шаг. */
   onNeedAuth?: (retry: () => void) => void;
+  /** Пояс студии и горизонт записи. Без каталога — день телефона и 60 дней. */
+  catalog?: StudioCatalog | null;
 };
 
-const iso = (date: Date) =>
-  `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+type Pages = { key: string; slots: AvailabilitySlot[][]; reason: string | null; error: ApiError | null };
 
-export function useResourceBooking({ onNeedAuth }: Options = {}) {
+/** Отказы, после которых показанное время уже неправда. */
+const SLOT_GONE = new Set(['SLOT_UNAVAILABLE', 'CONFIG_INCOMPLETE', 'VERSION_CONFLICT']);
+
+export function useResourceBooking({ onNeedAuth, catalog }: Options = {}) {
   const { t } = useTranslation();
-  const { tg, vibrateMedium } = useTelegram();
+  const { tg, vibrateMedium, vibrateLight } = useTelegram();
 
   const [service, setService] = useState<ResourceTarget | null>(null);
   const [move, setMove] = useState<MoveTarget | null>(null);
   const [branchId, setBranchId] = useState<number | null>(null);
-  const [teacherId, setTeacherId] = useState<number | null>(null);
-  const [date, setDate] = useState(() => new Date());
-  const [slots, setSlots] = useState<AvailabilitySlot[]>([]);
-  const [reason, setReason] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [teacher, setTeacher] = useState<{ id: number | null; name: string | null }>({ id: null, name: null });
+  const [pickedDay, setPickedDay] = useState<IsoDay | null>(null);
+  const [wantedPages, setWantedPages] = useState(1);
+  const [pages, setPages] = useState<Pages | null>(null);
+  const [attempt, setAttempt] = useState(0);
   const [step, setStep] = useState<ResourceStep>('select_time');
   const [quote, setQuote] = useState<QuoteRead | null>(null);
   const [booking, setBooking] = useState<BookingRead | null>(null);
+  const [notice, setNotice] = useState<ResourceNotice | null>(null);
   const [needsPhone, setNeedsPhone] = useState(false);
   const [needsSubscription, setNeedsSubscription] = useState<string | null>(null);
+  // Слот, по которому просили quote: TERMS_CHANGED пересчитывает ЕГО же.
+  const lastSlot = useRef<AvailabilitySlot | null>(null);
+  // Чем был открыт лист в прошлый раз: тот же мастер и услуга — тот же день.
+  const lastScope = useRef<string | null>(null);
 
-  const sequence = useRef(0);
+  const today = studioToday(catalog?.studio.tz_iana);
+  const lastDay = lastBookableDay(today, catalog?.rules.booking_window_days);
+  const totalPages = pageCount(today, lastDay);
+
+  const key = service && branchId ? `${service.id}|${branchId}|${teacher.id ?? 'any'}|${today}|${attempt}` : null;
+  const fresh = pages && pages.key === key ? pages : null;
+  const loadedPages = fresh?.slots.length ?? 0;
+  const loadError = fresh?.error ?? null;
+
+  useEffect(() => {
+    if (key === null || !service || !branchId || loadError) return;
+    const index = loadedPages;
+    if (index >= Math.min(wantedPages, totalPages)) return;
+    const range = pageRange(today, index, lastDay);
+    if (!range) return;
+    let cancelled = false;
+
+    hybridApi
+      .availability(availabilityQuery({ serviceId: service.id, branchId, teacherId: teacher.id, from: range.from, to: range.to }))
+      .then((data) => {
+        if (cancelled) return;
+        setPages((prev) => {
+          const same = prev && prev.key === key ? prev : null;
+          const loaded = same?.slots ?? [];
+          if (loaded.length !== index) return prev; // эту страницу уже дописали
+          return { key, slots: [...loaded, data.slots], reason: same?.reason ?? data.reason ?? null, error: null };
+        });
+      })
+      .catch((error: ApiError) => {
+        if (cancelled) return;
+        setPages((prev) => ({ key, slots: prev && prev.key === key ? prev.slots : [], reason: null, error }));
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [key, loadedPages, wantedPages, totalPages, loadError, service, branchId, teacher.id, today, lastDay]);
+
+  const slots = useMemo(() => (fresh ? fresh.slots.flat() : []), [fresh]);
+  const byDay = useMemo(() => groupByDay(slots), [slots]);
+  const loadedTo = loadedPages > 0 ? pageRange(today, loadedPages - 1, lastDay)?.to ?? null : null;
+  const days = useMemo(() => (loadedTo ? dayList(today, loadedTo) : []), [today, loadedTo]);
+  // День, выбранный человеком, — если он в загруженных; иначе ближайший со временем.
+  const day = pickedDay && days.includes(pickedDay) ? pickedDay : firstDayWithSlots(days, byDay);
+  const isLoading = key !== null && !loadError && loadedPages < Math.min(wantedPages, totalPages);
 
   const open = (picked: ResourceTarget, branch: number | null, moving: MoveTarget | null = null,
                 preset: OpenPreset = {}) => {
+    const scope = `${picked.id}|${branch}|${preset.teacherId ?? 'any'}|${moving?.reservationId ?? ''}`;
     setService(picked);
     setMove(moving);
     setBranchId(branch);
-    setTeacherId(preset.teacherId ?? null);
-    setSlots([]);
-    setReason(null);
+    setTeacher({ id: preset.teacherId ?? null, name: preset.teacherName ?? null });
+    if (scope !== lastScope.current) setPickedDay(null);
+    lastScope.current = scope;
+    setWantedPages(1);
+    // Каждое открытие — свежее время: пока лист был закрыт, окно могли занять.
+    setAttempt((value) => value + 1);
     setQuote(null);
     setBooking(null);
+    setNotice(null);
     setStep('select_time');
-    setDate(preset.date ?? new Date());
+    lastSlot.current = null;
     vibrateMedium();
   };
 
   const close = () => setService(null);
 
-  // Перезагрузка — это счётчик, а не вызов функции: setState живёт внутри
-  // промис-колбэков эффекта, как на странице расписания. Прямой вызов
-  // «функции, которая делает setState» из тела эффекта запрещён правилом
-  // react-hooks/set-state-in-effect и действительно даёт каскад рендеров.
-  const [reloadKey, setReloadKey] = useState(0);
-  const reload = useCallback(() => setReloadKey((value) => value + 1), []);
+  // Перечитать время: смена ключа сама запускает загрузку заново.
+  const reload = () => setAttempt((value) => value + 1);
 
-  useEffect(() => {
-    if (!service || !branchId) return;
-    const request = ++sequence.current;
-    // Скелет по таймеру: на быстром ответе он не появляется вовсе.
-    const timer = window.setTimeout(() => setIsLoading(true), 250);
+  function handleFailure(error: ApiError) {
+    if (error.status === 428) {
+      setNeedsPhone(true);
+      return;
+    }
+    if (error.status === 402) {
+      setNeedsSubscription(error.code ? t('subscriptionSheet.hint') : error.message);
+      return;
+    }
+    setNotice({ code: error.code ?? 'UNKNOWN', tone: 'error' });
+    if (tg) tg.HapticFeedback.notificationOccurred('error');
+  }
 
-    hybridApi
-      .availability({
-        service_id: service.id,
-        branch_id: branchId,
-        date_from: iso(date),
-        date_to: iso(date),
-        ...(teacherId != null ? { teacher_id: teacherId } : {}),
-      })
-      .then((data) => {
-        if (request !== sequence.current) return;  // Ответ прошлого выбора.
-        setSlots(data.slots);
-        setReason(data.slots.length === 0 ? data.reason ?? 'empty' : null);
-      })
-      .catch((error) => {
-        if (request !== sequence.current) return;
-        setSlots([]);
-        setReason('error');
-        notify(error instanceof Error ? error.message : t('resource.loadError'));
-      })
-      .finally(() => {
-        window.clearTimeout(timer);
-        if (request === sequence.current) setIsLoading(false);
-      });
-
-    return () => window.clearTimeout(timer);
-  }, [service, branchId, teacherId, date, reloadKey, t]);
-
-  const requestQuote = async (slot: AvailabilitySlot) => {
+  const requestQuote = async (slot: AvailabilitySlot, refreshed = false) => {
     if (!service || !branchId) return;
     // Вход поднимается ДО quote: условия персональные (абонемент, пробное,
     // долг), и посчитать их можно только для конкретного человека.
@@ -146,14 +189,19 @@ export function useResourceBooking({ onNeedAuth }: Options = {}) {
       onNeedAuth(() => void requestQuote(slot));
       return;
     }
+    lastSlot.current = slot;
+    setNotice(refreshed ? { code: 'TERMS_REFRESHED', tone: 'info' } : null);
+    setQuote(null);
     setStep('quote');
     const request = {
       booking_mode: 'resource' as const,
       service_id: service.id,
       branch_id: branchId,
       // Мастер именно тот, кого показали в слоте: «Любой» превращается в
-      // конкретный ID здесь, а не остаётся неопределённым до confirm.
-      teacher_id: teacherId ?? slot.teacher_ids[0] ?? null,
+      // конкретный ID здесь (сервер отдаёт teacher_ids по возрастанию — это и
+      // есть его правило «минимальный свободный»), а не остаётся
+      // неопределённым до confirm.
+      teacher_id: teacher.id ?? slot.teacher_ids[0] ?? null,
       starts_at: slot.starts_at,
     };
     try {
@@ -162,8 +210,10 @@ export function useResourceBooking({ onNeedAuth }: Options = {}) {
         : await hybridApi.quote(request);
       setQuote(created);
     } catch (error) {
+      const failure = error as ApiError;
       setStep('select_time');
-      handleFailure(error);
+      handleFailure(failure);
+      if (failure.code && SLOT_GONE.has(failure.code)) reload();
     }
   };
 
@@ -172,45 +222,71 @@ export function useResourceBooking({ onNeedAuth }: Options = {}) {
     setStep('confirming');
     try {
       // Перенос отправляет ожидаемую версию занятия: чужая правка между
-      // показом и подтверждением обязана дать VERSION_CONFLICT, а не тихо
-      // переписать уже изменённый интервал (§6.5).
+      // показом и подтверждением обязана дать VERSION_CONFLICT (§6.5).
       const result = move
         ? await hybridApi.move(move.reservationId, quote.quote_id, move.version)
         : await hybridApi.confirm(quote.quote_id);
       setBooking(result);
+      setNotice(null);
       setStep('done');
       bumpLessons();
       spawnPetals();
       if (tg) tg.HapticFeedback.notificationOccurred('success');
     } catch (error) {
-      // Конфликт оставляет форму открытой и обновляет время: слот мог уйти
-      // между показом и подтверждением, и это нормальный исход, а не сбой.
-      setStep('select_time');
+      const failure = error as ApiError;
+      // Нужен телефон — условия те же, после сохранения номера подтверждают снова.
+      if (failure.status === 428) {
+        setStep('quote');
+        setNeedsPhone(true);
+        return;
+      }
+      // Условия изменились или quote истёк: тот же слот, новые условия — и
+      // подтверждать их человек обязан заново (MA-06). Если слот ушёл,
+      // пересчёт сам вернёт к выбору времени.
+      if ((failure.code === 'TERMS_CHANGED' || failure.code === 'QUOTE_EXPIRED') && lastSlot.current) {
+        await requestQuote(lastSlot.current, true);
+        return;
+      }
+      // Слот заняли между показом и подтверждением — нормальный исход, а не
+      // сбой: форма остаётся открытой, время перечитывается.
       setQuote(null);
+      setStep('select_time');
       reload();
-      handleFailure(error);
+      handleFailure(failure);
     }
   };
 
-  function handleFailure(error: unknown) {
-    const status = (error as { status?: number }).status;
-    if (status === 428) { setNeedsPhone(true); return; }
-    if (status === 402) {
-      setNeedsSubscription(error instanceof Error ? error.message : t('subscriptionSheet.hint'));
-      return;
-    }
-    notify(error instanceof Error ? error.message : t('resource.bookError'));
-    if (tg) tg.HapticFeedback.notificationOccurred('error');
-  }
-
   return {
-    service, move, branchId, teacherId, setTeacherId, date, setDate,
-    slots, reason, isLoading, step, quote, booking,
+    service, move, branchId,
+    teacherId: teacher.id, teacherName: teacher.name,
+    today, lastDay, days, day, byDay,
+    slotsOfDay: day ? byDay.get(day) ?? [] : [],
+    reason: fresh?.reason ?? null,
+    loadError,
+    isLoading,
+    /** Ещё ничего не пришло — лента дней и время рисуются скелетом. */
+    isFirstLoad: isLoading && loadedPages === 0,
+    hasMore: !isLoading && !loadError && loadedPages > 0 && loadedPages < totalPages,
+    loadMore: () => setWantedPages(Math.max(wantedPages, loadedPages + 1)),
+    retryLoad: () => setPages((prev) => (prev ? { ...prev, error: null } : prev)),
+    pickDay: (next: IsoDay) => {
+      setPickedDay(next);
+      vibrateLight();
+    },
+    step, quote, booking, notice,
     open, close, requestQuote, confirm, reload,
-    back: () => { setQuote(null); setStep('select_time'); },
+    back: () => {
+      setQuote(null);
+      setNotice(null);
+      setStep('select_time');
+    },
     needsPhone,
     closePhone: () => setNeedsPhone(false),
-    retryAfterPhone: () => { setNeedsPhone(false); reload(); },
+    retryAfterPhone: () => {
+      setNeedsPhone(false);
+      if (quote) void confirm();
+      else reload();
+    },
     needsSubscription,
     closeSubscription: () => setNeedsSubscription(null),
   };

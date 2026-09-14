@@ -1,0 +1,37 @@
+{
+  "banner": {
+    "title": "Vaše soukromí, vaše volba",
+    "text": "Velora ve vašem prohlížeči ukládá jen to, bez čeho nefunguje: přihlášení, jazyk a nastavení rozhraní. S vaším svolením zapneme také přihlášení přes Google — Google pak uloží vlastní cookies. Analytiku ani reklamu nepoužíváme.",
+    "policy": "Zásady cookies"
+  },
+  "actions": {
+    "accept": "Přijmout vše",
+    "reject": "Odmítnout vše",
+    "save": "Uložit volbu",
+    "settings": "Nastavit"
+  },
+  "settings": {
+    "title": "Nastavení cookies",
+    "subtitle": "Platí pro tento prohlížeč. Změnit je můžete kdykoli.",
+    "alwaysOn": "Vždy zapnuté",
+    "necessary": {
+      "title": "Nezbytné",
+      "text": "Udržují vás přihlášené, pamatují si jazyk, motiv a vaši volbu zde a chrání platby i službu před zneužitím. Bez nich Velora nefunguje."
+    },
+    "functional": {
+      "title": "Přihlášení přes Google",
+      "text": "Načte přihlašovací službu Google, abyste se mohli přihlásit svým účtem Google. Google může uložit vlastní cookies a zjistit, že jste otevřeli přihlašovací stránku."
+    },
+    "none": "Analytické, reklamní ani sledovací cookies nepoužíváme.",
+    "decided": "Vaše volba ze dne {{date}}",
+    "policy": "Úplný seznam najdete v Zásadách cookies"
+  },
+  "google": {
+    "button": "Pokračovat přes Google",
+    "notice": "Kliknutím zapnete přihlášení přes Google: načte se služba Google a ta může uložit vlastní cookies.",
+    "policy": "Podrobnosti"
+  },
+  "profile": {
+    "button": "Nastavení cookies"
+  }
+}

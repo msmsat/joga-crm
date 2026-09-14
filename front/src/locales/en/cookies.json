@@ -1,0 +1,37 @@
+{
+  "banner": {
+    "title": "Your privacy, your choice",
+    "text": "Velora keeps only what it needs to work in your browser: your sign-in, language and interface settings. With your permission we'll also turn on Google Sign-In — Google then sets its own cookies. We use no analytics and no advertising.",
+    "policy": "Cookie policy"
+  },
+  "actions": {
+    "accept": "Accept all",
+    "reject": "Reject all",
+    "save": "Save choice",
+    "settings": "Settings"
+  },
+  "settings": {
+    "title": "Cookie settings",
+    "subtitle": "Applies to this browser. You can change it at any time.",
+    "alwaysOn": "Always on",
+    "necessary": {
+      "title": "Strictly necessary",
+      "text": "Keep you signed in, remember your language, theme and your choice here, and protect payments and the service from abuse. Velora can't work without them."
+    },
+    "functional": {
+      "title": "Sign in with Google",
+      "text": "Loads Google's sign-in service so you can use your Google account. Google may set its own cookies and learn that you opened the sign-in page."
+    },
+    "none": "No analytics, advertising or tracking cookies — we don't use any.",
+    "decided": "Your choice of {{date}}",
+    "policy": "Full list in the Cookie policy"
+  },
+  "google": {
+    "button": "Continue with Google",
+    "notice": "Clicking turns on Google Sign-In: Google's service loads and can set its own cookies.",
+    "policy": "Details"
+  },
+  "profile": {
+    "button": "Cookie settings"
+  }
+}

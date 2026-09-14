@@ -1,0 +1,37 @@
+{
+  "banner": {
+    "title": "Ihre Privatsphäre, Ihre Wahl",
+    "text": "Velora speichert in Ihrem Browser nur, was für den Betrieb nötig ist: Ihre Anmeldung, Sprache und Oberflächeneinstellungen. Mit Ihrer Erlaubnis aktivieren wir außerdem die Anmeldung mit Google – Google setzt dann eigene Cookies. Analyse- und Werbe-Cookies nutzen wir nicht.",
+    "policy": "Cookie-Richtlinie"
+  },
+  "actions": {
+    "accept": "Alle akzeptieren",
+    "reject": "Alle ablehnen",
+    "save": "Auswahl speichern",
+    "settings": "Einstellungen"
+  },
+  "settings": {
+    "title": "Cookie-Einstellungen",
+    "subtitle": "Gilt für diesen Browser. Sie können sie jederzeit ändern.",
+    "alwaysOn": "Immer aktiv",
+    "necessary": {
+      "title": "Unbedingt erforderlich",
+      "text": "Halten Sie angemeldet, merken sich Sprache, Design und Ihre Auswahl hier und schützen Zahlungen und den Dienst vor Missbrauch. Ohne sie funktioniert Velora nicht."
+    },
+    "functional": {
+      "title": "Anmeldung mit Google",
+      "text": "Lädt den Anmeldedienst von Google, damit Sie sich mit Ihrem Google-Konto anmelden können. Google kann eigene Cookies setzen und erfahren, dass Sie die Anmeldeseite geöffnet haben."
+    },
+    "none": "Analyse-, Werbe- oder Tracking-Cookies verwenden wir nicht.",
+    "decided": "Ihre Auswahl vom {{date}}",
+    "policy": "Vollständige Liste in der Cookie-Richtlinie"
+  },
+  "google": {
+    "button": "Weiter mit Google",
+    "notice": "Ein Klick aktiviert die Anmeldung mit Google: Der Google-Dienst wird geladen und kann eigene Cookies setzen.",
+    "policy": "Details"
+  },
+  "profile": {
+    "button": "Cookie-Einstellungen"
+  }
+}

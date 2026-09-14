@@ -1,7 +1,7 @@
 /* ==========================================================================
    GLOBAL VARIABLES (Design Tokens)
    ========================================================================== */
-  @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800;900&display=swap');
+  /* Manrope подключается в main.tsx (@fontsource) — со своего домена, без запроса к Google. */
 
   :root {
     color-scheme: light;
@@ -3285,3 +3285,18 @@
 }
 @keyframes v-sheet-in  { from { opacity: 0; transform: translateY(24px) } to { opacity: 1; transform: none } }
 @keyframes v-sheet-out { from { opacity: 1; transform: none } to { opacity: 0; transform: translateY(24px) } }
+
+/* Плашка cookie на телефоне (components/cookies/CookieBanner): во всю ширину
+   над краем экрана, а в кабинете — над нижней панелью: навигацию до выбора
+   закрывать нельзя, иначе это cookie wall. Позиция на десктопе — утилитами
+   Tailwind; эти правила вне слоя и потому их перебивают. */
+@media (max-width: 767px) {
+  .v-cookie-banner {
+    left: 12px;
+    right: 12px;
+    bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+    width: auto;
+    padding: 18px;
+  }
+  .v-cookie-banner.is-dash { bottom: calc(var(--mnav-safe) + 12px); }
+}

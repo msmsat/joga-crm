@@ -5,6 +5,8 @@ const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8000'
 
 export const TERMS_URL = `${API_URL}/static/terms.html`
 export const PRIVACY_URL = `${API_URL}/static/privacy.html`
+// Перечень cookie и хранилища; согласие на необязательное — utils/cookieConsent.ts.
+export const COOKIES_URL = `${API_URL}/static/cookies.html`
 // Приложение об обработке данных (ст. 28 GDPR) — раздел внутри Условий.
 export const DPA_URL = `${TERMS_URL}#dpa`
 
@@ -22,7 +24,8 @@ export const SUPPORT_EMAIL = 'smat5302@gmail.com'
 export const SUPPORT_WHATSAPP = '+420 722 274 622'
 export const SUPPORT_WHATSAPP_URL = `https://wa.me/${SUPPORT_WHATSAPP.replace(/\D/g, '')}`
 
-// Подвал страниц входа и регистрации.
+// Подвал страниц входа и регистрации. «Настройки cookie» стоят там отдельной
+// кнопкой рядом со списком: это не ссылка, а окно (openCookieSettings).
 export const LEGAL_FOOTER_LINKS = [
   { label: 'Конфиденциальность', href: PRIVACY_URL },
   { label: 'Условия', href: TERMS_URL },
@@ -33,6 +36,7 @@ export const LEGAL_FOOTER_LINKS = [
 export const LEGAL_DOC_LINKS = [
   { label: 'Условия использования', href: TERMS_URL },
   { label: 'Политика конфиденциальности', href: PRIVACY_URL },
+  { label: 'Политика cookie', href: COOKIES_URL },
   { label: 'Обработка данных', href: DPA_URL },
   { label: 'Поддержка', href: SUPPORT_WHATSAPP_URL },
 ]

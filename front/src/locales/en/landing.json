@@ -339,7 +339,9 @@
         "title": "Documents",
         "terms": "Terms of use",
         "privacy": "Privacy policy",
+        "cookies": "Cookie policy",
         "dpa": "Data processing",
+        "cookieSettings": "Cookie settings",
         "support": "Support"
       }
     },

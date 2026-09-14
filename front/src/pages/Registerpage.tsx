@@ -5,7 +5,8 @@ import {
   IconEmail, IconUser, IconLock, IconEyeOpen, IconEyeClosed, ErrorAlert
 } from "../components/UI"; // 🔥 Весь UI подтягивается отсюда
 import { useNavigate } from "react-router-dom";
-import { GoogleLogin } from '@react-oauth/google';
+import { GoogleSignIn } from '../components/cookies/GoogleSignIn';
+import { openCookieSettings } from '../utils/cookieConsent';
 import { authApi, ApiError } from '../api';
 import { setActiveToken } from '../utils/auth';
 import { LEGAL_FOOTER_LINKS, LEGAL_LINK_PROPS, PRIVACY_URL, TERMS_URL } from '../utils/legal';
@@ -219,19 +220,12 @@ export default function RegisterPage() {
                 {/* Пока документы не приняты, кнопка Google не кликается: она в
                     iframe, поэтому гасим её обёрткой, а не атрибутом disabled. */}
                 <div style={{ display: "flex", justifyContent: "center", width: "100%", opacity: agree ? 1 : 0.45, pointerEvents: agree ? "auto" : "none", transition: "opacity 0.2s" }}>
-                  <GoogleLogin
+                  <GoogleSignIn
                       /* См. Loginpage: 320px кнопки Google не влезают в
                          карточку на самом узком экране. */
-                      width={String(Math.min(320, window.innerWidth - 76))}
-                      onSuccess={(credentialResponse) => {
-                          if (credentialResponse.credential) {
-                          handleGoogleSuccess(credentialResponse.credential);
-                          }
-                      }}
-                      onError={() => {
-                          setSubmitError("Google авторизация не удалась");
-                      }}
-                      useOneTap 
+                      width={Math.min(320, window.innerWidth - 76)}
+                      onCredential={(credential) => handleGoogleSuccess(credential)}
+                      onError={() => setSubmitError("Google авторизация не удалась")}
                   />
                 </div>
 
@@ -353,10 +347,11 @@ export default function RegisterPage() {
       {/* ── FOOTER ── */}
       <footer className="flex-between" style={{ borderTop: "1px solid var(--border)", padding: "16px 40px", position: "relative", zIndex: 1, flexWrap: "wrap", gap: 8 }}>
         <div style={{ fontSize: 12, color: "rgba(102,102,102,0.5)" }}>© 2026 Velora. Все права защищены.</div>
-        <div style={{ display: "flex", gap: 20, fontSize: 12 }}>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 20, fontSize: 12 }}>
           {LEGAL_FOOTER_LINKS.map(({ label, href }) => (
             <a key={label} href={href} {...LEGAL_LINK_PROPS} className="text-muted" style={{ textDecoration: "none", transition: "color 0.2s" }} onMouseOver={(e) => (e.currentTarget.style.color = "var(--onyx)")} onMouseOut={(e) => (e.currentTarget.style.color = "var(--muted)")}>{label}</a>
           ))}
+          <button type="button" onClick={openCookieSettings} className="text-muted" style={{ background: "none", border: "none", padding: 0, font: "inherit", cursor: "pointer", transition: "color 0.2s" }} onMouseOver={(e) => (e.currentTarget.style.color = "var(--onyx)")} onMouseOut={(e) => (e.currentTarget.style.color = "var(--muted)")}>Настройки cookie</button>
         </div>
       </footer>
     </div>

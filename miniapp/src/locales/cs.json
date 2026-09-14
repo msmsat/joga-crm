@@ -438,12 +438,10 @@
     "confirm": "Potvrdit",
     "confirming": "Potvrzujeme…",
     "done": "Hotovo",
-    "time": "Čas",
     "staff": "Specialista",
     "branch": "Pobočka",
     "duration": "Délka",
     "price": "Cena",
-    "status": "Stav",
     "pay": "Zaplatit",
     "changeTime": "Změnit čas",
     "loadError": "Volné časy se nepodařilo načíst",
@@ -466,8 +464,30 @@
       "attended": "Navštíveno",
       "cancelled": "Zrušeno"
     },
-    "reason": {
-      "config_incomplete": "Rozvrh této služby zatím není nastaven"
+    "back": "Zpět",
+    "moreDays": "Další",
+    "noSlotsDay": "Tento den není volný čas",
+    "nextFree": "Nejbližší volný: {{when}}",
+    "noSlotsRange": "V těchto dnech není volný čas",
+    "noSlotsWindow": "Zatím není volný čas",
+    "noSlotsWindowHint": "Zkuste jiného specialistu nebo se podívejte později.",
+    "showMoreDays": "Zobrazit další dny",
+    "otherMaster": "Vybrat jiného specialistu",
+    "parts": {
+      "morning": "Ráno",
+      "afternoon": "Odpoledne",
+      "evening": "Večer"
+    },
+    "errors": {
+      "SLOT_UNAVAILABLE": "Tento čas byl právě obsazen. Vyberte jiný — seznam je aktualizovaný.",
+      "QUOTE_EXPIRED": "Čas na potvrzení vypršel. Vyberte čas znovu.",
+      "TERMS_CHANGED": "Podmínky rezervace se změnily. Vyberte čas znovu.",
+      "TERMS_REFRESHED": "Podmínky se aktualizovaly — zkontrolujte je a potvrďte znovu.",
+      "CONFIG_INCOMPLETE": "Rozvrh se ještě nastavuje. Zkuste to o něco později.",
+      "VERSION_CONFLICT": "Rezervace byla právě změněna. Otevřete ji znovu.",
+      "NOT_FOUND": "Tuto službu nebo rezervaci se nepodařilo najít. Obnovte stránku.",
+      "BOOKING_CLOSED": "Online rezervace jsou teď uzavřeny.",
+      "UNKNOWN": "Rezervaci se nepodařilo vytvořit. Zkuste to znovu."
     }
   },
   "units": {
@@ -475,17 +495,11 @@
   },
   "booking": {
     "title": "Objednat se",
-    "stepBranch": "Pobočka",
-    "stepService": "Služba",
     "stepMaster": "Specialista",
     "duration": "{{min}} min",
     "pickService": "Vyberte službu",
     "anyMaster": "Kdokoli z týmu",
     "anyMasterHint": "Nejbližší volný čas",
-    "firstFree": "Volno od {{time}}",
-    "noFreeTime": "Obsazeno",
-    "noMasters": "Tento den nikdo nepracuje",
-    "noMastersHint": "Zkuste jiný den",
     "reason": {
       "config_incomplete": "Rozvrh této služby ještě není nastaven",
       "no_eligible_staff": "Tuto službu zatím nikdo neposkytuje",
@@ -493,6 +507,26 @@
       "error": "Načtení se nezdařilo. Zkuste to znovu",
       "no_services": "Studio zatím nepřidalo služby k rezervaci"
     },
-    "allBusy": "Tento den jsou všichni specialisté obsazeni."
+    "allServices": "Všechny služby",
+    "masters": "Specialisté",
+    "moreServices": "+{{n}} další",
+    "nearest": "Nejbližší: {{when}}",
+    "noNearest": "V nejbližších dnech není volno",
+    "today": "dnes",
+    "tomorrow": "zítra",
+    "selected": "vybráno",
+    "retry": "Zkusit znovu",
+    "loadError": "Specialisty se nepodařilo načíst",
+    "unavailable": "Online rezervace ke specialistům zatím není otevřená",
+    "unavailableHint": "Studio nastavuje rozvrh. Zkuste to o něco později.",
+    "noStaff": "Zatím nejsou žádní specialisté k rezervaci",
+    "noStaffHint": "Studio zatím nepřiřadilo specialisty k této pobočce.",
+    "noStaffForService": "Tuto službu tu zatím nikdo neposkytuje",
+    "showAllMasters": "Zobrazit všechny specialisty",
+    "noServicesForMaster": "Tento specialista zatím nemá služby k rezervaci",
+    "segment": {
+      "resource": "Individuálně",
+      "event": "Rozvrh skupin"
+    }
   }
 }
