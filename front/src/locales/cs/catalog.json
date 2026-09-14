@@ -91,10 +91,10 @@
       "workingHours": "Provozní doba"
     },
     "hall": {
-      "titleNew": "Nový sál",
-      "titleEdit": "Upravit sál",
-      "name": "Název sálu",
-      "namePlaceholder": "Sál A",
+      "titleNew": "Přidat {{spaceAcc}}",
+      "titleEdit": "Upravit {{spaceAcc}}",
+      "name": "Název",
+      "namePlaceholder": "{{space, capitalize}} A",
       "capacity": "Kapacita",
       "area": "Plocha, m²",
       "hourlyRate": "Cena za hodinu, {{currency}}",
@@ -102,10 +102,10 @@
       "equipment": "Vybavení",
       "equipmentPlaceholder": "Přidat vybavení",
       "color": "Barva",
-      "isOnline": "Online sál",
-      "photo": "Fotka sálu",
-      "subtitle": "Místnost v pobočce: místa, vybavení, barva v deníku",
-      "previewTitle": "Náhled sálu",
+      "isOnline": "Online",
+      "photo": "Fotka",
+      "subtitle": "{{space, capitalize}} v pobočce: místa, vybavení, barva v deníku",
+      "previewTitle": "Náhled",
       "sectionBasic": "Základ",
       "sectionSpace": "Prostor",
       "sectionLook": "Vzhled",
@@ -114,7 +114,7 @@
       "statArea": "Plocha",
       "statRate": "Cena / hod.",
       "isOnlineHint": "Lekce probíhají online — bez fyzické místnosti.",
-      "colorHint": "Lekce v tomto sále jsou v deníku zvýrazněné touto barvou."
+      "colorHint": "Touto barvou jsou lekce zvýrazněné v deníku."
     },
     "service": {
       "titleNew": "Nová služba",
@@ -189,16 +189,16 @@
   "studios": {
     "title": "POBOČKY",
     "addStudio": "Přidat studio",
-    "addHall": "Přidat sál",
+    "addHall": "Přidat {{spaceAcc}}",
     "editBranch": "Upravit pobočku",
     "deleteBranch": "Smazat pobočku",
     "infoTab": "Obecné informace",
-    "hallsTitle": "Sály studia",
-    "hallCount_one": "{{count}} sál",
-    "hallCount_few": "{{count}} sály",
-    "hallCount_other": "{{count}} sálů",
+    "hallsTitle": "{{spacePlural, capitalize}} studia",
+    "hallCount_one": "{{spacePlural, capitalize}} · {{count}}",
+    "hallCount_few": "{{spacePlural, capitalize}} · {{count}}",
+    "hallCount_other": "{{spacePlural, capitalize}} · {{count}}",
     "stats": {
-      "halls": "Sály",
+      "halls": "{{spacePlural, capitalize}}",
       "totalSeats": "Celkem míst",
       "fromPerHour": "Od / hod."
     },
@@ -213,8 +213,8 @@
       },
       "equipment": "Vybavení",
       "actions": "Akce",
-      "edit": "Upravit sál",
-      "delete": "Smazat sál"
+      "edit": "Upravit {{spaceAcc}}",
+      "delete": "Smazat {{spaceAcc}}"
     },
     "empty": {
       "title": "Žádné pobočky",
@@ -224,14 +224,14 @@
       "created": "Studio vytvořeno",
       "createError": "Vytvoření studia se nezdařilo",
       "deleted": "Studio smazáno",
-      "hallDeleted": "Sál smazán",
+      "hallDeleted": "Smazáno: {{space}}",
       "saved": "Uloženo",
       "edit": "Úprava: {{name}}"
     },
     "confirmDelete": "Smazat pobočku „{{name}}“? Tuto akci nelze vrátit.",
     "confirmDeleteTitle": "Smazat pobočku?",
-    "confirmDeleteHall": "Smazat sál „{{name}}“?",
-    "confirmDeleteHallTitle": "Smazat sál?"
+    "confirmDeleteHall": "Smazat {{spaceAcc}} „{{name}}“?",
+    "confirmDeleteHallTitle": "Smazat {{spaceAcc}}?"
   },
   "services": {
     "title": "SLUŽBY",

@@ -1,4 +1,9 @@
 {
+  "space": {
+    "singular": "spațiu",
+    "plural": "spații",
+    "accusative": "un spațiu"
+  },
   "phoneGate": {
     "title": "Adăugați numărul dvs. de telefon",
     "sub": "Telefonul este al doilea contact al contului: prin el recuperați accesul și primiți notificările. Numărul studioului nu se potrivește aici — acesta trebuie să fie al dvs."

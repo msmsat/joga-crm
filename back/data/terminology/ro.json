@@ -2,33 +2,7 @@
   "version": 1,
   "locale": "ro",
   "profiles": {
-    "generic": {
-      "staff": {
-        "singular": "specialist",
-        "plural": "specialiști",
-        "accusative": "un specialist"
-      },
-      "offering": {
-        "event": {
-          "singular": "eveniment",
-          "plural": "evenimente",
-          "accusative": "un eveniment"
-        },
-        "resource": {
-          "singular": "serviciu",
-          "plural": "servicii",
-          "accusative": "un serviciu"
-        }
-      },
-      "messages": {
-        "choose_staff": "Alegeți {{staff.accusative}}",
-        "choose_offering": "Alegeți {{offering.accusative}}",
-        "empty_slots": "Nu există ore disponibile",
-        "my_bookings": "Rezervările mele",
-        "confirm_booking": "Confirmă rezervarea"
-      }
-    },
-    "fitness": {
+    "studio": {
       "staff": {
         "singular": "antrenor",
         "plural": "antrenori",
@@ -45,6 +19,42 @@
           "plural": "servicii",
           "accusative": "un serviciu"
         }
+      },
+      "space": {
+        "singular": "sală",
+        "plural": "săli",
+        "accusative": "o sală"
+      },
+      "messages": {
+        "choose_staff": "Alegeți {{staff.accusative}}",
+        "choose_offering": "Alegeți {{offering.accusative}}",
+        "empty_slots": "Nu există ore disponibile",
+        "my_bookings": "Rezervările mele",
+        "confirm_booking": "Confirmă rezervarea"
+      }
+    },
+    "sport": {
+      "staff": {
+        "singular": "antrenor",
+        "plural": "antrenori",
+        "accusative": "un antrenor"
+      },
+      "offering": {
+        "event": {
+          "singular": "curs",
+          "plural": "cursuri",
+          "accusative": "un curs"
+        },
+        "resource": {
+          "singular": "serviciu",
+          "plural": "servicii",
+          "accusative": "un serviciu"
+        }
+      },
+      "space": {
+        "singular": "sală",
+        "plural": "săli",
+        "accusative": "o sală"
       },
       "messages": {
         "choose_staff": "Alegeți {{staff.accusative}}",
@@ -71,6 +81,104 @@
           "plural": "servicii",
           "accusative": "un serviciu"
         }
+      },
+      "space": {
+        "singular": "scaun",
+        "plural": "scaune",
+        "accusative": "un scaun"
+      },
+      "messages": {
+        "choose_staff": "Alegeți {{staff.accusative}}",
+        "choose_offering": "Alegeți {{offering.accusative}}",
+        "empty_slots": "Nu există ore disponibile",
+        "my_bookings": "Rezervările mele",
+        "confirm_booking": "Confirmă rezervarea"
+      }
+    },
+    "recovery": {
+      "staff": {
+        "singular": "specialist",
+        "plural": "specialiști",
+        "accusative": "un specialist"
+      },
+      "offering": {
+        "event": {
+          "singular": "eveniment",
+          "plural": "evenimente",
+          "accusative": "un eveniment"
+        },
+        "resource": {
+          "singular": "serviciu",
+          "plural": "servicii",
+          "accusative": "un serviciu"
+        }
+      },
+      "space": {
+        "singular": "cabină",
+        "plural": "cabine",
+        "accusative": "o cabină"
+      },
+      "messages": {
+        "choose_staff": "Alegeți {{staff.accusative}}",
+        "choose_offering": "Alegeți {{offering.accusative}}",
+        "empty_slots": "Nu există ore disponibile",
+        "my_bookings": "Rezervările mele",
+        "confirm_booking": "Confirmă rezervarea"
+      }
+    },
+    "relax": {
+      "staff": {
+        "singular": "specialist",
+        "plural": "specialiști",
+        "accusative": "un specialist"
+      },
+      "offering": {
+        "event": {
+          "singular": "eveniment",
+          "plural": "evenimente",
+          "accusative": "un eveniment"
+        },
+        "resource": {
+          "singular": "serviciu",
+          "plural": "servicii",
+          "accusative": "un serviciu"
+        }
+      },
+      "space": {
+        "singular": "cabină",
+        "plural": "cabine",
+        "accusative": "o cabină"
+      },
+      "messages": {
+        "choose_staff": "Alegeți {{staff.accusative}}",
+        "choose_offering": "Alegeți {{offering.accusative}}",
+        "empty_slots": "Nu există ore disponibile",
+        "my_bookings": "Rezervările mele",
+        "confirm_booking": "Confirmă rezervarea"
+      }
+    },
+    "other": {
+      "staff": {
+        "singular": "specialist",
+        "plural": "specialiști",
+        "accusative": "un specialist"
+      },
+      "offering": {
+        "event": {
+          "singular": "eveniment",
+          "plural": "evenimente",
+          "accusative": "un eveniment"
+        },
+        "resource": {
+          "singular": "serviciu",
+          "plural": "servicii",
+          "accusative": "un serviciu"
+        }
+      },
+      "space": {
+        "singular": "spațiu",
+        "plural": "spații",
+        "accusative": "un spațiu"
       },
       "messages": {
         "choose_staff": "Alegeți {{staff.accusative}}",

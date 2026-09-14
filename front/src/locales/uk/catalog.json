@@ -91,10 +91,10 @@
       "workingHours": "Робочі години"
     },
     "hall": {
-      "titleNew": "Новий зал",
-      "titleEdit": "Редагувати зал",
-      "name": "Назва залу",
-      "namePlaceholder": "Зал A",
+      "titleNew": "Додати {{spaceAcc}}",
+      "titleEdit": "Змінити {{spaceAcc}}",
+      "name": "Назва",
+      "namePlaceholder": "{{space, capitalize}} А",
       "capacity": "Місткість",
       "area": "Площа, м²",
       "hourlyRate": "Ціна за годину, {{currency}}",
@@ -102,10 +102,10 @@
       "equipment": "Обладнання",
       "equipmentPlaceholder": "Додати обладнання",
       "color": "Колір",
-      "isOnline": "Онлайн-зал",
-      "photo": "Фото залу",
-      "subtitle": "Приміщення філіалу: місця, обладнання, колір у журналі",
-      "previewTitle": "Перегляд залу",
+      "isOnline": "Онлайн",
+      "photo": "Фото",
+      "subtitle": "{{space, capitalize}} філіалу: місця, обладнання, колір у журналі",
+      "previewTitle": "Перегляд",
       "sectionBasic": "Основне",
       "sectionSpace": "Приміщення",
       "sectionLook": "Вигляд",
@@ -113,8 +113,8 @@
       "hourlyRateShort": "Ціна за годину",
       "statArea": "Площа",
       "statRate": "Ціна / година",
-      "isOnlineHint": "Заняття проходять онлайн — фізичного приміщення немає.",
-      "colorHint": "Заняття цього залу підсвічуються цим кольором у журналі."
+      "isOnlineHint": "Заняття проходять онлайн — без фізичного приміщення.",
+      "colorHint": "Цим кольором заняття підсвічуються в журналі."
     },
     "service": {
       "titleNew": "Нова послуга",
@@ -189,17 +189,17 @@
   "studios": {
     "title": "СТУДІЇ",
     "addStudio": "Додати студію",
-    "addHall": "Додати зал",
+    "addHall": "Додати {{spaceAcc}}",
     "editBranch": "Редагувати філіал",
     "deleteBranch": "Видалити філіал",
     "infoTab": "Загальна інформація",
-    "hallsTitle": "Зали студії",
-    "hallCount_one": "{{count}} зал",
-    "hallCount_few": "{{count}} зали",
-    "hallCount_many": "{{count}} залів",
-    "hallCount_other": "{{count}} залів",
+    "hallsTitle": "{{spacePlural, capitalize}} студії",
+    "hallCount_one": "{{spacePlural, capitalize}} · {{count}}",
+    "hallCount_few": "{{spacePlural, capitalize}} · {{count}}",
+    "hallCount_many": "{{spacePlural, capitalize}} · {{count}}",
+    "hallCount_other": "{{spacePlural, capitalize}} · {{count}}",
     "stats": {
-      "halls": "Зали",
+      "halls": "{{spacePlural, capitalize}}",
       "totalSeats": "Усього місць",
       "fromPerHour": "Від / годину"
     },
@@ -214,8 +214,8 @@
       },
       "equipment": "Обладнання",
       "actions": "Дії",
-      "edit": "Редагувати зал",
-      "delete": "Видалити зал"
+      "edit": "Змінити {{spaceAcc}}",
+      "delete": "Видалити {{spaceAcc}}"
     },
     "empty": {
       "title": "Студій немає",
@@ -225,14 +225,14 @@
       "created": "Студію створено",
       "createError": "Не вдалося створити студію",
       "deleted": "Студію видалено",
-      "hallDeleted": "Зал видалено",
+      "hallDeleted": "Видалено: {{space}}",
       "saved": "Збережено",
       "edit": "Редагування: {{name}}"
     },
     "confirmDelete": "Видалити філіал «{{name}}»? Це не можна скасувати.",
     "confirmDeleteTitle": "Видалити філіал?",
-    "confirmDeleteHall": "Видалити зал «{{name}}»?",
-    "confirmDeleteHallTitle": "Видалити зал?"
+    "confirmDeleteHall": "Видалити {{spaceAcc}} «{{name}}»?",
+    "confirmDeleteHallTitle": "Видалити {{spaceAcc}}?"
   },
   "services": {
     "title": "ПОСЛУГИ",

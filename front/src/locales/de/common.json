@@ -1,4 +1,9 @@
 {
+  "space": {
+    "singular": "Platz",
+    "plural": "Plätze",
+    "accusative": "Platz"
+  },
   "phoneGate": {
     "title": "Fügen Sie Ihre Telefonnummer hinzu",
     "sub": "Das Telefon ist der zweite Kontakt Ihres Kontos: Damit stellen Sie den Zugang wieder her und erhalten Benachrichtigungen. Die Studionummer passt hier nicht — diese muss Ihre eigene sein."

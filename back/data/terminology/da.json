@@ -2,33 +2,7 @@
   "version": 1,
   "locale": "da",
   "profiles": {
-    "generic": {
-      "staff": {
-        "singular": "specialist",
-        "plural": "specialister",
-        "accusative": "specialist"
-      },
-      "offering": {
-        "event": {
-          "singular": "begivenhed",
-          "plural": "begivenheder",
-          "accusative": "begivenhed"
-        },
-        "resource": {
-          "singular": "ydelse",
-          "plural": "ydelser",
-          "accusative": "ydelse"
-        }
-      },
-      "messages": {
-        "choose_staff": "Vælg {{staff.accusative}}",
-        "choose_offering": "Vælg {{offering.accusative}}",
-        "empty_slots": "Ingen ledige tider",
-        "my_bookings": "Mine bookinger",
-        "confirm_booking": "Bekræft booking"
-      }
-    },
-    "fitness": {
+    "studio": {
       "staff": {
         "singular": "træner",
         "plural": "trænere",
@@ -45,6 +19,42 @@
           "plural": "ydelser",
           "accusative": "ydelse"
         }
+      },
+      "space": {
+        "singular": "sal",
+        "plural": "sale",
+        "accusative": "sal"
+      },
+      "messages": {
+        "choose_staff": "Vælg {{staff.accusative}}",
+        "choose_offering": "Vælg {{offering.accusative}}",
+        "empty_slots": "Ingen ledige tider",
+        "my_bookings": "Mine bookinger",
+        "confirm_booking": "Bekræft booking"
+      }
+    },
+    "sport": {
+      "staff": {
+        "singular": "træner",
+        "plural": "trænere",
+        "accusative": "træner"
+      },
+      "offering": {
+        "event": {
+          "singular": "hold",
+          "plural": "hold",
+          "accusative": "hold"
+        },
+        "resource": {
+          "singular": "ydelse",
+          "plural": "ydelser",
+          "accusative": "ydelse"
+        }
+      },
+      "space": {
+        "singular": "sal",
+        "plural": "sale",
+        "accusative": "sal"
       },
       "messages": {
         "choose_staff": "Vælg {{staff.accusative}}",
@@ -71,6 +81,104 @@
           "plural": "ydelser",
           "accusative": "ydelse"
         }
+      },
+      "space": {
+        "singular": "stol",
+        "plural": "stole",
+        "accusative": "stol"
+      },
+      "messages": {
+        "choose_staff": "Vælg {{staff.accusative}}",
+        "choose_offering": "Vælg {{offering.accusative}}",
+        "empty_slots": "Ingen ledige tider",
+        "my_bookings": "Mine bookinger",
+        "confirm_booking": "Bekræft booking"
+      }
+    },
+    "recovery": {
+      "staff": {
+        "singular": "specialist",
+        "plural": "specialister",
+        "accusative": "specialist"
+      },
+      "offering": {
+        "event": {
+          "singular": "begivenhed",
+          "plural": "begivenheder",
+          "accusative": "begivenhed"
+        },
+        "resource": {
+          "singular": "ydelse",
+          "plural": "ydelser",
+          "accusative": "ydelse"
+        }
+      },
+      "space": {
+        "singular": "kabine",
+        "plural": "kabiner",
+        "accusative": "kabine"
+      },
+      "messages": {
+        "choose_staff": "Vælg {{staff.accusative}}",
+        "choose_offering": "Vælg {{offering.accusative}}",
+        "empty_slots": "Ingen ledige tider",
+        "my_bookings": "Mine bookinger",
+        "confirm_booking": "Bekræft booking"
+      }
+    },
+    "relax": {
+      "staff": {
+        "singular": "specialist",
+        "plural": "specialister",
+        "accusative": "specialist"
+      },
+      "offering": {
+        "event": {
+          "singular": "begivenhed",
+          "plural": "begivenheder",
+          "accusative": "begivenhed"
+        },
+        "resource": {
+          "singular": "ydelse",
+          "plural": "ydelser",
+          "accusative": "ydelse"
+        }
+      },
+      "space": {
+        "singular": "kabine",
+        "plural": "kabiner",
+        "accusative": "kabine"
+      },
+      "messages": {
+        "choose_staff": "Vælg {{staff.accusative}}",
+        "choose_offering": "Vælg {{offering.accusative}}",
+        "empty_slots": "Ingen ledige tider",
+        "my_bookings": "Mine bookinger",
+        "confirm_booking": "Bekræft booking"
+      }
+    },
+    "other": {
+      "staff": {
+        "singular": "specialist",
+        "plural": "specialister",
+        "accusative": "specialist"
+      },
+      "offering": {
+        "event": {
+          "singular": "begivenhed",
+          "plural": "begivenheder",
+          "accusative": "begivenhed"
+        },
+        "resource": {
+          "singular": "ydelse",
+          "plural": "ydelser",
+          "accusative": "ydelse"
+        }
+      },
+      "space": {
+        "singular": "plads",
+        "plural": "pladser",
+        "accusative": "plads"
       },
       "messages": {
         "choose_staff": "Vælg {{staff.accusative}}",

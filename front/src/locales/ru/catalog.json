@@ -91,10 +91,10 @@
       "workingHours": "Часы работы"
     },
     "hall": {
-      "titleNew": "Новый зал",
-      "titleEdit": "Редактировать зал",
-      "name": "Название зала",
-      "namePlaceholder": "Зал А",
+      "titleNew": "Добавить {{spaceAcc}}",
+      "titleEdit": "Изменить {{spaceAcc}}",
+      "name": "Название",
+      "namePlaceholder": "{{space, capitalize}} А",
       "capacity": "Вместимость",
       "area": "Площадь, м²",
       "hourlyRate": "Цена за час, {{currency}}",
@@ -102,10 +102,10 @@
       "equipment": "Оборудование",
       "equipmentPlaceholder": "Добавьте оборудование",
       "color": "Цвет",
-      "isOnline": "Онлайн-зал",
-      "photo": "Фото зала",
-      "subtitle": "Зал филиала: места, оборудование, цвет в журнале",
-      "previewTitle": "Предпросмотр зала",
+      "isOnline": "Онлайн",
+      "photo": "Фото",
+      "subtitle": "{{space, capitalize}} филиала: места, оборудование, цвет в журнале",
+      "previewTitle": "Предпросмотр",
       "sectionBasic": "Основное",
       "sectionSpace": "Пространство",
       "sectionLook": "Оформление",
@@ -113,8 +113,8 @@
       "hourlyRateShort": "Цена за час",
       "statArea": "Площадь",
       "statRate": "Цена / час",
-      "isOnlineHint": "Занятия проходят онлайн — без физического зала.",
-      "colorHint": "Этим цветом занятия зала подсвечиваются в журнале."
+      "isOnlineHint": "Занятия проходят онлайн — без физического помещения.",
+      "colorHint": "Этим цветом занятия подсвечиваются в журнале."
     },
     "service": {
       "titleNew": "Новая услуга",
@@ -189,17 +189,17 @@
   "studios": {
     "title": "СТУДИИ",
     "addStudio": "Добавить студию",
-    "addHall": "Добавить зал",
+    "addHall": "Добавить {{spaceAcc}}",
     "editBranch": "Редактировать филиал",
     "deleteBranch": "Удалить филиал",
     "infoTab": "Общая информация",
-    "hallsTitle": "Залы студии",
-    "hallCount_one": "{{count}} зал",
-    "hallCount_few": "{{count}} зала",
-    "hallCount_many": "{{count}} залов",
-    "hallCount_other": "{{count}} залов",
+    "hallsTitle": "{{spacePlural, capitalize}} студии",
+    "hallCount_one": "{{spacePlural, capitalize}} · {{count}}",
+    "hallCount_few": "{{spacePlural, capitalize}} · {{count}}",
+    "hallCount_many": "{{spacePlural, capitalize}} · {{count}}",
+    "hallCount_other": "{{spacePlural, capitalize}} · {{count}}",
     "stats": {
-      "halls": "Залов",
+      "halls": "{{spacePlural, capitalize}}",
       "totalSeats": "Мест всего",
       "fromPerHour": "От / час"
     },
@@ -214,8 +214,8 @@
       },
       "equipment": "Оборудование",
       "actions": "Действия",
-      "edit": "Изменить зал",
-      "delete": "Удалить зал"
+      "edit": "Изменить {{spaceAcc}}",
+      "delete": "Удалить {{spaceAcc}}"
     },
     "empty": {
       "title": "Нет студий",
@@ -225,14 +225,14 @@
       "created": "Студия создана",
       "createError": "Не удалось создать студию",
       "deleted": "Студия удалена",
-      "hallDeleted": "Зал удалён",
+      "hallDeleted": "Удалено: {{space}}",
       "saved": "Сохранено",
       "edit": "Изменить: {{name}}"
     },
     "confirmDelete": "Удалить филиал «{{name}}»? Это действие нельзя отменить.",
     "confirmDeleteTitle": "Удалить филиал?",
-    "confirmDeleteHall": "Удалить зал «{{name}}»?",
-    "confirmDeleteHallTitle": "Удалить зал?"
+    "confirmDeleteHall": "Удалить {{spaceAcc}} «{{name}}»?",
+    "confirmDeleteHallTitle": "Удалить {{spaceAcc}}?"
   },
   "services": {
     "title": "УСЛУГИ",

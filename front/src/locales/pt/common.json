@@ -1,4 +1,9 @@
 {
+  "space": {
+    "singular": "espaço",
+    "plural": "espaços",
+    "accusative": "um espaço"
+  },
   "phoneGate": {
     "title": "Adicione o seu número de telefone",
     "sub": "O telefone é o segundo contacto da sua conta: recupera o acesso e recebe as notificações. O número do estúdio não serve aqui — este tem de ser o seu."

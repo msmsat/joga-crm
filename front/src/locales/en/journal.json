@@ -2,11 +2,11 @@
   "toolbar": {
     "today": "Today",
     "trainers": "Trainers",
-    "halls": "Halls",
+    "halls": "{{spacePlural, capitalize}}",
     "day": "Day",
     "week": "Week",
     "resourceBooking": "Individual",
-    "noHall": "No room"
+    "noHall": "Unassigned"
   },
   "daySummary": {
     "classesToday": "classes today",
@@ -27,7 +27,10 @@
     "service": "Service",
     "servicePlaceholder": "Select a service",
     "namePlaceholder": "E.g. Reformer Pilates",
-    "location": "Location / Hall",
+    "location": "{{space, capitalize}}",
+    "branch": "Branch",
+    "onlyResourceServices": "All studio services are booked individually — they cannot be placed in the schedule in advance. A class is created from a service with group booking.",
+    "goToResourceBooking": "Go to individual booking",
     "start": "Start",
     "end": "End",
     "groupLimit": "Group limit",
@@ -106,7 +109,7 @@
     "add": "Add"
   },
   "rightPanel": {
-    "halls": "Halls",
+    "halls": "{{spacePlural, capitalize}}",
     "load": "Load",
     "upcoming": "Upcoming"
   },
@@ -119,7 +122,7 @@
     "newLessonPreview": "New lesson",
     "cancelled": "Cancelled",
     "noTrainers": "No trainers",
-    "noHalls": "No halls"
+    "noHalls": "No {{spacePlural}} yet"
   },
   "createService": "+ Create service",
   "invalidDateFormat": "Invalid date format",

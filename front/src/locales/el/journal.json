@@ -2,11 +2,11 @@
   "toolbar": {
     "today": "Σήμερα",
     "trainers": "Εκπαιδευτές",
-    "halls": "Αίθουσες",
+    "halls": "{{spacePlural, capitalize}}",
     "day": "Ημέρα",
     "week": "Εβδομάδα",
     "resourceBooking": "Ατομικά",
-    "noHall": "Χωρίς αίθουσα"
+    "noHall": "Χωρίς αντιστοίχιση"
   },
   "daySummary": {
     "classesToday": "μαθήματα σήμερα",
@@ -27,7 +27,10 @@
     "service": "Υπηρεσία",
     "servicePlaceholder": "Επιλέξτε υπηρεσία",
     "namePlaceholder": "Π.χ. Reformer Pilates",
-    "location": "Τοποθεσία / αίθουσα",
+    "location": "{{space, capitalize}}",
+    "branch": "Υποκατάστημα",
+    "onlyResourceServices": "Όλες οι υπηρεσίες του στούντιο κλείνονται ατομικά — δεν μπαίνουν στο πρόγραμμα εκ των προτέρων. Ένα μάθημα δημιουργείται από υπηρεσία με ομαδική κράτηση.",
+    "goToResourceBooking": "Μετάβαση σε ατομική κράτηση",
     "start": "Έναρξη",
     "end": "Λήξη",
     "groupLimit": "Όριο ομάδας",
@@ -106,7 +109,7 @@
     "add": "Προσθήκη"
   },
   "rightPanel": {
-    "halls": "Αίθουσες",
+    "halls": "{{spacePlural, capitalize}}",
     "load": "Πληρότητα",
     "upcoming": "Επόμενα"
   },
@@ -119,7 +122,7 @@
     "newLessonPreview": "Νέο μάθημα",
     "cancelled": "Ακυρωμένο",
     "noTrainers": "Χωρίς εκπαιδευτές",
-    "noHalls": "Χωρίς αίθουσες"
+    "noHalls": "{{spacePlural, capitalize}}: δεν υπάρχουν ακόμα"
   },
   "createService": "+ Δημιουργία υπηρεσίας",
   "invalidDateFormat": "Μη έγκυρη μορφή ημερομηνίας",

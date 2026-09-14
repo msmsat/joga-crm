@@ -2,33 +2,7 @@
   "version": 1,
   "locale": "hu",
   "profiles": {
-    "generic": {
-      "staff": {
-        "singular": "szakember",
-        "plural": "szakemberek",
-        "accusative": "szakembert"
-      },
-      "offering": {
-        "event": {
-          "singular": "esemény",
-          "plural": "események",
-          "accusative": "eseményt"
-        },
-        "resource": {
-          "singular": "szolgáltatás",
-          "plural": "szolgáltatások",
-          "accusative": "szolgáltatást"
-        }
-      },
-      "messages": {
-        "choose_staff": "Válasszon {{staff.accusative}}",
-        "choose_offering": "Válasszon {{offering.accusative}}",
-        "empty_slots": "Nincs szabad időpont",
-        "my_bookings": "Foglalásaim",
-        "confirm_booking": "Foglalás megerősítése"
-      }
-    },
-    "fitness": {
+    "studio": {
       "staff": {
         "singular": "edző",
         "plural": "edzők",
@@ -45,6 +19,42 @@
           "plural": "szolgáltatások",
           "accusative": "szolgáltatást"
         }
+      },
+      "space": {
+        "singular": "terem",
+        "plural": "termek",
+        "accusative": "termet"
+      },
+      "messages": {
+        "choose_staff": "Válasszon {{staff.accusative}}",
+        "choose_offering": "Válasszon {{offering.accusative}}",
+        "empty_slots": "Nincs szabad időpont",
+        "my_bookings": "Foglalásaim",
+        "confirm_booking": "Foglalás megerősítése"
+      }
+    },
+    "sport": {
+      "staff": {
+        "singular": "edző",
+        "plural": "edzők",
+        "accusative": "edzőt"
+      },
+      "offering": {
+        "event": {
+          "singular": "óra",
+          "plural": "órák",
+          "accusative": "órát"
+        },
+        "resource": {
+          "singular": "szolgáltatás",
+          "plural": "szolgáltatások",
+          "accusative": "szolgáltatást"
+        }
+      },
+      "space": {
+        "singular": "terem",
+        "plural": "termek",
+        "accusative": "termet"
       },
       "messages": {
         "choose_staff": "Válasszon {{staff.accusative}}",
@@ -71,6 +81,104 @@
           "plural": "szolgáltatások",
           "accusative": "szolgáltatást"
         }
+      },
+      "space": {
+        "singular": "szék",
+        "plural": "székek",
+        "accusative": "széket"
+      },
+      "messages": {
+        "choose_staff": "Válasszon {{staff.accusative}}",
+        "choose_offering": "Válasszon {{offering.accusative}}",
+        "empty_slots": "Nincs szabad időpont",
+        "my_bookings": "Foglalásaim",
+        "confirm_booking": "Foglalás megerősítése"
+      }
+    },
+    "recovery": {
+      "staff": {
+        "singular": "szakember",
+        "plural": "szakemberek",
+        "accusative": "szakembert"
+      },
+      "offering": {
+        "event": {
+          "singular": "esemény",
+          "plural": "események",
+          "accusative": "eseményt"
+        },
+        "resource": {
+          "singular": "szolgáltatás",
+          "plural": "szolgáltatások",
+          "accusative": "szolgáltatást"
+        }
+      },
+      "space": {
+        "singular": "kabin",
+        "plural": "kabinok",
+        "accusative": "kabint"
+      },
+      "messages": {
+        "choose_staff": "Válasszon {{staff.accusative}}",
+        "choose_offering": "Válasszon {{offering.accusative}}",
+        "empty_slots": "Nincs szabad időpont",
+        "my_bookings": "Foglalásaim",
+        "confirm_booking": "Foglalás megerősítése"
+      }
+    },
+    "relax": {
+      "staff": {
+        "singular": "szakember",
+        "plural": "szakemberek",
+        "accusative": "szakembert"
+      },
+      "offering": {
+        "event": {
+          "singular": "esemény",
+          "plural": "események",
+          "accusative": "eseményt"
+        },
+        "resource": {
+          "singular": "szolgáltatás",
+          "plural": "szolgáltatások",
+          "accusative": "szolgáltatást"
+        }
+      },
+      "space": {
+        "singular": "kabin",
+        "plural": "kabinok",
+        "accusative": "kabint"
+      },
+      "messages": {
+        "choose_staff": "Válasszon {{staff.accusative}}",
+        "choose_offering": "Válasszon {{offering.accusative}}",
+        "empty_slots": "Nincs szabad időpont",
+        "my_bookings": "Foglalásaim",
+        "confirm_booking": "Foglalás megerősítése"
+      }
+    },
+    "other": {
+      "staff": {
+        "singular": "szakember",
+        "plural": "szakemberek",
+        "accusative": "szakembert"
+      },
+      "offering": {
+        "event": {
+          "singular": "esemény",
+          "plural": "események",
+          "accusative": "eseményt"
+        },
+        "resource": {
+          "singular": "szolgáltatás",
+          "plural": "szolgáltatások",
+          "accusative": "szolgáltatást"
+        }
+      },
+      "space": {
+        "singular": "hely",
+        "plural": "helyek",
+        "accusative": "helyet"
       },
       "messages": {
         "choose_staff": "Válasszon {{staff.accusative}}",

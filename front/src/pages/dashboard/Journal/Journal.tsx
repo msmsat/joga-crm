@@ -22,11 +22,13 @@ import { BookingPopup } from './components/BookingPopup';
 import { NO_HALL_COLUMN } from './constants';
 import { useServiceOptions } from './hooks/useServiceOptions';
 import { NewBookingModal } from './components/modals/NewBookingModal';
+import type { NewBookingForm } from './components/modals/NewBookingModal';
 import { ResourceBookingModal } from './components/modals/ResourceBookingModal';
 import { AddClientModal } from './components/modals/AddClientModal';
 import { useToast, ConfirmModal } from '../../../components/ui/index';
 import { getUserRoleFromToken } from '../../../utils/auth';
 import { useAiIntent } from '../../../hooks/useAiIntent';
+import { useBusinessTerms } from '../../../hooks/useBusinessTerms';
 
 // Журнал помнит выбранный день между перезагрузками
 const JOURNAL_DATE_KEY = 'journal:selectedDate';
@@ -58,7 +60,17 @@ export default function Journal() {
   // (сотрудник, ведущий занятие только в этом дне) появляется сразу видимой.
   const [hiddenTrainers, setHiddenTrainers] = useState<number[]>([]);
   const [hiddenHalls, setHiddenHalls] = useState<string[]>([]);
-  const [viewMode, setViewMode] = useState<'trainers' | 'halls'>('trainers');
+  const [pickedViewMode, setPickedViewMode] = useState<'trainers' | 'halls'>('trainers');
+  // Участвует ли место (зал/кресло/кабинет) в расписании: отрасль студии плюс
+  // тумблер владельца, посчитанные сервером. У барбершопа клиент записывается
+  // к мастеру, и кресло не должно быть ни колонкой, ни фильтром, ни рядом
+  // чипов в форме. `undefined` — термины ещё не пришли.
+  const { spaceIsAxis } = useBusinessTerms();
+  // Режим «Залы» запираем, а не просто прячем вкладку: иначе владелец,
+  // оставивший его включённым до выключения оси, вернулся бы в журнал с
+  // колонками, которых уже не выбрать обратно.
+  const viewMode = spaceIsAxis === false ? 'trainers' : pickedViewMode;
+  const setViewMode = setPickedViewMode;
   const [popupBooking, setPopupBooking] = useState<Booking | null>(null);
   // Ассистенту: какое занятие открыто — «сколько здесь мест» в журнале
   // спрашивают про занятие, а в каталоге про зал.
@@ -80,7 +92,7 @@ export default function Journal() {
   const { services: journalServices } = useServiceOptions();
   const hasResourceServices = journalServices.some(s => s.booking_mode === 'resource' && s.is_bookable);
   // 🔥 Стейт формы создания живёт здесь — сетка получает живой объект для превью (задача 3 V4-4)
-  const [newForm, setNewForm] = useState({ serviceId: null as number | null, title: '', hall: '', maxClients: '8' });
+  const [newForm, setNewForm] = useState<NewBookingForm>({ serviceId: null, title: '', hall: '', maxClients: '8', branchId: null });
   const [timeStep, setTimeStep] = useState<number>(15); // 🔥 Шаг времени в минутах (по умолчанию 15)
   // 🔥 СТЕЙТЫ ДЛЯ УМНОГО ВВОДА ВРЕМЕНИ
   const [calendarView, setCalendarView] = useState<'day' | 'week'>('day');
@@ -227,7 +239,7 @@ export default function Journal() {
   const closeNewForm = () => {
     setShowNewForm(false);
     setNewBookingSlot(null);
-    setNewForm({ serviceId: null, title: '', hall: hallNames[0] ?? '', maxClients: '8' });
+    setNewForm({ serviceId: null, title: '', hall: hallNames[0] ?? '', maxClients: '8', branchId: null });
   };
 
   // ── Открыть форму нового слота (Всегда 1 час или заполнить остаток) ──
@@ -245,7 +257,7 @@ export default function Journal() {
     // колонку из newForm.hall) утащит новое занятие в первый зал.
     // В недельном виде колонки — даты, зал оттуда не достать → первый.
     const col = columns[columnIndex];
-    setNewForm({ serviceId: null, title: '', hall: typeof col === 'string' ? col : (hallNames[0] ?? ''), maxClients: '8' });
+    setNewForm({ serviceId: null, title: '', hall: typeof col === 'string' ? col : (hallNames[0] ?? ''), maxClients: '8', branchId: null });
     setShowNewForm(true);
   };
 
@@ -520,7 +532,9 @@ export default function Journal() {
   };
 
   // ── Создать занятие на сервере (данные формы приходят из модалки) ──
-  const createLessonFromModal = (form: { serviceId: number; title: string; hall: string; maxClients: number }) => {
+  const createLessonFromModal = (form: {
+    serviceId: number; title: string; hall: string; maxClients: number; branchId: number | null;
+  }) => {
     if (!newBookingSlot) return;
     const trainer = trainers.find(t => t.id === newBookingSlot.trainer);
     if (!trainer) {
@@ -553,13 +567,16 @@ export default function Journal() {
       // confirm (ResourceBookingModal), а не через создание занятия.
       bookingMode: 'event',
       version: 1,
-      branchId: hall?.branch_id ?? null,
+      // Филиал даёт зал, а где места нет в расписании — форма: у барбершопа
+      // кресло не выбирают, и вывести филиал больше неоткуда.
+      branchId: hall?.branch_id ?? form.branchId,
     };
 
     const createPayload: LessonCreate = {
       service_id: form.serviceId,
       teacher_id: newBookingSlot.trainer,
       hall_id: hall?.id ?? null,
+      branch_id: hall ? null : form.branchId,
       start_time: indexToDateTime(dateStr, newBookingSlot.timeStart),
       duration_min: Math.round((newBookingSlot.timeEnd - newBookingSlot.timeStart) * 60),
       total_spots: form.maxClients,
@@ -680,6 +697,7 @@ export default function Journal() {
             setIsEditingDate={setIsEditingDate}
             setDateInputVal={setDateInputVal}
             onResourceBooking={hasResourceServices ? () => setShowResourceBooking(true) : undefined}
+            spaceIsAxis={spaceIsAxis}
           />
 
           {/* ── СВОДКА ДНЯ ── */}
@@ -760,6 +778,7 @@ export default function Journal() {
                 setSelectedDay={setSelectedDay}
                 toggleHall={toggleHall}
                 calendarView={calendarView}
+                spaceIsAxis={spaceIsAxis}
                 eventDays={journalDays}
               />
             </div>
@@ -815,6 +834,8 @@ export default function Journal() {
           timeStep={timeStep}
           closeNewForm={closeNewForm}
           onCreate={createLessonFromModal}
+          spaceIsAxis={spaceIsAxis}
+          onResourceBooking={hasResourceServices ? () => { closeNewForm(); setShowResourceBooking(true); } : undefined}
         />
       )}
 

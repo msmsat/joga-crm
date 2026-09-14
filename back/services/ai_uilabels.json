@@ -308,11 +308,11 @@
     "de": "Studio anlegen"
   },
   "catalog:modals.hall.titleNew": {
-    "ru": "Новый зал",
-    "en": "New hall",
-    "uk": "Новий зал",
-    "cs": "Nový sál",
-    "de": "Neuer Saal"
+    "ru": "Добавить {{spaceAcc}}",
+    "en": "Add {{spaceAcc}}",
+    "uk": "Додати {{spaceAcc}}",
+    "cs": "Přidat {{spaceAcc}}",
+    "de": "{{spaceAcc}} hinzufügen"
   },
   "catalog:modals.package.titleNew": {
     "ru": "Новый пакет",
@@ -329,11 +329,11 @@
     "de": "Neue Leistung"
   },
   "catalog:studios.addHall": {
-    "ru": "Добавить зал",
-    "en": "Add hall",
-    "uk": "Додати зал",
-    "cs": "Přidat sál",
-    "de": "Saal hinzufügen"
+    "ru": "Добавить {{spaceAcc}}",
+    "en": "Add {{spaceAcc}}",
+    "uk": "Додати {{spaceAcc}}",
+    "cs": "Přidat {{spaceAcc}}",
+    "de": "{{spaceAcc}} hinzufügen"
   },
   "catalog:studios.deleteBranch": {
     "ru": "Удалить филиал",
@@ -678,6 +678,13 @@
     "cs": "Zrušit lekci?",
     "de": "Kurs stornieren?"
   },
+  "journal:newBooking.branch": {
+    "ru": "Филиал",
+    "en": "Branch",
+    "uk": "Філіал",
+    "cs": "Pobočka",
+    "de": "Filiale"
+  },
   "journal:newBooking.create": {
     "ru": "Создать занятие",
     "en": "Create lesson",
@@ -691,6 +698,20 @@
     "uk": "Створити послугу?",
     "cs": "Vytvořit službu?",
     "de": "Leistung erstellen?"
+  },
+  "journal:newBooking.goToResourceBooking": {
+    "ru": "Перейти к индивидуальной записи",
+    "en": "Go to individual booking",
+    "uk": "Перейти до індивідуального запису",
+    "cs": "Přejít na individuální rezervaci",
+    "de": "Zur individuellen Buchung"
+  },
+  "journal:newBooking.onlyResourceServices": {
+    "ru": "Все услуги студии записываются индивидуально — их нельзя поставить в расписание заранее. Занятие создаётся из услуги с групповой записью.",
+    "en": "All studio services are booked individually — they cannot be placed in the schedule in advance. A class is created from a service with group booking.",
+    "uk": "Усі послуги студії записуються індивідуально — їх не можна поставити в розклад заздалегідь. Заняття створюється з послуги з груповим записом.",
+    "cs": "Všechny služby studia se objednávají individuálně — do rozvrhu je předem postavit nelze. Lekce se vytváří ze služby se skupinovým rezervováním.",
+    "de": "Alle Leistungen des Studios werden individuell gebucht — sie lassen sich nicht im Voraus in den Zeitplan setzen. Ein Kurs entsteht aus einer Leistung mit Gruppenbuchung."
   },
   "journal:newBooking.title": {
     "ru": "Новое занятие",
@@ -728,11 +749,11 @@
     "de": "Nicht genug Rechte, um den Plan zu ändern"
   },
   "journal:toolbar.noHall": {
-    "ru": "Без зала",
-    "en": "No room",
-    "uk": "Без зали",
-    "cs": "Bez sálu",
-    "de": "Ohne Raum"
+    "ru": "Без привязки",
+    "en": "Unassigned",
+    "uk": "Без прив’язки",
+    "cs": "Bez přiřazení",
+    "de": "Ohne Zuordnung"
   },
   "journal:toolbar.resourceBooking": {
     "ru": "Индивидуально",

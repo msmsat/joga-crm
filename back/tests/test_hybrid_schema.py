@@ -102,9 +102,12 @@ async def _defaults_are_event(ids):
     async with async_session_maker() as db:
         studio = await db.get(Studio, ids["studio"])
         assert studio.booking_mode == "event"
-        assert studio.terminology_profile == "generic"
+        assert studio.terminology_profile == "other"
         assert studio.booking_config_version == 1
         assert studio.strict_schedule_enabled is False
+        # Место наследует отрасль, пока владелец не решил иначе: None — это
+        # «как в отрасли», а не «выключено».
+        assert studio.space_is_axis is None
 
         service = Service(studio_id=ids["studio"], name="Стретчинг", price=500, duration_min=60)
         db.add(service)

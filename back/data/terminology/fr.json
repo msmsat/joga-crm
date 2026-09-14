@@ -2,33 +2,7 @@
   "version": 1,
   "locale": "fr",
   "profiles": {
-    "generic": {
-      "staff": {
-        "singular": "spécialiste",
-        "plural": "spécialistes",
-        "accusative": "un spécialiste"
-      },
-      "offering": {
-        "event": {
-          "singular": "événement",
-          "plural": "événements",
-          "accusative": "un événement"
-        },
-        "resource": {
-          "singular": "prestation",
-          "plural": "prestations",
-          "accusative": "une prestation"
-        }
-      },
-      "messages": {
-        "choose_staff": "Choisissez {{staff.accusative}}",
-        "choose_offering": "Choisissez {{offering.accusative}}",
-        "empty_slots": "Aucun créneau disponible",
-        "my_bookings": "Mes réservations",
-        "confirm_booking": "Confirmer la réservation"
-      }
-    },
-    "fitness": {
+    "studio": {
       "staff": {
         "singular": "coach",
         "plural": "coachs",
@@ -45,6 +19,42 @@
           "plural": "prestations",
           "accusative": "une prestation"
         }
+      },
+      "space": {
+        "singular": "salle",
+        "plural": "salles",
+        "accusative": "une salle"
+      },
+      "messages": {
+        "choose_staff": "Choisissez {{staff.accusative}}",
+        "choose_offering": "Choisissez {{offering.accusative}}",
+        "empty_slots": "Aucun créneau disponible",
+        "my_bookings": "Mes réservations",
+        "confirm_booking": "Confirmer la réservation"
+      }
+    },
+    "sport": {
+      "staff": {
+        "singular": "coach",
+        "plural": "coachs",
+        "accusative": "un coach"
+      },
+      "offering": {
+        "event": {
+          "singular": "cours",
+          "plural": "cours",
+          "accusative": "un cours"
+        },
+        "resource": {
+          "singular": "prestation",
+          "plural": "prestations",
+          "accusative": "une prestation"
+        }
+      },
+      "space": {
+        "singular": "salle",
+        "plural": "salles",
+        "accusative": "une salle"
       },
       "messages": {
         "choose_staff": "Choisissez {{staff.accusative}}",
@@ -71,6 +81,104 @@
           "plural": "prestations",
           "accusative": "une prestation"
         }
+      },
+      "space": {
+        "singular": "fauteuil",
+        "plural": "fauteuils",
+        "accusative": "un fauteuil"
+      },
+      "messages": {
+        "choose_staff": "Choisissez {{staff.accusative}}",
+        "choose_offering": "Choisissez {{offering.accusative}}",
+        "empty_slots": "Aucun créneau disponible",
+        "my_bookings": "Mes réservations",
+        "confirm_booking": "Confirmer la réservation"
+      }
+    },
+    "recovery": {
+      "staff": {
+        "singular": "spécialiste",
+        "plural": "spécialistes",
+        "accusative": "un spécialiste"
+      },
+      "offering": {
+        "event": {
+          "singular": "événement",
+          "plural": "événements",
+          "accusative": "un événement"
+        },
+        "resource": {
+          "singular": "prestation",
+          "plural": "prestations",
+          "accusative": "une prestation"
+        }
+      },
+      "space": {
+        "singular": "cabine",
+        "plural": "cabines",
+        "accusative": "une cabine"
+      },
+      "messages": {
+        "choose_staff": "Choisissez {{staff.accusative}}",
+        "choose_offering": "Choisissez {{offering.accusative}}",
+        "empty_slots": "Aucun créneau disponible",
+        "my_bookings": "Mes réservations",
+        "confirm_booking": "Confirmer la réservation"
+      }
+    },
+    "relax": {
+      "staff": {
+        "singular": "spécialiste",
+        "plural": "spécialistes",
+        "accusative": "un spécialiste"
+      },
+      "offering": {
+        "event": {
+          "singular": "événement",
+          "plural": "événements",
+          "accusative": "un événement"
+        },
+        "resource": {
+          "singular": "prestation",
+          "plural": "prestations",
+          "accusative": "une prestation"
+        }
+      },
+      "space": {
+        "singular": "cabine",
+        "plural": "cabines",
+        "accusative": "une cabine"
+      },
+      "messages": {
+        "choose_staff": "Choisissez {{staff.accusative}}",
+        "choose_offering": "Choisissez {{offering.accusative}}",
+        "empty_slots": "Aucun créneau disponible",
+        "my_bookings": "Mes réservations",
+        "confirm_booking": "Confirmer la réservation"
+      }
+    },
+    "other": {
+      "staff": {
+        "singular": "spécialiste",
+        "plural": "spécialistes",
+        "accusative": "un spécialiste"
+      },
+      "offering": {
+        "event": {
+          "singular": "événement",
+          "plural": "événements",
+          "accusative": "un événement"
+        },
+        "resource": {
+          "singular": "prestation",
+          "plural": "prestations",
+          "accusative": "une prestation"
+        }
+      },
+      "space": {
+        "singular": "espace",
+        "plural": "espaces",
+        "accusative": "un espace"
       },
       "messages": {
         "choose_staff": "Choisissez {{staff.accusative}}",

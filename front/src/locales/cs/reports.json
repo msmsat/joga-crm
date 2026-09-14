@@ -16,7 +16,7 @@
     },
     "vsPrevious": "oproti předchozímu období: {{from}}–{{to}}",
     "allBranches": "Všechny pobočky",
-    "allHalls": "Všechny sály",
+    "allHalls": "Všechny {{spacePlural}}",
     "allTrainers": "Všichni trenéři",
     "allServices": "Všechny služby",
     "export": "Export"
@@ -335,7 +335,7 @@
       "topProfitable": "Nejvýnosnější",
       "topFilled": "Nejobsazenější",
       "chronicLow": "Chronicky nedoplněné",
-      "halls": "Využití sálů",
+      "halls": "Využití: {{spacePlural}}",
       "held": "odučeno {{count}}",
       "weeks": "{{count}} týd.",
       "move": "Přesunout",
@@ -374,8 +374,8 @@
   },
   "scopeNote": {
     "label": "Za celé studio",
-    "money": "Filtry Pobočka a Sál na peníze nemají vliv — platby nejsou navázané na sál",
-    "clientBase": "Trenér, sál, pobočka ani služba tuto metriku nemění — klienti na ně nejsou navázáni"
+    "money": "Filtry Pobočka a {{space}} na peníze nepůsobí — platba k nim není vázaná",
+    "clientBase": "Trenér, {{space}}, pobočka a služba tuto metriku nemění — klient k nim není vázaný"
   },
   "descriptions": {
     "overview": {
@@ -411,8 +411,8 @@
       "heatmap": "Kde je rozvrh přeplněný a kde prázdný",
       "topProfitable": "Časy v rozvrhu, které přinášejí nejvíc peněz",
       "topFilled": "Časy, které si klienti rezervují nejochotněji",
-      "chronicLow": "Termíny, které už týdny plní méně než třetinu sálu",
-      "halls": "Jakou část času jsou vaše sály skutečně využité",
+      "chronicLow": "Termíny, které už týdny plní méně než třetinu míst",
+      "halls": "{{spacePlural, capitalize}} — kolik času jsou skutečně využité",
       "losses": "Kde studio přichází o místa: zrušené lekce nebo klienti, kteří nedorazili"
     }
   },
@@ -503,7 +503,7 @@
     },
     "filtersScope": {
       "title": "Rozsah filtrů",
-      "text": "Filtry Pobočka a Sál ovlivňují jen metriky navázané na lekce. Platby nejsou vázané na sál, takže peníze se zobrazují za celé studio."
+      "text": "Filtry Pobočka a {{space}} působí jen na metriky lekcí. Platby takovou vazbu nemají, proto se peníze zobrazují za celé studio."
     },
     "avgValue": {
       "title": "Hodnota klienta",
@@ -559,11 +559,11 @@
     },
     "chronicLow": {
       "title": "Chronicky prázdné termíny",
-      "text": "Časy, které už několik týdnů plní méně než třetinu sálu. Kandidáti na přesun nebo zrušení."
+      "text": "Časy, které už několik týdnů plní méně než třetinu míst. Kandidáti na přesun nebo zrušení."
     },
     "hallUtil": {
-      "title": "Využití sálů",
-      "text": "Jakou část času jsou vaše sály skutečně využité. Prázdný sál je nájem, který se nevyplácí."
+      "title": "Využití: {{spacePlural}}",
+      "text": "{{spacePlural, capitalize}} — kolik času jsou skutečně využité. Prostoj je nájem, který se nevrací."
     },
     "heatmap": {
       "title": "Vytížení podle dne a hodiny",

@@ -233,12 +233,23 @@
      color: var(--onyx);
    }
 
-   /* Дашборд сам ограничивает себя 100vh (DashboardLayout: height:100vh + overflow:hidden),
-      а публичные страницы (лендинг, логин) должны уметь скроллиться на низких экранах */
+   /* Дашборд сам ограничивает себя высотой экрана (DashboardLayout: height:100dvh
+      + overflow:hidden), а публичные страницы (лендинг, логин) должны уметь
+      скроллиться на низких экранах.
+      Высота экрана в каркасе — 100dvh, НЕ 100vh: в Safari на iPad/iPhone 100vh —
+      это экран со СВЁРНУТОЙ адресной строкой, и пока строка видна, кабинет
+      оказывался выше экрана на её высоту — документ прокручивался вместе с меню,
+      а низ меню уходил под край. На десктопе dvh и vh совпадают. */
    html, body, #root {
-    height: 100vh;
+    height: 100dvh;
     margin: 0;
     padding: 0;
+  }
+   /* Кабинет — приложение, а не документ: корень не пружинит под пальцем
+      (иначе на планшете весь каркас с меню «уезжает» при свайпе). Скроллятся
+      только внутренние области — .content, .sidebar-nav, тела модалок. */
+   html:has(.dash-root), body:has(.dash-root) {
+    overscroll-behavior: none;
   }
    
    ::-webkit-scrollbar { width: 4px; }
@@ -1063,7 +1074,7 @@
 /* overflow: visible — из меню наружу торчат две вещи: тумблер сворачивания
    (кружок на границе) и панель аккаунтов в режиме рельсы. Обрезку берут на
    себя внутренние блоки (.sidebar-nav скроллится, .sidebar-logo клипует). */
-.sidebar { width: var(--sidebar); min-width: var(--sidebar); height: 100vh; background: var(--card); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: visible; z-index: 100; position: relative; }
+.sidebar { width: var(--sidebar); min-width: var(--sidebar); height: 100%; background: var(--card); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: visible; z-index: 100; position: relative; }
 .sidebar-logo { padding: 24px 20px 20px; border-bottom: 1px solid var(--border); overflow: hidden; }
 .sidebar-logo .logo-name { font-size: 18px; font-weight: 800; letter-spacing: -0.5px; color: var(--text); display: flex; align-items: center; gap: 8px; }
 .logo-dot { width: 8px; height: 8px; background: var(--accent); border-radius: 50%; display: inline-block; }
@@ -1153,6 +1164,17 @@
 .sidebar.is-rail .user-pill { justify-content: center; padding: 8px 0; gap: 0; }
 /* Меню аккаунтов шире рельсы — иначе строки студий нечитаемы */
 .sidebar.is-rail .user-menu-panel { right: auto; width: 248px; transform-origin: bottom left; }
+
+/* Низкий экран (iPad mini в альбомной при раскрытой строке Safari — ~670px
+   видимой высоты): меню владельца не влезало на 13px, и список пунктов
+   прокручивался. Ужимаем шаг пунктов, а не прячем их. Селекторы повторяют
+   базовые по специфичности — иначе правила рельсы выше их перебили бы. */
+@media (max-height: 720px) {
+  .sidebar-nav { padding-top: 8px; padding-bottom: 8px; }
+  .nav-item { padding-top: 8px; padding-bottom: 8px; }
+  .sidebar.is-rail .sidebar-nav { padding-bottom: 8px; }
+  .sidebar.is-rail .nav-item { padding-top: 9px; padding-bottom: 9px; }
+}
 
 /* Тумблер сворачивания живёт в шапке меню, справа от логотипа: раньше он висел
    кружком на самой границе панели (right:-11px, opacity:0 до наведения) — половина
@@ -1666,7 +1688,7 @@
 .tg-modal-overlay { position: fixed; inset: 0; z-index: 200; display: none; align-items: center; justify-content: center; padding: 16px; }
 .tg-modal-overlay::before { content: ''; position: absolute; inset: 0; z-index: -1; background: rgba(0,0,0,0.5); }
 .tg-modal-overlay.open { display: flex; }
-.tg-modal { background: var(--card); border-radius: var(--radius-lg); padding: var(--tg-modal-pad, 28px); width: 480px; max-width: min(480px, 100%); max-height: calc(100vh - 32px); overflow-y: auto; box-shadow: 0 24px 64px rgba(0,0,0,0.15); animation: modalIn 0.3s ease; }
+.tg-modal { background: var(--card); border-radius: var(--radius-lg); padding: var(--tg-modal-pad, 28px); width: 480px; max-width: min(480px, 100%); max-height: calc(100dvh - 32px); overflow-y: auto; box-shadow: 0 24px 64px rgba(0,0,0,0.15); animation: modalIn 0.3s ease; }
 @media (max-height: 820px) { :root { --tg-modal-pad: 22px; } }
 @media (max-height: 700px) { :root { --tg-modal-pad: 18px; } .tg-modal-overlay { padding: 10px; } }
 /* Общий вход модалок: только проявление, без масштаба и сдвига (см. .v-modal) */
@@ -2171,7 +2193,7 @@
 .v-modal-lg {
   width: 100%;
   max-width: var(--v-modal-w, 860px);
-  max-height: calc(100vh - 32px);
+  max-height: calc(100dvh - 32px);
   display: grid;
   grid-template-columns: var(--v-left-w, 280px) 1fr;
   grid-template-rows: minmax(0, 1fr);
@@ -2299,7 +2321,7 @@
 }
 @media (max-height: 700px) {
   .v-overlay { padding: 10px; }
-  .v-modal-lg { max-height: calc(100vh - 20px); }
+  .v-modal-lg { max-height: calc(100dvh - 20px); }
   :root {
     --vm-head-pad: 14px 18px 11px;
     --vm-body-pad: 13px 18px;
@@ -2309,8 +2331,8 @@
 }
 /* Высокие «мастера» с инлайновой высотой (min(600px, …)) — тот же класс,
    чтобы медиазапросы выше доставали и до них. */
-.v-modal-wizard { height: min(var(--vm-wizard-h, 600px), calc(100vh - 32px)); }
-@media (max-height: 700px) { .v-modal-wizard { height: calc(100vh - 20px); } }
+.v-modal-wizard { height: min(var(--vm-wizard-h, 600px), calc(100dvh - 32px)); }
+@media (max-height: 700px) { .v-modal-wizard { height: calc(100dvh - 20px); } }
 @keyframes v-modal-in  { from { opacity: 0 } to { opacity: 1 } }
 @keyframes v-modal-out { from { opacity: 1 } to { opacity: 0 } }
 
@@ -2851,7 +2873,7 @@
        несколько колонок вместо одной;
      • overflow:hidden и 100vh/100dvh — признак каркасного контейнера, который
        сам держит высоту экрана. Без этого исключения правило цепляло
-       .dash-root (инлайновый flex-ряд с height:100vh и overflow:hidden):
+       .dash-root (инлайновый flex-ряд с height:100dvh и overflow:hidden):
        строка переносилась, высота flex-линии считалась по содержимому, .main
        вырастал до 1954px внутри экрана в 568 — и всё ниже первого экрана
        обрезалось без всякой возможности доскроллить. */

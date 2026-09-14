@@ -16,7 +16,7 @@
     },
     "vsPrevious": "vs. Vorperiode: {{from}}–{{to}}",
     "allBranches": "Alle Filialen",
-    "allHalls": "Alle Säle",
+    "allHalls": "Alle {{spacePlural}}",
     "allTrainers": "Alle Trainer",
     "allServices": "Alle Leistungen",
     "export": "Export"
@@ -334,7 +334,7 @@
       "topProfitable": "Am profitabelsten",
       "topFilled": "Am vollsten",
       "chronicLow": "Chronisch schwach besucht",
-      "halls": "Saalauslastung",
+      "halls": "Auslastung: {{spacePlural}}",
       "held": "{{count}} gehalten",
       "weeks": "{{count}} Wo.",
       "move": "Verschieben",
@@ -370,8 +370,8 @@
   },
   "scopeNote": {
     "label": "Studioweit",
-    "money": "Die Filter Filiale und Saal wirken sich nicht auf Geld aus — Zahlungen sind keinem Saal zugeordnet",
-    "clientBase": "Trainer, Saal, Filiale und Leistung ändern diese Kennzahl nicht — Kunden sind ihnen nicht zugeordnet"
+    "money": "Die Filter Filiale und {{space}} wirken sich nicht auf Geld aus — Zahlungen sind ihnen nicht zugeordnet",
+    "clientBase": "Trainer, {{space}}, Filiale und Leistung ändern diese Kennzahl nicht — Kunden sind ihnen nicht zugeordnet"
   },
   "descriptions": {
     "overview": {
@@ -407,8 +407,8 @@
       "heatmap": "Wo der Plan überbucht ist und wo er leer bleibt",
       "topProfitable": "Die Zeiten im Plan, die am meisten Geld bringen",
       "topFilled": "Die Zeiten, die Kunden am liebsten buchen",
-      "chronicLow": "Termine, die seit Wochen weniger als ein Drittel des Saals füllen",
-      "halls": "Wie viel der Zeit Ihre Säle tatsächlich genutzt werden",
+      "chronicLow": "Termine, die seit Wochen weniger als ein Drittel der Plätze füllen",
+      "halls": "{{spacePlural, capitalize}} — wie viel der Zeit sie tatsächlich genutzt werden",
       "losses": "Wo das Studio Plätze verliert: abgesagte Kurse oder Kunden, die nicht erscheinen"
     }
   },
@@ -499,7 +499,7 @@
     },
     "filtersScope": {
       "title": "Geltungsbereich der Filter",
-      "text": "Die Filter Filiale und Saal wirken nur auf kursbezogene Kennzahlen. Zahlungen sind keinem Saal zugeordnet, deshalb wird Geld studioweit angezeigt."
+      "text": "Die Filter Filiale und {{space}} wirken nur auf kursbezogene Kennzahlen. Zahlungen haben keine solche Zuordnung, deshalb wird Geld studioweit angezeigt."
     },
     "avgValue": {
       "title": "Kundenwert",
@@ -555,11 +555,11 @@
     },
     "chronicLow": {
       "title": "Chronisch leere Termine",
-      "text": "Zeiten, die seit mehreren Wochen weniger als ein Drittel des Saals füllen. Kandidaten zum Verschieben oder Streichen."
+      "text": "Zeiten, die seit mehreren Wochen weniger als ein Drittel der Plätze füllen. Kandidaten zum Verschieben oder Streichen."
     },
     "hallUtil": {
-      "title": "Saalauslastung",
-      "text": "Wie viel der Zeit Ihre Säle tatsächlich genutzt werden. Ein leerer Saal ist Miete, die sich nicht rechnet."
+      "title": "Auslastung: {{spacePlural}}",
+      "text": "{{spacePlural, capitalize}} — wie viel der Zeit sie tatsächlich genutzt werden. Leerlauf ist Miete, die sich nicht rechnet."
     },
     "heatmap": {
       "title": "Auslastung nach Tag und Stunde",

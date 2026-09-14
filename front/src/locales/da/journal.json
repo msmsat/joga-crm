@@ -2,11 +2,11 @@
   "toolbar": {
     "today": "I dag",
     "trainers": "Undervisere",
-    "halls": "Sale",
+    "halls": "{{spacePlural, capitalize}}",
     "day": "Dag",
     "week": "Uge",
     "resourceBooking": "Individuelt",
-    "noHall": "Uden sal"
+    "noHall": "Ikke tildelt"
   },
   "daySummary": {
     "classesToday": "hold i dag",
@@ -27,7 +27,10 @@
     "service": "Ydelse",
     "servicePlaceholder": "Vælg en ydelse",
     "namePlaceholder": "F.eks. Reformer Pilates",
-    "location": "Sted / sal",
+    "location": "{{space, capitalize}}",
+    "branch": "Afdeling",
+    "onlyResourceServices": "Alle studiets ydelser bookes individuelt — de kan ikke lægges i skemaet på forhånd. Et hold oprettes ud fra en ydelse med gruppebooking.",
+    "goToResourceBooking": "Gå til individuel booking",
     "start": "Start",
     "end": "Slut",
     "groupLimit": "Holdstørrelse",
@@ -106,7 +109,7 @@
     "add": "Tilføj"
   },
   "rightPanel": {
-    "halls": "Sale",
+    "halls": "{{spacePlural, capitalize}}",
     "load": "Belægning",
     "upcoming": "Kommende"
   },
@@ -119,7 +122,7 @@
     "newLessonPreview": "Nyt hold",
     "cancelled": "Aflyst",
     "noTrainers": "Ingen undervisere",
-    "noHalls": "Ingen sale"
+    "noHalls": "{{spacePlural, capitalize}}: ingen endnu"
   },
   "createService": "+ Opret ydelse",
   "invalidDateFormat": "Ugyldigt datoformat",

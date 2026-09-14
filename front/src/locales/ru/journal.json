@@ -2,11 +2,11 @@
   "toolbar": {
     "today": "Сегодня",
     "trainers": "Тренеры",
-    "halls": "Залы",
+    "halls": "{{spacePlural, capitalize}}",
     "day": "День",
     "week": "Неделя",
     "resourceBooking": "Индивидуально",
-    "noHall": "Без зала"
+    "noHall": "Без привязки"
   },
   "daySummary": {
     "classesToday": "занятий сегодня",
@@ -27,7 +27,10 @@
     "service": "Услуга",
     "servicePlaceholder": "Выберите услугу",
     "namePlaceholder": "Например: Пилатес Реформер",
-    "location": "Локация / Зал",
+    "location": "{{space, capitalize}}",
+    "branch": "Филиал",
+    "onlyResourceServices": "Все услуги студии записываются индивидуально — их нельзя поставить в расписание заранее. Занятие создаётся из услуги с групповой записью.",
+    "goToResourceBooking": "Перейти к индивидуальной записи",
     "start": "Начало",
     "end": "Конец",
     "groupLimit": "Лимит группы",
@@ -110,7 +113,7 @@
     "add": "Добавить"
   },
   "rightPanel": {
-    "halls": "Залы",
+    "halls": "{{spacePlural, capitalize}}",
     "load": "Загрузка",
     "upcoming": "Ближайшие"
   },
@@ -123,7 +126,7 @@
     "newLessonPreview": "Новое занятие",
     "cancelled": "Отменено",
     "noTrainers": "Нет тренеров",
-    "noHalls": "Нет залов"
+    "noHalls": "{{spacePlural, capitalize}} не заведены"
   },
   "createService": "+ Создать услугу",
   "invalidDateFormat": "Неверный формат даты",

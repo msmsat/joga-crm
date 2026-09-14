@@ -33,6 +33,8 @@ interface ToolbarProps {
   /** HB-22: вход в индивидуальную запись. Кнопки нет, пока у студии нет ни
    *  одной услуги с механикой resource — иначе она вела бы в пустую форму. */
   onResourceBooking?: () => void;
+  /** Участвует ли место в расписании. `undefined` — термины ещё не пришли. */
+  spaceIsAxis?: boolean;
 }
 
 export const Toolbar: React.FC<ToolbarProps> = ({
@@ -57,6 +59,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   setCalendarView,
   onGoToToday,
   onResourceBooking,
+  spaceIsAxis,
 }) => {
   const { t, i18n } = useTranslation('journal');
   return (
@@ -143,14 +146,21 @@ export const Toolbar: React.FC<ToolbarProps> = ({
           расползались на три этажа и съедали 177px из 568. На десктопе у неё
           display:contents, то есть в раскладке её просто нет. */}
       <div className="j-tb-controls">
-      {/* Вид: тренеры / залы */}
+      {/* Вид: сотрудники / места. Вкладка мест есть не у всех: в барбершопе
+          клиент записывается к мастеру, а не к креслу, и колонка кресел там
+          только занимает экран. Решает отрасль студии плюс тумблер владельца
+          (space_is_axis), посчитанные сервером. Пока термины не пришли,
+          значение undefined — вкладку показываем: спрятать её у студии,
+          которая ей пользуется, хуже, чем показать на кадр позже. */}
       <div style={{ display: 'flex', gap: 3, background: 'var(--bg2)', borderRadius: 8, padding: 3 }}>
         <button className={`pill-tab ${viewMode === 'trainers' ? 'active' : ''}`} onClick={() => setViewMode('trainers')}>
           <Icons.Users /> {t('toolbar.trainers')}
         </button>
-        <button className={`pill-tab ${viewMode === 'halls' ? 'active' : ''}`} onClick={() => setViewMode('halls')}>
-          <Icons.Grid /> {t('toolbar.halls')}
-        </button>
+        {spaceIsAxis !== false && (
+          <button className={`pill-tab ${viewMode === 'halls' ? 'active' : ''}`} onClick={() => setViewMode('halls')}>
+            <Icons.Grid /> {t('toolbar.halls')}
+          </button>
+        )}
       </div>
 
       <div className="j-sep" style={{ width: 1, height: 20, background: 'var(--border)', flexShrink: 0 }} />

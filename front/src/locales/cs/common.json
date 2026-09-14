@@ -1,4 +1,9 @@
 {
+  "space": {
+    "singular": "místo",
+    "plural": "místa",
+    "accusative": "místo"
+  },
   "phoneGate": {
     "title": "Přidejte své telefonní číslo",
     "sub": "Telefon je druhý kontakt vašeho účtu: obnovuje přístup a chodí na něj oznámení. Číslo studia sem nepatří — tohle musí být vaše."

@@ -2,33 +2,7 @@
   "version": 1,
   "locale": "sq",
   "profiles": {
-    "generic": {
-      "staff": {
-        "singular": "specialist",
-        "plural": "specialistë",
-        "accusative": "specialist"
-      },
-      "offering": {
-        "event": {
-          "singular": "aktivitet",
-          "plural": "aktivitete",
-          "accusative": "aktivitet"
-        },
-        "resource": {
-          "singular": "shërbim",
-          "plural": "shërbime",
-          "accusative": "shërbim"
-        }
-      },
-      "messages": {
-        "choose_staff": "Zgjidhni {{staff.accusative}}",
-        "choose_offering": "Zgjidhni {{offering.accusative}}",
-        "empty_slots": "Nuk ka orare të lira",
-        "my_bookings": "Rezervimet e mia",
-        "confirm_booking": "Konfirmo rezervimin"
-      }
-    },
-    "fitness": {
+    "studio": {
       "staff": {
         "singular": "trajner",
         "plural": "trajnerë",
@@ -45,6 +19,42 @@
           "plural": "shërbime",
           "accusative": "shërbim"
         }
+      },
+      "space": {
+        "singular": "sallë",
+        "plural": "salla",
+        "accusative": "sallë"
+      },
+      "messages": {
+        "choose_staff": "Zgjidhni {{staff.accusative}}",
+        "choose_offering": "Zgjidhni {{offering.accusative}}",
+        "empty_slots": "Nuk ka orare të lira",
+        "my_bookings": "Rezervimet e mia",
+        "confirm_booking": "Konfirmo rezervimin"
+      }
+    },
+    "sport": {
+      "staff": {
+        "singular": "trajner",
+        "plural": "trajnerë",
+        "accusative": "trajner"
+      },
+      "offering": {
+        "event": {
+          "singular": "orë mësimi",
+          "plural": "orë mësimi",
+          "accusative": "orë mësimi"
+        },
+        "resource": {
+          "singular": "shërbim",
+          "plural": "shërbime",
+          "accusative": "shërbim"
+        }
+      },
+      "space": {
+        "singular": "sallë",
+        "plural": "salla",
+        "accusative": "sallë"
       },
       "messages": {
         "choose_staff": "Zgjidhni {{staff.accusative}}",
@@ -71,6 +81,104 @@
           "plural": "shërbime",
           "accusative": "shërbim"
         }
+      },
+      "space": {
+        "singular": "karrige",
+        "plural": "karrige",
+        "accusative": "karrige"
+      },
+      "messages": {
+        "choose_staff": "Zgjidhni {{staff.accusative}}",
+        "choose_offering": "Zgjidhni {{offering.accusative}}",
+        "empty_slots": "Nuk ka orare të lira",
+        "my_bookings": "Rezervimet e mia",
+        "confirm_booking": "Konfirmo rezervimin"
+      }
+    },
+    "recovery": {
+      "staff": {
+        "singular": "specialist",
+        "plural": "specialistë",
+        "accusative": "specialist"
+      },
+      "offering": {
+        "event": {
+          "singular": "aktivitet",
+          "plural": "aktivitete",
+          "accusative": "aktivitet"
+        },
+        "resource": {
+          "singular": "shërbim",
+          "plural": "shërbime",
+          "accusative": "shërbim"
+        }
+      },
+      "space": {
+        "singular": "kabinë",
+        "plural": "kabina",
+        "accusative": "kabinë"
+      },
+      "messages": {
+        "choose_staff": "Zgjidhni {{staff.accusative}}",
+        "choose_offering": "Zgjidhni {{offering.accusative}}",
+        "empty_slots": "Nuk ka orare të lira",
+        "my_bookings": "Rezervimet e mia",
+        "confirm_booking": "Konfirmo rezervimin"
+      }
+    },
+    "relax": {
+      "staff": {
+        "singular": "specialist",
+        "plural": "specialistë",
+        "accusative": "specialist"
+      },
+      "offering": {
+        "event": {
+          "singular": "aktivitet",
+          "plural": "aktivitete",
+          "accusative": "aktivitet"
+        },
+        "resource": {
+          "singular": "shërbim",
+          "plural": "shërbime",
+          "accusative": "shërbim"
+        }
+      },
+      "space": {
+        "singular": "kabinë",
+        "plural": "kabina",
+        "accusative": "kabinë"
+      },
+      "messages": {
+        "choose_staff": "Zgjidhni {{staff.accusative}}",
+        "choose_offering": "Zgjidhni {{offering.accusative}}",
+        "empty_slots": "Nuk ka orare të lira",
+        "my_bookings": "Rezervimet e mia",
+        "confirm_booking": "Konfirmo rezervimin"
+      }
+    },
+    "other": {
+      "staff": {
+        "singular": "specialist",
+        "plural": "specialistë",
+        "accusative": "specialist"
+      },
+      "offering": {
+        "event": {
+          "singular": "aktivitet",
+          "plural": "aktivitete",
+          "accusative": "aktivitet"
+        },
+        "resource": {
+          "singular": "shërbim",
+          "plural": "shërbime",
+          "accusative": "shërbim"
+        }
+      },
+      "space": {
+        "singular": "hapësirë",
+        "plural": "hapësira",
+        "accusative": "hapësirë"
       },
       "messages": {
         "choose_staff": "Zgjidhni {{staff.accusative}}",

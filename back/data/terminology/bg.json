@@ -2,33 +2,7 @@
   "version": 1,
   "locale": "bg",
   "profiles": {
-    "generic": {
-      "staff": {
-        "singular": "специалист",
-        "plural": "специалисти",
-        "accusative": "специалист"
-      },
-      "offering": {
-        "event": {
-          "singular": "събитие",
-          "plural": "събития",
-          "accusative": "събитие"
-        },
-        "resource": {
-          "singular": "услуга",
-          "plural": "услуги",
-          "accusative": "услуга"
-        }
-      },
-      "messages": {
-        "choose_staff": "Изберете {{staff.accusative}}",
-        "choose_offering": "Изберете {{offering.accusative}}",
-        "empty_slots": "Няма свободни часове",
-        "my_bookings": "Моите резервации",
-        "confirm_booking": "Потвърдете резервацията"
-      }
-    },
-    "fitness": {
+    "studio": {
       "staff": {
         "singular": "треньор",
         "plural": "треньори",
@@ -45,6 +19,42 @@
           "plural": "услуги",
           "accusative": "услуга"
         }
+      },
+      "space": {
+        "singular": "зала",
+        "plural": "зали",
+        "accusative": "зала"
+      },
+      "messages": {
+        "choose_staff": "Изберете {{staff.accusative}}",
+        "choose_offering": "Изберете {{offering.accusative}}",
+        "empty_slots": "Няма свободни часове",
+        "my_bookings": "Моите резервации",
+        "confirm_booking": "Потвърдете резервацията"
+      }
+    },
+    "sport": {
+      "staff": {
+        "singular": "треньор",
+        "plural": "треньори",
+        "accusative": "треньор"
+      },
+      "offering": {
+        "event": {
+          "singular": "занятие",
+          "plural": "занятия",
+          "accusative": "занятие"
+        },
+        "resource": {
+          "singular": "услуга",
+          "plural": "услуги",
+          "accusative": "услуга"
+        }
+      },
+      "space": {
+        "singular": "зала",
+        "plural": "зали",
+        "accusative": "зала"
       },
       "messages": {
         "choose_staff": "Изберете {{staff.accusative}}",
@@ -71,6 +81,104 @@
           "plural": "услуги",
           "accusative": "услуга"
         }
+      },
+      "space": {
+        "singular": "стол",
+        "plural": "столове",
+        "accusative": "стол"
+      },
+      "messages": {
+        "choose_staff": "Изберете {{staff.accusative}}",
+        "choose_offering": "Изберете {{offering.accusative}}",
+        "empty_slots": "Няма свободни часове",
+        "my_bookings": "Моите резервации",
+        "confirm_booking": "Потвърдете резервацията"
+      }
+    },
+    "recovery": {
+      "staff": {
+        "singular": "специалист",
+        "plural": "специалисти",
+        "accusative": "специалист"
+      },
+      "offering": {
+        "event": {
+          "singular": "събитие",
+          "plural": "събития",
+          "accusative": "събитие"
+        },
+        "resource": {
+          "singular": "услуга",
+          "plural": "услуги",
+          "accusative": "услуга"
+        }
+      },
+      "space": {
+        "singular": "кабинет",
+        "plural": "кабинети",
+        "accusative": "кабинет"
+      },
+      "messages": {
+        "choose_staff": "Изберете {{staff.accusative}}",
+        "choose_offering": "Изберете {{offering.accusative}}",
+        "empty_slots": "Няма свободни часове",
+        "my_bookings": "Моите резервации",
+        "confirm_booking": "Потвърдете резервацията"
+      }
+    },
+    "relax": {
+      "staff": {
+        "singular": "специалист",
+        "plural": "специалисти",
+        "accusative": "специалист"
+      },
+      "offering": {
+        "event": {
+          "singular": "събитие",
+          "plural": "събития",
+          "accusative": "събитие"
+        },
+        "resource": {
+          "singular": "услуга",
+          "plural": "услуги",
+          "accusative": "услуга"
+        }
+      },
+      "space": {
+        "singular": "кабинет",
+        "plural": "кабинети",
+        "accusative": "кабинет"
+      },
+      "messages": {
+        "choose_staff": "Изберете {{staff.accusative}}",
+        "choose_offering": "Изберете {{offering.accusative}}",
+        "empty_slots": "Няма свободни часове",
+        "my_bookings": "Моите резервации",
+        "confirm_booking": "Потвърдете резервацията"
+      }
+    },
+    "other": {
+      "staff": {
+        "singular": "специалист",
+        "plural": "специалисти",
+        "accusative": "специалист"
+      },
+      "offering": {
+        "event": {
+          "singular": "събитие",
+          "plural": "събития",
+          "accusative": "събитие"
+        },
+        "resource": {
+          "singular": "услуга",
+          "plural": "услуги",
+          "accusative": "услуга"
+        }
+      },
+      "space": {
+        "singular": "място",
+        "plural": "места",
+        "accusative": "място"
       },
       "messages": {
         "choose_staff": "Изберете {{staff.accusative}}",

@@ -2,11 +2,11 @@
   "toolbar": {
     "today": "Sot",
     "trainers": "Trajnerët",
-    "halls": "Sallat",
+    "halls": "{{spacePlural, capitalize}}",
     "day": "Ditë",
     "week": "Javë",
     "resourceBooking": "Individuale",
-    "noHall": "Pa sallë"
+    "noHall": "Pa caktuar"
   },
   "daySummary": {
     "classesToday": "mësime sot",
@@ -27,7 +27,10 @@
     "service": "Shërbimi",
     "servicePlaceholder": "Zgjidhni një shërbim",
     "namePlaceholder": "P.sh. Reformer Pilates",
-    "location": "Vendi / Salla",
+    "location": "{{space, capitalize}}",
+    "branch": "Dega",
+    "onlyResourceServices": "Të gjitha shërbimet e studios rezervohen individualisht — nuk mund të vendosen paraprakisht në orar. Një orë mësimi krijohet nga një shërbim me rezervim në grup.",
+    "goToResourceBooking": "Shko te rezervimi individual",
     "start": "Fillimi",
     "end": "Mbarimi",
     "groupLimit": "Kufiri i grupit",
@@ -106,7 +109,7 @@
     "add": "Shto"
   },
   "rightPanel": {
-    "halls": "Sallat",
+    "halls": "{{spacePlural, capitalize}}",
     "load": "Ngarkesa",
     "upcoming": "Në vijim"
   },
@@ -119,7 +122,7 @@
     "newLessonPreview": "Mësim i ri",
     "cancelled": "Anuluar",
     "noTrainers": "Pa trajnerë",
-    "noHalls": "Pa salla"
+    "noHalls": "{{spacePlural, capitalize}}: ende asnjë"
   },
   "createService": "+ Krijo shërbim",
   "invalidDateFormat": "Format date i pavlefshëm",

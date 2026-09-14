@@ -2,33 +2,7 @@
   "version": 1,
   "locale": "uk",
   "profiles": {
-    "generic": {
-      "staff": {
-        "singular": "спеціаліст",
-        "plural": "спеціалісти",
-        "accusative": "спеціаліста"
-      },
-      "offering": {
-        "event": {
-          "singular": "подія",
-          "plural": "події",
-          "accusative": "подію"
-        },
-        "resource": {
-          "singular": "послуга",
-          "plural": "послуги",
-          "accusative": "послугу"
-        }
-      },
-      "messages": {
-        "choose_staff": "Виберіть {{staff.accusative}}",
-        "choose_offering": "Виберіть {{offering.accusative}}",
-        "empty_slots": "Немає доступного часу",
-        "my_bookings": "Мої записи",
-        "confirm_booking": "Підтвердити запис"
-      }
-    },
-    "fitness": {
+    "studio": {
       "staff": {
         "singular": "тренер",
         "plural": "тренери",
@@ -45,6 +19,42 @@
           "plural": "послуги",
           "accusative": "послугу"
         }
+      },
+      "space": {
+        "singular": "зал",
+        "plural": "зали",
+        "accusative": "зал"
+      },
+      "messages": {
+        "choose_staff": "Виберіть {{staff.accusative}}",
+        "choose_offering": "Виберіть {{offering.accusative}}",
+        "empty_slots": "Немає доступного часу",
+        "my_bookings": "Мої записи",
+        "confirm_booking": "Підтвердити запис"
+      }
+    },
+    "sport": {
+      "staff": {
+        "singular": "тренер",
+        "plural": "тренери",
+        "accusative": "тренера"
+      },
+      "offering": {
+        "event": {
+          "singular": "заняття",
+          "plural": "заняття",
+          "accusative": "заняття"
+        },
+        "resource": {
+          "singular": "послуга",
+          "plural": "послуги",
+          "accusative": "послугу"
+        }
+      },
+      "space": {
+        "singular": "зал",
+        "plural": "зали",
+        "accusative": "зал"
       },
       "messages": {
         "choose_staff": "Виберіть {{staff.accusative}}",
@@ -71,6 +81,104 @@
           "plural": "послуги",
           "accusative": "послугу"
         }
+      },
+      "space": {
+        "singular": "крісло",
+        "plural": "крісла",
+        "accusative": "крісло"
+      },
+      "messages": {
+        "choose_staff": "Виберіть {{staff.accusative}}",
+        "choose_offering": "Виберіть {{offering.accusative}}",
+        "empty_slots": "Немає доступного часу",
+        "my_bookings": "Мої записи",
+        "confirm_booking": "Підтвердити запис"
+      }
+    },
+    "recovery": {
+      "staff": {
+        "singular": "спеціаліст",
+        "plural": "спеціалісти",
+        "accusative": "спеціаліста"
+      },
+      "offering": {
+        "event": {
+          "singular": "подія",
+          "plural": "події",
+          "accusative": "подію"
+        },
+        "resource": {
+          "singular": "послуга",
+          "plural": "послуги",
+          "accusative": "послугу"
+        }
+      },
+      "space": {
+        "singular": "кабінет",
+        "plural": "кабінети",
+        "accusative": "кабінет"
+      },
+      "messages": {
+        "choose_staff": "Виберіть {{staff.accusative}}",
+        "choose_offering": "Виберіть {{offering.accusative}}",
+        "empty_slots": "Немає доступного часу",
+        "my_bookings": "Мої записи",
+        "confirm_booking": "Підтвердити запис"
+      }
+    },
+    "relax": {
+      "staff": {
+        "singular": "спеціаліст",
+        "plural": "спеціалісти",
+        "accusative": "спеціаліста"
+      },
+      "offering": {
+        "event": {
+          "singular": "подія",
+          "plural": "події",
+          "accusative": "подію"
+        },
+        "resource": {
+          "singular": "послуга",
+          "plural": "послуги",
+          "accusative": "послугу"
+        }
+      },
+      "space": {
+        "singular": "кабінет",
+        "plural": "кабінети",
+        "accusative": "кабінет"
+      },
+      "messages": {
+        "choose_staff": "Виберіть {{staff.accusative}}",
+        "choose_offering": "Виберіть {{offering.accusative}}",
+        "empty_slots": "Немає доступного часу",
+        "my_bookings": "Мої записи",
+        "confirm_booking": "Підтвердити запис"
+      }
+    },
+    "other": {
+      "staff": {
+        "singular": "спеціаліст",
+        "plural": "спеціалісти",
+        "accusative": "спеціаліста"
+      },
+      "offering": {
+        "event": {
+          "singular": "подія",
+          "plural": "події",
+          "accusative": "подію"
+        },
+        "resource": {
+          "singular": "послуга",
+          "plural": "послуги",
+          "accusative": "послугу"
+        }
+      },
+      "space": {
+        "singular": "місце",
+        "plural": "місця",
+        "accusative": "місце"
       },
       "messages": {
         "choose_staff": "Виберіть {{staff.accusative}}",

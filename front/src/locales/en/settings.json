@@ -68,16 +68,23 @@
       "profile": "Industry wording",
       "profileHint": "Chooses the words for staff and offerings. It changes wording only — never roles, prices or the booking model.",
       "strict": "Strict schedule",
-      "strictHint": "Forbids double-booking a specialist or an exclusive room. Required before individual booking can be turned on.",
+      "strictHint": "Forbids double-booking a specialist or an exclusive space. Required before individual booking can be turned on.",
+      "spaceAxis": "Use {{spacePlural}} in the schedule",
+      "spaceAxisHint": "Off — the client books a person, and the space takes no column in the journal. On — a class is tied to a space.",
+      "spaceAxisDefaultOn": "Default for your industry: on",
+      "spaceAxisDefaultOff": "Default for your industry: off",
       "modes": {
         "event": "Events",
         "resource": "Individual",
         "hybrid": "Mixed"
       },
       "profiles": {
-        "generic": "Neutral",
-        "fitness": "Fitness",
-        "beauty": "Beauty"
+        "studio": "Group practices and studios",
+        "sport": "Sport and gyms",
+        "beauty": "Beauty and grooming",
+        "recovery": "Body and recovery",
+        "relax": "Spa and relaxation",
+        "other": "Other"
       },
       "preview": {
         "event": "Event",
@@ -311,7 +318,7 @@
         "action": "Wipe data",
         "toast": "Database wiped successfully",
         "consequence1": "Permanently deleted: clients, lessons, bookings, operations, documents, client subscriptions, loyalty history",
-        "consequence2": "Kept as is: studio, branches, halls, services, staff, subscription plan and settings",
+        "consequence2": "Unchanged: studio, branches, {{spacePlural}}, services, staff, subscription and settings",
         "consequence3": "This action is irreversible — it cannot be undone once confirmed"
       },
       "deleteAccount": {

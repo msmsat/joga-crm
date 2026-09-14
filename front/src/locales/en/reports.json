@@ -16,7 +16,7 @@
     },
     "vsPrevious": "vs previous period: {{from}}–{{to}}",
     "allBranches": "All branches",
-    "allHalls": "All halls",
+    "allHalls": "All {{spacePlural}}",
     "allTrainers": "All trainers",
     "allServices": "All services",
     "export": "Export"
@@ -276,7 +276,7 @@
       "topProfitable": "Most profitable",
       "topFilled": "Most filled",
       "chronicLow": "Chronically underfilled",
-      "halls": "Hall utilization",
+      "halls": "Utilization: {{spacePlural}}",
       "held": "{{count}} held",
       "weeks": "{{count}} wks",
       "move": "Move",
@@ -312,8 +312,8 @@
   },
   "scopeNote": {
     "label": "Studio-wide",
-    "money": "The Branch and Hall filters don't affect money — payments aren't linked to a hall",
-    "clientBase": "Trainer, hall, branch and service don't change this metric — clients aren't linked to them"
+    "money": "The Branch and {{space}} filters do not affect money — a payment is not tied to them",
+    "clientBase": "Trainer, {{space}}, branch and service do not change this metric — a client is not tied to them"
   },
   "descriptions": {
     "overview": {
@@ -349,8 +349,8 @@
       "heatmap": "Where the schedule is overbooked, and where it's empty",
       "topProfitable": "The times in your schedule that bring in the most money",
       "topFilled": "The times clients book most eagerly",
-      "chronicLow": "Slots that have filled less than a third of the hall for weeks running",
-      "halls": "How much of the time your halls are actually in use",
+      "chronicLow": "Slots that have been filling less than a third of the seats for weeks",
+      "halls": "How much of the time your {{spacePlural}} are actually in use",
       "losses": "Where the studio loses spots: lessons cancelled or clients not showing up"
     }
   },
@@ -376,7 +376,7 @@
     "missedRevenue": { "title": "Missed revenue", "text": "Money the studio didn't earn because of empty spots in past sessions: free spots multiplied by the session price." },
     "losses": { "title": "Cancellations and no-shows", "text": "A \"cancel\" is a cancelled lesson; a \"no-show\" is a client who booked but didn't come. The time/service/trainer breakdowns use the same filters as the tab and reconcile with the header KPIs." },
     "lessonRevenue": { "title": "Lesson revenue", "text": "A rough estimate of a session's revenue: attendees multiplied by price. Payments aren't tied to a specific session, so this is an approximation, not an exact figure." },
-    "filtersScope": { "title": "Filter scope", "text": "The Branch and Hall filters only affect session-based metrics. Payments aren't linked to a hall, so money is shown studio-wide." },
+    "filtersScope": { "title": "Filter scope", "text": "The Branch and {{space}} filters apply only to class metrics. Payments have no such link, so money is shown studio-wide." },
     "avgValue": { "title": "Client value", "text": "What one client brings in on average this period." },
     "cancelNoshow": { "title": "Cancels and no-shows", "text": "Share of disrupted sessions: cancellations and no-shows out of everything scheduled." },
     "avgRating": { "title": "Average rating", "text": "The average rating clients gave this trainer's sessions." },
@@ -390,8 +390,8 @@
     "products": { "title": "What's selling", "text": "All packages and services for the period: how many sold, for how much, and whether sales are growing." },
     "topProfitable": { "title": "Most profitable slots", "text": "The times in your schedule that bring in the most money. Put your best trainers there." },
     "topFilled": { "title": "Most filled slots", "text": "The times clients book most eagerly. If it's packed solid, it's worth adding another session." },
-    "chronicLow": { "title": "Chronically empty slots", "text": "Times that have filled less than a third of the hall for several weeks running. Candidates for moving or cancelling." },
-    "hallUtil": { "title": "Hall utilization", "text": "How much of the time your halls are actually in use. An empty hall is rent that isn't paying for itself." },
+    "chronicLow": { "title": "Chronically empty slots", "text": "Times that have been filling less than a third of the seats for several weeks. Candidates to move or drop." },
+    "hallUtil": { "title": "Utilization: {{spacePlural}}", "text": "How much of the time your {{spacePlural}} are actually in use. Idle time is rent that does not pay off." },
     "heatmap": { "title": "Load by day and hour", "text": "Color shows the slot's average fill rate for the period. Click a cell to see that day and hour's sessions." },
     "riskSegments": { "title": "Risk segments", "text": "Clients grouped by the type of risk they carry — losing them, or the revenue they're not bringing in. Each card has its own reason and a clear next step: message them, offer a renewal, or upsell." },
     "loyalSegments": { "title": "Loyal", "text": "Clients who already bring you the most value: they visit most often, spend the most, or bring in friends. Worth looking after and rewarding." },

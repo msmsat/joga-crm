@@ -111,6 +111,12 @@ class LessonCreateRequest(BaseSchema):
     service_id: int
     teacher_id: int
     hall_id: Optional[int] = None
+    # Филиал занятия. С залом его называть незачем — он берётся из зала, и
+    # присланное значение обязано совпасть (иначе 409). Нужен он там, где
+    # места не участвуют в расписании (барбершоп: запись к мастеру, не к
+    # креслу): иначе событие в студии с двумя филиалами остаётся без филиала,
+    # потому что вывести его больше не из чего.
+    branch_id: Optional[int] = None
     start_time: datetime
     duration_min: int = 60
     total_spots: int = 8
@@ -126,6 +132,7 @@ class LessonUpdateRequest(BaseSchema):
     service_id: Optional[int] = None
     teacher_id: Optional[int] = None
     hall_id: Optional[int] = None
+    branch_id: Optional[int] = None
     start_time: Optional[datetime] = None
     duration_min: Optional[int] = None
     total_spots: Optional[int] = None

@@ -29,7 +29,14 @@ export interface GeneralSettings {
 }
 
 // Поля, доступные для PATCH — logo_url пишется отдельным эндпоинтом (studioApi.uploadStudioLogo).
-export type GeneralUpdate = Partial<Omit<GeneralSettings, 'logo_url' | 'booking_capabilities' | 'terminology'>> & { booking_mode?: StudioBookingMode; terminology_profile?: TerminologyProfile; strict_schedule_enabled?: boolean }
+export type GeneralUpdate = Partial<Omit<GeneralSettings, 'logo_url' | 'booking_capabilities' | 'terminology'>> & {
+  booking_mode?: StudioBookingMode;
+  terminology_profile?: TerminologyProfile;
+  strict_schedule_enabled?: boolean;
+  /** Роль места в расписании. `null` — ЗНАЧАЩЕЕ: «наследовать отрасль», а не
+   *  «не менять»; не менять — это не прислать поле вовсе. */
+  space_is_axis?: boolean | null;
+}
 
 export interface AppearanceSettings {
   theme: string | null

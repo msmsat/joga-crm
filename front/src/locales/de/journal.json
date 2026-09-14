@@ -2,11 +2,11 @@
   "toolbar": {
     "today": "Heute",
     "trainers": "Trainer",
-    "halls": "Räume",
+    "halls": "{{spacePlural, capitalize}}",
     "day": "Tag",
     "week": "Woche",
     "resourceBooking": "Individuell",
-    "noHall": "Ohne Raum"
+    "noHall": "Ohne Zuordnung"
   },
   "daySummary": {
     "classesToday": "Kurse heute",
@@ -27,7 +27,10 @@
     "service": "Leistung",
     "servicePlaceholder": "Leistung auswählen",
     "namePlaceholder": "z. B. Reformer Pilates",
-    "location": "Ort / Raum",
+    "location": "{{space, capitalize}}",
+    "branch": "Filiale",
+    "onlyResourceServices": "Alle Leistungen des Studios werden individuell gebucht — sie lassen sich nicht im Voraus in den Zeitplan setzen. Ein Kurs entsteht aus einer Leistung mit Gruppenbuchung.",
+    "goToResourceBooking": "Zur individuellen Buchung",
     "start": "Beginn",
     "end": "Ende",
     "groupLimit": "Gruppengröße",
@@ -106,7 +109,7 @@
     "add": "Hinzufügen"
   },
   "rightPanel": {
-    "halls": "Räume",
+    "halls": "{{spacePlural, capitalize}}",
     "load": "Auslastung",
     "upcoming": "Demnächst"
   },
@@ -119,7 +122,7 @@
     "newLessonPreview": "Neuer Kurs",
     "cancelled": "Storniert",
     "noTrainers": "Keine Trainer",
-    "noHalls": "Keine Räume"
+    "noHalls": "Keine {{spacePlural}}"
   },
   "createService": "+ Leistung erstellen",
   "invalidDateFormat": "Ungültiges Datumsformat",

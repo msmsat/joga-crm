@@ -1,4 +1,9 @@
 {
+  "space": {
+    "singular": "miejsce",
+    "plural": "miejsca",
+    "accusative": "miejsce"
+  },
   "phoneGate": {
     "title": "Dodaj swój numer telefonu",
     "sub": "Telefon to drugi kontakt Twojego konta: przez niego odzyskasz dostęp i dostaniesz powiadomienia. Numer studia się tu nie nadaje — ten musi być Twój."

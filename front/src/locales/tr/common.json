@@ -1,4 +1,9 @@
 {
+  "space": {
+    "singular": "alan",
+    "plural": "alanlar",
+    "accusative": "alan"
+  },
   "phoneGate": {
     "title": "Telefon numaranızı ekleyin",
     "sub": "Telefon, hesabınızın ikinci iletişim bilgisidir: erişimi kurtarır ve bildirimleri alır. Stüdyonun numarası buraya uymaz — bunun sizin olması gerekir."

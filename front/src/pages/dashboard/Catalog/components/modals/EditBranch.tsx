@@ -150,7 +150,10 @@ export function EditBranchModal({ branch, onClose, onSubmit, onDelete }: EditBra
         country={country}
       />
       <div className="ebh-stats-row">
-        <StatPill icon={<IconDoor />} value={halls.length} label={t("catalog:studios.stats.halls", { defaultValue: "Залов" })} />
+        {/* defaultValue не задаём: подпись зависит от отрасли студии
+            («Залы» / «Кресла» / «Кабинеты»), и русское слово в запасе выдало
+            бы его англоязычной студии вместо перевода. */}
+        <StatPill icon={<IconDoor />} value={halls.length} label={t("catalog:studios.stats.halls")} />
         <StatPill icon={<IconUsers />} value={totalSeats} label={t("catalog:studios.stats.totalSeats", { defaultValue: "Мест" })} />
         <StatPill
           icon={<IconTag />}

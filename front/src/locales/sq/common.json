@@ -1,4 +1,9 @@
 {
+  "space": {
+    "singular": "hapësirë",
+    "plural": "hapësira",
+    "accusative": "hapësirë"
+  },
   "phoneGate": {
     "title": "Shtoni numrin tuaj të telefonit",
     "sub": "Telefoni është kontakti i dytë i llogarisë suaj: rikthen aksesin dhe merr njoftimet. Numri i studios nuk vlen këtu — ky duhet të jetë juaji."

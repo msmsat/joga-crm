@@ -205,7 +205,7 @@ export default function OnboardingPage() {
     <div
       className="velora-modal ob-modal"
       style={{
-        width: "100%", maxWidth: "920px", minHeight: "min(560px, calc(100vh - 40px))", maxHeight: "calc(100vh - 40px)",
+        width: "100%", maxWidth: "920px", minHeight: "min(560px, calc(100dvh - 40px))", maxHeight: "calc(100dvh - 40px)",
         background: "var(--bg)", borderRadius: "24px",
         boxShadow: "0 48px 120px rgba(26,26,26,0.18), 0 8px 32px rgba(26,26,26,0.08)",
         display: "flex", alignItems: "stretch", overflow: "hidden",

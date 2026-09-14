@@ -1,4 +1,9 @@
 {
+  "space": {
+    "singular": "plads",
+    "plural": "pladser",
+    "accusative": "plads"
+  },
   "phoneGate": {
     "title": "Tilføj dit telefonnummer",
     "sub": "Telefonen er din kontos anden kontakt: den gendanner adgang og modtager notifikationer. Studiets nummer duer ikke her — det her skal være dit eget."

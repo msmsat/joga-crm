@@ -2,11 +2,11 @@
   "toolbar": {
     "today": "Azi",
     "trainers": "Antrenori",
-    "halls": "Săli",
+    "halls": "{{spacePlural, capitalize}}",
     "day": "Zi",
     "week": "Săptămână",
     "resourceBooking": "Individual",
-    "noHall": "Fără sală"
+    "noHall": "Neatribuit"
   },
   "daySummary": {
     "classesToday": "ședințe azi",
@@ -27,7 +27,10 @@
     "service": "Serviciu",
     "servicePlaceholder": "Alegeți un serviciu",
     "namePlaceholder": "De ex. Reformer Pilates",
-    "location": "Locație / sală",
+    "location": "{{space, capitalize}}",
+    "branch": "Filială",
+    "onlyResourceServices": "Toate serviciile studioului se programează individual — nu pot fi puse în orar din timp. Un curs se creează dintr-un serviciu cu programare de grup.",
+    "goToResourceBooking": "Mergi la programarea individuală",
     "start": "Început",
     "end": "Sfârșit",
     "groupLimit": "Limita grupei",
@@ -108,7 +111,7 @@
     "add": "Adaugă"
   },
   "rightPanel": {
-    "halls": "Săli",
+    "halls": "{{spacePlural, capitalize}}",
     "load": "Ocupare",
     "upcoming": "Urmează"
   },
@@ -121,7 +124,7 @@
     "newLessonPreview": "Ședință nouă",
     "cancelled": "Anulată",
     "noTrainers": "Fără antrenori",
-    "noHalls": "Fără săli"
+    "noHalls": "{{spacePlural, capitalize}}: încă nu există"
   },
   "createService": "+ Creează serviciu",
   "invalidDateFormat": "Format de dată invalid",

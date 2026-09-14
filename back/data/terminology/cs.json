@@ -2,33 +2,7 @@
   "version": 1,
   "locale": "cs",
   "profiles": {
-    "generic": {
-      "staff": {
-        "singular": "specialista",
-        "plural": "specialisté",
-        "accusative": "specialistu"
-      },
-      "offering": {
-        "event": {
-          "singular": "událost",
-          "plural": "události",
-          "accusative": "událost"
-        },
-        "resource": {
-          "singular": "služba",
-          "plural": "služby",
-          "accusative": "službu"
-        }
-      },
-      "messages": {
-        "choose_staff": "Vyberte {{staff.accusative}}",
-        "choose_offering": "Vyberte {{offering.accusative}}",
-        "empty_slots": "Žádné volné termíny",
-        "my_bookings": "Moje rezervace",
-        "confirm_booking": "Potvrdit rezervaci"
-      }
-    },
-    "fitness": {
+    "studio": {
       "staff": {
         "singular": "trenér",
         "plural": "trenéři",
@@ -45,6 +19,42 @@
           "plural": "služby",
           "accusative": "službu"
         }
+      },
+      "space": {
+        "singular": "sál",
+        "plural": "sály",
+        "accusative": "sál"
+      },
+      "messages": {
+        "choose_staff": "Vyberte {{staff.accusative}}",
+        "choose_offering": "Vyberte {{offering.accusative}}",
+        "empty_slots": "Žádné volné termíny",
+        "my_bookings": "Moje rezervace",
+        "confirm_booking": "Potvrdit rezervaci"
+      }
+    },
+    "sport": {
+      "staff": {
+        "singular": "trenér",
+        "plural": "trenéři",
+        "accusative": "trenéra"
+      },
+      "offering": {
+        "event": {
+          "singular": "lekce",
+          "plural": "lekce",
+          "accusative": "lekci"
+        },
+        "resource": {
+          "singular": "služba",
+          "plural": "služby",
+          "accusative": "službu"
+        }
+      },
+      "space": {
+        "singular": "sál",
+        "plural": "sály",
+        "accusative": "sál"
       },
       "messages": {
         "choose_staff": "Vyberte {{staff.accusative}}",
@@ -71,6 +81,104 @@
           "plural": "služby",
           "accusative": "službu"
         }
+      },
+      "space": {
+        "singular": "křeslo",
+        "plural": "křesla",
+        "accusative": "křeslo"
+      },
+      "messages": {
+        "choose_staff": "Vyberte {{staff.accusative}}",
+        "choose_offering": "Vyberte {{offering.accusative}}",
+        "empty_slots": "Žádné volné termíny",
+        "my_bookings": "Moje rezervace",
+        "confirm_booking": "Potvrdit rezervaci"
+      }
+    },
+    "recovery": {
+      "staff": {
+        "singular": "specialista",
+        "plural": "specialisté",
+        "accusative": "specialistu"
+      },
+      "offering": {
+        "event": {
+          "singular": "událost",
+          "plural": "události",
+          "accusative": "událost"
+        },
+        "resource": {
+          "singular": "služba",
+          "plural": "služby",
+          "accusative": "službu"
+        }
+      },
+      "space": {
+        "singular": "místnost",
+        "plural": "místnosti",
+        "accusative": "místnost"
+      },
+      "messages": {
+        "choose_staff": "Vyberte {{staff.accusative}}",
+        "choose_offering": "Vyberte {{offering.accusative}}",
+        "empty_slots": "Žádné volné termíny",
+        "my_bookings": "Moje rezervace",
+        "confirm_booking": "Potvrdit rezervaci"
+      }
+    },
+    "relax": {
+      "staff": {
+        "singular": "specialista",
+        "plural": "specialisté",
+        "accusative": "specialistu"
+      },
+      "offering": {
+        "event": {
+          "singular": "událost",
+          "plural": "události",
+          "accusative": "událost"
+        },
+        "resource": {
+          "singular": "služba",
+          "plural": "služby",
+          "accusative": "službu"
+        }
+      },
+      "space": {
+        "singular": "místnost",
+        "plural": "místnosti",
+        "accusative": "místnost"
+      },
+      "messages": {
+        "choose_staff": "Vyberte {{staff.accusative}}",
+        "choose_offering": "Vyberte {{offering.accusative}}",
+        "empty_slots": "Žádné volné termíny",
+        "my_bookings": "Moje rezervace",
+        "confirm_booking": "Potvrdit rezervaci"
+      }
+    },
+    "other": {
+      "staff": {
+        "singular": "specialista",
+        "plural": "specialisté",
+        "accusative": "specialistu"
+      },
+      "offering": {
+        "event": {
+          "singular": "událost",
+          "plural": "události",
+          "accusative": "událost"
+        },
+        "resource": {
+          "singular": "služba",
+          "plural": "služby",
+          "accusative": "službu"
+        }
+      },
+      "space": {
+        "singular": "místo",
+        "plural": "místa",
+        "accusative": "místo"
       },
       "messages": {
         "choose_staff": "Vyberte {{staff.accusative}}",

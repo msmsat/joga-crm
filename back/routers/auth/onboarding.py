@@ -7,6 +7,7 @@ from database import get_db
 from models import Client, User, Studio, StudioWorkingHours, StudioMember
 from schemas import OnboardingRequest, SelectStudioRequest, StudioListItem, TokenResponse
 from security import create_access_token
+from services import terminology
 from dependencies import ALGORITHM, SECRET_KEY, get_current_user, oauth2_scheme
 from jose import jwt
 
@@ -49,6 +50,11 @@ async def _create_studio_with_defaults(user: User, data: OnboardingRequest, db: 
         website=data.website,
         business_type="fitness",
         business_subtype=data.activityType,
+        # Отрасль, выбранная на шаге «Вид деятельности», решает словарь студии:
+        # тренер или мастер, занятие или услуга, зал или кресло. Считаем ОДИН
+        # раз здесь — дальше это самостоятельное поле, которое владелец может
+        # сменить в настройках, а не производное от business_subtype.
+        terminology_profile=terminology.profile_for_activities(data.activityType),
         timezone=data.timezone,
         language=data.language,
         currency=data.currency,

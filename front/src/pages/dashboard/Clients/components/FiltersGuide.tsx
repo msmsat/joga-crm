@@ -104,7 +104,7 @@ export function FiltersGuide({ categories, activeCatKey, onCatChange }: FiltersG
 
         .fg-panel {
           width: min(660px, calc(100vw - 24px));
-          max-height: min(600px, calc(100vh - 100px));
+          max-height: min(600px, calc(100dvh - 100px));
           overflow-y: auto;
           background: var(--bg-card, #FFFFFF);
           border: 1px solid rgba(var(--ink),0.08);

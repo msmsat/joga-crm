@@ -59,6 +59,9 @@
         "offering": {
           "$ref": "#/$defs/Offerings"
         },
+        "space": {
+          "$ref": "#/$defs/Forms"
+        },
         "messages": {
           "additionalProperties": {
             "type": "string"
@@ -70,6 +73,7 @@
       "required": [
         "staff",
         "offering",
+        "space",
         "messages"
       ],
       "title": "Profile",

@@ -2,33 +2,7 @@
   "version": 1,
   "locale": "sv",
   "profiles": {
-    "generic": {
-      "staff": {
-        "singular": "specialist",
-        "plural": "specialister",
-        "accusative": "specialist"
-      },
-      "offering": {
-        "event": {
-          "singular": "evenemang",
-          "plural": "evenemang",
-          "accusative": "evenemang"
-        },
-        "resource": {
-          "singular": "tjänst",
-          "plural": "tjänster",
-          "accusative": "tjänst"
-        }
-      },
-      "messages": {
-        "choose_staff": "Välj {{staff.accusative}}",
-        "choose_offering": "Välj {{offering.accusative}}",
-        "empty_slots": "Inga lediga tider",
-        "my_bookings": "Mina bokningar",
-        "confirm_booking": "Bekräfta bokning"
-      }
-    },
-    "fitness": {
+    "studio": {
       "staff": {
         "singular": "tränare",
         "plural": "tränare",
@@ -45,6 +19,42 @@
           "plural": "tjänster",
           "accusative": "tjänst"
         }
+      },
+      "space": {
+        "singular": "sal",
+        "plural": "salar",
+        "accusative": "sal"
+      },
+      "messages": {
+        "choose_staff": "Välj {{staff.accusative}}",
+        "choose_offering": "Välj {{offering.accusative}}",
+        "empty_slots": "Inga lediga tider",
+        "my_bookings": "Mina bokningar",
+        "confirm_booking": "Bekräfta bokning"
+      }
+    },
+    "sport": {
+      "staff": {
+        "singular": "tränare",
+        "plural": "tränare",
+        "accusative": "tränare"
+      },
+      "offering": {
+        "event": {
+          "singular": "pass",
+          "plural": "pass",
+          "accusative": "pass"
+        },
+        "resource": {
+          "singular": "tjänst",
+          "plural": "tjänster",
+          "accusative": "tjänst"
+        }
+      },
+      "space": {
+        "singular": "sal",
+        "plural": "salar",
+        "accusative": "sal"
       },
       "messages": {
         "choose_staff": "Välj {{staff.accusative}}",
@@ -71,6 +81,104 @@
           "plural": "tjänster",
           "accusative": "tjänst"
         }
+      },
+      "space": {
+        "singular": "stol",
+        "plural": "stolar",
+        "accusative": "stol"
+      },
+      "messages": {
+        "choose_staff": "Välj {{staff.accusative}}",
+        "choose_offering": "Välj {{offering.accusative}}",
+        "empty_slots": "Inga lediga tider",
+        "my_bookings": "Mina bokningar",
+        "confirm_booking": "Bekräfta bokning"
+      }
+    },
+    "recovery": {
+      "staff": {
+        "singular": "specialist",
+        "plural": "specialister",
+        "accusative": "specialist"
+      },
+      "offering": {
+        "event": {
+          "singular": "evenemang",
+          "plural": "evenemang",
+          "accusative": "evenemang"
+        },
+        "resource": {
+          "singular": "tjänst",
+          "plural": "tjänster",
+          "accusative": "tjänst"
+        }
+      },
+      "space": {
+        "singular": "behandlingsrum",
+        "plural": "behandlingsrum",
+        "accusative": "behandlingsrum"
+      },
+      "messages": {
+        "choose_staff": "Välj {{staff.accusative}}",
+        "choose_offering": "Välj {{offering.accusative}}",
+        "empty_slots": "Inga lediga tider",
+        "my_bookings": "Mina bokningar",
+        "confirm_booking": "Bekräfta bokning"
+      }
+    },
+    "relax": {
+      "staff": {
+        "singular": "specialist",
+        "plural": "specialister",
+        "accusative": "specialist"
+      },
+      "offering": {
+        "event": {
+          "singular": "evenemang",
+          "plural": "evenemang",
+          "accusative": "evenemang"
+        },
+        "resource": {
+          "singular": "tjänst",
+          "plural": "tjänster",
+          "accusative": "tjänst"
+        }
+      },
+      "space": {
+        "singular": "behandlingsrum",
+        "plural": "behandlingsrum",
+        "accusative": "behandlingsrum"
+      },
+      "messages": {
+        "choose_staff": "Välj {{staff.accusative}}",
+        "choose_offering": "Välj {{offering.accusative}}",
+        "empty_slots": "Inga lediga tider",
+        "my_bookings": "Mina bokningar",
+        "confirm_booking": "Bekräfta bokning"
+      }
+    },
+    "other": {
+      "staff": {
+        "singular": "specialist",
+        "plural": "specialister",
+        "accusative": "specialist"
+      },
+      "offering": {
+        "event": {
+          "singular": "evenemang",
+          "plural": "evenemang",
+          "accusative": "evenemang"
+        },
+        "resource": {
+          "singular": "tjänst",
+          "plural": "tjänster",
+          "accusative": "tjänst"
+        }
+      },
+      "space": {
+        "singular": "plats",
+        "plural": "platser",
+        "accusative": "plats"
       },
       "messages": {
         "choose_staff": "Välj {{staff.accusative}}",

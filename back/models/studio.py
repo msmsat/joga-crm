@@ -87,10 +87,19 @@ class Studio(Base):
     # специалиста; hybrid — оба сразу. Управляет каталогом; сама механика
     # записи решается по этому полю, а не по названию/направлению бизнеса.
     booking_mode: Mapped[str] = mapped_column(String(16), default="event", server_default="event")
-    # Пресет отраслевых терминов интерфейса (generic/fitness/beauty) —
-    # готовый набор фраз (services/terminology.py, HB-14), не алгоритм
-    # словоизменения и не парсинг business_subtype.
-    terminology_profile: Mapped[str] = mapped_column(String(16), default="generic", server_default="generic")
+    # Пресет отраслевых терминов интерфейса — готовый набор фраз
+    # (services/terminology.py, HB-14), не алгоритм словоизменения. Значения
+    # 1-в-1 повторяют разделы «Вида деятельности» в онбординге: studio, sport,
+    # beauty, recovery, relax, other. Проставляется ОДИН раз при создании
+    # студии по выбранным направлениям; дальше это самостоятельное поле, а не
+    # производное от business_subtype — владелец может сменить его в
+    # настройках, и парсить подтип на каждом запросе нельзя.
+    terminology_profile: Mapped[str] = mapped_column(String(16), default="other", server_default="other")
+    # Участвует ли место (зал/кресло/кабинет) в расписании как ось. NULL —
+    # наследовать отрасль (services/terminology.SPACE_IS_AXIS), True/False —
+    # владелец решил иначе. Именно три состояния, а не два: студия, которая
+    # ничего не трогала, обязана ехать за пресетом, если тот поменяется.
+    space_is_axis: Mapped[Optional[bool]] = mapped_column(Boolean, nullable=True)
     # Растёт при сохранении любых настроек, влияющих на условия записи.
     # Клиентский провайдер (front/miniapp, HB-16) сверяет её, чтобы не
     # показать устаревшие условия из кэша после смены студии/языка/режима.

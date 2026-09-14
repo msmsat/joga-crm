@@ -24,7 +24,9 @@ BookingMode = Literal["event", "resource", "hybrid"]
 # Service.booking_mode — resource+group запрещена отдельным правилом (§6.1),
 # поэтому у услуги нет "hybrid": одна услуга — один сценарий.
 ServiceBookingMode = Literal["event", "resource"]
-TerminologyProfile = Literal["generic", "fitness", "beauty"]
+# Профили 1-в-1 повторяют разделы «Вида деятельности» в онбординге; старые
+# имена (generic/fitness/beauty до HB-14) переводит services.terminology.
+TerminologyProfile = Literal["studio", "sport", "beauty", "recovery", "relax", "other"]
 
 # Готовность САМОГО КОДА к режиму, а не разрешение конкретной студии. Открыто
 # после HB-07 (единый замок закрыл обходы) и HB-24 (аудит наследия + проверки
@@ -47,6 +49,26 @@ class BookingCapabilities(HybridSchema):
     terminology_profile: TerminologyProfile
     booking_config_version: int
     strict_schedule_enabled: bool
+    # Участвует ли место (зал/кресло/кабинет) в расписании. Приходит УЖЕ
+    # вычисленным — отрасль плюс тумблер владельца: складывать эти два
+    # источника клиенту нельзя, иначе правило заведётся во второй копии.
+    space_is_axis: bool
+
+    @classmethod
+    def of(cls, studio) -> "BookingCapabilities":
+        """Единственный конструктор блока. Настройки и мини-апп обязаны
+        отвечать одинаково: раньше каждый собирал его сам, и добавленное поле
+        легко оставалось в одном из двух ответов."""
+        from services import terminology
+
+        profile = terminology.profile_key(studio.terminology_profile)
+        return cls(
+            booking_mode=studio.booking_mode,
+            terminology_profile=profile,
+            booking_config_version=studio.booking_config_version,
+            strict_schedule_enabled=studio.strict_schedule_enabled,
+            space_is_axis=terminology.space_is_axis(profile, studio.space_is_axis),
+        )
 
 
 class EventQuoteRequest(HybridSchema):

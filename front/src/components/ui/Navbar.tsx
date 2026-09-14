@@ -225,7 +225,7 @@ export function Navbar({ title, subtitle }: NavbarProps) {
           top: '100%',
           left: 'var(--tb-ai-pad, 24px)',
           right: 'var(--tb-ai-pad, 24px)',
-          maxHeight: panelOpen ? 'min(420px, calc(100vh - var(--topbar-h) - 32px))' : '0px',
+          maxHeight: panelOpen ? 'min(420px, calc(100dvh - var(--topbar-h) - 32px))' : '0px',
           overflowY: panelOpen ? 'auto' : 'hidden',
           opacity: panelOpen ? 1 : 0,
           transform: panelOpen ? 'translateY(0)' : 'translateY(-6px)',

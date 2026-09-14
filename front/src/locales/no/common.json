@@ -1,4 +1,9 @@
 {
+  "space": {
+    "singular": "plass",
+    "plural": "plasser",
+    "accusative": "plass"
+  },
   "phoneGate": {
     "title": "Legg til telefonnummeret ditt",
     "sub": "Telefonen er kontoens andre kontakt: den gjenoppretter tilgang og mottar varsler. Studioets nummer passer ikke her — dette må være ditt eget."

@@ -70,16 +70,23 @@
       "profile": "Oborová slova",
       "profileHint": "Vybírá slova pro specialisty a služby. Mění se jen formulace — role, ceny ani model rezervací ne.",
       "strict": "Přísný rozvrh",
-      "strictHint": "Zakazuje obsadit specialistu nebo výhradní sál dvakrát. Je nutný před zapnutím individuálních rezervací.",
+      "strictHint": "Zakazuje obsadit specialistu nebo exkluzivní prostor dvakrát. Nutné před zapnutím individuálního rezervování.",
+      "spaceAxis": "Počítat {{spacePlural}} v rozvrhu",
+      "spaceAxisHint": "Vypnuto — klient se objednává k člověku a prostor nezabírá sloupec v deníku. Zapnuto — lekce je vázaná na prostor.",
+      "spaceAxisDefaultOn": "Výchozí pro váš obor: zapnuto",
+      "spaceAxisDefaultOff": "Výchozí pro váš obor: vypnuto",
       "modes": {
         "event": "Události",
         "resource": "Individuálně",
         "hybrid": "Smíšeně"
       },
       "profiles": {
-        "generic": "Neutrálně",
-        "fitness": "Fitness",
-        "beauty": "Krása"
+        "studio": "Skupinové praxe a studia",
+        "sport": "Sport a tělocvičny",
+        "beauty": "Krása a péče",
+        "recovery": "Tělo a regenerace",
+        "relax": "Lázně a relaxace",
+        "other": "Jiné"
       },
       "preview": {
         "event": "Událost",
@@ -313,7 +320,7 @@
         "action": "Vymazat data",
         "toast": "Databáze byla úspěšně vymazána",
         "consequence1": "Trvale smazáno: klienti, lekce, rezervace, operace, dokumenty, permanentky klientů, historie věrnosti",
-        "consequence2": "Zůstává beze změny: studio, pobočky, sály, služby, zaměstnanci, tarif a nastavení",
+        "consequence2": "Beze změny zůstanou: studio, pobočky, {{spacePlural}}, služby, zaměstnanci, předplatné a nastavení",
         "consequence3": "Tato akce je nevratná — po potvrzení ji nelze vzít zpět"
       },
       "deleteAccount": {

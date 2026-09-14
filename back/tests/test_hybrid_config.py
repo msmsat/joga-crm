@@ -74,8 +74,9 @@ async def _capabilities_read_by_all_roles(studio_id: int) -> None:
         full = await get_general_settings(ctx=owner, db=db)
     assert isinstance(full, GeneralRead)
     assert full.booking_capabilities == BookingCapabilities(
-        booking_mode="event", terminology_profile="generic",
+        booking_mode="event", terminology_profile="other",
         booking_config_version=1, strict_schedule_enabled=False,
+        space_is_axis=True,
     )
 
     async with async_session_maker() as db:
@@ -187,7 +188,7 @@ async def _version_bumps_on_relevant_changes_only(studio_id: int) -> None:
     # Терминология — условие записи, версия растёт.
     async with async_session_maker() as db:
         after_terms = await update_general_settings(
-            body=GeneralUpdate(terminology_profile="fitness"),
+            body=GeneralUpdate(terminology_profile="sport"),
             background=BackgroundTasks(), ctx=owner, db=db,
         )
     assert after_terms.booking_capabilities.booking_config_version == v0 + 1
@@ -195,7 +196,7 @@ async def _version_bumps_on_relevant_changes_only(studio_id: int) -> None:
     # Тот же профиль повторно — не изменение, версия не растёт.
     async with async_session_maker() as db:
         after_same = await update_general_settings(
-            body=GeneralUpdate(terminology_profile="fitness"),
+            body=GeneralUpdate(terminology_profile="sport"),
             background=BackgroundTasks(), ctx=owner, db=db,
         )
     assert after_same.booking_capabilities.booking_config_version == v0 + 1

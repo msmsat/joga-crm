@@ -2,11 +2,11 @@
   "toolbar": {
     "today": "Dziś",
     "trainers": "Trenerzy",
-    "halls": "Sale",
+    "halls": "{{spacePlural, capitalize}}",
     "day": "Dzień",
     "week": "Tydzień",
     "resourceBooking": "Indywidualnie",
-    "noHall": "Bez sali"
+    "noHall": "Bez przypisania"
   },
   "daySummary": {
     "classesToday": "zajęć dziś",
@@ -27,7 +27,10 @@
     "service": "Usługa",
     "servicePlaceholder": "Wybierz usługę",
     "namePlaceholder": "Np. Reformer Pilates",
-    "location": "Miejsce / sala",
+    "location": "{{space, capitalize}}",
+    "branch": "Oddział",
+    "onlyResourceServices": "Wszystkie usługi studia rezerwuje się indywidualnie — nie można ich wcześniej umieścić w grafiku. Zajęcia tworzy się z usługi z rezerwacją grupową.",
+    "goToResourceBooking": "Przejdź do rezerwacji indywidualnej",
     "start": "Początek",
     "end": "Koniec",
     "groupLimit": "Limit grupy",
@@ -110,7 +113,7 @@
     "add": "Dodaj"
   },
   "rightPanel": {
-    "halls": "Sale",
+    "halls": "{{spacePlural, capitalize}}",
     "load": "Wypełnienie",
     "upcoming": "Nadchodzące"
   },
@@ -123,7 +126,7 @@
     "newLessonPreview": "Nowe zajęcia",
     "cancelled": "Odwołane",
     "noTrainers": "Brak trenerów",
-    "noHalls": "Brak sal"
+    "noHalls": "{{spacePlural, capitalize}}: jeszcze brak"
   },
   "createService": "+ Utwórz usługę",
   "invalidDateFormat": "Nieprawidłowy format daty",

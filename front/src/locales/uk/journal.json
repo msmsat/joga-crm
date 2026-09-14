@@ -2,11 +2,11 @@
   "toolbar": {
     "today": "Сьогодні",
     "trainers": "Тренери",
-    "halls": "Зали",
+    "halls": "{{spacePlural, capitalize}}",
     "day": "День",
     "week": "Тиждень",
     "resourceBooking": "Індивідуально",
-    "noHall": "Без зали"
+    "noHall": "Без прив’язки"
   },
   "daySummary": {
     "classesToday": "занять сьогодні",
@@ -27,7 +27,10 @@
     "service": "Послуга",
     "servicePlaceholder": "Оберіть послугу",
     "namePlaceholder": "Напр. Reformer Pilates",
-    "location": "Місце / зала",
+    "location": "{{space, capitalize}}",
+    "branch": "Філіал",
+    "onlyResourceServices": "Усі послуги студії записуються індивідуально — їх не можна поставити в розклад заздалегідь. Заняття створюється з послуги з груповим записом.",
+    "goToResourceBooking": "Перейти до індивідуального запису",
     "start": "Початок",
     "end": "Кінець",
     "groupLimit": "Ліміт групи",
@@ -110,7 +113,7 @@
     "add": "Додати"
   },
   "rightPanel": {
-    "halls": "Зали",
+    "halls": "{{spacePlural, capitalize}}",
     "load": "Заповненість",
     "upcoming": "Найближчі"
   },
@@ -123,7 +126,7 @@
     "newLessonPreview": "Нове заняття",
     "cancelled": "Скасовано",
     "noTrainers": "Немає тренерів",
-    "noHalls": "Немає зал"
+    "noHalls": "{{spacePlural, capitalize}} не створені"
   },
   "createService": "+ Створити послугу",
   "invalidDateFormat": "Некоректний формат дати",

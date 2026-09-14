@@ -7,7 +7,10 @@ import * as Icons from '../../../../../components/Icons';
 import type { Trainer } from '../../types';
 import { TIMES } from '../../constants';
 import { formatIndexToTimeStr, parseTimeToIndex, generateTimeIntervals } from '../../utils';
+import { useQuery } from '@tanstack/react-query';
 import { useServiceOptions, CREATE_SERVICE_OPTION } from '../../hooks/useServiceOptions';
+import { studioApi } from '../../../../../api/studio/studio.api';
+import { queryKeys } from '../../../../../api/queryKeys';
 import { Select, ConfirmModal } from '../../../../../components/ui/index';
 
 interface NewBookingModalProps {
@@ -15,13 +18,27 @@ interface NewBookingModalProps {
   halls: string[];
   newBookingSlot: { trainer: number; timeStart: number; timeEnd: number };
   setNewBookingSlot: React.Dispatch<React.SetStateAction<{ trainer: number; timeStart: number; timeEnd: number } | null>>;
-  newForm: { serviceId: number | null; title: string; hall: string; maxClients: string };
-  setNewForm: React.Dispatch<React.SetStateAction<{ serviceId: number | null; title: string; hall: string; maxClients: string }>>;
+  newForm: NewBookingForm;
+  setNewForm: React.Dispatch<React.SetStateAction<NewBookingForm>>;
   newFormPos: { x: number; y: number };
   modalRef: React.RefObject<HTMLDivElement | null>;
   timeStep: number;
   closeNewForm: () => void;
-  onCreate: (form: { serviceId: number; title: string; hall: string; maxClients: number }) => void;
+  onCreate: (form: { serviceId: number; title: string; hall: string; maxClients: number; branchId: number | null }) => void;
+  /** Перевод в форму индивидуальной записи — там, где все услуги такие. */
+  onResourceBooking?: () => void;
+  /** Участвует ли место в расписании. `undefined` — термины ещё не пришли. */
+  spaceIsAxis?: boolean;
+}
+
+export interface NewBookingForm {
+  serviceId: number | null;
+  title: string;
+  hall: string;
+  maxClients: string;
+  /** Заполняется только там, где место не участвует в расписании: иначе
+   *  филиал приходит вместе с залом, и второй источник был бы лишним. */
+  branchId: number | null;
 }
 
 export const NewBookingModal: React.FC<NewBookingModalProps> = ({
@@ -35,9 +52,24 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({
   modalRef,
   timeStep,
   closeNewForm,
-  onCreate
+  onCreate,
+  spaceIsAxis,
+  onResourceBooking,
 }) => {
   const { t } = useTranslation('journal');
+  // Филиалы нужны только форме без мест — там они единственный источник
+  // привязки занятия к филиалу. Кэш общий с Каталогом.
+  const { data: branches = [] } = useQuery({
+    queryKey: queryKeys.branches,
+    queryFn: () => studioApi.getBranches(),
+    enabled: spaceIsAxis === false,
+  });
+  // Филиал один — выбирать нечего, селект скрыт, но занятие всё равно обязано
+  // к нему привязаться: иначе оно осталось бы без филиала молча.
+  const onlyBranchId = spaceIsAxis === false && branches.length === 1 ? branches[0].id : null;
+  useEffect(() => {
+    if (onlyBranchId != null) setNewForm(f => (f.branchId === onlyBranchId ? f : { ...f, branchId: onlyBranchId }));
+  }, [onlyBranchId, setNewForm]);
   const [startInput, setStartInput] = useState('');
   const [endInput, setEndInput] = useState('');
   const [activeDropdown, setActiveDropdown] = useState<'start' | 'end' | null>(null);
@@ -48,7 +80,7 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({
   const endScrollRef = useRef<HTMLDivElement>(null);
 
   const KP_INTERVALS = useMemo(() => generateTimeIntervals(timeStep), [timeStep]);
-  const { services, options: serviceOptions } = useServiceOptions();
+  const { services, options: serviceOptions, onlyResourceServices } = useServiceOptions();
 
   // Валидация до отправки (зеркалит серверные правила, lessons.py): услуга
   // выбрана, лимит — целое 1-50, конец позже начала.
@@ -133,7 +165,10 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({
     onCreate({
       serviceId: newForm.serviceId,
       title: newForm.title,
-      hall: newForm.hall,
+      // Место и филиал взаимоисключающи: там, где место — ось, филиал приходит
+      // вместе с ним, и слать оба значит спорить с сервером на ровном месте.
+      hall: spaceIsAxis === false ? '' : newForm.hall,
+      branchId: spaceIsAxis === false ? newForm.branchId : null,
       maxClients: maxClientsNum,
     });
     closeNewForm();
@@ -182,23 +217,60 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({
                   placeholder={t('newBooking.servicePlaceholder')}
                 />
                 {serviceError && <div style={{ fontSize: 11, color: 'var(--error)', fontWeight: 600, marginTop: 4 }}>{serviceError}</div>}
+                {/* Пустой список здесь — не «услуг нет», а «все услуги
+                    индивидуальные». Без этой строки владелец барбершопа видел
+                    один пункт «создать услугу» и делал вывод, что каталог
+                    пуст. */}
+                {onlyResourceServices && (
+                  <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 6, lineHeight: 1.5 }}>
+                    {t('newBooking.onlyResourceServices')}
+                    {onResourceBooking && (
+                      <button
+                        type="button"
+                        onClick={onResourceBooking}
+                        style={{
+                          display: 'block', marginTop: 4, padding: 0, border: 'none', background: 'none',
+                          color: 'var(--peach)', fontWeight: 700, fontSize: 11, fontFamily: 'inherit', cursor: 'pointer',
+                        }}
+                      >
+                        {t('newBooking.goToResourceBooking')}
+                      </button>
+                    )}
+                  </div>
+                )}
               </div>
 
-              <div className="kp-section">
-                <div className="kp-section-title">{t('newBooking.location')}</div>
-                <div className="kp-halls">
-                  {halls.map(h => (
-                    <div
-                      key={h}
-                      className={`kp-chip ${newForm.hall === h ? 'active' : ''}`}
-                      style={newForm.hall === h ? { background: 'var(--onyx)', borderColor: 'var(--onyx)', color: 'var(--bg)', boxShadow: '0 4px 12px rgba(26,26,26,0.12)' } : {}}
-                      onClick={() => setNewForm(f => ({ ...f, hall: h }))}
-                    >
-                      {h}
-                    </div>
-                  ))}
+              {/* Место или филиал — но не оба. Там, где место участвует в
+                  расписании (зал пилатеса), выбираем место. Там, где нет
+                  (кресло барбершопа), ряд из десяти чипов занимал бы пол-формы
+                  и ничего не решал: клиент записан к мастеру. Остаётся филиал —
+                  и тот прячется, когда он единственный. */}
+              {spaceIsAxis !== false ? (
+                <div className="kp-section">
+                  <div className="kp-section-title">{t('newBooking.location')}</div>
+                  <div className="kp-halls">
+                    {halls.map(h => (
+                      <div
+                        key={h}
+                        className={`kp-chip ${newForm.hall === h ? 'active' : ''}`}
+                        style={newForm.hall === h ? { background: 'var(--onyx)', borderColor: 'var(--onyx)', color: 'var(--bg)', boxShadow: '0 4px 12px rgba(26,26,26,0.12)' } : {}}
+                        onClick={() => setNewForm(f => ({ ...f, hall: h }))}
+                      >
+                        {h}
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              ) : branches.length > 1 && (
+                <div className="kp-section" onClick={e => e.stopPropagation()}>
+                  <div className="kp-section-title">{t('newBooking.branch')}</div>
+                  <Select
+                    value={newForm.branchId != null ? String(newForm.branchId) : ''}
+                    options={branches.map(b => ({ value: String(b.id), label: b.name }))}
+                    onChange={value => setNewForm(f => ({ ...f, branchId: Number(value) }))}
+                  />
+                </div>
+              )}
 
               <div className="kp-times">
                 <div className="kp-section" onClick={e => e.stopPropagation()}>

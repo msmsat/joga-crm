@@ -22,6 +22,7 @@ router = APIRouter()
 # задача прямо требует не путать смену витрины со сменой условий записи.
 _BOOKING_RELEVANT_STUDIO_FIELDS = frozenset({
     "booking_mode", "terminology_profile", "strict_schedule_enabled",
+    "space_is_axis",
     "tz_iana", "timezone", "currency", "journal_time_step",
 })
 
@@ -34,12 +35,10 @@ async def _get_studio(studio_id: int, db: AsyncSession) -> Studio:
 
 
 def _capabilities(studio: Studio) -> BookingCapabilities:
-    return BookingCapabilities(
-        booking_mode=studio.booking_mode,
-        terminology_profile=studio.terminology_profile,
-        booking_config_version=studio.booking_config_version,
-        strict_schedule_enabled=studio.strict_schedule_enabled,
-    )
+    # Сборка живёт на самой схеме — тем же блоком отвечает мини-апп
+    # (routers/booking/miniapp_studio.py), и две копии конструктора уже
+    # расходились бы на каждом новом поле.
+    return BookingCapabilities.of(studio)
 
 
 async def bump_booking_config_version(db: AsyncSession, studio: Studio) -> None:

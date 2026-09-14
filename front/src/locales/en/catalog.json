@@ -91,10 +91,10 @@
       "workingHours": "Working hours"
     },
     "hall": {
-      "titleNew": "New hall",
-      "titleEdit": "Edit hall",
-      "name": "Hall name",
-      "namePlaceholder": "Hall A",
+      "titleNew": "Add {{spaceAcc}}",
+      "titleEdit": "Edit {{spaceAcc}}",
+      "name": "Name",
+      "namePlaceholder": "{{space, capitalize}} A",
       "capacity": "Capacity",
       "area": "Area, m²",
       "hourlyRate": "Price per hour, {{currency}}",
@@ -102,10 +102,10 @@
       "equipment": "Equipment",
       "equipmentPlaceholder": "Add equipment",
       "color": "Color",
-      "isOnline": "Online hall",
-      "photo": "Hall photo",
-      "subtitle": "A room in the branch: seats, equipment, journal color",
-      "previewTitle": "Hall preview",
+      "isOnline": "Online",
+      "photo": "Photo",
+      "subtitle": "{{space, capitalize}} in the branch: seats, equipment, journal color",
+      "previewTitle": "Preview",
       "sectionBasic": "Basics",
       "sectionSpace": "Space",
       "sectionLook": "Appearance",
@@ -113,8 +113,8 @@
       "hourlyRateShort": "Price per hour",
       "statArea": "Area",
       "statRate": "Price / hour",
-      "isOnlineHint": "Classes run online — no physical room.",
-      "colorHint": "This hall's classes are highlighted with this color in the journal."
+      "isOnlineHint": "Classes run online — no physical premises.",
+      "colorHint": "Classes here are highlighted with this color in the journal."
     },
     "service": {
       "titleNew": "New service",
@@ -189,15 +189,15 @@
   "studios": {
     "title": "STUDIOS",
     "addStudio": "Add studio",
-    "addHall": "Add hall",
+    "addHall": "Add {{spaceAcc}}",
     "editBranch": "Edit branch",
     "deleteBranch": "Delete branch",
     "infoTab": "General info",
-    "hallsTitle": "Studio halls",
-    "hallCount_one": "{{count}} hall",
-    "hallCount_other": "{{count}} halls",
+    "hallsTitle": "Studio {{spacePlural}}",
+    "hallCount_one": "{{spacePlural, capitalize}} · {{count}}",
+    "hallCount_other": "{{spacePlural, capitalize}} · {{count}}",
     "stats": {
-      "halls": "Halls",
+      "halls": "{{spacePlural, capitalize}}",
       "totalSeats": "Total seats",
       "fromPerHour": "From / hour"
     },
@@ -212,8 +212,8 @@
       },
       "equipment": "Equipment",
       "actions": "Actions",
-      "edit": "Edit hall",
-      "delete": "Delete hall"
+      "edit": "Edit {{spaceAcc}}",
+      "delete": "Delete {{spaceAcc}}"
     },
     "empty": {
       "title": "No studios",
@@ -223,14 +223,14 @@
       "created": "Studio created",
       "createError": "Failed to create studio",
       "deleted": "Studio deleted",
-      "hallDeleted": "Hall deleted",
+      "hallDeleted": "Deleted: {{space}}",
       "saved": "Saved",
       "edit": "Edit: {{name}}"
     },
     "confirmDelete": "Delete branch \"{{name}}\"? This cannot be undone.",
     "confirmDeleteTitle": "Delete branch?",
-    "confirmDeleteHall": "Delete hall \"{{name}}\"?",
-    "confirmDeleteHallTitle": "Delete hall?"
+    "confirmDeleteHall": "Delete {{spaceAcc}} \"{{name}}\"?",
+    "confirmDeleteHallTitle": "Delete {{spaceAcc}}?"
   },
   "services": {
     "title": "SERVICES",

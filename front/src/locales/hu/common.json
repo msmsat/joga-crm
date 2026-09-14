@@ -1,4 +1,9 @@
 {
+  "space": {
+    "singular": "hely",
+    "plural": "helyek",
+    "accusative": "helyet"
+  },
   "phoneGate": {
     "title": "Adja meg a telefonszámát",
     "sub": "A telefon a fiókja második elérhetősége: ezzel állítható vissza a hozzáférés, és ide érkeznek az értesítések. A stúdió száma ide nem való — ennek a sajátjának kell lennie."

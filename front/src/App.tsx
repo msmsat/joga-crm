@@ -59,7 +59,7 @@ const ProtectedRoute = ({ children, requireOnboarding = true }: { children: Reac
       .finally(() => { clearTimeout(timer); setLoading(false); });
   }, [token]);
 
-  if (loading) return <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg)' }}><span className="spinner" style={{ borderColor: 'var(--peach)' }}/></div>;
+  if (loading) return <div style={{ height: '100dvh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg)' }}><span className="spinner" style={{ borderColor: 'var(--peach)' }}/></div>;
   if (!token || !user) return <Navigate to="/login" replace />;
   if (requireOnboarding && user.is_onboarded === false) return <Navigate to="/onboarding" replace />;
   if (!requireOnboarding && user.is_onboarded === true) return <Navigate to="/dashboard" replace />;

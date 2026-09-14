@@ -1,4 +1,9 @@
 {
+  "space": {
+    "singular": "plats",
+    "plural": "platser",
+    "accusative": "plats"
+  },
   "phoneGate": {
     "title": "Lägg till ditt telefonnummer",
     "sub": "Telefonen är kontots andra kontaktuppgift: den återställer åtkomst och tar emot aviseringar. Studions nummer duger inte här — det här måste vara ditt eget."

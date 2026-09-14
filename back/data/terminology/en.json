@@ -2,33 +2,7 @@
   "version": 1,
   "locale": "en",
   "profiles": {
-    "generic": {
-      "staff": {
-        "singular": "specialist",
-        "plural": "specialists",
-        "accusative": "specialist"
-      },
-      "offering": {
-        "event": {
-          "singular": "event",
-          "plural": "events",
-          "accusative": "event"
-        },
-        "resource": {
-          "singular": "service",
-          "plural": "services",
-          "accusative": "service"
-        }
-      },
-      "messages": {
-        "choose_staff": "Choose {{staff.accusative}}",
-        "choose_offering": "Choose {{offering.accusative}}",
-        "empty_slots": "No available times",
-        "my_bookings": "My bookings",
-        "confirm_booking": "Confirm booking"
-      }
-    },
-    "fitness": {
+    "studio": {
       "staff": {
         "singular": "trainer",
         "plural": "trainers",
@@ -45,6 +19,42 @@
           "plural": "services",
           "accusative": "service"
         }
+      },
+      "space": {
+        "singular": "hall",
+        "plural": "halls",
+        "accusative": "hall"
+      },
+      "messages": {
+        "choose_staff": "Choose {{staff.accusative}}",
+        "choose_offering": "Choose {{offering.accusative}}",
+        "empty_slots": "No available times",
+        "my_bookings": "My bookings",
+        "confirm_booking": "Confirm booking"
+      }
+    },
+    "sport": {
+      "staff": {
+        "singular": "trainer",
+        "plural": "trainers",
+        "accusative": "trainer"
+      },
+      "offering": {
+        "event": {
+          "singular": "class",
+          "plural": "classes",
+          "accusative": "class"
+        },
+        "resource": {
+          "singular": "service",
+          "plural": "services",
+          "accusative": "service"
+        }
+      },
+      "space": {
+        "singular": "hall",
+        "plural": "halls",
+        "accusative": "hall"
       },
       "messages": {
         "choose_staff": "Choose {{staff.accusative}}",
@@ -71,6 +81,104 @@
           "plural": "services",
           "accusative": "service"
         }
+      },
+      "space": {
+        "singular": "chair",
+        "plural": "chairs",
+        "accusative": "chair"
+      },
+      "messages": {
+        "choose_staff": "Choose {{staff.accusative}}",
+        "choose_offering": "Choose {{offering.accusative}}",
+        "empty_slots": "No available times",
+        "my_bookings": "My bookings",
+        "confirm_booking": "Confirm booking"
+      }
+    },
+    "recovery": {
+      "staff": {
+        "singular": "specialist",
+        "plural": "specialists",
+        "accusative": "specialist"
+      },
+      "offering": {
+        "event": {
+          "singular": "event",
+          "plural": "events",
+          "accusative": "event"
+        },
+        "resource": {
+          "singular": "service",
+          "plural": "services",
+          "accusative": "service"
+        }
+      },
+      "space": {
+        "singular": "room",
+        "plural": "rooms",
+        "accusative": "room"
+      },
+      "messages": {
+        "choose_staff": "Choose {{staff.accusative}}",
+        "choose_offering": "Choose {{offering.accusative}}",
+        "empty_slots": "No available times",
+        "my_bookings": "My bookings",
+        "confirm_booking": "Confirm booking"
+      }
+    },
+    "relax": {
+      "staff": {
+        "singular": "specialist",
+        "plural": "specialists",
+        "accusative": "specialist"
+      },
+      "offering": {
+        "event": {
+          "singular": "event",
+          "plural": "events",
+          "accusative": "event"
+        },
+        "resource": {
+          "singular": "service",
+          "plural": "services",
+          "accusative": "service"
+        }
+      },
+      "space": {
+        "singular": "room",
+        "plural": "rooms",
+        "accusative": "room"
+      },
+      "messages": {
+        "choose_staff": "Choose {{staff.accusative}}",
+        "choose_offering": "Choose {{offering.accusative}}",
+        "empty_slots": "No available times",
+        "my_bookings": "My bookings",
+        "confirm_booking": "Confirm booking"
+      }
+    },
+    "other": {
+      "staff": {
+        "singular": "specialist",
+        "plural": "specialists",
+        "accusative": "specialist"
+      },
+      "offering": {
+        "event": {
+          "singular": "event",
+          "plural": "events",
+          "accusative": "event"
+        },
+        "resource": {
+          "singular": "service",
+          "plural": "services",
+          "accusative": "service"
+        }
+      },
+      "space": {
+        "singular": "space",
+        "plural": "spaces",
+        "accusative": "space"
       },
       "messages": {
         "choose_staff": "Choose {{staff.accusative}}",

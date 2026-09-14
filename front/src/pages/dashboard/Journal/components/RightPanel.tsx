@@ -267,11 +267,14 @@ interface RightPanelProps {
   toggleHall: (h: string) => void;
   calendarView: 'day' | 'week'; // 🔥 Добавили пропс
   eventDays: string[]; // Точки мини-календаря — реальные даты занятий месяца (задача 5 V4-5)
+  /** Участвует ли место в расписании. `undefined` — термины ещё не пришли. */
+  spaceIsAxis?: boolean;
 }
 
 export const RightPanel: React.FC<RightPanelProps> = ({
   trainers, halls, calMonth, calYear, selectedDay, today, activeHalls, activeBookings, filteredBookings,
-  changeMonth, setSelectedDay, toggleHall, calendarView, eventDays // 🔥 Вытащили пропс
+  changeMonth, setSelectedDay, toggleHall, calendarView, eventDays, // 🔥 Вытащили пропс
+  spaceIsAxis,
 }) => {
   const { i18n } = useTranslation('journal');
 
@@ -295,9 +298,15 @@ export const RightPanel: React.FC<RightPanelProps> = ({
         calendarView={calendarView} // 🔥 Передали внутрь
         eventDays={eventDays}
       />
-      <HallsFilter
-        halls={halls} activeHalls={activeHalls} activeBookings={activeBookings} toggleHall={toggleHall}
-      />
+      {/* Фильтр мест — только там, где место участвует в расписании. У
+          барбершопа кресло не ось: фильтровать день по креслам нечего, клиент
+          записан к мастеру. `undefined` (термины ещё не пришли) — показываем:
+          спрятать фильтр у студии, которая им пользуется, хуже. */}
+      {spaceIsAxis !== false && (
+        <HallsFilter
+          halls={halls} activeHalls={activeHalls} activeBookings={activeBookings} toggleHall={toggleHall}
+        />
+      )}
       <TrainerStats
         trainers={trainers} activeBookings={activeBookings}
       />

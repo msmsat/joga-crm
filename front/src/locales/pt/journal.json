@@ -2,11 +2,11 @@
   "toolbar": {
     "today": "Hoje",
     "trainers": "Instrutores",
-    "halls": "Salas",
+    "halls": "{{spacePlural, capitalize}}",
     "day": "Dia",
     "week": "Semana",
     "resourceBooking": "Individual",
-    "noHall": "Sem sala"
+    "noHall": "Sem atribuição"
   },
   "daySummary": {
     "classesToday": "aulas hoje",
@@ -27,7 +27,10 @@
     "service": "Serviço",
     "servicePlaceholder": "Selecione um serviço",
     "namePlaceholder": "Ex.: Reformer Pilates",
-    "location": "Local / sala",
+    "location": "{{space, capitalize}}",
+    "branch": "Filial",
+    "onlyResourceServices": "Todos os serviços do estúdio são marcados individualmente — não podem ser colocados no horário com antecedência. Uma aula é criada a partir de um serviço com marcação em grupo.",
+    "goToResourceBooking": "Ir para a marcação individual",
     "start": "Início",
     "end": "Fim",
     "groupLimit": "Limite do grupo",
@@ -106,7 +109,7 @@
     "add": "Adicionar"
   },
   "rightPanel": {
-    "halls": "Salas",
+    "halls": "{{spacePlural, capitalize}}",
     "load": "Ocupação",
     "upcoming": "A seguir"
   },
@@ -119,7 +122,7 @@
     "newLessonPreview": "Nova aula",
     "cancelled": "Cancelada",
     "noTrainers": "Sem instrutores",
-    "noHalls": "Sem salas"
+    "noHalls": "{{spacePlural, capitalize}}: ainda não há"
   },
   "createService": "+ Criar serviço",
   "invalidDateFormat": "Formato de data inválido",

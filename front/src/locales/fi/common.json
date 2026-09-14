@@ -1,4 +1,9 @@
 {
+  "space": {
+    "singular": "tila",
+    "plural": "tilat",
+    "accusative": "tila"
+  },
   "phoneGate": {
     "title": "Lisää puhelinnumerosi",
     "sub": "Puhelin on tilisi toinen yhteystieto: sillä palautat käyttöoikeuden ja saat ilmoitukset. Studion numero ei käy tähän — tämän on oltava sinun."

@@ -2,11 +2,11 @@
   "toolbar": {
     "today": "Dnes",
     "trainers": "Trenéři",
-    "halls": "Sály",
+    "halls": "{{spacePlural, capitalize}}",
     "day": "Den",
     "week": "Týden",
     "resourceBooking": "Individuálně",
-    "noHall": "Bez sálu"
+    "noHall": "Bez přiřazení"
   },
   "daySummary": {
     "classesToday": "lekcí dnes",
@@ -27,7 +27,10 @@
     "service": "Služba",
     "servicePlaceholder": "Vyberte službu",
     "namePlaceholder": "Např. Reformer Pilates",
-    "location": "Místo / sál",
+    "location": "{{space, capitalize}}",
+    "branch": "Pobočka",
+    "onlyResourceServices": "Všechny služby studia se objednávají individuálně — do rozvrhu je předem postavit nelze. Lekce se vytváří ze služby se skupinovým rezervováním.",
+    "goToResourceBooking": "Přejít na individuální rezervaci",
     "start": "Začátek",
     "end": "Konec",
     "groupLimit": "Limit skupiny",
@@ -108,7 +111,7 @@
     "add": "Přidat"
   },
   "rightPanel": {
-    "halls": "Sály",
+    "halls": "{{spacePlural, capitalize}}",
     "load": "Naplněnost",
     "upcoming": "Nadcházející"
   },
@@ -121,7 +124,7 @@
     "newLessonPreview": "Nová lekce",
     "cancelled": "Zrušeno",
     "noTrainers": "Žádní trenéři",
-    "noHalls": "Žádné sály"
+    "noHalls": "Žádné {{spacePlural}}"
   },
   "createService": "+ Vytvořit službu",
   "invalidDateFormat": "Neplatný formát data",

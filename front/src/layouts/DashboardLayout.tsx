@@ -15,6 +15,7 @@ import { billingApi } from '../api/billing/billing.api';
 import { hasBillingAccess } from '../lib/billingAccess';
 import SubscriptionBanner from '../components/SubscriptionBanner';
 import { useStudioSettings } from '../hooks/useStudioCurrency';
+import { useBusinessTerms } from '../hooks/useBusinessTerms';
 import { settingsApi } from '../api/settings/settings.api';
 import { queryKeys } from '../api/queryKeys';
 import i18n from '../i18n';
@@ -60,6 +61,11 @@ export default function DashboardLayout() {
   // Мутации в Настройках зовут changeLanguage сами; это — для входа в
   // приложение и смены студии.
   const { data: studio } = useStudioSettings();
+  // Зовём ради побочного эффекта: хук кладёт слово студии для места
+  // (зал/кресло/кабинет) в переменные i18n, и подписи каталога, журнала и
+  // отчётов подставляют его сами. Без вызова на уровне оболочки слово
+  // появлялось бы только на страницах, которые сами спрашивают термины.
+  useBusinessTerms();
   const { data: appearance } = useQuery({
     queryKey: queryKeys.appearance,
     queryFn: () => settingsApi.getAppearance(),
@@ -119,7 +125,7 @@ export default function DashboardLayout() {
     <ThemeProvider>
     <div className={`dash-root${isDrawerOpen ? ' drawer-open' : ''}`} style={{
       display: 'flex',
-      height: '100vh',
+      height: '100dvh', // не 100vh: на iPad 100vh выше видимой части экрана (см. App.css, html/body)
       overflow: 'hidden',
       fontFamily: 'var(--font)',
       background: 'var(--bg)',

@@ -2,33 +2,7 @@
   "version": 1,
   "locale": "pl",
   "profiles": {
-    "generic": {
-      "staff": {
-        "singular": "specjalista",
-        "plural": "specjaliści",
-        "accusative": "specjalistę"
-      },
-      "offering": {
-        "event": {
-          "singular": "wydarzenie",
-          "plural": "wydarzenia",
-          "accusative": "wydarzenie"
-        },
-        "resource": {
-          "singular": "usługa",
-          "plural": "usługi",
-          "accusative": "usługę"
-        }
-      },
-      "messages": {
-        "choose_staff": "Wybierz {{staff.accusative}}",
-        "choose_offering": "Wybierz {{offering.accusative}}",
-        "empty_slots": "Brak wolnych terminów",
-        "my_bookings": "Moje rezerwacje",
-        "confirm_booking": "Potwierdź rezerwację"
-      }
-    },
-    "fitness": {
+    "studio": {
       "staff": {
         "singular": "trener",
         "plural": "trenerzy",
@@ -45,6 +19,42 @@
           "plural": "usługi",
           "accusative": "usługę"
         }
+      },
+      "space": {
+        "singular": "sala",
+        "plural": "sale",
+        "accusative": "salę"
+      },
+      "messages": {
+        "choose_staff": "Wybierz {{staff.accusative}}",
+        "choose_offering": "Wybierz {{offering.accusative}}",
+        "empty_slots": "Brak wolnych terminów",
+        "my_bookings": "Moje rezerwacje",
+        "confirm_booking": "Potwierdź rezerwację"
+      }
+    },
+    "sport": {
+      "staff": {
+        "singular": "trener",
+        "plural": "trenerzy",
+        "accusative": "trenera"
+      },
+      "offering": {
+        "event": {
+          "singular": "zajęcia",
+          "plural": "zajęcia",
+          "accusative": "zajęcia"
+        },
+        "resource": {
+          "singular": "usługa",
+          "plural": "usługi",
+          "accusative": "usługę"
+        }
+      },
+      "space": {
+        "singular": "sala",
+        "plural": "sale",
+        "accusative": "salę"
       },
       "messages": {
         "choose_staff": "Wybierz {{staff.accusative}}",
@@ -71,6 +81,104 @@
           "plural": "usługi",
           "accusative": "usługę"
         }
+      },
+      "space": {
+        "singular": "fotel",
+        "plural": "fotele",
+        "accusative": "fotel"
+      },
+      "messages": {
+        "choose_staff": "Wybierz {{staff.accusative}}",
+        "choose_offering": "Wybierz {{offering.accusative}}",
+        "empty_slots": "Brak wolnych terminów",
+        "my_bookings": "Moje rezerwacje",
+        "confirm_booking": "Potwierdź rezerwację"
+      }
+    },
+    "recovery": {
+      "staff": {
+        "singular": "specjalista",
+        "plural": "specjaliści",
+        "accusative": "specjalistę"
+      },
+      "offering": {
+        "event": {
+          "singular": "wydarzenie",
+          "plural": "wydarzenia",
+          "accusative": "wydarzenie"
+        },
+        "resource": {
+          "singular": "usługa",
+          "plural": "usługi",
+          "accusative": "usługę"
+        }
+      },
+      "space": {
+        "singular": "gabinet",
+        "plural": "gabinety",
+        "accusative": "gabinet"
+      },
+      "messages": {
+        "choose_staff": "Wybierz {{staff.accusative}}",
+        "choose_offering": "Wybierz {{offering.accusative}}",
+        "empty_slots": "Brak wolnych terminów",
+        "my_bookings": "Moje rezerwacje",
+        "confirm_booking": "Potwierdź rezerwację"
+      }
+    },
+    "relax": {
+      "staff": {
+        "singular": "specjalista",
+        "plural": "specjaliści",
+        "accusative": "specjalistę"
+      },
+      "offering": {
+        "event": {
+          "singular": "wydarzenie",
+          "plural": "wydarzenia",
+          "accusative": "wydarzenie"
+        },
+        "resource": {
+          "singular": "usługa",
+          "plural": "usługi",
+          "accusative": "usługę"
+        }
+      },
+      "space": {
+        "singular": "gabinet",
+        "plural": "gabinety",
+        "accusative": "gabinet"
+      },
+      "messages": {
+        "choose_staff": "Wybierz {{staff.accusative}}",
+        "choose_offering": "Wybierz {{offering.accusative}}",
+        "empty_slots": "Brak wolnych terminów",
+        "my_bookings": "Moje rezerwacje",
+        "confirm_booking": "Potwierdź rezerwację"
+      }
+    },
+    "other": {
+      "staff": {
+        "singular": "specjalista",
+        "plural": "specjaliści",
+        "accusative": "specjalistę"
+      },
+      "offering": {
+        "event": {
+          "singular": "wydarzenie",
+          "plural": "wydarzenia",
+          "accusative": "wydarzenie"
+        },
+        "resource": {
+          "singular": "usługa",
+          "plural": "usługi",
+          "accusative": "usługę"
+        }
+      },
+      "space": {
+        "singular": "miejsce",
+        "plural": "miejsca",
+        "accusative": "miejsce"
       },
       "messages": {
         "choose_staff": "Wybierz {{staff.accusative}}",

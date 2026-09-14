@@ -2,33 +2,7 @@
   "version": 1,
   "locale": "el",
   "profiles": {
-    "generic": {
-      "staff": {
-        "singular": "ειδικός",
-        "plural": "ειδικοί",
-        "accusative": "ειδικό"
-      },
-      "offering": {
-        "event": {
-          "singular": "εκδήλωση",
-          "plural": "εκδηλώσεις",
-          "accusative": "εκδήλωση"
-        },
-        "resource": {
-          "singular": "υπηρεσία",
-          "plural": "υπηρεσίες",
-          "accusative": "υπηρεσία"
-        }
-      },
-      "messages": {
-        "choose_staff": "Επιλέξτε {{staff.accusative}}",
-        "choose_offering": "Επιλέξτε {{offering.accusative}}",
-        "empty_slots": "Δεν υπάρχουν διαθέσιμες ώρες",
-        "my_bookings": "Οι κρατήσεις μου",
-        "confirm_booking": "Επιβεβαίωση κράτησης"
-      }
-    },
-    "fitness": {
+    "studio": {
       "staff": {
         "singular": "προπονητής",
         "plural": "προπονητές",
@@ -45,6 +19,42 @@
           "plural": "υπηρεσίες",
           "accusative": "υπηρεσία"
         }
+      },
+      "space": {
+        "singular": "αίθουσα",
+        "plural": "αίθουσες",
+        "accusative": "αίθουσα"
+      },
+      "messages": {
+        "choose_staff": "Επιλέξτε {{staff.accusative}}",
+        "choose_offering": "Επιλέξτε {{offering.accusative}}",
+        "empty_slots": "Δεν υπάρχουν διαθέσιμες ώρες",
+        "my_bookings": "Οι κρατήσεις μου",
+        "confirm_booking": "Επιβεβαίωση κράτησης"
+      }
+    },
+    "sport": {
+      "staff": {
+        "singular": "προπονητής",
+        "plural": "προπονητές",
+        "accusative": "προπονητή"
+      },
+      "offering": {
+        "event": {
+          "singular": "μάθημα",
+          "plural": "μαθήματα",
+          "accusative": "μάθημα"
+        },
+        "resource": {
+          "singular": "υπηρεσία",
+          "plural": "υπηρεσίες",
+          "accusative": "υπηρεσία"
+        }
+      },
+      "space": {
+        "singular": "αίθουσα",
+        "plural": "αίθουσες",
+        "accusative": "αίθουσα"
       },
       "messages": {
         "choose_staff": "Επιλέξτε {{staff.accusative}}",
@@ -71,6 +81,104 @@
           "plural": "υπηρεσίες",
           "accusative": "υπηρεσία"
         }
+      },
+      "space": {
+        "singular": "καρέκλα",
+        "plural": "καρέκλες",
+        "accusative": "καρέκλα"
+      },
+      "messages": {
+        "choose_staff": "Επιλέξτε {{staff.accusative}}",
+        "choose_offering": "Επιλέξτε {{offering.accusative}}",
+        "empty_slots": "Δεν υπάρχουν διαθέσιμες ώρες",
+        "my_bookings": "Οι κρατήσεις μου",
+        "confirm_booking": "Επιβεβαίωση κράτησης"
+      }
+    },
+    "recovery": {
+      "staff": {
+        "singular": "ειδικός",
+        "plural": "ειδικοί",
+        "accusative": "ειδικό"
+      },
+      "offering": {
+        "event": {
+          "singular": "εκδήλωση",
+          "plural": "εκδηλώσεις",
+          "accusative": "εκδήλωση"
+        },
+        "resource": {
+          "singular": "υπηρεσία",
+          "plural": "υπηρεσίες",
+          "accusative": "υπηρεσία"
+        }
+      },
+      "space": {
+        "singular": "καμπίνα",
+        "plural": "καμπίνες",
+        "accusative": "καμπίνα"
+      },
+      "messages": {
+        "choose_staff": "Επιλέξτε {{staff.accusative}}",
+        "choose_offering": "Επιλέξτε {{offering.accusative}}",
+        "empty_slots": "Δεν υπάρχουν διαθέσιμες ώρες",
+        "my_bookings": "Οι κρατήσεις μου",
+        "confirm_booking": "Επιβεβαίωση κράτησης"
+      }
+    },
+    "relax": {
+      "staff": {
+        "singular": "ειδικός",
+        "plural": "ειδικοί",
+        "accusative": "ειδικό"
+      },
+      "offering": {
+        "event": {
+          "singular": "εκδήλωση",
+          "plural": "εκδηλώσεις",
+          "accusative": "εκδήλωση"
+        },
+        "resource": {
+          "singular": "υπηρεσία",
+          "plural": "υπηρεσίες",
+          "accusative": "υπηρεσία"
+        }
+      },
+      "space": {
+        "singular": "καμπίνα",
+        "plural": "καμπίνες",
+        "accusative": "καμπίνα"
+      },
+      "messages": {
+        "choose_staff": "Επιλέξτε {{staff.accusative}}",
+        "choose_offering": "Επιλέξτε {{offering.accusative}}",
+        "empty_slots": "Δεν υπάρχουν διαθέσιμες ώρες",
+        "my_bookings": "Οι κρατήσεις μου",
+        "confirm_booking": "Επιβεβαίωση κράτησης"
+      }
+    },
+    "other": {
+      "staff": {
+        "singular": "ειδικός",
+        "plural": "ειδικοί",
+        "accusative": "ειδικό"
+      },
+      "offering": {
+        "event": {
+          "singular": "εκδήλωση",
+          "plural": "εκδηλώσεις",
+          "accusative": "εκδήλωση"
+        },
+        "resource": {
+          "singular": "υπηρεσία",
+          "plural": "υπηρεσίες",
+          "accusative": "υπηρεσία"
+        }
+      },
+      "space": {
+        "singular": "χώρος",
+        "plural": "χώροι",
+        "accusative": "χώρο"
       },
       "messages": {
         "choose_staff": "Επιλέξτε {{staff.accusative}}",

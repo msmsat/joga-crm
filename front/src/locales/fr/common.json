@@ -1,4 +1,9 @@
 {
+  "space": {
+    "singular": "espace",
+    "plural": "espaces",
+    "accusative": "un espace"
+  },
   "phoneGate": {
     "title": "Ajoutez votre numéro de téléphone",
     "sub": "Le téléphone est le second contact de votre compte : il permet de récupérer l'accès et de recevoir les notifications. Le numéro du studio ne convient pas ici — celui-ci doit être le vôtre."

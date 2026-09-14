@@ -3,6 +3,7 @@ import { Card, EmptyState } from '../../../../../../components/ui/index';
 import { fmtMoney, fmtPct } from '../../../../../../lib/format';
 import { ProgressBar } from '../../ProgressBar';
 import { useInsightAction } from '../../../hooks/useInsightAction';
+import { useBusinessTerms } from '../../../../../../hooks/useBusinessTerms';
 import { CardHeading } from '../../shared/CardHeading';
 import type { ChronicLowRow, HallUtilRow, LessonSliceRow } from '../../../types';
 
@@ -114,6 +115,7 @@ export interface SlicesCardsProps {
 
 export function SlicesCards({ topProfitable, topFilled, chronicLow, halls }: SlicesCardsProps) {
   const { t } = useTranslation('reports');
+  const { spaceIsAxis } = useBusinessTerms();
   return (
     <div className="grid-2" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(min(200px, 100%), 1fr))', marginBottom: '20px' }}>
       <SectionCard title={t('schedule.slices.topProfitable')} description={t('descriptions.schedule.topProfitable')} formulaKey="topProfitable">
@@ -125,9 +127,14 @@ export function SlicesCards({ topProfitable, topFilled, chronicLow, halls }: Sli
       <SectionCard id={CHRONIC_LOW_ID} title={t('schedule.slices.chronicLow')} description={t('descriptions.schedule.chronicLow')} formulaKey="chronicLow">
         <ChronicLowList rows={chronicLow} />
       </SectionCard>
-      <SectionCard title={t('schedule.slices.halls')} description={t('descriptions.schedule.halls')} formulaKey="hallUtil">
-        <HallsList rows={halls} />
-      </SectionCard>
+      {/* Загрузка мест — только там, где место участвует в расписании. У
+          барбершопа занятия к креслам не привязаны, и карточка показывала бы
+          нули по всем строкам. */}
+      {spaceIsAxis !== false && (
+        <SectionCard title={t('schedule.slices.halls')} description={t('descriptions.schedule.halls')} formulaKey="hallUtil">
+          <HallsList rows={halls} />
+        </SectionCard>
+      )}
     </div>
   );
 }

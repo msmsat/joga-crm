@@ -2,11 +2,11 @@
   "toolbar": {
     "today": "Днес",
     "trainers": "Треньори",
-    "halls": "Зали",
+    "halls": "{{spacePlural, capitalize}}",
     "day": "Ден",
     "week": "Седмица",
     "resourceBooking": "Индивидуално",
-    "noHall": "Без зала"
+    "noHall": "Без разпределение"
   },
   "daySummary": {
     "classesToday": "занятия днес",
@@ -27,7 +27,10 @@
     "service": "Услуга",
     "servicePlaceholder": "Изберете услуга",
     "namePlaceholder": "Напр. Reformer Pilates",
-    "location": "Място / зала",
+    "location": "{{space, capitalize}}",
+    "branch": "Клон",
+    "onlyResourceServices": "Всички услуги на студиото се записват индивидуално — не могат да се поставят в графика предварително. Занятие се създава от услуга с групово записване.",
+    "goToResourceBooking": "Към индивидуалното записване",
     "start": "Начало",
     "end": "Край",
     "groupLimit": "Лимит на групата",
@@ -106,7 +109,7 @@
     "add": "Добави"
   },
   "rightPanel": {
-    "halls": "Зали",
+    "halls": "{{spacePlural, capitalize}}",
     "load": "Заетост",
     "upcoming": "Предстоящи"
   },
@@ -119,7 +122,7 @@
     "newLessonPreview": "Ново занятие",
     "cancelled": "Отменено",
     "noTrainers": "Няма треньори",
-    "noHalls": "Няма зали"
+    "noHalls": "{{spacePlural, capitalize}}: все още няма"
   },
   "createService": "+ Създай услуга",
   "invalidDateFormat": "Невалиден формат на датата",

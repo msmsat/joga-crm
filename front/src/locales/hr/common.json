@@ -1,4 +1,9 @@
 {
+  "space": {
+    "singular": "mjesto",
+    "plural": "mjesta",
+    "accusative": "mjesto"
+  },
   "phoneGate": {
     "title": "Dodajte svoj broj telefona",
     "sub": "Telefon je drugi kontakt vašeg računa: preko njega se vraća pristup i stižu obavijesti. Broj studija ovdje ne odgovara — ovaj mora biti vaš."

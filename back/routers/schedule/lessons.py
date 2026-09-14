@@ -10,7 +10,8 @@ from database import async_session_maker, get_db
 from dependencies import get_scoped_lesson, get_studio_context, StudioContext
 from services import lesson_time, studio_time
 from models import (
-    Client, ClientPayment, Hall, Lesson, Reservation, Service, Studio, StudioMember, User,
+    Client, ClientPayment, Hall, Lesson, Reservation, Service, Studio, StudioBranch,
+    StudioMember, User,
 )
 from schemas.schedule.lessons import (
     EligibleClient, LessonCancelRequest, LessonCreateRequest, LessonDaysResponse, LessonDetail,
@@ -308,6 +309,39 @@ async def _assert_hall_in_studio(hall_id: int, studio_id: int, db: AsyncSession)
     return hall.branch_id
 
 
+async def _assert_branch_in_studio(branch_id: int, studio_id: int, db: AsyncSession) -> int:
+    exists = (await db.execute(
+        select(StudioBranch.id).where(StudioBranch.id == branch_id, StudioBranch.studio_id == studio_id)
+    )).scalar_one_or_none()
+    if exists is None:
+        raise HTTPException(status_code=404, detail="Филиал не найден в студии")
+    return branch_id
+
+
+async def _resolve_branch(
+    hall_id: Optional[int], branch_id: Optional[int], studio_id: int, db: AsyncSession,
+) -> Optional[int]:
+    """Филиал занятия по залу и/или явному значению.
+
+    Зал остаётся старшим источником: он физически стоит в филиале, и спорить с
+    этим присланным числом нельзя — расхождение это 409, а не молчаливый выбор
+    одного из двух. Без зала филиал берётся из тела запроса: у студий, где
+    места не участвуют в расписании, выводить его больше не из чего, а терять
+    нельзя — по нему считается всё, что режется по филиалам."""
+    if hall_id is not None:
+        from_hall = await _assert_hall_in_studio(hall_id, studio_id, db)
+        if branch_id is not None and branch_id != from_hall:
+            raise HTTPException(status_code=409, detail={
+                "code": "BRANCH_CONFLICTS_WITH_HALL",
+                "message": "Филиал занятия задаётся залом — присланный филиал другой",
+                "params": {"hall_branch_id": from_hall, "requested_branch_id": branch_id},
+            })
+        return from_hall
+    if branch_id is None:
+        return None
+    return await _assert_branch_in_studio(branch_id, studio_id, db)
+
+
 async def _booked_count(lesson_id: int, db: AsyncSession) -> int:
     return (await db.execute(
         select(func.count(Reservation.id)).where(
@@ -462,9 +496,7 @@ async def create_lesson(
     studio = await schedule_guard.lock_studio(db, ctx.studio_id)
 
     teacher_name = await _teacher_name_in_studio(body.teacher_id, ctx.studio_id, db)
-    branch_id = None
-    if body.hall_id is not None:
-        branch_id = await _assert_hall_in_studio(body.hall_id, ctx.studio_id, db)
+    branch_id = await _resolve_branch(body.hall_id, body.branch_id, ctx.studio_id, db)
     service = await _service_in_studio(body.service_id, ctx.studio_id, db)
     # §4.4: у resource-услуги интервал возникает при ПОДТВЕРЖДЕНИИ записи и
     # принадлежит одному клиенту. Поставить её в расписание событием — значит
@@ -612,14 +644,16 @@ async def update_lesson(
         if "price" not in fields:
             lesson.price = service.price
 
-    if "hall_id" in fields:
+    if "hall_id" in fields or "branch_id" in fields:
         # Зал меняется (или снимается) — branch_id синхронизируется вместе с
         # ним в этом же fields-словаре (§6.1): без этого перенос в другой
-        # филиал молча оставлял бы занятие числящимся в прежнем.
-        if fields["hall_id"] is not None:
-            fields["branch_id"] = await _assert_hall_in_studio(fields["hall_id"], ctx.studio_id, db)
-        else:
-            fields["branch_id"] = None
+        # филиал молча оставлял бы занятие числящимся в прежнем. Зал, которого
+        # в запросе нет, берётся у самого занятия: увести филиал в сторону от
+        # зала, оставив зал на месте, нельзя — это 409, а не выбор наугад.
+        hall_id = fields["hall_id"] if "hall_id" in fields else lesson.hall_id
+        fields["branch_id"] = await _resolve_branch(
+            hall_id, fields.get("branch_id"), ctx.studio_id, db,
+        )
 
     # HB-22 п.3 / §6.5: интервал индивидуальной записи двигается ТОЛЬКО общим
     # сервисом переноса (`services/resource_reschedule`). Здесь нет ни проверки

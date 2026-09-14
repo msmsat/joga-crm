@@ -91,10 +91,10 @@
       "workingHours": "Öffnungszeiten"
     },
     "hall": {
-      "titleNew": "Neuer Saal",
-      "titleEdit": "Saal bearbeiten",
-      "name": "Saalname",
-      "namePlaceholder": "Saal A",
+      "titleNew": "{{spaceAcc}} hinzufügen",
+      "titleEdit": "{{spaceAcc}} bearbeiten",
+      "name": "Name",
+      "namePlaceholder": "{{space, capitalize}} A",
       "capacity": "Kapazität",
       "area": "Fläche, m²",
       "hourlyRate": "Preis pro Stunde, {{currency}}",
@@ -102,10 +102,10 @@
       "equipment": "Ausstattung",
       "equipmentPlaceholder": "Ausstattung hinzufügen",
       "color": "Farbe",
-      "isOnline": "Online-Saal",
-      "photo": "Saalfoto",
-      "subtitle": "Ein Raum in der Filiale: Plätze, Ausstattung, Journalfarbe",
-      "previewTitle": "Saalvorschau",
+      "isOnline": "Online",
+      "photo": "Foto",
+      "subtitle": "{{space, capitalize}} in der Filiale: Plätze, Ausstattung, Journalfarbe",
+      "previewTitle": "Vorschau",
       "sectionBasic": "Grunddaten",
       "sectionSpace": "Raum",
       "sectionLook": "Darstellung",
@@ -113,8 +113,8 @@
       "hourlyRateShort": "Preis pro Stunde",
       "statArea": "Fläche",
       "statRate": "Preis / Stunde",
-      "isOnlineHint": "Kurse finden online statt — kein physischer Raum.",
-      "colorHint": "Die Kurse dieses Saals werden im Journal mit dieser Farbe hervorgehoben."
+      "isOnlineHint": "Kurse finden online statt — ohne physische Räumlichkeit.",
+      "colorHint": "Mit dieser Farbe werden die Kurse im Journal hervorgehoben."
     },
     "service": {
       "titleNew": "Neue Leistung",
@@ -189,15 +189,15 @@
   "studios": {
     "title": "STUDIOS",
     "addStudio": "Studio hinzufügen",
-    "addHall": "Saal hinzufügen",
+    "addHall": "{{spaceAcc}} hinzufügen",
     "editBranch": "Filiale bearbeiten",
     "deleteBranch": "Filiale löschen",
     "infoTab": "Allgemeine Infos",
-    "hallsTitle": "Säle des Studios",
-    "hallCount_one": "{{count}} Saal",
-    "hallCount_other": "{{count}} Säle",
+    "hallsTitle": "{{spacePlural, capitalize}} des Studios",
+    "hallCount_one": "{{spacePlural, capitalize}} · {{count}}",
+    "hallCount_other": "{{spacePlural, capitalize}} · {{count}}",
     "stats": {
-      "halls": "Säle",
+      "halls": "{{spacePlural, capitalize}}",
       "totalSeats": "Plätze gesamt",
       "fromPerHour": "Ab / Stunde"
     },
@@ -212,8 +212,8 @@
       },
       "equipment": "Ausstattung",
       "actions": "Aktionen",
-      "edit": "Saal bearbeiten",
-      "delete": "Saal löschen"
+      "edit": "{{spaceAcc}} bearbeiten",
+      "delete": "{{spaceAcc}} löschen"
     },
     "empty": {
       "title": "Keine Studios",
@@ -223,14 +223,14 @@
       "created": "Studio angelegt",
       "createError": "Studio konnte nicht angelegt werden",
       "deleted": "Studio gelöscht",
-      "hallDeleted": "Saal gelöscht",
+      "hallDeleted": "Gelöscht: {{space}}",
       "saved": "Gespeichert",
       "edit": "Bearbeiten: {{name}}"
     },
     "confirmDelete": "Filiale „{{name}}“ löschen? Das kann nicht rückgängig gemacht werden.",
     "confirmDeleteTitle": "Filiale löschen?",
-    "confirmDeleteHall": "Saal „{{name}}“ löschen?",
-    "confirmDeleteHallTitle": "Saal löschen?"
+    "confirmDeleteHall": "{{spaceAcc}} „{{name}}“ löschen?",
+    "confirmDeleteHallTitle": "{{spaceAcc}} löschen?"
   },
   "services": {
     "title": "LEISTUNGEN",

@@ -12,8 +12,9 @@ def _default_booking_capabilities() -> BookingCapabilities:
     не падал на required-поле, которого нет как атрибута у ORM-объекта.
     Значения совпадают с дефолтом свежей студии (models/studio.py)."""
     return BookingCapabilities(
-        booking_mode="event", terminology_profile="generic",
+        booking_mode="event", terminology_profile="other",
         booking_config_version=1, strict_schedule_enabled=False,
+        space_is_axis=True,
     )
 
 # Три списка ниже 1-в-1 совпадают с components/UI.tsx (CURRENCIES/LANGUAGES/
@@ -147,6 +148,11 @@ class GeneralUpdate(BaseSchema):
     # владелец получал понятную 409, а не 422 "невозможное значение".
     booking_mode: Optional[BookingMode] = None
     terminology_profile: Optional[TerminologyProfile] = None
+    # Участвует ли место (зал/кресло/кабинет) в расписании. Три состояния, и
+    # `null` здесь — ЗНАЧАЩЕЕ: «наследовать отрасль», а не «поле не прислали».
+    # Различает их exclude_unset=True в роутере, поэтому Optional тут не
+    # означает «необязательно передавать, если хочешь сбросить».
+    space_is_axis: Optional[bool] = None
     # Строгое расписание — обязательное условие resource/hybrid (§6.1).
     # Включение и выключение проходят аудит наследия под замком студии
     # (services/hybrid_audit.assert_can_activate), поэтому здесь только тип.

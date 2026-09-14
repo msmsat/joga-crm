@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Select, usePopoverPosition } from '../../../../components/ui/index';
 import type { SelectOption } from '../../../../components/ui/index';
 import { usePhone } from '../../../../hooks/usePhone';
+import { useBusinessTerms } from '../../../../hooks/useBusinessTerms';
 import s from '../Reports.module.css';
 import { MIN_REPORT_DATE, TAB_FILTERS } from '../constants';
 import type { Tab, ReportPeriod, ReportFilters } from '../types';
@@ -230,6 +231,7 @@ export function ReportsToolbar({
   const [exported, setExported] = useState(false);
   const visibleFilters = TAB_FILTERS[activeTab];
   const isPhone = usePhone();
+  const { spaceIsAxis } = useBusinessTerms();
 
   const fire = () => {
     onExport();
@@ -379,7 +381,11 @@ export function ReportsToolbar({
 
         <div className={s.barFilters}>
           {visibleFilters.includes('branch') && selectFilter('branchId', filters.branchId, options.branches, t('toolbar.allBranches'))}
-          {visibleFilters.includes('hall') && selectFilter('hallId', filters.hallId, options.halls, t('toolbar.allHalls'))}
+          {/* Фильтр мест — только там, где место участвует в расписании:
+              у барбершопа занятия к креслам не привязаны, и фильтр обнулял бы
+              любой отчёт. */}
+          {visibleFilters.includes('hall') && spaceIsAxis !== false
+            && selectFilter('hallId', filters.hallId, options.halls, t('toolbar.allHalls'))}
           {visibleFilters.includes('trainer') && selectFilter('trainerId', filters.trainerId, options.trainers, t('toolbar.allTrainers'))}
           {visibleFilters.includes('service') && selectFilter('serviceId', filters.serviceId, options.services, t('toolbar.allServices'))}
         </div>

@@ -39,6 +39,10 @@ export interface LessonCreate {
   service_id: number
   teacher_id?: number | null
   hall_id?: number | null
+  /** Филиал занятия. С залом не нужен — сервер берёт филиал из зала и
+   *  отклоняет расхождение (409 BRANCH_CONFLICTS_WITH_HALL). Нужен там, где
+   *  место не участвует в расписании: вывести филиал иначе неоткуда. */
+  branch_id?: number | null
   start_time: string
   duration_min: number
   price?: number

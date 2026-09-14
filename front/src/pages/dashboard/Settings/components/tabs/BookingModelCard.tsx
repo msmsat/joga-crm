@@ -39,13 +39,16 @@ export default function BookingModelCard({ data, save }: {
   const capabilities = data.booking_capabilities;
   const terms = useBusinessTerms(preview, data.terminology?.profile ?? null);
   const failure = blockersOf(save.error);
+  // Отраслевое значение БЕЗ тумблера — по нему подписываем, что считается
+  // умолчанием. Берём у профиля, а не у capabilities: там оно уже с поправкой.
+  const industryDefault = terms.industrySpaceIsAxis ?? true;
 
   const modeOptions: { value: StudioBookingMode; label: string }[] =
     (["event", "resource", "hybrid"] as const).map(value => ({
       value, label: t(`general.booking.modes.${value}`),
     }));
   const profileOptions: { value: TerminologyProfile; label: string }[] =
-    (["generic", "fitness", "beauty"] as const).map(value => ({
+    (["studio", "sport", "beauty", "recovery", "relax", "other"] as const).map(value => ({
       value, label: t(`general.booking.profiles.${value}`),
     }));
 
@@ -94,6 +97,26 @@ export default function BookingModelCard({ data, save }: {
             value={capabilities.terminology_profile}
             options={profileOptions}
             onChange={value => save.mutate({ terminology_profile: value as TerminologyProfile })}
+          />,
+        )}
+        {/* Роль места в расписании. Отрасль задаёт значение по умолчанию, и
+            подпись честно называет его: владелец должен видеть, от чего он
+            отступает. Вернуть «как в отрасли» — это null, а не false, поэтому
+            рядом с тумблером стоит кнопка возврата, а не третье положение:
+            тумблер с тремя состояниями человек не прочитает. */}
+        {row(
+          t("general.booking.spaceAxis"),
+          `${t("general.booking.spaceAxisHint")} ${industryDefault
+            ? t("general.booking.spaceAxisDefaultOn")
+            : t("general.booking.spaceAxisDefaultOff")}`,
+          <Switch
+            checked={capabilities.space_is_axis}
+            disabled={save.isPending}
+            onChange={value => save.mutate({
+              // Совпало с отраслью — снимаем переопределение совсем, чтобы
+              // студия поехала за пресетом, если тот поменяется.
+              space_is_axis: value === industryDefault ? null : value,
+            })}
           />,
         )}
 

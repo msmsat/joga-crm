@@ -92,6 +92,19 @@ def nest(flat, arrays):
     return root
 
 
+FORMAT_SUFFIX = re.compile(r'\{\{\s*([^,}]+?)\s*,[^}]*\}\}')
+
+
+def _placeholders(text):
+    """Подстановки строки для сверки с en — по ИМЕНАМ, без формата.
+
+    {{spacePlural, capitalize}} и {{spacePlural}} — одна и та же подстановка:
+    формат зависит от того, где слово стоит во фразе, а это у языков разное
+    («Кресла студии» открывается словом, «Studio chairs» — нет). Потерянное или
+    выдуманное ИМЯ проверка по-прежнему ловит."""
+    return sorted(FORMAT_SUFFIX.sub(r'{{\1}}', p) for p in PLACEHOLDER.findall(str(text)))
+
+
 def _base(key):
     m = PLURAL.match(key)
     return m.group(1) if m else None
@@ -131,7 +144,7 @@ def check(lang, ns, flat):
         src = en.get(k) or en.get(f'{_base(k)}_other') or en.get(f'{_base(k)}_one')
         if src is None:
             continue
-        if sorted(PLACEHOLDER.findall(str(src))) != sorted(PLACEHOLDER.findall(str(v))):
+        if _placeholders(src) != _placeholders(v):
             problems.append(f'{k}: подстановки не как в en ({PLACEHOLDER.findall(str(src))})')
     return problems
 

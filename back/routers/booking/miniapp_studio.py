@@ -351,10 +351,5 @@ async def get_studio_catalog(
         ],
         can_pay_online=can_pay_online,
         terminology=terminology.configuration(studio, locale),
-        booking_capabilities=BookingCapabilities(
-            booking_mode=studio.booking_mode,
-            terminology_profile=studio.terminology_profile,
-            booking_config_version=studio.booking_config_version,
-            strict_schedule_enabled=studio.strict_schedule_enabled,
-        ),
+        booking_capabilities=BookingCapabilities.of(studio),
     )

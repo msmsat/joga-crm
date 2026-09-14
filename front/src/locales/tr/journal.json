@@ -2,11 +2,11 @@
   "toolbar": {
     "today": "Bugün",
     "trainers": "Eğitmenler",
-    "halls": "Salonlar",
+    "halls": "{{spacePlural, capitalize}}",
     "day": "Gün",
     "week": "Hafta",
     "resourceBooking": "Bireysel",
-    "noHall": "Salonsuz"
+    "noHall": "Atanmamış"
   },
   "daySummary": {
     "classesToday": "bugün ders",
@@ -27,7 +27,10 @@
     "service": "Hizmet",
     "servicePlaceholder": "Bir hizmet seçin",
     "namePlaceholder": "Örn. Reformer Pilates",
-    "location": "Konum / salon",
+    "location": "{{space, capitalize}}",
+    "branch": "Şube",
+    "onlyResourceServices": "Stüdyonun tüm hizmetleri bireysel olarak randevu alınır — önceden programa eklenemez. Ders, grup rezervasyonlu bir hizmetten oluşturulur.",
+    "goToResourceBooking": "Bireysel randevuya geç",
     "start": "Başlangıç",
     "end": "Bitiş",
     "groupLimit": "Grup limiti",
@@ -106,7 +109,7 @@
     "add": "Ekle"
   },
   "rightPanel": {
-    "halls": "Salonlar",
+    "halls": "{{spacePlural, capitalize}}",
     "load": "Doluluk",
     "upcoming": "Yaklaşan"
   },
@@ -119,7 +122,7 @@
     "newLessonPreview": "Yeni ders",
     "cancelled": "İptal edildi",
     "noTrainers": "Eğitmen yok",
-    "noHalls": "Salon yok"
+    "noHalls": "{{spacePlural, capitalize}}: henüz yok"
   },
   "createService": "+ Hizmet oluştur",
   "invalidDateFormat": "Geçersiz tarih biçimi",

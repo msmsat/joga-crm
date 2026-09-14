@@ -140,7 +140,7 @@ export default function AgentSetupModal({
           нужно 190px из 288 доступных, содержимому вкладки оставалось 98 и оно
           обрезалось. Ниже 768px модалка становится шитом снизу, а каналы —
           горизонтальным рельсом над содержимым. */}
-      <div className="flex h-[628px] max-h-[calc(100vh-32px)] w-[920px] max-w-[calc(100vw-32px)] animate-in overflow-hidden rounded-[26px] bg-background font-sans text-foreground ring-1 ring-black/[0.06] fade-in duration-300 max-[900px]:w-[620px] max-[767px]:h-[92dvh] max-[767px]:max-h-[92dvh] max-[767px]:w-full max-[767px]:max-w-full max-[767px]:!flex-col max-[767px]:rounded-b-none"
+      <div className="flex h-[628px] max-h-[calc(100dvh-32px)] w-[920px] max-w-[calc(100vw-32px)] animate-in overflow-hidden rounded-[26px] bg-background font-sans text-foreground ring-1 ring-black/[0.06] fade-in duration-300 max-[900px]:w-[620px] max-[767px]:h-[92dvh] max-[767px]:max-h-[92dvh] max-[767px]:w-full max-[767px]:max-w-full max-[767px]:!flex-col max-[767px]:rounded-b-none"
         style={{ boxShadow: '0 50px 120px -30px rgba(26,26,26,0.45), 0 16px 48px -16px rgba(26,26,26,0.16)' }}
       >
         {/* ─── левая колонка: каналы ─── */}

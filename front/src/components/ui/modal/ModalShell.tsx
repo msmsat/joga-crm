@@ -66,7 +66,7 @@ export function ModalShell({ onClose, children, size = 'sm', left, leftStyle, le
               }
             : {
                 width: '100%', maxWidth: maxWidth ?? '460px',
-                maxHeight: 'calc(100vh - 32px)',
+                maxHeight: 'calc(100dvh - 32px)',
                 display: 'flex', flexDirection: 'column',
               }),
         }}

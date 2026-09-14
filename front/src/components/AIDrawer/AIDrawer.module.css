@@ -12,7 +12,7 @@
   top: 0;
   right: 0;
   width: var(--drawer-w, 420px);
-  height: 100vh;
+  height: 100dvh;
   display: flex;
   flex-direction: column;
   background: var(--bg);
@@ -29,7 +29,7 @@
 @media (max-width: 1600px) {
   .drawer {
     top: var(--topbar-h, 72px);
-    height: calc(100vh - var(--topbar-h, 72px));
+    height: calc(100dvh - var(--topbar-h, 72px));
     border-top-left-radius: 16px;
     border-top: 1px solid rgba(var(--ink), 0.06);
     box-shadow: -16px 0 64px -12px rgba(26, 26, 26, 0.22);

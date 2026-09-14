@@ -2,12 +2,17 @@
 export type BookingMode = 'event' | 'resource';
 export type ServiceBookingMode = BookingMode;
 export type StudioBookingMode = BookingMode | 'hybrid';
-export type TerminologyProfile = 'generic' | 'fitness' | 'beauty';
+/** Разделы «Вида деятельности» в онбординге CRM; старые generic/fitness
+ *  сервер переводит сам (services/terminology.profile_key). */
+export type TerminologyProfile = 'studio' | 'sport' | 'beauty' | 'recovery' | 'relax' | 'other';
 export interface BookingCapabilities {
   booking_mode: StudioBookingMode;
   terminology_profile: TerminologyProfile;
   booking_config_version: number;
   strict_schedule_enabled: boolean;
+  /** Участвует ли место (зал/кресло/кабинет) в расписании: отрасль плюс
+   *  тумблер владельца, уже посчитанные сервером. */
+  space_is_axis: boolean;
 }
 export interface TermForms { singular: string; plural: string; accusative: string }
 export type BusinessMessage = 'choose_staff' | 'choose_offering' | 'empty_slots' | 'my_bookings' | 'confirm_booking';
@@ -15,9 +20,13 @@ export interface Terminology {
   version: number;
   locale: string;
   profile: TerminologyProfile;
+  /** Для студии — с тумблером владельца; в `profiles` — отраслевое значение. */
+  space_is_axis: boolean;
   profiles: Record<TerminologyProfile, {
     staff: TermForms;
     offering: Record<BookingMode, TermForms>;
+    space: TermForms;
+    space_is_axis: boolean;
     messages: Record<BusinessMessage, string>;
   }>;
 }

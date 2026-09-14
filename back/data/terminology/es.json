@@ -2,33 +2,7 @@
   "version": 1,
   "locale": "es",
   "profiles": {
-    "generic": {
-      "staff": {
-        "singular": "especialista",
-        "plural": "especialistas",
-        "accusative": "un especialista"
-      },
-      "offering": {
-        "event": {
-          "singular": "evento",
-          "plural": "eventos",
-          "accusative": "un evento"
-        },
-        "resource": {
-          "singular": "servicio",
-          "plural": "servicios",
-          "accusative": "un servicio"
-        }
-      },
-      "messages": {
-        "choose_staff": "Elige {{staff.accusative}}",
-        "choose_offering": "Elige {{offering.accusative}}",
-        "empty_slots": "No hay horarios disponibles",
-        "my_bookings": "Mis reservas",
-        "confirm_booking": "Confirmar reserva"
-      }
-    },
-    "fitness": {
+    "studio": {
       "staff": {
         "singular": "entrenador",
         "plural": "entrenadores",
@@ -45,6 +19,42 @@
           "plural": "servicios",
           "accusative": "un servicio"
         }
+      },
+      "space": {
+        "singular": "sala",
+        "plural": "salas",
+        "accusative": "una sala"
+      },
+      "messages": {
+        "choose_staff": "Elige {{staff.accusative}}",
+        "choose_offering": "Elige {{offering.accusative}}",
+        "empty_slots": "No hay horarios disponibles",
+        "my_bookings": "Mis reservas",
+        "confirm_booking": "Confirmar reserva"
+      }
+    },
+    "sport": {
+      "staff": {
+        "singular": "entrenador",
+        "plural": "entrenadores",
+        "accusative": "un entrenador"
+      },
+      "offering": {
+        "event": {
+          "singular": "clase",
+          "plural": "clases",
+          "accusative": "una clase"
+        },
+        "resource": {
+          "singular": "servicio",
+          "plural": "servicios",
+          "accusative": "un servicio"
+        }
+      },
+      "space": {
+        "singular": "sala",
+        "plural": "salas",
+        "accusative": "una sala"
       },
       "messages": {
         "choose_staff": "Elige {{staff.accusative}}",
@@ -71,6 +81,104 @@
           "plural": "servicios",
           "accusative": "un servicio"
         }
+      },
+      "space": {
+        "singular": "sillón",
+        "plural": "sillones",
+        "accusative": "un sillón"
+      },
+      "messages": {
+        "choose_staff": "Elige {{staff.accusative}}",
+        "choose_offering": "Elige {{offering.accusative}}",
+        "empty_slots": "No hay horarios disponibles",
+        "my_bookings": "Mis reservas",
+        "confirm_booking": "Confirmar reserva"
+      }
+    },
+    "recovery": {
+      "staff": {
+        "singular": "especialista",
+        "plural": "especialistas",
+        "accusative": "un especialista"
+      },
+      "offering": {
+        "event": {
+          "singular": "evento",
+          "plural": "eventos",
+          "accusative": "un evento"
+        },
+        "resource": {
+          "singular": "servicio",
+          "plural": "servicios",
+          "accusative": "un servicio"
+        }
+      },
+      "space": {
+        "singular": "cabina",
+        "plural": "cabinas",
+        "accusative": "una cabina"
+      },
+      "messages": {
+        "choose_staff": "Elige {{staff.accusative}}",
+        "choose_offering": "Elige {{offering.accusative}}",
+        "empty_slots": "No hay horarios disponibles",
+        "my_bookings": "Mis reservas",
+        "confirm_booking": "Confirmar reserva"
+      }
+    },
+    "relax": {
+      "staff": {
+        "singular": "especialista",
+        "plural": "especialistas",
+        "accusative": "un especialista"
+      },
+      "offering": {
+        "event": {
+          "singular": "evento",
+          "plural": "eventos",
+          "accusative": "un evento"
+        },
+        "resource": {
+          "singular": "servicio",
+          "plural": "servicios",
+          "accusative": "un servicio"
+        }
+      },
+      "space": {
+        "singular": "cabina",
+        "plural": "cabinas",
+        "accusative": "una cabina"
+      },
+      "messages": {
+        "choose_staff": "Elige {{staff.accusative}}",
+        "choose_offering": "Elige {{offering.accusative}}",
+        "empty_slots": "No hay horarios disponibles",
+        "my_bookings": "Mis reservas",
+        "confirm_booking": "Confirmar reserva"
+      }
+    },
+    "other": {
+      "staff": {
+        "singular": "especialista",
+        "plural": "especialistas",
+        "accusative": "un especialista"
+      },
+      "offering": {
+        "event": {
+          "singular": "evento",
+          "plural": "eventos",
+          "accusative": "un evento"
+        },
+        "resource": {
+          "singular": "servicio",
+          "plural": "servicios",
+          "accusative": "un servicio"
+        }
+      },
+      "space": {
+        "singular": "espacio",
+        "plural": "espacios",
+        "accusative": "un espacio"
       },
       "messages": {
         "choose_staff": "Elige {{staff.accusative}}",

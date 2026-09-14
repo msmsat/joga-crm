@@ -3,12 +3,19 @@ export type BookingMode = 'event' | 'resource';
 /** Услуга — одна механика: resource+group запрещена сервером (§6.1). */
 export type ServiceBookingMode = BookingMode;
 export type StudioBookingMode = BookingMode | 'hybrid';
-export type TerminologyProfile = 'generic' | 'fitness' | 'beauty';
+/** Разделы экрана «Вид деятельности» в онбординге: что владелец выбрал, тем
+ *  студия и говорит. Старые имена (generic/fitness/beauty) сервер переводит
+ *  сам — сюда они уже не приходят. */
+export type TerminologyProfile = 'studio' | 'sport' | 'beauty' | 'recovery' | 'relax' | 'other';
 export interface BookingCapabilities {
   booking_mode: StudioBookingMode;
   terminology_profile: TerminologyProfile;
   booking_config_version: number;
   strict_schedule_enabled: boolean;
+  /** Участвует ли место (зал/кресло/кабинет) в расписании. Приходит УЖЕ с
+   *  учётом тумблера владельца — складывать отрасль с переопределением здесь
+   *  нельзя, это серверное правило. */
+  space_is_axis: boolean;
 }
 export interface TermForms { singular: string; plural: string; accusative: string }
 export type BusinessMessage = 'choose_staff' | 'choose_offering' | 'empty_slots' | 'my_bookings' | 'confirm_booking';
@@ -19,8 +26,14 @@ export interface Terminology {
   profiles: Record<TerminologyProfile, {
     staff: TermForms;
     offering: Record<BookingMode, TermForms>;
+    /** Зал / кресло / кабинет / место — смотря чем студия занимается. */
+    space: TermForms;
+    /** Отраслевое значение по умолчанию, БЕЗ тумблера владельца. */
+    space_is_axis: boolean;
     messages: Record<BusinessMessage, string>;
   }>;
+  /** То же, что booking_capabilities.space_is_axis — с учётом тумблера. */
+  space_is_axis: boolean;
 }
 export interface EventQuoteRequest { booking_mode: 'event'; lesson_id: number; spot_number?: number | null; payment_method?: 'venue' | 'card' }
 export interface ResourceQuoteRequest { booking_mode: 'resource'; service_id: number; branch_id: number; teacher_id?: number | null; starts_at: string; payment_method?: 'venue' | 'card' }

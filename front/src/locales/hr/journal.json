@@ -2,11 +2,11 @@
   "toolbar": {
     "today": "Danas",
     "trainers": "Treneri",
-    "halls": "Dvorane",
+    "halls": "{{spacePlural, capitalize}}",
     "day": "Dan",
     "week": "Tjedan",
     "resourceBooking": "Individualno",
-    "noHall": "Bez dvorane"
+    "noHall": "Bez dodjele"
   },
   "daySummary": {
     "classesToday": "termina danas",
@@ -27,7 +27,10 @@
     "service": "Usluga",
     "servicePlaceholder": "Odaberite uslugu",
     "namePlaceholder": "Npr. Reformer Pilates",
-    "location": "Mjesto / dvorana",
+    "location": "{{space, capitalize}}",
+    "branch": "Poslovnica",
+    "onlyResourceServices": "Sve usluge studija rezerviraju se individualno — ne mogu se unaprijed staviti u raspored. Sat se stvara iz usluge s grupnom rezervacijom.",
+    "goToResourceBooking": "Prijeđi na individualnu rezervaciju",
     "start": "Početak",
     "end": "Kraj",
     "groupLimit": "Ograničenje grupe",
@@ -108,7 +111,7 @@
     "add": "Dodaj"
   },
   "rightPanel": {
-    "halls": "Dvorane",
+    "halls": "{{spacePlural, capitalize}}",
     "load": "Popunjenost",
     "upcoming": "Nadolazeći"
   },
@@ -121,7 +124,7 @@
     "newLessonPreview": "Novi termin",
     "cancelled": "Otkazano",
     "noTrainers": "Nema trenera",
-    "noHalls": "Nema dvorana"
+    "noHalls": "{{spacePlural, capitalize}}: još nema"
   },
   "createService": "+ Kreiraj uslugu",
   "invalidDateFormat": "Neispravan format datuma",

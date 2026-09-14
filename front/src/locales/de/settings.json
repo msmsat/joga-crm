@@ -68,16 +68,23 @@
       "profile": "Branchenwörter",
       "profileHint": "Wählt die Wörter für Fachkräfte und Angebote. Nur die Formulierung ändert sich — Rollen, Preise und Buchungsmodell bleiben.",
       "strict": "Strenger Kalender",
-      "strictHint": "Verhindert Doppelbelegung von Fachkraft oder exklusivem Raum. Vor individueller Buchung erforderlich.",
+      "strictHint": "Verhindert Doppelbelegung von Fachkraft oder exklusivem Bereich. Vor individueller Buchung erforderlich.",
+      "spaceAxis": "{{spacePlural}} im Zeitplan berücksichtigen",
+      "spaceAxisHint": "Aus — der Kunde bucht eine Person, und der Bereich belegt keine Spalte im Journal. An — ein Kurs ist an einen Bereich gebunden.",
+      "spaceAxisDefaultOn": "Standard für Ihre Branche: an",
+      "spaceAxisDefaultOff": "Standard für Ihre Branche: aus",
       "modes": {
         "event": "Termine",
         "resource": "Individuell",
         "hybrid": "Gemischt"
       },
       "profiles": {
-        "generic": "Neutral",
-        "fitness": "Fitness",
-        "beauty": "Beauty"
+        "studio": "Gruppenpraxis und Studios",
+        "sport": "Sport und Studios",
+        "beauty": "Beauty und Pflege",
+        "recovery": "Körper und Regeneration",
+        "relax": "Spa und Erholung",
+        "other": "Sonstiges"
       },
       "preview": {
         "event": "Termin",
@@ -311,7 +318,7 @@
         "action": "Daten löschen",
         "toast": "Datenbank erfolgreich geleert",
         "consequence1": "Endgültig gelöscht: Kunden, Kurse, Buchungen, Transaktionen, Dokumente, Kundenkarten, Loyalitätsverlauf",
-        "consequence2": "Bleibt unverändert: Studio, Filialen, Säle, Leistungen, Mitarbeitende, Tarif und Einstellungen",
+        "consequence2": "Bleibt unverändert: Studio, Filialen, {{spacePlural}}, Leistungen, Mitarbeitende, Tarif und Einstellungen",
         "consequence3": "Diese Aktion ist unumkehrbar — nach der Bestätigung lässt sie sich nicht rückgängig machen"
       },
       "deleteAccount": {

@@ -2,11 +2,11 @@
   "toolbar": {
     "today": "I dag",
     "trainers": "Instruktörer",
-    "halls": "Salar",
+    "halls": "{{spacePlural, capitalize}}",
     "day": "Dag",
     "week": "Vecka",
     "resourceBooking": "Individuellt",
-    "noHall": "Utan sal"
+    "noHall": "Ej tilldelat"
   },
   "daySummary": {
     "classesToday": "pass i dag",
@@ -27,7 +27,10 @@
     "service": "Tjänst",
     "servicePlaceholder": "Välj en tjänst",
     "namePlaceholder": "T.ex. Reformer Pilates",
-    "location": "Plats / sal",
+    "location": "{{space, capitalize}}",
+    "branch": "Filial",
+    "onlyResourceServices": "Alla studions tjänster bokas individuellt — de kan inte läggas in i schemat i förväg. Ett pass skapas från en tjänst med gruppbokning.",
+    "goToResourceBooking": "Gå till individuell bokning",
     "start": "Start",
     "end": "Slut",
     "groupLimit": "Gruppstorlek",
@@ -106,7 +109,7 @@
     "add": "Lägg till"
   },
   "rightPanel": {
-    "halls": "Salar",
+    "halls": "{{spacePlural, capitalize}}",
     "load": "Beläggning",
     "upcoming": "Kommande"
   },
@@ -119,7 +122,7 @@
     "newLessonPreview": "Nytt pass",
     "cancelled": "Inställt",
     "noTrainers": "Inga instruktörer",
-    "noHalls": "Inga salar"
+    "noHalls": "{{spacePlural, capitalize}}: inga än"
   },
   "createService": "+ Skapa tjänst",
   "invalidDateFormat": "Ogiltigt datumformat",
