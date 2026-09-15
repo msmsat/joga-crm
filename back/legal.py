@@ -25,7 +25,7 @@ from models import User, UserConsent
 load_dotenv()
 
 # Дата редакции Условий, Приложения об обработке данных, Политики и Политики cookie.
-TERMS_VERSION = "2026-09-14.1"
+TERMS_VERSION = "2026-09-14.2"
 
 # Публичные адреса документов (их же показывает фронт: front/src/utils/legal.ts).
 BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000").rstrip("/")

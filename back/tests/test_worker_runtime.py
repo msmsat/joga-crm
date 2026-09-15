@@ -437,7 +437,8 @@ async def _no_transaction_during_network(studio_id: int) -> None:
         CA.async_session_maker = real_maker
         llm.chat, TGCH.send_typing, llm.is_configured = real_chat, real_typing, real_conf
 
-    assert answer == "Готово.", "ход агента не вернул намерение"
+    # endswith, а не ==: первый ответ человеку открывается строкой «вам отвечает ИИ».
+    assert answer and answer.endswith("Готово."), "ход агента не вернул намерение"
     assert not open_at_network, f"транзакция открыта во время сетевых вызовов: {open_at_network}"
     assert live, "сессии не отслеживались — проверка ничего не измерила"
 

@@ -145,6 +145,7 @@
     "navbarPlaceholder": "Ask AI or set a task...",
     "enterToSend": "Enter to send",
     "shiftEnterNewline": "Shift+Enter for a new line",
+    "aiDisclaimer": "Velora AI can make mistakes. Check important information.",
     "continueInChat": "Continue in chat →",
     "emptyTitle": "How can I help?",
     "emptySubtitle": "Ask any question about your studio, clients, or business",

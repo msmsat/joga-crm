@@ -16,7 +16,7 @@ from sqlalchemy import delete, select
 
 from database import async_session_maker
 from models import Client, Studio, StudioAISettings, StudioBillingPlan, StudioWorkingHours
-from services import client_agent, llm
+from services import client_agent, llm, response_texts
 from services.client_agent import (
     CHANNEL_INSTAGRAM,
     CHANNEL_TELEGRAM,
@@ -36,6 +36,15 @@ _EMAIL_B = "client-agent-b@test.local"
 def _usage():
     return llm.LLMUsage(model="google/gemini-3-flash", prompt_tokens=10, cached_tokens=0,
                         completion_tokens=5, cost_micro=20)
+
+
+def _split_disclosure(answer: str) -> tuple[str | None, str]:
+    """(строка «вам отвечает ИИ» или None, сам ответ). Язык раскрытия зависит
+    от определения языка сообщения, поэтому ищем среди всех переводов."""
+    for text in response_texts.AI_DISCLOSURE.values():
+        if answer.startswith(text + "\n\n"):
+            return text, answer[len(text) + 2:]
+    return None, answer
 
 
 class _ScriptedLLM:
@@ -149,6 +158,8 @@ async def _run():
                 CHANNEL_INSTAGRAM, sender_ref="igsid-1",
             )
             assert answer
+            # Ст. 50(1) AI Act: незнакомец с первого ответа знает, что говорит с ИИ.
+            assert _split_disclosure(answer)[0], answer
             assert not (script.tool_names & crm_only)
             assert not (script.tool_names & {"get_my_bookings", "get_my_subscription"})
             # Входящее обёрнуто разделителем — это данные, а не инструкция.
@@ -171,8 +182,20 @@ async def _run():
                 db, ids["a"], await _settings(db, ids["a"]), known,
                 "Что с моим абонементом?", CHANNEL_TELEGRAM, sender_ref=str(_TG_ID),
             )
-            assert answer == "У вас осталось 5 занятий."
+            # Первый ответ этому человеку открывается строкой «вам отвечает ИИ» —
+            # её ставит сервер, а не модель: промпт — просьба, а не гарантия.
+            disclosure, body = _split_disclosure(answer)
+            assert disclosure, answer
+            assert body == "У вас осталось 5 занятий.", body
             assert len(script2.calls) == 2
+
+            # Второй ответ тому же человеку — без повтора: раскрытие одно на разговор.
+            _ScriptedLLM(llm.LLMReply("Следующее занятие завтра.", [], _usage())).install()
+            again = await reply(
+                db, ids["a"], await _settings(db, ids["a"]), known,
+                "А когда следующее занятие?", CHANNEL_TELEGRAM, sender_ref=str(_TG_ID),
+            )
+            assert again == "Следующее занятие завтра.", again
 
             # ── Изменяющих инструментов у клиентского агента нет вовсе:
             # просьба записаться уводится в мини-приложение.
@@ -248,8 +271,11 @@ async def _run_settings_apply():
             prompt = script.calls[0]["messages"][0]["content"]
             assert "деловой" in prompt and "40" in prompt
             # …и предел соблюдён жёстко: модель его игнорирует систематически.
-            assert len(answer) <= 40, (len(answer), answer)
-            assert answer.endswith("…")
+            # Предел — на сам ответ; строка раскрытия ИИ идёт сверх него, её не режут.
+            disclosure, body = _split_disclosure(answer)
+            assert disclosure, answer
+            assert len(body) <= 40, (len(body), body)
+            assert body.endswith("…")
 
             # Смена тона заметно меняет промпт.
             settings = await _settings(db, ids["a"])

@@ -10,6 +10,7 @@ import { openCookieSettings } from '../utils/cookieConsent';
 import { authApi, ApiError } from '../api';
 import { setActiveToken } from '../utils/auth';
 import { LEGAL_FOOTER_LINKS, LEGAL_LINK_PROPS, PRIVACY_URL, TERMS_URL } from '../utils/legal';
+import { TRIAL_DAYS } from '../api/billing/billing.types';
 
 // ─── STEP TYPES ──────────────────────────────────────────────────────────────
 
@@ -209,7 +210,7 @@ export default function RegisterPage() {
                 <div className="flex-col gap-8">
                   <div style={{ display: "inline-flex", alignItems: "center", gap: 7, padding: "5px 12px", background: "linear-gradient(135deg, rgba(249,160,139,0.12), rgba(249,160,139,0.06))", border: "1px solid rgba(249,160,139,0.28)", borderRadius: 100, width: "fit-content" }}>
                     <div style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--peach)", boxShadow: "0 0 0 3px var(--peach-glow)", animation: "pulse 2.4s ease-in-out infinite" }} />
-                    <span style={{ fontSize: 12, fontWeight: 600, color: "var(--peach)", letterSpacing: "0.3px" }}>14 дней бесплатно</span>
+                    <span style={{ fontSize: 12, fontWeight: 600, color: "var(--peach)", letterSpacing: "0.3px" }}>{TRIAL_DAYS} дней бесплатно</span>
                   </div>
                   <h1 style={{ fontSize: 26, fontWeight: 800, letterSpacing: "-0.5px", lineHeight: 1.2 }}>Создать аккаунт</h1>
                   <p className="text-muted" style={{ fontSize: 14, lineHeight: "1.6" }}>Без карты. Без обязательств. Только результат.</p>

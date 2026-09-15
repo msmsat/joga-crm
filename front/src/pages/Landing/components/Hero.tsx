@@ -86,7 +86,7 @@ export function Hero() {
 
           {/* Здесь стоял счётчик «2 400+ бизнесов» и рейтинг 4.9 — цифр, которых
               у продукта пока нет. Вместо выдуманной социальной пруфы — условия
-              триала, они настоящие (TRIAL_DAYS в routers/auth/onboarding.py). */}
+              триала, они настоящие (TRIAL_DAYS в routers/billing/plans.py). */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

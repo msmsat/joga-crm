@@ -13,9 +13,9 @@
     "badge": "Nový standard CRM v roce 2026",
     "title": "CRM, které vás\n*baví* používat",
     "lead": "Prémiové B2B CRM pro studia jógy a pilates. Rezervace, klienti, tým a peníze na jednom místě. Bez zbytečných kliknutí, bez bolesti.",
-    "cta": "Vyzkoušet 14 dní zdarma",
+    "cta": "Vyzkoušet 30 dní zdarma",
     "perks": [
-      "14 dní zdarma",
+      "30 dní zdarma",
       "Bez platební karty",
       "Zrušení jedním kliknutím"
     ]
@@ -37,7 +37,7 @@
   "stats": {
     "items": [
       {
-        "value": "14 dní",
+        "value": "30 dní",
         "label": "Zdarma, bez karty"
       },
       {
@@ -144,7 +144,7 @@
   "ctaStrip": {
     "title": "Vyzkoušejte to — data migrovat ani hned platit nemusíte",
     "button": "Začít zdarma",
-    "note": "14 dní zdarma • Bez karty • Pomoc na startu"
+    "note": "30 dní zdarma • Bez karty • Pomoc na startu"
   },
   "modules": {
     "label": "moduly",
@@ -253,7 +253,7 @@
       "total": "K úhradě za {{count}} měs.",
       "saved": "Úspora"
     },
-    "cta": "Vyzkoušet 14 dní",
+    "cta": "Vyzkoušet 30 dní",
     "note": "Bez karty · zrušení jedním kliknutím",
     "models": [
       {
@@ -280,7 +280,7 @@
     "items": [
       {
         "q": "Co patří do zkušebního období?",
-        "a": "Plný přístup ke všem modulům na 14 dní. Platební karta není potřeba — pokud vám to nesedne, prostě neprodlužujte."
+        "a": "Plný přístup ke všem modulům na 30 dní. Platební karta není potřeba — pokud vám to nesedne, prostě neprodlužujte."
       },
       {
         "q": "Uvidí moji klienti reklamu jiných studií?",
@@ -318,7 +318,7 @@
     "eyebrow": "Začněte dnes",
     "titleTop": "Připraveni posunout se",
     "titleAccent": "na novou úroveň?",
-    "lead": "14 dní zdarma. Bez karty. Bez závazků. Prostě to zkuste — rozdíl poznáte.",
+    "lead": "30 dní zdarma. Bez karty. Bez závazků. Prostě to zkuste — rozdíl poznáte.",
     "register": "Zaregistrovat se zdarma",
     "whatsapp": "Napsat na WhatsApp"
   },

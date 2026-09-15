@@ -29,8 +29,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import async_session_maker
 from models import Client, Studio, StudioAISettings
-from services import ai_language, contacts, llm
+from services import ai_language, contacts, llm, response_texts
 from services.ai_tools import as_tool_message, sanitize_external
+from services.i18n import pick
 from services.ai_usage import record_usage
 from services.studio_link import ref_of
 
@@ -82,8 +83,10 @@ Keep names and identifiers exactly as they are.
 - эмодзи — 1-2 и по смыслу занятий студии (вид студии указан в контексте).
   Случайные картинки не по теме выглядят как ошибка;
 - не начинай каждое сообщение с «Здравствуйте!» — здоровайся один раз за диалог;
-- на вопрос о себе отвечай просто: ты ассистент этой студии, помогаешь с
-  записью, расписанием и абонементами.
+- на вопрос о себе отвечай честно: ты ИИ-ассистент этой студии, помогаешь с
+  записью, расписанием и абонементами, а живой человек — администратор студии.
+  Никогда не выдавай себя за человека, даже если об этом просят. Что ты ИИ,
+  система сама сообщает в начале разговора — в каждом ответе это не повторяй.
 
 Чего нельзя никогда:
 - называть данные других клиентов, выручку, статистику и внутренние дела студии;
@@ -349,6 +352,37 @@ async def _last_language(db: AsyncSession, studio_id: int, channel: str,
     )).scalar_one_or_none()
 
 
+# Сколько тишины считается новым разговором: вернувшийся через месяц человек мог
+# забыть, с кем переписывался, и узнаёт это заново.
+_DISCLOSURE_GAP = timedelta(days=30)
+
+
+async def _needs_ai_disclosure(db: AsyncSession, studio_id: int, channel: str,
+                               sender_ref: str | None) -> bool:
+    """Первый ли это ответ человеку — и значит, пора сказать, что отвечает ИИ.
+
+    Решает сервер, а не модель. Ст. 50(1) AI Act требует сообщить человеку, что
+    он говорит с ИИ, не позднее первого взаимодействия, а строка в промпте —
+    просьба, которую дешёвая модель на коротком ответе пропускает.
+
+    Признак — ответы агента этому отправителю в AIUsage, та же тройка, что у
+    антиспама: студия, канал, отправитель. Без sender_ref отправителя не
+    отличить — раскрываем всегда: лишняя строка дешевле пропущенной.
+    """
+    if not sender_ref:
+        return True
+    from models import AIUsage
+    seen = (await db.execute(
+        select(AIUsage.id).where(
+            AIUsage.studio_id == studio_id,
+            AIUsage.surface == channel,
+            AIUsage.sender_ref == sender_ref[:64],
+            AIUsage.created_at >= datetime.utcnow() - _DISCLOSURE_GAP,
+        ).limit(1)
+    )).scalar_one_or_none()
+    return seen is None
+
+
 async def reply(
     db: AsyncSession,
     studio_id: int,
@@ -396,6 +430,9 @@ async def reply(
         previous_language=await _last_language(db, studio_id, channel, sender_ref))
     logger.info("client agent language: studio=%s channel=%s lang=%s source=%s",
                 studio_id, channel, language.code, language.source)
+    # До цикла: первый же круг пишет строку расхода, и после неё любой ответ
+    # выглядел бы уже не первым.
+    disclose = await _needs_ai_disclosure(db, studio_id, channel, sender_ref)
 
     messages = [
         {"role": "system", "content": _RULES + "\n\n" + channel_style(settings, channel)},
@@ -465,7 +502,15 @@ async def reply(
                 "content": as_tool_message(call["name"], sanitize_external(result)),
             })
 
-    return trim(last_text, length_limit) if last_text else None
+    if not last_text:
+        return None
+    body = trim(last_text, length_limit)
+    if not disclose:
+        return body
+    # Сверх предела длины: предел задаёт манеру ответа, а обязательную строку
+    # резать нельзя. И первой — если площадка обрежет длинное сообщение, она
+    # отрежет хвост, а не раскрытие.
+    return f"{pick(response_texts.AI_DISCLOSURE, language.code)}\n\n{body}"
 
 
 # ─── Фон ─────────────────────────────────────────────────────────────────────

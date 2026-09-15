@@ -13,9 +13,9 @@
     "badge": "The new CRM standard in 2026",
     "title": "A CRM you'll\n*love* using",
     "lead": "A premium B2B CRM for yoga and pilates studios. Bookings, clients, your team and your money in one place. No extra clicks, no pain.",
-    "cta": "Try 14 days free",
+    "cta": "Try 30 days free",
     "perks": [
-      "14 days free",
+      "30 days free",
       "No bank card",
       "Cancel in one click"
     ]
@@ -37,7 +37,7 @@
   "stats": {
     "items": [
       {
-        "value": "14 days",
+        "value": "30 days",
         "label": "Free, no card required"
       },
       {
@@ -144,7 +144,7 @@
   "ctaStrip": {
     "title": "Give it a try — no data migration and no payment up front",
     "button": "Start free",
-    "note": "14 days free • No card • Help getting started"
+    "note": "30 days free • No card • Help getting started"
   },
   "modules": {
     "label": "modules",
@@ -248,7 +248,7 @@
       "total": "Due for {{count}} months",
       "saved": "You save"
     },
-    "cta": "Try 14 days",
+    "cta": "Try 30 days",
     "note": "No card · cancel in one click",
     "models": [
       {
@@ -275,7 +275,7 @@
     "items": [
       {
         "q": "What does the trial include?",
-        "a": "Full access to every module for 14 days. No bank card needed — if it isn't for you, simply don't renew."
+        "a": "Full access to every module for 30 days. No bank card needed — if it isn't for you, simply don't renew."
       },
       {
         "q": "Will my clients see ads for other studios?",
@@ -313,7 +313,7 @@
     "eyebrow": "Start today",
     "titleTop": "Ready to move",
     "titleAccent": "to the next level?",
-    "lead": "14 days free. No card. No commitment. Just try it — you'll feel the difference.",
+    "lead": "30 days free. No card. No commitment. Just try it — you'll feel the difference.",
     "register": "Sign up for free",
     "whatsapp": "Message us on WhatsApp"
   },

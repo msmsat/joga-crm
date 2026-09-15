@@ -43,7 +43,9 @@ def test_register_refuses_account_without_consent():
         email="consent-check@veloratest.ru", name="Consent", password="Velora7pq",
     )
     try:
-        asyncio.run(register(payload, _Request(), db=None))
+        # __wrapped__ — мимо лимитера slowapi: он требует настоящий Request и
+        # падал раньше, чем доходило до проверки согласия.
+        asyncio.run(register.__wrapped__(payload, _Request(), db=None))
     except HTTPException as exc:
         assert exc.status_code == 400, exc.status_code
         # Код, а не только текст: по нему фронт отличает «нужна галочка» от

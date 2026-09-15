@@ -463,6 +463,14 @@
   padding-right: 4px;
 }
 
+.aiDisclaimer {
+  font-size: 10.5px;
+  line-height: 1.4;
+  color: #C0BDB9;
+  text-align: center;
+  margin-top: 5px;
+}
+
 .inputWrap {
   display: flex;
   align-items: center; /* однострочный вид: текст по центру рядом с кнопкой */

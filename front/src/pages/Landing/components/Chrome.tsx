@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { LogoMark } from "../../../components/Icons";
 import { getActiveToken } from "../../../utils/auth";
 import { openCookieSettings } from "../../../utils/cookieConsent";
-import { PRIVACY_URL, TERMS_URL, COOKIES_URL, DPA_URL, LEGAL_LINK_PROPS, SUPPORT_WHATSAPP, SUPPORT_WHATSAPP_URL } from "../../../utils/legal";
+import { PRIVACY_URL, TERMS_URL, COOKIES_URL, DPA_URL, LEGAL_ENTITY, LEGAL_LINK_PROPS, SUPPORT_WHATSAPP, SUPPORT_WHATSAPP_URL } from "../../../utils/legal";
 import { LangSwitch } from "./LangSwitch";
 
 const LINKS = [
@@ -183,8 +183,9 @@ export function LandingFooter() {
 
         {/* Индикатор «Все системы в норме» убран: статус-страницы, которая бы
             его подтверждала, у нас нет — это была картинка, а не показание. */}
-        <div className="mt-14 border-t border-white/10 pt-8 text-[12px] text-white/30">
-          {t("footer.copyright")}
+        <div className="mt-14 border-t border-white/10 pt-8 text-[12px] leading-[1.7] text-white/30">
+          <p>{t("footer.copyright")}</p>
+          <p className="mt-1">{LEGAL_ENTITY}</p>
         </div>
       </div>
 

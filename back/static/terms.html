@@ -17,6 +17,9 @@
   .party { background: rgba(217,119,87,0.08); border: 1px solid rgba(217,119,87,0.28);
            border-radius: 10px; padding: 16px 20px; }
   .party p { color: #1a1a1a; }
+  .key { border: 1px solid rgba(0,0,0,0.12); border-radius: 10px; padding: 8px 20px; margin-top: 24px; }
+  .key li { margin: 6px 0; }
+  .scroll { overflow-x: auto; }
   table { border-collapse: collapse; width: 100%; margin-top: 12px; font-size: 14px; }
   th, td { border: 1px solid rgba(0,0,0,0.12); padding: 8px 10px; text-align: left; vertical-align: top; color: #444; }
   th { font-weight: 600; color: #1a1a1a; }
@@ -24,6 +27,7 @@
     body { background: #121212; color: #ececec; }
     p, li { color: #b4b4b4; }
     .party p { color: #ececec; }
+    .key { border-color: rgba(255,255,255,0.14); }
     th, td { border-color: rgba(255,255,255,0.14); color: #b4b4b4; }
     th { color: #ececec; }
   }
@@ -32,7 +36,7 @@
 <body>
 
 <h1>Terms of Service</h1>
-<p class="updated">Velora CRM · Version 2026-09-14.1</p>
+<p class="updated">Velora CRM · Version 2026-09-14.2</p>
 
 <div class="party">
   <p><strong>Provider.</strong> Velora CRM is operated by <strong>Andrii Sadovskyi</strong>,
@@ -45,10 +49,27 @@
 
 <p>These Terms govern the use of the Velora CRM platform (the "Service"). By ticking the
 acceptance box during registration you enter into a binding agreement with Velora on
-these Terms, including <a href="#dpa">Annex A (Data Processing Agreement)</a>. If you accept
-on behalf of a company, you confirm you are authorised to bind it. We record which version
-you accepted, when, and from which IP address, as evidence that the agreement was
-concluded.</p>
+these Terms, including <a href="#dpa">Annex A (Data Processing Agreement)</a> and
+<a href="#subprocessors">Annex B (Sub-processors)</a>. If you accept on behalf of a company,
+you confirm you are authorised to bind it. We record which version you accepted, when, and
+from which IP address, as evidence that the agreement was concluded.</p>
+
+<div class="key">
+  <p><strong>Key points</strong> — a summary for convenience; the full text below prevails.</p>
+  <ul>
+    <li>The Service is for businesses only; consumer withdrawal rights do not apply (section 1).</li>
+    <li>Subscriptions renew automatically until cancelled; paid periods are not refunded pro rata (sections 5 and 7).</li>
+    <li><strong>Velora AI can be wrong.</strong> Its answers, figures, summaries and messages are
+        generated automatically, are not professional advice and must be checked by you before
+        you rely on them. We accept no liability for relying on them unchecked (section 11).</li>
+    <li>You are responsible towards your own clients: their data, the messages you send, what
+        your AI agents tell them, and the reviews you publish (sections 9, 10, 11 and 12).</li>
+    <li>Fake, purchased or manipulated reviews and ratings are prohibited (section 12).</li>
+    <li>Illegal content can be reported to us, and we explain any restriction we apply (sections 8 and 14).</li>
+    <li>Our liability is limited to the fees paid in the preceding 12 months, except where the
+        law does not allow a limit (section 19).</li>
+  </ul>
+</div>
 
 <h2>1. Who may use the Service</h2>
 <p>The Service is offered to businesses and sole traders only (B2B). It is not intended
@@ -66,7 +87,15 @@ billing details.</p>
   <li><strong>End Client</strong> — the Customer's own client, who books classes and buys
       services from the Customer, including through the Velora client mini-app.</li>
   <li><strong>Customer Data</strong> — everything the Customer or its Users enter into or
-      generate in the Service.</li>
+      generate in the Service, including content End Clients send to the Customer through it.</li>
+  <li><strong>AI Features</strong> — the functions of the Service that use artificial
+      intelligence models, in particular the Velora AI assistant and the Client Agents.</li>
+  <li><strong>Client Agent</strong> — an AI Feature the Customer can enable to answer End Clients
+      automatically in a connected messaging channel (Telegram, Instagram, WhatsApp).</li>
+  <li><strong>AI Output</strong> — any text, figure, summary, chart, suggestion, draft, plan or
+      message produced by an AI Feature.</li>
+  <li><strong>Rating</strong> — a score or review an End Client gives for a class or service of
+      the Customer through the Service.</li>
 </ul>
 
 <h2>3. Accounts and access</h2>
@@ -94,7 +123,7 @@ paid functionality requires an active subscription.</p>
   <li>Invoices are issued electronically and made available in the CRM and by email. You
       agree to receive invoices in electronic form.</li>
   <li>We may change prices for future billing periods. Changes are announced at least
-      30 days in advance under section 15 and never apply retroactively to a period
+      30 days in advance under section 21 and never apply retroactively to a period
       already paid for.</li>
 </ul>
 
@@ -137,6 +166,10 @@ customers established in another EU member state who supply a valid VAT identifi
 number may be invoiced under the reverse-charge mechanism. You are responsible for the
 accuracy of the billing details and tax identifiers you enter, and for any additional tax,
 interest or penalty arising from details that prove to be inaccurate.</p>
+<p>You remain solely responsible for your own taxes, including VAT and income tax on sales to
+your End Clients. If a law requires us to collect, verify or report information about you or
+your sales to a tax or other public authority, you will provide that information on request,
+and we may disclose it to that authority to the extent the law requires.</p>
 
 <h2>7. Cancellation and refunds</h2>
 <ul>
@@ -153,12 +186,19 @@ interest or penalty arising from details that prove to be inaccurate.</p>
 <p>If an invoice is not paid by its due date we may, after notifying you by email, suspend
 access to the CRM and to the client mini-app until payment is received. Suspension does not
 delete Customer Data.</p>
-<p>Whenever we restrict, suspend or terminate the Service, we give you a
-<strong>statement of reasons</strong> on a durable medium — before the measure takes effect,
-or without undue delay where the measure is required by law or by an immediate security or
-fraud concern. You may contest the measure by replying to that statement at the contact
-address in section 19, and we will consider your reply and respond in writing.</p>
-<p>Accounts that remain unpaid may be terminated in accordance with section 12.</p>
+<p>We may also restrict or suspend the whole Service, an individual feature (including AI
+Features or a connected messaging channel) or specific content, where you seriously breach
+section 10, 11.7, 12 or 13, where content is illegal, or where this is needed to protect End
+Clients, other customers or the security of the Service. Any measure is proportionate and
+limited to what is necessary.</p>
+<p>Whenever we restrict, suspend or terminate the Service or remove content, we give you a
+<strong>statement of reasons</strong> on a durable medium, in line with Article 17 of
+Regulation (EU) 2022/2065 (Digital Services Act) — before the measure takes effect, or without
+undue delay where the measure is required by law or by an immediate security or fraud concern.
+You may contest the measure by replying to that statement at the contact address in
+section 24; a person, not an automated system, will consider your reply and respond in
+writing. This does not affect your right to go to court.</p>
+<p>Accounts that remain unpaid may be terminated in accordance with section 17.</p>
 
 <h2>9. Payments between the Customer and its End Clients</h2>
 <p>Where End Clients pay the Customer through the Service, <strong>Velora is not a party to
@@ -167,86 +207,296 @@ End Clients for the services sold, prices, invoicing, taxes, refunds, cancellati
 complaints and any consumer rights those End Clients may have. Velora provides only the
 technical means to accept and record those payments.</p>
 
-<h2>10. Acceptable use</h2>
-<p>You must not: use the Service unlawfully; upload personal data you have no lawful basis
-to process; send unsolicited marketing through the Service in breach of applicable law;
-attempt to gain unauthorised access, probe or disrupt the Service; resell or provide the
-Service to third parties outside your own business without our written agreement; or use
-the Service to build a competing product.</p>
+<h2>10. The Customer's obligations towards End Clients</h2>
+<p>The Customer decides whom it serves and what it tells them, and is responsible for doing
+so lawfully. In particular, the Customer:</p>
+<ul>
+  <li>is the controller of its End Clients' personal data and must provide them with its own
+      privacy information under Articles 13 and 14 GDPR, including that it uses the Service,
+      its messaging channels and, where enabled, Client Agents;</li>
+  <li>must have a legal basis for every message it sends through the Service, and prior
+      consent where the law requires it for commercial communications — including under
+      Section 7 of Czech Act No. 480/2004 Coll. on Certain Information Society Services — and
+      must honour opt-outs without delay;</li>
+  <li>must comply with the rules of each messaging channel it connects, including the
+      policies of Meta (Instagram, WhatsApp) and Telegram;</li>
+  <li>must provide its End Clients with the information consumer law requires about its own
+      services, prices, cancellation terms and complaints handling;</li>
+  <li>must not enter special categories of personal data (Article 9 GDPR), including health
+      data such as injuries, illnesses or pregnancy, into the Service, except where it has a
+      valid legal basis and has assessed the processing itself; free-text notes and AI
+      conversations are not designed for such data.</li>
+</ul>
 
-<h2>11. Customer Data and intellectual property</h2>
-<p>Customer Data belongs to the Customer. We use it only to provide and secure the Service,
-under <a href="#dpa">Annex A</a>. The Service itself, its software, design and content
+<h2>11. Velora AI and Client Agents</h2>
+
+<h3>11.1 What the AI Features are</h3>
+<p>The AI Features answer questions about the Customer's business, summarise and analyse
+Customer Data, draft texts, propose actions and, where the Customer enables a Client Agent,
+answer End Clients automatically in connected messaging channels. They are built on
+general-purpose AI models operated by third parties and reached through the providers listed
+in <a href="#subprocessors">Annex B</a>. Which model answers a given request may change over
+time and between requests.</p>
+
+<h3>11.2 AI Output can be wrong</h3>
+<p>AI models generate output by probability, not by knowledge or understanding.
+<strong>AI Output may be inaccurate, incomplete, outdated, inconsistent with the data in the
+Service, or entirely made up</strong> — including figures, totals, dates, times, prices,
+availability, names, calculations, forecasts, legal or tax statements and references to
+functions of the Service. The same question may receive different answers. AI Output does not
+reflect Velora's own opinion or a statement of fact by Velora, and a confident tone is not a
+sign of accuracy.</p>
+
+<h3>11.3 Not professional advice</h3>
+<p>AI Output is not legal, tax, accounting, financial, employment, medical, health, fitness or
+safety advice, and must not replace such advice from a qualified professional. In particular,
+it must not be used to decide whether an exercise, class or treatment is safe for a given
+person.</p>
+
+<h3>11.4 Human review is the Customer's responsibility</h3>
+<p>The Customer and its Users must check AI Output before relying on it, before passing it on
+to anyone, and before making any business, financial, tax or personnel decision based on it.
+Where an AI Feature proposes a change to Customer Data — for example creating a booking,
+changing a price or sending a message — the change is carried out only after a User has
+reviewed and explicitly confirmed it in the Service. <strong>A confirmed action is the
+Customer's own action</strong>, with the same effect as if the User had performed it
+manually. The Customer ensures its Users understand these limitations and know how to use
+the AI Features appropriately.</p>
+
+<h3>11.5 Client Agents</h3>
+<ul>
+  <li>Client Agents are designed to present themselves as an AI assistant of the Customer and
+      not as a human, so that End Clients know they are interacting with an AI system, as
+      required by Article 50(1) of Regulation (EU) 2024/1689 (AI Act). The Customer must not
+      instruct, configure or present a Client Agent as a human, and must not remove or
+      obscure that information.</li>
+  <li>The Customer decides whether to enable a Client Agent, what instructions to give it and
+      which channels to connect, and is responsible towards its End Clients for what the
+      agent tells them. The Customer must give End Clients a way to reach a human at the
+      Customer.</li>
+  <li>A Client Agent answers questions using the Customer's data in the Service. It is
+      instructed not to promise discounts, refunds, places or conditions that are not
+      in that data, but it may still do so in error. Whether any statement of a Client Agent
+      binds the Customer towards an End Client is a matter between them; <strong>no such
+      statement creates any obligation of Velora</strong>.</li>
+  <li>The Customer must monitor the conversations of its Client Agents with reasonable care
+      and switch an agent off if it behaves inappropriately. Velora may switch off a Client
+      Agent under section 8.</li>
+</ul>
+
+<h3>11.6 Availability of AI Features</h3>
+<p>AI Features depend on third-party models and may be slower, limited by usage quotas,
+temporarily unavailable or changed — including a change of model or provider — without this
+being a breach of these Terms. Velora may add, change or withdraw individual AI Features; a
+material reduction of AI Features included in a paid plan is announced under section 21.</p>
+
+<h3>11.7 Prohibited uses of AI Features</h3>
+<p>The Customer must not use the AI Features:</p>
+<ul>
+  <li>for any practice prohibited by Article 5 of the AI Act, or to manipulate, deceive or
+      exploit the vulnerabilities of any person;</li>
+  <li>as the sole basis for decisions on recruiting, dismissing, promoting, remunerating or
+      evaluating the performance of staff, or on refusing a person access to services — AI
+      Output may inform such decisions only after a human has independently assessed them;</li>
+  <li>to generate unlawful, defamatory, discriminatory, harassing or infringing content, or
+      unsolicited commercial communications;</li>
+  <li>to attempt to bypass safeguards, extract system instructions, access data outside the
+      Customer's own account, or place automated or excessive load on the Service;</li>
+  <li>to develop or train an AI model or a competing product.</li>
+</ul>
+
+<h3>11.8 Customer Data and model training</h3>
+<p>Velora does not use Customer Data to train AI models, and configures its requests so that
+AI providers that retain prompts for training are excluded. Customer Data is sent to AI
+providers only to the extent needed to answer the specific request. Velora may review ratings
+of AI answers and requests that the AI Features failed to handle, in order to maintain and
+improve the Service, as described in section A.1.</p>
+
+<h3>11.9 Liability for AI Output</h3>
+<p>To the extent permitted by law, and subject to section 19, <strong>Velora does not warrant
+the accuracy, completeness or fitness for any purpose of AI Output and is not liable for any
+loss arising from the use of or reliance on AI Output</strong>, from actions confirmed by a
+User under section 11.4, or from statements a Client Agent makes to End Clients. This does not
+exclude liability for damage caused intentionally or by gross negligence, or liability that
+cannot be excluded by law.</p>
+
+<h2>12. Reviews and ratings</h2>
+<p>The Service lets End Clients rate classes and services of the Customer. A Rating can be
+given only by an End Client who is signed in to the client mini-app and has a booking for a
+class that has already started; this is the only check Velora performs, and Velora does not
+verify the content of Ratings. Ratings are shown to the Customer inside the CRM; Velora does
+not publish them.</p>
+<p>Reviews that do not come from real customers mislead consumers and are prohibited by
+Directive 2005/29/EC on unfair commercial practices, as amended by Directive (EU) 2019/2161,
+and by Czech Act No. 634/1992 Coll. on Consumer Protection. The Customer must not, and must
+not allow its Users or anyone acting for it to:</p>
+<ul>
+  <li>submit, write, commission or buy Ratings or reviews that do not reflect a genuine
+      experience of a real End Client, including by using an End Client's account;</li>
+  <li>offer discounts, bonuses, loyalty points or other benefits in return for a positive
+      Rating, or for a Rating at all without clearly disclosing that incentive wherever the
+      review is shown;</li>
+  <li>present Ratings or reviews selectively — for example by publishing only positive ones or
+      suppressing negative ones — while giving the impression that they are complete or
+      representative, or misrepresent a review or a social media endorsement;</li>
+  <li>state that reviews are verified unless reasonable and proportionate steps have actually
+      been taken to check that they come from customers who used the service.</li>
+</ul>
+<p>If the Customer publishes Ratings, reviews or figures derived from them — on its website,
+social media, in advertising or elsewhere — the Customer alone is responsible for doing so
+lawfully, including for informing consumers whether and how it ensures that the published
+reviews come from customers who actually used its services.</p>
+<p>Velora does not publish reviews, testimonials or ratings of its own Service unless they come
+from real customers who agreed to their publication, and where it publishes them it states how
+their origin was checked.</p>
+
+<h2>13. Acceptable use and content</h2>
+<p>You are responsible for all content you or your Users enter into, upload to or send through
+the Service, and you confirm you have the rights and legal basis needed for it. You must not:
+use the Service unlawfully; upload personal data you have no lawful basis to process; upload
+content that is illegal, infringes the rights of others, or is defamatory, discriminatory or
+harassing; send unsolicited marketing through the Service in breach of applicable law;
+attempt to gain unauthorised access, probe, scrape or disrupt the Service; resell or provide
+the Service to third parties outside your own business without our written agreement; or use
+the Service to build a competing product.</p>
+<p>Velora does not monitor content in the Service in general and uses no automated content
+moderation. We act on content when we receive a notice under section 14, when we otherwise
+become aware of illegal content, or when required by an authority; each decision is taken
+by a person. If we become aware of information giving rise to a suspicion that a criminal
+offence involving a threat to the life or safety of a person has taken place, is taking place
+or is likely to take place, we inform the competent authorities as required by Article 18 of
+the Digital Services Act.</p>
+
+<h2>14. Notices of illegal content and points of contact</h2>
+<p>Anyone — including End Clients — may notify us of content in the Service they consider
+illegal by writing to <a href="mailto:smat5302@gmail.com">smat5302@gmail.com</a> with the
+subject "Illegal content notice". To allow us to act, the notice should state the reasons why
+the content is considered illegal, the exact location of the content (for example the studio
+name, the page and a screenshot), the name and email address of the person submitting it
+(unless the notice concerns child sexual abuse material or similar offences), and a statement
+that the notice is made in good faith and is accurate and complete. We confirm receipt, decide
+on the notice in a timely, diligent, non-arbitrary and objective manner, and inform the
+submitter of our decision and of the available means of redress.</p>
+<p>This address is also the single point of contact under Articles 11 and 12 of the Digital
+Services Act for authorities of the EU member states, the European Commission, the European
+Board for Digital Services and recipients of the Service. Communication is possible in
+<strong>Czech and English</strong>; we will also do our best to respond in Ukrainian, Russian
+and German. Messages are handled by a person, not only by automated tools.</p>
+
+<h2>15. Customer Data and intellectual property</h2>
+<p>Customer Data belongs to the Customer. We use it only to provide, secure and maintain the
+Service, under <a href="#dpa">Annex A</a>. The Service itself, its software, design and content
 remain our property; these Terms grant a non-exclusive, non-transferable right to use it
 during the subscription.</p>
+<p>As between the parties, AI Output generated for the Customer belongs to the Customer, to
+the extent any rights exist in it. Velora gives no assurance that AI Output is unique,
+protected by copyright or free of third-party rights; the Customer is responsible for checking
+this before publishing or commercially using AI Output.</p>
 <p>You may export your data from the Service at any time while the account is active, in a
 structured, commonly used and machine-readable format. After termination, data is deleted
 as described in the <a href="/static/privacy.html">Privacy Policy</a> and in section A.8.</p>
-<p>If you send us suggestions or feedback, we may use them to improve the Service without
-obligation or payment to you.</p>
+<p>If you send us suggestions or feedback, including ratings of AI answers, we may use them to
+improve the Service without obligation or payment to you.</p>
 
-<h2>12. Term and termination</h2>
+<h2>16. Confidentiality</h2>
+<p>Each party keeps confidential the non-public information of the other party it receives in
+connection with the Service, uses it only to perform this agreement, and discloses it only to
+persons who need it for that purpose and are bound by confidentiality, or where required by
+law. Personal data is additionally protected under Annex A. This obligation survives
+termination for five years, and for personal data and trade secrets for as long as they remain
+protected by law.</p>
+
+<h2>17. Term and termination</h2>
 <p>The agreement runs for as long as an account exists. Either party may terminate: you by
 cancelling and closing the account, we by giving 30 days' notice, or immediately if you
-materially breach these Terms, fail to pay after a reminder, or use the Service unlawfully.
-On termination access ends and data is deleted per the Privacy Policy. Termination does not
-affect fees accrued before it took effect.</p>
+materially breach these Terms — including sections 11.7, 12 and 13 — fail to pay after a
+reminder, or use the Service unlawfully. On termination access ends and data is deleted per
+the Privacy Policy. Termination does not affect fees accrued before it took effect, nor
+sections 11.9, 15, 16, 19, 20 and 25, which survive it.</p>
 
-<h2>13. Availability and support</h2>
-<p>We aim to keep the Service available at all times but do not guarantee uninterrupted
-operation. Maintenance is scheduled outside peak hours where practical. Support is provided
-by email at the address in section 19. No separate service-level agreement applies unless
-agreed in writing.</p>
+<h2>18. Availability and support</h2>
+<p>We aim to keep the Service available at all times but do not guarantee uninterrupted or
+error-free operation. Maintenance is scheduled outside peak hours where practical. Support is
+provided by email at the address in section 24 and through the WhatsApp support contact shown
+on our website. No separate service-level agreement applies unless agreed in writing.</p>
 
-<h2>14. Warranties and liability</h2>
-<p>The Service is provided "as is" to the extent permitted by law. We are not liable for
-lost profit, lost revenue, lost data restorable from your own exports, or indirect or
-consequential loss. Our total liability in any 12-month period is limited to the fees you
-paid to Velora in the 12 months preceding the event. Nothing here limits liability that
-cannot be limited by law, including for damage caused intentionally or by gross negligence,
-and including liability under Article 82 GDPR.</p>
+<h2>19. Warranties and liability</h2>
+<p>The Service, including the AI Features, is provided "as is" and "as available" to the
+extent permitted by law. Velora gives no warranty, express or implied, that the Service or any
+AI Output will meet the Customer's particular requirements, be accurate, or be suitable for a
+particular purpose, and does not guarantee any business result.</p>
+<p>Velora is not liable for lost profit, lost revenue, lost business opportunity, lost goodwill,
+lost data restorable from your own exports, or indirect or consequential loss. Velora is not
+liable for the acts or omissions of the Customer, its Users or End Clients, for content they
+provide, or for the operation of third-party services the Customer connects (such as messaging
+channels, calendars or payment terminals) beyond Velora's obligations under Annex A.</p>
+<p>Velora's total liability arising out of or in connection with this agreement in any
+12-month period is limited to the fees the Customer paid to Velora in the 12 months preceding
+the event giving rise to the liability.</p>
+<p>Nothing in these Terms excludes or limits liability that cannot be excluded or limited by
+law, including liability for damage caused intentionally or by gross negligence, for harm to a
+person's life, health or other natural rights (Section 2898 of the Czech Civil Code), or
+liability towards data subjects under Article 82 GDPR.</p>
+<p>The Customer shall compensate Velora for any loss, fine, damages and reasonable costs of
+defence Velora incurs as a result of a claim by a third party — including an End Client or a
+public authority — to the extent that claim arises from Customer Data, from messages sent or
+content published by the Customer or its Users, from statements of a Client Agent configured by
+the Customer, from Ratings or reviews handled contrary to section 12, or from the Customer's
+breach of these Terms or of law. Velora informs the Customer of such a claim without undue delay
+and lets the Customer take part in its defence.</p>
 
-<h2>15. Force majeure</h2>
+<h2>20. Force majeure</h2>
 <p>Neither party is liable for failure to perform caused by an event beyond its reasonable
 control — including war, civil unrest, natural disaster, epidemic, failure of public
 telecommunications or electricity networks, or the failure or discontinuation of a
-third-party service listed in <a href="#subprocessors">Annex B</a>. The affected party
-informs the other without undue delay. Payment obligations already accrued are not
-excused. If the event lasts more than 60 days, either party may terminate the affected
-part of the agreement in writing.</p>
+third-party service listed in <a href="#subprocessors">Annex B</a>, including an AI model
+provider. The affected party informs the other without undue delay. Payment obligations
+already accrued are not excused. If the event lasts more than 60 days, either party may
+terminate the affected part of the agreement in writing.</p>
 
-<h2>16. Changes to the Service and to these Terms</h2>
-<p>We may develop and change the Service. We may amend these Terms; the version date at the
-top is always current. Material changes are announced at least 30 days in advance by email
-or in the CRM, and you will be asked to accept the new version on your next sign-in.
-Continuing to use the Service after a change takes effect means the new version applies.
-If you do not accept it, you may cancel under section 7. Amendments never apply
-retroactively to periods already paid for.</p>
+<h2>21. Changes to the Service and to these Terms</h2>
+<p>We may develop and change the Service. We may amend these Terms for a legitimate reason —
+in particular a change of law, of the features or technical operation of the Service, of our
+sub-processors, or of prices. The version at the top is always current, and each version
+remains identifiable by its version number.</p>
+<p>Material changes are announced at least 30 days before they take effect, by email to the
+account owner and in the CRM, together with the new text. We may also ask you to confirm the
+new version in the CRM. If you do not agree, you may cancel before the change takes effect,
+and the change will not apply to the remainder of a period you have already paid for.
+If you continue to use the Service after the change takes effect without cancelling, the new
+version applies. Changes required by law, or which only benefit you, may take effect sooner.
+Amendments never apply retroactively.</p>
 
-<h2>17. Assignment</h2>
+<h2>22. Assignment</h2>
 <p>You may not assign this agreement without our written consent. We may assign it, in whole
 or in part, to a legal entity that succeeds to the business of operating the Service —
 including on a change of legal form of the provider — provided the assignee assumes these
 Terms and Annex A unchanged. We will notify you at least 30 days in advance; if you object
-on reasonable grounds you may terminate under section 12 with effect from the assignment.</p>
+on reasonable grounds you may terminate under section 17 with effect from the assignment.</p>
 
-<h2>18. Notices</h2>
+<h2>23. Notices</h2>
 <p>Notices to you are sent to the email address registered in your account and are deemed
 delivered on the following working day; keeping that address current is your
-responsibility. Notices to us are sent to the address in section 19.</p>
+responsibility. Notices to us are sent to the address in section 24.</p>
 
-<h2>19. Contact</h2>
-<p><a href="mailto:smat5302@gmail.com">smat5302@gmail.com</a></p>
+<h2>24. Contact</h2>
+<p>General, legal and data protection matters, notices of illegal content, and the points of
+contact under the Digital Services Act:
+<a href="mailto:smat5302@gmail.com">smat5302@gmail.com</a>.</p>
 
-<h2>20. Governing law and disputes</h2>
+<h2>25. Governing law and disputes</h2>
 <p>These Terms are governed by the law of the Czech Republic, excluding its conflict-of-law
 rules and the UN Convention on Contracts for the International Sale of Goods. The parties
 agree that the courts of the Czech Republic have exclusive jurisdiction, the locally
 competent court being the one for the registered address of the provider stated above.
 Before starting proceedings, the parties will attempt to resolve the dispute by
-negotiation for 30 days from a written notice of dispute.</p>
+negotiation for 30 days from a written notice of dispute. Mandatory rights to seek redress
+before a court or an authority under the Digital Services Act or the GDPR are not
+affected.</p>
 
-<h2>21. Final provisions</h2>
+<h2>26. Final provisions</h2>
+<p>These Terms are drawn up in English. Translations, where provided, are for convenience only;
+in case of any difference the English version prevails.</p>
 <p>If any provision is held invalid or unenforceable, it is replaced by a valid provision
 closest to its commercial purpose and the remainder stays in force. Failure to enforce a
 right is not a waiver of it. These Terms, together with Annexes A and B and the
@@ -266,20 +516,27 @@ processing.</p>
 
 <h3>A.1 Subject matter, duration, nature and purpose</h3>
 <p>Velora processes personal data on the Customer's behalf solely to provide the Service —
-scheduling, client management, memberships and loyalty, payments, notifications, reporting
-and, where enabled by the Customer, automated messaging and AI assistance. Processing lasts
-as long as the Customer's account exists, plus the deletion period in A.8.</p>
+scheduling, client management, memberships and loyalty, ratings, payments, notifications,
+reporting and, where enabled by the Customer, automated messaging, Client Agents and AI
+assistance. Providing the Service includes keeping it secure and working, and reviewing the
+ratings Users give to AI answers and the requests the AI Features failed to handle, so that
+their quality can be maintained; access for that purpose is limited to the provider, and the
+data is never used to train AI models. Processing lasts as long as the Customer's account
+exists, plus the deletion period in A.8.</p>
 
 <h3>A.2 Categories of data subjects</h3>
-<p>The Customer's End Clients; the Customer's employees and collaborators who are given
-access as Users.</p>
+<p>The Customer's End Clients and people who contact the Customer through a connected
+messaging channel; the Customer's employees and collaborators who are given access as
+Users.</p>
 
 <h3>A.3 Types of personal data</h3>
 <p>Identification and contact data (name, email, phone, messenger identifiers), date of
-birth, address or city, booking and attendance history, membership and loyalty balances,
-payment records and amounts, notes entered by the Customer, and message content where a
-messaging channel is connected. The Customer must not enter special categories of personal
-data (Article 9 GDPR), including health data, into free-text fields.</p>
+birth, address or city, booking and attendance history, Ratings, membership and loyalty
+balances, payment records and amounts, notes entered by the Customer, message content where a
+messaging channel is connected, conversations with the AI Features, and facts the Velora AI
+assistant has been asked to remember. The Customer must not enter special categories of
+personal data (Article 9 GDPR), including health data, into free-text fields or AI
+conversations.</p>
 
 <h3>A.4 Instructions</h3>
 <p>Velora processes personal data only on documented instructions from the Customer; the
@@ -303,6 +560,9 @@ state of the art and the risk to data subjects:</p>
       hashes; card details never stored by Velora but held by the payment provider;</li>
   <li>role-based access control inside the Service, so each User reaches only the data
       their role allows, enforced on the server and not only in the interface;</li>
+  <li>AI Features limited to the data of the Customer's own account and to the role of the
+      User who asks; requests to AI providers sent with data collection for training
+      disabled;</li>
   <li>administrative and database access restricted to the provider and protected by
       individual credentials;</li>
   <li>daily automated backups of the database, written outside the application's storage
@@ -331,7 +591,9 @@ notification under Article 33.</p>
 
 <h3>A.8 Deletion and return</h3>
 <p>On termination the Customer may export its data from the Service. Velora deletes the
-data within 90 days of account closure. Copies still present in database backups are
+data within 90 days of account closure. While the account exists, Users can delete individual
+AI conversations and remembered facts in the Service, and disconnecting a messaging channel
+deletes its stored access token at once. Copies still present in database backups are
 overwritten within the backup retention period of 14 days and are not used for any other
 purpose in the meantime. Retention beyond these periods happens only where required by law
 (for example accounting records under Czech law). Velora confirms deletion in writing on
@@ -350,8 +612,8 @@ processing that runs the Service therefore take place inside the European Union,
 hosting the Service is not itself a transfer to a third country under Chapter V GDPR.</p>
 <p>Velora contracts with Google Cloud EMEA Limited (Ireland). Under Google's Cloud Data
 Processing Addendum, Google personnel outside the EEA may access data in limited
-circumstances, principally support and incident response. That residual access, and any
-transfer made by the other sub-processors listed in Annex B, is covered by:</p>
+circumstances, principally support and incident response. That residual access is covered
+by:</p>
 <ul>
   <li>the Cloud Data Processing Addendum concluded with Google, which incorporates the
       European Commission's <strong>Standard Contractual Clauses</strong> (Decision
@@ -361,17 +623,22 @@ transfer made by the other sub-processors listed in Annex B, is covered by:</p>
   <li>Google LLC's certification under the <strong>EU–U.S. Data Privacy Framework</strong>,
       for which the European Commission adopted an adequacy decision on 10 July 2023.</li>
 </ul>
-<p>Other sub-processors listed in Annex B contract with Velora through their EU or EEA
-entities; where any of them transfers data outside the EEA, that transfer is covered by an
-adequacy decision or by the Standard Contractual Clauses together with any additional
-measures required. Velora will inform Customers at least 30 days in advance under A.6
-before changing the hosting region or provider.</p>
+<p>When the AI Features are used, the content of the request — the question or message and
+the Customer Data needed to answer it — is sent to OpenRouter, Inc. in the United States and
+passed by it to the AI model provider selected for that request, as listed in Annex B. These
+and any other transfers by the sub-processors listed in Annex B outside the EEA are covered
+by the European Commission's adequacy decision for recipients certified under the EU–U.S.
+Data Privacy Framework, or otherwise by the Standard Contractual Clauses together with any
+supplementary measures required. Velora sends to AI providers only what the specific request
+needs, with collection of data for training disabled. Velora will inform Customers at least
+30 days in advance under A.6 before changing the hosting region or provider.</p>
 
 <hr style="margin: 56px 0; border: none; border-top: 1px solid rgba(0,0,0,0.12);">
 
 <h2 id="subprocessors">Annex B — Sub-processors</h2>
 <p>Current as of the version date above.</p>
 
+<div class="scroll">
 <table>
   <tr><th>Sub-processor</th><th>Purpose</th><th>Location of processing</th><th>When used</th></tr>
   <tr>
@@ -396,9 +663,27 @@ before changing the hosting region or provider.</p>
   </tr>
   <tr>
     <td>Google Ireland Ltd. / Google LLC</td>
-    <td>Transactional email delivery, Google sign-in, Google Calendar sync, Gemini AI features</td>
+    <td>Transactional email delivery, Google sign-in, Google Calendar sync</td>
     <td>EU and United States (SCCs and EU–U.S. Data Privacy Framework)</td>
-    <td>Email always; sign-in, calendar and AI only where the Customer uses them</td>
+    <td>Email always; sign-in and calendar only where the Customer uses them</td>
+  </tr>
+  <tr>
+    <td>OpenRouter, Inc. (USA)</td>
+    <td>Routing requests of the AI Features to the AI model provider and returning the
+        answer; configured so that providers retaining prompts for training are excluded</td>
+    <td>United States — Standard Contractual Clauses, or the EU–U.S. Data Privacy Framework
+        where the recipient is certified</td>
+    <td>Only when AI Features are used (Velora AI assistant, Client Agents)</td>
+  </tr>
+  <tr>
+    <td>AI model providers reached through OpenRouter: Google LLC (Gemini models),
+        Anthropic, PBC (Claude models), OpenAI, L.L.C. (GPT models)</td>
+    <td>Generating AI Output for a specific request; the provider is selected per request,
+        including as a fallback when another provider is unavailable</td>
+    <td>United States and other locations of the provider's infrastructure — Standard
+        Contractual Clauses, or the EU–U.S. Data Privacy Framework where the recipient is
+        certified</td>
+    <td>Only when AI Features are used</td>
   </tr>
   <tr>
     <td>Meta Platforms Ireland Ltd.</td>
@@ -413,6 +698,7 @@ before changing the hosting region or provider.</p>
     <td>Only if the Customer connects that channel</td>
   </tr>
 </table>
+</div>
 
 </body>
 </html>

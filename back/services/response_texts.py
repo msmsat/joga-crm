@@ -14,6 +14,19 @@
 идёт человеческая фраза.
 """
 
+# ─── Вам отвечает ИИ ─────────────────────────────────────────────────────────
+# Первая строка первого ответа агента в разговоре (services/client_agent).
+# Ст. 50(1) AI Act: человек узнаёт, что говорит с ИИ, не позднее первого
+# взаимодействия. Вторая фраза — Условия §11.5: слова агента не обещание студии.
+
+AI_DISCLOSURE = {
+    "ru": "Вам отвечает ИИ-ассистент студии. Он может ошибаться: цены, места и условия подтверждает администратор.",
+    "en": "You're chatting with the studio's AI assistant. It can make mistakes: prices, places and terms are confirmed by the studio staff.",
+    "uk": "Вам відповідає ШІ-асистент студії. Він може помилятися: ціни, місця та умови підтверджує адміністратор.",
+    "cs": "Odpovídá vám AI asistent studia. Může se mýlit: ceny, volná místa a podmínky potvrzuje administrátor.",
+    "de": "Hier antwortet der KI-Assistent des Studios. Er kann sich irren: Preise, freie Plätze und Bedingungen bestätigt das Studio-Team.",
+}
+
 # ─── Нашлось ─────────────────────────────────────────────────────────────────
 
 FOUND_ONE = {

@@ -9,6 +9,7 @@ import { openCookieSettings } from '../utils/cookieConsent';
 import { authApi, ApiError } from '../api';
 import { setActiveToken } from '../utils/auth';
 import { LEGAL_FOOTER_LINKS, LEGAL_LINK_PROPS, PRIVACY_URL, TERMS_URL } from '../utils/legal';
+import { TRIAL_DAYS } from '../api/billing/billing.types';
 
 // ─── MAIN LOGIN PAGE ──────────────────────────────────────────────────────────
 export default function LoginPage() {
@@ -181,7 +182,7 @@ export default function LoginPage() {
 
   const subtitles = {
     login: "Войдите, чтобы продолжить работу в Velora",
-    register: "14 дней бесплатно — без карты",
+    register: `${TRIAL_DAYS} дней бесплатно — без карты`,
     forgot: forgotStep === 1 ? "Мы пришлём инструкцию на ваш email" : `Код отправлен на ${identifier}`,
     login2fa: `Код отправлен на ${identifier}`,
   };

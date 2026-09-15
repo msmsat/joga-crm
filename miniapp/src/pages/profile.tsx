@@ -20,6 +20,7 @@ import {
   type UserSubscription,
 } from '../api/user';
 import type { StudioCatalog } from '../api/studio';
+import { BASE_URL } from '../api/config';
 
 interface ProfileProps {
   catalog: StudioCatalog | null;
@@ -130,6 +131,16 @@ export default function Profile({
   const openWebsite = () => {
     if (!website) return;
     const url = /^https?:\/\//i.test(website) ? website : `https://${website}`;
+    if (tg && tg.openLink) tg.openLink(url);
+    else window.open(url, '_blank', 'noopener,noreferrer');
+    vibrateLight();
+  };
+
+  // Политика Velora: платформа обрабатывает данные клиента по поручению студии,
+  // и прочитать, кто ещё их видит и где они хранятся, клиент должен суметь из
+  // самого приложения. Документ отдаёт бэкенд (back/static/privacy.html).
+  const openPrivacy = () => {
+    const url = `${BASE_URL}/static/privacy.html`;
     if (tg && tg.openLink) tg.openLink(url);
     else window.open(url, '_blank', 'noopener,noreferrer');
     vibrateLight();
@@ -384,6 +395,11 @@ export default function Profile({
               />
             )}
             <LanguagePopover />
+            <SettingRow
+              label={t('profile.privacy')}
+              onClick={openPrivacy}
+              icon={<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />}
+            />
           </div>
         </div>
       </>

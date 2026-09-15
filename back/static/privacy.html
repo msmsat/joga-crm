@@ -16,6 +16,7 @@
   .party { background: rgba(217,119,87,0.08); border: 1px solid rgba(217,119,87,0.28);
            border-radius: 10px; padding: 16px 20px; }
   .party p { color: #1a1a1a; }
+  .scroll { overflow-x: auto; }
   table { border-collapse: collapse; width: 100%; margin-top: 12px; font-size: 14px; }
   th, td { border: 1px solid rgba(0,0,0,0.12); padding: 8px 10px; text-align: left; vertical-align: top; color: #444; }
   th { font-weight: 600; color: #1a1a1a; }
@@ -31,7 +32,7 @@
 <body>
 
 <h1>Privacy Policy</h1>
-<p class="updated">Velora CRM · Version 2026-09-14.1</p>
+<p class="updated">Velora CRM · Version 2026-09-14.2</p>
 
 <div class="party">
   <p><strong>Who we are.</strong> Velora CRM is operated by <strong>Andrii Sadovskyi</strong>,
@@ -57,18 +58,20 @@ sub-processors. Both documents share the version date above.</p>
 depending on which applies:</p>
 <ul>
   <li><strong>As processor</strong> — for everything a studio enters into the CRM about its
-      own clients and staff (bookings, memberships, payments, notes, messages). There the
-      <strong>studio is the controller</strong>: it decides what to collect and why, and it
-      answers requests from its clients. We act only on the studio's instructions under
-      <a href="/static/terms.html#dpa">Annex A</a>. If you are a client of a studio and want
-      your data removed, contact that studio; we will forward any request we receive to it.</li>
+      own clients and staff (bookings, memberships, payments, ratings, notes, messages, AI
+      conversations). There the <strong>studio is the controller</strong>: it decides what to
+      collect and why, and it answers requests from its clients. We act only on the studio's
+      instructions under <a href="/static/terms.html#dpa">Annex A</a>. If you are a client of a
+      studio and want your data removed, contact that studio; we will forward any request we
+      receive to it.</li>
   <li><strong>As controller</strong> — for the studio's own account with us: registration
       details, billing and invoicing data, records of acceptance of our Terms, security logs
-      and support correspondence. There we decide the purposes ourselves and this policy
-      governs directly.</li>
+      and support correspondence, and notices of illegal content sent to us. There we decide
+      the purposes ourselves and this policy governs directly.</li>
 </ul>
 
 <h2>2. What we handle, on what legal basis, and for how long</h2>
+<div class="scroll">
 <table>
   <tr><th>Data</th><th>Purpose</th><th>Legal basis</th><th>Retention</th></tr>
   <tr>
@@ -79,7 +82,7 @@ depending on which applies:</p>
   </tr>
   <tr>
     <td>Billing data: plan, payments, invoices, tax identifiers</td>
-    <td>Charging for the Service, issuing invoices</td>
+    <td>Charging for the Service, issuing invoices, meeting tax obligations</td>
     <td>Contract, Art. 6(1)(b); legal obligation, Art. 6(1)(c)</td>
     <td>10 years for accounting and VAT records under Czech law</td>
   </tr>
@@ -96,24 +99,44 @@ depending on which applies:</p>
     <td>Up to 12 months</td>
   </tr>
   <tr>
+    <td>Notices of illegal content and complaints about our decisions: sender's name and
+        email, content of the notice, our decision</td>
+    <td>Handling the notice or complaint under the Digital Services Act</td>
+    <td>Legal obligation, Art. 6(1)(c) — Regulation (EU) 2022/2065</td>
+    <td>3 years from the decision, then deleted</td>
+  </tr>
+  <tr>
     <td>Client records entered by a studio: name, contacts, date of birth, visits, memberships, payments, notes</td>
     <td>Providing the CRM to that studio</td>
     <td>The studio's own basis — we act as processor</td>
     <td>Per the studio's instructions; deleted within 90 days of account closure</td>
   </tr>
   <tr>
+    <td>Ratings a studio's clients give to past classes in the client mini-app</td>
+    <td>Showing the studio and its trainers how classes are received</td>
+    <td>The studio's own basis — we act as processor</td>
+    <td>As client records above</td>
+  </tr>
+  <tr>
+    <td>AI conversations: questions and answers in Velora AI, facts the assistant was asked to
+        remember, ratings of answers, and conversations of a studio's AI agents with its
+        clients</td>
+    <td>Providing the AI features to that studio; maintaining their quality (see section 4)</td>
+    <td>The studio's own basis — we act as processor</td>
+    <td>Until a user deletes the conversation or fact in the CRM, otherwise as client records above</td>
+  </tr>
+  <tr>
     <td>Instagram data (only if the studio connects a professional account): the account's Instagram user ID and username, direct message content, and the sender's Instagram-scoped ID</td>
-    <td>Delivering automated replies on the studio's behalf</td>
+    <td>Delivering replies on the studio's behalf</td>
     <td>The studio's own basis — we act as processor</td>
     <td>Deleted immediately on disconnection; otherwise as above</td>
   </tr>
 </table>
+</div>
 <p>Where the table says data is deleted, copies still present in daily database backups are
 overwritten within the backup retention period of 14 days.</p>
 <p>We do not sell personal data, do not use it for advertising, and do not use it to train
-AI models. We do not make decisions producing legal or similarly significant effects about
-anyone by automated means alone; the AI features in the Service draft text and suggestions
-for a human to act on.</p>
+AI models.</p>
 
 <h2>3. Instagram integration</h2>
 <p>When a studio connects an Instagram professional account, we receive an access token
@@ -123,16 +146,46 @@ used only to read incoming direct messages and send replies. The connection can 
 any time from the Velora AI page of the CRM, or from Instagram under Settings → Apps and
 websites. Revoking it deletes the stored token immediately.</p>
 
-<h2>4. Who else sees the data</h2>
+<h2>4. Artificial intelligence</h2>
+<ul>
+  <li><strong>What it does.</strong> Velora AI answers questions of a studio's staff about their
+      business, summarises data and drafts texts. Where a studio enables it, an AI agent also
+      answers the studio's clients in Telegram, Instagram or WhatsApp — about schedules, prices
+      and, for a recognised client, their own bookings and membership.</li>
+  <li><strong>What is sent, and to whom.</strong> To answer, the question and the data needed
+      for it are sent to OpenRouter, Inc. (USA), which passes them to one of the AI model
+      providers listed in <a href="/static/terms.html#subprocessors">Annex B of the Terms</a>
+      (Google, Anthropic or OpenAI). The assistant sees only the data of the studio's own
+      account, limited by the role of the person asking; an AI agent talking to a client sees
+      only that client's own bookings and the studio's public information.</li>
+  <li><strong>No training.</strong> Every request is sent with collection of data for training
+      disabled, so providers that keep prompts for training are excluded. We do not train AI
+      models on your data ourselves.</li>
+  <li><strong>You are told when it is AI.</strong> A studio's AI agent introduces itself as an
+      AI assistant of the studio, in line with Article 50 of the EU AI Act. If you would rather
+      talk to a person, ask the agent or contact the studio directly.</li>
+  <li><strong>AI can be wrong.</strong> Answers are generated automatically and may contain
+      mistakes. Nothing an AI agent says about prices, places, discounts or refunds replaces
+      the confirmation of the studio itself.</li>
+  <li><strong>No automated decisions about you.</strong> The AI features do not make decisions
+      that produce legal effects concerning a person or similarly significantly affect them
+      (Article 22 GDPR). An AI agent cannot book, cancel, charge or refund anything; changes
+      proposed by Velora AI are carried out only after a member of staff confirms them.</li>
+  <li><strong>Quality.</strong> To keep the AI features working properly, we review ratings
+      staff give to answers and requests the AI failed to handle. Access is limited to the
+      provider, and the results are used only to improve the Service.</li>
+</ul>
+
+<h2>5. Who else sees the data</h2>
 <p>Data is shared only with the providers necessary to run the Service — hosting, network
-delivery and TLS termination (Cloudflare), payment processing, email delivery, and, where
-the studio connects them, Meta Platforms, Telegram and Google. Each is named with its
-purpose and location in
+delivery and TLS termination (Cloudflare), payment processing, email delivery, the AI
+providers described in section 4 when AI features are used, and, where the studio connects
+them, Meta Platforms, Telegram and Google. Each is named with its purpose and location in
 <a href="/static/terms.html#subprocessors">Annex B of the Terms</a>, which is kept current
 and changes only with 30 days' advance notice. We disclose data to public authorities only
 where legally required, and we do not grant any authority general or direct access.</p>
 
-<h2>5. Where the data is stored, and transfers outside the EU</h2>
+<h2>6. Where the data is stored, and transfers outside the EU</h2>
 <p>The application and its database run on Google Cloud infrastructure in
 <strong>Sweden</strong> (region europe-north2, Stockholm). Your data is stored in the
 European Union, and hosting the Service is not itself a transfer to a third country.</p>
@@ -141,14 +194,18 @@ processing addendum, Google personnel outside the EEA may access data in limited
 mainly to handle a support request or an incident; that access is covered by the Standard
 Contractual Clauses in the same addendum and by Google LLC's certification under the
 EU–U.S. Data Privacy Framework, for which the European Commission adopted an adequacy
-decision on 10 July 2023. Some other sub-processors in
+decision on 10 July 2023.</p>
+<p>When AI features are used, the request is processed by OpenRouter and the selected AI
+model provider in the United States. Some other sub-processors in
 <a href="/static/terms.html#subprocessors">Annex B of the Terms</a> also process data
-outside the EEA under the same safeguards. Details, including the supplementary measures,
-are in <a href="/static/terms.html#dpa">section A.10 of Annex A</a>. You may request a copy
-of the relevant safeguards at the contact address below. We give 30 days' notice before
-changing the hosting region or provider.</p>
+outside the EEA. These transfers rely on the adequacy decision for recipients certified under
+the EU–U.S. Data Privacy Framework, or otherwise on the Standard Contractual Clauses with the
+supplementary measures required. Details are in
+<a href="/static/terms.html#dpa">section A.10 of Annex A</a>. You may request a copy of the
+relevant safeguards at the contact address below. We give 30 days' notice before changing the
+hosting region or provider.</p>
 
-<h2>6. Cookies and similar technologies</h2>
+<h2>7. Cookies and similar technologies</h2>
 <p>Velora stores in your browser only what the Service needs in order to work: keeping you
 signed in, remembering your language and interface settings, protecting payments and recording
 your cookie choice. These items are strictly necessary and need no consent under Section 89(3)
@@ -163,12 +220,12 @@ limit access to the Service.</p>
 <p>Every item, with its provider, purpose and lifetime, is listed in the
 <a href="/static/cookies.html">Cookie Policy</a>.</p>
 
-<h2>7. Security</h2>
+<h2>8. Security</h2>
 <p>Data travels over TLS and is stored on access-restricted servers with storage-level
 encryption at rest. Access tokens for connected messaging channels are encrypted a second
 time by the application before being written to the database. Passwords are kept only as
 salted one-way hashes and API keys only as hashes — neither can be read back by us.
-Access inside the Service is limited by role and
+Access inside the Service, including what the AI features can see, is limited by role and
 enforced on the server. Card numbers never reach our systems; they are held by our payment
 provider. The database is backed up automatically every day and backups are kept for
 14 days, so data can be restored after an incident. The full list of measures is in
@@ -176,7 +233,7 @@ provider. The database is backed up automatically every day and backups are kept
 occurs, we notify the affected studio without undue delay and, where required, the
 supervisory authority under Article 33 GDPR.</p>
 
-<h2>8. Your rights</h2>
+<h2>9. Your rights</h2>
 <p>Where we act as controller (section 1), you may require: access to your data;
 rectification of inaccurate data; erasure; restriction of processing; portability in a
 structured, commonly used, machine-readable format; and you may object to processing based
@@ -184,6 +241,9 @@ on our legitimate interest. Requests are free of charge and answered within one 
 extendable by two further months for complex requests, in which case we tell you why.</p>
 <p>Write to <a href="mailto:smat5302@gmail.com">smat5302@gmail.com</a> with the subject
 "Data request". We may ask for information needed to confirm your identity.</p>
+<p>If you are a client of a studio, the studio is responsible for your data held in the CRM
+(section 1) — send your request to the studio. If you write to us instead, we forward it to
+the studio and assist it in answering.</p>
 <p>To delete data associated with an Instagram account, disconnect it in the CRM — the
 stored token and Instagram identifiers are removed at once — or send a deletion request to
 the address above.</p>
@@ -193,16 +253,16 @@ authority for Velora is the <strong>Office for Personal Data Protection</strong>
 <a href="https://uoou.gov.cz">uoou.gov.cz</a>. You may also complain to the authority in
 your own EU country of residence.</p>
 
-<h2>9. Providing data is voluntary</h2>
+<h2>10. Providing data is voluntary</h2>
 <p>You are not obliged to give us personal data, but account and billing data are necessary
 to conclude and perform the contract — without them the Service cannot be provided.</p>
 
-<h2>10. Changes</h2>
+<h2>11. Changes</h2>
 <p>We may update this policy. The revision date at the top always reflects the current
 version, and material changes are announced at least 30 days in advance by email or in the
-CRM, as set out in section 16 of the Terms.</p>
+CRM, as set out in section 21 of the Terms.</p>
 
-<h2>11. Contact</h2>
+<h2>12. Contact</h2>
 <p>Questions about this policy: <a href="mailto:smat5302@gmail.com">smat5302@gmail.com</a></p>
 
 </body>

@@ -203,6 +203,9 @@ export default function ChatPanel({
             </>
           )}
         </div>
+        {/* Условия §11: ответы ИИ надо проверять. Сказано там, где ответ читают,
+            а не только в документе, который открывают раз в жизни. */}
+        <div className={styles.aiDisclaimer}>{t('chat.aiDisclaimer')}</div>
       </div>
     </div>
   );

@@ -145,6 +145,7 @@
     "navbarPlaceholder": "Спросите AI или поставьте задачу...",
     "enterToSend": "Enter — отправить",
     "shiftEnterNewline": "Shift+Enter — новая строка",
+    "aiDisclaimer": "Velora AI может ошибаться. Проверяйте важные данные.",
     "continueInChat": "Продолжить в чате →",
     "emptyTitle": "Чем могу помочь?",
     "emptySubtitle": "Задайте любой вопрос о вашей студии, клиентах или бизнесе",

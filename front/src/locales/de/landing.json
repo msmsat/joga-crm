@@ -13,9 +13,9 @@
     "badge": "Der neue CRM-Standard 2026",
     "title": "Ein CRM, das\n*Freude* macht",
     "lead": "Premium-B2B-CRM für Yoga- und Pilates-Studios. Buchungen, Kunden, Team und Geld an einem Ort. Ohne überflüssige Klicks, ohne Schmerz.",
-    "cta": "14 Tage kostenlos testen",
+    "cta": "30 Tage kostenlos testen",
     "perks": [
-      "14 Tage kostenlos",
+      "30 Tage kostenlos",
       "Ohne Kreditkarte",
       "Kündigung mit einem Klick"
     ]
@@ -37,7 +37,7 @@
   "stats": {
     "items": [
       {
-        "value": "14 Tage",
+        "value": "30 Tage",
         "label": "Kostenlos, ohne Karte"
       },
       {
@@ -144,7 +144,7 @@
   "ctaStrip": {
     "title": "Probieren Sie es aus — Daten migrieren und sofort zahlen müssen Sie nicht",
     "button": "Kostenlos starten",
-    "note": "14 Tage kostenlos • Ohne Karte • Hilfe beim Start"
+    "note": "30 Tage kostenlos • Ohne Karte • Hilfe beim Start"
   },
   "modules": {
     "label": "module",
@@ -249,7 +249,7 @@
       "total": "Zu zahlen für {{count}} Mon.",
       "saved": "Ersparnis"
     },
-    "cta": "14 Tage testen",
+    "cta": "30 Tage testen",
     "note": "Ohne Karte · Kündigung mit einem Klick",
     "models": [
       {
@@ -276,7 +276,7 @@
     "items": [
       {
         "q": "Was ist in der Testphase enthalten?",
-        "a": "Voller Zugriff auf alle Module für 14 Tage. Eine Kreditkarte ist nicht nötig — passt es nicht, verlängern Sie einfach nicht."
+        "a": "Voller Zugriff auf alle Module für 30 Tage. Eine Kreditkarte ist nicht nötig — passt es nicht, verlängern Sie einfach nicht."
       },
       {
         "q": "Sehen meine Kunden Werbung anderer Studios?",
@@ -314,7 +314,7 @@
     "eyebrow": "Heute starten",
     "titleTop": "Bereit für den Schritt",
     "titleAccent": "auf das nächste Level?",
-    "lead": "14 Tage kostenlos. Ohne Karte. Ohne Verpflichtung. Probieren Sie es einfach aus — Sie spüren den Unterschied.",
+    "lead": "30 Tage kostenlos. Ohne Karte. Ohne Verpflichtung. Probieren Sie es einfach aus — Sie spüren den Unterschied.",
     "register": "Kostenlos registrieren",
     "whatsapp": "Auf WhatsApp schreiben"
   },

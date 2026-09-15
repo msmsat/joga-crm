@@ -67,6 +67,8 @@ export default function InputBar({ onSend, disabled }: InputBarProps) {
       {value.length > 3500 && (
         <div className={styles.charCount}>{t('chat.charCount', { count: value.length })}</div>
       )}
+      {/* Тот же дисклеймер, что на странице AI (ChatPanel): Условия §11. */}
+      <div className={styles.aiDisclaimer}>{t('chat.aiDisclaimer')}</div>
     </div>
   );
 }

@@ -180,7 +180,8 @@ def test_ai_admin_answers_with_exhausted_assistant_quota(monkeypatch, channel):
                     wa_enabled=True, ig_off_hours_only=False))
                 await db.commit()
             result = await client_agent.produce_reply(sid, channel, '123456', 'Hello')
-            assert result == 'Welcome' and calls
+            # endswith: первый ответ человеку открывается строкой «вам отвечает ИИ».
+            assert result and result.endswith('Welcome') and calls
             async with async_session_maker() as db:
                 assert (await ai_quota_details(db, sid))['used'] == 1000
     asyncio.run(run())

@@ -1182,6 +1182,16 @@
   font-family: var(--font, 'Manrope', sans-serif);
 }
 
+.aiDisclaimer {
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--text3);
+  opacity: 0.75;
+  margin-top: 3px;
+  text-align: center;
+  font-family: var(--font, 'Manrope', sans-serif);
+}
+
 
 /* ─── ТЕЛЕФОН: страница = интерфейс AI-дровера ────────────────────────────────
    Двухколоночная раскладка на 320px схлопывалась в панель поверх чата, то есть

@@ -3024,7 +3024,7 @@
   .navbar { padding: 10px 14px; width: calc(100% - 20px); top: 10px; }
   .btn-size-normal { padding: 10px 15px; font-size: 13px; }
   .lp-nav-cta-sub { display: none; }
-  /* Поля 24px + «Попробовать 14 дней бесплатно» не влезают в 320px и тянут
+  /* Поля 24px + «Попробовать 30 дней бесплатно» не влезают в 320px и тянут
      всю секцию героя шире экрана — режем поля и кегль. */
   .btn-size-large { padding: 13px 16px; font-size: 14px; }
 
