@@ -15,7 +15,7 @@ from schemas.auth.requests import (
     WorkingHoursInput,
     validate_strong_password,
 )
-from schemas.auth.responses import InviteInfoResponse, StudioListItem, TokenResponse
+from schemas.auth.responses import InviteInfoResponse, LocaleResponse, StudioListItem, TokenResponse
 from schemas.auth.otp import OtpAction, OtpRequestIn, OtpRequestOut, OtpVerifyIn, OtpVerifyOut
 
 __all__ = [
@@ -25,6 +25,7 @@ __all__ = [
     "InviteAcceptRequest",
     "InviteDeclineRequest",
     "InviteInfoResponse",
+    "LocaleResponse",
     "Login2FARequest",
     "LoginRequest",
     "OnboardingRequest",

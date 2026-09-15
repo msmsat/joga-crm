@@ -186,6 +186,14 @@ export function LandingFooter() {
         <div className="mt-14 border-t border-white/10 pt-8 text-[12px] leading-[1.7] text-white/30">
           <p>{t("footer.copyright")}</p>
           <p className="mt-1">{LEGAL_ENTITY}</p>
+          {/* Условие лицензии CC BY 4.0 базы, по которой страница выбирает язык
+              по стране посетителя (back/services/geo_locale.py). Название
+              продукта и формулировку не переводим — это атрибуция. */}
+          <p className="mt-1">
+            <a href="https://db-ip.com" {...LEGAL_LINK_PROPS} className="transition-colors hover:text-white/60">
+              IP geolocation by DB-IP
+            </a>
+          </p>
         </div>
       </div>
 

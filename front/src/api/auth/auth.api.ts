@@ -7,6 +7,7 @@ import type {
   ContactField,
   InviteInfo,
   ForgotPasswordPayload,
+  LocaleResponse,
   GoogleAuthPayload,
   Login2FAPayload,
   LoginPayload,
@@ -58,6 +59,12 @@ export const authApi = {
 
   declineInvite: (payload: DeclineInvitePayload) =>
     client.post<void>('/auth/invite/decline', payload, { auth: false }),
+
+  // Язык сайта: из аккаунта, если токен есть, иначе по стране IP. Токен уходит,
+  // если он есть, но 401 здесь не гасит сессию: ручка публичная, звать её может
+  // и лендинг с давно протухшим токеном в localStorage.
+  getLocale: () =>
+    client.get<LocaleResponse>('/auth/locale', { allowUnauthorized: true }),
 
   getMe: (signal?: AbortSignal) =>
     client.get<UserMe>('/auth/me', { signal }),

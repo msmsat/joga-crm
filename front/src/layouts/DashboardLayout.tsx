@@ -19,6 +19,7 @@ import { useBusinessTerms } from '../hooks/useBusinessTerms';
 import { settingsApi } from '../api/settings/settings.api';
 import { queryKeys } from '../api/queryKeys';
 import i18n from '../i18n';
+import { rememberLang } from '../utils/lang';
 // Важно: путь с /index — иначе на Windows импорт папки ui сталкивается с UI.tsx по регистру.
 import { Sidebar, Navbar, ErrorBoundary } from '../components/ui/index';
 
@@ -73,7 +74,12 @@ export default function DashboardLayout() {
   });
   const uiLanguage = appearance?.language ?? studio?.language;
   useEffect(() => {
-    if (uiLanguage && uiLanguage !== i18n.language) {
+    if (!uiLanguage) return;
+    // Язык из БД запоминаем и за пределами кабинета: после выхода лендинг
+    // открывается на нём, а не на языке страны по IP. Смена в Настройках
+    // доходит сюда же — обе мутации обновляют кэш, из которого он собран.
+    rememberLang(uiLanguage);
+    if (uiLanguage !== i18n.language) {
       i18n.changeLanguage(uiLanguage);
     }
   }, [uiLanguage]);

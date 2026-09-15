@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Literal, Optional
 
 from schemas._base import BaseSchema
 
@@ -41,3 +41,15 @@ class StudioListItem(BaseSchema):
     is_current: bool
     members_count: int
     clients_count: int
+
+
+class LocaleResponse(BaseSchema):
+    """GET /auth/locale — на каком языке открыть сайт (routers/auth/locale.py).
+
+    `account` — язык из БД: фронт запоминает его как выбор человека.
+    `ip` — догадка по стране: она не перебивает выбор, сделанный раньше.
+    `language` = None — определить не вышло, фронт остаётся на своём.
+    """
+    language: Optional[str] = None
+    source: Literal["account", "ip"]
+    country: Optional[str] = None

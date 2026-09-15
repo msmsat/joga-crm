@@ -19,6 +19,14 @@ export interface GoogleAuthPayload {
   accept_terms?: boolean
 }
 
+/** GET /auth/locale. `account` — язык из БД (личный или студии), `ip` — по
+ *  стране посетителя. `language: null` — определить не вышло. */
+export interface LocaleResponse {
+  language: string | null
+  source: 'account' | 'ip'
+  country: string | null
+}
+
 export interface VerifyEmailPayload {
   email: string
   code: string

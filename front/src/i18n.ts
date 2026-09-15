@@ -1,7 +1,7 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import type { Resource, ResourceLanguage } from 'i18next';
-import { DEFAULT_LANG, storedLang } from './utils/lang';
+import { DEFAULT_LANG, initialLang } from './utils/lang';
 
 // Словари подхватываются по структуре папок: locales/<язык>/<неймспейс>.json.
 // Раньше здесь лежало по строке import на каждый файл — при 22 языках и 18
@@ -32,10 +32,10 @@ i18n
   .use(initReactI18next) // Передаем i18n внутрь React
   .init({
     resources,
-    // Английский — язык по умолчанию для всех, кто ещё не выбирал: продукт
-    // международный, и первый экран не должен зависеть от того, на каком языке
-    // его писали. Выбор с лендинга переживает перезагрузку (utils/lang.ts).
-    lng: storedLang(),
+    // Первый кадр — на языке прошлого визита: выбор человека или его аккаунта,
+    // иначе язык страны, иначе английский (utils/lang.ts). Сверка с сервером
+    // идёт следом и не задерживает отрисовку (lib/detectLanguage.ts).
+    lng: initialLang(),
     fallbackLng: DEFAULT_LANG, // Если слова нет в языке студии, покажет английское
     // 'en-US'/'pt-BR' (могли прийти из старой записи в БД) должны находить
     // 'en' и 'pt', а не проваливаться в fallback целиком. supportedLngs не

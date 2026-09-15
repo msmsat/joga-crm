@@ -16,7 +16,7 @@ import StepSettings from "./onboarding/StepSettings";
 import StepSchedule from "./onboarding/StepSchedule";
 import type { OnboardingData } from "./onboarding/types";
 import { DEFAULT_WORKING_HOURS } from "./onboarding/types";
-import { storedLang } from "../../utils/lang";
+import { initialLang } from "../../utils/lang";
 import { setActiveToken } from '../../utils/auth';
 
 type Step = 1 | 2 | 3 | 4 | 5;
@@ -50,16 +50,17 @@ export default function OnboardingPage() {
     email: "",
     website: "",
     timezone: browserTimezone(),
-    language: localStorage.getItem(ONBOARDING_LANG_KEY) || storedLang(),
+    language: localStorage.getItem(ONBOARDING_LANG_KEY) || initialLang(),
     currency: "RUB",
     dateFormat: "DD.MM.YYYY",
     firstDayOfWeek: "monday",
     workingHours: DEFAULT_WORKING_HOURS,
   });
 
-  // Онбординг стартует на английском по умолчанию, независимо от языка, оставшегося
-  // от предыдущей студии пользователя (DashboardLayout синхронизирует его обратно после финиша) —
-  // но если человек уже выбирал язык на онбординге раньше, помним его выбор (см. ONBOARDING_LANG_KEY).
+  // Онбординг стартует на языке, который человек видел до входа: выбранном на лендинге,
+  // из его аккаунта или языке страны по IP (utils/lang.initialLang). Не поменял — этот
+  // язык и уйдёт в студию, и Настройки покажут его. Если человек уже выбирал язык на
+  // онбординге раньше, помним его выбор (см. ONBOARDING_LANG_KEY).
   useEffect(() => {
     i18n.changeLanguage(data.language);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps

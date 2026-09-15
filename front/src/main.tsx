@@ -11,6 +11,11 @@ import '@fontsource/manrope/800.css'
 import './index.css'
 import App from './App.tsx'
 import './i18n';
+import { detectLanguage } from './lib/detectLanguage';
+
+// Не ждём: первый кадр рисуется на языке прошлого визита (utils/lang.initialLang),
+// ответ сервера переключит его, если язык другой.
+void detectLanguage();
 
 // GoogleOAuthProvider здесь больше не оборачивает приложение: он грузил скрипт
 // Google на КАЖДОЙ странице. Теперь он в components/cookies/GoogleSignIn —
