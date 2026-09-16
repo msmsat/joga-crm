@@ -68,9 +68,8 @@ class User(Base):
 
     theme: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
     accent_color: Mapped[Optional[str]] = mapped_column(String(7), nullable=True)
-    # Язык интерфейса — личный, рядом с темой. NULL значит «как в студии»
-    # (Studio.language): владелец задаёт язык студии, а сотрудник может выбрать
-    # себе другой, не трогая настройки студии.
+    # Язык интерфейса — личный, рядом с темой. NULL — автоматический выбор
+    # по IP с английским по умолчанию, если нет ручного выбора в браузере.
     language: Mapped[Optional[str]] = mapped_column(String(5), nullable=True)
 
     # Реквизиты плательщика — на АККАУНТЕ, а не на студии: платит человек своей

@@ -2,22 +2,21 @@
 
 Приоритет решает сервер, а не фронт, потому что только он видит обе стороны:
 
-1. Вошёл (токен в заголовке) — язык из БД: личный `User.language`, не выбран —
-   язык активной студии. Ровно тот, что покажет кабинет (DashboardLayout).
-2. Гость, или в аккаунте языка ещё нет (онбординг не пройден) — язык страны
-   по IP (services/geo_locale).
+1. Вошёл (токен в заголовке) — явно выбранный личный `User.language`.
+2. Гость или личного выбора ещё нет — язык страны по IP, иначе английский.
+   Язык студии не является личным выбором сотрудника.
 
 Ручка публичная и никогда не отвечает 401: протухший или отозванный токен здесь
 значит «гость», а не «выкинуть на /login». Лендинг зовёт её на каждом открытии.
 """
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_db
-from dependencies import get_current_user, get_studio_context
+from dependencies import get_current_user
 from legal import consent_ip
-from models import Studio, User
+from models import User
 from schemas.auth.responses import LocaleResponse
 from services import geo_locale, i18n
 
@@ -33,24 +32,19 @@ async def _account_language(token: str, db: AsyncSession) -> str | None:
     except HTTPException:
         return None
     raw = user.language
-    if not raw:
-        try:
-            ctx = await get_studio_context(token=token, user=user, db=db)
-        except HTTPException:
-            # Студии ещё нет или не выбрана из нескольких — языка в БД нет.
-            return None
-        studio = await db.get(Studio, ctx.studio_id)
-        raw = studio.language if studio else None
-    # «pl» у студии — языка интерфейса нет, кабинет покажет английский; лендинг тоже.
+    # Нет личного выбора — IP. Язык без перевода — английский.
     return i18n.resolve(raw) if raw else None
 
 
 @router.get("/locale", response_model=LocaleResponse)
 async def get_locale(
     request: Request,
+    response: Response,
     token: str | None = Depends(_optional_token),
     db: AsyncSession = Depends(get_db),
 ):
+    # Страна зависит от текущего IP/VPN, ответ нельзя повторять из кэша.
+    response.headers["Cache-Control"] = "private, no-store"
     if token:
         language = await _account_language(token, db)
         if language:

@@ -189,7 +189,7 @@ class GeneralUpdate(BaseSchema):
 class AppearanceRead(BaseSchema):
     theme: Optional[str] = None
     accent_color: Optional[str] = None
-    # null — язык не выбран лично, интерфейс идёт за языком студии.
+    # null — язык не выбран лично; интерфейс использует выбор браузера / IP / en.
     language: Optional[str] = None
 
 

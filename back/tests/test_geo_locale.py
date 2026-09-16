@@ -9,6 +9,7 @@
 import asyncio
 
 import pytest
+from fastapi import Response
 
 from routers.auth import locale as locale_router
 from services import geo_locale
@@ -21,7 +22,10 @@ class _Request:
 
 
 def _locale(request, token=None):
-    return asyncio.run(locale_router.get_locale(request, token=token, db=None))
+    response = Response()
+    result = asyncio.run(locale_router.get_locale(request, response, token=token, db=None))
+    assert response.headers["cache-control"] == "private, no-store"
+    return result
 
 
 def test_country_maps_to_translated_language():
@@ -29,10 +33,11 @@ def test_country_maps_to_translated_language():
     assert geo_locale.language_for_country("sk") == "cs"
     assert geo_locale.language_for_country("AT") == "de"
     assert geo_locale.language_for_country("UA") == "uk"
-    assert geo_locale.language_for_country("KZ") == "ru"
-    # Перевода нет — None, а не выдуманный код: фронт останется на английском.
-    assert geo_locale.language_for_country("FR") is None
-    assert geo_locale.language_for_country(None) is None
+    # Russian is opt-in. Unknown/unsupported countries use English explicitly.
+    assert geo_locale.language_for_country("KZ") == "en"
+    assert geo_locale.language_for_country("RU") == "en"
+    assert geo_locale.language_for_country("FR") == "en"
+    assert geo_locale.language_for_country(None) == "en"
 
 
 def test_cloudflare_header_wins_and_unknown_is_ignored():
@@ -84,3 +89,40 @@ def test_dead_token_is_a_guest_not_401():
     # проглотить это и ответить по стране, а не 401.
     result = _locale(_Request({"cf-ipcountry": "UA"}), token="garbage")
     assert (result.language, result.source) == ("uk", "ip")
+
+
+def test_unknown_country_returns_english():
+    result = _locale(_Request())
+    assert (result.language, result.source) == ("en", "ip")
+
+
+def test_ip_is_taken_from_proxy_forwarded_visitor(monkeypatch):
+    seen = []
+    def lookup(ip):
+        seen.append(ip)
+        return "DE"
+    monkeypatch.setattr(geo_locale, "country_for_ip", lookup)
+    result = _locale(_Request({"x-forwarded-for": "8.8.8.8, 172.18.0.1"}))
+    assert seen == ["8.8.8.8"]
+    assert result.language == "de"
+
+
+def test_no_personal_choice_does_not_inherit_studio_russian(monkeypatch):
+    from types import SimpleNamespace
+    async def user(**kwargs):
+        return SimpleNamespace(language=None)
+    async def context(**kwargs):
+        return SimpleNamespace(studio_id=1)
+    class Database:
+        async def get(self, *args):
+            return SimpleNamespace(language="ru")
+    monkeypatch.setattr(locale_router, "get_current_user", user)
+    monkeypatch.setattr(locale_router, "get_studio_context", context, raising=False)
+    assert asyncio.run(locale_router._account_language("session", Database())) is None
+
+
+def test_server_default_is_english_and_russian_remains_available():
+    from services.i18n import resolve
+    assert resolve(None) == "en"
+    assert resolve("") == "en"
+    assert resolve("ru") == "ru"

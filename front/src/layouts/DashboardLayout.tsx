@@ -14,12 +14,11 @@ import { getUserRoleFromToken } from '../utils/auth';
 import { billingApi } from '../api/billing/billing.api';
 import { hasBillingAccess } from '../lib/billingAccess';
 import SubscriptionBanner from '../components/SubscriptionBanner';
-import { useStudioSettings } from '../hooks/useStudioCurrency';
 import { useBusinessTerms } from '../hooks/useBusinessTerms';
 import { settingsApi } from '../api/settings/settings.api';
 import { queryKeys } from '../api/queryKeys';
 import i18n from '../i18n';
-import { rememberLang } from '../utils/lang';
+import { chosenLang, rememberLang } from '../utils/lang';
 // Важно: путь с /index — иначе на Windows импорт папки ui сталкивается с UI.tsx по регистру.
 import { Sidebar, Navbar, ErrorBoundary } from '../components/ui/index';
 
@@ -57,11 +56,8 @@ export default function DashboardLayout() {
 
   const routeKey = ROUTE_KEY[location.pathname.replace(/\/$/, '')] ?? 'dashboard';
 
-  // Язык интерфейса → i18next. Личный выбор сотрудника (Настройки → Внешний
-  // вид) главнее языка студии; не выбран — идём за студией, как раньше.
-  // Мутации в Настройках зовут changeLanguage сами; это — для входа в
-  // приложение и смены студии.
-  const { data: studio } = useStudioSettings();
+  // Только личный выбор меняет язык интерфейса. Без него остаётся язык
+  // текущего IP / английский: настройка студии не должна навязывать русский.
   // Зовём ради побочного эффекта: хук кладёт слово студии для места
   // (зал/кресло/кабинет) в переменные i18n, и подписи каталога, журнала и
   // отчётов подставляют его сами. Без вызова на уровне оболочки слово
@@ -72,12 +68,10 @@ export default function DashboardLayout() {
     queryFn: () => settingsApi.getAppearance(),
     staleTime: 5 * 60_000,
   });
-  const uiLanguage = appearance?.language ?? studio?.language;
+  const uiLanguage = appearance?.language;
   useEffect(() => {
-    if (!uiLanguage) return;
-    // Язык из БД запоминаем и за пределами кабинета: после выхода лендинг
-    // открывается на нём, а не на языке страны по IP. Смена в Настройках
-    // доходит сюда же — обе мутации обновляют кэш, из которого он собран.
+    if (!uiLanguage || chosenLang()) return;
+    // Личный выбор из аккаунта сохраняется и после выхода.
     rememberLang(uiLanguage);
     if (uiLanguage !== i18n.language) {
       i18n.changeLanguage(uiLanguage);

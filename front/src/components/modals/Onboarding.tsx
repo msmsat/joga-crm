@@ -16,7 +16,7 @@ import StepSettings from "./onboarding/StepSettings";
 import StepSchedule from "./onboarding/StepSchedule";
 import type { OnboardingData } from "./onboarding/types";
 import { DEFAULT_WORKING_HOURS } from "./onboarding/types";
-import { initialLang } from "../../utils/lang";
+import { chosenLang, initialLang, rememberLang } from "../../utils/lang";
 import { setActiveToken } from '../../utils/auth';
 
 type Step = 1 | 2 | 3 | 4 | 5;
@@ -50,7 +50,7 @@ export default function OnboardingPage() {
     email: "",
     website: "",
     timezone: browserTimezone(),
-    language: localStorage.getItem(ONBOARDING_LANG_KEY) || initialLang(),
+    language: chosenLang() || localStorage.getItem(ONBOARDING_LANG_KEY) || initialLang(),
     currency: "RUB",
     dateFormat: "DD.MM.YYYY",
     firstDayOfWeek: "monday",
@@ -68,6 +68,7 @@ export default function OnboardingPage() {
   function patch(update: Partial<OnboardingData>) {
     setData(d => ({ ...d, ...update }));
     if (update.language) {
+      rememberLang(update.language);
       i18n.changeLanguage(update.language);
       localStorage.setItem(ONBOARDING_LANG_KEY, update.language);
     }

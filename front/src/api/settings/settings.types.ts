@@ -41,7 +41,7 @@ export type GeneralUpdate = Partial<Omit<GeneralSettings, 'logo_url' | 'booking_
 export interface AppearanceSettings {
   theme: string | null
   accent_color: string | null
-  /** Личный язык интерфейса. null — идём за языком студии (Studio.language). */
+  /** Личный язык интерфейса. null — явный выбор в браузере, затем IP / английский. */
   language: string | null
 }
 

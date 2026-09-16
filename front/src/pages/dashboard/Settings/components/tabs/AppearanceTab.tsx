@@ -9,6 +9,7 @@ import { settingsApi } from "../../../../../api/settings/settings.api";
 import { queryKeys } from "../../../../../api/queryKeys";
 import { errorMessage } from "../../../../../api/errorMessage";
 import { saveThemeSeed } from "../../../../../utils/auth";
+import { rememberLang } from "../../../../../utils/lang";
 import type { AppearanceSettings, AppearanceUpdate } from "../../../../../api/settings/settings.types";
 
 export default function AppearanceTab() {
@@ -30,21 +31,27 @@ export default function AppearanceTab() {
     onMutate: async (patch) => {
       await qc.cancelQueries({ queryKey: queryKeys.appearance });
       const prev = qc.getQueryData<AppearanceSettings>(queryKeys.appearance);
+      const previousLanguage = i18n.language;
       qc.setQueryData<AppearanceSettings>(queryKeys.appearance, (o) => ({
         theme: o?.theme ?? null, accent_color: o?.accent_color ?? null, language: o?.language ?? null, ...patch,
+        // DashboardLayout remembers account languages. Until the save succeeds,
+        // only i18next previews the choice; the shared account value stays confirmed.
+        ...(patch.language ? { language: o?.language ?? null } : {}),
       }));
       // Язык переключаем сразу: ждать ответа сервера, чтобы перерисовать
       // подписи, — заметная пауза на действие, которое видно целиком.
       if (patch.language) i18n.changeLanguage(patch.language);
-      return { prev };
+      return { prev, previousLanguage };
     },
     onSuccess: (_data, patch) => {
       if (patch.theme) saveThemeSeed(patch.theme);
+      if (patch.language) rememberLang(patch.language);
+      qc.setQueryData(queryKeys.appearance, _data);
       toast.success(t('toast.saved'));
     },
     onError: (err, patch, ctx) => {
       if (ctx?.prev) qc.setQueryData(queryKeys.appearance, ctx.prev);
-      if (patch.language && ctx?.prev?.language) i18n.changeLanguage(ctx.prev.language);
+      if (patch.language && ctx?.previousLanguage) i18n.changeLanguage(ctx.previousLanguage);
       toast.error(errorMessage(err, t));
     },
   });
@@ -134,7 +141,7 @@ export default function AppearanceTab() {
         <SectionHeader icon={icons.globe} title={t('appearance.language.title')} subtitle={t('appearance.language.subtitle')} />
         <div style={{ width: "min(300px, 100%)" }}>
           <Select
-            value={data?.language ?? i18n.language}
+            value={i18n.language}
             onChange={(v) => save.mutate({ language: v })}
             options={LANGUAGES}
           />

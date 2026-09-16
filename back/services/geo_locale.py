@@ -20,6 +20,7 @@ from functools import cache
 from pathlib import Path
 
 import maxminddb
+from services.i18n import DEFAULT_LANG
 
 logger = logging.getLogger(__name__)
 
@@ -29,14 +30,14 @@ DB_PATH = Path(
 )
 
 # Страна → язык интерфейса. Только языки, на которые переведён фронт
-# (services/i18n.LANGS). Страны вне списка получают None, и фронт остаётся на
+# (services/i18n.LANGS). Страны вне списка получают en, и фронт остаётся на
 # английском. Словакия → чешский: словацкого перевода нет, а чешский словаку
 # понятнее английского.
 COUNTRY_LANGUAGE: dict[str, str] = {
     "CZ": "cs", "SK": "cs",
     "DE": "de", "AT": "de", "CH": "de", "LI": "de",
     "UA": "uk",
-    "RU": "ru", "BY": "ru", "KZ": "ru", "KG": "ru", "UZ": "ru", "TJ": "ru", "TM": "ru",
+    # Русский доступен только как явный выбор пользователя, не по геолокации.
 }
 
 # Cloudflare так помечает неизвестную страну и выход Tor.
@@ -81,8 +82,8 @@ def visitor_country(cf_country: str | None, ip: str | None) -> str | None:
     return country_for_ip(ip)
 
 
-def language_for_country(country: str | None) -> str | None:
-    return COUNTRY_LANGUAGE.get((country or "").upper())
+def language_for_country(country: str | None) -> str:
+    return COUNTRY_LANGUAGE.get((country or "").upper(), DEFAULT_LANG)
 
 
 if __name__ == "__main__":
@@ -92,5 +93,5 @@ if __name__ == "__main__":
     assert visitor_country("cz", None) == "CZ"
     assert visitor_country("XX", "127.0.0.1") is None
     assert country_for_ip("192.168.1.10") is None and country_for_ip("мусор") is None
-    assert language_for_country("AT") == "de" and language_for_country("FR") is None
+    assert language_for_country("AT") == "de" and language_for_country("FR") == "en"
     print(f"geo_locale self-check ok — база: {DB_PATH} ({'есть' if _reader() else 'нет'})")

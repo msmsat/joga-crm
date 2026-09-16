@@ -6,6 +6,7 @@ import { queryKeys } from "../../../../api/queryKeys";
 import { errorMessage } from "../../../../api/errorMessage";
 import { useToast } from "../../../../components/ui/index";
 import type { GeneralSettings, GeneralUpdate } from "../../../../api/settings/settings.types";
+import { rememberLang } from "../../../../utils/lang";
 
 // Данные компании и локаль студии — общий кэш-ключ studioSettings: на нём же
 // висит useStudioCurrency() во всём приложении (Каталог, Клиенты, Лояльность).
@@ -26,7 +27,8 @@ export function useGeneralSettings() {
       qc.setQueryData(queryKeys.studioSettings, data);
       void qc.invalidateQueries({ queryKey: ['businessTerms'] });
       // Смена языка — сразу переключаем интерфейс, не дожидаясь перезахода.
-      if (patch.language && patch.language !== i18n.language) {
+      if (patch.language) {
+        rememberLang(patch.language);
         i18n.changeLanguage(patch.language);
       }
       toast.success(t("toast.saved"));

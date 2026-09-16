@@ -13,7 +13,7 @@ import App from './App.tsx'
 import './i18n';
 import { detectLanguage } from './lib/detectLanguage';
 
-// Не ждём: первый кадр рисуется на языке прошлого визита (utils/lang.initialLang),
+// Не ждём: первый кадр — явный выбор или английский (utils/lang.initialLang),
 // ответ сервера переключит его, если язык другой.
 void detectLanguage();
 

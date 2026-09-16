@@ -19,14 +19,12 @@ export const LANGUAGES = [
 /** Язык, когда ни выбора, ни страны нет. */
 export const DEFAULT_LANG = "en";
 
-// Два ключа, а не один, потому что это разные по силе вещи:
-//  - ui_language — ВЫБОР: переключатель лендинга или язык из аккаунта
-//    (кабинет пишет его сюда, см. DashboardLayout). Переживает выход, и
-//    лендинг открывается на нём, а не на языке страны;
-//  - geo_language — ДОГАДКА по стране IP (lib/detectLanguage). Нужна только
-//    тому, кто ещё ничего не выбирал, и выбор не перебивает никогда.
-const UI_LANG_KEY = "ui_language";
-const GEO_LANG_KEY = "geo_language";
+// Старый ui_language смешивал ручной выбор и автоматический язык студии.
+// Его нельзя считать предпочтением: иначе старый ru навсегда блокирует IP.
+const UI_LANG_KEY = "ui_language_choice";
+// Страну прошлой загрузки не сохраняем: VPN мог изменить её с тех пор.
+let geoLanguage: string | null = null;
+let sessionChoice: string | null = null;
 
 export function isSupportedLang(code: string | null | undefined): code is string {
   return !!code && LANGUAGES.some(l => l.value === code);
@@ -54,18 +52,21 @@ function write(key: string, code: string): void {
 
 /** Язык, выбранный человеком или пришедший из его аккаунта; null — не было. */
 export function chosenLang(): string | null {
-  return read(UI_LANG_KEY);
+  // onboarding_language was only ever written by its language selector.
+  return sessionChoice ?? read(UI_LANG_KEY) ?? read("onboarding_language");
 }
 
-/** Язык первого кадра: выбор → страна из прошлого визита → английский. */
+/** При загрузке — явный выбор или английский; затем страна текущего визита. */
 export function initialLang(): string {
-  return chosenLang() ?? read(GEO_LANG_KEY) ?? DEFAULT_LANG;
+  return chosenLang() ?? geoLanguage ?? DEFAULT_LANG;
 }
 
 export function rememberLang(code: string): void {
+  if (!isSupportedLang(code)) return;
+  sessionChoice = code;
   write(UI_LANG_KEY, code);
 }
 
 export function rememberGeoLang(code: string): void {
-  write(GEO_LANG_KEY, code);
+  if (isSupportedLang(code)) geoLanguage = code;
 }

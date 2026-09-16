@@ -1,18 +1,14 @@
 import i18n from '../i18n'
 import { authApi } from '../api/auth/auth.api'
-import { getActiveToken } from '../utils/auth'
-import { chosenLang, isSupportedLang, rememberGeoLang, rememberLang } from '../utils/lang'
+import { DEFAULT_LANG, chosenLang, isSupportedLang, rememberGeoLang, rememberLang } from '../utils/lang'
 
 /**
  * Язык сайта при открытии — один запрос на старте приложения.
  *
- * Что главнее, решает сервер (GET /auth/locale): вошедшему — язык из БД,
- * гостю — язык страны его IP. Здесь только применяем ответ:
- *  - язык из БД запоминается как выбор (ui_language). Человек, сменивший язык
- *    в настройках, после выхода видит лендинг на нём, а не на языке страны;
- *  - язык страны — только догадка. Он не перебивает сделанный раньше выбор и
- *    не трогает вошедшего: у того язык либо в БД, либо выбирается на
- *    онбординге, который сам стартует с этой догадки (utils/lang.initialLang).
+ * Приоритет: явный выбор в браузере → личный язык аккаунта → текущий IP → en.
+ * Язык студии и старые автоматические кэши не являются выбором человека.
+ * Даже при наличии токена сервер может вернуть IP (нет личного выбора или
+ * токен истёк): такой ответ тоже применяется.
  *
  * Пока запрос шёл, язык мог смениться (переключатель лендинга, онбординг,
  * кабинет). Этот выбор свежее ответа, и ответ его не перетирает.
@@ -26,14 +22,12 @@ export async function detectLanguage(): Promise<void> {
   } catch {
     return
   }
-  const { language, source } = result
-  if (!isSupportedLang(language)) return
-
+  const { source } = result
+  const language = isSupportedLang(result.language) ? result.language : DEFAULT_LANG
+  if (chosenLang() || i18n.language !== initial) return
   if (source === 'ip') {
     rememberGeoLang(language)
-    if (chosenLang() || getActiveToken()) return
   }
-  if (i18n.language !== initial) return
   if (source === 'account') rememberLang(language)
   if (language !== i18n.language) void i18n.changeLanguage(language)
 }

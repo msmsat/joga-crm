@@ -26,7 +26,7 @@ T = TypeVar("T")
 LANGS: tuple[str, ...] = ("ru", "en", "uk", "cs", "de")
 
 # Язык студии не задан вовсе (Studio.language nullable, старые студии).
-DEFAULT_LANG = "ru"
+DEFAULT_LANG = "en"
 # Язык задан, но перевода на него у нас нет (pl, fr, …). Английский, а не
 # русский: он понятен там, где русский может быть не понят вовсе.
 FALLBACK_LANG = "en"
@@ -53,7 +53,7 @@ if __name__ == "__main__":
     assert resolve("cs") == "cs" and resolve("uk") == "uk"
     assert resolve("de-DE") == "de" and resolve("EN") == "en"
     assert resolve("pl") == "en", "язык без переводов — английский"
-    assert resolve(None) == "ru" and resolve("") == "ru"
+    assert resolve(None) == "en" and resolve("") == "en"
 
     _m = {"ru": "да", "en": "yes", "cs": "ano"}
     assert pick(_m, "cs") == "ano" and pick(_m, "ru") == "да"
