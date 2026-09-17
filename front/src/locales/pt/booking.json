@@ -19,7 +19,6 @@
       "desc": "Mini aplicação de marcações — para bio, stories e campanhas",
       "copy": "Copiar link",
       "open": "Abrir a mini aplicação",
-      "print": "Imprimir QR",
       "posterTitle": "Marque a sua aula online",
       "scanHint": "Aponte a câmara do telemóvel ao código"
     }
@@ -159,7 +158,6 @@
     "botDisconnected": "Bot desligado",
     "codeCopied": "Código copiado!",
     "linkCopied": "Link copiado!",
-    "printBlocked": "Permita as janelas pop-up para imprimir o código QR",
     "stripeReturned": "Dados enviados para a Stripe",
     "stripeLinkExpired": "O link da Stripe expirou — tente novamente"
   },

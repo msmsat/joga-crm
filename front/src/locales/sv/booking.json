@@ -19,7 +19,6 @@
       "desc": "Boknings-miniapp — för bio, stories och kampanjer",
       "copy": "Kopiera länk",
       "open": "Öppna miniappen",
-      "print": "Skriv ut QR",
       "posterTitle": "Boka ditt pass online",
       "scanHint": "Rikta mobilkameran mot koden"
     }
@@ -159,7 +158,6 @@
     "botDisconnected": "Bot frånkopplad",
     "codeCopied": "Koden är kopierad!",
     "linkCopied": "Länken är kopierad!",
-    "printBlocked": "Tillåt popup-fönster för att skriva ut QR-koden",
     "stripeReturned": "Uppgifterna har skickats till Stripe",
     "stripeLinkExpired": "Stripe-länken har gått ut — försök igen"
   },

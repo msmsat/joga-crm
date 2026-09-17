@@ -154,5 +154,22 @@
     "title": "Något gick fel",
     "description": "Den här sidan stötte på ett fel. Prova att ladda om — resten av appen fungerar fortfarande.",
     "reload": "Ladda om sidan"
+  },
+  "qr": {
+    "title": "QR-kod",
+    "subtitle": "Skriv ut, lägg upp i stories eller kopiera länken.",
+    "copy": "Kopiera",
+    "print": "Skriv ut",
+    "story": "För stories",
+    "copied": "Länken kopierad",
+    "copyFailed": "Det gick inte att kopiera länken",
+    "printBlocked": "Webbläsaren blockerade utskriftsfönstret",
+    "storySaved": "Bilden sparad",
+    "storyFailed": "Det gick inte att skapa bilden",
+    "scanHint": "Rikta kameran för att boka",
+    "lessonAction": "QR-kod för passet",
+    "lessonCaption": "Rikta kameran för att boka passet",
+    "packageAction": "QR-kod för klippkortet",
+    "packageCaption": "Rikta kameran för att köpa klippkortet"
   }
 }

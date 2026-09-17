@@ -154,5 +154,22 @@
     "title": "Etwas ist schiefgelaufen",
     "description": "Auf dieser Seite ist ein Fehler aufgetreten. Laden Sie sie neu — der Rest der App funktioniert weiter.",
     "reload": "Seite neu laden"
+  },
+  "qr": {
+    "title": "QR-Code",
+    "subtitle": "Drucken, in die Story stellen oder den Link kopieren.",
+    "copy": "Kopieren",
+    "print": "Drucken",
+    "story": "Für Stories",
+    "copied": "Link kopiert",
+    "copyFailed": "Link konnte nicht kopiert werden",
+    "printBlocked": "Der Browser hat das Druckfenster blockiert",
+    "storySaved": "Bild gespeichert",
+    "storyFailed": "Bild konnte nicht erstellt werden",
+    "scanHint": "Kamera darauf richten und buchen",
+    "lessonAction": "QR-Code des Kurses",
+    "lessonCaption": "Kamera darauf richten und diesen Kurs buchen",
+    "packageAction": "QR-Code des Abos",
+    "packageCaption": "Kamera darauf richten und das Abo kaufen"
   }
 }

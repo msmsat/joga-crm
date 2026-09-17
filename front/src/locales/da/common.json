@@ -154,5 +154,22 @@
     "title": "Noget gik galt",
     "description": "Denne side stødte på en fejl. Prøv at genindlæse — resten af appen fungerer stadig.",
     "reload": "Genindlæs siden"
+  },
+  "qr": {
+    "title": "QR-kode",
+    "subtitle": "Print den, læg den i stories, eller kopiér linket.",
+    "copy": "Kopiér",
+    "print": "Udskriv",
+    "story": "Til stories",
+    "copied": "Linket er kopieret",
+    "copyFailed": "Linket kunne ikke kopieres",
+    "printBlocked": "Browseren blokerede udskriftsvinduet",
+    "storySaved": "Billedet er gemt",
+    "storyFailed": "Billedet kunne ikke laves",
+    "scanHint": "Ret kameraet mod koden for at booke",
+    "lessonAction": "QR-kode til holdet",
+    "lessonCaption": "Ret kameraet mod koden for at booke holdet",
+    "packageAction": "QR-kode til klippekortet",
+    "packageCaption": "Ret kameraet mod koden for at købe klippekortet"
   }
 }

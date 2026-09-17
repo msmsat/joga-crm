@@ -154,5 +154,22 @@
     "title": "Noe gikk galt",
     "description": "Denne siden fikk en feil. Prøv å laste den på nytt — resten av appen fungerer fortsatt.",
     "reload": "Last siden på nytt"
+  },
+  "qr": {
+    "title": "QR-kode",
+    "subtitle": "Skriv den ut, legg den i stories eller kopier lenken.",
+    "copy": "Kopier",
+    "print": "Skriv ut",
+    "story": "Til stories",
+    "copied": "Lenken er kopiert",
+    "copyFailed": "Kunne ikke kopiere lenken",
+    "printBlocked": "Nettleseren blokkerte utskriftsvinduet",
+    "storySaved": "Bildet er lagret",
+    "storyFailed": "Kunne ikke lage bildet",
+    "scanHint": "Rett kameraet mot koden for å booke",
+    "lessonAction": "QR-kode for timen",
+    "lessonCaption": "Rett kameraet mot koden for å booke timen",
+    "packageAction": "QR-kode for klippekortet",
+    "packageCaption": "Rett kameraet mot koden for å kjøpe klippekortet"
   }
 }

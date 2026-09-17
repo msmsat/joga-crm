@@ -19,6 +19,8 @@ export type { SelectOption, SelectProps } from './Select';
 export { Switch } from './Switch';
 export type { SwitchProps } from './Switch';
 export { ConfirmModal } from './ConfirmModal';
+export { QrShareModal } from './QrShareModal';
+export type { QrShareModalProps } from './QrShareModal';
 export type { ConfirmModalProps } from './ConfirmModal';
 export { ToastProvider, useToast } from './Toast';
 export { Sidebar } from './Sidebar';

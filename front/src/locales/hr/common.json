@@ -154,5 +154,22 @@
     "title": "Nešto je pošlo po zlu",
     "description": "Na ovoj je stranici došlo do greške. Pokušajte je osvježiti — ostatak aplikacije i dalje radi.",
     "reload": "Osvježi stranicu"
+  },
+  "qr": {
+    "title": "QR kod",
+    "subtitle": "Ispišite ga, objavite u storyju ili kopirajte poveznicu.",
+    "copy": "Kopiraj",
+    "print": "Ispis",
+    "story": "Za story",
+    "copied": "Poveznica je kopirana",
+    "copyFailed": "Poveznicu nije bilo moguće kopirati",
+    "printBlocked": "Preglednik je blokirao prozor za ispis",
+    "storySaved": "Slika je spremljena",
+    "storyFailed": "Sliku nije bilo moguće izraditi",
+    "scanHint": "Usmjerite kameru za prijavu",
+    "lessonAction": "QR kod termina",
+    "lessonCaption": "Usmjerite kameru i prijavite se na ovaj termin",
+    "packageAction": "QR kod paketa",
+    "packageCaption": "Usmjerite kameru i kupite paket"
   }
 }

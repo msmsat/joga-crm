@@ -17,7 +17,8 @@ const WEEK_START_DAY_KEY: Record<string, string> = { monday: "mon", sunday: "sun
 export default function StepSettings({ data, onChange }: Props) {
   const { t } = useTranslation(["onboarding", "common"]);
 
-  const timezoneOptions = TIMEZONES.map(o => ({ ...o, label: t(`onboarding:settings.timezones.${o.value}`) }));
+  // У пояса подпись уже готова (города — имена собственные, их не переводят),
+  // у валюты переводится название.
   const currencyOptions = CURRENCY_OPTIONS.map(o => ({ ...o, label: t(`onboarding:settings.currencies.${o.value}`) }));
   const weekStartOptions = WEEK_START_OPTIONS.map(o => ({ ...o, label: t(`common:days.${WEEK_START_DAY_KEY[o.value]}`) }));
 
@@ -32,13 +33,17 @@ export default function StepSettings({ data, onChange }: Props) {
         </p>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
+      {/* minmax(0, …), а не 1fr: у 1fr минимум = min-content, и длинная подпись
+          пояса («Берлин, Париж, Мадрид (UTC+1)») раздувала свою колонку и
+          сдвигала валюту влево. С нулевым минимумом колонки равны всегда, а
+          текст обрезается многоточием (ellipsis уже в PremiumSelect). */}
+      <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)", gap: "14px" }}>
         <div>
           <label style={labelStyle}>{t("onboarding:settings.timezoneLabel")}</label>
           <PremiumSelect
             value={data.timezone}
             onChange={v => onChange({ timezone: v })}
-            options={timezoneOptions}
+            options={TIMEZONES}
             placeholder={t("onboarding:settings.timezonePlaceholder")}
           />
         </div>

@@ -19,7 +19,6 @@
       "desc": "Varausten minisovellus — bioon, storyihin ja kampanjoihin",
       "copy": "Kopioi linkki",
       "open": "Avaa minisovellus",
-      "print": "Tulosta QR",
       "posterTitle": "Varaa tuntisi verkossa",
       "scanHint": "Suuntaa puhelimen kamera koodiin"
     }
@@ -159,7 +158,6 @@
     "botDisconnected": "Botti irrotettu",
     "codeCopied": "Koodi kopioitu!",
     "linkCopied": "Linkki kopioitu!",
-    "printBlocked": "Salli ponnahdusikkunat tulostaaksesi QR-koodin",
     "stripeReturned": "Tiedot lähetetty Stripeen",
     "stripeLinkExpired": "Stripe-linkki vanhentui — yritä uudelleen"
   },

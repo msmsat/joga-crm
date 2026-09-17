@@ -89,6 +89,44 @@ export function readTab(): string | undefined {
   return tab && TABS.includes(tab) ? tab : undefined;
 }
 
+/**
+ * Куда именно ведёт ссылка внутри раздела: на конкретное занятие или на
+ * конкретный абонемент.
+ *
+ * Это адрес QR-кодов, которые студия печатает и выкладывает в сторис
+ * (front/src/components/ui/QrShareModal.tsx). Код на занятие обязан открыть
+ * ЭТО занятие: у всех занятий студии он иначе одинаковый, и печатать его
+ * отдельно для каждого было бы незачем.
+ *
+ * Дата едет вместе с занятием (`d`) осознанно: расписание грузится по дням, и
+ * без неё приложению пришлось бы перебирать дни в поисках номера. Занятия в
+ * найденном дне уже нет (отменили, прошло) — ссылка просто открывает этот день,
+ * а не пустой экран с ошибкой.
+ */
+export type DeepLink = {
+  lessonId?: number;
+  /** `YYYY-MM-DD` — день, в котором искать занятие. */
+  date?: string;
+  packageId?: number;
+};
+
+const numeric = (value: string | null): number | undefined => {
+  // Мусор в адресе игнорируем молча: ссылку правят руками и пересылают.
+  if (!value || !/^\d+$/.test(value)) return undefined;
+  const parsed = Number(value);
+  return Number.isSafeInteger(parsed) && parsed > 0 ? parsed : undefined;
+};
+
+export function readDeepLink(): DeepLink {
+  const params = new URLSearchParams(window.location.search);
+  const date = params.get('d');
+  return {
+    lessonId: numeric(params.get('lesson')),
+    date: date && /^\d{4}-\d{2}-\d{2}$/.test(date) ? date : undefined,
+    packageId: numeric(params.get('pkg')),
+  };
+}
+
 function parseStartParam(startParam: string | undefined) {
   // `s<код студии>` до первого `_`: реферальный хвост `_ref<код>` в код студии
   // не попадает, потому что `_` в него не входит.

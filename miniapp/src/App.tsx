@@ -17,7 +17,7 @@ import { getLoyalty, type LoyaltyOverview } from './api/loyalty';
 import { useTelegram } from './hooks/useTelegram';
 import { useIsDesktop } from './hooks/useIsDesktop';
 import { visibleNavItems } from './components/navItems';
-import { readEntry, readTab, rememberStudio, setStudioRef } from './lib/entry';
+import { readDeepLink, readEntry, readTab, rememberStudio, setStudioRef } from './lib/entry';
 import { applyBranding, applyDefaultLanguage } from './lib/branding';
 import { getSession, saveSession, clearSession, reconcileSession } from './lib/session';
 import { startPresence } from './lib/presence';
@@ -45,6 +45,9 @@ const DEFAULT_TAB = 'sched';
 
 export default function App() {
   const { t } = useTranslation();
+  // Куда ведёт ссылка внутри раздела: QR-код студии печатается на конкретное
+  // занятие или конкретный абонемент. Читается один раз, как и `?tab=`.
+  const [deepLink] = useState(readDeepLink);
   // Ссылка из письма студии ведёт в конкретный раздел (`?tab=my`), а не «в
   // приложение вообще»: клиент открыл письмо про запись — он должен увидеть
   // запись. Читаем один раз при первом рендере: дальше вкладками управляет меню.
@@ -64,8 +67,10 @@ export default function App() {
   // раз, когда клиент просто зашёл купить абонемент.
   const [pendingCertificate, setPendingCertificate] = useState<string | null>(null);
   // Запись упёрлась в «Предоплату при записи» (402): человека несёт в покупку
-  // абонемента — тем же путём, что и сертификат из Клуба.
-  const [wantsSubscription, setWantsSubscription] = useState(false);
+  // абонемента — тем же путём, что и сертификат из Клуба. Второй повод — QR
+  // абонемента: код обещает конкретный абонемент, и открыться должна покупка,
+  // а не общий профиль, в котором его ещё надо найти.
+  const [wantsSubscription, setWantsSubscription] = useState(() => deepLink.packageId != null);
   const { tg } = useTelegram();
   const isDesktop = useIsDesktop();
   // Область прокрутки приложения. На телефоне прокручивается она, а не документ, —
@@ -350,6 +355,7 @@ export default function App() {
         catalog={catalog}
         onBuySubscription={goBuySubscription}
         onNeedAuth={requireAuth}
+        focusLesson={deepLink.lessonId != null ? { id: deepLink.lessonId, date: deepLink.date } : undefined}
       />
     ),
     my: <MyLessons catalog={catalog} />,
@@ -361,6 +367,7 @@ export default function App() {
         onPendingCertificateUsed={() => setPendingCertificate(null)}
         openBuy={wantsSubscription}
         onBuyIntentUsed={() => setWantsSubscription(false)}
+        initialPackageId={deepLink.packageId}
       />
     ),
     club: <Club data={loyalty} onUseCertificate={useCertificate} />,

@@ -154,5 +154,22 @@
     "title": "Нешто је пошло наопако",
     "description": "На овој страници је дошло до грешке. Покушајте да је освежите — остатак апликације и даље ради.",
     "reload": "Освежи страницу"
+  },
+  "qr": {
+    "title": "QR kod",
+    "subtitle": "Odštampajte ga, objavite u storiju ili kopirajte link.",
+    "copy": "Kopiraj",
+    "print": "Štampa",
+    "story": "Za story",
+    "copied": "Link je kopiran",
+    "copyFailed": "Link nije moguće kopirati",
+    "printBlocked": "Pregledač je blokirao prozor za štampu",
+    "storySaved": "Slika je sačuvana",
+    "storyFailed": "Sliku nije moguće napraviti",
+    "scanHint": "Usmerite kameru da se prijavite",
+    "lessonAction": "QR kod termina",
+    "lessonCaption": "Usmerite kameru i prijavite se na ovaj termin",
+    "packageAction": "QR kod paketa",
+    "packageCaption": "Usmerite kameru i kupite paket"
   }
 }

@@ -19,7 +19,6 @@
       "desc": "Mini app di prenotazione — per bio, storie e campagne",
       "copy": "Copia il link",
       "open": "Apri la mini app",
-      "print": "Stampa il QR",
       "posterTitle": "Prenota la tua lezione online",
       "scanHint": "Punta la fotocamera del telefono sul codice"
     }
@@ -159,7 +158,6 @@
     "botDisconnected": "Bot scollegato",
     "codeCopied": "Codice copiato!",
     "linkCopied": "Link copiato!",
-    "printBlocked": "Consenti i pop-up per stampare il codice QR",
     "stripeReturned": "Dati inviati a Stripe",
     "stripeLinkExpired": "Il link Stripe è scaduto — riprova"
   },

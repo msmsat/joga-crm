@@ -16,6 +16,8 @@ interface SheduleProps {
   onBuySubscription: () => void;
   /** Бронь гостя: поднять существующий вход и продолжить ту же запись. */
   onNeedAuth: (retry: () => void) => void;
+  /** Занятие из QR-кода студии: открыть его день и сам лист брони. */
+  focusLesson?: { id: number; date?: string };
 }
 
 /**
@@ -29,10 +31,12 @@ interface SheduleProps {
  * Оба раздела гибридной студии остаются смонтированными и прячутся атрибутом:
  * переключение не теряет ни выбранного мастера, ни пролистанную неделю.
  */
-export default function Shedule({ catalog, onBuySubscription, onNeedAuth }: SheduleProps) {
+export default function Shedule({ catalog, onBuySubscription, onNeedAuth, focusLesson }: SheduleProps) {
   const { t } = useTranslation();
   const mode = catalog?.booking_capabilities.booking_mode ?? 'event';
-  const [view, setView] = useState<ScheduleView>('resource');
+  // Ссылка на занятие открывает групповой раздел: индивидуальная запись идёт
+  // от мастера, занятия с номером там нет.
+  const [view, setView] = useState<ScheduleView>(focusLesson ? 'event' : 'resource');
   const showResource = mode === 'resource' || (mode === 'hybrid' && view === 'resource');
   const rules = catalog?.rules ?? null;
 
@@ -60,6 +64,7 @@ export default function Shedule({ catalog, onBuySubscription, onNeedAuth }: Shed
             onBuySubscription={onBuySubscription}
             onNeedAuth={onNeedAuth}
             segment={segment}
+            focusLesson={focusLesson}
           />
         </div>
       )}

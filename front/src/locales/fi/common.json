@@ -154,5 +154,22 @@
     "title": "Jokin meni pieleen",
     "description": "Tällä sivulla tapahtui virhe. Kokeile ladata uudelleen — muu sovellus toimii edelleen.",
     "reload": "Lataa sivu uudelleen"
+  },
+  "qr": {
+    "title": "QR-koodi",
+    "subtitle": "Tulosta, jaa storyihin tai kopioi linkki.",
+    "copy": "Kopioi",
+    "print": "Tulosta",
+    "story": "Storyihin",
+    "copied": "Linkki kopioitu",
+    "copyFailed": "Linkin kopiointi ei onnistunut",
+    "printBlocked": "Selain esti tulostusikkunan",
+    "storySaved": "Kuva tallennettu",
+    "storyFailed": "Kuvan luonti ei onnistunut",
+    "scanHint": "Suuntaa kamera ja varaa paikka",
+    "lessonAction": "Tunnin QR-koodi",
+    "lessonCaption": "Suuntaa kamera ja varaa paikka tunnille",
+    "packageAction": "Sarjakortin QR-koodi",
+    "packageCaption": "Suuntaa kamera ja osta sarjakortti"
   }
 }

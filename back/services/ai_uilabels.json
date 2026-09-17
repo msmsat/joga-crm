@@ -230,13 +230,6 @@
     "cs": "Kopírovat odkaz",
     "de": "Link kopieren"
   },
-  "booking:channels.miniapp.print": {
-    "ru": "Распечатать QR",
-    "en": "Print QR",
-    "uk": "Друкувати QR",
-    "cs": "Vytisknout QR",
-    "de": "QR drucken"
-  },
   "booking:channels.sectionTitle": {
     "ru": "Каналы подключения",
     "en": "Connection channels",
@@ -495,6 +488,41 @@
     "uk": "Додати клієнта",
     "cs": "Přidat klienta",
     "de": "Kunde hinzufügen"
+  },
+  "common:qr.copy": {
+    "ru": "Копировать",
+    "en": "Copy",
+    "uk": "Копіювати",
+    "cs": "Kopírovat",
+    "de": "Kopieren"
+  },
+  "common:qr.print": {
+    "ru": "Печать",
+    "en": "Print",
+    "uk": "Друк",
+    "cs": "Tisk",
+    "de": "Drucken"
+  },
+  "common:qr.printBlocked": {
+    "ru": "Браузер заблокировал окно печати",
+    "en": "The browser blocked the print window",
+    "uk": "Браузер заблокував вікно друку",
+    "cs": "Prohlížeč zablokoval okno tisku",
+    "de": "Der Browser hat das Druckfenster blockiert"
+  },
+  "common:qr.story": {
+    "ru": "Для сторис",
+    "en": "For stories",
+    "uk": "Для сторіс",
+    "cs": "Do stories",
+    "de": "Für Stories"
+  },
+  "common:qr.title": {
+    "ru": "QR-код",
+    "en": "QR code",
+    "uk": "QR-код",
+    "cs": "QR kód",
+    "de": "QR-Code"
   },
   "cookies:profile.button": {
     "ru": "Настройки cookie",

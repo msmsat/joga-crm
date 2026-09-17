@@ -154,5 +154,22 @@
     "title": "Something went wrong",
     "description": "This page ran into an error. Try reloading — the rest of the app keeps working.",
     "reload": "Reload page"
+  },
+  "qr": {
+    "title": "QR code",
+    "subtitle": "Print it, post it to stories, or copy the link.",
+    "copy": "Copy",
+    "print": "Print",
+    "story": "For stories",
+    "copied": "Link copied",
+    "copyFailed": "Could not copy the link",
+    "printBlocked": "The browser blocked the print window",
+    "storySaved": "Image saved",
+    "storyFailed": "Could not build the image",
+    "scanHint": "Point your camera to sign up",
+    "lessonAction": "Class QR code",
+    "lessonCaption": "Point your camera to book this class",
+    "packageAction": "Pass QR code",
+    "packageCaption": "Point your camera to buy this pass"
   }
 }

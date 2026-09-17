@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, type ReactNode } from 'react';
+import { useState, useEffect, useMemo, useRef, type ReactNode } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import BookingModal from '../../components/modals/BookingModal';
@@ -57,13 +57,15 @@ interface EventScheduleProps {
   onNeedAuth: (retry: () => void) => void;
   /** Переключатель разделов гибридной студии — под шапкой, над лентой недели. */
   segment?: ReactNode;
+  /** Занятие из QR-кода студии: открыть его день и сам лист брони. */
+  focusLesson?: { id: number; date?: string };
 }
 
 /**
  * Расписание групповых занятий по дням (booking_mode `event`, и групповой
  * раздел `hybrid`). Индивидуальная запись живёт отдельно — pages/booking.
  */
-export default function EventSchedule({ catalog, onBuySubscription, onNeedAuth, segment }: EventScheduleProps) {
+export default function EventSchedule({ catalog, onBuySubscription, onNeedAuth, segment, focusLesson }: EventScheduleProps) {
   const branches = catalog?.branches ?? [];
   const isMultiStudio = branches.length > 1;
   const rules = catalog?.rules ?? null;
@@ -77,7 +79,14 @@ export default function EventSchedule({ catalog, onBuySubscription, onNeedAuth, 
     return limit;
   }, [rules]);
 
-  const [date, setDate] = useState(() => new Date());
+  // День из ссылки — начальное состояние, а не эффект: иначе экран сначала
+  // покажет сегодня, сходит за ним в сеть и только потом переедет на нужный
+  // день, то есть два запроса и видимый прыжок вместо открытия.
+  // Локальная полночь (`T00:00:00`), а не голый `YYYY-MM-DD`: последний Date
+  // читает как UTC, и вечером восточнее Гринвича день съезжает назад.
+  const [date, setDate] = useState(() =>
+    focusLesson?.date ? new Date(`${focusLesson.date}T00:00:00`) : new Date(),
+  );
   const day = isoDate(date);
   /* Последний полученный день. Вместе со списком хранится, первый ли он за
      жизнь экрана: лесенка появления положена только ему. Листая неделю, человек
@@ -130,6 +139,20 @@ export default function EventSchedule({ catalog, onBuySubscription, onNeedAuth, 
     },
     onNeedAuth,
   });
+
+  // Занятие из QR-кода студии: поднять его лист брони, как только день пришёл.
+  // Ровно один раз за жизнь экрана — иначе лист открывался бы заново после
+  // каждого закрытия и после каждого фонового обновления списка.
+  // Занятия в дне нет (отменили, уже прошло) — остаётся открытый нужный день:
+  // ошибка «занятие не найдено» человеку, пришедшему с плаката, ничего не даёт.
+  const focused = useRef(false);
+  useEffect(() => {
+    if (!focusLesson || focused.current) return;
+    const lesson = dayClasses.find((item) => item.id === focusLesson.id);
+    if (!lesson) return;
+    focused.current = true;
+    booking.openModal(lesson);
+  }, [focusLesson, dayClasses, booking]);
 
   useEffect(() => {
     let cancelled = false;

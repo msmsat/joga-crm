@@ -19,7 +19,6 @@
       "desc": "Rezervační mini aplikace — do bia, stories a kampaní",
       "copy": "Kopírovat odkaz",
       "open": "Otevřít mini aplikaci",
-      "print": "Vytisknout QR",
       "posterTitle": "Rezervujte si lekci online",
       "scanHint": "Namiřte fotoaparát telefonu na kód"
     }
@@ -159,7 +158,6 @@
     "botDisconnected": "Bot odpojen",
     "codeCopied": "Kód zkopírován!",
     "linkCopied": "Odkaz zkopírován!",
-    "printBlocked": "Pro tisk QR kódu povolte vyskakovací okna",
     "stripeReturned": "Údaje odeslány do Stripe",
     "stripeLinkExpired": "Platnost odkazu Stripe vypršela — zkuste to prosím znovu"
   },

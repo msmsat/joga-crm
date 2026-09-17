@@ -1,10 +1,13 @@
 import { useTranslation } from "react-i18next";
+import type { Country } from "react-phone-number-input";
 import { InputField, PhoneField } from "../../UI";
 import type { OnboardingData } from "./types";
 
 interface Props {
   data: OnboardingData;
   onChange: (patch: Partial<OnboardingData>) => void;
+  /** Страна визита: телефон набирают без «+», и код подставляется сам. */
+  country?: Country;
 }
 
 const IconPin = () => (
@@ -30,7 +33,7 @@ const IconGlobe = () => (
   </svg>
 );
 
-export default function StepContact({ data, onChange }: Props) {
+export default function StepContact({ data, onChange, country }: Props) {
   const { t } = useTranslation("onboarding");
   return (
     <div>
@@ -47,12 +50,13 @@ export default function StepContact({ data, onChange }: Props) {
         <PhoneField
           label={t("onboarding:contact.phoneLabel")}
           value={data.phone}
+          defaultCountry={country}
           onChange={(v) => onChange({ phone: v || "" })}
         />
 
         <InputField
           label={t("onboarding:contact.addressLabel")}
-          placeholder="Baker Street, 221B"
+          placeholder={t("onboarding:contact.addressPlaceholder")}
           value={data.address}
           onChange={(v: string) => onChange({ address: v })}
           icon={<IconPin />}

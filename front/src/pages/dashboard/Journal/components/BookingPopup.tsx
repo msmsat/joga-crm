@@ -12,9 +12,10 @@ import { formatIndexToTimeStr, parseTimeToIndex, generateTimeIntervals, MIN_TIME
 import { useServiceOptions, CREATE_SERVICE_OPTION } from '../hooks/useServiceOptions';
 import type { useJournalMutations } from '../hooks/useJournalMutations';
 import type { HistoryEntry } from '../hooks/useUndoHistory';
-import { useToast, Select, ConfirmModal } from '../../../../components/ui/index';
+import { useToast, Select, ConfirmModal, QrShareModal } from '../../../../components/ui/index';
+import { miniappLink } from '../../../../lib/miniapp';
 import { formatMoney } from '../../../../lib/money';
-import { useStudioCurrency } from '../../../../hooks/useStudioCurrency';
+import { useStudioCurrency, useStudioSettings } from '../../../../hooks/useStudioCurrency';
 
 const MIN_TIME_IDX = MIN_TIME_INDEX;
 const MAX_TIME_IDX = MAX_TIME_INDEX;
@@ -68,7 +69,7 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
 }) => {
   const toast = useToast();
   const navigate = useNavigate();
-  const { t } = useTranslation('journal');
+  const { t, i18n } = useTranslation('journal');
   const isCancelled = popupBooking.status === 'cancelled';
   const isResource = popupBooking.bookingMode === 'resource';
 
@@ -77,6 +78,7 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
   const [editEndInput, setEditEndInput] = useState('');
   const [editActiveDropdown, setEditActiveDropdown] = useState<'start' | 'end' | null>(null);
   const [showCatalogConfirm, setShowCatalogConfirm] = useState(false);
+  const [showQr, setShowQr] = useState(false);
 
   // Стейты добавления клиента
   // Бронь, по которой сейчас спрашиваем способ оплаты (id записи) — строка
@@ -90,6 +92,28 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
 
   const startScrollRef = useRef<HTMLDivElement>(null);
   const endScrollRef = useRef<HTMLDivElement>(null);
+
+  // QR занятия: ссылка мини-приложения студии с номером занятия. Плакат и
+  // картинку для сторис рисует общая модалка кита — здесь только что на них
+  // написать. Индивидуальной записи (resource) код не положен: это чужое
+  // забронированное время, звать на него посторонних некуда.
+  const { data: studio } = useStudioSettings();
+  const qrUrl = miniappLink(studio?.miniapp_url ?? '', {
+    tab: 'sched',
+    lesson: popupBooking.id,
+    d: popupBooking.date,
+  });
+  const canShareQr = !isCancelled && !isResource && Boolean(studio?.miniapp_url);
+  const qrSubtitle = [
+    popupBooking.date
+      ? new Date(`${popupBooking.date}T00:00:00`).toLocaleDateString(i18n.language, {
+          weekday: 'short', day: 'numeric', month: 'long',
+        })
+      : null,
+    `${formatIndexToTimeStr(popupBooking.timeStart)}–${formatIndexToTimeStr(popupBooking.timeEnd)}`,
+    popupBooking.hall || null,
+    trainers.find(tr => tr.id === popupBooking.trainer)?.full || null,
+  ].filter(Boolean).join(' · ');
 
   const KP_INTERVALS = useMemo(() => generateTimeIntervals(timeStep), [timeStep]);
   const { services, options: serviceOptions } = useServiceOptions();
@@ -768,6 +792,17 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
               </>
             )}
 
+            {canShareQr && (
+              <button
+                className="bp-btn ghost icon-only"
+                title={t('common:qr.lessonAction')}
+                aria-label={t('common:qr.lessonAction')}
+                onClick={(e) => { e.stopPropagation(); setShowQr(true); }}
+              >
+                <Icons.QrCode />
+              </button>
+            )}
+
             {canEdit && (
               <button className="bp-btn danger icon-only" title={t('bookingPopup.deleteLesson')} onClick={() => deleteBooking(popupBooking.id)}>
                 <Icons.Trash />
@@ -778,6 +813,18 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
       </div>
       )}
     </div>
+
+    {showQr && (
+      <QrShareModal
+        url={qrUrl}
+        kicker={studio?.name}
+        title={popupBooking.title}
+        subtitle={qrSubtitle}
+        caption={t('common:qr.lessonCaption')}
+        fileName={popupBooking.title}
+        onClose={() => setShowQr(false)}
+      />
+    )}
 
     {showCatalogConfirm && (
       <ConfirmModal

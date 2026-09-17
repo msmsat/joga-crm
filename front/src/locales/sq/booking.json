@@ -19,7 +19,6 @@
       "desc": "Mini-aplikacioni i rezervimeve — për bio, stories dhe fushata",
       "copy": "Kopjo lidhjen",
       "open": "Hap mini-aplikacionin",
-      "print": "Printo QR",
       "posterTitle": "Rezervoni mësimin online",
       "scanHint": "Drejtojeni kamerën e telefonit nga kodi"
     }
@@ -159,7 +158,6 @@
     "botDisconnected": "Boti u shkëput",
     "codeCopied": "Kodi u kopjua!",
     "linkCopied": "Lidhja u kopjua!",
-    "printBlocked": "Lejoni dritaret kërcyese për të printuar kodin QR",
     "stripeReturned": "Të dhënat u dërguan te Stripe",
     "stripeLinkExpired": "Lidhja e Stripe skadoi — provoni sërish"
   },

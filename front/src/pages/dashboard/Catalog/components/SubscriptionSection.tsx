@@ -2,10 +2,13 @@ import { useState } from 'react';
 import { useAiIntent } from '../../../../hooks/useAiIntent';
 import { useTranslation } from 'react-i18next';
 import { usePackageList, useSubscriptionConfig } from '../hooks/useSubscriptions';
-import { useStudioCurrency } from '../../../../hooks/useStudioCurrency';
+import { useStudioCurrency, useStudioSettings } from '../../../../hooks/useStudioCurrency';
 import { getCurrencySymbol } from '../../../../components/UI';
+import * as Icons from '../../../../components/Icons';
 import { useToast } from '../../../../components/ui/Toast';
 import { ConfirmModal } from '../../../../components/ui/ConfirmModal';
+import { QrShareModal } from '../../../../components/ui/index';
+import { miniappLink } from '../../../../lib/miniapp';
 import { CatalogListSkeleton, CatalogError } from './CatalogSkeleton';
 import { errorMessage } from '../../../../api/errorMessage';
 import { PackageModal } from './modals/EditPackage';
@@ -31,6 +34,10 @@ export function SubscriptionSection() {
   const [packageModal, setPackageModal] = useState<{ pkg: SubscriptionPackage | null } | null>(null);
   // Пакет, для которого спрашиваем подтверждение снятия с продажи (null → не спрашиваем).
   const [confirmDeactivate, setConfirmDeactivate] = useState<SubscriptionPackage | null>(null);
+  // Пакет, чей QR открыт. Код ведёт в мини-приложение прямо на покупку этого
+  // абонемента — его печатают на стойку и выкладывают в сторис.
+  const [qrPackage, setQrPackage] = useState<SubscriptionPackage | null>(null);
+  const { data: studio } = useStudioSettings();
 
   // Ассистент: ?tab=subscriptions&ai=package.create (эпик AI-6, задача 9).
   useAiIntent('package.create', () => setPackageModal({ pkg: null }));
@@ -159,6 +166,18 @@ export function SubscriptionSection() {
                       ? t('catalog:subscriptions.card.allServices')
                       : t('catalog:subscriptions.card.serviceCount', { count: pkg.service_ids.length })}
                   </span>
+                  {/* QR только у того, что реально продаётся: код на снятый с
+                      продажи абонемент привёл бы клиента в пустоту. */}
+                  {pkg.is_active && studio?.miniapp_url && (
+                    <button
+                      className="cat-action-btn sub-card-qr"
+                      title={t('common:qr.packageAction')}
+                      aria-label={t('common:qr.packageAction')}
+                      onClick={() => setQrPackage(pkg)}
+                    >
+                      <Icons.QrCode />
+                    </button>
+                  )}
                   <button
                     className="cat-action-btn"
                     onClick={() => (pkg.is_active ? setConfirmDeactivate(pkg) : doRestore(pkg))}
@@ -219,6 +238,22 @@ export function SubscriptionSection() {
               throw error;
             }
           }}
+        />
+      )}
+
+      {qrPackage && (
+        <QrShareModal
+          url={miniappLink(studio?.miniapp_url ?? '', { tab: 'prof', pkg: qrPackage.id })}
+          kicker={studio?.name}
+          title={qrPackage.name}
+          subtitle={[
+            t('catalog:subscriptions.card.classCount', { count: qrPackage.class_count }),
+            `${currency}${qrPackage.price.toLocaleString()}`,
+            t('catalog:subscriptions.card.duration', { count: qrPackage.duration_days }),
+          ].join(' · ')}
+          caption={t('common:qr.packageCaption')}
+          fileName={qrPackage.name}
+          onClose={() => setQrPackage(null)}
         />
       )}
 

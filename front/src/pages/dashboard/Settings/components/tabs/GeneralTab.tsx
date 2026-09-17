@@ -57,7 +57,7 @@ export default function GeneralTab() {
   // должен совпадать один в один, обычный kit Select, без визуальных правок.
   const currencyOptions = CURRENCY_OPTIONS.map(c => ({ value: c.value, label: `${c.symbol}  ${t(`onboarding:settings.currencies.${c.value}`)}` }));
   const languageOptions = LANGUAGES;
-  const timezoneOptions = TIMEZONES.map(tz => ({ value: tz.value, label: t(`onboarding:settings.timezones.${tz.value}`) }));
+  const timezoneOptions = TIMEZONES;
 
   const dirty = COMPANY_FIELDS.some(k => draft[k] !== data[k]);
 

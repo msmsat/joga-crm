@@ -154,5 +154,22 @@
     "title": "Algo correu mal",
     "description": "Esta página encontrou um erro. Experimente recarregá-la — o resto da aplicação continua a funcionar.",
     "reload": "Recarregar a página"
+  },
+  "qr": {
+    "title": "Código QR",
+    "subtitle": "Imprima, publique nos stories ou copie o link.",
+    "copy": "Copiar",
+    "print": "Imprimir",
+    "story": "Para stories",
+    "copied": "Link copiado",
+    "copyFailed": "Não foi possível copiar o link",
+    "printBlocked": "O navegador bloqueou a janela de impressão",
+    "storySaved": "Imagem guardada",
+    "storyFailed": "Não foi possível criar a imagem",
+    "scanHint": "Aponte a câmara para marcar",
+    "lessonAction": "Código QR da aula",
+    "lessonCaption": "Aponte a câmara para marcar esta aula",
+    "packageAction": "Código QR do passe",
+    "packageCaption": "Aponte a câmara para comprar o passe"
   }
 }

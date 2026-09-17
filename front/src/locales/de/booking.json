@@ -19,7 +19,6 @@
       "desc": "Buchungs-Mini-App — für Bio, Stories und Kampagnen",
       "copy": "Link kopieren",
       "open": "Mini-App öffnen",
-      "print": "QR drucken",
       "posterTitle": "Buchen Sie Ihren Kurs online",
       "scanHint": "Richten Sie die Handykamera auf den Code"
     }
@@ -159,7 +158,6 @@
     "botDisconnected": "Bot getrennt",
     "codeCopied": "Code kopiert!",
     "linkCopied": "Link kopiert!",
-    "printBlocked": "Erlauben Sie Pop-ups, um den QR-Code zu drucken",
     "stripeReturned": "Daten an Stripe gesendet",
     "stripeLinkExpired": "Der Stripe-Link ist abgelaufen — bitte erneut versuchen"
   },

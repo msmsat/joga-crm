@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import "../../App.css";
 import { isValidPhoneNumber } from "react-phone-number-input";
 import {
-  Logo, StepIndicator, PremiumSelect, LANGUAGES, browserTimezone,
+  Logo, StepIndicator, PremiumSelect, LANGUAGES, browserTimezone, phoneCountry,
   Illustration1, Illustration3, Illustration4, Illustration5,
 } from "../UI";
 import { authApi, studioApi } from '../../api';
@@ -17,6 +17,7 @@ import StepSchedule from "./onboarding/StepSchedule";
 import type { OnboardingData } from "./onboarding/types";
 import { DEFAULT_WORKING_HOURS } from "./onboarding/types";
 import { chosenLang, initialLang, rememberLang } from "../../utils/lang";
+import { FALLBACK_CURRENCY, currencyForCountry } from "../../utils/geo";
 import { setActiveToken } from '../../utils/auth';
 
 type Step = 1 | 2 | 3 | 4 | 5;
@@ -51,7 +52,8 @@ export default function OnboardingPage() {
     website: "",
     timezone: browserTimezone(),
     language: chosenLang() || localStorage.getItem(ONBOARDING_LANG_KEY) || initialLang(),
-    currency: "RUB",
+    // Стартовое значение — до ответа сервера о стране (см. эффект ниже).
+    currency: FALLBACK_CURRENCY,
     dateFormat: "DD.MM.YYYY",
     firstDayOfWeek: "monday",
     workingHours: DEFAULT_WORKING_HOURS,
@@ -65,8 +67,30 @@ export default function OnboardingPage() {
     i18n.changeLanguage(data.language);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Страна визита: из неё берутся валюта студии и код в телефонном поле. Ответ
+  // приходит асинхронно, поэтому подставляем валюту ТОЛЬКО пока человек не
+  // трогал селект сам — иначе поздний ответ затёр бы уже сделанный выбор.
+  // Сбой запроса — не беда: в валюте остаётся евро, в телефоне международный
+  // формат. Часовой пояс здесь не трогаем намеренно: браузер знает его точнее
+  // IP — через VPN меняется страна, а часы на машине нет.
+  const [visitorCountry, setVisitorCountry] = useState<string | null>(null);
+  const currencyPicked = useRef(false);
+
+  useEffect(() => {
+    // Свой запрос, а не общий с detectLanguage: ответ зависит от текущего IP,
+    // сервер отдаёт его с no-store и переиспользовать его нельзя.
+    void authApi.getLocale().then(res => {
+      if (!res.country) return;
+      setVisitorCountry(res.country);
+      if (!currencyPicked.current) {
+        setData(d => ({ ...d, currency: currencyForCountry(res.country) }));
+      }
+    }).catch(() => {});
+  }, []);
+
   function patch(update: Partial<OnboardingData>) {
     setData(d => ({ ...d, ...update }));
+    if (update.currency) currencyPicked.current = true;
     if (update.language) {
       rememberLang(update.language);
       i18n.changeLanguage(update.language);
@@ -319,7 +343,7 @@ export default function OnboardingPage() {
           <div key={step} style={animStyle}>
             {step === 1 && <StepIdentity data={data} onChange={patch} />}
             {step === 2 && <StepActivity data={data} onChange={patch} />}
-            {step === 3 && <StepContact data={data} onChange={patch} />}
+            {step === 3 && <StepContact data={data} onChange={patch} country={phoneCountry(visitorCountry)} />}
             {step === 4 && <StepSettings data={data} onChange={patch} />}
             {step === 5 && <StepSchedule data={data} onChange={patch} />}
           </div>

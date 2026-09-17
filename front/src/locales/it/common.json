@@ -154,5 +154,22 @@
     "title": "Qualcosa è andato storto",
     "description": "Questa pagina ha incontrato un errore. Prova a ricaricarla — il resto dell'app continua a funzionare.",
     "reload": "Ricarica la pagina"
+  },
+  "qr": {
+    "title": "Codice QR",
+    "subtitle": "Stampalo, mettilo nelle storie o copia il link.",
+    "copy": "Copia",
+    "print": "Stampa",
+    "story": "Per le storie",
+    "copied": "Link copiato",
+    "copyFailed": "Impossibile copiare il link",
+    "printBlocked": "Il browser ha bloccato la finestra di stampa",
+    "storySaved": "Immagine salvata",
+    "storyFailed": "Impossibile creare l'immagine",
+    "scanHint": "Inquadra con la fotocamera per prenotare",
+    "lessonAction": "Codice QR della lezione",
+    "lessonCaption": "Inquadra con la fotocamera per prenotare questa lezione",
+    "packageAction": "Codice QR dell'abbonamento",
+    "packageCaption": "Inquadra con la fotocamera per acquistare l'abbonamento"
   }
 }

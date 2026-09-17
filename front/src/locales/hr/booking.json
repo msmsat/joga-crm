@@ -19,7 +19,6 @@
       "desc": "Mini aplikacija za rezervacije — za bio, stories i kampanje",
       "copy": "Kopiraj poveznicu",
       "open": "Otvori mini aplikaciju",
-      "print": "Ispiši QR",
       "posterTitle": "Rezervirajte termin online",
       "scanHint": "Usmjerite kameru telefona na kod"
     }
@@ -159,7 +158,6 @@
     "botDisconnected": "Bot odspojen",
     "codeCopied": "Kod kopiran!",
     "linkCopied": "Poveznica kopirana!",
-    "printBlocked": "Dopustite skočne prozore da biste ispisali QR kod",
     "stripeReturned": "Podaci poslani Stripeu",
     "stripeLinkExpired": "Stripe poveznica je istekla — pokušajte ponovno"
   },

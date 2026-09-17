@@ -7,7 +7,8 @@ import { useTranslation } from "react-i18next";
 import { placePopover } from "./ui/popoverPosition";
 import { LANGUAGES } from "../utils/lang";
 
-import PhoneInput from 'react-phone-number-input/input';
+import PhoneInput, { isSupportedCountry } from 'react-phone-number-input/input';
+import type { Country } from 'react-phone-number-input';
 import 'react-phone-number-input/style.css';
 
 // ─── FLOATING ORBS ────────────────────────────────────────────────────────────
@@ -95,6 +96,15 @@ export function InputField({ label, type = "text", placeholder, value, onChange,
   );
 }
 
+/** Страна для телефонного поля — только та, которую знает libphonenumber.
+ *
+ * Код страны приходит с сервера (`/auth/locale`), а он не всегда про географию:
+ * Cloudflare отдаёт псевдокоды вроде «EU» для анонимного прокси, и на такой
+ * стране PhoneInput падает с «Unknown country». Незнакомое — undefined, поле
+ * работает как раньше: номер вводится в международном формате. */
+export const phoneCountry = (code: string | null | undefined): Country | undefined =>
+  code && isSupportedCountry(code.toUpperCase()) ? (code.toUpperCase() as Country) : undefined;
+
 // ─── PHONE INPUT FIELD (С маской и флагами) ───────────────────────────────────
 // label необязателен: в модалках, где подпись рисует свой <FieldLabel>, пустой
 // <label> добавлял лишний отступ. hint — строка-подсказка под полем (например
@@ -105,9 +115,11 @@ interface PhoneFieldProps {
   onChange: (value: string | undefined) => void;
   error?: ReactNode;
   hint?: ReactNode;
+  /** Чей код подставить, когда номер набирают без «+». Обычно страна визита. */
+  defaultCountry?: Country;
 }
 
-export function PhoneField({ label, value, onChange, error, hint }: PhoneFieldProps) {
+export function PhoneField({ label, value, onChange, error, hint, defaultCountry }: PhoneFieldProps) {
   const [focused, setFocused] = useState(false);
   const hasValue = value && value.length > 0;
 
@@ -122,6 +134,7 @@ export function PhoneField({ label, value, onChange, error, hint }: PhoneFieldPr
         <PhoneInput
           placeholder="+"
           value={value}
+          defaultCountry={defaultCountry}
           onChange={onChange}
           className={`phone-input-wrapper ${focused ? "focused" : ""} ${hasValue ? "has-value" : ""} ${error ? "has-error" : ""}`}
           onFocus={() => setFocused(true)}
@@ -499,32 +512,53 @@ export const WEEK_START_OPTIONS = [
   { value: "sunday" },
 ];
 
-export const BUSINESS_CATEGORIES = [
-  { id: "fitness", icon: "🏋️", label: "Фитнес и спорт", subtypes: ["Тренажёрный зал", "CrossFit", "Бокс / MMA", "Йога", "Пилатес", "Стретчинг", "Танцы", "Плавание / бассейн", "Теннис", "Гольф"] },
-  { id: "beauty", icon: "💆", label: "Красота и уход", subtypes: ["Салон красоты", "Барбершоп", "Nail-студия", "Татуировки / пирсинг", "Брови и ресницы", "SPA-студия", "Массаж", "Эпиляция / шугаринг"] },
-  { id: "medical", icon: "🏥", label: "Медицина", subtypes: ["Клиника", "Стоматология", "Психотерапия", "Физиотерапия", "Косметология", "Дерматология", "Диетология", "Офтальмология"] },
-  { id: "education", icon: "📚", label: "Образование", subtypes: ["Языковая школа", "Репетиторство", "Детский центр", "Музыкальная школа", "Онлайн-курсы", "Бизнес-коучинг", "Арт-студия", "IT-обучение"] },
-  { id: "pets", icon: "🐾", label: "Ветеринария и животные", subtypes: ["Ветклиника", "Груминг", "Зоогостиница", "Кинология / дрессировка", "Зоосалон"] },
-  { id: "auto", icon: "🚗", label: "Авто", subtypes: ["Автомойка", "СТО", "Детейлинг", "Шиномонтаж", "Автошкола"] },
-  { id: "other", icon: "✦", label: "Другое", subtypes: ["Фотостудия", "Коворкинг", "Квест-комната", "Бьюти-бокс", "Иное"] },
+// Все целые офсеты, по порядку и без дыр: начинаем с Праги (UTC+1) и идём на
+// запад — Лондон, Нью-Йорк, Гавайи (-11), за линией перемены дат +14 и обратно
+// домой через +2, соседний с первым. Список значений обязан совпадать с Literal
+// Timezone в back/schemas/settings/general.py. Получасовых поясов (+5:30) нет
+// намеренно: офсет парсится как int часов (services/daily_notify.py:_studio_tz).
+//
+// Города НЕ переводятся и живут здесь, а не в локалях. Это имена собственные:
+// в пикере часовых поясов их держат латиницей все, а двадцать две копии одного
+// списка — ровно то, из-за чего эти подписи годами оставались с набором городов
+// от Калининграда до Камчатки. Один список — одно место, где его чинить.
+//
+// Офсеты стандартные, зимние: Прага — UTC+1, летом фактически +2. Так же было
+// и раньше; пикер выбирает пояс, а не текущее смещение.
+const TIMEZONE_CITIES: [string, string][] = [
+  ["UTC+1", "Prague, Berlin, Paris"],
+  ["UTC+0", "London, Lisbon, Dublin"],
+  ["UTC-1", "Azores, Cape Verde"],
+  ["UTC-2", "Fernando de Noronha"],
+  ["UTC-3", "Buenos Aires, São Paulo"],
+  ["UTC-4", "Halifax, Santiago"],
+  ["UTC-5", "New York, Toronto, Miami"],
+  ["UTC-6", "Chicago, Dallas, Mexico City"],
+  ["UTC-7", "Denver, Phoenix, Calgary"],
+  ["UTC-8", "Los Angeles, Seattle, Vancouver"],
+  ["UTC-9", "Anchorage"],
+  ["UTC-10", "Honolulu"],
+  ["UTC-11", "Pago Pago, Niue"],
+  ["UTC+14", "Kiritimati"],
+  ["UTC+13", "Apia, Nuku'alofa"],
+  ["UTC+12", "Auckland, Suva"],
+  ["UTC+11", "Nouméa, Honiara"],
+  ["UTC+10", "Sydney, Brisbane, Guam"],
+  ["UTC+9", "Tokyo, Seoul"],
+  ["UTC+8", "Singapore, Hong Kong, Beijing"],
+  ["UTC+7", "Bangkok, Jakarta, Hanoi"],
+  ["UTC+6", "Dhaka, Bishkek"],
+  // Казахстан перешёл на UTC+5 в марте 2024 — здесь Алматы стоял в +6.
+  ["UTC+5", "Tashkent, Almaty, Karachi"],
+  ["UTC+4", "Dubai, Baku, Tbilisi"],
+  ["UTC+3", "Istanbul, Nairobi, Riyadh"],
+  ["UTC+2", "Kyiv, Athens, Helsinki"],
 ];
 
-// Все целые офсеты, по порядку и без дыр: начинаем на час впереди Берлина
-// (UTC+2, Киев) и идём вниз — Берлин, Лондон, дальше на запад через Нью-Йорк к
-// Гавайям (-11), за линией перемены дат +14 и обратно к дому через +3.
-// Список значений обязан совпадать с Literal Timezone в
-// back/schemas/settings/general.py, подписи — ключи onboarding:settings.timezones.
-// Получасовых поясов (+5:30) нет намеренно: офсет парсится как int часов
-// (services/daily_notify.py:_studio_tz).
-export const TIMEZONES = [
-  { value: "UTC+2" }, { value: "UTC+1" }, { value: "UTC+0" },
-  { value: "UTC-1" }, { value: "UTC-2" }, { value: "UTC-3" }, { value: "UTC-4" },
-  { value: "UTC-5" }, { value: "UTC-6" }, { value: "UTC-7" }, { value: "UTC-8" },
-  { value: "UTC-9" }, { value: "UTC-10" }, { value: "UTC-11" },
-  { value: "UTC+14" }, { value: "UTC+13" }, { value: "UTC+12" }, { value: "UTC+11" },
-  { value: "UTC+10" }, { value: "UTC+9" }, { value: "UTC+8" }, { value: "UTC+7" },
-  { value: "UTC+6" }, { value: "UTC+5" }, { value: "UTC+4" }, { value: "UTC+3" },
-];
+export const TIMEZONES = TIMEZONE_CITIES.map(([value, cities]) => ({
+  value,
+  label: `${cities} (${value})`,
+}));
 
 // Стартовый пояс = пояс браузера: человеку остаётся согласиться, а не искать свой.
 // Дробные пояса (+5:30) обрезаем до целого — в списке только целые.
@@ -565,8 +599,10 @@ export const CURRENCIES = [
 const PICKABLE = ["RUB", "USD", "EUR", "UAH", "GBP", "CZK", "CHF"];
 export const CURRENCY_OPTIONS = CURRENCIES.filter(c => PICKABLE.includes(c.value));
 
+// Фолбэк — евро: в нём платформа выставляет счета, и он же подставляется
+// онбордингу, когда страна визита ничего не подсказала (utils/geo.ts).
 export function getCurrencySymbol(code: string | undefined): string {
-  return CURRENCIES.find(c => c.value === code)?.symbol ?? "₽";
+  return CURRENCIES.find(c => c.value === code)?.symbol ?? "€";
 }
 
 export function StepIndicator({ current, total }: { current: number; total: number }) {
@@ -839,7 +875,7 @@ export function Illustration4({ timezone, currency, language }: { timezone: stri
           <div style={{ fontSize: '9px', color: '#AAAAAA', fontWeight: 600, marginTop: '4px' }}>{(lang?.label ?? 'English').slice(0, 8)}</div>
         </div>
       </div>
-      {tz && <div style={{ fontSize: '11px', color: '#AAAAAA', fontWeight: 500 }}>{t(`onboarding:settings.timezones.${tz.value}`)}</div>}
+      {tz && <div style={{ fontSize: '11px', color: '#AAAAAA', fontWeight: 500 }}>{tz.label}</div>}
     </div>
   );
 }

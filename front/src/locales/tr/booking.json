@@ -19,7 +19,6 @@
       "desc": "Randevu mini uygulaması — bio, hikâye ve kampanyalar için",
       "copy": "Bağlantıyı kopyala",
       "open": "Mini uygulamayı aç",
-      "print": "QR yazdır",
       "posterTitle": "Dersinizi online ayırtın",
       "scanHint": "Telefon kameranızı koda tutun"
     }
@@ -159,7 +158,6 @@
     "botDisconnected": "Bot bağlantısı kesildi",
     "codeCopied": "Kod kopyalandı!",
     "linkCopied": "Bağlantı kopyalandı!",
-    "printBlocked": "QR kodu yazdırmak için açılır pencerelere izin verin",
     "stripeReturned": "Bilgiler Stripe'a gönderildi",
     "stripeLinkExpired": "Stripe bağlantısının süresi doldu — tekrar deneyin"
   },

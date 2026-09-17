@@ -154,5 +154,22 @@
     "title": "Algo ha salido mal",
     "description": "Esta página ha encontrado un error. Prueba a recargarla — el resto de la aplicación sigue funcionando.",
     "reload": "Recargar la página"
+  },
+  "qr": {
+    "title": "Código QR",
+    "subtitle": "Imprímelo, súbelo a historias o copia el enlace.",
+    "copy": "Copiar",
+    "print": "Imprimir",
+    "story": "Para historias",
+    "copied": "Enlace copiado",
+    "copyFailed": "No se pudo copiar el enlace",
+    "printBlocked": "El navegador bloqueó la ventana de impresión",
+    "storySaved": "Imagen guardada",
+    "storyFailed": "No se pudo crear la imagen",
+    "scanHint": "Apunta la cámara para reservar",
+    "lessonAction": "Código QR de la clase",
+    "lessonCaption": "Apunta la cámara para reservar esta clase",
+    "packageAction": "Código QR del bono",
+    "packageCaption": "Apunta la cámara para comprar el bono"
   }
 }
