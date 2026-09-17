@@ -1,0 +1,435 @@
+{
+  "categories": {
+    "all": "Toți",
+    "vip": "VIP",
+    "active": "Activi",
+    "new": "Noi",
+    "has_subscription": "Cu abonament",
+    "inactive": "Inactivi",
+    "frozen": "Înghețați",
+    "birthday": "Zi de naștere"
+  },
+  "categoriesInfo": {
+    "all": {
+      "text": "Lista completă de clienți a studioului, fără filtru de stare aplicat."
+    },
+    "vip": {
+      "text": "Plăți reușite în valoare totală de 50.000+ sau 30+ vizite. VIP poate fi fixat și manual în fișa clientului; fixarea manuală se păstrează indiferent de sume."
+    },
+    "active": {
+      "text": "Cel puțin o vizită în ultimele 60 de zile. Se bazează pe prezența marcată în jurnal — starea se actualizează singură, fără a fi setată manual."
+    },
+    "new": {
+      "text": "Primele 15 zile de la data înregistrării, indiferent dacă clientul a fost adăugat manual sau a venit prin rezervare online. În ziua a 16-a trece automat la Activ sau Inactiv."
+    },
+    "has_subscription": {
+      "text": "Are un abonament activ: neexpirat, neînghețat și cu ședințe rămase. Se actualizează imediat la cumpărare, după fiecare ședință utilizată și la expirare."
+    },
+    "inactive": {
+      "text": "Nicio vizită în ultimele 60 de zile — sau nu a vizitat niciodată și au trecut mai mult de 15 zile de la înregistrare."
+    },
+    "frozen": {
+      "text": "Înghețat cu butonul din fișa clientului — singura stare setată manual. După dezghețare, clientul revine la starea automată."
+    },
+    "birthday": {
+      "text": "Cei care își serbează astăzi ziua de naștere — ziua și luna corespund, anul este ignorat. Lista se actualizează automat în fiecare zi."
+    }
+  },
+  "status": {
+    "active": "Activ",
+    "vip": "VIP",
+    "new": "Nou",
+    "inactive": "Inactiv",
+    "frozen": "Înghețat"
+  },
+  "filtersGuide": {
+    "trigger": "Despre filtre",
+    "title": "Filtre de clienți",
+    "subtitle": "Cum se calculează fiecare categorie. Faceți clic pe un card pentru a aplica filtrul sau schimbați un prag — stările se recalculează imediat.",
+    "close": "Închide",
+    "rule": {
+      "new_client_days": "Nou timp de",
+      "active_within_days": "Vizită în ultimele",
+      "vip_min_spent": "Cheltuit de la",
+      "vip_min_visits": "sau vizite"
+    },
+    "unit": {
+      "days": "zile",
+      "money": "",
+      "visits": "vizite"
+    }
+  },
+  "toolbar": {
+    "searchPlaceholder": "Caută client…",
+    "addClient": "Adaugă client"
+  },
+  "table": {
+    "visits": "vizite",
+    "frozenBadge": "❄ înghețat",
+    "totalSpent": "Total cheltuit",
+    "subscription": "Abonament",
+    "of": "din",
+    "noSubscription": "Fără abonament"
+  },
+  "loadMore": "Încarcă mai mult",
+  "loading": "Se încarcă…",
+  "panel": {
+    "tabs": {
+      "info": "Profil",
+      "events": "Evenimente",
+      "notes": "Note",
+      "wallet": "Cumpărături"
+    },
+    "actions": {
+      "book": "Rezervă",
+      "bonus": "Bonus"
+    },
+    "editDateHint": "Faceți clic pentru editare",
+    "since": "din {{date}}",
+    "contacts": {
+      "title": "Contacte",
+      "phone": "Telefon",
+      "email": "E-mail",
+      "telegram": "Telegram",
+      "birthDate": "Data nașterii",
+      "city": "Oraș",
+      "copyHint": " · faceți clic pentru copiere"
+    },
+    "debt": "{{amount}} neachitați pentru ședințe — acceptați plata în Jurnal",
+    "stats": {
+      "visits": "Vizite",
+      "spent": "Cheltuit",
+      "subscription": "Abonament"
+    },
+    "loyalty": {
+      "points": "puncte",
+      "level": "nivelul {{tier}}",
+      "toNext": "Până la următorul nivel: {{points}} puncte",
+      "multiplier": "multiplicator de puncte ×{{value}}",
+      "worth": "Valorează {{amount}} la plată",
+      "toNextLevel": "Încă {{amount}} pentru a ajunge la {{level}}",
+      "pointValue": "1 punct = {{amount}}",
+      "nextPointValue": "la {{level}} — {{amount}}",
+      "noBonus": "Acest nivel nu modifică valoarea punctelor"
+    },
+    "referral": {
+      "title": "Invită un prieten",
+      "copy": "Copiază"
+    },
+    "abonement": {
+      "title": "Abonament",
+      "lessons": "{{remaining}}/{{total}} ședințe",
+      "noSubscription": "Niciun abonament activ",
+      "noSubscriptionWarning": "Clientul nu are abonament — oferiți-i unul",
+      "lowWarning": "Au rămas puține ședințe — oferiți o reînnoire",
+      "finishedWarning": "Nu au mai rămas ședințe — oferiți o reînnoire",
+      "remind": "Amintește clientului",
+      "reminderSent": "Memento trimis clientului"
+    },
+    "products": {
+      "single": "individual",
+      "pending": "în așteptare",
+      "frozen": "înghețat",
+      "until": "Valabil până la {{date}}",
+      "startsOnFirstVisit": "Perioada începe cu prima ședință"
+    },
+    "wallet": {
+      "buy": "Cumpără",
+      "active": "Active",
+      "archived": "Arhivate",
+      "singles": "Vizite individuale",
+      "subscriptions": "Abonamente",
+      "noSingles": "Încă nu există vizite individuale",
+      "emptyActive": "Nu există produse active",
+      "emptyArchived": "Nu există produse arhivate",
+      "emptyCatalog": "Acest studio nu are încă pachete de abonament",
+      "lessons": "{{remaining}}/{{total}} ședințe",
+      "perVisit": "Pe vizită individuală",
+      "until": "până la {{date}}",
+      "frozenBadge": "Înghețat",
+      "loadFailed": "Încărcarea portofelului a eșuat",
+      "back": "← Înapoi",
+      "catalogTitle": "Catalog",
+      "showAll": "Toate",
+      "posTitle": "Casă",
+      "promoLabel": "Cod promoțional",
+      "promoPlaceholder": "Introduceți codul promoțional",
+      "promoInvalid": "Codul promoțional nu este valid",
+      "useDeposit": "Plătește din depozit ({{amount}})",
+      "certLabel": "Cod certificat",
+      "certPlaceholder": "Introduceți codul certificatului",
+      "certApplied": "Certificat",
+      "depositApplied": "Depozit",
+      "base": "Preț de bază",
+      "discount": "Reducere",
+      "bonuses": "Bonusuri",
+      "total": "Total",
+      "cash": "Numerar",
+      "card": "Card",
+      "cardStripe": "Plățile cu cardul trec printr-o pagină Stripe și ajung direct în contul studioului. Configurați-le în Finanțe → Plăți online.",
+      "offlineLocked": "Plățile în numerar sunt disponibile în planurile Combo și superioare",
+      "payByCard": "Plătește cu cardul",
+      "confirmPay": "Confirmă plata",
+      "confirmPayCovered": "Confirmă (deja plătit)",
+      "confirmTitle": "Confirmați plata primită?",
+      "confirmMessage": "Se va înregistra un venit de {{amount}} și produsul va fi acordat clientului.",
+      "confirmMessageCard": "Se va deschide un formular de plată Stripe pentru {{amount}}. Produsul este acordat și venitul înregistrat după reușita plății.",
+      "payToStudio": "Plata ajunge în contul studioului",
+      "payConfirming": "Se verifică plata…",
+      "close": "Închide",
+      "confirmMessageCovered": "Plata este acoperită integral de depozit sau certificat. Produsul va fi acordat clientului.",
+      "paySuccess": "Plată înregistrată",
+      "payCancelled": "Plata a fost anulată — nu s-a debitat nimic",
+      "payNotCompleted": "Stripe nu a confirmat încă plata. Dacă a fost debitat cardul, reîmprospătați peste un minut.",
+      "payNotApplied": "Cardul a fost debitat, dar vânzarea nu a putut fi înregistrată: condițiile s-au schimbat (certificat, cod promoțional sau pachet). Înregistrați manual vânzarea sau rambursați în Stripe.",
+      "transfer": "Transferă",
+      "transferTitle": "Transferă abonamentul",
+      "transferSearchLabel": "Transferă către",
+      "transferSearchPlaceholder": "Numele sau telefonul clientului",
+      "transferSelectPlaceholder": "Selectați clientul",
+      "transferConfirm": "Transferă",
+      "transferSuccess": "Abonament transferat",
+      "lessonsCount_one": "{{count}} ședință",
+      "lessonsCount_few": "{{count}} ședințe",
+      "lessonsCount_other": "{{count}} de ședințe",
+      "useBonuses_one": "Folosește bonusuri ({{count}})",
+      "useBonuses_few": "Folosește bonusuri ({{count}})",
+      "useBonuses_other": "Folosește bonusuri ({{count}})",
+      "bonusesSpent_one": "Bonusuri ({{count}} pct.)",
+      "bonusesSpent_few": "Bonusuri ({{count}} pct.)",
+      "bonusesSpent_other": "Bonusuri ({{count}} pct.)"
+    },
+    "offers": {
+      "title": "Reducere personală",
+      "empty": "Nu există reduceri active",
+      "grant": "Acordă reducere",
+      "cancel": "Anulează",
+      "valuePercent": "{{value}}%",
+      "valueAmount": "{{value}} ₽",
+      "untilDate": "până la {{date}}",
+      "noExpiry": "fără expirare",
+      "scopeRenewal": "pentru reînnoire",
+      "grantTitle": "Acordă o reducere personală",
+      "grantValue": "Valoarea reducerii",
+      "grantType": {
+        "percent": "Procent (%)",
+        "amount": "Sumă (₽)"
+      },
+      "grantValidUntil": "Valabil până la",
+      "grantSubmit": "Acordă",
+      "cancelConfirmTitle": "Anulați reducerea?",
+      "cancelConfirmMessage": "Clientul nu va mai putea folosi această ofertă.",
+      "toasts": {
+        "granted": "Reducere acordată",
+        "cancelled": "Reducere anulată",
+        "loadFailed": "Nu s-au putut încărca reducerile"
+      }
+    },
+    "activity": {
+      "compactTitle": "Activitate (3 luni)",
+      "clickForDetails": "Faceți clic pentru detalii",
+      "detailedTitle": "Activitate detaliată",
+      "periods": {
+        "month3": "3 luni",
+        "month6": "6 luni"
+      },
+      "visitsInPeriod": "Vizite în perioadă",
+      "emptyState": "Nu există vizite în această perioadă",
+      "insightTitle": "Frecvență medie",
+      "insightBody": "În medie {{avg}} vizite pe lună în perioada selectată.",
+      "months": {
+        "jan": "ian.",
+        "feb": "feb.",
+        "mar": "mar.",
+        "apr": "apr.",
+        "may": "mai",
+        "jun": "iun.",
+        "jul": "iul.",
+        "aug": "aug.",
+        "sep": "sept.",
+        "oct": "oct.",
+        "nov": "nov.",
+        "dec": "dec."
+      },
+      "visitsTooltip_one": "{{count}} vizită",
+      "visitsTooltip_few": "{{count}} vizite",
+      "visitsTooltip_other": "{{count}} de vizite"
+    },
+    "tags": {
+      "title": "Etichete",
+      "add": "Adaugă",
+      "close": "Închide",
+      "customPlaceholder": "Etichetă proprie + Enter…"
+    },
+    "danger": {
+      "freeze": "Îngheață",
+      "unfreeze": "Dezgheață",
+      "freezeDisabledHint": "Înghețarea este dezactivată în Catalog → setări abonamente",
+      "delete": "Șterge"
+    },
+    "events": {
+      "filterTabs": {
+        "all": "Toate",
+        "payment": "Plăți",
+        "visit": "Vizite",
+        "booking": "Rezervări",
+        "cancel": "Anulări",
+        "bonus": "Bonusuri",
+        "freeze": "Înghețări"
+      },
+      "empty": "Nu există evenimente"
+    },
+    "notes": {
+      "title": "Note administrator",
+      "prefix": "Notă · {{date}}",
+      "save": "Salvează",
+      "cancel": "Anulează",
+      "addPlaceholder": "Introduceți o notă…",
+      "add": "Adaugă notă",
+      "justNow": "chiar acum",
+      "deleteTitle": "Ștergeți nota?",
+      "deleteMessage": "Această notă nu poate fi recuperată."
+    },
+    "bookingPanel": {
+      "title": "Rezervare rapidă",
+      "today": "Astăzi",
+      "noLessons": "Nu există ședințe în această zi",
+      "full": "Nu mai sunt locuri",
+      "confirm": "Rezervă →",
+      "noSubscription": "Clientul nu are abonament disponibil pentru rezervare",
+      "individual": "Serviciu individual"
+    },
+    "bonusPanel": {
+      "title": "Acordă bonus"
+    },
+    "toasts": {
+      "noPhone": "Clientul nu are număr de telefon",
+      "copied": "Copiat cu succes",
+      "bookingCreated": "Rezervare creată",
+      "bookingFailed": "Rezervarea a eșuat",
+      "bonusFailed": "Nu s-au putut acorda punctele",
+      "bonusApplied": "Bonus acordat: {{label}}",
+      "clientAdded": "Client adăugat"
+    },
+    "bonusOptions": {
+      "p200": {
+        "label": "+200 puncte",
+        "description": "Adaugă la soldul de fidelitate"
+      },
+      "p500": {
+        "label": "+500 puncte",
+        "description": "Adaugă la soldul de fidelitate"
+      },
+      "p1000": {
+        "label": "+1000 puncte",
+        "description": "Adaugă la soldul de fidelitate"
+      }
+    }
+  },
+  "tags": {
+    "suggested": [
+      "Probă",
+      "VIP",
+      "Recomandare",
+      "Online",
+      "Grup",
+      "Personal"
+    ]
+  },
+  "addModal": {
+    "title": "Client nou",
+    "cancel": "Anulează",
+    "back": "← Înapoi",
+    "continue": "Continuă →",
+    "submit": "Adaugă client ✓",
+    "stepCounter": "Pasul {{current}} din {{total}}",
+    "trustSignal": "Datele sunt protejate și vizibile numai administratorilor",
+    "steps": {
+      "1": {
+        "title": "Date personale",
+        "sub": "Introduceți datele de contact ale clientului"
+      },
+      "2": {
+        "title": "Detalii de profil",
+        "sub": "Informații suplimentare (opțional)"
+      },
+      "3": {
+        "title": "Abonament",
+        "sub": "Alegeți un tip de abonament și adăugați o notă"
+      },
+      "4": {
+        "title": "Totul este gata!",
+        "sub": "Verificați datele și adăugați clientul"
+      }
+    },
+    "step1": {
+      "previewLabel": "Client nou · Previzualizare",
+      "name": "Nume complet *",
+      "namePlaceholder": "Andrei Popescu",
+      "phone": "Telefon",
+      "phonePlaceholder": "+40 700 000 000",
+      "email": "E-mail",
+      "emailPlaceholder": "client@exemplu.ro"
+    },
+    "step2": {
+      "bday": "Data nașterii",
+      "bdayPlaceholder": "12 aprilie 1990",
+      "city": "Oraș",
+      "cityPlaceholder": "București",
+      "tags": "Etichete",
+      "tagsPlaceholder": "Pilates, VIP, recuperare… (Enter)",
+      "tagsHint": "Apăsați Enter pentru a adăuga o etichetă",
+      "inviteCode": "Cod de invitație al recomandatorului",
+      "inviteCodePlaceholder": "Opțional",
+      "inviteCodeHint": "Dacă este furnizat, amândoi primiți un bonus"
+    },
+    "step3": {
+      "classCount": "Abonament",
+      "classesUnit": "ședințe",
+      "selected": "Selectat",
+      "noPackage": "Fără abonament",
+      "noPackages": "Acest studio nu are încă pachete de abonament",
+      "noPackagesLink": "Creează pachete în Catalog →",
+      "alreadyPaid": "Clientul a plătit deja pentru acest abonament?",
+      "yes": "Da",
+      "no": "Nu",
+      "note": "Notă",
+      "notePlaceholder": "Cerințe speciale, contraindicații, preferințe…",
+      "classesCount_one": "{{count}} ședință",
+      "classesCount_few": "{{count}} ședințe",
+      "classesCount_other": "{{count}} de ședințe"
+    },
+    "step4": {
+      "readyTitle": "Date completate!",
+      "readySub": "Verificați datele și confirmați adăugarea",
+      "newClient": "Client nou",
+      "fields": {
+        "phone": "Telefon",
+        "email": "E-mail",
+        "bday": "Data nașterii",
+        "city": "Oraș",
+        "subscription": "Abonament",
+        "tags": "Etichete"
+      },
+      "smsTitle": "Trimite SMS de bun venit",
+      "smsSub": "Clientul va primi un mesaj de invitație",
+      "subscriptionValue_one": "{{count}} ședință",
+      "subscriptionValue_few": "{{count}} ședințe",
+      "subscriptionValue_other": "{{count}} de ședințe"
+    },
+    "errors": {
+      "name": "Introduceți un nume (cel puțin 2 caractere)",
+      "phone": "Număr de telefon nevalid",
+      "email": "E-mail nevalid",
+      "city": "Introduceți un oraș"
+    }
+  },
+  "deleteModal": {
+    "title": "Ștergeți clientul?",
+    "body": "Sunteți pe punctul de a șterge clientul",
+    "warning": "Această acțiune nu poate fi anulată.",
+    "cancel": "Anulează",
+    "confirm": "Șterge",
+    "success": "Client șters"
+  }
+}

@@ -320,6 +320,35 @@ def check_secret_key() -> None:
         _err("SECRET_KEY слишком короткий или дефолтный — токены можно подделать")
 
 
+def check_admin_panel() -> None:
+    """Панель платформы: включена — значит настроена правильно.
+
+    Сама по себе панель необязательна, поэтому её отсутствие не блокер. А вот
+    включённая панель с общим секретом подписи — блокер: с ним любой выданный
+    кабинетом токен становится валидной подписью и для неё, и разделение
+    контуров существует только на бумаге.
+    """
+    import sys as _sys
+    from pathlib import Path as _Path
+
+    _sys.path.insert(0, str(_Path(__file__).resolve().parent.parent))
+    from services import admin_auth
+
+    if not admin_auth.is_configured():
+        _warn(
+            "Панель платформы выключена: не заданы ADMIN_LOGIN / "
+            "ADMIN_PASSWORD_HASH / ADMIN_JWT_SECRET. Это штатно, если она не нужна"
+        )
+        return
+    if admin_auth.secret_conflicts():
+        _err(
+            "ADMIN_JWT_SECRET совпадает с SECRET_KEY: любой токен кабинета станет "
+            "валидной подписью для панели платформы. Сгенерируйте отдельный секрет"
+        )
+    if len(os.getenv("ADMIN_JWT_SECRET", "")) < 32:
+        _err("ADMIN_JWT_SECRET короче 32 символов — подпись панели подделываема")
+
+
 def check_legal_docs() -> None:
     """Условия и Политика — сделка с клиентом, а не украшение.
 
@@ -1229,6 +1258,7 @@ async def main(sync: bool) -> int:
     check_smtp()
     check_platform_email()
     check_legal_docs()
+    check_admin_panel()
     check_ai()
     await check_ai_models()
     await check_ai_credits()

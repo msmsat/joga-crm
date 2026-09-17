@@ -329,3 +329,113 @@ missing namespace (`clients`) across incomplete UI languages.
 
 - Built and strictly verified the 309-value French `clients.json` from
   `clients-fr-2026-09-17.tsv`, including all French plural forms.
+
+## 2026-09-17 — clients / Spanish batch
+
+- Built and strictly verified the 309-value Spanish `clients.json` from
+  `clients-es-2026-09-17.tsv`, including all Spanish plural forms.
+
+## 2026-09-17 — clients / Italian batch
+
+- Built and strictly verified the 309-value Italian `clients.json` from
+  `clients-it-2026-09-17.tsv`, including all Italian plural forms.
+
+## 2026-09-17 — clients / Portuguese batch
+
+- Built and strictly verified the 309-value Portuguese `clients.json` from
+  `clients-pt-2026-09-17.tsv`, including all Portuguese plural forms.
+
+## 2026-09-17 — clients / Danish batch
+
+- Built and strictly verified the 309-value Danish `clients.json` from
+  `clients-da-2026-09-17.tsv`, including all Danish plural forms.
+
+## 2026-09-17 — clients / Finnish batch
+
+- Built and strictly verified the 309-value Finnish `clients.json` from
+  `clients-fi-2026-09-17.tsv`, including all Finnish plural forms.
+
+## 2026-09-17 — clients / Norwegian batch
+
+- Built and strictly verified the 309-value Norwegian Bokmål `clients.json`
+  from `clients-no-2026-09-17.tsv`, including all Norwegian plural forms.
+
+## 2026-09-17 — clients / Swedish batch
+
+- Built and strictly verified the 309-value Swedish `clients.json` from
+  `clients-sv-2026-09-17.tsv`, including all Swedish plural forms.
+
+## 2026-09-17 — clients / Albanian batch
+
+- Built and strictly verified the 309-value Albanian `clients.json` from
+  `clients-sq-2026-09-17.tsv`, including all Albanian plural forms.
+
+## 2026-09-17 — clients / Bulgarian batch
+
+- Built and strictly verified the 309-value Bulgarian `clients.json` from
+  `clients-bg-2026-09-17.tsv`, including all Bulgarian plural forms.
+
+## 2026-09-17 — clients / Croatian batch
+
+- Built and strictly verified the 315-value Croatian `clients.json` from
+  `clients-hr-2026-09-17.tsv`, including all Croatian plural forms.
+
+## 2026-09-17 — clients / Greek batch
+
+- Built and strictly verified the 309-value Greek `clients.json` from
+  `clients-el-2026-09-17.tsv`, including all Greek plural forms.
+
+## 2026-09-17 — clients / Hungarian batch
+
+- Built and strictly verified the 309-value Hungarian `clients.json` from
+  `clients-hu-2026-09-17.tsv`, including all Hungarian plural forms.
+
+## 2026-09-17 — clients / Polish batch
+
+- Built and strictly verified the 315-value Polish `clients.json` from
+  `clients-pl-2026-09-17.tsv`, including all Polish plural forms.
+
+## 2026-09-17 — clients / Romanian batch
+
+- Built and strictly verified the 315-value Romanian `clients.json` from
+  `clients-ro-2026-09-17.tsv`, including all Romanian plural forms.
+
+## 2026-09-17 — clients / Turkish batch
+
+- Built and strictly verified the 309-value Turkish `clients.json` from
+  `clients-tr-2026-09-17.tsv`, including all Turkish plural forms.
+
+## 2026-09-17 — clients / Serbian batch
+
+- Built and strictly verified the 315-value Serbian Cyrillic `clients.json`
+  from `clients-sr-2026-09-17.tsv`, including all Serbian plural forms.
+
+### Next concrete step
+
+Run a full strict validation checkpoint, then translate the next missing
+namespace (`notifications`) across the languages that do not yet contain it.
+
+## 2026-09-17 — notifications / Albanian batch
+
+- Built and strictly verified the 240-value Albanian `notifications.json`
+  from `notifications-sq-2026-09-17.tsv`, including Albanian plural forms.
+
+## 2026-09-17 — notifications / Bulgarian batch
+
+- Built and strictly verified the 240-value Bulgarian `notifications.json`
+  from `notifications-bg-2026-09-17.tsv`, including Bulgarian plural forms.
+
+## 2026-09-17 — notifications / Croatian batch
+
+- Built and strictly verified the 247-value Croatian `notifications.json`
+  from `notifications-hr-2026-09-17.tsv`, including Croatian plural forms.
+
+## 2026-09-17 — notifications / Danish batch
+
+- Built and strictly verified the 240-value Danish `notifications.json` from
+  `notifications-da-2026-09-17.tsv`, including Danish plural forms.
+
+## 2026-09-17 — notifications / Finnish batch
+
+- Built and strictly verified the 240-value Finnish `notifications.json`
+  from `notifications-fi-2026-09-17.tsv`, including Finnish plural forms.

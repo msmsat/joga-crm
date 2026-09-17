@@ -11,6 +11,7 @@ import { authApi, ApiError } from '../api';
 import { setActiveToken } from '../utils/auth';
 import { LEGAL_FOOTER_LINKS, LEGAL_LINK_PROPS, PRIVACY_URL, TERMS_URL } from '../utils/legal';
 import { TRIAL_DAYS } from '../api/billing/billing.types';
+import { getAnonId } from "../lib/anonId";
 
 // ─── STEP TYPES ──────────────────────────────────────────────────────────────
 
@@ -126,7 +127,7 @@ export default function RegisterPage() {
     setSubmitError("");
 
     try {
-      await authApi.register({ email, name: displayName, password, accept_terms: agree });
+      await authApi.register({ email, name: displayName, password, accept_terms: agree, anon_id: getAnonId() });
       setStep(4);
     } catch (err: unknown) {
       setSubmitError(err instanceof ApiError ? err.message : "Ошибка соединения с сервером");

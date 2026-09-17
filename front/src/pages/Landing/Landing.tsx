@@ -1,4 +1,6 @@
+import { useEffect } from "react";
 import { MotionConfig } from "framer-motion";
+import { reportLandingVisit } from "../../api/landing";
 import { useTranslation } from "react-i18next";
 import "../../App.css"; // Manrope + классы кнопок .btn/.btn-primary из ДС
 import "./landing.css"; // непрерывные анимации и подложки лендинга
@@ -26,6 +28,10 @@ import { Cta } from "./components/Cta";
  * (см. tokens.ts), потому что маркетинговая обложка всегда одна и та же.
  */
 export default function Landing() {
+  // Один раз на монтирование. Повторы внутри получаса схлопывает сервер, так
+  // что перезагрузка страницы не превращается в новый визит.
+  useEffect(() => { reportLandingVisit(); }, []);
+
   const { t } = useTranslation("landing");
   // В ленте — то, что в продукте уже есть. Был список ниш (барбершоп, SPA,
   // ногтевой сервис, кроссфит): текущий фокус — студии йоги и пилатеса

@@ -1,0 +1,429 @@
+{
+  "categories": {
+    "all": "Összes",
+    "vip": "VIP",
+    "active": "Aktív",
+    "new": "Új",
+    "has_subscription": "Bérlettel",
+    "inactive": "Inaktív",
+    "frozen": "Felfüggesztett",
+    "birthday": "Születésnap"
+  },
+  "categoriesInfo": {
+    "all": {
+      "text": "A stúdió teljes ügyféllistája, állapotszűrő nélkül."
+    },
+    "vip": {
+      "text": "Sikeres fizetések összesen 50 000+ értékben vagy 30+ látogatás. A VIP kézzel is rögzíthető az ügyfélkártyán; a kézi rögzítés az összegektől függetlenül megmarad."
+    },
+    "active": {
+      "text": "Legalább egy látogatás az elmúlt 60 napban. A naplóban jelölt jelenléten alapul — az állapot magától frissül, nem kell kézzel beállítani."
+    },
+    "new": {
+      "text": "A regisztráció dátumától számított első 15 nap, függetlenül attól, hogy az ügyfelet kézzel adták hozzá vagy online foglalásból érkezett. A 16. napon automatikusan Aktív vagy Inaktív lesz."
+    },
+    "has_subscription": {
+      "text": "Érvényes bérlete van: nem járt le, nincs felfüggesztve, és maradt még alkalom. Azonnal frissül vásárláskor, minden felhasznált alkalom után és lejáratkor."
+    },
+    "inactive": {
+      "text": "Nincs látogatása az elmúlt 60 napban — vagy soha nem látogatott el, és több mint 15 nap telt el a regisztráció óta."
+    },
+    "frozen": {
+      "text": "Az ügyfélkártya gombjával felfüggesztve — ez az egyetlen kézzel beállított állapot. Feloldás után az ügyfél visszatér az automatikus állapotához."
+    },
+    "birthday": {
+      "text": "Akiknek ma van a születésnapjuk — a nap és a hónap egyezik, az év nem számít. A lista minden nap automatikusan frissül."
+    }
+  },
+  "status": {
+    "active": "Aktív",
+    "vip": "VIP",
+    "new": "Új",
+    "inactive": "Inaktív",
+    "frozen": "Felfüggesztett"
+  },
+  "filtersGuide": {
+    "trigger": "A szűrőkről",
+    "title": "Ügyfélszűrők",
+    "subtitle": "Így számítjuk ki az egyes kategóriákat. Kattintson egy kártyára a szűrő alkalmazásához, vagy módosítson egy küszöbértéket — az állapotok azonnal újraszámolódnak.",
+    "close": "Bezárás",
+    "rule": {
+      "new_client_days": "Új ennyi ideig:",
+      "active_within_days": "Látogatás ennyi időn belül:",
+      "vip_min_spent": "Elköltött összeg ettől:",
+      "vip_min_visits": "vagy látogatások"
+    },
+    "unit": {
+      "days": "nap",
+      "money": "",
+      "visits": "látogatás"
+    }
+  },
+  "toolbar": {
+    "searchPlaceholder": "Ügyfél keresése…",
+    "addClient": "Ügyfél hozzáadása"
+  },
+  "table": {
+    "visits": "látogatás",
+    "frozenBadge": "❄ felfüggesztve",
+    "totalSpent": "Összes költés",
+    "subscription": "Bérlet",
+    "of": "/",
+    "noSubscription": "Nincs bérlet"
+  },
+  "loadMore": "Több betöltése",
+  "loading": "Betöltés…",
+  "panel": {
+    "tabs": {
+      "info": "Profil",
+      "events": "Események",
+      "notes": "Jegyzetek",
+      "wallet": "Vásárlások"
+    },
+    "actions": {
+      "book": "Foglalás",
+      "bonus": "Bónusz"
+    },
+    "editDateHint": "Kattintson a szerkesztéshez",
+    "since": "{{date}} óta",
+    "contacts": {
+      "title": "Kapcsolat",
+      "phone": "Telefon",
+      "email": "E-mail",
+      "telegram": "Telegram",
+      "birthDate": "Születési dátum",
+      "city": "Város",
+      "copyHint": " · kattintson a másoláshoz"
+    },
+    "debt": "{{amount}} kifizetetlen az alkalmakért — fogadja el a fizetést a Naplóban",
+    "stats": {
+      "visits": "Látogatások",
+      "spent": "Elköltve",
+      "subscription": "Bérlet"
+    },
+    "loyalty": {
+      "points": "pont",
+      "level": "{{tier}} szint",
+      "toNext": "A következő szintig: {{points}} pont",
+      "multiplier": "×{{value}} pontos szorzó",
+      "worth": "Értéke fizetéskor: {{amount}}",
+      "toNextLevel": "Még {{amount}} a(z) {{level}} eléréséhez",
+      "pointValue": "1 pont = {{amount}}",
+      "nextPointValue": "a(z) {{level}} szinten — {{amount}}",
+      "noBonus": "Ez a szint nem változtatja meg a pont értékét"
+    },
+    "referral": {
+      "title": "Barát meghívása",
+      "copy": "Másolás"
+    },
+    "abonement": {
+      "title": "Bérlet",
+      "lessons": "{{remaining}}/{{total}} alkalom",
+      "noSubscription": "Nincs aktív bérlet",
+      "noSubscriptionWarning": "Az ügyfélnek nincs bérlete — ajánljon fel egyet",
+      "lowWarning": "Kevés alkalom maradt — ajánljon fel hosszabbítást",
+      "finishedWarning": "Nincs több alkalom — ajánljon fel hosszabbítást",
+      "remind": "Ügyfél emlékeztetése",
+      "reminderSent": "Emlékeztető elküldve az ügyfélnek"
+    },
+    "products": {
+      "single": "egyszeri",
+      "pending": "várakozó",
+      "frozen": "felfüggesztett",
+      "until": "Érvényes {{date}}-ig",
+      "startsOnFirstVisit": "Az időszak az első alkalommal kezdődik"
+    },
+    "wallet": {
+      "buy": "Vásárlás",
+      "active": "Aktív",
+      "archived": "Archivált",
+      "singles": "Egyszeri látogatások",
+      "subscriptions": "Bérletek",
+      "noSingles": "Még nincsenek egyszeri látogatások",
+      "emptyActive": "Nincsenek aktív termékek",
+      "emptyArchived": "Nincsenek archivált termékek",
+      "emptyCatalog": "Ennek a stúdiónak még nincsenek bérletcsomagjai",
+      "lessons": "{{remaining}}/{{total}} alkalom",
+      "perVisit": "Egyszeri látogatásonként",
+      "until": "{{date}}-ig",
+      "frozenBadge": "Felfüggesztett",
+      "loadFailed": "A pénztárca betöltése nem sikerült",
+      "back": "← Vissza",
+      "catalogTitle": "Katalógus",
+      "showAll": "Összes",
+      "posTitle": "Pénztár",
+      "promoLabel": "Promóciós kód",
+      "promoPlaceholder": "Adja meg a promóciós kódot",
+      "promoInvalid": "A promóciós kód érvénytelen",
+      "useDeposit": "Fizetés letétből ({{amount}})",
+      "certLabel": "Utalványkód",
+      "certPlaceholder": "Adja meg az utalványkódot",
+      "certApplied": "Utalvány",
+      "depositApplied": "Letét",
+      "base": "Alapár",
+      "discount": "Kedvezmény",
+      "bonuses": "Bónuszok",
+      "total": "Összesen",
+      "cash": "Készpénz",
+      "card": "Kártya",
+      "cardStripe": "A kártyás fizetések egy Stripe-oldalon keresztül közvetlenül a stúdió számlájára érkeznek. Állítsa be a Pénzügyek → Online fizetések menüpontban.",
+      "offlineLocked": "A készpénzes fizetés a Combo és magasabb csomagokban érhető el",
+      "payByCard": "Fizetés kártyával",
+      "confirmPay": "Fizetés megerősítése",
+      "confirmPayCovered": "Megerősítés (már fizetve)",
+      "confirmTitle": "Megerősíti a beérkezett fizetést?",
+      "confirmMessage": "Ez {{amount}} bevételt rögzít, és átadja a terméket az ügyfélnek.",
+      "confirmMessageCard": "Megnyílik egy Stripe fizetési űrlap {{amount}} összeggel. A termék átadása és a bevétel rögzítése sikeres fizetés után történik.",
+      "payToStudio": "A fizetés a stúdió számlájára érkezik",
+      "payConfirming": "Fizetés ellenőrzése…",
+      "close": "Bezárás",
+      "confirmMessageCovered": "A fizetést teljesen fedezi a letét vagy az utalvány. A terméket átadjuk az ügyfélnek.",
+      "paySuccess": "Fizetés rögzítve",
+      "payCancelled": "A fizetés megszakítva — nem történt terhelés",
+      "payNotCompleted": "A Stripe még nem erősítette meg a fizetést. Ha a kártyát megterhelték, frissítsen egy perc múlva.",
+      "payNotApplied": "A kártyát megterhelték, de az értékesítést nem lehetett rögzíteni: a feltételek megváltoztak (utalvány, promóciós kód vagy csomag). Rögzítse kézzel az értékesítést, vagy térítsen vissza a Stripe-ban.",
+      "transfer": "Átruházás",
+      "transferTitle": "Bérlet átruházása",
+      "transferSearchLabel": "Átruházás erre:",
+      "transferSearchPlaceholder": "Ügyfél neve vagy telefonszáma",
+      "transferSelectPlaceholder": "Válasszon ügyfelet",
+      "transferConfirm": "Átruházás",
+      "transferSuccess": "Bérlet átruházva",
+      "lessonsCount_one": "{{count}} alkalom",
+      "lessonsCount_other": "{{count}} alkalom",
+      "useBonuses_one": "Bónuszok felhasználása ({{count}})",
+      "useBonuses_other": "Bónuszok felhasználása ({{count}})",
+      "bonusesSpent_one": "Bónuszok ({{count}} p.)",
+      "bonusesSpent_other": "Bónuszok ({{count}} p.)"
+    },
+    "offers": {
+      "title": "Személyes kedvezmény",
+      "empty": "Nincsenek aktív kedvezmények",
+      "grant": "Kedvezmény adása",
+      "cancel": "Mégse",
+      "valuePercent": "{{value}}%",
+      "valueAmount": "{{value}} ₽",
+      "untilDate": "{{date}}-ig",
+      "noExpiry": "lejárat nélkül",
+      "scopeRenewal": "megújításhoz",
+      "grantTitle": "Személyes kedvezmény adása",
+      "grantValue": "Kedvezmény mértéke",
+      "grantType": {
+        "percent": "Százalék (%)",
+        "amount": "Összeg (₽)"
+      },
+      "grantValidUntil": "Érvényes eddig:",
+      "grantSubmit": "Adás",
+      "cancelConfirmTitle": "Visszavonja a kedvezményt?",
+      "cancelConfirmMessage": "Az ügyfél többé nem használhatja ezt az ajánlatot.",
+      "toasts": {
+        "granted": "Kedvezmény megadva",
+        "cancelled": "Kedvezmény visszavonva",
+        "loadFailed": "A kedvezmények betöltése nem sikerült"
+      }
+    },
+    "activity": {
+      "compactTitle": "Aktivitás (3 hó)",
+      "clickForDetails": "Kattintson a részletekért",
+      "detailedTitle": "Részletes aktivitás",
+      "periods": {
+        "month3": "3 hó",
+        "month6": "6 hó"
+      },
+      "visitsInPeriod": "Látogatások az időszakban",
+      "emptyState": "Nincs látogatás ebben az időszakban",
+      "insightTitle": "Átlagos részvétel",
+      "insightBody": "Átlagosan {{avg}} látogatás havonta a kiválasztott időszakban.",
+      "months": {
+        "jan": "jan.",
+        "feb": "febr.",
+        "mar": "márc.",
+        "apr": "ápr.",
+        "may": "máj.",
+        "jun": "jún.",
+        "jul": "júl.",
+        "aug": "aug.",
+        "sep": "szept.",
+        "oct": "okt.",
+        "nov": "nov.",
+        "dec": "dec."
+      },
+      "visitsTooltip_one": "{{count}} látogatás",
+      "visitsTooltip_other": "{{count}} látogatás"
+    },
+    "tags": {
+      "title": "Címkék",
+      "add": "Hozzáadás",
+      "close": "Bezárás",
+      "customPlaceholder": "Egyéni címke + Enter…"
+    },
+    "danger": {
+      "freeze": "Felfüggesztés",
+      "unfreeze": "Felfüggesztés feloldása",
+      "freezeDisabledHint": "A felfüggesztés ki van kapcsolva a Katalógus → bérletbeállítások részben",
+      "delete": "Törlés"
+    },
+    "events": {
+      "filterTabs": {
+        "all": "Összes",
+        "payment": "Fizetések",
+        "visit": "Látogatások",
+        "booking": "Foglalások",
+        "cancel": "Lemondások",
+        "bonus": "Bónuszok",
+        "freeze": "Felfüggesztések"
+      },
+      "empty": "Nincsenek események"
+    },
+    "notes": {
+      "title": "Adminisztrátori jegyzetek",
+      "prefix": "Jegyzet · {{date}}",
+      "save": "Mentés",
+      "cancel": "Mégse",
+      "addPlaceholder": "Írjon egy jegyzetet…",
+      "add": "Jegyzet hozzáadása",
+      "justNow": "épp most",
+      "deleteTitle": "Törli a jegyzetet?",
+      "deleteMessage": "Ez a jegyzet nem állítható vissza."
+    },
+    "bookingPanel": {
+      "title": "Gyors foglalás",
+      "today": "Ma",
+      "noLessons": "Nincs foglalkozás ezen a napon",
+      "full": "Nincs szabad hely",
+      "confirm": "Foglalás →",
+      "noSubscription": "Az ügyfélnek nincs foglalásra használható bérlete",
+      "individual": "Egyéni szolgáltatás"
+    },
+    "bonusPanel": {
+      "title": "Bónusz adása"
+    },
+    "toasts": {
+      "noPhone": "Az ügyfélnek nincs telefonszáma",
+      "copied": "Sikeresen másolva",
+      "bookingCreated": "Foglalás létrehozva",
+      "bookingFailed": "A foglalás nem sikerült",
+      "bonusFailed": "A pontok megadása nem sikerült",
+      "bonusApplied": "Bónusz megadva: {{label}}",
+      "clientAdded": "Ügyfél hozzáadva"
+    },
+    "bonusOptions": {
+      "p200": {
+        "label": "+200 pont",
+        "description": "Hozzáadás a hűség-egyenleghez"
+      },
+      "p500": {
+        "label": "+500 pont",
+        "description": "Hozzáadás a hűség-egyenleghez"
+      },
+      "p1000": {
+        "label": "+1000 pont",
+        "description": "Hozzáadás a hűség-egyenleghez"
+      }
+    }
+  },
+  "tags": {
+    "suggested": [
+      "Próba",
+      "VIP",
+      "Ajánlás",
+      "Online",
+      "Csoport",
+      "Személyes"
+    ]
+  },
+  "addModal": {
+    "title": "Új ügyfél",
+    "cancel": "Mégse",
+    "back": "← Vissza",
+    "continue": "Folytatás →",
+    "submit": "Ügyfél hozzáadása ✓",
+    "stepCounter": "{{current}}. lépés / {{total}}",
+    "trustSignal": "Az adatok védettek, és csak rendszergazdák láthatják őket",
+    "steps": {
+      "1": {
+        "title": "Személyes adatok",
+        "sub": "Adja meg az ügyfél elérhetőségeit"
+      },
+      "2": {
+        "title": "Profiladatok",
+        "sub": "További információk (nem kötelező)"
+      },
+      "3": {
+        "title": "Bérlet",
+        "sub": "Válasszon bérlettípust, és adjon hozzá jegyzetet"
+      },
+      "4": {
+        "title": "Minden kész!",
+        "sub": "Ellenőrizze az adatokat, és adja hozzá az ügyfelet"
+      }
+    },
+    "step1": {
+      "previewLabel": "Új ügyfél · Előnézet",
+      "name": "Teljes név *",
+      "namePlaceholder": "Kovács Anna",
+      "phone": "Telefon",
+      "phonePlaceholder": "+36 30 000 0000",
+      "email": "E-mail",
+      "emailPlaceholder": "ugyfel@pelda.hu"
+    },
+    "step2": {
+      "bday": "Születési dátum",
+      "bdayPlaceholder": "1990. április 12.",
+      "city": "Város",
+      "cityPlaceholder": "Budapest",
+      "tags": "Címkék",
+      "tagsPlaceholder": "Pilates, VIP, rehabilitáció… (Enter)",
+      "tagsHint": "Címke hozzáadásához nyomja meg az Entert",
+      "inviteCode": "Ajánló meghívókódja",
+      "inviteCodePlaceholder": "Nem kötelező",
+      "inviteCodeHint": "Ha megadja, mindketten bónuszt kapnak"
+    },
+    "step3": {
+      "classCount": "Bérlet",
+      "classesUnit": "alkalom",
+      "selected": "Kiválasztva",
+      "noPackage": "Nincs bérlet",
+      "noPackages": "Ennek a stúdiónak még nincsenek bérletcsomagjai",
+      "noPackagesLink": "Csomagok létrehozása a Katalógusban →",
+      "alreadyPaid": "Az ügyfél már fizetett ezért a bérletért?",
+      "yes": "Igen",
+      "no": "Nem",
+      "note": "Jegyzet",
+      "notePlaceholder": "Különleges kérések, ellenjavallatok, preferenciák…",
+      "classesCount_one": "{{count}} alkalom",
+      "classesCount_other": "{{count}} alkalom"
+    },
+    "step4": {
+      "readyTitle": "Adatok kitöltve!",
+      "readySub": "Ellenőrizze az adatokat, és erősítse meg a hozzáadást",
+      "newClient": "Új ügyfél",
+      "fields": {
+        "phone": "Telefon",
+        "email": "E-mail",
+        "bday": "Születési dátum",
+        "city": "Város",
+        "subscription": "Bérlet",
+        "tags": "Címkék"
+      },
+      "smsTitle": "Üdvözlő SMS küldése",
+      "smsSub": "Az ügyfél meghívóüzenetet kap",
+      "subscriptionValue_one": "{{count}} alkalom",
+      "subscriptionValue_other": "{{count}} alkalom"
+    },
+    "errors": {
+      "name": "Adjon meg nevet (legalább 2 karakter)",
+      "phone": "Érvénytelen telefonszám",
+      "email": "Érvénytelen e-mail",
+      "city": "Adjon meg várost"
+    }
+  },
+  "deleteModal": {
+    "title": "Törli az ügyfelet?",
+    "body": "Éppen törölni készül az ügyfelet",
+    "warning": "Ez a művelet nem vonható vissza.",
+    "cancel": "Mégse",
+    "confirm": "Törlés",
+    "success": "Ügyfél törölve"
+  }
+}

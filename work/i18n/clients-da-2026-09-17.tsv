@@ -1,0 +1,310 @@
+== da
+categories.all	Alle
+categories.vip	VIP
+categories.active	Aktive
+categories.new	Nye
+categories.has_subscription	Med abonnement
+categories.inactive	Inaktive
+categories.frozen	Satte på pause
+categories.birthday	Fødselsdag
+categoriesInfo.all.text	Den fulde kundeliste for studiet uden noget statusfilter.
+categoriesInfo.vip.text	Gennemførte betalinger på i alt 50.000+ eller 30+ besøg. VIP kan også fastgøres manuelt på kundekortet; en manuel fastgørelse gælder uanset beløbene.
+categoriesInfo.active.text	Mindst ét besøg inden for de seneste 60 dage. Baseret på fremmøde markeret i journalen — status opdateres automatisk og behøver ikke sættes manuelt.
+categoriesInfo.new.text	De første 15 dage fra registreringsdatoen, uanset om kunden er tilføjet manuelt eller kom via onlinebooking. På dag 16 flyttes kunden automatisk til Aktiv eller Inaktiv.
+categoriesInfo.has_subscription.text	Har et gyldigt abonnement: ikke udløbet, ikke sat på pause og med lektioner tilbage. Opdateres straks ved køb, ved hver brugt lektion og ved udløb.
+categoriesInfo.inactive.text	Ingen besøg de seneste 60 dage — eller aldrig besøgt og mere end 15 dage siden registrering.
+categoriesInfo.frozen.text	Sat på pause med knappen på kundekortet — den eneste status, der sættes manuelt. Efter genaktivering vender kunden tilbage til sin automatiske status.
+categoriesInfo.birthday.text	Dem, der har fødselsdag i dag — dag og måned matcher, året ignoreres. Listen opdateres automatisk hver dag.
+status.active	Aktiv
+status.vip	VIP
+status.new	Ny
+status.inactive	Inaktiv
+status.frozen	Sat på pause
+filtersGuide.trigger	Om filtre
+filtersGuide.title	Kundefiltre
+filtersGuide.subtitle	Sådan beregnes hver kategori. Klik på et kort for at anvende filteret, eller ændr en grænseværdi — statusserne genberegnes med det samme.
+filtersGuide.close	Luk
+filtersGuide.rule.new_client_days	Ny i
+filtersGuide.rule.active_within_days	Besøg inden for
+filtersGuide.rule.vip_min_spent	Brugt fra
+filtersGuide.rule.vip_min_visits	eller besøg
+filtersGuide.unit.days	dage
+filtersGuide.unit.money	
+filtersGuide.unit.visits	besøg
+toolbar.searchPlaceholder	Søg efter kunde…
+toolbar.addClient	Tilføj kunde
+table.visits	besøg
+table.frozenBadge	❄ på pause
+table.totalSpent	Samlet brugt
+table.subscription	Abonnement
+table.of	af
+table.noSubscription	Intet abonnement
+loadMore	Indlæs flere
+loading	Indlæser…
+panel.tabs.info	Profil
+panel.tabs.events	Hændelser
+panel.tabs.notes	Noter
+panel.tabs.wallet	Køb
+panel.actions.book	Book
+panel.actions.bonus	Bonus
+panel.editDateHint	Klik for at redigere
+panel.since	siden {{date}}
+panel.contacts.title	Kontaktoplysninger
+panel.contacts.phone	Telefon
+panel.contacts.email	E-mail
+panel.contacts.telegram	Telegram
+panel.contacts.birthDate	Fødselsdato
+panel.contacts.city	By
+panel.contacts.copyHint	 · klik for at kopiere
+panel.debt	{{amount}} ubetalt for lektioner — modtag betalingen i Journalen
+panel.stats.visits	Besøg
+panel.stats.spent	Brugt
+panel.stats.subscription	Abonnement
+panel.loyalty.points	point
+panel.loyalty.level	{{tier}}-niveau
+panel.loyalty.toNext	Til næste niveau: {{points}} point
+panel.loyalty.multiplier	×{{value}} pointmultiplikator
+panel.loyalty.worth	Værdi {{amount}} ved betaling
+panel.loyalty.toNextLevel	{{amount}} mere for at nå {{level}}
+panel.loyalty.pointValue	1 point = {{amount}}
+panel.loyalty.nextPointValue	på {{level}} — {{amount}}
+panel.loyalty.noBonus	Dette niveau ændrer ikke pointværdien
+panel.referral.title	Invitér en ven
+panel.referral.copy	Kopiér
+panel.abonement.title	Abonnement
+panel.abonement.lessons	{{remaining}}/{{total}} lektioner
+panel.abonement.noSubscription	Intet aktivt abonnement
+panel.abonement.noSubscriptionWarning	Kunden har intet abonnement — tilbyd et
+panel.abonement.lowWarning	Få lektioner tilbage — tilbyd en fornyelse
+panel.abonement.finishedWarning	Ingen lektioner tilbage — tilbyd en fornyelse
+panel.abonement.remind	Påmind kunden
+panel.abonement.reminderSent	Påmindelse sendt til kunden
+panel.products.single	enkelt
+panel.products.pending	venter
+panel.products.frozen	på pause
+panel.products.until	Gyldig til {{date}}
+panel.products.startsOnFirstVisit	Perioden starter med første lektion
+panel.wallet.buy	Køb
+panel.wallet.active	Aktive
+panel.wallet.archived	Arkiverede
+panel.wallet.singles	Enkeltbesøg
+panel.wallet.subscriptions	Abonnementer
+panel.wallet.noSingles	Ingen enkeltbesøg endnu
+panel.wallet.emptyActive	Ingen aktive produkter
+panel.wallet.emptyArchived	Ingen arkiverede produkter
+panel.wallet.emptyCatalog	Dette studie har endnu ingen abonnementspakker
+panel.wallet.lessons	{{remaining}}/{{total}} lektioner
+panel.wallet.lessonsCount_one	{{count}} lektion
+panel.wallet.lessonsCount_other	{{count}} lektioner
+panel.wallet.perVisit	Pr. enkeltbesøg
+panel.wallet.until	indtil {{date}}
+panel.wallet.frozenBadge	På pause
+panel.wallet.loadFailed	Kunne ikke indlæse tegnebogen
+panel.wallet.back	← Tilbage
+panel.wallet.catalogTitle	Katalog
+panel.wallet.showAll	Alle
+panel.wallet.posTitle	Betaling
+panel.wallet.promoLabel	Rabatkode
+panel.wallet.promoPlaceholder	Indtast rabatkode
+panel.wallet.promoInvalid	Rabatkoden er ugyldig
+panel.wallet.useBonuses_one	Brug bonuspoint ({{count}})
+panel.wallet.useBonuses_other	Brug bonuspoint ({{count}})
+panel.wallet.useDeposit	Betal fra indestående ({{amount}})
+panel.wallet.certLabel	Certifikatkode
+panel.wallet.certPlaceholder	Indtast certifikatkode
+panel.wallet.certApplied	Certifikat
+panel.wallet.depositApplied	Indestående
+panel.wallet.base	Grundpris
+panel.wallet.discount	Rabat
+panel.wallet.bonuses	Bonuspoint
+panel.wallet.bonusesSpent_one	Bonuspoint ({{count}} point)
+panel.wallet.bonusesSpent_other	Bonuspoint ({{count}} point)
+panel.wallet.total	I alt
+panel.wallet.cash	Kontant
+panel.wallet.card	Kort
+panel.wallet.cardStripe	Kortbetalinger går via en Stripe-side og indbetales direkte på studiets konto. Sæt det op under Økonomi → Onlinebetalinger.
+panel.wallet.offlineLocked	Kontantbetalinger er tilgængelige på Combo-abonnementer og derover
+panel.wallet.payByCard	Betal med kort
+panel.wallet.confirmPay	Bekræft betaling
+panel.wallet.confirmPayCovered	Bekræft (allerede betalt)
+panel.wallet.confirmTitle	Bekræft modtaget betaling?
+panel.wallet.confirmMessage	Dette registrerer en indtægt på {{amount}} og giver produktet til kunden.
+panel.wallet.confirmMessageCard	En Stripe-betalingsformular for {{amount}} åbnes. Produktet gives, og indtægten registreres, når betalingen lykkes.
+panel.wallet.payToStudio	Betalingen går ind på studiets konto
+panel.wallet.payConfirming	Kontrollerer betaling…
+panel.wallet.close	Luk
+panel.wallet.confirmMessageCovered	Betalingen er helt dækket af indestående eller certifikat. Produktet gives til kunden.
+panel.wallet.paySuccess	Betaling registreret
+panel.wallet.payCancelled	Betaling annulleret — intet er trukket
+panel.wallet.payNotCompleted	Stripe har endnu ikke bekræftet betalingen. Hvis kortet er trukket, så opdatér om et minut.
+panel.wallet.payNotApplied	Kortet blev trukket, men salget kunne ikke registreres: betingelserne ændrede sig (certifikat, rabatkode eller pakke). Registrér salget manuelt, eller tilbagebetal i Stripe.
+panel.wallet.transfer	Overfør
+panel.wallet.transferTitle	Overfør abonnement
+panel.wallet.transferSearchLabel	Overfør til
+panel.wallet.transferSearchPlaceholder	Kundens navn eller telefon
+panel.wallet.transferSelectPlaceholder	Vælg kunde
+panel.wallet.transferConfirm	Overfør
+panel.wallet.transferSuccess	Abonnement overført
+panel.offers.title	Personlig rabat
+panel.offers.empty	Ingen aktive rabatter
+panel.offers.grant	Giv rabat
+panel.offers.cancel	Annuller
+panel.offers.valuePercent	{{value}} %
+panel.offers.valueAmount	{{value}} ₽
+panel.offers.untilDate	indtil {{date}}
+panel.offers.noExpiry	uden udløb
+panel.offers.scopeRenewal	ved fornyelse
+panel.offers.grantTitle	Giv en personlig rabat
+panel.offers.grantValue	Rabatstørrelse
+panel.offers.grantType.percent	Procent (%)
+panel.offers.grantType.amount	Beløb (₽)
+panel.offers.grantValidUntil	Gyldig til
+panel.offers.grantSubmit	Giv
+panel.offers.cancelConfirmTitle	Annuller rabat?
+panel.offers.cancelConfirmMessage	Kunden kan ikke længere bruge dette tilbud.
+panel.offers.toasts.granted	Rabat givet
+panel.offers.toasts.cancelled	Rabat annulleret
+panel.offers.toasts.loadFailed	Kunne ikke indlæse rabatter
+panel.activity.compactTitle	Aktivitet (3 mdr.)
+panel.activity.clickForDetails	Klik for detaljer
+panel.activity.detailedTitle	Detaljeret aktivitet
+panel.activity.periods.month3	3 mdr.
+panel.activity.periods.month6	6 mdr.
+panel.activity.visitsInPeriod	Besøg i perioden
+panel.activity.visitsTooltip_one	{{count}} besøg
+panel.activity.visitsTooltip_other	{{count}} besøg
+panel.activity.emptyState	Ingen besøg i denne periode
+panel.activity.insightTitle	Gennemsnitligt fremmøde
+panel.activity.insightBody	I gennemsnit {{avg}} besøg om måneden i den valgte periode.
+panel.activity.months.jan	jan.
+panel.activity.months.feb	feb.
+panel.activity.months.mar	mar.
+panel.activity.months.apr	apr.
+panel.activity.months.may	maj
+panel.activity.months.jun	jun.
+panel.activity.months.jul	jul.
+panel.activity.months.aug	aug.
+panel.activity.months.sep	sep.
+panel.activity.months.oct	okt.
+panel.activity.months.nov	nov.
+panel.activity.months.dec	dec.
+panel.tags.title	Mærkater
+panel.tags.add	Tilføj
+panel.tags.close	Luk
+panel.tags.customPlaceholder	Brugerdefineret mærkat + Enter…
+panel.danger.freeze	Sæt på pause
+panel.danger.unfreeze	Genaktiver
+panel.danger.freezeDisabledHint	Pause er deaktiveret i Katalog → abonnementsindstillinger
+panel.danger.delete	Slet
+panel.events.filterTabs.all	Alle
+panel.events.filterTabs.payment	Betalinger
+panel.events.filterTabs.visit	Besøg
+panel.events.filterTabs.booking	Bookinger
+panel.events.filterTabs.cancel	Annulleringer
+panel.events.filterTabs.bonus	Bonuspoint
+panel.events.filterTabs.freeze	Pauser
+panel.events.empty	Ingen hændelser
+panel.notes.title	Administrationsnoter
+panel.notes.prefix	Note · {{date}}
+panel.notes.save	Gem
+panel.notes.cancel	Annuller
+panel.notes.addPlaceholder	Skriv en note…
+panel.notes.add	Tilføj note
+panel.notes.justNow	lige nu
+panel.notes.deleteTitle	Slet note?
+panel.notes.deleteMessage	Denne note kan ikke gendannes.
+panel.bookingPanel.title	Hurtig booking
+panel.bookingPanel.today	I dag
+panel.bookingPanel.noLessons	Ingen lektioner denne dag
+panel.bookingPanel.full	Ingen ledige pladser
+panel.bookingPanel.confirm	Book →
+panel.bookingPanel.noSubscription	Kunden har intet abonnement, der kan bruges til booking
+panel.bookingPanel.individual	Individuel ydelse
+panel.bonusPanel.title	Giv bonus
+panel.toasts.noPhone	Kunden har intet telefonnummer
+panel.toasts.copied	Kopieret
+panel.toasts.bookingCreated	Booking oprettet
+panel.toasts.bookingFailed	Kunne ikke booke
+panel.toasts.bonusFailed	Kunne ikke give point
+panel.toasts.bonusApplied	Bonus givet: {{label}}
+panel.toasts.clientAdded	Kunde tilføjet
+panel.bonusOptions.p200.label	+200 point
+panel.bonusOptions.p200.description	Tilføj til loyalitetssaldo
+panel.bonusOptions.p500.label	+500 point
+panel.bonusOptions.p500.description	Tilføj til loyalitetssaldo
+panel.bonusOptions.p1000.label	+1000 point
+panel.bonusOptions.p1000.description	Tilføj til loyalitetssaldo
+tags.suggested.0	Prøve
+tags.suggested.1	VIP
+tags.suggested.2	Henvisning
+tags.suggested.3	Online
+tags.suggested.4	Gruppe
+tags.suggested.5	Personlig
+addModal.title	Ny kunde
+addModal.cancel	Annuller
+addModal.back	← Tilbage
+addModal.continue	Fortsæt →
+addModal.submit	Tilføj kunde ✓
+addModal.stepCounter	Trin {{current}} af {{total}}
+addModal.trustSignal	Data er beskyttet og kun synlige for administratorer
+addModal.steps.1.title	Personlige oplysninger
+addModal.steps.1.sub	Indtast kundens kontaktoplysninger
+addModal.steps.2.title	Profiloplysninger
+addModal.steps.2.sub	Yderligere oplysninger (valgfrit)
+addModal.steps.3.title	Abonnement
+addModal.steps.3.sub	Vælg en abonnementstype, og tilføj en note
+addModal.steps.4.title	Alt er klar!
+addModal.steps.4.sub	Gennemgå oplysningerne, og tilføj kunden
+addModal.step1.previewLabel	Ny kunde · Eksempel
+addModal.step1.name	Fulde navn *
+addModal.step1.namePlaceholder	Anne Jensen
+addModal.step1.phone	Telefon
+addModal.step1.phonePlaceholder	+45 20 00 00 00
+addModal.step1.email	E-mail
+addModal.step1.emailPlaceholder	kunde@eksempel.dk
+addModal.step2.bday	Fødselsdato
+addModal.step2.bdayPlaceholder	12. april 1990
+addModal.step2.city	By
+addModal.step2.cityPlaceholder	København
+addModal.step2.tags	Mærkater
+addModal.step2.tagsPlaceholder	Pilates, VIP, genoptræning… (Enter)
+addModal.step2.tagsHint	Tryk Enter for at tilføje et mærkat
+addModal.step2.inviteCode	Henviserens invitationskode
+addModal.step2.inviteCodePlaceholder	Valgfrit
+addModal.step2.inviteCodeHint	Hvis den er angivet, får I begge en bonus
+addModal.step3.classCount	Abonnement
+addModal.step3.classesUnit	lektioner
+addModal.step3.classesCount_one	{{count}} lektion
+addModal.step3.classesCount_other	{{count}} lektioner
+addModal.step3.selected	Valgt
+addModal.step3.noPackage	Intet abonnement
+addModal.step3.noPackages	Dette studie har endnu ingen abonnementspakker
+addModal.step3.noPackagesLink	Opret pakker i Katalog →
+addModal.step3.alreadyPaid	Har kunden allerede betalt for dette abonnement?
+addModal.step3.yes	Ja
+addModal.step3.no	Nej
+addModal.step3.note	Note
+addModal.step3.notePlaceholder	Særlige ønsker, kontraindikationer, præferencer…
+addModal.step4.readyTitle	Oplysninger udfyldt!
+addModal.step4.readySub	Gennemgå oplysningerne, og bekræft tilføjelsen
+addModal.step4.newClient	Ny kunde
+addModal.step4.fields.phone	Telefon
+addModal.step4.fields.email	E-mail
+addModal.step4.fields.bday	Fødselsdato
+addModal.step4.fields.city	By
+addModal.step4.fields.subscription	Abonnement
+addModal.step4.fields.tags	Mærkater
+addModal.step4.subscriptionValue_one	{{count}} lektion
+addModal.step4.subscriptionValue_other	{{count}} lektioner
+addModal.step4.smsTitle	Send velkomst-sms
+addModal.step4.smsSub	Kunden modtager en invitationsbesked
+addModal.errors.name	Indtast et navn (mindst 2 tegn)
+addModal.errors.phone	Ugyldigt telefonnummer
+addModal.errors.email	Ugyldig e-mail
+addModal.errors.city	Indtast en by
+deleteModal.title	Slet kunde?
+deleteModal.body	Du er ved at slette kunden
+deleteModal.warning	Denne handling kan ikke fortrydes.
+deleteModal.cancel	Annuller
+deleteModal.confirm	Slet
+deleteModal.success	Kunde slettet

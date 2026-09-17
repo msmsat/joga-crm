@@ -34,3 +34,15 @@
 	encode gzip zstd
 	reverse_proxy api:8000
 }
+
+# Третий домен (admin.example.com) — та же панель, что на /adm основного
+# бэкенда. Переменной нет (локально) -> :8081, порт наружу не проброшен.
+#
+# redir, а не rewrite: ассеты панели абсолютные (/adm/assets/...), и правило
+# вида `rewrite * /adm{uri}` превратило бы их в /adm/adm/assets/... Один редирект
+# с корня решает это без переписывания путей.
+{$ADMIN_ADDRESS::8081} {
+	encode gzip zstd
+	redir / /adm
+	reverse_proxy api:8000
+}

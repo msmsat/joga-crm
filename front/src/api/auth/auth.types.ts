@@ -10,6 +10,8 @@ export interface RegisterPayload {
   // Галочка «принимаю Условия и Политику». Без неё бэкенд отвечает 400
   // consent_required и аккаунт не заводит — доказательство согласия обязательно.
   accept_terms: boolean
+  /** Браузер, с которого пришли: склейка визита лендинга с аккаунтом. */
+  anon_id?: string
 }
 
 export interface GoogleAuthPayload {

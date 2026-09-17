@@ -1,0 +1,310 @@
+== tr
+categories.all	Tümü
+categories.vip	VIP
+categories.active	Aktif
+categories.new	Yeni
+categories.has_subscription	Abonelikli
+categories.inactive	Pasif
+categories.frozen	Dondurulmuş
+categories.birthday	Doğum günü
+categoriesInfo.all.text	Durum filtresi uygulanmamış stüdyonun tüm müşteri listesi.
+categoriesInfo.vip.text	Toplam 50.000+ tutarında başarılı ödeme veya 30+ ziyaret. VIP, müşteri kartına elle de sabitlenebilir; elle sabitleme tutarlardan bağımsız olarak korunur.
+categoriesInfo.active.text	Son 60 günde en az bir ziyaret. Günlükte işaretlenen katılıma göre belirlenir — durum kendiliğinden güncellenir, elle ayarlamaya gerek yoktur.
+categoriesInfo.new.text	Kayıt tarihinden itibaren ilk 15 gün; müşterinin elle eklenmiş veya çevrimiçi rezervasyonla gelmiş olması fark etmez. 16. günde otomatik olarak Aktif ya da Pasif durumuna geçer.
+categoriesInfo.has_subscription.text	Geçerli aboneliği var: süresi dolmamış, dondurulmamış ve kalan dersleri bulunuyor. Satın alma anında, her kullanılan dersten sonra ve süresi dolduğunda güncellenir.
+categoriesInfo.inactive.text	Son 60 günde hiç ziyaret yoksa veya müşteri hiç gelmemiş ve kayıttan itibaren 15 günden fazla geçmişse.
+categoriesInfo.frozen.text	Müşteri kartındaki düğmeyle dondurulmuş — elle ayarlanan tek durum budur. Dondurma kaldırıldığında müşteri otomatik durumuna döner.
+categoriesInfo.birthday.text	Bugün doğum günü olanlar — gün ve ay eşleşir, yıl dikkate alınmaz. Liste her gün otomatik yenilenir.
+status.active	Aktif
+status.vip	VIP
+status.new	Yeni
+status.inactive	Pasif
+status.frozen	Dondurulmuş
+filtersGuide.trigger	Filtreler hakkında
+filtersGuide.title	Müşteri filtreleri
+filtersGuide.subtitle	Her kategorinin nasıl hesaplandığı. Filtreyi uygulamak için bir karta tıklayın veya eşiği değiştirin — durumlar hemen yeniden hesaplanır.
+filtersGuide.close	Kapat
+filtersGuide.rule.new_client_days	Yeni olduğu süre
+filtersGuide.rule.active_within_days	Şu süre içinde ziyaret
+filtersGuide.rule.vip_min_spent	Şu tutardan itibaren harcama
+filtersGuide.rule.vip_min_visits	veya ziyaret
+filtersGuide.unit.days	gün
+filtersGuide.unit.money	
+filtersGuide.unit.visits	ziyaret
+toolbar.searchPlaceholder	Müşteri ara…
+toolbar.addClient	Müşteri ekle
+table.visits	ziyaret
+table.frozenBadge	❄ dondurulmuş
+table.totalSpent	Toplam harcama
+table.subscription	Abonelik
+table.of	/
+table.noSubscription	Abonelik yok
+loadMore	Daha fazla yükle
+loading	Yükleniyor…
+panel.tabs.info	Profil
+panel.tabs.events	Etkinlikler
+panel.tabs.notes	Notlar
+panel.tabs.wallet	Satın alımlar
+panel.actions.book	Rezervasyon yap
+panel.actions.bonus	Bonus
+panel.editDateHint	Düzenlemek için tıklayın
+panel.since	{{date}} tarihinden beri
+panel.contacts.title	İletişim bilgileri
+panel.contacts.phone	Telefon
+panel.contacts.email	E-posta
+panel.contacts.telegram	Telegram
+panel.contacts.birthDate	Doğum tarihi
+panel.contacts.city	Şehir
+panel.contacts.copyHint	 · kopyalamak için tıklayın
+panel.debt	Dersler için {{amount}} ödenmemiş — ödemeyi Günlükte alın
+panel.stats.visits	Ziyaretler
+panel.stats.spent	Harcanan
+panel.stats.subscription	Abonelik
+panel.loyalty.points	puan
+panel.loyalty.level	{{tier}} seviyesi
+panel.loyalty.toNext	Sonraki seviyeye: {{points}} puan
+panel.loyalty.multiplier	×{{value}} puan çarpanı
+panel.loyalty.worth	Ödemede değeri: {{amount}}
+panel.loyalty.toNextLevel	{{level}} seviyesine ulaşmak için {{amount}} daha
+panel.loyalty.pointValue	1 puan = {{amount}}
+panel.loyalty.nextPointValue	{{level}} seviyesinde — {{amount}}
+panel.loyalty.noBonus	Bu seviye puan değerini değiştirmez
+panel.referral.title	Arkadaşını davet et
+panel.referral.copy	Kopyala
+panel.abonement.title	Abonelik
+panel.abonement.lessons	{{remaining}}/{{total}} ders
+panel.abonement.noSubscription	Aktif abonelik yok
+panel.abonement.noSubscriptionWarning	Müşterinin aboneliği yok — bir tane teklif edin
+panel.abonement.lowWarning	Az ders kaldı — yenileme teklif edin
+panel.abonement.finishedWarning	Ders kalmadı — yenileme teklif edin
+panel.abonement.remind	Müşteriye hatırlat
+panel.abonement.reminderSent	Hatırlatma müşteriye gönderildi
+panel.products.single	tekli
+panel.products.pending	kuyrukta
+panel.products.frozen	dondurulmuş
+panel.products.until	{{date}} tarihine kadar geçerli
+panel.products.startsOnFirstVisit	Süre ilk dersle başlar
+panel.wallet.buy	Satın al
+panel.wallet.active	Aktif
+panel.wallet.archived	Arşivlenmiş
+panel.wallet.singles	Tek ziyaretler
+panel.wallet.subscriptions	Abonelikler
+panel.wallet.noSingles	Henüz tek ziyaret yok
+panel.wallet.emptyActive	Aktif ürün yok
+panel.wallet.emptyArchived	Arşivlenmiş ürün yok
+panel.wallet.emptyCatalog	Bu stüdyoda henüz abonelik paketi yok
+panel.wallet.lessons	{{remaining}}/{{total}} ders
+panel.wallet.lessonsCount_one	{{count}} ders
+panel.wallet.lessonsCount_other	{{count}} ders
+panel.wallet.perVisit	Tek ziyaret başına
+panel.wallet.until	{{date}} tarihine kadar
+panel.wallet.frozenBadge	Dondurulmuş
+panel.wallet.loadFailed	Cüzdan yüklenemedi
+panel.wallet.back	← Geri
+panel.wallet.catalogTitle	Katalog
+panel.wallet.showAll	Tümü
+panel.wallet.posTitle	Kasa
+panel.wallet.promoLabel	Promosyon kodu
+panel.wallet.promoPlaceholder	Promosyon kodunu girin
+panel.wallet.promoInvalid	Promosyon kodu geçersiz
+panel.wallet.useBonuses_one	Bonusları kullan ({{count}})
+panel.wallet.useBonuses_other	Bonusları kullan ({{count}})
+panel.wallet.useDeposit	Depozitodan öde ({{amount}})
+panel.wallet.certLabel	Sertifika kodu
+panel.wallet.certPlaceholder	Sertifika kodunu girin
+panel.wallet.certApplied	Sertifika
+panel.wallet.depositApplied	Depozito
+panel.wallet.base	Temel fiyat
+panel.wallet.discount	İndirim
+panel.wallet.bonuses	Bonuslar
+panel.wallet.bonusesSpent_one	Bonuslar ({{count}} p.)
+panel.wallet.bonusesSpent_other	Bonuslar ({{count}} p.)
+panel.wallet.total	Toplam
+panel.wallet.cash	Nakit
+panel.wallet.card	Kart
+panel.wallet.cardStripe	Kart ödemeleri bir Stripe sayfasından geçer ve doğrudan stüdyonun hesabına ulaşır. Finans → Çevrimiçi ödemeler bölümünden ayarlayın.
+panel.wallet.offlineLocked	Nakit ödemeler Combo ve üzeri planlarda kullanılabilir
+panel.wallet.payByCard	Kartla öde
+panel.wallet.confirmPay	Ödemeyi onayla
+panel.wallet.confirmPayCovered	Onayla (zaten ödendi)
+panel.wallet.confirmTitle	Alınan ödeme onaylansın mı?
+panel.wallet.confirmMessage	Bu işlem {{amount}} tutarında gelir kaydeder ve ürünü müşteriye verir.
+panel.wallet.confirmMessageCard	{{amount}} için bir Stripe ödeme formu açılır. Ödeme başarılı olduğunda ürün verilir ve gelir kaydedilir.
+panel.wallet.payToStudio	Ödeme stüdyonun hesabına ulaşır
+panel.wallet.payConfirming	Ödeme doğrulanıyor…
+panel.wallet.close	Kapat
+panel.wallet.confirmMessageCovered	Ödeme tamamen depozito veya sertifika ile karşılandı. Ürün müşteriye verilecek.
+panel.wallet.paySuccess	Ödeme kaydedildi
+panel.wallet.payCancelled	Ödeme iptal edildi — ücret alınmadı
+panel.wallet.payNotCompleted	Stripe ödemeyi henüz onaylamadı. Karttan çekim yapıldıysa bir dakika sonra yenileyin.
+panel.wallet.payNotApplied	Karttan çekim yapıldı ancak satış kaydedilemedi: koşullar değişti (sertifika, promosyon kodu veya paket). Satışı elle kaydedin ya da Stripe üzerinden iade edin.
+panel.wallet.transfer	Devret
+panel.wallet.transferTitle	Aboneliği devret
+panel.wallet.transferSearchLabel	Şuna devret
+panel.wallet.transferSearchPlaceholder	Müşteri adı veya telefonu
+panel.wallet.transferSelectPlaceholder	Müşteri seçin
+panel.wallet.transferConfirm	Devret
+panel.wallet.transferSuccess	Abonelik devredildi
+panel.offers.title	Kişisel indirim
+panel.offers.empty	Aktif indirim yok
+panel.offers.grant	İndirim ver
+panel.offers.cancel	İptal
+panel.offers.valuePercent	{{value}}%
+panel.offers.valueAmount	{{value}} ₽
+panel.offers.untilDate	{{date}} tarihine kadar
+panel.offers.noExpiry	süresiz
+panel.offers.scopeRenewal	yenileme için
+panel.offers.grantTitle	Kişisel indirim ver
+panel.offers.grantValue	İndirim tutarı
+panel.offers.grantType.percent	Yüzde (%)
+panel.offers.grantType.amount	Tutar (₽)
+panel.offers.grantValidUntil	Geçerlilik tarihi
+panel.offers.grantSubmit	Ver
+panel.offers.cancelConfirmTitle	İndirim iptal edilsin mi?
+panel.offers.cancelConfirmMessage	Müşteri artık bu teklifi kullanamayacak.
+panel.offers.toasts.granted	İndirim verildi
+panel.offers.toasts.cancelled	İndirim iptal edildi
+panel.offers.toasts.loadFailed	İndirimler yüklenemedi
+panel.activity.compactTitle	Etkinlik (3 ay)
+panel.activity.clickForDetails	Ayrıntılar için tıklayın
+panel.activity.detailedTitle	Ayrıntılı etkinlik
+panel.activity.periods.month3	3 ay
+panel.activity.periods.month6	6 ay
+panel.activity.visitsInPeriod	Dönemdeki ziyaretler
+panel.activity.visitsTooltip_one	{{count}} ziyaret
+panel.activity.visitsTooltip_other	{{count}} ziyaret
+panel.activity.emptyState	Bu dönemde ziyaret yok
+panel.activity.insightTitle	Ortalama katılım
+panel.activity.insightBody	Seçilen dönemde ayda ortalama {{avg}} ziyaret.
+panel.activity.months.jan	Oca
+panel.activity.months.feb	Şub
+panel.activity.months.mar	Mar
+panel.activity.months.apr	Nis
+panel.activity.months.may	May
+panel.activity.months.jun	Haz
+panel.activity.months.jul	Tem
+panel.activity.months.aug	Ağu
+panel.activity.months.sep	Eyl
+panel.activity.months.oct	Eki
+panel.activity.months.nov	Kas
+panel.activity.months.dec	Ara
+panel.tags.title	Etiketler
+panel.tags.add	Ekle
+panel.tags.close	Kapat
+panel.tags.customPlaceholder	Özel etiket + Enter…
+panel.danger.freeze	Dondur
+panel.danger.unfreeze	Dondurmayı kaldır
+panel.danger.freezeDisabledHint	Dondurma, Katalog → abonelik ayarlarında devre dışı
+panel.danger.delete	Sil
+panel.events.filterTabs.all	Tümü
+panel.events.filterTabs.payment	Ödemeler
+panel.events.filterTabs.visit	Ziyaretler
+panel.events.filterTabs.booking	Rezervasyonlar
+panel.events.filterTabs.cancel	İptaller
+panel.events.filterTabs.bonus	Bonuslar
+panel.events.filterTabs.freeze	Dondurmalar
+panel.events.empty	Etkinlik yok
+panel.notes.title	Yönetici notları
+panel.notes.prefix	Not · {{date}}
+panel.notes.save	Kaydet
+panel.notes.cancel	İptal
+panel.notes.addPlaceholder	Bir not yazın…
+panel.notes.add	Not ekle
+panel.notes.justNow	az önce
+panel.notes.deleteTitle	Not silinsin mi?
+panel.notes.deleteMessage	Bu not geri alınamaz.
+panel.bookingPanel.title	Hızlı rezervasyon
+panel.bookingPanel.today	Bugün
+panel.bookingPanel.noLessons	Bu gün ders yok
+panel.bookingPanel.full	Yer yok
+panel.bookingPanel.confirm	Rezervasyon yap →
+panel.bookingPanel.noSubscription	Müşterinin rezervasyon için kullanılabilir aboneliği yok
+panel.bookingPanel.individual	Bireysel hizmet
+panel.bonusPanel.title	Bonus ver
+panel.toasts.noPhone	Müşterinin telefon numarası yok
+panel.toasts.copied	Başarıyla kopyalandı
+panel.toasts.bookingCreated	Rezervasyon oluşturuldu
+panel.toasts.bookingFailed	Rezervasyon yapılamadı
+panel.toasts.bonusFailed	Puanlar verilemedi
+panel.toasts.bonusApplied	Bonus verildi: {{label}}
+panel.toasts.clientAdded	Müşteri eklendi
+panel.bonusOptions.p200.label	+200 puan
+panel.bonusOptions.p200.description	Sadakat bakiyesine ekle
+panel.bonusOptions.p500.label	+500 puan
+panel.bonusOptions.p500.description	Sadakat bakiyesine ekle
+panel.bonusOptions.p1000.label	+1000 puan
+panel.bonusOptions.p1000.description	Sadakat bakiyesine ekle
+tags.suggested.0	Deneme
+tags.suggested.1	VIP
+tags.suggested.2	Tavsiye
+tags.suggested.3	Çevrimiçi
+tags.suggested.4	Grup
+tags.suggested.5	Kişisel
+addModal.title	Yeni müşteri
+addModal.cancel	İptal
+addModal.back	← Geri
+addModal.continue	Devam et →
+addModal.submit	Müşteri ekle ✓
+addModal.stepCounter	{{total}} adımın {{current}}. adımı
+addModal.trustSignal	Veriler korunur ve yalnızca yöneticiler tarafından görülebilir
+addModal.steps.1.title	Kişisel bilgiler
+addModal.steps.1.sub	Müşterinin iletişim bilgilerini girin
+addModal.steps.2.title	Profil ayrıntıları
+addModal.steps.2.sub	Ek bilgiler (isteğe bağlı)
+addModal.steps.3.title	Abonelik
+addModal.steps.3.sub	Bir abonelik türü seçin ve not ekleyin
+addModal.steps.4.title	Her şey hazır!
+addModal.steps.4.sub	Bilgileri gözden geçirin ve müşteriyi ekleyin
+addModal.step1.previewLabel	Yeni müşteri · Önizleme
+addModal.step1.name	Ad soyad *
+addModal.step1.namePlaceholder	Ayşe Yılmaz
+addModal.step1.phone	Telefon
+addModal.step1.phonePlaceholder	+90 530 000 0000
+addModal.step1.email	E-posta
+addModal.step1.emailPlaceholder	musteri@ornek.tr
+addModal.step2.bday	Doğum tarihi
+addModal.step2.bdayPlaceholder	12 Nisan 1990
+addModal.step2.city	Şehir
+addModal.step2.cityPlaceholder	İstanbul
+addModal.step2.tags	Etiketler
+addModal.step2.tagsPlaceholder	Pilates, VIP, rehabilitasyon… (Enter)
+addModal.step2.tagsHint	Etiket eklemek için Enter tuşuna basın
+addModal.step2.inviteCode	Yönlendirenin davet kodu
+addModal.step2.inviteCodePlaceholder	İsteğe bağlı
+addModal.step2.inviteCodeHint	Belirtilirse ikiniz de bonus alırsınız
+addModal.step3.classCount	Abonelik
+addModal.step3.classesUnit	ders
+addModal.step3.classesCount_one	{{count}} ders
+addModal.step3.classesCount_other	{{count}} ders
+addModal.step3.selected	Seçildi
+addModal.step3.noPackage	Abonelik yok
+addModal.step3.noPackages	Bu stüdyoda henüz abonelik paketi yok
+addModal.step3.noPackagesLink	Katalogda paket oluştur →
+addModal.step3.alreadyPaid	Müşteri bu abonelik için zaten ödeme yaptı mı?
+addModal.step3.yes	Evet
+addModal.step3.no	Hayır
+addModal.step3.note	Not
+addModal.step3.notePlaceholder	Özel istekler, kontrendikasyonlar, tercihler…
+addModal.step4.readyTitle	Bilgiler tamamlandı!
+addModal.step4.readySub	Bilgileri gözden geçirin ve eklemeyi onaylayın
+addModal.step4.newClient	Yeni müşteri
+addModal.step4.fields.phone	Telefon
+addModal.step4.fields.email	E-posta
+addModal.step4.fields.bday	Doğum tarihi
+addModal.step4.fields.city	Şehir
+addModal.step4.fields.subscription	Abonelik
+addModal.step4.fields.tags	Etiketler
+addModal.step4.subscriptionValue_one	{{count}} ders
+addModal.step4.subscriptionValue_other	{{count}} ders
+addModal.step4.smsTitle	Hoş geldin SMS'i gönder
+addModal.step4.smsSub	Müşteri davet mesajı alacak
+addModal.errors.name	Bir ad girin (en az 2 karakter)
+addModal.errors.phone	Geçersiz telefon numarası
+addModal.errors.email	Geçersiz e-posta
+addModal.errors.city	Bir şehir girin
+deleteModal.title	Müşteri silinsin mi?
+deleteModal.body	Müşteriyi silmek üzeresiniz
+deleteModal.warning	Bu işlem geri alınamaz.
+deleteModal.cancel	İptal
+deleteModal.confirm	Sil
+deleteModal.success	Müşteri silindi

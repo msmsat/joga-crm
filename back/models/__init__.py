@@ -69,6 +69,7 @@ from .products import Product, ProductSale
 from .events import StudioEvent, EventAttendee
 from .reports import StudioReview, ActivityLog, TrainerSalesGoal, StudioTask
 from .analytics import DailyMetricSnapshot
+from .platform import LandingVisit
 
 __all__ = [
     "Base",
@@ -151,4 +152,5 @@ __all__ = [
     "TrainerSalesGoal",
     "StudioTask",
     "DailyMetricSnapshot",
+    "LandingVisit",
 ]

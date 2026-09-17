@@ -1,0 +1,310 @@
+== bg
+categories.all	Всички
+categories.vip	VIP
+categories.active	Активни
+categories.new	Нови
+categories.has_subscription	С абонамент
+categories.inactive	Неактивни
+categories.frozen	Замразени
+categories.birthday	Рожден ден
+categoriesInfo.all.text	Пълният списък с клиенти на студиото, без приложен филтър по статус.
+categoriesInfo.vip.text	Успешни плащания на обща стойност 50 000+ или 30+ посещения. VIP може да се фиксира и ръчно в картата на клиента; ръчното фиксиране остава независимо от сумите.
+categoriesInfo.active.text	Поне едно посещение през последните 60 дни. Изчислява се по присъствието, отбелязано в дневника — статусът се обновява сам, без ръчно задаване.
+categoriesInfo.new.text	Първите 15 дни от датата на регистрация, независимо дали клиентът е добавен ръчно или е дошъл чрез онлайн резервация. На 16-ия ден автоматично преминава в Активен или Неактивен.
+categoriesInfo.has_subscription.text	Има валиден абонамент: не е изтекъл, не е замразен и има оставащи занятия. Обновява се веднага при покупка, след всяко използвано занятие и при изтичане.
+categoriesInfo.inactive.text	Няма посещения през последните 60 дни — или никога не е посещавал и са минали повече от 15 дни от регистрацията.
+categoriesInfo.frozen.text	Замразен чрез бутона в картата на клиента — единственият статус, задаван ръчно. След размразяване клиентът се връща към автоматичния си статус.
+categoriesInfo.birthday.text	Тези, които имат рожден ден днес — денят и месецът съвпадат, годината се игнорира. Списъкът се обновява автоматично всеки ден.
+status.active	Активен
+status.vip	VIP
+status.new	Нов
+status.inactive	Неактивен
+status.frozen	Замразен
+filtersGuide.trigger	За филтрите
+filtersGuide.title	Филтри за клиенти
+filtersGuide.subtitle	Как се изчислява всяка категория. Щракнете върху карта, за да приложите филтъра, или променете праг — статусите се преизчисляват веднага.
+filtersGuide.close	Затвори
+filtersGuide.rule.new_client_days	Нов за
+filtersGuide.rule.active_within_days	Посещение в рамките на
+filtersGuide.rule.vip_min_spent	Похарчено от
+filtersGuide.rule.vip_min_visits	или посещения
+filtersGuide.unit.days	дни
+filtersGuide.unit.money	
+filtersGuide.unit.visits	посещения
+toolbar.searchPlaceholder	Търсене на клиент…
+toolbar.addClient	Добави клиент
+table.visits	посещения
+table.frozenBadge	❄ замразен
+table.totalSpent	Общо похарчено
+table.subscription	Абонамент
+table.of	от
+table.noSubscription	Без абонамент
+loadMore	Зареди още
+loading	Зареждане…
+panel.tabs.info	Профил
+panel.tabs.events	Събития
+panel.tabs.notes	Бележки
+panel.tabs.wallet	Покупки
+panel.actions.book	Резервирай
+panel.actions.bonus	Бонус
+panel.editDateHint	Щракнете за редактиране
+panel.since	от {{date}}
+panel.contacts.title	Контакти
+panel.contacts.phone	Телефон
+panel.contacts.email	Имейл
+panel.contacts.telegram	Telegram
+panel.contacts.birthDate	Дата на раждане
+panel.contacts.city	Град
+panel.contacts.copyHint	 · щракнете за копиране
+panel.debt	{{amount}} неплатени за занятия — приемете плащането в Дневника
+panel.stats.visits	Посещения
+panel.stats.spent	Похарчено
+panel.stats.subscription	Абонамент
+panel.loyalty.points	точки
+panel.loyalty.level	ниво {{tier}}
+panel.loyalty.toNext	До следващото ниво: {{points}} точки
+panel.loyalty.multiplier	множител на точки ×{{value}}
+panel.loyalty.worth	Стойност {{amount}} при плащане
+panel.loyalty.toNextLevel	Още {{amount}} до {{level}}
+panel.loyalty.pointValue	1 точка = {{amount}}
+panel.loyalty.nextPointValue	на {{level}} — {{amount}}
+panel.loyalty.noBonus	Това ниво не променя стойността на точките
+panel.referral.title	Покани приятел
+panel.referral.copy	Копирай
+panel.abonement.title	Абонамент
+panel.abonement.lessons	{{remaining}}/{{total}} занятия
+panel.abonement.noSubscription	Няма активен абонамент
+panel.abonement.noSubscriptionWarning	Клиентът няма абонамент — предложете му такъв
+panel.abonement.lowWarning	Остават малко занятия — предложете подновяване
+panel.abonement.finishedWarning	Не остават занятия — предложете подновяване
+panel.abonement.remind	Напомни на клиента
+panel.abonement.reminderSent	Напомнянето е изпратено на клиента
+panel.products.single	единично
+panel.products.pending	на изчакване
+panel.products.frozen	замразен
+panel.products.until	Валиден до {{date}}
+panel.products.startsOnFirstVisit	Срокът започва с първото занятие
+panel.wallet.buy	Купи
+panel.wallet.active	Активни
+panel.wallet.archived	Архивирани
+panel.wallet.singles	Единични посещения
+panel.wallet.subscriptions	Абонаменти
+panel.wallet.noSingles	Все още няма единични посещения
+panel.wallet.emptyActive	Няма активни продукти
+panel.wallet.emptyArchived	Няма архивирани продукти
+panel.wallet.emptyCatalog	Това студио все още няма абонаментни пакети
+panel.wallet.lessons	{{remaining}}/{{total}} занятия
+panel.wallet.lessonsCount_one	{{count}} занятие
+panel.wallet.lessonsCount_other	{{count}} занятия
+panel.wallet.perVisit	За единично посещение
+panel.wallet.until	до {{date}}
+panel.wallet.frozenBadge	Замразен
+panel.wallet.loadFailed	Неуспешно зареждане на портфейла
+panel.wallet.back	← Назад
+panel.wallet.catalogTitle	Каталог
+panel.wallet.showAll	Всички
+panel.wallet.posTitle	Каса
+panel.wallet.promoLabel	Промокод
+panel.wallet.promoPlaceholder	Въведете промокод
+panel.wallet.promoInvalid	Промокодът е невалиден
+panel.wallet.useBonuses_one	Използвай бонуси ({{count}})
+panel.wallet.useBonuses_other	Използвай бонуси ({{count}})
+panel.wallet.useDeposit	Плати от депозит ({{amount}})
+panel.wallet.certLabel	Код на сертификат
+panel.wallet.certPlaceholder	Въведете код на сертификат
+panel.wallet.certApplied	Сертификат
+panel.wallet.depositApplied	Депозит
+panel.wallet.base	Базова цена
+panel.wallet.discount	Отстъпка
+panel.wallet.bonuses	Бонуси
+panel.wallet.bonusesSpent_one	Бонуси ({{count}} т.)
+panel.wallet.bonusesSpent_other	Бонуси ({{count}} т.)
+panel.wallet.total	Общо
+panel.wallet.cash	В брой
+panel.wallet.card	Карта
+panel.wallet.cardStripe	Плащанията с карта минават през страница на Stripe и постъпват директно в сметката на студиото. Настройте ги във Финанси → Онлайн плащания.
+panel.wallet.offlineLocked	Плащанията в брой са налични за планове Combo и по-високи
+panel.wallet.payByCard	Плати с карта
+panel.wallet.confirmPay	Потвърди плащането
+panel.wallet.confirmPayCovered	Потвърди (вече платено)
+panel.wallet.confirmTitle	Да се потвърди полученото плащане?
+panel.wallet.confirmMessage	Това ще отчете приход от {{amount}} и ще предостави продукта на клиента.
+panel.wallet.confirmMessageCard	Ще се отвори формуляр за плащане през Stripe за {{amount}}. Продуктът се предоставя и приходът се отчита след успешно плащане.
+panel.wallet.payToStudio	Плащането постъпва в сметката на студиото
+panel.wallet.payConfirming	Потвърждаване на плащането…
+panel.wallet.close	Затвори
+panel.wallet.confirmMessageCovered	Плащането е изцяло покрито от депозит или сертификат. Продуктът ще бъде предоставен на клиента.
+panel.wallet.paySuccess	Плащането е отчетено
+panel.wallet.payCancelled	Плащането е отменено — нищо не е таксувано
+panel.wallet.payNotCompleted	Stripe все още не е потвърдил плащането. Ако картата е таксувана, обновете след минута.
+panel.wallet.payNotApplied	Картата е таксувана, но продажбата не може да бъде отчетена: условията са се променили (сертификат, промокод или пакет). Отчетете продажбата ръчно или възстановете сумата в Stripe.
+panel.wallet.transfer	Прехвърли
+panel.wallet.transferTitle	Прехвърли абонамент
+panel.wallet.transferSearchLabel	Прехвърли на
+panel.wallet.transferSearchPlaceholder	Име или телефон на клиента
+panel.wallet.transferSelectPlaceholder	Избери клиент
+panel.wallet.transferConfirm	Прехвърли
+panel.wallet.transferSuccess	Абонаментът е прехвърлен
+panel.offers.title	Лична отстъпка
+panel.offers.empty	Няма активни отстъпки
+panel.offers.grant	Дай отстъпка
+panel.offers.cancel	Отмени
+panel.offers.valuePercent	{{value}}%
+panel.offers.valueAmount	{{value}} ₽
+panel.offers.untilDate	до {{date}}
+panel.offers.noExpiry	без срок
+panel.offers.scopeRenewal	за подновяване
+panel.offers.grantTitle	Дай лична отстъпка
+panel.offers.grantValue	Размер на отстъпката
+panel.offers.grantType.percent	Процент (%)
+panel.offers.grantType.amount	Сума (₽)
+panel.offers.grantValidUntil	Валидна до
+panel.offers.grantSubmit	Дай
+panel.offers.cancelConfirmTitle	Да се отмени отстъпката?
+panel.offers.cancelConfirmMessage	Клиентът вече няма да може да използва тази оферта.
+panel.offers.toasts.granted	Отстъпката е предоставена
+panel.offers.toasts.cancelled	Отстъпката е отменена
+panel.offers.toasts.loadFailed	Неуспешно зареждане на отстъпките
+panel.activity.compactTitle	Активност (3 мес.)
+panel.activity.clickForDetails	Щракнете за подробности
+panel.activity.detailedTitle	Подробна активност
+panel.activity.periods.month3	3 мес.
+panel.activity.periods.month6	6 мес.
+panel.activity.visitsInPeriod	Посещения за периода
+panel.activity.visitsTooltip_one	{{count}} посещение
+panel.activity.visitsTooltip_other	{{count}} посещения
+panel.activity.emptyState	Няма посещения за този период
+panel.activity.insightTitle	Средна посещаемост
+panel.activity.insightBody	Средно {{avg}} посещения на месец за избрания период.
+panel.activity.months.jan	ян
+panel.activity.months.feb	фев
+panel.activity.months.mar	мар
+panel.activity.months.apr	апр
+panel.activity.months.may	май
+panel.activity.months.jun	юни
+panel.activity.months.jul	юли
+panel.activity.months.aug	авг
+panel.activity.months.sep	сеп
+panel.activity.months.oct	окт
+panel.activity.months.nov	ное
+panel.activity.months.dec	дек
+panel.tags.title	Етикети
+panel.tags.add	Добави
+panel.tags.close	Затвори
+panel.tags.customPlaceholder	Персонален етикет + Enter…
+panel.danger.freeze	Замрази
+panel.danger.unfreeze	Размрази
+panel.danger.freezeDisabledHint	Замразяването е изключено в Каталог → настройки на абонаментите
+panel.danger.delete	Изтрий
+panel.events.filterTabs.all	Всички
+panel.events.filterTabs.payment	Плащания
+panel.events.filterTabs.visit	Посещения
+panel.events.filterTabs.booking	Резервации
+panel.events.filterTabs.cancel	Отмени
+panel.events.filterTabs.bonus	Бонуси
+panel.events.filterTabs.freeze	Замразявания
+panel.events.empty	Няма събития
+panel.notes.title	Бележки на администратора
+panel.notes.prefix	Бележка · {{date}}
+panel.notes.save	Запази
+panel.notes.cancel	Отмени
+panel.notes.addPlaceholder	Въведете бележка…
+panel.notes.add	Добави бележка
+panel.notes.justNow	току-що
+panel.notes.deleteTitle	Да се изтрие бележката?
+panel.notes.deleteMessage	Тази бележка не може да бъде възстановена.
+panel.bookingPanel.title	Бърза резервация
+panel.bookingPanel.today	Днес
+panel.bookingPanel.noLessons	Няма занятия в този ден
+panel.bookingPanel.full	Няма свободни места
+panel.bookingPanel.confirm	Резервирай →
+panel.bookingPanel.noSubscription	Клиентът няма наличен абонамент за резервация
+panel.bookingPanel.individual	Индивидуална услуга
+panel.bonusPanel.title	Дай бонус
+panel.toasts.noPhone	Клиентът няма телефонен номер
+panel.toasts.copied	Копирано успешно
+panel.toasts.bookingCreated	Резервацията е създадена
+panel.toasts.bookingFailed	Неуспешна резервация
+panel.toasts.bonusFailed	Неуспешно предоставяне на точки
+panel.toasts.bonusApplied	Бонусът е предоставен: {{label}}
+panel.toasts.clientAdded	Клиентът е добавен
+panel.bonusOptions.p200.label	+200 точки
+panel.bonusOptions.p200.description	Добави към баланса за лоялност
+panel.bonusOptions.p500.label	+500 точки
+panel.bonusOptions.p500.description	Добави към баланса за лоялност
+panel.bonusOptions.p1000.label	+1000 точки
+panel.bonusOptions.p1000.description	Добави към баланса за лоялност
+tags.suggested.0	Пробен
+tags.suggested.1	VIP
+tags.suggested.2	Препоръка
+tags.suggested.3	Онлайн
+tags.suggested.4	Група
+tags.suggested.5	Личен
+addModal.title	Нов клиент
+addModal.cancel	Отмени
+addModal.back	← Назад
+addModal.continue	Продължи →
+addModal.submit	Добави клиент ✓
+addModal.stepCounter	Стъпка {{current}} от {{total}}
+addModal.trustSignal	Данните са защитени и видими само за администраторите
+addModal.steps.1.title	Лични данни
+addModal.steps.1.sub	Въведете данните за контакт на клиента
+addModal.steps.2.title	Данни за профила
+addModal.steps.2.sub	Допълнителна информация (незадължително)
+addModal.steps.3.title	Абонамент
+addModal.steps.3.sub	Изберете вид абонамент и добавете бележка
+addModal.steps.4.title	Готово!
+addModal.steps.4.sub	Прегледайте данните и добавете клиента
+addModal.step1.previewLabel	Нов клиент · Преглед
+addModal.step1.name	Име и фамилия *
+addModal.step1.namePlaceholder	Иван Петров
+addModal.step1.phone	Телефон
+addModal.step1.phonePlaceholder	+359 88 000 0000
+addModal.step1.email	Имейл
+addModal.step1.emailPlaceholder	klient@primer.bg
+addModal.step2.bday	Дата на раждане
+addModal.step2.bdayPlaceholder	12 април 1990 г.
+addModal.step2.city	Град
+addModal.step2.cityPlaceholder	София
+addModal.step2.tags	Етикети
+addModal.step2.tagsPlaceholder	Пилатес, VIP, рехабилитация… (Enter)
+addModal.step2.tagsHint	Натиснете Enter, за да добавите етикет
+addModal.step2.inviteCode	Код за покана на препоръчалия
+addModal.step2.inviteCodePlaceholder	Незадължително
+addModal.step2.inviteCodeHint	Ако е посочен, и двамата получавате бонус
+addModal.step3.classCount	Абонамент
+addModal.step3.classesUnit	занятия
+addModal.step3.classesCount_one	{{count}} занятие
+addModal.step3.classesCount_other	{{count}} занятия
+addModal.step3.selected	Избран
+addModal.step3.noPackage	Без абонамент
+addModal.step3.noPackages	Това студио все още няма абонаментни пакети
+addModal.step3.noPackagesLink	Създай пакети в Каталог →
+addModal.step3.alreadyPaid	Клиентът вече плати ли за този абонамент?
+addModal.step3.yes	Да
+addModal.step3.no	Не
+addModal.step3.note	Бележка
+addModal.step3.notePlaceholder	Специални изисквания, противопоказания, предпочитания…
+addModal.step4.readyTitle	Данните са попълнени!
+addModal.step4.readySub	Прегледайте данните и потвърдете добавянето
+addModal.step4.newClient	Нов клиент
+addModal.step4.fields.phone	Телефон
+addModal.step4.fields.email	Имейл
+addModal.step4.fields.bday	Дата на раждане
+addModal.step4.fields.city	Град
+addModal.step4.fields.subscription	Абонамент
+addModal.step4.fields.tags	Етикети
+addModal.step4.subscriptionValue_one	{{count}} занятие
+addModal.step4.subscriptionValue_other	{{count}} занятия
+addModal.step4.smsTitle	Изпрати SMS за добре дошъл
+addModal.step4.smsSub	Клиентът ще получи съобщение с покана
+addModal.errors.name	Въведете име (поне 2 знака)
+addModal.errors.phone	Невалиден телефонен номер
+addModal.errors.email	Невалиден имейл
+addModal.errors.city	Въведете град
+deleteModal.title	Да се изтрие клиентът?
+deleteModal.body	Предстои да изтриете клиента
+deleteModal.warning	Това действие не може да бъде отменено.
+deleteModal.cancel	Отмени
+deleteModal.confirm	Изтрий
+deleteModal.success	Клиентът е изтрит

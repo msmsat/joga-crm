@@ -1,0 +1,361 @@
+{
+  "loading": "Učitavanje…",
+  "chModal": {
+    "eyebrow": "Kanal obavijesti",
+    "connected": "Povezan",
+    "notConnected": "Nije povezan",
+    "setup": "Postavljanje veze",
+    "details": "Pojedinosti veze",
+    "ready": "Kanal radi",
+    "readyHint": "Obavijesti za uključene događaje šalju se automatski.",
+    "bot": "Bot",
+    "token": "Token",
+    "phone": "Broj",
+    "account": "Račun",
+    "sender": "Pošiljatelj"
+  },
+  "channels": {
+    "title": "Kanali isporuke",
+    "connect": "Poveži",
+    "connected": "Povezan",
+    "openSettings": "Postavke kanala {{channel}}",
+    "waLockedHint": "Kanal se otključava kada Meta ima vaš način plaćanja, potvrđenu tvrtku i odobrene predloške",
+    "waBlocker": {
+      "payment": "Nema načina plaćanja — podsjetnici se ne isporučuju. Postavite",
+      "verification": "Tvrtka nije potvrđena putem Mete — ograničenje 250/dan. Kako riješiti",
+      "templates": "Predlošci su još na pregledu kod Mete — ništa neće biti poslano. Pojedinosti"
+    }
+  },
+  "roles": {
+    "client": "Klijent",
+    "trainer": "Trener",
+    "admin": "Administrator",
+    "owner": "Vlasnik",
+    "activeCount_one": "{{count}} aktivan",
+    "activeCount_few": "{{count}} aktivna",
+    "activeCount_other": "{{count}} aktivnih"
+  },
+  "matrix": {
+    "saving": "Spremanje…",
+    "allSaved": "Sve promjene su spremljene",
+    "notSaved": "Nije spremljeno",
+    "activateAll": "Aktiviraj sve",
+    "deactivateAll": "Očisti sve potvrdne okvire",
+    "scenariosFor": "Scenariji za: {{role}}",
+    "eventColumn": "Sistemski događaj",
+    "noActiveChannels": "Nema aktivnih kanala",
+    "noActiveChannelsHint": "Uključite barem jedan kanal isporuke u lijevom panelu",
+    "adviceLabel": "Savjet:",
+    "advice": "Za svaku ulogu zasebno postavite što se šalje i kamo — Velora će to obraditi automatski.",
+    "tiers": {
+      "critical": "Obavezno · ne može se isključiti",
+      "operational": "Operativno",
+      "optional": "Neobavezno"
+    },
+    "lock": {
+      "critical": "Obavezna obavijest — ne može se isključiti",
+      "lastChannel": "Posljednji kanal isporuke — ne može se isključiti"
+    },
+    "channelDisconnected": "Kanal nije povezan",
+    "activeCount_one": "Aktivni okidači: {{count}} od {{total}}",
+    "activeCount_few": "Aktivni okidači: {{count}} od {{total}}",
+    "activeCount_other": "Aktivni okidači: {{count}} od {{total}}",
+    "configureFor_one": "Postavite kanale za {{count}} sistemski okidač",
+    "configureFor_few": "Postavite kanale za {{count}} sistemska okidača",
+    "configureFor_other": "Postavite kanale za {{count}} sistemskih okidača"
+  },
+  "events": {
+    "c1": {
+      "title": "Rezervacija potvrđena",
+      "desc": "Nakon uspješne rezervacije termina"
+    },
+    "c2": {
+      "title": "Podsjetnik za termin",
+      "desc": "24 sata i 2 sata prije"
+    },
+    "c3": {
+      "title": "Termin otkazan",
+      "desc": "Kada trener ili studio otkažu"
+    },
+    "c4": {
+      "title": "Uspješno plaćanje",
+      "desc": "Potvrda nakon uspješne naplate"
+    },
+    "c5": {
+      "title": "Malo termina preostalo",
+      "desc": "Kada je u paketu ostalo 1–2 posjeta"
+    },
+    "c6": {
+      "title": "Paket istječe",
+      "desc": "3 dana prije isteka"
+    },
+    "c7": {
+      "title": "Rođendan",
+      "desc": "Čestitka s posebnom ponudom"
+    },
+    "c8": {
+      "title": "Zahtjev za recenziju",
+      "desc": "Nakon prisustvovanja terminu"
+    },
+    "c9": {
+      "title": "Povrat novca",
+      "desc": "Pri otkazivanju i obradi povrata"
+    },
+    "c10": {
+      "title": "Termin još nije plaćen",
+      "desc": "Klijent je prisustvovao, ali nije platio"
+    },
+    "c11": {
+      "title": "Termin je pomaknut",
+      "desc": "Promijenjeno je vrijeme, dvorana ili trener"
+    },
+    "c12": {
+      "title": "Bonus je dodijeljen",
+      "desc": "Klijentu su dodani bodovi ili bonus"
+    },
+    "c13": {
+      "title": "Kava nakon termina",
+      "desc": "Tko iz grupe ide na kavu"
+    },
+    "t1": {
+      "title": "Nova rezervacija kod trenera",
+      "desc": "Klijent je rezervirao osobni termin"
+    },
+    "t2": {
+      "title": "Klijent je otkazao rezervaciju",
+      "desc": "Klijent je otkazao manje od 2 sata prije"
+    },
+    "t3": {
+      "title": "Podsjetnik za termin",
+      "desc": "1 sat prije početka"
+    },
+    "t4": {
+      "title": "Popis grupe",
+      "desc": "30 min. prije grupnog termina"
+    },
+    "t5": {
+      "title": "Promjena rasporeda",
+      "desc": "Administrator je promijenio termin ili lokaciju"
+    },
+    "t6": {
+      "title": "Obračunata plaća",
+      "desc": "Tjedni izračun isplate"
+    },
+    "t7": {
+      "title": "Nova recenzija trenera",
+      "desc": "Klijent je ostavio ocjenu nakon termina"
+    },
+    "t8": {
+      "title": "Rođendan klijenta",
+      "desc": "Podsjetnik da osobno čestitate"
+    },
+    "t9": {
+      "title": "Termin otkazan",
+      "desc": "Studio ili administrator otkazao je vaš termin"
+    },
+    "a1": {
+      "title": "Nova online rezervacija",
+      "desc": "Klijent je rezervirao preko stranice ili widgeta"
+    },
+    "a2": {
+      "title": "Otkazivanje u zadnji čas",
+      "desc": "Manje od 1 sata prije termina"
+    },
+    "a3": {
+      "title": "Novi klijent u sustavu",
+      "desc": "Registracija novog korisnika"
+    },
+    "a4": {
+      "title": "Primljena uplata",
+      "desc": "Svaka uspješna naplata"
+    },
+    "a6": {
+      "title": "Paketi pri kraju",
+      "desc": "Skupina klijenata s ≤1 preostalim terminom"
+    },
+    "a7": {
+      "title": "Sukob u rasporedu",
+      "desc": "Termini koji se preklapaju u dnevniku"
+    },
+    "a8": {
+      "title": "Dnevni izvještaj",
+      "desc": "Sažetak na kraju dana"
+    },
+    "a9": {
+      "title": "Pokušaj prijave",
+      "desc": "Prijava s novog uređaja"
+    },
+    "a10": {
+      "title": "Povrat novca",
+      "desc": "Administrator je izdao povrat"
+    },
+    "o1": {
+      "title": "Dnevni sažetak",
+      "desc": "Prihod, rezervacije, prisustvo za taj dan"
+    },
+    "o2": {
+      "title": "Tjedni izvještaj",
+      "desc": "KPI-jevi: rast klijenata, LTV, konverzija"
+    },
+    "o3": {
+      "title": "Velika uplata",
+      "desc": "Naplata iznad postavljenog praga"
+    },
+    "o4": {
+      "title": "Anomalija podataka",
+      "desc": "Oštar pad rezervacija ili prihoda"
+    },
+    "o5": {
+      "title": "Novi član osoblja",
+      "desc": "Administrator je stvorio novi račun"
+    },
+    "o6": {
+      "title": "Obnova plana",
+      "desc": "Podsjetnik za plaćanje pretplate na Veloru"
+    },
+    "o7": {
+      "title": "Promijenjena prava pristupa",
+      "desc": "Promijenjene su dozvole člana osoblja"
+    },
+    "o8": {
+      "title": "KPI ostvaren",
+      "desc": "Mjesečni cilj je postignut"
+    },
+    "o9": {
+      "title": "Izvoz podataka",
+      "desc": "Netko je izvezao bazu podataka klijenata"
+    }
+  },
+  "tg": {
+    "title": "Telegram",
+    "subtitleConnected": "Kanal je povezan",
+    "subtitleDisconnected": "Povežite bota za obavijesti",
+    "connected": "Povezan",
+    "pasteToken": "Zalijepite token bota koji ste dobili od @BotFathera.",
+    "invalidToken": "Neispravan format tokena",
+    "howToGet": "Kako dobiti token:",
+    "steps": {
+      "1": "Otvorite @BotFather u Telegramu",
+      "2": "Pošaljite naredbu /newbot i slijedite upute",
+      "3": "Kopirajte izdani token",
+      "4": "Zalijepite ga u polje iznad"
+    },
+    "connect": "Poveži",
+    "disconnect": "Prekini vezu",
+    "disconnectTitle": "Prekinuti vezu s Telegramom?",
+    "disconnectMessage": "Klijenti i osoblje više neće primati obavijesti putem ovog kanala.",
+    "close": "Zatvori",
+    "cancel": "Otkaži"
+  },
+  "emailCh": {
+    "title": "E-pošta",
+    "subtitle": "Adresa pošiljatelja za e-poštu klijentima",
+    "verifiedLabel": "Potvrđeno",
+    "emailLabel": "E-pošta pošiljatelja",
+    "emailPlaceholder": "admin@studio.com",
+    "invalidEmail": "Unesite valjanu e-poštu",
+    "sendCode": "Pošalji kôd",
+    "codeSentTo": "Kôd je poslan na",
+    "codeHint": "Unesite 6-znamenkasti kôd iz e-pošte.",
+    "codeLabel": "Kôd za potvrdu",
+    "resend": "Ponovno pošalji kôd",
+    "viaVelora": "E-pošta se šalje putem poslužitelja Velore u vaše ime.",
+    "wrongCode": "Neispravan ili istekao kôd",
+    "verify": "Potvrdi",
+    "back": "Natrag",
+    "cancel": "Otkaži"
+  },
+  "wa": {
+    "title": "WhatsApp",
+    "subtitleConnected": "Kanal je povezan",
+    "subtitleDisconnected": "Prijavite se Meta poslovnim računom",
+    "connected": "Povezan",
+    "paymentRequiredTitle": "Bit će potrebna kartica",
+    "paymentRequired": "Povezivanje broja je besplatno, ali Meta isporučuje podsjetnike klijentima tek nakon dodavanja kartice. Dodajete je zasebno —",
+    "paymentMissingTitle": "Nema načina plaćanja",
+    "paymentMissing": "Trenutačno rade samo odgovori bota na dolazne poruke. Meta odbija podsjetnike, potvrde i masovne poruke dok se ne doda kartica —",
+    "paymentOkTitle": "Plaćanje je povezano",
+    "paymentOk": "obavijesti se isporučuju u cijelosti.",
+    "paymentUnknown": "Nismo mogli provjeriti način plaćanja s Metom — prikazat ćemo stanje pri sljedećem pokušaju.",
+    "paymentLink": "Meta centar za naplatu",
+    "paymentRecheck": "Provjeri ponovno",
+    "paymentFound": "Plaćanje je povezano",
+    "verify": {
+      "title": "Tvrtka nije potvrđena kod Mete",
+      "lead": "Broj radi, ali uz smanjeno ograničenje od 250 jedinstvenih primatelja dnevno. Potvrda uklanja ograničenje i otključava potpuno pokretanje. Studio to mora učiniti sam — WhatsApp račun pripada vama i Velora to ne može učiniti u vaše ime.",
+      "stepsTitle": "Kako potvrditi tvrtku:",
+      "step1a": "Otvorite",
+      "link": "Meta Business Security Center",
+      "step1b": "i kliknite „Pokreni potvrdu”. Potrebna su vam administratorska prava na poslovnom računu.",
+      "step2": "Ispunite pravne podatke: naziv točno kako je u dokumentima, adresu, telefon i web-stranicu. Stranica mora raditi i koristiti HTTPS.",
+      "step3": "Prenesite dokument o registraciji tvrtke i pričekajte da ga Meta pregleda.",
+      "step4": "Potvrdite da ste povezani s tvrtkom: e-poštom na domeni stranice, pozivom ili SMS-om na navedeni telefon ili potvrdom domene.",
+      "step5": "Pričekajte odluku — obično 1–5 radnih dana. Status je u istom Sigurnosnom centru; ako bude odbijeno, Meta navodi razlog i dopušta novu prijavu.",
+      "docsTitle": "Koji dokumenti vrijede (po jedan iz svake skupine):",
+      "doc1": "Registracija: potvrda o osnivanju, izvadak iz registra, poslovna dozvola ili porezni dokument.",
+      "doc2": "Dokaz prisutnosti: aktivna web-stranica, službena stranica na društvenim mrežama ili unos u poslovnom imeniku.",
+      "pitfallTitle": "Najčešći razlog odbijanja",
+      "pitfall": "Naziv tvrtke u Meti i u dokumentu mora se podudarati znak po znak, uključujući pravni oblik i interpunkciju. „Romashka LLC” i „Romashka, LLC” smatraju se različitim nazivima."
+    },
+    "templatesTitle": "Predlošci poruka",
+    "templates": "Meta vam ne dopušta da prvi pošaljete poruku klijentu bez unaprijed odobrenog predloška. Izradite predloške za svaki događaj — idu na pregled i počinju raditi nakon odobrenja.",
+    "templatesAction": "Pripremi predloške",
+    "templatesPending": "Izrada predložaka…",
+    "templatesPartial": "Meta je odbila neke predloške: {{failed}}. Pogledajte zapise za pojedinosti",
+    "templatesRejected": "— te se obavijesti ne dostavljaju. Provjerite tekst na svom Meta računu i ponovno izradite predloške.",
+    "templatesPendingHint": "— Meta može trebati do jednog dana. {{approved}} je već odobreno i isporučuje se.",
+    "templatesOkTitle": "Predlošci su odobreni",
+    "paidWarning": "WhatsApp poruke se naplaćuju",
+    "approxPrice": "pribl.",
+    "pricingLoading": "Učitavanje trenutačne cijene…",
+    "perMessage": "po poruci",
+    "viaMeta": "naplaćuje izravno Meta",
+    "windowNotice": "Isporuka je zajamčena samo unutar 24-satnog prozora razgovora.",
+    "connect": "Poveži WhatsApp",
+    "disconnect": "Prekini vezu",
+    "disconnectTitle": "Prekinuti vezu s WhatsAppom?",
+    "disconnectMessage": "Klijenti i osoblje više neće primati obavijesti putem ovog kanala.",
+    "close": "Zatvori",
+    "cancel": "Otkaži",
+    "templatesDone_one": "Predlošci su spremni: {{count}}. Čeka se Meta pregled",
+    "templatesDone_few": "Predlošci su spremni: {{count}}. Čeka se Meta pregled",
+    "templatesDone_other": "Predlošci su spremni: {{count}}. Čeka se Meta pregled",
+    "templatesRejectedTitle_one": "Meta je odbila {{count}} predložak",
+    "templatesRejectedTitle_few": "Meta je odbila {{count}} predloška",
+    "templatesRejectedTitle_other": "Meta je odbila {{count}} predložaka",
+    "templatesPendingTitle_one": "{{count}} predložak na pregledu",
+    "templatesPendingTitle_few": "{{count}} predloška na pregledu",
+    "templatesPendingTitle_other": "{{count}} predložaka na pregledu",
+    "templatesOk_one": "{{count}} je prošao Meta pregled — obavijesti se isporučuju.",
+    "templatesOk_few": "Sva {{count}} prošla su Meta pregled — obavijesti se isporučuju.",
+    "templatesOk_other": "Svih {{count}} prošlo je Meta pregled — obavijesti se isporučuju."
+  },
+  "tabs": {
+    "matrix": "Postavke",
+    "log": "Dnevnik isporuke"
+  },
+  "log": {
+    "title": "Dnevnik isporuke",
+    "subtitle": "Što je poslano, kome i kada te kako je svako slanje završilo.",
+    "status": {
+      "sent": "Dostavljeno",
+      "rejected": "Odbijeno",
+      "error": "Pogreška veze",
+      "pending": "U tijeku"
+    },
+    "searchPlaceholder": "Telefon, e-pošta ili šifra događaja",
+    "allChannels": "Svi kanali",
+    "reset": "Poništi",
+    "refreshing": "Osvježavanje…",
+    "otherEvent": "Slanje izvan kataloga",
+    "empty": "Još ništa nije poslano",
+    "emptyHint": "Svaka obavijest koju studio šalje klijentima i osoblju bit će prikazana ovdje.",
+    "emptyFiltered": "Ništa nije pronađeno",
+    "emptyFilteredHint": "Pokušajte promijeniti filtre ili potražiti drugi broj.",
+    "loadError": "Nije moguće učitati dnevnik",
+    "loadErrorHint": "Osvježite stranicu — ako to ne pomogne, obratite se podršci.",
+    "range": "{{from}}–{{to}} od {{total}}",
+    "prev": "Natrag",
+    "next": "Sljedeće"
+  }
+}

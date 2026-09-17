@@ -1,0 +1,241 @@
+== sq
+loading	Po ngarkohet…
+chModal.eyebrow	Kanali i njoftimeve
+chModal.connected	I lidhur
+chModal.notConnected	Jo i lidhur
+chModal.setup	Konfigurimi i lidhjes
+chModal.details	Detajet e lidhjes
+chModal.ready	Kanali është gati dhe funksionon
+chModal.readyHint	Njoftimet për ngjarjet e aktivizuara dërgohen automatikisht.
+chModal.bot	Bot
+chModal.token	Token
+chModal.phone	Numri
+chModal.account	Llogaria
+chModal.sender	Dërguesi
+channels.title	Kanalet e dërgimit
+channels.connect	Lidhu
+channels.connected	I lidhur
+channels.openSettings	Cilësimet e {{channel}}
+channels.waLockedHint	Kanali hapet sapo Meta të ketë metodën tuaj të pagesës, biznes të verifikuar dhe shabllone të miratuara
+channels.waBlocker.payment	Nuk ka metodë pagese — kujtesat nuk dërgohen. Konfiguroje
+channels.waBlocker.verification	Biznesi nuk është verifikuar me Meta — kufi 250/ditë. Si ta rregulloni
+channels.waBlocker.templates	Shabllonet janë ende në shqyrtim te Meta — asgjë nuk do të dërgohet. Hollësi
+roles.client	Klient
+roles.trainer	Trajner
+roles.admin	Administrator
+roles.owner	Pronar
+roles.activeCount_one	{{count}} aktiv
+roles.activeCount_other	{{count}} aktivë
+matrix.saving	Po ruhet…
+matrix.allSaved	Të gjitha ndryshimet u ruajtën
+matrix.notSaved	Nuk u ruajt
+matrix.activateAll	Aktivizo të gjitha
+matrix.deactivateAll	Pastro të gjitha kutitë e zgjedhjes
+matrix.activeCount_one	Aktivizues aktivë: {{count}} nga {{total}}
+matrix.activeCount_other	Aktivizues aktivë: {{count}} nga {{total}}
+matrix.scenariosFor	Skenarët për: {{role}}
+matrix.configureFor_one	Konfiguro kanalet për {{count}} aktivizues të sistemit
+matrix.configureFor_other	Konfiguro kanalet për {{count}} aktivizues të sistemit
+matrix.eventColumn	Ngjarja e sistemit
+matrix.noActiveChannels	Nuk ka kanale aktive
+matrix.noActiveChannelsHint	Aktivizoni të paktën një kanal dërgimi në panelin majtas
+matrix.adviceLabel	Këshillë:
+matrix.advice	Konfiguroni veçmas për çdo rol çfarë dërgohet dhe ku — Velora do ta trajtojë automatikisht.
+matrix.tiers.critical	E detyrueshme · nuk mund të çaktivizohet
+matrix.tiers.operational	Operative
+matrix.tiers.optional	Opsionale
+matrix.lock.critical	Njoftim i detyrueshëm — nuk mund të çaktivizohet
+matrix.lock.lastChannel	Kanali i fundit i dërgimit — nuk mund të çaktivizohet
+matrix.channelDisconnected	Kanali nuk është i lidhur
+events.c1.title	Rezervimi u konfirmua
+events.c1.desc	Pas rezervimit të suksesshëm të klasës
+events.c2.title	Kujtesë për klasën
+events.c2.desc	24 orë dhe 2 orë më parë
+events.c3.title	Klasa u anulua
+events.c3.desc	Kur trajneri ose studioja anulon
+events.c4.title	Pagesa u krye
+events.c4.desc	Fatura pas tarifimit të suksesshëm
+events.c5.title	Pak klasa të mbetura
+events.c5.desc	Kur kanë mbetur 1–2 vizita në paketë
+events.c6.title	Paketa po skadon
+events.c6.desc	3 ditë para datës së skadimit
+events.c7.title	Ditëlindje
+events.c7.desc	Urim me ofertë të veçantë
+events.c8.title	Kërkesë për vlerësim
+events.c8.desc	Pas pjesëmarrjes në një klasë
+events.c9.title	Rimbursim
+events.c9.desc	Pas anulimit dhe procesimit të rimbursimit
+events.c10.title	Klasa ende e papaguar
+events.c10.desc	Klienti mori pjesë por nuk ka paguar
+events.c11.title	Klasa u ricaktua
+events.c11.desc	Ora, salla ose trajneri ndryshoi
+events.c12.title	Bonusi u shtua
+events.c12.desc	Klientit iu shtuan pikë ose bonus
+events.c13.title	Kafe pas klasës
+events.c13.desc	Kush nga grupi shkon për kafe
+events.t1.title	Rezervim i ri te trajneri
+events.t1.desc	Një klient rezervoi një seancë personale
+events.t2.title	Klienti anuloi rezervimin
+events.t2.desc	Klienti anuloi më pak se 2 orë më parë
+events.t3.title	Kujtesë për klasën
+events.t3.desc	1 orë para fillimit
+events.t4.title	Lista e grupit
+events.t4.desc	30 min. para klasës në grup
+events.t5.title	Ndryshim në orar
+events.t5.desc	Administratori ndryshoi orën ose vendndodhjen
+events.t6.title	Paga u llogarit
+events.t6.desc	Llogaritja javore e pagesës
+events.t7.title	Vlerësim i ri për trajnerin
+events.t7.desc	Klienti la vlerësim pas klasës
+events.t8.title	Ditëlindja e klientit
+events.t8.desc	Kujtesë për të uruar personalisht
+events.t9.title	Klasa u anulua
+events.t9.desc	Studioja ose administratori anuloi klasën tuaj
+events.a1.title	Rezervim i ri online
+events.a1.desc	Klienti rezervoi nëpërmjet sajtit ose widget-it
+events.a2.title	Anulim i minutës së fundit
+events.a2.desc	Më pak se 1 orë para klasës
+events.a3.title	Klient i ri në sistem
+events.a3.desc	Regjistrim i përdoruesit të ri
+events.a4.title	Pagesa u mor
+events.a4.desc	Çdo tarifim i suksesshëm
+events.a6.title	Paketat po mbarojnë
+events.a6.desc	Grup klientësh me ≤1 klasë të mbetur
+events.a7.title	Konflikt në orar
+events.a7.desc	Klasa që mbivendosen në ditar
+events.a8.title	Raporti ditor
+events.a8.desc	Përmbledhje në fund të ditës
+events.a9.title	Përpjekje për hyrje
+events.a9.desc	Hyrje nga një pajisje e re
+events.a10.title	Rimbursim
+events.a10.desc	Administratori lëshoi rimbursim
+events.o1.title	Përmbledhja ditore
+events.o1.desc	Të ardhura, rezervime, pjesëmarrje për ditën
+events.o2.title	Raporti javor
+events.o2.desc	Treguesit: rritja e klientëve, LTV, konvertimi
+events.o3.title	Pagesë e madhe
+events.o3.desc	Tarifim mbi pragun e vendosur
+events.o4.title	Anomali në të dhëna
+events.o4.desc	Rënie e ndjeshme në rezervime ose të ardhura
+events.o5.title	Anëtar i ri i stafit
+events.o5.desc	Administratori krijoi një llogari të re
+events.o6.title	Rinovimi i planit
+events.o6.desc	Kujtesë për të paguar abonimin e Velora
+events.o7.title	Të drejtat e hyrjes ndryshuan
+events.o7.desc	Lejet e anëtarit të stafit u ndryshuan
+events.o8.title	Treguesi u arrit
+events.o8.desc	Objektivi mujor u arrit
+events.o9.title	Eksport i të dhënave
+events.o9.desc	Dikush eksportoi bazën e të dhënave të klientëve
+tg.title	Telegram
+tg.subtitleConnected	Kanali është i lidhur
+tg.subtitleDisconnected	Lidhni botin e njoftimeve
+tg.connected	I lidhur
+tg.pasteToken	Ngjitni tokenin e botit që morët nga @BotFather.
+tg.invalidToken	Format i pavlefshëm tokeni
+tg.howToGet	Si të merrni një token:
+tg.steps.1	Hapni @BotFather në Telegram
+tg.steps.2	Dërgoni komandën /newbot dhe ndiqni udhëzimet
+tg.steps.3	Kopjoni tokenin e lëshuar
+tg.steps.4	Ngjiteni në fushën më sipër
+tg.connect	Lidhu
+tg.disconnect	Shkëput
+tg.disconnectTitle	Të shkëputet Telegram?
+tg.disconnectMessage	Klientët dhe stafi nuk do të marrin më njoftime përmes këtij kanali.
+tg.close	Mbyll
+tg.cancel	Anulo
+emailCh.title	Email
+emailCh.subtitle	Adresa e dërguesit për email-et e klientëve
+emailCh.verifiedLabel	E verifikuar
+emailCh.emailLabel	Email i dërguesit
+emailCh.emailPlaceholder	admin@studio.com
+emailCh.invalidEmail	Shkruani një email të vlefshëm
+emailCh.sendCode	Dërgo kodin
+emailCh.codeSentTo	Kodi u dërgua te
+emailCh.codeHint	Shkruani kodin 6-shifror nga email-i.
+emailCh.codeLabel	Kodi i verifikimit
+emailCh.resend	Ridërgo kodin
+emailCh.viaVelora	Email-et dërgohen për llogarinë tuaj përmes serverit Velora.
+emailCh.wrongCode	Kod i pavlefshëm ose i skaduar
+emailCh.verify	Verifiko
+emailCh.back	Kthehu
+emailCh.cancel	Anulo
+wa.title	WhatsApp
+wa.subtitleConnected	Kanali është i lidhur
+wa.subtitleDisconnected	Hyni me llogarinë e biznesit Meta
+wa.connected	I lidhur
+wa.paymentRequiredTitle	Do të nevojitet një kartë
+wa.paymentRequired	Lidhja e numrit është falas, por Meta dërgon kujtesa për klientët vetëm kur shtohet një kartë. E shtoni veçmas —
+wa.paymentMissingTitle	Nuk ka metodë pagese
+wa.paymentMissing	Për momentin funksionojnë vetëm përgjigjet e botit ndaj mesazheve hyrëse. Meta refuzon kujtesat, konfirmimet dhe dërgesat masive derisa të shtohet një kartë —
+wa.paymentOkTitle	Pagesa u lidh
+wa.paymentOk	njoftimet dërgohen plotësisht.
+wa.paymentUnknown	Nuk mundëm të kontrollojmë metodën e pagesës me Meta — do të shfaqim gjendjen në përpjekjen tjetër.
+wa.paymentLink	Qendra e faturimit Meta
+wa.paymentRecheck	Kontrollo përsëri
+wa.paymentFound	Pagesa u lidh
+wa.verify.title	Biznesi nuk është verifikuar me Meta
+wa.verify.lead	Numri funksionon, por me kufi të reduktuar prej 250 marrësish unikë në ditë. Verifikimi e heq kufirin dhe mundëson nisje të plotë. Studioja duhet ta bëjë vetë — llogaria WhatsApp ju përket juve dhe Velora nuk mund ta kalojë në emrin tuaj.
+wa.verify.stepsTitle	Si ta verifikoni biznesin:
+wa.verify.step1a	Hapni
+wa.verify.link	Qendrën e Sigurisë së Biznesit Meta
+wa.verify.step1b	dhe klikoni “Nis verifikimin”. Ju duhen të drejta administratori në llogarinë e biznesit.
+wa.verify.step2	Plotësoni të dhënat ligjore: emrin saktësisht si në dokumente, adresën, telefonin dhe sajtin. Sajti duhet të jetë aktiv dhe të përdorë HTTPS.
+wa.verify.step3	Ngarkoni dokumentin e regjistrimit të biznesit dhe prisni që Meta ta shqyrtojë.
+wa.verify.step4	Konfirmoni se jeni të lidhur me biznesin: email në domenin e sajtit, telefonatë ose SMS në numrin e listuar, ose verifikim domeni.
+wa.verify.step5	Prisni vendimin — zakonisht 1–5 ditë pune. Statusi është në të njëjtën Qendër Sigurie; nëse refuzohet, Meta jep arsyen dhe lejon riaplikim.
+wa.verify.docsTitle	Cilat dokumente pranohen (një nga secili grup):
+wa.verify.doc1	Regjistrimi: certifikata e themelimit, ekstrakti i regjistrit, licenca e biznesit ose dokument tatimor.
+wa.verify.doc2	Dëshmi e pranisë: sajt funksional, faqe zyrtare në rrjet social ose listim në direktori biznesi.
+wa.verify.pitfallTitle	Arsyeja më e zakonshme e refuzimit
+wa.verify.pitfall	Emri i biznesit te Meta dhe në dokument duhet të përputhet karakter për karakter, përfshirë formën ligjore dhe pikësimin. “Romashka LLC” dhe “Romashka, LLC” llogariten si emra të ndryshëm.
+wa.templatesTitle	Shabllonet e mesazheve
+wa.templates	Meta nuk ju lejon t'i shkruani i pari klientit pa shabllon të miratuar paraprakisht. Krijoni shabllone për çdo ngjarje — do të kalojnë shqyrtimin dhe nisin të funksionojnë sapo të miratohen.
+wa.templatesAction	Përgatit shabllonet
+wa.templatesPending	Po krijohen shabllonet…
+wa.templatesDone_one	Shabllonet gati: {{count}}. Në pritje të shqyrtimit nga Meta
+wa.templatesDone_other	Shabllonet gati: {{count}}. Në pritje të shqyrtimit nga Meta
+wa.templatesPartial	Meta refuzoi disa shabllone: {{failed}}. Shihni regjistrat për hollësi
+wa.templatesRejectedTitle_one	Meta refuzoi {{count}} shabllon
+wa.templatesRejectedTitle_other	Meta refuzoi {{count}} shabllone
+wa.templatesRejected	— këto njoftime nuk po dërgohen. Kontrolloni formulimin në llogarinë Meta dhe krijojini përsëri shabllonet.
+wa.templatesPendingTitle_one	{{count}} shabllon në shqyrtim
+wa.templatesPendingTitle_other	{{count}} shabllone në shqyrtim
+wa.templatesPendingHint	— Meta mund të zgjasë deri në një ditë. {{approved}} janë miratuar tashmë dhe po dërgohen.
+wa.templatesOkTitle	Shabllonet u miratuan
+wa.templatesOk_one	{{count}} kaloi shqyrtimin e Meta — njoftimet po dërgohen.
+wa.templatesOk_other	Të {{count}} kaluan shqyrtimin e Meta — njoftimet po dërgohen.
+wa.paidWarning	Mesazhet WhatsApp janë me pagesë
+wa.approxPrice	rreth.
+wa.pricingLoading	Po ngarkohet çmimi aktual…
+wa.perMessage	për mesazh
+wa.viaMeta	të faturuara drejtpërdrejt nga Meta
+wa.windowNotice	Dërgimi garantohet vetëm brenda dritares 24-orëshe të bisedës.
+wa.connect	Lidhu me WhatsApp
+wa.disconnect	Shkëput
+wa.disconnectTitle	Të shkëputet WhatsApp?
+wa.disconnectMessage	Klientët dhe stafi nuk do të marrin më njoftime përmes këtij kanali.
+wa.close	Mbyll
+wa.cancel	Anulo
+tabs.matrix	Cilësimet
+tabs.log	Regjistri i dërgimeve
+log.title	Regjistri i dërgimeve
+log.subtitle	Çfarë u dërgua, kujt dhe kur, si dhe si përfundoi çdo dërgim.
+log.status.sent	Dërguar
+log.status.rejected	Refuzuar
+log.status.error	Dështim lidhjeje
+log.status.pending	Në proces
+log.searchPlaceholder	Telefon, email ose kod ngjarjeje
+log.allChannels	Të gjitha kanalet
+log.reset	Rivendos
+log.refreshing	Po rifreskohet…
+log.otherEvent	Dërgim jashtë katalogut
+log.empty	Ende nuk është dërguar asgjë
+log.emptyHint	Çdo njoftim që studioja u dërgon klientëve dhe stafit shfaqet këtu.
+log.emptyFiltered	Nuk u gjet asgjë
+log.emptyFilteredHint	Provoni të ndryshoni filtrat ose kërkoni një numër tjetër.
+log.loadError	Nuk mundëm të ngarkonim regjistrin
+log.loadErrorHint	Rifreskoni faqen — nëse nuk ndihmon, kontaktoni mbështetjen.
+log.range	{{from}}–{{to}} nga {{total}}
+log.prev	Mbrapa
+log.next	Tjetra

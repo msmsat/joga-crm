@@ -1,0 +1,310 @@
+== sq
+categories.all	Të gjithë
+categories.vip	VIP
+categories.active	Aktivë
+categories.new	Të rinj
+categories.has_subscription	Me abonim
+categories.inactive	Joaktivë
+categories.frozen	Të ngrirë
+categories.birthday	Ditëlindje
+categoriesInfo.all.text	Lista e plotë e klientëve të studios, pa filtër statusi të aplikuar.
+categoriesInfo.vip.text	Pagesa të suksesshme me vlerë totale 50 000+ ose 30+ vizita. VIP mund të fiksohet edhe manualisht në kartën e klientit; fiksimi manual mbetet pavarësisht shumave.
+categoriesInfo.active.text	Të paktën një vizitë në 60 ditët e fundit. Bazohet në pjesëmarrjen e shënuar në ditar — statusi përditësohet vetë, pa pasur nevojë të caktohet me dorë.
+categoriesInfo.new.text	15 ditët e para nga data e regjistrimit, pavarësisht nëse klienti u shtua manualisht apo erdhi nga rezervimi online. Në ditën e 16-të kalon automatikisht te Aktiv ose Joaktiv.
+categoriesInfo.has_subscription.text	Ka abonim aktiv: jo të skaduar, jo të ngrirë dhe me seanca të mbetura. Përditësohet menjëherë në blerje, pas çdo seance të përdorur dhe kur skadon.
+categoriesInfo.inactive.text	Pa vizita në 60 ditët e fundit — ose pa vizituar kurrë dhe kanë kaluar mbi 15 ditë nga regjistrimi.
+categoriesInfo.frozen.text	I ngrirë nga butoni në kartën e klientit — i vetmi status që caktohet me dorë. Pas çngrirjes, klienti kthehet te statusi automatik.
+categoriesInfo.birthday.text	Ata që kanë ditëlindjen sot — dita dhe muaji përputhen, viti shpërfillet. Lista rifreskohet automatikisht çdo ditë.
+status.active	Aktiv
+status.vip	VIP
+status.new	I ri
+status.inactive	Joaktiv
+status.frozen	I ngrirë
+filtersGuide.trigger	Rreth filtrave
+filtersGuide.title	Filtrat e klientëve
+filtersGuide.subtitle	Si llogaritet çdo kategori. Klikoni një kartë për të zbatuar filtrin ose ndryshoni pragun — statuset rillogariten menjëherë.
+filtersGuide.close	Mbyll
+filtersGuide.rule.new_client_days	I ri për
+filtersGuide.rule.active_within_days	Vizitë brenda
+filtersGuide.rule.vip_min_spent	Shpenzuar nga
+filtersGuide.rule.vip_min_visits	ose vizita
+filtersGuide.unit.days	ditë
+filtersGuide.unit.money	
+filtersGuide.unit.visits	vizita
+toolbar.searchPlaceholder	Kërko klient…
+toolbar.addClient	Shto klient
+table.visits	vizita
+table.frozenBadge	❄ i ngrirë
+table.totalSpent	Shpenzuar gjithsej
+table.subscription	Abonim
+table.of	nga
+table.noSubscription	Pa abonim
+loadMore	Ngarko më shumë
+loading	Po ngarkohet…
+panel.tabs.info	Profili
+panel.tabs.events	Ngjarjet
+panel.tabs.notes	Shënimet
+panel.tabs.wallet	Blerjet
+panel.actions.book	Rezervo
+panel.actions.bonus	Bonus
+panel.editDateHint	Klikoni për ta ndryshuar
+panel.since	që nga {{date}}
+panel.contacts.title	Kontaktet
+panel.contacts.phone	Telefon
+panel.contacts.email	E-mail
+panel.contacts.telegram	Telegram
+panel.contacts.birthDate	Data e lindjes
+panel.contacts.city	Qyteti
+panel.contacts.copyHint	 · klikoni për të kopjuar
+panel.debt	{{amount}} të papaguara për seanca — pranoni pagesën te Ditari
+panel.stats.visits	Vizitat
+panel.stats.spent	Shpenzuar
+panel.stats.subscription	Abonim
+panel.loyalty.points	pikë
+panel.loyalty.level	niveli {{tier}}
+panel.loyalty.toNext	Deri në nivelin tjetër: {{points}} pikë
+panel.loyalty.multiplier	shumëzues pikësh ×{{value}}
+panel.loyalty.worth	Vlen {{amount}} në arkë
+panel.loyalty.toNextLevel	Edhe {{amount}} për të arritur {{level}}
+panel.loyalty.pointValue	1 pikë = {{amount}}
+panel.loyalty.nextPointValue	në {{level}} — {{amount}}
+panel.loyalty.noBonus	Ky nivel nuk e ndryshon vlerën e pikëve
+panel.referral.title	Fto një mik
+panel.referral.copy	Kopjo
+panel.abonement.title	Abonim
+panel.abonement.lessons	{{remaining}}/{{total}} seanca
+panel.abonement.noSubscription	Nuk ka abonim aktiv
+panel.abonement.noSubscriptionWarning	Klienti nuk ka abonim — ofrojini një
+panel.abonement.lowWarning	Kanë mbetur pak seanca — ofroni rinovim
+panel.abonement.finishedWarning	Nuk kanë mbetur seanca — ofroni rinovim
+panel.abonement.remind	Kujtoji klientit
+panel.abonement.reminderSent	Kujtesa iu dërgua klientit
+panel.products.single	e vetme
+panel.products.pending	në pritje
+panel.products.frozen	i ngrirë
+panel.products.until	Vlen deri më {{date}}
+panel.products.startsOnFirstVisit	Afati fillon me seancën e parë
+panel.wallet.buy	Bli
+panel.wallet.active	Aktive
+panel.wallet.archived	Të arkivuara
+panel.wallet.singles	Vizita të vetme
+panel.wallet.subscriptions	Abonimet
+panel.wallet.noSingles	Ende pa vizita të vetme
+panel.wallet.emptyActive	Nuk ka produkte aktive
+panel.wallet.emptyArchived	Nuk ka produkte të arkivuara
+panel.wallet.emptyCatalog	Kjo studio nuk ka ende paketa abonimi
+panel.wallet.lessons	{{remaining}}/{{total}} seanca
+panel.wallet.lessonsCount_one	{{count}} seancë
+panel.wallet.lessonsCount_other	{{count}} seanca
+panel.wallet.perVisit	Për vizitë të vetme
+panel.wallet.until	deri më {{date}}
+panel.wallet.frozenBadge	I ngrirë
+panel.wallet.loadFailed	Ngarkimi i portofolit dështoi
+panel.wallet.back	← Kthehu
+panel.wallet.catalogTitle	Katalogu
+panel.wallet.showAll	Të gjitha
+panel.wallet.posTitle	Arka
+panel.wallet.promoLabel	Kodi promocional
+panel.wallet.promoPlaceholder	Shkruani kodin promocional
+panel.wallet.promoInvalid	Kodi promocional nuk është i vlefshëm
+panel.wallet.useBonuses_one	Përdor bonuset ({{count}})
+panel.wallet.useBonuses_other	Përdor bonuset ({{count}})
+panel.wallet.useDeposit	Paguaj nga depozita ({{amount}})
+panel.wallet.certLabel	Kodi i certifikatës
+panel.wallet.certPlaceholder	Shkruani kodin e certifikatës
+panel.wallet.certApplied	Certifikata
+panel.wallet.depositApplied	Depozita
+panel.wallet.base	Çmimi bazë
+panel.wallet.discount	Zbritja
+panel.wallet.bonuses	Bonuset
+panel.wallet.bonusesSpent_one	Bonuset ({{count}} pikë)
+panel.wallet.bonusesSpent_other	Bonuset ({{count}} pikë)
+panel.wallet.total	Gjithsej
+panel.wallet.cash	Para në dorë
+panel.wallet.card	Kartë
+panel.wallet.cardStripe	Pagesat me kartë kalojnë përmes një faqeje Stripe dhe shkojnë drejtpërdrejt në llogarinë e studios. Konfigurojini te Financat → Pagesat online.
+panel.wallet.offlineLocked	Pagesat me para në dorë ofrohen në planet Combo dhe më të larta
+panel.wallet.payByCard	Paguaj me kartë
+panel.wallet.confirmPay	Konfirmo pagesën
+panel.wallet.confirmPayCovered	Konfirmo (e paguar tashmë)
+panel.wallet.confirmTitle	Të konfirmohet pagesa e marrë?
+panel.wallet.confirmMessage	Kjo do të regjistrojë të ardhura prej {{amount}} dhe do t'ia japë produktin klientit.
+panel.wallet.confirmMessageCard	Do të hapet formulari i pagesës Stripe për {{amount}}. Produkti jepet dhe të ardhurat regjistrohen sapo pagesa të kryhet me sukses.
+panel.wallet.payToStudio	Pagesa shkon në llogarinë e studios
+panel.wallet.payConfirming	Po verifikohet pagesa…
+panel.wallet.close	Mbyll
+panel.wallet.confirmMessageCovered	Pagesa mbulohet plotësisht nga depozita ose certifikata. Produkti do t'i jepet klientit.
+panel.wallet.paySuccess	Pagesa u regjistrua
+panel.wallet.payCancelled	Pagesa u anulua — nuk u tërhoq asgjë
+panel.wallet.payNotCompleted	Stripe ende nuk e ka konfirmuar pagesën. Nëse karta u tarifua, rifreskoni pas një minute.
+panel.wallet.payNotApplied	Karta u tarifua, por shitja nuk u regjistrua: kushtet ndryshuan (certifikata, kodi promocional ose paketa). Regjistrojeni shitjen manualisht ose rimbursoni në Stripe.
+panel.wallet.transfer	Transfero
+panel.wallet.transferTitle	Transfero abonimin
+panel.wallet.transferSearchLabel	Transfero te
+panel.wallet.transferSearchPlaceholder	Emri ose telefoni i klientit
+panel.wallet.transferSelectPlaceholder	Zgjidh klientin
+panel.wallet.transferConfirm	Transfero
+panel.wallet.transferSuccess	Abonimi u transferua
+panel.offers.title	Zbritje personale
+panel.offers.empty	Nuk ka zbritje aktive
+panel.offers.grant	Jep zbritje
+panel.offers.cancel	Anulo
+panel.offers.valuePercent	{{value}}%
+panel.offers.valueAmount	{{value}} ₽
+panel.offers.untilDate	deri më {{date}}
+panel.offers.noExpiry	pa skadim
+panel.offers.scopeRenewal	për rinovim
+panel.offers.grantTitle	Jep një zbritje personale
+panel.offers.grantValue	Masa e zbritjes
+panel.offers.grantType.percent	Përqindje (%)
+panel.offers.grantType.amount	Shuma (₽)
+panel.offers.grantValidUntil	Vlen deri më
+panel.offers.grantSubmit	Jep
+panel.offers.cancelConfirmTitle	Të anulohet zbritja?
+panel.offers.cancelConfirmMessage	Klienti nuk do të mund ta përdorë më këtë ofertë.
+panel.offers.toasts.granted	Zbritja u dha
+panel.offers.toasts.cancelled	Zbritja u anulua
+panel.offers.toasts.loadFailed	Ngarkimi i zbritjeve dështoi
+panel.activity.compactTitle	Aktiviteti (3 muaj)
+panel.activity.clickForDetails	Klikoni për hollësi
+panel.activity.detailedTitle	Aktiviteti i hollësishëm
+panel.activity.periods.month3	3 muaj
+panel.activity.periods.month6	6 muaj
+panel.activity.visitsInPeriod	Vizitat në periudhë
+panel.activity.visitsTooltip_one	{{count}} vizitë
+panel.activity.visitsTooltip_other	{{count}} vizita
+panel.activity.emptyState	Nuk ka vizita në këtë periudhë
+panel.activity.insightTitle	Pjesëmarrja mesatare
+panel.activity.insightBody	Mesatarisht {{avg}} vizita në muaj gjatë periudhës së zgjedhur.
+panel.activity.months.jan	jan
+panel.activity.months.feb	shk
+panel.activity.months.mar	mar
+panel.activity.months.apr	pri
+panel.activity.months.may	maj
+panel.activity.months.jun	qer
+panel.activity.months.jul	kor
+panel.activity.months.aug	gush
+panel.activity.months.sep	sht
+panel.activity.months.oct	tet
+panel.activity.months.nov	nën
+panel.activity.months.dec	dhj
+panel.tags.title	Etiketat
+panel.tags.add	Shto
+panel.tags.close	Mbyll
+panel.tags.customPlaceholder	Etiketë e personalizuar + Enter…
+panel.danger.freeze	Ngri
+panel.danger.unfreeze	Çngri
+panel.danger.freezeDisabledHint	Ngrirja është çaktivizuar te Katalogu → cilësimet e abonimeve
+panel.danger.delete	Fshi
+panel.events.filterTabs.all	Të gjitha
+panel.events.filterTabs.payment	Pagesat
+panel.events.filterTabs.visit	Vizitat
+panel.events.filterTabs.booking	Rezervimet
+panel.events.filterTabs.cancel	Anulimet
+panel.events.filterTabs.bonus	Bonuset
+panel.events.filterTabs.freeze	Ngrirjet
+panel.events.empty	Nuk ka ngjarje
+panel.notes.title	Shënime të administratorit
+panel.notes.prefix	Shënim · {{date}}
+panel.notes.save	Ruaj
+panel.notes.cancel	Anulo
+panel.notes.addPlaceholder	Shkruani një shënim…
+panel.notes.add	Shto shënim
+panel.notes.justNow	sapo tani
+panel.notes.deleteTitle	Të fshihet shënimi?
+panel.notes.deleteMessage	Ky shënim nuk mund të rikthehet.
+panel.bookingPanel.title	Rezervim i shpejtë
+panel.bookingPanel.today	Sot
+panel.bookingPanel.noLessons	Nuk ka seanca këtë ditë
+panel.bookingPanel.full	Nuk ka vende
+panel.bookingPanel.confirm	Rezervo →
+panel.bookingPanel.noSubscription	Klienti nuk ka abonim të disponueshëm për rezervim
+panel.bookingPanel.individual	Shërbim individual
+panel.bonusPanel.title	Jep bonus
+panel.toasts.noPhone	Klienti nuk ka numër telefoni
+panel.toasts.copied	U kopjua me sukses
+panel.toasts.bookingCreated	Rezervimi u krijua
+panel.toasts.bookingFailed	Rezervimi dështoi
+panel.toasts.bonusFailed	Dhënia e pikëve dështoi
+panel.toasts.bonusApplied	Bonusi u dha: {{label}}
+panel.toasts.clientAdded	Klienti u shtua
+panel.bonusOptions.p200.label	+200 pikë
+panel.bonusOptions.p200.description	Shtoje te bilanci i besnikërisë
+panel.bonusOptions.p500.label	+500 pikë
+panel.bonusOptions.p500.description	Shtoje te bilanci i besnikërisë
+panel.bonusOptions.p1000.label	+1000 pikë
+panel.bonusOptions.p1000.description	Shtoje te bilanci i besnikërisë
+tags.suggested.0	Provë
+tags.suggested.1	VIP
+tags.suggested.2	Rekomandim
+tags.suggested.3	Online
+tags.suggested.4	Grup
+tags.suggested.5	Personal
+addModal.title	Klient i ri
+addModal.cancel	Anulo
+addModal.back	← Kthehu
+addModal.continue	Vazhdo →
+addModal.submit	Shto klient ✓
+addModal.stepCounter	Hapi {{current}} nga {{total}}
+addModal.trustSignal	Të dhënat janë të mbrojtura dhe të dukshme vetëm për administratorët
+addModal.steps.1.title	Të dhënat personale
+addModal.steps.1.sub	Shkruani të dhënat e kontaktit të klientit
+addModal.steps.2.title	Të dhënat e profilit
+addModal.steps.2.sub	Informacion shtesë (opsional)
+addModal.steps.3.title	Abonimi
+addModal.steps.3.sub	Zgjidhni një lloj abonimi dhe shtoni shënim
+addModal.steps.4.title	Gjithçka gati!
+addModal.steps.4.sub	Kontrolloni të dhënat dhe shtoni klientin
+addModal.step1.previewLabel	Klient i ri · Parapamje
+addModal.step1.name	Emri i plotë *
+addModal.step1.namePlaceholder	Arben Hoxha
+addModal.step1.phone	Telefon
+addModal.step1.phonePlaceholder	+355 69 000 0000
+addModal.step1.email	E-mail
+addModal.step1.emailPlaceholder	klient@shembull.al
+addModal.step2.bday	Data e lindjes
+addModal.step2.bdayPlaceholder	12 prill 1990
+addModal.step2.city	Qyteti
+addModal.step2.cityPlaceholder	Tiranë
+addModal.step2.tags	Etiketat
+addModal.step2.tagsPlaceholder	Pilates, VIP, rehabilitim… (Enter)
+addModal.step2.tagsHint	Shtoni etiketë duke shtypur Enter
+addModal.step2.inviteCode	Kodi i ftesës së referuesit
+addModal.step2.inviteCodePlaceholder	Opsionale
+addModal.step2.inviteCodeHint	Nëse jepet, të dy merrni bonus
+addModal.step3.classCount	Abonimi
+addModal.step3.classesUnit	seanca
+addModal.step3.classesCount_one	{{count}} seancë
+addModal.step3.classesCount_other	{{count}} seanca
+addModal.step3.selected	E zgjedhur
+addModal.step3.noPackage	Pa abonim
+addModal.step3.noPackages	Kjo studio nuk ka ende paketa abonimi
+addModal.step3.noPackagesLink	Krijo paketa te Katalogu →
+addModal.step3.alreadyPaid	A ka paguar tashmë klienti për këtë abonim?
+addModal.step3.yes	Po
+addModal.step3.no	Jo
+addModal.step3.note	Shënim
+addModal.step3.notePlaceholder	Kërkesa të veçanta, kundërindikacione, preferenca…
+addModal.step4.readyTitle	Të dhënat u plotësuan!
+addModal.step4.readySub	Kontrolloni të dhënat dhe konfirmoni shtimin
+addModal.step4.newClient	Klient i ri
+addModal.step4.fields.phone	Telefon
+addModal.step4.fields.email	E-mail
+addModal.step4.fields.bday	Data e lindjes
+addModal.step4.fields.city	Qyteti
+addModal.step4.fields.subscription	Abonimi
+addModal.step4.fields.tags	Etiketat
+addModal.step4.subscriptionValue_one	{{count}} seancë
+addModal.step4.subscriptionValue_other	{{count}} seanca
+addModal.step4.smsTitle	Dërgo SMS mirëseardhjeje
+addModal.step4.smsSub	Klienti do të marrë një mesazh ftese
+addModal.errors.name	Shkruani një emër (të paktën 2 karaktere)
+addModal.errors.phone	Numër telefoni i pavlefshëm
+addModal.errors.email	E-mail i pavlefshëm
+addModal.errors.city	Shkruani një qytet
+deleteModal.title	Të fshihet klienti?
+deleteModal.body	Jeni gati të fshini klientin
+deleteModal.warning	Ky veprim nuk mund të zhbëhet.
+deleteModal.cancel	Anulo
+deleteModal.confirm	Fshi
+deleteModal.success	Klienti u fshi

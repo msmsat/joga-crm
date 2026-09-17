@@ -1,0 +1,435 @@
+{
+  "categories": {
+    "all": "Wszyscy",
+    "vip": "VIP",
+    "active": "Aktywni",
+    "new": "Nowi",
+    "has_subscription": "Z abonamentem",
+    "inactive": "Nieaktywni",
+    "frozen": "Zamrożeni",
+    "birthday": "Urodziny"
+  },
+  "categoriesInfo": {
+    "all": {
+      "text": "Pełna lista klientów studia bez zastosowanego filtra statusu."
+    },
+    "vip": {
+      "text": "Udane płatności na łączną kwotę 50 000+ lub 30+ wizyt. VIP można też przypiąć ręcznie na karcie klienta; ręczne przypięcie pozostaje niezależnie od kwot."
+    },
+    "active": {
+      "text": "Co najmniej jedna wizyta w ciągu ostatnich 60 dni. Na podstawie obecności oznaczonej w dzienniku — status aktualizuje się sam, bez ręcznego ustawiania."
+    },
+    "new": {
+      "text": "Pierwsze 15 dni od daty rejestracji, niezależnie od tego, czy klient został dodany ręcznie, czy przyszedł z rezerwacji online. Szesnastego dnia automatycznie przechodzi do Aktywnych albo Nieaktywnych."
+    },
+    "has_subscription": {
+      "text": "Ma aktywny abonament: niewygasły, niezamrożony i z pozostałymi zajęciami. Aktualizuje się od razu przy zakupie, po każdych wykorzystanych zajęciach i po wygaśnięciu."
+    },
+    "inactive": {
+      "text": "Brak wizyt w ciągu ostatnich 60 dni — albo nigdy nie odwiedził studia, a od rejestracji minęło ponad 15 dni."
+    },
+    "frozen": {
+      "text": "Zamrożony przyciskiem na karcie klienta — jedyny status ustawiany ręcznie. Po odmrożeniu klient wraca do automatycznego statusu."
+    },
+    "birthday": {
+      "text": "Osoby, które mają dziś urodziny — dzień i miesiąc się zgadzają, rok jest pomijany. Lista odświeża się automatycznie codziennie."
+    }
+  },
+  "status": {
+    "active": "Aktywny",
+    "vip": "VIP",
+    "new": "Nowy",
+    "inactive": "Nieaktywny",
+    "frozen": "Zamrożony"
+  },
+  "filtersGuide": {
+    "trigger": "O filtrach",
+    "title": "Filtry klientów",
+    "subtitle": "Jak obliczana jest każda kategoria. Kliknij kartę, aby zastosować filtr, lub zmień próg — statusy przeliczają się od razu.",
+    "close": "Zamknij",
+    "rule": {
+      "new_client_days": "Nowy przez",
+      "active_within_days": "Wizyta w ciągu",
+      "vip_min_spent": "Wydano od",
+      "vip_min_visits": "lub wizyty"
+    },
+    "unit": {
+      "days": "dni",
+      "money": "",
+      "visits": "wizyt"
+    }
+  },
+  "toolbar": {
+    "searchPlaceholder": "Szukaj klienta…",
+    "addClient": "Dodaj klienta"
+  },
+  "table": {
+    "visits": "wizyt",
+    "frozenBadge": "❄ zamrożony",
+    "totalSpent": "Łącznie wydano",
+    "subscription": "Abonament",
+    "of": "z",
+    "noSubscription": "Bez abonamentu"
+  },
+  "loadMore": "Załaduj więcej",
+  "loading": "Ładowanie…",
+  "panel": {
+    "tabs": {
+      "info": "Profil",
+      "events": "Zdarzenia",
+      "notes": "Notatki",
+      "wallet": "Zakupy"
+    },
+    "actions": {
+      "book": "Zarezerwuj",
+      "bonus": "Bonus"
+    },
+    "editDateHint": "Kliknij, aby edytować",
+    "since": "od {{date}}",
+    "contacts": {
+      "title": "Dane kontaktowe",
+      "phone": "Telefon",
+      "email": "E-mail",
+      "telegram": "Telegram",
+      "birthDate": "Data urodzenia",
+      "city": "Miasto",
+      "copyHint": " · kliknij, aby skopiować"
+    },
+    "debt": "{{amount}} nieopłacone za zajęcia — przyjmij płatność w Dzienniku",
+    "stats": {
+      "visits": "Wizyty",
+      "spent": "Wydano",
+      "subscription": "Abonament"
+    },
+    "loyalty": {
+      "points": "punktów",
+      "level": "poziom {{tier}}",
+      "toNext": "Do następnego poziomu: {{points}} punktów",
+      "multiplier": "mnożnik punktów ×{{value}}",
+      "worth": "Wartość przy płatności: {{amount}}",
+      "toNextLevel": "Jeszcze {{amount}} do {{level}}",
+      "pointValue": "1 punkt = {{amount}}",
+      "nextPointValue": "na {{level}} — {{amount}}",
+      "noBonus": "Ten poziom nie zmienia wartości punktów"
+    },
+    "referral": {
+      "title": "Zaproś znajomego",
+      "copy": "Kopiuj"
+    },
+    "abonement": {
+      "title": "Abonament",
+      "lessons": "{{remaining}}/{{total}} zajęć",
+      "noSubscription": "Brak aktywnego abonamentu",
+      "noSubscriptionWarning": "Klient nie ma abonamentu — zaproponuj mu go",
+      "lowWarning": "Pozostało mało zajęć — zaproponuj odnowienie",
+      "finishedWarning": "Nie zostały żadne zajęcia — zaproponuj odnowienie",
+      "remind": "Przypomnij klientowi",
+      "reminderSent": "Wysłano przypomnienie do klienta"
+    },
+    "products": {
+      "single": "pojedynczy",
+      "pending": "w kolejce",
+      "frozen": "zamrożony",
+      "until": "Ważny do {{date}}",
+      "startsOnFirstVisit": "Okres zaczyna się od pierwszych zajęć"
+    },
+    "wallet": {
+      "buy": "Kup",
+      "active": "Aktywne",
+      "archived": "Zarchiwizowane",
+      "singles": "Pojedyncze wizyty",
+      "subscriptions": "Abonamenty",
+      "noSingles": "Nie ma jeszcze pojedynczych wizyt",
+      "emptyActive": "Brak aktywnych produktów",
+      "emptyArchived": "Brak zarchiwizowanych produktów",
+      "emptyCatalog": "To studio nie ma jeszcze pakietów abonamentowych",
+      "lessons": "{{remaining}}/{{total}} zajęć",
+      "perVisit": "Za pojedynczą wizytę",
+      "until": "do {{date}}",
+      "frozenBadge": "Zamrożony",
+      "loadFailed": "Nie udało się załadować portfela",
+      "back": "← Wróć",
+      "catalogTitle": "Katalog",
+      "showAll": "Wszystkie",
+      "posTitle": "Kasa",
+      "promoLabel": "Kod promocyjny",
+      "promoPlaceholder": "Wpisz kod promocyjny",
+      "promoInvalid": "Kod promocyjny jest nieprawidłowy",
+      "useDeposit": "Zapłać z depozytu ({{amount}})",
+      "certLabel": "Kod certyfikatu",
+      "certPlaceholder": "Wpisz kod certyfikatu",
+      "certApplied": "Certyfikat",
+      "depositApplied": "Depozyt",
+      "base": "Cena bazowa",
+      "discount": "Rabat",
+      "bonuses": "Bonusy",
+      "total": "Razem",
+      "cash": "Gotówka",
+      "card": "Karta",
+      "cardStripe": "Płatności kartą przechodzą przez stronę Stripe i trafiają bezpośrednio na konto studia. Skonfiguruj je w Finansach → Płatności online.",
+      "offlineLocked": "Płatności gotówką są dostępne w planach Combo i wyższych",
+      "payByCard": "Zapłać kartą",
+      "confirmPay": "Potwierdź płatność",
+      "confirmPayCovered": "Potwierdź (już opłacono)",
+      "confirmTitle": "Potwierdzić otrzymanie płatności?",
+      "confirmMessage": "To zapisze przychód {{amount}} i przekaże produkt klientowi.",
+      "confirmMessageCard": "Otworzy się formularz płatności Stripe na {{amount}}. Produkt zostanie przyznany, a przychód zapisany po pomyślnym opłaceniu.",
+      "payToStudio": "Płatność trafia na konto studia",
+      "payConfirming": "Weryfikowanie płatności…",
+      "close": "Zamknij",
+      "confirmMessageCovered": "Płatność jest w całości pokryta depozytem lub certyfikatem. Produkt zostanie przekazany klientowi.",
+      "paySuccess": "Płatność zapisana",
+      "payCancelled": "Płatność anulowana — nic nie zostało pobrane",
+      "payNotCompleted": "Stripe nie potwierdził jeszcze płatności. Jeśli karta została obciążona, odśwież za minutę.",
+      "payNotApplied": "Karta została obciążona, ale sprzedaży nie udało się zapisać: warunki się zmieniły (certyfikat, kod promocyjny lub pakiet). Zapisz sprzedaż ręcznie albo zwróć środki w Stripe.",
+      "transfer": "Przenieś",
+      "transferTitle": "Przenieś abonament",
+      "transferSearchLabel": "Przenieś do",
+      "transferSearchPlaceholder": "Imię lub telefon klienta",
+      "transferSelectPlaceholder": "Wybierz klienta",
+      "transferConfirm": "Przenieś",
+      "transferSuccess": "Abonament przeniesiony",
+      "lessonsCount_one": "{{count}} zajęcie",
+      "lessonsCount_few": "{{count}} zajęcia",
+      "lessonsCount_many": "{{count}} zajęć",
+      "useBonuses_one": "Wykorzystaj bonusy ({{count}})",
+      "useBonuses_few": "Wykorzystaj bonusy ({{count}})",
+      "useBonuses_many": "Wykorzystaj bonusy ({{count}})",
+      "bonusesSpent_one": "Bonusy ({{count}} pkt)",
+      "bonusesSpent_few": "Bonusy ({{count}} pkt)",
+      "bonusesSpent_many": "Bonusy ({{count}} pkt)"
+    },
+    "offers": {
+      "title": "Rabat osobisty",
+      "empty": "Brak aktywnych rabatów",
+      "grant": "Przyznaj rabat",
+      "cancel": "Anuluj",
+      "valuePercent": "{{value}}%",
+      "valueAmount": "{{value}} ₽",
+      "untilDate": "do {{date}}",
+      "noExpiry": "bez terminu ważności",
+      "scopeRenewal": "przy odnowieniu",
+      "grantTitle": "Przyznaj rabat osobisty",
+      "grantValue": "Wysokość rabatu",
+      "grantType": {
+        "percent": "Procent (%)",
+        "amount": "Kwota (₽)"
+      },
+      "grantValidUntil": "Ważny do",
+      "grantSubmit": "Przyznaj",
+      "cancelConfirmTitle": "Anulować rabat?",
+      "cancelConfirmMessage": "Klient nie będzie już mógł skorzystać z tej oferty.",
+      "toasts": {
+        "granted": "Rabat przyznany",
+        "cancelled": "Rabat anulowany",
+        "loadFailed": "Nie udało się załadować rabatów"
+      }
+    },
+    "activity": {
+      "compactTitle": "Aktywność (3 mies.)",
+      "clickForDetails": "Kliknij, aby zobaczyć szczegóły",
+      "detailedTitle": "Szczegółowa aktywność",
+      "periods": {
+        "month3": "3 mies.",
+        "month6": "6 mies."
+      },
+      "visitsInPeriod": "Wizyty w okresie",
+      "emptyState": "Brak wizyt w tym okresie",
+      "insightTitle": "Średnia frekwencja",
+      "insightBody": "Średnio {{avg}} wizyt miesięcznie w wybranym okresie.",
+      "months": {
+        "jan": "sty",
+        "feb": "lut",
+        "mar": "mar",
+        "apr": "kwi",
+        "may": "maj",
+        "jun": "cze",
+        "jul": "lip",
+        "aug": "sie",
+        "sep": "wrz",
+        "oct": "paź",
+        "nov": "lis",
+        "dec": "gru"
+      },
+      "visitsTooltip_one": "{{count}} wizyta",
+      "visitsTooltip_few": "{{count}} wizyty",
+      "visitsTooltip_many": "{{count}} wizyt"
+    },
+    "tags": {
+      "title": "Tagi",
+      "add": "Dodaj",
+      "close": "Zamknij",
+      "customPlaceholder": "Własny tag + Enter…"
+    },
+    "danger": {
+      "freeze": "Zamroź",
+      "unfreeze": "Odmroź",
+      "freezeDisabledHint": "Zamrażanie jest wyłączone w Katalogu → ustawienia abonamentów",
+      "delete": "Usuń"
+    },
+    "events": {
+      "filterTabs": {
+        "all": "Wszystkie",
+        "payment": "Płatności",
+        "visit": "Wizyty",
+        "booking": "Rezerwacje",
+        "cancel": "Anulowania",
+        "bonus": "Bonusy",
+        "freeze": "Zamrożenia"
+      },
+      "empty": "Brak zdarzeń"
+    },
+    "notes": {
+      "title": "Notatki administratora",
+      "prefix": "Notatka · {{date}}",
+      "save": "Zapisz",
+      "cancel": "Anuluj",
+      "addPlaceholder": "Wpisz notatkę…",
+      "add": "Dodaj notatkę",
+      "justNow": "przed chwilą",
+      "deleteTitle": "Usunąć notatkę?",
+      "deleteMessage": "Tej notatki nie można odzyskać."
+    },
+    "bookingPanel": {
+      "title": "Szybka rezerwacja",
+      "today": "Dzisiaj",
+      "noLessons": "Brak zajęć tego dnia",
+      "full": "Brak miejsc",
+      "confirm": "Zarezerwuj →",
+      "noSubscription": "Klient nie ma abonamentu dostępnego do rezerwacji",
+      "individual": "Usługa indywidualna"
+    },
+    "bonusPanel": {
+      "title": "Przyznaj bonus"
+    },
+    "toasts": {
+      "noPhone": "Klient nie ma numeru telefonu",
+      "copied": "Skopiowano",
+      "bookingCreated": "Rezerwacja utworzona",
+      "bookingFailed": "Nie udało się zarezerwować",
+      "bonusFailed": "Nie udało się przyznać punktów",
+      "bonusApplied": "Bonus przyznany: {{label}}",
+      "clientAdded": "Klient dodany"
+    },
+    "bonusOptions": {
+      "p200": {
+        "label": "+200 punktów",
+        "description": "Dodaj do salda lojalnościowego"
+      },
+      "p500": {
+        "label": "+500 punktów",
+        "description": "Dodaj do salda lojalnościowego"
+      },
+      "p1000": {
+        "label": "+1000 punktów",
+        "description": "Dodaj do salda lojalnościowego"
+      }
+    }
+  },
+  "tags": {
+    "suggested": [
+      "Próbny",
+      "VIP",
+      "Polecenie",
+      "Online",
+      "Grupa",
+      "Osobisty"
+    ]
+  },
+  "addModal": {
+    "title": "Nowy klient",
+    "cancel": "Anuluj",
+    "back": "← Wróć",
+    "continue": "Dalej →",
+    "submit": "Dodaj klienta ✓",
+    "stepCounter": "Krok {{current}} z {{total}}",
+    "trustSignal": "Dane są chronione i widoczne tylko dla administratorów",
+    "steps": {
+      "1": {
+        "title": "Dane osobowe",
+        "sub": "Wpisz dane kontaktowe klienta"
+      },
+      "2": {
+        "title": "Dane profilu",
+        "sub": "Dodatkowe informacje (opcjonalnie)"
+      },
+      "3": {
+        "title": "Abonament",
+        "sub": "Wybierz typ abonamentu i dodaj notatkę"
+      },
+      "4": {
+        "title": "Gotowe!",
+        "sub": "Sprawdź dane i dodaj klienta"
+      }
+    },
+    "step1": {
+      "previewLabel": "Nowy klient · Podgląd",
+      "name": "Imię i nazwisko *",
+      "namePlaceholder": "Jan Kowalski",
+      "phone": "Telefon",
+      "phonePlaceholder": "+48 500 000 000",
+      "email": "E-mail",
+      "emailPlaceholder": "klient@przyklad.pl"
+    },
+    "step2": {
+      "bday": "Data urodzenia",
+      "bdayPlaceholder": "12 kwietnia 1990",
+      "city": "Miasto",
+      "cityPlaceholder": "Warszawa",
+      "tags": "Tagi",
+      "tagsPlaceholder": "Pilates, VIP, rehabilitacja… (Enter)",
+      "tagsHint": "Naciśnij Enter, aby dodać tag",
+      "inviteCode": "Kod zaproszenia osoby polecającej",
+      "inviteCodePlaceholder": "Opcjonalnie",
+      "inviteCodeHint": "Jeśli go podasz, oboje otrzymacie bonus"
+    },
+    "step3": {
+      "classCount": "Abonament",
+      "classesUnit": "zajęć",
+      "selected": "Wybrano",
+      "noPackage": "Bez abonamentu",
+      "noPackages": "To studio nie ma jeszcze pakietów abonamentowych",
+      "noPackagesLink": "Utwórz pakiety w Katalogu →",
+      "alreadyPaid": "Czy klient zapłacił już za ten abonament?",
+      "yes": "Tak",
+      "no": "Nie",
+      "note": "Notatka",
+      "notePlaceholder": "Szczególne prośby, przeciwwskazania, preferencje…",
+      "classesCount_one": "{{count}} zajęcie",
+      "classesCount_few": "{{count}} zajęcia",
+      "classesCount_many": "{{count}} zajęć"
+    },
+    "step4": {
+      "readyTitle": "Dane wypełnione!",
+      "readySub": "Sprawdź dane i potwierdź dodanie",
+      "newClient": "Nowy klient",
+      "fields": {
+        "phone": "Telefon",
+        "email": "E-mail",
+        "bday": "Data urodzenia",
+        "city": "Miasto",
+        "subscription": "Abonament",
+        "tags": "Tagi"
+      },
+      "smsTitle": "Wyślij powitalny SMS",
+      "smsSub": "Klient otrzyma wiadomość z zaproszeniem",
+      "subscriptionValue_one": "{{count}} zajęcie",
+      "subscriptionValue_few": "{{count}} zajęcia",
+      "subscriptionValue_many": "{{count}} zajęć"
+    },
+    "errors": {
+      "name": "Wpisz imię (co najmniej 2 znaki)",
+      "phone": "Nieprawidłowy numer telefonu",
+      "email": "Nieprawidłowy e-mail",
+      "city": "Wpisz miasto"
+    }
+  },
+  "deleteModal": {
+    "title": "Usunąć klienta?",
+    "body": "Za chwilę usuniesz klienta",
+    "warning": "Tej operacji nie można cofnąć.",
+    "cancel": "Anuluj",
+    "confirm": "Usuń",
+    "success": "Klient usunięty"
+  }
+}

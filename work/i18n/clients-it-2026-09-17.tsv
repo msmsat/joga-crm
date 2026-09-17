@@ -1,0 +1,310 @@
+== it
+categories.all	Tutti
+categories.vip	VIP
+categories.active	Attivi
+categories.new	Nuovi
+categories.has_subscription	Con abbonamento
+categories.inactive	Inattivi
+categories.frozen	Sospesi
+categories.birthday	Compleanno
+categoriesInfo.all.text	L'elenco completo dei clienti dello studio, senza filtri di stato applicati.
+categoriesInfo.vip.text	Pagamenti riusciti per un totale di 50.000+ o 30+ visite. Il VIP può anche essere fissato manualmente nella scheda cliente; il fissaggio manuale rimane indipendentemente dagli importi.
+categoriesInfo.active.text	Almeno una visita negli ultimi 60 giorni. Si basa sulle presenze segnate nel registro: lo stato si aggiorna da solo, senza doverlo impostare manualmente.
+categoriesInfo.new.text	I primi 15 giorni dalla data di registrazione, sia che il cliente sia stato aggiunto manualmente sia che sia arrivato dalla prenotazione online. Il 16° giorno passa automaticamente ad Attivo o Inattivo.
+categoriesInfo.has_subscription.text	Ha un abbonamento valido: non scaduto, non sospeso e con lezioni rimanenti. Si aggiorna subito all'acquisto, a ogni lezione usata e alla scadenza.
+categoriesInfo.inactive.text	Nessuna visita negli ultimi 60 giorni, oppure nessuna visita in assoluto e più di 15 giorni dalla registrazione.
+categoriesInfo.frozen.text	Sospeso dal pulsante nella scheda cliente: è l'unico stato impostato manualmente. Dopo la riattivazione il cliente torna al proprio stato automatico.
+categoriesInfo.birthday.text	Chi compie gli anni oggi: giorno e mese coincidono, l'anno viene ignorato. L'elenco si aggiorna automaticamente ogni giorno.
+status.active	Attivo
+status.vip	VIP
+status.new	Nuovo
+status.inactive	Inattivo
+status.frozen	Sospeso
+filtersGuide.trigger	Informazioni sui filtri
+filtersGuide.title	Filtri clienti
+filtersGuide.subtitle	Come viene calcolata ogni categoria. Fai clic su una scheda per applicare il filtro, oppure modifica una soglia: gli stati si ricalcolano subito.
+filtersGuide.close	Chiudi
+filtersGuide.rule.new_client_days	Nuovo per
+filtersGuide.rule.active_within_days	Visita entro
+filtersGuide.rule.vip_min_spent	Speso da
+filtersGuide.rule.vip_min_visits	o visite
+filtersGuide.unit.days	giorni
+filtersGuide.unit.money	
+filtersGuide.unit.visits	visite
+toolbar.searchPlaceholder	Cerca cliente…
+toolbar.addClient	Aggiungi cliente
+table.visits	visite
+table.frozenBadge	❄ sospeso
+table.totalSpent	Totale speso
+table.subscription	Abbonamento
+table.of	di
+table.noSubscription	Nessun abbonamento
+loadMore	Carica altro
+loading	Caricamento…
+panel.tabs.info	Profilo
+panel.tabs.events	Eventi
+panel.tabs.notes	Note
+panel.tabs.wallet	Acquisti
+panel.actions.book	Prenota
+panel.actions.bonus	Bonus
+panel.editDateHint	Fai clic per modificare
+panel.since	dal {{date}}
+panel.contacts.title	Contatti
+panel.contacts.phone	Telefono
+panel.contacts.email	E-mail
+panel.contacts.telegram	Telegram
+panel.contacts.birthDate	Data di nascita
+panel.contacts.city	Città
+panel.contacts.copyHint	 · fai clic per copiare
+panel.debt	{{amount}} non pagati per le lezioni — accetta il pagamento nel Registro
+panel.stats.visits	Visite
+panel.stats.spent	Speso
+panel.stats.subscription	Abbonamento
+panel.loyalty.points	punti
+panel.loyalty.level	livello {{tier}}
+panel.loyalty.toNext	Al livello successivo: {{points}} punti
+panel.loyalty.multiplier	moltiplicatore punti ×{{value}}
+panel.loyalty.worth	Vale {{amount}} alla cassa
+panel.loyalty.toNextLevel	Ancora {{amount}} per raggiungere {{level}}
+panel.loyalty.pointValue	1 punto = {{amount}}
+panel.loyalty.nextPointValue	al livello {{level}} — {{amount}}
+panel.loyalty.noBonus	Questo livello non modifica il valore dei punti
+panel.referral.title	Invita un amico
+panel.referral.copy	Copia
+panel.abonement.title	Abbonamento
+panel.abonement.lessons	{{remaining}}/{{total}} lezioni
+panel.abonement.noSubscription	Nessun abbonamento attivo
+panel.abonement.noSubscriptionWarning	Il cliente non ha un abbonamento: proponine uno
+panel.abonement.lowWarning	Restano poche lezioni: proponi un rinnovo
+panel.abonement.finishedWarning	Non restano lezioni: proponi un rinnovo
+panel.abonement.remind	Ricorda al cliente
+panel.abonement.reminderSent	Promemoria inviato al cliente
+panel.products.single	singolo
+panel.products.pending	in attesa
+panel.products.frozen	sospeso
+panel.products.until	Valido fino al {{date}}
+panel.products.startsOnFirstVisit	Il periodo inizia con la prima lezione
+panel.wallet.buy	Acquista
+panel.wallet.active	Attivi
+panel.wallet.archived	Archiviati
+panel.wallet.singles	Visite singole
+panel.wallet.subscriptions	Abbonamenti
+panel.wallet.noSingles	Ancora nessuna visita singola
+panel.wallet.emptyActive	Nessun prodotto attivo
+panel.wallet.emptyArchived	Nessun prodotto archiviato
+panel.wallet.emptyCatalog	Questo studio non ha ancora pacchetti di abbonamento
+panel.wallet.lessons	{{remaining}}/{{total}} lezioni
+panel.wallet.lessonsCount_one	{{count}} lezione
+panel.wallet.lessonsCount_other	{{count}} lezioni
+panel.wallet.perVisit	Per singola visita
+panel.wallet.until	fino al {{date}}
+panel.wallet.frozenBadge	Sospeso
+panel.wallet.loadFailed	Impossibile caricare il portafoglio
+panel.wallet.back	← Indietro
+panel.wallet.catalogTitle	Catalogo
+panel.wallet.showAll	Tutti
+panel.wallet.posTitle	Cassa
+panel.wallet.promoLabel	Codice promozionale
+panel.wallet.promoPlaceholder	Inserisci il codice promozionale
+panel.wallet.promoInvalid	Il codice promozionale non è valido
+panel.wallet.useBonuses_one	Usa bonus ({{count}})
+panel.wallet.useBonuses_other	Usa bonus ({{count}})
+panel.wallet.useDeposit	Paga dal deposito ({{amount}})
+panel.wallet.certLabel	Codice certificato
+panel.wallet.certPlaceholder	Inserisci il codice del certificato
+panel.wallet.certApplied	Certificato
+panel.wallet.depositApplied	Deposito
+panel.wallet.base	Prezzo base
+panel.wallet.discount	Sconto
+panel.wallet.bonuses	Bonus
+panel.wallet.bonusesSpent_one	Bonus ({{count}} pt)
+panel.wallet.bonusesSpent_other	Bonus ({{count}} pt)
+panel.wallet.total	Totale
+panel.wallet.cash	Contanti
+panel.wallet.card	Carta
+panel.wallet.cardStripe	I pagamenti con carta passano da una pagina Stripe e arrivano direttamente sul conto dello studio. Configurali in Finanze → Pagamenti online.
+panel.wallet.offlineLocked	I pagamenti in contanti sono disponibili con i piani Combo e superiori
+panel.wallet.payByCard	Paga con carta
+panel.wallet.confirmPay	Conferma pagamento
+panel.wallet.confirmPayCovered	Conferma (già pagato)
+panel.wallet.confirmTitle	Confermare il pagamento ricevuto?
+panel.wallet.confirmMessage	Verrà registrata un'entrata di {{amount}} e il prodotto sarà assegnato al cliente.
+panel.wallet.confirmMessageCard	Si aprirà un modulo di pagamento Stripe per {{amount}}. Il prodotto sarà assegnato e l'entrata registrata dopo l'esito positivo del pagamento.
+panel.wallet.payToStudio	Il pagamento arriva sul conto dello studio
+panel.wallet.payConfirming	Verifica del pagamento…
+panel.wallet.close	Chiudi
+panel.wallet.confirmMessageCovered	Il pagamento è completamente coperto da deposito o certificato. Il prodotto verrà assegnato al cliente.
+panel.wallet.paySuccess	Pagamento registrato
+panel.wallet.payCancelled	Pagamento annullato: non è stato addebitato nulla
+panel.wallet.payNotCompleted	Stripe non ha ancora confermato il pagamento. Se la carta è stata addebitata, aggiorna tra un minuto.
+panel.wallet.payNotApplied	La carta è stata addebitata, ma non è stato possibile registrare la vendita: le condizioni sono cambiate (certificato, codice promozionale o pacchetto). Registra manualmente la vendita oppure effettua il rimborso in Stripe.
+panel.wallet.transfer	Trasferisci
+panel.wallet.transferTitle	Trasferisci abbonamento
+panel.wallet.transferSearchLabel	Trasferisci a
+panel.wallet.transferSearchPlaceholder	Nome o telefono del cliente
+panel.wallet.transferSelectPlaceholder	Seleziona cliente
+panel.wallet.transferConfirm	Trasferisci
+panel.wallet.transferSuccess	Abbonamento trasferito
+panel.offers.title	Sconto personale
+panel.offers.empty	Nessuno sconto attivo
+panel.offers.grant	Concedi sconto
+panel.offers.cancel	Annulla
+panel.offers.valuePercent	{{value}}%
+panel.offers.valueAmount	{{value}} ₽
+panel.offers.untilDate	fino al {{date}}
+panel.offers.noExpiry	senza scadenza
+panel.offers.scopeRenewal	per il rinnovo
+panel.offers.grantTitle	Concedi uno sconto personale
+panel.offers.grantValue	Entità dello sconto
+panel.offers.grantType.percent	Percentuale (%)
+panel.offers.grantType.amount	Importo (₽)
+panel.offers.grantValidUntil	Valido fino al
+panel.offers.grantSubmit	Concedi
+panel.offers.cancelConfirmTitle	Annullare lo sconto?
+panel.offers.cancelConfirmMessage	Il cliente non potrà più usare questa offerta.
+panel.offers.toasts.granted	Sconto concesso
+panel.offers.toasts.cancelled	Sconto annullato
+panel.offers.toasts.loadFailed	Impossibile caricare gli sconti
+panel.activity.compactTitle	Attività (3 mesi)
+panel.activity.clickForDetails	Fai clic per i dettagli
+panel.activity.detailedTitle	Attività dettagliata
+panel.activity.periods.month3	3 mesi
+panel.activity.periods.month6	6 mesi
+panel.activity.visitsInPeriod	Visite nel periodo
+panel.activity.visitsTooltip_one	{{count}} visita
+panel.activity.visitsTooltip_other	{{count}} visite
+panel.activity.emptyState	Nessuna visita in questo periodo
+panel.activity.insightTitle	Frequenza media
+panel.activity.insightBody	In media {{avg}} visite al mese nel periodo selezionato.
+panel.activity.months.jan	gen
+panel.activity.months.feb	feb
+panel.activity.months.mar	mar
+panel.activity.months.apr	apr
+panel.activity.months.may	mag
+panel.activity.months.jun	giu
+panel.activity.months.jul	lug
+panel.activity.months.aug	ago
+panel.activity.months.sep	set
+panel.activity.months.oct	ott
+panel.activity.months.nov	nov
+panel.activity.months.dec	dic
+panel.tags.title	Etichette
+panel.tags.add	Aggiungi
+panel.tags.close	Chiudi
+panel.tags.customPlaceholder	Etichetta personalizzata + Invio…
+panel.danger.freeze	Sospendi
+panel.danger.unfreeze	Riattiva
+panel.danger.freezeDisabledHint	La sospensione è disabilitata in Catalogo → impostazioni abbonamenti
+panel.danger.delete	Elimina
+panel.events.filterTabs.all	Tutti
+panel.events.filterTabs.payment	Pagamenti
+panel.events.filterTabs.visit	Visite
+panel.events.filterTabs.booking	Prenotazioni
+panel.events.filterTabs.cancel	Annullamenti
+panel.events.filterTabs.bonus	Bonus
+panel.events.filterTabs.freeze	Sospensioni
+panel.events.empty	Nessun evento
+panel.notes.title	Note amministrative
+panel.notes.prefix	Nota · {{date}}
+panel.notes.save	Salva
+panel.notes.cancel	Annulla
+panel.notes.addPlaceholder	Inserisci una nota…
+panel.notes.add	Aggiungi nota
+panel.notes.justNow	proprio ora
+panel.notes.deleteTitle	Eliminare la nota?
+panel.notes.deleteMessage	Questa nota non può essere recuperata.
+panel.bookingPanel.title	Prenotazione rapida
+panel.bookingPanel.today	Oggi
+panel.bookingPanel.noLessons	Nessuna lezione in questo giorno
+panel.bookingPanel.full	Nessun posto disponibile
+panel.bookingPanel.confirm	Prenota →
+panel.bookingPanel.noSubscription	Il cliente non ha un abbonamento disponibile per la prenotazione
+panel.bookingPanel.individual	Servizio individuale
+panel.bonusPanel.title	Concedi bonus
+panel.toasts.noPhone	Il cliente non ha un numero di telefono
+panel.toasts.copied	Copiato correttamente
+panel.toasts.bookingCreated	Prenotazione creata
+panel.toasts.bookingFailed	Impossibile prenotare
+panel.toasts.bonusFailed	Impossibile concedere i punti
+panel.toasts.bonusApplied	Bonus concesso: {{label}}
+panel.toasts.clientAdded	Cliente aggiunto
+panel.bonusOptions.p200.label	+200 punti
+panel.bonusOptions.p200.description	Aggiungi al saldo fedeltà
+panel.bonusOptions.p500.label	+500 punti
+panel.bonusOptions.p500.description	Aggiungi al saldo fedeltà
+panel.bonusOptions.p1000.label	+1000 punti
+panel.bonusOptions.p1000.description	Aggiungi al saldo fedeltà
+tags.suggested.0	Prova
+tags.suggested.1	VIP
+tags.suggested.2	Segnalazione
+tags.suggested.3	Online
+tags.suggested.4	Gruppo
+tags.suggested.5	Personale
+addModal.title	Nuovo cliente
+addModal.cancel	Annulla
+addModal.back	← Indietro
+addModal.continue	Continua →
+addModal.submit	Aggiungi cliente ✓
+addModal.stepCounter	Passaggio {{current}} di {{total}}
+addModal.trustSignal	I dati sono protetti e visibili solo agli amministratori
+addModal.steps.1.title	Dati personali
+addModal.steps.1.sub	Inserisci i dati di contatto del cliente
+addModal.steps.2.title	Dettagli del profilo
+addModal.steps.2.sub	Informazioni aggiuntive (facoltative)
+addModal.steps.3.title	Abbonamento
+addModal.steps.3.sub	Scegli un tipo di abbonamento e aggiungi una nota
+addModal.steps.4.title	Tutto pronto!
+addModal.steps.4.sub	Controlla i dati e aggiungi il cliente
+addModal.step1.previewLabel	Nuovo cliente · Anteprima
+addModal.step1.name	Nome completo *
+addModal.step1.namePlaceholder	Giulia Rossi
+addModal.step1.phone	Telefono
+addModal.step1.phonePlaceholder	+39 333 000 0000
+addModal.step1.email	E-mail
+addModal.step1.emailPlaceholder	cliente@esempio.it
+addModal.step2.bday	Data di nascita
+addModal.step2.bdayPlaceholder	12 aprile 1990
+addModal.step2.city	Città
+addModal.step2.cityPlaceholder	Roma
+addModal.step2.tags	Etichette
+addModal.step2.tagsPlaceholder	Pilates, VIP, riabilitazione… (Invio)
+addModal.step2.tagsHint	Premi Invio per aggiungere un'etichetta
+addModal.step2.inviteCode	Codice invito del referente
+addModal.step2.inviteCodePlaceholder	Facoltativo
+addModal.step2.inviteCodeHint	Se indicato, riceverete entrambi un bonus
+addModal.step3.classCount	Abbonamento
+addModal.step3.classesUnit	lezioni
+addModal.step3.classesCount_one	{{count}} lezione
+addModal.step3.classesCount_other	{{count}} lezioni
+addModal.step3.selected	Selezionato
+addModal.step3.noPackage	Nessun abbonamento
+addModal.step3.noPackages	Questo studio non ha ancora pacchetti di abbonamento
+addModal.step3.noPackagesLink	Crea pacchetti nel Catalogo →
+addModal.step3.alreadyPaid	Il cliente ha già pagato questo abbonamento?
+addModal.step3.yes	Sì
+addModal.step3.no	No
+addModal.step3.note	Nota
+addModal.step3.notePlaceholder	Richieste speciali, controindicazioni, preferenze…
+addModal.step4.readyTitle	Dati completati!
+addModal.step4.readySub	Controlla i dati e conferma l'aggiunta
+addModal.step4.newClient	Nuovo cliente
+addModal.step4.fields.phone	Telefono
+addModal.step4.fields.email	E-mail
+addModal.step4.fields.bday	Data di nascita
+addModal.step4.fields.city	Città
+addModal.step4.fields.subscription	Abbonamento
+addModal.step4.fields.tags	Etichette
+addModal.step4.subscriptionValue_one	{{count}} lezione
+addModal.step4.subscriptionValue_other	{{count}} lezioni
+addModal.step4.smsTitle	Invia SMS di benvenuto
+addModal.step4.smsSub	Il cliente riceverà un messaggio di invito
+addModal.errors.name	Inserisci un nome (almeno 2 caratteri)
+addModal.errors.phone	Numero di telefono non valido
+addModal.errors.email	E-mail non valida
+addModal.errors.city	Inserisci una città
+deleteModal.title	Eliminare il cliente?
+deleteModal.body	Stai per eliminare il cliente
+deleteModal.warning	Questa azione non può essere annullata.
+deleteModal.cancel	Annulla
+deleteModal.confirm	Elimina
+deleteModal.success	Cliente eliminato

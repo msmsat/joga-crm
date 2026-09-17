@@ -1,0 +1,354 @@
+{
+  "loading": "Ladataan…",
+  "chModal": {
+    "eyebrow": "Ilmoituskanava",
+    "connected": "Yhdistetty",
+    "notConnected": "Ei yhdistetty",
+    "setup": "Yhteyden määritys",
+    "details": "Yhteyden tiedot",
+    "ready": "Kanava on käytössä",
+    "readyHint": "Ilmoitukset käyttöön otetuista tapahtumista lähetetään automaattisesti.",
+    "bot": "Botti",
+    "token": "Tunniste",
+    "phone": "Numero",
+    "account": "Tili",
+    "sender": "Lähettäjä"
+  },
+  "channels": {
+    "title": "Toimituskanavat",
+    "connect": "Yhdistä",
+    "connected": "Yhdistetty",
+    "openSettings": "Kanavan {{channel}} asetukset",
+    "waLockedHint": "Kanava avautuu, kun Metalla on maksutapasi, vahvistettu yritys ja hyväksytyt mallipohjat",
+    "waBlocker": {
+      "payment": "Maksutapaa ei ole — muistutuksia ei toimiteta. Ota käyttöön",
+      "verification": "Yritystä ei ole vahvistettu Metassa — raja 250/päivä. Näin korjaat",
+      "templates": "Mallipohjat ovat yhä Metan tarkistuksessa — mitään ei lähetetä. Tiedot"
+    }
+  },
+  "roles": {
+    "client": "Asiakas",
+    "trainer": "Valmentaja",
+    "admin": "Ylläpitäjä",
+    "owner": "Omistaja",
+    "activeCount_one": "{{count}} aktiivinen",
+    "activeCount_other": "{{count}} aktiivista"
+  },
+  "matrix": {
+    "saving": "Tallennetaan…",
+    "allSaved": "Kaikki muutokset tallennettu",
+    "notSaved": "Ei tallennettu",
+    "activateAll": "Ota kaikki käyttöön",
+    "deactivateAll": "Tyhjennä kaikki valinnat",
+    "scenariosFor": "Skenaariot roolille: {{role}}",
+    "eventColumn": "Järjestelmätapahtuma",
+    "noActiveChannels": "Ei aktiivisia kanavia",
+    "noActiveChannelsHint": "Ota käyttöön vähintään yksi toimituskanava vasemman reunan paneelista",
+    "adviceLabel": "Vinkki:",
+    "advice": "Määritä jokaiselle roolille erikseen, mitä lähetetään ja minne — Velora hoitaa sen automaattisesti.",
+    "tiers": {
+      "critical": "Pakollinen · ei voi poistaa käytöstä",
+      "operational": "Toiminnallinen",
+      "optional": "Valinnainen"
+    },
+    "lock": {
+      "critical": "Pakollinen ilmoitus — ei voi poistaa käytöstä",
+      "lastChannel": "Viimeinen toimituskanava — ei voi poistaa käytöstä"
+    },
+    "channelDisconnected": "Kanavaa ei ole yhdistetty",
+    "activeCount_one": "Aktiivisia käynnistimiä: {{count}} / {{total}}",
+    "activeCount_other": "Aktiivisia käynnistimiä: {{count}} / {{total}}",
+    "configureFor_one": "Määritä kanavat {{count}} järjestelmäkäynnistimelle",
+    "configureFor_other": "Määritä kanavat {{count}} järjestelmäkäynnistimelle"
+  },
+  "events": {
+    "c1": {
+      "title": "Varaus vahvistettu",
+      "desc": "Onnistuneen tuntivarauksen yhteydessä"
+    },
+    "c2": {
+      "title": "Tuntimuistutus",
+      "desc": "24 tuntia ja 2 tuntia ennen"
+    },
+    "c3": {
+      "title": "Tunti peruttu",
+      "desc": "Kun valmentaja tai studio peruu"
+    },
+    "c4": {
+      "title": "Maksu onnistui",
+      "desc": "Kuitti onnistuneen veloituksen jälkeen"
+    },
+    "c5": {
+      "title": "Tunnit loppumassa",
+      "desc": "Kun paketissa on jäljellä 1–2 käyntiä"
+    },
+    "c6": {
+      "title": "Paketti vanhenee",
+      "desc": "3 päivää ennen päättymistä"
+    },
+    "c7": {
+      "title": "Syntymäpäivä",
+      "desc": "Onnittelu erityistarjouksella"
+    },
+    "c8": {
+      "title": "Arvostelupyyntö",
+      "desc": "Tunnille osallistumisen jälkeen"
+    },
+    "c9": {
+      "title": "Hyvitys",
+      "desc": "Peruutuksen ja hyvityksen käsittelyn yhteydessä"
+    },
+    "c10": {
+      "title": "Tuntia ei ole vielä maksettu",
+      "desc": "Asiakas osallistui mutta ei maksanut"
+    },
+    "c11": {
+      "title": "Tunti siirretty",
+      "desc": "Aika, huone tai valmentaja vaihtui"
+    },
+    "c12": {
+      "title": "Bonus lisätty",
+      "desc": "Asiakkaalle lisättiin pisteitä tai bonus"
+    },
+    "c13": {
+      "title": "Kahville tunnin jälkeen",
+      "desc": "Kuka ryhmästä lähtee kahville"
+    },
+    "t1": {
+      "title": "Uusi varaus valmentajalle",
+      "desc": "Asiakas varasi henkilökohtaisen ajan"
+    },
+    "t2": {
+      "title": "Asiakas perui varauksen",
+      "desc": "Asiakas perui alle 2 tuntia ennen"
+    },
+    "t3": {
+      "title": "Tuntimuistutus",
+      "desc": "1 tunti ennen alkua"
+    },
+    "t4": {
+      "title": "Ryhmäluettelo",
+      "desc": "30 min. ennen ryhmätuntia"
+    },
+    "t5": {
+      "title": "Aikataulumuutos",
+      "desc": "Ylläpitäjä muutti aikaa tai paikkaa"
+    },
+    "t6": {
+      "title": "Palkka kertynyt",
+      "desc": "Viikoittainen palkkiolaskelma"
+    },
+    "t7": {
+      "title": "Uusi valmentaja-arvostelu",
+      "desc": "Asiakas antoi arvion tunnin jälkeen"
+    },
+    "t8": {
+      "title": "Asiakkaan syntymäpäivä",
+      "desc": "Muistutus onnitella henkilökohtaisesti"
+    },
+    "t9": {
+      "title": "Tunti peruttu",
+      "desc": "Studio tai ylläpitäjä perui tuntisi"
+    },
+    "a1": {
+      "title": "Uusi verkkovaraus",
+      "desc": "Asiakas varasi sivuston tai pienoisohjelman kautta"
+    },
+    "a2": {
+      "title": "Viime hetken peruutus",
+      "desc": "Alle 1 tunti ennen tuntia"
+    },
+    "a3": {
+      "title": "Uusi asiakas järjestelmässä",
+      "desc": "Uuden käyttäjän rekisteröinti"
+    },
+    "a4": {
+      "title": "Maksu vastaanotettu",
+      "desc": "Mikä tahansa onnistunut veloitus"
+    },
+    "a6": {
+      "title": "Paketit loppumassa",
+      "desc": "Ryhmä asiakkaita, joilla on ≤1 tunti jäljellä"
+    },
+    "a7": {
+      "title": "Aikatauluristiriita",
+      "desc": "Päällekkäiset tunnit päiväkirjassa"
+    },
+    "a8": {
+      "title": "Päiväraportti",
+      "desc": "Päivän päättävä yhteenveto"
+    },
+    "a9": {
+      "title": "Kirjautumisyritys",
+      "desc": "Kirjautuminen uudelta laitteelta"
+    },
+    "a10": {
+      "title": "Hyvitys",
+      "desc": "Ylläpitäjä teki hyvityksen"
+    },
+    "o1": {
+      "title": "Päiväyhteenveto",
+      "desc": "Päivän tulot, varaukset ja osallistuminen"
+    },
+    "o2": {
+      "title": "Viikkoraportti",
+      "desc": "Tunnusluvut: asiakaskasvu, LTV, konversio"
+    },
+    "o3": {
+      "title": "Suuri maksu",
+      "desc": "Veloitus yli asetetun kynnyksen"
+    },
+    "o4": {
+      "title": "Poikkeama tiedoissa",
+      "desc": "Jyrkkä lasku varauksissa tai tuloissa"
+    },
+    "o5": {
+      "title": "Uusi henkilöstön jäsen",
+      "desc": "Ylläpitäjä loi uuden tilin"
+    },
+    "o6": {
+      "title": "Sopimuksen uusiminen",
+      "desc": "Muistutus Velora-tilauksen maksamisesta"
+    },
+    "o7": {
+      "title": "Käyttöoikeudet muuttuivat",
+      "desc": "Henkilöstön jäsenen oikeuksia muutettiin"
+    },
+    "o8": {
+      "title": "Tavoite saavutettu",
+      "desc": "Kuukausitavoite saavutettu"
+    },
+    "o9": {
+      "title": "Tietojen vienti",
+      "desc": "Joku vei asiakastietokannan"
+    }
+  },
+  "tg": {
+    "title": "Telegram",
+    "subtitleConnected": "Kanava yhdistetty",
+    "subtitleDisconnected": "Yhdistä ilmoitusbotti",
+    "connected": "Yhdistetty",
+    "pasteToken": "Liitä @BotFatherilta saamasi bottitunniste.",
+    "invalidToken": "Virheellinen tunnistemuoto",
+    "howToGet": "Näin saat tunnisteen:",
+    "steps": {
+      "1": "Avaa @BotFather Telegramissa",
+      "2": "Lähetä komento /newbot ja noudata ohjeita",
+      "3": "Kopioi annettu tunniste",
+      "4": "Liitä se yllä olevaan kenttään"
+    },
+    "connect": "Yhdistä",
+    "disconnect": "Katkaise yhteys",
+    "disconnectTitle": "Katkaistaanko Telegram-yhteys?",
+    "disconnectMessage": "Asiakkaat ja henkilöstö eivät enää saa ilmoituksia tämän kanavan kautta.",
+    "close": "Sulje",
+    "cancel": "Peruuta"
+  },
+  "emailCh": {
+    "title": "Sähköposti",
+    "subtitle": "Lähettäjän osoite asiakassähköposteille",
+    "verifiedLabel": "Vahvistettu",
+    "emailLabel": "Lähettäjän sähköposti",
+    "emailPlaceholder": "admin@studio.com",
+    "invalidEmail": "Anna kelvollinen sähköpostiosoite",
+    "sendCode": "Lähetä koodi",
+    "codeSentTo": "Koodi lähetetty osoitteeseen",
+    "codeHint": "Syötä sähköpostin 6-numeroinen koodi.",
+    "codeLabel": "Vahvistuskoodi",
+    "resend": "Lähetä koodi uudelleen",
+    "viaVelora": "Sähköpostit lähetetään Velora-palvelimen kautta puolestasi.",
+    "wrongCode": "Virheellinen tai vanhentunut koodi",
+    "verify": "Vahvista",
+    "back": "Takaisin",
+    "cancel": "Peruuta"
+  },
+  "wa": {
+    "title": "WhatsApp",
+    "subtitleConnected": "Kanava yhdistetty",
+    "subtitleDisconnected": "Kirjaudu Meta-yritystililläsi",
+    "connected": "Yhdistetty",
+    "paymentRequiredTitle": "Kortti tarvitaan",
+    "paymentRequired": "Numeron yhdistäminen on ilmaista, mutta Meta toimittaa asiakasmuistutukset vasta, kun kortti on lisätty. Lisäät sen erikseen —",
+    "paymentMissingTitle": "Maksutapaa ei ole",
+    "paymentMissing": "Tällä hetkellä vain botin vastaukset saapuviin viesteihin toimivat. Meta hylkää muistutukset, vahvistukset ja joukkolähetykset, kunnes kortti lisätään —",
+    "paymentOkTitle": "Maksu yhdistetty",
+    "paymentOk": "ilmoitukset toimitetaan kokonaan.",
+    "paymentUnknown": "Emme voineet tarkistaa maksutapaa Metasta — näytämme tilan seuraavalla yrityksellä.",
+    "paymentLink": "Metan laskutuskeskus",
+    "paymentRecheck": "Tarkista uudelleen",
+    "paymentFound": "Maksu yhdistetty",
+    "verify": {
+      "title": "Yritystä ei ole vahvistettu Metassa",
+      "lead": "Numero toimii, mutta pienemmällä, 250 yksilöllisen vastaanottajan päivärajalla. Vahvistus poistaa rajan ja avaa täyden käyttöönoton. Studion on tehtävä se itse — WhatsApp-tili kuuluu sinulle, eikä Velora voi hoitaa sitä puolestasi.",
+      "stepsTitle": "Näin vahvistat yrityksen:",
+      "step1a": "Avaa",
+      "link": "Meta Business Security Center",
+      "step1b": "ja valitse ”Aloita vahvistus”. Tarvitset yritystilin ylläpitäjäoikeudet.",
+      "step2": "Täytä lakisääteiset tiedot: nimi täsmälleen asiakirjojen muodossa, osoite, puhelin ja verkkosivusto. Sivuston on oltava toiminnassa ja käytettävä HTTPS:ää.",
+      "step3": "Lataa yrityksen rekisteröintiasiakirja ja odota, että Meta tarkistaa sen.",
+      "step4": "Vahvista yhteytesi yritykseen: sähköposti sivustosi verkkotunnuksessa, soitto tai tekstiviesti ilmoitettuun numeroon tai verkkotunnuksen vahvistus.",
+      "step5": "Odota päätöstä — tavallisesti 1–5 arkipäivää. Tila näkyy samassa tietoturvakeskuksessa; jos pyyntö hylätään, Meta kertoo syyn ja sallii uuden hakemuksen.",
+      "docsTitle": "Sopivat asiakirjat (yksi kustakin ryhmästä):",
+      "doc1": "Rekisteröinti: perustamistodistus, rekisteriote, yrityslupa tai veroasiakirja.",
+      "doc2": "Osoitus toiminnasta: toimiva verkkosivusto, virallinen sosiaalisen median sivu tai yrityshakemistomerkintä.",
+      "pitfallTitle": "Yleisin hylkäyksen syy",
+      "pitfall": "Yrityksen nimen Metassa ja asiakirjassa on vastattava toisiaan merkki merkiltä, myös yhtiömuodon ja välimerkkien osalta. ”Romashka LLC” ja ”Romashka, LLC” katsotaan eri nimiksi."
+    },
+    "templatesTitle": "Viestipohjat",
+    "templates": "Meta ei anna sinun lähettää asiakkaalle ensimmäistä viestiä ilman ennalta hyväksyttyä pohjaa. Luo pohjat jokaiseen tapahtumaan — ne menevät tarkistukseen ja alkavat toimia hyväksynnän jälkeen.",
+    "templatesAction": "Valmistele pohjat",
+    "templatesPending": "Luodaan pohjia…",
+    "templatesPartial": "Meta hylkäsi joitakin pohjia: {{failed}}. Katso tiedot lokista",
+    "templatesRejected": "— näitä ilmoituksia ei toimiteta. Tarkista sanamuoto Meta-tililtäsi ja luo pohjat uudelleen.",
+    "templatesPendingHint": "— Metalla voi kulua enintään päivä. {{approved}} on jo hyväksytty ja toimitetaan.",
+    "templatesOkTitle": "Pohjat hyväksytty",
+    "paidWarning": "WhatsApp-viestit ovat maksullisia",
+    "approxPrice": "n.",
+    "pricingLoading": "Ladataan nykyistä hintaa…",
+    "perMessage": "viestiä kohti",
+    "viaMeta": "Meta laskuttaa suoraan",
+    "windowNotice": "Toimitus taataan vain 24 tunnin keskusteluikkunan aikana.",
+    "connect": "Yhdistä WhatsApp",
+    "disconnect": "Katkaise yhteys",
+    "disconnectTitle": "Katkaistaanko WhatsApp-yhteys?",
+    "disconnectMessage": "Asiakkaat ja henkilöstö eivät enää saa ilmoituksia tämän kanavan kautta.",
+    "close": "Sulje",
+    "cancel": "Peruuta",
+    "templatesDone_one": "Pohjat valmiina: {{count}}. Odottaa Metan tarkistusta",
+    "templatesDone_other": "Pohjat valmiina: {{count}}. Odottaa Metan tarkistusta",
+    "templatesRejectedTitle_one": "Meta hylkäsi {{count}} pohjan",
+    "templatesRejectedTitle_other": "Meta hylkäsi {{count}} pohjaa",
+    "templatesPendingTitle_one": "{{count}} pohja tarkistuksessa",
+    "templatesPendingTitle_other": "{{count}} pohjaa tarkistuksessa",
+    "templatesOk_one": "{{count}} läpäisi Metan tarkistuksen — ilmoitukset toimitetaan.",
+    "templatesOk_other": "Kaikki {{count}} läpäisivät Metan tarkistuksen — ilmoitukset toimitetaan."
+  },
+  "tabs": {
+    "matrix": "Asetukset",
+    "log": "Toimitusloki"
+  },
+  "log": {
+    "title": "Toimitusloki",
+    "subtitle": "Mitä lähetettiin, kenelle ja milloin sekä miten kukin lähetys päättyi.",
+    "status": {
+      "sent": "Toimitettu",
+      "rejected": "Hylätty",
+      "error": "Yhteysvirhe",
+      "pending": "Käynnissä"
+    },
+    "searchPlaceholder": "Puhelin, sähköposti tai tapahtumakoodi",
+    "allChannels": "Kaikki kanavat",
+    "reset": "Nollaa",
+    "refreshing": "Päivitetään…",
+    "otherEvent": "Lähetys luettelon ulkopuolella",
+    "empty": "Mitään ei ole vielä lähetetty",
+    "emptyHint": "Jokainen studion asiakkaille ja henkilöstölle lähettämä ilmoitus näkyy täällä.",
+    "emptyFiltered": "Mitään ei löytynyt",
+    "emptyFilteredHint": "Kokeile vaihtaa suodattimia tai hae toisella numerolla.",
+    "loadError": "Lokia ei voitu ladata",
+    "loadErrorHint": "Päivitä sivu — jos se ei auta, ota yhteys tukeen.",
+    "range": "{{from}}–{{to}} / {{total}}",
+    "prev": "Takaisin",
+    "next": "Seuraava"
+  }
+}

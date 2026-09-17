@@ -1,0 +1,310 @@
+== hu
+categories.all	Összes
+categories.vip	VIP
+categories.active	Aktív
+categories.new	Új
+categories.has_subscription	Bérlettel
+categories.inactive	Inaktív
+categories.frozen	Felfüggesztett
+categories.birthday	Születésnap
+categoriesInfo.all.text	A stúdió teljes ügyféllistája, állapotszűrő nélkül.
+categoriesInfo.vip.text	Sikeres fizetések összesen 50 000+ értékben vagy 30+ látogatás. A VIP kézzel is rögzíthető az ügyfélkártyán; a kézi rögzítés az összegektől függetlenül megmarad.
+categoriesInfo.active.text	Legalább egy látogatás az elmúlt 60 napban. A naplóban jelölt jelenléten alapul — az állapot magától frissül, nem kell kézzel beállítani.
+categoriesInfo.new.text	A regisztráció dátumától számított első 15 nap, függetlenül attól, hogy az ügyfelet kézzel adták hozzá vagy online foglalásból érkezett. A 16. napon automatikusan Aktív vagy Inaktív lesz.
+categoriesInfo.has_subscription.text	Érvényes bérlete van: nem járt le, nincs felfüggesztve, és maradt még alkalom. Azonnal frissül vásárláskor, minden felhasznált alkalom után és lejáratkor.
+categoriesInfo.inactive.text	Nincs látogatása az elmúlt 60 napban — vagy soha nem látogatott el, és több mint 15 nap telt el a regisztráció óta.
+categoriesInfo.frozen.text	Az ügyfélkártya gombjával felfüggesztve — ez az egyetlen kézzel beállított állapot. Feloldás után az ügyfél visszatér az automatikus állapotához.
+categoriesInfo.birthday.text	Akiknek ma van a születésnapjuk — a nap és a hónap egyezik, az év nem számít. A lista minden nap automatikusan frissül.
+status.active	Aktív
+status.vip	VIP
+status.new	Új
+status.inactive	Inaktív
+status.frozen	Felfüggesztett
+filtersGuide.trigger	A szűrőkről
+filtersGuide.title	Ügyfélszűrők
+filtersGuide.subtitle	Így számítjuk ki az egyes kategóriákat. Kattintson egy kártyára a szűrő alkalmazásához, vagy módosítson egy küszöbértéket — az állapotok azonnal újraszámolódnak.
+filtersGuide.close	Bezárás
+filtersGuide.rule.new_client_days	Új ennyi ideig:
+filtersGuide.rule.active_within_days	Látogatás ennyi időn belül:
+filtersGuide.rule.vip_min_spent	Elköltött összeg ettől:
+filtersGuide.rule.vip_min_visits	vagy látogatások
+filtersGuide.unit.days	nap
+filtersGuide.unit.money	
+filtersGuide.unit.visits	látogatás
+toolbar.searchPlaceholder	Ügyfél keresése…
+toolbar.addClient	Ügyfél hozzáadása
+table.visits	látogatás
+table.frozenBadge	❄ felfüggesztve
+table.totalSpent	Összes költés
+table.subscription	Bérlet
+table.of	/
+table.noSubscription	Nincs bérlet
+loadMore	Több betöltése
+loading	Betöltés…
+panel.tabs.info	Profil
+panel.tabs.events	Események
+panel.tabs.notes	Jegyzetek
+panel.tabs.wallet	Vásárlások
+panel.actions.book	Foglalás
+panel.actions.bonus	Bónusz
+panel.editDateHint	Kattintson a szerkesztéshez
+panel.since	{{date}} óta
+panel.contacts.title	Kapcsolat
+panel.contacts.phone	Telefon
+panel.contacts.email	E-mail
+panel.contacts.telegram	Telegram
+panel.contacts.birthDate	Születési dátum
+panel.contacts.city	Város
+panel.contacts.copyHint	 · kattintson a másoláshoz
+panel.debt	{{amount}} kifizetetlen az alkalmakért — fogadja el a fizetést a Naplóban
+panel.stats.visits	Látogatások
+panel.stats.spent	Elköltve
+panel.stats.subscription	Bérlet
+panel.loyalty.points	pont
+panel.loyalty.level	{{tier}} szint
+panel.loyalty.toNext	A következő szintig: {{points}} pont
+panel.loyalty.multiplier	×{{value}} pontos szorzó
+panel.loyalty.worth	Értéke fizetéskor: {{amount}}
+panel.loyalty.toNextLevel	Még {{amount}} a(z) {{level}} eléréséhez
+panel.loyalty.pointValue	1 pont = {{amount}}
+panel.loyalty.nextPointValue	a(z) {{level}} szinten — {{amount}}
+panel.loyalty.noBonus	Ez a szint nem változtatja meg a pont értékét
+panel.referral.title	Barát meghívása
+panel.referral.copy	Másolás
+panel.abonement.title	Bérlet
+panel.abonement.lessons	{{remaining}}/{{total}} alkalom
+panel.abonement.noSubscription	Nincs aktív bérlet
+panel.abonement.noSubscriptionWarning	Az ügyfélnek nincs bérlete — ajánljon fel egyet
+panel.abonement.lowWarning	Kevés alkalom maradt — ajánljon fel hosszabbítást
+panel.abonement.finishedWarning	Nincs több alkalom — ajánljon fel hosszabbítást
+panel.abonement.remind	Ügyfél emlékeztetése
+panel.abonement.reminderSent	Emlékeztető elküldve az ügyfélnek
+panel.products.single	egyszeri
+panel.products.pending	várakozó
+panel.products.frozen	felfüggesztett
+panel.products.until	Érvényes {{date}}-ig
+panel.products.startsOnFirstVisit	Az időszak az első alkalommal kezdődik
+panel.wallet.buy	Vásárlás
+panel.wallet.active	Aktív
+panel.wallet.archived	Archivált
+panel.wallet.singles	Egyszeri látogatások
+panel.wallet.subscriptions	Bérletek
+panel.wallet.noSingles	Még nincsenek egyszeri látogatások
+panel.wallet.emptyActive	Nincsenek aktív termékek
+panel.wallet.emptyArchived	Nincsenek archivált termékek
+panel.wallet.emptyCatalog	Ennek a stúdiónak még nincsenek bérletcsomagjai
+panel.wallet.lessons	{{remaining}}/{{total}} alkalom
+panel.wallet.lessonsCount_one	{{count}} alkalom
+panel.wallet.lessonsCount_other	{{count}} alkalom
+panel.wallet.perVisit	Egyszeri látogatásonként
+panel.wallet.until	{{date}}-ig
+panel.wallet.frozenBadge	Felfüggesztett
+panel.wallet.loadFailed	A pénztárca betöltése nem sikerült
+panel.wallet.back	← Vissza
+panel.wallet.catalogTitle	Katalógus
+panel.wallet.showAll	Összes
+panel.wallet.posTitle	Pénztár
+panel.wallet.promoLabel	Promóciós kód
+panel.wallet.promoPlaceholder	Adja meg a promóciós kódot
+panel.wallet.promoInvalid	A promóciós kód érvénytelen
+panel.wallet.useBonuses_one	Bónuszok felhasználása ({{count}})
+panel.wallet.useBonuses_other	Bónuszok felhasználása ({{count}})
+panel.wallet.useDeposit	Fizetés letétből ({{amount}})
+panel.wallet.certLabel	Utalványkód
+panel.wallet.certPlaceholder	Adja meg az utalványkódot
+panel.wallet.certApplied	Utalvány
+panel.wallet.depositApplied	Letét
+panel.wallet.base	Alapár
+panel.wallet.discount	Kedvezmény
+panel.wallet.bonuses	Bónuszok
+panel.wallet.bonusesSpent_one	Bónuszok ({{count}} p.)
+panel.wallet.bonusesSpent_other	Bónuszok ({{count}} p.)
+panel.wallet.total	Összesen
+panel.wallet.cash	Készpénz
+panel.wallet.card	Kártya
+panel.wallet.cardStripe	A kártyás fizetések egy Stripe-oldalon keresztül közvetlenül a stúdió számlájára érkeznek. Állítsa be a Pénzügyek → Online fizetések menüpontban.
+panel.wallet.offlineLocked	A készpénzes fizetés a Combo és magasabb csomagokban érhető el
+panel.wallet.payByCard	Fizetés kártyával
+panel.wallet.confirmPay	Fizetés megerősítése
+panel.wallet.confirmPayCovered	Megerősítés (már fizetve)
+panel.wallet.confirmTitle	Megerősíti a beérkezett fizetést?
+panel.wallet.confirmMessage	Ez {{amount}} bevételt rögzít, és átadja a terméket az ügyfélnek.
+panel.wallet.confirmMessageCard	Megnyílik egy Stripe fizetési űrlap {{amount}} összeggel. A termék átadása és a bevétel rögzítése sikeres fizetés után történik.
+panel.wallet.payToStudio	A fizetés a stúdió számlájára érkezik
+panel.wallet.payConfirming	Fizetés ellenőrzése…
+panel.wallet.close	Bezárás
+panel.wallet.confirmMessageCovered	A fizetést teljesen fedezi a letét vagy az utalvány. A terméket átadjuk az ügyfélnek.
+panel.wallet.paySuccess	Fizetés rögzítve
+panel.wallet.payCancelled	A fizetés megszakítva — nem történt terhelés
+panel.wallet.payNotCompleted	A Stripe még nem erősítette meg a fizetést. Ha a kártyát megterhelték, frissítsen egy perc múlva.
+panel.wallet.payNotApplied	A kártyát megterhelték, de az értékesítést nem lehetett rögzíteni: a feltételek megváltoztak (utalvány, promóciós kód vagy csomag). Rögzítse kézzel az értékesítést, vagy térítsen vissza a Stripe-ban.
+panel.wallet.transfer	Átruházás
+panel.wallet.transferTitle	Bérlet átruházása
+panel.wallet.transferSearchLabel	Átruházás erre:
+panel.wallet.transferSearchPlaceholder	Ügyfél neve vagy telefonszáma
+panel.wallet.transferSelectPlaceholder	Válasszon ügyfelet
+panel.wallet.transferConfirm	Átruházás
+panel.wallet.transferSuccess	Bérlet átruházva
+panel.offers.title	Személyes kedvezmény
+panel.offers.empty	Nincsenek aktív kedvezmények
+panel.offers.grant	Kedvezmény adása
+panel.offers.cancel	Mégse
+panel.offers.valuePercent	{{value}}%
+panel.offers.valueAmount	{{value}} ₽
+panel.offers.untilDate	{{date}}-ig
+panel.offers.noExpiry	lejárat nélkül
+panel.offers.scopeRenewal	megújításhoz
+panel.offers.grantTitle	Személyes kedvezmény adása
+panel.offers.grantValue	Kedvezmény mértéke
+panel.offers.grantType.percent	Százalék (%)
+panel.offers.grantType.amount	Összeg (₽)
+panel.offers.grantValidUntil	Érvényes eddig:
+panel.offers.grantSubmit	Adás
+panel.offers.cancelConfirmTitle	Visszavonja a kedvezményt?
+panel.offers.cancelConfirmMessage	Az ügyfél többé nem használhatja ezt az ajánlatot.
+panel.offers.toasts.granted	Kedvezmény megadva
+panel.offers.toasts.cancelled	Kedvezmény visszavonva
+panel.offers.toasts.loadFailed	A kedvezmények betöltése nem sikerült
+panel.activity.compactTitle	Aktivitás (3 hó)
+panel.activity.clickForDetails	Kattintson a részletekért
+panel.activity.detailedTitle	Részletes aktivitás
+panel.activity.periods.month3	3 hó
+panel.activity.periods.month6	6 hó
+panel.activity.visitsInPeriod	Látogatások az időszakban
+panel.activity.visitsTooltip_one	{{count}} látogatás
+panel.activity.visitsTooltip_other	{{count}} látogatás
+panel.activity.emptyState	Nincs látogatás ebben az időszakban
+panel.activity.insightTitle	Átlagos részvétel
+panel.activity.insightBody	Átlagosan {{avg}} látogatás havonta a kiválasztott időszakban.
+panel.activity.months.jan	jan.
+panel.activity.months.feb	febr.
+panel.activity.months.mar	márc.
+panel.activity.months.apr	ápr.
+panel.activity.months.may	máj.
+panel.activity.months.jun	jún.
+panel.activity.months.jul	júl.
+panel.activity.months.aug	aug.
+panel.activity.months.sep	szept.
+panel.activity.months.oct	okt.
+panel.activity.months.nov	nov.
+panel.activity.months.dec	dec.
+panel.tags.title	Címkék
+panel.tags.add	Hozzáadás
+panel.tags.close	Bezárás
+panel.tags.customPlaceholder	Egyéni címke + Enter…
+panel.danger.freeze	Felfüggesztés
+panel.danger.unfreeze	Felfüggesztés feloldása
+panel.danger.freezeDisabledHint	A felfüggesztés ki van kapcsolva a Katalógus → bérletbeállítások részben
+panel.danger.delete	Törlés
+panel.events.filterTabs.all	Összes
+panel.events.filterTabs.payment	Fizetések
+panel.events.filterTabs.visit	Látogatások
+panel.events.filterTabs.booking	Foglalások
+panel.events.filterTabs.cancel	Lemondások
+panel.events.filterTabs.bonus	Bónuszok
+panel.events.filterTabs.freeze	Felfüggesztések
+panel.events.empty	Nincsenek események
+panel.notes.title	Adminisztrátori jegyzetek
+panel.notes.prefix	Jegyzet · {{date}}
+panel.notes.save	Mentés
+panel.notes.cancel	Mégse
+panel.notes.addPlaceholder	Írjon egy jegyzetet…
+panel.notes.add	Jegyzet hozzáadása
+panel.notes.justNow	épp most
+panel.notes.deleteTitle	Törli a jegyzetet?
+panel.notes.deleteMessage	Ez a jegyzet nem állítható vissza.
+panel.bookingPanel.title	Gyors foglalás
+panel.bookingPanel.today	Ma
+panel.bookingPanel.noLessons	Nincs foglalkozás ezen a napon
+panel.bookingPanel.full	Nincs szabad hely
+panel.bookingPanel.confirm	Foglalás →
+panel.bookingPanel.noSubscription	Az ügyfélnek nincs foglalásra használható bérlete
+panel.bookingPanel.individual	Egyéni szolgáltatás
+panel.bonusPanel.title	Bónusz adása
+panel.toasts.noPhone	Az ügyfélnek nincs telefonszáma
+panel.toasts.copied	Sikeresen másolva
+panel.toasts.bookingCreated	Foglalás létrehozva
+panel.toasts.bookingFailed	A foglalás nem sikerült
+panel.toasts.bonusFailed	A pontok megadása nem sikerült
+panel.toasts.bonusApplied	Bónusz megadva: {{label}}
+panel.toasts.clientAdded	Ügyfél hozzáadva
+panel.bonusOptions.p200.label	+200 pont
+panel.bonusOptions.p200.description	Hozzáadás a hűség-egyenleghez
+panel.bonusOptions.p500.label	+500 pont
+panel.bonusOptions.p500.description	Hozzáadás a hűség-egyenleghez
+panel.bonusOptions.p1000.label	+1000 pont
+panel.bonusOptions.p1000.description	Hozzáadás a hűség-egyenleghez
+tags.suggested.0	Próba
+tags.suggested.1	VIP
+tags.suggested.2	Ajánlás
+tags.suggested.3	Online
+tags.suggested.4	Csoport
+tags.suggested.5	Személyes
+addModal.title	Új ügyfél
+addModal.cancel	Mégse
+addModal.back	← Vissza
+addModal.continue	Folytatás →
+addModal.submit	Ügyfél hozzáadása ✓
+addModal.stepCounter	{{current}}. lépés / {{total}}
+addModal.trustSignal	Az adatok védettek, és csak rendszergazdák láthatják őket
+addModal.steps.1.title	Személyes adatok
+addModal.steps.1.sub	Adja meg az ügyfél elérhetőségeit
+addModal.steps.2.title	Profiladatok
+addModal.steps.2.sub	További információk (nem kötelező)
+addModal.steps.3.title	Bérlet
+addModal.steps.3.sub	Válasszon bérlettípust, és adjon hozzá jegyzetet
+addModal.steps.4.title	Minden kész!
+addModal.steps.4.sub	Ellenőrizze az adatokat, és adja hozzá az ügyfelet
+addModal.step1.previewLabel	Új ügyfél · Előnézet
+addModal.step1.name	Teljes név *
+addModal.step1.namePlaceholder	Kovács Anna
+addModal.step1.phone	Telefon
+addModal.step1.phonePlaceholder	+36 30 000 0000
+addModal.step1.email	E-mail
+addModal.step1.emailPlaceholder	ugyfel@pelda.hu
+addModal.step2.bday	Születési dátum
+addModal.step2.bdayPlaceholder	1990. április 12.
+addModal.step2.city	Város
+addModal.step2.cityPlaceholder	Budapest
+addModal.step2.tags	Címkék
+addModal.step2.tagsPlaceholder	Pilates, VIP, rehabilitáció… (Enter)
+addModal.step2.tagsHint	Címke hozzáadásához nyomja meg az Entert
+addModal.step2.inviteCode	Ajánló meghívókódja
+addModal.step2.inviteCodePlaceholder	Nem kötelező
+addModal.step2.inviteCodeHint	Ha megadja, mindketten bónuszt kapnak
+addModal.step3.classCount	Bérlet
+addModal.step3.classesUnit	alkalom
+addModal.step3.classesCount_one	{{count}} alkalom
+addModal.step3.classesCount_other	{{count}} alkalom
+addModal.step3.selected	Kiválasztva
+addModal.step3.noPackage	Nincs bérlet
+addModal.step3.noPackages	Ennek a stúdiónak még nincsenek bérletcsomagjai
+addModal.step3.noPackagesLink	Csomagok létrehozása a Katalógusban →
+addModal.step3.alreadyPaid	Az ügyfél már fizetett ezért a bérletért?
+addModal.step3.yes	Igen
+addModal.step3.no	Nem
+addModal.step3.note	Jegyzet
+addModal.step3.notePlaceholder	Különleges kérések, ellenjavallatok, preferenciák…
+addModal.step4.readyTitle	Adatok kitöltve!
+addModal.step4.readySub	Ellenőrizze az adatokat, és erősítse meg a hozzáadást
+addModal.step4.newClient	Új ügyfél
+addModal.step4.fields.phone	Telefon
+addModal.step4.fields.email	E-mail
+addModal.step4.fields.bday	Születési dátum
+addModal.step4.fields.city	Város
+addModal.step4.fields.subscription	Bérlet
+addModal.step4.fields.tags	Címkék
+addModal.step4.subscriptionValue_one	{{count}} alkalom
+addModal.step4.subscriptionValue_other	{{count}} alkalom
+addModal.step4.smsTitle	Üdvözlő SMS küldése
+addModal.step4.smsSub	Az ügyfél meghívóüzenetet kap
+addModal.errors.name	Adjon meg nevet (legalább 2 karakter)
+addModal.errors.phone	Érvénytelen telefonszám
+addModal.errors.email	Érvénytelen e-mail
+addModal.errors.city	Adjon meg várost
+deleteModal.title	Törli az ügyfelet?
+deleteModal.body	Éppen törölni készül az ügyfelet
+deleteModal.warning	Ez a művelet nem vonható vissza.
+deleteModal.cancel	Mégse
+deleteModal.confirm	Törlés
+deleteModal.success	Ügyfél törölve

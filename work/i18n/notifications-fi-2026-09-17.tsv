@@ -1,0 +1,241 @@
+== fi
+loading	Ladataan…
+chModal.eyebrow	Ilmoituskanava
+chModal.connected	Yhdistetty
+chModal.notConnected	Ei yhdistetty
+chModal.setup	Yhteyden määritys
+chModal.details	Yhteyden tiedot
+chModal.ready	Kanava on käytössä
+chModal.readyHint	Ilmoitukset käyttöön otetuista tapahtumista lähetetään automaattisesti.
+chModal.bot	Botti
+chModal.token	Tunniste
+chModal.phone	Numero
+chModal.account	Tili
+chModal.sender	Lähettäjä
+channels.title	Toimituskanavat
+channels.connect	Yhdistä
+channels.connected	Yhdistetty
+channels.openSettings	Kanavan {{channel}} asetukset
+channels.waLockedHint	Kanava avautuu, kun Metalla on maksutapasi, vahvistettu yritys ja hyväksytyt mallipohjat
+channels.waBlocker.payment	Maksutapaa ei ole — muistutuksia ei toimiteta. Ota käyttöön
+channels.waBlocker.verification	Yritystä ei ole vahvistettu Metassa — raja 250/päivä. Näin korjaat
+channels.waBlocker.templates	Mallipohjat ovat yhä Metan tarkistuksessa — mitään ei lähetetä. Tiedot
+roles.client	Asiakas
+roles.trainer	Valmentaja
+roles.admin	Ylläpitäjä
+roles.owner	Omistaja
+roles.activeCount_one	{{count}} aktiivinen
+roles.activeCount_other	{{count}} aktiivista
+matrix.saving	Tallennetaan…
+matrix.allSaved	Kaikki muutokset tallennettu
+matrix.notSaved	Ei tallennettu
+matrix.activateAll	Ota kaikki käyttöön
+matrix.deactivateAll	Tyhjennä kaikki valinnat
+matrix.activeCount_one	Aktiivisia käynnistimiä: {{count}} / {{total}}
+matrix.activeCount_other	Aktiivisia käynnistimiä: {{count}} / {{total}}
+matrix.scenariosFor	Skenaariot roolille: {{role}}
+matrix.configureFor_one	Määritä kanavat {{count}} järjestelmäkäynnistimelle
+matrix.configureFor_other	Määritä kanavat {{count}} järjestelmäkäynnistimelle
+matrix.eventColumn	Järjestelmätapahtuma
+matrix.noActiveChannels	Ei aktiivisia kanavia
+matrix.noActiveChannelsHint	Ota käyttöön vähintään yksi toimituskanava vasemman reunan paneelista
+matrix.adviceLabel	Vinkki:
+matrix.advice	Määritä jokaiselle roolille erikseen, mitä lähetetään ja minne — Velora hoitaa sen automaattisesti.
+matrix.tiers.critical	Pakollinen · ei voi poistaa käytöstä
+matrix.tiers.operational	Toiminnallinen
+matrix.tiers.optional	Valinnainen
+matrix.lock.critical	Pakollinen ilmoitus — ei voi poistaa käytöstä
+matrix.lock.lastChannel	Viimeinen toimituskanava — ei voi poistaa käytöstä
+matrix.channelDisconnected	Kanavaa ei ole yhdistetty
+events.c1.title	Varaus vahvistettu
+events.c1.desc	Onnistuneen tuntivarauksen yhteydessä
+events.c2.title	Tuntimuistutus
+events.c2.desc	24 tuntia ja 2 tuntia ennen
+events.c3.title	Tunti peruttu
+events.c3.desc	Kun valmentaja tai studio peruu
+events.c4.title	Maksu onnistui
+events.c4.desc	Kuitti onnistuneen veloituksen jälkeen
+events.c5.title	Tunnit loppumassa
+events.c5.desc	Kun paketissa on jäljellä 1–2 käyntiä
+events.c6.title	Paketti vanhenee
+events.c6.desc	3 päivää ennen päättymistä
+events.c7.title	Syntymäpäivä
+events.c7.desc	Onnittelu erityistarjouksella
+events.c8.title	Arvostelupyyntö
+events.c8.desc	Tunnille osallistumisen jälkeen
+events.c9.title	Hyvitys
+events.c9.desc	Peruutuksen ja hyvityksen käsittelyn yhteydessä
+events.c10.title	Tuntia ei ole vielä maksettu
+events.c10.desc	Asiakas osallistui mutta ei maksanut
+events.c11.title	Tunti siirretty
+events.c11.desc	Aika, huone tai valmentaja vaihtui
+events.c12.title	Bonus lisätty
+events.c12.desc	Asiakkaalle lisättiin pisteitä tai bonus
+events.c13.title	Kahville tunnin jälkeen
+events.c13.desc	Kuka ryhmästä lähtee kahville
+events.t1.title	Uusi varaus valmentajalle
+events.t1.desc	Asiakas varasi henkilökohtaisen ajan
+events.t2.title	Asiakas perui varauksen
+events.t2.desc	Asiakas perui alle 2 tuntia ennen
+events.t3.title	Tuntimuistutus
+events.t3.desc	1 tunti ennen alkua
+events.t4.title	Ryhmäluettelo
+events.t4.desc	30 min. ennen ryhmätuntia
+events.t5.title	Aikataulumuutos
+events.t5.desc	Ylläpitäjä muutti aikaa tai paikkaa
+events.t6.title	Palkka kertynyt
+events.t6.desc	Viikoittainen palkkiolaskelma
+events.t7.title	Uusi valmentaja-arvostelu
+events.t7.desc	Asiakas antoi arvion tunnin jälkeen
+events.t8.title	Asiakkaan syntymäpäivä
+events.t8.desc	Muistutus onnitella henkilökohtaisesti
+events.t9.title	Tunti peruttu
+events.t9.desc	Studio tai ylläpitäjä perui tuntisi
+events.a1.title	Uusi verkkovaraus
+events.a1.desc	Asiakas varasi sivuston tai pienoisohjelman kautta
+events.a2.title	Viime hetken peruutus
+events.a2.desc	Alle 1 tunti ennen tuntia
+events.a3.title	Uusi asiakas järjestelmässä
+events.a3.desc	Uuden käyttäjän rekisteröinti
+events.a4.title	Maksu vastaanotettu
+events.a4.desc	Mikä tahansa onnistunut veloitus
+events.a6.title	Paketit loppumassa
+events.a6.desc	Ryhmä asiakkaita, joilla on ≤1 tunti jäljellä
+events.a7.title	Aikatauluristiriita
+events.a7.desc	Päällekkäiset tunnit päiväkirjassa
+events.a8.title	Päiväraportti
+events.a8.desc	Päivän päättävä yhteenveto
+events.a9.title	Kirjautumisyritys
+events.a9.desc	Kirjautuminen uudelta laitteelta
+events.a10.title	Hyvitys
+events.a10.desc	Ylläpitäjä teki hyvityksen
+events.o1.title	Päiväyhteenveto
+events.o1.desc	Päivän tulot, varaukset ja osallistuminen
+events.o2.title	Viikkoraportti
+events.o2.desc	Tunnusluvut: asiakaskasvu, LTV, konversio
+events.o3.title	Suuri maksu
+events.o3.desc	Veloitus yli asetetun kynnyksen
+events.o4.title	Poikkeama tiedoissa
+events.o4.desc	Jyrkkä lasku varauksissa tai tuloissa
+events.o5.title	Uusi henkilöstön jäsen
+events.o5.desc	Ylläpitäjä loi uuden tilin
+events.o6.title	Sopimuksen uusiminen
+events.o6.desc	Muistutus Velora-tilauksen maksamisesta
+events.o7.title	Käyttöoikeudet muuttuivat
+events.o7.desc	Henkilöstön jäsenen oikeuksia muutettiin
+events.o8.title	Tavoite saavutettu
+events.o8.desc	Kuukausitavoite saavutettu
+events.o9.title	Tietojen vienti
+events.o9.desc	Joku vei asiakastietokannan
+tg.title	Telegram
+tg.subtitleConnected	Kanava yhdistetty
+tg.subtitleDisconnected	Yhdistä ilmoitusbotti
+tg.connected	Yhdistetty
+tg.pasteToken	Liitä @BotFatherilta saamasi bottitunniste.
+tg.invalidToken	Virheellinen tunnistemuoto
+tg.howToGet	Näin saat tunnisteen:
+tg.steps.1	Avaa @BotFather Telegramissa
+tg.steps.2	Lähetä komento /newbot ja noudata ohjeita
+tg.steps.3	Kopioi annettu tunniste
+tg.steps.4	Liitä se yllä olevaan kenttään
+tg.connect	Yhdistä
+tg.disconnect	Katkaise yhteys
+tg.disconnectTitle	Katkaistaanko Telegram-yhteys?
+tg.disconnectMessage	Asiakkaat ja henkilöstö eivät enää saa ilmoituksia tämän kanavan kautta.
+tg.close	Sulje
+tg.cancel	Peruuta
+emailCh.title	Sähköposti
+emailCh.subtitle	Lähettäjän osoite asiakassähköposteille
+emailCh.verifiedLabel	Vahvistettu
+emailCh.emailLabel	Lähettäjän sähköposti
+emailCh.emailPlaceholder	admin@studio.com
+emailCh.invalidEmail	Anna kelvollinen sähköpostiosoite
+emailCh.sendCode	Lähetä koodi
+emailCh.codeSentTo	Koodi lähetetty osoitteeseen
+emailCh.codeHint	Syötä sähköpostin 6-numeroinen koodi.
+emailCh.codeLabel	Vahvistuskoodi
+emailCh.resend	Lähetä koodi uudelleen
+emailCh.viaVelora	Sähköpostit lähetetään Velora-palvelimen kautta puolestasi.
+emailCh.wrongCode	Virheellinen tai vanhentunut koodi
+emailCh.verify	Vahvista
+emailCh.back	Takaisin
+emailCh.cancel	Peruuta
+wa.title	WhatsApp
+wa.subtitleConnected	Kanava yhdistetty
+wa.subtitleDisconnected	Kirjaudu Meta-yritystililläsi
+wa.connected	Yhdistetty
+wa.paymentRequiredTitle	Kortti tarvitaan
+wa.paymentRequired	Numeron yhdistäminen on ilmaista, mutta Meta toimittaa asiakasmuistutukset vasta, kun kortti on lisätty. Lisäät sen erikseen —
+wa.paymentMissingTitle	Maksutapaa ei ole
+wa.paymentMissing	Tällä hetkellä vain botin vastaukset saapuviin viesteihin toimivat. Meta hylkää muistutukset, vahvistukset ja joukkolähetykset, kunnes kortti lisätään —
+wa.paymentOkTitle	Maksu yhdistetty
+wa.paymentOk	ilmoitukset toimitetaan kokonaan.
+wa.paymentUnknown	Emme voineet tarkistaa maksutapaa Metasta — näytämme tilan seuraavalla yrityksellä.
+wa.paymentLink	Metan laskutuskeskus
+wa.paymentRecheck	Tarkista uudelleen
+wa.paymentFound	Maksu yhdistetty
+wa.verify.title	Yritystä ei ole vahvistettu Metassa
+wa.verify.lead	Numero toimii, mutta pienemmällä, 250 yksilöllisen vastaanottajan päivärajalla. Vahvistus poistaa rajan ja avaa täyden käyttöönoton. Studion on tehtävä se itse — WhatsApp-tili kuuluu sinulle, eikä Velora voi hoitaa sitä puolestasi.
+wa.verify.stepsTitle	Näin vahvistat yrityksen:
+wa.verify.step1a	Avaa
+wa.verify.link	Meta Business Security Center
+wa.verify.step1b	ja valitse ”Aloita vahvistus”. Tarvitset yritystilin ylläpitäjäoikeudet.
+wa.verify.step2	Täytä lakisääteiset tiedot: nimi täsmälleen asiakirjojen muodossa, osoite, puhelin ja verkkosivusto. Sivuston on oltava toiminnassa ja käytettävä HTTPS:ää.
+wa.verify.step3	Lataa yrityksen rekisteröintiasiakirja ja odota, että Meta tarkistaa sen.
+wa.verify.step4	Vahvista yhteytesi yritykseen: sähköposti sivustosi verkkotunnuksessa, soitto tai tekstiviesti ilmoitettuun numeroon tai verkkotunnuksen vahvistus.
+wa.verify.step5	Odota päätöstä — tavallisesti 1–5 arkipäivää. Tila näkyy samassa tietoturvakeskuksessa; jos pyyntö hylätään, Meta kertoo syyn ja sallii uuden hakemuksen.
+wa.verify.docsTitle	Sopivat asiakirjat (yksi kustakin ryhmästä):
+wa.verify.doc1	Rekisteröinti: perustamistodistus, rekisteriote, yrityslupa tai veroasiakirja.
+wa.verify.doc2	Osoitus toiminnasta: toimiva verkkosivusto, virallinen sosiaalisen median sivu tai yrityshakemistomerkintä.
+wa.verify.pitfallTitle	Yleisin hylkäyksen syy
+wa.verify.pitfall	Yrityksen nimen Metassa ja asiakirjassa on vastattava toisiaan merkki merkiltä, myös yhtiömuodon ja välimerkkien osalta. ”Romashka LLC” ja ”Romashka, LLC” katsotaan eri nimiksi.
+wa.templatesTitle	Viestipohjat
+wa.templates	Meta ei anna sinun lähettää asiakkaalle ensimmäistä viestiä ilman ennalta hyväksyttyä pohjaa. Luo pohjat jokaiseen tapahtumaan — ne menevät tarkistukseen ja alkavat toimia hyväksynnän jälkeen.
+wa.templatesAction	Valmistele pohjat
+wa.templatesPending	Luodaan pohjia…
+wa.templatesDone_one	Pohjat valmiina: {{count}}. Odottaa Metan tarkistusta
+wa.templatesDone_other	Pohjat valmiina: {{count}}. Odottaa Metan tarkistusta
+wa.templatesPartial	Meta hylkäsi joitakin pohjia: {{failed}}. Katso tiedot lokista
+wa.templatesRejectedTitle_one	Meta hylkäsi {{count}} pohjan
+wa.templatesRejectedTitle_other	Meta hylkäsi {{count}} pohjaa
+wa.templatesRejected	— näitä ilmoituksia ei toimiteta. Tarkista sanamuoto Meta-tililtäsi ja luo pohjat uudelleen.
+wa.templatesPendingTitle_one	{{count}} pohja tarkistuksessa
+wa.templatesPendingTitle_other	{{count}} pohjaa tarkistuksessa
+wa.templatesPendingHint	— Metalla voi kulua enintään päivä. {{approved}} on jo hyväksytty ja toimitetaan.
+wa.templatesOkTitle	Pohjat hyväksytty
+wa.templatesOk_one	{{count}} läpäisi Metan tarkistuksen — ilmoitukset toimitetaan.
+wa.templatesOk_other	Kaikki {{count}} läpäisivät Metan tarkistuksen — ilmoitukset toimitetaan.
+wa.paidWarning	WhatsApp-viestit ovat maksullisia
+wa.approxPrice	n.
+wa.pricingLoading	Ladataan nykyistä hintaa…
+wa.perMessage	viestiä kohti
+wa.viaMeta	Meta laskuttaa suoraan
+wa.windowNotice	Toimitus taataan vain 24 tunnin keskusteluikkunan aikana.
+wa.connect	Yhdistä WhatsApp
+wa.disconnect	Katkaise yhteys
+wa.disconnectTitle	Katkaistaanko WhatsApp-yhteys?
+wa.disconnectMessage	Asiakkaat ja henkilöstö eivät enää saa ilmoituksia tämän kanavan kautta.
+wa.close	Sulje
+wa.cancel	Peruuta
+tabs.matrix	Asetukset
+tabs.log	Toimitusloki
+log.title	Toimitusloki
+log.subtitle	Mitä lähetettiin, kenelle ja milloin sekä miten kukin lähetys päättyi.
+log.status.sent	Toimitettu
+log.status.rejected	Hylätty
+log.status.error	Yhteysvirhe
+log.status.pending	Käynnissä
+log.searchPlaceholder	Puhelin, sähköposti tai tapahtumakoodi
+log.allChannels	Kaikki kanavat
+log.reset	Nollaa
+log.refreshing	Päivitetään…
+log.otherEvent	Lähetys luettelon ulkopuolella
+log.empty	Mitään ei ole vielä lähetetty
+log.emptyHint	Jokainen studion asiakkaille ja henkilöstölle lähettämä ilmoitus näkyy täällä.
+log.emptyFiltered	Mitään ei löytynyt
+log.emptyFilteredHint	Kokeile vaihtaa suodattimia tai hae toisella numerolla.
+log.loadError	Lokia ei voitu ladata
+log.loadErrorHint	Päivitä sivu — jos se ei auta, ota yhteys tukeen.
+log.range	{{from}}–{{to}} / {{total}}
+log.prev	Takaisin
+log.next	Seuraava

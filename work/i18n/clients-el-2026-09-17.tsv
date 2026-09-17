@@ -1,0 +1,310 @@
+== el
+categories.all	Όλοι
+categories.vip	VIP
+categories.active	Ενεργοί
+categories.new	Νέοι
+categories.has_subscription	Με συνδρομή
+categories.inactive	Ανενεργοί
+categories.frozen	Σε αναστολή
+categories.birthday	Γενέθλια
+categoriesInfo.all.text	Η πλήρης λίστα πελατών του στούντιο, χωρίς φίλτρο κατάστασης.
+categoriesInfo.vip.text	Επιτυχημένες πληρωμές συνολικού ύψους 50.000+ ή 30+ επισκέψεις. Το VIP μπορεί επίσης να καρφιτσωθεί χειροκίνητα στην κάρτα πελάτη· το χειροκίνητο καρφίτσωμα διατηρείται ανεξάρτητα από τα ποσά.
+categoriesInfo.active.text	Τουλάχιστον μία επίσκεψη τις τελευταίες 60 ημέρες. Βασίζεται στην παρουσία που σημειώνεται στο ημερολόγιο — η κατάσταση ενημερώνεται μόνη της, χωρίς χειροκίνητο ορισμό.
+categoriesInfo.new.text	Οι πρώτες 15 ημέρες από την ημερομηνία εγγραφής, είτε ο πελάτης προστέθηκε χειροκίνητα είτε ήρθε μέσω ηλεκτρονικής κράτησης. Τη 16η ημέρα μεταφέρεται αυτόματα στους Ενεργούς ή Ανενεργούς.
+categoriesInfo.has_subscription.text	Έχει ενεργή συνδρομή: δεν έχει λήξει, δεν είναι σε αναστολή και απομένουν μαθήματα. Ενημερώνεται αμέσως στην αγορά, μετά από κάθε χρησιμοποιημένο μάθημα και στη λήξη.
+categoriesInfo.inactive.text	Καμία επίσκεψη τις τελευταίες 60 ημέρες — ή δεν έχει επισκεφθεί ποτέ και έχουν περάσει πάνω από 15 ημέρες από την εγγραφή.
+categoriesInfo.frozen.text	Σε αναστολή από το κουμπί στην κάρτα πελάτη — η μόνη κατάσταση που ορίζεται χειροκίνητα. Μετά την άρση της αναστολής, ο πελάτης επιστρέφει στην αυτόματη κατάστασή του.
+categoriesInfo.birthday.text	Όσοι έχουν σήμερα γενέθλια — η ημέρα και ο μήνας ταιριάζουν, το έτος αγνοείται. Η λίστα ανανεώνεται αυτόματα κάθε ημέρα.
+status.active	Ενεργός
+status.vip	VIP
+status.new	Νέος
+status.inactive	Ανενεργός
+status.frozen	Σε αναστολή
+filtersGuide.trigger	Σχετικά με τα φίλτρα
+filtersGuide.title	Φίλτρα πελατών
+filtersGuide.subtitle	Πώς υπολογίζεται κάθε κατηγορία. Κάντε κλικ σε μια κάρτα για να εφαρμόσετε το φίλτρο ή αλλάξτε ένα όριο — οι καταστάσεις υπολογίζονται ξανά αμέσως.
+filtersGuide.close	Κλείσιμο
+filtersGuide.rule.new_client_days	Νέος για
+filtersGuide.rule.active_within_days	Επίσκεψη εντός
+filtersGuide.rule.vip_min_spent	Δαπάνη από
+filtersGuide.rule.vip_min_visits	ή επισκέψεις
+filtersGuide.unit.days	ημέρες
+filtersGuide.unit.money	
+filtersGuide.unit.visits	επισκέψεις
+toolbar.searchPlaceholder	Αναζήτηση πελάτη…
+toolbar.addClient	Προσθήκη πελάτη
+table.visits	επισκέψεις
+table.frozenBadge	❄ σε αναστολή
+table.totalSpent	Συνολική δαπάνη
+table.subscription	Συνδρομή
+table.of	από
+table.noSubscription	Χωρίς συνδρομή
+loadMore	Φόρτωση περισσότερων
+loading	Φόρτωση…
+panel.tabs.info	Προφίλ
+panel.tabs.events	Συμβάντα
+panel.tabs.notes	Σημειώσεις
+panel.tabs.wallet	Αγορές
+panel.actions.book	Κράτηση
+panel.actions.bonus	Μπόνους
+panel.editDateHint	Κάντε κλικ για επεξεργασία
+panel.since	από {{date}}
+panel.contacts.title	Επικοινωνία
+panel.contacts.phone	Τηλέφωνο
+panel.contacts.email	Email
+panel.contacts.telegram	Telegram
+panel.contacts.birthDate	Ημερομηνία γέννησης
+panel.contacts.city	Πόλη
+panel.contacts.copyHint	 · κάντε κλικ για αντιγραφή
+panel.debt	{{amount}} απλήρωτα για μαθήματα — δεχθείτε την πληρωμή στο Ημερολόγιο
+panel.stats.visits	Επισκέψεις
+panel.stats.spent	Δαπάνη
+panel.stats.subscription	Συνδρομή
+panel.loyalty.points	πόντοι
+panel.loyalty.level	επίπεδο {{tier}}
+panel.loyalty.toNext	Για το επόμενο επίπεδο: {{points}} πόντοι
+panel.loyalty.multiplier	πολλαπλασιαστής πόντων ×{{value}}
+panel.loyalty.worth	Αξία {{amount}} στο ταμείο
+panel.loyalty.toNextLevel	{{amount}} ακόμη για το {{level}}
+panel.loyalty.pointValue	1 πόντος = {{amount}}
+panel.loyalty.nextPointValue	στο {{level}} — {{amount}}
+panel.loyalty.noBonus	Αυτό το επίπεδο δεν αλλάζει την αξία των πόντων
+panel.referral.title	Προσκαλέστε φίλο
+panel.referral.copy	Αντιγραφή
+panel.abonement.title	Συνδρομή
+panel.abonement.lessons	{{remaining}}/{{total}} μαθήματα
+panel.abonement.noSubscription	Δεν υπάρχει ενεργή συνδρομή
+panel.abonement.noSubscriptionWarning	Ο πελάτης δεν έχει συνδρομή — προσφέρετε μία
+panel.abonement.lowWarning	Απομένουν λίγα μαθήματα — προσφέρετε ανανέωση
+panel.abonement.finishedWarning	Δεν απομένουν μαθήματα — προσφέρετε ανανέωση
+panel.abonement.remind	Υπενθύμιση στον πελάτη
+panel.abonement.reminderSent	Η υπενθύμιση στάλθηκε στον πελάτη
+panel.products.single	μεμονωμένο
+panel.products.pending	σε αναμονή
+panel.products.frozen	σε αναστολή
+panel.products.until	Ισχύει έως {{date}}
+panel.products.startsOnFirstVisit	Η περίοδος ξεκινά με το πρώτο μάθημα
+panel.wallet.buy	Αγορά
+panel.wallet.active	Ενεργά
+panel.wallet.archived	Αρχειοθετημένα
+panel.wallet.singles	Μεμονωμένες επισκέψεις
+panel.wallet.subscriptions	Συνδρομές
+panel.wallet.noSingles	Δεν υπάρχουν ακόμη μεμονωμένες επισκέψεις
+panel.wallet.emptyActive	Δεν υπάρχουν ενεργά προϊόντα
+panel.wallet.emptyArchived	Δεν υπάρχουν αρχειοθετημένα προϊόντα
+panel.wallet.emptyCatalog	Αυτό το στούντιο δεν έχει ακόμη πακέτα συνδρομών
+panel.wallet.lessons	{{remaining}}/{{total}} μαθήματα
+panel.wallet.lessonsCount_one	{{count}} μάθημα
+panel.wallet.lessonsCount_other	{{count}} μαθήματα
+panel.wallet.perVisit	Ανά μεμονωμένη επίσκεψη
+panel.wallet.until	έως {{date}}
+panel.wallet.frozenBadge	Σε αναστολή
+panel.wallet.loadFailed	Αποτυχία φόρτωσης πορτοφολιού
+panel.wallet.back	← Πίσω
+panel.wallet.catalogTitle	Κατάλογος
+panel.wallet.showAll	Όλα
+panel.wallet.posTitle	Ταμείο
+panel.wallet.promoLabel	Κωδικός προσφοράς
+panel.wallet.promoPlaceholder	Εισαγάγετε κωδικό προσφοράς
+panel.wallet.promoInvalid	Ο κωδικός προσφοράς δεν είναι έγκυρος
+panel.wallet.useBonuses_one	Χρήση μπόνους ({{count}})
+panel.wallet.useBonuses_other	Χρήση μπόνους ({{count}})
+panel.wallet.useDeposit	Πληρωμή από κατάθεση ({{amount}})
+panel.wallet.certLabel	Κωδικός πιστοποιητικού
+panel.wallet.certPlaceholder	Εισαγάγετε κωδικό πιστοποιητικού
+panel.wallet.certApplied	Πιστοποιητικό
+panel.wallet.depositApplied	Κατάθεση
+panel.wallet.base	Βασική τιμή
+panel.wallet.discount	Έκπτωση
+panel.wallet.bonuses	Μπόνους
+panel.wallet.bonusesSpent_one	Μπόνους ({{count}} π.)
+panel.wallet.bonusesSpent_other	Μπόνους ({{count}} π.)
+panel.wallet.total	Σύνολο
+panel.wallet.cash	Μετρητά
+panel.wallet.card	Κάρτα
+panel.wallet.cardStripe	Οι πληρωμές με κάρτα γίνονται μέσω σελίδας Stripe και καταλήγουν απευθείας στον λογαριασμό του στούντιο. Ρυθμίστε τις στις Οικονομικές συναλλαγές → Ηλεκτρονικές πληρωμές.
+panel.wallet.offlineLocked	Οι πληρωμές με μετρητά είναι διαθέσιμες στα προγράμματα Combo και άνω
+panel.wallet.payByCard	Πληρωμή με κάρτα
+panel.wallet.confirmPay	Επιβεβαίωση πληρωμής
+panel.wallet.confirmPayCovered	Επιβεβαίωση (ήδη πληρωμένο)
+panel.wallet.confirmTitle	Επιβεβαίωση ληφθείσας πληρωμής;
+panel.wallet.confirmMessage	Θα καταγραφεί έσοδο {{amount}} και το προϊόν θα δοθεί στον πελάτη.
+panel.wallet.confirmMessageCard	Θα ανοίξει φόρμα πληρωμής Stripe για {{amount}}. Το προϊόν δίνεται και το έσοδο καταγράφεται όταν η πληρωμή ολοκληρωθεί επιτυχώς.
+panel.wallet.payToStudio	Η πληρωμή καταλήγει στον λογαριασμό του στούντιο
+panel.wallet.payConfirming	Επαλήθευση πληρωμής…
+panel.wallet.close	Κλείσιμο
+panel.wallet.confirmMessageCovered	Η πληρωμή καλύπτεται πλήρως από κατάθεση ή πιστοποιητικό. Το προϊόν θα δοθεί στον πελάτη.
+panel.wallet.paySuccess	Η πληρωμή καταγράφηκε
+panel.wallet.payCancelled	Η πληρωμή ακυρώθηκε — δεν χρεώθηκε τίποτα
+panel.wallet.payNotCompleted	Η Stripe δεν έχει επιβεβαιώσει ακόμη την πληρωμή. Αν η κάρτα χρεώθηκε, ανανεώστε σε ένα λεπτό.
+panel.wallet.payNotApplied	Η κάρτα χρεώθηκε, αλλά η πώληση δεν καταγράφηκε: οι όροι άλλαξαν (πιστοποιητικό, κωδικός προσφοράς ή πακέτο). Καταγράψτε την πώληση χειροκίνητα ή επιστρέψτε τα χρήματα στη Stripe.
+panel.wallet.transfer	Μεταφορά
+panel.wallet.transferTitle	Μεταφορά συνδρομής
+panel.wallet.transferSearchLabel	Μεταφορά σε
+panel.wallet.transferSearchPlaceholder	Όνομα ή τηλέφωνο πελάτη
+panel.wallet.transferSelectPlaceholder	Επιλέξτε πελάτη
+panel.wallet.transferConfirm	Μεταφορά
+panel.wallet.transferSuccess	Η συνδρομή μεταφέρθηκε
+panel.offers.title	Προσωπική έκπτωση
+panel.offers.empty	Δεν υπάρχουν ενεργές εκπτώσεις
+panel.offers.grant	Δώστε έκπτωση
+panel.offers.cancel	Ακύρωση
+panel.offers.valuePercent	{{value}}%
+panel.offers.valueAmount	{{value}} ₽
+panel.offers.untilDate	έως {{date}}
+panel.offers.noExpiry	χωρίς λήξη
+panel.offers.scopeRenewal	για ανανέωση
+panel.offers.grantTitle	Δώστε προσωπική έκπτωση
+panel.offers.grantValue	Μέγεθος έκπτωσης
+panel.offers.grantType.percent	Ποσοστό (%)
+panel.offers.grantType.amount	Ποσό (₽)
+panel.offers.grantValidUntil	Ισχύει έως
+panel.offers.grantSubmit	Δώστε
+panel.offers.cancelConfirmTitle	Ακύρωση έκπτωσης;
+panel.offers.cancelConfirmMessage	Ο πελάτης δεν θα μπορεί πλέον να χρησιμοποιεί αυτή την προσφορά.
+panel.offers.toasts.granted	Η έκπτωση δόθηκε
+panel.offers.toasts.cancelled	Η έκπτωση ακυρώθηκε
+panel.offers.toasts.loadFailed	Αποτυχία φόρτωσης εκπτώσεων
+panel.activity.compactTitle	Δραστηριότητα (3 μήν.)
+panel.activity.clickForDetails	Κάντε κλικ για λεπτομέρειες
+panel.activity.detailedTitle	Αναλυτική δραστηριότητα
+panel.activity.periods.month3	3 μήν.
+panel.activity.periods.month6	6 μήν.
+panel.activity.visitsInPeriod	Επισκέψεις στην περίοδο
+panel.activity.visitsTooltip_one	{{count}} επίσκεψη
+panel.activity.visitsTooltip_other	{{count}} επισκέψεις
+panel.activity.emptyState	Δεν υπάρχουν επισκέψεις σε αυτή την περίοδο
+panel.activity.insightTitle	Μέση προσέλευση
+panel.activity.insightBody	Κατά μέσο όρο {{avg}} επισκέψεις τον μήνα στην επιλεγμένη περίοδο.
+panel.activity.months.jan	Ιαν
+panel.activity.months.feb	Φεβ
+panel.activity.months.mar	Μαρ
+panel.activity.months.apr	Απρ
+panel.activity.months.may	Μαΐ
+panel.activity.months.jun	Ιουν
+panel.activity.months.jul	Ιουλ
+panel.activity.months.aug	Αυγ
+panel.activity.months.sep	Σεπ
+panel.activity.months.oct	Οκτ
+panel.activity.months.nov	Νοε
+panel.activity.months.dec	Δεκ
+panel.tags.title	Ετικέτες
+panel.tags.add	Προσθήκη
+panel.tags.close	Κλείσιμο
+panel.tags.customPlaceholder	Προσαρμοσμένη ετικέτα + Enter…
+panel.danger.freeze	Αναστολή
+panel.danger.unfreeze	Άρση αναστολής
+panel.danger.freezeDisabledHint	Η αναστολή είναι απενεργοποιημένη στις Ρυθμίσεις Καταλόγου → Συνδρομές
+panel.danger.delete	Διαγραφή
+panel.events.filterTabs.all	Όλα
+panel.events.filterTabs.payment	Πληρωμές
+panel.events.filterTabs.visit	Επισκέψεις
+panel.events.filterTabs.booking	Κρατήσεις
+panel.events.filterTabs.cancel	Ακυρώσεις
+panel.events.filterTabs.bonus	Μπόνους
+panel.events.filterTabs.freeze	Αναστολές
+panel.events.empty	Δεν υπάρχουν συμβάντα
+panel.notes.title	Σημειώσεις διαχειριστή
+panel.notes.prefix	Σημείωση · {{date}}
+panel.notes.save	Αποθήκευση
+panel.notes.cancel	Ακύρωση
+panel.notes.addPlaceholder	Πληκτρολογήστε σημείωση…
+panel.notes.add	Προσθήκη σημείωσης
+panel.notes.justNow	μόλις τώρα
+panel.notes.deleteTitle	Διαγραφή σημείωσης;
+panel.notes.deleteMessage	Αυτή η σημείωση δεν μπορεί να ανακτηθεί.
+panel.bookingPanel.title	Γρήγορη κράτηση
+panel.bookingPanel.today	Σήμερα
+panel.bookingPanel.noLessons	Δεν υπάρχουν μαθήματα αυτή την ημέρα
+panel.bookingPanel.full	Δεν υπάρχουν θέσεις
+panel.bookingPanel.confirm	Κράτηση →
+panel.bookingPanel.noSubscription	Ο πελάτης δεν έχει διαθέσιμη συνδρομή για κράτηση
+panel.bookingPanel.individual	Ατομική υπηρεσία
+panel.bonusPanel.title	Δώστε μπόνους
+panel.toasts.noPhone	Ο πελάτης δεν έχει αριθμό τηλεφώνου
+panel.toasts.copied	Αντιγράφηκε επιτυχώς
+panel.toasts.bookingCreated	Η κράτηση δημιουργήθηκε
+panel.toasts.bookingFailed	Η κράτηση απέτυχε
+panel.toasts.bonusFailed	Η προσθήκη πόντων απέτυχε
+panel.toasts.bonusApplied	Το μπόνους δόθηκε: {{label}}
+panel.toasts.clientAdded	Ο πελάτης προστέθηκε
+panel.bonusOptions.p200.label	+200 πόντοι
+panel.bonusOptions.p200.description	Προσθήκη στο υπόλοιπο επιβράβευσης
+panel.bonusOptions.p500.label	+500 πόντοι
+panel.bonusOptions.p500.description	Προσθήκη στο υπόλοιπο επιβράβευσης
+panel.bonusOptions.p1000.label	+1000 πόντοι
+panel.bonusOptions.p1000.description	Προσθήκη στο υπόλοιπο επιβράβευσης
+tags.suggested.0	Δοκιμή
+tags.suggested.1	VIP
+tags.suggested.2	Σύσταση
+tags.suggested.3	Online
+tags.suggested.4	Ομάδα
+tags.suggested.5	Προσωπικό
+addModal.title	Νέος πελάτης
+addModal.cancel	Ακύρωση
+addModal.back	← Πίσω
+addModal.continue	Συνέχεια →
+addModal.submit	Προσθήκη πελάτη ✓
+addModal.stepCounter	Βήμα {{current}} από {{total}}
+addModal.trustSignal	Τα δεδομένα προστατεύονται και είναι ορατά μόνο στους διαχειριστές
+addModal.steps.1.title	Προσωπικά στοιχεία
+addModal.steps.1.sub	Εισαγάγετε τα στοιχεία επικοινωνίας του πελάτη
+addModal.steps.2.title	Στοιχεία προφίλ
+addModal.steps.2.sub	Πρόσθετες πληροφορίες (προαιρετικό)
+addModal.steps.3.title	Συνδρομή
+addModal.steps.3.sub	Επιλέξτε τύπο συνδρομής και προσθέστε σημείωση
+addModal.steps.4.title	Όλα έτοιμα!
+addModal.steps.4.sub	Ελέγξτε τα στοιχεία και προσθέστε τον πελάτη
+addModal.step1.previewLabel	Νέος πελάτης · Προεπισκόπηση
+addModal.step1.name	Ονοματεπώνυμο *
+addModal.step1.namePlaceholder	Μαρία Παπαδοπούλου
+addModal.step1.phone	Τηλέφωνο
+addModal.step1.phonePlaceholder	+30 690 000 0000
+addModal.step1.email	Email
+addModal.step1.emailPlaceholder	pelatis@paradeigma.gr
+addModal.step2.bday	Ημερομηνία γέννησης
+addModal.step2.bdayPlaceholder	12 Απριλίου 1990
+addModal.step2.city	Πόλη
+addModal.step2.cityPlaceholder	Αθήνα
+addModal.step2.tags	Ετικέτες
+addModal.step2.tagsPlaceholder	Pilates, VIP, αποκατάσταση… (Enter)
+addModal.step2.tagsHint	Πατήστε Enter για να προσθέσετε ετικέτα
+addModal.step2.inviteCode	Κωδικός πρόσκλησης συστήνοντος
+addModal.step2.inviteCodePlaceholder	Προαιρετικό
+addModal.step2.inviteCodeHint	Αν δοθεί, θα λάβετε και οι δύο μπόνους
+addModal.step3.classCount	Συνδρομή
+addModal.step3.classesUnit	μαθήματα
+addModal.step3.classesCount_one	{{count}} μάθημα
+addModal.step3.classesCount_other	{{count}} μαθήματα
+addModal.step3.selected	Επιλεγμένο
+addModal.step3.noPackage	Χωρίς συνδρομή
+addModal.step3.noPackages	Αυτό το στούντιο δεν έχει ακόμη πακέτα συνδρομών
+addModal.step3.noPackagesLink	Δημιουργία πακέτων στον Κατάλογο →
+addModal.step3.alreadyPaid	Έχει ήδη πληρώσει ο πελάτης για αυτή τη συνδρομή;
+addModal.step3.yes	Ναι
+addModal.step3.no	Όχι
+addModal.step3.note	Σημείωση
+addModal.step3.notePlaceholder	Ειδικά αιτήματα, αντενδείξεις, προτιμήσεις…
+addModal.step4.readyTitle	Τα στοιχεία συμπληρώθηκαν!
+addModal.step4.readySub	Ελέγξτε τα στοιχεία και επιβεβαιώστε την προσθήκη
+addModal.step4.newClient	Νέος πελάτης
+addModal.step4.fields.phone	Τηλέφωνο
+addModal.step4.fields.email	Email
+addModal.step4.fields.bday	Ημερομηνία γέννησης
+addModal.step4.fields.city	Πόλη
+addModal.step4.fields.subscription	Συνδρομή
+addModal.step4.fields.tags	Ετικέτες
+addModal.step4.subscriptionValue_one	{{count}} μάθημα
+addModal.step4.subscriptionValue_other	{{count}} μαθήματα
+addModal.step4.smsTitle	Αποστολή SMS καλωσορίσματος
+addModal.step4.smsSub	Ο πελάτης θα λάβει μήνυμα πρόσκλησης
+addModal.errors.name	Εισαγάγετε όνομα (τουλάχιστον 2 χαρακτήρες)
+addModal.errors.phone	Μη έγκυρος αριθμός τηλεφώνου
+addModal.errors.email	Μη έγκυρο email
+addModal.errors.city	Εισαγάγετε πόλη
+deleteModal.title	Διαγραφή πελάτη;
+deleteModal.body	Πρόκειται να διαγράψετε τον πελάτη
+deleteModal.warning	Αυτή η ενέργεια δεν μπορεί να αναιρεθεί.
+deleteModal.cancel	Ακύρωση
+deleteModal.confirm	Διαγραφή
+deleteModal.success	Ο πελάτης διαγράφηκε

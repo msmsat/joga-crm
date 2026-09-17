@@ -1,0 +1,354 @@
+{
+  "loading": "Laster…",
+  "chModal": {
+    "eyebrow": "Varslingskanal",
+    "connected": "Tilkoblet",
+    "notConnected": "Ikke tilkoblet",
+    "setup": "Oppsett av tilkobling",
+    "details": "Tilkoblingsdetaljer",
+    "ready": "Kanalen er klar og i drift",
+    "readyHint": "Varsler for aktiverte hendelser sendes automatisk.",
+    "bot": "Bot",
+    "token": "Token",
+    "phone": "Nummer",
+    "account": "Konto",
+    "sender": "Avsender"
+  },
+  "channels": {
+    "title": "Leveringskanaler",
+    "connect": "Koble til",
+    "connected": "Tilkoblet",
+    "openSettings": "Innstillinger for {{channel}}",
+    "waLockedHint": "Kanalen låses opp når Meta har betalingsmetoden din, en verifisert bedrift og godkjente maler",
+    "waBlocker": {
+      "payment": "Ingen betalingsmetode — påminnelser leveres ikke. Sett opp",
+      "verification": "Bedriften er ikke verifisert hos Meta — grense på 250/dag. Slik fikser du det",
+      "templates": "Malene er fortsatt til gjennomgang hos Meta — ingenting blir sendt. Detaljer"
+    }
+  },
+  "roles": {
+    "client": "Kunde",
+    "trainer": "Trener",
+    "admin": "Administrator",
+    "owner": "Eier",
+    "activeCount_one": "{{count}} aktiv",
+    "activeCount_other": "{{count}} aktive"
+  },
+  "matrix": {
+    "saving": "Lagrer…",
+    "allSaved": "Alle endringer er lagret",
+    "notSaved": "Ikke lagret",
+    "activateAll": "Aktiver alle",
+    "deactivateAll": "Fjern alle avkrysninger",
+    "scenariosFor": "Scenarioer for: {{role}}",
+    "eventColumn": "Systemhendelse",
+    "noActiveChannels": "Ingen aktive kanaler",
+    "noActiveChannelsHint": "Aktiver minst én leveringskanal i panelet til venstre",
+    "adviceLabel": "Tips:",
+    "advice": "Konfigurer separat for hver rolle hva som sendes og hvor — Velora håndterer det automatisk.",
+    "tiers": {
+      "critical": "Påkrevd · kan ikke slås av",
+      "operational": "Operativ",
+      "optional": "Valgfri"
+    },
+    "lock": {
+      "critical": "Påkrevd varsel — kan ikke slås av",
+      "lastChannel": "Siste leveringskanal — kan ikke slås av"
+    },
+    "channelDisconnected": "Kanalen er ikke tilkoblet",
+    "activeCount_one": "Aktive utløsere: {{count}} av {{total}}",
+    "activeCount_other": "Aktive utløsere: {{count}} av {{total}}",
+    "configureFor_one": "Konfigurer kanaler for {{count}} systemutløser",
+    "configureFor_other": "Konfigurer kanaler for {{count}} systemutløsere"
+  },
+  "events": {
+    "c1": {
+      "title": "Bestilling bekreftet",
+      "desc": "Ved vellykket klassebestilling"
+    },
+    "c2": {
+      "title": "Påminnelse om klasse",
+      "desc": "24 timer og 2 timer før"
+    },
+    "c3": {
+      "title": "Klasse avlyst",
+      "desc": "Når treneren eller studioet avlyser"
+    },
+    "c4": {
+      "title": "Betaling gjennomført",
+      "desc": "Kvittering etter vellykket belastning"
+    },
+    "c5": {
+      "title": "Få klasser igjen",
+      "desc": "Når det er 1–2 besøk igjen i pakken"
+    },
+    "c6": {
+      "title": "Pakken utløper",
+      "desc": "3 dager før utløpsdatoen"
+    },
+    "c7": {
+      "title": "Bursdag",
+      "desc": "Hilsen med et spesielt tilbud"
+    },
+    "c8": {
+      "title": "Forespørsel om vurdering",
+      "desc": "Etter deltakelse på en klasse"
+    },
+    "c9": {
+      "title": "Refusjon",
+      "desc": "Ved avbestilling og behandling av refusjon"
+    },
+    "c10": {
+      "title": "Klassen er ikke betalt ennå",
+      "desc": "Kunden deltok, men har ikke betalt"
+    },
+    "c11": {
+      "title": "Klasse flyttet",
+      "desc": "Tid, rom eller trener ble endret"
+    },
+    "c12": {
+      "title": "Bonus lagt til",
+      "desc": "Poeng eller bonus lagt til kunden"
+    },
+    "c13": {
+      "title": "Kaffe etter klassen",
+      "desc": "Hvem i gruppen som skal ta en kaffe"
+    },
+    "t1": {
+      "title": "Ny bestilling hos trener",
+      "desc": "En kunde bestilte en personlig økt"
+    },
+    "t2": {
+      "title": "Kunden avbestilte bestilling",
+      "desc": "Kunden avbestilte mindre enn 2 t før"
+    },
+    "t3": {
+      "title": "Påminnelse om klasse",
+      "desc": "1 time før start"
+    },
+    "t4": {
+      "title": "Gruppeliste",
+      "desc": "30 min. før en gruppetime"
+    },
+    "t5": {
+      "title": "Endring i timeplanen",
+      "desc": "Administrator endret tidspunkt eller sted"
+    },
+    "t6": {
+      "title": "Lønn opptjent",
+      "desc": "Ukentlig utbetalingsberegning"
+    },
+    "t7": {
+      "title": "Ny treneranmeldelse",
+      "desc": "Kunden ga en vurdering etter klassen"
+    },
+    "t8": {
+      "title": "Kundens bursdag",
+      "desc": "Påminnelse om å gratulere personlig"
+    },
+    "t9": {
+      "title": "Klasse avlyst",
+      "desc": "Studioet eller administratoren avlyste klassen din"
+    },
+    "a1": {
+      "title": "Ny nettbestilling",
+      "desc": "Kunden bestilte via nettsted eller widget"
+    },
+    "a2": {
+      "title": "Avbestilling i siste liten",
+      "desc": "Mindre enn 1 time før klassen"
+    },
+    "a3": {
+      "title": "Ny kunde i systemet",
+      "desc": "Registrering av ny bruker"
+    },
+    "a4": {
+      "title": "Betaling mottatt",
+      "desc": "Enhver vellykket belastning"
+    },
+    "a6": {
+      "title": "Pakkene begynner å bli tomme",
+      "desc": "Gruppe kunder med ≤1 klasse igjen"
+    },
+    "a7": {
+      "title": "Konflikt i timeplanen",
+      "desc": "Overlappende klasser i journalen"
+    },
+    "a8": {
+      "title": "Daglig rapport",
+      "desc": "Oppsummering ved dagens slutt"
+    },
+    "a9": {
+      "title": "Innloggingsforsøk",
+      "desc": "Innlogging fra en ny enhet"
+    },
+    "a10": {
+      "title": "Refusjon",
+      "desc": "Administrator utstedte en refusjon"
+    },
+    "o1": {
+      "title": "Daglig oppsummering",
+      "desc": "Inntekt, bestillinger, oppmøte for dagen"
+    },
+    "o2": {
+      "title": "Ukentlig rapport",
+      "desc": "KPI-er: kundevekst, LTV, konvertering"
+    },
+    "o3": {
+      "title": "Stor betaling",
+      "desc": "Belastning over angitt grense"
+    },
+    "o4": {
+      "title": "Dataavvik",
+      "desc": "Bratt fall i bestillinger eller inntekt"
+    },
+    "o5": {
+      "title": "Nytt medarbeidermedlem",
+      "desc": "Administrator opprettet en ny konto"
+    },
+    "o6": {
+      "title": "Fornyelse av plan",
+      "desc": "Påminnelse om betaling for Velora-abonnementet"
+    },
+    "o7": {
+      "title": "Tilgangsrettigheter endret",
+      "desc": "Tillatelsene til medarbeideren ble endret"
+    },
+    "o8": {
+      "title": "KPI nådd",
+      "desc": "Månedlig mål oppnådd"
+    },
+    "o9": {
+      "title": "Dataeksport",
+      "desc": "Noen eksporterte kundedatabasen"
+    }
+  },
+  "tg": {
+    "title": "Telegram",
+    "subtitleConnected": "Kanalen er tilkoblet",
+    "subtitleDisconnected": "Koble til varslingsboten",
+    "connected": "Tilkoblet",
+    "pasteToken": "Lim inn bottokenet du fikk fra @BotFather.",
+    "invalidToken": "Ugyldig tokenformat",
+    "howToGet": "Slik får du et token:",
+    "steps": {
+      "1": "Åpne @BotFather i Telegram",
+      "2": "Send kommandoen /newbot og følg instruksjonene",
+      "3": "Kopier det utstedte tokenet",
+      "4": "Lim det inn i feltet over"
+    },
+    "connect": "Koble til",
+    "disconnect": "Koble fra",
+    "disconnectTitle": "Koble fra Telegram?",
+    "disconnectMessage": "Kunder og ansatte vil slutte å motta varsler gjennom denne kanalen.",
+    "close": "Lukk",
+    "cancel": "Avbryt"
+  },
+  "emailCh": {
+    "title": "E-post",
+    "subtitle": "Avsenderadresse for kunde-e-poster",
+    "verifiedLabel": "Verifisert",
+    "emailLabel": "Avsender-e-post",
+    "emailPlaceholder": "admin@studio.com",
+    "invalidEmail": "Skriv inn en gyldig e-postadresse",
+    "sendCode": "Send kode",
+    "codeSentTo": "Kode sendt til",
+    "codeHint": "Skriv inn den 6-sifrede koden fra e-posten.",
+    "codeLabel": "Bekreftelseskode",
+    "resend": "Send koden på nytt",
+    "viaVelora": "E-poster sendes via Velora-serveren på dine vegne.",
+    "wrongCode": "Ugyldig eller utløpt kode",
+    "verify": "Bekreft",
+    "back": "Tilbake",
+    "cancel": "Avbryt"
+  },
+  "wa": {
+    "title": "WhatsApp",
+    "subtitleConnected": "Kanalen er tilkoblet",
+    "subtitleDisconnected": "Logg inn med Meta-bedriftskontoen din",
+    "connected": "Tilkoblet",
+    "paymentRequiredTitle": "Du trenger et kort",
+    "paymentRequired": "Det er gratis å koble til nummeret, men Meta leverer først kundepåminnelser når et kort er lagt til. Du legger det til separat —",
+    "paymentMissingTitle": "Ingen betalingsmetode",
+    "paymentMissing": "Akkurat nå virker bare botsvar på innkommende meldinger. Meta avviser påminnelser, bekreftelser og utsendelser til et kort er lagt til —",
+    "paymentOkTitle": "Betaling tilkoblet",
+    "paymentOk": "varsler leveres fullt ut.",
+    "paymentUnknown": "Vi kunne ikke kontrollere betalingsmetoden hos Meta — vi viser status ved neste forsøk.",
+    "paymentLink": "Metas faktureringssenter",
+    "paymentRecheck": "Sjekk igjen",
+    "paymentFound": "Betaling tilkoblet",
+    "verify": {
+      "title": "Bedriften er ikke verifisert hos Meta",
+      "lead": "Nummeret virker, men med redusert grense på 250 unike mottakere per dag. Verifisering fjerner grensen og åpner for full lansering. Studioet må gjøre det selv — WhatsApp-kontoen tilhører deg, og Velora kan ikke gjøre det på dine vegne.",
+      "stepsTitle": "Slik verifiserer du bedriften:",
+      "step1a": "Åpne",
+      "link": "Meta Business Security Center",
+      "step1b": "og trykk «Start verifisering». Du trenger administratorrettigheter på bedriftskontoen.",
+      "step2": "Fyll inn de juridiske opplysningene: navnet nøyaktig som i dokumentene, adresse, telefon og nettsted. Nettstedet må være aktivt og bruke HTTPS.",
+      "step3": "Last opp et registreringsdokument for bedriften og vent på at Meta gjennomgår det.",
+      "step4": "Bekreft at du er knyttet til bedriften: e-post på nettstedets domene, et anrop eller SMS til oppført telefon, eller domeneverifisering.",
+      "step5": "Vent på avgjørelsen — vanligvis 1–5 virkedager. Statusen er i samme sikkerhetssenter; ved avslag oppgir Meta grunnen og lar deg søke igjen.",
+      "docsTitle": "Hvilke dokumenter fungerer (ett fra hver gruppe):",
+      "doc1": "Registrering: stiftelsesbevis, registerutskrift, bedriftslisens eller skattedokument.",
+      "doc2": "Bevis på tilstedeværelse: et fungerende nettsted, en offisiell side i sosiale medier eller en oppføring i bedriftskatalog.",
+      "pitfallTitle": "Den vanligste avslagsgrunnen",
+      "pitfall": "Bedriftsnavnet i Meta og i dokumentet må samsvare tegn for tegn, også selskapsform og tegnsetting. «Romashka LLC» og «Romashka, LLC» regnes som ulike navn."
+    },
+    "templatesTitle": "Meldingsmaler",
+    "templates": "Meta lar deg ikke kontakte en kunde først uten en forhåndsgodkjent mal. Opprett maler for hver hendelse — de går til gjennomgang og begynner å virke når de er godkjent.",
+    "templatesAction": "Klargjør maler",
+    "templatesPending": "Oppretter maler…",
+    "templatesPartial": "Meta avviste noen maler: {{failed}}. Se loggen for detaljer",
+    "templatesRejected": "— disse varslene leveres ikke. Kontroller ordlyden i Meta-kontoen og opprett malene på nytt.",
+    "templatesPendingHint": "— Meta kan bruke opptil en dag. {{approved}} er allerede godkjent og leveres.",
+    "templatesOkTitle": "Maler godkjent",
+    "paidWarning": "WhatsApp-meldinger er betalte",
+    "approxPrice": "ca.",
+    "pricingLoading": "Laster gjeldende pris…",
+    "perMessage": "per melding",
+    "viaMeta": "faktureres direkte av Meta",
+    "windowNotice": "Levering er bare garantert innenfor samtalevinduet på 24 timer.",
+    "connect": "Koble til WhatsApp",
+    "disconnect": "Koble fra",
+    "disconnectTitle": "Koble fra WhatsApp?",
+    "disconnectMessage": "Kunder og ansatte vil slutte å motta varsler gjennom denne kanalen.",
+    "close": "Lukk",
+    "cancel": "Avbryt",
+    "templatesDone_one": "Maler klare: {{count}}. Venter på Meta-gjennomgang",
+    "templatesDone_other": "Maler klare: {{count}}. Venter på Meta-gjennomgang",
+    "templatesRejectedTitle_one": "Meta avviste {{count}} mal",
+    "templatesRejectedTitle_other": "Meta avviste {{count}} maler",
+    "templatesPendingTitle_one": "{{count}} mal til gjennomgang",
+    "templatesPendingTitle_other": "{{count}} maler til gjennomgang",
+    "templatesOk_one": "{{count}} besto Meta-gjennomgangen — varsler leveres.",
+    "templatesOk_other": "Alle {{count}} besto Meta-gjennomgangen — varsler leveres."
+  },
+  "tabs": {
+    "matrix": "Innstillinger",
+    "log": "Leveringslogg"
+  },
+  "log": {
+    "title": "Leveringslogg",
+    "subtitle": "Hva som ble sendt, til hvem og når, og hvordan hver sending endte.",
+    "status": {
+      "sent": "Levert",
+      "rejected": "Avvist",
+      "error": "Tilkoblingsfeil",
+      "pending": "Pågår"
+    },
+    "searchPlaceholder": "Telefon, e-post eller hendelseskode",
+    "allChannels": "Alle kanaler",
+    "reset": "Tilbakestill",
+    "refreshing": "Oppdaterer…",
+    "otherEvent": "Send utenfor katalogen",
+    "empty": "Ingenting er sendt ennå",
+    "emptyHint": "Hvert varsel studioet sender til kunder og ansatte vises her.",
+    "emptyFiltered": "Ingenting funnet",
+    "emptyFilteredHint": "Prøv å endre filtrene eller søk etter et annet nummer.",
+    "loadError": "Kunne ikke laste loggen",
+    "loadErrorHint": "Oppdater siden — hvis det ikke hjelper, kontakt kundestøtte.",
+    "range": "{{from}}–{{to}} av {{total}}",
+    "prev": "Tilbake",
+    "next": "Neste"
+  }
+}

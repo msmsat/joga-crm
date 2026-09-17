@@ -1,0 +1,316 @@
+== pl
+categories.all	Wszyscy
+categories.vip	VIP
+categories.active	Aktywni
+categories.new	Nowi
+categories.has_subscription	Z abonamentem
+categories.inactive	Nieaktywni
+categories.frozen	Zamrożeni
+categories.birthday	Urodziny
+categoriesInfo.all.text	Pełna lista klientów studia bez zastosowanego filtra statusu.
+categoriesInfo.vip.text	Udane płatności na łączną kwotę 50 000+ lub 30+ wizyt. VIP można też przypiąć ręcznie na karcie klienta; ręczne przypięcie pozostaje niezależnie od kwot.
+categoriesInfo.active.text	Co najmniej jedna wizyta w ciągu ostatnich 60 dni. Na podstawie obecności oznaczonej w dzienniku — status aktualizuje się sam, bez ręcznego ustawiania.
+categoriesInfo.new.text	Pierwsze 15 dni od daty rejestracji, niezależnie od tego, czy klient został dodany ręcznie, czy przyszedł z rezerwacji online. Szesnastego dnia automatycznie przechodzi do Aktywnych albo Nieaktywnych.
+categoriesInfo.has_subscription.text	Ma aktywny abonament: niewygasły, niezamrożony i z pozostałymi zajęciami. Aktualizuje się od razu przy zakupie, po każdych wykorzystanych zajęciach i po wygaśnięciu.
+categoriesInfo.inactive.text	Brak wizyt w ciągu ostatnich 60 dni — albo nigdy nie odwiedził studia, a od rejestracji minęło ponad 15 dni.
+categoriesInfo.frozen.text	Zamrożony przyciskiem na karcie klienta — jedyny status ustawiany ręcznie. Po odmrożeniu klient wraca do automatycznego statusu.
+categoriesInfo.birthday.text	Osoby, które mają dziś urodziny — dzień i miesiąc się zgadzają, rok jest pomijany. Lista odświeża się automatycznie codziennie.
+status.active	Aktywny
+status.vip	VIP
+status.new	Nowy
+status.inactive	Nieaktywny
+status.frozen	Zamrożony
+filtersGuide.trigger	O filtrach
+filtersGuide.title	Filtry klientów
+filtersGuide.subtitle	Jak obliczana jest każda kategoria. Kliknij kartę, aby zastosować filtr, lub zmień próg — statusy przeliczają się od razu.
+filtersGuide.close	Zamknij
+filtersGuide.rule.new_client_days	Nowy przez
+filtersGuide.rule.active_within_days	Wizyta w ciągu
+filtersGuide.rule.vip_min_spent	Wydano od
+filtersGuide.rule.vip_min_visits	lub wizyty
+filtersGuide.unit.days	dni
+filtersGuide.unit.money	
+filtersGuide.unit.visits	wizyt
+toolbar.searchPlaceholder	Szukaj klienta…
+toolbar.addClient	Dodaj klienta
+table.visits	wizyt
+table.frozenBadge	❄ zamrożony
+table.totalSpent	Łącznie wydano
+table.subscription	Abonament
+table.of	z
+table.noSubscription	Bez abonamentu
+loadMore	Załaduj więcej
+loading	Ładowanie…
+panel.tabs.info	Profil
+panel.tabs.events	Zdarzenia
+panel.tabs.notes	Notatki
+panel.tabs.wallet	Zakupy
+panel.actions.book	Zarezerwuj
+panel.actions.bonus	Bonus
+panel.editDateHint	Kliknij, aby edytować
+panel.since	od {{date}}
+panel.contacts.title	Dane kontaktowe
+panel.contacts.phone	Telefon
+panel.contacts.email	E-mail
+panel.contacts.telegram	Telegram
+panel.contacts.birthDate	Data urodzenia
+panel.contacts.city	Miasto
+panel.contacts.copyHint	 · kliknij, aby skopiować
+panel.debt	{{amount}} nieopłacone za zajęcia — przyjmij płatność w Dzienniku
+panel.stats.visits	Wizyty
+panel.stats.spent	Wydano
+panel.stats.subscription	Abonament
+panel.loyalty.points	punktów
+panel.loyalty.level	poziom {{tier}}
+panel.loyalty.toNext	Do następnego poziomu: {{points}} punktów
+panel.loyalty.multiplier	mnożnik punktów ×{{value}}
+panel.loyalty.worth	Wartość przy płatności: {{amount}}
+panel.loyalty.toNextLevel	Jeszcze {{amount}} do {{level}}
+panel.loyalty.pointValue	1 punkt = {{amount}}
+panel.loyalty.nextPointValue	na {{level}} — {{amount}}
+panel.loyalty.noBonus	Ten poziom nie zmienia wartości punktów
+panel.referral.title	Zaproś znajomego
+panel.referral.copy	Kopiuj
+panel.abonement.title	Abonament
+panel.abonement.lessons	{{remaining}}/{{total}} zajęć
+panel.abonement.noSubscription	Brak aktywnego abonamentu
+panel.abonement.noSubscriptionWarning	Klient nie ma abonamentu — zaproponuj mu go
+panel.abonement.lowWarning	Pozostało mało zajęć — zaproponuj odnowienie
+panel.abonement.finishedWarning	Nie zostały żadne zajęcia — zaproponuj odnowienie
+panel.abonement.remind	Przypomnij klientowi
+panel.abonement.reminderSent	Wysłano przypomnienie do klienta
+panel.products.single	pojedynczy
+panel.products.pending	w kolejce
+panel.products.frozen	zamrożony
+panel.products.until	Ważny do {{date}}
+panel.products.startsOnFirstVisit	Okres zaczyna się od pierwszych zajęć
+panel.wallet.buy	Kup
+panel.wallet.active	Aktywne
+panel.wallet.archived	Zarchiwizowane
+panel.wallet.singles	Pojedyncze wizyty
+panel.wallet.subscriptions	Abonamenty
+panel.wallet.noSingles	Nie ma jeszcze pojedynczych wizyt
+panel.wallet.emptyActive	Brak aktywnych produktów
+panel.wallet.emptyArchived	Brak zarchiwizowanych produktów
+panel.wallet.emptyCatalog	To studio nie ma jeszcze pakietów abonamentowych
+panel.wallet.lessons	{{remaining}}/{{total}} zajęć
+panel.wallet.lessonsCount_one	{{count}} zajęcie
+panel.wallet.lessonsCount_few	{{count}} zajęcia
+panel.wallet.lessonsCount_many	{{count}} zajęć
+panel.wallet.perVisit	Za pojedynczą wizytę
+panel.wallet.until	do {{date}}
+panel.wallet.frozenBadge	Zamrożony
+panel.wallet.loadFailed	Nie udało się załadować portfela
+panel.wallet.back	← Wróć
+panel.wallet.catalogTitle	Katalog
+panel.wallet.showAll	Wszystkie
+panel.wallet.posTitle	Kasa
+panel.wallet.promoLabel	Kod promocyjny
+panel.wallet.promoPlaceholder	Wpisz kod promocyjny
+panel.wallet.promoInvalid	Kod promocyjny jest nieprawidłowy
+panel.wallet.useBonuses_one	Wykorzystaj bonusy ({{count}})
+panel.wallet.useBonuses_few	Wykorzystaj bonusy ({{count}})
+panel.wallet.useBonuses_many	Wykorzystaj bonusy ({{count}})
+panel.wallet.useDeposit	Zapłać z depozytu ({{amount}})
+panel.wallet.certLabel	Kod certyfikatu
+panel.wallet.certPlaceholder	Wpisz kod certyfikatu
+panel.wallet.certApplied	Certyfikat
+panel.wallet.depositApplied	Depozyt
+panel.wallet.base	Cena bazowa
+panel.wallet.discount	Rabat
+panel.wallet.bonuses	Bonusy
+panel.wallet.bonusesSpent_one	Bonusy ({{count}} pkt)
+panel.wallet.bonusesSpent_few	Bonusy ({{count}} pkt)
+panel.wallet.bonusesSpent_many	Bonusy ({{count}} pkt)
+panel.wallet.total	Razem
+panel.wallet.cash	Gotówka
+panel.wallet.card	Karta
+panel.wallet.cardStripe	Płatności kartą przechodzą przez stronę Stripe i trafiają bezpośrednio na konto studia. Skonfiguruj je w Finansach → Płatności online.
+panel.wallet.offlineLocked	Płatności gotówką są dostępne w planach Combo i wyższych
+panel.wallet.payByCard	Zapłać kartą
+panel.wallet.confirmPay	Potwierdź płatność
+panel.wallet.confirmPayCovered	Potwierdź (już opłacono)
+panel.wallet.confirmTitle	Potwierdzić otrzymanie płatności?
+panel.wallet.confirmMessage	To zapisze przychód {{amount}} i przekaże produkt klientowi.
+panel.wallet.confirmMessageCard	Otworzy się formularz płatności Stripe na {{amount}}. Produkt zostanie przyznany, a przychód zapisany po pomyślnym opłaceniu.
+panel.wallet.payToStudio	Płatność trafia na konto studia
+panel.wallet.payConfirming	Weryfikowanie płatności…
+panel.wallet.close	Zamknij
+panel.wallet.confirmMessageCovered	Płatność jest w całości pokryta depozytem lub certyfikatem. Produkt zostanie przekazany klientowi.
+panel.wallet.paySuccess	Płatność zapisana
+panel.wallet.payCancelled	Płatność anulowana — nic nie zostało pobrane
+panel.wallet.payNotCompleted	Stripe nie potwierdził jeszcze płatności. Jeśli karta została obciążona, odśwież za minutę.
+panel.wallet.payNotApplied	Karta została obciążona, ale sprzedaży nie udało się zapisać: warunki się zmieniły (certyfikat, kod promocyjny lub pakiet). Zapisz sprzedaż ręcznie albo zwróć środki w Stripe.
+panel.wallet.transfer	Przenieś
+panel.wallet.transferTitle	Przenieś abonament
+panel.wallet.transferSearchLabel	Przenieś do
+panel.wallet.transferSearchPlaceholder	Imię lub telefon klienta
+panel.wallet.transferSelectPlaceholder	Wybierz klienta
+panel.wallet.transferConfirm	Przenieś
+panel.wallet.transferSuccess	Abonament przeniesiony
+panel.offers.title	Rabat osobisty
+panel.offers.empty	Brak aktywnych rabatów
+panel.offers.grant	Przyznaj rabat
+panel.offers.cancel	Anuluj
+panel.offers.valuePercent	{{value}}%
+panel.offers.valueAmount	{{value}} ₽
+panel.offers.untilDate	do {{date}}
+panel.offers.noExpiry	bez terminu ważności
+panel.offers.scopeRenewal	przy odnowieniu
+panel.offers.grantTitle	Przyznaj rabat osobisty
+panel.offers.grantValue	Wysokość rabatu
+panel.offers.grantType.percent	Procent (%)
+panel.offers.grantType.amount	Kwota (₽)
+panel.offers.grantValidUntil	Ważny do
+panel.offers.grantSubmit	Przyznaj
+panel.offers.cancelConfirmTitle	Anulować rabat?
+panel.offers.cancelConfirmMessage	Klient nie będzie już mógł skorzystać z tej oferty.
+panel.offers.toasts.granted	Rabat przyznany
+panel.offers.toasts.cancelled	Rabat anulowany
+panel.offers.toasts.loadFailed	Nie udało się załadować rabatów
+panel.activity.compactTitle	Aktywność (3 mies.)
+panel.activity.clickForDetails	Kliknij, aby zobaczyć szczegóły
+panel.activity.detailedTitle	Szczegółowa aktywność
+panel.activity.periods.month3	3 mies.
+panel.activity.periods.month6	6 mies.
+panel.activity.visitsInPeriod	Wizyty w okresie
+panel.activity.visitsTooltip_one	{{count}} wizyta
+panel.activity.visitsTooltip_few	{{count}} wizyty
+panel.activity.visitsTooltip_many	{{count}} wizyt
+panel.activity.emptyState	Brak wizyt w tym okresie
+panel.activity.insightTitle	Średnia frekwencja
+panel.activity.insightBody	Średnio {{avg}} wizyt miesięcznie w wybranym okresie.
+panel.activity.months.jan	sty
+panel.activity.months.feb	lut
+panel.activity.months.mar	mar
+panel.activity.months.apr	kwi
+panel.activity.months.may	maj
+panel.activity.months.jun	cze
+panel.activity.months.jul	lip
+panel.activity.months.aug	sie
+panel.activity.months.sep	wrz
+panel.activity.months.oct	paź
+panel.activity.months.nov	lis
+panel.activity.months.dec	gru
+panel.tags.title	Tagi
+panel.tags.add	Dodaj
+panel.tags.close	Zamknij
+panel.tags.customPlaceholder	Własny tag + Enter…
+panel.danger.freeze	Zamroź
+panel.danger.unfreeze	Odmroź
+panel.danger.freezeDisabledHint	Zamrażanie jest wyłączone w Katalogu → ustawienia abonamentów
+panel.danger.delete	Usuń
+panel.events.filterTabs.all	Wszystkie
+panel.events.filterTabs.payment	Płatności
+panel.events.filterTabs.visit	Wizyty
+panel.events.filterTabs.booking	Rezerwacje
+panel.events.filterTabs.cancel	Anulowania
+panel.events.filterTabs.bonus	Bonusy
+panel.events.filterTabs.freeze	Zamrożenia
+panel.events.empty	Brak zdarzeń
+panel.notes.title	Notatki administratora
+panel.notes.prefix	Notatka · {{date}}
+panel.notes.save	Zapisz
+panel.notes.cancel	Anuluj
+panel.notes.addPlaceholder	Wpisz notatkę…
+panel.notes.add	Dodaj notatkę
+panel.notes.justNow	przed chwilą
+panel.notes.deleteTitle	Usunąć notatkę?
+panel.notes.deleteMessage	Tej notatki nie można odzyskać.
+panel.bookingPanel.title	Szybka rezerwacja
+panel.bookingPanel.today	Dzisiaj
+panel.bookingPanel.noLessons	Brak zajęć tego dnia
+panel.bookingPanel.full	Brak miejsc
+panel.bookingPanel.confirm	Zarezerwuj →
+panel.bookingPanel.noSubscription	Klient nie ma abonamentu dostępnego do rezerwacji
+panel.bookingPanel.individual	Usługa indywidualna
+panel.bonusPanel.title	Przyznaj bonus
+panel.toasts.noPhone	Klient nie ma numeru telefonu
+panel.toasts.copied	Skopiowano
+panel.toasts.bookingCreated	Rezerwacja utworzona
+panel.toasts.bookingFailed	Nie udało się zarezerwować
+panel.toasts.bonusFailed	Nie udało się przyznać punktów
+panel.toasts.bonusApplied	Bonus przyznany: {{label}}
+panel.toasts.clientAdded	Klient dodany
+panel.bonusOptions.p200.label	+200 punktów
+panel.bonusOptions.p200.description	Dodaj do salda lojalnościowego
+panel.bonusOptions.p500.label	+500 punktów
+panel.bonusOptions.p500.description	Dodaj do salda lojalnościowego
+panel.bonusOptions.p1000.label	+1000 punktów
+panel.bonusOptions.p1000.description	Dodaj do salda lojalnościowego
+tags.suggested.0	Próbny
+tags.suggested.1	VIP
+tags.suggested.2	Polecenie
+tags.suggested.3	Online
+tags.suggested.4	Grupa
+tags.suggested.5	Osobisty
+addModal.title	Nowy klient
+addModal.cancel	Anuluj
+addModal.back	← Wróć
+addModal.continue	Dalej →
+addModal.submit	Dodaj klienta ✓
+addModal.stepCounter	Krok {{current}} z {{total}}
+addModal.trustSignal	Dane są chronione i widoczne tylko dla administratorów
+addModal.steps.1.title	Dane osobowe
+addModal.steps.1.sub	Wpisz dane kontaktowe klienta
+addModal.steps.2.title	Dane profilu
+addModal.steps.2.sub	Dodatkowe informacje (opcjonalnie)
+addModal.steps.3.title	Abonament
+addModal.steps.3.sub	Wybierz typ abonamentu i dodaj notatkę
+addModal.steps.4.title	Gotowe!
+addModal.steps.4.sub	Sprawdź dane i dodaj klienta
+addModal.step1.previewLabel	Nowy klient · Podgląd
+addModal.step1.name	Imię i nazwisko *
+addModal.step1.namePlaceholder	Jan Kowalski
+addModal.step1.phone	Telefon
+addModal.step1.phonePlaceholder	+48 500 000 000
+addModal.step1.email	E-mail
+addModal.step1.emailPlaceholder	klient@przyklad.pl
+addModal.step2.bday	Data urodzenia
+addModal.step2.bdayPlaceholder	12 kwietnia 1990
+addModal.step2.city	Miasto
+addModal.step2.cityPlaceholder	Warszawa
+addModal.step2.tags	Tagi
+addModal.step2.tagsPlaceholder	Pilates, VIP, rehabilitacja… (Enter)
+addModal.step2.tagsHint	Naciśnij Enter, aby dodać tag
+addModal.step2.inviteCode	Kod zaproszenia osoby polecającej
+addModal.step2.inviteCodePlaceholder	Opcjonalnie
+addModal.step2.inviteCodeHint	Jeśli go podasz, oboje otrzymacie bonus
+addModal.step3.classCount	Abonament
+addModal.step3.classesUnit	zajęć
+addModal.step3.classesCount_one	{{count}} zajęcie
+addModal.step3.classesCount_few	{{count}} zajęcia
+addModal.step3.classesCount_many	{{count}} zajęć
+addModal.step3.selected	Wybrano
+addModal.step3.noPackage	Bez abonamentu
+addModal.step3.noPackages	To studio nie ma jeszcze pakietów abonamentowych
+addModal.step3.noPackagesLink	Utwórz pakiety w Katalogu →
+addModal.step3.alreadyPaid	Czy klient zapłacił już za ten abonament?
+addModal.step3.yes	Tak
+addModal.step3.no	Nie
+addModal.step3.note	Notatka
+addModal.step3.notePlaceholder	Szczególne prośby, przeciwwskazania, preferencje…
+addModal.step4.readyTitle	Dane wypełnione!
+addModal.step4.readySub	Sprawdź dane i potwierdź dodanie
+addModal.step4.newClient	Nowy klient
+addModal.step4.fields.phone	Telefon
+addModal.step4.fields.email	E-mail
+addModal.step4.fields.bday	Data urodzenia
+addModal.step4.fields.city	Miasto
+addModal.step4.fields.subscription	Abonament
+addModal.step4.fields.tags	Tagi
+addModal.step4.subscriptionValue_one	{{count}} zajęcie
+addModal.step4.subscriptionValue_few	{{count}} zajęcia
+addModal.step4.subscriptionValue_many	{{count}} zajęć
+addModal.step4.smsTitle	Wyślij powitalny SMS
+addModal.step4.smsSub	Klient otrzyma wiadomość z zaproszeniem
+addModal.errors.name	Wpisz imię (co najmniej 2 znaki)
+addModal.errors.phone	Nieprawidłowy numer telefonu
+addModal.errors.email	Nieprawidłowy e-mail
+addModal.errors.city	Wpisz miasto
+deleteModal.title	Usunąć klienta?
+deleteModal.body	Za chwilę usuniesz klienta
+deleteModal.warning	Tej operacji nie można cofnąć.
+deleteModal.cancel	Anuluj
+deleteModal.confirm	Usuń
+deleteModal.success	Klient usunięty

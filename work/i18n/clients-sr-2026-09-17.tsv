@@ -1,0 +1,316 @@
+== sr
+categories.all	Сви
+categories.vip	VIP
+categories.active	Активни
+categories.new	Нови
+categories.has_subscription	С претплатом
+categories.inactive	Неактивни
+categories.frozen	Замрзнути
+categories.birthday	Рођендан
+categoriesInfo.all.text	Цео списак клијената студија, без примењеног филтера статуса.
+categoriesInfo.vip.text	Успешна плаћања у укупном износу од 50.000+ или 30+ посета. VIP се може ручно закачити и на картици клијента; ручно закачивање остаје без обзира на износе.
+categoriesInfo.active.text	Најмање једна посета у последњих 60 дана. Заснива се на присуству означеном у дневнику — статус се сам ажурира и не треба га ручно подешавати.
+categoriesInfo.new.text	Првих 15 дана од датума регистрације, без обзира на то да ли је клијент додат ручно или је дошао путем онлајн резервације. Шеснаестог дана аутоматски прелази у Активне или Неактивне.
+categoriesInfo.has_subscription.text	Има важећу претплату: није истекла, није замрзнута и има преосталих термина. Ажурира се одмах при куповини, после сваког искоришћеног термина и при истеку.
+categoriesInfo.inactive.text	Нема посета у последњих 60 дана — или никада није посетио и прошло је више од 15 дана од регистрације.
+categoriesInfo.frozen.text	Замрзнут дугметом на картици клијента — једини статус који се поставља ручно. После одмрзавања клијент се враћа на аутоматски статус.
+categoriesInfo.birthday.text	Они којима је данас рођендан — дан и месец се подударају, година се занемарује. Списак се аутоматски освежава сваког дана.
+status.active	Активан
+status.vip	VIP
+status.new	Нов
+status.inactive	Неактиван
+status.frozen	Замрзнут
+filtersGuide.trigger	О филтерима
+filtersGuide.title	Филтери клијената
+filtersGuide.subtitle	Како се израчунава свака категорија. Кликните на картицу да примените филтер или промените праг — статуси се одмах поново израчунавају.
+filtersGuide.close	Затвори
+filtersGuide.rule.new_client_days	Нов током
+filtersGuide.rule.active_within_days	Посета у оквиру
+filtersGuide.rule.vip_min_spent	Потрошено од
+filtersGuide.rule.vip_min_visits	или посета
+filtersGuide.unit.days	дана
+filtersGuide.unit.money	
+filtersGuide.unit.visits	посета
+toolbar.searchPlaceholder	Претражи клијента…
+toolbar.addClient	Додај клијента
+table.visits	посета
+table.frozenBadge	❄ замрзнут
+table.totalSpent	Укупно потрошено
+table.subscription	Претплата
+table.of	од
+table.noSubscription	Без претплате
+loadMore	Учитај још
+loading	Учитавање…
+panel.tabs.info	Профил
+panel.tabs.events	Догађаји
+panel.tabs.notes	Белешке
+panel.tabs.wallet	Куповине
+panel.actions.book	Резервиши
+panel.actions.bonus	Бонус
+panel.editDateHint	Кликните за уређивање
+panel.since	од {{date}}
+panel.contacts.title	Контакти
+panel.contacts.phone	Телефон
+panel.contacts.email	Имејл
+panel.contacts.telegram	Telegram
+panel.contacts.birthDate	Датум рођења
+panel.contacts.city	Град
+panel.contacts.copyHint	 · кликните за копирање
+panel.debt	{{amount}} неплаћено за термине — прихватите уплату у Дневнику
+panel.stats.visits	Посете
+panel.stats.spent	Потрошено
+panel.stats.subscription	Претплата
+panel.loyalty.points	поени
+panel.loyalty.level	ниво {{tier}}
+panel.loyalty.toNext	До следећег нивоа: {{points}} поена
+panel.loyalty.multiplier	множилац поена ×{{value}}
+panel.loyalty.worth	Вреди {{amount}} при наплати
+panel.loyalty.toNextLevel	Још {{amount}} до {{level}}
+panel.loyalty.pointValue	1 поен = {{amount}}
+panel.loyalty.nextPointValue	на {{level}} — {{amount}}
+panel.loyalty.noBonus	Овај ниво не мења вредност поена
+panel.referral.title	Позови пријатеља
+panel.referral.copy	Копирај
+panel.abonement.title	Претплата
+panel.abonement.lessons	{{remaining}}/{{total}} термина
+panel.abonement.noSubscription	Нема активне претплате
+panel.abonement.noSubscriptionWarning	Клијент нема претплату — понудите му је
+panel.abonement.lowWarning	Остало је мало термина — понудите обнову
+panel.abonement.finishedWarning	Нема преосталих термина — понудите обнову
+panel.abonement.remind	Подсети клијента
+panel.abonement.reminderSent	Подсетник је послат клијенту
+panel.products.single	појединачно
+panel.products.pending	на чекању
+panel.products.frozen	замрзнуто
+panel.products.until	Важи до {{date}}
+panel.products.startsOnFirstVisit	Рок почиње првим термином
+panel.wallet.buy	Купи
+panel.wallet.active	Активни
+panel.wallet.archived	Архивирани
+panel.wallet.singles	Појединачне посете
+panel.wallet.subscriptions	Претплате
+panel.wallet.noSingles	Још нема појединачних посета
+panel.wallet.emptyActive	Нема активних производа
+panel.wallet.emptyArchived	Нема архивираних производа
+panel.wallet.emptyCatalog	Овај студио још нема пакете претплате
+panel.wallet.lessons	{{remaining}}/{{total}} термина
+panel.wallet.lessonsCount_one	{{count}} термин
+panel.wallet.lessonsCount_few	{{count}} термина
+panel.wallet.lessonsCount_other	{{count}} термина
+panel.wallet.perVisit	По појединачној посети
+panel.wallet.until	до {{date}}
+panel.wallet.frozenBadge	Замрзнуто
+panel.wallet.loadFailed	Учитавање новчаника није успело
+panel.wallet.back	← Назад
+panel.wallet.catalogTitle	Каталог
+panel.wallet.showAll	Сви
+panel.wallet.posTitle	Наплата
+panel.wallet.promoLabel	Промотивни код
+panel.wallet.promoPlaceholder	Унесите промотивни код
+panel.wallet.promoInvalid	Промотивни код није важећи
+panel.wallet.useBonuses_one	Искористи бонусе ({{count}})
+panel.wallet.useBonuses_few	Искористи бонусе ({{count}})
+panel.wallet.useBonuses_other	Искористи бонусе ({{count}})
+panel.wallet.useDeposit	Плати из депозита ({{amount}})
+panel.wallet.certLabel	Код сертификата
+panel.wallet.certPlaceholder	Унесите код сертификата
+panel.wallet.certApplied	Сертификат
+panel.wallet.depositApplied	Депозит
+panel.wallet.base	Основна цена
+panel.wallet.discount	Попуст
+panel.wallet.bonuses	Бонуси
+panel.wallet.bonusesSpent_one	Бонуси ({{count}} поен)
+panel.wallet.bonusesSpent_few	Бонуси ({{count}} поена)
+panel.wallet.bonusesSpent_other	Бонуси ({{count}} поена)
+panel.wallet.total	Укупно
+panel.wallet.cash	Готовина
+panel.wallet.card	Картица
+panel.wallet.cardStripe	Плаћања картицом пролазе преко Stripe странице и стижу директно на рачун студија. Подесите их у Финансије → Онлајн плаћања.
+panel.wallet.offlineLocked	Плаћања готовином доступна су на Combo и вишим пакетима
+panel.wallet.payByCard	Плати картицом
+panel.wallet.confirmPay	Потврди плаћање
+panel.wallet.confirmPayCovered	Потврди (већ плаћено)
+panel.wallet.confirmTitle	Потврдити примљену уплату?
+panel.wallet.confirmMessage	Ово ће забележити приход од {{amount}} и доделити производ клијенту.
+panel.wallet.confirmMessageCard	Отвориће се Stripe образац за плаћање од {{amount}}. Производ се додељује, а приход бележи након успешне уплате.
+panel.wallet.payToStudio	Уплата стиже на рачун студија
+panel.wallet.payConfirming	Провера плаћања…
+panel.wallet.close	Затвори
+panel.wallet.confirmMessageCovered	Плаћање је у потпуности покривено депозитом или сертификатом. Производ ће бити додељен клијенту.
+panel.wallet.paySuccess	Плаћање је забележено
+panel.wallet.payCancelled	Плаћање је отказано — ништа није наплаћено
+panel.wallet.payNotCompleted	Stripe још није потврдио плаћање. Ако је картица терећена, освежите за минут.
+panel.wallet.payNotApplied	Картица је терећена, али продаја није могла бити забележена: услови су се променили (сертификат, промотивни код или пакет). Забележите продају ручно или извршите повраћај у Stripe-у.
+panel.wallet.transfer	Пренеси
+panel.wallet.transferTitle	Пренеси претплату
+panel.wallet.transferSearchLabel	Пренеси на
+panel.wallet.transferSearchPlaceholder	Име или телефон клијента
+panel.wallet.transferSelectPlaceholder	Изабери клијента
+panel.wallet.transferConfirm	Пренеси
+panel.wallet.transferSuccess	Претплата је пренесена
+panel.offers.title	Лични попуст
+panel.offers.empty	Нема активних попуста
+panel.offers.grant	Додели попуст
+panel.offers.cancel	Откажи
+panel.offers.valuePercent	{{value}}%
+panel.offers.valueAmount	{{value}} ₽
+panel.offers.untilDate	до {{date}}
+panel.offers.noExpiry	без истека
+panel.offers.scopeRenewal	за обнову
+panel.offers.grantTitle	Додели лични попуст
+panel.offers.grantValue	Величина попуста
+panel.offers.grantType.percent	Проценат (%)
+panel.offers.grantType.amount	Износ (₽)
+panel.offers.grantValidUntil	Важи до
+panel.offers.grantSubmit	Додели
+panel.offers.cancelConfirmTitle	Отказати попуст?
+panel.offers.cancelConfirmMessage	Клијент више неће моћи да користи ову понуду.
+panel.offers.toasts.granted	Попуст је додељен
+panel.offers.toasts.cancelled	Попуст је отказан
+panel.offers.toasts.loadFailed	Учитавање попуста није успело
+panel.activity.compactTitle	Активност (3 мес.)
+panel.activity.clickForDetails	Кликните за детаље
+panel.activity.detailedTitle	Детаљна активност
+panel.activity.periods.month3	3 мес.
+panel.activity.periods.month6	6 мес.
+panel.activity.visitsInPeriod	Посете у периоду
+panel.activity.visitsTooltip_one	{{count}} посета
+panel.activity.visitsTooltip_few	{{count}} посете
+panel.activity.visitsTooltip_other	{{count}} посета
+panel.activity.emptyState	Нема посета у овом периоду
+panel.activity.insightTitle	Просечна посећеност
+panel.activity.insightBody	У просеку {{avg}} посета месечно у изабраном периоду.
+panel.activity.months.jan	јан
+panel.activity.months.feb	феб
+panel.activity.months.mar	мар
+panel.activity.months.apr	апр
+panel.activity.months.may	мај
+panel.activity.months.jun	јун
+panel.activity.months.jul	јул
+panel.activity.months.aug	авг
+panel.activity.months.sep	сеп
+panel.activity.months.oct	окт
+panel.activity.months.nov	нов
+panel.activity.months.dec	дец
+panel.tags.title	Ознаке
+panel.tags.add	Додај
+panel.tags.close	Затвори
+panel.tags.customPlaceholder	Прилагођена ознака + Enter…
+panel.danger.freeze	Замрзни
+panel.danger.unfreeze	Одмрзни
+panel.danger.freezeDisabledHint	Замрзавање је искључено у Каталог → подешавања претплата
+panel.danger.delete	Обриши
+panel.events.filterTabs.all	Сви
+panel.events.filterTabs.payment	Плаћања
+panel.events.filterTabs.visit	Посете
+panel.events.filterTabs.booking	Резервације
+panel.events.filterTabs.cancel	Отказивања
+panel.events.filterTabs.bonus	Бонуси
+panel.events.filterTabs.freeze	Замрзавања
+panel.events.empty	Нема догађаја
+panel.notes.title	Белешке администратора
+panel.notes.prefix	Белешка · {{date}}
+panel.notes.save	Сачувај
+panel.notes.cancel	Откажи
+panel.notes.addPlaceholder	Унесите белешку…
+panel.notes.add	Додај белешку
+panel.notes.justNow	управо сада
+panel.notes.deleteTitle	Обрисати белешку?
+panel.notes.deleteMessage	Ова белешка не може бити враћена.
+panel.bookingPanel.title	Брза резервација
+panel.bookingPanel.today	Данас
+panel.bookingPanel.noLessons	Нема термина овог дана
+panel.bookingPanel.full	Нема слободних места
+panel.bookingPanel.confirm	Резервиши →
+panel.bookingPanel.noSubscription	Клијент нема претплату доступну за резервацију
+panel.bookingPanel.individual	Индивидуална услуга
+panel.bonusPanel.title	Додели бонус
+panel.toasts.noPhone	Клијент нема број телефона
+panel.toasts.copied	Успешно копирано
+panel.toasts.bookingCreated	Резервација је направљена
+panel.toasts.bookingFailed	Резервација није успела
+panel.toasts.bonusFailed	Додела поена није успела
+panel.toasts.bonusApplied	Бонус је додељен: {{label}}
+panel.toasts.clientAdded	Клијент је додат
+panel.bonusOptions.p200.label	+200 поена
+panel.bonusOptions.p200.description	Додај на стање лојалности
+panel.bonusOptions.p500.label	+500 поена
+panel.bonusOptions.p500.description	Додај на стање лојалности
+panel.bonusOptions.p1000.label	+1000 поена
+panel.bonusOptions.p1000.description	Додај на стање лојалности
+tags.suggested.0	Пробни
+tags.suggested.1	VIP
+tags.suggested.2	Препорука
+tags.suggested.3	Онлајн
+tags.suggested.4	Група
+tags.suggested.5	Лично
+addModal.title	Нови клијент
+addModal.cancel	Откажи
+addModal.back	← Назад
+addModal.continue	Настави →
+addModal.submit	Додај клијента ✓
+addModal.stepCounter	Корак {{current}} од {{total}}
+addModal.trustSignal	Подаци су заштићени и видљиви само администраторима
+addModal.steps.1.title	Лични подаци
+addModal.steps.1.sub	Унесите контакт податке клијента
+addModal.steps.2.title	Подаци профила
+addModal.steps.2.sub	Додатне информације (опционо)
+addModal.steps.3.title	Претплата
+addModal.steps.3.sub	Изаберите врсту претплате и додајте белешку
+addModal.steps.4.title	Све је спремно!
+addModal.steps.4.sub	Прегледајте податке и додајте клијента
+addModal.step1.previewLabel	Нови клијент · Преглед
+addModal.step1.name	Име и презиме *
+addModal.step1.namePlaceholder	Милан Јовановић
+addModal.step1.phone	Телефон
+addModal.step1.phonePlaceholder	+381 60 000 0000
+addModal.step1.email	Имејл
+addModal.step1.emailPlaceholder	klijent@primer.rs
+addModal.step2.bday	Датум рођења
+addModal.step2.bdayPlaceholder	12. април 1990.
+addModal.step2.city	Град
+addModal.step2.cityPlaceholder	Београд
+addModal.step2.tags	Ознаке
+addModal.step2.tagsPlaceholder	Пилатес, VIP, рехабилитација… (Enter)
+addModal.step2.tagsHint	Притисните Enter да додате ознаку
+addModal.step2.inviteCode	Позивни код препоручиоца
+addModal.step2.inviteCodePlaceholder	Опционо
+addModal.step2.inviteCodeHint	Ако је унет, обоје добијате бонус
+addModal.step3.classCount	Претплата
+addModal.step3.classesUnit	термина
+addModal.step3.classesCount_one	{{count}} термин
+addModal.step3.classesCount_few	{{count}} термина
+addModal.step3.classesCount_other	{{count}} термина
+addModal.step3.selected	Изабрано
+addModal.step3.noPackage	Без претплате
+addModal.step3.noPackages	Овај студио још нема пакете претплате
+addModal.step3.noPackagesLink	Направи пакете у Каталогу →
+addModal.step3.alreadyPaid	Да ли је клијент већ платио ову претплату?
+addModal.step3.yes	Да
+addModal.step3.no	Не
+addModal.step3.note	Белешка
+addModal.step3.notePlaceholder	Посебни захтеви, контраиндикације, преференције…
+addModal.step4.readyTitle	Подаци су попуњени!
+addModal.step4.readySub	Прегледајте податке и потврдите додавање
+addModal.step4.newClient	Нови клијент
+addModal.step4.fields.phone	Телефон
+addModal.step4.fields.email	Имејл
+addModal.step4.fields.bday	Датум рођења
+addModal.step4.fields.city	Град
+addModal.step4.fields.subscription	Претплата
+addModal.step4.fields.tags	Ознаке
+addModal.step4.subscriptionValue_one	{{count}} термин
+addModal.step4.subscriptionValue_few	{{count}} термина
+addModal.step4.subscriptionValue_other	{{count}} термина
+addModal.step4.smsTitle	Пошаљи SMS добродошлице
+addModal.step4.smsSub	Клијент ће примити поруку с позивницом
+addModal.errors.name	Унесите име (најмање 2 знака)
+addModal.errors.phone	Неисправан број телефона
+addModal.errors.email	Неисправан имејл
+addModal.errors.city	Унесите град
+deleteModal.title	Обрисати клијента?
+deleteModal.body	Управо ћете обрисати клијента
+deleteModal.warning	Ова радња не може бити поништена.
+deleteModal.cancel	Откажи
+deleteModal.confirm	Обриши
+deleteModal.success	Клијент је обрисан

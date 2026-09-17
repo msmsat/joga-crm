@@ -1,0 +1,429 @@
+{
+  "categories": {
+    "all": "Alle",
+    "vip": "VIP",
+    "active": "Aktive",
+    "new": "Nye",
+    "has_subscription": "Med abonnement",
+    "inactive": "Inaktive",
+    "frozen": "Satte på pause",
+    "birthday": "Fødselsdag"
+  },
+  "categoriesInfo": {
+    "all": {
+      "text": "Den fulde kundeliste for studiet uden noget statusfilter."
+    },
+    "vip": {
+      "text": "Gennemførte betalinger på i alt 50.000+ eller 30+ besøg. VIP kan også fastgøres manuelt på kundekortet; en manuel fastgørelse gælder uanset beløbene."
+    },
+    "active": {
+      "text": "Mindst ét besøg inden for de seneste 60 dage. Baseret på fremmøde markeret i journalen — status opdateres automatisk og behøver ikke sættes manuelt."
+    },
+    "new": {
+      "text": "De første 15 dage fra registreringsdatoen, uanset om kunden er tilføjet manuelt eller kom via onlinebooking. På dag 16 flyttes kunden automatisk til Aktiv eller Inaktiv."
+    },
+    "has_subscription": {
+      "text": "Har et gyldigt abonnement: ikke udløbet, ikke sat på pause og med lektioner tilbage. Opdateres straks ved køb, ved hver brugt lektion og ved udløb."
+    },
+    "inactive": {
+      "text": "Ingen besøg de seneste 60 dage — eller aldrig besøgt og mere end 15 dage siden registrering."
+    },
+    "frozen": {
+      "text": "Sat på pause med knappen på kundekortet — den eneste status, der sættes manuelt. Efter genaktivering vender kunden tilbage til sin automatiske status."
+    },
+    "birthday": {
+      "text": "Dem, der har fødselsdag i dag — dag og måned matcher, året ignoreres. Listen opdateres automatisk hver dag."
+    }
+  },
+  "status": {
+    "active": "Aktiv",
+    "vip": "VIP",
+    "new": "Ny",
+    "inactive": "Inaktiv",
+    "frozen": "Sat på pause"
+  },
+  "filtersGuide": {
+    "trigger": "Om filtre",
+    "title": "Kundefiltre",
+    "subtitle": "Sådan beregnes hver kategori. Klik på et kort for at anvende filteret, eller ændr en grænseværdi — statusserne genberegnes med det samme.",
+    "close": "Luk",
+    "rule": {
+      "new_client_days": "Ny i",
+      "active_within_days": "Besøg inden for",
+      "vip_min_spent": "Brugt fra",
+      "vip_min_visits": "eller besøg"
+    },
+    "unit": {
+      "days": "dage",
+      "money": "",
+      "visits": "besøg"
+    }
+  },
+  "toolbar": {
+    "searchPlaceholder": "Søg efter kunde…",
+    "addClient": "Tilføj kunde"
+  },
+  "table": {
+    "visits": "besøg",
+    "frozenBadge": "❄ på pause",
+    "totalSpent": "Samlet brugt",
+    "subscription": "Abonnement",
+    "of": "af",
+    "noSubscription": "Intet abonnement"
+  },
+  "loadMore": "Indlæs flere",
+  "loading": "Indlæser…",
+  "panel": {
+    "tabs": {
+      "info": "Profil",
+      "events": "Hændelser",
+      "notes": "Noter",
+      "wallet": "Køb"
+    },
+    "actions": {
+      "book": "Book",
+      "bonus": "Bonus"
+    },
+    "editDateHint": "Klik for at redigere",
+    "since": "siden {{date}}",
+    "contacts": {
+      "title": "Kontaktoplysninger",
+      "phone": "Telefon",
+      "email": "E-mail",
+      "telegram": "Telegram",
+      "birthDate": "Fødselsdato",
+      "city": "By",
+      "copyHint": " · klik for at kopiere"
+    },
+    "debt": "{{amount}} ubetalt for lektioner — modtag betalingen i Journalen",
+    "stats": {
+      "visits": "Besøg",
+      "spent": "Brugt",
+      "subscription": "Abonnement"
+    },
+    "loyalty": {
+      "points": "point",
+      "level": "{{tier}}-niveau",
+      "toNext": "Til næste niveau: {{points}} point",
+      "multiplier": "×{{value}} pointmultiplikator",
+      "worth": "Værdi {{amount}} ved betaling",
+      "toNextLevel": "{{amount}} mere for at nå {{level}}",
+      "pointValue": "1 point = {{amount}}",
+      "nextPointValue": "på {{level}} — {{amount}}",
+      "noBonus": "Dette niveau ændrer ikke pointværdien"
+    },
+    "referral": {
+      "title": "Invitér en ven",
+      "copy": "Kopiér"
+    },
+    "abonement": {
+      "title": "Abonnement",
+      "lessons": "{{remaining}}/{{total}} lektioner",
+      "noSubscription": "Intet aktivt abonnement",
+      "noSubscriptionWarning": "Kunden har intet abonnement — tilbyd et",
+      "lowWarning": "Få lektioner tilbage — tilbyd en fornyelse",
+      "finishedWarning": "Ingen lektioner tilbage — tilbyd en fornyelse",
+      "remind": "Påmind kunden",
+      "reminderSent": "Påmindelse sendt til kunden"
+    },
+    "products": {
+      "single": "enkelt",
+      "pending": "venter",
+      "frozen": "på pause",
+      "until": "Gyldig til {{date}}",
+      "startsOnFirstVisit": "Perioden starter med første lektion"
+    },
+    "wallet": {
+      "buy": "Køb",
+      "active": "Aktive",
+      "archived": "Arkiverede",
+      "singles": "Enkeltbesøg",
+      "subscriptions": "Abonnementer",
+      "noSingles": "Ingen enkeltbesøg endnu",
+      "emptyActive": "Ingen aktive produkter",
+      "emptyArchived": "Ingen arkiverede produkter",
+      "emptyCatalog": "Dette studie har endnu ingen abonnementspakker",
+      "lessons": "{{remaining}}/{{total}} lektioner",
+      "perVisit": "Pr. enkeltbesøg",
+      "until": "indtil {{date}}",
+      "frozenBadge": "På pause",
+      "loadFailed": "Kunne ikke indlæse tegnebogen",
+      "back": "← Tilbage",
+      "catalogTitle": "Katalog",
+      "showAll": "Alle",
+      "posTitle": "Betaling",
+      "promoLabel": "Rabatkode",
+      "promoPlaceholder": "Indtast rabatkode",
+      "promoInvalid": "Rabatkoden er ugyldig",
+      "useDeposit": "Betal fra indestående ({{amount}})",
+      "certLabel": "Certifikatkode",
+      "certPlaceholder": "Indtast certifikatkode",
+      "certApplied": "Certifikat",
+      "depositApplied": "Indestående",
+      "base": "Grundpris",
+      "discount": "Rabat",
+      "bonuses": "Bonuspoint",
+      "total": "I alt",
+      "cash": "Kontant",
+      "card": "Kort",
+      "cardStripe": "Kortbetalinger går via en Stripe-side og indbetales direkte på studiets konto. Sæt det op under Økonomi → Onlinebetalinger.",
+      "offlineLocked": "Kontantbetalinger er tilgængelige på Combo-abonnementer og derover",
+      "payByCard": "Betal med kort",
+      "confirmPay": "Bekræft betaling",
+      "confirmPayCovered": "Bekræft (allerede betalt)",
+      "confirmTitle": "Bekræft modtaget betaling?",
+      "confirmMessage": "Dette registrerer en indtægt på {{amount}} og giver produktet til kunden.",
+      "confirmMessageCard": "En Stripe-betalingsformular for {{amount}} åbnes. Produktet gives, og indtægten registreres, når betalingen lykkes.",
+      "payToStudio": "Betalingen går ind på studiets konto",
+      "payConfirming": "Kontrollerer betaling…",
+      "close": "Luk",
+      "confirmMessageCovered": "Betalingen er helt dækket af indestående eller certifikat. Produktet gives til kunden.",
+      "paySuccess": "Betaling registreret",
+      "payCancelled": "Betaling annulleret — intet er trukket",
+      "payNotCompleted": "Stripe har endnu ikke bekræftet betalingen. Hvis kortet er trukket, så opdatér om et minut.",
+      "payNotApplied": "Kortet blev trukket, men salget kunne ikke registreres: betingelserne ændrede sig (certifikat, rabatkode eller pakke). Registrér salget manuelt, eller tilbagebetal i Stripe.",
+      "transfer": "Overfør",
+      "transferTitle": "Overfør abonnement",
+      "transferSearchLabel": "Overfør til",
+      "transferSearchPlaceholder": "Kundens navn eller telefon",
+      "transferSelectPlaceholder": "Vælg kunde",
+      "transferConfirm": "Overfør",
+      "transferSuccess": "Abonnement overført",
+      "lessonsCount_one": "{{count}} lektion",
+      "lessonsCount_other": "{{count}} lektioner",
+      "useBonuses_one": "Brug bonuspoint ({{count}})",
+      "useBonuses_other": "Brug bonuspoint ({{count}})",
+      "bonusesSpent_one": "Bonuspoint ({{count}} point)",
+      "bonusesSpent_other": "Bonuspoint ({{count}} point)"
+    },
+    "offers": {
+      "title": "Personlig rabat",
+      "empty": "Ingen aktive rabatter",
+      "grant": "Giv rabat",
+      "cancel": "Annuller",
+      "valuePercent": "{{value}} %",
+      "valueAmount": "{{value}} ₽",
+      "untilDate": "indtil {{date}}",
+      "noExpiry": "uden udløb",
+      "scopeRenewal": "ved fornyelse",
+      "grantTitle": "Giv en personlig rabat",
+      "grantValue": "Rabatstørrelse",
+      "grantType": {
+        "percent": "Procent (%)",
+        "amount": "Beløb (₽)"
+      },
+      "grantValidUntil": "Gyldig til",
+      "grantSubmit": "Giv",
+      "cancelConfirmTitle": "Annuller rabat?",
+      "cancelConfirmMessage": "Kunden kan ikke længere bruge dette tilbud.",
+      "toasts": {
+        "granted": "Rabat givet",
+        "cancelled": "Rabat annulleret",
+        "loadFailed": "Kunne ikke indlæse rabatter"
+      }
+    },
+    "activity": {
+      "compactTitle": "Aktivitet (3 mdr.)",
+      "clickForDetails": "Klik for detaljer",
+      "detailedTitle": "Detaljeret aktivitet",
+      "periods": {
+        "month3": "3 mdr.",
+        "month6": "6 mdr."
+      },
+      "visitsInPeriod": "Besøg i perioden",
+      "emptyState": "Ingen besøg i denne periode",
+      "insightTitle": "Gennemsnitligt fremmøde",
+      "insightBody": "I gennemsnit {{avg}} besøg om måneden i den valgte periode.",
+      "months": {
+        "jan": "jan.",
+        "feb": "feb.",
+        "mar": "mar.",
+        "apr": "apr.",
+        "may": "maj",
+        "jun": "jun.",
+        "jul": "jul.",
+        "aug": "aug.",
+        "sep": "sep.",
+        "oct": "okt.",
+        "nov": "nov.",
+        "dec": "dec."
+      },
+      "visitsTooltip_one": "{{count}} besøg",
+      "visitsTooltip_other": "{{count}} besøg"
+    },
+    "tags": {
+      "title": "Mærkater",
+      "add": "Tilføj",
+      "close": "Luk",
+      "customPlaceholder": "Brugerdefineret mærkat + Enter…"
+    },
+    "danger": {
+      "freeze": "Sæt på pause",
+      "unfreeze": "Genaktiver",
+      "freezeDisabledHint": "Pause er deaktiveret i Katalog → abonnementsindstillinger",
+      "delete": "Slet"
+    },
+    "events": {
+      "filterTabs": {
+        "all": "Alle",
+        "payment": "Betalinger",
+        "visit": "Besøg",
+        "booking": "Bookinger",
+        "cancel": "Annulleringer",
+        "bonus": "Bonuspoint",
+        "freeze": "Pauser"
+      },
+      "empty": "Ingen hændelser"
+    },
+    "notes": {
+      "title": "Administrationsnoter",
+      "prefix": "Note · {{date}}",
+      "save": "Gem",
+      "cancel": "Annuller",
+      "addPlaceholder": "Skriv en note…",
+      "add": "Tilføj note",
+      "justNow": "lige nu",
+      "deleteTitle": "Slet note?",
+      "deleteMessage": "Denne note kan ikke gendannes."
+    },
+    "bookingPanel": {
+      "title": "Hurtig booking",
+      "today": "I dag",
+      "noLessons": "Ingen lektioner denne dag",
+      "full": "Ingen ledige pladser",
+      "confirm": "Book →",
+      "noSubscription": "Kunden har intet abonnement, der kan bruges til booking",
+      "individual": "Individuel ydelse"
+    },
+    "bonusPanel": {
+      "title": "Giv bonus"
+    },
+    "toasts": {
+      "noPhone": "Kunden har intet telefonnummer",
+      "copied": "Kopieret",
+      "bookingCreated": "Booking oprettet",
+      "bookingFailed": "Kunne ikke booke",
+      "bonusFailed": "Kunne ikke give point",
+      "bonusApplied": "Bonus givet: {{label}}",
+      "clientAdded": "Kunde tilføjet"
+    },
+    "bonusOptions": {
+      "p200": {
+        "label": "+200 point",
+        "description": "Tilføj til loyalitetssaldo"
+      },
+      "p500": {
+        "label": "+500 point",
+        "description": "Tilføj til loyalitetssaldo"
+      },
+      "p1000": {
+        "label": "+1000 point",
+        "description": "Tilføj til loyalitetssaldo"
+      }
+    }
+  },
+  "tags": {
+    "suggested": [
+      "Prøve",
+      "VIP",
+      "Henvisning",
+      "Online",
+      "Gruppe",
+      "Personlig"
+    ]
+  },
+  "addModal": {
+    "title": "Ny kunde",
+    "cancel": "Annuller",
+    "back": "← Tilbage",
+    "continue": "Fortsæt →",
+    "submit": "Tilføj kunde ✓",
+    "stepCounter": "Trin {{current}} af {{total}}",
+    "trustSignal": "Data er beskyttet og kun synlige for administratorer",
+    "steps": {
+      "1": {
+        "title": "Personlige oplysninger",
+        "sub": "Indtast kundens kontaktoplysninger"
+      },
+      "2": {
+        "title": "Profiloplysninger",
+        "sub": "Yderligere oplysninger (valgfrit)"
+      },
+      "3": {
+        "title": "Abonnement",
+        "sub": "Vælg en abonnementstype, og tilføj en note"
+      },
+      "4": {
+        "title": "Alt er klar!",
+        "sub": "Gennemgå oplysningerne, og tilføj kunden"
+      }
+    },
+    "step1": {
+      "previewLabel": "Ny kunde · Eksempel",
+      "name": "Fulde navn *",
+      "namePlaceholder": "Anne Jensen",
+      "phone": "Telefon",
+      "phonePlaceholder": "+45 20 00 00 00",
+      "email": "E-mail",
+      "emailPlaceholder": "kunde@eksempel.dk"
+    },
+    "step2": {
+      "bday": "Fødselsdato",
+      "bdayPlaceholder": "12. april 1990",
+      "city": "By",
+      "cityPlaceholder": "København",
+      "tags": "Mærkater",
+      "tagsPlaceholder": "Pilates, VIP, genoptræning… (Enter)",
+      "tagsHint": "Tryk Enter for at tilføje et mærkat",
+      "inviteCode": "Henviserens invitationskode",
+      "inviteCodePlaceholder": "Valgfrit",
+      "inviteCodeHint": "Hvis den er angivet, får I begge en bonus"
+    },
+    "step3": {
+      "classCount": "Abonnement",
+      "classesUnit": "lektioner",
+      "selected": "Valgt",
+      "noPackage": "Intet abonnement",
+      "noPackages": "Dette studie har endnu ingen abonnementspakker",
+      "noPackagesLink": "Opret pakker i Katalog →",
+      "alreadyPaid": "Har kunden allerede betalt for dette abonnement?",
+      "yes": "Ja",
+      "no": "Nej",
+      "note": "Note",
+      "notePlaceholder": "Særlige ønsker, kontraindikationer, præferencer…",
+      "classesCount_one": "{{count}} lektion",
+      "classesCount_other": "{{count}} lektioner"
+    },
+    "step4": {
+      "readyTitle": "Oplysninger udfyldt!",
+      "readySub": "Gennemgå oplysningerne, og bekræft tilføjelsen",
+      "newClient": "Ny kunde",
+      "fields": {
+        "phone": "Telefon",
+        "email": "E-mail",
+        "bday": "Fødselsdato",
+        "city": "By",
+        "subscription": "Abonnement",
+        "tags": "Mærkater"
+      },
+      "smsTitle": "Send velkomst-sms",
+      "smsSub": "Kunden modtager en invitationsbesked",
+      "subscriptionValue_one": "{{count}} lektion",
+      "subscriptionValue_other": "{{count}} lektioner"
+    },
+    "errors": {
+      "name": "Indtast et navn (mindst 2 tegn)",
+      "phone": "Ugyldigt telefonnummer",
+      "email": "Ugyldig e-mail",
+      "city": "Indtast en by"
+    }
+  },
+  "deleteModal": {
+    "title": "Slet kunde?",
+    "body": "Du er ved at slette kunden",
+    "warning": "Denne handling kan ikke fortrydes.",
+    "cancel": "Annuller",
+    "confirm": "Slet",
+    "success": "Kunde slettet"
+  }
+}

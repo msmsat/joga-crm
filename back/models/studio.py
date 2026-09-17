@@ -1,5 +1,6 @@
+from datetime import datetime
 from typing import List, Optional
-from sqlalchemy import Boolean, Integer, String
+from sqlalchemy import Boolean, DateTime, Integer, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base import Base
@@ -109,6 +110,12 @@ class Studio(Base):
     # resource/hybrid; после появления resource-интервалов автоматически не
     # выключается — иначе уже выданные интервалы остались бы без защиты.
     strict_schedule_enabled: Mapped[bool] = mapped_column(Boolean, default=False, server_default="false")
+
+    # Когда создана студия. См. комментарий у User.created_at: у строк, заведённых
+    # до появления колонки, здесь NULL, и это честное «неизвестно».
+    created_at: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=False), server_default=func.now(), nullable=True
+    )
 
     # Core
     branches: Mapped[List["StudioBranch"]] = relationship(back_populates="studio", cascade="all, delete-orphan")

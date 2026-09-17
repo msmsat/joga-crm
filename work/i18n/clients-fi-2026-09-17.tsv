@@ -1,0 +1,310 @@
+== fi
+categories.all	Kaikki
+categories.vip	VIP
+categories.active	Aktiiviset
+categories.new	Uudet
+categories.has_subscription	Jäsenyyden kanssa
+categories.inactive	Ei aktiivisia
+categories.frozen	Jäädytetyt
+categories.birthday	Syntymäpäivä
+categoriesInfo.all.text	Studion koko asiakasluettelo ilman tilasuodatusta.
+categoriesInfo.vip.text	Onnistuneita maksuja yhteensä 50 000+ tai 30+ käyntiä. VIP-tilan voi myös kiinnittää käsin asiakaskorttiin; käsin tehty kiinnitys pysyy voimassa summista riippumatta.
+categoriesInfo.active.text	Vähintään yksi käynti viimeisten 60 päivän aikana. Perustuu päiväkirjaan merkittyihin läsnäoloihin — tila päivittyy itsestään, eikä sitä tarvitse asettaa käsin.
+categoriesInfo.new.text	Ensimmäiset 15 päivää rekisteröintipäivästä, lisättiinpä asiakas käsin tai tulipa hän verkkovarauksen kautta. Päivänä 16 asiakas siirtyy automaattisesti Aktiivisiin tai Ei aktiivisiin.
+categoriesInfo.has_subscription.text	Voimassa oleva jäsenyys: ei vanhentunut, ei jäädytetty ja tunteja jäljellä. Päivittyy heti oston yhteydessä, jokaisen käytetyn tunnin jälkeen ja vanhentuessaan.
+categoriesInfo.inactive.text	Ei käyntejä viimeisten 60 päivän aikana — tai ei koskaan käynyt ja rekisteröinnistä on kulunut yli 15 päivää.
+categoriesInfo.frozen.text	Jäädytetty asiakaskortin painikkeella — ainoa käsin asetettava tila. Jäädytyksen purkamisen jälkeen asiakas palaa automaattiseen tilaansa.
+categoriesInfo.birthday.text	Ne, joilla on tänään syntymäpäivä — päivä ja kuukausi täsmäävät, vuotta ei huomioida. Luettelo päivittyy automaattisesti joka päivä.
+status.active	Aktiivinen
+status.vip	VIP
+status.new	Uusi
+status.inactive	Ei aktiivinen
+status.frozen	Jäädytetty
+filtersGuide.trigger	Tietoa suodattimista
+filtersGuide.title	Asiakassuodattimet
+filtersGuide.subtitle	Näin kukin luokka lasketaan. Ota suodatin käyttöön napsauttamalla korttia tai muuta raja-arvoa — tilat lasketaan heti uudelleen.
+filtersGuide.close	Sulje
+filtersGuide.rule.new_client_days	Uusi ajan
+filtersGuide.rule.active_within_days	Käynti viimeisten
+filtersGuide.rule.vip_min_spent	Käytetty vähintään
+filtersGuide.rule.vip_min_visits	tai käyntiä
+filtersGuide.unit.days	päivää
+filtersGuide.unit.money	
+filtersGuide.unit.visits	käyntiä
+toolbar.searchPlaceholder	Hae asiakasta…
+toolbar.addClient	Lisää asiakas
+table.visits	käyntiä
+table.frozenBadge	❄ jäädytetty
+table.totalSpent	Käytetty yhteensä
+table.subscription	Jäsenyys
+table.of	/
+table.noSubscription	Ei jäsenyyttä
+loadMore	Lataa lisää
+loading	Ladataan…
+panel.tabs.info	Profiili
+panel.tabs.events	Tapahtumat
+panel.tabs.notes	Muistiinpanot
+panel.tabs.wallet	Ostokset
+panel.actions.book	Varaa
+panel.actions.bonus	Bonus
+panel.editDateHint	Muokkaa napsauttamalla
+panel.since	alkaen {{date}}
+panel.contacts.title	Yhteystiedot
+panel.contacts.phone	Puhelin
+panel.contacts.email	Sähköposti
+panel.contacts.telegram	Telegram
+panel.contacts.birthDate	Syntymäaika
+panel.contacts.city	Kaupunki
+panel.contacts.copyHint	 · kopioi napsauttamalla
+panel.debt	{{amount}} maksamatta tunneista — vastaanota maksu Päiväkirjassa
+panel.stats.visits	Käynnit
+panel.stats.spent	Käytetty
+panel.stats.subscription	Jäsenyys
+panel.loyalty.points	pistettä
+panel.loyalty.level	{{tier}}-taso
+panel.loyalty.toNext	Seuraavalle tasolle: {{points}} pistettä
+panel.loyalty.multiplier	×{{value}} pistekerroin
+panel.loyalty.worth	Arvo kassalla {{amount}}
+panel.loyalty.toNextLevel	{{amount}} lisää tasolle {{level}}
+panel.loyalty.pointValue	1 piste = {{amount}}
+panel.loyalty.nextPointValue	asolla {{level}} — {{amount}}
+panel.loyalty.noBonus	Tämä taso ei muuta pisteen arvoa
+panel.referral.title	Kutsu ystävä
+panel.referral.copy	Kopioi
+panel.abonement.title	Jäsenyys
+panel.abonement.lessons	{{remaining}}/{{total}} tuntia
+panel.abonement.noSubscription	Ei aktiivista jäsenyyttä
+panel.abonement.noSubscriptionWarning	Asiakkaalla ei ole jäsenyyttä — tarjoa hänelle sellaista
+panel.abonement.lowWarning	Tunteja on vähän jäljellä — tarjoa uusimista
+panel.abonement.finishedWarning	Tunteja ei ole jäljellä — tarjoa uusimista
+panel.abonement.remind	Muistuta asiakasta
+panel.abonement.reminderSent	Muistutus lähetetty asiakkaalle
+panel.products.single	yksittäinen
+panel.products.pending	jonossa
+panel.products.frozen	jäädytetty
+panel.products.until	Voimassa {{date}} asti
+panel.products.startsOnFirstVisit	Jakso alkaa ensimmäisestä tunnista
+panel.wallet.buy	Osta
+panel.wallet.active	Aktiiviset
+panel.wallet.archived	Arkistoidut
+panel.wallet.singles	Yksittäiskäynnit
+panel.wallet.subscriptions	Jäsenyydet
+panel.wallet.noSingles	Ei vielä yksittäiskäyntejä
+panel.wallet.emptyActive	Ei aktiivisia tuotteita
+panel.wallet.emptyArchived	Ei arkistoituja tuotteita
+panel.wallet.emptyCatalog	Tällä studiolla ei ole vielä jäsenyyspaketteja
+panel.wallet.lessons	{{remaining}}/{{total}} tuntia
+panel.wallet.lessonsCount_one	{{count}} tunti
+panel.wallet.lessonsCount_other	{{count}} tuntia
+panel.wallet.perVisit	Yksittäiskäyntiä kohti
+panel.wallet.until	{{date}} asti
+panel.wallet.frozenBadge	Jäädytetty
+panel.wallet.loadFailed	Lompakon lataaminen epäonnistui
+panel.wallet.back	← Takaisin
+panel.wallet.catalogTitle	Luettelo
+panel.wallet.showAll	Kaikki
+panel.wallet.posTitle	Kassa
+panel.wallet.promoLabel	Alennuskoodi
+panel.wallet.promoPlaceholder	Syötä alennuskoodi
+panel.wallet.promoInvalid	Alennuskoodi ei kelpaa
+panel.wallet.useBonuses_one	Käytä bonuksia ({{count}})
+panel.wallet.useBonuses_other	Käytä bonuksia ({{count}})
+panel.wallet.useDeposit	Maksa talletuksesta ({{amount}})
+panel.wallet.certLabel	Lahjakortin koodi
+panel.wallet.certPlaceholder	Syötä lahjakortin koodi
+panel.wallet.certApplied	Lahjakortti
+panel.wallet.depositApplied	Talletus
+panel.wallet.base	Perushinta
+panel.wallet.discount	Alennus
+panel.wallet.bonuses	Bonukset
+panel.wallet.bonusesSpent_one	Bonukset ({{count}} p.)
+panel.wallet.bonusesSpent_other	Bonukset ({{count}} p.)
+panel.wallet.total	Yhteensä
+panel.wallet.cash	Käteinen
+panel.wallet.card	Kortti
+panel.wallet.cardStripe	Korttimaksut kulkevat Stripe-sivun kautta ja menevät suoraan studion tilille. Ota ne käyttöön kohdassa Talous → Verkkomaksut.
+panel.wallet.offlineLocked	Käteismaksut ovat käytettävissä Combo- ja sitä korkeammilla sopimuksilla
+panel.wallet.payByCard	Maksa kortilla
+panel.wallet.confirmPay	Vahvista maksu
+panel.wallet.confirmPayCovered	Vahvista (jo maksettu)
+panel.wallet.confirmTitle	Vahvistetaanko vastaanotettu maksu?
+panel.wallet.confirmMessage	Tämä kirjaa {{amount}} tuloa ja antaa tuotteen asiakkaalle.
+panel.wallet.confirmMessageCard	Stripe-maksulomake summalle {{amount}} avautuu. Tuote annetaan ja tulo kirjataan, kun maksu onnistuu.
+panel.wallet.payToStudio	Maksu tulee studion tilille
+panel.wallet.payConfirming	Vahvistetaan maksua…
+panel.wallet.close	Sulje
+panel.wallet.confirmMessageCovered	Maksu on kokonaan katettu talletuksella tai lahjakortilla. Tuote annetaan asiakkaalle.
+panel.wallet.paySuccess	Maksu kirjattu
+panel.wallet.payCancelled	Maksu peruutettu — mitään ei veloitettu
+panel.wallet.payNotCompleted	Stripe ei ole vielä vahvistanut maksua. Jos korttia veloitettiin, päivitä sivu minuutin kuluttua.
+panel.wallet.payNotApplied	Korttia veloitettiin, mutta myyntiä ei voitu kirjata: ehdot muuttuivat (lahjakortti, alennuskoodi tai paketti). Kirjaa myynti käsin tai palauta maksu Stripessä.
+panel.wallet.transfer	Siirrä
+panel.wallet.transferTitle	Siirrä jäsenyys
+panel.wallet.transferSearchLabel	Siirrä henkilölle
+panel.wallet.transferSearchPlaceholder	Asiakkaan nimi tai puhelin
+panel.wallet.transferSelectPlaceholder	Valitse asiakas
+panel.wallet.transferConfirm	Siirrä
+panel.wallet.transferSuccess	Jäsenyys siirretty
+panel.offers.title	Henkilökohtainen alennus
+panel.offers.empty	Ei aktiivisia alennuksia
+panel.offers.grant	Myönnä alennus
+panel.offers.cancel	Peruuta
+panel.offers.valuePercent	{{value}} %
+panel.offers.valueAmount	{{value}} ₽
+panel.offers.untilDate	{{date}} asti
+panel.offers.noExpiry	ei vanhenemista
+panel.offers.scopeRenewal	uusimiseen
+panel.offers.grantTitle	Myönnä henkilökohtainen alennus
+panel.offers.grantValue	Alennuksen määrä
+panel.offers.grantType.percent	Prosentti (%)
+panel.offers.grantType.amount	Summa (₽)
+panel.offers.grantValidUntil	Voimassa asti
+panel.offers.grantSubmit	Myönnä
+panel.offers.cancelConfirmTitle	Peruutetaanko alennus?
+panel.offers.cancelConfirmMessage	Asiakas ei voi enää käyttää tätä tarjousta.
+panel.offers.toasts.granted	Alennus myönnetty
+panel.offers.toasts.cancelled	Alennus peruutettu
+panel.offers.toasts.loadFailed	Alennusten lataaminen epäonnistui
+panel.activity.compactTitle	Aktiivisuus (3 kk)
+panel.activity.clickForDetails	Näytä tiedot napsauttamalla
+panel.activity.detailedTitle	Yksityiskohtainen aktiivisuus
+panel.activity.periods.month3	3 kk
+panel.activity.periods.month6	6 kk
+panel.activity.visitsInPeriod	Käynnit jaksolla
+panel.activity.visitsTooltip_one	{{count}} käynti
+panel.activity.visitsTooltip_other	{{count}} käyntiä
+panel.activity.emptyState	Ei käyntejä tällä jaksolla
+panel.activity.insightTitle	Keskimääräinen osallistuminen
+panel.activity.insightBody	Keskimäärin {{avg}} käyntiä kuukaudessa valitulla jaksolla.
+panel.activity.months.jan	tammi
+panel.activity.months.feb	helmi
+panel.activity.months.mar	maalis
+panel.activity.months.apr	huhti
+panel.activity.months.may	touko
+panel.activity.months.jun	kesä
+panel.activity.months.jul	heinä
+panel.activity.months.aug	elo
+panel.activity.months.sep	syys
+panel.activity.months.oct	loka
+panel.activity.months.nov	marras
+panel.activity.months.dec	joulu
+panel.tags.title	Tunnisteet
+panel.tags.add	Lisää
+panel.tags.close	Sulje
+panel.tags.customPlaceholder	Oma tunniste + Enter…
+panel.danger.freeze	Jäädytä
+panel.danger.unfreeze	Poista jäädytys
+panel.danger.freezeDisabledHint	Jäädytys on poistettu käytöstä kohdassa Luettelo → jäsenyysasetukset
+panel.danger.delete	Poista
+panel.events.filterTabs.all	Kaikki
+panel.events.filterTabs.payment	Maksut
+panel.events.filterTabs.visit	Käynnit
+panel.events.filterTabs.booking	Varaukset
+panel.events.filterTabs.cancel	Peruutukset
+panel.events.filterTabs.bonus	Bonukset
+panel.events.filterTabs.freeze	Jäädytykset
+panel.events.empty	Ei tapahtumia
+panel.notes.title	Ylläpidon muistiinpanot
+panel.notes.prefix	Muistiinpano · {{date}}
+panel.notes.save	Tallenna
+panel.notes.cancel	Peruuta
+panel.notes.addPlaceholder	Kirjoita muistiinpano…
+panel.notes.add	Lisää muistiinpano
+panel.notes.justNow	juuri nyt
+panel.notes.deleteTitle	Poistetaanko muistiinpano?
+panel.notes.deleteMessage	Tätä muistiinpanoa ei voi palauttaa.
+panel.bookingPanel.title	Pikavaraus
+panel.bookingPanel.today	Tänään
+panel.bookingPanel.noLessons	Ei tunteja tänä päivänä
+panel.bookingPanel.full	Ei paikkoja
+panel.bookingPanel.confirm	Varaa →
+panel.bookingPanel.noSubscription	Asiakkaalla ei ole varaamiseen sopivaa jäsenyyttä
+panel.bookingPanel.individual	Yksilöllinen palvelu
+panel.bonusPanel.title	Myönnä bonus
+panel.toasts.noPhone	Asiakkaalla ei ole puhelinnumeroa
+panel.toasts.copied	Kopioitu
+panel.toasts.bookingCreated	Varaus luotu
+panel.toasts.bookingFailed	Varaus epäonnistui
+panel.toasts.bonusFailed	Pisteiden myöntäminen epäonnistui
+panel.toasts.bonusApplied	Bonus myönnetty: {{label}}
+panel.toasts.clientAdded	Asiakas lisätty
+panel.bonusOptions.p200.label	+200 pistettä
+panel.bonusOptions.p200.description	Lisää kanta-asiakassaldoon
+panel.bonusOptions.p500.label	+500 pistettä
+panel.bonusOptions.p500.description	Lisää kanta-asiakassaldoon
+panel.bonusOptions.p1000.label	+1000 pistettä
+panel.bonusOptions.p1000.description	Lisää kanta-asiakassaldoon
+tags.suggested.0	Kokeilu
+tags.suggested.1	VIP
+tags.suggested.2	Suosittelu
+tags.suggested.3	Verkossa
+tags.suggested.4	Ryhmä
+tags.suggested.5	Henkilökohtainen
+addModal.title	Uusi asiakas
+addModal.cancel	Peruuta
+addModal.back	← Takaisin
+addModal.continue	Jatka →
+addModal.submit	Lisää asiakas ✓
+addModal.stepCounter	Vaihe {{current}} / {{total}}
+addModal.trustSignal	Tiedot on suojattu ja vain ylläpitäjät näkevät ne
+addModal.steps.1.title	Henkilötiedot
+addModal.steps.1.sub	Syötä asiakkaan yhteystiedot
+addModal.steps.2.title	Profiilitiedot
+addModal.steps.2.sub	Lisätiedot (valinnainen)
+addModal.steps.3.title	Jäsenyys
+addModal.steps.3.sub	Valitse jäsenyystyyppi ja lisää muistiinpano
+addModal.steps.4.title	Valmista tuli!
+addModal.steps.4.sub	Tarkista tiedot ja lisää asiakas
+addModal.step1.previewLabel	Uusi asiakas · Esikatselu
+addModal.step1.name	Koko nimi *
+addModal.step1.namePlaceholder	Maija Virtanen
+addModal.step1.phone	Puhelin
+addModal.step1.phonePlaceholder	+358 40 000 0000
+addModal.step1.email	Sähköposti
+addModal.step1.emailPlaceholder	asiakas@esimerkki.fi
+addModal.step2.bday	Syntymäaika
+addModal.step2.bdayPlaceholder	12. huhtikuuta 1990
+addModal.step2.city	Kaupunki
+addModal.step2.cityPlaceholder	Helsinki
+addModal.step2.tags	Tunnisteet
+addModal.step2.tagsPlaceholder	Pilates, VIP, kuntoutus… (Enter)
+addModal.step2.tagsHint	Lisää tunniste painamalla Enter
+addModal.step2.inviteCode	Suosittelijan kutsukoodi
+addModal.step2.inviteCodePlaceholder	Valinnainen
+addModal.step2.inviteCodeHint	Jos koodi annetaan, molemmat saavat bonuksen
+addModal.step3.classCount	Jäsenyys
+addModal.step3.classesUnit	tuntia
+addModal.step3.classesCount_one	{{count}} tunti
+addModal.step3.classesCount_other	{{count}} tuntia
+addModal.step3.selected	Valittu
+addModal.step3.noPackage	Ei jäsenyyttä
+addModal.step3.noPackages	Tällä studiolla ei ole vielä jäsenyyspaketteja
+addModal.step3.noPackagesLink	Luo paketteja Luettelossa →
+addModal.step3.alreadyPaid	Onko asiakas jo maksanut tästä jäsenyydestä?
+addModal.step3.yes	Kyllä
+addModal.step3.no	Ei
+addModal.step3.note	Muistiinpano
+addModal.step3.notePlaceholder	Erityistoiveet, vasta-aiheet, mieltymykset…
+addModal.step4.readyTitle	Tiedot täytetty!
+addModal.step4.readySub	Tarkista tiedot ja vahvista lisäys
+addModal.step4.newClient	Uusi asiakas
+addModal.step4.fields.phone	Puhelin
+addModal.step4.fields.email	Sähköposti
+addModal.step4.fields.bday	Syntymäaika
+addModal.step4.fields.city	Kaupunki
+addModal.step4.fields.subscription	Jäsenyys
+addModal.step4.fields.tags	Tunnisteet
+addModal.step4.subscriptionValue_one	{{count}} tunti
+addModal.step4.subscriptionValue_other	{{count}} tuntia
+addModal.step4.smsTitle	Lähetä tervetuloa-SMS
+addModal.step4.smsSub	Asiakas saa kutsuviestin
+addModal.errors.name	Syötä nimi (vähintään 2 merkkiä)
+addModal.errors.phone	Virheellinen puhelinnumero
+addModal.errors.email	Virheellinen sähköposti
+addModal.errors.city	Syötä kaupunki
+deleteModal.title	Poistetaanko asiakas?
+deleteModal.body	Olet poistamassa asiakkaan
+deleteModal.warning	Toimintoa ei voi perua.
+deleteModal.cancel	Peruuta
+deleteModal.confirm	Poista
+deleteModal.success	Asiakas poistettu

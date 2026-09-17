@@ -1,0 +1,310 @@
+== no
+categories.all	Alle
+categories.vip	VIP
+categories.active	Aktive
+categories.new	Nye
+categories.has_subscription	Med abonnement
+categories.inactive	Inaktive
+categories.frozen	Frosne
+categories.birthday	Bursdag
+categoriesInfo.all.text	Hele kundelisten for studioet, uten statusfilter.
+categoriesInfo.vip.text	Vellykkede betalinger på totalt 50 000+ eller 30+ besøk. VIP kan også festes manuelt på kundekortet; en manuell festing gjelder uavhengig av beløpene.
+categoriesInfo.active.text	Minst ett besøk de siste 60 dagene. Basert på oppmøte markert i journalen — statusen oppdateres av seg selv og trenger ikke settes manuelt.
+categoriesInfo.new.text	De første 15 dagene fra registreringsdatoen, enten kunden ble lagt til manuelt eller kom via nettbestilling. På dag 16 flyttes kunden automatisk til Aktiv eller Inaktiv.
+categoriesInfo.has_subscription.text	Har et gyldig abonnement: ikke utløpt, ikke frosset og med timer igjen. Oppdateres straks ved kjøp, etter hver brukte time og når det utløper.
+categoriesInfo.inactive.text	Ingen besøk de siste 60 dagene — eller aldri besøkt og mer enn 15 dager siden registrering.
+categoriesInfo.frozen.text	Frosset med knappen på kundekortet — den eneste statusen som settes manuelt. Etter opptining går kunden tilbake til automatisk status.
+categoriesInfo.birthday.text	De som har bursdag i dag — dag og måned stemmer, året ignoreres. Listen oppdateres automatisk hver dag.
+status.active	Aktiv
+status.vip	VIP
+status.new	Ny
+status.inactive	Inaktiv
+status.frozen	Frosset
+filtersGuide.trigger	Om filtre
+filtersGuide.title	Kundefiltre
+filtersGuide.subtitle	Slik beregnes hver kategori. Klikk på et kort for å bruke filteret, eller endre en terskel — statusene beregnes på nytt med én gang.
+filtersGuide.close	Lukk
+filtersGuide.rule.new_client_days	Ny i
+filtersGuide.rule.active_within_days	Besøk innen
+filtersGuide.rule.vip_min_spent	Brukt fra
+filtersGuide.rule.vip_min_visits	eller besøk
+filtersGuide.unit.days	dager
+filtersGuide.unit.money	
+filtersGuide.unit.visits	besøk
+toolbar.searchPlaceholder	Søk etter kunde…
+toolbar.addClient	Legg til kunde
+table.visits	besøk
+table.frozenBadge	❄ frosset
+table.totalSpent	Totalt brukt
+table.subscription	Abonnement
+table.of	av
+table.noSubscription	Ingen abonnement
+loadMore	Last inn flere
+loading	Laster…
+panel.tabs.info	Profil
+panel.tabs.events	Hendelser
+panel.tabs.notes	Notater
+panel.tabs.wallet	Kjøp
+panel.actions.book	Bestill
+panel.actions.bonus	Bonus
+panel.editDateHint	Klikk for å redigere
+panel.since	siden {{date}}
+panel.contacts.title	Kontaktinformasjon
+panel.contacts.phone	Telefon
+panel.contacts.email	E-post
+panel.contacts.telegram	Telegram
+panel.contacts.birthDate	Fødselsdato
+panel.contacts.city	By
+panel.contacts.copyHint	 · klikk for å kopiere
+panel.debt	{{amount}} ubetalt for timer — ta imot betaling i Journalen
+panel.stats.visits	Besøk
+panel.stats.spent	Brukt
+panel.stats.subscription	Abonnement
+panel.loyalty.points	poeng
+panel.loyalty.level	{{tier}}-nivå
+panel.loyalty.toNext	Til neste nivå: {{points}} poeng
+panel.loyalty.multiplier	×{{value}} poengmultiplikator
+panel.loyalty.worth	Verdt {{amount}} ved betaling
+panel.loyalty.toNextLevel	{{amount}} mer for å nå {{level}}
+panel.loyalty.pointValue	1 poeng = {{amount}}
+panel.loyalty.nextPointValue	på {{level}} — {{amount}}
+panel.loyalty.noBonus	Dette nivået endrer ikke poengverdien
+panel.referral.title	Inviter en venn
+panel.referral.copy	Kopier
+panel.abonement.title	Abonnement
+panel.abonement.lessons	{{remaining}}/{{total}} timer
+panel.abonement.noSubscription	Ingen aktivt abonnement
+panel.abonement.noSubscriptionWarning	Kunden har ikke abonnement — tilby et
+panel.abonement.lowWarning	Få timer igjen — tilby fornyelse
+panel.abonement.finishedWarning	Ingen timer igjen — tilby fornyelse
+panel.abonement.remind	Minn kunden på det
+panel.abonement.reminderSent	Påminnelse sendt til kunden
+panel.products.single	enkelt
+panel.products.pending	venter
+panel.products.frozen	frosset
+panel.products.until	Gyldig til {{date}}
+panel.products.startsOnFirstVisit	Perioden starter med første time
+panel.wallet.buy	Kjøp
+panel.wallet.active	Aktive
+panel.wallet.archived	Arkiverte
+panel.wallet.singles	Enkeltbesøk
+panel.wallet.subscriptions	Abonnementer
+panel.wallet.noSingles	Ingen enkeltbesøk ennå
+panel.wallet.emptyActive	Ingen aktive produkter
+panel.wallet.emptyArchived	Ingen arkiverte produkter
+panel.wallet.emptyCatalog	Dette studioet har ennå ingen abonnementspakker
+panel.wallet.lessons	{{remaining}}/{{total}} timer
+panel.wallet.lessonsCount_one	{{count}} time
+panel.wallet.lessonsCount_other	{{count}} timer
+panel.wallet.perVisit	Per enkeltbesøk
+panel.wallet.until	til {{date}}
+panel.wallet.frozenBadge	Frosset
+panel.wallet.loadFailed	Kunne ikke laste lommeboken
+panel.wallet.back	← Tilbake
+panel.wallet.catalogTitle	Katalog
+panel.wallet.showAll	Alle
+panel.wallet.posTitle	Kasse
+panel.wallet.promoLabel	Kampanjekode
+panel.wallet.promoPlaceholder	Skriv inn kampanjekode
+panel.wallet.promoInvalid	Kampanjekoden er ugyldig
+panel.wallet.useBonuses_one	Bruk bonus ({{count}})
+panel.wallet.useBonuses_other	Bruk bonus ({{count}})
+panel.wallet.useDeposit	Betal fra innskudd ({{amount}})
+panel.wallet.certLabel	Sertifikatkode
+panel.wallet.certPlaceholder	Skriv inn sertifikatkode
+panel.wallet.certApplied	Sertifikat
+panel.wallet.depositApplied	Innskudd
+panel.wallet.base	Grunnpris
+panel.wallet.discount	Rabatt
+panel.wallet.bonuses	Bonus
+panel.wallet.bonusesSpent_one	Bonus ({{count}} p.)
+panel.wallet.bonusesSpent_other	Bonus ({{count}} p.)
+panel.wallet.total	Totalt
+panel.wallet.cash	Kontant
+panel.wallet.card	Kort
+panel.wallet.cardStripe	Kortbetalinger går via en Stripe-side og kommer direkte inn på studioets konto. Sett det opp under Økonomi → Nettbetalinger.
+panel.wallet.offlineLocked	Kontantbetalinger er tilgjengelige på Combo-abonnementer og høyere
+panel.wallet.payByCard	Betal med kort
+panel.wallet.confirmPay	Bekreft betaling
+panel.wallet.confirmPayCovered	Bekreft (allerede betalt)
+panel.wallet.confirmTitle	Bekreft mottatt betaling?
+panel.wallet.confirmMessage	Dette registrerer inntekt på {{amount}} og gir produktet til kunden.
+panel.wallet.confirmMessageCard	Et Stripe-betalingsskjema for {{amount}} åpnes. Produktet gis og inntekten registreres når betalingen lykkes.
+panel.wallet.payToStudio	Betalingen kommer inn på studioets konto
+panel.wallet.payConfirming	Bekrefter betaling…
+panel.wallet.close	Lukk
+panel.wallet.confirmMessageCovered	Betalingen er fullt dekket av innskudd eller sertifikat. Produktet gis til kunden.
+panel.wallet.paySuccess	Betaling registrert
+panel.wallet.payCancelled	Betaling avbrutt — ingenting ble belastet
+panel.wallet.payNotCompleted	Stripe har ikke bekreftet betalingen ennå. Hvis kortet ble belastet, oppdater siden om et minutt.
+panel.wallet.payNotApplied	Kortet ble belastet, men salget kunne ikke registreres: vilkårene endret seg (sertifikat, kampanjekode eller pakke). Registrer salget manuelt eller refunder i Stripe.
+panel.wallet.transfer	Overfør
+panel.wallet.transferTitle	Overfør abonnement
+panel.wallet.transferSearchLabel	Overfør til
+panel.wallet.transferSearchPlaceholder	Kundens navn eller telefon
+panel.wallet.transferSelectPlaceholder	Velg kunde
+panel.wallet.transferConfirm	Overfør
+panel.wallet.transferSuccess	Abonnement overført
+panel.offers.title	Personlig rabatt
+panel.offers.empty	Ingen aktive rabatter
+panel.offers.grant	Gi rabatt
+panel.offers.cancel	Avbryt
+panel.offers.valuePercent	{{value}} %
+panel.offers.valueAmount	{{value}} ₽
+panel.offers.untilDate	til {{date}}
+panel.offers.noExpiry	uten utløp
+panel.offers.scopeRenewal	for fornyelse
+panel.offers.grantTitle	Gi en personlig rabatt
+panel.offers.grantValue	Rabattstørrelse
+panel.offers.grantType.percent	Prosent (%)
+panel.offers.grantType.amount	Beløp (₽)
+panel.offers.grantValidUntil	Gyldig til
+panel.offers.grantSubmit	Gi
+panel.offers.cancelConfirmTitle	Avbryte rabatt?
+panel.offers.cancelConfirmMessage	Kunden kan ikke lenger bruke dette tilbudet.
+panel.offers.toasts.granted	Rabatt gitt
+panel.offers.toasts.cancelled	Rabatt avbrutt
+panel.offers.toasts.loadFailed	Kunne ikke laste rabatter
+panel.activity.compactTitle	Aktivitet (3 md.)
+panel.activity.clickForDetails	Klikk for detaljer
+panel.activity.detailedTitle	Detaljert aktivitet
+panel.activity.periods.month3	3 md.
+panel.activity.periods.month6	6 md.
+panel.activity.visitsInPeriod	Besøk i perioden
+panel.activity.visitsTooltip_one	{{count}} besøk
+panel.activity.visitsTooltip_other	{{count}} besøk
+panel.activity.emptyState	Ingen besøk i denne perioden
+panel.activity.insightTitle	Gjennomsnittlig oppmøte
+panel.activity.insightBody	I snitt {{avg}} besøk per måned i den valgte perioden.
+panel.activity.months.jan	jan.
+panel.activity.months.feb	feb.
+panel.activity.months.mar	mar.
+panel.activity.months.apr	apr.
+panel.activity.months.may	mai
+panel.activity.months.jun	jun.
+panel.activity.months.jul	jul.
+panel.activity.months.aug	aug.
+panel.activity.months.sep	sep.
+panel.activity.months.oct	okt.
+panel.activity.months.nov	nov.
+panel.activity.months.dec	des.
+panel.tags.title	Etiketter
+panel.tags.add	Legg til
+panel.tags.close	Lukk
+panel.tags.customPlaceholder	Egendefinert etikett + Enter…
+panel.danger.freeze	Frys
+panel.danger.unfreeze	Opphev frysing
+panel.danger.freezeDisabledHint	Frysing er deaktivert i Katalog → abonnementsinnstillinger
+panel.danger.delete	Slett
+panel.events.filterTabs.all	Alle
+panel.events.filterTabs.payment	Betalinger
+panel.events.filterTabs.visit	Besøk
+panel.events.filterTabs.booking	Bestillinger
+panel.events.filterTabs.cancel	Avbestillinger
+panel.events.filterTabs.bonus	Bonus
+panel.events.filterTabs.freeze	Frysinger
+panel.events.empty	Ingen hendelser
+panel.notes.title	Administrasjonsnotater
+panel.notes.prefix	Notat · {{date}}
+panel.notes.save	Lagre
+panel.notes.cancel	Avbryt
+panel.notes.addPlaceholder	Skriv et notat…
+panel.notes.add	Legg til notat
+panel.notes.justNow	akkurat nå
+panel.notes.deleteTitle	Slette notat?
+panel.notes.deleteMessage	Dette notatet kan ikke gjenopprettes.
+panel.bookingPanel.title	Rask bestilling
+panel.bookingPanel.today	I dag
+panel.bookingPanel.noLessons	Ingen timer denne dagen
+panel.bookingPanel.full	Ingen ledige plasser
+panel.bookingPanel.confirm	Bestill →
+panel.bookingPanel.noSubscription	Kunden har ikke et abonnement som kan brukes til bestilling
+panel.bookingPanel.individual	Individuell tjeneste
+panel.bonusPanel.title	Gi bonus
+panel.toasts.noPhone	Kunden har ikke telefonnummer
+panel.toasts.copied	Kopiert
+panel.toasts.bookingCreated	Bestilling opprettet
+panel.toasts.bookingFailed	Kunne ikke bestille
+panel.toasts.bonusFailed	Kunne ikke gi poeng
+panel.toasts.bonusApplied	Bonus gitt: {{label}}
+panel.toasts.clientAdded	Kunde lagt til
+panel.bonusOptions.p200.label	+200 poeng
+panel.bonusOptions.p200.description	Legg til lojalitetssaldo
+panel.bonusOptions.p500.label	+500 poeng
+panel.bonusOptions.p500.description	Legg til lojalitetssaldo
+panel.bonusOptions.p1000.label	+1000 poeng
+panel.bonusOptions.p1000.description	Legg til lojalitetssaldo
+tags.suggested.0	Prøve
+tags.suggested.1	VIP
+tags.suggested.2	Henvisning
+tags.suggested.3	På nett
+tags.suggested.4	Gruppe
+tags.suggested.5	Personlig
+addModal.title	Ny kunde
+addModal.cancel	Avbryt
+addModal.back	← Tilbake
+addModal.continue	Fortsett →
+addModal.submit	Legg til kunde ✓
+addModal.stepCounter	Trinn {{current}} av {{total}}
+addModal.trustSignal	Data er beskyttet og kun synlig for administratorer
+addModal.steps.1.title	Personopplysninger
+addModal.steps.1.sub	Skriv inn kundens kontaktinformasjon
+addModal.steps.2.title	Profilopplysninger
+addModal.steps.2.sub	Tilleggsinformasjon (valgfritt)
+addModal.steps.3.title	Abonnement
+addModal.steps.3.sub	Velg abonnementstype og legg til et notat
+addModal.steps.4.title	Alt er klart!
+addModal.steps.4.sub	Se gjennom opplysningene og legg til kunden
+addModal.step1.previewLabel	Ny kunde · Forhåndsvisning
+addModal.step1.name	Fullt navn *
+addModal.step1.namePlaceholder	Ola Nordmann
+addModal.step1.phone	Telefon
+addModal.step1.phonePlaceholder	+47 400 00 000
+addModal.step1.email	E-post
+addModal.step1.emailPlaceholder	kunde@eksempel.no
+addModal.step2.bday	Fødselsdato
+addModal.step2.bdayPlaceholder	12. april 1990
+addModal.step2.city	By
+addModal.step2.cityPlaceholder	Oslo
+addModal.step2.tags	Etiketter
+addModal.step2.tagsPlaceholder	Pilates, VIP, rehabilitering… (Enter)
+addModal.step2.tagsHint	Trykk Enter for å legge til en etikett
+addModal.step2.inviteCode	Henviserens invitasjonskode
+addModal.step2.inviteCodePlaceholder	Valgfritt
+addModal.step2.inviteCodeHint	Hvis den er oppgitt, får dere begge en bonus
+addModal.step3.classCount	Abonnement
+addModal.step3.classesUnit	timer
+addModal.step3.classesCount_one	{{count}} time
+addModal.step3.classesCount_other	{{count}} timer
+addModal.step3.selected	Valgt
+addModal.step3.noPackage	Ingen abonnement
+addModal.step3.noPackages	Dette studioet har ennå ingen abonnementspakker
+addModal.step3.noPackagesLink	Opprett pakker i Katalog →
+addModal.step3.alreadyPaid	Har kunden allerede betalt for dette abonnementet?
+addModal.step3.yes	Ja
+addModal.step3.no	Nei
+addModal.step3.note	Notat
+addModal.step3.notePlaceholder	Spesielle ønsker, kontraindikasjoner, preferanser…
+addModal.step4.readyTitle	Opplysninger fylt ut!
+addModal.step4.readySub	Se gjennom opplysningene og bekreft tilleggingen
+addModal.step4.newClient	Ny kunde
+addModal.step4.fields.phone	Telefon
+addModal.step4.fields.email	E-post
+addModal.step4.fields.bday	Fødselsdato
+addModal.step4.fields.city	By
+addModal.step4.fields.subscription	Abonnement
+addModal.step4.fields.tags	Etiketter
+addModal.step4.subscriptionValue_one	{{count}} time
+addModal.step4.subscriptionValue_other	{{count}} timer
+addModal.step4.smsTitle	Send velkomst-SMS
+addModal.step4.smsSub	Kunden mottar en invitasjonsmelding
+addModal.errors.name	Skriv inn et navn (minst 2 tegn)
+addModal.errors.phone	Ugyldig telefonnummer
+addModal.errors.email	Ugyldig e-post
+addModal.errors.city	Skriv inn en by
+deleteModal.title	Slette kunde?
+deleteModal.body	Du er i ferd med å slette kunden
+deleteModal.warning	Denne handlingen kan ikke angres.
+deleteModal.cancel	Avbryt
+deleteModal.confirm	Slett
+deleteModal.success	Kunde slettet

@@ -1,0 +1,429 @@
+{
+  "categories": {
+    "all": "Kaikki",
+    "vip": "VIP",
+    "active": "Aktiiviset",
+    "new": "Uudet",
+    "has_subscription": "Jäsenyyden kanssa",
+    "inactive": "Ei aktiivisia",
+    "frozen": "Jäädytetyt",
+    "birthday": "Syntymäpäivä"
+  },
+  "categoriesInfo": {
+    "all": {
+      "text": "Studion koko asiakasluettelo ilman tilasuodatusta."
+    },
+    "vip": {
+      "text": "Onnistuneita maksuja yhteensä 50 000+ tai 30+ käyntiä. VIP-tilan voi myös kiinnittää käsin asiakaskorttiin; käsin tehty kiinnitys pysyy voimassa summista riippumatta."
+    },
+    "active": {
+      "text": "Vähintään yksi käynti viimeisten 60 päivän aikana. Perustuu päiväkirjaan merkittyihin läsnäoloihin — tila päivittyy itsestään, eikä sitä tarvitse asettaa käsin."
+    },
+    "new": {
+      "text": "Ensimmäiset 15 päivää rekisteröintipäivästä, lisättiinpä asiakas käsin tai tulipa hän verkkovarauksen kautta. Päivänä 16 asiakas siirtyy automaattisesti Aktiivisiin tai Ei aktiivisiin."
+    },
+    "has_subscription": {
+      "text": "Voimassa oleva jäsenyys: ei vanhentunut, ei jäädytetty ja tunteja jäljellä. Päivittyy heti oston yhteydessä, jokaisen käytetyn tunnin jälkeen ja vanhentuessaan."
+    },
+    "inactive": {
+      "text": "Ei käyntejä viimeisten 60 päivän aikana — tai ei koskaan käynyt ja rekisteröinnistä on kulunut yli 15 päivää."
+    },
+    "frozen": {
+      "text": "Jäädytetty asiakaskortin painikkeella — ainoa käsin asetettava tila. Jäädytyksen purkamisen jälkeen asiakas palaa automaattiseen tilaansa."
+    },
+    "birthday": {
+      "text": "Ne, joilla on tänään syntymäpäivä — päivä ja kuukausi täsmäävät, vuotta ei huomioida. Luettelo päivittyy automaattisesti joka päivä."
+    }
+  },
+  "status": {
+    "active": "Aktiivinen",
+    "vip": "VIP",
+    "new": "Uusi",
+    "inactive": "Ei aktiivinen",
+    "frozen": "Jäädytetty"
+  },
+  "filtersGuide": {
+    "trigger": "Tietoa suodattimista",
+    "title": "Asiakassuodattimet",
+    "subtitle": "Näin kukin luokka lasketaan. Ota suodatin käyttöön napsauttamalla korttia tai muuta raja-arvoa — tilat lasketaan heti uudelleen.",
+    "close": "Sulje",
+    "rule": {
+      "new_client_days": "Uusi ajan",
+      "active_within_days": "Käynti viimeisten",
+      "vip_min_spent": "Käytetty vähintään",
+      "vip_min_visits": "tai käyntiä"
+    },
+    "unit": {
+      "days": "päivää",
+      "money": "",
+      "visits": "käyntiä"
+    }
+  },
+  "toolbar": {
+    "searchPlaceholder": "Hae asiakasta…",
+    "addClient": "Lisää asiakas"
+  },
+  "table": {
+    "visits": "käyntiä",
+    "frozenBadge": "❄ jäädytetty",
+    "totalSpent": "Käytetty yhteensä",
+    "subscription": "Jäsenyys",
+    "of": "/",
+    "noSubscription": "Ei jäsenyyttä"
+  },
+  "loadMore": "Lataa lisää",
+  "loading": "Ladataan…",
+  "panel": {
+    "tabs": {
+      "info": "Profiili",
+      "events": "Tapahtumat",
+      "notes": "Muistiinpanot",
+      "wallet": "Ostokset"
+    },
+    "actions": {
+      "book": "Varaa",
+      "bonus": "Bonus"
+    },
+    "editDateHint": "Muokkaa napsauttamalla",
+    "since": "alkaen {{date}}",
+    "contacts": {
+      "title": "Yhteystiedot",
+      "phone": "Puhelin",
+      "email": "Sähköposti",
+      "telegram": "Telegram",
+      "birthDate": "Syntymäaika",
+      "city": "Kaupunki",
+      "copyHint": " · kopioi napsauttamalla"
+    },
+    "debt": "{{amount}} maksamatta tunneista — vastaanota maksu Päiväkirjassa",
+    "stats": {
+      "visits": "Käynnit",
+      "spent": "Käytetty",
+      "subscription": "Jäsenyys"
+    },
+    "loyalty": {
+      "points": "pistettä",
+      "level": "{{tier}}-taso",
+      "toNext": "Seuraavalle tasolle: {{points}} pistettä",
+      "multiplier": "×{{value}} pistekerroin",
+      "worth": "Arvo kassalla {{amount}}",
+      "toNextLevel": "{{amount}} lisää tasolle {{level}}",
+      "pointValue": "1 piste = {{amount}}",
+      "nextPointValue": "asolla {{level}} — {{amount}}",
+      "noBonus": "Tämä taso ei muuta pisteen arvoa"
+    },
+    "referral": {
+      "title": "Kutsu ystävä",
+      "copy": "Kopioi"
+    },
+    "abonement": {
+      "title": "Jäsenyys",
+      "lessons": "{{remaining}}/{{total}} tuntia",
+      "noSubscription": "Ei aktiivista jäsenyyttä",
+      "noSubscriptionWarning": "Asiakkaalla ei ole jäsenyyttä — tarjoa hänelle sellaista",
+      "lowWarning": "Tunteja on vähän jäljellä — tarjoa uusimista",
+      "finishedWarning": "Tunteja ei ole jäljellä — tarjoa uusimista",
+      "remind": "Muistuta asiakasta",
+      "reminderSent": "Muistutus lähetetty asiakkaalle"
+    },
+    "products": {
+      "single": "yksittäinen",
+      "pending": "jonossa",
+      "frozen": "jäädytetty",
+      "until": "Voimassa {{date}} asti",
+      "startsOnFirstVisit": "Jakso alkaa ensimmäisestä tunnista"
+    },
+    "wallet": {
+      "buy": "Osta",
+      "active": "Aktiiviset",
+      "archived": "Arkistoidut",
+      "singles": "Yksittäiskäynnit",
+      "subscriptions": "Jäsenyydet",
+      "noSingles": "Ei vielä yksittäiskäyntejä",
+      "emptyActive": "Ei aktiivisia tuotteita",
+      "emptyArchived": "Ei arkistoituja tuotteita",
+      "emptyCatalog": "Tällä studiolla ei ole vielä jäsenyyspaketteja",
+      "lessons": "{{remaining}}/{{total}} tuntia",
+      "perVisit": "Yksittäiskäyntiä kohti",
+      "until": "{{date}} asti",
+      "frozenBadge": "Jäädytetty",
+      "loadFailed": "Lompakon lataaminen epäonnistui",
+      "back": "← Takaisin",
+      "catalogTitle": "Luettelo",
+      "showAll": "Kaikki",
+      "posTitle": "Kassa",
+      "promoLabel": "Alennuskoodi",
+      "promoPlaceholder": "Syötä alennuskoodi",
+      "promoInvalid": "Alennuskoodi ei kelpaa",
+      "useDeposit": "Maksa talletuksesta ({{amount}})",
+      "certLabel": "Lahjakortin koodi",
+      "certPlaceholder": "Syötä lahjakortin koodi",
+      "certApplied": "Lahjakortti",
+      "depositApplied": "Talletus",
+      "base": "Perushinta",
+      "discount": "Alennus",
+      "bonuses": "Bonukset",
+      "total": "Yhteensä",
+      "cash": "Käteinen",
+      "card": "Kortti",
+      "cardStripe": "Korttimaksut kulkevat Stripe-sivun kautta ja menevät suoraan studion tilille. Ota ne käyttöön kohdassa Talous → Verkkomaksut.",
+      "offlineLocked": "Käteismaksut ovat käytettävissä Combo- ja sitä korkeammilla sopimuksilla",
+      "payByCard": "Maksa kortilla",
+      "confirmPay": "Vahvista maksu",
+      "confirmPayCovered": "Vahvista (jo maksettu)",
+      "confirmTitle": "Vahvistetaanko vastaanotettu maksu?",
+      "confirmMessage": "Tämä kirjaa {{amount}} tuloa ja antaa tuotteen asiakkaalle.",
+      "confirmMessageCard": "Stripe-maksulomake summalle {{amount}} avautuu. Tuote annetaan ja tulo kirjataan, kun maksu onnistuu.",
+      "payToStudio": "Maksu tulee studion tilille",
+      "payConfirming": "Vahvistetaan maksua…",
+      "close": "Sulje",
+      "confirmMessageCovered": "Maksu on kokonaan katettu talletuksella tai lahjakortilla. Tuote annetaan asiakkaalle.",
+      "paySuccess": "Maksu kirjattu",
+      "payCancelled": "Maksu peruutettu — mitään ei veloitettu",
+      "payNotCompleted": "Stripe ei ole vielä vahvistanut maksua. Jos korttia veloitettiin, päivitä sivu minuutin kuluttua.",
+      "payNotApplied": "Korttia veloitettiin, mutta myyntiä ei voitu kirjata: ehdot muuttuivat (lahjakortti, alennuskoodi tai paketti). Kirjaa myynti käsin tai palauta maksu Stripessä.",
+      "transfer": "Siirrä",
+      "transferTitle": "Siirrä jäsenyys",
+      "transferSearchLabel": "Siirrä henkilölle",
+      "transferSearchPlaceholder": "Asiakkaan nimi tai puhelin",
+      "transferSelectPlaceholder": "Valitse asiakas",
+      "transferConfirm": "Siirrä",
+      "transferSuccess": "Jäsenyys siirretty",
+      "lessonsCount_one": "{{count}} tunti",
+      "lessonsCount_other": "{{count}} tuntia",
+      "useBonuses_one": "Käytä bonuksia ({{count}})",
+      "useBonuses_other": "Käytä bonuksia ({{count}})",
+      "bonusesSpent_one": "Bonukset ({{count}} p.)",
+      "bonusesSpent_other": "Bonukset ({{count}} p.)"
+    },
+    "offers": {
+      "title": "Henkilökohtainen alennus",
+      "empty": "Ei aktiivisia alennuksia",
+      "grant": "Myönnä alennus",
+      "cancel": "Peruuta",
+      "valuePercent": "{{value}} %",
+      "valueAmount": "{{value}} ₽",
+      "untilDate": "{{date}} asti",
+      "noExpiry": "ei vanhenemista",
+      "scopeRenewal": "uusimiseen",
+      "grantTitle": "Myönnä henkilökohtainen alennus",
+      "grantValue": "Alennuksen määrä",
+      "grantType": {
+        "percent": "Prosentti (%)",
+        "amount": "Summa (₽)"
+      },
+      "grantValidUntil": "Voimassa asti",
+      "grantSubmit": "Myönnä",
+      "cancelConfirmTitle": "Peruutetaanko alennus?",
+      "cancelConfirmMessage": "Asiakas ei voi enää käyttää tätä tarjousta.",
+      "toasts": {
+        "granted": "Alennus myönnetty",
+        "cancelled": "Alennus peruutettu",
+        "loadFailed": "Alennusten lataaminen epäonnistui"
+      }
+    },
+    "activity": {
+      "compactTitle": "Aktiivisuus (3 kk)",
+      "clickForDetails": "Näytä tiedot napsauttamalla",
+      "detailedTitle": "Yksityiskohtainen aktiivisuus",
+      "periods": {
+        "month3": "3 kk",
+        "month6": "6 kk"
+      },
+      "visitsInPeriod": "Käynnit jaksolla",
+      "emptyState": "Ei käyntejä tällä jaksolla",
+      "insightTitle": "Keskimääräinen osallistuminen",
+      "insightBody": "Keskimäärin {{avg}} käyntiä kuukaudessa valitulla jaksolla.",
+      "months": {
+        "jan": "tammi",
+        "feb": "helmi",
+        "mar": "maalis",
+        "apr": "huhti",
+        "may": "touko",
+        "jun": "kesä",
+        "jul": "heinä",
+        "aug": "elo",
+        "sep": "syys",
+        "oct": "loka",
+        "nov": "marras",
+        "dec": "joulu"
+      },
+      "visitsTooltip_one": "{{count}} käynti",
+      "visitsTooltip_other": "{{count}} käyntiä"
+    },
+    "tags": {
+      "title": "Tunnisteet",
+      "add": "Lisää",
+      "close": "Sulje",
+      "customPlaceholder": "Oma tunniste + Enter…"
+    },
+    "danger": {
+      "freeze": "Jäädytä",
+      "unfreeze": "Poista jäädytys",
+      "freezeDisabledHint": "Jäädytys on poistettu käytöstä kohdassa Luettelo → jäsenyysasetukset",
+      "delete": "Poista"
+    },
+    "events": {
+      "filterTabs": {
+        "all": "Kaikki",
+        "payment": "Maksut",
+        "visit": "Käynnit",
+        "booking": "Varaukset",
+        "cancel": "Peruutukset",
+        "bonus": "Bonukset",
+        "freeze": "Jäädytykset"
+      },
+      "empty": "Ei tapahtumia"
+    },
+    "notes": {
+      "title": "Ylläpidon muistiinpanot",
+      "prefix": "Muistiinpano · {{date}}",
+      "save": "Tallenna",
+      "cancel": "Peruuta",
+      "addPlaceholder": "Kirjoita muistiinpano…",
+      "add": "Lisää muistiinpano",
+      "justNow": "juuri nyt",
+      "deleteTitle": "Poistetaanko muistiinpano?",
+      "deleteMessage": "Tätä muistiinpanoa ei voi palauttaa."
+    },
+    "bookingPanel": {
+      "title": "Pikavaraus",
+      "today": "Tänään",
+      "noLessons": "Ei tunteja tänä päivänä",
+      "full": "Ei paikkoja",
+      "confirm": "Varaa →",
+      "noSubscription": "Asiakkaalla ei ole varaamiseen sopivaa jäsenyyttä",
+      "individual": "Yksilöllinen palvelu"
+    },
+    "bonusPanel": {
+      "title": "Myönnä bonus"
+    },
+    "toasts": {
+      "noPhone": "Asiakkaalla ei ole puhelinnumeroa",
+      "copied": "Kopioitu",
+      "bookingCreated": "Varaus luotu",
+      "bookingFailed": "Varaus epäonnistui",
+      "bonusFailed": "Pisteiden myöntäminen epäonnistui",
+      "bonusApplied": "Bonus myönnetty: {{label}}",
+      "clientAdded": "Asiakas lisätty"
+    },
+    "bonusOptions": {
+      "p200": {
+        "label": "+200 pistettä",
+        "description": "Lisää kanta-asiakassaldoon"
+      },
+      "p500": {
+        "label": "+500 pistettä",
+        "description": "Lisää kanta-asiakassaldoon"
+      },
+      "p1000": {
+        "label": "+1000 pistettä",
+        "description": "Lisää kanta-asiakassaldoon"
+      }
+    }
+  },
+  "tags": {
+    "suggested": [
+      "Kokeilu",
+      "VIP",
+      "Suosittelu",
+      "Verkossa",
+      "Ryhmä",
+      "Henkilökohtainen"
+    ]
+  },
+  "addModal": {
+    "title": "Uusi asiakas",
+    "cancel": "Peruuta",
+    "back": "← Takaisin",
+    "continue": "Jatka →",
+    "submit": "Lisää asiakas ✓",
+    "stepCounter": "Vaihe {{current}} / {{total}}",
+    "trustSignal": "Tiedot on suojattu ja vain ylläpitäjät näkevät ne",
+    "steps": {
+      "1": {
+        "title": "Henkilötiedot",
+        "sub": "Syötä asiakkaan yhteystiedot"
+      },
+      "2": {
+        "title": "Profiilitiedot",
+        "sub": "Lisätiedot (valinnainen)"
+      },
+      "3": {
+        "title": "Jäsenyys",
+        "sub": "Valitse jäsenyystyyppi ja lisää muistiinpano"
+      },
+      "4": {
+        "title": "Valmista tuli!",
+        "sub": "Tarkista tiedot ja lisää asiakas"
+      }
+    },
+    "step1": {
+      "previewLabel": "Uusi asiakas · Esikatselu",
+      "name": "Koko nimi *",
+      "namePlaceholder": "Maija Virtanen",
+      "phone": "Puhelin",
+      "phonePlaceholder": "+358 40 000 0000",
+      "email": "Sähköposti",
+      "emailPlaceholder": "asiakas@esimerkki.fi"
+    },
+    "step2": {
+      "bday": "Syntymäaika",
+      "bdayPlaceholder": "12. huhtikuuta 1990",
+      "city": "Kaupunki",
+      "cityPlaceholder": "Helsinki",
+      "tags": "Tunnisteet",
+      "tagsPlaceholder": "Pilates, VIP, kuntoutus… (Enter)",
+      "tagsHint": "Lisää tunniste painamalla Enter",
+      "inviteCode": "Suosittelijan kutsukoodi",
+      "inviteCodePlaceholder": "Valinnainen",
+      "inviteCodeHint": "Jos koodi annetaan, molemmat saavat bonuksen"
+    },
+    "step3": {
+      "classCount": "Jäsenyys",
+      "classesUnit": "tuntia",
+      "selected": "Valittu",
+      "noPackage": "Ei jäsenyyttä",
+      "noPackages": "Tällä studiolla ei ole vielä jäsenyyspaketteja",
+      "noPackagesLink": "Luo paketteja Luettelossa →",
+      "alreadyPaid": "Onko asiakas jo maksanut tästä jäsenyydestä?",
+      "yes": "Kyllä",
+      "no": "Ei",
+      "note": "Muistiinpano",
+      "notePlaceholder": "Erityistoiveet, vasta-aiheet, mieltymykset…",
+      "classesCount_one": "{{count}} tunti",
+      "classesCount_other": "{{count}} tuntia"
+    },
+    "step4": {
+      "readyTitle": "Tiedot täytetty!",
+      "readySub": "Tarkista tiedot ja vahvista lisäys",
+      "newClient": "Uusi asiakas",
+      "fields": {
+        "phone": "Puhelin",
+        "email": "Sähköposti",
+        "bday": "Syntymäaika",
+        "city": "Kaupunki",
+        "subscription": "Jäsenyys",
+        "tags": "Tunnisteet"
+      },
+      "smsTitle": "Lähetä tervetuloa-SMS",
+      "smsSub": "Asiakas saa kutsuviestin",
+      "subscriptionValue_one": "{{count}} tunti",
+      "subscriptionValue_other": "{{count}} tuntia"
+    },
+    "errors": {
+      "name": "Syötä nimi (vähintään 2 merkkiä)",
+      "phone": "Virheellinen puhelinnumero",
+      "email": "Virheellinen sähköposti",
+      "city": "Syötä kaupunki"
+    }
+  },
+  "deleteModal": {
+    "title": "Poistetaanko asiakas?",
+    "body": "Olet poistamassa asiakkaan",
+    "warning": "Toimintoa ei voi perua.",
+    "cancel": "Peruuta",
+    "confirm": "Poista",
+    "success": "Asiakas poistettu"
+  }
+}

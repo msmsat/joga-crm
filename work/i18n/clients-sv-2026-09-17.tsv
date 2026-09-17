@@ -1,0 +1,310 @@
+== sv
+categories.all	Alla
+categories.vip	VIP
+categories.active	Aktiva
+categories.new	Nya
+categories.has_subscription	Med abonnemang
+categories.inactive	Inaktiva
+categories.frozen	Frysta
+categories.birthday	Födelsedag
+categoriesInfo.all.text	Studions fullständiga kundlista utan något statusfilter.
+categoriesInfo.vip.text	Genomförda betalningar på sammanlagt 50 000+ eller 30+ besök. VIP kan också fästas manuellt i kundkortet; en manuell fastsättning gäller oavsett beloppen.
+categoriesInfo.active.text	Minst ett besök under de senaste 60 dagarna. Bygger på närvaro som markerats i journalen — statusen uppdateras automatiskt och behöver inte ställas in för hand.
+categoriesInfo.new.text	De första 15 dagarna från registreringsdatumet, oavsett om kunden lades till manuellt eller kom via onlinebokning. Dag 16 flyttas kunden automatiskt till Aktiv eller Inaktiv.
+categoriesInfo.has_subscription.text	Har ett giltigt abonnemang: inte utgånget, inte fryst och med lektioner kvar. Uppdateras direkt vid köp, efter varje använd lektion och när det löper ut.
+categoriesInfo.inactive.text	Inga besök de senaste 60 dagarna — eller aldrig besökt och mer än 15 dagar sedan registreringen.
+categoriesInfo.frozen.text	Fryst via knappen i kundkortet — den enda status som sätts manuellt. Efter upptining återgår kunden till sin automatiska status.
+categoriesInfo.birthday.text	De som fyller år i dag — dag och månad stämmer, året ignoreras. Listan uppdateras automatiskt varje dag.
+status.active	Aktiv
+status.vip	VIP
+status.new	Ny
+status.inactive	Inaktiv
+status.frozen	Fryst
+filtersGuide.trigger	Om filter
+filtersGuide.title	Kundfilter
+filtersGuide.subtitle	Så här beräknas varje kategori. Klicka på ett kort för att använda filtret eller ändra ett tröskelvärde — statusarna beräknas om direkt.
+filtersGuide.close	Stäng
+filtersGuide.rule.new_client_days	Ny i
+filtersGuide.rule.active_within_days	Besök inom
+filtersGuide.rule.vip_min_spent	Spenderat från
+filtersGuide.rule.vip_min_visits	eller besök
+filtersGuide.unit.days	dagar
+filtersGuide.unit.money	
+filtersGuide.unit.visits	besök
+toolbar.searchPlaceholder	Sök kund…
+toolbar.addClient	Lägg till kund
+table.visits	besök
+table.frozenBadge	❄ fryst
+table.totalSpent	Totalt spenderat
+table.subscription	Abonnemang
+table.of	av
+table.noSubscription	Inget abonnemang
+loadMore	Ladda fler
+loading	Laddar…
+panel.tabs.info	Profil
+panel.tabs.events	Händelser
+panel.tabs.notes	Anteckningar
+panel.tabs.wallet	Köp
+panel.actions.book	Boka
+panel.actions.bonus	Bonus
+panel.editDateHint	Klicka för att redigera
+panel.since	sedan {{date}}
+panel.contacts.title	Kontaktuppgifter
+panel.contacts.phone	Telefon
+panel.contacts.email	E-post
+panel.contacts.telegram	Telegram
+panel.contacts.birthDate	Födelsedatum
+panel.contacts.city	Ort
+panel.contacts.copyHint	 · klicka för att kopiera
+panel.debt	{{amount}} obetalt för lektioner — ta emot betalningen i Journalen
+panel.stats.visits	Besök
+panel.stats.spent	Spenderat
+panel.stats.subscription	Abonnemang
+panel.loyalty.points	poäng
+panel.loyalty.level	{{tier}}-nivå
+panel.loyalty.toNext	Till nästa nivå: {{points}} poäng
+panel.loyalty.multiplier	×{{value}} poängmultiplikator
+panel.loyalty.worth	Värt {{amount}} i kassan
+panel.loyalty.toNextLevel	{{amount}} till för att nå {{level}}
+panel.loyalty.pointValue	1 poäng = {{amount}}
+panel.loyalty.nextPointValue	på {{level}} — {{amount}}
+panel.loyalty.noBonus	Den här nivån ändrar inte poängvärdet
+panel.referral.title	Bjud in en vän
+panel.referral.copy	Kopiera
+panel.abonement.title	Abonnemang
+panel.abonement.lessons	{{remaining}}/{{total}} lektioner
+panel.abonement.noSubscription	Inget aktivt abonnemang
+panel.abonement.noSubscriptionWarning	Kunden har inget abonnemang — erbjud ett
+panel.abonement.lowWarning	Få lektioner kvar — erbjud förnyelse
+panel.abonement.finishedWarning	Inga lektioner kvar — erbjud förnyelse
+panel.abonement.remind	Påminn kunden
+panel.abonement.reminderSent	Påminnelse skickad till kunden
+panel.products.single	enstaka
+panel.products.pending	köad
+panel.products.frozen	fryst
+panel.products.until	Gäller till {{date}}
+panel.products.startsOnFirstVisit	Perioden börjar med första lektionen
+panel.wallet.buy	Köp
+panel.wallet.active	Aktiva
+panel.wallet.archived	Arkiverade
+panel.wallet.singles	Enstaka besök
+panel.wallet.subscriptions	Abonnemang
+panel.wallet.noSingles	Inga enstaka besök än
+panel.wallet.emptyActive	Inga aktiva produkter
+panel.wallet.emptyArchived	Inga arkiverade produkter
+panel.wallet.emptyCatalog	Den här studion har inga abonnemangspaket ännu
+panel.wallet.lessons	{{remaining}}/{{total}} lektioner
+panel.wallet.lessonsCount_one	{{count}} lektion
+panel.wallet.lessonsCount_other	{{count}} lektioner
+panel.wallet.perVisit	Per enstaka besök
+panel.wallet.until	till {{date}}
+panel.wallet.frozenBadge	Fryst
+panel.wallet.loadFailed	Kunde inte läsa in plånboken
+panel.wallet.back	← Tillbaka
+panel.wallet.catalogTitle	Katalog
+panel.wallet.showAll	Alla
+panel.wallet.posTitle	Kassa
+panel.wallet.promoLabel	Kampanjkod
+panel.wallet.promoPlaceholder	Ange kampanjkod
+panel.wallet.promoInvalid	Kampanjkoden är ogiltig
+panel.wallet.useBonuses_one	Använd bonus ({{count}})
+panel.wallet.useBonuses_other	Använd bonus ({{count}})
+panel.wallet.useDeposit	Betala från insättning ({{amount}})
+panel.wallet.certLabel	Certifikatkod
+panel.wallet.certPlaceholder	Ange certifikatkod
+panel.wallet.certApplied	Certifikat
+panel.wallet.depositApplied	Insättning
+panel.wallet.base	Grundpris
+panel.wallet.discount	Rabatt
+panel.wallet.bonuses	Bonus
+panel.wallet.bonusesSpent_one	Bonus ({{count}} p)
+panel.wallet.bonusesSpent_other	Bonus ({{count}} p)
+panel.wallet.total	Totalt
+panel.wallet.cash	Kontant
+panel.wallet.card	Kort
+panel.wallet.cardStripe	Kortbetalningar går via en Stripe-sida och kommer direkt in på studions konto. Ställ in det under Ekonomi → Onlinebetalningar.
+panel.wallet.offlineLocked	Kontantbetalningar är tillgängliga med Combo-planer och högre
+panel.wallet.payByCard	Betala med kort
+panel.wallet.confirmPay	Bekräfta betalning
+panel.wallet.confirmPayCovered	Bekräfta (redan betalt)
+panel.wallet.confirmTitle	Bekräfta mottagen betalning?
+panel.wallet.confirmMessage	Detta registrerar en intäkt på {{amount}} och tilldelar produkten till kunden.
+panel.wallet.confirmMessageCard	Ett Stripe-betalningsformulär för {{amount}} öppnas. Produkten tilldelas och intäkten registreras när betalningen lyckas.
+panel.wallet.payToStudio	Betalningen kommer in på studions konto
+panel.wallet.payConfirming	Verifierar betalning…
+panel.wallet.close	Stäng
+panel.wallet.confirmMessageCovered	Betalningen täcks helt av insättning eller certifikat. Produkten tilldelas kunden.
+panel.wallet.paySuccess	Betalning registrerad
+panel.wallet.payCancelled	Betalning avbruten — inget har debiterats
+panel.wallet.payNotCompleted	Stripe har inte bekräftat betalningen ännu. Om kortet debiterades, uppdatera sidan om en minut.
+panel.wallet.payNotApplied	Kortet debiterades men försäljningen kunde inte registreras: villkoren ändrades (certifikat, kampanjkod eller paket). Registrera försäljningen manuellt eller återbetala i Stripe.
+panel.wallet.transfer	Överför
+panel.wallet.transferTitle	Överför abonnemang
+panel.wallet.transferSearchLabel	Överför till
+panel.wallet.transferSearchPlaceholder	Kundens namn eller telefon
+panel.wallet.transferSelectPlaceholder	Välj kund
+panel.wallet.transferConfirm	Överför
+panel.wallet.transferSuccess	Abonnemang överfört
+panel.offers.title	Personlig rabatt
+panel.offers.empty	Inga aktiva rabatter
+panel.offers.grant	Ge rabatt
+panel.offers.cancel	Avbryt
+panel.offers.valuePercent	{{value}} %
+panel.offers.valueAmount	{{value}} ₽
+panel.offers.untilDate	till {{date}}
+panel.offers.noExpiry	utan utgångsdatum
+panel.offers.scopeRenewal	vid förnyelse
+panel.offers.grantTitle	Ge en personlig rabatt
+panel.offers.grantValue	Rabattens storlek
+panel.offers.grantType.percent	Procent (%)
+panel.offers.grantType.amount	Belopp (₽)
+panel.offers.grantValidUntil	Gäller till
+panel.offers.grantSubmit	Ge
+panel.offers.cancelConfirmTitle	Avbryt rabatt?
+panel.offers.cancelConfirmMessage	Kunden kan inte längre använda detta erbjudande.
+panel.offers.toasts.granted	Rabatt given
+panel.offers.toasts.cancelled	Rabatt avbruten
+panel.offers.toasts.loadFailed	Kunde inte läsa in rabatter
+panel.activity.compactTitle	Aktivitet (3 mån.)
+panel.activity.clickForDetails	Klicka för detaljer
+panel.activity.detailedTitle	Detaljerad aktivitet
+panel.activity.periods.month3	3 mån.
+panel.activity.periods.month6	6 mån.
+panel.activity.visitsInPeriod	Besök under perioden
+panel.activity.visitsTooltip_one	{{count}} besök
+panel.activity.visitsTooltip_other	{{count}} besök
+panel.activity.emptyState	Inga besök under denna period
+panel.activity.insightTitle	Genomsnittlig närvaro
+panel.activity.insightBody	I genomsnitt {{avg}} besök per månad under den valda perioden.
+panel.activity.months.jan	jan.
+panel.activity.months.feb	feb.
+panel.activity.months.mar	mars
+panel.activity.months.apr	apr.
+panel.activity.months.may	maj
+panel.activity.months.jun	juni
+panel.activity.months.jul	juli
+panel.activity.months.aug	aug.
+panel.activity.months.sep	sep.
+panel.activity.months.oct	okt.
+panel.activity.months.nov	nov.
+panel.activity.months.dec	dec.
+panel.tags.title	Taggar
+panel.tags.add	Lägg till
+panel.tags.close	Stäng
+panel.tags.customPlaceholder	Egen tagg + Retur…
+panel.danger.freeze	Frys
+panel.danger.unfreeze	Tina upp
+panel.danger.freezeDisabledHint	Frysning är avstängd i Katalog → abonnemangsinställningar
+panel.danger.delete	Ta bort
+panel.events.filterTabs.all	Alla
+panel.events.filterTabs.payment	Betalningar
+panel.events.filterTabs.visit	Besök
+panel.events.filterTabs.booking	Bokningar
+panel.events.filterTabs.cancel	Avbokningar
+panel.events.filterTabs.bonus	Bonus
+panel.events.filterTabs.freeze	Frysningar
+panel.events.empty	Inga händelser
+panel.notes.title	Administratörsanteckningar
+panel.notes.prefix	Anteckning · {{date}}
+panel.notes.save	Spara
+panel.notes.cancel	Avbryt
+panel.notes.addPlaceholder	Skriv en anteckning…
+panel.notes.add	Lägg till anteckning
+panel.notes.justNow	just nu
+panel.notes.deleteTitle	Ta bort anteckning?
+panel.notes.deleteMessage	Den här anteckningen kan inte återställas.
+panel.bookingPanel.title	Snabb bokning
+panel.bookingPanel.today	I dag
+panel.bookingPanel.noLessons	Inga lektioner denna dag
+panel.bookingPanel.full	Inga platser kvar
+panel.bookingPanel.confirm	Boka →
+panel.bookingPanel.noSubscription	Kunden har inget abonnemang tillgängligt för bokning
+panel.bookingPanel.individual	Individuell tjänst
+panel.bonusPanel.title	Ge bonus
+panel.toasts.noPhone	Kunden har inget telefonnummer
+panel.toasts.copied	Kopierat
+panel.toasts.bookingCreated	Bokning skapad
+panel.toasts.bookingFailed	Kunde inte boka
+panel.toasts.bonusFailed	Kunde inte ge poäng
+panel.toasts.bonusApplied	Bonus given: {{label}}
+panel.toasts.clientAdded	Kund tillagd
+panel.bonusOptions.p200.label	+200 poäng
+panel.bonusOptions.p200.description	Lägg till på lojalitetssaldot
+panel.bonusOptions.p500.label	+500 poäng
+panel.bonusOptions.p500.description	Lägg till på lojalitetssaldot
+panel.bonusOptions.p1000.label	+1000 poäng
+panel.bonusOptions.p1000.description	Lägg till på lojalitetssaldot
+tags.suggested.0	Prova på
+tags.suggested.1	VIP
+tags.suggested.2	Rekommendation
+tags.suggested.3	Online
+tags.suggested.4	Grupp
+tags.suggested.5	Personlig
+addModal.title	Ny kund
+addModal.cancel	Avbryt
+addModal.back	← Tillbaka
+addModal.continue	Fortsätt →
+addModal.submit	Lägg till kund ✓
+addModal.stepCounter	Steg {{current}} av {{total}}
+addModal.trustSignal	Uppgifterna är skyddade och synliga endast för administratörer
+addModal.steps.1.title	Personuppgifter
+addModal.steps.1.sub	Ange kundens kontaktuppgifter
+addModal.steps.2.title	Profiluppgifter
+addModal.steps.2.sub	Ytterligare information (valfritt)
+addModal.steps.3.title	Abonnemang
+addModal.steps.3.sub	Välj en abonnemangstyp och lägg till en anteckning
+addModal.steps.4.title	Allt klart!
+addModal.steps.4.sub	Granska uppgifterna och lägg till kunden
+addModal.step1.previewLabel	Ny kund · Förhandsvisning
+addModal.step1.name	Fullständigt namn *
+addModal.step1.namePlaceholder	Anna Svensson
+addModal.step1.phone	Telefon
+addModal.step1.phonePlaceholder	+46 70 000 00 00
+addModal.step1.email	E-post
+addModal.step1.emailPlaceholder	kund@exempel.se
+addModal.step2.bday	Födelsedatum
+addModal.step2.bdayPlaceholder	12 april 1990
+addModal.step2.city	Ort
+addModal.step2.cityPlaceholder	Stockholm
+addModal.step2.tags	Taggar
+addModal.step2.tagsPlaceholder	Pilates, VIP, rehabilitering… (Retur)
+addModal.step2.tagsHint	Tryck på Retur för att lägga till en tagg
+addModal.step2.inviteCode	Värvarens inbjudningskod
+addModal.step2.inviteCodePlaceholder	Valfritt
+addModal.step2.inviteCodeHint	Om den anges får ni båda en bonus
+addModal.step3.classCount	Abonnemang
+addModal.step3.classesUnit	lektioner
+addModal.step3.classesCount_one	{{count}} lektion
+addModal.step3.classesCount_other	{{count}} lektioner
+addModal.step3.selected	Vald
+addModal.step3.noPackage	Inget abonnemang
+addModal.step3.noPackages	Den här studion har inga abonnemangspaket ännu
+addModal.step3.noPackagesLink	Skapa paket i Katalog →
+addModal.step3.alreadyPaid	Har kunden redan betalat för detta abonnemang?
+addModal.step3.yes	Ja
+addModal.step3.no	Nej
+addModal.step3.note	Anteckning
+addModal.step3.notePlaceholder	Särskilda önskemål, kontraindikationer, preferenser…
+addModal.step4.readyTitle	Uppgifter ifyllda!
+addModal.step4.readySub	Granska uppgifterna och bekräfta tillägget
+addModal.step4.newClient	Ny kund
+addModal.step4.fields.phone	Telefon
+addModal.step4.fields.email	E-post
+addModal.step4.fields.bday	Födelsedatum
+addModal.step4.fields.city	Ort
+addModal.step4.fields.subscription	Abonnemang
+addModal.step4.fields.tags	Taggar
+addModal.step4.subscriptionValue_one	{{count}} lektion
+addModal.step4.subscriptionValue_other	{{count}} lektioner
+addModal.step4.smsTitle	Skicka välkomst-sms
+addModal.step4.smsSub	Kunden får ett inbjudningsmeddelande
+addModal.errors.name	Ange ett namn (minst 2 tecken)
+addModal.errors.phone	Ogiltigt telefonnummer
+addModal.errors.email	Ogiltig e-post
+addModal.errors.city	Ange en ort
+deleteModal.title	Ta bort kund?
+deleteModal.body	Du är på väg att ta bort kunden
+deleteModal.warning	Åtgärden kan inte ångras.
+deleteModal.cancel	Avbryt
+deleteModal.confirm	Ta bort
+deleteModal.success	Kund borttagen

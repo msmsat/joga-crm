@@ -1,0 +1,354 @@
+{
+  "loading": "Po ngarkohet…",
+  "chModal": {
+    "eyebrow": "Kanali i njoftimeve",
+    "connected": "I lidhur",
+    "notConnected": "Jo i lidhur",
+    "setup": "Konfigurimi i lidhjes",
+    "details": "Detajet e lidhjes",
+    "ready": "Kanali është gati dhe funksionon",
+    "readyHint": "Njoftimet për ngjarjet e aktivizuara dërgohen automatikisht.",
+    "bot": "Bot",
+    "token": "Token",
+    "phone": "Numri",
+    "account": "Llogaria",
+    "sender": "Dërguesi"
+  },
+  "channels": {
+    "title": "Kanalet e dërgimit",
+    "connect": "Lidhu",
+    "connected": "I lidhur",
+    "openSettings": "Cilësimet e {{channel}}",
+    "waLockedHint": "Kanali hapet sapo Meta të ketë metodën tuaj të pagesës, biznes të verifikuar dhe shabllone të miratuara",
+    "waBlocker": {
+      "payment": "Nuk ka metodë pagese — kujtesat nuk dërgohen. Konfiguroje",
+      "verification": "Biznesi nuk është verifikuar me Meta — kufi 250/ditë. Si ta rregulloni",
+      "templates": "Shabllonet janë ende në shqyrtim te Meta — asgjë nuk do të dërgohet. Hollësi"
+    }
+  },
+  "roles": {
+    "client": "Klient",
+    "trainer": "Trajner",
+    "admin": "Administrator",
+    "owner": "Pronar",
+    "activeCount_one": "{{count}} aktiv",
+    "activeCount_other": "{{count}} aktivë"
+  },
+  "matrix": {
+    "saving": "Po ruhet…",
+    "allSaved": "Të gjitha ndryshimet u ruajtën",
+    "notSaved": "Nuk u ruajt",
+    "activateAll": "Aktivizo të gjitha",
+    "deactivateAll": "Pastro të gjitha kutitë e zgjedhjes",
+    "scenariosFor": "Skenarët për: {{role}}",
+    "eventColumn": "Ngjarja e sistemit",
+    "noActiveChannels": "Nuk ka kanale aktive",
+    "noActiveChannelsHint": "Aktivizoni të paktën një kanal dërgimi në panelin majtas",
+    "adviceLabel": "Këshillë:",
+    "advice": "Konfiguroni veçmas për çdo rol çfarë dërgohet dhe ku — Velora do ta trajtojë automatikisht.",
+    "tiers": {
+      "critical": "E detyrueshme · nuk mund të çaktivizohet",
+      "operational": "Operative",
+      "optional": "Opsionale"
+    },
+    "lock": {
+      "critical": "Njoftim i detyrueshëm — nuk mund të çaktivizohet",
+      "lastChannel": "Kanali i fundit i dërgimit — nuk mund të çaktivizohet"
+    },
+    "channelDisconnected": "Kanali nuk është i lidhur",
+    "activeCount_one": "Aktivizues aktivë: {{count}} nga {{total}}",
+    "activeCount_other": "Aktivizues aktivë: {{count}} nga {{total}}",
+    "configureFor_one": "Konfiguro kanalet për {{count}} aktivizues të sistemit",
+    "configureFor_other": "Konfiguro kanalet për {{count}} aktivizues të sistemit"
+  },
+  "events": {
+    "c1": {
+      "title": "Rezervimi u konfirmua",
+      "desc": "Pas rezervimit të suksesshëm të klasës"
+    },
+    "c2": {
+      "title": "Kujtesë për klasën",
+      "desc": "24 orë dhe 2 orë më parë"
+    },
+    "c3": {
+      "title": "Klasa u anulua",
+      "desc": "Kur trajneri ose studioja anulon"
+    },
+    "c4": {
+      "title": "Pagesa u krye",
+      "desc": "Fatura pas tarifimit të suksesshëm"
+    },
+    "c5": {
+      "title": "Pak klasa të mbetura",
+      "desc": "Kur kanë mbetur 1–2 vizita në paketë"
+    },
+    "c6": {
+      "title": "Paketa po skadon",
+      "desc": "3 ditë para datës së skadimit"
+    },
+    "c7": {
+      "title": "Ditëlindje",
+      "desc": "Urim me ofertë të veçantë"
+    },
+    "c8": {
+      "title": "Kërkesë për vlerësim",
+      "desc": "Pas pjesëmarrjes në një klasë"
+    },
+    "c9": {
+      "title": "Rimbursim",
+      "desc": "Pas anulimit dhe procesimit të rimbursimit"
+    },
+    "c10": {
+      "title": "Klasa ende e papaguar",
+      "desc": "Klienti mori pjesë por nuk ka paguar"
+    },
+    "c11": {
+      "title": "Klasa u ricaktua",
+      "desc": "Ora, salla ose trajneri ndryshoi"
+    },
+    "c12": {
+      "title": "Bonusi u shtua",
+      "desc": "Klientit iu shtuan pikë ose bonus"
+    },
+    "c13": {
+      "title": "Kafe pas klasës",
+      "desc": "Kush nga grupi shkon për kafe"
+    },
+    "t1": {
+      "title": "Rezervim i ri te trajneri",
+      "desc": "Një klient rezervoi një seancë personale"
+    },
+    "t2": {
+      "title": "Klienti anuloi rezervimin",
+      "desc": "Klienti anuloi më pak se 2 orë më parë"
+    },
+    "t3": {
+      "title": "Kujtesë për klasën",
+      "desc": "1 orë para fillimit"
+    },
+    "t4": {
+      "title": "Lista e grupit",
+      "desc": "30 min. para klasës në grup"
+    },
+    "t5": {
+      "title": "Ndryshim në orar",
+      "desc": "Administratori ndryshoi orën ose vendndodhjen"
+    },
+    "t6": {
+      "title": "Paga u llogarit",
+      "desc": "Llogaritja javore e pagesës"
+    },
+    "t7": {
+      "title": "Vlerësim i ri për trajnerin",
+      "desc": "Klienti la vlerësim pas klasës"
+    },
+    "t8": {
+      "title": "Ditëlindja e klientit",
+      "desc": "Kujtesë për të uruar personalisht"
+    },
+    "t9": {
+      "title": "Klasa u anulua",
+      "desc": "Studioja ose administratori anuloi klasën tuaj"
+    },
+    "a1": {
+      "title": "Rezervim i ri online",
+      "desc": "Klienti rezervoi nëpërmjet sajtit ose widget-it"
+    },
+    "a2": {
+      "title": "Anulim i minutës së fundit",
+      "desc": "Më pak se 1 orë para klasës"
+    },
+    "a3": {
+      "title": "Klient i ri në sistem",
+      "desc": "Regjistrim i përdoruesit të ri"
+    },
+    "a4": {
+      "title": "Pagesa u mor",
+      "desc": "Çdo tarifim i suksesshëm"
+    },
+    "a6": {
+      "title": "Paketat po mbarojnë",
+      "desc": "Grup klientësh me ≤1 klasë të mbetur"
+    },
+    "a7": {
+      "title": "Konflikt në orar",
+      "desc": "Klasa që mbivendosen në ditar"
+    },
+    "a8": {
+      "title": "Raporti ditor",
+      "desc": "Përmbledhje në fund të ditës"
+    },
+    "a9": {
+      "title": "Përpjekje për hyrje",
+      "desc": "Hyrje nga një pajisje e re"
+    },
+    "a10": {
+      "title": "Rimbursim",
+      "desc": "Administratori lëshoi rimbursim"
+    },
+    "o1": {
+      "title": "Përmbledhja ditore",
+      "desc": "Të ardhura, rezervime, pjesëmarrje për ditën"
+    },
+    "o2": {
+      "title": "Raporti javor",
+      "desc": "Treguesit: rritja e klientëve, LTV, konvertimi"
+    },
+    "o3": {
+      "title": "Pagesë e madhe",
+      "desc": "Tarifim mbi pragun e vendosur"
+    },
+    "o4": {
+      "title": "Anomali në të dhëna",
+      "desc": "Rënie e ndjeshme në rezervime ose të ardhura"
+    },
+    "o5": {
+      "title": "Anëtar i ri i stafit",
+      "desc": "Administratori krijoi një llogari të re"
+    },
+    "o6": {
+      "title": "Rinovimi i planit",
+      "desc": "Kujtesë për të paguar abonimin e Velora"
+    },
+    "o7": {
+      "title": "Të drejtat e hyrjes ndryshuan",
+      "desc": "Lejet e anëtarit të stafit u ndryshuan"
+    },
+    "o8": {
+      "title": "Treguesi u arrit",
+      "desc": "Objektivi mujor u arrit"
+    },
+    "o9": {
+      "title": "Eksport i të dhënave",
+      "desc": "Dikush eksportoi bazën e të dhënave të klientëve"
+    }
+  },
+  "tg": {
+    "title": "Telegram",
+    "subtitleConnected": "Kanali është i lidhur",
+    "subtitleDisconnected": "Lidhni botin e njoftimeve",
+    "connected": "I lidhur",
+    "pasteToken": "Ngjitni tokenin e botit që morët nga @BotFather.",
+    "invalidToken": "Format i pavlefshëm tokeni",
+    "howToGet": "Si të merrni një token:",
+    "steps": {
+      "1": "Hapni @BotFather në Telegram",
+      "2": "Dërgoni komandën /newbot dhe ndiqni udhëzimet",
+      "3": "Kopjoni tokenin e lëshuar",
+      "4": "Ngjiteni në fushën më sipër"
+    },
+    "connect": "Lidhu",
+    "disconnect": "Shkëput",
+    "disconnectTitle": "Të shkëputet Telegram?",
+    "disconnectMessage": "Klientët dhe stafi nuk do të marrin më njoftime përmes këtij kanali.",
+    "close": "Mbyll",
+    "cancel": "Anulo"
+  },
+  "emailCh": {
+    "title": "Email",
+    "subtitle": "Adresa e dërguesit për email-et e klientëve",
+    "verifiedLabel": "E verifikuar",
+    "emailLabel": "Email i dërguesit",
+    "emailPlaceholder": "admin@studio.com",
+    "invalidEmail": "Shkruani një email të vlefshëm",
+    "sendCode": "Dërgo kodin",
+    "codeSentTo": "Kodi u dërgua te",
+    "codeHint": "Shkruani kodin 6-shifror nga email-i.",
+    "codeLabel": "Kodi i verifikimit",
+    "resend": "Ridërgo kodin",
+    "viaVelora": "Email-et dërgohen për llogarinë tuaj përmes serverit Velora.",
+    "wrongCode": "Kod i pavlefshëm ose i skaduar",
+    "verify": "Verifiko",
+    "back": "Kthehu",
+    "cancel": "Anulo"
+  },
+  "wa": {
+    "title": "WhatsApp",
+    "subtitleConnected": "Kanali është i lidhur",
+    "subtitleDisconnected": "Hyni me llogarinë e biznesit Meta",
+    "connected": "I lidhur",
+    "paymentRequiredTitle": "Do të nevojitet një kartë",
+    "paymentRequired": "Lidhja e numrit është falas, por Meta dërgon kujtesa për klientët vetëm kur shtohet një kartë. E shtoni veçmas —",
+    "paymentMissingTitle": "Nuk ka metodë pagese",
+    "paymentMissing": "Për momentin funksionojnë vetëm përgjigjet e botit ndaj mesazheve hyrëse. Meta refuzon kujtesat, konfirmimet dhe dërgesat masive derisa të shtohet një kartë —",
+    "paymentOkTitle": "Pagesa u lidh",
+    "paymentOk": "njoftimet dërgohen plotësisht.",
+    "paymentUnknown": "Nuk mundëm të kontrollojmë metodën e pagesës me Meta — do të shfaqim gjendjen në përpjekjen tjetër.",
+    "paymentLink": "Qendra e faturimit Meta",
+    "paymentRecheck": "Kontrollo përsëri",
+    "paymentFound": "Pagesa u lidh",
+    "verify": {
+      "title": "Biznesi nuk është verifikuar me Meta",
+      "lead": "Numri funksionon, por me kufi të reduktuar prej 250 marrësish unikë në ditë. Verifikimi e heq kufirin dhe mundëson nisje të plotë. Studioja duhet ta bëjë vetë — llogaria WhatsApp ju përket juve dhe Velora nuk mund ta kalojë në emrin tuaj.",
+      "stepsTitle": "Si ta verifikoni biznesin:",
+      "step1a": "Hapni",
+      "link": "Qendrën e Sigurisë së Biznesit Meta",
+      "step1b": "dhe klikoni “Nis verifikimin”. Ju duhen të drejta administratori në llogarinë e biznesit.",
+      "step2": "Plotësoni të dhënat ligjore: emrin saktësisht si në dokumente, adresën, telefonin dhe sajtin. Sajti duhet të jetë aktiv dhe të përdorë HTTPS.",
+      "step3": "Ngarkoni dokumentin e regjistrimit të biznesit dhe prisni që Meta ta shqyrtojë.",
+      "step4": "Konfirmoni se jeni të lidhur me biznesin: email në domenin e sajtit, telefonatë ose SMS në numrin e listuar, ose verifikim domeni.",
+      "step5": "Prisni vendimin — zakonisht 1–5 ditë pune. Statusi është në të njëjtën Qendër Sigurie; nëse refuzohet, Meta jep arsyen dhe lejon riaplikim.",
+      "docsTitle": "Cilat dokumente pranohen (një nga secili grup):",
+      "doc1": "Regjistrimi: certifikata e themelimit, ekstrakti i regjistrit, licenca e biznesit ose dokument tatimor.",
+      "doc2": "Dëshmi e pranisë: sajt funksional, faqe zyrtare në rrjet social ose listim në direktori biznesi.",
+      "pitfallTitle": "Arsyeja më e zakonshme e refuzimit",
+      "pitfall": "Emri i biznesit te Meta dhe në dokument duhet të përputhet karakter për karakter, përfshirë formën ligjore dhe pikësimin. “Romashka LLC” dhe “Romashka, LLC” llogariten si emra të ndryshëm."
+    },
+    "templatesTitle": "Shabllonet e mesazheve",
+    "templates": "Meta nuk ju lejon t'i shkruani i pari klientit pa shabllon të miratuar paraprakisht. Krijoni shabllone për çdo ngjarje — do të kalojnë shqyrtimin dhe nisin të funksionojnë sapo të miratohen.",
+    "templatesAction": "Përgatit shabllonet",
+    "templatesPending": "Po krijohen shabllonet…",
+    "templatesPartial": "Meta refuzoi disa shabllone: {{failed}}. Shihni regjistrat për hollësi",
+    "templatesRejected": "— këto njoftime nuk po dërgohen. Kontrolloni formulimin në llogarinë Meta dhe krijojini përsëri shabllonet.",
+    "templatesPendingHint": "— Meta mund të zgjasë deri në një ditë. {{approved}} janë miratuar tashmë dhe po dërgohen.",
+    "templatesOkTitle": "Shabllonet u miratuan",
+    "paidWarning": "Mesazhet WhatsApp janë me pagesë",
+    "approxPrice": "rreth.",
+    "pricingLoading": "Po ngarkohet çmimi aktual…",
+    "perMessage": "për mesazh",
+    "viaMeta": "të faturuara drejtpërdrejt nga Meta",
+    "windowNotice": "Dërgimi garantohet vetëm brenda dritares 24-orëshe të bisedës.",
+    "connect": "Lidhu me WhatsApp",
+    "disconnect": "Shkëput",
+    "disconnectTitle": "Të shkëputet WhatsApp?",
+    "disconnectMessage": "Klientët dhe stafi nuk do të marrin më njoftime përmes këtij kanali.",
+    "close": "Mbyll",
+    "cancel": "Anulo",
+    "templatesDone_one": "Shabllonet gati: {{count}}. Në pritje të shqyrtimit nga Meta",
+    "templatesDone_other": "Shabllonet gati: {{count}}. Në pritje të shqyrtimit nga Meta",
+    "templatesRejectedTitle_one": "Meta refuzoi {{count}} shabllon",
+    "templatesRejectedTitle_other": "Meta refuzoi {{count}} shabllone",
+    "templatesPendingTitle_one": "{{count}} shabllon në shqyrtim",
+    "templatesPendingTitle_other": "{{count}} shabllone në shqyrtim",
+    "templatesOk_one": "{{count}} kaloi shqyrtimin e Meta — njoftimet po dërgohen.",
+    "templatesOk_other": "Të {{count}} kaluan shqyrtimin e Meta — njoftimet po dërgohen."
+  },
+  "tabs": {
+    "matrix": "Cilësimet",
+    "log": "Regjistri i dërgimeve"
+  },
+  "log": {
+    "title": "Regjistri i dërgimeve",
+    "subtitle": "Çfarë u dërgua, kujt dhe kur, si dhe si përfundoi çdo dërgim.",
+    "status": {
+      "sent": "Dërguar",
+      "rejected": "Refuzuar",
+      "error": "Dështim lidhjeje",
+      "pending": "Në proces"
+    },
+    "searchPlaceholder": "Telefon, email ose kod ngjarjeje",
+    "allChannels": "Të gjitha kanalet",
+    "reset": "Rivendos",
+    "refreshing": "Po rifreskohet…",
+    "otherEvent": "Dërgim jashtë katalogut",
+    "empty": "Ende nuk është dërguar asgjë",
+    "emptyHint": "Çdo njoftim që studioja u dërgon klientëve dhe stafit shfaqet këtu.",
+    "emptyFiltered": "Nuk u gjet asgjë",
+    "emptyFilteredHint": "Provoni të ndryshoni filtrat ose kërkoni një numër tjetër.",
+    "loadError": "Nuk mundëm të ngarkonim regjistrin",
+    "loadErrorHint": "Rifreskoni faqen — nëse nuk ndihmon, kontaktoni mbështetjen.",
+    "range": "{{from}}–{{to}} nga {{total}}",
+    "prev": "Mbrapa",
+    "next": "Tjetra"
+  }
+}

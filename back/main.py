@@ -30,6 +30,7 @@ from routers.loyalty.packages import router as catalog_subscriptions_router
 from routers.booking import router as booking_router, miniapp_router
 from routers.billing import router as billing_router
 from routers.checkout import router as checkout_router, webhook_router as checkout_webhook_router
+from routers.admin import router as admin_router, collect_router as landing_collect_router
 from dependencies import require_active_subscription
 from fastapi import Depends
 
@@ -135,6 +136,12 @@ app.include_router(booking_router, prefix="/booking", tags=["Booking"])
 # без JWT и без гейта подписки — как и остальная публичная запись.
 app.include_router(miniapp_router, prefix="/global", tags=["Miniapp"])
 app.include_router(billing_router, prefix="/billing", tags=["Billing"])
+# Платформенная админка: свой секрет подписи, своя зависимость, студии у неё нет
+# вовсе — поэтому ни JWT кабинета, ни гейт подписки к ней не применяются.
+app.include_router(admin_router, prefix="/adm/api", tags=["Admin"])
+# Маяк лендинга — публичный и БЕЗ префикса админки: его зовёт браузер
+# анонимного посетителя, а /adm/api закрыт токеном целиком.
+app.include_router(landing_collect_router, tags=["Admin"])
 
 try:
     os.makedirs("static/logos", exist_ok=True)
@@ -183,6 +190,33 @@ if os.path.isfile(_MINIAPP_INDEX):
         # Студию отсюда не проверяем: страница одна на все студии, а какая это
         # студия, мини-приложение спросит у API само (services/studio_link).
         return FileResponse(_MINIAPP_INDEX)
+
+
+# --- Платформенная админка ------------------------------------------------------
+# Тот же механизм, что у мини-приложения: сборка делается на хосте, dist
+# монтируется томом, раздаётся отсюда. Отдельного хостинга и второго процесса
+# ради трёх статических файлов не нужно.
+#
+# Ассеты лежат под /adm/assets (vite base='/adm/'), а не под /assets: последний
+# уже занят мини-приложением, и без префикса они перекрыли бы друг друга.
+#
+# Роутера внутри админки нет — экраны переключаются состоянием, поэтому
+# catch-all не нужен и пути /adm/api остаются за API.
+_ADMIN_DIST = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "admin", "dist"
+)
+_ADMIN_INDEX = os.path.join(_ADMIN_DIST, "index.html")
+
+if os.path.isfile(_ADMIN_INDEX):
+    app.mount(
+        "/adm/assets",
+        StaticFiles(directory=os.path.join(_ADMIN_DIST, "assets")),
+        name="admin-assets",
+    )
+
+    @app.get("/adm", include_in_schema=False)
+    async def admin_index():
+        return FileResponse(_ADMIN_INDEX)
 
 
 @app.get("/")

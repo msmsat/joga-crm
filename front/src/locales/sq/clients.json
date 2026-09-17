@@ -1,0 +1,429 @@
+{
+  "categories": {
+    "all": "Të gjithë",
+    "vip": "VIP",
+    "active": "Aktivë",
+    "new": "Të rinj",
+    "has_subscription": "Me abonim",
+    "inactive": "Joaktivë",
+    "frozen": "Të ngrirë",
+    "birthday": "Ditëlindje"
+  },
+  "categoriesInfo": {
+    "all": {
+      "text": "Lista e plotë e klientëve të studios, pa filtër statusi të aplikuar."
+    },
+    "vip": {
+      "text": "Pagesa të suksesshme me vlerë totale 50 000+ ose 30+ vizita. VIP mund të fiksohet edhe manualisht në kartën e klientit; fiksimi manual mbetet pavarësisht shumave."
+    },
+    "active": {
+      "text": "Të paktën një vizitë në 60 ditët e fundit. Bazohet në pjesëmarrjen e shënuar në ditar — statusi përditësohet vetë, pa pasur nevojë të caktohet me dorë."
+    },
+    "new": {
+      "text": "15 ditët e para nga data e regjistrimit, pavarësisht nëse klienti u shtua manualisht apo erdhi nga rezervimi online. Në ditën e 16-të kalon automatikisht te Aktiv ose Joaktiv."
+    },
+    "has_subscription": {
+      "text": "Ka abonim aktiv: jo të skaduar, jo të ngrirë dhe me seanca të mbetura. Përditësohet menjëherë në blerje, pas çdo seance të përdorur dhe kur skadon."
+    },
+    "inactive": {
+      "text": "Pa vizita në 60 ditët e fundit — ose pa vizituar kurrë dhe kanë kaluar mbi 15 ditë nga regjistrimi."
+    },
+    "frozen": {
+      "text": "I ngrirë nga butoni në kartën e klientit — i vetmi status që caktohet me dorë. Pas çngrirjes, klienti kthehet te statusi automatik."
+    },
+    "birthday": {
+      "text": "Ata që kanë ditëlindjen sot — dita dhe muaji përputhen, viti shpërfillet. Lista rifreskohet automatikisht çdo ditë."
+    }
+  },
+  "status": {
+    "active": "Aktiv",
+    "vip": "VIP",
+    "new": "I ri",
+    "inactive": "Joaktiv",
+    "frozen": "I ngrirë"
+  },
+  "filtersGuide": {
+    "trigger": "Rreth filtrave",
+    "title": "Filtrat e klientëve",
+    "subtitle": "Si llogaritet çdo kategori. Klikoni një kartë për të zbatuar filtrin ose ndryshoni pragun — statuset rillogariten menjëherë.",
+    "close": "Mbyll",
+    "rule": {
+      "new_client_days": "I ri për",
+      "active_within_days": "Vizitë brenda",
+      "vip_min_spent": "Shpenzuar nga",
+      "vip_min_visits": "ose vizita"
+    },
+    "unit": {
+      "days": "ditë",
+      "money": "",
+      "visits": "vizita"
+    }
+  },
+  "toolbar": {
+    "searchPlaceholder": "Kërko klient…",
+    "addClient": "Shto klient"
+  },
+  "table": {
+    "visits": "vizita",
+    "frozenBadge": "❄ i ngrirë",
+    "totalSpent": "Shpenzuar gjithsej",
+    "subscription": "Abonim",
+    "of": "nga",
+    "noSubscription": "Pa abonim"
+  },
+  "loadMore": "Ngarko më shumë",
+  "loading": "Po ngarkohet…",
+  "panel": {
+    "tabs": {
+      "info": "Profili",
+      "events": "Ngjarjet",
+      "notes": "Shënimet",
+      "wallet": "Blerjet"
+    },
+    "actions": {
+      "book": "Rezervo",
+      "bonus": "Bonus"
+    },
+    "editDateHint": "Klikoni për ta ndryshuar",
+    "since": "që nga {{date}}",
+    "contacts": {
+      "title": "Kontaktet",
+      "phone": "Telefon",
+      "email": "E-mail",
+      "telegram": "Telegram",
+      "birthDate": "Data e lindjes",
+      "city": "Qyteti",
+      "copyHint": " · klikoni për të kopjuar"
+    },
+    "debt": "{{amount}} të papaguara për seanca — pranoni pagesën te Ditari",
+    "stats": {
+      "visits": "Vizitat",
+      "spent": "Shpenzuar",
+      "subscription": "Abonim"
+    },
+    "loyalty": {
+      "points": "pikë",
+      "level": "niveli {{tier}}",
+      "toNext": "Deri në nivelin tjetër: {{points}} pikë",
+      "multiplier": "shumëzues pikësh ×{{value}}",
+      "worth": "Vlen {{amount}} në arkë",
+      "toNextLevel": "Edhe {{amount}} për të arritur {{level}}",
+      "pointValue": "1 pikë = {{amount}}",
+      "nextPointValue": "në {{level}} — {{amount}}",
+      "noBonus": "Ky nivel nuk e ndryshon vlerën e pikëve"
+    },
+    "referral": {
+      "title": "Fto një mik",
+      "copy": "Kopjo"
+    },
+    "abonement": {
+      "title": "Abonim",
+      "lessons": "{{remaining}}/{{total}} seanca",
+      "noSubscription": "Nuk ka abonim aktiv",
+      "noSubscriptionWarning": "Klienti nuk ka abonim — ofrojini një",
+      "lowWarning": "Kanë mbetur pak seanca — ofroni rinovim",
+      "finishedWarning": "Nuk kanë mbetur seanca — ofroni rinovim",
+      "remind": "Kujtoji klientit",
+      "reminderSent": "Kujtesa iu dërgua klientit"
+    },
+    "products": {
+      "single": "e vetme",
+      "pending": "në pritje",
+      "frozen": "i ngrirë",
+      "until": "Vlen deri më {{date}}",
+      "startsOnFirstVisit": "Afati fillon me seancën e parë"
+    },
+    "wallet": {
+      "buy": "Bli",
+      "active": "Aktive",
+      "archived": "Të arkivuara",
+      "singles": "Vizita të vetme",
+      "subscriptions": "Abonimet",
+      "noSingles": "Ende pa vizita të vetme",
+      "emptyActive": "Nuk ka produkte aktive",
+      "emptyArchived": "Nuk ka produkte të arkivuara",
+      "emptyCatalog": "Kjo studio nuk ka ende paketa abonimi",
+      "lessons": "{{remaining}}/{{total}} seanca",
+      "perVisit": "Për vizitë të vetme",
+      "until": "deri më {{date}}",
+      "frozenBadge": "I ngrirë",
+      "loadFailed": "Ngarkimi i portofolit dështoi",
+      "back": "← Kthehu",
+      "catalogTitle": "Katalogu",
+      "showAll": "Të gjitha",
+      "posTitle": "Arka",
+      "promoLabel": "Kodi promocional",
+      "promoPlaceholder": "Shkruani kodin promocional",
+      "promoInvalid": "Kodi promocional nuk është i vlefshëm",
+      "useDeposit": "Paguaj nga depozita ({{amount}})",
+      "certLabel": "Kodi i certifikatës",
+      "certPlaceholder": "Shkruani kodin e certifikatës",
+      "certApplied": "Certifikata",
+      "depositApplied": "Depozita",
+      "base": "Çmimi bazë",
+      "discount": "Zbritja",
+      "bonuses": "Bonuset",
+      "total": "Gjithsej",
+      "cash": "Para në dorë",
+      "card": "Kartë",
+      "cardStripe": "Pagesat me kartë kalojnë përmes një faqeje Stripe dhe shkojnë drejtpërdrejt në llogarinë e studios. Konfigurojini te Financat → Pagesat online.",
+      "offlineLocked": "Pagesat me para në dorë ofrohen në planet Combo dhe më të larta",
+      "payByCard": "Paguaj me kartë",
+      "confirmPay": "Konfirmo pagesën",
+      "confirmPayCovered": "Konfirmo (e paguar tashmë)",
+      "confirmTitle": "Të konfirmohet pagesa e marrë?",
+      "confirmMessage": "Kjo do të regjistrojë të ardhura prej {{amount}} dhe do t'ia japë produktin klientit.",
+      "confirmMessageCard": "Do të hapet formulari i pagesës Stripe për {{amount}}. Produkti jepet dhe të ardhurat regjistrohen sapo pagesa të kryhet me sukses.",
+      "payToStudio": "Pagesa shkon në llogarinë e studios",
+      "payConfirming": "Po verifikohet pagesa…",
+      "close": "Mbyll",
+      "confirmMessageCovered": "Pagesa mbulohet plotësisht nga depozita ose certifikata. Produkti do t'i jepet klientit.",
+      "paySuccess": "Pagesa u regjistrua",
+      "payCancelled": "Pagesa u anulua — nuk u tërhoq asgjë",
+      "payNotCompleted": "Stripe ende nuk e ka konfirmuar pagesën. Nëse karta u tarifua, rifreskoni pas një minute.",
+      "payNotApplied": "Karta u tarifua, por shitja nuk u regjistrua: kushtet ndryshuan (certifikata, kodi promocional ose paketa). Regjistrojeni shitjen manualisht ose rimbursoni në Stripe.",
+      "transfer": "Transfero",
+      "transferTitle": "Transfero abonimin",
+      "transferSearchLabel": "Transfero te",
+      "transferSearchPlaceholder": "Emri ose telefoni i klientit",
+      "transferSelectPlaceholder": "Zgjidh klientin",
+      "transferConfirm": "Transfero",
+      "transferSuccess": "Abonimi u transferua",
+      "lessonsCount_one": "{{count}} seancë",
+      "lessonsCount_other": "{{count}} seanca",
+      "useBonuses_one": "Përdor bonuset ({{count}})",
+      "useBonuses_other": "Përdor bonuset ({{count}})",
+      "bonusesSpent_one": "Bonuset ({{count}} pikë)",
+      "bonusesSpent_other": "Bonuset ({{count}} pikë)"
+    },
+    "offers": {
+      "title": "Zbritje personale",
+      "empty": "Nuk ka zbritje aktive",
+      "grant": "Jep zbritje",
+      "cancel": "Anulo",
+      "valuePercent": "{{value}}%",
+      "valueAmount": "{{value}} ₽",
+      "untilDate": "deri më {{date}}",
+      "noExpiry": "pa skadim",
+      "scopeRenewal": "për rinovim",
+      "grantTitle": "Jep një zbritje personale",
+      "grantValue": "Masa e zbritjes",
+      "grantType": {
+        "percent": "Përqindje (%)",
+        "amount": "Shuma (₽)"
+      },
+      "grantValidUntil": "Vlen deri më",
+      "grantSubmit": "Jep",
+      "cancelConfirmTitle": "Të anulohet zbritja?",
+      "cancelConfirmMessage": "Klienti nuk do të mund ta përdorë më këtë ofertë.",
+      "toasts": {
+        "granted": "Zbritja u dha",
+        "cancelled": "Zbritja u anulua",
+        "loadFailed": "Ngarkimi i zbritjeve dështoi"
+      }
+    },
+    "activity": {
+      "compactTitle": "Aktiviteti (3 muaj)",
+      "clickForDetails": "Klikoni për hollësi",
+      "detailedTitle": "Aktiviteti i hollësishëm",
+      "periods": {
+        "month3": "3 muaj",
+        "month6": "6 muaj"
+      },
+      "visitsInPeriod": "Vizitat në periudhë",
+      "emptyState": "Nuk ka vizita në këtë periudhë",
+      "insightTitle": "Pjesëmarrja mesatare",
+      "insightBody": "Mesatarisht {{avg}} vizita në muaj gjatë periudhës së zgjedhur.",
+      "months": {
+        "jan": "jan",
+        "feb": "shk",
+        "mar": "mar",
+        "apr": "pri",
+        "may": "maj",
+        "jun": "qer",
+        "jul": "kor",
+        "aug": "gush",
+        "sep": "sht",
+        "oct": "tet",
+        "nov": "nën",
+        "dec": "dhj"
+      },
+      "visitsTooltip_one": "{{count}} vizitë",
+      "visitsTooltip_other": "{{count}} vizita"
+    },
+    "tags": {
+      "title": "Etiketat",
+      "add": "Shto",
+      "close": "Mbyll",
+      "customPlaceholder": "Etiketë e personalizuar + Enter…"
+    },
+    "danger": {
+      "freeze": "Ngri",
+      "unfreeze": "Çngri",
+      "freezeDisabledHint": "Ngrirja është çaktivizuar te Katalogu → cilësimet e abonimeve",
+      "delete": "Fshi"
+    },
+    "events": {
+      "filterTabs": {
+        "all": "Të gjitha",
+        "payment": "Pagesat",
+        "visit": "Vizitat",
+        "booking": "Rezervimet",
+        "cancel": "Anulimet",
+        "bonus": "Bonuset",
+        "freeze": "Ngrirjet"
+      },
+      "empty": "Nuk ka ngjarje"
+    },
+    "notes": {
+      "title": "Shënime të administratorit",
+      "prefix": "Shënim · {{date}}",
+      "save": "Ruaj",
+      "cancel": "Anulo",
+      "addPlaceholder": "Shkruani një shënim…",
+      "add": "Shto shënim",
+      "justNow": "sapo tani",
+      "deleteTitle": "Të fshihet shënimi?",
+      "deleteMessage": "Ky shënim nuk mund të rikthehet."
+    },
+    "bookingPanel": {
+      "title": "Rezervim i shpejtë",
+      "today": "Sot",
+      "noLessons": "Nuk ka seanca këtë ditë",
+      "full": "Nuk ka vende",
+      "confirm": "Rezervo →",
+      "noSubscription": "Klienti nuk ka abonim të disponueshëm për rezervim",
+      "individual": "Shërbim individual"
+    },
+    "bonusPanel": {
+      "title": "Jep bonus"
+    },
+    "toasts": {
+      "noPhone": "Klienti nuk ka numër telefoni",
+      "copied": "U kopjua me sukses",
+      "bookingCreated": "Rezervimi u krijua",
+      "bookingFailed": "Rezervimi dështoi",
+      "bonusFailed": "Dhënia e pikëve dështoi",
+      "bonusApplied": "Bonusi u dha: {{label}}",
+      "clientAdded": "Klienti u shtua"
+    },
+    "bonusOptions": {
+      "p200": {
+        "label": "+200 pikë",
+        "description": "Shtoje te bilanci i besnikërisë"
+      },
+      "p500": {
+        "label": "+500 pikë",
+        "description": "Shtoje te bilanci i besnikërisë"
+      },
+      "p1000": {
+        "label": "+1000 pikë",
+        "description": "Shtoje te bilanci i besnikërisë"
+      }
+    }
+  },
+  "tags": {
+    "suggested": [
+      "Provë",
+      "VIP",
+      "Rekomandim",
+      "Online",
+      "Grup",
+      "Personal"
+    ]
+  },
+  "addModal": {
+    "title": "Klient i ri",
+    "cancel": "Anulo",
+    "back": "← Kthehu",
+    "continue": "Vazhdo →",
+    "submit": "Shto klient ✓",
+    "stepCounter": "Hapi {{current}} nga {{total}}",
+    "trustSignal": "Të dhënat janë të mbrojtura dhe të dukshme vetëm për administratorët",
+    "steps": {
+      "1": {
+        "title": "Të dhënat personale",
+        "sub": "Shkruani të dhënat e kontaktit të klientit"
+      },
+      "2": {
+        "title": "Të dhënat e profilit",
+        "sub": "Informacion shtesë (opsional)"
+      },
+      "3": {
+        "title": "Abonimi",
+        "sub": "Zgjidhni një lloj abonimi dhe shtoni shënim"
+      },
+      "4": {
+        "title": "Gjithçka gati!",
+        "sub": "Kontrolloni të dhënat dhe shtoni klientin"
+      }
+    },
+    "step1": {
+      "previewLabel": "Klient i ri · Parapamje",
+      "name": "Emri i plotë *",
+      "namePlaceholder": "Arben Hoxha",
+      "phone": "Telefon",
+      "phonePlaceholder": "+355 69 000 0000",
+      "email": "E-mail",
+      "emailPlaceholder": "klient@shembull.al"
+    },
+    "step2": {
+      "bday": "Data e lindjes",
+      "bdayPlaceholder": "12 prill 1990",
+      "city": "Qyteti",
+      "cityPlaceholder": "Tiranë",
+      "tags": "Etiketat",
+      "tagsPlaceholder": "Pilates, VIP, rehabilitim… (Enter)",
+      "tagsHint": "Shtoni etiketë duke shtypur Enter",
+      "inviteCode": "Kodi i ftesës së referuesit",
+      "inviteCodePlaceholder": "Opsionale",
+      "inviteCodeHint": "Nëse jepet, të dy merrni bonus"
+    },
+    "step3": {
+      "classCount": "Abonimi",
+      "classesUnit": "seanca",
+      "selected": "E zgjedhur",
+      "noPackage": "Pa abonim",
+      "noPackages": "Kjo studio nuk ka ende paketa abonimi",
+      "noPackagesLink": "Krijo paketa te Katalogu →",
+      "alreadyPaid": "A ka paguar tashmë klienti për këtë abonim?",
+      "yes": "Po",
+      "no": "Jo",
+      "note": "Shënim",
+      "notePlaceholder": "Kërkesa të veçanta, kundërindikacione, preferenca…",
+      "classesCount_one": "{{count}} seancë",
+      "classesCount_other": "{{count}} seanca"
+    },
+    "step4": {
+      "readyTitle": "Të dhënat u plotësuan!",
+      "readySub": "Kontrolloni të dhënat dhe konfirmoni shtimin",
+      "newClient": "Klient i ri",
+      "fields": {
+        "phone": "Telefon",
+        "email": "E-mail",
+        "bday": "Data e lindjes",
+        "city": "Qyteti",
+        "subscription": "Abonimi",
+        "tags": "Etiketat"
+      },
+      "smsTitle": "Dërgo SMS mirëseardhjeje",
+      "smsSub": "Klienti do të marrë një mesazh ftese",
+      "subscriptionValue_one": "{{count}} seancë",
+      "subscriptionValue_other": "{{count}} seanca"
+    },
+    "errors": {
+      "name": "Shkruani një emër (të paktën 2 karaktere)",
+      "phone": "Numër telefoni i pavlefshëm",
+      "email": "E-mail i pavlefshëm",
+      "city": "Shkruani një qytet"
+    }
+  },
+  "deleteModal": {
+    "title": "Të fshihet klienti?",
+    "body": "Jeni gati të fshini klientin",
+    "warning": "Ky veprim nuk mund të zhbëhet.",
+    "cancel": "Anulo",
+    "confirm": "Fshi",
+    "success": "Klienti u fshi"
+  }
+}

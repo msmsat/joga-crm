@@ -42,6 +42,10 @@ services:
       # не тащить фронтовую сборку в питоновский образ. Папки нет → мини-ап отдаёт
       # 404, но API живёт: main.py монтирует эти маршруты только если dist на месте.
       - ./miniapp/dist:/miniapp/dist:ro
+      # Собранная админка платформы — та же история, что с мини-аппом: в образ
+      # она не попадает (build-контекст — ./back), монтируем с хоста. Папки нет —
+      # /adm отдаёт 404, API живёт.
+      - ./admin/dist:/admin/dist:ro
     depends_on:
       db:
         condition: service_healthy
@@ -80,6 +84,9 @@ services:
       SITE_ADDRESS: ${SITE_ADDRESS:-:80}
       # Домен для голых путей бэкенда (мини-ап, вебхуки) — см. front/Caddyfile.
       API_ADDRESS: ${API_ADDRESS:-:8080}
+      # Домен панели платформы. Пусто — отдельный домен не поднимается, панель
+      # доступна по <домен API>/adm.
+      ADMIN_ADDRESS: ${ADMIN_ADDRESS:-:8081}
     ports:
       - "80:80"
       - "443:443"

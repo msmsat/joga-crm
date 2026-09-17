@@ -1,0 +1,241 @@
+== no
+loading	Laster…
+chModal.eyebrow	Varslingskanal
+chModal.connected	Tilkoblet
+chModal.notConnected	Ikke tilkoblet
+chModal.setup	Oppsett av tilkobling
+chModal.details	Tilkoblingsdetaljer
+chModal.ready	Kanalen er klar og i drift
+chModal.readyHint	Varsler for aktiverte hendelser sendes automatisk.
+chModal.bot	Bot
+chModal.token	Token
+chModal.phone	Nummer
+chModal.account	Konto
+chModal.sender	Avsender
+channels.title	Leveringskanaler
+channels.connect	Koble til
+channels.connected	Tilkoblet
+channels.openSettings	Innstillinger for {{channel}}
+channels.waLockedHint	Kanalen låses opp når Meta har betalingsmetoden din, en verifisert bedrift og godkjente maler
+channels.waBlocker.payment	Ingen betalingsmetode — påminnelser leveres ikke. Sett opp
+channels.waBlocker.verification	Bedriften er ikke verifisert hos Meta — grense på 250/dag. Slik fikser du det
+channels.waBlocker.templates	Malene er fortsatt til gjennomgang hos Meta — ingenting blir sendt. Detaljer
+roles.client	Kunde
+roles.trainer	Trener
+roles.admin	Administrator
+roles.owner	Eier
+roles.activeCount_one	{{count}} aktiv
+roles.activeCount_other	{{count}} aktive
+matrix.saving	Lagrer…
+matrix.allSaved	Alle endringer er lagret
+matrix.notSaved	Ikke lagret
+matrix.activateAll	Aktiver alle
+matrix.deactivateAll	Fjern alle avkrysninger
+matrix.activeCount_one	Aktive utløsere: {{count}} av {{total}}
+matrix.activeCount_other	Aktive utløsere: {{count}} av {{total}}
+matrix.scenariosFor	Scenarioer for: {{role}}
+matrix.configureFor_one	Konfigurer kanaler for {{count}} systemutløser
+matrix.configureFor_other	Konfigurer kanaler for {{count}} systemutløsere
+matrix.eventColumn	Systemhendelse
+matrix.noActiveChannels	Ingen aktive kanaler
+matrix.noActiveChannelsHint	Aktiver minst én leveringskanal i panelet til venstre
+matrix.adviceLabel	Tips:
+matrix.advice	Konfigurer separat for hver rolle hva som sendes og hvor — Velora håndterer det automatisk.
+matrix.tiers.critical	Påkrevd · kan ikke slås av
+matrix.tiers.operational	Operativ
+matrix.tiers.optional	Valgfri
+matrix.lock.critical	Påkrevd varsel — kan ikke slås av
+matrix.lock.lastChannel	Siste leveringskanal — kan ikke slås av
+matrix.channelDisconnected	Kanalen er ikke tilkoblet
+events.c1.title	Bestilling bekreftet
+events.c1.desc	Ved vellykket klassebestilling
+events.c2.title	Påminnelse om klasse
+events.c2.desc	24 timer og 2 timer før
+events.c3.title	Klasse avlyst
+events.c3.desc	Når treneren eller studioet avlyser
+events.c4.title	Betaling gjennomført
+events.c4.desc	Kvittering etter vellykket belastning
+events.c5.title	Få klasser igjen
+events.c5.desc	Når det er 1–2 besøk igjen i pakken
+events.c6.title	Pakken utløper
+events.c6.desc	3 dager før utløpsdatoen
+events.c7.title	Bursdag
+events.c7.desc	Hilsen med et spesielt tilbud
+events.c8.title	Forespørsel om vurdering
+events.c8.desc	Etter deltakelse på en klasse
+events.c9.title	Refusjon
+events.c9.desc	Ved avbestilling og behandling av refusjon
+events.c10.title	Klassen er ikke betalt ennå
+events.c10.desc	Kunden deltok, men har ikke betalt
+events.c11.title	Klasse flyttet
+events.c11.desc	Tid, rom eller trener ble endret
+events.c12.title	Bonus lagt til
+events.c12.desc	Poeng eller bonus lagt til kunden
+events.c13.title	Kaffe etter klassen
+events.c13.desc	Hvem i gruppen som skal ta en kaffe
+events.t1.title	Ny bestilling hos trener
+events.t1.desc	En kunde bestilte en personlig økt
+events.t2.title	Kunden avbestilte bestilling
+events.t2.desc	Kunden avbestilte mindre enn 2 t før
+events.t3.title	Påminnelse om klasse
+events.t3.desc	1 time før start
+events.t4.title	Gruppeliste
+events.t4.desc	30 min. før en gruppetime
+events.t5.title	Endring i timeplanen
+events.t5.desc	Administrator endret tidspunkt eller sted
+events.t6.title	Lønn opptjent
+events.t6.desc	Ukentlig utbetalingsberegning
+events.t7.title	Ny treneranmeldelse
+events.t7.desc	Kunden ga en vurdering etter klassen
+events.t8.title	Kundens bursdag
+events.t8.desc	Påminnelse om å gratulere personlig
+events.t9.title	Klasse avlyst
+events.t9.desc	Studioet eller administratoren avlyste klassen din
+events.a1.title	Ny nettbestilling
+events.a1.desc	Kunden bestilte via nettsted eller widget
+events.a2.title	Avbestilling i siste liten
+events.a2.desc	Mindre enn 1 time før klassen
+events.a3.title	Ny kunde i systemet
+events.a3.desc	Registrering av ny bruker
+events.a4.title	Betaling mottatt
+events.a4.desc	Enhver vellykket belastning
+events.a6.title	Pakkene begynner å bli tomme
+events.a6.desc	Gruppe kunder med ≤1 klasse igjen
+events.a7.title	Konflikt i timeplanen
+events.a7.desc	Overlappende klasser i journalen
+events.a8.title	Daglig rapport
+events.a8.desc	Oppsummering ved dagens slutt
+events.a9.title	Innloggingsforsøk
+events.a9.desc	Innlogging fra en ny enhet
+events.a10.title	Refusjon
+events.a10.desc	Administrator utstedte en refusjon
+events.o1.title	Daglig oppsummering
+events.o1.desc	Inntekt, bestillinger, oppmøte for dagen
+events.o2.title	Ukentlig rapport
+events.o2.desc	KPI-er: kundevekst, LTV, konvertering
+events.o3.title	Stor betaling
+events.o3.desc	Belastning over angitt grense
+events.o4.title	Dataavvik
+events.o4.desc	Bratt fall i bestillinger eller inntekt
+events.o5.title	Nytt medarbeidermedlem
+events.o5.desc	Administrator opprettet en ny konto
+events.o6.title	Fornyelse av plan
+events.o6.desc	Påminnelse om betaling for Velora-abonnementet
+events.o7.title	Tilgangsrettigheter endret
+events.o7.desc	Tillatelsene til medarbeideren ble endret
+events.o8.title	KPI nådd
+events.o8.desc	Månedlig mål oppnådd
+events.o9.title	Dataeksport
+events.o9.desc	Noen eksporterte kundedatabasen
+tg.title	Telegram
+tg.subtitleConnected	Kanalen er tilkoblet
+tg.subtitleDisconnected	Koble til varslingsboten
+tg.connected	Tilkoblet
+tg.pasteToken	Lim inn bottokenet du fikk fra @BotFather.
+tg.invalidToken	Ugyldig tokenformat
+tg.howToGet	Slik får du et token:
+tg.steps.1	Åpne @BotFather i Telegram
+tg.steps.2	Send kommandoen /newbot og følg instruksjonene
+tg.steps.3	Kopier det utstedte tokenet
+tg.steps.4	Lim det inn i feltet over
+tg.connect	Koble til
+tg.disconnect	Koble fra
+tg.disconnectTitle	Koble fra Telegram?
+tg.disconnectMessage	Kunder og ansatte vil slutte å motta varsler gjennom denne kanalen.
+tg.close	Lukk
+tg.cancel	Avbryt
+emailCh.title	E-post
+emailCh.subtitle	Avsenderadresse for kunde-e-poster
+emailCh.verifiedLabel	Verifisert
+emailCh.emailLabel	Avsender-e-post
+emailCh.emailPlaceholder	admin@studio.com
+emailCh.invalidEmail	Skriv inn en gyldig e-postadresse
+emailCh.sendCode	Send kode
+emailCh.codeSentTo	Kode sendt til
+emailCh.codeHint	Skriv inn den 6-sifrede koden fra e-posten.
+emailCh.codeLabel	Bekreftelseskode
+emailCh.resend	Send koden på nytt
+emailCh.viaVelora	E-poster sendes via Velora-serveren på dine vegne.
+emailCh.wrongCode	Ugyldig eller utløpt kode
+emailCh.verify	Bekreft
+emailCh.back	Tilbake
+emailCh.cancel	Avbryt
+wa.title	WhatsApp
+wa.subtitleConnected	Kanalen er tilkoblet
+wa.subtitleDisconnected	Logg inn med Meta-bedriftskontoen din
+wa.connected	Tilkoblet
+wa.paymentRequiredTitle	Du trenger et kort
+wa.paymentRequired	Det er gratis å koble til nummeret, men Meta leverer først kundepåminnelser når et kort er lagt til. Du legger det til separat —
+wa.paymentMissingTitle	Ingen betalingsmetode
+wa.paymentMissing	Akkurat nå virker bare botsvar på innkommende meldinger. Meta avviser påminnelser, bekreftelser og utsendelser til et kort er lagt til —
+wa.paymentOkTitle	Betaling tilkoblet
+wa.paymentOk	varsler leveres fullt ut.
+wa.paymentUnknown	Vi kunne ikke kontrollere betalingsmetoden hos Meta — vi viser status ved neste forsøk.
+wa.paymentLink	Metas faktureringssenter
+wa.paymentRecheck	Sjekk igjen
+wa.paymentFound	Betaling tilkoblet
+wa.verify.title	Bedriften er ikke verifisert hos Meta
+wa.verify.lead	Nummeret virker, men med redusert grense på 250 unike mottakere per dag. Verifisering fjerner grensen og åpner for full lansering. Studioet må gjøre det selv — WhatsApp-kontoen tilhører deg, og Velora kan ikke gjøre det på dine vegne.
+wa.verify.stepsTitle	Slik verifiserer du bedriften:
+wa.verify.step1a	Åpne
+wa.verify.link	Meta Business Security Center
+wa.verify.step1b	og trykk «Start verifisering». Du trenger administratorrettigheter på bedriftskontoen.
+wa.verify.step2	Fyll inn de juridiske opplysningene: navnet nøyaktig som i dokumentene, adresse, telefon og nettsted. Nettstedet må være aktivt og bruke HTTPS.
+wa.verify.step3	Last opp et registreringsdokument for bedriften og vent på at Meta gjennomgår det.
+wa.verify.step4	Bekreft at du er knyttet til bedriften: e-post på nettstedets domene, et anrop eller SMS til oppført telefon, eller domeneverifisering.
+wa.verify.step5	Vent på avgjørelsen — vanligvis 1–5 virkedager. Statusen er i samme sikkerhetssenter; ved avslag oppgir Meta grunnen og lar deg søke igjen.
+wa.verify.docsTitle	Hvilke dokumenter fungerer (ett fra hver gruppe):
+wa.verify.doc1	Registrering: stiftelsesbevis, registerutskrift, bedriftslisens eller skattedokument.
+wa.verify.doc2	Bevis på tilstedeværelse: et fungerende nettsted, en offisiell side i sosiale medier eller en oppføring i bedriftskatalog.
+wa.verify.pitfallTitle	Den vanligste avslagsgrunnen
+wa.verify.pitfall	Bedriftsnavnet i Meta og i dokumentet må samsvare tegn for tegn, også selskapsform og tegnsetting. «Romashka LLC» og «Romashka, LLC» regnes som ulike navn.
+wa.templatesTitle	Meldingsmaler
+wa.templates	Meta lar deg ikke kontakte en kunde først uten en forhåndsgodkjent mal. Opprett maler for hver hendelse — de går til gjennomgang og begynner å virke når de er godkjent.
+wa.templatesAction	Klargjør maler
+wa.templatesPending	Oppretter maler…
+wa.templatesDone_one	Maler klare: {{count}}. Venter på Meta-gjennomgang
+wa.templatesDone_other	Maler klare: {{count}}. Venter på Meta-gjennomgang
+wa.templatesPartial	Meta avviste noen maler: {{failed}}. Se loggen for detaljer
+wa.templatesRejectedTitle_one	Meta avviste {{count}} mal
+wa.templatesRejectedTitle_other	Meta avviste {{count}} maler
+wa.templatesRejected	— disse varslene leveres ikke. Kontroller ordlyden i Meta-kontoen og opprett malene på nytt.
+wa.templatesPendingTitle_one	{{count}} mal til gjennomgang
+wa.templatesPendingTitle_other	{{count}} maler til gjennomgang
+wa.templatesPendingHint	— Meta kan bruke opptil en dag. {{approved}} er allerede godkjent og leveres.
+wa.templatesOkTitle	Maler godkjent
+wa.templatesOk_one	{{count}} besto Meta-gjennomgangen — varsler leveres.
+wa.templatesOk_other	Alle {{count}} besto Meta-gjennomgangen — varsler leveres.
+wa.paidWarning	WhatsApp-meldinger er betalte
+wa.approxPrice	ca.
+wa.pricingLoading	Laster gjeldende pris…
+wa.perMessage	per melding
+wa.viaMeta	faktureres direkte av Meta
+wa.windowNotice	Levering er bare garantert innenfor samtalevinduet på 24 timer.
+wa.connect	Koble til WhatsApp
+wa.disconnect	Koble fra
+wa.disconnectTitle	Koble fra WhatsApp?
+wa.disconnectMessage	Kunder og ansatte vil slutte å motta varsler gjennom denne kanalen.
+wa.close	Lukk
+wa.cancel	Avbryt
+tabs.matrix	Innstillinger
+tabs.log	Leveringslogg
+log.title	Leveringslogg
+log.subtitle	Hva som ble sendt, til hvem og når, og hvordan hver sending endte.
+log.status.sent	Levert
+log.status.rejected	Avvist
+log.status.error	Tilkoblingsfeil
+log.status.pending	Pågår
+log.searchPlaceholder	Telefon, e-post eller hendelseskode
+log.allChannels	Alle kanaler
+log.reset	Tilbakestill
+log.refreshing	Oppdaterer…
+log.otherEvent	Send utenfor katalogen
+log.empty	Ingenting er sendt ennå
+log.emptyHint	Hvert varsel studioet sender til kunder og ansatte vises her.
+log.emptyFiltered	Ingenting funnet
+log.emptyFilteredHint	Prøv å endre filtrene eller søk etter et annet nummer.
+log.loadError	Kunne ikke laste loggen
+log.loadErrorHint	Oppdater siden — hvis det ikke hjelper, kontakt kundestøtte.
+log.range	{{from}}–{{to}} av {{total}}
+log.prev	Tilbake
+log.next	Neste

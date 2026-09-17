@@ -1,0 +1,241 @@
+== bg
+loading	Зареждане…
+chModal.eyebrow	Канал за известия
+chModal.connected	Свързан
+chModal.notConnected	Не е свързан
+chModal.setup	Настройка на връзката
+chModal.details	Данни за връзката
+chModal.ready	Каналът работи
+chModal.readyHint	Известията за активираните събития се изпращат автоматично.
+chModal.bot	Бот
+chModal.token	Токен
+chModal.phone	Номер
+chModal.account	Акаунт
+chModal.sender	Подател
+channels.title	Канали за доставка
+channels.connect	Свържи
+channels.connected	Свързан
+channels.openSettings	Настройки на {{channel}}
+channels.waLockedHint	Каналът се отключва, когато Meta има вашия метод на плащане, потвърден бизнес и одобрени шаблони
+channels.waBlocker.payment	Няма метод на плащане — напомнянията не се доставят. Настройте
+channels.waBlocker.verification	Бизнесът не е потвърден с Meta — лимит 250/ден. Как да го поправите
+channels.waBlocker.templates	Шаблоните още се преглеждат от Meta — нищо няма да бъде изпратено. Подробности
+roles.client	Клиент
+roles.trainer	Треньор
+roles.admin	Администратор
+roles.owner	Собственик
+roles.activeCount_one	{{count}} активен
+roles.activeCount_other	{{count}} активни
+matrix.saving	Запазване…
+matrix.allSaved	Всички промени са запазени
+matrix.notSaved	Не е запазено
+matrix.activateAll	Активирай всички
+matrix.deactivateAll	Изчисти всички отметки
+matrix.activeCount_one	Активни задействания: {{count}} от {{total}}
+matrix.activeCount_other	Активни задействания: {{count}} от {{total}}
+matrix.scenariosFor	Сценарии за: {{role}}
+matrix.configureFor_one	Конфигурирайте канали за {{count}} системно задействане
+matrix.configureFor_other	Конфигурирайте канали за {{count}} системни задействания
+matrix.eventColumn	Системно събитие
+matrix.noActiveChannels	Няма активни канали
+matrix.noActiveChannelsHint	Включете поне един канал за доставка в панела отляво
+matrix.adviceLabel	Съвет:
+matrix.advice	Конфигурирайте отделно за всяка роля какво се изпраща и къде — Velora ще се погрижи автоматично.
+matrix.tiers.critical	Задължително · не може да се изключи
+matrix.tiers.operational	Оперативно
+matrix.tiers.optional	По избор
+matrix.lock.critical	Задължително известие — не може да се изключи
+matrix.lock.lastChannel	Последен канал за доставка — не може да се изключи
+matrix.channelDisconnected	Каналът не е свързан
+events.c1.title	Резервацията е потвърдена
+events.c1.desc	При успешно резервиране на клас
+events.c2.title	Напомняне за клас
+events.c2.desc	24 часа и 2 часа преди това
+events.c3.title	Класът е отменен
+events.c3.desc	Когато треньорът или студиото отменят
+events.c4.title	Успешно плащане
+events.c4.desc	Касова бележка след успешно таксуване
+events.c5.title	Остават малко занятия
+events.c5.desc	Когато остават 1–2 посещения в пакета
+events.c6.title	Пакетът изтича
+events.c6.desc	3 дни преди изтичането
+events.c7.title	Рожден ден
+events.c7.desc	Поздрав със специална оферта
+events.c8.title	Искане за отзив
+events.c8.desc	След участие в клас
+events.c9.title	Възстановяване
+events.c9.desc	При отмяна и обработка на възстановяване
+events.c10.title	Класът още не е платен
+events.c10.desc	Клиентът е присъствал, но не е платил
+events.c11.title	Класът е преместен
+events.c11.desc	Часът, залата или треньорът са променени
+events.c12.title	Бонусът е начислен
+events.c12.desc	Към клиента са добавени точки или бонус
+events.c13.title	Кафе след клас
+events.c13.desc	Кой от групата отива на кафе
+events.t1.title	Нова резервация при треньора
+events.t1.desc	Клиент резервира лична сесия
+events.t2.title	Клиентът отмени резервацията
+events.t2.desc	Клиентът отмени по-малко от 2 ч. преди това
+events.t3.title	Напомняне за клас
+events.t3.desc	1 час преди началото
+events.t4.title	Списък на групата
+events.t4.desc	30 мин. преди групов клас
+events.t5.title	Промяна в графика
+events.t5.desc	Администраторът промени слот или място
+events.t6.title	Начислена заплата
+events.t6.desc	Седмично изчисляване на плащането
+events.t7.title	Нов отзив за треньора
+events.t7.desc	Клиент остави оценка след клас
+events.t8.title	Рожден ден на клиента
+events.t8.desc	Напомняне да поздравите лично
+events.t9.title	Класът е отменен
+events.t9.desc	Студиото или администраторът отмени вашия клас
+events.a1.title	Нова онлайн резервация
+events.a1.desc	Клиентът резервира през сайт или джаджа
+events.a2.title	Отмяна в последния момент
+events.a2.desc	По-малко от 1 час преди класа
+events.a3.title	Нов клиент в системата
+events.a3.desc	Регистрация на нов потребител
+events.a4.title	Получено плащане
+events.a4.desc	Всяко успешно таксуване
+events.a6.title	Пакетите привършват
+events.a6.desc	Група клиенти с ≤1 оставащо занятие
+events.a7.title	Конфликт в графика
+events.a7.desc	Припокриващи се класове в дневника
+events.a8.title	Дневен отчет
+events.a8.desc	Обобщение в края на деня
+events.a9.title	Опит за вход
+events.a9.desc	Влизане от ново устройство
+events.a10.title	Възстановяване
+events.a10.desc	Администраторът извърши възстановяване
+events.o1.title	Дневно обобщение
+events.o1.desc	Приходи, резервации, присъствие за деня
+events.o2.title	Седмичен отчет
+events.o2.desc	Показатели: ръст на клиенти, LTV, конверсия
+events.o3.title	Голямо плащане
+events.o3.desc	Таксуване над зададения праг
+events.o4.title	Аномалия в данните
+events.o4.desc	Рязък спад в резервациите или приходите
+events.o5.title	Нов служител
+events.o5.desc	Администраторът създаде нов акаунт
+events.o6.title	Подновяване на план
+events.o6.desc	Напомняне за плащане на абонамента за Velora
+events.o7.title	Правата за достъп са променени
+events.o7.desc	Разрешенията на служителя са променени
+events.o8.title	Постигнат KPI
+events.o8.desc	Месечната цел е постигната
+events.o9.title	Експорт на данни
+events.o9.desc	Някой експортира базата данни с клиенти
+tg.title	Telegram
+tg.subtitleConnected	Каналът е свързан
+tg.subtitleDisconnected	Свържете бота за известия
+tg.connected	Свързан
+tg.pasteToken	Поставете токена на бота, получен от @BotFather.
+tg.invalidToken	Невалиден формат на токена
+tg.howToGet	Как да получите токен:
+tg.steps.1	Отворете @BotFather в Telegram
+tg.steps.2	Изпратете командата /newbot и следвайте указанията
+tg.steps.3	Копирайте издадения токен
+tg.steps.4	Поставете го в полето по-горе
+tg.connect	Свържи
+tg.disconnect	Прекъсни връзката
+tg.disconnectTitle	Да се прекъсне ли Telegram?
+tg.disconnectMessage	Клиентите и служителите ще спрат да получават известия по този канал.
+tg.close	Затвори
+tg.cancel	Отмени
+emailCh.title	Имейл
+emailCh.subtitle	Адрес на подателя за имейлите до клиенти
+emailCh.verifiedLabel	Потвърден
+emailCh.emailLabel	Имейл на подателя
+emailCh.emailPlaceholder	admin@studio.com
+emailCh.invalidEmail	Въведете валиден имейл
+emailCh.sendCode	Изпрати код
+emailCh.codeSentTo	Кодът е изпратен до
+emailCh.codeHint	Въведете 6-цифрения код от имейла.
+emailCh.codeLabel	Код за потвърждение
+emailCh.resend	Изпрати кода отново
+emailCh.viaVelora	Имейлите се изпращат от сървъра на Velora от ваше име.
+emailCh.wrongCode	Невалиден или изтекъл код
+emailCh.verify	Потвърди
+emailCh.back	Назад
+emailCh.cancel	Отмени
+wa.title	WhatsApp
+wa.subtitleConnected	Каналът е свързан
+wa.subtitleDisconnected	Влезте с бизнес акаунта си в Meta
+wa.connected	Свързан
+wa.paymentRequiredTitle	Ще е нужна карта
+wa.paymentRequired	Свързването на номера е безплатно, но Meta доставя напомняния до клиенти едва след добавяне на карта. Добавяте я отделно —
+wa.paymentMissingTitle	Няма метод на плащане
+wa.paymentMissing	В момента работят само отговорите на бота на входящи съобщения. Meta отхвърля напомняния, потвърждения и масови съобщения, докато не добавите карта —
+wa.paymentOkTitle	Плащането е свързано
+wa.paymentOk	известията се доставят изцяло.
+wa.paymentUnknown	Неуспешна проверка на метода на плащане с Meta — ще покажем състоянието при следващия опит.
+wa.paymentLink	Център за фактуриране на Meta
+wa.paymentRecheck	Провери отново
+wa.paymentFound	Плащането е свързано
+wa.verify.title	Бизнесът не е потвърден с Meta
+wa.verify.lead	Номерът работи, но с намален лимит от 250 уникални получатели на ден. Потвърждението премахва лимита и отключва пълно стартиране. Студиото трябва да го направи само — WhatsApp акаунтът е ваш и Velora не може да действа от ваше име.
+wa.verify.stepsTitle	Как да потвърдите бизнеса:
+wa.verify.step1a	Отворете
+wa.verify.link	Центъра за сигурност на Meta Business
+wa.verify.step1b	и натиснете „Започни потвърждение“. Нужни са ви администраторски права за бизнес акаунта.
+wa.verify.step2	Попълнете юридическите данни: името точно както е в документите, адрес, телефон и уебсайт. Сайтът трябва да е активен и да използва HTTPS.
+wa.verify.step3	Качете документ за регистрация на бизнеса и изчакайте Meta да го прегледа.
+wa.verify.step4	Потвърдете, че сте свързани с бизнеса: имейл в домейна на сайта, обаждане или SMS до посочения телефон или потвърждение на домейн.
+wa.verify.step5	Изчакайте решението — обикновено 1–5 работни дни. Статусът е в същия Център за сигурност; при отказ Meta посочва причината и позволява ново заявление.
+wa.verify.docsTitle	Подходящи документи (по един от всяка група):
+wa.verify.doc1	Регистрация: удостоверение за учредяване, извлечение от регистър, бизнес лиценз или данъчен документ.
+wa.verify.doc2	Доказателство за присъствие: работещ уебсайт, официална страница в социална мрежа или запис в бизнес каталог.
+wa.verify.pitfallTitle	Най-честата причина за отказ
+wa.verify.pitfall	Името на бизнеса в Meta и в документа трябва да съвпада знак по знак, включително правната форма и пунктуацията. „Romashka LLC“ и „Romashka, LLC“ се смятат за различни имена.
+wa.templatesTitle	Шаблони за съобщения
+wa.templates	Meta не позволява да пишете първи на клиент без предварително одобрен шаблон. Създайте шаблони за всяко събитие — те ще минат преглед и ще заработят след одобрение.
+wa.templatesAction	Подготви шаблони
+wa.templatesPending	Създаване на шаблони…
+wa.templatesDone_one	Шаблоните са готови: {{count}}. Очаква се преглед от Meta
+wa.templatesDone_other	Шаблоните са готови: {{count}}. Очаква се преглед от Meta
+wa.templatesPartial	Meta отхвърли някои шаблони: {{failed}}. Вижте журналите за подробности
+wa.templatesRejectedTitle_one	Meta отхвърли {{count}} шаблон
+wa.templatesRejectedTitle_other	Meta отхвърли {{count}} шаблона
+wa.templatesRejected	— тези известия не се доставят. Проверете текста в акаунта си в Meta и създайте шаблоните отново.
+wa.templatesPendingTitle_one	{{count}} шаблон се преглежда
+wa.templatesPendingTitle_other	{{count}} шаблона се преглеждат
+wa.templatesPendingHint	— Meta може да отнеме до ден. {{approved}} вече са одобрени и се доставят.
+wa.templatesOkTitle	Шаблоните са одобрени
+wa.templatesOk_one	{{count}} шаблон премина прегледа на Meta — известията се доставят.
+wa.templatesOk_other	Всички {{count}} преминаха прегледа на Meta — известията се доставят.
+wa.paidWarning	Съобщенията в WhatsApp са платени
+wa.approxPrice	прибл.
+wa.pricingLoading	Зареждане на текущата цена…
+wa.perMessage	на съобщение
+wa.viaMeta	таксувано директно от Meta
+wa.windowNotice	Доставката е гарантирана само в рамките на 24-часовия прозорец за разговор.
+wa.connect	Свържи WhatsApp
+wa.disconnect	Прекъсни връзката
+wa.disconnectTitle	Да се прекъсне ли WhatsApp?
+wa.disconnectMessage	Клиентите и служителите ще спрат да получават известия по този канал.
+wa.close	Затвори
+wa.cancel	Отмени
+tabs.matrix	Настройки
+tabs.log	Дневник на доставките
+log.title	Дневник на доставките
+log.subtitle	Какво е изпратено, до кого и кога, и как е приключило всяко изпращане.
+log.status.sent	Доставено
+log.status.rejected	Отхвърлено
+log.status.error	Грешка във връзката
+log.status.pending	В процес
+log.searchPlaceholder	Телефон, имейл или код на събитие
+log.allChannels	Всички канали
+log.reset	Нулирай
+log.refreshing	Обновяване…
+log.otherEvent	Изпращане извън каталога
+log.empty	Още нищо не е изпращано
+log.emptyHint	Всяко известие, което студиото изпраща до клиенти и служители, ще се показва тук.
+log.emptyFiltered	Няма намерени резултати
+log.emptyFilteredHint	Опитайте да промените филтрите или да потърсите друг номер.
+log.loadError	Дневникът не може да се зареди
+log.loadErrorHint	Обновете страницата — ако това не помогне, свържете се с поддръжката.
+log.range	{{from}}–{{to}} от {{total}}
+log.prev	Назад
+log.next	Напред

@@ -1,0 +1,316 @@
+== ro
+categories.all	Toți
+categories.vip	VIP
+categories.active	Activi
+categories.new	Noi
+categories.has_subscription	Cu abonament
+categories.inactive	Inactivi
+categories.frozen	Înghețați
+categories.birthday	Zi de naștere
+categoriesInfo.all.text	Lista completă de clienți a studioului, fără filtru de stare aplicat.
+categoriesInfo.vip.text	Plăți reușite în valoare totală de 50.000+ sau 30+ vizite. VIP poate fi fixat și manual în fișa clientului; fixarea manuală se păstrează indiferent de sume.
+categoriesInfo.active.text	Cel puțin o vizită în ultimele 60 de zile. Se bazează pe prezența marcată în jurnal — starea se actualizează singură, fără a fi setată manual.
+categoriesInfo.new.text	Primele 15 zile de la data înregistrării, indiferent dacă clientul a fost adăugat manual sau a venit prin rezervare online. În ziua a 16-a trece automat la Activ sau Inactiv.
+categoriesInfo.has_subscription.text	Are un abonament activ: neexpirat, neînghețat și cu ședințe rămase. Se actualizează imediat la cumpărare, după fiecare ședință utilizată și la expirare.
+categoriesInfo.inactive.text	Nicio vizită în ultimele 60 de zile — sau nu a vizitat niciodată și au trecut mai mult de 15 zile de la înregistrare.
+categoriesInfo.frozen.text	Înghețat cu butonul din fișa clientului — singura stare setată manual. După dezghețare, clientul revine la starea automată.
+categoriesInfo.birthday.text	Cei care își serbează astăzi ziua de naștere — ziua și luna corespund, anul este ignorat. Lista se actualizează automat în fiecare zi.
+status.active	Activ
+status.vip	VIP
+status.new	Nou
+status.inactive	Inactiv
+status.frozen	Înghețat
+filtersGuide.trigger	Despre filtre
+filtersGuide.title	Filtre de clienți
+filtersGuide.subtitle	Cum se calculează fiecare categorie. Faceți clic pe un card pentru a aplica filtrul sau schimbați un prag — stările se recalculează imediat.
+filtersGuide.close	Închide
+filtersGuide.rule.new_client_days	Nou timp de
+filtersGuide.rule.active_within_days	Vizită în ultimele
+filtersGuide.rule.vip_min_spent	Cheltuit de la
+filtersGuide.rule.vip_min_visits	sau vizite
+filtersGuide.unit.days	zile
+filtersGuide.unit.money	
+filtersGuide.unit.visits	vizite
+toolbar.searchPlaceholder	Caută client…
+toolbar.addClient	Adaugă client
+table.visits	vizite
+table.frozenBadge	❄ înghețat
+table.totalSpent	Total cheltuit
+table.subscription	Abonament
+table.of	din
+table.noSubscription	Fără abonament
+loadMore	Încarcă mai mult
+loading	Se încarcă…
+panel.tabs.info	Profil
+panel.tabs.events	Evenimente
+panel.tabs.notes	Note
+panel.tabs.wallet	Cumpărături
+panel.actions.book	Rezervă
+panel.actions.bonus	Bonus
+panel.editDateHint	Faceți clic pentru editare
+panel.since	din {{date}}
+panel.contacts.title	Contacte
+panel.contacts.phone	Telefon
+panel.contacts.email	E-mail
+panel.contacts.telegram	Telegram
+panel.contacts.birthDate	Data nașterii
+panel.contacts.city	Oraș
+panel.contacts.copyHint	 · faceți clic pentru copiere
+panel.debt	{{amount}} neachitați pentru ședințe — acceptați plata în Jurnal
+panel.stats.visits	Vizite
+panel.stats.spent	Cheltuit
+panel.stats.subscription	Abonament
+panel.loyalty.points	puncte
+panel.loyalty.level	nivelul {{tier}}
+panel.loyalty.toNext	Până la următorul nivel: {{points}} puncte
+panel.loyalty.multiplier	multiplicator de puncte ×{{value}}
+panel.loyalty.worth	Valorează {{amount}} la plată
+panel.loyalty.toNextLevel	Încă {{amount}} pentru a ajunge la {{level}}
+panel.loyalty.pointValue	1 punct = {{amount}}
+panel.loyalty.nextPointValue	la {{level}} — {{amount}}
+panel.loyalty.noBonus	Acest nivel nu modifică valoarea punctelor
+panel.referral.title	Invită un prieten
+panel.referral.copy	Copiază
+panel.abonement.title	Abonament
+panel.abonement.lessons	{{remaining}}/{{total}} ședințe
+panel.abonement.noSubscription	Niciun abonament activ
+panel.abonement.noSubscriptionWarning	Clientul nu are abonament — oferiți-i unul
+panel.abonement.lowWarning	Au rămas puține ședințe — oferiți o reînnoire
+panel.abonement.finishedWarning	Nu au mai rămas ședințe — oferiți o reînnoire
+panel.abonement.remind	Amintește clientului
+panel.abonement.reminderSent	Memento trimis clientului
+panel.products.single	individual
+panel.products.pending	în așteptare
+panel.products.frozen	înghețat
+panel.products.until	Valabil până la {{date}}
+panel.products.startsOnFirstVisit	Perioada începe cu prima ședință
+panel.wallet.buy	Cumpără
+panel.wallet.active	Active
+panel.wallet.archived	Arhivate
+panel.wallet.singles	Vizite individuale
+panel.wallet.subscriptions	Abonamente
+panel.wallet.noSingles	Încă nu există vizite individuale
+panel.wallet.emptyActive	Nu există produse active
+panel.wallet.emptyArchived	Nu există produse arhivate
+panel.wallet.emptyCatalog	Acest studio nu are încă pachete de abonament
+panel.wallet.lessons	{{remaining}}/{{total}} ședințe
+panel.wallet.lessonsCount_one	{{count}} ședință
+panel.wallet.lessonsCount_few	{{count}} ședințe
+panel.wallet.lessonsCount_other	{{count}} de ședințe
+panel.wallet.perVisit	Pe vizită individuală
+panel.wallet.until	până la {{date}}
+panel.wallet.frozenBadge	Înghețat
+panel.wallet.loadFailed	Încărcarea portofelului a eșuat
+panel.wallet.back	← Înapoi
+panel.wallet.catalogTitle	Catalog
+panel.wallet.showAll	Toate
+panel.wallet.posTitle	Casă
+panel.wallet.promoLabel	Cod promoțional
+panel.wallet.promoPlaceholder	Introduceți codul promoțional
+panel.wallet.promoInvalid	Codul promoțional nu este valid
+panel.wallet.useBonuses_one	Folosește bonusuri ({{count}})
+panel.wallet.useBonuses_few	Folosește bonusuri ({{count}})
+panel.wallet.useBonuses_other	Folosește bonusuri ({{count}})
+panel.wallet.useDeposit	Plătește din depozit ({{amount}})
+panel.wallet.certLabel	Cod certificat
+panel.wallet.certPlaceholder	Introduceți codul certificatului
+panel.wallet.certApplied	Certificat
+panel.wallet.depositApplied	Depozit
+panel.wallet.base	Preț de bază
+panel.wallet.discount	Reducere
+panel.wallet.bonuses	Bonusuri
+panel.wallet.bonusesSpent_one	Bonusuri ({{count}} pct.)
+panel.wallet.bonusesSpent_few	Bonusuri ({{count}} pct.)
+panel.wallet.bonusesSpent_other	Bonusuri ({{count}} pct.)
+panel.wallet.total	Total
+panel.wallet.cash	Numerar
+panel.wallet.card	Card
+panel.wallet.cardStripe	Plățile cu cardul trec printr-o pagină Stripe și ajung direct în contul studioului. Configurați-le în Finanțe → Plăți online.
+panel.wallet.offlineLocked	Plățile în numerar sunt disponibile în planurile Combo și superioare
+panel.wallet.payByCard	Plătește cu cardul
+panel.wallet.confirmPay	Confirmă plata
+panel.wallet.confirmPayCovered	Confirmă (deja plătit)
+panel.wallet.confirmTitle	Confirmați plata primită?
+panel.wallet.confirmMessage	Se va înregistra un venit de {{amount}} și produsul va fi acordat clientului.
+panel.wallet.confirmMessageCard	Se va deschide un formular de plată Stripe pentru {{amount}}. Produsul este acordat și venitul înregistrat după reușita plății.
+panel.wallet.payToStudio	Plata ajunge în contul studioului
+panel.wallet.payConfirming	Se verifică plata…
+panel.wallet.close	Închide
+panel.wallet.confirmMessageCovered	Plata este acoperită integral de depozit sau certificat. Produsul va fi acordat clientului.
+panel.wallet.paySuccess	Plată înregistrată
+panel.wallet.payCancelled	Plata a fost anulată — nu s-a debitat nimic
+panel.wallet.payNotCompleted	Stripe nu a confirmat încă plata. Dacă a fost debitat cardul, reîmprospătați peste un minut.
+panel.wallet.payNotApplied	Cardul a fost debitat, dar vânzarea nu a putut fi înregistrată: condițiile s-au schimbat (certificat, cod promoțional sau pachet). Înregistrați manual vânzarea sau rambursați în Stripe.
+panel.wallet.transfer	Transferă
+panel.wallet.transferTitle	Transferă abonamentul
+panel.wallet.transferSearchLabel	Transferă către
+panel.wallet.transferSearchPlaceholder	Numele sau telefonul clientului
+panel.wallet.transferSelectPlaceholder	Selectați clientul
+panel.wallet.transferConfirm	Transferă
+panel.wallet.transferSuccess	Abonament transferat
+panel.offers.title	Reducere personală
+panel.offers.empty	Nu există reduceri active
+panel.offers.grant	Acordă reducere
+panel.offers.cancel	Anulează
+panel.offers.valuePercent	{{value}}%
+panel.offers.valueAmount	{{value}} ₽
+panel.offers.untilDate	până la {{date}}
+panel.offers.noExpiry	fără expirare
+panel.offers.scopeRenewal	pentru reînnoire
+panel.offers.grantTitle	Acordă o reducere personală
+panel.offers.grantValue	Valoarea reducerii
+panel.offers.grantType.percent	Procent (%)
+panel.offers.grantType.amount	Sumă (₽)
+panel.offers.grantValidUntil	Valabil până la
+panel.offers.grantSubmit	Acordă
+panel.offers.cancelConfirmTitle	Anulați reducerea?
+panel.offers.cancelConfirmMessage	Clientul nu va mai putea folosi această ofertă.
+panel.offers.toasts.granted	Reducere acordată
+panel.offers.toasts.cancelled	Reducere anulată
+panel.offers.toasts.loadFailed	Nu s-au putut încărca reducerile
+panel.activity.compactTitle	Activitate (3 luni)
+panel.activity.clickForDetails	Faceți clic pentru detalii
+panel.activity.detailedTitle	Activitate detaliată
+panel.activity.periods.month3	3 luni
+panel.activity.periods.month6	6 luni
+panel.activity.visitsInPeriod	Vizite în perioadă
+panel.activity.visitsTooltip_one	{{count}} vizită
+panel.activity.visitsTooltip_few	{{count}} vizite
+panel.activity.visitsTooltip_other	{{count}} de vizite
+panel.activity.emptyState	Nu există vizite în această perioadă
+panel.activity.insightTitle	Frecvență medie
+panel.activity.insightBody	În medie {{avg}} vizite pe lună în perioada selectată.
+panel.activity.months.jan	ian.
+panel.activity.months.feb	feb.
+panel.activity.months.mar	mar.
+panel.activity.months.apr	apr.
+panel.activity.months.may	mai
+panel.activity.months.jun	iun.
+panel.activity.months.jul	iul.
+panel.activity.months.aug	aug.
+panel.activity.months.sep	sept.
+panel.activity.months.oct	oct.
+panel.activity.months.nov	nov.
+panel.activity.months.dec	dec.
+panel.tags.title	Etichete
+panel.tags.add	Adaugă
+panel.tags.close	Închide
+panel.tags.customPlaceholder	Etichetă proprie + Enter…
+panel.danger.freeze	Îngheață
+panel.danger.unfreeze	Dezgheață
+panel.danger.freezeDisabledHint	Înghețarea este dezactivată în Catalog → setări abonamente
+panel.danger.delete	Șterge
+panel.events.filterTabs.all	Toate
+panel.events.filterTabs.payment	Plăți
+panel.events.filterTabs.visit	Vizite
+panel.events.filterTabs.booking	Rezervări
+panel.events.filterTabs.cancel	Anulări
+panel.events.filterTabs.bonus	Bonusuri
+panel.events.filterTabs.freeze	Înghețări
+panel.events.empty	Nu există evenimente
+panel.notes.title	Note administrator
+panel.notes.prefix	Notă · {{date}}
+panel.notes.save	Salvează
+panel.notes.cancel	Anulează
+panel.notes.addPlaceholder	Introduceți o notă…
+panel.notes.add	Adaugă notă
+panel.notes.justNow	chiar acum
+panel.notes.deleteTitle	Ștergeți nota?
+panel.notes.deleteMessage	Această notă nu poate fi recuperată.
+panel.bookingPanel.title	Rezervare rapidă
+panel.bookingPanel.today	Astăzi
+panel.bookingPanel.noLessons	Nu există ședințe în această zi
+panel.bookingPanel.full	Nu mai sunt locuri
+panel.bookingPanel.confirm	Rezervă →
+panel.bookingPanel.noSubscription	Clientul nu are abonament disponibil pentru rezervare
+panel.bookingPanel.individual	Serviciu individual
+panel.bonusPanel.title	Acordă bonus
+panel.toasts.noPhone	Clientul nu are număr de telefon
+panel.toasts.copied	Copiat cu succes
+panel.toasts.bookingCreated	Rezervare creată
+panel.toasts.bookingFailed	Rezervarea a eșuat
+panel.toasts.bonusFailed	Nu s-au putut acorda punctele
+panel.toasts.bonusApplied	Bonus acordat: {{label}}
+panel.toasts.clientAdded	Client adăugat
+panel.bonusOptions.p200.label	+200 puncte
+panel.bonusOptions.p200.description	Adaugă la soldul de fidelitate
+panel.bonusOptions.p500.label	+500 puncte
+panel.bonusOptions.p500.description	Adaugă la soldul de fidelitate
+panel.bonusOptions.p1000.label	+1000 puncte
+panel.bonusOptions.p1000.description	Adaugă la soldul de fidelitate
+tags.suggested.0	Probă
+tags.suggested.1	VIP
+tags.suggested.2	Recomandare
+tags.suggested.3	Online
+tags.suggested.4	Grup
+tags.suggested.5	Personal
+addModal.title	Client nou
+addModal.cancel	Anulează
+addModal.back	← Înapoi
+addModal.continue	Continuă →
+addModal.submit	Adaugă client ✓
+addModal.stepCounter	Pasul {{current}} din {{total}}
+addModal.trustSignal	Datele sunt protejate și vizibile numai administratorilor
+addModal.steps.1.title	Date personale
+addModal.steps.1.sub	Introduceți datele de contact ale clientului
+addModal.steps.2.title	Detalii de profil
+addModal.steps.2.sub	Informații suplimentare (opțional)
+addModal.steps.3.title	Abonament
+addModal.steps.3.sub	Alegeți un tip de abonament și adăugați o notă
+addModal.steps.4.title	Totul este gata!
+addModal.steps.4.sub	Verificați datele și adăugați clientul
+addModal.step1.previewLabel	Client nou · Previzualizare
+addModal.step1.name	Nume complet *
+addModal.step1.namePlaceholder	Andrei Popescu
+addModal.step1.phone	Telefon
+addModal.step1.phonePlaceholder	+40 700 000 000
+addModal.step1.email	E-mail
+addModal.step1.emailPlaceholder	client@exemplu.ro
+addModal.step2.bday	Data nașterii
+addModal.step2.bdayPlaceholder	12 aprilie 1990
+addModal.step2.city	Oraș
+addModal.step2.cityPlaceholder	București
+addModal.step2.tags	Etichete
+addModal.step2.tagsPlaceholder	Pilates, VIP, recuperare… (Enter)
+addModal.step2.tagsHint	Apăsați Enter pentru a adăuga o etichetă
+addModal.step2.inviteCode	Cod de invitație al recomandatorului
+addModal.step2.inviteCodePlaceholder	Opțional
+addModal.step2.inviteCodeHint	Dacă este furnizat, amândoi primiți un bonus
+addModal.step3.classCount	Abonament
+addModal.step3.classesUnit	ședințe
+addModal.step3.classesCount_one	{{count}} ședință
+addModal.step3.classesCount_few	{{count}} ședințe
+addModal.step3.classesCount_other	{{count}} de ședințe
+addModal.step3.selected	Selectat
+addModal.step3.noPackage	Fără abonament
+addModal.step3.noPackages	Acest studio nu are încă pachete de abonament
+addModal.step3.noPackagesLink	Creează pachete în Catalog →
+addModal.step3.alreadyPaid	Clientul a plătit deja pentru acest abonament?
+addModal.step3.yes	Da
+addModal.step3.no	Nu
+addModal.step3.note	Notă
+addModal.step3.notePlaceholder	Cerințe speciale, contraindicații, preferințe…
+addModal.step4.readyTitle	Date completate!
+addModal.step4.readySub	Verificați datele și confirmați adăugarea
+addModal.step4.newClient	Client nou
+addModal.step4.fields.phone	Telefon
+addModal.step4.fields.email	E-mail
+addModal.step4.fields.bday	Data nașterii
+addModal.step4.fields.city	Oraș
+addModal.step4.fields.subscription	Abonament
+addModal.step4.fields.tags	Etichete
+addModal.step4.subscriptionValue_one	{{count}} ședință
+addModal.step4.subscriptionValue_few	{{count}} ședințe
+addModal.step4.subscriptionValue_other	{{count}} de ședințe
+addModal.step4.smsTitle	Trimite SMS de bun venit
+addModal.step4.smsSub	Clientul va primi un mesaj de invitație
+addModal.errors.name	Introduceți un nume (cel puțin 2 caractere)
+addModal.errors.phone	Număr de telefon nevalid
+addModal.errors.email	E-mail nevalid
+addModal.errors.city	Introduceți un oraș
+deleteModal.title	Ștergeți clientul?
+deleteModal.body	Sunteți pe punctul de a șterge clientul
+deleteModal.warning	Această acțiune nu poate fi anulată.
+deleteModal.cancel	Anulează
+deleteModal.confirm	Șterge
+deleteModal.success	Client șters

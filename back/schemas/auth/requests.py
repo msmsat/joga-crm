@@ -40,11 +40,24 @@ class RegisterRequest(BaseSchema):
     # Галочка «принимаю Условия и Политику». Заводить аккаунт без неё нельзя —
     # см. legal.record_consent и routers/auth/register.
     accept_terms: bool = False
+    # Идентификатор браузера с лендинга (localStorage). Необязателен: регистрация
+    # бывает и мимо лендинга — по прямой ссылке, из приглашения, с почты.
+    # Обрезается здесь, а не в роутере: колонка в БД 64 символа, и длинная
+    # строка иначе уронила бы вставку уже после проверки пароля.
+    anon_id: Optional[str] = None
 
     @field_validator("password")
     @classmethod
     def validate_password(cls, value: str) -> str:
         return validate_strong_password(value)
+
+    @field_validator("anon_id")
+    @classmethod
+    def clip_anon_id(cls, value: Optional[str]) -> Optional[str]:
+        if value is None:
+            return None
+        trimmed = value.strip()
+        return trimmed[:64] or None
 
 
 class GoogleAuthRequest(BaseSchema):

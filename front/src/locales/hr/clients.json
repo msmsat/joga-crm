@@ -1,0 +1,435 @@
+{
+  "categories": {
+    "all": "Svi",
+    "vip": "VIP",
+    "active": "Aktivni",
+    "new": "Novi",
+    "has_subscription": "S pretplatom",
+    "inactive": "Neaktivni",
+    "frozen": "Zamrznuti",
+    "birthday": "Rođendan"
+  },
+  "categoriesInfo": {
+    "all": {
+      "text": "Cijeli popis klijenata studija, bez primijenjenog filtra statusa."
+    },
+    "vip": {
+      "text": "Uspješne uplate u ukupnom iznosu od 50 000+ ili 30+ posjeta. VIP se može ručno prikvačiti i na kartici klijenta; ručno prikvačivanje ostaje bez obzira na iznose."
+    },
+    "active": {
+      "text": "Najmanje jedan posjet u posljednjih 60 dana. Temelji se na prisutnosti označenoj u dnevniku — status se ažurira sam i ne treba ga ručno postavljati."
+    },
+    "new": {
+      "text": "Prvih 15 dana od datuma registracije, bilo da je klijent dodan ručno ili je došao putem online rezervacije. Šesnaestog dana automatski prelazi u Aktivne ili Neaktivne."
+    },
+    "has_subscription": {
+      "text": "Ima važeću pretplatu: nije istekla, nije zamrznuta i ima preostalih termina. Ažurira se odmah pri kupnji, nakon svakog iskorištenog termina i pri isteku."
+    },
+    "inactive": {
+      "text": "Nema posjeta u posljednjih 60 dana — ili nikada nije posjetio i prošlo je više od 15 dana od registracije."
+    },
+    "frozen": {
+      "text": "Zamrznut putem gumba na kartici klijenta — jedini status koji se postavlja ručno. Nakon odmrzavanja klijent se vraća na automatski status."
+    },
+    "birthday": {
+      "text": "Oni kojima je danas rođendan — dan i mjesec odgovaraju, godina se zanemaruje. Popis se automatski osvježava svaki dan."
+    }
+  },
+  "status": {
+    "active": "Aktivan",
+    "vip": "VIP",
+    "new": "Novi",
+    "inactive": "Neaktivan",
+    "frozen": "Zamrznut"
+  },
+  "filtersGuide": {
+    "trigger": "O filtrima",
+    "title": "Filtri klijenata",
+    "subtitle": "Kako se izračunava svaka kategorija. Kliknite karticu za primjenu filtra ili promijenite prag — statusi se odmah ponovno izračunavaju.",
+    "close": "Zatvori",
+    "rule": {
+      "new_client_days": "Novi tijekom",
+      "active_within_days": "Posjet unutar",
+      "vip_min_spent": "Potrošeno od",
+      "vip_min_visits": "ili posjeta"
+    },
+    "unit": {
+      "days": "dana",
+      "money": "",
+      "visits": "posjeta"
+    }
+  },
+  "toolbar": {
+    "searchPlaceholder": "Pretraži klijenta…",
+    "addClient": "Dodaj klijenta"
+  },
+  "table": {
+    "visits": "posjeta",
+    "frozenBadge": "❄ zamrznut",
+    "totalSpent": "Ukupno potrošeno",
+    "subscription": "Pretplata",
+    "of": "od",
+    "noSubscription": "Bez pretplate"
+  },
+  "loadMore": "Učitaj više",
+  "loading": "Učitavanje…",
+  "panel": {
+    "tabs": {
+      "info": "Profil",
+      "events": "Događaji",
+      "notes": "Bilješke",
+      "wallet": "Kupnje"
+    },
+    "actions": {
+      "book": "Rezerviraj",
+      "bonus": "Bonus"
+    },
+    "editDateHint": "Kliknite za uređivanje",
+    "since": "od {{date}}",
+    "contacts": {
+      "title": "Kontakti",
+      "phone": "Telefon",
+      "email": "E-pošta",
+      "telegram": "Telegram",
+      "birthDate": "Datum rođenja",
+      "city": "Grad",
+      "copyHint": " · kliknite za kopiranje"
+    },
+    "debt": "{{amount}} neplaćeno za termine — prihvatite uplatu u Dnevniku",
+    "stats": {
+      "visits": "Posjeti",
+      "spent": "Potrošeno",
+      "subscription": "Pretplata"
+    },
+    "loyalty": {
+      "points": "bodovi",
+      "level": "razina {{tier}}",
+      "toNext": "Do sljedeće razine: {{points}} bodova",
+      "multiplier": "množitelj bodova ×{{value}}",
+      "worth": "Vrijedi {{amount}} pri naplati",
+      "toNextLevel": "Još {{amount}} do razine {{level}}",
+      "pointValue": "1 bod = {{amount}}",
+      "nextPointValue": "na {{level}} — {{amount}}",
+      "noBonus": "Ova razina ne mijenja vrijednost boda"
+    },
+    "referral": {
+      "title": "Pozovi prijatelja",
+      "copy": "Kopiraj"
+    },
+    "abonement": {
+      "title": "Pretplata",
+      "lessons": "{{remaining}}/{{total}} termina",
+      "noSubscription": "Nema aktivne pretplate",
+      "noSubscriptionWarning": "Klijent nema pretplatu — ponudite mu je",
+      "lowWarning": "Ostalo je malo termina — ponudite obnovu",
+      "finishedWarning": "Nema preostalih termina — ponudite obnovu",
+      "remind": "Podsjeti klijenta",
+      "reminderSent": "Podsjetnik je poslan klijentu"
+    },
+    "products": {
+      "single": "pojedinačno",
+      "pending": "na čekanju",
+      "frozen": "zamrznuto",
+      "until": "Vrijedi do {{date}}",
+      "startsOnFirstVisit": "Rok počinje prvim terminom"
+    },
+    "wallet": {
+      "buy": "Kupi",
+      "active": "Aktivni",
+      "archived": "Arhivirani",
+      "singles": "Pojedinačni posjeti",
+      "subscriptions": "Pretplate",
+      "noSingles": "Još nema pojedinačnih posjeta",
+      "emptyActive": "Nema aktivnih proizvoda",
+      "emptyArchived": "Nema arhiviranih proizvoda",
+      "emptyCatalog": "Ovaj studio još nema pakete pretplate",
+      "lessons": "{{remaining}}/{{total}} termina",
+      "perVisit": "Po pojedinačnom posjetu",
+      "until": "do {{date}}",
+      "frozenBadge": "Zamrznuto",
+      "loadFailed": "Učitavanje novčanika nije uspjelo",
+      "back": "← Natrag",
+      "catalogTitle": "Katalog",
+      "showAll": "Svi",
+      "posTitle": "Naplata",
+      "promoLabel": "Promotivni kod",
+      "promoPlaceholder": "Unesite promotivni kod",
+      "promoInvalid": "Promotivni kod nije valjan",
+      "useDeposit": "Plati iz pologa ({{amount}})",
+      "certLabel": "Kod certifikata",
+      "certPlaceholder": "Unesite kod certifikata",
+      "certApplied": "Certifikat",
+      "depositApplied": "Polog",
+      "base": "Osnovna cijena",
+      "discount": "Popust",
+      "bonuses": "Bonusi",
+      "total": "Ukupno",
+      "cash": "Gotovina",
+      "card": "Kartica",
+      "cardStripe": "Plaćanja karticom prolaze kroz Stripe stranicu i stižu izravno na račun studija. Postavite ih u Financije → Online plaćanja.",
+      "offlineLocked": "Plaćanja gotovinom dostupna su na Combo i višim paketima",
+      "payByCard": "Plati karticom",
+      "confirmPay": "Potvrdi plaćanje",
+      "confirmPayCovered": "Potvrdi (već plaćeno)",
+      "confirmTitle": "Potvrditi primljenu uplatu?",
+      "confirmMessage": "Ovo će zabilježiti prihod od {{amount}} i dodijeliti proizvod klijentu.",
+      "confirmMessageCard": "Otvorit će se Stripe obrazac za plaćanje od {{amount}}. Proizvod se dodjeljuje, a prihod bilježi nakon uspješne uplate.",
+      "payToStudio": "Uplata stiže na račun studija",
+      "payConfirming": "Provjerava se plaćanje…",
+      "close": "Zatvori",
+      "confirmMessageCovered": "Plaćanje je u cijelosti pokriveno pologom ili certifikatom. Proizvod će biti dodijeljen klijentu.",
+      "paySuccess": "Plaćanje je zabilježeno",
+      "payCancelled": "Plaćanje je otkazano — ništa nije naplaćeno",
+      "payNotCompleted": "Stripe još nije potvrdio plaćanje. Ako je kartica terećena, osvježite za minutu.",
+      "payNotApplied": "Kartica je terećena, ali prodaja nije mogla biti zabilježena: uvjeti su se promijenili (certifikat, promotivni kod ili paket). Zabilježite prodaju ručno ili izvršite povrat u Stripeu.",
+      "transfer": "Prenesi",
+      "transferTitle": "Prenesi pretplatu",
+      "transferSearchLabel": "Prenesi na",
+      "transferSearchPlaceholder": "Ime ili telefon klijenta",
+      "transferSelectPlaceholder": "Odaberi klijenta",
+      "transferConfirm": "Prenesi",
+      "transferSuccess": "Pretplata je prenesena",
+      "lessonsCount_one": "{{count}} termin",
+      "lessonsCount_few": "{{count}} termina",
+      "lessonsCount_other": "{{count}} termina",
+      "useBonuses_one": "Iskoristi bonuse ({{count}})",
+      "useBonuses_few": "Iskoristi bonuse ({{count}})",
+      "useBonuses_other": "Iskoristi bonuse ({{count}})",
+      "bonusesSpent_one": "Bonusi ({{count}} bod)",
+      "bonusesSpent_few": "Bonusi ({{count}} boda)",
+      "bonusesSpent_other": "Bonusi ({{count}} bodova)"
+    },
+    "offers": {
+      "title": "Osobni popust",
+      "empty": "Nema aktivnih popusta",
+      "grant": "Dodijeli popust",
+      "cancel": "Otkaži",
+      "valuePercent": "{{value}}%",
+      "valueAmount": "{{value}} ₽",
+      "untilDate": "do {{date}}",
+      "noExpiry": "bez isteka",
+      "scopeRenewal": "za obnovu",
+      "grantTitle": "Dodijeli osobni popust",
+      "grantValue": "Veličina popusta",
+      "grantType": {
+        "percent": "Postotak (%)",
+        "amount": "Iznos (₽)"
+      },
+      "grantValidUntil": "Vrijedi do",
+      "grantSubmit": "Dodijeli",
+      "cancelConfirmTitle": "Otkazati popust?",
+      "cancelConfirmMessage": "Klijent više neće moći koristiti ovu ponudu.",
+      "toasts": {
+        "granted": "Popust je dodijeljen",
+        "cancelled": "Popust je otkazan",
+        "loadFailed": "Učitavanje popusta nije uspjelo"
+      }
+    },
+    "activity": {
+      "compactTitle": "Aktivnost (3 mj.)",
+      "clickForDetails": "Kliknite za detalje",
+      "detailedTitle": "Detaljna aktivnost",
+      "periods": {
+        "month3": "3 mj.",
+        "month6": "6 mj."
+      },
+      "visitsInPeriod": "Posjeti u razdoblju",
+      "emptyState": "Nema posjeta u ovom razdoblju",
+      "insightTitle": "Prosječna posjećenost",
+      "insightBody": "U prosjeku {{avg}} posjeta mjesečno u odabranom razdoblju.",
+      "months": {
+        "jan": "sij",
+        "feb": "velj",
+        "mar": "ožu",
+        "apr": "tra",
+        "may": "svi",
+        "jun": "lip",
+        "jul": "srp",
+        "aug": "kol",
+        "sep": "ruj",
+        "oct": "lis",
+        "nov": "stu",
+        "dec": "pro"
+      },
+      "visitsTooltip_one": "{{count}} posjet",
+      "visitsTooltip_few": "{{count}} posjeta",
+      "visitsTooltip_other": "{{count}} posjeta"
+    },
+    "tags": {
+      "title": "Oznake",
+      "add": "Dodaj",
+      "close": "Zatvori",
+      "customPlaceholder": "Prilagođena oznaka + Enter…"
+    },
+    "danger": {
+      "freeze": "Zamrzni",
+      "unfreeze": "Odmrzni",
+      "freezeDisabledHint": "Zamrzavanje je isključeno u Katalog → postavke pretplata",
+      "delete": "Izbriši"
+    },
+    "events": {
+      "filterTabs": {
+        "all": "Svi",
+        "payment": "Plaćanja",
+        "visit": "Posjeti",
+        "booking": "Rezervacije",
+        "cancel": "Otkazivanja",
+        "bonus": "Bonusi",
+        "freeze": "Zamrzavanja"
+      },
+      "empty": "Nema događaja"
+    },
+    "notes": {
+      "title": "Bilješke administratora",
+      "prefix": "Bilješka · {{date}}",
+      "save": "Spremi",
+      "cancel": "Otkaži",
+      "addPlaceholder": "Unesite bilješku…",
+      "add": "Dodaj bilješku",
+      "justNow": "upravo sada",
+      "deleteTitle": "Izbrisati bilješku?",
+      "deleteMessage": "Ova se bilješka ne može vratiti."
+    },
+    "bookingPanel": {
+      "title": "Brza rezervacija",
+      "today": "Danas",
+      "noLessons": "Nema termina ovog dana",
+      "full": "Nema slobodnih mjesta",
+      "confirm": "Rezerviraj →",
+      "noSubscription": "Klijent nema pretplatu dostupnu za rezervaciju",
+      "individual": "Individualna usluga"
+    },
+    "bonusPanel": {
+      "title": "Dodijeli bonus"
+    },
+    "toasts": {
+      "noPhone": "Klijent nema broj telefona",
+      "copied": "Uspješno kopirano",
+      "bookingCreated": "Rezervacija je stvorena",
+      "bookingFailed": "Rezervacija nije uspjela",
+      "bonusFailed": "Dodjela bodova nije uspjela",
+      "bonusApplied": "Bonus je dodijeljen: {{label}}",
+      "clientAdded": "Klijent je dodan"
+    },
+    "bonusOptions": {
+      "p200": {
+        "label": "+200 bodova",
+        "description": "Dodaj na saldo vjernosti"
+      },
+      "p500": {
+        "label": "+500 bodova",
+        "description": "Dodaj na saldo vjernosti"
+      },
+      "p1000": {
+        "label": "+1000 bodova",
+        "description": "Dodaj na saldo vjernosti"
+      }
+    }
+  },
+  "tags": {
+    "suggested": [
+      "Probni",
+      "VIP",
+      "Preporuka",
+      "Online",
+      "Grupa",
+      "Osobno"
+    ]
+  },
+  "addModal": {
+    "title": "Novi klijent",
+    "cancel": "Otkaži",
+    "back": "← Natrag",
+    "continue": "Nastavi →",
+    "submit": "Dodaj klijenta ✓",
+    "stepCounter": "Korak {{current}} od {{total}}",
+    "trustSignal": "Podaci su zaštićeni i vidljivi samo administratorima",
+    "steps": {
+      "1": {
+        "title": "Osobni podaci",
+        "sub": "Unesite kontaktne podatke klijenta"
+      },
+      "2": {
+        "title": "Podaci profila",
+        "sub": "Dodatne informacije (neobavezno)"
+      },
+      "3": {
+        "title": "Pretplata",
+        "sub": "Odaberite vrstu pretplate i dodajte bilješku"
+      },
+      "4": {
+        "title": "Sve je spremno!",
+        "sub": "Pregledajte podatke i dodajte klijenta"
+      }
+    },
+    "step1": {
+      "previewLabel": "Novi klijent · Pregled",
+      "name": "Puno ime *",
+      "namePlaceholder": "Ana Horvat",
+      "phone": "Telefon",
+      "phonePlaceholder": "+385 91 000 0000",
+      "email": "E-pošta",
+      "emailPlaceholder": "klijent@primjer.hr"
+    },
+    "step2": {
+      "bday": "Datum rođenja",
+      "bdayPlaceholder": "12. travnja 1990.",
+      "city": "Grad",
+      "cityPlaceholder": "Zagreb",
+      "tags": "Oznake",
+      "tagsPlaceholder": "Pilates, VIP, rehabilitacija… (Enter)",
+      "tagsHint": "Pritisnite Enter za dodavanje oznake",
+      "inviteCode": "Kod pozivnice preporučitelja",
+      "inviteCodePlaceholder": "Neobavezno",
+      "inviteCodeHint": "Ako je unesen, oboje dobivate bonus"
+    },
+    "step3": {
+      "classCount": "Pretplata",
+      "classesUnit": "termina",
+      "selected": "Odabrano",
+      "noPackage": "Bez pretplate",
+      "noPackages": "Ovaj studio još nema pakete pretplate",
+      "noPackagesLink": "Izradi pakete u Katalogu →",
+      "alreadyPaid": "Je li klijent već platio ovu pretplatu?",
+      "yes": "Da",
+      "no": "Ne",
+      "note": "Bilješka",
+      "notePlaceholder": "Posebni zahtjevi, kontraindikacije, preferencije…",
+      "classesCount_one": "{{count}} termin",
+      "classesCount_few": "{{count}} termina",
+      "classesCount_other": "{{count}} termina"
+    },
+    "step4": {
+      "readyTitle": "Podaci su popunjeni!",
+      "readySub": "Pregledajte podatke i potvrdite dodavanje",
+      "newClient": "Novi klijent",
+      "fields": {
+        "phone": "Telefon",
+        "email": "E-pošta",
+        "bday": "Datum rođenja",
+        "city": "Grad",
+        "subscription": "Pretplata",
+        "tags": "Oznake"
+      },
+      "smsTitle": "Pošalji SMS dobrodošlice",
+      "smsSub": "Klijent će primiti poruku s pozivnicom",
+      "subscriptionValue_one": "{{count}} termin",
+      "subscriptionValue_few": "{{count}} termina",
+      "subscriptionValue_other": "{{count}} termina"
+    },
+    "errors": {
+      "name": "Unesite ime (najmanje 2 znaka)",
+      "phone": "Neispravan broj telefona",
+      "email": "Neispravna e-pošta",
+      "city": "Unesite grad"
+    }
+  },
+  "deleteModal": {
+    "title": "Izbrisati klijenta?",
+    "body": "Upravo ćete izbrisati klijenta",
+    "warning": "Ova se radnja ne može poništiti.",
+    "cancel": "Otkaži",
+    "confirm": "Izbriši",
+    "success": "Klijent je izbrisan"
+  }
+}

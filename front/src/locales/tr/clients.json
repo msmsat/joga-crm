@@ -1,0 +1,429 @@
+{
+  "categories": {
+    "all": "Tümü",
+    "vip": "VIP",
+    "active": "Aktif",
+    "new": "Yeni",
+    "has_subscription": "Abonelikli",
+    "inactive": "Pasif",
+    "frozen": "Dondurulmuş",
+    "birthday": "Doğum günü"
+  },
+  "categoriesInfo": {
+    "all": {
+      "text": "Durum filtresi uygulanmamış stüdyonun tüm müşteri listesi."
+    },
+    "vip": {
+      "text": "Toplam 50.000+ tutarında başarılı ödeme veya 30+ ziyaret. VIP, müşteri kartına elle de sabitlenebilir; elle sabitleme tutarlardan bağımsız olarak korunur."
+    },
+    "active": {
+      "text": "Son 60 günde en az bir ziyaret. Günlükte işaretlenen katılıma göre belirlenir — durum kendiliğinden güncellenir, elle ayarlamaya gerek yoktur."
+    },
+    "new": {
+      "text": "Kayıt tarihinden itibaren ilk 15 gün; müşterinin elle eklenmiş veya çevrimiçi rezervasyonla gelmiş olması fark etmez. 16. günde otomatik olarak Aktif ya da Pasif durumuna geçer."
+    },
+    "has_subscription": {
+      "text": "Geçerli aboneliği var: süresi dolmamış, dondurulmamış ve kalan dersleri bulunuyor. Satın alma anında, her kullanılan dersten sonra ve süresi dolduğunda güncellenir."
+    },
+    "inactive": {
+      "text": "Son 60 günde hiç ziyaret yoksa veya müşteri hiç gelmemiş ve kayıttan itibaren 15 günden fazla geçmişse."
+    },
+    "frozen": {
+      "text": "Müşteri kartındaki düğmeyle dondurulmuş — elle ayarlanan tek durum budur. Dondurma kaldırıldığında müşteri otomatik durumuna döner."
+    },
+    "birthday": {
+      "text": "Bugün doğum günü olanlar — gün ve ay eşleşir, yıl dikkate alınmaz. Liste her gün otomatik yenilenir."
+    }
+  },
+  "status": {
+    "active": "Aktif",
+    "vip": "VIP",
+    "new": "Yeni",
+    "inactive": "Pasif",
+    "frozen": "Dondurulmuş"
+  },
+  "filtersGuide": {
+    "trigger": "Filtreler hakkında",
+    "title": "Müşteri filtreleri",
+    "subtitle": "Her kategorinin nasıl hesaplandığı. Filtreyi uygulamak için bir karta tıklayın veya eşiği değiştirin — durumlar hemen yeniden hesaplanır.",
+    "close": "Kapat",
+    "rule": {
+      "new_client_days": "Yeni olduğu süre",
+      "active_within_days": "Şu süre içinde ziyaret",
+      "vip_min_spent": "Şu tutardan itibaren harcama",
+      "vip_min_visits": "veya ziyaret"
+    },
+    "unit": {
+      "days": "gün",
+      "money": "",
+      "visits": "ziyaret"
+    }
+  },
+  "toolbar": {
+    "searchPlaceholder": "Müşteri ara…",
+    "addClient": "Müşteri ekle"
+  },
+  "table": {
+    "visits": "ziyaret",
+    "frozenBadge": "❄ dondurulmuş",
+    "totalSpent": "Toplam harcama",
+    "subscription": "Abonelik",
+    "of": "/",
+    "noSubscription": "Abonelik yok"
+  },
+  "loadMore": "Daha fazla yükle",
+  "loading": "Yükleniyor…",
+  "panel": {
+    "tabs": {
+      "info": "Profil",
+      "events": "Etkinlikler",
+      "notes": "Notlar",
+      "wallet": "Satın alımlar"
+    },
+    "actions": {
+      "book": "Rezervasyon yap",
+      "bonus": "Bonus"
+    },
+    "editDateHint": "Düzenlemek için tıklayın",
+    "since": "{{date}} tarihinden beri",
+    "contacts": {
+      "title": "İletişim bilgileri",
+      "phone": "Telefon",
+      "email": "E-posta",
+      "telegram": "Telegram",
+      "birthDate": "Doğum tarihi",
+      "city": "Şehir",
+      "copyHint": " · kopyalamak için tıklayın"
+    },
+    "debt": "Dersler için {{amount}} ödenmemiş — ödemeyi Günlükte alın",
+    "stats": {
+      "visits": "Ziyaretler",
+      "spent": "Harcanan",
+      "subscription": "Abonelik"
+    },
+    "loyalty": {
+      "points": "puan",
+      "level": "{{tier}} seviyesi",
+      "toNext": "Sonraki seviyeye: {{points}} puan",
+      "multiplier": "×{{value}} puan çarpanı",
+      "worth": "Ödemede değeri: {{amount}}",
+      "toNextLevel": "{{level}} seviyesine ulaşmak için {{amount}} daha",
+      "pointValue": "1 puan = {{amount}}",
+      "nextPointValue": "{{level}} seviyesinde — {{amount}}",
+      "noBonus": "Bu seviye puan değerini değiştirmez"
+    },
+    "referral": {
+      "title": "Arkadaşını davet et",
+      "copy": "Kopyala"
+    },
+    "abonement": {
+      "title": "Abonelik",
+      "lessons": "{{remaining}}/{{total}} ders",
+      "noSubscription": "Aktif abonelik yok",
+      "noSubscriptionWarning": "Müşterinin aboneliği yok — bir tane teklif edin",
+      "lowWarning": "Az ders kaldı — yenileme teklif edin",
+      "finishedWarning": "Ders kalmadı — yenileme teklif edin",
+      "remind": "Müşteriye hatırlat",
+      "reminderSent": "Hatırlatma müşteriye gönderildi"
+    },
+    "products": {
+      "single": "tekli",
+      "pending": "kuyrukta",
+      "frozen": "dondurulmuş",
+      "until": "{{date}} tarihine kadar geçerli",
+      "startsOnFirstVisit": "Süre ilk dersle başlar"
+    },
+    "wallet": {
+      "buy": "Satın al",
+      "active": "Aktif",
+      "archived": "Arşivlenmiş",
+      "singles": "Tek ziyaretler",
+      "subscriptions": "Abonelikler",
+      "noSingles": "Henüz tek ziyaret yok",
+      "emptyActive": "Aktif ürün yok",
+      "emptyArchived": "Arşivlenmiş ürün yok",
+      "emptyCatalog": "Bu stüdyoda henüz abonelik paketi yok",
+      "lessons": "{{remaining}}/{{total}} ders",
+      "perVisit": "Tek ziyaret başına",
+      "until": "{{date}} tarihine kadar",
+      "frozenBadge": "Dondurulmuş",
+      "loadFailed": "Cüzdan yüklenemedi",
+      "back": "← Geri",
+      "catalogTitle": "Katalog",
+      "showAll": "Tümü",
+      "posTitle": "Kasa",
+      "promoLabel": "Promosyon kodu",
+      "promoPlaceholder": "Promosyon kodunu girin",
+      "promoInvalid": "Promosyon kodu geçersiz",
+      "useDeposit": "Depozitodan öde ({{amount}})",
+      "certLabel": "Sertifika kodu",
+      "certPlaceholder": "Sertifika kodunu girin",
+      "certApplied": "Sertifika",
+      "depositApplied": "Depozito",
+      "base": "Temel fiyat",
+      "discount": "İndirim",
+      "bonuses": "Bonuslar",
+      "total": "Toplam",
+      "cash": "Nakit",
+      "card": "Kart",
+      "cardStripe": "Kart ödemeleri bir Stripe sayfasından geçer ve doğrudan stüdyonun hesabına ulaşır. Finans → Çevrimiçi ödemeler bölümünden ayarlayın.",
+      "offlineLocked": "Nakit ödemeler Combo ve üzeri planlarda kullanılabilir",
+      "payByCard": "Kartla öde",
+      "confirmPay": "Ödemeyi onayla",
+      "confirmPayCovered": "Onayla (zaten ödendi)",
+      "confirmTitle": "Alınan ödeme onaylansın mı?",
+      "confirmMessage": "Bu işlem {{amount}} tutarında gelir kaydeder ve ürünü müşteriye verir.",
+      "confirmMessageCard": "{{amount}} için bir Stripe ödeme formu açılır. Ödeme başarılı olduğunda ürün verilir ve gelir kaydedilir.",
+      "payToStudio": "Ödeme stüdyonun hesabına ulaşır",
+      "payConfirming": "Ödeme doğrulanıyor…",
+      "close": "Kapat",
+      "confirmMessageCovered": "Ödeme tamamen depozito veya sertifika ile karşılandı. Ürün müşteriye verilecek.",
+      "paySuccess": "Ödeme kaydedildi",
+      "payCancelled": "Ödeme iptal edildi — ücret alınmadı",
+      "payNotCompleted": "Stripe ödemeyi henüz onaylamadı. Karttan çekim yapıldıysa bir dakika sonra yenileyin.",
+      "payNotApplied": "Karttan çekim yapıldı ancak satış kaydedilemedi: koşullar değişti (sertifika, promosyon kodu veya paket). Satışı elle kaydedin ya da Stripe üzerinden iade edin.",
+      "transfer": "Devret",
+      "transferTitle": "Aboneliği devret",
+      "transferSearchLabel": "Şuna devret",
+      "transferSearchPlaceholder": "Müşteri adı veya telefonu",
+      "transferSelectPlaceholder": "Müşteri seçin",
+      "transferConfirm": "Devret",
+      "transferSuccess": "Abonelik devredildi",
+      "lessonsCount_one": "{{count}} ders",
+      "lessonsCount_other": "{{count}} ders",
+      "useBonuses_one": "Bonusları kullan ({{count}})",
+      "useBonuses_other": "Bonusları kullan ({{count}})",
+      "bonusesSpent_one": "Bonuslar ({{count}} p.)",
+      "bonusesSpent_other": "Bonuslar ({{count}} p.)"
+    },
+    "offers": {
+      "title": "Kişisel indirim",
+      "empty": "Aktif indirim yok",
+      "grant": "İndirim ver",
+      "cancel": "İptal",
+      "valuePercent": "{{value}}%",
+      "valueAmount": "{{value}} ₽",
+      "untilDate": "{{date}} tarihine kadar",
+      "noExpiry": "süresiz",
+      "scopeRenewal": "yenileme için",
+      "grantTitle": "Kişisel indirim ver",
+      "grantValue": "İndirim tutarı",
+      "grantType": {
+        "percent": "Yüzde (%)",
+        "amount": "Tutar (₽)"
+      },
+      "grantValidUntil": "Geçerlilik tarihi",
+      "grantSubmit": "Ver",
+      "cancelConfirmTitle": "İndirim iptal edilsin mi?",
+      "cancelConfirmMessage": "Müşteri artık bu teklifi kullanamayacak.",
+      "toasts": {
+        "granted": "İndirim verildi",
+        "cancelled": "İndirim iptal edildi",
+        "loadFailed": "İndirimler yüklenemedi"
+      }
+    },
+    "activity": {
+      "compactTitle": "Etkinlik (3 ay)",
+      "clickForDetails": "Ayrıntılar için tıklayın",
+      "detailedTitle": "Ayrıntılı etkinlik",
+      "periods": {
+        "month3": "3 ay",
+        "month6": "6 ay"
+      },
+      "visitsInPeriod": "Dönemdeki ziyaretler",
+      "emptyState": "Bu dönemde ziyaret yok",
+      "insightTitle": "Ortalama katılım",
+      "insightBody": "Seçilen dönemde ayda ortalama {{avg}} ziyaret.",
+      "months": {
+        "jan": "Oca",
+        "feb": "Şub",
+        "mar": "Mar",
+        "apr": "Nis",
+        "may": "May",
+        "jun": "Haz",
+        "jul": "Tem",
+        "aug": "Ağu",
+        "sep": "Eyl",
+        "oct": "Eki",
+        "nov": "Kas",
+        "dec": "Ara"
+      },
+      "visitsTooltip_one": "{{count}} ziyaret",
+      "visitsTooltip_other": "{{count}} ziyaret"
+    },
+    "tags": {
+      "title": "Etiketler",
+      "add": "Ekle",
+      "close": "Kapat",
+      "customPlaceholder": "Özel etiket + Enter…"
+    },
+    "danger": {
+      "freeze": "Dondur",
+      "unfreeze": "Dondurmayı kaldır",
+      "freezeDisabledHint": "Dondurma, Katalog → abonelik ayarlarında devre dışı",
+      "delete": "Sil"
+    },
+    "events": {
+      "filterTabs": {
+        "all": "Tümü",
+        "payment": "Ödemeler",
+        "visit": "Ziyaretler",
+        "booking": "Rezervasyonlar",
+        "cancel": "İptaller",
+        "bonus": "Bonuslar",
+        "freeze": "Dondurmalar"
+      },
+      "empty": "Etkinlik yok"
+    },
+    "notes": {
+      "title": "Yönetici notları",
+      "prefix": "Not · {{date}}",
+      "save": "Kaydet",
+      "cancel": "İptal",
+      "addPlaceholder": "Bir not yazın…",
+      "add": "Not ekle",
+      "justNow": "az önce",
+      "deleteTitle": "Not silinsin mi?",
+      "deleteMessage": "Bu not geri alınamaz."
+    },
+    "bookingPanel": {
+      "title": "Hızlı rezervasyon",
+      "today": "Bugün",
+      "noLessons": "Bu gün ders yok",
+      "full": "Yer yok",
+      "confirm": "Rezervasyon yap →",
+      "noSubscription": "Müşterinin rezervasyon için kullanılabilir aboneliği yok",
+      "individual": "Bireysel hizmet"
+    },
+    "bonusPanel": {
+      "title": "Bonus ver"
+    },
+    "toasts": {
+      "noPhone": "Müşterinin telefon numarası yok",
+      "copied": "Başarıyla kopyalandı",
+      "bookingCreated": "Rezervasyon oluşturuldu",
+      "bookingFailed": "Rezervasyon yapılamadı",
+      "bonusFailed": "Puanlar verilemedi",
+      "bonusApplied": "Bonus verildi: {{label}}",
+      "clientAdded": "Müşteri eklendi"
+    },
+    "bonusOptions": {
+      "p200": {
+        "label": "+200 puan",
+        "description": "Sadakat bakiyesine ekle"
+      },
+      "p500": {
+        "label": "+500 puan",
+        "description": "Sadakat bakiyesine ekle"
+      },
+      "p1000": {
+        "label": "+1000 puan",
+        "description": "Sadakat bakiyesine ekle"
+      }
+    }
+  },
+  "tags": {
+    "suggested": [
+      "Deneme",
+      "VIP",
+      "Tavsiye",
+      "Çevrimiçi",
+      "Grup",
+      "Kişisel"
+    ]
+  },
+  "addModal": {
+    "title": "Yeni müşteri",
+    "cancel": "İptal",
+    "back": "← Geri",
+    "continue": "Devam et →",
+    "submit": "Müşteri ekle ✓",
+    "stepCounter": "{{total}} adımın {{current}}. adımı",
+    "trustSignal": "Veriler korunur ve yalnızca yöneticiler tarafından görülebilir",
+    "steps": {
+      "1": {
+        "title": "Kişisel bilgiler",
+        "sub": "Müşterinin iletişim bilgilerini girin"
+      },
+      "2": {
+        "title": "Profil ayrıntıları",
+        "sub": "Ek bilgiler (isteğe bağlı)"
+      },
+      "3": {
+        "title": "Abonelik",
+        "sub": "Bir abonelik türü seçin ve not ekleyin"
+      },
+      "4": {
+        "title": "Her şey hazır!",
+        "sub": "Bilgileri gözden geçirin ve müşteriyi ekleyin"
+      }
+    },
+    "step1": {
+      "previewLabel": "Yeni müşteri · Önizleme",
+      "name": "Ad soyad *",
+      "namePlaceholder": "Ayşe Yılmaz",
+      "phone": "Telefon",
+      "phonePlaceholder": "+90 530 000 0000",
+      "email": "E-posta",
+      "emailPlaceholder": "musteri@ornek.tr"
+    },
+    "step2": {
+      "bday": "Doğum tarihi",
+      "bdayPlaceholder": "12 Nisan 1990",
+      "city": "Şehir",
+      "cityPlaceholder": "İstanbul",
+      "tags": "Etiketler",
+      "tagsPlaceholder": "Pilates, VIP, rehabilitasyon… (Enter)",
+      "tagsHint": "Etiket eklemek için Enter tuşuna basın",
+      "inviteCode": "Yönlendirenin davet kodu",
+      "inviteCodePlaceholder": "İsteğe bağlı",
+      "inviteCodeHint": "Belirtilirse ikiniz de bonus alırsınız"
+    },
+    "step3": {
+      "classCount": "Abonelik",
+      "classesUnit": "ders",
+      "selected": "Seçildi",
+      "noPackage": "Abonelik yok",
+      "noPackages": "Bu stüdyoda henüz abonelik paketi yok",
+      "noPackagesLink": "Katalogda paket oluştur →",
+      "alreadyPaid": "Müşteri bu abonelik için zaten ödeme yaptı mı?",
+      "yes": "Evet",
+      "no": "Hayır",
+      "note": "Not",
+      "notePlaceholder": "Özel istekler, kontrendikasyonlar, tercihler…",
+      "classesCount_one": "{{count}} ders",
+      "classesCount_other": "{{count}} ders"
+    },
+    "step4": {
+      "readyTitle": "Bilgiler tamamlandı!",
+      "readySub": "Bilgileri gözden geçirin ve eklemeyi onaylayın",
+      "newClient": "Yeni müşteri",
+      "fields": {
+        "phone": "Telefon",
+        "email": "E-posta",
+        "bday": "Doğum tarihi",
+        "city": "Şehir",
+        "subscription": "Abonelik",
+        "tags": "Etiketler"
+      },
+      "smsTitle": "Hoş geldin SMS'i gönder",
+      "smsSub": "Müşteri davet mesajı alacak",
+      "subscriptionValue_one": "{{count}} ders",
+      "subscriptionValue_other": "{{count}} ders"
+    },
+    "errors": {
+      "name": "Bir ad girin (en az 2 karakter)",
+      "phone": "Geçersiz telefon numarası",
+      "email": "Geçersiz e-posta",
+      "city": "Bir şehir girin"
+    }
+  },
+  "deleteModal": {
+    "title": "Müşteri silinsin mi?",
+    "body": "Müşteriyi silmek üzeresiniz",
+    "warning": "Bu işlem geri alınamaz.",
+    "cancel": "İptal",
+    "confirm": "Sil",
+    "success": "Müşteri silindi"
+  }
+}

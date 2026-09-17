@@ -1,0 +1,429 @@
+{
+  "categories": {
+    "all": "Todos",
+    "vip": "VIP",
+    "active": "Ativos",
+    "new": "Novos",
+    "has_subscription": "Com subscrição",
+    "inactive": "Inativos",
+    "frozen": "Congelados",
+    "birthday": "Aniversário"
+  },
+  "categoriesInfo": {
+    "all": {
+      "text": "A lista completa de clientes do estúdio, sem qualquer filtro de estado aplicado."
+    },
+    "vip": {
+      "text": "Pagamentos bem-sucedidos num total de 50.000+ ou 30+ visitas. O VIP também pode ser fixado manualmente na ficha do cliente; a fixação manual mantém-se independentemente dos valores."
+    },
+    "active": {
+      "text": "Pelo menos uma visita nos últimos 60 dias. Baseia-se nas presenças registadas no diário: o estado atualiza-se sozinho, sem ser necessário defini-lo manualmente."
+    },
+    "new": {
+      "text": "Os primeiros 15 dias desde a data de registo, quer o cliente tenha sido adicionado manualmente ou chegado através da reserva online. No 16.º dia passa automaticamente a Ativo ou Inativo."
+    },
+    "has_subscription": {
+      "text": "Tem uma subscrição ativa: não expirou, não está congelada e tem aulas restantes. Atualiza-se imediatamente na compra, a cada aula utilizada e quando expira."
+    },
+    "inactive": {
+      "text": "Sem visitas nos últimos 60 dias, ou sem nunca ter visitado e com mais de 15 dias desde o registo."
+    },
+    "frozen": {
+      "text": "Congelado através do botão na ficha do cliente: é o único estado definido manualmente. Depois de descongelar, o cliente regressa ao estado automático."
+    },
+    "birthday": {
+      "text": "Quem faz anos hoje: o dia e o mês coincidem, o ano é ignorado. A lista é atualizada automaticamente todos os dias."
+    }
+  },
+  "status": {
+    "active": "Ativo",
+    "vip": "VIP",
+    "new": "Novo",
+    "inactive": "Inativo",
+    "frozen": "Congelado"
+  },
+  "filtersGuide": {
+    "trigger": "Sobre os filtros",
+    "title": "Filtros de clientes",
+    "subtitle": "Como é calculada cada categoria. Clique num cartão para aplicar o filtro ou altere um limite: os estados são recalculados de imediato.",
+    "close": "Fechar",
+    "rule": {
+      "new_client_days": "Novo durante",
+      "active_within_days": "Visita nos últimos",
+      "vip_min_spent": "Gasto a partir de",
+      "vip_min_visits": "ou visitas"
+    },
+    "unit": {
+      "days": "dias",
+      "money": "",
+      "visits": "visitas"
+    }
+  },
+  "toolbar": {
+    "searchPlaceholder": "Pesquisar cliente…",
+    "addClient": "Adicionar cliente"
+  },
+  "table": {
+    "visits": "visitas",
+    "frozenBadge": "❄ congelado",
+    "totalSpent": "Total gasto",
+    "subscription": "Subscrição",
+    "of": "de",
+    "noSubscription": "Sem subscrição"
+  },
+  "loadMore": "Carregar mais",
+  "loading": "A carregar…",
+  "panel": {
+    "tabs": {
+      "info": "Perfil",
+      "events": "Eventos",
+      "notes": "Notas",
+      "wallet": "Compras"
+    },
+    "actions": {
+      "book": "Reservar",
+      "bonus": "Bónus"
+    },
+    "editDateHint": "Clique para editar",
+    "since": "desde {{date}}",
+    "contacts": {
+      "title": "Contactos",
+      "phone": "Telefone",
+      "email": "E-mail",
+      "telegram": "Telegram",
+      "birthDate": "Data de nascimento",
+      "city": "Cidade",
+      "copyHint": " · clique para copiar"
+    },
+    "debt": "{{amount}} em aulas por pagar — aceite o pagamento no Diário",
+    "stats": {
+      "visits": "Visitas",
+      "spent": "Gasto",
+      "subscription": "Subscrição"
+    },
+    "loyalty": {
+      "points": "pontos",
+      "level": "nível {{tier}}",
+      "toNext": "Até ao próximo nível: {{points}} pontos",
+      "multiplier": "multiplicador de pontos ×{{value}}",
+      "worth": "Vale {{amount}} no pagamento",
+      "toNextLevel": "Faltam {{amount}} para chegar a {{level}}",
+      "pointValue": "1 ponto = {{amount}}",
+      "nextPointValue": "no nível {{level}} — {{amount}}",
+      "noBonus": "Este nível não altera o valor dos pontos"
+    },
+    "referral": {
+      "title": "Convidar um amigo",
+      "copy": "Copiar"
+    },
+    "abonement": {
+      "title": "Subscrição",
+      "lessons": "{{remaining}}/{{total}} aulas",
+      "noSubscription": "Sem subscrição ativa",
+      "noSubscriptionWarning": "O cliente não tem subscrição — ofereça-lhe uma",
+      "lowWarning": "Restam poucas aulas — ofereça uma renovação",
+      "finishedWarning": "Não restam aulas — ofereça uma renovação",
+      "remind": "Lembrar o cliente",
+      "reminderSent": "Lembrete enviado ao cliente"
+    },
+    "products": {
+      "single": "individual",
+      "pending": "em fila",
+      "frozen": "congelado",
+      "until": "Válido até {{date}}",
+      "startsOnFirstVisit": "O período começa com a primeira aula"
+    },
+    "wallet": {
+      "buy": "Comprar",
+      "active": "Ativos",
+      "archived": "Arquivados",
+      "singles": "Visitas individuais",
+      "subscriptions": "Subscrições",
+      "noSingles": "Ainda não há visitas individuais",
+      "emptyActive": "Não há produtos ativos",
+      "emptyArchived": "Não há produtos arquivados",
+      "emptyCatalog": "Este estúdio ainda não tem pacotes de subscrição",
+      "lessons": "{{remaining}}/{{total}} aulas",
+      "perVisit": "Por visita individual",
+      "until": "até {{date}}",
+      "frozenBadge": "Congelado",
+      "loadFailed": "Não foi possível carregar a carteira",
+      "back": "← Voltar",
+      "catalogTitle": "Catálogo",
+      "showAll": "Todos",
+      "posTitle": "Pagamento",
+      "promoLabel": "Código promocional",
+      "promoPlaceholder": "Introduza o código promocional",
+      "promoInvalid": "O código promocional não é válido",
+      "useDeposit": "Pagar do depósito ({{amount}})",
+      "certLabel": "Código do certificado",
+      "certPlaceholder": "Introduza o código do certificado",
+      "certApplied": "Certificado",
+      "depositApplied": "Depósito",
+      "base": "Preço base",
+      "discount": "Desconto",
+      "bonuses": "Bónus",
+      "total": "Total",
+      "cash": "Dinheiro",
+      "card": "Cartão",
+      "cardStripe": "Os pagamentos por cartão passam por uma página Stripe e entram diretamente na conta do estúdio. Configure-os em Finanças → Pagamentos online.",
+      "offlineLocked": "Os pagamentos em dinheiro estão disponíveis nos planos Combo e superiores",
+      "payByCard": "Pagar com cartão",
+      "confirmPay": "Confirmar pagamento",
+      "confirmPayCovered": "Confirmar (já pago)",
+      "confirmTitle": "Confirmar o pagamento recebido?",
+      "confirmMessage": "Isto irá registar uma receita de {{amount}} e atribuir o produto ao cliente.",
+      "confirmMessageCard": "Será aberto um formulário de pagamento Stripe para {{amount}}. O produto será atribuído e a receita registada quando o pagamento for concluído com êxito.",
+      "payToStudio": "O pagamento entra na conta do estúdio",
+      "payConfirming": "A verificar o pagamento…",
+      "close": "Fechar",
+      "confirmMessageCovered": "O pagamento está totalmente coberto pelo depósito ou certificado. O produto será atribuído ao cliente.",
+      "paySuccess": "Pagamento registado",
+      "payCancelled": "Pagamento cancelado — não foi cobrado nada",
+      "payNotCompleted": "A Stripe ainda não confirmou o pagamento. Se o cartão tiver sido cobrado, atualize dentro de um minuto.",
+      "payNotApplied": "O cartão foi cobrado, mas não foi possível registar a venda: os termos mudaram (certificado, código promocional ou pacote). Registe a venda manualmente ou reembolse na Stripe.",
+      "transfer": "Transferir",
+      "transferTitle": "Transferir subscrição",
+      "transferSearchLabel": "Transferir para",
+      "transferSearchPlaceholder": "Nome ou telefone do cliente",
+      "transferSelectPlaceholder": "Selecionar cliente",
+      "transferConfirm": "Transferir",
+      "transferSuccess": "Subscrição transferida",
+      "lessonsCount_one": "{{count}} aula",
+      "lessonsCount_other": "{{count}} aulas",
+      "useBonuses_one": "Usar bónus ({{count}})",
+      "useBonuses_other": "Usar bónus ({{count}})",
+      "bonusesSpent_one": "Bónus ({{count}} pt)",
+      "bonusesSpent_other": "Bónus ({{count}} pts)"
+    },
+    "offers": {
+      "title": "Desconto pessoal",
+      "empty": "Não há descontos ativos",
+      "grant": "Conceder desconto",
+      "cancel": "Cancelar",
+      "valuePercent": "{{value}}%",
+      "valueAmount": "{{value}} ₽",
+      "untilDate": "até {{date}}",
+      "noExpiry": "sem validade",
+      "scopeRenewal": "para renovação",
+      "grantTitle": "Conceder um desconto pessoal",
+      "grantValue": "Valor do desconto",
+      "grantType": {
+        "percent": "Percentagem (%)",
+        "amount": "Montante (₽)"
+      },
+      "grantValidUntil": "Válido até",
+      "grantSubmit": "Conceder",
+      "cancelConfirmTitle": "Cancelar o desconto?",
+      "cancelConfirmMessage": "O cliente deixará de poder usar esta oferta.",
+      "toasts": {
+        "granted": "Desconto concedido",
+        "cancelled": "Desconto cancelado",
+        "loadFailed": "Não foi possível carregar os descontos"
+      }
+    },
+    "activity": {
+      "compactTitle": "Atividade (3 meses)",
+      "clickForDetails": "Clique para ver detalhes",
+      "detailedTitle": "Atividade detalhada",
+      "periods": {
+        "month3": "3 meses",
+        "month6": "6 meses"
+      },
+      "visitsInPeriod": "Visitas no período",
+      "emptyState": "Não há visitas neste período",
+      "insightTitle": "Frequência média",
+      "insightBody": "Em média, {{avg}} visitas por mês no período selecionado.",
+      "months": {
+        "jan": "jan.",
+        "feb": "fev.",
+        "mar": "mar.",
+        "apr": "abr.",
+        "may": "mai.",
+        "jun": "jun.",
+        "jul": "jul.",
+        "aug": "ag.",
+        "sep": "set.",
+        "oct": "out.",
+        "nov": "nov.",
+        "dec": "dez."
+      },
+      "visitsTooltip_one": "{{count}} visita",
+      "visitsTooltip_other": "{{count}} visitas"
+    },
+    "tags": {
+      "title": "Etiquetas",
+      "add": "Adicionar",
+      "close": "Fechar",
+      "customPlaceholder": "Etiqueta personalizada + Enter…"
+    },
+    "danger": {
+      "freeze": "Congelar",
+      "unfreeze": "Descongelar",
+      "freezeDisabledHint": "O congelamento está desativado em Catálogo → definições de subscrições",
+      "delete": "Eliminar"
+    },
+    "events": {
+      "filterTabs": {
+        "all": "Todos",
+        "payment": "Pagamentos",
+        "visit": "Visitas",
+        "booking": "Reservas",
+        "cancel": "Cancelamentos",
+        "bonus": "Bónus",
+        "freeze": "Congelamentos"
+      },
+      "empty": "Não há eventos"
+    },
+    "notes": {
+      "title": "Notas administrativas",
+      "prefix": "Nota · {{date}}",
+      "save": "Guardar",
+      "cancel": "Cancelar",
+      "addPlaceholder": "Introduza uma nota…",
+      "add": "Adicionar nota",
+      "justNow": "mesmo agora",
+      "deleteTitle": "Eliminar a nota?",
+      "deleteMessage": "Esta nota não pode ser recuperada."
+    },
+    "bookingPanel": {
+      "title": "Reserva rápida",
+      "today": "Hoje",
+      "noLessons": "Não há aulas neste dia",
+      "full": "Não há vagas",
+      "confirm": "Reservar →",
+      "noSubscription": "O cliente não tem uma subscrição disponível para reservar",
+      "individual": "Serviço individual"
+    },
+    "bonusPanel": {
+      "title": "Conceder bónus"
+    },
+    "toasts": {
+      "noPhone": "O cliente não tem número de telefone",
+      "copied": "Copiado com êxito",
+      "bookingCreated": "Reserva criada",
+      "bookingFailed": "Não foi possível reservar",
+      "bonusFailed": "Não foi possível conceder os pontos",
+      "bonusApplied": "Bónus concedido: {{label}}",
+      "clientAdded": "Cliente adicionado"
+    },
+    "bonusOptions": {
+      "p200": {
+        "label": "+200 pontos",
+        "description": "Adicionar ao saldo de fidelização"
+      },
+      "p500": {
+        "label": "+500 pontos",
+        "description": "Adicionar ao saldo de fidelização"
+      },
+      "p1000": {
+        "label": "+1000 pontos",
+        "description": "Adicionar ao saldo de fidelização"
+      }
+    }
+  },
+  "tags": {
+    "suggested": [
+      "Experimental",
+      "VIP",
+      "Recomendação",
+      "Online",
+      "Grupo",
+      "Pessoal"
+    ]
+  },
+  "addModal": {
+    "title": "Novo cliente",
+    "cancel": "Cancelar",
+    "back": "← Voltar",
+    "continue": "Continuar →",
+    "submit": "Adicionar cliente ✓",
+    "stepCounter": "Passo {{current}} de {{total}}",
+    "trustSignal": "Os dados estão protegidos e visíveis apenas para administradores",
+    "steps": {
+      "1": {
+        "title": "Dados pessoais",
+        "sub": "Introduza os contactos do cliente"
+      },
+      "2": {
+        "title": "Detalhes do perfil",
+        "sub": "Informação adicional (opcional)"
+      },
+      "3": {
+        "title": "Subscrição",
+        "sub": "Escolha um tipo de subscrição e adicione uma nota"
+      },
+      "4": {
+        "title": "Tudo pronto!",
+        "sub": "Reveja os dados e adicione o cliente"
+      }
+    },
+    "step1": {
+      "previewLabel": "Novo cliente · Pré-visualização",
+      "name": "Nome completo *",
+      "namePlaceholder": "João Silva",
+      "phone": "Telefone",
+      "phonePlaceholder": "+351 912 000 000",
+      "email": "E-mail",
+      "emailPlaceholder": "cliente@exemplo.pt"
+    },
+    "step2": {
+      "bday": "Data de nascimento",
+      "bdayPlaceholder": "12 de abril de 1990",
+      "city": "Cidade",
+      "cityPlaceholder": "Lisboa",
+      "tags": "Etiquetas",
+      "tagsPlaceholder": "Pilates, VIP, reabilitação… (Enter)",
+      "tagsHint": "Prima Enter para adicionar uma etiqueta",
+      "inviteCode": "Código de convite do recomendador",
+      "inviteCodePlaceholder": "Opcional",
+      "inviteCodeHint": "Se for indicado, ambos recebem um bónus"
+    },
+    "step3": {
+      "classCount": "Subscrição",
+      "classesUnit": "aulas",
+      "selected": "Selecionado",
+      "noPackage": "Sem subscrição",
+      "noPackages": "Este estúdio ainda não tem pacotes de subscrição",
+      "noPackagesLink": "Criar pacotes no Catálogo →",
+      "alreadyPaid": "O cliente já pagou esta subscrição?",
+      "yes": "Sim",
+      "no": "Não",
+      "note": "Nota",
+      "notePlaceholder": "Pedidos especiais, contraindicações, preferências…",
+      "classesCount_one": "{{count}} aula",
+      "classesCount_other": "{{count}} aulas"
+    },
+    "step4": {
+      "readyTitle": "Dados preenchidos!",
+      "readySub": "Reveja os dados e confirme a adição",
+      "newClient": "Novo cliente",
+      "fields": {
+        "phone": "Telefone",
+        "email": "E-mail",
+        "bday": "Data de nascimento",
+        "city": "Cidade",
+        "subscription": "Subscrição",
+        "tags": "Etiquetas"
+      },
+      "smsTitle": "Enviar SMS de boas-vindas",
+      "smsSub": "O cliente receberá uma mensagem de convite",
+      "subscriptionValue_one": "{{count}} aula",
+      "subscriptionValue_other": "{{count}} aulas"
+    },
+    "errors": {
+      "name": "Introduza um nome (pelo menos 2 caracteres)",
+      "phone": "Número de telefone inválido",
+      "email": "E-mail inválido",
+      "city": "Introduza uma cidade"
+    }
+  },
+  "deleteModal": {
+    "title": "Eliminar cliente?",
+    "body": "Está prestes a eliminar o cliente",
+    "warning": "Esta ação não pode ser anulada.",
+    "cancel": "Cancelar",
+    "confirm": "Eliminar",
+    "success": "Cliente eliminado"
+  }
+}

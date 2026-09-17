@@ -1,0 +1,429 @@
+{
+  "categories": {
+    "all": "Alla",
+    "vip": "VIP",
+    "active": "Aktiva",
+    "new": "Nya",
+    "has_subscription": "Med abonnemang",
+    "inactive": "Inaktiva",
+    "frozen": "Frysta",
+    "birthday": "Födelsedag"
+  },
+  "categoriesInfo": {
+    "all": {
+      "text": "Studions fullständiga kundlista utan något statusfilter."
+    },
+    "vip": {
+      "text": "Genomförda betalningar på sammanlagt 50 000+ eller 30+ besök. VIP kan också fästas manuellt i kundkortet; en manuell fastsättning gäller oavsett beloppen."
+    },
+    "active": {
+      "text": "Minst ett besök under de senaste 60 dagarna. Bygger på närvaro som markerats i journalen — statusen uppdateras automatiskt och behöver inte ställas in för hand."
+    },
+    "new": {
+      "text": "De första 15 dagarna från registreringsdatumet, oavsett om kunden lades till manuellt eller kom via onlinebokning. Dag 16 flyttas kunden automatiskt till Aktiv eller Inaktiv."
+    },
+    "has_subscription": {
+      "text": "Har ett giltigt abonnemang: inte utgånget, inte fryst och med lektioner kvar. Uppdateras direkt vid köp, efter varje använd lektion och när det löper ut."
+    },
+    "inactive": {
+      "text": "Inga besök de senaste 60 dagarna — eller aldrig besökt och mer än 15 dagar sedan registreringen."
+    },
+    "frozen": {
+      "text": "Fryst via knappen i kundkortet — den enda status som sätts manuellt. Efter upptining återgår kunden till sin automatiska status."
+    },
+    "birthday": {
+      "text": "De som fyller år i dag — dag och månad stämmer, året ignoreras. Listan uppdateras automatiskt varje dag."
+    }
+  },
+  "status": {
+    "active": "Aktiv",
+    "vip": "VIP",
+    "new": "Ny",
+    "inactive": "Inaktiv",
+    "frozen": "Fryst"
+  },
+  "filtersGuide": {
+    "trigger": "Om filter",
+    "title": "Kundfilter",
+    "subtitle": "Så här beräknas varje kategori. Klicka på ett kort för att använda filtret eller ändra ett tröskelvärde — statusarna beräknas om direkt.",
+    "close": "Stäng",
+    "rule": {
+      "new_client_days": "Ny i",
+      "active_within_days": "Besök inom",
+      "vip_min_spent": "Spenderat från",
+      "vip_min_visits": "eller besök"
+    },
+    "unit": {
+      "days": "dagar",
+      "money": "",
+      "visits": "besök"
+    }
+  },
+  "toolbar": {
+    "searchPlaceholder": "Sök kund…",
+    "addClient": "Lägg till kund"
+  },
+  "table": {
+    "visits": "besök",
+    "frozenBadge": "❄ fryst",
+    "totalSpent": "Totalt spenderat",
+    "subscription": "Abonnemang",
+    "of": "av",
+    "noSubscription": "Inget abonnemang"
+  },
+  "loadMore": "Ladda fler",
+  "loading": "Laddar…",
+  "panel": {
+    "tabs": {
+      "info": "Profil",
+      "events": "Händelser",
+      "notes": "Anteckningar",
+      "wallet": "Köp"
+    },
+    "actions": {
+      "book": "Boka",
+      "bonus": "Bonus"
+    },
+    "editDateHint": "Klicka för att redigera",
+    "since": "sedan {{date}}",
+    "contacts": {
+      "title": "Kontaktuppgifter",
+      "phone": "Telefon",
+      "email": "E-post",
+      "telegram": "Telegram",
+      "birthDate": "Födelsedatum",
+      "city": "Ort",
+      "copyHint": " · klicka för att kopiera"
+    },
+    "debt": "{{amount}} obetalt för lektioner — ta emot betalningen i Journalen",
+    "stats": {
+      "visits": "Besök",
+      "spent": "Spenderat",
+      "subscription": "Abonnemang"
+    },
+    "loyalty": {
+      "points": "poäng",
+      "level": "{{tier}}-nivå",
+      "toNext": "Till nästa nivå: {{points}} poäng",
+      "multiplier": "×{{value}} poängmultiplikator",
+      "worth": "Värt {{amount}} i kassan",
+      "toNextLevel": "{{amount}} till för att nå {{level}}",
+      "pointValue": "1 poäng = {{amount}}",
+      "nextPointValue": "på {{level}} — {{amount}}",
+      "noBonus": "Den här nivån ändrar inte poängvärdet"
+    },
+    "referral": {
+      "title": "Bjud in en vän",
+      "copy": "Kopiera"
+    },
+    "abonement": {
+      "title": "Abonnemang",
+      "lessons": "{{remaining}}/{{total}} lektioner",
+      "noSubscription": "Inget aktivt abonnemang",
+      "noSubscriptionWarning": "Kunden har inget abonnemang — erbjud ett",
+      "lowWarning": "Få lektioner kvar — erbjud förnyelse",
+      "finishedWarning": "Inga lektioner kvar — erbjud förnyelse",
+      "remind": "Påminn kunden",
+      "reminderSent": "Påminnelse skickad till kunden"
+    },
+    "products": {
+      "single": "enstaka",
+      "pending": "köad",
+      "frozen": "fryst",
+      "until": "Gäller till {{date}}",
+      "startsOnFirstVisit": "Perioden börjar med första lektionen"
+    },
+    "wallet": {
+      "buy": "Köp",
+      "active": "Aktiva",
+      "archived": "Arkiverade",
+      "singles": "Enstaka besök",
+      "subscriptions": "Abonnemang",
+      "noSingles": "Inga enstaka besök än",
+      "emptyActive": "Inga aktiva produkter",
+      "emptyArchived": "Inga arkiverade produkter",
+      "emptyCatalog": "Den här studion har inga abonnemangspaket ännu",
+      "lessons": "{{remaining}}/{{total}} lektioner",
+      "perVisit": "Per enstaka besök",
+      "until": "till {{date}}",
+      "frozenBadge": "Fryst",
+      "loadFailed": "Kunde inte läsa in plånboken",
+      "back": "← Tillbaka",
+      "catalogTitle": "Katalog",
+      "showAll": "Alla",
+      "posTitle": "Kassa",
+      "promoLabel": "Kampanjkod",
+      "promoPlaceholder": "Ange kampanjkod",
+      "promoInvalid": "Kampanjkoden är ogiltig",
+      "useDeposit": "Betala från insättning ({{amount}})",
+      "certLabel": "Certifikatkod",
+      "certPlaceholder": "Ange certifikatkod",
+      "certApplied": "Certifikat",
+      "depositApplied": "Insättning",
+      "base": "Grundpris",
+      "discount": "Rabatt",
+      "bonuses": "Bonus",
+      "total": "Totalt",
+      "cash": "Kontant",
+      "card": "Kort",
+      "cardStripe": "Kortbetalningar går via en Stripe-sida och kommer direkt in på studions konto. Ställ in det under Ekonomi → Onlinebetalningar.",
+      "offlineLocked": "Kontantbetalningar är tillgängliga med Combo-planer och högre",
+      "payByCard": "Betala med kort",
+      "confirmPay": "Bekräfta betalning",
+      "confirmPayCovered": "Bekräfta (redan betalt)",
+      "confirmTitle": "Bekräfta mottagen betalning?",
+      "confirmMessage": "Detta registrerar en intäkt på {{amount}} och tilldelar produkten till kunden.",
+      "confirmMessageCard": "Ett Stripe-betalningsformulär för {{amount}} öppnas. Produkten tilldelas och intäkten registreras när betalningen lyckas.",
+      "payToStudio": "Betalningen kommer in på studions konto",
+      "payConfirming": "Verifierar betalning…",
+      "close": "Stäng",
+      "confirmMessageCovered": "Betalningen täcks helt av insättning eller certifikat. Produkten tilldelas kunden.",
+      "paySuccess": "Betalning registrerad",
+      "payCancelled": "Betalning avbruten — inget har debiterats",
+      "payNotCompleted": "Stripe har inte bekräftat betalningen ännu. Om kortet debiterades, uppdatera sidan om en minut.",
+      "payNotApplied": "Kortet debiterades men försäljningen kunde inte registreras: villkoren ändrades (certifikat, kampanjkod eller paket). Registrera försäljningen manuellt eller återbetala i Stripe.",
+      "transfer": "Överför",
+      "transferTitle": "Överför abonnemang",
+      "transferSearchLabel": "Överför till",
+      "transferSearchPlaceholder": "Kundens namn eller telefon",
+      "transferSelectPlaceholder": "Välj kund",
+      "transferConfirm": "Överför",
+      "transferSuccess": "Abonnemang överfört",
+      "lessonsCount_one": "{{count}} lektion",
+      "lessonsCount_other": "{{count}} lektioner",
+      "useBonuses_one": "Använd bonus ({{count}})",
+      "useBonuses_other": "Använd bonus ({{count}})",
+      "bonusesSpent_one": "Bonus ({{count}} p)",
+      "bonusesSpent_other": "Bonus ({{count}} p)"
+    },
+    "offers": {
+      "title": "Personlig rabatt",
+      "empty": "Inga aktiva rabatter",
+      "grant": "Ge rabatt",
+      "cancel": "Avbryt",
+      "valuePercent": "{{value}} %",
+      "valueAmount": "{{value}} ₽",
+      "untilDate": "till {{date}}",
+      "noExpiry": "utan utgångsdatum",
+      "scopeRenewal": "vid förnyelse",
+      "grantTitle": "Ge en personlig rabatt",
+      "grantValue": "Rabattens storlek",
+      "grantType": {
+        "percent": "Procent (%)",
+        "amount": "Belopp (₽)"
+      },
+      "grantValidUntil": "Gäller till",
+      "grantSubmit": "Ge",
+      "cancelConfirmTitle": "Avbryt rabatt?",
+      "cancelConfirmMessage": "Kunden kan inte längre använda detta erbjudande.",
+      "toasts": {
+        "granted": "Rabatt given",
+        "cancelled": "Rabatt avbruten",
+        "loadFailed": "Kunde inte läsa in rabatter"
+      }
+    },
+    "activity": {
+      "compactTitle": "Aktivitet (3 mån.)",
+      "clickForDetails": "Klicka för detaljer",
+      "detailedTitle": "Detaljerad aktivitet",
+      "periods": {
+        "month3": "3 mån.",
+        "month6": "6 mån."
+      },
+      "visitsInPeriod": "Besök under perioden",
+      "emptyState": "Inga besök under denna period",
+      "insightTitle": "Genomsnittlig närvaro",
+      "insightBody": "I genomsnitt {{avg}} besök per månad under den valda perioden.",
+      "months": {
+        "jan": "jan.",
+        "feb": "feb.",
+        "mar": "mars",
+        "apr": "apr.",
+        "may": "maj",
+        "jun": "juni",
+        "jul": "juli",
+        "aug": "aug.",
+        "sep": "sep.",
+        "oct": "okt.",
+        "nov": "nov.",
+        "dec": "dec."
+      },
+      "visitsTooltip_one": "{{count}} besök",
+      "visitsTooltip_other": "{{count}} besök"
+    },
+    "tags": {
+      "title": "Taggar",
+      "add": "Lägg till",
+      "close": "Stäng",
+      "customPlaceholder": "Egen tagg + Retur…"
+    },
+    "danger": {
+      "freeze": "Frys",
+      "unfreeze": "Tina upp",
+      "freezeDisabledHint": "Frysning är avstängd i Katalog → abonnemangsinställningar",
+      "delete": "Ta bort"
+    },
+    "events": {
+      "filterTabs": {
+        "all": "Alla",
+        "payment": "Betalningar",
+        "visit": "Besök",
+        "booking": "Bokningar",
+        "cancel": "Avbokningar",
+        "bonus": "Bonus",
+        "freeze": "Frysningar"
+      },
+      "empty": "Inga händelser"
+    },
+    "notes": {
+      "title": "Administratörsanteckningar",
+      "prefix": "Anteckning · {{date}}",
+      "save": "Spara",
+      "cancel": "Avbryt",
+      "addPlaceholder": "Skriv en anteckning…",
+      "add": "Lägg till anteckning",
+      "justNow": "just nu",
+      "deleteTitle": "Ta bort anteckning?",
+      "deleteMessage": "Den här anteckningen kan inte återställas."
+    },
+    "bookingPanel": {
+      "title": "Snabb bokning",
+      "today": "I dag",
+      "noLessons": "Inga lektioner denna dag",
+      "full": "Inga platser kvar",
+      "confirm": "Boka →",
+      "noSubscription": "Kunden har inget abonnemang tillgängligt för bokning",
+      "individual": "Individuell tjänst"
+    },
+    "bonusPanel": {
+      "title": "Ge bonus"
+    },
+    "toasts": {
+      "noPhone": "Kunden har inget telefonnummer",
+      "copied": "Kopierat",
+      "bookingCreated": "Bokning skapad",
+      "bookingFailed": "Kunde inte boka",
+      "bonusFailed": "Kunde inte ge poäng",
+      "bonusApplied": "Bonus given: {{label}}",
+      "clientAdded": "Kund tillagd"
+    },
+    "bonusOptions": {
+      "p200": {
+        "label": "+200 poäng",
+        "description": "Lägg till på lojalitetssaldot"
+      },
+      "p500": {
+        "label": "+500 poäng",
+        "description": "Lägg till på lojalitetssaldot"
+      },
+      "p1000": {
+        "label": "+1000 poäng",
+        "description": "Lägg till på lojalitetssaldot"
+      }
+    }
+  },
+  "tags": {
+    "suggested": [
+      "Prova på",
+      "VIP",
+      "Rekommendation",
+      "Online",
+      "Grupp",
+      "Personlig"
+    ]
+  },
+  "addModal": {
+    "title": "Ny kund",
+    "cancel": "Avbryt",
+    "back": "← Tillbaka",
+    "continue": "Fortsätt →",
+    "submit": "Lägg till kund ✓",
+    "stepCounter": "Steg {{current}} av {{total}}",
+    "trustSignal": "Uppgifterna är skyddade och synliga endast för administratörer",
+    "steps": {
+      "1": {
+        "title": "Personuppgifter",
+        "sub": "Ange kundens kontaktuppgifter"
+      },
+      "2": {
+        "title": "Profiluppgifter",
+        "sub": "Ytterligare information (valfritt)"
+      },
+      "3": {
+        "title": "Abonnemang",
+        "sub": "Välj en abonnemangstyp och lägg till en anteckning"
+      },
+      "4": {
+        "title": "Allt klart!",
+        "sub": "Granska uppgifterna och lägg till kunden"
+      }
+    },
+    "step1": {
+      "previewLabel": "Ny kund · Förhandsvisning",
+      "name": "Fullständigt namn *",
+      "namePlaceholder": "Anna Svensson",
+      "phone": "Telefon",
+      "phonePlaceholder": "+46 70 000 00 00",
+      "email": "E-post",
+      "emailPlaceholder": "kund@exempel.se"
+    },
+    "step2": {
+      "bday": "Födelsedatum",
+      "bdayPlaceholder": "12 april 1990",
+      "city": "Ort",
+      "cityPlaceholder": "Stockholm",
+      "tags": "Taggar",
+      "tagsPlaceholder": "Pilates, VIP, rehabilitering… (Retur)",
+      "tagsHint": "Tryck på Retur för att lägga till en tagg",
+      "inviteCode": "Värvarens inbjudningskod",
+      "inviteCodePlaceholder": "Valfritt",
+      "inviteCodeHint": "Om den anges får ni båda en bonus"
+    },
+    "step3": {
+      "classCount": "Abonnemang",
+      "classesUnit": "lektioner",
+      "selected": "Vald",
+      "noPackage": "Inget abonnemang",
+      "noPackages": "Den här studion har inga abonnemangspaket ännu",
+      "noPackagesLink": "Skapa paket i Katalog →",
+      "alreadyPaid": "Har kunden redan betalat för detta abonnemang?",
+      "yes": "Ja",
+      "no": "Nej",
+      "note": "Anteckning",
+      "notePlaceholder": "Särskilda önskemål, kontraindikationer, preferenser…",
+      "classesCount_one": "{{count}} lektion",
+      "classesCount_other": "{{count}} lektioner"
+    },
+    "step4": {
+      "readyTitle": "Uppgifter ifyllda!",
+      "readySub": "Granska uppgifterna och bekräfta tillägget",
+      "newClient": "Ny kund",
+      "fields": {
+        "phone": "Telefon",
+        "email": "E-post",
+        "bday": "Födelsedatum",
+        "city": "Ort",
+        "subscription": "Abonnemang",
+        "tags": "Taggar"
+      },
+      "smsTitle": "Skicka välkomst-sms",
+      "smsSub": "Kunden får ett inbjudningsmeddelande",
+      "subscriptionValue_one": "{{count}} lektion",
+      "subscriptionValue_other": "{{count}} lektioner"
+    },
+    "errors": {
+      "name": "Ange ett namn (minst 2 tecken)",
+      "phone": "Ogiltigt telefonnummer",
+      "email": "Ogiltig e-post",
+      "city": "Ange en ort"
+    }
+  },
+  "deleteModal": {
+    "title": "Ta bort kund?",
+    "body": "Du är på väg att ta bort kunden",
+    "warning": "Åtgärden kan inte ångras.",
+    "cancel": "Avbryt",
+    "confirm": "Ta bort",
+    "success": "Kund borttagen"
+  }
+}

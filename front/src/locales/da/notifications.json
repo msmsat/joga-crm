@@ -1,0 +1,354 @@
+{
+  "loading": "Indlæser…",
+  "chModal": {
+    "eyebrow": "Notifikationskanal",
+    "connected": "Forbundet",
+    "notConnected": "Ikke forbundet",
+    "setup": "Opsætning af forbindelse",
+    "details": "Forbindelsesoplysninger",
+    "ready": "Kanalen er klar og kører",
+    "readyHint": "Notifikationer for aktiverede hændelser sendes automatisk.",
+    "bot": "Bot",
+    "token": "Token",
+    "phone": "Nummer",
+    "account": "Konto",
+    "sender": "Afsender"
+  },
+  "channels": {
+    "title": "Leveringskanaler",
+    "connect": "Forbind",
+    "connected": "Forbundet",
+    "openSettings": "Indstillinger for {{channel}}",
+    "waLockedHint": "Kanalen låses op, når Meta har din betalingsmetode, en verificeret virksomhed og godkendte skabeloner",
+    "waBlocker": {
+      "payment": "Ingen betalingsmetode — påmindelser leveres ikke. Opsæt",
+      "verification": "Virksomheden er ikke verificeret hos Meta — grænse på 250/dag. Sådan løser du det",
+      "templates": "Skabelonerne er stadig under gennemgang hos Meta — intet bliver sendt. Detaljer"
+    }
+  },
+  "roles": {
+    "client": "Kunde",
+    "trainer": "Træner",
+    "admin": "Administrator",
+    "owner": "Ejer",
+    "activeCount_one": "{{count}} aktiv",
+    "activeCount_other": "{{count}} aktive"
+  },
+  "matrix": {
+    "saving": "Gemmer…",
+    "allSaved": "Alle ændringer er gemt",
+    "notSaved": "Ikke gemt",
+    "activateAll": "Aktivér alle",
+    "deactivateAll": "Ryd alle afkrydsningsfelter",
+    "scenariosFor": "Scenarier for: {{role}}",
+    "eventColumn": "Systemhændelse",
+    "noActiveChannels": "Ingen aktive kanaler",
+    "noActiveChannelsHint": "Aktivér mindst én leveringskanal i panelet til venstre",
+    "adviceLabel": "Tip:",
+    "advice": "Indstil særskilt for hver rolle, hvad der sendes og hvor — Velora klarer det automatisk.",
+    "tiers": {
+      "critical": "Påkrævet · kan ikke slås fra",
+      "operational": "Driftsmæssig",
+      "optional": "Valgfri"
+    },
+    "lock": {
+      "critical": "Påkrævet notifikation — kan ikke slås fra",
+      "lastChannel": "Sidste leveringskanal — kan ikke slås fra"
+    },
+    "channelDisconnected": "Kanalen er ikke forbundet",
+    "activeCount_one": "Aktive udløsere: {{count}} af {{total}}",
+    "activeCount_other": "Aktive udløsere: {{count}} af {{total}}",
+    "configureFor_one": "Konfigurer kanaler til {{count}} systemudløser",
+    "configureFor_other": "Konfigurer kanaler til {{count}} systemudløsere"
+  },
+  "events": {
+    "c1": {
+      "title": "Booking bekræftet",
+      "desc": "Ved vellykket klassebooking"
+    },
+    "c2": {
+      "title": "Påmindelse om klasse",
+      "desc": "24 timer og 2 timer før"
+    },
+    "c3": {
+      "title": "Klasse aflyst",
+      "desc": "Når træneren eller studiet aflyser"
+    },
+    "c4": {
+      "title": "Betaling gennemført",
+      "desc": "Kvittering efter en vellykket opkrævning"
+    },
+    "c5": {
+      "title": "Få klasser tilbage",
+      "desc": "Når der er 1–2 besøg tilbage i pakken"
+    },
+    "c6": {
+      "title": "Pakken udløber",
+      "desc": "3 dage før udløbsdatoen"
+    },
+    "c7": {
+      "title": "Fødselsdag",
+      "desc": "Hilsen med et særligt tilbud"
+    },
+    "c8": {
+      "title": "Anmodning om anmeldelse",
+      "desc": "Efter deltagelse i en klasse"
+    },
+    "c9": {
+      "title": "Tilbagebetaling",
+      "desc": "Ved aflysning og behandling af tilbagebetaling"
+    },
+    "c10": {
+      "title": "Klasse ikke betalt endnu",
+      "desc": "Kunden deltog, men har ikke betalt"
+    },
+    "c11": {
+      "title": "Klasse flyttet",
+      "desc": "Tid, lokale eller træner ændret"
+    },
+    "c12": {
+      "title": "Bonus tildelt",
+      "desc": "Point eller bonus føjet til kunden"
+    },
+    "c13": {
+      "title": "Kaffe efter klassen",
+      "desc": "Hvem fra gruppen tager med på kaffe"
+    },
+    "t1": {
+      "title": "Ny booking hos træner",
+      "desc": "En kunde har booket en personlig session"
+    },
+    "t2": {
+      "title": "Kunden aflyste booking",
+      "desc": "Kunden aflyste mindre end 2 timer før"
+    },
+    "t3": {
+      "title": "Påmindelse om klasse",
+      "desc": "1 time før start"
+    },
+    "t4": {
+      "title": "Deltagerliste",
+      "desc": "30 min. før en gruppeklasse"
+    },
+    "t5": {
+      "title": "Ændring af plan",
+      "desc": "Administrator ændrede tidsrum eller sted"
+    },
+    "t6": {
+      "title": "Løn optjent",
+      "desc": "Ugentlig beregning af udbetaling"
+    },
+    "t7": {
+      "title": "Ny anmeldelse af træner",
+      "desc": "Kunden gav en vurdering efter klassen"
+    },
+    "t8": {
+      "title": "Kundens fødselsdag",
+      "desc": "Påmindelse om at lykønske personligt"
+    },
+    "t9": {
+      "title": "Klasse aflyst",
+      "desc": "Studiet eller administratoren aflyste din klasse"
+    },
+    "a1": {
+      "title": "Ny onlinebooking",
+      "desc": "Kunden bookede via side eller widget"
+    },
+    "a2": {
+      "title": "Aflysning i sidste øjeblik",
+      "desc": "Mindre end 1 time før klassen"
+    },
+    "a3": {
+      "title": "Ny kunde i systemet",
+      "desc": "Registrering af ny bruger"
+    },
+    "a4": {
+      "title": "Betaling modtaget",
+      "desc": "Enhver vellykket opkrævning"
+    },
+    "a6": {
+      "title": "Pakker er ved at løbe tør",
+      "desc": "Gruppe af kunder med ≤1 klasse tilbage"
+    },
+    "a7": {
+      "title": "Konflikt i planen",
+      "desc": "Overlappende klasser i journalen"
+    },
+    "a8": {
+      "title": "Daglig rapport",
+      "desc": "Opsummering ved dagens afslutning"
+    },
+    "a9": {
+      "title": "Loginforsøg",
+      "desc": "Log ind fra en ny enhed"
+    },
+    "a10": {
+      "title": "Tilbagebetaling",
+      "desc": "Administrator udstedte en tilbagebetaling"
+    },
+    "o1": {
+      "title": "Daglig opsummering",
+      "desc": "Indtægt, bookinger, fremmøde for dagen"
+    },
+    "o2": {
+      "title": "Ugentlig rapport",
+      "desc": "Nøgletal: kundevækst, LTV, konvertering"
+    },
+    "o3": {
+      "title": "Stor betaling",
+      "desc": "Opkrævning over den angivne grænse"
+    },
+    "o4": {
+      "title": "Dataafvigelse",
+      "desc": "Kraftigt fald i bookinger eller indtægt"
+    },
+    "o5": {
+      "title": "Nyt medarbejdermedlem",
+      "desc": "Administrator oprettede en ny konto"
+    },
+    "o6": {
+      "title": "Planfornyelse",
+      "desc": "Påmindelse om betaling for Velora-abonnementet"
+    },
+    "o7": {
+      "title": "Adgangsrettigheder ændret",
+      "desc": "Medarbejderens tilladelser blev ændret"
+    },
+    "o8": {
+      "title": "Nøgletal nået",
+      "desc": "Månedligt mål nået"
+    },
+    "o9": {
+      "title": "Dataeksport",
+      "desc": "Nogen eksporterede kundedatabasen"
+    }
+  },
+  "tg": {
+    "title": "Telegram",
+    "subtitleConnected": "Kanalen er forbundet",
+    "subtitleDisconnected": "Forbind notifikationsbotten",
+    "connected": "Forbundet",
+    "pasteToken": "Indsæt bottokenet, du fik fra @BotFather.",
+    "invalidToken": "Ugyldigt tokenformat",
+    "howToGet": "Sådan får du et token:",
+    "steps": {
+      "1": "Åbn @BotFather i Telegram",
+      "2": "Send kommandoen /newbot, og følg vejledningen",
+      "3": "Kopiér det udstedte token",
+      "4": "Indsæt det i feltet ovenfor"
+    },
+    "connect": "Forbind",
+    "disconnect": "Afbryd forbindelse",
+    "disconnectTitle": "Afbryd Telegram?",
+    "disconnectMessage": "Kunder og personale holder op med at modtage notifikationer gennem denne kanal.",
+    "close": "Luk",
+    "cancel": "Annuller"
+  },
+  "emailCh": {
+    "title": "E-mail",
+    "subtitle": "Afsenderadresse til kundemails",
+    "verifiedLabel": "Bekræftet",
+    "emailLabel": "Afsender-e-mail",
+    "emailPlaceholder": "admin@studio.com",
+    "invalidEmail": "Indtast en gyldig e-mail",
+    "sendCode": "Send kode",
+    "codeSentTo": "Kode sendt til",
+    "codeHint": "Indtast den 6-cifrede kode fra e-mailen.",
+    "codeLabel": "Bekræftelseskode",
+    "resend": "Send koden igen",
+    "viaVelora": "E-mails sendes via Velora-serveren på dine vegne.",
+    "wrongCode": "Ugyldig eller udløbet kode",
+    "verify": "Bekræft",
+    "back": "Tilbage",
+    "cancel": "Annuller"
+  },
+  "wa": {
+    "title": "WhatsApp",
+    "subtitleConnected": "Kanalen er forbundet",
+    "subtitleDisconnected": "Log ind med din Meta-virksomhedskonto",
+    "connected": "Forbundet",
+    "paymentRequiredTitle": "Et kort bliver nødvendigt",
+    "paymentRequired": "Det er gratis at forbinde nummeret, men Meta leverer først påmindelser til kunder, når et kort er tilføjet. Det tilføjer du separat —",
+    "paymentMissingTitle": "Ingen betalingsmetode",
+    "paymentMissing": "Lige nu virker kun botsvar på indgående beskeder. Meta afviser påmindelser, bekræftelser og udsendelser, indtil et kort er tilføjet —",
+    "paymentOkTitle": "Betaling forbundet",
+    "paymentOk": "notifikationer leveres fuldt ud.",
+    "paymentUnknown": "Vi kunne ikke kontrollere betalingsmetoden hos Meta — vi viser status ved næste forsøg.",
+    "paymentLink": "Metas faktureringscenter",
+    "paymentRecheck": "Kontrollér igen",
+    "paymentFound": "Betaling forbundet",
+    "verify": {
+      "title": "Virksomheden er ikke verificeret hos Meta",
+      "lead": "Nummeret virker, men med en reduceret grænse på 250 unikke modtagere om dagen. Verificering fjerner grænsen og åbner for fuld lancering. Studiet skal gøre det selv — WhatsApp-kontoen tilhører dig, og Velora kan ikke handle på dine vegne.",
+      "stepsTitle": "Sådan verificerer du virksomheden:",
+      "step1a": "Åbn",
+      "link": "Meta Business Security Center",
+      "step1b": "og klik på “Start verificering”. Du skal have administratorrettigheder på virksomhedskontoen.",
+      "step2": "Udfyld de juridiske oplysninger: navnet præcis som i dokumenterne, adresse, telefon og websted. Sitet skal være aktivt og bruge HTTPS.",
+      "step3": "Upload et virksomhedsregistreringsdokument, og vent på at Meta gennemgår det.",
+      "step4": "Bekræft, at du er knyttet til virksomheden: en e-mail på dit websteds domæne, et opkald eller sms til det angivne nummer eller domæneverificering.",
+      "step5": "Vent på afgørelsen — normalt 1–5 arbejdsdage. Status findes i samme sikkerhedscenter; ved afslag oplyser Meta grunden og lader dig ansøge igen.",
+      "docsTitle": "Hvilke dokumenter virker (ét fra hver gruppe):",
+      "doc1": "Registrering: stiftelsesattest, udskrift fra register, virksomhedslicens eller skattedokument.",
+      "doc2": "Bevis på tilstedeværelse: et fungerende websted, en officiel side på sociale medier eller en virksomhedsfortegnelse.",
+      "pitfallTitle": "Den mest almindelige afvisning",
+      "pitfall": "Virksomhedsnavnet i Meta og i dokumentet skal matche tegn for tegn, også selskabsform og tegnsætning. “Romashka LLC” og “Romashka, LLC” regnes som forskellige navne."
+    },
+    "templatesTitle": "Beskedskabeloner",
+    "templates": "Meta lader dig ikke skrive først til en kunde uden en forhåndsgodkendt skabelon. Opret skabeloner til hver hændelse — de sendes til gennemgang og virker efter godkendelse.",
+    "templatesAction": "Forbered skabeloner",
+    "templatesPending": "Opretter skabeloner…",
+    "templatesPartial": "Meta afviste nogle skabeloner: {{failed}}. Se loggen for detaljer",
+    "templatesRejected": "— de notifikationer leveres ikke. Kontrollér formuleringen på din Meta-konto, og opret skabelonerne igen.",
+    "templatesPendingHint": "— Meta kan tage op til en dag. {{approved}} er allerede godkendt og leveres.",
+    "templatesOkTitle": "Skabeloner godkendt",
+    "paidWarning": "WhatsApp-beskeder er betalte",
+    "approxPrice": "ca.",
+    "pricingLoading": "Indlæser aktuel pris…",
+    "perMessage": "pr. besked",
+    "viaMeta": "faktureres direkte af Meta",
+    "windowNotice": "Levering er kun garanteret inden for samtalevinduet på 24 timer.",
+    "connect": "Forbind WhatsApp",
+    "disconnect": "Afbryd forbindelse",
+    "disconnectTitle": "Afbryd WhatsApp?",
+    "disconnectMessage": "Kunder og personale holder op med at modtage notifikationer gennem denne kanal.",
+    "close": "Luk",
+    "cancel": "Annuller",
+    "templatesDone_one": "Skabeloner klar: {{count}}. Afventer Meta-gennemgang",
+    "templatesDone_other": "Skabeloner klar: {{count}}. Afventer Meta-gennemgang",
+    "templatesRejectedTitle_one": "Meta afviste {{count}} skabelon",
+    "templatesRejectedTitle_other": "Meta afviste {{count}} skabeloner",
+    "templatesPendingTitle_one": "{{count}} skabelon under gennemgang",
+    "templatesPendingTitle_other": "{{count}} skabeloner under gennemgang",
+    "templatesOk_one": "{{count}} bestod Meta-gennemgangen — notifikationer leveres.",
+    "templatesOk_other": "Alle {{count}} bestod Meta-gennemgangen — notifikationer leveres."
+  },
+  "tabs": {
+    "matrix": "Indstillinger",
+    "log": "Leveringslog"
+  },
+  "log": {
+    "title": "Leveringslog",
+    "subtitle": "Hvad der blev sendt, til hvem og hvornår, og hvordan hver afsendelse sluttede.",
+    "status": {
+      "sent": "Leveret",
+      "rejected": "Afvist",
+      "error": "Forbindelsesfejl",
+      "pending": "I gang"
+    },
+    "searchPlaceholder": "Telefon, e-mail eller hændelseskode",
+    "allChannels": "Alle kanaler",
+    "reset": "Nulstil",
+    "refreshing": "Opdaterer…",
+    "otherEvent": "Send uden for kataloget",
+    "empty": "Intet er sendt endnu",
+    "emptyHint": "Hver notifikation, studiet sender til kunder og personale, vises her.",
+    "emptyFiltered": "Intet fundet",
+    "emptyFilteredHint": "Prøv at ændre filtrene eller søge efter et andet nummer.",
+    "loadError": "Kunne ikke indlæse loggen",
+    "loadErrorHint": "Opdater siden — hvis det ikke hjælper, så kontakt support.",
+    "range": "{{from}}–{{to}} af {{total}}",
+    "prev": "Tilbage",
+    "next": "Næste"
+  }
+}

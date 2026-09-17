@@ -56,6 +56,20 @@ class User(Base):
     is_onboarded: Mapped[bool] = mapped_column(Boolean, default=False)
     last_online_at: Mapped[Optional[date]] = mapped_column(Date, nullable=True)
 
+    # Когда заведён аккаунт. Колонки не было с самого начала, поэтому у старых
+    # строк она заполнена задним числом по первой сессии, а где сессий не было —
+    # осталась NULL. NULL здесь значит «неизвестно», и интерфейс обязан писать
+    # именно это: выдуманную дату потом не отличить от настоящей.
+    created_at: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=False), server_default=func.now(), nullable=True
+    )
+    # Идентификатор браузера, с которого пришла регистрация (localStorage
+    # лендинга). Единственное, что связывает анонимный визит с аккаунтом;
+    # без него визит и регистрация остаются двумя несвязанными фактами.
+    signup_anon_id: Mapped[Optional[str]] = mapped_column(
+        String(64), nullable=True, index=True
+    )
+
     two_fa_enabled: Mapped[bool] = mapped_column(Boolean, default=False)
 
     # OTP с TTL и скоупом действия (EPIC 5, задача 3). Теперь ЕДИНСТВЕННЫЙ механизм
