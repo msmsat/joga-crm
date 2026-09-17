@@ -8,6 +8,8 @@ import { formatMoney } from '../lib/format'
 type OverviewData = {
   visits: number
   unique_visitors: number
+  new_visitors: number
+  returning_visitors: number
   registrations: number
   studios_created: number
   trials_active: number
@@ -85,8 +87,12 @@ export function Overview() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <Card label="Визиты" value={data.visits} />
+        <Card label="Заходов на лендинг" value={data.visits} />
         <Card label="Уникальные посетители" value={data.unique_visitors} />
+        {/* «Впервые» — по всей истории браузера, а не по выбранному периоду:
+            вернувшийся через месяц человек новым уже не становится. */}
+        <Card label="Из них впервые" value={data.new_visitors} />
+        <Card label="Вернувшиеся" value={data.returning_visitors} />
         <Card label="Регистрации" value={data.registrations} />
         <Card label="Новые студии" value={data.studios_created} />
         <Card label="На пробном" value={data.trials_active} />

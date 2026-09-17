@@ -1,10 +1,17 @@
-"""Две ленты: откуда приходят деньги и кто входит в продукт."""
+"""Три ленты: откуда приходят деньги, кто входит в продукт и кто заходит на лендинг."""
 from fastapi import APIRouter, Depends, Query
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_db
-from models import BillingInvoice, PlatformRevenueLedger, Studio, User, UserSession
+from models import (
+    BillingInvoice,
+    LandingVisit,
+    PlatformRevenueLedger,
+    Studio,
+    User,
+    UserSession,
+)
 from services.admin_auth import require_admin
 from services.platform_stats import period_bounds
 
@@ -108,3 +115,71 @@ async def admin_logins(
             for session, name, email in rows
         ]
     }
+
+
+@router.get("/visits")
+async def admin_visits(
+    days: int = Query(7, ge=1, le=365),
+    limit: int = Query(200, ge=1, le=1000),
+    db: AsyncSession = Depends(get_db),
+    _claims: dict = Depends(require_admin),
+):
+    """Поимённая лента заходов на лендинг — насколько «имя» вообще есть у
+    анонимного посетителя: идентификатор браузера, страна, устройство, откуда
+    пришёл и во сколько. Сырого IP тут нет и не будет."""
+    start, _end = period_bounds(days)
+
+    rows = (
+        await db.execute(
+            select(LandingVisit)
+            .where(LandingVisit.created_at >= start)
+            .order_by(LandingVisit.created_at.desc())
+            .limit(limit)
+        )
+    ).scalars().all()
+
+    # История каждого браузера из выдачи: первый заход и сколько всего было.
+    # Один запрос по попавшим в страницу anon_id, а не по одному на строку —
+    # иначе двести строк превращаются в двести запросов.
+    history: dict[str, tuple[object, int]] = {}
+    if rows:
+        seen_ids = {row.anon_id for row in rows}
+        history = {
+            anon: (first_at, int(total or 0))
+            for anon, first_at, total in (
+                await db.execute(
+                    select(
+                        LandingVisit.anon_id,
+                        func.min(LandingVisit.created_at),
+                        func.count(LandingVisit.id),
+                    )
+                    .where(LandingVisit.anon_id.in_(seen_ids))
+                    .group_by(LandingVisit.anon_id)
+                )
+            ).all()
+        }
+
+    items = []
+    for row in rows:
+        first_at, total = history.get(row.anon_id, (row.created_at, 1))
+        items.append(
+            {
+                "anon_id": row.anon_id,
+                "path": row.path,
+                "referrer": row.referrer,
+                "utm_source": row.utm_source,
+                "utm_medium": row.utm_medium,
+                "utm_campaign": row.utm_campaign,
+                "country": row.country,
+                "device": row.device,
+                "lang": row.lang,
+                "at": row.created_at.isoformat() if row.created_at else None,
+                # Первый заход этого браузера за всю историю, а не за период:
+                # иначе вернувшийся через месяц человек снова звался бы новым.
+                "is_new": first_at == row.created_at,
+                "first_at": first_at.isoformat() if first_at else None,
+                "visits_total": total,
+            }
+        )
+
+    return {"items": items}

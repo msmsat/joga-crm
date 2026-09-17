@@ -20,6 +20,7 @@ import { visibleNavItems } from './components/navItems';
 import { readEntry, readTab, rememberStudio, setGuestStudio } from './lib/entry';
 import { applyBranding, applyDefaultLanguage } from './lib/branding';
 import { getSession, saveSession, clearSession } from './lib/session';
+import { startPresence } from './lib/presence';
 import './App.css';
 
 /**
@@ -131,6 +132,9 @@ export default function App() {
 
     setIsLoading(false);
   };
+
+  // Счётчик «кто сейчас в мини-приложении» для панели платформы.
+  useEffect(() => startPresence(), []);
 
   useEffect(() => {
     // Студию из ссылки api/client.ts подставляет в запросы, пока сессии нет:

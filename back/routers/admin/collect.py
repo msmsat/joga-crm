@@ -8,7 +8,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_db
 from ratelimit import limiter
-from schemas.admin import LandingVisitRequest
+from schemas.admin import LandingVisitRequest, PresenceBeatRequest
+from services import presence
 from services.geo_locale import visitor_country
 from services.visit_collector import clip, device_from_ua, record_visit
 
@@ -57,4 +58,20 @@ async def landing_visit(request: Request, db: AsyncSession = Depends(get_db)):
         # Счётчик никогда не ломает страницу, ради которой его позвали.
         logger.warning("не удалось записать визит лендинга", exc_info=True)
 
+    return Response(status_code=204)
+
+
+@router.post("/presence/beat", status_code=204, include_in_schema=False)
+# 120 в минуту при сигнале раз в 20 секунд — запас на общий IP: за одним NAT
+# сидит целый офис или вся мобильная сота, и лимит лендинга их бы обрезал.
+@limiter.limit("120/minute")
+async def presence_beat(request: Request):
+    # Ни базы, ни ожидания: сигнал только двигает отметку в памяти. Тело, как и
+    # у маяка визитов, разбирается вручную — 204 на мусор вместо рассказа о схеме.
+    try:
+        body = PresenceBeatRequest.model_validate(await request.json())
+    except (ValidationError, ValueError):
+        return Response(status_code=204)
+
+    presence.touch(body.surface, clip(body.anon_id, 64) or "")
     return Response(status_code=204)

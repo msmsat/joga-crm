@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { MotionConfig } from "framer-motion";
 import { reportLandingVisit } from "../../api/landing";
+import { startPresence } from "../../api/presence";
 import { useTranslation } from "react-i18next";
 import "../../App.css"; // Manrope + классы кнопок .btn/.btn-primary из ДС
 import "./landing.css"; // непрерывные анимации и подложки лендинга
@@ -31,6 +32,9 @@ export default function Landing() {
   // Один раз на монтирование. Повторы внутри получаса схлопывает сервер, так
   // что перезагрузка страницы не превращается в новый визит.
   useEffect(() => { reportLandingVisit(); }, []);
+  // Визит — факт истории, присутствие — состояние прямо сейчас: разные вещи,
+  // и считаются они врозь.
+  useEffect(() => startPresence("landing"), []);
 
   const { t } = useTranslation("landing");
   // В ленте — то, что в продукте уже есть. Был список ниш (барбершоп, SPA,

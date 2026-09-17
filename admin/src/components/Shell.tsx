@@ -1,7 +1,10 @@
-export type Tab = 'overview' | 'accounts' | 'feed'
+import { Live } from './Live'
+
+export type Tab = 'overview' | 'visits' | 'accounts' | 'feed'
 
 const TABS: { key: Tab; label: string }[] = [
   { key: 'overview', label: 'Обзор' },
+  { key: 'visits', label: 'Визиты' },
   { key: 'accounts', label: 'Аккаунты' },
   { key: 'feed', label: 'Лента' },
 ]
@@ -37,6 +40,11 @@ export function Shell({
           <button onClick={onLogout} className="underline">Выйти</button>
         </div>
       </header>
+      {/* Онлайн живёт в шапке, а не на «Обзоре»: цифра нужна одинаково на всех
+          вкладках, а опрос при этом остаётся один. */}
+      <div className="border-b border-[#EFEAE6] bg-white px-6 py-3">
+        <Live />
+      </div>
       <main className="p-6">{children}</main>
     </div>
   )

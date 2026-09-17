@@ -8,10 +8,18 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_db
 from models import LandingVisit, Studio, StudioBillingPlan, User
+from services import presence
 from services.admin_auth import require_admin
 from services.platform_stats import money_by_currency, paying_studio_ids, period_bounds
 
 router = APIRouter()
+
+
+@router.get("/live")
+async def admin_live(_claims: dict = Depends(require_admin)):
+    """Кто на сайте прямо сейчас. Базу не трогает вовсе — эту ручку опрашивают
+    раз в пять секунд, и каждый опрос не должен стоить запроса в Postgres."""
+    return presence.counts()
 
 
 @router.get("/overview")
@@ -33,6 +41,22 @@ async def admin_overview(
             select(func.count(distinct(LandingVisit.anon_id))).where(
                 LandingVisit.created_at >= start
             )
+        )
+    ).scalar_one()
+    # Впервые пришедшие: браузеры, у которых САМЫЙ ПЕРВЫЙ визит попал в период.
+    # Это не то же самое, что уникальные: человек, заходивший месяц назад и
+    # вернувшийся вчера, уникален в обоих периодах, но новый только в том.
+    first_seen = (
+        select(
+            LandingVisit.anon_id.label("anon"),
+            func.min(LandingVisit.created_at).label("first_at"),
+        )
+        .group_by(LandingVisit.anon_id)
+        .subquery()
+    )
+    new_visitors = (
+        await db.execute(
+            select(func.count()).select_from(first_seen).where(first_seen.c.first_at >= start)
         )
     ).scalar_one()
     registrations = (
@@ -81,6 +105,11 @@ async def admin_overview(
         "days": days,
         "visits": int(visits or 0),
         "unique_visitors": int(uniques or 0),
+        "new_visitors": int(new_visitors or 0),
+        # Вернувшиеся считаются вычитанием намеренно: обе части посчитаны по
+        # одному и тому же множеству anon_id за один период, и третий запрос
+        # дал бы ровно это же число.
+        "returning_visitors": int(uniques or 0) - int(new_visitors or 0),
         "registrations": int(registrations or 0),
         "studios_created": int(studios_created or 0),
         "trials_active": len(active_trials),
