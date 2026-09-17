@@ -7,7 +7,7 @@
 import i18n from '../i18n';
 import { BASE_URL } from './config';
 import { getSession, clearSession } from '../lib/session';
-import { getGuestStudio } from '../lib/entry';
+import { getStudioRef } from '../lib/entry';
 
 // `anon` — запрос заведомо без Bearer. Нужен ровно там, где живая сессия меняет
 // смысл ручки: /auth/email/verify с токеном не логинит, а привязывает почту к
@@ -22,13 +22,16 @@ async function apiFetch<T>(path: string, options: ApiOptions = {}): Promise<T> {
   const { body, headers, anon, ...rest } = options;
   const session = getSession();
 
-  // Гость: сессии нет, значит и студию сервер из токена не возьмёт — называем
-  // её сами. Так открытые ручки витрины (каталог, расписание) отвечают ещё до
-  // регистрации, а закрытые как отвечали 401, так и отвечают.
-  const guestStudio = session ? null : getGuestStudio();
-  const query = guestStudio === null
+  // Студию называем ВСЕГДА, когда знаем её, — и гостем, и с живой сессией.
+  // Токен привязан к одной студии (карточка клиента принадлежит ей), поэтому
+  // умолчать о ссылке значит попросить сервер показать прошлую студию: ровно
+  // так тёмная тема и каталог студии A переезжали на ссылку студии B.
+  // Названа своя студия — сервер отвечает как раньше, карточка при клиенте
+  // (get_viewer в back/routers/booking/miniapp.py).
+  const studioRef = getStudioRef();
+  const query = studioRef === null
     ? ''
-    : `${path.includes('?') ? '&' : '?'}studio_id=${encodeURIComponent(guestStudio)}`;
+    : `${path.includes('?') ? '&' : '?'}studio_id=${encodeURIComponent(studioRef)}`;
 
   const response = await fetch(`${BASE_URL}${path}${query}`, {
     ...rest,

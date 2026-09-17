@@ -16,6 +16,8 @@ type Props = {
   userName?: string;
   /** Вход ещё одним аккаунтом — экран входа поднимает App. */
   onAddAccount: () => void;
+  /** Студия, которую приложение показывает: аккаунты меню принадлежат ей. */
+  studioId?: number;
   /** Человек без аккаунта. Ему сюда добавляется выбор языка: профиля, где эта
    *  настройка живёт у вошедшего, у него нет. */
   isGuest?: boolean;
@@ -55,6 +57,7 @@ export default function DesktopNav({
   userName,
   onAddAccount,
   isGuest,
+  studioId,
 }: Props) {
   const { t } = useTranslation();
 
@@ -197,7 +200,7 @@ export default function DesktopNav({
              краю: это один угол настроек, а не два отдельных блока. */}
       <div className="flex shrink-0 flex-col gap-1.5 px-6 pb-7 pt-4">
         {isGuest && <LanguagePopover variant="card" />}
-        <AccountMenu userName={userName} onAddAccount={onAddAccount} />
+        <AccountMenu userName={userName} onAddAccount={onAddAccount} studioId={studioId} />
       </div>
     </aside>
   );

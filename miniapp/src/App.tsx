@@ -17,9 +17,9 @@ import { getLoyalty, type LoyaltyOverview } from './api/loyalty';
 import { useTelegram } from './hooks/useTelegram';
 import { useIsDesktop } from './hooks/useIsDesktop';
 import { visibleNavItems } from './components/navItems';
-import { readEntry, readTab, rememberStudio, setGuestStudio } from './lib/entry';
+import { readEntry, readTab, rememberStudio, setStudioRef } from './lib/entry';
 import { applyBranding, applyDefaultLanguage } from './lib/branding';
-import { getSession, saveSession, clearSession } from './lib/session';
+import { getSession, saveSession, clearSession, reconcileSession } from './lib/session';
 import { startPresence } from './lib/presence';
 import './App.css';
 
@@ -106,6 +106,15 @@ export default function App() {
   const loadCatalog = async () => {
     try {
       const data = await getStudioCatalog();
+      // Витрина пришла от студии из ссылки — теперь к ней же приводим сессию:
+      // карточка клиента действует только в своей студии. Чужая откладывается
+      // (не удаляется), своя, если она есть на устройстве, включается сама.
+      // Перезагрузка, а не догрузка: с другой сессией меняется всё — и каталог,
+      // и цены, и кабинет, и их проще перечитать разом, чем сшивать на лету.
+      if (reconcileSession(data.studio.id)) {
+        window.location.reload();
+        return;
+      }
       // Брендинг применяем здесь, а не в рендере: цвет и тема живут в токенах
       // на <html>, их видит и то, что рисуется вне React (оверлеи, фон body).
       applyBranding(data.studio.accent_color, data.studio.dark_mode);
@@ -116,7 +125,7 @@ export default function App() {
       // токеном. Код из ссылки сильнее номера из ответа: по нему студия зовёт
       // клиентов, и именно он должен остаться в памяти приложения.
       rememberStudio(entry.studioRef ?? data.studio.id);
-      setGuestStudio(entry.studioRef ?? String(data.studio.id));
+      setStudioRef(entry.studioRef ?? String(data.studio.id));
       setCatalog(data);
     } catch (error) {
       console.error('Не вдалося завантажити дані студії:', error);
@@ -139,7 +148,7 @@ export default function App() {
   useEffect(() => {
     // Студию из ссылки api/client.ts подставляет в запросы, пока сессии нет:
     // гостю сервер не может взять её из токена. Ставим до первого запроса.
-    setGuestStudio(entry.studioRef);
+    setStudioRef(entry.studioRef);
 
     if (tg) {
       tg.ready();
@@ -398,6 +407,7 @@ export default function App() {
             studioName={catalog?.studio.name}
             logoUrl={catalog?.studio.logo_url}
             userName={user?.name}
+            studioId={catalog?.studio.id}
             onAddAccount={() => setIsAddingAccount(true)}
             isGuest={!user}
           />

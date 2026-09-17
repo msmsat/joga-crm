@@ -342,15 +342,40 @@ async def get_viewer(
     token: Optional[str] = Depends(client_oauth2_scheme),
     db: AsyncSession = Depends(get_db),
 ) -> Viewer:
-    """`get_current_client`, допускающий гостя. Токен есть — ведёт себя ровно как
-    он (включая гейт неоплаченной студии), и `studio_id` из запроса игнорируется:
-    свою студию клиент не выбирает."""
+    """`get_current_client`, допускающий гостя.
+
+    Студию называет ЗАПРОС, если он её назвал, и токен — если нет. Карточка
+    клиента действует только в своей студии: `Client.studio_id` привязывает её к
+    одной, и `sub` токена указывает на эту же карточку. Поэтому ссылка на другую
+    студию — это витрина, где у человека карточки нет, и виден он там гостем.
+
+    Раньше `studio_id` при живом токене отбрасывался, и клиент студии A,
+    открывший ссылку студии B, получал студию A целиком: её брендинг вплоть до
+    тёмной темы, её каталог и её расписание. Ссылка вела в одно место,
+    приложение показывало другое.
+    """
+    client: Optional[Client] = None
     if token:
-        client = await get_current_client(token, db)
-        return Viewer(client, client.studio_id)
+        try:
+            client = await get_current_client(token, db)
+        except HTTPException as exc:
+            # 402 означает «СВОЯ студия отключена за неоплату». Когда запрос
+            # называет другую студию, это не её беда: ссылка ведёт на чужую
+            # витрину, а она открыта всем, в том числе людям без карточки.
+            # Всё остальное — протухший токен и прочее — как было.
+            if exc.status_code != 402 or studio_id is None:
+                raise
+
     if studio_id is None:
-        raise HTTPException(status_code=401, detail="Недействительный токен")
+        if client is None:
+            raise HTTPException(status_code=401, detail="Недействительный токен")
+        return Viewer(client, client.studio_id)
+
     resolved = await require_studio_id(db, studio_id)
+    # Своя студия названа явно — обычный путь клиента, карточка при нём.
+    if client is not None and resolved == client.studio_id:
+        return Viewer(client, client.studio_id)
+
     # Тот же гейт, что и у клиента с токеном: студия, отключённая за неоплату,
     # не показывает расписание, на которое всё равно не записаться.
     if await platform_fee.studio_suspended(db, resolved):
