@@ -31,14 +31,22 @@ export function Live() {
   }, [])
 
   return (
-    <div className="flex flex-wrap items-center gap-x-5 gap-y-1 text-sm">
-      <span className="flex items-center gap-2 font-semibold text-[#1A1A1A]">
-        <span className="h-2 w-2 rounded-full bg-[#A3C9A8]" />
+    <div className="tabular flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
+      <span className="flex items-center gap-2 font-semibold">
+        <span
+          className="h-2 w-2 rounded-full bg-[var(--live)]"
+          // Точка живая только когда цифры пришли: серая точка при мёртвом
+          // опросе честнее зелёной, обещающей связь, которой нет.
+          style={{ background: data ? 'var(--live)' : 'var(--line-strong)' }}
+        />
         Сейчас онлайн: {data?.total ?? '—'}
       </span>
       {PARTS.map((p) => (
-        <span key={p.key} className="text-[#666]">
-          {p.label} <span className="font-semibold text-[#1A1A1A]">{data?.[p.key] ?? '—'}</span>
+        <span
+          key={p.key}
+          className="rounded-lg border border-[var(--line)] px-2.5 py-1 text-[var(--muted)]"
+        >
+          {p.label} <span className="font-semibold text-[var(--ink)]">{data?.[p.key] ?? '—'}</span>
         </span>
       ))}
     </div>

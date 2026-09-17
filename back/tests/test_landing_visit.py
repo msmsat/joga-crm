@@ -79,6 +79,33 @@ async def test_visit_is_recorded_with_server_side_country_and_device():
         await _cleanup(anon)
 
 
+async def test_place_and_ip_come_from_headers():
+    # Адрес за Cloudflare берётся из CF-Connecting-IP, а место — из офлайн-базы
+    # по этому же адресу. Заголовок CF-IPCountry сильнее базы по стране: он от
+    # самой сети. 8.8.8.8 стоит в любой версии базы (Маунтин-Вью, Калифорния).
+    from services.geo_locale import locate_ip
+
+    anon = f"test-{uuid.uuid4()}"
+    try:
+        await _post(
+            {"anon_id": anon, "path": "/"},
+            headers={"CF-Connecting-IP": "8.8.8.8", "User-Agent": IPHONE_UA},
+        )
+        rows = await _rows(anon)
+        assert rows[0].ip == "8.8.8.8"
+        known = locate_ip("8.8.8.8")
+        if known.city is None:
+            # Базы нет (её кладёт scripts/fetch_geoip при сборке образа) —
+            # тогда место обязано быть пустым, а не выдуманным.
+            assert rows[0].city is None and rows[0].region is None
+        else:
+            assert rows[0].country == "US"
+            assert rows[0].city == known.city
+            assert rows[0].region == known.region
+    finally:
+        await _cleanup(anon)
+
+
 async def test_country_from_body_is_ignored():
     # Клиент не источник правды о своей стране: иначе счётчик показывает то,
     # что ему прислали.

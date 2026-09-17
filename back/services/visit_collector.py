@@ -59,6 +59,9 @@ async def record_visit(
     lang: str | None,
     country: str | None,
     device: str,
+    ip: str | None = None,
+    region: str | None = None,
+    city: str | None = None,
 ) -> bool:
     """Пишет визит. Возвращает False, если это повтор внутри окна."""
     since = datetime.utcnow() - timedelta(minutes=DEDUP_MINUTES)
@@ -86,7 +89,10 @@ async def record_visit(
             utm_campaign=clip(utm_campaign, 100),
             lang=clip(lang, 5),
             country=country,
+            region=clip(region, 80),
+            city=clip(city, 80),
             device=device,
+            ip=clip(ip, 45),
         )
     )
     await db.commit()

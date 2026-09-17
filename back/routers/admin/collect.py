@@ -10,7 +10,7 @@ from database import get_db
 from ratelimit import limiter
 from schemas.admin import LandingVisitRequest, PresenceBeatRequest
 from services import presence
-from services.geo_locale import visitor_country
+from services.geo_locale import locate_ip, visitor_country, visitor_ip
 from services.visit_collector import clip, device_from_ua, record_visit
 
 logger = logging.getLogger(__name__)
@@ -35,10 +35,17 @@ async def landing_visit(request: Request, db: AsyncSession = Depends(get_db)):
     if not anon_id or not path:
         return Response(status_code=204)
 
-    country = visitor_country(
-        request.headers.get("CF-IPCountry"),
+    # Адрес считаем один раз: он и сам едет в строку, и служит запасным
+    # источником страны, когда заголовка Cloudflare нет (заход мимо туннеля).
+    ip = visitor_ip(
+        request.headers.get("CF-Connecting-IP"),
+        request.headers.get("X-Forwarded-For"),
         request.client.host if request.client else None,
     )
+    # Место ищем один раз: заголовок Cloudflare главнее базы по стране (он от
+    # самой сети и точнее), а регион с городом взять неоткуда, кроме базы.
+    place = locate_ip(ip)
+    country = visitor_country(request.headers.get("CF-IPCountry"), ip)
     device = device_from_ua(request.headers.get("User-Agent"))
 
     try:
@@ -52,7 +59,10 @@ async def landing_visit(request: Request, db: AsyncSession = Depends(get_db)):
             utm_campaign=body.utm_campaign,
             lang=body.lang,
             country=country,
+            region=place.region,
+            city=place.city,
             device=device,
+            ip=ip,
         )
     except Exception:
         # Счётчик никогда не ломает страницу, ради которой его позвали.

@@ -1,6 +1,7 @@
 """Три ленты: откуда приходят деньги, кто входит в продукт и кто заходит на лендинг."""
 from fastapi import APIRouter, Depends, Query
-from sqlalchemy import func, select
+from sqlalchemy import and_, func, or_, select
+from sqlalchemy.orm import aliased
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_db
@@ -120,22 +121,47 @@ async def admin_logins(
 @router.get("/visits")
 async def admin_visits(
     days: int = Query(7, ge=1, le=365),
-    limit: int = Query(200, ge=1, le=1000),
+    limit: int = Query(50, ge=1, le=200),
+    before_id: int | None = Query(None, ge=1),
+    only_new: bool = Query(False),
     db: AsyncSession = Depends(get_db),
     _claims: dict = Depends(require_admin),
 ):
-    """Поимённая лента заходов на лендинг — насколько «имя» вообще есть у
-    анонимного посетителя: идентификатор браузера, страна, устройство, откуда
-    пришёл и во сколько. Сырого IP тут нет и не будет."""
+    """Поимённая лента заходов на лендинг: адрес, идентификатор браузера,
+    страна, устройство, откуда пришёл и во сколько.
+
+    Листается курсором по `id`, а не смещением: лента живая, наверх постоянно
+    добавляются строки, и `offset=50` на следующей странице показывал бы те же
+    записи, что уже прочитаны. `id` растёт монотонно, поэтому «всё, что старше
+    вот этой строки» остаётся верным и через минуту, и через час.
+    """
     start, _end = period_bounds(days)
 
-    rows = (
-        await db.execute(
-            select(LandingVisit)
-            .where(LandingVisit.created_at >= start)
-            .order_by(LandingVisit.created_at.desc())
-            .limit(limit)
+    query = select(LandingVisit).where(LandingVisit.created_at >= start)
+    if before_id is not None:
+        query = query.where(LandingVisit.id < before_id)
+    if only_new:
+        # Первый в жизни заход этого браузера: раньше него по этому же anon_id
+        # ничего нет. Считает СУБД, а не выдача, — иначе страница из пятидесяти
+        # строк давала бы три новых, и листать пришлось бы вслепую.
+        earlier = aliased(LandingVisit)
+        query = query.where(
+            ~select(earlier.id)
+            .where(
+                earlier.anon_id == LandingVisit.anon_id,
+                or_(
+                    earlier.created_at < LandingVisit.created_at,
+                    and_(
+                        earlier.created_at == LandingVisit.created_at,
+                        earlier.id < LandingVisit.id,
+                    ),
+                ),
+            )
+            .exists()
         )
+
+    rows = (
+        await db.execute(query.order_by(LandingVisit.id.desc()).limit(limit))
     ).scalars().all()
 
     # История каждого браузера из выдачи: первый заход и сколько всего было.
@@ -164,13 +190,19 @@ async def admin_visits(
         first_at, total = history.get(row.anon_id, (row.created_at, 1))
         items.append(
             {
+                "id": row.id,
                 "anon_id": row.anon_id,
+                # Адрес показывается только здесь и только владельцу продукта.
+                # Пусто — заход случился до того, как адреса начали собирать.
+                "ip": row.ip,
                 "path": row.path,
                 "referrer": row.referrer,
                 "utm_source": row.utm_source,
                 "utm_medium": row.utm_medium,
                 "utm_campaign": row.utm_campaign,
                 "country": row.country,
+                "region": row.region,
+                "city": row.city,
                 "device": row.device,
                 "lang": row.lang,
                 "at": row.created_at.isoformat() if row.created_at else None,
@@ -182,4 +214,9 @@ async def admin_visits(
             }
         )
 
-    return {"items": items}
+    # Курсор следующей страницы. None — дальше ничего нет, и лента должна
+    # перестать просить добавку, а не крутить пустые запросы до конца времён.
+    return {
+        "items": items,
+        "next_before_id": items[-1]["id"] if len(rows) == limit else None,
+    }

@@ -1,4 +1,8 @@
-"""Скачать базу DB-IP «IP to Country Lite» для языка сайта по стране (services/geo_locale.py).
+"""Скачать базу DB-IP «City Lite»: страна, регион и город по адресу (services/geo_locale.py).
+
+Раньше качалась страновая база (4 МБ). Городская весит 121 МБ и отвечает на все
+три вопроса разом — держать обе значило бы две загрузки и два повода разойтись
+в данных.
 
 База бесплатная (CC BY 4.0, ссылка на db-ip.com стоит в подвале лендинга) и
 выходит раз в месяц, в имени файла стоит месяц. В первые дни месяца свежего файла
@@ -22,9 +26,12 @@ import maxminddb
 
 from services.geo_locale import DB_PATH
 
-URL = "https://download.db-ip.com/free/dbip-country-lite-{month}.mmdb.gz"
-# Публичный резолвер Google: адрес стабилен и в любой версии базы лежит в США.
-PROBE_IP, PROBE_COUNTRY = "8.8.8.8", "US"
+URL = "https://download.db-ip.com/free/dbip-city-lite-{month}.mmdb.gz"
+# Публичный резолвер Google: адрес стабилен и в любой версии базы лежит в США,
+# в Маунтин-Вью. Город проверяем наравне со страной — иначе страновая база,
+# случайно оказавшаяся по этой ссылке, прошла бы проверку и молча лишила
+# панель городов.
+PROBE_IP, PROBE_COUNTRY, PROBE_CITY = "8.8.8.8", "US", "Mountain View"
 
 
 def _months() -> list[str]:
@@ -46,7 +53,9 @@ def _valid(path: str) -> bool:
             record = reader.get(PROBE_IP) or {}
     except (OSError, maxminddb.InvalidDatabaseError):
         return False
-    return (record.get("country") or {}).get("iso_code") == PROBE_COUNTRY
+    if (record.get("country") or {}).get("iso_code") != PROBE_COUNTRY:
+        return False
+    return ((record.get("city") or {}).get("names") or {}).get("en") == PROBE_CITY
 
 
 def main() -> int:
@@ -59,7 +68,7 @@ def main() -> int:
             print(f"GeoIP {month}: не скачалась ({exc})")
             continue
         if not _valid(partial):
-            print(f"GeoIP {month}: файл не читается как база стран")
+            print(f"GeoIP {month}: файл не читается как база городов")
             continue
         os.replace(partial, DB_PATH)
         print(f"GeoIP {month}: {DB_PATH} ({DB_PATH.stat().st_size // 1024} КБ)")

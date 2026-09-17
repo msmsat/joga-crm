@@ -17,9 +17,10 @@ from .base import Base
 class LandingVisit(Base):
     """Один заход на лендинг.
 
-    Сырого IP здесь нет и быть не должно: из него на лету берётся только
-    ISO-код страны (services/geo_locale.visitor_country), а сам адрес никуда
-    не пишется.
+    `ip` — адрес посетителя. Он здесь по прямому требованию владельца продукта:
+    смотреть заходы поимённо, а не верить итоговым числам. Это персональные
+    данные (в ЕС адрес считается таковым), поэтому колонка заполняется только
+    для лендинга и нигде больше не показывается, кроме панели платформы.
 
     `anon_id` — идентификатор браузера из localStorage. Он же уезжает в
     `users.signup_anon_id` при регистрации, и на этом держится вся воронка:
@@ -41,6 +42,12 @@ class LandingVisit(Base):
     utm_medium: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
     utm_campaign: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
     country: Mapped[Optional[str]] = mapped_column(String(2), nullable=True)
+    # Регион и город по адресу (DB-IP City Lite). NULL — база не знала места
+    # или адреса не было вовсе; догадка сюда не подставляется.
+    region: Mapped[Optional[str]] = mapped_column(String(80), nullable=True)
+    city: Mapped[Optional[str]] = mapped_column(String(80), nullable=True)
+    # 45 символов — предел IPv6 с зоной, самый длинный возможный адрес.
+    ip: Mapped[Optional[str]] = mapped_column(String(45), nullable=True)
     device: Mapped[str] = mapped_column(String(10), default="unknown", server_default="unknown")
     lang: Mapped[Optional[str]] = mapped_column(String(5), nullable=True)
     created_at: Mapped[datetime] = mapped_column(
