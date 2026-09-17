@@ -1,0 +1,246 @@
+== bg
+tabs.studios	Студиа
+tabs.services	Услуги
+tabs.subscriptions	Абонаменти
+modals.addStudio.steps.about.title	За студиото
+modals.addStudio.steps.about.sub	Име и контакти
+modals.addStudio.steps.about.trust	Данните ви са криптирани и никога не се споделят с трети страни
+modals.addStudio.steps.location.title	Местоположение
+modals.addStudio.steps.location.sub	Къде се намира този филиал?
+modals.addStudio.steps.location.trust	Адресът се използва в графика и картите
+modals.addStudio.steps.photo.title	Снимка
+modals.addStudio.steps.photo.sub	Корица на студиото — по избор
+modals.addStudio.steps.photo.trust	Можете да я добавите по-късно в настройките на филиала
+modals.addStudio.stepCounter	Стъпка {{current}} от {{total}}
+modals.addStudio.step1.heading	Основна информация
+modals.addStudio.step1.subheading	Как се казва студиото и как да се свържем с него?
+modals.addStudio.step1.name	Име на студиото *
+modals.addStudio.step1.namePlaceholder	Напр. Velora Studio
+modals.addStudio.step1.phone	Телефон *
+modals.addStudio.step1.email	Имейл *
+modals.addStudio.step1.contactHint	Въведете телефон или имейл — поне едно
+modals.addStudio.step1.noContacts	Няма посочени контакти
+modals.addStudio.step1.new	НОВО
+modals.addStudio.step2.heading	Местоположение
+modals.addStudio.step2.subheading	Посочете къде се намира този филиал
+modals.addStudio.step2.country	Държава
+modals.addStudio.step2.countryPlaceholder	Съединени щати
+modals.addStudio.step2.city	Град *
+modals.addStudio.step2.cityPlaceholder	Ню Йорк
+modals.addStudio.step2.address	Адрес *
+modals.addStudio.step2.addressPlaceholder	5th Avenue 12, офис 301
+modals.addStudio.step2.noAddress	Няма посочен адрес
+modals.addStudio.step2.groupHint	Полетата „Държава“ и „Град“ се използват за групиране на филиалите в списъка.
+modals.addStudio.step3.heading	Снимка на студиото
+modals.addStudio.step3.subheading	Качете корица — по избор е, може да я пропуснете
+modals.addStudio.step3.uploadCta	Щракнете за качване
+modals.addStudio.step3.uploadHint	JPG, PNG до 10 MB
+modals.addStudio.step3.replace	Замени
+modals.addStudio.step3.remove	Премахни
+modals.addStudio.step3.previewAlt	Преглед
+modals.addStudio.step3.summary	Обобщение
+modals.addStudio.step3.uploadError	Снимката не можа да се качи. Опитайте с друг файл или я премахнете.
+modals.addStudio.summaryRows.name	Име
+modals.addStudio.summaryRows.city	Град
+modals.addStudio.summaryRows.address	Адрес
+modals.addStudio.nextPhoto	Напред — снимка
+modals.addStudio.submit	Създай студио
+modals.addStudio.skipPhoto	Пропусни снимката и създай
+modals.addStudio.illus.contacts	Контакти
+modals.addStudio.illus.newBranch	Нов филиал
+modals.addStudio.illus.city	Град
+modals.addStudio.illus.newBranchStudio	Нов филиал на студиото
+modals.editBranch.title	Редактиране на филиал
+modals.editBranch.name	Име на филиала
+modals.editBranch.namePlaceholder	Velora Studio
+modals.editBranch.phone	Телефон
+modals.editBranch.email	Имейл
+modals.editBranch.emailPlaceholder	studio@velora.com
+modals.editBranch.country	Държава
+modals.editBranch.countryPlaceholder	Съединени щати
+modals.editBranch.city	Град
+modals.editBranch.cityPlaceholder	Ню Йорк
+modals.editBranch.address	Адрес
+modals.editBranch.addressPlaceholder	5th Avenue 12
+modals.editBranch.photo	Снимка на филиала
+modals.editBranch.contactHint	Въведете телефон или имейл
+modals.editBranch.workingHours	Работно време
+modals.hall.titleNew	Добавяне на {{spaceAcc}}
+modals.hall.titleEdit	Редактиране на {{spaceAcc}}
+modals.hall.name	Име
+modals.hall.namePlaceholder	{{space, capitalize}} A
+modals.hall.capacity	Капацитет
+modals.hall.area	Площ, m²
+modals.hall.hourlyRate	Цена на час, {{currency}}
+modals.hall.hourlyRatePlaceholder	3000
+modals.hall.equipment	Оборудване
+modals.hall.equipmentPlaceholder	Добавете оборудване
+modals.hall.color	Цвят
+modals.hall.isOnline	Онлайн
+modals.hall.photo	Снимка
+modals.hall.subtitle	{{space, capitalize}} във филиала: места, оборудване, цвят в графика
+modals.hall.previewTitle	Преглед
+modals.hall.sectionBasic	Основно
+modals.hall.sectionSpace	Пространство
+modals.hall.sectionLook	Изглед
+modals.hall.areaShort	Площ
+modals.hall.hourlyRateShort	Цена на час
+modals.hall.statArea	Площ
+modals.hall.statRate	Цена / час
+modals.hall.isOnlineHint	Занятията се провеждат онлайн — без физическо помещение.
+modals.hall.colorHint	Занятията тук се открояват с този цвят в графика.
+modals.service.titleNew	Нова услуга
+modals.service.titleEdit	Редактиране на услуга
+modals.service.name	Име на услугата
+modals.service.namePlaceholder	Хатха йога
+modals.service.category	Категория
+modals.service.type	Тип
+modals.service.typeGroup	Групова
+modals.service.typeIndividual	Индивидуална
+modals.service.price	Цена, {{currency}}
+modals.service.pricePlaceholder	1200
+modals.service.duration	Продължителност, мин
+modals.service.durationPlaceholder	60
+modals.service.maxClients	Максимум клиенти
+modals.service.maxClientsPlaceholder	15
+modals.service.description	Описание
+modals.service.descriptionPlaceholder	Кратко описание на услугата
+modals.service.color	Цвят
+modals.service.subtitle	Показва се в графика и онлайн записването
+modals.service.previewTitle	Преглед на графика
+modals.service.sectionBasic	Основно
+modals.service.sectionPricing	Цена и време
+modals.service.sectionLook	Изглед
+modals.service.priceShort	Цена
+modals.service.durationShort	Продължителност
+modals.service.statSeats	Места
+modals.service.colorHint	Занятията се открояват с този цвят в мрежата на графика.
+modals.service.bookingMode	Механика на записването
+modals.service.bookingModeEvent	Записване
+modals.service.bookingModeResource	Изберете час
+modals.service.bookingModeEventHint	Клиентите се записват за занятие, което вече сте насрочили.
+modals.service.bookingModeResourceHint	Клиентът избира специалист и свободен час; интервалът {{offering}} се създава при потвърждение.
+modals.service.bookable	Налично за записване
+modals.service.bookableOn	Да
+modals.service.bookableOff	Не
+modals.service.bufferBefore	Буфер преди
+modals.service.bufferAfter	Буфер след
+modals.package.titleNew	Нов пакет
+modals.package.titleEdit	Редактиране на пакет
+modals.package.name	Име на пакета
+modals.package.namePlaceholder	8 занятия
+modals.package.classCount	Брой занятия
+modals.package.classCountPlaceholder	8
+modals.package.price	Цена, {{currency}}
+modals.package.pricePlaceholder	8000
+modals.package.perVisitPrice	Цена на посещение
+modals.package.durationDays	Валиден за, дни
+modals.package.durationDaysPlaceholder	60
+modals.package.services	Услуги
+modals.package.servicesHint	Няма избрано — пакетът важи за всички занятия
+modals.package.isActive	За продажба
+modals.package.soldAsSubscription	Покажи в раздел „Абонаменти“
+modals.package.soldAsSingle	Покажи в раздел „Единични посещения“
+modals.package.subtitle	Пакет занятия, който продавате на клиенти
+modals.package.previewTitle	Преглед на карта
+modals.package.previewKind	Карта
+modals.package.previewValid	Валиден за
+modals.package.sectionBasic	Основно
+modals.package.sectionTerms	Условия
+modals.package.sectionSale	Продажби
+modals.package.priceShort	Цена на пакета
+modals.package.statClasses	Занятия
+modals.package.statDays	Дни
+modals.package.statAll	Всички
+modals.package.isActiveHint	Клиентите могат да виждат и купуват този пакет.
+modals.package.soldAsSubscriptionHint	В противен случай пакетът остава само при единичните посещения.
+studios.title	СТУДИА
+studios.addStudio	Добави студио
+studios.addHall	Добави {{spaceAcc}}
+studios.editBranch	Редактиране на филиал
+studios.deleteBranch	Изтриване на филиал
+studios.infoTab	Обща информация
+studios.hallsTitle	{{spacePlural, capitalize}} на студиото
+studios.hallCount_one	{{spacePlural, capitalize}} · {{count}}
+studios.hallCount_other	{{spacePlural, capitalize}} · {{count}}
+studios.stats.halls	{{spacePlural, capitalize}}
+studios.stats.totalSeats	Общо места
+studios.stats.fromPerHour	От / час
+studios.hall.seats	места
+studios.hall.schedule	Работно време
+studios.hall.closed	Затворено
+studios.hall.stats.seats	Места
+studios.hall.stats.area	Площ
+studios.hall.stats.perHour	На час
+studios.hall.equipment	Оборудване
+studios.hall.actions	Действия
+studios.hall.edit	Редактиране на {{spaceAcc}}
+studios.hall.delete	Изтриване на {{spaceAcc}}
+studios.empty.title	Няма студиа
+studios.empty.subtitle	Добавете първото си студио
+studios.toasts.created	Студиото е създадено
+studios.toasts.createError	Студиото не можа да се създаде
+studios.toasts.deleted	Студиото е изтрито
+studios.toasts.hallDeleted	Изтрито: {{space}}
+studios.toasts.saved	Запазено
+studios.toasts.edit	Редактиране: {{name}}
+studios.confirmDelete	Да се изтрие ли филиалът „{{name}}“? Това не може да се отмени.
+studios.confirmDeleteTitle	Да се изтрие ли филиалът?
+studios.confirmDeleteHall	Да се изтрие ли {{spaceAcc}} „{{name}}“?
+studios.confirmDeleteHallTitle	Да се изтрие ли {{spaceAcc}}?
+services.title	УСЛУГИ
+services.addService	Добави услуга
+services.types.group	Групова
+services.types.individual	Индив.
+services.types.groupFull	 · Групова
+services.types.individualFull	 · Индивидуална
+services.stats.price	Цена
+services.stats.duration	Продължителност
+services.stats.bookings	Записвания
+services.stats.revenue	Приход
+services.details.description	Описание
+services.details.details	Подробности
+services.details.minutes	минути
+services.details.upTo	До {{count}} души
+services.details.personal	Индивидуална
+services.details.bookingsPerMonth	записвания за 30 дни
+services.details.schedule	График на занятията
+services.empty.title	Няма услуги
+services.empty.subtitle	Добавете първата си услуга
+services.toasts.deleted	Услугата е изтрита
+services.toasts.deleteError	Услугата не можа да се изтрие
+services.toasts.saved	Запазено
+services.toasts.saveError	Услугата не можа да се запази
+services.toasts.edit	Редактиране: {{name}}
+services.confirmDelete	Да се изтрие ли услугата „{{name}}“?
+services.confirmDeleteTitle	Да се изтрие ли услугата?
+services.categories.yoga	Йога
+services.categories.pilates	Пилатес
+services.categories.stretching	Разтягане
+services.categories.individual	Индивидуална
+services.categories.other	Без категория
+subscriptions.title	АБОНАМЕНТИ
+subscriptions.addPackage	Добави пакет
+subscriptions.card.classCount_one	{{count}} занятие
+subscriptions.card.classCount_other	{{count}} занятия
+subscriptions.card.duration	{{count}} дни
+subscriptions.card.allServices	Всички занятия
+subscriptions.card.serviceCount_one	{{count}} услуга
+subscriptions.card.serviceCount_other	{{count}} услуги
+subscriptions.card.inactiveBadge	Свален от продажба
+subscriptions.settings.title	Настройки на програмата
+subscriptions.settings.allowFreeze	Замразяване на абонамент
+subscriptions.settings.allowTransfer	Прехвърляне към друг клиент
+subscriptions.settings.autoRenewal	Автоматично подновяване от депозита на клиента
+subscriptions.empty.title	Все още няма пакети
+subscriptions.empty.cta	Създай пакет
+subscriptions.toasts.created	Пакетът е създаден
+subscriptions.toasts.saved	Запазено
+subscriptions.toasts.saveError	Пакетът не можа да се запази
+subscriptions.toasts.deactivated	Пакетът е свален от продажба
+subscriptions.toasts.restored	Пакетът отново е в продажба
+subscriptions.toasts.actionError	Действието не можа да се изпълни
+subscriptions.deactivate	Свали от продажба
+subscriptions.restore	Върни в продажба
+subscriptions.confirmDeactivateTitle	Да се свали ли този пакет от продажба?
+subscriptions.confirmDeactivate	Вече продадените абонаменти ще продължат да работят.

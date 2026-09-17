@@ -1,0 +1,246 @@
+== sq
+tabs.studios	Studiot
+tabs.services	Shërbimet
+tabs.subscriptions	Anëtarësimet
+modals.addStudio.steps.about.title	Rreth studios
+modals.addStudio.steps.about.sub	Emri dhe të dhënat e kontaktit
+modals.addStudio.steps.about.trust	Të dhënat tuaja janë të enkriptuara dhe nuk ndahen kurrë me palë të treta
+modals.addStudio.steps.location.title	Vendndodhja
+modals.addStudio.steps.location.sub	Ku ndodhet kjo degë?
+modals.addStudio.steps.location.trust	Adresa përdoret në orar dhe në harta
+modals.addStudio.steps.photo.title	Foto
+modals.addStudio.steps.photo.sub	Kopertina e studios — opsionale
+modals.addStudio.steps.photo.trust	Mund ta shtoni më vonë te cilësimet e degës
+modals.addStudio.stepCounter	Hapi {{current}} nga {{total}}
+modals.addStudio.step1.heading	Informacion bazë
+modals.addStudio.step1.subheading	Si quhet studioja dhe si mund të kontaktohet?
+modals.addStudio.step1.name	Emri i studios *
+modals.addStudio.step1.namePlaceholder	P.sh. Velora Studio
+modals.addStudio.step1.phone	Telefon *
+modals.addStudio.step1.email	Email *
+modals.addStudio.step1.contactHint	Vendosni telefon ose email — të paktën një
+modals.addStudio.step1.noContacts	Nuk u dhanë kontakte
+modals.addStudio.step1.new	I RI
+modals.addStudio.step2.heading	Vendndodhja
+modals.addStudio.step2.subheading	Përcaktoni ku ndodhet kjo degë
+modals.addStudio.step2.country	Shteti
+modals.addStudio.step2.countryPlaceholder	Shtetet e Bashkuara
+modals.addStudio.step2.city	Qyteti *
+modals.addStudio.step2.cityPlaceholder	Nju Jork
+modals.addStudio.step2.address	Adresa *
+modals.addStudio.step2.addressPlaceholder	5th Avenue 12, zyra 301
+modals.addStudio.step2.noAddress	Nuk u dha adresë
+modals.addStudio.step2.groupHint	Fushat „Shteti” dhe „Qyteti” përdoren për të grupuar degët në listë.
+modals.addStudio.step3.heading	Foto e studios
+modals.addStudio.step3.subheading	Ngarkoni një kopertinë — është opsionale, mund ta kaloni
+modals.addStudio.step3.uploadCta	Klikoni për të ngarkuar
+modals.addStudio.step3.uploadHint	JPG, PNG deri në 10 MB
+modals.addStudio.step3.replace	Zëvendëso
+modals.addStudio.step3.remove	Hiq
+modals.addStudio.step3.previewAlt	Parapamje
+modals.addStudio.step3.summary	Përmbledhje
+modals.addStudio.step3.uploadError	Fotoja nuk u ngarkua. Provoni një skedar tjetër ose hiqeni.
+modals.addStudio.summaryRows.name	Emri
+modals.addStudio.summaryRows.city	Qyteti
+modals.addStudio.summaryRows.address	Adresa
+modals.addStudio.nextPhoto	Tjetra — foto
+modals.addStudio.submit	Krijo studio
+modals.addStudio.skipPhoto	Kalo foton dhe krijo
+modals.addStudio.illus.contacts	Kontaktet
+modals.addStudio.illus.newBranch	Degë e re
+modals.addStudio.illus.city	Qyteti
+modals.addStudio.illus.newBranchStudio	Degë e re studioje
+modals.editBranch.title	Ndrysho degën
+modals.editBranch.name	Emri i degës
+modals.editBranch.namePlaceholder	Velora Studio
+modals.editBranch.phone	Telefon
+modals.editBranch.email	Email
+modals.editBranch.emailPlaceholder	studio@velora.com
+modals.editBranch.country	Shteti
+modals.editBranch.countryPlaceholder	Shtetet e Bashkuara
+modals.editBranch.city	Qyteti
+modals.editBranch.cityPlaceholder	Nju Jork
+modals.editBranch.address	Adresa
+modals.editBranch.addressPlaceholder	5th Avenue 12
+modals.editBranch.photo	Foto e degës
+modals.editBranch.contactHint	Vendosni telefon ose email
+modals.editBranch.workingHours	Orari i punës
+modals.hall.titleNew	Shto {{spaceAcc}}
+modals.hall.titleEdit	Ndrysho {{spaceAcc}}
+modals.hall.name	Emri
+modals.hall.namePlaceholder	{{space, capitalize}} A
+modals.hall.capacity	Kapaciteti
+modals.hall.area	Sipërfaqja, m²
+modals.hall.hourlyRate	Çmimi për orë, {{currency}}
+modals.hall.hourlyRatePlaceholder	3000
+modals.hall.equipment	Pajisjet
+modals.hall.equipmentPlaceholder	Shto pajisje
+modals.hall.color	Ngjyra
+modals.hall.isOnline	Online
+modals.hall.photo	Foto
+modals.hall.subtitle	{{space, capitalize}} në degë: vende, pajisje, ngjyrë në orar
+modals.hall.previewTitle	Parapamje
+modals.hall.sectionBasic	Bazat
+modals.hall.sectionSpace	Hapësira
+modals.hall.sectionLook	Pamja
+modals.hall.areaShort	Sipërfaqja
+modals.hall.hourlyRateShort	Çmimi për orë
+modals.hall.statArea	Sipërfaqja
+modals.hall.statRate	Çmimi / orë
+modals.hall.isOnlineHint	Klasat zhvillohen online — pa ambiente fizike.
+modals.hall.colorHint	Klasat këtu theksohen me këtë ngjyrë në orar.
+modals.service.titleNew	Shërbim i ri
+modals.service.titleEdit	Ndrysho shërbimin
+modals.service.name	Emri i shërbimit
+modals.service.namePlaceholder	Hatha yoga
+modals.service.category	Kategoria
+modals.service.type	Lloji
+modals.service.typeGroup	Në grup
+modals.service.typeIndividual	Individual
+modals.service.price	Çmimi, {{currency}}
+modals.service.pricePlaceholder	1200
+modals.service.duration	Kohëzgjatja, min
+modals.service.durationPlaceholder	60
+modals.service.maxClients	Maksimumi i klientëve
+modals.service.maxClientsPlaceholder	15
+modals.service.description	Përshkrimi
+modals.service.descriptionPlaceholder	Përshkrim i shkurtër i shërbimit
+modals.service.color	Ngjyra
+modals.service.subtitle	Shfaqet në orar dhe në rezervimet online
+modals.service.previewTitle	Parapamje e orarit
+modals.service.sectionBasic	Bazat
+modals.service.sectionPricing	Çmimi dhe koha
+modals.service.sectionLook	Pamja
+modals.service.priceShort	Çmimi
+modals.service.durationShort	Kohëzgjatja
+modals.service.statSeats	Vendet
+modals.service.colorHint	Klasat theksohen me këtë ngjyrë në rrjetën e orarit.
+modals.service.bookingMode	Mënyra e rezervimit
+modals.service.bookingModeEvent	Regjistrimi
+modals.service.bookingModeResource	Zgjidhni një orë
+modals.service.bookingModeEventHint	Klientët regjistrohen për një klasë që e keni planifikuar tashmë.
+modals.service.bookingModeResourceHint	Klienti zgjedh një specialist dhe një orar të lirë; intervali {{offering}} krijohet në konfirmim.
+modals.service.bookable	I disponueshëm për rezervim
+modals.service.bookableOn	Po
+modals.service.bookableOff	Jo
+modals.service.bufferBefore	Hapësirë para
+modals.service.bufferAfter	Hapësirë pas
+modals.package.titleNew	Paketë e re
+modals.package.titleEdit	Ndrysho paketën
+modals.package.name	Emri i paketës
+modals.package.namePlaceholder	8 klasa
+modals.package.classCount	Numri i klasave
+modals.package.classCountPlaceholder	8
+modals.package.price	Çmimi, {{currency}}
+modals.package.pricePlaceholder	8000
+modals.package.perVisitPrice	Çmimi për vizitë
+modals.package.durationDays	Vlen për, ditë
+modals.package.durationDaysPlaceholder	60
+modals.package.services	Shërbimet
+modals.package.servicesHint	Nuk është zgjedhur asgjë — paketa vlen për të gjitha klasat
+modals.package.isActive	Në shitje
+modals.package.soldAsSubscription	Shfaq në skedën „Anëtarësimet”
+modals.package.soldAsSingle	Shfaq në skedën „Vizita të vetme”
+modals.package.subtitle	Paketë klasash që ua shisni klientëve
+modals.package.previewTitle	Parapamje e kartës
+modals.package.previewKind	Kartë
+modals.package.previewValid	Vlen për
+modals.package.sectionBasic	Bazat
+modals.package.sectionTerms	Kushtet
+modals.package.sectionSale	Shitjet
+modals.package.priceShort	Çmimi i paketës
+modals.package.statClasses	Klasat
+modals.package.statDays	Ditët
+modals.package.statAll	Të gjitha
+modals.package.isActiveHint	Klientët mund ta shohin dhe blejnë këtë paketë.
+modals.package.soldAsSubscriptionHint	Përndryshe paketa mbetet vetëm te vizitat e vetme.
+studios.title	STUDIO
+studios.addStudio	Shto studio
+studios.addHall	Shto {{spaceAcc}}
+studios.editBranch	Ndrysho degën
+studios.deleteBranch	Fshi degën
+studios.infoTab	Informacion i përgjithshëm
+studios.hallsTitle	{{spacePlural, capitalize}} e studios
+studios.hallCount_one	{{spacePlural, capitalize}} · {{count}}
+studios.hallCount_other	{{spacePlural, capitalize}} · {{count}}
+studios.stats.halls	{{spacePlural, capitalize}}
+studios.stats.totalSeats	Vende gjithsej
+studios.stats.fromPerHour	Nga / orë
+studios.hall.seats	vende
+studios.hall.schedule	Orari i punës
+studios.hall.closed	Mbyllur
+studios.hall.stats.seats	Vende
+studios.hall.stats.area	Sipërfaqja
+studios.hall.stats.perHour	Në orë
+studios.hall.equipment	Pajisjet
+studios.hall.actions	Veprimet
+studios.hall.edit	Ndrysho {{spaceAcc}}
+studios.hall.delete	Fshi {{spaceAcc}}
+studios.empty.title	Nuk ka studio
+studios.empty.subtitle	Shtoni studion tuaj të parë
+studios.toasts.created	Studioja u krijua
+studios.toasts.createError	Studioja nuk u krijua
+studios.toasts.deleted	Studioja u fshi
+studios.toasts.hallDeleted	U fshi: {{space}}
+studios.toasts.saved	U ruajt
+studios.toasts.edit	Ndrysho: {{name}}
+studios.confirmDelete	Të fshihet dega „{{name}}”? Ky veprim nuk mund të zhbëhet.
+studios.confirmDeleteTitle	Të fshihet dega?
+studios.confirmDeleteHall	Të fshihet {{spaceAcc}} „{{name}}”?
+studios.confirmDeleteHallTitle	Të fshihet {{spaceAcc}}?
+services.title	SHËRBIME
+services.addService	Shto shërbim
+services.types.group	Në grup
+services.types.individual	Indiv.
+services.types.groupFull	 · Në grup
+services.types.individualFull	 · Individual
+services.stats.price	Çmimi
+services.stats.duration	Kohëzgjatja
+services.stats.bookings	Rezervimet
+services.stats.revenue	Të ardhurat
+services.details.description	Përshkrimi
+services.details.details	Detajet
+services.details.minutes	minuta
+services.details.upTo	Deri në {{count}} pers.
+services.details.personal	Personal
+services.details.bookingsPerMonth	rezervime në 30 ditë
+services.details.schedule	Orari i klasave
+services.empty.title	Nuk ka shërbime
+services.empty.subtitle	Shtoni shërbimin tuaj të parë
+services.toasts.deleted	Shërbimi u fshi
+services.toasts.deleteError	Shërbimi nuk u fshi
+services.toasts.saved	U ruajt
+services.toasts.saveError	Shërbimi nuk u ruajt
+services.toasts.edit	Ndrysho: {{name}}
+services.confirmDelete	Të fshihet shërbimi „{{name}}”?
+services.confirmDeleteTitle	Të fshihet shërbimi?
+services.categories.yoga	Yoga
+services.categories.pilates	Pilates
+services.categories.stretching	Shtrirje
+services.categories.individual	Individual
+services.categories.other	Pa kategori
+subscriptions.title	ANËTARËSIME
+subscriptions.addPackage	Shto paketë
+subscriptions.card.classCount_one	{{count}} klasë
+subscriptions.card.classCount_other	{{count}} klasa
+subscriptions.card.duration	{{count}} ditë
+subscriptions.card.allServices	Të gjitha klasat
+subscriptions.card.serviceCount_one	{{count}} shërbim
+subscriptions.card.serviceCount_other	{{count}} shërbime
+subscriptions.card.inactiveBadge	I hequr nga shitja
+subscriptions.settings.title	Cilësimet e programit
+subscriptions.settings.allowFreeze	Ngrirja e anëtarësimit
+subscriptions.settings.allowTransfer	Transferim te një klient tjetër
+subscriptions.settings.autoRenewal	Rinovim automatik nga depozita e klientit
+subscriptions.empty.title	Nuk ka ende paketa
+subscriptions.empty.cta	Krijo paketë
+subscriptions.toasts.created	Paketa u krijua
+subscriptions.toasts.saved	U ruajt
+subscriptions.toasts.saveError	Paketa nuk u ruajt
+subscriptions.toasts.deactivated	Paketa u hoq nga shitja
+subscriptions.toasts.restored	Paketa u rikthye në shitje
+subscriptions.toasts.actionError	Veprimi nuk u përfundua
+subscriptions.deactivate	Hiq nga shitja
+subscriptions.restore	Rikthe në shitje
+subscriptions.confirmDeactivateTitle	Të hiqet kjo paketë nga shitja?
+subscriptions.confirmDeactivate	Anëtarësimet e shitura tashmë do të vazhdojnë të funksionojnë.

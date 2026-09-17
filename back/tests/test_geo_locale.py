@@ -126,3 +126,13 @@ def test_server_default_is_english_and_russian_remains_available():
     assert resolve(None) == "en"
     assert resolve("") == "en"
     assert resolve("ru") == "ru"
+
+
+def test_interface_locale_keeps_completed_ui_languages_separate_from_outbound():
+    from services.ui_locale import INTERFACE_LANGS, resolve_ui_locale
+
+    assert len(INTERFACE_LANGS) == 22
+    assert resolve_ui_locale("fr") == "fr"
+    assert resolve_ui_locale("pl") == "pl"
+    assert resolve_ui_locale("cz") == "cs"
+    assert resolve_ui_locale("unsupported") == "en"

@@ -1,0 +1,374 @@
+== sq
+banner.title	Privatësia juaj, zgjedhja juaj
+banner.text	Velora ruan vetëm atë që i nevojitet për të funksionuar në shfletuesin tuaj: hyrjen, gjuhën dhe cilësimet e ndërfaqes. Me lejen tuaj do të aktivizojmë edhe hyrjen me Google — Google më pas vendos cookie-t e veta. Nuk përdorim analitikë apo reklama.
+banner.policy	Politika e cookie-ve
+actions.accept	Prano të gjitha
+actions.reject	Refuzo të gjitha
+actions.save	Ruaj zgjedhjen
+actions.settings	Cilësimet
+settings.title	Cilësimet e cookie-ve
+settings.subtitle	Zbatohen për këtë shfletues. Mund t'i ndryshoni në çdo kohë.
+settings.alwaysOn	Gjithmonë aktive
+settings.necessary.title	Rreptësisht të nevojshme
+settings.necessary.text	Ju mbajnë të identifikuar, kujtojnë gjuhën, temën dhe zgjedhjen tuaj këtu, si dhe mbrojnë pagesat dhe shërbimin nga keqpërdorimi. Velora nuk mund të funksionojë pa to.
+settings.functional.title	Hyrje me Google
+settings.functional.text	Ngarkon shërbimin e hyrjes së Google që të përdorni llogarinë tuaj Google. Google mund të vendosë cookie-t e veta dhe të mësojë se keni hapur faqen e hyrjes.
+settings.none	Pa cookie për analitikë, reklama ose gjurmim — nuk i përdorim.
+settings.decided	Zgjedhja juaj më {{date}}
+settings.policy	Lista e plotë në Politikën e cookie-ve
+google.button	Vazhdo me Google
+google.notice	Klikimi aktivizon hyrjen me Google: shërbimi i Google ngarkohet dhe mund të vendosë cookie.
+google.policy	Detaje
+profile.button	Cilësimet e cookie-ve
+== bg
+banner.title	Вашата поверителност, вашият избор
+banner.text	Velora съхранява само необходимото, за да работи в браузъра ви: входа, езика и настройките на интерфейса. С ваше разрешение ще включим и входа с Google — след това Google задава собствени бисквитки. Не използваме анализи или реклама.
+banner.policy	Политика за бисквитките
+actions.accept	Приемам всички
+actions.reject	Отхвърлям всички
+actions.save	Запазване на избора
+actions.settings	Настройки
+settings.title	Настройки на бисквитките
+settings.subtitle	Важи за този браузър. Можете да го промените по всяко време.
+settings.alwaysOn	Винаги включени
+settings.necessary.title	Строго необходими
+settings.necessary.text	Поддържат ви вписани, запомнят езика, темата и избора ви тук и защитават плащанията и услугата от злоупотреба. Velora не може да работи без тях.
+settings.functional.title	Вход с Google
+settings.functional.text	Зарежда услугата за вход на Google, за да използвате профила си в Google. Google може да зададе собствени бисквитки и да разбере, че сте отворили страницата за вход.
+settings.none	Без бисквитки за анализи, реклама или проследяване — не ги използваме.
+settings.decided	Вашият избор от {{date}}
+settings.policy	Пълен списък в Политиката за бисквитките
+google.button	Продължете с Google
+google.notice	Кликването включва входа с Google: услугата на Google се зарежда и може да зададе бисквитки.
+google.policy	Подробности
+profile.button	Настройки на бисквитките
+== hr
+banner.title	Vaša privatnost, vaš izbor
+banner.text	Velora čuva samo ono što joj treba za rad u vašem pregledniku: prijavu, jezik i postavke sučelja. Uz vaše dopuštenje uključit ćemo i prijavu putem Googlea — Google tada postavlja vlastite kolačiće. Ne koristimo analitiku ni oglašavanje.
+banner.policy	Pravila o kolačićima
+actions.accept	Prihvati sve
+actions.reject	Odbij sve
+actions.save	Spremi izbor
+actions.settings	Postavke
+settings.title	Postavke kolačića
+settings.subtitle	Primjenjuje se na ovaj preglednik. Možete promijeniti izbor u bilo kojem trenutku.
+settings.alwaysOn	Uvijek uključeno
+settings.necessary.title	Strogo nužni
+settings.necessary.text	Održavaju vas prijavljenima, pamte vaš jezik, temu i izbor te štite plaćanja i uslugu od zloupotrebe. Velora ne može raditi bez njih.
+settings.functional.title	Prijava putem Googlea
+settings.functional.text	Učitava Googleovu uslugu prijave kako biste mogli koristiti svoj Google račun. Google može postaviti vlastite kolačiće i saznati da ste otvorili stranicu za prijavu.
+settings.none	Nema kolačića za analitiku, oglašavanje ni praćenje — ne koristimo ih.
+settings.decided	Vaš izbor od {{date}}
+settings.policy	Cijeli popis u Pravilima o kolačićima
+google.button	Nastavi s Googleom
+google.notice	Klikom se uključuje prijava putem Googlea: Googleova usluga učitava se i može postaviti kolačiće.
+google.policy	Pojedinosti
+profile.button	Postavke kolačića
+== da
+banner.title	Dit privatliv, dit valg
+banner.text	Velora gemmer kun det, der er nødvendigt for at fungere i din browser: dit login, sprog og grænsefladeindstillinger. Med din tilladelse aktiverer vi også Google-login — Google sætter derefter sine egne cookies. Vi bruger ingen analyse eller annoncering.
+banner.policy	Cookiepolitik
+actions.accept	Acceptér alle
+actions.reject	Afvis alle
+actions.save	Gem valg
+actions.settings	Indstillinger
+settings.title	Cookieindstillinger
+settings.subtitle	Gælder for denne browser. Du kan ændre det når som helst.
+settings.alwaysOn	Altid aktiv
+settings.necessary.title	Strengt nødvendige
+settings.necessary.text	Holder dig logget ind, husker dit sprog, tema og valg her og beskytter betalinger og tjenesten mod misbrug. Velora kan ikke fungere uden dem.
+settings.functional.title	Log ind med Google
+settings.functional.text	Indlæser Googles logintjeneste, så du kan bruge din Google-konto. Google kan sætte sine egne cookies og se, at du har åbnet login-siden.
+settings.none	Ingen cookies til analyse, annoncering eller sporing — vi bruger dem ikke.
+settings.decided	Dit valg fra {{date}}
+settings.policy	Hele listen findes i cookiepolitikken
+google.button	Fortsæt med Google
+google.notice	Et klik aktiverer Google-login: Googles tjeneste indlæses og kan sætte cookies.
+google.policy	Detaljer
+profile.button	Cookieindstillinger
+== fi
+banner.title	Yksityisyytesi, valintasi
+banner.text	Velora säilyttää vain sen, mitä se tarvitsee toimiakseen selaimessasi: kirjautumisen, kielen ja käyttöliittymäasetukset. Luvallasi otamme käyttöön myös Google-kirjautumisen — Google asettaa silloin omat evästeensä. Emme käytä analytiikkaa tai mainontaa.
+banner.policy	Evästekäytäntö
+actions.accept	Hyväksy kaikki
+actions.reject	Hylkää kaikki
+actions.save	Tallenna valinta
+actions.settings	Asetukset
+settings.title	Evästeasetukset
+settings.subtitle	Koskee tätä selainta. Voit muuttaa valintaa milloin tahansa.
+settings.alwaysOn	Aina käytössä
+settings.necessary.title	Ehdottoman välttämättömät
+settings.necessary.text	Pitävät sinut kirjautuneena, muistavat kielesi, teemasi ja valintasi sekä suojaavat maksuja ja palvelua väärinkäytöltä. Velora ei voi toimia ilman niitä.
+settings.functional.title	Kirjaudu Googlella
+settings.functional.text	Lataa Googlen kirjautumispalvelun, jotta voit käyttää Google-tiliäsi. Google voi asettaa omia evästeitään ja saada tiedon, että avasit kirjautumissivun.
+settings.none	Ei analytiikka-, mainos- tai seurantaevästeitä — emme käytä niitä.
+settings.decided	Valintasi {{date}}
+settings.policy	Täysi luettelo evästekäytännössä
+google.button	Jatka Googlella
+google.notice	Napsautus ottaa Google-kirjautumisen käyttöön: Googlen palvelu latautuu ja voi asettaa evästeitä.
+google.policy	Tiedot
+profile.button	Evästeasetukset
+== fr
+banner.title	Votre vie privée, votre choix
+banner.text	Velora ne conserve que ce dont elle a besoin dans votre navigateur : votre connexion, la langue et les réglages d’interface. Avec votre autorisation, nous activerons aussi la connexion Google — Google déposera alors ses propres cookies. Nous n’utilisons ni analyse d’audience ni publicité.
+banner.policy	Politique relative aux cookies
+actions.accept	Tout accepter
+actions.reject	Tout refuser
+actions.save	Enregistrer le choix
+actions.settings	Paramètres
+settings.title	Paramètres des cookies
+settings.subtitle	S’applique à ce navigateur. Vous pouvez modifier votre choix à tout moment.
+settings.alwaysOn	Toujours actifs
+settings.necessary.title	Strictement nécessaires
+settings.necessary.text	Ils vous gardent connecté, mémorisent votre langue, votre thème et votre choix, et protègent les paiements et le service contre les abus. Velora ne peut pas fonctionner sans eux.
+settings.functional.title	Se connecter avec Google
+settings.functional.text	Charge le service de connexion Google pour vous permettre d’utiliser votre compte Google. Google peut déposer ses propres cookies et savoir que vous avez ouvert la page de connexion.
+settings.none	Aucun cookie d’analyse, de publicité ou de suivi — nous n’en utilisons pas.
+settings.decided	Votre choix du {{date}}
+settings.policy	Liste complète dans la Politique relative aux cookies
+google.button	Continuer avec Google
+google.notice	Un clic active la connexion Google : le service Google se charge et peut déposer des cookies.
+google.policy	Détails
+profile.button	Paramètres des cookies
+== el
+banner.title	Το απόρρητό σας, η επιλογή σας
+banner.text	Η Velora διατηρεί μόνο όσα χρειάζεται για να λειτουργεί στο πρόγραμμα περιήγησής σας: τη σύνδεση, τη γλώσσα και τις ρυθμίσεις διεπαφής. Με την άδειά σας θα ενεργοποιήσουμε και τη σύνδεση με Google — η Google θα ορίσει τότε τα δικά της cookies. Δεν χρησιμοποιούμε αναλυτικά στοιχεία ή διαφήμιση.
+banner.policy	Πολιτική cookies
+actions.accept	Αποδοχή όλων
+actions.reject	Απόρριψη όλων
+actions.save	Αποθήκευση επιλογής
+actions.settings	Ρυθμίσεις
+settings.title	Ρυθμίσεις cookies
+settings.subtitle	Ισχύει για αυτό το πρόγραμμα περιήγησης. Μπορείτε να το αλλάξετε ανά πάσα στιγμή.
+settings.alwaysOn	Πάντα ενεργά
+settings.necessary.title	Απολύτως απαραίτητα
+settings.necessary.text	Σας διατηρούν συνδεδεμένους, θυμούνται τη γλώσσα, το θέμα και την επιλογή σας και προστατεύουν τις πληρωμές και την υπηρεσία από κατάχρηση. Η Velora δεν μπορεί να λειτουργήσει χωρίς αυτά.
+settings.functional.title	Σύνδεση με Google
+settings.functional.text	Φορτώνει την υπηρεσία σύνδεσης της Google ώστε να χρησιμοποιήσετε τον λογαριασμό σας Google. Η Google μπορεί να ορίσει δικά της cookies και να μάθει ότι ανοίξατε τη σελίδα σύνδεσης.
+settings.none	Δεν χρησιμοποιούμε cookies αναλυτικών στοιχείων, διαφήμισης ή παρακολούθησης.
+settings.decided	Η επιλογή σας στις {{date}}
+settings.policy	Πλήρης λίστα στην Πολιτική cookies
+google.button	Συνέχεια με Google
+google.notice	Με το κλικ ενεργοποιείται η σύνδεση με Google: η υπηρεσία της Google φορτώνει και μπορεί να ορίσει cookies.
+google.policy	Λεπτομέρειες
+profile.button	Ρυθμίσεις cookies
+== hu
+banner.title	Az Ön adatvédelme, az Ön döntése
+banner.text	A Velora csak azt tárolja, amire a böngészőjében való működéshez szüksége van: a bejelentkezést, a nyelvet és a felületi beállításokat. Engedélyével a Google-bejelentkezést is bekapcsoljuk — a Google ezután saját cookie-kat állít be. Nem használunk analitikát vagy hirdetést.
+banner.policy	Cookie-szabályzat
+actions.accept	Összes elfogadása
+actions.reject	Összes elutasítása
+actions.save	Választás mentése
+actions.settings	Beállítások
+settings.title	Cookie-beállítások
+settings.subtitle	Erre a böngészőre vonatkozik. Bármikor megváltoztathatja.
+settings.alwaysOn	Mindig bekapcsolva
+settings.necessary.title	Feltétlenül szükséges
+settings.necessary.text	Bejelentkezve tartják, megjegyzik a nyelvét, témáját és választását, és védik a fizetéseket és a szolgáltatást a visszaéléstől. A Velora ezek nélkül nem működik.
+settings.functional.title	Bejelentkezés Google-fiókkal
+settings.functional.text	Betölti a Google bejelentkezési szolgáltatását, hogy használhassa Google-fiókját. A Google saját cookie-kat állíthat be, és megtudhatja, hogy megnyitotta a bejelentkezési oldalt.
+settings.none	Nem használunk analitikai, hirdetési vagy követési cookie-kat.
+settings.decided	Az Ön választása: {{date}}
+settings.policy	A teljes lista a Cookie-szabályzatban található
+google.button	Folytatás Google-fiókkal
+google.notice	A kattintás bekapcsolja a Google-bejelentkezést: a Google szolgáltatása betöltődik és cookie-kat állíthat be.
+google.policy	Részletek
+profile.button	Cookie-beállítások
+== it
+banner.title	La tua privacy, la tua scelta
+banner.text	Velora conserva solo ciò che le serve per funzionare nel tuo browser: accesso, lingua e impostazioni dell’interfaccia. Con il tuo consenso attiveremo anche l’accesso con Google — Google imposterà quindi i propri cookie. Non utilizziamo analisi né pubblicità.
+banner.policy	Informativa sui cookie
+actions.accept	Accetta tutto
+actions.reject	Rifiuta tutto
+actions.save	Salva la scelta
+actions.settings	Impostazioni
+settings.title	Impostazioni dei cookie
+settings.subtitle	Si applica a questo browser. Puoi modificare la scelta in qualsiasi momento.
+settings.alwaysOn	Sempre attivi
+settings.necessary.title	Strettamente necessari
+settings.necessary.text	Ti mantengono connesso, ricordano lingua, tema e scelta e proteggono pagamenti e servizio dagli abusi. Velora non può funzionare senza di essi.
+settings.functional.title	Accedi con Google
+settings.functional.text	Carica il servizio di accesso Google per permetterti di usare il tuo account Google. Google può impostare i propri cookie e sapere che hai aperto la pagina di accesso.
+settings.none	Nessun cookie di analisi, pubblicità o tracciamento — non li utilizziamo.
+settings.decided	La tua scelta del {{date}}
+settings.policy	Elenco completo nell’Informativa sui cookie
+google.button	Continua con Google
+google.notice	Facendo clic attivi l’accesso con Google: il servizio Google viene caricato e può impostare cookie.
+google.policy	Dettagli
+profile.button	Impostazioni dei cookie
+== no
+banner.title	Ditt personvern, ditt valg
+banner.text	Velora lagrer bare det den trenger for å fungere i nettleseren din: innloggingen din, språk og grensesnittinnstillinger. Med din tillatelse aktiverer vi også Google-innlogging — Google setter da sine egne informasjonskapsler. Vi bruker ikke analyse eller annonsering.
+banner.policy	Informasjonskapselpolicy
+actions.accept	Godta alle
+actions.reject	Avslå alle
+actions.save	Lagre valget
+actions.settings	Innstillinger
+settings.title	Innstillinger for informasjonskapsler
+settings.subtitle	Gjelder for denne nettleseren. Du kan endre det når som helst.
+settings.alwaysOn	Alltid på
+settings.necessary.title	Strengt nødvendige
+settings.necessary.text	Holder deg innlogget, husker språket, temaet og valget ditt, og beskytter betalinger og tjenesten mot misbruk. Velora kan ikke fungere uten dem.
+settings.functional.title	Logg inn med Google
+settings.functional.text	Laster Googles innloggingstjeneste slik at du kan bruke Google-kontoen din. Google kan sette egne informasjonskapsler og få vite at du åpnet innloggingssiden.
+settings.none	Ingen informasjonskapsler for analyse, annonsering eller sporing — vi bruker dem ikke.
+settings.decided	Ditt valg fra {{date}}
+settings.policy	Fullstendig liste i informasjonskapselpolicyen
+google.button	Fortsett med Google
+google.notice	Et klikk aktiverer Google-innlogging: Googles tjeneste lastes inn og kan sette informasjonskapsler.
+google.policy	Detaljer
+profile.button	Innstillinger for informasjonskapsler
+== pl
+banner.title	Twoja prywatność, Twój wybór
+banner.text	Velora zapisuje tylko to, czego potrzebuje do działania w Twojej przeglądarce: logowanie, język i ustawienia interfejsu. Za Twoją zgodą włączymy także logowanie przez Google — Google ustawi wtedy własne pliki cookie. Nie używamy analityki ani reklam.
+banner.policy	Polityka plików cookie
+actions.accept	Zaakceptuj wszystkie
+actions.reject	Odrzuć wszystkie
+actions.save	Zapisz wybór
+actions.settings	Ustawienia
+settings.title	Ustawienia plików cookie
+settings.subtitle	Dotyczy tej przeglądarki. Możesz zmienić wybór w każdej chwili.
+settings.alwaysOn	Zawsze włączone
+settings.necessary.title	Bezwzględnie konieczne
+settings.necessary.text	Utrzymują logowanie, zapamiętują język, motyw i wybór oraz chronią płatności i usługę przed nadużyciami. Velora nie może działać bez nich.
+settings.functional.title	Zaloguj się przez Google
+settings.functional.text	Ładuje usługę logowania Google, aby umożliwić użycie konta Google. Google może ustawić własne pliki cookie i dowiedzieć się, że otwarto stronę logowania.
+settings.none	Nie używamy plików cookie do analityki, reklam ani śledzenia.
+settings.decided	Twój wybór z {{date}}
+settings.policy	Pełna lista w Polityce plików cookie
+google.button	Kontynuuj z Google
+google.notice	Kliknięcie włącza logowanie przez Google: usługa Google zostaje załadowana i może ustawić pliki cookie.
+google.policy	Szczegóły
+profile.button	Ustawienia plików cookie
+== pt
+banner.title	A sua privacidade, a sua escolha
+banner.text	A Velora guarda apenas o necessário para funcionar no seu navegador: início de sessão, idioma e definições da interface. Com a sua autorização, também ativaremos o início de sessão com Google — a Google definirá depois os seus próprios cookies. Não usamos análises nem publicidade.
+banner.policy	Política de cookies
+actions.accept	Aceitar tudo
+actions.reject	Recusar tudo
+actions.save	Guardar escolha
+actions.settings	Definições
+settings.title	Definições de cookies
+settings.subtitle	Aplica-se a este navegador. Pode alterar a escolha a qualquer momento.
+settings.alwaysOn	Sempre ativos
+settings.necessary.title	Estritamente necessários
+settings.necessary.text	Mantêm a sua sessão iniciada, lembram o idioma, tema e escolha e protegem pagamentos e o serviço contra abuso. A Velora não pode funcionar sem eles.
+settings.functional.title	Iniciar sessão com Google
+settings.functional.text	Carrega o serviço de início de sessão da Google para poder usar a sua conta Google. A Google pode definir os seus próprios cookies e saber que abriu a página de início de sessão.
+settings.none	Não usamos cookies de análise, publicidade ou rastreio.
+settings.decided	A sua escolha de {{date}}
+settings.policy	Lista completa na Política de cookies
+google.button	Continuar com Google
+google.notice	Ao clicar ativa o início de sessão com Google: o serviço da Google é carregado e pode definir cookies.
+google.policy	Detalhes
+profile.button	Definições de cookies
+== ro
+banner.title	Confidențialitatea ta, alegerea ta
+banner.text	Velora păstrează doar ce are nevoie pentru a funcționa în browserul tău: autentificarea, limba și setările interfeței. Cu acordul tău vom activa și autentificarea prin Google — Google va seta apoi propriile cookie-uri. Nu folosim analiză sau publicitate.
+banner.policy	Politica privind cookie-urile
+actions.accept	Acceptă toate
+actions.reject	Respinge toate
+actions.save	Salvează alegerea
+actions.settings	Setări
+settings.title	Setări cookie
+settings.subtitle	Se aplică acestui browser. Poți schimba alegerea oricând.
+settings.alwaysOn	Întotdeauna active
+settings.necessary.title	Strict necesare
+settings.necessary.text	Te mențin autentificat, rețin limba, tema și alegerea ta și protejează plățile și serviciul împotriva abuzurilor. Velora nu poate funcționa fără ele.
+settings.functional.title	Autentificare cu Google
+settings.functional.text	Încarcă serviciul de autentificare Google ca să îți poți folosi contul Google. Google poate seta propriile cookie-uri și poate afla că ai deschis pagina de autentificare.
+settings.none	Nu folosim cookie-uri de analiză, publicitate sau urmărire.
+settings.decided	Alegerea ta din {{date}}
+settings.policy	Lista completă în Politica privind cookie-urile
+google.button	Continuă cu Google
+google.notice	Un clic activează autentificarea cu Google: serviciul Google se încarcă și poate seta cookie-uri.
+google.policy	Detalii
+profile.button	Setări cookie
+== sr
+banner.title	Vaša privatnost, vaš izbor
+banner.text	Velora čuva samo ono što joj je potrebno za rad u vašem pregledaču: prijavu, jezik i podešavanja interfejsa. Uz vašu dozvolu uključićemo i prijavu preko Google-a — Google zatim postavlja sopstvene kolačiće. Ne koristimo analitiku ni oglašavanje.
+banner.policy	Politika kolačića
+actions.accept	Prihvati sve
+actions.reject	Odbij sve
+actions.save	Sačuvaj izbor
+actions.settings	Podešavanja
+settings.title	Podešavanja kolačića
+settings.subtitle	Važi za ovaj pregledač. Izbor možete promeniti u bilo kom trenutku.
+settings.alwaysOn	Uvek uključeno
+settings.necessary.title	Strogo neophodni
+settings.necessary.text	Održavaju vas prijavljenim, pamte jezik, temu i izbor i štite plaćanja i uslugu od zloupotrebe. Velora ne može da radi bez njih.
+settings.functional.title	Prijava preko Google-a
+settings.functional.text	Učitava Google uslugu za prijavu da biste mogli da koristite svoj Google nalog. Google može postaviti sopstvene kolačiće i saznati da ste otvorili stranicu za prijavu.
+settings.none	Ne koristimo kolačiće za analitiku, oglašavanje ili praćenje.
+settings.decided	Vaš izbor od {{date}}
+settings.policy	Potpuna lista u Politici kolačića
+google.button	Nastavi sa Google-om
+google.notice	Klik aktivira prijavu preko Google-a: Google usluga se učitava i može postaviti kolačiće.
+google.policy	Detalji
+profile.button	Podešavanja kolačića
+== es
+banner.title	Tu privacidad, tu elección
+banner.text	Velora conserva solo lo que necesita para funcionar en tu navegador: tu inicio de sesión, idioma y ajustes de interfaz. Con tu permiso también activaremos el inicio de sesión con Google; Google establecerá entonces sus propias cookies. No usamos analítica ni publicidad.
+banner.policy	Política de cookies
+actions.accept	Aceptar todas
+actions.reject	Rechazar todas
+actions.save	Guardar elección
+actions.settings	Configuración
+settings.title	Configuración de cookies
+settings.subtitle	Se aplica a este navegador. Puedes cambiar tu elección en cualquier momento.
+settings.alwaysOn	Siempre activadas
+settings.necessary.title	Estrictamente necesarias
+settings.necessary.text	Te mantienen conectado, recuerdan tu idioma, tema y elección, y protegen los pagos y el servicio frente al uso indebido. Velora no puede funcionar sin ellas.
+settings.functional.title	Iniciar sesión con Google
+settings.functional.text	Carga el servicio de inicio de sesión de Google para que puedas usar tu cuenta de Google. Google puede establecer sus propias cookies y saber que abriste la página de inicio de sesión.
+settings.none	No usamos cookies de analítica, publicidad ni seguimiento.
+settings.decided	Tu elección del {{date}}
+settings.policy	Lista completa en la Política de cookies
+google.button	Continuar con Google
+google.notice	Al hacer clic activas el inicio de sesión con Google: el servicio de Google se carga y puede establecer cookies.
+google.policy	Detalles
+profile.button	Configuración de cookies
+== sv
+banner.title	Din integritet, ditt val
+banner.text	Velora sparar bara det som behövs för att fungera i din webbläsare: din inloggning, ditt språk och gränssnittsinställningar. Med ditt tillstånd aktiverar vi även Google-inloggning — Google sätter då sina egna cookies. Vi använder varken analys eller annonsering.
+banner.policy	Cookiepolicy
+actions.accept	Acceptera alla
+actions.reject	Avvisa alla
+actions.save	Spara val
+actions.settings	Inställningar
+settings.title	Cookieinställningar
+settings.subtitle	Gäller den här webbläsaren. Du kan ändra ditt val när som helst.
+settings.alwaysOn	Alltid aktiva
+settings.necessary.title	Strikt nödvändiga
+settings.necessary.text	Håller dig inloggad, kommer ihåg ditt språk, tema och val och skyddar betalningar och tjänsten mot missbruk. Velora kan inte fungera utan dem.
+settings.functional.title	Logga in med Google
+settings.functional.text	Laddar Googles inloggningstjänst så att du kan använda ditt Google-konto. Google kan sätta egna cookies och få veta att du öppnade inloggningssidan.
+settings.none	Vi använder inga cookies för analys, annonsering eller spårning.
+settings.decided	Ditt val från {{date}}
+settings.policy	Fullständig lista i cookiepolicyn
+google.button	Fortsätt med Google
+google.notice	Ett klick aktiverar Google-inloggning: Googles tjänst laddas och kan sätta cookies.
+google.policy	Detaljer
+profile.button	Cookieinställningar
+== tr
+banner.title	Gizliliğiniz, seçiminiz
+banner.text	Velora tarayıcınızda çalışmak için yalnızca gerekenleri saklar: oturum açma, dil ve arayüz ayarları. İzninizle Google ile oturum açmayı da etkinleştiririz — Google daha sonra kendi çerezlerini ayarlar. Analiz veya reklam kullanmıyoruz.
+banner.policy	Çerez politikası
+actions.accept	Tümünü kabul et
+actions.reject	Tümünü reddet
+actions.save	Seçimi kaydet
+actions.settings	Ayarlar
+settings.title	Çerez ayarları
+settings.subtitle	Bu tarayıcı için geçerlidir. İstediğiniz zaman değiştirebilirsiniz.
+settings.alwaysOn	Her zaman açık
+settings.necessary.title	Kesinlikle gerekli
+settings.necessary.text	Oturumunuzu açık tutar, dilinizi, temanızı ve seçiminizi hatırlar; ödemeleri ve hizmeti kötüye kullanıma karşı korur. Velora bunlar olmadan çalışamaz.
+settings.functional.title	Google ile oturum aç
+settings.functional.text	Google hesabınızı kullanabilmeniz için Google oturum açma hizmetini yükler. Google kendi çerezlerini ayarlayabilir ve oturum açma sayfasını açtığınızı öğrenebilir.
+settings.none	Analiz, reklam veya izleme çerezleri kullanmıyoruz.
+settings.decided	{{date}} tarihindeki seçiminiz
+settings.policy	Tam liste Çerez politikasında
+google.button	Google ile devam et
+google.notice	Tıklamak Google ile oturum açmayı etkinleştirir: Google hizmeti yüklenir ve çerez ayarlayabilir.
+google.policy	Ayrıntılar
+profile.button	Çerez ayarları

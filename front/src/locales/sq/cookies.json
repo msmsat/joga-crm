@@ -1,0 +1,37 @@
+{
+  "banner": {
+    "title": "Privatësia juaj, zgjedhja juaj",
+    "text": "Velora ruan vetëm atë që i nevojitet për të funksionuar në shfletuesin tuaj: hyrjen, gjuhën dhe cilësimet e ndërfaqes. Me lejen tuaj do të aktivizojmë edhe hyrjen me Google — Google më pas vendos cookie-t e veta. Nuk përdorim analitikë apo reklama.",
+    "policy": "Politika e cookie-ve"
+  },
+  "actions": {
+    "accept": "Prano të gjitha",
+    "reject": "Refuzo të gjitha",
+    "save": "Ruaj zgjedhjen",
+    "settings": "Cilësimet"
+  },
+  "settings": {
+    "title": "Cilësimet e cookie-ve",
+    "subtitle": "Zbatohen për këtë shfletues. Mund t'i ndryshoni në çdo kohë.",
+    "alwaysOn": "Gjithmonë aktive",
+    "necessary": {
+      "title": "Rreptësisht të nevojshme",
+      "text": "Ju mbajnë të identifikuar, kujtojnë gjuhën, temën dhe zgjedhjen tuaj këtu, si dhe mbrojnë pagesat dhe shërbimin nga keqpërdorimi. Velora nuk mund të funksionojë pa to."
+    },
+    "functional": {
+      "title": "Hyrje me Google",
+      "text": "Ngarkon shërbimin e hyrjes së Google që të përdorni llogarinë tuaj Google. Google mund të vendosë cookie-t e veta dhe të mësojë se keni hapur faqen e hyrjes."
+    },
+    "none": "Pa cookie për analitikë, reklama ose gjurmim — nuk i përdorim.",
+    "decided": "Zgjedhja juaj më {{date}}",
+    "policy": "Lista e plotë në Politikën e cookie-ve"
+  },
+  "google": {
+    "button": "Vazhdo me Google",
+    "notice": "Klikimi aktivizon hyrjen me Google: shërbimi i Google ngarkohet dhe mund të vendosë cookie.",
+    "policy": "Detaje"
+  },
+  "profile": {
+    "button": "Cilësimet e cookie-ve"
+  }
+}

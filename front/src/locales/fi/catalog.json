@@ -1,0 +1,315 @@
+{
+  "tabs": {
+    "studios": "Studiot",
+    "services": "Palvelut",
+    "subscriptions": "Jäsenyydet"
+  },
+  "modals": {
+    "addStudio": {
+      "steps": {
+        "about": {
+          "title": "Tietoa studiosta",
+          "sub": "Nimi ja yhteystiedot",
+          "trust": "Tietosi salataan, eikä niitä koskaan jaeta kolmansille osapuolille"
+        },
+        "location": {
+          "title": "Sijainti",
+          "sub": "Missä tämä toimipiste sijaitsee?",
+          "trust": "Osoitetta käytetään kalenterissa ja kartoissa"
+        },
+        "photo": {
+          "title": "Kuva",
+          "sub": "Studion kansikuva — valinnainen",
+          "trust": "Voit lisätä sen myöhemmin toimipisteen asetuksissa"
+        }
+      },
+      "stepCounter": "Vaihe {{current}} / {{total}}",
+      "step1": {
+        "heading": "Perustiedot",
+        "subheading": "Mikä studion nimi on ja miten siihen saa yhteyden?",
+        "name": "Studion nimi *",
+        "namePlaceholder": "Esim. Velora Studio",
+        "phone": "Puhelin *",
+        "email": "Sähköposti *",
+        "contactHint": "Anna puhelinnumero tai sähköposti — vähintään toinen",
+        "noContacts": "Yhteystietoja ei annettu",
+        "new": "UUSI"
+      },
+      "step2": {
+        "heading": "Sijainti",
+        "subheading": "Määritä, missä tämä toimipiste sijaitsee",
+        "country": "Maa",
+        "countryPlaceholder": "Yhdysvallat",
+        "city": "Kaupunki *",
+        "cityPlaceholder": "New York",
+        "address": "Osoite *",
+        "addressPlaceholder": "5th Avenue 12, huoneisto 301",
+        "noAddress": "Osoitetta ei annettu",
+        "groupHint": "Kenttiä ”Maa” ja ”Kaupunki” käytetään toimipisteiden ryhmittelyyn luettelossa."
+      },
+      "step3": {
+        "heading": "Studion kuva",
+        "subheading": "Lataa kansikuva — se on valinnainen, voit ohittaa sen",
+        "uploadCta": "Lataa napsauttamalla",
+        "uploadHint": "JPG, PNG, enintään 10 Mt",
+        "replace": "Vaihda",
+        "remove": "Poista",
+        "previewAlt": "Esikatselu",
+        "summary": "Yhteenveto",
+        "uploadError": "Kuvan lataus epäonnistui. Kokeile toista tiedostoa tai poista kuva."
+      },
+      "summaryRows": {
+        "name": "Nimi",
+        "city": "Kaupunki",
+        "address": "Osoite"
+      },
+      "nextPhoto": "Seuraava — kuva",
+      "submit": "Luo studio",
+      "skipPhoto": "Ohita kuva ja luo",
+      "illus": {
+        "contacts": "Yhteystiedot",
+        "newBranch": "Uusi toimipiste",
+        "city": "Kaupunki",
+        "newBranchStudio": "Uusi studiotoimipiste"
+      }
+    },
+    "editBranch": {
+      "title": "Muokkaa toimipistettä",
+      "name": "Toimipisteen nimi",
+      "namePlaceholder": "Velora Studio",
+      "phone": "Puhelin",
+      "email": "Sähköposti",
+      "emailPlaceholder": "studio@velora.com",
+      "country": "Maa",
+      "countryPlaceholder": "Yhdysvallat",
+      "city": "Kaupunki",
+      "cityPlaceholder": "New York",
+      "address": "Osoite",
+      "addressPlaceholder": "5th Avenue 12",
+      "photo": "Toimipisteen kuva",
+      "contactHint": "Anna puhelinnumero tai sähköposti",
+      "workingHours": "Aukioloajat"
+    },
+    "hall": {
+      "titleNew": "Lisää {{spaceAcc}}",
+      "titleEdit": "Muokkaa {{spaceAcc}}",
+      "name": "Nimi",
+      "namePlaceholder": "{{space, capitalize}} A",
+      "capacity": "Kapasiteetti",
+      "area": "Pinta-ala, m²",
+      "hourlyRate": "Tuntihinta, {{currency}}",
+      "hourlyRatePlaceholder": "3000",
+      "equipment": "Varusteet",
+      "equipmentPlaceholder": "Lisää varusteita",
+      "color": "Väri",
+      "isOnline": "Verkossa",
+      "photo": "Kuva",
+      "subtitle": "{{space, capitalize}} toimipisteessä: paikat, varusteet, kalenterin väri",
+      "previewTitle": "Esikatselu",
+      "sectionBasic": "Perustiedot",
+      "sectionSpace": "Tila",
+      "sectionLook": "Ulkoasu",
+      "areaShort": "Pinta-ala",
+      "hourlyRateShort": "Tuntihinta",
+      "statArea": "Pinta-ala",
+      "statRate": "Hinta / tunti",
+      "isOnlineHint": "Tunnit pidetään verkossa — fyysistä tilaa ei ole.",
+      "colorHint": "Tässä pidettävät tunnit korostetaan tällä värillä kalenterissa."
+    },
+    "service": {
+      "titleNew": "Uusi palvelu",
+      "titleEdit": "Muokkaa palvelua",
+      "name": "Palvelun nimi",
+      "namePlaceholder": "Hatha-jooga",
+      "category": "Luokka",
+      "type": "Tyyppi",
+      "typeGroup": "Ryhmä",
+      "typeIndividual": "Yksilö",
+      "price": "Hinta, {{currency}}",
+      "pricePlaceholder": "1200",
+      "duration": "Kesto, min",
+      "durationPlaceholder": "60",
+      "maxClients": "Enimmäismäärä asiakkaita",
+      "maxClientsPlaceholder": "15",
+      "description": "Kuvaus",
+      "descriptionPlaceholder": "Lyhyt palvelukuvaus",
+      "color": "Väri",
+      "subtitle": "Näkyy kalenterissa ja verkkoajanvarauksessa",
+      "previewTitle": "Kalenterin esikatselu",
+      "sectionBasic": "Perustiedot",
+      "sectionPricing": "Hinta ja aika",
+      "sectionLook": "Ulkoasu",
+      "priceShort": "Hinta",
+      "durationShort": "Kesto",
+      "statSeats": "Paikat",
+      "colorHint": "Tunnit korostetaan tällä värillä kalenteriruudukossa.",
+      "bookingMode": "Varaustapa",
+      "bookingModeEvent": "Ilmoittautuminen",
+      "bookingModeResource": "Valitse aika",
+      "bookingModeEventHint": "Asiakkaat ilmoittautuvat jo kalenteriin merkittyyn tuntiin.",
+      "bookingModeResourceHint": "Asiakas valitsee asiantuntijan ja vapaan ajan; {{offering}}-väli luodaan vahvistettaessa.",
+      "bookable": "Varattavissa",
+      "bookableOn": "Kyllä",
+      "bookableOff": "Ei",
+      "bufferBefore": "Puskuri ennen",
+      "bufferAfter": "Puskuri jälkeen"
+    },
+    "package": {
+      "titleNew": "Uusi paketti",
+      "titleEdit": "Muokkaa pakettia",
+      "name": "Paketin nimi",
+      "namePlaceholder": "8 tuntia",
+      "classCount": "Tuntien määrä",
+      "classCountPlaceholder": "8",
+      "price": "Hinta, {{currency}}",
+      "pricePlaceholder": "8000",
+      "perVisitPrice": "Hinta käynniltä",
+      "durationDays": "Voimassa, päivää",
+      "durationDaysPlaceholder": "60",
+      "services": "Palvelut",
+      "servicesHint": "Mitään ei valittu — paketti koskee kaikkia tunteja",
+      "isActive": "Myynnissä",
+      "soldAsSubscription": "Näytä ”Jäsenyydet”-välilehdessä",
+      "soldAsSingle": "Näytä ”Yksittäiset käynnit” -välilehdessä",
+      "subtitle": "Tuntipaketti, jonka myyt asiakkaille",
+      "previewTitle": "Passin esikatselu",
+      "previewKind": "Passi",
+      "previewValid": "Voimassa",
+      "sectionBasic": "Perustiedot",
+      "sectionTerms": "Ehdot",
+      "sectionSale": "Myynti",
+      "priceShort": "Paketin hinta",
+      "statClasses": "Tunnit",
+      "statDays": "Päivät",
+      "statAll": "Kaikki",
+      "isActiveHint": "Asiakkaat voivat nähdä ja ostaa tämän paketin.",
+      "soldAsSubscriptionHint": "Muuten paketti jää vain yksittäisiin käynteihin."
+    }
+  },
+  "studios": {
+    "title": "STUDIOT",
+    "addStudio": "Lisää studio",
+    "addHall": "Lisää {{spaceAcc}}",
+    "editBranch": "Muokkaa toimipistettä",
+    "deleteBranch": "Poista toimipiste",
+    "infoTab": "Yleistiedot",
+    "hallsTitle": "Studion {{spacePlural}}",
+    "hallCount_one": "{{spacePlural, capitalize}} · {{count}}",
+    "hallCount_other": "{{spacePlural, capitalize}} · {{count}}",
+    "stats": {
+      "halls": "{{spacePlural, capitalize}}",
+      "totalSeats": "Paikkoja yhteensä",
+      "fromPerHour": "Alkaen / tunti"
+    },
+    "hall": {
+      "seats": "paikkaa",
+      "schedule": "Aukioloajat",
+      "closed": "Suljettu",
+      "stats": {
+        "seats": "Paikat",
+        "area": "Pinta-ala",
+        "perHour": "Tunnissa"
+      },
+      "equipment": "Varusteet",
+      "actions": "Toiminnot",
+      "edit": "Muokkaa {{spaceAcc}}",
+      "delete": "Poista {{spaceAcc}}"
+    },
+    "empty": {
+      "title": "Ei studioita",
+      "subtitle": "Lisää ensimmäinen studiosi"
+    },
+    "toasts": {
+      "created": "Studio luotu",
+      "createError": "Studion luonti epäonnistui",
+      "deleted": "Studio poistettu",
+      "hallDeleted": "Poistettu: {{space}}",
+      "saved": "Tallennettu",
+      "edit": "Muokkaa: {{name}}"
+    },
+    "confirmDelete": "Poistetaanko toimipiste ”{{name}}”? Toimintoa ei voi perua.",
+    "confirmDeleteTitle": "Poistetaanko toimipiste?",
+    "confirmDeleteHall": "Poistetaanko {{spaceAcc}} ”{{name}}”?",
+    "confirmDeleteHallTitle": "Poistetaanko {{spaceAcc}}?"
+  },
+  "services": {
+    "title": "PALVELUT",
+    "addService": "Lisää palvelu",
+    "types": {
+      "group": "Ryhmä",
+      "individual": "Yksilö",
+      "groupFull": " · Ryhmä",
+      "individualFull": " · Yksilö"
+    },
+    "stats": {
+      "price": "Hinta",
+      "duration": "Kesto",
+      "bookings": "Varaukset",
+      "revenue": "Tuotot"
+    },
+    "details": {
+      "description": "Kuvaus",
+      "details": "Tiedot",
+      "minutes": "minuuttia",
+      "upTo": "Enintään {{count}} hlöä",
+      "personal": "Yksilöllinen",
+      "bookingsPerMonth": "varausta 30 päivässä",
+      "schedule": "Tuntikalenteri"
+    },
+    "empty": {
+      "title": "Ei palveluita",
+      "subtitle": "Lisää ensimmäinen palvelusi"
+    },
+    "toasts": {
+      "deleted": "Palvelu poistettu",
+      "deleteError": "Palvelun poisto epäonnistui",
+      "saved": "Tallennettu",
+      "saveError": "Palvelun tallennus epäonnistui",
+      "edit": "Muokkaa: {{name}}"
+    },
+    "confirmDelete": "Poistetaanko palvelu ”{{name}}”?",
+    "confirmDeleteTitle": "Poistetaanko palvelu?",
+    "categories": {
+      "yoga": "Jooga",
+      "pilates": "Pilates",
+      "stretching": "Venyttely",
+      "individual": "Yksilöllinen",
+      "other": "Luokittelematon"
+    }
+  },
+  "subscriptions": {
+    "title": "JÄSENYYDET",
+    "addPackage": "Lisää paketti",
+    "card": {
+      "classCount_one": "{{count}} tunti",
+      "classCount_other": "{{count}} tuntia",
+      "duration": "{{count}} päivää",
+      "allServices": "Kaikki tunnit",
+      "serviceCount_one": "{{count}} palvelu",
+      "serviceCount_other": "{{count}} palvelua",
+      "inactiveBadge": "Poistettu myynnistä"
+    },
+    "settings": {
+      "title": "Ohjelman asetukset",
+      "allowFreeze": "Jäsenyyden jäädytys",
+      "allowTransfer": "Siirto toiselle asiakkaalle",
+      "autoRenewal": "Automaattinen uusinta asiakkaan talletuksesta"
+    },
+    "empty": {
+      "title": "Paketteja ei vielä ole",
+      "cta": "Luo paketti"
+    },
+    "toasts": {
+      "created": "Paketti luotu",
+      "saved": "Tallennettu",
+      "saveError": "Paketin tallennus epäonnistui",
+      "deactivated": "Paketti poistettu myynnistä",
+      "restored": "Paketti palautettu myyntiin",
+      "actionError": "Toimintoa ei voitu suorittaa"
+    },
+    "deactivate": "Poista myynnistä",
+    "restore": "Palauta myyntiin",
+    "confirmDeactivateTitle": "Poistetaanko tämä paketti myynnistä?",
+    "confirmDeactivate": "Jo myydyt jäsenyydet toimivat edelleen."
+  }
+}

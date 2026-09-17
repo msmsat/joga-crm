@@ -1,0 +1,310 @@
+== fr
+categories.all	Tous
+categories.vip	VIP
+categories.active	Actifs
+categories.new	Nouveaux
+categories.has_subscription	Avec abonnement
+categories.inactive	Inactifs
+categories.frozen	Gelés
+categories.birthday	Anniversaire
+categoriesInfo.all.text	La liste complète des clients du studio, sans filtre de statut.
+categoriesInfo.vip.text	Paiements réussis totalisant 50 000+ ou 30+ visites. Le statut VIP peut aussi être épinglé manuellement dans la fiche client ; cet épinglage reste actif quels que soient les montants.
+categoriesInfo.active.text	Au moins une visite au cours des 60 derniers jours. Calculé à partir des présences marquées dans le journal : le statut se met à jour automatiquement, sans action manuelle.
+categoriesInfo.new.text	Les 15 premiers jours suivant l'inscription, que le client ait été ajouté manuellement ou soit arrivé via la réservation en ligne. Au 16e jour, il passe automatiquement à Actif ou Inactif.
+categoriesInfo.has_subscription.text	Dispose d'un abonnement actif : non expiré, non gelé et avec des cours restants. Mis à jour immédiatement à l'achat, après chaque cours utilisé et à l'expiration.
+categoriesInfo.inactive.text	Aucune visite depuis 60 jours, ou aucune visite du tout plus de 15 jours après l'inscription.
+categoriesInfo.frozen.text	Gelé via le bouton de la fiche client : le seul statut défini manuellement. Après dégel, le client retrouve son statut automatique.
+categoriesInfo.birthday.text	Dont l'anniversaire est aujourd'hui : le jour et le mois correspondent, l'année est ignorée. La liste s'actualise chaque jour automatiquement.
+status.active	Actif
+status.vip	VIP
+status.new	Nouveau
+status.inactive	Inactif
+status.frozen	Gelé
+filtersGuide.trigger	À propos des filtres
+filtersGuide.title	Filtres clients
+filtersGuide.subtitle	Mode de calcul de chaque catégorie. Cliquez sur une carte pour appliquer le filtre, ou modifiez un seuil : les statuts sont recalculés immédiatement.
+filtersGuide.close	Fermer
+filtersGuide.rule.new_client_days	Nouveau pendant
+filtersGuide.rule.active_within_days	Visite au cours des
+filtersGuide.rule.vip_min_spent	Dépensé à partir de
+filtersGuide.rule.vip_min_visits	ou visites
+filtersGuide.unit.days	jours
+filtersGuide.unit.money	
+filtersGuide.unit.visits	visites
+toolbar.searchPlaceholder	Rechercher un client…
+toolbar.addClient	Ajouter un client
+table.visits	visites
+table.frozenBadge	❄ gelé
+table.totalSpent	Total dépensé
+table.subscription	Abonnement
+table.of	sur
+table.noSubscription	Aucun abonnement
+loadMore	Afficher plus
+loading	Chargement…
+panel.tabs.info	Profil
+panel.tabs.events	Événements
+panel.tabs.notes	Notes
+panel.tabs.wallet	Achats
+panel.actions.book	Réserver
+panel.actions.bonus	Bonus
+panel.editDateHint	Cliquez pour modifier
+panel.since	depuis le {{date}}
+panel.contacts.title	Coordonnées
+panel.contacts.phone	Téléphone
+panel.contacts.email	E-mail
+panel.contacts.telegram	Telegram
+panel.contacts.birthDate	Date de naissance
+panel.contacts.city	Ville
+panel.contacts.copyHint	 · cliquez pour copier
+panel.debt	{{amount}} impayés pour des cours — acceptez le paiement dans le Journal
+panel.stats.visits	Visites
+panel.stats.spent	Dépensé
+panel.stats.subscription	Abonnement
+panel.loyalty.points	points
+panel.loyalty.level	niveau {{tier}}
+panel.loyalty.toNext	Jusqu'au niveau suivant : {{points}} points
+panel.loyalty.multiplier	multiplicateur de points ×{{value}}
+panel.loyalty.worth	Valeur de {{amount}} au paiement
+panel.loyalty.toNextLevel	Encore {{amount}} pour atteindre {{level}}
+panel.loyalty.pointValue	1 point = {{amount}}
+panel.loyalty.nextPointValue	au niveau {{level}} — {{amount}}
+panel.loyalty.noBonus	Ce niveau ne modifie pas la valeur des points
+panel.referral.title	Inviter un ami
+panel.referral.copy	Copier
+panel.abonement.title	Abonnement
+panel.abonement.lessons	{{remaining}}/{{total}} cours
+panel.abonement.noSubscription	Aucun abonnement actif
+panel.abonement.noSubscriptionWarning	Le client n'a pas d'abonnement — proposez-en un
+panel.abonement.lowWarning	Il reste peu de cours — proposez un renouvellement
+panel.abonement.finishedWarning	Il ne reste plus de cours — proposez un renouvellement
+panel.abonement.remind	Rappeler au client
+panel.abonement.reminderSent	Rappel envoyé au client
+panel.products.single	à l'unité
+panel.products.pending	en attente
+panel.products.frozen	gelé
+panel.products.until	Valable jusqu'au {{date}}
+panel.products.startsOnFirstVisit	La période commence au premier cours
+panel.wallet.buy	Acheter
+panel.wallet.active	Actifs
+panel.wallet.archived	Archivés
+panel.wallet.singles	Visites à l'unité
+panel.wallet.subscriptions	Abonnements
+panel.wallet.noSingles	Pas encore de visites à l'unité
+panel.wallet.emptyActive	Aucun produit actif
+panel.wallet.emptyArchived	Aucun produit archivé
+panel.wallet.emptyCatalog	Ce studio n'a pas encore de formules d'abonnement
+panel.wallet.lessons	{{remaining}}/{{total}} cours
+panel.wallet.lessonsCount_one	{{count}} cours
+panel.wallet.lessonsCount_other	{{count}} cours
+panel.wallet.perVisit	Par visite à l'unité
+panel.wallet.until	jusqu'au {{date}}
+panel.wallet.frozenBadge	Gelé
+panel.wallet.loadFailed	Impossible de charger le portefeuille
+panel.wallet.back	← Retour
+panel.wallet.catalogTitle	Catalogue
+panel.wallet.showAll	Tous
+panel.wallet.posTitle	Paiement
+panel.wallet.promoLabel	Code promo
+panel.wallet.promoPlaceholder	Saisir le code promo
+panel.wallet.promoInvalid	Le code promo n'est pas valide
+panel.wallet.useBonuses_one	Utiliser les bonus ({{count}})
+panel.wallet.useBonuses_other	Utiliser les bonus ({{count}})
+panel.wallet.useDeposit	Payer depuis le dépôt ({{amount}})
+panel.wallet.certLabel	Code du certificat
+panel.wallet.certPlaceholder	Saisir le code du certificat
+panel.wallet.certApplied	Certificat
+panel.wallet.depositApplied	Dépôt
+panel.wallet.base	Prix de base
+panel.wallet.discount	Réduction
+panel.wallet.bonuses	Bonus
+panel.wallet.bonusesSpent_one	Bonus ({{count}} pt)
+panel.wallet.bonusesSpent_other	Bonus ({{count}} pts)
+panel.wallet.total	Total
+panel.wallet.cash	Espèces
+panel.wallet.card	Carte
+panel.wallet.cardStripe	Les paiements par carte passent par une page Stripe et arrivent directement sur le compte du studio. Configurez-les dans Finances → Paiements en ligne.
+panel.wallet.offlineLocked	Les paiements en espèces sont disponibles avec les forfaits Combo et supérieurs
+panel.wallet.payByCard	Payer par carte
+panel.wallet.confirmPay	Confirmer le paiement
+panel.wallet.confirmPayCovered	Confirmer (déjà payé)
+panel.wallet.confirmTitle	Confirmer la réception du paiement ?
+panel.wallet.confirmMessage	Cette opération enregistrera un revenu de {{amount}} et attribuera le produit au client.
+panel.wallet.confirmMessageCard	Un formulaire de paiement Stripe pour {{amount}} va s'ouvrir. Le produit est attribué et le revenu enregistré une fois le paiement réussi.
+panel.wallet.payToStudio	Le paiement arrive sur le compte du studio
+panel.wallet.payConfirming	Vérification du paiement…
+panel.wallet.close	Fermer
+panel.wallet.confirmMessageCovered	Le paiement est entièrement couvert par le dépôt ou le certificat. Le produit sera attribué au client.
+panel.wallet.paySuccess	Paiement enregistré
+panel.wallet.payCancelled	Paiement annulé — aucun débit n'a été effectué
+panel.wallet.payNotCompleted	Stripe n'a pas encore confirmé le paiement. Si la carte a été débitée, actualisez dans une minute.
+panel.wallet.payNotApplied	La carte a été débitée, mais la vente n'a pas pu être enregistrée : les conditions ont changé (certificat, code promo ou formule). Enregistrez la vente manuellement ou remboursez-la dans Stripe.
+panel.wallet.transfer	Transférer
+panel.wallet.transferTitle	Transférer l'abonnement
+panel.wallet.transferSearchLabel	Transférer à
+panel.wallet.transferSearchPlaceholder	Nom ou téléphone du client
+panel.wallet.transferSelectPlaceholder	Sélectionner un client
+panel.wallet.transferConfirm	Transférer
+panel.wallet.transferSuccess	Abonnement transféré
+panel.offers.title	Réduction personnelle
+panel.offers.empty	Aucune réduction active
+panel.offers.grant	Accorder une réduction
+panel.offers.cancel	Annuler
+panel.offers.valuePercent	{{value}} %
+panel.offers.valueAmount	{{value}} ₽
+panel.offers.untilDate	jusqu'au {{date}}
+panel.offers.noExpiry	sans expiration
+panel.offers.scopeRenewal	pour le renouvellement
+panel.offers.grantTitle	Accorder une réduction personnelle
+panel.offers.grantValue	Montant de la réduction
+panel.offers.grantType.percent	Pourcentage (%)
+panel.offers.grantType.amount	Montant (₽)
+panel.offers.grantValidUntil	Valable jusqu'au
+panel.offers.grantSubmit	Accorder
+panel.offers.cancelConfirmTitle	Annuler la réduction ?
+panel.offers.cancelConfirmMessage	Le client ne pourra plus utiliser cette offre.
+panel.offers.toasts.granted	Réduction accordée
+panel.offers.toasts.cancelled	Réduction annulée
+panel.offers.toasts.loadFailed	Impossible de charger les réductions
+panel.activity.compactTitle	Activité (3 mois)
+panel.activity.clickForDetails	Cliquez pour les détails
+panel.activity.detailedTitle	Activité détaillée
+panel.activity.periods.month3	3 mois
+panel.activity.periods.month6	6 mois
+panel.activity.visitsInPeriod	Visites sur la période
+panel.activity.visitsTooltip_one	{{count}} visite
+panel.activity.visitsTooltip_other	{{count}} visites
+panel.activity.emptyState	Aucune visite sur cette période
+panel.activity.insightTitle	Fréquentation moyenne
+panel.activity.insightBody	{{avg}} visites par mois en moyenne sur la période sélectionnée.
+panel.activity.months.jan	janv.
+panel.activity.months.feb	févr.
+panel.activity.months.mar	mars
+panel.activity.months.apr	avr.
+panel.activity.months.may	mai
+panel.activity.months.jun	juin
+panel.activity.months.jul	juil.
+panel.activity.months.aug	août
+panel.activity.months.sep	sept.
+panel.activity.months.oct	oct.
+panel.activity.months.nov	nov.
+panel.activity.months.dec	déc.
+panel.tags.title	Étiquettes
+panel.tags.add	Ajouter
+panel.tags.close	Fermer
+panel.tags.customPlaceholder	Étiquette personnalisée + Entrée…
+panel.danger.freeze	Geler
+panel.danger.unfreeze	Dégeler
+panel.danger.freezeDisabledHint	Le gel est désactivé dans Catalogue → paramètres des abonnements
+panel.danger.delete	Supprimer
+panel.events.filterTabs.all	Tous
+panel.events.filterTabs.payment	Paiements
+panel.events.filterTabs.visit	Visites
+panel.events.filterTabs.booking	Réservations
+panel.events.filterTabs.cancel	Annulations
+panel.events.filterTabs.bonus	Bonus
+panel.events.filterTabs.freeze	Gels
+panel.events.empty	Aucun événement
+panel.notes.title	Notes administratives
+panel.notes.prefix	Note · {{date}}
+panel.notes.save	Enregistrer
+panel.notes.cancel	Annuler
+panel.notes.addPlaceholder	Saisir une note…
+panel.notes.add	Ajouter une note
+panel.notes.justNow	à l'instant
+panel.notes.deleteTitle	Supprimer la note ?
+panel.notes.deleteMessage	Cette note ne peut pas être récupérée.
+panel.bookingPanel.title	Réservation rapide
+panel.bookingPanel.today	Aujourd'hui
+panel.bookingPanel.noLessons	Aucun cours ce jour-là
+panel.bookingPanel.full	Aucune place
+panel.bookingPanel.confirm	Réserver →
+panel.bookingPanel.noSubscription	Le client n'a pas d'abonnement disponible pour réserver
+panel.bookingPanel.individual	Service individuel
+panel.bonusPanel.title	Accorder un bonus
+panel.toasts.noPhone	Le client n'a pas de numéro de téléphone
+panel.toasts.copied	Copié avec succès
+panel.toasts.bookingCreated	Réservation créée
+panel.toasts.bookingFailed	Impossible de réserver
+panel.toasts.bonusFailed	Impossible d'accorder les points
+panel.toasts.bonusApplied	Bonus accordé : {{label}}
+panel.toasts.clientAdded	Client ajouté
+panel.bonusOptions.p200.label	+200 points
+panel.bonusOptions.p200.description	Ajouter au solde de fidélité
+panel.bonusOptions.p500.label	+500 points
+panel.bonusOptions.p500.description	Ajouter au solde de fidélité
+panel.bonusOptions.p1000.label	+1 000 points
+panel.bonusOptions.p1000.description	Ajouter au solde de fidélité
+tags.suggested.0	Essai
+tags.suggested.1	VIP
+tags.suggested.2	Parrainage
+tags.suggested.3	En ligne
+tags.suggested.4	Groupe
+tags.suggested.5	Personnel
+addModal.title	Nouveau client
+addModal.cancel	Annuler
+addModal.back	← Retour
+addModal.continue	Continuer →
+addModal.submit	Ajouter le client ✓
+addModal.stepCounter	Étape {{current}} sur {{total}}
+addModal.trustSignal	Les données sont protégées et visibles uniquement par les administrateurs
+addModal.steps.1.title	Informations personnelles
+addModal.steps.1.sub	Saisissez les coordonnées du client
+addModal.steps.2.title	Détails du profil
+addModal.steps.2.sub	Informations supplémentaires (facultatif)
+addModal.steps.3.title	Abonnement
+addModal.steps.3.sub	Choisissez un type d'abonnement et ajoutez une note
+addModal.steps.4.title	Tout est prêt !
+addModal.steps.4.sub	Vérifiez les informations et ajoutez le client
+addModal.step1.previewLabel	Nouveau client · Aperçu
+addModal.step1.name	Nom complet *
+addModal.step1.namePlaceholder	Jean Dupont
+addModal.step1.phone	Téléphone
+addModal.step1.phonePlaceholder	+33 6 00 00 00 00
+addModal.step1.email	E-mail
+addModal.step1.emailPlaceholder	client@exemple.fr
+addModal.step2.bday	Date de naissance
+addModal.step2.bdayPlaceholder	12 avril 1990
+addModal.step2.city	Ville
+addModal.step2.cityPlaceholder	Paris
+addModal.step2.tags	Étiquettes
+addModal.step2.tagsPlaceholder	Pilates, VIP, rééducation… (Entrée)
+addModal.step2.tagsHint	Appuyez sur Entrée pour ajouter une étiquette
+addModal.step2.inviteCode	Code d'invitation du parrain
+addModal.step2.inviteCodePlaceholder	Facultatif
+addModal.step2.inviteCodeHint	S'il est renseigné, vous recevez tous les deux un bonus
+addModal.step3.classCount	Abonnement
+addModal.step3.classesUnit	cours
+addModal.step3.classesCount_one	{{count}} cours
+addModal.step3.classesCount_other	{{count}} cours
+addModal.step3.selected	Sélectionné
+addModal.step3.noPackage	Aucun abonnement
+addModal.step3.noPackages	Ce studio n'a pas encore de formules d'abonnement
+addModal.step3.noPackagesLink	Créer des formules dans Catalogue →
+addModal.step3.alreadyPaid	Le client a-t-il déjà payé cet abonnement ?
+addModal.step3.yes	Oui
+addModal.step3.no	Non
+addModal.step3.note	Note
+addModal.step3.notePlaceholder	Demandes particulières, contre-indications, préférences…
+addModal.step4.readyTitle	Informations renseignées !
+addModal.step4.readySub	Vérifiez les informations et confirmez l'ajout
+addModal.step4.newClient	Nouveau client
+addModal.step4.fields.phone	Téléphone
+addModal.step4.fields.email	E-mail
+addModal.step4.fields.bday	Date de naissance
+addModal.step4.fields.city	Ville
+addModal.step4.fields.subscription	Abonnement
+addModal.step4.fields.tags	Étiquettes
+addModal.step4.subscriptionValue_one	{{count}} cours
+addModal.step4.subscriptionValue_other	{{count}} cours
+addModal.step4.smsTitle	Envoyer un SMS de bienvenue
+addModal.step4.smsSub	Le client recevra un message d'invitation
+addModal.errors.name	Saisissez un nom (au moins 2 caractères)
+addModal.errors.phone	Numéro de téléphone non valide
+addModal.errors.email	Adresse e-mail non valide
+addModal.errors.city	Saisissez une ville
+deleteModal.title	Supprimer le client ?
+deleteModal.body	Vous êtes sur le point de supprimer le client
+deleteModal.warning	Cette action est irréversible.
+deleteModal.cancel	Annuler
+deleteModal.confirm	Supprimer
+deleteModal.success	Client supprimé

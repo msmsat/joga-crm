@@ -1,0 +1,315 @@
+{
+  "tabs": {
+    "studios": "Студиа",
+    "services": "Услуги",
+    "subscriptions": "Абонаменти"
+  },
+  "modals": {
+    "addStudio": {
+      "steps": {
+        "about": {
+          "title": "За студиото",
+          "sub": "Име и контакти",
+          "trust": "Данните ви са криптирани и никога не се споделят с трети страни"
+        },
+        "location": {
+          "title": "Местоположение",
+          "sub": "Къде се намира този филиал?",
+          "trust": "Адресът се използва в графика и картите"
+        },
+        "photo": {
+          "title": "Снимка",
+          "sub": "Корица на студиото — по избор",
+          "trust": "Можете да я добавите по-късно в настройките на филиала"
+        }
+      },
+      "stepCounter": "Стъпка {{current}} от {{total}}",
+      "step1": {
+        "heading": "Основна информация",
+        "subheading": "Как се казва студиото и как да се свържем с него?",
+        "name": "Име на студиото *",
+        "namePlaceholder": "Напр. Velora Studio",
+        "phone": "Телефон *",
+        "email": "Имейл *",
+        "contactHint": "Въведете телефон или имейл — поне едно",
+        "noContacts": "Няма посочени контакти",
+        "new": "НОВО"
+      },
+      "step2": {
+        "heading": "Местоположение",
+        "subheading": "Посочете къде се намира този филиал",
+        "country": "Държава",
+        "countryPlaceholder": "Съединени щати",
+        "city": "Град *",
+        "cityPlaceholder": "Ню Йорк",
+        "address": "Адрес *",
+        "addressPlaceholder": "5th Avenue 12, офис 301",
+        "noAddress": "Няма посочен адрес",
+        "groupHint": "Полетата „Държава“ и „Град“ се използват за групиране на филиалите в списъка."
+      },
+      "step3": {
+        "heading": "Снимка на студиото",
+        "subheading": "Качете корица — по избор е, може да я пропуснете",
+        "uploadCta": "Щракнете за качване",
+        "uploadHint": "JPG, PNG до 10 MB",
+        "replace": "Замени",
+        "remove": "Премахни",
+        "previewAlt": "Преглед",
+        "summary": "Обобщение",
+        "uploadError": "Снимката не можа да се качи. Опитайте с друг файл или я премахнете."
+      },
+      "summaryRows": {
+        "name": "Име",
+        "city": "Град",
+        "address": "Адрес"
+      },
+      "nextPhoto": "Напред — снимка",
+      "submit": "Създай студио",
+      "skipPhoto": "Пропусни снимката и създай",
+      "illus": {
+        "contacts": "Контакти",
+        "newBranch": "Нов филиал",
+        "city": "Град",
+        "newBranchStudio": "Нов филиал на студиото"
+      }
+    },
+    "editBranch": {
+      "title": "Редактиране на филиал",
+      "name": "Име на филиала",
+      "namePlaceholder": "Velora Studio",
+      "phone": "Телефон",
+      "email": "Имейл",
+      "emailPlaceholder": "studio@velora.com",
+      "country": "Държава",
+      "countryPlaceholder": "Съединени щати",
+      "city": "Град",
+      "cityPlaceholder": "Ню Йорк",
+      "address": "Адрес",
+      "addressPlaceholder": "5th Avenue 12",
+      "photo": "Снимка на филиала",
+      "contactHint": "Въведете телефон или имейл",
+      "workingHours": "Работно време"
+    },
+    "hall": {
+      "titleNew": "Добавяне на {{spaceAcc}}",
+      "titleEdit": "Редактиране на {{spaceAcc}}",
+      "name": "Име",
+      "namePlaceholder": "{{space, capitalize}} A",
+      "capacity": "Капацитет",
+      "area": "Площ, m²",
+      "hourlyRate": "Цена на час, {{currency}}",
+      "hourlyRatePlaceholder": "3000",
+      "equipment": "Оборудване",
+      "equipmentPlaceholder": "Добавете оборудване",
+      "color": "Цвят",
+      "isOnline": "Онлайн",
+      "photo": "Снимка",
+      "subtitle": "{{space, capitalize}} във филиала: места, оборудване, цвят в графика",
+      "previewTitle": "Преглед",
+      "sectionBasic": "Основно",
+      "sectionSpace": "Пространство",
+      "sectionLook": "Изглед",
+      "areaShort": "Площ",
+      "hourlyRateShort": "Цена на час",
+      "statArea": "Площ",
+      "statRate": "Цена / час",
+      "isOnlineHint": "Занятията се провеждат онлайн — без физическо помещение.",
+      "colorHint": "Занятията тук се открояват с този цвят в графика."
+    },
+    "service": {
+      "titleNew": "Нова услуга",
+      "titleEdit": "Редактиране на услуга",
+      "name": "Име на услугата",
+      "namePlaceholder": "Хатха йога",
+      "category": "Категория",
+      "type": "Тип",
+      "typeGroup": "Групова",
+      "typeIndividual": "Индивидуална",
+      "price": "Цена, {{currency}}",
+      "pricePlaceholder": "1200",
+      "duration": "Продължителност, мин",
+      "durationPlaceholder": "60",
+      "maxClients": "Максимум клиенти",
+      "maxClientsPlaceholder": "15",
+      "description": "Описание",
+      "descriptionPlaceholder": "Кратко описание на услугата",
+      "color": "Цвят",
+      "subtitle": "Показва се в графика и онлайн записването",
+      "previewTitle": "Преглед на графика",
+      "sectionBasic": "Основно",
+      "sectionPricing": "Цена и време",
+      "sectionLook": "Изглед",
+      "priceShort": "Цена",
+      "durationShort": "Продължителност",
+      "statSeats": "Места",
+      "colorHint": "Занятията се открояват с този цвят в мрежата на графика.",
+      "bookingMode": "Механика на записването",
+      "bookingModeEvent": "Записване",
+      "bookingModeResource": "Изберете час",
+      "bookingModeEventHint": "Клиентите се записват за занятие, което вече сте насрочили.",
+      "bookingModeResourceHint": "Клиентът избира специалист и свободен час; интервалът {{offering}} се създава при потвърждение.",
+      "bookable": "Налично за записване",
+      "bookableOn": "Да",
+      "bookableOff": "Не",
+      "bufferBefore": "Буфер преди",
+      "bufferAfter": "Буфер след"
+    },
+    "package": {
+      "titleNew": "Нов пакет",
+      "titleEdit": "Редактиране на пакет",
+      "name": "Име на пакета",
+      "namePlaceholder": "8 занятия",
+      "classCount": "Брой занятия",
+      "classCountPlaceholder": "8",
+      "price": "Цена, {{currency}}",
+      "pricePlaceholder": "8000",
+      "perVisitPrice": "Цена на посещение",
+      "durationDays": "Валиден за, дни",
+      "durationDaysPlaceholder": "60",
+      "services": "Услуги",
+      "servicesHint": "Няма избрано — пакетът важи за всички занятия",
+      "isActive": "За продажба",
+      "soldAsSubscription": "Покажи в раздел „Абонаменти“",
+      "soldAsSingle": "Покажи в раздел „Единични посещения“",
+      "subtitle": "Пакет занятия, който продавате на клиенти",
+      "previewTitle": "Преглед на карта",
+      "previewKind": "Карта",
+      "previewValid": "Валиден за",
+      "sectionBasic": "Основно",
+      "sectionTerms": "Условия",
+      "sectionSale": "Продажби",
+      "priceShort": "Цена на пакета",
+      "statClasses": "Занятия",
+      "statDays": "Дни",
+      "statAll": "Всички",
+      "isActiveHint": "Клиентите могат да виждат и купуват този пакет.",
+      "soldAsSubscriptionHint": "В противен случай пакетът остава само при единичните посещения."
+    }
+  },
+  "studios": {
+    "title": "СТУДИА",
+    "addStudio": "Добави студио",
+    "addHall": "Добави {{spaceAcc}}",
+    "editBranch": "Редактиране на филиал",
+    "deleteBranch": "Изтриване на филиал",
+    "infoTab": "Обща информация",
+    "hallsTitle": "{{spacePlural, capitalize}} на студиото",
+    "hallCount_one": "{{spacePlural, capitalize}} · {{count}}",
+    "hallCount_other": "{{spacePlural, capitalize}} · {{count}}",
+    "stats": {
+      "halls": "{{spacePlural, capitalize}}",
+      "totalSeats": "Общо места",
+      "fromPerHour": "От / час"
+    },
+    "hall": {
+      "seats": "места",
+      "schedule": "Работно време",
+      "closed": "Затворено",
+      "stats": {
+        "seats": "Места",
+        "area": "Площ",
+        "perHour": "На час"
+      },
+      "equipment": "Оборудване",
+      "actions": "Действия",
+      "edit": "Редактиране на {{spaceAcc}}",
+      "delete": "Изтриване на {{spaceAcc}}"
+    },
+    "empty": {
+      "title": "Няма студиа",
+      "subtitle": "Добавете първото си студио"
+    },
+    "toasts": {
+      "created": "Студиото е създадено",
+      "createError": "Студиото не можа да се създаде",
+      "deleted": "Студиото е изтрито",
+      "hallDeleted": "Изтрито: {{space}}",
+      "saved": "Запазено",
+      "edit": "Редактиране: {{name}}"
+    },
+    "confirmDelete": "Да се изтрие ли филиалът „{{name}}“? Това не може да се отмени.",
+    "confirmDeleteTitle": "Да се изтрие ли филиалът?",
+    "confirmDeleteHall": "Да се изтрие ли {{spaceAcc}} „{{name}}“?",
+    "confirmDeleteHallTitle": "Да се изтрие ли {{spaceAcc}}?"
+  },
+  "services": {
+    "title": "УСЛУГИ",
+    "addService": "Добави услуга",
+    "types": {
+      "group": "Групова",
+      "individual": "Индив.",
+      "groupFull": " · Групова",
+      "individualFull": " · Индивидуална"
+    },
+    "stats": {
+      "price": "Цена",
+      "duration": "Продължителност",
+      "bookings": "Записвания",
+      "revenue": "Приход"
+    },
+    "details": {
+      "description": "Описание",
+      "details": "Подробности",
+      "minutes": "минути",
+      "upTo": "До {{count}} души",
+      "personal": "Индивидуална",
+      "bookingsPerMonth": "записвания за 30 дни",
+      "schedule": "График на занятията"
+    },
+    "empty": {
+      "title": "Няма услуги",
+      "subtitle": "Добавете първата си услуга"
+    },
+    "toasts": {
+      "deleted": "Услугата е изтрита",
+      "deleteError": "Услугата не можа да се изтрие",
+      "saved": "Запазено",
+      "saveError": "Услугата не можа да се запази",
+      "edit": "Редактиране: {{name}}"
+    },
+    "confirmDelete": "Да се изтрие ли услугата „{{name}}“?",
+    "confirmDeleteTitle": "Да се изтрие ли услугата?",
+    "categories": {
+      "yoga": "Йога",
+      "pilates": "Пилатес",
+      "stretching": "Разтягане",
+      "individual": "Индивидуална",
+      "other": "Без категория"
+    }
+  },
+  "subscriptions": {
+    "title": "АБОНАМЕНТИ",
+    "addPackage": "Добави пакет",
+    "card": {
+      "classCount_one": "{{count}} занятие",
+      "classCount_other": "{{count}} занятия",
+      "duration": "{{count}} дни",
+      "allServices": "Всички занятия",
+      "serviceCount_one": "{{count}} услуга",
+      "serviceCount_other": "{{count}} услуги",
+      "inactiveBadge": "Свален от продажба"
+    },
+    "settings": {
+      "title": "Настройки на програмата",
+      "allowFreeze": "Замразяване на абонамент",
+      "allowTransfer": "Прехвърляне към друг клиент",
+      "autoRenewal": "Автоматично подновяване от депозита на клиента"
+    },
+    "empty": {
+      "title": "Все още няма пакети",
+      "cta": "Създай пакет"
+    },
+    "toasts": {
+      "created": "Пакетът е създаден",
+      "saved": "Запазено",
+      "saveError": "Пакетът не можа да се запази",
+      "deactivated": "Пакетът е свален от продажба",
+      "restored": "Пакетът отново е в продажба",
+      "actionError": "Действието не можа да се изпълни"
+    },
+    "deactivate": "Свали от продажба",
+    "restore": "Върни в продажба",
+    "confirmDeactivateTitle": "Да се свали ли този пакет от продажба?",
+    "confirmDeactivate": "Вече продадените абонаменти ще продължат да работят."
+  }
+}

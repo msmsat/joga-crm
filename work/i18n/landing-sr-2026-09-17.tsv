@@ -1,0 +1,233 @@
+== sr
+nav.product	Производ
+nav.modules	Модули
+nav.pricing	Цене
+nav.faq	Честа питања
+nav.login	Пријавите се
+nav.startShort	Почните
+nav.startFull	Почните бесплатно
+nav.language	Језик
+hero.badge	Нови CRM стандард за 2026.
+hero.title	CRM који ћете\\n*волети* да користите
+hero.lead	Премијум B2B CRM за јога и пилатес студије. Резервације, клијенти, тим и финансије на једном месту. Без сувишних кликова и забуне.
+hero.cta	Испробајте бесплатно 30 дана
+hero.perks.0	30 дана бесплатно
+hero.perks.1	Картица није потребна
+hero.perks.2	Откажите једним кликом
+marquee.0	Распоред
+marquee.1	Клијенти
+marquee.2	Чланарине
+marquee.3	Онлајн резервације
+marquee.4	Финансије
+marquee.5	Зараде
+marquee.6	Обавештења
+marquee.7	Лојалност
+marquee.8	Извештаји
+marquee.9	Velora AI
+marquee.10	Апликација за клијенте
+marquee.11	Улоге и приступ
+stats.items.0.value	30 дана
+stats.items.0.label	Бесплатно, без картице
+stats.items.1.value	16
+stats.items.1.label	модула у сваком плану
+stats.items.2.value	4
+stats.items.2.label	канала за онлајн резервације
+stats.items.3.value	од 15 €
+stats.items.3.label	месечно по студију
+stats.trust.0	Ваши подаци остају ваши
+stats.trust.1	Улоге важе и на серверу
+stats.trust.2	CSV извоз кад год желите
+stats.trust.3	Брисање на захтев
+compare.label	разлика
+compare.title	Уклонили смо оно\\nшто вам смета
+compare.lead	Velora је настала из нашег сопственог искуства: водили смо студије и сваког дана наилазили на исти зид — CRM у коме је потребно девет кликова да закажете клијента. Ево шта се променило.
+compare.usual	Уобичајени начин
+compare.velora	У Velora-и
+compare.pairs.0.bad	Да бисте заказали клијента, напуштате распоред, отварате други приказ и затим се враћате
+compare.pairs.0.good	Резервације и нови клијенти настају директно у распореду
+compare.pairs.1.bad	Извештаји се извозе у Excel и ручно упоређују
+compare.pairs.1.good	Извештаји уживо по тренеру и услузи, са извозом за било који период
+compare.pairs.2.bad	Обавештења су засебна услуга коју додатно плаћате
+compare.pairs.2.good	Telegram, е-пошта и WhatsApp су уграђени уз матрицу догађај × канал
+compare.pairs.3.bad	Тренер види распоред и базу клијената свих осталих
+compare.pairs.3.good	Улоге ограничавају приступ и у интерфејсу и на серверу
+compare.pairs.4.bad	Асистент? У најбољем случају, претрага клијента
+compare.pairs.4.good	Velora AI одговара на питања о вашем послу — и на питања ваших клијената у Telegram-у и Instagram-у
+showcase.label	све на једном месту
+showcase.title	Једна платформа уместо\\nдесетина услуга
+showcase.lead	Резервације, клијенти, новац, комуникација и AI у једном интерфејсу. Ниједан модул није сувишан: сваки приказ решава стварни проблем власника.
+showcase.blocks.journal.title	Ваш распоред
+showcase.blocks.journal.lead	Дневна мрежа у којој су тренери колоне, а сати редови. Овде се одвија све што администратор ради.
+showcase.blocks.journal.points.0	Превуците час у друго време — или код другог тренера
+showcase.blocks.journal.points.1	Правите нове часове и клијенте без напуштања распореда
+showcase.blocks.journal.points.2	Сажетак дана је поред вас: попуњеност сала и приходи
+showcase.blocks.booking.title	Ваше онлајн резервације
+showcase.blocks.booking.lead	Четири канала на којима се клијенти сами заказују, у свако доба и без администратора.
+showcase.blocks.booking.points.0	Веб виџет, Telegram, WhatsApp и Instagram — сваки се подешава засебно
+showcase.blocks.booking.points.1	Правила: колико сати пре почетка се затвара заказивање и до када клијент може да откаже
+showcase.blocks.booking.points.2	Брендирање апликације за клијенте са прегледом уживо — боја и језик у складу са вашим брендом
+showcase.blocks.finance.title	Ваше финансије
+showcase.blocks.finance.lead	Рачуни, трансакције, зараде и документи на једном месту, без извоза у табеле.
+showcase.blocks.finance.points.0	Благајна, банковни рачун и наплата картица са стањима и дневним променама
+showcase.blocks.finance.points.1	Чланарине, поклон-картице и повраћаји повезани са клијентом и рачуном
+showcase.blocks.finance.points.2	Зараде тренера израчунате по вашим правилима
+showcase.blocks.notify.title	Ваша обавештења
+showcase.blocks.notify.lead	Три канала испоруке и матрица у којој одређујете шта се где шаље.
+showcase.blocks.notify.points.0	Telegram, е-пошта и WhatsApp — сваки повезан сопственим кључем студија
+showcase.blocks.notify.points.1	Засебан скуп догађаја за клијента, тренера, администратора и власника
+showcase.blocks.notify.points.2	Подсетници 24 и 2 сата раније, „остало је 1–2 часа“, рођендани и захтеви за оцену
+showcase.blocks.ai.title	Ваш AI слој
+showcase.blocks.ai.lead	Асистент познаје контекст посла и налази се на свакој страници — агенти сами одговарају клијентима.
+showcase.blocks.ai.points.0	Питајте о студију из горње траке, без отварања другог одељка
+showcase.blocks.ai.points.1	AI агенти у Telegram-у и Instagram-у: тон комуникације и режим „само ван радног времена“
+showcase.blocks.ai.points.2	Статистика: колико је разговора обрађено и како су оцењени
+ctaStrip.title	Испробајте без преноса података и без плаћања унапред
+ctaStrip.button	Почните бесплатно
+ctaStrip.note	30 дана бесплатно • Без картице • Помоћ при почетку
+modules.label	модули
+modules.title	16 модула,\\nвећ укључених
+modules.lead	Није колекција заглушки „ускоро“ — све што је наведено ради и укључено је у план. Улоге одређују ко види који одељак.
+modules.items.dashboard.title	Преглед
+modules.items.dashboard.desc	Приходи, активни клијенти, резервације и лојалност клијената — са трендовима
+modules.items.journal.title	Распоред
+modules.items.journal.desc	Дневна мрежа по тренеру и сали, превуците за поновно заказивање
+modules.items.clients.title	Клијенти
+modules.items.clients.desc	Профил, чланарине, поени, историја, белешке, ознаке
+modules.items.staff.title	Тим
+modules.items.staff.desc	Профили, показатељи, радно време, расподела сала
+modules.items.catalog.title	Каталог
+modules.items.catalog.desc	Објекти, сале са бојом и капацитетом, услуге студија
+modules.items.booking.title	Онлајн резервације
+modules.items.booking.desc	Виџет, Telegram, WhatsApp, Instagram и правила заказивања
+modules.items.finance.title	Финансије
+modules.items.finance.desc	Рачуни, трансакције, уговорне стране, документи, циљеви, зараде
+modules.items.notify.title	Обавештења
+modules.items.notify.desc	Telegram, е-пошта, WhatsApp и матрица догађај × канал
+modules.items.loyalty.title	Лојалност
+modules.items.loyalty.desc	Картице, попусти, поклон-картице, чланарине, препоруке
+modules.items.ai.title	Velora AI
+modules.items.ai.desc	Асистент за посао и агенти за ваше клијенте
+modules.items.reports.title	Извештаји
+modules.items.reports.desc	По продаји, тренерима и услугама — са извозом
+modules.items.miniapp.title	Апликација за клијенте
+modules.items.miniapp.desc	Лични налог клијента: резервације, чланарине, поени
+modules.items.multistudio.title	Више студија
+modules.items.multistudio.desc	Више студија у једном налогу, пребацујте се кад год желите
+modules.items.roles.title	Улоге и приступ
+modules.items.roles.desc	Власник, администратор, тренер — у интерфејсу и на серверу
+modules.items.settings.title	Подешавања
+modules.items.settings.desc	Радно време, тема, тим, безбедност, сесије
+modules.items.data.title	Подаци
+modules.items.data.desc	CSV извоз, брисање на захтев
+modules.integrations	Интеграције
+modules.integrationsNote	повезане у подешавањима студија
+pricing.label	цене
+pricing.title	Ваш план зависи од\\nвеличине тима
+pricing.lead	15 € за две особе, +5 € за свако следеће место, неограничено — 120 €. Свих 16 модула и Velora AI укључени су на сваком нивоу: плаћате величину тима, а не откључавање дугмади. Три модела плаћања по избору и до 40% попуста при уплати унапред.
+pricing.team	тим
+pricing.seats_one	особа
+pricing.seats_few	особе
+pricing.seats_other	особа
+pricing.unlimited	неограничено
+pricing.scaleMin	2 места
+pricing.scaleMax	∞ неограничено
+pricing.sliderAria	Колико људи ради у вашем студију
+pricing.hint	**15 €** за две особе, **+5 €** за свако додатно место. Неограничено — **120 €** месечно.
+pricing.period	период плаћања
+pricing.months	{{count}} мес.
+pricing.noDiscount	—
+pricing.yourPrice	ваша цена
+pricing.perMonth	/ мес.
+pricing.amount	{{value}} €
+pricing.amountPerMonth	{{value}} € / мес.
+pricing.rows.seats	Тим
+pricing.rows.perSeat	По особи
+pricing.rows.ai	Velora AI захтеви
+pricing.rows.aiPerMonth	{{value}} / мес.
+pricing.rows.modules	Модули
+pricing.rows.modulesAll	свих 16
+pricing.rows.total	За плаћање за {{count}} месеци
+pricing.rows.saved	Уштедећете
+pricing.cta	Испробајте 30 дана
+pricing.note	Без картице · откажите једним кликом
+pricing.models.0.title	Претплата
+pricing.models.0.price	од 15 € / мес.
+pricing.models.0.desc	Фиксни износ. Унапред знате трошак — без изненађења на крају месеца.
+pricing.models.1.title	3% прихода
+pricing.models.1.price	најмање 15 € / мес.
+pricing.models.1.desc	Плаћајте према промету. У мирнијем месецу доплаћујете само разлику до минималног износа.
+pricing.models.2.title	Комбиновано
+pricing.models.2.price	½ фиксно + 1,5%
+pricing.models.2.desc	Половина претплате плус мали проценат — равнотежа између два модела.
+pricing.footnote	Пробни период не захтева картицу. Модел плаћања и број места можете мењати у апликацији у било ком тренутку. Цене су без ПДВ-а: порез се обрачунава на наплати за вашу земљу.
+faq.label	питања
+faq.title	Ово људи обично питају
+faq.items.0.q	Шта укључује пробни период?
+faq.items.0.a	Пун приступ свим модулима 30 дана. Картица није потребна — ако вам не одговара, једноставно не обновите.
+faq.items.1.q	Да ли ће моји клијенти видети рекламе других студија?
+faq.items.1.a	Не. Клијенти заказују преко виџета на вашем сајту, вашег Telegram-а, WhatsApp-а или Instagram-а — и преко апликације за клијенте у вашој боји и са вашим логотипом. Не постоји заједнички каталог са другим студијима.
+faq.items.2.q	Ко у мом тиму види шта?
+faq.items.2.a	Три улоге. Власник види све. Администратор види распоред, клијенте и преглед. Тренер види само своје часове и клијенте. Ограничење ради у интерфејсу и на серверу: нема пута до туђих података.
+faq.items.3.q	Могу ли да водим више студија или објеката?
+faq.items.3.a	Да, и то не зависи од плана. Један налог може припадати већем броју студија и пребацивати се између њих, а у студију подешавате објекте и сале.
+faq.items.4.q	Да ли постоје тамна тема и други језици?
+faq.items.4.a	Да. Интерфејс пребацује светлу и тамну тему и подржава 22 језика, укључујући енглески, руски, украјински, чешки и немачки. Временска зона, валута и језик бирају се при увођењу.
+faq.items.5.q	Шта се дешава са мојим подацима ако одлучим да одем?
+faq.items.5.a	Подаци су ваши. У подешавањима постоји CSV извоз за клијенте, распоред, финансије и чланарине, а брисање се врши на ваш захтев.
+faq.notFoundTitle	Нисте нашли одговор?
+faq.notFoundLead	Пишите нам — одговарамо лично, без ботова и без чекања.
+faq.copied	Копирано
+about.label	о нама
+about.title	Velora граде људи\\nкоји су и сами водили студије
+about.lead	Не градимо „CRM за све“. Градимо алат за одређени посао — распоред, клијенте, новац, комуникацију — и сами одговарамо на питања уместо да шаљемо готове одговоре.
+about.p1	Клијенти једног студија остају клијенти тог студија. Velora не прави заједнички каталог, не приказује вашим клијентима туђе огласе и не узима проценат када вам се особа врати.
+about.p2	Тренутно је производ направљен за јога и пилатес студије — за начин на који заиста раде њихови распореди, чланарине и тренери. Друге делатности ће уследити са истом пажњом.
+cta.eyebrow	Почните данас
+cta.titleTop	Спремни за
+cta.titleAccent	следећи корак?
+cta.lead	30 дана бесплатно. Без картице. Без обавезе. Испробајте — осетићете разлику.
+cta.register	Региструјте се бесплатно
+cta.whatsapp	Пишите нам на WhatsApp-у
+footer.tagline	Премијум CRM за јога и пилатес студије. Резервације, клијенти, новац и AI на једном месту.
+footer.columns.product.title	Производ
+footer.columns.product.features	Функције
+footer.columns.product.modules	Модули
+footer.columns.product.booking	Онлајн резервације
+footer.columns.product.ai	Velora AI
+footer.columns.product.pricing	Цене
+footer.columns.company.title	Компанија
+footer.columns.company.difference	Наша разлика
+footer.columns.company.about	О нама
+footer.columns.company.faq	Питања и одговори
+footer.columns.company.support	Подршка
+footer.columns.docs.title	Документи
+footer.columns.docs.terms	Услови коришћења
+footer.columns.docs.privacy	Политика приватности
+footer.columns.docs.cookies	Политика колачића
+footer.columns.docs.dpa	Обрада података
+footer.columns.docs.cookieSettings	Подешавања колачића
+footer.columns.docs.support	Подршка
+footer.copyright	© 2026 Velora. Сва права задржана.
+screens.journal	Дневни распоред
+screens.booking	Онлајн резервација
+screens.finance	Плаћање посете
+screens.notify	Догађај × канал
+screens.ai	Velora AI
+art.journal	Распоред
+art.journalToday	Данас — 12 часова
+art.weekdays.0	П
+art.weekdays.1	У
+art.weekdays.2	С
+art.weekdays.3	Ч
+art.weekdays.4	П
+art.weekdays.5	С
+art.weekdays.6	Н
+art.finance	Финансије
+art.financeValue	1,8 хиљ. €
+art.financeLabel	приход овог месеца
+art.clients	Клијенти
+art.clientsLabel	клијенти, +12 ове недеље
+art.questions_one	{{count}} питање
+art.questions_few	{{count}} питања
+art.questions_other	{{count}} питања
+art.open	отвори

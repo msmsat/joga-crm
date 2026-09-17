@@ -1,0 +1,37 @@
+{
+  "banner": {
+    "title": "Dit privatliv, dit valg",
+    "text": "Velora gemmer kun det, der er nødvendigt for at fungere i din browser: dit login, sprog og grænsefladeindstillinger. Med din tilladelse aktiverer vi også Google-login — Google sætter derefter sine egne cookies. Vi bruger ingen analyse eller annoncering.",
+    "policy": "Cookiepolitik"
+  },
+  "actions": {
+    "accept": "Acceptér alle",
+    "reject": "Afvis alle",
+    "save": "Gem valg",
+    "settings": "Indstillinger"
+  },
+  "settings": {
+    "title": "Cookieindstillinger",
+    "subtitle": "Gælder for denne browser. Du kan ændre det når som helst.",
+    "alwaysOn": "Altid aktiv",
+    "necessary": {
+      "title": "Strengt nødvendige",
+      "text": "Holder dig logget ind, husker dit sprog, tema og valg her og beskytter betalinger og tjenesten mod misbrug. Velora kan ikke fungere uden dem."
+    },
+    "functional": {
+      "title": "Log ind med Google",
+      "text": "Indlæser Googles logintjeneste, så du kan bruge din Google-konto. Google kan sætte sine egne cookies og se, at du har åbnet login-siden."
+    },
+    "none": "Ingen cookies til analyse, annoncering eller sporing — vi bruger dem ikke.",
+    "decided": "Dit valg fra {{date}}",
+    "policy": "Hele listen findes i cookiepolitikken"
+  },
+  "google": {
+    "button": "Fortsæt med Google",
+    "notice": "Et klik aktiverer Google-login: Googles tjeneste indlæses og kan sætte cookies.",
+    "policy": "Detaljer"
+  },
+  "profile": {
+    "button": "Cookieindstillinger"
+  }
+}

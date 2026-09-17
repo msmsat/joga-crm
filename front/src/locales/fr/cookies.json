@@ -1,0 +1,37 @@
+{
+  "banner": {
+    "title": "Votre vie privée, votre choix",
+    "text": "Velora ne conserve que ce dont elle a besoin dans votre navigateur : votre connexion, la langue et les réglages d’interface. Avec votre autorisation, nous activerons aussi la connexion Google — Google déposera alors ses propres cookies. Nous n’utilisons ni analyse d’audience ni publicité.",
+    "policy": "Politique relative aux cookies"
+  },
+  "actions": {
+    "accept": "Tout accepter",
+    "reject": "Tout refuser",
+    "save": "Enregistrer le choix",
+    "settings": "Paramètres"
+  },
+  "settings": {
+    "title": "Paramètres des cookies",
+    "subtitle": "S’applique à ce navigateur. Vous pouvez modifier votre choix à tout moment.",
+    "alwaysOn": "Toujours actifs",
+    "necessary": {
+      "title": "Strictement nécessaires",
+      "text": "Ils vous gardent connecté, mémorisent votre langue, votre thème et votre choix, et protègent les paiements et le service contre les abus. Velora ne peut pas fonctionner sans eux."
+    },
+    "functional": {
+      "title": "Se connecter avec Google",
+      "text": "Charge le service de connexion Google pour vous permettre d’utiliser votre compte Google. Google peut déposer ses propres cookies et savoir que vous avez ouvert la page de connexion."
+    },
+    "none": "Aucun cookie d’analyse, de publicité ou de suivi — nous n’en utilisons pas.",
+    "decided": "Votre choix du {{date}}",
+    "policy": "Liste complète dans la Politique relative aux cookies"
+  },
+  "google": {
+    "button": "Continuer avec Google",
+    "notice": "Un clic active la connexion Google : le service Google se charge et peut déposer des cookies.",
+    "policy": "Détails"
+  },
+  "profile": {
+    "button": "Paramètres des cookies"
+  }
+}

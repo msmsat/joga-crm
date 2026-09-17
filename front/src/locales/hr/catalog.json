@@ -1,0 +1,318 @@
+{
+  "tabs": {
+    "studios": "Studiji",
+    "services": "Usluge",
+    "subscriptions": "Članarine"
+  },
+  "modals": {
+    "addStudio": {
+      "steps": {
+        "about": {
+          "title": "O studiju",
+          "sub": "Naziv i kontaktni podaci",
+          "trust": "Vaši podaci su šifrirani i nikada se ne dijele s trećim stranama"
+        },
+        "location": {
+          "title": "Lokacija",
+          "sub": "Gdje se nalazi ova poslovnica?",
+          "trust": "Adresa se koristi u rasporedu i na kartama"
+        },
+        "photo": {
+          "title": "Fotografija",
+          "sub": "Naslovna fotografija studija — neobavezna",
+          "trust": "Možete je dodati kasnije u postavkama poslovnice"
+        }
+      },
+      "stepCounter": "Korak {{current}} od {{total}}",
+      "step1": {
+        "heading": "Osnovne informacije",
+        "subheading": "Kako se studio zove i kako ga kontaktirati?",
+        "name": "Naziv studija *",
+        "namePlaceholder": "Npr. Velora Studio",
+        "phone": "Telefon *",
+        "email": "E-pošta *",
+        "contactHint": "Unesite telefon ili e-poštu — barem jedno",
+        "noContacts": "Nisu navedeni kontakti",
+        "new": "NOVO"
+      },
+      "step2": {
+        "heading": "Lokacija",
+        "subheading": "Navedite gdje se nalazi ova poslovnica",
+        "country": "Zemlja",
+        "countryPlaceholder": "Sjedinjene Američke Države",
+        "city": "Grad *",
+        "cityPlaceholder": "New York",
+        "address": "Adresa *",
+        "addressPlaceholder": "5th Avenue 12, ured 301",
+        "noAddress": "Nije navedena adresa",
+        "groupHint": "Polja „Zemlja” i „Grad” koriste se za grupiranje poslovnica na popisu."
+      },
+      "step3": {
+        "heading": "Fotografija studija",
+        "subheading": "Prenesite naslovnu fotografiju — neobavezna je, možete je preskočiti",
+        "uploadCta": "Kliknite za prijenos",
+        "uploadHint": "JPG, PNG do 10 MB",
+        "replace": "Zamijeni",
+        "remove": "Ukloni",
+        "previewAlt": "Pregled",
+        "summary": "Sažetak",
+        "uploadError": "Fotografiju nije moguće prenijeti. Pokušajte s drugom datotekom ili je uklonite."
+      },
+      "summaryRows": {
+        "name": "Naziv",
+        "city": "Grad",
+        "address": "Adresa"
+      },
+      "nextPhoto": "Dalje — fotografija",
+      "submit": "Izradi studio",
+      "skipPhoto": "Preskoči fotografiju i izradi",
+      "illus": {
+        "contacts": "Kontakti",
+        "newBranch": "Nova poslovnica",
+        "city": "Grad",
+        "newBranchStudio": "Nova poslovnica studija"
+      }
+    },
+    "editBranch": {
+      "title": "Uredi poslovnicu",
+      "name": "Naziv poslovnice",
+      "namePlaceholder": "Velora Studio",
+      "phone": "Telefon",
+      "email": "E-pošta",
+      "emailPlaceholder": "studio@velora.com",
+      "country": "Zemlja",
+      "countryPlaceholder": "Sjedinjene Američke Države",
+      "city": "Grad",
+      "cityPlaceholder": "New York",
+      "address": "Adresa",
+      "addressPlaceholder": "5th Avenue 12",
+      "photo": "Fotografija poslovnice",
+      "contactHint": "Unesite telefon ili e-poštu",
+      "workingHours": "Radno vrijeme"
+    },
+    "hall": {
+      "titleNew": "Dodaj {{spaceAcc}}",
+      "titleEdit": "Uredi {{spaceAcc}}",
+      "name": "Naziv",
+      "namePlaceholder": "{{space, capitalize}} A",
+      "capacity": "Kapacitet",
+      "area": "Površina, m²",
+      "hourlyRate": "Cijena po satu, {{currency}}",
+      "hourlyRatePlaceholder": "3000",
+      "equipment": "Oprema",
+      "equipmentPlaceholder": "Dodaj opremu",
+      "color": "Boja",
+      "isOnline": "Online",
+      "photo": "Fotografija",
+      "subtitle": "{{space, capitalize}} u poslovnici: mjesta, oprema, boja u rasporedu",
+      "previewTitle": "Pregled",
+      "sectionBasic": "Osnovno",
+      "sectionSpace": "Prostor",
+      "sectionLook": "Izgled",
+      "areaShort": "Površina",
+      "hourlyRateShort": "Cijena po satu",
+      "statArea": "Površina",
+      "statRate": "Cijena / sat",
+      "isOnlineHint": "Satovi se održavaju online — bez fizičkog prostora.",
+      "colorHint": "Satovi se ovdje ističu ovom bojom u rasporedu."
+    },
+    "service": {
+      "titleNew": "Nova usluga",
+      "titleEdit": "Uredi uslugu",
+      "name": "Naziv usluge",
+      "namePlaceholder": "Hatha yoga",
+      "category": "Kategorija",
+      "type": "Vrsta",
+      "typeGroup": "Grupna",
+      "typeIndividual": "Individualna",
+      "price": "Cijena, {{currency}}",
+      "pricePlaceholder": "1200",
+      "duration": "Trajanje, min",
+      "durationPlaceholder": "60",
+      "maxClients": "Najviše klijenata",
+      "maxClientsPlaceholder": "15",
+      "description": "Opis",
+      "descriptionPlaceholder": "Kratak opis usluge",
+      "color": "Boja",
+      "subtitle": "Pojavljuje se u rasporedu i online rezervacijama",
+      "previewTitle": "Pregled rasporeda",
+      "sectionBasic": "Osnovno",
+      "sectionPricing": "Cijena i vrijeme",
+      "sectionLook": "Izgled",
+      "priceShort": "Cijena",
+      "durationShort": "Trajanje",
+      "statSeats": "Mjesta",
+      "colorHint": "Satovi se ističu ovom bojom u mreži rasporeda.",
+      "bookingMode": "Način rezervacije",
+      "bookingModeEvent": "Prijava",
+      "bookingModeResource": "Odaberi vrijeme",
+      "bookingModeEventHint": "Klijenti se prijavljuju na sat koji ste već zakazali.",
+      "bookingModeResourceHint": "Klijent bira stručnjaka i slobodno vrijeme; interval {{offering}} stvara se pri potvrdi.",
+      "bookable": "Dostupno za rezervaciju",
+      "bookableOn": "Da",
+      "bookableOff": "Ne",
+      "bufferBefore": "Međuvrijeme prije",
+      "bufferAfter": "Međuvrijeme nakon"
+    },
+    "package": {
+      "titleNew": "Novi paket",
+      "titleEdit": "Uredi paket",
+      "name": "Naziv paketa",
+      "namePlaceholder": "8 sati",
+      "classCount": "Broj sati",
+      "classCountPlaceholder": "8",
+      "price": "Cijena, {{currency}}",
+      "pricePlaceholder": "8000",
+      "perVisitPrice": "Cijena po posjetu",
+      "durationDays": "Vrijedi, dana",
+      "durationDaysPlaceholder": "60",
+      "services": "Usluge",
+      "servicesHint": "Ništa nije odabrano — paket vrijedi za sve satove",
+      "isActive": "U prodaji",
+      "soldAsSubscription": "Prikaži na kartici „Članarine”",
+      "soldAsSingle": "Prikaži na kartici „Pojedinačni posjeti”",
+      "subtitle": "Paket sati koji prodajete klijentima",
+      "previewTitle": "Pregled propusnice",
+      "previewKind": "Propusnica",
+      "previewValid": "Vrijedi",
+      "sectionBasic": "Osnovno",
+      "sectionTerms": "Uvjeti",
+      "sectionSale": "Prodaja",
+      "priceShort": "Cijena paketa",
+      "statClasses": "Satovi",
+      "statDays": "Dani",
+      "statAll": "Svi",
+      "isActiveHint": "Klijenti mogu vidjeti i kupiti ovaj paket.",
+      "soldAsSubscriptionHint": "U suprotnom paket ostaje samo pod pojedinačnim posjetima."
+    }
+  },
+  "studios": {
+    "title": "STUDIJI",
+    "addStudio": "Dodaj studio",
+    "addHall": "Dodaj {{spaceAcc}}",
+    "editBranch": "Uredi poslovnicu",
+    "deleteBranch": "Izbriši poslovnicu",
+    "infoTab": "Opće informacije",
+    "hallsTitle": "{{spacePlural, capitalize}} studija",
+    "hallCount_one": "{{spacePlural, capitalize}} · {{count}}",
+    "hallCount_few": "{{spacePlural, capitalize}} · {{count}}",
+    "hallCount_other": "{{spacePlural, capitalize}} · {{count}}",
+    "stats": {
+      "halls": "{{spacePlural, capitalize}}",
+      "totalSeats": "Ukupno mjesta",
+      "fromPerHour": "Od / sat"
+    },
+    "hall": {
+      "seats": "mjesta",
+      "schedule": "Radno vrijeme",
+      "closed": "Zatvoreno",
+      "stats": {
+        "seats": "Mjesta",
+        "area": "Površina",
+        "perHour": "Po satu"
+      },
+      "equipment": "Oprema",
+      "actions": "Radnje",
+      "edit": "Uredi {{spaceAcc}}",
+      "delete": "Izbriši {{spaceAcc}}"
+    },
+    "empty": {
+      "title": "Nema studija",
+      "subtitle": "Dodajte svoj prvi studio"
+    },
+    "toasts": {
+      "created": "Studio izrađen",
+      "createError": "Studio nije moguće izraditi",
+      "deleted": "Studio izbrisan",
+      "hallDeleted": "Izbrisano: {{space}}",
+      "saved": "Spremljeno",
+      "edit": "Uredi: {{name}}"
+    },
+    "confirmDelete": "Izbrisati poslovnicu „{{name}}”? Ova se radnja ne može poništiti.",
+    "confirmDeleteTitle": "Izbrisati poslovnicu?",
+    "confirmDeleteHall": "Izbrisati {{spaceAcc}} „{{name}}”?",
+    "confirmDeleteHallTitle": "Izbrisati {{spaceAcc}}?"
+  },
+  "services": {
+    "title": "USLUGE",
+    "addService": "Dodaj uslugu",
+    "types": {
+      "group": "Grupna",
+      "individual": "Indiv.",
+      "groupFull": " · Grupna",
+      "individualFull": " · Individualna"
+    },
+    "stats": {
+      "price": "Cijena",
+      "duration": "Trajanje",
+      "bookings": "Rezervacije",
+      "revenue": "Prihod"
+    },
+    "details": {
+      "description": "Opis",
+      "details": "Detalji",
+      "minutes": "minuta",
+      "upTo": "Do {{count}} os.",
+      "personal": "Individualna",
+      "bookingsPerMonth": "rezervacija u 30 dana",
+      "schedule": "Raspored sati"
+    },
+    "empty": {
+      "title": "Nema usluga",
+      "subtitle": "Dodajte svoju prvu uslugu"
+    },
+    "toasts": {
+      "deleted": "Usluga izbrisana",
+      "deleteError": "Uslugu nije moguće izbrisati",
+      "saved": "Spremljeno",
+      "saveError": "Uslugu nije moguće spremiti",
+      "edit": "Uredi: {{name}}"
+    },
+    "confirmDelete": "Izbrisati uslugu „{{name}}”?",
+    "confirmDeleteTitle": "Izbrisati uslugu?",
+    "categories": {
+      "yoga": "Yoga",
+      "pilates": "Pilates",
+      "stretching": "Istezanje",
+      "individual": "Individualna",
+      "other": "Nekategorizirano"
+    }
+  },
+  "subscriptions": {
+    "title": "ČLANARINE",
+    "addPackage": "Dodaj paket",
+    "card": {
+      "classCount_one": "{{count}} sat",
+      "classCount_few": "{{count}} sata",
+      "classCount_other": "{{count}} sati",
+      "duration": "{{count}} dana",
+      "allServices": "Svi satovi",
+      "serviceCount_one": "{{count}} usluga",
+      "serviceCount_few": "{{count}} usluge",
+      "serviceCount_other": "{{count}} usluga",
+      "inactiveBadge": "Povučen iz prodaje"
+    },
+    "settings": {
+      "title": "Postavke programa",
+      "allowFreeze": "Zamrzavanje članarine",
+      "allowTransfer": "Prijenos drugom klijentu",
+      "autoRenewal": "Automatska obnova s depozita klijenta"
+    },
+    "empty": {
+      "title": "Još nema paketa",
+      "cta": "Izradi paket"
+    },
+    "toasts": {
+      "created": "Paket izrađen",
+      "saved": "Spremljeno",
+      "saveError": "Paket nije moguće spremiti",
+      "deactivated": "Paket povučen iz prodaje",
+      "restored": "Paket ponovno u prodaji",
+      "actionError": "Radnju nije moguće dovršiti"
+    },
+    "deactivate": "Povuci iz prodaje",
+    "restore": "Vrati u prodaju",
+    "confirmDeactivateTitle": "Povući ovaj paket iz prodaje?",
+    "confirmDeactivate": "Već prodane članarine nastavit će raditi."
+  }
+}

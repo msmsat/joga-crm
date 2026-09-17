@@ -1,0 +1,246 @@
+== no
+tabs.studios	Studioer
+tabs.services	Tjenester
+tabs.subscriptions	Medlemskap
+modals.addStudio.steps.about.title	Om studioet
+modals.addStudio.steps.about.sub	Navn og kontaktopplysninger
+modals.addStudio.steps.about.trust	Dataene dine er kryptert og deles aldri med tredjeparter
+modals.addStudio.steps.location.title	Sted
+modals.addStudio.steps.location.sub	Hvor ligger denne avdelingen?
+modals.addStudio.steps.location.trust	Adressen brukes i timeplanen og kart
+modals.addStudio.steps.photo.title	Bilde
+modals.addStudio.steps.photo.sub	Forsidebilde for studioet — valgfritt
+modals.addStudio.steps.photo.trust	Du kan legge det til senere i avdelingens innstillinger
+modals.addStudio.stepCounter	Trinn {{current}} av {{total}}
+modals.addStudio.step1.heading	Grunnleggende informasjon
+modals.addStudio.step1.subheading	Hva heter studioet, og hvordan kan det nås?
+modals.addStudio.step1.name	Studionavn *
+modals.addStudio.step1.namePlaceholder	F.eks. Velora Studio
+modals.addStudio.step1.phone	Telefon *
+modals.addStudio.step1.email	E-post *
+modals.addStudio.step1.contactHint	Skriv inn telefon eller e-post — minst én
+modals.addStudio.step1.noContacts	Ingen kontaktopplysninger oppgitt
+modals.addStudio.step1.new	NY
+modals.addStudio.step2.heading	Sted
+modals.addStudio.step2.subheading	Oppgi hvor denne avdelingen ligger
+modals.addStudio.step2.country	Land
+modals.addStudio.step2.countryPlaceholder	USA
+modals.addStudio.step2.city	By *
+modals.addStudio.step2.cityPlaceholder	New York
+modals.addStudio.step2.address	Adresse *
+modals.addStudio.step2.addressPlaceholder	5th Avenue 12, lokale 301
+modals.addStudio.step2.noAddress	Ingen adresse oppgitt
+modals.addStudio.step2.groupHint	Feltene «Land» og «By» brukes til å gruppere avdelinger i listen.
+modals.addStudio.step3.heading	Studiobilde
+modals.addStudio.step3.subheading	Last opp et forsidebilde — valgfritt, du kan hoppe over det
+modals.addStudio.step3.uploadCta	Klikk for å laste opp
+modals.addStudio.step3.uploadHint	JPG, PNG opptil 10 MB
+modals.addStudio.step3.replace	Erstatt
+modals.addStudio.step3.remove	Fjern
+modals.addStudio.step3.previewAlt	Forhåndsvisning
+modals.addStudio.step3.summary	Sammendrag
+modals.addStudio.step3.uploadError	Kunne ikke laste opp bildet. Prøv en annen fil eller fjern det.
+modals.addStudio.summaryRows.name	Navn
+modals.addStudio.summaryRows.city	By
+modals.addStudio.summaryRows.address	Adresse
+modals.addStudio.nextPhoto	Neste — bilde
+modals.addStudio.submit	Opprett studio
+modals.addStudio.skipPhoto	Hopp over bilde og opprett
+modals.addStudio.illus.contacts	Kontakter
+modals.addStudio.illus.newBranch	Ny avdeling
+modals.addStudio.illus.city	By
+modals.addStudio.illus.newBranchStudio	Ny studioavdeling
+modals.editBranch.title	Rediger avdeling
+modals.editBranch.name	Avdelingsnavn
+modals.editBranch.namePlaceholder	Velora Studio
+modals.editBranch.phone	Telefon
+modals.editBranch.email	E-post
+modals.editBranch.emailPlaceholder	studio@velora.com
+modals.editBranch.country	Land
+modals.editBranch.countryPlaceholder	USA
+modals.editBranch.city	By
+modals.editBranch.cityPlaceholder	New York
+modals.editBranch.address	Adresse
+modals.editBranch.addressPlaceholder	5th Avenue 12
+modals.editBranch.photo	Avdelingsbilde
+modals.editBranch.contactHint	Skriv inn telefon eller e-post
+modals.editBranch.workingHours	Åpningstider
+modals.hall.titleNew	Legg til {{spaceAcc}}
+modals.hall.titleEdit	Rediger {{spaceAcc}}
+modals.hall.name	Navn
+modals.hall.namePlaceholder	{{space, capitalize}} A
+modals.hall.capacity	Kapasitet
+modals.hall.area	Areal, m²
+modals.hall.hourlyRate	Pris per time, {{currency}}
+modals.hall.hourlyRatePlaceholder	3000
+modals.hall.equipment	Utstyr
+modals.hall.equipmentPlaceholder	Legg til utstyr
+modals.hall.color	Farge
+modals.hall.isOnline	På nett
+modals.hall.photo	Bilde
+modals.hall.subtitle	{{space, capitalize}} i avdelingen: plasser, utstyr, farge i timeplanen
+modals.hall.previewTitle	Forhåndsvisning
+modals.hall.sectionBasic	Grunnleggende
+modals.hall.sectionSpace	Rom
+modals.hall.sectionLook	Utseende
+modals.hall.areaShort	Areal
+modals.hall.hourlyRateShort	Pris per time
+modals.hall.statArea	Areal
+modals.hall.statRate	Pris / time
+modals.hall.isOnlineHint	Klassene holdes på nett — ingen fysiske lokaler.
+modals.hall.colorHint	Klassene her fremheves med denne fargen i timeplanen.
+modals.service.titleNew	Ny tjeneste
+modals.service.titleEdit	Rediger tjeneste
+modals.service.name	Tjenestenavn
+modals.service.namePlaceholder	Hatha yoga
+modals.service.category	Kategori
+modals.service.type	Type
+modals.service.typeGroup	Gruppe
+modals.service.typeIndividual	Individuell
+modals.service.price	Pris, {{currency}}
+modals.service.pricePlaceholder	1200
+modals.service.duration	Varighet, min
+modals.service.durationPlaceholder	60
+modals.service.maxClients	Maks antall kunder
+modals.service.maxClientsPlaceholder	15
+modals.service.description	Beskrivelse
+modals.service.descriptionPlaceholder	Kort beskrivelse av tjenesten
+modals.service.color	Farge
+modals.service.subtitle	Vises i timeplanen og nettbookingen
+modals.service.previewTitle	Forhåndsvisning i timeplanen
+modals.service.sectionBasic	Grunnleggende
+modals.service.sectionPricing	Pris og tid
+modals.service.sectionLook	Utseende
+modals.service.priceShort	Pris
+modals.service.durationShort	Varighet
+modals.service.statSeats	Plasser
+modals.service.colorHint	Klassene fremheves med denne fargen i timeplanrutenettet.
+modals.service.bookingMode	Bestillingsmåte
+modals.service.bookingModeEvent	Påmelding
+modals.service.bookingModeResource	Velg tidspunkt
+modals.service.bookingModeEventHint	Kunder melder seg på en klasse du allerede har planlagt.
+modals.service.bookingModeResourceHint	Kunden velger en spesialist og et ledig tidspunkt; intervallet {{offering}} opprettes ved bekreftelse.
+modals.service.bookable	Tilgjengelig for booking
+modals.service.bookableOn	Ja
+modals.service.bookableOff	Nei
+modals.service.bufferBefore	Buffer før
+modals.service.bufferAfter	Buffer etter
+modals.package.titleNew	Ny pakke
+modals.package.titleEdit	Rediger pakke
+modals.package.name	Pakkenavn
+modals.package.namePlaceholder	8 klasser
+modals.package.classCount	Antall klasser
+modals.package.classCountPlaceholder	8
+modals.package.price	Pris, {{currency}}
+modals.package.pricePlaceholder	8000
+modals.package.perVisitPrice	Pris per besøk
+modals.package.durationDays	Gyldig i, dager
+modals.package.durationDaysPlaceholder	60
+modals.package.services	Tjenester
+modals.package.servicesHint	Ingenting valgt — pakken gjelder alle klasser
+modals.package.isActive	Til salgs
+modals.package.soldAsSubscription	Vis i fanen «Medlemskap»
+modals.package.soldAsSingle	Vis i fanen «Enkeltbesøk»
+modals.package.subtitle	En klassepakke du selger til kunder
+modals.package.previewTitle	Forhåndsvisning av pass
+modals.package.previewKind	Pass
+modals.package.previewValid	Gyldig i
+modals.package.sectionBasic	Grunnleggende
+modals.package.sectionTerms	Vilkår
+modals.package.sectionSale	Salg
+modals.package.priceShort	Pakkepris
+modals.package.statClasses	Klasser
+modals.package.statDays	Dager
+modals.package.statAll	Alle
+modals.package.isActiveHint	Kunder kan se og kjøpe denne pakken.
+modals.package.soldAsSubscriptionHint	Ellers blir pakken bare under enkeltbesøk.
+studios.title	STUDIOER
+studios.addStudio	Legg til studio
+studios.addHall	Legg til {{spaceAcc}}
+studios.editBranch	Rediger avdeling
+studios.deleteBranch	Slett avdeling
+studios.infoTab	Generell informasjon
+studios.hallsTitle	Studioets {{spacePlural}}
+studios.hallCount_one	{{spacePlural, capitalize}} · {{count}}
+studios.hallCount_other	{{spacePlural, capitalize}} · {{count}}
+studios.stats.halls	{{spacePlural, capitalize}}
+studios.stats.totalSeats	Totalt antall plasser
+studios.stats.fromPerHour	Fra / time
+studios.hall.seats	plasser
+studios.hall.schedule	Åpningstider
+studios.hall.closed	Stengt
+studios.hall.stats.seats	Plasser
+studios.hall.stats.area	Areal
+studios.hall.stats.perHour	Per time
+studios.hall.equipment	Utstyr
+studios.hall.actions	Handlinger
+studios.hall.edit	Rediger {{spaceAcc}}
+studios.hall.delete	Slett {{spaceAcc}}
+studios.empty.title	Ingen studioer
+studios.empty.subtitle	Legg til ditt første studio
+studios.toasts.created	Studio opprettet
+studios.toasts.createError	Kunne ikke opprette studio
+studios.toasts.deleted	Studio slettet
+studios.toasts.hallDeleted	Slettet: {{space}}
+studios.toasts.saved	Lagret
+studios.toasts.edit	Rediger: {{name}}
+studios.confirmDelete	Slette avdeling «{{name}}»? Dette kan ikke angres.
+studios.confirmDeleteTitle	Slette avdeling?
+studios.confirmDeleteHall	Slette {{spaceAcc}} «{{name}}»?
+studios.confirmDeleteHallTitle	Slette {{spaceAcc}}?
+services.title	TJENESTER
+services.addService	Legg til tjeneste
+services.types.group	Gruppe
+services.types.individual	Indiv.
+services.types.groupFull	 · Gruppe
+services.types.individualFull	 · Individuell
+services.stats.price	Pris
+services.stats.duration	Varighet
+services.stats.bookings	Bookinger
+services.stats.revenue	Inntekter
+services.details.description	Beskrivelse
+services.details.details	Detaljer
+services.details.minutes	minutter
+services.details.upTo	Opptil {{count}} pers.
+services.details.personal	Personlig
+services.details.bookingsPerMonth	bookinger på 30 dager
+services.details.schedule	Klasseplan
+services.empty.title	Ingen tjenester
+services.empty.subtitle	Legg til din første tjeneste
+services.toasts.deleted	Tjeneste slettet
+services.toasts.deleteError	Kunne ikke slette tjenesten
+services.toasts.saved	Lagret
+services.toasts.saveError	Kunne ikke lagre tjenesten
+services.toasts.edit	Rediger: {{name}}
+services.confirmDelete	Slette tjenesten «{{name}}»?
+services.confirmDeleteTitle	Slette tjeneste?
+services.categories.yoga	Yoga
+services.categories.pilates	Pilates
+services.categories.stretching	Tøying
+services.categories.individual	Individuell
+services.categories.other	Uten kategori
+subscriptions.title	MEDLEMSKAP
+subscriptions.addPackage	Legg til pakke
+subscriptions.card.classCount_one	{{count}} klasse
+subscriptions.card.classCount_other	{{count}} klasser
+subscriptions.card.duration	{{count}} dager
+subscriptions.card.allServices	Alle klasser
+subscriptions.card.serviceCount_one	{{count}} tjeneste
+subscriptions.card.serviceCount_other	{{count}} tjenester
+subscriptions.card.inactiveBadge	Tatt av salg
+subscriptions.settings.title	Programinnstillinger
+subscriptions.settings.allowFreeze	Frysing av medlemskap
+subscriptions.settings.allowTransfer	Overfør til en annen kunde
+subscriptions.settings.autoRenewal	Automatisk fornyelse fra kundens innskudd
+subscriptions.empty.title	Ingen pakker ennå
+subscriptions.empty.cta	Opprett pakke
+subscriptions.toasts.created	Pakke opprettet
+subscriptions.toasts.saved	Lagret
+subscriptions.toasts.saveError	Kunne ikke lagre pakken
+subscriptions.toasts.deactivated	Pakke tatt av salg
+subscriptions.toasts.restored	Pakke satt til salg igjen
+subscriptions.toasts.actionError	Kunne ikke fullføre handlingen
+subscriptions.deactivate	Ta av salg
+subscriptions.restore	Sett til salg igjen
+subscriptions.confirmDeactivateTitle	Ta denne pakken av salg?
+subscriptions.confirmDeactivate	Allerede solgte medlemskap fortsetter å fungere.

@@ -1,0 +1,231 @@
+== fi
+nav.product	Tuote
+nav.modules	Moduulit
+nav.pricing	Hinnat
+nav.faq	UKK
+nav.login	Kirjaudu sisään
+nav.startShort	Aloita
+nav.startFull	Aloita maksutta
+nav.language	Kieli
+hero.badge	Uusi CRM-standardi vuonna 2026
+hero.title	CRM, jota\n*rakastat* käyttää
+hero.lead	Premium-tason B2B-CRM jooga- ja pilatesstudioille. Varaukset, asiakkaat, tiimisi ja taloutesi samassa paikassa. Ei ylimääräisiä klikkauksia eikä vaivaa.
+hero.cta	Kokeile 30 päivää maksutta
+hero.perks.0	30 päivää maksutta
+hero.perks.1	Ei maksukorttia
+hero.perks.2	Peruuta yhdellä klikkauksella
+marquee.0	Aikataulu
+marquee.1	Asiakkaat
+marquee.2	Jäsenyydet
+marquee.3	Verkkovaraus
+marquee.4	Talous
+marquee.5	Palkat
+marquee.6	Ilmoitukset
+marquee.7	Asiakasuskollisuus
+marquee.8	Raportit
+marquee.9	Velora AI
+marquee.10	Asiakassovellus
+marquee.11	Roolit ja käyttöoikeudet
+stats.items.0.value	30 päivää
+stats.items.0.label	Maksutta, ei korttia
+stats.items.1.value	16
+stats.items.1.label	Moduulia jokaisessa paketissa
+stats.items.2.value	4
+stats.items.2.label	Verkkovarauskanavaa
+stats.items.3.value	alkaen 15 €
+stats.items.3.label	Kuukaudessa studiota kohden
+stats.trust.0	Tietosi pysyvät ominasi
+stats.trust.1	Roolit valvotaan palvelimella
+stats.trust.2	CSV-vienti milloin tahansa
+stats.trust.3	Poisto pyynnöstä
+compare.label	ero
+compare.title	Poistimme sen,\nmikä oli tiellä
+compare.lead	Velora kasvoi omista kokemuksistamme: pyöritimme studioita ja törmäsimme joka päivä samaan seinään — CRM:ään, jossa yhden asiakkaan varaaminen vaati yhdeksän klikkausta. Näin se muuttui.
+compare.usual	Tavallinen tapa
+compare.velora	Velorassa
+compare.pairs.0.bad	Varaat asiakkaan poistumalla aikataulusta toiselle näytölle ja palaamalla takaisin
+compare.pairs.0.good	Varaukset ja uudet asiakkaat luodaan suoraan aikataulussa
+compare.pairs.1.bad	Raportit viedään Exceliin ja täsmäytetään käsin
+compare.pairs.1.good	Reaaliaikaiset raportit valmentajittain ja palveluittain, vienti mille tahansa ajalle
+compare.pairs.2.bad	Ilmoitukset ovat erillinen palvelu, josta maksetaan erikseen
+compare.pairs.2.good	Telegram, sähköposti ja WhatsApp sisäänrakennettuina tapahtuma × kanava -matriisilla
+compare.pairs.3.bad	Valmentaja voi nähdä kaikkien muiden aikataulut ja asiakkaat
+compare.pairs.3.good	Roolit rajaavat pääsyn sekä käyttöliittymässä että palvelimella
+compare.pairs.4.bad	Avustaja? Parhaimmillaan asiakashaku
+compare.pairs.4.good	Velora AI vastaa yritystäsi koskeviin kysymyksiin — ja asiakkaillesi Telegramissa ja Instagramissa
+showcase.label	kaikki yhdessä
+showcase.title	Yksi alusta\ntusinan palvelun sijaan
+showcase.lead	Varaukset, asiakkaat, raha, viestintä ja tekoäly yhdessä käyttöliittymässä. Ei yhtään turhaa moduulia: jokainen näyttö ratkaisee aidon omistajan ongelman.
+showcase.blocks.journal.title	Oma aikataulusi
+showcase.blocks.journal.lead	Päiväruudukko, jossa valmentajat ovat sarakkeita ja tunnit rivejä. Kaikki ylläpitäjän työ tapahtuu täällä.
+showcase.blocks.journal.points.0	Vedä tunti toiseen aikaan tai toiselle valmentajalle
+showcase.blocks.journal.points.1	Luo uusia tunteja ja asiakkaita poistumatta aikataulusta
+showcase.blocks.journal.points.2	Päivän yhteenveto on vieressä: tilojen kuormitus ja liikevaihto
+showcase.blocks.booking.title	Oma verkkovarauksesi
+showcase.blocks.booking.lead	Neljä kanavaa, joiden kautta asiakkaat varaavat itse ympäri vuorokauden ilman ylläpitäjää.
+showcase.blocks.booking.points.0	Verkkosivuwidget, Telegram, WhatsApp ja Instagram — jokainen määritetään erikseen
+showcase.blocks.booking.points.1	Säännöt: kuinka monta tuntia ennen alkua varaus sulkeutuu ja mihin asti asiakas voi perua
+showcase.blocks.booking.points.2	Asiakassovelluksen brändäys live-esikatselulla — väri ja kieli vastaavat brändiäsi
+showcase.blocks.finance.title	Oma taloutesi
+showcase.blocks.finance.lead	Tilit, tapahtumat, palkat ja asiakirjat yhdessä paikassa ilman vientiä laskentataulukoihin.
+showcase.blocks.finance.points.0	Kassa, pankkitili ja maksunvälitys saldoineen ja päivittäisine muutoksineen
+showcase.blocks.finance.points.1	Jäsenyydet, lahjakortit ja hyvitykset sidottuina asiakkaaseen ja tiliin
+showcase.blocks.finance.points.2	Valmentajien palkat omien sääntöjesi mukaan laskettuina
+showcase.blocks.notify.title	Omat ilmoituksesi
+showcase.blocks.notify.lead	Kolme toimituskanavaa ja matriisi, jossa päätät mitä lähetetään minne.
+showcase.blocks.notify.points.0	Telegram, sähköposti ja WhatsApp — kukin yhdistetty studion omaan avaimeen
+showcase.blocks.notify.points.1	Oma tapahtumajoukko asiakkaalle, valmentajalle, ylläpitäjälle ja omistajalle
+showcase.blocks.notify.points.2	Muistutukset 24 ja 2 tuntia ennen, ”1–2 tuntia jäljellä”, syntymäpäivät ja arvostelupyynnöt
+showcase.blocks.ai.title	Oma tekoälytasosi
+showcase.blocks.ai.lead	Avustaja tuntee liiketoimintasi kontekstin ja on käytettävissä jokaisella sivulla — agentit vastaavat asiakkaillesi itse.
+showcase.blocks.ai.points.0	Kysymykset studiosta suoraan yläpalkista avaamatta toista osiota
+showcase.blocks.ai.points.1	Tekoälyagentit Telegramissa ja Instagramissa: äänensävy ja ”vain aukioloaikojen ulkopuolella” -tila
+showcase.blocks.ai.points.2	Tilastot: kuinka monta keskustelua käsiteltiin ja miten ne arvioitiin
+ctaStrip.title	Kokeile ilman datan siirtoa tai ennakkomaksua
+ctaStrip.button	Aloita maksutta
+ctaStrip.note	30 päivää maksutta • Ei korttia • Apua alkuun
+modules.label	moduulit
+modules.title	16 moduulia,\nvalmiiksi mukana
+modules.lead	Ei ”tulossa pian” -paikkamerkkien kokoelma — kaikki lueteltu toimii ja kuuluu pakettiin. Roolit ratkaisevat, kuka näkee minkäkin osion.
+modules.items.dashboard.title	Hallintapaneeli
+modules.items.dashboard.desc	Liikevaihto, aktiiviset asiakkaat, varaukset ja säilyminen — trendeineen
+modules.items.journal.title	Aikataulu
+modules.items.journal.desc	Päiväruudukko valmentajittain ja tiloittain, vedä siirtääksesi
+modules.items.clients.title	Asiakkaat
+modules.items.clients.desc	Profiili, jäsenyys, pisteet, historia, muistiinpanot, tunnisteet
+modules.items.staff.title	Tiimi
+modules.items.staff.desc	Profiilit, mittarit, työajat, tilamääritykset
+modules.items.catalog.title	Luettelo
+modules.items.catalog.desc	Toimipisteet, värilliset ja kapasiteetiltaan määritetyt tilat, studion palvelut
+modules.items.booking.title	Verkkovaraus
+modules.items.booking.desc	Widget, Telegram, WhatsApp, Instagram ja varaussäännöt
+modules.items.finance.title	Talous
+modules.items.finance.desc	Tilit, tapahtumat, vastapuolet, asiakirjat, tavoitteet, palkat
+modules.items.notify.title	Ilmoitukset
+modules.items.notify.desc	Telegram, sähköposti, WhatsApp ja tapahtuma × kanava -matriisi
+modules.items.loyalty.title	Asiakasuskollisuus
+modules.items.loyalty.desc	Kortit, alennukset, lahjakortit, jäsenyydet, suosittelut
+modules.items.ai.title	Velora AI
+modules.items.ai.desc	Liiketoiminta-avustaja ja agentit asiakkaillesi
+modules.items.reports.title	Raportit
+modules.items.reports.desc	Myynnin, valmentajien ja palveluiden mukaan — viennillä
+modules.items.miniapp.title	Asiakassovellus
+modules.items.miniapp.desc	Asiakkaan oma tili: varaukset, jäsenyys, pisteet
+modules.items.multistudio.title	Useita studioita
+modules.items.multistudio.desc	Useita studioita yhdellä tilillä, vaihda milloin tahansa
+modules.items.roles.title	Roolit ja käyttöoikeudet
+modules.items.roles.desc	Omistaja, ylläpitäjä, valmentaja — käyttöliittymässä ja palvelimella
+modules.items.settings.title	Asetukset
+modules.items.settings.desc	Työajat, teema, tiimi, tietoturva, istunnot
+modules.items.data.title	Tiedot
+modules.items.data.desc	CSV-vienti, poisto pyynnöstä
+modules.integrations	Integraatiot
+modules.integrationsNote	yhdistetty studion asetuksissa
+pricing.label	hinnat
+pricing.title	Pakettisi määräytyy\ntiimisi koon mukaan
+pricing.lead	15 € kahdesta henkilöstä, +5 € jokaisesta seuraavasta paikasta, rajaton — 120 €. Kaikki 16 moduulia ja Velora AI sisältyvät joka tasoon: maksat tiimisi koosta, et painikkeiden avaamisesta. Valittavana on kolme maksutapaa ja ennakkoon maksaessa jopa 40 % alennus.
+pricing.team	tiimi
+pricing.seats_one	henkilö
+pricing.seats_other	henkilöä
+pricing.unlimited	ei rajaa
+pricing.scaleMin	2 paikkaa
+pricing.scaleMax	∞ rajaton
+pricing.sliderAria	Kuinka monta henkilöä studiossasi työskentelee
+pricing.hint	**15 €** kahdesta henkilöstä, **+5 €** jokaisesta lisäpaikasta. Rajaton — **120 €** kuukaudessa.
+pricing.period	laskutuskausi
+pricing.months	{{count}} kk
+pricing.noDiscount	—
+pricing.yourPrice	hintasi
+pricing.perMonth	/ kk
+pricing.amount	{{value}} €
+pricing.amountPerMonth	{{value}} € / kk
+pricing.rows.seats	Tiimi
+pricing.rows.perSeat	Henkilöä kohti
+pricing.rows.ai	Velora AI -pyynnöt
+pricing.rows.aiPerMonth	{{value}} / kk
+pricing.rows.modules	Moduulit
+pricing.rows.modulesAll	kaikki 16
+pricing.rows.total	Maksettavaa {{count}} kuukaudelta
+pricing.rows.saved	Säästät
+pricing.cta	Kokeile 30 päivää
+pricing.note	Ei korttia · peruuta yhdellä klikkauksella
+pricing.models.0.title	Tilaus
+pricing.models.0.price	alkaen 15 € / kk
+pricing.models.0.desc	Kiinteä summa. Tiedät kustannuksen etukäteen — ei yllätyksiä kuun lopussa.
+pricing.models.1.title	3 % liikevaihdosta
+pricing.models.1.price	vähintään 15 € / kk
+pricing.models.1.desc	Maksa liikevaihdosta. Hiljaisena kuukautena täydennät vain erotuksen vähimmäismäärään.
+pricing.models.2.title	Yhdistelmä
+pricing.models.2.price	½ kiinteä + 1,5 %
+pricing.models.2.desc	Puolet tilauksesta plus pieni prosentti — keskitie kahden mallin välillä.
+pricing.footnote	Kokeilu ei vaadi korttia. Maksumallia ja paikkojen määrää voi muuttaa sovelluksessa milloin tahansa. Hinnat eivät sisällä arvonlisäveroa: vero lasketaan maksussa maasi mukaan.
+faq.label	kysymykset
+faq.title	Mitä yleensä kysytään
+faq.items.0.q	Mitä kokeilu sisältää?
+faq.items.0.a	Täysi pääsy kaikkiin moduuleihin 30 päiväksi. Maksukorttia ei tarvita — jos tämä ei sovi sinulle, älä vain uusi tilausta.
+faq.items.1.q	Näkevätkö asiakkaani muiden studioiden mainoksia?
+faq.items.1.a	Eivät. Asiakkaat varaavat sivustosi widgetin, Telegramin, WhatsAppin tai Instagramin kautta — sekä asiakassovelluksella omalla värilläsi ja logollasi. Muiden studioiden kanssa ei ole yhteistä luetteloa.
+faq.items.2.q	Kuka tiimissäni näkee mitä?
+faq.items.2.a	Kolme roolia. Omistaja näkee kaiken. Ylläpitäjä näkee aikataulun, asiakkaat ja hallintapaneelin. Valmentaja näkee vain omat tuntinsa ja asiakkaansa. Rajoitus toimii käyttöliittymässä ja palvelimella: muiden tietoihin ei pääse.
+faq.items.3.q	Voinko hallita useita studioita tai toimipisteitä?
+faq.items.3.a	Kyllä, eikä se riipu paketista. Yksi tili voi kuulua useille studioille ja vaihtaa niiden välillä, ja studion sisällä määrität toimipisteet ja tilat.
+faq.items.4.q	Onko tumma teema ja muita kieliä?
+faq.items.4.a	Kyllä, käyttöliittymä vaihtaa vaalean ja tumman välillä ja puhuu englantia, venäjää, ukrainaa, tšekkiä ja saksaa. Aikavyöhyke, valuutta ja kieli määritetään käyttöönoton aikana.
+faq.items.5.q	Mitä tiedoilleni tapahtuu, jos päätän lähteä?
+faq.items.5.a	Tiedot ovat sinun. Asetuksissa on CSV-vienti asiakkaille, aikataululle, taloudelle ja jäsenyyksille, ja poisto tehdään pyynnöstäsi.
+faq.notFoundTitle	Etkö löytänyt vastausta?
+faq.notFoundLead	Kirjoita meille — vastaamme itse, ilman botteja ja jonoa.
+faq.copied	Kopioitu
+about.label	meistä
+about.title	Veloran tekevät ihmiset,\njotka ovat itse pyörittäneet studioita
+about.lead	Emme tee ”CRM:ää kaikille”. Teemme työkalua tiettyyn työhön — aikatauluun, asiakkaisiin, rahaan ja viestintään — ja vastaamme kysymyksiin itse valmiin vastauksen lähettämisen sijaan.
+about.p1	Studion asiakkaat pysyvät studion asiakkaina. Velora ei rakenna yhteistä luetteloa, ei näytä asiakkaillesi muiden mainoksia eikä ota osuutta siksi, että henkilö palaa luoksesi.
+about.p2	Tuote on tällä hetkellä tehty jooga- ja pilatesstudioille — niiden aikataulujen, jäsenyyksien ja valmentajien todelliseen toimintatapaan. Muut alat seuraavat yhtä harkitusti.
+cta.eyebrow	Aloita tänään
+cta.titleTop	Oletko valmis siirtymään
+cta.titleAccent	seuraavalle tasolle?
+cta.lead	30 päivää maksutta. Ei korttia. Ei sitoutumista. Kokeile — huomaat eron.
+cta.register	Rekisteröidy maksutta
+cta.whatsapp	Lähetä viesti WhatsAppissa
+footer.tagline	Premium-CRM jooga- ja pilatesstudioille. Varaukset, asiakkaat, raha ja tekoäly samassa paikassa.
+footer.columns.product.title	Tuote
+footer.columns.product.features	Ominaisuudet
+footer.columns.product.modules	Moduulit
+footer.columns.product.booking	Verkkovaraus
+footer.columns.product.ai	Velora AI
+footer.columns.product.pricing	Hinnat
+footer.columns.company.title	Yritys
+footer.columns.company.difference	Miten erotumme
+footer.columns.company.about	Meistä
+footer.columns.company.faq	Kysymykset ja vastaukset
+footer.columns.company.support	Tuki
+footer.columns.docs.title	Asiakirjat
+footer.columns.docs.terms	Käyttöehdot
+footer.columns.docs.privacy	Tietosuojakäytäntö
+footer.columns.docs.cookies	Evästekäytäntö
+footer.columns.docs.dpa	Tietojenkäsittely
+footer.columns.docs.cookieSettings	Evästeasetukset
+footer.columns.docs.support	Tuki
+footer.copyright	© 2026 Velora. Kaikki oikeudet pidätetään.
+screens.journal	Päiväaikataulu
+screens.booking	Verkkovaraus
+screens.finance	Käyntimaksu
+screens.notify	Tapahtuma × kanava
+screens.ai	Velora AI
+art.journal	Aikataulu
+art.journalToday	Tänään — 12 tuntia
+art.weekdays.0	M
+art.weekdays.1	T
+art.weekdays.2	K
+art.weekdays.3	T
+art.weekdays.4	P
+art.weekdays.5	L
+art.weekdays.6	S
+art.finance	Talous
+art.financeValue	1,8 t€
+art.financeLabel	liikevaihto tässä kuussa
+art.clients	Asiakkaat
+art.clientsLabel	asiakasta, +12 tällä viikolla
+art.questions_one	{{count}} kysymys
+art.questions_other	{{count}} kysymystä
+art.open	avaa

@@ -1,0 +1,315 @@
+{
+  "tabs": {
+    "studios": "Studios",
+    "services": "Services",
+    "subscriptions": "Abonnements"
+  },
+  "modals": {
+    "addStudio": {
+      "steps": {
+        "about": {
+          "title": "À propos du studio",
+          "sub": "Nom et coordonnées",
+          "trust": "Vos données sont chiffrées et ne sont jamais partagées avec des tiers"
+        },
+        "location": {
+          "title": "Emplacement",
+          "sub": "Où se trouve cette succursale ?",
+          "trust": "L'adresse est utilisée dans le planning et les cartes"
+        },
+        "photo": {
+          "title": "Photo",
+          "sub": "Couverture du studio — facultative",
+          "trust": "Vous pourrez l'ajouter plus tard dans les paramètres de la succursale"
+        }
+      },
+      "stepCounter": "Étape {{current}} sur {{total}}",
+      "step1": {
+        "heading": "Informations principales",
+        "subheading": "Comment s'appelle le studio et comment le joindre ?",
+        "name": "Nom du studio *",
+        "namePlaceholder": "Ex. : Studio Velora",
+        "phone": "Téléphone *",
+        "email": "E-mail *",
+        "contactHint": "Indiquez un téléphone ou un e-mail — au moins un",
+        "noContacts": "Aucun contact indiqué",
+        "new": "NOUVEAU"
+      },
+      "step2": {
+        "heading": "Emplacement",
+        "subheading": "Indiquez où se trouve cette succursale",
+        "country": "Pays",
+        "countryPlaceholder": "États-Unis",
+        "city": "Ville *",
+        "cityPlaceholder": "New York",
+        "address": "Adresse *",
+        "addressPlaceholder": "5e Avenue 12, bureau 301",
+        "noAddress": "Aucune adresse indiquée",
+        "groupHint": "Les champs « Pays » et « Ville » servent à regrouper les succursales dans la liste."
+      },
+      "step3": {
+        "heading": "Photo du studio",
+        "subheading": "Importez une couverture — facultatif, vous pouvez passer cette étape",
+        "uploadCta": "Cliquez pour importer",
+        "uploadHint": "JPG, PNG jusqu'à 10 Mo",
+        "replace": "Remplacer",
+        "remove": "Supprimer",
+        "previewAlt": "Aperçu",
+        "summary": "Récapitulatif",
+        "uploadError": "Échec de l'import de la photo. Essayez un autre fichier ou supprimez-la."
+      },
+      "summaryRows": {
+        "name": "Nom",
+        "city": "Ville",
+        "address": "Adresse"
+      },
+      "nextPhoto": "Suivant — photo",
+      "submit": "Créer le studio",
+      "skipPhoto": "Ignorer la photo et créer",
+      "illus": {
+        "contacts": "Coordonnées",
+        "newBranch": "Nouvelle succursale",
+        "city": "Ville",
+        "newBranchStudio": "Nouvelle succursale de studio"
+      }
+    },
+    "editBranch": {
+      "title": "Modifier la succursale",
+      "name": "Nom de la succursale",
+      "namePlaceholder": "Studio Velora",
+      "phone": "Téléphone",
+      "email": "E-mail",
+      "emailPlaceholder": "studio@velora.com",
+      "country": "Pays",
+      "countryPlaceholder": "États-Unis",
+      "city": "Ville",
+      "cityPlaceholder": "New York",
+      "address": "Adresse",
+      "addressPlaceholder": "5e Avenue 12",
+      "photo": "Photo de la succursale",
+      "contactHint": "Indiquez un téléphone ou un e-mail",
+      "workingHours": "Horaires d'ouverture"
+    },
+    "hall": {
+      "titleNew": "Ajouter {{spaceAcc}}",
+      "titleEdit": "Modifier {{spaceAcc}}",
+      "name": "Nom",
+      "namePlaceholder": "{{space, capitalize}} A",
+      "capacity": "Capacité",
+      "area": "Surface, m²",
+      "hourlyRate": "Prix par heure, {{currency}}",
+      "hourlyRatePlaceholder": "3000",
+      "equipment": "Équipement",
+      "equipmentPlaceholder": "Ajouter de l'équipement",
+      "color": "Couleur",
+      "isOnline": "En ligne",
+      "photo": "Photo",
+      "subtitle": "{{space, capitalize}} dans la succursale : places, équipement, couleur dans le planning",
+      "previewTitle": "Aperçu",
+      "sectionBasic": "Essentiel",
+      "sectionSpace": "Espace",
+      "sectionLook": "Apparence",
+      "areaShort": "Surface",
+      "hourlyRateShort": "Prix par heure",
+      "statArea": "Surface",
+      "statRate": "Prix / heure",
+      "isOnlineHint": "Les cours ont lieu en ligne — aucun local physique.",
+      "colorHint": "Les cours ici sont mis en évidence avec cette couleur dans le planning."
+    },
+    "service": {
+      "titleNew": "Nouveau service",
+      "titleEdit": "Modifier le service",
+      "name": "Nom du service",
+      "namePlaceholder": "Hatha yoga",
+      "category": "Catégorie",
+      "type": "Type",
+      "typeGroup": "Groupe",
+      "typeIndividual": "Individuel",
+      "price": "Prix, {{currency}}",
+      "pricePlaceholder": "1200",
+      "duration": "Durée, min",
+      "durationPlaceholder": "60",
+      "maxClients": "Nombre maximal de clients",
+      "maxClientsPlaceholder": "15",
+      "description": "Description",
+      "descriptionPlaceholder": "Brève description du service",
+      "color": "Couleur",
+      "subtitle": "Apparaît dans le planning et la réservation en ligne",
+      "previewTitle": "Aperçu dans le planning",
+      "sectionBasic": "Essentiel",
+      "sectionPricing": "Prix et durée",
+      "sectionLook": "Apparence",
+      "priceShort": "Prix",
+      "durationShort": "Durée",
+      "statSeats": "Places",
+      "colorHint": "Les cours sont mis en évidence avec cette couleur dans la grille du planning.",
+      "bookingMode": "Mode de réservation",
+      "bookingModeEvent": "Inscription",
+      "bookingModeResource": "Choisir un horaire",
+      "bookingModeEventHint": "Les clients s'inscrivent à un cours déjà planifié.",
+      "bookingModeResourceHint": "Le client choisit un spécialiste et un créneau libre ; l'intervalle {{offering}} est créé à la confirmation.",
+      "bookable": "Disponible à la réservation",
+      "bookableOn": "Oui",
+      "bookableOff": "Non",
+      "bufferBefore": "Temps tampon avant",
+      "bufferAfter": "Temps tampon après"
+    },
+    "package": {
+      "titleNew": "Nouveau forfait",
+      "titleEdit": "Modifier le forfait",
+      "name": "Nom du forfait",
+      "namePlaceholder": "8 cours",
+      "classCount": "Nombre de cours",
+      "classCountPlaceholder": "8",
+      "price": "Prix, {{currency}}",
+      "pricePlaceholder": "8000",
+      "perVisitPrice": "Prix par visite",
+      "durationDays": "Valable, jours",
+      "durationDaysPlaceholder": "60",
+      "services": "Services",
+      "servicesHint": "Aucune sélection — le forfait s'applique à tous les cours",
+      "isActive": "En vente",
+      "soldAsSubscription": "Afficher dans l'onglet « Abonnements »",
+      "soldAsSingle": "Afficher dans l'onglet « Visites uniques »",
+      "subtitle": "Un lot de cours que vous vendez aux clients",
+      "previewTitle": "Aperçu du pass",
+      "previewKind": "Pass",
+      "previewValid": "Valable",
+      "sectionBasic": "Essentiel",
+      "sectionTerms": "Conditions",
+      "sectionSale": "Vente",
+      "priceShort": "Prix du forfait",
+      "statClasses": "Cours",
+      "statDays": "Jours",
+      "statAll": "Tous",
+      "isActiveHint": "Les clients peuvent voir et acheter ce forfait.",
+      "soldAsSubscriptionHint": "Sinon, le forfait reste uniquement dans les visites uniques."
+    }
+  },
+  "studios": {
+    "title": "STUDIOS",
+    "addStudio": "Ajouter un studio",
+    "addHall": "Ajouter {{spaceAcc}}",
+    "editBranch": "Modifier la succursale",
+    "deleteBranch": "Supprimer la succursale",
+    "infoTab": "Informations générales",
+    "hallsTitle": "{{spacePlural, capitalize}} du studio",
+    "hallCount_one": "{{spacePlural, capitalize}} · {{count}}",
+    "hallCount_other": "{{spacePlural, capitalize}} · {{count}}",
+    "stats": {
+      "halls": "{{spacePlural, capitalize}}",
+      "totalSeats": "Nombre total de places",
+      "fromPerHour": "À partir de / heure"
+    },
+    "hall": {
+      "seats": "places",
+      "schedule": "Horaires d'ouverture",
+      "closed": "Fermé",
+      "stats": {
+        "seats": "Places",
+        "area": "Surface",
+        "perHour": "Par heure"
+      },
+      "equipment": "Équipement",
+      "actions": "Actions",
+      "edit": "Modifier {{spaceAcc}}",
+      "delete": "Supprimer {{spaceAcc}}"
+    },
+    "empty": {
+      "title": "Aucun studio",
+      "subtitle": "Ajoutez votre premier studio"
+    },
+    "toasts": {
+      "created": "Studio créé",
+      "createError": "Impossible de créer le studio",
+      "deleted": "Studio supprimé",
+      "hallDeleted": "Supprimé : {{space}}",
+      "saved": "Enregistré",
+      "edit": "Modifier : {{name}}"
+    },
+    "confirmDelete": "Supprimer la succursale « {{name}} » ? Cette action est irréversible.",
+    "confirmDeleteTitle": "Supprimer la succursale ?",
+    "confirmDeleteHall": "Supprimer {{spaceAcc}} « {{name}} » ?",
+    "confirmDeleteHallTitle": "Supprimer {{spaceAcc}} ?"
+  },
+  "services": {
+    "title": "SERVICES",
+    "addService": "Ajouter un service",
+    "types": {
+      "group": "Groupe",
+      "individual": "Indiv.",
+      "groupFull": " · Groupe",
+      "individualFull": " · Individuel"
+    },
+    "stats": {
+      "price": "Prix",
+      "duration": "Durée",
+      "bookings": "Réservations",
+      "revenue": "Revenu"
+    },
+    "details": {
+      "description": "Description",
+      "details": "Détails",
+      "minutes": "minutes",
+      "upTo": "Jusqu'à {{count}} pers.",
+      "personal": "Individuel",
+      "bookingsPerMonth": "réservations en 30 jours",
+      "schedule": "Planning des cours"
+    },
+    "empty": {
+      "title": "Aucun service",
+      "subtitle": "Ajoutez votre premier service"
+    },
+    "toasts": {
+      "deleted": "Service supprimé",
+      "deleteError": "Impossible de supprimer le service",
+      "saved": "Enregistré",
+      "saveError": "Impossible d'enregistrer le service",
+      "edit": "Modifier : {{name}}"
+    },
+    "confirmDelete": "Supprimer le service « {{name}} » ?",
+    "confirmDeleteTitle": "Supprimer le service ?",
+    "categories": {
+      "yoga": "Yoga",
+      "pilates": "Pilates",
+      "stretching": "Étirements",
+      "individual": "Individuel",
+      "other": "Sans catégorie"
+    }
+  },
+  "subscriptions": {
+    "title": "ABONNEMENTS",
+    "addPackage": "Ajouter un forfait",
+    "card": {
+      "classCount_one": "{{count}} cours",
+      "classCount_other": "{{count}} cours",
+      "duration": "{{count}} jours",
+      "allServices": "Tous les cours",
+      "serviceCount_one": "{{count}} service",
+      "serviceCount_other": "{{count}} services",
+      "inactiveBadge": "Retiré de la vente"
+    },
+    "settings": {
+      "title": "Paramètres du programme",
+      "allowFreeze": "Gel de l'abonnement",
+      "allowTransfer": "Transfert vers un autre client",
+      "autoRenewal": "Renouvellement automatique à partir du dépôt du client"
+    },
+    "empty": {
+      "title": "Aucun forfait pour le moment",
+      "cta": "Créer un forfait"
+    },
+    "toasts": {
+      "created": "Forfait créé",
+      "saved": "Enregistré",
+      "saveError": "Impossible d'enregistrer le forfait",
+      "deactivated": "Forfait retiré de la vente",
+      "restored": "Forfait remis en vente",
+      "actionError": "Impossible d'effectuer l'action"
+    },
+    "deactivate": "Retirer de la vente",
+    "restore": "Remettre en vente",
+    "confirmDeactivateTitle": "Retirer ce forfait de la vente ?",
+    "confirmDeactivate": "Les abonnements déjà vendus continueront de fonctionner."
+  }
+}

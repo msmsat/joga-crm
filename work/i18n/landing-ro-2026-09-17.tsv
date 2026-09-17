@@ -1,0 +1,233 @@
+== ro
+nav.product	Produs
+nav.modules	Module
+nav.pricing	Prețuri
+nav.faq	Întrebări frecvente
+nav.login	Conectare
+nav.startShort	Începeți
+nav.startFull	Începeți gratuit
+nav.language	Limbă
+hero.badge	Noul standard CRM al anului 2026
+hero.title	Un CRM pe care\\n*veți iubi* să-l folosiți
+hero.lead	CRM B2B premium pentru studiouri de yoga și pilates. Programări, clienți, echipă și finanțe într-un singur loc. Fără clicuri în plus, fără confuzie.
+hero.cta	Încercați gratuit 30 de zile
+hero.perks.0	30 de zile gratuite
+hero.perks.1	Fără card
+hero.perks.2	Anulați cu un clic
+marquee.0	Program
+marquee.1	Clienți
+marquee.2	Abonamente
+marquee.3	Programări online
+marquee.4	Finanțe
+marquee.5	Salarii
+marquee.6	Notificări
+marquee.7	Fidelizare
+marquee.8	Rapoarte
+marquee.9	Velora AI
+marquee.10	Aplicație client
+marquee.11	Roluri și acces
+stats.items.0.value	30 de zile
+stats.items.0.label	Gratuit, fără card
+stats.items.1.value	16
+stats.items.1.label	module în fiecare plan
+stats.items.2.value	4
+stats.items.2.label	canale de programări online
+stats.items.3.value	de la 15 €
+stats.items.3.label	pe lună, per studio
+stats.trust.0	Datele rămân ale dvs.
+stats.trust.1	Rolurile sunt aplicate și pe server
+stats.trust.2	Export CSV oricând
+stats.trust.3	Ștergere la cerere
+compare.label	diferența
+compare.title	Am eliminat ce\\nvă stătea în cale
+compare.lead	Velora s-a născut din propria noastră experiență: administram studiouri și ne loveam zilnic de același zid — un CRM în care sunt necesare nouă clicuri pentru a programa un client. Iată ce s-a schimbat.
+compare.usual	Modul obișnuit
+compare.velora	În Velora
+compare.pairs.0.bad	Pentru a programa un client, părăsiți programul pentru alt ecran și apoi reveniți
+compare.pairs.0.good	Programările și clienții noi sunt creați direct în program
+compare.pairs.1.bad	Rapoartele sunt exportate în Excel și reconciliate manual
+compare.pairs.1.good	Rapoarte live după antrenor și serviciu, cu export pentru orice perioadă
+compare.pairs.2.bad	Notificările sunt un serviciu separat, pentru care plătiți separat
+compare.pairs.2.good	Telegram, email și WhatsApp sunt integrate printr-o matrice eveniment × canal
+compare.pairs.3.bad	Un antrenor poate vedea programul și baza de clienți a tuturor celorlalți
+compare.pairs.3.good	Rolurile limitează accesul atât în interfață, cât și pe server
+compare.pairs.4.bad	Un asistent? În cel mai bun caz, căutare de clienți
+compare.pairs.4.good	Velora AI răspunde la întrebări despre afacerea dvs. — și la întrebările clienților în Telegram și Instagram
+showcase.label	toate într-un singur loc
+showcase.title	O platformă în locul\\nunui zeci de servicii
+showcase.lead	Programări, clienți, bani, comunicare și AI într-o singură interfață. Niciun modul inutil: fiecare ecran rezolvă o problemă reală a proprietarului.
+showcase.blocks.journal.title	Programul dvs.
+showcase.blocks.journal.lead	O grilă zilnică în care antrenorii sunt coloane, iar orele sunt rânduri. Aici se întâmplă tot ce face administratorul.
+showcase.blocks.journal.points.0	Trageți un curs la altă oră — sau la alt antrenor
+showcase.blocks.journal.points.1	Creați cursuri și clienți noi fără să părăsiți programul
+showcase.blocks.journal.points.2	Rezumatul zilei este alături: ocuparea sălilor și veniturile
+showcase.blocks.booking.title	Programările dvs. online
+showcase.blocks.booking.lead	Patru canale în care clienții se programează singuri, non-stop și fără administrator.
+showcase.blocks.booking.points.0	Widget web, Telegram, WhatsApp și Instagram — fiecare se configurează separat
+showcase.blocks.booking.points.1	Reguli: cu câte ore înainte de start se închide programarea și până când poate clientul să anuleze
+showcase.blocks.booking.points.2	Identitatea aplicației client cu previzualizare live — culoare și limbă potrivite brandului dvs.
+showcase.blocks.finance.title	Finanțele dvs.
+showcase.blocks.finance.lead	Conturi, tranzacții, salarii și documente într-un singur loc, fără export în foi de calcul.
+showcase.blocks.finance.points.0	Casă, cont bancar și încasări cu cardul, cu solduri și mișcări zilnice
+showcase.blocks.finance.points.1	Abonamente, carduri cadou și rambursări legate de un client și un cont
+showcase.blocks.finance.points.2	Salarii pentru antrenori calculate după regulile dvs.
+showcase.blocks.notify.title	Notificările dvs.
+showcase.blocks.notify.lead	Trei canale de livrare și o matrice în care decideți ce se trimite și unde.
+showcase.blocks.notify.points.0	Telegram, email și WhatsApp — fiecare conectat cu propria cheie a studioului
+showcase.blocks.notify.points.1	Un set separat de evenimente pentru client, antrenor, administrator și proprietar
+showcase.blocks.notify.points.2	Mementouri cu 24 și 2 ore înainte, „au rămas 1–2 cursuri”, zile de naștere și cereri de recenzie
+showcase.blocks.ai.title	Stratul dvs. AI
+showcase.blocks.ai.lead	Asistentul cunoaște contextul afacerii și este pe fiecare pagină — agenții răspund singuri clienților.
+showcase.blocks.ai.points.0	Întrebați despre studio din bara de sus, fără a deschide altă secțiune
+showcase.blocks.ai.points.1	Agenți AI în Telegram și Instagram: tonul comunicării și modul „doar în afara programului”
+showcase.blocks.ai.points.2	Statistici: câte conversații au fost gestionate și cum au fost evaluate
+ctaStrip.title	Încercați fără migrare de date și fără plată în avans
+ctaStrip.button	Începeți gratuit
+ctaStrip.note	30 de zile gratuite • Fără card • Ajutor la început
+modules.label	module
+modules.title	16 module,\\ndeja incluse
+modules.lead	Nu o colecție de substituenți „în curând” — tot ce este listat funcționează și este inclus în plan. Rolurile stabilesc cine vede fiecare secțiune.
+modules.items.dashboard.title	Prezentare generală
+modules.items.dashboard.desc	Venituri, clienți activi, programări și fidelitatea clienților — cu tendințe
+modules.items.journal.title	Program
+modules.items.journal.desc	Grilă zilnică pe antrenor și sală, trageți pentru reprogramare
+modules.items.clients.title	Clienți
+modules.items.clients.desc	Profil, abonamente, puncte, istoric, note, etichete
+modules.items.staff.title	Echipă
+modules.items.staff.desc	Profiluri, indicatori, program de lucru, alocări de săli
+modules.items.catalog.title	Catalog
+modules.items.catalog.desc	Locații, săli cu culoare și capacitate, servicii ale studioului
+modules.items.booking.title	Programări online
+modules.items.booking.desc	Widget, Telegram, WhatsApp, Instagram și reguli de programare
+modules.items.finance.title	Finanțe
+modules.items.finance.desc	Conturi, tranzacții, contrapartide, documente, obiective, salarii
+modules.items.notify.title	Notificări
+modules.items.notify.desc	Telegram, email, WhatsApp și matrice eveniment × canal
+modules.items.loyalty.title	Fidelizare
+modules.items.loyalty.desc	Carduri, reduceri, carduri cadou, abonamente, recomandări
+modules.items.ai.title	Velora AI
+modules.items.ai.desc	Un asistent pentru afacere și agenți pentru clienții dvs.
+modules.items.reports.title	Rapoarte
+modules.items.reports.desc	După vânzări, antrenori și servicii — cu export
+modules.items.miniapp.title	Aplicație client
+modules.items.miniapp.desc	Contul personal al clientului: programări, abonamente, puncte
+modules.items.multistudio.title	Mai multe studiouri
+modules.items.multistudio.desc	Mai multe studiouri într-un cont, schimbați oricând
+modules.items.roles.title	Roluri și acces
+modules.items.roles.desc	Proprietar, administrator, antrenor — în interfață și pe server
+modules.items.settings.title	Setări
+modules.items.settings.desc	Program de lucru, temă, echipă, securitate, sesiuni
+modules.items.data.title	Date
+modules.items.data.desc	Export CSV, ștergere la cerere
+modules.integrations	Integrări
+modules.integrationsNote	conectate din setările studioului
+pricing.label	prețuri
+pricing.title	Planul dvs. depinde de\\ndimensiunea echipei
+pricing.lead	15 € pentru două persoane, +5 € pentru fiecare loc următor, nelimitat — 120 €. Toate cele 16 module și Velora AI sunt incluse la fiecare nivel: plătiți pentru mărimea echipei, nu pentru deblocarea butoanelor. Trei modele de plată la alegere și până la 40% reducere la plata în avans.
+pricing.team	echipă
+pricing.seats_one	persoană
+pricing.seats_few	persoane
+pricing.seats_other	de persoane
+pricing.unlimited	nelimitat
+pricing.scaleMin	2 locuri
+pricing.scaleMax	∞ nelimitat
+pricing.sliderAria	Câte persoane lucrează în studioul dvs.
+pricing.hint	**15 €** pentru două persoane, **+5 €** pentru fiecare loc în plus. Nelimitat — **120 €** pe lună.
+pricing.period	perioada de plată
+pricing.months	{{count}} luni
+pricing.noDiscount	—
+pricing.yourPrice	prețul dvs.
+pricing.perMonth	/ lună
+pricing.amount	{{value}} €
+pricing.amountPerMonth	{{value}} € / lună
+pricing.rows.seats	Echipă
+pricing.rows.perSeat	Per persoană
+pricing.rows.ai	Solicitări Velora AI
+pricing.rows.aiPerMonth	{{value}} / lună
+pricing.rows.modules	Module
+pricing.rows.modulesAll	toate 16
+pricing.rows.total	De plată pentru {{count}} luni
+pricing.rows.saved	Economisiți
+pricing.cta	Încercați 30 de zile
+pricing.note	Fără card · anulați cu un clic
+pricing.models.0.title	Abonament
+pricing.models.0.price	de la 15 € / lună
+pricing.models.0.desc	O sumă fixă. Cunoașteți costul dinainte — fără surprize la sfârșitul lunii.
+pricing.models.1.title	3% din venituri
+pricing.models.1.price	minimum 15 € / lună
+pricing.models.1.desc	Plătiți în funcție de cifră de afaceri. Într-o lună liniștită, completați doar diferența până la suma minimă.
+pricing.models.2.title	Combinat
+pricing.models.2.price	½ fix + 1,5%
+pricing.models.2.desc	Jumătate din abonament plus un procent mic — un echilibru între cele două modele.
+pricing.footnote	Perioada de probă nu necesită card. Modelul de plată și numărul de locuri pot fi schimbate oricând în aplicație. Prețurile nu includ TVA: taxa este calculată la plată pentru țara dvs.
+faq.label	întrebări
+faq.title	Asta întreabă de obicei oamenii
+faq.items.0.q	Ce include perioada de probă?
+faq.items.0.a	Acces complet la toate modulele timp de 30 de zile. Nu este necesar un card — dacă nu vi se potrivește, pur și simplu nu reînnoiți.
+faq.items.1.q	Vor vedea clienții mei reclame pentru alte studiouri?
+faq.items.1.a	Nu. Clienții programează prin widgetul de pe site-ul dvs., Telegram, WhatsApp sau Instagram — și printr-o aplicație client în culoarea dvs. și cu logo-ul dvs. Nu există un catalog comun cu alte studiouri.
+faq.items.2.q	Cine din echipa mea vede ce?
+faq.items.2.a	Trei roluri. Proprietarul vede totul. Administratorul vede programul, clienții și prezentarea generală. Antrenorul vede doar propriile cursuri și clienți. Restricția funcționează în interfață și pe server: nu există cale către datele altora.
+faq.items.3.q	Pot gestiona mai multe studiouri sau locații?
+faq.items.3.a	Da, și nu depinde de plan. Un cont poate aparține mai multor studiouri și se poate schimba între ele, iar în studio configurați locațiile și sălile.
+faq.items.4.q	Există temă întunecată și alte limbi?
+faq.items.4.a	Da. Interfața comută între tema luminoasă și cea întunecată și acceptă 22 de limbi, inclusiv engleză, rusă, ucraineană, cehă și germană. Fusul orar, moneda și limba se aleg la configurarea inițială.
+faq.items.5.q	Ce se întâmplă cu datele mele dacă aleg să plec?
+faq.items.5.a	Datele sunt ale dvs. Setările oferă export CSV pentru clienți, program, finanțe și abonamente, iar ștergerea se face la cererea dvs.
+faq.notFoundTitle	Nu ați găsit răspunsul?
+faq.notFoundLead	Scrieți-ne — răspundem personal, fără boți și fără coadă.
+faq.copied	Copiat
+about.label	despre noi
+about.title	Velora este construită de oameni\\ncare au condus chiar ei studiouri
+about.lead	Nu construim un „CRM pentru toți”. Construim un instrument pentru o muncă anume — program, clienți, bani, comunicare — și răspundem singuri la întrebări în loc să trimitem răspunsuri gata făcute.
+about.p1	Clienții unui studio rămân clienții acelui studio. Velora nu construiește un catalog comun, nu le arată clienților dvs. reclamele altora și nu ia un procent când o persoană revine la dvs.
+about.p2	În prezent produsul este creat pentru studiouri de yoga și pilates — pentru modul în care funcționează cu adevărat programele, abonamentele și antrenorii lor. Alte domenii vor urma cu aceeași grijă.
+cta.eyebrow	Începeți astăzi
+cta.titleTop	Sunteți gata să faceți
+cta.titleAccent	următorul pas?
+cta.lead	30 de zile gratuite. Fără card. Fără angajament. Încercați — veți simți diferența.
+cta.register	Înregistrați-vă gratuit
+cta.whatsapp	Scrieți-ne pe WhatsApp
+footer.tagline	CRM premium pentru studiouri de yoga și pilates. Programări, clienți, bani și AI într-un singur loc.
+footer.columns.product.title	Produs
+footer.columns.product.features	Funcții
+footer.columns.product.modules	Module
+footer.columns.product.booking	Programări online
+footer.columns.product.ai	Velora AI
+footer.columns.product.pricing	Prețuri
+footer.columns.company.title	Companie
+footer.columns.company.difference	Diferența noastră
+footer.columns.company.about	Despre noi
+footer.columns.company.faq	Întrebări și răspunsuri
+footer.columns.company.support	Asistență
+footer.columns.docs.title	Documente
+footer.columns.docs.terms	Termeni de utilizare
+footer.columns.docs.privacy	Politica de confidențialitate
+footer.columns.docs.cookies	Politica de cookie-uri
+footer.columns.docs.dpa	Prelucrarea datelor
+footer.columns.docs.cookieSettings	Setări cookie-uri
+footer.columns.docs.support	Asistență
+footer.copyright	© 2026 Velora. Toate drepturile rezervate.
+screens.journal	Program zilnic
+screens.booking	Programare online
+screens.finance	Plata unei vizite
+screens.notify	Eveniment × canal
+screens.ai	Velora AI
+art.journal	Program
+art.journalToday	Astăzi — 12 cursuri
+art.weekdays.0	L
+art.weekdays.1	M
+art.weekdays.2	M
+art.weekdays.3	J
+art.weekdays.4	V
+art.weekdays.5	S
+art.weekdays.6	D
+art.finance	Finanțe
+art.financeValue	1,8 mii €
+art.financeLabel	venituri luna aceasta
+art.clients	Clienți
+art.clientsLabel	clienți, +12 săptămâna aceasta
+art.questions_one	{{count}} întrebare
+art.questions_few	{{count}} întrebări
+art.questions_other	{{count}} de întrebări
+art.open	deschide

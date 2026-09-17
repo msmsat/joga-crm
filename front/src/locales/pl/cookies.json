@@ -1,0 +1,37 @@
+{
+  "banner": {
+    "title": "Twoja prywatność, Twój wybór",
+    "text": "Velora zapisuje tylko to, czego potrzebuje do działania w Twojej przeglądarce: logowanie, język i ustawienia interfejsu. Za Twoją zgodą włączymy także logowanie przez Google — Google ustawi wtedy własne pliki cookie. Nie używamy analityki ani reklam.",
+    "policy": "Polityka plików cookie"
+  },
+  "actions": {
+    "accept": "Zaakceptuj wszystkie",
+    "reject": "Odrzuć wszystkie",
+    "save": "Zapisz wybór",
+    "settings": "Ustawienia"
+  },
+  "settings": {
+    "title": "Ustawienia plików cookie",
+    "subtitle": "Dotyczy tej przeglądarki. Możesz zmienić wybór w każdej chwili.",
+    "alwaysOn": "Zawsze włączone",
+    "necessary": {
+      "title": "Bezwzględnie konieczne",
+      "text": "Utrzymują logowanie, zapamiętują język, motyw i wybór oraz chronią płatności i usługę przed nadużyciami. Velora nie może działać bez nich."
+    },
+    "functional": {
+      "title": "Zaloguj się przez Google",
+      "text": "Ładuje usługę logowania Google, aby umożliwić użycie konta Google. Google może ustawić własne pliki cookie i dowiedzieć się, że otwarto stronę logowania."
+    },
+    "none": "Nie używamy plików cookie do analityki, reklam ani śledzenia.",
+    "decided": "Twój wybór z {{date}}",
+    "policy": "Pełna lista w Polityce plików cookie"
+  },
+  "google": {
+    "button": "Kontynuuj z Google",
+    "notice": "Kliknięcie włącza logowanie przez Google: usługa Google zostaje załadowana i może ustawić pliki cookie.",
+    "policy": "Szczegóły"
+  },
+  "profile": {
+    "button": "Ustawienia plików cookie"
+  }
+}

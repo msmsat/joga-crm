@@ -162,11 +162,9 @@
   "planCards": {
     "bestChoice": "Beste Wahl",
     "current": "Aktuell",
-    "enterprise": "Enterprise",
     "perMonth": "/ Mon.",
     "currentPlan": "Aktueller Tarif",
     "yourPrice": "Ihr Preis",
-    "choosePlan": "Tarif wählen",
     "staffLimit": "Bis zu {{count}} Mitarbeitende",
     "staffUnlimited": "Unbegrenzt Mitarbeitende"
   },

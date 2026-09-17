@@ -1,0 +1,378 @@
+{
+  "nav": {
+    "product": "Produkt",
+    "modules": "Moduler",
+    "pricing": "Priser",
+    "faq": "Vanlige spørsmål",
+    "login": "Logg inn",
+    "startShort": "Start",
+    "startFull": "Start gratis",
+    "language": "Språk"
+  },
+  "hero": {
+    "badge": "Den nye CRM-standarden for 2026",
+    "title": "Et CRM du vil\\\n*elske* å bruke",
+    "lead": "Et førsteklasses B2B-CRM for yoga- og pilatesstudioer. Bookinger, kunder, team og økonomi på ett sted. Ingen ekstra klikk, ingen forvirring.",
+    "cta": "Prøv gratis i 30 dager",
+    "perks": [
+      "30 dager gratis",
+      "Ingen kort nødvendig",
+      "Avslutt med ett klikk"
+    ]
+  },
+  "marquee": [
+    "Timeplan",
+    "Kunder",
+    "Medlemskap",
+    "Nettbooking",
+    "Økonomi",
+    "Lønn",
+    "Varsler",
+    "Lojalitet",
+    "Rapporter",
+    "Velora AI",
+    "Kundeapp",
+    "Roller og tilgang"
+  ],
+  "stats": {
+    "items": [
+      {
+        "value": "30 dager",
+        "label": "Gratis, uten kort"
+      },
+      {
+        "value": "16",
+        "label": "moduler i hver plan"
+      },
+      {
+        "value": "4",
+        "label": "kanaler for nettbooking"
+      },
+      {
+        "value": "fra 15 €",
+        "label": "per måned og studio"
+      }
+    ],
+    "trust": [
+      "Dataene dine forblir dine",
+      "Roller håndheves på serveren",
+      "CSV-eksport når som helst",
+      "Sletting på forespørsel"
+    ]
+  },
+  "compare": {
+    "label": "forskjellen",
+    "title": "Vi fjernet det\\\nsom stod i veien",
+    "lead": "Velora vokste ut av vår egen erfaring: Vi drev studioer og møtte hver dag den samme veggen — et CRM der det krevdes ni klikk for å booke en kunde. Her er hva som endret seg.",
+    "usual": "Den vanlige måten",
+    "velora": "I Velora",
+    "pairs": [
+      {
+        "bad": "For å booke en kunde må du forlate timeplanen, gå til en annen visning og deretter tilbake",
+        "good": "Bookinger og nye kunder opprettes direkte i timeplanen"
+      },
+      {
+        "bad": "Rapporter eksporteres til Excel og avstemmes manuelt",
+        "good": "Direkterapporter per trener og tjeneste, med eksport for enhver periode"
+      },
+      {
+        "bad": "Varsler er en separat tjeneste du betaler separat for",
+        "good": "Telegram, e-post og WhatsApp er innebygd med en hendelse × kanal-matrise"
+      },
+      {
+        "bad": "En trener kan se alles timeplaner og kundebase",
+        "good": "Roller begrenser tilgang både i grensesnittet og på serveren"
+      },
+      {
+        "bad": "En assistent? I beste fall kundesøk",
+        "good": "Velora AI svarer på spørsmål om virksomheten din — og kundenes spørsmål i Telegram og Instagram"
+      }
+    ]
+  },
+  "showcase": {
+    "label": "alt på ett sted",
+    "title": "Én plattform i stedet\\\nfor et dusin tjenester",
+    "lead": "Bookinger, kunder, penger, kommunikasjon og AI i ett grensesnitt. Ikke én overflødig modul: hver visning løser et reelt problem for eieren.",
+    "blocks": {
+      "journal": {
+        "title": "Timeplanen din",
+        "lead": "Et dagsrutenett der trenere er kolonner og timer er rader. Alt en administrator gjør, skjer her.",
+        "points": [
+          "Dra en klasse til et annet tidspunkt — eller til en annen trener",
+          "Opprett nye klasser og kunder uten å forlate timeplanen",
+          "Dagens sammendrag ligger ved siden av: romutnyttelse og inntekter"
+        ]
+      },
+      "booking": {
+        "title": "Nettbookingen din",
+        "lead": "Fire kanaler der kunder booker selv, døgnet rundt og uten administrator.",
+        "points": [
+          "Webwidget, Telegram, WhatsApp og Instagram — hver konfigureres separat",
+          "Regler: hvor mange timer før start bookingen stenger, og hvor lenge kunden kan avbestille",
+          "Merkevare for kundeappen med forhåndsvisning i sanntid — farge og språk som passer merkevaren din"
+        ]
+      },
+      "finance": {
+        "title": "Økonomien din",
+        "lead": "Kontoer, transaksjoner, lønn og dokumenter på ett sted, uten eksport til regneark.",
+        "points": [
+          "Kasse, bankkonto og kortinnløsning med saldoer og daglige bevegelser",
+          "Medlemskap, gavekort og refusjoner knyttet til en kunde og en konto",
+          "Trenerlønn beregnet etter dine egne regler"
+        ]
+      },
+      "notify": {
+        "title": "Varslene dine",
+        "lead": "Tre leveringskanaler og en matrise der du bestemmer hva som sendes hvor.",
+        "points": [
+          "Telegram, e-post og WhatsApp — hver koblet til studioets egen nøkkel",
+          "Et eget sett hendelser for kunde, trener, administrator og eier",
+          "Påminnelser 24 og 2 timer før, «1–2 klasser igjen», bursdager og forespørsler om vurdering"
+        ]
+      },
+      "ai": {
+        "title": "AI-laget ditt",
+        "lead": "Assistenten kjenner virksomhetens kontekst og er på hver side — agentene svarer kundene selv.",
+        "points": [
+          "Still spørsmål om studioet fra topplinjen uten å åpne en annen seksjon",
+          "AI-agenter i Telegram og Instagram: kommunikasjonsstil og modus «bare utenfor åpningstid»",
+          "Statistikk: hvor mange samtaler som ble håndtert og hvordan de ble vurdert"
+        ]
+      }
+    }
+  },
+  "ctaStrip": {
+    "title": "Prøv uten datamigrering og uten forskuddsbetaling",
+    "button": "Start gratis",
+    "note": "30 dager gratis • Ingen kort • Hjelp til oppstart"
+  },
+  "modules": {
+    "label": "moduler",
+    "title": "16 moduler,\\\nallerede inkludert",
+    "lead": "Ikke en samling plassholdere med «kommer snart» — alt som står oppført fungerer og er inkludert i planen. Roller bestemmer hvem som ser hver seksjon.",
+    "items": {
+      "dashboard": {
+        "title": "Oversikt",
+        "desc": "Inntekter, aktive kunder, bookinger og kundelojalitet — med trender"
+      },
+      "journal": {
+        "title": "Timeplan",
+        "desc": "Dagsrutenett per trener og rom, dra for å planlegge på nytt"
+      },
+      "clients": {
+        "title": "Kunder",
+        "desc": "Profil, medlemskap, poeng, historikk, notater, etiketter"
+      },
+      "staff": {
+        "title": "Team",
+        "desc": "Profiler, nøkkeltall, arbeidstid, romtildelinger"
+      },
+      "catalog": {
+        "title": "Katalog",
+        "desc": "Anlegg, rom med farge og kapasitet, studiots tjenester"
+      },
+      "booking": {
+        "title": "Nettbooking",
+        "desc": "Widget, Telegram, WhatsApp, Instagram og bestillingsregler"
+      },
+      "finance": {
+        "title": "Økonomi",
+        "desc": "Kontoer, transaksjoner, motparter, dokumenter, mål, lønn"
+      },
+      "notify": {
+        "title": "Varsler",
+        "desc": "Telegram, e-post, WhatsApp og en hendelse × kanal-matrise"
+      },
+      "loyalty": {
+        "title": "Lojalitet",
+        "desc": "Kort, rabatter, gavekort, medlemskap, anbefalinger"
+      },
+      "ai": {
+        "title": "Velora AI",
+        "desc": "En virksomhetsassistent og agenter for kundene dine"
+      },
+      "reports": {
+        "title": "Rapporter",
+        "desc": "Etter salg, trenere og tjenester — med eksport"
+      },
+      "miniapp": {
+        "title": "Kundeapp",
+        "desc": "Kundens egen konto: bookinger, medlemskap, poeng"
+      },
+      "multistudio": {
+        "title": "Flere studioer",
+        "desc": "Flere studioer i én konto, bytt når som helst"
+      },
+      "roles": {
+        "title": "Roller og tilgang",
+        "desc": "Eier, administrator, trener — i grensesnittet og på serveren"
+      },
+      "settings": {
+        "title": "Innstillinger",
+        "desc": "Arbeidstid, tema, team, sikkerhet, økter"
+      },
+      "data": {
+        "title": "Data",
+        "desc": "CSV-eksport, sletting på forespørsel"
+      }
+    },
+    "integrations": "Integrasjoner",
+    "integrationsNote": "koblet til i studioinnstillingene"
+  },
+  "pricing": {
+    "label": "priser",
+    "title": "Planen din avhenger av\\\nstørrelsen på teamet",
+    "lead": "15 € for to personer, +5 € for hver neste plass, ubegrenset — 120 €. Alle 16 moduler og Velora AI er inkludert på hvert nivå: du betaler for teamets størrelse, ikke for å låse opp knapper. Tre betalingsmodeller å velge mellom og opptil 40 % rabatt ved forskuddsbetaling.",
+    "team": "team",
+    "seats_one": "person",
+    "seats_other": "personer",
+    "unlimited": "ubegrenset",
+    "scaleMin": "2 plasser",
+    "scaleMax": "∞ ubegrenset",
+    "sliderAria": "Hvor mange personer jobber i studioet ditt",
+    "hint": "**15 €** for to personer, **+5 €** for hver ekstra plass. Ubegrenset — **120 €** per måned.",
+    "period": "betalingsperiode",
+    "months": "{{count}} md.",
+    "noDiscount": "—",
+    "yourPrice": "prisen din",
+    "perMonth": "/ md.",
+    "amount": "{{value}} €",
+    "amountPerMonth": "{{value}} € / md.",
+    "rows": {
+      "seats": "Team",
+      "perSeat": "Per person",
+      "ai": "Velora AI-forespørsler",
+      "aiPerMonth": "{{value}} / md.",
+      "modules": "Moduler",
+      "modulesAll": "alle 16",
+      "total": "Å betale for {{count}} måneder",
+      "saved": "Du sparer"
+    },
+    "cta": "Prøv i 30 dager",
+    "note": "Ingen kort · avslutt med ett klikk",
+    "models": [
+      {
+        "title": "Abonnement",
+        "price": "fra 15 € / md.",
+        "desc": "Et fast beløp. Du kjenner kostnaden på forhånd — ingen overraskelser ved månedsslutt."
+      },
+      {
+        "title": "3 % av inntektene",
+        "price": "minst 15 € / md.",
+        "desc": "Betal etter omsetning. I en rolig måned fyller du bare på differansen opp til minstebeløpet."
+      },
+      {
+        "title": "Kombinert",
+        "price": "½ fast + 1,5 %",
+        "desc": "Halvparten av abonnementet pluss en liten prosent — en balanse mellom de to modellene."
+      }
+    ],
+    "footnote": "Prøveperioden krever ikke kort. Betalingsmodell og antall plasser kan endres i appen når som helst. Prisene er ekskludert MVA: avgiften beregnes i kassen for landet ditt."
+  },
+  "faq": {
+    "label": "spørsmål",
+    "title": "Dette spør folk vanligvis om",
+    "items": [
+      {
+        "q": "Hva er inkludert i prøveperioden?",
+        "a": "Full tilgang til alle moduler i 30 dager. Ingen kort kreves — hvis det ikke passer, fornyer du bare ikke."
+      },
+      {
+        "q": "Vil kundene mine se reklame for andre studioer?",
+        "a": "Nei. Kunder booker gjennom widgeten på nettstedet ditt, Telegram, WhatsApp eller Instagram — og via en kundeapp i din farge og med din logo. Det finnes ingen felles katalog med andre studioer."
+      },
+      {
+        "q": "Hvem i teamet mitt ser hva?",
+        "a": "Tre roller. Eieren ser alt. Administratoren ser timeplanen, kundene og oversikten. Treneren ser bare egne klasser og kunder. Begrensningen fungerer i grensesnittet og på serveren: det finnes ingen vei til andres data."
+      },
+      {
+        "q": "Kan jeg drive flere studioer eller anlegg?",
+        "a": "Ja, og det avhenger ikke av planen. Én konto kan tilhøre flere studioer og bytte mellom dem, og i et studio setter du opp anlegg og rom."
+      },
+      {
+        "q": "Finnes det mørkt tema og andre språk?",
+        "a": "Ja. Grensesnittet veksler mellom lyst og mørkt tema og støtter 22 språk, blant annet engelsk, russisk, ukrainsk, tsjekkisk og tysk. Tidssone, valuta og språk velges under oppstarten."
+      },
+      {
+        "q": "Hva skjer med dataene mine hvis jeg velger å dra?",
+        "a": "Dataene er dine. Innstillinger har CSV-eksport for kunder, timeplan, økonomi og medlemskap, og sletting gjøres på forespørsel."
+      }
+    ],
+    "notFoundTitle": "Fant du ikke svaret?",
+    "notFoundLead": "Skriv til oss — vi svarer selv, uten roboter og uten kø.",
+    "copied": "Kopiert"
+  },
+  "about": {
+    "label": "om oss",
+    "title": "Velora bygges av mennesker\\\nsom selv har drevet studioer",
+    "lead": "Vi bygger ikke et «CRM for alle». Vi bygger et verktøy for en konkret jobb — timeplan, kunder, penger, kommunikasjon — og svarer selv på spørsmål i stedet for å sende ferdige svar.",
+    "p1": "Et studios kunder forblir studioets kunder. Velora bygger ingen felles katalog, viser ikke kundene dine andres annonser og tar ingen prosent når noen kommer tilbake til deg.",
+    "p2": "Akkurat nå er produktet laget for yoga- og pilatesstudioer — for hvordan timeplaner, medlemskap og trenere faktisk fungerer. Andre bransjer følger med samme omtanke."
+  },
+  "cta": {
+    "eyebrow": "Start i dag",
+    "titleTop": "Klar for å ta",
+    "titleAccent": "neste steg?",
+    "lead": "30 dager gratis. Ingen kort. Ingen binding. Prøv — du vil merke forskjellen.",
+    "register": "Registrer deg gratis",
+    "whatsapp": "Skriv til oss på WhatsApp"
+  },
+  "footer": {
+    "tagline": "Et førsteklasses CRM for yoga- og pilatesstudioer. Bookinger, kunder, penger og AI på ett sted.",
+    "columns": {
+      "product": {
+        "title": "Produkt",
+        "features": "Funksjoner",
+        "modules": "Moduler",
+        "booking": "Nettbooking",
+        "ai": "Velora AI",
+        "pricing": "Priser"
+      },
+      "company": {
+        "title": "Selskap",
+        "difference": "Forskjellen vår",
+        "about": "Om oss",
+        "faq": "Spørsmål og svar",
+        "support": "Kundestøtte"
+      },
+      "docs": {
+        "title": "Dokumenter",
+        "terms": "Vilkår for bruk",
+        "privacy": "Personvernpolicy",
+        "cookies": "Informasjonskapselpolicy",
+        "dpa": "Databehandling",
+        "cookieSettings": "Informasjonskapselinnstillinger",
+        "support": "Kundestøtte"
+      }
+    },
+    "copyright": "© 2026 Velora. Alle rettigheter forbeholdt."
+  },
+  "screens": {
+    "journal": "Dagsplan",
+    "booking": "Nettbooking",
+    "finance": "Betaling for besøk",
+    "notify": "Hendelse × kanal",
+    "ai": "Velora AI"
+  },
+  "art": {
+    "journal": "Timeplan",
+    "journalToday": "I dag — 12 klasser",
+    "weekdays": [
+      "M",
+      "T",
+      "O",
+      "T",
+      "F",
+      "L",
+      "S"
+    ],
+    "finance": "Økonomi",
+    "financeValue": "1,8 t€",
+    "financeLabel": "inntekter denne måneden",
+    "clients": "Kunder",
+    "clientsLabel": "kunder, +12 denne uken",
+    "questions_one": "{{count}} spørsmål",
+    "questions_other": "{{count}} spørsmål",
+    "open": "åpne"
+  }
+}

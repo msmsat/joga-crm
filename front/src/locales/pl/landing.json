@@ -1,0 +1,380 @@
+{
+  "nav": {
+    "product": "Produkt",
+    "modules": "Moduły",
+    "pricing": "Cennik",
+    "faq": "Najczęstsze pytania",
+    "login": "Zaloguj się",
+    "startShort": "Zacznij",
+    "startFull": "Zacznij za darmo",
+    "language": "Język"
+  },
+  "hero": {
+    "badge": "Nowy standard CRM na 2026 rok",
+    "title": "CRM, którego\\\n*polubisz* używać",
+    "lead": "Premium B2B CRM dla studiów jogi i pilatesu. Rezerwacje, klienci, zespół i finanse w jednym miejscu. Bez zbędnych kliknięć i zamieszania.",
+    "cta": "Wypróbuj bezpłatnie przez 30 dni",
+    "perks": [
+      "30 dni za darmo",
+      "Bez karty",
+      "Anuluj jednym kliknięciem"
+    ]
+  },
+  "marquee": [
+    "Harmonogram",
+    "Klienci",
+    "Karnety",
+    "Rezerwacje online",
+    "Finanse",
+    "Wynagrodzenia",
+    "Powiadomienia",
+    "Lojalność",
+    "Raporty",
+    "Velora AI",
+    "Aplikacja klienta",
+    "Role i dostęp"
+  ],
+  "stats": {
+    "items": [
+      {
+        "value": "30 dni",
+        "label": "Za darmo, bez karty"
+      },
+      {
+        "value": "16",
+        "label": "modułów w każdym planie"
+      },
+      {
+        "value": "4",
+        "label": "kanały rezerwacji online"
+      },
+      {
+        "value": "od 15 €",
+        "label": "miesięcznie za studio"
+      }
+    ],
+    "trust": [
+      "Twoje dane pozostają Twoje",
+      "Role są egzekwowane na serwerze",
+      "Eksport CSV w każdej chwili",
+      "Usunięcie na żądanie"
+    ]
+  },
+  "compare": {
+    "label": "różnica",
+    "title": "Usunęliśmy to,\\\nco stało na drodze",
+    "lead": "Velora powstała z naszego doświadczenia: prowadziliśmy studia i codziennie napotykaliśmy tę samą ścianę — CRM, w którym potrzeba dziewięciu kliknięć, aby zapisać klienta. Oto, co się zmieniło.",
+    "usual": "Zwykły sposób",
+    "velora": "W Velora",
+    "pairs": [
+      {
+        "bad": "Aby zapisać klienta, opuszczasz harmonogram, przechodzisz do innego widoku i potem wracasz",
+        "good": "Rezerwacje i nowi klienci powstają bezpośrednio w harmonogramie"
+      },
+      {
+        "bad": "Raporty eksportuje się do Excela i ręcznie uzgadnia",
+        "good": "Raporty na żywo według trenera i usługi, z eksportem za dowolny okres"
+      },
+      {
+        "bad": "Powiadomienia to osobna usługa, za którą płacisz dodatkowo",
+        "good": "Telegram, e-mail i WhatsApp są wbudowane dzięki macierzy zdarzenie × kanał"
+      },
+      {
+        "bad": "Trener widzi harmonogram i bazę klientów wszystkich pozostałych",
+        "good": "Role ograniczają dostęp zarówno w interfejsie, jak i na serwerze"
+      },
+      {
+        "bad": "Asystent? W najlepszym razie wyszukiwanie klienta",
+        "good": "Velora AI odpowiada na pytania o Twoją firmę — i na pytania klientów w Telegramie oraz Instagramie"
+      }
+    ]
+  },
+  "showcase": {
+    "label": "wszystko w jednym",
+    "title": "Jedna platforma zamiast\\\ndziesiątek usług",
+    "lead": "Rezerwacje, klienci, pieniądze, komunikacja i AI w jednym interfejsie. Ani jednego zbędnego modułu: każdy widok rozwiązuje prawdziwy problem właściciela.",
+    "blocks": {
+      "journal": {
+        "title": "Twój harmonogram",
+        "lead": "Dzienna siatka, w której trenerzy są kolumnami, a godziny wierszami. Tutaj dzieje się wszystko, co robi administrator.",
+        "points": [
+          "Przeciągnij zajęcia na inną godzinę — lub do innego trenera",
+          "Twórz nowe zajęcia i klientów bez opuszczania harmonogramu",
+          "Podsumowanie dnia jest obok: obłożenie sal i przychody"
+        ]
+      },
+      "booking": {
+        "title": "Twoje rezerwacje online",
+        "lead": "Cztery kanały, w których klienci rezerwują sami, przez całą dobę i bez administratora.",
+        "points": [
+          "Widget na stronie, Telegram, WhatsApp i Instagram — każdy kanał konfigurujesz osobno",
+          "Zasady: ile godzin przed rozpoczęciem zamyka się rezerwacja i do kiedy klient może anulować",
+          "Branding aplikacji klienta z podglądem na żywo — kolor i język zgodne z Twoją marką"
+        ]
+      },
+      "finance": {
+        "title": "Twoje finanse",
+        "lead": "Konta, transakcje, wynagrodzenia i dokumenty w jednym miejscu, bez eksportu do arkuszy.",
+        "points": [
+          "Kasa, konto bankowe i płatności kartą z saldami oraz dziennymi obrotami",
+          "Karnety, karty podarunkowe i zwroty powiązane z klientem i kontem",
+          "Wynagrodzenia trenerów liczone według Twoich zasad"
+        ]
+      },
+      "notify": {
+        "title": "Twoje powiadomienia",
+        "lead": "Trzy kanały dostarczania i macierz, w której decydujesz, co jest wysyłane i gdzie.",
+        "points": [
+          "Telegram, e-mail i WhatsApp — każdy połączony własnym kluczem studia",
+          "Osobny zestaw zdarzeń dla klienta, trenera, administratora i właściciela",
+          "Przypomnienia 24 i 2 godziny wcześniej, „zostały 1–2 zajęcia”, urodziny i prośby o opinię"
+        ]
+      },
+      "ai": {
+        "title": "Twoja warstwa AI",
+        "lead": "Asystent zna kontekst firmy i jest na każdej stronie — agenci sami odpowiadają klientom.",
+        "points": [
+          "Zadaj pytanie o studio z górnego paska, bez otwierania innej sekcji",
+          "Agenci AI w Telegramie i Instagramie: ton komunikacji oraz tryb „tylko poza godzinami pracy”",
+          "Statystyki: ile rozmów obsłużono i jak je oceniono"
+        ]
+      }
+    }
+  },
+  "ctaStrip": {
+    "title": "Wypróbuj bez migracji danych i bez przedpłaty",
+    "button": "Zacznij za darmo",
+    "note": "30 dni za darmo • Bez karty • Pomoc na start"
+  },
+  "modules": {
+    "label": "moduły",
+    "title": "16 modułów,\\\njuż w cenie",
+    "lead": "To nie zbiór atrap z napisem „wkrótce” — wszystko na liście działa i jest w planie. Role określają, kto widzi każdą sekcję.",
+    "items": {
+      "dashboard": {
+        "title": "Przegląd",
+        "desc": "Przychody, aktywni klienci, rezerwacje i lojalność klientów — z trendami"
+      },
+      "journal": {
+        "title": "Harmonogram",
+        "desc": "Dzienna siatka według trenera i sali, przeciągnij, aby przełożyć"
+      },
+      "clients": {
+        "title": "Klienci",
+        "desc": "Profil, karnety, punkty, historia, notatki, tagi"
+      },
+      "staff": {
+        "title": "Zespół",
+        "desc": "Profile, wskaźniki, godziny pracy, przydziały sal"
+      },
+      "catalog": {
+        "title": "Katalog",
+        "desc": "Obiekty, sale z kolorem i pojemnością, usługi studia"
+      },
+      "booking": {
+        "title": "Rezerwacje online",
+        "desc": "Widget, Telegram, WhatsApp, Instagram i zasady rezerwacji"
+      },
+      "finance": {
+        "title": "Finanse",
+        "desc": "Konta, transakcje, kontrahenci, dokumenty, cele, wynagrodzenia"
+      },
+      "notify": {
+        "title": "Powiadomienia",
+        "desc": "Telegram, e-mail, WhatsApp i macierz zdarzenie × kanał"
+      },
+      "loyalty": {
+        "title": "Lojalność",
+        "desc": "Karty, rabaty, karty podarunkowe, karnety, polecenia"
+      },
+      "ai": {
+        "title": "Velora AI",
+        "desc": "Asystent firmy i agenci dla Twoich klientów"
+      },
+      "reports": {
+        "title": "Raporty",
+        "desc": "Według sprzedaży, trenerów i usług — z eksportem"
+      },
+      "miniapp": {
+        "title": "Aplikacja klienta",
+        "desc": "Własne konto klienta: rezerwacje, karnety, punkty"
+      },
+      "multistudio": {
+        "title": "Wiele studiów",
+        "desc": "Wiele studiów na jednym koncie, przełączaj się w każdej chwili"
+      },
+      "roles": {
+        "title": "Role i dostęp",
+        "desc": "Właściciel, administrator, trener — w interfejsie i na serwerze"
+      },
+      "settings": {
+        "title": "Ustawienia",
+        "desc": "Godziny pracy, motyw, zespół, bezpieczeństwo, sesje"
+      },
+      "data": {
+        "title": "Dane",
+        "desc": "Eksport CSV, usunięcie na żądanie"
+      }
+    },
+    "integrations": "Integracje",
+    "integrationsNote": "podłączone w ustawieniach studia"
+  },
+  "pricing": {
+    "label": "cennik",
+    "title": "Twój plan zależy od\\\nwielkości zespołu",
+    "lead": "15 € za dwie osoby, +5 € za każde kolejne miejsce, bez limitu — 120 €. Wszystkie 16 modułów i Velora AI są na każdym poziomie: płacisz za wielkość zespołu, a nie za odblokowywanie przycisków. Do wyboru są trzy modele płatności oraz do 40% zniżki przy przedpłacie.",
+    "team": "zespół",
+    "seats_one": "osoba",
+    "seats_few": "osoby",
+    "seats_many": "osób",
+    "unlimited": "bez limitu",
+    "scaleMin": "2 miejsca",
+    "scaleMax": "∞ bez limitu",
+    "sliderAria": "Ile osób pracuje w Twoim studiu",
+    "hint": "**15 €** za dwie osoby, **+5 €** za każde dodatkowe miejsce. Bez limitu — **120 €** miesięcznie.",
+    "period": "okres płatności",
+    "months": "{{count}} mies.",
+    "noDiscount": "—",
+    "yourPrice": "Twoja cena",
+    "perMonth": "/ mies.",
+    "amount": "{{value}} €",
+    "amountPerMonth": "{{value}} € / mies.",
+    "rows": {
+      "seats": "Zespół",
+      "perSeat": "Za osobę",
+      "ai": "Zapytania Velora AI",
+      "aiPerMonth": "{{value}} / mies.",
+      "modules": "Moduły",
+      "modulesAll": "wszystkie 16",
+      "total": "Do zapłaty za {{count}} miesięcy",
+      "saved": "Oszczędzasz"
+    },
+    "cta": "Wypróbuj przez 30 dni",
+    "note": "Bez karty · anuluj jednym kliknięciem",
+    "models": [
+      {
+        "title": "Subskrypcja",
+        "price": "od 15 € / mies.",
+        "desc": "Stała kwota. Koszt znasz z góry — bez niespodzianek na koniec miesiąca."
+      },
+      {
+        "title": "3% przychodu",
+        "price": "co najmniej 15 € / mies.",
+        "desc": "Płać według obrotu. W spokojniejszym miesiącu dopłacasz tylko różnicę do minimum."
+      },
+      {
+        "title": "Model mieszany",
+        "price": "½ stałej opłaty + 1,5%",
+        "desc": "Połowa subskrypcji plus niewielki procent — równowaga między dwoma modelami."
+      }
+    ],
+    "footnote": "Okres próbny nie wymaga karty. Model płatności i liczbę miejsc możesz zmienić w aplikacji w każdej chwili. Ceny nie zawierają VAT: podatek jest obliczany przy płatności dla Twojego kraju."
+  },
+  "faq": {
+    "label": "pytania",
+    "title": "O to ludzie pytają najczęściej",
+    "items": [
+      {
+        "q": "Co obejmuje okres próbny?",
+        "a": "Pełny dostęp do wszystkich modułów przez 30 dni. Karta nie jest potrzebna — jeśli to nie dla Ciebie, po prostu nie odnawiasz."
+      },
+      {
+        "q": "Czy moi klienci zobaczą reklamy innych studiów?",
+        "a": "Nie. Klienci rezerwują przez widget na Twojej stronie, Telegram, WhatsApp lub Instagram — a także przez aplikację klienta w Twoim kolorze i z Twoim logo. Nie ma wspólnego katalogu z innymi studiami."
+      },
+      {
+        "q": "Kto w moim zespole widzi co?",
+        "a": "Są trzy role. Właściciel widzi wszystko. Administrator widzi harmonogram, klientów i przegląd. Trener widzi wyłącznie własne zajęcia i klientów. Ograniczenie działa w interfejsie i na serwerze: nie ma drogi do cudzych danych."
+      },
+      {
+        "q": "Czy mogę prowadzić kilka studiów lub obiektów?",
+        "a": "Tak, i nie zależy to od planu. Jedno konto może należeć do kilku studiów i przełączać się między nimi, a w studiu konfigurujesz obiekty i sale."
+      },
+      {
+        "q": "Czy jest ciemny motyw i inne języki?",
+        "a": "Tak. Interfejs przełącza motyw jasny i ciemny oraz obsługuje 22 języki, w tym angielski, rosyjski, ukraiński, czeski i niemiecki. Strefę czasową, walutę i język wybierasz podczas wdrożenia."
+      },
+      {
+        "q": "Co stanie się z moimi danymi, jeśli zdecyduję się odejść?",
+        "a": "Dane są Twoje. Ustawienia oferują eksport CSV klientów, harmonogramu, finansów i karnetów, a usunięcie odbywa się na Twoje żądanie."
+      }
+    ],
+    "notFoundTitle": "Nie znalazłeś odpowiedzi?",
+    "notFoundLead": "Napisz do nas — odpowiadamy osobiście, bez botów i bez kolejki.",
+    "copied": "Skopiowano"
+  },
+  "about": {
+    "label": "o nas",
+    "title": "Velorę tworzą ludzie,\\\nktórzy sami prowadzili studia",
+    "lead": "Nie budujemy „CRM dla wszystkich”. Budujemy narzędzie do konkretnej pracy — harmonogramu, klientów, pieniędzy i komunikacji — i sami odpowiadamy na pytania zamiast wysyłać gotowe odpowiedzi.",
+    "p1": "Klienci studia pozostają jego klientami. Velora nie tworzy wspólnego katalogu, nie pokazuje Twoim klientom reklam innych firm i nie pobiera prowizji, gdy ktoś do Ciebie wraca.",
+    "p2": "Obecnie produkt jest zbudowany dla studiów jogi i pilatesu — dla sposobu, w jaki naprawdę działają ich harmonogramy, karnety i trenerzy. Inne branże pojawią się z taką samą uważnością."
+  },
+  "cta": {
+    "eyebrow": "Zacznij dziś",
+    "titleTop": "Gotowi, by zrobić",
+    "titleAccent": "kolejny krok?",
+    "lead": "30 dni za darmo. Bez karty. Bez zobowiązań. Wypróbuj — poczujesz różnicę.",
+    "register": "Zarejestruj się za darmo",
+    "whatsapp": "Napisz do nas na WhatsAppie"
+  },
+  "footer": {
+    "tagline": "Premium CRM dla studiów jogi i pilatesu. Rezerwacje, klienci, pieniądze i AI w jednym miejscu.",
+    "columns": {
+      "product": {
+        "title": "Produkt",
+        "features": "Funkcje",
+        "modules": "Moduły",
+        "booking": "Rezerwacje online",
+        "ai": "Velora AI",
+        "pricing": "Cennik"
+      },
+      "company": {
+        "title": "Firma",
+        "difference": "Nasza różnica",
+        "about": "O nas",
+        "faq": "Pytania i odpowiedzi",
+        "support": "Wsparcie"
+      },
+      "docs": {
+        "title": "Dokumenty",
+        "terms": "Warunki korzystania",
+        "privacy": "Polityka prywatności",
+        "cookies": "Polityka cookies",
+        "dpa": "Przetwarzanie danych",
+        "cookieSettings": "Ustawienia cookies",
+        "support": "Wsparcie"
+      }
+    },
+    "copyright": "© 2026 Velora. Wszelkie prawa zastrzeżone."
+  },
+  "screens": {
+    "journal": "Dzienny harmonogram",
+    "booking": "Rezerwacja online",
+    "finance": "Płatność za wizytę",
+    "notify": "Zdarzenie × kanał",
+    "ai": "Velora AI"
+  },
+  "art": {
+    "journal": "Harmonogram",
+    "journalToday": "Dzisiaj — 12 zajęć",
+    "weekdays": [
+      "P",
+      "W",
+      "Ś",
+      "C",
+      "P",
+      "S",
+      "N"
+    ],
+    "finance": "Finanse",
+    "financeValue": "1,8 tys. €",
+    "financeLabel": "przychód w tym miesiącu",
+    "clients": "Klienci",
+    "clientsLabel": "klienci, +12 w tym tygodniu",
+    "questions_one": "{{count}} pytanie",
+    "questions_few": "{{count}} pytania",
+    "questions_many": "{{count}} pytań",
+    "open": "otwórz"
+  }
+}

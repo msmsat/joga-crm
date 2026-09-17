@@ -1,0 +1,37 @@
+{
+  "banner": {
+    "title": "Tu privacidad, tu elección",
+    "text": "Velora conserva solo lo que necesita para funcionar en tu navegador: tu inicio de sesión, idioma y ajustes de interfaz. Con tu permiso también activaremos el inicio de sesión con Google; Google establecerá entonces sus propias cookies. No usamos analítica ni publicidad.",
+    "policy": "Política de cookies"
+  },
+  "actions": {
+    "accept": "Aceptar todas",
+    "reject": "Rechazar todas",
+    "save": "Guardar elección",
+    "settings": "Configuración"
+  },
+  "settings": {
+    "title": "Configuración de cookies",
+    "subtitle": "Se aplica a este navegador. Puedes cambiar tu elección en cualquier momento.",
+    "alwaysOn": "Siempre activadas",
+    "necessary": {
+      "title": "Estrictamente necesarias",
+      "text": "Te mantienen conectado, recuerdan tu idioma, tema y elección, y protegen los pagos y el servicio frente al uso indebido. Velora no puede funcionar sin ellas."
+    },
+    "functional": {
+      "title": "Iniciar sesión con Google",
+      "text": "Carga el servicio de inicio de sesión de Google para que puedas usar tu cuenta de Google. Google puede establecer sus propias cookies y saber que abriste la página de inicio de sesión."
+    },
+    "none": "No usamos cookies de analítica, publicidad ni seguimiento.",
+    "decided": "Tu elección del {{date}}",
+    "policy": "Lista completa en la Política de cookies"
+  },
+  "google": {
+    "button": "Continuar con Google",
+    "notice": "Al hacer clic activas el inicio de sesión con Google: el servicio de Google se carga y puede establecer cookies.",
+    "policy": "Detalles"
+  },
+  "profile": {
+    "button": "Configuración de cookies"
+  }
+}

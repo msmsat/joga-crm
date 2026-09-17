@@ -124,6 +124,7 @@
     "3": "3 months",
     "6": "6 months",
     "12": "1 year",
+    "24": "2 years",
     "title": "Payment period",
     "discountActive": "{{percent}}% discount active",
     "noDiscount": "No discount",

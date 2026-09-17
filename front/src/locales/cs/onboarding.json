@@ -53,6 +53,7 @@
   "activity": {
     "title": "Typ činnosti",
     "subtitle": "Označte vše, čemu se věnujete — v rámci jedné sekce",
+    "comingSoon": "Již brzy: barbershop, fitness, tanec a další",
     "types": {
       "yoga": "Jóga",
       "pilates": "Pilates",

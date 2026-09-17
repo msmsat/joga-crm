@@ -1,0 +1,231 @@
+== tr
+nav.product	Ürün
+nav.modules	Modüller
+nav.pricing	Fiyatlandırma
+nav.faq	Sık sorulan sorular
+nav.login	Giriş yap
+nav.startShort	Başla
+nav.startFull	Ücretsiz başla
+nav.language	Dil
+hero.badge	2026'nın yeni CRM standardı
+hero.title	Kullanmaktan\\n*keyif* alacağınız CRM
+hero.lead	Yoga ve pilates stüdyoları için premium B2B CRM. Rezervasyonlar, müşteriler, ekip ve finans tek yerde. Ekstra tıklama yok, karmaşa yok.
+hero.cta	30 gün ücretsiz deneyin
+hero.perks.0	30 gün ücretsiz
+hero.perks.1	Kart gerekmez
+hero.perks.2	Tek tıklamayla iptal
+marquee.0	Takvim
+marquee.1	Müşteriler
+marquee.2	Üyelikler
+marquee.3	Online rezervasyon
+marquee.4	Finans
+marquee.5	Maaşlar
+marquee.6	Bildirimler
+marquee.7	Sadakat
+marquee.8	Raporlar
+marquee.9	Velora AI
+marquee.10	Müşteri uygulaması
+marquee.11	Roller ve erişim
+stats.items.0.value	30 gün
+stats.items.0.label	Ücretsiz, kart gerekmez
+stats.items.1.value	16
+stats.items.1.label	Her planda modül
+stats.items.2.value	4
+stats.items.2.label	Online rezervasyon kanalı
+stats.items.3.value	15 €'dan başlayan
+stats.items.3.label	Aylık, stüdyo başına
+stats.trust.0	Verileriniz size ait kalır
+stats.trust.1	Roller sunucuda da uygulanır
+stats.trust.2	İstediğiniz zaman CSV dışa aktarımı
+stats.trust.3	Talep üzerine silme
+compare.label	fark
+compare.title	Yolunuza çıkan\\nşeyleri kaldırdık
+compare.lead	Velora kendi deneyimimizden doğdu: stüdyolar yönettik ve her gün aynı duvara çarptık — bir müşteriyi kaydetmek için dokuz tıklama isteyen bir CRM. İşte değişenler.
+compare.usual	Alışılagelen yol
+compare.velora	Velora'da
+compare.pairs.0.bad	Müşteriyi kaydetmek için takvimden başka bir ekrana geçip sonra geri dönmeniz gerekir
+compare.pairs.0.good	Rezervasyonlar ve yeni müşteriler doğrudan takvimde oluşturulur
+compare.pairs.1.bad	Raporlar Excel'e aktarılır ve elle karşılaştırılır
+compare.pairs.1.good	Eğitmen ve hizmet bazında canlı raporlar, istediğiniz dönem için dışa aktarma ile
+compare.pairs.2.bad	Bildirimler ayrıca ödeme yaptığınız ayrı bir hizmettir
+compare.pairs.2.good	Telegram, e-posta ve WhatsApp olay × kanal matrisiyle yerleşik gelir
+compare.pairs.3.bad	Bir eğitmen herkesin takvimini ve müşteri listesini görebilir
+compare.pairs.3.good	Roller erişimi hem arayüzde hem sunucuda sınırlar
+compare.pairs.4.bad	Bir asistan mı? En iyi ihtimalle müşteri araması
+compare.pairs.4.good	Velora AI işletmeniz hakkında soruları yanıtlar — Telegram ve Instagram'da müşterilerinizin sorularını da
+showcase.label	hepsi bir arada
+showcase.title	Bir düzine hizmet yerine\\ntek platform
+showcase.lead	Rezervasyonlar, müşteriler, para, iletişim ve AI tek arayüzde. Tek bir gereksiz modül yok: her ekran sahibin gerçek bir sorununu çözer.
+showcase.blocks.journal.title	Takviminiz
+showcase.blocks.journal.lead	Eğitmenlerin sütun, saatlerin satır olduğu günlük ızgara. Yöneticinin yaptığı her şey burada gerçekleşir.
+showcase.blocks.journal.points.0	Dersi başka bir saate veya başka bir eğitmene sürükleyin
+showcase.blocks.journal.points.1	Takvimden çıkmadan yeni dersler ve müşteriler oluşturun
+showcase.blocks.journal.points.2	Günün özeti yan tarafta: salon doluluğu ve gelir
+showcase.blocks.booking.title	Online rezervasyonunuz
+showcase.blocks.booking.lead	Müşterilerin yöneticisiz, günün her saati kendi rezervasyonunu yaptığı dört kanal.
+showcase.blocks.booking.points.0	Web bileşeni, Telegram, WhatsApp ve Instagram — her biri ayrı yapılandırılır
+showcase.blocks.booking.points.1	Kurallar: başlangıçtan kaç saat önce rezervasyon kapanır ve müşteri ne zamana kadar iptal edebilir
+showcase.blocks.booking.points.2	Canlı önizlemeli müşteri uygulaması markalaması — markanıza uygun renk ve dil
+showcase.blocks.finance.title	Finansınız
+showcase.blocks.finance.lead	Hesaplar, işlemler, maaşlar ve belgeler tek yerde; elektronik tabloya aktarma gerekmez.
+showcase.blocks.finance.points.0	Bakiyeler ve günlük hareketlerle kasa, banka hesabı ve kart tahsilatı
+showcase.blocks.finance.points.1	Müşteriye ve hesaba bağlı üyelikler, hediye kartları ve iadeler
+showcase.blocks.finance.points.2	Kendi kurallarınıza göre hesaplanan eğitmen maaşları
+showcase.blocks.notify.title	Bildirimleriniz
+showcase.blocks.notify.lead	Üç teslim kanalı ve neyin nereye gönderileceğini belirlediğiniz bir matris.
+showcase.blocks.notify.points.0	Telegram, e-posta ve WhatsApp — her biri stüdyonun kendi anahtarıyla bağlanır
+showcase.blocks.notify.points.1	Müşteri, eğitmen, yönetici ve sahip için ayrı olay kümesi
+showcase.blocks.notify.points.2	24 ve 2 saat önce hatırlatmalar, “1–2 ders kaldı”, doğum günleri ve değerlendirme istekleri
+showcase.blocks.ai.title	AI katmanınız
+showcase.blocks.ai.lead	Asistan işletme bağlamını bilir ve her sayfada bulunur; ajanlar müşterilere kendileri yanıt verir.
+showcase.blocks.ai.points.0	Başka bir bölümü açmadan üst çubuktan stüdyo hakkında soru sorun
+showcase.blocks.ai.points.1	Telegram ve Instagram'da AI ajanları: iletişim tonu ve “yalnızca çalışma saatleri dışında” modu
+showcase.blocks.ai.points.2	İstatistikler: kaç görüşmenin yönetildiği ve nasıl değerlendirildiği
+ctaStrip.title	Veri taşımadan, peşin ödeme yapmadan deneyin
+ctaStrip.button	Ücretsiz başla
+ctaStrip.note	30 gün ücretsiz • Kart gerekmez • Başlangıç desteği
+modules.label	modüller
+modules.title	16 modül,\\nzaten dahil
+modules.lead	“Yakında” yazan yer tutucular koleksiyonu değil — listelenen her şey çalışır ve plana dahildir. Her bölümü kimin göreceğini roller belirler.
+modules.items.dashboard.title	Genel bakış
+modules.items.dashboard.desc	Gelir, aktif müşteriler, rezervasyonlar ve müşteri sadakati — eğilimlerle
+modules.items.journal.title	Takvim
+modules.items.journal.desc	Eğitmen ve salon başına günlük ızgara, yeniden planlamak için sürükleyin
+modules.items.clients.title	Müşteriler
+modules.items.clients.desc	Profil, üyelikler, puanlar, geçmiş, notlar, etiketler
+modules.items.staff.title	Ekip
+modules.items.staff.desc	Profiller, göstergeler, çalışma saatleri, salon atamaları
+modules.items.catalog.title	Katalog
+modules.items.catalog.desc	Tesisler, renk ve kapasiteye sahip salonlar, stüdyo hizmetleri
+modules.items.booking.title	Online rezervasyon
+modules.items.booking.desc	Bileşen, Telegram, WhatsApp, Instagram ve rezervasyon kuralları
+modules.items.finance.title	Finans
+modules.items.finance.desc	Hesaplar, işlemler, karşı taraflar, belgeler, hedefler, maaşlar
+modules.items.notify.title	Bildirimler
+modules.items.notify.desc	Telegram, e-posta, WhatsApp ve olay × kanal matrisi
+modules.items.loyalty.title	Sadakat
+modules.items.loyalty.desc	Kartlar, indirimler, hediye kartları, üyelikler, tavsiyeler
+modules.items.ai.title	Velora AI
+modules.items.ai.desc	İşletme asistanı ve müşterileriniz için ajanlar
+modules.items.reports.title	Raporlar
+modules.items.reports.desc	Satışlar, eğitmenler ve hizmetler için — dışa aktarma ile
+modules.items.miniapp.title	Müşteri uygulaması
+modules.items.miniapp.desc	Müşterinin kendi hesabı: rezervasyonlar, üyelikler, puanlar
+modules.items.multistudio.title	Birden çok stüdyo
+modules.items.multistudio.desc	Tek hesapta birden çok stüdyo, istediğiniz zaman geçiş yapın
+modules.items.roles.title	Roller ve erişim
+modules.items.roles.desc	Sahip, yönetici, eğitmen — arayüzde ve sunucuda
+modules.items.settings.title	Ayarlar
+modules.items.settings.desc	Çalışma saatleri, tema, ekip, güvenlik, oturumlar
+modules.items.data.title	Veri
+modules.items.data.desc	CSV dışa aktarımı, talep üzerine silme
+modules.integrations	Entegrasyonlar
+modules.integrationsNote	stüdyo ayarlarında bağlanır
+pricing.label	fiyatlandırma
+pricing.title	Planınız ekip\\nbüyüklüğünüze bağlıdır
+pricing.lead	İki kişi için 15 €, her ek koltuk için +5 €, sınırsız — 120 €. Tüm 16 modül ve Velora AI her seviyeye dahildir: düğmeleri açmak için değil, ekip büyüklüğü için ödeme yaparsınız. Seçebileceğiniz üç ödeme modeli ve peşin ödemede %40'a varan indirim.
+pricing.team	ekip
+pricing.seats_one	kişi
+pricing.seats_other	kişi
+pricing.unlimited	sınırsız
+pricing.scaleMin	2 koltuk
+pricing.scaleMax	∞ sınırsız
+pricing.sliderAria	Stüdyonuzda kaç kişi çalışıyor
+pricing.hint	İki kişi için **15 €**, her ek koltuk için **+5 €**. Sınırsız — ayda **120 €**.
+pricing.period	ödeme dönemi
+pricing.months	{{count}} ay
+pricing.noDiscount	—
+pricing.yourPrice	fiyatınız
+pricing.perMonth	/ ay
+pricing.amount	{{value}} €
+pricing.amountPerMonth	{{value}} € / ay
+pricing.rows.seats	Ekip
+pricing.rows.perSeat	Kişi başına
+pricing.rows.ai	Velora AI istekleri
+pricing.rows.aiPerMonth	{{value}} / ay
+pricing.rows.modules	Modüller
+pricing.rows.modulesAll	16'nın tamamı
+pricing.rows.total	{{count}} ay için ödenecek
+pricing.rows.saved	Tasarrufunuz
+pricing.cta	30 gün deneyin
+pricing.note	Kart gerekmez · tek tıklamayla iptal
+pricing.models.0.title	Abonelik
+pricing.models.0.price	15 € / ay'dan başlayan
+pricing.models.0.desc	Sabit bir tutar. Maliyeti baştan bilirsiniz — ay sonunda sürpriz yok.
+pricing.models.1.title	Gelirin %3'ü
+pricing.models.1.price	en az 15 € / ay
+pricing.models.1.desc	Ciroya göre ödeyin. Sakin bir ayda yalnızca asgari tutara kadar farkı tamamlarsınız.
+pricing.models.2.title	Karma
+pricing.models.2.price	½ sabit + %1,5
+pricing.models.2.desc	Aboneliğin yarısı artı küçük bir yüzde — iki model arasında denge.
+pricing.footnote	Deneme için kart gerekmez. Ödeme modeli ve koltuk sayısı uygulamada istediğiniz zaman değiştirilebilir. Fiyatlara KDV dahil değildir: vergi ülkeniz için ödeme sırasında hesaplanır.
+faq.label	sorular
+faq.title	İnsanların genellikle sordukları
+faq.items.0.q	Deneme süresine neler dahil?
+faq.items.0.a	30 gün boyunca tüm modüllere tam erişim. Kart gerekmez — size uymuyorsa yenilemezsiniz.
+faq.items.1.q	Müşterilerim başka stüdyoların reklamlarını görecek mi?
+faq.items.1.a	Hayır. Müşteriler sitenizdeki bileşen, Telegram, WhatsApp veya Instagram üzerinden — ayrıca renginiz ve logonuzla müşteri uygulaması üzerinden — rezervasyon yapar. Başka stüdyolarla ortak bir katalog yoktur.
+faq.items.2.q	Ekibimde kim neyi görür?
+faq.items.2.a	Üç rol vardır. Sahip her şeyi görür. Yönetici takvimi, müşterileri ve genel bakışı görür. Eğitmen yalnızca kendi derslerini ve müşterilerini görür. Kısıtlama arayüzde ve sunucuda çalışır: başkalarının verilerine giden bir yol yoktur.
+faq.items.3.q	Birden fazla stüdyo veya tesis yönetebilir miyim?
+faq.items.3.a	Evet, bu plana bağlı değildir. Bir hesap birden çok stüdyoya ait olabilir ve aralarında geçiş yapabilir; stüdyo içinde tesisleri ve salonları ayarlarsınız.
+faq.items.4.q	Karanlık tema ve başka diller var mı?
+faq.items.4.a	Evet. Arayüz açık ve koyu tema arasında geçer ve İngilizce, Rusça, Ukraynaca, Çekçe ve Almanca dahil 22 dili destekler. Saat dilimi, para birimi ve dil başlangıçta seçilir.
+faq.items.5.q	Ayrılmaya karar verirsem verilerime ne olur?
+faq.items.5.a	Veriler sizin. Ayarlarda müşteriler, takvim, finans ve üyelikler için CSV dışa aktarımı vardır; silme talebiniz üzerine yapılır.
+faq.notFoundTitle	Cevabı bulamadınız mı?
+faq.notFoundLead	Bize yazın — botlar veya bekleme sırası olmadan bizzat yanıtlarız.
+faq.copied	Kopyalandı
+about.label	hakkımızda
+about.title	Velora, kendileri de stüdyo işletmiş\\ninsanlar tarafından geliştiriliyor
+about.lead	“Herkes için CRM” yapmıyoruz. Belirli bir iş için — takvim, müşteriler, para, iletişim — araç geliştiriyor; ezber cevaplar göndermek yerine soruları kendimiz yanıtlıyoruz.
+about.p1	Bir stüdyonun müşterileri o stüdyonun müşterileri olarak kalır. Velora ortak bir katalog kurmaz, müşterilerinize başkalarının reklamlarını göstermez ve bir kişi size geri döndüğünde komisyon almaz.
+about.p2	Şu anda ürün yoga ve pilates stüdyoları için; takvimlerinin, üyeliklerinin ve eğitmenlerinin gerçekten çalışma biçimi için tasarlandı. Diğer sektörler de aynı özenle sonra gelecek.
+cta.eyebrow	Bugün başlayın
+cta.titleTop	Bir sonraki
+cta.titleAccent	adımı atmaya hazır mısınız?
+cta.lead	30 gün ücretsiz. Kart gerekmez. Taahhüt yok. Deneyin — farkı hissedeceksiniz.
+cta.register	Ücretsiz kaydol
+cta.whatsapp	WhatsApp'tan bize yazın
+footer.tagline	Yoga ve pilates stüdyoları için premium CRM. Rezervasyonlar, müşteriler, para ve AI tek yerde.
+footer.columns.product.title	Ürün
+footer.columns.product.features	Özellikler
+footer.columns.product.modules	Modüller
+footer.columns.product.booking	Online rezervasyon
+footer.columns.product.ai	Velora AI
+footer.columns.product.pricing	Fiyatlandırma
+footer.columns.company.title	Şirket
+footer.columns.company.difference	Farkımız
+footer.columns.company.about	Hakkımızda
+footer.columns.company.faq	Sorular ve yanıtlar
+footer.columns.company.support	Destek
+footer.columns.docs.title	Belgeler
+footer.columns.docs.terms	Kullanım koşulları
+footer.columns.docs.privacy	Gizlilik politikası
+footer.columns.docs.cookies	Çerez politikası
+footer.columns.docs.dpa	Veri işleme
+footer.columns.docs.cookieSettings	Çerez ayarları
+footer.columns.docs.support	Destek
+footer.copyright	© 2026 Velora. Tüm hakları saklıdır.
+screens.journal	Günlük takvim
+screens.booking	Online rezervasyon
+screens.finance	Ziyaret ödemesi
+screens.notify	Olay × kanal
+screens.ai	Velora AI
+art.journal	Takvim
+art.journalToday	Bugün — 12 ders
+art.weekdays.0	P
+art.weekdays.1	S
+art.weekdays.2	Ç
+art.weekdays.3	P
+art.weekdays.4	C
+art.weekdays.5	C
+art.weekdays.6	P
+art.finance	Finans
+art.financeValue	1,8 bin €
+art.financeLabel	bu ay gelir
+art.clients	Müşteriler
+art.clientsLabel	müşteri, bu hafta +12
+art.questions_one	{{count}} soru
+art.questions_other	{{count}} soru
+art.open	aç

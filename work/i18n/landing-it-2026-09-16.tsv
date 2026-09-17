@@ -1,0 +1,231 @@
+== it
+nav.product	Prodotto
+nav.modules	Moduli
+nav.pricing	Prezzi
+nav.faq	FAQ
+nav.login	Accedi
+nav.startShort	Inizia
+nav.startFull	Inizia gratis
+nav.language	Lingua
+hero.badge	Il nuovo standard CRM nel 2026
+hero.title	Un CRM che\n*amerai* usare
+hero.lead	Un CRM B2B premium per studi di yoga e pilates. Prenotazioni, clienti, team e finanze in un unico posto. Nessun clic superfluo, nessuna complicazione.
+hero.cta	Prova gratis per 30 giorni
+hero.perks.0	30 giorni gratuiti
+hero.perks.1	Nessuna carta richiesta
+hero.perks.2	Annulla con un clic
+marquee.0	Calendario
+marquee.1	Clienti
+marquee.2	Abbonamenti
+marquee.3	Prenotazione online
+marquee.4	Finanze
+marquee.5	Paghe
+marquee.6	Notifiche
+marquee.7	Fidelizzazione
+marquee.8	Report
+marquee.9	Velora AI
+marquee.10	App clienti
+marquee.11	Ruoli e accessi
+stats.items.0.value	30 giorni
+stats.items.0.label	Gratis, senza carta richiesta
+stats.items.1.value	16
+stats.items.1.label	Moduli in ogni piano
+stats.items.2.value	4
+stats.items.2.label	Canali di prenotazione online
+stats.items.3.value	da 15 €
+stats.items.3.label	Al mese, per studio
+stats.trust.0	I tuoi dati restano tuoi
+stats.trust.1	Ruoli applicati sul server
+stats.trust.2	Esportazione CSV in qualsiasi momento
+stats.trust.3	Eliminazione su richiesta
+compare.label	la differenza
+compare.title	Abbiamo eliminato ciò\nche ostacolava il lavoro
+compare.lead	Velora nasce dalla nostra esperienza: gestivamo studi e ogni giorno incontravamo lo stesso ostacolo, un CRM in cui prenotare un cliente richiedeva nove clic. Ecco cosa cambia.
+compare.usual	Il modo abituale
+compare.velora	In Velora
+compare.pairs.0.bad	Per prenotare un cliente esci dal calendario, apri un’altra schermata e poi torni indietro
+compare.pairs.0.good	Prenotazioni e nuovi clienti vengono creati direttamente nel calendario
+compare.pairs.1.bad	I report vengono esportati in Excel e riconciliati a mano
+compare.pairs.1.good	Report in tempo reale per istruttore e servizio, esportabili per qualsiasi periodo
+compare.pairs.2.bad	Le notifiche sono un servizio separato da pagare a parte
+compare.pairs.2.good	Telegram, email e WhatsApp integrati, con una matrice evento × canale
+compare.pairs.3.bad	Un istruttore può vedere il calendario e i clienti di tutti gli altri
+compare.pairs.3.good	I ruoli limitano l’accesso nell’interfaccia e sul server
+compare.pairs.4.bad	Un assistente? Al massimo una ricerca clienti
+compare.pairs.4.good	Velora AI risponde alle domande sulla tua attività e ai tuoi clienti su Telegram e Instagram
+showcase.label	tutto in uno
+showcase.title	Una piattaforma invece\ndi una dozzina di servizi
+showcase.lead	Prenotazioni, clienti, denaro, comunicazione e IA in un’unica interfaccia. Nessun modulo superfluo: ogni schermata risolve un problema reale del titolare.
+showcase.blocks.journal.title	Il tuo calendario
+showcase.blocks.journal.lead	Una griglia giornaliera con gli istruttori in colonna e le ore in riga. Tutto ciò che fa un amministratore avviene qui.
+showcase.blocks.journal.points.0	Trascina una lezione a un altro orario o a un altro istruttore
+showcase.blocks.journal.points.1	Crea lezioni e nuovi clienti senza uscire dal calendario
+showcase.blocks.journal.points.2	Il riepilogo della giornata è accanto: occupazione delle sale e ricavi
+showcase.blocks.booking.title	La tua prenotazione online
+showcase.blocks.booking.lead	Quattro canali con cui i clienti prenotano da soli, in ogni momento e senza coinvolgere l’amministratore.
+showcase.blocks.booking.points.0	Widget web, Telegram, WhatsApp e Instagram: ciascuno configurato separatamente
+showcase.blocks.booking.points.1	Regole: quante ore prima dell’inizio chiudere le prenotazioni e fino a quando un cliente può annullare
+showcase.blocks.booking.points.2	Brand dell’app clienti con anteprima dal vivo: colore e lingua in linea con il tuo marchio
+showcase.blocks.finance.title	Le tue finanze
+showcase.blocks.finance.lead	Conti, operazioni, paghe e documenti in un unico posto, senza esportazioni nei fogli di calcolo.
+showcase.blocks.finance.points.0	Cassa, conto bancario e incassi con saldi e movimenti giornalieri
+showcase.blocks.finance.points.1	Abbonamenti, certificati e rimborsi collegati a un cliente e a un conto
+showcase.blocks.finance.points.2	Paghe degli istruttori calcolate secondo le tue regole
+showcase.blocks.notify.title	Le tue notifiche
+showcase.blocks.notify.lead	Tre canali di invio e una matrice in cui decidi cosa inviare e dove.
+showcase.blocks.notify.points.0	Telegram, email e WhatsApp: ciascuno collegato con la chiave del tuo studio
+showcase.blocks.notify.points.1	Un insieme distinto di eventi per cliente, istruttore, amministratore e titolare
+showcase.blocks.notify.points.2	Promemoria 24 e 2 ore prima, «restano 1–2 lezioni», compleanni e richieste di recensione
+showcase.blocks.ai.title	Il tuo livello IA
+showcase.blocks.ai.lead	L’assistente conosce il contesto della tua attività ed è disponibile su ogni pagina; gli agenti rispondono autonomamente ai clienti.
+showcase.blocks.ai.points.0	Domande sullo studio dalla barra superiore, senza aprire un’altra sezione
+showcase.blocks.ai.points.1	Agenti IA su Telegram e Instagram: tono di voce e modalità «solo fuori orario»
+showcase.blocks.ai.points.2	Statistiche: quante conversazioni sono state gestite e come sono state valutate
+ctaStrip.title	Provalo senza migrazione dati né pagamento anticipato
+ctaStrip.button	Inizia gratis
+ctaStrip.note	30 giorni gratuiti • Nessuna carta • Aiuto per iniziare
+modules.label	moduli
+modules.title	16 moduli,\ngià inclusi
+modules.lead	Non un elenco di promesse «in arrivo»: tutto ciò che è elencato funziona ed è incluso nel piano. I ruoli decidono chi vede ogni sezione.
+modules.items.dashboard.title	Dashboard
+modules.items.dashboard.desc	Ricavi, clienti attivi, prenotazioni e fidelizzazione, con tendenze
+modules.items.journal.title	Calendario
+modules.items.journal.desc	Griglia giornaliera per istruttore e sala, trascina per riprogrammare
+modules.items.clients.title	Clienti
+modules.items.clients.desc	Profilo, abbonamento, punti, storico, note, tag
+modules.items.staff.title	Team
+modules.items.staff.desc	Profili, metriche, orari di lavoro, assegnazioni delle sale
+modules.items.catalog.title	Catalogo
+modules.items.catalog.desc	Sedi, sale con colore e capacità, servizi dello studio
+modules.items.booking.title	Prenotazione online
+modules.items.booking.desc	Widget, Telegram, WhatsApp, Instagram e regole di prenotazione
+modules.items.finance.title	Finanze
+modules.items.finance.desc	Conti, operazioni, controparti, documenti, obiettivi, paghe
+modules.items.notify.title	Notifiche
+modules.items.notify.desc	Telegram, email, WhatsApp e una matrice evento × canale
+modules.items.loyalty.title	Fidelizzazione
+modules.items.loyalty.desc	Carte, sconti, certificati, abbonamenti, referenze
+modules.items.ai.title	Velora AI
+modules.items.ai.desc	Un assistente aziendale e agenti per i tuoi clienti
+modules.items.reports.title	Report
+modules.items.reports.desc	Per vendite, istruttori e servizi, con esportazione
+modules.items.miniapp.title	App clienti
+modules.items.miniapp.desc	L’area del cliente: prenotazioni, abbonamento, punti
+modules.items.multistudio.title	Multi-studio
+modules.items.multistudio.desc	Più studi in un account, passa dall’uno all’altro in qualsiasi momento
+modules.items.roles.title	Ruoli e accessi
+modules.items.roles.desc	Titolare, amministratore, istruttore: nell’interfaccia e sul server
+modules.items.settings.title	Impostazioni
+modules.items.settings.desc	Orari di lavoro, tema, team, sicurezza, sessioni
+modules.items.data.title	Dati
+modules.items.data.desc	Esportazione CSV, eliminazione su richiesta
+modules.integrations	Integrazioni
+modules.integrationsNote	collegate nelle impostazioni dello studio
+pricing.label	prezzi
+pricing.title	Il tuo piano dipende\ndalla dimensione del team
+pricing.lead	15 € per due persone, +5 € per ogni posto aggiuntivo, illimitato: 120 €. Tutti i 16 moduli e Velora AI sono inclusi a ogni livello: paghi per la dimensione del tuo team, non per sbloccare pulsanti. Tre modelli di pagamento tra cui scegliere e fino al 40% di sconto pagando in anticipo.
+pricing.team	team
+pricing.seats_one	persona
+pricing.seats_other	persone
+pricing.unlimited	senza limiti
+pricing.scaleMin	2 posti
+pricing.scaleMax	∞ illimitato
+pricing.sliderAria	Quante persone lavorano nel tuo studio
+pricing.hint	**15 €** per due persone, **+5 €** per ogni posto aggiuntivo. Illimitato: **120 €** al mese.
+pricing.period	periodo di fatturazione
+pricing.months	{{count}} mesi
+pricing.noDiscount	—
+pricing.yourPrice	il tuo prezzo
+pricing.perMonth	/ mese
+pricing.amount	{{value}} €
+pricing.amountPerMonth	{{value}} € / mese
+pricing.rows.seats	Team
+pricing.rows.perSeat	Per persona
+pricing.rows.ai	Richieste Velora AI
+pricing.rows.aiPerMonth	{{value}} / mese
+pricing.rows.modules	Moduli
+pricing.rows.modulesAll	tutti e 16
+pricing.rows.total	Da pagare per {{count}} mesi
+pricing.rows.saved	Risparmi
+pricing.cta	Prova 30 giorni
+pricing.note	Nessuna carta · annulla con un clic
+pricing.models.0.title	Abbonamento
+pricing.models.0.price	da 15 € / mese
+pricing.models.0.desc	Un importo fisso. Conosci il costo in anticipo, senza sorprese alla fine del mese.
+pricing.models.1.title	3% dei ricavi
+pricing.models.1.price	minimo 15 € / mese
+pricing.models.1.desc	Paga in base al fatturato. In un mese tranquillo integri solo la differenza fino al minimo.
+pricing.models.2.title	Combo
+pricing.models.2.price	½ fisso + 1,5%
+pricing.models.2.desc	Metà abbonamento più una piccola percentuale: una via di mezzo fra i due modelli.
+pricing.footnote	La prova non richiede una carta. Il modello di pagamento e il numero di posti possono essere modificati nell’app in qualsiasi momento. I prezzi sono al netto dell’IVA: l’imposta viene calcolata al pagamento in base al tuo paese.
+faq.label	domande
+faq.title	Le domande più frequenti
+faq.items.0.q	Cosa include la prova?
+faq.items.0.a	Accesso completo a ogni modulo per 30 giorni. Non serve una carta: se non fa per te, semplicemente non rinnovare.
+faq.items.1.q	I miei clienti vedranno pubblicità di altri studi?
+faq.items.1.a	No. I clienti prenotano tramite il widget sul tuo sito, il tuo Telegram, WhatsApp o Instagram, e tramite un’app clienti con il tuo colore e logo. Non esiste un catalogo condiviso con altri studi.
+faq.items.2.q	Chi vede cosa nel mio team?
+faq.items.2.a	Tre ruoli. Il titolare vede tutto. L’amministratore vede calendario, clienti e dashboard. L’istruttore vede solo le proprie lezioni e i propri clienti. Il limite funziona nell’interfaccia e sul server: non si possono raggiungere dati altrui.
+faq.items.3.q	Posso gestire più studi o sedi?
+faq.items.3.a	Sì, e non dipende dal piano. Un account può appartenere a più studi e passare da uno all’altro; all’interno di uno studio configuri sedi e sale.
+faq.items.4.q	C’è il tema scuro e ci sono altre lingue?
+faq.items.4.a	Sì, l’interfaccia passa da chiara a scura e parla inglese, russo, ucraino, ceco e tedesco. Fuso orario, valuta e lingua si impostano durante la configurazione iniziale.
+faq.items.5.q	Cosa succede ai miei dati se decido di lasciare?
+faq.items.5.a	I dati sono tuoi. Impostazioni offre l’esportazione CSV di clienti, calendario, finanze e abbonamenti, e la cancellazione avviene su tua richiesta.
+faq.notFoundTitle	Non hai trovato la risposta?
+faq.notFoundLead	Scrivici: rispondiamo noi, senza bot né attese.
+faq.copied	Copiato
+about.label	chi siamo
+about.title	Velora è creata da persone\nche hanno gestito studi in prima persona
+about.lead	Non stiamo creando un «CRM per tutti». Stiamo creando uno strumento per un lavoro specifico — calendario, clienti, denaro, comunicazione — e rispondiamo noi alle domande invece di inviare risposte preconfezionate.
+about.p1	I clienti di uno studio restano clienti di quello studio. Velora non crea un catalogo condiviso, non mostra ai tuoi clienti le pubblicità di altri e non trattiene una commissione perché una persona torna da te.
+about.p2	Al momento il prodotto è pensato per studi di yoga e pilates, per come funzionano davvero i loro calendari, abbonamenti e istruttori. Seguiranno altri settori, con la stessa cura.
+cta.eyebrow	Inizia oggi
+cta.titleTop	Pronto a passare
+cta.titleAccent	al livello successivo?
+cta.lead	30 giorni gratuiti. Nessuna carta. Nessun impegno. Provalo: sentirai la differenza.
+cta.register	Registrati gratis
+cta.whatsapp	Scrivici su WhatsApp
+footer.tagline	Un CRM premium per studi di yoga e pilates. Prenotazioni, clienti, finanze e IA in un unico posto.
+footer.columns.product.title	Prodotto
+footer.columns.product.features	Funzionalità
+footer.columns.product.modules	Moduli
+footer.columns.product.booking	Prenotazione online
+footer.columns.product.ai	Velora AI
+footer.columns.product.pricing	Prezzi
+footer.columns.company.title	Azienda
+footer.columns.company.difference	Cosa ci distingue
+footer.columns.company.about	Chi siamo
+footer.columns.company.faq	Domande e risposte
+footer.columns.company.support	Supporto
+footer.columns.docs.title	Documenti
+footer.columns.docs.terms	Termini di utilizzo
+footer.columns.docs.privacy	Informativa sulla privacy
+footer.columns.docs.cookies	Informativa sui cookie
+footer.columns.docs.dpa	Trattamento dei dati
+footer.columns.docs.cookieSettings	Impostazioni cookie
+footer.columns.docs.support	Supporto
+footer.copyright	© 2026 Velora. Tutti i diritti riservati.
+screens.journal	Calendario giornaliero
+screens.booking	Prenotazione online
+screens.finance	Pagamento visita
+screens.notify	Evento × canale
+screens.ai	Velora AI
+art.journal	Calendario
+art.journalToday	Oggi — 12 lezioni
+art.weekdays.0	L
+art.weekdays.1	M
+art.weekdays.2	M
+art.weekdays.3	G
+art.weekdays.4	V
+art.weekdays.5	S
+art.weekdays.6	D
+art.finance	Finanze
+art.financeValue	1,8 mila €
+art.financeLabel	ricavi di questo mese
+art.clients	Clienti
+art.clientsLabel	clienti, +12 questa settimana
+art.questions_one	{{count}} domanda
+art.questions_other	{{count}} domande
+art.open	apri

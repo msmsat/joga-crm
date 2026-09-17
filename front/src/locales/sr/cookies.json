@@ -1,0 +1,37 @@
+{
+  "banner": {
+    "title": "Vaša privatnost, vaš izbor",
+    "text": "Velora čuva samo ono što joj je potrebno za rad u vašem pregledaču: prijavu, jezik i podešavanja interfejsa. Uz vašu dozvolu uključićemo i prijavu preko Google-a — Google zatim postavlja sopstvene kolačiće. Ne koristimo analitiku ni oglašavanje.",
+    "policy": "Politika kolačića"
+  },
+  "actions": {
+    "accept": "Prihvati sve",
+    "reject": "Odbij sve",
+    "save": "Sačuvaj izbor",
+    "settings": "Podešavanja"
+  },
+  "settings": {
+    "title": "Podešavanja kolačića",
+    "subtitle": "Važi za ovaj pregledač. Izbor možete promeniti u bilo kom trenutku.",
+    "alwaysOn": "Uvek uključeno",
+    "necessary": {
+      "title": "Strogo neophodni",
+      "text": "Održavaju vas prijavljenim, pamte jezik, temu i izbor i štite plaćanja i uslugu od zloupotrebe. Velora ne može da radi bez njih."
+    },
+    "functional": {
+      "title": "Prijava preko Google-a",
+      "text": "Učitava Google uslugu za prijavu da biste mogli da koristite svoj Google nalog. Google može postaviti sopstvene kolačiće i saznati da ste otvorili stranicu za prijavu."
+    },
+    "none": "Ne koristimo kolačiće za analitiku, oglašavanje ili praćenje.",
+    "decided": "Vaš izbor od {{date}}",
+    "policy": "Potpuna lista u Politici kolačića"
+  },
+  "google": {
+    "button": "Nastavi sa Google-om",
+    "notice": "Klik aktivira prijavu preko Google-a: Google usluga se učitava i može postaviti kolačiće.",
+    "policy": "Detalji"
+  },
+  "profile": {
+    "button": "Podešavanja kolačića"
+  }
+}

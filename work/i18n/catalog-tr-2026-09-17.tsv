@@ -1,0 +1,246 @@
+== tr
+tabs.studios	Stüdyolar
+tabs.services	Hizmetler
+tabs.subscriptions	Üyelikler
+modals.addStudio.steps.about.title	Stüdyo hakkında
+modals.addStudio.steps.about.sub	Ad ve iletişim bilgileri
+modals.addStudio.steps.about.trust	Verileriniz şifrelenir ve asla üçüncü taraflarla paylaşılmaz
+modals.addStudio.steps.location.title	Konum
+modals.addStudio.steps.location.sub	Bu şube nerede bulunuyor?
+modals.addStudio.steps.location.trust	Adres, takvimde ve haritalarda kullanılır
+modals.addStudio.steps.photo.title	Fotoğraf
+modals.addStudio.steps.photo.sub	Stüdyo kapağı — isteğe bağlı
+modals.addStudio.steps.photo.trust	Daha sonra şube ayarlarından ekleyebilirsiniz
+modals.addStudio.stepCounter	{{total}} adımın {{current}}. adımı
+modals.addStudio.step1.heading	Temel bilgiler
+modals.addStudio.step1.subheading	Stüdyonun adı nedir ve nasıl ulaşılır?
+modals.addStudio.step1.name	Stüdyo adı *
+modals.addStudio.step1.namePlaceholder	Örn. Velora Studio
+modals.addStudio.step1.phone	Telefon *
+modals.addStudio.step1.email	E-posta *
+modals.addStudio.step1.contactHint	Telefon veya e-posta girin — en az biri
+modals.addStudio.step1.noContacts	İletişim bilgisi verilmedi
+modals.addStudio.step1.new	YENİ
+modals.addStudio.step2.heading	Konum
+modals.addStudio.step2.subheading	Bu şubenin nerede olduğunu belirtin
+modals.addStudio.step2.country	Ülke
+modals.addStudio.step2.countryPlaceholder	Amerika Birleşik Devletleri
+modals.addStudio.step2.city	Şehir *
+modals.addStudio.step2.cityPlaceholder	New York
+modals.addStudio.step2.address	Adres *
+modals.addStudio.step2.addressPlaceholder	5th Avenue 12, daire 301
+modals.addStudio.step2.noAddress	Adres verilmedi
+modals.addStudio.step2.groupHint	“Ülke” ve “Şehir” alanları, şubeleri listede gruplamak için kullanılır.
+modals.addStudio.step3.heading	Stüdyo fotoğrafı
+modals.addStudio.step3.subheading	Bir kapak yükleyin — isteğe bağlıdır, atlayabilirsiniz
+modals.addStudio.step3.uploadCta	Yüklemek için tıklayın
+modals.addStudio.step3.uploadHint	JPG, PNG, en fazla 10 MB
+modals.addStudio.step3.replace	Değiştir
+modals.addStudio.step3.remove	Kaldır
+modals.addStudio.step3.previewAlt	Önizleme
+modals.addStudio.step3.summary	Özet
+modals.addStudio.step3.uploadError	Fotoğraf yüklenemedi. Başka bir dosya deneyin veya kaldırın.
+modals.addStudio.summaryRows.name	Ad
+modals.addStudio.summaryRows.city	Şehir
+modals.addStudio.summaryRows.address	Adres
+modals.addStudio.nextPhoto	Sonraki — fotoğraf
+modals.addStudio.submit	Stüdyo oluştur
+modals.addStudio.skipPhoto	Fotoğrafı atla ve oluştur
+modals.addStudio.illus.contacts	İletişim bilgileri
+modals.addStudio.illus.newBranch	Yeni şube
+modals.addStudio.illus.city	Şehir
+modals.addStudio.illus.newBranchStudio	Yeni stüdyo şubesi
+modals.editBranch.title	Şubeyi düzenle
+modals.editBranch.name	Şube adı
+modals.editBranch.namePlaceholder	Velora Studio
+modals.editBranch.phone	Telefon
+modals.editBranch.email	E-posta
+modals.editBranch.emailPlaceholder	studio@velora.com
+modals.editBranch.country	Ülke
+modals.editBranch.countryPlaceholder	Amerika Birleşik Devletleri
+modals.editBranch.city	Şehir
+modals.editBranch.cityPlaceholder	New York
+modals.editBranch.address	Adres
+modals.editBranch.addressPlaceholder	5th Avenue 12
+modals.editBranch.photo	Şube fotoğrafı
+modals.editBranch.contactHint	Telefon veya e-posta girin
+modals.editBranch.workingHours	Çalışma saatleri
+modals.hall.titleNew	{{spaceAcc}} ekle
+modals.hall.titleEdit	{{spaceAcc}} düzenle
+modals.hall.name	Ad
+modals.hall.namePlaceholder	{{space, capitalize}} A
+modals.hall.capacity	Kapasite
+modals.hall.area	Alan, m²
+modals.hall.hourlyRate	Saatlik fiyat, {{currency}}
+modals.hall.hourlyRatePlaceholder	3000
+modals.hall.equipment	Ekipman
+modals.hall.equipmentPlaceholder	Ekipman ekle
+modals.hall.color	Renk
+modals.hall.isOnline	Çevrimiçi
+modals.hall.photo	Fotoğraf
+modals.hall.subtitle	Şubedeki {{space, capitalize}}: koltuklar, ekipman, takvim rengi
+modals.hall.previewTitle	Önizleme
+modals.hall.sectionBasic	Temel bilgiler
+modals.hall.sectionSpace	Alan
+modals.hall.sectionLook	Görünüm
+modals.hall.areaShort	Alan
+modals.hall.hourlyRateShort	Saatlik fiyat
+modals.hall.statArea	Alan
+modals.hall.statRate	Fiyat / saat
+modals.hall.isOnlineHint	Dersler çevrimiçi yapılır — fiziksel bir mekan yoktur.
+modals.hall.colorHint	Buradaki dersler takvimde bu renkle vurgulanır.
+modals.service.titleNew	Yeni hizmet
+modals.service.titleEdit	Hizmeti düzenle
+modals.service.name	Hizmet adı
+modals.service.namePlaceholder	Hatha yoga
+modals.service.category	Kategori
+modals.service.type	Tür
+modals.service.typeGroup	Grup
+modals.service.typeIndividual	Bireysel
+modals.service.price	Fiyat, {{currency}}
+modals.service.pricePlaceholder	1200
+modals.service.duration	Süre, dk
+modals.service.durationPlaceholder	60
+modals.service.maxClients	Maks. müşteri sayısı
+modals.service.maxClientsPlaceholder	15
+modals.service.description	Açıklama
+modals.service.descriptionPlaceholder	Kısa hizmet açıklaması
+modals.service.color	Renk
+modals.service.subtitle	Takvimde ve online rezervasyonda görünür
+modals.service.previewTitle	Takvim önizlemesi
+modals.service.sectionBasic	Temel bilgiler
+modals.service.sectionPricing	Fiyat ve süre
+modals.service.sectionLook	Görünüm
+modals.service.priceShort	Fiyat
+modals.service.durationShort	Süre
+modals.service.statSeats	Koltuklar
+modals.service.colorHint	Dersler takvim ızgarasında bu renkle vurgulanır.
+modals.service.bookingMode	Rezervasyon şekli
+modals.service.bookingModeEvent	Kayıt
+modals.service.bookingModeResource	Saat seç
+modals.service.bookingModeEventHint	Müşteriler, önceden planladığınız bir derse kaydolur.
+modals.service.bookingModeResourceHint	Müşteri bir uzman ve boş zaman seçer; {{offering}} aralığı onayda oluşturulur.
+modals.service.bookable	Rezervasyona açık
+modals.service.bookableOn	Evet
+modals.service.bookableOff	Hayır
+modals.service.bufferBefore	Önceki tampon
+modals.service.bufferAfter	Sonraki tampon
+modals.package.titleNew	Yeni paket
+modals.package.titleEdit	Paketi düzenle
+modals.package.name	Paket adı
+modals.package.namePlaceholder	8 ders
+modals.package.classCount	Ders sayısı
+modals.package.classCountPlaceholder	8
+modals.package.price	Fiyat, {{currency}}
+modals.package.pricePlaceholder	8000
+modals.package.perVisitPrice	Ziyaret başına fiyat
+modals.package.durationDays	Geçerlilik, gün
+modals.package.durationDaysPlaceholder	60
+modals.package.services	Hizmetler
+modals.package.servicesHint	Hiçbir şey seçilmedi — paket tüm dersler için geçerlidir
+modals.package.isActive	Satışta
+modals.package.soldAsSubscription	“Üyelikler” sekmesinde göster
+modals.package.soldAsSingle	“Tek ziyaretler” sekmesinde göster
+modals.package.subtitle	Müşterilere sattığınız ders paketi
+modals.package.previewTitle	Kart önizlemesi
+modals.package.previewKind	Kart
+modals.package.previewValid	Geçerlilik
+modals.package.sectionBasic	Temel bilgiler
+modals.package.sectionTerms	Koşullar
+modals.package.sectionSale	Satış
+modals.package.priceShort	Paket fiyatı
+modals.package.statClasses	Dersler
+modals.package.statDays	Günler
+modals.package.statAll	Tümü
+modals.package.isActiveHint	Müşteriler bu paketi görebilir ve satın alabilir.
+modals.package.soldAsSubscriptionHint	Aksi halde paket yalnızca tek ziyaretlerde kalır.
+studios.title	STÜDYOLAR
+studios.addStudio	Stüdyo ekle
+studios.addHall	{{spaceAcc}} ekle
+studios.editBranch	Şubeyi düzenle
+studios.deleteBranch	Şubeyi sil
+studios.infoTab	Genel bilgiler
+studios.hallsTitle	Stüdyo {{spacePlural}}
+studios.hallCount_one	{{spacePlural, capitalize}} · {{count}}
+studios.hallCount_other	{{spacePlural, capitalize}} · {{count}}
+studios.stats.halls	{{spacePlural, capitalize}}
+studios.stats.totalSeats	Toplam koltuk
+studios.stats.fromPerHour	Başlangıç / saat
+studios.hall.seats	koltuk
+studios.hall.schedule	Çalışma saatleri
+studios.hall.closed	Kapalı
+studios.hall.stats.seats	Koltuklar
+studios.hall.stats.area	Alan
+studios.hall.stats.perHour	Saatlik
+studios.hall.equipment	Ekipman
+studios.hall.actions	İşlemler
+studios.hall.edit	{{spaceAcc}} düzenle
+studios.hall.delete	{{spaceAcc}} sil
+studios.empty.title	Stüdyo yok
+studios.empty.subtitle	İlk stüdyonuzu ekleyin
+studios.toasts.created	Stüdyo oluşturuldu
+studios.toasts.createError	Stüdyo oluşturulamadı
+studios.toasts.deleted	Stüdyo silindi
+studios.toasts.hallDeleted	Silindi: {{space}}
+studios.toasts.saved	Kaydedildi
+studios.toasts.edit	Düzenle: {{name}}
+studios.confirmDelete	“{{name}}” şubesi silinsin mi? Bu işlem geri alınamaz.
+studios.confirmDeleteTitle	Şube silinsin mi?
+studios.confirmDeleteHall	{{spaceAcc}} “{{name}}” silinsin mi?
+studios.confirmDeleteHallTitle	{{spaceAcc}} silinsin mi?
+services.title	HİZMETLER
+services.addService	Hizmet ekle
+services.types.group	Grup
+services.types.individual	Bireysel
+services.types.groupFull	 · Grup
+services.types.individualFull	 · Bireysel
+services.stats.price	Fiyat
+services.stats.duration	Süre
+services.stats.bookings	Rezervasyonlar
+services.stats.revenue	Gelir
+services.details.description	Açıklama
+services.details.details	Ayrıntılar
+services.details.minutes	dakika
+services.details.upTo	En çok {{count}} kişi
+services.details.personal	Kişisel
+services.details.bookingsPerMonth	30 günde rezervasyon
+services.details.schedule	Ders takvimi
+services.empty.title	Hizmet yok
+services.empty.subtitle	İlk hizmetinizi ekleyin
+services.toasts.deleted	Hizmet silindi
+services.toasts.deleteError	Hizmet silinemedi
+services.toasts.saved	Kaydedildi
+services.toasts.saveError	Hizmet kaydedilemedi
+services.toasts.edit	Düzenle: {{name}}
+services.confirmDelete	“{{name}}” hizmeti silinsin mi?
+services.confirmDeleteTitle	Hizmet silinsin mi?
+services.categories.yoga	Yoga
+services.categories.pilates	Pilates
+services.categories.stretching	Esneme
+services.categories.individual	Bireysel
+services.categories.other	Kategorisiz
+subscriptions.title	ÜYELİKLER
+subscriptions.addPackage	Paket ekle
+subscriptions.card.classCount_one	{{count}} ders
+subscriptions.card.classCount_other	{{count}} ders
+subscriptions.card.duration	{{count}} gün
+subscriptions.card.allServices	Tüm dersler
+subscriptions.card.serviceCount_one	{{count}} hizmet
+subscriptions.card.serviceCount_other	{{count}} hizmet
+subscriptions.card.inactiveBadge	Satıştan kaldırıldı
+subscriptions.settings.title	Program ayarları
+subscriptions.settings.allowFreeze	Üyeliği dondurma
+subscriptions.settings.allowTransfer	Başka müşteriye aktarım
+subscriptions.settings.autoRenewal	Müşteri bakiyesinden otomatik yenileme
+subscriptions.empty.title	Henüz paket yok
+subscriptions.empty.cta	Paket oluştur
+subscriptions.toasts.created	Paket oluşturuldu
+subscriptions.toasts.saved	Kaydedildi
+subscriptions.toasts.saveError	Paket kaydedilemedi
+subscriptions.toasts.deactivated	Paket satıştan kaldırıldı
+subscriptions.toasts.restored	Paket yeniden satışta
+subscriptions.toasts.actionError	İşlem tamamlanamadı
+subscriptions.deactivate	Satıştan kaldır
+subscriptions.restore	Yeniden satışa al
+subscriptions.confirmDeactivateTitle	Bu paket satıştan kaldırılsın mı?
+subscriptions.confirmDeactivate	Daha önce satılan üyelikler çalışmaya devam eder.

@@ -1,0 +1,315 @@
+{
+  "tabs": {
+    "studios": "Studior",
+    "services": "Tjänster",
+    "subscriptions": "Medlemskap"
+  },
+  "modals": {
+    "addStudio": {
+      "steps": {
+        "about": {
+          "title": "Om studion",
+          "sub": "Namn och kontaktuppgifter",
+          "trust": "Dina data är krypterade och delas aldrig med tredje part"
+        },
+        "location": {
+          "title": "Plats",
+          "sub": "Var ligger denna filial?",
+          "trust": "Adressen används i schemat och på kartor"
+        },
+        "photo": {
+          "title": "Foto",
+          "sub": "Studiots omslagsbild — valfri",
+          "trust": "Du kan lägga till den senare i filialens inställningar"
+        }
+      },
+      "stepCounter": "Steg {{current}} av {{total}}",
+      "step1": {
+        "heading": "Grundläggande uppgifter",
+        "subheading": "Vad heter studion och hur når man den?",
+        "name": "Studions namn *",
+        "namePlaceholder": "T.ex. Velora Studio",
+        "phone": "Telefon *",
+        "email": "E-post *",
+        "contactHint": "Ange ett telefonnummer eller en e-postadress — minst en",
+        "noContacts": "Inga kontaktuppgifter angivna",
+        "new": "NY"
+      },
+      "step2": {
+        "heading": "Plats",
+        "subheading": "Ange var denna filial ligger",
+        "country": "Land",
+        "countryPlaceholder": "USA",
+        "city": "Stad *",
+        "cityPlaceholder": "New York",
+        "address": "Adress *",
+        "addressPlaceholder": "5th Avenue 12, lokal 301",
+        "noAddress": "Ingen adress angiven",
+        "groupHint": "Fälten ”Land” och ”Stad” används för att gruppera filialer i listan."
+      },
+      "step3": {
+        "heading": "Studiobild",
+        "subheading": "Ladda upp en omslagsbild — valfritt, du kan hoppa över det",
+        "uploadCta": "Klicka för att ladda upp",
+        "uploadHint": "JPG, PNG upp till 10 MB",
+        "replace": "Ersätt",
+        "remove": "Ta bort",
+        "previewAlt": "Förhandsvisning",
+        "summary": "Sammanfattning",
+        "uploadError": "Det gick inte att ladda upp fotot. Prova en annan fil eller ta bort det."
+      },
+      "summaryRows": {
+        "name": "Namn",
+        "city": "Stad",
+        "address": "Adress"
+      },
+      "nextPhoto": "Nästa — foto",
+      "submit": "Skapa studio",
+      "skipPhoto": "Hoppa över foto och skapa",
+      "illus": {
+        "contacts": "Kontaktuppgifter",
+        "newBranch": "Ny filial",
+        "city": "Stad",
+        "newBranchStudio": "Ny studiofilial"
+      }
+    },
+    "editBranch": {
+      "title": "Redigera filial",
+      "name": "Filialnamn",
+      "namePlaceholder": "Velora Studio",
+      "phone": "Telefon",
+      "email": "E-post",
+      "emailPlaceholder": "studio@velora.com",
+      "country": "Land",
+      "countryPlaceholder": "USA",
+      "city": "Stad",
+      "cityPlaceholder": "New York",
+      "address": "Adress",
+      "addressPlaceholder": "5th Avenue 12",
+      "photo": "Filialfoto",
+      "contactHint": "Ange ett telefonnummer eller en e-postadress",
+      "workingHours": "Öppettider"
+    },
+    "hall": {
+      "titleNew": "Lägg till {{spaceAcc}}",
+      "titleEdit": "Redigera {{spaceAcc}}",
+      "name": "Namn",
+      "namePlaceholder": "{{space, capitalize}} A",
+      "capacity": "Kapacitet",
+      "area": "Yta, m²",
+      "hourlyRate": "Pris per timme, {{currency}}",
+      "hourlyRatePlaceholder": "3000",
+      "equipment": "Utrustning",
+      "equipmentPlaceholder": "Lägg till utrustning",
+      "color": "Färg",
+      "isOnline": "Online",
+      "photo": "Foto",
+      "subtitle": "{{space, capitalize}} i filialen: platser, utrustning, färg i schemat",
+      "previewTitle": "Förhandsvisning",
+      "sectionBasic": "Grundläggande",
+      "sectionSpace": "Utrymme",
+      "sectionLook": "Utseende",
+      "areaShort": "Yta",
+      "hourlyRateShort": "Pris per timme",
+      "statArea": "Yta",
+      "statRate": "Pris / timme",
+      "isOnlineHint": "Klasser hålls online — inga fysiska lokaler.",
+      "colorHint": "Klasser här markeras med denna färg i schemat."
+    },
+    "service": {
+      "titleNew": "Ny tjänst",
+      "titleEdit": "Redigera tjänst",
+      "name": "Tjänstens namn",
+      "namePlaceholder": "Hathayoga",
+      "category": "Kategori",
+      "type": "Typ",
+      "typeGroup": "Grupp",
+      "typeIndividual": "Individuell",
+      "price": "Pris, {{currency}}",
+      "pricePlaceholder": "1200",
+      "duration": "Längd, min",
+      "durationPlaceholder": "60",
+      "maxClients": "Max antal kunder",
+      "maxClientsPlaceholder": "15",
+      "description": "Beskrivning",
+      "descriptionPlaceholder": "Kort tjänstebeskrivning",
+      "color": "Färg",
+      "subtitle": "Visas i schemat och onlinebokningen",
+      "previewTitle": "Förhandsvisning i schemat",
+      "sectionBasic": "Grundläggande",
+      "sectionPricing": "Pris och tid",
+      "sectionLook": "Utseende",
+      "priceShort": "Pris",
+      "durationShort": "Längd",
+      "statSeats": "Platser",
+      "colorHint": "Klasser markeras med denna färg i schemarutnätet.",
+      "bookingMode": "Bokningssätt",
+      "bookingModeEvent": "Anmälan",
+      "bookingModeResource": "Välj tid",
+      "bookingModeEventHint": "Kunder anmäler sig till en klass du redan har schemalagt.",
+      "bookingModeResourceHint": "Kunden väljer en specialist och en ledig tid; intervallet {{offering}} skapas vid bekräftelse.",
+      "bookable": "Tillgänglig för bokning",
+      "bookableOn": "Ja",
+      "bookableOff": "Nej",
+      "bufferBefore": "Buffert före",
+      "bufferAfter": "Buffert efter"
+    },
+    "package": {
+      "titleNew": "Nytt paket",
+      "titleEdit": "Redigera paket",
+      "name": "Paketnamn",
+      "namePlaceholder": "8 klasser",
+      "classCount": "Antal klasser",
+      "classCountPlaceholder": "8",
+      "price": "Pris, {{currency}}",
+      "pricePlaceholder": "8000",
+      "perVisitPrice": "Pris per besök",
+      "durationDays": "Giltigt i, dagar",
+      "durationDaysPlaceholder": "60",
+      "services": "Tjänster",
+      "servicesHint": "Inget valt — paketet gäller alla klasser",
+      "isActive": "Till salu",
+      "soldAsSubscription": "Visa på fliken ”Medlemskap”",
+      "soldAsSingle": "Visa på fliken ”Enstaka besök”",
+      "subtitle": "Ett klasspaket som du säljer till kunder",
+      "previewTitle": "Förhandsvisning av pass",
+      "previewKind": "Pass",
+      "previewValid": "Giltigt i",
+      "sectionBasic": "Grundläggande",
+      "sectionTerms": "Villkor",
+      "sectionSale": "Försäljning",
+      "priceShort": "Paketpris",
+      "statClasses": "Klasser",
+      "statDays": "Dagar",
+      "statAll": "Alla",
+      "isActiveHint": "Kunder kan se och köpa detta paket.",
+      "soldAsSubscriptionHint": "Annars finns paketet bara under enstaka besök."
+    }
+  },
+  "studios": {
+    "title": "STUDIOR",
+    "addStudio": "Lägg till studio",
+    "addHall": "Lägg till {{spaceAcc}}",
+    "editBranch": "Redigera filial",
+    "deleteBranch": "Ta bort filial",
+    "infoTab": "Allmän information",
+    "hallsTitle": "Studions {{spacePlural}}",
+    "hallCount_one": "{{spacePlural, capitalize}} · {{count}}",
+    "hallCount_other": "{{spacePlural, capitalize}} · {{count}}",
+    "stats": {
+      "halls": "{{spacePlural, capitalize}}",
+      "totalSeats": "Totalt antal platser",
+      "fromPerHour": "Från / timme"
+    },
+    "hall": {
+      "seats": "platser",
+      "schedule": "Öppettider",
+      "closed": "Stängt",
+      "stats": {
+        "seats": "Platser",
+        "area": "Yta",
+        "perHour": "Per timme"
+      },
+      "equipment": "Utrustning",
+      "actions": "Åtgärder",
+      "edit": "Redigera {{spaceAcc}}",
+      "delete": "Ta bort {{spaceAcc}}"
+    },
+    "empty": {
+      "title": "Inga studior",
+      "subtitle": "Lägg till din första studio"
+    },
+    "toasts": {
+      "created": "Studio skapad",
+      "createError": "Det gick inte att skapa studio",
+      "deleted": "Studio borttagen",
+      "hallDeleted": "Borttagen: {{space}}",
+      "saved": "Sparat",
+      "edit": "Redigera: {{name}}"
+    },
+    "confirmDelete": "Ta bort filialen ”{{name}}”? Detta kan inte ångras.",
+    "confirmDeleteTitle": "Ta bort filial?",
+    "confirmDeleteHall": "Ta bort {{spaceAcc}} ”{{name}}”?",
+    "confirmDeleteHallTitle": "Ta bort {{spaceAcc}}?"
+  },
+  "services": {
+    "title": "TJÄNSTER",
+    "addService": "Lägg till tjänst",
+    "types": {
+      "group": "Grupp",
+      "individual": "Indiv.",
+      "groupFull": " · Grupp",
+      "individualFull": " · Individuell"
+    },
+    "stats": {
+      "price": "Pris",
+      "duration": "Längd",
+      "bookings": "Bokningar",
+      "revenue": "Intäkter"
+    },
+    "details": {
+      "description": "Beskrivning",
+      "details": "Detaljer",
+      "minutes": "minuter",
+      "upTo": "Upp till {{count}} pers.",
+      "personal": "Personlig",
+      "bookingsPerMonth": "bokningar på 30 dagar",
+      "schedule": "Klasschema"
+    },
+    "empty": {
+      "title": "Inga tjänster",
+      "subtitle": "Lägg till din första tjänst"
+    },
+    "toasts": {
+      "deleted": "Tjänst borttagen",
+      "deleteError": "Det gick inte att ta bort tjänsten",
+      "saved": "Sparat",
+      "saveError": "Det gick inte att spara tjänsten",
+      "edit": "Redigera: {{name}}"
+    },
+    "confirmDelete": "Ta bort tjänsten ”{{name}}”?",
+    "confirmDeleteTitle": "Ta bort tjänst?",
+    "categories": {
+      "yoga": "Yoga",
+      "pilates": "Pilates",
+      "stretching": "Stretching",
+      "individual": "Individuell",
+      "other": "Okategoriserad"
+    }
+  },
+  "subscriptions": {
+    "title": "MEDLEMSKAP",
+    "addPackage": "Lägg till paket",
+    "card": {
+      "classCount_one": "{{count}} klass",
+      "classCount_other": "{{count}} klasser",
+      "duration": "{{count}} dagar",
+      "allServices": "Alla klasser",
+      "serviceCount_one": "{{count}} tjänst",
+      "serviceCount_other": "{{count}} tjänster",
+      "inactiveBadge": "Tagen ur försäljning"
+    },
+    "settings": {
+      "title": "Programinställningar",
+      "allowFreeze": "Frys medlemskap",
+      "allowTransfer": "Överför till en annan kund",
+      "autoRenewal": "Automatisk förnyelse från kundens insättning"
+    },
+    "empty": {
+      "title": "Inga paket ännu",
+      "cta": "Skapa paket"
+    },
+    "toasts": {
+      "created": "Paket skapat",
+      "saved": "Sparat",
+      "saveError": "Det gick inte att spara paketet",
+      "deactivated": "Paket taget ur försäljning",
+      "restored": "Paket åter i försäljning",
+      "actionError": "Det gick inte att genomföra åtgärden"
+    },
+    "deactivate": "Ta ur försäljning",
+    "restore": "Lägg tillbaka i försäljning",
+    "confirmDeactivateTitle": "Ta detta paket ur försäljning?",
+    "confirmDeactivate": "Redan sålda medlemskap fortsätter att fungera."
+  }
+}

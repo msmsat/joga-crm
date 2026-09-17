@@ -1,0 +1,231 @@
+== pt
+nav.product	Produto
+nav.modules	Módulos
+nav.pricing	Preços
+nav.faq	Perguntas frequentes
+nav.login	Iniciar sessão
+nav.startShort	Começar
+nav.startFull	Começar gratuitamente
+nav.language	Idioma
+hero.badge	O novo padrão de CRM em 2026
+hero.title	Um CRM que vai\n*adorar* usar
+hero.lead	Um CRM B2B premium para estúdios de ioga e pilates. Marcações, clientes, equipa e finanças num só lugar. Sem cliques extra, sem complicações.
+hero.cta	Experimente 30 dias grátis
+hero.perks.0	30 dias grátis
+hero.perks.1	Sem cartão bancário
+hero.perks.2	Cancele com um clique
+marquee.0	Agenda
+marquee.1	Clientes
+marquee.2	Planos de aulas
+marquee.3	Marcação online
+marquee.4	Finanças
+marquee.5	Salários
+marquee.6	Notificações
+marquee.7	Fidelização
+marquee.8	Relatórios
+marquee.9	Velora AI
+marquee.10	Aplicação do cliente
+marquee.11	Funções e acesso
+stats.items.0.value	30 dias
+stats.items.0.label	Grátis, sem cartão necessário
+stats.items.1.value	16
+stats.items.1.label	Módulos em todos os planos
+stats.items.2.value	4
+stats.items.2.label	Canais de marcação online
+stats.items.3.value	desde 15 €
+stats.items.3.label	Por mês, por estúdio
+stats.trust.0	Os seus dados continuam a ser seus
+stats.trust.1	Funções aplicadas no servidor
+stats.trust.2	Exportação CSV a qualquer momento
+stats.trust.3	Eliminação mediante pedido
+compare.label	a diferença
+compare.title	Retirámos o que\natrapalhava o trabalho
+compare.lead	A Velora nasceu da nossa própria experiência: geríamos estúdios e encontrávamos todos os dias o mesmo obstáculo — um CRM onde marcar um cliente exigia nove cliques. Eis o que mudou.
+compare.usual	A forma habitual
+compare.velora	Na Velora
+compare.pairs.0.bad	Para marcar um cliente, sai da agenda para outro ecrã e volta novamente
+compare.pairs.0.good	As marcações e os novos clientes são criados diretamente na agenda
+compare.pairs.1.bad	Os relatórios são exportados para o Excel e reconciliados à mão
+compare.pairs.1.good	Relatórios em tempo real por treinador e serviço, com exportação para qualquer período
+compare.pairs.2.bad	As notificações são um serviço separado, pago à parte
+compare.pairs.2.good	Telegram, email e WhatsApp integrados, com uma matriz evento × canal
+compare.pairs.3.bad	Um treinador pode ver a agenda e os clientes de todos os outros
+compare.pairs.3.good	As funções limitam o acesso na interface e no servidor
+compare.pairs.4.bad	Um assistente? No máximo, uma pesquisa de clientes
+compare.pairs.4.good	A Velora AI responde a perguntas sobre o seu negócio e aos seus clientes no Telegram e Instagram
+showcase.label	tudo num só lugar
+showcase.title	Uma plataforma em vez\nde uma dúzia de serviços
+showcase.lead	Marcações, clientes, dinheiro, comunicação e IA numa única interface. Não há módulos supérfluos: cada ecrã resolve um problema real do proprietário.
+showcase.blocks.journal.title	A sua agenda
+showcase.blocks.journal.lead	Uma grelha diária onde os treinadores são colunas e as horas são linhas. Tudo o que um administrador faz acontece aqui.
+showcase.blocks.journal.points.0	Arraste uma aula para outra hora ou para outro treinador
+showcase.blocks.journal.points.1	Crie novas aulas e clientes sem sair da agenda
+showcase.blocks.journal.points.2	O resumo do dia fica ao lado: ocupação das salas e receita
+showcase.blocks.booking.title	A sua marcação online
+showcase.blocks.booking.lead	Quatro canais pelos quais os clientes fazem a sua própria marcação, a qualquer hora e sem envolvimento do administrador.
+showcase.blocks.booking.points.0	Widget web, Telegram, WhatsApp e Instagram — cada um configurado separadamente
+showcase.blocks.booking.points.1	Regras: quantas horas antes do início a marcação fecha e até quando o cliente pode cancelar
+showcase.blocks.booking.points.2	Identidade da aplicação do cliente com pré-visualização ao vivo — cor e idioma adequados à sua marca
+showcase.blocks.finance.title	As suas finanças
+showcase.blocks.finance.lead	Contas, operações, salários e documentos num só lugar, sem exportar para folhas de cálculo.
+showcase.blocks.finance.points.0	Caixa, conta bancária e pagamentos com saldo e movimentos diários
+showcase.blocks.finance.points.1	Planos de aulas, certificados e reembolsos ligados a um cliente e a uma conta
+showcase.blocks.finance.points.2	Salários dos treinadores calculados pelas suas próprias regras
+showcase.blocks.notify.title	As suas notificações
+showcase.blocks.notify.lead	Três canais de entrega e uma matriz onde decide o que vai para onde.
+showcase.blocks.notify.points.0	Telegram, email e WhatsApp — cada um ligado à chave do seu estúdio
+showcase.blocks.notify.points.1	Um conjunto de eventos separado para cliente, treinador, administrador e proprietário
+showcase.blocks.notify.points.2	Lembretes 24 e 2 horas antes, «restam 1–2 aulas», aniversários, pedidos de avaliação
+showcase.blocks.ai.title	A sua camada de IA
+showcase.blocks.ai.lead	O assistente conhece o contexto do seu negócio e está disponível em todas as páginas — os agentes respondem autonomamente aos clientes.
+showcase.blocks.ai.points.0	Perguntas sobre o estúdio diretamente da barra superior, sem abrir outra secção
+showcase.blocks.ai.points.1	Agentes de IA no Telegram e Instagram: tom de voz e modo «apenas fora de horário»
+showcase.blocks.ai.points.2	Estatísticas: quantas conversas foram tratadas e como foram avaliadas
+ctaStrip.title	Experimente sem migração de dados nem pagamento antecipado
+ctaStrip.button	Começar gratuitamente
+ctaStrip.note	30 dias grátis • Sem cartão • Ajuda para começar
+modules.label	módulos
+modules.title	16 módulos,\njá incluídos
+modules.lead	Não é uma lista de promessas «em breve»: tudo o que está listado funciona e faz parte do plano. As funções decidem quem vê cada secção.
+modules.items.dashboard.title	Painel
+modules.items.dashboard.desc	Receita, clientes ativos, marcações e retenção, com tendências
+modules.items.journal.title	Agenda
+modules.items.journal.desc	Grelha diária por treinador e sala, arraste para reagendar
+modules.items.clients.title	Clientes
+modules.items.clients.desc	Perfil, plano de aulas, pontos, histórico, notas, etiquetas
+modules.items.staff.title	Equipa
+modules.items.staff.desc	Perfis, métricas, horário de trabalho, atribuições de salas
+modules.items.catalog.title	Catálogo
+modules.items.catalog.desc	Filiais, salas com cor e capacidade, serviços do estúdio
+modules.items.booking.title	Marcação online
+modules.items.booking.desc	Widget, Telegram, WhatsApp, Instagram e regras de marcação
+modules.items.finance.title	Finanças
+modules.items.finance.desc	Contas, operações, contrapartes, documentos, objetivos, salários
+modules.items.notify.title	Notificações
+modules.items.notify.desc	Telegram, email, WhatsApp e uma matriz evento × canal
+modules.items.loyalty.title	Fidelização
+modules.items.loyalty.desc	Cartões, descontos, certificados, planos de aulas, recomendações
+modules.items.ai.title	Velora AI
+modules.items.ai.desc	Um assistente de negócio e agentes para os seus clientes
+modules.items.reports.title	Relatórios
+modules.items.reports.desc	Por vendas, treinadores e serviços, com exportação
+modules.items.miniapp.title	Aplicação do cliente
+modules.items.miniapp.desc	A conta do cliente: marcações, plano de aulas, pontos
+modules.items.multistudio.title	Vários estúdios
+modules.items.multistudio.desc	Vários estúdios numa conta, mude a qualquer momento
+modules.items.roles.title	Funções e acesso
+modules.items.roles.desc	Proprietário, administrador, treinador — na interface e no servidor
+modules.items.settings.title	Definições
+modules.items.settings.desc	Horários, tema, equipa, segurança, sessões
+modules.items.data.title	Dados
+modules.items.data.desc	Exportação CSV, eliminação mediante pedido
+modules.integrations	Integrações
+modules.integrationsNote	ligadas nas definições do estúdio
+pricing.label	preços
+pricing.title	O seu plano depende\ndo tamanho da sua equipa
+pricing.lead	15 € para duas pessoas, +5 € por cada lugar seguinte, ilimitado — 120 €. Todos os 16 módulos e a Velora AI estão em todos os níveis: paga pelo tamanho da equipa, não para desbloquear botões. Três modelos de pagamento à escolha e até 40% de desconto ao pagar antecipadamente.
+pricing.team	equipa
+pricing.seats_one	pessoa
+pricing.seats_other	pessoas
+pricing.unlimited	sem limite
+pricing.scaleMin	2 lugares
+pricing.scaleMax	∞ ilimitado
+pricing.sliderAria	Quantas pessoas trabalham no seu estúdio
+pricing.hint	**15 €** para duas pessoas, **+5 €** por cada lugar adicional. Ilimitado — **120 €** por mês.
+pricing.period	período de faturação
+pricing.months	{{count}} meses
+pricing.noDiscount	—
+pricing.yourPrice	o seu preço
+pricing.perMonth	/ mês
+pricing.amount	{{value}} €
+pricing.amountPerMonth	{{value}} € / mês
+pricing.rows.seats	Equipa
+pricing.rows.perSeat	Por pessoa
+pricing.rows.ai	Pedidos à Velora AI
+pricing.rows.aiPerMonth	{{value}} / mês
+pricing.rows.modules	Módulos
+pricing.rows.modulesAll	todos os 16
+pricing.rows.total	A pagar por {{count}} meses
+pricing.rows.saved	Poupa
+pricing.cta	Experimente 30 dias
+pricing.note	Sem cartão · cancele com um clique
+pricing.models.0.title	Subscrição
+pricing.models.0.price	desde 15 € / mês
+pricing.models.0.desc	Um valor fixo. Sabe o custo antecipadamente, sem surpresas no fim do mês.
+pricing.models.1.title	3% da receita
+pricing.models.1.price	mínimo de 15 € / mês
+pricing.models.1.desc	Pague conforme a faturação. Num mês calmo, só completa a diferença até ao mínimo.
+pricing.models.2.title	Combo
+pricing.models.2.price	½ fixo + 1,5%
+pricing.models.2.desc	Metade da subscrição mais uma pequena percentagem — um meio-termo entre os dois modelos.
+pricing.footnote	O período experimental não requer cartão. O modelo de pagamento e o número de lugares podem ser alterados na aplicação a qualquer momento. Os preços não incluem IVA: o imposto é calculado no pagamento de acordo com o seu país.
+faq.label	perguntas
+faq.title	O que as pessoas costumam perguntar
+faq.items.0.q	O que inclui o período experimental?
+faq.items.0.a	Acesso completo a todos os módulos durante 30 dias. Não é necessário cartão bancário — se não for para si, simplesmente não renove.
+faq.items.1.q	Os meus clientes verão anúncios de outros estúdios?
+faq.items.1.a	Não. Os clientes fazem marcações pelo widget no seu site, pelo seu Telegram, WhatsApp ou Instagram e por uma aplicação de cliente com a sua cor e logótipo. Não existe catálogo partilhado com outros estúdios.
+faq.items.2.q	Quem vê o quê na minha equipa?
+faq.items.2.a	Três funções. O proprietário vê tudo. O administrador vê a agenda, os clientes e o painel. O treinador vê apenas as próprias aulas e clientes. O limite funciona na interface e no servidor: não há forma de aceder aos dados de outra pessoa.
+faq.items.3.q	Posso gerir vários estúdios ou filiais?
+faq.items.3.a	Sim, e isso não depende do plano. Uma conta pode pertencer a vários estúdios e alternar entre eles; dentro de um estúdio, configura filiais e salas.
+faq.items.4.q	Há tema escuro e outros idiomas?
+faq.items.4.a	Sim, a interface alterna entre claro e escuro e fala inglês, russo, ucraniano, checo e alemão. O fuso horário, a moeda e o idioma são definidos durante a configuração inicial.
+faq.items.5.q	O que acontece aos meus dados se decidir sair?
+faq.items.5.a	Os dados são seus. As Definições têm exportação CSV — clientes, agenda, finanças, planos de aulas — e a eliminação é feita mediante pedido.
+faq.notFoundTitle	Não encontrou a resposta?
+faq.notFoundLead	Escreva-nos — respondemos nós próprios, sem bots nem filas.
+faq.copied	Copiado
+about.label	sobre nós
+about.title	A Velora é criada por pessoas\nque geriram estúdios
+about.lead	Não estamos a criar um «CRM para todos». Estamos a criar uma ferramenta para um trabalho específico — agenda, clientes, dinheiro, comunicação — e respondemos nós às perguntas em vez de enviar respostas pré-formatadas.
+about.p1	Os clientes de um estúdio continuam a ser clientes desse estúdio. A Velora não cria um catálogo partilhado, não mostra aos seus clientes anúncios de outras pessoas e não cobra uma comissão porque alguém volta até si.
+about.p2	Neste momento o produto é criado para estúdios de ioga e pilates — para a forma como realmente funcionam as suas agendas, planos de aulas e treinadores. Outros setores seguir-se-ão com a mesma intenção.
+cta.eyebrow	Comece hoje
+cta.titleTop	Pronto para avançar
+cta.titleAccent	para o próximo nível?
+cta.lead	30 dias grátis. Sem cartão. Sem compromisso. Experimente — vai sentir a diferença.
+cta.register	Registar gratuitamente
+cta.whatsapp	Envie-nos mensagem no WhatsApp
+footer.tagline	Um CRM premium para estúdios de ioga e pilates. Marcações, clientes, dinheiro e IA num só lugar.
+footer.columns.product.title	Produto
+footer.columns.product.features	Funcionalidades
+footer.columns.product.modules	Módulos
+footer.columns.product.booking	Marcação online
+footer.columns.product.ai	Velora AI
+footer.columns.product.pricing	Preços
+footer.columns.company.title	Empresa
+footer.columns.company.difference	O que nos diferencia
+footer.columns.company.about	Sobre nós
+footer.columns.company.faq	Perguntas e respostas
+footer.columns.company.support	Apoio
+footer.columns.docs.title	Documentos
+footer.columns.docs.terms	Termos de utilização
+footer.columns.docs.privacy	Política de privacidade
+footer.columns.docs.cookies	Política de cookies
+footer.columns.docs.dpa	Tratamento de dados
+footer.columns.docs.cookieSettings	Definições de cookies
+footer.columns.docs.support	Apoio
+footer.copyright	© 2026 Velora. Todos os direitos reservados.
+screens.journal	Agenda diária
+screens.booking	Marcação online
+screens.finance	Pagamento de visita
+screens.notify	Evento × canal
+screens.ai	Velora AI
+art.journal	Agenda
+art.journalToday	Hoje — 12 aulas
+art.weekdays.0	S
+art.weekdays.1	T
+art.weekdays.2	Q
+art.weekdays.3	Q
+art.weekdays.4	S
+art.weekdays.5	S
+art.weekdays.6	D
+art.finance	Finanças
+art.financeValue	1,8 mil €
+art.financeLabel	receita deste mês
+art.clients	Clientes
+art.clientsLabel	clientes, +12 esta semana
+art.questions_one	{{count}} pergunta
+art.questions_other	{{count}} perguntas
+art.open	abrir

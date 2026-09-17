@@ -1,0 +1,315 @@
+{
+  "tabs": {
+    "studios": "Studier",
+    "services": "Ydelser",
+    "subscriptions": "Medlemskaber"
+  },
+  "modals": {
+    "addStudio": {
+      "steps": {
+        "about": {
+          "title": "Om studiet",
+          "sub": "Navn og kontaktoplysninger",
+          "trust": "Dine data er krypteret og deles aldrig med tredjeparter"
+        },
+        "location": {
+          "title": "Placering",
+          "sub": "Hvor ligger denne afdeling?",
+          "trust": "Adressen bruges i kalenderen og på kort"
+        },
+        "photo": {
+          "title": "Foto",
+          "sub": "Studieforside — valgfri",
+          "trust": "Du kan tilføje det senere i afdelingens indstillinger"
+        }
+      },
+      "stepCounter": "Trin {{current}} af {{total}}",
+      "step1": {
+        "heading": "Grundlæggende oplysninger",
+        "subheading": "Hvad hedder studiet, og hvordan kontakter man det?",
+        "name": "Studienavn *",
+        "namePlaceholder": "F.eks. Velora Studio",
+        "phone": "Telefon *",
+        "email": "E-mail *",
+        "contactHint": "Indtast et telefonnummer eller en e-mail — mindst én",
+        "noContacts": "Ingen kontaktoplysninger angivet",
+        "new": "NY"
+      },
+      "step2": {
+        "heading": "Placering",
+        "subheading": "Angiv, hvor denne afdeling ligger",
+        "country": "Land",
+        "countryPlaceholder": "USA",
+        "city": "By *",
+        "cityPlaceholder": "New York",
+        "address": "Adresse *",
+        "addressPlaceholder": "5th Avenue 12, lokale 301",
+        "noAddress": "Ingen adresse angivet",
+        "groupHint": "Felterne „Land” og „By” bruges til at gruppere afdelinger på listen."
+      },
+      "step3": {
+        "heading": "Studiefoto",
+        "subheading": "Upload et cover — valgfrit, du kan springe det over",
+        "uploadCta": "Klik for at uploade",
+        "uploadHint": "JPG, PNG op til 10 MB",
+        "replace": "Erstat",
+        "remove": "Fjern",
+        "previewAlt": "Forhåndsvisning",
+        "summary": "Oversigt",
+        "uploadError": "Kunne ikke uploade fotoet. Prøv en anden fil, eller fjern det."
+      },
+      "summaryRows": {
+        "name": "Navn",
+        "city": "By",
+        "address": "Adresse"
+      },
+      "nextPhoto": "Næste — foto",
+      "submit": "Opret studie",
+      "skipPhoto": "Spring foto over, og opret",
+      "illus": {
+        "contacts": "Kontaktoplysninger",
+        "newBranch": "Ny afdeling",
+        "city": "By",
+        "newBranchStudio": "Ny studieafdeling"
+      }
+    },
+    "editBranch": {
+      "title": "Rediger afdeling",
+      "name": "Afdelingsnavn",
+      "namePlaceholder": "Velora Studio",
+      "phone": "Telefon",
+      "email": "E-mail",
+      "emailPlaceholder": "studio@velora.com",
+      "country": "Land",
+      "countryPlaceholder": "USA",
+      "city": "By",
+      "cityPlaceholder": "New York",
+      "address": "Adresse",
+      "addressPlaceholder": "5th Avenue 12",
+      "photo": "Afdelingsfoto",
+      "contactHint": "Indtast et telefonnummer eller en e-mail",
+      "workingHours": "Åbningstider"
+    },
+    "hall": {
+      "titleNew": "Tilføj {{spaceAcc}}",
+      "titleEdit": "Rediger {{spaceAcc}}",
+      "name": "Navn",
+      "namePlaceholder": "{{space, capitalize}} A",
+      "capacity": "Kapacitet",
+      "area": "Areal, m²",
+      "hourlyRate": "Pris pr. time, {{currency}}",
+      "hourlyRatePlaceholder": "3000",
+      "equipment": "Udstyr",
+      "equipmentPlaceholder": "Tilføj udstyr",
+      "color": "Farve",
+      "isOnline": "Online",
+      "photo": "Foto",
+      "subtitle": "{{space, capitalize}} i afdelingen: pladser, udstyr, kalenderfarve",
+      "previewTitle": "Forhåndsvisning",
+      "sectionBasic": "Grundlæggende",
+      "sectionSpace": "Rum",
+      "sectionLook": "Udseende",
+      "areaShort": "Areal",
+      "hourlyRateShort": "Pris pr. time",
+      "statArea": "Areal",
+      "statRate": "Pris / time",
+      "isOnlineHint": "Holdene foregår online — ingen fysiske lokaler.",
+      "colorHint": "Hold her fremhæves med denne farve i kalenderen."
+    },
+    "service": {
+      "titleNew": "Ny ydelse",
+      "titleEdit": "Rediger ydelse",
+      "name": "Ydelsesnavn",
+      "namePlaceholder": "Hatha yoga",
+      "category": "Kategori",
+      "type": "Type",
+      "typeGroup": "Hold",
+      "typeIndividual": "Individuel",
+      "price": "Pris, {{currency}}",
+      "pricePlaceholder": "1200",
+      "duration": "Varighed, min.",
+      "durationPlaceholder": "60",
+      "maxClients": "Maks. antal klienter",
+      "maxClientsPlaceholder": "15",
+      "description": "Beskrivelse",
+      "descriptionPlaceholder": "Kort beskrivelse af ydelsen",
+      "color": "Farve",
+      "subtitle": "Vises i kalenderen og onlinebooking",
+      "previewTitle": "Kalenderforhåndsvisning",
+      "sectionBasic": "Grundlæggende",
+      "sectionPricing": "Pris og tid",
+      "sectionLook": "Udseende",
+      "priceShort": "Pris",
+      "durationShort": "Varighed",
+      "statSeats": "Pladser",
+      "colorHint": "Hold fremhæves med denne farve i kalendergitteret.",
+      "bookingMode": "Bookingmetode",
+      "bookingModeEvent": "Tilmelding",
+      "bookingModeResource": "Vælg tidspunkt",
+      "bookingModeEventHint": "Klienter tilmelder sig et hold, du allerede har planlagt.",
+      "bookingModeResourceHint": "Klienten vælger en specialist og et ledigt tidspunkt; intervallet {{offering}} oprettes ved bekræftelse.",
+      "bookable": "Kan bookes",
+      "bookableOn": "Ja",
+      "bookableOff": "Nej",
+      "bufferBefore": "Buffer før",
+      "bufferAfter": "Buffer efter"
+    },
+    "package": {
+      "titleNew": "Ny pakke",
+      "titleEdit": "Rediger pakke",
+      "name": "Pakkenavn",
+      "namePlaceholder": "8 hold",
+      "classCount": "Antal hold",
+      "classCountPlaceholder": "8",
+      "price": "Pris, {{currency}}",
+      "pricePlaceholder": "8000",
+      "perVisitPrice": "Pris pr. besøg",
+      "durationDays": "Gyldig i, dage",
+      "durationDaysPlaceholder": "60",
+      "services": "Ydelser",
+      "servicesHint": "Intet valgt — pakken gælder for alle hold",
+      "isActive": "Til salg",
+      "soldAsSubscription": "Vis på fanen „Medlemskaber”",
+      "soldAsSingle": "Vis på fanen „Enkeltbesøg”",
+      "subtitle": "En pakke hold, som du sælger til klienter",
+      "previewTitle": "Forhåndsvisning af kort",
+      "previewKind": "Kort",
+      "previewValid": "Gyldig i",
+      "sectionBasic": "Grundlæggende",
+      "sectionTerms": "Vilkår",
+      "sectionSale": "Salg",
+      "priceShort": "Pakkepris",
+      "statClasses": "Hold",
+      "statDays": "Dage",
+      "statAll": "Alle",
+      "isActiveHint": "Klienter kan se og købe denne pakke.",
+      "soldAsSubscriptionHint": "Ellers bliver pakken kun under enkeltbesøg."
+    }
+  },
+  "studios": {
+    "title": "STUDIER",
+    "addStudio": "Tilføj studie",
+    "addHall": "Tilføj {{spaceAcc}}",
+    "editBranch": "Rediger afdeling",
+    "deleteBranch": "Slet afdeling",
+    "infoTab": "Generelle oplysninger",
+    "hallsTitle": "Studiets {{spacePlural}}",
+    "hallCount_one": "{{spacePlural, capitalize}} · {{count}}",
+    "hallCount_other": "{{spacePlural, capitalize}} · {{count}}",
+    "stats": {
+      "halls": "{{spacePlural, capitalize}}",
+      "totalSeats": "Samlet antal pladser",
+      "fromPerHour": "Fra / time"
+    },
+    "hall": {
+      "seats": "pladser",
+      "schedule": "Åbningstider",
+      "closed": "Lukket",
+      "stats": {
+        "seats": "Pladser",
+        "area": "Areal",
+        "perHour": "Pr. time"
+      },
+      "equipment": "Udstyr",
+      "actions": "Handlinger",
+      "edit": "Rediger {{spaceAcc}}",
+      "delete": "Slet {{spaceAcc}}"
+    },
+    "empty": {
+      "title": "Ingen studier",
+      "subtitle": "Tilføj dit første studie"
+    },
+    "toasts": {
+      "created": "Studie oprettet",
+      "createError": "Kunne ikke oprette studie",
+      "deleted": "Studie slettet",
+      "hallDeleted": "Slettet: {{space}}",
+      "saved": "Gemt",
+      "edit": "Rediger: {{name}}"
+    },
+    "confirmDelete": "Slet afdeling „{{name}}”? Dette kan ikke fortrydes.",
+    "confirmDeleteTitle": "Slet afdeling?",
+    "confirmDeleteHall": "Slet {{spaceAcc}} „{{name}}”?",
+    "confirmDeleteHallTitle": "Slet {{spaceAcc}}?"
+  },
+  "services": {
+    "title": "YDELSER",
+    "addService": "Tilføj ydelse",
+    "types": {
+      "group": "Hold",
+      "individual": "Indiv.",
+      "groupFull": " · Hold",
+      "individualFull": " · Individuel"
+    },
+    "stats": {
+      "price": "Pris",
+      "duration": "Varighed",
+      "bookings": "Bookinger",
+      "revenue": "Omsætning"
+    },
+    "details": {
+      "description": "Beskrivelse",
+      "details": "Detaljer",
+      "minutes": "minutter",
+      "upTo": "Op til {{count}} pers.",
+      "personal": "Personlig",
+      "bookingsPerMonth": "bookinger på 30 dage",
+      "schedule": "Holdplan"
+    },
+    "empty": {
+      "title": "Ingen ydelser",
+      "subtitle": "Tilføj din første ydelse"
+    },
+    "toasts": {
+      "deleted": "Ydelse slettet",
+      "deleteError": "Kunne ikke slette ydelsen",
+      "saved": "Gemt",
+      "saveError": "Kunne ikke gemme ydelsen",
+      "edit": "Rediger: {{name}}"
+    },
+    "confirmDelete": "Slet ydelsen „{{name}}”?",
+    "confirmDeleteTitle": "Slet ydelse?",
+    "categories": {
+      "yoga": "Yoga",
+      "pilates": "Pilates",
+      "stretching": "Stræk",
+      "individual": "Individuel",
+      "other": "Uden kategori"
+    }
+  },
+  "subscriptions": {
+    "title": "MEDLEMSKABER",
+    "addPackage": "Tilføj pakke",
+    "card": {
+      "classCount_one": "{{count}} hold",
+      "classCount_other": "{{count}} hold",
+      "duration": "{{count}} dage",
+      "allServices": "Alle hold",
+      "serviceCount_one": "{{count}} ydelse",
+      "serviceCount_other": "{{count}} ydelser",
+      "inactiveBadge": "Taget af salg"
+    },
+    "settings": {
+      "title": "Programindstillinger",
+      "allowFreeze": "Frysning af medlemskab",
+      "allowTransfer": "Overførsel til en anden klient",
+      "autoRenewal": "Automatisk fornyelse fra klientens indskud"
+    },
+    "empty": {
+      "title": "Ingen pakker endnu",
+      "cta": "Opret pakke"
+    },
+    "toasts": {
+      "created": "Pakke oprettet",
+      "saved": "Gemt",
+      "saveError": "Kunne ikke gemme pakken",
+      "deactivated": "Pakke taget af salg",
+      "restored": "Pakke sat til salg igen",
+      "actionError": "Kunne ikke gennemføre handlingen"
+    },
+    "deactivate": "Tag af salg",
+    "restore": "Sæt til salg igen",
+    "confirmDeactivateTitle": "Tag denne pakke af salg?",
+    "confirmDeactivate": "Allerede solgte medlemskaber vil fortsat fungere."
+  }
+}

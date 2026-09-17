@@ -162,11 +162,9 @@
   "planCards": {
     "bestChoice": "Nejlepší volba",
     "current": "Aktuální",
-    "enterprise": "Enterprise",
     "perMonth": "/ měs.",
     "currentPlan": "Aktuální tarif",
     "yourPrice": "Vaše cena",
-    "choosePlan": "Vybrat tarif",
     "staffLimit": "Až {{count}} zaměstnanců",
     "staffUnlimited": "Neomezený počet zaměstnanců"
   },

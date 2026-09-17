@@ -1,0 +1,380 @@
+{
+  "nav": {
+    "product": "Produs",
+    "modules": "Module",
+    "pricing": "Prețuri",
+    "faq": "Întrebări frecvente",
+    "login": "Conectare",
+    "startShort": "Începeți",
+    "startFull": "Începeți gratuit",
+    "language": "Limbă"
+  },
+  "hero": {
+    "badge": "Noul standard CRM al anului 2026",
+    "title": "Un CRM pe care\\\n*veți iubi* să-l folosiți",
+    "lead": "CRM B2B premium pentru studiouri de yoga și pilates. Programări, clienți, echipă și finanțe într-un singur loc. Fără clicuri în plus, fără confuzie.",
+    "cta": "Încercați gratuit 30 de zile",
+    "perks": [
+      "30 de zile gratuite",
+      "Fără card",
+      "Anulați cu un clic"
+    ]
+  },
+  "marquee": [
+    "Program",
+    "Clienți",
+    "Abonamente",
+    "Programări online",
+    "Finanțe",
+    "Salarii",
+    "Notificări",
+    "Fidelizare",
+    "Rapoarte",
+    "Velora AI",
+    "Aplicație client",
+    "Roluri și acces"
+  ],
+  "stats": {
+    "items": [
+      {
+        "value": "30 de zile",
+        "label": "Gratuit, fără card"
+      },
+      {
+        "value": "16",
+        "label": "module în fiecare plan"
+      },
+      {
+        "value": "4",
+        "label": "canale de programări online"
+      },
+      {
+        "value": "de la 15 €",
+        "label": "pe lună, per studio"
+      }
+    ],
+    "trust": [
+      "Datele rămân ale dvs.",
+      "Rolurile sunt aplicate și pe server",
+      "Export CSV oricând",
+      "Ștergere la cerere"
+    ]
+  },
+  "compare": {
+    "label": "diferența",
+    "title": "Am eliminat ce\\\nvă stătea în cale",
+    "lead": "Velora s-a născut din propria noastră experiență: administram studiouri și ne loveam zilnic de același zid — un CRM în care sunt necesare nouă clicuri pentru a programa un client. Iată ce s-a schimbat.",
+    "usual": "Modul obișnuit",
+    "velora": "În Velora",
+    "pairs": [
+      {
+        "bad": "Pentru a programa un client, părăsiți programul pentru alt ecran și apoi reveniți",
+        "good": "Programările și clienții noi sunt creați direct în program"
+      },
+      {
+        "bad": "Rapoartele sunt exportate în Excel și reconciliate manual",
+        "good": "Rapoarte live după antrenor și serviciu, cu export pentru orice perioadă"
+      },
+      {
+        "bad": "Notificările sunt un serviciu separat, pentru care plătiți separat",
+        "good": "Telegram, email și WhatsApp sunt integrate printr-o matrice eveniment × canal"
+      },
+      {
+        "bad": "Un antrenor poate vedea programul și baza de clienți a tuturor celorlalți",
+        "good": "Rolurile limitează accesul atât în interfață, cât și pe server"
+      },
+      {
+        "bad": "Un asistent? În cel mai bun caz, căutare de clienți",
+        "good": "Velora AI răspunde la întrebări despre afacerea dvs. — și la întrebările clienților în Telegram și Instagram"
+      }
+    ]
+  },
+  "showcase": {
+    "label": "toate într-un singur loc",
+    "title": "O platformă în locul\\\nunui zeci de servicii",
+    "lead": "Programări, clienți, bani, comunicare și AI într-o singură interfață. Niciun modul inutil: fiecare ecran rezolvă o problemă reală a proprietarului.",
+    "blocks": {
+      "journal": {
+        "title": "Programul dvs.",
+        "lead": "O grilă zilnică în care antrenorii sunt coloane, iar orele sunt rânduri. Aici se întâmplă tot ce face administratorul.",
+        "points": [
+          "Trageți un curs la altă oră — sau la alt antrenor",
+          "Creați cursuri și clienți noi fără să părăsiți programul",
+          "Rezumatul zilei este alături: ocuparea sălilor și veniturile"
+        ]
+      },
+      "booking": {
+        "title": "Programările dvs. online",
+        "lead": "Patru canale în care clienții se programează singuri, non-stop și fără administrator.",
+        "points": [
+          "Widget web, Telegram, WhatsApp și Instagram — fiecare se configurează separat",
+          "Reguli: cu câte ore înainte de start se închide programarea și până când poate clientul să anuleze",
+          "Identitatea aplicației client cu previzualizare live — culoare și limbă potrivite brandului dvs."
+        ]
+      },
+      "finance": {
+        "title": "Finanțele dvs.",
+        "lead": "Conturi, tranzacții, salarii și documente într-un singur loc, fără export în foi de calcul.",
+        "points": [
+          "Casă, cont bancar și încasări cu cardul, cu solduri și mișcări zilnice",
+          "Abonamente, carduri cadou și rambursări legate de un client și un cont",
+          "Salarii pentru antrenori calculate după regulile dvs."
+        ]
+      },
+      "notify": {
+        "title": "Notificările dvs.",
+        "lead": "Trei canale de livrare și o matrice în care decideți ce se trimite și unde.",
+        "points": [
+          "Telegram, email și WhatsApp — fiecare conectat cu propria cheie a studioului",
+          "Un set separat de evenimente pentru client, antrenor, administrator și proprietar",
+          "Mementouri cu 24 și 2 ore înainte, „au rămas 1–2 cursuri”, zile de naștere și cereri de recenzie"
+        ]
+      },
+      "ai": {
+        "title": "Stratul dvs. AI",
+        "lead": "Asistentul cunoaște contextul afacerii și este pe fiecare pagină — agenții răspund singuri clienților.",
+        "points": [
+          "Întrebați despre studio din bara de sus, fără a deschide altă secțiune",
+          "Agenți AI în Telegram și Instagram: tonul comunicării și modul „doar în afara programului”",
+          "Statistici: câte conversații au fost gestionate și cum au fost evaluate"
+        ]
+      }
+    }
+  },
+  "ctaStrip": {
+    "title": "Încercați fără migrare de date și fără plată în avans",
+    "button": "Începeți gratuit",
+    "note": "30 de zile gratuite • Fără card • Ajutor la început"
+  },
+  "modules": {
+    "label": "module",
+    "title": "16 module,\\\ndeja incluse",
+    "lead": "Nu o colecție de substituenți „în curând” — tot ce este listat funcționează și este inclus în plan. Rolurile stabilesc cine vede fiecare secțiune.",
+    "items": {
+      "dashboard": {
+        "title": "Prezentare generală",
+        "desc": "Venituri, clienți activi, programări și fidelitatea clienților — cu tendințe"
+      },
+      "journal": {
+        "title": "Program",
+        "desc": "Grilă zilnică pe antrenor și sală, trageți pentru reprogramare"
+      },
+      "clients": {
+        "title": "Clienți",
+        "desc": "Profil, abonamente, puncte, istoric, note, etichete"
+      },
+      "staff": {
+        "title": "Echipă",
+        "desc": "Profiluri, indicatori, program de lucru, alocări de săli"
+      },
+      "catalog": {
+        "title": "Catalog",
+        "desc": "Locații, săli cu culoare și capacitate, servicii ale studioului"
+      },
+      "booking": {
+        "title": "Programări online",
+        "desc": "Widget, Telegram, WhatsApp, Instagram și reguli de programare"
+      },
+      "finance": {
+        "title": "Finanțe",
+        "desc": "Conturi, tranzacții, contrapartide, documente, obiective, salarii"
+      },
+      "notify": {
+        "title": "Notificări",
+        "desc": "Telegram, email, WhatsApp și matrice eveniment × canal"
+      },
+      "loyalty": {
+        "title": "Fidelizare",
+        "desc": "Carduri, reduceri, carduri cadou, abonamente, recomandări"
+      },
+      "ai": {
+        "title": "Velora AI",
+        "desc": "Un asistent pentru afacere și agenți pentru clienții dvs."
+      },
+      "reports": {
+        "title": "Rapoarte",
+        "desc": "După vânzări, antrenori și servicii — cu export"
+      },
+      "miniapp": {
+        "title": "Aplicație client",
+        "desc": "Contul personal al clientului: programări, abonamente, puncte"
+      },
+      "multistudio": {
+        "title": "Mai multe studiouri",
+        "desc": "Mai multe studiouri într-un cont, schimbați oricând"
+      },
+      "roles": {
+        "title": "Roluri și acces",
+        "desc": "Proprietar, administrator, antrenor — în interfață și pe server"
+      },
+      "settings": {
+        "title": "Setări",
+        "desc": "Program de lucru, temă, echipă, securitate, sesiuni"
+      },
+      "data": {
+        "title": "Date",
+        "desc": "Export CSV, ștergere la cerere"
+      }
+    },
+    "integrations": "Integrări",
+    "integrationsNote": "conectate din setările studioului"
+  },
+  "pricing": {
+    "label": "prețuri",
+    "title": "Planul dvs. depinde de\\\ndimensiunea echipei",
+    "lead": "15 € pentru două persoane, +5 € pentru fiecare loc următor, nelimitat — 120 €. Toate cele 16 module și Velora AI sunt incluse la fiecare nivel: plătiți pentru mărimea echipei, nu pentru deblocarea butoanelor. Trei modele de plată la alegere și până la 40% reducere la plata în avans.",
+    "team": "echipă",
+    "seats_one": "persoană",
+    "seats_few": "persoane",
+    "seats_other": "de persoane",
+    "unlimited": "nelimitat",
+    "scaleMin": "2 locuri",
+    "scaleMax": "∞ nelimitat",
+    "sliderAria": "Câte persoane lucrează în studioul dvs.",
+    "hint": "**15 €** pentru două persoane, **+5 €** pentru fiecare loc în plus. Nelimitat — **120 €** pe lună.",
+    "period": "perioada de plată",
+    "months": "{{count}} luni",
+    "noDiscount": "—",
+    "yourPrice": "prețul dvs.",
+    "perMonth": "/ lună",
+    "amount": "{{value}} €",
+    "amountPerMonth": "{{value}} € / lună",
+    "rows": {
+      "seats": "Echipă",
+      "perSeat": "Per persoană",
+      "ai": "Solicitări Velora AI",
+      "aiPerMonth": "{{value}} / lună",
+      "modules": "Module",
+      "modulesAll": "toate 16",
+      "total": "De plată pentru {{count}} luni",
+      "saved": "Economisiți"
+    },
+    "cta": "Încercați 30 de zile",
+    "note": "Fără card · anulați cu un clic",
+    "models": [
+      {
+        "title": "Abonament",
+        "price": "de la 15 € / lună",
+        "desc": "O sumă fixă. Cunoașteți costul dinainte — fără surprize la sfârșitul lunii."
+      },
+      {
+        "title": "3% din venituri",
+        "price": "minimum 15 € / lună",
+        "desc": "Plătiți în funcție de cifră de afaceri. Într-o lună liniștită, completați doar diferența până la suma minimă."
+      },
+      {
+        "title": "Combinat",
+        "price": "½ fix + 1,5%",
+        "desc": "Jumătate din abonament plus un procent mic — un echilibru între cele două modele."
+      }
+    ],
+    "footnote": "Perioada de probă nu necesită card. Modelul de plată și numărul de locuri pot fi schimbate oricând în aplicație. Prețurile nu includ TVA: taxa este calculată la plată pentru țara dvs."
+  },
+  "faq": {
+    "label": "întrebări",
+    "title": "Asta întreabă de obicei oamenii",
+    "items": [
+      {
+        "q": "Ce include perioada de probă?",
+        "a": "Acces complet la toate modulele timp de 30 de zile. Nu este necesar un card — dacă nu vi se potrivește, pur și simplu nu reînnoiți."
+      },
+      {
+        "q": "Vor vedea clienții mei reclame pentru alte studiouri?",
+        "a": "Nu. Clienții programează prin widgetul de pe site-ul dvs., Telegram, WhatsApp sau Instagram — și printr-o aplicație client în culoarea dvs. și cu logo-ul dvs. Nu există un catalog comun cu alte studiouri."
+      },
+      {
+        "q": "Cine din echipa mea vede ce?",
+        "a": "Trei roluri. Proprietarul vede totul. Administratorul vede programul, clienții și prezentarea generală. Antrenorul vede doar propriile cursuri și clienți. Restricția funcționează în interfață și pe server: nu există cale către datele altora."
+      },
+      {
+        "q": "Pot gestiona mai multe studiouri sau locații?",
+        "a": "Da, și nu depinde de plan. Un cont poate aparține mai multor studiouri și se poate schimba între ele, iar în studio configurați locațiile și sălile."
+      },
+      {
+        "q": "Există temă întunecată și alte limbi?",
+        "a": "Da. Interfața comută între tema luminoasă și cea întunecată și acceptă 22 de limbi, inclusiv engleză, rusă, ucraineană, cehă și germană. Fusul orar, moneda și limba se aleg la configurarea inițială."
+      },
+      {
+        "q": "Ce se întâmplă cu datele mele dacă aleg să plec?",
+        "a": "Datele sunt ale dvs. Setările oferă export CSV pentru clienți, program, finanțe și abonamente, iar ștergerea se face la cererea dvs."
+      }
+    ],
+    "notFoundTitle": "Nu ați găsit răspunsul?",
+    "notFoundLead": "Scrieți-ne — răspundem personal, fără boți și fără coadă.",
+    "copied": "Copiat"
+  },
+  "about": {
+    "label": "despre noi",
+    "title": "Velora este construită de oameni\\\ncare au condus chiar ei studiouri",
+    "lead": "Nu construim un „CRM pentru toți”. Construim un instrument pentru o muncă anume — program, clienți, bani, comunicare — și răspundem singuri la întrebări în loc să trimitem răspunsuri gata făcute.",
+    "p1": "Clienții unui studio rămân clienții acelui studio. Velora nu construiește un catalog comun, nu le arată clienților dvs. reclamele altora și nu ia un procent când o persoană revine la dvs.",
+    "p2": "În prezent produsul este creat pentru studiouri de yoga și pilates — pentru modul în care funcționează cu adevărat programele, abonamentele și antrenorii lor. Alte domenii vor urma cu aceeași grijă."
+  },
+  "cta": {
+    "eyebrow": "Începeți astăzi",
+    "titleTop": "Sunteți gata să faceți",
+    "titleAccent": "următorul pas?",
+    "lead": "30 de zile gratuite. Fără card. Fără angajament. Încercați — veți simți diferența.",
+    "register": "Înregistrați-vă gratuit",
+    "whatsapp": "Scrieți-ne pe WhatsApp"
+  },
+  "footer": {
+    "tagline": "CRM premium pentru studiouri de yoga și pilates. Programări, clienți, bani și AI într-un singur loc.",
+    "columns": {
+      "product": {
+        "title": "Produs",
+        "features": "Funcții",
+        "modules": "Module",
+        "booking": "Programări online",
+        "ai": "Velora AI",
+        "pricing": "Prețuri"
+      },
+      "company": {
+        "title": "Companie",
+        "difference": "Diferența noastră",
+        "about": "Despre noi",
+        "faq": "Întrebări și răspunsuri",
+        "support": "Asistență"
+      },
+      "docs": {
+        "title": "Documente",
+        "terms": "Termeni de utilizare",
+        "privacy": "Politica de confidențialitate",
+        "cookies": "Politica de cookie-uri",
+        "dpa": "Prelucrarea datelor",
+        "cookieSettings": "Setări cookie-uri",
+        "support": "Asistență"
+      }
+    },
+    "copyright": "© 2026 Velora. Toate drepturile rezervate."
+  },
+  "screens": {
+    "journal": "Program zilnic",
+    "booking": "Programare online",
+    "finance": "Plata unei vizite",
+    "notify": "Eveniment × canal",
+    "ai": "Velora AI"
+  },
+  "art": {
+    "journal": "Program",
+    "journalToday": "Astăzi — 12 cursuri",
+    "weekdays": [
+      "L",
+      "M",
+      "M",
+      "J",
+      "V",
+      "S",
+      "D"
+    ],
+    "finance": "Finanțe",
+    "financeValue": "1,8 mii €",
+    "financeLabel": "venituri luna aceasta",
+    "clients": "Clienți",
+    "clientsLabel": "clienți, +12 săptămâna aceasta",
+    "questions_one": "{{count}} întrebare",
+    "questions_few": "{{count}} întrebări",
+    "questions_other": "{{count}} de întrebări",
+    "open": "deschide"
+  }
+}

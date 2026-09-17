@@ -1,0 +1,231 @@
+== hu
+nav.product	Termék
+nav.modules	Modulok
+nav.pricing	Árak
+nav.faq	Gyakori kérdések
+nav.login	Belépés
+nav.startShort	Kezdés
+nav.startFull	Kezdje ingyen
+nav.language	Nyelv
+hero.badge	A 2026-os év új CRM-szabványa
+hero.title	CRM, amelyet\\n*öröm* használni
+hero.lead	Prémium B2B CRM jóga- és pilatesstúdióknak. Foglalások, ügyfelek, csapat és pénzügyek egy helyen. Felesleges kattintások és zűrzavar nélkül.
+hero.cta	Próbálja ki ingyen 30 napig
+hero.perks.0	30 nap ingyen
+hero.perks.1	Bankkártya nélkül
+hero.perks.2	Lemondás egy kattintással
+marquee.0	Naptár
+marquee.1	Ügyfelek
+marquee.2	Bérletek
+marquee.3	Online foglalás
+marquee.4	Pénzügyek
+marquee.5	Bérek
+marquee.6	Értesítések
+marquee.7	Hűségprogram
+marquee.8	Jelentések
+marquee.9	Velora AI
+marquee.10	Ügyfélalkalmazás
+marquee.11	Szerepkörök és hozzáférés
+stats.items.0.value	30 nap
+stats.items.0.label	Ingyen, bankkártya nélkül
+stats.items.1.value	16
+stats.items.1.label	modul minden csomagban
+stats.items.2.value	4
+stats.items.2.label	online foglalási csatorna
+stats.items.3.value	15 €-tól
+stats.items.3.label	havonta, stúdiónként
+stats.trust.0	Az adatai az Önéi maradnak
+stats.trust.1	A szerepkörök a szerveren is érvényesek
+stats.trust.2	CSV-export bármikor
+stats.trust.3	Törlés kérésre
+compare.label	a különbség
+compare.title	Eltávolítottuk azt,\\nami hátráltatta Önt
+compare.lead	A Velora saját tapasztalatból született: stúdiókat vezettünk, és nap mint nap ugyanabba a falba ütköztünk — egy CRM-be, ahol kilenc kattintás kellett egy ügyfél foglalásához. Íme, mi változott.
+compare.usual	A megszokott út
+compare.velora	A Velorában
+compare.pairs.0.bad	Ügyfél foglalásához el kell hagynia a naptárt, másik nézetbe kell lépnie, majd visszatérnie
+compare.pairs.0.good	A foglalások és az új ügyfelek közvetlenül a naptárban jönnek létre
+compare.pairs.1.bad	A jelentéseket Excelbe exportálják, majd kézzel egyeztetik
+compare.pairs.1.good	Élő jelentések oktatónként és szolgáltatásonként, exporttal bármely időszakra
+compare.pairs.2.bad	Az értesítések külön szolgáltatásnak számítanak, amelyért külön fizet
+compare.pairs.2.good	A Telegram, az e-mail és a WhatsApp esemény × csatorna mátrixszal beépítve érkezik
+compare.pairs.3.bad	Egy oktató mindenki más naptárát és ügyféladatbázisát láthatja
+compare.pairs.3.good	A szerepkörök a felületen és a szerveren is korlátozzák a hozzáférést
+compare.pairs.4.bad	Egy asszisztens? Legjobb esetben ügyfélkeresés
+compare.pairs.4.good	A Velora AI válaszol a vállalkozásával kapcsolatos kérdésekre — és ügyfelei Telegram- és Instagram-kérdéseire is
+showcase.label	minden egy helyen
+showcase.title	Egy platform\\ntucatnyi szolgáltatás helyett
+showcase.lead	Foglalások, ügyfelek, pénz, kommunikáció és AI egyetlen felületen. Egyetlen fölösleges modul sincs: minden nézet egy valódi tulajdonosi problémát old meg.
+showcase.blocks.journal.title	Az Ön naptára
+showcase.blocks.journal.lead	Napi rács, ahol az oktatók oszlopok, az órák sorok. Itt történik minden, amit egy adminisztrátor elvégez.
+showcase.blocks.journal.points.0	Húzza át az órát más időpontra — vagy másik oktatóhoz
+showcase.blocks.journal.points.1	Hozzon létre új órákat és ügyfeleket a naptár elhagyása nélkül
+showcase.blocks.journal.points.2	A napi összefoglaló mellette van: teremkihasználtság és bevétel
+showcase.blocks.booking.title	Az Ön online foglalása
+showcase.blocks.booking.lead	Négy csatorna, ahol az ügyfelek önállóan, a nap bármely órájában és adminisztrátor nélkül foglalnak.
+showcase.blocks.booking.points.0	Webes widget, Telegram, WhatsApp és Instagram — mindegyik külön konfigurálható
+showcase.blocks.booking.points.1	Szabályok: hány órával a kezdés előtt zárul a foglalás, és meddig mondhatja le az ügyfél
+showcase.blocks.booking.points.2	Ügyfélalkalmazás-arculat élő előnézettel — a márkájához illő szín és nyelv
+showcase.blocks.finance.title	Az Ön pénzügyei
+showcase.blocks.finance.lead	Számlák, tranzakciók, bérek és dokumentumok egy helyen, táblázatkezelőbe exportálás nélkül.
+showcase.blocks.finance.points.0	Pénztár, bankszámla és kártyaelfogadás egyenlegekkel és napi mozgásokkal
+showcase.blocks.finance.points.1	Ügyfélhez és számlához kapcsolt bérletek, ajándékkártyák és visszatérítések
+showcase.blocks.finance.points.2	Az Ön szabályai szerint számított oktatói bérek
+showcase.blocks.notify.title	Az Ön értesítései
+showcase.blocks.notify.lead	Három kézbesítési csatorna és egy mátrix, amelyben eldönti, mi hová menjen.
+showcase.blocks.notify.points.0	Telegram, e-mail és WhatsApp — mindegyik a stúdió saját kulcsával kapcsolódik
+showcase.blocks.notify.points.1	Külön eseménykészlet ügyfélnek, oktatónak, adminisztrátornak és tulajdonosnak
+showcase.blocks.notify.points.2	Emlékeztetők 24 és 2 órával előtte, „1–2 óra maradt”, születésnapok és értékelési kérések
+showcase.blocks.ai.title	Az Ön AI-rétege
+showcase.blocks.ai.lead	Az asszisztens ismeri a vállalkozás környezetét, és minden oldalon ott van — az ügynökök maguk válaszolnak az ügyfeleknek.
+showcase.blocks.ai.points.0	Kérdezzen a stúdióról a felső sávból, más szakasz megnyitása nélkül
+showcase.blocks.ai.points.1	AI-ügynökök a Telegramban és az Instagramon: kommunikációs hang és „csak nyitvatartáson kívül” mód
+showcase.blocks.ai.points.2	Statisztika: hány beszélgetést kezeltek, és hogyan értékelték őket
+ctaStrip.title	Próbálja ki adatmigrálás és előrefizetés nélkül
+ctaStrip.button	Kezdje ingyen
+ctaStrip.note	30 nap ingyen • Bankkártya nélkül • Segítség az induláshoz
+modules.label	modulok
+modules.title	16 modul,\\nmár benne van
+modules.lead	Nem „hamarosan” feliratú helyőrzők gyűjteménye — minden felsorolt funkció működik és a csomag része. A szerepkörök döntik el, ki melyik szakaszt látja.
+modules.items.dashboard.title	Áttekintés
+modules.items.dashboard.desc	Bevétel, aktív ügyfelek, foglalások és ügyfélhűség — trendekkel
+modules.items.journal.title	Naptár
+modules.items.journal.desc	Napi rács oktatónként és termenkként, húzással ütemezhető át
+modules.items.clients.title	Ügyfelek
+modules.items.clients.desc	Profil, bérletek, pontok, előzmények, jegyzetek, címkék
+modules.items.staff.title	Csapat
+modules.items.staff.desc	Profilok, mutatók, munkaidő, terem-hozzárendelések
+modules.items.catalog.title	Katalógus
+modules.items.catalog.desc	Létesítmények, színes és kapacitással jelölt termek, stúdiószolgáltatások
+modules.items.booking.title	Online foglalás
+modules.items.booking.desc	Widget, Telegram, WhatsApp, Instagram és foglalási szabályok
+modules.items.finance.title	Pénzügyek
+modules.items.finance.desc	Számlák, tranzakciók, partnerek, dokumentumok, célok, bérek
+modules.items.notify.title	Értesítések
+modules.items.notify.desc	Telegram, e-mail, WhatsApp és esemény × csatorna mátrix
+modules.items.loyalty.title	Hűségprogram
+modules.items.loyalty.desc	Kártyák, kedvezmények, ajándékkártyák, bérletek, ajánlások
+modules.items.ai.title	Velora AI
+modules.items.ai.desc	Üzleti asszisztens és ügynökök az ügyfeleihez
+modules.items.reports.title	Jelentések
+modules.items.reports.desc	Értékesítés, oktatók és szolgáltatások szerint — exporttal
+modules.items.miniapp.title	Ügyfélalkalmazás
+modules.items.miniapp.desc	Az ügyfél saját fiókja: foglalások, bérletek, pontok
+modules.items.multistudio.title	Több stúdió
+modules.items.multistudio.desc	Több stúdió egy fiókban, bármikor váltson
+modules.items.roles.title	Szerepkörök és hozzáférés
+modules.items.roles.desc	Tulajdonos, adminisztrátor, oktató — a felületen és a szerveren
+modules.items.settings.title	Beállítások
+modules.items.settings.desc	Nyitvatartás, téma, csapat, biztonság, munkamenetek
+modules.items.data.title	Adatok
+modules.items.data.desc	CSV-export, törlés kérésre
+modules.integrations	Integrációk
+modules.integrationsNote	a stúdió beállításaiban kapcsolható
+pricing.label	árak
+pricing.title	Az Ön csomagja a\\ncsapat méretétől függ
+pricing.lead	15 € két főre, +5 € minden további helyért, korlátlan — 120 €. Mind a 16 modul és a Velora AI minden szinten benne van: a csapat méretéért fizet, nem a gombok feloldásáért. Három fizetési modell közül választhat, előrefizetéssel akár 40% kedvezménnyel.
+pricing.team	csapat
+pricing.seats_one	fő
+pricing.seats_other	fő
+pricing.unlimited	korlátlan
+pricing.scaleMin	2 hely
+pricing.scaleMax	∞ korlátlan
+pricing.sliderAria	Hányan dolgoznak az Ön stúdiójában
+pricing.hint	**15 €** két főre, **+5 €** minden további helyért. Korlátlan — **120 €** havonta.
+pricing.period	fizetési időszak
+pricing.months	{{count}} hó
+pricing.noDiscount	—
+pricing.yourPrice	az Ön ára
+pricing.perMonth	/ hó
+pricing.amount	{{value}} €
+pricing.amountPerMonth	{{value}} € / hó
+pricing.rows.seats	Csapat
+pricing.rows.perSeat	Főnként
+pricing.rows.ai	Velora AI-kérések
+pricing.rows.aiPerMonth	{{value}} / hó
+pricing.rows.modules	Modulok
+pricing.rows.modulesAll	mind a 16
+pricing.rows.total	Fizetendő {{count}} hónapra
+pricing.rows.saved	Megtakarítás
+pricing.cta	Próbálja ki 30 napig
+pricing.note	Bankkártya nélkül · lemondás egy kattintással
+pricing.models.0.title	Előfizetés
+pricing.models.0.price	15 € / hó-tól
+pricing.models.0.desc	Fix összeg. Előre tudja a költséget — nincs meglepetés a hónap végén.
+pricing.models.1.title	A bevétel 3%-a
+pricing.models.1.price	legalább 15 € / hó
+pricing.models.1.desc	Forgalom alapján fizet. Csendesebb hónapban csak a különbözetet tölti fel a minimumig.
+pricing.models.2.title	Kombinált
+pricing.models.2.price	½ fix + 1,5%
+pricing.models.2.desc	Az előfizetés fele plusz egy kis százalék — egyensúly a két modell között.
+pricing.footnote	A próbaidőszakhoz nem kell bankkártya. A fizetési modell és a helyek száma az alkalmazásban bármikor módosítható. Az árak nem tartalmazzák az áfát: az adó az Ön országára a pénztárnál számolódik.
+faq.label	kérdések
+faq.title	Ezt kérdezik általában
+faq.items.0.q	Mit tartalmaz a próbaidőszak?
+faq.items.0.a	Teljes hozzáférés minden modulhoz 30 napig. Nem kell bankkártya — ha nem megfelelő, egyszerűen nem újítja meg.
+faq.items.1.q	Látnak majd az ügyfeleim más stúdióktól hirdetéseket?
+faq.items.1.a	Nem. Az ügyfelek a webhelyén lévő widgeten, a Telegramon, WhatsAppon vagy Instagramon keresztül foglalnak — illetve az Ön színével és logójával ellátott ügyfélalkalmazásban. Nincs közös katalógus más stúdiókkal.
+faq.items.2.q	Ki mit lát a csapatomban?
+faq.items.2.a	Három szerepkör van. A tulajdonos mindent lát. Az adminisztrátor a naptárt, az ügyfeleket és az áttekintést látja. Az oktató csak a saját óráit és ügyfeleit látja. A korlátozás a felületen és a szerveren is működik: nincs út mások adataihoz.
+faq.items.3.q	Vezethetek több stúdiót vagy létesítményt?
+faq.items.3.a	Igen, és ez nem függ a csomagtól. Egy fiók több stúdióhoz is tartozhat, és válthat közöttük; a stúdión belül létesítményeket és termeket állíthat be.
+faq.items.4.q	Van sötét téma és más nyelv?
+faq.items.4.a	Igen. A felület világos és sötét téma között vált, és 22 nyelvet támogat, köztük angolt, oroszt, ukránt, csehet és németet. Az időzónát, pénznemet és nyelvet az első beállításkor választja ki.
+faq.items.5.q	Mi történik az adataimmal, ha úgy döntök, hogy távozom?
+faq.items.5.a	Az adatok az Önéi. A beállítások CSV-exportot adnak ügyfelekhez, naptárhoz, pénzügyekhez és bérletekhez, a törlés pedig az Ön kérésére történik.
+faq.notFoundTitle	Nem találta meg a választ?
+faq.notFoundLead	Írjon nekünk — személyesen válaszolunk, botok és várakozás nélkül.
+faq.copied	Másolva
+about.label	rólunk
+about.title	A Velorát olyan emberek építik,\\nakik maguk is vezettek stúdiókat
+about.lead	Nem „CRM-et építünk mindenkinek”. Egy konkrét munkához készítünk eszközt — naptárhoz, ügyfelekhez, pénzhez, kommunikációhoz — és a kérdésekre magunk válaszolunk sablonválaszok helyett.
+about.p1	Egy stúdió ügyfelei a stúdió ügyfelei maradnak. A Velora nem épít közös katalógust, nem mutat mások hirdetéseit az ügyfeleinek, és nem kér százalékot, amikor valaki visszatér Önhöz.
+about.p2	Jelenleg a termék jóga- és pilatesstúdiókra készült — arra, ahogyan a naptáruk, bérleteik és oktatóik valóban működnek. Más ágazatok ugyanolyan körültekintéssel következnek.
+cta.eyebrow	Kezdje még ma
+cta.titleTop	Készen áll a
+cta.titleAccent	következő lépésre?
+cta.lead	30 nap ingyen. Bankkártya nélkül. Kötelezettség nélkül. Próbálja ki — érezni fogja a különbséget.
+cta.register	Regisztráljon ingyen
+cta.whatsapp	Írjon nekünk WhatsAppon
+footer.tagline	Prémium CRM jóga- és pilatesstúdióknak. Foglalások, ügyfelek, pénz és AI egy helyen.
+footer.columns.product.title	Termék
+footer.columns.product.features	Funkciók
+footer.columns.product.modules	Modulok
+footer.columns.product.booking	Online foglalás
+footer.columns.product.ai	Velora AI
+footer.columns.product.pricing	Árak
+footer.columns.company.title	Cég
+footer.columns.company.difference	Különbségünk
+footer.columns.company.about	Rólunk
+footer.columns.company.faq	Kérdések és válaszok
+footer.columns.company.support	Támogatás
+footer.columns.docs.title	Dokumentumok
+footer.columns.docs.terms	Felhasználási feltételek
+footer.columns.docs.privacy	Adatvédelmi szabályzat
+footer.columns.docs.cookies	Süti szabályzat
+footer.columns.docs.dpa	Adatkezelés
+footer.columns.docs.cookieSettings	Süti beállítások
+footer.columns.docs.support	Támogatás
+footer.copyright	© 2026 Velora. Minden jog fenntartva.
+screens.journal	Napi naptár
+screens.booking	Online foglalás
+screens.finance	Látogatás fizetése
+screens.notify	Esemény × csatorna
+screens.ai	Velora AI
+art.journal	Naptár
+art.journalToday	Ma — 12 óra
+art.weekdays.0	H
+art.weekdays.1	K
+art.weekdays.2	Sze
+art.weekdays.3	Cs
+art.weekdays.4	P
+art.weekdays.5	Szo
+art.weekdays.6	V
+art.finance	Pénzügyek
+art.financeValue	1,8 ezer €
+art.financeLabel	e havi bevétel
+art.clients	Ügyfelek
+art.clientsLabel	ügyfelek, +12 ezen a héten
+art.questions_one	{{count}} kérdés
+art.questions_other	{{count}} kérdés
+art.open	megnyitás

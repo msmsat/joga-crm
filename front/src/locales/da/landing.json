@@ -1,0 +1,378 @@
+{
+  "nav": {
+    "product": "Produkt",
+    "modules": "Moduler",
+    "pricing": "Priser",
+    "faq": "FAQ",
+    "login": "Log ind",
+    "startShort": "Start",
+    "startFull": "Start gratis",
+    "language": "Sprog"
+  },
+  "hero": {
+    "badge": "Den nye CRM-standard i 2026",
+    "title": "Et CRM, du vil\n*elske* at bruge",
+    "lead": "Et premium B2B-CRM til yoga- og pilatesstudier. Bookinger, kunder, team og økonomi ét sted. Ingen ekstra klik, intet besvær.",
+    "cta": "Prøv gratis i 30 dage",
+    "perks": [
+      "30 dage gratis",
+      "Intet betalingskort",
+      "Annuller med ét klik"
+    ]
+  },
+  "marquee": [
+    "Kalender",
+    "Kunder",
+    "Medlemskaber",
+    "Onlinebooking",
+    "Økonomi",
+    "Løn",
+    "Notifikationer",
+    "Loyalitet",
+    "Rapporter",
+    "Velora AI",
+    "Kundeapp",
+    "Roller og adgang"
+  ],
+  "stats": {
+    "items": [
+      {
+        "value": "30 dage",
+        "label": "Gratis, intet kort nødvendigt"
+      },
+      {
+        "value": "16",
+        "label": "Moduler i alle planer"
+      },
+      {
+        "value": "4",
+        "label": "Onlinebookingkanaler"
+      },
+      {
+        "value": "fra 15 €",
+        "label": "Pr. måned, pr. studie"
+      }
+    ],
+    "trust": [
+      "Dine data forbliver dine",
+      "Roller håndhæves på serveren",
+      "CSV-eksport når som helst",
+      "Sletning efter anmodning"
+    ]
+  },
+  "compare": {
+    "label": "forskellen",
+    "title": "Vi fjernede det,\nder stod i vejen",
+    "lead": "Velora udsprang af vores egne erfaringer: Vi drev studier og ramte hver dag den samme mur — et CRM, hvor én kundebooking kostede ni klik. Her er, hvad der ændrede sig.",
+    "usual": "Den sædvanlige måde",
+    "velora": "I Velora",
+    "pairs": [
+      {
+        "bad": "For at booke en kunde forlader du kalenderen, åbner en anden skærm og går tilbage igen",
+        "good": "Bookinger og nye kunder oprettes direkte i kalenderen"
+      },
+      {
+        "bad": "Rapporter eksporteres til Excel og afstemmes manuelt",
+        "good": "Live-rapporter pr. træner og tjeneste med eksport for enhver periode"
+      },
+      {
+        "bad": "Notifikationer er en separat tjeneste, du betaler for særskilt",
+        "good": "Telegram, e-mail og WhatsApp er indbygget med en hændelse × kanal-matrix"
+      },
+      {
+        "bad": "En træner kan se alle andres kalender og kundegrundlag",
+        "good": "Roller begrænser adgangen både i brugerfladen og på serveren"
+      },
+      {
+        "bad": "En assistent? Højst en kundesøgning",
+        "good": "Velora AI besvarer spørgsmål om din virksomhed — og svarer dine kunder på Telegram og Instagram"
+      }
+    ]
+  },
+  "showcase": {
+    "label": "alt i ét",
+    "title": "Én platform i stedet\nfor et dusin tjenester",
+    "lead": "Bookinger, kunder, penge, kommunikation og AI i én brugerflade. Ikke et eneste overflødigt modul: hver skærm løser et reelt ejerproblem.",
+    "blocks": {
+      "journal": {
+        "title": "Din kalender",
+        "lead": "Et dagsgitter, hvor trænere er kolonner og timer er rækker. Alt, en administrator gør, sker her.",
+        "points": [
+          "Træk en klasse til et andet tidspunkt — eller til en anden træner",
+          "Nye klasser og nye kunder oprettes uden at forlade kalenderen",
+          "Dagsoversigten ligger ved siden af: lokalebelastning og omsætning"
+        ]
+      },
+      "booking": {
+        "title": "Din onlinebooking",
+        "lead": "Fire kanaler, hvor kunder selv booker — døgnet rundt og uden en administrator.",
+        "points": [
+          "Webwidget, Telegram, WhatsApp og Instagram — hver konfigureres separat",
+          "Regler: hvor mange timer før start bookingen lukker, og hvornår kunden kan annullere",
+          "Kundeappens branding med liveeksempel — farve og sprog, der matcher dit brand"
+        ]
+      },
+      "finance": {
+        "title": "Din økonomi",
+        "lead": "Konti, transaktioner, løn og dokumenter ét sted, uden eksport til regneark.",
+        "points": [
+          "Kasse, bankkonto og kortindløsning med saldi og daglige bevægelser",
+          "Medlemskaber, gavekort og refunderinger knyttet til en kunde og en konto",
+          "Trænerløn beregnet efter dine egne regler"
+        ]
+      },
+      "notify": {
+        "title": "Dine notifikationer",
+        "lead": "Tre leveringskanaler og en matrix, hvor du beslutter, hvad der går hvorhen.",
+        "points": [
+          "Telegram, e-mail og WhatsApp — hver tilsluttet med dit studies egen nøgle",
+          "Et separat sæt hændelser for kunden, træneren, administratoren og ejeren",
+          "Påmindelser 24 og 2 timer før, „1–2 klasser tilbage“, fødselsdage og anmeldelsesanmodninger"
+        ]
+      },
+      "ai": {
+        "title": "Dit AI-lag",
+        "lead": "Assistenten kender din virksomheds kontekst og er tilgængelig på alle sider — agenterne svarer selv kunderne.",
+        "points": [
+          "Spørgsmål om studiet direkte fra topbjælken uden at åbne en anden sektion",
+          "AI-agenter på Telegram og Instagram: tone og tilstanden „kun uden for åbningstid“",
+          "Statistik: hvor mange samtaler der blev håndteret, og hvordan de blev vurderet"
+        ]
+      }
+    }
+  },
+  "ctaStrip": {
+    "title": "Prøv det uden datamigrering og uden betaling på forhånd",
+    "button": "Start gratis",
+    "note": "30 dage gratis • Intet kort • Hjælp til at komme i gang"
+  },
+  "modules": {
+    "label": "moduler",
+    "title": "16 moduler,\nallerede inkluderet",
+    "lead": "Ikke en samling „kommer snart“-pladsholdere — alt på listen virker og er en del af planen. Roller afgør, hvem der ser hvilken sektion.",
+    "items": {
+      "dashboard": {
+        "title": "Dashboard",
+        "desc": "Omsætning, aktive kunder, bookinger og fastholdelse — med tendenser"
+      },
+      "journal": {
+        "title": "Kalender",
+        "desc": "Dagsgitter pr. træner og lokale; træk for at flytte"
+      },
+      "clients": {
+        "title": "Kunder",
+        "desc": "Profil, medlemskab, point, historik, noter, tags"
+      },
+      "staff": {
+        "title": "Team",
+        "desc": "Profiler, nøgletal, arbejdstid, lokaleopgaver"
+      },
+      "catalog": {
+        "title": "Katalog",
+        "desc": "Afdelinger, lokaler med farve og kapacitet, studiets tjenester"
+      },
+      "booking": {
+        "title": "Onlinebooking",
+        "desc": "Widget, Telegram, WhatsApp, Instagram og bookingregler"
+      },
+      "finance": {
+        "title": "Økonomi",
+        "desc": "Konti, transaktioner, modparter, dokumenter, mål, løn"
+      },
+      "notify": {
+        "title": "Notifikationer",
+        "desc": "Telegram, e-mail, WhatsApp og en hændelse × kanal-matrix"
+      },
+      "loyalty": {
+        "title": "Loyalitet",
+        "desc": "Kort, rabatter, gavekort, medlemskaber, henvisninger"
+      },
+      "ai": {
+        "title": "Velora AI",
+        "desc": "En forretningsassistent og agenter til dine kunder"
+      },
+      "reports": {
+        "title": "Rapporter",
+        "desc": "Efter salg, trænere og tjenester — med eksport"
+      },
+      "miniapp": {
+        "title": "Kundeapp",
+        "desc": "Kundens egen konto: bookinger, medlemskab, point"
+      },
+      "multistudio": {
+        "title": "Flere studier",
+        "desc": "Flere studier i én konto, skift når som helst"
+      },
+      "roles": {
+        "title": "Roller og adgang",
+        "desc": "Ejer, administrator, træner — i brugerfladen og på serveren"
+      },
+      "settings": {
+        "title": "Indstillinger",
+        "desc": "Arbejdstider, tema, team, sikkerhed, sessioner"
+      },
+      "data": {
+        "title": "Data",
+        "desc": "CSV-eksport, sletning efter anmodning"
+      }
+    },
+    "integrations": "Integrationer",
+    "integrationsNote": "tilsluttet i studieindstillingerne"
+  },
+  "pricing": {
+    "label": "priser",
+    "title": "Din plan afhænger\naf dit teams størrelse",
+    "lead": "15 € for to personer, +5 € for hver næste plads, ubegrænset — 120 €. Alle 16 moduler og Velora AI er med på alle niveauer: Du betaler for teamets størrelse, ikke for at låse knapper op. Vælg mellem tre betalingsmodeller og få op til 40 % rabat ved forudbetaling.",
+    "team": "team",
+    "seats_one": "person",
+    "seats_other": "personer",
+    "unlimited": "uden grænse",
+    "scaleMin": "2 pladser",
+    "scaleMax": "∞ ubegrænset",
+    "sliderAria": "Hvor mange personer arbejder i dit studie",
+    "hint": "**15 €** for to personer, **+5 €** for hver ekstra plads. Ubegrænset — **120 €** om måneden.",
+    "period": "betalingsperiode",
+    "months": "{{count}} mdr.",
+    "noDiscount": "—",
+    "yourPrice": "din pris",
+    "perMonth": "/ md.",
+    "amount": "{{value}} €",
+    "amountPerMonth": "{{value}} € / md.",
+    "rows": {
+      "seats": "Team",
+      "perSeat": "Pr. person",
+      "ai": "Velora AI-forespørgsler",
+      "aiPerMonth": "{{value}} / md.",
+      "modules": "Moduler",
+      "modulesAll": "alle 16",
+      "total": "Forfalder for {{count}} måneder",
+      "saved": "Du sparer"
+    },
+    "cta": "Prøv i 30 dage",
+    "note": "Intet kort · annullér med ét klik",
+    "models": [
+      {
+        "title": "Abonnement",
+        "price": "fra 15 € / md.",
+        "desc": "Et fast beløb. Du kender prisen på forhånd — ingen overraskelser sidst på måneden."
+      },
+      {
+        "title": "3 % af omsætningen",
+        "price": "mindst 15 € / md.",
+        "desc": "Betal af omsætningen. I en rolig måned fylder du kun forskellen op til minimum."
+      },
+      {
+        "title": "Kombi",
+        "price": "½ fast + 1,5 %",
+        "desc": "Halvdelen af abonnementet plus en lille procentdel — en mellemvej mellem de to modeller."
+      }
+    ],
+    "footnote": "Prøveperioden kræver intet kort. Betalingsmodel og antal pladser kan ændres i appen når som helst. Priser er ekskl. moms: skat beregnes ved betaling for dit land."
+  },
+  "faq": {
+    "label": "spørgsmål",
+    "title": "Det spørger folk oftest om",
+    "items": [
+      {
+        "q": "Hvad indeholder prøveperioden?",
+        "a": "Fuld adgang til hvert modul i 30 dage. Intet betalingskort kræves — hvis det ikke er noget for dig, skal du bare ikke forny."
+      },
+      {
+        "q": "Ser mine kunder reklamer for andre studier?",
+        "a": "Nej. Kunder booker via widgetten på dit websted, din Telegram, WhatsApp eller Instagram — og gennem en kundeapp i din farve og med dit logo. Der findes intet fælles katalog med andre studier."
+      },
+      {
+        "q": "Hvem i mit team ser hvad?",
+        "a": "Tre roller. Ejeren ser alt. Administratoren ser kalenderen, kunderne og dashboardet. Træneren ser kun egne klasser og egne kunder. Grænsen virker i brugerfladen og på serveren: Der er ingen vej til andres data."
+      },
+      {
+        "q": "Kan jeg drive flere studier eller afdelinger?",
+        "a": "Ja, og det afhænger ikke af planen. Én konto kan høre til flere studier og skifte imellem dem, og i et studie opsætter du afdelinger og lokaler."
+      },
+      {
+        "q": "Findes der mørkt tema og andre sprog?",
+        "a": "Ja, brugerfladen skifter mellem lyst og mørkt og understøtter 22 sprog, herunder engelsk, russisk, ukrainsk, tjekkisk og tysk. Tidszone, valuta og sprog indstilles under onboarding."
+      },
+      {
+        "q": "Hvad sker der med mine data, hvis jeg vælger at forlade tjenesten?",
+        "a": "Dataene er dine. Indstillinger har CSV-eksport — kunder, kalender, økonomi, medlemskaber — og sletning foretages efter din anmodning."
+      }
+    ],
+    "notFoundTitle": "Fandt du ikke dit svar?",
+    "notFoundLead": "Skriv til os — vi svarer selv, uden bots og uden kø.",
+    "copied": "Kopieret"
+  },
+  "about": {
+    "label": "om os",
+    "title": "Velora bygges af mennesker\nder selv har drevet studier",
+    "lead": "Vi laver ikke et „CRM for alle“. Vi laver et værktøj til et bestemt arbejde — kalender, kunder, penge, kommunikation — og svarer selv på spørgsmål i stedet for at sende standardsvar.",
+    "p1": "Et studies kunder forbliver studiets kunder. Velora opbygger ikke et fælles katalog, viser ikke dine kunder andres reklamer og tager ikke en andel, fordi en person kommer tilbage til dig.",
+    "p2": "Lige nu er produktet bygget til yoga- og pilatesstudier — sådan som deres kalendere, medlemskaber og trænere faktisk fungerer. Andre brancher kommer senere, lige så bevidst."
+  },
+  "cta": {
+    "eyebrow": "Start i dag",
+    "titleTop": "Klar til at gå",
+    "titleAccent": "til næste niveau?",
+    "lead": "30 dage gratis. Intet kort. Ingen binding. Prøv det — du mærker forskellen.",
+    "register": "Opret dig gratis",
+    "whatsapp": "Skriv til os på WhatsApp"
+  },
+  "footer": {
+    "tagline": "Et premium-CRM til yoga- og pilatesstudier. Bookinger, kunder, penge og AI ét sted.",
+    "columns": {
+      "product": {
+        "title": "Produkt",
+        "features": "Funktioner",
+        "modules": "Moduler",
+        "booking": "Onlinebooking",
+        "ai": "Velora AI",
+        "pricing": "Priser"
+      },
+      "company": {
+        "title": "Virksomhed",
+        "difference": "Sådan adskiller vi os",
+        "about": "Om os",
+        "faq": "Spørgsmål og svar",
+        "support": "Support"
+      },
+      "docs": {
+        "title": "Dokumenter",
+        "terms": "Brugsvilkår",
+        "privacy": "Privatlivspolitik",
+        "cookies": "Cookiepolitik",
+        "dpa": "Databehandling",
+        "cookieSettings": "Cookieindstillinger",
+        "support": "Support"
+      }
+    },
+    "copyright": "© 2026 Velora. Alle rettigheder forbeholdes."
+  },
+  "screens": {
+    "journal": "Dagskalender",
+    "booking": "Onlinebooking",
+    "finance": "Betaling for besøg",
+    "notify": "Hændelse × kanal",
+    "ai": "Velora AI"
+  },
+  "art": {
+    "journal": "Kalender",
+    "journalToday": "I dag — 12 klasser",
+    "weekdays": [
+      "M",
+      "T",
+      "O",
+      "T",
+      "F",
+      "L",
+      "S"
+    ],
+    "finance": "Økonomi",
+    "financeValue": "1,8 t€",
+    "financeLabel": "omsætning denne måned",
+    "clients": "Kunder",
+    "clientsLabel": "kunder, +12 denne uge",
+    "questions_one": "{{count}} spørgsmål",
+    "questions_other": "{{count}} spørgsmål",
+    "open": "åbn"
+  }
+}

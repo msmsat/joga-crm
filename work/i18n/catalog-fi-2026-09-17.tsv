@@ -1,0 +1,246 @@
+== fi
+tabs.studios	Studiot
+tabs.services	Palvelut
+tabs.subscriptions	Jäsenyydet
+modals.addStudio.steps.about.title	Tietoa studiosta
+modals.addStudio.steps.about.sub	Nimi ja yhteystiedot
+modals.addStudio.steps.about.trust	Tietosi salataan, eikä niitä koskaan jaeta kolmansille osapuolille
+modals.addStudio.steps.location.title	Sijainti
+modals.addStudio.steps.location.sub	Missä tämä toimipiste sijaitsee?
+modals.addStudio.steps.location.trust	Osoitetta käytetään kalenterissa ja kartoissa
+modals.addStudio.steps.photo.title	Kuva
+modals.addStudio.steps.photo.sub	Studion kansikuva — valinnainen
+modals.addStudio.steps.photo.trust	Voit lisätä sen myöhemmin toimipisteen asetuksissa
+modals.addStudio.stepCounter	Vaihe {{current}} / {{total}}
+modals.addStudio.step1.heading	Perustiedot
+modals.addStudio.step1.subheading	Mikä studion nimi on ja miten siihen saa yhteyden?
+modals.addStudio.step1.name	Studion nimi *
+modals.addStudio.step1.namePlaceholder	Esim. Velora Studio
+modals.addStudio.step1.phone	Puhelin *
+modals.addStudio.step1.email	Sähköposti *
+modals.addStudio.step1.contactHint	Anna puhelinnumero tai sähköposti — vähintään toinen
+modals.addStudio.step1.noContacts	Yhteystietoja ei annettu
+modals.addStudio.step1.new	UUSI
+modals.addStudio.step2.heading	Sijainti
+modals.addStudio.step2.subheading	Määritä, missä tämä toimipiste sijaitsee
+modals.addStudio.step2.country	Maa
+modals.addStudio.step2.countryPlaceholder	Yhdysvallat
+modals.addStudio.step2.city	Kaupunki *
+modals.addStudio.step2.cityPlaceholder	New York
+modals.addStudio.step2.address	Osoite *
+modals.addStudio.step2.addressPlaceholder	5th Avenue 12, huoneisto 301
+modals.addStudio.step2.noAddress	Osoitetta ei annettu
+modals.addStudio.step2.groupHint	Kenttiä ”Maa” ja ”Kaupunki” käytetään toimipisteiden ryhmittelyyn luettelossa.
+modals.addStudio.step3.heading	Studion kuva
+modals.addStudio.step3.subheading	Lataa kansikuva — se on valinnainen, voit ohittaa sen
+modals.addStudio.step3.uploadCta	Lataa napsauttamalla
+modals.addStudio.step3.uploadHint	JPG, PNG, enintään 10 Mt
+modals.addStudio.step3.replace	Vaihda
+modals.addStudio.step3.remove	Poista
+modals.addStudio.step3.previewAlt	Esikatselu
+modals.addStudio.step3.summary	Yhteenveto
+modals.addStudio.step3.uploadError	Kuvan lataus epäonnistui. Kokeile toista tiedostoa tai poista kuva.
+modals.addStudio.summaryRows.name	Nimi
+modals.addStudio.summaryRows.city	Kaupunki
+modals.addStudio.summaryRows.address	Osoite
+modals.addStudio.nextPhoto	Seuraava — kuva
+modals.addStudio.submit	Luo studio
+modals.addStudio.skipPhoto	Ohita kuva ja luo
+modals.addStudio.illus.contacts	Yhteystiedot
+modals.addStudio.illus.newBranch	Uusi toimipiste
+modals.addStudio.illus.city	Kaupunki
+modals.addStudio.illus.newBranchStudio	Uusi studiotoimipiste
+modals.editBranch.title	Muokkaa toimipistettä
+modals.editBranch.name	Toimipisteen nimi
+modals.editBranch.namePlaceholder	Velora Studio
+modals.editBranch.phone	Puhelin
+modals.editBranch.email	Sähköposti
+modals.editBranch.emailPlaceholder	studio@velora.com
+modals.editBranch.country	Maa
+modals.editBranch.countryPlaceholder	Yhdysvallat
+modals.editBranch.city	Kaupunki
+modals.editBranch.cityPlaceholder	New York
+modals.editBranch.address	Osoite
+modals.editBranch.addressPlaceholder	5th Avenue 12
+modals.editBranch.photo	Toimipisteen kuva
+modals.editBranch.contactHint	Anna puhelinnumero tai sähköposti
+modals.editBranch.workingHours	Aukioloajat
+modals.hall.titleNew	Lisää {{spaceAcc}}
+modals.hall.titleEdit	Muokkaa {{spaceAcc}}
+modals.hall.name	Nimi
+modals.hall.namePlaceholder	{{space, capitalize}} A
+modals.hall.capacity	Kapasiteetti
+modals.hall.area	Pinta-ala, m²
+modals.hall.hourlyRate	Tuntihinta, {{currency}}
+modals.hall.hourlyRatePlaceholder	3000
+modals.hall.equipment	Varusteet
+modals.hall.equipmentPlaceholder	Lisää varusteita
+modals.hall.color	Väri
+modals.hall.isOnline	Verkossa
+modals.hall.photo	Kuva
+modals.hall.subtitle	{{space, capitalize}} toimipisteessä: paikat, varusteet, kalenterin väri
+modals.hall.previewTitle	Esikatselu
+modals.hall.sectionBasic	Perustiedot
+modals.hall.sectionSpace	Tila
+modals.hall.sectionLook	Ulkoasu
+modals.hall.areaShort	Pinta-ala
+modals.hall.hourlyRateShort	Tuntihinta
+modals.hall.statArea	Pinta-ala
+modals.hall.statRate	Hinta / tunti
+modals.hall.isOnlineHint	Tunnit pidetään verkossa — fyysistä tilaa ei ole.
+modals.hall.colorHint	Tässä pidettävät tunnit korostetaan tällä värillä kalenterissa.
+modals.service.titleNew	Uusi palvelu
+modals.service.titleEdit	Muokkaa palvelua
+modals.service.name	Palvelun nimi
+modals.service.namePlaceholder	Hatha-jooga
+modals.service.category	Luokka
+modals.service.type	Tyyppi
+modals.service.typeGroup	Ryhmä
+modals.service.typeIndividual	Yksilö
+modals.service.price	Hinta, {{currency}}
+modals.service.pricePlaceholder	1200
+modals.service.duration	Kesto, min
+modals.service.durationPlaceholder	60
+modals.service.maxClients	Enimmäismäärä asiakkaita
+modals.service.maxClientsPlaceholder	15
+modals.service.description	Kuvaus
+modals.service.descriptionPlaceholder	Lyhyt palvelukuvaus
+modals.service.color	Väri
+modals.service.subtitle	Näkyy kalenterissa ja verkkoajanvarauksessa
+modals.service.previewTitle	Kalenterin esikatselu
+modals.service.sectionBasic	Perustiedot
+modals.service.sectionPricing	Hinta ja aika
+modals.service.sectionLook	Ulkoasu
+modals.service.priceShort	Hinta
+modals.service.durationShort	Kesto
+modals.service.statSeats	Paikat
+modals.service.colorHint	Tunnit korostetaan tällä värillä kalenteriruudukossa.
+modals.service.bookingMode	Varaustapa
+modals.service.bookingModeEvent	Ilmoittautuminen
+modals.service.bookingModeResource	Valitse aika
+modals.service.bookingModeEventHint	Asiakkaat ilmoittautuvat jo kalenteriin merkittyyn tuntiin.
+modals.service.bookingModeResourceHint	Asiakas valitsee asiantuntijan ja vapaan ajan; {{offering}}-väli luodaan vahvistettaessa.
+modals.service.bookable	Varattavissa
+modals.service.bookableOn	Kyllä
+modals.service.bookableOff	Ei
+modals.service.bufferBefore	Puskuri ennen
+modals.service.bufferAfter	Puskuri jälkeen
+modals.package.titleNew	Uusi paketti
+modals.package.titleEdit	Muokkaa pakettia
+modals.package.name	Paketin nimi
+modals.package.namePlaceholder	8 tuntia
+modals.package.classCount	Tuntien määrä
+modals.package.classCountPlaceholder	8
+modals.package.price	Hinta, {{currency}}
+modals.package.pricePlaceholder	8000
+modals.package.perVisitPrice	Hinta käynniltä
+modals.package.durationDays	Voimassa, päivää
+modals.package.durationDaysPlaceholder	60
+modals.package.services	Palvelut
+modals.package.servicesHint	Mitään ei valittu — paketti koskee kaikkia tunteja
+modals.package.isActive	Myynnissä
+modals.package.soldAsSubscription	Näytä ”Jäsenyydet”-välilehdessä
+modals.package.soldAsSingle	Näytä ”Yksittäiset käynnit” -välilehdessä
+modals.package.subtitle	Tuntipaketti, jonka myyt asiakkaille
+modals.package.previewTitle	Passin esikatselu
+modals.package.previewKind	Passi
+modals.package.previewValid	Voimassa
+modals.package.sectionBasic	Perustiedot
+modals.package.sectionTerms	Ehdot
+modals.package.sectionSale	Myynti
+modals.package.priceShort	Paketin hinta
+modals.package.statClasses	Tunnit
+modals.package.statDays	Päivät
+modals.package.statAll	Kaikki
+modals.package.isActiveHint	Asiakkaat voivat nähdä ja ostaa tämän paketin.
+modals.package.soldAsSubscriptionHint	Muuten paketti jää vain yksittäisiin käynteihin.
+studios.title	STUDIOT
+studios.addStudio	Lisää studio
+studios.addHall	Lisää {{spaceAcc}}
+studios.editBranch	Muokkaa toimipistettä
+studios.deleteBranch	Poista toimipiste
+studios.infoTab	Yleistiedot
+studios.hallsTitle	Studion {{spacePlural}}
+studios.hallCount_one	{{spacePlural, capitalize}} · {{count}}
+studios.hallCount_other	{{spacePlural, capitalize}} · {{count}}
+studios.stats.halls	{{spacePlural, capitalize}}
+studios.stats.totalSeats	Paikkoja yhteensä
+studios.stats.fromPerHour	Alkaen / tunti
+studios.hall.seats	paikkaa
+studios.hall.schedule	Aukioloajat
+studios.hall.closed	Suljettu
+studios.hall.stats.seats	Paikat
+studios.hall.stats.area	Pinta-ala
+studios.hall.stats.perHour	Tunnissa
+studios.hall.equipment	Varusteet
+studios.hall.actions	Toiminnot
+studios.hall.edit	Muokkaa {{spaceAcc}}
+studios.hall.delete	Poista {{spaceAcc}}
+studios.empty.title	Ei studioita
+studios.empty.subtitle	Lisää ensimmäinen studiosi
+studios.toasts.created	Studio luotu
+studios.toasts.createError	Studion luonti epäonnistui
+studios.toasts.deleted	Studio poistettu
+studios.toasts.hallDeleted	Poistettu: {{space}}
+studios.toasts.saved	Tallennettu
+studios.toasts.edit	Muokkaa: {{name}}
+studios.confirmDelete	Poistetaanko toimipiste ”{{name}}”? Toimintoa ei voi perua.
+studios.confirmDeleteTitle	Poistetaanko toimipiste?
+studios.confirmDeleteHall	Poistetaanko {{spaceAcc}} ”{{name}}”?
+studios.confirmDeleteHallTitle	Poistetaanko {{spaceAcc}}?
+services.title	PALVELUT
+services.addService	Lisää palvelu
+services.types.group	Ryhmä
+services.types.individual	Yksilö
+services.types.groupFull	 · Ryhmä
+services.types.individualFull	 · Yksilö
+services.stats.price	Hinta
+services.stats.duration	Kesto
+services.stats.bookings	Varaukset
+services.stats.revenue	Tuotot
+services.details.description	Kuvaus
+services.details.details	Tiedot
+services.details.minutes	minuuttia
+services.details.upTo	Enintään {{count}} hlöä
+services.details.personal	Yksilöllinen
+services.details.bookingsPerMonth	varausta 30 päivässä
+services.details.schedule	Tuntikalenteri
+services.empty.title	Ei palveluita
+services.empty.subtitle	Lisää ensimmäinen palvelusi
+services.toasts.deleted	Palvelu poistettu
+services.toasts.deleteError	Palvelun poisto epäonnistui
+services.toasts.saved	Tallennettu
+services.toasts.saveError	Palvelun tallennus epäonnistui
+services.toasts.edit	Muokkaa: {{name}}
+services.confirmDelete	Poistetaanko palvelu ”{{name}}”?
+services.confirmDeleteTitle	Poistetaanko palvelu?
+services.categories.yoga	Jooga
+services.categories.pilates	Pilates
+services.categories.stretching	Venyttely
+services.categories.individual	Yksilöllinen
+services.categories.other	Luokittelematon
+subscriptions.title	JÄSENYYDET
+subscriptions.addPackage	Lisää paketti
+subscriptions.card.classCount_one	{{count}} tunti
+subscriptions.card.classCount_other	{{count}} tuntia
+subscriptions.card.duration	{{count}} päivää
+subscriptions.card.allServices	Kaikki tunnit
+subscriptions.card.serviceCount_one	{{count}} palvelu
+subscriptions.card.serviceCount_other	{{count}} palvelua
+subscriptions.card.inactiveBadge	Poistettu myynnistä
+subscriptions.settings.title	Ohjelman asetukset
+subscriptions.settings.allowFreeze	Jäsenyyden jäädytys
+subscriptions.settings.allowTransfer	Siirto toiselle asiakkaalle
+subscriptions.settings.autoRenewal	Automaattinen uusinta asiakkaan talletuksesta
+subscriptions.empty.title	Paketteja ei vielä ole
+subscriptions.empty.cta	Luo paketti
+subscriptions.toasts.created	Paketti luotu
+subscriptions.toasts.saved	Tallennettu
+subscriptions.toasts.saveError	Paketin tallennus epäonnistui
+subscriptions.toasts.deactivated	Paketti poistettu myynnistä
+subscriptions.toasts.restored	Paketti palautettu myyntiin
+subscriptions.toasts.actionError	Toimintoa ei voitu suorittaa
+subscriptions.deactivate	Poista myynnistä
+subscriptions.restore	Palauta myyntiin
+subscriptions.confirmDeactivateTitle	Poistetaanko tämä paketti myynnistä?
+subscriptions.confirmDeactivate	Jo myydyt jäsenyydet toimivat edelleen.

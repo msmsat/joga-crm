@@ -1,0 +1,378 @@
+{
+  "nav": {
+    "product": "Tuote",
+    "modules": "Moduulit",
+    "pricing": "Hinnat",
+    "faq": "UKK",
+    "login": "Kirjaudu sisään",
+    "startShort": "Aloita",
+    "startFull": "Aloita maksutta",
+    "language": "Kieli"
+  },
+  "hero": {
+    "badge": "Uusi CRM-standardi vuonna 2026",
+    "title": "CRM, jota\n*rakastat* käyttää",
+    "lead": "Premium-tason B2B-CRM jooga- ja pilatesstudioille. Varaukset, asiakkaat, tiimisi ja taloutesi samassa paikassa. Ei ylimääräisiä klikkauksia eikä vaivaa.",
+    "cta": "Kokeile 30 päivää maksutta",
+    "perks": [
+      "30 päivää maksutta",
+      "Ei maksukorttia",
+      "Peruuta yhdellä klikkauksella"
+    ]
+  },
+  "marquee": [
+    "Aikataulu",
+    "Asiakkaat",
+    "Jäsenyydet",
+    "Verkkovaraus",
+    "Talous",
+    "Palkat",
+    "Ilmoitukset",
+    "Asiakasuskollisuus",
+    "Raportit",
+    "Velora AI",
+    "Asiakassovellus",
+    "Roolit ja käyttöoikeudet"
+  ],
+  "stats": {
+    "items": [
+      {
+        "value": "30 päivää",
+        "label": "Maksutta, ei korttia"
+      },
+      {
+        "value": "16",
+        "label": "Moduulia jokaisessa paketissa"
+      },
+      {
+        "value": "4",
+        "label": "Verkkovarauskanavaa"
+      },
+      {
+        "value": "alkaen 15 €",
+        "label": "Kuukaudessa studiota kohden"
+      }
+    ],
+    "trust": [
+      "Tietosi pysyvät ominasi",
+      "Roolit valvotaan palvelimella",
+      "CSV-vienti milloin tahansa",
+      "Poisto pyynnöstä"
+    ]
+  },
+  "compare": {
+    "label": "ero",
+    "title": "Poistimme sen,\nmikä oli tiellä",
+    "lead": "Velora kasvoi omista kokemuksistamme: pyöritimme studioita ja törmäsimme joka päivä samaan seinään — CRM:ään, jossa yhden asiakkaan varaaminen vaati yhdeksän klikkausta. Näin se muuttui.",
+    "usual": "Tavallinen tapa",
+    "velora": "Velorassa",
+    "pairs": [
+      {
+        "bad": "Varaat asiakkaan poistumalla aikataulusta toiselle näytölle ja palaamalla takaisin",
+        "good": "Varaukset ja uudet asiakkaat luodaan suoraan aikataulussa"
+      },
+      {
+        "bad": "Raportit viedään Exceliin ja täsmäytetään käsin",
+        "good": "Reaaliaikaiset raportit valmentajittain ja palveluittain, vienti mille tahansa ajalle"
+      },
+      {
+        "bad": "Ilmoitukset ovat erillinen palvelu, josta maksetaan erikseen",
+        "good": "Telegram, sähköposti ja WhatsApp sisäänrakennettuina tapahtuma × kanava -matriisilla"
+      },
+      {
+        "bad": "Valmentaja voi nähdä kaikkien muiden aikataulut ja asiakkaat",
+        "good": "Roolit rajaavat pääsyn sekä käyttöliittymässä että palvelimella"
+      },
+      {
+        "bad": "Avustaja? Parhaimmillaan asiakashaku",
+        "good": "Velora AI vastaa yritystäsi koskeviin kysymyksiin — ja asiakkaillesi Telegramissa ja Instagramissa"
+      }
+    ]
+  },
+  "showcase": {
+    "label": "kaikki yhdessä",
+    "title": "Yksi alusta\ntusinan palvelun sijaan",
+    "lead": "Varaukset, asiakkaat, raha, viestintä ja tekoäly yhdessä käyttöliittymässä. Ei yhtään turhaa moduulia: jokainen näyttö ratkaisee aidon omistajan ongelman.",
+    "blocks": {
+      "journal": {
+        "title": "Oma aikataulusi",
+        "lead": "Päiväruudukko, jossa valmentajat ovat sarakkeita ja tunnit rivejä. Kaikki ylläpitäjän työ tapahtuu täällä.",
+        "points": [
+          "Vedä tunti toiseen aikaan tai toiselle valmentajalle",
+          "Luo uusia tunteja ja asiakkaita poistumatta aikataulusta",
+          "Päivän yhteenveto on vieressä: tilojen kuormitus ja liikevaihto"
+        ]
+      },
+      "booking": {
+        "title": "Oma verkkovarauksesi",
+        "lead": "Neljä kanavaa, joiden kautta asiakkaat varaavat itse ympäri vuorokauden ilman ylläpitäjää.",
+        "points": [
+          "Verkkosivuwidget, Telegram, WhatsApp ja Instagram — jokainen määritetään erikseen",
+          "Säännöt: kuinka monta tuntia ennen alkua varaus sulkeutuu ja mihin asti asiakas voi perua",
+          "Asiakassovelluksen brändäys live-esikatselulla — väri ja kieli vastaavat brändiäsi"
+        ]
+      },
+      "finance": {
+        "title": "Oma taloutesi",
+        "lead": "Tilit, tapahtumat, palkat ja asiakirjat yhdessä paikassa ilman vientiä laskentataulukoihin.",
+        "points": [
+          "Kassa, pankkitili ja maksunvälitys saldoineen ja päivittäisine muutoksineen",
+          "Jäsenyydet, lahjakortit ja hyvitykset sidottuina asiakkaaseen ja tiliin",
+          "Valmentajien palkat omien sääntöjesi mukaan laskettuina"
+        ]
+      },
+      "notify": {
+        "title": "Omat ilmoituksesi",
+        "lead": "Kolme toimituskanavaa ja matriisi, jossa päätät mitä lähetetään minne.",
+        "points": [
+          "Telegram, sähköposti ja WhatsApp — kukin yhdistetty studion omaan avaimeen",
+          "Oma tapahtumajoukko asiakkaalle, valmentajalle, ylläpitäjälle ja omistajalle",
+          "Muistutukset 24 ja 2 tuntia ennen, ”1–2 tuntia jäljellä”, syntymäpäivät ja arvostelupyynnöt"
+        ]
+      },
+      "ai": {
+        "title": "Oma tekoälytasosi",
+        "lead": "Avustaja tuntee liiketoimintasi kontekstin ja on käytettävissä jokaisella sivulla — agentit vastaavat asiakkaillesi itse.",
+        "points": [
+          "Kysymykset studiosta suoraan yläpalkista avaamatta toista osiota",
+          "Tekoälyagentit Telegramissa ja Instagramissa: äänensävy ja ”vain aukioloaikojen ulkopuolella” -tila",
+          "Tilastot: kuinka monta keskustelua käsiteltiin ja miten ne arvioitiin"
+        ]
+      }
+    }
+  },
+  "ctaStrip": {
+    "title": "Kokeile ilman datan siirtoa tai ennakkomaksua",
+    "button": "Aloita maksutta",
+    "note": "30 päivää maksutta • Ei korttia • Apua alkuun"
+  },
+  "modules": {
+    "label": "moduulit",
+    "title": "16 moduulia,\nvalmiiksi mukana",
+    "lead": "Ei ”tulossa pian” -paikkamerkkien kokoelma — kaikki lueteltu toimii ja kuuluu pakettiin. Roolit ratkaisevat, kuka näkee minkäkin osion.",
+    "items": {
+      "dashboard": {
+        "title": "Hallintapaneeli",
+        "desc": "Liikevaihto, aktiiviset asiakkaat, varaukset ja säilyminen — trendeineen"
+      },
+      "journal": {
+        "title": "Aikataulu",
+        "desc": "Päiväruudukko valmentajittain ja tiloittain, vedä siirtääksesi"
+      },
+      "clients": {
+        "title": "Asiakkaat",
+        "desc": "Profiili, jäsenyys, pisteet, historia, muistiinpanot, tunnisteet"
+      },
+      "staff": {
+        "title": "Tiimi",
+        "desc": "Profiilit, mittarit, työajat, tilamääritykset"
+      },
+      "catalog": {
+        "title": "Luettelo",
+        "desc": "Toimipisteet, värilliset ja kapasiteetiltaan määritetyt tilat, studion palvelut"
+      },
+      "booking": {
+        "title": "Verkkovaraus",
+        "desc": "Widget, Telegram, WhatsApp, Instagram ja varaussäännöt"
+      },
+      "finance": {
+        "title": "Talous",
+        "desc": "Tilit, tapahtumat, vastapuolet, asiakirjat, tavoitteet, palkat"
+      },
+      "notify": {
+        "title": "Ilmoitukset",
+        "desc": "Telegram, sähköposti, WhatsApp ja tapahtuma × kanava -matriisi"
+      },
+      "loyalty": {
+        "title": "Asiakasuskollisuus",
+        "desc": "Kortit, alennukset, lahjakortit, jäsenyydet, suosittelut"
+      },
+      "ai": {
+        "title": "Velora AI",
+        "desc": "Liiketoiminta-avustaja ja agentit asiakkaillesi"
+      },
+      "reports": {
+        "title": "Raportit",
+        "desc": "Myynnin, valmentajien ja palveluiden mukaan — viennillä"
+      },
+      "miniapp": {
+        "title": "Asiakassovellus",
+        "desc": "Asiakkaan oma tili: varaukset, jäsenyys, pisteet"
+      },
+      "multistudio": {
+        "title": "Useita studioita",
+        "desc": "Useita studioita yhdellä tilillä, vaihda milloin tahansa"
+      },
+      "roles": {
+        "title": "Roolit ja käyttöoikeudet",
+        "desc": "Omistaja, ylläpitäjä, valmentaja — käyttöliittymässä ja palvelimella"
+      },
+      "settings": {
+        "title": "Asetukset",
+        "desc": "Työajat, teema, tiimi, tietoturva, istunnot"
+      },
+      "data": {
+        "title": "Tiedot",
+        "desc": "CSV-vienti, poisto pyynnöstä"
+      }
+    },
+    "integrations": "Integraatiot",
+    "integrationsNote": "yhdistetty studion asetuksissa"
+  },
+  "pricing": {
+    "label": "hinnat",
+    "title": "Pakettisi määräytyy\ntiimisi koon mukaan",
+    "lead": "15 € kahdesta henkilöstä, +5 € jokaisesta seuraavasta paikasta, rajaton — 120 €. Kaikki 16 moduulia ja Velora AI sisältyvät joka tasoon: maksat tiimisi koosta, et painikkeiden avaamisesta. Valittavana on kolme maksutapaa ja ennakkoon maksaessa jopa 40 % alennus.",
+    "team": "tiimi",
+    "seats_one": "henkilö",
+    "seats_other": "henkilöä",
+    "unlimited": "ei rajaa",
+    "scaleMin": "2 paikkaa",
+    "scaleMax": "∞ rajaton",
+    "sliderAria": "Kuinka monta henkilöä studiossasi työskentelee",
+    "hint": "**15 €** kahdesta henkilöstä, **+5 €** jokaisesta lisäpaikasta. Rajaton — **120 €** kuukaudessa.",
+    "period": "laskutuskausi",
+    "months": "{{count}} kk",
+    "noDiscount": "—",
+    "yourPrice": "hintasi",
+    "perMonth": "/ kk",
+    "amount": "{{value}} €",
+    "amountPerMonth": "{{value}} € / kk",
+    "rows": {
+      "seats": "Tiimi",
+      "perSeat": "Henkilöä kohti",
+      "ai": "Velora AI -pyynnöt",
+      "aiPerMonth": "{{value}} / kk",
+      "modules": "Moduulit",
+      "modulesAll": "kaikki 16",
+      "total": "Maksettavaa {{count}} kuukaudelta",
+      "saved": "Säästät"
+    },
+    "cta": "Kokeile 30 päivää",
+    "note": "Ei korttia · peruuta yhdellä klikkauksella",
+    "models": [
+      {
+        "title": "Tilaus",
+        "price": "alkaen 15 € / kk",
+        "desc": "Kiinteä summa. Tiedät kustannuksen etukäteen — ei yllätyksiä kuun lopussa."
+      },
+      {
+        "title": "3 % liikevaihdosta",
+        "price": "vähintään 15 € / kk",
+        "desc": "Maksa liikevaihdosta. Hiljaisena kuukautena täydennät vain erotuksen vähimmäismäärään."
+      },
+      {
+        "title": "Yhdistelmä",
+        "price": "½ kiinteä + 1,5 %",
+        "desc": "Puolet tilauksesta plus pieni prosentti — keskitie kahden mallin välillä."
+      }
+    ],
+    "footnote": "Kokeilu ei vaadi korttia. Maksumallia ja paikkojen määrää voi muuttaa sovelluksessa milloin tahansa. Hinnat eivät sisällä arvonlisäveroa: vero lasketaan maksussa maasi mukaan."
+  },
+  "faq": {
+    "label": "kysymykset",
+    "title": "Mitä yleensä kysytään",
+    "items": [
+      {
+        "q": "Mitä kokeilu sisältää?",
+        "a": "Täysi pääsy kaikkiin moduuleihin 30 päiväksi. Maksukorttia ei tarvita — jos tämä ei sovi sinulle, älä vain uusi tilausta."
+      },
+      {
+        "q": "Näkevätkö asiakkaani muiden studioiden mainoksia?",
+        "a": "Eivät. Asiakkaat varaavat sivustosi widgetin, Telegramin, WhatsAppin tai Instagramin kautta — sekä asiakassovelluksella omalla värilläsi ja logollasi. Muiden studioiden kanssa ei ole yhteistä luetteloa."
+      },
+      {
+        "q": "Kuka tiimissäni näkee mitä?",
+        "a": "Kolme roolia. Omistaja näkee kaiken. Ylläpitäjä näkee aikataulun, asiakkaat ja hallintapaneelin. Valmentaja näkee vain omat tuntinsa ja asiakkaansa. Rajoitus toimii käyttöliittymässä ja palvelimella: muiden tietoihin ei pääse."
+      },
+      {
+        "q": "Voinko hallita useita studioita tai toimipisteitä?",
+        "a": "Kyllä, eikä se riipu paketista. Yksi tili voi kuulua useille studioille ja vaihtaa niiden välillä, ja studion sisällä määrität toimipisteet ja tilat."
+      },
+      {
+        "q": "Onko tumma teema ja muita kieliä?",
+        "a": "Kyllä, käyttöliittymä vaihtaa vaalean ja tumman välillä ja tukee 22 kieltä, mukaan lukien englantia, venäjää, ukrainaa, tšekkiä ja saksaa. Aikavyöhyke, valuutta ja kieli määritetään käyttöönoton aikana."
+      },
+      {
+        "q": "Mitä tiedoilleni tapahtuu, jos päätän lähteä?",
+        "a": "Tiedot ovat sinun. Asetuksissa on CSV-vienti asiakkaille, aikataululle, taloudelle ja jäsenyyksille, ja poisto tehdään pyynnöstäsi."
+      }
+    ],
+    "notFoundTitle": "Etkö löytänyt vastausta?",
+    "notFoundLead": "Kirjoita meille — vastaamme itse, ilman botteja ja jonoa.",
+    "copied": "Kopioitu"
+  },
+  "about": {
+    "label": "meistä",
+    "title": "Veloran tekevät ihmiset,\njotka ovat itse pyörittäneet studioita",
+    "lead": "Emme tee ”CRM:ää kaikille”. Teemme työkalua tiettyyn työhön — aikatauluun, asiakkaisiin, rahaan ja viestintään — ja vastaamme kysymyksiin itse valmiin vastauksen lähettämisen sijaan.",
+    "p1": "Studion asiakkaat pysyvät studion asiakkaina. Velora ei rakenna yhteistä luetteloa, ei näytä asiakkaillesi muiden mainoksia eikä ota osuutta siksi, että henkilö palaa luoksesi.",
+    "p2": "Tuote on tällä hetkellä tehty jooga- ja pilatesstudioille — niiden aikataulujen, jäsenyyksien ja valmentajien todelliseen toimintatapaan. Muut alat seuraavat yhtä harkitusti."
+  },
+  "cta": {
+    "eyebrow": "Aloita tänään",
+    "titleTop": "Oletko valmis siirtymään",
+    "titleAccent": "seuraavalle tasolle?",
+    "lead": "30 päivää maksutta. Ei korttia. Ei sitoutumista. Kokeile — huomaat eron.",
+    "register": "Rekisteröidy maksutta",
+    "whatsapp": "Lähetä viesti WhatsAppissa"
+  },
+  "footer": {
+    "tagline": "Premium-CRM jooga- ja pilatesstudioille. Varaukset, asiakkaat, raha ja tekoäly samassa paikassa.",
+    "columns": {
+      "product": {
+        "title": "Tuote",
+        "features": "Ominaisuudet",
+        "modules": "Moduulit",
+        "booking": "Verkkovaraus",
+        "ai": "Velora AI",
+        "pricing": "Hinnat"
+      },
+      "company": {
+        "title": "Yritys",
+        "difference": "Miten erotumme",
+        "about": "Meistä",
+        "faq": "Kysymykset ja vastaukset",
+        "support": "Tuki"
+      },
+      "docs": {
+        "title": "Asiakirjat",
+        "terms": "Käyttöehdot",
+        "privacy": "Tietosuojakäytäntö",
+        "cookies": "Evästekäytäntö",
+        "dpa": "Tietojenkäsittely",
+        "cookieSettings": "Evästeasetukset",
+        "support": "Tuki"
+      }
+    },
+    "copyright": "© 2026 Velora. Kaikki oikeudet pidätetään."
+  },
+  "screens": {
+    "journal": "Päiväaikataulu",
+    "booking": "Verkkovaraus",
+    "finance": "Käyntimaksu",
+    "notify": "Tapahtuma × kanava",
+    "ai": "Velora AI"
+  },
+  "art": {
+    "journal": "Aikataulu",
+    "journalToday": "Tänään — 12 tuntia",
+    "weekdays": [
+      "M",
+      "T",
+      "K",
+      "T",
+      "P",
+      "L",
+      "S"
+    ],
+    "finance": "Talous",
+    "financeValue": "1,8 t€",
+    "financeLabel": "liikevaihto tässä kuussa",
+    "clients": "Asiakkaat",
+    "clientsLabel": "asiakasta, +12 tällä viikolla",
+    "questions_one": "{{count}} kysymys",
+    "questions_other": "{{count}} kysymystä",
+    "open": "avaa"
+  }
+}

@@ -1,0 +1,249 @@
+== ro
+tabs.studios	Studiouri
+tabs.services	Servicii
+tabs.subscriptions	Abonamente
+modals.addStudio.steps.about.title	Despre studio
+modals.addStudio.steps.about.sub	Nume și date de contact
+modals.addStudio.steps.about.trust	Datele dvs. sunt criptate și nu sunt partajate niciodată cu terți
+modals.addStudio.steps.location.title	Locație
+modals.addStudio.steps.location.sub	Unde se află această sucursală?
+modals.addStudio.steps.location.trust	Adresa este utilizată în program și pe hărți
+modals.addStudio.steps.photo.title	Fotografie
+modals.addStudio.steps.photo.sub	Coperta studioului — opțională
+modals.addStudio.steps.photo.trust	O puteți adăuga mai târziu în setările sucursalei
+modals.addStudio.stepCounter	Pasul {{current}} din {{total}}
+modals.addStudio.step1.heading	Informații de bază
+modals.addStudio.step1.subheading	Cum se numește studioul și cum poate fi contactat?
+modals.addStudio.step1.name	Numele studioului *
+modals.addStudio.step1.namePlaceholder	De ex. Studio Velora
+modals.addStudio.step1.phone	Telefon *
+modals.addStudio.step1.email	E-mail *
+modals.addStudio.step1.contactHint	Introduceți un telefon sau un e-mail — cel puțin unul
+modals.addStudio.step1.noContacts	Nu au fost oferite contacte
+modals.addStudio.step1.new	NOU
+modals.addStudio.step2.heading	Locație
+modals.addStudio.step2.subheading	Specificați unde se află această sucursală
+modals.addStudio.step2.country	Țară
+modals.addStudio.step2.countryPlaceholder	Statele Unite
+modals.addStudio.step2.city	Oraș *
+modals.addStudio.step2.cityPlaceholder	New York
+modals.addStudio.step2.address	Adresă *
+modals.addStudio.step2.addressPlaceholder	5th Avenue 12, apartamentul 301
+modals.addStudio.step2.noAddress	Nu a fost oferită adresă
+modals.addStudio.step2.groupHint	Câmpurile „Țară” și „Oraș” sunt utilizate pentru gruparea sucursalelor în listă.
+modals.addStudio.step3.heading	Fotografia studioului
+modals.addStudio.step3.subheading	Încărcați o copertă — este opțională, o puteți omite
+modals.addStudio.step3.uploadCta	Faceți clic pentru încărcare
+modals.addStudio.step3.uploadHint	JPG, PNG până la 10 MB
+modals.addStudio.step3.replace	Înlocuiește
+modals.addStudio.step3.remove	Elimină
+modals.addStudio.step3.previewAlt	Previzualizare
+modals.addStudio.step3.summary	Rezumat
+modals.addStudio.step3.uploadError	Fotografia nu a putut fi încărcată. Încercați alt fișier sau eliminați-o.
+modals.addStudio.summaryRows.name	Nume
+modals.addStudio.summaryRows.city	Oraș
+modals.addStudio.summaryRows.address	Adresă
+modals.addStudio.nextPhoto	Următorul — fotografie
+modals.addStudio.submit	Creează studio
+modals.addStudio.skipPhoto	Omite fotografia și creează
+modals.addStudio.illus.contacts	Contacte
+modals.addStudio.illus.newBranch	Sucursala nouă
+modals.addStudio.illus.city	Oraș
+modals.addStudio.illus.newBranchStudio	Sucursala nouă a studioului
+modals.editBranch.title	Editează sucursala
+modals.editBranch.name	Numele sucursalei
+modals.editBranch.namePlaceholder	Studio Velora
+modals.editBranch.phone	Telefon
+modals.editBranch.email	E-mail
+modals.editBranch.emailPlaceholder	studio@velora.com
+modals.editBranch.country	Țară
+modals.editBranch.countryPlaceholder	Statele Unite
+modals.editBranch.city	Oraș
+modals.editBranch.cityPlaceholder	New York
+modals.editBranch.address	Adresă
+modals.editBranch.addressPlaceholder	5th Avenue 12
+modals.editBranch.photo	Fotografia sucursalei
+modals.editBranch.contactHint	Introduceți un telefon sau un e-mail
+modals.editBranch.workingHours	Program de lucru
+modals.hall.titleNew	Adaugă {{spaceAcc}}
+modals.hall.titleEdit	Editează {{spaceAcc}}
+modals.hall.name	Nume
+modals.hall.namePlaceholder	{{space, capitalize}} A
+modals.hall.capacity	Capacitate
+modals.hall.area	Suprafață, m²
+modals.hall.hourlyRate	Preț pe oră, {{currency}}
+modals.hall.hourlyRatePlaceholder	3000
+modals.hall.equipment	Echipament
+modals.hall.equipmentPlaceholder	Adaugă echipament
+modals.hall.color	Culoare
+modals.hall.isOnline	Online
+modals.hall.photo	Fotografie
+modals.hall.subtitle	{{space, capitalize}} în sucursală: locuri, echipament, culoare în program
+modals.hall.previewTitle	Previzualizare
+modals.hall.sectionBasic	De bază
+modals.hall.sectionSpace	Spațiu
+modals.hall.sectionLook	Aspect
+modals.hall.areaShort	Suprafață
+modals.hall.hourlyRateShort	Preț pe oră
+modals.hall.statArea	Suprafață
+modals.hall.statRate	Preț / oră
+modals.hall.isOnlineHint	Cursurile se desfășoară online — fără spații fizice.
+modals.hall.colorHint	Cursurile de aici sunt evidențiate cu această culoare în program.
+modals.service.titleNew	Serviciu nou
+modals.service.titleEdit	Editează serviciul
+modals.service.name	Numele serviciului
+modals.service.namePlaceholder	Hatha yoga
+modals.service.category	Categorie
+modals.service.type	Tip
+modals.service.typeGroup	Grup
+modals.service.typeIndividual	Individual
+modals.service.price	Preț, {{currency}}
+modals.service.pricePlaceholder	1200
+modals.service.duration	Durată, min
+modals.service.durationPlaceholder	60
+modals.service.maxClients	Număr maxim de clienți
+modals.service.maxClientsPlaceholder	15
+modals.service.description	Descriere
+modals.service.descriptionPlaceholder	Scurtă descriere a serviciului
+modals.service.color	Culoare
+modals.service.subtitle	Apare în program și în rezervarea online
+modals.service.previewTitle	Previzualizare program
+modals.service.sectionBasic	De bază
+modals.service.sectionPricing	Preț și timp
+modals.service.sectionLook	Aspect
+modals.service.priceShort	Preț
+modals.service.durationShort	Durată
+modals.service.statSeats	Locuri
+modals.service.colorHint	Cursurile sunt evidențiate cu această culoare în grila programului.
+modals.service.bookingMode	Mecanism de rezervare
+modals.service.bookingModeEvent	Înscriere
+modals.service.bookingModeResource	Alege o oră
+modals.service.bookingModeEventHint	Clienții se înscriu la un curs pe care l-ați programat deja.
+modals.service.bookingModeResourceHint	Clientul alege un specialist și o oră liberă; intervalul {{offering}} este creat la confirmare.
+modals.service.bookable	Disponibil pentru rezervare
+modals.service.bookableOn	Da
+modals.service.bookableOff	Nu
+modals.service.bufferBefore	Interval înainte
+modals.service.bufferAfter	Interval după
+modals.package.titleNew	Pachet nou
+modals.package.titleEdit	Editează pachetul
+modals.package.name	Numele pachetului
+modals.package.namePlaceholder	8 cursuri
+modals.package.classCount	Număr de cursuri
+modals.package.classCountPlaceholder	8
+modals.package.price	Preț, {{currency}}
+modals.package.pricePlaceholder	8000
+modals.package.perVisitPrice	Preț pe vizită
+modals.package.durationDays	Valabil, zile
+modals.package.durationDaysPlaceholder	60
+modals.package.services	Servicii
+modals.package.servicesHint	Nimic selectat — pachetul se aplică tuturor cursurilor
+modals.package.isActive	La vânzare
+modals.package.soldAsSubscription	Afișează în fila „Abonamente”
+modals.package.soldAsSingle	Afișează în fila „Vizite individuale”
+modals.package.subtitle	Un pachet de cursuri pe care îl vindeți clienților
+modals.package.previewTitle	Previzualizare abonament
+modals.package.previewKind	Abonament
+modals.package.previewValid	Valabil
+modals.package.sectionBasic	De bază
+modals.package.sectionTerms	Condiții
+modals.package.sectionSale	Vânzări
+modals.package.priceShort	Prețul pachetului
+modals.package.statClasses	Cursuri
+modals.package.statDays	Zile
+modals.package.statAll	Toate
+modals.package.isActiveHint	Clienții pot vedea și cumpăra acest pachet.
+modals.package.soldAsSubscriptionHint	În caz contrar, pachetul rămâne doar la vizite individuale.
+studios.title	STUDIOURI
+studios.addStudio	Adaugă studio
+studios.addHall	Adaugă {{spaceAcc}}
+studios.editBranch	Editează sucursala
+studios.deleteBranch	Elimină sucursala
+studios.infoTab	Informații generale
+studios.hallsTitle	{{spacePlural, capitalize}} ale studioului
+studios.hallCount_one	{{spacePlural, capitalize}} · {{count}}
+studios.hallCount_few	{{spacePlural, capitalize}} · {{count}}
+studios.hallCount_other	{{spacePlural, capitalize}} · {{count}}
+studios.stats.halls	{{spacePlural, capitalize}}
+studios.stats.totalSeats	Locuri totale
+studios.stats.fromPerHour	De la / oră
+studios.hall.seats	locuri
+studios.hall.schedule	Program de lucru
+studios.hall.closed	Închis
+studios.hall.stats.seats	Locuri
+studios.hall.stats.area	Suprafață
+studios.hall.stats.perHour	Pe oră
+studios.hall.equipment	Echipament
+studios.hall.actions	Acțiuni
+studios.hall.edit	Editează {{spaceAcc}}
+studios.hall.delete	Elimină {{spaceAcc}}
+studios.empty.title	Niciun studio
+studios.empty.subtitle	Adăugați primul dvs. studio
+studios.toasts.created	Studio creat
+studios.toasts.createError	Studioul nu a putut fi creat
+studios.toasts.deleted	Studio eliminat
+studios.toasts.hallDeleted	Eliminat: {{space}}
+studios.toasts.saved	Salvat
+studios.toasts.edit	Editează: {{name}}
+studios.confirmDelete	Eliminați sucursala „{{name}}”? Această acțiune nu poate fi anulată.
+studios.confirmDeleteTitle	Eliminați sucursala?
+studios.confirmDeleteHall	Eliminați {{spaceAcc}} „{{name}}”?
+studios.confirmDeleteHallTitle	Eliminați {{spaceAcc}}?
+services.title	SERVICII
+services.addService	Adaugă serviciu
+services.types.group	Grup
+services.types.individual	Indiv.
+services.types.groupFull	 · Grup
+services.types.individualFull	 · Individual
+services.stats.price	Preț
+services.stats.duration	Durată
+services.stats.bookings	Rezervări
+services.stats.revenue	Venituri
+services.details.description	Descriere
+services.details.details	Detalii
+services.details.minutes	minute
+services.details.upTo	Până la {{count}} pers.
+services.details.personal	Personal
+services.details.bookingsPerMonth	rezervări în 30 de zile
+services.details.schedule	Programul cursurilor
+services.empty.title	Niciun serviciu
+services.empty.subtitle	Adăugați primul dvs. serviciu
+services.toasts.deleted	Serviciu eliminat
+services.toasts.deleteError	Serviciul nu a putut fi eliminat
+services.toasts.saved	Salvat
+services.toasts.saveError	Serviciul nu a putut fi salvat
+services.toasts.edit	Editează: {{name}}
+services.confirmDelete	Eliminați serviciul „{{name}}”?
+services.confirmDeleteTitle	Eliminați serviciul?
+services.categories.yoga	Yoga
+services.categories.pilates	Pilates
+services.categories.stretching	Stretching
+services.categories.individual	Individual
+services.categories.other	Necategorizat
+subscriptions.title	ABONAMENTE
+subscriptions.addPackage	Adaugă pachet
+subscriptions.card.classCount_one	{{count}} curs
+subscriptions.card.classCount_few	{{count}} cursuri
+subscriptions.card.classCount_other	{{count}} de cursuri
+subscriptions.card.duration	{{count}} zile
+subscriptions.card.allServices	Toate cursurile
+subscriptions.card.serviceCount_one	{{count}} serviciu
+subscriptions.card.serviceCount_few	{{count}} servicii
+subscriptions.card.serviceCount_other	{{count}} de servicii
+subscriptions.card.inactiveBadge	Scos de la vânzare
+subscriptions.settings.title	Setări program
+subscriptions.settings.allowFreeze	Înghețare abonament
+subscriptions.settings.allowTransfer	Transfer la alt client
+subscriptions.settings.autoRenewal	Reînnoire automată din depozitul clientului
+subscriptions.empty.title	Încă nu există pachete
+subscriptions.empty.cta	Creează pachet
+subscriptions.toasts.created	Pachet creat
+subscriptions.toasts.saved	Salvat
+subscriptions.toasts.saveError	Pachetul nu a putut fi salvat
+subscriptions.toasts.deactivated	Pachet scos de la vânzare
+subscriptions.toasts.restored	Pachet repus la vânzare
+subscriptions.toasts.actionError	Acțiunea nu a putut fi efectuată
+subscriptions.deactivate	Scoate de la vânzare
+subscriptions.restore	Pune din nou la vânzare
+subscriptions.confirmDeactivateTitle	Scoateți acest pachet de la vânzare?
+subscriptions.confirmDeactivate	Abonamentele deja vândute vor continua să funcționeze.

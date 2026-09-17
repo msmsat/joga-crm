@@ -1,0 +1,378 @@
+{
+  "nav": {
+    "product": "Produkti",
+    "modules": "Modulet",
+    "pricing": "Çmimet",
+    "faq": "Pyetjet e shpeshta",
+    "login": "Hyni",
+    "startShort": "Filloni",
+    "startFull": "Filloni falas",
+    "language": "Gjuha"
+  },
+  "hero": {
+    "badge": "Standardi i ri CRM për vitin 2026",
+    "title": "Një CRM që do ta\\\n*donit* ta përdornit",
+    "lead": "CRM premium B2B për studio yoga dhe pilates. Rezervime, klientë, ekip dhe financa në një vend. Pa klikime të panevojshme, pa ngatërresë.",
+    "cta": "Provojeni falas për 30 ditë",
+    "perks": [
+      "30 ditë falas",
+      "Pa kartë",
+      "Anulojeni me një klik"
+    ]
+  },
+  "marquee": [
+    "Orari",
+    "Klientët",
+    "Anëtarësimet",
+    "Rezervimet online",
+    "Financat",
+    "Pagat",
+    "Njoftimet",
+    "Besnikëria",
+    "Raportet",
+    "Velora AI",
+    "Aplikacioni i klientit",
+    "Rolet dhe qasja"
+  ],
+  "stats": {
+    "items": [
+      {
+        "value": "30 ditë",
+        "label": "Falas, pa kartë"
+      },
+      {
+        "value": "16",
+        "label": "module në çdo plan"
+      },
+      {
+        "value": "4",
+        "label": "kanale rezervimi online"
+      },
+      {
+        "value": "nga 15 €",
+        "label": "për muaj, për studio"
+      }
+    ],
+    "trust": [
+      "Të dhënat tuaja mbeten tuajat",
+      "Rolet zbatohen edhe në server",
+      "Eksport CSV kurdoherë",
+      "Fshirje me kërkesë"
+    ]
+  },
+  "compare": {
+    "label": "dallimi",
+    "title": "Hoqëm atë që\\\nju pengonte",
+    "lead": "Velora lindi nga përvoja jonë: drejtonim studio dhe çdo ditë ndesheshim me të njëjtin mur — një CRM ku duheshin nëntë klikime për të rezervuar një klient. Ja çfarë ndryshoi.",
+    "usual": "Mënyra e zakonshme",
+    "velora": "Në Velora",
+    "pairs": [
+      {
+        "bad": "Për të rezervuar një klient, largoheni nga orari për një ekran tjetër dhe pastaj ktheheni",
+        "good": "Rezervimet dhe klientët e rinj krijohen drejtpërdrejt në orar"
+      },
+      {
+        "bad": "Raportet eksportohen në Excel dhe përputhen me dorë",
+        "good": "Raporte live sipas trajnerit dhe shërbimit, me eksport për çdo periudhë"
+      },
+      {
+        "bad": "Njoftimet janë një shërbim i veçantë për të cilin paguani veçmas",
+        "good": "Telegram, email dhe WhatsApp janë të integruara me një matricë ngjarje × kanal"
+      },
+      {
+        "bad": "Një trajner mund të shohë orarin dhe bazën e klientëve të të gjithëve të tjerëve",
+        "good": "Rolet e kufizojnë qasjen si në ndërfaqe, ashtu edhe në server"
+      },
+      {
+        "bad": "Një asistent? Në rastin më të mirë, kërkim klientësh",
+        "good": "Velora AI u përgjigjet pyetjeve për biznesin tuaj — dhe pyetjeve të klientëve tuaj në Telegram dhe Instagram"
+      }
+    ]
+  },
+  "showcase": {
+    "label": "gjithçka në një vend",
+    "title": "Një platformë në vend të\\\ndhjetëra shërbimeve",
+    "lead": "Rezervime, klientë, para, komunikim dhe AI në një ndërfaqe të vetme. Asnjë modul i tepërt: çdo pamje zgjidh një problem real të pronarit.",
+    "blocks": {
+      "journal": {
+        "title": "Orari juaj",
+        "lead": "Rrjetë ditore ku trajnerët janë kolona dhe orët janë rreshta. Këtu ndodh gjithçka që bën administratori.",
+        "points": [
+          "Tërhiqni një klasë në një orar tjetër — ose te një trajner tjetër",
+          "Krijoni klasa dhe klientë të rinj pa dalë nga orari",
+          "Përmbledhja e ditës është pranë: zënia e sallave dhe të ardhurat"
+        ]
+      },
+      "booking": {
+        "title": "Rezervimet tuaja online",
+        "lead": "Katër kanale ku klientët rezervojnë vetë, në çdo kohë dhe pa administrator.",
+        "points": [
+          "Widget në faqe, Telegram, WhatsApp dhe Instagram — secili konfigurohet veçmas",
+          "Rregulla: sa orë para fillimit mbyllet rezervimi dhe deri kur klienti mund të anulojë",
+          "Markimi i aplikacionit të klientit me parapamje live — ngjyra dhe gjuha që i përshtaten markës suaj"
+        ]
+      },
+      "finance": {
+        "title": "Financat tuaja",
+        "lead": "Llogari, transaksione, paga dhe dokumente në një vend, pa eksport në tabela llogaritëse.",
+        "points": [
+          "Arkë, llogari bankare dhe pranime me kartë me saldo dhe lëvizje ditore",
+          "Anëtarësime, karta dhuratë dhe rimbursime të lidhura me një klient dhe llogari",
+          "Pagat e trajnerëve të llogaritura sipas rregullave tuaja"
+        ]
+      },
+      "notify": {
+        "title": "Njoftimet tuaja",
+        "lead": "Tri kanale dërgimi dhe një matricë ku vendosni çfarë dërgohet dhe ku.",
+        "points": [
+          "Telegram, email dhe WhatsApp — secili lidhet me çelësin e vet të studios",
+          "Një grup i veçantë ngjarjesh për klientin, trajnerin, administratorin dhe pronarin",
+          "Kujtesa 24 dhe 2 orë përpara, „mbeten 1–2 klasa”, ditëlindje dhe kërkesa për vlerësim"
+        ]
+      },
+      "ai": {
+        "title": "Shtresa juaj AI",
+        "lead": "Asistenti e njeh kontekstin e biznesit dhe është në çdo faqe — agjentët u përgjigjen vetë klientëve.",
+        "points": [
+          "Pyesni për studion nga shiriti i sipërm, pa hapur një seksion tjetër",
+          "Agjentë AI në Telegram dhe Instagram: toni i komunikimit dhe mënyra „vetëm jashtë orarit të punës”",
+          "Statistika: sa biseda u trajtuan dhe si u vlerësuan"
+        ]
+      }
+    }
+  },
+  "ctaStrip": {
+    "title": "Provojeni pa migrim të të dhënave dhe pa pagesë paraprake",
+    "button": "Filloni falas",
+    "note": "30 ditë falas • Pa kartë • Ndihmë për fillimin"
+  },
+  "modules": {
+    "label": "modulet",
+    "title": "16 module,\\\ntashmë të përfshira",
+    "lead": "Jo një koleksion vendmbajtësish „së shpejti” — gjithçka e listuar funksionon dhe përfshihet në plan. Rolet vendosin kush e sheh secilin seksion.",
+    "items": {
+      "dashboard": {
+        "title": "Pasqyrë",
+        "desc": "Të ardhura, klientë aktivë, rezervime dhe besnikëria e klientëve — me trende"
+      },
+      "journal": {
+        "title": "Orari",
+        "desc": "Rrjetë ditore sipas trajnerit dhe sallës, tërhiqeni për ta ricaktuar"
+      },
+      "clients": {
+        "title": "Klientët",
+        "desc": "Profili, anëtarësime, pikë, histori, shënime, etiketa"
+      },
+      "staff": {
+        "title": "Ekipi",
+        "desc": "Profile, tregues, orari i punës, caktime sallash"
+      },
+      "catalog": {
+        "title": "Katalogu",
+        "desc": "Objekte, salla me ngjyrë dhe kapacitet, shërbimet e studios"
+      },
+      "booking": {
+        "title": "Rezervimet online",
+        "desc": "Widget, Telegram, WhatsApp, Instagram dhe rregulla rezervimi"
+      },
+      "finance": {
+        "title": "Financat",
+        "desc": "Llogari, transaksione, palë, dokumente, objektiva, paga"
+      },
+      "notify": {
+        "title": "Njoftimet",
+        "desc": "Telegram, email, WhatsApp dhe matricë ngjarje × kanal"
+      },
+      "loyalty": {
+        "title": "Besnikëria",
+        "desc": "Karta, zbritje, karta dhuratë, anëtarësime, rekomandime"
+      },
+      "ai": {
+        "title": "Velora AI",
+        "desc": "Asistent biznesi dhe agjentë për klientët tuaj"
+      },
+      "reports": {
+        "title": "Raportet",
+        "desc": "Sipas shitjeve, trajnerëve dhe shërbimeve — me eksport"
+      },
+      "miniapp": {
+        "title": "Aplikacioni i klientit",
+        "desc": "Llogaria e klientit: rezervime, anëtarësime, pikë"
+      },
+      "multistudio": {
+        "title": "Disa studio",
+        "desc": "Disa studio në një llogari, kaloni kurdoherë"
+      },
+      "roles": {
+        "title": "Rolet dhe qasja",
+        "desc": "Pronar, administrator, trajner — në ndërfaqe dhe në server"
+      },
+      "settings": {
+        "title": "Cilësimet",
+        "desc": "Orari i punës, tema, ekipi, siguria, sesionet"
+      },
+      "data": {
+        "title": "Të dhënat",
+        "desc": "Eksport CSV, fshirje me kërkesë"
+      }
+    },
+    "integrations": "Integrimet",
+    "integrationsNote": "lidhen në cilësimet e studios"
+  },
+  "pricing": {
+    "label": "çmimet",
+    "title": "Plani juaj varet nga\\\nmadhësia e ekipit",
+    "lead": "15 € për dy persona, +5 € për çdo vend tjetër, pa kufi — 120 €. Të 16 modulet dhe Velora AI përfshihen në çdo nivel: paguani për madhësinë e ekipit, jo për të zhbllokuar butona. Tre modele pagese për të zgjedhur dhe deri në 40% ulje me pagesë paraprake.",
+    "team": "ekip",
+    "seats_one": "person",
+    "seats_other": "persona",
+    "unlimited": "pa kufi",
+    "scaleMin": "2 vende",
+    "scaleMax": "∞ pa kufi",
+    "sliderAria": "Sa persona punojnë në studion tuaj",
+    "hint": "**15 €** për dy persona, **+5 €** për çdo vend shtesë. Pa kufi — **120 €** në muaj.",
+    "period": "periudha e pagesës",
+    "months": "{{count}} muaj",
+    "noDiscount": "—",
+    "yourPrice": "çmimi juaj",
+    "perMonth": "/ muaj",
+    "amount": "{{value}} €",
+    "amountPerMonth": "{{value}} € / muaj",
+    "rows": {
+      "seats": "Ekipi",
+      "perSeat": "Për person",
+      "ai": "Kërkesa Velora AI",
+      "aiPerMonth": "{{value}} / muaj",
+      "modules": "Modulet",
+      "modulesAll": "të 16-at",
+      "total": "Për t'u paguar për {{count}} muaj",
+      "saved": "Ju kurseni"
+    },
+    "cta": "Provojeni për 30 ditë",
+    "note": "Pa kartë · anulim me një klik",
+    "models": [
+      {
+        "title": "Abonim",
+        "price": "nga 15 € / muaj",
+        "desc": "Një shumë fikse. Koston e dini paraprakisht — pa surpriza në fund të muajit."
+      },
+      {
+        "title": "3% e të ardhurave",
+        "price": "të paktën 15 € / muaj",
+        "desc": "Paguani sipas xhiros. Në një muaj më të qetë, plotësoni vetëm diferencën deri te shuma minimale."
+      },
+      {
+        "title": "I kombinuar",
+        "price": "½ fikse + 1,5%",
+        "desc": "Gjysma e abonimit plus një përqindje e vogël — ekuilibër mes dy modeleve."
+      }
+    ],
+    "footnote": "Prova nuk kërkon kartë. Modeli i pagesës dhe numri i vendeve mund të ndryshohen në aplikacion kurdoherë. Çmimet nuk përfshijnë TVSH-në: taksa llogaritet në pagesë për vendin tuaj."
+  },
+  "faq": {
+    "label": "pyetje",
+    "title": "Këto pyeten zakonisht",
+    "items": [
+      {
+        "q": "Çfarë përfshin periudha e provës?",
+        "a": "Qasje e plotë në të gjitha modulet për 30 ditë. Nuk nevojitet kartë — nëse nuk ju përshtatet, thjesht nuk e rinovoni."
+      },
+      {
+        "q": "A do të shohin klientët e mi reklama të studiove të tjera?",
+        "a": "Jo. Klientët rezervojnë përmes widget-it në faqen tuaj, Telegram-it, WhatsApp-it ose Instagram-it tuaj — dhe nga aplikacioni i klientit me ngjyrën dhe logon tuaj. Nuk ka katalog të përbashkët me studio të tjera."
+      },
+      {
+        "q": "Kush në ekipin tim sheh çfarë?",
+        "a": "Tre role. Pronari sheh gjithçka. Administratori sheh orarin, klientët dhe pasqyrën. Trajneri sheh vetëm klasat dhe klientët e tij. Kufizimi funksionon në ndërfaqe dhe në server: nuk ka rrugë drejt të dhënave të të tjerëve."
+      },
+      {
+        "q": "A mund të drejtoj disa studio ose objekte?",
+        "a": "Po, dhe kjo nuk varet nga plani. Një llogari mund t'u përkasë disa studiove dhe të kalojë mes tyre, ndërsa brenda studios konfiguroni objektet dhe sallat."
+      },
+      {
+        "q": "A ka temë të errët dhe gjuhë të tjera?",
+        "a": "Po. Ndërfaqja kalon mes temës së çelët dhe të errët dhe mbështet 22 gjuhë, përfshirë anglishten, rusishten, ukrainishten, çekishten dhe gjermanishten. Zona kohore, monedha dhe gjuha zgjidhen gjatë konfigurimit fillestar."
+      },
+      {
+        "q": "Çfarë ndodh me të dhënat e mia nëse vendos të largohem?",
+        "a": "Të dhënat janë tuajat. Cilësimet ofrojnë eksport CSV për klientët, orarin, financat dhe anëtarësimet, dhe fshirja bëhet me kërkesën tuaj."
+      }
+    ],
+    "notFoundTitle": "Nuk e gjetët përgjigjen?",
+    "notFoundLead": "Na shkruani — përgjigjemi personalisht, pa robotë dhe pa pritje.",
+    "copied": "U kopjua"
+  },
+  "about": {
+    "label": "rreth nesh",
+    "title": "Velora ndërtohet nga njerëz\\\nqë vetë kanë drejtuar studio",
+    "lead": "Nuk po ndërtojmë „CRM për të gjithë”. Po ndërtojmë një mjet për një punë të caktuar — orar, klientë, para, komunikim — dhe u përgjigjemi vetë pyetjeve në vend që të dërgojmë përgjigje të gatshme.",
+    "p1": "Klientët e një studioje mbeten klientët e saj. Velora nuk ndërton një katalog të përbashkët, nuk u shfaq klientëve tuaj reklama të të tjerëve dhe nuk merr përqindje kur një person kthehet te ju.",
+    "p2": "Tani për tani produkti është krijuar për studio yoga dhe pilates — për mënyrën si funksionojnë vërtet oraret, anëtarësimet dhe trajnerët e tyre. Industri të tjera do të vijnë me të njëjtën kujdes."
+  },
+  "cta": {
+    "eyebrow": "Filloni sot",
+    "titleTop": "Gati për të bërë",
+    "titleAccent": "hapin tjetër?",
+    "lead": "30 ditë falas. Pa kartë. Pa detyrim. Provojeni — do ta ndieni ndryshimin.",
+    "register": "Regjistrohuni falas",
+    "whatsapp": "Na shkruani në WhatsApp"
+  },
+  "footer": {
+    "tagline": "CRM premium për studio yoga dhe pilates. Rezervime, klientë, para dhe AI në një vend.",
+    "columns": {
+      "product": {
+        "title": "Produkti",
+        "features": "Funksionet",
+        "modules": "Modulet",
+        "booking": "Rezervimet online",
+        "ai": "Velora AI",
+        "pricing": "Çmimet"
+      },
+      "company": {
+        "title": "Kompania",
+        "difference": "Dallimi ynë",
+        "about": "Rreth nesh",
+        "faq": "Pyetje dhe përgjigje",
+        "support": "Mbështetje"
+      },
+      "docs": {
+        "title": "Dokumentet",
+        "terms": "Kushtet e përdorimit",
+        "privacy": "Politika e privatësisë",
+        "cookies": "Politika e cookies",
+        "dpa": "Përpunimi i të dhënave",
+        "cookieSettings": "Cilësimet e cookies",
+        "support": "Mbështetje"
+      }
+    },
+    "copyright": "© 2026 Velora. Të gjitha të drejtat e rezervuara."
+  },
+  "screens": {
+    "journal": "Orari ditor",
+    "booking": "Rezervim online",
+    "finance": "Pagesa e vizitës",
+    "notify": "Ngjarje × kanal",
+    "ai": "Velora AI"
+  },
+  "art": {
+    "journal": "Orari",
+    "journalToday": "Sot — 12 klasa",
+    "weekdays": [
+      "H",
+      "M",
+      "M",
+      "E",
+      "P",
+      "S",
+      "D"
+    ],
+    "finance": "Financat",
+    "financeValue": "1,8 mijë €",
+    "financeLabel": "të ardhurat e këtij muaji",
+    "clients": "Klientët",
+    "clientsLabel": "klientë, +12 këtë javë",
+    "questions_one": "{{count}} pyetje",
+    "questions_other": "{{count}} pyetje",
+    "open": "hap"
+  }
+}

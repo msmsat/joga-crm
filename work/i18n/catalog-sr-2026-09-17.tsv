@@ -1,0 +1,249 @@
+== sr
+tabs.studios	Студији
+tabs.services	Услуге
+tabs.subscriptions	Чланарине
+modals.addStudio.steps.about.title	О студију
+modals.addStudio.steps.about.sub	Назив и контакт подаци
+modals.addStudio.steps.about.trust	Ваши подаци су шифровани и никада се не деле са трећим странама
+modals.addStudio.steps.location.title	Локација
+modals.addStudio.steps.location.sub	Где се налази овај огранак?
+modals.addStudio.steps.location.trust	Адреса се користи у распореду и на мапама
+modals.addStudio.steps.photo.title	Фотографија
+modals.addStudio.steps.photo.sub	Насловна фотографија студија — опционално
+modals.addStudio.steps.photo.trust	Можете је додати касније у подешавањима огранка
+modals.addStudio.stepCounter	Корак {{current}} од {{total}}
+modals.addStudio.step1.heading	Основне информације
+modals.addStudio.step1.subheading	Како се студио зове и како се може контактирати?
+modals.addStudio.step1.name	Назив студија *
+modals.addStudio.step1.namePlaceholder	Нпр. Velora Studio
+modals.addStudio.step1.phone	Телефон *
+modals.addStudio.step1.email	Имејл *
+modals.addStudio.step1.contactHint	Унесите телефон или имејл — бар једно
+modals.addStudio.step1.noContacts	Нема наведених контаката
+modals.addStudio.step1.new	НОВО
+modals.addStudio.step2.heading	Локација
+modals.addStudio.step2.subheading	Наведите где се налази овај огранак
+modals.addStudio.step2.country	Држава
+modals.addStudio.step2.countryPlaceholder	Сједињене Америчке Државе
+modals.addStudio.step2.city	Град *
+modals.addStudio.step2.cityPlaceholder	Њујорк
+modals.addStudio.step2.address	Адреса *
+modals.addStudio.step2.addressPlaceholder	5th Avenue 12, канцеларија 301
+modals.addStudio.step2.noAddress	Нема наведене адресе
+modals.addStudio.step2.groupHint	Поља „Држава” и „Град” служе за груписање огранака у листи.
+modals.addStudio.step3.heading	Фотографија студија
+modals.addStudio.step3.subheading	Отпремите насловну фотографију — опционална је, можете је прескочити
+modals.addStudio.step3.uploadCta	Кликните за отпремање
+modals.addStudio.step3.uploadHint	JPG, PNG до 10 MB
+modals.addStudio.step3.replace	Замени
+modals.addStudio.step3.remove	Уклони
+modals.addStudio.step3.previewAlt	Преглед
+modals.addStudio.step3.summary	Сажетак
+modals.addStudio.step3.uploadError	Фотографија није могла да се отпреми. Покушајте другу датотеку или је уклоните.
+modals.addStudio.summaryRows.name	Назив
+modals.addStudio.summaryRows.city	Град
+modals.addStudio.summaryRows.address	Адреса
+modals.addStudio.nextPhoto	Следеће — фотографија
+modals.addStudio.submit	Направи студио
+modals.addStudio.skipPhoto	Прескочи фотографију и направи
+modals.addStudio.illus.contacts	Контакти
+modals.addStudio.illus.newBranch	Нови огранак
+modals.addStudio.illus.city	Град
+modals.addStudio.illus.newBranchStudio	Нови огранак студија
+modals.editBranch.title	Измени огранак
+modals.editBranch.name	Назив огранка
+modals.editBranch.namePlaceholder	Velora Studio
+modals.editBranch.phone	Телефон
+modals.editBranch.email	Имејл
+modals.editBranch.emailPlaceholder	studio@velora.com
+modals.editBranch.country	Држава
+modals.editBranch.countryPlaceholder	Сједињене Америчке Државе
+modals.editBranch.city	Град
+modals.editBranch.cityPlaceholder	Њујорк
+modals.editBranch.address	Адреса
+modals.editBranch.addressPlaceholder	5th Avenue 12
+modals.editBranch.photo	Фотографија огранка
+modals.editBranch.contactHint	Унесите телефон или имејл
+modals.editBranch.workingHours	Радно време
+modals.hall.titleNew	Додај {{spaceAcc}}
+modals.hall.titleEdit	Измени {{spaceAcc}}
+modals.hall.name	Назив
+modals.hall.namePlaceholder	{{space, capitalize}} A
+modals.hall.capacity	Капацитет
+modals.hall.area	Површина, m²
+modals.hall.hourlyRate	Цена по сату, {{currency}}
+modals.hall.hourlyRatePlaceholder	3000
+modals.hall.equipment	Опрема
+modals.hall.equipmentPlaceholder	Додај опрему
+modals.hall.color	Боја
+modals.hall.isOnline	Онлајн
+modals.hall.photo	Фотографија
+modals.hall.subtitle	{{space, capitalize}} у огранку: места, опрема, боја у распореду
+modals.hall.previewTitle	Преглед
+modals.hall.sectionBasic	Основно
+modals.hall.sectionSpace	Простор
+modals.hall.sectionLook	Изглед
+modals.hall.areaShort	Површина
+modals.hall.hourlyRateShort	Цена по сату
+modals.hall.statArea	Површина
+modals.hall.statRate	Цена / сат
+modals.hall.isOnlineHint	Часови се одржавају онлајн — нема физичког простора.
+modals.hall.colorHint	Часови овде су истакнути овом бојом у распореду.
+modals.service.titleNew	Нова услуга
+modals.service.titleEdit	Измени услугу
+modals.service.name	Назив услуге
+modals.service.namePlaceholder	Хатха јога
+modals.service.category	Категорија
+modals.service.type	Тип
+modals.service.typeGroup	Групна
+modals.service.typeIndividual	Индивидуална
+modals.service.price	Цена, {{currency}}
+modals.service.pricePlaceholder	1200
+modals.service.duration	Трајање, мин
+modals.service.durationPlaceholder	60
+modals.service.maxClients	Максимално клијената
+modals.service.maxClientsPlaceholder	15
+modals.service.description	Опис
+modals.service.descriptionPlaceholder	Кратак опис услуге
+modals.service.color	Боја
+modals.service.subtitle	Приказује се у распореду и онлајн резервацији
+modals.service.previewTitle	Преглед распореда
+modals.service.sectionBasic	Основно
+modals.service.sectionPricing	Цена и време
+modals.service.sectionLook	Изглед
+modals.service.priceShort	Цена
+modals.service.durationShort	Трајање
+modals.service.statSeats	Места
+modals.service.colorHint	Часови су истакнути овом бојом у мрежи распореда.
+modals.service.bookingMode	Начин резервације
+modals.service.bookingModeEvent	Пријава
+modals.service.bookingModeResource	Изаберите време
+modals.service.bookingModeEventHint	Клијенти се пријављују за час који сте већ заказали.
+modals.service.bookingModeResourceHint	Клијент бира стручњака и слободно време; интервал {{offering}} настаје при потврди.
+modals.service.bookable	Доступно за резервацију
+modals.service.bookableOn	Да
+modals.service.bookableOff	Не
+modals.service.bufferBefore	Бафер пре
+modals.service.bufferAfter	Бафер после
+modals.package.titleNew	Нови пакет
+modals.package.titleEdit	Измени пакет
+modals.package.name	Назив пакета
+modals.package.namePlaceholder	8 часова
+modals.package.classCount	Број часова
+modals.package.classCountPlaceholder	8
+modals.package.price	Цена, {{currency}}
+modals.package.pricePlaceholder	8000
+modals.package.perVisitPrice	Цена по посети
+modals.package.durationDays	Важи, дана
+modals.package.durationDaysPlaceholder	60
+modals.package.services	Услуге
+modals.package.servicesHint	Ништа није изабрано — пакет важи за све часове
+modals.package.isActive	У продаји
+modals.package.soldAsSubscription	Прикажи на картици „Чланарине”
+modals.package.soldAsSingle	Прикажи на картици „Појединачне посете”
+modals.package.subtitle	Пакет часова који продајете клијентима
+modals.package.previewTitle	Преглед карте
+modals.package.previewKind	Карта
+modals.package.previewValid	Важи
+modals.package.sectionBasic	Основно
+modals.package.sectionTerms	Услови
+modals.package.sectionSale	Продаја
+modals.package.priceShort	Цена пакета
+modals.package.statClasses	Часови
+modals.package.statDays	Дани
+modals.package.statAll	Сви
+modals.package.isActiveHint	Клијенти могу видети и купити овај пакет.
+modals.package.soldAsSubscriptionHint	У супротном пакет остаје само у појединачним посетама.
+studios.title	СТУДИЈИ
+studios.addStudio	Додај студио
+studios.addHall	Додај {{spaceAcc}}
+studios.editBranch	Измени огранак
+studios.deleteBranch	Избриши огранак
+studios.infoTab	Опште информације
+studios.hallsTitle	{{spacePlural, capitalize}} студија
+studios.hallCount_one	{{spacePlural, capitalize}} · {{count}}
+studios.hallCount_few	{{spacePlural, capitalize}} · {{count}}
+studios.hallCount_other	{{spacePlural, capitalize}} · {{count}}
+studios.stats.halls	{{spacePlural, capitalize}}
+studios.stats.totalSeats	Укупно места
+studios.stats.fromPerHour	Од / сат
+studios.hall.seats	места
+studios.hall.schedule	Радно време
+studios.hall.closed	Затворено
+studios.hall.stats.seats	Места
+studios.hall.stats.area	Површина
+studios.hall.stats.perHour	По сату
+studios.hall.equipment	Опрема
+studios.hall.actions	Радње
+studios.hall.edit	Измени {{spaceAcc}}
+studios.hall.delete	Избриши {{spaceAcc}}
+studios.empty.title	Нема студија
+studios.empty.subtitle	Додајте свој први студио
+studios.toasts.created	Студио је направљен
+studios.toasts.createError	Студио није могао да се направи
+studios.toasts.deleted	Студио је избрисан
+studios.toasts.hallDeleted	Избрисано: {{space}}
+studios.toasts.saved	Сачувано
+studios.toasts.edit	Измени: {{name}}
+studios.confirmDelete	Избрисати огранак „{{name}}”? Ово се не може поништити.
+studios.confirmDeleteTitle	Избрисати огранак?
+studios.confirmDeleteHall	Избрисати {{spaceAcc}} „{{name}}”?
+studios.confirmDeleteHallTitle	Избрисати {{spaceAcc}}?
+services.title	УСЛУГЕ
+services.addService	Додај услугу
+services.types.group	Групна
+services.types.individual	Индив.
+services.types.groupFull	 · Групна
+services.types.individualFull	 · Индивидуална
+services.stats.price	Цена
+services.stats.duration	Трајање
+services.stats.bookings	Резервације
+services.stats.revenue	Приход
+services.details.description	Опис
+services.details.details	Детаљи
+services.details.minutes	минута
+services.details.upTo	До {{count}} особа
+services.details.personal	Индивидуална
+services.details.bookingsPerMonth	резервација за 30 дана
+services.details.schedule	Распоред часова
+services.empty.title	Нема услуга
+services.empty.subtitle	Додајте своју прву услугу
+services.toasts.deleted	Услуга је избрисана
+services.toasts.deleteError	Услуга није могла да се избрише
+services.toasts.saved	Сачувано
+services.toasts.saveError	Услуга није могла да се сачува
+services.toasts.edit	Измени: {{name}}
+services.confirmDelete	Избрисати услугу „{{name}}”?
+services.confirmDeleteTitle	Избрисати услугу?
+services.categories.yoga	Јога
+services.categories.pilates	Пилатес
+services.categories.stretching	Истезање
+services.categories.individual	Индивидуална
+services.categories.other	Без категорије
+subscriptions.title	ЧЛАНАРИНЕ
+subscriptions.addPackage	Додај пакет
+subscriptions.card.classCount_one	{{count}} час
+subscriptions.card.classCount_few	{{count}} часа
+subscriptions.card.classCount_other	{{count}} часова
+subscriptions.card.duration	{{count}} дана
+subscriptions.card.allServices	Сви часови
+subscriptions.card.serviceCount_one	{{count}} услуга
+subscriptions.card.serviceCount_few	{{count}} услуге
+subscriptions.card.serviceCount_other	{{count}} услуга
+subscriptions.card.inactiveBadge	Повучено из продаје
+subscriptions.settings.title	Подешавања програма
+subscriptions.settings.allowFreeze	Замрзавање чланарине
+subscriptions.settings.allowTransfer	Пренос другом клијенту
+subscriptions.settings.autoRenewal	Аутоматска обнова из депозита клијента
+subscriptions.empty.title	Још нема пакета
+subscriptions.empty.cta	Направи пакет
+subscriptions.toasts.created	Пакет је направљен
+subscriptions.toasts.saved	Сачувано
+subscriptions.toasts.saveError	Пакет није могао да се сачува
+subscriptions.toasts.deactivated	Пакет је повучен из продаје
+subscriptions.toasts.restored	Пакет је поново у продаји
+subscriptions.toasts.actionError	Радња није могла да се изврши
+subscriptions.deactivate	Повуци из продаје
+subscriptions.restore	Врати у продају
+subscriptions.confirmDeactivateTitle	Повући овај пакет из продаје?
+subscriptions.confirmDeactivate	Већ продате чланарине ће наставити да раде.

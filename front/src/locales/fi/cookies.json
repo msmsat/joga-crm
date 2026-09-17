@@ -1,0 +1,37 @@
+{
+  "banner": {
+    "title": "Yksityisyytesi, valintasi",
+    "text": "Velora säilyttää vain sen, mitä se tarvitsee toimiakseen selaimessasi: kirjautumisen, kielen ja käyttöliittymäasetukset. Luvallasi otamme käyttöön myös Google-kirjautumisen — Google asettaa silloin omat evästeensä. Emme käytä analytiikkaa tai mainontaa.",
+    "policy": "Evästekäytäntö"
+  },
+  "actions": {
+    "accept": "Hyväksy kaikki",
+    "reject": "Hylkää kaikki",
+    "save": "Tallenna valinta",
+    "settings": "Asetukset"
+  },
+  "settings": {
+    "title": "Evästeasetukset",
+    "subtitle": "Koskee tätä selainta. Voit muuttaa valintaa milloin tahansa.",
+    "alwaysOn": "Aina käytössä",
+    "necessary": {
+      "title": "Ehdottoman välttämättömät",
+      "text": "Pitävät sinut kirjautuneena, muistavat kielesi, teemasi ja valintasi sekä suojaavat maksuja ja palvelua väärinkäytöltä. Velora ei voi toimia ilman niitä."
+    },
+    "functional": {
+      "title": "Kirjaudu Googlella",
+      "text": "Lataa Googlen kirjautumispalvelun, jotta voit käyttää Google-tiliäsi. Google voi asettaa omia evästeitään ja saada tiedon, että avasit kirjautumissivun."
+    },
+    "none": "Ei analytiikka-, mainos- tai seurantaevästeitä — emme käytä niitä.",
+    "decided": "Valintasi {{date}}",
+    "policy": "Täysi luettelo evästekäytännössä"
+  },
+  "google": {
+    "button": "Jatka Googlella",
+    "notice": "Napsautus ottaa Google-kirjautumisen käyttöön: Googlen palvelu latautuu ja voi asettaa evästeitä.",
+    "policy": "Tiedot"
+  },
+  "profile": {
+    "button": "Evästeasetukset"
+  }
+}

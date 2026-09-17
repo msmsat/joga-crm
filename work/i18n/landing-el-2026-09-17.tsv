@@ -1,0 +1,231 @@
+== el
+nav.product	Προϊόν
+nav.modules	Ενότητες
+nav.pricing	Τιμές
+nav.faq	Συχνές ερωτήσεις
+nav.login	Σύνδεση
+nav.startShort	Ξεκινήστε
+nav.startFull	Ξεκινήστε δωρεάν
+nav.language	Γλώσσα
+hero.badge	Το νέο πρότυπο CRM του 2026
+hero.title	Ένα CRM που θα\\n*χαίρεστε* να χρησιμοποιείτε
+hero.lead	Premium B2B CRM για στούντιο γιόγκα και πιλάτες. Κρατήσεις, πελάτες, ομάδα και οικονομικά σε ένα μέρος. Χωρίς περιττά κλικ και μπέρδεμα.
+hero.cta	Δοκιμάστε δωρεάν για 30 ημέρες
+hero.perks.0	30 ημέρες δωρεάν
+hero.perks.1	Δεν χρειάζεται κάρτα
+hero.perks.2	Ακύρωση με ένα κλικ
+marquee.0	Πρόγραμμα
+marquee.1	Πελάτες
+marquee.2	Συνδρομές
+marquee.3	Online κρατήσεις
+marquee.4	Οικονομικά
+marquee.5	Μισθοδοσία
+marquee.6	Ειδοποιήσεις
+marquee.7	Επιβράβευση
+marquee.8	Αναφορές
+marquee.9	Velora AI
+marquee.10	Εφαρμογή πελάτη
+marquee.11	Ρόλοι και πρόσβαση
+stats.items.0.value	30 ημέρες
+stats.items.0.label	Δωρεάν, χωρίς κάρτα
+stats.items.1.value	16
+stats.items.1.label	ενότητες σε κάθε πλάνο
+stats.items.2.value	4
+stats.items.2.label	κανάλια online κράτησης
+stats.items.3.value	από 15 €
+stats.items.3.label	ανά μήνα και στούντιο
+stats.trust.0	Τα δεδομένα σας παραμένουν δικά σας
+stats.trust.1	Οι ρόλοι εφαρμόζονται και στον διακομιστή
+stats.trust.2	Εξαγωγή CSV όποτε θέλετε
+stats.trust.3	Διαγραφή κατόπιν αιτήματος
+compare.label	η διαφορά
+compare.title	Αφαιρέσαμε ό,τι\\nσας κρατούσε πίσω
+compare.lead	Το Velora γεννήθηκε από τη δική μας εμπειρία: διαχειριζόμασταν στούντιο και κάθε μέρα συναντούσαμε το ίδιο εμπόδιο — ένα CRM που χρειαζόταν εννέα κλικ για να κλείσετε έναν πελάτη. Δείτε τι άλλαξε.
+compare.usual	Ο συνηθισμένος τρόπος
+compare.velora	Στο Velora
+compare.pairs.0.bad	Για να κλείσετε έναν πελάτη, φεύγετε από το πρόγραμμα για άλλη οθόνη και μετά επιστρέφετε
+compare.pairs.0.good	Οι κρατήσεις και οι νέοι πελάτες δημιουργούνται απευθείας στο πρόγραμμα
+compare.pairs.1.bad	Οι αναφορές εξάγονται στο Excel και συγκρίνονται χειροκίνητα
+compare.pairs.1.good	Ζωντανές αναφορές ανά εκπαιδευτή και υπηρεσία, με εξαγωγή για κάθε περίοδο
+compare.pairs.2.bad	Οι ειδοποιήσεις είναι ξεχωριστή υπηρεσία για την οποία πληρώνετε επιπλέον
+compare.pairs.2.good	Telegram, email και WhatsApp είναι ενσωματωμένα με πίνακα συμβάν × κανάλι
+compare.pairs.3.bad	Ένας εκπαιδευτής βλέπει το πρόγραμμα και τη βάση πελατών όλων των άλλων
+compare.pairs.3.good	Οι ρόλοι περιορίζουν την πρόσβαση τόσο στο περιβάλλον όσο και στον διακομιστή
+compare.pairs.4.bad	Βοηθός; Στην καλύτερη περίπτωση, αναζήτηση πελάτη
+compare.pairs.4.good	Το Velora AI απαντά σε ερωτήσεις για την επιχείρησή σας — και στις ερωτήσεις των πελατών σας στο Telegram και το Instagram
+showcase.label	όλα σε ένα
+showcase.title	Μία πλατφόρμα αντί\\nγια δεκάδες υπηρεσίες
+showcase.lead	Κρατήσεις, πελάτες, χρήματα, επικοινωνία και AI σε ένα περιβάλλον. Ούτε μία περιττή ενότητα: κάθε οθόνη λύνει ένα πραγματικό πρόβλημα του ιδιοκτήτη.
+showcase.blocks.journal.title	Το πρόγραμμά σας
+showcase.blocks.journal.lead	Ημερήσιο πλέγμα, με τους εκπαιδευτές σε στήλες και τις ώρες σε γραμμές. Όλα όσα κάνει ο διαχειριστής συμβαίνουν εδώ.
+showcase.blocks.journal.points.0	Σύρετε ένα μάθημα σε άλλη ώρα — ή σε άλλον εκπαιδευτή
+showcase.blocks.journal.points.1	Δημιουργήστε νέα μαθήματα και πελάτες χωρίς να φύγετε από το πρόγραμμα
+showcase.blocks.journal.points.2	Η σύνοψη της ημέρας είναι δίπλα σας: πληρότητα αιθουσών και έσοδα
+showcase.blocks.booking.title	Οι online κρατήσεις σας
+showcase.blocks.booking.lead	Τέσσερα κανάλια όπου οι πελάτες κλείνουν μόνοι τους, όλο το εικοσιτετράωρο και χωρίς διαχειριστή.
+showcase.blocks.booking.points.0	Widget ιστού, Telegram, WhatsApp και Instagram — το καθένα ρυθμίζεται ξεχωριστά
+showcase.blocks.booking.points.1	Κανόνες: πόσες ώρες πριν την έναρξη κλείνει η κράτηση και μέχρι πότε μπορεί ο πελάτης να ακυρώσει
+showcase.blocks.booking.points.2	Ταυτότητα της εφαρμογής πελάτη με ζωντανή προεπισκόπηση — χρώμα και γλώσσα που ταιριάζουν στο brand σας
+showcase.blocks.finance.title	Τα οικονομικά σας
+showcase.blocks.finance.lead	Λογαριασμοί, συναλλαγές, μισθοδοσία και έγγραφα σε ένα μέρος, χωρίς εξαγωγές σε υπολογιστικά φύλλα.
+showcase.blocks.finance.points.0	Ταμείο, τραπεζικός λογαριασμός και εισπράξεις καρτών με υπόλοιπα και ημερήσιες κινήσεις
+showcase.blocks.finance.points.1	Συνδρομές, δωροκάρτες και επιστροφές συνδεδεμένες με πελάτη και λογαριασμό
+showcase.blocks.finance.points.2	Αμοιβές εκπαιδευτών υπολογισμένες με τους δικούς σας κανόνες
+showcase.blocks.notify.title	Οι ειδοποιήσεις σας
+showcase.blocks.notify.lead	Τρία κανάλια παράδοσης και ένας πίνακας όπου ορίζετε τι στέλνεται και πού.
+showcase.blocks.notify.points.0	Telegram, email και WhatsApp — το καθένα συνδέεται με το δικό του κλειδί στούντιο
+showcase.blocks.notify.points.1	Ξεχωριστό σύνολο συμβάντων για πελάτη, εκπαιδευτή, διαχειριστή και ιδιοκτήτη
+showcase.blocks.notify.points.2	Υπενθυμίσεις 24 και 2 ώρες πριν, «μένουν 1–2 μαθήματα», γενέθλια και αιτήματα αξιολόγησης
+showcase.blocks.ai.title	Το επίπεδο AI σας
+showcase.blocks.ai.lead	Ο βοηθός γνωρίζει το πλαίσιο της επιχείρησης και είναι σε κάθε σελίδα — οι πράκτορες απαντούν μόνοι τους στους πελάτες.
+showcase.blocks.ai.points.0	Ρωτήστε για το στούντιο από την επάνω μπάρα, χωρίς να ανοίξετε άλλη ενότητα
+showcase.blocks.ai.points.1	Πράκτορες AI σε Telegram και Instagram: τόνος επικοινωνίας και λειτουργία «μόνο εκτός ωραρίου»
+showcase.blocks.ai.points.2	Στατιστικά: πόσες συνομιλίες διεκπεραιώθηκαν και πώς αξιολογήθηκαν
+ctaStrip.title	Δοκιμάστε χωρίς μεταφορά δεδομένων και χωρίς προπληρωμή
+ctaStrip.button	Ξεκινήστε δωρεάν
+ctaStrip.note	30 ημέρες δωρεάν • Χωρίς κάρτα • Βοήθεια για ξεκίνημα
+modules.label	ενότητες
+modules.title	16 ενότητες,\\nήδη περιλαμβάνονται
+modules.lead	Όχι συλλογή από placeholders «σύντομα διαθέσιμο» — ό,τι αναφέρεται λειτουργεί και περιλαμβάνεται στο πλάνο. Οι ρόλοι καθορίζουν ποιος βλέπει κάθε ενότητα.
+modules.items.dashboard.title	Επισκόπηση
+modules.items.dashboard.desc	Έσοδα, ενεργοί πελάτες, κρατήσεις και αφοσίωση πελατών — με τάσεις
+modules.items.journal.title	Πρόγραμμα
+modules.items.journal.desc	Ημερήσιο πλέγμα ανά εκπαιδευτή και αίθουσα, σύρετε για επαναπρογραμματισμό
+modules.items.clients.title	Πελάτες
+modules.items.clients.desc	Προφίλ, συνδρομές, πόντοι, ιστορικό, σημειώσεις, ετικέτες
+modules.items.staff.title	Ομάδα
+modules.items.staff.desc	Προφίλ, δείκτες, ωράρια, αναθέσεις αιθουσών
+modules.items.catalog.title	Κατάλογος
+modules.items.catalog.desc	Εγκαταστάσεις, αίθουσες με χρώμα και χωρητικότητα, υπηρεσίες στούντιο
+modules.items.booking.title	Online κρατήσεις
+modules.items.booking.desc	Widget, Telegram, WhatsApp, Instagram και κανόνες κρατήσεων
+modules.items.finance.title	Οικονομικά
+modules.items.finance.desc	Λογαριασμοί, συναλλαγές, αντισυμβαλλόμενοι, έγγραφα, στόχοι, μισθοδοσία
+modules.items.notify.title	Ειδοποιήσεις
+modules.items.notify.desc	Telegram, email, WhatsApp και πίνακας συμβάν × κανάλι
+modules.items.loyalty.title	Επιβράβευση
+modules.items.loyalty.desc	Κάρτες, εκπτώσεις, δωροκάρτες, συνδρομές, συστάσεις
+modules.items.ai.title	Velora AI
+modules.items.ai.desc	Βοηθός επιχείρησης και πράκτορες για τους πελάτες σας
+modules.items.reports.title	Αναφορές
+modules.items.reports.desc	Για πωλήσεις, εκπαιδευτές και υπηρεσίες — με εξαγωγή
+modules.items.miniapp.title	Εφαρμογή πελάτη
+modules.items.miniapp.desc	Ο προσωπικός χώρος πελάτη: κρατήσεις, συνδρομές, πόντοι
+modules.items.multistudio.title	Πολλά στούντιο
+modules.items.multistudio.desc	Πολλά στούντιο σε έναν λογαριασμό, αλλάζετε όποτε θέλετε
+modules.items.roles.title	Ρόλοι και πρόσβαση
+modules.items.roles.desc	Ιδιοκτήτης, διαχειριστής, εκπαιδευτής — στο περιβάλλον και τον διακομιστή
+modules.items.settings.title	Ρυθμίσεις
+modules.items.settings.desc	Ωράριο, θέμα, ομάδα, ασφάλεια, συνεδρίες
+modules.items.data.title	Δεδομένα
+modules.items.data.desc	Εξαγωγή CSV, διαγραφή κατόπιν αιτήματος
+modules.integrations	Ενσωματώσεις
+modules.integrationsNote	συνδέονται στις ρυθμίσεις του στούντιο
+pricing.label	τιμές
+pricing.title	Το πλάνο σας εξαρτάται από\\nτο μέγεθος της ομάδας
+pricing.lead	15 € για δύο άτομα, +5 € για κάθε επόμενη θέση, απεριόριστο — 120 €. Και οι 16 ενότητες και το Velora AI περιλαμβάνονται σε κάθε επίπεδο: πληρώνετε για το μέγεθος της ομάδας, όχι για να ξεκλειδώνετε κουμπιά. Τρία μοντέλα πληρωμής και έως 40% έκπτωση με προπληρωμή.
+pricing.team	ομάδα
+pricing.seats_one	άτομο
+pricing.seats_other	άτομα
+pricing.unlimited	απεριόριστο
+pricing.scaleMin	2 θέσεις
+pricing.scaleMax	∞ απεριόριστο
+pricing.sliderAria	Πόσα άτομα εργάζονται στο στούντιό σας
+pricing.hint	**15 €** για δύο άτομα, **+5 €** για κάθε επιπλέον θέση. Απεριόριστο — **120 €** τον μήνα.
+pricing.period	περίοδος πληρωμής
+pricing.months	{{count}} μήν.
+pricing.noDiscount	—
+pricing.yourPrice	η τιμή σας
+pricing.perMonth	/ μήν.
+pricing.amount	{{value}} €
+pricing.amountPerMonth	{{value}} € / μήν.
+pricing.rows.seats	Ομάδα
+pricing.rows.perSeat	Ανά άτομο
+pricing.rows.ai	Αιτήματα Velora AI
+pricing.rows.aiPerMonth	{{value}} / μήν.
+pricing.rows.modules	Ενότητες
+pricing.rows.modulesAll	και οι 16
+pricing.rows.total	Πληρωμή για {{count}} μήνες
+pricing.rows.saved	Εξοικονομείτε
+pricing.cta	Δοκιμάστε για 30 ημέρες
+pricing.note	Χωρίς κάρτα · ακύρωση με ένα κλικ
+pricing.models.0.title	Συνδρομή
+pricing.models.0.price	από 15 € / μήν.
+pricing.models.0.desc	Σταθερό ποσό. Γνωρίζετε το κόστος εκ των προτέρων — χωρίς εκπλήξεις στο τέλος του μήνα.
+pricing.models.1.title	3% των εσόδων
+pricing.models.1.price	τουλάχιστον 15 € / μήν.
+pricing.models.1.desc	Πληρώστε ανάλογα με τον τζίρο. Σε έναν ήσυχο μήνα συμπληρώνετε μόνο τη διαφορά ως το ελάχιστο ποσό.
+pricing.models.2.title	Συνδυαστικό
+pricing.models.2.price	½ σταθερό + 1,5%
+pricing.models.2.desc	Το μισό της συνδρομής συν ένα μικρό ποσοστό — ισορροπία ανάμεσα στα δύο μοντέλα.
+pricing.footnote	Η δοκιμή δεν απαιτεί κάρτα. Το μοντέλο πληρωμής και ο αριθμός θέσεων αλλάζουν στην εφαρμογή όποτε θέλετε. Οι τιμές δεν περιλαμβάνουν ΦΠΑ: ο φόρος υπολογίζεται στο ταμείο για τη χώρα σας.
+faq.label	ερωτήσεις
+faq.title	Αυτά ρωτούν συνήθως
+faq.items.0.q	Τι περιλαμβάνει η δοκιμαστική περίοδος;
+faq.items.0.a	Πλήρης πρόσβαση σε όλες τις ενότητες για 30 ημέρες. Δεν χρειάζεται κάρτα — αν δεν σας ταιριάζει, απλώς δεν ανανεώνετε.
+faq.items.1.q	Θα βλέπουν οι πελάτες μου διαφημίσεις άλλων στούντιο;
+faq.items.1.a	Όχι. Οι πελάτες κλείνουν από το widget στον ιστότοπό σας, το Telegram, το WhatsApp ή το Instagram σας — και από μια εφαρμογή πελάτη με το χρώμα και το λογότυπό σας. Δεν υπάρχει κοινός κατάλογος με άλλα στούντιο.
+faq.items.2.q	Ποιος στην ομάδα μου βλέπει τι;
+faq.items.2.a	Τρεις ρόλοι. Ο ιδιοκτήτης βλέπει τα πάντα. Ο διαχειριστής βλέπει το πρόγραμμα, τους πελάτες και την επισκόπηση. Ο εκπαιδευτής βλέπει μόνο τα δικά του μαθήματα και πελάτες. Ο περιορισμός λειτουργεί στο περιβάλλον και στον διακομιστή: δεν υπάρχει διαδρομή προς δεδομένα άλλων.
+faq.items.3.q	Μπορώ να διαχειρίζομαι πολλά στούντιο ή εγκαταστάσεις;
+faq.items.3.a	Ναι, και δεν εξαρτάται από το πλάνο. Ένας λογαριασμός μπορεί να ανήκει σε πολλά στούντιο και να εναλλάσσεται μεταξύ τους, ενώ μέσα στο στούντιο ρυθμίζετε εγκαταστάσεις και αίθουσες.
+faq.items.4.q	Υπάρχει σκούρο θέμα και άλλες γλώσσες;
+faq.items.4.a	Ναι. Το περιβάλλον εναλλάσσει φωτεινό και σκούρο θέμα και υποστηρίζει 22 γλώσσες, μεταξύ των οποίων αγγλικά, ρωσικά, ουκρανικά, τσεχικά και γερμανικά. Ζώνη ώρας, νόμισμα και γλώσσα επιλέγονται κατά την εισαγωγή.
+faq.items.5.q	Τι συμβαίνει με τα δεδομένα μου αν αποφασίσω να φύγω;
+faq.items.5.a	Τα δεδομένα είναι δικά σας. Οι ρυθμίσεις παρέχουν εξαγωγή CSV για πελάτες, πρόγραμμα, οικονομικά και συνδρομές, και η διαγραφή γίνεται κατόπιν αιτήματός σας.
+faq.notFoundTitle	Δεν βρήκατε απάντηση;
+faq.notFoundLead	Γράψτε μας — απαντάμε προσωπικά, χωρίς bots και χωρίς αναμονή.
+faq.copied	Αντιγράφηκε
+about.label	σχετικά με εμάς
+about.title	Το Velora δημιουργείται από ανθρώπους\\nπου έχουν διαχειριστεί στούντιο οι ίδιοι
+about.lead	Δεν φτιάχνουμε ένα «CRM για όλους». Φτιάχνουμε εργαλείο για μια συγκεκριμένη δουλειά — πρόγραμμα, πελάτες, χρήματα, επικοινωνία — και απαντάμε οι ίδιοι στις ερωτήσεις αντί να στέλνουμε έτοιμες απαντήσεις.
+about.p1	Οι πελάτες ενός στούντιο παραμένουν πελάτες του. Το Velora δεν φτιάχνει κοινό κατάλογο, δεν δείχνει στους πελάτες σας διαφημίσεις άλλων και δεν παίρνει ποσοστό όταν κάποιος επιστρέφει σε εσάς.
+about.p2	Προς το παρόν το προϊόν είναι φτιαγμένο για στούντιο γιόγκα και πιλάτες — για τον τρόπο που λειτουργούν πραγματικά τα προγράμματα, οι συνδρομές και οι εκπαιδευτές τους. Άλλοι κλάδοι θα ακολουθήσουν με την ίδια προσοχή.
+cta.eyebrow	Ξεκινήστε σήμερα
+cta.titleTop	Έτοιμοι για το
+cta.titleAccent	επόμενο βήμα;
+cta.lead	30 ημέρες δωρεάν. Χωρίς κάρτα. Χωρίς δέσμευση. Δοκιμάστε — θα νιώσετε τη διαφορά.
+cta.register	Εγγραφείτε δωρεάν
+cta.whatsapp	Γράψτε μας στο WhatsApp
+footer.tagline	Premium CRM για στούντιο γιόγκα και πιλάτες. Κρατήσεις, πελάτες, χρήματα και AI σε ένα μέρος.
+footer.columns.product.title	Προϊόν
+footer.columns.product.features	Λειτουργίες
+footer.columns.product.modules	Ενότητες
+footer.columns.product.booking	Online κρατήσεις
+footer.columns.product.ai	Velora AI
+footer.columns.product.pricing	Τιμές
+footer.columns.company.title	Εταιρεία
+footer.columns.company.difference	Η διαφορά μας
+footer.columns.company.about	Σχετικά με εμάς
+footer.columns.company.faq	Ερωτήσεις και απαντήσεις
+footer.columns.company.support	Υποστήριξη
+footer.columns.docs.title	Έγγραφα
+footer.columns.docs.terms	Όροι χρήσης
+footer.columns.docs.privacy	Πολιτική απορρήτου
+footer.columns.docs.cookies	Πολιτική cookies
+footer.columns.docs.dpa	Επεξεργασία δεδομένων
+footer.columns.docs.cookieSettings	Ρυθμίσεις cookies
+footer.columns.docs.support	Υποστήριξη
+footer.copyright	© 2026 Velora. Με επιφύλαξη παντός δικαιώματος.
+screens.journal	Ημερήσιο πρόγραμμα
+screens.booking	Online κράτηση
+screens.finance	Πληρωμή επίσκεψης
+screens.notify	Συμβάν × κανάλι
+screens.ai	Velora AI
+art.journal	Πρόγραμμα
+art.journalToday	Σήμερα — 12 μαθήματα
+art.weekdays.0	Δ
+art.weekdays.1	Τ
+art.weekdays.2	Τ
+art.weekdays.3	Π
+art.weekdays.4	Π
+art.weekdays.5	Σ
+art.weekdays.6	Κ
+art.finance	Οικονομικά
+art.financeValue	1,8 χιλ. €
+art.financeLabel	έσοδα αυτόν τον μήνα
+art.clients	Πελάτες
+art.clientsLabel	πελάτες, +12 αυτήν την εβδομάδα
+art.questions_one	{{count}} ερώτηση
+art.questions_other	{{count}} ερωτήσεις
+art.open	άνοιγμα

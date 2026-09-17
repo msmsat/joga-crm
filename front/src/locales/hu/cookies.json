@@ -1,0 +1,37 @@
+{
+  "banner": {
+    "title": "Az Ön adatvédelme, az Ön döntése",
+    "text": "A Velora csak azt tárolja, amire a böngészőjében való működéshez szüksége van: a bejelentkezést, a nyelvet és a felületi beállításokat. Engedélyével a Google-bejelentkezést is bekapcsoljuk — a Google ezután saját cookie-kat állít be. Nem használunk analitikát vagy hirdetést.",
+    "policy": "Cookie-szabályzat"
+  },
+  "actions": {
+    "accept": "Összes elfogadása",
+    "reject": "Összes elutasítása",
+    "save": "Választás mentése",
+    "settings": "Beállítások"
+  },
+  "settings": {
+    "title": "Cookie-beállítások",
+    "subtitle": "Erre a böngészőre vonatkozik. Bármikor megváltoztathatja.",
+    "alwaysOn": "Mindig bekapcsolva",
+    "necessary": {
+      "title": "Feltétlenül szükséges",
+      "text": "Bejelentkezve tartják, megjegyzik a nyelvét, témáját és választását, és védik a fizetéseket és a szolgáltatást a visszaéléstől. A Velora ezek nélkül nem működik."
+    },
+    "functional": {
+      "title": "Bejelentkezés Google-fiókkal",
+      "text": "Betölti a Google bejelentkezési szolgáltatását, hogy használhassa Google-fiókját. A Google saját cookie-kat állíthat be, és megtudhatja, hogy megnyitotta a bejelentkezési oldalt."
+    },
+    "none": "Nem használunk analitikai, hirdetési vagy követési cookie-kat.",
+    "decided": "Az Ön választása: {{date}}",
+    "policy": "A teljes lista a Cookie-szabályzatban található"
+  },
+  "google": {
+    "button": "Folytatás Google-fiókkal",
+    "notice": "A kattintás bekapcsolja a Google-bejelentkezést: a Google szolgáltatása betöltődik és cookie-kat állíthat be.",
+    "policy": "Részletek"
+  },
+  "profile": {
+    "button": "Cookie-beállítások"
+  }
+}

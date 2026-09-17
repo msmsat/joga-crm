@@ -1,0 +1,246 @@
+== el
+tabs.studios	Στούντιο
+tabs.services	Υπηρεσίες
+tabs.subscriptions	Συνδρομές
+modals.addStudio.steps.about.title	Σχετικά με το στούντιο
+modals.addStudio.steps.about.sub	Όνομα και στοιχεία επικοινωνίας
+modals.addStudio.steps.about.trust	Τα δεδομένα σας είναι κρυπτογραφημένα και δεν κοινοποιούνται ποτέ σε τρίτους
+modals.addStudio.steps.location.title	Τοποθεσία
+modals.addStudio.steps.location.sub	Πού βρίσκεται αυτό το υποκατάστημα;
+modals.addStudio.steps.location.trust	Η διεύθυνση χρησιμοποιείται στο πρόγραμμα και στους χάρτες
+modals.addStudio.steps.photo.title	Φωτογραφία
+modals.addStudio.steps.photo.sub	Εξώφυλλο στούντιο — προαιρετικό
+modals.addStudio.steps.photo.trust	Μπορείτε να το προσθέσετε αργότερα στις ρυθμίσεις του υποκαταστήματος
+modals.addStudio.stepCounter	Βήμα {{current}} από {{total}}
+modals.addStudio.step1.heading	Βασικές πληροφορίες
+modals.addStudio.step1.subheading	Ποιο είναι το όνομα του στούντιο και πώς μπορεί κανείς να επικοινωνήσει μαζί του;
+modals.addStudio.step1.name	Όνομα στούντιο *
+modals.addStudio.step1.namePlaceholder	Π.χ. Velora Studio
+modals.addStudio.step1.phone	Τηλέφωνο *
+modals.addStudio.step1.email	Email *
+modals.addStudio.step1.contactHint	Εισαγάγετε τηλέφωνο ή email — τουλάχιστον ένα
+modals.addStudio.step1.noContacts	Δεν δόθηκαν στοιχεία επικοινωνίας
+modals.addStudio.step1.new	ΝΕΟ
+modals.addStudio.step2.heading	Τοποθεσία
+modals.addStudio.step2.subheading	Ορίστε πού βρίσκεται αυτό το υποκατάστημα
+modals.addStudio.step2.country	Χώρα
+modals.addStudio.step2.countryPlaceholder	Ηνωμένες Πολιτείες
+modals.addStudio.step2.city	Πόλη *
+modals.addStudio.step2.cityPlaceholder	Νέα Υόρκη
+modals.addStudio.step2.address	Διεύθυνση *
+modals.addStudio.step2.addressPlaceholder	5th Avenue 12, γραφείο 301
+modals.addStudio.step2.noAddress	Δεν δόθηκε διεύθυνση
+modals.addStudio.step2.groupHint	Τα πεδία «Χώρα» και «Πόλη» χρησιμοποιούνται για την ομαδοποίηση των υποκαταστημάτων στη λίστα.
+modals.addStudio.step3.heading	Φωτογραφία στούντιο
+modals.addStudio.step3.subheading	Μεταφορτώστε ένα εξώφυλλο — είναι προαιρετικό, μπορείτε να το παραλείψετε
+modals.addStudio.step3.uploadCta	Κάντε κλικ για μεταφόρτωση
+modals.addStudio.step3.uploadHint	JPG, PNG έως 10 MB
+modals.addStudio.step3.replace	Αντικατάσταση
+modals.addStudio.step3.remove	Αφαίρεση
+modals.addStudio.step3.previewAlt	Προεπισκόπηση
+modals.addStudio.step3.summary	Σύνοψη
+modals.addStudio.step3.uploadError	Η μεταφόρτωση της φωτογραφίας απέτυχε. Δοκιμάστε άλλο αρχείο ή αφαιρέστε τη.
+modals.addStudio.summaryRows.name	Όνομα
+modals.addStudio.summaryRows.city	Πόλη
+modals.addStudio.summaryRows.address	Διεύθυνση
+modals.addStudio.nextPhoto	Επόμενο — φωτογραφία
+modals.addStudio.submit	Δημιουργία στούντιο
+modals.addStudio.skipPhoto	Παράλειψη φωτογραφίας και δημιουργία
+modals.addStudio.illus.contacts	Επαφές
+modals.addStudio.illus.newBranch	Νέο υποκατάστημα
+modals.addStudio.illus.city	Πόλη
+modals.addStudio.illus.newBranchStudio	Νέο υποκατάστημα στούντιο
+modals.editBranch.title	Επεξεργασία υποκαταστήματος
+modals.editBranch.name	Όνομα υποκαταστήματος
+modals.editBranch.namePlaceholder	Velora Studio
+modals.editBranch.phone	Τηλέφωνο
+modals.editBranch.email	Email
+modals.editBranch.emailPlaceholder	studio@velora.com
+modals.editBranch.country	Χώρα
+modals.editBranch.countryPlaceholder	Ηνωμένες Πολιτείες
+modals.editBranch.city	Πόλη
+modals.editBranch.cityPlaceholder	Νέα Υόρκη
+modals.editBranch.address	Διεύθυνση
+modals.editBranch.addressPlaceholder	5th Avenue 12
+modals.editBranch.photo	Φωτογραφία υποκαταστήματος
+modals.editBranch.contactHint	Εισαγάγετε τηλέφωνο ή email
+modals.editBranch.workingHours	Ώρες λειτουργίας
+modals.hall.titleNew	Προσθήκη {{spaceAcc}}
+modals.hall.titleEdit	Επεξεργασία {{spaceAcc}}
+modals.hall.name	Όνομα
+modals.hall.namePlaceholder	{{space, capitalize}} A
+modals.hall.capacity	Χωρητικότητα
+modals.hall.area	Εμβαδό, m²
+modals.hall.hourlyRate	Τιμή ανά ώρα, {{currency}}
+modals.hall.hourlyRatePlaceholder	3000
+modals.hall.equipment	Εξοπλισμός
+modals.hall.equipmentPlaceholder	Προσθήκη εξοπλισμού
+modals.hall.color	Χρώμα
+modals.hall.isOnline	Online
+modals.hall.photo	Φωτογραφία
+modals.hall.subtitle	{{space, capitalize}} στο υποκατάστημα: θέσεις, εξοπλισμός, χρώμα στο πρόγραμμα
+modals.hall.previewTitle	Προεπισκόπηση
+modals.hall.sectionBasic	Βασικά
+modals.hall.sectionSpace	Χώρος
+modals.hall.sectionLook	Εμφάνιση
+modals.hall.areaShort	Εμβαδό
+modals.hall.hourlyRateShort	Τιμή ανά ώρα
+modals.hall.statArea	Εμβαδό
+modals.hall.statRate	Τιμή / ώρα
+modals.hall.isOnlineHint	Τα μαθήματα γίνονται online — δεν υπάρχει φυσικός χώρος.
+modals.hall.colorHint	Τα μαθήματα εδώ επισημαίνονται με αυτό το χρώμα στο πρόγραμμα.
+modals.service.titleNew	Νέα υπηρεσία
+modals.service.titleEdit	Επεξεργασία υπηρεσίας
+modals.service.name	Όνομα υπηρεσίας
+modals.service.namePlaceholder	Hatha yoga
+modals.service.category	Κατηγορία
+modals.service.type	Τύπος
+modals.service.typeGroup	Ομαδική
+modals.service.typeIndividual	Ατομική
+modals.service.price	Τιμή, {{currency}}
+modals.service.pricePlaceholder	1200
+modals.service.duration	Διάρκεια, λεπτά
+modals.service.durationPlaceholder	60
+modals.service.maxClients	Μέγιστος αριθμός πελατών
+modals.service.maxClientsPlaceholder	15
+modals.service.description	Περιγραφή
+modals.service.descriptionPlaceholder	Σύντομη περιγραφή υπηρεσίας
+modals.service.color	Χρώμα
+modals.service.subtitle	Εμφανίζεται στο πρόγραμμα και στην online κράτηση
+modals.service.previewTitle	Προεπισκόπηση προγράμματος
+modals.service.sectionBasic	Βασικά
+modals.service.sectionPricing	Τιμή και χρόνος
+modals.service.sectionLook	Εμφάνιση
+modals.service.priceShort	Τιμή
+modals.service.durationShort	Διάρκεια
+modals.service.statSeats	Θέσεις
+modals.service.colorHint	Τα μαθήματα επισημαίνονται με αυτό το χρώμα στο πλέγμα προγράμματος.
+modals.service.bookingMode	Τρόπος κράτησης
+modals.service.bookingModeEvent	Εγγραφή
+modals.service.bookingModeResource	Επιλογή ώρας
+modals.service.bookingModeEventHint	Οι πελάτες εγγράφονται σε μάθημα που έχετε ήδη προγραμματίσει.
+modals.service.bookingModeResourceHint	Ο πελάτης επιλέγει έναν ειδικό και ελεύθερη ώρα· το διάστημα {{offering}} δημιουργείται κατά την επιβεβαίωση.
+modals.service.bookable	Διαθέσιμο για κράτηση
+modals.service.bookableOn	Ναι
+modals.service.bookableOff	Όχι
+modals.service.bufferBefore	Χρόνος πριν
+modals.service.bufferAfter	Χρόνος μετά
+modals.package.titleNew	Νέο πακέτο
+modals.package.titleEdit	Επεξεργασία πακέτου
+modals.package.name	Όνομα πακέτου
+modals.package.namePlaceholder	8 μαθήματα
+modals.package.classCount	Αριθμός μαθημάτων
+modals.package.classCountPlaceholder	8
+modals.package.price	Τιμή, {{currency}}
+modals.package.pricePlaceholder	8000
+modals.package.perVisitPrice	Τιμή ανά επίσκεψη
+modals.package.durationDays	Ισχύει για, ημέρες
+modals.package.durationDaysPlaceholder	60
+modals.package.services	Υπηρεσίες
+modals.package.servicesHint	Δεν επιλέχθηκε τίποτα — το πακέτο ισχύει για όλα τα μαθήματα
+modals.package.isActive	Προς πώληση
+modals.package.soldAsSubscription	Εμφάνιση στην καρτέλα «Συνδρομές»
+modals.package.soldAsSingle	Εμφάνιση στην καρτέλα «Μεμονωμένες επισκέψεις»
+modals.package.subtitle	Ένα πακέτο μαθημάτων που πουλάτε σε πελάτες
+modals.package.previewTitle	Προεπισκόπηση πάσου
+modals.package.previewKind	Πάσο
+modals.package.previewValid	Ισχύει για
+modals.package.sectionBasic	Βασικά
+modals.package.sectionTerms	Όροι
+modals.package.sectionSale	Πωλήσεις
+modals.package.priceShort	Τιμή πακέτου
+modals.package.statClasses	Μαθήματα
+modals.package.statDays	Ημέρες
+modals.package.statAll	Όλα
+modals.package.isActiveHint	Οι πελάτες μπορούν να δουν και να αγοράσουν αυτό το πακέτο.
+modals.package.soldAsSubscriptionHint	Διαφορετικά το πακέτο παραμένει μόνο στις μεμονωμένες επισκέψεις.
+studios.title	ΣΤΟΥΝΤΙΟ
+studios.addStudio	Προσθήκη στούντιο
+studios.addHall	Προσθήκη {{spaceAcc}}
+studios.editBranch	Επεξεργασία υποκαταστήματος
+studios.deleteBranch	Διαγραφή υποκαταστήματος
+studios.infoTab	Γενικές πληροφορίες
+studios.hallsTitle	{{spacePlural, capitalize}} στούντιο
+studios.hallCount_one	{{spacePlural, capitalize}} · {{count}}
+studios.hallCount_other	{{spacePlural, capitalize}} · {{count}}
+studios.stats.halls	{{spacePlural, capitalize}}
+studios.stats.totalSeats	Συνολικές θέσεις
+studios.stats.fromPerHour	Από / ώρα
+studios.hall.seats	θέσεις
+studios.hall.schedule	Ώρες λειτουργίας
+studios.hall.closed	Κλειστό
+studios.hall.stats.seats	Θέσεις
+studios.hall.stats.area	Εμβαδό
+studios.hall.stats.perHour	Ανά ώρα
+studios.hall.equipment	Εξοπλισμός
+studios.hall.actions	Ενέργειες
+studios.hall.edit	Επεξεργασία {{spaceAcc}}
+studios.hall.delete	Διαγραφή {{spaceAcc}}
+studios.empty.title	Δεν υπάρχουν στούντιο
+studios.empty.subtitle	Προσθέστε το πρώτο σας στούντιο
+studios.toasts.created	Το στούντιο δημιουργήθηκε
+studios.toasts.createError	Δεν ήταν δυνατή η δημιουργία του στούντιο
+studios.toasts.deleted	Το στούντιο διαγράφηκε
+studios.toasts.hallDeleted	Διαγράφηκε: {{space}}
+studios.toasts.saved	Αποθηκεύτηκε
+studios.toasts.edit	Επεξεργασία: {{name}}
+studios.confirmDelete	Διαγραφή υποκαταστήματος «{{name}}»; Δεν μπορεί να αναιρεθεί.
+studios.confirmDeleteTitle	Διαγραφή υποκαταστήματος;
+studios.confirmDeleteHall	Διαγραφή {{spaceAcc}} «{{name}}»;
+studios.confirmDeleteHallTitle	Διαγραφή {{spaceAcc}};
+services.title	ΥΠΗΡΕΣΙΕΣ
+services.addService	Προσθήκη υπηρεσίας
+services.types.group	Ομαδική
+services.types.individual	Ατομ.
+services.types.groupFull	 · Ομαδική
+services.types.individualFull	 · Ατομική
+services.stats.price	Τιμή
+services.stats.duration	Διάρκεια
+services.stats.bookings	Κρατήσεις
+services.stats.revenue	Έσοδα
+services.details.description	Περιγραφή
+services.details.details	Λεπτομέρειες
+services.details.minutes	λεπτά
+services.details.upTo	Έως {{count}} άτ.
+services.details.personal	Ατομική
+services.details.bookingsPerMonth	κρατήσεις σε 30 ημέρες
+services.details.schedule	Πρόγραμμα μαθημάτων
+services.empty.title	Δεν υπάρχουν υπηρεσίες
+services.empty.subtitle	Προσθέστε την πρώτη σας υπηρεσία
+services.toasts.deleted	Η υπηρεσία διαγράφηκε
+services.toasts.deleteError	Δεν ήταν δυνατή η διαγραφή της υπηρεσίας
+services.toasts.saved	Αποθηκεύτηκε
+services.toasts.saveError	Δεν ήταν δυνατή η αποθήκευση της υπηρεσίας
+services.toasts.edit	Επεξεργασία: {{name}}
+services.confirmDelete	Διαγραφή υπηρεσίας «{{name}}»;
+services.confirmDeleteTitle	Διαγραφή υπηρεσίας;
+services.categories.yoga	Γιόγκα
+services.categories.pilates	Πιλάτες
+services.categories.stretching	Διατάσεις
+services.categories.individual	Ατομική
+services.categories.other	Χωρίς κατηγορία
+subscriptions.title	ΣΥΝΔΡΟΜΕΣ
+subscriptions.addPackage	Προσθήκη πακέτου
+subscriptions.card.classCount_one	{{count}} μάθημα
+subscriptions.card.classCount_other	{{count}} μαθήματα
+subscriptions.card.duration	{{count}} ημέρες
+subscriptions.card.allServices	Όλα τα μαθήματα
+subscriptions.card.serviceCount_one	{{count}} υπηρεσία
+subscriptions.card.serviceCount_other	{{count}} υπηρεσίες
+subscriptions.card.inactiveBadge	Αποσύρθηκε από την πώληση
+subscriptions.settings.title	Ρυθμίσεις προγράμματος
+subscriptions.settings.allowFreeze	Πάγωμα συνδρομής
+subscriptions.settings.allowTransfer	Μεταφορά σε άλλο πελάτη
+subscriptions.settings.autoRenewal	Αυτόματη ανανέωση από την κατάθεση του πελάτη
+subscriptions.empty.title	Δεν υπάρχουν ακόμη πακέτα
+subscriptions.empty.cta	Δημιουργία πακέτου
+subscriptions.toasts.created	Το πακέτο δημιουργήθηκε
+subscriptions.toasts.saved	Αποθηκεύτηκε
+subscriptions.toasts.saveError	Δεν ήταν δυνατή η αποθήκευση του πακέτου
+subscriptions.toasts.deactivated	Το πακέτο αποσύρθηκε από την πώληση
+subscriptions.toasts.restored	Το πακέτο επανήλθε προς πώληση
+subscriptions.toasts.actionError	Δεν ήταν δυνατή η ολοκλήρωση της ενέργειας
+subscriptions.deactivate	Απόσυρση από την πώληση
+subscriptions.restore	Επαναφορά προς πώληση
+subscriptions.confirmDeactivateTitle	Απόσυρση αυτού του πακέτου από την πώληση;
+subscriptions.confirmDeactivate	Οι συνδρομές που έχουν ήδη πουληθεί θα συνεχίσουν να λειτουργούν.

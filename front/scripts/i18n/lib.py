@@ -5,7 +5,14 @@ import io, json, os, re, collections
 # работать из любой рабочей директории, не только из front/.
 SRC = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(
     os.path.abspath(__file__)))), 'src', 'locales')
+# Contract for the CRM interface. This deliberately does not mirror the
+# backend's five-language outbound-message set.
+INTERFACE_LANGS = (
+    'en', 'ru', 'sq', 'bg', 'hr', 'cs', 'da', 'fi', 'fr', 'de', 'el', 'hu',
+    'it', 'no', 'pl', 'pt', 'ro', 'sr', 'es', 'sv', 'tr', 'uk',
+)
 PLACEHOLDER = re.compile(r'\{\{.*?\}\}|<\d+>|</\d+>|\$t\([^)]*\)')
+RICH_TAG = re.compile(r'<(/?)(\d+)>')
 PLURAL = re.compile(r'^(.*)_(zero|one|two|few|many|other)$')
 
 
@@ -43,12 +50,26 @@ def flatten(node, prefix=''):
     return out
 
 
-def load(lang, ns):
-    return json.load(io.open(f'{SRC}/{lang}/{ns}.json', encoding='utf-8'))
+def _object_without_duplicate_keys(pairs):
+    """JSON object hook that turns silent duplicate-key data loss into an error."""
+    value = {}
+    for key, item in pairs:
+        if key in value:
+            raise ValueError(f"duplicate key {key!r}")
+        value[key] = item
+    return value
 
 
-def namespaces():
-    return sorted(f[:-5] for f in os.listdir(f'{SRC}/en') if f.endswith('.json'))
+def load(lang, ns, root=None):
+    root = root or SRC
+    path = os.path.join(root, lang, f'{ns}.json')
+    with io.open(path, encoding='utf-8') as source:
+        return json.load(source, object_pairs_hook=_object_without_duplicate_keys)
+
+
+def namespaces(root=None):
+    root = root or SRC
+    return sorted(f[:-5] for f in os.listdir(os.path.join(root, 'en')) if f.endswith('.json'))
 
 
 def _slot(lst, idx, default):
@@ -93,6 +114,7 @@ def nest(flat, arrays):
 
 
 FORMAT_SUFFIX = re.compile(r'\{\{\s*([^,}]+?)\s*,[^}]*\}\}')
+COUNT_PLACEHOLDER = re.compile(r'\{\{\s*count(?:\s*,[^}]*)?\s*\}\}')
 
 
 def _placeholders(text):
@@ -110,16 +132,75 @@ def _base(key):
     return m.group(1) if m else None
 
 
-def check(lang, ns, flat):
+def _node_kind(value):
+    if isinstance(value, dict):
+        return 'object'
+    if isinstance(value, list):
+        return 'array'
+    return 'scalar'
+
+
+def _shape_problems(source, target, prefix=''):
+    """Report object/array/scalar changes that flattening alone cannot see."""
+    label = prefix or '<root>'
+    if _node_kind(source) != _node_kind(target):
+        return [f'{label}: structure is {_node_kind(target)}, expected {_node_kind(source)}']
+    if isinstance(source, dict):
+        problems = []
+        for key, value in source.items():
+            if key in target:
+                next_prefix = f'{prefix}.{key}' if prefix else key
+                problems.extend(_shape_problems(value, target[key], next_prefix))
+        return problems
+    if isinstance(source, list):
+        problems = []
+        for index, value in enumerate(source):
+            if index < len(target):
+                next_prefix = f'{prefix}.{index}' if prefix else str(index)
+                problems.extend(_shape_problems(value, target[index], next_prefix))
+        return problems
+    return []
+
+
+def _tag_problem(text):
+    """Return a tag-balance diagnostic, or ``None`` for a valid tag sequence."""
+    stack = []
+    for match in RICH_TAG.finditer(str(text)):
+        closing, tag = match.groups()
+        if not closing:
+            stack.append(tag)
+        elif not stack or stack[-1] != tag:
+            return f'unbalanced tag </{tag}>'
+        else:
+            stack.pop()
+    if stack:
+        return f'unclosed tag <{stack[-1]}>'
+    return None
+
+
+def check(lang, ns, flat, tree=None, root=None):
     """Сверяет набор ключей и подстановки с en. Возвращает список претензий."""
-    en = flatten(load('en', ns))
-    plural_bases = {b for b in (_base(k) for k in en) if b}
+    source_tree = load('en', ns, root)
+    en = flatten(source_tree)
+    explicit_plural_bases = {b for b in (_base(k) for k in en) if b}
+    # English may use a bare count key (``months``), while an inflected target
+    # legitimately needs ``months_one``/``months_few``/… . A bare target key
+    # remains a valid catch-all, but a target that chooses forms must provide
+    # every form its language needs.
+    implicit_plural_bases = {
+        key for key, value in en.items()
+        if not _base(key) and isinstance(value, str) and COUNT_PLACEHOLDER.search(value)
+    }
+    plural_bases = explicit_plural_bases | implicit_plural_bases
     problems = []
+
+    if tree is not None:
+        problems.extend(_shape_problems(source_tree, tree))
 
     # Обязательны все неплюральные ключи en. У плюральных обязателен минимум
     # _one и _other — остальные категории (few/many) язык добавляет по своей
     # грамматике: без них i18next для 3 занятий по-чешски свалился бы на en.
-    required = {k for k in en if not _base(k)}
+    required = {k for k in en if not _base(k) and k not in implicit_plural_bases}
     missing = required - set(flat)
     if missing:
         problems.append(f'не хватает {len(missing)}: {sorted(missing)[:8]}')
@@ -134,18 +215,31 @@ def check(lang, ns, flat):
         if not need <= have:
             problems.append(f'{base}: для {lang} нужны {sorted(need)}, есть {sorted(have) or "ничего"}')
 
-    allowed = required | {f'{b}_{c}' for b in plural_bases
-                          for c in ('zero', 'one', 'two', 'few', 'many', 'other')}
+    allowed = required | plural_bases | {
+        f'{b}_{c}' for b in plural_bases
+        for c in ('zero', 'one', 'two', 'few', 'many', 'other')
+    }
     extra = set(flat) - allowed
     if extra:
         problems.append(f'лишние {len(extra)}: {sorted(extra)[:8]}')
 
     for k, v in flat.items():
-        src = en.get(k) or en.get(f'{_base(k)}_other') or en.get(f'{_base(k)}_one')
+        src = en.get(k)
+        if src is None:
+            src = en.get(f'{_base(k)}_other')
+        if src is None:
+            src = en.get(f'{_base(k)}_one')
+        if src is None:
+            src = en.get(_base(k))
         if src is None:
             continue
+        if isinstance(src, str) and src.strip() and (not isinstance(v, str) or not v.strip()):
+            problems.append(f'{k}: empty translation for non-empty source')
         if _placeholders(src) != _placeholders(v):
             problems.append(f'{k}: подстановки не как в en ({PLACEHOLDER.findall(str(src))})')
+        tag_problem = _tag_problem(v)
+        if tag_problem:
+            problems.append(f'{k}: {tag_problem}')
     return problems
 
 
@@ -166,7 +260,8 @@ def write_ns(lang, ns, flat):
     order += [k for k in flat if k not in seen]
 
     os.makedirs(f'{SRC}/{lang}', exist_ok=True)
-    io.open(f'{SRC}/{lang}/{ns}.json', 'w', encoding='utf-8', newline='').write(
-        json.dumps(nest(collections.OrderedDict((k, flat[k]) for k in order),
-                        array_paths(load('en', ns))),
-                   ensure_ascii=False, indent=2) + '\n')
+    with io.open(f'{SRC}/{lang}/{ns}.json', 'w', encoding='utf-8', newline='') as destination:
+        destination.write(json.dumps(
+            nest(collections.OrderedDict((k, flat[k]) for k in order), array_paths(load('en', ns))),
+            ensure_ascii=False, indent=2,
+        ) + '\n')

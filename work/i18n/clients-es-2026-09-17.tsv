@@ -1,0 +1,310 @@
+== es
+categories.all	Todos
+categories.vip	VIP
+categories.active	Activos
+categories.new	Nuevos
+categories.has_subscription	Con suscripción
+categories.inactive	Inactivos
+categories.frozen	Congelados
+categories.birthday	Cumpleaños
+categoriesInfo.all.text	La lista completa de clientes del estudio, sin ningún filtro de estado aplicado.
+categoriesInfo.vip.text	Pagos realizados por un total de 50.000+ o 30+ visitas. También se puede fijar VIP manualmente en la ficha del cliente; la fijación manual se mantiene independientemente de los importes.
+categoriesInfo.active.text	Al menos una visita en los últimos 60 días. Se basa en la asistencia registrada en el diario: el estado se actualiza solo, no hace falta configurarlo a mano.
+categoriesInfo.new.text	Los primeros 15 días desde la fecha de registro, tanto si el cliente se añadió manualmente como si llegó mediante reserva en línea. El día 16 pasa automáticamente a Activo o Inactivo.
+categoriesInfo.has_subscription.text	Tiene una suscripción vigente: no vencida, no congelada y con clases restantes. Se actualiza al instante al comprar, con cada clase utilizada y al vencer.
+categoriesInfo.inactive.text	Sin visitas en los últimos 60 días, o sin haber visitado nunca y con más de 15 días desde el registro.
+categoriesInfo.frozen.text	Congelado con el botón de la ficha del cliente: es el único estado que se establece a mano. Al descongelarlo, el cliente vuelve a su estado automático.
+categoriesInfo.birthday.text	Quienes cumplen años hoy: coinciden el día y el mes, el año se ignora. La lista se actualiza automáticamente cada día.
+status.active	Activo
+status.vip	VIP
+status.new	Nuevo
+status.inactive	Inactivo
+status.frozen	Congelado
+filtersGuide.trigger	Acerca de los filtros
+filtersGuide.title	Filtros de clientes
+filtersGuide.subtitle	Cómo se calcula cada categoría. Haz clic en una tarjeta para aplicar el filtro o cambia un umbral: los estados se recalculan al momento.
+filtersGuide.close	Cerrar
+filtersGuide.rule.new_client_days	Nuevo durante
+filtersGuide.rule.active_within_days	Visita en los últimos
+filtersGuide.rule.vip_min_spent	Gastado desde
+filtersGuide.rule.vip_min_visits	o visitas
+filtersGuide.unit.days	días
+filtersGuide.unit.money	
+filtersGuide.unit.visits	visitas
+toolbar.searchPlaceholder	Buscar cliente…
+toolbar.addClient	Añadir cliente
+table.visits	visitas
+table.frozenBadge	❄ congelado
+table.totalSpent	Total gastado
+table.subscription	Suscripción
+table.of	de
+table.noSubscription	Sin suscripción
+loadMore	Cargar más
+loading	Cargando…
+panel.tabs.info	Perfil
+panel.tabs.events	Eventos
+panel.tabs.notes	Notas
+panel.tabs.wallet	Compras
+panel.actions.book	Reservar
+panel.actions.bonus	Bonus
+panel.editDateHint	Haz clic para editar
+panel.since	desde {{date}}
+panel.contacts.title	Contacto
+panel.contacts.phone	Teléfono
+panel.contacts.email	Correo electrónico
+panel.contacts.telegram	Telegram
+panel.contacts.birthDate	Fecha de nacimiento
+panel.contacts.city	Ciudad
+panel.contacts.copyHint	 · haz clic para copiar
+panel.debt	{{amount}} pendientes de clases — acepta el pago en el Diario
+panel.stats.visits	Visitas
+panel.stats.spent	Gastado
+panel.stats.subscription	Suscripción
+panel.loyalty.points	puntos
+panel.loyalty.level	nivel {{tier}}
+panel.loyalty.toNext	Para el siguiente nivel: {{points}} puntos
+panel.loyalty.multiplier	multiplicador de puntos ×{{value}}
+panel.loyalty.worth	Vale {{amount}} al pagar
+panel.loyalty.toNextLevel	Faltan {{amount}} para llegar a {{level}}
+panel.loyalty.pointValue	1 punto = {{amount}}
+panel.loyalty.nextPointValue	en {{level}} — {{amount}}
+panel.loyalty.noBonus	Este nivel no cambia el valor de los puntos
+panel.referral.title	Invitar a un amigo
+panel.referral.copy	Copiar
+panel.abonement.title	Suscripción
+panel.abonement.lessons	{{remaining}}/{{total}} clases
+panel.abonement.noSubscription	No hay suscripción activa
+panel.abonement.noSubscriptionWarning	El cliente no tiene suscripción: ofrécele una
+panel.abonement.lowWarning	Quedan pocas clases: ofrece una renovación
+panel.abonement.finishedWarning	No quedan clases: ofrece una renovación
+panel.abonement.remind	Recordar al cliente
+panel.abonement.reminderSent	Recordatorio enviado al cliente
+panel.products.single	individual
+panel.products.pending	en cola
+panel.products.frozen	congelado
+panel.products.until	Válido hasta {{date}}
+panel.products.startsOnFirstVisit	El plazo empieza con la primera clase
+panel.wallet.buy	Comprar
+panel.wallet.active	Activos
+panel.wallet.archived	Archivados
+panel.wallet.singles	Visitas individuales
+panel.wallet.subscriptions	Suscripciones
+panel.wallet.noSingles	Aún no hay visitas individuales
+panel.wallet.emptyActive	No hay productos activos
+panel.wallet.emptyArchived	No hay productos archivados
+panel.wallet.emptyCatalog	Este estudio aún no tiene paquetes de suscripción
+panel.wallet.lessons	{{remaining}}/{{total}} clases
+panel.wallet.lessonsCount_one	{{count}} clase
+panel.wallet.lessonsCount_other	{{count}} clases
+panel.wallet.perVisit	Por visita individual
+panel.wallet.until	hasta {{date}}
+panel.wallet.frozenBadge	Congelado
+panel.wallet.loadFailed	No se pudo cargar la cartera
+panel.wallet.back	← Volver
+panel.wallet.catalogTitle	Catálogo
+panel.wallet.showAll	Todos
+panel.wallet.posTitle	Cobro
+panel.wallet.promoLabel	Código promocional
+panel.wallet.promoPlaceholder	Introduce el código promocional
+panel.wallet.promoInvalid	El código promocional no es válido
+panel.wallet.useBonuses_one	Canjear bonus ({{count}})
+panel.wallet.useBonuses_other	Canjear bonus ({{count}})
+panel.wallet.useDeposit	Pagar con depósito ({{amount}})
+panel.wallet.certLabel	Código del certificado
+panel.wallet.certPlaceholder	Introduce el código del certificado
+panel.wallet.certApplied	Certificado
+panel.wallet.depositApplied	Depósito
+panel.wallet.base	Precio base
+panel.wallet.discount	Descuento
+panel.wallet.bonuses	Bonus
+panel.wallet.bonusesSpent_one	Bonus ({{count}} pto.)
+panel.wallet.bonusesSpent_other	Bonus ({{count}} ptos.)
+panel.wallet.total	Total
+panel.wallet.cash	Efectivo
+panel.wallet.card	Tarjeta
+panel.wallet.cardStripe	Los pagos con tarjeta pasan por una página de Stripe y llegan directamente a la cuenta del estudio. Configúralos en Finanzas → Pagos en línea.
+panel.wallet.offlineLocked	Los pagos en efectivo están disponibles en los planes Combo y superiores
+panel.wallet.payByCard	Pagar con tarjeta
+panel.wallet.confirmPay	Confirmar pago
+panel.wallet.confirmPayCovered	Confirmar (ya pagado)
+panel.wallet.confirmTitle	¿Confirmar el pago recibido?
+panel.wallet.confirmMessage	Se registrará un ingreso de {{amount}} y se asignará el producto al cliente.
+panel.wallet.confirmMessageCard	Se abrirá un formulario de pago de Stripe por {{amount}}. El producto se asignará y el ingreso se registrará cuando el pago se complete correctamente.
+panel.wallet.payToStudio	El pago llega a la cuenta del estudio
+panel.wallet.payConfirming	Verificando el pago…
+panel.wallet.close	Cerrar
+panel.wallet.confirmMessageCovered	El pago está cubierto por completo por el depósito o certificado. El producto se asignará al cliente.
+panel.wallet.paySuccess	Pago registrado
+panel.wallet.payCancelled	Pago cancelado: no se ha cobrado nada
+panel.wallet.payNotCompleted	Stripe aún no ha confirmado el pago. Si se ha cobrado la tarjeta, actualiza dentro de un minuto.
+panel.wallet.payNotApplied	Se ha cobrado la tarjeta, pero no se pudo registrar la venta: las condiciones cambiaron (certificado, código promocional o paquete). Registra la venta manualmente o reembolsa en Stripe.
+panel.wallet.transfer	Transferir
+panel.wallet.transferTitle	Transferir suscripción
+panel.wallet.transferSearchLabel	Transferir a
+panel.wallet.transferSearchPlaceholder	Nombre o teléfono del cliente
+panel.wallet.transferSelectPlaceholder	Seleccionar cliente
+panel.wallet.transferConfirm	Transferir
+panel.wallet.transferSuccess	Suscripción transferida
+panel.offers.title	Descuento personal
+panel.offers.empty	No hay descuentos activos
+panel.offers.grant	Conceder descuento
+panel.offers.cancel	Cancelar
+panel.offers.valuePercent	{{value}} %
+panel.offers.valueAmount	{{value}} ₽
+panel.offers.untilDate	hasta {{date}}
+panel.offers.noExpiry	sin vencimiento
+panel.offers.scopeRenewal	para renovación
+panel.offers.grantTitle	Conceder un descuento personal
+panel.offers.grantValue	Importe del descuento
+panel.offers.grantType.percent	Porcentaje (%)
+panel.offers.grantType.amount	Importe (₽)
+panel.offers.grantValidUntil	Válido hasta
+panel.offers.grantSubmit	Conceder
+panel.offers.cancelConfirmTitle	¿Cancelar el descuento?
+panel.offers.cancelConfirmMessage	El cliente ya no podrá usar esta oferta.
+panel.offers.toasts.granted	Descuento concedido
+panel.offers.toasts.cancelled	Descuento cancelado
+panel.offers.toasts.loadFailed	No se pudieron cargar los descuentos
+panel.activity.compactTitle	Actividad (3 meses)
+panel.activity.clickForDetails	Haz clic para ver detalles
+panel.activity.detailedTitle	Actividad detallada
+panel.activity.periods.month3	3 meses
+panel.activity.periods.month6	6 meses
+panel.activity.visitsInPeriod	Visitas en el período
+panel.activity.visitsTooltip_one	{{count}} visita
+panel.activity.visitsTooltip_other	{{count}} visitas
+panel.activity.emptyState	No hay visitas en este período
+panel.activity.insightTitle	Asistencia media
+panel.activity.insightBody	{{avg}} visitas al mes de media durante el período seleccionado.
+panel.activity.months.jan	ene
+panel.activity.months.feb	feb
+panel.activity.months.mar	mar
+panel.activity.months.apr	abr
+panel.activity.months.may	may
+panel.activity.months.jun	jun
+panel.activity.months.jul	jul
+panel.activity.months.aug	ago
+panel.activity.months.sep	sept
+panel.activity.months.oct	oct
+panel.activity.months.nov	nov
+panel.activity.months.dec	dic
+panel.tags.title	Etiquetas
+panel.tags.add	Añadir
+panel.tags.close	Cerrar
+panel.tags.customPlaceholder	Etiqueta personalizada + Intro…
+panel.danger.freeze	Congelar
+panel.danger.unfreeze	Descongelar
+panel.danger.freezeDisabledHint	La congelación está desactivada en Catálogo → ajustes de suscripciones
+panel.danger.delete	Eliminar
+panel.events.filterTabs.all	Todos
+panel.events.filterTabs.payment	Pagos
+panel.events.filterTabs.visit	Visitas
+panel.events.filterTabs.booking	Reservas
+panel.events.filterTabs.cancel	Cancelaciones
+panel.events.filterTabs.bonus	Bonus
+panel.events.filterTabs.freeze	Congelaciones
+panel.events.empty	No hay eventos
+panel.notes.title	Notas de administración
+panel.notes.prefix	Nota · {{date}}
+panel.notes.save	Guardar
+panel.notes.cancel	Cancelar
+panel.notes.addPlaceholder	Escribe una nota…
+panel.notes.add	Añadir nota
+panel.notes.justNow	ahora mismo
+panel.notes.deleteTitle	¿Eliminar la nota?
+panel.notes.deleteMessage	Esta nota no se puede recuperar.
+panel.bookingPanel.title	Reserva rápida
+panel.bookingPanel.today	Hoy
+panel.bookingPanel.noLessons	No hay clases este día
+panel.bookingPanel.full	No quedan plazas
+panel.bookingPanel.confirm	Reservar →
+panel.bookingPanel.noSubscription	El cliente no tiene una suscripción disponible para reservar
+panel.bookingPanel.individual	Servicio individual
+panel.bonusPanel.title	Conceder bonus
+panel.toasts.noPhone	El cliente no tiene teléfono
+panel.toasts.copied	Copiado correctamente
+panel.toasts.bookingCreated	Reserva creada
+panel.toasts.bookingFailed	No se pudo crear la reserva
+panel.toasts.bonusFailed	No se pudieron conceder los puntos
+panel.toasts.bonusApplied	Bonus concedido: {{label}}
+panel.toasts.clientAdded	Cliente añadido
+panel.bonusOptions.p200.label	+200 puntos
+panel.bonusOptions.p200.description	Añadir al saldo de fidelidad
+panel.bonusOptions.p500.label	+500 puntos
+panel.bonusOptions.p500.description	Añadir al saldo de fidelidad
+panel.bonusOptions.p1000.label	+1000 puntos
+panel.bonusOptions.p1000.description	Añadir al saldo de fidelidad
+tags.suggested.0	Prueba
+tags.suggested.1	VIP
+tags.suggested.2	Recomendación
+tags.suggested.3	En línea
+tags.suggested.4	Grupo
+tags.suggested.5	Personal
+addModal.title	Nuevo cliente
+addModal.cancel	Cancelar
+addModal.back	← Volver
+addModal.continue	Continuar →
+addModal.submit	Añadir cliente ✓
+addModal.stepCounter	Paso {{current}} de {{total}}
+addModal.trustSignal	Los datos están protegidos y solo son visibles para administradores
+addModal.steps.1.title	Datos personales
+addModal.steps.1.sub	Introduce los datos de contacto del cliente
+addModal.steps.2.title	Datos del perfil
+addModal.steps.2.sub	Información adicional (opcional)
+addModal.steps.3.title	Suscripción
+addModal.steps.3.sub	Elige un tipo de suscripción y añade una nota
+addModal.steps.4.title	¡Todo listo!
+addModal.steps.4.sub	Revisa la información y añade al cliente
+addModal.step1.previewLabel	Nuevo cliente · Vista previa
+addModal.step1.name	Nombre completo *
+addModal.step1.namePlaceholder	Juan Pérez
+addModal.step1.phone	Teléfono
+addModal.step1.phonePlaceholder	+34 600 000 000
+addModal.step1.email	Correo electrónico
+addModal.step1.emailPlaceholder	cliente@ejemplo.es
+addModal.step2.bday	Fecha de nacimiento
+addModal.step2.bdayPlaceholder	12 de abril de 1990
+addModal.step2.city	Ciudad
+addModal.step2.cityPlaceholder	Madrid
+addModal.step2.tags	Etiquetas
+addModal.step2.tagsPlaceholder	Pilates, VIP, rehabilitación… (Intro)
+addModal.step2.tagsHint	Pulsa Intro para añadir una etiqueta
+addModal.step2.inviteCode	Código de invitación del recomendador
+addModal.step2.inviteCodePlaceholder	Opcional
+addModal.step2.inviteCodeHint	Si se indica, ambos recibís un bonus
+addModal.step3.classCount	Suscripción
+addModal.step3.classesUnit	clases
+addModal.step3.classesCount_one	{{count}} clase
+addModal.step3.classesCount_other	{{count}} clases
+addModal.step3.selected	Seleccionado
+addModal.step3.noPackage	Sin suscripción
+addModal.step3.noPackages	Este estudio aún no tiene paquetes de suscripción
+addModal.step3.noPackagesLink	Crear paquetes en Catálogo →
+addModal.step3.alreadyPaid	¿El cliente ya ha pagado esta suscripción?
+addModal.step3.yes	Sí
+addModal.step3.no	No
+addModal.step3.note	Nota
+addModal.step3.notePlaceholder	Solicitudes especiales, contraindicaciones, preferencias…
+addModal.step4.readyTitle	¡Datos completados!
+addModal.step4.readySub	Revisa la información y confirma la incorporación
+addModal.step4.newClient	Nuevo cliente
+addModal.step4.fields.phone	Teléfono
+addModal.step4.fields.email	Correo electrónico
+addModal.step4.fields.bday	Fecha de nacimiento
+addModal.step4.fields.city	Ciudad
+addModal.step4.fields.subscription	Suscripción
+addModal.step4.fields.tags	Etiquetas
+addModal.step4.subscriptionValue_one	{{count}} clase
+addModal.step4.subscriptionValue_other	{{count}} clases
+addModal.step4.smsTitle	Enviar SMS de bienvenida
+addModal.step4.smsSub	El cliente recibirá un mensaje de invitación
+addModal.errors.name	Introduce un nombre (al menos 2 caracteres)
+addModal.errors.phone	Número de teléfono no válido
+addModal.errors.email	Correo electrónico no válido
+addModal.errors.city	Introduce una ciudad
+deleteModal.title	¿Eliminar cliente?
+deleteModal.body	Estás a punto de eliminar al cliente
+deleteModal.warning	Esta acción no se puede deshacer.
+deleteModal.cancel	Cancelar
+deleteModal.confirm	Eliminar
+deleteModal.success	Cliente eliminado

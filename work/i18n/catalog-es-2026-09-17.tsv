@@ -1,0 +1,246 @@
+== es
+tabs.studios	Estudios
+tabs.services	Servicios
+tabs.subscriptions	Membresías
+modals.addStudio.steps.about.title	Acerca del estudio
+modals.addStudio.steps.about.sub	Nombre y datos de contacto
+modals.addStudio.steps.about.trust	Tus datos se cifran y nunca se comparten con terceros
+modals.addStudio.steps.location.title	Ubicación
+modals.addStudio.steps.location.sub	¿Dónde está esta sucursal?
+modals.addStudio.steps.location.trust	La dirección se usa en el horario y los mapas
+modals.addStudio.steps.photo.title	Foto
+modals.addStudio.steps.photo.sub	Portada del estudio — opcional
+modals.addStudio.steps.photo.trust	Puedes añadirla después en los ajustes de la sucursal
+modals.addStudio.stepCounter	Paso {{current}} de {{total}}
+modals.addStudio.step1.heading	Información básica
+modals.addStudio.step1.subheading	¿Cómo se llama el estudio y cómo se puede contactar?
+modals.addStudio.step1.name	Nombre del estudio *
+modals.addStudio.step1.namePlaceholder	Ej.: Estudio Velora
+modals.addStudio.step1.phone	Teléfono *
+modals.addStudio.step1.email	Correo electrónico *
+modals.addStudio.step1.contactHint	Introduce un teléfono o correo electrónico — al menos uno
+modals.addStudio.step1.noContacts	No se indicaron contactos
+modals.addStudio.step1.new	NUEVO
+modals.addStudio.step2.heading	Ubicación
+modals.addStudio.step2.subheading	Indica dónde está esta sucursal
+modals.addStudio.step2.country	País
+modals.addStudio.step2.countryPlaceholder	Estados Unidos
+modals.addStudio.step2.city	Ciudad *
+modals.addStudio.step2.cityPlaceholder	Nueva York
+modals.addStudio.step2.address	Dirección *
+modals.addStudio.step2.addressPlaceholder	5th Avenue 12, oficina 301
+modals.addStudio.step2.noAddress	No se indicó dirección
+modals.addStudio.step2.groupHint	Los campos «País» y «Ciudad» se usan para agrupar sucursales en la lista.
+modals.addStudio.step3.heading	Foto del estudio
+modals.addStudio.step3.subheading	Sube una portada — es opcional, puedes omitirla
+modals.addStudio.step3.uploadCta	Haz clic para subir
+modals.addStudio.step3.uploadHint	JPG, PNG hasta 10 MB
+modals.addStudio.step3.replace	Reemplazar
+modals.addStudio.step3.remove	Eliminar
+modals.addStudio.step3.previewAlt	Vista previa
+modals.addStudio.step3.summary	Resumen
+modals.addStudio.step3.uploadError	No se pudo subir la foto. Prueba otro archivo o elimínala.
+modals.addStudio.summaryRows.name	Nombre
+modals.addStudio.summaryRows.city	Ciudad
+modals.addStudio.summaryRows.address	Dirección
+modals.addStudio.nextPhoto	Siguiente — foto
+modals.addStudio.submit	Crear estudio
+modals.addStudio.skipPhoto	Omitir foto y crear
+modals.addStudio.illus.contacts	Contactos
+modals.addStudio.illus.newBranch	Nueva sucursal
+modals.addStudio.illus.city	Ciudad
+modals.addStudio.illus.newBranchStudio	Nueva sucursal del estudio
+modals.editBranch.title	Editar sucursal
+modals.editBranch.name	Nombre de la sucursal
+modals.editBranch.namePlaceholder	Estudio Velora
+modals.editBranch.phone	Teléfono
+modals.editBranch.email	Correo electrónico
+modals.editBranch.emailPlaceholder	studio@velora.com
+modals.editBranch.country	País
+modals.editBranch.countryPlaceholder	Estados Unidos
+modals.editBranch.city	Ciudad
+modals.editBranch.cityPlaceholder	Nueva York
+modals.editBranch.address	Dirección
+modals.editBranch.addressPlaceholder	5th Avenue 12
+modals.editBranch.photo	Foto de la sucursal
+modals.editBranch.contactHint	Introduce un teléfono o correo electrónico
+modals.editBranch.workingHours	Horario de trabajo
+modals.hall.titleNew	Añadir {{spaceAcc}}
+modals.hall.titleEdit	Editar {{spaceAcc}}
+modals.hall.name	Nombre
+modals.hall.namePlaceholder	{{space, capitalize}} A
+modals.hall.capacity	Capacidad
+modals.hall.area	Superficie, m²
+modals.hall.hourlyRate	Precio por hora, {{currency}}
+modals.hall.hourlyRatePlaceholder	3000
+modals.hall.equipment	Equipamiento
+modals.hall.equipmentPlaceholder	Añadir equipamiento
+modals.hall.color	Color
+modals.hall.isOnline	En línea
+modals.hall.photo	Foto
+modals.hall.subtitle	{{space, capitalize}} en la sucursal: plazas, equipamiento, color en el horario
+modals.hall.previewTitle	Vista previa
+modals.hall.sectionBasic	Información básica
+modals.hall.sectionSpace	Espacio
+modals.hall.sectionLook	Apariencia
+modals.hall.areaShort	Superficie
+modals.hall.hourlyRateShort	Precio por hora
+modals.hall.statArea	Superficie
+modals.hall.statRate	Precio / hora
+modals.hall.isOnlineHint	Las clases se realizan en línea — no hay instalaciones físicas.
+modals.hall.colorHint	Las clases aquí se resaltan con este color en el horario.
+modals.service.titleNew	Nuevo servicio
+modals.service.titleEdit	Editar servicio
+modals.service.name	Nombre del servicio
+modals.service.namePlaceholder	Hatha yoga
+modals.service.category	Categoría
+modals.service.type	Tipo
+modals.service.typeGroup	Grupo
+modals.service.typeIndividual	Individual
+modals.service.price	Precio, {{currency}}
+modals.service.pricePlaceholder	1200
+modals.service.duration	Duración, min
+modals.service.durationPlaceholder	60
+modals.service.maxClients	Máximo de clientes
+modals.service.maxClientsPlaceholder	15
+modals.service.description	Descripción
+modals.service.descriptionPlaceholder	Descripción breve del servicio
+modals.service.color	Color
+modals.service.subtitle	Se muestra en el horario y en las reservas en línea
+modals.service.previewTitle	Vista previa del horario
+modals.service.sectionBasic	Información básica
+modals.service.sectionPricing	Precio y duración
+modals.service.sectionLook	Apariencia
+modals.service.priceShort	Precio
+modals.service.durationShort	Duración
+modals.service.statSeats	Plazas
+modals.service.colorHint	Las clases se resaltan con este color en la cuadrícula del horario.
+modals.service.bookingMode	Mecánica de reserva
+modals.service.bookingModeEvent	Inscripción
+modals.service.bookingModeResource	Elegir hora
+modals.service.bookingModeEventHint	Los clientes se inscriben en una clase ya programada.
+modals.service.bookingModeResourceHint	El cliente elige un especialista y una hora libre; el intervalo de {{offering}} se crea al confirmar.
+modals.service.bookable	Disponible para reservar
+modals.service.bookableOn	Sí
+modals.service.bookableOff	No
+modals.service.bufferBefore	Margen antes
+modals.service.bufferAfter	Margen después
+modals.package.titleNew	Nuevo paquete
+modals.package.titleEdit	Editar paquete
+modals.package.name	Nombre del paquete
+modals.package.namePlaceholder	8 clases
+modals.package.classCount	Número de clases
+modals.package.classCountPlaceholder	8
+modals.package.price	Precio, {{currency}}
+modals.package.pricePlaceholder	8000
+modals.package.perVisitPrice	Precio por visita
+modals.package.durationDays	Válido durante, días
+modals.package.durationDaysPlaceholder	60
+modals.package.services	Servicios
+modals.package.servicesHint	Nada seleccionado — el paquete se aplica a todas las clases
+modals.package.isActive	A la venta
+modals.package.soldAsSubscription	Mostrar en la pestaña «Membresías»
+modals.package.soldAsSingle	Mostrar en la pestaña «Visitas individuales»
+modals.package.subtitle	Un paquete de clases que vendes a los clientes
+modals.package.previewTitle	Vista previa del pase
+modals.package.previewKind	Pase
+modals.package.previewValid	Válido durante
+modals.package.sectionBasic	Información básica
+modals.package.sectionTerms	Condiciones
+modals.package.sectionSale	Ventas
+modals.package.priceShort	Precio del paquete
+modals.package.statClasses	Clases
+modals.package.statDays	Días
+modals.package.statAll	Todas
+modals.package.isActiveHint	Los clientes pueden ver y comprar este paquete.
+modals.package.soldAsSubscriptionHint	De lo contrario, el paquete queda solo en visitas individuales.
+studios.title	ESTUDIOS
+studios.addStudio	Añadir estudio
+studios.addHall	Añadir {{spaceAcc}}
+studios.editBranch	Editar sucursal
+studios.deleteBranch	Eliminar sucursal
+studios.infoTab	Información general
+studios.hallsTitle	{{spacePlural, capitalize}} del estudio
+studios.hallCount_one	{{spacePlural, capitalize}} · {{count}}
+studios.hallCount_other	{{spacePlural, capitalize}} · {{count}}
+studios.stats.halls	{{spacePlural, capitalize}}
+studios.stats.totalSeats	Total de plazas
+studios.stats.fromPerHour	Desde / hora
+studios.hall.seats	plazas
+studios.hall.schedule	Horario de trabajo
+studios.hall.closed	Cerrado
+studios.hall.stats.seats	Plazas
+studios.hall.stats.area	Superficie
+studios.hall.stats.perHour	Por hora
+studios.hall.equipment	Equipamiento
+studios.hall.actions	Acciones
+studios.hall.edit	Editar {{spaceAcc}}
+studios.hall.delete	Eliminar {{spaceAcc}}
+studios.empty.title	No hay estudios
+studios.empty.subtitle	Añade tu primer estudio
+studios.toasts.created	Estudio creado
+studios.toasts.createError	No se pudo crear el estudio
+studios.toasts.deleted	Estudio eliminado
+studios.toasts.hallDeleted	Eliminado: {{space}}
+studios.toasts.saved	Guardado
+studios.toasts.edit	Editar: {{name}}
+studios.confirmDelete	¿Eliminar la sucursal «{{name}}»? Esta acción no se puede deshacer.
+studios.confirmDeleteTitle	¿Eliminar sucursal?
+studios.confirmDeleteHall	¿Eliminar {{spaceAcc}} «{{name}}»?
+studios.confirmDeleteHallTitle	¿Eliminar {{spaceAcc}}?
+services.title	SERVICIOS
+services.addService	Añadir servicio
+services.types.group	Grupo
+services.types.individual	Indiv.
+services.types.groupFull	 · Grupo
+services.types.individualFull	 · Individual
+services.stats.price	Precio
+services.stats.duration	Duración
+services.stats.bookings	Reservas
+services.stats.revenue	Ingresos
+services.details.description	Descripción
+services.details.details	Detalles
+services.details.minutes	minutos
+services.details.upTo	Hasta {{count}} pers.
+services.details.personal	Individual
+services.details.bookingsPerMonth	reservas en 30 días
+services.details.schedule	Horario de clases
+services.empty.title	No hay servicios
+services.empty.subtitle	Añade tu primer servicio
+services.toasts.deleted	Servicio eliminado
+services.toasts.deleteError	No se pudo eliminar el servicio
+services.toasts.saved	Guardado
+services.toasts.saveError	No se pudo guardar el servicio
+services.toasts.edit	Editar: {{name}}
+services.confirmDelete	¿Eliminar el servicio «{{name}}»?
+services.confirmDeleteTitle	¿Eliminar servicio?
+services.categories.yoga	Yoga
+services.categories.pilates	Pilates
+services.categories.stretching	Estiramientos
+services.categories.individual	Individual
+services.categories.other	Sin categoría
+subscriptions.title	MEMBRESÍAS
+subscriptions.addPackage	Añadir paquete
+subscriptions.card.classCount_one	{{count}} clase
+subscriptions.card.classCount_other	{{count}} clases
+subscriptions.card.duration	{{count}} días
+subscriptions.card.allServices	Todas las clases
+subscriptions.card.serviceCount_one	{{count}} servicio
+subscriptions.card.serviceCount_other	{{count}} servicios
+subscriptions.card.inactiveBadge	Retirado de la venta
+subscriptions.settings.title	Ajustes del programa
+subscriptions.settings.allowFreeze	Congelar membresía
+subscriptions.settings.allowTransfer	Transferir a otro cliente
+subscriptions.settings.autoRenewal	Renovación automática desde el saldo del cliente
+subscriptions.empty.title	Aún no hay paquetes
+subscriptions.empty.cta	Crear paquete
+subscriptions.toasts.created	Paquete creado
+subscriptions.toasts.saved	Guardado
+subscriptions.toasts.saveError	No se pudo guardar el paquete
+subscriptions.toasts.deactivated	Paquete retirado de la venta
+subscriptions.toasts.restored	Paquete puesto de nuevo a la venta
+subscriptions.toasts.actionError	No se pudo completar la acción
+subscriptions.deactivate	Retirar de la venta
+subscriptions.restore	Volver a poner a la venta
+subscriptions.confirmDeactivateTitle	¿Retirar este paquete de la venta?
+subscriptions.confirmDeactivate	Las membresías ya vendidas seguirán funcionando.

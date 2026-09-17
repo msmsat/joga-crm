@@ -1,0 +1,37 @@
+{
+  "banner": {
+    "title": "Gizliliğiniz, seçiminiz",
+    "text": "Velora tarayıcınızda çalışmak için yalnızca gerekenleri saklar: oturum açma, dil ve arayüz ayarları. İzninizle Google ile oturum açmayı da etkinleştiririz — Google daha sonra kendi çerezlerini ayarlar. Analiz veya reklam kullanmıyoruz.",
+    "policy": "Çerez politikası"
+  },
+  "actions": {
+    "accept": "Tümünü kabul et",
+    "reject": "Tümünü reddet",
+    "save": "Seçimi kaydet",
+    "settings": "Ayarlar"
+  },
+  "settings": {
+    "title": "Çerez ayarları",
+    "subtitle": "Bu tarayıcı için geçerlidir. İstediğiniz zaman değiştirebilirsiniz.",
+    "alwaysOn": "Her zaman açık",
+    "necessary": {
+      "title": "Kesinlikle gerekli",
+      "text": "Oturumunuzu açık tutar, dilinizi, temanızı ve seçiminizi hatırlar; ödemeleri ve hizmeti kötüye kullanıma karşı korur. Velora bunlar olmadan çalışamaz."
+    },
+    "functional": {
+      "title": "Google ile oturum aç",
+      "text": "Google hesabınızı kullanabilmeniz için Google oturum açma hizmetini yükler. Google kendi çerezlerini ayarlayabilir ve oturum açma sayfasını açtığınızı öğrenebilir."
+    },
+    "none": "Analiz, reklam veya izleme çerezleri kullanmıyoruz.",
+    "decided": "{{date}} tarihindeki seçiminiz",
+    "policy": "Tam liste Çerez politikasında"
+  },
+  "google": {
+    "button": "Google ile devam et",
+    "notice": "Tıklamak Google ile oturum açmayı etkinleştirir: Google hizmeti yüklenir ve çerez ayarlayabilir.",
+    "policy": "Ayrıntılar"
+  },
+  "profile": {
+    "button": "Çerez ayarları"
+  }
+}

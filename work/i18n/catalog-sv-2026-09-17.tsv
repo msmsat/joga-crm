@@ -1,0 +1,246 @@
+== sv
+tabs.studios	Studior
+tabs.services	Tjänster
+tabs.subscriptions	Medlemskap
+modals.addStudio.steps.about.title	Om studion
+modals.addStudio.steps.about.sub	Namn och kontaktuppgifter
+modals.addStudio.steps.about.trust	Dina data är krypterade och delas aldrig med tredje part
+modals.addStudio.steps.location.title	Plats
+modals.addStudio.steps.location.sub	Var ligger denna filial?
+modals.addStudio.steps.location.trust	Adressen används i schemat och på kartor
+modals.addStudio.steps.photo.title	Foto
+modals.addStudio.steps.photo.sub	Studiots omslagsbild — valfri
+modals.addStudio.steps.photo.trust	Du kan lägga till den senare i filialens inställningar
+modals.addStudio.stepCounter	Steg {{current}} av {{total}}
+modals.addStudio.step1.heading	Grundläggande uppgifter
+modals.addStudio.step1.subheading	Vad heter studion och hur når man den?
+modals.addStudio.step1.name	Studions namn *
+modals.addStudio.step1.namePlaceholder	T.ex. Velora Studio
+modals.addStudio.step1.phone	Telefon *
+modals.addStudio.step1.email	E-post *
+modals.addStudio.step1.contactHint	Ange ett telefonnummer eller en e-postadress — minst en
+modals.addStudio.step1.noContacts	Inga kontaktuppgifter angivna
+modals.addStudio.step1.new	NY
+modals.addStudio.step2.heading	Plats
+modals.addStudio.step2.subheading	Ange var denna filial ligger
+modals.addStudio.step2.country	Land
+modals.addStudio.step2.countryPlaceholder	USA
+modals.addStudio.step2.city	Stad *
+modals.addStudio.step2.cityPlaceholder	New York
+modals.addStudio.step2.address	Adress *
+modals.addStudio.step2.addressPlaceholder	5th Avenue 12, lokal 301
+modals.addStudio.step2.noAddress	Ingen adress angiven
+modals.addStudio.step2.groupHint	Fälten ”Land” och ”Stad” används för att gruppera filialer i listan.
+modals.addStudio.step3.heading	Studiobild
+modals.addStudio.step3.subheading	Ladda upp en omslagsbild — valfritt, du kan hoppa över det
+modals.addStudio.step3.uploadCta	Klicka för att ladda upp
+modals.addStudio.step3.uploadHint	JPG, PNG upp till 10 MB
+modals.addStudio.step3.replace	Ersätt
+modals.addStudio.step3.remove	Ta bort
+modals.addStudio.step3.previewAlt	Förhandsvisning
+modals.addStudio.step3.summary	Sammanfattning
+modals.addStudio.step3.uploadError	Det gick inte att ladda upp fotot. Prova en annan fil eller ta bort det.
+modals.addStudio.summaryRows.name	Namn
+modals.addStudio.summaryRows.city	Stad
+modals.addStudio.summaryRows.address	Adress
+modals.addStudio.nextPhoto	Nästa — foto
+modals.addStudio.submit	Skapa studio
+modals.addStudio.skipPhoto	Hoppa över foto och skapa
+modals.addStudio.illus.contacts	Kontaktuppgifter
+modals.addStudio.illus.newBranch	Ny filial
+modals.addStudio.illus.city	Stad
+modals.addStudio.illus.newBranchStudio	Ny studiofilial
+modals.editBranch.title	Redigera filial
+modals.editBranch.name	Filialnamn
+modals.editBranch.namePlaceholder	Velora Studio
+modals.editBranch.phone	Telefon
+modals.editBranch.email	E-post
+modals.editBranch.emailPlaceholder	studio@velora.com
+modals.editBranch.country	Land
+modals.editBranch.countryPlaceholder	USA
+modals.editBranch.city	Stad
+modals.editBranch.cityPlaceholder	New York
+modals.editBranch.address	Adress
+modals.editBranch.addressPlaceholder	5th Avenue 12
+modals.editBranch.photo	Filialfoto
+modals.editBranch.contactHint	Ange ett telefonnummer eller en e-postadress
+modals.editBranch.workingHours	Öppettider
+modals.hall.titleNew	Lägg till {{spaceAcc}}
+modals.hall.titleEdit	Redigera {{spaceAcc}}
+modals.hall.name	Namn
+modals.hall.namePlaceholder	{{space, capitalize}} A
+modals.hall.capacity	Kapacitet
+modals.hall.area	Yta, m²
+modals.hall.hourlyRate	Pris per timme, {{currency}}
+modals.hall.hourlyRatePlaceholder	3000
+modals.hall.equipment	Utrustning
+modals.hall.equipmentPlaceholder	Lägg till utrustning
+modals.hall.color	Färg
+modals.hall.isOnline	Online
+modals.hall.photo	Foto
+modals.hall.subtitle	{{space, capitalize}} i filialen: platser, utrustning, färg i schemat
+modals.hall.previewTitle	Förhandsvisning
+modals.hall.sectionBasic	Grundläggande
+modals.hall.sectionSpace	Utrymme
+modals.hall.sectionLook	Utseende
+modals.hall.areaShort	Yta
+modals.hall.hourlyRateShort	Pris per timme
+modals.hall.statArea	Yta
+modals.hall.statRate	Pris / timme
+modals.hall.isOnlineHint	Klasser hålls online — inga fysiska lokaler.
+modals.hall.colorHint	Klasser här markeras med denna färg i schemat.
+modals.service.titleNew	Ny tjänst
+modals.service.titleEdit	Redigera tjänst
+modals.service.name	Tjänstens namn
+modals.service.namePlaceholder	Hathayoga
+modals.service.category	Kategori
+modals.service.type	Typ
+modals.service.typeGroup	Grupp
+modals.service.typeIndividual	Individuell
+modals.service.price	Pris, {{currency}}
+modals.service.pricePlaceholder	1200
+modals.service.duration	Längd, min
+modals.service.durationPlaceholder	60
+modals.service.maxClients	Max antal kunder
+modals.service.maxClientsPlaceholder	15
+modals.service.description	Beskrivning
+modals.service.descriptionPlaceholder	Kort tjänstebeskrivning
+modals.service.color	Färg
+modals.service.subtitle	Visas i schemat och onlinebokningen
+modals.service.previewTitle	Förhandsvisning i schemat
+modals.service.sectionBasic	Grundläggande
+modals.service.sectionPricing	Pris och tid
+modals.service.sectionLook	Utseende
+modals.service.priceShort	Pris
+modals.service.durationShort	Längd
+modals.service.statSeats	Platser
+modals.service.colorHint	Klasser markeras med denna färg i schemarutnätet.
+modals.service.bookingMode	Bokningssätt
+modals.service.bookingModeEvent	Anmälan
+modals.service.bookingModeResource	Välj tid
+modals.service.bookingModeEventHint	Kunder anmäler sig till en klass du redan har schemalagt.
+modals.service.bookingModeResourceHint	Kunden väljer en specialist och en ledig tid; intervallet {{offering}} skapas vid bekräftelse.
+modals.service.bookable	Tillgänglig för bokning
+modals.service.bookableOn	Ja
+modals.service.bookableOff	Nej
+modals.service.bufferBefore	Buffert före
+modals.service.bufferAfter	Buffert efter
+modals.package.titleNew	Nytt paket
+modals.package.titleEdit	Redigera paket
+modals.package.name	Paketnamn
+modals.package.namePlaceholder	8 klasser
+modals.package.classCount	Antal klasser
+modals.package.classCountPlaceholder	8
+modals.package.price	Pris, {{currency}}
+modals.package.pricePlaceholder	8000
+modals.package.perVisitPrice	Pris per besök
+modals.package.durationDays	Giltigt i, dagar
+modals.package.durationDaysPlaceholder	60
+modals.package.services	Tjänster
+modals.package.servicesHint	Inget valt — paketet gäller alla klasser
+modals.package.isActive	Till salu
+modals.package.soldAsSubscription	Visa på fliken ”Medlemskap”
+modals.package.soldAsSingle	Visa på fliken ”Enstaka besök”
+modals.package.subtitle	Ett klasspaket som du säljer till kunder
+modals.package.previewTitle	Förhandsvisning av pass
+modals.package.previewKind	Pass
+modals.package.previewValid	Giltigt i
+modals.package.sectionBasic	Grundläggande
+modals.package.sectionTerms	Villkor
+modals.package.sectionSale	Försäljning
+modals.package.priceShort	Paketpris
+modals.package.statClasses	Klasser
+modals.package.statDays	Dagar
+modals.package.statAll	Alla
+modals.package.isActiveHint	Kunder kan se och köpa detta paket.
+modals.package.soldAsSubscriptionHint	Annars finns paketet bara under enstaka besök.
+studios.title	STUDIOR
+studios.addStudio	Lägg till studio
+studios.addHall	Lägg till {{spaceAcc}}
+studios.editBranch	Redigera filial
+studios.deleteBranch	Ta bort filial
+studios.infoTab	Allmän information
+studios.hallsTitle	Studions {{spacePlural}}
+studios.hallCount_one	{{spacePlural, capitalize}} · {{count}}
+studios.hallCount_other	{{spacePlural, capitalize}} · {{count}}
+studios.stats.halls	{{spacePlural, capitalize}}
+studios.stats.totalSeats	Totalt antal platser
+studios.stats.fromPerHour	Från / timme
+studios.hall.seats	platser
+studios.hall.schedule	Öppettider
+studios.hall.closed	Stängt
+studios.hall.stats.seats	Platser
+studios.hall.stats.area	Yta
+studios.hall.stats.perHour	Per timme
+studios.hall.equipment	Utrustning
+studios.hall.actions	Åtgärder
+studios.hall.edit	Redigera {{spaceAcc}}
+studios.hall.delete	Ta bort {{spaceAcc}}
+studios.empty.title	Inga studior
+studios.empty.subtitle	Lägg till din första studio
+studios.toasts.created	Studio skapad
+studios.toasts.createError	Det gick inte att skapa studio
+studios.toasts.deleted	Studio borttagen
+studios.toasts.hallDeleted	Borttagen: {{space}}
+studios.toasts.saved	Sparat
+studios.toasts.edit	Redigera: {{name}}
+studios.confirmDelete	Ta bort filialen ”{{name}}”? Detta kan inte ångras.
+studios.confirmDeleteTitle	Ta bort filial?
+studios.confirmDeleteHall	Ta bort {{spaceAcc}} ”{{name}}”?
+studios.confirmDeleteHallTitle	Ta bort {{spaceAcc}}?
+services.title	TJÄNSTER
+services.addService	Lägg till tjänst
+services.types.group	Grupp
+services.types.individual	Indiv.
+services.types.groupFull	 · Grupp
+services.types.individualFull	 · Individuell
+services.stats.price	Pris
+services.stats.duration	Längd
+services.stats.bookings	Bokningar
+services.stats.revenue	Intäkter
+services.details.description	Beskrivning
+services.details.details	Detaljer
+services.details.minutes	minuter
+services.details.upTo	Upp till {{count}} pers.
+services.details.personal	Personlig
+services.details.bookingsPerMonth	bokningar på 30 dagar
+services.details.schedule	Klasschema
+services.empty.title	Inga tjänster
+services.empty.subtitle	Lägg till din första tjänst
+services.toasts.deleted	Tjänst borttagen
+services.toasts.deleteError	Det gick inte att ta bort tjänsten
+services.toasts.saved	Sparat
+services.toasts.saveError	Det gick inte att spara tjänsten
+services.toasts.edit	Redigera: {{name}}
+services.confirmDelete	Ta bort tjänsten ”{{name}}”?
+services.confirmDeleteTitle	Ta bort tjänst?
+services.categories.yoga	Yoga
+services.categories.pilates	Pilates
+services.categories.stretching	Stretching
+services.categories.individual	Individuell
+services.categories.other	Okategoriserad
+subscriptions.title	MEDLEMSKAP
+subscriptions.addPackage	Lägg till paket
+subscriptions.card.classCount_one	{{count}} klass
+subscriptions.card.classCount_other	{{count}} klasser
+subscriptions.card.duration	{{count}} dagar
+subscriptions.card.allServices	Alla klasser
+subscriptions.card.serviceCount_one	{{count}} tjänst
+subscriptions.card.serviceCount_other	{{count}} tjänster
+subscriptions.card.inactiveBadge	Tagen ur försäljning
+subscriptions.settings.title	Programinställningar
+subscriptions.settings.allowFreeze	Frys medlemskap
+subscriptions.settings.allowTransfer	Överför till en annan kund
+subscriptions.settings.autoRenewal	Automatisk förnyelse från kundens insättning
+subscriptions.empty.title	Inga paket ännu
+subscriptions.empty.cta	Skapa paket
+subscriptions.toasts.created	Paket skapat
+subscriptions.toasts.saved	Sparat
+subscriptions.toasts.saveError	Det gick inte att spara paketet
+subscriptions.toasts.deactivated	Paket taget ur försäljning
+subscriptions.toasts.restored	Paket åter i försäljning
+subscriptions.toasts.actionError	Det gick inte att genomföra åtgärden
+subscriptions.deactivate	Ta ur försäljning
+subscriptions.restore	Lägg tillbaka i försäljning
+subscriptions.confirmDeactivateTitle	Ta detta paket ur försäljning?
+subscriptions.confirmDeactivate	Redan sålda medlemskap fortsätter att fungera.

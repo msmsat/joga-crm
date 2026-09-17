@@ -1,0 +1,37 @@
+{
+  "banner": {
+    "title": "Ditt personvern, ditt valg",
+    "text": "Velora lagrer bare det den trenger for å fungere i nettleseren din: innloggingen din, språk og grensesnittinnstillinger. Med din tillatelse aktiverer vi også Google-innlogging — Google setter da sine egne informasjonskapsler. Vi bruker ikke analyse eller annonsering.",
+    "policy": "Informasjonskapselpolicy"
+  },
+  "actions": {
+    "accept": "Godta alle",
+    "reject": "Avslå alle",
+    "save": "Lagre valget",
+    "settings": "Innstillinger"
+  },
+  "settings": {
+    "title": "Innstillinger for informasjonskapsler",
+    "subtitle": "Gjelder for denne nettleseren. Du kan endre det når som helst.",
+    "alwaysOn": "Alltid på",
+    "necessary": {
+      "title": "Strengt nødvendige",
+      "text": "Holder deg innlogget, husker språket, temaet og valget ditt, og beskytter betalinger og tjenesten mot misbruk. Velora kan ikke fungere uten dem."
+    },
+    "functional": {
+      "title": "Logg inn med Google",
+      "text": "Laster Googles innloggingstjeneste slik at du kan bruke Google-kontoen din. Google kan sette egne informasjonskapsler og få vite at du åpnet innloggingssiden."
+    },
+    "none": "Ingen informasjonskapsler for analyse, annonsering eller sporing — vi bruker dem ikke.",
+    "decided": "Ditt valg fra {{date}}",
+    "policy": "Fullstendig liste i informasjonskapselpolicyen"
+  },
+  "google": {
+    "button": "Fortsett med Google",
+    "notice": "Et klikk aktiverer Google-innlogging: Googles tjeneste lastes inn og kan sette informasjonskapsler.",
+    "policy": "Detaljer"
+  },
+  "profile": {
+    "button": "Innstillinger for informasjonskapsler"
+  }
+}

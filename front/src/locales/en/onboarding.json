@@ -53,6 +53,7 @@
   "activity": {
     "title": "Type of activity",
     "subtitle": "Tick everything you do — all within one section",
+    "comingSoon": "Coming soon: barbershop, fitness, dance, and more",
     "types": {
       "yoga": "Yoga",
       "pilates": "Pilates",

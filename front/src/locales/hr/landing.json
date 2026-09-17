@@ -1,0 +1,380 @@
+{
+  "nav": {
+    "product": "Proizvod",
+    "modules": "Moduli",
+    "pricing": "Cijene",
+    "faq": "Česta pitanja",
+    "login": "Prijavite se",
+    "startShort": "Počnite",
+    "startFull": "Počnite besplatno",
+    "language": "Jezik"
+  },
+  "hero": {
+    "badge": "Novi CRM standard za 2026.",
+    "title": "CRM koji ćete\\\n*voljeti* koristiti",
+    "lead": "Premium B2B CRM za studije joge i pilatesa. Rezervacije, klijenti, tim i financije na jednom mjestu. Bez dodatnih klikova i zbrke.",
+    "cta": "Isprobajte besplatno 30 dana",
+    "perks": [
+      "30 dana besplatno",
+      "Kartica nije potrebna",
+      "Otkažite jednim klikom"
+    ]
+  },
+  "marquee": [
+    "Raspored",
+    "Klijenti",
+    "Članarine",
+    "Online rezervacije",
+    "Financije",
+    "Plaće",
+    "Obavijesti",
+    "Lojalnost",
+    "Izvještaji",
+    "Velora AI",
+    "Aplikacija za klijente",
+    "Uloge i pristup"
+  ],
+  "stats": {
+    "items": [
+      {
+        "value": "30 dana",
+        "label": "Besplatno, bez kartice"
+      },
+      {
+        "value": "16",
+        "label": "modula u svakom planu"
+      },
+      {
+        "value": "4",
+        "label": "kanala za online rezervacije"
+      },
+      {
+        "value": "od 15 €",
+        "label": "mjesečno po studiju"
+      }
+    ],
+    "trust": [
+      "Vaši podaci ostaju vaši",
+      "Uloge se primjenjuju i na poslužitelju",
+      "CSV izvoz u svakom trenutku",
+      "Brisanje na zahtjev"
+    ]
+  },
+  "compare": {
+    "label": "razlika",
+    "title": "Uklonili smo ono\\\nšto vam stoji na putu",
+    "lead": "Velora je nastala iz vlastitog iskustva: vodili smo studije i svaki dan nailazili na isti zid — CRM u kojem je potrebno devet klikova za rezervaciju klijenta. Evo što se promijenilo.",
+    "usual": "Uobičajeni način",
+    "velora": "U Velori",
+    "pairs": [
+      {
+        "bad": "Da biste rezervirali klijenta, napuštate raspored, odlazite u drugi prikaz i zatim se vraćate",
+        "good": "Rezervacije i novi klijenti stvaraju se izravno u rasporedu"
+      },
+      {
+        "bad": "Izvještaji se izvoze u Excel i ručno usklađuju",
+        "good": "Izvještaji uživo po treneru i usluzi, s izvozom za bilo koje razdoblje"
+      },
+      {
+        "bad": "Obavijesti su zasebna usluga koju posebno plaćate",
+        "good": "Telegram, e-pošta i WhatsApp ugrađeni su s matricom događaj × kanal"
+      },
+      {
+        "bad": "Trener može vidjeti raspored i bazu klijenata svih ostalih",
+        "good": "Uloge ograničavaju pristup i u sučelju i na poslužitelju"
+      },
+      {
+        "bad": "Asistent? U najboljem slučaju pretraga klijenta",
+        "good": "Velora AI odgovara na pitanja o vašem poslovanju — i na pitanja vaših klijenata u Telegramu i Instagramu"
+      }
+    ]
+  },
+  "showcase": {
+    "label": "sve na jednom mjestu",
+    "title": "Jedna platforma umjesto\\\ndesetaka usluga",
+    "lead": "Rezervacije, klijenti, novac, komunikacija i AI u jednom sučelju. Nijedan suvišan modul: svaki prikaz rješava stvaran problem vlasnika.",
+    "blocks": {
+      "journal": {
+        "title": "Vaš raspored",
+        "lead": "Dnevna mreža u kojoj su treneri stupci, a sati redovi. Ovdje se događa sve što administrator radi.",
+        "points": [
+          "Povucite sat na drugo vrijeme — ili drugom treneru",
+          "Stvarajte nove satove i klijente bez napuštanja rasporeda",
+          "Sažetak dana je uz vas: popunjenost dvorana i prihodi"
+        ]
+      },
+      "booking": {
+        "title": "Vaše online rezervacije",
+        "lead": "Četiri kanala na kojima klijenti sami rezerviraju, u svako doba i bez administratora.",
+        "points": [
+          "Web widget, Telegram, WhatsApp i Instagram — svaki se podešava zasebno",
+          "Pravila: koliko sati prije početka se zatvara rezervacija i do kada klijent može otkazati",
+          "Brendiranje aplikacije za klijente s pregledom uživo — boja i jezik prema vašem brendu"
+        ]
+      },
+      "finance": {
+        "title": "Vaše financije",
+        "lead": "Računi, transakcije, plaće i dokumenti na jednom mjestu, bez izvoza u proračunske tablice.",
+        "points": [
+          "Blagajna, bankovni račun i kartična naplata sa stanjima i dnevnim promjenama",
+          "Članarine, poklon-kartice i povrati povezani s klijentom i računom",
+          "Plaće trenera izračunate prema vašim pravilima"
+        ]
+      },
+      "notify": {
+        "title": "Vaše obavijesti",
+        "lead": "Tri kanala dostave i matrica u kojoj odlučujete što se šalje i kamo.",
+        "points": [
+          "Telegram, e-pošta i WhatsApp — svaki povezan vlastitim ključem studija",
+          "Zaseban skup događaja za klijenta, trenera, administratora i vlasnika",
+          "Podsjetnici 24 i 2 sata prije, „ostala su 1–2 sata“, rođendani i zahtjevi za recenziju"
+        ]
+      },
+      "ai": {
+        "title": "Vaš AI sloj",
+        "lead": "Asistent poznaje kontekst poslovanja i nalazi se na svakoj stranici — agenti sami odgovaraju klijentima.",
+        "points": [
+          "Pitajte o studiju iz gornje trake, bez otvaranja drugog odjeljka",
+          "AI agenti u Telegramu i Instagramu: ton komunikacije i način „samo izvan radnog vremena“",
+          "Statistika: koliko je razgovora obrađeno i kako su ocijenjeni"
+        ]
+      }
+    }
+  },
+  "ctaStrip": {
+    "title": "Isprobajte bez migracije podataka i bez plaćanja unaprijed",
+    "button": "Počnite besplatno",
+    "note": "30 dana besplatno • Bez kartice • Pomoć pri početku"
+  },
+  "modules": {
+    "label": "moduli",
+    "title": "16 modula,\\\nveć uključenih",
+    "lead": "Nije zbirka praznih mjesta s oznakom „uskoro” — sve navedeno radi i uključeno je u plan. Uloge određuju tko vidi koji odjeljak.",
+    "items": {
+      "dashboard": {
+        "title": "Pregled",
+        "desc": "Prihodi, aktivni klijenti, rezervacije i lojalnost klijenata — s trendovima"
+      },
+      "journal": {
+        "title": "Raspored",
+        "desc": "Dnevna mreža po treneru i dvorani, povucite za promjenu termina"
+      },
+      "clients": {
+        "title": "Klijenti",
+        "desc": "Profil, članarine, bodovi, povijest, bilješke, oznake"
+      },
+      "staff": {
+        "title": "Tim",
+        "desc": "Profili, pokazatelji, radno vrijeme, dodjele dvorana"
+      },
+      "catalog": {
+        "title": "Katalog",
+        "desc": "Lokacije, dvorane s bojom i kapacitetom, usluge studija"
+      },
+      "booking": {
+        "title": "Online rezervacije",
+        "desc": "Widget, Telegram, WhatsApp, Instagram i pravila rezerviranja"
+      },
+      "finance": {
+        "title": "Financije",
+        "desc": "Računi, transakcije, druge strane, dokumenti, ciljevi, plaće"
+      },
+      "notify": {
+        "title": "Obavijesti",
+        "desc": "Telegram, e-pošta, WhatsApp i matrica događaj × kanal"
+      },
+      "loyalty": {
+        "title": "Lojalnost",
+        "desc": "Kartice, popusti, poklon-kartice, članarine, preporuke"
+      },
+      "ai": {
+        "title": "Velora AI",
+        "desc": "Asistent za poslovanje i agenti za vaše klijente"
+      },
+      "reports": {
+        "title": "Izvještaji",
+        "desc": "Po prodaji, trenerima i uslugama — s izvozom"
+      },
+      "miniapp": {
+        "title": "Aplikacija za klijente",
+        "desc": "Osobni račun klijenta: rezervacije, članarine, bodovi"
+      },
+      "multistudio": {
+        "title": "Više studija",
+        "desc": "Više studija na jednom računu, prebacujte se kad god želite"
+      },
+      "roles": {
+        "title": "Uloge i pristup",
+        "desc": "Vlasnik, administrator, trener — u sučelju i na poslužitelju"
+      },
+      "settings": {
+        "title": "Postavke",
+        "desc": "Radno vrijeme, tema, tim, sigurnost, sesije"
+      },
+      "data": {
+        "title": "Podaci",
+        "desc": "CSV izvoz, brisanje na zahtjev"
+      }
+    },
+    "integrations": "Integracije",
+    "integrationsNote": "povezane u postavkama studija"
+  },
+  "pricing": {
+    "label": "cijene",
+    "title": "Vaš plan ovisi o\\\nveličini tima",
+    "lead": "15 € za dvije osobe, +5 € za svako sljedeće mjesto, neograničeno — 120 €. Svih 16 modula i Velora AI uključeni su na svakoj razini: plaćate veličinu tima, a ne otključavanje gumba. Tri modela plaćanja po izboru i do 40 % popusta pri uplati unaprijed.",
+    "team": "tim",
+    "seats_one": "osoba",
+    "seats_few": "osobe",
+    "seats_other": "osoba",
+    "unlimited": "neograničeno",
+    "scaleMin": "2 mjesta",
+    "scaleMax": "∞ neograničeno",
+    "sliderAria": "Koliko osoba radi u vašem studiju",
+    "hint": "**15 €** za dvije osobe, **+5 €** za svako dodatno mjesto. Neograničeno — **120 €** mjesečno.",
+    "period": "razdoblje plaćanja",
+    "months": "{{count}} mj.",
+    "noDiscount": "—",
+    "yourPrice": "vaša cijena",
+    "perMonth": "/ mj.",
+    "amount": "{{value}} €",
+    "amountPerMonth": "{{value}} € / mj.",
+    "rows": {
+      "seats": "Tim",
+      "perSeat": "Po osobi",
+      "ai": "Velora AI zahtjevi",
+      "aiPerMonth": "{{value}} / mj.",
+      "modules": "Moduli",
+      "modulesAll": "svih 16",
+      "total": "Za platiti za {{count}} mjeseci",
+      "saved": "Štedite"
+    },
+    "cta": "Isprobajte 30 dana",
+    "note": "Bez kartice · otkažite jednim klikom",
+    "models": [
+      {
+        "title": "Pretplata",
+        "price": "od 15 € / mj.",
+        "desc": "Fiksan iznos. Trošak znate unaprijed — bez iznenađenja na kraju mjeseca."
+      },
+      {
+        "title": "3 % prihoda",
+        "price": "najmanje 15 € / mj.",
+        "desc": "Plaćajte prema prometu. U mirnijem mjesecu doplaćujete samo razliku do minimalnog iznosa."
+      },
+      {
+        "title": "Kombinirano",
+        "price": "½ fiksno + 1,5 %",
+        "desc": "Polovica pretplate plus mali postotak — ravnoteža između dva modela."
+      }
+    ],
+    "footnote": "Probno razdoblje ne zahtijeva karticu. Model plaćanja i broj mjesta možete promijeniti u aplikaciji bilo kada. Cijene su bez PDV-a: porez se izračunava pri naplati za vašu zemlju."
+  },
+  "faq": {
+    "label": "pitanja",
+    "title": "Ovo ljudi obično pitaju",
+    "items": [
+      {
+        "q": "Što uključuje probno razdoblje?",
+        "a": "Puni pristup svim modulima 30 dana. Kartica nije potrebna — ako vam ne odgovara, jednostavno ne obnovite."
+      },
+      {
+        "q": "Hoće li moji klijenti vidjeti oglase drugih studija?",
+        "a": "Ne. Klijenti rezerviraju putem widgeta na vašoj web-stranici, vašeg Telegrama, WhatsAppa ili Instagrama — i kroz aplikaciju za klijente u vašoj boji i s vašim logotipom. Ne postoji zajednički katalog s drugim studijima."
+      },
+      {
+        "q": "Tko u mom timu vidi što?",
+        "a": "Tri uloge. Vlasnik vidi sve. Administrator vidi raspored, klijente i pregled. Trener vidi samo vlastite satove i klijente. Ograničenje radi u sučelju i na poslužitelju: nema puta do tuđih podataka."
+      },
+      {
+        "q": "Mogu li voditi više studija ili lokacija?",
+        "a": "Da, i to ne ovisi o planu. Jedan račun može pripadati većem broju studija i prebacivati se između njih, a u studiju postavljate lokacije i dvorane."
+      },
+      {
+        "q": "Postoji li tamna tema i drugi jezici?",
+        "a": "Da. Sučelje se prebacuje između svijetle i tamne teme i podržava 22 jezika, uključujući engleski, ruski, ukrajinski, češki i njemački. Vremenska zona, valuta i jezik biraju se pri uvođenju."
+      },
+      {
+        "q": "Što se događa s mojim podacima ako odlučim otići?",
+        "a": "Podaci su vaši. U postavkama postoji CSV izvoz za klijente, raspored, financije i članarine, a brisanje se obavlja na vaš zahtjev."
+      }
+    ],
+    "notFoundTitle": "Niste pronašli odgovor?",
+    "notFoundLead": "Pišite nam — odgovaramo osobno, bez botova i bez čekanja.",
+    "copied": "Kopirano"
+  },
+  "about": {
+    "label": "o nama",
+    "title": "Veloru grade ljudi\\\nkoji su i sami vodili studije",
+    "lead": "Ne gradimo „CRM za sve”. Gradimo alat za određeni posao — raspored, klijente, novac, komunikaciju — i sami odgovaramo na pitanja umjesto da šaljemo gotove odgovore.",
+    "p1": "Klijenti jednog studija ostaju klijenti tog studija. Velora ne stvara zajednički katalog, ne prikazuje vašim klijentima tuđe oglase i ne uzima postotak kada vam se osoba vrati.",
+    "p2": "Trenutačno je proizvod izgrađen za studije joge i pilatesa — za način na koji zaista funkcioniraju njihovi rasporedi, članarine i treneri. Druge će djelatnosti slijediti s istom pažnjom."
+  },
+  "cta": {
+    "eyebrow": "Počnite danas",
+    "titleTop": "Spremni za",
+    "titleAccent": "sljedeći korak?",
+    "lead": "30 dana besplatno. Bez kartice. Bez obveze. Isprobajte — osjetit ćete razliku.",
+    "register": "Registrirajte se besplatno",
+    "whatsapp": "Pišite nam na WhatsAppu"
+  },
+  "footer": {
+    "tagline": "Premium CRM za studije joge i pilatesa. Rezervacije, klijenti, novac i AI na jednom mjestu.",
+    "columns": {
+      "product": {
+        "title": "Proizvod",
+        "features": "Značajke",
+        "modules": "Moduli",
+        "booking": "Online rezervacije",
+        "ai": "Velora AI",
+        "pricing": "Cijene"
+      },
+      "company": {
+        "title": "Tvrtka",
+        "difference": "Naša razlika",
+        "about": "O nama",
+        "faq": "Pitanja i odgovori",
+        "support": "Podrška"
+      },
+      "docs": {
+        "title": "Dokumenti",
+        "terms": "Uvjeti korištenja",
+        "privacy": "Pravila privatnosti",
+        "cookies": "Pravila o kolačićima",
+        "dpa": "Obrada podataka",
+        "cookieSettings": "Postavke kolačića",
+        "support": "Podrška"
+      }
+    },
+    "copyright": "© 2026 Velora. Sva prava pridržana."
+  },
+  "screens": {
+    "journal": "Dnevni raspored",
+    "booking": "Online rezervacija",
+    "finance": "Plaćanje posjeta",
+    "notify": "Događaj × kanal",
+    "ai": "Velora AI"
+  },
+  "art": {
+    "journal": "Raspored",
+    "journalToday": "Danas — 12 sati",
+    "weekdays": [
+      "P",
+      "U",
+      "S",
+      "Č",
+      "P",
+      "S",
+      "N"
+    ],
+    "finance": "Financije",
+    "financeValue": "1,8 tis. €",
+    "financeLabel": "prihodi ovog mjeseca",
+    "clients": "Klijenti",
+    "clientsLabel": "klijenti, +12 ovaj tjedan",
+    "questions_one": "{{count}} pitanje",
+    "questions_few": "{{count}} pitanja",
+    "questions_other": "{{count}} pitanja",
+    "open": "otvori"
+  }
+}

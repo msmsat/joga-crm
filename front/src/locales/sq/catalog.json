@@ -1,0 +1,315 @@
+{
+  "tabs": {
+    "studios": "Studiot",
+    "services": "Shërbimet",
+    "subscriptions": "Anëtarësimet"
+  },
+  "modals": {
+    "addStudio": {
+      "steps": {
+        "about": {
+          "title": "Rreth studios",
+          "sub": "Emri dhe të dhënat e kontaktit",
+          "trust": "Të dhënat tuaja janë të enkriptuara dhe nuk ndahen kurrë me palë të treta"
+        },
+        "location": {
+          "title": "Vendndodhja",
+          "sub": "Ku ndodhet kjo degë?",
+          "trust": "Adresa përdoret në orar dhe në harta"
+        },
+        "photo": {
+          "title": "Foto",
+          "sub": "Kopertina e studios — opsionale",
+          "trust": "Mund ta shtoni më vonë te cilësimet e degës"
+        }
+      },
+      "stepCounter": "Hapi {{current}} nga {{total}}",
+      "step1": {
+        "heading": "Informacion bazë",
+        "subheading": "Si quhet studioja dhe si mund të kontaktohet?",
+        "name": "Emri i studios *",
+        "namePlaceholder": "P.sh. Velora Studio",
+        "phone": "Telefon *",
+        "email": "Email *",
+        "contactHint": "Vendosni telefon ose email — të paktën një",
+        "noContacts": "Nuk u dhanë kontakte",
+        "new": "I RI"
+      },
+      "step2": {
+        "heading": "Vendndodhja",
+        "subheading": "Përcaktoni ku ndodhet kjo degë",
+        "country": "Shteti",
+        "countryPlaceholder": "Shtetet e Bashkuara",
+        "city": "Qyteti *",
+        "cityPlaceholder": "Nju Jork",
+        "address": "Adresa *",
+        "addressPlaceholder": "5th Avenue 12, zyra 301",
+        "noAddress": "Nuk u dha adresë",
+        "groupHint": "Fushat „Shteti” dhe „Qyteti” përdoren për të grupuar degët në listë."
+      },
+      "step3": {
+        "heading": "Foto e studios",
+        "subheading": "Ngarkoni një kopertinë — është opsionale, mund ta kaloni",
+        "uploadCta": "Klikoni për të ngarkuar",
+        "uploadHint": "JPG, PNG deri në 10 MB",
+        "replace": "Zëvendëso",
+        "remove": "Hiq",
+        "previewAlt": "Parapamje",
+        "summary": "Përmbledhje",
+        "uploadError": "Fotoja nuk u ngarkua. Provoni një skedar tjetër ose hiqeni."
+      },
+      "summaryRows": {
+        "name": "Emri",
+        "city": "Qyteti",
+        "address": "Adresa"
+      },
+      "nextPhoto": "Tjetra — foto",
+      "submit": "Krijo studio",
+      "skipPhoto": "Kalo foton dhe krijo",
+      "illus": {
+        "contacts": "Kontaktet",
+        "newBranch": "Degë e re",
+        "city": "Qyteti",
+        "newBranchStudio": "Degë e re studioje"
+      }
+    },
+    "editBranch": {
+      "title": "Ndrysho degën",
+      "name": "Emri i degës",
+      "namePlaceholder": "Velora Studio",
+      "phone": "Telefon",
+      "email": "Email",
+      "emailPlaceholder": "studio@velora.com",
+      "country": "Shteti",
+      "countryPlaceholder": "Shtetet e Bashkuara",
+      "city": "Qyteti",
+      "cityPlaceholder": "Nju Jork",
+      "address": "Adresa",
+      "addressPlaceholder": "5th Avenue 12",
+      "photo": "Foto e degës",
+      "contactHint": "Vendosni telefon ose email",
+      "workingHours": "Orari i punës"
+    },
+    "hall": {
+      "titleNew": "Shto {{spaceAcc}}",
+      "titleEdit": "Ndrysho {{spaceAcc}}",
+      "name": "Emri",
+      "namePlaceholder": "{{space, capitalize}} A",
+      "capacity": "Kapaciteti",
+      "area": "Sipërfaqja, m²",
+      "hourlyRate": "Çmimi për orë, {{currency}}",
+      "hourlyRatePlaceholder": "3000",
+      "equipment": "Pajisjet",
+      "equipmentPlaceholder": "Shto pajisje",
+      "color": "Ngjyra",
+      "isOnline": "Online",
+      "photo": "Foto",
+      "subtitle": "{{space, capitalize}} në degë: vende, pajisje, ngjyrë në orar",
+      "previewTitle": "Parapamje",
+      "sectionBasic": "Bazat",
+      "sectionSpace": "Hapësira",
+      "sectionLook": "Pamja",
+      "areaShort": "Sipërfaqja",
+      "hourlyRateShort": "Çmimi për orë",
+      "statArea": "Sipërfaqja",
+      "statRate": "Çmimi / orë",
+      "isOnlineHint": "Klasat zhvillohen online — pa ambiente fizike.",
+      "colorHint": "Klasat këtu theksohen me këtë ngjyrë në orar."
+    },
+    "service": {
+      "titleNew": "Shërbim i ri",
+      "titleEdit": "Ndrysho shërbimin",
+      "name": "Emri i shërbimit",
+      "namePlaceholder": "Hatha yoga",
+      "category": "Kategoria",
+      "type": "Lloji",
+      "typeGroup": "Në grup",
+      "typeIndividual": "Individual",
+      "price": "Çmimi, {{currency}}",
+      "pricePlaceholder": "1200",
+      "duration": "Kohëzgjatja, min",
+      "durationPlaceholder": "60",
+      "maxClients": "Maksimumi i klientëve",
+      "maxClientsPlaceholder": "15",
+      "description": "Përshkrimi",
+      "descriptionPlaceholder": "Përshkrim i shkurtër i shërbimit",
+      "color": "Ngjyra",
+      "subtitle": "Shfaqet në orar dhe në rezervimet online",
+      "previewTitle": "Parapamje e orarit",
+      "sectionBasic": "Bazat",
+      "sectionPricing": "Çmimi dhe koha",
+      "sectionLook": "Pamja",
+      "priceShort": "Çmimi",
+      "durationShort": "Kohëzgjatja",
+      "statSeats": "Vendet",
+      "colorHint": "Klasat theksohen me këtë ngjyrë në rrjetën e orarit.",
+      "bookingMode": "Mënyra e rezervimit",
+      "bookingModeEvent": "Regjistrimi",
+      "bookingModeResource": "Zgjidhni një orë",
+      "bookingModeEventHint": "Klientët regjistrohen për një klasë që e keni planifikuar tashmë.",
+      "bookingModeResourceHint": "Klienti zgjedh një specialist dhe një orar të lirë; intervali {{offering}} krijohet në konfirmim.",
+      "bookable": "I disponueshëm për rezervim",
+      "bookableOn": "Po",
+      "bookableOff": "Jo",
+      "bufferBefore": "Hapësirë para",
+      "bufferAfter": "Hapësirë pas"
+    },
+    "package": {
+      "titleNew": "Paketë e re",
+      "titleEdit": "Ndrysho paketën",
+      "name": "Emri i paketës",
+      "namePlaceholder": "8 klasa",
+      "classCount": "Numri i klasave",
+      "classCountPlaceholder": "8",
+      "price": "Çmimi, {{currency}}",
+      "pricePlaceholder": "8000",
+      "perVisitPrice": "Çmimi për vizitë",
+      "durationDays": "Vlen për, ditë",
+      "durationDaysPlaceholder": "60",
+      "services": "Shërbimet",
+      "servicesHint": "Nuk është zgjedhur asgjë — paketa vlen për të gjitha klasat",
+      "isActive": "Në shitje",
+      "soldAsSubscription": "Shfaq në skedën „Anëtarësimet”",
+      "soldAsSingle": "Shfaq në skedën „Vizita të vetme”",
+      "subtitle": "Paketë klasash që ua shisni klientëve",
+      "previewTitle": "Parapamje e kartës",
+      "previewKind": "Kartë",
+      "previewValid": "Vlen për",
+      "sectionBasic": "Bazat",
+      "sectionTerms": "Kushtet",
+      "sectionSale": "Shitjet",
+      "priceShort": "Çmimi i paketës",
+      "statClasses": "Klasat",
+      "statDays": "Ditët",
+      "statAll": "Të gjitha",
+      "isActiveHint": "Klientët mund ta shohin dhe blejnë këtë paketë.",
+      "soldAsSubscriptionHint": "Përndryshe paketa mbetet vetëm te vizitat e vetme."
+    }
+  },
+  "studios": {
+    "title": "STUDIO",
+    "addStudio": "Shto studio",
+    "addHall": "Shto {{spaceAcc}}",
+    "editBranch": "Ndrysho degën",
+    "deleteBranch": "Fshi degën",
+    "infoTab": "Informacion i përgjithshëm",
+    "hallsTitle": "{{spacePlural, capitalize}} e studios",
+    "hallCount_one": "{{spacePlural, capitalize}} · {{count}}",
+    "hallCount_other": "{{spacePlural, capitalize}} · {{count}}",
+    "stats": {
+      "halls": "{{spacePlural, capitalize}}",
+      "totalSeats": "Vende gjithsej",
+      "fromPerHour": "Nga / orë"
+    },
+    "hall": {
+      "seats": "vende",
+      "schedule": "Orari i punës",
+      "closed": "Mbyllur",
+      "stats": {
+        "seats": "Vende",
+        "area": "Sipërfaqja",
+        "perHour": "Në orë"
+      },
+      "equipment": "Pajisjet",
+      "actions": "Veprimet",
+      "edit": "Ndrysho {{spaceAcc}}",
+      "delete": "Fshi {{spaceAcc}}"
+    },
+    "empty": {
+      "title": "Nuk ka studio",
+      "subtitle": "Shtoni studion tuaj të parë"
+    },
+    "toasts": {
+      "created": "Studioja u krijua",
+      "createError": "Studioja nuk u krijua",
+      "deleted": "Studioja u fshi",
+      "hallDeleted": "U fshi: {{space}}",
+      "saved": "U ruajt",
+      "edit": "Ndrysho: {{name}}"
+    },
+    "confirmDelete": "Të fshihet dega „{{name}}”? Ky veprim nuk mund të zhbëhet.",
+    "confirmDeleteTitle": "Të fshihet dega?",
+    "confirmDeleteHall": "Të fshihet {{spaceAcc}} „{{name}}”?",
+    "confirmDeleteHallTitle": "Të fshihet {{spaceAcc}}?"
+  },
+  "services": {
+    "title": "SHËRBIME",
+    "addService": "Shto shërbim",
+    "types": {
+      "group": "Në grup",
+      "individual": "Indiv.",
+      "groupFull": " · Në grup",
+      "individualFull": " · Individual"
+    },
+    "stats": {
+      "price": "Çmimi",
+      "duration": "Kohëzgjatja",
+      "bookings": "Rezervimet",
+      "revenue": "Të ardhurat"
+    },
+    "details": {
+      "description": "Përshkrimi",
+      "details": "Detajet",
+      "minutes": "minuta",
+      "upTo": "Deri në {{count}} pers.",
+      "personal": "Personal",
+      "bookingsPerMonth": "rezervime në 30 ditë",
+      "schedule": "Orari i klasave"
+    },
+    "empty": {
+      "title": "Nuk ka shërbime",
+      "subtitle": "Shtoni shërbimin tuaj të parë"
+    },
+    "toasts": {
+      "deleted": "Shërbimi u fshi",
+      "deleteError": "Shërbimi nuk u fshi",
+      "saved": "U ruajt",
+      "saveError": "Shërbimi nuk u ruajt",
+      "edit": "Ndrysho: {{name}}"
+    },
+    "confirmDelete": "Të fshihet shërbimi „{{name}}”?",
+    "confirmDeleteTitle": "Të fshihet shërbimi?",
+    "categories": {
+      "yoga": "Yoga",
+      "pilates": "Pilates",
+      "stretching": "Shtrirje",
+      "individual": "Individual",
+      "other": "Pa kategori"
+    }
+  },
+  "subscriptions": {
+    "title": "ANËTARËSIME",
+    "addPackage": "Shto paketë",
+    "card": {
+      "classCount_one": "{{count}} klasë",
+      "classCount_other": "{{count}} klasa",
+      "duration": "{{count}} ditë",
+      "allServices": "Të gjitha klasat",
+      "serviceCount_one": "{{count}} shërbim",
+      "serviceCount_other": "{{count}} shërbime",
+      "inactiveBadge": "I hequr nga shitja"
+    },
+    "settings": {
+      "title": "Cilësimet e programit",
+      "allowFreeze": "Ngrirja e anëtarësimit",
+      "allowTransfer": "Transferim te një klient tjetër",
+      "autoRenewal": "Rinovim automatik nga depozita e klientit"
+    },
+    "empty": {
+      "title": "Nuk ka ende paketa",
+      "cta": "Krijo paketë"
+    },
+    "toasts": {
+      "created": "Paketa u krijua",
+      "saved": "U ruajt",
+      "saveError": "Paketa nuk u ruajt",
+      "deactivated": "Paketa u hoq nga shitja",
+      "restored": "Paketa u rikthye në shitje",
+      "actionError": "Veprimi nuk u përfundua"
+    },
+    "deactivate": "Hiq nga shitja",
+    "restore": "Rikthe në shitje",
+    "confirmDeactivateTitle": "Të hiqet kjo paketë nga shitja?",
+    "confirmDeactivate": "Anëtarësimet e shitura tashmë do të vazhdojnë të funksionojnë."
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "banner": {
+    "title": "Confidențialitatea ta, alegerea ta",
+    "text": "Velora păstrează doar ce are nevoie pentru a funcționa în browserul tău: autentificarea, limba și setările interfeței. Cu acordul tău vom activa și autentificarea prin Google — Google va seta apoi propriile cookie-uri. Nu folosim analiză sau publicitate.",
+    "policy": "Politica privind cookie-urile"
+  },
+  "actions": {
+    "accept": "Acceptă toate",
+    "reject": "Respinge toate",
+    "save": "Salvează alegerea",
+    "settings": "Setări"
+  },
+  "settings": {
+    "title": "Setări cookie",
+    "subtitle": "Se aplică acestui browser. Poți schimba alegerea oricând.",
+    "alwaysOn": "Întotdeauna active",
+    "necessary": {
+      "title": "Strict necesare",
+      "text": "Te mențin autentificat, rețin limba, tema și alegerea ta și protejează plățile și serviciul împotriva abuzurilor. Velora nu poate funcționa fără ele."
+    },
+    "functional": {
+      "title": "Autentificare cu Google",
+      "text": "Încarcă serviciul de autentificare Google ca să îți poți folosi contul Google. Google poate seta propriile cookie-uri și poate afla că ai deschis pagina de autentificare."
+    },
+    "none": "Nu folosim cookie-uri de analiză, publicitate sau urmărire.",
+    "decided": "Alegerea ta din {{date}}",
+    "policy": "Lista completă în Politica privind cookie-urile"
+  },
+  "google": {
+    "button": "Continuă cu Google",
+    "notice": "Un clic activează autentificarea cu Google: serviciul Google se încarcă și poate seta cookie-uri.",
+    "policy": "Detalii"
+  },
+  "profile": {
+    "button": "Setări cookie"
+  }
+}

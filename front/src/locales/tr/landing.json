@@ -1,0 +1,378 @@
+{
+  "nav": {
+    "product": "Ürün",
+    "modules": "Modüller",
+    "pricing": "Fiyatlandırma",
+    "faq": "Sık sorulan sorular",
+    "login": "Giriş yap",
+    "startShort": "Başla",
+    "startFull": "Ücretsiz başla",
+    "language": "Dil"
+  },
+  "hero": {
+    "badge": "2026'nın yeni CRM standardı",
+    "title": "Kullanmaktan\\\n*keyif* alacağınız CRM",
+    "lead": "Yoga ve pilates stüdyoları için premium B2B CRM. Rezervasyonlar, müşteriler, ekip ve finans tek yerde. Ekstra tıklama yok, karmaşa yok.",
+    "cta": "30 gün ücretsiz deneyin",
+    "perks": [
+      "30 gün ücretsiz",
+      "Kart gerekmez",
+      "Tek tıklamayla iptal"
+    ]
+  },
+  "marquee": [
+    "Takvim",
+    "Müşteriler",
+    "Üyelikler",
+    "Online rezervasyon",
+    "Finans",
+    "Maaşlar",
+    "Bildirimler",
+    "Sadakat",
+    "Raporlar",
+    "Velora AI",
+    "Müşteri uygulaması",
+    "Roller ve erişim"
+  ],
+  "stats": {
+    "items": [
+      {
+        "value": "30 gün",
+        "label": "Ücretsiz, kart gerekmez"
+      },
+      {
+        "value": "16",
+        "label": "Her planda modül"
+      },
+      {
+        "value": "4",
+        "label": "Online rezervasyon kanalı"
+      },
+      {
+        "value": "15 €'dan başlayan",
+        "label": "Aylık, stüdyo başına"
+      }
+    ],
+    "trust": [
+      "Verileriniz size ait kalır",
+      "Roller sunucuda da uygulanır",
+      "İstediğiniz zaman CSV dışa aktarımı",
+      "Talep üzerine silme"
+    ]
+  },
+  "compare": {
+    "label": "fark",
+    "title": "Yolunuza çıkan\\\nşeyleri kaldırdık",
+    "lead": "Velora kendi deneyimimizden doğdu: stüdyolar yönettik ve her gün aynı duvara çarptık — bir müşteriyi kaydetmek için dokuz tıklama isteyen bir CRM. İşte değişenler.",
+    "usual": "Alışılagelen yol",
+    "velora": "Velora'da",
+    "pairs": [
+      {
+        "bad": "Müşteriyi kaydetmek için takvimden başka bir ekrana geçip sonra geri dönmeniz gerekir",
+        "good": "Rezervasyonlar ve yeni müşteriler doğrudan takvimde oluşturulur"
+      },
+      {
+        "bad": "Raporlar Excel'e aktarılır ve elle karşılaştırılır",
+        "good": "Eğitmen ve hizmet bazında canlı raporlar, istediğiniz dönem için dışa aktarma ile"
+      },
+      {
+        "bad": "Bildirimler ayrıca ödeme yaptığınız ayrı bir hizmettir",
+        "good": "Telegram, e-posta ve WhatsApp olay × kanal matrisiyle yerleşik gelir"
+      },
+      {
+        "bad": "Bir eğitmen herkesin takvimini ve müşteri listesini görebilir",
+        "good": "Roller erişimi hem arayüzde hem sunucuda sınırlar"
+      },
+      {
+        "bad": "Bir asistan mı? En iyi ihtimalle müşteri araması",
+        "good": "Velora AI işletmeniz hakkında soruları yanıtlar — Telegram ve Instagram'da müşterilerinizin sorularını da"
+      }
+    ]
+  },
+  "showcase": {
+    "label": "hepsi bir arada",
+    "title": "Bir düzine hizmet yerine\\\ntek platform",
+    "lead": "Rezervasyonlar, müşteriler, para, iletişim ve AI tek arayüzde. Tek bir gereksiz modül yok: her ekran sahibin gerçek bir sorununu çözer.",
+    "blocks": {
+      "journal": {
+        "title": "Takviminiz",
+        "lead": "Eğitmenlerin sütun, saatlerin satır olduğu günlük ızgara. Yöneticinin yaptığı her şey burada gerçekleşir.",
+        "points": [
+          "Dersi başka bir saate veya başka bir eğitmene sürükleyin",
+          "Takvimden çıkmadan yeni dersler ve müşteriler oluşturun",
+          "Günün özeti yan tarafta: salon doluluğu ve gelir"
+        ]
+      },
+      "booking": {
+        "title": "Online rezervasyonunuz",
+        "lead": "Müşterilerin yöneticisiz, günün her saati kendi rezervasyonunu yaptığı dört kanal.",
+        "points": [
+          "Web bileşeni, Telegram, WhatsApp ve Instagram — her biri ayrı yapılandırılır",
+          "Kurallar: başlangıçtan kaç saat önce rezervasyon kapanır ve müşteri ne zamana kadar iptal edebilir",
+          "Canlı önizlemeli müşteri uygulaması markalaması — markanıza uygun renk ve dil"
+        ]
+      },
+      "finance": {
+        "title": "Finansınız",
+        "lead": "Hesaplar, işlemler, maaşlar ve belgeler tek yerde; elektronik tabloya aktarma gerekmez.",
+        "points": [
+          "Bakiyeler ve günlük hareketlerle kasa, banka hesabı ve kart tahsilatı",
+          "Müşteriye ve hesaba bağlı üyelikler, hediye kartları ve iadeler",
+          "Kendi kurallarınıza göre hesaplanan eğitmen maaşları"
+        ]
+      },
+      "notify": {
+        "title": "Bildirimleriniz",
+        "lead": "Üç teslim kanalı ve neyin nereye gönderileceğini belirlediğiniz bir matris.",
+        "points": [
+          "Telegram, e-posta ve WhatsApp — her biri stüdyonun kendi anahtarıyla bağlanır",
+          "Müşteri, eğitmen, yönetici ve sahip için ayrı olay kümesi",
+          "24 ve 2 saat önce hatırlatmalar, “1–2 ders kaldı”, doğum günleri ve değerlendirme istekleri"
+        ]
+      },
+      "ai": {
+        "title": "AI katmanınız",
+        "lead": "Asistan işletme bağlamını bilir ve her sayfada bulunur; ajanlar müşterilere kendileri yanıt verir.",
+        "points": [
+          "Başka bir bölümü açmadan üst çubuktan stüdyo hakkında soru sorun",
+          "Telegram ve Instagram'da AI ajanları: iletişim tonu ve “yalnızca çalışma saatleri dışında” modu",
+          "İstatistikler: kaç görüşmenin yönetildiği ve nasıl değerlendirildiği"
+        ]
+      }
+    }
+  },
+  "ctaStrip": {
+    "title": "Veri taşımadan, peşin ödeme yapmadan deneyin",
+    "button": "Ücretsiz başla",
+    "note": "30 gün ücretsiz • Kart gerekmez • Başlangıç desteği"
+  },
+  "modules": {
+    "label": "modüller",
+    "title": "16 modül,\\\nzaten dahil",
+    "lead": "“Yakında” yazan yer tutucular koleksiyonu değil — listelenen her şey çalışır ve plana dahildir. Her bölümü kimin göreceğini roller belirler.",
+    "items": {
+      "dashboard": {
+        "title": "Genel bakış",
+        "desc": "Gelir, aktif müşteriler, rezervasyonlar ve müşteri sadakati — eğilimlerle"
+      },
+      "journal": {
+        "title": "Takvim",
+        "desc": "Eğitmen ve salon başına günlük ızgara, yeniden planlamak için sürükleyin"
+      },
+      "clients": {
+        "title": "Müşteriler",
+        "desc": "Profil, üyelikler, puanlar, geçmiş, notlar, etiketler"
+      },
+      "staff": {
+        "title": "Ekip",
+        "desc": "Profiller, göstergeler, çalışma saatleri, salon atamaları"
+      },
+      "catalog": {
+        "title": "Katalog",
+        "desc": "Tesisler, renk ve kapasiteye sahip salonlar, stüdyo hizmetleri"
+      },
+      "booking": {
+        "title": "Online rezervasyon",
+        "desc": "Bileşen, Telegram, WhatsApp, Instagram ve rezervasyon kuralları"
+      },
+      "finance": {
+        "title": "Finans",
+        "desc": "Hesaplar, işlemler, karşı taraflar, belgeler, hedefler, maaşlar"
+      },
+      "notify": {
+        "title": "Bildirimler",
+        "desc": "Telegram, e-posta, WhatsApp ve olay × kanal matrisi"
+      },
+      "loyalty": {
+        "title": "Sadakat",
+        "desc": "Kartlar, indirimler, hediye kartları, üyelikler, tavsiyeler"
+      },
+      "ai": {
+        "title": "Velora AI",
+        "desc": "İşletme asistanı ve müşterileriniz için ajanlar"
+      },
+      "reports": {
+        "title": "Raporlar",
+        "desc": "Satışlar, eğitmenler ve hizmetler için — dışa aktarma ile"
+      },
+      "miniapp": {
+        "title": "Müşteri uygulaması",
+        "desc": "Müşterinin kendi hesabı: rezervasyonlar, üyelikler, puanlar"
+      },
+      "multistudio": {
+        "title": "Birden çok stüdyo",
+        "desc": "Tek hesapta birden çok stüdyo, istediğiniz zaman geçiş yapın"
+      },
+      "roles": {
+        "title": "Roller ve erişim",
+        "desc": "Sahip, yönetici, eğitmen — arayüzde ve sunucuda"
+      },
+      "settings": {
+        "title": "Ayarlar",
+        "desc": "Çalışma saatleri, tema, ekip, güvenlik, oturumlar"
+      },
+      "data": {
+        "title": "Veri",
+        "desc": "CSV dışa aktarımı, talep üzerine silme"
+      }
+    },
+    "integrations": "Entegrasyonlar",
+    "integrationsNote": "stüdyo ayarlarında bağlanır"
+  },
+  "pricing": {
+    "label": "fiyatlandırma",
+    "title": "Planınız ekip\\\nbüyüklüğünüze bağlıdır",
+    "lead": "İki kişi için 15 €, her ek koltuk için +5 €, sınırsız — 120 €. Tüm 16 modül ve Velora AI her seviyeye dahildir: düğmeleri açmak için değil, ekip büyüklüğü için ödeme yaparsınız. Seçebileceğiniz üç ödeme modeli ve peşin ödemede %40'a varan indirim.",
+    "team": "ekip",
+    "seats_one": "kişi",
+    "seats_other": "kişi",
+    "unlimited": "sınırsız",
+    "scaleMin": "2 koltuk",
+    "scaleMax": "∞ sınırsız",
+    "sliderAria": "Stüdyonuzda kaç kişi çalışıyor",
+    "hint": "İki kişi için **15 €**, her ek koltuk için **+5 €**. Sınırsız — ayda **120 €**.",
+    "period": "ödeme dönemi",
+    "months": "{{count}} ay",
+    "noDiscount": "—",
+    "yourPrice": "fiyatınız",
+    "perMonth": "/ ay",
+    "amount": "{{value}} €",
+    "amountPerMonth": "{{value}} € / ay",
+    "rows": {
+      "seats": "Ekip",
+      "perSeat": "Kişi başına",
+      "ai": "Velora AI istekleri",
+      "aiPerMonth": "{{value}} / ay",
+      "modules": "Modüller",
+      "modulesAll": "16'nın tamamı",
+      "total": "{{count}} ay için ödenecek",
+      "saved": "Tasarrufunuz"
+    },
+    "cta": "30 gün deneyin",
+    "note": "Kart gerekmez · tek tıklamayla iptal",
+    "models": [
+      {
+        "title": "Abonelik",
+        "price": "15 € / ay'dan başlayan",
+        "desc": "Sabit bir tutar. Maliyeti baştan bilirsiniz — ay sonunda sürpriz yok."
+      },
+      {
+        "title": "Gelirin %3'ü",
+        "price": "en az 15 € / ay",
+        "desc": "Ciroya göre ödeyin. Sakin bir ayda yalnızca asgari tutara kadar farkı tamamlarsınız."
+      },
+      {
+        "title": "Karma",
+        "price": "½ sabit + %1,5",
+        "desc": "Aboneliğin yarısı artı küçük bir yüzde — iki model arasında denge."
+      }
+    ],
+    "footnote": "Deneme için kart gerekmez. Ödeme modeli ve koltuk sayısı uygulamada istediğiniz zaman değiştirilebilir. Fiyatlara KDV dahil değildir: vergi ülkeniz için ödeme sırasında hesaplanır."
+  },
+  "faq": {
+    "label": "sorular",
+    "title": "İnsanların genellikle sordukları",
+    "items": [
+      {
+        "q": "Deneme süresine neler dahil?",
+        "a": "30 gün boyunca tüm modüllere tam erişim. Kart gerekmez — size uymuyorsa yenilemezsiniz."
+      },
+      {
+        "q": "Müşterilerim başka stüdyoların reklamlarını görecek mi?",
+        "a": "Hayır. Müşteriler sitenizdeki bileşen, Telegram, WhatsApp veya Instagram üzerinden — ayrıca renginiz ve logonuzla müşteri uygulaması üzerinden — rezervasyon yapar. Başka stüdyolarla ortak bir katalog yoktur."
+      },
+      {
+        "q": "Ekibimde kim neyi görür?",
+        "a": "Üç rol vardır. Sahip her şeyi görür. Yönetici takvimi, müşterileri ve genel bakışı görür. Eğitmen yalnızca kendi derslerini ve müşterilerini görür. Kısıtlama arayüzde ve sunucuda çalışır: başkalarının verilerine giden bir yol yoktur."
+      },
+      {
+        "q": "Birden fazla stüdyo veya tesis yönetebilir miyim?",
+        "a": "Evet, bu plana bağlı değildir. Bir hesap birden çok stüdyoya ait olabilir ve aralarında geçiş yapabilir; stüdyo içinde tesisleri ve salonları ayarlarsınız."
+      },
+      {
+        "q": "Karanlık tema ve başka diller var mı?",
+        "a": "Evet. Arayüz açık ve koyu tema arasında geçer ve İngilizce, Rusça, Ukraynaca, Çekçe ve Almanca dahil 22 dili destekler. Saat dilimi, para birimi ve dil başlangıçta seçilir."
+      },
+      {
+        "q": "Ayrılmaya karar verirsem verilerime ne olur?",
+        "a": "Veriler sizin. Ayarlarda müşteriler, takvim, finans ve üyelikler için CSV dışa aktarımı vardır; silme talebiniz üzerine yapılır."
+      }
+    ],
+    "notFoundTitle": "Cevabı bulamadınız mı?",
+    "notFoundLead": "Bize yazın — botlar veya bekleme sırası olmadan bizzat yanıtlarız.",
+    "copied": "Kopyalandı"
+  },
+  "about": {
+    "label": "hakkımızda",
+    "title": "Velora, kendileri de stüdyo işletmiş\\\ninsanlar tarafından geliştiriliyor",
+    "lead": "“Herkes için CRM” yapmıyoruz. Belirli bir iş için — takvim, müşteriler, para, iletişim — araç geliştiriyor; ezber cevaplar göndermek yerine soruları kendimiz yanıtlıyoruz.",
+    "p1": "Bir stüdyonun müşterileri o stüdyonun müşterileri olarak kalır. Velora ortak bir katalog kurmaz, müşterilerinize başkalarının reklamlarını göstermez ve bir kişi size geri döndüğünde komisyon almaz.",
+    "p2": "Şu anda ürün yoga ve pilates stüdyoları için; takvimlerinin, üyeliklerinin ve eğitmenlerinin gerçekten çalışma biçimi için tasarlandı. Diğer sektörler de aynı özenle sonra gelecek."
+  },
+  "cta": {
+    "eyebrow": "Bugün başlayın",
+    "titleTop": "Bir sonraki",
+    "titleAccent": "adımı atmaya hazır mısınız?",
+    "lead": "30 gün ücretsiz. Kart gerekmez. Taahhüt yok. Deneyin — farkı hissedeceksiniz.",
+    "register": "Ücretsiz kaydol",
+    "whatsapp": "WhatsApp'tan bize yazın"
+  },
+  "footer": {
+    "tagline": "Yoga ve pilates stüdyoları için premium CRM. Rezervasyonlar, müşteriler, para ve AI tek yerde.",
+    "columns": {
+      "product": {
+        "title": "Ürün",
+        "features": "Özellikler",
+        "modules": "Modüller",
+        "booking": "Online rezervasyon",
+        "ai": "Velora AI",
+        "pricing": "Fiyatlandırma"
+      },
+      "company": {
+        "title": "Şirket",
+        "difference": "Farkımız",
+        "about": "Hakkımızda",
+        "faq": "Sorular ve yanıtlar",
+        "support": "Destek"
+      },
+      "docs": {
+        "title": "Belgeler",
+        "terms": "Kullanım koşulları",
+        "privacy": "Gizlilik politikası",
+        "cookies": "Çerez politikası",
+        "dpa": "Veri işleme",
+        "cookieSettings": "Çerez ayarları",
+        "support": "Destek"
+      }
+    },
+    "copyright": "© 2026 Velora. Tüm hakları saklıdır."
+  },
+  "screens": {
+    "journal": "Günlük takvim",
+    "booking": "Online rezervasyon",
+    "finance": "Ziyaret ödemesi",
+    "notify": "Olay × kanal",
+    "ai": "Velora AI"
+  },
+  "art": {
+    "journal": "Takvim",
+    "journalToday": "Bugün — 12 ders",
+    "weekdays": [
+      "P",
+      "S",
+      "Ç",
+      "P",
+      "C",
+      "C",
+      "P"
+    ],
+    "finance": "Finans",
+    "financeValue": "1,8 bin €",
+    "financeLabel": "bu ay gelir",
+    "clients": "Müşteriler",
+    "clientsLabel": "müşteri, bu hafta +12",
+    "questions_one": "{{count}} soru",
+    "questions_other": "{{count}} soru",
+    "open": "aç"
+  }
+}

@@ -1,0 +1,318 @@
+{
+  "tabs": {
+    "studios": "Studiouri",
+    "services": "Servicii",
+    "subscriptions": "Abonamente"
+  },
+  "modals": {
+    "addStudio": {
+      "steps": {
+        "about": {
+          "title": "Despre studio",
+          "sub": "Nume și date de contact",
+          "trust": "Datele dvs. sunt criptate și nu sunt partajate niciodată cu terți"
+        },
+        "location": {
+          "title": "Locație",
+          "sub": "Unde se află această sucursală?",
+          "trust": "Adresa este utilizată în program și pe hărți"
+        },
+        "photo": {
+          "title": "Fotografie",
+          "sub": "Coperta studioului — opțională",
+          "trust": "O puteți adăuga mai târziu în setările sucursalei"
+        }
+      },
+      "stepCounter": "Pasul {{current}} din {{total}}",
+      "step1": {
+        "heading": "Informații de bază",
+        "subheading": "Cum se numește studioul și cum poate fi contactat?",
+        "name": "Numele studioului *",
+        "namePlaceholder": "De ex. Studio Velora",
+        "phone": "Telefon *",
+        "email": "E-mail *",
+        "contactHint": "Introduceți un telefon sau un e-mail — cel puțin unul",
+        "noContacts": "Nu au fost oferite contacte",
+        "new": "NOU"
+      },
+      "step2": {
+        "heading": "Locație",
+        "subheading": "Specificați unde se află această sucursală",
+        "country": "Țară",
+        "countryPlaceholder": "Statele Unite",
+        "city": "Oraș *",
+        "cityPlaceholder": "New York",
+        "address": "Adresă *",
+        "addressPlaceholder": "5th Avenue 12, apartamentul 301",
+        "noAddress": "Nu a fost oferită adresă",
+        "groupHint": "Câmpurile „Țară” și „Oraș” sunt utilizate pentru gruparea sucursalelor în listă."
+      },
+      "step3": {
+        "heading": "Fotografia studioului",
+        "subheading": "Încărcați o copertă — este opțională, o puteți omite",
+        "uploadCta": "Faceți clic pentru încărcare",
+        "uploadHint": "JPG, PNG până la 10 MB",
+        "replace": "Înlocuiește",
+        "remove": "Elimină",
+        "previewAlt": "Previzualizare",
+        "summary": "Rezumat",
+        "uploadError": "Fotografia nu a putut fi încărcată. Încercați alt fișier sau eliminați-o."
+      },
+      "summaryRows": {
+        "name": "Nume",
+        "city": "Oraș",
+        "address": "Adresă"
+      },
+      "nextPhoto": "Următorul — fotografie",
+      "submit": "Creează studio",
+      "skipPhoto": "Omite fotografia și creează",
+      "illus": {
+        "contacts": "Contacte",
+        "newBranch": "Sucursala nouă",
+        "city": "Oraș",
+        "newBranchStudio": "Sucursala nouă a studioului"
+      }
+    },
+    "editBranch": {
+      "title": "Editează sucursala",
+      "name": "Numele sucursalei",
+      "namePlaceholder": "Studio Velora",
+      "phone": "Telefon",
+      "email": "E-mail",
+      "emailPlaceholder": "studio@velora.com",
+      "country": "Țară",
+      "countryPlaceholder": "Statele Unite",
+      "city": "Oraș",
+      "cityPlaceholder": "New York",
+      "address": "Adresă",
+      "addressPlaceholder": "5th Avenue 12",
+      "photo": "Fotografia sucursalei",
+      "contactHint": "Introduceți un telefon sau un e-mail",
+      "workingHours": "Program de lucru"
+    },
+    "hall": {
+      "titleNew": "Adaugă {{spaceAcc}}",
+      "titleEdit": "Editează {{spaceAcc}}",
+      "name": "Nume",
+      "namePlaceholder": "{{space, capitalize}} A",
+      "capacity": "Capacitate",
+      "area": "Suprafață, m²",
+      "hourlyRate": "Preț pe oră, {{currency}}",
+      "hourlyRatePlaceholder": "3000",
+      "equipment": "Echipament",
+      "equipmentPlaceholder": "Adaugă echipament",
+      "color": "Culoare",
+      "isOnline": "Online",
+      "photo": "Fotografie",
+      "subtitle": "{{space, capitalize}} în sucursală: locuri, echipament, culoare în program",
+      "previewTitle": "Previzualizare",
+      "sectionBasic": "De bază",
+      "sectionSpace": "Spațiu",
+      "sectionLook": "Aspect",
+      "areaShort": "Suprafață",
+      "hourlyRateShort": "Preț pe oră",
+      "statArea": "Suprafață",
+      "statRate": "Preț / oră",
+      "isOnlineHint": "Cursurile se desfășoară online — fără spații fizice.",
+      "colorHint": "Cursurile de aici sunt evidențiate cu această culoare în program."
+    },
+    "service": {
+      "titleNew": "Serviciu nou",
+      "titleEdit": "Editează serviciul",
+      "name": "Numele serviciului",
+      "namePlaceholder": "Hatha yoga",
+      "category": "Categorie",
+      "type": "Tip",
+      "typeGroup": "Grup",
+      "typeIndividual": "Individual",
+      "price": "Preț, {{currency}}",
+      "pricePlaceholder": "1200",
+      "duration": "Durată, min",
+      "durationPlaceholder": "60",
+      "maxClients": "Număr maxim de clienți",
+      "maxClientsPlaceholder": "15",
+      "description": "Descriere",
+      "descriptionPlaceholder": "Scurtă descriere a serviciului",
+      "color": "Culoare",
+      "subtitle": "Apare în program și în rezervarea online",
+      "previewTitle": "Previzualizare program",
+      "sectionBasic": "De bază",
+      "sectionPricing": "Preț și timp",
+      "sectionLook": "Aspect",
+      "priceShort": "Preț",
+      "durationShort": "Durată",
+      "statSeats": "Locuri",
+      "colorHint": "Cursurile sunt evidențiate cu această culoare în grila programului.",
+      "bookingMode": "Mecanism de rezervare",
+      "bookingModeEvent": "Înscriere",
+      "bookingModeResource": "Alege o oră",
+      "bookingModeEventHint": "Clienții se înscriu la un curs pe care l-ați programat deja.",
+      "bookingModeResourceHint": "Clientul alege un specialist și o oră liberă; intervalul {{offering}} este creat la confirmare.",
+      "bookable": "Disponibil pentru rezervare",
+      "bookableOn": "Da",
+      "bookableOff": "Nu",
+      "bufferBefore": "Interval înainte",
+      "bufferAfter": "Interval după"
+    },
+    "package": {
+      "titleNew": "Pachet nou",
+      "titleEdit": "Editează pachetul",
+      "name": "Numele pachetului",
+      "namePlaceholder": "8 cursuri",
+      "classCount": "Număr de cursuri",
+      "classCountPlaceholder": "8",
+      "price": "Preț, {{currency}}",
+      "pricePlaceholder": "8000",
+      "perVisitPrice": "Preț pe vizită",
+      "durationDays": "Valabil, zile",
+      "durationDaysPlaceholder": "60",
+      "services": "Servicii",
+      "servicesHint": "Nimic selectat — pachetul se aplică tuturor cursurilor",
+      "isActive": "La vânzare",
+      "soldAsSubscription": "Afișează în fila „Abonamente”",
+      "soldAsSingle": "Afișează în fila „Vizite individuale”",
+      "subtitle": "Un pachet de cursuri pe care îl vindeți clienților",
+      "previewTitle": "Previzualizare abonament",
+      "previewKind": "Abonament",
+      "previewValid": "Valabil",
+      "sectionBasic": "De bază",
+      "sectionTerms": "Condiții",
+      "sectionSale": "Vânzări",
+      "priceShort": "Prețul pachetului",
+      "statClasses": "Cursuri",
+      "statDays": "Zile",
+      "statAll": "Toate",
+      "isActiveHint": "Clienții pot vedea și cumpăra acest pachet.",
+      "soldAsSubscriptionHint": "În caz contrar, pachetul rămâne doar la vizite individuale."
+    }
+  },
+  "studios": {
+    "title": "STUDIOURI",
+    "addStudio": "Adaugă studio",
+    "addHall": "Adaugă {{spaceAcc}}",
+    "editBranch": "Editează sucursala",
+    "deleteBranch": "Elimină sucursala",
+    "infoTab": "Informații generale",
+    "hallsTitle": "{{spacePlural, capitalize}} ale studioului",
+    "hallCount_one": "{{spacePlural, capitalize}} · {{count}}",
+    "hallCount_few": "{{spacePlural, capitalize}} · {{count}}",
+    "hallCount_other": "{{spacePlural, capitalize}} · {{count}}",
+    "stats": {
+      "halls": "{{spacePlural, capitalize}}",
+      "totalSeats": "Locuri totale",
+      "fromPerHour": "De la / oră"
+    },
+    "hall": {
+      "seats": "locuri",
+      "schedule": "Program de lucru",
+      "closed": "Închis",
+      "stats": {
+        "seats": "Locuri",
+        "area": "Suprafață",
+        "perHour": "Pe oră"
+      },
+      "equipment": "Echipament",
+      "actions": "Acțiuni",
+      "edit": "Editează {{spaceAcc}}",
+      "delete": "Elimină {{spaceAcc}}"
+    },
+    "empty": {
+      "title": "Niciun studio",
+      "subtitle": "Adăugați primul dvs. studio"
+    },
+    "toasts": {
+      "created": "Studio creat",
+      "createError": "Studioul nu a putut fi creat",
+      "deleted": "Studio eliminat",
+      "hallDeleted": "Eliminat: {{space}}",
+      "saved": "Salvat",
+      "edit": "Editează: {{name}}"
+    },
+    "confirmDelete": "Eliminați sucursala „{{name}}”? Această acțiune nu poate fi anulată.",
+    "confirmDeleteTitle": "Eliminați sucursala?",
+    "confirmDeleteHall": "Eliminați {{spaceAcc}} „{{name}}”?",
+    "confirmDeleteHallTitle": "Eliminați {{spaceAcc}}?"
+  },
+  "services": {
+    "title": "SERVICII",
+    "addService": "Adaugă serviciu",
+    "types": {
+      "group": "Grup",
+      "individual": "Indiv.",
+      "groupFull": " · Grup",
+      "individualFull": " · Individual"
+    },
+    "stats": {
+      "price": "Preț",
+      "duration": "Durată",
+      "bookings": "Rezervări",
+      "revenue": "Venituri"
+    },
+    "details": {
+      "description": "Descriere",
+      "details": "Detalii",
+      "minutes": "minute",
+      "upTo": "Până la {{count}} pers.",
+      "personal": "Personal",
+      "bookingsPerMonth": "rezervări în 30 de zile",
+      "schedule": "Programul cursurilor"
+    },
+    "empty": {
+      "title": "Niciun serviciu",
+      "subtitle": "Adăugați primul dvs. serviciu"
+    },
+    "toasts": {
+      "deleted": "Serviciu eliminat",
+      "deleteError": "Serviciul nu a putut fi eliminat",
+      "saved": "Salvat",
+      "saveError": "Serviciul nu a putut fi salvat",
+      "edit": "Editează: {{name}}"
+    },
+    "confirmDelete": "Eliminați serviciul „{{name}}”?",
+    "confirmDeleteTitle": "Eliminați serviciul?",
+    "categories": {
+      "yoga": "Yoga",
+      "pilates": "Pilates",
+      "stretching": "Stretching",
+      "individual": "Individual",
+      "other": "Necategorizat"
+    }
+  },
+  "subscriptions": {
+    "title": "ABONAMENTE",
+    "addPackage": "Adaugă pachet",
+    "card": {
+      "classCount_one": "{{count}} curs",
+      "classCount_few": "{{count}} cursuri",
+      "classCount_other": "{{count}} de cursuri",
+      "duration": "{{count}} zile",
+      "allServices": "Toate cursurile",
+      "serviceCount_one": "{{count}} serviciu",
+      "serviceCount_few": "{{count}} servicii",
+      "serviceCount_other": "{{count}} de servicii",
+      "inactiveBadge": "Scos de la vânzare"
+    },
+    "settings": {
+      "title": "Setări program",
+      "allowFreeze": "Înghețare abonament",
+      "allowTransfer": "Transfer la alt client",
+      "autoRenewal": "Reînnoire automată din depozitul clientului"
+    },
+    "empty": {
+      "title": "Încă nu există pachete",
+      "cta": "Creează pachet"
+    },
+    "toasts": {
+      "created": "Pachet creat",
+      "saved": "Salvat",
+      "saveError": "Pachetul nu a putut fi salvat",
+      "deactivated": "Pachet scos de la vânzare",
+      "restored": "Pachet repus la vânzare",
+      "actionError": "Acțiunea nu a putut fi efectuată"
+    },
+    "deactivate": "Scoate de la vânzare",
+    "restore": "Pune din nou la vânzare",
+    "confirmDeactivateTitle": "Scoateți acest pachet de la vânzare?",
+    "confirmDeactivate": "Abonamentele deja vândute vor continua să funcționeze."
+  }
+}

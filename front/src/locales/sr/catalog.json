@@ -1,0 +1,318 @@
+{
+  "tabs": {
+    "studios": "Студији",
+    "services": "Услуге",
+    "subscriptions": "Чланарине"
+  },
+  "modals": {
+    "addStudio": {
+      "steps": {
+        "about": {
+          "title": "О студију",
+          "sub": "Назив и контакт подаци",
+          "trust": "Ваши подаци су шифровани и никада се не деле са трећим странама"
+        },
+        "location": {
+          "title": "Локација",
+          "sub": "Где се налази овај огранак?",
+          "trust": "Адреса се користи у распореду и на мапама"
+        },
+        "photo": {
+          "title": "Фотографија",
+          "sub": "Насловна фотографија студија — опционално",
+          "trust": "Можете је додати касније у подешавањима огранка"
+        }
+      },
+      "stepCounter": "Корак {{current}} од {{total}}",
+      "step1": {
+        "heading": "Основне информације",
+        "subheading": "Како се студио зове и како се може контактирати?",
+        "name": "Назив студија *",
+        "namePlaceholder": "Нпр. Velora Studio",
+        "phone": "Телефон *",
+        "email": "Имејл *",
+        "contactHint": "Унесите телефон или имејл — бар једно",
+        "noContacts": "Нема наведених контаката",
+        "new": "НОВО"
+      },
+      "step2": {
+        "heading": "Локација",
+        "subheading": "Наведите где се налази овај огранак",
+        "country": "Држава",
+        "countryPlaceholder": "Сједињене Америчке Државе",
+        "city": "Град *",
+        "cityPlaceholder": "Њујорк",
+        "address": "Адреса *",
+        "addressPlaceholder": "5th Avenue 12, канцеларија 301",
+        "noAddress": "Нема наведене адресе",
+        "groupHint": "Поља „Држава” и „Град” служе за груписање огранака у листи."
+      },
+      "step3": {
+        "heading": "Фотографија студија",
+        "subheading": "Отпремите насловну фотографију — опционална је, можете је прескочити",
+        "uploadCta": "Кликните за отпремање",
+        "uploadHint": "JPG, PNG до 10 MB",
+        "replace": "Замени",
+        "remove": "Уклони",
+        "previewAlt": "Преглед",
+        "summary": "Сажетак",
+        "uploadError": "Фотографија није могла да се отпреми. Покушајте другу датотеку или је уклоните."
+      },
+      "summaryRows": {
+        "name": "Назив",
+        "city": "Град",
+        "address": "Адреса"
+      },
+      "nextPhoto": "Следеће — фотографија",
+      "submit": "Направи студио",
+      "skipPhoto": "Прескочи фотографију и направи",
+      "illus": {
+        "contacts": "Контакти",
+        "newBranch": "Нови огранак",
+        "city": "Град",
+        "newBranchStudio": "Нови огранак студија"
+      }
+    },
+    "editBranch": {
+      "title": "Измени огранак",
+      "name": "Назив огранка",
+      "namePlaceholder": "Velora Studio",
+      "phone": "Телефон",
+      "email": "Имејл",
+      "emailPlaceholder": "studio@velora.com",
+      "country": "Држава",
+      "countryPlaceholder": "Сједињене Америчке Државе",
+      "city": "Град",
+      "cityPlaceholder": "Њујорк",
+      "address": "Адреса",
+      "addressPlaceholder": "5th Avenue 12",
+      "photo": "Фотографија огранка",
+      "contactHint": "Унесите телефон или имејл",
+      "workingHours": "Радно време"
+    },
+    "hall": {
+      "titleNew": "Додај {{spaceAcc}}",
+      "titleEdit": "Измени {{spaceAcc}}",
+      "name": "Назив",
+      "namePlaceholder": "{{space, capitalize}} A",
+      "capacity": "Капацитет",
+      "area": "Површина, m²",
+      "hourlyRate": "Цена по сату, {{currency}}",
+      "hourlyRatePlaceholder": "3000",
+      "equipment": "Опрема",
+      "equipmentPlaceholder": "Додај опрему",
+      "color": "Боја",
+      "isOnline": "Онлајн",
+      "photo": "Фотографија",
+      "subtitle": "{{space, capitalize}} у огранку: места, опрема, боја у распореду",
+      "previewTitle": "Преглед",
+      "sectionBasic": "Основно",
+      "sectionSpace": "Простор",
+      "sectionLook": "Изглед",
+      "areaShort": "Површина",
+      "hourlyRateShort": "Цена по сату",
+      "statArea": "Површина",
+      "statRate": "Цена / сат",
+      "isOnlineHint": "Часови се одржавају онлајн — нема физичког простора.",
+      "colorHint": "Часови овде су истакнути овом бојом у распореду."
+    },
+    "service": {
+      "titleNew": "Нова услуга",
+      "titleEdit": "Измени услугу",
+      "name": "Назив услуге",
+      "namePlaceholder": "Хатха јога",
+      "category": "Категорија",
+      "type": "Тип",
+      "typeGroup": "Групна",
+      "typeIndividual": "Индивидуална",
+      "price": "Цена, {{currency}}",
+      "pricePlaceholder": "1200",
+      "duration": "Трајање, мин",
+      "durationPlaceholder": "60",
+      "maxClients": "Максимално клијената",
+      "maxClientsPlaceholder": "15",
+      "description": "Опис",
+      "descriptionPlaceholder": "Кратак опис услуге",
+      "color": "Боја",
+      "subtitle": "Приказује се у распореду и онлајн резервацији",
+      "previewTitle": "Преглед распореда",
+      "sectionBasic": "Основно",
+      "sectionPricing": "Цена и време",
+      "sectionLook": "Изглед",
+      "priceShort": "Цена",
+      "durationShort": "Трајање",
+      "statSeats": "Места",
+      "colorHint": "Часови су истакнути овом бојом у мрежи распореда.",
+      "bookingMode": "Начин резервације",
+      "bookingModeEvent": "Пријава",
+      "bookingModeResource": "Изаберите време",
+      "bookingModeEventHint": "Клијенти се пријављују за час који сте већ заказали.",
+      "bookingModeResourceHint": "Клијент бира стручњака и слободно време; интервал {{offering}} настаје при потврди.",
+      "bookable": "Доступно за резервацију",
+      "bookableOn": "Да",
+      "bookableOff": "Не",
+      "bufferBefore": "Бафер пре",
+      "bufferAfter": "Бафер после"
+    },
+    "package": {
+      "titleNew": "Нови пакет",
+      "titleEdit": "Измени пакет",
+      "name": "Назив пакета",
+      "namePlaceholder": "8 часова",
+      "classCount": "Број часова",
+      "classCountPlaceholder": "8",
+      "price": "Цена, {{currency}}",
+      "pricePlaceholder": "8000",
+      "perVisitPrice": "Цена по посети",
+      "durationDays": "Важи, дана",
+      "durationDaysPlaceholder": "60",
+      "services": "Услуге",
+      "servicesHint": "Ништа није изабрано — пакет важи за све часове",
+      "isActive": "У продаји",
+      "soldAsSubscription": "Прикажи на картици „Чланарине”",
+      "soldAsSingle": "Прикажи на картици „Појединачне посете”",
+      "subtitle": "Пакет часова који продајете клијентима",
+      "previewTitle": "Преглед карте",
+      "previewKind": "Карта",
+      "previewValid": "Важи",
+      "sectionBasic": "Основно",
+      "sectionTerms": "Услови",
+      "sectionSale": "Продаја",
+      "priceShort": "Цена пакета",
+      "statClasses": "Часови",
+      "statDays": "Дани",
+      "statAll": "Сви",
+      "isActiveHint": "Клијенти могу видети и купити овај пакет.",
+      "soldAsSubscriptionHint": "У супротном пакет остаје само у појединачним посетама."
+    }
+  },
+  "studios": {
+    "title": "СТУДИЈИ",
+    "addStudio": "Додај студио",
+    "addHall": "Додај {{spaceAcc}}",
+    "editBranch": "Измени огранак",
+    "deleteBranch": "Избриши огранак",
+    "infoTab": "Опште информације",
+    "hallsTitle": "{{spacePlural, capitalize}} студија",
+    "hallCount_one": "{{spacePlural, capitalize}} · {{count}}",
+    "hallCount_few": "{{spacePlural, capitalize}} · {{count}}",
+    "hallCount_other": "{{spacePlural, capitalize}} · {{count}}",
+    "stats": {
+      "halls": "{{spacePlural, capitalize}}",
+      "totalSeats": "Укупно места",
+      "fromPerHour": "Од / сат"
+    },
+    "hall": {
+      "seats": "места",
+      "schedule": "Радно време",
+      "closed": "Затворено",
+      "stats": {
+        "seats": "Места",
+        "area": "Површина",
+        "perHour": "По сату"
+      },
+      "equipment": "Опрема",
+      "actions": "Радње",
+      "edit": "Измени {{spaceAcc}}",
+      "delete": "Избриши {{spaceAcc}}"
+    },
+    "empty": {
+      "title": "Нема студија",
+      "subtitle": "Додајте свој први студио"
+    },
+    "toasts": {
+      "created": "Студио је направљен",
+      "createError": "Студио није могао да се направи",
+      "deleted": "Студио је избрисан",
+      "hallDeleted": "Избрисано: {{space}}",
+      "saved": "Сачувано",
+      "edit": "Измени: {{name}}"
+    },
+    "confirmDelete": "Избрисати огранак „{{name}}”? Ово се не може поништити.",
+    "confirmDeleteTitle": "Избрисати огранак?",
+    "confirmDeleteHall": "Избрисати {{spaceAcc}} „{{name}}”?",
+    "confirmDeleteHallTitle": "Избрисати {{spaceAcc}}?"
+  },
+  "services": {
+    "title": "УСЛУГЕ",
+    "addService": "Додај услугу",
+    "types": {
+      "group": "Групна",
+      "individual": "Индив.",
+      "groupFull": " · Групна",
+      "individualFull": " · Индивидуална"
+    },
+    "stats": {
+      "price": "Цена",
+      "duration": "Трајање",
+      "bookings": "Резервације",
+      "revenue": "Приход"
+    },
+    "details": {
+      "description": "Опис",
+      "details": "Детаљи",
+      "minutes": "минута",
+      "upTo": "До {{count}} особа",
+      "personal": "Индивидуална",
+      "bookingsPerMonth": "резервација за 30 дана",
+      "schedule": "Распоред часова"
+    },
+    "empty": {
+      "title": "Нема услуга",
+      "subtitle": "Додајте своју прву услугу"
+    },
+    "toasts": {
+      "deleted": "Услуга је избрисана",
+      "deleteError": "Услуга није могла да се избрише",
+      "saved": "Сачувано",
+      "saveError": "Услуга није могла да се сачува",
+      "edit": "Измени: {{name}}"
+    },
+    "confirmDelete": "Избрисати услугу „{{name}}”?",
+    "confirmDeleteTitle": "Избрисати услугу?",
+    "categories": {
+      "yoga": "Јога",
+      "pilates": "Пилатес",
+      "stretching": "Истезање",
+      "individual": "Индивидуална",
+      "other": "Без категорије"
+    }
+  },
+  "subscriptions": {
+    "title": "ЧЛАНАРИНЕ",
+    "addPackage": "Додај пакет",
+    "card": {
+      "classCount_one": "{{count}} час",
+      "classCount_few": "{{count}} часа",
+      "classCount_other": "{{count}} часова",
+      "duration": "{{count}} дана",
+      "allServices": "Сви часови",
+      "serviceCount_one": "{{count}} услуга",
+      "serviceCount_few": "{{count}} услуге",
+      "serviceCount_other": "{{count}} услуга",
+      "inactiveBadge": "Повучено из продаје"
+    },
+    "settings": {
+      "title": "Подешавања програма",
+      "allowFreeze": "Замрзавање чланарине",
+      "allowTransfer": "Пренос другом клијенту",
+      "autoRenewal": "Аутоматска обнова из депозита клијента"
+    },
+    "empty": {
+      "title": "Још нема пакета",
+      "cta": "Направи пакет"
+    },
+    "toasts": {
+      "created": "Пакет је направљен",
+      "saved": "Сачувано",
+      "saveError": "Пакет није могао да се сачува",
+      "deactivated": "Пакет је повучен из продаје",
+      "restored": "Пакет је поново у продаји",
+      "actionError": "Радња није могла да се изврши"
+    },
+    "deactivate": "Повуци из продаје",
+    "restore": "Врати у продају",
+    "confirmDeactivateTitle": "Повући овај пакет из продаје?",
+    "confirmDeactivate": "Већ продате чланарине ће наставити да раде."
+  }
+}

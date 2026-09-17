@@ -1,0 +1,315 @@
+{
+  "tabs": {
+    "studios": "Stüdyolar",
+    "services": "Hizmetler",
+    "subscriptions": "Üyelikler"
+  },
+  "modals": {
+    "addStudio": {
+      "steps": {
+        "about": {
+          "title": "Stüdyo hakkında",
+          "sub": "Ad ve iletişim bilgileri",
+          "trust": "Verileriniz şifrelenir ve asla üçüncü taraflarla paylaşılmaz"
+        },
+        "location": {
+          "title": "Konum",
+          "sub": "Bu şube nerede bulunuyor?",
+          "trust": "Adres, takvimde ve haritalarda kullanılır"
+        },
+        "photo": {
+          "title": "Fotoğraf",
+          "sub": "Stüdyo kapağı — isteğe bağlı",
+          "trust": "Daha sonra şube ayarlarından ekleyebilirsiniz"
+        }
+      },
+      "stepCounter": "{{total}} adımın {{current}}. adımı",
+      "step1": {
+        "heading": "Temel bilgiler",
+        "subheading": "Stüdyonun adı nedir ve nasıl ulaşılır?",
+        "name": "Stüdyo adı *",
+        "namePlaceholder": "Örn. Velora Studio",
+        "phone": "Telefon *",
+        "email": "E-posta *",
+        "contactHint": "Telefon veya e-posta girin — en az biri",
+        "noContacts": "İletişim bilgisi verilmedi",
+        "new": "YENİ"
+      },
+      "step2": {
+        "heading": "Konum",
+        "subheading": "Bu şubenin nerede olduğunu belirtin",
+        "country": "Ülke",
+        "countryPlaceholder": "Amerika Birleşik Devletleri",
+        "city": "Şehir *",
+        "cityPlaceholder": "New York",
+        "address": "Adres *",
+        "addressPlaceholder": "5th Avenue 12, daire 301",
+        "noAddress": "Adres verilmedi",
+        "groupHint": "“Ülke” ve “Şehir” alanları, şubeleri listede gruplamak için kullanılır."
+      },
+      "step3": {
+        "heading": "Stüdyo fotoğrafı",
+        "subheading": "Bir kapak yükleyin — isteğe bağlıdır, atlayabilirsiniz",
+        "uploadCta": "Yüklemek için tıklayın",
+        "uploadHint": "JPG, PNG, en fazla 10 MB",
+        "replace": "Değiştir",
+        "remove": "Kaldır",
+        "previewAlt": "Önizleme",
+        "summary": "Özet",
+        "uploadError": "Fotoğraf yüklenemedi. Başka bir dosya deneyin veya kaldırın."
+      },
+      "summaryRows": {
+        "name": "Ad",
+        "city": "Şehir",
+        "address": "Adres"
+      },
+      "nextPhoto": "Sonraki — fotoğraf",
+      "submit": "Stüdyo oluştur",
+      "skipPhoto": "Fotoğrafı atla ve oluştur",
+      "illus": {
+        "contacts": "İletişim bilgileri",
+        "newBranch": "Yeni şube",
+        "city": "Şehir",
+        "newBranchStudio": "Yeni stüdyo şubesi"
+      }
+    },
+    "editBranch": {
+      "title": "Şubeyi düzenle",
+      "name": "Şube adı",
+      "namePlaceholder": "Velora Studio",
+      "phone": "Telefon",
+      "email": "E-posta",
+      "emailPlaceholder": "studio@velora.com",
+      "country": "Ülke",
+      "countryPlaceholder": "Amerika Birleşik Devletleri",
+      "city": "Şehir",
+      "cityPlaceholder": "New York",
+      "address": "Adres",
+      "addressPlaceholder": "5th Avenue 12",
+      "photo": "Şube fotoğrafı",
+      "contactHint": "Telefon veya e-posta girin",
+      "workingHours": "Çalışma saatleri"
+    },
+    "hall": {
+      "titleNew": "{{spaceAcc}} ekle",
+      "titleEdit": "{{spaceAcc}} düzenle",
+      "name": "Ad",
+      "namePlaceholder": "{{space, capitalize}} A",
+      "capacity": "Kapasite",
+      "area": "Alan, m²",
+      "hourlyRate": "Saatlik fiyat, {{currency}}",
+      "hourlyRatePlaceholder": "3000",
+      "equipment": "Ekipman",
+      "equipmentPlaceholder": "Ekipman ekle",
+      "color": "Renk",
+      "isOnline": "Çevrimiçi",
+      "photo": "Fotoğraf",
+      "subtitle": "Şubedeki {{space, capitalize}}: koltuklar, ekipman, takvim rengi",
+      "previewTitle": "Önizleme",
+      "sectionBasic": "Temel bilgiler",
+      "sectionSpace": "Alan",
+      "sectionLook": "Görünüm",
+      "areaShort": "Alan",
+      "hourlyRateShort": "Saatlik fiyat",
+      "statArea": "Alan",
+      "statRate": "Fiyat / saat",
+      "isOnlineHint": "Dersler çevrimiçi yapılır — fiziksel bir mekan yoktur.",
+      "colorHint": "Buradaki dersler takvimde bu renkle vurgulanır."
+    },
+    "service": {
+      "titleNew": "Yeni hizmet",
+      "titleEdit": "Hizmeti düzenle",
+      "name": "Hizmet adı",
+      "namePlaceholder": "Hatha yoga",
+      "category": "Kategori",
+      "type": "Tür",
+      "typeGroup": "Grup",
+      "typeIndividual": "Bireysel",
+      "price": "Fiyat, {{currency}}",
+      "pricePlaceholder": "1200",
+      "duration": "Süre, dk",
+      "durationPlaceholder": "60",
+      "maxClients": "Maks. müşteri sayısı",
+      "maxClientsPlaceholder": "15",
+      "description": "Açıklama",
+      "descriptionPlaceholder": "Kısa hizmet açıklaması",
+      "color": "Renk",
+      "subtitle": "Takvimde ve online rezervasyonda görünür",
+      "previewTitle": "Takvim önizlemesi",
+      "sectionBasic": "Temel bilgiler",
+      "sectionPricing": "Fiyat ve süre",
+      "sectionLook": "Görünüm",
+      "priceShort": "Fiyat",
+      "durationShort": "Süre",
+      "statSeats": "Koltuklar",
+      "colorHint": "Dersler takvim ızgarasında bu renkle vurgulanır.",
+      "bookingMode": "Rezervasyon şekli",
+      "bookingModeEvent": "Kayıt",
+      "bookingModeResource": "Saat seç",
+      "bookingModeEventHint": "Müşteriler, önceden planladığınız bir derse kaydolur.",
+      "bookingModeResourceHint": "Müşteri bir uzman ve boş zaman seçer; {{offering}} aralığı onayda oluşturulur.",
+      "bookable": "Rezervasyona açık",
+      "bookableOn": "Evet",
+      "bookableOff": "Hayır",
+      "bufferBefore": "Önceki tampon",
+      "bufferAfter": "Sonraki tampon"
+    },
+    "package": {
+      "titleNew": "Yeni paket",
+      "titleEdit": "Paketi düzenle",
+      "name": "Paket adı",
+      "namePlaceholder": "8 ders",
+      "classCount": "Ders sayısı",
+      "classCountPlaceholder": "8",
+      "price": "Fiyat, {{currency}}",
+      "pricePlaceholder": "8000",
+      "perVisitPrice": "Ziyaret başına fiyat",
+      "durationDays": "Geçerlilik, gün",
+      "durationDaysPlaceholder": "60",
+      "services": "Hizmetler",
+      "servicesHint": "Hiçbir şey seçilmedi — paket tüm dersler için geçerlidir",
+      "isActive": "Satışta",
+      "soldAsSubscription": "“Üyelikler” sekmesinde göster",
+      "soldAsSingle": "“Tek ziyaretler” sekmesinde göster",
+      "subtitle": "Müşterilere sattığınız ders paketi",
+      "previewTitle": "Kart önizlemesi",
+      "previewKind": "Kart",
+      "previewValid": "Geçerlilik",
+      "sectionBasic": "Temel bilgiler",
+      "sectionTerms": "Koşullar",
+      "sectionSale": "Satış",
+      "priceShort": "Paket fiyatı",
+      "statClasses": "Dersler",
+      "statDays": "Günler",
+      "statAll": "Tümü",
+      "isActiveHint": "Müşteriler bu paketi görebilir ve satın alabilir.",
+      "soldAsSubscriptionHint": "Aksi halde paket yalnızca tek ziyaretlerde kalır."
+    }
+  },
+  "studios": {
+    "title": "STÜDYOLAR",
+    "addStudio": "Stüdyo ekle",
+    "addHall": "{{spaceAcc}} ekle",
+    "editBranch": "Şubeyi düzenle",
+    "deleteBranch": "Şubeyi sil",
+    "infoTab": "Genel bilgiler",
+    "hallsTitle": "Stüdyo {{spacePlural}}",
+    "hallCount_one": "{{spacePlural, capitalize}} · {{count}}",
+    "hallCount_other": "{{spacePlural, capitalize}} · {{count}}",
+    "stats": {
+      "halls": "{{spacePlural, capitalize}}",
+      "totalSeats": "Toplam koltuk",
+      "fromPerHour": "Başlangıç / saat"
+    },
+    "hall": {
+      "seats": "koltuk",
+      "schedule": "Çalışma saatleri",
+      "closed": "Kapalı",
+      "stats": {
+        "seats": "Koltuklar",
+        "area": "Alan",
+        "perHour": "Saatlik"
+      },
+      "equipment": "Ekipman",
+      "actions": "İşlemler",
+      "edit": "{{spaceAcc}} düzenle",
+      "delete": "{{spaceAcc}} sil"
+    },
+    "empty": {
+      "title": "Stüdyo yok",
+      "subtitle": "İlk stüdyonuzu ekleyin"
+    },
+    "toasts": {
+      "created": "Stüdyo oluşturuldu",
+      "createError": "Stüdyo oluşturulamadı",
+      "deleted": "Stüdyo silindi",
+      "hallDeleted": "Silindi: {{space}}",
+      "saved": "Kaydedildi",
+      "edit": "Düzenle: {{name}}"
+    },
+    "confirmDelete": "“{{name}}” şubesi silinsin mi? Bu işlem geri alınamaz.",
+    "confirmDeleteTitle": "Şube silinsin mi?",
+    "confirmDeleteHall": "{{spaceAcc}} “{{name}}” silinsin mi?",
+    "confirmDeleteHallTitle": "{{spaceAcc}} silinsin mi?"
+  },
+  "services": {
+    "title": "HİZMETLER",
+    "addService": "Hizmet ekle",
+    "types": {
+      "group": "Grup",
+      "individual": "Bireysel",
+      "groupFull": " · Grup",
+      "individualFull": " · Bireysel"
+    },
+    "stats": {
+      "price": "Fiyat",
+      "duration": "Süre",
+      "bookings": "Rezervasyonlar",
+      "revenue": "Gelir"
+    },
+    "details": {
+      "description": "Açıklama",
+      "details": "Ayrıntılar",
+      "minutes": "dakika",
+      "upTo": "En çok {{count}} kişi",
+      "personal": "Kişisel",
+      "bookingsPerMonth": "30 günde rezervasyon",
+      "schedule": "Ders takvimi"
+    },
+    "empty": {
+      "title": "Hizmet yok",
+      "subtitle": "İlk hizmetinizi ekleyin"
+    },
+    "toasts": {
+      "deleted": "Hizmet silindi",
+      "deleteError": "Hizmet silinemedi",
+      "saved": "Kaydedildi",
+      "saveError": "Hizmet kaydedilemedi",
+      "edit": "Düzenle: {{name}}"
+    },
+    "confirmDelete": "“{{name}}” hizmeti silinsin mi?",
+    "confirmDeleteTitle": "Hizmet silinsin mi?",
+    "categories": {
+      "yoga": "Yoga",
+      "pilates": "Pilates",
+      "stretching": "Esneme",
+      "individual": "Bireysel",
+      "other": "Kategorisiz"
+    }
+  },
+  "subscriptions": {
+    "title": "ÜYELİKLER",
+    "addPackage": "Paket ekle",
+    "card": {
+      "classCount_one": "{{count}} ders",
+      "classCount_other": "{{count}} ders",
+      "duration": "{{count}} gün",
+      "allServices": "Tüm dersler",
+      "serviceCount_one": "{{count}} hizmet",
+      "serviceCount_other": "{{count}} hizmet",
+      "inactiveBadge": "Satıştan kaldırıldı"
+    },
+    "settings": {
+      "title": "Program ayarları",
+      "allowFreeze": "Üyeliği dondurma",
+      "allowTransfer": "Başka müşteriye aktarım",
+      "autoRenewal": "Müşteri bakiyesinden otomatik yenileme"
+    },
+    "empty": {
+      "title": "Henüz paket yok",
+      "cta": "Paket oluştur"
+    },
+    "toasts": {
+      "created": "Paket oluşturuldu",
+      "saved": "Kaydedildi",
+      "saveError": "Paket kaydedilemedi",
+      "deactivated": "Paket satıştan kaldırıldı",
+      "restored": "Paket yeniden satışta",
+      "actionError": "İşlem tamamlanamadı"
+    },
+    "deactivate": "Satıştan kaldır",
+    "restore": "Yeniden satışa al",
+    "confirmDeactivateTitle": "Bu paket satıştan kaldırılsın mı?",
+    "confirmDeactivate": "Daha önce satılan üyelikler çalışmaya devam eder."
+  }
+}

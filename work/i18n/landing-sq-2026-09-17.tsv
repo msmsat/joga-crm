@@ -1,0 +1,231 @@
+== sq
+nav.product	Produkti
+nav.modules	Modulet
+nav.pricing	Çmimet
+nav.faq	Pyetjet e shpeshta
+nav.login	Hyni
+nav.startShort	Filloni
+nav.startFull	Filloni falas
+nav.language	Gjuha
+hero.badge	Standardi i ri CRM për vitin 2026
+hero.title	Një CRM që do ta\\n*donit* ta përdornit
+hero.lead	CRM premium B2B për studio yoga dhe pilates. Rezervime, klientë, ekip dhe financa në një vend. Pa klikime të panevojshme, pa ngatërresë.
+hero.cta	Provojeni falas për 30 ditë
+hero.perks.0	30 ditë falas
+hero.perks.1	Pa kartë
+hero.perks.2	Anulojeni me një klik
+marquee.0	Orari
+marquee.1	Klientët
+marquee.2	Anëtarësimet
+marquee.3	Rezervimet online
+marquee.4	Financat
+marquee.5	Pagat
+marquee.6	Njoftimet
+marquee.7	Besnikëria
+marquee.8	Raportet
+marquee.9	Velora AI
+marquee.10	Aplikacioni i klientit
+marquee.11	Rolet dhe qasja
+stats.items.0.value	30 ditë
+stats.items.0.label	Falas, pa kartë
+stats.items.1.value	16
+stats.items.1.label	module në çdo plan
+stats.items.2.value	4
+stats.items.2.label	kanale rezervimi online
+stats.items.3.value	nga 15 €
+stats.items.3.label	për muaj, për studio
+stats.trust.0	Të dhënat tuaja mbeten tuajat
+stats.trust.1	Rolet zbatohen edhe në server
+stats.trust.2	Eksport CSV kurdoherë
+stats.trust.3	Fshirje me kërkesë
+compare.label	dallimi
+compare.title	Hoqëm atë që\\nju pengonte
+compare.lead	Velora lindi nga përvoja jonë: drejtonim studio dhe çdo ditë ndesheshim me të njëjtin mur — një CRM ku duheshin nëntë klikime për të rezervuar një klient. Ja çfarë ndryshoi.
+compare.usual	Mënyra e zakonshme
+compare.velora	Në Velora
+compare.pairs.0.bad	Për të rezervuar një klient, largoheni nga orari për një ekran tjetër dhe pastaj ktheheni
+compare.pairs.0.good	Rezervimet dhe klientët e rinj krijohen drejtpërdrejt në orar
+compare.pairs.1.bad	Raportet eksportohen në Excel dhe përputhen me dorë
+compare.pairs.1.good	Raporte live sipas trajnerit dhe shërbimit, me eksport për çdo periudhë
+compare.pairs.2.bad	Njoftimet janë një shërbim i veçantë për të cilin paguani veçmas
+compare.pairs.2.good	Telegram, email dhe WhatsApp janë të integruara me një matricë ngjarje × kanal
+compare.pairs.3.bad	Një trajner mund të shohë orarin dhe bazën e klientëve të të gjithëve të tjerëve
+compare.pairs.3.good	Rolet e kufizojnë qasjen si në ndërfaqe, ashtu edhe në server
+compare.pairs.4.bad	Një asistent? Në rastin më të mirë, kërkim klientësh
+compare.pairs.4.good	Velora AI u përgjigjet pyetjeve për biznesin tuaj — dhe pyetjeve të klientëve tuaj në Telegram dhe Instagram
+showcase.label	gjithçka në një vend
+showcase.title	Një platformë në vend të\\ndhjetëra shërbimeve
+showcase.lead	Rezervime, klientë, para, komunikim dhe AI në një ndërfaqe të vetme. Asnjë modul i tepërt: çdo pamje zgjidh një problem real të pronarit.
+showcase.blocks.journal.title	Orari juaj
+showcase.blocks.journal.lead	Rrjetë ditore ku trajnerët janë kolona dhe orët janë rreshta. Këtu ndodh gjithçka që bën administratori.
+showcase.blocks.journal.points.0	Tërhiqni një klasë në një orar tjetër — ose te një trajner tjetër
+showcase.blocks.journal.points.1	Krijoni klasa dhe klientë të rinj pa dalë nga orari
+showcase.blocks.journal.points.2	Përmbledhja e ditës është pranë: zënia e sallave dhe të ardhurat
+showcase.blocks.booking.title	Rezervimet tuaja online
+showcase.blocks.booking.lead	Katër kanale ku klientët rezervojnë vetë, në çdo kohë dhe pa administrator.
+showcase.blocks.booking.points.0	Widget në faqe, Telegram, WhatsApp dhe Instagram — secili konfigurohet veçmas
+showcase.blocks.booking.points.1	Rregulla: sa orë para fillimit mbyllet rezervimi dhe deri kur klienti mund të anulojë
+showcase.blocks.booking.points.2	Markimi i aplikacionit të klientit me parapamje live — ngjyra dhe gjuha që i përshtaten markës suaj
+showcase.blocks.finance.title	Financat tuaja
+showcase.blocks.finance.lead	Llogari, transaksione, paga dhe dokumente në një vend, pa eksport në tabela llogaritëse.
+showcase.blocks.finance.points.0	Arkë, llogari bankare dhe pranime me kartë me saldo dhe lëvizje ditore
+showcase.blocks.finance.points.1	Anëtarësime, karta dhuratë dhe rimbursime të lidhura me një klient dhe llogari
+showcase.blocks.finance.points.2	Pagat e trajnerëve të llogaritura sipas rregullave tuaja
+showcase.blocks.notify.title	Njoftimet tuaja
+showcase.blocks.notify.lead	Tri kanale dërgimi dhe një matricë ku vendosni çfarë dërgohet dhe ku.
+showcase.blocks.notify.points.0	Telegram, email dhe WhatsApp — secili lidhet me çelësin e vet të studios
+showcase.blocks.notify.points.1	Një grup i veçantë ngjarjesh për klientin, trajnerin, administratorin dhe pronarin
+showcase.blocks.notify.points.2	Kujtesa 24 dhe 2 orë përpara, „mbeten 1–2 klasa”, ditëlindje dhe kërkesa për vlerësim
+showcase.blocks.ai.title	Shtresa juaj AI
+showcase.blocks.ai.lead	Asistenti e njeh kontekstin e biznesit dhe është në çdo faqe — agjentët u përgjigjen vetë klientëve.
+showcase.blocks.ai.points.0	Pyesni për studion nga shiriti i sipërm, pa hapur një seksion tjetër
+showcase.blocks.ai.points.1	Agjentë AI në Telegram dhe Instagram: toni i komunikimit dhe mënyra „vetëm jashtë orarit të punës”
+showcase.blocks.ai.points.2	Statistika: sa biseda u trajtuan dhe si u vlerësuan
+ctaStrip.title	Provojeni pa migrim të të dhënave dhe pa pagesë paraprake
+ctaStrip.button	Filloni falas
+ctaStrip.note	30 ditë falas • Pa kartë • Ndihmë për fillimin
+modules.label	modulet
+modules.title	16 module,\\ntashmë të përfshira
+modules.lead	Jo një koleksion vendmbajtësish „së shpejti” — gjithçka e listuar funksionon dhe përfshihet në plan. Rolet vendosin kush e sheh secilin seksion.
+modules.items.dashboard.title	Pasqyrë
+modules.items.dashboard.desc	Të ardhura, klientë aktivë, rezervime dhe besnikëria e klientëve — me trende
+modules.items.journal.title	Orari
+modules.items.journal.desc	Rrjetë ditore sipas trajnerit dhe sallës, tërhiqeni për ta ricaktuar
+modules.items.clients.title	Klientët
+modules.items.clients.desc	Profili, anëtarësime, pikë, histori, shënime, etiketa
+modules.items.staff.title	Ekipi
+modules.items.staff.desc	Profile, tregues, orari i punës, caktime sallash
+modules.items.catalog.title	Katalogu
+modules.items.catalog.desc	Objekte, salla me ngjyrë dhe kapacitet, shërbimet e studios
+modules.items.booking.title	Rezervimet online
+modules.items.booking.desc	Widget, Telegram, WhatsApp, Instagram dhe rregulla rezervimi
+modules.items.finance.title	Financat
+modules.items.finance.desc	Llogari, transaksione, palë, dokumente, objektiva, paga
+modules.items.notify.title	Njoftimet
+modules.items.notify.desc	Telegram, email, WhatsApp dhe matricë ngjarje × kanal
+modules.items.loyalty.title	Besnikëria
+modules.items.loyalty.desc	Karta, zbritje, karta dhuratë, anëtarësime, rekomandime
+modules.items.ai.title	Velora AI
+modules.items.ai.desc	Asistent biznesi dhe agjentë për klientët tuaj
+modules.items.reports.title	Raportet
+modules.items.reports.desc	Sipas shitjeve, trajnerëve dhe shërbimeve — me eksport
+modules.items.miniapp.title	Aplikacioni i klientit
+modules.items.miniapp.desc	Llogaria e klientit: rezervime, anëtarësime, pikë
+modules.items.multistudio.title	Disa studio
+modules.items.multistudio.desc	Disa studio në një llogari, kaloni kurdoherë
+modules.items.roles.title	Rolet dhe qasja
+modules.items.roles.desc	Pronar, administrator, trajner — në ndërfaqe dhe në server
+modules.items.settings.title	Cilësimet
+modules.items.settings.desc	Orari i punës, tema, ekipi, siguria, sesionet
+modules.items.data.title	Të dhënat
+modules.items.data.desc	Eksport CSV, fshirje me kërkesë
+modules.integrations	Integrimet
+modules.integrationsNote	lidhen në cilësimet e studios
+pricing.label	çmimet
+pricing.title	Plani juaj varet nga\\nmadhësia e ekipit
+pricing.lead	15 € për dy persona, +5 € për çdo vend tjetër, pa kufi — 120 €. Të 16 modulet dhe Velora AI përfshihen në çdo nivel: paguani për madhësinë e ekipit, jo për të zhbllokuar butona. Tre modele pagese për të zgjedhur dhe deri në 40% ulje me pagesë paraprake.
+pricing.team	ekip
+pricing.seats_one	person
+pricing.seats_other	persona
+pricing.unlimited	pa kufi
+pricing.scaleMin	2 vende
+pricing.scaleMax	∞ pa kufi
+pricing.sliderAria	Sa persona punojnë në studion tuaj
+pricing.hint	**15 €** për dy persona, **+5 €** për çdo vend shtesë. Pa kufi — **120 €** në muaj.
+pricing.period	periudha e pagesës
+pricing.months	{{count}} muaj
+pricing.noDiscount	—
+pricing.yourPrice	çmimi juaj
+pricing.perMonth	/ muaj
+pricing.amount	{{value}} €
+pricing.amountPerMonth	{{value}} € / muaj
+pricing.rows.seats	Ekipi
+pricing.rows.perSeat	Për person
+pricing.rows.ai	Kërkesa Velora AI
+pricing.rows.aiPerMonth	{{value}} / muaj
+pricing.rows.modules	Modulet
+pricing.rows.modulesAll	të 16-at
+pricing.rows.total	Për t'u paguar për {{count}} muaj
+pricing.rows.saved	Ju kurseni
+pricing.cta	Provojeni për 30 ditë
+pricing.note	Pa kartë · anulim me një klik
+pricing.models.0.title	Abonim
+pricing.models.0.price	nga 15 € / muaj
+pricing.models.0.desc	Një shumë fikse. Koston e dini paraprakisht — pa surpriza në fund të muajit.
+pricing.models.1.title	3% e të ardhurave
+pricing.models.1.price	të paktën 15 € / muaj
+pricing.models.1.desc	Paguani sipas xhiros. Në një muaj më të qetë, plotësoni vetëm diferencën deri te shuma minimale.
+pricing.models.2.title	I kombinuar
+pricing.models.2.price	½ fikse + 1,5%
+pricing.models.2.desc	Gjysma e abonimit plus një përqindje e vogël — ekuilibër mes dy modeleve.
+pricing.footnote	Prova nuk kërkon kartë. Modeli i pagesës dhe numri i vendeve mund të ndryshohen në aplikacion kurdoherë. Çmimet nuk përfshijnë TVSH-në: taksa llogaritet në pagesë për vendin tuaj.
+faq.label	pyetje
+faq.title	Këto pyeten zakonisht
+faq.items.0.q	Çfarë përfshin periudha e provës?
+faq.items.0.a	Qasje e plotë në të gjitha modulet për 30 ditë. Nuk nevojitet kartë — nëse nuk ju përshtatet, thjesht nuk e rinovoni.
+faq.items.1.q	A do të shohin klientët e mi reklama të studiove të tjera?
+faq.items.1.a	Jo. Klientët rezervojnë përmes widget-it në faqen tuaj, Telegram-it, WhatsApp-it ose Instagram-it tuaj — dhe nga aplikacioni i klientit me ngjyrën dhe logon tuaj. Nuk ka katalog të përbashkët me studio të tjera.
+faq.items.2.q	Kush në ekipin tim sheh çfarë?
+faq.items.2.a	Tre role. Pronari sheh gjithçka. Administratori sheh orarin, klientët dhe pasqyrën. Trajneri sheh vetëm klasat dhe klientët e tij. Kufizimi funksionon në ndërfaqe dhe në server: nuk ka rrugë drejt të dhënave të të tjerëve.
+faq.items.3.q	A mund të drejtoj disa studio ose objekte?
+faq.items.3.a	Po, dhe kjo nuk varet nga plani. Një llogari mund t'u përkasë disa studiove dhe të kalojë mes tyre, ndërsa brenda studios konfiguroni objektet dhe sallat.
+faq.items.4.q	A ka temë të errët dhe gjuhë të tjera?
+faq.items.4.a	Po. Ndërfaqja kalon mes temës së çelët dhe të errët dhe mbështet 22 gjuhë, përfshirë anglishten, rusishten, ukrainishten, çekishten dhe gjermanishten. Zona kohore, monedha dhe gjuha zgjidhen gjatë konfigurimit fillestar.
+faq.items.5.q	Çfarë ndodh me të dhënat e mia nëse vendos të largohem?
+faq.items.5.a	Të dhënat janë tuajat. Cilësimet ofrojnë eksport CSV për klientët, orarin, financat dhe anëtarësimet, dhe fshirja bëhet me kërkesën tuaj.
+faq.notFoundTitle	Nuk e gjetët përgjigjen?
+faq.notFoundLead	Na shkruani — përgjigjemi personalisht, pa robotë dhe pa pritje.
+faq.copied	U kopjua
+about.label	rreth nesh
+about.title	Velora ndërtohet nga njerëz\\nqë vetë kanë drejtuar studio
+about.lead	Nuk po ndërtojmë „CRM për të gjithë”. Po ndërtojmë një mjet për një punë të caktuar — orar, klientë, para, komunikim — dhe u përgjigjemi vetë pyetjeve në vend që të dërgojmë përgjigje të gatshme.
+about.p1	Klientët e një studioje mbeten klientët e saj. Velora nuk ndërton një katalog të përbashkët, nuk u shfaq klientëve tuaj reklama të të tjerëve dhe nuk merr përqindje kur një person kthehet te ju.
+about.p2	Tani për tani produkti është krijuar për studio yoga dhe pilates — për mënyrën si funksionojnë vërtet oraret, anëtarësimet dhe trajnerët e tyre. Industri të tjera do të vijnë me të njëjtën kujdes.
+cta.eyebrow	Filloni sot
+cta.titleTop	Gati për të bërë
+cta.titleAccent	hapin tjetër?
+cta.lead	30 ditë falas. Pa kartë. Pa detyrim. Provojeni — do ta ndieni ndryshimin.
+cta.register	Regjistrohuni falas
+cta.whatsapp	Na shkruani në WhatsApp
+footer.tagline	CRM premium për studio yoga dhe pilates. Rezervime, klientë, para dhe AI në një vend.
+footer.columns.product.title	Produkti
+footer.columns.product.features	Funksionet
+footer.columns.product.modules	Modulet
+footer.columns.product.booking	Rezervimet online
+footer.columns.product.ai	Velora AI
+footer.columns.product.pricing	Çmimet
+footer.columns.company.title	Kompania
+footer.columns.company.difference	Dallimi ynë
+footer.columns.company.about	Rreth nesh
+footer.columns.company.faq	Pyetje dhe përgjigje
+footer.columns.company.support	Mbështetje
+footer.columns.docs.title	Dokumentet
+footer.columns.docs.terms	Kushtet e përdorimit
+footer.columns.docs.privacy	Politika e privatësisë
+footer.columns.docs.cookies	Politika e cookies
+footer.columns.docs.dpa	Përpunimi i të dhënave
+footer.columns.docs.cookieSettings	Cilësimet e cookies
+footer.columns.docs.support	Mbështetje
+footer.copyright	© 2026 Velora. Të gjitha të drejtat e rezervuara.
+screens.journal	Orari ditor
+screens.booking	Rezervim online
+screens.finance	Pagesa e vizitës
+screens.notify	Ngjarje × kanal
+screens.ai	Velora AI
+art.journal	Orari
+art.journalToday	Sot — 12 klasa
+art.weekdays.0	H
+art.weekdays.1	M
+art.weekdays.2	M
+art.weekdays.3	E
+art.weekdays.4	P
+art.weekdays.5	S
+art.weekdays.6	D
+art.finance	Financat
+art.financeValue	1,8 mijë €
+art.financeLabel	të ardhurat e këtij muaji
+art.clients	Klientët
+art.clientsLabel	klientë, +12 këtë javë
+art.questions_one	{{count}} pyetje
+art.questions_other	{{count}} pyetje
+art.open	hap

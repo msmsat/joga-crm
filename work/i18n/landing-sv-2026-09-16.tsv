@@ -1,0 +1,231 @@
+== sv
+nav.product	Produkt
+nav.modules	Moduler
+nav.pricing	Priser
+nav.faq	Vanliga frågor
+nav.login	Logga in
+nav.startShort	Starta
+nav.startFull	Starta gratis
+nav.language	Språk
+hero.badge	Den nya CRM-standarden 2026
+hero.title	Ett CRM som du\n*älskar* att använda
+hero.lead	Ett premium B2B-CRM för yoga- och pilatesstudior. Bokningar, kunder, team och ekonomi på ett ställe. Inga extra klick, inget krångel.
+hero.cta	Prova gratis i 30 dagar
+hero.perks.0	30 dagar gratis
+hero.perks.1	Inget bankkort
+hero.perks.2	Avsluta med ett klick
+marquee.0	Schema
+marquee.1	Kunder
+marquee.2	Medlemskap
+marquee.3	Onlinebokning
+marquee.4	Ekonomi
+marquee.5	Löner
+marquee.6	Notifieringar
+marquee.7	Lojalitet
+marquee.8	Rapporter
+marquee.9	Velora AI
+marquee.10	Kundapp
+marquee.11	Roller och åtkomst
+stats.items.0.value	30 dagar
+stats.items.0.label	Gratis, inget kort krävs
+stats.items.1.value	16
+stats.items.1.label	Moduler i varje plan
+stats.items.2.value	4
+stats.items.2.label	Kanaler för onlinebokning
+stats.items.3.value	från 15 €
+stats.items.3.label	Per månad och studio
+stats.trust.0	Din data förblir din
+stats.trust.1	Roller tillämpas på servern
+stats.trust.2	CSV-export när som helst
+stats.trust.3	Radering på begäran
+compare.label	skillnaden
+compare.title	Vi tog bort det\nsom stod i vägen
+compare.lead	Velora växte fram ur vår egen erfarenhet: vi drev studior och stötte varje dag på samma vägg — ett CRM där det krävdes nio klick för att boka en kund. Här är vad som förändrades.
+compare.usual	Det vanliga sättet
+compare.velora	I Velora
+compare.pairs.0.bad	För att boka en kund lämnar du schemat för en annan vy och går sedan tillbaka
+compare.pairs.0.good	Bokningar och nya kunder skapas direkt i schemat
+compare.pairs.1.bad	Rapporter exporteras till Excel och stäms av för hand
+compare.pairs.1.good	Live-rapporter per tränare och tjänst, med export för valfri period
+compare.pairs.2.bad	Notifieringar är en separat tjänst som du betalar för separat
+compare.pairs.2.good	Telegram, e-post och WhatsApp är inbyggda med en händelse × kanal-matris
+compare.pairs.3.bad	En tränare kan se allas andras scheman och kundregister
+compare.pairs.3.good	Roller begränsar åtkomst både i gränssnittet och på servern
+compare.pairs.4.bad	En assistent? I bästa fall kundsökning
+compare.pairs.4.good	Velora AI svarar på frågor om din verksamhet — och på dina kunders frågor i Telegram och Instagram
+showcase.label	allt i ett
+showcase.title	En plattform i stället\nför ett dussin tjänster
+showcase.lead	Bokningar, kunder, pengar, kommunikation och AI i ett enda gränssnitt. Inte en enda överflödig modul: varje vy löser ett verkligt problem för ägaren.
+showcase.blocks.journal.title	Ditt schema
+showcase.blocks.journal.lead	Ett dagsrutnät där tränare är kolumner och timmar är rader. Allt en administratör gör sker här.
+showcase.blocks.journal.points.0	Dra en klass till en annan tid — eller till en annan tränare
+showcase.blocks.journal.points.1	Nya klasser och kunder skapas utan att lämna schemat
+showcase.blocks.journal.points.2	Dagens sammanfattning ligger bredvid: lokalbelastning och intäkter
+showcase.blocks.booking.title	Din onlinebokning
+showcase.blocks.booking.lead	Fyra kanaler där kunder bokar själva, dygnet runt och utan administratör.
+showcase.blocks.booking.points.0	Webbwidget, Telegram, WhatsApp och Instagram — var och en konfigureras separat
+showcase.blocks.booking.points.1	Regler: hur många timmar före start bokningen stänger och hur länge kunden kan avboka
+showcase.blocks.booking.points.2	Kundappens varumärke med liveförhandsvisning — färg och språk som matchar ditt varumärke
+showcase.blocks.finance.title	Din ekonomi
+showcase.blocks.finance.lead	Konton, transaktioner, löner och dokument på ett ställe, utan export till kalkylblad.
+showcase.blocks.finance.points.0	Kassa, bankkonto och kortinlösen med saldon och dagliga rörelser
+showcase.blocks.finance.points.1	Medlemskap, presentkort och återbetalningar kopplade till en kund och ett konto
+showcase.blocks.finance.points.2	Tränarlöner beräknade enligt dina egna regler
+showcase.blocks.notify.title	Dina notifieringar
+showcase.blocks.notify.lead	Tre leveranskanaler och en matris där du bestämmer vad som skickas vart.
+showcase.blocks.notify.points.0	Telegram, e-post och WhatsApp — var och en ansluten med studions egen nyckel
+showcase.blocks.notify.points.1	En separat uppsättning händelser för kund, tränare, administratör och ägare
+showcase.blocks.notify.points.2	Påminnelser 24 och 2 timmar före, ”1–2 klasser kvar”, födelsedagar och granskningsförfrågningar
+showcase.blocks.ai.title	Ditt AI-lager
+showcase.blocks.ai.lead	Assistenten känner till verksamhetens sammanhang och finns på varje sida — agenterna svarar kunderna själva.
+showcase.blocks.ai.points.0	Frågor om studion direkt från toppfältet utan att öppna en annan sektion
+showcase.blocks.ai.points.1	AI-agenter i Telegram och Instagram: tonläge och läget ”endast utanför öppettid”
+showcase.blocks.ai.points.2	Statistik: hur många samtal som hanterades och hur de betygsattes
+ctaStrip.title	Prova utan datamigrering och utan betalning i förskott
+ctaStrip.button	Starta gratis
+ctaStrip.note	30 dagar gratis • Inget kort • Hjälp att komma igång
+modules.label	moduler
+modules.title	16 moduler,\nredan inkluderade
+modules.lead	Inte en samling platshållare med ”kommer snart” — allt som står med fungerar och ingår i planen. Roller avgör vem som ser vilken sektion.
+modules.items.dashboard.title	Översikt
+modules.items.dashboard.desc	Intäkter, aktiva kunder, bokningar och kundlojalitet — med trender
+modules.items.journal.title	Schema
+modules.items.journal.desc	Dagsrutnät per tränare och lokal, dra för att boka om
+modules.items.clients.title	Kunder
+modules.items.clients.desc	Profil, medlemskap, poäng, historik, anteckningar, taggar
+modules.items.staff.title	Team
+modules.items.staff.desc	Profiler, nyckeltal, arbetstider, lokaltilldelningar
+modules.items.catalog.title	Katalog
+modules.items.catalog.desc	Anläggningar, lokaler med färg och kapacitet, studions tjänster
+modules.items.booking.title	Onlinebokning
+modules.items.booking.desc	Widget, Telegram, WhatsApp, Instagram och bokningsregler
+modules.items.finance.title	Ekonomi
+modules.items.finance.desc	Konton, transaktioner, motparter, dokument, mål, löner
+modules.items.notify.title	Notifieringar
+modules.items.notify.desc	Telegram, e-post, WhatsApp och en händelse × kanal-matris
+modules.items.loyalty.title	Lojalitet
+modules.items.loyalty.desc	Kort, rabatter, presentkort, medlemskap, rekommendationer
+modules.items.ai.title	Velora AI
+modules.items.ai.desc	En verksamhetsassistent och agenter för dina kunder
+modules.items.reports.title	Rapporter
+modules.items.reports.desc	Efter försäljning, tränare och tjänster — med export
+modules.items.miniapp.title	Kundapp
+modules.items.miniapp.desc	Kundens eget konto: bokningar, medlemskap, poäng
+modules.items.multistudio.title	Flera studior
+modules.items.multistudio.desc	Flera studior i ett konto, växla när som helst
+modules.items.roles.title	Roller och åtkomst
+modules.items.roles.desc	Ägare, administratör, tränare — i gränssnittet och på servern
+modules.items.settings.title	Inställningar
+modules.items.settings.desc	Arbetstider, tema, team, säkerhet, sessioner
+modules.items.data.title	Data
+modules.items.data.desc	CSV-export, radering på begäran
+modules.integrations	Integrationer
+modules.integrationsNote	anslutna i studieinställningarna
+pricing.label	priser
+pricing.title	Din plan beror på\nstorleken på ditt team
+pricing.lead	15 € för två personer, +5 € för varje nästa plats, obegränsat — 120 €. Alla 16 moduler och Velora AI ingår på varje nivå: du betalar för teamets storlek, inte för att låsa upp knappar. Tre betalningsmodeller att välja mellan och upp till 40 % rabatt när du betalar i förskott.
+pricing.team	team
+pricing.seats_one	person
+pricing.seats_other	personer
+pricing.unlimited	utan gräns
+pricing.scaleMin	2 platser
+pricing.scaleMax	∞ obegränsat
+pricing.sliderAria	Hur många personer arbetar i din studio
+pricing.hint	**15 €** för två personer, **+5 €** för varje extra plats. Obegränsat — **120 €** per månad.
+pricing.period	betalningsperiod
+pricing.months	{{count}} mån.
+pricing.noDiscount	—
+pricing.yourPrice	ditt pris
+pricing.perMonth	/ mån.
+pricing.amount	{{value}} €
+pricing.amountPerMonth	{{value}} € / mån.
+pricing.rows.seats	Team
+pricing.rows.perSeat	Per person
+pricing.rows.ai	Velora AI-förfrågningar
+pricing.rows.aiPerMonth	{{value}} / mån.
+pricing.rows.modules	Moduler
+pricing.rows.modulesAll	alla 16
+pricing.rows.total	Att betala för {{count}} månader
+pricing.rows.saved	Du sparar
+pricing.cta	Prova i 30 dagar
+pricing.note	Inget kort · avsluta med ett klick
+pricing.models.0.title	Prenumeration
+pricing.models.0.price	från 15 € / mån.
+pricing.models.0.desc	Ett fast belopp. Du känner till kostnaden i förväg — inga överraskningar i slutet av månaden.
+pricing.models.1.title	3 % av intäkterna
+pricing.models.1.price	minst 15 € / mån.
+pricing.models.1.desc	Betala efter omsättning. Under en lugn månad fyller du bara på skillnaden till minimibeloppet.
+pricing.models.2.title	Kombi
+pricing.models.2.price	½ fast + 1,5 %
+pricing.models.2.desc	Hälften av prenumerationen plus en liten procentsats — en medelväg mellan de två modellerna.
+pricing.footnote	Provet kräver inget kort. Betalningsmodell och antal platser kan ändras i appen när som helst. Priserna är exklusive moms: skatten beräknas i kassan för ditt land.
+faq.label	frågor
+faq.title	Det här brukar folk fråga
+faq.items.0.q	Vad ingår i provperioden?
+faq.items.0.a	Full åtkomst till alla moduler i 30 dagar. Inget bankkort behövs — om det inte passar dig förnyar du helt enkelt inte.
+faq.items.1.q	Kommer mina kunder att se annonser för andra studior?
+faq.items.1.a	Nej. Kunder bokar via widgeten på din webbplats, din Telegram, WhatsApp eller Instagram — och via en kundapp i din färg och med din logotyp. Det finns ingen gemensam katalog med andra studior.
+faq.items.2.q	Vem i mitt team ser vad?
+faq.items.2.a	Tre roller. Ägaren ser allt. Administratören ser schemat, kunderna och översikten. Tränaren ser bara sina egna klasser och kunder. Begränsningen fungerar i gränssnittet och på servern: det finns ingen väg till andras data.
+faq.items.3.q	Kan jag driva flera studior eller anläggningar?
+faq.items.3.a	Ja, och det beror inte på planen. Ett konto kan tillhöra flera studior och växla mellan dem, och inom en studio ställer du in anläggningar och lokaler.
+faq.items.4.q	Finns mörkt tema och andra språk?
+faq.items.4.a	Ja, gränssnittet växlar mellan ljust och mörkt och talar engelska, ryska, ukrainska, tjeckiska och tyska. Tidszon, valuta och språk väljs under introduktionen.
+faq.items.5.q	Vad händer med min data om jag bestämmer mig för att lämna?
+faq.items.5.a	Data är din. Inställningar har CSV-export för kunder, schema, ekonomi och medlemskap, och radering sker på din begäran.
+faq.notFoundTitle	Hittade du inte svaret?
+faq.notFoundLead	Skriv till oss — vi svarar själva, utan botar och utan kö.
+faq.copied	Kopierat
+about.label	om oss
+about.title	Velora byggs av människor\nsom själva har drivit studior
+about.lead	Vi bygger inte ett ”CRM för alla”. Vi bygger ett verktyg för ett särskilt jobb — schema, kunder, pengar, kommunikation — och svarar själva på frågor i stället för att skicka färdiga svar.
+about.p1	En studios kunder förblir studions kunder. Velora bygger ingen gemensam katalog, visar inte dina kunder andras annonser och tar ingen andel för att en person kommer tillbaka till dig.
+about.p2	Just nu är produkten byggd för yoga- och pilatesstudior — för hur deras scheman, medlemskap och tränare faktiskt fungerar. Andra branscher följer, lika medvetet.
+cta.eyebrow	Börja idag
+cta.titleTop	Redo att ta
+cta.titleAccent	nästa steg?
+cta.lead	30 dagar gratis. Inget kort. Ingen bindning. Prova — du känner skillnaden.
+cta.register	Registrera dig gratis
+cta.whatsapp	Skriv till oss på WhatsApp
+footer.tagline	Ett premium-CRM för yoga- och pilatesstudior. Bokningar, kunder, pengar och AI på ett ställe.
+footer.columns.product.title	Produkt
+footer.columns.product.features	Funktioner
+footer.columns.product.modules	Moduler
+footer.columns.product.booking	Onlinebokning
+footer.columns.product.ai	Velora AI
+footer.columns.product.pricing	Priser
+footer.columns.company.title	Företag
+footer.columns.company.difference	Så skiljer vi oss
+footer.columns.company.about	Om oss
+footer.columns.company.faq	Frågor och svar
+footer.columns.company.support	Support
+footer.columns.docs.title	Dokument
+footer.columns.docs.terms	Användarvillkor
+footer.columns.docs.privacy	Integritetspolicy
+footer.columns.docs.cookies	Cookiepolicy
+footer.columns.docs.dpa	Databehandling
+footer.columns.docs.cookieSettings	Cookieinställningar
+footer.columns.docs.support	Support
+footer.copyright	© 2026 Velora. Alla rättigheter förbehållna.
+screens.journal	Dagschema
+screens.booking	Onlinebokning
+screens.finance	Betalning för besök
+screens.notify	Händelse × kanal
+screens.ai	Velora AI
+art.journal	Schema
+art.journalToday	I dag — 12 klasser
+art.weekdays.0	M
+art.weekdays.1	T
+art.weekdays.2	O
+art.weekdays.3	T
+art.weekdays.4	F
+art.weekdays.5	L
+art.weekdays.6	S
+art.finance	Ekonomi
+art.financeValue	1,8 t€
+art.financeLabel	intäkter denna månad
+art.clients	Kunder
+art.clientsLabel	kunder, +12 den här veckan
+art.questions_one	{{count}} fråga
+art.questions_other	{{count}} frågor
+art.open	öppna

@@ -1,0 +1,378 @@
+{
+  "nav": {
+    "product": "Termék",
+    "modules": "Modulok",
+    "pricing": "Árak",
+    "faq": "Gyakori kérdések",
+    "login": "Belépés",
+    "startShort": "Kezdés",
+    "startFull": "Kezdje ingyen",
+    "language": "Nyelv"
+  },
+  "hero": {
+    "badge": "A 2026-os év új CRM-szabványa",
+    "title": "CRM, amelyet\\\n*öröm* használni",
+    "lead": "Prémium B2B CRM jóga- és pilatesstúdióknak. Foglalások, ügyfelek, csapat és pénzügyek egy helyen. Felesleges kattintások és zűrzavar nélkül.",
+    "cta": "Próbálja ki ingyen 30 napig",
+    "perks": [
+      "30 nap ingyen",
+      "Bankkártya nélkül",
+      "Lemondás egy kattintással"
+    ]
+  },
+  "marquee": [
+    "Naptár",
+    "Ügyfelek",
+    "Bérletek",
+    "Online foglalás",
+    "Pénzügyek",
+    "Bérek",
+    "Értesítések",
+    "Hűségprogram",
+    "Jelentések",
+    "Velora AI",
+    "Ügyfélalkalmazás",
+    "Szerepkörök és hozzáférés"
+  ],
+  "stats": {
+    "items": [
+      {
+        "value": "30 nap",
+        "label": "Ingyen, bankkártya nélkül"
+      },
+      {
+        "value": "16",
+        "label": "modul minden csomagban"
+      },
+      {
+        "value": "4",
+        "label": "online foglalási csatorna"
+      },
+      {
+        "value": "15 €-tól",
+        "label": "havonta, stúdiónként"
+      }
+    ],
+    "trust": [
+      "Az adatai az Önéi maradnak",
+      "A szerepkörök a szerveren is érvényesek",
+      "CSV-export bármikor",
+      "Törlés kérésre"
+    ]
+  },
+  "compare": {
+    "label": "a különbség",
+    "title": "Eltávolítottuk azt,\\\nami hátráltatta Önt",
+    "lead": "A Velora saját tapasztalatból született: stúdiókat vezettünk, és nap mint nap ugyanabba a falba ütköztünk — egy CRM-be, ahol kilenc kattintás kellett egy ügyfél foglalásához. Íme, mi változott.",
+    "usual": "A megszokott út",
+    "velora": "A Velorában",
+    "pairs": [
+      {
+        "bad": "Ügyfél foglalásához el kell hagynia a naptárt, másik nézetbe kell lépnie, majd visszatérnie",
+        "good": "A foglalások és az új ügyfelek közvetlenül a naptárban jönnek létre"
+      },
+      {
+        "bad": "A jelentéseket Excelbe exportálják, majd kézzel egyeztetik",
+        "good": "Élő jelentések oktatónként és szolgáltatásonként, exporttal bármely időszakra"
+      },
+      {
+        "bad": "Az értesítések külön szolgáltatásnak számítanak, amelyért külön fizet",
+        "good": "A Telegram, az e-mail és a WhatsApp esemény × csatorna mátrixszal beépítve érkezik"
+      },
+      {
+        "bad": "Egy oktató mindenki más naptárát és ügyféladatbázisát láthatja",
+        "good": "A szerepkörök a felületen és a szerveren is korlátozzák a hozzáférést"
+      },
+      {
+        "bad": "Egy asszisztens? Legjobb esetben ügyfélkeresés",
+        "good": "A Velora AI válaszol a vállalkozásával kapcsolatos kérdésekre — és ügyfelei Telegram- és Instagram-kérdéseire is"
+      }
+    ]
+  },
+  "showcase": {
+    "label": "minden egy helyen",
+    "title": "Egy platform\\\ntucatnyi szolgáltatás helyett",
+    "lead": "Foglalások, ügyfelek, pénz, kommunikáció és AI egyetlen felületen. Egyetlen fölösleges modul sincs: minden nézet egy valódi tulajdonosi problémát old meg.",
+    "blocks": {
+      "journal": {
+        "title": "Az Ön naptára",
+        "lead": "Napi rács, ahol az oktatók oszlopok, az órák sorok. Itt történik minden, amit egy adminisztrátor elvégez.",
+        "points": [
+          "Húzza át az órát más időpontra — vagy másik oktatóhoz",
+          "Hozzon létre új órákat és ügyfeleket a naptár elhagyása nélkül",
+          "A napi összefoglaló mellette van: teremkihasználtság és bevétel"
+        ]
+      },
+      "booking": {
+        "title": "Az Ön online foglalása",
+        "lead": "Négy csatorna, ahol az ügyfelek önállóan, a nap bármely órájában és adminisztrátor nélkül foglalnak.",
+        "points": [
+          "Webes widget, Telegram, WhatsApp és Instagram — mindegyik külön konfigurálható",
+          "Szabályok: hány órával a kezdés előtt zárul a foglalás, és meddig mondhatja le az ügyfél",
+          "Ügyfélalkalmazás-arculat élő előnézettel — a márkájához illő szín és nyelv"
+        ]
+      },
+      "finance": {
+        "title": "Az Ön pénzügyei",
+        "lead": "Számlák, tranzakciók, bérek és dokumentumok egy helyen, táblázatkezelőbe exportálás nélkül.",
+        "points": [
+          "Pénztár, bankszámla és kártyaelfogadás egyenlegekkel és napi mozgásokkal",
+          "Ügyfélhez és számlához kapcsolt bérletek, ajándékkártyák és visszatérítések",
+          "Az Ön szabályai szerint számított oktatói bérek"
+        ]
+      },
+      "notify": {
+        "title": "Az Ön értesítései",
+        "lead": "Három kézbesítési csatorna és egy mátrix, amelyben eldönti, mi hová menjen.",
+        "points": [
+          "Telegram, e-mail és WhatsApp — mindegyik a stúdió saját kulcsával kapcsolódik",
+          "Külön eseménykészlet ügyfélnek, oktatónak, adminisztrátornak és tulajdonosnak",
+          "Emlékeztetők 24 és 2 órával előtte, „1–2 óra maradt”, születésnapok és értékelési kérések"
+        ]
+      },
+      "ai": {
+        "title": "Az Ön AI-rétege",
+        "lead": "Az asszisztens ismeri a vállalkozás környezetét, és minden oldalon ott van — az ügynökök maguk válaszolnak az ügyfeleknek.",
+        "points": [
+          "Kérdezzen a stúdióról a felső sávból, más szakasz megnyitása nélkül",
+          "AI-ügynökök a Telegramban és az Instagramon: kommunikációs hang és „csak nyitvatartáson kívül” mód",
+          "Statisztika: hány beszélgetést kezeltek, és hogyan értékelték őket"
+        ]
+      }
+    }
+  },
+  "ctaStrip": {
+    "title": "Próbálja ki adatmigrálás és előrefizetés nélkül",
+    "button": "Kezdje ingyen",
+    "note": "30 nap ingyen • Bankkártya nélkül • Segítség az induláshoz"
+  },
+  "modules": {
+    "label": "modulok",
+    "title": "16 modul,\\\nmár benne van",
+    "lead": "Nem „hamarosan” feliratú helyőrzők gyűjteménye — minden felsorolt funkció működik és a csomag része. A szerepkörök döntik el, ki melyik szakaszt látja.",
+    "items": {
+      "dashboard": {
+        "title": "Áttekintés",
+        "desc": "Bevétel, aktív ügyfelek, foglalások és ügyfélhűség — trendekkel"
+      },
+      "journal": {
+        "title": "Naptár",
+        "desc": "Napi rács oktatónként és termenkként, húzással ütemezhető át"
+      },
+      "clients": {
+        "title": "Ügyfelek",
+        "desc": "Profil, bérletek, pontok, előzmények, jegyzetek, címkék"
+      },
+      "staff": {
+        "title": "Csapat",
+        "desc": "Profilok, mutatók, munkaidő, terem-hozzárendelések"
+      },
+      "catalog": {
+        "title": "Katalógus",
+        "desc": "Létesítmények, színes és kapacitással jelölt termek, stúdiószolgáltatások"
+      },
+      "booking": {
+        "title": "Online foglalás",
+        "desc": "Widget, Telegram, WhatsApp, Instagram és foglalási szabályok"
+      },
+      "finance": {
+        "title": "Pénzügyek",
+        "desc": "Számlák, tranzakciók, partnerek, dokumentumok, célok, bérek"
+      },
+      "notify": {
+        "title": "Értesítések",
+        "desc": "Telegram, e-mail, WhatsApp és esemény × csatorna mátrix"
+      },
+      "loyalty": {
+        "title": "Hűségprogram",
+        "desc": "Kártyák, kedvezmények, ajándékkártyák, bérletek, ajánlások"
+      },
+      "ai": {
+        "title": "Velora AI",
+        "desc": "Üzleti asszisztens és ügynökök az ügyfeleihez"
+      },
+      "reports": {
+        "title": "Jelentések",
+        "desc": "Értékesítés, oktatók és szolgáltatások szerint — exporttal"
+      },
+      "miniapp": {
+        "title": "Ügyfélalkalmazás",
+        "desc": "Az ügyfél saját fiókja: foglalások, bérletek, pontok"
+      },
+      "multistudio": {
+        "title": "Több stúdió",
+        "desc": "Több stúdió egy fiókban, bármikor váltson"
+      },
+      "roles": {
+        "title": "Szerepkörök és hozzáférés",
+        "desc": "Tulajdonos, adminisztrátor, oktató — a felületen és a szerveren"
+      },
+      "settings": {
+        "title": "Beállítások",
+        "desc": "Nyitvatartás, téma, csapat, biztonság, munkamenetek"
+      },
+      "data": {
+        "title": "Adatok",
+        "desc": "CSV-export, törlés kérésre"
+      }
+    },
+    "integrations": "Integrációk",
+    "integrationsNote": "a stúdió beállításaiban kapcsolható"
+  },
+  "pricing": {
+    "label": "árak",
+    "title": "Az Ön csomagja a\\\ncsapat méretétől függ",
+    "lead": "15 € két főre, +5 € minden további helyért, korlátlan — 120 €. Mind a 16 modul és a Velora AI minden szinten benne van: a csapat méretéért fizet, nem a gombok feloldásáért. Három fizetési modell közül választhat, előrefizetéssel akár 40% kedvezménnyel.",
+    "team": "csapat",
+    "seats_one": "fő",
+    "seats_other": "fő",
+    "unlimited": "korlátlan",
+    "scaleMin": "2 hely",
+    "scaleMax": "∞ korlátlan",
+    "sliderAria": "Hányan dolgoznak az Ön stúdiójában",
+    "hint": "**15 €** két főre, **+5 €** minden további helyért. Korlátlan — **120 €** havonta.",
+    "period": "fizetési időszak",
+    "months": "{{count}} hó",
+    "noDiscount": "—",
+    "yourPrice": "az Ön ára",
+    "perMonth": "/ hó",
+    "amount": "{{value}} €",
+    "amountPerMonth": "{{value}} € / hó",
+    "rows": {
+      "seats": "Csapat",
+      "perSeat": "Főnként",
+      "ai": "Velora AI-kérések",
+      "aiPerMonth": "{{value}} / hó",
+      "modules": "Modulok",
+      "modulesAll": "mind a 16",
+      "total": "Fizetendő {{count}} hónapra",
+      "saved": "Megtakarítás"
+    },
+    "cta": "Próbálja ki 30 napig",
+    "note": "Bankkártya nélkül · lemondás egy kattintással",
+    "models": [
+      {
+        "title": "Előfizetés",
+        "price": "15 € / hó-tól",
+        "desc": "Fix összeg. Előre tudja a költséget — nincs meglepetés a hónap végén."
+      },
+      {
+        "title": "A bevétel 3%-a",
+        "price": "legalább 15 € / hó",
+        "desc": "Forgalom alapján fizet. Csendesebb hónapban csak a különbözetet tölti fel a minimumig."
+      },
+      {
+        "title": "Kombinált",
+        "price": "½ fix + 1,5%",
+        "desc": "Az előfizetés fele plusz egy kis százalék — egyensúly a két modell között."
+      }
+    ],
+    "footnote": "A próbaidőszakhoz nem kell bankkártya. A fizetési modell és a helyek száma az alkalmazásban bármikor módosítható. Az árak nem tartalmazzák az áfát: az adó az Ön országára a pénztárnál számolódik."
+  },
+  "faq": {
+    "label": "kérdések",
+    "title": "Ezt kérdezik általában",
+    "items": [
+      {
+        "q": "Mit tartalmaz a próbaidőszak?",
+        "a": "Teljes hozzáférés minden modulhoz 30 napig. Nem kell bankkártya — ha nem megfelelő, egyszerűen nem újítja meg."
+      },
+      {
+        "q": "Látnak majd az ügyfeleim más stúdióktól hirdetéseket?",
+        "a": "Nem. Az ügyfelek a webhelyén lévő widgeten, a Telegramon, WhatsAppon vagy Instagramon keresztül foglalnak — illetve az Ön színével és logójával ellátott ügyfélalkalmazásban. Nincs közös katalógus más stúdiókkal."
+      },
+      {
+        "q": "Ki mit lát a csapatomban?",
+        "a": "Három szerepkör van. A tulajdonos mindent lát. Az adminisztrátor a naptárt, az ügyfeleket és az áttekintést látja. Az oktató csak a saját óráit és ügyfeleit látja. A korlátozás a felületen és a szerveren is működik: nincs út mások adataihoz."
+      },
+      {
+        "q": "Vezethetek több stúdiót vagy létesítményt?",
+        "a": "Igen, és ez nem függ a csomagtól. Egy fiók több stúdióhoz is tartozhat, és válthat közöttük; a stúdión belül létesítményeket és termeket állíthat be."
+      },
+      {
+        "q": "Van sötét téma és más nyelv?",
+        "a": "Igen. A felület világos és sötét téma között vált, és 22 nyelvet támogat, köztük angolt, oroszt, ukránt, csehet és németet. Az időzónát, pénznemet és nyelvet az első beállításkor választja ki."
+      },
+      {
+        "q": "Mi történik az adataimmal, ha úgy döntök, hogy távozom?",
+        "a": "Az adatok az Önéi. A beállítások CSV-exportot adnak ügyfelekhez, naptárhoz, pénzügyekhez és bérletekhez, a törlés pedig az Ön kérésére történik."
+      }
+    ],
+    "notFoundTitle": "Nem találta meg a választ?",
+    "notFoundLead": "Írjon nekünk — személyesen válaszolunk, botok és várakozás nélkül.",
+    "copied": "Másolva"
+  },
+  "about": {
+    "label": "rólunk",
+    "title": "A Velorát olyan emberek építik,\\\nakik maguk is vezettek stúdiókat",
+    "lead": "Nem „CRM-et építünk mindenkinek”. Egy konkrét munkához készítünk eszközt — naptárhoz, ügyfelekhez, pénzhez, kommunikációhoz — és a kérdésekre magunk válaszolunk sablonválaszok helyett.",
+    "p1": "Egy stúdió ügyfelei a stúdió ügyfelei maradnak. A Velora nem épít közös katalógust, nem mutat mások hirdetéseit az ügyfeleinek, és nem kér százalékot, amikor valaki visszatér Önhöz.",
+    "p2": "Jelenleg a termék jóga- és pilatesstúdiókra készült — arra, ahogyan a naptáruk, bérleteik és oktatóik valóban működnek. Más ágazatok ugyanolyan körültekintéssel következnek."
+  },
+  "cta": {
+    "eyebrow": "Kezdje még ma",
+    "titleTop": "Készen áll a",
+    "titleAccent": "következő lépésre?",
+    "lead": "30 nap ingyen. Bankkártya nélkül. Kötelezettség nélkül. Próbálja ki — érezni fogja a különbséget.",
+    "register": "Regisztráljon ingyen",
+    "whatsapp": "Írjon nekünk WhatsAppon"
+  },
+  "footer": {
+    "tagline": "Prémium CRM jóga- és pilatesstúdióknak. Foglalások, ügyfelek, pénz és AI egy helyen.",
+    "columns": {
+      "product": {
+        "title": "Termék",
+        "features": "Funkciók",
+        "modules": "Modulok",
+        "booking": "Online foglalás",
+        "ai": "Velora AI",
+        "pricing": "Árak"
+      },
+      "company": {
+        "title": "Cég",
+        "difference": "Különbségünk",
+        "about": "Rólunk",
+        "faq": "Kérdések és válaszok",
+        "support": "Támogatás"
+      },
+      "docs": {
+        "title": "Dokumentumok",
+        "terms": "Felhasználási feltételek",
+        "privacy": "Adatvédelmi szabályzat",
+        "cookies": "Süti szabályzat",
+        "dpa": "Adatkezelés",
+        "cookieSettings": "Süti beállítások",
+        "support": "Támogatás"
+      }
+    },
+    "copyright": "© 2026 Velora. Minden jog fenntartva."
+  },
+  "screens": {
+    "journal": "Napi naptár",
+    "booking": "Online foglalás",
+    "finance": "Látogatás fizetése",
+    "notify": "Esemény × csatorna",
+    "ai": "Velora AI"
+  },
+  "art": {
+    "journal": "Naptár",
+    "journalToday": "Ma — 12 óra",
+    "weekdays": [
+      "H",
+      "K",
+      "Sze",
+      "Cs",
+      "P",
+      "Szo",
+      "V"
+    ],
+    "finance": "Pénzügyek",
+    "financeValue": "1,8 ezer €",
+    "financeLabel": "e havi bevétel",
+    "clients": "Ügyfelek",
+    "clientsLabel": "ügyfelek, +12 ezen a héten",
+    "questions_one": "{{count}} kérdés",
+    "questions_other": "{{count}} kérdés",
+    "open": "megnyitás"
+  }
+}

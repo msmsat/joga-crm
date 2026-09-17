@@ -1,0 +1,249 @@
+== hr
+tabs.studios	Studiji
+tabs.services	Usluge
+tabs.subscriptions	Članarine
+modals.addStudio.steps.about.title	O studiju
+modals.addStudio.steps.about.sub	Naziv i kontaktni podaci
+modals.addStudio.steps.about.trust	Vaši podaci su šifrirani i nikada se ne dijele s trećim stranama
+modals.addStudio.steps.location.title	Lokacija
+modals.addStudio.steps.location.sub	Gdje se nalazi ova poslovnica?
+modals.addStudio.steps.location.trust	Adresa se koristi u rasporedu i na kartama
+modals.addStudio.steps.photo.title	Fotografija
+modals.addStudio.steps.photo.sub	Naslovna fotografija studija — neobavezna
+modals.addStudio.steps.photo.trust	Možete je dodati kasnije u postavkama poslovnice
+modals.addStudio.stepCounter	Korak {{current}} od {{total}}
+modals.addStudio.step1.heading	Osnovne informacije
+modals.addStudio.step1.subheading	Kako se studio zove i kako ga kontaktirati?
+modals.addStudio.step1.name	Naziv studija *
+modals.addStudio.step1.namePlaceholder	Npr. Velora Studio
+modals.addStudio.step1.phone	Telefon *
+modals.addStudio.step1.email	E-pošta *
+modals.addStudio.step1.contactHint	Unesite telefon ili e-poštu — barem jedno
+modals.addStudio.step1.noContacts	Nisu navedeni kontakti
+modals.addStudio.step1.new	NOVO
+modals.addStudio.step2.heading	Lokacija
+modals.addStudio.step2.subheading	Navedite gdje se nalazi ova poslovnica
+modals.addStudio.step2.country	Zemlja
+modals.addStudio.step2.countryPlaceholder	Sjedinjene Američke Države
+modals.addStudio.step2.city	Grad *
+modals.addStudio.step2.cityPlaceholder	New York
+modals.addStudio.step2.address	Adresa *
+modals.addStudio.step2.addressPlaceholder	5th Avenue 12, ured 301
+modals.addStudio.step2.noAddress	Nije navedena adresa
+modals.addStudio.step2.groupHint	Polja „Zemlja” i „Grad” koriste se za grupiranje poslovnica na popisu.
+modals.addStudio.step3.heading	Fotografija studija
+modals.addStudio.step3.subheading	Prenesite naslovnu fotografiju — neobavezna je, možete je preskočiti
+modals.addStudio.step3.uploadCta	Kliknite za prijenos
+modals.addStudio.step3.uploadHint	JPG, PNG do 10 MB
+modals.addStudio.step3.replace	Zamijeni
+modals.addStudio.step3.remove	Ukloni
+modals.addStudio.step3.previewAlt	Pregled
+modals.addStudio.step3.summary	Sažetak
+modals.addStudio.step3.uploadError	Fotografiju nije moguće prenijeti. Pokušajte s drugom datotekom ili je uklonite.
+modals.addStudio.summaryRows.name	Naziv
+modals.addStudio.summaryRows.city	Grad
+modals.addStudio.summaryRows.address	Adresa
+modals.addStudio.nextPhoto	Dalje — fotografija
+modals.addStudio.submit	Izradi studio
+modals.addStudio.skipPhoto	Preskoči fotografiju i izradi
+modals.addStudio.illus.contacts	Kontakti
+modals.addStudio.illus.newBranch	Nova poslovnica
+modals.addStudio.illus.city	Grad
+modals.addStudio.illus.newBranchStudio	Nova poslovnica studija
+modals.editBranch.title	Uredi poslovnicu
+modals.editBranch.name	Naziv poslovnice
+modals.editBranch.namePlaceholder	Velora Studio
+modals.editBranch.phone	Telefon
+modals.editBranch.email	E-pošta
+modals.editBranch.emailPlaceholder	studio@velora.com
+modals.editBranch.country	Zemlja
+modals.editBranch.countryPlaceholder	Sjedinjene Američke Države
+modals.editBranch.city	Grad
+modals.editBranch.cityPlaceholder	New York
+modals.editBranch.address	Adresa
+modals.editBranch.addressPlaceholder	5th Avenue 12
+modals.editBranch.photo	Fotografija poslovnice
+modals.editBranch.contactHint	Unesite telefon ili e-poštu
+modals.editBranch.workingHours	Radno vrijeme
+modals.hall.titleNew	Dodaj {{spaceAcc}}
+modals.hall.titleEdit	Uredi {{spaceAcc}}
+modals.hall.name	Naziv
+modals.hall.namePlaceholder	{{space, capitalize}} A
+modals.hall.capacity	Kapacitet
+modals.hall.area	Površina, m²
+modals.hall.hourlyRate	Cijena po satu, {{currency}}
+modals.hall.hourlyRatePlaceholder	3000
+modals.hall.equipment	Oprema
+modals.hall.equipmentPlaceholder	Dodaj opremu
+modals.hall.color	Boja
+modals.hall.isOnline	Online
+modals.hall.photo	Fotografija
+modals.hall.subtitle	{{space, capitalize}} u poslovnici: mjesta, oprema, boja u rasporedu
+modals.hall.previewTitle	Pregled
+modals.hall.sectionBasic	Osnovno
+modals.hall.sectionSpace	Prostor
+modals.hall.sectionLook	Izgled
+modals.hall.areaShort	Površina
+modals.hall.hourlyRateShort	Cijena po satu
+modals.hall.statArea	Površina
+modals.hall.statRate	Cijena / sat
+modals.hall.isOnlineHint	Satovi se održavaju online — bez fizičkog prostora.
+modals.hall.colorHint	Satovi se ovdje ističu ovom bojom u rasporedu.
+modals.service.titleNew	Nova usluga
+modals.service.titleEdit	Uredi uslugu
+modals.service.name	Naziv usluge
+modals.service.namePlaceholder	Hatha yoga
+modals.service.category	Kategorija
+modals.service.type	Vrsta
+modals.service.typeGroup	Grupna
+modals.service.typeIndividual	Individualna
+modals.service.price	Cijena, {{currency}}
+modals.service.pricePlaceholder	1200
+modals.service.duration	Trajanje, min
+modals.service.durationPlaceholder	60
+modals.service.maxClients	Najviše klijenata
+modals.service.maxClientsPlaceholder	15
+modals.service.description	Opis
+modals.service.descriptionPlaceholder	Kratak opis usluge
+modals.service.color	Boja
+modals.service.subtitle	Pojavljuje se u rasporedu i online rezervacijama
+modals.service.previewTitle	Pregled rasporeda
+modals.service.sectionBasic	Osnovno
+modals.service.sectionPricing	Cijena i vrijeme
+modals.service.sectionLook	Izgled
+modals.service.priceShort	Cijena
+modals.service.durationShort	Trajanje
+modals.service.statSeats	Mjesta
+modals.service.colorHint	Satovi se ističu ovom bojom u mreži rasporeda.
+modals.service.bookingMode	Način rezervacije
+modals.service.bookingModeEvent	Prijava
+modals.service.bookingModeResource	Odaberi vrijeme
+modals.service.bookingModeEventHint	Klijenti se prijavljuju na sat koji ste već zakazali.
+modals.service.bookingModeResourceHint	Klijent bira stručnjaka i slobodno vrijeme; interval {{offering}} stvara se pri potvrdi.
+modals.service.bookable	Dostupno za rezervaciju
+modals.service.bookableOn	Da
+modals.service.bookableOff	Ne
+modals.service.bufferBefore	Međuvrijeme prije
+modals.service.bufferAfter	Međuvrijeme nakon
+modals.package.titleNew	Novi paket
+modals.package.titleEdit	Uredi paket
+modals.package.name	Naziv paketa
+modals.package.namePlaceholder	8 sati
+modals.package.classCount	Broj sati
+modals.package.classCountPlaceholder	8
+modals.package.price	Cijena, {{currency}}
+modals.package.pricePlaceholder	8000
+modals.package.perVisitPrice	Cijena po posjetu
+modals.package.durationDays	Vrijedi, dana
+modals.package.durationDaysPlaceholder	60
+modals.package.services	Usluge
+modals.package.servicesHint	Ništa nije odabrano — paket vrijedi za sve satove
+modals.package.isActive	U prodaji
+modals.package.soldAsSubscription	Prikaži na kartici „Članarine”
+modals.package.soldAsSingle	Prikaži na kartici „Pojedinačni posjeti”
+modals.package.subtitle	Paket sati koji prodajete klijentima
+modals.package.previewTitle	Pregled propusnice
+modals.package.previewKind	Propusnica
+modals.package.previewValid	Vrijedi
+modals.package.sectionBasic	Osnovno
+modals.package.sectionTerms	Uvjeti
+modals.package.sectionSale	Prodaja
+modals.package.priceShort	Cijena paketa
+modals.package.statClasses	Satovi
+modals.package.statDays	Dani
+modals.package.statAll	Svi
+modals.package.isActiveHint	Klijenti mogu vidjeti i kupiti ovaj paket.
+modals.package.soldAsSubscriptionHint	U suprotnom paket ostaje samo pod pojedinačnim posjetima.
+studios.title	STUDIJI
+studios.addStudio	Dodaj studio
+studios.addHall	Dodaj {{spaceAcc}}
+studios.editBranch	Uredi poslovnicu
+studios.deleteBranch	Izbriši poslovnicu
+studios.infoTab	Opće informacije
+studios.hallsTitle	{{spacePlural, capitalize}} studija
+studios.hallCount_one	{{spacePlural, capitalize}} · {{count}}
+studios.hallCount_few	{{spacePlural, capitalize}} · {{count}}
+studios.hallCount_other	{{spacePlural, capitalize}} · {{count}}
+studios.stats.halls	{{spacePlural, capitalize}}
+studios.stats.totalSeats	Ukupno mjesta
+studios.stats.fromPerHour	Od / sat
+studios.hall.seats	mjesta
+studios.hall.schedule	Radno vrijeme
+studios.hall.closed	Zatvoreno
+studios.hall.stats.seats	Mjesta
+studios.hall.stats.area	Površina
+studios.hall.stats.perHour	Po satu
+studios.hall.equipment	Oprema
+studios.hall.actions	Radnje
+studios.hall.edit	Uredi {{spaceAcc}}
+studios.hall.delete	Izbriši {{spaceAcc}}
+studios.empty.title	Nema studija
+studios.empty.subtitle	Dodajte svoj prvi studio
+studios.toasts.created	Studio izrađen
+studios.toasts.createError	Studio nije moguće izraditi
+studios.toasts.deleted	Studio izbrisan
+studios.toasts.hallDeleted	Izbrisano: {{space}}
+studios.toasts.saved	Spremljeno
+studios.toasts.edit	Uredi: {{name}}
+studios.confirmDelete	Izbrisati poslovnicu „{{name}}”? Ova se radnja ne može poništiti.
+studios.confirmDeleteTitle	Izbrisati poslovnicu?
+studios.confirmDeleteHall	Izbrisati {{spaceAcc}} „{{name}}”?
+studios.confirmDeleteHallTitle	Izbrisati {{spaceAcc}}?
+services.title	USLUGE
+services.addService	Dodaj uslugu
+services.types.group	Grupna
+services.types.individual	Indiv.
+services.types.groupFull	 · Grupna
+services.types.individualFull	 · Individualna
+services.stats.price	Cijena
+services.stats.duration	Trajanje
+services.stats.bookings	Rezervacije
+services.stats.revenue	Prihod
+services.details.description	Opis
+services.details.details	Detalji
+services.details.minutes	minuta
+services.details.upTo	Do {{count}} os.
+services.details.personal	Individualna
+services.details.bookingsPerMonth	rezervacija u 30 dana
+services.details.schedule	Raspored sati
+services.empty.title	Nema usluga
+services.empty.subtitle	Dodajte svoju prvu uslugu
+services.toasts.deleted	Usluga izbrisana
+services.toasts.deleteError	Uslugu nije moguće izbrisati
+services.toasts.saved	Spremljeno
+services.toasts.saveError	Uslugu nije moguće spremiti
+services.toasts.edit	Uredi: {{name}}
+services.confirmDelete	Izbrisati uslugu „{{name}}”?
+services.confirmDeleteTitle	Izbrisati uslugu?
+services.categories.yoga	Yoga
+services.categories.pilates	Pilates
+services.categories.stretching	Istezanje
+services.categories.individual	Individualna
+services.categories.other	Nekategorizirano
+subscriptions.title	ČLANARINE
+subscriptions.addPackage	Dodaj paket
+subscriptions.card.classCount_one	{{count}} sat
+subscriptions.card.classCount_few	{{count}} sata
+subscriptions.card.classCount_other	{{count}} sati
+subscriptions.card.duration	{{count}} dana
+subscriptions.card.allServices	Svi satovi
+subscriptions.card.serviceCount_one	{{count}} usluga
+subscriptions.card.serviceCount_few	{{count}} usluge
+subscriptions.card.serviceCount_other	{{count}} usluga
+subscriptions.card.inactiveBadge	Povučen iz prodaje
+subscriptions.settings.title	Postavke programa
+subscriptions.settings.allowFreeze	Zamrzavanje članarine
+subscriptions.settings.allowTransfer	Prijenos drugom klijentu
+subscriptions.settings.autoRenewal	Automatska obnova s depozita klijenta
+subscriptions.empty.title	Još nema paketa
+subscriptions.empty.cta	Izradi paket
+subscriptions.toasts.created	Paket izrađen
+subscriptions.toasts.saved	Spremljeno
+subscriptions.toasts.saveError	Paket nije moguće spremiti
+subscriptions.toasts.deactivated	Paket povučen iz prodaje
+subscriptions.toasts.restored	Paket ponovno u prodaji
+subscriptions.toasts.actionError	Radnju nije moguće dovršiti
+subscriptions.deactivate	Povuci iz prodaje
+subscriptions.restore	Vrati u prodaju
+subscriptions.confirmDeactivateTitle	Povući ovaj paket iz prodaje?
+subscriptions.confirmDeactivate	Već prodane članarine nastavit će raditi.

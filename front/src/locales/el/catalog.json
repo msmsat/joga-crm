@@ -1,0 +1,315 @@
+{
+  "tabs": {
+    "studios": "Στούντιο",
+    "services": "Υπηρεσίες",
+    "subscriptions": "Συνδρομές"
+  },
+  "modals": {
+    "addStudio": {
+      "steps": {
+        "about": {
+          "title": "Σχετικά με το στούντιο",
+          "sub": "Όνομα και στοιχεία επικοινωνίας",
+          "trust": "Τα δεδομένα σας είναι κρυπτογραφημένα και δεν κοινοποιούνται ποτέ σε τρίτους"
+        },
+        "location": {
+          "title": "Τοποθεσία",
+          "sub": "Πού βρίσκεται αυτό το υποκατάστημα;",
+          "trust": "Η διεύθυνση χρησιμοποιείται στο πρόγραμμα και στους χάρτες"
+        },
+        "photo": {
+          "title": "Φωτογραφία",
+          "sub": "Εξώφυλλο στούντιο — προαιρετικό",
+          "trust": "Μπορείτε να το προσθέσετε αργότερα στις ρυθμίσεις του υποκαταστήματος"
+        }
+      },
+      "stepCounter": "Βήμα {{current}} από {{total}}",
+      "step1": {
+        "heading": "Βασικές πληροφορίες",
+        "subheading": "Ποιο είναι το όνομα του στούντιο και πώς μπορεί κανείς να επικοινωνήσει μαζί του;",
+        "name": "Όνομα στούντιο *",
+        "namePlaceholder": "Π.χ. Velora Studio",
+        "phone": "Τηλέφωνο *",
+        "email": "Email *",
+        "contactHint": "Εισαγάγετε τηλέφωνο ή email — τουλάχιστον ένα",
+        "noContacts": "Δεν δόθηκαν στοιχεία επικοινωνίας",
+        "new": "ΝΕΟ"
+      },
+      "step2": {
+        "heading": "Τοποθεσία",
+        "subheading": "Ορίστε πού βρίσκεται αυτό το υποκατάστημα",
+        "country": "Χώρα",
+        "countryPlaceholder": "Ηνωμένες Πολιτείες",
+        "city": "Πόλη *",
+        "cityPlaceholder": "Νέα Υόρκη",
+        "address": "Διεύθυνση *",
+        "addressPlaceholder": "5th Avenue 12, γραφείο 301",
+        "noAddress": "Δεν δόθηκε διεύθυνση",
+        "groupHint": "Τα πεδία «Χώρα» και «Πόλη» χρησιμοποιούνται για την ομαδοποίηση των υποκαταστημάτων στη λίστα."
+      },
+      "step3": {
+        "heading": "Φωτογραφία στούντιο",
+        "subheading": "Μεταφορτώστε ένα εξώφυλλο — είναι προαιρετικό, μπορείτε να το παραλείψετε",
+        "uploadCta": "Κάντε κλικ για μεταφόρτωση",
+        "uploadHint": "JPG, PNG έως 10 MB",
+        "replace": "Αντικατάσταση",
+        "remove": "Αφαίρεση",
+        "previewAlt": "Προεπισκόπηση",
+        "summary": "Σύνοψη",
+        "uploadError": "Η μεταφόρτωση της φωτογραφίας απέτυχε. Δοκιμάστε άλλο αρχείο ή αφαιρέστε τη."
+      },
+      "summaryRows": {
+        "name": "Όνομα",
+        "city": "Πόλη",
+        "address": "Διεύθυνση"
+      },
+      "nextPhoto": "Επόμενο — φωτογραφία",
+      "submit": "Δημιουργία στούντιο",
+      "skipPhoto": "Παράλειψη φωτογραφίας και δημιουργία",
+      "illus": {
+        "contacts": "Επαφές",
+        "newBranch": "Νέο υποκατάστημα",
+        "city": "Πόλη",
+        "newBranchStudio": "Νέο υποκατάστημα στούντιο"
+      }
+    },
+    "editBranch": {
+      "title": "Επεξεργασία υποκαταστήματος",
+      "name": "Όνομα υποκαταστήματος",
+      "namePlaceholder": "Velora Studio",
+      "phone": "Τηλέφωνο",
+      "email": "Email",
+      "emailPlaceholder": "studio@velora.com",
+      "country": "Χώρα",
+      "countryPlaceholder": "Ηνωμένες Πολιτείες",
+      "city": "Πόλη",
+      "cityPlaceholder": "Νέα Υόρκη",
+      "address": "Διεύθυνση",
+      "addressPlaceholder": "5th Avenue 12",
+      "photo": "Φωτογραφία υποκαταστήματος",
+      "contactHint": "Εισαγάγετε τηλέφωνο ή email",
+      "workingHours": "Ώρες λειτουργίας"
+    },
+    "hall": {
+      "titleNew": "Προσθήκη {{spaceAcc}}",
+      "titleEdit": "Επεξεργασία {{spaceAcc}}",
+      "name": "Όνομα",
+      "namePlaceholder": "{{space, capitalize}} A",
+      "capacity": "Χωρητικότητα",
+      "area": "Εμβαδό, m²",
+      "hourlyRate": "Τιμή ανά ώρα, {{currency}}",
+      "hourlyRatePlaceholder": "3000",
+      "equipment": "Εξοπλισμός",
+      "equipmentPlaceholder": "Προσθήκη εξοπλισμού",
+      "color": "Χρώμα",
+      "isOnline": "Online",
+      "photo": "Φωτογραφία",
+      "subtitle": "{{space, capitalize}} στο υποκατάστημα: θέσεις, εξοπλισμός, χρώμα στο πρόγραμμα",
+      "previewTitle": "Προεπισκόπηση",
+      "sectionBasic": "Βασικά",
+      "sectionSpace": "Χώρος",
+      "sectionLook": "Εμφάνιση",
+      "areaShort": "Εμβαδό",
+      "hourlyRateShort": "Τιμή ανά ώρα",
+      "statArea": "Εμβαδό",
+      "statRate": "Τιμή / ώρα",
+      "isOnlineHint": "Τα μαθήματα γίνονται online — δεν υπάρχει φυσικός χώρος.",
+      "colorHint": "Τα μαθήματα εδώ επισημαίνονται με αυτό το χρώμα στο πρόγραμμα."
+    },
+    "service": {
+      "titleNew": "Νέα υπηρεσία",
+      "titleEdit": "Επεξεργασία υπηρεσίας",
+      "name": "Όνομα υπηρεσίας",
+      "namePlaceholder": "Hatha yoga",
+      "category": "Κατηγορία",
+      "type": "Τύπος",
+      "typeGroup": "Ομαδική",
+      "typeIndividual": "Ατομική",
+      "price": "Τιμή, {{currency}}",
+      "pricePlaceholder": "1200",
+      "duration": "Διάρκεια, λεπτά",
+      "durationPlaceholder": "60",
+      "maxClients": "Μέγιστος αριθμός πελατών",
+      "maxClientsPlaceholder": "15",
+      "description": "Περιγραφή",
+      "descriptionPlaceholder": "Σύντομη περιγραφή υπηρεσίας",
+      "color": "Χρώμα",
+      "subtitle": "Εμφανίζεται στο πρόγραμμα και στην online κράτηση",
+      "previewTitle": "Προεπισκόπηση προγράμματος",
+      "sectionBasic": "Βασικά",
+      "sectionPricing": "Τιμή και χρόνος",
+      "sectionLook": "Εμφάνιση",
+      "priceShort": "Τιμή",
+      "durationShort": "Διάρκεια",
+      "statSeats": "Θέσεις",
+      "colorHint": "Τα μαθήματα επισημαίνονται με αυτό το χρώμα στο πλέγμα προγράμματος.",
+      "bookingMode": "Τρόπος κράτησης",
+      "bookingModeEvent": "Εγγραφή",
+      "bookingModeResource": "Επιλογή ώρας",
+      "bookingModeEventHint": "Οι πελάτες εγγράφονται σε μάθημα που έχετε ήδη προγραμματίσει.",
+      "bookingModeResourceHint": "Ο πελάτης επιλέγει έναν ειδικό και ελεύθερη ώρα· το διάστημα {{offering}} δημιουργείται κατά την επιβεβαίωση.",
+      "bookable": "Διαθέσιμο για κράτηση",
+      "bookableOn": "Ναι",
+      "bookableOff": "Όχι",
+      "bufferBefore": "Χρόνος πριν",
+      "bufferAfter": "Χρόνος μετά"
+    },
+    "package": {
+      "titleNew": "Νέο πακέτο",
+      "titleEdit": "Επεξεργασία πακέτου",
+      "name": "Όνομα πακέτου",
+      "namePlaceholder": "8 μαθήματα",
+      "classCount": "Αριθμός μαθημάτων",
+      "classCountPlaceholder": "8",
+      "price": "Τιμή, {{currency}}",
+      "pricePlaceholder": "8000",
+      "perVisitPrice": "Τιμή ανά επίσκεψη",
+      "durationDays": "Ισχύει για, ημέρες",
+      "durationDaysPlaceholder": "60",
+      "services": "Υπηρεσίες",
+      "servicesHint": "Δεν επιλέχθηκε τίποτα — το πακέτο ισχύει για όλα τα μαθήματα",
+      "isActive": "Προς πώληση",
+      "soldAsSubscription": "Εμφάνιση στην καρτέλα «Συνδρομές»",
+      "soldAsSingle": "Εμφάνιση στην καρτέλα «Μεμονωμένες επισκέψεις»",
+      "subtitle": "Ένα πακέτο μαθημάτων που πουλάτε σε πελάτες",
+      "previewTitle": "Προεπισκόπηση πάσου",
+      "previewKind": "Πάσο",
+      "previewValid": "Ισχύει για",
+      "sectionBasic": "Βασικά",
+      "sectionTerms": "Όροι",
+      "sectionSale": "Πωλήσεις",
+      "priceShort": "Τιμή πακέτου",
+      "statClasses": "Μαθήματα",
+      "statDays": "Ημέρες",
+      "statAll": "Όλα",
+      "isActiveHint": "Οι πελάτες μπορούν να δουν και να αγοράσουν αυτό το πακέτο.",
+      "soldAsSubscriptionHint": "Διαφορετικά το πακέτο παραμένει μόνο στις μεμονωμένες επισκέψεις."
+    }
+  },
+  "studios": {
+    "title": "ΣΤΟΥΝΤΙΟ",
+    "addStudio": "Προσθήκη στούντιο",
+    "addHall": "Προσθήκη {{spaceAcc}}",
+    "editBranch": "Επεξεργασία υποκαταστήματος",
+    "deleteBranch": "Διαγραφή υποκαταστήματος",
+    "infoTab": "Γενικές πληροφορίες",
+    "hallsTitle": "{{spacePlural, capitalize}} στούντιο",
+    "hallCount_one": "{{spacePlural, capitalize}} · {{count}}",
+    "hallCount_other": "{{spacePlural, capitalize}} · {{count}}",
+    "stats": {
+      "halls": "{{spacePlural, capitalize}}",
+      "totalSeats": "Συνολικές θέσεις",
+      "fromPerHour": "Από / ώρα"
+    },
+    "hall": {
+      "seats": "θέσεις",
+      "schedule": "Ώρες λειτουργίας",
+      "closed": "Κλειστό",
+      "stats": {
+        "seats": "Θέσεις",
+        "area": "Εμβαδό",
+        "perHour": "Ανά ώρα"
+      },
+      "equipment": "Εξοπλισμός",
+      "actions": "Ενέργειες",
+      "edit": "Επεξεργασία {{spaceAcc}}",
+      "delete": "Διαγραφή {{spaceAcc}}"
+    },
+    "empty": {
+      "title": "Δεν υπάρχουν στούντιο",
+      "subtitle": "Προσθέστε το πρώτο σας στούντιο"
+    },
+    "toasts": {
+      "created": "Το στούντιο δημιουργήθηκε",
+      "createError": "Δεν ήταν δυνατή η δημιουργία του στούντιο",
+      "deleted": "Το στούντιο διαγράφηκε",
+      "hallDeleted": "Διαγράφηκε: {{space}}",
+      "saved": "Αποθηκεύτηκε",
+      "edit": "Επεξεργασία: {{name}}"
+    },
+    "confirmDelete": "Διαγραφή υποκαταστήματος «{{name}}»; Δεν μπορεί να αναιρεθεί.",
+    "confirmDeleteTitle": "Διαγραφή υποκαταστήματος;",
+    "confirmDeleteHall": "Διαγραφή {{spaceAcc}} «{{name}}»;",
+    "confirmDeleteHallTitle": "Διαγραφή {{spaceAcc}};"
+  },
+  "services": {
+    "title": "ΥΠΗΡΕΣΙΕΣ",
+    "addService": "Προσθήκη υπηρεσίας",
+    "types": {
+      "group": "Ομαδική",
+      "individual": "Ατομ.",
+      "groupFull": " · Ομαδική",
+      "individualFull": " · Ατομική"
+    },
+    "stats": {
+      "price": "Τιμή",
+      "duration": "Διάρκεια",
+      "bookings": "Κρατήσεις",
+      "revenue": "Έσοδα"
+    },
+    "details": {
+      "description": "Περιγραφή",
+      "details": "Λεπτομέρειες",
+      "minutes": "λεπτά",
+      "upTo": "Έως {{count}} άτ.",
+      "personal": "Ατομική",
+      "bookingsPerMonth": "κρατήσεις σε 30 ημέρες",
+      "schedule": "Πρόγραμμα μαθημάτων"
+    },
+    "empty": {
+      "title": "Δεν υπάρχουν υπηρεσίες",
+      "subtitle": "Προσθέστε την πρώτη σας υπηρεσία"
+    },
+    "toasts": {
+      "deleted": "Η υπηρεσία διαγράφηκε",
+      "deleteError": "Δεν ήταν δυνατή η διαγραφή της υπηρεσίας",
+      "saved": "Αποθηκεύτηκε",
+      "saveError": "Δεν ήταν δυνατή η αποθήκευση της υπηρεσίας",
+      "edit": "Επεξεργασία: {{name}}"
+    },
+    "confirmDelete": "Διαγραφή υπηρεσίας «{{name}}»;",
+    "confirmDeleteTitle": "Διαγραφή υπηρεσίας;",
+    "categories": {
+      "yoga": "Γιόγκα",
+      "pilates": "Πιλάτες",
+      "stretching": "Διατάσεις",
+      "individual": "Ατομική",
+      "other": "Χωρίς κατηγορία"
+    }
+  },
+  "subscriptions": {
+    "title": "ΣΥΝΔΡΟΜΕΣ",
+    "addPackage": "Προσθήκη πακέτου",
+    "card": {
+      "classCount_one": "{{count}} μάθημα",
+      "classCount_other": "{{count}} μαθήματα",
+      "duration": "{{count}} ημέρες",
+      "allServices": "Όλα τα μαθήματα",
+      "serviceCount_one": "{{count}} υπηρεσία",
+      "serviceCount_other": "{{count}} υπηρεσίες",
+      "inactiveBadge": "Αποσύρθηκε από την πώληση"
+    },
+    "settings": {
+      "title": "Ρυθμίσεις προγράμματος",
+      "allowFreeze": "Πάγωμα συνδρομής",
+      "allowTransfer": "Μεταφορά σε άλλο πελάτη",
+      "autoRenewal": "Αυτόματη ανανέωση από την κατάθεση του πελάτη"
+    },
+    "empty": {
+      "title": "Δεν υπάρχουν ακόμη πακέτα",
+      "cta": "Δημιουργία πακέτου"
+    },
+    "toasts": {
+      "created": "Το πακέτο δημιουργήθηκε",
+      "saved": "Αποθηκεύτηκε",
+      "saveError": "Δεν ήταν δυνατή η αποθήκευση του πακέτου",
+      "deactivated": "Το πακέτο αποσύρθηκε από την πώληση",
+      "restored": "Το πακέτο επανήλθε προς πώληση",
+      "actionError": "Δεν ήταν δυνατή η ολοκλήρωση της ενέργειας"
+    },
+    "deactivate": "Απόσυρση από την πώληση",
+    "restore": "Επαναφορά προς πώληση",
+    "confirmDeactivateTitle": "Απόσυρση αυτού του πακέτου από την πώληση;",
+    "confirmDeactivate": "Οι συνδρομές που έχουν ήδη πουληθεί θα συνεχίσουν να λειτουργούν."
+  }
+}

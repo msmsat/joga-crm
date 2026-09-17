@@ -1,0 +1,318 @@
+{
+  "tabs": {
+    "studios": "Studia",
+    "services": "Usługi",
+    "subscriptions": "Karnety"
+  },
+  "modals": {
+    "addStudio": {
+      "steps": {
+        "about": {
+          "title": "O studiu",
+          "sub": "Nazwa i dane kontaktowe",
+          "trust": "Twoje dane są szyfrowane i nigdy nie są udostępniane osobom trzecim"
+        },
+        "location": {
+          "title": "Lokalizacja",
+          "sub": "Gdzie znajduje się ten oddział?",
+          "trust": "Adres jest używany w harmonogramie i na mapach"
+        },
+        "photo": {
+          "title": "Zdjęcie",
+          "sub": "Okładka studia — opcjonalna",
+          "trust": "Możesz ją dodać później w ustawieniach oddziału"
+        }
+      },
+      "stepCounter": "Krok {{current}} z {{total}}",
+      "step1": {
+        "heading": "Podstawowe informacje",
+        "subheading": "Jak nazywa się studio i jak się z nim skontaktować?",
+        "name": "Nazwa studia *",
+        "namePlaceholder": "Np. Studio Velora",
+        "phone": "Telefon *",
+        "email": "E-mail *",
+        "contactHint": "Podaj telefon lub e-mail — przynajmniej jedno",
+        "noContacts": "Nie podano kontaktów",
+        "new": "NOWE"
+      },
+      "step2": {
+        "heading": "Lokalizacja",
+        "subheading": "Wskaż, gdzie znajduje się ten oddział",
+        "country": "Kraj",
+        "countryPlaceholder": "Stany Zjednoczone",
+        "city": "Miasto *",
+        "cityPlaceholder": "Nowy Jork",
+        "address": "Adres *",
+        "addressPlaceholder": "5th Avenue 12, lokal 301",
+        "noAddress": "Nie podano adresu",
+        "groupHint": "Pola „Kraj” i „Miasto” służą do grupowania oddziałów na liście."
+      },
+      "step3": {
+        "heading": "Zdjęcie studia",
+        "subheading": "Prześlij okładkę — jest opcjonalna, możesz ją pominąć",
+        "uploadCta": "Kliknij, aby przesłać",
+        "uploadHint": "JPG, PNG do 10 MB",
+        "replace": "Zamień",
+        "remove": "Usuń",
+        "previewAlt": "Podgląd",
+        "summary": "Podsumowanie",
+        "uploadError": "Nie udało się przesłać zdjęcia. Spróbuj innego pliku albo je usuń."
+      },
+      "summaryRows": {
+        "name": "Nazwa",
+        "city": "Miasto",
+        "address": "Adres"
+      },
+      "nextPhoto": "Dalej — zdjęcie",
+      "submit": "Utwórz studio",
+      "skipPhoto": "Pomiń zdjęcie i utwórz",
+      "illus": {
+        "contacts": "Kontakty",
+        "newBranch": "Nowy oddział",
+        "city": "Miasto",
+        "newBranchStudio": "Nowy oddział studia"
+      }
+    },
+    "editBranch": {
+      "title": "Edytuj oddział",
+      "name": "Nazwa oddziału",
+      "namePlaceholder": "Studio Velora",
+      "phone": "Telefon",
+      "email": "E-mail",
+      "emailPlaceholder": "studio@velora.com",
+      "country": "Kraj",
+      "countryPlaceholder": "Stany Zjednoczone",
+      "city": "Miasto",
+      "cityPlaceholder": "Nowy Jork",
+      "address": "Adres",
+      "addressPlaceholder": "5th Avenue 12",
+      "photo": "Zdjęcie oddziału",
+      "contactHint": "Podaj telefon lub e-mail",
+      "workingHours": "Godziny pracy"
+    },
+    "hall": {
+      "titleNew": "Dodaj {{spaceAcc}}",
+      "titleEdit": "Edytuj {{spaceAcc}}",
+      "name": "Nazwa",
+      "namePlaceholder": "{{space, capitalize}} A",
+      "capacity": "Pojemność",
+      "area": "Powierzchnia, m²",
+      "hourlyRate": "Cena za godzinę, {{currency}}",
+      "hourlyRatePlaceholder": "3000",
+      "equipment": "Wyposażenie",
+      "equipmentPlaceholder": "Dodaj wyposażenie",
+      "color": "Kolor",
+      "isOnline": "Online",
+      "photo": "Zdjęcie",
+      "subtitle": "{{space, capitalize}} w oddziale: miejsca, wyposażenie, kolor w harmonogramie",
+      "previewTitle": "Podgląd",
+      "sectionBasic": "Podstawowe",
+      "sectionSpace": "Przestrzeń",
+      "sectionLook": "Wygląd",
+      "areaShort": "Powierzchnia",
+      "hourlyRateShort": "Cena za godzinę",
+      "statArea": "Powierzchnia",
+      "statRate": "Cena / godz.",
+      "isOnlineHint": "Zajęcia odbywają się online — bez fizycznego pomieszczenia.",
+      "colorHint": "Zajęcia tutaj są wyróżniane tym kolorem w harmonogramie."
+    },
+    "service": {
+      "titleNew": "Nowa usługa",
+      "titleEdit": "Edytuj usługę",
+      "name": "Nazwa usługi",
+      "namePlaceholder": "Hatha joga",
+      "category": "Kategoria",
+      "type": "Typ",
+      "typeGroup": "Grupowa",
+      "typeIndividual": "Indywidualna",
+      "price": "Cena, {{currency}}",
+      "pricePlaceholder": "1200",
+      "duration": "Czas trwania, min",
+      "durationPlaceholder": "60",
+      "maxClients": "Maksymalna liczba klientów",
+      "maxClientsPlaceholder": "15",
+      "description": "Opis",
+      "descriptionPlaceholder": "Krótki opis usługi",
+      "color": "Kolor",
+      "subtitle": "Pojawia się w harmonogramie i rezerwacji online",
+      "previewTitle": "Podgląd harmonogramu",
+      "sectionBasic": "Podstawowe",
+      "sectionPricing": "Cena i czas",
+      "sectionLook": "Wygląd",
+      "priceShort": "Cena",
+      "durationShort": "Czas trwania",
+      "statSeats": "Miejsca",
+      "colorHint": "Zajęcia są wyróżniane tym kolorem na siatce harmonogramu.",
+      "bookingMode": "Mechanika rezerwacji",
+      "bookingModeEvent": "Zapisy",
+      "bookingModeResource": "Wybierz godzinę",
+      "bookingModeEventHint": "Klienci zapisują się na zajęcia, które zostały już zaplanowane.",
+      "bookingModeResourceHint": "Klient wybiera specjalistę i wolny termin; przedział {{offering}} jest tworzony przy potwierdzeniu.",
+      "bookable": "Dostępna do rezerwacji",
+      "bookableOn": "Tak",
+      "bookableOff": "Nie",
+      "bufferBefore": "Bufor przed",
+      "bufferAfter": "Bufor po"
+    },
+    "package": {
+      "titleNew": "Nowy pakiet",
+      "titleEdit": "Edytuj pakiet",
+      "name": "Nazwa pakietu",
+      "namePlaceholder": "8 zajęć",
+      "classCount": "Liczba zajęć",
+      "classCountPlaceholder": "8",
+      "price": "Cena, {{currency}}",
+      "pricePlaceholder": "8000",
+      "perVisitPrice": "Cena za wizytę",
+      "durationDays": "Ważny przez, dni",
+      "durationDaysPlaceholder": "60",
+      "services": "Usługi",
+      "servicesHint": "Nic nie wybrano — pakiet dotyczy wszystkich zajęć",
+      "isActive": "W sprzedaży",
+      "soldAsSubscription": "Pokaż na karcie „Karnety”",
+      "soldAsSingle": "Pokaż na karcie „Pojedyncze wizyty”",
+      "subtitle": "Pakiet zajęć, który sprzedajesz klientom",
+      "previewTitle": "Podgląd karnetu",
+      "previewKind": "Karnet",
+      "previewValid": "Ważny przez",
+      "sectionBasic": "Podstawowe",
+      "sectionTerms": "Warunki",
+      "sectionSale": "Sprzedaż",
+      "priceShort": "Cena pakietu",
+      "statClasses": "Zajęcia",
+      "statDays": "Dni",
+      "statAll": "Wszystkie",
+      "isActiveHint": "Klienci mogą zobaczyć i kupić ten pakiet.",
+      "soldAsSubscriptionHint": "W przeciwnym razie pakiet pozostanie tylko w pojedynczych wizytach."
+    }
+  },
+  "studios": {
+    "title": "STUDIA",
+    "addStudio": "Dodaj studio",
+    "addHall": "Dodaj {{spaceAcc}}",
+    "editBranch": "Edytuj oddział",
+    "deleteBranch": "Usuń oddział",
+    "infoTab": "Informacje ogólne",
+    "hallsTitle": "{{spacePlural, capitalize}} studia",
+    "hallCount_one": "{{spacePlural, capitalize}} · {{count}}",
+    "hallCount_few": "{{spacePlural, capitalize}} · {{count}}",
+    "hallCount_many": "{{spacePlural, capitalize}} · {{count}}",
+    "stats": {
+      "halls": "{{spacePlural, capitalize}}",
+      "totalSeats": "Łączna liczba miejsc",
+      "fromPerHour": "Od / godz."
+    },
+    "hall": {
+      "seats": "miejsca",
+      "schedule": "Godziny pracy",
+      "closed": "Zamknięte",
+      "stats": {
+        "seats": "Miejsca",
+        "area": "Powierzchnia",
+        "perHour": "Na godzinę"
+      },
+      "equipment": "Wyposażenie",
+      "actions": "Działania",
+      "edit": "Edytuj {{spaceAcc}}",
+      "delete": "Usuń {{spaceAcc}}"
+    },
+    "empty": {
+      "title": "Brak studiów",
+      "subtitle": "Dodaj swoje pierwsze studio"
+    },
+    "toasts": {
+      "created": "Studio utworzone",
+      "createError": "Nie udało się utworzyć studia",
+      "deleted": "Studio usunięte",
+      "hallDeleted": "Usunięto: {{space}}",
+      "saved": "Zapisano",
+      "edit": "Edytuj: {{name}}"
+    },
+    "confirmDelete": "Usunąć oddział „{{name}}”? Tej czynności nie można cofnąć.",
+    "confirmDeleteTitle": "Usunąć oddział?",
+    "confirmDeleteHall": "Usunąć {{spaceAcc}} „{{name}}”?",
+    "confirmDeleteHallTitle": "Usunąć {{spaceAcc}}?"
+  },
+  "services": {
+    "title": "USŁUGI",
+    "addService": "Dodaj usługę",
+    "types": {
+      "group": "Grupowa",
+      "individual": "Indyw.",
+      "groupFull": " · Grupowa",
+      "individualFull": " · Indywidualna"
+    },
+    "stats": {
+      "price": "Cena",
+      "duration": "Czas trwania",
+      "bookings": "Rezerwacje",
+      "revenue": "Przychód"
+    },
+    "details": {
+      "description": "Opis",
+      "details": "Szczegóły",
+      "minutes": "minut",
+      "upTo": "Do {{count}} os.",
+      "personal": "Indywidualna",
+      "bookingsPerMonth": "rezerwacji w 30 dni",
+      "schedule": "Harmonogram zajęć"
+    },
+    "empty": {
+      "title": "Brak usług",
+      "subtitle": "Dodaj pierwszą usługę"
+    },
+    "toasts": {
+      "deleted": "Usługa usunięta",
+      "deleteError": "Nie udało się usunąć usługi",
+      "saved": "Zapisano",
+      "saveError": "Nie udało się zapisać usługi",
+      "edit": "Edytuj: {{name}}"
+    },
+    "confirmDelete": "Usunąć usługę „{{name}}”?",
+    "confirmDeleteTitle": "Usunąć usługę?",
+    "categories": {
+      "yoga": "Joga",
+      "pilates": "Pilates",
+      "stretching": "Rozciąganie",
+      "individual": "Indywidualna",
+      "other": "Bez kategorii"
+    }
+  },
+  "subscriptions": {
+    "title": "KARNETY",
+    "addPackage": "Dodaj pakiet",
+    "card": {
+      "classCount_one": "{{count}} zajęcie",
+      "classCount_few": "{{count}} zajęcia",
+      "classCount_many": "{{count}} zajęć",
+      "duration": "{{count}} dni",
+      "allServices": "Wszystkie zajęcia",
+      "serviceCount_one": "{{count}} usługa",
+      "serviceCount_few": "{{count}} usługi",
+      "serviceCount_many": "{{count}} usług",
+      "inactiveBadge": "Wycofany ze sprzedaży"
+    },
+    "settings": {
+      "title": "Ustawienia programu",
+      "allowFreeze": "Zawieszenie karnetu",
+      "allowTransfer": "Przeniesienie na innego klienta",
+      "autoRenewal": "Automatyczne odnowienie z salda klienta"
+    },
+    "empty": {
+      "title": "Nie ma jeszcze pakietów",
+      "cta": "Utwórz pakiet"
+    },
+    "toasts": {
+      "created": "Pakiet utworzony",
+      "saved": "Zapisano",
+      "saveError": "Nie udało się zapisać pakietu",
+      "deactivated": "Pakiet wycofany ze sprzedaży",
+      "restored": "Pakiet ponownie w sprzedaży",
+      "actionError": "Nie udało się wykonać działania"
+    },
+    "deactivate": "Wycofaj ze sprzedaży",
+    "restore": "Przywróć do sprzedaży",
+    "confirmDeactivateTitle": "Wycofać ten pakiet ze sprzedaży?",
+    "confirmDeactivate": "Już sprzedane karnety będą nadal działać."
+  }
+}

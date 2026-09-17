@@ -1,0 +1,315 @@
+{
+  "tabs": {
+    "studios": "Stúdiók",
+    "services": "Szolgáltatások",
+    "subscriptions": "Bérletek"
+  },
+  "modals": {
+    "addStudio": {
+      "steps": {
+        "about": {
+          "title": "A stúdióról",
+          "sub": "Név és elérhetőségek",
+          "trust": "Az adatai titkosítva vannak, és soha nem osztjuk meg harmadik felekkel"
+        },
+        "location": {
+          "title": "Helyszín",
+          "sub": "Hol található ez a telephely?",
+          "trust": "A címet a naptár és a térképek használják"
+        },
+        "photo": {
+          "title": "Fénykép",
+          "sub": "Stúdióborító — opcionális",
+          "trust": "Később a telephely beállításaiban is hozzáadhatja"
+        }
+      },
+      "stepCounter": "{{current}}. lépés / {{total}}",
+      "step1": {
+        "heading": "Alapvető információk",
+        "subheading": "Mi a stúdió neve, és hogyan lehet elérni?",
+        "name": "Stúdió neve *",
+        "namePlaceholder": "Pl. Velora Studio",
+        "phone": "Telefon *",
+        "email": "E-mail *",
+        "contactHint": "Adjon meg telefont vagy e-mailt — legalább az egyiket",
+        "noContacts": "Nincs megadott elérhetőség",
+        "new": "ÚJ"
+      },
+      "step2": {
+        "heading": "Helyszín",
+        "subheading": "Adja meg, hol található ez a telephely",
+        "country": "Ország",
+        "countryPlaceholder": "Egyesült Államok",
+        "city": "Város *",
+        "cityPlaceholder": "New York",
+        "address": "Cím *",
+        "addressPlaceholder": "5th Avenue 12, 301. iroda",
+        "noAddress": "Nincs megadott cím",
+        "groupHint": "Az „Ország” és „Város” mezők a telephelyek listában való csoportosítására szolgálnak."
+      },
+      "step3": {
+        "heading": "Stúdiófotó",
+        "subheading": "Töltsön fel borítóképet — ez opcionális, kihagyhatja",
+        "uploadCta": "Kattintson a feltöltéshez",
+        "uploadHint": "JPG, PNG, legfeljebb 10 MB",
+        "replace": "Csere",
+        "remove": "Eltávolítás",
+        "previewAlt": "Előnézet",
+        "summary": "Összegzés",
+        "uploadError": "A fénykép feltöltése nem sikerült. Próbáljon másik fájlt, vagy távolítsa el."
+      },
+      "summaryRows": {
+        "name": "Név",
+        "city": "Város",
+        "address": "Cím"
+      },
+      "nextPhoto": "Következő — fénykép",
+      "submit": "Stúdió létrehozása",
+      "skipPhoto": "Fénykép kihagyása és létrehozás",
+      "illus": {
+        "contacts": "Elérhetőségek",
+        "newBranch": "Új telephely",
+        "city": "Város",
+        "newBranchStudio": "Új stúdiótelephely"
+      }
+    },
+    "editBranch": {
+      "title": "Telephely szerkesztése",
+      "name": "Telephely neve",
+      "namePlaceholder": "Velora Studio",
+      "phone": "Telefon",
+      "email": "E-mail",
+      "emailPlaceholder": "studio@velora.com",
+      "country": "Ország",
+      "countryPlaceholder": "Egyesült Államok",
+      "city": "Város",
+      "cityPlaceholder": "New York",
+      "address": "Cím",
+      "addressPlaceholder": "5th Avenue 12",
+      "photo": "Telephely fényképe",
+      "contactHint": "Adjon meg telefont vagy e-mailt",
+      "workingHours": "Nyitvatartás"
+    },
+    "hall": {
+      "titleNew": "{{spaceAcc}} hozzáadása",
+      "titleEdit": "{{spaceAcc}} szerkesztése",
+      "name": "Név",
+      "namePlaceholder": "{{space, capitalize}} A",
+      "capacity": "Kapacitás",
+      "area": "Terület, m²",
+      "hourlyRate": "Óradíj, {{currency}}",
+      "hourlyRatePlaceholder": "3000",
+      "equipment": "Felszerelés",
+      "equipmentPlaceholder": "Felszerelés hozzáadása",
+      "color": "Szín",
+      "isOnline": "Online",
+      "photo": "Fénykép",
+      "subtitle": "{{space, capitalize}} a telephelyen: helyek, felszerelés, naptárszín",
+      "previewTitle": "Előnézet",
+      "sectionBasic": "Alapvető",
+      "sectionSpace": "Tér",
+      "sectionLook": "Megjelenés",
+      "areaShort": "Terület",
+      "hourlyRateShort": "Óradíj",
+      "statArea": "Terület",
+      "statRate": "Ár / óra",
+      "isOnlineHint": "Az órákat online tartják — nincs fizikai helyszín.",
+      "colorHint": "Az itt tartott órákat ezzel a színnel emeljük ki a naptárban."
+    },
+    "service": {
+      "titleNew": "Új szolgáltatás",
+      "titleEdit": "Szolgáltatás szerkesztése",
+      "name": "Szolgáltatás neve",
+      "namePlaceholder": "Hatha jóga",
+      "category": "Kategória",
+      "type": "Típus",
+      "typeGroup": "Csoportos",
+      "typeIndividual": "Egyéni",
+      "price": "Ár, {{currency}}",
+      "pricePlaceholder": "1200",
+      "duration": "Időtartam, perc",
+      "durationPlaceholder": "60",
+      "maxClients": "Ügyfelek maximális száma",
+      "maxClientsPlaceholder": "15",
+      "description": "Leírás",
+      "descriptionPlaceholder": "Rövid szolgáltatásleírás",
+      "color": "Szín",
+      "subtitle": "Megjelenik a naptárban és az online foglalásban",
+      "previewTitle": "Naptár-előnézet",
+      "sectionBasic": "Alapvető",
+      "sectionPricing": "Ár és idő",
+      "sectionLook": "Megjelenés",
+      "priceShort": "Ár",
+      "durationShort": "Időtartam",
+      "statSeats": "Helyek",
+      "colorHint": "Az órákat ezzel a színnel emeljük ki a naptárrácsban.",
+      "bookingMode": "Foglalási mód",
+      "bookingModeEvent": "Jelentkezés",
+      "bookingModeResource": "Időpont választása",
+      "bookingModeEventHint": "Az ügyfelek egy már beütemezett órára jelentkeznek.",
+      "bookingModeResourceHint": "Az ügyfél szakembert és szabad időpontot választ; a {{offering}} időköz a megerősítéskor jön létre.",
+      "bookable": "Foglalható",
+      "bookableOn": "Igen",
+      "bookableOff": "Nem",
+      "bufferBefore": "Puffer előtte",
+      "bufferAfter": "Puffer utána"
+    },
+    "package": {
+      "titleNew": "Új csomag",
+      "titleEdit": "Csomag szerkesztése",
+      "name": "Csomag neve",
+      "namePlaceholder": "8 óra",
+      "classCount": "Órák száma",
+      "classCountPlaceholder": "8",
+      "price": "Ár, {{currency}}",
+      "pricePlaceholder": "8000",
+      "perVisitPrice": "Ár látogatásonként",
+      "durationDays": "Érvényesség, nap",
+      "durationDaysPlaceholder": "60",
+      "services": "Szolgáltatások",
+      "servicesHint": "Nincs kiválasztva semmi — a csomag minden órára vonatkozik",
+      "isActive": "Eladó",
+      "soldAsSubscription": "Megjelenítés a „Bérletek” lapon",
+      "soldAsSingle": "Megjelenítés az „Egyszeri látogatások” lapon",
+      "subtitle": "Óracsomag, amelyet ügyfeleknek értékesít",
+      "previewTitle": "Bérlet előnézete",
+      "previewKind": "Bérlet",
+      "previewValid": "Érvényes",
+      "sectionBasic": "Alapvető",
+      "sectionTerms": "Feltételek",
+      "sectionSale": "Értékesítés",
+      "priceShort": "Csomag ára",
+      "statClasses": "Órák",
+      "statDays": "Napok",
+      "statAll": "Mind",
+      "isActiveHint": "Az ügyfelek megtekinthetik és megvásárolhatják ezt a csomagot.",
+      "soldAsSubscriptionHint": "Ellenkező esetben a csomag csak az egyszeri látogatásoknál marad."
+    }
+  },
+  "studios": {
+    "title": "STÚDIÓK",
+    "addStudio": "Stúdió hozzáadása",
+    "addHall": "{{spaceAcc}} hozzáadása",
+    "editBranch": "Telephely szerkesztése",
+    "deleteBranch": "Telephely törlése",
+    "infoTab": "Általános adatok",
+    "hallsTitle": "A stúdió {{spacePlural}}i",
+    "hallCount_one": "{{spacePlural, capitalize}} · {{count}}",
+    "hallCount_other": "{{spacePlural, capitalize}} · {{count}}",
+    "stats": {
+      "halls": "{{spacePlural, capitalize}}",
+      "totalSeats": "Összes hely",
+      "fromPerHour": "Kezdőár / óra"
+    },
+    "hall": {
+      "seats": "helyek",
+      "schedule": "Nyitvatartás",
+      "closed": "Zárva",
+      "stats": {
+        "seats": "Helyek",
+        "area": "Terület",
+        "perHour": "Óránként"
+      },
+      "equipment": "Felszerelés",
+      "actions": "Műveletek",
+      "edit": "{{spaceAcc}} szerkesztése",
+      "delete": "{{spaceAcc}} törlése"
+    },
+    "empty": {
+      "title": "Nincs stúdió",
+      "subtitle": "Adja hozzá első stúdióját"
+    },
+    "toasts": {
+      "created": "Stúdió létrehozva",
+      "createError": "A stúdió létrehozása nem sikerült",
+      "deleted": "Stúdió törölve",
+      "hallDeleted": "Törölve: {{space}}",
+      "saved": "Mentve",
+      "edit": "Szerkesztés: {{name}}"
+    },
+    "confirmDelete": "Törli a(z) „{{name}}” telephelyet? Ez nem vonható vissza.",
+    "confirmDeleteTitle": "Törli a telephelyet?",
+    "confirmDeleteHall": "Törli {{spaceAcc}} „{{name}}”?",
+    "confirmDeleteHallTitle": "Törli {{spaceAcc}}?"
+  },
+  "services": {
+    "title": "SZOLGÁLTATÁSOK",
+    "addService": "Szolgáltatás hozzáadása",
+    "types": {
+      "group": "Csoportos",
+      "individual": "Egyéni",
+      "groupFull": " · Csoportos",
+      "individualFull": " · Egyéni"
+    },
+    "stats": {
+      "price": "Ár",
+      "duration": "Időtartam",
+      "bookings": "Foglalások",
+      "revenue": "Bevétel"
+    },
+    "details": {
+      "description": "Leírás",
+      "details": "Részletek",
+      "minutes": "perc",
+      "upTo": "Legfeljebb {{count}} fő",
+      "personal": "Személyes",
+      "bookingsPerMonth": "foglalás 30 nap alatt",
+      "schedule": "Órarend"
+    },
+    "empty": {
+      "title": "Nincs szolgáltatás",
+      "subtitle": "Adja hozzá első szolgáltatását"
+    },
+    "toasts": {
+      "deleted": "Szolgáltatás törölve",
+      "deleteError": "A szolgáltatás törlése nem sikerült",
+      "saved": "Mentve",
+      "saveError": "A szolgáltatás mentése nem sikerült",
+      "edit": "Szerkesztés: {{name}}"
+    },
+    "confirmDelete": "Törli a(z) „{{name}}” szolgáltatást?",
+    "confirmDeleteTitle": "Törli a szolgáltatást?",
+    "categories": {
+      "yoga": "Jóga",
+      "pilates": "Pilates",
+      "stretching": "Nyújtás",
+      "individual": "Egyéni",
+      "other": "Kategorizálatlan"
+    }
+  },
+  "subscriptions": {
+    "title": "BÉRLETEK",
+    "addPackage": "Csomag hozzáadása",
+    "card": {
+      "classCount_one": "{{count}} óra",
+      "classCount_other": "{{count}} óra",
+      "duration": "{{count}} nap",
+      "allServices": "Minden óra",
+      "serviceCount_one": "{{count}} szolgáltatás",
+      "serviceCount_other": "{{count}} szolgáltatás",
+      "inactiveBadge": "Kivonva az értékesítésből"
+    },
+    "settings": {
+      "title": "Programbeállítások",
+      "allowFreeze": "Bérlet felfüggesztése",
+      "allowTransfer": "Átadás másik ügyfélnek",
+      "autoRenewal": "Automatikus megújítás az ügyfél egyenlegéből"
+    },
+    "empty": {
+      "title": "Még nincs csomag",
+      "cta": "Csomag létrehozása"
+    },
+    "toasts": {
+      "created": "Csomag létrehozva",
+      "saved": "Mentve",
+      "saveError": "A csomag mentése nem sikerült",
+      "deactivated": "Csomag kivonva az értékesítésből",
+      "restored": "Csomag újra értékesíthető",
+      "actionError": "A művelet nem hajtható végre"
+    },
+    "deactivate": "Kivonás az értékesítésből",
+    "restore": "Vissza az értékesítésbe",
+    "confirmDeactivateTitle": "Kivonja ezt a csomagot az értékesítésből?",
+    "confirmDeactivate": "A már értékesített bérletek továbbra is működnek."
+  }
+}

@@ -1,0 +1,246 @@
+== hu
+tabs.studios	Stúdiók
+tabs.services	Szolgáltatások
+tabs.subscriptions	Bérletek
+modals.addStudio.steps.about.title	A stúdióról
+modals.addStudio.steps.about.sub	Név és elérhetőségek
+modals.addStudio.steps.about.trust	Az adatai titkosítva vannak, és soha nem osztjuk meg harmadik felekkel
+modals.addStudio.steps.location.title	Helyszín
+modals.addStudio.steps.location.sub	Hol található ez a telephely?
+modals.addStudio.steps.location.trust	A címet a naptár és a térképek használják
+modals.addStudio.steps.photo.title	Fénykép
+modals.addStudio.steps.photo.sub	Stúdióborító — opcionális
+modals.addStudio.steps.photo.trust	Később a telephely beállításaiban is hozzáadhatja
+modals.addStudio.stepCounter	{{current}}. lépés / {{total}}
+modals.addStudio.step1.heading	Alapvető információk
+modals.addStudio.step1.subheading	Mi a stúdió neve, és hogyan lehet elérni?
+modals.addStudio.step1.name	Stúdió neve *
+modals.addStudio.step1.namePlaceholder	Pl. Velora Studio
+modals.addStudio.step1.phone	Telefon *
+modals.addStudio.step1.email	E-mail *
+modals.addStudio.step1.contactHint	Adjon meg telefont vagy e-mailt — legalább az egyiket
+modals.addStudio.step1.noContacts	Nincs megadott elérhetőség
+modals.addStudio.step1.new	ÚJ
+modals.addStudio.step2.heading	Helyszín
+modals.addStudio.step2.subheading	Adja meg, hol található ez a telephely
+modals.addStudio.step2.country	Ország
+modals.addStudio.step2.countryPlaceholder	Egyesült Államok
+modals.addStudio.step2.city	Város *
+modals.addStudio.step2.cityPlaceholder	New York
+modals.addStudio.step2.address	Cím *
+modals.addStudio.step2.addressPlaceholder	5th Avenue 12, 301. iroda
+modals.addStudio.step2.noAddress	Nincs megadott cím
+modals.addStudio.step2.groupHint	Az „Ország” és „Város” mezők a telephelyek listában való csoportosítására szolgálnak.
+modals.addStudio.step3.heading	Stúdiófotó
+modals.addStudio.step3.subheading	Töltsön fel borítóképet — ez opcionális, kihagyhatja
+modals.addStudio.step3.uploadCta	Kattintson a feltöltéshez
+modals.addStudio.step3.uploadHint	JPG, PNG, legfeljebb 10 MB
+modals.addStudio.step3.replace	Csere
+modals.addStudio.step3.remove	Eltávolítás
+modals.addStudio.step3.previewAlt	Előnézet
+modals.addStudio.step3.summary	Összegzés
+modals.addStudio.step3.uploadError	A fénykép feltöltése nem sikerült. Próbáljon másik fájlt, vagy távolítsa el.
+modals.addStudio.summaryRows.name	Név
+modals.addStudio.summaryRows.city	Város
+modals.addStudio.summaryRows.address	Cím
+modals.addStudio.nextPhoto	Következő — fénykép
+modals.addStudio.submit	Stúdió létrehozása
+modals.addStudio.skipPhoto	Fénykép kihagyása és létrehozás
+modals.addStudio.illus.contacts	Elérhetőségek
+modals.addStudio.illus.newBranch	Új telephely
+modals.addStudio.illus.city	Város
+modals.addStudio.illus.newBranchStudio	Új stúdiótelephely
+modals.editBranch.title	Telephely szerkesztése
+modals.editBranch.name	Telephely neve
+modals.editBranch.namePlaceholder	Velora Studio
+modals.editBranch.phone	Telefon
+modals.editBranch.email	E-mail
+modals.editBranch.emailPlaceholder	studio@velora.com
+modals.editBranch.country	Ország
+modals.editBranch.countryPlaceholder	Egyesült Államok
+modals.editBranch.city	Város
+modals.editBranch.cityPlaceholder	New York
+modals.editBranch.address	Cím
+modals.editBranch.addressPlaceholder	5th Avenue 12
+modals.editBranch.photo	Telephely fényképe
+modals.editBranch.contactHint	Adjon meg telefont vagy e-mailt
+modals.editBranch.workingHours	Nyitvatartás
+modals.hall.titleNew	{{spaceAcc}} hozzáadása
+modals.hall.titleEdit	{{spaceAcc}} szerkesztése
+modals.hall.name	Név
+modals.hall.namePlaceholder	{{space, capitalize}} A
+modals.hall.capacity	Kapacitás
+modals.hall.area	Terület, m²
+modals.hall.hourlyRate	Óradíj, {{currency}}
+modals.hall.hourlyRatePlaceholder	3000
+modals.hall.equipment	Felszerelés
+modals.hall.equipmentPlaceholder	Felszerelés hozzáadása
+modals.hall.color	Szín
+modals.hall.isOnline	Online
+modals.hall.photo	Fénykép
+modals.hall.subtitle	{{space, capitalize}} a telephelyen: helyek, felszerelés, naptárszín
+modals.hall.previewTitle	Előnézet
+modals.hall.sectionBasic	Alapvető
+modals.hall.sectionSpace	Tér
+modals.hall.sectionLook	Megjelenés
+modals.hall.areaShort	Terület
+modals.hall.hourlyRateShort	Óradíj
+modals.hall.statArea	Terület
+modals.hall.statRate	Ár / óra
+modals.hall.isOnlineHint	Az órákat online tartják — nincs fizikai helyszín.
+modals.hall.colorHint	Az itt tartott órákat ezzel a színnel emeljük ki a naptárban.
+modals.service.titleNew	Új szolgáltatás
+modals.service.titleEdit	Szolgáltatás szerkesztése
+modals.service.name	Szolgáltatás neve
+modals.service.namePlaceholder	Hatha jóga
+modals.service.category	Kategória
+modals.service.type	Típus
+modals.service.typeGroup	Csoportos
+modals.service.typeIndividual	Egyéni
+modals.service.price	Ár, {{currency}}
+modals.service.pricePlaceholder	1200
+modals.service.duration	Időtartam, perc
+modals.service.durationPlaceholder	60
+modals.service.maxClients	Ügyfelek maximális száma
+modals.service.maxClientsPlaceholder	15
+modals.service.description	Leírás
+modals.service.descriptionPlaceholder	Rövid szolgáltatásleírás
+modals.service.color	Szín
+modals.service.subtitle	Megjelenik a naptárban és az online foglalásban
+modals.service.previewTitle	Naptár-előnézet
+modals.service.sectionBasic	Alapvető
+modals.service.sectionPricing	Ár és idő
+modals.service.sectionLook	Megjelenés
+modals.service.priceShort	Ár
+modals.service.durationShort	Időtartam
+modals.service.statSeats	Helyek
+modals.service.colorHint	Az órákat ezzel a színnel emeljük ki a naptárrácsban.
+modals.service.bookingMode	Foglalási mód
+modals.service.bookingModeEvent	Jelentkezés
+modals.service.bookingModeResource	Időpont választása
+modals.service.bookingModeEventHint	Az ügyfelek egy már beütemezett órára jelentkeznek.
+modals.service.bookingModeResourceHint	Az ügyfél szakembert és szabad időpontot választ; a {{offering}} időköz a megerősítéskor jön létre.
+modals.service.bookable	Foglalható
+modals.service.bookableOn	Igen
+modals.service.bookableOff	Nem
+modals.service.bufferBefore	Puffer előtte
+modals.service.bufferAfter	Puffer utána
+modals.package.titleNew	Új csomag
+modals.package.titleEdit	Csomag szerkesztése
+modals.package.name	Csomag neve
+modals.package.namePlaceholder	8 óra
+modals.package.classCount	Órák száma
+modals.package.classCountPlaceholder	8
+modals.package.price	Ár, {{currency}}
+modals.package.pricePlaceholder	8000
+modals.package.perVisitPrice	Ár látogatásonként
+modals.package.durationDays	Érvényesség, nap
+modals.package.durationDaysPlaceholder	60
+modals.package.services	Szolgáltatások
+modals.package.servicesHint	Nincs kiválasztva semmi — a csomag minden órára vonatkozik
+modals.package.isActive	Eladó
+modals.package.soldAsSubscription	Megjelenítés a „Bérletek” lapon
+modals.package.soldAsSingle	Megjelenítés az „Egyszeri látogatások” lapon
+modals.package.subtitle	Óracsomag, amelyet ügyfeleknek értékesít
+modals.package.previewTitle	Bérlet előnézete
+modals.package.previewKind	Bérlet
+modals.package.previewValid	Érvényes
+modals.package.sectionBasic	Alapvető
+modals.package.sectionTerms	Feltételek
+modals.package.sectionSale	Értékesítés
+modals.package.priceShort	Csomag ára
+modals.package.statClasses	Órák
+modals.package.statDays	Napok
+modals.package.statAll	Mind
+modals.package.isActiveHint	Az ügyfelek megtekinthetik és megvásárolhatják ezt a csomagot.
+modals.package.soldAsSubscriptionHint	Ellenkező esetben a csomag csak az egyszeri látogatásoknál marad.
+studios.title	STÚDIÓK
+studios.addStudio	Stúdió hozzáadása
+studios.addHall	{{spaceAcc}} hozzáadása
+studios.editBranch	Telephely szerkesztése
+studios.deleteBranch	Telephely törlése
+studios.infoTab	Általános adatok
+studios.hallsTitle	A stúdió {{spacePlural}}i
+studios.hallCount_one	{{spacePlural, capitalize}} · {{count}}
+studios.hallCount_other	{{spacePlural, capitalize}} · {{count}}
+studios.stats.halls	{{spacePlural, capitalize}}
+studios.stats.totalSeats	Összes hely
+studios.stats.fromPerHour	Kezdőár / óra
+studios.hall.seats	helyek
+studios.hall.schedule	Nyitvatartás
+studios.hall.closed	Zárva
+studios.hall.stats.seats	Helyek
+studios.hall.stats.area	Terület
+studios.hall.stats.perHour	Óránként
+studios.hall.equipment	Felszerelés
+studios.hall.actions	Műveletek
+studios.hall.edit	{{spaceAcc}} szerkesztése
+studios.hall.delete	{{spaceAcc}} törlése
+studios.empty.title	Nincs stúdió
+studios.empty.subtitle	Adja hozzá első stúdióját
+studios.toasts.created	Stúdió létrehozva
+studios.toasts.createError	A stúdió létrehozása nem sikerült
+studios.toasts.deleted	Stúdió törölve
+studios.toasts.hallDeleted	Törölve: {{space}}
+studios.toasts.saved	Mentve
+studios.toasts.edit	Szerkesztés: {{name}}
+studios.confirmDelete	Törli a(z) „{{name}}” telephelyet? Ez nem vonható vissza.
+studios.confirmDeleteTitle	Törli a telephelyet?
+studios.confirmDeleteHall	Törli {{spaceAcc}} „{{name}}”?
+studios.confirmDeleteHallTitle	Törli {{spaceAcc}}?
+services.title	SZOLGÁLTATÁSOK
+services.addService	Szolgáltatás hozzáadása
+services.types.group	Csoportos
+services.types.individual	Egyéni
+services.types.groupFull	 · Csoportos
+services.types.individualFull	 · Egyéni
+services.stats.price	Ár
+services.stats.duration	Időtartam
+services.stats.bookings	Foglalások
+services.stats.revenue	Bevétel
+services.details.description	Leírás
+services.details.details	Részletek
+services.details.minutes	perc
+services.details.upTo	Legfeljebb {{count}} fő
+services.details.personal	Személyes
+services.details.bookingsPerMonth	foglalás 30 nap alatt
+services.details.schedule	Órarend
+services.empty.title	Nincs szolgáltatás
+services.empty.subtitle	Adja hozzá első szolgáltatását
+services.toasts.deleted	Szolgáltatás törölve
+services.toasts.deleteError	A szolgáltatás törlése nem sikerült
+services.toasts.saved	Mentve
+services.toasts.saveError	A szolgáltatás mentése nem sikerült
+services.toasts.edit	Szerkesztés: {{name}}
+services.confirmDelete	Törli a(z) „{{name}}” szolgáltatást?
+services.confirmDeleteTitle	Törli a szolgáltatást?
+services.categories.yoga	Jóga
+services.categories.pilates	Pilates
+services.categories.stretching	Nyújtás
+services.categories.individual	Egyéni
+services.categories.other	Kategorizálatlan
+subscriptions.title	BÉRLETEK
+subscriptions.addPackage	Csomag hozzáadása
+subscriptions.card.classCount_one	{{count}} óra
+subscriptions.card.classCount_other	{{count}} óra
+subscriptions.card.duration	{{count}} nap
+subscriptions.card.allServices	Minden óra
+subscriptions.card.serviceCount_one	{{count}} szolgáltatás
+subscriptions.card.serviceCount_other	{{count}} szolgáltatás
+subscriptions.card.inactiveBadge	Kivonva az értékesítésből
+subscriptions.settings.title	Programbeállítások
+subscriptions.settings.allowFreeze	Bérlet felfüggesztése
+subscriptions.settings.allowTransfer	Átadás másik ügyfélnek
+subscriptions.settings.autoRenewal	Automatikus megújítás az ügyfél egyenlegéből
+subscriptions.empty.title	Még nincs csomag
+subscriptions.empty.cta	Csomag létrehozása
+subscriptions.toasts.created	Csomag létrehozva
+subscriptions.toasts.saved	Mentve
+subscriptions.toasts.saveError	A csomag mentése nem sikerült
+subscriptions.toasts.deactivated	Csomag kivonva az értékesítésből
+subscriptions.toasts.restored	Csomag újra értékesíthető
+subscriptions.toasts.actionError	A művelet nem hajtható végre
+subscriptions.deactivate	Kivonás az értékesítésből
+subscriptions.restore	Vissza az értékesítésbe
+subscriptions.confirmDeactivateTitle	Kivonja ezt a csomagot az értékesítésből?
+subscriptions.confirmDeactivate	A már értékesített bérletek továbbra is működnek.

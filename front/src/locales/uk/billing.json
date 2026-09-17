@@ -162,11 +162,9 @@
   "planCards": {
     "bestChoice": "Найкращий вибір",
     "current": "Поточний",
-    "enterprise": "Enterprise",
     "perMonth": "/ міс.",
     "currentPlan": "Поточний тариф",
     "yourPrice": "Ваша ціна",
-    "choosePlan": "Обрати тариф",
     "staffLimit": "До {{count}} співробітників",
     "staffUnlimited": "Необмежено співробітників"
   },
