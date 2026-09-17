@@ -178,6 +178,7 @@
     "price": "Hinta",
     "noSlots": "Tänä päivänä ei ole vapaita aikoja",
     "configIncomplete": "Tämän palvelun aikataulua ei ole vielä määritetty",
-    "moveTitle": "Varauksen siirto"
+    "moveTitle": "Varauksen siirto",
+    "moveBusy": "Asiantuntija on varattu tähän aikaan"
   }
 }

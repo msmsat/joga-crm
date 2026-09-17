@@ -178,6 +178,7 @@
     "price": "Preço",
     "noSlots": "Não há horário livre nesta data",
     "configIncomplete": "O horário deste serviço ainda não está configurado",
-    "moveTitle": "Reagendar marcação"
+    "moveTitle": "Reagendar marcação",
+    "moveBusy": "O especialista está ocupado a esta hora"
   }
 }

@@ -178,6 +178,7 @@
     "price": "Prix",
     "noSlots": "Aucun créneau libre à cette date",
     "configIncomplete": "Le planning de cette prestation n’est pas encore configuré",
-    "moveTitle": "Reporter la réservation"
+    "moveTitle": "Reporter la réservation",
+    "moveBusy": "Le spécialiste est occupé à cette heure"
   }
 }

@@ -178,6 +178,7 @@
     "price": "Fiyat",
     "noSlots": "Bu tarihte boş saat yok",
     "configIncomplete": "Bu hizmetin takvimi henüz ayarlanmadı",
-    "moveTitle": "Randevuyu erteleme"
+    "moveTitle": "Randevuyu erteleme",
+    "moveBusy": "Bu saatte uzman dolu"
   }
 }

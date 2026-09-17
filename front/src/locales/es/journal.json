@@ -178,6 +178,7 @@
     "price": "Precio",
     "noSlots": "No hay hueco libre en esta fecha",
     "configIncomplete": "El horario de este servicio aún no está configurado",
-    "moveTitle": "Reprogramar reserva"
+    "moveTitle": "Reprogramar reserva",
+    "moveBusy": "El especialista está ocupado a esta hora"
   }
 }

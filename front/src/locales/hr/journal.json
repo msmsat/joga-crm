@@ -182,6 +182,7 @@
     "price": "Cijena",
     "noSlots": "Na ovaj datum nema slobodnog termina",
     "configIncomplete": "Raspored ove usluge još nije postavljen",
-    "moveTitle": "Premještanje rezervacije"
+    "moveTitle": "Premještanje rezervacije",
+    "moveBusy": "U to vrijeme stručnjak je zauzet"
   }
 }

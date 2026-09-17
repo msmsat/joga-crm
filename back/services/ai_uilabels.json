@@ -664,13 +664,6 @@
     "cs": "Smazat lekci",
     "de": "Kurs löschen"
   },
-  "journal:bookingPopup.edit": {
-    "ru": "Изменить",
-    "en": "Edit",
-    "uk": "Редагувати",
-    "cs": "Upravit",
-    "de": "Bearbeiten"
-  },
   "journal:bookingPopup.markAttended": {
     "ru": "Отметить посещение",
     "en": "Mark attendance",
@@ -762,12 +755,40 @@
     "cs": "Nová lekce",
     "de": "Neuer Kurs"
   },
+  "journal:resourceBooking.date": {
+    "ru": "Дата",
+    "en": "Date",
+    "uk": "Дата",
+    "cs": "Datum",
+    "de": "Datum"
+  },
+  "journal:resourceBooking.moveBusy": {
+    "ru": "В это время мастер занят",
+    "en": "The specialist is busy at this time",
+    "uk": "У цей час майстер зайнятий",
+    "cs": "V tento čas má specialista obsazeno",
+    "de": "Zu dieser Zeit ist die Fachkraft belegt"
+  },
   "journal:resourceBooking.moveTitle": {
     "ru": "Перенос записи",
     "en": "Reschedule booking",
     "uk": "Перенесення запису",
     "cs": "Přesun rezervace",
     "de": "Buchung verschieben"
+  },
+  "journal:resourceBooking.noSlots": {
+    "ru": "На эту дату свободного времени нет",
+    "en": "No free time on this date",
+    "uk": "На цю дату вільного часу немає",
+    "cs": "V tento den není volný čas",
+    "de": "An diesem Tag ist keine Zeit frei"
+  },
+  "journal:resourceBooking.time": {
+    "ru": "Время",
+    "en": "Time",
+    "uk": "Час",
+    "cs": "Čas",
+    "de": "Zeit"
   },
   "journal:resourceBooking.title": {
     "ru": "Индивидуальная запись",

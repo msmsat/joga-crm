@@ -178,6 +178,7 @@
     "price": "Pris",
     "noSlots": "Ingen ledig tid på denne dato",
     "configIncomplete": "Skemaet for denne ydelse er endnu ikke sat op",
-    "moveTitle": "Flyt booking"
+    "moveTitle": "Flyt booking",
+    "moveBusy": "Specialisten er optaget på dette tidspunkt"
   }
 }

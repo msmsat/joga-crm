@@ -186,6 +186,7 @@
     "price": "Cena",
     "noSlots": "W tym dniu nie ma wolnych godzin",
     "configIncomplete": "Grafik tej usługi nie jest jeszcze skonfigurowany",
-    "moveTitle": "Przeniesienie rezerwacji"
+    "moveTitle": "Przeniesienie rezerwacji",
+    "moveBusy": "O tej porze specjalista jest zajęty"
   }
 }

@@ -182,6 +182,7 @@
     "price": "Preț",
     "noSlots": "În această zi nu există interval liber",
     "configIncomplete": "Orarul acestui serviciu nu este încă configurat",
-    "moveTitle": "Reprogramarea programării"
+    "moveTitle": "Reprogramarea programării",
+    "moveBusy": "La această oră specialistul este ocupat"
   }
 }

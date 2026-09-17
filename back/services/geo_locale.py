@@ -141,7 +141,7 @@ def visitor_ip(
     """Настоящий адрес посетителя, а не адрес прокси.
 
     Продукт стоит за двумя посредниками разом: Cloudflare (туннель на
-    api.jogaua.online) и Caddy. Для `request.client.host` это значит адрес
+    api.veloria.pro) и Caddy. Для `request.client.host` это значит адрес
     соседнего контейнера — один и тот же для всего интернета.
 
     Порядок именно такой: `CF-Connecting-IP` Cloudflare ставит сам и подделать
