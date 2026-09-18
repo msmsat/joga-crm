@@ -282,6 +282,9 @@
       "cancel": "İptal",
       "addPlaceholder": "Bir not yazın…",
       "add": "Not ekle",
+      "addPhoto": "Fotoğraf",
+      "removePhoto": "Fotoğrafı kaldır",
+      "photoUploading": "Yükleniyor…",
       "justNow": "az önce",
       "deleteTitle": "Not silinsin mi?",
       "deleteMessage": "Bu not geri alınamaz."

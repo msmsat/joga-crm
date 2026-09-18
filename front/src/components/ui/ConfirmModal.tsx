@@ -19,13 +19,6 @@ export function ConfirmModal({ title, message, confirmText, cancelText, danger =
   const { t } = useTranslation('common');
   const [busy, setBusy] = useState(false);
 
-  // Esc закрывает (но не во время запроса — чтобы не бросить операцию на полпути).
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape' && !busy) onClose(); };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [busy, onClose]);
-
   const handleConfirm = async () => {
     if (busy) return;
     try {
@@ -37,6 +30,20 @@ export function ConfirmModal({ title, message, confirmText, cancelText, danger =
       setBusy(false);
     }
   };
+
+  // Esc закрывает, Enter подтверждает (как у нативного confirm) — но не во время
+  // запроса, чтобы не бросить операцию на полпути и не послать её дважды.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (busy) return;
+      if (e.key === 'Escape') onClose();
+      else if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); void handleConfirm(); }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+    // handleConfirm пересоздаётся каждый рендер — в зависимостях достаточно busy.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [busy, onClose]);
 
   const accent = danger ? '#D88C9A' : '#F9A08B';
   const accentDark = danger ? '#C07080' : '#E8886F';

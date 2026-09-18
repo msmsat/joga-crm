@@ -170,6 +170,7 @@
     "lessonAction": "QR-kod för passet",
     "lessonCaption": "Rikta kameran för att boka passet",
     "packageAction": "QR-kod för klippkortet",
-    "packageCaption": "Rikta kameran för att köpa klippkortet"
+    "packageCaption": "Rikta kameran för att köpa klippkortet",
+    "serviceAction": "QR-kod för tjänsten"
   }
 }

@@ -49,7 +49,7 @@
         "label": "kanale rezervimi online"
       },
       {
-        "value": "nga 15 €",
+        "value": "nga 30 €",
         "label": "për muaj, për studio"
       }
     ],
@@ -222,7 +222,7 @@
   "pricing": {
     "label": "çmimet",
     "title": "Plani juaj varet nga\\\nmadhësia e ekipit",
-    "lead": "15 € për dy persona, +5 € për çdo vend tjetër, pa kufi — 120 €. Të 16 modulet dhe Velora AI përfshihen në çdo nivel: paguani për madhësinë e ekipit, jo për të zhbllokuar butona. Tre modele pagese për të zgjedhur dhe deri në 40% ulje me pagesë paraprake.",
+    "lead": "30 € për dy persona, +5 € për çdo vend tjetër, pa kufi — 150 €. Të 16 modulet dhe Velora AI përfshihen në çdo nivel: paguani për madhësinë e ekipit, jo për të zhbllokuar butona. Tre modele pagese për të zgjedhur dhe deri në 30% ulje me pagesë paraprake.",
     "team": "ekip",
     "seats_one": "person",
     "seats_other": "persona",
@@ -230,7 +230,7 @@
     "scaleMin": "2 vende",
     "scaleMax": "∞ pa kufi",
     "sliderAria": "Sa persona punojnë në studion tuaj",
-    "hint": "**15 €** për dy persona, **+5 €** për çdo vend shtesë. Pa kufi — **120 €** në muaj.",
+    "hint": "**30 €** për dy persona, **+5 €** për çdo vend shtesë. Pa kufi — **150 €** në muaj.",
     "period": "periudha e pagesës",
     "months": "{{count}} muaj",
     "noDiscount": "—",
@@ -253,12 +253,12 @@
     "models": [
       {
         "title": "Abonim",
-        "price": "nga 15 € / muaj",
+        "price": "nga 30 € / muaj",
         "desc": "Një shumë fikse. Koston e dini paraprakisht — pa surpriza në fund të muajit."
       },
       {
         "title": "3% e të ardhurave",
-        "price": "të paktën 15 € / muaj",
+        "price": "të paktën 30 € / muaj",
         "desc": "Paguani sipas xhiros. Në një muaj më të qetë, plotësoni vetëm diferencën deri te shuma minimale."
       },
       {

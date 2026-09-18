@@ -168,6 +168,7 @@ UI_ONLY: dict[str, str] = {
     "POST /studio/upload-branch-photo": "загрузка файла",
     "POST /studio/upload-hall-photo": "загрузка файла",
     "POST /studio/upload-staff-photo": "загрузка файла",
+    "POST /clients/{client_id}/notes/photo": "загрузка файла",
 
     # ── Финансы: правка проводок, документы, зарплаты, эквайринг
     "PATCH /finances/operations/{operation_id}": "правка проведённой операции пересчитывает балансы и комиссию",

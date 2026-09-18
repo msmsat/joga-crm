@@ -286,6 +286,9 @@
       "cancel": "Откажи",
       "addPlaceholder": "Унесите белешку…",
       "add": "Додај белешку",
+      "addPhoto": "Фотографија",
+      "removePhoto": "Уклони фотографију",
+      "photoUploading": "Отпремање…",
       "justNow": "управо сада",
       "deleteTitle": "Обрисати белешку?",
       "deleteMessage": "Ова белешка не може бити враћена."

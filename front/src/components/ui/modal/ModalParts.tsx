@@ -81,6 +81,8 @@ export function PrimaryButton({ onClick, disabled, loading, children }: {
   return (
     <button
       type="button"
+      // Метка главной кнопки: по ней ModalShell находит, что нажать на Enter.
+      data-modal-submit=""
       onClick={onClick}
       disabled={off}
       style={{

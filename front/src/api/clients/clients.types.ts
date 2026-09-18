@@ -40,6 +40,8 @@ export interface ClientWallet {
 export interface ClientNote {
   id: number
   text: string
+  /** Пути к файлам на бэкенде (/static/notes/…) — показывать через resolveImageUrl. */
+  photos: string[]
   created_at: string
   updated_at: string | null
 }
@@ -198,6 +200,7 @@ export interface ClientCreatedOut {
 export interface NoteCreatedOut {
   id: number
   text: string
+  photos: string[]
   created_at: string
 }
 

@@ -9,6 +9,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "check:contrast": "node scripts/check-contrast.mjs",
+    "check:enter": "node scripts/check-enter-submit.mjs",
     "check:mobile": "node scripts/check-mobile.mjs",
     "check:landing": "node scripts/check-landing-anchors.mjs",
     "check:uimap": "node scripts/check-uimap.mjs",

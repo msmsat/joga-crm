@@ -170,6 +170,7 @@
     "lessonAction": "Class QR code",
     "lessonCaption": "Point your camera to book this class",
     "packageAction": "Pass QR code",
-    "packageCaption": "Point your camera to buy this pass"
+    "packageCaption": "Point your camera to buy this pass",
+    "serviceAction": "Service QR code"
   }
 }

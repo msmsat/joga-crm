@@ -8,6 +8,7 @@ import { resolveImageUrl } from "../api/client";
 import type { InviteInfo, UserMe } from "../api/auth/auth.types";
 import { getActiveToken, setActiveToken } from '../utils/auth';
 import { LEGAL_LINK_PROPS, PRIVACY_URL, TERMS_URL } from '../utils/legal';
+import { submitOnEnter } from '../lib/submitOnEnter';
 
 // Уход на форму входа именно с ?switch=1: без него PublicRoute уводит на
 // дашборд, если в браузере уже открыт чей-то аккаунт — а по ссылке-приглашению
@@ -157,7 +158,7 @@ export default function JoinPage() {
 
       <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", padding: "20px 24px 60px", position: "relative", zIndex: 1 }}>
         <div style={{ width: "100%", maxWidth: "440px", opacity: mounted ? 1 : 0, transform: mounted ? "translateY(0)" : "translateY(24px)", transition: "all 0.55s cubic-bezier(0.34,1.1,0.64,1) 0.1s" }}>
-          <div className="login-card">
+          <div className="login-card" onKeyDown={submitOnEnter(handleSubmit)}>
 
             {loading && (
               <div style={{ display: "flex", justifyContent: "center", padding: "24px 0" }}>

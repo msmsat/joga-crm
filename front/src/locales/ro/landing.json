@@ -49,7 +49,7 @@
         "label": "canale de programări online"
       },
       {
-        "value": "de la 15 €",
+        "value": "de la 30 €",
         "label": "pe lună, per studio"
       }
     ],
@@ -222,7 +222,7 @@
   "pricing": {
     "label": "prețuri",
     "title": "Planul dvs. depinde de\\\ndimensiunea echipei",
-    "lead": "15 € pentru două persoane, +5 € pentru fiecare loc următor, nelimitat — 120 €. Toate cele 16 module și Velora AI sunt incluse la fiecare nivel: plătiți pentru mărimea echipei, nu pentru deblocarea butoanelor. Trei modele de plată la alegere și până la 40% reducere la plata în avans.",
+    "lead": "30 € pentru două persoane, +5 € pentru fiecare loc următor, nelimitat — 150 €. Toate cele 16 module și Velora AI sunt incluse la fiecare nivel: plătiți pentru mărimea echipei, nu pentru deblocarea butoanelor. Trei modele de plată la alegere și până la 30% reducere la plata în avans.",
     "team": "echipă",
     "seats_one": "persoană",
     "seats_few": "persoane",
@@ -231,7 +231,7 @@
     "scaleMin": "2 locuri",
     "scaleMax": "∞ nelimitat",
     "sliderAria": "Câte persoane lucrează în studioul dvs.",
-    "hint": "**15 €** pentru două persoane, **+5 €** pentru fiecare loc în plus. Nelimitat — **120 €** pe lună.",
+    "hint": "**30 €** pentru două persoane, **+5 €** pentru fiecare loc în plus. Nelimitat — **150 €** pe lună.",
     "period": "perioada de plată",
     "months": "{{count}} luni",
     "noDiscount": "—",
@@ -254,12 +254,12 @@
     "models": [
       {
         "title": "Abonament",
-        "price": "de la 15 € / lună",
+        "price": "de la 30 € / lună",
         "desc": "O sumă fixă. Cunoașteți costul dinainte — fără surprize la sfârșitul lunii."
       },
       {
         "title": "3% din venituri",
-        "price": "minimum 15 € / lună",
+        "price": "minimum 30 € / lună",
         "desc": "Plătiți în funcție de cifră de afaceri. Într-o lună liniștită, completați doar diferența până la suma minimă."
       },
       {

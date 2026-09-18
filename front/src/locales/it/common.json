@@ -170,6 +170,7 @@
     "lessonAction": "Codice QR della lezione",
     "lessonCaption": "Inquadra con la fotocamera per prenotare questa lezione",
     "packageAction": "Codice QR dell'abbonamento",
-    "packageCaption": "Inquadra con la fotocamera per acquistare l'abbonamento"
+    "packageCaption": "Inquadra con la fotocamera per acquistare l'abbonamento",
+    "serviceAction": "Codice QR del servizio"
   }
 }

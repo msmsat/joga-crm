@@ -9,6 +9,7 @@ import { useGeneralSettings } from "../../hooks/useGeneralSettings";
 import BookingModelCard from "./BookingModelCard";
 import { getUserRoleFromToken } from "../../../../../utils/auth";
 import type { GeneralSettings, GeneralUpdate } from "../../../../../api/settings/settings.types";
+import { submitOnEnter } from "../../../../../lib/submitOnEnter";
 
 // logo_url — отдельный аплоад (uploadLogo), journal_time_step — без UI в этой задаче.
 // Карточка компании редактируется черновиком (Сохранить/Отмена), локаль
@@ -95,7 +96,7 @@ export default function GeneralTab() {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-      <div className="card" style={{ padding: "28px 28px 24px" }}>
+      <div className="card" style={{ padding: "28px 28px 24px" }} onKeyDown={submitOnEnter(dirty ? handleSave : null)}>
         <SectionHeader icon={icons.building} title={t('general.company.title')} subtitle={t('general.company.subtitle')} />
         {/* Класс нужен телефону: там логотип 96px рядом с полями оставлял им
             71px ширины — в поле не влезало даже название студии. На узком

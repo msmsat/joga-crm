@@ -170,6 +170,7 @@
     "lessonAction": "QR code du cours",
     "lessonCaption": "Pointez la caméra pour réserver ce cours",
     "packageAction": "QR code de l'abonnement",
-    "packageCaption": "Pointez la caméra pour acheter l'abonnement"
+    "packageCaption": "Pointez la caméra pour acheter l'abonnement",
+    "serviceAction": "QR code du service"
   }
 }

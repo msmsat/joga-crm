@@ -311,9 +311,9 @@ def test_paid_combo_price_turns_the_combo_mode_on():
     plan = _paid("velora_combo_s15_12m")
     assert plan.billing_mode == "combo"
     assert plan.percent_rate == 1.5
-    # Половина ступени «15 мест» (4000) со скидкой 40% за год — та же формула,
+    # Половина ступени «15 мест» (4750) со скидкой 30% за год — та же формула,
     # что в activate_model.
-    assert plan.fixed_base_amount == round(4000 * 0.6)
+    assert plan.fixed_base_amount == round(4750 * 0.7)
 
 
 def test_paid_plain_price_turns_the_combo_mode_off():

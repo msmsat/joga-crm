@@ -12,6 +12,7 @@ import { setActiveToken } from '../utils/auth';
 import { LEGAL_FOOTER_LINKS, LEGAL_LINK_PROPS, PRIVACY_URL, TERMS_URL } from '../utils/legal';
 import { TRIAL_DAYS } from '../api/billing/billing.types';
 import { getAnonId } from "../lib/anonId";
+import { submitOnEnter } from "../lib/submitOnEnter";
 
 // ─── STEP TYPES ──────────────────────────────────────────────────────────────
 
@@ -189,7 +190,10 @@ export default function RegisterPage() {
         <div style={{ width: "100%", maxWidth: 420, opacity: mounted ? 1 : 0, transform: mounted ? "none" : "translateY(24px)", transition: "all 0.6s cubic-bezier(0.34,1.2,0.64,1)" }}>
 
           {/* ── CARD ── */}
-          <div className="login-card flex-col gap-24" style={{ background: "var(--bg-card)", borderRadius: 24, border: "1px solid var(--border)", boxShadow: "0 8px 48px -8px rgba(26,26,26,0.10), 0 2px 8px rgba(26,26,26,0.04)", padding: "var(--auth-card-pad, 40px)" }}>
+          <div
+            className="login-card flex-col gap-24"
+            onKeyDown={submitOnEnter(loading ? null : (step === 3 ? handleRegister : step === 4 ? handleVerify : next))}
+            style={{ background: "var(--bg-card)", borderRadius: 24, border: "1px solid var(--border)", boxShadow: "0 8px 48px -8px rgba(26,26,26,0.10), 0 2px 8px rgba(26,26,26,0.04)", padding: "var(--auth-card-pad, 40px)" }}>
 
             {done ? (
               /* ── SUCCESS STATE ── */

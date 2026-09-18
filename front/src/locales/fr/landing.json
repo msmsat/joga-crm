@@ -49,7 +49,7 @@
         "label": "Canaux de réservation en ligne"
       },
       {
-        "value": "à partir de 15 €",
+        "value": "à partir de 30 €",
         "label": "Par mois et par studio"
       }
     ],
@@ -222,7 +222,7 @@
   "pricing": {
     "label": "tarifs",
     "title": "Votre offre dépend\nde la taille de votre équipe",
-    "lead": "15 € pour deux personnes, puis +5 € par place supplémentaire, illimité — 120 €. Les 16 modules et Velora AI sont inclus à chaque niveau : vous payez la taille de votre équipe, pas pour débloquer des boutons. Trois modèles de paiement au choix et jusqu’à 40 % de réduction en payant à l’avance.",
+    "lead": "30 € pour deux personnes, puis +5 € par place supplémentaire, illimité — 150 €. Les 16 modules et Velora AI sont inclus à chaque niveau : vous payez la taille de votre équipe, pas pour débloquer des boutons. Trois modèles de paiement au choix et jusqu’à 30 % de réduction en payant à l’avance.",
     "team": "équipe",
     "seats_one": "personne",
     "seats_other": "personnes",
@@ -230,7 +230,7 @@
     "scaleMin": "2 places",
     "scaleMax": "∞ illimité",
     "sliderAria": "Combien de personnes travaillent dans votre studio",
-    "hint": "**15 €** pour deux personnes, puis **+5 €** par place. Illimité — **120 €** par mois.",
+    "hint": "**30 €** pour deux personnes, puis **+5 €** par place. Illimité — **150 €** par mois.",
     "period": "période de facturation",
     "months": "{{count}} mois",
     "noDiscount": "—",
@@ -253,12 +253,12 @@
     "models": [
       {
         "title": "Abonnement",
-        "price": "à partir de 15 € / mois",
+        "price": "à partir de 30 € / mois",
         "desc": "Un montant fixe. Vous connaissez le coût à l’avance, sans surprise à la fin du mois."
       },
       {
         "title": "3 % du chiffre d’affaires",
-        "price": "minimum 15 € / mois",
+        "price": "minimum 30 € / mois",
         "desc": "Payez selon le chiffre d’affaires. Lors d’un mois calme, vous ne complétez que jusqu’au minimum."
       },
       {

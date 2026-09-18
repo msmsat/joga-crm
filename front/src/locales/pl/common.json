@@ -170,6 +170,7 @@
     "lessonAction": "Kod QR zajęć",
     "lessonCaption": "Skieruj aparat, aby zapisać się na te zajęcia",
     "packageAction": "Kod QR karnetu",
-    "packageCaption": "Skieruj aparat, aby kupić karnet"
+    "packageCaption": "Skieruj aparat, aby kupić karnet",
+    "serviceAction": "Kod QR usługi"
   }
 }

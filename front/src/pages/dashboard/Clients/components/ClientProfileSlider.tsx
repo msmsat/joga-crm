@@ -8,6 +8,7 @@ import { useClientActions, type NoteItem } from '../hooks/useClientActions';
 import { InlineEdit } from './InlineEdit';
 import ClientOffersPanel from './ClientOffersPanel';
 import { ClientProducts } from './ClientProducts';
+import { NotePhotos } from './NotePhotos';
 import { WalletTab } from './WalletTab';
 import { useClientEvents, useClientNotes, useClientActivity, useClientInviteCode, useReferralEnabled, useFreezeEnabled } from '../hooks/useClientsList';
 import { formatDate, formatMoney, getAvatarColor, getInitials } from '../utils/mapClient';
@@ -428,6 +429,7 @@ function ClientPanel({ client, profile, onClose, onDelete }: {
   const noteItems: NoteItem[] = (activeTab === 'notes' ? fullNotes : (client.notes ?? [])).map(n => ({
     id: n.id,
     text: n.text,
+    photos: n.photos ?? [],
     date: new Date(n.created_at).toLocaleDateString(i18nInstance.language, { day: 'numeric', month: 'long' }),
   }));
 
@@ -791,7 +793,7 @@ function ClientPanel({ client, profile, onClose, onDelete }: {
                   {canEdit && actions.editingNoteId !== note.id && (
                     <div style={{ display: 'flex', gap: '2px' }}>
                       <button
-                        onClick={() => actions.startEditNote(note.id, note.text)}
+                        onClick={() => actions.startEditNote(note.id, note.text, note.photos)}
                         style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text3)', display: 'flex', alignItems: 'center', padding: '2px', borderRadius: '4px', transition: 'color 0.15s' }}
                         onMouseEnter={e => e.currentTarget.style.color='var(--peach)'}
                         onMouseLeave={e => e.currentTarget.style.color='var(--text3)'}
@@ -814,13 +816,22 @@ function ClientPanel({ client, profile, onClose, onDelete }: {
                       onKeyDown={e => { if (e.key === 'Enter' && e.ctrlKey) actions.saveNote(note.id); }}
                       style={{ width: '100%', minHeight: '80px', padding: '8px 10px', borderRadius: '8px', border: '2px solid var(--peach)', outline: 'none', boxShadow: '0 0 0 4px rgba(249,160,139,0.15)', fontSize: '13px', fontFamily: 'Manrope', color: 'var(--text)', resize: 'vertical', boxSizing: 'border-box', lineHeight: 1.6, background: 'var(--bg-card)' }}
                     />
+                    <NotePhotos
+                      photos={actions.notePhotos}
+                      onAdd={actions.addNotePhoto}
+                      onRemove={actions.removeNotePhoto}
+                      uploading={actions.notePhotoUploading}
+                    />
                     <div style={{ display: 'flex', gap: '6px', marginTop: '8px' }}>
                       <button onClick={() => actions.saveNote(note.id)} style={{ padding: '6px 14px', borderRadius: '7px', border: 'none', background: 'var(--peach)', color: '#fff', fontSize: '11px', fontWeight: 700, cursor: 'pointer', fontFamily: 'Manrope', transition: 'all 0.2s' }}>{t('panel.notes.save')}</button>
                       <button onClick={actions.cancelEditNote} style={{ padding: '6px 14px', borderRadius: '7px', border: '1px solid var(--border)', background: 'transparent', color: 'var(--text3)', fontSize: '11px', fontWeight: 600, cursor: 'pointer', fontFamily: 'Manrope', transition: 'all 0.2s' }}>{t('panel.notes.cancel')}</button>
                     </div>
                   </div>
                 ) : (
-                  <div style={{ fontSize: '13px', color: 'var(--text)', lineHeight: 1.6 }}>{note.text}</div>
+                  <>
+                    {note.text && <div style={{ fontSize: '13px', color: 'var(--text)', lineHeight: 1.6 }}>{note.text}</div>}
+                    <NotePhotos photos={note.photos}/>
+                  </>
                 )}
               </div>
             ))}
@@ -835,6 +846,12 @@ function ClientPanel({ client, profile, onClose, onDelete }: {
                   style={{ width: '100%', minHeight: '72px', padding: '10px 12px', borderRadius: '10px', border: '1px solid var(--border)', outline: 'none', fontSize: '13px', fontFamily: 'Manrope', color: 'var(--text)', resize: 'vertical', boxSizing: 'border-box', lineHeight: 1.6, background: 'var(--bg-card)', transition: 'border-color 0.2s, box-shadow 0.2s' }}
                   onFocus={e => { e.target.style.borderColor='var(--peach)'; e.target.style.boxShadow='0 0 0 4px rgba(249,160,139,0.12)'; }}
                   onBlur={e => { e.target.style.borderColor='var(--border)'; e.target.style.boxShadow='none'; }}
+                />
+                <NotePhotos
+                  photos={actions.notePhotos}
+                  onAdd={actions.addNotePhoto}
+                  onRemove={actions.removeNotePhoto}
+                  uploading={actions.notePhotoUploading}
                 />
                 <div style={{ display: 'flex', gap: '6px', marginTop: '8px' }}>
                   <button onClick={actions.saveNewNote} style={{ padding: '7px 16px', borderRadius: '8px', border: 'none', background: 'var(--peach)', color: '#fff', fontSize: '12px', fontWeight: 700, cursor: 'pointer', fontFamily: 'Manrope', transition: 'all 0.2s' }}>{t('panel.notes.save')}</button>

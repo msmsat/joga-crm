@@ -49,7 +49,7 @@
         "label": "Canali di prenotazione online"
       },
       {
-        "value": "da 15 €",
+        "value": "da 30 €",
         "label": "Al mese, per studio"
       }
     ],
@@ -222,7 +222,7 @@
   "pricing": {
     "label": "prezzi",
     "title": "Il tuo piano dipende\ndalla dimensione del team",
-    "lead": "15 € per due persone, +5 € per ogni posto aggiuntivo, illimitato: 120 €. Tutti i 16 moduli e Velora AI sono inclusi a ogni livello: paghi per la dimensione del tuo team, non per sbloccare pulsanti. Tre modelli di pagamento tra cui scegliere e fino al 40% di sconto pagando in anticipo.",
+    "lead": "30 € per due persone, +5 € per ogni posto aggiuntivo, illimitato: 150 €. Tutti i 16 moduli e Velora AI sono inclusi a ogni livello: paghi per la dimensione del tuo team, non per sbloccare pulsanti. Tre modelli di pagamento tra cui scegliere e fino al 30% di sconto pagando in anticipo.",
     "team": "team",
     "seats_one": "persona",
     "seats_other": "persone",
@@ -230,7 +230,7 @@
     "scaleMin": "2 posti",
     "scaleMax": "∞ illimitato",
     "sliderAria": "Quante persone lavorano nel tuo studio",
-    "hint": "**15 €** per due persone, **+5 €** per ogni posto aggiuntivo. Illimitato: **120 €** al mese.",
+    "hint": "**30 €** per due persone, **+5 €** per ogni posto aggiuntivo. Illimitato: **150 €** al mese.",
     "period": "periodo di fatturazione",
     "months": "{{count}} mesi",
     "noDiscount": "—",
@@ -253,12 +253,12 @@
     "models": [
       {
         "title": "Abbonamento",
-        "price": "da 15 € / mese",
+        "price": "da 30 € / mese",
         "desc": "Un importo fisso. Conosci il costo in anticipo, senza sorprese alla fine del mese."
       },
       {
         "title": "3% dei ricavi",
-        "price": "minimo 15 € / mese",
+        "price": "minimo 30 € / mese",
         "desc": "Paga in base al fatturato. In un mese tranquillo integri solo la differenza fino al minimo."
       },
       {

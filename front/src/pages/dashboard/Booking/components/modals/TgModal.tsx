@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
 import { IconTelegram } from '../ui/BookingIcons'
+import { submitOnEnter } from '../../../../../lib/submitOnEnter'
 
 interface Props {
   connected: boolean
@@ -29,7 +30,7 @@ export function TgModal({ connected, botName, token, onConnect, onDisconnect, on
 
   return createPortal(
     <div className="tg-modal-overlay open" onClick={(e) => { if (e.target === e.currentTarget) onClose() }}>
-      <div className="tg-modal">
+      <div className="tg-modal" onKeyDown={submitOnEnter(isValid ? () => onConnect(trimmed) : null)}>
 
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>

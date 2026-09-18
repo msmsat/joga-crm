@@ -64,6 +64,19 @@ check('без услуги видны все мастера филиала', () 
   assert.deepEqual(visibleStaff(staff, start.serviceId).map((m) => m.teacher_id), [10, 20, 30]);
 });
 
+// ─── 1b. Услуга из QR-кода студии ─────────────────────────────────────────────
+check('ссылка на услугу открывает экран уже с её мастерами', () => {
+  const linked = initialBookingPage(ALL_BRANCHES, 3);
+  assert.equal(linked.serviceId, 3);
+  assert.deepEqual(visibleStaff(staff, linked.serviceId).map((m) => m.teacher_id), [10, 30]);
+});
+check('ссылка на услугу, которую никто не делает, не запирает экран', () => {
+  // Код напечатали, а мастера с услуги сняли: фильтр обязан отвалиться сам,
+  // иначе человек с плаката видит пустой список без объяснения.
+  const linked = initialBookingPage(ALL_BRANCHES, 4);
+  assert.equal(reconcile(linked, [boris], services).serviceId, null);
+});
+
 // ─── 2–3. Услуга фильтрует, снятие фильтра возвращает всех ────────────────────
 check('услуга оставляет только тех, кто её оказывает', () => {
   const state = act(start, { type: 'service', serviceId: 3, staff });

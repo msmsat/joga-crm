@@ -6,6 +6,7 @@ import "../../../../../App.css";
 import { Logo, PhoneField } from "../../../../../components/UI";
 import { Input, PhotoUpload } from "../../../../../components/ui/modal";
 import { studioApi } from "../../../../../api/studio/studio.api";
+import { submitOnEnter } from "../../../../../lib/submitOnEnter";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -341,6 +342,11 @@ export default function AddStudioModal({ isOpen, onClose, onSuccess }: AddStudio
 
       <div
         className="v-modal-lg v-modal-wizard v-modal-steps"
+        onKeyDown={submitOnEnter(
+          (step === 1 && !canStep1) || (step === 2 && !canStep2) || isSubmitting
+            ? null
+            : (step === 3 ? handleFinish : goNext)
+        )}
         style={{
           ["--v-modal-w" as string]: "860px",
           ["--v-left-w" as string]: "280px",

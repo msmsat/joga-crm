@@ -49,7 +49,7 @@
         "label": "kanały rezerwacji online"
       },
       {
-        "value": "od 15 €",
+        "value": "od 30 €",
         "label": "miesięcznie za studio"
       }
     ],
@@ -222,7 +222,7 @@
   "pricing": {
     "label": "cennik",
     "title": "Twój plan zależy od\\\nwielkości zespołu",
-    "lead": "15 € za dwie osoby, +5 € za każde kolejne miejsce, bez limitu — 120 €. Wszystkie 16 modułów i Velora AI są na każdym poziomie: płacisz za wielkość zespołu, a nie za odblokowywanie przycisków. Do wyboru są trzy modele płatności oraz do 40% zniżki przy przedpłacie.",
+    "lead": "30 € za dwie osoby, +5 € za każde kolejne miejsce, bez limitu — 150 €. Wszystkie 16 modułów i Velora AI są na każdym poziomie: płacisz za wielkość zespołu, a nie za odblokowywanie przycisków. Do wyboru są trzy modele płatności oraz do 30% zniżki przy przedpłacie.",
     "team": "zespół",
     "seats_one": "osoba",
     "seats_few": "osoby",
@@ -231,7 +231,7 @@
     "scaleMin": "2 miejsca",
     "scaleMax": "∞ bez limitu",
     "sliderAria": "Ile osób pracuje w Twoim studiu",
-    "hint": "**15 €** za dwie osoby, **+5 €** za każde dodatkowe miejsce. Bez limitu — **120 €** miesięcznie.",
+    "hint": "**30 €** za dwie osoby, **+5 €** za każde dodatkowe miejsce. Bez limitu — **150 €** miesięcznie.",
     "period": "okres płatności",
     "months": "{{count}} mies.",
     "noDiscount": "—",
@@ -254,12 +254,12 @@
     "models": [
       {
         "title": "Subskrypcja",
-        "price": "od 15 € / mies.",
+        "price": "od 30 € / mies.",
         "desc": "Stała kwota. Koszt znasz z góry — bez niespodzianek na koniec miesiąca."
       },
       {
         "title": "3% przychodu",
-        "price": "co najmniej 15 € / mies.",
+        "price": "co najmniej 30 € / mies.",
         "desc": "Płać według obrotu. W spokojniejszym miesiącu dopłacasz tylko różnicę do minimum."
       },
       {

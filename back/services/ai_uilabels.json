@@ -447,6 +447,13 @@
     "cs": "Přidat poznámku",
     "de": "Notiz hinzufügen"
   },
+  "clients:panel.notes.addPhoto": {
+    "ru": "Фото",
+    "en": "Photo",
+    "uk": "Фото",
+    "cs": "Foto",
+    "de": "Foto"
+  },
   "clients:panel.offers.title": {
     "ru": "Персональная скидка",
     "en": "Personal discount",

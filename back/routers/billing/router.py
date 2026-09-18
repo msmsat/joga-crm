@@ -1238,8 +1238,8 @@ if __name__ == "__main__":
     # Экономия за период считается по каталогу с ОБЕИХ сторон и не зависит от НДС,
     # который Stripe накинул сверху (из-за него прежняя формула показывала ноль).
     assert _period_saving("s2", 1) == 0                        # помесячно скидки нет
-    assert _period_saving("s2", 12) == 1500 * 12 - 10800       # 40% за год
-    assert _period_saving("s2", 6) == 1500 * 6 - 6750          # 25% за полгода
+    assert _period_saving("s2", 12) == 3000 * 12 - 25200       # 30% за год
+    assert _period_saving("s2", 6) == 3000 * 6 - 13500         # 25% за полгода
     assert _period_saving("unlimited", 12) > _period_saving("unlimited", 6)
     # Счёт за комиссию и легаси-строки не роняют плашку и ничего не «экономят».
     assert _period_saving("offline_fee", 1) == 0

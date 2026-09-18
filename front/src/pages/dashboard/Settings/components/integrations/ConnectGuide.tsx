@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button, Input } from "../../../../../components/ui/index";
 import type { IntegrationType } from "../../../../../api/settings/settings.types";
+import { submitOnEnter } from "../../../../../lib/submitOnEnter";
 
 interface ConnectGuideProps {
   type: IntegrationType;
@@ -34,7 +35,10 @@ export default function ConnectGuide({ type, loading, onSubmit, onGoogleConnect 
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+    <div
+      style={{ display: "flex", flexDirection: "column", gap: "16px" }}
+      onKeyDown={submitOnEnter(loading || !canSubmit ? null : (type === "google_calendar" ? onGoogleConnect : handleSubmit))}
+    >
       <div>
         <div style={{ fontSize: "12px", fontWeight: 700, color: "var(--onyx)", marginBottom: "8px" }}>
           {t("integrations.guide.howToTitle")}

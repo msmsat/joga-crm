@@ -286,6 +286,9 @@
       "cancel": "Otkaži",
       "addPlaceholder": "Unesite bilješku…",
       "add": "Dodaj bilješku",
+      "addPhoto": "Fotografija",
+      "removePhoto": "Ukloni fotografiju",
+      "photoUploading": "Učitavanje…",
       "justNow": "upravo sada",
       "deleteTitle": "Izbrisati bilješku?",
       "deleteMessage": "Ova se bilješka ne može vratiti."

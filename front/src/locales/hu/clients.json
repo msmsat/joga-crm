@@ -282,6 +282,9 @@
       "cancel": "Mégse",
       "addPlaceholder": "Írjon egy jegyzetet…",
       "add": "Jegyzet hozzáadása",
+      "addPhoto": "Fotó",
+      "removePhoto": "Fotó eltávolítása",
+      "photoUploading": "Feltöltés…",
       "justNow": "épp most",
       "deleteTitle": "Törli a jegyzetet?",
       "deleteMessage": "Ez a jegyzet nem állítható vissza."

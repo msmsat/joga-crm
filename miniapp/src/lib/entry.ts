@@ -108,6 +108,12 @@ export type DeepLink = {
   /** `YYYY-MM-DD` — день, в котором искать занятие. */
   date?: string;
   packageId?: number;
+  /**
+   * Услуга с QR-кода из Каталога. Механику в ссылку не кладём: приложение
+   * смотрит её в СВОЁМ каталоге, и напечатанный код переживает превращение
+   * услуги из групповой в индивидуальную и обратно.
+   */
+  serviceId?: number;
 };
 
 const numeric = (value: string | null): number | undefined => {
@@ -124,6 +130,7 @@ export function readDeepLink(): DeepLink {
     lessonId: numeric(params.get('lesson')),
     date: date && /^\d{4}-\d{2}-\d{2}$/.test(date) ? date : undefined,
     packageId: numeric(params.get('pkg')),
+    serviceId: numeric(params.get('service')),
   };
 }
 

@@ -282,6 +282,9 @@
       "cancel": "Annulla",
       "addPlaceholder": "Inserisci una nota…",
       "add": "Aggiungi nota",
+      "addPhoto": "Foto",
+      "removePhoto": "Rimuovi foto",
+      "photoUploading": "Caricamento…",
       "justNow": "proprio ora",
       "deleteTitle": "Eliminare la nota?",
       "deleteMessage": "Questa nota non può essere recuperata."

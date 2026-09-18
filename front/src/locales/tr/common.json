@@ -170,6 +170,7 @@
     "lessonAction": "Dersin QR kodu",
     "lessonCaption": "Bu derse kaydolmak için kamerayı doğrultun",
     "packageAction": "Paketin QR kodu",
-    "packageCaption": "Paketi satın almak için kamerayı doğrultun"
+    "packageCaption": "Paketi satın almak için kamerayı doğrultun",
+    "serviceAction": "Hizmetin QR kodu"
   }
 }

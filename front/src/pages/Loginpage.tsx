@@ -10,6 +10,7 @@ import { authApi, ApiError } from '../api';
 import { setActiveToken } from '../utils/auth';
 import { LEGAL_FOOTER_LINKS, LEGAL_LINK_PROPS, PRIVACY_URL, TERMS_URL } from '../utils/legal';
 import { TRIAL_DAYS } from '../api/billing/billing.types';
+import { submitOnEnter } from '../lib/submitOnEnter';
 
 // ─── MAIN LOGIN PAGE ──────────────────────────────────────────────────────────
 export default function LoginPage() {
@@ -258,7 +259,7 @@ export default function LoginPage() {
           }}
         >
           {/* ── CARD ── */}
-          <div className="login-card">
+          <div className="login-card" onKeyDown={submitOnEnter(loading ? null : handleSubmit)}>
             {/* Header */}
             <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
               {(mode === "forgot" || mode === "login2fa") && (

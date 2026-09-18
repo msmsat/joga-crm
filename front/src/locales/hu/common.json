@@ -170,6 +170,7 @@
     "lessonAction": "Az óra QR-kódja",
     "lessonCaption": "Irányítsd rá a kamerát, és foglalj erre az órára",
     "packageAction": "A bérlet QR-kódja",
-    "packageCaption": "Irányítsd rá a kamerát, és vedd meg a bérletet"
+    "packageCaption": "Irányítsd rá a kamerát, és vedd meg a bérletet",
+    "serviceAction": "A szolgáltatás QR-kódja"
   }
 }

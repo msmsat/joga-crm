@@ -278,6 +278,9 @@
       "cancel": "Cancel",
       "addPlaceholder": "Enter a note...",
       "add": "Add note",
+      "addPhoto": "Photo",
+      "removePhoto": "Remove photo",
+      "photoUploading": "Uploading…",
       "justNow": "just now",
       "deleteTitle": "Delete note?",
       "deleteMessage": "This note cannot be recovered."

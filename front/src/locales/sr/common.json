@@ -170,6 +170,7 @@
     "lessonAction": "QR kod termina",
     "lessonCaption": "Usmerite kameru i prijavite se na ovaj termin",
     "packageAction": "QR kod paketa",
-    "packageCaption": "Usmerite kameru i kupite paket"
+    "packageCaption": "Usmerite kameru i kupite paket",
+    "serviceAction": "QR kod usluge"
   }
 }

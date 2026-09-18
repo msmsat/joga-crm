@@ -336,8 +336,8 @@ def test_fees_are_reserved_before_going_to_stripe():
 
 def test_combo_costs_exactly_half_on_every_period():
     """Расхождение допустимо ровно на цент округления нечётной суммы, и только
-    в пользу студии: 15 € за 3 месяца со скидкой — это 38.25 €, а половины по
-    19.13 € в сумме дали бы больше половины."""
+    в пользу студии: половинка, посчитанная по своей формуле и округлённая
+    вверх, в сумме дала бы БОЛЬШЕ половины подписки."""
     for plan_id in PLANS:
         for months in PERIOD_DISCOUNTS:
             full, half = amount_for(plan_id, months), combo_amount_for(plan_id, months)

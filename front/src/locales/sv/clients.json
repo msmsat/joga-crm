@@ -282,6 +282,9 @@
       "cancel": "Avbryt",
       "addPlaceholder": "Skriv en anteckning…",
       "add": "Lägg till anteckning",
+      "addPhoto": "Foto",
+      "removePhoto": "Ta bort foto",
+      "photoUploading": "Laddar upp…",
       "justNow": "just nu",
       "deleteTitle": "Ta bort anteckning?",
       "deleteMessage": "Den här anteckningen kan inte återställas."

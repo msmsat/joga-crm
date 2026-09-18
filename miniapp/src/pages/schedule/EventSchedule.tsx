@@ -59,13 +59,15 @@ interface EventScheduleProps {
   segment?: ReactNode;
   /** Занятие из QR-кода студии: открыть его день и сам лист брони. */
   focusLesson?: { id: number; date?: string };
+  /** Групповая услуга из QR-кода студии: расписание сразу отфильтровано по ней. */
+  focusServiceId?: number;
 }
 
 /**
  * Расписание групповых занятий по дням (booking_mode `event`, и групповой
  * раздел `hybrid`). Индивидуальная запись живёт отдельно — pages/booking.
  */
-export default function EventSchedule({ catalog, onBuySubscription, onNeedAuth, segment, focusLesson }: EventScheduleProps) {
+export default function EventSchedule({ catalog, onBuySubscription, onNeedAuth, segment, focusLesson, focusServiceId }: EventScheduleProps) {
   const branches = catalog?.branches ?? [];
   const isMultiStudio = branches.length > 1;
   const rules = catalog?.rules ?? null;
@@ -110,6 +112,17 @@ export default function EventSchedule({ catalog, onBuySubscription, onNeedAuth, 
     service: null,
     teacher: null,
   });
+
+  // Услуга из QR-кода студии: человек пришёл с плаката конкретного направления
+  // и должен увидеть его, а не всё расписание. Эффектом, а не начальным
+  // состоянием: раздел выбирается по механике услуги, а её называет каталог,
+  // который приезжает позже первого кадра. Один раз — дальше фильтр его.
+  const focusedService = useRef(false);
+  useEffect(() => {
+    if (focusServiceId == null || focusedService.current) return;
+    focusedService.current = true;
+    setFilters((current) => ({ ...current, service: focusServiceId }));
+  }, [focusServiceId]);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   // Каталог мог перечитаться без одного из филиалов — выбранным он не считается.
   const studioIds = knownBranches(filters.studioIds, branches.map((branch) => branch.id));
@@ -222,6 +235,18 @@ export default function EventSchedule({ catalog, onBuySubscription, onNeedAuth, 
       ),
     [dayClasses, filters],
   );
+
+  /**
+   * Подпись услуги в чипе фильтра. В самом фильтре лежит ID (HB-19: два
+   * одноимённых направления — разные пункты), и печатать его человеку нельзя.
+   * Имя ищем сначала в услугах дня, потом в каталоге студии: услуга из ссылки
+   * может не идти сегодня вовсе, и чип обязан назвать её всё равно.
+   */
+  const serviceLabel = (id: number): string => {
+    const name = services.find((item) => item.id === id)?.name
+      ?? catalog?.services.find((item) => item.id === id)?.name;
+    return name ? t(`lesson.name.${name}`, { defaultValue: name }) : String(id);
+  };
 
   const activeCount = (filters.service ? 1 : 0) + (filters.teacher ? 1 : 0);
   const studioLabel = studioIds.length === 0
@@ -337,7 +362,7 @@ export default function EventSchedule({ catalog, onBuySubscription, onNeedAuth, 
               className="flex h-9 shrink-0 items-center gap-1.5 rounded-full bg-card pl-3.5 pr-2.5 shadow-soft transition-shadow duration-300 dt:h-10 dt:pl-4 dt:pr-3 dt:hover:shadow-lift"
             >
               <span className="whitespace-nowrap text-[12px] font-bold text-foreground">
-                {key === 'service' ? t(`lesson.name.${value}`, { defaultValue: value }) : value}
+                {key === 'service' ? serviceLabel(value as number) : value}
               </span>
               <svg viewBox="0 0 24 24" fill="none" stroke="var(--v-muted-foreground)" strokeWidth="2.6" strokeLinecap="round" className="h-3 w-3">
                 <path d="M18 6L6 18M6 6l12 12" />

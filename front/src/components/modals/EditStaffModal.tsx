@@ -12,6 +12,7 @@ import { resolveImageUrl } from "../../api/client";
 import { getCurrencySymbol } from "../UI";
 import { useContactCheck } from "../../hooks/useContactCheck";
 import StaffAvailabilitySection from "./StaffAvailabilitySection";
+import { submitOnEnter } from "../../lib/submitOnEnter";
 
 // ─── TYPES ────────────────────────────────────────────────────────────────────
 interface ScheduleDay { enabled: boolean; from: string; to: string; }
@@ -697,6 +698,7 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
 
       <div
         className="v-modal-lg v-modal-wizard"
+        onKeyDown={submitOnEnter(saving || !canSave ? null : handleSave)}
         style={{
           position: "relative",
           ["--v-modal-w" as string]: "860px",

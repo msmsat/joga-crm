@@ -12,6 +12,7 @@ import { useAccounts, useCounterparties, useOperations, useFinanceMutations } fr
 import { PAYMENT_METHOD_KEYS } from '../../constants';
 import { financesApi } from '../../../../../api/finances/finances.api';
 import { clientsApi } from '../../../../../api/clients/clients.api';
+import { submitOnEnter } from '../../../../../lib/submitOnEnter';
 
 const PAGE_SIZE = 20;
 const todayISO = () => new Date().toISOString().slice(0, 10);
@@ -331,7 +332,7 @@ export default function OperationsTab({ showToast, initialSearch }: {
 
       {/* Форма создания операции */}
       {addOpen && (
-        <div className={styles.morphContainer} style={{ background: 'var(--bg-card)', borderRadius: '16px', border: '1.5px solid #F9A08B', padding: '24px', marginBottom: '24px', boxShadow: '0 12px 28px rgba(249,160,139,0.06)' }}>
+        <div className={styles.morphContainer} onKeyDown={submitOnEnter(nTitle.trim() && !saving ? handleCreate : null)} style={{ background: 'var(--bg-card)', borderRadius: '16px', border: '1.5px solid #F9A08B', padding: '24px', marginBottom: '24px', boxShadow: '0 12px 28px rgba(249,160,139,0.06)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '18px' }}>
             <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(249,160,139,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#F9A08B' }}><Ico.Plus /></div>
             <div style={{ fontSize: '13px', fontWeight: 800, color: 'var(--onyx)' }}>{t('operations.newOperationTitle')}</div>
@@ -433,7 +434,7 @@ export default function OperationsTab({ showToast, initialSearch }: {
               </select>
             </div>
             {newCpOpen && (
-              <div className={styles.morphContainer} style={{ gridColumn: '1 / -1', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', padding: '14px', background: 'rgba(249,160,139,0.04)', borderRadius: '10px', border: '1px dashed rgba(249,160,139,0.4)' }}>
+              <div className={styles.morphContainer} onKeyDown={submitOnEnter(newCpName.trim() && !savingCp ? handleCreateCounterparty : null)} style={{ gridColumn: '1 / -1', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', padding: '14px', background: 'rgba(249,160,139,0.04)', borderRadius: '10px', border: '1px dashed rgba(249,160,139,0.4)' }}>
                 <input value={newCpName} onChange={e => setNewCpName(e.target.value)} onFocus={() => setAddFocused('cpn')} onBlur={() => setAddFocused(null)} placeholder={t('counterparties.namePlaceholder')} style={inp('cpn')} />
                 <select value={newCpType} onChange={e => setNewCpType(e.target.value)} onFocus={() => setAddFocused('cpt')} onBlur={() => setAddFocused(null)} style={inp('cpt')}>
                   {TYPE_OPTIONS.map(o => <option key={o.key} value={o.value}>{t(`counterparties.types.${o.key}.label`)}</option>)}
@@ -504,7 +505,7 @@ export default function OperationsTab({ showToast, initialSearch }: {
                   {isOpen && (
                     <div style={{ borderTop: '1px solid rgba(252,174,145,0.1)' }}>
                       {editingOpId === op.id ? (
-                        <div key="edit" className={styles.morphContainer} style={{ padding: '20px 24px', background: 'rgba(252,174,145,0.03)' }}>
+                        <div key="edit" className={styles.morphContainer} onKeyDown={submitOnEnter(eTitle.trim() && !savingEdit ? saveOpEdit : null)} style={{ padding: '20px 24px', background: 'rgba(252,174,145,0.03)' }}>
                           <div style={{ fontSize: '13px', fontWeight: 800, color: 'var(--onyx)', marginBottom: '14px' }}>{t('operations.editTitle')}</div>
                           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '14px' }}>
                             <div style={{ gridColumn: '1 / -1' }}>

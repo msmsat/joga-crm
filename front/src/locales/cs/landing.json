@@ -49,7 +49,7 @@
         "label": "Kanály online rezervace"
       },
       {
-        "value": "od 15 €",
+        "value": "od 30 €",
         "label": "Měsíčně za studio"
       }
     ],
@@ -222,7 +222,7 @@
   "pricing": {
     "label": "ceník",
     "title": "Tarif je\nvelikost týmu",
-    "lead": "15 € za dva lidi, každé další místo +5 €, neomezeně — 120 €. Všech 16 modulů i Velora AI patří ke každému stupni: platíte za velikost týmu, ne za odemykání tlačítek. Tři modely platby na výběr, při platbě dopředu sleva až 40 %.",
+    "lead": "30 € za dva lidi, každé další místo +5 €, neomezeně — 150 €. Všech 16 modulů i Velora AI patří ke každému stupni: platíte za velikost týmu, ne za odemykání tlačítek. Tři modely platby na výběr, při platbě dopředu sleva až 30 %.",
     "team": "tým",
     "seats_one": "člověk",
     "seats_few": "lidé",
@@ -232,7 +232,7 @@
     "scaleMin": "2 místa",
     "scaleMax": "∞ neomezeně",
     "sliderAria": "Kolik lidí pracuje ve studiu",
-    "hint": "**15 €** za dva, každé další místo **+5 €**. Neomezeně — **120 €** měsíčně.",
+    "hint": "**30 €** za dva, každé další místo **+5 €**. Neomezeně — **150 €** měsíčně.",
     "period": "období platby",
     "months_one": "{{count}} měs",
     "months_few": "{{count}} měs",
@@ -258,12 +258,12 @@
     "models": [
       {
         "title": "Předplatné",
-        "price": "od 15 € / měs",
+        "price": "od 30 € / měs",
         "desc": "Pevná částka. Náklad znáte dopředu — žádná překvapení na konci měsíce."
       },
       {
         "title": "3 % z tržeb",
-        "price": "minimálně 15 € / měs",
+        "price": "minimálně 30 € / měs",
         "desc": "Platíte z obratu. V prázdném měsíci doplácíte jen rozdíl do minima."
       },
       {

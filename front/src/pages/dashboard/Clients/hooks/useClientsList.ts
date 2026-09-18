@@ -236,13 +236,14 @@ export function useClientMutations() {
   });
 
   const createNoteMut = useMutation({
-    mutationFn: ({ id, text }: { id: number; text: string }) => clientsApi.createNote(id, text),
+    mutationFn: ({ id, text, photos }: { id: number; text: string; photos: string[] }) =>
+      clientsApi.createNote(id, text, photos),
     onSuccess: (_r, { id }) => { invalidateDetail(id); qc.invalidateQueries({ queryKey: queryKeys.clientNotes(id) }); },
   });
 
   const updateNoteMut = useMutation({
-    mutationFn: ({ id, noteId, text }: { id: number; noteId: number; text: string }) =>
-      clientsApi.updateNote(id, noteId, text),
+    mutationFn: ({ id, noteId, text, photos }: { id: number; noteId: number; text: string; photos: string[] }) =>
+      clientsApi.updateNote(id, noteId, text, photos),
     onSuccess: (_r, { id }) => { invalidateDetail(id); qc.invalidateQueries({ queryKey: queryKeys.clientNotes(id) }); },
   });
 
@@ -271,8 +272,9 @@ export function useClientMutations() {
       updateRegistrationDateMut.mutateAsync({ id, registration_date }),
     addTag: (id: number, tag: string) => addTagMut.mutateAsync({ id, tag }),
     removeTag: (id: number, tag: string) => removeTagMut.mutateAsync({ id, tag }),
-    createNote: (id: number, text: string) => createNoteMut.mutateAsync({ id, text }),
-    updateNote: (id: number, noteId: number, text: string) => updateNoteMut.mutateAsync({ id, noteId, text }),
+    createNote: (id: number, text: string, photos: string[] = []) => createNoteMut.mutateAsync({ id, text, photos }),
+    updateNote: (id: number, noteId: number, text: string, photos: string[] = []) =>
+      updateNoteMut.mutateAsync({ id, noteId, text, photos }),
     deleteNote: (id: number, noteId: number) => deleteNoteMut.mutateAsync({ id, noteId }),
     book: (id: number, lessonId: number) => bookMut.mutateAsync({ id, lessonId }),
     addBonus: (id: number, amount: number, description?: string) => addBonusMut.mutateAsync({ id, amount, description }),

@@ -27,6 +27,7 @@ class ClientProductOut(ActiveSubscriptionOut):
 class NoteOut(BaseSchema):
     id: int
     text: str
+    photos: List[str] = []
     created_at: str
     updated_at: Optional[str] = None
 
@@ -136,6 +137,7 @@ class ClientCreatedOut(BaseSchema):
 class NoteCreatedOut(BaseSchema):
     id: int
     text: str
+    photos: List[str] = []
     created_at: str
 
 

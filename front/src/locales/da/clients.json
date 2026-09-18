@@ -282,6 +282,9 @@
       "cancel": "Annuller",
       "addPlaceholder": "Skriv en note…",
       "add": "Tilføj note",
+      "addPhoto": "Foto",
+      "removePhoto": "Fjern foto",
+      "photoUploading": "Uploader…",
       "justNow": "lige nu",
       "deleteTitle": "Slet note?",
       "deleteMessage": "Denne note kan ikke gendannes."

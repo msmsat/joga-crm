@@ -278,6 +278,9 @@
       "cancel": "Отмена",
       "addPlaceholder": "Введите заметку...",
       "add": "Добавить заметку",
+      "addPhoto": "Фото",
+      "removePhoto": "Удалить фото",
+      "photoUploading": "Загрузка…",
       "justNow": "только что",
       "deleteTitle": "Удалить заметку?",
       "deleteMessage": "Заметку нельзя будет восстановить."

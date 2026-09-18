@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { FieldLabel, FocusInput } from "../../../../../components/modals/EditStaffModal";
 import { PhoneField } from "../../../../../components/UI";
 import { useContactCheck } from "../../../../../hooks/useContactCheck";
+import { submitOnEnter } from "../../../../../lib/submitOnEnter";
 
 // Владельцу правим только контакты: имя/роль/доступ живут в «Профиле»,
 // а роль owner бэкенд у себя не даёт менять этим эндпоинтом вообще.
@@ -247,6 +248,7 @@ export function OwnerContactsModal({ owner, onClose, onSave }: Props) {
       <div
         className="v-modal-lg v-modal-wizard"
         onClick={e => e.stopPropagation()}
+        onKeyDown={submitOnEnter(!canSave || saved ? null : handleSave)}
         style={{
           position: "relative",
           ["--v-modal-w" as string]: "820px",
@@ -334,8 +336,7 @@ export function OwnerContactsModal({ owner, onClose, onSave }: Props) {
                 <FieldLabel>{t("common:fields.email")} *</FieldLabel>
                 <FocusInput type="email" value={email} onChange={setEmail}
                   placeholder="owner@velora.studio" error={emailError}
-                  hint={emailCheck.checking ? checkingHint : undefined}
-                  onKeyDown={e => { if (e.key === "Enter") handleSave(); }} />
+                  hint={emailCheck.checking ? checkingHint : undefined} />
               </div>
 
               {/* Предупреждение: email — это логин */}

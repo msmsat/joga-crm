@@ -19,6 +19,7 @@ LOGOS_DIR = "static/logos"
 BRANCH_PHOTOS_DIR = "static/branches"
 STAFF_PHOTOS_DIR = "static/staff"
 HALL_PHOTOS_DIR = "static/halls"
+NOTE_PHOTOS_DIR = "static/notes"  # снимки в заметках о клиенте (routers/clients/profiles.py)
 ALLOWED_EXTENSIONS = {"jpg", "jpeg", "png", "webp", "gif"}
 MIME_TO_EXT = {
     "image/jpeg": "jpg",
@@ -45,7 +46,7 @@ def _resolve_ext(file: UploadFile) -> str:
     )
 
 
-async def _save_image(file: UploadFile, target_dir: str, max_size_mb: int) -> str:
+async def save_image(file: UploadFile, target_dir: str, max_size_mb: int) -> str:
     ext = _resolve_ext(file)
 
     content = await file.read()
@@ -65,7 +66,7 @@ async def upload_logo(
     file: UploadFile = File(...),
     _user: User = Depends(get_current_user),
 ):
-    url = await _save_image(file, LOGOS_DIR, max_size_mb=5)
+    url = await save_image(file, LOGOS_DIR, max_size_mb=5)
     return {"url": url}
 
 
@@ -86,7 +87,7 @@ async def upload_studio_logo(
         raise HTTPException(status_code=404, detail="Студия не найдена")
 
     old_url = studio.logo_url
-    new_url = await _save_image(file, LOGOS_DIR, max_size_mb=2)
+    new_url = await save_image(file, LOGOS_DIR, max_size_mb=2)
     studio.logo_url = new_url
     await db.commit()
 
@@ -108,7 +109,7 @@ async def upload_branch_photo(
     file: UploadFile = File(...),
     _ctx: StudioContext = Depends(require_role("owner")),
 ):
-    url = await _save_image(file, BRANCH_PHOTOS_DIR, max_size_mb=10)
+    url = await save_image(file, BRANCH_PHOTOS_DIR, max_size_mb=10)
     return {"url": url}
 
 
@@ -117,7 +118,7 @@ async def upload_staff_photo(
     file: UploadFile = File(...),
     _ctx: StudioContext = Depends(require_role("owner")),
 ):
-    url = await _save_image(file, STAFF_PHOTOS_DIR, max_size_mb=5)
+    url = await save_image(file, STAFF_PHOTOS_DIR, max_size_mb=5)
     return {"url": url}
 
 
@@ -126,5 +127,5 @@ async def upload_hall_photo(
     file: UploadFile = File(...),
     _ctx: StudioContext = Depends(require_role("owner")),
 ):
-    url = await _save_image(file, HALL_PHOTOS_DIR, max_size_mb=10)
+    url = await save_image(file, HALL_PHOTOS_DIR, max_size_mb=10)
     return {"url": url}

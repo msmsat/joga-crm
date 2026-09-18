@@ -9,6 +9,7 @@ import { getCurrencySymbol } from "../../../../../components/UI";
 import { useContactCheck } from "../../../../../hooks/useContactCheck";
 import { staffApi } from "../../../../../api/staff";
 import type { StaffMutateResponse } from "../../../../../api/staff/staff.types";
+import { submitOnEnter } from "../../../../../lib/submitOnEnter";
 
 // ─── TYPES ────────────────────────────────────────────────────────────────────
 type Step = 1 | 2 | 3 | 4;
@@ -483,6 +484,10 @@ export function AddEmployeeModal({ isOpen, onClose, onSuccess }: AddEmployeeModa
     && !emailCheck.checking;
   const canStep2         = data.role.trim().length >= 2;
   const canStep3         = Object.values(data.schedule).some(d => d.enabled);
+
+  // Главное действие шага — им же управляет Enter в полях (см. onKeyDown карточки).
+  const nextBlocked = (step === 1 && !canStep1) || (step === 2 && !canStep2) || (step === 3 && (!canStep3 || saving));
+  const nextAction  = step === 4 ? handleClose : step === 3 ? handleCreate : goNext;
   const enabledDays      = Object.values(data.schedule).filter(d => d.enabled).length;
 
   const DAYS_ORDER = ["mon","tue","wed","thu","fri","sat","sun"];
@@ -567,6 +572,7 @@ export function AddEmployeeModal({ isOpen, onClose, onSuccess }: AddEmployeeModa
 
       <div
         className="v-modal-lg v-modal-wizard v-modal-steps"
+        onKeyDown={submitOnEnter(nextBlocked ? null : nextAction)}
         style={{
           ["--v-modal-w" as string]: "860px",
           ["--v-left-w" as string]: "280px",
@@ -1115,12 +1121,12 @@ export function AddEmployeeModal({ isOpen, onClose, onSuccess }: AddEmployeeModa
             )}
             {(() => {
               // Шаг 3 создаёт сотрудника (и отправляет письмо), шаг 4 только закрывает.
-              const blocked = (step === 1 && !canStep1) || (step === 2 && !canStep2) || (step === 3 && (!canStep3 || saving));
+              const blocked = nextBlocked;
               return (
                 <button
                   type="button"
                   disabled={blocked}
-                  onClick={step === 4 ? handleClose : step === 3 ? handleCreate : goNext}
+                  onClick={nextAction}
                   style={{
                     flex: 1, padding: "13px 22px",
                     background: step === 4 ? "linear-gradient(135deg, #A3C9A8, #7aab80)" : "linear-gradient(135deg, #FCAE91, #F9A08B)",

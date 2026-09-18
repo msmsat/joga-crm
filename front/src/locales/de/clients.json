@@ -278,6 +278,9 @@
       "cancel": "Abbrechen",
       "addPlaceholder": "Notiz eingeben...",
       "add": "Notiz hinzufügen",
+      "addPhoto": "Foto",
+      "removePhoto": "Foto entfernen",
+      "photoUploading": "Wird hochgeladen…",
       "justNow": "gerade eben",
       "deleteTitle": "Notiz löschen?",
       "deleteMessage": "Diese Notiz lässt sich nicht wiederherstellen."

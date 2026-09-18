@@ -170,6 +170,7 @@
     "lessonAction": "Kodi QR i orës",
     "lessonCaption": "Drejtoni kamerën për t'u regjistruar në këtë orë",
     "packageAction": "Kodi QR i abonimit",
-    "packageCaption": "Drejtoni kamerën për të blerë abonimin"
+    "packageCaption": "Drejtoni kamerën për të blerë abonimin",
+    "serviceAction": "Kodi QR i shërbimit"
   }
 }

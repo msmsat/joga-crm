@@ -8,6 +8,7 @@ import { errorMessage } from '../../../../../../api/errorMessage';
 import { useToast } from '../../../../../../components/ui/Toast';
 import { useStudioCurrency } from '../../../../../../hooks/useStudioCurrency';
 import { getCurrencySymbol } from '../../../../../../components/UI';
+import { submitOnEnter } from '../../../../../../lib/submitOnEnter';
 
 const STATUS_COLOR: Record<'active' | 'expired' | 'exhausted' | 'disabled', string> = {
   active: '#5BAB72',
@@ -78,7 +79,7 @@ export default function PromoCodesConfig() {
 
       <div>
         <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text2)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '16px' }}>{t('config.promoCreate')}</div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }} onKeyDown={submitOnEnter(canSubmit ? () => createMut.mutate() : null)}>
           <input
             type="text"
             value={code}

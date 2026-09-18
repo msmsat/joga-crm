@@ -18,9 +18,9 @@ import { GridBg } from "./Illustrations";
 // страницы, где рядом кнопка оплаты, нельзя.
 const MIN_SEATS = 2;
 const MAX_SEATS = 20;
-const SEAT_BASE = 15;   // € / мес за MIN_SEATS мест
+const SEAT_BASE = 30;   // € / мес за MIN_SEATS мест
 const SEAT_STEP = 5;    // + за каждое место сверх минимума
-const UNLIMITED_PRICE = 120;
+const UNLIMITED_PRICE = 150;
 const UNLIMITED_AI = 5000;
 const AI_PER_SEAT = 150;
 /** Позиция ползунка за последней ступенью — безлимит («∞» на конце линии). */
@@ -29,9 +29,9 @@ const UNLIMITED_POS = MAX_SEATS + 1;
 /** Скидки за период оплаты — PERIOD_DISCOUNTS из plans.py. */
 const PERIODS = [
   { months: 1, off: 0 },
-  { months: 3, off: 0.15 },
+  { months: 3, off: 0.2 },
   { months: 6, off: 0.25 },
-  { months: 12, off: 0.4 },
+  { months: 12, off: 0.3 },
 ];
 
 const round2 = (value: number) => Math.round(value * 100) / 100;
