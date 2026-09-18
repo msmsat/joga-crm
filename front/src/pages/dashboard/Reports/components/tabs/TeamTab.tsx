@@ -90,7 +90,7 @@ export function TeamTab({ params, paramsKey, registerCsvExport, onWidenPeriod }:
     _id: l.id,
     _date: l.start_time.slice(0, 10),
     name: l.name,
-    time: new Date(l.start_time).toLocaleString(i18n.language === 'en' ? 'en-US' : 'ru-RU', {
+    time: new Date(l.start_time).toLocaleString(i18n.language, {
       day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit',
     }),
     trainer: l.teacher_name ?? '—',

@@ -187,7 +187,7 @@ export function OverviewTab({ params, paramsKey, registerCsvExport, onWidenPerio
   const lessonRows = (dayLessons ?? []).map(l => ({
     _id: l.id,
     name: l.name,
-    time: new Date(l.start_time).toLocaleTimeString(i18n.language === 'en' ? 'en-US' : 'ru-RU', { hour: '2-digit', minute: '2-digit' }),
+    time: new Date(l.start_time).toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' }),
     trainer: l.teacher_name ?? '—',
     occupancy: `${l.booked_count}/${l.total_spots}`,
   }));

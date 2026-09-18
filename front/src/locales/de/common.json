@@ -171,5 +171,42 @@
     "lessonCaption": "Kamera darauf richten und diesen Kurs buchen",
     "packageAction": "QR-Code des Abos",
     "packageCaption": "Kamera darauf richten und das Abo kaufen"
+  },
+  "auth": {
+    "noAccount": "Noch kein Konto?",
+    "haveAccount": "Sie haben bereits ein Konto?",
+    "welcomeBack": "Willkommen zurück",
+    "choosePassword": "Neues Passwort erstellen",
+    "confirmationCode": "Bestätigungscode",
+    "loginSubtitle": "Melden Sie sich an, um Velora weiter zu nutzen",
+    "resetInstruction": "Wir senden Anweisungen an Ihre E-Mail-Adresse",
+    "codeSent": "Der Code wurde an {{identifier}} gesendet",
+    "googleFailed": "Google-Anmeldung fehlgeschlagen",
+    "googleAccountMissing": "Für diese Google-Adresse gibt es noch kein Konto. Wir erstellen es, nachdem Sie die Dokumente akzeptiert haben.",
+    "divider": "oder anmelden mit",
+    "codeFromEmail": "Code aus der E-Mail",
+    "rememberMe": "Angemeldet bleiben",
+    "forgotPassword": "Passwort vergessen?",
+    "signInSystem": "Anmelden",
+    "sendInstructions": "Anweisungen senden",
+    "passwordChanged": "Das Passwort wurde geändert. Sie können sich jetzt anmelden.",
+    "contactSub": "Geben Sie Ihre E-Mail-Adresse ein, um ein Konto zu erstellen",
+    "nameTitle": "Wie sollen wir Sie nennen?",
+    "nameSub": "Name oder Spitzname — Ihre Wahl",
+    "accountCreated": "Das Konto wurde erstellt. Wir haben eine Bestätigungs-E-Mail an {{email}} gesendet.",
+    "dashboard": "Zum Dashboard",
+    "or": "oder",
+    "registerByEmail": "Mit E-Mail registrieren",
+    "displayNamePlaceholder": "Zum Beispiel: Anna, Max, StudioInhaber",
+    "displayNameHint": "Dieser Name wird in der Oberfläche und in Benachrichtigungen angezeigt. Sie können ihn in den Einstellungen ändern.",
+    "codeSix": "Geben Sie den 6-stelligen Code ein",
+    "users": "Unternehmen nutzen bereits Velora",
+    "strength": {
+      "weak": "Schwach",
+      "medium": "Mittel",
+      "good": "Gut",
+      "strong": "Stark",
+      "excellent": "Ausgezeichnet"
+    }
   }
 }

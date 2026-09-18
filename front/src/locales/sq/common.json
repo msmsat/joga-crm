@@ -171,5 +171,42 @@
     "lessonCaption": "Drejtoni kamerën për t'u regjistruar në këtë orë",
     "packageAction": "Kodi QR i abonimit",
     "packageCaption": "Drejtoni kamerën për të blerë abonimin"
+  },
+  "auth": {
+    "noAccount": "Nuk keni llogari?",
+    "haveAccount": "Keni tashmë një llogari?",
+    "welcomeBack": "Mirë se u rikthyet",
+    "choosePassword": "Krijoni një fjalëkalim të ri",
+    "confirmationCode": "Kodi i konfirmimit",
+    "loginSubtitle": "Hyni për të vazhduar në Velora",
+    "resetInstruction": "Do t'ju dërgojmë udhëzime në email",
+    "codeSent": "Kodi u dërgua te {{identifier}}",
+    "googleFailed": "Identifikimi me Google dështoi",
+    "googleAccountMissing": "Nuk ka ende llogari për këtë adresë Google. Do ta krijojmë pasi të pranoni dokumentet.",
+    "divider": "ose hyni me",
+    "codeFromEmail": "Kodi nga emaili",
+    "rememberMe": "Më mbaj të identifikuar",
+    "forgotPassword": "Harruat fjalëkalimin?",
+    "signInSystem": "Hyni",
+    "sendInstructions": "Dërgo udhëzimet",
+    "passwordChanged": "Fjalëkalimi u ndryshua. Tani mund të hyni.",
+    "contactSub": "Vendosni emailin për të krijuar një llogari",
+    "nameTitle": "Si t'ju quajmë?",
+    "nameSub": "Emër ose pseudonim — zgjedhja juaj",
+    "accountCreated": "Llogaria u krijua. Dërguam një email konfirmimi te {{email}}.",
+    "dashboard": "Shko te paneli",
+    "or": "ose",
+    "registerByEmail": "Regjistrohu me email",
+    "displayNamePlaceholder": "P.sh.: Ana, Max, Pronari",
+    "displayNameHint": "Ky emër shfaqet në ndërfaqe dhe njoftime. Mund ta ndryshoni te cilësimet.",
+    "codeSix": "Vendosni kodin me 6 shifra",
+    "users": "biznese përdorin tashmë Velora",
+    "strength": {
+      "weak": "Dobët",
+      "medium": "Mesatar",
+      "good": "Mirë",
+      "strong": "I fortë",
+      "excellent": "Shkëlqyeshëm"
+    }
   }
 }

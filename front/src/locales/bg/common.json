@@ -171,5 +171,42 @@
     "lessonCaption": "Насочете камерата, за да се запишете за занятието",
     "packageAction": "QR код на абонамента",
     "packageCaption": "Насочете камерата, за да купите абонамента"
+  },
+  "auth": {
+    "noAccount": "Нямате акаунт?",
+    "haveAccount": "Вече имате акаунт?",
+    "welcomeBack": "Добре дошли отново",
+    "choosePassword": "Създайте нова парола",
+    "confirmationCode": "Код за потвърждение",
+    "loginSubtitle": "Влезте, за да продължите във Velora",
+    "resetInstruction": "Ще изпратим инструкции на вашия имейл",
+    "codeSent": "Кодът е изпратен до {{identifier}}",
+    "googleFailed": "Входът с Google не бе успешен",
+    "googleAccountMissing": "Все още няма акаунт за този адрес в Google. Ще създадем такъв, след като приемете документите.",
+    "divider": "или влезте чрез",
+    "codeFromEmail": "Код от имейла",
+    "rememberMe": "Запомни ме",
+    "forgotPassword": "Забравена парола?",
+    "signInSystem": "Вход",
+    "sendInstructions": "Изпрати инструкции",
+    "passwordChanged": "Паролата е променена. Сега можете да влезете.",
+    "contactSub": "Въведете имейл, за да създадете акаунт",
+    "nameTitle": "Как да ви наричаме?",
+    "nameSub": "Име или прякор — по ваш избор",
+    "accountCreated": "Акаунтът е създаден. Изпратихме имейл за потвърждение до {{email}}.",
+    "dashboard": "Към таблото",
+    "or": "или",
+    "registerByEmail": "Регистрация с имейл",
+    "displayNamePlaceholder": "Например: Анна, Макс, Собственик",
+    "displayNameHint": "Това име се показва в интерфейса и известията. Можете да го промените в настройките.",
+    "codeSix": "Въведете 6-цифрения код",
+    "users": "бизнеса вече използват Velora",
+    "strength": {
+      "weak": "Слаба",
+      "medium": "Средна",
+      "good": "Добра",
+      "strong": "Силна",
+      "excellent": "Отлична"
+    }
   }
 }

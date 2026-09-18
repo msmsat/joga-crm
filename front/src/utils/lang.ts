@@ -11,8 +11,25 @@
 export const LANGUAGES = [
   { value: "en", label: "English", flag: "🇬🇧" },
   { value: "ru", label: "Русский", flag: "🇷🇺" },
+  { value: "sq", label: "Shqip", flag: "🇦🇱" },
+  { value: "bg", label: "Български", flag: "🇧🇬" },
+  { value: "hr", label: "Hrvatski", flag: "🇭🇷" },
   { value: "cs", label: "Čeština", flag: "🇨🇿" },
+  { value: "da", label: "Dansk", flag: "🇩🇰" },
+  { value: "fi", label: "Suomi", flag: "🇫🇮" },
+  { value: "fr", label: "Français", flag: "🇫🇷" },
   { value: "de", label: "Deutsch", flag: "🇩🇪" },
+  { value: "el", label: "Ελληνικά", flag: "🇬🇷" },
+  { value: "hu", label: "Magyar", flag: "🇭🇺" },
+  { value: "it", label: "Italiano", flag: "🇮🇹" },
+  { value: "no", label: "Norsk", flag: "🇳🇴" },
+  { value: "pl", label: "Polski", flag: "🇵🇱" },
+  { value: "pt", label: "Português", flag: "🇵🇹" },
+  { value: "ro", label: "Română", flag: "🇷🇴" },
+  { value: "sr", label: "Српски", flag: "🇷🇸" },
+  { value: "es", label: "Español", flag: "🇪🇸" },
+  { value: "sv", label: "Svenska", flag: "🇸🇪" },
+  { value: "tr", label: "Türkçe", flag: "🇹🇷" },
   { value: "uk", label: "Українська", flag: "🇺🇦" },
 ];
 
@@ -26,15 +43,23 @@ const UI_LANG_KEY = "ui_language_choice";
 let geoLanguage: string | null = null;
 let sessionChoice: string | null = null;
 
+const LEGACY_LANGUAGE_CODES: Record<string, string> = { cz: "cs" };
+
+function normalizeLang(code: string | null | undefined): string | null {
+  if (!code) return null;
+  const normalized = LEGACY_LANGUAGE_CODES[code.toLowerCase()] ?? code.toLowerCase();
+  return LANGUAGES.some(l => l.value === normalized) ? normalized : null;
+}
+
 export function isSupportedLang(code: string | null | undefined): code is string {
-  return !!code && LANGUAGES.some(l => l.value === code);
+  return normalizeLang(code) !== null;
 }
 
 function read(key: string): string | null {
   try {
     const saved = localStorage.getItem(key);
     // Незнакомое (и чужая запись в хранилище) считается отсутствующим.
-    return isSupportedLang(saved) ? saved : null;
+    return normalizeLang(saved);
   } catch {
     // Приватный режим/заблокированное хранилище — не повод падать на старте.
     return null;
@@ -42,9 +67,10 @@ function read(key: string): string | null {
 }
 
 function write(key: string, code: string): void {
-  if (!isSupportedLang(code)) return;
+  const normalized = normalizeLang(code);
+  if (!normalized) return;
   try {
-    localStorage.setItem(key, code);
+    localStorage.setItem(key, normalized);
   } catch {
     // см. read
   }
@@ -62,11 +88,13 @@ export function initialLang(): string {
 }
 
 export function rememberLang(code: string): void {
-  if (!isSupportedLang(code)) return;
-  sessionChoice = code;
-  write(UI_LANG_KEY, code);
+  const normalized = normalizeLang(code);
+  if (!normalized) return;
+  sessionChoice = normalized;
+  write(UI_LANG_KEY, normalized);
 }
 
 export function rememberGeoLang(code: string): void {
-  if (isSupportedLang(code)) geoLanguage = code;
+  const normalized = normalizeLang(code);
+  if (normalized) geoLanguage = normalized;
 }

@@ -171,5 +171,42 @@
     "lessonCaption": "Irányítsd rá a kamerát, és foglalj erre az órára",
     "packageAction": "A bérlet QR-kódja",
     "packageCaption": "Irányítsd rá a kamerát, és vedd meg a bérletet"
+  },
+  "auth": {
+    "noAccount": "Nincs fiókja?",
+    "haveAccount": "Már van fiókja?",
+    "welcomeBack": "Üdv újra itt",
+    "choosePassword": "Hozzon létre új jelszót",
+    "confirmationCode": "Megerősítő kód",
+    "loginSubtitle": "Jelentkezzen be a Velora folytatásához",
+    "resetInstruction": "Az utasításokat az e-mail-címére küldjük",
+    "codeSent": "A kód elküldve ide: {{identifier}}",
+    "googleFailed": "A Google-bejelentkezés sikertelen",
+    "googleAccountMissing": "Ehhez a Google-címhez még nincs fiók. A dokumentumok elfogadása után létrehozzuk.",
+    "divider": "vagy jelentkezzen be ezzel",
+    "codeFromEmail": "E-mailben kapott kód",
+    "rememberMe": "Emlékezzen rám",
+    "forgotPassword": "Elfelejtette a jelszavát?",
+    "signInSystem": "Bejelentkezés",
+    "sendInstructions": "Utasítások küldése",
+    "passwordChanged": "A jelszó megváltozott. Most már bejelentkezhet.",
+    "contactSub": "Adja meg az e-mail-címét a fiók létrehozásához",
+    "nameTitle": "Hogyan szólíthatjuk?",
+    "nameSub": "Név vagy becenév — ön dönt",
+    "accountCreated": "A fiók létrejött. Megerősítő e-mailt küldtünk ide: {{email}}.",
+    "dashboard": "Ugrás a vezérlőpultra",
+    "or": "vagy",
+    "registerByEmail": "Regisztráció e-maillel",
+    "displayNamePlaceholder": "Például: Anna, Max, StúdióTulajdonos",
+    "displayNameHint": "Ez a név jelenik meg a felületen és az értesítésekben. A beállításokban módosíthatja.",
+    "codeSix": "Adja meg a 6 számjegyű kódot",
+    "users": "vállalkozás használja már a Velorát",
+    "strength": {
+      "weak": "Gyenge",
+      "medium": "Közepes",
+      "good": "Jó",
+      "strong": "Erős",
+      "excellent": "Kiváló"
+    }
   }
 }

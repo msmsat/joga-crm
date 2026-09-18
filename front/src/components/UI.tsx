@@ -213,10 +213,10 @@ export function StepDots({ current, total }: { current: number; total: number })
 // ─── IDENTIFIER TABS ──────────────────────────────────────────────────────────
 export type IdentifierMode = "email" | "phone";
 export function IdentifierTabs({ active, onChange }: { active: IdentifierMode; onChange: (m: IdentifierMode) => void }) {
-  // Оставили только Email и Телефон
+  const { t } = useTranslation();
   const tabs: { key: IdentifierMode; label: string }[] = [
     { key: "email", label: "Email" }, 
-    { key: "phone", label: "Телефон" }
+    { key: "phone", label: t("fields.phone") }
   ];
   return (
     <div style={{ display: "flex", background: "rgba(var(--ink),0.04)", borderRadius: "10px", padding: "3px", gap: "2px" }}>
@@ -231,9 +231,10 @@ export function IdentifierTabs({ active, onChange }: { active: IdentifierMode; o
 
 // ─── BUTTONS & DIVIDERS ───────────────────────────────────────────────────────
 export function GoogleBtn({ onClick }: { onClick: () => void }) {
+  const { t } = useTranslation("cookies");
   return (
     <button className="btn btn-google" onClick={onClick}>
-      <GoogleIcon style={{ marginRight: "8px", verticalAlign: "middle" }} /> Войти через Google
+      <GoogleIcon style={{ marginRight: "8px", verticalAlign: "middle" }} /> {t("google.button")}
     </button>
   );
 }
@@ -247,9 +248,10 @@ export function PrimaryBtn({ children, onClick, loading = false, fullWidth = fal
   // Отличается от loading: там кнопка занята, здесь — просто нельзя.
   disabled?: boolean;
 }) {
+  const { t } = useTranslation();
   return (
     <button onClick={onClick} disabled={loading || disabled} className="btn btn-primary" style={{ width: fullWidth ? "100%" : "auto", padding: "15px 28px", borderRadius: "12px", opacity: disabled && !loading ? 0.5 : undefined }}>
-      {loading ? <><span className="spinner" /> Входим...</> : children}
+      {loading ? <><span className="spinner" /> {t("status.loading")}</> : children}
     </button>
   );
 }
@@ -287,6 +289,7 @@ export function Checkbox({ checked, onChange, label }: {
 export const CATEGORY_ICONS = [Droplet, Comb, Dumbbell, Sparkle, Scissors];
 
 export function SocialProof() {
+  const { t } = useTranslation();
   return (
     <div style={{ display: "flex", alignItems: "center", gap: "12px", justifyContent: "center" }}>
       <div style={{ display: "flex" }}>
@@ -296,7 +299,7 @@ export function SocialProof() {
           </div>
         ))}
       </div>
-      <p style={{ fontSize: "12px", color: "var(--muted)", margin: 0 }}><strong style={{ color: "var(--onyx)", fontWeight: 700 }}>2 400+</strong> бизнесов уже в системе</p>
+      <p style={{ fontSize: "12px", color: "var(--muted)", margin: 0 }}><strong style={{ color: "var(--onyx)", fontWeight: 700 }}>2 400+</strong> {t("auth.users")}</p>
       <div style={{ display: "flex", alignItems: "center", gap: "3px", padding: "3px 8px", background: "rgba(163,201,168,0.12)", borderRadius: "100px", border: "1px solid rgba(163,201,168,0.28)" }}>
         <span style={{ color: "var(--pistachio)", fontSize: "10px" }}>★</span>
         <span style={{ fontWeight: 700, fontSize: "11px", color: "var(--onyx)" }}>4.9</span>
@@ -306,9 +309,10 @@ export function SocialProof() {
 }
 
 export function PasswordStrength({ password }: { password: string }) {
+  const { t } = useTranslation();
   if (!password) return null;
   const strength = (() => { let s = 0; if (password.length >= 8) s++; if (password.length >= 12) s++; if (/[A-Z]/.test(password)) s++; if (/[0-9]/.test(password)) s++; if (/[^A-Za-z0-9]/.test(password)) s++; return s; })();
-  const levels = [{ label: "Слабый", color: "var(--rose)" }, { label: "Слабый", color: "var(--rose)" }, { label: "Средний", color: "#F9C08B" }, { label: "Хороший", color: "var(--pistachio)" }, { label: "Сильный", color: "#6DB87A" }, { label: "Отличный", color: "#4CAF62" }];
+  const levels = ["weak", "weak", "medium", "good", "strong", "excellent"].map((key, index) => ({ label: t(`auth.strength.${key}`), color: ["var(--rose)", "var(--rose)", "#F9C08B", "var(--pistachio)", "#6DB87A", "#4CAF62"][index] }));
   const level = levels[Math.min(strength, 5)];
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
@@ -569,12 +573,9 @@ export const browserTimezone = (): string => {
   return TIMEZONES.some(tz => tz.value === value) ? value : "UTC+0";
 };
 
-// Языки интерфейса. Список намеренно сокращён до пяти: продаём пока в этих
-// странах, а остальные переводы лежат в locales/ машинными и не вычитаны —
-// студия, выбравшая их, увидела бы кривой интерфейс. Возвращать по одному, по
-// мере вычитки перевода: папка в src/locales + строка здесь.
-// Список языков переехал в utils/lang.ts — его читает ещё и лендинг, которому
-// весь UI.tsx не нужен. Реэкспорт оставлен, чтобы импорты по проекту не менять.
+// Все поддерживаемые языки интерфейса находятся в utils/lang.ts — это источник
+// истины для настроек, онбординга и лендинга. Реэкспорт оставлен, чтобы не
+// менять существующие импорты из UI.tsx.
 export { LANGUAGES } from "../utils/lang";
 
 // Таблица валют переехала в utils/currency.ts — по той же причине, что и

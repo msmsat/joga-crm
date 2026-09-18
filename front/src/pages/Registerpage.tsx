@@ -9,9 +9,9 @@ import { GoogleSignIn } from '../components/cookies/GoogleSignIn';
 import { openCookieSettings } from '../utils/cookieConsent';
 import { authApi, ApiError } from '../api';
 import { setActiveToken } from '../utils/auth';
-import { LEGAL_FOOTER_LINKS, LEGAL_LINK_PROPS, PRIVACY_URL, TERMS_URL } from '../utils/legal';
-import { TRIAL_DAYS } from '../api/billing/billing.types';
+import { legalFooterLinks, LEGAL_LINK_PROPS, PRIVACY_URL, TERMS_URL } from '../utils/legal';
 import { getAnonId } from "../lib/anonId";
+import { useTranslation } from 'react-i18next';
 
 // ─── STEP TYPES ──────────────────────────────────────────────────────────────
 
@@ -26,6 +26,7 @@ type Step = 0 | 1 | 2 | 3 | 4;
  *  Мелкий текст «регистрируясь, вы принимаете» под Google был бы browsewrap —
  *  доказательства согласия он не даёт, а через Google приходит половина людей. */
 function ConsentCheck({ checked, error, onChange }: { checked: boolean; error?: string; onChange: (v: boolean) => void }) {
+  const { t } = useTranslation();
   return (
     <div className="flex-col" style={{ gap: 4 }}>
       <label className="custom-checkbox-wrapper">
@@ -34,8 +35,8 @@ function ConsentCheck({ checked, error, onChange }: { checked: boolean; error?: 
           {checked && <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style={{ animation: "checkPop 0.22s ease" }}><path d="M2 5L4.2 7.2L8 3" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>}
         </div>
         <span className="text-muted" style={{ fontSize: 12, lineHeight: "1.6" }}>
-          Я принимаю <a href={TERMS_URL} {...LEGAL_LINK_PROPS} className="text-link">Условия использования</a> и{" "}
-          <a href={PRIVACY_URL} {...LEGAL_LINK_PROPS} className="text-link">Политику конфиденциальности</a>
+          {t("join:consent.text")} <a href={TERMS_URL} {...LEGAL_LINK_PROPS} className="text-link">{t("join:consent.terms")}</a> {" "}
+          {t("join:consent.and")} <a href={PRIVACY_URL} {...LEGAL_LINK_PROPS} className="text-link">{t("join:consent.privacy")}</a>
         </span>
       </label>
       {error && <span style={{ fontSize: 12, color: "var(--rose)", fontWeight: 500, marginLeft: 28 }}>{error}</span>}
@@ -46,6 +47,8 @@ function ConsentCheck({ checked, error, onChange }: { checked: boolean; error?: 
 // ─── MAIN COMPONENT ──────────────────────────────────────────────────────────
 
 export default function RegisterPage() {
+  const { t } = useTranslation();
+  const footerLinks = legalFooterLinks(t);
   const [step, setStep] = useState<Step>(0);
   const [mounted, setMounted] = useState(false);
   const navigate = useNavigate();
@@ -71,7 +74,7 @@ export default function RegisterPage() {
     // Кнопка Google живёт в iframe — перехватить сам клик нельзя, поэтому
     // непринятые документы ловим здесь, а кнопку до галочки гасим (см. разметку).
     if (!agree) {
-      setErrors({ agree: "Необходимо согласие" });
+      setErrors({ agree: t("join:errors.consentRequired") });
       return;
     }
     setLoading(true);
@@ -86,7 +89,7 @@ export default function RegisterPage() {
         navigate("/dashboard");
       }
     } catch {
-      setSubmitError("Ошибка авторизации через Google");
+      setSubmitError(t("auth.googleFailed"));
     } finally {
       setLoading(false);
     }
@@ -95,21 +98,21 @@ export default function RegisterPage() {
   const validateStep = (s: Step): boolean => {
     const errs: Record<string, string> = {};
     if (s === 1) {
-      if (!email.trim()) errs.email = "Введите email";
-      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errs.email = "Некорректный email";
+      if (!email.trim()) errs.email = t("validation.required");
+      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errs.email = t("validation.email");
     }
     if (s === 2) {
-      if (!displayName.trim()) errs.displayName = "Введите имя или никнейм";
-      else if (displayName.trim().length < 2) errs.displayName = "Минимум 2 символа";
+      if (!displayName.trim()) errs.displayName = t("validation.required");
+      else if (displayName.trim().length < 2) errs.displayName = t("validation.minLength", { n: 2 });
     }
     if (s === 3) {
-      if (!password) errs.password = "Введите пароль";
-      else if (password.length < 8) errs.password = "Минимум 8 символов";
-      if (!agree) errs.agree = "Необходимо согласие";
+      if (!password) errs.password = t("join:errors.passwordRequired");
+      else if (password.length < 8) errs.password = t("validation.minLength", { n: 8 });
+      if (!agree) errs.agree = t("join:errors.consentRequired");
     }
     if (s === 4) {
-      if (!code) errs.code = "Введите код подтверждения";
-      else if (code.length !== 6) errs.code = "Код должен состоять из 6 цифр";
+      if (!code) errs.code = t("auth.confirmationCode");
+      else if (code.length !== 6) errs.code = t("auth.codeSix");
     }
     setErrors(errs);
     return Object.keys(errs).length === 0;
@@ -130,7 +133,7 @@ export default function RegisterPage() {
       await authApi.register({ email, name: displayName, password, accept_terms: agree, anon_id: getAnonId() });
       setStep(4);
     } catch (err: unknown) {
-      setSubmitError(err instanceof ApiError ? err.message : "Ошибка соединения с сервером");
+      setSubmitError(err instanceof ApiError ? err.message : t("errors.network"));
     } finally {
       setLoading(false);
     }
@@ -146,7 +149,7 @@ export default function RegisterPage() {
       if (data.access_token) setActiveToken(data.access_token);
       setDone(true);
     } catch (err: unknown) {
-      setSubmitError(err instanceof ApiError ? err.message : "Ошибка соединения с сервером");
+      setSubmitError(err instanceof ApiError ? err.message : t("errors.network"));
     } finally {
       setLoading(false);
     }
@@ -163,10 +166,10 @@ export default function RegisterPage() {
   const stepMeta = [
     { title: "", sub: "" },
     // 🔥 Поменяли тут:
-    { title: "Контактные данные", sub: "Введите ваш email для создания аккаунта" },
-    { title: "Как вас называть?", sub: "Имя или никнейм — на ваш выбор" },
-    { title: "Придумайте пароль", sub: "Минимум 8 символов для надёжной защиты" },
-    { title: "Подтверждение почты", sub: "Мы отправили 4-значный код на ваш email" },
+    { title: t("onboarding:steps.contact.title"), sub: t("auth.contactSub") },
+    { title: t("auth.nameTitle"), sub: t("auth.nameSub") },
+    { title: t("auth.choosePassword"), sub: t("validation.minLength", { n: 8 }) },
+    { title: t("auth.confirmationCode"), sub: t("auth.codeSent", { identifier: email }) },
   ];
   
   return (
@@ -177,9 +180,9 @@ export default function RegisterPage() {
       <nav className="flex-between" style={{ padding: "20px 40px", position: "relative", zIndex: 10, opacity: mounted ? 1 : 0, transition: "opacity 0.4s ease" }}>
         <Logo />
         <div className="text-muted" style={{ fontSize: 13, display: "flex", alignItems: "center", gap: 6 }}>
-          Уже есть аккаунт?{" "}
+          {t("auth.haveAccount")} {" "}
           <button onClick={() => navigate("/login")} style={{ background: "none", border: "none", color: "var(--peach)", fontWeight: 700, fontSize: 13, cursor: "pointer", padding: 0 }}>
-            Войти →
+            {t("profile:accounts.login")} →
           </button>
         </div>
       </nav>
@@ -198,11 +201,11 @@ export default function RegisterPage() {
                   <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M6 14L11 19L22 9" stroke="var(--pistachio)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
                 </div>
                 <div className="flex-col gap-8">
-                  <div style={{ fontWeight: 800, fontSize: 22, letterSpacing: "-0.4px" }}>Добро пожаловать, {displayName}!</div>
-                  <div className="text-muted" style={{ fontSize: 14, lineHeight: "1.6" }}>Аккаунт создан. Мы отправили письмо на <span style={{ color: "var(--onyx)", fontWeight: 600 }}>{email}</span> для подтверждения.</div>
+                  <div style={{ fontWeight: 800, fontSize: 22, letterSpacing: "-0.4px" }}>{t("onboarding:identity.welcome")}, {displayName}!</div>
+                  <div className="text-muted" style={{ fontSize: 14, lineHeight: "1.6" }}>{t("auth.accountCreated", { email })}</div>
                 </div>
                 <button className="btn-gradient" onClick={() => navigate("/dashboard")}>
-                  Перейти в панель управления →
+                  {t("auth.dashboard")} →
                 </button>
               </div>
             ) : step === 0 ? (
@@ -211,10 +214,10 @@ export default function RegisterPage() {
                 <div className="flex-col gap-8">
                   <div style={{ display: "inline-flex", alignItems: "center", gap: 7, padding: "5px 12px", background: "linear-gradient(135deg, rgba(249,160,139,0.12), rgba(249,160,139,0.06))", border: "1px solid rgba(249,160,139,0.28)", borderRadius: 100, width: "fit-content" }}>
                     <div style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--peach)", boxShadow: "0 0 0 3px var(--peach-glow)", animation: "pulse 2.4s ease-in-out infinite" }} />
-                    <span style={{ fontSize: 12, fontWeight: 600, color: "var(--peach)", letterSpacing: "0.3px" }}>{TRIAL_DAYS} дней бесплатно</span>
+                    <span style={{ fontSize: 12, fontWeight: 600, color: "var(--peach)", letterSpacing: "0.3px" }}>{t("landing:hero.perks.0")}</span>
                   </div>
-                  <h1 style={{ fontSize: 26, fontWeight: 800, letterSpacing: "-0.5px", lineHeight: 1.2 }}>Создать аккаунт</h1>
-                  <p className="text-muted" style={{ fontSize: 14, lineHeight: "1.6" }}>Без карты. Без обязательств. Только результат.</p>
+                  <h1 style={{ fontSize: 26, fontWeight: 800, letterSpacing: "-0.5px", lineHeight: 1.2 }}>{t("profile:accounts.register")}</h1>
+                  <p className="text-muted" style={{ fontSize: 14, lineHeight: "1.6" }}>{t("landing:cta.lead")}</p>
                 </div>
 
                 <ConsentCheck checked={agree} error={errors.agree} onChange={(v) => { setAgree(v); clearErr("agree"); }} />
@@ -227,18 +230,18 @@ export default function RegisterPage() {
                          карточку на самом узком экране. */
                       width={Math.min(320, window.innerWidth - 76)}
                       onCredential={(credential) => handleGoogleSuccess(credential)}
-                      onError={() => setSubmitError("Google авторизация не удалась")}
+                      onError={() => setSubmitError(t("auth.googleFailed"))}
                   />
                 </div>
 
                 <div className="flex-center gap-12">
                   <div style={{ flex: 1, height: 1, background: "var(--border)" }} />
-                  <span style={{ fontSize: 12, fontWeight: 600, color: "rgba(102,102,102,0.5)", textTransform: "uppercase" }}>или</span>
+                  <span style={{ fontSize: 12, fontWeight: 600, color: "rgba(102,102,102,0.5)", textTransform: "uppercase" }}>{t("auth.or")}</span>
                   <div style={{ flex: 1, height: 1, background: "var(--border)" }} />
                 </div>
 
                 <button className="btn-gradient" onClick={() => setStep(1)}>
-                  {<IconEmail />} Зарегистрироваться по email
+                  {<IconEmail />} {t("auth.registerByEmail")}
                 </button>
 
               </div>
@@ -260,12 +263,12 @@ export default function RegisterPage() {
                     </>
                   )}
                   {step === 2 && (
-                    <InputField label="Имя или никнейм *" type="text" placeholder="Например: Катя, Max, КрутойМаркетолог" value={displayName} onChange={(v: string) => { setDisplayName(v); clearErr("displayName"); }} icon={<IconUser />} error={errors.displayName} autoComplete="nickname" />
+                    <InputField label={`${t("auth.nameTitle")} *`} type="text" placeholder={t("auth.displayNamePlaceholder")} value={displayName} onChange={(v: string) => { setDisplayName(v); clearErr("displayName"); }} icon={<IconUser />} error={errors.displayName} autoComplete="nickname" />
                   )}
                   {step === 3 && (
                     <div className="flex-col gap-8">
                       <InputField
-                        label="Пароль *" type={showPassword ? "text" : "password"} placeholder="Минимум 8 символов"
+                        label={`${t("join:fields.password")} *`} type={showPassword ? "text" : "password"} placeholder={t("validation.minLength", { n: 8 })}
                         value={password} onChange={(v: string) => { setPassword(v); clearErr("password"); }}
                         icon={<IconLock />} error={errors.password} autoComplete="new-password"
                         rightSlot={<button className="btn-icon-clear" style={{ color: showPassword ? "var(--peach)" : "var(--muted)" }} onClick={() => setShowPassword((v) => !v)}>{eyeIcon(showPassword)}</button>}
@@ -276,7 +279,7 @@ export default function RegisterPage() {
                   {step === 4 && (
                     <div className="flex-col gap-8">
                       <InputField
-                        label="Код из письма" type="text" placeholder="123456" maxLength={6}
+                        label={t("auth.codeFromEmail")} type="text" placeholder="123456" maxLength={6}
                         value={code} 
                         onChange={(v: string) => { 
                           // Разрешаем вводить только цифры
@@ -293,7 +296,7 @@ export default function RegisterPage() {
                 {step === 2 && (
                   <div style={{ display: "flex", gap: 10, padding: "12px 14px", background: "rgba(249,160,139,0.06)", borderRadius: 12, border: "1px solid rgba(249,160,139,0.14)" }}>
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, marginTop: 1 }}><circle cx="8" cy="8" r="6.5" stroke="var(--peach)" strokeWidth="1.3" /><path d="M8 5.5V8.5" stroke="var(--peach)" strokeWidth="1.3" strokeLinecap="round" /><circle cx="8" cy="10.5" r="0.6" fill="var(--peach)" /></svg>
-                    <span className="text-muted" style={{ fontSize: 12, lineHeight: "1.6" }}>Это имя будет отображаться в интерфейсе и уведомлениях. Вы сможете изменить его в настройках.</span>
+                    <span className="text-muted" style={{ fontSize: 12, lineHeight: "1.6" }}>{t("auth.displayNameHint")}</span>
                   </div>
                 )}
 
@@ -313,7 +316,7 @@ export default function RegisterPage() {
                     disabled={loading} 
                     style={{ flex: 1 }}
                   >
-                    {loading ? <><span className="spinner" /> Загрузка...</> : step === 3 ? "Зарегистрироваться" : step === 4 ? "Подтвердить →" : "Продолжить →"}
+                    {loading ? <><span className="spinner" /> {t("status.loading")}</> : step === 3 ? t("profile:accounts.register") : step === 4 ? `${t("buttons.continue")} →` : `${t("buttons.continue")} →`}
                   </button>
                 </div>
               </div>
@@ -327,14 +330,14 @@ export default function RegisterPage() {
                 <div style={{ display: "flex" }}>
                   {["#F9A08B","#A3C9A8","#D88C9A","#7EB8D4","#B8A9D9"].map((c, i) => (
                     <div key={i} className="flex-center" style={{ width: 26, height: 26, borderRadius: "50%", background: `linear-gradient(135deg, ${c}, ${c}cc)`, border: "2px solid var(--bg-card)", marginLeft: i > 0 ? -8 : 0, zIndex: 5 - i, fontSize: 10, fontWeight: 700, color: "white" }}>
-                      {["К","А","М","Д","В"][i]}
+                      {["V","E","L","O","R"][i]}
                     </div>
                   ))}
                 </div>
-                <span style={{ fontSize: 12, color: "rgba(102,102,102,0.6)", fontWeight: 500 }}><b style={{ color: "var(--onyx)" }}>2 400+</b> бизнесов уже работают с Velora</span>
+                <span style={{ fontSize: 12, color: "rgba(102,102,102,0.6)", fontWeight: 500 }}><b style={{ color: "var(--onyx)" }}>2 400+</b> {t("auth.users")}</span>
               </div>
               <div className="flex-center" style={{ gap: 20 }}>
-                {[ { label: "SSL защита" }, { label: "GDPR" }, { label: "2FA" } ].map((item, i) => (
+                {[ { label: "SSL" }, { label: "GDPR" }, { label: "2FA" } ].map((item, i) => (
                   <div key={i} className="flex-center" style={{ gap: 5, fontSize: 11, fontWeight: 500, color: "rgba(102,102,102,0.6)" }}>
                     <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1L1.5 3V6.5C1.5 9.26142 3.73858 11.5 6.5 12C9.26142 11.5 11.5 9.26142 11.5 6.5V3L6.5 1Z" stroke="var(--pistachio)" strokeWidth="1.3" strokeLinejoin="round" /><path d="M4.5 6.5L5.9 7.9L8.5 5" stroke="var(--pistachio)" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" /></svg>
                     {item.label}
@@ -348,12 +351,12 @@ export default function RegisterPage() {
 
       {/* ── FOOTER ── */}
       <footer className="flex-between" style={{ borderTop: "1px solid var(--border)", padding: "16px 40px", position: "relative", zIndex: 1, flexWrap: "wrap", gap: 8 }}>
-        <div style={{ fontSize: 12, color: "rgba(102,102,102,0.5)" }}>© 2026 Velora. Все права защищены.</div>
+        <div style={{ fontSize: 12, color: "rgba(102,102,102,0.5)" }}>{t("landing:footer.copyright")}</div>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 20, fontSize: 12 }}>
-          {LEGAL_FOOTER_LINKS.map(({ label, href }) => (
+          {footerLinks.map(({ label, href }) => (
             <a key={label} href={href} {...LEGAL_LINK_PROPS} className="text-muted" style={{ textDecoration: "none", transition: "color 0.2s" }} onMouseOver={(e) => (e.currentTarget.style.color = "var(--onyx)")} onMouseOut={(e) => (e.currentTarget.style.color = "var(--muted)")}>{label}</a>
           ))}
-          <button type="button" onClick={openCookieSettings} className="text-muted" style={{ background: "none", border: "none", padding: 0, font: "inherit", cursor: "pointer", transition: "color 0.2s" }} onMouseOver={(e) => (e.currentTarget.style.color = "var(--onyx)")} onMouseOut={(e) => (e.currentTarget.style.color = "var(--muted)")}>Настройки cookie</button>
+          <button type="button" onClick={openCookieSettings} className="text-muted" style={{ background: "none", border: "none", padding: 0, font: "inherit", cursor: "pointer", transition: "color 0.2s" }} onMouseOver={(e) => (e.currentTarget.style.color = "var(--onyx)")} onMouseOut={(e) => (e.currentTarget.style.color = "var(--muted)")}>{t("cookies:profile.button")}</button>
         </div>
       </footer>
     </div>

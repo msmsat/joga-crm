@@ -171,5 +171,42 @@
     "lessonCaption": "Inquadra con la fotocamera per prenotare questa lezione",
     "packageAction": "Codice QR dell'abbonamento",
     "packageCaption": "Inquadra con la fotocamera per acquistare l'abbonamento"
+  },
+  "auth": {
+    "noAccount": "Non hai un account?",
+    "haveAccount": "Hai già un account?",
+    "welcomeBack": "Bentornato",
+    "choosePassword": "Crea una nuova password",
+    "confirmationCode": "Codice di conferma",
+    "loginSubtitle": "Accedi per continuare in Velora",
+    "resetInstruction": "Invieremo le istruzioni alla tua e-mail",
+    "codeSent": "Il codice è stato inviato a {{identifier}}",
+    "googleFailed": "Accesso con Google non riuscito",
+    "googleAccountMissing": "Non esiste ancora un account per questo indirizzo Google. Lo creeremo dopo l'accettazione dei documenti.",
+    "divider": "oppure accedi con",
+    "codeFromEmail": "Codice dall'e-mail",
+    "rememberMe": "Ricordami",
+    "forgotPassword": "Password dimenticata?",
+    "signInSystem": "Accedi",
+    "sendInstructions": "Invia istruzioni",
+    "passwordChanged": "La password è stata modificata. Ora puoi accedere.",
+    "contactSub": "Inserisci la tua e-mail per creare un account",
+    "nameTitle": "Come possiamo chiamarti?",
+    "nameSub": "Nome o soprannome — scegli tu",
+    "accountCreated": "Account creato. Abbiamo inviato un'e-mail di conferma a {{email}}.",
+    "dashboard": "Vai alla dashboard",
+    "or": "oppure",
+    "registerByEmail": "Registrati con e-mail",
+    "displayNamePlaceholder": "Ad esempio: Anna, Max, ProprietarioStudio",
+    "displayNameHint": "Questo nome viene visualizzato nell'interfaccia e nelle notifiche. Puoi modificarlo nelle impostazioni.",
+    "codeSix": "Inserisci il codice a 6 cifre",
+    "users": "aziende usano già Velora",
+    "strength": {
+      "weak": "Debole",
+      "medium": "Medio",
+      "good": "Buono",
+      "strong": "Forte",
+      "excellent": "Eccellente"
+    }
   }
 }

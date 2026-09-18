@@ -171,5 +171,42 @@
     "lessonCaption": "Наведите камеру, чтобы записаться на занятие",
     "packageAction": "QR-код абонемента",
     "packageCaption": "Наведите камеру, чтобы купить абонемент"
+  },
+  "auth": {
+    "noAccount": "Нет аккаунта?",
+    "haveAccount": "Уже есть аккаунт?",
+    "welcomeBack": "С возвращением",
+    "choosePassword": "Создайте новый пароль",
+    "confirmationCode": "Код подтверждения",
+    "loginSubtitle": "Войдите, чтобы продолжить работу в Velora",
+    "resetInstruction": "Мы отправим инструкцию на ваш email",
+    "codeSent": "Код отправлен на {{identifier}}",
+    "googleFailed": "Не удалось войти через Google",
+    "googleAccountMissing": "Аккаунта с этим адресом Google ещё нет. Мы создадим его после принятия документов.",
+    "divider": "или войдите через",
+    "codeFromEmail": "Код из письма",
+    "rememberMe": "Запомнить меня",
+    "forgotPassword": "Забыли пароль?",
+    "signInSystem": "Войти в систему",
+    "sendInstructions": "Отправить инструкцию",
+    "passwordChanged": "Пароль изменён. Теперь вы можете войти.",
+    "contactSub": "Введите email для создания аккаунта",
+    "nameTitle": "Как вас называть?",
+    "nameSub": "Имя или никнейм — на ваш выбор",
+    "accountCreated": "Аккаунт создан. Мы отправили письмо для подтверждения на {{email}}.",
+    "dashboard": "Перейти в панель управления",
+    "or": "или",
+    "registerByEmail": "Зарегистрироваться по email",
+    "displayNamePlaceholder": "Например: Катя, Max, ВладелецСтудии",
+    "displayNameHint": "Это имя будет отображаться в интерфейсе и уведомлениях. Вы сможете изменить его в настройках.",
+    "codeSix": "Введите 6-значный код",
+    "users": "бизнесов уже используют Velora",
+    "strength": {
+      "weak": "Слабый",
+      "medium": "Средний",
+      "good": "Хороший",
+      "strong": "Сильный",
+      "excellent": "Отличный"
+    }
   }
 }

@@ -171,5 +171,42 @@
     "lessonCaption": "Point your camera to book this class",
     "packageAction": "Pass QR code",
     "packageCaption": "Point your camera to buy this pass"
+  },
+  "auth": {
+    "noAccount": "No account?",
+    "haveAccount": "Already have an account?",
+    "welcomeBack": "Welcome back",
+    "choosePassword": "Create a new password",
+    "confirmationCode": "Confirmation code",
+    "loginSubtitle": "Sign in to continue to Velora",
+    "resetInstruction": "We'll send instructions to your email",
+    "codeSent": "Code sent to {{identifier}}",
+    "googleFailed": "Google sign-in failed",
+    "googleAccountMissing": "There is no account for this Google address yet. We'll create one after you accept the documents.",
+    "divider": "or sign in with",
+    "codeFromEmail": "Code from email",
+    "rememberMe": "Remember me",
+    "forgotPassword": "Forgot password?",
+    "signInSystem": "Sign in",
+    "sendInstructions": "Send instructions",
+    "passwordChanged": "Password changed. You can sign in now.",
+    "contactSub": "Enter your email to create an account",
+    "nameTitle": "What should we call you?",
+    "nameSub": "A name or nickname — your choice",
+    "accountCreated": "Account created. We sent a confirmation email to {{email}}.",
+    "dashboard": "Go to dashboard",
+    "or": "or",
+    "registerByEmail": "Sign up with email",
+    "displayNamePlaceholder": "For example: Alex, Sam, StudioOwner",
+    "displayNameHint": "This name appears in the interface and notifications. You can change it in settings.",
+    "codeSix": "Enter the 6-digit code",
+    "users": "businesses already use Velora",
+    "strength": {
+      "weak": "Weak",
+      "medium": "Medium",
+      "good": "Good",
+      "strong": "Strong",
+      "excellent": "Excellent"
+    }
   }
 }

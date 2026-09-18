@@ -171,5 +171,42 @@
     "lessonCaption": "Ret kameraet mod koden for at booke holdet",
     "packageAction": "QR-kode til klippekortet",
     "packageCaption": "Ret kameraet mod koden for at købe klippekortet"
+  },
+  "auth": {
+    "noAccount": "Har du ikke en konto?",
+    "haveAccount": "Har du allerede en konto?",
+    "welcomeBack": "Velkommen tilbage",
+    "choosePassword": "Opret en ny adgangskode",
+    "confirmationCode": "Bekræftelseskode",
+    "loginSubtitle": "Log ind for at fortsætte til Velora",
+    "resetInstruction": "Vi sender instruktioner til din e-mail",
+    "codeSent": "Koden er sendt til {{identifier}}",
+    "googleFailed": "Google-login mislykkedes",
+    "googleAccountMissing": "Der er endnu ingen konto til denne Google-adresse. Vi opretter en, når du har accepteret dokumenterne.",
+    "divider": "eller log ind med",
+    "codeFromEmail": "Kode fra e-mail",
+    "rememberMe": "Husk mig",
+    "forgotPassword": "Glemt adgangskode?",
+    "signInSystem": "Log ind",
+    "sendInstructions": "Send instruktioner",
+    "passwordChanged": "Adgangskoden er ændret. Du kan nu logge ind.",
+    "contactSub": "Indtast din e-mail for at oprette en konto",
+    "nameTitle": "Hvad skal vi kalde dig?",
+    "nameSub": "Navn eller kaldenavn — du vælger",
+    "accountCreated": "Kontoen er oprettet. Vi har sendt en bekræftelsesmail til {{email}}.",
+    "dashboard": "Gå til dashboard",
+    "or": "eller",
+    "registerByEmail": "Opret med e-mail",
+    "displayNamePlaceholder": "For eksempel: Anna, Max, StudioEjer",
+    "displayNameHint": "Dette navn vises i grænsefladen og i notifikationer. Du kan ændre det i indstillingerne.",
+    "codeSix": "Indtast den 6-cifrede kode",
+    "users": "virksomheder bruger allerede Velora",
+    "strength": {
+      "weak": "Svag",
+      "medium": "Mellem",
+      "good": "God",
+      "strong": "Stærk",
+      "excellent": "Fremragende"
+    }
   }
 }

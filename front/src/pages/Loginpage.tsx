@@ -8,12 +8,14 @@ import { GoogleSignIn } from '../components/cookies/GoogleSignIn';
 import { openCookieSettings } from '../utils/cookieConsent';
 import { authApi, ApiError } from '../api';
 import { setActiveToken } from '../utils/auth';
-import { LEGAL_FOOTER_LINKS, LEGAL_LINK_PROPS, PRIVACY_URL, TERMS_URL } from '../utils/legal';
-import { TRIAL_DAYS } from '../api/billing/billing.types';
+import { legalFooterLinks, LEGAL_LINK_PROPS, PRIVACY_URL, TERMS_URL } from '../utils/legal';
+import { useTranslation } from 'react-i18next';
 
 // ─── MAIN LOGIN PAGE ──────────────────────────────────────────────────────────
 export default function LoginPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
+  const footerLinks = legalFooterLinks(t);
   const [mode, setMode] = useState<"login" | "register" | "forgot" | "login2fa">("login");
   // ?email=… — возврат в аккаунт из «Недавних» в профиле: адрес подставляем,
   // пароль спрашиваем как обычно (живого токена у прежнего аккаунта уже нет).
@@ -70,7 +72,7 @@ export default function LoginPage() {
       if (err instanceof ApiError && err.code === "consent_required") {
         setPendingGoogle(credential);
       } else {
-        setSubmitError("Ошибка авторизации через Google");
+        setSubmitError(t("auth.googleFailed"));
       }
     } finally {
       setLoading(false);
@@ -80,23 +82,22 @@ export default function LoginPage() {
   const validateForm = () => {
     const newErrors: { identifier?: string; password?: string; twoFaCode?: string } = {};
     if (mode === "login2fa") {
-      if (!/^\d{6}$/.test(twoFaCode)) newErrors.twoFaCode = "Введите 6 цифр из письма";
+      if (!/^\d{6}$/.test(twoFaCode)) newErrors.twoFaCode = t("auth.codeSix");
       setErrors(newErrors);
       return Object.keys(newErrors).length === 0;
     }
     if (!identifier.trim()) {
-      const labels = { email: "Email", phone: "Телефон" }; // Убрали name
-      newErrors.identifier = `${labels[identifierMode]} обязателен`;
+      newErrors.identifier = t("validation.required");
     } else if (identifierMode === "email" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(identifier)) {
-      newErrors.identifier = "Введите корректный email";
+      newErrors.identifier = t("validation.email");
     } else if (identifierMode === "phone" && !isValidPhoneNumber(identifier)) {
       // 🔥 Заменили Regex на умную функцию от библиотеки
-      newErrors.identifier = "Введите номер телефона полностью";
+      newErrors.identifier = t("validation.phone");
     }
     if (mode !== "forgot" && !password) {
-      newErrors.password = "Пароль обязателен";
+      newErrors.password = t("join:errors.passwordRequired");
     } else if (mode !== "forgot" && password.length < 6) {
-      newErrors.password = "Минимум 6 символов";
+      newErrors.password = t("validation.minLength", { n: 6 });
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -128,7 +129,7 @@ export default function LoginPage() {
           setMode("login");
           setForgotStep(1);
           setPassword("");
-          setSuccessMsg("Пароль успешно изменён! Теперь вы можете войти.");
+          setSuccessMsg(t("auth.passwordChanged"));
         }
       }
 
@@ -151,7 +152,7 @@ export default function LoginPage() {
         }
       }
     } catch (err: unknown) {
-      setSubmitError(err instanceof ApiError ? err.message : "Ошибка соединения с сервером");
+      setSubmitError(err instanceof ApiError ? err.message : t("errors.network"));
     } finally {
       setLoading(false);
     }
@@ -174,17 +175,17 @@ export default function LoginPage() {
   };
 
   const titles = {
-    login: "С возвращением",
-    register: "Создать аккаунт",
-    forgot: forgotStep === 1 ? "Восстановить доступ" : "Придумайте пароль",
-    login2fa: "Код подтверждения",
+    login: t("auth.welcomeBack"),
+    register: t("profile:accounts.register"),
+    forgot: forgotStep === 1 ? t("join:forgotLink") : t("auth.choosePassword"),
+    login2fa: t("auth.confirmationCode"),
   };
 
   const subtitles = {
-    login: "Войдите, чтобы продолжить работу в Velora",
-    register: `${TRIAL_DAYS} дней бесплатно — без карты`,
-    forgot: forgotStep === 1 ? "Мы пришлём инструкцию на ваш email" : `Код отправлен на ${identifier}`,
-    login2fa: `Код отправлен на ${identifier}`,
+    login: t("auth.loginSubtitle"),
+    register: t("landing:hero.perks.0"),
+    forgot: forgotStep === 1 ? t("auth.resetInstruction") : t("auth.codeSent", { identifier }),
+    login2fa: t("auth.codeSent", { identifier }),
   };
 
   return (
@@ -208,7 +209,7 @@ export default function LoginPage() {
         <div style={{ fontSize: "13px", color: "var(--muted)", display: "flex", alignItems: "center", gap: "6px" }}>
           {mode === "login" ? (
             <>
-              Нет аккаунта?{" "}
+              {t("auth.noAccount")} {" "}
               <button
                 onClick={() => navigate("/register")} // 🔥 Просто делаем переход вместо setMode
                 style={{
@@ -216,12 +217,12 @@ export default function LoginPage() {
                   fontWeight: 700, fontSize: "13px", cursor: "pointer", padding: 0,
                 }}
               >
-                Зарегистрироваться →
+                {t("profile:accounts.register")} →
               </button>
             </>
           ) : (
             <>
-              Уже есть аккаунт?{" "}
+              {t("auth.haveAccount")} {" "}
               <button
                 onClick={() => { setMode("login"); setErrors({}); }}
                 style={{
@@ -229,7 +230,7 @@ export default function LoginPage() {
                   fontWeight: 700, fontSize: "13px", cursor: "pointer", padding: 0,
                 }}
               >
-                Войти →
+                {t("profile:accounts.login")} →
               </button>
             </>
           )}
@@ -272,7 +273,7 @@ export default function LoginPage() {
                   style={{ display: "inline-flex", alignItems: "center", gap: "6px", background: "none", border: "none", color: "var(--muted)", fontSize: "12px", fontWeight: 600, cursor: "pointer", padding: 0, marginBottom: "8px", width: "fit-content" }}
                 >
                   <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M7.5 2L3.5 6L7.5 10" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                  Назад
+                  {t("buttons.back")}
                 </button>
               )}
               <h1 style={{ fontSize: "26px", fontWeight: 900, color: "var(--onyx)", letterSpacing: "-0.8px", margin: 0, lineHeight: "1.1" }}>
@@ -296,7 +297,7 @@ export default function LoginPage() {
                          экрана в форме входа переживём. */
                       width={Math.min(320, window.innerWidth - 76)}
                       onCredential={(credential) => handleGoogleSuccess(credential)}
-                      onError={() => setSubmitError("Google авторизация не удалась")}
+                      onError={() => setSubmitError(t("auth.googleFailed"))}
                   />
                 </div>
 
@@ -305,12 +306,12 @@ export default function LoginPage() {
                 {pendingGoogle && (
                   <div style={{ display: "flex", flexDirection: "column", gap: "12px", padding: "14px 16px", background: "rgba(252,174,145,0.07)", border: "1.5px solid rgba(252,174,145,0.26)", borderRadius: "14px" }}>
                     <p style={{ fontSize: "12.5px", color: "var(--muted)", margin: 0, lineHeight: 1.55 }}>
-                      Аккаунта с этим адресом ещё нет — мы создадим новый. Для этого примите наши документы.
+                      {t("auth.googleAccountMissing")}
                     </p>
                     <Checkbox checked={agree} onChange={setAgree} label={
                       <span style={{ fontSize: "12.5px" }}>
-                        Я принимаю <a href={TERMS_URL} {...LEGAL_LINK_PROPS} className="text-link">Условия использования</a> и{" "}
-                        <a href={PRIVACY_URL} {...LEGAL_LINK_PROPS} className="text-link">Политику конфиденциальности</a>
+                        {t("join:consent.text")} <a href={TERMS_URL} {...LEGAL_LINK_PROPS} className="text-link">{t("join:consent.terms")}</a> {" "}
+                        {t("join:consent.and")} <a href={PRIVACY_URL} {...LEGAL_LINK_PROPS} className="text-link">{t("join:consent.privacy")}</a>
                       </span>
                     } />
                     <PrimaryBtn
@@ -319,12 +320,12 @@ export default function LoginPage() {
                       disabled={!agree}
                       fullWidth
                     >
-                      Создать аккаунт
+                      {t("profile:accounts.register")}
                     </PrimaryBtn>
                   </div>
                 )}
 
-                <Divider label="или войдите через" />
+                <Divider label={t("auth.divider")} />
               </>
             )}
 
@@ -359,7 +360,7 @@ export default function LoginPage() {
                   />
                 ) : (
                   <PhoneField
-                    label="Номер телефона"
+                    label={t("fields.phone")}
                     value={identifier}
                     onChange={(v) => { setIdentifier(v || ""); setErrors((e) => ({ ...e, identifier: undefined })); }}
                     error={errors.identifier}
@@ -371,7 +372,7 @@ export default function LoginPage() {
               {mode === "forgot" && forgotStep === 2 && (
                 <>
                   <InputField 
-                    label="Код из письма" type="text" placeholder="123456" maxLength={6}
+                    label={t("auth.codeFromEmail")} type="text" placeholder="123456" maxLength={6}
                     value={resetCode}
                     onChange={(v: string) => { setResetCode(v.replace(/\D/g, '').slice(0, 6)); setErrors((e) => ({ ...e, resetCode: undefined })); }}
                     icon={<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="3" y="7" width="10" height="7.5" rx="2" stroke="currentColor" strokeWidth="1.4"/><path d="M5.5 7V5C5.5 3.61929 6.61929 2.5 8 2.5C9.38071 2.5 10.5 3.61929 10.5 5V7" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/><circle cx="8" cy="10.5" r="1" fill="currentColor"/></svg>} 
@@ -379,11 +380,11 @@ export default function LoginPage() {
                   />
                   <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
                     <InputField 
-                      label="Новый пароль" type={showPassword ? "text" : "password"} placeholder="Минимум 8 символов" 
+                      label={t("join:fields.newPassword")} type={showPassword ? "text" : "password"} placeholder={t("validation.minLength", { n: 8 })}
                       value={newPassword} 
                       onChange={(v: string) => { setNewPassword(v); setErrors((e) => ({ ...e, password: undefined })); }} 
                       icon={<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="3" y="7" width="10" height="7.5" rx="2" stroke="currentColor" strokeWidth="1.4"/><path d="M5.5 7V5C5.5 3.61929 6.61929 2.5 8 2.5C9.38071 2.5 10.5 3.61929 10.5 5V7" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/><circle cx="8" cy="10.5" r="1" fill="currentColor"/></svg>} 
-                      rightSlot={<button onClick={() => setShowPassword(!showPassword)} style={{ background: "none", border: "none", cursor: "pointer", color: showPassword ? "var(--peach)" : "var(--muted)", padding: 0, height: "100%", outline: "none" }}>{showPassword ? "Скрыть" : "Показать"}</button>} 
+                      rightSlot={<button onClick={() => setShowPassword(!showPassword)} style={{ background: "none", border: "none", cursor: "pointer", color: showPassword ? "var(--peach)" : "var(--muted)", padding: 0, height: "100%", outline: "none" }}>{showPassword ? t("join:fields.hide") : t("join:fields.show")}</button>}
                       error={errors.password} 
                     />
                     <PasswordStrength password={newPassword} />
@@ -393,7 +394,7 @@ export default function LoginPage() {
 
               {mode === "login2fa" && (
                 <InputField
-                  label="Код из письма"
+                  label={t("auth.codeFromEmail")}
                   type="text"
                   placeholder="123456"
                   maxLength={6}
@@ -407,9 +408,9 @@ export default function LoginPage() {
               {mode === "login" && (
                 <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
                   <InputField
-                    label="Пароль"
+                    label={t("join:fields.password")}
                     type={showPassword ? "text" : "password"}
-                    placeholder="Введите пароль"
+                    placeholder={t("join:fields.passwordPlaceholder")}
                     value={password}
                     onChange={(v: string) => { setPassword(v); setErrors((e) => ({ ...e, password: undefined })); }}
                     icon={
@@ -430,7 +431,7 @@ export default function LoginPage() {
                           transition: "color 0.2s", outline: "none"
                         }}
                       >
-                        {showPassword ? "Скрыть" : "Показать"}
+                        {showPassword ? t("join:fields.hide") : t("join:fields.show")}
                       </button>
                     }
                     error={errors.password}
@@ -442,7 +443,7 @@ export default function LoginPage() {
             {/* Remember + Forgot */}
             {mode === "login" && (
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <Checkbox checked={remember} onChange={setRemember} label="Запомнить меня" />
+                <Checkbox checked={remember} onChange={setRemember} label={t("auth.rememberMe")} />
                 <button
                   onClick={() => { setMode("forgot"); setErrors({}); }}
                   style={{
@@ -450,7 +451,7 @@ export default function LoginPage() {
                     fontSize: "13px", fontWeight: 600, cursor: "pointer", padding: 0, textDecoration: "none",
                   }}
                 >
-                  Забыли пароль?
+                  {t("auth.forgotPassword")}
                 </button>
               </div>
             )}
@@ -458,19 +459,18 @@ export default function LoginPage() {
             {/* CTA Button */}
             <PrimaryBtn onClick={handleSubmit} loading={loading} fullWidth>
               {mode === "login"
-                ? "Войти в систему"
+                ? t("auth.signInSystem")
                 : mode === "register"
-                ? "Создать аккаунт"
+                ? t("profile:accounts.register")
                 : mode === "login2fa"
-                ? "Подтвердить"
-                : "Отправить инструкцию"}
+                ? t("buttons.continue")
+                : t("auth.sendInstructions")}
             </PrimaryBtn>
 
             {/* Forgot mode hint */}
             {mode === "forgot" && (
               <p style={{ fontSize: "12px", color: "var(--muted)", margin: 0, textAlign: "center", lineHeight: "1.6" }}>
-                Письмо придёт в течение нескольких минут. Проверьте папку&nbsp;
-                <span style={{ color: "var(--onyx)", fontWeight: 600 }}>Спам</span>, если не нашли.
+                {t("auth.resetHint")}
               </p>
             )}
           </div>
@@ -490,7 +490,7 @@ export default function LoginPage() {
                       <path d="M4.5 6.5L5.9 7.9L8.5 5" stroke="var(--pistachio)" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   ),
-                  label: "SSL защита",
+                  label: "SSL",
                 },
                 {
                   icon: (
@@ -499,7 +499,7 @@ export default function LoginPage() {
                       <path d="M4 6.5H9M6.5 4V9" stroke="var(--pistachio)" strokeWidth="1.3" strokeLinecap="round" />
                     </svg>
                   ),
-                  label: "GDPR соответствие",
+                  label: "GDPR",
                 },
                 {
                   icon: (
@@ -508,7 +508,7 @@ export default function LoginPage() {
                       <path d="M4 6.5L5.8 8.3L9 5" stroke="var(--pistachio)" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   ),
-                  label: "2FA опционально",
+                  label: "2FA",
                 },
               ].map((item, i) => (
                 <div key={i} style={{ display: "flex", alignItems: "center", gap: "5px", fontSize: "11px", fontWeight: 500, color: "rgba(102,102,102,0.7)" }}>
@@ -530,16 +530,16 @@ export default function LoginPage() {
         }}
       >
         <div style={{ fontSize: "12px", color: "rgba(102,102,102,0.5)" }}>
-          © 2026 Velora. Все права защищены.
+          {t("landing:footer.copyright")}
         </div>
         <div style={{ display: "flex", flexWrap: "wrap", gap: "20px", fontSize: "12px" }}>
-          {LEGAL_FOOTER_LINKS.map(({ label, href }) => (
+          {footerLinks.map(({ label, href }) => (
             <a key={label} href={href} {...LEGAL_LINK_PROPS} style={{ color: "rgba(102,102,102,0.6)", textDecoration: "none", transition: "color 0.2s" }} onMouseOver={(e) => e.currentTarget.style.color = "var(--onyx)"} onMouseOut={(e) => e.currentTarget.style.color = "rgba(102,102,102,0.6)"}>
               {label}
             </a>
           ))}
           <button type="button" onClick={openCookieSettings} style={{ background: "none", border: "none", padding: 0, font: "inherit", cursor: "pointer", color: "rgba(102,102,102,0.6)", transition: "color 0.2s" }} onMouseOver={(e) => e.currentTarget.style.color = "var(--onyx)"} onMouseOut={(e) => e.currentTarget.style.color = "rgba(102,102,102,0.6)"}>
-            Настройки cookie
+            {t("cookies:profile.button")}
           </button>
         </div>
       </footer>
