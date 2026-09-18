@@ -1,0 +1,376 @@
+== da
+tabs.overview	Oversigt
+tabs.sales	Salg
+tabs.clients	Kunder
+tabs.team	Team
+tabs.schedule	Kalender
+toolbar.period.day	Dag
+toolbar.period.week	Uge
+toolbar.period.month	Måned
+toolbar.period.year	År
+toolbar.period.custom	Brugerdefineret
+toolbar.vsPrevious	sammenlignet med forrige periode: {{from}}–{{to}}
+toolbar.allBranches	Alle afdelinger
+toolbar.allHalls	Alle {{spacePlural}}
+toolbar.allTrainers	Alle trænere
+toolbar.allServices	Alle ydelser
+toolbar.export	Eksportér
+insights.title	Kræver opmærksomhed
+insights.action	Åbn
+insights.empty	Alt ser godt ud lige nu — ingen anbefalinger at vise
+insights.revenue_up_clients_down	Omsætningen stiger, men antallet af aktive kunder falder — undersøg kundefrafald
+insights.clients_at_risk	{{count}} kunde(r) har ikke deltaget i over 3 uger — risiko for frafald
+insights.lesson_overfull	"{{name}}" {{weekday, weekday}} kl. {{hour}}:00 har været {{pct}} % fyldt tre uger i træk — overvej at tilføje et hold mere
+insights.trial_low_conversion	Kun {{pct}} % af {{buyers}} prøveforløbskøbere købte efterfølgende et abonnement — overvej en kampagne
+insights.fastest_growing_product	"{{name}}" vokser hurtigst: +{{pct}} % sammenlignet med forrige periode
+insights.renewals_low	Kun {{pct}} % af kunder med et udløbet abonnement fornyer — overvej en påmindelse
+insights.new_no_second_visit	{{count}} nye kunder kom én gang og bookede aldrig igen — overvej en påmindelse
+insights.subs_expiring_week	{{count}} kunder har et abonnement, der udløber i denne uge — overvej at tilbyde fornyelse
+insights.vip_inactive	VIP-kunden "{{name}}" har ikke besøgt jer i {{days}} dage — overvej en personlig besked
+insights.high_return_free_evenings	"{{name}}" har en høj tilbagevendingsrate ({{return_pct}} %), men ledige aftener — tilføj et hold
+insights.trainer_overloaded	"{{name}}" er belastet {{load_pct}} % — overvej at omfordele kalenderen
+insights.low_rating	"{{name}}" har en vurdering på {{rating}} — det er værd at se nærmere på
+insights.slot_chronic_low	"{{name}}" {{weekday, isodowWeekday}} kl. {{hour}}:00 har været {{pct}} % fyldt i {{weeks}} uger i træk — flyt eller aflys det
+insights.hall_idle_evenings	"{{name}}" står tomt {{pct}} % af aftentimerne — overvej at planlægge et hold
+insights.slot_overfull	Tidspunktet {{weekday, isodowWeekday}} kl. {{hour}}:00 har været {{pct}} % fyldt tre uger i træk — overvej at tilføje et hold mere
+insights.loss_hotspot	{{cancels}} hold blev aflyst {{label}} i denne periode — de fleste aflysninger samler sig om denne time
+table.loading	Indlæser…
+table.noProduct	Intet produkt
+empty.noData.title	Der er ikke noget her endnu
+empty.noData.text	Der blev ikke registreret aktivitet i den valgte periode. Udvid perioden, eller begynd med at booke en kunde i Journalen.
+empty.noData.widen	Vis året
+empty.noRevenue	Ingen betalinger i denne periode
+empty.noSales	Intet salg i dette udsnit
+empty.noProducts	Ingen pakker eller ydelser solgt endnu
+empty.noLessons	Ingen hold i denne periode
+empty.noTrainerLessons	Denne træner har ikke afholdt nogen hold endnu
+empty.noRows	Ingen poster i dette udsnit
+empty.noLosses	Ingen aflysninger eller udeblivelser i denne periode
+overview.kpi.revenue	Omsætning
+overview.kpi.profit	Overskud
+overview.kpi.attendance	Fremmøde
+overview.kpi.activeClients	Aktive kunder
+overview.kpi.fillRate	Belægningsgrad
+overview.chart.metric.revenue	Omsætning
+overview.chart.metric.profit	Overskud
+overview.chart.metric.attendance	Fremmøde
+overview.chart.metric.new_clients	Nye kunder
+overview.chart.metric.fill_rate	Belægningsgrad
+overview.revenueStructure.title	Omsætningsstruktur
+overview.category.subscriptions	Abonnementer
+overview.category.services	Ydelser
+overview.category.certificates	Gavekort
+overview.category.rent	Leje
+overview.category.salary	Løn
+overview.category.refunds	Refunderinger
+overview.clientDynamics.title	Kundedynamik
+overview.clientDynamics.new	Nye
+overview.clientDynamics.returned	Vendte tilbage
+overview.clientDynamics.lost	Mistede
+overview.drilldown.title	Transaktion
+overview.drilldown.category	Kategori
+overview.drilldown.amount	Beløb
+overview.drilldown.lesson	Hold
+overview.drilldown.time	Tid
+overview.drilldown.occupancy	Belægning
+overview.drilldown.date	Dato
+overview.drilldown.method	Metode
+overview.drilldown.trainer	Træner
+overview.drilldown.rowsCount	poster
+overview.drilldown.search	Søg i tabellen
+overview.drilldown.shownOf	Viser {{shown}} af {{total}}
+overview.drilldown.noMatches	Intet fundet for “{{query}}”
+overview.drilldown.reset	Nulstil
+overview.drilldown.export	Eksportér CSV
+overview.drilldown.subtitle.money	Transaktioner i dette udsnit
+overview.drilldown.subtitle.lessons	Hold i dette udsnit
+overview.drilldown.hint.operations	Klik på en række for at åbne transaktionen i Økonomi
+overview.drilldown.hint.lessons	Klik på en række for at åbne den pågældende dag i Journalen
+overview.drilldown.stat.net	Netto
+overview.drilldown.stat.income	Indtægt
+overview.drilldown.stat.expense	Udgift
+overview.drilldown.stat.operations	Transaktioner
+overview.drilldown.stat.topCategory	Største kategori
+overview.drilldown.stat.lessons	Hold
+overview.drilldown.stat.booked	Booket af pladser
+overview.drilldown.stat.avgFill	Gennemsnitlig belægning
+overview.drilldown.stat.trainers	Trænere
+overview.drilldown.stat.cancelled	Aflyst
+sales.kpi.revenue	Omsætning
+sales.kpi.salesCount	Salg
+sales.kpi.avgCheck	Gennemsnitligt køb
+sales.kpi.repeatShare	Andel genkøb
+sales.kpi.renewals	Fornyelsesrate
+sales.chart.title	Salg
+sales.incomeOperations	Indtægtstransaktioner
+sales.breakdown.byCategory	Hvad de køber
+sales.breakdown.byMethod	Hvordan de betaler
+sales.breakdown.buyerType	Hvem køber
+sales.breakdown.new	Nye
+sales.breakdown.returning	Tilbagevendende
+sales.breakdown.noClient	Ingen kunde
+sales.method.card	Kort
+sales.method.cash	Kontant
+sales.method.qr	QR-kode
+sales.method.transfer	Overførsel
+sales.products.title	Produkter
+sales.products.name	Produkt
+sales.products.sold	Solgt
+sales.products.revenue	Omsætning
+sales.products.avgCheck	Gennemsnitligt køb
+sales.products.repeatShare	Andel genkøb
+sales.products.trend	Udvikling
+sales.products.trendHint	Sammenlignet med den foregående periode af samme længde
+clients.kpi.new	Nye
+clients.kpi.returned	Vendte tilbage
+clients.kpi.lost	Mistede
+clients.kpi.retention	Fastholdelse
+clients.kpi.avgValue	Kundeværdi
+clients.chart.title	Nye kontra tilbagevendende
+clients.chart.new	Nye
+clients.chart.returned	Tilbagevendende
+clients.riskTitle	Risikosegmenter
+clients.loyalTitle	Loyale
+clients.list	Liste
+clients.campaign	Start kampagne
+clients.exportList	Eksportér liste
+clients.emptySegment	Segmentet "{{name}}" har ingen kunder lige nu
+clients.segments.new.name	Nye kunder
+clients.segments.new.desc	Registreret i den valgte periode
+clients.segments.returned.name	Tilbagevendende kunder
+clients.segments.returned.desc	Besøgte både denne og den foregående periode
+clients.segments.lost.name	Mistede kunder
+clients.segments.lost.desc	Besøgte i forrige periode, men kom ikke tilbage i denne
+clients.segments.active.name	Aktive kunder
+clients.segments.active.desc	Kom til mindst ét hold i den valgte periode
+clients.segments.at_risk.name	På kanten
+clients.segments.at_risk.desc	Aktive, men intet besøg i 21+ dage
+clients.segments.vip_idle.name	Inaktive VIP'er
+clients.segments.vip_idle.desc	VIP-kunder uden besøg i 14+ dage
+clients.segments.expiring_subscription.name	Abonnement udløber
+clients.segments.expiring_subscription.desc	≤2 hold tilbage eller ≤7 dage tilbage
+clients.segments.lost_newcomers.name	Vendte aldrig tilbage
+clients.segments.lost_newcomers.desc	Kom én gang, væk i 14+ dage
+clients.segments.upsell_candidates.name	Klar til opgradering
+clients.segments.upsell_candidates.desc	8+ besøg denne måned, ingen pakke
+clients.segments.frequent.name	Hyppige
+clients.segments.frequent.desc	8+ besøg i perioden
+clients.segments.high_ltv.name	Høj LTV
+clients.segments.high_ltv.desc	Øverste 10 % efter samlet forbrug
+clients.segments.referrers.name	Henvisere
+clients.segments.referrers.desc	Gennemførte en henvisning i perioden
+clients.listSearch	Søg efter navn eller telefon
+clients.shownOf	Viser {{shown}} af {{total}}
+clients.noMatches	Ingen fundet for "{{query}}"
+clients.resetSearch	Nulstil
+clients.neverVisited	Aldrig besøgt
+clients.valueLabel.visits	Besøg
+clients.valueLabel.spent	Forbrugt
+clients.valueLabel.daysIdle	Dage inaktiv
+clients.valueLabel.remaining	Hold tilbage
+clients.valueLabel.value	Værdi
+clients.relative.today	I dag
+clients.relative.daysAgo_one	for {{count}} dag siden
+clients.relative.daysAgo_other	for {{count}} dage siden
+team.kpi.lessonsCount	Hold
+team.kpi.revenuePerHour	Omsætning/time
+team.kpi.avgFillPct	Belægningsgrad
+team.kpi.cancelNoshowPct	Aflysninger/udeblivelser
+team.kpi.avgRating	Vurdering
+team.table.title	Trænere
+team.table.trainer	Træner
+team.table.lessons	Hold
+team.table.fillPct	Belægningsgrad
+team.table.attendance	Fremmøde
+team.table.revenue	Omsætning
+team.table.returnRate	Tilbagevendingsrate
+team.table.cancels	Aflysninger
+team.table.fillPctHint	Fyldte pladser af det planlagte
+team.table.returnRateHint	Kunder, der bookede hos denne træner igen
+team.table.cancelsHint	Aflyste hold og kunders udeblivelser
+team.table.ratingHint	Den gennemsnitlige vurdering kunder gav denne træners hold
+team.drawer.revenueByWeek	Omsætning pr. uge
+team.drawer.loadByWeekday	Belastning efter ugedag
+team.drawer.loadByHour	Belastning efter tidspunkt
+team.drawer.loadDim.weekday	Efter dag
+team.drawer.loadDim.hour	Efter time
+team.drawer.schedule.title	Kalender
+team.drawer.schedule.empty	Ingen hold i denne periode
+team.drawer.topLessons	Foretrukne hold
+team.drawer.returnBlock	Kundernes tilbagevenden
+team.drawer.returnOf	{{returned}} af {{total}} kunder vendte tilbage ({{pct}} %)
+team.drawer.openProfile	Åbn profil
+team.drawer.held	Afholdt
+team.drawer.attendance	Fremmøde
+team.weekdays.0	Søn
+team.weekdays.1	Man
+team.weekdays.2	Tir
+team.weekdays.3	Ons
+team.weekdays.4	Tor
+team.weekdays.5	Fre
+team.weekdays.6	Lør
+schedule.weekdaysMonFirst.0	Man
+schedule.weekdaysMonFirst.1	Tir
+schedule.weekdaysMonFirst.2	Ons
+schedule.weekdaysMonFirst.3	Tor
+schedule.weekdaysMonFirst.4	Fre
+schedule.weekdaysMonFirst.5	Lør
+schedule.weekdaysMonFirst.6	Søn
+schedule.kpi.avgFillPct	Belægningsgrad
+schedule.kpi.freeSpots	Ledige pladser
+schedule.kpi.cancels	Aflysninger
+schedule.kpi.noshows	Udeblivelser
+schedule.kpi.lostRevenue	Mistet omsætning
+schedule.heatmap.title	Belastning efter dag og time
+schedule.heatmap.legend	Belægningsgrad:
+schedule.heatmap.tooltip	{{lessons}} hold · {{attendance}} deltog · {{pct}} %
+schedule.heatmap.empty	Ingen hold
+schedule.slices.topProfitable	Mest indbringende
+schedule.slices.topFilled	Mest fyldte
+schedule.slices.chronicLow	Kronisk underfyldte
+schedule.slices.halls	Udnyttelse: {{spacePlural}}
+schedule.slices.held	{{count}} afholdt
+schedule.slices.weeks	{{count}} uger
+schedule.slices.move	Flyt
+schedule.slices.cancel	Aflys
+schedule.slices.eveningIdle	aften tom {{pct}} %
+schedule.losses.title	Aflysninger og udeblivelser
+schedule.losses.dim.hour	Efter tidspunkt
+schedule.losses.dim.service	Efter ydelse
+schedule.losses.dim.trainer	Efter træner
+schedule.losses.cancels_one	{{count}} aflysning
+schedule.losses.cancels_other	{{count}} aflysninger
+schedule.losses.noshows_one	{{count}} udeblivelse
+schedule.losses.noshows_other	{{count}} udeblivelser
+schedule.losses.lostSpots_one	−{{count}} plads
+schedule.losses.lostSpots_other	−{{count}} pladser
+schedule.status.confirmed	Bekræftet
+schedule.status.pending	Afventer
+schedule.status.cancelled	Aflyst
+schedule.slot.summary	for {{from}} — {{to}}
+schedule.slot.lessonsCount	Hold i alt
+export.csv	Download CSV
+scopeNote.label	Hele studiet
+scopeNote.money	Filtrene Afdeling og {{space}} påvirker ikke beløb — en betaling er ikke knyttet til dem
+scopeNote.clientBase	Træner, {{space}}, afdeling og ydelse ændrer ikke denne måling — en kunde er ikke knyttet til dem
+descriptions.overview.metric.revenue	Alle penge, der kom ind i studiet i perioden
+descriptions.overview.metric.profit	Det, der er tilbage efter periodens udgifter
+descriptions.overview.metric.attendance	Hold, som kunderne faktisk deltog i
+descriptions.overview.metric.new_clients	Kunder registreret i denne periode
+descriptions.overview.metric.fill_rate	Hvor fyldte holdene er: bookede pladser ud af tilgængelige pladser
+descriptions.overview.revenueStructure	Hvad din omsætning består af i denne periode
+descriptions.overview.clientDynamics	Hvor mange der kom første gang, vendte tilbage eller holdt op med at komme
+descriptions.sales.chart	Omsætning og antal køb pr. dag
+descriptions.sales.byCategory	Hvert produkts andel af omsætningen
+descriptions.sales.byMethod	Hvordan omsætningen fordeler sig efter betalingsmetode
+descriptions.sales.buyerType	Hvor meget omsætning der kommer fra nye kunder kontra faste kunder
+descriptions.sales.products	Hvert produkt: hvor mange der er solgt, for hvor meget, og om salget vokser
+descriptions.clients.chart	Hvor mange kunder der kom første gang, og hvor mange der vendte tilbage, pr. uge
+descriptions.clients.riskSegments	Kunder, du kan miste, hvis du ikke kontakter dem nu
+descriptions.clients.loyalSegments	Dem der besøger mest, bruger mest og tager venner med
+descriptions.team.trainers	Sammenligning efter belastning, omsætning og kundernes tilbagevendingsrate
+descriptions.team.loadWeekday	Hvilke ugedage træneren har travlt, og hvornår vedkommende er ledig
+descriptions.team.loadHour	Hvornår deres hold fyldes, og hvornår de står tomme
+descriptions.team.schedule	Alle trænerens hold i den valgte periode
+descriptions.schedule.heatmap	Hvor kalenderen er overbooket, og hvor den er tom
+descriptions.schedule.topProfitable	Tidspunkterne i kalenderen, der indbringer mest
+descriptions.schedule.topFilled	Tidspunkterne som kunderne booker mest ivrigt
+descriptions.schedule.chronicLow	Tidspunkter, der i ugevis har været fyldt mindre end en tredjedel
+descriptions.schedule.halls	Hvor stor en del af tiden dine {{spacePlural}} faktisk er i brug
+descriptions.schedule.losses	Hvor studiet mister pladser: aflyste hold eller kunder, der udebliver
+formulas.salesCount.title	Salg
+formulas.salesCount.text	Hvor mange gange kunderne betalte dig i denne periode. Én person, der betaler flere gange, tæller som separate salg.
+formulas.revenue.title	Omsætning
+formulas.revenue.text	Alle penge, der kom ind i studiet i denne periode, efter betalingsdato. Pakker, enkelttimer, gavekort og varer — alt sammen.
+formulas.profit.title	Overskud
+formulas.profit.text	Det, der er tilbage efter denne periodes udgifter: husleje, løn og materialer. Det er dit faktiske overskud.
+formulas.attendance.title	Fremmøde
+formulas.attendance.text	Hvor mange besøg kunderne faktisk gennemførte. Kun hold markeret som deltog tælles med.
+formulas.bookings.title	Bookinger
+formulas.bookings.text	Hvor mange bookinger kunderne lavede til hold. Aflyste bookinger tælles ikke med.
+formulas.noshow.title	Udeblivelse
+formulas.noshow.text	En kunde bookede, holdet blev afholdt, og kunden mødte ikke op. Hver udeblivelse er en plads, som en anden kunne have taget.
+formulas.activeClients.title	Aktive kunder
+formulas.activeClients.text	Hvor mange forskellige personer der kom mindst én gang i perioden. Hver kunde tæller én gang, uanset hvor mange besøg de havde.
+formulas.occupancy.title	Belægning
+formulas.occupancy.text	Hvor fyldte dine hold er: fyldte pladser ud af det, du planlagde. 100 % betyder, at der ikke er mere plads.
+formulas.avgCheck.title	Gennemsnitligt køb
+formulas.avgCheck.text	Hvad én betaling i gennemsnit indbringer. Tallet stiger, når kunder køber længere pakker eller tilkøb.
+formulas.retention.title	Fastholdelse
+formulas.retention.text	Hvor mange af sidste periodes kunder der kom igen i denne periode. Det viser, om du fastholder folk eller starter fra nul hver måned.
+formulas.newClients.title	Nye kunder
+formulas.newClients.text	Personer, der dukkede op i din kundebase for første gang i denne periode.
+formulas.returning.title	Tilbagevendende
+formulas.returning.text	Kunder, der har besøgt før og kom igen i denne periode.
+formulas.lost.title	Mistede
+formulas.lost.text	Besøgte i sidste periode og er ikke kommet én gang i denne. Det er stadig værd at kontakte dem.
+formulas.clientValue.title	Kundeværdi
+formulas.clientValue.text	Hvad én kunde i gennemsnit indbringer i denne periode.
+formulas.repeatPurchaseShare.title	Andel genkøb
+formulas.repeatPurchaseShare.text	Andelen af kunder, der købte hos dig mere end én gang. Jo højere den er, jo stærkere er vanen med at vende tilbage.
+formulas.renewalRate.title	Fornyelsesrate
+formulas.renewalRate.text	Hvor mange kunder der købte en ny pakke, efter den forrige var udløbet.
+formulas.revenuePerHour.title	Omsætning pr. time (træner)
+formulas.revenuePerHour.text	Hvor mange penge en times arbejde fra en træner indbringer. Det lader dig sammenligne trænere fair — én kan have færre hold, men hvert hold giver mere.
+formulas.trainerReturnRate.title	Tilbagevendingsrate (træner)
+formulas.trainerReturnRate.text	Andelen af en træners kunder, der bookede hos dem igen.
+formulas.missedRevenue.title	Mistet omsætning
+formulas.missedRevenue.text	Penge studiet ikke tjente på grund af tomme pladser på tidligere hold: ledige pladser ganget med holdets pris.
+formulas.losses.title	Aflysninger og udeblivelser
+formulas.losses.text	En „aflysning” er et aflyst hold; en „udeblivelse” er en kunde, der bookede, men ikke kom. Opdelingerne efter tidspunkt/ydelse/træner bruger de samme filtre som fanen og stemmer med KPI'erne i overskriften.
+formulas.lessonRevenue.title	Holdomsætning
+formulas.lessonRevenue.text	Et groft skøn over et holds omsætning: antal deltagere ganget med prisen. Betalinger er ikke knyttet til et bestemt hold, så dette er et overslag, ikke et præcist tal.
+formulas.filtersScope.title	Filtrenes omfang
+formulas.filtersScope.text	Filtrene Afdeling og {{space}} gælder kun holdmålinger. Betalinger har ingen sådan kobling, så beløb vises for hele studiet.
+formulas.avgValue.title	Kundeværdi
+formulas.avgValue.text	Hvad én kunde i gennemsnit indbringer i denne periode.
+formulas.cancelNoshow.title	Aflysninger og udeblivelser
+formulas.cancelNoshow.text	Andelen af afbrudte hold: aflysninger og udeblivelser ud af alt det planlagte.
+formulas.avgRating.title	Gennemsnitlig vurdering
+formulas.avgRating.text	Den gennemsnitlige vurdering kunder gav denne træners hold.
+formulas.teamScope.title	Dataomfang
+formulas.teamScope.text	Dette tæller kun omsætning knyttet til en bestemt træner, så summen for alle trænere kan være lavere end studiets samlede omsætning.
+formulas.lessonsCount.title	Hold
+formulas.lessonsCount.text	Hvor mange hold trænerne afholdt i denne periode.
+formulas.load.title	Belastning
+formulas.load.text	Hvor fyldt en træners dag er: deres bookede timer ud af studiets åbningstid.
+formulas.weeklyClients.title	Nye og tilbagevendende
+formulas.weeklyClients.text	Pr. uge: hvor mange der kom til dig for første gang, og hvor mange der kom igen. Et sundt studie vokser på begge kurver.
+formulas.byCategory.title	Omsætning efter kategori
+formulas.byCategory.text	Hvad du faktisk tjener på: pakker, enkelttimer, gavekort og varer.
+formulas.byMethod.title	Betalingsmetoder
+formulas.byMethod.text	Hvordan kunder betaler. Det hjælper dig med at se, om du har brug for kortbetaling, og hvor mange penge der går uden om kassen.
+formulas.buyerType.title	Hvem betaler
+formulas.buyerType.text	Nye kunder kontra faste kunder. Hvis næsten al omsætning kommer fra nye kunder, fastholder studiet ikke folk.
+formulas.products.title	Hvad der sælger
+formulas.products.text	Alle pakker og ydelser i perioden: hvor mange der er solgt, for hvor meget, og om salget vokser.
+formulas.topProfitable.title	Mest indbringende tidspunkter
+formulas.topProfitable.text	Tidspunkterne i kalenderen, der indbringer mest. Læg dine bedste trænere der.
+formulas.topFilled.title	Mest fyldte tidspunkter
+formulas.topFilled.text	Tidspunkterne som kunderne booker mest ivrigt. Hvis de er helt fyldte, er det værd at tilføje et hold mere.
+formulas.chronicLow.title	Kronisk tomme tidspunkter
+formulas.chronicLow.text	Tidspunkter der har været fyldt mindre end en tredjedel i flere uger. Kandidater til at flytte eller fjerne.
+formulas.hallUtil.title	Udnyttelse: {{spacePlural}}
+formulas.hallUtil.text	Hvor stor en del af tiden dine {{spacePlural}} faktisk er i brug. Tom tid er husleje, der ikke betaler sig.
+formulas.heatmap.title	Belastning efter dag og time
+formulas.heatmap.text	Farven viser tidspunktets gennemsnitlige belægningsgrad i perioden. Klik på en celle for at se holdene den dag og time.
+formulas.riskSegments.title	Risikosegmenter
+formulas.riskSegments.text	Kunder grupperet efter den type risiko, de udgør — at du mister dem, eller den omsætning de ikke skaber. Hvert kort har sin egen begrundelse og et tydeligt næste skridt: skriv til dem, tilbyd fornyelse eller opgradering.
+formulas.loyalSegments.title	Loyale
+formulas.loyalSegments.text	Kunder, der allerede skaber mest værdi: de kommer oftest, bruger mest eller tager venner med. De er værd at passe på og belønne.
+formulas.segment.at_risk.title	På kanten
+formulas.segment.at_risk.text	De plejede at komme regelmæssigt og er nu forsvundet. De kan stadig vindes tilbage med én besked.
+formulas.segment.vip_idle.title	Inaktive VIP'er
+formulas.segment.vip_idle.text	Kunder, der har brugt mere end alle andre, men ikke har besøgt jer i et stykke tid.
+formulas.segment.expiring_subscription.title	Abonnement udløber
+formulas.segment.expiring_subscription.text	Disse kunder har 1–2 hold tilbage. Det bedste tidspunkt at tilbyde en fornyelse.
+formulas.segment.lost_newcomers.title	Nye kunder, der ikke vendte tilbage
+formulas.segment.lost_newcomers.text	De kom én gang og forsvandt. Det skyldes ofte det første hold — værd at undersøge.
+formulas.segment.upsell_candidates.title	Klar til mere
+formulas.segment.upsell_candidates.text	De kommer ofte, men køber den enkleste pakke. Det er værd at tilbyde et dyrere abonnement.
+formulas.segment.frequent.title	Faste kunder
+formulas.segment.frequent.text	De kommer oftere end alle andre. Rygraden i studiets omsætning.
+formulas.segment.high_ltv.title	Mest værdifulde
+formulas.segment.high_ltv.text	De har indbragt studiet flere penge end nogen andre, samlet set.
+formulas.segment.referrers.title	Tager venner med
+formulas.segment.referrers.text	Kunder, hvis anbefalinger har bragt andre mennesker til dig.

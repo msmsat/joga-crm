@@ -1,0 +1,287 @@
+== fi
+telegram.tokenLabel	Botin tunniste
+telegram.tokenPlaceholder	1234567890:ABC...
+telegram.tokenInvalidFormat	Virheellinen tunnisteen muoto
+telegram.verifyButton	Vahvista ja yhdistä
+telegram.verifiedToast	Botti @{{username}} on yhdistetty
+telegram.verifyFailedToast	Telegram hylkäsi tämän tunnisteen
+telegram.disconnect	Katkaise yhteys
+telegram.disconnectedToast	Botin yhteys katkaistiin
+telegram.disconnectConfirmTitle	Katkaistaanko botin yhteys?
+telegram.disconnectConfirmMessage	Telegramin automaattivastaaja lakkaa toimimasta, kunnes yhdistät botin uudelleen.
+telegram.gateTooltip	Yhdistä ensin botti
+telegram.statsPending	Näytetään, kun automaattivastaaja alkaa toimia
+telegram.instructionTitle	Näin saat tunnisteen
+telegram.instructionStep1	Avaa @BotFather Telegramissa
+telegram.instructionStep2	Lähetä komento /newbot ja valitse botille nimi ja käyttäjänimi
+telegram.instructionStep3	Kopioi saamasi tunniste
+telegram.instructionStep4	Liitä se tähän ja valitse "Vahvista ja yhdistä"
+instagram.connectButton	Yhdistä Instagram
+instagram.connectedToast	Instagram on yhdistetty
+instagram.connectErrorToast	Instagramin yhdistäminen ei onnistunut — yritä uudelleen
+instagram.expiresUntil	Käyttöoikeus on voimassa {{date}} asti
+instagram.disconnect	Katkaise yhteys
+instagram.disconnectedToast	Instagramin yhteys katkaistiin
+instagram.disconnectConfirmTitle	Katkaistaanko Instagramin yhteys?
+instagram.disconnectConfirmMessage	Instagramin automaattivastaaja lakkaa vastaamasta asiakkaille, kunnes yhdistät tilin uudelleen.
+instagram.gateTooltip	Yhdistä ensin tili
+instagram.statsPending	Näytetään, kun automaattivastaaja alkaa toimia
+instagram.instructionTitle	Näin yhdistät
+instagram.instructionStep1	Studion tilin on oltava ammattilaistili — Business tai Creator (Instagram-asetukset → Tilin tyyppi)
+instagram.instructionStep2	Valitse "Yhdistä Instagram" ja kirjaudu sisään studion tilillä
+instagram.instructionStep3	Salli pääsy viesteihin
+instagram.instructionStep4	Palaat tänne automaattisesti
+whatsapp.numberLabel	WhatsApp Business -numero
+whatsapp.connectLink	tai syötä tunniste käsin
+whatsapp.gateTooltip	Yhdistä ensin WhatsApp-numero
+whatsapp.statsPending	Näytetään, kun automaattivastaaja alkaa toimia
+whatsapp.instructionTitle	Näin yhdistät
+whatsapp.instructionStep1	Valitse “Yhdistä WhatsApp” — Meta-ikkuna avautuu
+whatsapp.instructionStep2	Kirjaudu Facebookiin, valitse yritystili ja numero (tai lisää uusi) ja vahvista se koodilla
+whatsapp.instructionStep3	Numero yhdistetään kerran — samaa käytetään asiakasilmoituksiin; palaa tänne ja ota automaattivastaaja käyttöön
+whatsapp.connectButton	Yhdistä WhatsApp
+whatsapp.connectedToast	WhatsApp-numero on yhdistetty
+whatsapp.connectErrorToast	WhatsApp-numeron yhdistäminen ei onnistunut
+whatsapp.disconnect	Katkaise yhteys
+whatsapp.disconnectedToast	WhatsAppin yhteys katkaistiin
+whatsapp.disconnectConfirmTitle	Katkaistaanko WhatsAppin yhteys?
+whatsapp.disconnectConfirmMessage	Numero katkaistaan myös studion ilmoituksista ja integraatioista.
+history.title	Keskusteluhistoria
+history.empty	Aloita ensimmäinen keskustelusi
+history.today	Tänään
+history.yesterday	Eilen
+history.earlier	Aiemmin
+history.messagesCount_one	{{count}} viesti
+history.messagesCount_other	{{count}} viestiä
+history.deleteConfirmTitle	Poistetaanko tämä keskustelu?
+history.deleteConfirmMessage	Kaikki tämän keskustelun viestit poistetaan pysyvästi.
+actions.newChat	Uusi keskustelu
+actions.deleteChat	Poista keskustelu
+actions.confirmTitle	Vahvista toiminto
+actions.confirm	Vahvista
+actions.cancel	Peruuta
+actions.cancelled	Toiminto peruutettiin.
+actions.done	Valmis {{date}}
+actions.effect	Mitä muuttuu
+actions.undo	Kumoa
+actions.undoTitle	Kumotaanko tämä toiminto?
+actions.undoMessage	Palautan tehdyn muutoksen: {{action}}. Tunnit, jotka asiakkaat ovat jo varanneet, säilyvät — vain ihminen voi poistaa ne.
+actions.args.lesson_id	Tunti
+actions.args.client_id	Asiakas
+actions.args.reservation_id	Varaus
+actions.args.alternate_with	Vuorotellen henkilön kanssa
+actions.args.service_id	Palvelu
+actions.args.teacher_id	Ohjaaja
+actions.args.hall_id	Sali
+actions.args.start_time	Alkaa
+actions.args.duration_min	Kesto, min
+actions.args.total_spots	Paikat
+actions.args.price	Hinta
+actions.args.name	Etunimi
+actions.args.last_name	Sukunimi
+actions.args.phone	Puhelin
+actions.args.email	Sähköposti
+actions.args.city	Kaupunki
+actions.args.birth_date	Syntymäaika
+actions.args.source	Lähde
+actions.args.frozen	Jäädytetty
+actions.args.date_from	Alkaen
+actions.args.date_to	Asti
+actions.args.weekdays	Viikonpäivät
+actions.args.time_from	Alkaen
+actions.args.time_to	Asti
+actions.args.break_at	Tauko klo
+actions.args.break_min	Tauko, min
+actions.args.extend_hours	Laajenna ohjaajan työaikaa
+actions.args.salary	Palkka
+actions.args.access_role	Käyttöoikeus
+actions.args.department	Tehtävä
+actions.args.password	Työntekijän salasana
+actions.args.rate	Palkkio
+actions.args.rate_type	Palkkiotapa
+actions.args.service_ids	Palvelut
+actions.args.schedule	Työvuoro
+actions.bool.yes	kyllä
+actions.bool.no	ei
+settings.title	AI-asetukset
+settings.model	Malli
+settings.language	Kieli
+models.comingSoon	Tulossa pian
+models.velora-3.5	Velora AI 3.5
+languages.auto	Automaattinen
+languages.ru	Venäjä
+languages.en	Englanti
+languages.uk	Ukraina
+languages.cs	Tšekki
+languages.de	Saksa
+chat.thinking	Velora AI ajattelee
+chat.thinkingAnswer	Velora AI pohtii vastausta
+chat.readyTitle	Velora AI on valmis auttamaan
+chat.thinkingTitle	Velora AI ajattelee...
+chat.readySubtitle	Esitä kysymys tai valitse ehdotus
+chat.thinkingSubtitle	Pyyntöäsi käsitellään
+chat.placeholder	Kirjoita viesti...
+chat.drawerPlaceholder	Kysy minulta mitä tahansa...
+chat.navbarPlaceholder	Kysy tekoälyltä tai aseta tehtävä...
+chat.enterToSend	Lähetä Enterillä
+chat.shiftEnterNewline	Uusi rivi Shift+Enterillä
+chat.aiDisclaimer	Velora AI voi tehdä virheitä. Tarkista tärkeät tiedot.
+chat.continueInChat	Jatka keskustelussa →
+chat.emptyTitle	Kuinka voin auttaa?
+chat.emptySubtitle	Esitä kysymys studiostasi, asiakkaistasi tai liiketoiminnastasi
+chat.charCount_one	{{count}} / 4000 merkki
+chat.charCount_other	{{count}} / 4000 merkkiä
+chat.suggestions.revenue	Näytä tämän kuun tulotilastot
+chat.suggestions.sms	Kirjoita tekstiviestimuistutus tapaamisesta
+chat.suggestions.promo	Ideoita kesäkampanjaan
+chat.suggestions.retention	Miten voin parantaa asiakaspitoa?
+chat.drawerSuggestions.revenueAnalysis	Tuloanalyysi
+chat.drawerSuggestions.emailTemplate	Sähköpostimalli
+chat.drawerSuggestions.promoIdeas	Kampanjaideoita
+chat.drawerSuggestions.clientReport	Asiakasraportti
+drawer.historyBack	Keskustelut
+drawer.historyLabel	Historia
+agents.title	AI-agentit
+agents.info.title	Mitä AI-agentit ovat
+agents.info.lead	Avustaja, joka vastaa asiakkaillesi studion viestikanavissa, kun olet varattu.
+agents.info.b1	Vastaa ympäri vuorokauden — kukaan ei odota ylläpitäjää
+agents.info.b2	Tuntee studion aikataulun, palvelut ja hinnat
+agents.info.b3	Sinä määrität vastausten sävyn ja pituuden
+agents.info.note	Kanava alkaa toimia, kun se yhdistetään asetuksissa
+agents.activeCount	{{active}} / {{total}}
+agents.stateOn	Vastaa
+agents.stateOffline	Ei yhdistetty
+agents.configureButton	Määritä agentit
+agents.enable	Ota käyttöön
+agents.disable	Poista käytöstä
+agents.modalTitle	AI-agentin asetukset
+agents.modalSubtitle	Automaattivastaukset viestikanavissa
+agents.tabPrompt	Järjestelmäkehote
+agents.statusDisabled	Poistettu käytöstä
+agents.statHandled	Käsitelty
+agents.statRating	Arvio
+agents.styleTitle	Vastaustyyli
+agents.styleAllChannels	koskee kaikkia kanavia
+agents.toneLabel	Vastausten sävy
+agents.tone.friendly	Ystävällinen
+agents.tone.formal	Muodollinen
+agents.tone.neutral	Neutraali
+agents.maxLengthLabel	Vastauksen enimmäispituus (merkkiä)
+agents.maxLengthError	Anna luku väliltä 50–4000
+agents.offHoursLabel	Automaattivastaus vain työajan ulkopuolella
+agents.promptHint	Tämä teksti määrittää agentin persoonallisuuden — miten se viestii, mitä se tietää ja mitä aiheita se välttää.
+agents.promptPlaceholder	Olet kohtelias studioavustaja...
+agents.promptCount_one	{{count}} / 2000 merkki
+agents.promptCount_other	{{count}} / 2000 merkkiä
+agents.tgChannelInactive	Telegram-kanava on pois käytöstä verkkovarauksessa — botti ei vastaanota viestejä, joten agentti pysyy hiljaa.
+errors.tg_token_required	Yhdistä ensin Telegram-botti — tunnistetta ei ole vielä tallennettu.
+errors.ig_not_connected	Instagramia ei ole vielä yhdistetty.
+errors.wa_not_connected	WhatsApp-numeroa ei ole vielä yhdistetty — yhdistä se Ilmoituksissa.
+errors.assistant_unavailable	Avustaja ei ole tilapäisesti käytettävissä — yritä myöhemmin uudelleen.
+errors.trial_exhausted	Olet käyttänyt kaikki 500 AI-avustajan kokeilupyyntöä. Valitse maksullinen paketti jatkaaksesi.
+errors.quota_exceeded	Olet käyttänyt kaikki tämän paketin AI-pyynnöt. Raja nollautuu kuukauden alussa — tai päivitä pakettisi.
+toasts.settingsSaved	Asetukset tallennettu
+toolStatus.add_client_note	Kirjoitetaan muistiinpanoa…
+toolStatus.add_client_tag	Lisätään tunnistetta…
+toolStatus.add_loyalty_points	Lisätään pisteitä…
+toolStatus.book_client	Varataan tuntia…
+toolStatus.cancel_booking	Perutaan varausta…
+toolStatus.pay_booking	Kirjataan tunnin maksua…
+toolStatus.clear_schedule	Tyhjennetään aikataulua…
+toolStatus.create_account	Luodaan tiliä…
+toolStatus.create_branch	Luodaan toimipistettä…
+toolStatus.create_client	Luodaan asiakasta…
+toolStatus.create_counterparty	Luodaan vastapuolta…
+toolStatus.create_hall	Luodaan salia…
+toolStatus.create_lesson	Luodaan tuntia…
+toolStatus.create_operation	Kirjataan tapahtumaa…
+toolStatus.create_package	Luodaan pakettia…
+toolStatus.create_promo	Luodaan kampanjakoodia…
+toolStatus.create_service	Luodaan palvelua…
+toolStatus.create_staff	Lisätään tiimin jäsentä…
+toolStatus.default	Työskennellään…
+toolStatus.delete_client	Poistetaan asiakasta…
+toolStatus.delete_staff	Poistetaan tiimin jäsentä…
+toolStatus.fill_schedule	Täytetään aikataulua…
+toolStatus.find_clients	Haetaan asiakkaita…
+toolStatus.forget_fact	Unohdetaan tietoa…
+toolStatus.freeze_client	Jäädytetään asiakasta…
+toolStatus.get_booking_settings	Tarkistetaan varausasetuksia…
+toolStatus.get_catalog_settings	Tarkistetaan pakettiasetuksia…
+toolStatus.get_client	Avataan asiakaskorttia…
+toolStatus.get_client_events	Luetaan asiakashistoriaa…
+toolStatus.get_inactive_clients	Etsitään passiivisia asiakkaita…
+toolStatus.get_client_notes	Luetaan asiakasmuistiinpanoja…
+toolStatus.get_client_subscription	Tarkistetaan asiakkaan pakettia…
+toolStatus.get_delivery_log	Tarkistetaan toimituslokia…
+toolStatus.get_finance_goals	Tarkistetaan taloustavoitteita…
+toolStatus.get_finance_summary	Tarkistetaan taloutta…
+toolStatus.get_lesson	Avataan tuntia…
+toolStatus.get_loyalty_programs	Tarkistetaan kanta-asiakasohjelmia…
+toolStatus.get_loyalty_summary	Tarkistetaan kanta-asiakkuutta…
+toolStatus.get_notification_matrix	Tarkistetaan ilmoituksia…
+toolStatus.get_payroll	Lasketaan palkkoja…
+toolStatus.get_rooms	Tarkistetaan saleja…
+toolStatus.get_schedule	Tarkistetaan aikataulua…
+toolStatus.get_segments	Tarkistetaan asiakassegmenttejä…
+toolStatus.get_services	Tarkistetaan palveluja…
+toolStatus.get_staff	Tarkistetaan tiimiä…
+toolStatus.get_staff_profile	Avataan tiimin jäsenen korttia…
+toolStatus.get_stats	Käsitellään lukuja…
+toolStatus.get_team_report	Mitataan paluuta ohjaajittain…
+toolStatus.get_studio_facts	Palautetaan mieleen studiosta tiedettyä…
+toolStatus.get_today_agenda	Tarkistetaan tämän päivän ohjelmaa…
+toolStatus.issue_certificate	Myönnetään todistusta…
+toolStatus.list_operations	Tarkistetaan tuloja ja menoja…
+toolStatus.open_ui	Avataan näkymää…
+toolStatus.remember_fact	Muistetaan…
+toolStatus.remove_client_tag	Poistetaan tunnistetta…
+toolStatus.sell_subscription	Myydään pakettia…
+toolStatus.set_client_discount	Asetetaan alennusta…
+toolStatus.set_staff_day	Merkitään päivä aikatauluun…
+toolStatus.set_staff_schedule	Asetetaan aikataulua…
+toolStatus.toggle_notification_event	Vaihdetaan ilmoitusta…
+toolStatus.ui_section	Tarkistetaan, miten osio toimii…
+toolStatus.update_booking_rules	Päivitetään varausasetuksia…
+toolStatus.update_client	Päivitetään asiakastietoja…
+toolStatus.update_lesson	Päivitetään tuntia…
+toolStatus.update_service	Päivitetään palvelua…
+toolStatus.update_staff	Päivitetään tiimin jäsentä…
+quota.trialLow	Kokeilupyyntöjä on jäljellä vähän.
+quota.label	AI-avustajan pyynnöt
+quota.value	{{used}} / {{limit}}
+quota.low	Olet lähellä kuukausirajaa.
+quota.upgrade	Valitse paketti
+quota.monthPeriod	Kalenterikuukautta kohden (UTC)
+quota.trialPeriod	Koko kokeilujaksolle
+rating.up	Hyvä vastaus
+rating.down	Huono vastaus
+memory.title	Avustaja muistaa
+memory.forget	Unohda
+memory.forgetConfirmTitle	Unohdetaanko tämä tieto?
+memory.forgetConfirmMessage	Avustaja ei enää käytä sitä vastauksissa.
+memory.deleted	Tieto poistettu
+plan.pages.who	Kuka ja mitä
+plan.pages.when	Milloin
+plan.pages.check	Tarkista
+plan.stepOf	Vaihe {{current}} / {{total}}
+plan.next	Seuraava
+plan.back	Takaisin
+plan.confirm	Hyväksy
+plan.confirmDanger	Hyväksy
+plan.choose	Valitse
+plan.nothingFound	Mitään ei löytynyt
+plan.nothingToFill	Täällä ei ole mitään täytettävää — jatka suoraan.
+plan.fromStep	luotu vaiheessa {{n}}
+plan.values.group	ryhmä
+plan.values.individual	yksilö
+plan.values.trainer	ohjaaja
+plan.values.admin	ylläpitäjä
+plan.values.owner	omistaja
+plan.values.hourly	tunnilta
+plan.values.percent	% tuloista
+plan.values.fixed	tunnilta
+plan.title_one	Hyväksy — {{count}} toiminto
+plan.title_other	Hyväksy — {{count}} toimintoa
+plan.stillEmpty_one	{{count}} kenttä jäljellä
+plan.stillEmpty_other	{{count}} kenttää jäljellä

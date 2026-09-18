@@ -170,7 +170,48 @@
     "lessonAction": "QR kód lekce",
     "lessonCaption": "Namiřte foťák a rezervujte si tuto lekci",
     "packageAction": "QR kód permanentky",
+<<<<<<< HEAD
     "packageCaption": "Namiřte foťák a kupte si permanentku",
     "serviceAction": "QR kód služby"
+=======
+    "packageCaption": "Namiřte foťák a kupte si permanentku"
+  },
+  "auth": {
+    "noAccount": "Nemáte účet?",
+    "haveAccount": "Už máte účet?",
+    "welcomeBack": "Vítejte zpět",
+    "choosePassword": "Vytvořte nové heslo",
+    "confirmationCode": "Ověřovací kód",
+    "loginSubtitle": "Přihlaste se a pokračujte do Velory",
+    "resetInstruction": "Pokyny pošleme na váš e-mail",
+    "codeSent": "Kód byl odeslán na {{identifier}}",
+    "googleFailed": "Přihlášení přes Google se nezdařilo",
+    "googleAccountMissing": "Pro tuto adresu Google zatím neexistuje účet. Vytvoříme ho po přijetí dokumentů.",
+    "divider": "nebo se přihlaste přes",
+    "codeFromEmail": "Kód z e-mailu",
+    "rememberMe": "Zapamatovat si mě",
+    "forgotPassword": "Zapomněli jste heslo?",
+    "signInSystem": "Přihlásit se",
+    "sendInstructions": "Odeslat pokyny",
+    "passwordChanged": "Heslo bylo změněno. Nyní se můžete přihlásit.",
+    "contactSub": "Zadejte e-mail pro vytvoření účtu",
+    "nameTitle": "Jak vám máme říkat?",
+    "nameSub": "Jméno nebo přezdívka — je to na vás",
+    "accountCreated": "Účet byl vytvořen. Na {{email}} jsme poslali potvrzovací e-mail.",
+    "dashboard": "Přejít na přehled",
+    "or": "nebo",
+    "registerByEmail": "Registrovat se e-mailem",
+    "displayNamePlaceholder": "Například: Anna, Max, MajitelStudia",
+    "displayNameHint": "Toto jméno se zobrazí v rozhraní a oznámeních. Můžete ho změnit v nastavení.",
+    "codeSix": "Zadejte šestimístný kód",
+    "users": "firem již používá Veloru",
+    "strength": {
+      "weak": "Slabé",
+      "medium": "Střední",
+      "good": "Dobré",
+      "strong": "Silné",
+      "excellent": "Výborné"
+    }
+>>>>>>> bcf4a067f80368999140a9359ef17c722154c536
   }
 }

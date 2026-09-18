@@ -106,10 +106,10 @@ function flatten(obj, prefix = '', out = {}) {
 }
 
 const NAMESPACES = readdirSync(path.join(SRC, 'locales', 'ru')).map((f) => f.replace('.json', ''));
-// Языки продукта — те же пять, что знает бэкенд (back/services/i18n.py): по этому
-// артефакту ассистент называет владельцу подпись кнопки, и чешской студии он
-// обязан назвать чешскую, а не английскую.
-const LANGS = ['ru', 'en', 'uk', 'cs', 'de'];
+// Языки интерфейса — все завершённые 22 локали из front/src/utils/lang.ts.
+// Исходящие сообщения используют отдельный пятиъязычный services/i18n.py;
+// этот артефакт описывает подписи именно веб-интерфейса.
+const LANGS = ['en', 'ru', 'sq', 'bg', 'hr', 'cs', 'da', 'fi', 'fr', 'de', 'el', 'hu', 'it', 'no', 'pl', 'pt', 'ro', 'sr', 'es', 'sv', 'tr', 'uk'];
 const locales = Object.fromEntries(LANGS.map((l) => [l, {}]));  // язык → ns:key → строка
 for (const ns of NAMESPACES) {
   for (const lang of LANGS) {

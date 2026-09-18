@@ -1,0 +1,294 @@
+== bg
+legal.terms	Условия за ползване
+legal.privacy	Политика за поверителност
+tabs.plans	Планове и цени
+tabs.invoices	История на плащанията
+tabs.method	Начин на плащане
+tabsShort.plans	Планове
+tabsShort.invoices	История
+tabsShort.method	Плащане
+paymentsHistory.title	Пълна история на плащанията
+paymentsHistory.subtitle	Всички фактури за това студио
+paymentsHistory.clearFilter	Изчисти
+paymentsHistory.loadMore	Зареди още
+planNames.start	Start
+planNames.pro	Pro
+planNames.business	Business
+seats.title	Колко служители има в студиото
+seats.hint	от {{amount}} на месец
+seats.stepNote	Всяко допълнително място добавя {{amount}} на месец
+seats.unlimitedNote	Без ограничение за служители
+seats.perSeat	На служител
+limits.staff	Служители
+limits.ai	Заявки към Velora AI
+limits.unlimited	Неограничено
+banner.trialEnds	Пробният ви период приключва на {{date}} — изберете план
+banner.renews	Абонаментът ви {{plan}} се подновява на {{date}}
+banner.expires	Абонаментът ви {{plan}} приключва на {{date}}
+banner.choosePlan	Изберете план
+banner.dismiss	Затвори
+banner.unpaid	Планът ви не е платен. За да продължите, платете в Планове и фактуриране.
+banner.suspended	Достъпът е спрян, защото фактурата за плана е просрочена. Платете я в Планове и фактуриране.
+paymentReturn.done	Плащането мина успешно — планът {{plan}} е активен.
+paymentReturn.processing	Плащането се обработва — абонаментът ви ще се активира след няколко минути.
+header.eyebrow	Velora · Фактуриране
+header.title	Планове и фактуриране
+header.subtitle	Управлявайте абонамента, начините на плащане и историята на плащанията
+header.totalSpent	Общо изразходвано
+header.monthsWithUs	Месеци с нас
+header.saved	Спестено
+header.nextCharge	Следващо начисляване
+header.currentPlan	ТЕКУЩ ПЛАН
+header.noPlanName	Без план
+header.noPlan	Няма активен абонамент
+header.active	Активен
+header.activeUntil	Активен · до {{date}}
+header.trialPlanName	Пробен план
+header.trial	Пробен период
+header.trialUntil	Пробен период · до {{date}}
+header.expired	Изтекъл
+header.percentRate	{{rate}}% от продажбите
+header.modePercent	Процентен план
+header.modeFixed	Фиксиран
+header.modeCombo	Комбо
+header.unpaid	Планът не е платен
+header.awaitingPayment	Очаква плащане
+mode.title	Модел на плащане
+mode.subscription	Фиксиран абонамент
+mode.percent	% от продажбите
+mode.combo	Комбо фиксирано + %
+mode.short.subscription	Фиксиран
+mode.short.percent	Процент
+mode.short.combo	Комбо
+mode.descriptions.subscription	Плащате една сума на месец. Предвидимо и изгодно.
+mode.descriptions.percent	Без фиксирана такса: {{rate}}% от всяка продажба, включително в брой.
+mode.descriptions.combo	Половината абонамент + {{rate}}% от всяка продажба, включително в брой.
+mode.badges.popular	Популярен
+mode.badges.flexible	Гъвкав
+mode.percentCard.title	Моделът „3% от продажбите“
+mode.percentCard.description	Плащате само когато печелите: 3% от всяка продажба, без фиксирана абонаментна такса. Онлайн плащанията се разделят веднага; плащанията в брой и депозитите се натрупват и идват като една фактура всеки месец.
+mode.percentCard.noFixed	Без фиксирана такса
+mode.percentCard.payForResult	Плащане за резултат
+mode.percentCard.oneClick	Активиране с 1 клик
+mode.percentCard.cta	Активирай модела 3%
+mode.percentCard.ctaShort	Активирай 3%
+mode.activateSuccess	Моделът на плащане е обновен
+mode.activateError	Моделът на плащане не можа да бъде обновен
+mode.alreadyActive	Този модел на плащане вече е активен — по-долу можете да подновите или смените плана
+mode.confirmSwitchTitle	Да сменим модела на плащане?
+mode.confirmSwitchMessage	Абонаментът ви е активен. Смяната на модела влиза в сила веднага и остатъкът от платения период СЕ ГУБИ ИЗЦЯЛО: неизползваните дни не се възстановяват и не се прехвърлят.
+mode.termsTitle	Потвърдете условията на плана
+mode.termsMessage	При този план платформата удържа {{rate}}% от всяка продажба.\n\nЗа онлайн плащанията таксата се удържа автоматично в момента на плащането. За плащания в брой, терминал и зареждане на депозити тя НЕ се удържа веднага — натрупва се и получавате отделна фактура веднъж месечно.\n\nИмате {{days}} дни да платите тази фактура. Ако не бъде платена навреме, достъпът до CRM и клиентското мини-приложение се спира до уреждането ѝ.\n\nТекущата дължима сума се вижда във Фактуриране; можете да платите по всяко време, включително предварително.
+mode.termsConfirm	Приемам условията
+mode.termsMinimum	Минималната месечна такса е {{amount}} {{currency}}. Ако през календарен месец платформата е спечелила по-малко от тази сума от студиото ви (например изобщо няма продажби през CRM), получавате фактура за разликата. Ако спечелите повече от минимума, няма фактура. Неплатена минимална такса спира достъпа по същия начин като неплатена фактура за комисиона.
+mode.termsBurn	ВНИМАНИЕ: остава ви платен период. Смяната на модела на фактуриране го ГУБИ изцяло — неизползваните дни не се възстановяват и не се прехвърлят.
+mode.termsCombo	Смяната е ПОКУПКА: веднага след потвърждението ще видите дължимата сума. Остатъкът от текущия платен период се губи — не се възстановява и не се прехвърля. Моделът фиксирано + % се включва САМО след плащане; дотогава планът ви остава без промяна и нищо не се начислява.
+combo.rateBadge	{{rate}}%
+combo.summary	Фиксирано {{fixed}}/мес. + {{rate}}% от продажбите (плащанията в брой се фактурират месечно)
+combo.cta	Активирай Комбо плана
+combo.ctaShort	Активирай комбо
+period.1	1 месец
+period.3	3 месеца
+period.6	6 месеца
+period.12	1 година
+period.24	2 години
+period.title	Период на плащане
+period.discountActive	Активна е отстъпка {{percent}}%
+period.noDiscount	Без отстъпка
+period.discountLabel	−{{percent}}% отстъпка
+calculator.title	Параметри за изчисление
+calculator.monthlyTurnover	Вашият месечен онлайн оборот
+calculator.turnoverRangeMin	50 хил.
+calculator.turnoverRangeMax	3 млн.+
+calculator.chooseFeeLabel	Изберете комисионна (влияе на функциите)
+calculator.feeOptions.basic	Основен
+calculator.feeOptions.standard	Стандартен
+calculator.feeOptions.pro	Pro
+calculator.feeOptions.max	Макс
+calculator.chooseFixedLabel	Изберете базова фиксирана част (еквайрингът винаги е 3%)
+calculator.fixedOptions.start	Start
+calculator.fixedOptions.optima	Optima
+calculator.fixedOptions.business	Business
+calculator.economyPercentTitle	ИКОНОМИКА НА ПЛАНА
+calculator.economyComboTitle	ИКОНОМИКА НА КОМБО ПЛАНА
+calculator.turnover	Оборот на студиото
+calculator.systemFee	Системна такса
+calculator.totalMonthlyPayment	ОБЩО МЕСЕЧНО ПЛАЩАНЕ
+calculator.onlyPayForResult	Не плащате фиксирана такса, а само за резултат
+calculator.activatePercent	Активирай модела {{percent}}%
+calculator.baseSubscription	Базов абонамент (фиксиран)
+calculator.acquiringFee	Еквайринг / такса
+calculator.activateCombo	Активирай Комбо плана
+planCards.bestChoice	Най-добър избор
+planCards.current	Текущ
+planCards.perMonth	/ мес.
+planCards.currentPlan	Текущ план
+planCards.yourPrice	Вашата цена
+planCards.staffLimit	До {{count}} служители
+planCards.staffUnlimited	Неограничен брой служители
+paymentSchedule.title	График на плащанията
+paymentSchedule.total	Общо дължимо
+paymentSchedule.morePayments	+ още {{count}} плащания по {{amount}}
+paymentSchedule.processing	Пренасочване към плащане…
+paymentSchedule.payFor	Плати за {{count}} мес.
+paymentSchedule.vatNote	Без ДДС — данъкът се добавя при плащане според вашата държава
+trust.title	Защо над 2 400 бизнеса ни се доверяват
+trust.reviews.0.text	Преминахме от Altegio. Разликата е като между такси и частен самолет.
+trust.reviews.0.author	Мария К., FORM Pilates
+trust.reviews.1.text	Най-хубавото е, че знам точно какво плащам всеки месец. Без изненади.
+trust.reviews.1.author	Артем Н., Barbershop Bros
+trust.reviews.2.text	Поддръжката отговори за 4 минути. Никога не съм виждала това другаде.
+trust.reviews.2.author	Елена Д., SPA LUNA
+upgrade.priceLine	Цена {{price}}/мес.
+upgrade.discountNote	 {{percent}}% отстъпка при плащане за {{period}} мес.
+upgrade.planLabel	План
+upgrade.periodLabel	Период
+upgrade.periodValue_one	{{count}} месец
+upgrade.periodValue_other	{{count}} месеца
+upgrade.discountLabel	Отстъпка
+upgrade.scheduledBadge	От {{date}} — план „{{plan}}“
+upgrade.vatNote	Без ДДС — данъкът се добавя при плащане според данните на компанията ви; компании от ЕС с ДДС номер ползват обратно начисляване.
+method.notLinked	Не е свързан
+method.badgeTitle	Начинът на плащане е защитен
+method.tokenSub	Токен на доставчика · изтича {{expiry}}
+method.tokenNote	Истинските данни на картата се съхраняват от доставчика на плащания (PCI DSS L1). Пазим само еднократен токен за подновяване.
+method.securityTitle	Стандарти за защита на данните
+method.security.pciDss	Шифроване PCI DSS Ниво 1
+method.security.secure3d	Защита на транзакциите с 3D Secure
+method.security.noStorage	Данните на картата никога не минават през нашите сървъри
+method.security.autoLink	Картата се свързва при първото плащане
+method.noCardDetail	Не е нужно да въвеждате данни отделно — плащането става на защитената страница на Stripe.
+method.renewDone	Фактурата е създадена — плащането се обработва
+method.renewBusy	Създаване на фактура…
+method.renewSuccess	Фактурата за подновяване е създадена
+method.renewError	Фактурата не можа да бъде създадена. Опитайте отново.
+method.renewNow	Поднови сега с карта •••• {{last4}}
+method.autopayTitle	Настройки за автоматично плащане
+method.autopaySuccess	Настройката е запазена
+method.autopayError	Настройката не можа да бъде запазена. Опитайте отново.
+method.autopay.cardOnly	Налично при плащане с карта
+method.autopay.autoRenew.label	Автоматично подновяване
+method.autopay.autoRenew.desc	Изключете, за да отмените в края на платения период
+method.autopay.autoRenew.until	Абонаментът няма да се поднови — достъп до {{date}}
+method.autopay.emailNotify.label	Известия по имейл
+method.autopay.emailNotify.desc	Разписка се изпраща по имейл след всяко плащане
+method.autopay.remind3d.label	Напомни 3 дни по-рано
+method.autopay.remind3d.desc	Ще ви напомним преди автоматичното начисляване
+method.autopay.sms.label	SMS известие
+method.autopay.sms.desc	Изпраща се SMS при начисляване
+method.portal.title	Данни за фактуриране и ДДС
+method.portal.subtitle	Фактурите, свързаната карта и историята на начисленията са в клиентския портал на Stripe.
+method.portal.cta	Отвори в Stripe
+method.ibanBadgeLabel	Банков превод (SEPA)
+method.ibanBadgeNote	Фактурите идват по имейл с линк за плащане — нищо не се начислява автоматично по карта. Можете да платите и предварително от страницата на фактурата.
+invoices.title	История на плащанията
+invoices.totalPaid	общо платено {{amount}}
+invoices.exportCsv	Експортирай CSV
+invoices.exportError	CSV не можа да бъде експортиран. Опитайте отново.
+invoices.receiptError	Разписката не можа да бъде отворена. Опитайте отново.
+invoices.invoiceNo	Фактура #{{id}}
+invoices.methodCard	Платено с карта
+invoices.methodIban	Платено с банков превод (IBAN)
+invoices.syncHint	Проверете статуса в платежната услуга
+invoices.syncChanged	Статусът е обновен: {{status}}
+invoices.syncUnchanged	Платежната услуга потвърди същия статус
+invoices.syncError	Статусът не можа да бъде проверен. Опитайте отново.
+invoices.kindOfflineFee	Комисиона за офлайн продажби
+invoices.kindMinFee	Минимална месечна такса
+invoices.kindOnlineFee	Комисиона за онлайн плащания
+invoices.methodWithheld	Удържано от Stripe при плащане
+table.date	Дата
+table.description	Описание
+table.amount	Сума
+table.status	Статус
+table.receipt	Разписка
+status.paid	Платено
+status.pending	В очакване
+status.failed	Неплатено
+status.refunded	Възстановено
+empty.noInvoices	Все още няма фактури — ще се появят след първото ви плащане.
+empty.noCard	Картата ви ще се появи автоматично след първото плащане.
+empty.monthsWithUs	Все още не сте купили абонамент
+empty.noData	Няма данни
+savings.title	Вашите спестявания
+savings.prepayTitle	Вашите спестявания при предплащане
+savings.emptyState	Изберете по-дълъг период и започвате да спестявате
+savings.youSave	Спестявате {{amount}} за {{months}} мес.
+savings.freeMonths	Това е като {{count}} мес. безплатно
+savings.amountLabel	{{amount}} спестявания
+savings.comparedToMonthly	спрямо месечно плащане
+savings.forMonths_one	За {{count}} месец
+savings.forMonths_other	За {{count}} месеца
+pay	Плати
+continuePlan	Продължи плана
+payModal.titleNew	Стартирай план {{plan}}
+payModal.titleSwitch	Премини към {{plan}}
+payModal.titleRenew	Поднови {{plan}}
+payModal.totalLabel	Планът ви ще струва
+payModal.burnWarning	Преминаването към друг план рестартира периода: остатъкът от плана ви {{plan}} СЕ ГУБИ — не се възстановява и не се прехвърля. Подновяването на същия план го запазва.
+payModal.switched	Планът е променен: няма нищо за плащане — промяната е покрита от оставащото от текущия период.
+payModal.renewNote	Това подновява същия план: купените месеци се добавят към текущия платен период. Нищо не се губи.
+payModal.cardNote	Плащане с карта на защитената страница на Stripe · 7-дневно възстановяване
+payModal.freeUntil	Нищо не се начислява до {{date}}: остават ви {{count}} дни от вече платения период. Фактурирането започва на тази дата.
+payModal.taxLabel	ДДС
+payModal.taxLine	ДДС {{rate}}%
+payModal.reverseCharge	Обратно начисляване
+payModal.totalWithTax	Общо с ДДС
+payModal.taxServerNote	Данъкът се изчислява от данните ви за фактуриране. Фактурата ще показва същата сума.
+payModal.taxReview	Не успяхме да определим данъка за данните ви за фактуриране, затова общата сума се показва без него и плащането не може да бъде завършено. Проверете държавата и адреса на платеца или се свържете с поддръжката.
+offlineFee.title	Такса за офлайн продажби
+offlineFee.accruing	Натрупана от плащания в брой и депозити при {{rate}}%. Фактурира се месечно, имате {{days}} дни да платите.
+offlineFee.due	Фактурата е издадена. Оставащи дни за плащане: {{days}}.
+offlineFee.suspended	Плащането е просрочено — достъпът до CRM и мини-приложението е спрян.
+offlineFee.pay	Плати
+offlineFee.suspendedMin	Минималната месечна такса е просрочена — достъпът до CRM и мини-приложението е спрян.
+offlineFee.alsoAccruing	Плюс натрупани този месец: {{amount}} — влиза в следващата фактура.
+offlineFee.minimum	Минималната месечна такса е {{amount}}. Печелите по-малко за месец — доплащате разликата; печелите повече — няма фактура.
+offlineFee.pendingBill	Натрупано по предишния модел, очаква фактура.
+offlineFee.notBilledYet	Все още няма издадена фактура: натрупаната сума е под минималния размер на фактурата или все още се подготвя. Нищо не се губи — влиза в следващата фактура.
+trial.title	Оферта за нови студиа
+trial.subtitle	Студиото ви току-що е създадено
+trial.headline	{{days}} дни безплатно
+trial.noCard	Не е нужна карта — няма какво да плащате сега
+trial.perks.allModules	Пълен достъп до всеки модул: дневник, клиенти, финанси, известия и Velora AI
+trial.perks.noCommitment	Без обвързване: ако не ви подхожда, просто не подновявайте
+trial.perks.keepData	Всичко, което настроите в пробния период, остава ваше
+trial.activate	Активирай
+trial.decline	Откажи
+trial.cardHint	Все още не сте активирали безплатния период на това студио. Той остава наличен, докато не купите план.
+profile.title	Данни за фактуриране
+profile.editTitle	Редактиране на данните за фактуриране
+profile.subtitle	Адресът ви се изписва във фактурата и определя данъчната ставка. Съхранява се в акаунта ви — няма да го искаме отново в друго студио.
+profile.subtitlePay	Попълнете веднъж и следващия път плащането минава веднага. Адресът ви се изписва във фактурата и определя данъчната ставка.
+profile.cardTitle	Данни за фактуриране
+profile.cardSubtitle	Съхраняват се в акаунта ви и се ползват във всички ваши студиа. Така изглеждат във фактурата.
+profile.cardEmpty	Все още не са попълнени — ще ги поискаме преди първото ви плащане. Можете да ги добавите сега.
+profile.add	Добави данни за фактуриране
+profile.edit	Редактирай
+profile.save	Запази
+profile.saveAndPay	Запази и продължи към плащане
+profile.cancel	Откажи
+profile.saved	Данните за фактуриране са запазени
+profile.vatNone	Не е предоставен
+profile.fields.country	Държава или регион
+profile.fields.countryPlaceholder	Изберете държава
+profile.fields.address	Адрес
+profile.fields.line1	Адресен ред 1
+profile.fields.line1Placeholder	Улица и номер
+profile.fields.line2	Адресен ред 2 — по избор
+profile.fields.line2Placeholder	Апартамент, офис, номер на единица и др.
+profile.fields.postalCode	Пощенски код
+profile.fields.postalCodePlaceholder	110 00
+profile.fields.city	Град
+profile.fields.cityPlaceholder	Прага
+profile.fields.vat	ДДС номер — по избор
+profile.fields.vatPlaceholder	{{prefix}}12345678
+profile.fields.vatHint	Само за фирми. Номерът се проверява в регистъра на ЕС (VIES) в момента на запазване — не приемаме непроверени номера. С валиден номер фирма в друга държава от ЕС получава фактура без данък (обратно начисляване). Физическите лица нямат такъв — оставете полето празно.
+profile.fields.countrySearch	Започнете да пишете име
+profile.fields.countryNotFound	Няма намерена държава
+profile.fields.vatOutsideEu	Не искаме ДДС номер: извън ЕС данъкът се определя от държавата на платеца, не от номера му, затова няма значение за фактурата.
+profile.fields.vatPending	Номерът ви е запазен, но регистърът на ЕС не беше наличен тогава, затова още не е потвърден и следващата ви фактура ще включва пълно ДДС. Не е нужно да го въвеждате отново: продължаваме да проверяваме и когато регистърът отговори, данъкът спира да се начислява. За вече платена фактура поддръжката ще възстанови данъка.
+profile.errors.required	Това поле е задължително
+profile.preview.invoice	Фактура
+profile.preview.billTo	Фактура до
+profile.preview.note	Така се изписват данните ви във всяка фактура. Можете да ги променяте по всяко време в Планове и фактуриране → Начин на плащане.

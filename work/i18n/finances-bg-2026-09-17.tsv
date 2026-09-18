@@ -1,0 +1,377 @@
+== bg
+tabs.accounts	Сметки
+tabs.operations	Операции
+tabs.salaries	Заплати
+tabs.counterparties	Контрагенти
+tabs.documents	Документи
+tabs.onlinePayments	Онлайн плащания
+tabs.paymentMethods	Начини на плащане
+tabs.reports	Отчети
+tabs.goals	Цели
+common.save	Запази
+common.cancel	Отказ
+common.create	Създай
+common.edit	Редактирай
+common.delete	Изтрий
+common.loading	Зареждане…
+common.all	Всички
+common.confirm	Потвърди
+common.monthsShort.0	Яну
+common.monthsShort.1	Фев
+common.monthsShort.2	Мар
+common.monthsShort.3	Апр
+common.monthsShort.4	Май
+common.monthsShort.5	Юни
+common.monthsShort.6	Юли
+common.monthsShort.7	Авг
+common.monthsShort.8	Сеп
+common.monthsShort.9	Окт
+common.monthsShort.10	Ное
+common.monthsShort.11	Дек
+common.weekdaysShort.0	Пон
+common.weekdaysShort.1	Вто
+common.weekdaysShort.2	Сря
+common.weekdaysShort.3	Чет
+common.weekdaysShort.4	Пет
+common.weekdaysShort.5	Съб
+common.weekdaysShort.6	Нед
+info.accounts	Сметките са касите на студиото, банковите сметки и онлайн приемането на плащания. Тук виждате всеки баланс и общия капитал.
+info.operations	Операциите са всички приходи и разходи на студиото. Създаването на операция веднага променя баланса на свързаната сметка.
+info.salaries	Заплатите се изчисляват според ставката на служителя (фиксирана, почасова или процентна) за избрания период.
+info.counterparties	Контрагентите са организации и физически лица, с които студиото се разплаща: доставчици, наемодатели, партньори.
+info.documents	Документите са договори, актове и фактури, свързани с контрагенти, или вътрешни документи.
+info.onlinePayments	Онлайн плащания — свързване на Stripe за картови плащания. Сметката се създава за вашето студио, така че парите отиват директно при вас, без да минават през Velora.
+info.paymentMethods	Начините на плащане показват как плащат клиентите в студиото и статистика за всеки от тях.
+info.reports	Отчетите показват тенденциите на приходите, разходите и печалбата за избрания период.
+info.goals	Финансовите цели са планът за спестявания на студиото с автоматично или ръчно проследяване на напредъка.
+accounts.loading	Зареждане на сметки…
+accounts.totalCapital	Общ капитал на студиото
+accounts.donutTotal	{{symbol}} общо
+accounts.todayChange	днес
+accounts.system	СИСТЕМА
+accounts.today	днес
+accounts.editTitle	Редактиране на сметка
+accounts.namePlaceholder	Име
+accounts.balancePlaceholder	Баланс, {{symbol}}
+accounts.types.cash	В брой
+accounts.types.bank	Карта
+accounts.types.online	Онлайн
+accounts.typesShort.cash	В брой
+accounts.typesShort.bank	Карта
+accounts.typesShort.online	Онлайн
+accounts.history	История
+accounts.historyTitle	История: {{name}}
+accounts.income30d	Приходи (30 д.)
+accounts.expense30d	Разходи (30 д.)
+accounts.samplePayment	Плащане за услуга
+accounts.sampleTime	Днес, 14:32
+accounts.openAllOperations	Отвори всички операции
+accounts.newSavingsTitle	Нова спестовна сметка
+accounts.createSavings	Създай спестовна сметка
+accounts.deleteConfirmTitle	Да се изтрие ли тази сметка?
+accounts.deleteConfirmText	Всички нейни средства ще бъдат изключени от общата статистика. Това действие не може да бъде отменено.
+accounts.toasts.loadFailed	Сметките не можаха да се заредят
+accounts.toasts.deleted	Сметката е изтрита
+accounts.toasts.deleteFailed	Сметката не можа да се изтрие
+accounts.toasts.saved	Настройките са запазени
+accounts.toasts.saveFailed	Сметката не можа да се запази
+accounts.toasts.created	Спестовната сметка е създадена
+accounts.toasts.createFailed	Сметката не можа да се създаде
+operations.income	Приход
+operations.expense	Разход
+operations.balance	Баланс
+operations.searchPlaceholder	Търсене по заглавие и категория…
+operations.close	Затвори
+operations.operation	Операция
+operations.export	Експортирай
+operations.newOperationTitle	Нова операция
+operations.titleLabel	Заглавие
+operations.titlePlaceholder	Напр. Плащане за абонамент
+operations.amountLabel	Сума, {{symbol}}
+operations.dateLabel	Дата
+operations.categoryLabel	Категория
+operations.categoryPlaceholder	Категория
+operations.accountLabel	Сметка
+operations.noAccount	Без сметка
+operations.methodLabel	Начин на плащане
+operations.noMethod	Не е посочено
+operations.counterpartyLabel	Контрагент
+operations.noCounterparty	Без контрагент
+operations.newCounterparty	+ Нов контрагент
+operations.clientLabel	Клиент
+operations.clientHint	Точките за лоялност и нивото ще бъдат начислени на клиента
+operations.clientSearchPlaceholder	Започнете да въвеждате име…
+operations.noClient	Без клиент
+operations.editTitle	Редактиране на операция
+operations.saving	Запазване…
+operations.loading	Зареждане на операции…
+operations.emptyTitle	Няма намерени операции
+operations.emptyBody	Променете филтрите или създайте първата операция
+operations.pending	Изчаква се
+operations.detailAccount	Получаваща сметка
+operations.detailCategory	Категория
+operations.detailMethod	Начин на плащане
+operations.detailCounterparty	Контрагент
+operations.receipt	Касова бележка
+operations.loadMore	Зареди още ({{count}})
+operations.toasts.loadFailed	Операциите не можаха да се заредят
+operations.toasts.loadMoreFailed	Не можаха да се заредят още операции
+operations.toasts.deleted	Операцията е изтрита
+operations.toasts.deleteFailed	Операцията не можа да се изтрие
+operations.toasts.enterAmount	Въведете сума
+operations.toasts.created	Операцията е създадена
+operations.toasts.createFailed	Операцията не можа да се създаде
+operations.toasts.updated	Операцията е актуализирана
+operations.toasts.updateFailed	Операцията не можа да се запази
+operations.toasts.exportFailed	Операциите не можаха да се експортират
+operations.toasts.receiptDownloaded	Касовата бележка е изтеглена
+operations.categoryPresets.in.0.value	Абонаменти
+operations.categoryPresets.in.0.label	Абонаменти
+operations.categoryPresets.in.1.value	Услуги
+operations.categoryPresets.in.1.label	Услуги
+operations.categoryPresets.in.2.value	Подаръчни сертификати
+operations.categoryPresets.in.2.label	Подаръчни сертификати
+operations.categoryPresets.in.3.value	Депозит
+operations.categoryPresets.in.3.label	Депозит
+operations.categoryPresets.in.4.value	Друго
+operations.categoryPresets.in.4.label	Друго
+operations.categoryPresets.out.0.value	Възстановявания
+operations.categoryPresets.out.0.label	Възстановявания
+operations.categoryPresets.out.1.value	Наем
+operations.categoryPresets.out.1.label	Наем
+operations.categoryPresets.out.2.value	Заплата
+operations.categoryPresets.out.2.label	Заплата
+operations.categoryPresets.out.3.value	Доставки
+operations.categoryPresets.out.3.label	Доставки
+operations.categoryPresets.out.4.value	Маркетинг
+operations.categoryPresets.out.4.label	Маркетинг
+operations.categoryPresets.out.5.value	Данъци
+operations.categoryPresets.out.5.label	Данъци
+operations.categoryPresets.out.6.value	Друго
+operations.categoryPresets.out.6.label	Друго
+salaries.loading	Зареждане на заплати…
+salaries.noRows	Няма служители за изчисляване
+salaries.fund	Фонд работна заплата
+salaries.fundSub	текущ месец
+salaries.sessions	Сесии
+salaries.sessionsSub	общо проведени
+salaries.paidOf	служители
+salaries.sessionsCount	{{count}} сесии
+salaries.paid	Платено
+salaries.pending	Изчаква се
+salaries.paying	…
+salaries.payAction	Плати
+salaries.cancelAction	Отмени заплата
+salaries.perMonth	/мес.
+salaries.accrualTitle	Начисление за период
+salaries.rate	Ставка
+salaries.rateNotSet	не е зададена
+salaries.sessionsInPeriod	Сесии за периода
+salaries.hoursWorked	Отработени часове
+salaries.lessonsRevenue	Приход от сесии
+salaries.totalToPay	Общо за плащане
+salaries.rateWarning	Ставката не е зададена — посочете я в профила на служителя, за да може да се изчисли начислението.
+salaries.rateUnit.hourly	ч.
+salaries.rateUnit.percent	%
+salaries.rateUnit.fixed	фиксирана
+salaries.paidAt	Платено {{date}}
+salaries.historyTitle	История на плащанията
+salaries.historyEmpty	Все още няма плащания
+salaries.historyLoading	Зареждане на история…
+salaries.toasts.loadFailed	Заплатите не можаха да се заредят
+salaries.toasts.paid	Заплатата е платена: {{name}}
+salaries.toasts.payFailed	Заплатата не можа да се плати
+salaries.toasts.canceled	Заплатата е отменена: {{name}}
+salaries.toasts.historyLoadFailed	Историята на плащанията не можа да се зареди
+counterparties.count	{{count}} контрагенти
+counterparties.totalDebt	Общ дълг:
+counterparties.add	Добави
+counterparties.newTitle	Нов контрагент
+counterparties.nameLabel	Име / Пълно име
+counterparties.namePlaceholder	Фирма ЕООД или Иван Петров
+counterparties.innLabel	Данъчен номер
+counterparties.categoryLabel	Категория
+counterparties.categoryPlaceholder	Наем, доставчик…
+counterparties.typeLabel	Тип контрагент
+counterparties.types.legal.label	Юридическо лице
+counterparties.types.legal.desc	Организация или компания
+counterparties.types.ie.label	Едноличен търговец
+counterparties.types.ie.desc	Индивидуален предприемач
+counterparties.types.person.label	Физическо лице
+counterparties.types.person.desc	Частно лице
+counterparties.addSubmit	Добави контрагент
+counterparties.you	Вие
+counterparties.otherCategory	Друго
+counterparties.deals	сделки
+counterparties.dealsLabel	Сделки
+counterparties.debtLabel	Дълг
+counterparties.documents	Документи
+counterparties.edit	Редактирай
+counterparties.delete	Изтрий
+counterparties.deleteConfirmTitle	Да се изтрие ли контрагентът?
+counterparties.deleteConfirmText	Свързаните документи и историята на сделките ще останат, но контрагентът ще бъде премахнат от списъка.
+counterparties.toasts.loadFailed	Контрагентите не можаха да се заредят
+counterparties.toasts.enterName	Въведете име
+counterparties.toasts.saved	Промените са запазени
+counterparties.toasts.saveFailed	Не можа да се запази
+counterparties.toasts.added	Контрагентът е добавен
+counterparties.toasts.addFailed	Контрагентът не можа да се добави
+counterparties.toasts.deleted	Контрагентът е изтрит
+counterparties.toasts.deleteFailed	Контрагентът не можа да се изтрие
+counterparties.toasts.documentsOpened	Документите са отворени
+documents.signed	Подписан
+documents.pendingCount	Очаква подпис
+documents.draftCount	Вътрешен (неподписан)
+documents.searchPlaceholder	Търсене по заглавие или контрагент…
+documents.filters.all	Всички
+documents.filters.signed	Подписани
+documents.filters.pending	Очаква подпис
+documents.upload	Качи
+documents.addTitle	Добави документ в библиотеката
+documents.dropzoneTitle	Щракнете или плъзнете файл
+documents.dropzoneHint	PDF, DOCX, XLSX (до 15 MB)
+documents.dropzoneChange	Щракнете, за да изберете друг файл
+documents.titleLabel	Заглавие на документа
+documents.titlePlaceholder	Напр. Приемо-предавателен протокол №48
+documents.partyLabel	Контрагент (ако има)
+documents.partyPlaceholder	Име на фирма или едноличен търговец
+documents.needsSignature	Нужен ли е подпис на документа?
+documents.needsSignatureHint	Статусът ще бъде „Очаква подпис“
+documents.saveToBase	Запази в библиотеката
+documents.emptyTitle	Тази папка е празна
+documents.emptyBody	Качете нов документ или променете филтрите
+documents.internalDoc	Вътрешен документ
+documents.uploaded	Качен {{date}}
+documents.download	Изтегли
+documents.open	Отвори
+documents.fileRequired	Прикачете файл
+documents.options	Опции
+documents.status.title	Статус
+documents.status.signed	Подписан
+documents.status.pending	Очаква подпис
+documents.status.draft	Неподписан
+documents.delete	Изтрий
+documents.toasts.loadFailed	Документите не можаха да се заредят
+documents.toasts.titleRequired	Качете файл или въведете заглавие
+documents.toasts.created	Документът е качен в библиотеката
+documents.toasts.createFailed	Документът не можа да се запази
+documents.toasts.badFormat	Позволени формати: PDF, DOCX, XLSX
+documents.toasts.downloadFailed	Файлът не можа да се изтегли
+documents.toasts.noFile	Към този документ няма прикачен файл
+documents.toasts.openFailed	Файлът не можа да се отвори
+documents.toasts.statusChanged	Статус: {{label}}
+documents.toasts.statusFailed	Статусът не можа да се промени
+documents.toasts.deleted	Документът е изтрит
+documents.toasts.deleteFailed	Документът не можа да се изтрие
+goals.loading	Зареждане на цели…
+goals.active	Цели в процес
+goals.done	Изпълнени
+goals.avgProgress	Общ напредък
+goals.trackingTitle	Проследяване на плана
+goals.createGoal	Създай цел
+goals.newTitle	Нова финансова цел
+goals.titleLabel	Заглавие на целта
+goals.titlePlaceholder	Напр. Нови реформър машини
+goals.targetLabel	Целева сума, {{symbol}}
+goals.targetPlaceholder	500000
+goals.deadlineLabel	Краен срок
+goals.trackingLabel	Как да се проследява напредъкът?
+goals.trackingAuto	Автоматично (CRM показател)
+goals.trackingAutoDesc	Свържете целта с приходите от избрана категория. CRM ще придвижва лентата за напредък сам.
+goals.trackingManual	Ръчно (лични спестявания)
+goals.trackingManualDesc	На картата ще се появи бутон „Добави средства“. Напредъкът зависи само от вас.
+goals.opTypeLabel	Тип операция
+goals.categoryLabel	Категория
+goals.categoryPlaceholder	Изберете категория
+goals.editTitle	Редактиране на цел
+goals.nameLabel	Заглавие
+goals.namePlaceholder	Заглавие на целта
+goals.amountLabel	Сума, {{symbol}}
+goals.achieved	Целта е постигната
+goals.priority.high	Висок приоритет
+goals.priority.medium	Среден приоритет
+goals.priority.low	Нисък приоритет
+goals.autoCollect	Автоматично проследяване
+goals.deadlinePrefix	Краен срок:
+goals.noDeadline	Без краен срок
+goals.fundPlaceholder	Сума, {{symbol}}
+goals.fund	Добави
+goals.addFunds	Добави средства
+goals.autoHint	Стойността се актуализира автоматично от приходите на категорията
+goals.deleteConfirmTitle	Да се изтрие ли целта?
+goals.deleteConfirmText	Напредъкът по тази цел ще бъде загубен. Това действие не може да бъде отменено.
+goals.toasts.loadFailed	Целите не можаха да се заредят
+goals.toasts.fillRequired	Попълнете заглавието и сумата
+goals.toasts.chooseCategory	Изберете категория за автоматичната цел
+goals.toasts.created	Целта е създадена
+goals.toasts.createFailed	Целта не можа да се създаде
+goals.toasts.enterName	Въведете име
+goals.toasts.updated	Целта е актуализирана
+goals.toasts.updateFailed	Целта не можа да се актуализира
+goals.toasts.deleted	Целта е изтрита
+goals.toasts.deleteFailed	Целта не можа да се изтрие
+goals.toasts.funded	Средствата са добавени
+goals.toasts.fundFailed	Средствата не можаха да се добавят
+onlinePayments.description	Свържете Stripe и клиентите ви ще могат да плащат с карта на касата. Парите постъпват директно в сметката на студиото — Velora никога не ги държи. Комисионата следва вашия план.
+onlinePayments.gatewaysTitle	Доставчици на плащания
+onlinePayments.gateways.stripe.name	Stripe
+onlinePayments.gateways.states.none.label	Не е свързан
+onlinePayments.gateways.states.none.hint	Приемайте картови плащания в сметката на студиото
+onlinePayments.gateways.states.none.action	Свържи
+onlinePayments.gateways.states.incomplete.label	Липсват данни
+onlinePayments.gateways.states.incomplete.hint	Stripe очаква данните на вашето студио — плащанията остават изключени дотогава
+onlinePayments.gateways.states.incomplete.action	Продължи
+onlinePayments.gateways.states.action.label	Необходимо е действие
+onlinePayments.gateways.states.action.hint	Stripe отхвърли някои данни и очаква корекции — няма да се изчисти само
+onlinePayments.gateways.states.action.action	Поправи данните
+onlinePayments.gateways.states.review.label	В процес на проверка
+onlinePayments.gateways.states.review.hint	Данните са изпратени, Stripe ги проверява. Обикновено това отнема до ден
+onlinePayments.gateways.states.review.action	Отвори Stripe
+onlinePayments.gateways.states.active.label	Свързан
+onlinePayments.gateways.states.active.hint	Картовите плащания постъпват в Stripe сметката на студиото
+onlinePayments.gateways.states.active.action	Настройки
+onlinePayments.toasts.gatewayUpdated	Настройките на доставчика са актуализирани
+onlinePayments.toasts.stripeReturned	Данните са изпратени към Stripe
+onlinePayments.toasts.stripeLinkExpired	Връзката към Stripe е изтекла — натиснете отново Свържи
+paymentMethods.totalTurnover	Оборот за периода
+paymentMethods.periods.month	Месец
+paymentMethods.periods.quarter	Тримесечие
+paymentMethods.periods.year	Година
+paymentMethods.amount	Сума
+paymentMethods.share	Дял
+paymentMethods.transactions	транзакции
+paymentMethods.methods.cash.name	В брой
+paymentMethods.methods.card.name	Банкова карта
+paymentMethods.methods.qr.name	СБП (QR)
+paymentMethods.methods.transfer.name	Превод
+paymentMethods.methods.stripe.name	Stripe
+paymentMethods.methods..name	Не е посочено
+reports.metrics.revenue	Приходи
+reports.metrics.expenses	Разходи
+reports.metrics.profit	Печалба
+reports.metrics.margin	Марж
+reports.vsPreviousPeriod	спрямо предходния период
+reports.cashflowTitle	Паричен поток
+reports.cashflowSub	Анализ на приходите и разходите
+reports.period	Период
+reports.income	Приход
+reports.expense	Разход
+reports.profit	Печалба
+reports.periods.today	Днес
+reports.periods.week	Седмица
+reports.periods.month	Месец
+reports.periods.year	Година
+reports.legendIncome	Приходи
+reports.legendExpense	Разходи
+reports.exportCsv	Експортирай CSV
+reports.expenseStructure	Структура на разходите
+reports.incomeStructure	Структура на приходите
+reports.total	Общо
+reports.otherCategory	Без категория
+reports.noData	Няма данни за този период
+reports.insightsTitle	Финансово обобщение и анализи
+reports.insightsPlaceholder	Тук ще се появи финансово обобщение с AI: анализ на тенденции, структура на разходите и препоръки
+reports.toasts.exportFailed	Операциите не можаха да се експортират
+confirmModal.cancel	Отказ
+confirmModal.confirm	Потвърди
+confirmModal.delete	Изтрий

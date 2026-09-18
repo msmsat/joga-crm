@@ -1,0 +1,248 @@
+== ro
+loading	Se încarcă…
+chModal.eyebrow	Canal de notificări
+chModal.connected	Conectat
+chModal.notConnected	Neconectat
+chModal.setup	Configurare conexiune
+chModal.details	Detalii conexiune
+chModal.ready	Canalul funcționează
+chModal.readyHint	Notificările pentru evenimentele activate sunt trimise automat.
+chModal.bot	Bot
+chModal.token	Token
+chModal.phone	Număr
+chModal.account	Cont
+chModal.sender	Expeditor
+channels.title	Canale de livrare
+channels.connect	Conectează
+channels.connected	Conectat
+channels.openSettings	Setări {{channel}}
+channels.waLockedHint	Canalul se deblochează când Meta are metoda de plată, o afacere verificată și șabloane aprobate
+channels.waBlocker.payment	Nu există metodă de plată — mementourile nu sunt livrate. Configurează
+channels.waBlocker.verification	Afacerea nu este verificată cu Meta — limită 250/zi. Cum rezolvi
+channels.waBlocker.templates	Șabloanele sunt încă în verificare la Meta — nu se va trimite nimic. Detalii
+roles.client	Client
+roles.trainer	Antrenor
+roles.admin	Administrator
+roles.owner	Proprietar
+roles.activeCount_one	{{count}} activ
+roles.activeCount_few	{{count}} active
+roles.activeCount_other	{{count}} active
+matrix.saving	Se salvează…
+matrix.allSaved	Toate modificările au fost salvate
+matrix.notSaved	Nesalvat
+matrix.activateAll	Activează toate
+matrix.deactivateAll	Șterge toate casetele bifate
+matrix.activeCount_one	Declanșatoare active: {{count}} din {{total}}
+matrix.activeCount_few	Declanșatoare active: {{count}} din {{total}}
+matrix.activeCount_other	Declanșatoare active: {{count}} din {{total}}
+matrix.scenariosFor	Scenarii pentru: {{role}}
+matrix.configureFor_one	Configurează canale pentru {{count}} declanșator de sistem
+matrix.configureFor_few	Configurează canale pentru {{count}} declanșatoare de sistem
+matrix.configureFor_other	Configurează canale pentru {{count}} de declanșatoare de sistem
+matrix.eventColumn	Eveniment de sistem
+matrix.noActiveChannels	Nu există canale active
+matrix.noActiveChannelsHint	Activează cel puțin un canal de livrare în panoul din stânga
+matrix.adviceLabel	Sfat:
+matrix.advice	Configurează separat pentru fiecare rol ce se trimite și unde — Velora se ocupă automat.
+matrix.tiers.critical	Obligatoriu · nu poate fi dezactivat
+matrix.tiers.operational	Operațional
+matrix.tiers.optional	Opțional
+matrix.lock.critical	Notificare obligatorie — nu poate fi dezactivată
+matrix.lock.lastChannel	Ultimul canal de livrare — nu poate fi dezactivat
+matrix.channelDisconnected	Canalul nu este conectat
+events.c1.title	Rezervare confirmată
+events.c1.desc	La rezervarea reușită a unei clase
+events.c2.title	Memento pentru clasă
+events.c2.desc	Cu 24 de ore și 2 ore înainte
+events.c3.title	Clasa a fost anulată
+events.c3.desc	Când antrenorul sau studioul anulează
+events.c4.title	Plată reușită
+events.c4.desc	Chitanță după o taxare reușită
+events.c5.title	Puține clase rămase
+events.c5.desc	Când mai rămân 1–2 vizite în pachet
+events.c6.title	Pachetul expiră
+events.c6.desc	Cu 3 zile înainte de expirare
+events.c7.title	Zi de naștere
+events.c7.desc	Felicitare cu ofertă specială
+events.c8.title	Cerere de recenzie
+events.c8.desc	După participarea la o clasă
+events.c9.title	Rambursare
+events.c9.desc	La anulare și procesarea rambursării
+events.c10.title	Clasa nu este încă plătită
+events.c10.desc	Clientul a participat dar nu a plătit
+events.c11.title	Clasa a fost reprogramată
+events.c11.desc	Ora, sala sau antrenorul s-a schimbat
+events.c12.title	Bonus acordat
+events.c12.desc	Puncte sau bonus adăugat clientului
+events.c13.title	Cafea după clasă
+events.c13.desc	Cine din grup merge la cafea
+events.t1.title	Rezervare nouă la antrenor
+events.t1.desc	Un client a rezervat o sesiune personală
+events.t2.title	Clientul a anulat rezervarea
+events.t2.desc	Clientul a anulat cu mai puțin de 2 h înainte
+events.t3.title	Memento pentru clasă
+events.t3.desc	Cu 1 oră înainte de început
+events.t4.title	Lista grupului
+events.t4.desc	Cu 30 min. înainte de o clasă de grup
+events.t5.title	Modificare de program
+events.t5.desc	Administratorul a schimbat intervalul sau locația
+events.t6.title	Salariu calculat
+events.t6.desc	Calcul săptămânal al plății
+events.t7.title	Recenzie nouă pentru antrenor
+events.t7.desc	Clientul a lăsat o evaluare după clasă
+events.t8.title	Ziua de naștere a clientului
+events.t8.desc	Memento de felicitare personală
+events.t9.title	Clasa a fost anulată
+events.t9.desc	Studioul sau administratorul a anulat clasa dvs.
+events.a1.title	Rezervare online nouă
+events.a1.desc	Clientul a rezervat prin site sau widget
+events.a2.title	Anulare în ultimul moment
+events.a2.desc	Cu mai puțin de 1 oră înainte de clasă
+events.a3.title	Client nou în sistem
+events.a3.desc	Înregistrare utilizator nou
+events.a4.title	Plată primită
+events.a4.desc	Orice taxare reușită
+events.a6.title	Pachetele se termină
+events.a6.desc	Grup de clienți cu ≤1 clasă rămasă
+events.a7.title	Conflict de program
+events.a7.desc	Clase suprapuse în jurnal
+events.a8.title	Raport zilnic
+events.a8.desc	Rezumat la finalul zilei
+events.a9.title	Încercare de conectare
+events.a9.desc	Autentificare de pe un dispozitiv nou
+events.a10.title	Rambursare
+events.a10.desc	Administratorul a emis o rambursare
+events.o1.title	Rezumat zilnic
+events.o1.desc	Venituri, rezervări, participare în ziua respectivă
+events.o2.title	Raport săptămânal
+events.o2.desc	Indicatori: creștere clienți, LTV, conversie
+events.o3.title	Plată mare
+events.o3.desc	Taxare peste pragul stabilit
+events.o4.title	Anomalie de date
+events.o4.desc	Scădere bruscă a rezervărilor sau veniturilor
+events.o5.title	Membru nou în echipă
+events.o5.desc	Administratorul a creat un cont nou
+events.o6.title	Reînnoire plan
+events.o6.desc	Memento pentru plata abonamentului Velora
+events.o7.title	Drepturi de acces modificate
+events.o7.desc	Permisiunile membrului echipei s-au schimbat
+events.o8.title	KPI atins
+events.o8.desc	Obiectivul lunar a fost atins
+events.o9.title	Export date
+events.o9.desc	Cineva a exportat baza de date a clienților
+tg.title	Telegram
+tg.subtitleConnected	Canal conectat
+tg.subtitleDisconnected	Conectează botul de notificări
+tg.connected	Conectat
+tg.pasteToken	Lipește tokenul botului primit de la @BotFather.
+tg.invalidToken	Format de token nevalid
+tg.howToGet	Cum obții un token:
+tg.steps.1	Deschide @BotFather în Telegram
+tg.steps.2	Trimite comanda /newbot și urmează instrucțiunile
+tg.steps.3	Copiază tokenul emis
+tg.steps.4	Lipește-l în câmpul de mai sus
+tg.connect	Conectează
+tg.disconnect	Deconectează
+tg.disconnectTitle	Deconectați Telegram?
+tg.disconnectMessage	Clienții și personalul nu vor mai primi notificări prin acest canal.
+tg.close	Închide
+tg.cancel	Anulează
+emailCh.title	E-mail
+emailCh.subtitle	Adresa expeditorului pentru e-mailurile către clienți
+emailCh.verifiedLabel	Verificat
+emailCh.emailLabel	E-mail expeditor
+emailCh.emailPlaceholder	admin@studio.com
+emailCh.invalidEmail	Introduceți un e-mail valid
+emailCh.sendCode	Trimite codul
+emailCh.codeSentTo	Cod trimis către
+emailCh.codeHint	Introduceți codul de 6 cifre din e-mail.
+emailCh.codeLabel	Cod de verificare
+emailCh.resend	Retrimite codul
+emailCh.viaVelora	E-mailurile sunt trimise prin serverul Velora în numele dvs.
+emailCh.wrongCode	Cod nevalid sau expirat
+emailCh.verify	Verifică
+emailCh.back	Înapoi
+emailCh.cancel	Anulează
+wa.title	WhatsApp
+wa.subtitleConnected	Canal conectat
+wa.subtitleDisconnected	Conectați-vă cu contul dvs. de afaceri Meta
+wa.connected	Conectat
+wa.paymentRequiredTitle	Va fi necesar un card
+wa.paymentRequired	Conectarea numărului este gratuită, dar Meta livrează mementouri clienților numai după ce este adăugat un card. Îl adăugați separat —
+wa.paymentMissingTitle	Nu există metodă de plată
+wa.paymentMissing	Acum funcționează doar răspunsurile botului la mesajele primite. Meta respinge mementourile, confirmările și difuzările până când adăugați un card —
+wa.paymentOkTitle	Plată conectată
+wa.paymentOk	notificările sunt livrate integral.
+wa.paymentUnknown	Nu am putut verifica metoda de plată cu Meta — vom afișa starea la următoarea încercare.
+wa.paymentLink	Centrul de facturare Meta
+wa.paymentRecheck	Verifică din nou
+wa.paymentFound	Plată conectată
+wa.verify.title	Afacerea nu este verificată cu Meta
+wa.verify.lead	Numărul funcționează, dar cu o limită redusă de 250 de destinatari unici pe zi. Verificarea elimină limita și deblochează lansarea completă. Studioul trebuie să facă singur acest lucru — contul WhatsApp vă aparține, iar Velora nu poate acționa în numele dvs.
+wa.verify.stepsTitle	Cum verificați afacerea:
+wa.verify.step1a	Deschideți
+wa.verify.link	Centrul de securitate Meta Business
+wa.verify.step1b	și apăsați „Începe verificarea”. Aveți nevoie de drepturi de administrator pe contul de afaceri.
+wa.verify.step2	Completați datele juridice: numele exact ca în documente, adresa, telefonul și site-ul. Site-ul trebuie să fie activ și să folosească HTTPS.
+wa.verify.step3	Încărcați un document de înregistrare a afacerii și așteptați ca Meta să îl analizeze.
+wa.verify.step4	Confirmați conexiunea cu afacerea: e-mail pe domeniul site-ului, apel sau SMS la telefonul indicat sau verificarea domeniului.
+wa.verify.step5	Așteptați decizia — de obicei 1–5 zile lucrătoare. Starea este în același Centru de securitate; dacă este respinsă, Meta indică motivul și permite o nouă cerere.
+wa.verify.docsTitle	Documente acceptate (unul din fiecare grup):
+wa.verify.doc1	Înregistrare: certificat de constituire, extras de registru, licență de afaceri sau document fiscal.
+wa.verify.doc2	Dovadă de prezență: un site funcțional, pagină oficială de social media sau listare într-un director de afaceri.
+wa.verify.pitfallTitle	Cel mai frecvent motiv de respingere
+wa.verify.pitfall	Numele afacerii din Meta și din document trebuie să coincidă caracter cu caracter, inclusiv forma juridică și punctuația. „Romashka LLC” și „Romashka, LLC” sunt considerate nume diferite.
+wa.templatesTitle	Șabloane de mesaje
+wa.templates	Meta nu vă permite să scrieți primul unui client fără un șablon preaprobat. Creați șabloane pentru fiecare eveniment — merg la verificare și încep să funcționeze după aprobare.
+wa.templatesAction	Pregătește șabloane
+wa.templatesPending	Se creează șabloane…
+wa.templatesDone_one	Șabloane gata: {{count}}. Se așteaptă verificarea Meta
+wa.templatesDone_few	Șabloane gata: {{count}}. Se așteaptă verificarea Meta
+wa.templatesDone_other	Șabloane gata: {{count}}. Se așteaptă verificarea Meta
+wa.templatesPartial	Meta a respins unele șabloane: {{failed}}. Consultați jurnalul pentru detalii
+wa.templatesRejectedTitle_one	Meta a respins {{count}} șablon
+wa.templatesRejectedTitle_few	Meta a respins {{count}} șabloane
+wa.templatesRejectedTitle_other	Meta a respins {{count}} de șabloane
+wa.templatesRejected	— acele notificări nu sunt livrate. Verificați formularea în contul Meta și recreați șabloanele.
+wa.templatesPendingTitle_one	{{count}} șablon în verificare
+wa.templatesPendingTitle_few	{{count}} șabloane în verificare
+wa.templatesPendingTitle_other	{{count}} de șabloane în verificare
+wa.templatesPendingHint	— Meta poate dura până la o zi. {{approved}} sunt deja aprobate și se livrează.
+wa.templatesOkTitle	Șabloane aprobate
+wa.templatesOk_one	{{count}} a trecut verificarea Meta — notificările sunt livrate.
+wa.templatesOk_few	Toate {{count}} au trecut verificarea Meta — notificările sunt livrate.
+wa.templatesOk_other	Toate {{count}} au trecut verificarea Meta — notificările sunt livrate.
+wa.paidWarning	Mesajele WhatsApp sunt contra cost
+wa.approxPrice	aprox.
+wa.pricingLoading	Se încarcă prețul actual…
+wa.perMessage	pe mesaj
+wa.viaMeta	facturat direct de Meta
+wa.windowNotice	Livrarea este garantată numai în fereastra de conversație de 24 de ore.
+wa.connect	Conectează WhatsApp
+wa.disconnect	Deconectează
+wa.disconnectTitle	Deconectați WhatsApp?
+wa.disconnectMessage	Clienții și personalul nu vor mai primi notificări prin acest canal.
+wa.close	Închide
+wa.cancel	Anulează
+tabs.matrix	Setări
+tabs.log	Jurnal de livrare
+log.title	Jurnal de livrare
+log.subtitle	Ce s-a trimis, cui și când, precum și cum s-a încheiat fiecare trimitere.
+log.status.sent	Livrat
+log.status.rejected	Respins
+log.status.error	Eroare de conexiune
+log.status.pending	În curs
+log.searchPlaceholder	Telefon, e-mail sau cod de eveniment
+log.allChannels	Toate canalele
+log.reset	Resetează
+log.refreshing	Se reîmprospătează…
+log.otherEvent	Trimitere în afara catalogului
+log.empty	Nu s-a trimis încă nimic
+log.emptyHint	Fiecare notificare trimisă de studio către clienți și personal va apărea aici.
+log.emptyFiltered	Nu s-a găsit nimic
+log.emptyFilteredHint	Încercați să modificați filtrele sau să căutați alt număr.
+log.loadError	Jurnalul nu a putut fi încărcat
+log.loadErrorHint	Reîmprospătați pagina — dacă nu ajută, contactați asistența.
+log.range	{{from}}–{{to}} din {{total}}
+log.prev	Înapoi
+log.next	Următorul

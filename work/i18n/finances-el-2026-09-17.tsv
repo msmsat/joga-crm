@@ -1,0 +1,377 @@
+== el
+tabs.accounts	Λογαριασμοί
+tabs.operations	Συναλλαγές
+tabs.salaries	Μισθοδοσία
+tabs.counterparties	Αντισυμβαλλόμενοι
+tabs.documents	Έγγραφα
+tabs.onlinePayments	Ηλεκτρονικές πληρωμές
+tabs.paymentMethods	Τρόποι πληρωμής
+tabs.reports	Αναφορές
+tabs.goals	Στόχοι
+common.save	Αποθήκευση
+common.cancel	Ακύρωση
+common.create	Δημιουργία
+common.edit	Επεξεργασία
+common.delete	Διαγραφή
+common.loading	Φόρτωση…
+common.all	Όλα
+common.confirm	Επιβεβαίωση
+common.monthsShort.0	Ιαν
+common.monthsShort.1	Φεβ
+common.monthsShort.2	Μαρ
+common.monthsShort.3	Απρ
+common.monthsShort.4	Μάι
+common.monthsShort.5	Ιουν
+common.monthsShort.6	Ιουλ
+common.monthsShort.7	Αυγ
+common.monthsShort.8	Σεπ
+common.monthsShort.9	Οκτ
+common.monthsShort.10	Νοε
+common.monthsShort.11	Δεκ
+common.weekdaysShort.0	Δευ
+common.weekdaysShort.1	Τρι
+common.weekdaysShort.2	Τετ
+common.weekdaysShort.3	Πεμ
+common.weekdaysShort.4	Παρ
+common.weekdaysShort.5	Σαβ
+common.weekdaysShort.6	Κυρ
+info.accounts	Οι λογαριασμοί είναι τα ταμεία, οι τραπεζικοί λογαριασμοί και η διαδικτυακή αποδοχή πληρωμών του στούντιο. Εδώ βλέπετε κάθε υπόλοιπο και το συνολικό κεφάλαιο.
+info.operations	Οι συναλλαγές είναι όλα τα έσοδα και έξοδα του στούντιο. Η δημιουργία συναλλαγής μεταβάλλει αμέσως το υπόλοιπο του συνδεδεμένου λογαριασμού.
+info.salaries	Οι μισθοί υπολογίζονται από την αμοιβή του μέλους της ομάδας (σταθερή, ωριαία ή ποσοστιαία) για την επιλεγμένη περίοδο.
+info.counterparties	Οι αντισυμβαλλόμενοι είναι οργανισμοί και άτομα με τα οποία το στούντιο κάνει διακανονισμούς: προμηθευτές, εκμισθωτές, συνεργάτες.
+info.documents	Τα έγγραφα είναι συμβάσεις, πράξεις και τιμολόγια συνδεδεμένα με αντισυμβαλλομένους ή εσωτερικά έγγραφα.
+info.onlinePayments	Ηλεκτρονικές πληρωμές — συνδέστε το Stripe για πληρωμές με κάρτα. Ο λογαριασμός δημιουργείται για το στούντιό σας, ώστε τα χρήματα να πηγαίνουν απευθείας σε εσάς, χωρίς να περνούν από τη Velora.
+info.paymentMethods	Οι τρόποι πληρωμής δείχνουν πώς πληρώνουν οι πελάτες στο στούντιο και στατιστικά για κάθε τρόπο.
+info.reports	Οι αναφορές δείχνουν τάσεις εσόδων, εξόδων και κέρδους στην επιλεγμένη περίοδο.
+info.goals	Οι οικονομικοί στόχοι είναι το πλάνο αποταμίευσης του στούντιο με αυτόματη ή χειροκίνητη παρακολούθηση προόδου.
+accounts.loading	Φόρτωση λογαριασμών…
+accounts.totalCapital	Συνολικό κεφάλαιο στούντιο
+accounts.donutTotal	{{symbol}} σύνολο
+accounts.todayChange	σήμερα
+accounts.system	ΣΥΣΤΗΜΑ
+accounts.today	σήμερα
+accounts.editTitle	Επεξεργασία λογαριασμού
+accounts.namePlaceholder	Όνομα
+accounts.balancePlaceholder	Υπόλοιπο, {{symbol}}
+accounts.types.cash	Μετρητά
+accounts.types.bank	Κάρτα
+accounts.types.online	Διαδικτυακά
+accounts.typesShort.cash	Μετρητά
+accounts.typesShort.bank	Κάρτα
+accounts.typesShort.online	Διαδικτυακά
+accounts.history	Ιστορικό
+accounts.historyTitle	Ιστορικό: {{name}}
+accounts.income30d	Έσοδα (30 ημ.)
+accounts.expense30d	Έξοδα (30 ημ.)
+accounts.samplePayment	Πληρωμή υπηρεσίας
+accounts.sampleTime	Σήμερα, 14:32
+accounts.openAllOperations	Άνοιγμα όλων των συναλλαγών
+accounts.newSavingsTitle	Νέος λογαριασμός αποταμίευσης
+accounts.createSavings	Δημιουργία λογαριασμού αποταμίευσης
+accounts.deleteConfirmTitle	Διαγραφή αυτού του λογαριασμού;
+accounts.deleteConfirmText	Όλα τα κεφάλαιά του θα εξαιρεθούν από τα συνολικά στατιστικά. Η ενέργεια δεν αναιρείται.
+accounts.toasts.loadFailed	Αποτυχία φόρτωσης λογαριασμών
+accounts.toasts.deleted	Ο λογαριασμός διαγράφηκε
+accounts.toasts.deleteFailed	Αποτυχία διαγραφής λογαριασμού
+accounts.toasts.saved	Οι ρυθμίσεις αποθηκεύτηκαν
+accounts.toasts.saveFailed	Αποτυχία αποθήκευσης λογαριασμού
+accounts.toasts.created	Ο λογαριασμός αποταμίευσης δημιουργήθηκε
+accounts.toasts.createFailed	Αποτυχία δημιουργίας λογαριασμού
+operations.income	Έσοδο
+operations.expense	Έξοδο
+operations.balance	Υπόλοιπο
+operations.searchPlaceholder	Αναζήτηση με τίτλο και κατηγορία…
+operations.close	Κλείσιμο
+operations.operation	Συναλλαγή
+operations.export	Εξαγωγή
+operations.newOperationTitle	Νέα συναλλαγή
+operations.titleLabel	Τίτλος
+operations.titlePlaceholder	Π.χ. πληρωμή συνδρομής
+operations.amountLabel	Ποσό, {{symbol}}
+operations.dateLabel	Ημερομηνία
+operations.categoryLabel	Κατηγορία
+operations.categoryPlaceholder	Κατηγορία
+operations.accountLabel	Λογαριασμός
+operations.noAccount	Χωρίς λογαριασμό
+operations.methodLabel	Τρόπος πληρωμής
+operations.noMethod	Δεν προσδιορίστηκε
+operations.counterpartyLabel	Αντισυμβαλλόμενος
+operations.noCounterparty	Χωρίς αντισυμβαλλόμενο
+operations.newCounterparty	+ Νέος αντισυμβαλλόμενος
+operations.clientLabel	Πελάτης
+operations.clientHint	Οι πόντοι επιβράβευσης και το επίπεδο θα πιστωθούν στον πελάτη
+operations.clientSearchPlaceholder	Ξεκινήστε να πληκτρολογείτε ένα όνομα…
+operations.noClient	Χωρίς πελάτη
+operations.editTitle	Επεξεργασία συναλλαγής
+operations.saving	Αποθήκευση…
+operations.loading	Φόρτωση συναλλαγών…
+operations.emptyTitle	Δεν βρέθηκαν συναλλαγές
+operations.emptyBody	Αλλάξτε τα φίλτρα ή δημιουργήστε την πρώτη συναλλαγή
+operations.pending	Σε αναμονή
+operations.detailAccount	Λογαριασμός είσπραξης
+operations.detailCategory	Κατηγορία
+operations.detailMethod	Τρόπος πληρωμής
+operations.detailCounterparty	Αντισυμβαλλόμενος
+operations.receipt	Απόδειξη
+operations.loadMore	Φόρτωση περισσότερων ({{count}})
+operations.toasts.loadFailed	Αποτυχία φόρτωσης συναλλαγών
+operations.toasts.loadMoreFailed	Αποτυχία φόρτωσης περισσότερων συναλλαγών
+operations.toasts.deleted	Η συναλλαγή διαγράφηκε
+operations.toasts.deleteFailed	Αποτυχία διαγραφής συναλλαγής
+operations.toasts.enterAmount	Εισαγάγετε ποσό
+operations.toasts.created	Η συναλλαγή δημιουργήθηκε
+operations.toasts.createFailed	Αποτυχία δημιουργίας συναλλαγής
+operations.toasts.updated	Η συναλλαγή ενημερώθηκε
+operations.toasts.updateFailed	Αποτυχία αποθήκευσης συναλλαγής
+operations.toasts.exportFailed	Αποτυχία εξαγωγής συναλλαγών
+operations.toasts.receiptDownloaded	Η απόδειξη λήφθηκε
+operations.categoryPresets.in.0.value	Συνδρομές
+operations.categoryPresets.in.0.label	Συνδρομές
+operations.categoryPresets.in.1.value	Υπηρεσίες
+operations.categoryPresets.in.1.label	Υπηρεσίες
+operations.categoryPresets.in.2.value	Δωροεπιταγές
+operations.categoryPresets.in.2.label	Δωροεπιταγές
+operations.categoryPresets.in.3.value	Κατάθεση
+operations.categoryPresets.in.3.label	Κατάθεση
+operations.categoryPresets.in.4.value	Άλλο
+operations.categoryPresets.in.4.label	Άλλο
+operations.categoryPresets.out.0.value	Επιστροφές
+operations.categoryPresets.out.0.label	Επιστροφές
+operations.categoryPresets.out.1.value	Ενοίκιο
+operations.categoryPresets.out.1.label	Ενοίκιο
+operations.categoryPresets.out.2.value	Μισθοί
+operations.categoryPresets.out.2.label	Μισθοί
+operations.categoryPresets.out.3.value	Προμήθειες
+operations.categoryPresets.out.3.label	Προμήθειες
+operations.categoryPresets.out.4.value	Μάρκετινγκ
+operations.categoryPresets.out.4.label	Μάρκετινγκ
+operations.categoryPresets.out.5.value	Φόροι
+operations.categoryPresets.out.5.label	Φόροι
+operations.categoryPresets.out.6.value	Άλλο
+operations.categoryPresets.out.6.label	Άλλο
+salaries.loading	Φόρτωση μισθοδοσίας…
+salaries.noRows	Δεν υπάρχει προσωπικό για υπολογισμό
+salaries.fund	Ταμείο μισθοδοσίας
+salaries.fundSub	τρέχων μήνας
+salaries.sessions	Συνεδρίες
+salaries.sessionsSub	συνολικά πραγματοποιημένες
+salaries.paidOf	προσωπικό
+salaries.sessionsCount	{{count}} συνεδρίες
+salaries.paid	Πληρώθηκε
+salaries.pending	Σε αναμονή
+salaries.paying	…
+salaries.payAction	Πληρωμή
+salaries.cancelAction	Ακύρωση μισθού
+salaries.perMonth	/μήνα
+salaries.accrualTitle	Δεδουλευμένα για περίοδο
+salaries.rate	Αμοιβή
+salaries.rateNotSet	δεν ορίστηκε
+salaries.sessionsInPeriod	Συνεδρίες στην περίοδο
+salaries.hoursWorked	Ώρες εργασίας
+salaries.lessonsRevenue	Έσοδα συνεδριών
+salaries.totalToPay	Σύνολο προς πληρωμή
+salaries.rateWarning	Η αμοιβή δεν έχει οριστεί — ορίστε την στο προφίλ του μέλους της ομάδας ώστε να υπολογιστούν τα δεδουλευμένα.
+salaries.rateUnit.hourly	ωρ.
+salaries.rateUnit.percent	%
+salaries.rateUnit.fixed	σταθερή
+salaries.paidAt	Πληρώθηκε {{date}}
+salaries.historyTitle	Ιστορικό πληρωμών
+salaries.historyEmpty	Δεν υπάρχουν πληρωμές ακόμη
+salaries.historyLoading	Φόρτωση ιστορικού…
+salaries.toasts.loadFailed	Αποτυχία φόρτωσης μισθοδοσίας
+salaries.toasts.paid	Ο μισθός πληρώθηκε: {{name}}
+salaries.toasts.payFailed	Αποτυχία πληρωμής μισθού
+salaries.toasts.canceled	Ο μισθός ακυρώθηκε: {{name}}
+salaries.toasts.historyLoadFailed	Αποτυχία φόρτωσης ιστορικού πληρωμών
+counterparties.count	{{count}} αντισυμβαλλόμενοι
+counterparties.totalDebt	Συνολικό χρέος:
+counterparties.add	Προσθήκη
+counterparties.newTitle	Νέος αντισυμβαλλόμενος
+counterparties.nameLabel	Όνομα / Πλήρες όνομα
+counterparties.namePlaceholder	Εταιρεία ΕΠΕ ή Γιάννης Παπαδόπουλος
+counterparties.innLabel	ΑΦΜ
+counterparties.categoryLabel	Κατηγορία
+counterparties.categoryPlaceholder	Ενοίκιο, προμηθευτής…
+counterparties.typeLabel	Τύπος αντισυμβαλλομένου
+counterparties.types.legal.label	Νομικό πρόσωπο
+counterparties.types.legal.desc	Οργανισμός ή εταιρεία
+counterparties.types.ie.label	Ατομική επιχείρηση
+counterparties.types.ie.desc	Αυτοαπασχολούμενος
+counterparties.types.person.label	Ιδιώτης
+counterparties.types.person.desc	Φυσικό πρόσωπο
+counterparties.addSubmit	Προσθήκη αντισυμβαλλομένου
+counterparties.you	Εσείς
+counterparties.otherCategory	Άλλο
+counterparties.deals	συμφωνίες
+counterparties.dealsLabel	Συμφωνίες
+counterparties.debtLabel	Χρέος
+counterparties.documents	Έγγραφα
+counterparties.edit	Επεξεργασία
+counterparties.delete	Διαγραφή
+counterparties.deleteConfirmTitle	Διαγραφή αντισυμβαλλομένου;
+counterparties.deleteConfirmText	Τα σχετικά έγγραφα και το ιστορικό συμφωνιών θα παραμείνουν, αλλά ο αντισυμβαλλόμενος θα αφαιρεθεί από τη λίστα.
+counterparties.toasts.loadFailed	Αποτυχία φόρτωσης αντισυμβαλλομένων
+counterparties.toasts.enterName	Εισαγάγετε όνομα
+counterparties.toasts.saved	Οι αλλαγές αποθηκεύτηκαν
+counterparties.toasts.saveFailed	Αποτυχία αποθήκευσης
+counterparties.toasts.added	Ο αντισυμβαλλόμενος προστέθηκε
+counterparties.toasts.addFailed	Αποτυχία προσθήκης αντισυμβαλλομένου
+counterparties.toasts.deleted	Ο αντισυμβαλλόμενος διαγράφηκε
+counterparties.toasts.deleteFailed	Αποτυχία διαγραφής αντισυμβαλλομένου
+counterparties.toasts.documentsOpened	Τα έγγραφα άνοιξαν
+documents.signed	Υπογεγραμμένο
+documents.pendingCount	Αναμονή υπογραφής
+documents.draftCount	Εσωτερικό (ανυπόγραφο)
+documents.searchPlaceholder	Αναζήτηση με τίτλο ή αντισυμβαλλόμενο…
+documents.filters.all	Όλα
+documents.filters.signed	Υπογεγραμμένα
+documents.filters.pending	Αναμονή υπογραφής
+documents.upload	Μεταφόρτωση
+documents.addTitle	Προσθήκη εγγράφου στη βιβλιοθήκη
+documents.dropzoneTitle	Κάντε κλικ ή σύρετε ένα αρχείο
+documents.dropzoneHint	PDF, DOCX, XLSX (έως 15 MB)
+documents.dropzoneChange	Κάντε κλικ για να επιλέξετε άλλο αρχείο
+documents.titleLabel	Τίτλος εγγράφου
+documents.titlePlaceholder	Π.χ. Πρακτικό παραλαβής #48
+documents.partyLabel	Αντισυμβαλλόμενος (αν υπάρχει)
+documents.partyPlaceholder	Όνομα εταιρείας ή ατομικής επιχείρησης
+documents.needsSignature	Χρειάζεται υπογραφή το έγγραφο;
+documents.needsSignatureHint	Η κατάσταση θα είναι «Αναμονή υπογραφής»
+documents.saveToBase	Αποθήκευση στη βιβλιοθήκη
+documents.emptyTitle	Αυτός ο φάκελος είναι κενός
+documents.emptyBody	Μεταφορτώστε νέο έγγραφο ή αλλάξτε τα φίλτρα
+documents.internalDoc	Εσωτερικό έγγραφο
+documents.uploaded	Μεταφορτώθηκε {{date}}
+documents.download	Λήψη
+documents.open	Άνοιγμα
+documents.fileRequired	Επισυνάψτε ένα αρχείο
+documents.options	Επιλογές
+documents.status.title	Κατάσταση
+documents.status.signed	Υπογεγραμμένο
+documents.status.pending	Αναμονή υπογραφής
+documents.status.draft	Ανυπόγραφο
+documents.delete	Διαγραφή
+documents.toasts.loadFailed	Αποτυχία φόρτωσης εγγράφων
+documents.toasts.titleRequired	Μεταφορτώστε αρχείο ή εισαγάγετε τίτλο
+documents.toasts.created	Το έγγραφο μεταφορτώθηκε στη βιβλιοθήκη
+documents.toasts.createFailed	Αποτυχία αποθήκευσης εγγράφου
+documents.toasts.badFormat	Επιτρεπόμενες μορφές: PDF, DOCX, XLSX
+documents.toasts.downloadFailed	Αποτυχία λήψης αρχείου
+documents.toasts.noFile	Δεν επισυνάπτεται αρχείο σε αυτό το έγγραφο
+documents.toasts.openFailed	Αποτυχία ανοίγματος αρχείου
+documents.toasts.statusChanged	Κατάσταση: {{label}}
+documents.toasts.statusFailed	Αποτυχία αλλαγής κατάστασης
+documents.toasts.deleted	Το έγγραφο διαγράφηκε
+documents.toasts.deleteFailed	Αποτυχία διαγραφής εγγράφου
+goals.loading	Φόρτωση στόχων…
+goals.active	Στόχοι σε εξέλιξη
+goals.done	Ολοκληρώθηκαν
+goals.avgProgress	Συνολική πρόοδος
+goals.trackingTitle	Παρακολούθηση πλάνου
+goals.createGoal	Δημιουργία στόχου
+goals.newTitle	Νέος οικονομικός στόχος
+goals.titleLabel	Τίτλος στόχου
+goals.titlePlaceholder	Π.χ. νέα μηχανήματα reformer
+goals.targetLabel	Ποσό στόχου, {{symbol}}
+goals.targetPlaceholder	500000
+goals.deadlineLabel	Προθεσμία
+goals.trackingLabel	Πώς θα παρακολουθείται η πρόοδος;
+goals.trackingAuto	Αυτόματα (μέτρηση CRM)
+goals.trackingAutoDesc	Συνδέστε τον στόχο με έσοδα μιας επιλεγμένης κατηγορίας. Το CRM θα μετακινεί μόνο του τη γραμμή προόδου.
+goals.trackingManual	Χειροκίνητα (προσωπικές αποταμιεύσεις)
+goals.trackingManualDesc	Στην κάρτα θα εμφανιστεί κουμπί «Προσθήκη κεφαλαίων». Η πρόοδος εξαρτάται μόνο από εσάς.
+goals.opTypeLabel	Τύπος συναλλαγής
+goals.categoryLabel	Κατηγορία
+goals.categoryPlaceholder	Επιλέξτε κατηγορία
+goals.editTitle	Επεξεργασία στόχου
+goals.nameLabel	Τίτλος
+goals.namePlaceholder	Τίτλος στόχου
+goals.amountLabel	Ποσό, {{symbol}}
+goals.achieved	Ο στόχος επιτεύχθηκε
+goals.priority.high	Υψηλή προτεραιότητα
+goals.priority.medium	Μεσαία προτεραιότητα
+goals.priority.low	Χαμηλή προτεραιότητα
+goals.autoCollect	Αυτόματη παρακολούθηση
+goals.deadlinePrefix	Προθεσμία:
+goals.noDeadline	Χωρίς προθεσμία
+goals.fundPlaceholder	Ποσό, {{symbol}}
+goals.fund	Προσθήκη
+goals.addFunds	Προσθήκη κεφαλαίων
+goals.autoHint	Η τιμή ενημερώνεται αυτόματα από τα έσοδα της κατηγορίας
+goals.deleteConfirmTitle	Διαγραφή στόχου;
+goals.deleteConfirmText	Η πρόοδος αυτού του στόχου θα χαθεί. Η ενέργεια δεν αναιρείται.
+goals.toasts.loadFailed	Αποτυχία φόρτωσης στόχων
+goals.toasts.fillRequired	Συμπληρώστε τίτλο και ποσό
+goals.toasts.chooseCategory	Επιλέξτε κατηγορία για τον αυτόματο στόχο
+goals.toasts.created	Ο στόχος δημιουργήθηκε
+goals.toasts.createFailed	Αποτυχία δημιουργίας στόχου
+goals.toasts.enterName	Εισαγάγετε όνομα
+goals.toasts.updated	Ο στόχος ενημερώθηκε
+goals.toasts.updateFailed	Αποτυχία ενημέρωσης στόχου
+goals.toasts.deleted	Ο στόχος διαγράφηκε
+goals.toasts.deleteFailed	Αποτυχία διαγραφής στόχου
+goals.toasts.funded	Προστέθηκαν κεφάλαια
+goals.toasts.fundFailed	Αποτυχία προσθήκης κεφαλαίων
+onlinePayments.description	Συνδέστε το Stripe και οι πελάτες σας θα μπορούν να πληρώνουν με κάρτα στο ταμείο. Τα χρήματα καταλήγουν απευθείας στον λογαριασμό του στούντιό σας — η Velora δεν τα κρατά ποτέ. Η προμήθεια ακολουθεί το πλάνο σας.
+onlinePayments.gatewaysTitle	Πάροχοι πληρωμών
+onlinePayments.gateways.stripe.name	Stripe
+onlinePayments.gateways.states.none.label	Δεν συνδέθηκε
+onlinePayments.gateways.states.none.hint	Δεχτείτε πληρωμές με κάρτα στον λογαριασμό του στούντιο
+onlinePayments.gateways.states.none.action	Σύνδεση
+onlinePayments.gateways.states.incomplete.label	Λείπουν στοιχεία
+onlinePayments.gateways.states.incomplete.hint	Το Stripe περιμένει τα στοιχεία του στούντιό σας — οι πληρωμές παραμένουν απενεργοποιημένες έως τότε
+onlinePayments.gateways.states.incomplete.action	Συνέχεια
+onlinePayments.gateways.states.action.label	Απαιτείται ενέργεια
+onlinePayments.gateways.states.action.hint	Το Stripe απέρριψε ορισμένα στοιχεία και περιμένει διορθώσεις — δεν θα επιλυθεί μόνο του
+onlinePayments.gateways.states.action.action	Διόρθωση στοιχείων
+onlinePayments.gateways.states.review.label	Υπό έλεγχο
+onlinePayments.gateways.states.review.hint	Τα στοιχεία υποβλήθηκαν και το Stripe τα ελέγχει. Αυτό συνήθως διαρκεί έως μία ημέρα
+onlinePayments.gateways.states.review.action	Άνοιγμα Stripe
+onlinePayments.gateways.states.active.label	Συνδέθηκε
+onlinePayments.gateways.states.active.hint	Οι πληρωμές με κάρτα καταλήγουν στον λογαριασμό Stripe του στούντιο
+onlinePayments.gateways.states.active.action	Ρυθμίσεις
+onlinePayments.toasts.gatewayUpdated	Οι ρυθμίσεις παρόχου ενημερώθηκαν
+onlinePayments.toasts.stripeReturned	Τα στοιχεία υποβλήθηκαν στο Stripe
+onlinePayments.toasts.stripeLinkExpired	Ο σύνδεσμος Stripe έληξε — πατήστε ξανά Σύνδεση
+paymentMethods.totalTurnover	Τζίρος περιόδου
+paymentMethods.periods.month	Μήνας
+paymentMethods.periods.quarter	Τρίμηνο
+paymentMethods.periods.year	Έτος
+paymentMethods.amount	Ποσό
+paymentMethods.share	Μερίδιο
+paymentMethods.transactions	συναλλαγές
+paymentMethods.methods.cash.name	Μετρητά
+paymentMethods.methods.card.name	Τραπεζική κάρτα
+paymentMethods.methods.qr.name	SBP (QR)
+paymentMethods.methods.transfer.name	Μεταφορά
+paymentMethods.methods.stripe.name	Stripe
+paymentMethods.methods..name	Δεν προσδιορίστηκε
+reports.metrics.revenue	Έσοδα
+reports.metrics.expenses	Έξοδα
+reports.metrics.profit	Κέρδος
+reports.metrics.margin	Περιθώριο
+reports.vsPreviousPeriod	σε σχέση με την προηγούμενη περίοδο
+reports.cashflowTitle	Ταμειακή ροή
+reports.cashflowSub	Ανάλυση εσόδων και εξόδων
+reports.period	Περίοδος
+reports.income	Έσοδο
+reports.expense	Έξοδο
+reports.profit	Κέρδος
+reports.periods.today	Σήμερα
+reports.periods.week	Εβδομάδα
+reports.periods.month	Μήνας
+reports.periods.year	Έτος
+reports.legendIncome	Έσοδα
+reports.legendExpense	Έξοδα
+reports.exportCsv	Εξαγωγή CSV
+reports.expenseStructure	Δομή εξόδων
+reports.incomeStructure	Δομή εσόδων
+reports.total	Σύνολο
+reports.otherCategory	Χωρίς κατηγορία
+reports.noData	Δεν υπάρχουν δεδομένα για αυτή την περίοδο
+reports.insightsTitle	Οικονομική σύνοψη και πληροφορίες
+reports.insightsPlaceholder	Εδώ θα εμφανιστεί οικονομική σύνοψη με AI: ανάλυση τάσεων, δομή εξόδων και συστάσεις
+reports.toasts.exportFailed	Αποτυχία εξαγωγής συναλλαγών
+confirmModal.cancel	Ακύρωση
+confirmModal.confirm	Επιβεβαίωση
+confirmModal.delete	Διαγραφή

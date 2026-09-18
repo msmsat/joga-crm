@@ -1,0 +1,296 @@
+== pl
+legal.terms	Warunki świadczenia usług
+legal.privacy	Polityka prywatności
+tabs.plans	Plany i ceny
+tabs.invoices	Historia płatności
+tabs.method	Metoda płatności
+tabsShort.plans	Plany
+tabsShort.invoices	Historia
+tabsShort.method	Płatność
+paymentsHistory.title	Pełna historia płatności
+paymentsHistory.subtitle	Wszystkie faktury tego studia
+paymentsHistory.clearFilter	Wyczyść
+paymentsHistory.loadMore	Załaduj więcej
+planNames.start	Start
+planNames.pro	Pro
+planNames.business	Business
+seats.title	Ilu pracowników ma studio?
+seats.hint	od {{amount}} miesięcznie
+seats.stepNote	Każde dodatkowe miejsce kosztuje {{amount}} miesięcznie
+seats.unlimitedNote	Nielimitowana liczba pracowników
+seats.perSeat	Za pracownika
+limits.staff	Pracownicy
+limits.ai	Zapytania Velora AI
+limits.unlimited	Bez limitu
+banner.trialEnds	Okres próbny kończy się {{date}} — wybierz plan
+banner.renews	Twoja subskrypcja {{plan}} odnowi się {{date}}
+banner.expires	Twoja subskrypcja {{plan}} wygasa {{date}}
+banner.choosePlan	Wybierz plan
+banner.dismiss	Zamknij
+banner.unpaid	Twój plan nie został opłacony. Aby kontynuować, zapłać w sekcji Plany i rozliczenia.
+banner.suspended	Dostęp został zawieszony, ponieważ faktura za plan jest po terminie. Opłać ją w sekcji Plany i rozliczenia.
+paymentReturn.done	Płatność zakończona — plan {{plan}} jest aktywny.
+paymentReturn.processing	Płatność jest przetwarzana — subskrypcja zostanie aktywowana za kilka minut.
+header.eyebrow	Velora · Rozliczenia
+header.title	Plany i rozliczenia
+header.subtitle	Zarządzaj subskrypcją, metodami płatności i historią płatności
+header.totalSpent	Łącznie wydano
+header.monthsWithUs	Miesięcy z nami
+header.saved	Zaoszczędzono
+header.nextCharge	Następne obciążenie
+header.currentPlan	OBECNY PLAN
+header.noPlanName	Brak planu
+header.noPlan	Brak aktywnej subskrypcji
+header.active	Aktywny
+header.activeUntil	Aktywny · do {{date}}
+header.trialPlanName	Plan próbny
+header.trial	Okres próbny
+header.trialUntil	Okres próbny · do {{date}}
+header.expired	Wygasł
+header.percentRate	{{rate}}% sprzedaży
+header.modePercent	Plan procentowy
+header.modeFixed	Stały
+header.modeCombo	Łączony
+header.unpaid	Plan nieopłacony
+header.awaitingPayment	Oczekuje na płatność
+mode.title	Model płatności
+mode.subscription	Stała subskrypcja
+mode.percent	% sprzedaży
+mode.combo	Połączenie stałej opłaty i %
+mode.short.subscription	Stały
+mode.short.percent	Procent
+mode.short.combo	Łączony
+mode.descriptions.subscription	Płać stałą kwotę co miesiąc. Przewidywalnie i korzystnie.
+mode.descriptions.percent	Bez stałej opłaty: {{rate}}% każdej sprzedaży, także gotówkowej.
+mode.descriptions.combo	Połowa abonamentu + {{rate}}% każdej sprzedaży, także gotówkowej.
+mode.badges.popular	Popularny
+mode.badges.flexible	Elastyczny
+mode.percentCard.title	Model „3% sprzedaży”
+mode.percentCard.description	Płać tylko, gdy zarabiasz: 3% każdej sprzedaży, bez stałej opłaty abonamentowej. Płatności online są dzielone od razu; gotówka i doładowania depozytów są sumowane i trafiają na jedną fakturę co miesiąc.
+mode.percentCard.noFixed	Bez stałej opłaty
+mode.percentCard.payForResult	Płać za efekt
+mode.percentCard.oneClick	Aktywacja jednym kliknięciem
+mode.percentCard.cta	Aktywuj model 3%
+mode.percentCard.ctaShort	Aktywuj 3%
+mode.activateSuccess	Model płatności został zaktualizowany
+mode.activateError	Nie udało się zaktualizować modelu płatności
+mode.alreadyActive	Ten model płatności jest już aktywny — poniżej możesz odnowić lub zmienić plan
+mode.confirmSwitchTitle	Zmienić model płatności?
+mode.confirmSwitchMessage	Twoja subskrypcja jest aktywna. Zmiana zacznie obowiązywać od razu, a pozostała część opłaconego okresu PRZEPADA CAŁKOWICIE: niewykorzystane dni nie są zwracane ani przenoszone.
+mode.termsTitle	Potwierdź warunki planu
+mode.termsMessage	W tym planie platforma zatrzymuje {{rate}}% każdej sprzedaży.\n\nW przypadku płatności online opłata jest pobierana automatycznie w momencie płatności. W przypadku gotówki, terminala i doładowań depozytów NIE jest pobierana od razu — kumuluje się, a raz w miesiącu otrzymasz osobną fakturę.\n\nMasz {{days}} dni na opłacenie faktury. Jeśli nie zostanie opłacona na czas, dostęp do CRM i miniaplikacji klientów zostanie zawieszony do czasu zapłaty.\n\nAktualną kwotę do zapłaty zobaczysz w Rozliczeniach; możesz zapłacić w dowolnym momencie, także z wyprzedzeniem.
+mode.termsConfirm	Akceptuję warunki
+mode.termsMinimum	Minimalna miesięczna opłata wynosi {{amount}} {{currency}}. Jeśli w miesiącu kalendarzowym platforma zarobiła na Twoim studiu mniej niż tę kwotę (na przykład nie było sprzedaży przez CRM), zostanie zafakturowana różnica. Jeśli zarobisz więcej niż minimum, faktura nie zostanie wystawiona. Nieopłacona minimalna opłata zawiesza dostęp tak samo jak nieopłacona faktura prowizyjna.
+mode.termsBurn	UWAGA: Pozostał Ci opłacony okres. Zmiana modelu rozliczeń powoduje jego CAŁKOWITĄ UTRATĘ — niewykorzystane dni nie są zwracane ani przenoszone.
+mode.termsCombo	Zmiana to ZAKUP: natychmiast po potwierdzeniu zobaczysz kwotę do zapłaty. Pozostała część bieżącego opłaconego okresu przepada — nie jest zwracana ani przenoszona. Model stały + % aktywuje się DOPIERO po płatności; do tego czasu Twój plan pozostaje bez zmian i nic nie jest naliczane.
+combo.rateBadge	{{rate}}%
+combo.summary	Stała opłata {{fixed}}/mies. + {{rate}}% sprzedaży (gotówka fakturowana co miesiąc)
+combo.cta	Aktywuj plan łączony
+combo.ctaShort	Aktywuj połączenie
+period.1	1 miesiąc
+period.3	3 miesiące
+period.6	6 miesięcy
+period.12	1 rok
+period.24	2 lata
+period.title	Okres płatności
+period.discountActive	Rabat {{percent}}% jest aktywny
+period.noDiscount	Bez rabatu
+period.discountLabel	−{{percent}}% rabatu
+calculator.title	Parametry kalkulacji
+calculator.monthlyTurnover	Twój miesięczny obrót online
+calculator.turnoverRangeMin	50 tys.
+calculator.turnoverRangeMax	3 mln+
+calculator.chooseFeeLabel	Wybierz stawkę prowizji (wpływa na funkcje)
+calculator.feeOptions.basic	Podstawowa
+calculator.feeOptions.standard	Standardowa
+calculator.feeOptions.pro	Pro
+calculator.feeOptions.max	Maksymalna
+calculator.chooseFixedLabel	Wybierz stałą część podstawową (prowizja za obsługę płatności to zawsze 3%)
+calculator.fixedOptions.start	Start
+calculator.fixedOptions.optima	Optima
+calculator.fixedOptions.business	Business
+calculator.economyPercentTitle	OSZCZĘDNOŚĆ NA PLANIE
+calculator.economyComboTitle	OSZCZĘDNOŚĆ NA PLANIE ŁĄCZONYM
+calculator.turnover	Obrót studia
+calculator.systemFee	Opłata systemowa
+calculator.totalMonthlyPayment	ŁĄCZNA MIESIĘCZNA PŁATNOŚĆ
+calculator.onlyPayForResult	Nie płacisz stałej opłaty, tylko za rezultaty
+calculator.activatePercent	Aktywuj model {{percent}}%
+calculator.baseSubscription	Subskrypcja podstawowa (stała)
+calculator.acquiringFee	Obsługa płatności / prowizja
+calculator.activateCombo	Aktywuj plan łączony
+planCards.bestChoice	Najlepszy wybór
+planCards.current	Obecny
+planCards.perMonth	/ mies.
+planCards.currentPlan	Obecny plan
+planCards.yourPrice	Twoja cena
+planCards.staffLimit	Do {{count}} pracowników
+planCards.staffUnlimited	Bez limitu pracowników
+paymentSchedule.title	Harmonogram płatności
+paymentSchedule.total	Łącznie do zapłaty
+paymentSchedule.morePayments	+ {{count}} kolejnych płatności po {{amount}}
+paymentSchedule.processing	Przekierowujemy do płatności…
+paymentSchedule.payFor	Zapłać za {{count}} miesięcy
+paymentSchedule.vatNote	Bez VAT — podatek zostanie dodany w kasie zgodnie z Twoim krajem
+trust.title	Dlaczego zaufało nam ponad 2 400 firm
+trust.reviews.0.text	Przeszliśmy z Altegio. Różnica jest jak między taksówką a prywatnym odrzutowcem.
+trust.reviews.0.author	Maria K., FORM Pilates
+trust.reviews.1.text	Najlepsze jest to, że dokładnie wiem, ile płacę co miesiąc. Bez niespodzianek.
+trust.reviews.1.author	Artem N., Barbershop Bros
+trust.reviews.2.text	Wsparcie odpowiedziało w 4 minuty. Nigdzie indziej tego nie widziałam.
+trust.reviews.2.author	Elena D., SPA LUNA
+upgrade.priceLine	Cena {{price}}/mies.
+upgrade.discountNote	 {{percent}}% rabatu przy płatności za {{period}} miesięcy
+upgrade.planLabel	Plan
+upgrade.periodLabel	Okres
+upgrade.periodValue_one	{{count}} miesiąc
+upgrade.periodValue_few	{{count}} miesiące
+upgrade.periodValue_many	{{count}} miesięcy
+upgrade.discountLabel	Rabat
+upgrade.scheduledBadge	Od {{date}} — plan „{{plan}}”
+upgrade.vatNote	Bez VAT — podatek zostanie dodany przy płatności na podstawie danych firmy; firmy z UE z numerem VAT korzystają z mechanizmu odwrotnego obciążenia.
+method.notLinked	Niepołączona
+method.badgeTitle	Metoda płatności jest zabezpieczona
+method.tokenSub	Token dostawcy · wygasa {{expiry}}
+method.tokenNote	Rzeczywiste dane karty przechowuje dostawca płatności (PCI DSS L1). Zachowujemy tylko jednorazowy token do odnowień.
+method.securityTitle	Standardy ochrony danych
+method.security.pciDss	Szyfrowanie PCI DSS poziomu 1
+method.security.secure3d	Ochrona transakcji 3D Secure
+method.security.noStorage	Dane karty nigdy nie przechodzą przez nasze serwery
+method.security.autoLink	Karta zostanie połączona przy pierwszej płatności
+method.noCardDetail	Nie musisz podawać danych osobno — płatność odbywa się na bezpiecznej stronie Stripe.
+method.renewDone	Faktura została utworzona — płatność jest przetwarzana
+method.renewBusy	Tworzenie faktury…
+method.renewSuccess	Faktura odnowienia została utworzona
+method.renewError	Nie udało się utworzyć faktury. Spróbuj ponownie.
+method.renewNow	Odnów teraz kartą •••• {{last4}}
+method.autopayTitle	Ustawienia automatycznej płatności
+method.autopaySuccess	Ustawienie zapisane
+method.autopayError	Nie udało się zapisać ustawienia. Spróbuj ponownie.
+method.autopay.cardOnly	Dostępne przy płatności kartą
+method.autopay.autoRenew.label	Automatyczne odnowienie
+method.autopay.autoRenew.desc	Wyłącz, aby anulować po zakończeniu opłaconego okresu
+method.autopay.autoRenew.until	Subskrypcja nie odnowi się — dostęp do {{date}}
+method.autopay.emailNotify.label	Powiadomienia e-mail
+method.autopay.emailNotify.desc	Faktura jest wysyłana e-mailem po każdej płatności
+method.autopay.remind3d.label	Przypomnij 3 dni wcześniej
+method.autopay.remind3d.desc	Przypomnimy Ci przed automatycznym obciążeniem
+method.autopay.sms.label	Powiadomienie SMS
+method.autopay.sms.desc	Wiadomość SMS jest wysyłana przy obciążeniu
+method.portal.title	Dane rozliczeniowe i VAT
+method.portal.subtitle	Faktury, połączona karta i historia obciążeń są w portalu klienta Stripe.
+method.portal.cta	Otwórz w Stripe
+method.ibanBadgeLabel	Przelew bankowy (SEPA)
+method.ibanBadgeNote	Faktury przychodzą e-mailem z linkiem do płatności — nic nie jest automatycznie pobierane z karty. Możesz też zapłacić wcześniej na stronie faktury.
+invoices.title	Historia płatności
+invoices.totalPaid	łącznie zapłacono {{amount}}
+invoices.exportCsv	Eksportuj CSV
+invoices.exportError	Nie udało się wyeksportować CSV. Spróbuj ponownie.
+invoices.receiptError	Nie udało się otworzyć faktury. Spróbuj ponownie.
+invoices.invoiceNo	Faktura #{{id}}
+invoices.methodCard	Opłacono kartą
+invoices.methodIban	Opłacono przelewem bankowym (IBAN)
+invoices.syncHint	Sprawdź status w usłudze płatniczej
+invoices.syncChanged	Status zaktualizowano: {{status}}
+invoices.syncUnchanged	Usługa płatnicza potwierdziła ten sam status
+invoices.syncError	Nie udało się sprawdzić statusu. Spróbuj ponownie.
+invoices.kindOfflineFee	Prowizja za sprzedaż offline
+invoices.kindMinFee	Minimalna opłata miesięczna
+invoices.kindOnlineFee	Prowizja za płatności online
+invoices.methodWithheld	Pobrano przez Stripe przy płatności
+table.date	Data
+table.description	Opis
+table.amount	Kwota
+table.status	Status
+table.receipt	Faktura
+status.paid	Opłacono
+status.pending	Oczekuje
+status.failed	Nieopłacono
+status.refunded	Zwrócono
+empty.noInvoices	Nie ma jeszcze faktur — pojawią się po pierwszej płatności.
+empty.noCard	Twoja karta pojawi się automatycznie po pierwszej płatności.
+empty.monthsWithUs	Nie kupiono jeszcze subskrypcji
+empty.noData	Brak danych
+savings.title	Twoje oszczędności
+savings.prepayTitle	Twoje oszczędności przy płatności z góry
+savings.emptyState	Wybierz dłuższy okres i zacznij oszczędzać
+savings.youSave	Oszczędzasz {{amount}} przez {{months}} miesięcy
+savings.freeMonths	To jak {{count}} darmowych miesięcy
+savings.amountLabel	{{amount}} oszczędności
+savings.comparedToMonthly	w porównaniu z płatnością miesięczną
+savings.forMonths_one	Za {{count}} miesiąc
+savings.forMonths_few	Za {{count}} miesiące
+savings.forMonths_many	Za {{count}} miesięcy
+pay	Zapłać
+continuePlan	Kontynuuj plan
+payModal.titleNew	Rozpocznij plan {{plan}}
+payModal.titleSwitch	Przejdź na {{plan}}
+payModal.titleRenew	Odnów {{plan}}
+payModal.totalLabel	Twój plan będzie kosztować
+payModal.burnWarning	Przejście na inny plan uruchamia okres od nowa: pozostała część Twojego planu {{plan}} PRZEPADA — nie jest zwracana ani przenoszona. Odnowienie tego samego planu ją zachowuje.
+payModal.switched	Plan został zmieniony: nie ma nic do zapłaty — zmiana została pokryta z pozostałej części bieżącego okresu.
+payModal.renewNote	To odnawia ten sam plan: kupione miesiące zostaną dodane do obecnego opłaconego okresu. Nic nie przepada.
+payModal.cardNote	Płatność kartą na bezpiecznej stronie Stripe · zwrot w ciągu 7 dni
+payModal.freeUntil	Do {{date}} nic nie zostanie pobrane: pozostało Ci {{count}} dni opłaconego okresu. Rozliczenia rozpoczną się tego dnia.
+payModal.taxLabel	VAT
+payModal.taxLine	VAT {{rate}}%
+payModal.reverseCharge	Odwrotne obciążenie
+payModal.totalWithTax	Łącznie z VAT
+payModal.taxServerNote	Podatek jest obliczany na podstawie danych rozliczeniowych. Faktura pokaże tę samą kwotę.
+payModal.taxReview	Nie mogliśmy ustalić podatku na podstawie danych rozliczeniowych, dlatego suma jest pokazana bez niego i płatność nie może zostać zakończona. Sprawdź kraj i adres płatnika lub skontaktuj się ze wsparciem.
+offlineFee.title	Opłata za sprzedaż offline
+offlineFee.accruing	Naliczona z gotówki i depozytów według stawki {{rate}}%. Faktura jest wystawiana co miesiąc; masz {{days}} dni na zapłatę.
+offlineFee.due	Faktura została wystawiona. Pozostało dni na płatność: {{days}}.
+offlineFee.suspended	Płatność jest po terminie — dostęp do CRM i miniaplikacji został zawieszony.
+offlineFee.pay	Zapłać
+offlineFee.suspendedMin	Minimalna miesięczna opłata jest po terminie — dostęp do CRM i miniaplikacji został zawieszony.
+offlineFee.alsoAccruing	Dodatkowo nalicza się w tym miesiącu: {{amount}} — trafi na następną fakturę.
+offlineFee.minimum	Minimalna miesięczna opłata wynosi {{amount}}. Jeśli zarobisz mniej w ciągu miesiąca, dopłacisz różnicę; jeśli więcej, faktura nie zostanie wystawiona.
+offlineFee.pendingBill	Naliczono według poprzedniego modelu, oczekuje na fakturę.
+offlineFee.notBilledYet	Faktura nie została jeszcze wystawiona: naliczona kwota jest niższa niż minimalna kwota faktury lub faktura jest nadal przygotowywana. Nic nie przepada — trafi na następną fakturę.
+trial.title	Oferta dla nowych studiów
+trial.subtitle	Twoje studio zostało właśnie utworzone
+trial.headline	{{days}} dni za darmo
+trial.noCard	Karta nie jest wymagana — teraz nie masz nic do zapłaty
+trial.perks.allModules	Pełny dostęp do każdego modułu: terminarza, klientów, finansów, powiadomień i Velora AI
+trial.perks.noCommitment	Bez zobowiązań: jeśli nie pasuje, po prostu nie odnawiaj
+trial.perks.keepData	Wszystko, co dodasz w okresie próbnym, pozostaje Twoje
+trial.activate	Aktywuj
+trial.decline	Odrzuć
+trial.cardHint	Nie aktywowano jeszcze bezpłatnego okresu dla tego studia. Pozostanie dostępny, dopóki nie kupisz planu.
+profile.title	Dane rozliczeniowe
+profile.editTitle	Edytuj dane rozliczeniowe
+profile.subtitle	Twój adres trafia na fakturę i określa stawkę podatku. Jest zapisany na koncie — nie zapytamy ponownie w innym studiu.
+profile.subtitlePay	Wypełnij raz, a następnym razem płatność przejdzie od razu. Twój adres trafia na fakturę i określa stawkę podatku.
+profile.cardTitle	Dane rozliczeniowe
+profile.cardSubtitle	Są zapisane na Twoim koncie i używane we wszystkich studiach. Tak pojawiają się na fakturze.
+profile.cardEmpty	Jeszcze nie wypełniono — poprosimy o nie przed pierwszą płatnością. Możesz dodać je teraz.
+profile.add	Dodaj dane rozliczeniowe
+profile.edit	Edytuj
+profile.save	Zapisz
+profile.saveAndPay	Zapisz i przejdź do płatności
+profile.cancel	Anuluj
+profile.saved	Dane rozliczeniowe zapisano
+profile.vatNone	Nie podano
+profile.fields.country	Kraj lub region
+profile.fields.countryPlaceholder	Wybierz kraj
+profile.fields.address	Adres
+profile.fields.line1	Wiersz adresu 1
+profile.fields.line1Placeholder	Ulica i numer
+profile.fields.line2	Wiersz adresu 2 — opcjonalnie
+profile.fields.line2Placeholder	Mieszkanie, lokal, numer jednostki itp.
+profile.fields.postalCode	Kod pocztowy
+profile.fields.postalCodePlaceholder	110 00
+profile.fields.city	Miasto
+profile.fields.cityPlaceholder	Praga
+profile.fields.vat	Numer VAT — opcjonalnie
+profile.fields.vatPlaceholder	{{prefix}}12345678
+profile.fields.vatHint	Tylko dla firm. Numer jest sprawdzany w rejestrze UE (VIES) podczas zapisywania — nie przyjmujemy niezweryfikowanych numerów. Dzięki prawidłowemu numerowi firma w innym kraju UE jest fakturowana bez podatku (odwrotne obciążenie). Osoby prywatne go nie mają — pozostaw pole puste.
+profile.fields.countrySearch	Zacznij wpisywać nazwę
+profile.fields.countryNotFound	Nie znaleziono kraju
+profile.fields.vatOutsideEu	Nie prosimy o numer VAT: poza UE podatek zależy od kraju płatnika, a nie od numeru, więc nie wpływa on na fakturę.
+profile.fields.vatPending	Twój numer został zapisany, ale rejestr UE był wówczas niedostępny, więc nie jest jeszcze potwierdzony i następna faktura obejmie pełny VAT. Nie musisz wpisywać go ponownie: będziemy go dalej sprawdzać, a gdy tylko rejestr odpowie, podatek przestanie być naliczany. W przypadku już opłaconej faktury wsparcie zwróci podatek.
+profile.errors.required	To pole jest wymagane
+profile.preview.invoice	Faktura
+profile.preview.billTo	Nabywca
+profile.preview.note	Tak Twoje dane będą widoczne na każdej fakturze. Możesz je zmienić w dowolnym momencie w Plan i rozliczenia → Metoda płatności.

@@ -1,0 +1,354 @@
+{
+  "loading": "Betöltés…",
+  "chModal": {
+    "eyebrow": "Értesítési csatorna",
+    "connected": "Kapcsolódva",
+    "notConnected": "Nincs kapcsolódva",
+    "setup": "Kapcsolat beállítása",
+    "details": "Kapcsolat részletei",
+    "ready": "A csatorna működik",
+    "readyHint": "Az engedélyezett események értesítései automatikusan elküldésre kerülnek.",
+    "bot": "Bot",
+    "token": "Token",
+    "phone": "Szám",
+    "account": "Fiók",
+    "sender": "Feladó"
+  },
+  "channels": {
+    "title": "Kézbesítési csatornák",
+    "connect": "Csatlakoztatás",
+    "connected": "Kapcsolódva",
+    "openSettings": "{{channel}} beállításai",
+    "waLockedHint": "A csatorna akkor nyílik meg, amikor a Meta rendelkezik a fizetési móddal, hitelesített vállalkozással és jóváhagyott sablonokkal",
+    "waBlocker": {
+      "payment": "Nincs fizetési mód — az emlékeztetők nem érkeznek meg. Állítsa be",
+      "verification": "A vállalkozás nincs hitelesítve a Metánál — napi 250-es korlát. Javítási útmutató",
+      "templates": "A sablonok még Meta-felülvizsgálat alatt állnak — semmi nem lesz elküldve. Részletek"
+    }
+  },
+  "roles": {
+    "client": "Ügyfél",
+    "trainer": "Edző",
+    "admin": "Rendszergazda",
+    "owner": "Tulajdonos",
+    "activeCount_one": "{{count}} aktív",
+    "activeCount_other": "{{count}} aktív"
+  },
+  "matrix": {
+    "saving": "Mentés…",
+    "allSaved": "Minden módosítás mentve",
+    "notSaved": "Nincs mentve",
+    "activateAll": "Összes aktiválása",
+    "deactivateAll": "Minden jelölőnégyzet törlése",
+    "scenariosFor": "Forgatókönyvek ehhez: {{role}}",
+    "eventColumn": "Rendszeresemény",
+    "noActiveChannels": "Nincsenek aktív csatornák",
+    "noActiveChannelsHint": "Kapcsoljon be legalább egy kézbesítési csatornát a bal oldali panelen",
+    "adviceLabel": "Tipp:",
+    "advice": "Állítsa be szerepenként külön, mi hová kerül elküldésre — a Velora automatikusan kezeli.",
+    "tiers": {
+      "critical": "Kötelező · nem kapcsolható ki",
+      "operational": "Működési",
+      "optional": "Opcionális"
+    },
+    "lock": {
+      "critical": "Kötelező értesítés — nem kapcsolható ki",
+      "lastChannel": "Utolsó kézbesítési csatorna — nem kapcsolható ki"
+    },
+    "channelDisconnected": "A csatorna nincs csatlakoztatva",
+    "activeCount_one": "Aktív eseményindító: {{count}} / {{total}}",
+    "activeCount_other": "Aktív eseményindító: {{count}} / {{total}}",
+    "configureFor_one": "Csatornák beállítása {{count}} rendszerindítóhoz",
+    "configureFor_other": "Csatornák beállítása {{count}} rendszerindítóhoz"
+  },
+  "events": {
+    "c1": {
+      "title": "Foglalás megerősítve",
+      "desc": "Sikeres foglalás után"
+    },
+    "c2": {
+      "title": "Óraemlékeztető",
+      "desc": "24 órával és 2 órával előtte"
+    },
+    "c3": {
+      "title": "Az óra elmarad",
+      "desc": "Amikor az edző vagy a stúdió lemondja"
+    },
+    "c4": {
+      "title": "Sikeres fizetés",
+      "desc": "Bizonylat a sikeres terhelés után"
+    },
+    "c5": {
+      "title": "Kevés óra maradt",
+      "desc": "Amikor 1–2 látogatás marad a csomagban"
+    },
+    "c6": {
+      "title": "A csomag lejár",
+      "desc": "3 nappal a lejárat előtt"
+    },
+    "c7": {
+      "title": "Születésnap",
+      "desc": "Köszöntés különleges ajánlattal"
+    },
+    "c8": {
+      "title": "Értékelési kérés",
+      "desc": "Órán való részvétel után"
+    },
+    "c9": {
+      "title": "Visszatérítés",
+      "desc": "Lemondáskor és a visszatérítés feldolgozásakor"
+    },
+    "c10": {
+      "title": "Az óra még nincs kifizetve",
+      "desc": "Az ügyfél részt vett, de még nem fizetett"
+    },
+    "c11": {
+      "title": "Az óra át lett ütemezve",
+      "desc": "Az idő, terem vagy edző megváltozott"
+    },
+    "c12": {
+      "title": "Bónusz jóváírva",
+      "desc": "Pont vagy bónusz került az ügyfélhez"
+    },
+    "c13": {
+      "title": "Kávé az óra után",
+      "desc": "Ki megy a csoportból kávézni"
+    },
+    "t1": {
+      "title": "Új foglalás edzőnél",
+      "desc": "Egy ügyfél személyes alkalmat foglalt"
+    },
+    "t2": {
+      "title": "Az ügyfél lemondta a foglalást",
+      "desc": "Az ügyfél kevesebb mint 2 órával előtte mondta le"
+    },
+    "t3": {
+      "title": "Óraemlékeztető",
+      "desc": "1 órával a kezdés előtt"
+    },
+    "t4": {
+      "title": "Csoportnévsor",
+      "desc": "30 perccel csoportos óra előtt"
+    },
+    "t5": {
+      "title": "Időpontváltozás",
+      "desc": "A rendszergazda módosította az időpontot vagy helyszínt"
+    },
+    "t6": {
+      "title": "Bér elszámolva",
+      "desc": "Heti kifizetési számítás"
+    },
+    "t7": {
+      "title": "Új edzőértékelés",
+      "desc": "Az ügyfél értékelést adott az óra után"
+    },
+    "t8": {
+      "title": "Az ügyfél születésnapja",
+      "desc": "Emlékeztető személyes felköszöntéshez"
+    },
+    "t9": {
+      "title": "Az óra elmarad",
+      "desc": "A stúdió vagy rendszergazda lemondta az óráját"
+    },
+    "a1": {
+      "title": "Új online foglalás",
+      "desc": "Az ügyfél a webhelyen vagy widgeten foglalt"
+    },
+    "a2": {
+      "title": "Utolsó pillanatos lemondás",
+      "desc": "Kevesebb mint 1 órával az óra előtt"
+    },
+    "a3": {
+      "title": "Új ügyfél a rendszerben",
+      "desc": "Új felhasználó regisztrációja"
+    },
+    "a4": {
+      "title": "Fizetés érkezett",
+      "desc": "Bármely sikeres terhelés"
+    },
+    "a6": {
+      "title": "A csomagok fogynak",
+      "desc": "Ügyfelek csoportja, akiknek ≤1 órájuk maradt"
+    },
+    "a7": {
+      "title": "Ütemezési ütközés",
+      "desc": "Átfedő órák a naplóban"
+    },
+    "a8": {
+      "title": "Napi jelentés",
+      "desc": "Nap végi összefoglaló"
+    },
+    "a9": {
+      "title": "Bejelentkezési kísérlet",
+      "desc": "Bejelentkezés új eszközről"
+    },
+    "a10": {
+      "title": "Visszatérítés",
+      "desc": "A rendszergazda visszatérítést adott ki"
+    },
+    "o1": {
+      "title": "Napi összefoglaló",
+      "desc": "A nap bevétele, foglalásai és részvétele"
+    },
+    "o2": {
+      "title": "Heti jelentés",
+      "desc": "Mutatók: ügyfélnövekedés, LTV, konverzió"
+    },
+    "o3": {
+      "title": "Nagy összegű fizetés",
+      "desc": "A beállított küszöb feletti terhelés"
+    },
+    "o4": {
+      "title": "Adatanomália",
+      "desc": "Meredek visszaesés a foglalásokban vagy bevételben"
+    },
+    "o5": {
+      "title": "Új munkatárs",
+      "desc": "A rendszergazda új fiókot hozott létre"
+    },
+    "o6": {
+      "title": "Csomagmegújítás",
+      "desc": "Emlékeztető a Velora-előfizetés fizetésére"
+    },
+    "o7": {
+      "title": "Hozzáférési jogok módosultak",
+      "desc": "A munkatárs engedélyei módosultak"
+    },
+    "o8": {
+      "title": "KPI elérve",
+      "desc": "A havi cél teljesült"
+    },
+    "o9": {
+      "title": "Adatok exportálása",
+      "desc": "Valaki exportálta az ügyféladatbázist"
+    }
+  },
+  "tg": {
+    "title": "Telegram",
+    "subtitleConnected": "A csatorna csatlakoztatva",
+    "subtitleDisconnected": "Kapcsolja össze az értesítési botot",
+    "connected": "Kapcsolódva",
+    "pasteToken": "Illessze be az @BotFather-től kapott bot tokent.",
+    "invalidToken": "Érvénytelen tokenformátum",
+    "howToGet": "Token beszerzése:",
+    "steps": {
+      "1": "Nyissa meg a @BotFather-t a Telegramban",
+      "2": "Küldje el a /newbot parancsot, és kövesse az utasításokat",
+      "3": "Másolja ki a kiadott tokent",
+      "4": "Illessze be a fenti mezőbe"
+    },
+    "connect": "Csatlakoztatás",
+    "disconnect": "Kapcsolat bontása",
+    "disconnectTitle": "Bontja a Telegram-kapcsolatot?",
+    "disconnectMessage": "Az ügyfelek és a munkatársak nem kapnak több értesítést ezen a csatornán.",
+    "close": "Bezárás",
+    "cancel": "Mégse"
+  },
+  "emailCh": {
+    "title": "E-mail",
+    "subtitle": "Feladói cím az ügyféllevelekhez",
+    "verifiedLabel": "Ellenőrizve",
+    "emailLabel": "Feladó e-mail-címe",
+    "emailPlaceholder": "admin@studio.com",
+    "invalidEmail": "Adjon meg érvényes e-mail-címet",
+    "sendCode": "Kód küldése",
+    "codeSentTo": "Kód elküldve ide:",
+    "codeHint": "Adja meg az e-mailben kapott 6 számjegyű kódot.",
+    "codeLabel": "Ellenőrzőkód",
+    "resend": "Kód újraküldése",
+    "viaVelora": "Az e-mailek a Velora szerverén keresztül, az Ön nevében kerülnek kiküldésre.",
+    "wrongCode": "Érvénytelen vagy lejárt kód",
+    "verify": "Ellenőrzés",
+    "back": "Vissza",
+    "cancel": "Mégse"
+  },
+  "wa": {
+    "title": "WhatsApp",
+    "subtitleConnected": "A csatorna csatlakoztatva",
+    "subtitleDisconnected": "Jelentkezzen be Meta-vállalkozási fiókjával",
+    "connected": "Kapcsolódva",
+    "paymentRequiredTitle": "Kártyára lesz szükség",
+    "paymentRequired": "A szám csatlakoztatása ingyenes, de a Meta csak kártya hozzáadása után kézbesíti az ügyfélemlékeztetőket. Ezt külön adja hozzá —",
+    "paymentMissingTitle": "Nincs fizetési mód",
+    "paymentMissing": "Jelenleg csak a bot bejövő üzenetekre adott válaszai működnek. A Meta elutasítja az emlékeztetőket, visszaigazolásokat és körleveleket, amíg nem ad hozzá kártyát —",
+    "paymentOkTitle": "Fizetés csatlakoztatva",
+    "paymentOk": "az értesítések teljes körűen kézbesülnek.",
+    "paymentUnknown": "Nem tudtuk ellenőrizni a fizetési módot a Metánál — a következő próbálkozáskor megjelenítjük az állapotot.",
+    "paymentLink": "Meta számlázási központ",
+    "paymentRecheck": "Ellenőrzés újra",
+    "paymentFound": "Fizetés csatlakoztatva",
+    "verify": {
+      "title": "A vállalkozás nincs hitelesítve a Metánál",
+      "lead": "A szám működik, de csökkentett napi 250 egyedi címzett korláttal. A hitelesítés feloldja a korlátot és lehetővé teszi a teljes indulást. A stúdiónak ezt magának kell elvégeznie — a WhatsApp-fiók az Öné, a Velora nem járhat el az Ön nevében.",
+      "stepsTitle": "A vállalkozás hitelesítése:",
+      "step1a": "Nyissa meg a",
+      "link": "Meta Business Security Centert",
+      "step1b": "és válassza a „Hitelesítés indítása” lehetőséget. Rendszergazdai jog kell a vállalkozási fiókhoz.",
+      "step2": "Töltse ki a jogi adatokat: a név pontosan az iratok szerint, cím, telefon és weboldal. A webhelynek működnie kell és HTTPS-t kell használnia.",
+      "step3": "Töltsön fel vállalkozási regisztrációs dokumentumot, és várja meg, amíg a Meta elolvassa.",
+      "step4": "Erősítse meg kapcsolatát a vállalkozással: e-mail a webhely domainjén, hívás vagy SMS a megadott telefonra, illetve domainhitelesítés.",
+      "step5": "Várja meg a döntést — általában 1–5 munkanap. Az állapot ugyanabban a Biztonsági központban látható; elutasításkor a Meta megadja az okot és új jelentkezést enged.",
+      "docsTitle": "Elfogadható dokumentumok (minden csoportból egy):",
+      "doc1": "Regisztráció: alapító okirat, cégjegyzékkivonat, üzleti engedély vagy adózási dokumentum.",
+      "doc2": "Jelenlét igazolása: működő webhely, hivatalos közösségimédia-oldal vagy üzleti címtárbejegyzés.",
+      "pitfallTitle": "A leggyakoribb elutasítás",
+      "pitfall": "A Meta-fiókban és a dokumentumban szereplő cégnévnek karakterről karakterre egyeznie kell, beleértve a cégformát és az írásjeleket is. A „Romashka LLC” és a „Romashka, LLC” különböző névnek számít."
+    },
+    "templatesTitle": "Üzenetsablonok",
+    "templates": "A Meta nem engedi, hogy először írjon az ügyfélnek előre jóváhagyott sablon nélkül. Hozzon létre sablont minden eseményhez — ellenőrzésre kerülnek, és jóváhagyás után működnek.",
+    "templatesAction": "Sablonok előkészítése",
+    "templatesPending": "Sablonok létrehozása…",
+    "templatesPartial": "A Meta néhány sablont elutasított: {{failed}}. A részletekhez nézze meg a naplót",
+    "templatesRejected": "— ezek az értesítések nem kerülnek kézbesítésre. Ellenőrizze a szöveget Meta-fiókjában, és hozza létre újra a sablonokat.",
+    "templatesPendingHint": "— a Metánál ez akár egy napot is igénybe vehet. {{approved}} már jóváhagyott és kézbesítésre kerül.",
+    "templatesOkTitle": "Sablonok jóváhagyva",
+    "paidWarning": "A WhatsApp-üzenetek fizetősek",
+    "approxPrice": "kb.",
+    "pricingLoading": "Aktuális ár betöltése…",
+    "perMessage": "üzenetenként",
+    "viaMeta": "közvetlenül a Meta számlázza",
+    "windowNotice": "A kézbesítés csak a 24 órás beszélgetési ablakon belül garantált.",
+    "connect": "WhatsApp csatlakoztatása",
+    "disconnect": "Kapcsolat bontása",
+    "disconnectTitle": "Bontja a WhatsApp-kapcsolatot?",
+    "disconnectMessage": "Az ügyfelek és a munkatársak nem kapnak több értesítést ezen a csatornán.",
+    "close": "Bezárás",
+    "cancel": "Mégse",
+    "templatesDone_one": "Sablonok készen: {{count}}. Meta-ellenőrzésre vár",
+    "templatesDone_other": "Sablonok készen: {{count}}. Meta-ellenőrzésre vár",
+    "templatesRejectedTitle_one": "A Meta {{count}} sablont elutasított",
+    "templatesRejectedTitle_other": "A Meta {{count}} sablont elutasított",
+    "templatesPendingTitle_one": "{{count}} sablon felülvizsgálat alatt",
+    "templatesPendingTitle_other": "{{count}} sablon felülvizsgálat alatt",
+    "templatesOk_one": "{{count}} átment a Meta ellenőrzésén — az értesítések kézbesülnek.",
+    "templatesOk_other": "Mind a(z) {{count}} átment a Meta ellenőrzésén — az értesítések kézbesülnek."
+  },
+  "tabs": {
+    "matrix": "Beállítások",
+    "log": "Kézbesítési napló"
+  },
+  "log": {
+    "title": "Kézbesítési napló",
+    "subtitle": "Mi ment ki, kinek és mikor, valamint hogyan ért véget az egyes küldés.",
+    "status": {
+      "sent": "Kézbesítve",
+      "rejected": "Elutasítva",
+      "error": "Kapcsolati hiba",
+      "pending": "Folyamatban"
+    },
+    "searchPlaceholder": "Telefon, e-mail vagy eseménykód",
+    "allChannels": "Minden csatorna",
+    "reset": "Visszaállítás",
+    "refreshing": "Frissítés…",
+    "otherEvent": "Küldés a katalóguson kívül",
+    "empty": "Még semmit sem küldtek",
+    "emptyHint": "Itt jelenik meg minden értesítés, amelyet a stúdió ügyfeleknek és munkatársaknak küld.",
+    "emptyFiltered": "Nincs találat",
+    "emptyFilteredHint": "Próbálja meg módosítani a szűrőket vagy másik számra keresni.",
+    "loadError": "Nem sikerült betölteni a naplót",
+    "loadErrorHint": "Frissítse az oldalt — ha ez nem segít, forduljon az ügyfélszolgálathoz.",
+    "range": "{{from}}–{{to}} / {{total}}",
+    "prev": "Vissza",
+    "next": "Következő"
+  }
+}

@@ -1,0 +1,294 @@
+== tr
+legal.terms	Hizmet koşulları
+legal.privacy	Gizlilik politikası
+tabs.plans	Planlar ve fiyatlar
+tabs.invoices	Ödeme geçmişi
+tabs.method	Ödeme yöntemi
+tabsShort.plans	Planlar
+tabsShort.invoices	Geçmiş
+tabsShort.method	Ödeme
+paymentsHistory.title	Tüm ödeme geçmişi
+paymentsHistory.subtitle	Bu stüdyoya ait tüm faturalar
+paymentsHistory.clearFilter	Temizle
+paymentsHistory.loadMore	Daha fazla yükle
+planNames.start	Start
+planNames.pro	Pro
+planNames.business	Business
+seats.title	Stüdyoda kaç ekip üyesi var?
+seats.hint	aylık {{amount}} tutarından başlayan fiyatlarla
+seats.stepNote	Her ek koltuk aylık {{amount}} tutarındadır
+seats.unlimitedNote	Sınırsız ekip
+seats.perSeat	Ekip üyesi başına
+limits.staff	Ekip
+limits.ai	Velora AI istekleri
+limits.unlimited	Sınırsız
+banner.trialEnds	Deneme süreniz {{date}} tarihinde bitiyor — bir plan seçin
+banner.renews	{{plan}} aboneliğiniz {{date}} tarihinde yenilenir
+banner.expires	{{plan}} aboneliğiniz {{date}} tarihinde sona erer
+banner.choosePlan	Plan seç
+banner.dismiss	Kapat
+banner.unpaid	Planınız ödenmemiş. Devam etmek için Planlar ve faturalandırma bölümünden ödeme yapın.
+banner.suspended	Plan faturası vadesi geçtiği için erişim askıya alındı. Planlar ve faturalandırma bölümünden ödeyin.
+paymentReturn.done	Ödeme tamamlandı — {{plan}} planı etkin.
+paymentReturn.processing	Ödeme işleniyor — aboneliğiniz birkaç dakika içinde etkinleştirilecek.
+header.eyebrow	Velora · Faturalandırma
+header.title	Planlar ve faturalandırma
+header.subtitle	Aboneliğinizi, ödeme yöntemlerinizi ve ödeme geçmişinizi yönetin
+header.totalSpent	Toplam harcama
+header.monthsWithUs	Bizimle geçen aylar
+header.saved	Tasarruf
+header.nextCharge	Sonraki tahsilat
+header.currentPlan	GEÇERLİ PLAN
+header.noPlanName	Plan yok
+header.noPlan	Etkin abonelik yok
+header.active	Etkin
+header.activeUntil	Etkin · {{date}} tarihine kadar
+header.trialPlanName	Deneme planı
+header.trial	Deneme süresi
+header.trialUntil	Deneme süresi · {{date}} tarihine kadar
+header.expired	Süresi doldu
+header.percentRate	Satışların %{{rate}}’i
+header.modePercent	Yüzde planı
+header.modeFixed	Sabit
+header.modeCombo	Karma
+header.unpaid	Plan ödenmemiş
+header.awaitingPayment	Ödeme bekleniyor
+mode.title	Ödeme modeli
+mode.subscription	Sabit abonelik
+mode.percent	Satışların %’si
+mode.combo	Sabit + % birleşimi
+mode.short.subscription	Sabit
+mode.short.percent	Yüzde
+mode.short.combo	Karma
+mode.descriptions.subscription	Her ay sabit bir tutar ödeyin. Öngörülebilir ve avantajlıdır.
+mode.descriptions.percent	Sabit ücret yok: nakit dahil her satışın %{{rate}}’i.
+mode.descriptions.combo	Yarım abonelik + nakit dahil her satışın %{{rate}}’i.
+mode.badges.popular	Popüler
+mode.badges.flexible	Esnek
+mode.percentCard.title	“Satışların %3’ü” modeli
+mode.percentCard.description	Yalnızca kazandığınızda ödeyin: sabit abonelik ücreti olmadan her satışın %3’ü. Çevrimiçi ödemeler anında bölünür; nakit ve depozito yüklemeleri birikir ve her ay tek fatura olarak gelir.
+mode.percentCard.noFixed	Sabit ücret yok
+mode.percentCard.payForResult	Sonuç için ödeme yapın
+mode.percentCard.oneClick	Tek tıkla etkinleştirme
+mode.percentCard.cta	%3 modelini etkinleştir
+mode.percentCard.ctaShort	%3’ü etkinleştir
+mode.activateSuccess	Ödeme modeli güncellendi
+mode.activateError	Ödeme modeli güncellenemedi
+mode.alreadyActive	Bu ödeme modeli zaten etkin — aşağıdan planı yenileyebilir veya değiştirebilirsiniz
+mode.confirmSwitchTitle	Ödeme modeli değiştirilsin mi?
+mode.confirmSwitchMessage	Aboneliğiniz etkin. Değişiklik hemen geçerli olur ve ödenmiş dönemin kalan kısmı TAMAMEN KAYBOLUR: kullanılmayan günler iade edilmez veya aktarılmaz.
+mode.termsTitle	Plan koşullarını onaylayın
+mode.termsMessage	Bu planda platform her satışın %{{rate}}’ini alır.\n\nÇevrimiçi ödemelerde ücret ödeme anında otomatik olarak kesilir. Nakit, terminal ve depozito yüklemelerinde HEMEN kesilmez — birikir ve ayda bir kez ayrı fatura alırsınız.\n\nFaturayı ödemek için {{days}} gününüz vardır. Zamanında ödenmezse CRM ve müşteri mini uygulamasına erişim ödenene kadar askıya alınır.\n\nGüncel ödenecek tutar Faturalandırma’da gösterilir; istediğiniz zaman, hatta önceden ödeme yapabilirsiniz.
+mode.termsConfirm	Koşulları kabul ediyorum
+mode.termsMinimum	Asgari aylık ücret {{amount}} {{currency}} tutarındadır. Bir takvim ayında platform stüdyonuzdan bu tutardan az kazanırsa fark faturalandırılır. Asgariden fazla kazanırsanız fatura olmaz. Ödenmemiş asgari ücret, ödenmemiş komisyon faturası gibi erişimi askıya alır.
+mode.termsBurn	DİKKAT: Ödenmiş süreniz kaldı. Faturalandırma modelini değiştirdiğinizde bu süreyi TAMAMEN KAYBEDERSİNİZ — kullanılmayan günler iade edilmez veya aktarılmaz.
+mode.termsCombo	Değişiklik bir SATIN ALMADIR: onaydan hemen sonra ödenecek tutarı görürsünüz. Mevcut ödenmiş dönemin kalanı kaybolur — iade edilmez veya aktarılmaz. Sabit + % modeli YALNIZCA ödemeden sonra etkinleşir; o zamana kadar planınız aynı kalır ve ücret alınmaz.
+combo.rateBadge	%{{rate}}
+combo.summary	Sabit {{fixed}}/ay + satışların %{{rate}}’i (nakit aylık faturalandırılır)
+combo.cta	Karma planı etkinleştir
+combo.ctaShort	Birleşimi etkinleştir
+period.1	1 ay
+period.3	3 ay
+period.6	6 ay
+period.12	1 yıl
+period.24	2 yıl
+period.title	Ödeme dönemi
+period.discountActive	%{{percent}} indirim etkin
+period.noDiscount	İndirim yok
+period.discountLabel	−%{{percent}} indirim
+calculator.title	Hesaplama parametreleri
+calculator.monthlyTurnover	Aylık çevrimiçi cironuz
+calculator.turnoverRangeMin	50 bin
+calculator.turnoverRangeMax	3 mn+
+calculator.chooseFeeLabel	Komisyon oranını seçin (özellikleri etkiler)
+calculator.feeOptions.basic	Temel
+calculator.feeOptions.standard	Standart
+calculator.feeOptions.pro	Pro
+calculator.feeOptions.max	Maksimum
+calculator.chooseFixedLabel	Sabit temel kısmı seçin (tahsilat ücreti her zaman %3’tür)
+calculator.fixedOptions.start	Start
+calculator.fixedOptions.optima	Optima
+calculator.fixedOptions.business	Business
+calculator.economyPercentTitle	PLAN TASARRUFU
+calculator.economyComboTitle	KARMA PLAN TASARRUFU
+calculator.turnover	Stüdyo cirosu
+calculator.systemFee	Sistem ücreti
+calculator.totalMonthlyPayment	TOPLAM AYLIK ÖDEME
+calculator.onlyPayForResult	Sabit ücret ödemezsiniz, yalnızca sonuç için ödeme yaparsınız
+calculator.activatePercent	%{{percent}} modelini etkinleştir
+calculator.baseSubscription	Temel abonelik (sabit)
+calculator.acquiringFee	Ödeme alma / ücret
+calculator.activateCombo	Karma planı etkinleştir
+planCards.bestChoice	En iyi seçim
+planCards.current	Mevcut
+planCards.perMonth	/ ay
+planCards.currentPlan	Mevcut plan
+planCards.yourPrice	Fiyatınız
+planCards.staffLimit	En fazla {{count}} ekip üyesi
+planCards.staffUnlimited	Sınırsız ekip
+paymentSchedule.title	Ödeme takvimi
+paymentSchedule.total	Toplam ödenecek
+paymentSchedule.morePayments	{{amount}} tutarında + {{count}} ek ödeme
+paymentSchedule.processing	Ödemeye yönlendiriliyorsunuz…
+paymentSchedule.payFor	{{count}} ay için öde
+paymentSchedule.vatNote	KDV hariç — vergi ülkenize göre ödeme sırasında eklenir
+trust.title	2.400’den fazla işletme neden bize güveniyor
+trust.reviews.0.text	Altegio’dan geçtik. Fark, taksi ile özel jet arasındaki fark gibi.
+trust.reviews.0.author	Maria K., FORM Pilates
+trust.reviews.1.text	En güzeli her ay tam olarak ne ödediğimi bilmek. Sürpriz yok.
+trust.reviews.1.author	Artem N., Barbershop Bros
+trust.reviews.2.text	Destek 4 dakikada yanıt verdi. Bunu başka hiçbir yerde görmedim.
+trust.reviews.2.author	Elena D., SPA LUNA
+upgrade.priceLine	Fiyat {{price}}/ay
+upgrade.discountNote	 {{period}} ay ödemede %{{percent}} indirim
+upgrade.planLabel	Plan
+upgrade.periodLabel	Dönem
+upgrade.periodValue_one	{{count}} ay
+upgrade.periodValue_other	{{count}} ay
+upgrade.discountLabel	İndirim
+upgrade.scheduledBadge	{{date}} tarihinden itibaren — “{{plan}}” planı
+upgrade.vatNote	KDV hariç — vergi şirket bilgilerinize göre ödeme sırasında eklenir; KDV numarası olan AB şirketleri ters vergilendirmeden yararlanır.
+method.notLinked	Bağlı değil
+method.badgeTitle	Ödeme yöntemi korunuyor
+method.tokenSub	Sağlayıcı belirteci · {{expiry}} tarihinde sona erer
+method.tokenNote	Gerçek kart verileri ödeme sağlayıcısı tarafından saklanır (PCI DSS L1). Yenilemeler için yalnızca tek kullanımlık belirteç tutarız.
+method.securityTitle	Veri koruma standartları
+method.security.pciDss	PCI DSS Seviye 1 şifreleme
+method.security.secure3d	3D Secure işlem koruması
+method.security.noStorage	Kart verileri asla sunucularımızdan geçmez
+method.security.autoLink	Kart ilk ödemede bağlanır
+method.noCardDetail	Verileri ayrıca girmeniz gerekmez — ödeme Stripe’ın güvenli sayfasında yapılır.
+method.renewDone	Fatura oluşturuldu — ödeme işleniyor
+method.renewBusy	Fatura oluşturuluyor…
+method.renewSuccess	Yenileme faturası oluşturuldu
+method.renewError	Fatura oluşturulamadı. Tekrar deneyin.
+method.renewNow	•••• {{last4}} kartıyla şimdi yenile
+method.autopayTitle	Otomatik ödeme ayarları
+method.autopaySuccess	Ayar kaydedildi
+method.autopayError	Ayar kaydedilemedi. Tekrar deneyin.
+method.autopay.cardOnly	Kartla ödeme yaparken kullanılabilir
+method.autopay.autoRenew.label	Otomatik yenileme
+method.autopay.autoRenew.desc	Ödenmiş dönemin sonunda iptal etmek için kapatın
+method.autopay.autoRenew.until	Abonelik yenilenmeyecek — {{date}} tarihine kadar erişim
+method.autopay.emailNotify.label	E-posta bildirimleri
+method.autopay.emailNotify.desc	Her ödemeden sonra fatura e-posta ile gönderilir
+method.autopay.remind3d.label	3 gün önce hatırlat
+method.autopay.remind3d.desc	Otomatik tahsilattan önce hatırlatacağız
+method.autopay.sms.label	SMS bildirimi
+method.autopay.sms.desc	Tahsilat yapıldığında kısa mesaj gönderilir
+method.portal.title	Fatura bilgileri ve KDV
+method.portal.subtitle	Faturalar, bağlı kart ve tahsilat geçmişi Stripe müşteri portalındadır.
+method.portal.cta	Stripe’ta aç
+method.ibanBadgeLabel	Banka havalesi (SEPA)
+method.ibanBadgeNote	Faturalar ödeme bağlantısıyla e-posta üzerinden gelir — karttan otomatik olarak hiçbir şey çekilmez. Fatura sayfasından daha erken de ödeme yapabilirsiniz.
+invoices.title	Ödeme geçmişi
+invoices.totalPaid	toplam ödenen {{amount}}
+invoices.exportCsv	CSV dışa aktar
+invoices.exportError	CSV dışa aktarılamadı. Tekrar deneyin.
+invoices.receiptError	Fatura açılamadı. Tekrar deneyin.
+invoices.invoiceNo	Fatura #{{id}}
+invoices.methodCard	Kartla ödendi
+invoices.methodIban	Banka havalesiyle ödendi (IBAN)
+invoices.syncHint	Durumu ödeme hizmetinden kontrol edin
+invoices.syncChanged	Durum güncellendi: {{status}}
+invoices.syncUnchanged	Ödeme hizmeti aynı durumu doğruladı
+invoices.syncError	Durum kontrol edilemedi. Tekrar deneyin.
+invoices.kindOfflineFee	Çevrimdışı satış komisyonu
+invoices.kindMinFee	Asgari aylık ücret
+invoices.kindOnlineFee	Çevrimiçi ödeme komisyonu
+invoices.methodWithheld	Ödeme sırasında Stripe tarafından kesildi
+table.date	Tarih
+table.description	Açıklama
+table.amount	Tutar
+table.status	Durum
+table.receipt	Fatura
+status.paid	Ödendi
+status.pending	Beklemede
+status.failed	Ödenmedi
+status.refunded	İade edildi
+empty.noInvoices	Henüz fatura yok — ilk ödemeden sonra görünürler.
+empty.noCard	Kartınız ilk ödemeden sonra otomatik olarak görünür.
+empty.monthsWithUs	Henüz abonelik satın almadınız
+empty.noData	Veri yok
+savings.title	Tasarruflarınız
+savings.prepayTitle	Peşin ödeme yaptığınızda tasarruflarınız
+savings.emptyState	Daha uzun bir dönem seçin ve tasarruf etmeye başlayın
+savings.youSave	{{months}} ayda {{amount}} tasarruf edersiniz
+savings.freeMonths	Bu, {{count}} ücretsiz ay gibidir
+savings.amountLabel	{{amount}} tasarruf
+savings.comparedToMonthly	aylık ödemeye kıyasla
+savings.forMonths_one	{{count}} ay için
+savings.forMonths_other	{{count}} ay için
+pay	Öde
+continuePlan	Plana devam et
+payModal.titleNew	{{plan}} planını başlat
+payModal.titleSwitch	{{plan}} planına geç
+payModal.titleRenew	{{plan}} planını yenile
+payModal.totalLabel	Planınızın maliyeti
+payModal.burnWarning	Başka bir plana geçmek dönemi yeniden başlatır: {{plan}} planınızın kalan kısmı KAYBOLUR — iade edilmez veya aktarılmaz. Aynı planı yenilemek onu korur.
+payModal.switched	Plan değiştirildi: ödenecek bir şey yok — değişiklik mevcut dönemin kalan kısmıyla karşılandı.
+payModal.renewNote	Bu, aynı planı yeniler: satın aldığınız aylar mevcut ödenmiş döneme eklenir. Hiçbir şey kaybolmaz.
+payModal.cardNote	Stripe’ın güvenli sayfasında kartla ödeme · 7 gün içinde iade
+payModal.freeUntil	{{date}} tarihine kadar hiçbir ücret alınmaz: ödenmiş dönemden {{count}} gününüz kaldı. Faturalandırma o tarihte başlar.
+payModal.taxLabel	KDV
+payModal.taxLine	%{{rate}} KDV
+payModal.reverseCharge	Ters vergilendirme
+payModal.totalWithTax	KDV dahil toplam
+payModal.taxServerNote	Vergi, fatura bilgilerinizden hesaplanır. Fatura aynı tutarı gösterir.
+payModal.taxReview	Fatura bilgilerinizden vergiyi belirleyemedik; bu nedenle toplam vergi olmadan gösterilir ve ödeme tamamlanamaz. Ödeyenin ülkesini ve adresini kontrol edin veya destekle iletişime geçin.
+offlineFee.title	Çevrimdışı satış ücreti
+offlineFee.accruing	Nakit ve depozitolardan %{{rate}} oranında birikmiştir. Aylık faturalandırılır; ödeme için {{days}} gününüz vardır.
+offlineFee.due	Fatura kesildi. Ödeme için kalan gün: {{days}}.
+offlineFee.suspended	Ödeme vadesi geçti — CRM ve mini uygulama erişimi askıya alındı.
+offlineFee.pay	Öde
+offlineFee.suspendedMin	Asgari aylık ücret vadesi geçti — CRM ve mini uygulama erişimi askıya alındı.
+offlineFee.alsoAccruing	Ayrıca bu ay biriken: {{amount}} — sonraki faturaya eklenecek.
+offlineFee.minimum	Asgari aylık ücret {{amount}} tutarındadır. Ay içinde daha az kazanırsanız farkı ödersiniz; daha fazla kazanırsanız fatura olmaz.
+offlineFee.pendingBill	Önceki modele göre birikmiş, fatura bekliyor.
+offlineFee.notBilledYet	Henüz fatura kesilmedi: biriken tutar asgari fatura tutarının altında veya fatura hâlâ hazırlanıyor. Hiçbir şey kaybolmaz — sonraki faturaya eklenir.
+trial.title	Yeni stüdyolar için teklif
+trial.subtitle	Stüdyonuz yeni oluşturuldu
+trial.headline	{{days}} gün ücretsiz
+trial.noCard	Kart gerekmez — şimdi ödeyecek bir şeyiniz yok
+trial.perks.allModules	Her modüle tam erişim: takvim, müşteriler, finans, bildirimler ve Velora AI
+trial.perks.noCommitment	Taahhüt yok: size uygun değilse yenilemeyin
+trial.perks.keepData	Deneme sırasında girdiğiniz her şey sizin kalır
+trial.activate	Etkinleştir
+trial.decline	Reddet
+trial.cardHint	Bu stüdyo için ücretsiz dönemi henüz etkinleştirmediniz. Bir plan satın alana kadar kullanılabilir kalır.
+profile.title	Fatura bilgileri
+profile.editTitle	Fatura bilgilerini düzenle
+profile.subtitle	Adresiniz faturada yer alır ve vergi oranını belirler. Hesabınıza kaydedilir — başka bir stüdyoda tekrar sormayız.
+profile.subtitlePay	Bir kez doldurun, sonraki sefer ödeme doğrudan ilerler. Adresiniz faturada yer alır ve vergi oranını belirler.
+profile.cardTitle	Fatura bilgileri
+profile.cardSubtitle	Hesabınıza kaydedilir ve tüm stüdyolarda kullanılır. Faturada böyle görünür.
+profile.cardEmpty	Henüz doldurulmadı — ilk ödemeden önce isteyeceğiz. Şimdi ekleyebilirsiniz.
+profile.add	Fatura bilgileri ekle
+profile.edit	Düzenle
+profile.save	Kaydet
+profile.saveAndPay	Kaydet ve ödemeye devam et
+profile.cancel	İptal
+profile.saved	Fatura bilgileri kaydedildi
+profile.vatNone	Belirtilmedi
+profile.fields.country	Ülke veya bölge
+profile.fields.countryPlaceholder	Bir ülke seçin
+profile.fields.address	Adres
+profile.fields.line1	Adres satırı 1
+profile.fields.line1Placeholder	Sokak ve numara
+profile.fields.line2	Adres satırı 2 — isteğe bağlı
+profile.fields.line2Placeholder	Daire, süit, birim numarası vb.
+profile.fields.postalCode	Posta kodu
+profile.fields.postalCodePlaceholder	110 00
+profile.fields.city	Şehir
+profile.fields.cityPlaceholder	Prag
+profile.fields.vat	KDV numarası — isteğe bağlı
+profile.fields.vatPlaceholder	{{prefix}}12345678
+profile.fields.vatHint	Yalnızca işletmeler için. Numara kaydederken AB sicilinde (VIES) doğrulanır — doğrulanmamış numaraları kabul etmeyiz. Geçerli numarayla başka bir AB ülkesindeki şirket vergisiz faturalandırılır (ters vergilendirme). Bireysel müşterilerin numarası yoktur — alanı boş bırakın.
+profile.fields.countrySearch	Bir ad yazmaya başlayın
+profile.fields.countryNotFound	Ülke bulunamadı
+profile.fields.vatOutsideEu	KDV numarası istemiyoruz: AB dışında vergi numaraya değil, ödeyenin ülkesine göre belirlenir; bu nedenle faturayı etkilemez.
+profile.fields.vatPending	Numaranız kaydedildi ancak AB sicili o anda kullanılamıyordu; bu yüzden henüz onaylanmadı ve sonraki faturanız tam KDV içerir. Tekrar girmeniz gerekmez: kontrol etmeye devam edeceğiz ve sicil yanıt verir vermez vergi alınmayacaktır. Önceden ödenmiş bir fatura için destek vergiyi iade eder.
+profile.errors.required	Bu alan zorunludur
+profile.preview.invoice	Fatura
+profile.preview.billTo	Fatura adresi
+profile.preview.note	Bilgileriniz her faturada böyle görünür. Bunları istediğiniz zaman Plan ve faturalandırma → Ödeme yöntemi bölümünden değiştirebilirsiniz.

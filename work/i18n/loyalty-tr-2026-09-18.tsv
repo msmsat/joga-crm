@@ -1,0 +1,240 @@
+== tr
+header.allConfigured	Tüm programlar yapılandırıldı
+header.allConfiguredSub	Sadakat sisteminiz tam kapasite çalışıyor
+header.setup	Sadakat programlarını yapılandırın
+header.setupSub	{{total}} programdan {{count}} tanesi yapılandırıldı · Her program müşteri bağlılığını artırır
+header.start	Başlayın
+programs.loyalty.title	Sadakat kartları
+programs.loyalty.desc	Seviyeli puan biriktirme sistemi
+programs.loyalty.statLabel	müşteri
+programs.discounts.title	İndirimler ve cashback
+programs.discounts.desc	Müşteriler için kişisel teklifler
+programs.discounts.statLabel	aktif
+programs.certificates.title	Hediye sertifikaları
+programs.certificates.desc	Hediye ve isimli sertifikalar
+programs.certificates.statLabel	satıldı
+programs.referral.title	Tavsiyeler
+programs.referral.desc	„Bir arkadaşını getir” programı
+programs.referral.statLabel	tavsiye
+programs.promocodes.title	Promosyon kodları
+programs.promocodes.desc	Kullanım sınırı olan indirim kodları
+programs.promocodes.statLabel	aktif
+programs.deposit.title	Depozito
+programs.deposit.desc	Müşterinin stüdyodaki para bakiyesi
+programs.deposit.statLabel	bakiyeli
+card.active	Aktif
+card.disable	Devre dışı bırak
+card.notConfigured	Yapılandırılmadı
+card.configure	Yapılandır
+drawer.subtitle	Program ayarları
+drawer.saving	Kaydediliyor…
+drawer.save	Kaydet ve etkinleştir
+drawer.cancel	İptal
+drawer.close	Kapat
+config.mainParams	Ana parametreler
+config.programName	Program adı
+config.pointsRate	Puan oranı (1 puan için {{currency}})
+config.levels	Seviyeler
+config.pointValue	1 puan =
+config.pointValueHint	Puanlar her seviyede aynı oranda kazanılır, ancak değerleri aynı değildir. Gold'a 1, Diamond'a 2 verin; müşterinin kazandığı bir puan kasada fiyatı iki kat daha fazla düşürür. Seviyenin faydası budur: Bir kişi stüdyoda ne kadar çok harcarsa puanları o kadar değerli olur.
+config.expiry	Geçerlilik süresi
+config.expiryTooltip	Müşterinin biriktirdiği puanları ne kadar süre kullanabileceği
+config.expiryOptions.3m	3 ay
+config.expiryOptions.6m	6 ay
+config.expiryOptions.1y	1 yıl
+config.expiryOptions.never	Süresiz
+config.newLevelName	Yeni seviye
+config.addLevel	+ Seviye
+config.levelFrom	başlangıç
+config.levelTo	bitiş
+config.deleteLevelTitle	Bu seviye silinsin mi?
+config.deleteLevelMessage	„{{name}}” seviyesindeki müşteriler toplam harcamalarına göre komşu seviyeye taşınır.
+config.discountType	İndirim türü
+config.discountTypes.percentage	Yüzde (%)
+config.discountTypes.fixed	Sabit ({{currency}})
+config.discountTypes.cashback	Cashback
+config.cashbackPercent	Cashback yüzdesi
+config.discountSize	İndirim tutarı
+config.minPurchase	Minimum alışveriş tutarı
+config.noLimit	Sınır yok
+config.conditions	Uygulama koşulları
+config.appliesToAll	Tüm hizmetlere uygula
+config.stackable	Diğer indirimlerle birleştir
+config.visibleInCabinet	Müşterinin hesabında göster
+config.certType	Sertifika türü
+config.certTypes.named	İsimli
+config.certTypes.gift	Hediye
+config.certTypes.service	Bir hizmet için
+config.denominations	Tutarlar
+config.addDenom	+ Ekle
+config.service	Hizmet
+config.noServices	Katalogda henüz hizmet yok — bunları „Katalog” bölümünden ekleyin
+config.params	Parametreler
+config.expiryDays	Geçerlilik süresi (gün)
+config.certIssue	Sertifika düzenle
+config.certCustomAmount	Özel tutar
+config.certRecipientName	Alıcının adı
+config.certRecipientPlaceholder	İsteğe bağlı
+config.certLinkClient	Bir müşteriye bağla
+config.certClientSearchPlaceholder	Bir ad yazmaya başlayın…
+config.certAccount	Depozito hesabı
+config.certAccountNone	Deftere kaydetme
+config.certIssueButton	Düzenle
+config.certIssuedTitle	Sertifika düzenlendi
+config.certCopyCode	Kodu kopyala
+config.certCopied	Kopyalandı
+config.certIssueAnother	Bir tane daha düzenle
+config.certIssued	Düzenlenen sertifikalar
+config.certEmpty	Henüz sertifika düzenlenmedi
+config.certStatus.active	Aktif
+config.certStatus.used	Kullanıldı
+config.certStatus.expired	Süresi doldu
+config.certRedeem	Kullan
+config.certRedeemTitle	Bu sertifika kullanılsın mı?
+config.certRedeemMessage	{{code}} sertifikası kullanılmış olarak işaretlenecek. Bu işlem geri alınamaz.
+config.referrerBonusTitle	Tavsiye bonusu
+config.referrerBonus	Tavsiye eden için bonus ({{currency}})
+config.newClientDiscount	Yeni müşteri indirimi (%)
+config.triggerCondition	Tahakkuk koşulu
+config.triggerConditions.first_visit	İlk ziyaretten sonra
+config.triggerConditions.first_payment	İlk ödemeden sonra
+config.triggerConditions.registration	Kayıt sırasında hemen
+config.bonusAccrual	Bonus tahakkuku
+config.bonusTypes.points	Puanlar
+config.bonusTypes.deposit	Depozitoya
+config.bonusTypes.discount	İndirim olarak
+config.promoCreate	Promosyon kodu oluştur
+config.promoCodePlaceholder	YAZ25
+config.promoValidUntil	Geçerlilik bitişi
+config.promoUsageLimit	Kullanım sınırı
+config.promoAdd	+ Promosyon kodu ekle
+config.promoList	Promosyon kodları
+config.promoEmpty	Henüz promosyon kodu yok
+config.promoUntil	kadar
+config.promoStatus.active	Aktif
+config.promoStatus.expired	Süresi doldu
+config.promoStatus.exhausted	Sınıra ulaşıldı
+config.promoStatus.disabled	Devre dışı
+config.depositTotal	Toplam bakiye
+config.depositTotalSub	tüm müşteri mevduatlarında
+config.depositTopClients	Bakiyeye göre en iyi müşteriler
+config.depositEmpty	Henüz kimsenin depozitosu yok
+config.depositHint	Yüklemeler ve çekimler müşteri profilinden yapılır. Tavsiye programı bonusları puan yerine depozitoya ödeyebilir.
+validation.required	Bu alan zorunludur
+validation.minOne	En az 1 olmalıdır
+validation.minZero	Negatif olamaz
+validation.positive	0'dan büyük olmalıdır
+validation.range0to100	0 ile 100 arası
+toasts.saved	Program etkinleştirildi
+toasts.saveFailed	Kaydedilemedi
+toasts.toggleFailed	Program güncellenemedi
+toasts.loadFailed	Veriler yüklenemedi
+toasts.retry	Tekrar dene
+stats.notConnected	Program bağlı değil
+stats.willAppear	Veriler yapılandırmadan sonra görünür
+stats.noData	Veri yok
+stats.connectProgram	Program bağla
+stats.revenueHeadline	Üyelerden gelir
+stats.membersHeadline	Program üyeleri
+stats.returnedClients	Geri dönen müşteriler
+stats.returnedClientsSub	90 günde 2+ ziyaret
+stats.avgCheckHeadline	Üye başına ortalama fiş
+stats.bonusCostHeadline	Bonus maliyeti
+stats.bonusCostSub	bu ay
+stats.roiHeadline	ROI
+stats.roiValue	×{{value}}
+stats.perMonth	bu ay
+stats.cardHolders	kart sahipleri
+stats.kpi	Temel göstergeler
+stats.members	Üyeler
+stats.withCard	kartlı
+stats.avgCheck	Ortalama fiş
+stats.byMembers	üyeler arasında
+stats.pointsInCirculation	Dolaşımdaki puanlar
+stats.accrued	biriken
+stats.revenue	Gelir
+stats.revenuePerMonth	üyelerden / ay
+stats.levelDistribution	Seviyeye göre dağılım
+stats.noLevels	Seviyeler henüz yapılandırılmadı
+stats.totalClients	Programdaki toplam müşteri
+stats.fromValue	{{value}} değerinden itibaren
+stats.levelPointValue	puan = {{value}}
+scenarios.title	Akıllı senaryolar
+scenarios.subtitle	Elde tutma otopilotu: sistem müşterileri bulur ve sizin yerinize ödüllendirir
+scenarios.add	Senaryo
+scenarios.fired	{{count}} kez tetiklendi
+scenarios.lastRun	son çalıştırma {{when}}
+scenarios.neverRun	henüz çalıştırılmadı
+scenarios.empty	Henüz senaryo yok
+scenarios.emptySub	İlkini oluşturun — sistem müşterileri sizin için elde tutar
+scenarios.channel	Kanal
+scenarios.channelSoon	entegrasyon bağlandıktan sonra
+scenarios.pickTemplate	Senaryo seçin
+scenarios.pickTemplateSub	Hazır şablon — eşikleri daha sonra ayarlayın
+scenarios.create	Oluştur
+scenarios.deleteConfirm	Senaryo silinsin mi?
+scenarios.deleteConfirmSub	Kural tetiklenmeyi bırakacak. Bu işlem geri alınamaz.
+scenarios.triggers.inactive_days	{{days}} gündür pasif
+scenarios.triggers.low_subscription	≤ {{classes_left}} ders kaldı
+scenarios.triggers.birthday	doğum günü
+scenarios.triggers.nth_visit	{{n}}. ziyaret
+scenarios.triggers.referral	bir arkadaş getirdi
+scenarios.actions.points	{{points}} puan hediye et
+scenarios.actions.gift_classes	{{classes}} ders hediye et
+scenarios.actions.certificate	{{amount}} ₽ tutarında sertifika düzenle
+scenarios.actions.renewal_offer	%{{discount}} indirimle yenileme teklif et
+scenarios.templates.win_back.name	Sizi özledik
+scenarios.templates.win_back.desc	Uzun süredir gelmeyen bir müşteriyi geri kazanın
+scenarios.templates.expiring_subscription.name	Abonelik bitmek üzere
+scenarios.templates.expiring_subscription.desc	Dersler bitmeden yenileme teklif edin
+scenarios.templates.birthday_gift.name	Doğum günü hediyesi
+scenarios.templates.birthday_gift.desc	Özel gününde müşteriyi sevindirin
+scenarios.templates.fifth_visit.name	Sadakat ödülü
+scenarios.templates.fifth_visit.desc	Sadakat için ücretsiz ders
+scenarios.templates.referral_thanks.name	Arkadaş için teşekkürler
+scenarios.templates.referral_thanks.desc	Yeni bir müşteri getiren kişiyi ödüllendirin
+scenarios.ifClient	Eğer müşteri
+scenarios.then	→
+scenarios.toasts.created	Senaryo oluşturuldu
+scenarios.toasts.updated	Senaryo güncellendi
+scenarios.toasts.deleted	Senaryo silindi
+scenarios.toasts.failed	Senaryo kaydedilemedi
+scenarios.delete	Sil
+segmentsBoard.title	Segmentler ve öneriler
+segmentsBoard.subtitle	Her biri için net bir eylem olan canlı müşteri grupları
+segmentsBoard.empty	Burada hiçbir şey yok ve bu iyi
+segmentsBoard.clients	müşteri
+segmentsBoard.daysAgo	{{count}} gün önce
+segmentsBoard.neverVisited	ziyaret yok
+segmentsBoard.more	ve {{count}} kişi daha
+segmentsBoard.segments.at_risk.name	Ayrılmak üzereler
+segmentsBoard.segments.at_risk.desc	Aktif, 21+ gündür pasif
+segmentsBoard.segments.at_risk.action	Bonus ver
+segmentsBoard.segments.vip_idle.name	Sessiz VIP
+segmentsBoard.segments.vip_idle.desc	VIP müşteriler, 14+ gündür pasif
+segmentsBoard.segments.vip_idle.action	Kampanya başlat
+segmentsBoard.segments.expiring_subscription.name	Abonelik sona eriyor
+segmentsBoard.segments.expiring_subscription.desc	≤2 ders veya ≤7 gün kaldı
+segmentsBoard.segments.expiring_subscription.action	Kampanya başlat
+segmentsBoard.segments.lost_newcomers.name	Hiç geri dönmediler
+segmentsBoard.segments.lost_newcomers.desc	Bir kez geldiler, 14+ gündür yoklar
+segmentsBoard.segments.lost_newcomers.action	Kampanya başlat
+segmentsBoard.segments.upsell_candidates.name	Pakete hazır
+segmentsBoard.segments.upsell_candidates.desc	Bu ay 8+ ziyaret, paket yok
+segmentsBoard.segments.upsell_candidates.action	Kampanya başlat
+segmentsBoard.campaignSub	„{{name}}” segmenti · {{count}} müşteri
+segmentsBoard.pointsLabel	Kaç puan verilecek
+segmentsBoard.messageLabel	Mesaj metni
+segmentsBoard.messagePlaceholder	örn. Sizi özledik! Geri dönün — sizi bekliyoruz.
+segmentsBoard.emailNote	E-posta yalnızca e-posta adresi olan müşterilere gider
+segmentsBoard.confirm	Gönder
+segmentsBoard.toasts.pointsDone	Puanlar verildi · {{processed}} işlendi, {{emails}} bilgilendirildi
+segmentsBoard.toasts.emailDone	Kampanya gönderildi · {{processed}} kişiden {{emails}} e-posta
+retention.title	Abonelik yenilemeleri
+retention.subtitle	Müşterilerin yeni bir paket için ne kadar iyi geri döndüğü
+retention.renewalRate	Yenile
+retention.avgPackages	Müşteri başına paket
+retention.sold	Satıldı
+retention.renewed	Yenilendi
+retention.empty	Henüz abonelik satışı yok
+retention.emptySub	Analizler ilk paket satışlarından sonra görünür

@@ -170,7 +170,48 @@
     "lessonAction": "Código QR de la clase",
     "lessonCaption": "Apunta la cámara para reservar esta clase",
     "packageAction": "Código QR del bono",
+<<<<<<< HEAD
     "packageCaption": "Apunta la cámara para comprar el bono",
     "serviceAction": "Código QR del servicio"
+=======
+    "packageCaption": "Apunta la cámara para comprar el bono"
+  },
+  "auth": {
+    "noAccount": "¿No tienes una cuenta?",
+    "haveAccount": "¿Ya tienes una cuenta?",
+    "welcomeBack": "Bienvenido de nuevo",
+    "choosePassword": "Crea una contraseña nueva",
+    "confirmationCode": "Código de confirmación",
+    "loginSubtitle": "Inicia sesión para continuar en Velora",
+    "resetInstruction": "Enviaremos instrucciones a tu correo electrónico",
+    "codeSent": "El código se envió a {{identifier}}",
+    "googleFailed": "No se pudo iniciar sesión con Google",
+    "googleAccountMissing": "Todavía no existe una cuenta para esta dirección de Google. La crearemos después de aceptar los documentos.",
+    "divider": "o inicia sesión con",
+    "codeFromEmail": "Código del correo electrónico",
+    "rememberMe": "Recuérdame",
+    "forgotPassword": "¿Olvidaste la contraseña?",
+    "signInSystem": "Iniciar sesión",
+    "sendInstructions": "Enviar instrucciones",
+    "passwordChanged": "La contraseña se cambió. Ya puedes iniciar sesión.",
+    "contactSub": "Introduce tu correo electrónico para crear una cuenta",
+    "nameTitle": "¿Cómo debemos llamarte?",
+    "nameSub": "Nombre o apodo: tú eliges",
+    "accountCreated": "La cuenta se creó. Enviamos un correo de confirmación a {{email}}.",
+    "dashboard": "Ir al panel",
+    "or": "o",
+    "registerByEmail": "Registrarse con correo electrónico",
+    "displayNamePlaceholder": "Por ejemplo: Ana, Max, DueñoDelEstudio",
+    "displayNameHint": "Este nombre aparece en la interfaz y las notificaciones. Puedes cambiarlo en los ajustes.",
+    "codeSix": "Introduce el código de 6 dígitos",
+    "users": "negocios ya usan Velora",
+    "strength": {
+      "weak": "Débil",
+      "medium": "Media",
+      "good": "Buena",
+      "strong": "Fuerte",
+      "excellent": "Excelente"
+    }
+>>>>>>> bcf4a067f80368999140a9359ef17c722154c536
   }
 }

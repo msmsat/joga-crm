@@ -1,0 +1,611 @@
+{
+  "tabs": {
+    "overview": "Áttekintés",
+    "sales": "Értékesítés",
+    "clients": "Ügyfelek",
+    "team": "Csapat",
+    "schedule": "Időbeosztás"
+  },
+  "toolbar": {
+    "period": {
+      "day": "Nap",
+      "week": "Hét",
+      "month": "Hónap",
+      "year": "Év",
+      "custom": "Egyéni"
+    },
+    "vsPrevious": "az előző időszakhoz képest: {{from}}–{{to}}",
+    "allBranches": "Minden telephely",
+    "allHalls": "Minden {{spacePlural}}",
+    "allTrainers": "Minden edző",
+    "allServices": "Minden szolgáltatás",
+    "export": "Exportálás"
+  },
+  "insights": {
+    "title": "Figyelmet igényel",
+    "action": "Megnyitás",
+    "empty": "Egyelőre minden rendben — nincs megjelenítendő javaslat",
+    "revenue_up_clients_down": "A bevétel nő, de az aktív ügyfelek száma csökken — ellenőrizze az elpártolást",
+    "clients_at_risk": "{{count}} ügyfél több mint 3 hete nem vett részt foglalkozáson — elpártolási kockázat",
+    "lesson_overfull": "A(z) „{{name}}” {{weekday, weekday}} {{hour}}:00-kor {{pct}}%-ban telt három hete egymás után — fontolja meg egy további alkalom hozzáadását",
+    "trial_low_conversion": "A(z) {{buyers}} próbakövető közül csak {{pct}}% vásárolt később előfizetést — fontolja meg egy kampány indítását",
+    "fastest_growing_product": "A(z) „{{name}}” nő a leggyorsabban: +{{pct}}% az előző időszakhoz képest",
+    "renewals_low": "A lejárt előfizetéssel rendelkező ügyfeleknek csak {{pct}}%-a újít — fontolja meg emlékeztető küldését",
+    "new_no_second_visit": "{{count}} új ügyfél egyszer jött el, és utána nem foglalt újra — fontolja meg emlékeztető küldését",
+    "subs_expiring_week": "{{count}} ügyfél előfizetése jár le ezen a héten — fontolja meg a megújítás felajánlását",
+    "vip_inactive": "A VIP ügyfél, „{{name}}”, {{days}} napja nem járt itt — fontolja meg személyes üzenet küldését",
+    "high_return_free_evenings": "A(z) „{{name}}” visszatérési aránya magas ({{return_pct}}%), de az esték szabadok — adjon hozzá alkalmat",
+    "trainer_overloaded": "A(z) „{{name}}” terheltsége {{load_pct}}% — fontolja meg az időbeosztás kiegyensúlyozását",
+    "low_rating": "A(z) „{{name}}” értékelése {{rating}} — érdemes közelebbről megvizsgálni",
+    "slot_chronic_low": "A(z) „{{name}}” {{weekday, isodowWeekday}} {{hour}}:00-kor {{pct}}%-ban telt {{weeks}} hete egymás után — helyezze át vagy törölje",
+    "hall_idle_evenings": "A(z) „{{name}}” az esti órák {{pct}}%-ában kihasználatlan — fontolja meg egy foglalkozás beütemezését",
+    "slot_overfull": "A(z) {{weekday, isodowWeekday}} {{hour}}:00-s idősáv {{pct}}%-ban telt három hete egymás után — fontolja meg egy további alkalom hozzáadását",
+    "loss_hotspot": "{{cancels}} foglalkozást mondtak le {{label}} időpontban ebben az időszakban — a legtöbb lemondás e köré az órára esik"
+  },
+  "table": {
+    "loading": "Betöltés…",
+    "noProduct": "Nincs termék"
+  },
+  "empty": {
+    "noData": {
+      "title": "Még nincs itt semmi",
+      "text": "A kiválasztott időszakban nem rögzítettek tevékenységet. Bővítse az időtartományt, vagy kezdje azzal, hogy ügyfelet foglal a Naplóban.",
+      "widen": "Év megjelenítése"
+    },
+    "noRevenue": "Nincsenek fizetések ebben az időszakban",
+    "noSales": "Nincs értékesítés ebben a nézetben",
+    "noProducts": "Még nem adtak el csomagot vagy szolgáltatást",
+    "noLessons": "Nincsenek foglalkozások ebben az időszakban",
+    "noTrainerLessons": "Ez az edző még nem tartott foglalkozást",
+    "noRows": "Nincsenek bejegyzések ebben a nézetben",
+    "noLosses": "Nincsenek lemondások vagy meg nem jelenések ebben az időszakban"
+  },
+  "overview": {
+    "kpi": {
+      "revenue": "Bevétel",
+      "profit": "Nyereség",
+      "attendance": "Részvétel",
+      "activeClients": "Aktív ügyfelek",
+      "fillRate": "Telítettségi arány"
+    },
+    "chart": {
+      "metric": {
+        "revenue": "Bevétel",
+        "profit": "Nyereség",
+        "attendance": "Részvétel",
+        "new_clients": "Új ügyfelek",
+        "fill_rate": "Telítettségi arány"
+      }
+    },
+    "revenueStructure": {
+      "title": "Bevételi szerkezet"
+    },
+    "category": {
+      "subscriptions": "Előfizetések",
+      "services": "Szolgáltatások",
+      "certificates": "Ajándékkártyák",
+      "rent": "Bérlet",
+      "salary": "Bérek",
+      "refunds": "Visszatérítések"
+    },
+    "clientDynamics": {
+      "title": "Ügyféldinamika",
+      "new": "Új",
+      "returned": "Visszatért",
+      "lost": "Elveszett"
+    },
+    "drilldown": {
+      "title": "Művelet",
+      "category": "Kategória",
+      "amount": "Összeg",
+      "lesson": "Foglalkozás",
+      "time": "Idő",
+      "occupancy": "Telítettség",
+      "date": "Dátum",
+      "method": "Mód",
+      "trainer": "Edző",
+      "rowsCount": "bejegyzés",
+      "search": "Keresés a táblázatban",
+      "shownOf": "{{shown}} / {{total}} megjelenítve",
+      "noMatches": "Nincs találat erre: „{{query}}”",
+      "reset": "Visszaállítás",
+      "export": "CSV exportálása",
+      "subtitle": {
+        "money": "Műveletek ebben a nézetben",
+        "lessons": "Foglalkozások ebben a nézetben"
+      },
+      "hint": {
+        "operations": "Kattintson egy sorra a művelet megnyitásához a Pénzügyekben",
+        "lessons": "Kattintson egy sorra az adott nap megnyitásához a Naplóban"
+      },
+      "stat": {
+        "net": "Nettó",
+        "income": "Bevétel",
+        "expense": "Kiadás",
+        "operations": "Műveletek",
+        "topCategory": "Legnagyobb kategória",
+        "lessons": "Foglalkozások",
+        "booked": "Lefoglalt helyek",
+        "avgFill": "Átlagos telítettség",
+        "trainers": "Edzők",
+        "cancelled": "Lemondva"
+      }
+    }
+  },
+  "sales": {
+    "kpi": {
+      "revenue": "Bevétel",
+      "salesCount": "Értékesítések",
+      "avgCheck": "Átlagos kosárérték",
+      "repeatShare": "Ismételt vásárlások aránya",
+      "renewals": "Megújítási arány"
+    },
+    "chart": {
+      "title": "Értékesítés"
+    },
+    "incomeOperations": "Bevételi műveletek",
+    "breakdown": {
+      "byCategory": "Mit vásárolnak",
+      "byMethod": "Hogyan fizetnek",
+      "buyerType": "Ki vásárol",
+      "new": "Újak",
+      "returning": "Visszatérők",
+      "noClient": "Nincs ügyfél"
+    },
+    "method": {
+      "card": "Kártya",
+      "cash": "Készpénz",
+      "qr": "QR-kód",
+      "transfer": "Átutalás"
+    },
+    "products": {
+      "title": "Termékek",
+      "name": "Termék",
+      "sold": "Eladva",
+      "revenue": "Bevétel",
+      "avgCheck": "Átlagos kosárérték",
+      "repeatShare": "Ismételt vásárlások aránya",
+      "trend": "Trend",
+      "trendHint": "Azonos hosszúságú előző időszakhoz viszonyítva"
+    }
+  },
+  "clients": {
+    "kpi": {
+      "new": "Újak",
+      "returned": "Visszatértek",
+      "lost": "Elveszettek",
+      "retention": "Megtartás",
+      "avgValue": "Ügyfélérték"
+    },
+    "chart": {
+      "title": "Újak és visszatérők",
+      "new": "Újak",
+      "returned": "Visszatérők"
+    },
+    "riskTitle": "Kockázati szegmensek",
+    "loyalTitle": "Hűségesek",
+    "list": "Lista",
+    "campaign": "Kampány indítása",
+    "exportList": "Lista exportálása",
+    "emptySegment": "A(z) „{{name}}” szegmensben jelenleg nincs ügyfél",
+    "segments": {
+      "new": {
+        "name": "Új ügyfelek",
+        "desc": "A kiválasztott időszakban regisztráltak"
+      },
+      "returned": {
+        "name": "Visszatérő ügyfelek",
+        "desc": "Ebben és az előző időszakban is látogattak"
+      },
+      "lost": {
+        "name": "Elveszett ügyfelek",
+        "desc": "Az előző időszakban látogattak, de ebben nem tértek vissza"
+      },
+      "active": {
+        "name": "Aktív ügyfelek",
+        "desc": "A kiválasztott időszakban legalább egy foglalkozáson részt vettek"
+      },
+      "at_risk": {
+        "name": "Veszélyzónában",
+        "desc": "Aktívak, de 21+ napja nem jártak itt"
+      },
+      "vip_idle": {
+        "name": "Inaktív VIP-ek",
+        "desc": "VIP ügyfelek, 14+ napja nem jártak itt"
+      },
+      "expiring_subscription": {
+        "name": "Lejáró előfizetés",
+        "desc": "≤2 foglalkozás vagy ≤7 nap maradt"
+      },
+      "lost_newcomers": {
+        "name": "Sosem tértek vissza",
+        "desc": "Egyszer jöttek, 14+ napja eltűntek"
+      },
+      "upsell_candidates": {
+        "name": "Készek a nagyobb csomagra",
+        "desc": "8+ látogatás ebben a hónapban, csomag nélkül"
+      },
+      "frequent": {
+        "name": "Gyakori látogatók",
+        "desc": "8+ látogatás az időszakban"
+      },
+      "high_ltv": {
+        "name": "Magas LTV",
+        "desc": "A teljes költés alapján a felső 10%"
+      },
+      "referrers": {
+        "name": "Ajánlók",
+        "desc": "Az időszakban ajánlást teljesítettek"
+      }
+    },
+    "listSearch": "Keresés név vagy telefonszám alapján",
+    "shownOf": "{{shown}} / {{total}} megjelenítve",
+    "noMatches": "Nincs találat erre: „{{query}}”",
+    "resetSearch": "Visszaállítás",
+    "neverVisited": "Sosem látogatott el",
+    "valueLabel": {
+      "visits": "Látogatások",
+      "spent": "Költés",
+      "daysIdle": "Inaktív napok",
+      "remaining": "Hátralévő foglalkozások",
+      "value": "Érték"
+    },
+    "relative": {
+      "today": "Ma",
+      "daysAgo_one": "{{count}} napja",
+      "daysAgo_other": "{{count}} napja"
+    }
+  },
+  "team": {
+    "kpi": {
+      "lessonsCount": "Foglalkozások",
+      "revenuePerHour": "Bevétel/óra",
+      "avgFillPct": "Telítettségi arány",
+      "cancelNoshowPct": "Lemondások/távolmaradások",
+      "avgRating": "Értékelés"
+    },
+    "table": {
+      "title": "Edzők",
+      "trainer": "Edző",
+      "lessons": "Foglalkozások",
+      "fillPct": "Telítettségi arány",
+      "attendance": "Részvétel",
+      "revenue": "Bevétel",
+      "returnRate": "Visszatérési arány",
+      "cancels": "Lemondások",
+      "fillPctHint": "Betöltött helyek a tervezett helyekből",
+      "returnRateHint": "Ügyfelek, akik újra ennél az edzőnél foglaltak",
+      "cancelsHint": "Lemondott foglalkozások és ügyfél-távolmaradások",
+      "ratingHint": "Az ügyfelek által az edző foglalkozásaira adott átlagos értékelés"
+    },
+    "drawer": {
+      "revenueByWeek": "Bevétel hetenként",
+      "loadByWeekday": "Terhelés hétköznaponként",
+      "loadByHour": "Terhelés napszak szerint",
+      "loadDim": {
+        "weekday": "Nap szerint",
+        "hour": "Óra szerint"
+      },
+      "schedule": {
+        "title": "Időbeosztás",
+        "empty": "Nincsenek foglalkozások ebben az időszakban"
+      },
+      "topLessons": "Kedvenc foglalkozások",
+      "returnBlock": "Ügyfelek visszatérése",
+      "returnOf": "{{returned}} ügyfél tért vissza {{total}} közül ({{pct}}%)",
+      "openProfile": "Profil megnyitása",
+      "held": "Megtartva",
+      "attendance": "Részvétel"
+    },
+    "weekdays": [
+      "V",
+      "H",
+      "K",
+      "Sze",
+      "Cs",
+      "P",
+      "Szo"
+    ]
+  },
+  "schedule": {
+    "weekdaysMonFirst": [
+      "H",
+      "K",
+      "Sze",
+      "Cs",
+      "P",
+      "Szo",
+      "V"
+    ],
+    "kpi": {
+      "avgFillPct": "Telítettségi arány",
+      "freeSpots": "Szabad helyek",
+      "cancels": "Lemondások",
+      "noshows": "Távolmaradások",
+      "lostRevenue": "Elveszett bevétel"
+    },
+    "heatmap": {
+      "title": "Terhelés nap és óra szerint",
+      "legend": "Telítettségi arány:",
+      "tooltip": "{{lessons}} foglalkozás · {{attendance}} résztvevő · {{pct}}%",
+      "empty": "Nincsenek foglalkozások"
+    },
+    "slices": {
+      "topProfitable": "Legjövedelmezőbb",
+      "topFilled": "Legtelítettebb",
+      "chronicLow": "Tartósan alacsony telítettségű",
+      "halls": "Kihasználtság: {{spacePlural}}",
+      "held": "{{count}} megtartva",
+      "weeks": "{{count}} hét",
+      "move": "Áthelyezés",
+      "cancel": "Lemondás",
+      "eveningIdle": "esti kihasználatlanság {{pct}}%"
+    },
+    "losses": {
+      "title": "Lemondások és távolmaradások",
+      "dim": {
+        "hour": "Időpont szerint",
+        "service": "Szolgáltatás szerint",
+        "trainer": "Edző szerint"
+      },
+      "cancels_one": "{{count}} lemondás",
+      "cancels_other": "{{count}} lemondás",
+      "noshows_one": "{{count}} távolmaradás",
+      "noshows_other": "{{count}} távolmaradás",
+      "lostSpots_one": "−{{count}} hely",
+      "lostSpots_other": "−{{count}} hely"
+    },
+    "status": {
+      "confirmed": "Megerősítve",
+      "pending": "Függőben",
+      "cancelled": "Lemondva"
+    },
+    "slot": {
+      "summary": "{{from}} — {{to}} között",
+      "lessonsCount": "Összes foglalkozás"
+    }
+  },
+  "export": {
+    "csv": "CSV letöltése"
+  },
+  "scopeNote": {
+    "label": "A teljes stúdióban",
+    "money": "A Telephely és {{space}} szűrő nem befolyásolja a pénzügyi adatokat — a fizetés nem kötődik hozzájuk",
+    "clientBase": "Az edző, a(z) {{space}}, a telephely és a szolgáltatás nem változtatja ezt a mutatót — az ügyfél nem kötődik hozzájuk"
+  },
+  "descriptions": {
+    "overview": {
+      "metric": {
+        "revenue": "Minden pénz, amely a stúdióba érkezett az időszakban",
+        "profit": "Ami az időszak kiadásai után megmarad",
+        "attendance": "Foglalkozások, amelyeken az ügyfelek ténylegesen részt vettek",
+        "new_clients": "Az időszakban regisztrált ügyfelek",
+        "fill_rate": "A foglalkozások telítettsége: lefoglalt helyek a rendelkezésre álló helyekből"
+      },
+      "revenueStructure": "Miből áll össze a bevétele ebben az időszakban",
+      "clientDynamics": "Hányan jöttek először, tértek vissza vagy hagytak fel a látogatással"
+    },
+    "sales": {
+      "chart": "Bevétel és vásárlások száma naponta",
+      "byCategory": "Az egyes termékek részesedése a bevételből",
+      "byMethod": "Hogyan oszlik meg a bevétel fizetési mód szerint",
+      "buyerType": "Mennyi bevétel származik új, illetve visszatérő ügyfelektől",
+      "products": "Minden termék: hányat adtak el, mennyiért, és növekszik-e az értékesítés"
+    },
+    "clients": {
+      "chart": "Hány ügyfél jött először, és hány tért vissza, hetenként",
+      "riskSegments": "Ügyfelek, akiket elveszíthet, ha most nem keresi meg őket",
+      "loyalSegments": "Akik a legtöbbet járnak, költenek és barátokat hoznak"
+    },
+    "team": {
+      "trainers": "Összehasonlítás terhelés, bevétel és ügyfél-visszatérési arány alapján",
+      "loadWeekday": "A hét mely napjain elfoglalt az edző, és mikor szabad",
+      "loadHour": "Mikor telnek meg a foglalkozásai, és mikor maradnak üresek",
+      "schedule": "Az edző összes foglalkozása a kiválasztott időszakban"
+    },
+    "schedule": {
+      "heatmap": "Hol túlzsúfolt az időbeosztás, és hol üres",
+      "topProfitable": "Az időbeosztás azon időpontjai, amelyek a legtöbb pénzt hozzák",
+      "topFilled": "Az időpontok, amelyeket az ügyfelek a legszívesebben foglalnak",
+      "chronicLow": "Idősávok, amelyek hetek óta a helyek kevesebb mint egyharmadára telnek meg",
+      "halls": "Az idő mekkora részében használják ténylegesen a(z) {{spacePlural}} helyiségeit",
+      "losses": "Hol veszít helyeket a stúdió: lemondott foglalkozások vagy távol maradó ügyfelek miatt"
+    }
+  },
+  "formulas": {
+    "salesCount": {
+      "title": "Értékesítések",
+      "text": "Hányszor fizettek Önnek az ügyfelek ebben az időszakban. Egy személy, aki többször fizet, külön értékesítéseknek számít."
+    },
+    "revenue": {
+      "title": "Bevétel",
+      "text": "Minden pénz, amely a fizetés dátuma szerint ebben az időszakban a stúdióba érkezett. Csomagok, egyedi alkalmak, ajándékkártyák és kiskereskedelem — együtt."
+    },
+    "profit": {
+      "title": "Nyereség",
+      "text": "Ami az időszak kiadásai — bérlet, fizetések, kellékek — után megmarad. Ez a tényleges nyeresége."
+    },
+    "attendance": {
+      "title": "Részvétel",
+      "text": "Hány látogatást teljesítettek ténylegesen az ügyfelek. Csak a részt vettként megjelölt foglalkozások számítanak."
+    },
+    "bookings": {
+      "title": "Foglalások",
+      "text": "Hány foglalást tettek az ügyfelek foglalkozásokra. A lemondott foglalások nem számítanak."
+    },
+    "noshow": {
+      "title": "Távolmaradás",
+      "text": "Az ügyfél foglalt, a foglalkozást megtartották, de nem jelent meg. Minden ilyen eset egy hely, amelyet más elfoglalhatott volna."
+    },
+    "activeClients": {
+      "title": "Aktív ügyfelek",
+      "text": "Hány különböző ember jött el legalább egyszer ebben az időszakban. Minden ügyfél egyszer számít, a látogatások számától függetlenül."
+    },
+    "occupancy": {
+      "title": "Telítettség",
+      "text": "Mennyire teltek a foglalkozásai: betöltött helyek a tervezett helyekből. A 100% azt jelenti, hogy nincs több szabad hely."
+    },
+    "avgCheck": {
+      "title": "Átlagos kosárérték",
+      "text": "Mennyit hoz átlagosan egy fizetés. Nő, amikor az ügyfelek hosszabb csomagokat vagy kiegészítőket vásárolnak."
+    },
+    "retention": {
+      "title": "Megtartás",
+      "text": "Az előző időszak ügyfelei közül hányan tértek vissza ebben az időszakban. Megmutatja, hogy megtartja-e őket, vagy minden hónapban nulláról indul."
+    },
+    "newClients": {
+      "title": "Új ügyfelek",
+      "text": "Azok az emberek, akik először jelentek meg az ügyféladatbázisában ebben az időszakban."
+    },
+    "returning": {
+      "title": "Visszatérők",
+      "text": "Ügyfelek, akik már jártak Önnél, és ebben az időszakban ismét visszatértek."
+    },
+    "lost": {
+      "title": "Elveszettek",
+      "text": "Az előző időszakban látogattak, de ebben egyszer sem jelentek meg. Még mindig érdemes felvenni velük a kapcsolatot."
+    },
+    "clientValue": {
+      "title": "Ügyfélérték",
+      "text": "Mennyit hoz átlagosan egy ügyfél ebben az időszakban."
+    },
+    "repeatPurchaseShare": {
+      "title": "Ismételt vásárlások aránya",
+      "text": "Azon ügyfelek aránya, akik többször vásároltak Öntől. Minél magasabb, annál erősebb a visszatérés szokása."
+    },
+    "renewalRate": {
+      "title": "Megújítási arány",
+      "text": "Hány ügyfél vásárolt új csomagot az előző lejárta után."
+    },
+    "revenuePerHour": {
+      "title": "Bevétel óránként (edző)",
+      "text": "Mennyi pénzt hoz egy edző egy óra munkája. Így igazságosan összehasonlíthatók az edzők — valaki kevesebb foglalkozást tarthat, de mindegyik többet hoz."
+    },
+    "trainerReturnRate": {
+      "title": "Visszatérési arány (edző)",
+      "text": "Egy edző ügyfeleinek aránya, akik ismét nála foglaltak."
+    },
+    "missedRevenue": {
+      "title": "Elveszett bevétel",
+      "text": "Az a pénz, amelyet a stúdió a korábbi foglalkozások üres helyei miatt nem keresett meg: szabad helyek szorozva a foglalkozás árával."
+    },
+    "losses": {
+      "title": "Lemondások és távolmaradások",
+      "text": "A „lemondás” lemondott foglalkozást jelent; a „távolmaradás” olyan ügyfelet, aki foglalt, de nem jött el. Az idő/szolgáltatás/edző szerinti bontások ugyanazokat a szűrőket használják, mint a fül, és egyeznek a fejléc KPI-jaival."
+    },
+    "lessonRevenue": {
+      "title": "Foglalkozás bevétele",
+      "text": "A foglalkozás bevételének durva becslése: résztvevők száma szorozva az árral. A fizetések nem kötődnek egy konkrét foglalkozáshoz, így ez közelítés, nem pontos összeg."
+    },
+    "filtersScope": {
+      "title": "Szűrők hatóköre",
+      "text": "A Telephely és {{space}} szűrők csak a foglalkozási mutatókra vonatkoznak. A fizetéseknek nincs ilyen kapcsolata, ezért a pénzügyi adatokat a teljes stúdióra mutatjuk."
+    },
+    "avgValue": {
+      "title": "Ügyfélérték",
+      "text": "Mennyit hoz átlagosan egy ügyfél ebben az időszakban."
+    },
+    "cancelNoshow": {
+      "title": "Lemondások és távolmaradások",
+      "text": "A zavart foglalkozások aránya: lemondások és távolmaradások az összes tervezettből."
+    },
+    "avgRating": {
+      "title": "Átlagos értékelés",
+      "text": "Az átlagos értékelés, amelyet az ügyfelek ennek az edzőnek a foglalkozásaira adtak."
+    },
+    "teamScope": {
+      "title": "Adatok hatóköre",
+      "text": "Ez csak egy adott edzőhöz kapcsolódó bevételt számol, ezért az összes edző összege alacsonyabb lehet a stúdió teljes bevételénél."
+    },
+    "lessonsCount": {
+      "title": "Foglalkozások",
+      "text": "Hány foglalkozást tartottak az edzők ebben az időszakban."
+    },
+    "load": {
+      "title": "Terhelés",
+      "text": "Mennyire zsúfolt egy edző napja: a lefoglalt órái a stúdió nyitvatartási idejéből."
+    },
+    "weeklyClients": {
+      "title": "Újak és visszatérők",
+      "text": "Hetenként: hányan jöttek Önhöz először, és hányan tértek vissza. Az egészséges stúdió mindkét vonalon növekszik."
+    },
+    "byCategory": {
+      "title": "Bevétel kategóriánként",
+      "text": "Amin ténylegesen keres: csomagokon, egyedi alkalmakon, ajándékkártyákon és kiskereskedelmen."
+    },
+    "byMethod": {
+      "title": "Fizetési módok",
+      "text": "Hogyan fizetnek az ügyfelek. Segít látni, szükség van-e kártyaelfogadásra, és mennyi pénz kerüli meg a pénztárat."
+    },
+    "buyerType": {
+      "title": "Ki fizet",
+      "text": "Új ügyfelek szemben a visszatérőkkel. Ha szinte minden bevétel új ügyfelektől jön, a stúdió nem tartja meg őket."
+    },
+    "products": {
+      "title": "Mi fogy",
+      "text": "Az időszak összes csomagja és szolgáltatása: hányat adtak el, mennyiért, és növekszik-e az értékesítés."
+    },
+    "topProfitable": {
+      "title": "Legjövedelmezőbb idősávok",
+      "text": "Az időbeosztás azon időpontjai, amelyek a legtöbb pénzt hozzák. Tegye oda a legjobb edzőit."
+    },
+    "topFilled": {
+      "title": "Legtelítettebb idősávok",
+      "text": "Az időpontok, amelyeket az ügyfelek a legszívesebben foglalnak. Ha teljesen tele vannak, érdemes még egy foglalkozást hozzáadni."
+    },
+    "chronicLow": {
+      "title": "Tartósan üres idősávok",
+      "text": "Időpontok, amelyek több hete a helyek kevesebb mint egyharmadára telnek meg. Áthelyezésre vagy megszüntetésre jelöltek."
+    },
+    "hallUtil": {
+      "title": "Kihasználtság: {{spacePlural}}",
+      "text": "Az idő mekkora részében használják ténylegesen a(z) {{spacePlural}} helyiségeit. Az üres idő olyan bérlet, amely nem térül meg."
+    },
+    "heatmap": {
+      "title": "Terhelés nap és óra szerint",
+      "text": "A szín az idősáv átlagos telítettségét mutatja az időszakban. Kattintson egy cellára az adott nap és óra foglalkozásaihoz."
+    },
+    "riskSegments": {
+      "title": "Kockázati szegmensek",
+      "text": "Ügyfelek a kockázatuk típusa szerint csoportosítva — hogy elveszíti őket, vagy nem hoznak bevételt. Minden kártyának saját oka és egyértelmű következő lépése van: írjon nekik, ajánljon megújítást vagy magasabb csomagot."
+    },
+    "loyalSegments": {
+      "title": "Hűségesek",
+      "text": "Ügyfelek, akik már most a legtöbb értéket hozzák: gyakran járnak, a legtöbbet költenek vagy barátokat hoznak. Érdemes gondoskodni róluk és jutalmazni őket."
+    },
+    "segment": {
+      "at_risk": {
+        "title": "Veszélyzónában",
+        "text": "Régen rendszeresen jártak, most pedig eltűntek. Egy üzenettel még visszahozhatók."
+      },
+      "vip_idle": {
+        "title": "Inaktív VIP-ek",
+        "text": "Ügyfelek, akik mindenkinél többet költöttek, de már egy ideje nem látogattak el."
+      },
+      "expiring_subscription": {
+        "title": "Lejáró előfizetés",
+        "text": "Ezeknek az ügyfeleknek 1–2 foglalkozásuk maradt. Ez a legjobb pillanat a megújítás felajánlására."
+      },
+      "lost_newcomers": {
+        "title": "Vissza nem térő újak",
+        "text": "Egyszer jöttek és eltűntek. Általában az első foglalkozáson múlik — érdemes utánanézni."
+      },
+      "upsell_candidates": {
+        "title": "Készek többre",
+        "text": "Gyakran járnak, de a legegyszerűbb csomagot veszik. Érdemes drágább előfizetést felajánlani nekik."
+      },
+      "frequent": {
+        "title": "Rendszeresek",
+        "text": "Mindenkinél gyakrabban járnak. A stúdió bevételének gerince."
+      },
+      "high_ltv": {
+        "title": "Legértékesebbek",
+        "text": "Mindenkinél több pénzt hoztak a stúdiónak, teljes időtávon."
+      },
+      "referrers": {
+        "title": "Barátokat hoznak",
+        "text": "Ügyfelek, akiknek ajánlásai más embereket hoztak Önhöz."
+      }
+    }
+  }
+}

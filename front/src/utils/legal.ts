@@ -29,12 +29,12 @@ export const LEGAL_ENTITY = 'Andrii Sadovskyi · IČO 14390345 · DIČ CZ7607311
 export const SUPPORT_WHATSAPP = '+420 722 274 622'
 export const SUPPORT_WHATSAPP_URL = `https://wa.me/${SUPPORT_WHATSAPP.replace(/\D/g, '')}`
 
-// Подвал страниц входа и регистрации. «Настройки cookie» стоят там отдельной
-// кнопкой рядом со списком: это не ссылка, а окно (openCookieSettings).
-export const LEGAL_FOOTER_LINKS = [
-  { label: 'Конфиденциальность', href: PRIVACY_URL },
-  { label: 'Условия', href: TERMS_URL },
-  { label: 'Поддержка', href: SUPPORT_WHATSAPP_URL },
+// Подвал страниц входа и регистрации. Подписи приходят из namespace landing,
+// чтобы не оставлять русские статические ссылки при смене языка интерфейса.
+export const legalFooterLinks = (t: (key: string) => string) => [
+  { label: t('landing:footer.columns.docs.privacy'), href: PRIVACY_URL },
+  { label: t('landing:footer.columns.docs.terms'), href: TERMS_URL },
+  { label: t('landing:footer.columns.docs.support'), href: SUPPORT_WHATSAPP_URL },
 ]
 
 // Колонка «Документы» в подвале лендинга.

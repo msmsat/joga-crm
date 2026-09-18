@@ -1,0 +1,240 @@
+== ro
+header.allConfigured	Toate programele sunt configurate
+header.allConfiguredSub	Sistemul tău de fidelizare funcționează la capacitate maximă
+header.setup	Configurează programele de fidelizare
+header.setupSub	{{count}} din {{total}} programe configurate · Fiecare program crește retenția clienților
+header.start	Începe
+programs.loyalty.title	Carduri de fidelitate
+programs.loyalty.desc	Sistem de acumulare de puncte pe niveluri
+programs.loyalty.statLabel	clienți
+programs.discounts.title	Reduceri și cashback
+programs.discounts.desc	Oferte personale pentru clienți
+programs.discounts.statLabel	active
+programs.certificates.title	Certificate cadou
+programs.certificates.desc	Certificate cadou și nominale
+programs.certificates.statLabel	vândute
+programs.referral.title	Recomandări
+programs.referral.desc	Programul „Adu un prieten”
+programs.referral.statLabel	recomandări
+programs.promocodes.title	Coduri promoționale
+programs.promocodes.desc	Coduri de reducere cu limită de utilizare
+programs.promocodes.statLabel	active
+programs.deposit.title	Depozit
+programs.deposit.desc	Soldul de bani al clientului la studio
+programs.deposit.statLabel	cu sold
+card.active	Activ
+card.disable	Dezactivează
+card.notConfigured	Neconfigurat
+card.configure	Configurează
+drawer.subtitle	Setările programului
+drawer.saving	Se salvează…
+drawer.save	Salvează și activează
+drawer.cancel	Anulează
+drawer.close	Închide
+config.mainParams	Parametri principali
+config.programName	Numele programului
+config.pointsRate	Cursul punctelor ({{currency}} pentru 1 punct)
+config.levels	Niveluri
+config.pointValue	1 punct =
+config.pointValueHint	Punctele sunt obținute la aceeași rată la fiecare nivel, dar nu au aceeași valoare. Dă-i nivelului Gold 1 și Diamond 2, iar un punct câștigat de client va reduce prețul la casă de două ori mai mult. Acesta este avantajul unui nivel: cu cât cineva a cheltuit mai mult la studio, cu atât punctele sale valorează mai mult.
+config.expiry	Perioada de expirare
+config.expiryTooltip	Cât timp poate un client să cheltuiască punctele acumulate
+config.expiryOptions.3m	3 luni
+config.expiryOptions.6m	6 luni
+config.expiryOptions.1y	1 an
+config.expiryOptions.never	Fără expirare
+config.newLevelName	Nivel nou
+config.addLevel	+ Nivel
+config.levelFrom	de la
+config.levelTo	până la
+config.deleteLevelTitle	Ștergi acest nivel?
+config.deleteLevelMessage	Clienții de la nivelul „{{name}}” vor trece la nivelul învecinat în funcție de cheltuielile lor totale.
+config.discountType	Tipul reducerii
+config.discountTypes.percentage	Procent (%)
+config.discountTypes.fixed	Fixă ({{currency}})
+config.discountTypes.cashback	Cashback
+config.cashbackPercent	Procentul cashbackului
+config.discountSize	Valoarea reducerii
+config.minPurchase	Valoarea minimă a cumpărăturii
+config.noLimit	Fără limită
+config.conditions	Condiții de aplicare
+config.appliesToAll	Aplică tuturor serviciilor
+config.stackable	Combină cu alte reduceri
+config.visibleInCabinet	Arată clientului în contul său
+config.certType	Tipul certificatului
+config.certTypes.named	Nominal
+config.certTypes.gift	Cadou
+config.certTypes.service	Pentru un serviciu
+config.denominations	Valori nominale
+config.addDenom	+ Adaugă
+config.service	Serviciu
+config.noServices	Nu există încă servicii în catalog — adaugă-le la „Catalog”
+config.params	Parametri
+config.expiryDays	Perioada de expirare (zile)
+config.certIssue	Emite certificat
+config.certCustomAmount	Sumă personalizată
+config.certRecipientName	Numele destinatarului
+config.certRecipientPlaceholder	Opțional
+config.certLinkClient	Leagă de un client
+config.certClientSearchPlaceholder	Începe să scrii un nume…
+config.certAccount	Cont de depozit
+config.certAccountNone	Nu înregistra în registru
+config.certIssueButton	Emite
+config.certIssuedTitle	Certificatul a fost emis
+config.certCopyCode	Copiază codul
+config.certCopied	Copiat
+config.certIssueAnother	Emite altul
+config.certIssued	Certificate emise
+config.certEmpty	Nu au fost emise încă certificate
+config.certStatus.active	Activ
+config.certStatus.used	Folosit
+config.certStatus.expired	Expirat
+config.certRedeem	Folosește
+config.certRedeemTitle	Folosești acest certificat?
+config.certRedeemMessage	Certificatul {{code}} va fi marcat ca folosit. Această acțiune nu poate fi anulată.
+config.referrerBonusTitle	Bonus pentru recomandare
+config.referrerBonus	Bonus pentru recomandator ({{currency}})
+config.newClientDiscount	Reducere pentru client nou (%)
+config.triggerCondition	Condiție de acordare
+config.triggerConditions.first_visit	După prima vizită
+config.triggerConditions.first_payment	După prima plată
+config.triggerConditions.registration	Imediat la înregistrare
+config.bonusAccrual	Acordarea bonusului
+config.bonusTypes.points	Puncte
+config.bonusTypes.deposit	În depozit
+config.bonusTypes.discount	Ca reducere
+config.promoCreate	Creează cod promoțional
+config.promoCodePlaceholder	VARĂ25
+config.promoValidUntil	Valabil până la
+config.promoUsageLimit	Limita de utilizare
+config.promoAdd	+ Adaugă cod promoțional
+config.promoList	Coduri promoționale
+config.promoEmpty	Nu există încă coduri promoționale
+config.promoUntil	până la
+config.promoStatus.active	Activ
+config.promoStatus.expired	Expirat
+config.promoStatus.exhausted	Limita a fost atinsă
+config.promoStatus.disabled	Dezactivat
+config.depositTotal	Sold total
+config.depositTotalSub	în toate depozitele clienților
+config.depositTopClients	Cei mai buni clienți după sold
+config.depositEmpty	Nimeni nu are încă depozit
+config.depositHint	Alimentările și retragerile se fac din profilul clientului. Programul de recomandări poate plăti bonusuri în depozit în loc de puncte.
+validation.required	Acest câmp este obligatoriu
+validation.minOne	Trebuie să fie cel puțin 1
+validation.minZero	Nu poate fi negativ
+validation.positive	Trebuie să fie mai mare decât 0
+validation.range0to100	De la 0 la 100
+toasts.saved	Program activat
+toasts.saveFailed	Nu s-a putut salva
+toasts.toggleFailed	Nu s-a putut actualiza programul
+toasts.loadFailed	Nu s-au putut încărca datele
+toasts.retry	Încearcă din nou
+stats.notConnected	Programul nu este conectat
+stats.willAppear	Datele vor apărea după configurare
+stats.noData	Fără date
+stats.connectProgram	Conectează un program
+stats.revenueHeadline	Venituri de la membri
+stats.membersHeadline	Membrii programului
+stats.returnedClients	Clienți reveniți
+stats.returnedClientsSub	2+ vizite în 90 de zile
+stats.avgCheckHeadline	Bon mediu per membru
+stats.bonusCostHeadline	Costul bonusurilor
+stats.bonusCostSub	luna aceasta
+stats.roiHeadline	ROI
+stats.roiValue	×{{value}}
+stats.perMonth	luna aceasta
+stats.cardHolders	posesori de card
+stats.kpi	Indicatori principali
+stats.members	Membri
+stats.withCard	cu card
+stats.avgCheck	Bon mediu
+stats.byMembers	printre membri
+stats.pointsInCirculation	Puncte în circulație
+stats.accrued	acumulate
+stats.revenue	Venituri
+stats.revenuePerMonth	de la membri / lună
+stats.levelDistribution	Distribuție pe niveluri
+stats.noLevels	Nivelurile nu sunt încă configurate
+stats.totalClients	Total clienți în program
+stats.fromValue	de la {{value}}
+stats.levelPointValue	punct = {{value}}
+scenarios.title	Scenarii inteligente
+scenarios.subtitle	Pilot automat pentru retenție: sistemul găsește clienți și îi răsplătește pentru tine
+scenarios.add	Scenariu
+scenarios.fired	a fost declanșat de {{count}} ori
+scenarios.lastRun	ultima rulare {{when}}
+scenarios.neverRun	încă nu a rulat
+scenarios.empty	Nu există încă scenarii
+scenarios.emptySub	Creează primul — sistemul va reține clienții pentru tine
+scenarios.channel	Canal
+scenarios.channelSoon	după conectarea integrării
+scenarios.pickTemplate	Alege un scenariu
+scenarios.pickTemplateSub	Un șablon gata — ajustează pragurile mai târziu
+scenarios.create	Creează
+scenarios.deleteConfirm	Ștergi scenariul?
+scenarios.deleteConfirmSub	Regula nu va mai fi declanșată. Această acțiune nu poate fi anulată.
+scenarios.triggers.inactive_days	inactiv de {{days}} zile
+scenarios.triggers.low_subscription	≤ {{classes_left}} sesiuni rămase
+scenarios.triggers.birthday	zi de naștere
+scenarios.triggers.nth_visit	vizita nr. {{n}}
+scenarios.triggers.referral	a adus un prieten
+scenarios.actions.points	oferă {{points}} puncte
+scenarios.actions.gift_classes	oferă {{classes}} sesiuni
+scenarios.actions.certificate	emite un certificat de {{amount}} ₽
+scenarios.actions.renewal_offer	oferă reînnoire cu reducere de {{discount}}%
+scenarios.templates.win_back.name	Ne este dor de tine
+scenarios.templates.win_back.desc	Recuperează un client care nu a mai venit de ceva timp
+scenarios.templates.expiring_subscription.name	Abonamentul se termină
+scenarios.templates.expiring_subscription.desc	Oferă reînnoire înainte să se termine sesiunile
+scenarios.templates.birthday_gift.name	Cadou de ziua de naștere
+scenarios.templates.birthday_gift.desc	Bucură un client în ziua sa specială
+scenarios.templates.fifth_visit.name	Recompensă de fidelitate
+scenarios.templates.fifth_visit.desc	O sesiune gratuită pentru fidelitate
+scenarios.templates.referral_thanks.name	Mulțumim pentru prieten
+scenarios.templates.referral_thanks.desc	Răsplătește persoana care a adus un client nou
+scenarios.ifClient	Dacă clientul
+scenarios.then	→
+scenarios.toasts.created	Scenariu creat
+scenarios.toasts.updated	Scenariu actualizat
+scenarios.toasts.deleted	Scenariu șters
+scenarios.toasts.failed	Nu s-a putut salva scenariul
+scenarios.delete	Șterge
+segmentsBoard.title	Segmente și recomandări
+segmentsBoard.subtitle	Grupuri active de clienți, fiecare cu un îndemn clar la acțiune
+segmentsBoard.empty	Nu este nimic aici și e bine așa
+segmentsBoard.clients	clienți
+segmentsBoard.daysAgo	acum {{count}} zile
+segmentsBoard.neverVisited	fără vizite
+segmentsBoard.more	și încă {{count}}
+segmentsBoard.segments.at_risk.name	Pe punctul de a pleca
+segmentsBoard.segments.at_risk.desc	Activi, inactivi de 21+ zile
+segmentsBoard.segments.at_risk.action	Oferă bonus
+segmentsBoard.segments.vip_idle.name	VIP fără activitate
+segmentsBoard.segments.vip_idle.desc	Clienți VIP, inactivi de 14+ zile
+segmentsBoard.segments.vip_idle.action	Lansează campanie
+segmentsBoard.segments.expiring_subscription.name	Abonament pe cale să expire
+segmentsBoard.segments.expiring_subscription.desc	≤2 sesiuni sau ≤7 zile rămase
+segmentsBoard.segments.expiring_subscription.action	Lansează campanie
+segmentsBoard.segments.lost_newcomers.name	Nu s-au mai întors
+segmentsBoard.segments.lost_newcomers.desc	Au venit o dată, lipsesc de 14+ zile
+segmentsBoard.segments.lost_newcomers.action	Lansează campanie
+segmentsBoard.segments.upsell_candidates.name	Pregătiți pentru un pachet
+segmentsBoard.segments.upsell_candidates.desc	8+ vizite luna aceasta, fără pachet
+segmentsBoard.segments.upsell_candidates.action	Lansează campanie
+segmentsBoard.campaignSub	Segmentul „{{name}}” · {{count}} clienți
+segmentsBoard.pointsLabel	Câte puncte să fie acordate
+segmentsBoard.messageLabel	Textul mesajului
+segmentsBoard.messagePlaceholder	ex. Ne este dor de tine! Revino — te așteptăm.
+segmentsBoard.emailNote	E-mailul este trimis numai clienților cu adresă de e-mail
+segmentsBoard.confirm	Trimite
+segmentsBoard.toasts.pointsDone	Puncte acordate · {{processed}} procesați, {{emails}} notificați
+segmentsBoard.toasts.emailDone	Campanie trimisă · {{emails}} e-mailuri din {{processed}}
+retention.title	Reînnoiri de abonamente
+retention.subtitle	Cât de bine revin clienții pentru un pachet nou
+retention.renewalRate	Reînnoire
+retention.avgPackages	Pachete per client
+retention.sold	Vândute
+retention.renewed	Reînnoite
+retention.empty	Nu există încă vânzări de abonamente
+retention.emptySub	Analiza va apărea după primele vânzări de pachete

@@ -1,0 +1,333 @@
+== pt
+nav.sectionLabel	Definições do sistema
+nav.general	Geral
+nav.appearance	Aspeto
+nav.notifications	Notificações
+nav.billing	Faturação
+nav.security	Segurança
+nav.integrations	Integrações
+nav.data	Dados
+nav.logout	Mudar de CRM
+toast.saved	Guardado
+toast.error	Ocorreu um erro
+workspace.title	Os seus sistemas CRM
+workspace.subtitle	Escolha um espaço de trabalho ou crie um novo
+workspace.current	Atual
+workspace.membersCount_one	{{count}} membro
+workspace.membersCount_other	{{count}} membros
+workspace.clientsCount_one	{{count}} cliente
+workspace.clientsCount_other	{{count}} clientes
+workspace.createNew	Criar um novo estúdio
+workspace.loadError	Não foi possível carregar os seus estúdios
+workspace.selectError	Não foi possível mudar para este estúdio
+general.company.title	Dados da empresa
+general.company.subtitle	Informações públicas sobre o seu negócio
+general.company.name	Nome da empresa
+general.company.namePh	ex. O meu estúdio
+general.company.desc	Descrição
+general.company.descPh	O que faz o seu estúdio…
+general.company.phone	Telefone
+general.company.email	E-mail
+general.company.site	Website
+general.company.sitePh	https://studio.com
+general.company.address	Morada
+general.company.addressPh	Rua Exemplo 123, cidade
+general.reset	Repor
+general.resetToast	Definições repostas
+general.locale.title	Idioma e região
+general.locale.subtitle	Definições de localização da interface
+general.locale.timezone	Fuso horário
+general.locale.timezoneSearch	Cidade ou desvio
+general.locale.timezoneNotFound	Nenhum fuso horário encontrado
+general.locale.currency	Moeda
+general.locale.currencySearch	Pesquisar moeda ou código
+general.locale.currencyNotFound	Nenhuma moeda encontrada
+general.locale.language	Idioma da interface
+general.locale.languageSearch	Pesquisar idioma
+general.locale.languageNotFound	Nenhum idioma encontrado
+general.locale.dateFormat	Formato de data
+general.locale.firstDay	Primeiro dia da semana
+general.locale.firstDayLabels.0	Segunda-feira
+general.locale.firstDayLabels.1	Domingo
+general.booking.title	Modelo de reserva
+general.booking.subtitle	Como os clientes fazem reservas consigo
+general.booking.mode	Modelo de reserva
+general.booking.modeHint	Eventos — os clientes inscrevem-se numa aula agendada. Individual — o cliente escolhe um especialista e uma hora. Misto — ambos ao mesmo tempo.
+general.booking.profile	Terminologia do setor
+general.booking.profileHint	Escolhe as palavras para equipa e ofertas. Altera apenas a redação — nunca funções, preços ou o modelo de reserva.
+general.booking.strict	Agenda rigorosa
+general.booking.strictHint	Impede reservas duplas de um especialista ou espaço exclusivo. Obrigatório antes de ativar a reserva individual.
+general.booking.spaceAxis	Usar {{spacePlural}} na agenda
+general.booking.spaceAxisHint	Desligado — o cliente reserva uma pessoa e o espaço não tem coluna no diário. Ligado — uma aula fica associada a um espaço.
+general.booking.spaceAxisDefaultOn	Predefinição para o seu setor: ligado
+general.booking.spaceAxisDefaultOff	Predefinição para o seu setor: desligado
+general.booking.modes.event	Eventos
+general.booking.modes.resource	Individual
+general.booking.modes.hybrid	Misto
+general.booking.profiles.studio	Práticas de grupo e estúdios
+general.booking.profiles.sport	Desporto e ginásios
+general.booking.profiles.beauty	Beleza e cuidados
+general.booking.profiles.recovery	Corpo e recuperação
+general.booking.profiles.relax	Spa e relaxamento
+general.booking.profiles.other	Outro
+general.booking.preview.event	Evento
+general.booking.preview.resource	Individual
+general.booking.errors.AUDIT_BLOCKED	A agenda contém reservas que não são compatíveis com uma agenda rigorosa.
+general.booking.errors.STRICT_SCHEDULE_REQUIRED	Ative primeiro a agenda rigorosa.
+general.booking.errors.RESOURCE_HISTORY_EXISTS	A agenda rigorosa não pode ser desativada: o estúdio tem reservas individuais.
+general.booking.findings.overlap	Reservas sobrepostas
+general.booking.findings.unknown_timezone	Fuso horário desconhecido
+general.booking.findings.undefined_branch	Filial não definida
+general.booking.findings.invalid_duration	Duração inválida
+general.booking.findings.invalid_resource_row	Reserva individual incompleta
+general.booking.findings.missing_branch_assignment	O especialista não está atribuído à filial
+general.booking.findings.missing_working_hours	O especialista não tem horário de trabalho
+general.booking.findings.inactive_specialist	O especialista está inativo
+general.booking.findings.other	Requer revisão
+appearance.theme.title	Tema
+appearance.theme.subtitle	Escolha o estilo visual da interface
+appearance.theme.light	Claro
+appearance.theme.dark	Escuro
+appearance.theme.auto	Sistema
+appearance.accent.title	Cor de destaque
+appearance.accent.subtitle	Personalize a cor principal da interface
+appearance.accent.note	A sua escolha foi guardada, mas ainda não é aplicada à interface — chegará numa atualização futura.
+appearance.accent.noteTitle	Em breve
+appearance.accent.colors.peach	Pêssego
+appearance.accent.colors.pistachio	Pistácio
+appearance.accent.colors.lavender	Lavanda
+appearance.accent.colors.pink	Rosa
+appearance.accent.colors.gold	Dourado
+appearance.accent.colors.mint	Menta
+appearance.language.title	Idioma da interface
+appearance.language.subtitle	O seu idioma pessoal — não afeta as definições do estúdio
+appearance.language.search	Pesquisar idioma
+appearance.language.empty	Nenhum idioma encontrado
+notifications.myPrefs.title	As minhas notificações
+notifications.myPrefs.subtitle	Preferências pessoais — não afetam o resto do estúdio
+notifications.myPrefs.hint	As notificações obrigatórias não podem ser desativadas — garantem que nunca perde alterações na agenda e pagamentos.
+notifications.myPrefs.empty	Não existem notificações opcionais para a sua função
+notifications.myPrefs.channels.email	E-mail
+notifications.myPrefs.channels.telegram	Telegram
+notifications.myPrefs.channels.whatsapp	WhatsApp
+notifications.telegram.title	Telegram para notificações
+notifications.telegram.subtitle	Onde receber pessoalmente eventos — reservas, processamento salarial, relatórios
+notifications.telegram.chatId	O seu chat_id do Telegram
+notifications.telegram.chatIdPh	ex. 123456789
+notifications.telegram.hintBefore	Pode encontrar o seu chat_id no bot 
+notifications.telegram.hintAfter	 no Telegram — inicie uma conversa com ele e ele envia-lhe o seu ID.
+notifications.telegram.invalidChatId	O chat_id do Telegram tem de ser um número sem símbolos
+notifications.telegram.saved	Telegram ligado para notificações
+notifications.telegram.saveFailed	Não foi possível guardar o Telegram
+notifications.email.title	E-mail para notificações
+notifications.email.subtitle	Para onde enviar e-mails do sistema
+notifications.email.primary	E-mail principal
+notifications.email.backup	E-mail de reserva
+notifications.email.backupPh	backup@studio.com
+notifications.email.saved	Definições de notificações guardadas
+billing.plans.start	Start
+billing.plans.pro	Pro
+billing.plans.business	Business
+billing.plans.free_trial	Teste gratuito
+billing.status.active	Ativo
+billing.status.trial	Teste
+billing.status.expired	Expirado
+billing.plan.title	Plano atual
+billing.plan.expiresAt	Ativo até {{date}}
+billing.plan.maxStaff	Até {{count}} colaboradores
+billing.plan.staffUnlimited	Colaboradores ilimitados
+billing.plan.noSubscription	Sem subscrição ativa
+billing.plan.noSubscriptionCta	Escolher um plano
+billing.plan.trialCta	Escolher um plano
+billing.upgrade	Mudar para {{plan}}
+billing.renew	Renovar
+billing.autopay.title	Renovação automática
+billing.autopay.subtitle	Cobrado no seu cartão guardado
+billing.autopay.autoRenew	Renovação automática
+billing.autopay.notifyBefore	Lembraremos {{count}} dias antes da cobrança
+billing.payment.title	Método de pagamento
+billing.payment.cardSummary	Cartão •••• {{last4}}
+billing.payment.notLinked	Nenhum cartão associado
+billing.payment.change	Alterar
+billing.history.title	Histórico de pagamentos
+billing.history.subtitle	Últimos 12 pagamentos
+billing.history.exportCsv	Exportar CSV
+billing.history.empty	Ainda não há pagamentos
+billing.history.showAll	Mostrar tudo
+billing.history.period	{{count}} meses
+billing.history.noDate	—
+billing.history.status.paid	Pago
+billing.history.status.pending	Pendente
+billing.history.status.failed	Não pago
+billing.history.status.refunded	Reembolsado
+billing.toast.autopaySaved	Definições de renovação automática guardadas
+billing.toast.renewed	Renovação iniciada
+billing.toast.csvExportError	Não foi possível exportar o CSV
+security.account.title	Segurança da conta
+security.account.subtitle	Proteja o acesso ao seu espaço de trabalho
+security.twoFa.title	Autenticação de dois fatores
+security.twoFa.sub	Código por e-mail em cada início de sessão
+security.twoFa.active	Ativa
+security.twoFa.disabled	Desativada
+security.twoFa.enableTitle	Ativar 2FA
+security.twoFa.disableTitle	Desativar 2FA
+security.twoFa.enableWarning	Depois de ativada, cada início de sessão exigirá um código enviado para {{email}}. Certifique-se de que tem acesso a esse endereço — caso contrário, pode perder o acesso à sua conta.
+security.twoFa.disableWarning	Depois de desativada, só a palavra-passe será suficiente para iniciar sessão, sem código por e-mail.
+security.twoFa.enabledToast	A autenticação de dois fatores está ativa
+security.twoFa.disabledToast	A autenticação de dois fatores está desativada
+security.password.title	Palavra-passe da conta
+security.password.sub	A alteração é confirmada com um código por e-mail
+security.password.change	Alterar palavra-passe
+security.password.changed	Palavra-passe alterada com sucesso
+security.password.current	Palavra-passe atual
+security.password.currentPh	Introduza a palavra-passe atual
+security.password.new	Nova palavra-passe
+security.password.newPh	Pelo menos 8 caracteres
+security.password.repeat	Repita a palavra-passe
+security.password.repeatPh	Introduza novamente a nova palavra-passe
+security.password.mismatch	As palavras-passe não coincidem
+security.password.forgot	Esqueceu-se da palavra-passe?
+security.password.resetTitle	Recuperação de palavra-passe
+security.password.step1Sub	Vamos confirmar que é você
+security.password.step2Sub	Código enviado para {{email}}
+security.password.step3Sub	Escolha uma nova palavra-passe
+security.password.resetIntro	Enviaremos um código de 6 dígitos para o e-mail da sua conta. Não precisa de saber a palavra-passe atual — o código prova que a caixa de correio é sua.
+security.password.sendCode	Enviar código
+security.password.back	Voltar
+security.password.save	Guardar palavra-passe
+security.password.resetDone	Palavra-passe atualizada
+security.password.resetLogoutHint	Os outros dispositivos terminarão sessão — neste continuará com sessão iniciada.
+security.password.rules.len	8+ caracteres
+security.password.rules.letter	Tem uma letra
+security.password.rules.digit	Tem um algarismo
+security.password.rules.simple	Sem 111 ou qwerty
+security.sessions.title	Sessões ativas
+security.sessions.sub	Onde a sua conta tem sessão iniciada neste momento
+security.sessions.count	{{count}} dispositivos
+security.sessions.manage	Gerir
+security.sessions.hide	Ocultar
+security.sessions.current	Atual
+security.sessions.terminate	Terminar
+security.sessions.terminateAll	Terminar todas as outras sessões
+security.sessions.terminatedToast	Sessão terminada com sucesso
+security.sessions.terminatedAllToast	As outras sessões foram terminadas
+security.sessions.justNow	Ativa agora
+security.sessions.minutesAgo	há {{count}} min
+security.sessions.hoursAgo	há {{count}} h
+security.sessions.daysAgo	há {{count}} d
+security.sessions.unknownLocation	Desconhecido
+security.otp.sentHint	Enviámos um código de 6 dígitos para o seu e-mail. Introduza-o abaixo.
+security.otp.resend	Reenviar código
+security.otp.resendIn	Reenviar em {{count}} s
+security.otp.confirm	Confirmar
+security.otp.cancel	Cancelar
+security.otp.sendCode	Enviar código
+security.otp.continue	Continuar
+security.danger.title	Gestão de dados (zona de perigo)
+security.danger.export.title	Exportar todos os dados
+security.danger.export.sub	Transfira um arquivo da base de clientes e do histórico
+security.danger.export.prepare	Preparar arquivo
+security.danger.export.hide	Ocultar
+security.danger.export.clients	Base de clientes (CSV)
+security.danger.export.finances	Transações financeiras
+security.danger.export.schedule	Aulas e agenda
+security.danger.export.start	Iniciar exportação
+security.danger.export.started	O arquivo está a ser preparado; será enviado um link para o seu e-mail
+security.danger.export.emptySelection	Escolha pelo menos uma secção para exportar
+security.danger.wipe.title	Limpar base de dados
+security.danger.wipe.sub	Elimina todos os clientes e reservas. As definições serão mantidas.
+security.danger.wipe.action	Limpar dados
+security.danger.wipe.toast	Base de dados limpa com sucesso
+security.danger.wipe.consequence1	Eliminados permanentemente: clientes, aulas, reservas, operações, documentos, subscrições de clientes, histórico de fidelização
+security.danger.wipe.consequence2	Sem alteração: estúdio, filiais, {{spacePlural}}, serviços, equipa, subscrição e definições
+security.danger.wipe.consequence3	Esta ação é irreversível — não pode ser anulada após a confirmação
+security.danger.deleteAccount.title	Eliminar conta da empresa
+security.danger.deleteAccount.sub	Destruição completa e irreversível da empresa no sistema
+security.danger.deleteAccount.action	Eliminar para sempre
+security.danger.deleteAccount.consequence1	O estúdio e todos os seus dados serão eliminados permanentemente, incluindo clientes, aulas, finanças e definições
+security.danger.deleteAccount.consequence2	A sua conta pessoal permanece — apenas este estúdio é eliminado
+security.danger.deleteAccount.consequence3	A eliminação não está disponível com uma subscrição ativa ou se o estúdio tiver outros proprietários
+integrations.title	Integrações
+integrations.subtitle	Ligue canais e ecossistemas externos com um clique
+integrations.loadError	Não foi possível carregar o estado das integrações
+integrations.items.telegram.name	Bot do Telegram
+integrations.items.telegram.sub	Notificações a clientes e reservas através do bot
+integrations.items.whatsapp.name	WhatsApp Business
+integrations.items.whatsapp.sub	Mensagens em massa e notificações automáticas a clientes
+integrations.items.instagram.name	Instagram Direct
+integrations.items.instagram.sub	Agente de IA para respostas automáticas e reservas online
+integrations.items.google_calendar.name	Google Calendar
+integrations.items.google_calendar.sub	Sincronização da agenda do estúdio
+integrations.status.connected	Ligado
+integrations.status.notActive	Não ligado
+integrations.actions.configure	Configurar
+integrations.actions.connect	Ligar
+integrations.actions.disconnect	Desligar
+integrations.fields.keyLabel	Chave
+integrations.fields.connectedAtLabel	Ligado
+integrations.fields.telegramToken	Token da API do bot (do @BotFather)
+integrations.fields.telegramTokenPh	123456789:ABCDefGhIJKlmNoPQRsTUVwxyZ
+integrations.fields.whatsappToken	Token de acesso
+integrations.fields.whatsappTokenPh	EAAxxxxxxxxxxxxx
+integrations.fields.whatsappPhoneId	ID do número de telefone
+integrations.fields.whatsappPhoneIdPh	1029384756
+integrations.fields.whatsappWabaId	ID WABA (opcional)
+integrations.fields.whatsappWabaIdPh	1029384756
+integrations.fields.instagramToken	Token de acesso
+integrations.fields.instagramTokenPh	IGQWR...
+integrations.fields.instagramUserId	ID da conta empresarial do Instagram
+integrations.fields.instagramUserIdPh	17841400000000000
+integrations.guide.howToTitle	Como ligar
+integrations.guide.telegram.steps.0	Abra o @BotFather no Telegram e envie /newbot
+integrations.guide.telegram.steps.1	Escolha um nome e nome de utilizador para o bot — o BotFather envia-lhe um token de API
+integrations.guide.telegram.steps.2	Cole o token abaixo e clique em Ligar
+integrations.guide.whatsapp.steps.0	Crie uma aplicação no Meta for Developers e adicione o produto WhatsApp
+integrations.guide.whatsapp.steps.1	No API Setup, copie o token de acesso temporário ou permanente
+integrations.guide.whatsapp.steps.2	Copie também o ID do número de telefone do número de teste ou verificado
+integrations.guide.whatsapp.steps.3	Cole ambos os valores abaixo e clique em Ligar
+integrations.guide.instagram.steps.0	Ligue a conta Instagram do estúdio a uma Página do Facebook — necessário para a Direct API
+integrations.guide.instagram.steps.1	Crie uma aplicação no Meta for Developers com o produto Instagram Graph API
+integrations.guide.instagram.steps.2	Gere um token de acesso com as permissões instagram_basic e instagram_manage_messages
+integrations.guide.instagram.steps.3	Copie o ID da conta empresarial do Instagram e o token e cole-os abaixo
+integrations.guide.instagram.steps.4	Sem aprovação da Meta, a ligação funciona apenas para contas de teste da aplicação
+integrations.guide.google_calendar.steps.0	Clique em Ligar — será aberta uma janela de início de sessão Google
+integrations.guide.google_calendar.steps.1	Escolha a conta à qual o calendário do estúdio está ligado
+integrations.guide.google_calendar.steps.2	Conceda acesso ao calendário — as aulas começarão a aparecer nele automaticamente
+integrations.capabilities.notify	notificações a clientes neste canal
+integrations.capabilities.booking	reservas online através deste canal
+integrations.capabilities.dm_agent	agente de IA para respostas automáticas no Direct
+integrations.capabilities.schedule_sync	sincronização da agenda com Google Calendar
+integrations.disconnect.title	Desligar {{name}}?
+integrations.disconnect.willStop	Isto deixará de funcionar:
+integrations.disconnect.checkbox	Compreendo as consequências
+integrations.disconnect.cancel	Cancelar
+integrations.disconnect.confirm	Desligar
+integrations.google.connected	Google Calendar ligado
+integrations.google.denied	O acesso ao Google Calendar não foi concedido
+integrations.google.error	Não foi possível ligar ao Google Calendar
+integrations.google.primary	principal
+integrations.google.calendar	Calendário
+integrations.google.selectCalendar	Selecione um calendário
+integrations.google.loadingCalendars	A carregar calendários…
+integrations.google.syncMode	Modo de sincronização
+integrations.google.syncModeOptions.push	Apenas do CRM para o Google
+integrations.google.syncModeOptions.two_way	Bidirecional
+integrations.google.syncNow	Sincronizar agora
+integrations.google.lastSync	Última sincronização: {{date}}
+integrations.google.neverSynced	Ainda não sincronizado
+integrations.google.timezoneWarning	O fuso horário do estúdio não está definido — os eventos são enviados em UTC e podem divergir das horas reais das aulas. Defina o fuso horário em Geral.
+integrations.google.syncResult	Sincronizado: {{pushed}} enviados, {{pulled}} recebidos
+integrations.google.settingsSaved	Definições do Google Calendar guardadas
+integrations.toast.connected	Integração ligada
+integrations.toast.disconnected	Integração desligada
+data.export.title	Exportar relatórios e listas
+data.export.subtitle	Transfira ficheiros em formatos de tabela para contabilidade e análise
+data.export.clearFilter	Limpar período
+data.export.items.clients.name	Lista de clientes
+data.export.items.schedule.name	Histórico do diário e das reservas
+data.export.items.finances.name	Relatório financeiro
+data.export.items.subscriptions.name	Subscrições de clientes
+data.export.rows_one	{{count}} registo
+data.export.rows_other	{{count}} registos
+data.export.loading	A carregar...
+data.export.empty	sem dados para este período

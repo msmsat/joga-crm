@@ -1,0 +1,294 @@
+== da
+legal.terms	Servicevilkår
+legal.privacy	Privatlivspolitik
+tabs.plans	Planer og priser
+tabs.invoices	Betalingshistorik
+tabs.method	Betalingsmetode
+tabsShort.plans	Planer
+tabsShort.invoices	Historik
+tabsShort.method	Betaling
+paymentsHistory.title	Fuld betalingshistorik
+paymentsHistory.subtitle	Alle fakturaer for dette studio
+paymentsHistory.clearFilter	Ryd
+paymentsHistory.loadMore	Indlæs flere
+planNames.start	Start
+planNames.pro	Pro
+planNames.business	Business
+seats.title	Hvor mange medarbejdere er der i studiet
+seats.hint	fra {{amount}} om måneden
+seats.stepNote	Hver ekstra plads koster {{amount}} om måneden
+seats.unlimitedNote	Ingen grænse for medarbejdere
+seats.perSeat	Pr. medarbejder
+limits.staff	Medarbejdere
+limits.ai	Velora AI-forespørgsler
+limits.unlimited	Ubegrænset
+banner.trialEnds	Din prøveperiode slutter {{date}} — vælg en plan
+banner.renews	Dit abonnement {{plan}} fornyes {{date}}
+banner.expires	Dit abonnement {{plan}} slutter {{date}}
+banner.choosePlan	Vælg en plan
+banner.dismiss	Luk
+banner.unpaid	Din plan er ikke betalt. Betal i Planer og fakturering for at fortsætte.
+banner.suspended	Adgangen er suspenderet, fordi en planfaktura er forfalden. Betal den i Planer og fakturering.
+paymentReturn.done	Betalingen gik igennem — planen {{plan}} er aktiv.
+paymentReturn.processing	Behandler betalingen — dit abonnement aktiveres om et par minutter.
+header.eyebrow	Velora · Fakturering
+header.title	Planer og fakturering
+header.subtitle	Administrer abonnement, betalingsmetoder og betalingshistorik
+header.totalSpent	Samlet forbrug
+header.monthsWithUs	Måneder hos os
+header.saved	Sparet
+header.nextCharge	Næste opkrævning
+header.currentPlan	AKTUEL PLAN
+header.noPlanName	Ingen plan
+header.noPlan	Intet aktivt abonnement
+header.active	Aktiv
+header.activeUntil	Aktiv · til {{date}}
+header.trialPlanName	Prøveplan
+header.trial	Prøveperiode
+header.trialUntil	Prøveperiode · til {{date}}
+header.expired	Udløbet
+header.percentRate	{{rate}}% af salget
+header.modePercent	Procentplan
+header.modeFixed	Fast
+header.modeCombo	Kombineret
+header.unpaid	Planen er ikke betalt
+header.awaitingPayment	Afventer betaling
+mode.title	Betalingsmodel
+mode.subscription	Fast abonnement
+mode.percent	% af salget
+mode.combo	Fast + % kombination
+mode.short.subscription	Fast
+mode.short.percent	Procent
+mode.short.combo	Kombineret
+mode.descriptions.subscription	Betal ét beløb om måneden. Forudsigeligt og omkostningseffektivt.
+mode.descriptions.percent	Ingen fast afgift: {{rate}}% af hvert salg, også kontant.
+mode.descriptions.combo	Halvt abonnement + {{rate}}% af hvert salg, også kontant.
+mode.badges.popular	Populær
+mode.badges.flexible	Fleksibel
+mode.percentCard.title	Modellen “3% af salget”
+mode.percentCard.description	Betal kun, når du tjener: 3% af hvert salg, uden fast abonnementsafgift. Onlinebetalinger deles straks; kontanter og indskud samles og kommer som én faktura hver måned.
+mode.percentCard.noFixed	Ingen fast afgift
+mode.percentCard.payForResult	Betal for resultater
+mode.percentCard.oneClick	Aktivering med ét klik
+mode.percentCard.cta	Aktivér 3%-modellen
+mode.percentCard.ctaShort	Aktivér 3%
+mode.activateSuccess	Betalingsmodel opdateret
+mode.activateError	Betalingsmodellen kunne ikke opdateres
+mode.alreadyActive	Denne betalingsmodel er allerede aktiv — nedenfor kan du forny eller ændre planen
+mode.confirmSwitchTitle	Skifte betalingsmodel?
+mode.confirmSwitchMessage	Dit abonnement er aktivt. Skiftet træder i kraft med det samme, og resten af den betalte periode GÅR HELT TABT: ubrugte dage refunderes ikke og overføres ikke.
+mode.termsTitle	Bekræft planvilkår
+mode.termsMessage	På denne plan tilbageholder platformen {{rate}}% af hvert salg.\n\nVed onlinebetalinger tilbageholdes gebyret automatisk på betalingstidspunktet. Ved kontanter, terminal og indbetalinger tilbageholdes det IKKE straks — det optjenes, og du får en særskilt faktura én gang om måneden.\n\nDu har {{days}} dage til at betale fakturaen. Hvis den ikke betales til tiden, suspenderes adgang til CRM og kundernes miniapp, indtil den er betalt.\n\nDet aktuelle skyldige beløb vises i Fakturering; du kan betale når som helst, også tidligt.
+mode.termsConfirm	Jeg accepterer vilkårene
+mode.termsMinimum	Minimumsopkrævningen pr. måned er {{amount}} {{currency}}. Hvis platformen i en kalendermåned tjente mindre end det på dit studio (for eksempel hvis der slet ikke var salg gennem CRM), faktureres du for forskellen. Tjener du mere end minimum, kommer der ingen faktura. En ubetalt minimumsopkrævning suspenderer adgangen på samme måde som en ubetalt provisionsfaktura.
+mode.termsBurn	ADVARSEL: du har en betalt periode tilbage. Et skift af faktureringsmodel GØR HELT OP MED den — ubrugte dage refunderes ikke og overføres ikke.
+mode.termsCombo	Skiftet er et KØB: lige efter bekræftelsen ser du det skyldige beløb. Resten af din nuværende betalte periode går tabt — den refunderes ikke og overføres ikke. Modellen fast + % aktiveres KUN efter betaling; indtil da forbliver din plan som den er, og intet opkræves.
+combo.rateBadge	{{rate}}%
+combo.summary	Fast {{fixed}}/md. + {{rate}}% af salget (kontant faktureres månedligt)
+combo.cta	Aktivér den kombinerede plan
+combo.ctaShort	Aktivér kombineret
+period.1	1 måned
+period.3	3 måneder
+period.6	6 måneder
+period.12	1 år
+period.24	2 år
+period.title	Betalingsperiode
+period.discountActive	{{percent}}% rabat er aktiv
+period.noDiscount	Ingen rabat
+period.discountLabel	−{{percent}}% rabat
+calculator.title	Beregningsparametre
+calculator.monthlyTurnover	Din månedlige onlineomsætning
+calculator.turnoverRangeMin	50 t.
+calculator.turnoverRangeMax	3 mio.+
+calculator.chooseFeeLabel	Vælg en provisionssats (påvirker funktioner)
+calculator.feeOptions.basic	Basis
+calculator.feeOptions.standard	Standard
+calculator.feeOptions.pro	Pro
+calculator.feeOptions.max	Maks.
+calculator.chooseFixedLabel	Vælg en fast grunddel (indløsning er altid 3%)
+calculator.fixedOptions.start	Start
+calculator.fixedOptions.optima	Optima
+calculator.fixedOptions.business	Business
+calculator.economyPercentTitle	PLANØKONOMI
+calculator.economyComboTitle	KOMBINERET PLANØKONOMI
+calculator.turnover	Studioets omsætning
+calculator.systemFee	Systemgebyr
+calculator.totalMonthlyPayment	SAMLET MÅNEDLIG BETALING
+calculator.onlyPayForResult	Du betaler ingen fast afgift, kun for resultater
+calculator.activatePercent	Aktivér {{percent}}%-modellen
+calculator.baseSubscription	Basisabonnement (fast)
+calculator.acquiringFee	Indløsning / gebyr
+calculator.activateCombo	Aktivér den kombinerede plan
+planCards.bestChoice	Bedste valg
+planCards.current	Aktuel
+planCards.perMonth	/ md.
+planCards.currentPlan	Aktuel plan
+planCards.yourPrice	Din pris
+planCards.staffLimit	Op til {{count}} medarbejdere
+planCards.staffUnlimited	Ubegrænsede medarbejdere
+paymentSchedule.title	Betalingsplan
+paymentSchedule.total	Samlet beløb
+paymentSchedule.morePayments	+ {{count}} yderligere betalinger á {{amount}}
+paymentSchedule.processing	Omdirigerer til betaling…
+paymentSchedule.payFor	Betal for {{count}} md.
+paymentSchedule.vatNote	Ekskl. moms — skat tilføjes ved betaling efter dit land
+trust.title	Derfor stoler over 2.400 virksomheder på os
+trust.reviews.0.text	Vi skiftede fra Altegio. Forskellen er som mellem en taxa og et privatfly.
+trust.reviews.0.author	Maria K., FORM Pilates
+trust.reviews.1.text	Det bedste er at vide præcis, hvad jeg betaler hver måned. Ingen overraskelser.
+trust.reviews.1.author	Artem N., Barbershop Bros
+trust.reviews.2.text	Support svarede på 4 minutter. Det har jeg aldrig set andre steder.
+trust.reviews.2.author	Elena D., SPA LUNA
+upgrade.priceLine	Pris {{price}}/md.
+upgrade.discountNote	 {{percent}}% rabat ved betaling for {{period}} md.
+upgrade.planLabel	Plan
+upgrade.periodLabel	Periode
+upgrade.periodValue_one	{{count}} måned
+upgrade.periodValue_other	{{count}} måneder
+upgrade.discountLabel	Rabat
+upgrade.scheduledBadge	Fra {{date}} — plan "{{plan}}"
+upgrade.vatNote	Ekskl. moms — skat tilføjes ved betaling efter dine virksomhedsoplysninger; EU-virksomheder med momsnummer får omvendt betalingspligt.
+method.notLinked	Ikke tilknyttet
+method.badgeTitle	Betalingsmetoden er sikret
+method.tokenSub	Udbydertoken · udløber {{expiry}}
+method.tokenNote	Dine rigtige kortoplysninger opbevares af betalingsudbyderen (PCI DSS L1). Vi gemmer kun en engangstoken til fornyelser.
+method.securityTitle	Standarder for databeskyttelse
+method.security.pciDss	PCI DSS-kryptering, niveau 1
+method.security.secure3d	3D Secure-beskyttelse af transaktioner
+method.security.noStorage	Kortdata rører aldrig vores servere
+method.security.autoLink	Kortet tilknyttes ved første betaling
+method.noCardDetail	Du behøver ikke indtaste oplysninger separat — betalingen sker på Stripes sikre side.
+method.renewDone	Faktura oprettet — betalingen behandles
+method.renewBusy	Opretter faktura…
+method.renewSuccess	Faktura for fornyelse oprettet
+method.renewError	Fakturaen kunne ikke oprettes. Prøv igen.
+method.renewNow	Forny nu med kort •••• {{last4}}
+method.autopayTitle	Indstillinger for automatisk betaling
+method.autopaySuccess	Indstilling gemt
+method.autopayError	Indstillingen kunne ikke gemmes. Prøv igen.
+method.autopay.cardOnly	Tilgængelig ved kortbetaling
+method.autopay.autoRenew.label	Automatisk fornyelse
+method.autopay.autoRenew.desc	Slå fra for at annullere ved den betalte periodes afslutning
+method.autopay.autoRenew.until	Abonnementet fornyes ikke — adgang til {{date}}
+method.autopay.emailNotify.label	E-mailnotifikationer
+method.autopay.emailNotify.desc	Kvittering sendes på e-mail efter hver betaling
+method.autopay.remind3d.label	Påmind 3 dage før
+method.autopay.remind3d.desc	Vi minder dig om det før den automatiske opkrævning
+method.autopay.sms.label	SMS-varsel
+method.autopay.sms.desc	Sms sendes ved opkrævning
+method.portal.title	Faktureringsoplysninger og moms
+method.portal.subtitle	Fakturaer, det tilknyttede kort og opkrævningshistorik findes i Stripes kundeportal.
+method.portal.cta	Åbn hos Stripe
+method.ibanBadgeLabel	Bankoverførsel (SEPA)
+method.ibanBadgeNote	Fakturaer kommer på e-mail med et betalingslink — intet opkræves automatisk på et kort. Du kan også betale tidligt fra fakturasiden.
+invoices.title	Betalingshistorik
+invoices.totalPaid	samlet betalt {{amount}}
+invoices.exportCsv	Eksportér CSV
+invoices.exportError	CSV kunne ikke eksporteres. Prøv igen.
+invoices.receiptError	Kvitteringen kunne ikke åbnes. Prøv igen.
+invoices.invoiceNo	Faktura #{{id}}
+invoices.methodCard	Betalt med kort
+invoices.methodIban	Betalt med bankoverførsel (IBAN)
+invoices.syncHint	Tjek status hos betalingstjenesten
+invoices.syncChanged	Status opdateret: {{status}}
+invoices.syncUnchanged	Betalingstjenesten bekræftede samme status
+invoices.syncError	Status kunne ikke kontrolleres. Prøv igen.
+invoices.kindOfflineFee	Provision på offline salg
+invoices.kindMinFee	Minimumsgebyr pr. måned
+invoices.kindOnlineFee	Provision på onlinebetalinger
+invoices.methodWithheld	Tilbageholdt af Stripe ved betaling
+table.date	Dato
+table.description	Beskrivelse
+table.amount	Beløb
+table.status	Status
+table.receipt	Kvittering
+status.paid	Betalt
+status.pending	Afventer
+status.failed	Ikke betalt
+status.refunded	Refunderet
+empty.noInvoices	Ingen fakturaer endnu — de vises efter din første betaling.
+empty.noCard	Dit kort vises automatisk efter den første betaling.
+empty.monthsWithUs	Du har ikke købt et abonnement endnu
+empty.noData	Ingen data
+savings.title	Dine besparelser
+savings.prepayTitle	Dine besparelser ved forudbetaling
+savings.emptyState	Vælg en længere periode, så begynder du at spare
+savings.youSave	Du sparer {{amount}} over {{months}} md.
+savings.freeMonths	Det svarer til {{count}} md. gratis
+savings.amountLabel	{{amount}} i besparelse
+savings.comparedToMonthly	sammenlignet med månedlig betaling
+savings.forMonths_one	For {{count}} måned
+savings.forMonths_other	For {{count}} måneder
+pay	Betal
+continuePlan	Fortsæt plan
+payModal.titleNew	Start planen {{plan}}
+payModal.titleSwitch	Skift til {{plan}}
+payModal.titleRenew	Forny {{plan}}
+payModal.totalLabel	Din plan vil koste
+payModal.burnWarning	Et skift til en anden plan genstarter perioden: resten af din plan {{plan}} GÅR TABT — den refunderes ikke og overføres ikke. Fornyelse af den samme plan bevarer den.
+payModal.switched	Planen er ændret: intet at betale — skiftet blev dækket af resten af den nuværende periode.
+payModal.renewNote	Dette fornyer samme plan: de måneder, du køber, føjes til den nuværende betalte periode. Intet går tabt.
+payModal.cardNote	Kortbetaling på Stripes sikre side · 7 dages tilbagebetaling
+payModal.freeUntil	Intet opkræves før {{date}}: du har stadig {{count}} dag(e) af den allerede betalte periode. Fakturering begynder den dato.
+payModal.taxLabel	Moms
+payModal.taxLine	Moms {{rate}}%
+payModal.reverseCharge	Omvendt betalingspligt
+payModal.totalWithTax	I alt inkl. moms
+payModal.taxServerNote	Skat beregnes ud fra dine faktureringsoplysninger. Fakturaen viser samme beløb.
+payModal.taxReview	Vi kunne ikke bestemme skatten for dine faktureringsoplysninger, så det samlede beløb vises uden den, og betalingen kan ikke gennemføres. Tjek betalerens land og adresse, eller kontakt support.
+offlineFee.title	Gebyr for offline salg
+offlineFee.accruing	Optjent fra kontanter og indskud med {{rate}}%. Faktureres månedligt, {{days}} dage til betaling.
+offlineFee.due	Faktura udstedt. Dage tilbage til betaling: {{days}}.
+offlineFee.suspended	Betalingen er forfalden — adgang til CRM og miniapp er suspenderet.
+offlineFee.pay	Betal
+offlineFee.suspendedMin	Minimumsgebyret pr. måned er forfaldent — adgang til CRM og miniapp er suspenderet.
+offlineFee.alsoAccruing	Derudover optjenes denne måned: {{amount}} — kommer på næste faktura.
+offlineFee.minimum	Minimumsgebyret pr. måned er {{amount}}. Tjener du mindre på en måned, betaler du forskellen; tjener du mere, kommer der ingen faktura.
+offlineFee.pendingBill	Optjent under den tidligere model, afventer en faktura.
+offlineFee.notBilledYet	Ingen faktura er udstedt endnu: det optjente beløb er under den mindste fakturastørrelse, eller den forberedes stadig. Intet går tabt — det kommer på næste faktura.
+trial.title	Tilbud til nye studier
+trial.subtitle	Dit studio er netop oprettet
+trial.headline	{{days}} dage gratis
+trial.noCard	Intet kort kræves — intet at betale nu
+trial.perks.allModules	Fuld adgang til hvert modul: journal, kunder, økonomi, notifikationer og Velora AI
+trial.perks.noCommitment	Ingen binding: hvis det ikke passer, skal du bare ikke forny
+trial.perks.keepData	Alt, hvad du sætter op i prøveperioden, forbliver dit
+trial.activate	Aktivér
+trial.decline	Afslå
+trial.cardHint	Du har ikke aktiveret dette studios gratis periode endnu. Den er tilgængelig, indtil du køber en plan.
+profile.title	Faktureringsoplysninger
+profile.editTitle	Rediger faktureringsoplysninger
+profile.subtitle	Din adresse kommer på fakturaen og angiver skattesatsen. Den gemmes på din konto — vi spørger ikke igen i et andet studio.
+profile.subtitlePay	Udfyld dette én gang, og betalingen går igennem med det samme næste gang. Din adresse kommer på fakturaen og angiver skattesatsen.
+profile.cardTitle	Faktureringsoplysninger
+profile.cardSubtitle	Gemmes på din konto og bruges i alle dine studier. Sådan vises de på fakturaen.
+profile.cardEmpty	Endnu ikke udfyldt — vi spørger før din første betaling. Du kan tilføje dem nu.
+profile.add	Tilføj faktureringsoplysninger
+profile.edit	Rediger
+profile.save	Gem
+profile.saveAndPay	Gem og fortsæt til betaling
+profile.cancel	Annuller
+profile.saved	Faktureringsoplysninger gemt
+profile.vatNone	Ikke angivet
+profile.fields.country	Land eller region
+profile.fields.countryPlaceholder	Vælg et land
+profile.fields.address	Adresse
+profile.fields.line1	Adresselinje 1
+profile.fields.line1Placeholder	Gade og nummer
+profile.fields.line2	Adresselinje 2 — valgfri
+profile.fields.line2Placeholder	Lejlighed, suite, enhedsnummer osv.
+profile.fields.postalCode	Postnummer
+profile.fields.postalCodePlaceholder	110 00
+profile.fields.city	By
+profile.fields.cityPlaceholder	Prag
+profile.fields.vat	Momsnummer — valgfrit
+profile.fields.vatPlaceholder	{{prefix}}12345678
+profile.fields.vatHint	Kun for virksomheder. Nummeret kontrolleres mod EU-registret (VIES), når du gemmer — vi accepterer ikke ubekræftede numre. Med et gyldigt nummer faktureres en virksomhed i et andet EU-land uden skat (omvendt betalingspligt). Privatpersoner har ikke et — lad feltet stå tomt.
+profile.fields.countrySearch	Begynd at skrive et navn
+profile.fields.countryNotFound	Intet land fundet
+profile.fields.vatOutsideEu	Vi beder ikke om et momsnummer: uden for EU bestemmes skatten af betalerens land, ikke nummeret, så det gør ingen forskel på fakturaen.
+profile.fields.vatPending	Dit nummer er gemt, men EU-registret var utilgængeligt på tidspunktet, så det er ikke bekræftet endnu, og din næste faktura vil indeholde fuld moms. Du behøver ikke indtaste det igen: vi bliver ved med at kontrollere, og når registret svarer, opkræves skatten ikke længere. For en allerede betalt faktura refunderer support skatten.
+profile.errors.required	Dette felt er påkrævet
+profile.preview.invoice	Faktura
+profile.preview.billTo	Fakturer til
+profile.preview.note	Sådan fremgår dine oplysninger på hver faktura. Du kan ændre dem når som helst i Planer og fakturering → Betalingsmetode.

@@ -1,0 +1,333 @@
+== el
+nav.sectionLabel	Ρυθμίσεις συστήματος
+nav.general	Γενικά
+nav.appearance	Εμφάνιση
+nav.notifications	Ειδοποιήσεις
+nav.billing	Χρεώσεις
+nav.security	Ασφάλεια
+nav.integrations	Ενσωματώσεις
+nav.data	Δεδομένα
+nav.logout	Αλλαγή CRM
+toast.saved	Αποθηκεύτηκε
+toast.error	Κάτι πήγε στραβά
+workspace.title	Τα συστήματα CRM σας
+workspace.subtitle	Επιλέξτε χώρο εργασίας ή δημιουργήστε έναν νέο
+workspace.current	Τρέχων
+workspace.membersCount_one	{{count}} μέλος
+workspace.membersCount_other	{{count}} μέλη
+workspace.clientsCount_one	{{count}} πελάτης
+workspace.clientsCount_other	{{count}} πελάτες
+workspace.createNew	Δημιουργία νέου στούντιο
+workspace.loadError	Δεν ήταν δυνατή η φόρτωση των στούντιό σας
+workspace.selectError	Δεν ήταν δυνατή η μετάβαση σε αυτό το στούντιο
+general.company.title	Στοιχεία εταιρείας
+general.company.subtitle	Δημόσιες πληροφορίες για την επιχείρησή σας
+general.company.name	Επωνυμία εταιρείας
+general.company.namePh	π.χ. Το στούντιό μου
+general.company.desc	Περιγραφή
+general.company.descPh	Τι κάνει το στούντιό σας…
+general.company.phone	Τηλέφωνο
+general.company.email	Email
+general.company.site	Ιστότοπος
+general.company.sitePh	https://studio.com
+general.company.address	Διεύθυνση
+general.company.addressPh	Οδός Παραδείγματος 123, πόλη
+general.reset	Επαναφορά
+general.resetToast	Οι ρυθμίσεις επαναφέρθηκαν
+general.locale.title	Γλώσσα και περιοχή
+general.locale.subtitle	Ρυθμίσεις τοπικοποίησης διεπαφής
+general.locale.timezone	Ζώνη ώρας
+general.locale.timezoneSearch	Πόλη ή διαφορά ώρας
+general.locale.timezoneNotFound	Δεν βρέθηκε ζώνη ώρας
+general.locale.currency	Νόμισμα
+general.locale.currencySearch	Αναζήτηση νομίσματος
+general.locale.currencyNotFound	Δεν βρέθηκε νόμισμα
+general.locale.language	Γλώσσα διεπαφής
+general.locale.languageSearch	Αναζήτηση γλώσσας
+general.locale.languageNotFound	Δεν βρέθηκε γλώσσα
+general.locale.dateFormat	Μορφή ημερομηνίας
+general.locale.firstDay	Πρώτη ημέρα της εβδομάδας
+general.locale.firstDayLabels.0	Δευτέρα
+general.locale.firstDayLabels.1	Κυριακή
+general.booking.title	Μοντέλο κρατήσεων
+general.booking.subtitle	Πώς κάνουν κράτηση οι πελάτες σας
+general.booking.mode	Μοντέλο κρατήσεων
+general.booking.modeHint	Εκδηλώσεις — οι πελάτες εγγράφονται σε προγραμματισμένο μάθημα. Ατομικό — ο πελάτης επιλέγει ειδικό και ώρα. Μικτό — και τα δύο μαζί.
+general.booking.profile	Ορολογία κλάδου
+general.booking.profileHint	Επιλέγει τις λέξεις για το προσωπικό και τις υπηρεσίες. Αλλάζει μόνο τη διατύπωση — ποτέ τους ρόλους, τις τιμές ή το μοντέλο κρατήσεων.
+general.booking.strict	Αυστηρό πρόγραμμα
+general.booking.strictHint	Απαγορεύει διπλές κρατήσεις ειδικού ή αποκλειστικού χώρου. Απαιτείται πριν ενεργοποιηθούν οι ατομικές κρατήσεις.
+general.booking.spaceAxis	Χρήση {{spacePlural}} στο πρόγραμμα
+general.booking.spaceAxisHint	Ανενεργό — ο πελάτης κλείνει ένα άτομο και ο χώρος δεν έχει στήλη στο ημερολόγιο. Ενεργό — ένα μάθημα συνδέεται με χώρο.
+general.booking.spaceAxisDefaultOn	Προεπιλογή για τον κλάδο σας: ενεργό
+general.booking.spaceAxisDefaultOff	Προεπιλογή για τον κλάδο σας: ανενεργό
+general.booking.modes.event	Εκδηλώσεις
+general.booking.modes.resource	Ατομικό
+general.booking.modes.hybrid	Μικτό
+general.booking.profiles.studio	Ομαδικές πρακτικές και στούντιο
+general.booking.profiles.sport	Αθλητισμός και γυμναστήρια
+general.booking.profiles.beauty	Ομορφιά και περιποίηση
+general.booking.profiles.recovery	Σώμα και αποκατάσταση
+general.booking.profiles.relax	Spa και χαλάρωση
+general.booking.profiles.other	Άλλο
+general.booking.preview.event	Εκδήλωση
+general.booking.preview.resource	Ατομικό
+general.booking.errors.AUDIT_BLOCKED	Το πρόγραμμα περιέχει κρατήσεις που δεν είναι συμβατές με αυστηρό πρόγραμμα.
+general.booking.errors.STRICT_SCHEDULE_REQUIRED	Ενεργοποιήστε πρώτα το αυστηρό πρόγραμμα.
+general.booking.errors.RESOURCE_HISTORY_EXISTS	Το αυστηρό πρόγραμμα δεν μπορεί να απενεργοποιηθεί: το στούντιο έχει ατομικές κρατήσεις.
+general.booking.findings.overlap	Επικαλυπτόμενες κρατήσεις
+general.booking.findings.unknown_timezone	Άγνωστη ζώνη ώρας
+general.booking.findings.undefined_branch	Δεν έχει οριστεί υποκατάστημα
+general.booking.findings.invalid_duration	Μη έγκυρη διάρκεια
+general.booking.findings.invalid_resource_row	Ελλιπής ατομική κράτηση
+general.booking.findings.missing_branch_assignment	Ο ειδικός δεν έχει ανατεθεί σε υποκατάστημα
+general.booking.findings.missing_working_hours	Ο ειδικός δεν έχει ωράριο εργασίας
+general.booking.findings.inactive_specialist	Ο ειδικός είναι ανενεργός
+general.booking.findings.other	Χρειάζεται έλεγχο
+appearance.theme.title	Θέμα
+appearance.theme.subtitle	Επιλέξτε το οπτικό στυλ της διεπαφής
+appearance.theme.light	Φωτεινό
+appearance.theme.dark	Σκούρο
+appearance.theme.auto	Σύστημα
+appearance.accent.title	Χρώμα έμφασης
+appearance.accent.subtitle	Προσαρμόστε το βασικό χρώμα της διεπαφής
+appearance.accent.note	Η επιλογή σας αποθηκεύτηκε, αλλά δεν εφαρμόζεται ακόμη στη διεπαφή — θα προστεθεί σε μελλοντική ενημέρωση.
+appearance.accent.noteTitle	Σύντομα διαθέσιμο
+appearance.accent.colors.peach	Ροδακινί
+appearance.accent.colors.pistachio	Φιστικί
+appearance.accent.colors.lavender	Λεβάντα
+appearance.accent.colors.pink	Ροζ
+appearance.accent.colors.gold	Χρυσό
+appearance.accent.colors.mint	Μέντα
+appearance.language.title	Γλώσσα διεπαφής
+appearance.language.subtitle	Η προσωπική σας γλώσσα — δεν επηρεάζει τις ρυθμίσεις του στούντιο
+appearance.language.search	Αναζήτηση γλώσσας
+appearance.language.empty	Δεν βρέθηκε γλώσσα
+notifications.myPrefs.title	Οι ειδοποιήσεις μου
+notifications.myPrefs.subtitle	Προσωπικές προτιμήσεις — δεν επηρεάζουν το υπόλοιπο στούντιο
+notifications.myPrefs.hint	Οι υποχρεωτικές ειδοποιήσεις δεν απενεργοποιούνται — εξασφαλίζουν ότι δεν θα χάσετε ποτέ αλλαγές προγράμματος και πληρωμές.
+notifications.myPrefs.empty	Δεν υπάρχουν προαιρετικές ειδοποιήσεις για τον ρόλο σας
+notifications.myPrefs.channels.email	Email
+notifications.myPrefs.channels.telegram	Telegram
+notifications.myPrefs.channels.whatsapp	WhatsApp
+notifications.telegram.title	Telegram για ειδοποιήσεις
+notifications.telegram.subtitle	Πού θα λαμβάνετε προσωπικά συμβάντα — κρατήσεις, μισθοδοσία, αναφορές
+notifications.telegram.chatId	Το Telegram chat_id σας
+notifications.telegram.chatIdPh	π.χ. 123456789
+notifications.telegram.hintBefore	Μπορείτε να βρείτε το chat_id σας από το bot 
+notifications.telegram.hintAfter	 στο Telegram — ξεκινήστε συνομιλία μαζί του και θα σας στείλει το ID σας.
+notifications.telegram.invalidChatId	Το Telegram chat_id πρέπει να είναι αριθμός, χωρίς σύμβολα
+notifications.telegram.saved	Το Telegram συνδέθηκε για ειδοποιήσεις
+notifications.telegram.saveFailed	Αποτυχία αποθήκευσης Telegram
+notifications.email.title	Email για ειδοποιήσεις
+notifications.email.subtitle	Πού θα στέλνονται τα email συστήματος
+notifications.email.primary	Κύριο email
+notifications.email.backup	Εφεδρικό email
+notifications.email.backupPh	backup@studio.com
+notifications.email.saved	Οι ρυθμίσεις ειδοποιήσεων αποθηκεύτηκαν
+billing.plans.start	Start
+billing.plans.pro	Pro
+billing.plans.business	Business
+billing.plans.free_trial	Δωρεάν δοκιμή
+billing.status.active	Ενεργό
+billing.status.trial	Δοκιμή
+billing.status.expired	Έληξε
+billing.plan.title	Τρέχον πλάνο
+billing.plan.expiresAt	Ενεργό έως {{date}}
+billing.plan.maxStaff	Έως {{count}} εργαζόμενοι
+billing.plan.staffUnlimited	Απεριόριστο προσωπικό
+billing.plan.noSubscription	Δεν υπάρχει ενεργή συνδρομή
+billing.plan.noSubscriptionCta	Επιλέξτε πλάνο
+billing.plan.trialCta	Επιλέξτε πλάνο
+billing.upgrade	Αναβάθμιση σε {{plan}}
+billing.renew	Ανανέωση
+billing.autopay.title	Αυτόματη ανανέωση
+billing.autopay.subtitle	Χρέωση στην αποθηκευμένη κάρτα σας
+billing.autopay.autoRenew	Αυτόματη ανανέωση
+billing.autopay.notifyBefore	Θα σας υπενθυμίσουμε {{count}} ημέρες πριν από τη χρέωση
+billing.payment.title	Τρόπος πληρωμής
+billing.payment.cardSummary	Κάρτα •••• {{last4}}
+billing.payment.notLinked	Δεν έχει συνδεθεί κάρτα
+billing.payment.change	Αλλαγή
+billing.history.title	Ιστορικό πληρωμών
+billing.history.subtitle	Τελευταίες 12 πληρωμές
+billing.history.exportCsv	Εξαγωγή CSV
+billing.history.empty	Δεν υπάρχουν ακόμη πληρωμές
+billing.history.showAll	Εμφάνιση όλων
+billing.history.period	{{count}} μήνες
+billing.history.noDate	—
+billing.history.status.paid	Πληρώθηκε
+billing.history.status.pending	Σε αναμονή
+billing.history.status.failed	Δεν πληρώθηκε
+billing.history.status.refunded	Επιστράφηκε
+billing.toast.autopaySaved	Οι ρυθμίσεις αυτόματης ανανέωσης αποθηκεύτηκαν
+billing.toast.renewed	Η ανανέωση ξεκίνησε
+billing.toast.csvExportError	Αποτυχία εξαγωγής CSV
+security.account.title	Ασφάλεια λογαριασμού
+security.account.subtitle	Προστατέψτε την πρόσβαση στον χώρο εργασίας σας
+security.twoFa.title	Έλεγχος ταυτότητας δύο παραγόντων
+security.twoFa.sub	Κωδικός email σε κάθε σύνδεση
+security.twoFa.active	Ενεργό
+security.twoFa.disabled	Ανενεργό
+security.twoFa.enableTitle	Ενεργοποίηση 2FA
+security.twoFa.disableTitle	Απενεργοποίηση 2FA
+security.twoFa.enableWarning	Μετά την ενεργοποίηση, κάθε σύνδεση θα απαιτεί κωδικό που θα αποστέλλεται στο {{email}}. Βεβαιωθείτε ότι έχετε πρόσβαση — διαφορετικά μπορεί να χάσετε την πρόσβαση στον λογαριασμό σας.
+security.twoFa.disableWarning	Μετά την απενεργοποίηση, μόνο ο κωδικός πρόσβασης θα αρκεί για σύνδεση, χωρίς κωδικό email.
+security.twoFa.enabledToast	Ο έλεγχος ταυτότητας δύο παραγόντων ενεργοποιήθηκε
+security.twoFa.disabledToast	Ο έλεγχος ταυτότητας δύο παραγόντων απενεργοποιήθηκε
+security.password.title	Κωδικός πρόσβασης λογαριασμού
+security.password.sub	Η αλλαγή επιβεβαιώνεται με κωδικό email
+security.password.change	Αλλαγή κωδικού πρόσβασης
+security.password.changed	Ο κωδικός πρόσβασης άλλαξε επιτυχώς
+security.password.current	Τρέχων κωδικός πρόσβασης
+security.password.currentPh	Εισαγάγετε τον τρέχοντα κωδικό πρόσβασης
+security.password.new	Νέος κωδικός πρόσβασης
+security.password.newPh	Τουλάχιστον 8 χαρακτήρες
+security.password.repeat	Επανάληψη κωδικού πρόσβασης
+security.password.repeatPh	Εισαγάγετε ξανά τον νέο κωδικό πρόσβασης
+security.password.mismatch	Οι κωδικοί πρόσβασης δεν ταιριάζουν
+security.password.forgot	Ξεχάσατε τον κωδικό πρόσβασης;
+security.password.resetTitle	Ανάκτηση κωδικού πρόσβασης
+security.password.step1Sub	Ας επιβεβαιώσουμε ότι είστε εσείς
+security.password.step2Sub	Ο κωδικός στάλθηκε στο {{email}}
+security.password.step3Sub	Επιλέξτε νέο κωδικό πρόσβασης
+security.password.resetIntro	Θα στείλουμε έναν 6ψήφιο κωδικό στη διεύθυνση email του λογαριασμού σας. Δεν χρειάζεται να γνωρίζετε τον τρέχοντα κωδικό — ο κωδικός αποδεικνύει ότι το γραμματοκιβώτιο είναι δικό σας.
+security.password.sendCode	Αποστολή κωδικού
+security.password.back	Πίσω
+security.password.save	Αποθήκευση κωδικού πρόσβασης
+security.password.resetDone	Ο κωδικός πρόσβασης ενημερώθηκε
+security.password.resetLogoutHint	Οι άλλες συσκευές θα αποσυνδεθούν — σε αυτήν θα παραμείνετε συνδεδεμένοι.
+security.password.rules.len	8+ χαρακτήρες
+security.password.rules.letter	Περιέχει γράμμα
+security.password.rules.digit	Περιέχει ψηφίο
+security.password.rules.simple	Όχι 111 ή qwerty
+security.sessions.title	Ενεργές συνεδρίες
+security.sessions.sub	Πού είναι συνδεδεμένος ο λογαριασμός σας αυτήν τη στιγμή
+security.sessions.count	{{count}} συσκευές
+security.sessions.manage	Διαχείριση
+security.sessions.hide	Απόκρυψη
+security.sessions.current	Τρέχουσα
+security.sessions.terminate	Τερματισμός
+security.sessions.terminateAll	Τερματισμός όλων των άλλων συνεδριών
+security.sessions.terminatedToast	Η συνεδρία τερματίστηκε επιτυχώς
+security.sessions.terminatedAllToast	Οι άλλες συνεδρίες τερματίστηκαν
+security.sessions.justNow	Ενεργή τώρα
+security.sessions.minutesAgo	πριν από {{count}} λεπτά
+security.sessions.hoursAgo	πριν από {{count}} ώρες
+security.sessions.daysAgo	πριν από {{count}} ημέρες
+security.sessions.unknownLocation	Άγνωστο
+security.otp.sentHint	Στείλαμε έναν 6ψήφιο κωδικό στο email σας. Εισαγάγετέ τον παρακάτω.
+security.otp.resend	Επαναποστολή κωδικού
+security.otp.resendIn	Επαναποστολή σε {{count}} δευτ.
+security.otp.confirm	Επιβεβαίωση
+security.otp.cancel	Ακύρωση
+security.otp.sendCode	Αποστολή κωδικού
+security.otp.continue	Συνέχεια
+security.danger.title	Διαχείριση δεδομένων (επικίνδυνη ζώνη)
+security.danger.export.title	Εξαγωγή όλων των δεδομένων
+security.danger.export.sub	Λήψη αρχείου της βάσης πελατών και του ιστορικού
+security.danger.export.prepare	Προετοιμασία αρχείου
+security.danger.export.hide	Απόκρυψη
+security.danger.export.clients	Βάση πελατών (CSV)
+security.danger.export.finances	Οικονομικές συναλλαγές
+security.danger.export.schedule	Μαθήματα και πρόγραμμα
+security.danger.export.start	Έναρξη εξαγωγής
+security.danger.export.started	Το αρχείο προετοιμάζεται, σύνδεσμος θα σταλεί στο email σας
+security.danger.export.emptySelection	Επιλέξτε τουλάχιστον μία ενότητα για εξαγωγή
+security.danger.wipe.title	Εκκαθάριση βάσης δεδομένων
+security.danger.wipe.sub	Διαγράφει όλους τους πελάτες και τις κρατήσεις. Οι ρυθμίσεις διατηρούνται.
+security.danger.wipe.action	Εκκαθάριση δεδομένων
+security.danger.wipe.toast	Η βάση δεδομένων εκκαθαρίστηκε επιτυχώς
+security.danger.wipe.consequence1	Διαγράφονται οριστικά: πελάτες, μαθήματα, κρατήσεις, συναλλαγές, έγγραφα, συνδρομές πελατών, ιστορικό επιβράβευσης
+security.danger.wipe.consequence2	Χωρίς αλλαγή: στούντιο, υποκαταστήματα, {{spacePlural}}, υπηρεσίες, προσωπικό, συνδρομή και ρυθμίσεις
+security.danger.wipe.consequence3	Αυτή η ενέργεια είναι μη αναστρέψιμη — δεν μπορεί να αναιρεθεί μετά την επιβεβαίωση
+security.danger.deleteAccount.title	Διαγραφή εταιρικού λογαριασμού
+security.danger.deleteAccount.sub	Πλήρης και μη αναστρέψιμη καταστροφή της επιχείρησης στο σύστημα
+security.danger.deleteAccount.action	Οριστική διαγραφή
+security.danger.deleteAccount.consequence1	Το στούντιο και όλα τα δεδομένα του θα διαγραφούν οριστικά, συμπεριλαμβανομένων πελατών, μαθημάτων, οικονομικών και ρυθμίσεων
+security.danger.deleteAccount.consequence2	Ο προσωπικός σας λογαριασμός παραμένει — διαγράφεται μόνο αυτό το στούντιο
+security.danger.deleteAccount.consequence3	Η διαγραφή δεν είναι διαθέσιμη με ενεργή συνδρομή ή όταν το στούντιο έχει άλλους ιδιοκτήτες
+integrations.title	Ενσωματώσεις
+integrations.subtitle	Συνδέστε εξωτερικά κανάλια και οικοσυστήματα με ένα κλικ
+integrations.loadError	Αποτυχία φόρτωσης κατάστασης ενσωματώσεων
+integrations.items.telegram.name	Bot Telegram
+integrations.items.telegram.sub	Ειδοποιήσεις πελατών και κρατήσεις μέσω bot
+integrations.items.whatsapp.name	WhatsApp Business
+integrations.items.whatsapp.sub	Μαζικά μηνύματα και αυτόματες ειδοποιήσεις πελατών
+integrations.items.instagram.name	Instagram Direct
+integrations.items.instagram.sub	Πράκτορας AI για αυτόματες απαντήσεις και online κρατήσεις
+integrations.items.google_calendar.name	Google Calendar
+integrations.items.google_calendar.sub	Συγχρονισμός προγράμματος στούντιο
+integrations.status.connected	Συνδεδεμένο
+integrations.status.notActive	Δεν είναι συνδεδεμένο
+integrations.actions.configure	Ρύθμιση
+integrations.actions.connect	Σύνδεση
+integrations.actions.disconnect	Αποσύνδεση
+integrations.fields.keyLabel	Κλειδί
+integrations.fields.connectedAtLabel	Συνδεδεμένο
+integrations.fields.telegramToken	Διακριτικό API bot (από @BotFather)
+integrations.fields.telegramTokenPh	123456789:ABCDefGhIJKlmNoPQRsTUVwxyZ
+integrations.fields.whatsappToken	Διακριτικό πρόσβασης
+integrations.fields.whatsappTokenPh	EAAxxxxxxxxxxxxx
+integrations.fields.whatsappPhoneId	Αναγνωριστικό τηλεφωνικού αριθμού
+integrations.fields.whatsappPhoneIdPh	1029384756
+integrations.fields.whatsappWabaId	Αναγνωριστικό WABA (προαιρετικό)
+integrations.fields.whatsappWabaIdPh	1029384756
+integrations.fields.instagramToken	Διακριτικό πρόσβασης
+integrations.fields.instagramTokenPh	IGQWR...
+integrations.fields.instagramUserId	Αναγνωριστικό επαγγελματικού λογαριασμού Instagram
+integrations.fields.instagramUserIdPh	17841400000000000
+integrations.guide.howToTitle	Πώς να συνδεθείτε
+integrations.guide.telegram.steps.0	Ανοίξτε το @BotFather στο Telegram και στείλτε /newbot
+integrations.guide.telegram.steps.1	Επιλέξτε όνομα και όνομα χρήστη για το bot — το BotFather θα σας στείλει διακριτικό API
+integrations.guide.telegram.steps.2	Επικολλήστε το διακριτικό παρακάτω και πατήστε Σύνδεση
+integrations.guide.whatsapp.steps.0	Δημιουργήστε εφαρμογή στο Meta for Developers και προσθέστε το προϊόν WhatsApp
+integrations.guide.whatsapp.steps.1	Στο API Setup, αντιγράψτε το προσωρινό ή μόνιμο διακριτικό πρόσβασης
+integrations.guide.whatsapp.steps.2	Αντιγράψτε επίσης το αναγνωριστικό τηλεφωνικού αριθμού του δοκιμαστικού ή επαληθευμένου αριθμού
+integrations.guide.whatsapp.steps.3	Επικολλήστε και τις δύο τιμές παρακάτω και πατήστε Σύνδεση
+integrations.guide.instagram.steps.0	Συνδέστε τον λογαριασμό Instagram του στούντιο με Σελίδα Facebook — απαιτείται για το Direct API
+integrations.guide.instagram.steps.1	Δημιουργήστε εφαρμογή στο Meta for Developers με το προϊόν Instagram Graph API
+integrations.guide.instagram.steps.2	Δημιουργήστε διακριτικό πρόσβασης με δικαιώματα instagram_basic και instagram_manage_messages
+integrations.guide.instagram.steps.3	Αντιγράψτε το αναγνωριστικό επαγγελματικού λογαριασμού Instagram και το διακριτικό, και επικολλήστε τα παρακάτω
+integrations.guide.instagram.steps.4	Χωρίς έγκριση από τη Meta, η σύνδεση λειτουργεί μόνο για τους δοκιμαστικούς λογαριασμούς της εφαρμογής
+integrations.guide.google_calendar.steps.0	Πατήστε Σύνδεση — θα ανοίξει παράθυρο σύνδεσης Google
+integrations.guide.google_calendar.steps.1	Επιλέξτε τον λογαριασμό με τον οποίο συνδέεται το ημερολόγιο του στούντιο
+integrations.guide.google_calendar.steps.2	Δώστε πρόσβαση στο ημερολόγιο — τα μαθήματα θα εμφανίζονται εκεί αυτόματα
+integrations.capabilities.notify	ειδοποιήσεις πελατών σε αυτό το κανάλι
+integrations.capabilities.booking	online κρατήσεις μέσω αυτού του καναλιού
+integrations.capabilities.dm_agent	πράκτορας AI για αυτόματες απαντήσεις στο Direct
+integrations.capabilities.schedule_sync	συγχρονισμός προγράμματος με το Google Calendar
+integrations.disconnect.title	Αποσύνδεση {{name}};
+integrations.disconnect.willStop	Αυτό θα σταματήσει να λειτουργεί:
+integrations.disconnect.checkbox	Κατανοώ τις συνέπειες
+integrations.disconnect.cancel	Ακύρωση
+integrations.disconnect.confirm	Αποσύνδεση
+integrations.google.connected	Το Google Calendar συνδέθηκε
+integrations.google.denied	Δεν δόθηκε πρόσβαση στο Google Calendar
+integrations.google.error	Αποτυχία σύνδεσης με το Google Calendar
+integrations.google.primary	κύριο
+integrations.google.calendar	Ημερολόγιο
+integrations.google.selectCalendar	Επιλέξτε ημερολόγιο
+integrations.google.loadingCalendars	Φόρτωση ημερολογίων…
+integrations.google.syncMode	Λειτουργία συγχρονισμού
+integrations.google.syncModeOptions.push	Μόνο από CRM σε Google
+integrations.google.syncModeOptions.two_way	Διπλής κατεύθυνσης
+integrations.google.syncNow	Συγχρονισμός τώρα
+integrations.google.lastSync	Τελευταίος συγχρονισμός: {{date}}
+integrations.google.neverSynced	Δεν έχει συγχρονιστεί ακόμη
+integrations.google.timezoneWarning	Η ζώνη ώρας του στούντιο δεν έχει οριστεί — τα συμβάντα στέλνονται σε UTC και μπορεί να διαφέρουν από τις πραγματικές ώρες μαθημάτων. Ορίστε τη ζώνη ώρας στις Γενικές ρυθμίσεις.
+integrations.google.syncResult	Συγχρονίστηκε: {{pushed}} στάλθηκαν, {{pulled}} λήφθηκαν
+integrations.google.settingsSaved	Οι ρυθμίσεις Google Calendar αποθηκεύτηκαν
+integrations.toast.connected	Η ενσωμάτωση συνδέθηκε
+integrations.toast.disconnected	Η ενσωμάτωση αποσυνδέθηκε
+data.export.title	Εξαγωγή αναφορών και λιστών
+data.export.subtitle	Λήψη αρχείων σε μορφές πίνακα για λογιστική και αναλυτικά στοιχεία
+data.export.clearFilter	Εκκαθάριση περιόδου
+data.export.items.clients.name	Λίστα πελατών
+data.export.items.schedule.name	Ιστορικό ημερολογίου και κρατήσεων
+data.export.items.finances.name	Οικονομική αναφορά
+data.export.items.subscriptions.name	Συνδρομές πελατών
+data.export.rows_one	{{count}} εγγραφή
+data.export.rows_other	{{count}} εγγραφές
+data.export.loading	Φόρτωση...
+data.export.empty	δεν υπάρχουν δεδομένα για αυτήν την περίοδο

@@ -1,0 +1,240 @@
+== fr
+header.allConfigured	Tous les programmes sont configurés
+header.allConfiguredSub	Votre système de fidélité fonctionne à plein régime
+header.setup	Configurer les programmes de fidélité
+header.setupSub	{{count}} programmes sur {{total}} sont configurés · Chaque programme améliore la fidélisation des clients
+header.start	Commencer
+programs.loyalty.title	Cartes de fidélité
+programs.loyalty.desc	Système d'accumulation de points par niveaux
+programs.loyalty.statLabel	clients
+programs.discounts.title	Remises et cashback
+programs.discounts.desc	Offres personnalisées pour les clients
+programs.discounts.statLabel	actifs
+programs.certificates.title	Chèques-cadeaux
+programs.certificates.desc	Chèques-cadeaux et nominatifs
+programs.certificates.statLabel	vendus
+programs.referral.title	Parrainage
+programs.referral.desc	Programme « Invitez un ami »
+programs.referral.statLabel	parrainages
+programs.promocodes.title	Codes promo
+programs.promocodes.desc	Codes de réduction avec limite d'utilisation
+programs.promocodes.statLabel	actifs
+programs.deposit.title	Dépôt
+programs.deposit.desc	Solde monétaire du client au studio
+programs.deposit.statLabel	avec solde
+card.active	Actif
+card.disable	Désactiver
+card.notConfigured	Non configuré
+card.configure	Configurer
+drawer.subtitle	Paramètres du programme
+drawer.saving	Enregistrement…
+drawer.save	Enregistrer et activer
+drawer.cancel	Annuler
+drawer.close	Fermer
+config.mainParams	Paramètres principaux
+config.programName	Nom du programme
+config.pointsRate	Taux de points ({{currency}} pour 1 point)
+config.levels	Niveaux
+config.pointValue	1 point =
+config.pointValueHint	Les points sont gagnés au même taux à chaque niveau, mais ils n'ont pas la même valeur. Donnez 1 à Gold et 2 à Diamond : un point gagné par le client réduira alors deux fois plus le prix à la caisse. C'est l'intérêt d'un niveau : plus une personne a dépensé au studio, plus ses points valent.
+config.expiry	Durée de validité
+config.expiryTooltip	Pendant combien de temps un client peut dépenser ses points accumulés
+config.expiryOptions.3m	3 mois
+config.expiryOptions.6m	6 mois
+config.expiryOptions.1y	1 an
+config.expiryOptions.never	Sans expiration
+config.newLevelName	Nouveau niveau
+config.addLevel	+ Niveau
+config.levelFrom	de
+config.levelTo	à
+config.deleteLevelTitle	Supprimer ce niveau ?
+config.deleteLevelMessage	Les clients du niveau « {{name}} » passeront au niveau voisin selon leurs dépenses totales.
+config.discountType	Type de remise
+config.discountTypes.percentage	Pourcentage (%)
+config.discountTypes.fixed	Fixe ({{currency}})
+config.discountTypes.cashback	Cashback
+config.cashbackPercent	Pourcentage de cashback
+config.discountSize	Montant de la remise
+config.minPurchase	Montant minimum d'achat
+config.noLimit	Sans limite
+config.conditions	Conditions d'application
+config.appliesToAll	Appliquer à tous les services
+config.stackable	Cumulable avec d'autres remises
+config.visibleInCabinet	Afficher au client dans son compte
+config.certType	Type de chèque-cadeau
+config.certTypes.named	Nominatif
+config.certTypes.gift	Cadeau
+config.certTypes.service	Pour un service
+config.denominations	Montants
+config.addDenom	+ Ajouter
+config.service	Service
+config.noServices	Aucun service dans le catalogue pour le moment — ajoutez-en dans « Catalogue »
+config.params	Paramètres
+config.expiryDays	Durée de validité (jours)
+config.certIssue	Émettre un chèque-cadeau
+config.certCustomAmount	Montant personnalisé
+config.certRecipientName	Nom du destinataire
+config.certRecipientPlaceholder	Facultatif
+config.certLinkClient	Associer à un client
+config.certClientSearchPlaceholder	Commencez à saisir un nom…
+config.certAccount	Compte de dépôt
+config.certAccountNone	Ne pas enregistrer dans le registre
+config.certIssueButton	Émettre
+config.certIssuedTitle	Chèque-cadeau émis
+config.certCopyCode	Copier le code
+config.certCopied	Copié
+config.certIssueAnother	En émettre un autre
+config.certIssued	Chèques-cadeaux émis
+config.certEmpty	Aucun chèque-cadeau émis pour le moment
+config.certStatus.active	Actif
+config.certStatus.used	Utilisé
+config.certStatus.expired	Expiré
+config.certRedeem	Utiliser
+config.certRedeemTitle	Utiliser ce chèque-cadeau ?
+config.certRedeemMessage	Le chèque-cadeau {{code}} sera marqué comme utilisé. Cette action est irréversible.
+config.referrerBonusTitle	Bonus de parrainage
+config.referrerBonus	Bonus pour le parrain ({{currency}})
+config.newClientDiscount	Remise pour nouveau client (%)
+config.triggerCondition	Condition d'attribution
+config.triggerConditions.first_visit	Après la première visite
+config.triggerConditions.first_payment	Après le premier paiement
+config.triggerConditions.registration	Dès l'inscription
+config.bonusAccrual	Attribution du bonus
+config.bonusTypes.points	Points
+config.bonusTypes.deposit	Au dépôt
+config.bonusTypes.discount	En remise
+config.promoCreate	Créer un code promo
+config.promoCodePlaceholder	ÉTÉ25
+config.promoValidUntil	Valide jusqu'au
+config.promoUsageLimit	Limite d'utilisation
+config.promoAdd	+ Ajouter un code promo
+config.promoList	Codes promo
+config.promoEmpty	Aucun code promo pour le moment
+config.promoUntil	jusqu'au
+config.promoStatus.active	Actif
+config.promoStatus.expired	Expiré
+config.promoStatus.exhausted	Limite atteinte
+config.promoStatus.disabled	Désactivé
+config.depositTotal	Solde total
+config.depositTotalSub	sur l'ensemble des dépôts clients
+config.depositTopClients	Meilleurs clients par solde
+config.depositEmpty	Personne n'a encore de dépôt
+config.depositHint	Les rechargements et retraits se font dans le profil du client. Le programme de parrainage peut verser les bonus au dépôt plutôt qu'en points.
+validation.required	Ce champ est obligatoire
+validation.minOne	Doit être au moins égal à 1
+validation.minZero	Ne peut pas être négatif
+validation.positive	Doit être supérieur à 0
+validation.range0to100	De 0 à 100
+toasts.saved	Programme activé
+toasts.saveFailed	Échec de l'enregistrement
+toasts.toggleFailed	Impossible de mettre à jour le programme
+toasts.loadFailed	Impossible de charger les données
+toasts.retry	Réessayer
+stats.notConnected	Programme non connecté
+stats.willAppear	Les données apparaîtront après la configuration
+stats.noData	Aucune donnée
+stats.connectProgram	Connecter un programme
+stats.revenueHeadline	Revenus des membres
+stats.membersHeadline	Membres du programme
+stats.returnedClients	Clients revenus
+stats.returnedClientsSub	2+ visites en 90 jours
+stats.avgCheckHeadline	Panier moyen par membre
+stats.bonusCostHeadline	Coût des bonus
+stats.bonusCostSub	ce mois-ci
+stats.roiHeadline	ROI
+stats.roiValue	×{{value}}
+stats.perMonth	ce mois-ci
+stats.cardHolders	détenteurs de carte
+stats.kpi	Indicateurs clés
+stats.members	Membres
+stats.withCard	avec carte
+stats.avgCheck	Panier moyen
+stats.byMembers	chez les membres
+stats.pointsInCirculation	Points en circulation
+stats.accrued	crédités
+stats.revenue	Revenus
+stats.revenuePerMonth	membres / mois
+stats.levelDistribution	Répartition par niveau
+stats.noLevels	Les niveaux ne sont pas encore configurés
+stats.totalClients	Total de clients dans le programme
+stats.fromValue	à partir de {{value}}
+stats.levelPointValue	point = {{value}}
+scenarios.title	Scénarios intelligents
+scenarios.subtitle	Pilote automatique de fidélisation : le système trouve les clients et les récompense pour vous
+scenarios.add	Scénario
+scenarios.fired	déclenché {{count}} fois
+scenarios.lastRun	dernière exécution {{when}}
+scenarios.neverRun	jamais exécuté
+scenarios.empty	Aucun scénario pour le moment
+scenarios.emptySub	Créez le premier — le système fidélisera les clients pour vous
+scenarios.channel	Canal
+scenarios.channelSoon	après connexion de l'intégration
+scenarios.pickTemplate	Choisir un scénario
+scenarios.pickTemplateSub	Un modèle prêt à l'emploi — ajustez les seuils plus tard
+scenarios.create	Créer
+scenarios.deleteConfirm	Supprimer le scénario ?
+scenarios.deleteConfirmSub	La règle cessera de se déclencher. Cette action est irréversible.
+scenarios.triggers.inactive_days	inactif depuis {{days}} jours
+scenarios.triggers.low_subscription	≤ {{classes_left}} cours restants
+scenarios.triggers.birthday	anniversaire
+scenarios.triggers.nth_visit	visite n° {{n}}
+scenarios.triggers.referral	a recommandé un ami
+scenarios.actions.points	offrir {{points}} points
+scenarios.actions.gift_classes	offrir {{classes}} cours
+scenarios.actions.certificate	émettre un chèque-cadeau de {{amount}} ₽
+scenarios.actions.renewal_offer	proposer un renouvellement avec {{discount}} % de remise
+scenarios.templates.win_back.name	Vous nous manquez
+scenarios.templates.win_back.desc	Faites revenir un client qui n'est pas venu depuis longtemps
+scenarios.templates.expiring_subscription.name	Abonnement bientôt épuisé
+scenarios.templates.expiring_subscription.desc	Proposez un renouvellement avant que les cours ne soient épuisés
+scenarios.templates.birthday_gift.name	Cadeau d'anniversaire
+scenarios.templates.birthday_gift.desc	Faites plaisir à un client pour son jour spécial
+scenarios.templates.fifth_visit.name	Récompense de fidélité
+scenarios.templates.fifth_visit.desc	Un cours gratuit pour sa fidélité
+scenarios.templates.referral_thanks.name	Merci pour l'ami
+scenarios.templates.referral_thanks.desc	Récompensez la personne qui a amené un nouveau client
+scenarios.ifClient	Si le client
+scenarios.then	→
+scenarios.toasts.created	Scénario créé
+scenarios.toasts.updated	Scénario mis à jour
+scenarios.toasts.deleted	Scénario supprimé
+scenarios.toasts.failed	Impossible d'enregistrer le scénario
+scenarios.delete	Supprimer
+segmentsBoard.title	Segments et recommandations
+segmentsBoard.subtitle	Groupes de clients actifs, chacun avec une action claire à mener
+segmentsBoard.empty	Il n'y a rien ici, et c'est une bonne chose
+segmentsBoard.clients	clients
+segmentsBoard.daysAgo	il y a {{count}} jours
+segmentsBoard.neverVisited	aucune visite
+segmentsBoard.more	et {{count}} autres
+segmentsBoard.segments.at_risk.name	Sur le départ
+segmentsBoard.segments.at_risk.desc	Actifs, inactifs depuis 21+ jours
+segmentsBoard.segments.at_risk.action	Offrir un bonus
+segmentsBoard.segments.vip_idle.name	VIP silencieux
+segmentsBoard.segments.vip_idle.desc	Clients VIP, inactifs depuis 14+ jours
+segmentsBoard.segments.vip_idle.action	Lancer une campagne
+segmentsBoard.segments.expiring_subscription.name	Abonnement qui expire
+segmentsBoard.segments.expiring_subscription.desc	≤2 cours ou ≤7 jours restants
+segmentsBoard.segments.expiring_subscription.action	Lancer une campagne
+segmentsBoard.segments.lost_newcomers.name	Jamais revenus
+segmentsBoard.segments.lost_newcomers.desc	Venus une fois, absents depuis 14+ jours
+segmentsBoard.segments.lost_newcomers.action	Lancer une campagne
+segmentsBoard.segments.upsell_candidates.name	Prêts pour un forfait
+segmentsBoard.segments.upsell_candidates.desc	8+ visites ce mois-ci, sans forfait
+segmentsBoard.segments.upsell_candidates.action	Lancer une campagne
+segmentsBoard.campaignSub	Segment « {{name}} » · {{count}} clients
+segmentsBoard.pointsLabel	Combien de points attribuer
+segmentsBoard.messageLabel	Texte du message
+segmentsBoard.messagePlaceholder	ex. Vous nous manquez ! Revenez — nous vous attendons.
+segmentsBoard.emailNote	L'e-mail est envoyé uniquement aux clients ayant une adresse e-mail
+segmentsBoard.confirm	Envoyer
+segmentsBoard.toasts.pointsDone	Points attribués · {{processed}} traités, {{emails}} informés
+segmentsBoard.toasts.emailDone	Campagne envoyée · {{emails}} e-mails sur {{processed}}
+retention.title	Renouvellements d'abonnement
+retention.subtitle	Dans quelle mesure les clients reviennent pour un nouveau forfait
+retention.renewalRate	Renouveler
+retention.avgPackages	Forfaits par client
+retention.sold	Vendus
+retention.renewed	Renouvelés
+retention.empty	Aucune vente d'abonnement pour le moment
+retention.emptySub	L'analyse apparaîtra après les premières ventes de forfaits

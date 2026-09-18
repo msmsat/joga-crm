@@ -1,0 +1,240 @@
+== bg
+header.allConfigured	Всички програми са настроени
+header.allConfiguredSub	Вашата система за лоялност работи с пълен капацитет
+header.setup	Настройте програми за лоялност
+header.setupSub	{{count}} от {{total}} програми са настроени · Всяка програма увеличава задържането на клиенти
+header.start	Започнете
+programs.loyalty.title	Карти за лоялност
+programs.loyalty.desc	Система за натрупване на точки с нива
+programs.loyalty.statLabel	клиенти
+programs.discounts.title	Отстъпки и кешбек
+programs.discounts.desc	Персонални оферти за клиенти
+programs.discounts.statLabel	активни
+programs.certificates.title	Подаръчни сертификати
+programs.certificates.desc	Подаръчни и поименни сертификати
+programs.certificates.statLabel	продадени
+programs.referral.title	Препоръки
+programs.referral.desc	Програма „Доведи приятел”
+programs.referral.statLabel	препоръки
+programs.promocodes.title	Промокодове
+programs.promocodes.desc	Кодове за отстъпка с лимит на ползване
+programs.promocodes.statLabel	активни
+programs.deposit.title	Депозит
+programs.deposit.desc	Паричният баланс на клиента в студиото
+programs.deposit.statLabel	с баланс
+card.active	Активна
+card.disable	Деактивирай
+card.notConfigured	Не е настроена
+card.configure	Настрой
+drawer.subtitle	Настройки на програмата
+drawer.saving	Запазване…
+drawer.save	Запази и активирай
+drawer.cancel	Отказ
+drawer.close	Затвори
+config.mainParams	Основни параметри
+config.programName	Име на програмата
+config.pointsRate	Курс на точките ({{currency}} за 1 точка)
+config.levels	Нива
+config.pointValue	1 точка =
+config.pointValueHint	Точките се печелят по един и същ курс на всяко ниво, но нямат еднаква стойност. Дайте на Gold 1, а на Diamond 2 — тогава една спечелена точка ще намалява цената два пъти повече на касата. Това дава нивото: колкото повече е похарчил клиентът в студиото, толкова по-ценни са точките му.
+config.expiry	Срок на валидност
+config.expiryTooltip	Колко дълго клиентът може да използва натрупаните точки
+config.expiryOptions.3m	3 мес.
+config.expiryOptions.6m	6 мес.
+config.expiryOptions.1y	1 г.
+config.expiryOptions.never	Без изтичане
+config.newLevelName	Ново ниво
+config.addLevel	+ Ниво
+config.levelFrom	от
+config.levelTo	до
+config.deleteLevelTitle	Да изтриете това ниво?
+config.deleteLevelMessage	Клиентите на ниво „{{name}}” ще преминат към съседното ниво според общите си разходи.
+config.discountType	Тип отстъпка
+config.discountTypes.percentage	Процентна (%)
+config.discountTypes.fixed	Фиксирана ({{currency}})
+config.discountTypes.cashback	Кешбек
+config.cashbackPercent	Процент кешбек
+config.discountSize	Размер на отстъпката
+config.minPurchase	Минимална сума на покупка
+config.noLimit	Без лимит
+config.conditions	Условия за прилагане
+config.appliesToAll	Прилагай за всички услуги
+config.stackable	Комбинирай с други отстъпки
+config.visibleInCabinet	Показвай на клиента в профила му
+config.certType	Тип сертификат
+config.certTypes.named	Поименен
+config.certTypes.gift	Подаръчен
+config.certTypes.service	За услуга
+config.denominations	Номинали
+config.addDenom	+ Добави
+config.service	Услуга
+config.noServices	Все още няма услуги в каталога — добавете ги в „Каталог”
+config.params	Параметри
+config.expiryDays	Срок на валидност (дни)
+config.certIssue	Издай сертификат
+config.certCustomAmount	Собствена сума
+config.certRecipientName	Име на получателя
+config.certRecipientPlaceholder	По избор
+config.certLinkClient	Свържи с клиент
+config.certClientSearchPlaceholder	Започнете да пишете име…
+config.certAccount	Депозитна сметка
+config.certAccountNone	Не записвай в регистъра
+config.certIssueButton	Издай
+config.certIssuedTitle	Сертификатът е издаден
+config.certCopyCode	Копирай кода
+config.certCopied	Копирано
+config.certIssueAnother	Издай още един
+config.certIssued	Издадени сертификати
+config.certEmpty	Все още няма издадени сертификати
+config.certStatus.active	Активен
+config.certStatus.used	Използван
+config.certStatus.expired	Изтекъл
+config.certRedeem	Осребри
+config.certRedeemTitle	Да осребрите този сертификат?
+config.certRedeemMessage	Сертификатът {{code}} ще бъде отбелязан като използван. Това не може да се отмени.
+config.referrerBonusTitle	Бонус за препоръка
+config.referrerBonus	Бонус за препоръчващия ({{currency}})
+config.newClientDiscount	Отстъпка за нов клиент (%)
+config.triggerCondition	Условие за начисляване
+config.triggerConditions.first_visit	След първото посещение
+config.triggerConditions.first_payment	След първото плащане
+config.triggerConditions.registration	Веднага при регистрация
+config.bonusAccrual	Начисляване на бонус
+config.bonusTypes.points	Точки
+config.bonusTypes.deposit	Към депозит
+config.bonusTypes.discount	Като отстъпка
+config.promoCreate	Създай промокод
+config.promoCodePlaceholder	LQTO25
+config.promoValidUntil	Валиден до
+config.promoUsageLimit	Лимит на ползване
+config.promoAdd	+ Добави промокод
+config.promoList	Промокодове
+config.promoEmpty	Все още няма промокодове
+config.promoUntil	до
+config.promoStatus.active	Активен
+config.promoStatus.expired	Изтекъл
+config.promoStatus.exhausted	Лимитът е достигнат
+config.promoStatus.disabled	Деактивиран
+config.depositTotal	Общ баланс
+config.depositTotalSub	във всички клиентски депозити
+config.depositTopClients	Водещи клиенти по баланс
+config.depositEmpty	Все още никой няма депозит
+config.depositHint	Зарежданията и тегленията се правят в профила на клиента. Програмата за препоръки може да изплаща бонуси в депозит вместо в точки.
+validation.required	Това поле е задължително
+validation.minOne	Трябва да е поне 1
+validation.minZero	Не може да е отрицателно
+validation.positive	Трябва да е по-голямо от 0
+validation.range0to100	От 0 до 100
+toasts.saved	Програмата е активирана
+toasts.saveFailed	Неуспешно запазване
+toasts.toggleFailed	Неуспешно обновяване на програмата
+toasts.loadFailed	Неуспешно зареждане на данните
+toasts.retry	Опитайте отново
+stats.notConnected	Програмата не е свързана
+stats.willAppear	Данните ще се появят след настройване
+stats.noData	Няма данни
+stats.connectProgram	Свържи програма
+stats.revenueHeadline	Приходи от членове
+stats.membersHeadline	Членове на програмата
+stats.returnedClients	Върнали се клиенти
+stats.returnedClientsSub	2+ посещения за 90 дни
+stats.avgCheckHeadline	Средна сметка на член
+stats.bonusCostHeadline	Разход за бонуси
+stats.bonusCostSub	този месец
+stats.roiHeadline	ROI
+stats.roiValue	×{{value}}
+stats.perMonth	този месец
+stats.cardHolders	притежатели на карти
+stats.kpi	Основни показатели
+stats.members	Членове
+stats.withCard	с карта
+stats.avgCheck	Средна сметка
+stats.byMembers	сред членове
+stats.pointsInCirculation	Точки в обращение
+stats.accrued	начислени
+stats.revenue	Приходи
+stats.revenuePerMonth	от членове / мес.
+stats.levelDistribution	Разпределение по нива
+stats.noLevels	Нивата все още не са настроени
+stats.totalClients	Общо клиенти в програмата
+stats.fromValue	от {{value}}
+stats.levelPointValue	точка = {{value}}
+scenarios.title	Умни сценарии
+scenarios.subtitle	Автопилот за задържане: системата намира клиенти и ги награждава вместо вас
+scenarios.add	Сценарий
+scenarios.fired	задействан {{count}} пъти
+scenarios.lastRun	последно изпълнение {{when}}
+scenarios.neverRun	още не е изпълняван
+scenarios.empty	Все още няма сценарии
+scenarios.emptySub	Създайте първия — системата ще задържа клиентите вместо вас
+scenarios.channel	Канал
+scenarios.channelSoon	след свързване на интеграция
+scenarios.pickTemplate	Изберете сценарий
+scenarios.pickTemplateSub	Готов шаблон — настройте праговете по-късно
+scenarios.create	Създай
+scenarios.deleteConfirm	Да изтриете сценария?
+scenarios.deleteConfirmSub	Правилото ще спре да се задейства. Това не може да се отмени.
+scenarios.triggers.inactive_days	неактивен {{days}} дни
+scenarios.triggers.low_subscription	остават ≤ {{classes_left}} занятия
+scenarios.triggers.birthday	рожден ден
+scenarios.triggers.nth_visit	посещение №{{n}}
+scenarios.triggers.referral	доведе приятел
+scenarios.actions.points	подари {{points}} точки
+scenarios.actions.gift_classes	подари {{classes}} занятия
+scenarios.actions.certificate	издай сертификат за {{amount}} ₽
+scenarios.actions.renewal_offer	предложи подновяване с {{discount}}% отстъпка
+scenarios.templates.win_back.name	Липсвате ни
+scenarios.templates.win_back.desc	Върнете клиент, който не е идвал отдавна
+scenarios.templates.expiring_subscription.name	Абонаментът свършва
+scenarios.templates.expiring_subscription.desc	Предложете подновяване преди да свършат занятията
+scenarios.templates.birthday_gift.name	Подарък за рожден ден
+scenarios.templates.birthday_gift.desc	Зарадвайте клиента в специалния му ден
+scenarios.templates.fifth_visit.name	Награда за лоялност
+scenarios.templates.fifth_visit.desc	Безплатно занятие за лоялност
+scenarios.templates.referral_thanks.name	Благодаря за приятеля
+scenarios.templates.referral_thanks.desc	Наградете този, който е довел нов клиент
+scenarios.ifClient	Ако клиентът
+scenarios.then	→
+scenarios.toasts.created	Сценарият е създаден
+scenarios.toasts.updated	Сценарият е обновен
+scenarios.toasts.deleted	Сценарият е изтрит
+scenarios.toasts.failed	Сценарият не можа да се запази
+scenarios.delete	Изтрий
+segmentsBoard.title	Сегменти и препоръки
+segmentsBoard.subtitle	Активни групи клиенти, всяка с едно ясно действие
+segmentsBoard.empty	Тук няма нищо и това е добре
+segmentsBoard.clients	клиенти
+segmentsBoard.daysAgo	преди {{count}} дни
+segmentsBoard.neverVisited	без посещения
+segmentsBoard.more	и още {{count}}
+segmentsBoard.segments.at_risk.name	На път да си тръгнат
+segmentsBoard.segments.at_risk.desc	Активни, неактивни 21+ дни
+segmentsBoard.segments.at_risk.action	Дай бонус
+segmentsBoard.segments.vip_idle.name	VIP без активност
+segmentsBoard.segments.vip_idle.desc	VIP клиенти, неактивни 14+ дни
+segmentsBoard.segments.vip_idle.action	Стартирай кампания
+segmentsBoard.segments.expiring_subscription.name	Абонаментът изтича
+segmentsBoard.segments.expiring_subscription.desc	Остават ≤2 занятия или ≤7 дни
+segmentsBoard.segments.expiring_subscription.action	Стартирай кампания
+segmentsBoard.segments.lost_newcomers.name	Никога не се върнаха
+segmentsBoard.segments.lost_newcomers.desc	Дойдоха веднъж, няма ги 14+ дни
+segmentsBoard.segments.lost_newcomers.action	Стартирай кампания
+segmentsBoard.segments.upsell_candidates.name	Готови за пакет
+segmentsBoard.segments.upsell_candidates.desc	8+ посещения този месец, без пакет
+segmentsBoard.segments.upsell_candidates.action	Стартирай кампания
+segmentsBoard.campaignSub	Сегмент „{{name}}” · {{count}} клиенти
+segmentsBoard.pointsLabel	Колко точки да се дадат
+segmentsBoard.messageLabel	Текст на съобщението
+segmentsBoard.messagePlaceholder	напр. Липсвате ни! Върнете се — чакаме ви.
+segmentsBoard.emailNote	Имейлът се изпраща само на клиенти с имейл
+segmentsBoard.confirm	Изпрати
+segmentsBoard.toasts.pointsDone	Точките са начислени · {{processed}} обработени, {{emails}} уведомени
+segmentsBoard.toasts.emailDone	Кампанията е изпратена · {{emails}} имейла от {{processed}}
+retention.title	Подновявания на абонаменти
+retention.subtitle	Колко добре клиентите се връщат за нов пакет
+retention.renewalRate	Подновяване
+retention.avgPackages	Пакети на клиент
+retention.sold	Продадени
+retention.renewed	Подновени
+retention.empty	Все още няма продажби на абонаменти
+retention.emptySub	Аналитиката ще се появи след първите продажби на пакети

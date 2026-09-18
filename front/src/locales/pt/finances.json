@@ -1,0 +1,510 @@
+{
+  "tabs": {
+    "accounts": "Contas",
+    "operations": "Operações",
+    "salaries": "Salários",
+    "counterparties": "Contrapartes",
+    "documents": "Documentos",
+    "onlinePayments": "Pagamentos online",
+    "paymentMethods": "Métodos de pagamento",
+    "reports": "Relatórios",
+    "goals": "Objetivos"
+  },
+  "common": {
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "create": "Criar",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "loading": "A carregar…",
+    "all": "Todos",
+    "confirm": "Confirmar",
+    "monthsShort": [
+      "Jan",
+      "Fev",
+      "Mar",
+      "Abr",
+      "Mai",
+      "Jun",
+      "Jul",
+      "Ago",
+      "Set",
+      "Out",
+      "Nov",
+      "Dez"
+    ],
+    "weekdaysShort": [
+      "Seg",
+      "Ter",
+      "Qua",
+      "Qui",
+      "Sex",
+      "Sáb",
+      "Dom"
+    ]
+  },
+  "info": {
+    "accounts": "As contas são as caixas, contas bancárias e aquisição online do estúdio. Aqui vê cada saldo e o capital total.",
+    "operations": "As operações são todas as receitas e despesas do estúdio. Criar uma operação altera imediatamente o saldo da conta associada.",
+    "salaries": "Os salários são calculados a partir da taxa do membro da equipa (fixa, horária ou percentual) para o período selecionado.",
+    "counterparties": "As contrapartes são organizações e pessoas com quem o estúdio faz liquidações: fornecedores, senhorios, parceiros.",
+    "documents": "Os documentos são contratos, atos e faturas associados a contrapartes, ou documentos internos.",
+    "onlinePayments": "Pagamentos online — ligue a Stripe para pagamentos com cartão. A conta é criada para o seu estúdio, por isso o dinheiro vai diretamente para si, sem passar pela Velora.",
+    "paymentMethods": "Os métodos de pagamento mostram como os clientes pagam no estúdio e as estatísticas de cada método.",
+    "reports": "Os relatórios mostram as tendências de receitas, despesas e lucro no período selecionado.",
+    "goals": "Os objetivos financeiros são o plano de poupança do estúdio com acompanhamento automático ou manual do progresso."
+  },
+  "accounts": {
+    "loading": "A carregar contas…",
+    "totalCapital": "Capital total do estúdio",
+    "donutTotal": "{{symbol}} no total",
+    "todayChange": "hoje",
+    "system": "SISTEMA",
+    "today": "hoje",
+    "editTitle": "Editar conta",
+    "namePlaceholder": "Nome",
+    "balancePlaceholder": "Saldo, {{symbol}}",
+    "types": {
+      "cash": "Dinheiro",
+      "bank": "Cartão",
+      "online": "Online"
+    },
+    "typesShort": {
+      "cash": "Dinheiro",
+      "bank": "Cartão",
+      "online": "Online"
+    },
+    "history": "Histórico",
+    "historyTitle": "Histórico: {{name}}",
+    "income30d": "Receitas (30 d.)",
+    "expense30d": "Despesas (30 d.)",
+    "samplePayment": "Pagamento de serviço",
+    "sampleTime": "Hoje, 14:32",
+    "openAllOperations": "Abrir todas as operações",
+    "newSavingsTitle": "Nova conta de poupança",
+    "createSavings": "Criar conta de poupança",
+    "deleteConfirmTitle": "Eliminar esta conta?",
+    "deleteConfirmText": "Todos os seus fundos serão excluídos das estatísticas gerais. Esta ação não pode ser desfeita.",
+    "toasts": {
+      "loadFailed": "Não foi possível carregar as contas",
+      "deleted": "Conta eliminada",
+      "deleteFailed": "Não foi possível eliminar a conta",
+      "saved": "Definições guardadas",
+      "saveFailed": "Não foi possível guardar a conta",
+      "created": "Conta de poupança criada",
+      "createFailed": "Não foi possível criar a conta"
+    }
+  },
+  "operations": {
+    "income": "Receita",
+    "expense": "Despesa",
+    "balance": "Saldo",
+    "searchPlaceholder": "Pesquisar por título e categoria…",
+    "close": "Fechar",
+    "operation": "Operação",
+    "export": "Exportar",
+    "newOperationTitle": "Nova operação",
+    "titleLabel": "Título",
+    "titlePlaceholder": "Ex. pagamento de subscrição",
+    "amountLabel": "Montante, {{symbol}}",
+    "dateLabel": "Data",
+    "categoryLabel": "Categoria",
+    "categoryPlaceholder": "Categoria",
+    "accountLabel": "Conta",
+    "noAccount": "Sem conta",
+    "methodLabel": "Método de pagamento",
+    "noMethod": "Não especificado",
+    "counterpartyLabel": "Contraparte",
+    "noCounterparty": "Sem contraparte",
+    "newCounterparty": "+ Nova contraparte",
+    "clientLabel": "Cliente",
+    "clientHint": "Os pontos de fidelidade e o nível serão creditados ao cliente",
+    "clientSearchPlaceholder": "Comece a escrever um nome…",
+    "noClient": "Sem cliente",
+    "editTitle": "Editar operação",
+    "saving": "A guardar…",
+    "loading": "A carregar operações…",
+    "emptyTitle": "Não foram encontradas operações",
+    "emptyBody": "Altere os filtros ou crie a primeira operação",
+    "pending": "Pendente",
+    "detailAccount": "Conta recetora",
+    "detailCategory": "Categoria",
+    "detailMethod": "Método de pagamento",
+    "detailCounterparty": "Contraparte",
+    "receipt": "Recibo",
+    "loadMore": "Carregar mais ({{count}})",
+    "toasts": {
+      "loadFailed": "Não foi possível carregar as operações",
+      "loadMoreFailed": "Não foi possível carregar mais operações",
+      "deleted": "Operação eliminada",
+      "deleteFailed": "Não foi possível eliminar a operação",
+      "enterAmount": "Introduza um montante",
+      "created": "Operação criada",
+      "createFailed": "Não foi possível criar a operação",
+      "updated": "Operação atualizada",
+      "updateFailed": "Não foi possível guardar a operação",
+      "exportFailed": "Não foi possível exportar as operações",
+      "receiptDownloaded": "Recibo transferido"
+    },
+    "categoryPresets": {
+      "in": [
+        {
+          "value": "Subscrições",
+          "label": "Subscrições"
+        },
+        {
+          "value": "Serviços",
+          "label": "Serviços"
+        },
+        {
+          "value": "Certificados de oferta",
+          "label": "Certificados de oferta"
+        },
+        {
+          "value": "Depósito",
+          "label": "Depósito"
+        },
+        {
+          "value": "Outro",
+          "label": "Outro"
+        }
+      ],
+      "out": [
+        {
+          "value": "Reembolsos",
+          "label": "Reembolsos"
+        },
+        {
+          "value": "Renda",
+          "label": "Renda"
+        },
+        {
+          "value": "Salários",
+          "label": "Salários"
+        },
+        {
+          "value": "Compras",
+          "label": "Compras"
+        },
+        {
+          "value": "Marketing",
+          "label": "Marketing"
+        },
+        {
+          "value": "Impostos",
+          "label": "Impostos"
+        },
+        {
+          "value": "Outro",
+          "label": "Outro"
+        }
+      ]
+    }
+  },
+  "salaries": {
+    "loading": "A carregar salários…",
+    "noRows": "Não há pessoal para calcular",
+    "fund": "Fundo salarial",
+    "fundSub": "mês atual",
+    "sessions": "Sessões",
+    "sessionsSub": "total realizadas",
+    "paidOf": "pessoal",
+    "sessionsCount": "{{count}} sessões",
+    "paid": "Pago",
+    "pending": "Pendente",
+    "paying": "…",
+    "payAction": "Pagar",
+    "cancelAction": "Cancelar salário",
+    "perMonth": "/mês",
+    "accrualTitle": "Apuramento do período",
+    "rate": "Taxa",
+    "rateNotSet": "não definida",
+    "sessionsInPeriod": "Sessões no período",
+    "hoursWorked": "Horas trabalhadas",
+    "lessonsRevenue": "Receita das sessões",
+    "totalToPay": "Total a pagar",
+    "rateWarning": "A taxa não está definida — defina-a no perfil do membro da equipa para que o apuramento possa ser calculado.",
+    "rateUnit": {
+      "hourly": "h",
+      "percent": "%",
+      "fixed": "fixa"
+    },
+    "paidAt": "Pago {{date}}",
+    "historyTitle": "Histórico de pagamentos",
+    "historyEmpty": "Ainda não há pagamentos",
+    "historyLoading": "A carregar histórico…",
+    "toasts": {
+      "loadFailed": "Não foi possível carregar os salários",
+      "paid": "Salário pago: {{name}}",
+      "payFailed": "Não foi possível pagar o salário",
+      "canceled": "Salário cancelado: {{name}}",
+      "historyLoadFailed": "Não foi possível carregar o histórico de pagamentos"
+    }
+  },
+  "counterparties": {
+    "count": "{{count}} contrapartes",
+    "totalDebt": "Dívida total:",
+    "add": "Adicionar",
+    "newTitle": "Nova contraparte",
+    "nameLabel": "Nome / Nome completo",
+    "namePlaceholder": "Empresa Lda. ou João Silva",
+    "innLabel": "Identificação fiscal",
+    "categoryLabel": "Categoria",
+    "categoryPlaceholder": "Renda, fornecedor…",
+    "typeLabel": "Tipo de contraparte",
+    "types": {
+      "legal": {
+        "label": "Pessoa coletiva",
+        "desc": "Organização ou empresa"
+      },
+      "ie": {
+        "label": "Empresário em nome individual",
+        "desc": "Empreendedor individual"
+      },
+      "person": {
+        "label": "Particular",
+        "desc": "Pessoa singular"
+      }
+    },
+    "addSubmit": "Adicionar contraparte",
+    "you": "Você",
+    "otherCategory": "Outro",
+    "deals": "acordos",
+    "dealsLabel": "Acordos",
+    "debtLabel": "Dívida",
+    "documents": "Documentos",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "deleteConfirmTitle": "Eliminar a contraparte?",
+    "deleteConfirmText": "Os documentos relacionados e o histórico de acordos permanecem, mas a contraparte será removida da lista.",
+    "toasts": {
+      "loadFailed": "Não foi possível carregar as contrapartes",
+      "enterName": "Introduza um nome",
+      "saved": "Alterações guardadas",
+      "saveFailed": "Não foi possível guardar",
+      "added": "Contraparte adicionada",
+      "addFailed": "Não foi possível adicionar a contraparte",
+      "deleted": "Contraparte eliminada",
+      "deleteFailed": "Não foi possível eliminar a contraparte",
+      "documentsOpened": "Documentos abertos"
+    }
+  },
+  "documents": {
+    "signed": "Assinado",
+    "pendingCount": "A aguardar assinatura",
+    "draftCount": "Interno (não assinado)",
+    "searchPlaceholder": "Pesquisar por título ou contraparte…",
+    "filters": {
+      "all": "Todos",
+      "signed": "Assinados",
+      "pending": "A aguardar assinatura"
+    },
+    "upload": "Carregar",
+    "addTitle": "Adicionar documento à biblioteca",
+    "dropzoneTitle": "Clique ou arraste um ficheiro",
+    "dropzoneHint": "PDF, DOCX, XLSX (até 15 MB)",
+    "dropzoneChange": "Clique para escolher outro ficheiro",
+    "titleLabel": "Título do documento",
+    "titlePlaceholder": "Ex. auto de aceitação n.º 48",
+    "partyLabel": "Contraparte (se aplicável)",
+    "partyPlaceholder": "Nome da empresa ou empresário em nome individual",
+    "needsSignature": "O documento precisa de assinatura?",
+    "needsSignatureHint": "O estado será «A aguardar assinatura»",
+    "saveToBase": "Guardar na biblioteca",
+    "emptyTitle": "Esta pasta está vazia",
+    "emptyBody": "Carregue um novo documento ou altere os filtros",
+    "internalDoc": "Documento interno",
+    "uploaded": "Carregado {{date}}",
+    "download": "Transferir",
+    "open": "Abrir",
+    "fileRequired": "Anexe um ficheiro",
+    "options": "Opções",
+    "status": {
+      "title": "Estado",
+      "signed": "Assinado",
+      "pending": "A aguardar assinatura",
+      "draft": "Não assinado"
+    },
+    "delete": "Eliminar",
+    "toasts": {
+      "loadFailed": "Não foi possível carregar os documentos",
+      "titleRequired": "Carregue um ficheiro ou introduza um título",
+      "created": "Documento carregado na biblioteca",
+      "createFailed": "Não foi possível guardar o documento",
+      "badFormat": "Formatos permitidos: PDF, DOCX, XLSX",
+      "downloadFailed": "Não foi possível transferir o ficheiro",
+      "noFile": "Não há ficheiro anexado a este documento",
+      "openFailed": "Não foi possível abrir o ficheiro",
+      "statusChanged": "Estado: {{label}}",
+      "statusFailed": "Não foi possível alterar o estado",
+      "deleted": "Documento eliminado",
+      "deleteFailed": "Não foi possível eliminar o documento"
+    }
+  },
+  "goals": {
+    "loading": "A carregar objetivos…",
+    "active": "Objetivos em curso",
+    "done": "Concluídos",
+    "avgProgress": "Progresso global",
+    "trackingTitle": "Acompanhamento do plano",
+    "createGoal": "Criar objetivo",
+    "newTitle": "Novo objetivo financeiro",
+    "titleLabel": "Título do objetivo",
+    "titlePlaceholder": "Ex. novas máquinas reformer",
+    "targetLabel": "Montante-alvo, {{symbol}}",
+    "targetPlaceholder": "500000",
+    "deadlineLabel": "Prazo",
+    "trackingLabel": "Como acompanhar o progresso?",
+    "trackingAuto": "Automático (métrica CRM)",
+    "trackingAutoDesc": "Ligue o objetivo à receita de uma categoria escolhida. O CRM move a barra de progresso automaticamente.",
+    "trackingManual": "Manual (poupanças pessoais)",
+    "trackingManualDesc": "Aparecerá um botão «Adicionar fundos» no cartão. O progresso depende apenas de si.",
+    "opTypeLabel": "Tipo de operação",
+    "categoryLabel": "Categoria",
+    "categoryPlaceholder": "Escolha uma categoria",
+    "editTitle": "Editar objetivo",
+    "nameLabel": "Título",
+    "namePlaceholder": "Título do objetivo",
+    "amountLabel": "Montante, {{symbol}}",
+    "achieved": "Objetivo alcançado",
+    "priority": {
+      "high": "Prioridade elevada",
+      "medium": "Prioridade média",
+      "low": "Prioridade baixa"
+    },
+    "autoCollect": "Acompanhado automaticamente",
+    "deadlinePrefix": "Prazo:",
+    "noDeadline": "Sem prazo",
+    "fundPlaceholder": "Montante, {{symbol}}",
+    "fund": "Adicionar",
+    "addFunds": "Adicionar fundos",
+    "autoHint": "O valor é atualizado automaticamente a partir da receita da categoria",
+    "deleteConfirmTitle": "Eliminar objetivo?",
+    "deleteConfirmText": "O progresso deste objetivo será perdido. Esta ação não pode ser desfeita.",
+    "toasts": {
+      "loadFailed": "Não foi possível carregar os objetivos",
+      "fillRequired": "Preencha o título e o montante",
+      "chooseCategory": "Escolha uma categoria para o objetivo automático",
+      "created": "Objetivo criado",
+      "createFailed": "Não foi possível criar o objetivo",
+      "enterName": "Introduza um nome",
+      "updated": "Objetivo atualizado",
+      "updateFailed": "Não foi possível atualizar o objetivo",
+      "deleted": "Objetivo eliminado",
+      "deleteFailed": "Não foi possível eliminar o objetivo",
+      "funded": "Fundos adicionados",
+      "fundFailed": "Não foi possível adicionar fundos"
+    }
+  },
+  "onlinePayments": {
+    "description": "Ligue a Stripe e os seus clientes podem pagar com cartão na caixa. O dinheiro entra diretamente na conta do seu estúdio — a Velora nunca o retém. A comissão segue o seu plano.",
+    "gatewaysTitle": "Prestadores de pagamento",
+    "gateways": {
+      "stripe": {
+        "name": "Stripe"
+      },
+      "states": {
+        "none": {
+          "label": "Não ligado",
+          "hint": "Aceite pagamentos com cartão na conta do estúdio",
+          "action": "Ligar"
+        },
+        "incomplete": {
+          "label": "Dados em falta",
+          "hint": "A Stripe está à espera dos dados do seu estúdio — os pagamentos ficam desativados até então",
+          "action": "Continuar"
+        },
+        "action": {
+          "label": "Ação necessária",
+          "hint": "A Stripe rejeitou alguns dados e aguarda correções — não será resolvido automaticamente",
+          "action": "Corrigir dados"
+        },
+        "review": {
+          "label": "Em análise",
+          "hint": "Os dados foram enviados; a Stripe está a analisá-los. Normalmente demora até um dia",
+          "action": "Abrir a Stripe"
+        },
+        "active": {
+          "label": "Ligado",
+          "hint": "Os pagamentos com cartão entram na conta Stripe do estúdio",
+          "action": "Definições"
+        }
+      }
+    },
+    "toasts": {
+      "gatewayUpdated": "Definições do prestador atualizadas",
+      "stripeReturned": "Dados enviados à Stripe",
+      "stripeLinkExpired": "A ligação da Stripe expirou — carregue em Ligar novamente"
+    }
+  },
+  "paymentMethods": {
+    "totalTurnover": "Volume de negócios do período",
+    "periods": {
+      "month": "Mês",
+      "quarter": "Trimestre",
+      "year": "Ano"
+    },
+    "amount": "Montante",
+    "share": "Percentagem",
+    "transactions": "transações",
+    "methods": {
+      "cash": {
+        "name": "Dinheiro"
+      },
+      "card": {
+        "name": "Cartão bancário"
+      },
+      "qr": {
+        "name": "SBP (QR)"
+      },
+      "transfer": {
+        "name": "Transferência"
+      },
+      "stripe": {
+        "name": "Stripe"
+      },
+      "": {
+        "name": "Não especificado"
+      }
+    }
+  },
+  "reports": {
+    "metrics": {
+      "revenue": "Receitas",
+      "expenses": "Despesas",
+      "profit": "Lucro",
+      "margin": "Margem"
+    },
+    "vsPreviousPeriod": "face ao período anterior",
+    "cashflowTitle": "Fluxo de caixa",
+    "cashflowSub": "Análise de receitas e despesas",
+    "period": "Período",
+    "income": "Receita",
+    "expense": "Despesa",
+    "profit": "Lucro",
+    "periods": {
+      "today": "Hoje",
+      "week": "Semana",
+      "month": "Mês",
+      "year": "Ano"
+    },
+    "legendIncome": "Receitas",
+    "legendExpense": "Despesas",
+    "exportCsv": "Exportar CSV",
+    "expenseStructure": "Estrutura das despesas",
+    "incomeStructure": "Estrutura das receitas",
+    "total": "Total",
+    "otherCategory": "Sem categoria",
+    "noData": "Sem dados para este período",
+    "insightsTitle": "Resumo e análises financeiras",
+    "insightsPlaceholder": "O resumo financeiro com IA aparecerá aqui: análise de tendências, estrutura das despesas e recomendações",
+    "toasts": {
+      "exportFailed": "Não foi possível exportar as operações"
+    }
+  },
+  "confirmModal": {
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "delete": "Eliminar"
+  }
+}

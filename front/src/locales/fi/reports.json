@@ -1,0 +1,611 @@
+{
+  "tabs": {
+    "overview": "Yleiskatsaus",
+    "sales": "Myynti",
+    "clients": "Asiakkaat",
+    "team": "Tiimi",
+    "schedule": "Aikataulu"
+  },
+  "toolbar": {
+    "period": {
+      "day": "Päivä",
+      "week": "Viikko",
+      "month": "Kuukausi",
+      "year": "Vuosi",
+      "custom": "Mukautettu"
+    },
+    "vsPrevious": "verrattuna edelliseen jaksoon: {{from}}–{{to}}",
+    "allBranches": "Kaikki toimipisteet",
+    "allHalls": "Kaikki {{spacePlural}}",
+    "allTrainers": "Kaikki valmentajat",
+    "allServices": "Kaikki palvelut",
+    "export": "Vie"
+  },
+  "insights": {
+    "title": "Vaatii huomiota",
+    "action": "Avaa",
+    "empty": "Kaikki on nyt hyvin — ei näytettäviä neuvoja",
+    "revenue_up_clients_down": "Liikevaihto kasvaa, mutta aktiivisten asiakkaiden määrä vähenee — tarkista poistuma",
+    "clients_at_risk": "{{count}} asiakas(ta) ei ole osallistunut yli kolmeen viikkoon — poistumariski",
+    "lesson_overfull": "\"{{name}}\" {{weekday, weekday}} klo {{hour}}.00 on ollut {{pct}} % täynnä kolme viikkoa peräkkäin — harkitse uuden tunnin lisäämistä",
+    "trial_low_conversion": "Vain {{pct}} % {{buyers}} kokeiluasiakkaasta osti myöhemmin jäsenyyden — harkitse kampanjaa",
+    "fastest_growing_product": "\"{{name}}\" kasvaa nopeimmin: +{{pct}} % verrattuna edelliseen jaksoon",
+    "renewals_low": "Vain {{pct}} % asiakkaista, joiden jäsenyys on päättynyt, uusii sen — harkitse muistutusta",
+    "new_no_second_visit": "{{count}} uutta asiakasta kävi kerran eikä varannut enää uudelleen — harkitse muistutusta",
+    "subs_expiring_week": "{{count}} asiakkaan jäsenyys päättyy tällä viikolla — harkitse uusimisen tarjoamista",
+    "vip_inactive": "VIP-asiakas \"{{name}}\" ei ole käynyt {{days}} päivään — harkitse henkilökohtaista viestiä",
+    "high_return_free_evenings": "\"{{name}}\"-tunnilla on korkea paluuaste ({{return_pct}} %), mutta illat ovat vapaita — lisää tunti",
+    "trainer_overloaded": "\"{{name}}\" on kuormittunut {{load_pct}} % — harkitse aikataulun tasapainottamista",
+    "low_rating": "\"{{name}}\"-tunnin arvio on {{rating}} — siihen kannattaa perehtyä tarkemmin",
+    "slot_chronic_low": "\"{{name}}\" {{weekday, isodowWeekday}} klo {{hour}}.00 on ollut {{pct}} % täynnä {{weeks}} viikkoa peräkkäin — siirrä tai peru se",
+    "hall_idle_evenings": "\"{{name}}\" on tyhjillään {{pct}} % iltatunneista — harkitse tunnin lisäämistä",
+    "slot_overfull": "Aika {{weekday, isodowWeekday}} klo {{hour}}.00 on ollut {{pct}} % täynnä kolme viikkoa peräkkäin — harkitse uuden tunnin lisäämistä",
+    "loss_hotspot": "{{cancels}} tuntia peruttiin ajankohtana {{label}} tällä jaksolla — eniten peruutuksia kertyy tämän tunnin ympärille"
+  },
+  "table": {
+    "loading": "Ladataan…",
+    "noProduct": "Ei tuotetta"
+  },
+  "empty": {
+    "noData": {
+      "title": "Täällä ei ole vielä mitään",
+      "text": "Valitulla jaksolla ei kirjattu toimintaa. Laajenna ajanjaksoa tai aloita varaamalla asiakas päiväkirjassa.",
+      "widen": "Näytä vuosi"
+    },
+    "noRevenue": "Ei maksuja tällä jaksolla",
+    "noSales": "Ei myyntiä tässä osiossa",
+    "noProducts": "Pakkauksia tai palveluita ei ole vielä myyty",
+    "noLessons": "Ei tunteja tällä jaksolla",
+    "noTrainerLessons": "Tämä valmentaja ei ole vielä pitänyt tunteja",
+    "noRows": "Ei tietoja tässä osiossa",
+    "noLosses": "Ei peruutuksia tai poisjääntejä tällä jaksolla"
+  },
+  "overview": {
+    "kpi": {
+      "revenue": "Liikevaihto",
+      "profit": "Voitto",
+      "attendance": "Osallistuminen",
+      "activeClients": "Aktiiviset asiakkaat",
+      "fillRate": "Täyttöaste"
+    },
+    "chart": {
+      "metric": {
+        "revenue": "Liikevaihto",
+        "profit": "Voitto",
+        "attendance": "Osallistuminen",
+        "new_clients": "Uudet asiakkaat",
+        "fill_rate": "Täyttöaste"
+      }
+    },
+    "revenueStructure": {
+      "title": "Liikevaihdon rakenne"
+    },
+    "category": {
+      "subscriptions": "Jäsenyydet",
+      "services": "Palvelut",
+      "certificates": "Lahjakortit",
+      "rent": "Vuokra",
+      "salary": "Palkka",
+      "refunds": "Palautukset"
+    },
+    "clientDynamics": {
+      "title": "Asiakasdynamiikka",
+      "new": "Uudet",
+      "returned": "Palanneet",
+      "lost": "Menetetyt"
+    },
+    "drilldown": {
+      "title": "Tapahtuma",
+      "category": "Luokka",
+      "amount": "Määrä",
+      "lesson": "Tunti",
+      "time": "Aika",
+      "occupancy": "Täyttöaste",
+      "date": "Päivämäärä",
+      "method": "Tapa",
+      "trainer": "Valmentaja",
+      "rowsCount": "riviä",
+      "search": "Hae taulukosta",
+      "shownOf": "Näytetään {{shown}} / {{total}}",
+      "noMatches": "Haulla “{{query}}” ei löytynyt mitään",
+      "reset": "Nollaa",
+      "export": "Vie CSV",
+      "subtitle": {
+        "money": "Tämän osion tapahtumat",
+        "lessons": "Tämän osion tunnit"
+      },
+      "hint": {
+        "operations": "Avaa tapahtuma Taloudessa napsauttamalla riviä",
+        "lessons": "Avaa kyseinen päivä päiväkirjassa napsauttamalla riviä"
+      },
+      "stat": {
+        "net": "Netto",
+        "income": "Tulot",
+        "expense": "Menot",
+        "operations": "Tapahtumat",
+        "topCategory": "Suurin luokka",
+        "lessons": "Tunnit",
+        "booked": "Varatut paikat",
+        "avgFill": "Keskimääräinen täyttöaste",
+        "trainers": "Valmentajat",
+        "cancelled": "Peruttu"
+      }
+    }
+  },
+  "sales": {
+    "kpi": {
+      "revenue": "Liikevaihto",
+      "salesCount": "Myynnit",
+      "avgCheck": "Keskimääräinen ostos",
+      "repeatShare": "Uusintaostojen osuus",
+      "renewals": "Uusimisaste"
+    },
+    "chart": {
+      "title": "Myynti"
+    },
+    "incomeOperations": "Tulotapahtumat",
+    "breakdown": {
+      "byCategory": "Mitä he ostavat",
+      "byMethod": "Miten he maksavat",
+      "buyerType": "Kuka ostaa",
+      "new": "Uudet",
+      "returning": "Palaavat",
+      "noClient": "Ei asiakasta"
+    },
+    "method": {
+      "card": "Kortti",
+      "cash": "Käteinen",
+      "qr": "QR-koodi",
+      "transfer": "Tilisiirto"
+    },
+    "products": {
+      "title": "Tuotteet",
+      "name": "Tuote",
+      "sold": "Myyty",
+      "revenue": "Liikevaihto",
+      "avgCheck": "Keskimääräinen ostos",
+      "repeatShare": "Uusintaostojen osuus",
+      "trend": "Suunta",
+      "trendHint": "Verrattuna yhtä pitkään edelliseen jaksoon"
+    }
+  },
+  "clients": {
+    "kpi": {
+      "new": "Uudet",
+      "returned": "Palanneet",
+      "lost": "Menetetyt",
+      "retention": "Asiakaspysyvyys",
+      "avgValue": "Asiakkaan arvo"
+    },
+    "chart": {
+      "title": "Uudet ja palaavat",
+      "new": "Uudet",
+      "returned": "Palaavat"
+    },
+    "riskTitle": "Riskisegmentit",
+    "loyalTitle": "Uskolliset",
+    "list": "Luettelo",
+    "campaign": "Käynnistä kampanja",
+    "exportList": "Vie luettelo",
+    "emptySegment": "Segmentissä \"{{name}}\" ei ole nyt asiakkaita",
+    "segments": {
+      "new": {
+        "name": "Uudet asiakkaat",
+        "desc": "Rekisteröity valitulla jaksolla"
+      },
+      "returned": {
+        "name": "Palaavat asiakkaat",
+        "desc": "Kävivät tällä ja edellisellä jaksolla"
+      },
+      "lost": {
+        "name": "Menetetyt asiakkaat",
+        "desc": "Kävivät edellisellä jaksolla, eivät palanneet tällä"
+      },
+      "active": {
+        "name": "Aktiiviset asiakkaat",
+        "desc": "Osallistuivat vähintään yhdelle tunnille valitulla jaksolla"
+      },
+      "at_risk": {
+        "name": "Vaaravyöhykkeellä",
+        "desc": "Aktiivisia, mutta ei käyntiä 21+ päivään"
+      },
+      "vip_idle": {
+        "name": "Passiiviset VIP-asiakkaat",
+        "desc": "VIP-asiakkaat, ei käyntiä 14+ päivään"
+      },
+      "expiring_subscription": {
+        "name": "Jäsenyys päättymässä",
+        "desc": "Jäljellä ≤2 tuntia tai ≤7 päivää"
+      },
+      "lost_newcomers": {
+        "name": "Eivät palanneet koskaan",
+        "desc": "Kävivät kerran, poissa 14+ päivää"
+      },
+      "upsell_candidates": {
+        "name": "Valmiita lisämyyntiin",
+        "desc": "8+ käyntiä tässä kuussa, ei pakettia"
+      },
+      "frequent": {
+        "name": "Usein käyvät",
+        "desc": "8+ käyntiä jaksolla"
+      },
+      "high_ltv": {
+        "name": "Korkea LTV",
+        "desc": "Ylin 10 % kokonaiskulutuksen mukaan"
+      },
+      "referrers": {
+        "name": "Suosittelijat",
+        "desc": "Tekivät suosittelun jaksolla"
+      }
+    },
+    "listSearch": "Hae nimellä tai puhelinnumerolla",
+    "shownOf": "Näytetään {{shown}} / {{total}}",
+    "noMatches": "Haulla \"{{query}}\" ei löytynyt ketään",
+    "resetSearch": "Nollaa",
+    "neverVisited": "Ei käynyt koskaan",
+    "valueLabel": {
+      "visits": "Käynnit",
+      "spent": "Käytetty",
+      "daysIdle": "Toimettomia päiviä",
+      "remaining": "Tunteja jäljellä",
+      "value": "Arvo"
+    },
+    "relative": {
+      "today": "Tänään",
+      "daysAgo_one": "{{count}} päivä sitten",
+      "daysAgo_other": "{{count}} päivää sitten"
+    }
+  },
+  "team": {
+    "kpi": {
+      "lessonsCount": "Tunnit",
+      "revenuePerHour": "Liikevaihto/tunti",
+      "avgFillPct": "Täyttöaste",
+      "cancelNoshowPct": "Peruutukset/poissaolot",
+      "avgRating": "Arvio"
+    },
+    "table": {
+      "title": "Valmentajat",
+      "trainer": "Valmentaja",
+      "lessons": "Tunnit",
+      "fillPct": "Täyttöaste",
+      "attendance": "Osallistuminen",
+      "revenue": "Liikevaihto",
+      "returnRate": "Paluuaste",
+      "cancels": "Peruutukset",
+      "fillPctHint": "Täytetyt paikat suunnitelluista paikoista",
+      "returnRateHint": "Asiakkaat, jotka varasivat tämän valmentajan tunnin uudelleen",
+      "cancelsHint": "Perutut tunnit ja asiakkaiden poisjäännit",
+      "ratingHint": "Keskimääräinen arvio, jonka asiakkaat antoivat tämän valmentajan tunneille"
+    },
+    "drawer": {
+      "revenueByWeek": "Liikevaihto viikoittain",
+      "loadByWeekday": "Kuormitus viikonpäivittäin",
+      "loadByHour": "Kuormitus kellonajan mukaan",
+      "loadDim": {
+        "weekday": "Päivän mukaan",
+        "hour": "Tunnin mukaan"
+      },
+      "schedule": {
+        "title": "Aikataulu",
+        "empty": "Ei tunteja tällä jaksolla"
+      },
+      "topLessons": "Suosikkitunnit",
+      "returnBlock": "Asiakkaiden paluu",
+      "returnOf": "{{returned}} / {{total}} asiakkaasta palasi ({{pct}} %)",
+      "openProfile": "Avaa profiili",
+      "held": "Pidetty",
+      "attendance": "Osallistuminen"
+    },
+    "weekdays": [
+      "Su",
+      "Ma",
+      "Ti",
+      "Ke",
+      "To",
+      "Pe",
+      "La"
+    ]
+  },
+  "schedule": {
+    "weekdaysMonFirst": [
+      "Ma",
+      "Ti",
+      "Ke",
+      "To",
+      "Pe",
+      "La",
+      "Su"
+    ],
+    "kpi": {
+      "avgFillPct": "Täyttöaste",
+      "freeSpots": "Vapaat paikat",
+      "cancels": "Peruutukset",
+      "noshows": "Poissaolot",
+      "lostRevenue": "Menetetty liikevaihto"
+    },
+    "heatmap": {
+      "title": "Kuormitus päivän ja tunnin mukaan",
+      "legend": "Täyttöaste:",
+      "tooltip": "{{lessons}} tuntia · {{attendance}} osallistui · {{pct}} %",
+      "empty": "Ei tunteja"
+    },
+    "slices": {
+      "topProfitable": "Kannattavimmat",
+      "topFilled": "Täyteen varatuimmat",
+      "chronicLow": "Kroonisesti alitäydet",
+      "halls": "Käyttöaste: {{spacePlural}}",
+      "held": "{{count}} pidetty",
+      "weeks": "{{count}} vk",
+      "move": "Siirrä",
+      "cancel": "Peruuta",
+      "eveningIdle": "iltaisin tyhjänä {{pct}} %"
+    },
+    "losses": {
+      "title": "Peruutukset ja poisjäännit",
+      "dim": {
+        "hour": "Kellonajan mukaan",
+        "service": "Palvelun mukaan",
+        "trainer": "Valmentajan mukaan"
+      },
+      "cancels_one": "{{count}} peruutus",
+      "cancels_other": "{{count}} peruutusta",
+      "noshows_one": "{{count}} poisjäänti",
+      "noshows_other": "{{count}} poisjääntiä",
+      "lostSpots_one": "−{{count}} paikka",
+      "lostSpots_other": "−{{count}} paikkaa"
+    },
+    "status": {
+      "confirmed": "Vahvistettu",
+      "pending": "Odottaa",
+      "cancelled": "Peruttu"
+    },
+    "slot": {
+      "summary": "{{from}} — {{to}}",
+      "lessonsCount": "Tunteja yhteensä"
+    }
+  },
+  "export": {
+    "csv": "Lataa CSV"
+  },
+  "scopeNote": {
+    "label": "Koko studio",
+    "money": "Toimipiste- ja {{space}}-suodattimet eivät vaikuta rahaan — maksu ei liity niihin",
+    "clientBase": "Valmentaja, {{space}}, toimipiste ja palvelu eivät muuta tätä mittaria — asiakas ei liity niihin"
+  },
+  "descriptions": {
+    "overview": {
+      "metric": {
+        "revenue": "Kaikki studiolle jakson aikana tullut raha",
+        "profit": "Se, mikä jää jäljelle jakson kulujen jälkeen",
+        "attendance": "Tunnit, joille asiakkaat todella osallistuivat",
+        "new_clients": "Tällä jaksolla rekisteröidyt asiakkaat",
+        "fill_rate": "Kuinka täynnä tunnit ovat: varatut paikat käytettävissä olevista paikoista"
+      },
+      "revenueStructure": "Mistä liikevaihtosi tällä jaksolla koostuu",
+      "clientDynamics": "Kuinka moni tuli ensi kertaa, palasi tai lopetti käymisen"
+    },
+    "sales": {
+      "chart": "Liikevaihto ja ostojen määrä päivittäin",
+      "byCategory": "Kunkin tuotteen osuus liikevaihdosta",
+      "byMethod": "Miten liikevaihto jakautuu maksutavoittain",
+      "buyerType": "Kuinka paljon liikevaihtoa tulee uusilta asiakkailta verrattuna vakioasiakkaisiin",
+      "products": "Jokainen tuote: kuinka monta myytiin, millä summalla ja kasvaako myynti"
+    },
+    "clients": {
+      "chart": "Kuinka moni asiakas tuli ensi kertaa ja kuinka moni palasi, viikoittain",
+      "riskSegments": "Asiakkaat, jotka voit menettää, jos et ota heihin yhteyttä nyt",
+      "loyalSegments": "Ne, jotka käyvät eniten, kuluttavat eniten ja tuovat ystäviä"
+    },
+    "team": {
+      "trainers": "Vertailu kuormituksen, liikevaihdon ja asiakkaiden paluuasteen mukaan",
+      "loadWeekday": "Milloin viikonpäivinä valmentaja on kiireinen ja milloin vapaa",
+      "loadHour": "Mihin aikaan tunnit täyttyvät ja milloin ne jäävät tyhjiksi",
+      "schedule": "Kaikki valmentajan tunnit valitulla jaksolla"
+    },
+    "schedule": {
+      "heatmap": "Missä aikataulu on ylivarattu ja missä tyhjä",
+      "topProfitable": "Aikataulun ajat, jotka tuottavat eniten rahaa",
+      "topFilled": "Ajat, joita asiakkaat varaavat innokkaimmin",
+      "chronicLow": "Ajat, jotka ovat viikkoja täyttyneet alle kolmannekseen",
+      "halls": "Kuinka suuren osan ajasta {{spacePlural}} ovat todella käytössä",
+      "losses": "Missä studio menettää paikkoja: perutuissa tunneissa tai asiakkaiden poisjäänneissä"
+    }
+  },
+  "formulas": {
+    "salesCount": {
+      "title": "Myynnit",
+      "text": "Kuinka monta kertaa asiakkaat maksoivat sinulle tällä jaksolla. Yksi useasti maksava henkilö lasketaan erillisiksi myynneiksi."
+    },
+    "revenue": {
+      "title": "Liikevaihto",
+      "text": "Kaikki studiolle tällä jaksolla tullut raha maksupäivän mukaan. Paketit, yksittäiset tunnit, lahjakortit ja vähittäismyynti — kaikki yhdessä."
+    },
+    "profit": {
+      "title": "Voitto",
+      "text": "Se, mikä jää tämän jakson kulujen jälkeen: vuokra, palkat ja tarvikkeet. Tämä on todellinen voittosi."
+    },
+    "attendance": {
+      "title": "Osallistuminen",
+      "text": "Kuinka monta käyntiä asiakkaat todella tekivät. Vain osallistuneiksi merkityt tunnit lasketaan."
+    },
+    "bookings": {
+      "title": "Varaukset",
+      "text": "Kuinka monta varausta asiakkaat tekivät tunneille. Peruttuja varauksia ei lasketa."
+    },
+    "noshow": {
+      "title": "Poisjäänti",
+      "text": "Asiakas varasi, tunti pidettiin, mutta asiakas ei saapunut. Jokainen tapaus on paikka, jonka joku toinen olisi voinut ottaa."
+    },
+    "activeClients": {
+      "title": "Aktiiviset asiakkaat",
+      "text": "Kuinka moni eri henkilö kävi vähintään kerran tällä jaksolla. Jokainen asiakas lasketaan kerran käyntien määrästä riippumatta."
+    },
+    "occupancy": {
+      "title": "Täyttöaste",
+      "text": "Kuinka täynnä tunnisi ovat: täytetyt paikat kaikista suunnittelemistasi paikoista. 100 % tarkoittaa, ettei tilaa ole enää."
+    },
+    "avgCheck": {
+      "title": "Keskimääräinen ostos",
+      "text": "Kuinka paljon yksi maksu tuottaa keskimäärin. Se kasvaa, kun asiakkaat ostavat pidempiä paketteja tai lisäpalveluja."
+    },
+    "retention": {
+      "title": "Asiakaspysyvyys",
+      "text": "Kuinka moni edellisen jakson asiakkaista palasi tällä jaksolla. Se kertoo, pidätkö asiakkaat vai aloitatko joka kuukausi nollasta."
+    },
+    "newClients": {
+      "title": "Uudet asiakkaat",
+      "text": "Ihmiset, jotka ilmestyivät asiakaskantaasi ensimmäisen kerran tällä jaksolla."
+    },
+    "returning": {
+      "title": "Palaavat",
+      "text": "Asiakkaat, jotka olivat käyneet aiemmin ja tulivat uudelleen tällä jaksolla."
+    },
+    "lost": {
+      "title": "Menetetyt",
+      "text": "Kävivät edellisellä jaksolla eivätkä tulleet kertaakaan tällä jaksolla. Heihin kannattaa silti ottaa yhteyttä."
+    },
+    "clientValue": {
+      "title": "Asiakkaan arvo",
+      "text": "Kuinka paljon yksi asiakas tuottaa keskimäärin tällä jaksolla."
+    },
+    "repeatPurchaseShare": {
+      "title": "Uusintaostojen osuus",
+      "text": "Niiden asiakkaiden osuus, jotka ostivat sinulta useammin kuin kerran. Mitä suurempi luku, sitä vahvempi on tapa palata luoksesi."
+    },
+    "renewalRate": {
+      "title": "Uusimisaste",
+      "text": "Kuinka moni asiakas osti uuden paketin edellisen päätyttyä."
+    },
+    "revenuePerHour": {
+      "title": "Liikevaihto per tunti (valmentaja)",
+      "text": "Kuinka paljon rahaa valmentajan yksi työtunti tuottaa. Sen avulla voit verrata valmentajia reilusti — joku voi pitää vähemmän tunteja, mutta jokainen niistä tuottaa enemmän."
+    },
+    "trainerReturnRate": {
+      "title": "Paluuaste (valmentaja)",
+      "text": "Sen valmentajan asiakkaiden osuus, jotka varasivat häneltä uudelleen."
+    },
+    "missedRevenue": {
+      "title": "Menetetty liikevaihto",
+      "text": "Raha, jota studio ei ansainnut aiempien tuntien tyhjien paikkojen vuoksi: vapaat paikat kerrottuna tunnin hinnalla."
+    },
+    "losses": {
+      "title": "Peruutukset ja poisjäännit",
+      "text": "„Peruutus” on peruttu tunti; „poisjäänti” on asiakas, joka varasi mutta ei tullut. Kellonajan, palvelun ja valmentajan mukaiset erittelyt käyttävät samoja suodattimia kuin välilehti ja täsmäävät otsikon KPI-lukuihin."
+    },
+    "lessonRevenue": {
+      "title": "Tunnin liikevaihto",
+      "text": "Karkea arvio tunnin liikevaihdosta: osallistujat kerrottuna hinnalla. Maksuja ei liitetä tiettyyn tuntiin, joten tämä on arvio, ei tarkka luku."
+    },
+    "filtersScope": {
+      "title": "Suodattimien kattavuus",
+      "text": "Toimipiste- ja {{space}}-suodattimet koskevat vain tuntimittareita. Maksuilla ei ole tällaista yhteyttä, joten raha näytetään koko studiolle."
+    },
+    "avgValue": {
+      "title": "Asiakkaan arvo",
+      "text": "Kuinka paljon yksi asiakas tuottaa keskimäärin tällä jaksolla."
+    },
+    "cancelNoshow": {
+      "title": "Peruutukset ja poisjäännit",
+      "text": "Keskeytyneiden tuntien osuus: peruutukset ja poisjäännit kaikesta suunnitellusta."
+    },
+    "avgRating": {
+      "title": "Keskimääräinen arvio",
+      "text": "Keskimääräinen arvio, jonka asiakkaat antoivat tämän valmentajan tunneille."
+    },
+    "teamScope": {
+      "title": "Tietojen kattavuus",
+      "text": "Tässä lasketaan vain tiettyyn valmentajaan liittyvä liikevaihto, joten kaikkien valmentajien yhteissumma voi olla studion kokonaisliikevaihtoa pienempi."
+    },
+    "lessonsCount": {
+      "title": "Tunnit",
+      "text": "Kuinka monta tuntia valmentajat pitivät tällä jaksolla."
+    },
+    "load": {
+      "title": "Kuormitus",
+      "text": "Kuinka täysi valmentajan päivä on: hänen varatut tuntinsa studion aukioloaikojen sisällä."
+    },
+    "weeklyClients": {
+      "title": "Uudet ja palaavat",
+      "text": "Viikoittain: kuinka moni tuli luoksesi ensi kertaa ja kuinka moni palasi. Terve studio kasvaa molemmilla käyrillä."
+    },
+    "byCategory": {
+      "title": "Liikevaihto luokittain",
+      "text": "Mistä todella ansaitset: paketeista, yksittäisistä tunneista, lahjakorteista ja vähittäismyynnistä."
+    },
+    "byMethod": {
+      "title": "Maksutavat",
+      "text": "Miten asiakkaat maksavat. Auttaa näkemään, tarvitsetko korttimaksuja ja kuinka paljon rahaa ohittaa kassan."
+    },
+    "buyerType": {
+      "title": "Kuka maksaa",
+      "text": "Uudet asiakkaat verrattuna vakioasiakkaisiin. Jos lähes kaikki liikevaihto tulee uusilta asiakkailta, studio ei pidä asiakkaita."
+    },
+    "products": {
+      "title": "Mikä myy",
+      "text": "Kaikki jakson paketit ja palvelut: kuinka monta myytiin, millä summalla ja kasvaako myynti."
+    },
+    "topProfitable": {
+      "title": "Kannattavimmat ajat",
+      "text": "Aikataulun ajat, jotka tuottavat eniten rahaa. Sijoita parhaat valmentajasi niihin."
+    },
+    "topFilled": {
+      "title": "Täyteen varatuimmat ajat",
+      "text": "Ajat, joita asiakkaat varaavat innokkaimmin. Jos ne ovat täysin täynnä, kannattaa lisätä toinen tunti."
+    },
+    "chronicLow": {
+      "title": "Kroonisesti tyhjät ajat",
+      "text": "Ajat, jotka ovat täyttyneet alle kolmannekseen usean viikon ajan. Ne kannattaa siirtää tai poistaa."
+    },
+    "hallUtil": {
+      "title": "Käyttöaste: {{spacePlural}}",
+      "text": "Kuinka suuren osan ajasta {{spacePlural}} ovat todella käytössä. Tyhjä aika on vuokraa, joka ei maksa itseään takaisin."
+    },
+    "heatmap": {
+      "title": "Kuormitus päivän ja tunnin mukaan",
+      "text": "Väri näyttää ajan keskimääräisen täyttöasteen jaksolla. Napsauta solua nähdäksesi kyseisen päivän ja tunnin tunnit."
+    },
+    "riskSegments": {
+      "title": "Riskisegmentit",
+      "text": "Asiakkaat ryhmiteltyinä riskin mukaan — voit menettää heidät tai he eivät tuo tuloja. Jokaisella kortilla on oma perusteensa ja selkeä seuraava askel: lähetä viesti, tarjoa uusimista tai lisämyyntiä."
+    },
+    "loyalSegments": {
+      "title": "Uskolliset",
+      "text": "Asiakkaat, jotka tuovat jo eniten arvoa: he käyvät useimmin, kuluttavat eniten tai tuovat ystäviä. Heistä kannattaa pitää huolta ja palkita heitä."
+    },
+    "segment": {
+      "at_risk": {
+        "title": "Vaaravyöhykkeellä",
+        "text": "He kävivät ennen säännöllisesti, mutta ovat nyt kadonneet. Heidät voi vielä saada takaisin yhdellä viestillä."
+      },
+      "vip_idle": {
+        "title": "Passiiviset VIP-asiakkaat",
+        "text": "Asiakkaat, jotka ovat kuluttaneet enemmän kuin kukaan muu mutta eivät ole käyneet vähään aikaan."
+      },
+      "expiring_subscription": {
+        "title": "Jäsenyys päättymässä",
+        "text": "Näillä asiakkailla on jäljellä 1–2 tuntia. Nyt on paras hetki tarjota uusimista."
+      },
+      "lost_newcomers": {
+        "title": "Uudet asiakkaat, jotka eivät palanneet",
+        "text": "He kävivät kerran ja katosivat. Syynä on usein ensimmäinen tunti — asia kannattaa selvittää."
+      },
+      "upsell_candidates": {
+        "title": "Valmiita enempään",
+        "text": "He käyvät usein, mutta ostavat yksinkertaisimman paketin. Heille kannattaa tarjota kalliimpaa jäsenyyttä."
+      },
+      "frequent": {
+        "title": "Vakituiset",
+        "text": "He käyvät useammin kuin kukaan muu. Studion liikevaihdon selkäranka."
+      },
+      "high_ltv": {
+        "title": "Arvokkaimmat",
+        "text": "He ovat tuoneet studiolle enemmän rahaa kuin kukaan muu koko ajalta."
+      },
+      "referrers": {
+        "title": "Tuovat ystäviä",
+        "text": "Asiakkaat, joiden suositukset ovat tuoneet sinulle muita ihmisiä."
+      }
+    }
+  }
+}

@@ -1,0 +1,240 @@
+== hr
+header.allConfigured	Svi su programi postavljeni
+header.allConfiguredSub	Vaš sustav lojalnosti radi punom snagom
+header.setup	Postavite programe lojalnosti
+header.setupSub	{{count}} od {{total}} programa postavljeno · Svaki program povećava zadržavanje klijenata
+header.start	Započnite
+programs.loyalty.title	Kartice lojalnosti
+programs.loyalty.desc	Sustav skupljanja bodova po razinama
+programs.loyalty.statLabel	klijenata
+programs.discounts.title	Popusti i povrat novca
+programs.discounts.desc	Personalizirane ponude za klijente
+programs.discounts.statLabel	aktivno
+programs.certificates.title	Poklon-bonovi
+programs.certificates.desc	Poklon i personalizirani bonovi
+programs.certificates.statLabel	prodano
+programs.referral.title	Preporuke
+programs.referral.desc	Program „Dovedite prijatelja”
+programs.referral.statLabel	preporuka
+programs.promocodes.title	Promokodovi
+programs.promocodes.desc	Kodovi za popust s ograničenjem upotrebe
+programs.promocodes.statLabel	aktivno
+programs.deposit.title	Depozit
+programs.deposit.desc	Novčani saldo klijenta u studiju
+programs.deposit.statLabel	sa saldom
+card.active	Aktivno
+card.disable	Onemogući
+card.notConfigured	Nije postavljeno
+card.configure	Postavi
+drawer.subtitle	Postavke programa
+drawer.saving	Spremanje…
+drawer.save	Spremi i aktiviraj
+drawer.cancel	Odustani
+drawer.close	Zatvori
+config.mainParams	Glavni parametri
+config.programName	Naziv programa
+config.pointsRate	Stopa bodova ({{currency}} za 1 bod)
+config.levels	Razine
+config.pointValue	1 bod =
+config.pointValueHint	Bodovi se dobivaju po istoj stopi na svakoj razini, ali nemaju istu vrijednost. Goldu dajte 1, a Diamondu 2; tada će bod koji je klijent zaradio pri naplati smanjiti cijenu dvostruko više. To donosi razina: što je netko više potrošio u studiju, to njegovi bodovi više vrijede.
+config.expiry	Razdoblje valjanosti
+config.expiryTooltip	Koliko dugo klijent može trošiti prikupljene bodove
+config.expiryOptions.3m	3 mj.
+config.expiryOptions.6m	6 mj.
+config.expiryOptions.1y	1 g.
+config.expiryOptions.never	Bez isteka
+config.newLevelName	Nova razina
+config.addLevel	+ Razina
+config.levelFrom	od
+config.levelTo	do
+config.deleteLevelTitle	Izbrisati ovu razinu?
+config.deleteLevelMessage	Klijenti na razini „{{name}}” prijeći će na susjednu razinu prema ukupnoj potrošnji.
+config.discountType	Vrsta popusta
+config.discountTypes.percentage	Postotak (%)
+config.discountTypes.fixed	Fiksno ({{currency}})
+config.discountTypes.cashback	Povrat novca
+config.cashbackPercent	Postotak povrata novca
+config.discountSize	Iznos popusta
+config.minPurchase	Minimalni iznos kupnje
+config.noLimit	Bez ograničenja
+config.conditions	Uvjeti primjene
+config.appliesToAll	Primijeni na sve usluge
+config.stackable	Kombiniraj s drugim popustima
+config.visibleInCabinet	Prikaži klijentu u njegovom računu
+config.certType	Vrsta bona
+config.certTypes.named	Personaliziran
+config.certTypes.gift	Poklon
+config.certTypes.service	Za uslugu
+config.denominations	Nominale
+config.addDenom	+ Dodaj
+config.service	Usluga
+config.noServices	Još nema usluga u katalogu — dodajte ih u „Katalog”
+config.params	Parametri
+config.expiryDays	Razdoblje valjanosti (dani)
+config.certIssue	Izdaj bon
+config.certCustomAmount	Prilagođeni iznos
+config.certRecipientName	Ime primatelja
+config.certRecipientPlaceholder	Neobavezno
+config.certLinkClient	Poveži s klijentom
+config.certClientSearchPlaceholder	Počnite upisivati ime…
+config.certAccount	Depozitni račun
+config.certAccountNone	Ne evidentiraj u knjizi
+config.certIssueButton	Izdaj
+config.certIssuedTitle	Bon je izdan
+config.certCopyCode	Kopiraj kod
+config.certCopied	Kopirano
+config.certIssueAnother	Izdaj još jedan
+config.certIssued	Izdani bonovi
+config.certEmpty	Još nema izdanih bonova
+config.certStatus.active	Aktivan
+config.certStatus.used	Iskorišten
+config.certStatus.expired	Istekao
+config.certRedeem	Iskoristi
+config.certRedeemTitle	Iskoristiti ovaj bon?
+config.certRedeemMessage	Bon {{code}} bit će označen kao iskorišten. Ovo se ne može poništiti.
+config.referrerBonusTitle	Bonus za preporuku
+config.referrerBonus	Bonus za preporučitelja ({{currency}})
+config.newClientDiscount	Popust za novog klijenta (%)
+config.triggerCondition	Uvjet dodjele
+config.triggerConditions.first_visit	Nakon prvog posjeta
+config.triggerConditions.first_payment	Nakon prve uplate
+config.triggerConditions.registration	Odmah nakon registracije
+config.bonusAccrual	Dodjela bonusa
+config.bonusTypes.points	Bodovi
+config.bonusTypes.deposit	Na depozit
+config.bonusTypes.discount	Kao popust
+config.promoCreate	Stvori promokod
+config.promoCodePlaceholder	LJETO25
+config.promoValidUntil	Vrijedi do
+config.promoUsageLimit	Ograničenje korištenja
+config.promoAdd	+ Dodaj promokod
+config.promoList	Promokodovi
+config.promoEmpty	Još nema promokodova
+config.promoUntil	do
+config.promoStatus.active	Aktivan
+config.promoStatus.expired	Istekao
+config.promoStatus.exhausted	Ograničenje je dosegnuto
+config.promoStatus.disabled	Onemogućen
+config.depositTotal	Ukupni saldo
+config.depositTotalSub	na svim depozitima klijenata
+config.depositTopClients	Najbolji klijenti prema saldu
+config.depositEmpty	Još nitko nema depozit
+config.depositHint	Uplate i isplate obavljaju se na profilu klijenta. Program preporuka može uplaćivati bonuse na depozit umjesto u bodovima.
+validation.required	Ovo polje je obavezno
+validation.minOne	Mora biti najmanje 1
+validation.minZero	Ne može biti negativno
+validation.positive	Mora biti veće od 0
+validation.range0to100	Od 0 do 100
+toasts.saved	Program je aktiviran
+toasts.saveFailed	Spremanje nije uspjelo
+toasts.toggleFailed	Ažuriranje programa nije uspjelo
+toasts.loadFailed	Učitavanje podataka nije uspjelo
+toasts.retry	Pokušajte ponovno
+stats.notConnected	Program nije povezan
+stats.willAppear	Podaci će se pojaviti nakon postavljanja
+stats.noData	Nema podataka
+stats.connectProgram	Poveži program
+stats.revenueHeadline	Prihodi od članova
+stats.membersHeadline	Članovi programa
+stats.returnedClients	Vraćeni klijenti
+stats.returnedClientsSub	2+ posjeta u 90 dana
+stats.avgCheckHeadline	Prosječni račun po članu
+stats.bonusCostHeadline	Trošak bonusa
+stats.bonusCostSub	ovaj mjesec
+stats.roiHeadline	ROI
+stats.roiValue	×{{value}}
+stats.perMonth	ovaj mjesec
+stats.cardHolders	vlasnici kartica
+stats.kpi	Ključni pokazatelji
+stats.members	Članovi
+stats.withCard	s karticom
+stats.avgCheck	Prosječni račun
+stats.byMembers	među članovima
+stats.pointsInCirculation	Bodovi u opticaju
+stats.accrued	obračunato
+stats.revenue	Prihodi
+stats.revenuePerMonth	od članova / mj.
+stats.levelDistribution	Raspodjela po razinama
+stats.noLevels	Razine još nisu postavljene
+stats.totalClients	Ukupno klijenata u programu
+stats.fromValue	od {{value}}
+stats.levelPointValue	bod = {{value}}
+scenarios.title	Pametni scenariji
+scenarios.subtitle	Autopilot za zadržavanje: sustav pronalazi klijente i nagrađuje ih umjesto vas
+scenarios.add	Scenarij
+scenarios.fired	pokrenut {{count}} puta
+scenarios.lastRun	zadnje pokretanje {{when}}
+scenarios.neverRun	još nije pokrenut
+scenarios.empty	Još nema scenarija
+scenarios.emptySub	Izradite prvi — sustav će zadržavati klijente umjesto vas
+scenarios.channel	Kanal
+scenarios.channelSoon	nakon povezivanja integracije
+scenarios.pickTemplate	Odaberite scenarij
+scenarios.pickTemplateSub	Gotov predložak — pragove podesite kasnije
+scenarios.create	Izradi
+scenarios.deleteConfirm	Izbrisati scenarij?
+scenarios.deleteConfirmSub	Pravilo će se prestati pokretati. Ovo se ne može poništiti.
+scenarios.triggers.inactive_days	neaktivan {{days}} dana
+scenarios.triggers.low_subscription	preostalo ≤ {{classes_left}} termina
+scenarios.triggers.birthday	rođendan
+scenarios.triggers.nth_visit	posjet br. {{n}}
+scenarios.triggers.referral	doveo je prijatelja
+scenarios.actions.points	poklonite {{points}} bodova
+scenarios.actions.gift_classes	poklonite {{classes}} termina
+scenarios.actions.certificate	izdajte bon od {{amount}} ₽
+scenarios.actions.renewal_offer	ponudite obnovu uz {{discount}}% popusta
+scenarios.templates.win_back.name	Nedostajete nam
+scenarios.templates.win_back.desc	Vratite klijenta koji nije dolazio neko vrijeme
+scenarios.templates.expiring_subscription.name	Pretplata pri kraju
+scenarios.templates.expiring_subscription.desc	Ponudite obnovu prije nego što ponestane termina
+scenarios.templates.birthday_gift.name	Rođendanski poklon
+scenarios.templates.birthday_gift.desc	Razveselite klijenta na njegov poseban dan
+scenarios.templates.fifth_visit.name	Nagrada za lojalnost
+scenarios.templates.fifth_visit.desc	Besplatan termin za lojalnost
+scenarios.templates.referral_thanks.name	Hvala na prijatelju
+scenarios.templates.referral_thanks.desc	Nagradite osobu koja je dovela novog klijenta
+scenarios.ifClient	Ako klijent
+scenarios.then	→
+scenarios.toasts.created	Scenarij je izrađen
+scenarios.toasts.updated	Scenarij je ažuriran
+scenarios.toasts.deleted	Scenarij je izbrisan
+scenarios.toasts.failed	Scenarij nije moguće spremiti
+scenarios.delete	Izbriši
+segmentsBoard.title	Segmenti i preporuke
+segmentsBoard.subtitle	Aktivne grupe klijenata, svaka s jednim jasnim pozivom na akciju
+segmentsBoard.empty	Ovdje nema ničega i to je dobro
+segmentsBoard.clients	klijenata
+segmentsBoard.daysAgo	prije {{count}} dana
+segmentsBoard.neverVisited	bez posjeta
+segmentsBoard.more	i još {{count}}
+segmentsBoard.segments.at_risk.name	Pred odlaskom
+segmentsBoard.segments.at_risk.desc	Aktivni, neaktivni 21+ dan
+segmentsBoard.segments.at_risk.action	Dajte bonus
+segmentsBoard.segments.vip_idle.name	VIP je utihnuo
+segmentsBoard.segments.vip_idle.desc	VIP klijenti, neaktivni 14+ dana
+segmentsBoard.segments.vip_idle.action	Pokrenite kampanju
+segmentsBoard.segments.expiring_subscription.name	Pretplata istječe
+segmentsBoard.segments.expiring_subscription.desc	Preostalo ≤2 termina ili ≤7 dana
+segmentsBoard.segments.expiring_subscription.action	Pokrenite kampanju
+segmentsBoard.segments.lost_newcomers.name	Nikad se nisu vratili
+segmentsBoard.segments.lost_newcomers.desc	Došli jednom, nema ih 14+ dana
+segmentsBoard.segments.lost_newcomers.action	Pokrenite kampanju
+segmentsBoard.segments.upsell_candidates.name	Spremni za paket
+segmentsBoard.segments.upsell_candidates.desc	8+ posjeta ovaj mjesec, bez paketa
+segmentsBoard.segments.upsell_candidates.action	Pokrenite kampanju
+segmentsBoard.campaignSub	Segment „{{name}}” · {{count}} klijenata
+segmentsBoard.pointsLabel	Koliko bodova dodijeliti
+segmentsBoard.messageLabel	Tekst poruke
+segmentsBoard.messagePlaceholder	npr. Nedostajete nam! Vratite se — čekamo vas.
+segmentsBoard.emailNote	E-pošta ide samo klijentima koji je imaju
+segmentsBoard.confirm	Pošalji
+segmentsBoard.toasts.pointsDone	Bodovi su dodijeljeni · obrađeno {{processed}}, obaviješteno {{emails}}
+segmentsBoard.toasts.emailDone	Kampanja je poslana · {{emails}} e-poruka od {{processed}}
+retention.title	Obnove pretplata
+retention.subtitle	Koliko se dobro klijenti vraćaju po novi paket
+retention.renewalRate	Obnova
+retention.avgPackages	Paketa po klijentu
+retention.sold	Prodano
+retention.renewed	Obnovljeno
+retention.empty	Još nema prodaja pretplata
+retention.emptySub	Analitika će se pojaviti nakon prvih prodaja paketa

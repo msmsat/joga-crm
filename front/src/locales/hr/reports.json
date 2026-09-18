@@ -1,0 +1,615 @@
+{
+  "tabs": {
+    "overview": "Pregled",
+    "sales": "Prodaja",
+    "clients": "Klijenti",
+    "team": "Tim",
+    "schedule": "Raspored"
+  },
+  "toolbar": {
+    "period": {
+      "day": "Dan",
+      "week": "Tjedan",
+      "month": "Mjesec",
+      "year": "Godina",
+      "custom": "Prilagođeno"
+    },
+    "vsPrevious": "u odnosu na prethodno razdoblje: {{from}}–{{to}}",
+    "allBranches": "Sve poslovnice",
+    "allHalls": "Svi {{spacePlural}}",
+    "allTrainers": "Svi treneri",
+    "allServices": "Sve usluge",
+    "export": "Izvezi"
+  },
+  "insights": {
+    "title": "Zahtijeva pažnju",
+    "action": "Otvori",
+    "empty": "Za sada je sve u redu — nema savjeta za prikaz",
+    "revenue_up_clients_down": "Prihod raste, ali broj aktivnih klijenata pada — provjerite odlazak klijenata",
+    "clients_at_risk": "{{count}} klijenata nije prisustvovalo dulje od 3 tjedna — rizik odlaska",
+    "lesson_overfull": "„{{name}}” u {{weekday, weekday}} u {{hour}}:00 popunjen je {{pct}}% tri tjedna zaredom — razmislite o dodatnom terminu",
+    "trial_low_conversion": "Samo {{pct}}% od {{buyers}} kupaca probnog termina kupilo je pretplatu — razmislite o kampanji",
+    "fastest_growing_product": "„{{name}}” raste najbrže: +{{pct}}% u odnosu na prethodno razdoblje",
+    "renewals_low": "Samo {{pct}}% klijenata s isteklom pretplatom je obnavlja — razmislite o podsjetniku",
+    "new_no_second_visit": "{{count}} novih klijenata došlo je jednom i više nije rezerviralo — razmislite o podsjetniku",
+    "subs_expiring_week": "{{count}} klijenata ima pretplatu koja istječe ovaj tjedan — ponudite obnovu",
+    "vip_inactive": "VIP klijent „{{name}}” nije posjetio {{days}} dana — razmislite o osobnoj poruci",
+    "high_return_free_evenings": "„{{name}}” ima visoku stopu povratka ({{return_pct}}%), ali večeri su slobodne — dodajte termin",
+    "trainer_overloaded": "„{{name}}” opterećen je {{load_pct}}% — razmislite o uravnoteženju rasporeda",
+    "low_rating": "„{{name}}” ima ocjenu {{rating}} — vrijedno je pobliže pogledati",
+    "slot_chronic_low": "„{{name}}” u {{weekday, isodowWeekday}} u {{hour}}:00 popunjen je {{pct}}% već {{weeks}} tjedana — premjestite ga ili otkažite",
+    "hall_idle_evenings": "„{{name}}” je neiskorišten {{pct}}% večernjih sati — razmislite o zakazivanju termina",
+    "slot_overfull": "Termin {{weekday, isodowWeekday}} u {{hour}}:00 popunjen je {{pct}}% tri tjedna zaredom — razmislite o dodatnom terminu",
+    "loss_hotspot": "{{cancels}} termina otkazano je u {{label}} ovom razdoblju — većina otkaza grupira se oko ovog sata"
+  },
+  "table": {
+    "loading": "Učitavanje…",
+    "noProduct": "Nema proizvoda"
+  },
+  "empty": {
+    "noData": {
+      "title": "Ovdje još nema ničega",
+      "text": "Za odabrano razdoblje nije zabilježena aktivnost. Proširite raspon ili počnite rezerviranjem klijenta u Dnevniku.",
+      "widen": "Prikaži godinu"
+    },
+    "noRevenue": "Nema plaćanja u ovom razdoblju",
+    "noSales": "Nema prodaja u ovom presjeku",
+    "noProducts": "Još nisu prodani paketi ni usluge",
+    "noLessons": "Nema termina u ovom razdoblju",
+    "noTrainerLessons": "Ovaj trener još nije održao nijedan termin",
+    "noRows": "Nema zapisa u ovom presjeku",
+    "noLosses": "Nema otkaza ni nedolazaka u ovom razdoblju"
+  },
+  "overview": {
+    "kpi": {
+      "revenue": "Prihod",
+      "profit": "Dobit",
+      "attendance": "Posjećenost",
+      "activeClients": "Aktivni klijenti",
+      "fillRate": "Stopa popunjenosti"
+    },
+    "chart": {
+      "metric": {
+        "revenue": "Prihod",
+        "profit": "Dobit",
+        "attendance": "Posjećenost",
+        "new_clients": "Novi klijenti",
+        "fill_rate": "Stopa popunjenosti"
+      }
+    },
+    "revenueStructure": {
+      "title": "Struktura prihoda"
+    },
+    "category": {
+      "subscriptions": "Pretplate",
+      "services": "Usluge",
+      "certificates": "Certifikati",
+      "rent": "Najam",
+      "salary": "Plaća",
+      "refunds": "Povrati"
+    },
+    "clientDynamics": {
+      "title": "Dinamika klijenata",
+      "new": "Novi",
+      "returned": "Vratili se",
+      "lost": "Izgubljeni"
+    },
+    "drilldown": {
+      "title": "Operacija",
+      "category": "Kategorija",
+      "amount": "Iznos",
+      "lesson": "Termin",
+      "time": "Vrijeme",
+      "occupancy": "Popunjenost",
+      "date": "Datum",
+      "method": "Metoda",
+      "trainer": "Trener",
+      "rowsCount": "zapisa",
+      "search": "Pretraži tablicu",
+      "shownOf": "Prikazano {{shown}} od {{total}}",
+      "noMatches": "Nema rezultata za „{{query}}”",
+      "reset": "Poništi",
+      "export": "Izvezi CSV",
+      "subtitle": {
+        "money": "Operacije u ovom presjeku",
+        "lessons": "Termini u ovom presjeku"
+      },
+      "hint": {
+        "operations": "Kliknite red da otvorite operaciju u Financijama",
+        "lessons": "Kliknite red da otvorite taj dan u Dnevniku"
+      },
+      "stat": {
+        "net": "Neto",
+        "income": "Prihod",
+        "expense": "Rashod",
+        "operations": "Operacije",
+        "topCategory": "Vodeća kategorija",
+        "lessons": "Termini",
+        "booked": "Rezervirana mjesta",
+        "avgFill": "Prosječna popunjenost",
+        "trainers": "Treneri",
+        "cancelled": "Otkazano"
+      }
+    }
+  },
+  "sales": {
+    "kpi": {
+      "revenue": "Prihod",
+      "salesCount": "Prodaje",
+      "avgCheck": "Prosječni račun",
+      "repeatShare": "Udio ponovljenih",
+      "renewals": "Stopa obnove"
+    },
+    "chart": {
+      "title": "Prodaja"
+    },
+    "incomeOperations": "Prihodovne operacije",
+    "breakdown": {
+      "byCategory": "Što kupuju",
+      "byMethod": "Kako plaćaju",
+      "buyerType": "Tko kupuje",
+      "new": "Novi",
+      "returning": "Povratnici",
+      "noClient": "Bez klijenta"
+    },
+    "method": {
+      "card": "Kartica",
+      "cash": "Gotovina",
+      "qr": "QR kod",
+      "transfer": "Prijenos"
+    },
+    "products": {
+      "title": "Proizvodi",
+      "name": "Proizvod",
+      "sold": "Prodano",
+      "revenue": "Prihod",
+      "avgCheck": "Prosječni račun",
+      "repeatShare": "Udio ponovljenih",
+      "trend": "Trend",
+      "trendHint": "Usporedba s prethodnim razdobljem iste duljine"
+    }
+  },
+  "clients": {
+    "kpi": {
+      "new": "Novi",
+      "returned": "Vratili se",
+      "lost": "Izgubljeni",
+      "retention": "Zadržavanje",
+      "avgValue": "Vrijednost klijenta"
+    },
+    "chart": {
+      "title": "Novi naspram povratnika",
+      "new": "Novi",
+      "returned": "Povratnici"
+    },
+    "riskTitle": "Rizični segmenti",
+    "loyalTitle": "Lojalni",
+    "list": "Popis",
+    "campaign": "Pokreni kampanju",
+    "exportList": "Izvezi popis",
+    "emptySegment": "Segment „{{name}}” trenutačno nema klijenata",
+    "segments": {
+      "new": {
+        "name": "Novi klijenti",
+        "desc": "Registrirani u odabranom razdoblju"
+      },
+      "returned": {
+        "name": "Povratnici",
+        "desc": "Posjetili su ovo i prethodno razdoblje"
+      },
+      "lost": {
+        "name": "Izgubljeni klijenti",
+        "desc": "Posjetili su prošlo razdoblje, a nisu se vratili ovo"
+      },
+      "active": {
+        "name": "Aktivni klijenti",
+        "desc": "Došli su na barem jedan termin u odabranom razdoblju"
+      },
+      "at_risk": {
+        "name": "Na rubu",
+        "desc": "Aktivni, bez posjeta 21+ dan"
+      },
+      "vip_idle": {
+        "name": "VIP bez aktivnosti",
+        "desc": "VIP klijenti, bez posjeta 14+ dana"
+      },
+      "expiring_subscription": {
+        "name": "Pretplata pri kraju",
+        "desc": "Preostalo ≤2 termina ili ≤7 dana"
+      },
+      "lost_newcomers": {
+        "name": "Nikad se nisu vratili",
+        "desc": "Došli jednom, nema ih 14+ dana"
+      },
+      "upsell_candidates": {
+        "name": "Spremni za paket",
+        "desc": "8+ posjeta ovaj mjesec, bez paketa"
+      },
+      "frequent": {
+        "name": "Česti",
+        "desc": "8+ posjeta u razdoblju"
+      },
+      "high_ltv": {
+        "name": "Visoki LTV",
+        "desc": "Najboljih 10% prema ukupnoj potrošnji"
+      },
+      "referrers": {
+        "name": "Preporučitelji",
+        "desc": "Dovršili preporuku u razdoblju"
+      }
+    },
+    "listSearch": "Pretraži po imenu ili telefonu",
+    "shownOf": "Prikazano {{shown}} od {{total}}",
+    "noMatches": "Nitko nije pronađen za „{{query}}”",
+    "resetSearch": "Poništi",
+    "neverVisited": "Nikad nije posjetio",
+    "valueLabel": {
+      "visits": "Posjeti",
+      "spent": "Potrošeno",
+      "daysIdle": "Dana neaktivnosti",
+      "remaining": "Preostali termini",
+      "value": "Vrijednost"
+    },
+    "relative": {
+      "today": "Danas",
+      "daysAgo_one": "Prije {{count}} dan",
+      "daysAgo_few": "Prije {{count}} dana",
+      "daysAgo_other": "Prije {{count}} dana"
+    }
+  },
+  "team": {
+    "kpi": {
+      "lessonsCount": "Termini",
+      "revenuePerHour": "Prihod/sat",
+      "avgFillPct": "Stopa popunjenosti",
+      "cancelNoshowPct": "Otkazi/nedolasci",
+      "avgRating": "Ocjena"
+    },
+    "table": {
+      "title": "Treneri",
+      "trainer": "Trener",
+      "lessons": "Termini",
+      "fillPct": "Stopa popunjenosti",
+      "attendance": "Posjećenost",
+      "revenue": "Prihod",
+      "returnRate": "Stopa povratka",
+      "cancels": "Otkazi",
+      "fillPctHint": "Popunjena mjesta od planiranih",
+      "returnRateHint": "Klijenti koji su ponovno rezervirali kod ovog trenera",
+      "cancelsHint": "Otkazani termini i nedolasci klijenata",
+      "ratingHint": "Prosječna ocjena koju su klijenti dali terminima ovog trenera"
+    },
+    "drawer": {
+      "revenueByWeek": "Prihod po tjednu",
+      "loadByWeekday": "Opterećenje po danu u tjednu",
+      "loadByHour": "Opterećenje po dobu dana",
+      "loadDim": {
+        "weekday": "Po danu",
+        "hour": "Po satu"
+      },
+      "schedule": {
+        "title": "Raspored",
+        "empty": "Nema termina u ovom razdoblju"
+      },
+      "topLessons": "Omiljeni termini",
+      "returnBlock": "Povratak klijenata",
+      "returnOf": "{{returned}} od {{total}} klijenata vratilo se ({{pct}}%)",
+      "openProfile": "Otvori profil",
+      "held": "Održano",
+      "attendance": "Posjećenost"
+    },
+    "weekdays": [
+      "Ned",
+      "Pon",
+      "Uto",
+      "Sri",
+      "Čet",
+      "Pet",
+      "Sub"
+    ]
+  },
+  "schedule": {
+    "weekdaysMonFirst": [
+      "Pon",
+      "Uto",
+      "Sri",
+      "Čet",
+      "Pet",
+      "Sub",
+      "Ned"
+    ],
+    "kpi": {
+      "avgFillPct": "Stopa popunjenosti",
+      "freeSpots": "Slobodna mjesta",
+      "cancels": "Otkazi",
+      "noshows": "Nedolasci",
+      "lostRevenue": "Propušteni prihod"
+    },
+    "heatmap": {
+      "title": "Opterećenje po danu i satu",
+      "legend": "Stopa popunjenosti:",
+      "tooltip": "{{lessons}} termina · {{attendance}} prisustvovalo · {{pct}}%",
+      "empty": "Nema termina"
+    },
+    "slices": {
+      "topProfitable": "Najisplativiji",
+      "topFilled": "Najpopunjeniji",
+      "chronicLow": "Kronično slabo popunjeni",
+      "halls": "Iskorištenost: {{spacePlural}}",
+      "held": "{{count}} održano",
+      "weeks": "{{count}} tjed.",
+      "move": "Premjesti",
+      "cancel": "Otkaži",
+      "eveningIdle": "večernje mirovanje {{pct}}%"
+    },
+    "losses": {
+      "title": "Otkazi i nedolasci",
+      "dim": {
+        "hour": "Po vremenu",
+        "service": "Po usluzi",
+        "trainer": "Po treneru"
+      },
+      "cancels_one": "{{count}} otkaz",
+      "cancels_few": "{{count}} otkaza",
+      "cancels_other": "{{count}} otkaza",
+      "noshows_one": "{{count}} nedolazak",
+      "noshows_few": "{{count}} nedolaska",
+      "noshows_other": "{{count}} nedolazaka",
+      "lostSpots_one": "−{{count}} mjesto",
+      "lostSpots_few": "−{{count}} mjesta",
+      "lostSpots_other": "−{{count}} mjesta"
+    },
+    "status": {
+      "confirmed": "Potvrđeno",
+      "pending": "Na čekanju",
+      "cancelled": "Otkazano"
+    },
+    "slot": {
+      "summary": "za {{from}} — {{to}}",
+      "lessonsCount": "Ukupno termina"
+    }
+  },
+  "export": {
+    "csv": "Preuzmi CSV"
+  },
+  "scopeNote": {
+    "label": "Za cijeli studio",
+    "money": "Filtri Podružnica i {{space}} ne utječu na novac — uplata nije vezana uz njih",
+    "clientBase": "Trener, {{space}}, podružnica i usluga ne mijenjaju ovu metriku — klijent nije vezan uz njih"
+  },
+  "descriptions": {
+    "overview": {
+      "metric": {
+        "revenue": "Sav novac koji je stigao u studio tijekom razdoblja",
+        "profit": "Ono što ostane nakon troškova razdoblja",
+        "attendance": "Termini kojima su klijenti stvarno prisustvovali",
+        "new_clients": "Klijenti registrirani tijekom ovog razdoblja",
+        "fill_rate": "Koliko su termini puni: rezervirana mjesta od dostupnih mjesta"
+      },
+      "revenueStructure": "Od čega se sastoji vaš prihod ovog razdoblja",
+      "clientDynamics": "Koliko ih je došlo prvi put, vratilo se ili prestalo dolaziti"
+    },
+    "sales": {
+      "chart": "Prihod i broj kupnji po danu",
+      "byCategory": "Udio svakog proizvoda u prihodu",
+      "byMethod": "Kako je prihod raspoređen po načinu plaćanja",
+      "buyerType": "Koliki prihod dolazi od novih klijenata, a koliki od stalnih",
+      "products": "Svaki proizvod: koliko je prodano, za koliko i raste li prodaja"
+    },
+    "clients": {
+      "chart": "Koliko je klijenata došlo prvi put, a koliko se vratilo, po tjednu",
+      "riskSegments": "Klijenti koje biste mogli izgubiti ako im se sada ne javite",
+      "loyalSegments": "Oni koji najčešće dolaze, najviše troše i dovode prijatelje"
+    },
+    "team": {
+      "trainers": "Usporedba prema opterećenju, prihodu i stopi povratka klijenata",
+      "loadWeekday": "Kojim je danima u tjednu trener zauzet, a kada je slobodan",
+      "loadHour": "U koje se vrijeme njegovi termini pune, a kada ostaju prazni",
+      "schedule": "Svi termini trenera u odabranom razdoblju"
+    },
+    "schedule": {
+      "heatmap": "Gdje je raspored prebukiran, a gdje prazan",
+      "topProfitable": "Vremena u rasporedu koja donose najviše novca",
+      "topFilled": "Vremena koja klijenti najradije rezerviraju",
+      "chronicLow": "Termini koji tjednima popunjavaju manje od trećine mjesta",
+      "halls": "Koliko su često vaši {{spacePlural}} stvarno u upotrebi",
+      "losses": "Gdje studio gubi mjesta: otkazani termini ili nedolasci klijenata"
+    }
+  },
+  "formulas": {
+    "salesCount": {
+      "title": "Prodaje",
+      "text": "Koliko su vam puta klijenti platili u ovom razdoblju. Jedna osoba koja plati više puta računa se kao više zasebnih prodaja."
+    },
+    "revenue": {
+      "title": "Prihod",
+      "text": "Sav novac koji je stigao u studio u ovom razdoblju prema datumu plaćanja. Paketi, pojedinačni termini, poklon-bonovi i maloprodaja — sve zajedno."
+    },
+    "profit": {
+      "title": "Dobit",
+      "text": "Ono što ostaje nakon troškova ovog razdoblja: najamnine, plaća i potrošnog materijala. To je vaš stvarni prihod."
+    },
+    "attendance": {
+      "title": "Posjećenost",
+      "text": "Koliko su posjeta klijenti stvarno ostvarili. Broje se samo termini označeni kao posjećeni."
+    },
+    "bookings": {
+      "title": "Rezervacije",
+      "text": "Koliko su rezervacija klijenti napravili za termine. Otkazane rezervacije se ne broje."
+    },
+    "noshow": {
+      "title": "Nedolazak",
+      "text": "Klijent je rezervirao, termin se održao, ali se nije pojavio. Svaki je takav slučaj mjesto koje je netko drugi mogao zauzeti."
+    },
+    "activeClients": {
+      "title": "Aktivni klijenti",
+      "text": "Koliko je različitih ljudi došlo barem jednom u ovom razdoblju. Svaki klijent broji se jednom, bez obzira na broj posjeta."
+    },
+    "occupancy": {
+      "title": "Popunjenost",
+      "text": "Koliko su termini puni: zauzeta mjesta od onih koje ste planirali. 100 % znači da nema slobodnih mjesta."
+    },
+    "avgCheck": {
+      "title": "Prosječni račun",
+      "text": "Koliko u prosjeku donosi jedna uplata. Raste kada klijenti kupuju dulje pakete ili dodatke."
+    },
+    "retention": {
+      "title": "Zadržavanje",
+      "text": "Koliko se klijenata iz prošlog razdoblja vratilo u ovom. Pokazuje zadržavate li ljude ili svaki mjesec počinjete ispočetka."
+    },
+    "newClients": {
+      "title": "Novi klijenti",
+      "text": "Ljudi koji su se prvi put pojavili u vašoj bazi klijenata tijekom ovog razdoblja."
+    },
+    "returning": {
+      "title": "Povratnici",
+      "text": "Klijenti koji su već dolazili i vratili se ponovno u ovom razdoblju."
+    },
+    "lost": {
+      "title": "Izgubljeni",
+      "text": "Posjetili su u prošlom razdoblju, a u ovom nisu došli nijednom. I dalje im se vrijedi javiti."
+    },
+    "clientValue": {
+      "title": "Vrijednost klijenta",
+      "text": "Koliko jedan klijent u prosjeku donosi u ovom razdoblju."
+    },
+    "repeatPurchaseShare": {
+      "title": "Udio ponovljenih kupnji",
+      "text": "Udio klijenata koji su kupili od vas više od jednom. Što je veći, to je jača navika vraćanja."
+    },
+    "renewalRate": {
+      "title": "Stopa obnove",
+      "text": "Koliko je klijenata kupilo novi paket nakon što im je prethodni istekao."
+    },
+    "revenuePerHour": {
+      "title": "Prihod po satu (trener)",
+      "text": "Koliko novca donosi jedan sat rada trenera. Omogućuje poštenu usporedbu trenera — netko možda vodi manje termina, ali svaki donosi više."
+    },
+    "trainerReturnRate": {
+      "title": "Stopa povratka (trener)",
+      "text": "Udio klijenata trenera koji su ponovno rezervirali kod njega."
+    },
+    "missedRevenue": {
+      "title": "Propušteni prihod",
+      "text": "Novac koji studio nije zaradio zbog praznih mjesta na prošlim terminima: slobodna mjesta pomnožena cijenom termina."
+    },
+    "losses": {
+      "title": "Otkazi i nedolasci",
+      "text": "„Otkaz” je otkazani termin, a „nedolazak” je klijent koji je rezervirao, ali nije došao. Raščlambe po vremenu/usluzi/treneru koriste iste filtre kao kartica i usklađene su s KPI-jevima zaglavlja."
+    },
+    "lessonRevenue": {
+      "title": "Prihod termina",
+      "text": "Približna procjena prihoda termina: broj prisutnih pomnožen cijenom. Uplate nisu vezane uz pojedini termin, pa je ovo procjena, a ne točan iznos."
+    },
+    "filtersScope": {
+      "title": "Opseg filtra",
+      "text": "Filtri Podružnica i {{space}} primjenjuju se samo na metrike termina. Uplate nemaju takvu vezu, pa je novac prikazan za cijeli studio."
+    },
+    "avgValue": {
+      "title": "Vrijednost klijenta",
+      "text": "Koliko jedan klijent u prosjeku donosi u ovom razdoblju."
+    },
+    "cancelNoshow": {
+      "title": "Otkazi i nedolasci",
+      "text": "Udio poremećenih termina: otkazi i nedolasci od svega planiranog."
+    },
+    "avgRating": {
+      "title": "Prosječna ocjena",
+      "text": "Prosječna ocjena koju su klijenti dali terminima ovog trenera."
+    },
+    "teamScope": {
+      "title": "Opseg podataka",
+      "text": "Ovdje se broji samo prihod vezan uz određenog trenera, stoga ukupan iznos svih trenera može biti manji od ukupnog prihoda studija."
+    },
+    "lessonsCount": {
+      "title": "Termini",
+      "text": "Koliko su termina treneri održali u ovom razdoblju."
+    },
+    "load": {
+      "title": "Opterećenje",
+      "text": "Koliko je dan trenera popunjen: njegovi rezervirani sati od radnog vremena studija."
+    },
+    "weeklyClients": {
+      "title": "Novi i povratnici",
+      "text": "Po tjednu: koliko je ljudi došlo prvi put, a koliko se vratilo. Zdrav studio raste u oba smjera."
+    },
+    "byCategory": {
+      "title": "Prihod po kategoriji",
+      "text": "Na čemu stvarno zarađujete: paketima, pojedinačnim terminima, poklon-bonovima i maloprodajom."
+    },
+    "byMethod": {
+      "title": "Načini plaćanja",
+      "text": "Kako klijenti plaćaju. Pomaže vidjeti trebate li obradu kartica i koliko novca zaobilazi blagajnu."
+    },
+    "buyerType": {
+      "title": "Tko plaća",
+      "text": "Novi klijenti naspram stalnih. Ako gotovo sav prihod dolazi od novih klijenata, studio ih ne zadržava."
+    },
+    "products": {
+      "title": "Što se prodaje",
+      "text": "Svi paketi i usluge u razdoblju: koliko ih je prodano, za koliko i raste li prodaja."
+    },
+    "topProfitable": {
+      "title": "Najisplativiji termini",
+      "text": "Vremena u rasporedu koja donose najviše novca. Tamo postavite svoje najbolje trenere."
+    },
+    "topFilled": {
+      "title": "Najpopunjeniji termini",
+      "text": "Vremena koja klijenti najradije rezerviraju. Ako su potpuno popunjena, vrijedi dodati još jedan termin."
+    },
+    "chronicLow": {
+      "title": "Kronično prazni termini",
+      "text": "Vremena koja nekoliko tjedana popunjavaju manje od trećine mjesta. Kandidati za premještanje ili ukidanje."
+    },
+    "hallUtil": {
+      "title": "Iskorištenost: {{spacePlural}}",
+      "text": "Koliko su često vaši {{spacePlural}} stvarno u upotrebi. Prazno vrijeme je najamnina koja se ne isplati."
+    },
+    "heatmap": {
+      "title": "Opterećenje po danu i satu",
+      "text": "Boja prikazuje prosječnu stopu popunjenosti termina u razdoblju. Kliknite ćeliju da vidite termine tog dana i sata."
+    },
+    "riskSegments": {
+      "title": "Rizični segmenti",
+      "text": "Klijenti grupirani prema vrsti rizika koji nose — da ih izgubite ili prihodu koji ne donose. Svaka kartica ima vlastiti razlog i jasan sljedeći korak: javite im se, ponudite obnovu ili skuplji paket."
+    },
+    "loyalSegments": {
+      "title": "Lojalni",
+      "text": "Klijenti koji vam već donose najviše vrijednosti: najčešće dolaze, najviše troše ili dovode prijatelje. Vrijedi ih njegovati i nagrađivati."
+    },
+    "segment": {
+      "at_risk": {
+        "title": "Na rubu",
+        "text": "Nekad su redovito dolazili, a sada su nestali. Još ih je moguće vratiti jednom porukom."
+      },
+      "vip_idle": {
+        "title": "VIP bez aktivnosti",
+        "text": "Klijenti koji su potrošili više od ikoga, ali neko vrijeme nisu dolazili."
+      },
+      "expiring_subscription": {
+        "title": "Pretplata pri kraju",
+        "text": "Ovim klijentima ostaju 1–2 termina. Najbolji trenutak za ponuditi obnovu."
+      },
+      "lost_newcomers": {
+        "title": "Novopridošli koji se nisu vratili",
+        "text": "Došli su jednom i nestali. Obično je stvar u tom prvom terminu — vrijedi istražiti."
+      },
+      "upsell_candidates": {
+        "title": "Spremni za više",
+        "text": "Često dolaze, ali kupuju najjednostavniji paket. Vrijedi im ponuditi skuplju pretplatu."
+      },
+      "frequent": {
+        "title": "Redoviti",
+        "text": "Dolaze češće od ikoga drugoga. Okosnica su prihoda studija."
+      },
+      "high_ltv": {
+        "title": "Najvrjedniji",
+        "text": "Studiju su ukupno donijeli više novca od ikoga drugoga."
+      },
+      "referrers": {
+        "title": "Dovode prijatelje",
+        "text": "Klijenti čije su preporuke dovele druge ljude k vama."
+      }
+    }
+  }
+}

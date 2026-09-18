@@ -1,0 +1,240 @@
+== fi
+header.allConfigured	Kaikki ohjelmat on määritetty
+header.allConfiguredSub	Asiakasuskollisuusjärjestelmäsi toimii täydellä teholla
+header.setup	Määritä kanta-asiakasohjelmat
+header.setupSub	{{count}} / {{total}} ohjelmaa on määritetty · Jokainen ohjelma parantaa asiakkaiden pysyvyyttä
+header.start	Aloita
+programs.loyalty.title	Kanta-asiakaskortit
+programs.loyalty.desc	Tasopohjainen pisteiden keruujärjestelmä
+programs.loyalty.statLabel	asiakasta
+programs.discounts.title	Alennukset ja cashback
+programs.discounts.desc	Henkilökohtaisia tarjouksia asiakkaille
+programs.discounts.statLabel	aktiivista
+programs.certificates.title	Lahjakortit
+programs.certificates.desc	Lahja- ja nimelliset sertifikaatit
+programs.certificates.statLabel	myytyä
+programs.referral.title	Suosittelut
+programs.referral.desc	”Tuo ystävä” -ohjelma
+programs.referral.statLabel	suosittelua
+programs.promocodes.title	Alennuskoodit
+programs.promocodes.desc	Alennuskoodeja käyttörajalla
+programs.promocodes.statLabel	aktiivista
+programs.deposit.title	Talletus
+programs.deposit.desc	Asiakkaan rahasaldo studiolla
+programs.deposit.statLabel	saldollista
+card.active	Aktiivinen
+card.disable	Poista käytöstä
+card.notConfigured	Ei määritetty
+card.configure	Määritä
+drawer.subtitle	Ohjelman asetukset
+drawer.saving	Tallennetaan…
+drawer.save	Tallenna ja aktivoi
+drawer.cancel	Peruuta
+drawer.close	Sulje
+config.mainParams	Pääasetukset
+config.programName	Ohjelman nimi
+config.pointsRate	Pistekurssi ({{currency}} / 1 piste)
+config.levels	Tasot
+config.pointValue	1 piste =
+config.pointValueHint	Pisteitä kertyy samalla kurssilla jokaisella tasolla, mutta niiden arvo ei ole sama. Anna Goldille 1 ja Diamondille 2, jolloin asiakkaan ansaitsema piste alentaa kassalla hintaa kaksinkertaisesti. Tämä on tason hyöty: mitä enemmän asiakas on käyttänyt studiolla, sitä arvokkaampia hänen pisteensä ovat.
+config.expiry	Voimassaoloaika
+config.expiryTooltip	Kuinka kauan asiakas voi käyttää kertyneitä pisteitä
+config.expiryOptions.3m	3 kk
+config.expiryOptions.6m	6 kk
+config.expiryOptions.1y	1 v
+config.expiryOptions.never	Ei vanhene
+config.newLevelName	Uusi taso
+config.addLevel	+ Taso
+config.levelFrom	alkaen
+config.levelTo	asti
+config.deleteLevelTitle	Poistetaanko tämä taso?
+config.deleteLevelMessage	Tason ”{{name}}” asiakkaat siirtyvät viereiselle tasolle kokonaiskulutuksensa perusteella.
+config.discountType	Alennuksen tyyppi
+config.discountTypes.percentage	Prosentti (%)
+config.discountTypes.fixed	Kiinteä ({{currency}})
+config.discountTypes.cashback	Cashback
+config.cashbackPercent	Cashback-prosentti
+config.discountSize	Alennuksen määrä
+config.minPurchase	Ostoksen vähimmäissumma
+config.noLimit	Ei rajaa
+config.conditions	Soveltamisehdot
+config.appliesToAll	Käytä kaikissa palveluissa
+config.stackable	Yhdistä muihin alennuksiin
+config.visibleInCabinet	Näytä asiakkaalle hänen tilillään
+config.certType	Sertifikaatin tyyppi
+config.certTypes.named	Nimellinen
+config.certTypes.gift	Lahja
+config.certTypes.service	Palveluun
+config.denominations	Arvot
+config.addDenom	+ Lisää
+config.service	Palvelu
+config.noServices	Luettelossa ei ole vielä palveluja — lisää ne kohdassa ”Luettelo”
+config.params	Parametrit
+config.expiryDays	Voimassaoloaika (päivää)
+config.certIssue	Myönnä sertifikaatti
+config.certCustomAmount	Oma summa
+config.certRecipientName	Vastaanottajan nimi
+config.certRecipientPlaceholder	Valinnainen
+config.certLinkClient	Liitä asiakkaaseen
+config.certClientSearchPlaceholder	Ala kirjoittaa nimeä…
+config.certAccount	Talletustili
+config.certAccountNone	Älä kirjaa kirjanpitoon
+config.certIssueButton	Myönnä
+config.certIssuedTitle	Sertifikaatti myönnetty
+config.certCopyCode	Kopioi koodi
+config.certCopied	Kopioitu
+config.certIssueAnother	Myönnä toinen
+config.certIssued	Myönnetyt sertifikaatit
+config.certEmpty	Sertifikaatteja ei ole vielä myönnetty
+config.certStatus.active	Aktiivinen
+config.certStatus.used	Käytetty
+config.certStatus.expired	Vanhentunut
+config.certRedeem	Lunasta
+config.certRedeemTitle	Lunastetaanko tämä sertifikaatti?
+config.certRedeemMessage	Sertifikaatti {{code}} merkitään käytetyksi. Tätä ei voi perua.
+config.referrerBonusTitle	Suosittelubonus
+config.referrerBonus	Bonus suosittelijalle ({{currency}})
+config.newClientDiscount	Alennus uudelle asiakkaalle (%)
+config.triggerCondition	Kertymisehto
+config.triggerConditions.first_visit	Ensimmäisen käynnin jälkeen
+config.triggerConditions.first_payment	Ensimmäisen maksun jälkeen
+config.triggerConditions.registration	Heti rekisteröitymisen yhteydessä
+config.bonusAccrual	Bonuksen kertyminen
+config.bonusTypes.points	Pisteet
+config.bonusTypes.deposit	Talletukseen
+config.bonusTypes.discount	Alennuksena
+config.promoCreate	Luo alennuskoodi
+config.promoCodePlaceholder	KESÄ25
+config.promoValidUntil	Voimassa asti
+config.promoUsageLimit	Käyttöraja
+config.promoAdd	+ Lisää alennuskoodi
+config.promoList	Alennuskoodit
+config.promoEmpty	Alennuskoodeja ei ole vielä
+config.promoUntil	asti
+config.promoStatus.active	Aktiivinen
+config.promoStatus.expired	Vanhentunut
+config.promoStatus.exhausted	Käyttöraja saavutettu
+config.promoStatus.disabled	Poistettu käytöstä
+config.depositTotal	Kokonaissaldo
+config.depositTotalSub	kaikissa asiakastalletuksissa
+config.depositTopClients	Parhaat asiakkaat saldon mukaan
+config.depositEmpty	Kenelläkään ei ole vielä talletusta
+config.depositHint	Lisäykset ja nostot tehdään asiakkaan profiilissa. Suositteluohjelma voi maksaa bonuksia talletukseen pisteiden sijaan.
+validation.required	Tämä kenttä on pakollinen
+validation.minOne	Arvon on oltava vähintään 1
+validation.minZero	Arvo ei voi olla negatiivinen
+validation.positive	Arvon on oltava suurempi kuin 0
+validation.range0to100	0–100
+toasts.saved	Ohjelma aktivoitu
+toasts.saveFailed	Tallennus epäonnistui
+toasts.toggleFailed	Ohjelmaa ei voitu päivittää
+toasts.loadFailed	Tietoja ei voitu ladata
+toasts.retry	Yritä uudelleen
+stats.notConnected	Ohjelmaa ei ole yhdistetty
+stats.willAppear	Tiedot näkyvät määrityksen jälkeen
+stats.noData	Ei tietoja
+stats.connectProgram	Yhdistä ohjelma
+stats.revenueHeadline	Jäsenten tuotto
+stats.membersHeadline	Ohjelman jäsenet
+stats.returnedClients	Palanneet asiakkaat
+stats.returnedClientsSub	2+ käyntiä 90 päivässä
+stats.avgCheckHeadline	Keskimääräinen ostos jäsentä kohden
+stats.bonusCostHeadline	Bonusten kustannus
+stats.bonusCostSub	tässä kuussa
+stats.roiHeadline	ROI
+stats.roiValue	×{{value}}
+stats.perMonth	tässä kuussa
+stats.cardHolders	kortinhaltijaa
+stats.kpi	Keskeiset mittarit
+stats.members	Jäsenet
+stats.withCard	kortilla
+stats.avgCheck	Keskimääräinen ostos
+stats.byMembers	jäsenten keskuudessa
+stats.pointsInCirculation	Kierrossa olevat pisteet
+stats.accrued	kertynyt
+stats.revenue	Tuotto
+stats.revenuePerMonth	jäseniltä / kk
+stats.levelDistribution	Jakauma tasoittain
+stats.noLevels	Tasoja ei ole vielä määritetty
+stats.totalClients	Asiakkaita ohjelmassa yhteensä
+stats.fromValue	alkaen {{value}}
+stats.levelPointValue	piste = {{value}}
+scenarios.title	Älykkäät skenaariot
+scenarios.subtitle	Asiakaspidon autopilotti: järjestelmä löytää asiakkaat ja palkitsee heidät puolestasi
+scenarios.add	Skenaario
+scenarios.fired	lauennut {{count}} kertaa
+scenarios.lastRun	viimeksi ajettu {{when}}
+scenarios.neverRun	ei vielä ajettu
+scenarios.empty	Skenaarioita ei ole vielä
+scenarios.emptySub	Luo ensimmäinen — järjestelmä pitää asiakkaat puolestasi
+scenarios.channel	Kanava
+scenarios.channelSoon	integraation yhdistämisen jälkeen
+scenarios.pickTemplate	Valitse skenaario
+scenarios.pickTemplateSub	Valmis malli — säädä raja-arvoja myöhemmin
+scenarios.create	Luo
+scenarios.deleteConfirm	Poistetaanko skenaario?
+scenarios.deleteConfirmSub	Sääntö lakkaa laukeamasta. Tätä ei voi perua.
+scenarios.triggers.inactive_days	ei aktiivinen {{days}} päivään
+scenarios.triggers.low_subscription	≤ {{classes_left}} tuntia jäljellä
+scenarios.triggers.birthday	syntymäpäivä
+scenarios.triggers.nth_visit	käynti nro {{n}}
+scenarios.triggers.referral	suositteli ystävää
+scenarios.actions.points	anna {{points}} pistettä
+scenarios.actions.gift_classes	anna {{classes}} tuntia
+scenarios.actions.certificate	myönnä {{amount}} ₽:n sertifikaatti
+scenarios.actions.renewal_offer	tarjoa uusimista {{discount}} % alennuksella
+scenarios.templates.win_back.name	Kaipaamme sinua
+scenarios.templates.win_back.desc	Palauta asiakas, joka ei ole käynyt vähään aikaan
+scenarios.templates.expiring_subscription.name	Jäsenyys loppumassa
+scenarios.templates.expiring_subscription.desc	Tarjoa uusimista ennen kuin tunnit loppuvat
+scenarios.templates.birthday_gift.name	Syntymäpäivälahja
+scenarios.templates.birthday_gift.desc	Ilahduta asiakasta hänen erityisenä päivänään
+scenarios.templates.fifth_visit.name	Uskollisuuspalkinto
+scenarios.templates.fifth_visit.desc	Ilmainen tunti uskollisuudesta
+scenarios.templates.referral_thanks.name	Kiitos ystävästä
+scenarios.templates.referral_thanks.desc	Palkitse se, joka toi uuden asiakkaan
+scenarios.ifClient	Jos asiakas
+scenarios.then	→
+scenarios.toasts.created	Skenaario luotu
+scenarios.toasts.updated	Skenaario päivitetty
+scenarios.toasts.deleted	Skenaario poistettu
+scenarios.toasts.failed	Skenaariota ei voitu tallentaa
+scenarios.delete	Poista
+segmentsBoard.title	Segmentit ja suositukset
+segmentsBoard.subtitle	Aktiiviset asiakasryhmät, joilla jokaisella on yksi selkeä toimintakehotus
+segmentsBoard.empty	Täällä ei ole mitään, ja se on hyvä asia
+segmentsBoard.clients	asiakasta
+segmentsBoard.daysAgo	{{count}} päivää sitten
+segmentsBoard.neverVisited	ei käyntejä
+segmentsBoard.more	ja {{count}} muuta
+segmentsBoard.segments.at_risk.name	Lähdössä pois
+segmentsBoard.segments.at_risk.desc	Aktiiviset, passiivisia 21+ päivää
+segmentsBoard.segments.at_risk.action	Anna bonus
+segmentsBoard.segments.vip_idle.name	VIP hiljentynyt
+segmentsBoard.segments.vip_idle.desc	VIP-asiakkaat, passiivisia 14+ päivää
+segmentsBoard.segments.vip_idle.action	Käynnistä kampanja
+segmentsBoard.segments.expiring_subscription.name	Jäsenyys loppumassa
+segmentsBoard.segments.expiring_subscription.desc	≤2 tuntia tai ≤7 päivää jäljellä
+segmentsBoard.segments.expiring_subscription.action	Käynnistä kampanja
+segmentsBoard.segments.lost_newcomers.name	Eivät palanneet koskaan
+segmentsBoard.segments.lost_newcomers.desc	Kävivät kerran, poissa 14+ päivää
+segmentsBoard.segments.lost_newcomers.action	Käynnistä kampanja
+segmentsBoard.segments.upsell_candidates.name	Valmis paketille
+segmentsBoard.segments.upsell_candidates.desc	8+ käyntiä tässä kuussa, ei pakettia
+segmentsBoard.segments.upsell_candidates.action	Käynnistä kampanja
+segmentsBoard.campaignSub	Segmentti ”{{name}}” · {{count}} asiakasta
+segmentsBoard.pointsLabel	Kuinka monta pistettä annetaan
+segmentsBoard.messageLabel	Viestin teksti
+segmentsBoard.messagePlaceholder	esim. Kaipaamme sinua! Tule takaisin — odotamme sinua.
+segmentsBoard.emailNote	Sähköposti lähetetään vain asiakkaille, joilla on sähköpostiosoite
+segmentsBoard.confirm	Lähetä
+segmentsBoard.toasts.pointsDone	Pisteet myönnetty · {{processed}} käsitelty, {{emails}} ilmoitettu
+segmentsBoard.toasts.emailDone	Kampanja lähetetty · {{emails}} sähköpostia / {{processed}}
+retention.title	Jäsenyyksien uusimiset
+retention.subtitle	Kuinka hyvin asiakkaat palaavat uuden paketin pariin
+retention.renewalRate	Uusi
+retention.avgPackages	Paketteja asiakasta kohden
+retention.sold	Myyty
+retention.renewed	Uusittu
+retention.empty	Jäsenyysmyyntiä ei ole vielä
+retention.emptySub	Analytiikka näkyy ensimmäisten pakettimyyntien jälkeen

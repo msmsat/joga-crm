@@ -1,0 +1,336 @@
+== ro
+nav.sectionLabel	Setări de sistem
+nav.general	General
+nav.appearance	Aspect
+nav.notifications	Notificări
+nav.billing	Facturare
+nav.security	Securitate
+nav.integrations	Integrări
+nav.data	Date
+nav.logout	Schimbă CRM-ul
+toast.saved	Salvat
+toast.error	Ceva nu a mers bine
+workspace.title	Sistemele tale CRM
+workspace.subtitle	Alege un spațiu de lucru sau creează unul nou
+workspace.current	Curent
+workspace.membersCount_one	{{count}} membru
+workspace.membersCount_few	{{count}} membri
+workspace.membersCount_other	{{count}} de membri
+workspace.clientsCount_one	{{count}} client
+workspace.clientsCount_few	{{count}} clienți
+workspace.clientsCount_other	{{count}} de clienți
+workspace.createNew	Creează un studio nou
+workspace.loadError	Nu s-au putut încărca studiourile tale
+workspace.selectError	Nu s-a putut trece la acest studio
+general.company.title	Detalii companie
+general.company.subtitle	Informații publice despre afacerea ta
+general.company.name	Numele companiei
+general.company.namePh	ex. Studioul meu
+general.company.desc	Descriere
+general.company.descPh	Cu ce se ocupă studioul tău…
+general.company.phone	Telefon
+general.company.email	E-mail
+general.company.site	Site web
+general.company.sitePh	https://studio.com
+general.company.address	Adresă
+general.company.addressPh	Str. Exemplu 123, oraș
+general.reset	Resetează
+general.resetToast	Setări resetate
+general.locale.title	Limbă și regiune
+general.locale.subtitle	Setări de localizare a interfeței
+general.locale.timezone	Fus orar
+general.locale.timezoneSearch	Oraș sau diferență
+general.locale.timezoneNotFound	Nu a fost găsit niciun fus orar
+general.locale.currency	Monedă
+general.locale.currencySearch	Caută monedă sau cod
+general.locale.currencyNotFound	Nu a fost găsită nicio monedă
+general.locale.language	Limba interfeței
+general.locale.languageSearch	Caută limbă
+general.locale.languageNotFound	Nu a fost găsită nicio limbă
+general.locale.dateFormat	Format dată
+general.locale.firstDay	Prima zi a săptămânii
+general.locale.firstDayLabels.0	Luni
+general.locale.firstDayLabels.1	Duminică
+general.booking.title	Model de rezervare
+general.booking.subtitle	Cum rezervă clienții la tine
+general.booking.mode	Model de rezervare
+general.booking.modeHint	Evenimente — clienții se înscriu la o clasă programată. Individual — clientul alege un specialist și o oră. Mixt — ambele în același timp.
+general.booking.profile	Terminologie de industrie
+general.booking.profileHint	Alege cuvintele pentru personal și oferte. Modifică doar formularea — niciodată rolurile, prețurile sau modelul de rezervare.
+general.booking.strict	Program strict
+general.booking.strictHint	Interzice dubla rezervare a unui specialist sau a unui spațiu exclusiv. Este necesar înainte de activarea rezervărilor individuale.
+general.booking.spaceAxis	Folosește {{spacePlural}} în program
+general.booking.spaceAxisHint	Dezactivat — clientul rezervă o persoană, iar spațiul nu are coloană în jurnal. Activat — o clasă este legată de un spațiu.
+general.booking.spaceAxisDefaultOn	Implicit pentru industria ta: activat
+general.booking.spaceAxisDefaultOff	Implicit pentru industria ta: dezactivat
+general.booking.modes.event	Evenimente
+general.booking.modes.resource	Individual
+general.booking.modes.hybrid	Mixt
+general.booking.profiles.studio	Activități de grup și studiouri
+general.booking.profiles.sport	Sport și săli de fitness
+general.booking.profiles.beauty	Frumusețe și îngrijire
+general.booking.profiles.recovery	Corp și recuperare
+general.booking.profiles.relax	Spa și relaxare
+general.booking.profiles.other	Altele
+general.booking.preview.event	Eveniment
+general.booking.preview.resource	Individual
+general.booking.errors.AUDIT_BLOCKED	Programul conține rezervări incompatibile cu un program strict.
+general.booking.errors.STRICT_SCHEDULE_REQUIRED	Activează mai întâi programul strict.
+general.booking.errors.RESOURCE_HISTORY_EXISTS	Programul strict nu poate fi dezactivat: studioul are rezervări individuale.
+general.booking.findings.overlap	Rezervări suprapuse
+general.booking.findings.unknown_timezone	Fus orar necunoscut
+general.booking.findings.undefined_branch	Sucursala nu este setată
+general.booking.findings.invalid_duration	Durată nevalidă
+general.booking.findings.invalid_resource_row	Rezervare individuală incompletă
+general.booking.findings.missing_branch_assignment	Specialistul nu este alocat sucursalei
+general.booking.findings.missing_working_hours	Specialistul nu are program de lucru
+general.booking.findings.inactive_specialist	Specialistul este inactiv
+general.booking.findings.other	Necesită verificare
+appearance.theme.title	Temă
+appearance.theme.subtitle	Alege stilul vizual al interfeței
+appearance.theme.light	Deschisă
+appearance.theme.dark	Închisă
+appearance.theme.auto	Sistem
+appearance.accent.title	Culoare de accent
+appearance.accent.subtitle	Personalizează culoarea principală a interfeței
+appearance.accent.note	Alegerea ta este salvată, dar încă nu se aplică în interfață — va fi disponibilă într-o actualizare viitoare.
+appearance.accent.noteTitle	În curând
+appearance.accent.colors.peach	Piersică
+appearance.accent.colors.pistachio	Fistic
+appearance.accent.colors.lavender	Lavandă
+appearance.accent.colors.pink	Roz
+appearance.accent.colors.gold	Auriu
+appearance.accent.colors.mint	Mentă
+appearance.language.title	Limba interfeței
+appearance.language.subtitle	Limba ta personală — nu afectează setările studioului
+appearance.language.search	Caută limbă
+appearance.language.empty	Nu a fost găsită nicio limbă
+notifications.myPrefs.title	Notificările mele
+notifications.myPrefs.subtitle	Preferințe personale — nu afectează restul studioului
+notifications.myPrefs.hint	Notificările obligatorii nu pot fi oprite — astfel nu vei pierde niciodată modificări ale programului și plăți.
+notifications.myPrefs.empty	Nu există notificări opționale pentru rolul tău
+notifications.myPrefs.channels.email	E-mail
+notifications.myPrefs.channels.telegram	Telegram
+notifications.myPrefs.channels.whatsapp	WhatsApp
+notifications.telegram.title	Telegram pentru notificări
+notifications.telegram.subtitle	Unde să primești personal evenimente — rezervări, salarizare, rapoarte
+notifications.telegram.chatId	Chat_id-ul tău Telegram
+notifications.telegram.chatIdPh	ex. 123456789
+notifications.telegram.hintBefore	Îți poți găsi chat_id-ul la botul 
+notifications.telegram.hintAfter	 pe Telegram — începe o conversație cu el și îți va trimite ID-ul.
+notifications.telegram.invalidChatId	Chat_id-ul Telegram trebuie să fie un număr, fără simboluri
+notifications.telegram.saved	Telegram este conectat pentru notificări
+notifications.telegram.saveFailed	Nu s-a putut salva Telegram
+notifications.email.title	E-mail pentru notificări
+notifications.email.subtitle	Unde se trimit e-mailurile de sistem
+notifications.email.primary	E-mail principal
+notifications.email.backup	E-mail de rezervă
+notifications.email.backupPh	backup@studio.com
+notifications.email.saved	Setările de notificări au fost salvate
+billing.plans.start	Start
+billing.plans.pro	Pro
+billing.plans.business	Business
+billing.plans.free_trial	Perioadă de probă gratuită
+billing.status.active	Activ
+billing.status.trial	Perioadă de probă
+billing.status.expired	Expirat
+billing.plan.title	Plan curent
+billing.plan.expiresAt	Activ până la {{date}}
+billing.plan.maxStaff	Până la {{count}} angajați
+billing.plan.staffUnlimited	Angajați nelimitați
+billing.plan.noSubscription	Nu există abonament activ
+billing.plan.noSubscriptionCta	Alege un plan
+billing.plan.trialCta	Alege un plan
+billing.upgrade	Treci la {{plan}}
+billing.renew	Reînnoiește
+billing.autopay.title	Reînnoire automată
+billing.autopay.subtitle	Se taxează de pe cardul salvat
+billing.autopay.autoRenew	Reînnoire automată
+billing.autopay.notifyBefore	Îți vom aminti cu {{count}} zile înainte de taxare
+billing.payment.title	Metodă de plată
+billing.payment.cardSummary	Card •••• {{last4}}
+billing.payment.notLinked	Nu este conectat niciun card
+billing.payment.change	Schimbă
+billing.history.title	Istoric plăți
+billing.history.subtitle	Ultimele 12 plăți
+billing.history.exportCsv	Exportă CSV
+billing.history.empty	Nu există încă plăți
+billing.history.showAll	Arată tot
+billing.history.period	{{count}} luni
+billing.history.noDate	—
+billing.history.status.paid	Plătit
+billing.history.status.pending	În așteptare
+billing.history.status.failed	Neplătit
+billing.history.status.refunded	Rambursat
+billing.toast.autopaySaved	Setările de reînnoire automată au fost salvate
+billing.toast.renewed	Reînnoirea a început
+billing.toast.csvExportError	Nu s-a putut exporta CSV-ul
+security.account.title	Securitatea contului
+security.account.subtitle	Protejează accesul la spațiul tău de lucru
+security.twoFa.title	Autentificare cu doi factori
+security.twoFa.sub	Cod e-mail la fiecare autentificare
+security.twoFa.active	Activă
+security.twoFa.disabled	Dezactivată
+security.twoFa.enableTitle	Activează 2FA
+security.twoFa.disableTitle	Dezactivează 2FA
+security.twoFa.enableWarning	După activare, fiecare autentificare va necesita un cod trimis la {{email}}. Asigură-te că ai acces la adresa respectivă — altfel riști să pierzi accesul la cont.
+security.twoFa.disableWarning	După dezactivare, doar parola va fi suficientă pentru autentificare, fără cod e-mail.
+security.twoFa.enabledToast	Autentificarea cu doi factori este activă
+security.twoFa.disabledToast	Autentificarea cu doi factori este dezactivată
+security.password.title	Parola contului
+security.password.sub	Schimbarea se confirmă cu un cod e-mail
+security.password.change	Schimbă parola
+security.password.changed	Parola a fost schimbată cu succes
+security.password.current	Parola curentă
+security.password.currentPh	Introdu parola curentă
+security.password.new	Parolă nouă
+security.password.newPh	Cel puțin 8 caractere
+security.password.repeat	Repetă parola
+security.password.repeatPh	Introdu din nou parola nouă
+security.password.mismatch	Parolele nu coincid
+security.password.forgot	Ai uitat parola?
+security.password.resetTitle	Recuperare parolă
+security.password.step1Sub	Să confirmăm că ești tu
+security.password.step2Sub	Cod trimis la {{email}}
+security.password.step3Sub	Alege o parolă nouă
+security.password.resetIntro	Vom trimite un cod de 6 cifre la adresa de e-mail a contului tău. Nu trebuie să știi parola curentă — codul dovedește că inboxul îți aparține.
+security.password.sendCode	Trimite codul
+security.password.back	Înapoi
+security.password.save	Salvează parola
+security.password.resetDone	Parola a fost actualizată
+security.password.resetLogoutHint	Celelalte dispozitive vor fi deconectate — pe acesta vei rămâne conectat.
+security.password.rules.len	8+ caractere
+security.password.rules.letter	Are o literă
+security.password.rules.digit	Are o cifră
+security.password.rules.simple	Fără 111 sau qwerty
+security.sessions.title	Sesiuni active
+security.sessions.sub	Unde contul tău este conectat în prezent
+security.sessions.count	{{count}} dispozitive
+security.sessions.manage	Gestionează
+security.sessions.hide	Ascunde
+security.sessions.current	Curentă
+security.sessions.terminate	Încheie
+security.sessions.terminateAll	Încheie toate celelalte sesiuni
+security.sessions.terminatedToast	Sesiunea a fost încheiată cu succes
+security.sessions.terminatedAllToast	Celelalte sesiuni au fost încheiate
+security.sessions.justNow	Activă acum
+security.sessions.minutesAgo	acum {{count}} min.
+security.sessions.hoursAgo	acum {{count}} h
+security.sessions.daysAgo	acum {{count}} zile
+security.sessions.unknownLocation	Necunoscut
+security.otp.sentHint	Am trimis un cod de 6 cifre la e-mailul tău. Introdu-l mai jos.
+security.otp.resend	Retrimite codul
+security.otp.resendIn	Retrimite peste {{count}} s
+security.otp.confirm	Confirmă
+security.otp.cancel	Anulează
+security.otp.sendCode	Trimite codul
+security.otp.continue	Continuă
+security.danger.title	Gestionarea datelor (zonă periculoasă)
+security.danger.export.title	Exportă toate datele
+security.danger.export.sub	Descarcă o arhivă a bazei de clienți și a istoricului
+security.danger.export.prepare	Pregătește arhiva
+security.danger.export.hide	Ascunde
+security.danger.export.clients	Bază de clienți (CSV)
+security.danger.export.finances	Tranzacții financiare
+security.danger.export.schedule	Lecții și program
+security.danger.export.start	Începe exportul
+security.danger.export.started	Arhiva este în pregătire, un link va fi trimis la e-mailul tău
+security.danger.export.emptySelection	Alege cel puțin o secțiune de exportat
+security.danger.wipe.title	Golește baza de date
+security.danger.wipe.sub	Șterge toți clienții și rezervările. Setările vor fi păstrate.
+security.danger.wipe.action	Golește datele
+security.danger.wipe.toast	Baza de date a fost golită cu succes
+security.danger.wipe.consequence1	Șterse definitiv: clienți, lecții, rezervări, operațiuni, documente, abonamente clienți, istoric de loialitate
+security.danger.wipe.consequence2	Neschimbate: studio, sucursale, {{spacePlural}}, servicii, personal, abonament și setări
+security.danger.wipe.consequence3	Această acțiune este ireversibilă — nu poate fi anulată după confirmare
+security.danger.deleteAccount.title	Șterge contul companiei
+security.danger.deleteAccount.sub	Distrugerea completă și ireversibilă a afacerii în sistem
+security.danger.deleteAccount.action	Șterge definitiv
+security.danger.deleteAccount.consequence1	Studioul și toate datele sale vor fi șterse definitiv, inclusiv clienții, lecțiile, finanțele și setările
+security.danger.deleteAccount.consequence2	Contul tău personal rămâne — se șterge doar acest studio
+security.danger.deleteAccount.consequence3	Ștergerea nu este disponibilă cu un abonament activ sau dacă studioul are alți proprietari
+integrations.title	Integrări
+integrations.subtitle	Conectează canale și ecosisteme externe cu un singur clic
+integrations.loadError	Nu s-a putut încărca starea integrărilor
+integrations.items.telegram.name	Bot Telegram
+integrations.items.telegram.sub	Notificări clienți și rezervări prin bot
+integrations.items.whatsapp.name	WhatsApp Business
+integrations.items.whatsapp.sub	Mesaje în masă și notificări automate pentru clienți
+integrations.items.instagram.name	Instagram Direct
+integrations.items.instagram.sub	Agent AI pentru răspunsuri automate și rezervări online
+integrations.items.google_calendar.name	Google Calendar
+integrations.items.google_calendar.sub	Sincronizarea programului studioului
+integrations.status.connected	Conectat
+integrations.status.notActive	Neconectat
+integrations.actions.configure	Configurează
+integrations.actions.connect	Conectează
+integrations.actions.disconnect	Deconectează
+integrations.fields.keyLabel	Cheie
+integrations.fields.connectedAtLabel	Conectat
+integrations.fields.telegramToken	Token API bot (de la @BotFather)
+integrations.fields.telegramTokenPh	123456789:ABCDefGhIJKlmNoPQRsTUVwxyZ
+integrations.fields.whatsappToken	Token de acces
+integrations.fields.whatsappTokenPh	EAAxxxxxxxxxxxxx
+integrations.fields.whatsappPhoneId	ID număr de telefon
+integrations.fields.whatsappPhoneIdPh	1029384756
+integrations.fields.whatsappWabaId	ID WABA (opțional)
+integrations.fields.whatsappWabaIdPh	1029384756
+integrations.fields.instagramToken	Token de acces
+integrations.fields.instagramTokenPh	IGQWR...
+integrations.fields.instagramUserId	ID cont business Instagram
+integrations.fields.instagramUserIdPh	17841400000000000
+integrations.guide.howToTitle	Cum conectezi
+integrations.guide.telegram.steps.0	Deschide @BotFather în Telegram și trimite /newbot
+integrations.guide.telegram.steps.1	Alege un nume și un nume de utilizator pentru bot — BotFather îți va trimite un token API
+integrations.guide.telegram.steps.2	Lipește tokenul mai jos și apasă Conectează
+integrations.guide.whatsapp.steps.0	Creează o aplicație în Meta for Developers și adaugă produsul WhatsApp
+integrations.guide.whatsapp.steps.1	În API Setup, copiază tokenul de acces temporar sau permanent
+integrations.guide.whatsapp.steps.2	Copiază și ID-ul numărului de telefon al numărului de test sau verificat
+integrations.guide.whatsapp.steps.3	Lipește ambele valori mai jos și apasă Conectează
+integrations.guide.instagram.steps.0	Conectează contul Instagram al studioului la o Pagină Facebook — necesar pentru Direct API
+integrations.guide.instagram.steps.1	Creează o aplicație în Meta for Developers cu produsul Instagram Graph API
+integrations.guide.instagram.steps.2	Generează un token de acces cu permisiunile instagram_basic și instagram_manage_messages
+integrations.guide.instagram.steps.3	Copiază ID-ul contului business Instagram și tokenul, apoi lipește-le mai jos
+integrations.guide.instagram.steps.4	Fără aprobarea Meta, conexiunea funcționează doar pentru conturile de test ale aplicației
+integrations.guide.google_calendar.steps.0	Apasă Conectează — se va deschide o fereastră de autentificare Google
+integrations.guide.google_calendar.steps.1	Alege contul la care este conectat calendarul studioului
+integrations.guide.google_calendar.steps.2	Acordă acces la calendar — lecțiile vor începe să apară automat în el
+integrations.capabilities.notify	notificări clienți pe acest canal
+integrations.capabilities.booking	rezervări online prin acest canal
+integrations.capabilities.dm_agent	agent AI pentru răspunsuri automate în Direct
+integrations.capabilities.schedule_sync	sincronizarea programului cu Google Calendar
+integrations.disconnect.title	Deconectezi {{name}}?
+integrations.disconnect.willStop	Acest lucru nu va mai funcționa:
+integrations.disconnect.checkbox	Înțeleg consecințele
+integrations.disconnect.cancel	Anulează
+integrations.disconnect.confirm	Deconectează
+integrations.google.connected	Google Calendar este conectat
+integrations.google.denied	Accesul la Google Calendar nu a fost acordat
+integrations.google.error	Nu s-a putut conecta Google Calendar
+integrations.google.primary	principal
+integrations.google.calendar	Calendar
+integrations.google.selectCalendar	Selectează un calendar
+integrations.google.loadingCalendars	Se încarcă calendarele…
+integrations.google.syncMode	Mod de sincronizare
+integrations.google.syncModeOptions.push	Doar din CRM în Google
+integrations.google.syncModeOptions.two_way	Bidirecțional
+integrations.google.syncNow	Sincronizează acum
+integrations.google.lastSync	Ultima sincronizare: {{date}}
+integrations.google.neverSynced	Nu a fost sincronizat încă
+integrations.google.timezoneWarning	Fusul orar al studioului nu este setat — evenimentele sunt trimise în UTC și pot diferi de orele reale ale claselor. Setează fusul orar la General.
+integrations.google.syncResult	Sincronizat: {{pushed}} trimise, {{pulled}} primite
+integrations.google.settingsSaved	Setările Google Calendar au fost salvate
+integrations.toast.connected	Integrarea este conectată
+integrations.toast.disconnected	Integrarea este deconectată
+data.export.title	Exportă rapoarte și liste
+data.export.subtitle	Descarcă fișiere în formate tabelare pentru contabilitate și analiză
+data.export.clearFilter	Șterge perioada
+data.export.items.clients.name	Listă de clienți
+data.export.items.schedule.name	Istoric jurnal și rezervări
+data.export.items.finances.name	Raport financiar
+data.export.items.subscriptions.name	Abonamente clienți
+data.export.rows_one	{{count}} înregistrare
+data.export.rows_few	{{count}} înregistrări
+data.export.rows_other	{{count}} de înregistrări
+data.export.loading	Se încarcă...
+data.export.empty	nu există date pentru această perioadă

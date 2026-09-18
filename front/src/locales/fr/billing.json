@@ -1,0 +1,393 @@
+{
+  "legal": {
+    "terms": "Conditions d’utilisation",
+    "privacy": "Politique de confidentialité"
+  },
+  "tabs": {
+    "plans": "Offres et tarifs",
+    "invoices": "Historique des paiements",
+    "method": "Mode de paiement"
+  },
+  "tabsShort": {
+    "plans": "Offres",
+    "invoices": "Historique",
+    "method": "Paiement"
+  },
+  "paymentsHistory": {
+    "title": "Historique complet des paiements",
+    "subtitle": "Toutes les factures de ce studio",
+    "clearFilter": "Effacer",
+    "loadMore": "Charger plus"
+  },
+  "planNames": {
+    "start": "Start",
+    "pro": "Pro",
+    "business": "Business"
+  },
+  "seats": {
+    "title": "Combien de collaborateurs dans le studio",
+    "hint": "à partir de {{amount}} par mois",
+    "stepNote": "Chaque place supplémentaire ajoute {{amount}} par mois",
+    "unlimitedNote": "Nombre de collaborateurs illimité",
+    "perSeat": "Par collaborateur"
+  },
+  "limits": {
+    "staff": "Collaborateurs",
+    "ai": "Requêtes Velora AI",
+    "unlimited": "Illimité"
+  },
+  "banner": {
+    "trialEnds": "Votre essai se termine le {{date}} — choisissez une offre",
+    "renews": "Votre abonnement {{plan}} est renouvelé le {{date}}",
+    "expires": "Votre abonnement {{plan}} se termine le {{date}}",
+    "choosePlan": "Choisir une offre",
+    "dismiss": "Fermer",
+    "unpaid": "Votre offre n’a pas été payée. Pour continuer, payez dans Offres et facturation.",
+    "suspended": "L’accès est suspendu car une facture de l’offre est en retard. Payez-la dans Offres et facturation."
+  },
+  "paymentReturn": {
+    "done": "Paiement effectué — l’offre {{plan}} est active.",
+    "processing": "Paiement en cours de traitement — votre abonnement sera activé dans quelques minutes."
+  },
+  "header": {
+    "eyebrow": "Velora · Facturation",
+    "title": "Offres et facturation",
+    "subtitle": "Gérez votre abonnement, vos modes de paiement et votre historique des paiements",
+    "totalSpent": "Total dépensé",
+    "monthsWithUs": "Mois avec nous",
+    "saved": "Économisé",
+    "nextCharge": "Prochain prélèvement",
+    "currentPlan": "OFFRE ACTUELLE",
+    "noPlanName": "Aucune offre",
+    "noPlan": "Aucun abonnement actif",
+    "active": "Active",
+    "activeUntil": "Active · jusqu’au {{date}}",
+    "trialPlanName": "Offre d’essai",
+    "trial": "Période d’essai",
+    "trialUntil": "Période d’essai · jusqu’au {{date}}",
+    "expired": "Expirée",
+    "percentRate": "{{rate}}% des ventes",
+    "modePercent": "Offre à pourcentage",
+    "modeFixed": "Fixe",
+    "modeCombo": "Combinée",
+    "unpaid": "Offre non payée",
+    "awaitingPayment": "En attente de paiement"
+  },
+  "mode": {
+    "title": "Modèle de paiement",
+    "subscription": "Abonnement fixe",
+    "percent": "% des ventes",
+    "combo": "Combinaison fixe + %",
+    "short": {
+      "subscription": "Fixe",
+      "percent": "Pourcentage",
+      "combo": "Combinée"
+    },
+    "descriptions": {
+      "subscription": "Payez un montant chaque mois. Prévisible et rentable.",
+      "percent": "Aucun frais fixe : {{rate}}% de chaque vente, espèces comprises.",
+      "combo": "La moitié de l’abonnement + {{rate}}% de chaque vente, espèces comprises."
+    },
+    "badges": {
+      "popular": "Populaire",
+      "flexible": "Flexible"
+    },
+    "percentCard": {
+      "title": "Le modèle « 3% des ventes »",
+      "description": "Payez uniquement lorsque vous gagnez : 3% de chaque vente, sans frais fixes d’abonnement. Les paiements en ligne sont répartis instantanément ; les espèces et acomptes s’accumulent et arrivent sur une seule facture mensuelle.",
+      "noFixed": "Aucun frais fixe",
+      "payForResult": "Payez pour les résultats",
+      "oneClick": "Activation en un clic",
+      "cta": "Activer le modèle à 3%",
+      "ctaShort": "Activer 3%"
+    },
+    "activateSuccess": "Modèle de paiement mis à jour",
+    "activateError": "Impossible de mettre à jour le modèle de paiement",
+    "alreadyActive": "Ce modèle de paiement est déjà actif — vous pouvez renouveler ou modifier l’offre ci-dessous",
+    "confirmSwitchTitle": "Changer de modèle de paiement ?",
+    "confirmSwitchMessage": "Votre abonnement est actif. Le changement prend effet immédiatement et le reste de la période payée EST ENTIÈREMENT PERDU : les jours inutilisés ne sont ni remboursés ni reportés.",
+    "termsTitle": "Confirmer les conditions de l’offre",
+    "termsMessage": "Avec cette offre, la plateforme retient {{rate}}% de chaque vente.\n\nPour les paiements en ligne, les frais sont retenus automatiquement au moment du paiement. Pour les espèces, terminaux et recharges d’acomptes, ils ne sont PAS retenus immédiatement — ils s’accumulent et vous recevez une facture séparée une fois par mois.\n\nVous disposez de {{days}} jours pour payer cette facture. Si elle n’est pas réglée à temps, l’accès au CRM et à la mini-application client est suspendu jusqu’au règlement.\n\nLe montant actuel dû est affiché dans Facturation ; vous pouvez payer à tout moment, y compris à l’avance.",
+    "termsConfirm": "J’accepte les conditions",
+    "termsMinimum": "La facturation mensuelle minimale est de {{amount}} {{currency}}. Si, sur un mois civil, la plateforme a gagné moins que cela avec votre studio (par exemple, aucune vente via le CRM), la différence vous est facturée. Au-delà du minimum, aucune facture n’est émise. Des frais minimum impayés suspendent l’accès comme une facture de commission impayée.",
+    "termsBurn": "ATTENTION : il vous reste une période payée. Le changement de modèle de facturation LA FAIT ENTIÈREMENT PERDRE — les jours inutilisés ne sont ni remboursés ni reportés.",
+    "termsCombo": "Le changement est un ACHAT : juste après confirmation, vous verrez le montant dû. Le reste de votre période payée actuelle est perdu — il n’est ni remboursé ni reporté. Le modèle fixe + % s’active UNIQUEMENT après paiement ; jusque-là votre offre reste inchangée et rien n’est prélevé."
+  },
+  "combo": {
+    "rateBadge": "{{rate}}%",
+    "summary": "Fixe {{fixed}}/mois + {{rate}}% des ventes (espèces facturées mensuellement)",
+    "cta": "Activer l’offre combinée",
+    "ctaShort": "Activer le combiné"
+  },
+  "period": {
+    "1": "1 mois",
+    "3": "3 mois",
+    "6": "6 mois",
+    "12": "1 an",
+    "24": "2 ans",
+    "title": "Période de paiement",
+    "discountActive": "Remise de {{percent}}% active",
+    "noDiscount": "Aucune remise",
+    "discountLabel": "−{{percent}}% de remise"
+  },
+  "calculator": {
+    "title": "Paramètres de calcul",
+    "monthlyTurnover": "Votre chiffre d’affaires mensuel en ligne",
+    "turnoverRangeMin": "50 k",
+    "turnoverRangeMax": "3 M+",
+    "chooseFeeLabel": "Choisissez un taux de commission (il influe sur les fonctionnalités)",
+    "feeOptions": {
+      "basic": "Essentiel",
+      "standard": "Standard",
+      "pro": "Pro",
+      "max": "Max"
+    },
+    "chooseFixedLabel": "Choisissez la part fixe de base (l’acquisition est toujours à 3%)",
+    "fixedOptions": {
+      "start": "Start",
+      "optima": "Optima",
+      "business": "Business"
+    },
+    "economyPercentTitle": "ÉCONOMIE DE L’OFFRE",
+    "economyComboTitle": "ÉCONOMIE DE L’OFFRE COMBINÉE",
+    "turnover": "Chiffre d’affaires du studio",
+    "systemFee": "Frais de plateforme",
+    "totalMonthlyPayment": "PAIEMENT MENSUEL TOTAL",
+    "onlyPayForResult": "Vous ne payez pas de frais fixe, seulement les résultats",
+    "activatePercent": "Activer le modèle à {{percent}}%",
+    "baseSubscription": "Abonnement de base (fixe)",
+    "acquiringFee": "Acquisition / frais",
+    "activateCombo": "Activer l’offre combinée"
+  },
+  "planCards": {
+    "bestChoice": "Meilleur choix",
+    "current": "Actuelle",
+    "perMonth": "/ mois",
+    "currentPlan": "Offre actuelle",
+    "yourPrice": "Votre prix",
+    "staffLimit": "Jusqu’à {{count}} collaborateurs",
+    "staffUnlimited": "Collaborateurs illimités"
+  },
+  "paymentSchedule": {
+    "title": "Échéancier de paiement",
+    "total": "Total dû",
+    "morePayments": "+ {{count}} paiements supplémentaires de {{amount}}",
+    "processing": "Redirection vers le paiement…",
+    "payFor": "Payer {{count}} mois",
+    "vatNote": "Hors TVA — la taxe est ajoutée au paiement selon votre pays"
+  },
+  "trust": {
+    "title": "Pourquoi plus de 2 400 entreprises nous font confiance",
+    "reviews": [
+      {
+        "text": "Nous avons quitté Altegio. La différence, c’est comme entre un taxi et un jet privé.",
+        "author": "Maria K., FORM Pilates"
+      },
+      {
+        "text": "Le mieux, c’est de savoir exactement ce que je paie chaque mois. Aucune surprise.",
+        "author": "Artem N., Barbershop Bros"
+      },
+      {
+        "text": "Le support a répondu en 4 minutes. Je n’ai jamais vu cela ailleurs.",
+        "author": "Elena D., SPA LUNA"
+      }
+    ]
+  },
+  "upgrade": {
+    "priceLine": "Prix {{price}}/mois",
+    "discountNote": " {{percent}}% de réduction pour {{period}} mois",
+    "planLabel": "Offre",
+    "periodLabel": "Période",
+    "periodValue_one": "{{count}} mois",
+    "periodValue_other": "{{count}} mois",
+    "discountLabel": "Réduction",
+    "scheduledBadge": "À partir du {{date}} — offre « {{plan}} »",
+    "vatNote": "Hors TVA — la taxe est ajoutée au paiement selon les données de votre entreprise ; les entreprises UE avec un numéro de TVA bénéficient de l’autoliquidation."
+  },
+  "method": {
+    "notLinked": "Non associé",
+    "badgeTitle": "Mode de paiement sécurisé",
+    "tokenSub": "Jeton du prestataire · expire {{expiry}}",
+    "tokenNote": "Vos véritables données de carte sont conservées par le prestataire de paiement (PCI DSS L1). Nous ne gardons qu’un jeton à usage unique pour les renouvellements.",
+    "securityTitle": "Normes de protection des données",
+    "security": {
+      "pciDss": "Chiffrement PCI DSS niveau 1",
+      "secure3d": "Protection des transactions 3D Secure",
+      "noStorage": "Les données de carte ne passent jamais par nos serveurs",
+      "autoLink": "La carte est associée au premier paiement"
+    },
+    "noCardDetail": "Inutile de saisir vos données séparément — le paiement se fait sur la page sécurisée de Stripe.",
+    "renewDone": "Facture créée — traitement du paiement",
+    "renewBusy": "Création de la facture…",
+    "renewSuccess": "Facture de renouvellement créée",
+    "renewError": "Impossible de créer la facture. Veuillez réessayer.",
+    "renewNow": "Renouveler maintenant avec la carte •••• {{last4}}",
+    "autopayTitle": "Paramètres de paiement automatique",
+    "autopaySuccess": "Paramètre enregistré",
+    "autopayError": "Impossible d’enregistrer le paramètre. Veuillez réessayer.",
+    "autopay": {
+      "cardOnly": "Disponible lors du paiement par carte",
+      "autoRenew": {
+        "label": "Renouvellement automatique",
+        "desc": "Désactivez pour annuler à la fin de la période payée",
+        "until": "L’abonnement ne sera pas renouvelé — accès jusqu’au {{date}}"
+      },
+      "emailNotify": {
+        "label": "Notifications par e-mail",
+        "desc": "Un reçu est envoyé par e-mail après chaque paiement"
+      },
+      "remind3d": {
+        "label": "Rappeler 3 jours avant",
+        "desc": "Nous vous rappellerons avant le prélèvement automatique"
+      },
+      "sms": {
+        "label": "Alerte SMS",
+        "desc": "Un message est envoyé lors du prélèvement"
+      }
+    },
+    "portal": {
+      "title": "Informations de facturation et TVA",
+      "subtitle": "Les factures, la carte associée et l’historique des prélèvements se trouvent dans le portail client Stripe.",
+      "cta": "Ouvrir dans Stripe"
+    },
+    "ibanBadgeLabel": "Virement bancaire (SEPA)",
+    "ibanBadgeNote": "Les factures arrivent par e-mail avec un lien de paiement — rien n’est prélevé automatiquement sur une carte. Vous pouvez aussi payer à l’avance depuis la page de facture."
+  },
+  "invoices": {
+    "title": "Historique des paiements",
+    "totalPaid": "total payé {{amount}}",
+    "exportCsv": "Exporter en CSV",
+    "exportError": "Impossible d’exporter le CSV. Veuillez réessayer.",
+    "receiptError": "Impossible d’ouvrir le reçu. Veuillez réessayer.",
+    "invoiceNo": "Facture n°{{id}}",
+    "methodCard": "Payée par carte",
+    "methodIban": "Payée par virement bancaire (IBAN)",
+    "syncHint": "Vérifiez le statut auprès du service de paiement",
+    "syncChanged": "Statut mis à jour : {{status}}",
+    "syncUnchanged": "Le service de paiement a confirmé le même statut",
+    "syncError": "Impossible de vérifier le statut. Veuillez réessayer.",
+    "kindOfflineFee": "Commission sur ventes hors ligne",
+    "kindMinFee": "Frais mensuels minimum",
+    "kindOnlineFee": "Commission sur paiements en ligne",
+    "methodWithheld": "Prélevé par Stripe lors du paiement"
+  },
+  "table": {
+    "date": "Date",
+    "description": "Description",
+    "amount": "Montant",
+    "status": "Statut",
+    "receipt": "Reçu"
+  },
+  "status": {
+    "paid": "Payée",
+    "pending": "En attente",
+    "failed": "Non payée",
+    "refunded": "Remboursée"
+  },
+  "empty": {
+    "noInvoices": "Aucune facture pour le moment — elles apparaîtront après votre premier paiement.",
+    "noCard": "Votre carte apparaîtra automatiquement après le premier paiement.",
+    "monthsWithUs": "Vous n’avez pas encore acheté d’abonnement",
+    "noData": "Aucune donnée"
+  },
+  "savings": {
+    "title": "Vos économies",
+    "prepayTitle": "Vos économies en payant à l’avance",
+    "emptyState": "Choisissez une période plus longue et commencez à économiser",
+    "youSave": "Vous économisez {{amount}} sur {{months}} mois",
+    "freeMonths": "C’est comme {{count}} mois offerts",
+    "amountLabel": "{{amount}} d’économies",
+    "comparedToMonthly": "par rapport au paiement mensuel",
+    "forMonths_one": "Pour {{count}} mois",
+    "forMonths_other": "Pour {{count}} mois"
+  },
+  "pay": "Payer",
+  "continuePlan": "Continuer l’offre",
+  "payModal": {
+    "titleNew": "Démarrer l’offre {{plan}}",
+    "titleSwitch": "Passer à {{plan}}",
+    "titleRenew": "Renouveler {{plan}}",
+    "totalLabel": "Votre offre coûtera",
+    "burnWarning": "Le passage à une autre offre redémarre la période : le reste de votre offre {{plan}} EST PERDU — il n’est ni remboursé ni reporté. Le renouvellement de la même offre le conserve.",
+    "switched": "Offre modifiée : rien à payer — le changement est couvert par le reste de la période actuelle.",
+    "renewNote": "Cela renouvelle la même offre : les mois achetés s’ajoutent à votre période payée actuelle. Rien n’est perdu.",
+    "cardNote": "Paiement par carte sur la page sécurisée de Stripe · remboursement sous 7 jours",
+    "freeUntil": "Aucun prélèvement jusqu’au {{date}} : il vous reste {{count}} jour(s) de votre période déjà payée. La facturation commence à cette date.",
+    "taxLabel": "TVA",
+    "taxLine": "TVA {{rate}}%",
+    "reverseCharge": "Autoliquidation",
+    "totalWithTax": "Total TTC",
+    "taxServerNote": "La taxe est calculée à partir de vos informations de facturation. La facture affichera le même montant.",
+    "taxReview": "Nous n’avons pas pu déterminer la taxe pour vos informations de facturation ; le total est donc affiché sans elle et le paiement ne peut pas être finalisé. Vérifiez le pays et l’adresse du payeur ou contactez le support."
+  },
+  "offlineFee": {
+    "title": "Frais sur ventes hors ligne",
+    "accruing": "Cumulés sur les espèces et acomptes à {{rate}}%. Facturés mensuellement, vous avez {{days}} jours pour payer.",
+    "due": "Facture émise. Jours restants pour payer : {{days}}.",
+    "suspended": "Paiement en retard — l’accès au CRM et à la mini-application est suspendu.",
+    "pay": "Payer",
+    "suspendedMin": "Frais mensuels minimum en retard — l’accès au CRM et à la mini-application est suspendu.",
+    "alsoAccruing": "En plus, montant cumulé ce mois-ci : {{amount}} — il figurera sur la prochaine facture.",
+    "minimum": "Les frais mensuels minimum sont de {{amount}}. Si vous gagnez moins sur un mois, vous complétez la différence ; si vous gagnez plus, aucune facture n’est émise.",
+    "pendingBill": "Cumulés sous le modèle précédent, en attente de facture.",
+    "notBilledYet": "Aucune facture n’est encore émise : le montant cumulé est inférieur au montant minimal de facture ou est toujours en préparation. Rien n’est perdu — il figurera sur la prochaine facture."
+  },
+  "trial": {
+    "title": "Offre pour les nouveaux studios",
+    "subtitle": "Votre studio vient d’être créé",
+    "headline": "{{days}} jours gratuits",
+    "noCard": "Aucune carte requise — rien à payer maintenant",
+    "perks": {
+      "allModules": "Accès complet à chaque module : journal, clients, finances, notifications et Velora AI",
+      "noCommitment": "Sans engagement : si cela ne vous convient pas, ne renouvelez simplement pas",
+      "keepData": "Tout ce que vous configurez pendant l’essai vous appartient"
+    },
+    "activate": "Activer",
+    "decline": "Refuser",
+    "cardHint": "Vous n’avez pas encore activé la période gratuite de ce studio. Elle reste disponible jusqu’à l’achat d’une offre."
+  },
+  "profile": {
+    "title": "Informations de facturation",
+    "editTitle": "Modifier les informations de facturation",
+    "subtitle": "Votre adresse apparaît sur la facture et définit le taux de taxe. Elle est stockée sur votre compte — nous ne la redemanderons pas dans un autre studio.",
+    "subtitlePay": "Remplissez ceci une fois et le paiement passera directement la prochaine fois. Votre adresse apparaît sur la facture et définit le taux de taxe.",
+    "cardTitle": "Informations de facturation",
+    "cardSubtitle": "Stockées sur votre compte et utilisées dans tous vos studios. Voici comment elles apparaissent sur la facture.",
+    "cardEmpty": "Pas encore renseignées — nous les demanderons avant votre premier paiement. Vous pouvez les ajouter maintenant.",
+    "add": "Ajouter les informations de facturation",
+    "edit": "Modifier",
+    "save": "Enregistrer",
+    "saveAndPay": "Enregistrer et passer au paiement",
+    "cancel": "Annuler",
+    "saved": "Informations de facturation enregistrées",
+    "vatNone": "Non renseigné",
+    "fields": {
+      "country": "Pays ou région",
+      "countryPlaceholder": "Sélectionnez un pays",
+      "address": "Adresse",
+      "line1": "Ligne d’adresse 1",
+      "line1Placeholder": "Rue et numéro",
+      "line2": "Ligne d’adresse 2 — facultatif",
+      "line2Placeholder": "Appartement, bureau, numéro d’unité, etc.",
+      "postalCode": "Code postal",
+      "postalCodePlaceholder": "110 00",
+      "city": "Ville",
+      "cityPlaceholder": "Prague",
+      "vat": "Numéro de TVA — facultatif",
+      "vatPlaceholder": "{{prefix}}12345678",
+      "vatHint": "Réservé aux entreprises. Le numéro est vérifié dans le registre européen (VIES) lors de l’enregistrement — nous n’acceptons pas les numéros non vérifiés. Avec un numéro valide, une entreprise située dans un autre pays de l’UE est facturée hors taxe (autoliquidation). Les particuliers n’en ont pas — laissez le champ vide.",
+      "countrySearch": "Commencez à saisir un nom",
+      "countryNotFound": "Aucun pays trouvé",
+      "vatOutsideEu": "Nous ne demandons pas de numéro de TVA : hors UE, la taxe est déterminée par le pays du payeur, et non son numéro, donc cela ne change rien à la facture.",
+      "vatPending": "Votre numéro est enregistré, mais le registre européen était indisponible à ce moment-là ; il n’est donc pas encore confirmé et votre prochaine facture inclura la TVA complète. Inutile de le ressaisir : nous continuons de vérifier et, dès que le registre répond, la taxe cesse d’être facturée. Pour une facture déjà payée, le support remboursera la taxe."
+    },
+    "errors": {
+      "required": "Ce champ est obligatoire"
+    },
+    "preview": {
+      "invoice": "Facture",
+      "billTo": "Facturer à",
+      "note": "Voici comment vos informations apparaissent sur chaque facture. Vous pouvez les modifier à tout moment dans Offres et facturation → Mode de paiement."
+    }
+  }
+}

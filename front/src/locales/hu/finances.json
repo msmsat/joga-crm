@@ -1,0 +1,510 @@
+{
+  "tabs": {
+    "accounts": "Számlák",
+    "operations": "Műveletek",
+    "salaries": "Bérszámfejtés",
+    "counterparties": "Partnerek",
+    "documents": "Dokumentumok",
+    "onlinePayments": "Online fizetések",
+    "paymentMethods": "Fizetési módok",
+    "reports": "Jelentések",
+    "goals": "Célok"
+  },
+  "common": {
+    "save": "Mentés",
+    "cancel": "Mégse",
+    "create": "Létrehozás",
+    "edit": "Szerkesztés",
+    "delete": "Törlés",
+    "loading": "Betöltés…",
+    "all": "Összes",
+    "confirm": "Megerősítés",
+    "monthsShort": [
+      "Jan",
+      "Febr",
+      "Márc",
+      "Ápr",
+      "Máj",
+      "Jún",
+      "Júl",
+      "Aug",
+      "Szept",
+      "Okt",
+      "Nov",
+      "Dec"
+    ],
+    "weekdaysShort": [
+      "H",
+      "K",
+      "Sze",
+      "Cs",
+      "P",
+      "Szo",
+      "V"
+    ]
+  },
+  "info": {
+    "accounts": "A számlák a stúdió pénztárai, bankszámlái és online fizetési fogadása. Itt látja az egyes egyenlegeket és a teljes tőkét.",
+    "operations": "A műveletek a stúdió összes bevételét és kiadását jelentik. Egy művelet létrehozása azonnal módosítja a kapcsolt számla egyenlegét.",
+    "salaries": "A bérek a munkatárs díjazása (fix, óradíjas vagy százalékos) alapján számítódnak a kiválasztott időszakra.",
+    "counterparties": "A partnerek olyan szervezetek és magánszemélyek, akikkel a stúdió elszámol: beszállítók, bérbeadók, üzleti partnerek.",
+    "documents": "A dokumentumok a partnerekhez kapcsolódó szerződések, bizonylatok és számlák, vagy belső dokumentumok.",
+    "onlinePayments": "Online fizetések — csatlakoztassa a Stripe-ot kártyás fizetésekhez. A fiók a stúdiójához jön létre, így a pénz közvetlenül Önhöz érkezik, nem a Velorán keresztül.",
+    "paymentMethods": "A fizetési módok megmutatják, hogyan fizetnek az ügyfelek a stúdióban, és az egyes módok statisztikáit.",
+    "reports": "A jelentések a bevételek, kiadások és nyereség trendjeit mutatják a kiválasztott időszakban.",
+    "goals": "A pénzügyi célok a stúdió megtakarítási terve automatikus vagy manuális haladáskövetéssel."
+  },
+  "accounts": {
+    "loading": "Számlák betöltése…",
+    "totalCapital": "Stúdió teljes tőkéje",
+    "donutTotal": "{{symbol}} összesen",
+    "todayChange": "ma",
+    "system": "RENDSZER",
+    "today": "ma",
+    "editTitle": "Számla szerkesztése",
+    "namePlaceholder": "Név",
+    "balancePlaceholder": "Egyenleg, {{symbol}}",
+    "types": {
+      "cash": "Készpénz",
+      "bank": "Kártya",
+      "online": "Online"
+    },
+    "typesShort": {
+      "cash": "Készpénz",
+      "bank": "Kártya",
+      "online": "Online"
+    },
+    "history": "Előzmények",
+    "historyTitle": "Előzmények: {{name}}",
+    "income30d": "Bevétel (30 n.)",
+    "expense30d": "Kiadás (30 n.)",
+    "samplePayment": "Szolgáltatási díj",
+    "sampleTime": "Ma, 14:32",
+    "openAllOperations": "Összes művelet megnyitása",
+    "newSavingsTitle": "Új megtakarítási számla",
+    "createSavings": "Megtakarítási számla létrehozása",
+    "deleteConfirmTitle": "Törli ezt a számlát?",
+    "deleteConfirmText": "Minden rajta lévő összeg kikerül az általános statisztikából. Ez a művelet nem vonható vissza.",
+    "toasts": {
+      "loadFailed": "A számlák betöltése sikertelen",
+      "deleted": "Számla törölve",
+      "deleteFailed": "A számla törlése sikertelen",
+      "saved": "Beállítások mentve",
+      "saveFailed": "A számla mentése sikertelen",
+      "created": "Megtakarítási számla létrehozva",
+      "createFailed": "A számla létrehozása sikertelen"
+    }
+  },
+  "operations": {
+    "income": "Bevétel",
+    "expense": "Kiadás",
+    "balance": "Egyenleg",
+    "searchPlaceholder": "Keresés cím és kategória szerint…",
+    "close": "Bezárás",
+    "operation": "Művelet",
+    "export": "Exportálás",
+    "newOperationTitle": "Új művelet",
+    "titleLabel": "Cím",
+    "titlePlaceholder": "Például előfizetési díj",
+    "amountLabel": "Összeg, {{symbol}}",
+    "dateLabel": "Dátum",
+    "categoryLabel": "Kategória",
+    "categoryPlaceholder": "Kategória",
+    "accountLabel": "Számla",
+    "noAccount": "Nincs számla",
+    "methodLabel": "Fizetési mód",
+    "noMethod": "Nincs megadva",
+    "counterpartyLabel": "Partner",
+    "noCounterparty": "Nincs partner",
+    "newCounterparty": "+ Új partner",
+    "clientLabel": "Ügyfél",
+    "clientHint": "A hűségpontok és a szint az ügyfélhez kerülnek jóváírásra",
+    "clientSearchPlaceholder": "Kezdjen el nevet írni…",
+    "noClient": "Nincs ügyfél",
+    "editTitle": "Művelet szerkesztése",
+    "saving": "Mentés…",
+    "loading": "Műveletek betöltése…",
+    "emptyTitle": "Nem található művelet",
+    "emptyBody": "Módosítsa a szűrőket vagy hozzon létre egy első műveletet",
+    "pending": "Függőben",
+    "detailAccount": "Fogadó számla",
+    "detailCategory": "Kategória",
+    "detailMethod": "Fizetési mód",
+    "detailCounterparty": "Partner",
+    "receipt": "Bizonylat",
+    "loadMore": "További betöltése ({{count}})",
+    "toasts": {
+      "loadFailed": "A műveletek betöltése sikertelen",
+      "loadMoreFailed": "További műveletek betöltése sikertelen",
+      "deleted": "Művelet törölve",
+      "deleteFailed": "A művelet törlése sikertelen",
+      "enterAmount": "Adjon meg egy összeget",
+      "created": "Művelet létrehozva",
+      "createFailed": "A művelet létrehozása sikertelen",
+      "updated": "Művelet frissítve",
+      "updateFailed": "A művelet mentése sikertelen",
+      "exportFailed": "A műveletek exportálása sikertelen",
+      "receiptDownloaded": "Bizonylat letöltve"
+    },
+    "categoryPresets": {
+      "in": [
+        {
+          "value": "Előfizetések",
+          "label": "Előfizetések"
+        },
+        {
+          "value": "Szolgáltatások",
+          "label": "Szolgáltatások"
+        },
+        {
+          "value": "Ajándékutalványok",
+          "label": "Ajándékutalványok"
+        },
+        {
+          "value": "Letét",
+          "label": "Letét"
+        },
+        {
+          "value": "Egyéb",
+          "label": "Egyéb"
+        }
+      ],
+      "out": [
+        {
+          "value": "Visszatérítések",
+          "label": "Visszatérítések"
+        },
+        {
+          "value": "Bérleti díj",
+          "label": "Bérleti díj"
+        },
+        {
+          "value": "Bérek",
+          "label": "Bérek"
+        },
+        {
+          "value": "Beszerzések",
+          "label": "Beszerzések"
+        },
+        {
+          "value": "Marketing",
+          "label": "Marketing"
+        },
+        {
+          "value": "Adók",
+          "label": "Adók"
+        },
+        {
+          "value": "Egyéb",
+          "label": "Egyéb"
+        }
+      ]
+    }
+  },
+  "salaries": {
+    "loading": "Bérszámfejtés betöltése…",
+    "noRows": "Nincs számítható munkatárs",
+    "fund": "Béralap",
+    "fundSub": "aktuális hónap",
+    "sessions": "Alkalmak",
+    "sessionsSub": "összesen megtartva",
+    "paidOf": "munkatárs",
+    "sessionsCount": "{{count}} alkalom",
+    "paid": "Kifizetve",
+    "pending": "Függőben",
+    "paying": "…",
+    "payAction": "Fizetés",
+    "cancelAction": "Bér törlése",
+    "perMonth": "/hó",
+    "accrualTitle": "Elszámolás időszakra",
+    "rate": "Díjazás",
+    "rateNotSet": "nincs beállítva",
+    "sessionsInPeriod": "Alkalmak az időszakban",
+    "hoursWorked": "Ledolgozott órák",
+    "lessonsRevenue": "Alkalmak bevétele",
+    "totalToPay": "Összesen fizetendő",
+    "rateWarning": "A díjazás nincs beállítva — állítsa be a munkatárs profiljában, hogy az elszámolás kiszámítható legyen.",
+    "rateUnit": {
+      "hourly": "óra",
+      "percent": "%",
+      "fixed": "fix"
+    },
+    "paidAt": "Kifizetve {{date}}",
+    "historyTitle": "Fizetési előzmények",
+    "historyEmpty": "Még nincs fizetés",
+    "historyLoading": "Előzmények betöltése…",
+    "toasts": {
+      "loadFailed": "A bérszámfejtés betöltése sikertelen",
+      "paid": "Bér kifizetve: {{name}}",
+      "payFailed": "A bér kifizetése sikertelen",
+      "canceled": "Bér törölve: {{name}}",
+      "historyLoadFailed": "A fizetési előzmények betöltése sikertelen"
+    }
+  },
+  "counterparties": {
+    "count": "{{count}} partner",
+    "totalDebt": "Teljes tartozás:",
+    "add": "Hozzáadás",
+    "newTitle": "Új partner",
+    "nameLabel": "Név / Teljes név",
+    "namePlaceholder": "Cég Kft. vagy Kovács János",
+    "innLabel": "Adóazonosító",
+    "categoryLabel": "Kategória",
+    "categoryPlaceholder": "Bérleti díj, beszállító…",
+    "typeLabel": "Partner típusa",
+    "types": {
+      "legal": {
+        "label": "Jogi személy",
+        "desc": "Szervezet vagy vállalat"
+      },
+      "ie": {
+        "label": "Egyéni vállalkozó",
+        "desc": "Önálló vállalkozó"
+      },
+      "person": {
+        "label": "Magánszemély",
+        "desc": "Privát személy"
+      }
+    },
+    "addSubmit": "Partner hozzáadása",
+    "you": "Ön",
+    "otherCategory": "Egyéb",
+    "deals": "megállapodások",
+    "dealsLabel": "Megállapodások",
+    "debtLabel": "Tartozás",
+    "documents": "Dokumentumok",
+    "edit": "Szerkesztés",
+    "delete": "Törlés",
+    "deleteConfirmTitle": "Törli a partnert?",
+    "deleteConfirmText": "A kapcsolódó dokumentumok és a megállapodások előzményei megmaradnak, de a partner lekerül a listáról.",
+    "toasts": {
+      "loadFailed": "A partnerek betöltése sikertelen",
+      "enterName": "Adjon meg egy nevet",
+      "saved": "Módosítások mentve",
+      "saveFailed": "Mentés sikertelen",
+      "added": "Partner hozzáadva",
+      "addFailed": "A partner hozzáadása sikertelen",
+      "deleted": "Partner törölve",
+      "deleteFailed": "A partner törlése sikertelen",
+      "documentsOpened": "Dokumentumok megnyitva"
+    }
+  },
+  "documents": {
+    "signed": "Aláírva",
+    "pendingCount": "Aláírásra vár",
+    "draftCount": "Belső (aláíratlan)",
+    "searchPlaceholder": "Keresés cím vagy partner alapján…",
+    "filters": {
+      "all": "Összes",
+      "signed": "Aláírt",
+      "pending": "Aláírásra vár"
+    },
+    "upload": "Feltöltés",
+    "addTitle": "Dokumentum hozzáadása a könyvtárhoz",
+    "dropzoneTitle": "Kattintson vagy húzzon ide egy fájlt",
+    "dropzoneHint": "PDF, DOCX, XLSX (legfeljebb 15 MB)",
+    "dropzoneChange": "Kattintson másik fájl kiválasztásához",
+    "titleLabel": "Dokumentum címe",
+    "titlePlaceholder": "Például átvételi jegyzőkönyv #48",
+    "partyLabel": "Partner (ha van)",
+    "partyPlaceholder": "Cégnév vagy egyéni vállalkozó neve",
+    "needsSignature": "Szükséges a dokumentumhoz aláírás?",
+    "needsSignatureHint": "Az állapot: „Aláírásra vár”",
+    "saveToBase": "Mentés a könyvtárba",
+    "emptyTitle": "Ez a mappa üres",
+    "emptyBody": "Töltsön fel új dokumentumot vagy módosítsa a szűrőket",
+    "internalDoc": "Belső dokumentum",
+    "uploaded": "Feltöltve {{date}}",
+    "download": "Letöltés",
+    "open": "Megnyitás",
+    "fileRequired": "Csatoljon egy fájlt",
+    "options": "Beállítások",
+    "status": {
+      "title": "Állapot",
+      "signed": "Aláírva",
+      "pending": "Aláírásra vár",
+      "draft": "Aláíratlan"
+    },
+    "delete": "Törlés",
+    "toasts": {
+      "loadFailed": "A dokumentumok betöltése sikertelen",
+      "titleRequired": "Töltsön fel fájlt vagy adjon meg címet",
+      "created": "Dokumentum feltöltve a könyvtárba",
+      "createFailed": "A dokumentum mentése sikertelen",
+      "badFormat": "Engedélyezett formátumok: PDF, DOCX, XLSX",
+      "downloadFailed": "A fájl letöltése sikertelen",
+      "noFile": "Ehhez a dokumentumhoz nincs fájl csatolva",
+      "openFailed": "A fájl megnyitása sikertelen",
+      "statusChanged": "Állapot: {{label}}",
+      "statusFailed": "Az állapot módosítása sikertelen",
+      "deleted": "Dokumentum törölve",
+      "deleteFailed": "A dokumentum törlése sikertelen"
+    }
+  },
+  "goals": {
+    "loading": "Célok betöltése…",
+    "active": "Folyamatban lévő célok",
+    "done": "Teljesítve",
+    "avgProgress": "Általános előrehaladás",
+    "trackingTitle": "Terv követése",
+    "createGoal": "Cél létrehozása",
+    "newTitle": "Új pénzügyi cél",
+    "titleLabel": "Cél címe",
+    "titlePlaceholder": "Például új reformer gépek",
+    "targetLabel": "Célösszeg, {{symbol}}",
+    "targetPlaceholder": "500000",
+    "deadlineLabel": "Határidő",
+    "trackingLabel": "Hogyan kövesse az előrehaladást?",
+    "trackingAuto": "Automatikusan (CRM-mutató)",
+    "trackingAutoDesc": "Kapcsolja a célt egy választott kategória bevételéhez. A CRM maga mozgatja az előrehaladási sávot.",
+    "trackingManual": "Manuálisan (személyes megtakarítás)",
+    "trackingManualDesc": "A kártyán megjelenik a „Pénz hozzáadása” gomb. Az előrehaladás csak Öntől függ.",
+    "opTypeLabel": "Művelet típusa",
+    "categoryLabel": "Kategória",
+    "categoryPlaceholder": "Válasszon kategóriát",
+    "editTitle": "Cél szerkesztése",
+    "nameLabel": "Cím",
+    "namePlaceholder": "Cél címe",
+    "amountLabel": "Összeg, {{symbol}}",
+    "achieved": "Cél elérve",
+    "priority": {
+      "high": "Magas prioritás",
+      "medium": "Közepes prioritás",
+      "low": "Alacsony prioritás"
+    },
+    "autoCollect": "Automatikusan követett",
+    "deadlinePrefix": "Határidő:",
+    "noDeadline": "Nincs határidő",
+    "fundPlaceholder": "Összeg, {{symbol}}",
+    "fund": "Hozzáadás",
+    "addFunds": "Pénz hozzáadása",
+    "autoHint": "Az érték automatikusan frissül a kategória bevételéből",
+    "deleteConfirmTitle": "Törli a célt?",
+    "deleteConfirmText": "A cél előrehaladása elveszik. Ez a művelet nem vonható vissza.",
+    "toasts": {
+      "loadFailed": "A célok betöltése sikertelen",
+      "fillRequired": "Töltse ki a címet és az összeget",
+      "chooseCategory": "Válasszon kategóriát az automatikus célhoz",
+      "created": "Cél létrehozva",
+      "createFailed": "A cél létrehozása sikertelen",
+      "enterName": "Adjon meg egy nevet",
+      "updated": "Cél frissítve",
+      "updateFailed": "A cél frissítése sikertelen",
+      "deleted": "Cél törölve",
+      "deleteFailed": "A cél törlése sikertelen",
+      "funded": "Pénz hozzáadva",
+      "fundFailed": "A pénz hozzáadása sikertelen"
+    }
+  },
+  "onlinePayments": {
+    "description": "Csatlakoztassa a Stripe-ot, és ügyfelei kártyával fizethetnek a pénztárnál. A pénz közvetlenül a stúdió számlájára érkezik — a Velora soha nem tartja azt. A jutalék a csomagját követi.",
+    "gatewaysTitle": "Fizetési szolgáltatók",
+    "gateways": {
+      "stripe": {
+        "name": "Stripe"
+      },
+      "states": {
+        "none": {
+          "label": "Nincs csatlakoztatva",
+          "hint": "Fogadjon kártyás fizetéseket a stúdió számláján",
+          "action": "Csatlakoztatás"
+        },
+        "incomplete": {
+          "label": "Hiányzó adatok",
+          "hint": "A Stripe a stúdió adataira vár — a fizetések addig kikapcsolva maradnak",
+          "action": "Folytatás"
+        },
+        "action": {
+          "label": "Teendő szükséges",
+          "hint": "A Stripe néhány adatot elutasított és javításra vár — ez nem oldódik meg magától",
+          "action": "Adatok javítása"
+        },
+        "review": {
+          "label": "Ellenőrzés alatt",
+          "hint": "Az adatok elküldve, a Stripe ellenőrzi őket. Ez általában legfeljebb egy napot vesz igénybe",
+          "action": "Stripe megnyitása"
+        },
+        "active": {
+          "label": "Csatlakoztatva",
+          "hint": "A kártyás fizetések a stúdió Stripe-számlájára érkeznek",
+          "action": "Beállítások"
+        }
+      }
+    },
+    "toasts": {
+      "gatewayUpdated": "A fizetési szolgáltató beállításai frissültek",
+      "stripeReturned": "Az adatok elküldve a Stripe-nak",
+      "stripeLinkExpired": "A Stripe-hivatkozás lejárt — nyomja meg újra a Csatlakoztatás gombot"
+    }
+  },
+  "paymentMethods": {
+    "totalTurnover": "Időszaki forgalom",
+    "periods": {
+      "month": "Hónap",
+      "quarter": "Negyedév",
+      "year": "Év"
+    },
+    "amount": "Összeg",
+    "share": "Arány",
+    "transactions": "tranzakció",
+    "methods": {
+      "cash": {
+        "name": "Készpénz"
+      },
+      "card": {
+        "name": "Bankkártya"
+      },
+      "qr": {
+        "name": "SBP (QR)"
+      },
+      "transfer": {
+        "name": "Átutalás"
+      },
+      "stripe": {
+        "name": "Stripe"
+      },
+      "": {
+        "name": "Nincs megadva"
+      }
+    }
+  },
+  "reports": {
+    "metrics": {
+      "revenue": "Bevétel",
+      "expenses": "Kiadások",
+      "profit": "Nyereség",
+      "margin": "Árrés"
+    },
+    "vsPreviousPeriod": "az előző időszakhoz képest",
+    "cashflowTitle": "Pénzforgalom",
+    "cashflowSub": "Bevételek és kiadások elemzése",
+    "period": "Időszak",
+    "income": "Bevétel",
+    "expense": "Kiadás",
+    "profit": "Nyereség",
+    "periods": {
+      "today": "Ma",
+      "week": "Hét",
+      "month": "Hónap",
+      "year": "Év"
+    },
+    "legendIncome": "Bevétel",
+    "legendExpense": "Kiadások",
+    "exportCsv": "CSV exportálása",
+    "expenseStructure": "Kiadások szerkezete",
+    "incomeStructure": "Bevételek szerkezete",
+    "total": "Összesen",
+    "otherCategory": "Nem kategorizált",
+    "noData": "Nincs adat erre az időszakra",
+    "insightsTitle": "Pénzügyi összefoglaló és elemzések",
+    "insightsPlaceholder": "Itt jelenik meg az AI-alapú pénzügyi összefoglaló: trendelemzés, kiadások szerkezete és ajánlások",
+    "toasts": {
+      "exportFailed": "A műveletek exportálása sikertelen"
+    }
+  },
+  "confirmModal": {
+    "cancel": "Mégse",
+    "confirm": "Megerősítés",
+    "delete": "Törlés"
+  }
+}

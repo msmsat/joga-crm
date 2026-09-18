@@ -1,0 +1,510 @@
+{
+  "tabs": {
+    "accounts": "Llogaritë",
+    "operations": "Operacionet",
+    "salaries": "Pagat",
+    "counterparties": "Palët kontraktuese",
+    "documents": "Dokumentet",
+    "onlinePayments": "Pagesat online",
+    "paymentMethods": "Mënyrat e pagesës",
+    "reports": "Raportet",
+    "goals": "Objektivat"
+  },
+  "common": {
+    "save": "Ruaj",
+    "cancel": "Anulo",
+    "create": "Krijo",
+    "edit": "Ndrysho",
+    "delete": "Fshi",
+    "loading": "Po ngarkohet…",
+    "all": "Të gjitha",
+    "confirm": "Konfirmo",
+    "monthsShort": [
+      "Jan",
+      "Shk",
+      "Mar",
+      "Pri",
+      "Maj",
+      "Qer",
+      "Kor",
+      "Gus",
+      "Sht",
+      "Tet",
+      "Nën",
+      "Dhj"
+    ],
+    "weekdaysShort": [
+      "Hën",
+      "Mar",
+      "Mër",
+      "Enj",
+      "Pre",
+      "Sht",
+      "Die"
+    ]
+  },
+  "info": {
+    "accounts": "Llogaritë janë arkat e studios, llogaritë bankare dhe pranimi online i pagesave. Këtu shihni çdo bilanc dhe kapitalin total.",
+    "operations": "Operacionet janë të gjitha të ardhurat dhe shpenzimet e studios. Krijimi i një operacioni lëviz menjëherë bilancin e llogarisë së lidhur.",
+    "salaries": "Pagat llogariten nga norma e anëtarit të stafit (fikse, për orë ose përqindje) për periudhën e zgjedhur.",
+    "counterparties": "Palët kontraktuese janë organizata dhe individë me të cilët studioja kryen shlyerje: furnitorë, qiradhënës, partnerë.",
+    "documents": "Dokumentet janë kontrata, akte dhe fatura të lidhura me palët kontraktuese, ose dokumente të brendshme.",
+    "onlinePayments": "Pagesat online — lidhja e Stripe për pagesa me kartë. Llogaria krijohet për studion tuaj, prandaj paratë shkojnë drejtpërdrejt te ju, pa kaluar nga Velora.",
+    "paymentMethods": "Mënyrat e pagesës tregojnë si paguajnë klientët në studio dhe statistikat për secilën.",
+    "reports": "Raportet tregojnë prirjet e të ardhurave, shpenzimeve dhe fitimit gjatë periudhës së zgjedhur.",
+    "goals": "Objektivat financiare janë plani i kursimeve të studios me ndjekje automatike ose manuale të progresit."
+  },
+  "accounts": {
+    "loading": "Po ngarkohen llogaritë…",
+    "totalCapital": "Kapitali total i studios",
+    "donutTotal": "{{symbol}} gjithsej",
+    "todayChange": "sot",
+    "system": "SISTEMI",
+    "today": "sot",
+    "editTitle": "Ndrysho llogarinë",
+    "namePlaceholder": "Emri",
+    "balancePlaceholder": "Bilanci, {{symbol}}",
+    "types": {
+      "cash": "Para në dorë",
+      "bank": "Kartë",
+      "online": "Online"
+    },
+    "typesShort": {
+      "cash": "Para në dorë",
+      "bank": "Kartë",
+      "online": "Online"
+    },
+    "history": "Historia",
+    "historyTitle": "Historia: {{name}}",
+    "income30d": "Të ardhura (30 d.)",
+    "expense30d": "Shpenzime (30 d.)",
+    "samplePayment": "Pagesë për shërbim",
+    "sampleTime": "Sot, 14:32",
+    "openAllOperations": "Hap të gjitha operacionet",
+    "newSavingsTitle": "Llogari e re kursimi",
+    "createSavings": "Krijo llogari kursimi",
+    "deleteConfirmTitle": "Të fshihet kjo llogari?",
+    "deleteConfirmText": "Të gjitha fondet e saj do të përjashtohen nga statistikat e përgjithshme. Ky veprim nuk mund të zhbëhet.",
+    "toasts": {
+      "loadFailed": "Nuk u ngarkuan dot llogaritë",
+      "deleted": "Llogaria u fshi",
+      "deleteFailed": "Nuk u fshi dot llogaria",
+      "saved": "Cilësimet u ruajtën",
+      "saveFailed": "Nuk u ruajt dot llogaria",
+      "created": "Llogaria e kursimit u krijua",
+      "createFailed": "Nuk u krijua dot llogaria"
+    }
+  },
+  "operations": {
+    "income": "Të ardhura",
+    "expense": "Shpenzime",
+    "balance": "Bilanci",
+    "searchPlaceholder": "Kërko sipas titullit dhe kategorisë…",
+    "close": "Mbyll",
+    "operation": "Operacion",
+    "export": "Eksporto",
+    "newOperationTitle": "Operacion i ri",
+    "titleLabel": "Titulli",
+    "titlePlaceholder": "P.sh. Pagesë abonimi",
+    "amountLabel": "Shuma, {{symbol}}",
+    "dateLabel": "Data",
+    "categoryLabel": "Kategoria",
+    "categoryPlaceholder": "Kategoria",
+    "accountLabel": "Llogaria",
+    "noAccount": "Pa llogari",
+    "methodLabel": "Mënyra e pagesës",
+    "noMethod": "Nuk është përcaktuar",
+    "counterpartyLabel": "Pala kontraktuese",
+    "noCounterparty": "Pa palë kontraktuese",
+    "newCounterparty": "+ Palë e re kontraktuese",
+    "clientLabel": "Klienti",
+    "clientHint": "Pikët e besnikërisë dhe niveli do t’i kreditohen klientit",
+    "clientSearchPlaceholder": "Filloni të shkruani një emër…",
+    "noClient": "Pa klient",
+    "editTitle": "Ndrysho operacionin",
+    "saving": "Po ruhet…",
+    "loading": "Po ngarkohen operacionet…",
+    "emptyTitle": "Nuk u gjetën operacione",
+    "emptyBody": "Ndryshoni filtrat ose krijoni operacionin e parë",
+    "pending": "Në pritje",
+    "detailAccount": "Llogaria pranuese",
+    "detailCategory": "Kategoria",
+    "detailMethod": "Mënyra e pagesës",
+    "detailCounterparty": "Pala kontraktuese",
+    "receipt": "Fatura",
+    "loadMore": "Ngarko më shumë ({{count}})",
+    "toasts": {
+      "loadFailed": "Nuk u ngarkuan dot operacionet",
+      "loadMoreFailed": "Nuk u ngarkuan dot më shumë operacione",
+      "deleted": "Operacioni u fshi",
+      "deleteFailed": "Nuk u fshi dot operacioni",
+      "enterAmount": "Vendosni një shumë",
+      "created": "Operacioni u krijua",
+      "createFailed": "Nuk u krijua dot operacioni",
+      "updated": "Operacioni u përditësua",
+      "updateFailed": "Nuk u ruajt dot operacioni",
+      "exportFailed": "Nuk u eksportuan dot operacionet",
+      "receiptDownloaded": "Fatura u shkarkua"
+    },
+    "categoryPresets": {
+      "in": [
+        {
+          "value": "Abonime",
+          "label": "Abonime"
+        },
+        {
+          "value": "Shërbime",
+          "label": "Shërbime"
+        },
+        {
+          "value": "Certifikata dhurate",
+          "label": "Certifikata dhurate"
+        },
+        {
+          "value": "Depozitë",
+          "label": "Depozitë"
+        },
+        {
+          "value": "Të tjera",
+          "label": "Të tjera"
+        }
+      ],
+      "out": [
+        {
+          "value": "Rimbursime",
+          "label": "Rimbursime"
+        },
+        {
+          "value": "Qira",
+          "label": "Qira"
+        },
+        {
+          "value": "Paga",
+          "label": "Paga"
+        },
+        {
+          "value": "Furnizime",
+          "label": "Furnizime"
+        },
+        {
+          "value": "Marketing",
+          "label": "Marketing"
+        },
+        {
+          "value": "Taksa",
+          "label": "Taksa"
+        },
+        {
+          "value": "Të tjera",
+          "label": "Të tjera"
+        }
+      ]
+    }
+  },
+  "salaries": {
+    "loading": "Po ngarkohen pagat…",
+    "noRows": "Nuk ka staf për llogaritje",
+    "fund": "Fondi i pagave",
+    "fundSub": "muaji aktual",
+    "sessions": "Seancat",
+    "sessionsSub": "të mbajtura gjithsej",
+    "paidOf": "staf",
+    "sessionsCount": "{{count}} seanca",
+    "paid": "Paguar",
+    "pending": "Në pritje",
+    "paying": "…",
+    "payAction": "Paguaj",
+    "cancelAction": "Anulo pagën",
+    "perMonth": "/muaj",
+    "accrualTitle": "Përllogaritja për periudhën",
+    "rate": "Norma",
+    "rateNotSet": "nuk është vendosur",
+    "sessionsInPeriod": "Seanca në periudhë",
+    "hoursWorked": "Orë të punuara",
+    "lessonsRevenue": "Të ardhura nga seancat",
+    "totalToPay": "Gjithsej për pagesë",
+    "rateWarning": "Norma nuk është vendosur — caktojeni në profilin e anëtarit të stafit që të mund të llogaritet përllogaritja.",
+    "rateUnit": {
+      "hourly": "orë",
+      "percent": "%",
+      "fixed": "fikse"
+    },
+    "paidAt": "Paguar {{date}}",
+    "historyTitle": "Historia e pagesave",
+    "historyEmpty": "Ende nuk ka pagesa",
+    "historyLoading": "Po ngarkohet historia…",
+    "toasts": {
+      "loadFailed": "Nuk u ngarkuan dot pagat",
+      "paid": "Paga u pagua: {{name}}",
+      "payFailed": "Nuk u pagua dot paga",
+      "canceled": "Paga u anulua: {{name}}",
+      "historyLoadFailed": "Nuk u ngarkua dot historia e pagesave"
+    }
+  },
+  "counterparties": {
+    "count": "{{count}} palë kontraktuese",
+    "totalDebt": "Borxhi total:",
+    "add": "Shto",
+    "newTitle": "Palë e re kontraktuese",
+    "nameLabel": "Emri / Emri i plotë",
+    "namePlaceholder": "Kompania SHPK ose Gjon Smith",
+    "innLabel": "Numri tatimor",
+    "categoryLabel": "Kategoria",
+    "categoryPlaceholder": "Qira, furnitor…",
+    "typeLabel": "Lloji i palës kontraktuese",
+    "types": {
+      "legal": {
+        "label": "Person juridik",
+        "desc": "Organizatë ose kompani"
+      },
+      "ie": {
+        "label": "Sipërmarrës individual",
+        "desc": "Sipërmarrës privat"
+      },
+      "person": {
+        "label": "Individ",
+        "desc": "Person privat"
+      }
+    },
+    "addSubmit": "Shto palë kontraktuese",
+    "you": "Ju",
+    "otherCategory": "Tjetër",
+    "deals": "marrëveshje",
+    "dealsLabel": "Marrëveshjet",
+    "debtLabel": "Borxhi",
+    "documents": "Dokumentet",
+    "edit": "Ndrysho",
+    "delete": "Fshi",
+    "deleteConfirmTitle": "Të fshihet pala kontraktuese?",
+    "deleteConfirmText": "Dokumentet përkatëse dhe historia e marrëveshjeve do të mbeten, por pala kontraktuese do të hiqet nga lista.",
+    "toasts": {
+      "loadFailed": "Nuk u ngarkuan dot palët kontraktuese",
+      "enterName": "Vendosni një emër",
+      "saved": "Ndryshimet u ruajtën",
+      "saveFailed": "Nuk u ruajt dot",
+      "added": "Pala kontraktuese u shtua",
+      "addFailed": "Nuk u shtua dot pala kontraktuese",
+      "deleted": "Pala kontraktuese u fshi",
+      "deleteFailed": "Nuk u fshi dot pala kontraktuese",
+      "documentsOpened": "Dokumentet u hapën"
+    }
+  },
+  "documents": {
+    "signed": "Nënshkruar",
+    "pendingCount": "Në pritje të nënshkrimit",
+    "draftCount": "I brendshëm (i panënshkruar)",
+    "searchPlaceholder": "Kërko sipas titullit ose palës kontraktuese…",
+    "filters": {
+      "all": "Të gjitha",
+      "signed": "Nënshkruar",
+      "pending": "Në pritje të nënshkrimit"
+    },
+    "upload": "Ngarko",
+    "addTitle": "Shto dokument në bibliotekë",
+    "dropzoneTitle": "Klikoni ose tërhiqni një skedar",
+    "dropzoneHint": "PDF, DOCX, XLSX (deri në 15 MB)",
+    "dropzoneChange": "Klikoni për të zgjedhur skedar tjetër",
+    "titleLabel": "Titulli i dokumentit",
+    "titlePlaceholder": "P.sh. Akt pranimi nr. 48",
+    "partyLabel": "Pala kontraktuese (nëse ka)",
+    "partyPlaceholder": "Emri i kompanisë ose sipërmarrësit individual",
+    "needsSignature": "A ka nevojë dokumenti për nënshkrim?",
+    "needsSignatureHint": "Statusi do të jetë “Në pritje të nënshkrimit”",
+    "saveToBase": "Ruaj në bibliotekë",
+    "emptyTitle": "Kjo dosje është bosh",
+    "emptyBody": "Ngarkoni një dokument të ri ose ndryshoni filtrat",
+    "internalDoc": "Dokument i brendshëm",
+    "uploaded": "U ngarkua {{date}}",
+    "download": "Shkarko",
+    "open": "Hap",
+    "fileRequired": "Bashkëngjitni një skedar",
+    "options": "Opsionet",
+    "status": {
+      "title": "Statusi",
+      "signed": "Nënshkruar",
+      "pending": "Në pritje të nënshkrimit",
+      "draft": "I panënshkruar"
+    },
+    "delete": "Fshi",
+    "toasts": {
+      "loadFailed": "Nuk u ngarkuan dot dokumentet",
+      "titleRequired": "Ngarkoni një skedar ose vendosni titull",
+      "created": "Dokumenti u ngarkua në bibliotekë",
+      "createFailed": "Nuk u ruajt dot dokumenti",
+      "badFormat": "Formatet e lejuara: PDF, DOCX, XLSX",
+      "downloadFailed": "Nuk u shkarkua dot skedari",
+      "noFile": "Nuk ka skedar të bashkëngjitur në këtë dokument",
+      "openFailed": "Nuk u hap dot skedari",
+      "statusChanged": "Statusi: {{label}}",
+      "statusFailed": "Nuk u ndryshua dot statusi",
+      "deleted": "Dokumenti u fshi",
+      "deleteFailed": "Nuk u fshi dot dokumenti"
+    }
+  },
+  "goals": {
+    "loading": "Po ngarkohen objektivat…",
+    "active": "Objektiva në progres",
+    "done": "Të përfunduara",
+    "avgProgress": "Progresi i përgjithshëm",
+    "trackingTitle": "Ndjekja e planit",
+    "createGoal": "Krijo objektiv",
+    "newTitle": "Objektiv i ri financiar",
+    "titleLabel": "Titulli i objektivit",
+    "titlePlaceholder": "P.sh. Makina të reja reformer",
+    "targetLabel": "Shuma e synuar, {{symbol}}",
+    "targetPlaceholder": "500000",
+    "deadlineLabel": "Afati",
+    "trackingLabel": "Si të ndiqet progresi?",
+    "trackingAuto": "Automatik (metrikë CRM)",
+    "trackingAutoDesc": "Lidhni objektivin me të ardhurat nga një kategori e zgjedhur. CRM-ja do të lëvizë vetë shiritin e progresit.",
+    "trackingManual": "Manual (kursime personale)",
+    "trackingManualDesc": "Në kartë do të shfaqet butoni “Shto fonde”. Progresi varet vetëm nga ju.",
+    "opTypeLabel": "Lloji i operacionit",
+    "categoryLabel": "Kategoria",
+    "categoryPlaceholder": "Zgjidhni një kategori",
+    "editTitle": "Ndrysho objektivin",
+    "nameLabel": "Titulli",
+    "namePlaceholder": "Titulli i objektivit",
+    "amountLabel": "Shuma, {{symbol}}",
+    "achieved": "Objektivi u arrit",
+    "priority": {
+      "high": "Prioritet i lartë",
+      "medium": "Prioritet mesatar",
+      "low": "Prioritet i ulët"
+    },
+    "autoCollect": "Ndjekje automatike",
+    "deadlinePrefix": "Afati:",
+    "noDeadline": "Pa afat",
+    "fundPlaceholder": "Shuma, {{symbol}}",
+    "fund": "Shto",
+    "addFunds": "Shto fonde",
+    "autoHint": "Vlera përditësohet automatikisht nga të ardhurat e kategorisë",
+    "deleteConfirmTitle": "Të fshihet objektivi?",
+    "deleteConfirmText": "Progresi i këtij objektivi do të humbet. Ky veprim nuk mund të zhbëhet.",
+    "toasts": {
+      "loadFailed": "Nuk u ngarkuan dot objektivat",
+      "fillRequired": "Plotësoni titullin dhe shumën",
+      "chooseCategory": "Zgjidhni një kategori për objektivin automatik",
+      "created": "Objektivi u krijua",
+      "createFailed": "Nuk u krijua dot objektivi",
+      "enterName": "Vendosni një emër",
+      "updated": "Objektivi u përditësua",
+      "updateFailed": "Nuk u përditësua dot objektivi",
+      "deleted": "Objektivi u fshi",
+      "deleteFailed": "Nuk u fshi dot objektivi",
+      "funded": "Fondet u shtuan",
+      "fundFailed": "Nuk u shtuan dot fondet"
+    }
+  },
+  "onlinePayments": {
+    "description": "Lidhni Stripe dhe klientët tuaj mund të paguajnë me kartë në arkë. Paratë shkojnë drejtpërdrejt në llogarinë e studios — Velora nuk i mban kurrë. Komisioni ndjek planin tuaj.",
+    "gatewaysTitle": "Ofruesit e pagesave",
+    "gateways": {
+      "stripe": {
+        "name": "Stripe"
+      },
+      "states": {
+        "none": {
+          "label": "Nuk është lidhur",
+          "hint": "Pranoni pagesa me kartë në llogarinë e studios",
+          "action": "Lidhu"
+        },
+        "incomplete": {
+          "label": "Mungojnë të dhënat",
+          "hint": "Stripe po pret të dhënat e studios suaj — pagesat qëndrojnë të çaktivizuara deri atëherë",
+          "action": "Vazhdo"
+        },
+        "action": {
+          "label": "Nevojitet veprim",
+          "hint": "Stripe hodhi poshtë disa të dhëna dhe pret korrigjime — nuk do të pastrohet vetë",
+          "action": "Rregullo të dhënat"
+        },
+        "review": {
+          "label": "Në shqyrtim",
+          "hint": "Të dhënat janë dërguar; Stripe po i shqyrton. Zakonisht zgjat deri në një ditë",
+          "action": "Hap Stripe"
+        },
+        "active": {
+          "label": "Lidhur",
+          "hint": "Pagesat me kartë hyjnë në llogarinë Stripe të studios",
+          "action": "Cilësimet"
+        }
+      }
+    },
+    "toasts": {
+      "gatewayUpdated": "Cilësimet e ofruesit u përditësuan",
+      "stripeReturned": "Të dhënat u dorëzuan te Stripe",
+      "stripeLinkExpired": "Lidhja Stripe skadoi — shtypni përsëri Lidhu"
+    }
+  },
+  "paymentMethods": {
+    "totalTurnover": "Xhiroja për periudhën",
+    "periods": {
+      "month": "Muaj",
+      "quarter": "Tremujor",
+      "year": "Vit"
+    },
+    "amount": "Shuma",
+    "share": "Pjesa",
+    "transactions": "transaksione",
+    "methods": {
+      "cash": {
+        "name": "Para në dorë"
+      },
+      "card": {
+        "name": "Kartë bankare"
+      },
+      "qr": {
+        "name": "SBP (QR)"
+      },
+      "transfer": {
+        "name": "Transfertë"
+      },
+      "stripe": {
+        "name": "Stripe"
+      },
+      "": {
+        "name": "Nuk është përcaktuar"
+      }
+    }
+  },
+  "reports": {
+    "metrics": {
+      "revenue": "Të ardhura",
+      "expenses": "Shpenzime",
+      "profit": "Fitim",
+      "margin": "Marzhi"
+    },
+    "vsPreviousPeriod": "krahasuar me periudhën e mëparshme",
+    "cashflowTitle": "Rrjedha e parasë",
+    "cashflowSub": "Analiza e të ardhurave dhe shpenzimeve",
+    "period": "Periudha",
+    "income": "Të ardhura",
+    "expense": "Shpenzim",
+    "profit": "Fitim",
+    "periods": {
+      "today": "Sot",
+      "week": "Javë",
+      "month": "Muaj",
+      "year": "Vit"
+    },
+    "legendIncome": "Të ardhura",
+    "legendExpense": "Shpenzime",
+    "exportCsv": "Eksporto CSV",
+    "expenseStructure": "Struktura e shpenzimeve",
+    "incomeStructure": "Struktura e të ardhurave",
+    "total": "Gjithsej",
+    "otherCategory": "Pa kategori",
+    "noData": "Nuk ka të dhëna për këtë periudhë",
+    "insightsTitle": "Përmbledhje dhe njohuri financiare",
+    "insightsPlaceholder": "Përmbledhja financiare me AI do të shfaqet këtu: analiza e prirjeve, struktura e shpenzimeve dhe rekomandime",
+    "toasts": {
+      "exportFailed": "Nuk u eksportuan dot operacionet"
+    }
+  },
+  "confirmModal": {
+    "cancel": "Anulo",
+    "confirm": "Konfirmo",
+    "delete": "Fshi"
+  }
+}

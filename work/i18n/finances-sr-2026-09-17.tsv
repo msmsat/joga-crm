@@ -1,0 +1,377 @@
+== sr
+tabs.accounts	Рачуни
+tabs.operations	Операције
+tabs.salaries	Зараде
+tabs.counterparties	Уговорне стране
+tabs.documents	Документи
+tabs.onlinePayments	Онлајн плаћања
+tabs.paymentMethods	Начини плаћања
+tabs.reports	Извештаји
+tabs.goals	Циљеви
+common.save	Сачувај
+common.cancel	Откажи
+common.create	Креирај
+common.edit	Измени
+common.delete	Обриши
+common.loading	Учитавање…
+common.all	Све
+common.confirm	Потврди
+common.monthsShort.0	јан
+common.monthsShort.1	феб
+common.monthsShort.2	мар
+common.monthsShort.3	апр
+common.monthsShort.4	мај
+common.monthsShort.5	јун
+common.monthsShort.6	јул
+common.monthsShort.7	авг
+common.monthsShort.8	сеп
+common.monthsShort.9	окт
+common.monthsShort.10	нов
+common.monthsShort.11	дец
+common.weekdaysShort.0	пон
+common.weekdaysShort.1	уто
+common.weekdaysShort.2	сре
+common.weekdaysShort.3	чет
+common.weekdaysShort.4	пет
+common.weekdaysShort.5	суб
+common.weekdaysShort.6	нед
+info.accounts	Рачуни су касе студија, банковни рачуни и онлајн наплата. Овде видите свако стање и укупан капитал.
+info.operations	Операције су сви приходи и расходи студија. Креирање операције одмах мења стање повезаног рачуна.
+info.salaries	Зараде се израчунавају по тарифи члана тима (фиксној, сатној или процентуалној) за изабрани период.
+info.counterparties	Уговорне стране су организације и појединци са којима студио послује: добављачи, закуподавци, партнери.
+info.documents	Документи су уговори, акти и фактуре повезани са уговорним странама, као и интерни документи.
+info.onlinePayments	Онлајн плаћања — повежите Stripe за плаћања картицом. Рачун се отвара за ваш студио, па новац иде директно вама, без Velora-е као посредника.
+info.paymentMethods	Начини плаћања показују како клијенти плаћају у студију и статистику за сваки начин.
+info.reports	Извештаји показују кретања прихода, расхода и профита у изабраном периоду.
+info.goals	Финансијски циљеви су план штедње студија са аутоматским или ручним праћењем напретка.
+accounts.loading	Учитавање рачуна…
+accounts.totalCapital	Укупан капитал студија
+accounts.donutTotal	Укупно {{symbol}}
+accounts.todayChange	данас
+accounts.system	СИСТЕМ
+accounts.today	данас
+accounts.editTitle	Измени рачун
+accounts.namePlaceholder	Назив
+accounts.balancePlaceholder	Стање, {{symbol}}
+accounts.types.cash	Готовина
+accounts.types.bank	Картица
+accounts.types.online	Онлајн
+accounts.typesShort.cash	Готовина
+accounts.typesShort.bank	Картица
+accounts.typesShort.online	Онлајн
+accounts.history	Историја
+accounts.historyTitle	Историја: {{name}}
+accounts.income30d	Приход (30 д.)
+accounts.expense30d	Расход (30 д.)
+accounts.samplePayment	Плаћање услуге
+accounts.sampleTime	Данас, 14:32
+accounts.openAllOperations	Отвори све операције
+accounts.newSavingsTitle	Нови штедни рачун
+accounts.createSavings	Креирај штедни рачун
+accounts.deleteConfirmTitle	Обрисати овај рачун?
+accounts.deleteConfirmText	Сва средства са њега биће искључена из укупне статистике. Ова радња не може да се опозове.
+accounts.toasts.loadFailed	Учитавање рачуна није успело
+accounts.toasts.deleted	Рачун је обрисан
+accounts.toasts.deleteFailed	Брисање рачуна није успело
+accounts.toasts.saved	Подешавања су сачувана
+accounts.toasts.saveFailed	Чување рачуна није успело
+accounts.toasts.created	Штедни рачун је креиран
+accounts.toasts.createFailed	Креирање рачуна није успело
+operations.income	Приход
+operations.expense	Расход
+operations.balance	Стање
+operations.searchPlaceholder	Претражите по називу и категорији…
+operations.close	Затвори
+operations.operation	Операција
+operations.export	Извези
+operations.newOperationTitle	Нова операција
+operations.titleLabel	Назив
+operations.titlePlaceholder	На пример, уплата претплате
+operations.amountLabel	Износ, {{symbol}}
+operations.dateLabel	Датум
+operations.categoryLabel	Категорија
+operations.categoryPlaceholder	Категорија
+operations.accountLabel	Рачун
+operations.noAccount	Без рачуна
+operations.methodLabel	Начин плаћања
+operations.noMethod	Није наведено
+operations.counterpartyLabel	Уговорна страна
+operations.noCounterparty	Без уговорне стране
+operations.newCounterparty	+ Нова уговорна страна
+operations.clientLabel	Клијент
+operations.clientHint	Бодови лојалности и ниво биће додељени клијенту
+operations.clientSearchPlaceholder	Почните да куцате име…
+operations.noClient	Без клијента
+operations.editTitle	Измени операцију
+operations.saving	Чување…
+operations.loading	Учитавање операција…
+operations.emptyTitle	Није пронађена ниједна операција
+operations.emptyBody	Промените филтере или креирајте прву операцију
+operations.pending	На чекању
+operations.detailAccount	Рачун прималац
+operations.detailCategory	Категорија
+operations.detailMethod	Начин плаћања
+operations.detailCounterparty	Уговорна страна
+operations.receipt	Признаница
+operations.loadMore	Учитај још ({{count}})
+operations.toasts.loadFailed	Учитавање операција није успело
+operations.toasts.loadMoreFailed	Учитавање додатних операција није успело
+operations.toasts.deleted	Операција је обрисана
+operations.toasts.deleteFailed	Брисање операције није успело
+operations.toasts.enterAmount	Унесите износ
+operations.toasts.created	Операција је креирана
+operations.toasts.createFailed	Креирање операције није успело
+operations.toasts.updated	Операција је ажурирана
+operations.toasts.updateFailed	Чување операције није успело
+operations.toasts.exportFailed	Извоз операција није успео
+operations.toasts.receiptDownloaded	Признаница је преузета
+operations.categoryPresets.in.0.value	Чланарине
+operations.categoryPresets.in.0.label	Чланарине
+operations.categoryPresets.in.1.value	Услуге
+operations.categoryPresets.in.1.label	Услуге
+operations.categoryPresets.in.2.value	Поклон сертификати
+operations.categoryPresets.in.2.label	Поклон сертификати
+operations.categoryPresets.in.3.value	Депозит
+operations.categoryPresets.in.3.label	Депозит
+operations.categoryPresets.in.4.value	Остало
+operations.categoryPresets.in.4.label	Остало
+operations.categoryPresets.out.0.value	Повраћаји
+operations.categoryPresets.out.0.label	Повраћаји
+operations.categoryPresets.out.1.value	Закупнина
+operations.categoryPresets.out.1.label	Закупнина
+operations.categoryPresets.out.2.value	Зараде
+operations.categoryPresets.out.2.label	Зараде
+operations.categoryPresets.out.3.value	Набавке
+operations.categoryPresets.out.3.label	Набавке
+operations.categoryPresets.out.4.value	Маркетинг
+operations.categoryPresets.out.4.label	Маркетинг
+operations.categoryPresets.out.5.value	Порези
+operations.categoryPresets.out.5.label	Порези
+operations.categoryPresets.out.6.value	Остало
+operations.categoryPresets.out.6.label	Остало
+salaries.loading	Учитавање зарада…
+salaries.noRows	Нема чланова тима за обрачун
+salaries.fund	Фонд за зараде
+salaries.fundSub	текући месец
+salaries.sessions	Термини
+salaries.sessionsSub	укупно одржано
+salaries.paidOf	чланова тима
+salaries.sessionsCount	{{count}} термина
+salaries.paid	Исплаћено
+salaries.pending	На чекању
+salaries.paying	…
+salaries.payAction	Исплати
+salaries.cancelAction	Откажи исплату
+salaries.perMonth	/мес.
+salaries.accrualTitle	Обрачун за период
+salaries.rate	Тарифа
+salaries.rateNotSet	није подешена
+salaries.sessionsInPeriod	Термини у периоду
+salaries.hoursWorked	Одрађени сати
+salaries.lessonsRevenue	Приход од термина
+salaries.totalToPay	Укупно за исплату
+salaries.rateWarning	Тарифа није подешена — поставите је у профилу члана тима да би обрачун могао да се изврши.
+salaries.rateUnit.hourly	сат
+salaries.rateUnit.percent	%
+salaries.rateUnit.fixed	фиксно
+salaries.paidAt	Исплаћено {{date}}
+salaries.historyTitle	Историја исплата
+salaries.historyEmpty	Још нема исплата
+salaries.historyLoading	Учитавање историје…
+salaries.toasts.loadFailed	Учитавање зарада није успело
+salaries.toasts.paid	Зарада је исплаћена: {{name}}
+salaries.toasts.payFailed	Исплата зараде није успела
+salaries.toasts.canceled	Исплата зараде је отказана: {{name}}
+salaries.toasts.historyLoadFailed	Учитавање историје исплата није успело
+counterparties.count	{{count}} уговорних страна
+counterparties.totalDebt	Укупан дуг:
+counterparties.add	Додај
+counterparties.newTitle	Нова уговорна страна
+counterparties.nameLabel	Назив / Пуно име
+counterparties.namePlaceholder	Предузеће ДОО или Марко Марковић
+counterparties.innLabel	Порески број
+counterparties.categoryLabel	Категорија
+counterparties.categoryPlaceholder	Закуп, добављач…
+counterparties.typeLabel	Тип уговорне стране
+counterparties.types.legal.label	Правно лице
+counterparties.types.legal.desc	Организација или предузеће
+counterparties.types.ie.label	Предузетник
+counterparties.types.ie.desc	Самостални предузетник
+counterparties.types.person.label	Физичко лице
+counterparties.types.person.desc	Приватно лице
+counterparties.addSubmit	Додај уговорну страну
+counterparties.you	Ви
+counterparties.otherCategory	Остало
+counterparties.deals	послова
+counterparties.dealsLabel	Послови
+counterparties.debtLabel	Дуг
+counterparties.documents	Документи
+counterparties.edit	Измени
+counterparties.delete	Обриши
+counterparties.deleteConfirmTitle	Обрисати уговорну страну?
+counterparties.deleteConfirmText	Повезани документи и историја послова остаће сачувани, али ће уговорна страна бити уклоњена са листе.
+counterparties.toasts.loadFailed	Учитавање уговорних страна није успело
+counterparties.toasts.enterName	Унесите назив
+counterparties.toasts.saved	Измене су сачуване
+counterparties.toasts.saveFailed	Чување није успело
+counterparties.toasts.added	Уговорна страна је додата
+counterparties.toasts.addFailed	Додавање уговорне стране није успело
+counterparties.toasts.deleted	Уговорна страна је обрисана
+counterparties.toasts.deleteFailed	Брисање уговорне стране није успело
+counterparties.toasts.documentsOpened	Документи су отворени
+documents.signed	Потписани
+documents.pendingCount	Чекају потпис
+documents.draftCount	Интерни (непотписани)
+documents.searchPlaceholder	Претражите по називу или уговорној страни…
+documents.filters.all	Све
+documents.filters.signed	Потписани
+documents.filters.pending	Чекају потпис
+documents.upload	Отпреми
+documents.addTitle	Додај документ у библиотеку
+documents.dropzoneTitle	Кликните или превуците датотеку
+documents.dropzoneHint	PDF, DOCX, XLSX (до 15 MB)
+documents.dropzoneChange	Кликните да изаберете другу датотеку
+documents.titleLabel	Назив документа
+documents.titlePlaceholder	На пример, Записник о пријему бр. 48
+documents.partyLabel	Уговорна страна (ако постоји)
+documents.partyPlaceholder	Назив предузећа или предузетника
+documents.needsSignature	Да ли документ захтева потпис?
+documents.needsSignatureHint	Статус ће бити „Чека потпис”
+documents.saveToBase	Сачувај у библиотеку
+documents.emptyTitle	Ова фасцикла је празна
+documents.emptyBody	Отпремите нови документ или промените филтере
+documents.internalDoc	Интерни документ
+documents.uploaded	Отпремљено {{date}}
+documents.download	Преузми
+documents.open	Отвори
+documents.fileRequired	Приложите датотеку
+documents.options	Опције
+documents.status.title	Статус
+documents.status.signed	Потписан
+documents.status.pending	Чека потпис
+documents.status.draft	Непотписан
+documents.delete	Обриши
+documents.toasts.loadFailed	Учитавање докумената није успело
+documents.toasts.titleRequired	Отпремите датотеку или унесите назив
+documents.toasts.created	Документ је отпремљен у библиотеку
+documents.toasts.createFailed	Чување документа није успело
+documents.toasts.badFormat	Дозвољени формати: PDF, DOCX, XLSX
+documents.toasts.downloadFailed	Преузимање датотеке није успело
+documents.toasts.noFile	Уз овај документ није приложена датотека
+documents.toasts.openFailed	Отварање датотеке није успело
+documents.toasts.statusChanged	Статус: {{label}}
+documents.toasts.statusFailed	Промена статуса није успела
+documents.toasts.deleted	Документ је обрисан
+documents.toasts.deleteFailed	Брисање документа није успело
+goals.loading	Учитавање циљева…
+goals.active	Циљеви у току
+goals.done	Остварени
+goals.avgProgress	Укупан напредак
+goals.trackingTitle	Праћење плана
+goals.createGoal	Креирај циљ
+goals.newTitle	Нови финансијски циљ
+goals.titleLabel	Назив циља
+goals.titlePlaceholder	На пример, нови reformer уређаји
+goals.targetLabel	Циљни износ, {{symbol}}
+goals.targetPlaceholder	500000
+goals.deadlineLabel	Рок
+goals.trackingLabel	Како пратити напредак?
+goals.trackingAuto	Аутоматски (CRM показатељ)
+goals.trackingAutoDesc	Повежите циљ са приходом из изабране категорије. CRM ће сам померати траку напретка.
+goals.trackingManual	Ручно (лична штедња)
+goals.trackingManualDesc	На картици ће се појавити дугме „Додај средства”. Напредак зависи само од вас.
+goals.opTypeLabel	Тип операције
+goals.categoryLabel	Категорија
+goals.categoryPlaceholder	Изаберите категорију
+goals.editTitle	Измени циљ
+goals.nameLabel	Назив
+goals.namePlaceholder	Назив циља
+goals.amountLabel	Износ, {{symbol}}
+goals.achieved	Циљ је остварен
+goals.priority.high	Висок приоритет
+goals.priority.medium	Средњи приоритет
+goals.priority.low	Низак приоритет
+goals.autoCollect	Аутоматско праћење
+goals.deadlinePrefix	Рок:
+goals.noDeadline	Без рока
+goals.fundPlaceholder	Износ, {{symbol}}
+goals.fund	Додај
+goals.addFunds	Додај средства
+goals.autoHint	Вредност се аутоматски ажурира према приходу категорије
+goals.deleteConfirmTitle	Обрисати циљ?
+goals.deleteConfirmText	Напредак овог циља ће бити изгубљен. Ова радња не може да се опозове.
+goals.toasts.loadFailed	Учитавање циљева није успело
+goals.toasts.fillRequired	Попуните назив и износ
+goals.toasts.chooseCategory	Изаберите категорију за аутоматски циљ
+goals.toasts.created	Циљ је креиран
+goals.toasts.createFailed	Креирање циља није успело
+goals.toasts.enterName	Унесите назив
+goals.toasts.updated	Циљ је ажуриран
+goals.toasts.updateFailed	Ажурирање циља није успело
+goals.toasts.deleted	Циљ је обрисан
+goals.toasts.deleteFailed	Брисање циља није успело
+goals.toasts.funded	Средства су додата
+goals.toasts.fundFailed	Додавање средстава није успело
+onlinePayments.description	Повежите Stripe и ваши клијенти ће моћи да плаћају картицом на каси. Новац стиже директно на рачун вашег студија — Velora га никада не задржава. Провизија зависи од вашег плана.
+onlinePayments.gatewaysTitle	Пружаоци плаћања
+onlinePayments.gateways.stripe.name	Stripe
+onlinePayments.gateways.states.none.label	Није повезано
+onlinePayments.gateways.states.none.hint	Прихватајте плаћања картицом на рачун студија
+onlinePayments.gateways.states.none.action	Повежи
+onlinePayments.gateways.states.incomplete.label	Недостају подаци
+onlinePayments.gateways.states.incomplete.hint	Stripe чека податке о вашем студију — плаћања су онемогућена док их не пошаљете
+onlinePayments.gateways.states.incomplete.action	Настави
+onlinePayments.gateways.states.action.label	Потребна је радња
+onlinePayments.gateways.states.action.hint	Stripe је одбио неке податке и чека исправке — то се неће решити само од себе
+onlinePayments.gateways.states.action.action	Исправи податке
+onlinePayments.gateways.states.review.label	У провери
+onlinePayments.gateways.states.review.hint	Подаци су послати и Stripe их проверава. То обично траје до једног дана
+onlinePayments.gateways.states.review.action	Отвори Stripe
+onlinePayments.gateways.states.active.label	Повезано
+onlinePayments.gateways.states.active.hint	Плаћања картицом стижу на Stripe рачун студија
+onlinePayments.gateways.states.active.action	Подешавања
+onlinePayments.toasts.gatewayUpdated	Подешавања пружаоца су ажурирана
+onlinePayments.toasts.stripeReturned	Подаци су послати Stripe-у
+onlinePayments.toasts.stripeLinkExpired	Stripe веза је истекла — поново притисните Повежи
+paymentMethods.totalTurnover	Промет за период
+paymentMethods.periods.month	Месец
+paymentMethods.periods.quarter	Квартал
+paymentMethods.periods.year	Година
+paymentMethods.amount	Износ
+paymentMethods.share	Удео
+paymentMethods.transactions	трансакција
+paymentMethods.methods.cash.name	Готовина
+paymentMethods.methods.card.name	Банковна картица
+paymentMethods.methods.qr.name	SBP (QR)
+paymentMethods.methods.transfer.name	Трансфер
+paymentMethods.methods.stripe.name	Stripe
+paymentMethods.methods..name	Није наведено
+reports.metrics.revenue	Приходи
+reports.metrics.expenses	Расходи
+reports.metrics.profit	Профит
+reports.metrics.margin	Маржа
+reports.vsPreviousPeriod	у односу на претходни период
+reports.cashflowTitle	Ток готовине
+reports.cashflowSub	Анализа прихода и расхода
+reports.period	Период
+reports.income	Приход
+reports.expense	Расход
+reports.profit	Профит
+reports.periods.today	Данас
+reports.periods.week	Недеља
+reports.periods.month	Месец
+reports.periods.year	Година
+reports.legendIncome	Приходи
+reports.legendExpense	Расходи
+reports.exportCsv	Извези CSV
+reports.expenseStructure	Структура расхода
+reports.incomeStructure	Структура прихода
+reports.total	Укупно
+reports.otherCategory	Без категорије
+reports.noData	Нема података за овај период
+reports.insightsTitle	Финансијски сажетак и увиди
+reports.insightsPlaceholder	Овде ће се појавити финансијски сажетак уз помоћ ИИ: анализа трендова, структура расхода и препоруке
+reports.toasts.exportFailed	Извоз операција није успео
+confirmModal.cancel	Откажи
+confirmModal.confirm	Потврди
+confirmModal.delete	Обриши

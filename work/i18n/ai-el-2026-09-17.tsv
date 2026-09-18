@@ -1,0 +1,287 @@
+== el
+telegram.tokenLabel	Διακριτικό bot
+telegram.tokenPlaceholder	1234567890:ABC...
+telegram.tokenInvalidFormat	Μη έγκυρη μορφή διακριτικού
+telegram.verifyButton	Επαλήθευση και σύνδεση
+telegram.verifiedToast	Το bot @{{username}} συνδέθηκε
+telegram.verifyFailedToast	Το Telegram απέρριψε αυτό το διακριτικό
+telegram.disconnect	Αποσύνδεση
+telegram.disconnectedToast	Το bot αποσυνδέθηκε
+telegram.disconnectConfirmTitle	Αποσύνδεση του bot;
+telegram.disconnectConfirmMessage	Η αυτόματη απάντηση του Telegram θα σταματήσει να λειτουργεί μέχρι να συνδέσετε ξανά ένα bot.
+telegram.gateTooltip	Συνδέστε πρώτα ένα bot
+telegram.statsPending	Θα εμφανιστεί μόλις αρχίσει να λειτουργεί η αυτόματη απάντηση
+telegram.instructionTitle	Πώς να λάβετε διακριτικό
+telegram.instructionStep1	Ανοίξτε το @BotFather στο Telegram
+telegram.instructionStep2	Στείλτε την εντολή /newbot και επιλέξτε όνομα και όνομα χρήστη για το bot
+telegram.instructionStep3	Αντιγράψτε το διακριτικό που θα λάβετε
+telegram.instructionStep4	Επικολλήστε το εδώ και πατήστε «Επαλήθευση και σύνδεση»
+instagram.connectButton	Σύνδεση Instagram
+instagram.connectedToast	Το Instagram συνδέθηκε
+instagram.connectErrorToast	Δεν ήταν δυνατή η σύνδεση του Instagram — δοκιμάστε ξανά
+instagram.expiresUntil	Η πρόσβαση ισχύει έως {{date}}
+instagram.disconnect	Αποσύνδεση
+instagram.disconnectedToast	Το Instagram αποσυνδέθηκε
+instagram.disconnectConfirmTitle	Αποσύνδεση Instagram;
+instagram.disconnectConfirmMessage	Η αυτόματη απάντηση του Instagram θα σταματήσει να απαντά στους πελάτες μέχρι να συνδέσετε ξανά τον λογαριασμό.
+instagram.gateTooltip	Συνδέστε πρώτα έναν λογαριασμό
+instagram.statsPending	Θα εμφανιστεί μόλις αρχίσει να λειτουργεί η αυτόματη απάντηση
+instagram.instructionTitle	Πώς να συνδεθείτε
+instagram.instructionStep1	Ο λογαριασμός του στούντιο πρέπει να είναι επαγγελματικός — Business ή Creator (Ρυθμίσεις Instagram → Τύπος λογαριασμού)
+instagram.instructionStep2	Πατήστε «Σύνδεση Instagram» και συνδεθείτε με τον λογαριασμό του στούντιο
+instagram.instructionStep3	Επιτρέψτε την πρόσβαση στα μηνύματα
+instagram.instructionStep4	Θα επιστρέψετε εδώ αυτόματα
+whatsapp.numberLabel	Αριθμός WhatsApp Business
+whatsapp.connectLink	ή εισαγάγετε διακριτικό χειροκίνητα
+whatsapp.gateTooltip	Συνδέστε πρώτα έναν αριθμό WhatsApp
+whatsapp.statsPending	Θα εμφανιστεί μόλις αρχίσει να λειτουργεί η αυτόματη απάντηση
+whatsapp.instructionTitle	Πώς να συνδεθείτε
+whatsapp.instructionStep1	Πατήστε «Σύνδεση WhatsApp» — θα ανοίξει παράθυρο της Meta
+whatsapp.instructionStep2	Συνδεθείτε στο Facebook, επιλέξτε επαγγελματικό λογαριασμό και αριθμό (ή προσθέστε νέο) και επιβεβαιώστε τον με τον κωδικό
+whatsapp.instructionStep3	Ο αριθμός συνδέεται μία φορά — ο ίδιος χρησιμοποιείται για ειδοποιήσεις πελατών· επιστρέψτε εδώ και ενεργοποιήστε την αυτόματη απάντηση
+whatsapp.connectButton	Σύνδεση WhatsApp
+whatsapp.connectedToast	Ο αριθμός WhatsApp συνδέθηκε
+whatsapp.connectErrorToast	Δεν ήταν δυνατή η σύνδεση του αριθμού WhatsApp
+whatsapp.disconnect	Αποσύνδεση
+whatsapp.disconnectedToast	Το WhatsApp αποσυνδέθηκε
+whatsapp.disconnectConfirmTitle	Αποσύνδεση WhatsApp;
+whatsapp.disconnectConfirmMessage	Ο αριθμός θα αποσυνδεθεί επίσης από ειδοποιήσεις και ενσωματώσεις του στούντιο.
+history.title	Ιστορικό συνομιλιών
+history.empty	Ξεκινήστε την πρώτη σας συνομιλία
+history.today	Σήμερα
+history.yesterday	Χθες
+history.earlier	Νωρίτερα
+history.messagesCount_one	{{count}} μήνυμα
+history.messagesCount_other	{{count}} μηνύματα
+history.deleteConfirmTitle	Διαγραφή αυτής της συνομιλίας;
+history.deleteConfirmMessage	Όλα τα μηνύματα αυτής της συνομιλίας θα διαγραφούν οριστικά.
+actions.newChat	Νέα συνομιλία
+actions.deleteChat	Διαγραφή συνομιλίας
+actions.confirmTitle	Επιβεβαίωση ενέργειας
+actions.confirm	Επιβεβαίωση
+actions.cancel	Ακύρωση
+actions.cancelled	Η ενέργεια ακυρώθηκε.
+actions.done	Ολοκληρώθηκε {{date}}
+actions.effect	Τι αλλάζει
+actions.undo	Αναίρεση
+actions.undoTitle	Αναίρεση αυτής της ενέργειας;
+actions.undoMessage	Θα επαναφέρω ό,τι έγινε: {{action}}. Τα μαθήματα που έχουν ήδη κλείσει οι πελάτες θα παραμείνουν — μόνο άνθρωπος μπορεί να τα αφαιρέσει.
+actions.args.lesson_id	Μάθημα
+actions.args.client_id	Πελάτης
+actions.args.reservation_id	Κράτηση
+actions.args.alternate_with	Εναλλάξ με
+actions.args.service_id	Υπηρεσία
+actions.args.teacher_id	Εκπαιδευτής
+actions.args.hall_id	Αίθουσα
+actions.args.start_time	Ξεκινά
+actions.args.duration_min	Διάρκεια, λεπτά
+actions.args.total_spots	Θέσεις
+actions.args.price	Τιμή
+actions.args.name	Όνομα
+actions.args.last_name	Επώνυμο
+actions.args.phone	Τηλέφωνο
+actions.args.email	Email
+actions.args.city	Πόλη
+actions.args.birth_date	Ημερομηνία γέννησης
+actions.args.source	Πηγή
+actions.args.frozen	Σε αναστολή
+actions.args.date_from	Από
+actions.args.date_to	Έως
+actions.args.weekdays	Ημέρες εβδομάδας
+actions.args.time_from	Από
+actions.args.time_to	Έως
+actions.args.break_at	Διάλειμμα στις
+actions.args.break_min	Διάλειμμα, λεπτά
+actions.args.extend_hours	Επέκταση ωραρίου εκπαιδευτή
+actions.args.salary	Μισθός
+actions.args.access_role	Πρόσβαση
+actions.args.department	Θέση
+actions.args.password	Κωδικός εργαζομένου
+actions.args.rate	Αμοιβή
+actions.args.rate_type	Τύπος αμοιβής
+actions.args.service_ids	Υπηρεσίες
+actions.args.schedule	Πρόγραμμα
+actions.bool.yes	ναι
+actions.bool.no	όχι
+settings.title	Ρυθμίσεις AI
+settings.model	Μοντέλο
+settings.language	Γλώσσα
+models.comingSoon	Σύντομα διαθέσιμο
+models.velora-3.5	Velora AI 3.5
+languages.auto	Αυτόματα
+languages.ru	Ρωσικά
+languages.en	Αγγλικά
+languages.uk	Ουκρανικά
+languages.cs	Τσεχικά
+languages.de	Γερμανικά
+chat.thinking	Το Velora AI σκέφτεται
+chat.thinkingAnswer	Το Velora AI επεξεργάζεται την απάντηση
+chat.readyTitle	Το Velora AI είναι έτοιμο να βοηθήσει
+chat.thinkingTitle	Το Velora AI σκέφτεται...
+chat.readySubtitle	Κάντε μια ερώτηση ή επιλέξτε πρόταση
+chat.thinkingSubtitle	Επεξεργασία του αιτήματός σας
+chat.placeholder	Γράψτε ένα μήνυμα...
+chat.drawerPlaceholder	Ρωτήστε με οτιδήποτε...
+chat.navbarPlaceholder	Ρωτήστε το AI ή ορίστε εργασία...
+chat.enterToSend	Enter για αποστολή
+chat.shiftEnterNewline	Shift+Enter για νέα γραμμή
+chat.aiDisclaimer	Το Velora AI μπορεί να κάνει λάθη. Ελέγξτε τις σημαντικές πληροφορίες.
+chat.continueInChat	Συνέχεια στη συνομιλία →
+chat.emptyTitle	Πώς μπορώ να βοηθήσω;
+chat.emptySubtitle	Ρωτήστε οτιδήποτε για το στούντιο, τους πελάτες ή την επιχείρησή σας
+chat.charCount_one	{{count}} / 4000 χαρακτήρας
+chat.charCount_other	{{count}} / 4000 χαρακτήρες
+chat.suggestions.revenue	Εμφάνιση στατιστικών εσόδων αυτού του μήνα
+chat.suggestions.sms	Γράψε SMS υπενθύμισης για ραντεβού
+chat.suggestions.promo	Ιδέες για καλοκαιρινή προώθηση
+chat.suggestions.retention	Πώς μπορώ να βελτιώσω τη διατήρηση πελατών;
+chat.drawerSuggestions.revenueAnalysis	Ανάλυση εσόδων
+chat.drawerSuggestions.emailTemplate	Πρότυπο email
+chat.drawerSuggestions.promoIdeas	Ιδέες προώθησης
+chat.drawerSuggestions.clientReport	Αναφορά πελάτη
+drawer.historyBack	Συνομιλίες
+drawer.historyLabel	Ιστορικό
+agents.title	Πράκτορες AI
+agents.info.title	Τι είναι οι πράκτορες AI
+agents.info.lead	Ένας βοηθός που απαντά στους πελάτες στα μηνύματα του στούντιό σας όταν είστε απασχολημένοι.
+agents.info.b1	Απαντά όλο το εικοσιτετράωρο — κανείς δεν περιμένει διαχειριστή
+agents.info.b2	Γνωρίζει το πρόγραμμα, τις υπηρεσίες και τις τιμές του στούντιό σας
+agents.info.b3	Εσείς ορίζετε τον τόνο και το μήκος των απαντήσεων
+agents.info.note	Ένα κανάλι ενεργοποιείται μόλις συνδεθεί στις ρυθμίσεις
+agents.activeCount	{{active}} / {{total}}
+agents.stateOn	Απαντά
+agents.stateOffline	Δεν είναι συνδεδεμένος
+agents.configureButton	Ρύθμιση πρακτόρων
+agents.enable	Ενεργοποίηση
+agents.disable	Απενεργοποίηση
+agents.modalTitle	Ρύθμιση πράκτορα AI
+agents.modalSubtitle	Αυτόματες απαντήσεις σε εφαρμογές μηνυμάτων
+agents.tabPrompt	Οδηγία συστήματος
+agents.statusDisabled	Απενεργοποιημένο
+agents.statHandled	Διεκπεραιώθηκαν
+agents.statRating	Αξιολόγηση
+agents.styleTitle	Στυλ απάντησης
+agents.styleAllChannels	ισχύει για όλα τα κανάλια
+agents.toneLabel	Τόνος απάντησης
+agents.tone.friendly	Φιλικός
+agents.tone.formal	Επίσημος
+agents.tone.neutral	Ουδέτερος
+agents.maxLengthLabel	Μέγιστο μήκος απάντησης (χαρακτήρες)
+agents.maxLengthError	Εισαγάγετε αριθμό από 50 έως 4000
+agents.offHoursLabel	Αυτόματη απάντηση μόνο εκτός ωραρίου εργασίας
+agents.promptHint	Αυτό το κείμενο ορίζει την προσωπικότητα του πράκτορα — πώς επικοινωνεί, τι γνωρίζει και ποια θέματα αποφεύγει.
+agents.promptPlaceholder	Είστε ευγενικός βοηθός στούντιο...
+agents.promptCount_one	{{count}} / 2000 χαρακτήρας
+agents.promptCount_other	{{count}} / 2000 χαρακτήρες
+agents.tgChannelInactive	Το κανάλι Telegram είναι απενεργοποιημένο στην Online κράτηση — το bot δεν λαμβάνει μηνύματα, επομένως ο πράκτορας παραμένει σιωπηλός.
+errors.tg_token_required	Συνδέστε πρώτα ένα bot Telegram — δεν έχει αποθηκευτεί ακόμη διακριτικό.
+errors.ig_not_connected	Το Instagram δεν έχει συνδεθεί ακόμη.
+errors.wa_not_connected	Ο αριθμός WhatsApp δεν έχει συνδεθεί ακόμη — συνδέστε τον στις Ειδοποιήσεις.
+errors.assistant_unavailable	Ο βοηθός δεν είναι προσωρινά διαθέσιμος — δοκιμάστε ξανά αργότερα.
+errors.trial_exhausted	Χρησιμοποιήσατε και τα 500 δοκιμαστικά αιτήματα του βοηθού AI. Επιλέξτε πληρωμένο πρόγραμμα για να συνεχίσετε.
+errors.quota_exceeded	Χρησιμοποιήσατε όλα τα αιτήματα AI αυτού του προγράμματος. Το όριο επαναφέρεται στην αρχή του μήνα — ή αναβαθμίστε το πρόγραμμα.
+toasts.settingsSaved	Οι ρυθμίσεις αποθηκεύτηκαν
+toolStatus.add_client_note	Προσθήκη σημείωσης…
+toolStatus.add_client_tag	Προσθήκη ετικέτας…
+toolStatus.add_loyalty_points	Προσθήκη πόντων…
+toolStatus.book_client	Κράτηση μαθήματος…
+toolStatus.cancel_booking	Ακύρωση κράτησης…
+toolStatus.pay_booking	Καταχώριση πληρωμής μαθήματος…
+toolStatus.clear_schedule	Εκκαθάριση προγράμματος…
+toolStatus.create_account	Δημιουργία λογαριασμού…
+toolStatus.create_branch	Δημιουργία υποκαταστήματος…
+toolStatus.create_client	Δημιουργία πελάτη…
+toolStatus.create_counterparty	Δημιουργία αντισυμβαλλομένου…
+toolStatus.create_hall	Δημιουργία αίθουσας…
+toolStatus.create_lesson	Δημιουργία μαθήματος…
+toolStatus.create_operation	Καταχώριση συναλλαγής…
+toolStatus.create_package	Δημιουργία πακέτου…
+toolStatus.create_promo	Δημιουργία κωδικού προσφοράς…
+toolStatus.create_service	Δημιουργία υπηρεσίας…
+toolStatus.create_staff	Προσθήκη μέλους ομάδας…
+toolStatus.default	Επεξεργασία…
+toolStatus.delete_client	Διαγραφή πελάτη…
+toolStatus.delete_staff	Αφαίρεση μέλους ομάδας…
+toolStatus.fill_schedule	Συμπλήρωση προγράμματος…
+toolStatus.find_clients	Αναζήτηση πελατών…
+toolStatus.forget_fact	Λήθη πληροφορίας…
+toolStatus.freeze_client	Αναστολή πελάτη…
+toolStatus.get_booking_settings	Έλεγχος κανόνων κράτησης…
+toolStatus.get_catalog_settings	Έλεγχος ρυθμίσεων πακέτων…
+toolStatus.get_client	Άνοιγμα κάρτας πελάτη…
+toolStatus.get_client_events	Ανάγνωση ιστορικού πελάτη…
+toolStatus.get_inactive_clients	Αναζήτηση ανενεργών πελατών…
+toolStatus.get_client_notes	Ανάγνωση σημειώσεων πελάτη…
+toolStatus.get_client_subscription	Έλεγχος πακέτου πελάτη…
+toolStatus.get_delivery_log	Έλεγχος αρχείου αποστολών…
+toolStatus.get_finance_goals	Έλεγχος οικονομικών στόχων…
+toolStatus.get_finance_summary	Έλεγχος οικονομικών…
+toolStatus.get_lesson	Άνοιγμα μαθήματος…
+toolStatus.get_loyalty_programs	Έλεγχος προγραμμάτων επιβράβευσης…
+toolStatus.get_loyalty_summary	Έλεγχος επιβράβευσης…
+toolStatus.get_notification_matrix	Έλεγχος ειδοποιήσεων…
+toolStatus.get_payroll	Υπολογισμός μισθοδοσίας…
+toolStatus.get_rooms	Έλεγχος αιθουσών…
+toolStatus.get_schedule	Έλεγχος προγράμματος…
+toolStatus.get_segments	Έλεγχος τμημάτων πελατών…
+toolStatus.get_services	Έλεγχος υπηρεσιών…
+toolStatus.get_staff	Έλεγχος ομάδας…
+toolStatus.get_staff_profile	Άνοιγμα κάρτας μέλους ομάδας…
+toolStatus.get_stats	Επεξεργασία αριθμών…
+toolStatus.get_team_report	Μέτρηση επιστροφών ανά εκπαιδευτή…
+toolStatus.get_studio_facts	Ανάκληση όσων γνωρίζω για το στούντιο…
+toolStatus.get_today_agenda	Έλεγχος της σημερινής ημέρας…
+toolStatus.issue_certificate	Έκδοση πιστοποιητικού…
+toolStatus.list_operations	Έλεγχος εσόδων και εξόδων…
+toolStatus.open_ui	Άνοιγμα οθόνης…
+toolStatus.remember_fact	Απομνημόνευση…
+toolStatus.remove_client_tag	Αφαίρεση ετικέτας…
+toolStatus.sell_subscription	Πώληση πακέτου…
+toolStatus.set_client_discount	Ορισμός έκπτωσης…
+toolStatus.set_staff_day	Επισήμανση ημέρας στο πρόγραμμα…
+toolStatus.set_staff_schedule	Ορισμός προγράμματος…
+toolStatus.toggle_notification_event	Εναλλαγή ειδοποίησης…
+toolStatus.ui_section	Έλεγχος λειτουργίας ενότητας…
+toolStatus.update_booking_rules	Ενημέρωση κανόνων κράτησης…
+toolStatus.update_client	Ενημέρωση στοιχείων πελάτη…
+toolStatus.update_lesson	Ενημέρωση μαθήματος…
+toolStatus.update_service	Ενημέρωση υπηρεσίας…
+toolStatus.update_staff	Ενημέρωση μέλους ομάδας…
+quota.trialLow	Απομένουν λίγα δοκιμαστικά αιτήματα.
+quota.label	Αιτήματα βοηθού AI
+quota.value	{{used}} από {{limit}}
+quota.low	Πλησιάζετε το μηνιαίο όριο.
+quota.upgrade	Επιλέξτε πρόγραμμα
+quota.monthPeriod	Ανά ημερολογιακό μήνα (UTC)
+quota.trialPeriod	Για όλη τη δοκιμαστική περίοδο
+rating.up	Καλή απάντηση
+rating.down	Κακή απάντηση
+memory.title	Ο βοηθός θυμάται
+memory.forget	Ξέχασε
+memory.forgetConfirmTitle	Να ξεχαστεί αυτή η πληροφορία;
+memory.forgetConfirmMessage	Ο βοηθός θα σταματήσει να τη χρησιμοποιεί στις απαντήσεις.
+memory.deleted	Η πληροφορία αφαιρέθηκε
+plan.pages.who	Ποιος και τι
+plan.pages.when	Πότε
+plan.pages.check	Έλεγχος
+plan.stepOf	Βήμα {{current}} από {{total}}
+plan.next	Επόμενο
+plan.back	Πίσω
+plan.confirm	Έγκριση
+plan.confirmDanger	Έγκριση
+plan.choose	Επιλογή
+plan.nothingFound	Δεν βρέθηκε τίποτα
+plan.nothingToFill	Δεν υπάρχει κάτι για συμπλήρωση εδώ — προχωρήστε απευθείας.
+plan.fromStep	δημιουργήθηκε στο βήμα {{n}}
+plan.values.group	ομάδα
+plan.values.individual	ατομικό
+plan.values.trainer	εκπαιδευτής
+plan.values.admin	διαχειριστής
+plan.values.owner	ιδιοκτήτης
+plan.values.hourly	ανά ώρα
+plan.values.percent	% των εσόδων
+plan.values.fixed	ανά μάθημα
+plan.title_one	Έγκριση — {{count}} ενέργεια
+plan.title_other	Έγκριση — {{count}} ενέργειες
+plan.stillEmpty_one	Απομένει {{count}} πεδίο
+plan.stillEmpty_other	Απομένουν {{count}} πεδία

@@ -1,0 +1,292 @@
+== ro
+telegram.tokenLabel	Token bot
+telegram.tokenPlaceholder	1234567890:ABC...
+telegram.tokenInvalidFormat	Format de token nevalid
+telegram.verifyButton	Verifică și conectează
+telegram.verifiedToast	Botul @{{username}} este conectat
+telegram.verifyFailedToast	Telegram a respins acest token
+telegram.disconnect	Deconectează
+telegram.disconnectedToast	Botul este deconectat
+telegram.disconnectConfirmTitle	Deconectezi botul?
+telegram.disconnectConfirmMessage	Răspunsul automat Telegram va înceta să funcționeze până când reconectezi un bot.
+telegram.gateTooltip	Conectează mai întâi un bot
+telegram.statsPending	Va apărea când răspunsul automat va începe să funcționeze
+telegram.instructionTitle	Cum obții un token
+telegram.instructionStep1	Deschide @BotFather în Telegram
+telegram.instructionStep2	Trimite comanda /newbot și alege un nume și un nume de utilizator pentru bot
+telegram.instructionStep3	Copiază tokenul primit
+telegram.instructionStep4	Lipește-l aici și apasă „Verifică și conectează”
+instagram.connectButton	Conectează Instagram
+instagram.connectedToast	Instagram este conectat
+instagram.connectErrorToast	Nu s-a putut conecta Instagram — încearcă din nou
+instagram.expiresUntil	Acces valabil până la {{date}}
+instagram.disconnect	Deconectează
+instagram.disconnectedToast	Instagram este deconectat
+instagram.disconnectConfirmTitle	Deconectezi Instagram?
+instagram.disconnectConfirmMessage	Răspunsul automat Instagram va înceta să răspundă clienților până când reconectezi contul.
+instagram.gateTooltip	Conectează mai întâi un cont
+instagram.statsPending	Va apărea când răspunsul automat va începe să funcționeze
+instagram.instructionTitle	Cum te conectezi
+instagram.instructionStep1	Contul studioului trebuie să fie profesional — Business sau Creator (Setări Instagram → Tip de cont)
+instagram.instructionStep2	Apasă „Conectează Instagram” și autentifică-te cu contul studioului
+instagram.instructionStep3	Permite accesul la mesaje
+instagram.instructionStep4	Vei reveni aici automat
+whatsapp.numberLabel	Număr WhatsApp Business
+whatsapp.connectLink	sau introdu manual un token
+whatsapp.gateTooltip	Conectează mai întâi un număr WhatsApp
+whatsapp.statsPending	Va apărea când răspunsul automat va începe să funcționeze
+whatsapp.instructionTitle	Cum te conectezi
+whatsapp.instructionStep1	Apasă „Conectează WhatsApp” — se deschide o fereastră Meta
+whatsapp.instructionStep2	Autentifică-te pe Facebook, alege un cont de firmă și un număr (sau adaugă unul nou), apoi confirmă-l cu codul
+whatsapp.instructionStep3	Numărul se conectează o dată — același este folosit pentru notificările clienților; revino aici și activează răspunsul automat
+whatsapp.connectButton	Conectează WhatsApp
+whatsapp.connectedToast	Numărul WhatsApp este conectat
+whatsapp.connectErrorToast	Nu s-a putut conecta numărul WhatsApp
+whatsapp.disconnect	Deconectează
+whatsapp.disconnectedToast	WhatsApp este deconectat
+whatsapp.disconnectConfirmTitle	Deconectezi WhatsApp?
+whatsapp.disconnectConfirmMessage	Numărul va fi deconectat și de la notificările și integrările studioului.
+history.title	Istoric conversații
+history.empty	Începe prima ta conversație
+history.today	Astăzi
+history.yesterday	Ieri
+history.earlier	Mai devreme
+history.messagesCount_one	{{count}} mesaj
+history.messagesCount_few	{{count}} mesaje
+history.messagesCount_other	{{count}} de mesaje
+history.deleteConfirmTitle	Ștergi acest chat?
+history.deleteConfirmMessage	Toate mesajele din această conversație vor fi șterse definitiv.
+actions.newChat	Chat nou
+actions.deleteChat	Șterge chatul
+actions.confirmTitle	Confirmă acțiunea
+actions.confirm	Confirmă
+actions.cancel	Anulează
+actions.cancelled	Acțiunea a fost anulată.
+actions.done	Gata la {{date}}
+actions.effect	Ce se schimbă
+actions.undo	Anulează modificarea
+actions.undoTitle	Anulezi această acțiune?
+actions.undoMessage	Voi reveni asupra celor făcute: {{action}}. Clasele deja rezervate de clienți vor rămâne — doar o persoană le poate elimina.
+actions.args.lesson_id	Clasă
+actions.args.client_id	Client
+actions.args.reservation_id	Rezervare
+actions.args.alternate_with	Alternare cu
+actions.args.service_id	Serviciu
+actions.args.teacher_id	Antrenor
+actions.args.hall_id	Sală
+actions.args.start_time	Începe
+actions.args.duration_min	Durată, min
+actions.args.total_spots	Locuri
+actions.args.price	Preț
+actions.args.name	Prenume
+actions.args.last_name	Nume
+actions.args.phone	Telefon
+actions.args.email	E-mail
+actions.args.city	Oraș
+actions.args.birth_date	Data nașterii
+actions.args.source	Sursă
+actions.args.frozen	Înghețat
+actions.args.date_from	De la
+actions.args.date_to	Până la
+actions.args.weekdays	Zilele săptămânii
+actions.args.time_from	De la
+actions.args.time_to	Până la
+actions.args.break_at	Pauză la
+actions.args.break_min	Pauză, min
+actions.args.extend_hours	Extinde programul antrenorului
+actions.args.salary	Salariu
+actions.args.access_role	Acces
+actions.args.department	Funcție
+actions.args.password	Parola angajatului
+actions.args.rate	Tarif
+actions.args.rate_type	Tip de plată
+actions.args.service_ids	Servicii
+actions.args.schedule	Program
+actions.bool.yes	da
+actions.bool.no	nu
+settings.title	Setări AI
+settings.model	Model
+settings.language	Limbă
+models.comingSoon	În curând
+models.velora-3.5	Velora AI 3.5
+languages.auto	Automat
+languages.ru	Rusă
+languages.en	Engleză
+languages.uk	Ucraineană
+languages.cs	Cehă
+languages.de	Germană
+chat.thinking	Velora AI gândește
+chat.thinkingAnswer	Velora AI analizează răspunsul
+chat.readyTitle	Velora AI este gata să ajute
+chat.thinkingTitle	Velora AI gândește...
+chat.readySubtitle	Pune o întrebare sau alege o sugestie
+chat.thinkingSubtitle	Se procesează solicitarea ta
+chat.placeholder	Scrie un mesaj...
+chat.drawerPlaceholder	Întreabă-mă orice...
+chat.navbarPlaceholder	Întreabă AI-ul sau setează o sarcină...
+chat.enterToSend	Enter pentru trimitere
+chat.shiftEnterNewline	Shift+Enter pentru un rând nou
+chat.aiDisclaimer	Velora AI poate greși. Verifică informațiile importante.
+chat.continueInChat	Continuă în chat →
+chat.emptyTitle	Cum pot ajuta?
+chat.emptySubtitle	Pune orice întrebare despre studioul, clienții sau afacerea ta
+chat.charCount_one	{{count}} / 4000 caracter
+chat.charCount_few	{{count}} / 4000 caractere
+chat.charCount_other	{{count}} / 4000 de caractere
+chat.suggestions.revenue	Arată statisticile veniturilor pentru luna aceasta
+chat.suggestions.sms	Scrie un SMS de reamintire pentru o programare
+chat.suggestions.promo	Idei pentru o promoție de vară
+chat.suggestions.retention	Cum pot îmbunătăți retenția clienților?
+chat.drawerSuggestions.revenueAnalysis	Analiza veniturilor
+chat.drawerSuggestions.emailTemplate	Șablon de e-mail
+chat.drawerSuggestions.promoIdeas	Idei de promovare
+chat.drawerSuggestions.clientReport	Raport client
+drawer.historyBack	Chat-uri
+drawer.historyLabel	Istoric
+agents.title	Agenți AI
+agents.info.title	Ce sunt agenții AI
+agents.info.lead	Un asistent care răspunde clienților în aplicațiile de mesagerie ale studioului cât timp ești ocupat.
+agents.info.b1	Răspunde non-stop — nimeni nu așteaptă un administrator
+agents.info.b2	Cunoaște programul, serviciile și prețurile studioului tău
+agents.info.b3	Tu stabilești tonul și lungimea răspunsurilor
+agents.info.note	Un canal începe să funcționeze după ce este conectat în setări
+agents.activeCount	{{active}} / {{total}}
+agents.stateOn	Răspunde
+agents.stateOffline	Neconectat
+agents.configureButton	Configurează agenții
+agents.enable	Activează
+agents.disable	Dezactivează
+agents.modalTitle	Configurarea agentului AI
+agents.modalSubtitle	Răspunsuri automate în aplicații de mesagerie
+agents.tabPrompt	Instrucțiune de sistem
+agents.statusDisabled	Dezactivat
+agents.statHandled	Procesate
+agents.statRating	Evaluare
+agents.styleTitle	Stil de răspuns
+agents.styleAllChannels	se aplică tuturor canalelor
+agents.toneLabel	Tonul răspunsurilor
+agents.tone.friendly	Prietenos
+agents.tone.formal	Formal
+agents.tone.neutral	Neutru
+agents.maxLengthLabel	Lungimea maximă a răspunsului (caractere)
+agents.maxLengthError	Introdu un număr de la 50 la 4000
+agents.offHoursLabel	Răspuns automat numai în afara programului de lucru
+agents.promptHint	Acest text definește personalitatea agentului — cum comunică, ce știe și ce subiecte evită.
+agents.promptPlaceholder	Ești un asistent de studio politicos...
+agents.promptCount_one	{{count}} / 2000 caracter
+agents.promptCount_few	{{count}} / 2000 caractere
+agents.promptCount_other	{{count}} / 2000 de caractere
+agents.tgChannelInactive	Canalul Telegram este oprit în Rezervări online — botul nu primește mesaje, așa că agentul rămâne tăcut.
+errors.tg_token_required	Conectează mai întâi un bot Telegram — nu a fost salvat încă niciun token.
+errors.ig_not_connected	Instagram nu este conectat încă.
+errors.wa_not_connected	Numărul WhatsApp nu este conectat încă — conectează-l în Notificări.
+errors.assistant_unavailable	Asistentul este temporar indisponibil — încearcă mai târziu.
+errors.trial_exhausted	Ai folosit toate cele 500 de solicitări de probă ale asistentului AI. Alege un plan plătit pentru a continua.
+errors.quota_exceeded	Ai folosit toate solicitările AI din acest plan. Limita se resetează la începutul lunii — sau treci la un plan superior.
+toasts.settingsSaved	Setări salvate
+toolStatus.add_client_note	Se adaugă o notă…
+toolStatus.add_client_tag	Se adaugă o etichetă…
+toolStatus.add_loyalty_points	Se adaugă puncte…
+toolStatus.book_client	Se rezervă clasa…
+toolStatus.cancel_booking	Se anulează rezervarea…
+toolStatus.pay_booking	Se înregistrează plata clasei…
+toolStatus.clear_schedule	Se golește programul…
+toolStatus.create_account	Se creează un cont…
+toolStatus.create_branch	Se creează o filială…
+toolStatus.create_client	Se creează un client…
+toolStatus.create_counterparty	Se creează o contraparte…
+toolStatus.create_hall	Se creează o sală…
+toolStatus.create_lesson	Se creează o clasă…
+toolStatus.create_operation	Se înregistrează tranzacția…
+toolStatus.create_package	Se creează un abonament…
+toolStatus.create_promo	Se creează un cod promoțional…
+toolStatus.create_service	Se creează un serviciu…
+toolStatus.create_staff	Se adaugă un membru al echipei…
+toolStatus.default	Se procesează…
+toolStatus.delete_client	Se șterge clientul…
+toolStatus.delete_staff	Se elimină membrul echipei…
+toolStatus.fill_schedule	Se completează programul…
+toolStatus.find_clients	Se caută clienți…
+toolStatus.forget_fact	Se uită informația…
+toolStatus.freeze_client	Se îngheață clientul…
+toolStatus.get_booking_settings	Se verifică regulile de rezervare…
+toolStatus.get_catalog_settings	Se verifică setările abonamentelor…
+toolStatus.get_client	Se deschide fișa clientului…
+toolStatus.get_client_events	Se citește istoricul clientului…
+toolStatus.get_inactive_clients	Se caută clienți inactivi…
+toolStatus.get_client_notes	Se citesc notele clientului…
+toolStatus.get_client_subscription	Se verifică abonamentul clientului…
+toolStatus.get_delivery_log	Se verifică jurnalul de livrare…
+toolStatus.get_finance_goals	Se verifică obiectivele financiare…
+toolStatus.get_finance_summary	Se verifică finanțele…
+toolStatus.get_lesson	Se deschide clasa…
+toolStatus.get_loyalty_programs	Se verifică programele de fidelitate…
+toolStatus.get_loyalty_summary	Se verifică fidelitatea…
+toolStatus.get_notification_matrix	Se verifică notificările…
+toolStatus.get_payroll	Se calculează salariile…
+toolStatus.get_rooms	Se verifică sălile…
+toolStatus.get_schedule	Se verifică programul…
+toolStatus.get_segments	Se verifică segmentele de clienți…
+toolStatus.get_services	Se verifică serviciile…
+toolStatus.get_staff	Se verifică echipa…
+toolStatus.get_staff_profile	Se deschide fișa membrului echipei…
+toolStatus.get_stats	Se procesează cifrele…
+toolStatus.get_team_report	Se măsoară revenirea pe antrenor…
+toolStatus.get_studio_facts	Se reamintește ce se știe despre studio…
+toolStatus.get_today_agenda	Se verifică ziua de astăzi…
+toolStatus.issue_certificate	Se emite certificatul…
+toolStatus.list_operations	Se verifică venituri și cheltuieli…
+toolStatus.open_ui	Se deschide ecranul…
+toolStatus.remember_fact	Se memorează…
+toolStatus.remove_client_tag	Se elimină eticheta…
+toolStatus.sell_subscription	Se vinde abonamentul…
+toolStatus.set_client_discount	Se setează reducerea…
+toolStatus.set_staff_day	Se marchează ziua în program…
+toolStatus.set_staff_schedule	Se setează programul…
+toolStatus.toggle_notification_event	Se comută notificarea…
+toolStatus.ui_section	Se verifică funcționarea secțiunii…
+toolStatus.update_booking_rules	Se actualizează regulile de rezervare…
+toolStatus.update_client	Se actualizează datele clientului…
+toolStatus.update_lesson	Se actualizează clasa…
+toolStatus.update_service	Se actualizează serviciul…
+toolStatus.update_staff	Se actualizează membrul echipei…
+quota.trialLow	Au rămas puține solicitări de probă.
+quota.label	Solicitări către asistentul AI
+quota.value	{{used}} din {{limit}}
+quota.low	Ești aproape de limita lunară.
+quota.upgrade	Alege un plan
+quota.monthPeriod	Pe lună calendaristică (UTC)
+quota.trialPeriod	Pentru întreaga perioadă de probă
+rating.up	Răspuns bun
+rating.down	Răspuns prost
+memory.title	Asistentul își amintește
+memory.forget	Uită
+memory.forgetConfirmTitle	Uiți această informație?
+memory.forgetConfirmMessage	Asistentul nu o va mai folosi în răspunsuri.
+memory.deleted	Informație eliminată
+plan.pages.who	Cine și ce
+plan.pages.when	Când
+plan.pages.check	Verificare
+plan.stepOf	Pasul {{current}} din {{total}}
+plan.next	Următorul
+plan.back	Înapoi
+plan.confirm	Aprobă
+plan.confirmDanger	Aprobă
+plan.choose	Alege
+plan.nothingFound	Nu s-a găsit nimic
+plan.nothingToFill	Nu este nimic de completat aici — continuă direct.
+plan.fromStep	creat la pasul {{n}}
+plan.values.group	grup
+plan.values.individual	individual
+plan.values.trainer	antrenor
+plan.values.admin	administrator
+plan.values.owner	proprietar
+plan.values.hourly	pe oră
+plan.values.percent	% din venituri
+plan.values.fixed	pe clasă
+plan.title_one	Aprobă — {{count}} acțiune
+plan.title_few	Aprobă — {{count}} acțiuni
+plan.title_other	Aprobă — {{count}} de acțiuni
+plan.stillEmpty_one	A rămas {{count}} câmp
+plan.stillEmpty_few	Au rămas {{count}} câmpuri
+plan.stillEmpty_other	Au rămas {{count}} de câmpuri

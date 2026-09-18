@@ -1,0 +1,377 @@
+== sv
+tabs.accounts	Konton
+tabs.operations	Transaktioner
+tabs.salaries	Löner
+tabs.counterparties	Motparter
+tabs.documents	Dokument
+tabs.onlinePayments	Onlinebetalningar
+tabs.paymentMethods	Betalningsmetoder
+tabs.reports	Rapporter
+tabs.goals	Mål
+common.save	Spara
+common.cancel	Avbryt
+common.create	Skapa
+common.edit	Redigera
+common.delete	Radera
+common.loading	Laddar…
+common.all	Alla
+common.confirm	Bekräfta
+common.monthsShort.0	jan
+common.monthsShort.1	feb
+common.monthsShort.2	mar
+common.monthsShort.3	apr
+common.monthsShort.4	maj
+common.monthsShort.5	jun
+common.monthsShort.6	jul
+common.monthsShort.7	aug
+common.monthsShort.8	sep
+common.monthsShort.9	okt
+common.monthsShort.10	nov
+common.monthsShort.11	dec
+common.weekdaysShort.0	mån
+common.weekdaysShort.1	tis
+common.weekdaysShort.2	ons
+common.weekdaysShort.3	tors
+common.weekdaysShort.4	fre
+common.weekdaysShort.5	lör
+common.weekdaysShort.6	sön
+info.accounts	Konton är studions kassor, bankkonton och onlineinlösen. Här ser du varje saldo och det totala kapitalet.
+info.operations	Transaktioner är studions alla intäkter och utgifter. När du skapar en transaktion ändras saldot på det kopplade kontot direkt.
+info.salaries	Löner beräknas utifrån teammedlemmens ersättning (fast, per timme eller procent) för den valda perioden.
+info.counterparties	Motparter är organisationer och personer som studion gör upp med: leverantörer, hyresvärdar och partners.
+info.documents	Dokument är avtal, handlingar och fakturor som är kopplade till motparter, eller interna dokument.
+info.onlinePayments	Onlinebetalningar — anslut Stripe för kortbetalningar. Kontot skapas för din studio, så pengarna går direkt till dig utan att passera Velora.
+info.paymentMethods	Betalningsmetoder visar hur kunder betalar i studion och statistik för varje metod.
+info.reports	Rapporter visar trender för intäkter, utgifter och vinst under den valda perioden.
+info.goals	Finansiella mål är studions sparplan med automatisk eller manuell uppföljning av framstegen.
+accounts.loading	Laddar konton…
+accounts.totalCapital	Studions totala kapital
+accounts.donutTotal	Totalt {{symbol}}
+accounts.todayChange	idag
+accounts.system	SYSTEM
+accounts.today	idag
+accounts.editTitle	Redigera konto
+accounts.namePlaceholder	Namn
+accounts.balancePlaceholder	Saldo, {{symbol}}
+accounts.types.cash	Kontanter
+accounts.types.bank	Kort
+accounts.types.online	Online
+accounts.typesShort.cash	Kontanter
+accounts.typesShort.bank	Kort
+accounts.typesShort.online	Online
+accounts.history	Historik
+accounts.historyTitle	Historik: {{name}}
+accounts.income30d	Intäkter (30 d)
+accounts.expense30d	Utgifter (30 d)
+accounts.samplePayment	Betalning för tjänst
+accounts.sampleTime	Idag, 14:32
+accounts.openAllOperations	Öppna alla transaktioner
+accounts.newSavingsTitle	Nytt sparkonto
+accounts.createSavings	Skapa sparkonto
+accounts.deleteConfirmTitle	Radera detta konto?
+accounts.deleteConfirmText	Alla dess medel tas bort från den övergripande statistiken. Åtgärden kan inte ångras.
+accounts.toasts.loadFailed	Det gick inte att läsa in konton
+accounts.toasts.deleted	Kontot har raderats
+accounts.toasts.deleteFailed	Det gick inte att radera kontot
+accounts.toasts.saved	Inställningarna har sparats
+accounts.toasts.saveFailed	Det gick inte att spara kontot
+accounts.toasts.created	Sparkontot har skapats
+accounts.toasts.createFailed	Det gick inte att skapa kontot
+operations.income	Intäkt
+operations.expense	Utgift
+operations.balance	Saldo
+operations.searchPlaceholder	Sök efter titel och kategori…
+operations.close	Stäng
+operations.operation	Transaktion
+operations.export	Exportera
+operations.newOperationTitle	Ny transaktion
+operations.titleLabel	Titel
+operations.titlePlaceholder	Till exempel, prenumerationsbetalning
+operations.amountLabel	Belopp, {{symbol}}
+operations.dateLabel	Datum
+operations.categoryLabel	Kategori
+operations.categoryPlaceholder	Kategori
+operations.accountLabel	Konto
+operations.noAccount	Inget konto
+operations.methodLabel	Betalningsmetod
+operations.noMethod	Ej angivet
+operations.counterpartyLabel	Motpart
+operations.noCounterparty	Ingen motpart
+operations.newCounterparty	+ Ny motpart
+operations.clientLabel	Kund
+operations.clientHint	Lojalitetspoäng och nivå tilldelas kunden
+operations.clientSearchPlaceholder	Börja skriva ett namn…
+operations.noClient	Ingen kund
+operations.editTitle	Redigera transaktion
+operations.saving	Sparar…
+operations.loading	Laddar transaktioner…
+operations.emptyTitle	Inga transaktioner hittades
+operations.emptyBody	Ändra filtren eller skapa den första transaktionen
+operations.pending	Väntande
+operations.detailAccount	Mottagande konto
+operations.detailCategory	Kategori
+operations.detailMethod	Betalningsmetod
+operations.detailCounterparty	Motpart
+operations.receipt	Kvitto
+operations.loadMore	Ladda fler ({{count}})
+operations.toasts.loadFailed	Det gick inte att läsa in transaktioner
+operations.toasts.loadMoreFailed	Det gick inte att läsa in fler transaktioner
+operations.toasts.deleted	Transaktionen har raderats
+operations.toasts.deleteFailed	Det gick inte att radera transaktionen
+operations.toasts.enterAmount	Ange ett belopp
+operations.toasts.created	Transaktionen har skapats
+operations.toasts.createFailed	Det gick inte att skapa transaktionen
+operations.toasts.updated	Transaktionen har uppdaterats
+operations.toasts.updateFailed	Det gick inte att spara transaktionen
+operations.toasts.exportFailed	Det gick inte att exportera transaktioner
+operations.toasts.receiptDownloaded	Kvittot har hämtats
+operations.categoryPresets.in.0.value	Medlemskap
+operations.categoryPresets.in.0.label	Medlemskap
+operations.categoryPresets.in.1.value	Tjänster
+operations.categoryPresets.in.1.label	Tjänster
+operations.categoryPresets.in.2.value	Presentkort
+operations.categoryPresets.in.2.label	Presentkort
+operations.categoryPresets.in.3.value	Insättning
+operations.categoryPresets.in.3.label	Insättning
+operations.categoryPresets.in.4.value	Övrigt
+operations.categoryPresets.in.4.label	Övrigt
+operations.categoryPresets.out.0.value	Återbetalningar
+operations.categoryPresets.out.0.label	Återbetalningar
+operations.categoryPresets.out.1.value	Hyra
+operations.categoryPresets.out.1.label	Hyra
+operations.categoryPresets.out.2.value	Löner
+operations.categoryPresets.out.2.label	Löner
+operations.categoryPresets.out.3.value	Inköp
+operations.categoryPresets.out.3.label	Inköp
+operations.categoryPresets.out.4.value	Marknadsföring
+operations.categoryPresets.out.4.label	Marknadsföring
+operations.categoryPresets.out.5.value	Skatter
+operations.categoryPresets.out.5.label	Skatter
+operations.categoryPresets.out.6.value	Övrigt
+operations.categoryPresets.out.6.label	Övrigt
+salaries.loading	Laddar löner…
+salaries.noRows	Det finns ingen personal att beräkna
+salaries.fund	Lönefond
+salaries.fundSub	innevarande månad
+salaries.sessions	Pass
+salaries.sessionsSub	totalt genomförda
+salaries.paidOf	teammedlemmar
+salaries.sessionsCount	{{count}} pass
+salaries.paid	Betald
+salaries.pending	Väntande
+salaries.paying	…
+salaries.payAction	Betala
+salaries.cancelAction	Avbryt löneutbetalning
+salaries.perMonth	/mån
+salaries.accrualTitle	Intjäning för perioden
+salaries.rate	Ersättning
+salaries.rateNotSet	inte angiven
+salaries.sessionsInPeriod	Pass under perioden
+salaries.hoursWorked	Arbetade timmar
+salaries.lessonsRevenue	Intäkter från pass
+salaries.totalToPay	Totalt att betala
+salaries.rateWarning	Ersättningen är inte angiven — ställ in den i teammedlemmens profil så att lönen kan beräknas.
+salaries.rateUnit.hourly	tim
+salaries.rateUnit.percent	%
+salaries.rateUnit.fixed	fast
+salaries.paidAt	Betald {{date}}
+salaries.historyTitle	Betalningshistorik
+salaries.historyEmpty	Inga betalningar ännu
+salaries.historyLoading	Laddar historik…
+salaries.toasts.loadFailed	Det gick inte att läsa in löner
+salaries.toasts.paid	Lön utbetald: {{name}}
+salaries.toasts.payFailed	Det gick inte att betala lönen
+salaries.toasts.canceled	Löneutbetalning avbruten: {{name}}
+salaries.toasts.historyLoadFailed	Det gick inte att läsa in betalningshistoriken
+counterparties.count	{{count}} motparter
+counterparties.totalDebt	Total skuld:
+counterparties.add	Lägg till
+counterparties.newTitle	Ny motpart
+counterparties.nameLabel	Namn / Fullständigt namn
+counterparties.namePlaceholder	Företag AB eller Anna Andersson
+counterparties.innLabel	Organisationsnummer
+counterparties.categoryLabel	Kategori
+counterparties.categoryPlaceholder	Hyra, leverantör…
+counterparties.typeLabel	Typ av motpart
+counterparties.types.legal.label	Juridisk person
+counterparties.types.legal.desc	Organisation eller företag
+counterparties.types.ie.label	Enskild näringsidkare
+counterparties.types.ie.desc	Egenföretagare
+counterparties.types.person.label	Fysisk person
+counterparties.types.person.desc	Privatperson
+counterparties.addSubmit	Lägg till motpart
+counterparties.you	Du
+counterparties.otherCategory	Övrigt
+counterparties.deals	affärer
+counterparties.dealsLabel	Affärer
+counterparties.debtLabel	Skuld
+counterparties.documents	Dokument
+counterparties.edit	Redigera
+counterparties.delete	Radera
+counterparties.deleteConfirmTitle	Radera motparten?
+counterparties.deleteConfirmText	Relaterade dokument och affärshistorik finns kvar, men motparten tas bort från listan.
+counterparties.toasts.loadFailed	Det gick inte att läsa in motparter
+counterparties.toasts.enterName	Ange ett namn
+counterparties.toasts.saved	Ändringarna har sparats
+counterparties.toasts.saveFailed	Det gick inte att spara
+counterparties.toasts.added	Motparten har lagts till
+counterparties.toasts.addFailed	Det gick inte att lägga till motparten
+counterparties.toasts.deleted	Motparten har raderats
+counterparties.toasts.deleteFailed	Det gick inte att radera motparten
+counterparties.toasts.documentsOpened	Dokument har öppnats
+documents.signed	Signerade
+documents.pendingCount	Väntar på signering
+documents.draftCount	Interna (osignerade)
+documents.searchPlaceholder	Sök efter titel eller motpart…
+documents.filters.all	Alla
+documents.filters.signed	Signerade
+documents.filters.pending	Väntar på signering
+documents.upload	Ladda upp
+documents.addTitle	Lägg till dokument i biblioteket
+documents.dropzoneTitle	Klicka eller dra en fil hit
+documents.dropzoneHint	PDF, DOCX, XLSX (upp till 15 MB)
+documents.dropzoneChange	Klicka för att välja en annan fil
+documents.titleLabel	Dokumenttitel
+documents.titlePlaceholder	Till exempel, mottagningsprotokoll nr 48
+documents.partyLabel	Motpart (om någon)
+documents.partyPlaceholder	Företagsnamn eller enskild näringsidkare
+documents.needsSignature	Behöver dokumentet signeras?
+documents.needsSignatureHint	Statusen blir ”Väntar på signering”
+documents.saveToBase	Spara i biblioteket
+documents.emptyTitle	Den här mappen är tom
+documents.emptyBody	Ladda upp ett nytt dokument eller ändra filtren
+documents.internalDoc	Internt dokument
+documents.uploaded	Uppladdat {{date}}
+documents.download	Ladda ner
+documents.open	Öppna
+documents.fileRequired	Bifoga en fil
+documents.options	Alternativ
+documents.status.title	Status
+documents.status.signed	Signerad
+documents.status.pending	Väntar på signering
+documents.status.draft	Osignerad
+documents.delete	Radera
+documents.toasts.loadFailed	Det gick inte att läsa in dokument
+documents.toasts.titleRequired	Ladda upp en fil eller ange en titel
+documents.toasts.created	Dokumentet har laddats upp till biblioteket
+documents.toasts.createFailed	Det gick inte att spara dokumentet
+documents.toasts.badFormat	Tillåtna format: PDF, DOCX, XLSX
+documents.toasts.downloadFailed	Det gick inte att ladda ner filen
+documents.toasts.noFile	Ingen fil är bifogad till dokumentet
+documents.toasts.openFailed	Det gick inte att öppna filen
+documents.toasts.statusChanged	Status: {{label}}
+documents.toasts.statusFailed	Det gick inte att ändra statusen
+documents.toasts.deleted	Dokumentet har raderats
+documents.toasts.deleteFailed	Det gick inte att radera dokumentet
+goals.loading	Laddar mål…
+goals.active	Pågående mål
+goals.done	Slutförda
+goals.avgProgress	Övergripande framsteg
+goals.trackingTitle	Planuppföljning
+goals.createGoal	Skapa mål
+goals.newTitle	Nytt finansiellt mål
+goals.titleLabel	Måltitel
+goals.titlePlaceholder	Till exempel, nya reformermaskiner
+goals.targetLabel	Målbelopp, {{symbol}}
+goals.targetPlaceholder	500000
+goals.deadlineLabel	Tidsfrist
+goals.trackingLabel	Hur ska framstegen följas?
+goals.trackingAuto	Automatiskt (CRM-mått)
+goals.trackingAutoDesc	Koppla målet till intäkter från en vald kategori. CRM uppdaterar förloppsindikatorn automatiskt.
+goals.trackingManual	Manuellt (personligt sparande)
+goals.trackingManualDesc	Knappen ”Lägg till medel” visas på kortet. Framstegen beror helt på dig.
+goals.opTypeLabel	Transaktionstyp
+goals.categoryLabel	Kategori
+goals.categoryPlaceholder	Välj en kategori
+goals.editTitle	Redigera mål
+goals.nameLabel	Titel
+goals.namePlaceholder	Måltitel
+goals.amountLabel	Belopp, {{symbol}}
+goals.achieved	Målet har uppnåtts
+goals.priority.high	Hög prioritet
+goals.priority.medium	Medelhög prioritet
+goals.priority.low	Låg prioritet
+goals.autoCollect	Spåras automatiskt
+goals.deadlinePrefix	Tidsfrist:
+goals.noDeadline	Ingen tidsfrist
+goals.fundPlaceholder	Belopp, {{symbol}}
+goals.fund	Lägg till
+goals.addFunds	Lägg till medel
+goals.autoHint	Värdet uppdateras automatiskt utifrån kategoriintäkter
+goals.deleteConfirmTitle	Radera målet?
+goals.deleteConfirmText	Framstegen för detta mål går förlorade. Åtgärden kan inte ångras.
+goals.toasts.loadFailed	Det gick inte att läsa in mål
+goals.toasts.fillRequired	Fyll i titel och belopp
+goals.toasts.chooseCategory	Välj en kategori för det automatiska målet
+goals.toasts.created	Målet har skapats
+goals.toasts.createFailed	Det gick inte att skapa målet
+goals.toasts.enterName	Ange ett namn
+goals.toasts.updated	Målet har uppdaterats
+goals.toasts.updateFailed	Det gick inte att uppdatera målet
+goals.toasts.deleted	Målet har raderats
+goals.toasts.deleteFailed	Det gick inte att radera målet
+goals.toasts.funded	Medel har lagts till
+goals.toasts.fundFailed	Det gick inte att lägga till medel
+onlinePayments.description	Anslut Stripe så kan dina kunder betala med kort i kassan. Pengarna går direkt till studions konto — Velora håller dem aldrig. Avgiften följer din plan.
+onlinePayments.gatewaysTitle	Betalningsleverantörer
+onlinePayments.gateways.stripe.name	Stripe
+onlinePayments.gateways.states.none.label	Inte ansluten
+onlinePayments.gateways.states.none.hint	Ta emot kortbetalningar till studions konto
+onlinePayments.gateways.states.none.action	Anslut
+onlinePayments.gateways.states.incomplete.label	Uppgifter saknas
+onlinePayments.gateways.states.incomplete.hint	Stripe väntar på uppgifter om din studio — betalningar är avstängda tills dess
+onlinePayments.gateways.states.incomplete.action	Fortsätt
+onlinePayments.gateways.states.action.label	Åtgärd krävs
+onlinePayments.gateways.states.action.hint	Stripe har avvisat vissa uppgifter och väntar på rättelser — det löser sig inte automatiskt
+onlinePayments.gateways.states.action.action	Rätta uppgifter
+onlinePayments.gateways.states.review.label	Under granskning
+onlinePayments.gateways.states.review.hint	Uppgifterna har skickats in och Stripe granskar dem. Det tar vanligtvis upp till en dag
+onlinePayments.gateways.states.review.action	Öppna Stripe
+onlinePayments.gateways.states.active.label	Ansluten
+onlinePayments.gateways.states.active.hint	Kortbetalningar går till studions Stripe-konto
+onlinePayments.gateways.states.active.action	Inställningar
+onlinePayments.toasts.gatewayUpdated	Leverantörens inställningar har uppdaterats
+onlinePayments.toasts.stripeReturned	Uppgifter har skickats till Stripe
+onlinePayments.toasts.stripeLinkExpired	Stripe-länken har gått ut — tryck på Anslut igen
+paymentMethods.totalTurnover	Omsättning för perioden
+paymentMethods.periods.month	Månad
+paymentMethods.periods.quarter	Kvartal
+paymentMethods.periods.year	År
+paymentMethods.amount	Belopp
+paymentMethods.share	Andel
+paymentMethods.transactions	transaktioner
+paymentMethods.methods.cash.name	Kontanter
+paymentMethods.methods.card.name	Bankkort
+paymentMethods.methods.qr.name	SBP (QR)
+paymentMethods.methods.transfer.name	Överföring
+paymentMethods.methods.stripe.name	Stripe
+paymentMethods.methods..name	Ej angivet
+reports.metrics.revenue	Intäkter
+reports.metrics.expenses	Utgifter
+reports.metrics.profit	Vinst
+reports.metrics.margin	Marginal
+reports.vsPreviousPeriod	jämfört med föregående period
+reports.cashflowTitle	Kassaflöde
+reports.cashflowSub	Analys av intäkter och utgifter
+reports.period	Period
+reports.income	Intäkt
+reports.expense	Utgift
+reports.profit	Vinst
+reports.periods.today	Idag
+reports.periods.week	Vecka
+reports.periods.month	Månad
+reports.periods.year	År
+reports.legendIncome	Intäkter
+reports.legendExpense	Utgifter
+reports.exportCsv	Exportera CSV
+reports.expenseStructure	Utgiftsstruktur
+reports.incomeStructure	Intäktsstruktur
+reports.total	Totalt
+reports.otherCategory	Okategoriserat
+reports.noData	Det finns inga data för den här perioden
+reports.insightsTitle	Finansiell sammanfattning och insikter
+reports.insightsPlaceholder	En AI-driven finansiell sammanfattning visas här: trendanalys, utgiftsstruktur och rekommendationer
+reports.toasts.exportFailed	Det gick inte att exportera transaktioner
+confirmModal.cancel	Avbryt
+confirmModal.confirm	Bekräfta
+confirmModal.delete	Radera

@@ -1,0 +1,333 @@
+== da
+nav.sectionLabel	Systemindstillinger
+nav.general	Generelt
+nav.appearance	Udseende
+nav.notifications	Notifikationer
+nav.billing	Fakturering
+nav.security	Sikkerhed
+nav.integrations	Integrationer
+nav.data	Data
+nav.logout	Skift CRM
+toast.saved	Gemt
+toast.error	Noget gik galt
+workspace.title	Dine CRM-systemer
+workspace.subtitle	Vælg et arbejdsområde, eller opret et nyt
+workspace.current	Nuværende
+workspace.membersCount_one	{{count}} medlem
+workspace.membersCount_other	{{count}} medlemmer
+workspace.clientsCount_one	{{count}} klient
+workspace.clientsCount_other	{{count}} klienter
+workspace.createNew	Opret et nyt studie
+workspace.loadError	Kunne ikke indlæse dine studier
+workspace.selectError	Kunne ikke skifte til dette studie
+general.company.title	Virksomhedsoplysninger
+general.company.subtitle	Offentlige oplysninger om din virksomhed
+general.company.name	Virksomhedsnavn
+general.company.namePh	f.eks. Mit studie
+general.company.desc	Beskrivelse
+general.company.descPh	Hvad laver dit studie…
+general.company.phone	Telefon
+general.company.email	E-mail
+general.company.site	Websted
+general.company.sitePh	https://studio.com
+general.company.address	Adresse
+general.company.addressPh	Eksempelgade 123, by
+general.reset	Nulstil
+general.resetToast	Indstillingerne er nulstillet
+general.locale.title	Sprog og region
+general.locale.subtitle	Indstillinger for lokalisering af brugerfladen
+general.locale.timezone	Tidszone
+general.locale.timezoneSearch	By eller forskydning
+general.locale.timezoneNotFound	Ingen tidszone fundet
+general.locale.currency	Valuta
+general.locale.currencySearch	Søg efter valuta
+general.locale.currencyNotFound	Ingen valuta fundet
+general.locale.language	Sprog for brugerfladen
+general.locale.languageSearch	Søg efter sprog
+general.locale.languageNotFound	Intet sprog fundet
+general.locale.dateFormat	Datoformat
+general.locale.firstDay	Første dag i ugen
+general.locale.firstDayLabels.0	Mandag
+general.locale.firstDayLabels.1	Søndag
+general.booking.title	Bookingmodel
+general.booking.subtitle	Sådan booker klienter hos dig
+general.booking.mode	Bookingmodel
+general.booking.modeHint	Begivenheder — klienter tilmelder sig et planlagt hold. Individuel — klienten vælger en behandler og et tidspunkt. Blandet — begge dele på samme tid.
+general.booking.profile	Branchebetegnelser
+general.booking.profileHint	Vælger ordene for personale og tilbud. Det ændrer kun formuleringer — aldrig roller, priser eller bookingmodel.
+general.booking.strict	Streng kalender
+general.booking.strictHint	Forbyder dobbeltbooking af en behandler eller et eksklusivt lokale. Kræves, før individuel booking kan aktiveres.
+general.booking.spaceAxis	Brug {{spacePlural}} i kalenderen
+general.booking.spaceAxisHint	Fra — klienten booker en person, og lokalet har ingen kolonne i journalen. Til — et hold er knyttet til et lokale.
+general.booking.spaceAxisDefaultOn	Standard for din branche: til
+general.booking.spaceAxisDefaultOff	Standard for din branche: fra
+general.booking.modes.event	Begivenheder
+general.booking.modes.resource	Individuel
+general.booking.modes.hybrid	Blandet
+general.booking.profiles.studio	Holdtræning og studier
+general.booking.profiles.sport	Sport og fitnesscentre
+general.booking.profiles.beauty	Skønhed og pleje
+general.booking.profiles.recovery	Krop og restitution
+general.booking.profiles.relax	Spa og afslapning
+general.booking.profiles.other	Andet
+general.booking.preview.event	Begivenhed
+general.booking.preview.resource	Individuel
+general.booking.errors.AUDIT_BLOCKED	Kalenderen indeholder bookinger, som ikke er forenelige med en streng kalender.
+general.booking.errors.STRICT_SCHEDULE_REQUIRED	Aktivér først den strenge kalender.
+general.booking.errors.RESOURCE_HISTORY_EXISTS	Den strenge kalender kan ikke deaktiveres: studiet har individuelle bookinger.
+general.booking.findings.overlap	Overlappende bookinger
+general.booking.findings.unknown_timezone	Ukendt tidszone
+general.booking.findings.undefined_branch	Afdeling er ikke angivet
+general.booking.findings.invalid_duration	Ugyldig varighed
+general.booking.findings.invalid_resource_row	Ufuldstændig individuel booking
+general.booking.findings.missing_branch_assignment	Behandleren er ikke tilknyttet afdelingen
+general.booking.findings.missing_working_hours	Behandleren har ingen arbejdstid
+general.booking.findings.inactive_specialist	Behandleren er inaktiv
+general.booking.findings.other	Kræver gennemgang
+appearance.theme.title	Tema
+appearance.theme.subtitle	Vælg brugerfladens visuelle stil
+appearance.theme.light	Lyst
+appearance.theme.dark	Mørkt
+appearance.theme.auto	System
+appearance.accent.title	Accentfarve
+appearance.accent.subtitle	Tilpas brugerfladens hovedfarve
+appearance.accent.note	Dit valg er gemt, men anvendes endnu ikke i brugerfladen — det kommer i en fremtidig opdatering.
+appearance.accent.noteTitle	Kommer snart
+appearance.accent.colors.peach	Fersken
+appearance.accent.colors.pistachio	Pistacie
+appearance.accent.colors.lavender	Lavendel
+appearance.accent.colors.pink	Lyserød
+appearance.accent.colors.gold	Guld
+appearance.accent.colors.mint	Mint
+appearance.language.title	Sprog for brugerfladen
+appearance.language.subtitle	Dit personlige sprog — påvirker ikke studieindstillingerne
+appearance.language.search	Søg efter sprog
+appearance.language.empty	Intet sprog fundet
+notifications.myPrefs.title	Mine notifikationer
+notifications.myPrefs.subtitle	Personlige præferencer — påvirker ikke resten af studiet
+notifications.myPrefs.hint	Obligatoriske notifikationer kan ikke slås fra — de sikrer, at du aldrig går glip af ændringer i kalenderen og betalinger.
+notifications.myPrefs.empty	Ingen valgfri notifikationer for din rolle
+notifications.myPrefs.channels.email	E-mail
+notifications.myPrefs.channels.telegram	Telegram
+notifications.myPrefs.channels.whatsapp	WhatsApp
+notifications.telegram.title	Telegram til notifikationer
+notifications.telegram.subtitle	Hvor personlige hændelser skal sendes til dig — bookinger, løn og rapporter
+notifications.telegram.chatId	Dit Telegram chat_id
+notifications.telegram.chatIdPh	f.eks. 123456789
+notifications.telegram.hintBefore	Du kan finde dit chat_id hos botten 
+notifications.telegram.hintAfter	 på Telegram — start en chat med den, så sender den dit ID.
+notifications.telegram.invalidChatId	Telegram chat_id skal være et tal uden symboler
+notifications.telegram.saved	Telegram er tilknyttet notifikationer
+notifications.telegram.saveFailed	Kunne ikke gemme Telegram
+notifications.email.title	E-mail til notifikationer
+notifications.email.subtitle	Hvor system-e-mails skal sendes hen
+notifications.email.primary	Primær e-mail
+notifications.email.backup	Reserve-e-mail
+notifications.email.backupPh	backup@studio.com
+notifications.email.saved	Notifikationsindstillingerne er gemt
+billing.plans.start	Start
+billing.plans.pro	Pro
+billing.plans.business	Business
+billing.plans.free_trial	Gratis prøveperiode
+billing.status.active	Aktiv
+billing.status.trial	Prøveperiode
+billing.status.expired	Udløbet
+billing.plan.title	Nuværende abonnement
+billing.plan.expiresAt	Aktivt indtil {{date}}
+billing.plan.maxStaff	Op til {{count}} medarbejdere
+billing.plan.staffUnlimited	Ubegrænset antal medarbejdere
+billing.plan.noSubscription	Intet aktivt abonnement
+billing.plan.noSubscriptionCta	Vælg et abonnement
+billing.plan.trialCta	Vælg et abonnement
+billing.upgrade	Opgradér til {{plan}}
+billing.renew	Forny
+billing.autopay.title	Automatisk fornyelse
+billing.autopay.subtitle	Trækkes på dit gemte kort
+billing.autopay.autoRenew	Automatisk fornyelse
+billing.autopay.notifyBefore	Vi minder dig om det {{count}} dage før opkrævningen
+billing.payment.title	Betalingsmetode
+billing.payment.cardSummary	Kort •••• {{last4}}
+billing.payment.notLinked	Intet kort er tilknyttet
+billing.payment.change	Skift
+billing.history.title	Betalingshistorik
+billing.history.subtitle	Seneste 12 betalinger
+billing.history.exportCsv	Eksportér CSV
+billing.history.empty	Ingen betalinger endnu
+billing.history.showAll	Vis alle
+billing.history.period	{{count}} mdr.
+billing.history.noDate	—
+billing.history.status.paid	Betalt
+billing.history.status.pending	Afventer
+billing.history.status.failed	Ikke betalt
+billing.history.status.refunded	Refunderet
+billing.toast.autopaySaved	Indstillinger for automatisk fornyelse er gemt
+billing.toast.renewed	Fornyelse er startet
+billing.toast.csvExportError	Kunne ikke eksportere CSV
+security.account.title	Kontosikkerhed
+security.account.subtitle	Beskyt adgangen til dit arbejdsområde
+security.twoFa.title	Tofaktorgodkendelse
+security.twoFa.sub	E-mailkode ved hver log ind
+security.twoFa.active	Aktiv
+security.twoFa.disabled	Deaktiveret
+security.twoFa.enableTitle	Aktivér 2FA
+security.twoFa.disableTitle	Deaktivér 2FA
+security.twoFa.enableWarning	Når funktionen er aktiveret, kræver hver log ind en kode sendt til {{email}}. Sørg for, at du har adgang til den — ellers risikerer du at miste adgang til din konto.
+security.twoFa.disableWarning	Når funktionen er deaktiveret, er en adgangskode alene nok til at logge ind uden e-mailkode.
+security.twoFa.enabledToast	Tofaktorgodkendelse er aktiveret
+security.twoFa.disabledToast	Tofaktorgodkendelse er deaktiveret
+security.password.title	Kontoadgangskode
+security.password.sub	Ændringen bekræftes med en e-mailkode
+security.password.change	Skift adgangskode
+security.password.changed	Adgangskoden er ændret
+security.password.current	Nuværende adgangskode
+security.password.currentPh	Indtast din nuværende adgangskode
+security.password.new	Ny adgangskode
+security.password.newPh	Mindst 8 tegn
+security.password.repeat	Gentag adgangskoden
+security.password.repeatPh	Indtast den nye adgangskode igen
+security.password.mismatch	Adgangskoderne matcher ikke
+security.password.forgot	Har du glemt din adgangskode?
+security.password.resetTitle	Gendan adgangskode
+security.password.step1Sub	Lad os bekræfte, at det er dig
+security.password.step2Sub	Koden er sendt til {{email}}
+security.password.step3Sub	Vælg en ny adgangskode
+security.password.resetIntro	Vi sender en 6-cifret kode til e-mailadressen på din konto. Du behøver ikke kende din nuværende adgangskode — koden beviser, at indbakken er din.
+security.password.sendCode	Send kode
+security.password.back	Tilbage
+security.password.save	Gem adgangskode
+security.password.resetDone	Adgangskoden er opdateret
+security.password.resetLogoutHint	Andre enheder bliver logget ud — du forbliver logget ind på denne.
+security.password.rules.len	8+ tegn
+security.password.rules.letter	Indeholder et bogstav
+security.password.rules.digit	Indeholder et tal
+security.password.rules.simple	Ingen 111 eller qwerty
+security.sessions.title	Aktive sessioner
+security.sessions.sub	Hvor din konto er logget ind lige nu
+security.sessions.count	{{count}} enheder
+security.sessions.manage	Administrer
+security.sessions.hide	Skjul
+security.sessions.current	Nuværende
+security.sessions.terminate	Afslut
+security.sessions.terminateAll	Afslut alle andre sessioner
+security.sessions.terminatedToast	Sessionen er afsluttet
+security.sessions.terminatedAllToast	Andre sessioner er afsluttet
+security.sessions.justNow	Aktiv nu
+security.sessions.minutesAgo	for {{count}} min. siden
+security.sessions.hoursAgo	for {{count}} t. siden
+security.sessions.daysAgo	for {{count}} d. siden
+security.sessions.unknownLocation	Ukendt
+security.otp.sentHint	Vi har sendt en 6-cifret kode til din e-mail. Indtast den nedenfor.
+security.otp.resend	Send koden igen
+security.otp.resendIn	Send igen om {{count}} sek.
+security.otp.confirm	Bekræft
+security.otp.cancel	Annuller
+security.otp.sendCode	Send kode
+security.otp.continue	Fortsæt
+security.danger.title	Datahåndtering (farezone)
+security.danger.export.title	Eksportér alle data
+security.danger.export.sub	Download et arkiv med klientbasen og historikken
+security.danger.export.prepare	Forbered arkiv
+security.danger.export.hide	Skjul
+security.danger.export.clients	Klientbase (CSV)
+security.danger.export.finances	Finansielle transaktioner
+security.danger.export.schedule	Hold og kalender
+security.danger.export.start	Start eksport
+security.danger.export.started	Arkivet forberedes, og et link sendes til din e-mail
+security.danger.export.emptySelection	Vælg mindst én sektion til eksport
+security.danger.wipe.title	Ryd database
+security.danger.wipe.sub	Sletter alle klienter og bookinger. Indstillingerne bevares.
+security.danger.wipe.action	Ryd data
+security.danger.wipe.toast	Databasen er ryddet
+security.danger.wipe.consequence1	Slettes permanent: klienter, hold, bookinger, transaktioner, dokumenter, klientabonnementer, loyalitetshistorik
+security.danger.wipe.consequence2	Uændret: studie, afdelinger, {{spacePlural}}, ydelser, personale, abonnement og indstillinger
+security.danger.wipe.consequence3	Denne handling kan ikke fortrydes efter bekræftelse
+security.danger.deleteAccount.title	Slet virksomhedskonto
+security.danger.deleteAccount.sub	Fuldstændig og uigenkaldelig sletning af virksomheden fra systemet
+security.danger.deleteAccount.action	Slet for altid
+security.danger.deleteAccount.consequence1	Studiet og alle dets data slettes permanent, herunder klienter, hold, økonomi og indstillinger
+security.danger.deleteAccount.consequence2	Din personlige konto bevares — kun dette studie slettes
+security.danger.deleteAccount.consequence3	Sletning er ikke tilgængelig med et aktivt abonnement eller hvis studiet har andre ejere
+integrations.title	Integrationer
+integrations.subtitle	Forbind eksterne kanaler og økosystemer med ét klik
+integrations.loadError	Kunne ikke indlæse integrationsstatus
+integrations.items.telegram.name	Telegram-bot
+integrations.items.telegram.sub	Klientnotifikationer og booking via bot
+integrations.items.whatsapp.name	WhatsApp Business
+integrations.items.whatsapp.sub	Massebeskeder og automatiske notifikationer til klienter
+integrations.items.instagram.name	Instagram Direct
+integrations.items.instagram.sub	AI-agent til automatiske svar og onlinebooking
+integrations.items.google_calendar.name	Google Calendar
+integrations.items.google_calendar.sub	Synkronisering af studiets kalender
+integrations.status.connected	Forbundet
+integrations.status.notActive	Ikke forbundet
+integrations.actions.configure	Konfigurér
+integrations.actions.connect	Forbind
+integrations.actions.disconnect	Afbryd forbindelse
+integrations.fields.keyLabel	Nøgle
+integrations.fields.connectedAtLabel	Forbundet
+integrations.fields.telegramToken	Bot-API-token (fra @BotFather)
+integrations.fields.telegramTokenPh	123456789:ABCDefGhIJKlmNoPQRsTUVwxyZ
+integrations.fields.whatsappToken	Adgangstoken
+integrations.fields.whatsappTokenPh	EAAxxxxxxxxxxxxx
+integrations.fields.whatsappPhoneId	Telefonnummer-id
+integrations.fields.whatsappPhoneIdPh	1029384756
+integrations.fields.whatsappWabaId	WABA-id (valgfrit)
+integrations.fields.whatsappWabaIdPh	1029384756
+integrations.fields.instagramToken	Adgangstoken
+integrations.fields.instagramTokenPh	IGQWR...
+integrations.fields.instagramUserId	Id for Instagram-virksomhedskonto
+integrations.fields.instagramUserIdPh	17841400000000000
+integrations.guide.howToTitle	Sådan forbinder du
+integrations.guide.telegram.steps.0	Åbn @BotFather i Telegram og send /newbot
+integrations.guide.telegram.steps.1	Vælg et navn og brugernavn til botten — BotFather sender dig et API-token
+integrations.guide.telegram.steps.2	Indsæt tokenet nedenfor, og klik på Forbind
+integrations.guide.whatsapp.steps.0	Opret en app i Meta for Developers, og tilføj WhatsApp-produktet
+integrations.guide.whatsapp.steps.1	Kopiér det midlertidige eller permanente adgangstoken i API Setup
+integrations.guide.whatsapp.steps.2	Kopiér også telefonnummer-id'et for test- eller det bekræftede nummer
+integrations.guide.whatsapp.steps.3	Indsæt begge værdier nedenfor, og klik på Forbind
+integrations.guide.instagram.steps.0	Knyt studiets Instagram-konto til en Facebook-side — det kræves til Direct API
+integrations.guide.instagram.steps.1	Opret en app i Meta for Developers med produktet Instagram Graph API
+integrations.guide.instagram.steps.2	Opret et adgangstoken med tilladelserne instagram_basic og instagram_manage_messages
+integrations.guide.instagram.steps.3	Kopiér id'et for Instagram-virksomhedskontoen og tokenet, og indsæt dem nedenfor
+integrations.guide.instagram.steps.4	Uden Metas godkendelse virker forbindelsen kun for appens testkonti
+integrations.guide.google_calendar.steps.0	Klik på Forbind — et Google-log ind-vindue åbnes
+integrations.guide.google_calendar.steps.1	Vælg den konto, som studiets kalender er knyttet til
+integrations.guide.google_calendar.steps.2	Giv adgang til kalenderen — hold vises derefter automatisk i den
+integrations.capabilities.notify	klientnotifikationer på denne kanal
+integrations.capabilities.booking	onlinebooking via denne kanal
+integrations.capabilities.dm_agent	AI-agent til automatiske svar i Direct
+integrations.capabilities.schedule_sync	kalendersynkronisering med Google Calendar
+integrations.disconnect.title	Afbryd {{name}}?
+integrations.disconnect.willStop	Dette holder op med at virke:
+integrations.disconnect.checkbox	Jeg forstår konsekvenserne
+integrations.disconnect.cancel	Annuller
+integrations.disconnect.confirm	Afbryd forbindelse
+integrations.google.connected	Google Calendar er forbundet
+integrations.google.denied	Adgang til Google Calendar blev ikke givet
+integrations.google.error	Kunne ikke forbinde Google Calendar
+integrations.google.primary	primær
+integrations.google.calendar	Kalender
+integrations.google.selectCalendar	Vælg en kalender
+integrations.google.loadingCalendars	Indlæser kalendere…
+integrations.google.syncMode	Synkroniseringstilstand
+integrations.google.syncModeOptions.push	Kun fra CRM til Google
+integrations.google.syncModeOptions.two_way	Tovejs
+integrations.google.syncNow	Synkronisér nu
+integrations.google.lastSync	Sidst synkroniseret: {{date}}
+integrations.google.neverSynced	Endnu ikke synkroniseret
+integrations.google.timezoneWarning	Studiets tidszone er ikke angivet — begivenheder sendes i UTC og kan afvige fra de faktiske holdtidspunkter. Angiv tidszonen under Generelt.
+integrations.google.syncResult	Synkroniseret: {{pushed}} sendt, {{pulled}} hentet
+integrations.google.settingsSaved	Indstillinger for Google Calendar er gemt
+integrations.toast.connected	Integrationen er forbundet
+integrations.toast.disconnected	Integrationen er afbrudt
+data.export.title	Eksportér rapporter og lister
+data.export.subtitle	Download filer i tabelformater til regnskab og analyse
+data.export.clearFilter	Ryd periode
+data.export.items.clients.name	Klientliste
+data.export.items.schedule.name	Journal- og bookinghistorik
+data.export.items.finances.name	Finansiel rapport
+data.export.items.subscriptions.name	Klientabonnementer
+data.export.rows_one	{{count}} post
+data.export.rows_other	{{count}} poster
+data.export.loading	Indlæser...
+data.export.empty	Ingen data for denne periode

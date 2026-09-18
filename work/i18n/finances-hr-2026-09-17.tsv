@@ -1,0 +1,377 @@
+== hr
+tabs.accounts	Računi
+tabs.operations	Operacije
+tabs.salaries	Plaće
+tabs.counterparties	Protustranke
+tabs.documents	Dokumenti
+tabs.onlinePayments	Online plaćanja
+tabs.paymentMethods	Načini plaćanja
+tabs.reports	Izvještaji
+tabs.goals	Ciljevi
+common.save	Spremi
+common.cancel	Odustani
+common.create	Stvori
+common.edit	Uredi
+common.delete	Izbriši
+common.loading	Učitavanje…
+common.all	Sve
+common.confirm	Potvrdi
+common.monthsShort.0	Sij
+common.monthsShort.1	Velj
+common.monthsShort.2	Ožu
+common.monthsShort.3	Tra
+common.monthsShort.4	Svi
+common.monthsShort.5	Lip
+common.monthsShort.6	Srp
+common.monthsShort.7	Kol
+common.monthsShort.8	Ruj
+common.monthsShort.9	Lis
+common.monthsShort.10	Stu
+common.monthsShort.11	Pro
+common.weekdaysShort.0	Pon
+common.weekdaysShort.1	Uto
+common.weekdaysShort.2	Sri
+common.weekdaysShort.3	Čet
+common.weekdaysShort.4	Pet
+common.weekdaysShort.5	Sub
+common.weekdaysShort.6	Ned
+info.accounts	Računi su blagajne studija, bankovni računi i online naplata. Ovdje vidite svako stanje i ukupan kapital.
+info.operations	Operacije su svi prihodi i rashodi studija. Stvaranje operacije odmah mijenja stanje povezanog računa.
+info.salaries	Plaće se izračunavaju prema stopi člana osoblja (fiksno, po satu ili postotak) za odabrano razdoblje.
+info.counterparties	Protustranke su organizacije i pojedinci s kojima studio posluje: dobavljači, najmodavci, partneri.
+info.documents	Dokumenti su ugovori, akti i računi povezani s protustrankama ili interni dokumenti.
+info.onlinePayments	Online plaćanja — povežite Stripe za kartična plaćanja. Račun se stvara za vaš studio pa novac ide izravno vama, bez prolaska kroz Veloru.
+info.paymentMethods	Načini plaćanja pokazuju kako klijenti plaćaju u studiju i statistiku za svaki način.
+info.reports	Izvještaji prikazuju trendove prihoda, rashoda i dobiti u odabranom razdoblju.
+info.goals	Financijski ciljevi su plan štednje studija s automatskim ili ručnim praćenjem napretka.
+accounts.loading	Učitavanje računa…
+accounts.totalCapital	Ukupan kapital studija
+accounts.donutTotal	{{symbol}} ukupno
+accounts.todayChange	danas
+accounts.system	SUSTAV
+accounts.today	danas
+accounts.editTitle	Uredi račun
+accounts.namePlaceholder	Naziv
+accounts.balancePlaceholder	Stanje, {{symbol}}
+accounts.types.cash	Gotovina
+accounts.types.bank	Kartica
+accounts.types.online	Online
+accounts.typesShort.cash	Gotovina
+accounts.typesShort.bank	Kartica
+accounts.typesShort.online	Online
+accounts.history	Povijest
+accounts.historyTitle	Povijest: {{name}}
+accounts.income30d	Prihodi (30 d.)
+accounts.expense30d	Rashodi (30 d.)
+accounts.samplePayment	Plaćanje usluge
+accounts.sampleTime	Danas, 14:32
+accounts.openAllOperations	Otvori sve operacije
+accounts.newSavingsTitle	Novi štedni račun
+accounts.createSavings	Stvori štedni račun
+accounts.deleteConfirmTitle	Izbrisati ovaj račun?
+accounts.deleteConfirmText	Sva njegova sredstva bit će isključena iz ukupne statistike. Radnju nije moguće poništiti.
+accounts.toasts.loadFailed	Učitavanje računa nije uspjelo
+accounts.toasts.deleted	Račun je izbrisan
+accounts.toasts.deleteFailed	Brisanje računa nije uspjelo
+accounts.toasts.saved	Postavke su spremljene
+accounts.toasts.saveFailed	Spremanje računa nije uspjelo
+accounts.toasts.created	Štedni račun je stvoren
+accounts.toasts.createFailed	Stvaranje računa nije uspjelo
+operations.income	Prihod
+operations.expense	Rashod
+operations.balance	Stanje
+operations.searchPlaceholder	Pretraži po nazivu i kategoriji…
+operations.close	Zatvori
+operations.operation	Operacija
+operations.export	Izvezi
+operations.newOperationTitle	Nova operacija
+operations.titleLabel	Naziv
+operations.titlePlaceholder	Npr. Plaćanje pretplate
+operations.amountLabel	Iznos, {{symbol}}
+operations.dateLabel	Datum
+operations.categoryLabel	Kategorija
+operations.categoryPlaceholder	Kategorija
+operations.accountLabel	Račun
+operations.noAccount	Bez računa
+operations.methodLabel	Način plaćanja
+operations.noMethod	Nije navedeno
+operations.counterpartyLabel	Protustranka
+operations.noCounterparty	Bez protustranke
+operations.newCounterparty	+ Nova protustranka
+operations.clientLabel	Klijent
+operations.clientHint	Bodovi vjernosti i razina bit će dodijeljeni klijentu
+operations.clientSearchPlaceholder	Počnite upisivati ime…
+operations.noClient	Bez klijenta
+operations.editTitle	Uredi operaciju
+operations.saving	Spremanje…
+operations.loading	Učitavanje operacija…
+operations.emptyTitle	Nema pronađenih operacija
+operations.emptyBody	Promijenite filtre ili stvorite prvu operaciju
+operations.pending	Na čekanju
+operations.detailAccount	Primajući račun
+operations.detailCategory	Kategorija
+operations.detailMethod	Način plaćanja
+operations.detailCounterparty	Protustranka
+operations.receipt	Račun
+operations.loadMore	Učitaj više ({{count}})
+operations.toasts.loadFailed	Učitavanje operacija nije uspjelo
+operations.toasts.loadMoreFailed	Učitavanje dodatnih operacija nije uspjelo
+operations.toasts.deleted	Operacija je izbrisana
+operations.toasts.deleteFailed	Brisanje operacije nije uspjelo
+operations.toasts.enterAmount	Unesite iznos
+operations.toasts.created	Operacija je stvorena
+operations.toasts.createFailed	Stvaranje operacije nije uspjelo
+operations.toasts.updated	Operacija je ažurirana
+operations.toasts.updateFailed	Spremanje operacije nije uspjelo
+operations.toasts.exportFailed	Izvoz operacija nije uspio
+operations.toasts.receiptDownloaded	Račun je preuzet
+operations.categoryPresets.in.0.value	Pretplate
+operations.categoryPresets.in.0.label	Pretplate
+operations.categoryPresets.in.1.value	Usluge
+operations.categoryPresets.in.1.label	Usluge
+operations.categoryPresets.in.2.value	Poklon-bonovi
+operations.categoryPresets.in.2.label	Poklon-bonovi
+operations.categoryPresets.in.3.value	Depozit
+operations.categoryPresets.in.3.label	Depozit
+operations.categoryPresets.in.4.value	Ostalo
+operations.categoryPresets.in.4.label	Ostalo
+operations.categoryPresets.out.0.value	Povrati
+operations.categoryPresets.out.0.label	Povrati
+operations.categoryPresets.out.1.value	Najam
+operations.categoryPresets.out.1.label	Najam
+operations.categoryPresets.out.2.value	Plaće
+operations.categoryPresets.out.2.label	Plaće
+operations.categoryPresets.out.3.value	Nabava
+operations.categoryPresets.out.3.label	Nabava
+operations.categoryPresets.out.4.value	Marketing
+operations.categoryPresets.out.4.label	Marketing
+operations.categoryPresets.out.5.value	Porezi
+operations.categoryPresets.out.5.label	Porezi
+operations.categoryPresets.out.6.value	Ostalo
+operations.categoryPresets.out.6.label	Ostalo
+salaries.loading	Učitavanje plaća…
+salaries.noRows	Nema osoblja za izračun
+salaries.fund	Fond plaća
+salaries.fundSub	trenutni mjesec
+salaries.sessions	Sesije
+salaries.sessionsSub	ukupno održano
+salaries.paidOf	osoblje
+salaries.sessionsCount	{{count}} sesija
+salaries.paid	Plaćeno
+salaries.pending	Na čekanju
+salaries.paying	…
+salaries.payAction	Plati
+salaries.cancelAction	Otkaži plaću
+salaries.perMonth	/mj.
+salaries.accrualTitle	Obračun za razdoblje
+salaries.rate	Stopa
+salaries.rateNotSet	nije postavljeno
+salaries.sessionsInPeriod	Sesije u razdoblju
+salaries.hoursWorked	Odrađeni sati
+salaries.lessonsRevenue	Prihod od sesija
+salaries.totalToPay	Ukupno za plaćanje
+salaries.rateWarning	Stopa nije postavljena — postavite je u profilu člana osoblja kako bi se obračun mogao izračunati.
+salaries.rateUnit.hourly	sat
+salaries.rateUnit.percent	%
+salaries.rateUnit.fixed	fiksno
+salaries.paidAt	Plaćeno {{date}}
+salaries.historyTitle	Povijest plaćanja
+salaries.historyEmpty	Još nema plaćanja
+salaries.historyLoading	Učitavanje povijesti…
+salaries.toasts.loadFailed	Učitavanje plaća nije uspjelo
+salaries.toasts.paid	Plaća je isplaćena: {{name}}
+salaries.toasts.payFailed	Isplata plaće nije uspjela
+salaries.toasts.canceled	Plaća je otkazana: {{name}}
+salaries.toasts.historyLoadFailed	Učitavanje povijesti plaćanja nije uspjelo
+counterparties.count	{{count}} protustranaka
+counterparties.totalDebt	Ukupan dug:
+counterparties.add	Dodaj
+counterparties.newTitle	Nova protustranka
+counterparties.nameLabel	Naziv / Puno ime
+counterparties.namePlaceholder	Tvrtka d.o.o. ili Ivan Horvat
+counterparties.innLabel	Porezni broj
+counterparties.categoryLabel	Kategorija
+counterparties.categoryPlaceholder	Najam, dobavljač…
+counterparties.typeLabel	Vrsta protustranke
+counterparties.types.legal.label	Pravna osoba
+counterparties.types.legal.desc	Organizacija ili tvrtka
+counterparties.types.ie.label	Samostalni poduzetnik
+counterparties.types.ie.desc	Individualni poduzetnik
+counterparties.types.person.label	Fizička osoba
+counterparties.types.person.desc	Privatna osoba
+counterparties.addSubmit	Dodaj protustranku
+counterparties.you	Vi
+counterparties.otherCategory	Ostalo
+counterparties.deals	poslovi
+counterparties.dealsLabel	Poslovi
+counterparties.debtLabel	Dug
+counterparties.documents	Dokumenti
+counterparties.edit	Uredi
+counterparties.delete	Izbriši
+counterparties.deleteConfirmTitle	Izbrisati protustranku?
+counterparties.deleteConfirmText	Povezani dokumenti i povijest poslova ostat će, ali protustranka će biti uklonjena s popisa.
+counterparties.toasts.loadFailed	Učitavanje protustranaka nije uspjelo
+counterparties.toasts.enterName	Unesite naziv
+counterparties.toasts.saved	Promjene su spremljene
+counterparties.toasts.saveFailed	Spremanje nije uspjelo
+counterparties.toasts.added	Protustranka je dodana
+counterparties.toasts.addFailed	Dodavanje protustranke nije uspjelo
+counterparties.toasts.deleted	Protustranka je izbrisana
+counterparties.toasts.deleteFailed	Brisanje protustranke nije uspjelo
+counterparties.toasts.documentsOpened	Dokumenti su otvoreni
+documents.signed	Potpisano
+documents.pendingCount	Čeka potpis
+documents.draftCount	Interno (nepotpisano)
+documents.searchPlaceholder	Pretraži po naslovu ili protustranci…
+documents.filters.all	Sve
+documents.filters.signed	Potpisano
+documents.filters.pending	Čeka potpis
+documents.upload	Prenesi
+documents.addTitle	Dodaj dokument u biblioteku
+documents.dropzoneTitle	Kliknite ili povucite datoteku
+documents.dropzoneHint	PDF, DOCX, XLSX (do 15 MB)
+documents.dropzoneChange	Kliknite za odabir druge datoteke
+documents.titleLabel	Naslov dokumenta
+documents.titlePlaceholder	Npr. Zapisnik o primopredaji br. 48
+documents.partyLabel	Protustranka (ako postoji)
+documents.partyPlaceholder	Naziv tvrtke ili samostalnog poduzetnika
+documents.needsSignature	Treba li dokument potpis?
+documents.needsSignatureHint	Status će biti „Čeka potpis”
+documents.saveToBase	Spremi u biblioteku
+documents.emptyTitle	Ova mapa je prazna
+documents.emptyBody	Prenesite novi dokument ili promijenite filtre
+documents.internalDoc	Interni dokument
+documents.uploaded	Preneseno {{date}}
+documents.download	Preuzmi
+documents.open	Otvori
+documents.fileRequired	Priložite datoteku
+documents.options	Opcije
+documents.status.title	Status
+documents.status.signed	Potpisano
+documents.status.pending	Čeka potpis
+documents.status.draft	Nepotpisano
+documents.delete	Izbriši
+documents.toasts.loadFailed	Učitavanje dokumenata nije uspjelo
+documents.toasts.titleRequired	Prenesite datoteku ili unesite naslov
+documents.toasts.created	Dokument je prenesen u biblioteku
+documents.toasts.createFailed	Spremanje dokumenta nije uspjelo
+documents.toasts.badFormat	Dopušteni formati: PDF, DOCX, XLSX
+documents.toasts.downloadFailed	Preuzimanje datoteke nije uspjelo
+documents.toasts.noFile	Uz ovaj dokument nije priložena datoteka
+documents.toasts.openFailed	Otvaranje datoteke nije uspjelo
+documents.toasts.statusChanged	Status: {{label}}
+documents.toasts.statusFailed	Promjena statusa nije uspjela
+documents.toasts.deleted	Dokument je izbrisan
+documents.toasts.deleteFailed	Brisanje dokumenta nije uspjelo
+goals.loading	Učitavanje ciljeva…
+goals.active	Ciljevi u tijeku
+goals.done	Dovršeni
+goals.avgProgress	Ukupan napredak
+goals.trackingTitle	Praćenje plana
+goals.createGoal	Stvori cilj
+goals.newTitle	Novi financijski cilj
+goals.titleLabel	Naslov cilja
+goals.titlePlaceholder	Npr. Novi reformer uređaji
+goals.targetLabel	Ciljani iznos, {{symbol}}
+goals.targetPlaceholder	500000
+goals.deadlineLabel	Rok
+goals.trackingLabel	Kako pratiti napredak?
+goals.trackingAuto	Automatski (CRM metrika)
+goals.trackingAutoDesc	Povežite cilj s prihodom od odabrane kategorije. CRM će sam pomicati traku napretka.
+goals.trackingManual	Ručno (osobna štednja)
+goals.trackingManualDesc	Na kartici će se pojaviti gumb „Dodaj sredstva”. Napredak ovisi samo o vama.
+goals.opTypeLabel	Vrsta operacije
+goals.categoryLabel	Kategorija
+goals.categoryPlaceholder	Odaberite kategoriju
+goals.editTitle	Uredi cilj
+goals.nameLabel	Naslov
+goals.namePlaceholder	Naslov cilja
+goals.amountLabel	Iznos, {{symbol}}
+goals.achieved	Cilj je ostvaren
+goals.priority.high	Visok prioritet
+goals.priority.medium	Srednji prioritet
+goals.priority.low	Nizak prioritet
+goals.autoCollect	Automatsko praćenje
+goals.deadlinePrefix	Rok:
+goals.noDeadline	Bez roka
+goals.fundPlaceholder	Iznos, {{symbol}}
+goals.fund	Dodaj
+goals.addFunds	Dodaj sredstva
+goals.autoHint	Vrijednost se automatski ažurira iz prihoda kategorije
+goals.deleteConfirmTitle	Izbrisati cilj?
+goals.deleteConfirmText	Napredak za ovaj cilj bit će izgubljen. Radnju nije moguće poništiti.
+goals.toasts.loadFailed	Učitavanje ciljeva nije uspjelo
+goals.toasts.fillRequired	Ispunite naslov i iznos
+goals.toasts.chooseCategory	Odaberite kategoriju za automatski cilj
+goals.toasts.created	Cilj je stvoren
+goals.toasts.createFailed	Stvaranje cilja nije uspjelo
+goals.toasts.enterName	Unesite naziv
+goals.toasts.updated	Cilj je ažuriran
+goals.toasts.updateFailed	Ažuriranje cilja nije uspjelo
+goals.toasts.deleted	Cilj je izbrisan
+goals.toasts.deleteFailed	Brisanje cilja nije uspjelo
+goals.toasts.funded	Sredstva su dodana
+goals.toasts.fundFailed	Dodavanje sredstava nije uspjelo
+onlinePayments.description	Povežite Stripe i vaši klijenti mogu plaćati karticom na blagajni. Novac sjeda izravno na račun vašeg studija — Velora ga nikad ne zadržava. Provizija slijedi vaš plan.
+onlinePayments.gatewaysTitle	Pružatelji plaćanja
+onlinePayments.gateways.stripe.name	Stripe
+onlinePayments.gateways.states.none.label	Nije povezano
+onlinePayments.gateways.states.none.hint	Prihvaćajte kartična plaćanja na račun studija
+onlinePayments.gateways.states.none.action	Poveži
+onlinePayments.gateways.states.incomplete.label	Nedostaju podaci
+onlinePayments.gateways.states.incomplete.hint	Stripe čeka podatke vašeg studija — plaćanja ostaju isključena do tada
+onlinePayments.gateways.states.incomplete.action	Nastavi
+onlinePayments.gateways.states.action.label	Potrebna je radnja
+onlinePayments.gateways.states.action.hint	Stripe je odbio neke podatke i čeka ispravke — neće se riješiti samo od sebe
+onlinePayments.gateways.states.action.action	Ispravi podatke
+onlinePayments.gateways.states.review.label	U provjeri
+onlinePayments.gateways.states.review.hint	Podaci su poslani, Stripe ih provjerava. To obično traje do jednog dana
+onlinePayments.gateways.states.review.action	Otvori Stripe
+onlinePayments.gateways.states.active.label	Povezano
+onlinePayments.gateways.states.active.hint	Kartična plaćanja stižu na Stripe račun studija
+onlinePayments.gateways.states.active.action	Postavke
+onlinePayments.toasts.gatewayUpdated	Postavke pružatelja su ažurirane
+onlinePayments.toasts.stripeReturned	Podaci su poslani Stripeu
+onlinePayments.toasts.stripeLinkExpired	Stripe veza je istekla — ponovno pritisnite Poveži
+paymentMethods.totalTurnover	Promet za razdoblje
+paymentMethods.periods.month	Mjesec
+paymentMethods.periods.quarter	Tromjesečje
+paymentMethods.periods.year	Godina
+paymentMethods.amount	Iznos
+paymentMethods.share	Udio
+paymentMethods.transactions	transakcije
+paymentMethods.methods.cash.name	Gotovina
+paymentMethods.methods.card.name	Bankovna kartica
+paymentMethods.methods.qr.name	SBP (QR)
+paymentMethods.methods.transfer.name	Prijenos
+paymentMethods.methods.stripe.name	Stripe
+paymentMethods.methods..name	Nije navedeno
+reports.metrics.revenue	Prihodi
+reports.metrics.expenses	Rashodi
+reports.metrics.profit	Dobit
+reports.metrics.margin	Marža
+reports.vsPreviousPeriod	u odnosu na prethodno razdoblje
+reports.cashflowTitle	Novčani tok
+reports.cashflowSub	Analiza prihoda i rashoda
+reports.period	Razdoblje
+reports.income	Prihod
+reports.expense	Rashod
+reports.profit	Dobit
+reports.periods.today	Danas
+reports.periods.week	Tjedan
+reports.periods.month	Mjesec
+reports.periods.year	Godina
+reports.legendIncome	Prihodi
+reports.legendExpense	Rashodi
+reports.exportCsv	Izvezi CSV
+reports.expenseStructure	Struktura rashoda
+reports.incomeStructure	Struktura prihoda
+reports.total	Ukupno
+reports.otherCategory	Nekategorizirano
+reports.noData	Nema podataka za ovo razdoblje
+reports.insightsTitle	Financijski sažetak i uvidi
+reports.insightsPlaceholder	Financijski sažetak s AI-jem pojavit će se ovdje: analiza trendova, struktura rashoda i preporuke
+reports.toasts.exportFailed	Izvoz operacija nije uspio
+confirmModal.cancel	Odustani
+confirmModal.confirm	Potvrdi
+confirmModal.delete	Izbriši

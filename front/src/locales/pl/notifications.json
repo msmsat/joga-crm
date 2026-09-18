@@ -1,0 +1,361 @@
+{
+  "loading": "Ładowanie…",
+  "chModal": {
+    "eyebrow": "Kanał powiadomień",
+    "connected": "Połączono",
+    "notConnected": "Nie połączono",
+    "setup": "Konfiguracja połączenia",
+    "details": "Szczegóły połączenia",
+    "ready": "Kanał działa",
+    "readyHint": "Powiadomienia o włączonych zdarzeniach są wysyłane automatycznie.",
+    "bot": "Bot",
+    "token": "Token",
+    "phone": "Numer",
+    "account": "Konto",
+    "sender": "Nadawca"
+  },
+  "channels": {
+    "title": "Kanały dostawy",
+    "connect": "Połącz",
+    "connected": "Połączono",
+    "openSettings": "Ustawienia {{channel}}",
+    "waLockedHint": "Kanał odblokuje się, gdy Meta będzie mieć Twoją metodę płatności, zweryfikowaną firmę i zatwierdzone szablony",
+    "waBlocker": {
+      "payment": "Brak metody płatności — przypomnienia nie są dostarczane. Skonfiguruj",
+      "verification": "Firma nie jest zweryfikowana w Meta — limit 250/dzień. Jak to naprawić",
+      "templates": "Szablony są nadal sprawdzane przez Meta — nic nie zostanie wysłane. Szczegóły"
+    }
+  },
+  "roles": {
+    "client": "Klient",
+    "trainer": "Trener",
+    "admin": "Administrator",
+    "owner": "Właściciel",
+    "activeCount_one": "{{count}} aktywny",
+    "activeCount_few": "{{count}} aktywne",
+    "activeCount_many": "{{count}} aktywnych"
+  },
+  "matrix": {
+    "saving": "Zapisywanie…",
+    "allSaved": "Wszystkie zmiany zapisane",
+    "notSaved": "Nie zapisano",
+    "activateAll": "Włącz wszystkie",
+    "deactivateAll": "Wyczyść wszystkie pola wyboru",
+    "scenariosFor": "Scenariusze dla: {{role}}",
+    "eventColumn": "Zdarzenie systemowe",
+    "noActiveChannels": "Brak aktywnych kanałów",
+    "noActiveChannelsHint": "Włącz co najmniej jeden kanał dostawy w panelu po lewej",
+    "adviceLabel": "Wskazówka:",
+    "advice": "Dla każdej roli osobno ustaw, co jest wysyłane i gdzie — Velora zajmie się tym automatycznie.",
+    "tiers": {
+      "critical": "Wymagane · nie można wyłączyć",
+      "operational": "Operacyjne",
+      "optional": "Opcjonalne"
+    },
+    "lock": {
+      "critical": "Wymagane powiadomienie — nie można wyłączyć",
+      "lastChannel": "Ostatni kanał dostawy — nie można wyłączyć"
+    },
+    "channelDisconnected": "Kanał nie jest połączony",
+    "activeCount_one": "Aktywne wyzwalacze: {{count}} z {{total}}",
+    "activeCount_few": "Aktywne wyzwalacze: {{count}} z {{total}}",
+    "activeCount_many": "Aktywne wyzwalacze: {{count}} z {{total}}",
+    "configureFor_one": "Skonfiguruj kanały dla {{count}} wyzwalacza systemowego",
+    "configureFor_few": "Skonfiguruj kanały dla {{count}} wyzwalaczy systemowych",
+    "configureFor_many": "Skonfiguruj kanały dla {{count}} wyzwalaczy systemowych"
+  },
+  "events": {
+    "c1": {
+      "title": "Rezerwacja potwierdzona",
+      "desc": "Po udanej rezerwacji zajęć"
+    },
+    "c2": {
+      "title": "Przypomnienie o zajęciach",
+      "desc": "24 godziny i 2 godziny przed"
+    },
+    "c3": {
+      "title": "Zajęcia odwołane",
+      "desc": "Gdy trener lub studio odwołuje"
+    },
+    "c4": {
+      "title": "Płatność udana",
+      "desc": "Potwierdzenie po udanym obciążeniu"
+    },
+    "c5": {
+      "title": "Mało zajęć pozostało",
+      "desc": "Gdy w pakiecie zostały 1–2 wizyty"
+    },
+    "c6": {
+      "title": "Pakiet wygasa",
+      "desc": "3 dni przed datą wygaśnięcia"
+    },
+    "c7": {
+      "title": "Urodziny",
+      "desc": "Życzenia ze specjalną ofertą"
+    },
+    "c8": {
+      "title": "Prośba o opinię",
+      "desc": "Po udziale w zajęciach"
+    },
+    "c9": {
+      "title": "Zwrot środków",
+      "desc": "Przy anulowaniu i przetwarzaniu zwrotu"
+    },
+    "c10": {
+      "title": "Zajęcia jeszcze nieopłacone",
+      "desc": "Klient uczestniczył, ale nie zapłacił"
+    },
+    "c11": {
+      "title": "Zajęcia przeniesione",
+      "desc": "Zmieniono czas, salę lub trenera"
+    },
+    "c12": {
+      "title": "Bonus naliczony",
+      "desc": "Punkty lub bonus dodano klientowi"
+    },
+    "c13": {
+      "title": "Kawa po zajęciach",
+      "desc": "Kto z grupy idzie na kawę"
+    },
+    "t1": {
+      "title": "Nowa rezerwacja u trenera",
+      "desc": "Klient zarezerwował indywidualną sesję"
+    },
+    "t2": {
+      "title": "Klient anulował rezerwację",
+      "desc": "Klient anulował mniej niż 2 godziny przed"
+    },
+    "t3": {
+      "title": "Przypomnienie o zajęciach",
+      "desc": "1 godzinę przed rozpoczęciem"
+    },
+    "t4": {
+      "title": "Lista grupy",
+      "desc": "30 min przed zajęciami grupowymi"
+    },
+    "t5": {
+      "title": "Zmiana harmonogramu",
+      "desc": "Administrator zmienił termin lub lokalizację"
+    },
+    "t6": {
+      "title": "Wynagrodzenie naliczone",
+      "desc": "Tygodniowe wyliczenie wypłaty"
+    },
+    "t7": {
+      "title": "Nowa opinia o trenerze",
+      "desc": "Klient wystawił ocenę po zajęciach"
+    },
+    "t8": {
+      "title": "Urodziny klienta",
+      "desc": "Przypomnienie o osobistych życzeniach"
+    },
+    "t9": {
+      "title": "Zajęcia odwołane",
+      "desc": "Studio lub administrator odwołał Twoje zajęcia"
+    },
+    "a1": {
+      "title": "Nowa rezerwacja online",
+      "desc": "Klient zarezerwował przez stronę lub widżet"
+    },
+    "a2": {
+      "title": "Anulowanie w ostatniej chwili",
+      "desc": "Mniej niż 1 godzinę przed zajęciami"
+    },
+    "a3": {
+      "title": "Nowy klient w systemie",
+      "desc": "Rejestracja nowego użytkownika"
+    },
+    "a4": {
+      "title": "Płatność otrzymana",
+      "desc": "Każde udane obciążenie"
+    },
+    "a6": {
+      "title": "Pakiety się kończą",
+      "desc": "Grupa klientów z ≤1 zajęciami pozostałymi"
+    },
+    "a7": {
+      "title": "Konflikt w harmonogramie",
+      "desc": "Nakładające się zajęcia w dzienniku"
+    },
+    "a8": {
+      "title": "Raport dzienny",
+      "desc": "Podsumowanie na koniec dnia"
+    },
+    "a9": {
+      "title": "Próba logowania",
+      "desc": "Logowanie z nowego urządzenia"
+    },
+    "a10": {
+      "title": "Zwrot środków",
+      "desc": "Administrator dokonał zwrotu"
+    },
+    "o1": {
+      "title": "Podsumowanie dnia",
+      "desc": "Przychód, rezerwacje, frekwencja w danym dniu"
+    },
+    "o2": {
+      "title": "Raport tygodniowy",
+      "desc": "Wskaźniki: wzrost klientów, LTV, konwersja"
+    },
+    "o3": {
+      "title": "Duża płatność",
+      "desc": "Obciążenie powyżej ustawionego progu"
+    },
+    "o4": {
+      "title": "Anomalia danych",
+      "desc": "Gwałtowny spadek rezerwacji lub przychodów"
+    },
+    "o5": {
+      "title": "Nowy członek zespołu",
+      "desc": "Administrator utworzył nowe konto"
+    },
+    "o6": {
+      "title": "Odnowienie planu",
+      "desc": "Przypomnienie o opłaceniu subskrypcji Velora"
+    },
+    "o7": {
+      "title": "Zmieniono uprawnienia dostępu",
+      "desc": "Zmieniono uprawnienia członka zespołu"
+    },
+    "o8": {
+      "title": "Osiągnięto KPI",
+      "desc": "Miesięczny cel osiągnięty"
+    },
+    "o9": {
+      "title": "Eksport danych",
+      "desc": "Ktoś wyeksportował bazę klientów"
+    }
+  },
+  "tg": {
+    "title": "Telegram",
+    "subtitleConnected": "Kanał połączony",
+    "subtitleDisconnected": "Połącz bota powiadomień",
+    "connected": "Połączono",
+    "pasteToken": "Wklej token bota otrzymany od @BotFather.",
+    "invalidToken": "Nieprawidłowy format tokenu",
+    "howToGet": "Jak uzyskać token:",
+    "steps": {
+      "1": "Otwórz @BotFather w Telegramie",
+      "2": "Wyślij polecenie /newbot i postępuj zgodnie z instrukcjami",
+      "3": "Skopiuj wydany token",
+      "4": "Wklej go w polu powyżej"
+    },
+    "connect": "Połącz",
+    "disconnect": "Rozłącz",
+    "disconnectTitle": "Rozłączyć Telegram?",
+    "disconnectMessage": "Klienci i personel przestaną otrzymywać powiadomienia przez ten kanał.",
+    "close": "Zamknij",
+    "cancel": "Anuluj"
+  },
+  "emailCh": {
+    "title": "E-mail",
+    "subtitle": "Adres nadawcy wiadomości do klientów",
+    "verifiedLabel": "Zweryfikowano",
+    "emailLabel": "E-mail nadawcy",
+    "emailPlaceholder": "admin@studio.com",
+    "invalidEmail": "Wpisz prawidłowy e-mail",
+    "sendCode": "Wyślij kod",
+    "codeSentTo": "Kod wysłano do",
+    "codeHint": "Wpisz 6-cyfrowy kod z e-maila.",
+    "codeLabel": "Kod weryfikacyjny",
+    "resend": "Wyślij kod ponownie",
+    "viaVelora": "E-maile są wysyłane przez serwer Velora w Twoim imieniu.",
+    "wrongCode": "Nieprawidłowy lub wygasły kod",
+    "verify": "Zweryfikuj",
+    "back": "Wróć",
+    "cancel": "Anuluj"
+  },
+  "wa": {
+    "title": "WhatsApp",
+    "subtitleConnected": "Kanał połączony",
+    "subtitleDisconnected": "Zaloguj się kontem firmowym Meta",
+    "connected": "Połączono",
+    "paymentRequiredTitle": "Potrzebna będzie karta",
+    "paymentRequired": "Połączenie numeru jest bezpłatne, ale Meta dostarcza przypomnienia klientom dopiero po dodaniu karty. Dodajesz ją osobno —",
+    "paymentMissingTitle": "Brak metody płatności",
+    "paymentMissing": "Obecnie działają tylko odpowiedzi bota na wiadomości przychodzące. Meta odrzuca przypomnienia, potwierdzenia i wysyłki masowe, dopóki karta nie zostanie dodana —",
+    "paymentOkTitle": "Płatność połączona",
+    "paymentOk": "powiadomienia są dostarczane w pełni.",
+    "paymentUnknown": "Nie udało się sprawdzić metody płatności w Meta — pokażemy stan przy następnej próbie.",
+    "paymentLink": "Centrum rozliczeń Meta",
+    "paymentRecheck": "Sprawdź ponownie",
+    "paymentFound": "Płatność połączona",
+    "verify": {
+      "title": "Firma nie jest zweryfikowana w Meta",
+      "lead": "Numer działa, ale z ograniczeniem do 250 unikalnych odbiorców dziennie. Weryfikacja znosi limit i odblokowuje pełne uruchomienie. Studio musi zrobić to samodzielnie — konto WhatsApp należy do Ciebie, a Velora nie może działać w Twoim imieniu.",
+      "stepsTitle": "Jak zweryfikować firmę:",
+      "step1a": "Otwórz",
+      "link": "Centrum bezpieczeństwa Meta Business",
+      "step1b": "i kliknij „Rozpocznij weryfikację”. Potrzebujesz uprawnień administratora konta firmowego.",
+      "step2": "Wypełnij dane prawne: nazwę dokładnie jak w dokumentach, adres, telefon i witrynę. Witryna musi działać i używać HTTPS.",
+      "step3": "Prześlij dokument rejestracyjny firmy i poczekaj, aż Meta go sprawdzi.",
+      "step4": "Potwierdź związek z firmą: e-mail w domenie witryny, rozmowa lub SMS na podany telefon albo weryfikacja domeny.",
+      "step5": "Poczekaj na decyzję — zwykle 1–5 dni roboczych. Status jest w tym samym centrum bezpieczeństwa; w razie odrzucenia Meta podaje powód i pozwala złożyć wniosek ponownie.",
+      "docsTitle": "Akceptowane dokumenty (po jednym z każdej grupy):",
+      "doc1": "Rejestracja: akt założycielski, odpis z rejestru, licencja firmy lub dokument podatkowy.",
+      "doc2": "Dowód obecności: działająca strona, oficjalna strona w mediach społecznościowych lub wpis w katalogu firm.",
+      "pitfallTitle": "Najczęstszy powód odrzucenia",
+      "pitfall": "Nazwa firmy w Meta i w dokumencie musi być identyczna znak po znaku, wraz z formą prawną i interpunkcją. „Romashka LLC” i „Romashka, LLC” są uznawane za różne nazwy."
+    },
+    "templatesTitle": "Szablony wiadomości",
+    "templates": "Meta nie pozwoli Ci napisać do klienta jako pierwszemu bez wcześniej zatwierdzonego szablonu. Utwórz szablony dla każdego zdarzenia — trafią do sprawdzenia i zaczną działać po zatwierdzeniu.",
+    "templatesAction": "Przygotuj szablony",
+    "templatesPending": "Tworzenie szablonów…",
+    "templatesPartial": "Meta odrzuciła część szablonów: {{failed}}. Zobacz dziennik, aby poznać szczegóły",
+    "templatesRejected": "— te powiadomienia nie są dostarczane. Sprawdź treść na koncie Meta i utwórz szablony ponownie.",
+    "templatesPendingHint": "— Meta może potrzebować do jednego dnia. {{approved}} są już zatwierdzone i dostarczane.",
+    "templatesOkTitle": "Szablony zatwierdzone",
+    "paidWarning": "Wiadomości WhatsApp są płatne",
+    "approxPrice": "ok.",
+    "pricingLoading": "Ładowanie bieżącej ceny…",
+    "perMessage": "za wiadomość",
+    "viaMeta": "rozliczane bezpośrednio przez Meta",
+    "windowNotice": "Dostarczenie jest gwarantowane tylko w 24-godzinnym oknie rozmowy.",
+    "connect": "Połącz WhatsApp",
+    "disconnect": "Rozłącz",
+    "disconnectTitle": "Rozłączyć WhatsApp?",
+    "disconnectMessage": "Klienci i personel przestaną otrzymywać powiadomienia przez ten kanał.",
+    "close": "Zamknij",
+    "cancel": "Anuluj",
+    "templatesDone_one": "Szablony gotowe: {{count}}. Oczekują na weryfikację Meta",
+    "templatesDone_few": "Szablony gotowe: {{count}}. Oczekują na weryfikację Meta",
+    "templatesDone_many": "Szablony gotowe: {{count}}. Oczekują na weryfikację Meta",
+    "templatesRejectedTitle_one": "Meta odrzuciła {{count}} szablon",
+    "templatesRejectedTitle_few": "Meta odrzuciła {{count}} szablony",
+    "templatesRejectedTitle_many": "Meta odrzuciła {{count}} szablonów",
+    "templatesPendingTitle_one": "{{count}} szablon w trakcie weryfikacji",
+    "templatesPendingTitle_few": "{{count}} szablony w trakcie weryfikacji",
+    "templatesPendingTitle_many": "{{count}} szablonów w trakcie weryfikacji",
+    "templatesOk_one": "{{count}} przeszedł weryfikację Meta — powiadomienia są dostarczane.",
+    "templatesOk_few": "Wszystkie {{count}} przeszły weryfikację Meta — powiadomienia są dostarczane.",
+    "templatesOk_many": "Wszystkie {{count}} przeszły weryfikację Meta — powiadomienia są dostarczane."
+  },
+  "tabs": {
+    "matrix": "Ustawienia",
+    "log": "Dziennik dostaw"
+  },
+  "log": {
+    "title": "Dziennik dostaw",
+    "subtitle": "Co wysłano, do kogo i kiedy oraz jak zakończyła się każda wysyłka.",
+    "status": {
+      "sent": "Dostarczono",
+      "rejected": "Odrzucono",
+      "error": "Błąd połączenia",
+      "pending": "W toku"
+    },
+    "searchPlaceholder": "Telefon, e-mail lub kod zdarzenia",
+    "allChannels": "Wszystkie kanały",
+    "reset": "Resetuj",
+    "refreshing": "Odświeżanie…",
+    "otherEvent": "Wysyłka poza katalogiem",
+    "empty": "Jeszcze nic nie wysłano",
+    "emptyHint": "Tutaj pojawi się każde powiadomienie wysłane przez studio klientom i personelowi.",
+    "emptyFiltered": "Nic nie znaleziono",
+    "emptyFilteredHint": "Spróbuj zmienić filtry lub wyszukać inny numer.",
+    "loadError": "Nie udało się załadować dziennika",
+    "loadErrorHint": "Odśwież stronę — jeśli to nie pomoże, skontaktuj się z pomocą techniczną.",
+    "range": "{{from}}–{{to}} z {{total}}",
+    "prev": "Wróć",
+    "next": "Dalej"
+  }
+}

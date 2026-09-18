@@ -1,0 +1,510 @@
+{
+  "tabs": {
+    "accounts": "Računi",
+    "operations": "Operacije",
+    "salaries": "Plaće",
+    "counterparties": "Protustranke",
+    "documents": "Dokumenti",
+    "onlinePayments": "Online plaćanja",
+    "paymentMethods": "Načini plaćanja",
+    "reports": "Izvještaji",
+    "goals": "Ciljevi"
+  },
+  "common": {
+    "save": "Spremi",
+    "cancel": "Odustani",
+    "create": "Stvori",
+    "edit": "Uredi",
+    "delete": "Izbriši",
+    "loading": "Učitavanje…",
+    "all": "Sve",
+    "confirm": "Potvrdi",
+    "monthsShort": [
+      "Sij",
+      "Velj",
+      "Ožu",
+      "Tra",
+      "Svi",
+      "Lip",
+      "Srp",
+      "Kol",
+      "Ruj",
+      "Lis",
+      "Stu",
+      "Pro"
+    ],
+    "weekdaysShort": [
+      "Pon",
+      "Uto",
+      "Sri",
+      "Čet",
+      "Pet",
+      "Sub",
+      "Ned"
+    ]
+  },
+  "info": {
+    "accounts": "Računi su blagajne studija, bankovni računi i online naplata. Ovdje vidite svako stanje i ukupan kapital.",
+    "operations": "Operacije su svi prihodi i rashodi studija. Stvaranje operacije odmah mijenja stanje povezanog računa.",
+    "salaries": "Plaće se izračunavaju prema stopi člana osoblja (fiksno, po satu ili postotak) za odabrano razdoblje.",
+    "counterparties": "Protustranke su organizacije i pojedinci s kojima studio posluje: dobavljači, najmodavci, partneri.",
+    "documents": "Dokumenti su ugovori, akti i računi povezani s protustrankama ili interni dokumenti.",
+    "onlinePayments": "Online plaćanja — povežite Stripe za kartična plaćanja. Račun se stvara za vaš studio pa novac ide izravno vama, bez prolaska kroz Veloru.",
+    "paymentMethods": "Načini plaćanja pokazuju kako klijenti plaćaju u studiju i statistiku za svaki način.",
+    "reports": "Izvještaji prikazuju trendove prihoda, rashoda i dobiti u odabranom razdoblju.",
+    "goals": "Financijski ciljevi su plan štednje studija s automatskim ili ručnim praćenjem napretka."
+  },
+  "accounts": {
+    "loading": "Učitavanje računa…",
+    "totalCapital": "Ukupan kapital studija",
+    "donutTotal": "{{symbol}} ukupno",
+    "todayChange": "danas",
+    "system": "SUSTAV",
+    "today": "danas",
+    "editTitle": "Uredi račun",
+    "namePlaceholder": "Naziv",
+    "balancePlaceholder": "Stanje, {{symbol}}",
+    "types": {
+      "cash": "Gotovina",
+      "bank": "Kartica",
+      "online": "Online"
+    },
+    "typesShort": {
+      "cash": "Gotovina",
+      "bank": "Kartica",
+      "online": "Online"
+    },
+    "history": "Povijest",
+    "historyTitle": "Povijest: {{name}}",
+    "income30d": "Prihodi (30 d.)",
+    "expense30d": "Rashodi (30 d.)",
+    "samplePayment": "Plaćanje usluge",
+    "sampleTime": "Danas, 14:32",
+    "openAllOperations": "Otvori sve operacije",
+    "newSavingsTitle": "Novi štedni račun",
+    "createSavings": "Stvori štedni račun",
+    "deleteConfirmTitle": "Izbrisati ovaj račun?",
+    "deleteConfirmText": "Sva njegova sredstva bit će isključena iz ukupne statistike. Radnju nije moguće poništiti.",
+    "toasts": {
+      "loadFailed": "Učitavanje računa nije uspjelo",
+      "deleted": "Račun je izbrisan",
+      "deleteFailed": "Brisanje računa nije uspjelo",
+      "saved": "Postavke su spremljene",
+      "saveFailed": "Spremanje računa nije uspjelo",
+      "created": "Štedni račun je stvoren",
+      "createFailed": "Stvaranje računa nije uspjelo"
+    }
+  },
+  "operations": {
+    "income": "Prihod",
+    "expense": "Rashod",
+    "balance": "Stanje",
+    "searchPlaceholder": "Pretraži po nazivu i kategoriji…",
+    "close": "Zatvori",
+    "operation": "Operacija",
+    "export": "Izvezi",
+    "newOperationTitle": "Nova operacija",
+    "titleLabel": "Naziv",
+    "titlePlaceholder": "Npr. Plaćanje pretplate",
+    "amountLabel": "Iznos, {{symbol}}",
+    "dateLabel": "Datum",
+    "categoryLabel": "Kategorija",
+    "categoryPlaceholder": "Kategorija",
+    "accountLabel": "Račun",
+    "noAccount": "Bez računa",
+    "methodLabel": "Način plaćanja",
+    "noMethod": "Nije navedeno",
+    "counterpartyLabel": "Protustranka",
+    "noCounterparty": "Bez protustranke",
+    "newCounterparty": "+ Nova protustranka",
+    "clientLabel": "Klijent",
+    "clientHint": "Bodovi vjernosti i razina bit će dodijeljeni klijentu",
+    "clientSearchPlaceholder": "Počnite upisivati ime…",
+    "noClient": "Bez klijenta",
+    "editTitle": "Uredi operaciju",
+    "saving": "Spremanje…",
+    "loading": "Učitavanje operacija…",
+    "emptyTitle": "Nema pronađenih operacija",
+    "emptyBody": "Promijenite filtre ili stvorite prvu operaciju",
+    "pending": "Na čekanju",
+    "detailAccount": "Primajući račun",
+    "detailCategory": "Kategorija",
+    "detailMethod": "Način plaćanja",
+    "detailCounterparty": "Protustranka",
+    "receipt": "Račun",
+    "loadMore": "Učitaj više ({{count}})",
+    "toasts": {
+      "loadFailed": "Učitavanje operacija nije uspjelo",
+      "loadMoreFailed": "Učitavanje dodatnih operacija nije uspjelo",
+      "deleted": "Operacija je izbrisana",
+      "deleteFailed": "Brisanje operacije nije uspjelo",
+      "enterAmount": "Unesite iznos",
+      "created": "Operacija je stvorena",
+      "createFailed": "Stvaranje operacije nije uspjelo",
+      "updated": "Operacija je ažurirana",
+      "updateFailed": "Spremanje operacije nije uspjelo",
+      "exportFailed": "Izvoz operacija nije uspio",
+      "receiptDownloaded": "Račun je preuzet"
+    },
+    "categoryPresets": {
+      "in": [
+        {
+          "value": "Pretplate",
+          "label": "Pretplate"
+        },
+        {
+          "value": "Usluge",
+          "label": "Usluge"
+        },
+        {
+          "value": "Poklon-bonovi",
+          "label": "Poklon-bonovi"
+        },
+        {
+          "value": "Depozit",
+          "label": "Depozit"
+        },
+        {
+          "value": "Ostalo",
+          "label": "Ostalo"
+        }
+      ],
+      "out": [
+        {
+          "value": "Povrati",
+          "label": "Povrati"
+        },
+        {
+          "value": "Najam",
+          "label": "Najam"
+        },
+        {
+          "value": "Plaće",
+          "label": "Plaće"
+        },
+        {
+          "value": "Nabava",
+          "label": "Nabava"
+        },
+        {
+          "value": "Marketing",
+          "label": "Marketing"
+        },
+        {
+          "value": "Porezi",
+          "label": "Porezi"
+        },
+        {
+          "value": "Ostalo",
+          "label": "Ostalo"
+        }
+      ]
+    }
+  },
+  "salaries": {
+    "loading": "Učitavanje plaća…",
+    "noRows": "Nema osoblja za izračun",
+    "fund": "Fond plaća",
+    "fundSub": "trenutni mjesec",
+    "sessions": "Sesije",
+    "sessionsSub": "ukupno održano",
+    "paidOf": "osoblje",
+    "sessionsCount": "{{count}} sesija",
+    "paid": "Plaćeno",
+    "pending": "Na čekanju",
+    "paying": "…",
+    "payAction": "Plati",
+    "cancelAction": "Otkaži plaću",
+    "perMonth": "/mj.",
+    "accrualTitle": "Obračun za razdoblje",
+    "rate": "Stopa",
+    "rateNotSet": "nije postavljeno",
+    "sessionsInPeriod": "Sesije u razdoblju",
+    "hoursWorked": "Odrađeni sati",
+    "lessonsRevenue": "Prihod od sesija",
+    "totalToPay": "Ukupno za plaćanje",
+    "rateWarning": "Stopa nije postavljena — postavite je u profilu člana osoblja kako bi se obračun mogao izračunati.",
+    "rateUnit": {
+      "hourly": "sat",
+      "percent": "%",
+      "fixed": "fiksno"
+    },
+    "paidAt": "Plaćeno {{date}}",
+    "historyTitle": "Povijest plaćanja",
+    "historyEmpty": "Još nema plaćanja",
+    "historyLoading": "Učitavanje povijesti…",
+    "toasts": {
+      "loadFailed": "Učitavanje plaća nije uspjelo",
+      "paid": "Plaća je isplaćena: {{name}}",
+      "payFailed": "Isplata plaće nije uspjela",
+      "canceled": "Plaća je otkazana: {{name}}",
+      "historyLoadFailed": "Učitavanje povijesti plaćanja nije uspjelo"
+    }
+  },
+  "counterparties": {
+    "count": "{{count}} protustranaka",
+    "totalDebt": "Ukupan dug:",
+    "add": "Dodaj",
+    "newTitle": "Nova protustranka",
+    "nameLabel": "Naziv / Puno ime",
+    "namePlaceholder": "Tvrtka d.o.o. ili Ivan Horvat",
+    "innLabel": "Porezni broj",
+    "categoryLabel": "Kategorija",
+    "categoryPlaceholder": "Najam, dobavljač…",
+    "typeLabel": "Vrsta protustranke",
+    "types": {
+      "legal": {
+        "label": "Pravna osoba",
+        "desc": "Organizacija ili tvrtka"
+      },
+      "ie": {
+        "label": "Samostalni poduzetnik",
+        "desc": "Individualni poduzetnik"
+      },
+      "person": {
+        "label": "Fizička osoba",
+        "desc": "Privatna osoba"
+      }
+    },
+    "addSubmit": "Dodaj protustranku",
+    "you": "Vi",
+    "otherCategory": "Ostalo",
+    "deals": "poslovi",
+    "dealsLabel": "Poslovi",
+    "debtLabel": "Dug",
+    "documents": "Dokumenti",
+    "edit": "Uredi",
+    "delete": "Izbriši",
+    "deleteConfirmTitle": "Izbrisati protustranku?",
+    "deleteConfirmText": "Povezani dokumenti i povijest poslova ostat će, ali protustranka će biti uklonjena s popisa.",
+    "toasts": {
+      "loadFailed": "Učitavanje protustranaka nije uspjelo",
+      "enterName": "Unesite naziv",
+      "saved": "Promjene su spremljene",
+      "saveFailed": "Spremanje nije uspjelo",
+      "added": "Protustranka je dodana",
+      "addFailed": "Dodavanje protustranke nije uspjelo",
+      "deleted": "Protustranka je izbrisana",
+      "deleteFailed": "Brisanje protustranke nije uspjelo",
+      "documentsOpened": "Dokumenti su otvoreni"
+    }
+  },
+  "documents": {
+    "signed": "Potpisano",
+    "pendingCount": "Čeka potpis",
+    "draftCount": "Interno (nepotpisano)",
+    "searchPlaceholder": "Pretraži po naslovu ili protustranci…",
+    "filters": {
+      "all": "Sve",
+      "signed": "Potpisano",
+      "pending": "Čeka potpis"
+    },
+    "upload": "Prenesi",
+    "addTitle": "Dodaj dokument u biblioteku",
+    "dropzoneTitle": "Kliknite ili povucite datoteku",
+    "dropzoneHint": "PDF, DOCX, XLSX (do 15 MB)",
+    "dropzoneChange": "Kliknite za odabir druge datoteke",
+    "titleLabel": "Naslov dokumenta",
+    "titlePlaceholder": "Npr. Zapisnik o primopredaji br. 48",
+    "partyLabel": "Protustranka (ako postoji)",
+    "partyPlaceholder": "Naziv tvrtke ili samostalnog poduzetnika",
+    "needsSignature": "Treba li dokument potpis?",
+    "needsSignatureHint": "Status će biti „Čeka potpis”",
+    "saveToBase": "Spremi u biblioteku",
+    "emptyTitle": "Ova mapa je prazna",
+    "emptyBody": "Prenesite novi dokument ili promijenite filtre",
+    "internalDoc": "Interni dokument",
+    "uploaded": "Preneseno {{date}}",
+    "download": "Preuzmi",
+    "open": "Otvori",
+    "fileRequired": "Priložite datoteku",
+    "options": "Opcije",
+    "status": {
+      "title": "Status",
+      "signed": "Potpisano",
+      "pending": "Čeka potpis",
+      "draft": "Nepotpisano"
+    },
+    "delete": "Izbriši",
+    "toasts": {
+      "loadFailed": "Učitavanje dokumenata nije uspjelo",
+      "titleRequired": "Prenesite datoteku ili unesite naslov",
+      "created": "Dokument je prenesen u biblioteku",
+      "createFailed": "Spremanje dokumenta nije uspjelo",
+      "badFormat": "Dopušteni formati: PDF, DOCX, XLSX",
+      "downloadFailed": "Preuzimanje datoteke nije uspjelo",
+      "noFile": "Uz ovaj dokument nije priložena datoteka",
+      "openFailed": "Otvaranje datoteke nije uspjelo",
+      "statusChanged": "Status: {{label}}",
+      "statusFailed": "Promjena statusa nije uspjela",
+      "deleted": "Dokument je izbrisan",
+      "deleteFailed": "Brisanje dokumenta nije uspjelo"
+    }
+  },
+  "goals": {
+    "loading": "Učitavanje ciljeva…",
+    "active": "Ciljevi u tijeku",
+    "done": "Dovršeni",
+    "avgProgress": "Ukupan napredak",
+    "trackingTitle": "Praćenje plana",
+    "createGoal": "Stvori cilj",
+    "newTitle": "Novi financijski cilj",
+    "titleLabel": "Naslov cilja",
+    "titlePlaceholder": "Npr. Novi reformer uređaji",
+    "targetLabel": "Ciljani iznos, {{symbol}}",
+    "targetPlaceholder": "500000",
+    "deadlineLabel": "Rok",
+    "trackingLabel": "Kako pratiti napredak?",
+    "trackingAuto": "Automatski (CRM metrika)",
+    "trackingAutoDesc": "Povežite cilj s prihodom od odabrane kategorije. CRM će sam pomicati traku napretka.",
+    "trackingManual": "Ručno (osobna štednja)",
+    "trackingManualDesc": "Na kartici će se pojaviti gumb „Dodaj sredstva”. Napredak ovisi samo o vama.",
+    "opTypeLabel": "Vrsta operacije",
+    "categoryLabel": "Kategorija",
+    "categoryPlaceholder": "Odaberite kategoriju",
+    "editTitle": "Uredi cilj",
+    "nameLabel": "Naslov",
+    "namePlaceholder": "Naslov cilja",
+    "amountLabel": "Iznos, {{symbol}}",
+    "achieved": "Cilj je ostvaren",
+    "priority": {
+      "high": "Visok prioritet",
+      "medium": "Srednji prioritet",
+      "low": "Nizak prioritet"
+    },
+    "autoCollect": "Automatsko praćenje",
+    "deadlinePrefix": "Rok:",
+    "noDeadline": "Bez roka",
+    "fundPlaceholder": "Iznos, {{symbol}}",
+    "fund": "Dodaj",
+    "addFunds": "Dodaj sredstva",
+    "autoHint": "Vrijednost se automatski ažurira iz prihoda kategorije",
+    "deleteConfirmTitle": "Izbrisati cilj?",
+    "deleteConfirmText": "Napredak za ovaj cilj bit će izgubljen. Radnju nije moguće poništiti.",
+    "toasts": {
+      "loadFailed": "Učitavanje ciljeva nije uspjelo",
+      "fillRequired": "Ispunite naslov i iznos",
+      "chooseCategory": "Odaberite kategoriju za automatski cilj",
+      "created": "Cilj je stvoren",
+      "createFailed": "Stvaranje cilja nije uspjelo",
+      "enterName": "Unesite naziv",
+      "updated": "Cilj je ažuriran",
+      "updateFailed": "Ažuriranje cilja nije uspjelo",
+      "deleted": "Cilj je izbrisan",
+      "deleteFailed": "Brisanje cilja nije uspjelo",
+      "funded": "Sredstva su dodana",
+      "fundFailed": "Dodavanje sredstava nije uspjelo"
+    }
+  },
+  "onlinePayments": {
+    "description": "Povežite Stripe i vaši klijenti mogu plaćati karticom na blagajni. Novac sjeda izravno na račun vašeg studija — Velora ga nikad ne zadržava. Provizija slijedi vaš plan.",
+    "gatewaysTitle": "Pružatelji plaćanja",
+    "gateways": {
+      "stripe": {
+        "name": "Stripe"
+      },
+      "states": {
+        "none": {
+          "label": "Nije povezano",
+          "hint": "Prihvaćajte kartična plaćanja na račun studija",
+          "action": "Poveži"
+        },
+        "incomplete": {
+          "label": "Nedostaju podaci",
+          "hint": "Stripe čeka podatke vašeg studija — plaćanja ostaju isključena do tada",
+          "action": "Nastavi"
+        },
+        "action": {
+          "label": "Potrebna je radnja",
+          "hint": "Stripe je odbio neke podatke i čeka ispravke — neće se riješiti samo od sebe",
+          "action": "Ispravi podatke"
+        },
+        "review": {
+          "label": "U provjeri",
+          "hint": "Podaci su poslani, Stripe ih provjerava. To obično traje do jednog dana",
+          "action": "Otvori Stripe"
+        },
+        "active": {
+          "label": "Povezano",
+          "hint": "Kartična plaćanja stižu na Stripe račun studija",
+          "action": "Postavke"
+        }
+      }
+    },
+    "toasts": {
+      "gatewayUpdated": "Postavke pružatelja su ažurirane",
+      "stripeReturned": "Podaci su poslani Stripeu",
+      "stripeLinkExpired": "Stripe veza je istekla — ponovno pritisnite Poveži"
+    }
+  },
+  "paymentMethods": {
+    "totalTurnover": "Promet za razdoblje",
+    "periods": {
+      "month": "Mjesec",
+      "quarter": "Tromjesečje",
+      "year": "Godina"
+    },
+    "amount": "Iznos",
+    "share": "Udio",
+    "transactions": "transakcije",
+    "methods": {
+      "cash": {
+        "name": "Gotovina"
+      },
+      "card": {
+        "name": "Bankovna kartica"
+      },
+      "qr": {
+        "name": "SBP (QR)"
+      },
+      "transfer": {
+        "name": "Prijenos"
+      },
+      "stripe": {
+        "name": "Stripe"
+      },
+      "": {
+        "name": "Nije navedeno"
+      }
+    }
+  },
+  "reports": {
+    "metrics": {
+      "revenue": "Prihodi",
+      "expenses": "Rashodi",
+      "profit": "Dobit",
+      "margin": "Marža"
+    },
+    "vsPreviousPeriod": "u odnosu na prethodno razdoblje",
+    "cashflowTitle": "Novčani tok",
+    "cashflowSub": "Analiza prihoda i rashoda",
+    "period": "Razdoblje",
+    "income": "Prihod",
+    "expense": "Rashod",
+    "profit": "Dobit",
+    "periods": {
+      "today": "Danas",
+      "week": "Tjedan",
+      "month": "Mjesec",
+      "year": "Godina"
+    },
+    "legendIncome": "Prihodi",
+    "legendExpense": "Rashodi",
+    "exportCsv": "Izvezi CSV",
+    "expenseStructure": "Struktura rashoda",
+    "incomeStructure": "Struktura prihoda",
+    "total": "Ukupno",
+    "otherCategory": "Nekategorizirano",
+    "noData": "Nema podataka za ovo razdoblje",
+    "insightsTitle": "Financijski sažetak i uvidi",
+    "insightsPlaceholder": "Financijski sažetak s AI-jem pojavit će se ovdje: analiza trendova, struktura rashoda i preporuke",
+    "toasts": {
+      "exportFailed": "Izvoz operacija nije uspio"
+    }
+  },
+  "confirmModal": {
+    "cancel": "Odustani",
+    "confirm": "Potvrdi",
+    "delete": "Izbriši"
+  }
+}

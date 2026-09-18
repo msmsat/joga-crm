@@ -1,0 +1,377 @@
+== ro
+tabs.accounts	Conturi
+tabs.operations	Operațiuni
+tabs.salaries	Salarizare
+tabs.counterparties	Contrapărți
+tabs.documents	Documente
+tabs.onlinePayments	Plăți online
+tabs.paymentMethods	Metode de plată
+tabs.reports	Rapoarte
+tabs.goals	Obiective
+common.save	Salvează
+common.cancel	Anulează
+common.create	Creează
+common.edit	Editează
+common.delete	Șterge
+common.loading	Se încarcă…
+common.all	Toate
+common.confirm	Confirmă
+common.monthsShort.0	ian.
+common.monthsShort.1	feb.
+common.monthsShort.2	mar.
+common.monthsShort.3	apr.
+common.monthsShort.4	mai
+common.monthsShort.5	iun.
+common.monthsShort.6	iul.
+common.monthsShort.7	aug.
+common.monthsShort.8	sept.
+common.monthsShort.9	oct.
+common.monthsShort.10	nov.
+common.monthsShort.11	dec.
+common.weekdaysShort.0	lun.
+common.weekdaysShort.1	mar.
+common.weekdaysShort.2	mie.
+common.weekdaysShort.3	joi
+common.weekdaysShort.4	vin.
+common.weekdaysShort.5	sâm.
+common.weekdaysShort.6	dum.
+info.accounts	Conturile sunt casele de marcat, conturile bancare și achizițiile online ale studioului. Aici vezi fiecare sold și capitalul total.
+info.operations	Operațiunile sunt toate veniturile și cheltuielile studioului. Crearea unei operațiuni modifică imediat soldul contului asociat.
+info.salaries	Salariile sunt calculate din tariful angajatului (fix, orar sau procentual) pentru perioada selectată.
+info.counterparties	Contrapărțile sunt organizațiile și persoanele cu care studioul decontează: furnizori, proprietari, parteneri.
+info.documents	Documentele sunt contracte, acte și facturi legate de contrapărți sau documente interne.
+info.onlinePayments	Plăți online — conectarea Stripe pentru plăți cu cardul. Contul este creat pentru studioul tău, astfel încât banii ajung direct la tine, fără Velora ca intermediar.
+info.paymentMethods	Metodele de plată arată cum plătesc clienții la studio și statisticile pentru fiecare metodă.
+info.reports	Rapoartele arată evoluția veniturilor, cheltuielilor și profitului pentru perioada selectată.
+info.goals	Obiectivele financiare sunt planul de economii al studioului, cu urmărire automată sau manuală a progresului.
+accounts.loading	Se încarcă conturile…
+accounts.totalCapital	Capitalul total al studioului
+accounts.donutTotal	Total {{symbol}}
+accounts.todayChange	azi
+accounts.system	SISTEM
+accounts.today	azi
+accounts.editTitle	Editează contul
+accounts.namePlaceholder	Nume
+accounts.balancePlaceholder	Sold, {{symbol}}
+accounts.types.cash	Numerar
+accounts.types.bank	Card
+accounts.types.online	Online
+accounts.typesShort.cash	Numerar
+accounts.typesShort.bank	Card
+accounts.typesShort.online	Online
+accounts.history	Istoric
+accounts.historyTitle	Istoric: {{name}}
+accounts.income30d	Venituri (30 z.)
+accounts.expense30d	Cheltuieli (30 z.)
+accounts.samplePayment	Plată pentru serviciu
+accounts.sampleTime	Astăzi, 14:32
+accounts.openAllOperations	Deschide toate operațiunile
+accounts.newSavingsTitle	Cont nou de economii
+accounts.createSavings	Creează cont de economii
+accounts.deleteConfirmTitle	Ștergi acest cont?
+accounts.deleteConfirmText	Toate fondurile sale vor fi excluse din statisticile generale. Această acțiune nu poate fi anulată.
+accounts.toasts.loadFailed	Nu s-au putut încărca conturile
+accounts.toasts.deleted	Cont șters
+accounts.toasts.deleteFailed	Nu s-a putut șterge contul
+accounts.toasts.saved	Setări salvate
+accounts.toasts.saveFailed	Nu s-a putut salva contul
+accounts.toasts.created	Cont de economii creat
+accounts.toasts.createFailed	Nu s-a putut crea contul
+operations.income	Venit
+operations.expense	Cheltuială
+operations.balance	Sold
+operations.searchPlaceholder	Caută după titlu și categorie…
+operations.close	Închide
+operations.operation	Operațiune
+operations.export	Exportă
+operations.newOperationTitle	Operațiune nouă
+operations.titleLabel	Titlu
+operations.titlePlaceholder	De exemplu, plată abonament
+operations.amountLabel	Sumă, {{symbol}}
+operations.dateLabel	Dată
+operations.categoryLabel	Categorie
+operations.categoryPlaceholder	Categorie
+operations.accountLabel	Cont
+operations.noAccount	Fără cont
+operations.methodLabel	Metodă de plată
+operations.noMethod	Nespecificat
+operations.counterpartyLabel	Contraparte
+operations.noCounterparty	Fără contraparte
+operations.newCounterparty	+ Contraparte nouă
+operations.clientLabel	Client
+operations.clientHint	Punctele și nivelul de fidelitate vor fi atribuite clientului
+operations.clientSearchPlaceholder	Începe să tastezi un nume…
+operations.noClient	Fără client
+operations.editTitle	Editează operațiunea
+operations.saving	Se salvează…
+operations.loading	Se încarcă operațiunile…
+operations.emptyTitle	Nu s-au găsit operațiuni
+operations.emptyBody	Schimbă filtrele sau creează prima operațiune
+operations.pending	În așteptare
+operations.detailAccount	Cont destinatar
+operations.detailCategory	Categorie
+operations.detailMethod	Metodă de plată
+operations.detailCounterparty	Contraparte
+operations.receipt	Chitanță
+operations.loadMore	Încarcă mai multe ({{count}})
+operations.toasts.loadFailed	Nu s-au putut încărca operațiunile
+operations.toasts.loadMoreFailed	Nu s-au putut încărca mai multe operațiuni
+operations.toasts.deleted	Operațiune ștearsă
+operations.toasts.deleteFailed	Nu s-a putut șterge operațiunea
+operations.toasts.enterAmount	Introdu o sumă
+operations.toasts.created	Operațiune creată
+operations.toasts.createFailed	Nu s-a putut crea operațiunea
+operations.toasts.updated	Operațiune actualizată
+operations.toasts.updateFailed	Nu s-a putut salva operațiunea
+operations.toasts.exportFailed	Nu s-au putut exporta operațiunile
+operations.toasts.receiptDownloaded	Chitanță descărcată
+operations.categoryPresets.in.0.value	Abonamente
+operations.categoryPresets.in.0.label	Abonamente
+operations.categoryPresets.in.1.value	Servicii
+operations.categoryPresets.in.1.label	Servicii
+operations.categoryPresets.in.2.value	Certificate cadou
+operations.categoryPresets.in.2.label	Certificate cadou
+operations.categoryPresets.in.3.value	Depozit
+operations.categoryPresets.in.3.label	Depozit
+operations.categoryPresets.in.4.value	Altele
+operations.categoryPresets.in.4.label	Altele
+operations.categoryPresets.out.0.value	Rambursări
+operations.categoryPresets.out.0.label	Rambursări
+operations.categoryPresets.out.1.value	Chirie
+operations.categoryPresets.out.1.label	Chirie
+operations.categoryPresets.out.2.value	Salarii
+operations.categoryPresets.out.2.label	Salarii
+operations.categoryPresets.out.3.value	Aprovizionare
+operations.categoryPresets.out.3.label	Aprovizionare
+operations.categoryPresets.out.4.value	Marketing
+operations.categoryPresets.out.4.label	Marketing
+operations.categoryPresets.out.5.value	Impozite
+operations.categoryPresets.out.5.label	Impozite
+operations.categoryPresets.out.6.value	Altele
+operations.categoryPresets.out.6.label	Altele
+salaries.loading	Se încarcă salarizarea…
+salaries.noRows	Nu există angajați de calculat
+salaries.fund	Fond de salarii
+salaries.fundSub	luna curentă
+salaries.sessions	Sesiuni
+salaries.sessionsSub	total desfășurate
+salaries.paidOf	angajați
+salaries.sessionsCount	{{count}} sesiuni
+salaries.paid	Plătit
+salaries.pending	În așteptare
+salaries.paying	…
+salaries.payAction	Plătește
+salaries.cancelAction	Anulează salariul
+salaries.perMonth	/lună
+salaries.accrualTitle	Calcul pentru perioadă
+salaries.rate	Tarif
+salaries.rateNotSet	neconfigurat
+salaries.sessionsInPeriod	Sesiuni în perioadă
+salaries.hoursWorked	Ore lucrate
+salaries.lessonsRevenue	Venituri din sesiuni
+salaries.totalToPay	Total de plată
+salaries.rateWarning	Tariful nu este configurat — setează-l în profilul angajatului pentru a putea calcula drepturile salariale.
+salaries.rateUnit.hourly	oră
+salaries.rateUnit.percent	%
+salaries.rateUnit.fixed	fix
+salaries.paidAt	Plătit {{date}}
+salaries.historyTitle	Istoricul plăților
+salaries.historyEmpty	Nu există încă plăți
+salaries.historyLoading	Se încarcă istoricul…
+salaries.toasts.loadFailed	Nu s-a putut încărca salarizarea
+salaries.toasts.paid	Salariu plătit: {{name}}
+salaries.toasts.payFailed	Nu s-a putut plăti salariul
+salaries.toasts.canceled	Salariu anulat: {{name}}
+salaries.toasts.historyLoadFailed	Nu s-a putut încărca istoricul plăților
+counterparties.count	{{count}} contrapărți
+counterparties.totalDebt	Datorie totală:
+counterparties.add	Adaugă
+counterparties.newTitle	Contraparte nouă
+counterparties.nameLabel	Nume / Nume complet
+counterparties.namePlaceholder	Companie SRL sau Ion Popescu
+counterparties.innLabel	Cod fiscal
+counterparties.categoryLabel	Categorie
+counterparties.categoryPlaceholder	Chirie, furnizor…
+counterparties.typeLabel	Tipul contrapărții
+counterparties.types.legal.label	Persoană juridică
+counterparties.types.legal.desc	Organizație sau companie
+counterparties.types.ie.label	Persoană fizică autorizată
+counterparties.types.ie.desc	Antreprenor individual
+counterparties.types.person.label	Persoană fizică
+counterparties.types.person.desc	Persoană privată
+counterparties.addSubmit	Adaugă contrapartea
+counterparties.you	Tu
+counterparties.otherCategory	Altele
+counterparties.deals	tranzacții
+counterparties.dealsLabel	Tranzacții
+counterparties.debtLabel	Datorie
+counterparties.documents	Documente
+counterparties.edit	Editează
+counterparties.delete	Șterge
+counterparties.deleteConfirmTitle	Ștergi contrapartea?
+counterparties.deleteConfirmText	Documentele asociate și istoricul tranzacțiilor vor rămâne, dar contrapartea va fi eliminată din listă.
+counterparties.toasts.loadFailed	Nu s-au putut încărca contrapărțile
+counterparties.toasts.enterName	Introdu un nume
+counterparties.toasts.saved	Modificări salvate
+counterparties.toasts.saveFailed	Nu s-au putut salva modificările
+counterparties.toasts.added	Contraparte adăugată
+counterparties.toasts.addFailed	Nu s-a putut adăuga contrapartea
+counterparties.toasts.deleted	Contraparte ștearsă
+counterparties.toasts.deleteFailed	Nu s-a putut șterge contrapartea
+counterparties.toasts.documentsOpened	Documente deschise
+documents.signed	Semnate
+documents.pendingCount	În așteptarea semnării
+documents.draftCount	Interne (nesemnate)
+documents.searchPlaceholder	Caută după titlu sau contraparte…
+documents.filters.all	Toate
+documents.filters.signed	Semnate
+documents.filters.pending	În așteptarea semnării
+documents.upload	Încarcă
+documents.addTitle	Adaugă document în bibliotecă
+documents.dropzoneTitle	Apasă sau trage un fișier aici
+documents.dropzoneHint	PDF, DOCX, XLSX (până la 15 MB)
+documents.dropzoneChange	Apasă pentru a alege alt fișier
+documents.titleLabel	Titlul documentului
+documents.titlePlaceholder	De exemplu, Proces-verbal de recepție nr. 48
+documents.partyLabel	Contraparte (dacă există)
+documents.partyPlaceholder	Numele companiei sau al PFA-ului
+documents.needsSignature	Documentul necesită semnătură?
+documents.needsSignatureHint	Starea va fi „În așteptarea semnării”
+documents.saveToBase	Salvează în bibliotecă
+documents.emptyTitle	Acest dosar este gol
+documents.emptyBody	Încarcă un document nou sau schimbă filtrele
+documents.internalDoc	Document intern
+documents.uploaded	Încărcat {{date}}
+documents.download	Descarcă
+documents.open	Deschide
+documents.fileRequired	Atașează un fișier
+documents.options	Opțiuni
+documents.status.title	Stare
+documents.status.signed	Semnat
+documents.status.pending	În așteptarea semnării
+documents.status.draft	Nesemnat
+documents.delete	Șterge
+documents.toasts.loadFailed	Nu s-au putut încărca documentele
+documents.toasts.titleRequired	Încarcă un fișier sau introdu un titlu
+documents.toasts.created	Document încărcat în bibliotecă
+documents.toasts.createFailed	Nu s-a putut salva documentul
+documents.toasts.badFormat	Formate permise: PDF, DOCX, XLSX
+documents.toasts.downloadFailed	Nu s-a putut descărca fișierul
+documents.toasts.noFile	Nu este atașat niciun fișier acestui document
+documents.toasts.openFailed	Nu s-a putut deschide fișierul
+documents.toasts.statusChanged	Stare: {{label}}
+documents.toasts.statusFailed	Nu s-a putut schimba starea
+documents.toasts.deleted	Document șters
+documents.toasts.deleteFailed	Nu s-a putut șterge documentul
+goals.loading	Se încarcă obiectivele…
+goals.active	Obiective în desfășurare
+goals.done	Finalizate
+goals.avgProgress	Progres total
+goals.trackingTitle	Urmărirea planului
+goals.createGoal	Creează obiectiv
+goals.newTitle	Obiectiv financiar nou
+goals.titleLabel	Titlul obiectivului
+goals.titlePlaceholder	De exemplu, aparate reformer noi
+goals.targetLabel	Suma țintă, {{symbol}}
+goals.targetPlaceholder	500000
+goals.deadlineLabel	Termen-limită
+goals.trackingLabel	Cum urmărești progresul?
+goals.trackingAuto	Automat (indicator CRM)
+goals.trackingAutoDesc	Leagă obiectivul de veniturile unei categorii alese. CRM-ul va actualiza singur bara de progres.
+goals.trackingManual	Manual (economii personale)
+goals.trackingManualDesc	Pe card va apărea butonul „Adaugă fonduri”. Progresul depinde numai de tine.
+goals.opTypeLabel	Tip de operațiune
+goals.categoryLabel	Categorie
+goals.categoryPlaceholder	Alege o categorie
+goals.editTitle	Editează obiectivul
+goals.nameLabel	Titlu
+goals.namePlaceholder	Titlul obiectivului
+goals.amountLabel	Sumă, {{symbol}}
+goals.achieved	Obiectiv atins
+goals.priority.high	Prioritate ridicată
+goals.priority.medium	Prioritate medie
+goals.priority.low	Prioritate scăzută
+goals.autoCollect	Urmărit automat
+goals.deadlinePrefix	Termen:
+goals.noDeadline	Fără termen-limită
+goals.fundPlaceholder	Sumă, {{symbol}}
+goals.fund	Adaugă
+goals.addFunds	Adaugă fonduri
+goals.autoHint	Valoarea se actualizează automat din veniturile categoriei
+goals.deleteConfirmTitle	Ștergi obiectivul?
+goals.deleteConfirmText	Progresul acestui obiectiv se va pierde. Această acțiune nu poate fi anulată.
+goals.toasts.loadFailed	Nu s-au putut încărca obiectivele
+goals.toasts.fillRequired	Completează titlul și suma
+goals.toasts.chooseCategory	Alege o categorie pentru obiectivul automat
+goals.toasts.created	Obiectiv creat
+goals.toasts.createFailed	Nu s-a putut crea obiectivul
+goals.toasts.enterName	Introdu un nume
+goals.toasts.updated	Obiectiv actualizat
+goals.toasts.updateFailed	Nu s-a putut actualiza obiectivul
+goals.toasts.deleted	Obiectiv șters
+goals.toasts.deleteFailed	Nu s-a putut șterge obiectivul
+goals.toasts.funded	Fonduri adăugate
+goals.toasts.fundFailed	Nu s-au putut adăuga fondurile
+onlinePayments.description	Conectează Stripe, iar clienții tăi vor putea plăti cu cardul la casă. Banii intră direct în contul studioului — Velora nu îi reține niciodată. Comisionul depinde de planul tău.
+onlinePayments.gatewaysTitle	Furnizori de plăți
+onlinePayments.gateways.stripe.name	Stripe
+onlinePayments.gateways.states.none.label	Neconectat
+onlinePayments.gateways.states.none.hint	Acceptă plăți cu cardul în contul studioului
+onlinePayments.gateways.states.none.action	Conectează
+onlinePayments.gateways.states.incomplete.label	Lipsesc informații
+onlinePayments.gateways.states.incomplete.hint	Stripe așteaptă informațiile studioului tău — plățile rămân dezactivate până atunci
+onlinePayments.gateways.states.incomplete.action	Continuă
+onlinePayments.gateways.states.action.label	Este necesară o acțiune
+onlinePayments.gateways.states.action.hint	Stripe a respins unele informații și așteaptă corectări — situația nu se va rezolva automat
+onlinePayments.gateways.states.action.action	Corectează informațiile
+onlinePayments.gateways.states.review.label	În verificare
+onlinePayments.gateways.states.review.hint	Informațiile au fost trimise, iar Stripe le verifică. De obicei durează până la o zi
+onlinePayments.gateways.states.review.action	Deschide Stripe
+onlinePayments.gateways.states.active.label	Conectat
+onlinePayments.gateways.states.active.hint	Plățile cu cardul intră în contul Stripe al studioului
+onlinePayments.gateways.states.active.action	Setări
+onlinePayments.toasts.gatewayUpdated	Setările furnizorului au fost actualizate
+onlinePayments.toasts.stripeReturned	Informațiile au fost trimise către Stripe
+onlinePayments.toasts.stripeLinkExpired	Legătura Stripe a expirat — apasă din nou Conectează
+paymentMethods.totalTurnover	Cifra de afaceri a perioadei
+paymentMethods.periods.month	Lună
+paymentMethods.periods.quarter	Trimestru
+paymentMethods.periods.year	An
+paymentMethods.amount	Sumă
+paymentMethods.share	Pondere
+paymentMethods.transactions	tranzacții
+paymentMethods.methods.cash.name	Numerar
+paymentMethods.methods.card.name	Card bancar
+paymentMethods.methods.qr.name	SBP (QR)
+paymentMethods.methods.transfer.name	Transfer
+paymentMethods.methods.stripe.name	Stripe
+paymentMethods.methods..name	Nespecificat
+reports.metrics.revenue	Venituri
+reports.metrics.expenses	Cheltuieli
+reports.metrics.profit	Profit
+reports.metrics.margin	Marjă
+reports.vsPreviousPeriod	față de perioada anterioară
+reports.cashflowTitle	Flux de numerar
+reports.cashflowSub	Analiza veniturilor și cheltuielilor
+reports.period	Perioadă
+reports.income	Venit
+reports.expense	Cheltuială
+reports.profit	Profit
+reports.periods.today	Astăzi
+reports.periods.week	Săptămână
+reports.periods.month	Lună
+reports.periods.year	An
+reports.legendIncome	Venituri
+reports.legendExpense	Cheltuieli
+reports.exportCsv	Exportă CSV
+reports.expenseStructure	Structura cheltuielilor
+reports.incomeStructure	Structura veniturilor
+reports.total	Total
+reports.otherCategory	Fără categorie
+reports.noData	Nu există date pentru această perioadă
+reports.insightsTitle	Rezumat financiar și analize
+reports.insightsPlaceholder	Aici va apărea rezumatul financiar generat de IA: analiza tendințelor, structura cheltuielilor și recomandări
+reports.toasts.exportFailed	Nu s-au putut exporta operațiunile
+confirmModal.cancel	Anulează
+confirmModal.confirm	Confirmă
+confirmModal.delete	Șterge

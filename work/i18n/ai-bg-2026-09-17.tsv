@@ -1,0 +1,287 @@
+== bg
+telegram.tokenLabel	Токен на бота
+telegram.tokenPlaceholder	1234567890:ABC...
+telegram.tokenInvalidFormat	Невалиден формат на токена
+telegram.verifyButton	Потвърдете и свържете
+telegram.verifiedToast	Ботът @{{username}} е свързан
+telegram.verifyFailedToast	Telegram отхвърли този токен
+telegram.disconnect	Прекъснете връзката
+telegram.disconnectedToast	Ботът е изключен
+telegram.disconnectConfirmTitle	Да изключим ли бота?
+telegram.disconnectConfirmMessage	Автоматичният отговор в Telegram ще спре, докато не свържете отново бот.
+telegram.gateTooltip	Първо свържете бот
+telegram.statsPending	Ще се появи, след като автоматичният отговор започне да работи
+telegram.instructionTitle	Как да получите токен
+telegram.instructionStep1	Отворете @BotFather в Telegram
+telegram.instructionStep2	Изпратете командата /newbot, изберете име и потребителско име за бота
+telegram.instructionStep3	Копирайте токена, който ще получите
+telegram.instructionStep4	Поставете го тук и натиснете „Потвърдете и свържете“
+instagram.connectButton	Свържете Instagram
+instagram.connectedToast	Instagram е свързан
+instagram.connectErrorToast	Неуспешно свързване с Instagram — опитайте отново
+instagram.expiresUntil	Достъпът е валиден до {{date}}
+instagram.disconnect	Прекъснете връзката
+instagram.disconnectedToast	Instagram е изключен
+instagram.disconnectConfirmTitle	Да изключим ли Instagram?
+instagram.disconnectConfirmMessage	Автоматичният отговор в Instagram ще спре да отговаря на клиенти, докато не свържете отново акаунта.
+instagram.gateTooltip	Първо свържете акаунт
+instagram.statsPending	Ще се появи, след като автоматичният отговор започне да работи
+instagram.instructionTitle	Как да се свържете
+instagram.instructionStep1	Акаунтът на студиото трябва да е професионален — Business или Creator (Настройки на Instagram → Тип акаунт)
+instagram.instructionStep2	Натиснете „Свържете Instagram“ и влезте с акаунта на студиото
+instagram.instructionStep3	Разрешете достъп до съобщенията
+instagram.instructionStep4	Ще се върнете тук автоматично
+whatsapp.numberLabel	Номер в WhatsApp Business
+whatsapp.connectLink	или въведете токен ръчно
+whatsapp.gateTooltip	Първо свържете номер в WhatsApp
+whatsapp.statsPending	Ще се появи, след като автоматичният отговор започне да работи
+whatsapp.instructionTitle	Как да се свържете
+whatsapp.instructionStep1	Натиснете „Свържете WhatsApp“ — ще се отвори прозорец на Meta
+whatsapp.instructionStep2	Влезте във Facebook, изберете бизнес акаунт и номер (или добавете нов) и го потвърдете с кода
+whatsapp.instructionStep3	Номерът се свързва еднократно — същият се ползва за известия до клиенти; върнете се тук и включете автоматичния отговор
+whatsapp.connectButton	Свържете WhatsApp
+whatsapp.connectedToast	Номерът в WhatsApp е свързан
+whatsapp.connectErrorToast	Неуспешно свързване на номера в WhatsApp
+whatsapp.disconnect	Прекъснете връзката
+whatsapp.disconnectedToast	WhatsApp е изключен
+whatsapp.disconnectConfirmTitle	Да изключим ли WhatsApp?
+whatsapp.disconnectConfirmMessage	Номерът ще бъде изключен и от известията и интеграциите на студиото.
+history.title	История на чатовете
+history.empty	Започнете първия си разговор
+history.today	Днес
+history.yesterday	Вчера
+history.earlier	По-рано
+history.messagesCount_one	{{count}} съобщение
+history.messagesCount_other	{{count}} съобщения
+history.deleteConfirmTitle	Да изтрием ли този чат?
+history.deleteConfirmMessage	Всички съобщения в този разговор ще бъдат изтрити окончателно.
+actions.newChat	Нов чат
+actions.deleteChat	Изтрийте чата
+actions.confirmTitle	Потвърдете действието
+actions.confirm	Потвърдете
+actions.cancel	Откажете
+actions.cancelled	Действието е отменено.
+actions.done	Готово на {{date}}
+actions.effect	Какво ще се промени
+actions.undo	Отменете
+actions.undoTitle	Да отменим ли това действие?
+actions.undoMessage	Ще върна направеното: {{action}}. Занятията, които клиентите вече са резервирали, ще останат — само човек може да ги премахне.
+actions.args.lesson_id	Занятие
+actions.args.client_id	Клиент
+actions.args.reservation_id	Резервация
+actions.args.alternate_with	Редуване с
+actions.args.service_id	Услуга
+actions.args.teacher_id	Треньор
+actions.args.hall_id	Зала
+actions.args.start_time	Започва
+actions.args.duration_min	Продължителност, мин
+actions.args.total_spots	Места
+actions.args.price	Цена
+actions.args.name	Име
+actions.args.last_name	Фамилия
+actions.args.phone	Телефон
+actions.args.email	Имейл
+actions.args.city	Град
+actions.args.birth_date	Дата на раждане
+actions.args.source	Източник
+actions.args.frozen	Замразен
+actions.args.date_from	От
+actions.args.date_to	До
+actions.args.weekdays	Дни от седмицата
+actions.args.time_from	От
+actions.args.time_to	До
+actions.args.break_at	Почивка от
+actions.args.break_min	Почивка, мин
+actions.args.extend_hours	Разширете работното време на треньора
+actions.args.salary	Заплата
+actions.args.access_role	Достъп
+actions.args.department	Длъжност
+actions.args.password	Парола на служителя
+actions.args.rate	Ставка
+actions.args.rate_type	Вид заплащане
+actions.args.service_ids	Услуги
+actions.args.schedule	График
+actions.bool.yes	да
+actions.bool.no	не
+settings.title	Настройки на AI
+settings.model	Модел
+settings.language	Език
+models.comingSoon	Очаквайте скоро
+models.velora-3.5	Velora AI 3.5
+languages.auto	Автоматично
+languages.ru	Руски
+languages.en	Английски
+languages.uk	Украински
+languages.cs	Чешки
+languages.de	Немски
+chat.thinking	Velora AI мисли
+chat.thinkingAnswer	Velora AI обмисля отговора
+chat.readyTitle	Velora AI е готов да помогне
+chat.thinkingTitle	Velora AI мисли...
+chat.readySubtitle	Задайте въпрос или изберете предложение
+chat.thinkingSubtitle	Обработваме заявката ви
+chat.placeholder	Напишете съобщение...
+chat.drawerPlaceholder	Попитайте ме каквото искате...
+chat.navbarPlaceholder	Попитайте AI или задайте задача...
+chat.enterToSend	Enter за изпращане
+chat.shiftEnterNewline	Shift+Enter за нов ред
+chat.aiDisclaimer	Velora AI може да допусне грешки. Проверявайте важната информация.
+chat.continueInChat	Продължете в чата →
+chat.emptyTitle	Как мога да помогна?
+chat.emptySubtitle	Задайте въпрос за вашето студио, клиенти или бизнес
+chat.charCount_one	{{count}} / 4000 знак
+chat.charCount_other	{{count}} / 4000 знака
+chat.suggestions.revenue	Покажете приходите за този месец
+chat.suggestions.sms	Напишете SMS напомняне за час
+chat.suggestions.promo	Идеи за лятна промоция
+chat.suggestions.retention	Как да подобря задържането на клиенти?
+chat.drawerSuggestions.revenueAnalysis	Анализ на приходите
+chat.drawerSuggestions.emailTemplate	Шаблон за имейл
+chat.drawerSuggestions.promoIdeas	Идеи за промоция
+chat.drawerSuggestions.clientReport	Отчет за клиент
+drawer.historyBack	Чатове
+drawer.historyLabel	История
+agents.title	AI агенти
+agents.info.title	Какво са AI агентите
+agents.info.lead	Асистент, който отговаря на клиенти в месинджърите на студиото, докато сте заети.
+agents.info.b1	Отговаря денонощно — никой не чака администратор
+agents.info.b2	Познава графика, услугите и цените на студиото ви
+agents.info.b3	Вие задавате тона и дължината на отговорите
+agents.info.note	Каналът започва да работи, щом бъде свързан в настройките
+agents.activeCount	{{active}} / {{total}}
+agents.stateOn	Отговаря
+agents.stateOffline	Не е свързан
+agents.configureButton	Настройте агентите
+agents.enable	Включете
+agents.disable	Изключете
+agents.modalTitle	Настройка на AI агент
+agents.modalSubtitle	Автоматични отговори в месинджъри
+agents.tabPrompt	Системна инструкция
+agents.statusDisabled	Изключен
+agents.statHandled	Обработени
+agents.statRating	Оценка
+agents.styleTitle	Стил на отговорите
+agents.styleAllChannels	важи за всички канали
+agents.toneLabel	Тон на отговорите
+agents.tone.friendly	Приятелски
+agents.tone.formal	Официален
+agents.tone.neutral	Неутрален
+agents.maxLengthLabel	Максимална дължина на отговора (знаци)
+agents.maxLengthError	Въведете число от 50 до 4000
+agents.offHoursLabel	Автоматичен отговор само извън работно време
+agents.promptHint	Този текст определя характера на агента — как общува, какво знае и кои теми избягва.
+agents.promptPlaceholder	Вие сте учтив асистент на студиото...
+agents.promptCount_one	{{count}} / 2000 знак
+agents.promptCount_other	{{count}} / 2000 знака
+agents.tgChannelInactive	Каналът Telegram е изключен в Онлайн записване — ботът не получава съобщения, затова агентът мълчи.
+errors.tg_token_required	Първо свържете Telegram бот — все още няма запазен токен.
+errors.ig_not_connected	Instagram все още не е свързан.
+errors.wa_not_connected	Номерът в WhatsApp все още не е свързан — свържете го в Известия.
+errors.assistant_unavailable	Асистентът временно не е наличен — опитайте по-късно.
+errors.trial_exhausted	Използвахте всички 500 пробни заявки за AI асистента. Изберете платен план, за да продължите.
+errors.quota_exceeded	Използвахте всички AI заявки по този план. Лимитът се нулира в началото на месеца — или надградете плана си.
+toasts.settingsSaved	Настройките са запазени
+toolStatus.add_client_note	Добавяме бележка…
+toolStatus.add_client_tag	Добавяме етикет…
+toolStatus.add_loyalty_points	Добавяме точки…
+toolStatus.book_client	Записваме за занятие…
+toolStatus.cancel_booking	Отменяме резервацията…
+toolStatus.pay_booking	Отбелязваме плащането за занятието…
+toolStatus.clear_schedule	Изчистваме графика…
+toolStatus.create_account	Създаваме акаунт…
+toolStatus.create_branch	Създаваме филиал…
+toolStatus.create_client	Създаваме клиент…
+toolStatus.create_counterparty	Създаваме контрагент…
+toolStatus.create_hall	Създаваме зала…
+toolStatus.create_lesson	Създаваме занятие…
+toolStatus.create_operation	Отбелязваме операцията…
+toolStatus.create_package	Създаваме пакет…
+toolStatus.create_promo	Създаваме промокод…
+toolStatus.create_service	Създаваме услуга…
+toolStatus.create_staff	Добавяме член на екипа…
+toolStatus.default	Работим…
+toolStatus.delete_client	Изтриваме клиента…
+toolStatus.delete_staff	Премахваме член на екипа…
+toolStatus.fill_schedule	Попълваме графика…
+toolStatus.find_clients	Търсим клиенти…
+toolStatus.forget_fact	Забравяме факта…
+toolStatus.freeze_client	Замразяваме клиента…
+toolStatus.get_booking_settings	Проверяваме правилата за записване…
+toolStatus.get_catalog_settings	Проверяваме настройките на пакетите…
+toolStatus.get_client	Отваряме картата на клиента…
+toolStatus.get_client_events	Четем историята на клиента…
+toolStatus.get_inactive_clients	Търсим неактивни клиенти…
+toolStatus.get_client_notes	Четем бележките за клиента…
+toolStatus.get_client_subscription	Проверяваме пакета на клиента…
+toolStatus.get_delivery_log	Проверяваме дневника за доставки…
+toolStatus.get_finance_goals	Проверяваме финансовите цели…
+toolStatus.get_finance_summary	Проверяваме финансите…
+toolStatus.get_lesson	Отваряме занятието…
+toolStatus.get_loyalty_programs	Проверяваме програмите за лоялност…
+toolStatus.get_loyalty_summary	Проверяваме лоялността…
+toolStatus.get_notification_matrix	Проверяваме известията…
+toolStatus.get_payroll	Изчисляваме заплатите…
+toolStatus.get_rooms	Проверяваме залите…
+toolStatus.get_schedule	Проверяваме графика…
+toolStatus.get_segments	Проверяваме сегментите клиенти…
+toolStatus.get_services	Проверяваме услугите…
+toolStatus.get_staff	Проверяваме екипа…
+toolStatus.get_staff_profile	Отваряме картата на член от екипа…
+toolStatus.get_stats	Обработваме числата…
+toolStatus.get_team_report	Измерваме завръщането по треньор…
+toolStatus.get_studio_facts	Припомняме какво знаем за студиото…
+toolStatus.get_today_agenda	Проверяваме днес…
+toolStatus.issue_certificate	Издаваме сертификата…
+toolStatus.list_operations	Проверяваме приходите и разходите…
+toolStatus.open_ui	Отваряме екрана…
+toolStatus.remember_fact	Запомняме…
+toolStatus.remove_client_tag	Премахваме етикета…
+toolStatus.sell_subscription	Продаваме пакета…
+toolStatus.set_client_discount	Задаваме отстъпката…
+toolStatus.set_staff_day	Отбелязваме деня в графика…
+toolStatus.set_staff_schedule	Задаваме графика…
+toolStatus.toggle_notification_event	Превключваме известието…
+toolStatus.ui_section	Проверяваме как работи разделът…
+toolStatus.update_booking_rules	Обновяваме правилата за записване…
+toolStatus.update_client	Обновяваме данните на клиента…
+toolStatus.update_lesson	Обновяваме занятието…
+toolStatus.update_service	Обновяваме услугата…
+toolStatus.update_staff	Обновяваме член на екипа…
+quota.trialLow	Остават малко пробни заявки.
+quota.label	Заявки към AI асистента
+quota.value	{{used}} от {{limit}}
+quota.low	Близо сте до месечния лимит.
+quota.upgrade	Изберете план
+quota.monthPeriod	За календарен месец (UTC)
+quota.trialPeriod	За целия пробен период
+rating.up	Добър отговор
+rating.down	Лош отговор
+memory.title	Асистентът помни
+memory.forget	Забравете
+memory.forgetConfirmTitle	Да забравим ли този факт?
+memory.forgetConfirmMessage	Асистентът ще спре да го използва в отговорите.
+memory.deleted	Фактът е премахнат
+plan.pages.who	Кой и какво
+plan.pages.when	Кога
+plan.pages.check	Преглед
+plan.stepOf	Стъпка {{current}} от {{total}}
+plan.next	Напред
+plan.back	Назад
+plan.confirm	Одобрете
+plan.confirmDanger	Одобрете
+plan.choose	Изберете
+plan.nothingFound	Нищо не е намерено
+plan.nothingToFill	Тук няма нищо за попълване — продължете направо.
+plan.fromStep	създадено в стъпка {{n}}
+plan.values.group	група
+plan.values.individual	индивидуално
+plan.values.trainer	треньор
+plan.values.admin	администратор
+plan.values.owner	собственик
+plan.values.hourly	на час
+plan.values.percent	% от приходите
+plan.values.fixed	на занятие
+plan.title_one	Потвърдете — {{count}} действие
+plan.title_other	Потвърдете — {{count}} действия
+plan.stillEmpty_one	Остава {{count}} поле
+plan.stillEmpty_other	Остават {{count}} полета

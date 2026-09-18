@@ -1,0 +1,292 @@
+== sr
+telegram.tokenLabel	Токен бота
+telegram.tokenPlaceholder	1234567890:ABC...
+telegram.tokenInvalidFormat	Неисправан формат токена
+telegram.verifyButton	Потврди и повежи
+telegram.verifiedToast	Бот @{{username}} је повезан
+telegram.verifyFailedToast	Telegram је одбио овај токен
+telegram.disconnect	Прекини везу
+telegram.disconnectedToast	Бот је прекинуо везу
+telegram.disconnectConfirmTitle	Прекинути везу са ботом?
+telegram.disconnectConfirmMessage	Аутоматски одговор на Telegram-у престаће да ради док поново не повежете бота.
+telegram.gateTooltip	Прво повежите бота
+telegram.statsPending	Појавиће се када аутоматски одговор почне да ради
+telegram.instructionTitle	Како добити токен
+telegram.instructionStep1	Отворите @BotFather у Telegram-у
+telegram.instructionStep2	Пошаљите команду /newbot, па изаберите име и корисничко име за бота
+telegram.instructionStep3	Копирајте токен који добијете
+telegram.instructionStep4	Налепите га овде и кликните „Потврди и повежи“
+instagram.connectButton	Повежи Instagram
+instagram.connectedToast	Instagram је повезан
+instagram.connectErrorToast	Није могуће повезати Instagram — покушајте поново
+instagram.expiresUntil	Приступ важи до {{date}}
+instagram.disconnect	Прекини везу
+instagram.disconnectedToast	Instagram је прекинуо везу
+instagram.disconnectConfirmTitle	Прекинути везу са Instagram-ом?
+instagram.disconnectConfirmMessage	Аутоматски одговор на Instagram-у престаће да одговара клијентима док поново не повежете налог.
+instagram.gateTooltip	Прво повежите налог
+instagram.statsPending	Појавиће се када аутоматски одговор почне да ради
+instagram.instructionTitle	Како се повезати
+instagram.instructionStep1	Налог студија мора бити професионалан — Business или Creator (Подешавања Instagram-а → Тип налога)
+instagram.instructionStep2	Кликните „Повежи Instagram” и пријавите се налогом студија
+instagram.instructionStep3	Дозволите приступ порукама
+instagram.instructionStep4	Аутоматски ћете се вратити овде
+whatsapp.numberLabel	WhatsApp Business број
+whatsapp.connectLink	или ручно унесите токен
+whatsapp.gateTooltip	Прво повежите WhatsApp број
+whatsapp.statsPending	Појавиће се када аутоматски одговор почне да ради
+whatsapp.instructionTitle	Како се повезати
+whatsapp.instructionStep1	Кликните „Повежи WhatsApp” — отвориће се Meta прозор
+whatsapp.instructionStep2	Пријавите се на Facebook, изаберите пословни налог и број (или додајте нови), па га потврдите кодом
+whatsapp.instructionStep3	Број се повезује једном — исти се користи за обавештења клијентима; вратите се овде и укључите аутоматски одговор
+whatsapp.connectButton	Повежи WhatsApp
+whatsapp.connectedToast	WhatsApp број је повезан
+whatsapp.connectErrorToast	Није могуће повезати WhatsApp број
+whatsapp.disconnect	Прекини везу
+whatsapp.disconnectedToast	WhatsApp је прекинуо везу
+whatsapp.disconnectConfirmTitle	Прекинути везу са WhatsApp-ом?
+whatsapp.disconnectConfirmMessage	Број ће бити прекинут и са обавештењима и интеграцијама студија.
+history.title	Историја ћаскања
+history.empty	Започните први разговор
+history.today	Данас
+history.yesterday	Јуче
+history.earlier	Раније
+history.messagesCount_one	{{count}} порука
+history.messagesCount_few	{{count}} поруке
+history.messagesCount_other	{{count}} порука
+history.deleteConfirmTitle	Обрисати ово ћаскање?
+history.deleteConfirmMessage	Све поруке у овом разговору биће трајно обрисане.
+actions.newChat	Ново ћаскање
+actions.deleteChat	Обриши ћаскање
+actions.confirmTitle	Потврдите радњу
+actions.confirm	Потврди
+actions.cancel	Откажи
+actions.cancelled	Радња је отказана.
+actions.done	Готово {{date}}
+actions.effect	Шта се мења
+actions.undo	Опозови
+actions.undoTitle	Опозвати ову радњу?
+actions.undoMessage	Вратићу оно што је урађено: {{action}}. Часови које су клијенти већ резервисали остаће — само човек може да их уклони.
+actions.args.lesson_id	Час
+actions.args.client_id	Клијент
+actions.args.reservation_id	Резервација
+actions.args.alternate_with	Наизменично са
+actions.args.service_id	Услуга
+actions.args.teacher_id	Тренер
+actions.args.hall_id	Сала
+actions.args.start_time	Почиње
+actions.args.duration_min	Трајање, мин
+actions.args.total_spots	Места
+actions.args.price	Цена
+actions.args.name	Име
+actions.args.last_name	Презиме
+actions.args.phone	Телефон
+actions.args.email	Е-пошта
+actions.args.city	Град
+actions.args.birth_date	Датум рођења
+actions.args.source	Извор
+actions.args.frozen	Замрзнуто
+actions.args.date_from	Од
+actions.args.date_to	До
+actions.args.weekdays	Дани у недељи
+actions.args.time_from	Од
+actions.args.time_to	До
+actions.args.break_at	Пауза у
+actions.args.break_min	Пауза, мин
+actions.args.extend_hours	Прошири радно време тренера
+actions.args.salary	Плата
+actions.args.access_role	Приступ
+actions.args.department	Позиција
+actions.args.password	Лозинка запосленог
+actions.args.rate	Стопа
+actions.args.rate_type	Врста плаћања
+actions.args.service_ids	Услуге
+actions.args.schedule	Распоред
+actions.bool.yes	да
+actions.bool.no	не
+settings.title	AI подешавања
+settings.model	Модел
+settings.language	Језик
+models.comingSoon	Ускоро
+models.velora-3.5	Velora AI 3.5
+languages.auto	Аутоматски
+languages.ru	Руски
+languages.en	Енглески
+languages.uk	Украјински
+languages.cs	Чешки
+languages.de	Немачки
+chat.thinking	Velora AI размишља
+chat.thinkingAnswer	Velora AI разматра одговор
+chat.readyTitle	Velora AI је спреман да помогне
+chat.thinkingTitle	Velora AI размишља...
+chat.readySubtitle	Поставите питање или изаберите предлог
+chat.thinkingSubtitle	Обрађујемо ваш захтев
+chat.placeholder	Напишите поруку...
+chat.drawerPlaceholder	Питајте ме било шта...
+chat.navbarPlaceholder	Питајте AI или задајте задатак...
+chat.enterToSend	Enter за слање
+chat.shiftEnterNewline	Shift+Enter за нови ред
+chat.aiDisclaimer	Velora AI може да погреши. Проверите важне информације.
+chat.continueInChat	Настави у ћаскању →
+chat.emptyTitle	Како могу да помогнем?
+chat.emptySubtitle	Поставите питање о студију, клијентима или послу
+chat.charCount_one	{{count}} / 4000 знак
+chat.charCount_few	{{count}} / 4000 знака
+chat.charCount_other	{{count}} / 4000 знакова
+chat.suggestions.revenue	Прикажи статистику прихода за овај месец
+chat.suggestions.sms	Напиши SMS подсетник за термин
+chat.suggestions.promo	Идеје за летњу промоцију
+chat.suggestions.retention	Како могу да побољшам задржавање клијената?
+chat.drawerSuggestions.revenueAnalysis	Анализа прихода
+chat.drawerSuggestions.emailTemplate	Шаблон е-поште
+chat.drawerSuggestions.promoIdeas	Идеје за промоцију
+chat.drawerSuggestions.clientReport	Извештај о клијенту
+drawer.historyBack	Ћаскања
+drawer.historyLabel	Историја
+agents.title	AI агенти
+agents.info.title	Шта су AI агенти
+agents.info.lead	Асистент који одговара клијентима у месинџерима студија док сте заузети.
+agents.info.b1	Одговара цео дан — нико не чека администратора
+agents.info.b2	Познаје распоред, услуге и цене вашег студија
+agents.info.b3	Ви одређујете тон и дужину одговора
+agents.info.note	Канал почиње да ради чим се повеже у подешавањима
+agents.activeCount	{{active}} / {{total}}
+agents.stateOn	Одговара
+agents.stateOffline	Није повезан
+agents.configureButton	Подеси агенте
+agents.enable	Укључи
+agents.disable	Искључи
+agents.modalTitle	Подешавање AI агента
+agents.modalSubtitle	Аутоматски одговори у месинџерима
+agents.tabPrompt	Системска упутства
+agents.statusDisabled	Искључено
+agents.statHandled	Обрађено
+agents.statRating	Оцена
+agents.styleTitle	Стил одговора
+agents.styleAllChannels	важи за све канале
+agents.toneLabel	Тон одговора
+agents.tone.friendly	Пријатељски
+agents.tone.formal	Формалан
+agents.tone.neutral	Неутралан
+agents.maxLengthLabel	Највећа дужина одговора (знакови)
+agents.maxLengthError	Унесите број од 50 до 4000
+agents.offHoursLabel	Аутоматски одговор само ван радног времена
+agents.promptHint	Овај текст одређује личност агента — како комуницира, шта зна и које теме избегава.
+agents.promptPlaceholder	Ви сте љубазан асистент студија...
+agents.promptCount_one	{{count}} / 2000 знак
+agents.promptCount_few	{{count}} / 2000 знака
+agents.promptCount_other	{{count}} / 2000 знакова
+agents.tgChannelInactive	Telegram канал је искључен у Онлајн резервацијама — бот не прима поруке, па агент ћути.
+errors.tg_token_required	Прво повежите Telegram бот — токен још није сачуван.
+errors.ig_not_connected	Instagram још није повезан.
+errors.wa_not_connected	WhatsApp број још није повезан — повежите га у Обавештењима.
+errors.assistant_unavailable	Асистент је привремено недоступан — покушајте касније.
+errors.trial_exhausted	Искористили сте свих 500 пробних захтева AI асистента. Изаберите плаћени план да наставите.
+errors.quota_exceeded	Искористили сте све AI захтеве овог плана. Ограничење се обнавља почетком месеца — или надоградите план.
+toasts.settingsSaved	Подешавања су сачувана
+toolStatus.add_client_note	Додаје се белешка…
+toolStatus.add_client_tag	Додаје се ознака…
+toolStatus.add_loyalty_points	Додају се поени…
+toolStatus.book_client	Резервише се час…
+toolStatus.cancel_booking	Отказује се резервација…
+toolStatus.pay_booking	Евидентира се уплата за час…
+toolStatus.clear_schedule	Брише се распоред…
+toolStatus.create_account	Креира се налог…
+toolStatus.create_branch	Креира се филијала…
+toolStatus.create_client	Креира се клијент…
+toolStatus.create_counterparty	Креира се друга страна…
+toolStatus.create_hall	Креира се сала…
+toolStatus.create_lesson	Креира се час…
+toolStatus.create_operation	Евидентира се трансакција…
+toolStatus.create_package	Креира се пакет…
+toolStatus.create_promo	Креира се промотивни код…
+toolStatus.create_service	Креира се услуга…
+toolStatus.create_staff	Додаје се члан тима…
+toolStatus.default	Ради се…
+toolStatus.delete_client	Брише се клијент…
+toolStatus.delete_staff	Уклања се члан тима…
+toolStatus.fill_schedule	Попуњава се распоред…
+toolStatus.find_clients	Траже се клијенти…
+toolStatus.forget_fact	Заборавља се чињеница…
+toolStatus.freeze_client	Замрзава се клијент…
+toolStatus.get_booking_settings	Проверавају се правила резервације…
+toolStatus.get_catalog_settings	Проверавају се подешавања пакета…
+toolStatus.get_client	Отвара се картица клијента…
+toolStatus.get_client_events	Чита се историја клијента…
+toolStatus.get_inactive_clients	Траже се неактивни клијенти…
+toolStatus.get_client_notes	Читају се белешке о клијенту…
+toolStatus.get_client_subscription	Проверава се пакет клијента…
+toolStatus.get_delivery_log	Проверава се дневник испоруке…
+toolStatus.get_finance_goals	Проверавају се финансијски циљеви…
+toolStatus.get_finance_summary	Проверавају се финансије…
+toolStatus.get_lesson	Отвара се час…
+toolStatus.get_loyalty_programs	Проверавају се програми лојалности…
+toolStatus.get_loyalty_summary	Проверава се лојалност…
+toolStatus.get_notification_matrix	Проверавају се обавештења…
+toolStatus.get_payroll	Обрачунавају се плате…
+toolStatus.get_rooms	Проверавају се сале…
+toolStatus.get_schedule	Проверава се распоред…
+toolStatus.get_segments	Проверавају се сегменти клијената…
+toolStatus.get_services	Проверавају се услуге…
+toolStatus.get_staff	Проверава се тим…
+toolStatus.get_staff_profile	Отвара се картица члана тима…
+toolStatus.get_stats	Обрађују се бројеви…
+toolStatus.get_team_report	Мери се повратак по тренеру…
+toolStatus.get_studio_facts	Присећа се шта зна о студију…
+toolStatus.get_today_agenda	Проверава се данас…
+toolStatus.issue_certificate	Издаје се потврда…
+toolStatus.list_operations	Проверавају се приходи и расходи…
+toolStatus.open_ui	Отвара се екран…
+toolStatus.remember_fact	Памти се…
+toolStatus.remove_client_tag	Уклања се ознака…
+toolStatus.sell_subscription	Продаје се пакет…
+toolStatus.set_client_discount	Поставља се попуст…
+toolStatus.set_staff_day	Означава се дан у распореду…
+toolStatus.set_staff_schedule	Поставља се распоред…
+toolStatus.toggle_notification_event	Пребацује се обавештење…
+toolStatus.ui_section	Проверава се како одељак ради…
+toolStatus.update_booking_rules	Ажурирају се правила резервације…
+toolStatus.update_client	Ажурирају се подаци клијента…
+toolStatus.update_lesson	Ажурира се час…
+toolStatus.update_service	Ажурира се услуга…
+toolStatus.update_staff	Ажурира се члан тима…
+quota.trialLow	Остало је мало пробних захтева.
+quota.label	Захтеви AI асистенту
+quota.value	{{used}} од {{limit}}
+quota.low	Близу сте месечног ограничења.
+quota.upgrade	Изаберите план
+quota.monthPeriod	По календарском месецу (UTC)
+quota.trialPeriod	За цео пробни период
+rating.up	Добар одговор
+rating.down	Лош одговор
+memory.title	Асистент памти
+memory.forget	Заборави
+memory.forgetConfirmTitle	Заборавити ову чињеницу?
+memory.forgetConfirmMessage	Асистент ће престати да је користи у одговорима.
+memory.deleted	Чињеница је уклоњена
+plan.pages.who	Ко и шта
+plan.pages.when	Када
+plan.pages.check	Преглед
+plan.stepOf	Корак {{current}} од {{total}}
+plan.next	Даље
+plan.back	Назад
+plan.confirm	Одобри
+plan.confirmDanger	Одобри
+plan.choose	Изабери
+plan.nothingFound	Ништа није пронађено
+plan.nothingToFill	Овде нема ништа за попуњавање — наставите директно.
+plan.fromStep	креирано у кораку {{n}}
+plan.values.group	група
+plan.values.individual	индивидуално
+plan.values.trainer	тренер
+plan.values.admin	администратор
+plan.values.owner	власник
+plan.values.hourly	по сату
+plan.values.percent	% прихода
+plan.values.fixed	по часу
+plan.title_one	Одобри — {{count}} радња
+plan.title_few	Одобри — {{count}} радње
+plan.title_other	Одобри — {{count}} радњи
+plan.stillEmpty_one	Остало је {{count}} поље
+plan.stillEmpty_few	Остала су {{count}} поља
+plan.stillEmpty_other	Остало је {{count}} поља

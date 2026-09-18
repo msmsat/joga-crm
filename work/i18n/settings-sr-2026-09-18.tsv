@@ -1,0 +1,336 @@
+== sr
+nav.sectionLabel	Системска подешавања
+nav.general	Опште
+nav.appearance	Изглед
+nav.notifications	Обавештења
+nav.billing	Наплата
+nav.security	Безбедност
+nav.integrations	Интеграције
+nav.data	Подаци
+nav.logout	Промени CRM
+toast.saved	Сачувано
+toast.error	Нешто је пошло по злу
+workspace.title	Ваши CRM системи
+workspace.subtitle	Изаберите радни простор или направите нови
+workspace.current	Тренутни
+workspace.membersCount_one	{{count}} члан
+workspace.membersCount_few	{{count}} члана
+workspace.membersCount_other	{{count}} чланова
+workspace.clientsCount_one	{{count}} клијент
+workspace.clientsCount_few	{{count}} клијента
+workspace.clientsCount_other	{{count}} клијената
+workspace.createNew	Направи нови студио
+workspace.loadError	Није могуће учитати ваше студије
+workspace.selectError	Није могуће прећи на овај студио
+general.company.title	Подаци о фирми
+general.company.subtitle	Јавне информације о вашем пословању
+general.company.name	Назив фирме
+general.company.namePh	нпр. Мој студио
+general.company.desc	Опис
+general.company.descPh	Чиме се ваш студио бави…
+general.company.phone	Телефон
+general.company.email	Е-пошта
+general.company.site	Веб-сајт
+general.company.sitePh	https://studio.com
+general.company.address	Адреса
+general.company.addressPh	Улица Пример 123, град
+general.reset	Врати на почетно
+general.resetToast	Подешавања су враћена
+general.locale.title	Језик и регион
+general.locale.subtitle	Подешавања локализације интерфејса
+general.locale.timezone	Временска зона
+general.locale.timezoneSearch	Град или померај
+general.locale.timezoneNotFound	Временска зона није пронађена
+general.locale.currency	Валута
+general.locale.currencySearch	Претражи валуту или кôд
+general.locale.currencyNotFound	Валута није пронађена
+general.locale.language	Језик интерфејса
+general.locale.languageSearch	Претражи језик
+general.locale.languageNotFound	Језик није пронађен
+general.locale.dateFormat	Формат датума
+general.locale.firstDay	Први дан у недељи
+general.locale.firstDayLabels.0	Понедељак
+general.locale.firstDayLabels.1	Недеља
+general.booking.title	Модел резервације
+general.booking.subtitle	Како клијенти заказују код вас
+general.booking.mode	Модел резервације
+general.booking.modeHint	Догађаји — клијенти се пријављују за заказани час. Индивидуално — клијент бира стручњака и време. Комбиновано — обоје истовремено.
+general.booking.profile	Називи у делатности
+general.booking.profileHint	Бира речи за особље и понуду. Мења само називље — никада улоге, цене или модел резервације.
+general.booking.strict	Строг распоред
+general.booking.strictHint	Спречава дупле резервације стручњака или ексклузивног простора. Неопходан је пре укључивања индивидуалних резервација.
+general.booking.spaceAxis	Користи {{spacePlural}} у распореду
+general.booking.spaceAxisHint	Искључено — клијент резервише особу, а простор нема колону у дневнику. Укључено — час је везан за простор.
+general.booking.spaceAxisDefaultOn	Подразумевано за вашу делатност: укључено
+general.booking.spaceAxisDefaultOff	Подразумевано за вашу делатност: искључено
+general.booking.modes.event	Догађаји
+general.booking.modes.resource	Индивидуално
+general.booking.modes.hybrid	Комбиновано
+general.booking.profiles.studio	Групне праксе и студији
+general.booking.profiles.sport	Спорт и теретане
+general.booking.profiles.beauty	Лепота и нега
+general.booking.profiles.recovery	Тело и опоравак
+general.booking.profiles.relax	Спа и опуштање
+general.booking.profiles.other	Остало
+general.booking.preview.event	Догађај
+general.booking.preview.resource	Индивидуално
+general.booking.errors.AUDIT_BLOCKED	Распоред садржи резервације које нису усклађене са строгим распоредом.
+general.booking.errors.STRICT_SCHEDULE_REQUIRED	Најпре укључите строг распоред.
+general.booking.errors.RESOURCE_HISTORY_EXISTS	Строг распоред не може да се искључи: студио има индивидуалне резервације.
+general.booking.findings.overlap	Преклапајуће резервације
+general.booking.findings.unknown_timezone	Непозната временска зона
+general.booking.findings.undefined_branch	Огранак није подешен
+general.booking.findings.invalid_duration	Неисправно трајање
+general.booking.findings.invalid_resource_row	Непотпуна индивидуална резервација
+general.booking.findings.missing_branch_assignment	Стручњак није додељен огранку
+general.booking.findings.missing_working_hours	Стручњак нема радно време
+general.booking.findings.inactive_specialist	Стручњак није активан
+general.booking.findings.other	Потребна је провера
+appearance.theme.title	Тема
+appearance.theme.subtitle	Изаберите визуелни стил интерфејса
+appearance.theme.light	Светла
+appearance.theme.dark	Тамна
+appearance.theme.auto	Систем
+appearance.accent.title	Боја нагласка
+appearance.accent.subtitle	Прилагодите главну боју интерфејса
+appearance.accent.note	Ваш избор је сачуван, али се још не примењује на интерфејс — стиже у будућем ажурирању.
+appearance.accent.noteTitle	Ускоро
+appearance.accent.colors.peach	Бресква
+appearance.accent.colors.pistachio	Пистаћ
+appearance.accent.colors.lavender	Лаванда
+appearance.accent.colors.pink	Ружичаста
+appearance.accent.colors.gold	Златна
+appearance.accent.colors.mint	Мента
+appearance.language.title	Језик интерфејса
+appearance.language.subtitle	Ваш лични језик — не утиче на подешавања студија
+appearance.language.search	Претражи језик
+appearance.language.empty	Језик није пронађен
+notifications.myPrefs.title	Моја обавештења
+notifications.myPrefs.subtitle	Лична подешавања — не утичу на остатак студија
+notifications.myPrefs.hint	Обавезна обавештења не могу да се искључе — она осигуравају да никада не пропустите промене распореда и уплате.
+notifications.myPrefs.empty	Нема опционих обавештења за вашу улогу
+notifications.myPrefs.channels.email	Е-пошта
+notifications.myPrefs.channels.telegram	Telegram
+notifications.myPrefs.channels.whatsapp	WhatsApp
+notifications.telegram.title	Telegram за обавештења
+notifications.telegram.subtitle	Где да вам лично шаљемо догађаје — резервације, обрачун зарада, извештаје
+notifications.telegram.chatId	Ваш Telegram chat_id
+notifications.telegram.chatIdPh	нпр. 123456789
+notifications.telegram.hintBefore	Свој chat_id можете пронаћи код бота 
+notifications.telegram.hintAfter	 на Telegram-у — започните разговор с њим и послаће вам ID.
+notifications.telegram.invalidChatId	Telegram chat_id мора бити број, без симбола
+notifications.telegram.saved	Telegram је повезан за обавештења
+notifications.telegram.saveFailed	Чување Telegram-а није успело
+notifications.email.title	Е-пошта за обавештења
+notifications.email.subtitle	Где слати системске е-поруке
+notifications.email.primary	Главна е-пошта
+notifications.email.backup	Резервна е-пошта
+notifications.email.backupPh	backup@studio.com
+notifications.email.saved	Подешавања обавештења су сачувана
+billing.plans.start	Start
+billing.plans.pro	Pro
+billing.plans.business	Business
+billing.plans.free_trial	Бесплатни пробни период
+billing.status.active	Активно
+billing.status.trial	Пробни период
+billing.status.expired	Истекло
+billing.plan.title	Тренутни пакет
+billing.plan.expiresAt	Активно до {{date}}
+billing.plan.maxStaff	До {{count}} запослених
+billing.plan.staffUnlimited	Неограничен број запослених
+billing.plan.noSubscription	Нема активне претплате
+billing.plan.noSubscriptionCta	Изаберите пакет
+billing.plan.trialCta	Изаберите пакет
+billing.upgrade	Пређите на {{plan}}
+billing.renew	Обнови
+billing.autopay.title	Аутоматско обнављање
+billing.autopay.subtitle	Наплата са сачуване картице
+billing.autopay.autoRenew	Аутоматско обнављање
+billing.autopay.notifyBefore	Подсетићемо вас {{count}} дана пре наплате
+billing.payment.title	Начин плаћања
+billing.payment.cardSummary	Картица •••• {{last4}}
+billing.payment.notLinked	Ниједна картица није повезана
+billing.payment.change	Промени
+billing.history.title	Историја плаћања
+billing.history.subtitle	Последњих 12 уплата
+billing.history.exportCsv	Извези CSV
+billing.history.empty	Још нема уплата
+billing.history.showAll	Прикажи све
+billing.history.period	{{count}} мес.
+billing.history.noDate	—
+billing.history.status.paid	Плаћено
+billing.history.status.pending	На чекању
+billing.history.status.failed	Није плаћено
+billing.history.status.refunded	Враћено
+billing.toast.autopaySaved	Подешавања аутоматског обнављања су сачувана
+billing.toast.renewed	Обнављање је покренуто
+billing.toast.csvExportError	Извоз CSV-а није успео
+security.account.title	Безбедност налога
+security.account.subtitle	Заштитите приступ свом радном простору
+security.twoFa.title	Двофакторска аутентификација
+security.twoFa.sub	Кôд е-поштом при сваком пријављивању
+security.twoFa.active	Активна
+security.twoFa.disabled	Искључена
+security.twoFa.enableTitle	Укључи 2FA
+security.twoFa.disableTitle	Искључи 2FA
+security.twoFa.enableWarning	Када се укључи, свако пријављивање ће захтевати кôд послат на {{email}}. Уверите се да имате приступ тој адреси — у супротном можете изгубити приступ налогу.
+security.twoFa.disableWarning	Када се искључи, само лозинка ће бити довољна за пријављивање, без кода е-поштом.
+security.twoFa.enabledToast	Двофакторска аутентификација је укључена
+security.twoFa.disabledToast	Двофакторска аутентификација је искључена
+security.password.title	Лозинка налога
+security.password.sub	Промена се потврђује кôдом е-поштом
+security.password.change	Промени лозинку
+security.password.changed	Лозинка је успешно промењена
+security.password.current	Тренутна лозинка
+security.password.currentPh	Унесите тренутну лозинку
+security.password.new	Нова лозинка
+security.password.newPh	Најмање 8 знакова
+security.password.repeat	Поновите лозинку
+security.password.repeatPh	Поново унесите нову лозинку
+security.password.mismatch	Лозинке се не поклапају
+security.password.forgot	Заборавили сте лозинку?
+security.password.resetTitle	Опоравак лозинке
+security.password.step1Sub	Хајде да потврдимо да сте то ви
+security.password.step2Sub	Кôд је послат на {{email}}
+security.password.step3Sub	Изаберите нову лозинку
+security.password.resetIntro	Послаћемо 6-цифрени кôд на адресу е-поште вашег налога. Не морате знати тренутну лозинку — кôд доказује да је сандуче ваше.
+security.password.sendCode	Пошаљи кôд
+security.password.back	Назад
+security.password.save	Сачувај лозинку
+security.password.resetDone	Лозинка је ажурирана
+security.password.resetLogoutHint	Остали уређаји ће бити одјављени — на овом ћете остати пријављени.
+security.password.rules.len	8+ знакова
+security.password.rules.letter	Има слово
+security.password.rules.digit	Има цифру
+security.password.rules.simple	Без 111 или qwerty
+security.sessions.title	Активне сесије
+security.sessions.sub	Где је ваш налог тренутно пријављен
+security.sessions.count	{{count}} уређаја
+security.sessions.manage	Управљај
+security.sessions.hide	Сакриј
+security.sessions.current	Тренутна
+security.sessions.terminate	Прекини
+security.sessions.terminateAll	Прекини све друге сесије
+security.sessions.terminatedToast	Сесија је успешно прекинута
+security.sessions.terminatedAllToast	Остале сесије су прекинуте
+security.sessions.justNow	Активна сада
+security.sessions.minutesAgo	пре {{count}} мин.
+security.sessions.hoursAgo	пре {{count}} ч.
+security.sessions.daysAgo	пре {{count}} дана
+security.sessions.unknownLocation	Непознато
+security.otp.sentHint	Послали смо 6-цифрени кôд на вашу е-пошту. Унесите га испод.
+security.otp.resend	Пошаљи кôд поново
+security.otp.resendIn	Пошаљи поново за {{count}} сек.
+security.otp.confirm	Потврди
+security.otp.cancel	Откажи
+security.otp.sendCode	Пошаљи кôд
+security.otp.continue	Настави
+security.danger.title	Управљање подацима (опасна зона)
+security.danger.export.title	Извези све податке
+security.danger.export.sub	Преузмите архиву базе клијената и историје
+security.danger.export.prepare	Припреми архиву
+security.danger.export.hide	Сакриј
+security.danger.export.clients	База клијената (CSV)
+security.danger.export.finances	Финансијске трансакције
+security.danger.export.schedule	Часови и распоред
+security.danger.export.start	Покрени извоз
+security.danger.export.started	Архива се припрема, веза ће бити послата на вашу е-пошту
+security.danger.export.emptySelection	Изаберите бар један одељак за извоз
+security.danger.wipe.title	Обриши базу података
+security.danger.wipe.sub	Брише све клијенте и резервације. Подешавања остају сачувана.
+security.danger.wipe.action	Обриши податке
+security.danger.wipe.toast	База података је успешно обрисана
+security.danger.wipe.consequence1	Трајно се бришу: клијенти, часови, резервације, операције, документи, претплате клијената, историја лојалности
+security.danger.wipe.consequence2	Без измена: студио, огранци, {{spacePlural}}, услуге, особље, претплата и подешавања
+security.danger.wipe.consequence3	Ова радња је неповратна — не може се поништити након потврде
+security.danger.deleteAccount.title	Обриши фирмени налог
+security.danger.deleteAccount.sub	Потпуно и неповратно уништавање пословања у систему
+security.danger.deleteAccount.action	Обриши заувек
+security.danger.deleteAccount.consequence1	Студио и сви његови подаци биће трајно обрисани, укључујући клијенте, часове, финансије и подешавања
+security.danger.deleteAccount.consequence2	Ваш лични налог остаје — брише се само овај студио
+security.danger.deleteAccount.consequence3	Брисање није доступно уз активну претплату или ако студио има друге власнике
+integrations.title	Интеграције
+integrations.subtitle	Повежите спољне канале и екосистеме једним кликом
+integrations.loadError	Није могуће учитати стање интеграција
+integrations.items.telegram.name	Telegram бот
+integrations.items.telegram.sub	Обавештења клијентима и резервације преко бота
+integrations.items.whatsapp.name	WhatsApp Business
+integrations.items.whatsapp.sub	Масовне поруке и аутоматска обавештења клијентима
+integrations.items.instagram.name	Instagram Direct
+integrations.items.instagram.sub	AI агент за аутоматске одговоре и онлајн резервације
+integrations.items.google_calendar.name	Google Calendar
+integrations.items.google_calendar.sub	Синхронизација распореда студија
+integrations.status.connected	Повезано
+integrations.status.notActive	Није повезано
+integrations.actions.configure	Подеси
+integrations.actions.connect	Повежи
+integrations.actions.disconnect	Прекини везу
+integrations.fields.keyLabel	Кључ
+integrations.fields.connectedAtLabel	Повезано
+integrations.fields.telegramToken	API токен бота (од @BotFather)
+integrations.fields.telegramTokenPh	123456789:ABCDefGhIJKlmNoPQRsTUVwxyZ
+integrations.fields.whatsappToken	Приступни токен
+integrations.fields.whatsappTokenPh	EAAxxxxxxxxxxxxx
+integrations.fields.whatsappPhoneId	ID телефонског броја
+integrations.fields.whatsappPhoneIdPh	1029384756
+integrations.fields.whatsappWabaId	WABA ID (опционо)
+integrations.fields.whatsappWabaIdPh	1029384756
+integrations.fields.instagramToken	Приступни токен
+integrations.fields.instagramTokenPh	IGQWR...
+integrations.fields.instagramUserId	ID пословног Instagram налога
+integrations.fields.instagramUserIdPh	17841400000000000
+integrations.guide.howToTitle	Како повезати
+integrations.guide.telegram.steps.0	Отворите @BotFather у Telegram-у и пошаљите /newbot
+integrations.guide.telegram.steps.1	Изаберите име и корисничко име за бота — BotFather ће вам послати API токен
+integrations.guide.telegram.steps.2	Налепите токен испод и кликните Повежи
+integrations.guide.whatsapp.steps.0	Направите апликацију у Meta for Developers и додајте WhatsApp производ
+integrations.guide.whatsapp.steps.1	У API Setup-у копирајте привремени или трајни приступни токен
+integrations.guide.whatsapp.steps.2	Копирајте и ID телефонског броја тестног или потврђеног броја
+integrations.guide.whatsapp.steps.3	Налепите обе вредности испод и кликните Повежи
+integrations.guide.instagram.steps.0	Повежите Instagram налог студија са Facebook страницом — то је потребно за Direct API
+integrations.guide.instagram.steps.1	Направите апликацију у Meta for Developers са производом Instagram Graph API
+integrations.guide.instagram.steps.2	Направите приступни токен са дозволама instagram_basic и instagram_manage_messages
+integrations.guide.instagram.steps.3	Копирајте ID пословног Instagram налога и токен, па их налепите испод
+integrations.guide.instagram.steps.4	Без Meta провере веза ради само за тестне налоге апликације
+integrations.guide.google_calendar.steps.0	Кликните Повежи — отвориће се прозор за пријављивање на Google
+integrations.guide.google_calendar.steps.1	Изаберите налог са којим је повезан календар студија
+integrations.guide.google_calendar.steps.2	Дајте приступ календару — часови ће почети да се појављују у њему аутоматски
+integrations.capabilities.notify	обавештења клијентима на овом каналу
+integrations.capabilities.booking	онлајн резервације преко овог канала
+integrations.capabilities.dm_agent	AI агент за аутоматске одговоре у Direct-у
+integrations.capabilities.schedule_sync	синхронизација распореда са Google Calendar-ом
+integrations.disconnect.title	Прекинути везу са {{name}}?
+integrations.disconnect.willStop	Ово ће престати да ради:
+integrations.disconnect.checkbox	Разумем последице
+integrations.disconnect.cancel	Откажи
+integrations.disconnect.confirm	Прекини везу
+integrations.google.connected	Google Calendar је повезан
+integrations.google.denied	Приступ Google Calendar-у није одобрен
+integrations.google.error	Повезивање са Google Calendar-ом није успело
+integrations.google.primary	главни
+integrations.google.calendar	Календар
+integrations.google.selectCalendar	Изаберите календар
+integrations.google.loadingCalendars	Учитавање календара…
+integrations.google.syncMode	Режим синхронизације
+integrations.google.syncModeOptions.push	Само из CRM-а у Google
+integrations.google.syncModeOptions.two_way	Двосмерно
+integrations.google.syncNow	Синхронизуј сада
+integrations.google.lastSync	Последња синхронизација: {{date}}
+integrations.google.neverSynced	Још није синхронизовано
+integrations.google.timezoneWarning	Временска зона студија није подешена — догађаји се шаљу у UTC-у и могу одступати од стварног времена часова. Подесите временску зону у одељку Опште.
+integrations.google.syncResult	Синхронизовано: {{pushed}} послато, {{pulled}} преузето
+integrations.google.settingsSaved	Подешавања Google Calendar-а су сачувана
+integrations.toast.connected	Интеграција је повезана
+integrations.toast.disconnected	Интеграција је прекинута
+data.export.title	Извези извештаје и листе
+data.export.subtitle	Преузмите датотеке у табеларним форматима за књиговодство и анализу
+data.export.clearFilter	Очисти период
+data.export.items.clients.name	Листа клијената
+data.export.items.schedule.name	Историја дневника и резервација
+data.export.items.finances.name	Финансијски извештај
+data.export.items.subscriptions.name	Претплате клијената
+data.export.rows_one	{{count}} запис
+data.export.rows_few	{{count}} записа
+data.export.rows_other	{{count}} записа
+data.export.loading	Учитавање...
+data.export.empty	нема података за овај период

@@ -18,7 +18,8 @@ from dependencies import get_current_user
 from legal import consent_ip
 from models import User
 from schemas.auth.responses import LocaleResponse
-from services import geo_locale, i18n
+from services import geo_locale
+from services.ui_locale import resolve_ui_locale
 
 router = APIRouter()
 
@@ -33,7 +34,7 @@ async def _account_language(token: str, db: AsyncSession) -> str | None:
         return None
     raw = user.language
     # Нет личного выбора — IP. Язык без перевода — английский.
-    return i18n.resolve(raw) if raw else None
+    return resolve_ui_locale(raw) if raw else None
 
 
 @router.get("/locale", response_model=LocaleResponse)

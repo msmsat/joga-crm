@@ -1,0 +1,377 @@
+== sq
+tabs.accounts	Llogaritë
+tabs.operations	Operacionet
+tabs.salaries	Pagat
+tabs.counterparties	Palët kontraktuese
+tabs.documents	Dokumentet
+tabs.onlinePayments	Pagesat online
+tabs.paymentMethods	Mënyrat e pagesës
+tabs.reports	Raportet
+tabs.goals	Objektivat
+common.save	Ruaj
+common.cancel	Anulo
+common.create	Krijo
+common.edit	Ndrysho
+common.delete	Fshi
+common.loading	Po ngarkohet…
+common.all	Të gjitha
+common.confirm	Konfirmo
+common.monthsShort.0	Jan
+common.monthsShort.1	Shk
+common.monthsShort.2	Mar
+common.monthsShort.3	Pri
+common.monthsShort.4	Maj
+common.monthsShort.5	Qer
+common.monthsShort.6	Kor
+common.monthsShort.7	Gus
+common.monthsShort.8	Sht
+common.monthsShort.9	Tet
+common.monthsShort.10	Nën
+common.monthsShort.11	Dhj
+common.weekdaysShort.0	Hën
+common.weekdaysShort.1	Mar
+common.weekdaysShort.2	Mër
+common.weekdaysShort.3	Enj
+common.weekdaysShort.4	Pre
+common.weekdaysShort.5	Sht
+common.weekdaysShort.6	Die
+info.accounts	Llogaritë janë arkat e studios, llogaritë bankare dhe pranimi online i pagesave. Këtu shihni çdo bilanc dhe kapitalin total.
+info.operations	Operacionet janë të gjitha të ardhurat dhe shpenzimet e studios. Krijimi i një operacioni lëviz menjëherë bilancin e llogarisë së lidhur.
+info.salaries	Pagat llogariten nga norma e anëtarit të stafit (fikse, për orë ose përqindje) për periudhën e zgjedhur.
+info.counterparties	Palët kontraktuese janë organizata dhe individë me të cilët studioja kryen shlyerje: furnitorë, qiradhënës, partnerë.
+info.documents	Dokumentet janë kontrata, akte dhe fatura të lidhura me palët kontraktuese, ose dokumente të brendshme.
+info.onlinePayments	Pagesat online — lidhja e Stripe për pagesa me kartë. Llogaria krijohet për studion tuaj, prandaj paratë shkojnë drejtpërdrejt te ju, pa kaluar nga Velora.
+info.paymentMethods	Mënyrat e pagesës tregojnë si paguajnë klientët në studio dhe statistikat për secilën.
+info.reports	Raportet tregojnë prirjet e të ardhurave, shpenzimeve dhe fitimit gjatë periudhës së zgjedhur.
+info.goals	Objektivat financiare janë plani i kursimeve të studios me ndjekje automatike ose manuale të progresit.
+accounts.loading	Po ngarkohen llogaritë…
+accounts.totalCapital	Kapitali total i studios
+accounts.donutTotal	{{symbol}} gjithsej
+accounts.todayChange	sot
+accounts.system	SISTEMI
+accounts.today	sot
+accounts.editTitle	Ndrysho llogarinë
+accounts.namePlaceholder	Emri
+accounts.balancePlaceholder	Bilanci, {{symbol}}
+accounts.types.cash	Para në dorë
+accounts.types.bank	Kartë
+accounts.types.online	Online
+accounts.typesShort.cash	Para në dorë
+accounts.typesShort.bank	Kartë
+accounts.typesShort.online	Online
+accounts.history	Historia
+accounts.historyTitle	Historia: {{name}}
+accounts.income30d	Të ardhura (30 d.)
+accounts.expense30d	Shpenzime (30 d.)
+accounts.samplePayment	Pagesë për shërbim
+accounts.sampleTime	Sot, 14:32
+accounts.openAllOperations	Hap të gjitha operacionet
+accounts.newSavingsTitle	Llogari e re kursimi
+accounts.createSavings	Krijo llogari kursimi
+accounts.deleteConfirmTitle	Të fshihet kjo llogari?
+accounts.deleteConfirmText	Të gjitha fondet e saj do të përjashtohen nga statistikat e përgjithshme. Ky veprim nuk mund të zhbëhet.
+accounts.toasts.loadFailed	Nuk u ngarkuan dot llogaritë
+accounts.toasts.deleted	Llogaria u fshi
+accounts.toasts.deleteFailed	Nuk u fshi dot llogaria
+accounts.toasts.saved	Cilësimet u ruajtën
+accounts.toasts.saveFailed	Nuk u ruajt dot llogaria
+accounts.toasts.created	Llogaria e kursimit u krijua
+accounts.toasts.createFailed	Nuk u krijua dot llogaria
+operations.income	Të ardhura
+operations.expense	Shpenzime
+operations.balance	Bilanci
+operations.searchPlaceholder	Kërko sipas titullit dhe kategorisë…
+operations.close	Mbyll
+operations.operation	Operacion
+operations.export	Eksporto
+operations.newOperationTitle	Operacion i ri
+operations.titleLabel	Titulli
+operations.titlePlaceholder	P.sh. Pagesë abonimi
+operations.amountLabel	Shuma, {{symbol}}
+operations.dateLabel	Data
+operations.categoryLabel	Kategoria
+operations.categoryPlaceholder	Kategoria
+operations.accountLabel	Llogaria
+operations.noAccount	Pa llogari
+operations.methodLabel	Mënyra e pagesës
+operations.noMethod	Nuk është përcaktuar
+operations.counterpartyLabel	Pala kontraktuese
+operations.noCounterparty	Pa palë kontraktuese
+operations.newCounterparty	+ Palë e re kontraktuese
+operations.clientLabel	Klienti
+operations.clientHint	Pikët e besnikërisë dhe niveli do t’i kreditohen klientit
+operations.clientSearchPlaceholder	Filloni të shkruani një emër…
+operations.noClient	Pa klient
+operations.editTitle	Ndrysho operacionin
+operations.saving	Po ruhet…
+operations.loading	Po ngarkohen operacionet…
+operations.emptyTitle	Nuk u gjetën operacione
+operations.emptyBody	Ndryshoni filtrat ose krijoni operacionin e parë
+operations.pending	Në pritje
+operations.detailAccount	Llogaria pranuese
+operations.detailCategory	Kategoria
+operations.detailMethod	Mënyra e pagesës
+operations.detailCounterparty	Pala kontraktuese
+operations.receipt	Fatura
+operations.loadMore	Ngarko më shumë ({{count}})
+operations.toasts.loadFailed	Nuk u ngarkuan dot operacionet
+operations.toasts.loadMoreFailed	Nuk u ngarkuan dot më shumë operacione
+operations.toasts.deleted	Operacioni u fshi
+operations.toasts.deleteFailed	Nuk u fshi dot operacioni
+operations.toasts.enterAmount	Vendosni një shumë
+operations.toasts.created	Operacioni u krijua
+operations.toasts.createFailed	Nuk u krijua dot operacioni
+operations.toasts.updated	Operacioni u përditësua
+operations.toasts.updateFailed	Nuk u ruajt dot operacioni
+operations.toasts.exportFailed	Nuk u eksportuan dot operacionet
+operations.toasts.receiptDownloaded	Fatura u shkarkua
+operations.categoryPresets.in.0.value	Abonime
+operations.categoryPresets.in.0.label	Abonime
+operations.categoryPresets.in.1.value	Shërbime
+operations.categoryPresets.in.1.label	Shërbime
+operations.categoryPresets.in.2.value	Certifikata dhurate
+operations.categoryPresets.in.2.label	Certifikata dhurate
+operations.categoryPresets.in.3.value	Depozitë
+operations.categoryPresets.in.3.label	Depozitë
+operations.categoryPresets.in.4.value	Të tjera
+operations.categoryPresets.in.4.label	Të tjera
+operations.categoryPresets.out.0.value	Rimbursime
+operations.categoryPresets.out.0.label	Rimbursime
+operations.categoryPresets.out.1.value	Qira
+operations.categoryPresets.out.1.label	Qira
+operations.categoryPresets.out.2.value	Paga
+operations.categoryPresets.out.2.label	Paga
+operations.categoryPresets.out.3.value	Furnizime
+operations.categoryPresets.out.3.label	Furnizime
+operations.categoryPresets.out.4.value	Marketing
+operations.categoryPresets.out.4.label	Marketing
+operations.categoryPresets.out.5.value	Taksa
+operations.categoryPresets.out.5.label	Taksa
+operations.categoryPresets.out.6.value	Të tjera
+operations.categoryPresets.out.6.label	Të tjera
+salaries.loading	Po ngarkohen pagat…
+salaries.noRows	Nuk ka staf për llogaritje
+salaries.fund	Fondi i pagave
+salaries.fundSub	muaji aktual
+salaries.sessions	Seancat
+salaries.sessionsSub	të mbajtura gjithsej
+salaries.paidOf	staf
+salaries.sessionsCount	{{count}} seanca
+salaries.paid	Paguar
+salaries.pending	Në pritje
+salaries.paying	…
+salaries.payAction	Paguaj
+salaries.cancelAction	Anulo pagën
+salaries.perMonth	/muaj
+salaries.accrualTitle	Përllogaritja për periudhën
+salaries.rate	Norma
+salaries.rateNotSet	nuk është vendosur
+salaries.sessionsInPeriod	Seanca në periudhë
+salaries.hoursWorked	Orë të punuara
+salaries.lessonsRevenue	Të ardhura nga seancat
+salaries.totalToPay	Gjithsej për pagesë
+salaries.rateWarning	Norma nuk është vendosur — caktojeni në profilin e anëtarit të stafit që të mund të llogaritet përllogaritja.
+salaries.rateUnit.hourly	orë
+salaries.rateUnit.percent	%
+salaries.rateUnit.fixed	fikse
+salaries.paidAt	Paguar {{date}}
+salaries.historyTitle	Historia e pagesave
+salaries.historyEmpty	Ende nuk ka pagesa
+salaries.historyLoading	Po ngarkohet historia…
+salaries.toasts.loadFailed	Nuk u ngarkuan dot pagat
+salaries.toasts.paid	Paga u pagua: {{name}}
+salaries.toasts.payFailed	Nuk u pagua dot paga
+salaries.toasts.canceled	Paga u anulua: {{name}}
+salaries.toasts.historyLoadFailed	Nuk u ngarkua dot historia e pagesave
+counterparties.count	{{count}} palë kontraktuese
+counterparties.totalDebt	Borxhi total:
+counterparties.add	Shto
+counterparties.newTitle	Palë e re kontraktuese
+counterparties.nameLabel	Emri / Emri i plotë
+counterparties.namePlaceholder	Kompania SHPK ose Gjon Smith
+counterparties.innLabel	Numri tatimor
+counterparties.categoryLabel	Kategoria
+counterparties.categoryPlaceholder	Qira, furnitor…
+counterparties.typeLabel	Lloji i palës kontraktuese
+counterparties.types.legal.label	Person juridik
+counterparties.types.legal.desc	Organizatë ose kompani
+counterparties.types.ie.label	Sipërmarrës individual
+counterparties.types.ie.desc	Sipërmarrës privat
+counterparties.types.person.label	Individ
+counterparties.types.person.desc	Person privat
+counterparties.addSubmit	Shto palë kontraktuese
+counterparties.you	Ju
+counterparties.otherCategory	Tjetër
+counterparties.deals	marrëveshje
+counterparties.dealsLabel	Marrëveshjet
+counterparties.debtLabel	Borxhi
+counterparties.documents	Dokumentet
+counterparties.edit	Ndrysho
+counterparties.delete	Fshi
+counterparties.deleteConfirmTitle	Të fshihet pala kontraktuese?
+counterparties.deleteConfirmText	Dokumentet përkatëse dhe historia e marrëveshjeve do të mbeten, por pala kontraktuese do të hiqet nga lista.
+counterparties.toasts.loadFailed	Nuk u ngarkuan dot palët kontraktuese
+counterparties.toasts.enterName	Vendosni një emër
+counterparties.toasts.saved	Ndryshimet u ruajtën
+counterparties.toasts.saveFailed	Nuk u ruajt dot
+counterparties.toasts.added	Pala kontraktuese u shtua
+counterparties.toasts.addFailed	Nuk u shtua dot pala kontraktuese
+counterparties.toasts.deleted	Pala kontraktuese u fshi
+counterparties.toasts.deleteFailed	Nuk u fshi dot pala kontraktuese
+counterparties.toasts.documentsOpened	Dokumentet u hapën
+documents.signed	Nënshkruar
+documents.pendingCount	Në pritje të nënshkrimit
+documents.draftCount	I brendshëm (i panënshkruar)
+documents.searchPlaceholder	Kërko sipas titullit ose palës kontraktuese…
+documents.filters.all	Të gjitha
+documents.filters.signed	Nënshkruar
+documents.filters.pending	Në pritje të nënshkrimit
+documents.upload	Ngarko
+documents.addTitle	Shto dokument në bibliotekë
+documents.dropzoneTitle	Klikoni ose tërhiqni një skedar
+documents.dropzoneHint	PDF, DOCX, XLSX (deri në 15 MB)
+documents.dropzoneChange	Klikoni për të zgjedhur skedar tjetër
+documents.titleLabel	Titulli i dokumentit
+documents.titlePlaceholder	P.sh. Akt pranimi nr. 48
+documents.partyLabel	Pala kontraktuese (nëse ka)
+documents.partyPlaceholder	Emri i kompanisë ose sipërmarrësit individual
+documents.needsSignature	A ka nevojë dokumenti për nënshkrim?
+documents.needsSignatureHint	Statusi do të jetë “Në pritje të nënshkrimit”
+documents.saveToBase	Ruaj në bibliotekë
+documents.emptyTitle	Kjo dosje është bosh
+documents.emptyBody	Ngarkoni një dokument të ri ose ndryshoni filtrat
+documents.internalDoc	Dokument i brendshëm
+documents.uploaded	U ngarkua {{date}}
+documents.download	Shkarko
+documents.open	Hap
+documents.fileRequired	Bashkëngjitni një skedar
+documents.options	Opsionet
+documents.status.title	Statusi
+documents.status.signed	Nënshkruar
+documents.status.pending	Në pritje të nënshkrimit
+documents.status.draft	I panënshkruar
+documents.delete	Fshi
+documents.toasts.loadFailed	Nuk u ngarkuan dot dokumentet
+documents.toasts.titleRequired	Ngarkoni një skedar ose vendosni titull
+documents.toasts.created	Dokumenti u ngarkua në bibliotekë
+documents.toasts.createFailed	Nuk u ruajt dot dokumenti
+documents.toasts.badFormat	Formatet e lejuara: PDF, DOCX, XLSX
+documents.toasts.downloadFailed	Nuk u shkarkua dot skedari
+documents.toasts.noFile	Nuk ka skedar të bashkëngjitur në këtë dokument
+documents.toasts.openFailed	Nuk u hap dot skedari
+documents.toasts.statusChanged	Statusi: {{label}}
+documents.toasts.statusFailed	Nuk u ndryshua dot statusi
+documents.toasts.deleted	Dokumenti u fshi
+documents.toasts.deleteFailed	Nuk u fshi dot dokumenti
+goals.loading	Po ngarkohen objektivat…
+goals.active	Objektiva në progres
+goals.done	Të përfunduara
+goals.avgProgress	Progresi i përgjithshëm
+goals.trackingTitle	Ndjekja e planit
+goals.createGoal	Krijo objektiv
+goals.newTitle	Objektiv i ri financiar
+goals.titleLabel	Titulli i objektivit
+goals.titlePlaceholder	P.sh. Makina të reja reformer
+goals.targetLabel	Shuma e synuar, {{symbol}}
+goals.targetPlaceholder	500000
+goals.deadlineLabel	Afati
+goals.trackingLabel	Si të ndiqet progresi?
+goals.trackingAuto	Automatik (metrikë CRM)
+goals.trackingAutoDesc	Lidhni objektivin me të ardhurat nga një kategori e zgjedhur. CRM-ja do të lëvizë vetë shiritin e progresit.
+goals.trackingManual	Manual (kursime personale)
+goals.trackingManualDesc	Në kartë do të shfaqet butoni “Shto fonde”. Progresi varet vetëm nga ju.
+goals.opTypeLabel	Lloji i operacionit
+goals.categoryLabel	Kategoria
+goals.categoryPlaceholder	Zgjidhni një kategori
+goals.editTitle	Ndrysho objektivin
+goals.nameLabel	Titulli
+goals.namePlaceholder	Titulli i objektivit
+goals.amountLabel	Shuma, {{symbol}}
+goals.achieved	Objektivi u arrit
+goals.priority.high	Prioritet i lartë
+goals.priority.medium	Prioritet mesatar
+goals.priority.low	Prioritet i ulët
+goals.autoCollect	Ndjekje automatike
+goals.deadlinePrefix	Afati:
+goals.noDeadline	Pa afat
+goals.fundPlaceholder	Shuma, {{symbol}}
+goals.fund	Shto
+goals.addFunds	Shto fonde
+goals.autoHint	Vlera përditësohet automatikisht nga të ardhurat e kategorisë
+goals.deleteConfirmTitle	Të fshihet objektivi?
+goals.deleteConfirmText	Progresi i këtij objektivi do të humbet. Ky veprim nuk mund të zhbëhet.
+goals.toasts.loadFailed	Nuk u ngarkuan dot objektivat
+goals.toasts.fillRequired	Plotësoni titullin dhe shumën
+goals.toasts.chooseCategory	Zgjidhni një kategori për objektivin automatik
+goals.toasts.created	Objektivi u krijua
+goals.toasts.createFailed	Nuk u krijua dot objektivi
+goals.toasts.enterName	Vendosni një emër
+goals.toasts.updated	Objektivi u përditësua
+goals.toasts.updateFailed	Nuk u përditësua dot objektivi
+goals.toasts.deleted	Objektivi u fshi
+goals.toasts.deleteFailed	Nuk u fshi dot objektivi
+goals.toasts.funded	Fondet u shtuan
+goals.toasts.fundFailed	Nuk u shtuan dot fondet
+onlinePayments.description	Lidhni Stripe dhe klientët tuaj mund të paguajnë me kartë në arkë. Paratë shkojnë drejtpërdrejt në llogarinë e studios — Velora nuk i mban kurrë. Komisioni ndjek planin tuaj.
+onlinePayments.gatewaysTitle	Ofruesit e pagesave
+onlinePayments.gateways.stripe.name	Stripe
+onlinePayments.gateways.states.none.label	Nuk është lidhur
+onlinePayments.gateways.states.none.hint	Pranoni pagesa me kartë në llogarinë e studios
+onlinePayments.gateways.states.none.action	Lidhu
+onlinePayments.gateways.states.incomplete.label	Mungojnë të dhënat
+onlinePayments.gateways.states.incomplete.hint	Stripe po pret të dhënat e studios suaj — pagesat qëndrojnë të çaktivizuara deri atëherë
+onlinePayments.gateways.states.incomplete.action	Vazhdo
+onlinePayments.gateways.states.action.label	Nevojitet veprim
+onlinePayments.gateways.states.action.hint	Stripe hodhi poshtë disa të dhëna dhe pret korrigjime — nuk do të pastrohet vetë
+onlinePayments.gateways.states.action.action	Rregullo të dhënat
+onlinePayments.gateways.states.review.label	Në shqyrtim
+onlinePayments.gateways.states.review.hint	Të dhënat janë dërguar; Stripe po i shqyrton. Zakonisht zgjat deri në një ditë
+onlinePayments.gateways.states.review.action	Hap Stripe
+onlinePayments.gateways.states.active.label	Lidhur
+onlinePayments.gateways.states.active.hint	Pagesat me kartë hyjnë në llogarinë Stripe të studios
+onlinePayments.gateways.states.active.action	Cilësimet
+onlinePayments.toasts.gatewayUpdated	Cilësimet e ofruesit u përditësuan
+onlinePayments.toasts.stripeReturned	Të dhënat u dorëzuan te Stripe
+onlinePayments.toasts.stripeLinkExpired	Lidhja Stripe skadoi — shtypni përsëri Lidhu
+paymentMethods.totalTurnover	Xhiroja për periudhën
+paymentMethods.periods.month	Muaj
+paymentMethods.periods.quarter	Tremujor
+paymentMethods.periods.year	Vit
+paymentMethods.amount	Shuma
+paymentMethods.share	Pjesa
+paymentMethods.transactions	transaksione
+paymentMethods.methods.cash.name	Para në dorë
+paymentMethods.methods.card.name	Kartë bankare
+paymentMethods.methods.qr.name	SBP (QR)
+paymentMethods.methods.transfer.name	Transfertë
+paymentMethods.methods.stripe.name	Stripe
+paymentMethods.methods..name	Nuk është përcaktuar
+reports.metrics.revenue	Të ardhura
+reports.metrics.expenses	Shpenzime
+reports.metrics.profit	Fitim
+reports.metrics.margin	Marzhi
+reports.vsPreviousPeriod	krahasuar me periudhën e mëparshme
+reports.cashflowTitle	Rrjedha e parasë
+reports.cashflowSub	Analiza e të ardhurave dhe shpenzimeve
+reports.period	Periudha
+reports.income	Të ardhura
+reports.expense	Shpenzim
+reports.profit	Fitim
+reports.periods.today	Sot
+reports.periods.week	Javë
+reports.periods.month	Muaj
+reports.periods.year	Vit
+reports.legendIncome	Të ardhura
+reports.legendExpense	Shpenzime
+reports.exportCsv	Eksporto CSV
+reports.expenseStructure	Struktura e shpenzimeve
+reports.incomeStructure	Struktura e të ardhurave
+reports.total	Gjithsej
+reports.otherCategory	Pa kategori
+reports.noData	Nuk ka të dhëna për këtë periudhë
+reports.insightsTitle	Përmbledhje dhe njohuri financiare
+reports.insightsPlaceholder	Përmbledhja financiare me AI do të shfaqet këtu: analiza e prirjeve, struktura e shpenzimeve dhe rekomandime
+reports.toasts.exportFailed	Nuk u eksportuan dot operacionet
+confirmModal.cancel	Anulo
+confirmModal.confirm	Konfirmo
+confirmModal.delete	Fshi

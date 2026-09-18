@@ -1,0 +1,354 @@
+{
+  "loading": "Yükleniyor…",
+  "chModal": {
+    "eyebrow": "Bildirim kanalı",
+    "connected": "Bağlı",
+    "notConnected": "Bağlı değil",
+    "setup": "Bağlantı kurulumu",
+    "details": "Bağlantı ayrıntıları",
+    "ready": "Kanal çalışıyor",
+    "readyHint": "Etkinleştirilen etkinliklerin bildirimleri otomatik gönderilir.",
+    "bot": "Bot",
+    "token": "Token",
+    "phone": "Numara",
+    "account": "Hesap",
+    "sender": "Gönderen"
+  },
+  "channels": {
+    "title": "Teslimat kanalları",
+    "connect": "Bağlan",
+    "connected": "Bağlı",
+    "openSettings": "{{channel}} ayarları",
+    "waLockedHint": "Meta ödeme yönteminize, doğrulanmış işletmeye ve onaylı şablonlara sahip olduğunda kanal açılır",
+    "waBlocker": {
+      "payment": "Ödeme yöntemi yok — hatırlatıcılar teslim edilmiyor. Ayarla",
+      "verification": "İşletme Meta'da doğrulanmadı — günlük 250 sınırı. Nasıl düzeltilir",
+      "templates": "Şablonlar hâlâ Meta incelemesinde — hiçbir şey gönderilmeyecek. Ayrıntılar"
+    }
+  },
+  "roles": {
+    "client": "Müşteri",
+    "trainer": "Eğitmen",
+    "admin": "Yönetici",
+    "owner": "Sahip",
+    "activeCount_one": "{{count}} etkin",
+    "activeCount_other": "{{count}} etkin"
+  },
+  "matrix": {
+    "saving": "Kaydediliyor…",
+    "allSaved": "Tüm değişiklikler kaydedildi",
+    "notSaved": "Kaydedilmedi",
+    "activateAll": "Tümünü etkinleştir",
+    "deactivateAll": "Tüm onay kutularını temizle",
+    "scenariosFor": "Şunun için senaryolar: {{role}}",
+    "eventColumn": "Sistem olayı",
+    "noActiveChannels": "Etkin kanal yok",
+    "noActiveChannelsHint": "Soldaki panelden en az bir teslimat kanalı etkinleştirin",
+    "adviceLabel": "İpucu:",
+    "advice": "Her rol için neyin nereye gönderileceğini ayrı ayrı yapılandırın — Velora bunu otomatik yönetir.",
+    "tiers": {
+      "critical": "Zorunlu · kapatılamaz",
+      "operational": "Operasyonel",
+      "optional": "İsteğe bağlı"
+    },
+    "lock": {
+      "critical": "Zorunlu bildirim — kapatılamaz",
+      "lastChannel": "Son teslimat kanalı — kapatılamaz"
+    },
+    "channelDisconnected": "Kanal bağlı değil",
+    "activeCount_one": "Etkin tetikleyiciler: {{count}} / {{total}}",
+    "activeCount_other": "Etkin tetikleyiciler: {{count}} / {{total}}",
+    "configureFor_one": "{{count}} sistem tetikleyicisi için kanalları yapılandır",
+    "configureFor_other": "{{count}} sistem tetikleyicisi için kanalları yapılandır"
+  },
+  "events": {
+    "c1": {
+      "title": "Rezervasyon onaylandı",
+      "desc": "Başarılı ders rezervasyonunda"
+    },
+    "c2": {
+      "title": "Ders hatırlatıcısı",
+      "desc": "24 saat ve 2 saat önce"
+    },
+    "c3": {
+      "title": "Ders iptal edildi",
+      "desc": "Eğitmen veya stüdyo iptal ettiğinde"
+    },
+    "c4": {
+      "title": "Ödeme başarılı",
+      "desc": "Başarılı çekimden sonra makbuz"
+    },
+    "c5": {
+      "title": "Dersler azalıyor",
+      "desc": "Paket içinde 1–2 ziyaret kaldığında"
+    },
+    "c6": {
+      "title": "Paketin süresi doluyor",
+      "desc": "Sona erme tarihinden 3 gün önce"
+    },
+    "c7": {
+      "title": "Doğum günü",
+      "desc": "Özel teklifli kutlama"
+    },
+    "c8": {
+      "title": "Değerlendirme isteği",
+      "desc": "Dersten sonra"
+    },
+    "c9": {
+      "title": "İade",
+      "desc": "İptal ve iade işleme alınırken"
+    },
+    "c10": {
+      "title": "Ders henüz ödenmedi",
+      "desc": "Müşteri katıldı ama ödeme yapmadı"
+    },
+    "c11": {
+      "title": "Ders yeniden planlandı",
+      "desc": "Saat, salon veya eğitmen değişti"
+    },
+    "c12": {
+      "title": "Bonus eklendi",
+      "desc": "Müşteriye puan veya bonus eklendi"
+    },
+    "c13": {
+      "title": "Dersten sonra kahve",
+      "desc": "Gruptan kimin kahveye gittiği"
+    },
+    "t1": {
+      "title": "Eğitmende yeni rezervasyon",
+      "desc": "Müşteri kişisel seans rezervasyonu yaptı"
+    },
+    "t2": {
+      "title": "Müşteri rezervasyonu iptal etti",
+      "desc": "Müşteri 2 saatten az kala iptal etti"
+    },
+    "t3": {
+      "title": "Ders hatırlatıcısı",
+      "desc": "Başlangıçtan 1 saat önce"
+    },
+    "t4": {
+      "title": "Grup listesi",
+      "desc": "Grup dersinden 30 dk. önce"
+    },
+    "t5": {
+      "title": "Takvim değişikliği",
+      "desc": "Yönetici saat veya konumu değiştirdi"
+    },
+    "t6": {
+      "title": "Maaş tahakkuk etti",
+      "desc": "Haftalık ödeme hesaplaması"
+    },
+    "t7": {
+      "title": "Yeni eğitmen değerlendirmesi",
+      "desc": "Müşteri dersten sonra puan verdi"
+    },
+    "t8": {
+      "title": "Müşterinin doğum günü",
+      "desc": "Kişisel olarak kutlamak için hatırlatıcı"
+    },
+    "t9": {
+      "title": "Ders iptal edildi",
+      "desc": "Stüdyo veya yönetici dersinizi iptal etti"
+    },
+    "a1": {
+      "title": "Yeni çevrimiçi rezervasyon",
+      "desc": "Müşteri site veya widget üzerinden rezervasyon yaptı"
+    },
+    "a2": {
+      "title": "Son dakika iptali",
+      "desc": "Dersten 1 saatten az önce"
+    },
+    "a3": {
+      "title": "Sistemde yeni müşteri",
+      "desc": "Yeni kullanıcı kaydı"
+    },
+    "a4": {
+      "title": "Ödeme alındı",
+      "desc": "Her başarılı çekim"
+    },
+    "a6": {
+      "title": "Paketler azalıyor",
+      "desc": "≤1 dersi kalmış müşteri grubu"
+    },
+    "a7": {
+      "title": "Takvim çakışması",
+      "desc": "Günlükte çakışan dersler"
+    },
+    "a8": {
+      "title": "Günlük rapor",
+      "desc": "Gün sonu özeti"
+    },
+    "a9": {
+      "title": "Giriş denemesi",
+      "desc": "Yeni bir cihazdan giriş"
+    },
+    "a10": {
+      "title": "İade",
+      "desc": "Yönetici iade işlemi yaptı"
+    },
+    "o1": {
+      "title": "Günlük özet",
+      "desc": "Günün geliri, rezervasyonları, katılımı"
+    },
+    "o2": {
+      "title": "Haftalık rapor",
+      "desc": "Göstergeler: müşteri büyümesi, LTV, dönüşüm"
+    },
+    "o3": {
+      "title": "Büyük ödeme",
+      "desc": "Belirlenen eşiğin üzerindeki çekim"
+    },
+    "o4": {
+      "title": "Veri anormalliği",
+      "desc": "Rezervasyon veya gelirde keskin düşüş"
+    },
+    "o5": {
+      "title": "Yeni ekip üyesi",
+      "desc": "Yönetici yeni hesap oluşturdu"
+    },
+    "o6": {
+      "title": "Plan yenilemesi",
+      "desc": "Velora aboneliğini ödeme hatırlatıcısı"
+    },
+    "o7": {
+      "title": "Erişim hakları değişti",
+      "desc": "Ekip üyesinin izinleri değiştirildi"
+    },
+    "o8": {
+      "title": "KPI'a ulaşıldı",
+      "desc": "Aylık hedefe ulaşıldı"
+    },
+    "o9": {
+      "title": "Veri dışa aktarma",
+      "desc": "Birisi müşteri veritabanını dışa aktardı"
+    }
+  },
+  "tg": {
+    "title": "Telegram",
+    "subtitleConnected": "Kanal bağlı",
+    "subtitleDisconnected": "Bildirim botunu bağlayın",
+    "connected": "Bağlı",
+    "pasteToken": "@BotFather'dan aldığınız bot tokenini yapıştırın.",
+    "invalidToken": "Geçersiz token biçimi",
+    "howToGet": "Token nasıl alınır:",
+    "steps": {
+      "1": "Telegram'da @BotFather'ı açın",
+      "2": "/newbot komutunu gönderin ve yönergeleri izleyin",
+      "3": "Verilen tokeni kopyalayın",
+      "4": "Yukarıdaki alana yapıştırın"
+    },
+    "connect": "Bağlan",
+    "disconnect": "Bağlantıyı kes",
+    "disconnectTitle": "Telegram bağlantısı kesilsin mi?",
+    "disconnectMessage": "Müşteriler ve personel bu kanal üzerinden bildirim almayı bırakacak.",
+    "close": "Kapat",
+    "cancel": "İptal"
+  },
+  "emailCh": {
+    "title": "E-posta",
+    "subtitle": "Müşteri e-postaları için gönderen adresi",
+    "verifiedLabel": "Doğrulandı",
+    "emailLabel": "Gönderen e-postası",
+    "emailPlaceholder": "admin@studio.com",
+    "invalidEmail": "Geçerli bir e-posta girin",
+    "sendCode": "Kod gönder",
+    "codeSentTo": "Kod şuraya gönderildi:",
+    "codeHint": "E-postadaki 6 haneli kodu girin.",
+    "codeLabel": "Doğrulama kodu",
+    "resend": "Kodu yeniden gönder",
+    "viaVelora": "E-postalar sizin adınıza Velora sunucusu üzerinden gönderilir.",
+    "wrongCode": "Geçersiz veya süresi dolmuş kod",
+    "verify": "Doğrula",
+    "back": "Geri",
+    "cancel": "İptal"
+  },
+  "wa": {
+    "title": "WhatsApp",
+    "subtitleConnected": "Kanal bağlı",
+    "subtitleDisconnected": "Meta işletme hesabınızla oturum açın",
+    "connected": "Bağlı",
+    "paymentRequiredTitle": "Kart gerekli olacak",
+    "paymentRequired": "Numarayı bağlamak ücretsizdir, ancak Meta müşteri hatırlatıcılarını yalnızca kart eklendikten sonra teslim eder. Kartı ayrı olarak eklersiniz —",
+    "paymentMissingTitle": "Ödeme yöntemi yok",
+    "paymentMissing": "Şu anda yalnızca botun gelen mesajlara verdiği yanıtlar çalışır. Kart eklenene kadar Meta hatırlatıcıları, onayları ve toplu gönderileri reddeder —",
+    "paymentOkTitle": "Ödeme bağlandı",
+    "paymentOk": "bildirimler eksiksiz teslim edilir.",
+    "paymentUnknown": "Meta ile ödeme yöntemini kontrol edemedik — durumu sonraki denemede göstereceğiz.",
+    "paymentLink": "Meta faturalandırma merkezi",
+    "paymentRecheck": "Yeniden kontrol et",
+    "paymentFound": "Ödeme bağlandı",
+    "verify": {
+      "title": "İşletme Meta'da doğrulanmadı",
+      "lead": "Numara çalışır, ancak günlük 250 benzersiz alıcı sınırıyla. Doğrulama sınırı kaldırır ve tam kullanımı açar. Stüdyo bunu kendi yapmalıdır — WhatsApp hesabı size aittir ve Velora sizin adınıza işlem yapamaz.",
+      "stepsTitle": "İşletme nasıl doğrulanır:",
+      "step1a": "Şunu açın:",
+      "link": "Meta Business Security Center",
+      "step1b": "ve “Doğrulamayı başlat”ı tıklayın. İşletme hesabında yönetici yetkisine ihtiyacınız var.",
+      "step2": "Yasal bilgileri doldurun: belgelerdeki adın aynısı, adres, telefon ve web sitesi. Site çalışıyor olmalı ve HTTPS kullanmalıdır.",
+      "step3": "İşletme kayıt belgesini yükleyin ve Meta'nın incelemesini bekleyin.",
+      "step4": "İşletmeyle bağlantınızı onaylayın: site alan adında e-posta, listelenen telefona çağrı veya SMS ya da alan adı doğrulaması.",
+      "step5": "Kararı bekleyin — genellikle 1–5 iş günü. Durum aynı Güvenlik Merkezindedir; reddedilirse Meta nedeni belirtir ve yeniden başvuruya izin verir.",
+      "docsTitle": "Kabul edilen belgeler (her gruptan bir adet):",
+      "doc1": "Kayıt: kuruluş belgesi, sicil kaydı, işletme ruhsatı veya vergi belgesi.",
+      "doc2": "Varlık kanıtı: çalışan bir web sitesi, resmi sosyal medya sayfası veya işletme dizini kaydı.",
+      "pitfallTitle": "En yaygın ret nedeni",
+      "pitfall": "Meta'daki işletme adı ile belgedeki ad, yasal biçim ve noktalama dâhil karakter karakter eşleşmelidir. “Romashka LLC” ve “Romashka, LLC” farklı ad sayılır."
+    },
+    "templatesTitle": "Mesaj şablonları",
+    "templates": "Meta, önceden onaylanmış şablon olmadan müşteriye ilk mesajı göndermenize izin vermez. Her etkinlik için şablon oluşturun — incelemeye gider ve onaylanınca çalışmaya başlar.",
+    "templatesAction": "Şablonları hazırla",
+    "templatesPending": "Şablonlar oluşturuluyor…",
+    "templatesPartial": "Meta bazı şablonları reddetti: {{failed}}. Ayrıntılar için günlükleri inceleyin",
+    "templatesRejected": "— bu bildirimler teslim edilmiyor. Meta hesabınızdaki metni kontrol edin ve şablonları yeniden oluşturun.",
+    "templatesPendingHint": "— Meta'nın incelemesi bir güne kadar sürebilir. {{approved}} zaten onaylandı ve teslim ediliyor.",
+    "templatesOkTitle": "Şablonlar onaylandı",
+    "paidWarning": "WhatsApp mesajları ücretlidir",
+    "approxPrice": "yakl.",
+    "pricingLoading": "Güncel fiyat yükleniyor…",
+    "perMessage": "mesaj başına",
+    "viaMeta": "Meta tarafından doğrudan faturalandırılır",
+    "windowNotice": "Teslimat yalnızca 24 saatlik konuşma penceresinde garanti edilir.",
+    "connect": "WhatsApp'ı bağla",
+    "disconnect": "Bağlantıyı kes",
+    "disconnectTitle": "WhatsApp bağlantısı kesilsin mi?",
+    "disconnectMessage": "Müşteriler ve personel bu kanal üzerinden bildirim almayı bırakacak.",
+    "close": "Kapat",
+    "cancel": "İptal",
+    "templatesDone_one": "Şablonlar hazır: {{count}}. Meta incelemesi bekleniyor",
+    "templatesDone_other": "Şablonlar hazır: {{count}}. Meta incelemesi bekleniyor",
+    "templatesRejectedTitle_one": "Meta {{count}} şablonu reddetti",
+    "templatesRejectedTitle_other": "Meta {{count}} şablonu reddetti",
+    "templatesPendingTitle_one": "{{count}} şablon incelemede",
+    "templatesPendingTitle_other": "{{count}} şablon incelemede",
+    "templatesOk_one": "{{count}} şablon Meta incelemesini geçti — bildirimler teslim ediliyor.",
+    "templatesOk_other": "{{count}} şablon Meta incelemesini geçti — bildirimler teslim ediliyor."
+  },
+  "tabs": {
+    "matrix": "Ayarlar",
+    "log": "Teslimat günlüğü"
+  },
+  "log": {
+    "title": "Teslimat günlüğü",
+    "subtitle": "Ne gönderildiği, kime ve ne zaman gittiği, ayrıca her gönderimin nasıl sonuçlandığı.",
+    "status": {
+      "sent": "Teslim edildi",
+      "rejected": "Reddedildi",
+      "error": "Bağlantı hatası",
+      "pending": "Sürüyor"
+    },
+    "searchPlaceholder": "Telefon, e-posta veya olay kodu",
+    "allChannels": "Tüm kanallar",
+    "reset": "Sıfırla",
+    "refreshing": "Yenileniyor…",
+    "otherEvent": "Katalog dışına gönder",
+    "empty": "Henüz hiçbir şey gönderilmedi",
+    "emptyHint": "Stüdyonun müşterilere ve personele gönderdiği her bildirim burada görünür.",
+    "emptyFiltered": "Hiçbir şey bulunamadı",
+    "emptyFilteredHint": "Filtreleri değiştirmeyi veya farklı numara aramayı deneyin.",
+    "loadError": "Günlük yüklenemedi",
+    "loadErrorHint": "Sayfayı yenileyin — yardımcı olmazsa destek ekibiyle iletişime geçin.",
+    "range": "{{from}}–{{to}} / {{total}}",
+    "prev": "Geri",
+    "next": "Sonraki"
+  }
+}

@@ -68,8 +68,30 @@ load_dotenv()
 logger = logging.getLogger(__name__)
 
 NOTIFY_CHANNELS = ("email", "telegram", "whatsapp")
-_CURRENCY_SIGNS = {"RUB": "₽", "USD": "$", "EUR": "€", "KZT": "₸", "BYN": "Br", "UAH": "₴",
-                   "CZK": "Kč", "PLN": "zł", "GBP": "£", "HUF": "Ft", "RON": "lei"}
+# Знаки валют — 1-в-1 с front/src/utils/currency.ts: в письме, в шаблоне
+# WhatsApp и в price_str мини-приложения сумма обязана выглядеть так же, как в
+# кабинете. Кода нет в таблице — подставляется он сам (см. _fmt_amount).
+_CURRENCY_SIGNS = {
+    "AED": "د.إ", "ALL": "L", "AMD": "֏", "AOA": "Kz", "ARS": "$", "AUD": "A$",
+    "AZN": "₼", "BAM": "KM", "BBD": "$", "BGN": "лв", "BIF": "FBu", "BMD": "$",
+    "BOB": "Bs", "BRL": "R$", "BSD": "$", "BWP": "P", "BYN": "Br", "BZD": "$",
+    "CAD": "C$", "CDF": "FC", "CHF": "CHF", "CLP": "$", "COP": "$", "CRC": "₡",
+    "CUP": "$", "CVE": "$", "CZK": "Kč", "DJF": "Fdj", "DKK": "kr", "DOP": "$",
+    "EUR": "€", "FJD": "$", "FKP": "£", "GBP": "£", "GEL": "₾", "GHS": "₵",
+    "GIP": "£", "GMD": "D", "GNF": "FG", "GTQ": "Q", "GYD": "$", "HKD": "HK$",
+    "HNL": "L", "HTG": "G", "HUF": "Ft", "ILS": "₪", "INR": "₹", "ISK": "kr",
+    "JMD": "$", "KES": "KSh", "KGS": "с", "KMF": "CF", "KYD": "$", "KZT": "₸",
+    "LKR": "Rs", "LRD": "$", "LSL": "L", "MDL": "L", "MGA": "Ar", "MKD": "ден",
+    "MOP": "MOP", "MUR": "₨", "MWK": "MK", "MXN": "$", "MYR": "RM", "MZN": "MT",
+    "NAD": "$", "NGN": "₦", "NIO": "C$", "NOK": "kr", "NZD": "NZ$", "PAB": "B/.",
+    "PEN": "S/", "PGK": "K", "PHP": "₱", "PKR": "₨", "PLN": "zł", "PYG": "₲",
+    "RON": "lei", "RSD": "дин.", "RUB": "₽", "RWF": "FRw", "SBD": "$", "SCR": "₨",
+    "SDG": "SDG", "SEK": "kr", "SGD": "S$", "SLE": "Le", "SSP": "SSP", "STN": "Db",
+    "SZL": "L", "TJS": "SM", "TMT": "m", "TOP": "T$", "TRY": "₺", "TTD": "$",
+    "TZS": "TSh", "UAH": "₴", "UGX": "USh", "USD": "$", "UYU": "$U", "UZS": "UZS",
+    "VES": "Bs", "VUV": "VT", "WST": "T", "XAF": "FCFA", "XCD": "$", "XOF": "CFA",
+    "XPF": "₣", "ZAR": "R", "ZMW": "ZK", "ZWG": "ZiG",
+}
 GRAPH = "https://graph.facebook.com/v23.0"
 # ponytail: фикс-порог для события "крупный платёж" (o3), настройка в UI владельца — после MVP
 LARGE_PAYMENT = 10_000

@@ -1,0 +1,376 @@
+== sq
+tabs.overview	Përmbledhje
+tabs.sales	Shitje
+tabs.clients	Klientë
+tabs.team	Ekipi
+tabs.schedule	Orari
+toolbar.period.day	Ditë
+toolbar.period.week	Javë
+toolbar.period.month	Muaj
+toolbar.period.year	Vit
+toolbar.period.custom	E personalizuar
+toolbar.vsPrevious	krahasuar me periudhën e mëparshme: {{from}}–{{to}}
+toolbar.allBranches	Të gjitha degët
+toolbar.allHalls	Të gjitha {{spacePlural}}
+toolbar.allTrainers	Të gjithë trajnerët
+toolbar.allServices	Të gjitha shërbimet
+toolbar.export	Eksporto
+insights.title	Kërkon vëmendje
+insights.action	Hap
+insights.empty	Gjithçka është në rregull tani — nuk ka këshilla për të shfaqur
+insights.revenue_up_clients_down	Të ardhurat po rriten, por klientët aktivë po bien — kontrolloni largimin e klientëve
+insights.clients_at_risk	{{count}} klient(ë) nuk kanë marrë pjesë prej më shumë se 3 javësh — rrezik largimi
+insights.lesson_overfull	„{{name}}” të {{weekday, weekday}} në {{hour}}:00 ka qenë {{pct}}% e mbushur për tre javë rresht — mendoni të shtoni një seancë tjetër
+insights.trial_low_conversion	Vetëm {{pct}}% e {{buyers}} blerësve të provës blenë një abonim — mendoni për një fushatë
+insights.fastest_growing_product	„{{name}}” po rritet më shpejt: +{{pct}}% krahasuar me periudhën e mëparshme
+insights.renewals_low	Vetëm {{pct}}% e klientëve me abonim të skaduar e rinovojnë — mendoni për një kujtesë
+insights.new_no_second_visit	{{count}} klientë të rinj erdhën një herë dhe nuk rezervuan më — mendoni për një kujtesë
+insights.subs_expiring_week	{{count}} klientë kanë një abonim që skadon këtë javë — ofroni rinovim
+insights.vip_inactive	Klienti VIP „{{name}}” nuk ka vizituar prej {{days}} ditësh — mendoni për një mesazh personal
+insights.high_return_free_evenings	„{{name}}” ka normë të lartë kthimi ({{return_pct}}%), por mbrëmjet janë të lira — shtoni një seancë
+insights.trainer_overloaded	„{{name}}” është ngarkuar {{load_pct}}% — mendoni të ribalanconi orarin
+insights.low_rating	„{{name}}” ka vlerësim {{rating}} — ia vlen të shihet më nga afër
+insights.slot_chronic_low	„{{name}}” të {{weekday, isodowWeekday}} në {{hour}}:00 ka qenë {{pct}}% e mbushur për {{weeks}} javë rresht — zhvendoseni ose anullojeni
+insights.hall_idle_evenings	„{{name}}” është i papërdorur {{pct}}% të orëve të mbrëmjes — mendoni të caktoni një seancë
+insights.slot_overfull	Koha e {{weekday, isodowWeekday}} në {{hour}}:00 ka qenë {{pct}}% e mbushur për tre javë rresht — mendoni të shtoni një seancë tjetër
+insights.loss_hotspot	{{cancels}} seanca u anuluan në {{label}} këtë periudhë — shumica e anulimeve përqendrohen rreth kësaj ore
+table.loading	Po ngarkohet…
+table.noProduct	Pa produkt
+empty.noData.title	Nuk ka ende asgjë këtu
+empty.noData.text	Nuk u regjistrua aktivitet për periudhën e zgjedhur. Zgjeroni intervalin ose filloni duke rezervuar një klient në Ditar.
+empty.noData.widen	Shfaq vitin
+empty.noRevenue	Nuk ka pagesa në këtë periudhë
+empty.noSales	Nuk ka shitje në këtë segment
+empty.noProducts	Nuk janë shitur ende paketa ose shërbime
+empty.noLessons	Nuk ka seanca në këtë periudhë
+empty.noTrainerLessons	Ky trajner nuk ka mbajtur ende seanca
+empty.noRows	Nuk ka regjistrime në këtë segment
+empty.noLosses	Nuk ka anulime ose mungesa në këtë periudhë
+overview.kpi.revenue	Të ardhura
+overview.kpi.profit	Fitim
+overview.kpi.attendance	Pjesëmarrje
+overview.kpi.activeClients	Klientë aktivë
+overview.kpi.fillRate	Norma e mbushjes
+overview.chart.metric.revenue	Të ardhura
+overview.chart.metric.profit	Fitim
+overview.chart.metric.attendance	Pjesëmarrje
+overview.chart.metric.new_clients	Klientë të rinj
+overview.chart.metric.fill_rate	Norma e mbushjes
+overview.revenueStructure.title	Struktura e të ardhurave
+overview.category.subscriptions	Abonime
+overview.category.services	Shërbime
+overview.category.certificates	Certifikata
+overview.category.rent	Qira
+overview.category.salary	Pagë
+overview.category.refunds	Rimbursime
+overview.clientDynamics.title	Dinamika e klientëve
+overview.clientDynamics.new	Të rinj
+overview.clientDynamics.returned	Të rikthyer
+overview.clientDynamics.lost	Të humbur
+overview.drilldown.title	Operacion
+overview.drilldown.category	Kategori
+overview.drilldown.amount	Shuma
+overview.drilldown.lesson	Seancë
+overview.drilldown.time	Koha
+overview.drilldown.occupancy	Zënia
+overview.drilldown.date	Data
+overview.drilldown.method	Metoda
+overview.drilldown.trainer	Trajneri
+overview.drilldown.rowsCount	regjistrime
+overview.drilldown.search	Kërko në tabelë
+overview.drilldown.shownOf	Po shfaqen {{shown}} nga {{total}}
+overview.drilldown.noMatches	Nuk u gjet gjë për „{{query}}”
+overview.drilldown.reset	Rivendos
+overview.drilldown.export	Eksporto CSV
+overview.drilldown.subtitle.money	Operacione në këtë segment
+overview.drilldown.subtitle.lessons	Seanca në këtë segment
+overview.drilldown.hint.operations	Klikoni një rresht për të hapur operacionin te Financat
+overview.drilldown.hint.lessons	Klikoni një rresht për të hapur atë ditë te Ditari
+overview.drilldown.stat.net	Neto
+overview.drilldown.stat.income	Të ardhura
+overview.drilldown.stat.expense	Shpenzime
+overview.drilldown.stat.operations	Operacione
+overview.drilldown.stat.topCategory	Kategoria kryesore
+overview.drilldown.stat.lessons	Seanca
+overview.drilldown.stat.booked	Vende të rezervuara
+overview.drilldown.stat.avgFill	Zënie mesatare
+overview.drilldown.stat.trainers	Trajnerë
+overview.drilldown.stat.cancelled	Anuluar
+sales.kpi.revenue	Të ardhura
+sales.kpi.salesCount	Shitje
+sales.kpi.avgCheck	Shuma mesatare
+sales.kpi.repeatShare	Pjesa e përsëritur
+sales.kpi.renewals	Norma e rinovimit
+sales.chart.title	Shitje
+sales.incomeOperations	Operacione të të ardhurave
+sales.breakdown.byCategory	Çfarë blejnë
+sales.breakdown.byMethod	Si paguajnë
+sales.breakdown.buyerType	Kush blen
+sales.breakdown.new	Të rinj
+sales.breakdown.returning	Të rikthyer
+sales.breakdown.noClient	Pa klient
+sales.method.card	Kartë
+sales.method.cash	Para në dorë
+sales.method.qr	Kod QR
+sales.method.transfer	Transferim
+sales.products.title	Produkte
+sales.products.name	Produkt
+sales.products.sold	Shitur
+sales.products.revenue	Të ardhura
+sales.products.avgCheck	Shuma mesatare
+sales.products.repeatShare	Pjesa e përsëritur
+sales.products.trend	Tendenca
+sales.products.trendHint	Krahasuar me periudhën e mëparshme me të njëjtën kohëzgjatje
+clients.kpi.new	Të rinj
+clients.kpi.returned	Të rikthyer
+clients.kpi.lost	Të humbur
+clients.kpi.retention	Mbajtje
+clients.kpi.avgValue	Vlera e klientit
+clients.chart.title	Të rinj kundrejt të rikthyerve
+clients.chart.new	Të rinj
+clients.chart.returned	Të rikthyer
+clients.riskTitle	Segmente rreziku
+clients.loyalTitle	Besnikë
+clients.list	Lista
+clients.campaign	Nis fushatë
+clients.exportList	Eksporto listën
+clients.emptySegment	Segmenti „{{name}}” nuk ka klientë tani
+clients.segments.new.name	Klientë të rinj
+clients.segments.new.desc	U regjistruan në periudhën e zgjedhur
+clients.segments.returned.name	Klientë të rikthyer
+clients.segments.returned.desc	Vizituan këtë periudhë dhe atë para saj
+clients.segments.lost.name	Klientë të humbur
+clients.segments.lost.desc	Vizituan periudhën e kaluar, nuk u kthyen këtë periudhë
+clients.segments.active.name	Klientë aktivë
+clients.segments.active.desc	Erdhën në të paktën një seancë në periudhën e zgjedhur
+clients.segments.at_risk.name	Në prag largimi
+clients.segments.at_risk.desc	Aktivë, pa vizitë për 21+ ditë
+clients.segments.vip_idle.name	VIP pa aktivitet
+clients.segments.vip_idle.desc	Klientë VIP, pa vizitë për 14+ ditë
+clients.segments.expiring_subscription.name	Abonimi po përfundon
+clients.segments.expiring_subscription.desc	≤2 seanca ose ≤7 ditë të mbetura
+clients.segments.lost_newcomers.name	Nuk u kthyen kurrë
+clients.segments.lost_newcomers.desc	Erdhën një herë, mungojnë 14+ ditë
+clients.segments.upsell_candidates.name	Gati për paketë
+clients.segments.upsell_candidates.desc	8+ vizita këtë muaj, pa paketë
+clients.segments.frequent.name	Të shpeshtë
+clients.segments.frequent.desc	8+ vizita në periudhë
+clients.segments.high_ltv.name	LTV i lartë
+clients.segments.high_ltv.desc	10% më të mirët sipas shpenzimeve gjatë gjithë kohës
+clients.segments.referrers.name	Rekomandues
+clients.segments.referrers.desc	Përfunduan rekomandim në periudhë
+clients.listSearch	Kërko sipas emrit ose telefonit
+clients.shownOf	Po shfaqen {{shown}} nga {{total}}
+clients.noMatches	Nuk u gjet askush për „{{query}}”
+clients.resetSearch	Rivendos
+clients.neverVisited	Nuk ka vizituar kurrë
+clients.valueLabel.visits	Vizita
+clients.valueLabel.spent	Shpenzuar
+clients.valueLabel.daysIdle	Ditë pa aktivitet
+clients.valueLabel.remaining	Seanca të mbetura
+clients.valueLabel.value	Vlera
+clients.relative.today	Sot
+clients.relative.daysAgo_one	{{count}} ditë më parë
+clients.relative.daysAgo_other	{{count}} ditë më parë
+team.kpi.lessonsCount	Seanca
+team.kpi.revenuePerHour	Të ardhura/orë
+team.kpi.avgFillPct	Norma e mbushjes
+team.kpi.cancelNoshowPct	Anulime/mungesa
+team.kpi.avgRating	Vlerësim
+team.table.title	Trajnerë
+team.table.trainer	Trajner
+team.table.lessons	Seanca
+team.table.fillPct	Norma e mbushjes
+team.table.attendance	Pjesëmarrje
+team.table.revenue	Të ardhura
+team.table.returnRate	Norma e kthimit
+team.table.cancels	Anulime
+team.table.fillPctHint	Vende të zëna nga ato të planifikuara
+team.table.returnRateHint	Klientë që rezervuan sërish me këtë trajner
+team.table.cancelsHint	Seanca të anuluara dhe mungesa klientësh
+team.table.ratingHint	Vlerësimi mesatar që klientët i dhanë seancave të këtij trajneri
+team.drawer.revenueByWeek	Të ardhura sipas javës
+team.drawer.loadByWeekday	Ngarkesa sipas ditës së javës
+team.drawer.loadByHour	Ngarkesa sipas orës
+team.drawer.loadDim.weekday	Sipas ditës
+team.drawer.loadDim.hour	Sipas orës
+team.drawer.schedule.title	Orari
+team.drawer.schedule.empty	Nuk ka seanca në këtë periudhë
+team.drawer.topLessons	Seancat e preferuara
+team.drawer.returnBlock	Kthimi i klientit
+team.drawer.returnOf	{{returned}} nga {{total}} klientë u kthyen ({{pct}}%)
+team.drawer.openProfile	Hap profilin
+team.drawer.held	Të mbajtura
+team.drawer.attendance	Pjesëmarrje
+team.weekdays.0	Die
+team.weekdays.1	Hën
+team.weekdays.2	Mar
+team.weekdays.3	Mër
+team.weekdays.4	Enj
+team.weekdays.5	Pre
+team.weekdays.6	Sht
+schedule.weekdaysMonFirst.0	Hën
+schedule.weekdaysMonFirst.1	Mar
+schedule.weekdaysMonFirst.2	Mër
+schedule.weekdaysMonFirst.3	Enj
+schedule.weekdaysMonFirst.4	Pre
+schedule.weekdaysMonFirst.5	Sht
+schedule.weekdaysMonFirst.6	Die
+schedule.kpi.avgFillPct	Norma e mbushjes
+schedule.kpi.freeSpots	Vende të lira
+schedule.kpi.cancels	Anulime
+schedule.kpi.noshows	Mungesa
+schedule.kpi.lostRevenue	Të ardhura të humbura
+schedule.heatmap.title	Ngarkesa sipas ditës dhe orës
+schedule.heatmap.legend	Norma e mbushjes:
+schedule.heatmap.tooltip	{{lessons}} seanca · {{attendance}} pjesëmarrës · {{pct}}%
+schedule.heatmap.empty	Nuk ka seanca
+schedule.slices.topProfitable	Më fitimprurëset
+schedule.slices.topFilled	Më të mbushurat
+schedule.slices.chronicLow	Kronikisht pak të mbushura
+schedule.slices.halls	Përdorimi: {{spacePlural}}
+schedule.slices.held	{{count}} të mbajtura
+schedule.slices.weeks	{{count}} javë
+schedule.slices.move	Zhvendos
+schedule.slices.cancel	Anulo
+schedule.slices.eveningIdle	mbrëmje të lira {{pct}}%
+schedule.losses.title	Anulime dhe mungesa
+schedule.losses.dim.hour	Sipas orës
+schedule.losses.dim.service	Sipas shërbimit
+schedule.losses.dim.trainer	Sipas trajnerit
+schedule.losses.cancels_one	{{count}} anulim
+schedule.losses.cancels_other	{{count}} anulime
+schedule.losses.noshows_one	{{count}} mungesë
+schedule.losses.noshows_other	{{count}} mungesa
+schedule.losses.lostSpots_one	−{{count}} vend
+schedule.losses.lostSpots_other	−{{count}} vende
+schedule.status.confirmed	Konfirmuar
+schedule.status.pending	Në pritje
+schedule.status.cancelled	Anuluar
+schedule.slot.summary	për {{from}} — {{to}}
+schedule.slot.lessonsCount	Seanca gjithsej
+export.csv	Shkarko CSV
+scopeNote.label	Për gjithë studion
+scopeNote.money	Filtrat Dega dhe {{space}} nuk ndikojnë te paratë — pagesa nuk lidhet me to
+scopeNote.clientBase	Trajneri, {{space}}, dega dhe shërbimi nuk e ndryshojnë këtë tregues — një klient nuk lidhet me to
+descriptions.overview.metric.revenue	Të gjitha paratë që hynë në studio gjatë periudhës
+descriptions.overview.metric.profit	Ajo që mbetet pas shpenzimeve të periudhës
+descriptions.overview.metric.attendance	Seanca ku klientët morën pjesë realisht
+descriptions.overview.metric.new_clients	Klientët e regjistruar gjatë kësaj periudhe
+descriptions.overview.metric.fill_rate	Sa të mbushura janë seancat: vende të rezervuara nga vendet e disponueshme
+descriptions.overview.revenueStructure	Nga përbëhen të ardhurat tuaja këtë periudhë
+descriptions.overview.clientDynamics	Sa erdhën për herë të parë, sa u kthyen dhe sa ndaluan së ardhuri
+descriptions.sales.chart	Të ardhura dhe numër blerjesh sipas ditës
+descriptions.sales.byCategory	Pjesa e secilit produkt në të ardhura
+descriptions.sales.byMethod	Si ndahen të ardhurat sipas metodës së pagesës
+descriptions.sales.buyerType	Sa të ardhura vijnë nga klientë të rinj krahasuar me të rregulltit
+descriptions.sales.products	Çdo produkt: sa u shit, për sa dhe nëse po rritet
+descriptions.clients.chart	Sa klientë erdhën për herë të parë dhe sa u kthyen, sipas javës
+descriptions.clients.riskSegments	Klientët që mund të humbni nëse nuk i kontaktoni tani
+descriptions.clients.loyalSegments	Ata që vizitojnë më shpesh, shpenzojnë më shumë dhe sjellin miq
+descriptions.team.trainers	Krahasim sipas ngarkesës, të ardhurave dhe normës së kthimit të klientëve
+descriptions.team.loadWeekday	Cilat ditë të javës trajneri është i zënë dhe kur është i lirë
+descriptions.team.loadHour	Në ç'orë mbushen seancat e tij dhe kur mbeten bosh
+descriptions.team.schedule	Të gjitha seancat e trajnerit në periudhën e zgjedhur
+descriptions.schedule.heatmap	Ku orari është i tejmbushur dhe ku është bosh
+descriptions.schedule.topProfitable	Kohët e orarit tuaj që sjellin më shumë para
+descriptions.schedule.topFilled	Kohët që klientët rezervojnë më me dëshirë
+descriptions.schedule.chronicLow	Orë që për javë kanë mbushur më pak se një të tretën e vendeve
+descriptions.schedule.halls	Sa kohë {{spacePlural}} tuaja përdoren realisht
+descriptions.schedule.losses	Ku studioja humb vende: seanca të anuluara ose klientë që nuk paraqiten
+formulas.salesCount.title	Shitje
+formulas.salesCount.text	Sa herë klientët ju paguan këtë periudhë. Nëse një person paguan më shumë se një herë, llogaritet si shitje më vete.
+formulas.revenue.title	Të ardhura
+formulas.revenue.text	Të gjitha paratë që hynë në studio këtë periudhë, sipas datës së pagesës. Paketa, seanca të veçanta, karta dhuratë dhe shitje me pakicë — të gjitha bashkë.
+formulas.profit.title	Fitim
+formulas.profit.text	Ajo që mbetet pas shpenzimeve të kësaj periudhe: qira, paga, furnizime. Kjo është fitimi juaj real.
+formulas.attendance.title	Pjesëmarrje
+formulas.attendance.text	Sa vizita bënë realisht klientët. Numërohen vetëm seancat e shënuara si të ndjekura.
+formulas.bookings.title	Rezervime
+formulas.bookings.text	Sa rezervime bënë klientët për seanca. Rezervimet e anuluara nuk numërohen.
+formulas.noshow.title	Mungesë
+formulas.noshow.text	Klienti rezervoi, seanca u zhvillua dhe ai nuk erdhi. Secila mungesë është një vend që mund ta kishte zënë dikush tjetër.
+formulas.activeClients.title	Klientë aktivë
+formulas.activeClients.text	Sa persona të ndryshëm erdhën të paktën një herë këtë periudhë. Çdo klient numërohet një herë, pavarësisht sa vizita ka bërë.
+formulas.occupancy.title	Zënia
+formulas.occupancy.text	Sa të mbushura janë seancat: vende të zëna nga ato të planifikuara. 100% do të thotë se nuk ka më vende.
+formulas.avgCheck.title	Shuma mesatare
+formulas.avgCheck.text	Sa sjell mesatarisht një pagesë. Rritet kur klientët blejnë paketa më të gjata ose shtesa.
+formulas.retention.title	Mbajtje
+formulas.retention.text	Sa klientë të periudhës së kaluar u kthyen këtë periudhë. Tregon nëse po mbani klientët apo filloni nga zero çdo muaj.
+formulas.newClients.title	Klientë të rinj
+formulas.newClients.text	Persona që u shfaqën për herë të parë në bazën tuaj të klientëve këtë periudhë.
+formulas.returning.title	Të rikthyer
+formulas.returning.text	Klientë që kishin vizituar më parë dhe u kthyen përsëri këtë periudhë.
+formulas.lost.title	Të humbur
+formulas.lost.text	Vizituan periudhën e kaluar dhe nuk u shfaqën asnjë herë këtë periudhë. Ende ia vlen t'i kontaktoni.
+formulas.clientValue.title	Vlera e klientit
+formulas.clientValue.text	Sa sjell mesatarisht një klient këtë periudhë.
+formulas.repeatPurchaseShare.title	Pjesa e blerjeve të përsëritura
+formulas.repeatPurchaseShare.text	Pjesa e klientëve që blenë prej jush më shumë se një herë. Sa më e lartë të jetë, aq më i fortë është zakoni për t'u kthyer te ju.
+formulas.renewalRate.title	Norma e rinovimit
+formulas.renewalRate.text	Sa klientë blenë një paketë të re pasi u mbaroi e mëparshmja.
+formulas.revenuePerHour.title	Të ardhura për orë (trajner)
+formulas.revenuePerHour.text	Sa para sjell një orë punë e trajnerit. Ju lejon të krahasoni trajnerët drejt — njëri mund të mbajë më pak seanca, por secila sjell më shumë.
+formulas.trainerReturnRate.title	Norma e kthimit (trajner)
+formulas.trainerReturnRate.text	Pjesa e klientëve të trajnerit që rezervuan përsëri me të.
+formulas.missedRevenue.title	Të ardhura të humbura
+formulas.missedRevenue.text	Paratë që studioja nuk i fitoi për shkak të vendeve bosh në seancat e kaluara: vende të lira shumëzuar me çmimin e seancës.
+formulas.losses.title	Anulime dhe mungesa
+formulas.losses.text	Një „anulim” është një seancë e anuluar; një „mungesë” është klienti që rezervoi por nuk erdhi. Ndarjet sipas orës/shërbimit/trajnerit përdorin të njëjtët filtra si skeda dhe përputhen me treguesit kryesorë në krye.
+formulas.lessonRevenue.title	Të ardhura nga seanca
+formulas.lessonRevenue.text	Vlerësim i përafërt i të ardhurave të seancës: pjesëmarrësit shumëzuar me çmimin. Pagesat nuk lidhen me një seancë të caktuar, prandaj ky është përafrim, jo shifër e saktë.
+formulas.filtersScope.title	Fusha e filtrave
+formulas.filtersScope.text	Filtrat Dega dhe {{space}} zbatohen vetëm te treguesit e seancave. Pagesat nuk kanë lidhje të tillë, prandaj paratë shfaqen për gjithë studion.
+formulas.avgValue.title	Vlera e klientit
+formulas.avgValue.text	Sa sjell mesatarisht një klient këtë periudhë.
+formulas.cancelNoshow.title	Anulime dhe mungesa
+formulas.cancelNoshow.text	Pjesa e seancave të ndërprera: anulime dhe mungesa nga gjithçka e planifikuar.
+formulas.avgRating.title	Vlerësimi mesatar
+formulas.avgRating.text	Vlerësimi mesatar që klientët i dhanë seancave të këtij trajneri.
+formulas.teamScope.title	Fusha e të dhënave
+formulas.teamScope.text	Kjo numëron vetëm të ardhurat e lidhura me një trajner të caktuar, prandaj totali për të gjithë trajnerët mund të jetë më i ulët se të ardhura e përgjithshme e studios.
+formulas.lessonsCount.title	Seanca
+formulas.lessonsCount.text	Sa seanca mbajtën trajnerët këtë periudhë.
+formulas.load.title	Ngarkesa
+formulas.load.text	Sa e mbushur është dita e trajnerit: orët e rezervuara nga dritarja e punës së studios.
+formulas.weeklyClients.title	Të rinj dhe të rikthyer
+formulas.weeklyClients.text	Sipas javës: sa persona erdhën për herë të parë dhe sa u kthyen. Një studio e shëndetshme rritet në të dyja linjat.
+formulas.byCategory.title	Të ardhura sipas kategorisë
+formulas.byCategory.text	Nga çfarë fitoni realisht: paketa, seanca të veçanta, karta dhuratë, shitje me pakicë.
+formulas.byMethod.title	Metodat e pagesës
+formulas.byMethod.text	Si paguajnë klientët. Ju ndihmon të shihni nëse ju nevojitet pagesa me kartë dhe sa para anashkalojnë arkën.
+formulas.buyerType.title	Kush paguan
+formulas.buyerType.text	Klientë të rinj kundrejt të rregulltve. Nëse pothuajse të gjitha të ardhurat vijnë nga klientë të rinj, studioja nuk i mban njerëzit.
+formulas.products.title	Çfarë shitet
+formulas.products.text	Të gjitha paketat dhe shërbimet e periudhës: sa u shitën, për sa dhe nëse shitjet po rriten.
+formulas.topProfitable.title	Oraret më fitimprurëse
+formulas.topProfitable.text	Kohët e orarit që sjellin më shumë para. Vendosni trajnerët tuaj më të mirë aty.
+formulas.topFilled.title	Oraret më të mbushura
+formulas.topFilled.text	Kohët që klientët i rezervojnë më me dëshirë. Nëse janë plot, ia vlen të shtoni një seancë tjetër.
+formulas.chronicLow.title	Oraret kronikisht bosh
+formulas.chronicLow.text	Kohë që për disa javë kanë mbushur më pak se një të tretën e vendeve. Kandidatë për zhvendosje ose heqje.
+formulas.hallUtil.title	Përdorimi: {{spacePlural}}
+formulas.hallUtil.text	Sa kohë {{spacePlural}} tuaja përdoren realisht. Koha pa përdorim është qira që nuk shpërblehet.
+formulas.heatmap.title	Ngarkesa sipas ditës dhe orës
+formulas.heatmap.text	Ngjyra tregon normën mesatare të mbushjes së orarit për periudhën. Klikoni një qelizë për të parë seancat e asaj dite dhe ore.
+formulas.riskSegments.title	Segmente rreziku
+formulas.riskSegments.text	Klientë të grupuar sipas llojit të rrezikut që sjellin — humbjen e tyre ose të ardhurat që nuk po sjellin. Çdo kartë ka arsyen e vet dhe hapin e qartë vijues: dërgoni mesazh, ofroni rinovim ose paketë më të mirë.
+formulas.loyalSegments.title	Besnikë
+formulas.loyalSegments.text	Klientë që tashmë ju sjellin më shumë vlerë: vizitojnë më shpesh, shpenzojnë më shumë ose sjellin miq. Ia vlen t'i kujdesni dhe t'i shpërbleni.
+formulas.segment.at_risk.title	Në prag largimi
+formulas.segment.at_risk.text	Vizitonin rregullisht dhe tani janë zhdukur. Ende mund të rikthehen me një mesazh.
+formulas.segment.vip_idle.title	VIP pa aktivitet
+formulas.segment.vip_idle.text	Klientë që kanë shpenzuar më shumë se të gjithë, por nuk kanë vizituar kohët e fundit.
+formulas.segment.expiring_subscription.title	Abonimi po përfundon
+formulas.segment.expiring_subscription.text	Këtyre klientëve u kanë mbetur 1–2 seanca. Momenti më i mirë për të ofruar rinovim.
+formulas.segment.lost_newcomers.title	Të rinj që nuk u kthyen
+formulas.segment.lost_newcomers.text	Erdhën një herë dhe u zhdukën. Zakonisht lidhet me seancën e parë — ia vlen të hetohet.
+formulas.segment.upsell_candidates.title	Gati për më shumë
+formulas.segment.upsell_candidates.text	Vizitojnë shpesh, por blejnë paketën më të thjeshtë. Ia vlen t'u ofrohet abonim më i shtrenjtë.
+formulas.segment.frequent.title	Të rregullt
+formulas.segment.frequent.text	Vizitojnë më shpesh se kushdo tjetër. Shtylla kurrizore e të ardhurave të studios.
+formulas.segment.high_ltv.title	Më të vlefshmit
+formulas.segment.high_ltv.text	I kanë sjellë studios më shumë para se kushdo tjetër, në total.
+formulas.segment.referrers.title	Sjellin miq
+formulas.segment.referrers.text	Klientë, rekomandimet e të cilëve kanë sjellë njerëz të tjerë te ju.

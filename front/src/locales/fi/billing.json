@@ -1,0 +1,393 @@
+{
+  "legal": {
+    "terms": "Käyttöehdot",
+    "privacy": "Tietosuojakäytäntö"
+  },
+  "tabs": {
+    "plans": "Paketit ja hinnat",
+    "invoices": "Maksuhistoria",
+    "method": "Maksutapa"
+  },
+  "tabsShort": {
+    "plans": "Paketit",
+    "invoices": "Historia",
+    "method": "Maksu"
+  },
+  "paymentsHistory": {
+    "title": "Täydellinen maksuhistoria",
+    "subtitle": "Kaikki tämän studion laskut",
+    "clearFilter": "Tyhjennä",
+    "loadMore": "Lataa lisää"
+  },
+  "planNames": {
+    "start": "Start",
+    "pro": "Pro",
+    "business": "Business"
+  },
+  "seats": {
+    "title": "Kuinka monta työntekijää studiossa on",
+    "hint": "alkaen {{amount}} kuukaudessa",
+    "stepNote": "Jokainen lisäpaikka maksaa {{amount}} kuukaudessa",
+    "unlimitedNote": "Ei työntekijärajaa",
+    "perSeat": "Työntekijää kohti"
+  },
+  "limits": {
+    "staff": "Työntekijät",
+    "ai": "Velora AI -pyynnöt",
+    "unlimited": "Rajaton"
+  },
+  "banner": {
+    "trialEnds": "Kokeilusi päättyy {{date}} — valitse paketti",
+    "renews": "{{plan}}-tilauksesi uusiutuu {{date}}",
+    "expires": "{{plan}}-tilauksesi päättyy {{date}}",
+    "choosePlan": "Valitse paketti",
+    "dismiss": "Sulje",
+    "unpaid": "Pakettiasi ei ole maksettu. Jatkaaksesi maksa kohdassa Paketit ja laskutus.",
+    "suspended": "Käyttö on keskeytetty, koska paketin lasku on erääntynyt. Maksa se kohdassa Paketit ja laskutus."
+  },
+  "paymentReturn": {
+    "done": "Maksu onnistui — {{plan}}-paketti on aktiivinen.",
+    "processing": "Maksua käsitellään — tilauksesi aktivoituu muutamassa minuutissa."
+  },
+  "header": {
+    "eyebrow": "Velora · Laskutus",
+    "title": "Paketit ja laskutus",
+    "subtitle": "Hallitse tilaustasi, maksutapoja ja maksuhistoriaa",
+    "totalSpent": "Käytetty yhteensä",
+    "monthsWithUs": "Kuukautta kanssamme",
+    "saved": "Säästetty",
+    "nextCharge": "Seuraava veloitus",
+    "currentPlan": "NYKYINEN PAKETTI",
+    "noPlanName": "Ei pakettia",
+    "noPlan": "Ei aktiivista tilausta",
+    "active": "Aktiivinen",
+    "activeUntil": "Aktiivinen · {{date}} asti",
+    "trialPlanName": "Kokeilupaketti",
+    "trial": "Kokeilujakso",
+    "trialUntil": "Kokeilujakso · {{date}} asti",
+    "expired": "Vanhentunut",
+    "percentRate": "{{rate}}% myynnistä",
+    "modePercent": "Prosenttipaketti",
+    "modeFixed": "Kiinteä",
+    "modeCombo": "Yhdistelmä",
+    "unpaid": "Pakettia ei ole maksettu",
+    "awaitingPayment": "Odottaa maksua"
+  },
+  "mode": {
+    "title": "Maksumalli",
+    "subscription": "Kiinteä tilaus",
+    "percent": "% myynnistä",
+    "combo": "Kiinteä + % -yhdistelmä",
+    "short": {
+      "subscription": "Kiinteä",
+      "percent": "Prosentti",
+      "combo": "Yhdistelmä"
+    },
+    "descriptions": {
+      "subscription": "Maksa yksi summa kuukaudessa. Ennustettava ja kustannustehokas.",
+      "percent": "Ei kiinteää maksua: {{rate}}% jokaisesta myynnistä, myös käteisestä.",
+      "combo": "Puolet tilauksesta + {{rate}}% jokaisesta myynnistä, myös käteisestä."
+    },
+    "badges": {
+      "popular": "Suosittu",
+      "flexible": "Joustava"
+    },
+    "percentCard": {
+      "title": "”3 % myynnistä” -malli",
+      "description": "Maksa vain kun tienaat: 3 % jokaisesta myynnistä, ei kiinteää tilausmaksua. Verkkomaksut jaetaan heti; käteinen ja talletukset kertyvät ja tulevat yhtenä laskuna joka kuukausi.",
+      "noFixed": "Ei kiinteää maksua",
+      "payForResult": "Maksa tuloksista",
+      "oneClick": "Yhden napsautuksen aktivointi",
+      "cta": "Aktivoi 3 % -malli",
+      "ctaShort": "Aktivoi 3 %"
+    },
+    "activateSuccess": "Maksumalli päivitetty",
+    "activateError": "Maksumallin päivitys epäonnistui",
+    "alreadyActive": "Tämä maksumalli on jo aktiivinen — voit uusia tai vaihtaa paketin alla",
+    "confirmSwitchTitle": "Vaihdetaanko maksumallia?",
+    "confirmSwitchMessage": "Tilauksesi on aktiivinen. Mallin vaihto tulee voimaan heti, ja maksetun kauden loppuosa MENETETÄÄN KOKONAAN: käyttämättömiä päiviä ei palauteta eikä siirretä.",
+    "termsTitle": "Vahvista paketin ehdot",
+    "termsMessage": "Tässä paketissa alusta pidättää {{rate}}% jokaisesta myynnistä.\n\nVerkkomaksuissa maksu pidätetään automaattisesti maksun hetkellä. Käteisestä, päätteestä ja talletusten lisäyksistä sitä EI pidätetä heti — se kertyy, ja saat erillisen laskun kerran kuussa.\n\nSinulla on {{days}} päivää aikaa maksaa lasku. Jos sitä ei makseta ajoissa, pääsy CRM:ään ja asiakkaan minisovellukseen keskeytetään, kunnes lasku on maksettu.\n\nNykyinen maksettava määrä näkyy Laskutuksessa; voit maksaa milloin tahansa, myös etukäteen.",
+    "termsConfirm": "Hyväksyn ehdot",
+    "termsMinimum": "Vähimmäiskuukausimaksu on {{amount}} {{currency}}. Jos alusta ansaitsi kalenterikuukaudessa studioltasi vähemmän (esimerkiksi CRM:n kautta ei ollut lainkaan myyntiä), sinua laskutetaan erotuksesta. Jos ansaitset enemmän kuin vähimmäismäärän, laskua ei tule. Maksamaton vähimmäismaksu keskeyttää pääsyn samalla tavalla kuin maksamaton provisiolasku.",
+    "termsBurn": "VAROITUS: sinulla on maksettua aikaa jäljellä. Laskutusmallin vaihto MENETTÄÄ SEN KOKONAAN — käyttämättömiä päiviä ei palauteta eikä siirretä.",
+    "termsCombo": "Vaihto on OSTOPÄÄTÖS: heti vahvistuksen jälkeen näet maksettavan summan. Nykyisen maksetun kautesi loppuosa menetetään — sitä ei palauteta eikä siirretä. Kiinteä + % -malli käynnistyy VAIN maksun jälkeen; siihen asti pakettisi pysyy ennallaan eikä mitään veloiteta."
+  },
+  "combo": {
+    "rateBadge": "{{rate}}%",
+    "summary": "Kiinteä {{fixed}}/kk + {{rate}}% myynnistä (käteinen laskutetaan kuukausittain)",
+    "cta": "Aktivoi yhdistelmäpaketti",
+    "ctaShort": "Aktivoi yhdistelmä"
+  },
+  "period": {
+    "1": "1 kuukausi",
+    "3": "3 kuukautta",
+    "6": "6 kuukautta",
+    "12": "1 vuosi",
+    "24": "2 vuotta",
+    "title": "Maksukausi",
+    "discountActive": "{{percent}}% alennus käytössä",
+    "noDiscount": "Ei alennusta",
+    "discountLabel": "−{{percent}}% alennus"
+  },
+  "calculator": {
+    "title": "Laskentaparametrit",
+    "monthlyTurnover": "Kuukausittainen verkkoliikevaihtosi",
+    "turnoverRangeMin": "50 t.",
+    "turnoverRangeMax": "3 M+",
+    "chooseFeeLabel": "Valitse provisioaste (vaikuttaa ominaisuuksiin)",
+    "feeOptions": {
+      "basic": "Perus",
+      "standard": "Vakio",
+      "pro": "Pro",
+      "max": "Enintään"
+    },
+    "chooseFixedLabel": "Valitse kiinteä perusosa (maksunvälitys on aina 3 %)",
+    "fixedOptions": {
+      "start": "Start",
+      "optima": "Optima",
+      "business": "Business"
+    },
+    "economyPercentTitle": "PAKETIN TALOUDELLISUUS",
+    "economyComboTitle": "YHDISTELMÄPAKETIN TALOUDELLISUUS",
+    "turnover": "Studion liikevaihto",
+    "systemFee": "Järjestelmämaksu",
+    "totalMonthlyPayment": "KUUKAUSIMAKSU YHTEENSÄ",
+    "onlyPayForResult": "Et maksa kiinteää maksua, vain tuloksista",
+    "activatePercent": "Aktivoi {{percent}} % -malli",
+    "baseSubscription": "Perustilaus (kiinteä)",
+    "acquiringFee": "Maksunvälitys / maksu",
+    "activateCombo": "Aktivoi yhdistelmäpaketti"
+  },
+  "planCards": {
+    "bestChoice": "Paras valinta",
+    "current": "Nykyinen",
+    "perMonth": "/ kk",
+    "currentPlan": "Nykyinen paketti",
+    "yourPrice": "Hintasi",
+    "staffLimit": "Enintään {{count}} työntekijää",
+    "staffUnlimited": "Rajattomasti työntekijöitä"
+  },
+  "paymentSchedule": {
+    "title": "Maksuaikataulu",
+    "total": "Maksettavaa yhteensä",
+    "morePayments": "+ {{count}} lisämaksua, {{amount}} kukin",
+    "processing": "Ohjataan maksuun…",
+    "payFor": "Maksa {{count}} kk",
+    "vatNote": "Ilman ALV:tä — vero lisätään kassalla maasi perusteella"
+  },
+  "trust": {
+    "title": "Miksi yli 2 400 yritystä luottaa meihin",
+    "reviews": [
+      {
+        "text": "Vaihdoimme Altegiosta. Ero on kuin taksin ja yksityiskoneen välillä.",
+        "author": "Maria K., FORM Pilates"
+      },
+      {
+        "text": "Parasta on tietää täsmälleen, mitä maksan joka kuukausi. Ei yllätyksiä.",
+        "author": "Artem N., Barbershop Bros"
+      },
+      {
+        "text": "Tuki vastasi neljässä minuutissa. En ole nähnyt sitä missään muualla.",
+        "author": "Elena D., SPA LUNA"
+      }
+    ]
+  },
+  "upgrade": {
+    "priceLine": "Hinta {{price}}/kk",
+    "discountNote": " {{percent}}% alennus, kun maksat {{period}} kk",
+    "planLabel": "Paketti",
+    "periodLabel": "Kausi",
+    "periodValue_one": "{{count}} kuukausi",
+    "periodValue_other": "{{count}} kuukautta",
+    "discountLabel": "Alennus",
+    "scheduledBadge": "Alkaen {{date}} — paketti ”{{plan}}”",
+    "vatNote": "Ilman ALV:tä — vero lisätään kassalla yritystietojesi perusteella; EU-yritykset, joilla on ALV-numero, saavat käännetyn verovelvollisuuden."
+  },
+  "method": {
+    "notLinked": "Ei liitetty",
+    "badgeTitle": "Maksutapa on suojattu",
+    "tokenSub": "Palveluntarjoajan tunniste · vanhenee {{expiry}}",
+    "tokenNote": "Maksupalveluntarjoaja säilyttää oikeat korttitietosi (PCI DSS L1). Säilytämme vain kertakäyttöisen tunnisteen uusintoja varten.",
+    "securityTitle": "Tietosuojastandardit",
+    "security": {
+      "pciDss": "PCI DSS -tason 1 salaus",
+      "secure3d": "3D Secure -tapahtumasuojaus",
+      "noStorage": "Korttitiedot eivät koskaan kulje palvelimiemme kautta",
+      "autoLink": "Kortti liitetään ensimmäisessä maksussa"
+    },
+    "noCardDetail": "Tietoja ei tarvitse syöttää erikseen — maksu tapahtuu Stripen suojatulla sivulla.",
+    "renewDone": "Lasku luotu — maksua käsitellään",
+    "renewBusy": "Luodaan laskua…",
+    "renewSuccess": "Uusintalasku luotu",
+    "renewError": "Laskua ei voitu luoda. Yritä uudelleen.",
+    "renewNow": "Uusi nyt kortilla •••• {{last4}}",
+    "autopayTitle": "Automaattisen maksun asetukset",
+    "autopaySuccess": "Asetus tallennettu",
+    "autopayError": "Asetusta ei voitu tallentaa. Yritä uudelleen.",
+    "autopay": {
+      "cardOnly": "Käytettävissä korttimaksussa",
+      "autoRenew": {
+        "label": "Automaattinen uusinta",
+        "desc": "Poista käytöstä peruuttaaksesi maksetun kauden lopussa",
+        "until": "Tilaus ei uusiudu — käyttöoikeus {{date}} asti"
+      },
+      "emailNotify": {
+        "label": "Sähköposti-ilmoitukset",
+        "desc": "Kuitti lähetetään sähköpostitse jokaisen maksun jälkeen"
+      },
+      "remind3d": {
+        "label": "Muistuta 3 päivää aiemmin",
+        "desc": "Muistutamme ennen automaattista veloitusta"
+      },
+      "sms": {
+        "label": "Tekstiviesti-ilmoitus",
+        "desc": "Tekstiviesti lähetetään veloituksen yhteydessä"
+      }
+    },
+    "portal": {
+      "title": "Laskutustiedot ja ALV",
+      "subtitle": "Laskut, liitetty kortti ja veloitushistoria ovat Stripen asiakasportaalissa.",
+      "cta": "Avaa Stripessä"
+    },
+    "ibanBadgeLabel": "Pankkisiirto (SEPA)",
+    "ibanBadgeNote": "Laskut saapuvat sähköpostitse maksulinkin kanssa — korttia ei veloiteta automaattisesti. Voit maksaa myös aikaisin laskusivulta."
+  },
+  "invoices": {
+    "title": "Maksuhistoria",
+    "totalPaid": "maksettu yhteensä {{amount}}",
+    "exportCsv": "Vie CSV",
+    "exportError": "CSV-vienti epäonnistui. Yritä uudelleen.",
+    "receiptError": "Kuittia ei voitu avata. Yritä uudelleen.",
+    "invoiceNo": "Lasku #{{id}}",
+    "methodCard": "Maksettu kortilla",
+    "methodIban": "Maksettu pankkisiirrolla (IBAN)",
+    "syncHint": "Tarkista tila maksupalvelusta",
+    "syncChanged": "Tila päivitetty: {{status}}",
+    "syncUnchanged": "Maksupalvelu vahvisti saman tilan",
+    "syncError": "Tilaa ei voitu tarkistaa. Yritä uudelleen.",
+    "kindOfflineFee": "Offline-myynnin provisio",
+    "kindMinFee": "Vähimmäiskuukausimaksu",
+    "kindOnlineFee": "Verkkomaksujen provisio",
+    "methodWithheld": "Stripe pidätti maksun yhteydessä"
+  },
+  "table": {
+    "date": "Päivämäärä",
+    "description": "Kuvaus",
+    "amount": "Summa",
+    "status": "Tila",
+    "receipt": "Kuitti"
+  },
+  "status": {
+    "paid": "Maksettu",
+    "pending": "Odottaa",
+    "failed": "Maksamatta",
+    "refunded": "Hyvitetty"
+  },
+  "empty": {
+    "noInvoices": "Laskuja ei vielä ole — ne näkyvät ensimmäisen maksun jälkeen.",
+    "noCard": "Korttisi näkyy automaattisesti ensimmäisen maksun jälkeen.",
+    "monthsWithUs": "Et ole vielä ostanut tilausta",
+    "noData": "Ei tietoja"
+  },
+  "savings": {
+    "title": "Säästösi",
+    "prepayTitle": "Säästösi ennakkomaksulla",
+    "emptyState": "Valitse pidempi jakso ja alat säästää",
+    "youSave": "Säästät {{amount}} {{months}} kuukaudessa",
+    "freeMonths": "Se on kuin {{count}} kuukautta ilmaiseksi",
+    "amountLabel": "{{amount}} säästöä",
+    "comparedToMonthly": "verrattuna kuukausimaksuun",
+    "forMonths_one": "{{count}} kuukaudelle",
+    "forMonths_other": "{{count}} kuukaudelle"
+  },
+  "pay": "Maksa",
+  "continuePlan": "Jatka pakettia",
+  "payModal": {
+    "titleNew": "Aloita {{plan}}-paketti",
+    "titleSwitch": "Vaihda pakettiin {{plan}}",
+    "titleRenew": "Uusi {{plan}}",
+    "totalLabel": "Pakettisi maksaa",
+    "burnWarning": "Toiseen pakettiin vaihtaminen aloittaa kauden alusta: {{plan}}-pakettisi loppuosa MENETETÄÄN — sitä ei palauteta eikä siirretä. Saman paketin uusiminen säilyttää sen.",
+    "switched": "Paketti vaihdettu: ei maksettavaa — vaihto katettiin nykyisen kauden jäljellä olevalla osalla.",
+    "renewNote": "Tämä uusii saman paketin: ostamasi kuukaudet lisätään nykyiseen maksettuun kauteen. Mitään ei menetetä.",
+    "cardNote": "Korttimaksu Stripen suojatulla sivulla · 7 päivän palautus",
+    "freeUntil": "Mitään ei veloiteta ennen {{date}}: maksetusta kaudestasi on jäljellä {{count}} päivää. Laskutus alkaa sinä päivänä.",
+    "taxLabel": "ALV",
+    "taxLine": "ALV {{rate}}%",
+    "reverseCharge": "Käännetty verovelvollisuus",
+    "totalWithTax": "Yhteensä sis. ALV",
+    "taxServerNote": "Vero lasketaan laskutustietojesi perusteella. Lasku näyttää saman summan.",
+    "taxReview": "Emme voineet määrittää veroa laskutustiedoillesi, joten summa näytetään ilman sitä eikä maksua voi suorittaa. Tarkista maksajan maa ja osoite tai ota yhteyttä tukeen."
+  },
+  "offlineFee": {
+    "title": "Offline-myynnin maksu",
+    "accruing": "Kertynyt käteisestä ja talletuksista {{rate}} %:lla. Laskutetaan kuukausittain, maksuaikaa {{days}} päivää.",
+    "due": "Lasku on myönnetty. Päiviä jäljellä maksuun: {{days}}.",
+    "suspended": "Maksu on erääntynyt — pääsy CRM:ään ja minisovellukseen on keskeytetty.",
+    "pay": "Maksa",
+    "suspendedMin": "Vähimmäiskuukausimaksu on erääntynyt — pääsy CRM:ään ja minisovellukseen on keskeytetty.",
+    "alsoAccruing": "Lisäksi kertyy tässä kuussa: {{amount}} — se tulee seuraavaan laskuun.",
+    "minimum": "Vähimmäiskuukausimaksu on {{amount}}. Jos ansaitset kuukaudessa vähemmän, täydennät erotuksen; jos enemmän, laskua ei tule.",
+    "pendingBill": "Kertynyt edellisellä mallilla, odottaa laskua.",
+    "notBilledYet": "Laskua ei ole vielä myönnetty: kertynyt määrä on alle vähimmäislaskun tai sitä valmistellaan yhä. Mitään ei menetetä — se tulee seuraavaan laskuun."
+  },
+  "trial": {
+    "title": "Tarjous uusille studioille",
+    "subtitle": "Studiosi on juuri luotu",
+    "headline": "{{days}} päivää ilmaiseksi",
+    "noCard": "Korttia ei tarvita — nyt ei ole maksettavaa",
+    "perks": {
+      "allModules": "Täysi käyttöoikeus jokaiseen moduuliin: päiväkirja, asiakkaat, talous, ilmoitukset ja Velora AI",
+      "noCommitment": "Ei sitoumusta: jos se ei sovi, älä vain uusi tilausta",
+      "keepData": "Kaikki kokeilun aikana tekemäsi asetukset jäävät sinun"
+    },
+    "activate": "Aktivoi",
+    "decline": "Hylkää",
+    "cardHint": "Et ole vielä aktivoinut tämän studion ilmaista kautta. Se on käytettävissä, kunnes ostat paketin."
+  },
+  "profile": {
+    "title": "Laskutustiedot",
+    "editTitle": "Muokkaa laskutustietoja",
+    "subtitle": "Osoitteesi lisätään laskuun ja määrittää verokannan. Se tallennetaan tilillesi — emme kysy sitä uudelleen toisessa studiossa.",
+    "subtitlePay": "Täytä tämä kerran, ja seuraava maksu menee suoraan läpi. Osoitteesi lisätään laskuun ja määrittää verokannan.",
+    "cardTitle": "Laskutustiedot",
+    "cardSubtitle": "Tallennetaan tilillesi ja käytetään kaikissa studioissasi. Näin ne näkyvät laskussa.",
+    "cardEmpty": "Ei vielä täytetty — pyydämme ne ennen ensimmäistä maksua. Voit lisätä ne nyt.",
+    "add": "Lisää laskutustiedot",
+    "edit": "Muokkaa",
+    "save": "Tallenna",
+    "saveAndPay": "Tallenna ja jatka maksuun",
+    "cancel": "Peruuta",
+    "saved": "Laskutustiedot tallennettu",
+    "vatNone": "Ei annettu",
+    "fields": {
+      "country": "Maa tai alue",
+      "countryPlaceholder": "Valitse maa",
+      "address": "Osoite",
+      "line1": "Osoiterivi 1",
+      "line1Placeholder": "Katu ja numero",
+      "line2": "Osoiterivi 2 — valinnainen",
+      "line2Placeholder": "Asunto, toimisto, yksikkönumero jne.",
+      "postalCode": "Postinumero",
+      "postalCodePlaceholder": "110 00",
+      "city": "Kaupunki",
+      "cityPlaceholder": "Praha",
+      "vat": "ALV-numero — valinnainen",
+      "vatPlaceholder": "{{prefix}}12345678",
+      "vatHint": "Vain yrityksille. Numero tarkistetaan EU-rekisteristä (VIES) tallennushetkellä — emme hyväksy vahvistamattomia numeroita. Kelvollisella numerolla toisessa EU-maassa oleva yritys laskutetaan ilman veroa (käännetty verovelvollisuus). Yksityishenkilöillä ei ole sitä — jätä kenttä tyhjäksi.",
+      "countrySearch": "Aloita nimen kirjoittaminen",
+      "countryNotFound": "Maata ei löytynyt",
+      "vatOutsideEu": "Emme pyydä ALV-numeroa: EU:n ulkopuolella vero määräytyy maksajan maan, ei numeron mukaan, joten sillä ei ole vaikutusta laskuun.",
+      "vatPending": "Numerosi on tallennettu, mutta EU-rekisteri ei ollut tuolloin käytettävissä, joten sitä ei ole vielä vahvistettu ja seuraava laskusi sisältää täyden ALV:n. Sinun ei tarvitse syöttää sitä uudelleen: tarkistamme edelleen, ja kun rekisteri vastaa, veroa ei enää veloiteta. Tuki palauttaa veron jo maksetusta laskusta."
+    },
+    "errors": {
+      "required": "Tämä kenttä on pakollinen"
+    },
+    "preview": {
+      "invoice": "Lasku",
+      "billTo": "Laskutusosoite",
+      "note": "Näin tietosi näkyvät jokaisessa laskussa. Voit muuttaa niitä milloin tahansa kohdassa Paketit ja laskutus → Maksutapa."
+    }
+  }
+}

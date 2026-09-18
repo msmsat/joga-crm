@@ -1,0 +1,287 @@
+== it
+telegram.tokenLabel	Token del bot
+telegram.tokenPlaceholder	1234567890:ABC...
+telegram.tokenInvalidFormat	Formato del token non valido
+telegram.verifyButton	Verifica e connetti
+telegram.verifiedToast	Il bot @{{username}} è connesso
+telegram.verifyFailedToast	Telegram ha rifiutato questo token
+telegram.disconnect	Disconnetti
+telegram.disconnectedToast	Il bot è disconnesso
+telegram.disconnectConfirmTitle	Disconnettere il bot?
+telegram.disconnectConfirmMessage	Il risponditore automatico di Telegram smetterà di funzionare finché non ricollegherai un bot.
+telegram.gateTooltip	Collega prima un bot
+telegram.statsPending	Comparirà quando il risponditore automatico inizierà a funzionare
+telegram.instructionTitle	Come ottenere un token
+telegram.instructionStep1	Apri @BotFather in Telegram
+telegram.instructionStep2	Invia il comando /newbot, quindi scegli nome e nome utente per il bot
+telegram.instructionStep3	Copia il token ricevuto
+telegram.instructionStep4	Incollalo qui e fai clic su "Verifica e connetti"
+instagram.connectButton	Connetti Instagram
+instagram.connectedToast	Instagram è connesso
+instagram.connectErrorToast	Impossibile connettere Instagram — riprova
+instagram.expiresUntil	Accesso valido fino al {{date}}
+instagram.disconnect	Disconnetti
+instagram.disconnectedToast	Instagram è disconnesso
+instagram.disconnectConfirmTitle	Disconnettere Instagram?
+instagram.disconnectConfirmMessage	Il risponditore automatico di Instagram smetterà di rispondere ai clienti finché non ricollegherai l’account.
+instagram.gateTooltip	Collega prima un account
+instagram.statsPending	Comparirà quando il risponditore automatico inizierà a funzionare
+instagram.instructionTitle	Come connettersi
+instagram.instructionStep1	L’account dello studio deve essere professionale — Business o Creator (Impostazioni Instagram → Tipo di account)
+instagram.instructionStep2	Fai clic su "Connetti Instagram" e accedi con l’account dello studio
+instagram.instructionStep3	Consenti l’accesso ai messaggi
+instagram.instructionStep4	Tornerai qui automaticamente
+whatsapp.numberLabel	Numero WhatsApp Business
+whatsapp.connectLink	oppure inserisci un token manualmente
+whatsapp.gateTooltip	Collega prima un numero WhatsApp
+whatsapp.statsPending	Comparirà quando il risponditore automatico inizierà a funzionare
+whatsapp.instructionTitle	Come connettersi
+whatsapp.instructionStep1	Fai clic su “Connetti WhatsApp” — si aprirà una finestra Meta
+whatsapp.instructionStep2	Accedi a Facebook, scegli un account aziendale e un numero (o aggiungine uno), quindi confermalo con il codice
+whatsapp.instructionStep3	Il numero si collega una sola volta — sarà usato anche per le notifiche ai clienti; torna qui e attiva il risponditore automatico
+whatsapp.connectButton	Connetti WhatsApp
+whatsapp.connectedToast	Il numero WhatsApp è connesso
+whatsapp.connectErrorToast	Impossibile connettere il numero WhatsApp
+whatsapp.disconnect	Disconnetti
+whatsapp.disconnectedToast	WhatsApp è disconnesso
+whatsapp.disconnectConfirmTitle	Disconnettere WhatsApp?
+whatsapp.disconnectConfirmMessage	Il numero verrà disconnesso anche dalle notifiche e integrazioni dello studio.
+history.title	Cronologia chat
+history.empty	Inizia la tua prima conversazione
+history.today	Oggi
+history.yesterday	Ieri
+history.earlier	Prima
+history.messagesCount_one	{{count}} messaggio
+history.messagesCount_other	{{count}} messaggi
+history.deleteConfirmTitle	Eliminare questa chat?
+history.deleteConfirmMessage	Tutti i messaggi di questa conversazione verranno eliminati definitivamente.
+actions.newChat	Nuova chat
+actions.deleteChat	Elimina chat
+actions.confirmTitle	Conferma l’azione
+actions.confirm	Conferma
+actions.cancel	Annulla
+actions.cancelled	Azione annullata.
+actions.done	Completato {{date}}
+actions.effect	Cosa cambia
+actions.undo	Annulla modifica
+actions.undoTitle	Annullare questa azione?
+actions.undoMessage	Ripristinerò ciò che è stato fatto: {{action}}. Le lezioni già prenotate dai clienti resteranno — solo una persona può rimuoverle.
+actions.args.lesson_id	Lezione
+actions.args.client_id	Cliente
+actions.args.reservation_id	Prenotazione
+actions.args.alternate_with	In alternanza con
+actions.args.service_id	Servizio
+actions.args.teacher_id	Istruttore
+actions.args.hall_id	Sala
+actions.args.start_time	Inizia
+actions.args.duration_min	Durata, min
+actions.args.total_spots	Posti
+actions.args.price	Prezzo
+actions.args.name	Nome
+actions.args.last_name	Cognome
+actions.args.phone	Telefono
+actions.args.email	E-mail
+actions.args.city	Città
+actions.args.birth_date	Data di nascita
+actions.args.source	Origine
+actions.args.frozen	Sospeso
+actions.args.date_from	Dal
+actions.args.date_to	Al
+actions.args.weekdays	Giorni della settimana
+actions.args.time_from	Dalle
+actions.args.time_to	Alle
+actions.args.break_at	Pausa alle
+actions.args.break_min	Pausa, min
+actions.args.extend_hours	Estendi l’orario dell’istruttore
+actions.args.salary	Stipendio
+actions.args.access_role	Accesso
+actions.args.department	Ruolo
+actions.args.password	Password del dipendente
+actions.args.rate	Tariffa
+actions.args.rate_type	Tipo di pagamento
+actions.args.service_ids	Servizi
+actions.args.schedule	Orario
+actions.bool.yes	sì
+actions.bool.no	no
+settings.title	Impostazioni AI
+settings.model	Modello
+settings.language	Lingua
+models.comingSoon	Prossimamente
+models.velora-3.5	Velora AI 3.5
+languages.auto	Automatico
+languages.ru	Russo
+languages.en	Inglese
+languages.uk	Ucraino
+languages.cs	Ceco
+languages.de	Tedesco
+chat.thinking	Velora AI sta pensando
+chat.thinkingAnswer	Velora AI sta elaborando la risposta
+chat.readyTitle	Velora AI è pronto ad aiutarti
+chat.thinkingTitle	Velora AI sta pensando...
+chat.readySubtitle	Fai una domanda o scegli un suggerimento
+chat.thinkingSubtitle	Elaborazione della tua richiesta
+chat.placeholder	Scrivi un messaggio...
+chat.drawerPlaceholder	Chiedimi qualsiasi cosa...
+chat.navbarPlaceholder	Chiedi all’AI o imposta un’attività...
+chat.enterToSend	Invio per inviare
+chat.shiftEnterNewline	Maiusc+Invio per una nuova riga
+chat.aiDisclaimer	Velora AI può commettere errori. Controlla le informazioni importanti.
+chat.continueInChat	Continua nella chat →
+chat.emptyTitle	Come posso aiutarti?
+chat.emptySubtitle	Fai una domanda sul tuo studio, sui clienti o sulla tua attività
+chat.charCount_one	{{count}} / 4000 carattere
+chat.charCount_other	{{count}} / 4000 caratteri
+chat.suggestions.revenue	Mostra le statistiche delle entrate di questo mese
+chat.suggestions.sms	Scrivi un SMS di promemoria per un appuntamento
+chat.suggestions.promo	Idee per una promozione estiva
+chat.suggestions.retention	Come posso migliorare la fidelizzazione dei clienti?
+chat.drawerSuggestions.revenueAnalysis	Analisi delle entrate
+chat.drawerSuggestions.emailTemplate	Modello e-mail
+chat.drawerSuggestions.promoIdeas	Idee promozionali
+chat.drawerSuggestions.clientReport	Report cliente
+drawer.historyBack	Chat
+drawer.historyLabel	Cronologia
+agents.title	Agenti AI
+agents.info.title	Cosa sono gli agenti AI
+agents.info.lead	Un assistente che risponde ai clienti nelle app di messaggistica dello studio mentre sei occupato.
+agents.info.b1	Risponde 24 ore su 24 — nessuno aspetta l’amministratore
+agents.info.b2	Conosce calendario, servizi e prezzi del tuo studio
+agents.info.b3	Decidi tu il tono e la lunghezza delle risposte
+agents.info.note	Un canale inizia a funzionare appena è collegato nelle impostazioni
+agents.activeCount	{{active}} / {{total}}
+agents.stateOn	Risponde
+agents.stateOffline	Non connesso
+agents.configureButton	Configura agenti
+agents.enable	Attiva
+agents.disable	Disattiva
+agents.modalTitle	Configurazione agente AI
+agents.modalSubtitle	Risposte automatiche nelle app di messaggistica
+agents.tabPrompt	Istruzione di sistema
+agents.statusDisabled	Disattivato
+agents.statHandled	Gestite
+agents.statRating	Valutazione
+agents.styleTitle	Stile delle risposte
+agents.styleAllChannels	vale per tutti i canali
+agents.toneLabel	Tono delle risposte
+agents.tone.friendly	Amichevole
+agents.tone.formal	Formale
+agents.tone.neutral	Neutro
+agents.maxLengthLabel	Lunghezza massima della risposta (caratteri)
+agents.maxLengthError	Inserisci un numero da 50 a 4000
+agents.offHoursLabel	Risposta automatica solo fuori dall’orario di lavoro
+agents.promptHint	Questo testo definisce la personalità dell’agente — come comunica, cosa sa e quali argomenti evita.
+agents.promptPlaceholder	Sei un assistente di studio cortese...
+agents.promptCount_one	{{count}} / 2000 carattere
+agents.promptCount_other	{{count}} / 2000 caratteri
+agents.tgChannelInactive	Il canale Telegram è disattivato nelle Prenotazioni online — il bot non riceve messaggi, quindi l’agente resta in silenzio.
+errors.tg_token_required	Collega prima un bot Telegram — non è ancora stato salvato alcun token.
+errors.ig_not_connected	Instagram non è ancora connesso.
+errors.wa_not_connected	Il numero WhatsApp non è ancora connesso — collegalo nelle Notifiche.
+errors.assistant_unavailable	L’assistente non è temporaneamente disponibile — riprova più tardi.
+errors.trial_exhausted	Hai usato tutte le 500 richieste di prova dell’assistente AI. Scegli un piano a pagamento per continuare.
+errors.quota_exceeded	Hai usato tutte le richieste AI di questo piano. Il limite si reimposta all’inizio del mese — oppure passa a un piano superiore.
+toasts.settingsSaved	Impostazioni salvate
+toolStatus.add_client_note	Aggiunta di una nota…
+toolStatus.add_client_tag	Aggiunta di un’etichetta…
+toolStatus.add_loyalty_points	Aggiunta di punti…
+toolStatus.book_client	Prenotazione della lezione…
+toolStatus.cancel_booking	Annullamento della prenotazione…
+toolStatus.pay_booking	Registrazione del pagamento della lezione…
+toolStatus.clear_schedule	Pulizia dell’orario…
+toolStatus.create_account	Creazione di un account…
+toolStatus.create_branch	Creazione di una sede…
+toolStatus.create_client	Creazione di un cliente…
+toolStatus.create_counterparty	Creazione di una controparte…
+toolStatus.create_hall	Creazione di una sala…
+toolStatus.create_lesson	Creazione di una lezione…
+toolStatus.create_operation	Registrazione della transazione…
+toolStatus.create_package	Creazione di un abbonamento…
+toolStatus.create_promo	Creazione di un codice promozionale…
+toolStatus.create_service	Creazione di un servizio…
+toolStatus.create_staff	Aggiunta di un membro del team…
+toolStatus.default	Elaborazione…
+toolStatus.delete_client	Eliminazione del cliente…
+toolStatus.delete_staff	Rimozione del membro del team…
+toolStatus.fill_schedule	Compilazione dell’orario…
+toolStatus.find_clients	Ricerca di clienti…
+toolStatus.forget_fact	Eliminazione dell’informazione…
+toolStatus.freeze_client	Sospensione del cliente…
+toolStatus.get_booking_settings	Verifica delle regole di prenotazione…
+toolStatus.get_catalog_settings	Verifica delle impostazioni degli abbonamenti…
+toolStatus.get_client	Apertura della scheda cliente…
+toolStatus.get_client_events	Lettura della cronologia cliente…
+toolStatus.get_inactive_clients	Ricerca di clienti inattivi…
+toolStatus.get_client_notes	Lettura delle note cliente…
+toolStatus.get_client_subscription	Verifica dell’abbonamento cliente…
+toolStatus.get_delivery_log	Verifica del registro di consegna…
+toolStatus.get_finance_goals	Verifica degli obiettivi finanziari…
+toolStatus.get_finance_summary	Verifica delle finanze…
+toolStatus.get_lesson	Apertura della lezione…
+toolStatus.get_loyalty_programs	Verifica dei programmi fedeltà…
+toolStatus.get_loyalty_summary	Verifica della fedeltà…
+toolStatus.get_notification_matrix	Verifica delle notifiche…
+toolStatus.get_payroll	Calcolo delle retribuzioni…
+toolStatus.get_rooms	Verifica delle sale…
+toolStatus.get_schedule	Verifica dell’orario…
+toolStatus.get_segments	Verifica dei segmenti clienti…
+toolStatus.get_services	Verifica dei servizi…
+toolStatus.get_staff	Verifica del team…
+toolStatus.get_staff_profile	Apertura della scheda del membro del team…
+toolStatus.get_stats	Elaborazione dei dati…
+toolStatus.get_team_report	Misurazione del ritorno per istruttore…
+toolStatus.get_studio_facts	Richiamo di ciò che so sullo studio…
+toolStatus.get_today_agenda	Verifica della giornata di oggi…
+toolStatus.issue_certificate	Emissione del certificato…
+toolStatus.list_operations	Verifica di entrate e uscite…
+toolStatus.open_ui	Apertura della schermata…
+toolStatus.remember_fact	Memorizzazione…
+toolStatus.remove_client_tag	Rimozione dell’etichetta…
+toolStatus.sell_subscription	Vendita dell’abbonamento…
+toolStatus.set_client_discount	Impostazione dello sconto…
+toolStatus.set_staff_day	Segnalazione del giorno nell’orario…
+toolStatus.set_staff_schedule	Impostazione dell’orario…
+toolStatus.toggle_notification_event	Attivazione/disattivazione della notifica…
+toolStatus.ui_section	Verifica del funzionamento della sezione…
+toolStatus.update_booking_rules	Aggiornamento delle regole di prenotazione…
+toolStatus.update_client	Aggiornamento dei dati cliente…
+toolStatus.update_lesson	Aggiornamento della lezione…
+toolStatus.update_service	Aggiornamento del servizio…
+toolStatus.update_staff	Aggiornamento del membro del team…
+quota.trialLow	Restano poche richieste di prova.
+quota.label	Richieste all’assistente AI
+quota.value	{{used}} di {{limit}}
+quota.low	Sei vicino al limite mensile.
+quota.upgrade	Scegli un piano
+quota.monthPeriod	Per mese solare (UTC)
+quota.trialPeriod	Per tutta la prova
+rating.up	Buona risposta
+rating.down	Cattiva risposta
+memory.title	L’assistente ricorda
+memory.forget	Dimentica
+memory.forgetConfirmTitle	Dimenticare questa informazione?
+memory.forgetConfirmMessage	L’assistente smetterà di usarla nelle risposte.
+memory.deleted	Informazione rimossa
+plan.pages.who	Chi e cosa
+plan.pages.when	Quando
+plan.pages.check	Verifica
+plan.stepOf	Passaggio {{current}} di {{total}}
+plan.next	Avanti
+plan.back	Indietro
+plan.confirm	Approva
+plan.confirmDanger	Approva
+plan.choose	Scegli
+plan.nothingFound	Nessun risultato
+plan.nothingToFill	Non c’è nulla da compilare qui — prosegui direttamente.
+plan.fromStep	creato al passaggio {{n}}
+plan.values.group	gruppo
+plan.values.individual	individuale
+plan.values.trainer	istruttore
+plan.values.admin	amministratore
+plan.values.owner	proprietario
+plan.values.hourly	all’ora
+plan.values.percent	% delle entrate
+plan.values.fixed	per lezione
+plan.title_one	Approva — {{count}} azione
+plan.title_other	Approva — {{count}} azioni
+plan.stillEmpty_one	Resta {{count}} campo
+plan.stillEmpty_other	Restano {{count}} campi

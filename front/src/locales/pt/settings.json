@@ -1,0 +1,480 @@
+{
+  "nav": {
+    "sectionLabel": "Definições do sistema",
+    "general": "Geral",
+    "appearance": "Aspeto",
+    "notifications": "Notificações",
+    "billing": "Faturação",
+    "security": "Segurança",
+    "integrations": "Integrações",
+    "data": "Dados",
+    "logout": "Mudar de CRM"
+  },
+  "toast": {
+    "saved": "Guardado",
+    "error": "Ocorreu um erro"
+  },
+  "workspace": {
+    "title": "Os seus sistemas CRM",
+    "subtitle": "Escolha um espaço de trabalho ou crie um novo",
+    "current": "Atual",
+    "membersCount_one": "{{count}} membro",
+    "membersCount_other": "{{count}} membros",
+    "clientsCount_one": "{{count}} cliente",
+    "clientsCount_other": "{{count}} clientes",
+    "createNew": "Criar um novo estúdio",
+    "loadError": "Não foi possível carregar os seus estúdios",
+    "selectError": "Não foi possível mudar para este estúdio"
+  },
+  "general": {
+    "company": {
+      "title": "Dados da empresa",
+      "subtitle": "Informações públicas sobre o seu negócio",
+      "name": "Nome da empresa",
+      "namePh": "ex. O meu estúdio",
+      "desc": "Descrição",
+      "descPh": "O que faz o seu estúdio…",
+      "phone": "Telefone",
+      "email": "E-mail",
+      "site": "Website",
+      "sitePh": "https://studio.com",
+      "address": "Morada",
+      "addressPh": "Rua Exemplo 123, cidade"
+    },
+    "reset": "Repor",
+    "resetToast": "Definições repostas",
+    "locale": {
+      "title": "Idioma e região",
+      "subtitle": "Definições de localização da interface",
+      "timezone": "Fuso horário",
+      "timezoneSearch": "Cidade ou desvio",
+      "timezoneNotFound": "Nenhum fuso horário encontrado",
+      "currency": "Moeda",
+      "currencySearch": "Pesquisar moeda ou código",
+      "currencyNotFound": "Nenhuma moeda encontrada",
+      "language": "Idioma da interface",
+      "languageSearch": "Pesquisar idioma",
+      "languageNotFound": "Nenhum idioma encontrado",
+      "dateFormat": "Formato de data",
+      "firstDay": "Primeiro dia da semana",
+      "firstDayLabels": [
+        "Segunda-feira",
+        "Domingo"
+      ]
+    },
+    "booking": {
+      "title": "Modelo de reserva",
+      "subtitle": "Como os clientes fazem reservas consigo",
+      "mode": "Modelo de reserva",
+      "modeHint": "Eventos — os clientes inscrevem-se numa aula agendada. Individual — o cliente escolhe um especialista e uma hora. Misto — ambos ao mesmo tempo.",
+      "profile": "Terminologia do setor",
+      "profileHint": "Escolhe as palavras para equipa e ofertas. Altera apenas a redação — nunca funções, preços ou o modelo de reserva.",
+      "strict": "Agenda rigorosa",
+      "strictHint": "Impede reservas duplas de um especialista ou espaço exclusivo. Obrigatório antes de ativar a reserva individual.",
+      "spaceAxis": "Usar {{spacePlural}} na agenda",
+      "spaceAxisHint": "Desligado — o cliente reserva uma pessoa e o espaço não tem coluna no diário. Ligado — uma aula fica associada a um espaço.",
+      "spaceAxisDefaultOn": "Predefinição para o seu setor: ligado",
+      "spaceAxisDefaultOff": "Predefinição para o seu setor: desligado",
+      "modes": {
+        "event": "Eventos",
+        "resource": "Individual",
+        "hybrid": "Misto"
+      },
+      "profiles": {
+        "studio": "Práticas de grupo e estúdios",
+        "sport": "Desporto e ginásios",
+        "beauty": "Beleza e cuidados",
+        "recovery": "Corpo e recuperação",
+        "relax": "Spa e relaxamento",
+        "other": "Outro"
+      },
+      "preview": {
+        "event": "Evento",
+        "resource": "Individual"
+      },
+      "errors": {
+        "AUDIT_BLOCKED": "A agenda contém reservas que não são compatíveis com uma agenda rigorosa.",
+        "STRICT_SCHEDULE_REQUIRED": "Ative primeiro a agenda rigorosa.",
+        "RESOURCE_HISTORY_EXISTS": "A agenda rigorosa não pode ser desativada: o estúdio tem reservas individuais."
+      },
+      "findings": {
+        "overlap": "Reservas sobrepostas",
+        "unknown_timezone": "Fuso horário desconhecido",
+        "undefined_branch": "Filial não definida",
+        "invalid_duration": "Duração inválida",
+        "invalid_resource_row": "Reserva individual incompleta",
+        "missing_branch_assignment": "O especialista não está atribuído à filial",
+        "missing_working_hours": "O especialista não tem horário de trabalho",
+        "inactive_specialist": "O especialista está inativo",
+        "other": "Requer revisão"
+      }
+    }
+  },
+  "appearance": {
+    "theme": {
+      "title": "Tema",
+      "subtitle": "Escolha o estilo visual da interface",
+      "light": "Claro",
+      "dark": "Escuro",
+      "auto": "Sistema"
+    },
+    "accent": {
+      "title": "Cor de destaque",
+      "subtitle": "Personalize a cor principal da interface",
+      "note": "A sua escolha foi guardada, mas ainda não é aplicada à interface — chegará numa atualização futura.",
+      "noteTitle": "Em breve",
+      "colors": {
+        "peach": "Pêssego",
+        "pistachio": "Pistácio",
+        "lavender": "Lavanda",
+        "pink": "Rosa",
+        "gold": "Dourado",
+        "mint": "Menta"
+      }
+    },
+    "language": {
+      "title": "Idioma da interface",
+      "subtitle": "O seu idioma pessoal — não afeta as definições do estúdio",
+      "search": "Pesquisar idioma",
+      "empty": "Nenhum idioma encontrado"
+    }
+  },
+  "notifications": {
+    "myPrefs": {
+      "title": "As minhas notificações",
+      "subtitle": "Preferências pessoais — não afetam o resto do estúdio",
+      "hint": "As notificações obrigatórias não podem ser desativadas — garantem que nunca perde alterações na agenda e pagamentos.",
+      "empty": "Não existem notificações opcionais para a sua função",
+      "channels": {
+        "email": "E-mail",
+        "telegram": "Telegram",
+        "whatsapp": "WhatsApp"
+      }
+    },
+    "telegram": {
+      "title": "Telegram para notificações",
+      "subtitle": "Onde receber pessoalmente eventos — reservas, processamento salarial, relatórios",
+      "chatId": "O seu chat_id do Telegram",
+      "chatIdPh": "ex. 123456789",
+      "hintBefore": "Pode encontrar o seu chat_id no bot ",
+      "hintAfter": " no Telegram — inicie uma conversa com ele e ele envia-lhe o seu ID.",
+      "invalidChatId": "O chat_id do Telegram tem de ser um número sem símbolos",
+      "saved": "Telegram ligado para notificações",
+      "saveFailed": "Não foi possível guardar o Telegram"
+    },
+    "email": {
+      "title": "E-mail para notificações",
+      "subtitle": "Para onde enviar e-mails do sistema",
+      "primary": "E-mail principal",
+      "backup": "E-mail de reserva",
+      "backupPh": "backup@studio.com",
+      "saved": "Definições de notificações guardadas"
+    }
+  },
+  "billing": {
+    "plans": {
+      "start": "Start",
+      "pro": "Pro",
+      "business": "Business",
+      "free_trial": "Teste gratuito"
+    },
+    "status": {
+      "active": "Ativo",
+      "trial": "Teste",
+      "expired": "Expirado"
+    },
+    "plan": {
+      "title": "Plano atual",
+      "expiresAt": "Ativo até {{date}}",
+      "maxStaff": "Até {{count}} colaboradores",
+      "staffUnlimited": "Colaboradores ilimitados",
+      "noSubscription": "Sem subscrição ativa",
+      "noSubscriptionCta": "Escolher um plano",
+      "trialCta": "Escolher um plano"
+    },
+    "upgrade": "Mudar para {{plan}}",
+    "renew": "Renovar",
+    "autopay": {
+      "title": "Renovação automática",
+      "subtitle": "Cobrado no seu cartão guardado",
+      "autoRenew": "Renovação automática",
+      "notifyBefore": "Lembraremos {{count}} dias antes da cobrança"
+    },
+    "payment": {
+      "title": "Método de pagamento",
+      "cardSummary": "Cartão •••• {{last4}}",
+      "notLinked": "Nenhum cartão associado",
+      "change": "Alterar"
+    },
+    "history": {
+      "title": "Histórico de pagamentos",
+      "subtitle": "Últimos 12 pagamentos",
+      "exportCsv": "Exportar CSV",
+      "empty": "Ainda não há pagamentos",
+      "showAll": "Mostrar tudo",
+      "period": "{{count}} meses",
+      "noDate": "—",
+      "status": {
+        "paid": "Pago",
+        "pending": "Pendente",
+        "failed": "Não pago",
+        "refunded": "Reembolsado"
+      }
+    },
+    "toast": {
+      "autopaySaved": "Definições de renovação automática guardadas",
+      "renewed": "Renovação iniciada",
+      "csvExportError": "Não foi possível exportar o CSV"
+    }
+  },
+  "security": {
+    "account": {
+      "title": "Segurança da conta",
+      "subtitle": "Proteja o acesso ao seu espaço de trabalho"
+    },
+    "twoFa": {
+      "title": "Autenticação de dois fatores",
+      "sub": "Código por e-mail em cada início de sessão",
+      "active": "Ativa",
+      "disabled": "Desativada",
+      "enableTitle": "Ativar 2FA",
+      "disableTitle": "Desativar 2FA",
+      "enableWarning": "Depois de ativada, cada início de sessão exigirá um código enviado para {{email}}. Certifique-se de que tem acesso a esse endereço — caso contrário, pode perder o acesso à sua conta.",
+      "disableWarning": "Depois de desativada, só a palavra-passe será suficiente para iniciar sessão, sem código por e-mail.",
+      "enabledToast": "A autenticação de dois fatores está ativa",
+      "disabledToast": "A autenticação de dois fatores está desativada"
+    },
+    "password": {
+      "title": "Palavra-passe da conta",
+      "sub": "A alteração é confirmada com um código por e-mail",
+      "change": "Alterar palavra-passe",
+      "changed": "Palavra-passe alterada com sucesso",
+      "current": "Palavra-passe atual",
+      "currentPh": "Introduza a palavra-passe atual",
+      "new": "Nova palavra-passe",
+      "newPh": "Pelo menos 8 caracteres",
+      "repeat": "Repita a palavra-passe",
+      "repeatPh": "Introduza novamente a nova palavra-passe",
+      "mismatch": "As palavras-passe não coincidem",
+      "forgot": "Esqueceu-se da palavra-passe?",
+      "resetTitle": "Recuperação de palavra-passe",
+      "step1Sub": "Vamos confirmar que é você",
+      "step2Sub": "Código enviado para {{email}}",
+      "step3Sub": "Escolha uma nova palavra-passe",
+      "resetIntro": "Enviaremos um código de 6 dígitos para o e-mail da sua conta. Não precisa de saber a palavra-passe atual — o código prova que a caixa de correio é sua.",
+      "sendCode": "Enviar código",
+      "back": "Voltar",
+      "save": "Guardar palavra-passe",
+      "resetDone": "Palavra-passe atualizada",
+      "resetLogoutHint": "Os outros dispositivos terminarão sessão — neste continuará com sessão iniciada.",
+      "rules": {
+        "len": "8+ caracteres",
+        "letter": "Tem uma letra",
+        "digit": "Tem um algarismo",
+        "simple": "Sem 111 ou qwerty"
+      }
+    },
+    "sessions": {
+      "title": "Sessões ativas",
+      "sub": "Onde a sua conta tem sessão iniciada neste momento",
+      "count": "{{count}} dispositivos",
+      "manage": "Gerir",
+      "hide": "Ocultar",
+      "current": "Atual",
+      "terminate": "Terminar",
+      "terminateAll": "Terminar todas as outras sessões",
+      "terminatedToast": "Sessão terminada com sucesso",
+      "terminatedAllToast": "As outras sessões foram terminadas",
+      "justNow": "Ativa agora",
+      "minutesAgo": "há {{count}} min",
+      "hoursAgo": "há {{count}} h",
+      "daysAgo": "há {{count}} d",
+      "unknownLocation": "Desconhecido"
+    },
+    "otp": {
+      "sentHint": "Enviámos um código de 6 dígitos para o seu e-mail. Introduza-o abaixo.",
+      "resend": "Reenviar código",
+      "resendIn": "Reenviar em {{count}} s",
+      "confirm": "Confirmar",
+      "cancel": "Cancelar",
+      "sendCode": "Enviar código",
+      "continue": "Continuar"
+    },
+    "danger": {
+      "title": "Gestão de dados (zona de perigo)",
+      "export": {
+        "title": "Exportar todos os dados",
+        "sub": "Transfira um arquivo da base de clientes e do histórico",
+        "prepare": "Preparar arquivo",
+        "hide": "Ocultar",
+        "clients": "Base de clientes (CSV)",
+        "finances": "Transações financeiras",
+        "schedule": "Aulas e agenda",
+        "start": "Iniciar exportação",
+        "started": "O arquivo está a ser preparado; será enviado um link para o seu e-mail",
+        "emptySelection": "Escolha pelo menos uma secção para exportar"
+      },
+      "wipe": {
+        "title": "Limpar base de dados",
+        "sub": "Elimina todos os clientes e reservas. As definições serão mantidas.",
+        "action": "Limpar dados",
+        "toast": "Base de dados limpa com sucesso",
+        "consequence1": "Eliminados permanentemente: clientes, aulas, reservas, operações, documentos, subscrições de clientes, histórico de fidelização",
+        "consequence2": "Sem alteração: estúdio, filiais, {{spacePlural}}, serviços, equipa, subscrição e definições",
+        "consequence3": "Esta ação é irreversível — não pode ser anulada após a confirmação"
+      },
+      "deleteAccount": {
+        "title": "Eliminar conta da empresa",
+        "sub": "Destruição completa e irreversível da empresa no sistema",
+        "action": "Eliminar para sempre",
+        "consequence1": "O estúdio e todos os seus dados serão eliminados permanentemente, incluindo clientes, aulas, finanças e definições",
+        "consequence2": "A sua conta pessoal permanece — apenas este estúdio é eliminado",
+        "consequence3": "A eliminação não está disponível com uma subscrição ativa ou se o estúdio tiver outros proprietários"
+      }
+    }
+  },
+  "integrations": {
+    "title": "Integrações",
+    "subtitle": "Ligue canais e ecossistemas externos com um clique",
+    "loadError": "Não foi possível carregar o estado das integrações",
+    "items": {
+      "telegram": {
+        "name": "Bot do Telegram",
+        "sub": "Notificações a clientes e reservas através do bot"
+      },
+      "whatsapp": {
+        "name": "WhatsApp Business",
+        "sub": "Mensagens em massa e notificações automáticas a clientes"
+      },
+      "instagram": {
+        "name": "Instagram Direct",
+        "sub": "Agente de IA para respostas automáticas e reservas online"
+      },
+      "google_calendar": {
+        "name": "Google Calendar",
+        "sub": "Sincronização da agenda do estúdio"
+      }
+    },
+    "status": {
+      "connected": "Ligado",
+      "notActive": "Não ligado"
+    },
+    "actions": {
+      "configure": "Configurar",
+      "connect": "Ligar",
+      "disconnect": "Desligar"
+    },
+    "fields": {
+      "keyLabel": "Chave",
+      "connectedAtLabel": "Ligado",
+      "telegramToken": "Token da API do bot (do @BotFather)",
+      "telegramTokenPh": "123456789:ABCDefGhIJKlmNoPQRsTUVwxyZ",
+      "whatsappToken": "Token de acesso",
+      "whatsappTokenPh": "EAAxxxxxxxxxxxxx",
+      "whatsappPhoneId": "ID do número de telefone",
+      "whatsappPhoneIdPh": "1029384756",
+      "whatsappWabaId": "ID WABA (opcional)",
+      "whatsappWabaIdPh": "1029384756",
+      "instagramToken": "Token de acesso",
+      "instagramTokenPh": "IGQWR...",
+      "instagramUserId": "ID da conta empresarial do Instagram",
+      "instagramUserIdPh": "17841400000000000"
+    },
+    "guide": {
+      "howToTitle": "Como ligar",
+      "telegram": {
+        "steps": [
+          "Abra o @BotFather no Telegram e envie /newbot",
+          "Escolha um nome e nome de utilizador para o bot — o BotFather envia-lhe um token de API",
+          "Cole o token abaixo e clique em Ligar"
+        ]
+      },
+      "whatsapp": {
+        "steps": [
+          "Crie uma aplicação no Meta for Developers e adicione o produto WhatsApp",
+          "No API Setup, copie o token de acesso temporário ou permanente",
+          "Copie também o ID do número de telefone do número de teste ou verificado",
+          "Cole ambos os valores abaixo e clique em Ligar"
+        ]
+      },
+      "instagram": {
+        "steps": [
+          "Ligue a conta Instagram do estúdio a uma Página do Facebook — necessário para a Direct API",
+          "Crie uma aplicação no Meta for Developers com o produto Instagram Graph API",
+          "Gere um token de acesso com as permissões instagram_basic e instagram_manage_messages",
+          "Copie o ID da conta empresarial do Instagram e o token e cole-os abaixo",
+          "Sem aprovação da Meta, a ligação funciona apenas para contas de teste da aplicação"
+        ]
+      },
+      "google_calendar": {
+        "steps": [
+          "Clique em Ligar — será aberta uma janela de início de sessão Google",
+          "Escolha a conta à qual o calendário do estúdio está ligado",
+          "Conceda acesso ao calendário — as aulas começarão a aparecer nele automaticamente"
+        ]
+      }
+    },
+    "capabilities": {
+      "notify": "notificações a clientes neste canal",
+      "booking": "reservas online através deste canal",
+      "dm_agent": "agente de IA para respostas automáticas no Direct",
+      "schedule_sync": "sincronização da agenda com Google Calendar"
+    },
+    "disconnect": {
+      "title": "Desligar {{name}}?",
+      "willStop": "Isto deixará de funcionar:",
+      "checkbox": "Compreendo as consequências",
+      "cancel": "Cancelar",
+      "confirm": "Desligar"
+    },
+    "google": {
+      "connected": "Google Calendar ligado",
+      "denied": "O acesso ao Google Calendar não foi concedido",
+      "error": "Não foi possível ligar ao Google Calendar",
+      "primary": "principal",
+      "calendar": "Calendário",
+      "selectCalendar": "Selecione um calendário",
+      "loadingCalendars": "A carregar calendários…",
+      "syncMode": "Modo de sincronização",
+      "syncModeOptions": {
+        "push": "Apenas do CRM para o Google",
+        "two_way": "Bidirecional"
+      },
+      "syncNow": "Sincronizar agora",
+      "lastSync": "Última sincronização: {{date}}",
+      "neverSynced": "Ainda não sincronizado",
+      "timezoneWarning": "O fuso horário do estúdio não está definido — os eventos são enviados em UTC e podem divergir das horas reais das aulas. Defina o fuso horário em Geral.",
+      "syncResult": "Sincronizado: {{pushed}} enviados, {{pulled}} recebidos",
+      "settingsSaved": "Definições do Google Calendar guardadas"
+    },
+    "toast": {
+      "connected": "Integração ligada",
+      "disconnected": "Integração desligada"
+    }
+  },
+  "data": {
+    "export": {
+      "title": "Exportar relatórios e listas",
+      "subtitle": "Transfira ficheiros em formatos de tabela para contabilidade e análise",
+      "clearFilter": "Limpar período",
+      "items": {
+        "clients": {
+          "name": "Lista de clientes"
+        },
+        "schedule": {
+          "name": "Histórico do diário e das reservas"
+        },
+        "finances": {
+          "name": "Relatório financeiro"
+        },
+        "subscriptions": {
+          "name": "Subscrições de clientes"
+        }
+      },
+      "rows_one": "{{count}} registo",
+      "rows_other": "{{count}} registos",
+      "loading": "A carregar...",
+      "empty": "sem dados para este período"
+    }
+  }
+}

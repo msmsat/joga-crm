@@ -1,0 +1,376 @@
+== no
+tabs.overview	Oversikt
+tabs.sales	Salg
+tabs.clients	Kunder
+tabs.team	Team
+tabs.schedule	Timeplan
+toolbar.period.day	Dag
+toolbar.period.week	Uke
+toolbar.period.month	Måned
+toolbar.period.year	År
+toolbar.period.custom	Egendefinert
+toolbar.vsPrevious	sammenlignet med forrige periode: {{from}}–{{to}}
+toolbar.allBranches	Alle avdelinger
+toolbar.allHalls	Alle {{spacePlural}}
+toolbar.allTrainers	Alle trenere
+toolbar.allServices	Alle tjenester
+toolbar.export	Eksporter
+insights.title	Krever oppmerksomhet
+insights.action	Åpne
+insights.empty	Alt er bra akkurat nå — ingen råd å vise
+insights.revenue_up_clients_down	Inntekten øker, men aktive kunder blir færre — sjekk kundefrafall
+insights.clients_at_risk	{{count}} kunde(r) har ikke deltatt på over 3 uker — risiko for frafall
+insights.lesson_overfull	«{{name}}» {{weekday, weekday}} kl. {{hour}}:00 har vært {{pct}} % fullt tre uker på rad — vurder å legge til en økt
+insights.trial_low_conversion	Bare {{pct}} % av {{buyers}} prøvekjøpere kjøpte senere et abonnement — vurder en kampanje
+insights.fastest_growing_product	«{{name}}» vokser raskest: +{{pct}} % sammenlignet med forrige periode
+insights.renewals_low	Bare {{pct}} % av kunder med utløpt abonnement fornyer — vurder en påminnelse
+insights.new_no_second_visit	{{count}} nye kunder kom én gang og bestilte aldri igjen — vurder en påminnelse
+insights.subs_expiring_week	{{count}} kunder har et abonnement som utløper denne uken — vurder å tilby fornyelse
+insights.vip_inactive	VIP-kunden «{{name}}» har ikke besøkt dere på {{days}} dager — vurder en personlig melding
+insights.high_return_free_evenings	«{{name}}» har høy returrate ({{return_pct}} %), men ledige kvelder — legg til en økt
+insights.trainer_overloaded	«{{name}}» er belastet {{load_pct}} % — vurder å balansere timeplanen
+insights.low_rating	«{{name}}» har en vurdering på {{rating}} — verdt å se nærmere på
+insights.slot_chronic_low	«{{name}}» {{weekday, isodowWeekday}} kl. {{hour}}:00 har vært {{pct}} % fullt i {{weeks}} uker på rad — flytt eller avlys det
+insights.hall_idle_evenings	«{{name}}» er ubrukt {{pct}} % av kveldstimene — vurder å sette opp en økt
+insights.slot_overfull	Tidspunktet {{weekday, isodowWeekday}} kl. {{hour}}:00 har vært {{pct}} % fullt tre uker på rad — vurder å legge til en økt
+insights.loss_hotspot	{{cancels}} økter ble avlyst på {{label}} i denne perioden — flest avlysninger samler seg rundt denne timen
+table.loading	Laster…
+table.noProduct	Ingen produkt
+empty.noData.title	Det er ingenting her ennå
+empty.noData.text	Ingen aktivitet ble registrert i valgt periode. Utvid perioden, eller start med å booke en kunde i Journalen.
+empty.noData.widen	Vis året
+empty.noRevenue	Ingen betalinger i denne perioden
+empty.noSales	Ingen salg i dette utsnittet
+empty.noProducts	Ingen pakker eller tjenester solgt ennå
+empty.noLessons	Ingen økter i denne perioden
+empty.noTrainerLessons	Denne treneren har ikke holdt noen økter ennå
+empty.noRows	Ingen oppføringer i dette utsnittet
+empty.noLosses	Ingen avlysninger eller uteblivelser i denne perioden
+overview.kpi.revenue	Inntekt
+overview.kpi.profit	Fortjeneste
+overview.kpi.attendance	Oppmøte
+overview.kpi.activeClients	Aktive kunder
+overview.kpi.fillRate	Fyllingsgrad
+overview.chart.metric.revenue	Inntekt
+overview.chart.metric.profit	Fortjeneste
+overview.chart.metric.attendance	Oppmøte
+overview.chart.metric.new_clients	Nye kunder
+overview.chart.metric.fill_rate	Fyllingsgrad
+overview.revenueStructure.title	Inntektsstruktur
+overview.category.subscriptions	Abonnementer
+overview.category.services	Tjenester
+overview.category.certificates	Gavekort
+overview.category.rent	Leie
+overview.category.salary	Lønn
+overview.category.refunds	Refusjoner
+overview.clientDynamics.title	Kundedynamikk
+overview.clientDynamics.new	Nye
+overview.clientDynamics.returned	Kom tilbake
+overview.clientDynamics.lost	Tapte
+overview.drilldown.title	Transaksjon
+overview.drilldown.category	Kategori
+overview.drilldown.amount	Beløp
+overview.drilldown.lesson	Økt
+overview.drilldown.time	Tid
+overview.drilldown.occupancy	Belegg
+overview.drilldown.date	Dato
+overview.drilldown.method	Metode
+overview.drilldown.trainer	Trener
+overview.drilldown.rowsCount	oppføringer
+overview.drilldown.search	Søk i tabellen
+overview.drilldown.shownOf	Viser {{shown}} av {{total}}
+overview.drilldown.noMatches	Ingenting funnet for «{{query}}»
+overview.drilldown.reset	Tilbakestill
+overview.drilldown.export	Eksporter CSV
+overview.drilldown.subtitle.money	Transaksjoner i dette utsnittet
+overview.drilldown.subtitle.lessons	Økter i dette utsnittet
+overview.drilldown.hint.operations	Klikk på en rad for å åpne transaksjonen i Økonomi
+overview.drilldown.hint.lessons	Klikk på en rad for å åpne den dagen i Journalen
+overview.drilldown.stat.net	Netto
+overview.drilldown.stat.income	Inntekt
+overview.drilldown.stat.expense	Utgift
+overview.drilldown.stat.operations	Transaksjoner
+overview.drilldown.stat.topCategory	Største kategori
+overview.drilldown.stat.lessons	Økter
+overview.drilldown.stat.booked	Reserverte plasser
+overview.drilldown.stat.avgFill	Gjennomsnittlig belegg
+overview.drilldown.stat.trainers	Trenere
+overview.drilldown.stat.cancelled	Avlyst
+sales.kpi.revenue	Inntekt
+sales.kpi.salesCount	Salg
+sales.kpi.avgCheck	Gjennomsnittskjøp
+sales.kpi.repeatShare	Andel gjenkjøp
+sales.kpi.renewals	Fornyelsesrate
+sales.chart.title	Salg
+sales.incomeOperations	Inntektstransaksjoner
+sales.breakdown.byCategory	Hva de kjøper
+sales.breakdown.byMethod	Hvordan de betaler
+sales.breakdown.buyerType	Hvem som kjøper
+sales.breakdown.new	Nye
+sales.breakdown.returning	Faste
+sales.breakdown.noClient	Ingen kunde
+sales.method.card	Kort
+sales.method.cash	Kontant
+sales.method.qr	QR-kode
+sales.method.transfer	Overføring
+sales.products.title	Produkter
+sales.products.name	Produkt
+sales.products.sold	Solgt
+sales.products.revenue	Inntekt
+sales.products.avgCheck	Gjennomsnittskjøp
+sales.products.repeatShare	Andel gjenkjøp
+sales.products.trend	Utvikling
+sales.products.trendHint	Sammenlignet med forrige periode med samme varighet
+clients.kpi.new	Nye
+clients.kpi.returned	Kom tilbake
+clients.kpi.lost	Tapte
+clients.kpi.retention	Kundetilbakeholdelse
+clients.kpi.avgValue	Kundeverdi
+clients.chart.title	Nye og faste
+clients.chart.new	Nye
+clients.chart.returned	Faste
+clients.riskTitle	Risikosegmenter
+clients.loyalTitle	Lojale
+clients.list	Liste
+clients.campaign	Start kampanje
+clients.exportList	Eksporter liste
+clients.emptySegment	Segmentet «{{name}}» har ingen kunder akkurat nå
+clients.segments.new.name	Nye kunder
+clients.segments.new.desc	Registrert i den valgte perioden
+clients.segments.returned.name	Faste kunder
+clients.segments.returned.desc	Besøkte denne perioden og den forrige
+clients.segments.lost.name	Tapte kunder
+clients.segments.lost.desc	Besøkte forrige periode, men kom ikke tilbake i denne
+clients.segments.active.name	Aktive kunder
+clients.segments.active.desc	Kom på minst én økt i den valgte perioden
+clients.segments.at_risk.name	I faresonen
+clients.segments.at_risk.desc	Aktive, men uten besøk på 21+ dager
+clients.segments.vip_idle.name	Inaktive VIP-er
+clients.segments.vip_idle.desc	VIP-kunder uten besøk på 14+ dager
+clients.segments.expiring_subscription.name	Abonnement utløper
+clients.segments.expiring_subscription.desc	≤2 økter eller ≤7 dager igjen
+clients.segments.lost_newcomers.name	Kom aldri tilbake
+clients.segments.lost_newcomers.desc	Kom én gang, borte i 14+ dager
+clients.segments.upsell_candidates.name	Klar for oppgradering
+clients.segments.upsell_candidates.desc	8+ besøk denne måneden, ingen pakke
+clients.segments.frequent.name	Hyppige
+clients.segments.frequent.desc	8+ besøk i perioden
+clients.segments.high_ltv.name	Høy LTV
+clients.segments.high_ltv.desc	Topp 10 % etter samlet forbruk
+clients.segments.referrers.name	Anbefalere
+clients.segments.referrers.desc	Fullførte en anbefaling i perioden
+clients.listSearch	Søk etter navn eller telefon
+clients.shownOf	Viser {{shown}} av {{total}}
+clients.noMatches	Ingen funnet for «{{query}}»
+clients.resetSearch	Tilbakestill
+clients.neverVisited	Aldri besøkt
+clients.valueLabel.visits	Besøk
+clients.valueLabel.spent	Brukt
+clients.valueLabel.daysIdle	Inaktive dager
+clients.valueLabel.remaining	Økter igjen
+clients.valueLabel.value	Verdi
+clients.relative.today	I dag
+clients.relative.daysAgo_one	for {{count}} dag siden
+clients.relative.daysAgo_other	for {{count}} dager siden
+team.kpi.lessonsCount	Økter
+team.kpi.revenuePerHour	Inntekt/time
+team.kpi.avgFillPct	Fyllingsgrad
+team.kpi.cancelNoshowPct	Avlysninger/uteblivelser
+team.kpi.avgRating	Vurdering
+team.table.title	Trenere
+team.table.trainer	Trener
+team.table.lessons	Økter
+team.table.fillPct	Fyllingsgrad
+team.table.attendance	Oppmøte
+team.table.revenue	Inntekt
+team.table.returnRate	Returrate
+team.table.cancels	Avlysninger
+team.table.fillPctHint	Fylte plasser av de som var planlagt
+team.table.returnRateHint	Kunder som bestilte med denne treneren igjen
+team.table.cancelsHint	Avlyste økter og kunders uteblivelser
+team.table.ratingHint	Gjennomsnittsvurdering kunder ga denne trenerens økter
+team.drawer.revenueByWeek	Inntekt per uke
+team.drawer.loadByWeekday	Belastning per ukedag
+team.drawer.loadByHour	Belastning etter tid på dagen
+team.drawer.loadDim.weekday	Etter dag
+team.drawer.loadDim.hour	Etter time
+team.drawer.schedule.title	Timeplan
+team.drawer.schedule.empty	Ingen økter i denne perioden
+team.drawer.topLessons	Favorittøkter
+team.drawer.returnBlock	Kundenes tilbakekomst
+team.drawer.returnOf	{{returned}} av {{total}} kunder kom tilbake ({{pct}} %)
+team.drawer.openProfile	Åpne profil
+team.drawer.held	Holdt
+team.drawer.attendance	Oppmøte
+team.weekdays.0	søn
+team.weekdays.1	man
+team.weekdays.2	tir
+team.weekdays.3	ons
+team.weekdays.4	tor
+team.weekdays.5	fre
+team.weekdays.6	lør
+schedule.weekdaysMonFirst.0	man
+schedule.weekdaysMonFirst.1	tir
+schedule.weekdaysMonFirst.2	ons
+schedule.weekdaysMonFirst.3	tor
+schedule.weekdaysMonFirst.4	fre
+schedule.weekdaysMonFirst.5	lør
+schedule.weekdaysMonFirst.6	søn
+schedule.kpi.avgFillPct	Fyllingsgrad
+schedule.kpi.freeSpots	Ledige plasser
+schedule.kpi.cancels	Avlysninger
+schedule.kpi.noshows	Uteblivelser
+schedule.kpi.lostRevenue	Tapt inntekt
+schedule.heatmap.title	Belastning etter dag og time
+schedule.heatmap.legend	Fyllingsgrad:
+schedule.heatmap.tooltip	{{lessons}} økter · {{attendance}} deltok · {{pct}} %
+schedule.heatmap.empty	Ingen økter
+schedule.slices.topProfitable	Mest lønnsomme
+schedule.slices.topFilled	Mest fylte
+schedule.slices.chronicLow	Kronisk underfylte
+schedule.slices.halls	Utnyttelse: {{spacePlural}}
+schedule.slices.held	{{count}} holdt
+schedule.slices.weeks	{{count}} uker
+schedule.slices.move	Flytt
+schedule.slices.cancel	Avlys
+schedule.slices.eveningIdle	ledig på kveldstid {{pct}} %
+schedule.losses.title	Avlysninger og uteblivelser
+schedule.losses.dim.hour	Etter tidspunkt
+schedule.losses.dim.service	Etter tjeneste
+schedule.losses.dim.trainer	Etter trener
+schedule.losses.cancels_one	{{count}} avlysning
+schedule.losses.cancels_other	{{count}} avlysninger
+schedule.losses.noshows_one	{{count}} uteblivelse
+schedule.losses.noshows_other	{{count}} uteblivelser
+schedule.losses.lostSpots_one	−{{count}} plass
+schedule.losses.lostSpots_other	−{{count}} plasser
+schedule.status.confirmed	Bekreftet
+schedule.status.pending	Venter
+schedule.status.cancelled	Avlyst
+schedule.slot.summary	for {{from}} — {{to}}
+schedule.slot.lessonsCount	Økter totalt
+export.csv	Last ned CSV
+scopeNote.label	Hele studioet
+scopeNote.money	Filtrene Avdeling og {{space}} påvirker ikke beløp — en betaling er ikke knyttet til dem
+scopeNote.clientBase	Trener, {{space}}, avdeling og tjeneste endrer ikke denne målingen — en kunde er ikke knyttet til dem
+descriptions.overview.metric.revenue	Alle penger som kom inn i studioet i perioden
+descriptions.overview.metric.profit	Det som er igjen etter periodens utgifter
+descriptions.overview.metric.attendance	Økter kundene faktisk deltok på
+descriptions.overview.metric.new_clients	Kunder registrert i denne perioden
+descriptions.overview.metric.fill_rate	Hvor fulle øktene er: reserverte plasser av tilgjengelige plasser
+descriptions.overview.revenueStructure	Hva inntekten din består av i denne perioden
+descriptions.overview.clientDynamics	Hvor mange som kom for første gang, kom tilbake eller sluttet å komme
+descriptions.sales.chart	Inntekt og antall kjøp per dag
+descriptions.sales.byCategory	Hvert produkts andel av inntekten
+descriptions.sales.byMethod	Hvordan inntekten fordeler seg etter betalingsmåte
+descriptions.sales.buyerType	Hvor mye inntekt som kommer fra nye kunder kontra faste
+descriptions.sales.products	Hvert produkt: hvor mange solgt, for hvor mye og om salget vokser
+descriptions.clients.chart	Hvor mange kunder som kom for første gang og hvor mange som kom tilbake, per uke
+descriptions.clients.riskSegments	Kunder du kan miste hvis du ikke tar kontakt nå
+descriptions.clients.loyalSegments	De som besøker mest, bruker mest og tar med venner
+descriptions.team.trainers	Sammenligning etter belastning, inntekt og kundenes returrate
+descriptions.team.loadWeekday	Hvilke ukedager treneren er opptatt, og når de er ledige
+descriptions.team.loadHour	Når øktene fylles opp, og når de er tomme
+descriptions.team.schedule	Alle trenerens økter i den valgte perioden
+descriptions.schedule.heatmap	Hvor timeplanen er overbooket og hvor den er tom
+descriptions.schedule.topProfitable	Tidspunktene i timeplanen som gir mest penger
+descriptions.schedule.topFilled	Tidspunktene kundene bestiller mest ivrig
+descriptions.schedule.chronicLow	Tidspunkter som har vært fylt mindre enn en tredjedel i ukevis
+descriptions.schedule.halls	Hvor mye av tiden {{spacePlural}} faktisk er i bruk
+descriptions.schedule.losses	Hvor studioet mister plasser: avlyste økter eller kunder som uteblir
+formulas.salesCount.title	Salg
+formulas.salesCount.text	Hvor mange ganger kundene betalte deg i denne perioden. Én person som betaler flere ganger teller som separate salg.
+formulas.revenue.title	Inntekt
+formulas.revenue.text	Alle penger som kom inn i studioet denne perioden, etter betalingsdato. Pakker, enkeltøkter, gavekort og varesalg — alt sammen.
+formulas.profit.title	Fortjeneste
+formulas.profit.text	Det som er igjen etter utgiftene denne perioden: leie, lønn og utstyr. Dette er den reelle fortjenesten din.
+formulas.attendance.title	Oppmøte
+formulas.attendance.text	Hvor mange besøk kundene faktisk gjennomførte. Bare økter markert som deltatt teller.
+formulas.bookings.title	Bestillinger
+formulas.bookings.text	Hvor mange bestillinger kundene gjorde til økter. Avlyste bestillinger teller ikke.
+formulas.noshow.title	Uteblivelse
+formulas.noshow.text	En kunde bestilte, økten ble holdt, men kunden møtte ikke. Hvert tilfelle er en plass noen andre kunne ha tatt.
+formulas.activeClients.title	Aktive kunder
+formulas.activeClients.text	Hvor mange forskjellige personer som kom minst én gang i denne perioden. Hver kunde teller én gang, uansett hvor mange besøk de hadde.
+formulas.occupancy.title	Belegg
+formulas.occupancy.text	Hvor fulle øktene dine er: fylte plasser av det du planla. 100 % betyr at det ikke er mer plass.
+formulas.avgCheck.title	Gjennomsnittskjøp
+formulas.avgCheck.text	Hva én betaling i gjennomsnitt gir. Det øker når kunder kjøper lengre pakker eller tillegg.
+formulas.retention.title	Kundetilbakeholdelse
+formulas.retention.text	Hvor mange av forrige periodes kunder som kom tilbake i denne perioden. Viser om du beholder folk eller starter fra null hver måned.
+formulas.newClients.title	Nye kunder
+formulas.newClients.text	Personer som dukket opp i kundebasen din for første gang i denne perioden.
+formulas.returning.title	Faste kunder
+formulas.returning.text	Kunder som har besøkt før og kom tilbake igjen i denne perioden.
+formulas.lost.title	Tapte kunder
+formulas.lost.text	Besøkte forrige periode og har ikke dukket opp én gang i denne. Det er fortsatt verdt å ta kontakt.
+formulas.clientValue.title	Kundeverdi
+formulas.clientValue.text	Hva én kunde i gjennomsnitt gir i denne perioden.
+formulas.repeatPurchaseShare.title	Andel gjenkjøp
+formulas.repeatPurchaseShare.text	Andelen kunder som kjøpte fra deg mer enn én gang. Jo høyere den er, desto sterkere er vanen med å komme tilbake.
+formulas.renewalRate.title	Fornyelsesrate
+formulas.renewalRate.text	Hvor mange kunder som kjøpte en ny pakke etter at den forrige var utløpt.
+formulas.revenuePerHour.title	Inntekt per time (trener)
+formulas.revenuePerHour.text	Hvor mye penger én time av en treners arbeid gir. Lar deg sammenligne trenere rettferdig — én kan holde færre økter, men hver gir mer.
+formulas.trainerReturnRate.title	Returrate (trener)
+formulas.trainerReturnRate.text	Andelen av en treners kunder som bestilte med dem igjen.
+formulas.missedRevenue.title	Tapt inntekt
+formulas.missedRevenue.text	Penger studioet ikke tjente på grunn av tomme plasser i tidligere økter: ledige plasser ganget med øktens pris.
+formulas.losses.title	Avlysninger og uteblivelser
+formulas.losses.text	En «avlysning» er en avlyst økt; en «uteblivelse» er en kunde som bestilte, men ikke kom. Fordelingene på tid/tjeneste/trener bruker de samme filtrene som fanen og stemmer med KPI-ene i overskriften.
+formulas.lessonRevenue.title	Inntekt fra økt
+formulas.lessonRevenue.text	Et grovt estimat av en økts inntekt: deltakere ganget med pris. Betalinger er ikke knyttet til en bestemt økt, så dette er et anslag, ikke et eksakt tall.
+formulas.filtersScope.title	Filtrenes omfang
+formulas.filtersScope.text	Filtrene Avdeling og {{space}} gjelder bare øktmålinger. Betalinger har ingen slik kobling, så beløp vises for hele studioet.
+formulas.avgValue.title	Kundeverdi
+formulas.avgValue.text	Hva én kunde i gjennomsnitt gir i denne perioden.
+formulas.cancelNoshow.title	Avlysninger og uteblivelser
+formulas.cancelNoshow.text	Andelen forstyrrede økter: avlysninger og uteblivelser av alt som var planlagt.
+formulas.avgRating.title	Gjennomsnittsvurdering
+formulas.avgRating.text	Gjennomsnittsvurderingen kundene ga denne trenerens økter.
+formulas.teamScope.title	Dataomfang
+formulas.teamScope.text	Dette teller bare inntekt knyttet til en bestemt trener, så summen for alle trenere kan være lavere enn studioets totale inntekt.
+formulas.lessonsCount.title	Økter
+formulas.lessonsCount.text	Hvor mange økter trenerne holdt i denne perioden.
+formulas.load.title	Belastning
+formulas.load.text	Hvor fullpakket en treners dag er: deres bestilte timer av studioets åpningstid.
+formulas.weeklyClients.title	Nye og faste
+formulas.weeklyClients.text	Per uke: hvor mange som kom til deg for første gang og hvor mange som kom tilbake. Et sunt studio vokser på begge linjer.
+formulas.byCategory.title	Inntekt per kategori
+formulas.byCategory.text	Hva du faktisk tjener på: pakker, enkeltøkter, gavekort og varesalg.
+formulas.byMethod.title	Betalingsmåter
+formulas.byMethod.text	Hvordan kunder betaler. Hjelper deg å se om du trenger kortbetaling og hvor mye penger som går utenom kassen.
+formulas.buyerType.title	Hvem som betaler
+formulas.buyerType.text	Nye kunder mot faste. Hvis nesten all inntekt kommer fra nye kunder, beholder ikke studioet folk.
+formulas.products.title	Hva som selger
+formulas.products.text	Alle pakker og tjenester i perioden: hvor mange som er solgt, for hvor mye og om salget vokser.
+formulas.topProfitable.title	Mest lønnsomme tidspunkter
+formulas.topProfitable.text	Tidspunktene i timeplanen som gir mest penger. Legg de beste trenerne dine der.
+formulas.topFilled.title	Mest fylte tidspunkter
+formulas.topFilled.text	Tidspunktene kundene bestiller mest ivrig. Hvis de er helt fulle, er det verdt å legge til en økt til.
+formulas.chronicLow.title	Kronisk tomme tidspunkter
+formulas.chronicLow.text	Tidspunkter som har vært fylt mindre enn en tredjedel i flere uker. Kandidater for å flyttes eller fjernes.
+formulas.hallUtil.title	Utnyttelse: {{spacePlural}}
+formulas.hallUtil.text	Hvor mye av tiden {{spacePlural}} faktisk er i bruk. Tom tid er leie som ikke lønner seg.
+formulas.heatmap.title	Belastning etter dag og time
+formulas.heatmap.text	Fargen viser det gjennomsnittlige fyllet for tidspunktet i perioden. Klikk en celle for å se øktene den dagen og timen.
+formulas.riskSegments.title	Risikosegmenter
+formulas.riskSegments.text	Kunder gruppert etter risikoen de medfører — å miste dem eller inntekten de ikke gir. Hvert kort har sin egen grunn og et tydelig neste steg: skriv til dem, tilby fornyelse eller oppgradering.
+formulas.loyalSegments.title	Lojale
+formulas.loyalSegments.text	Kunder som allerede gir mest verdi: de besøker oftest, bruker mest eller tar med venner. Verdt å ta vare på og belønne.
+formulas.segment.at_risk.title	I faresonen
+formulas.segment.at_risk.text	De pleide å komme regelmessig og har nå forsvunnet. De kan fortsatt vinnes tilbake med én melding.
+formulas.segment.vip_idle.title	Inaktive VIP-er
+formulas.segment.vip_idle.text	Kunder som har brukt mer enn noen andre, men ikke besøkt dere på en stund.
+formulas.segment.expiring_subscription.title	Abonnement utløper
+formulas.segment.expiring_subscription.text	Disse kundene har 1–2 økter igjen. Det beste tidspunktet å tilby fornyelse.
+formulas.segment.lost_newcomers.title	Nye kunder som ikke kom tilbake
+formulas.segment.lost_newcomers.text	De kom én gang og forsvant. Det handler ofte om den første økten — verdt å undersøke.
+formulas.segment.upsell_candidates.title	Klar for mer
+formulas.segment.upsell_candidates.text	De kommer ofte, men kjøper den enkleste pakken. Verdt å tilby et dyrere abonnement.
+formulas.segment.frequent.title	Faste
+formulas.segment.frequent.text	De kommer oftere enn noen andre. Ryggraden i studioets inntekt.
+formulas.segment.high_ltv.title	Mest verdifulle
+formulas.segment.high_ltv.text	Har gitt studioet mer penger enn noen andre, gjennom hele tiden.
+formulas.segment.referrers.title	Tar med venner
+formulas.segment.referrers.text	Kunder hvis anbefalinger har brakt andre mennesker til deg.

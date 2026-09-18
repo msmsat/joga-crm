@@ -1,0 +1,377 @@
+== fr
+tabs.accounts	Comptes
+tabs.operations	Opérations
+tabs.salaries	Paie
+tabs.counterparties	Parties prenantes
+tabs.documents	Documents
+tabs.onlinePayments	Paiements en ligne
+tabs.paymentMethods	Modes de paiement
+tabs.reports	Rapports
+tabs.goals	Objectifs
+common.save	Enregistrer
+common.cancel	Annuler
+common.create	Créer
+common.edit	Modifier
+common.delete	Supprimer
+common.loading	Chargement…
+common.all	Tous
+common.confirm	Confirmer
+common.monthsShort.0	Janv.
+common.monthsShort.1	Févr.
+common.monthsShort.2	Mars
+common.monthsShort.3	Avr.
+common.monthsShort.4	Mai
+common.monthsShort.5	Juin
+common.monthsShort.6	Juil.
+common.monthsShort.7	Août
+common.monthsShort.8	Sept.
+common.monthsShort.9	Oct.
+common.monthsShort.10	Nov.
+common.monthsShort.11	Déc.
+common.weekdaysShort.0	Lun.
+common.weekdaysShort.1	Mar.
+common.weekdaysShort.2	Mer.
+common.weekdaysShort.3	Jeu.
+common.weekdaysShort.4	Ven.
+common.weekdaysShort.5	Sam.
+common.weekdaysShort.6	Dim.
+info.accounts	Les comptes sont les caisses, comptes bancaires et moyens d'encaissement en ligne du studio. Vous voyez ici chaque solde et le capital total.
+info.operations	Les opérations regroupent tous les revenus et dépenses du studio. Créer une opération modifie immédiatement le solde du compte associé.
+info.salaries	Les salaires sont calculés à partir du taux du membre de l'équipe (fixe, horaire ou pourcentage) pour la période choisie.
+info.counterparties	Les parties prenantes sont les organisations et personnes avec lesquelles le studio règle ses comptes : fournisseurs, bailleurs, partenaires.
+info.documents	Les documents sont des contrats, actes et factures liés à des parties prenantes, ou des documents internes.
+info.onlinePayments	Paiements en ligne — connectez Stripe pour les paiements par carte. Le compte est créé pour votre studio : l'argent vous est versé directement, sans passer par Velora.
+info.paymentMethods	Les modes de paiement indiquent comment les clients paient au studio et les statistiques de chaque mode.
+info.reports	Les rapports présentent les tendances des revenus, dépenses et bénéfices sur la période sélectionnée.
+info.goals	Les objectifs financiers constituent le plan d'épargne du studio, avec suivi automatique ou manuel de la progression.
+accounts.loading	Chargement des comptes…
+accounts.totalCapital	Capital total du studio
+accounts.donutTotal	{{symbol}} au total
+accounts.todayChange	aujourd'hui
+accounts.system	SYSTÈME
+accounts.today	aujourd'hui
+accounts.editTitle	Modifier le compte
+accounts.namePlaceholder	Nom
+accounts.balancePlaceholder	Solde, {{symbol}}
+accounts.types.cash	Espèces
+accounts.types.bank	Carte
+accounts.types.online	En ligne
+accounts.typesShort.cash	Espèces
+accounts.typesShort.bank	Carte
+accounts.typesShort.online	En ligne
+accounts.history	Historique
+accounts.historyTitle	Historique : {{name}}
+accounts.income30d	Revenus (30 j)
+accounts.expense30d	Dépenses (30 j)
+accounts.samplePayment	Paiement de service
+accounts.sampleTime	Aujourd'hui, 14:32
+accounts.openAllOperations	Ouvrir toutes les opérations
+accounts.newSavingsTitle	Nouveau compte d'épargne
+accounts.createSavings	Créer un compte d'épargne
+accounts.deleteConfirmTitle	Supprimer ce compte ?
+accounts.deleteConfirmText	Tous ses fonds seront exclus des statistiques globales. Cette action est irréversible.
+accounts.toasts.loadFailed	Impossible de charger les comptes
+accounts.toasts.deleted	Compte supprimé
+accounts.toasts.deleteFailed	Impossible de supprimer le compte
+accounts.toasts.saved	Paramètres enregistrés
+accounts.toasts.saveFailed	Impossible d'enregistrer le compte
+accounts.toasts.created	Compte d'épargne créé
+accounts.toasts.createFailed	Impossible de créer le compte
+operations.income	Revenu
+operations.expense	Dépense
+operations.balance	Solde
+operations.searchPlaceholder	Rechercher par titre et catégorie…
+operations.close	Fermer
+operations.operation	Opération
+operations.export	Exporter
+operations.newOperationTitle	Nouvelle opération
+operations.titleLabel	Titre
+operations.titlePlaceholder	Ex. paiement d'abonnement
+operations.amountLabel	Montant, {{symbol}}
+operations.dateLabel	Date
+operations.categoryLabel	Catégorie
+operations.categoryPlaceholder	Catégorie
+operations.accountLabel	Compte
+operations.noAccount	Aucun compte
+operations.methodLabel	Mode de paiement
+operations.noMethod	Non précisé
+operations.counterpartyLabel	Partie prenante
+operations.noCounterparty	Aucune partie prenante
+operations.newCounterparty	+ Nouvelle partie prenante
+operations.clientLabel	Client
+operations.clientHint	Les points de fidélité et le niveau seront crédités au client
+operations.clientSearchPlaceholder	Commencez à saisir un nom…
+operations.noClient	Aucun client
+operations.editTitle	Modifier l'opération
+operations.saving	Enregistrement…
+operations.loading	Chargement des opérations…
+operations.emptyTitle	Aucune opération trouvée
+operations.emptyBody	Modifiez les filtres ou créez la première opération
+operations.pending	En attente
+operations.detailAccount	Compte destinataire
+operations.detailCategory	Catégorie
+operations.detailMethod	Mode de paiement
+operations.detailCounterparty	Partie prenante
+operations.receipt	Reçu
+operations.loadMore	Charger plus ({{count}})
+operations.toasts.loadFailed	Impossible de charger les opérations
+operations.toasts.loadMoreFailed	Impossible de charger plus d'opérations
+operations.toasts.deleted	Opération supprimée
+operations.toasts.deleteFailed	Impossible de supprimer l'opération
+operations.toasts.enterAmount	Saisissez un montant
+operations.toasts.created	Opération créée
+operations.toasts.createFailed	Impossible de créer l'opération
+operations.toasts.updated	Opération mise à jour
+operations.toasts.updateFailed	Impossible d'enregistrer l'opération
+operations.toasts.exportFailed	Impossible d'exporter les opérations
+operations.toasts.receiptDownloaded	Reçu téléchargé
+operations.categoryPresets.in.0.value	Abonnements
+operations.categoryPresets.in.0.label	Abonnements
+operations.categoryPresets.in.1.value	Services
+operations.categoryPresets.in.1.label	Services
+operations.categoryPresets.in.2.value	Cartes-cadeaux
+operations.categoryPresets.in.2.label	Cartes-cadeaux
+operations.categoryPresets.in.3.value	Dépôt
+operations.categoryPresets.in.3.label	Dépôt
+operations.categoryPresets.in.4.value	Autre
+operations.categoryPresets.in.4.label	Autre
+operations.categoryPresets.out.0.value	Remboursements
+operations.categoryPresets.out.0.label	Remboursements
+operations.categoryPresets.out.1.value	Loyer
+operations.categoryPresets.out.1.label	Loyer
+operations.categoryPresets.out.2.value	Salaires
+operations.categoryPresets.out.2.label	Salaires
+operations.categoryPresets.out.3.value	Achats
+operations.categoryPresets.out.3.label	Achats
+operations.categoryPresets.out.4.value	Marketing
+operations.categoryPresets.out.4.label	Marketing
+operations.categoryPresets.out.5.value	Impôts
+operations.categoryPresets.out.5.label	Impôts
+operations.categoryPresets.out.6.value	Autre
+operations.categoryPresets.out.6.label	Autre
+salaries.loading	Chargement de la paie…
+salaries.noRows	Aucun membre du personnel à calculer
+salaries.fund	Masse salariale
+salaries.fundSub	mois en cours
+salaries.sessions	Séances
+salaries.sessionsSub	total réalisées
+salaries.paidOf	personnel
+salaries.sessionsCount	{{count}} séances
+salaries.paid	Payé
+salaries.pending	En attente
+salaries.paying	…
+salaries.payAction	Payer
+salaries.cancelAction	Annuler le salaire
+salaries.perMonth	/mois
+salaries.accrualTitle	Calcul pour la période
+salaries.rate	Taux
+salaries.rateNotSet	non défini
+salaries.sessionsInPeriod	Séances sur la période
+salaries.hoursWorked	Heures travaillées
+salaries.lessonsRevenue	Revenus des séances
+salaries.totalToPay	Total à payer
+salaries.rateWarning	Le taux n'est pas défini — indiquez-le dans le profil du membre du personnel afin que le calcul puisse être effectué.
+salaries.rateUnit.hourly	h
+salaries.rateUnit.percent	%
+salaries.rateUnit.fixed	fixe
+salaries.paidAt	Payé {{date}}
+salaries.historyTitle	Historique des paiements
+salaries.historyEmpty	Aucun paiement pour le moment
+salaries.historyLoading	Chargement de l'historique…
+salaries.toasts.loadFailed	Impossible de charger la paie
+salaries.toasts.paid	Salaire payé : {{name}}
+salaries.toasts.payFailed	Impossible de payer le salaire
+salaries.toasts.canceled	Salaire annulé : {{name}}
+salaries.toasts.historyLoadFailed	Impossible de charger l'historique des paiements
+counterparties.count	{{count}} parties prenantes
+counterparties.totalDebt	Dette totale :
+counterparties.add	Ajouter
+counterparties.newTitle	Nouvelle partie prenante
+counterparties.nameLabel	Nom / Nom complet
+counterparties.namePlaceholder	Société SARL ou Jean Dupont
+counterparties.innLabel	Identifiant fiscal
+counterparties.categoryLabel	Catégorie
+counterparties.categoryPlaceholder	Loyer, fournisseur…
+counterparties.typeLabel	Type de partie prenante
+counterparties.types.legal.label	Personne morale
+counterparties.types.legal.desc	Organisation ou entreprise
+counterparties.types.ie.label	Entrepreneur individuel
+counterparties.types.ie.desc	Entrepreneur indépendant
+counterparties.types.person.label	Particulier
+counterparties.types.person.desc	Personne privée
+counterparties.addSubmit	Ajouter une partie prenante
+counterparties.you	Vous
+counterparties.otherCategory	Autre
+counterparties.deals	accords
+counterparties.dealsLabel	Accords
+counterparties.debtLabel	Dette
+counterparties.documents	Documents
+counterparties.edit	Modifier
+counterparties.delete	Supprimer
+counterparties.deleteConfirmTitle	Supprimer cette partie prenante ?
+counterparties.deleteConfirmText	Les documents associés et l'historique des accords resteront, mais la partie prenante sera retirée de la liste.
+counterparties.toasts.loadFailed	Impossible de charger les parties prenantes
+counterparties.toasts.enterName	Saisissez un nom
+counterparties.toasts.saved	Modifications enregistrées
+counterparties.toasts.saveFailed	Impossible d'enregistrer
+counterparties.toasts.added	Partie prenante ajoutée
+counterparties.toasts.addFailed	Impossible d'ajouter la partie prenante
+counterparties.toasts.deleted	Partie prenante supprimée
+counterparties.toasts.deleteFailed	Impossible de supprimer la partie prenante
+counterparties.toasts.documentsOpened	Documents ouverts
+documents.signed	Signé
+documents.pendingCount	En attente de signature
+documents.draftCount	Interne (non signé)
+documents.searchPlaceholder	Rechercher par titre ou partie prenante…
+documents.filters.all	Tous
+documents.filters.signed	Signés
+documents.filters.pending	En attente de signature
+documents.upload	Téléverser
+documents.addTitle	Ajouter un document à la bibliothèque
+documents.dropzoneTitle	Cliquez ou glissez un fichier
+documents.dropzoneHint	PDF, DOCX, XLSX (jusqu'à 15 Mo)
+documents.dropzoneChange	Cliquez pour choisir un autre fichier
+documents.titleLabel	Titre du document
+documents.titlePlaceholder	Ex. procès-verbal de réception n° 48
+documents.partyLabel	Partie prenante (le cas échéant)
+documents.partyPlaceholder	Nom de l'entreprise ou de l'entrepreneur individuel
+documents.needsSignature	Le document nécessite-t-il une signature ?
+documents.needsSignatureHint	Le statut sera « En attente de signature »
+documents.saveToBase	Enregistrer dans la bibliothèque
+documents.emptyTitle	Ce dossier est vide
+documents.emptyBody	Téléversez un nouveau document ou modifiez les filtres
+documents.internalDoc	Document interne
+documents.uploaded	Téléversé {{date}}
+documents.download	Télécharger
+documents.open	Ouvrir
+documents.fileRequired	Joignez un fichier
+documents.options	Options
+documents.status.title	Statut
+documents.status.signed	Signé
+documents.status.pending	En attente de signature
+documents.status.draft	Non signé
+documents.delete	Supprimer
+documents.toasts.loadFailed	Impossible de charger les documents
+documents.toasts.titleRequired	Téléversez un fichier ou saisissez un titre
+documents.toasts.created	Document téléversé dans la bibliothèque
+documents.toasts.createFailed	Impossible d'enregistrer le document
+documents.toasts.badFormat	Formats autorisés : PDF, DOCX, XLSX
+documents.toasts.downloadFailed	Impossible de télécharger le fichier
+documents.toasts.noFile	Aucun fichier n'est joint à ce document
+documents.toasts.openFailed	Impossible d'ouvrir le fichier
+documents.toasts.statusChanged	Statut : {{label}}
+documents.toasts.statusFailed	Impossible de modifier le statut
+documents.toasts.deleted	Document supprimé
+documents.toasts.deleteFailed	Impossible de supprimer le document
+goals.loading	Chargement des objectifs…
+goals.active	Objectifs en cours
+goals.done	Terminés
+goals.avgProgress	Progression globale
+goals.trackingTitle	Suivi du plan
+goals.createGoal	Créer un objectif
+goals.newTitle	Nouvel objectif financier
+goals.titleLabel	Titre de l'objectif
+goals.titlePlaceholder	Ex. nouvelles machines Reformer
+goals.targetLabel	Montant cible, {{symbol}}
+goals.targetPlaceholder	500000
+goals.deadlineLabel	Échéance
+goals.trackingLabel	Comment suivre la progression ?
+goals.trackingAuto	Automatique (indicateur CRM)
+goals.trackingAutoDesc	Liez l'objectif aux revenus d'une catégorie choisie. Le CRM déplacera lui-même la barre de progression.
+goals.trackingManual	Manuel (épargne personnelle)
+goals.trackingManualDesc	Un bouton « Ajouter des fonds » apparaîtra sur la carte. La progression ne dépend que de vous.
+goals.opTypeLabel	Type d'opération
+goals.categoryLabel	Catégorie
+goals.categoryPlaceholder	Choisissez une catégorie
+goals.editTitle	Modifier l'objectif
+goals.nameLabel	Titre
+goals.namePlaceholder	Titre de l'objectif
+goals.amountLabel	Montant, {{symbol}}
+goals.achieved	Objectif atteint
+goals.priority.high	Priorité élevée
+goals.priority.medium	Priorité moyenne
+goals.priority.low	Priorité basse
+goals.autoCollect	Suivi automatique
+goals.deadlinePrefix	Échéance :
+goals.noDeadline	Aucune échéance
+goals.fundPlaceholder	Montant, {{symbol}}
+goals.fund	Ajouter
+goals.addFunds	Ajouter des fonds
+goals.autoHint	La valeur est mise à jour automatiquement à partir des revenus de la catégorie
+goals.deleteConfirmTitle	Supprimer l'objectif ?
+goals.deleteConfirmText	La progression de cet objectif sera perdue. Cette action est irréversible.
+goals.toasts.loadFailed	Impossible de charger les objectifs
+goals.toasts.fillRequired	Renseignez le titre et le montant
+goals.toasts.chooseCategory	Choisissez une catégorie pour l'objectif automatique
+goals.toasts.created	Objectif créé
+goals.toasts.createFailed	Impossible de créer l'objectif
+goals.toasts.enterName	Saisissez un nom
+goals.toasts.updated	Objectif mis à jour
+goals.toasts.updateFailed	Impossible de mettre à jour l'objectif
+goals.toasts.deleted	Objectif supprimé
+goals.toasts.deleteFailed	Impossible de supprimer l'objectif
+goals.toasts.funded	Fonds ajoutés
+goals.toasts.fundFailed	Impossible d'ajouter les fonds
+onlinePayments.description	Connectez Stripe et vos clients pourront payer par carte à la caisse. L'argent arrive directement sur le compte de votre studio — Velora ne le détient jamais. La commission suit votre plan.
+onlinePayments.gatewaysTitle	Prestataires de paiement
+onlinePayments.gateways.stripe.name	Stripe
+onlinePayments.gateways.states.none.label	Non connecté
+onlinePayments.gateways.states.none.hint	Acceptez les paiements par carte sur le compte du studio
+onlinePayments.gateways.states.none.action	Connecter
+onlinePayments.gateways.states.incomplete.label	Informations manquantes
+onlinePayments.gateways.states.incomplete.hint	Stripe attend les informations de votre studio — les paiements restent désactivés jusque-là
+onlinePayments.gateways.states.incomplete.action	Continuer
+onlinePayments.gateways.states.action.label	Action requise
+onlinePayments.gateways.states.action.hint	Stripe a refusé certaines informations et attend des corrections — cela ne se résoudra pas tout seul
+onlinePayments.gateways.states.action.action	Corriger les informations
+onlinePayments.gateways.states.review.label	En cours d'examen
+onlinePayments.gateways.states.review.hint	Les informations ont été envoyées, Stripe les examine. Cela prend généralement jusqu'à un jour
+onlinePayments.gateways.states.review.action	Ouvrir Stripe
+onlinePayments.gateways.states.active.label	Connecté
+onlinePayments.gateways.states.active.hint	Les paiements par carte arrivent sur le compte Stripe du studio
+onlinePayments.gateways.states.active.action	Paramètres
+onlinePayments.toasts.gatewayUpdated	Paramètres du prestataire mis à jour
+onlinePayments.toasts.stripeReturned	Informations envoyées à Stripe
+onlinePayments.toasts.stripeLinkExpired	Le lien Stripe a expiré — appuyez à nouveau sur Connecter
+paymentMethods.totalTurnover	Chiffre d'affaires de la période
+paymentMethods.periods.month	Mois
+paymentMethods.periods.quarter	Trimestre
+paymentMethods.periods.year	Année
+paymentMethods.amount	Montant
+paymentMethods.share	Part
+paymentMethods.transactions	transactions
+paymentMethods.methods.cash.name	Espèces
+paymentMethods.methods.card.name	Carte bancaire
+paymentMethods.methods.qr.name	SBP (QR)
+paymentMethods.methods.transfer.name	Virement
+paymentMethods.methods.stripe.name	Stripe
+paymentMethods.methods..name	Non précisé
+reports.metrics.revenue	Revenus
+reports.metrics.expenses	Dépenses
+reports.metrics.profit	Bénéfice
+reports.metrics.margin	Marge
+reports.vsPreviousPeriod	par rapport à la période précédente
+reports.cashflowTitle	Flux de trésorerie
+reports.cashflowSub	Analyse des revenus et dépenses
+reports.period	Période
+reports.income	Revenu
+reports.expense	Dépense
+reports.profit	Bénéfice
+reports.periods.today	Aujourd'hui
+reports.periods.week	Semaine
+reports.periods.month	Mois
+reports.periods.year	Année
+reports.legendIncome	Revenus
+reports.legendExpense	Dépenses
+reports.exportCsv	Exporter CSV
+reports.expenseStructure	Répartition des dépenses
+reports.incomeStructure	Répartition des revenus
+reports.total	Total
+reports.otherCategory	Non catégorisé
+reports.noData	Aucune donnée pour cette période
+reports.insightsTitle	Synthèse et analyses financières
+reports.insightsPlaceholder	Une synthèse financière assistée par IA apparaîtra ici : analyse des tendances, répartition des dépenses et recommandations
+reports.toasts.exportFailed	Impossible d'exporter les opérations
+confirmModal.cancel	Annuler
+confirmModal.confirm	Confirmer
+confirmModal.delete	Supprimer

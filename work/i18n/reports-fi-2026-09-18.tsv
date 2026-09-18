@@ -1,0 +1,376 @@
+== fi
+tabs.overview	Yleiskatsaus
+tabs.sales	Myynti
+tabs.clients	Asiakkaat
+tabs.team	Tiimi
+tabs.schedule	Aikataulu
+toolbar.period.day	Päivä
+toolbar.period.week	Viikko
+toolbar.period.month	Kuukausi
+toolbar.period.year	Vuosi
+toolbar.period.custom	Mukautettu
+toolbar.vsPrevious	verrattuna edelliseen jaksoon: {{from}}–{{to}}
+toolbar.allBranches	Kaikki toimipisteet
+toolbar.allHalls	Kaikki {{spacePlural}}
+toolbar.allTrainers	Kaikki valmentajat
+toolbar.allServices	Kaikki palvelut
+toolbar.export	Vie
+insights.title	Vaatii huomiota
+insights.action	Avaa
+insights.empty	Kaikki on nyt hyvin — ei näytettäviä neuvoja
+insights.revenue_up_clients_down	Liikevaihto kasvaa, mutta aktiivisten asiakkaiden määrä vähenee — tarkista poistuma
+insights.clients_at_risk	{{count}} asiakas(ta) ei ole osallistunut yli kolmeen viikkoon — poistumariski
+insights.lesson_overfull	"{{name}}" {{weekday, weekday}} klo {{hour}}.00 on ollut {{pct}} % täynnä kolme viikkoa peräkkäin — harkitse uuden tunnin lisäämistä
+insights.trial_low_conversion	Vain {{pct}} % {{buyers}} kokeiluasiakkaasta osti myöhemmin jäsenyyden — harkitse kampanjaa
+insights.fastest_growing_product	"{{name}}" kasvaa nopeimmin: +{{pct}} % verrattuna edelliseen jaksoon
+insights.renewals_low	Vain {{pct}} % asiakkaista, joiden jäsenyys on päättynyt, uusii sen — harkitse muistutusta
+insights.new_no_second_visit	{{count}} uutta asiakasta kävi kerran eikä varannut enää uudelleen — harkitse muistutusta
+insights.subs_expiring_week	{{count}} asiakkaan jäsenyys päättyy tällä viikolla — harkitse uusimisen tarjoamista
+insights.vip_inactive	VIP-asiakas "{{name}}" ei ole käynyt {{days}} päivään — harkitse henkilökohtaista viestiä
+insights.high_return_free_evenings	"{{name}}"-tunnilla on korkea paluuaste ({{return_pct}} %), mutta illat ovat vapaita — lisää tunti
+insights.trainer_overloaded	"{{name}}" on kuormittunut {{load_pct}} % — harkitse aikataulun tasapainottamista
+insights.low_rating	"{{name}}"-tunnin arvio on {{rating}} — siihen kannattaa perehtyä tarkemmin
+insights.slot_chronic_low	"{{name}}" {{weekday, isodowWeekday}} klo {{hour}}.00 on ollut {{pct}} % täynnä {{weeks}} viikkoa peräkkäin — siirrä tai peru se
+insights.hall_idle_evenings	"{{name}}" on tyhjillään {{pct}} % iltatunneista — harkitse tunnin lisäämistä
+insights.slot_overfull	Aika {{weekday, isodowWeekday}} klo {{hour}}.00 on ollut {{pct}} % täynnä kolme viikkoa peräkkäin — harkitse uuden tunnin lisäämistä
+insights.loss_hotspot	{{cancels}} tuntia peruttiin ajankohtana {{label}} tällä jaksolla — eniten peruutuksia kertyy tämän tunnin ympärille
+table.loading	Ladataan…
+table.noProduct	Ei tuotetta
+empty.noData.title	Täällä ei ole vielä mitään
+empty.noData.text	Valitulla jaksolla ei kirjattu toimintaa. Laajenna ajanjaksoa tai aloita varaamalla asiakas päiväkirjassa.
+empty.noData.widen	Näytä vuosi
+empty.noRevenue	Ei maksuja tällä jaksolla
+empty.noSales	Ei myyntiä tässä osiossa
+empty.noProducts	Pakkauksia tai palveluita ei ole vielä myyty
+empty.noLessons	Ei tunteja tällä jaksolla
+empty.noTrainerLessons	Tämä valmentaja ei ole vielä pitänyt tunteja
+empty.noRows	Ei tietoja tässä osiossa
+empty.noLosses	Ei peruutuksia tai poisjääntejä tällä jaksolla
+overview.kpi.revenue	Liikevaihto
+overview.kpi.profit	Voitto
+overview.kpi.attendance	Osallistuminen
+overview.kpi.activeClients	Aktiiviset asiakkaat
+overview.kpi.fillRate	Täyttöaste
+overview.chart.metric.revenue	Liikevaihto
+overview.chart.metric.profit	Voitto
+overview.chart.metric.attendance	Osallistuminen
+overview.chart.metric.new_clients	Uudet asiakkaat
+overview.chart.metric.fill_rate	Täyttöaste
+overview.revenueStructure.title	Liikevaihdon rakenne
+overview.category.subscriptions	Jäsenyydet
+overview.category.services	Palvelut
+overview.category.certificates	Lahjakortit
+overview.category.rent	Vuokra
+overview.category.salary	Palkka
+overview.category.refunds	Palautukset
+overview.clientDynamics.title	Asiakasdynamiikka
+overview.clientDynamics.new	Uudet
+overview.clientDynamics.returned	Palanneet
+overview.clientDynamics.lost	Menetetyt
+overview.drilldown.title	Tapahtuma
+overview.drilldown.category	Luokka
+overview.drilldown.amount	Määrä
+overview.drilldown.lesson	Tunti
+overview.drilldown.time	Aika
+overview.drilldown.occupancy	Täyttöaste
+overview.drilldown.date	Päivämäärä
+overview.drilldown.method	Tapa
+overview.drilldown.trainer	Valmentaja
+overview.drilldown.rowsCount	riviä
+overview.drilldown.search	Hae taulukosta
+overview.drilldown.shownOf	Näytetään {{shown}} / {{total}}
+overview.drilldown.noMatches	Haulla “{{query}}” ei löytynyt mitään
+overview.drilldown.reset	Nollaa
+overview.drilldown.export	Vie CSV
+overview.drilldown.subtitle.money	Tämän osion tapahtumat
+overview.drilldown.subtitle.lessons	Tämän osion tunnit
+overview.drilldown.hint.operations	Avaa tapahtuma Taloudessa napsauttamalla riviä
+overview.drilldown.hint.lessons	Avaa kyseinen päivä päiväkirjassa napsauttamalla riviä
+overview.drilldown.stat.net	Netto
+overview.drilldown.stat.income	Tulot
+overview.drilldown.stat.expense	Menot
+overview.drilldown.stat.operations	Tapahtumat
+overview.drilldown.stat.topCategory	Suurin luokka
+overview.drilldown.stat.lessons	Tunnit
+overview.drilldown.stat.booked	Varatut paikat
+overview.drilldown.stat.avgFill	Keskimääräinen täyttöaste
+overview.drilldown.stat.trainers	Valmentajat
+overview.drilldown.stat.cancelled	Peruttu
+sales.kpi.revenue	Liikevaihto
+sales.kpi.salesCount	Myynnit
+sales.kpi.avgCheck	Keskimääräinen ostos
+sales.kpi.repeatShare	Uusintaostojen osuus
+sales.kpi.renewals	Uusimisaste
+sales.chart.title	Myynti
+sales.incomeOperations	Tulotapahtumat
+sales.breakdown.byCategory	Mitä he ostavat
+sales.breakdown.byMethod	Miten he maksavat
+sales.breakdown.buyerType	Kuka ostaa
+sales.breakdown.new	Uudet
+sales.breakdown.returning	Palaavat
+sales.breakdown.noClient	Ei asiakasta
+sales.method.card	Kortti
+sales.method.cash	Käteinen
+sales.method.qr	QR-koodi
+sales.method.transfer	Tilisiirto
+sales.products.title	Tuotteet
+sales.products.name	Tuote
+sales.products.sold	Myyty
+sales.products.revenue	Liikevaihto
+sales.products.avgCheck	Keskimääräinen ostos
+sales.products.repeatShare	Uusintaostojen osuus
+sales.products.trend	Suunta
+sales.products.trendHint	Verrattuna yhtä pitkään edelliseen jaksoon
+clients.kpi.new	Uudet
+clients.kpi.returned	Palanneet
+clients.kpi.lost	Menetetyt
+clients.kpi.retention	Asiakaspysyvyys
+clients.kpi.avgValue	Asiakkaan arvo
+clients.chart.title	Uudet ja palaavat
+clients.chart.new	Uudet
+clients.chart.returned	Palaavat
+clients.riskTitle	Riskisegmentit
+clients.loyalTitle	Uskolliset
+clients.list	Luettelo
+clients.campaign	Käynnistä kampanja
+clients.exportList	Vie luettelo
+clients.emptySegment	Segmentissä "{{name}}" ei ole nyt asiakkaita
+clients.segments.new.name	Uudet asiakkaat
+clients.segments.new.desc	Rekisteröity valitulla jaksolla
+clients.segments.returned.name	Palaavat asiakkaat
+clients.segments.returned.desc	Kävivät tällä ja edellisellä jaksolla
+clients.segments.lost.name	Menetetyt asiakkaat
+clients.segments.lost.desc	Kävivät edellisellä jaksolla, eivät palanneet tällä
+clients.segments.active.name	Aktiiviset asiakkaat
+clients.segments.active.desc	Osallistuivat vähintään yhdelle tunnille valitulla jaksolla
+clients.segments.at_risk.name	Vaaravyöhykkeellä
+clients.segments.at_risk.desc	Aktiivisia, mutta ei käyntiä 21+ päivään
+clients.segments.vip_idle.name	Passiiviset VIP-asiakkaat
+clients.segments.vip_idle.desc	VIP-asiakkaat, ei käyntiä 14+ päivään
+clients.segments.expiring_subscription.name	Jäsenyys päättymässä
+clients.segments.expiring_subscription.desc	Jäljellä ≤2 tuntia tai ≤7 päivää
+clients.segments.lost_newcomers.name	Eivät palanneet koskaan
+clients.segments.lost_newcomers.desc	Kävivät kerran, poissa 14+ päivää
+clients.segments.upsell_candidates.name	Valmiita lisämyyntiin
+clients.segments.upsell_candidates.desc	8+ käyntiä tässä kuussa, ei pakettia
+clients.segments.frequent.name	Usein käyvät
+clients.segments.frequent.desc	8+ käyntiä jaksolla
+clients.segments.high_ltv.name	Korkea LTV
+clients.segments.high_ltv.desc	Ylin 10 % kokonaiskulutuksen mukaan
+clients.segments.referrers.name	Suosittelijat
+clients.segments.referrers.desc	Tekivät suosittelun jaksolla
+clients.listSearch	Hae nimellä tai puhelinnumerolla
+clients.shownOf	Näytetään {{shown}} / {{total}}
+clients.noMatches	Haulla "{{query}}" ei löytynyt ketään
+clients.resetSearch	Nollaa
+clients.neverVisited	Ei käynyt koskaan
+clients.valueLabel.visits	Käynnit
+clients.valueLabel.spent	Käytetty
+clients.valueLabel.daysIdle	Toimettomia päiviä
+clients.valueLabel.remaining	Tunteja jäljellä
+clients.valueLabel.value	Arvo
+clients.relative.today	Tänään
+clients.relative.daysAgo_one	{{count}} päivä sitten
+clients.relative.daysAgo_other	{{count}} päivää sitten
+team.kpi.lessonsCount	Tunnit
+team.kpi.revenuePerHour	Liikevaihto/tunti
+team.kpi.avgFillPct	Täyttöaste
+team.kpi.cancelNoshowPct	Peruutukset/poissaolot
+team.kpi.avgRating	Arvio
+team.table.title	Valmentajat
+team.table.trainer	Valmentaja
+team.table.lessons	Tunnit
+team.table.fillPct	Täyttöaste
+team.table.attendance	Osallistuminen
+team.table.revenue	Liikevaihto
+team.table.returnRate	Paluuaste
+team.table.cancels	Peruutukset
+team.table.fillPctHint	Täytetyt paikat suunnitelluista paikoista
+team.table.returnRateHint	Asiakkaat, jotka varasivat tämän valmentajan tunnin uudelleen
+team.table.cancelsHint	Perutut tunnit ja asiakkaiden poisjäännit
+team.table.ratingHint	Keskimääräinen arvio, jonka asiakkaat antoivat tämän valmentajan tunneille
+team.drawer.revenueByWeek	Liikevaihto viikoittain
+team.drawer.loadByWeekday	Kuormitus viikonpäivittäin
+team.drawer.loadByHour	Kuormitus kellonajan mukaan
+team.drawer.loadDim.weekday	Päivän mukaan
+team.drawer.loadDim.hour	Tunnin mukaan
+team.drawer.schedule.title	Aikataulu
+team.drawer.schedule.empty	Ei tunteja tällä jaksolla
+team.drawer.topLessons	Suosikkitunnit
+team.drawer.returnBlock	Asiakkaiden paluu
+team.drawer.returnOf	{{returned}} / {{total}} asiakkaasta palasi ({{pct}} %)
+team.drawer.openProfile	Avaa profiili
+team.drawer.held	Pidetty
+team.drawer.attendance	Osallistuminen
+team.weekdays.0	Su
+team.weekdays.1	Ma
+team.weekdays.2	Ti
+team.weekdays.3	Ke
+team.weekdays.4	To
+team.weekdays.5	Pe
+team.weekdays.6	La
+schedule.weekdaysMonFirst.0	Ma
+schedule.weekdaysMonFirst.1	Ti
+schedule.weekdaysMonFirst.2	Ke
+schedule.weekdaysMonFirst.3	To
+schedule.weekdaysMonFirst.4	Pe
+schedule.weekdaysMonFirst.5	La
+schedule.weekdaysMonFirst.6	Su
+schedule.kpi.avgFillPct	Täyttöaste
+schedule.kpi.freeSpots	Vapaat paikat
+schedule.kpi.cancels	Peruutukset
+schedule.kpi.noshows	Poissaolot
+schedule.kpi.lostRevenue	Menetetty liikevaihto
+schedule.heatmap.title	Kuormitus päivän ja tunnin mukaan
+schedule.heatmap.legend	Täyttöaste:
+schedule.heatmap.tooltip	{{lessons}} tuntia · {{attendance}} osallistui · {{pct}} %
+schedule.heatmap.empty	Ei tunteja
+schedule.slices.topProfitable	Kannattavimmat
+schedule.slices.topFilled	Täyteen varatuimmat
+schedule.slices.chronicLow	Kroonisesti alitäydet
+schedule.slices.halls	Käyttöaste: {{spacePlural}}
+schedule.slices.held	{{count}} pidetty
+schedule.slices.weeks	{{count}} vk
+schedule.slices.move	Siirrä
+schedule.slices.cancel	Peruuta
+schedule.slices.eveningIdle	iltaisin tyhjänä {{pct}} %
+schedule.losses.title	Peruutukset ja poisjäännit
+schedule.losses.dim.hour	Kellonajan mukaan
+schedule.losses.dim.service	Palvelun mukaan
+schedule.losses.dim.trainer	Valmentajan mukaan
+schedule.losses.cancels_one	{{count}} peruutus
+schedule.losses.cancels_other	{{count}} peruutusta
+schedule.losses.noshows_one	{{count}} poisjäänti
+schedule.losses.noshows_other	{{count}} poisjääntiä
+schedule.losses.lostSpots_one	−{{count}} paikka
+schedule.losses.lostSpots_other	−{{count}} paikkaa
+schedule.status.confirmed	Vahvistettu
+schedule.status.pending	Odottaa
+schedule.status.cancelled	Peruttu
+schedule.slot.summary	{{from}} — {{to}}
+schedule.slot.lessonsCount	Tunteja yhteensä
+export.csv	Lataa CSV
+scopeNote.label	Koko studio
+scopeNote.money	Toimipiste- ja {{space}}-suodattimet eivät vaikuta rahaan — maksu ei liity niihin
+scopeNote.clientBase	Valmentaja, {{space}}, toimipiste ja palvelu eivät muuta tätä mittaria — asiakas ei liity niihin
+descriptions.overview.metric.revenue	Kaikki studiolle jakson aikana tullut raha
+descriptions.overview.metric.profit	Se, mikä jää jäljelle jakson kulujen jälkeen
+descriptions.overview.metric.attendance	Tunnit, joille asiakkaat todella osallistuivat
+descriptions.overview.metric.new_clients	Tällä jaksolla rekisteröidyt asiakkaat
+descriptions.overview.metric.fill_rate	Kuinka täynnä tunnit ovat: varatut paikat käytettävissä olevista paikoista
+descriptions.overview.revenueStructure	Mistä liikevaihtosi tällä jaksolla koostuu
+descriptions.overview.clientDynamics	Kuinka moni tuli ensi kertaa, palasi tai lopetti käymisen
+descriptions.sales.chart	Liikevaihto ja ostojen määrä päivittäin
+descriptions.sales.byCategory	Kunkin tuotteen osuus liikevaihdosta
+descriptions.sales.byMethod	Miten liikevaihto jakautuu maksutavoittain
+descriptions.sales.buyerType	Kuinka paljon liikevaihtoa tulee uusilta asiakkailta verrattuna vakioasiakkaisiin
+descriptions.sales.products	Jokainen tuote: kuinka monta myytiin, millä summalla ja kasvaako myynti
+descriptions.clients.chart	Kuinka moni asiakas tuli ensi kertaa ja kuinka moni palasi, viikoittain
+descriptions.clients.riskSegments	Asiakkaat, jotka voit menettää, jos et ota heihin yhteyttä nyt
+descriptions.clients.loyalSegments	Ne, jotka käyvät eniten, kuluttavat eniten ja tuovat ystäviä
+descriptions.team.trainers	Vertailu kuormituksen, liikevaihdon ja asiakkaiden paluuasteen mukaan
+descriptions.team.loadWeekday	Milloin viikonpäivinä valmentaja on kiireinen ja milloin vapaa
+descriptions.team.loadHour	Mihin aikaan tunnit täyttyvät ja milloin ne jäävät tyhjiksi
+descriptions.team.schedule	Kaikki valmentajan tunnit valitulla jaksolla
+descriptions.schedule.heatmap	Missä aikataulu on ylivarattu ja missä tyhjä
+descriptions.schedule.topProfitable	Aikataulun ajat, jotka tuottavat eniten rahaa
+descriptions.schedule.topFilled	Ajat, joita asiakkaat varaavat innokkaimmin
+descriptions.schedule.chronicLow	Ajat, jotka ovat viikkoja täyttyneet alle kolmannekseen
+descriptions.schedule.halls	Kuinka suuren osan ajasta {{spacePlural}} ovat todella käytössä
+descriptions.schedule.losses	Missä studio menettää paikkoja: perutuissa tunneissa tai asiakkaiden poisjäänneissä
+formulas.salesCount.title	Myynnit
+formulas.salesCount.text	Kuinka monta kertaa asiakkaat maksoivat sinulle tällä jaksolla. Yksi useasti maksava henkilö lasketaan erillisiksi myynneiksi.
+formulas.revenue.title	Liikevaihto
+formulas.revenue.text	Kaikki studiolle tällä jaksolla tullut raha maksupäivän mukaan. Paketit, yksittäiset tunnit, lahjakortit ja vähittäismyynti — kaikki yhdessä.
+formulas.profit.title	Voitto
+formulas.profit.text	Se, mikä jää tämän jakson kulujen jälkeen: vuokra, palkat ja tarvikkeet. Tämä on todellinen voittosi.
+formulas.attendance.title	Osallistuminen
+formulas.attendance.text	Kuinka monta käyntiä asiakkaat todella tekivät. Vain osallistuneiksi merkityt tunnit lasketaan.
+formulas.bookings.title	Varaukset
+formulas.bookings.text	Kuinka monta varausta asiakkaat tekivät tunneille. Peruttuja varauksia ei lasketa.
+formulas.noshow.title	Poisjäänti
+formulas.noshow.text	Asiakas varasi, tunti pidettiin, mutta asiakas ei saapunut. Jokainen tapaus on paikka, jonka joku toinen olisi voinut ottaa.
+formulas.activeClients.title	Aktiiviset asiakkaat
+formulas.activeClients.text	Kuinka moni eri henkilö kävi vähintään kerran tällä jaksolla. Jokainen asiakas lasketaan kerran käyntien määrästä riippumatta.
+formulas.occupancy.title	Täyttöaste
+formulas.occupancy.text	Kuinka täynnä tunnisi ovat: täytetyt paikat kaikista suunnittelemistasi paikoista. 100 % tarkoittaa, ettei tilaa ole enää.
+formulas.avgCheck.title	Keskimääräinen ostos
+formulas.avgCheck.text	Kuinka paljon yksi maksu tuottaa keskimäärin. Se kasvaa, kun asiakkaat ostavat pidempiä paketteja tai lisäpalveluja.
+formulas.retention.title	Asiakaspysyvyys
+formulas.retention.text	Kuinka moni edellisen jakson asiakkaista palasi tällä jaksolla. Se kertoo, pidätkö asiakkaat vai aloitatko joka kuukausi nollasta.
+formulas.newClients.title	Uudet asiakkaat
+formulas.newClients.text	Ihmiset, jotka ilmestyivät asiakaskantaasi ensimmäisen kerran tällä jaksolla.
+formulas.returning.title	Palaavat
+formulas.returning.text	Asiakkaat, jotka olivat käyneet aiemmin ja tulivat uudelleen tällä jaksolla.
+formulas.lost.title	Menetetyt
+formulas.lost.text	Kävivät edellisellä jaksolla eivätkä tulleet kertaakaan tällä jaksolla. Heihin kannattaa silti ottaa yhteyttä.
+formulas.clientValue.title	Asiakkaan arvo
+formulas.clientValue.text	Kuinka paljon yksi asiakas tuottaa keskimäärin tällä jaksolla.
+formulas.repeatPurchaseShare.title	Uusintaostojen osuus
+formulas.repeatPurchaseShare.text	Niiden asiakkaiden osuus, jotka ostivat sinulta useammin kuin kerran. Mitä suurempi luku, sitä vahvempi on tapa palata luoksesi.
+formulas.renewalRate.title	Uusimisaste
+formulas.renewalRate.text	Kuinka moni asiakas osti uuden paketin edellisen päätyttyä.
+formulas.revenuePerHour.title	Liikevaihto per tunti (valmentaja)
+formulas.revenuePerHour.text	Kuinka paljon rahaa valmentajan yksi työtunti tuottaa. Sen avulla voit verrata valmentajia reilusti — joku voi pitää vähemmän tunteja, mutta jokainen niistä tuottaa enemmän.
+formulas.trainerReturnRate.title	Paluuaste (valmentaja)
+formulas.trainerReturnRate.text	Sen valmentajan asiakkaiden osuus, jotka varasivat häneltä uudelleen.
+formulas.missedRevenue.title	Menetetty liikevaihto
+formulas.missedRevenue.text	Raha, jota studio ei ansainnut aiempien tuntien tyhjien paikkojen vuoksi: vapaat paikat kerrottuna tunnin hinnalla.
+formulas.losses.title	Peruutukset ja poisjäännit
+formulas.losses.text	„Peruutus” on peruttu tunti; „poisjäänti” on asiakas, joka varasi mutta ei tullut. Kellonajan, palvelun ja valmentajan mukaiset erittelyt käyttävät samoja suodattimia kuin välilehti ja täsmäävät otsikon KPI-lukuihin.
+formulas.lessonRevenue.title	Tunnin liikevaihto
+formulas.lessonRevenue.text	Karkea arvio tunnin liikevaihdosta: osallistujat kerrottuna hinnalla. Maksuja ei liitetä tiettyyn tuntiin, joten tämä on arvio, ei tarkka luku.
+formulas.filtersScope.title	Suodattimien kattavuus
+formulas.filtersScope.text	Toimipiste- ja {{space}}-suodattimet koskevat vain tuntimittareita. Maksuilla ei ole tällaista yhteyttä, joten raha näytetään koko studiolle.
+formulas.avgValue.title	Asiakkaan arvo
+formulas.avgValue.text	Kuinka paljon yksi asiakas tuottaa keskimäärin tällä jaksolla.
+formulas.cancelNoshow.title	Peruutukset ja poisjäännit
+formulas.cancelNoshow.text	Keskeytyneiden tuntien osuus: peruutukset ja poisjäännit kaikesta suunnitellusta.
+formulas.avgRating.title	Keskimääräinen arvio
+formulas.avgRating.text	Keskimääräinen arvio, jonka asiakkaat antoivat tämän valmentajan tunneille.
+formulas.teamScope.title	Tietojen kattavuus
+formulas.teamScope.text	Tässä lasketaan vain tiettyyn valmentajaan liittyvä liikevaihto, joten kaikkien valmentajien yhteissumma voi olla studion kokonaisliikevaihtoa pienempi.
+formulas.lessonsCount.title	Tunnit
+formulas.lessonsCount.text	Kuinka monta tuntia valmentajat pitivät tällä jaksolla.
+formulas.load.title	Kuormitus
+formulas.load.text	Kuinka täysi valmentajan päivä on: hänen varatut tuntinsa studion aukioloaikojen sisällä.
+formulas.weeklyClients.title	Uudet ja palaavat
+formulas.weeklyClients.text	Viikoittain: kuinka moni tuli luoksesi ensi kertaa ja kuinka moni palasi. Terve studio kasvaa molemmilla käyrillä.
+formulas.byCategory.title	Liikevaihto luokittain
+formulas.byCategory.text	Mistä todella ansaitset: paketeista, yksittäisistä tunneista, lahjakorteista ja vähittäismyynnistä.
+formulas.byMethod.title	Maksutavat
+formulas.byMethod.text	Miten asiakkaat maksavat. Auttaa näkemään, tarvitsetko korttimaksuja ja kuinka paljon rahaa ohittaa kassan.
+formulas.buyerType.title	Kuka maksaa
+formulas.buyerType.text	Uudet asiakkaat verrattuna vakioasiakkaisiin. Jos lähes kaikki liikevaihto tulee uusilta asiakkailta, studio ei pidä asiakkaita.
+formulas.products.title	Mikä myy
+formulas.products.text	Kaikki jakson paketit ja palvelut: kuinka monta myytiin, millä summalla ja kasvaako myynti.
+formulas.topProfitable.title	Kannattavimmat ajat
+formulas.topProfitable.text	Aikataulun ajat, jotka tuottavat eniten rahaa. Sijoita parhaat valmentajasi niihin.
+formulas.topFilled.title	Täyteen varatuimmat ajat
+formulas.topFilled.text	Ajat, joita asiakkaat varaavat innokkaimmin. Jos ne ovat täysin täynnä, kannattaa lisätä toinen tunti.
+formulas.chronicLow.title	Kroonisesti tyhjät ajat
+formulas.chronicLow.text	Ajat, jotka ovat täyttyneet alle kolmannekseen usean viikon ajan. Ne kannattaa siirtää tai poistaa.
+formulas.hallUtil.title	Käyttöaste: {{spacePlural}}
+formulas.hallUtil.text	Kuinka suuren osan ajasta {{spacePlural}} ovat todella käytössä. Tyhjä aika on vuokraa, joka ei maksa itseään takaisin.
+formulas.heatmap.title	Kuormitus päivän ja tunnin mukaan
+formulas.heatmap.text	Väri näyttää ajan keskimääräisen täyttöasteen jaksolla. Napsauta solua nähdäksesi kyseisen päivän ja tunnin tunnit.
+formulas.riskSegments.title	Riskisegmentit
+formulas.riskSegments.text	Asiakkaat ryhmiteltyinä riskin mukaan — voit menettää heidät tai he eivät tuo tuloja. Jokaisella kortilla on oma perusteensa ja selkeä seuraava askel: lähetä viesti, tarjoa uusimista tai lisämyyntiä.
+formulas.loyalSegments.title	Uskolliset
+formulas.loyalSegments.text	Asiakkaat, jotka tuovat jo eniten arvoa: he käyvät useimmin, kuluttavat eniten tai tuovat ystäviä. Heistä kannattaa pitää huolta ja palkita heitä.
+formulas.segment.at_risk.title	Vaaravyöhykkeellä
+formulas.segment.at_risk.text	He kävivät ennen säännöllisesti, mutta ovat nyt kadonneet. Heidät voi vielä saada takaisin yhdellä viestillä.
+formulas.segment.vip_idle.title	Passiiviset VIP-asiakkaat
+formulas.segment.vip_idle.text	Asiakkaat, jotka ovat kuluttaneet enemmän kuin kukaan muu mutta eivät ole käyneet vähään aikaan.
+formulas.segment.expiring_subscription.title	Jäsenyys päättymässä
+formulas.segment.expiring_subscription.text	Näillä asiakkailla on jäljellä 1–2 tuntia. Nyt on paras hetki tarjota uusimista.
+formulas.segment.lost_newcomers.title	Uudet asiakkaat, jotka eivät palanneet
+formulas.segment.lost_newcomers.text	He kävivät kerran ja katosivat. Syynä on usein ensimmäinen tunti — asia kannattaa selvittää.
+formulas.segment.upsell_candidates.title	Valmiita enempään
+formulas.segment.upsell_candidates.text	He käyvät usein, mutta ostavat yksinkertaisimman paketin. Heille kannattaa tarjota kalliimpaa jäsenyyttä.
+formulas.segment.frequent.title	Vakituiset
+formulas.segment.frequent.text	He käyvät useammin kuin kukaan muu. Studion liikevaihdon selkäranka.
+formulas.segment.high_ltv.title	Arvokkaimmat
+formulas.segment.high_ltv.text	He ovat tuoneet studiolle enemmän rahaa kuin kukaan muu koko ajalta.
+formulas.segment.referrers.title	Tuovat ystäviä
+formulas.segment.referrers.text	Asiakkaat, joiden suositukset ovat tuoneet sinulle muita ihmisiä.

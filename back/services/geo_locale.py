@@ -21,7 +21,7 @@ from pathlib import Path
 from typing import NamedTuple
 
 import maxminddb
-from services.i18n import DEFAULT_LANG
+from services.ui_locale import DEFAULT_UI_LANG, INTERFACE_LANGS
 
 logger = logging.getLogger(__name__)
 
@@ -35,15 +35,35 @@ DB_PATH = Path(
     or Path(__file__).resolve().parent.parent / "geoip" / "dbip-city-lite.mmdb"
 )
 
-# Страна → язык интерфейса. Только языки, на которые переведён фронт
-# (services/i18n.LANGS). Страны вне списка получают en, и фронт остаётся на
-# английском. Словакия → чешский: словацкого перевода нет, а чешский словаку
-# понятнее английского.
+# Страна → язык интерфейса. Это отдельный набор 22 языков CRM-интерфейса;
+# ``services.i18n`` по-прежнему обслуживает только исходящие сообщения.
+# Страны вне списка получают en. Словакия → чешский: словацкого перевода нет,
+# а чешский словаку понятнее английского. Российский IP намеренно не выбирает
+# русский: русский остаётся только явным выбором пользователя.
 COUNTRY_LANGUAGE: dict[str, str] = {
+    "AL": "sq", "XK": "sq",
+    "BG": "bg",
+    "HR": "hr",
     "CZ": "cs", "SK": "cs",
+    "DK": "da",
+    "FI": "fi",
+    "FR": "fr", "MC": "fr",
     "DE": "de", "AT": "de", "CH": "de", "LI": "de",
+    "GR": "el", "CY": "el",
+    "HU": "hu",
+    "IT": "it", "SM": "it", "VA": "it",
+    "NO": "no",
+    "PL": "pl",
+    "PT": "pt",
+    "RO": "ro", "MD": "ro",
+    "RS": "sr",
+    "ES": "es", "AR": "es", "BO": "es", "CL": "es", "CO": "es",
+    "CR": "es", "CU": "es", "DO": "es", "EC": "es", "GQ": "es",
+    "GT": "es", "HN": "es", "MX": "es", "NI": "es", "PA": "es",
+    "PE": "es", "PR": "es", "PY": "es", "SV": "es", "UY": "es", "VE": "es",
+    "SE": "sv",
+    "TR": "tr",
     "UA": "uk",
-    # Русский доступен только как явный выбор пользователя, не по геолокации.
 }
 
 # Cloudflare так помечает неизвестную страну и выход Tor.
@@ -160,17 +180,15 @@ def visitor_ip(
 
 
 def language_for_country(country: str | None) -> str:
-    return COUNTRY_LANGUAGE.get((country or "").upper(), DEFAULT_LANG)
+    return COUNTRY_LANGUAGE.get((country or "").upper(), DEFAULT_UI_LANG)
 
 
 if __name__ == "__main__":
-    from services.i18n import LANGS
-
-    assert set(COUNTRY_LANGUAGE.values()) <= set(LANGS), "язык без перевода интерфейса"
+    assert set(COUNTRY_LANGUAGE.values()) <= set(INTERFACE_LANGS), "язык без перевода интерфейса"
     assert visitor_country("cz", None) == "CZ"
     assert visitor_country("XX", "127.0.0.1") is None
     assert country_for_ip("192.168.1.10") is None and country_for_ip("мусор") is None
-    assert language_for_country("AT") == "de" and language_for_country("FR") == "en"
+    assert language_for_country("AT") == "de" and language_for_country("FR") == "fr"
     assert locate_ip(None) == Place() and locate_ip("10.0.0.1") == Place()
     if _reader() is not None:
         # Замерено на живой базе: у Google свой адрес в Маунтин-Вью.

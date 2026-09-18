@@ -1,0 +1,333 @@
+== bg
+nav.sectionLabel	Системни настройки
+nav.general	Общи
+nav.appearance	Изглед
+nav.notifications	Известия
+nav.billing	Плащания
+nav.security	Сигурност
+nav.integrations	Интеграции
+nav.data	Данни
+nav.logout	Смяна на CRM
+toast.saved	Запазено
+toast.error	Нещо се обърка
+workspace.title	Вашите CRM системи
+workspace.subtitle	Изберете работно пространство или създайте ново
+workspace.current	Текущо
+workspace.membersCount_one	{{count}} член
+workspace.membersCount_other	{{count}} членове
+workspace.clientsCount_one	{{count}} клиент
+workspace.clientsCount_other	{{count}} клиенти
+workspace.createNew	Създайте ново студио
+workspace.loadError	Студиата ви не можаха да се заредят
+workspace.selectError	Не можа да се премине към това студио
+general.company.title	Данни за компанията
+general.company.subtitle	Публична информация за вашия бизнес
+general.company.name	Име на компанията
+general.company.namePh	напр. Моето студио
+general.company.desc	Описание
+general.company.descPh	Какво прави вашето студио…
+general.company.phone	Телефон
+general.company.email	Имейл
+general.company.site	Уебсайт
+general.company.sitePh	https://studio.com
+general.company.address	Адрес
+general.company.addressPh	ул. Примерна 123, Град
+general.reset	Нулиране
+general.resetToast	Настройките са нулирани
+general.locale.title	Език и регион
+general.locale.subtitle	Настройки за локализация на интерфейса
+general.locale.timezone	Часова зона
+general.locale.timezoneSearch	Град или отместване
+general.locale.timezoneNotFound	Не е намерена часова зона
+general.locale.currency	Валута
+general.locale.currencySearch	Търсене на валута
+general.locale.currencyNotFound	Няма намерена валута
+general.locale.language	Език на интерфейса
+general.locale.languageSearch	Търсене на език
+general.locale.languageNotFound	Не е намерен език
+general.locale.dateFormat	Формат на датата
+general.locale.firstDay	Първи ден на седмицата
+general.locale.firstDayLabels.0	Понеделник
+general.locale.firstDayLabels.1	Неделя
+general.booking.title	Модел на резервации
+general.booking.subtitle	Как клиентите ви резервират
+general.booking.mode	Модел на резервации
+general.booking.modeHint	Събития — клиентите се записват за планирано занимание. Индивидуални — клиентът избира специалист и час. Смесен — и двете едновременно.
+general.booking.profile	Терминология за отрасъла
+general.booking.profileHint	Избира думите за персонала и услугите. Променя само формулировките — никога ролите, цените или модела на резервации.
+general.booking.strict	Строг график
+general.booking.strictHint	Забранява двойно резервиране на специалист или ексклузивно пространство. Изисква се, преди да включите индивидуални резервации.
+general.booking.spaceAxis	Използвайте {{spacePlural}} в графика
+general.booking.spaceAxisHint	Изкл. — клиентът резервира човек и пространството няма колона в дневника. Вкл. — заниманието е свързано с пространство.
+general.booking.spaceAxisDefaultOn	Стандартно за вашия отрасъл: вкл.
+general.booking.spaceAxisDefaultOff	Стандартно за вашия отрасъл: изкл.
+general.booking.modes.event	Събития
+general.booking.modes.resource	Индивидуални
+general.booking.modes.hybrid	Смесен
+general.booking.profiles.studio	Групови практики и студиа
+general.booking.profiles.sport	Спорт и фитнес
+general.booking.profiles.beauty	Красота и грижа
+general.booking.profiles.recovery	Тяло и възстановяване
+general.booking.profiles.relax	Спа и релакс
+general.booking.profiles.other	Друго
+general.booking.preview.event	Събитие
+general.booking.preview.resource	Индивидуално
+general.booking.errors.AUDIT_BLOCKED	Графикът съдържа резервации, които не са съвместими със строг график.
+general.booking.errors.STRICT_SCHEDULE_REQUIRED	Първо включете строгия график.
+general.booking.errors.RESOURCE_HISTORY_EXISTS	Строгият график не може да се изключи: студиото има индивидуални резервации.
+general.booking.findings.overlap	Припокриващи се резервации
+general.booking.findings.unknown_timezone	Непозната часова зона
+general.booking.findings.undefined_branch	Не е зададен филиал
+general.booking.findings.invalid_duration	Невалидна продължителност
+general.booking.findings.invalid_resource_row	Непълна индивидуална резервация
+general.booking.findings.missing_branch_assignment	Специалистът не е назначен във филиала
+general.booking.findings.missing_working_hours	Специалистът няма работно време
+general.booking.findings.inactive_specialist	Специалистът е неактивен
+general.booking.findings.other	Нуждае се от преглед
+appearance.theme.title	Тема
+appearance.theme.subtitle	Изберете визуалния стил на интерфейса
+appearance.theme.light	Светла
+appearance.theme.dark	Тъмна
+appearance.theme.auto	Системна
+appearance.accent.title	Акцентен цвят
+appearance.accent.subtitle	Персонализирайте основния цвят на интерфейса
+appearance.accent.note	Изборът ви се запазва, но все още не се прилага в интерфейса — очаквайте го в бъдещо обновление.
+appearance.accent.noteTitle	Очаквайте скоро
+appearance.accent.colors.peach	Праскова
+appearance.accent.colors.pistachio	Шамфъстък
+appearance.accent.colors.lavender	Лавандула
+appearance.accent.colors.pink	Розово
+appearance.accent.colors.gold	Златно
+appearance.accent.colors.mint	Мента
+appearance.language.title	Език на интерфейса
+appearance.language.subtitle	Вашият личен език — не засяга настройките на студиото
+appearance.language.search	Търсене на език
+appearance.language.empty	Не е намерен език
+notifications.myPrefs.title	Моите известия
+notifications.myPrefs.subtitle	Лични предпочитания — не засягат останалата част от студиото
+notifications.myPrefs.hint	Задължителните известия не могат да се изключат — те гарантират, че няма да пропуснете промени в графика и плащанията.
+notifications.myPrefs.empty	Няма незадължителни известия за вашата роля
+notifications.myPrefs.channels.email	Имейл
+notifications.myPrefs.channels.telegram	Telegram
+notifications.myPrefs.channels.whatsapp	WhatsApp
+notifications.telegram.title	Telegram за известия
+notifications.telegram.subtitle	Къде да ви изпращаме лично събитията — резервации, заплати, отчети
+notifications.telegram.chatId	Вашият Telegram chat_id
+notifications.telegram.chatIdPh	напр. 123456789
+notifications.telegram.hintBefore	Можете да намерите своя chat_id от бота 
+notifications.telegram.hintAfter	 в Telegram — започнете чат с него и той ще ви изпрати вашия ID.
+notifications.telegram.invalidChatId	Telegram chat_id трябва да е число без символи
+notifications.telegram.saved	Telegram е свързан за известия
+notifications.telegram.saveFailed	Неуспешно запазване на Telegram
+notifications.email.title	Имейл за известия
+notifications.email.subtitle	Къде да изпращаме системните имейли
+notifications.email.primary	Основен имейл
+notifications.email.backup	Резервен имейл
+notifications.email.backupPh	backup@studio.com
+notifications.email.saved	Настройките за известия са запазени
+billing.plans.start	Start
+billing.plans.pro	Pro
+billing.plans.business	Business
+billing.plans.free_trial	Безплатен пробен период
+billing.status.active	Активен
+billing.status.trial	Пробен
+billing.status.expired	Изтекъл
+billing.plan.title	Текущ план
+billing.plan.expiresAt	Активен до {{date}}
+billing.plan.maxStaff	До {{count}} служители
+billing.plan.staffUnlimited	Неограничен брой служители
+billing.plan.noSubscription	Няма активен абонамент
+billing.plan.noSubscriptionCta	Изберете план
+billing.plan.trialCta	Изберете план
+billing.upgrade	Надградете до {{plan}}
+billing.renew	Поднови
+billing.autopay.title	Автоматично подновяване
+billing.autopay.subtitle	Таксува се от запазената ви карта
+billing.autopay.autoRenew	Автоматично подновяване
+billing.autopay.notifyBefore	Ще ви напомним {{count}} дни преди таксуването
+billing.payment.title	Начин на плащане
+billing.payment.cardSummary	Карта •••• {{last4}}
+billing.payment.notLinked	Няма свързана карта
+billing.payment.change	Промени
+billing.history.title	История на плащанията
+billing.history.subtitle	Последните 12 плащания
+billing.history.exportCsv	Експортиране на CSV
+billing.history.empty	Все още няма плащания
+billing.history.showAll	Покажи всички
+billing.history.period	{{count}} мес.
+billing.history.noDate	—
+billing.history.status.paid	Платено
+billing.history.status.pending	В изчакване
+billing.history.status.failed	Неплатено
+billing.history.status.refunded	Възстановено
+billing.toast.autopaySaved	Настройките за автоматично подновяване са запазени
+billing.toast.renewed	Подновяването започна
+billing.toast.csvExportError	CSV не можа да се експортира
+security.account.title	Сигурност на акаунта
+security.account.subtitle	Защитете достъпа до работното си пространство
+security.twoFa.title	Двуфакторно удостоверяване
+security.twoFa.sub	Код по имейл при всяко влизане
+security.twoFa.active	Активно
+security.twoFa.disabled	Изключено
+security.twoFa.enableTitle	Включване на 2FA
+security.twoFa.disableTitle	Изключване на 2FA
+security.twoFa.enableWarning	След включване всяко влизане ще изисква код, изпратен до {{email}}. Уверете се, че имате достъп до него — иначе рискувате да загубите достъп до акаунта си.
+security.twoFa.disableWarning	След изключване само паролата ще е достатъчна за влизане, без код по имейл.
+security.twoFa.enabledToast	Двуфакторното удостоверяване е включено
+security.twoFa.disabledToast	Двуфакторното удостоверяване е изключено
+security.password.title	Парола за акаунта
+security.password.sub	Промяната се потвърждава с код по имейл
+security.password.change	Промяна на паролата
+security.password.changed	Паролата е променена успешно
+security.password.current	Текуща парола
+security.password.currentPh	Въведете текущата си парола
+security.password.new	Нова парола
+security.password.newPh	Поне 8 знака
+security.password.repeat	Повторете паролата
+security.password.repeatPh	Въведете отново новата парола
+security.password.mismatch	Паролите не съвпадат
+security.password.forgot	Забравихте паролата си?
+security.password.resetTitle	Възстановяване на парола
+security.password.step1Sub	Нека потвърдим, че сте вие
+security.password.step2Sub	Кодът е изпратен на {{email}}
+security.password.step3Sub	Изберете нова парола
+security.password.resetIntro	Ще изпратим 6-цифрен код по имейл на адреса на акаунта ви. Не е нужно да знаете текущата парола — кодът доказва, че пощенската кутия е ваша.
+security.password.sendCode	Изпрати код
+security.password.back	Назад
+security.password.save	Запази паролата
+security.password.resetDone	Паролата е обновена
+security.password.resetLogoutHint	Другите устройства ще бъдат излезли от профила — вие оставате влезли на това.
+security.password.rules.len	8+ знака
+security.password.rules.letter	Има буква
+security.password.rules.digit	Има цифра
+security.password.rules.simple	Без 111 или qwerty
+security.sessions.title	Активни сесии
+security.sessions.sub	Къде в момента е влязъл акаунтът ви
+security.sessions.count	{{count}} устройства
+security.sessions.manage	Управление
+security.sessions.hide	Скрий
+security.sessions.current	Текуща
+security.sessions.terminate	Прекрати
+security.sessions.terminateAll	Прекрати всички други сесии
+security.sessions.terminatedToast	Сесията е прекратена успешно
+security.sessions.terminatedAllToast	Другите сесии са прекратени
+security.sessions.justNow	Активна сега
+security.sessions.minutesAgo	преди {{count}} мин.
+security.sessions.hoursAgo	преди {{count}} ч.
+security.sessions.daysAgo	преди {{count}} дни
+security.sessions.unknownLocation	Неизвестно
+security.otp.sentHint	Изпратихме 6-цифрен код на имейла ви. Въведете го по-долу.
+security.otp.resend	Изпрати отново кода
+security.otp.resendIn	Изпрати отново след {{count}} сек.
+security.otp.confirm	Потвърди
+security.otp.cancel	Отказ
+security.otp.sendCode	Изпрати код
+security.otp.continue	Продължи
+security.danger.title	Управление на данни (Опасна зона)
+security.danger.export.title	Експортиране на всички данни
+security.danger.export.sub	Изтеглете архив на клиентската база и историята
+security.danger.export.prepare	Подготви архив
+security.danger.export.hide	Скрий
+security.danger.export.clients	Клиентска база (CSV)
+security.danger.export.finances	Финансови транзакции
+security.danger.export.schedule	Занятия и график
+security.danger.export.start	Стартирай експортирането
+security.danger.export.started	Архивът се подготвя, връзка ще бъде изпратена на имейла ви
+security.danger.export.emptySelection	Изберете поне един раздел за експортиране
+security.danger.wipe.title	Изчистване на базата данни
+security.danger.wipe.sub	Изтрива всички клиенти и резервации. Настройките се запазват.
+security.danger.wipe.action	Изчисти данните
+security.danger.wipe.toast	Базата данни е изчистена успешно
+security.danger.wipe.consequence1	Изтрити завинаги: клиенти, занятия, резервации, операции, документи, клиентски абонаменти, история на лоялността
+security.danger.wipe.consequence2	Без промяна: студио, филиали, {{spacePlural}}, услуги, персонал, абонамент и настройки
+security.danger.wipe.consequence3	Това действие е необратимо — не може да бъде отменено след потвърждение
+security.danger.deleteAccount.title	Изтриване на фирмения акаунт
+security.danger.deleteAccount.sub	Пълно и необратимо унищожаване на бизнеса в системата
+security.danger.deleteAccount.action	Изтрий завинаги
+security.danger.deleteAccount.consequence1	Студиото и всички негови данни ще бъдат изтрити завинаги, включително клиенти, занятия, финанси и настройки
+security.danger.deleteAccount.consequence2	Личният ви акаунт остава — изтрива се само това студио
+security.danger.deleteAccount.consequence3	Изтриването не е достъпно при активен абонамент или ако студиото има други собственици
+integrations.title	Интеграции
+integrations.subtitle	Свържете външни канали и екосистеми с едно щракване
+integrations.loadError	Състоянието на интеграциите не можа да се зареди
+integrations.items.telegram.name	Telegram бот
+integrations.items.telegram.sub	Известия за клиенти и резервации чрез бот
+integrations.items.whatsapp.name	WhatsApp Business
+integrations.items.whatsapp.sub	Масови съобщения и автоматични известия за клиенти
+integrations.items.instagram.name	Instagram Direct
+integrations.items.instagram.sub	AI агент за автоматични отговори и онлайн резервации
+integrations.items.google_calendar.name	Google Calendar
+integrations.items.google_calendar.sub	Синхронизиране на графика на студиото
+integrations.status.connected	Свързано
+integrations.status.notActive	Несвързано
+integrations.actions.configure	Конфигурирай
+integrations.actions.connect	Свържи
+integrations.actions.disconnect	Прекъсни връзката
+integrations.fields.keyLabel	Ключ
+integrations.fields.connectedAtLabel	Свързано
+integrations.fields.telegramToken	API токен на бота (от @BotFather)
+integrations.fields.telegramTokenPh	123456789:ABCDefGhIJKlmNoPQRsTUVwxyZ
+integrations.fields.whatsappToken	Токен за достъп
+integrations.fields.whatsappTokenPh	EAAxxxxxxxxxxxxx
+integrations.fields.whatsappPhoneId	ID на телефонния номер
+integrations.fields.whatsappPhoneIdPh	1029384756
+integrations.fields.whatsappWabaId	WABA ID (по избор)
+integrations.fields.whatsappWabaIdPh	1029384756
+integrations.fields.instagramToken	Токен за достъп
+integrations.fields.instagramTokenPh	IGQWR...
+integrations.fields.instagramUserId	ID на бизнес акаунта в Instagram
+integrations.fields.instagramUserIdPh	17841400000000000
+integrations.guide.howToTitle	Как да се свържете
+integrations.guide.telegram.steps.0	Отворете @BotFather в Telegram и изпратете /newbot
+integrations.guide.telegram.steps.1	Изберете име и потребителско име за бота — BotFather ще ви изпрати API токен
+integrations.guide.telegram.steps.2	Поставете токена по-долу и щракнете Свържи
+integrations.guide.whatsapp.steps.0	Създайте приложение в Meta for Developers и добавете продукта WhatsApp
+integrations.guide.whatsapp.steps.1	В API Setup копирайте временния или постоянния токен за достъп
+integrations.guide.whatsapp.steps.2	Копирайте и ID на телефонния номер на тестовия или потвърдения номер
+integrations.guide.whatsapp.steps.3	Поставете двете стойности по-долу и щракнете Свържи
+integrations.guide.instagram.steps.0	Свържете Instagram акаунта на студиото с Facebook страница — това е нужно за Direct API
+integrations.guide.instagram.steps.1	Създайте приложение в Meta for Developers с продукта Instagram Graph API
+integrations.guide.instagram.steps.2	Създайте токен за достъп с разрешения instagram_basic и instagram_manage_messages
+integrations.guide.instagram.steps.3	Копирайте ID на бизнес акаунта в Instagram и токена, после ги поставете по-долу
+integrations.guide.instagram.steps.4	Без преглед от Meta връзката работи само за тестовите акаунти на приложението
+integrations.guide.google_calendar.steps.0	Щракнете Свържи — ще се отвори прозорец за вход в Google
+integrations.guide.google_calendar.steps.1	Изберете акаунта, с който е свързан календарът на студиото
+integrations.guide.google_calendar.steps.2	Дайте достъп до календара — занятията ще започнат да се показват автоматично в него
+integrations.capabilities.notify	известия за клиенти в този канал
+integrations.capabilities.booking	онлайн резервации чрез този канал
+integrations.capabilities.dm_agent	AI агент за автоматични отговори в Direct
+integrations.capabilities.schedule_sync	синхронизиране на графика с Google Calendar
+integrations.disconnect.title	Да се прекъсне {{name}}?
+integrations.disconnect.willStop	Това ще спре да работи:
+integrations.disconnect.checkbox	Разбирам последствията
+integrations.disconnect.cancel	Отказ
+integrations.disconnect.confirm	Прекъсни връзката
+integrations.google.connected	Google Calendar е свързан
+integrations.google.denied	Не беше предоставен достъп до Google Calendar
+integrations.google.error	Неуспешно свързване с Google Calendar
+integrations.google.primary	основен
+integrations.google.calendar	Календар
+integrations.google.selectCalendar	Изберете календар
+integrations.google.loadingCalendars	Зареждат се календари…
+integrations.google.syncMode	Режим на синхронизиране
+integrations.google.syncModeOptions.push	Само от CRM към Google
+integrations.google.syncModeOptions.two_way	В двете посоки
+integrations.google.syncNow	Синхронизирай сега
+integrations.google.lastSync	Последно синхронизиране: {{date}}
+integrations.google.neverSynced	Още не е синхронизирано
+integrations.google.timezoneWarning	Часовата зона на студиото не е зададена — събитията се изпращат в UTC и може да се различават от действителните часове на заниманията. Задайте часовата зона в Общи.
+integrations.google.syncResult	Синхронизирано: {{pushed}} изпратени, {{pulled}} получени
+integrations.google.settingsSaved	Настройките за Google Calendar са запазени
+integrations.toast.connected	Интеграцията е свързана
+integrations.toast.disconnected	Интеграцията е прекъсната
+data.export.title	Експортиране на отчети и списъци
+data.export.subtitle	Изтеглете файлове в таблични формати за счетоводство и анализ
+data.export.clearFilter	Изчисти периода
+data.export.items.clients.name	Списък с клиенти
+data.export.items.schedule.name	История на дневника и резервациите
+data.export.items.finances.name	Финансов отчет
+data.export.items.subscriptions.name	Абонаменти на клиенти
+data.export.rows_one	{{count}} запис
+data.export.rows_other	{{count}} записа
+data.export.loading	Зареждане...
+data.export.empty	няма данни за този период

@@ -1,0 +1,380 @@
+== pl
+tabs.overview	Przegląd
+tabs.sales	Sprzedaż
+tabs.clients	Klienci
+tabs.team	Zespół
+tabs.schedule	Grafik
+toolbar.period.day	Dzień
+toolbar.period.week	Tydzień
+toolbar.period.month	Miesiąc
+toolbar.period.year	Rok
+toolbar.period.custom	Niestandardowy
+toolbar.vsPrevious	w porównaniu z poprzednim okresem: {{from}}–{{to}}
+toolbar.allBranches	Wszystkie oddziały
+toolbar.allHalls	Wszystkie {{spacePlural}}
+toolbar.allTrainers	Wszyscy trenerzy
+toolbar.allServices	Wszystkie usługi
+toolbar.export	Eksportuj
+insights.title	Wymaga uwagi
+insights.action	Otwórz
+insights.empty	Na razie wszystko jest w porządku — brak porad do wyświetlenia
+insights.revenue_up_clients_down	Przychody rosną, ale liczba aktywnych klientów spada — sprawdź odpływ klientów
+insights.clients_at_risk	{{count}} klient(ów) nie uczestniczyło od ponad 3 tygodni — ryzyko odpływu
+insights.lesson_overfull	„{{name}}” {{weekday, weekday}} o {{hour}}:00 jest zapełnione w {{pct}}% od trzech tygodni — rozważ dodanie kolejnych zajęć
+insights.trial_low_conversion	Tylko {{pct}}% z {{buyers}} klientów próbnych kupiło później abonament — rozważ kampanię
+insights.fastest_growing_product	„{{name}}” rośnie najszybciej: +{{pct}}% w porównaniu z poprzednim okresem
+insights.renewals_low	Tylko {{pct}}% klientów z wygasłym abonamentem odnawia go — rozważ przypomnienie
+insights.new_no_second_visit	{{count}} nowych klientów przyszło raz i nigdy więcej nie zarezerwowało wizyty — rozważ przypomnienie
+insights.subs_expiring_week	{{count}} klientów ma abonament wygasający w tym tygodniu — rozważ ofertę odnowienia
+insights.vip_inactive	Klient VIP „{{name}}” nie odwiedził nas od {{days}} dni — rozważ osobistą wiadomość
+insights.high_return_free_evenings	„{{name}}” ma wysoki wskaźnik powrotów ({{return_pct}}%), ale wieczory są wolne — dodaj zajęcia
+insights.trainer_overloaded	„{{name}}” ma obciążenie {{load_pct}}% — rozważ zrównoważenie grafiku
+insights.low_rating	„{{name}}” ma ocenę {{rating}} — warto przyjrzeć się temu bliżej
+insights.slot_chronic_low	„{{name}}” {{weekday, isodowWeekday}} o {{hour}}:00 jest zapełnione w {{pct}}% od {{weeks}} tygodni — przenieś je lub odwołaj
+insights.hall_idle_evenings	„{{name}}” jest niewykorzystane przez {{pct}}% wieczornych godzin — rozważ zaplanowanie zajęć
+insights.slot_overfull	Slot {{weekday, isodowWeekday}} o {{hour}}:00 jest zapełniony w {{pct}}% od trzech tygodni — rozważ dodanie kolejnych zajęć
+insights.loss_hotspot	{{cancels}} zajęć odwołano o {{label}} w tym okresie — najwięcej odwołań przypada na tę godzinę
+table.loading	Ładowanie…
+table.noProduct	Brak produktu
+empty.noData.title	Nie ma tu jeszcze nic
+empty.noData.text	W wybranym okresie nie zarejestrowano aktywności. Poszerz zakres albo zacznij od zapisania klienta w Dzienniku.
+empty.noData.widen	Pokaż rok
+empty.noRevenue	Brak płatności w tym okresie
+empty.noSales	Brak sprzedaży w tym fragmencie
+empty.noProducts	Nie sprzedano jeszcze żadnych pakietów ani usług
+empty.noLessons	Brak zajęć w tym okresie
+empty.noTrainerLessons	Ten trener nie przeprowadził jeszcze żadnych zajęć
+empty.noRows	Brak rekordów w tym fragmencie
+empty.noLosses	Brak odwołań ani nieobecności w tym okresie
+overview.kpi.revenue	Przychody
+overview.kpi.profit	Zysk
+overview.kpi.attendance	Frekwencja
+overview.kpi.activeClients	Aktywni klienci
+overview.kpi.fillRate	Wskaźnik zapełnienia
+overview.chart.metric.revenue	Przychody
+overview.chart.metric.profit	Zysk
+overview.chart.metric.attendance	Frekwencja
+overview.chart.metric.new_clients	Nowi klienci
+overview.chart.metric.fill_rate	Wskaźnik zapełnienia
+overview.revenueStructure.title	Struktura przychodów
+overview.category.subscriptions	Abonamenty
+overview.category.services	Usługi
+overview.category.certificates	Bony podarunkowe
+overview.category.rent	Czynsz
+overview.category.salary	Wynagrodzenia
+overview.category.refunds	Zwroty
+overview.clientDynamics.title	Dynamika klientów
+overview.clientDynamics.new	Nowi
+overview.clientDynamics.returned	Powrócili
+overview.clientDynamics.lost	Utraceni
+overview.drilldown.title	Operacja
+overview.drilldown.category	Kategoria
+overview.drilldown.amount	Kwota
+overview.drilldown.lesson	Zajęcia
+overview.drilldown.time	Godzina
+overview.drilldown.occupancy	Zapełnienie
+overview.drilldown.date	Data
+overview.drilldown.method	Metoda
+overview.drilldown.trainer	Trener
+overview.drilldown.rowsCount	rekordy
+overview.drilldown.search	Szukaj w tabeli
+overview.drilldown.shownOf	Wyświetlono {{shown}} z {{total}}
+overview.drilldown.noMatches	Nic nie znaleziono dla „{{query}}”
+overview.drilldown.reset	Resetuj
+overview.drilldown.export	Eksportuj CSV
+overview.drilldown.subtitle.money	Operacje w tym fragmencie
+overview.drilldown.subtitle.lessons	Zajęcia w tym fragmencie
+overview.drilldown.hint.operations	Kliknij wiersz, aby otworzyć operację w Finansach
+overview.drilldown.hint.lessons	Kliknij wiersz, aby otworzyć ten dzień w Dzienniku
+overview.drilldown.stat.net	Netto
+overview.drilldown.stat.income	Przychód
+overview.drilldown.stat.expense	Wydatek
+overview.drilldown.stat.operations	Operacje
+overview.drilldown.stat.topCategory	Główna kategoria
+overview.drilldown.stat.lessons	Zajęcia
+overview.drilldown.stat.booked	Zarezerwowane miejsca
+overview.drilldown.stat.avgFill	Średnie zapełnienie
+overview.drilldown.stat.trainers	Trenerzy
+overview.drilldown.stat.cancelled	Odwołane
+sales.kpi.revenue	Przychody
+sales.kpi.salesCount	Sprzedaże
+sales.kpi.avgCheck	Średni paragon
+sales.kpi.repeatShare	Udział ponownych zakupów
+sales.kpi.renewals	Wskaźnik odnowień
+sales.chart.title	Sprzedaż
+sales.incomeOperations	Operacje przychodowe
+sales.breakdown.byCategory	Co kupują
+sales.breakdown.byMethod	Jak płacą
+sales.breakdown.buyerType	Kto kupuje
+sales.breakdown.new	Nowi
+sales.breakdown.returning	Powracający
+sales.breakdown.noClient	Bez klienta
+sales.method.card	Karta
+sales.method.cash	Gotówka
+sales.method.qr	Kod QR
+sales.method.transfer	Przelew
+sales.products.title	Produkty
+sales.products.name	Produkt
+sales.products.sold	Sprzedano
+sales.products.revenue	Przychody
+sales.products.avgCheck	Średni paragon
+sales.products.repeatShare	Udział ponownych zakupów
+sales.products.trend	Trend
+sales.products.trendHint	W porównaniu z poprzednim okresem o tej samej długości
+clients.kpi.new	Nowi
+clients.kpi.returned	Powrócili
+clients.kpi.lost	Utraceni
+clients.kpi.retention	Utrzymanie
+clients.kpi.avgValue	Wartość klienta
+clients.chart.title	Nowi a powracający
+clients.chart.new	Nowi
+clients.chart.returned	Powracający
+clients.riskTitle	Segmenty ryzyka
+clients.loyalTitle	Lojalni
+clients.list	Lista
+clients.campaign	Uruchom kampanię
+clients.exportList	Eksportuj listę
+clients.emptySegment	Segment „{{name}}” nie ma obecnie klientów
+clients.segments.new.name	Nowi klienci
+clients.segments.new.desc	Zarejestrowani w wybranym okresie
+clients.segments.returned.name	Powracający klienci
+clients.segments.returned.desc	Odwiedzili ten i poprzedni okres
+clients.segments.lost.name	Utraceni klienci
+clients.segments.lost.desc	Odwiedzili poprzedni okres, ale nie wrócili w tym
+clients.segments.active.name	Aktywni klienci
+clients.segments.active.desc	Przyszli na co najmniej jedne zajęcia w wybranym okresie
+clients.segments.at_risk.name	Na krawędzi
+clients.segments.at_risk.desc	Aktywni, ale bez wizyty od 21+ dni
+clients.segments.vip_idle.name	Nieaktywni VIP
+clients.segments.vip_idle.desc	Klienci VIP bez wizyty od 14+ dni
+clients.segments.expiring_subscription.name	Kończący się abonament
+clients.segments.expiring_subscription.desc	Pozostały ≤2 zajęcia lub ≤7 dni
+clients.segments.lost_newcomers.name	Nigdy nie wrócili
+clients.segments.lost_newcomers.desc	Przyszli raz, nie ma ich od 14+ dni
+clients.segments.upsell_candidates.name	Gotowi na wyższy pakiet
+clients.segments.upsell_candidates.desc	8+ wizyt w tym miesiącu, bez pakietu
+clients.segments.frequent.name	Części goście
+clients.segments.frequent.desc	8+ wizyt w okresie
+clients.segments.high_ltv.name	Wysokie LTV
+clients.segments.high_ltv.desc	Górne 10% według całkowitych wydatków
+clients.segments.referrers.name	Polecający
+clients.segments.referrers.desc	Dokonali polecenia w okresie
+clients.listSearch	Szukaj po imieniu lub telefonie
+clients.shownOf	Wyświetlono {{shown}} z {{total}}
+clients.noMatches	Nie znaleziono nikogo dla „{{query}}”
+clients.resetSearch	Resetuj
+clients.neverVisited	Nigdy nie odwiedził
+clients.valueLabel.visits	Wizyty
+clients.valueLabel.spent	Wydano
+clients.valueLabel.daysIdle	Dni bez aktywności
+clients.valueLabel.remaining	Pozostałe zajęcia
+clients.valueLabel.value	Wartość
+clients.relative.today	Dzisiaj
+clients.relative.daysAgo_one	{{count}} dzień temu
+clients.relative.daysAgo_few	{{count}} dni temu
+clients.relative.daysAgo_many	{{count}} dni temu
+team.kpi.lessonsCount	Zajęcia
+team.kpi.revenuePerHour	Przychody/godz.
+team.kpi.avgFillPct	Wskaźnik zapełnienia
+team.kpi.cancelNoshowPct	Odwołania/nieobecności
+team.kpi.avgRating	Ocena
+team.table.title	Trenerzy
+team.table.trainer	Trener
+team.table.lessons	Zajęcia
+team.table.fillPct	Wskaźnik zapełnienia
+team.table.attendance	Frekwencja
+team.table.revenue	Przychody
+team.table.returnRate	Wskaźnik powrotów
+team.table.cancels	Odwołania
+team.table.fillPctHint	Zajęte miejsca spośród zaplanowanych
+team.table.returnRateHint	Klienci, którzy ponownie zarezerwowali u tego trenera
+team.table.cancelsHint	Odwołane zajęcia i nieobecności klientów
+team.table.ratingHint	Średnia ocena, którą klienci wystawili zajęciom tego trenera
+team.drawer.revenueByWeek	Przychody według tygodnia
+team.drawer.loadByWeekday	Obciążenie według dnia tygodnia
+team.drawer.loadByHour	Obciążenie według pory dnia
+team.drawer.loadDim.weekday	Według dnia
+team.drawer.loadDim.hour	Według godziny
+team.drawer.schedule.title	Grafik
+team.drawer.schedule.empty	Brak zajęć w tym okresie
+team.drawer.topLessons	Ulubione zajęcia
+team.drawer.returnBlock	Powroty klientów
+team.drawer.returnOf	Powróciło {{returned}} z {{total}} klientów ({{pct}}%)
+team.drawer.openProfile	Otwórz profil
+team.drawer.held	Odbyły się
+team.drawer.attendance	Frekwencja
+team.weekdays.0	niedz.
+team.weekdays.1	pon.
+team.weekdays.2	wt.
+team.weekdays.3	śr.
+team.weekdays.4	czw.
+team.weekdays.5	pt.
+team.weekdays.6	sob.
+schedule.weekdaysMonFirst.0	pon.
+schedule.weekdaysMonFirst.1	wt.
+schedule.weekdaysMonFirst.2	śr.
+schedule.weekdaysMonFirst.3	czw.
+schedule.weekdaysMonFirst.4	pt.
+schedule.weekdaysMonFirst.5	sob.
+schedule.weekdaysMonFirst.6	niedz.
+schedule.kpi.avgFillPct	Wskaźnik zapełnienia
+schedule.kpi.freeSpots	Wolne miejsca
+schedule.kpi.cancels	Odwołania
+schedule.kpi.noshows	Nieobecności
+schedule.kpi.lostRevenue	Utracone przychody
+schedule.heatmap.title	Obciążenie według dnia i godziny
+schedule.heatmap.legend	Wskaźnik zapełnienia:
+schedule.heatmap.tooltip	{{lessons}} zajęć · {{attendance}} uczestników · {{pct}}%
+schedule.heatmap.empty	Brak zajęć
+schedule.slices.topProfitable	Najbardziej dochodowe
+schedule.slices.topFilled	Najbardziej zapełnione
+schedule.slices.chronicLow	Chronicznie słabo zapełnione
+schedule.slices.halls	Wykorzystanie: {{spacePlural}}
+schedule.slices.held	{{count}} odbyło się
+schedule.slices.weeks	{{count}} tyg.
+schedule.slices.move	Przenieś
+schedule.slices.cancel	Odwołaj
+schedule.slices.eveningIdle	wieczorem wolne {{pct}}%
+schedule.losses.title	Odwołania i nieobecności
+schedule.losses.dim.hour	Według godziny
+schedule.losses.dim.service	Według usługi
+schedule.losses.dim.trainer	Według trenera
+schedule.losses.cancels_one	{{count}} odwołanie
+schedule.losses.cancels_few	{{count}} odwołania
+schedule.losses.cancels_many	{{count}} odwołań
+schedule.losses.noshows_one	{{count}} nieobecność
+schedule.losses.noshows_few	{{count}} nieobecności
+schedule.losses.noshows_many	{{count}} nieobecności
+schedule.losses.lostSpots_one	−{{count}} miejsce
+schedule.losses.lostSpots_few	−{{count}} miejsca
+schedule.losses.lostSpots_many	−{{count}} miejsc
+schedule.status.confirmed	Potwierdzone
+schedule.status.pending	Oczekujące
+schedule.status.cancelled	Odwołane
+schedule.slot.summary	dla {{from}} — {{to}}
+schedule.slot.lessonsCount	Wszystkie zajęcia
+export.csv	Pobierz CSV
+scopeNote.label	Całe studio
+scopeNote.money	Filtry Oddział i {{space}} nie wpływają na kwoty — płatność nie jest z nimi powiązana
+scopeNote.clientBase	Trener, {{space}}, oddział i usługa nie zmieniają tej miary — klient nie jest z nimi powiązany
+descriptions.overview.metric.revenue	Wszystkie pieniądze, które wpłynęły do studia w tym okresie
+descriptions.overview.metric.profit	To, co zostaje po wydatkach okresu
+descriptions.overview.metric.attendance	Zajęcia, w których klienci faktycznie uczestniczyli
+descriptions.overview.metric.new_clients	Klienci zarejestrowani w tym okresie
+descriptions.overview.metric.fill_rate	Jak pełne są zajęcia: zarezerwowane miejsca spośród dostępnych
+descriptions.overview.revenueStructure	Z czego składają się Twoje przychody w tym okresie
+descriptions.overview.clientDynamics	Ilu przyszło pierwszy raz, wróciło lub przestało przychodzić
+descriptions.sales.chart	Przychody i liczba zakupów według dnia
+descriptions.sales.byCategory	Udział każdego produktu w przychodach
+descriptions.sales.byMethod	Jak przychody rozkładają się według metody płatności
+descriptions.sales.buyerType	Ile przychodów pochodzi od nowych klientów, a ile od stałych
+descriptions.sales.products	Każdy produkt: ile sprzedano, za ile i czy sprzedaż rośnie
+descriptions.clients.chart	Ilu klientów przyszło pierwszy raz, a ilu wróciło, według tygodnia
+descriptions.clients.riskSegments	Klienci, których możesz stracić, jeśli nie skontaktujesz się z nimi teraz
+descriptions.clients.loyalSegments	Ci, którzy odwiedzają najczęściej, wydają najwięcej i przyprowadzają znajomych
+descriptions.team.trainers	Porównanie według obciążenia, przychodów i wskaźnika powrotów klientów
+descriptions.team.loadWeekday	W które dni tygodnia trener jest zajęty, a kiedy wolny
+descriptions.team.loadHour	O której jego zajęcia się zapełniają, a kiedy pozostają puste
+descriptions.team.schedule	Wszystkie zajęcia trenera w wybranym okresie
+descriptions.schedule.heatmap	Gdzie grafik jest przepełniony, a gdzie pusty
+descriptions.schedule.topProfitable	Godziny w grafiku, które przynoszą najwięcej pieniędzy
+descriptions.schedule.topFilled	Godziny, które klienci rezerwują najchętniej
+descriptions.schedule.chronicLow	Sloty zapełniające się poniżej jednej trzeciej miejsc od wielu tygodni
+descriptions.schedule.halls	Jaką część czasu Twoje {{spacePlural}} są faktycznie używane
+descriptions.schedule.losses	Gdzie studio traci miejsca: odwołane zajęcia lub nieobecni klienci
+formulas.salesCount.title	Sprzedaże
+formulas.salesCount.text	Ile razy klienci zapłacili Ci w tym okresie. Jedna osoba płacąca wiele razy liczy się jako osobne sprzedaże.
+formulas.revenue.title	Przychody
+formulas.revenue.text	Wszystkie pieniądze, które wpłynęły do studia w tym okresie według daty płatności. Pakiety, pojedyncze sesje, bony podarunkowe i sprzedaż detaliczna — razem.
+formulas.profit.title	Zysk
+formulas.profit.text	To, co zostaje po wydatkach tego okresu: czynszu, wynagrodzeniach, materiałach. To Twój rzeczywisty zysk.
+formulas.attendance.title	Frekwencja
+formulas.attendance.text	Ile wizyt klienci faktycznie odbyli. Liczą się tylko sesje oznaczone jako odbyte.
+formulas.bookings.title	Rezerwacje
+formulas.bookings.text	Ile rezerwacji klienci zrobili na zajęcia. Anulowane rezerwacje nie są liczone.
+formulas.noshow.title	Nieobecność
+formulas.noshow.text	Klient zarezerwował, zajęcia się odbyły, ale nie przyszedł. Każdy taki przypadek to miejsce, które mógł zająć ktoś inny.
+formulas.activeClients.title	Aktywni klienci
+formulas.activeClients.text	Ile różnych osób przyszło co najmniej raz w tym okresie. Każdy klient liczy się raz, niezależnie od liczby wizyt.
+formulas.occupancy.title	Zapełnienie
+formulas.occupancy.text	Jak pełne są Twoje zajęcia: zajęte miejsca spośród zaplanowanych. 100% oznacza, że nie ma już wolnych miejsc.
+formulas.avgCheck.title	Średni paragon
+formulas.avgCheck.text	Ile średnio przynosi jedna płatność. Rośnie, gdy klienci kupują dłuższe pakiety lub dodatki.
+formulas.retention.title	Utrzymanie
+formulas.retention.text	Ilu klientów z poprzedniego okresu wróciło w tym okresie. Pokazuje, czy utrzymujesz klientów, czy co miesiąc zaczynasz od zera.
+formulas.newClients.title	Nowi klienci
+formulas.newClients.text	Osoby, które pojawiły się w Twojej bazie klientów pierwszy raz w tym okresie.
+formulas.returning.title	Powracający
+formulas.returning.text	Klienci, którzy odwiedzili wcześniej i ponownie wrócili w tym okresie.
+formulas.lost.title	Utraceni
+formulas.lost.text	Odwiedzili poprzedni okres i ani razu nie pojawili się w tym. Wciąż warto się z nimi skontaktować.
+formulas.clientValue.title	Wartość klienta
+formulas.clientValue.text	Ile średnio przynosi jeden klient w tym okresie.
+formulas.repeatPurchaseShare.title	Udział ponownych zakupów
+formulas.repeatPurchaseShare.text	Udział klientów, którzy kupili od Ciebie więcej niż raz. Im wyższy, tym silniejszy nawyk powracania.
+formulas.renewalRate.title	Wskaźnik odnowień
+formulas.renewalRate.text	Ilu klientów kupiło nowy pakiet po wygaśnięciu poprzedniego.
+formulas.revenuePerHour.title	Przychody na godzinę (trener)
+formulas.revenuePerHour.text	Ile pieniędzy przynosi jedna godzina pracy trenera. Pozwala uczciwie porównywać trenerów — ktoś może prowadzić mniej zajęć, ale każde przynosi więcej.
+formulas.trainerReturnRate.title	Wskaźnik powrotów (trener)
+formulas.trainerReturnRate.text	Udział klientów trenera, którzy ponownie zarezerwowali u niego zajęcia.
+formulas.missedRevenue.title	Utracone przychody
+formulas.missedRevenue.text	Pieniądze, których studio nie zarobiło przez wolne miejsca na poprzednich zajęciach: wolne miejsca pomnożone przez cenę sesji.
+formulas.losses.title	Odwołania i nieobecności
+formulas.losses.text	„Odwołanie” to odwołane zajęcia; „nieobecność” to klient, który zarezerwował, ale nie przyszedł. Podziały według czasu/usługi/trenera używają tych samych filtrów co karta i są zgodne z KPI w nagłówku.
+formulas.lessonRevenue.title	Przychody z zajęć
+formulas.lessonRevenue.text	Przybliżona ocena przychodów z sesji: uczestnicy pomnożeni przez cenę. Płatności nie są powiązane z konkretną sesją, więc to przybliżenie, a nie dokładna wartość.
+formulas.filtersScope.title	Zakres filtrów
+formulas.filtersScope.text	Filtry Oddział i {{space}} dotyczą tylko metryk zajęć. Płatności nie mają takiego powiązania, więc kwoty są pokazywane dla całego studia.
+formulas.avgValue.title	Wartość klienta
+formulas.avgValue.text	Ile średnio przynosi jeden klient w tym okresie.
+formulas.cancelNoshow.title	Odwołania i nieobecności
+formulas.cancelNoshow.text	Udział zakłóconych zajęć: odwołania i nieobecności ze wszystkich zaplanowanych.
+formulas.avgRating.title	Średnia ocena
+formulas.avgRating.text	Średnia ocena, którą klienci wystawili zajęciom tego trenera.
+formulas.teamScope.title	Zakres danych
+formulas.teamScope.text	To liczy tylko przychody powiązane z konkretnym trenerem, więc suma wszystkich trenerów może być niższa od łącznych przychodów studia.
+formulas.lessonsCount.title	Zajęcia
+formulas.lessonsCount.text	Ile sesji trenerzy przeprowadzili w tym okresie.
+formulas.load.title	Obciążenie
+formulas.load.text	Jak wypełniony jest dzień trenera: jego zarezerwowane godziny w czasie pracy studia.
+formulas.weeklyClients.title	Nowi i powracający
+formulas.weeklyClients.text	Według tygodnia: ile osób przyszło pierwszy raz, a ile wróciło. Zdrowe studio rośnie na obu liniach.
+formulas.byCategory.title	Przychody według kategorii
+formulas.byCategory.text	Na czym naprawdę zarabiasz: pakietach, pojedynczych sesjach, bonach podarunkowych i sprzedaży detalicznej.
+formulas.byMethod.title	Metody płatności
+formulas.byMethod.text	Jak płacą klienci. Pomaga zobaczyć, czy potrzebujesz płatności kartą i ile pieniędzy omija kasę.
+formulas.buyerType.title	Kto płaci
+formulas.buyerType.text	Nowi klienci a stali. Jeśli prawie wszystkie przychody pochodzą od nowych klientów, studio ich nie utrzymuje.
+formulas.products.title	Co się sprzedaje
+formulas.products.text	Wszystkie pakiety i usługi z okresu: ile sprzedano, za ile i czy sprzedaż rośnie.
+formulas.topProfitable.title	Najbardziej dochodowe terminy
+formulas.topProfitable.text	Godziny w grafiku, które przynoszą najwięcej pieniędzy. Ustaw tam najlepszych trenerów.
+formulas.topFilled.title	Najbardziej zapełnione terminy
+formulas.topFilled.text	Godziny, które klienci rezerwują najchętniej. Jeśli są całkowicie pełne, warto dodać kolejne zajęcia.
+formulas.chronicLow.title	Chronicznie puste terminy
+formulas.chronicLow.text	Godziny, które od kilku tygodni zapełniają mniej niż jedną trzecią miejsc. Kandydaci do przeniesienia lub usunięcia.
+formulas.hallUtil.title	Wykorzystanie: {{spacePlural}}
+formulas.hallUtil.text	Jaką część czasu Twoje {{spacePlural}} są faktycznie używane. Pusty czas to czynsz, który się nie zwraca.
+formulas.heatmap.title	Obciążenie według dnia i godziny
+formulas.heatmap.text	Kolor pokazuje średni wskaźnik zapełnienia slotu w okresie. Kliknij komórkę, aby zobaczyć sesje z tego dnia i godziny.
+formulas.riskSegments.title	Segmenty ryzyka
+formulas.riskSegments.text	Klienci pogrupowani według rodzaju ryzyka — utraty ich lub przychodów, których nie przynoszą. Każda karta ma własny powód i jasny kolejny krok: napisz do nich, zaproponuj odnowienie lub wyższy pakiet.
+formulas.loyalSegments.title	Lojalni
+formulas.loyalSegments.text	Klienci, którzy już przynoszą najwięcej wartości: odwiedzają najczęściej, wydają najwięcej lub przyprowadzają znajomych. Warto o nich dbać i ich nagradzać.
+formulas.segment.at_risk.title	Na krawędzi
+formulas.segment.at_risk.text	Kiedyś przychodzili regularnie, a teraz zniknęli. Nadal można ich odzyskać jedną wiadomością.
+formulas.segment.vip_idle.title	Nieaktywni VIP
+formulas.segment.vip_idle.text	Klienci, którzy wydali więcej niż wszyscy inni, ale od pewnego czasu nie odwiedzają studia.
+formulas.segment.expiring_subscription.title	Kończący się abonament
+formulas.segment.expiring_subscription.text	Tym klientom zostały 1–2 zajęcia. To najlepszy moment, aby zaproponować odnowienie.
+formulas.segment.lost_newcomers.title	Nowi klienci, którzy nie wrócili
+formulas.segment.lost_newcomers.text	Przyszli raz i zniknęli. Zwykle decydujące są pierwsze zajęcia — warto to zbadać.
+formulas.segment.upsell_candidates.title	Gotowi na więcej
+formulas.segment.upsell_candidates.text	Często odwiedzają studio, ale kupują najprostszy pakiet. Warto zaproponować im droższy abonament.
+formulas.segment.frequent.title	Stali bywalcy
+formulas.segment.frequent.text	Odwiedzają częściej niż wszyscy inni. Trzon przychodów studia.
+formulas.segment.high_ltv.title	Najcenniejsi
+formulas.segment.high_ltv.text	Przynieśli studiowi najwięcej pieniędzy ze wszystkich, w całym czasie.
+formulas.segment.referrers.title	Przyprowadzają znajomych
+formulas.segment.referrers.text	Klienci, których polecenia przyprowadziły do Ciebie inne osoby.

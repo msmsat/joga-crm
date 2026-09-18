@@ -1,0 +1,395 @@
+{
+  "legal": {
+    "terms": "Uvjeti korištenja",
+    "privacy": "Pravila privatnosti"
+  },
+  "tabs": {
+    "plans": "Planovi i cijene",
+    "invoices": "Povijest plaćanja",
+    "method": "Način plaćanja"
+  },
+  "tabsShort": {
+    "plans": "Planovi",
+    "invoices": "Povijest",
+    "method": "Plaćanje"
+  },
+  "paymentsHistory": {
+    "title": "Potpuna povijest plaćanja",
+    "subtitle": "Sve fakture za ovaj studio",
+    "clearFilter": "Očisti",
+    "loadMore": "Učitaj više"
+  },
+  "planNames": {
+    "start": "Start",
+    "pro": "Pro",
+    "business": "Business"
+  },
+  "seats": {
+    "title": "Koliko je zaposlenika u studiju",
+    "hint": "od {{amount}} mjesečno",
+    "stepNote": "Svako dodatno mjesto dodaje {{amount}} mjesečno",
+    "unlimitedNote": "Bez ograničenja broja zaposlenika",
+    "perSeat": "Po zaposleniku"
+  },
+  "limits": {
+    "staff": "Zaposlenici",
+    "ai": "Zahtjevi za Velora AI",
+    "unlimited": "Neograničeno"
+  },
+  "banner": {
+    "trialEnds": "Vaše probno razdoblje završava {{date}} — odaberite plan",
+    "renews": "Vaša pretplata {{plan}} obnavlja se {{date}}",
+    "expires": "Vaša pretplata {{plan}} završava {{date}}",
+    "choosePlan": "Odaberite plan",
+    "dismiss": "Zatvori",
+    "unpaid": "Vaš plan nije plaćen. Za nastavak platite u Planovi i naplata.",
+    "suspended": "Pristup je obustavljen jer je faktura plana dospjela. Platite je u Planovi i naplata."
+  },
+  "paymentReturn": {
+    "done": "Plaćanje je prošlo — plan {{plan}} je aktivan.",
+    "processing": "Plaćanje se obrađuje — pretplata će se aktivirati za nekoliko minuta."
+  },
+  "header": {
+    "eyebrow": "Velora · Naplata",
+    "title": "Planovi i naplata",
+    "subtitle": "Upravljajte pretplatom, načinima plaćanja i poviješću plaćanja",
+    "totalSpent": "Ukupno potrošeno",
+    "monthsWithUs": "Mjeseci s nama",
+    "saved": "Ušteđeno",
+    "nextCharge": "Sljedeća naplata",
+    "currentPlan": "TRENUTAČNI PLAN",
+    "noPlanName": "Bez plana",
+    "noPlan": "Nema aktivne pretplate",
+    "active": "Aktivan",
+    "activeUntil": "Aktivan · do {{date}}",
+    "trialPlanName": "Probni plan",
+    "trial": "Probno razdoblje",
+    "trialUntil": "Probno razdoblje · do {{date}}",
+    "expired": "Istekao",
+    "percentRate": "{{rate}}% prodaje",
+    "modePercent": "Postotni plan",
+    "modeFixed": "Fiksni",
+    "modeCombo": "Kombinirani",
+    "unpaid": "Plan nije plaćen",
+    "awaitingPayment": "Čeka plaćanje"
+  },
+  "mode": {
+    "title": "Model plaćanja",
+    "subscription": "Fiksna pretplata",
+    "percent": "% prodaje",
+    "combo": "Fiksno + % kombinacija",
+    "short": {
+      "subscription": "Fiksno",
+      "percent": "Postotak",
+      "combo": "Kombinirano"
+    },
+    "descriptions": {
+      "subscription": "Plaćate jedan iznos mjesečno. Predvidljivo i isplativo.",
+      "percent": "Bez fiksne naknade: {{rate}}% svake prodaje, uključujući gotovinu.",
+      "combo": "Pola pretplate + {{rate}}% svake prodaje, uključujući gotovinu."
+    },
+    "badges": {
+      "popular": "Popularno",
+      "flexible": "Fleksibilno"
+    },
+    "percentCard": {
+      "title": "Model „3% od prodaje“",
+      "description": "Plaćate samo kad zarađujete: 3% svake prodaje, bez fiksne pretplatničke naknade. Internetska plaćanja dijele se odmah; gotovina i depoziti se skupljaju i stižu kao jedna faktura svaki mjesec.",
+      "noFixed": "Bez fiksne naknade",
+      "payForResult": "Plaćanje za rezultat",
+      "oneClick": "Aktivacija jednim klikom",
+      "cta": "Aktiviraj model 3%",
+      "ctaShort": "Aktiviraj 3%"
+    },
+    "activateSuccess": "Model plaćanja je ažuriran",
+    "activateError": "Nije moguće ažurirati model plaćanja",
+    "alreadyActive": "Ovaj model plaćanja već je aktivan — u nastavku možete obnoviti ili promijeniti plan",
+    "confirmSwitchTitle": "Promijeniti model plaćanja?",
+    "confirmSwitchMessage": "Vaša pretplata je aktivna. Promjena modela vrijedi odmah, a ostatak plaćenog razdoblja U POTPUNOSTI SE GUBI: neiskorišteni dani se ne vraćaju i ne prenose.",
+    "termsTitle": "Potvrdite uvjete plana",
+    "termsMessage": "Na ovom planu platforma zadržava {{rate}}% svake prodaje.\n\nZa internetska plaćanja naknada se zadržava automatski u trenutku plaćanja. Za gotovinu, terminal i nadoplate depozita NE zadržava se odmah — obračunava se i jednom mjesečno dobivate posebnu fakturu.\n\nImate {{days}} dana za plaćanje te fakture. Ako nije plaćena na vrijeme, pristup CRM-u i miniaplikaciji za klijente obustavlja se dok ne bude podmirena.\n\nTrenutačni iznos za plaćanje vidljiv je u Naplati; možete platiti u bilo kojem trenutku, uključujući unaprijed.",
+    "termsConfirm": "Prihvaćam uvjete",
+    "termsMinimum": "Minimalna mjesečna naknada iznosi {{amount}} {{currency}}. Ako je u kalendarskom mjesecu platforma od vašeg studija zaradila manje od toga (na primjer, nije bilo prodaje kroz CRM), dobivate fakturu za razliku. Zaradite više od minimuma i nema fakture. Neplaćena minimalna naknada obustavlja pristup jednako kao neplaćena faktura provizije.",
+    "termsBurn": "UPOZORENJE: ostalo vam je plaćeno razdoblje. Promjena modela naplate GA U POTPUNOSTI GUBI — neiskorišteni dani se ne vraćaju i ne prenose.",
+    "termsCombo": "Promjena je KUPNJA: odmah nakon potvrde vidjet ćete dugovani iznos. Ostatak trenutačnog plaćenog razdoblja gubi se — ne vraća se i ne prenosi. Model fiksno + % uključuje se SAMO nakon plaćanja; do tada plan ostaje kakav jest i ništa se ne naplaćuje."
+  },
+  "combo": {
+    "rateBadge": "{{rate}}%",
+    "summary": "Fiksno {{fixed}}/mj. + {{rate}}% prodaje (gotovina se fakturira mjesečno)",
+    "cta": "Aktiviraj Kombinirani plan",
+    "ctaShort": "Aktiviraj kombinirano"
+  },
+  "period": {
+    "1": "1 mjesec",
+    "3": "3 mjeseca",
+    "6": "6 mjeseci",
+    "12": "1 godina",
+    "24": "2 godine",
+    "title": "Razdoblje plaćanja",
+    "discountActive": "Aktivan je popust od {{percent}}%",
+    "noDiscount": "Bez popusta",
+    "discountLabel": "−{{percent}}% popusta"
+  },
+  "calculator": {
+    "title": "Parametri izračuna",
+    "monthlyTurnover": "Vaš mjesečni online promet",
+    "turnoverRangeMin": "50 tis.",
+    "turnoverRangeMax": "3 mil.+",
+    "chooseFeeLabel": "Odaberite stopu provizije (utječe na značajke)",
+    "feeOptions": {
+      "basic": "Osnovni",
+      "standard": "Standardni",
+      "pro": "Pro",
+      "max": "Maks."
+    },
+    "chooseFixedLabel": "Odaberite osnovni fiksni dio (prihvat kartica uvijek je 3%)",
+    "fixedOptions": {
+      "start": "Start",
+      "optima": "Optima",
+      "business": "Business"
+    },
+    "economyPercentTitle": "EKONOMIJA PLANA",
+    "economyComboTitle": "EKONOMIJA KOMBINIRANOG PLANA",
+    "turnover": "Promet studija",
+    "systemFee": "Naknada sustava",
+    "totalMonthlyPayment": "UKUPNO MJESEČNO PLAĆANJE",
+    "onlyPayForResult": "Ne plaćate fiksnu naknadu, samo za rezultat",
+    "activatePercent": "Aktiviraj model {{percent}}%",
+    "baseSubscription": "Osnovna pretplata (fiksno)",
+    "acquiringFee": "Prihvat kartica / naknada",
+    "activateCombo": "Aktiviraj Kombinirani plan"
+  },
+  "planCards": {
+    "bestChoice": "Najbolji izbor",
+    "current": "Trenutačni",
+    "perMonth": "/ mj.",
+    "currentPlan": "Trenutačni plan",
+    "yourPrice": "Vaša cijena",
+    "staffLimit": "Do {{count}} zaposlenika",
+    "staffUnlimited": "Neograničen broj zaposlenika"
+  },
+  "paymentSchedule": {
+    "title": "Raspored plaćanja",
+    "total": "Ukupno za platiti",
+    "morePayments": "+ još {{count}} plaćanja po {{amount}}",
+    "processing": "Preusmjeravanje na plaćanje…",
+    "payFor": "Plati za {{count}} mj.",
+    "vatNote": "Bez PDV-a — porez se dodaje pri naplati prema vašoj državi"
+  },
+  "trust": {
+    "title": "Zašto nam vjeruje više od 2.400 tvrtki",
+    "reviews": [
+      {
+        "text": "Prešli smo s Altegia. Razlika je kao između taksija i privatnog aviona.",
+        "author": "Maria K., FORM Pilates"
+      },
+      {
+        "text": "Najbolje je što točno znam koliko plaćam svaki mjesec. Nema iznenađenja.",
+        "author": "Artem N., Barbershop Bros"
+      },
+      {
+        "text": "Podrška je odgovorila za 4 minute. To nikad nisam vidjela nigdje drugdje.",
+        "author": "Elena D., SPA LUNA"
+      }
+    ]
+  },
+  "upgrade": {
+    "priceLine": "Cijena {{price}}/mj.",
+    "discountNote": " {{percent}}% popusta pri plaćanju za {{period}} mj.",
+    "planLabel": "Plan",
+    "periodLabel": "Razdoblje",
+    "periodValue_one": "{{count}} mjesec",
+    "periodValue_few": "{{count}} mjeseca",
+    "periodValue_other": "{{count}} mjeseci",
+    "discountLabel": "Popust",
+    "scheduledBadge": "Od {{date}} — plan „{{plan}}“",
+    "vatNote": "Bez PDV-a — porez se dodaje pri naplati prema podacima vaše tvrtke; tvrtke iz EU-a s PDV brojem imaju prijenos porezne obveze."
+  },
+  "method": {
+    "notLinked": "Nije povezano",
+    "badgeTitle": "Način plaćanja je zaštićen",
+    "tokenSub": "Token pružatelja · istječe {{expiry}}",
+    "tokenNote": "Stvarne podatke kartice čuva pružatelj plaćanja (PCI DSS L1). Mi čuvamo samo jednokratni token za obnove.",
+    "securityTitle": "Standardi zaštite podataka",
+    "security": {
+      "pciDss": "PCI DSS šifriranje razine 1",
+      "secure3d": "3D Secure zaštita transakcija",
+      "noStorage": "Podaci kartice nikad ne prolaze našim poslužiteljima",
+      "autoLink": "Kartica se povezuje pri prvoj uplati"
+    },
+    "noCardDetail": "Ne morate zasebno unositi podatke — plaćanje se obavlja na sigurnoj Stripe stranici.",
+    "renewDone": "Faktura je izrađena — plaćanje se obrađuje",
+    "renewBusy": "Izrada fakture…",
+    "renewSuccess": "Faktura za obnovu je izrađena",
+    "renewError": "Nije moguće izraditi fakturu. Pokušajte ponovno.",
+    "renewNow": "Obnovi sada karticom •••• {{last4}}",
+    "autopayTitle": "Postavke automatskog plaćanja",
+    "autopaySuccess": "Postavka je spremljena",
+    "autopayError": "Nije moguće spremiti postavku. Pokušajte ponovno.",
+    "autopay": {
+      "cardOnly": "Dostupno pri plaćanju karticom",
+      "autoRenew": {
+        "label": "Automatska obnova",
+        "desc": "Isključite za otkazivanje na kraju plaćenog razdoblja",
+        "until": "Pretplata se neće obnoviti — pristup do {{date}}"
+      },
+      "emailNotify": {
+        "label": "Obavijesti e-poštom",
+        "desc": "Račun se šalje e-poštom nakon svakog plaćanja"
+      },
+      "remind3d": {
+        "label": "Podsjeti 3 dana ranije",
+        "desc": "Podsjetit ćemo vas prije automatske naplate"
+      },
+      "sms": {
+        "label": "SMS obavijest",
+        "desc": "Tekstualna poruka šalje se pri naplati"
+      }
+    },
+    "portal": {
+      "title": "Podaci za naplatu i PDV",
+      "subtitle": "Fakture, povezana kartica i povijest naplate nalaze se na Stripe korisničkom portalu.",
+      "cta": "Otvori u Stripeu"
+    },
+    "ibanBadgeLabel": "Bankovni prijenos (SEPA)",
+    "ibanBadgeNote": "Fakture stižu e-poštom s poveznicom za plaćanje — ništa se ne naplaćuje automatski s kartice. Možete platiti i ranije na stranici fakture."
+  },
+  "invoices": {
+    "title": "Povijest plaćanja",
+    "totalPaid": "ukupno plaćeno {{amount}}",
+    "exportCsv": "Izvezi CSV",
+    "exportError": "Nije moguće izvesti CSV. Pokušajte ponovno.",
+    "receiptError": "Nije moguće otvoriti račun. Pokušajte ponovno.",
+    "invoiceNo": "Faktura #{{id}}",
+    "methodCard": "Plaćeno karticom",
+    "methodIban": "Plaćeno bankovnim prijenosom (IBAN)",
+    "syncHint": "Provjerite status kod usluge plaćanja",
+    "syncChanged": "Status je ažuriran: {{status}}",
+    "syncUnchanged": "Usluga plaćanja potvrdila je isti status",
+    "syncError": "Nije moguće provjeriti status. Pokušajte ponovno.",
+    "kindOfflineFee": "Provizija za offline prodaju",
+    "kindMinFee": "Minimalna mjesečna naknada",
+    "kindOnlineFee": "Provizija za online plaćanja",
+    "methodWithheld": "Stripe je zadržao pri plaćanju"
+  },
+  "table": {
+    "date": "Datum",
+    "description": "Opis",
+    "amount": "Iznos",
+    "status": "Status",
+    "receipt": "Račun"
+  },
+  "status": {
+    "paid": "Plaćeno",
+    "pending": "Na čekanju",
+    "failed": "Nije plaćeno",
+    "refunded": "Vraćeno"
+  },
+  "empty": {
+    "noInvoices": "Još nema faktura — pojavit će se nakon prve uplate.",
+    "noCard": "Kartica će se automatski pojaviti nakon prve uplate.",
+    "monthsWithUs": "Još niste kupili pretplatu",
+    "noData": "Nema podataka"
+  },
+  "savings": {
+    "title": "Vaše uštede",
+    "prepayTitle": "Vaše uštede pri plaćanju unaprijed",
+    "emptyState": "Odaberite dulje razdoblje i počnite štedjeti",
+    "youSave": "Štedite {{amount}} tijekom {{months}} mj.",
+    "freeMonths": "To je kao {{count}} mj. besplatno",
+    "amountLabel": "{{amount}} uštede",
+    "comparedToMonthly": "u usporedbi s mjesečnim plaćanjem",
+    "forMonths_one": "Za {{count}} mjesec",
+    "forMonths_few": "Za {{count}} mjeseca",
+    "forMonths_other": "Za {{count}} mjeseci"
+  },
+  "pay": "Plati",
+  "continuePlan": "Nastavi plan",
+  "payModal": {
+    "titleNew": "Pokreni plan {{plan}}",
+    "titleSwitch": "Prijeđi na {{plan}}",
+    "titleRenew": "Obnovi {{plan}}",
+    "totalLabel": "Vaš plan koštat će",
+    "burnWarning": "Prelazak na drugi plan ponovno pokreće razdoblje: ostatak vašeg plana {{plan}} U POTPUNOSTI SE GUBI — ne vraća se i ne prenosi. Obnova istog plana ga zadržava.",
+    "switched": "Plan je promijenjen: nema plaćanja — promjena je pokrivena ostatkom trenutačnog razdoblja.",
+    "renewNote": "Ovo obnavlja isti plan: kupljeni mjeseci dodaju se trenutačnom plaćenom razdoblju. Ništa se ne gubi.",
+    "cardNote": "Plaćanje karticom na sigurnoj Stripe stranici · povrat novca u 7 dana",
+    "freeUntil": "Ništa se ne naplaćuje do {{date}}: ostalo vam je {{count}} dana već plaćenog razdoblja. Naplata počinje tog datuma.",
+    "taxLabel": "PDV",
+    "taxLine": "PDV {{rate}}%",
+    "reverseCharge": "Prijenos porezne obveze",
+    "totalWithTax": "Ukupno s PDV-om",
+    "taxServerNote": "Porez se izračunava iz podataka za naplatu. Faktura će pokazati isti iznos.",
+    "taxReview": "Nismo mogli utvrditi porez za vaše podatke za naplatu, pa se ukupni iznos prikazuje bez njega i plaćanje se ne može dovršiti. Provjerite državu i adresu platitelja ili kontaktirajte podršku."
+  },
+  "offlineFee": {
+    "title": "Naknada za offline prodaju",
+    "accruing": "Obračunato od gotovine i depozita po {{rate}}%. Fakturira se mjesečno, imate {{days}} dana za plaćanje.",
+    "due": "Faktura je izdana. Preostalo dana za plaćanje: {{days}}.",
+    "suspended": "Plaćanje je dospjelo — pristup CRM-u i miniaplikaciji je obustavljen.",
+    "pay": "Plati",
+    "suspendedMin": "Minimalna mjesečna naknada je dospjela — pristup CRM-u i miniaplikaciji je obustavljen.",
+    "alsoAccruing": "Uz to se ovaj mjesec obračunava: {{amount}} — ide u sljedeću fakturu.",
+    "minimum": "Minimalna mjesečna naknada iznosi {{amount}}. Zaradite manje u mjesecu i nadoplaćujete razliku; zaradite više i nema fakture.",
+    "pendingBill": "Obračunato prema prethodnom modelu, čeka fakturu.",
+    "notBilledYet": "Faktura još nije izdana: obračunati iznos je ispod minimalne veličine fakture ili se još priprema. Ništa se ne gubi — ide u sljedeću fakturu."
+  },
+  "trial": {
+    "title": "Ponuda za nove studije",
+    "subtitle": "Vaš studio je upravo stvoren",
+    "headline": "{{days}} dana besplatno",
+    "noCard": "Kartica nije potrebna — sada nema ništa za platiti",
+    "perks": {
+      "allModules": "Potpun pristup svakom modulu: dnevnik, klijenti, financije, obavijesti i Velora AI",
+      "noCommitment": "Bez obveze: ako vam ne odgovara, jednostavno ne obnovite",
+      "keepData": "Sve što postavite tijekom probe ostaje vaše"
+    },
+    "activate": "Aktiviraj",
+    "decline": "Odbij",
+    "cardHint": "Još niste aktivirali besplatno razdoblje ovog studija. Ostaje dostupno dok ne kupite plan."
+  },
+  "profile": {
+    "title": "Podaci za naplatu",
+    "editTitle": "Uredi podatke za naplatu",
+    "subtitle": "Vaša adresa ide na fakturu i određuje poreznu stopu. Sprema se na vaš račun — nećemo je ponovo tražiti u drugom studiju.",
+    "subtitlePay": "Ispunite ovo jednom i plaćanje će sljedeći put proći odmah. Vaša adresa ide na fakturu i određuje poreznu stopu.",
+    "cardTitle": "Podaci za naplatu",
+    "cardSubtitle": "Spremljeni su na vaš račun i koriste se u svim studijima. Ovako se pojavljuju na fakturi.",
+    "cardEmpty": "Još nisu uneseni — tražit ćemo ih prije prve uplate. Možete ih dodati sada.",
+    "add": "Dodaj podatke za naplatu",
+    "edit": "Uredi",
+    "save": "Spremi",
+    "saveAndPay": "Spremi i nastavi na plaćanje",
+    "cancel": "Odustani",
+    "saved": "Podaci za naplatu spremljeni",
+    "vatNone": "Nije navedeno",
+    "fields": {
+      "country": "Država ili regija",
+      "countryPlaceholder": "Odaberite državu",
+      "address": "Adresa",
+      "line1": "Redak adrese 1",
+      "line1Placeholder": "Ulica i broj",
+      "line2": "Redak adrese 2 — neobavezno",
+      "line2Placeholder": "Stan, apartman, broj jedinice itd.",
+      "postalCode": "Poštanski broj",
+      "postalCodePlaceholder": "110 00",
+      "city": "Grad",
+      "cityPlaceholder": "Prag",
+      "vat": "PDV broj — neobavezno",
+      "vatPlaceholder": "{{prefix}}12345678",
+      "vatHint": "Samo za tvrtke. Broj se provjerava u registru EU-a (VIES) pri spremanju — ne prihvaćamo neprovjerene brojeve. S važećim brojem tvrtka u drugoj državi EU-a dobiva fakturu bez poreza (prijenos porezne obveze). Fizičke osobe ga nemaju — ostavite prazno.",
+      "countrySearch": "Počnite tipkati ime",
+      "countryNotFound": "Država nije pronađena",
+      "vatOutsideEu": "Ne tražimo PDV broj: izvan EU-a porez određuje država platitelja, a ne broj, pa ne utječe na fakturu.",
+      "vatPending": "Vaš je broj spremljen, ali registar EU-a tada nije bio dostupan, pa još nije potvrđen i sljedeća faktura uključivat će puni PDV. Ne morate ga ponovno unositi: nastavljamo provjeravati i čim registar odgovori porez se prestaje naplaćivati. Za već plaćenu fakturu podrška će vratiti porez."
+    },
+    "errors": {
+      "required": "Ovo je polje obavezno"
+    },
+    "preview": {
+      "invoice": "Faktura",
+      "billTo": "Račun za",
+      "note": "Ovako se vaši podaci pojavljuju na svakoj fakturi. Možete ih promijeniti bilo kada u Planovi i naplata → Način plaćanja."
+    }
+  }
+}

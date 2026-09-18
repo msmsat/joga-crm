@@ -1,0 +1,240 @@
+== da
+header.allConfigured	Alle programmer er sat op
+header.allConfiguredSub	Dit loyalitetssystem kører for fuld kraft
+header.setup	Opsæt loyalitetsprogrammer
+header.setupSub	{{count}} af {{total}} programmer er sat op · Hvert program styrker fastholdelsen af kunder
+header.start	Kom i gang
+programs.loyalty.title	Loyalitetskort
+programs.loyalty.desc	Niveaudelt pointoptjeningssystem
+programs.loyalty.statLabel	kunder
+programs.discounts.title	Rabatter og cashback
+programs.discounts.desc	Personlige tilbud til kunder
+programs.discounts.statLabel	aktive
+programs.certificates.title	Gavekort
+programs.certificates.desc	Gavekort og personlige certifikater
+programs.certificates.statLabel	solgt
+programs.referral.title	Henvisninger
+programs.referral.desc	Programmet „Tag en ven med”
+programs.referral.statLabel	henvisninger
+programs.promocodes.title	Rabatkoder
+programs.promocodes.desc	Rabatkoder med en brugsgrænse
+programs.promocodes.statLabel	aktive
+programs.deposit.title	Indestående
+programs.deposit.desc	Kundens kontantbalance hos studiet
+programs.deposit.statLabel	med saldo
+card.active	Aktiv
+card.disable	Deaktivér
+card.notConfigured	Ikke konfigureret
+card.configure	Konfigurér
+drawer.subtitle	Programindstillinger
+drawer.saving	Gemmer…
+drawer.save	Gem og aktivér
+drawer.cancel	Annullér
+drawer.close	Luk
+config.mainParams	Hovedparametre
+config.programName	Programnavn
+config.pointsRate	Pointkurs ({{currency}} pr. 1 point)
+config.levels	Niveauer
+config.pointValue	1 point =
+config.pointValueHint	Point optjenes med samme kurs på hvert niveau, men de har ikke samme værdi. Giv Gold 1 og Diamond 2, så et point optjent af kunden giver dobbelt så stort afslag ved kassen. Det er det, et niveau giver: Jo mere man har brugt i studiet, jo mere er pointene værd.
+config.expiry	Udløbsperiode
+config.expiryTooltip	Hvor længe en kunde kan bruge optjente point
+config.expiryOptions.3m	3 mdr.
+config.expiryOptions.6m	6 mdr.
+config.expiryOptions.1y	1 år
+config.expiryOptions.never	Uden udløb
+config.newLevelName	Nyt niveau
+config.addLevel	+ Niveau
+config.levelFrom	fra
+config.levelTo	til
+config.deleteLevelTitle	Slet dette niveau?
+config.deleteLevelMessage	Kunder på niveauet „{{name}}” flyttes til det tilstødende niveau efter deres samlede forbrug.
+config.discountType	Rabattype
+config.discountTypes.percentage	Procent (%)
+config.discountTypes.fixed	Fast ({{currency}})
+config.discountTypes.cashback	Cashback
+config.cashbackPercent	Cashback-procent
+config.discountSize	Rabatbeløb
+config.minPurchase	Mindste købsbeløb
+config.noLimit	Ingen grænse
+config.conditions	Anvendelsesbetingelser
+config.appliesToAll	Anvend på alle tjenester
+config.stackable	Kombinér med andre rabatter
+config.visibleInCabinet	Vis kunden i kundens konto
+config.certType	Certifikattype
+config.certTypes.named	Personligt
+config.certTypes.gift	Gave
+config.certTypes.service	Til en tjeneste
+config.denominations	Beløb
+config.addDenom	+ Tilføj
+config.service	Tjeneste
+config.noServices	Der er endnu ingen tjenester i kataloget — tilføj dem under „Katalog”
+config.params	Parametre
+config.expiryDays	Udløbsperiode (dage)
+config.certIssue	Udsted certifikat
+config.certCustomAmount	Valgfrit beløb
+config.certRecipientName	Modtagerens navn
+config.certRecipientPlaceholder	Valgfrit
+config.certLinkClient	Knyt til en kunde
+config.certClientSearchPlaceholder	Begynd at skrive et navn…
+config.certAccount	Indestående-konto
+config.certAccountNone	Registrer ikke i regnskabet
+config.certIssueButton	Udsted
+config.certIssuedTitle	Certifikat udstedt
+config.certCopyCode	Kopiér kode
+config.certCopied	Kopieret
+config.certIssueAnother	Udsted endnu et
+config.certIssued	Udstedte certifikater
+config.certEmpty	Der er endnu ikke udstedt certifikater
+config.certStatus.active	Aktiv
+config.certStatus.used	Indløst
+config.certStatus.expired	Udløbet
+config.certRedeem	Indløs
+config.certRedeemTitle	Indløse dette certifikat?
+config.certRedeemMessage	Certifikat {{code}} markeres som indløst. Det kan ikke fortrydes.
+config.referrerBonusTitle	Henvisningsbonus
+config.referrerBonus	Bonus til henviseren ({{currency}})
+config.newClientDiscount	Rabat til ny kunde (%)
+config.triggerCondition	Optjeningsbetingelse
+config.triggerConditions.first_visit	Efter første besøg
+config.triggerConditions.first_payment	Efter første betaling
+config.triggerConditions.registration	Straks ved registrering
+config.bonusAccrual	Bonusoptjening
+config.bonusTypes.points	Point
+config.bonusTypes.deposit	Til indestående
+config.bonusTypes.discount	Som rabat
+config.promoCreate	Opret rabatkode
+config.promoCodePlaceholder	SOMMER25
+config.promoValidUntil	Gyldig til
+config.promoUsageLimit	Brugsgrænse
+config.promoAdd	+ Tilføj rabatkode
+config.promoList	Rabatkoder
+config.promoEmpty	Der er endnu ingen rabatkoder
+config.promoUntil	til
+config.promoStatus.active	Aktiv
+config.promoStatus.expired	Udløbet
+config.promoStatus.exhausted	Grænsen er nået
+config.promoStatus.disabled	Deaktiveret
+config.depositTotal	Samlet saldo
+config.depositTotalSub	på tværs af kunders indeståender
+config.depositTopClients	Topkunder efter saldo
+config.depositEmpty	Ingen har et indestående endnu
+config.depositHint	Indbetalinger og udbetalinger sker på kundens profil. Henvisningsprogrammet kan udbetale bonusser til indeståendet i stedet for som point.
+validation.required	Dette felt er påkrævet
+validation.minOne	Skal være mindst 1
+validation.minZero	Må ikke være negativt
+validation.positive	Skal være større end 0
+validation.range0to100	0 til 100
+toasts.saved	Programmet er aktiveret
+toasts.saveFailed	Kunne ikke gemme
+toasts.toggleFailed	Kunne ikke opdatere programmet
+toasts.loadFailed	Kunne ikke indlæse data
+toasts.retry	Prøv igen
+stats.notConnected	Programmet er ikke tilsluttet
+stats.willAppear	Data vises efter opsætning
+stats.noData	Ingen data
+stats.connectProgram	Tilslut et program
+stats.revenueHeadline	Omsætning fra medlemmer
+stats.membersHeadline	Programmedlemmer
+stats.returnedClients	Tilbagevendte kunder
+stats.returnedClientsSub	2+ besøg på 90 dage
+stats.avgCheckHeadline	Gennemsnitlig bon pr. medlem
+stats.bonusCostHeadline	Bonusomkostning
+stats.bonusCostSub	denne måned
+stats.roiHeadline	ROI
+stats.roiValue	×{{value}}
+stats.perMonth	denne måned
+stats.cardHolders	kortindehavere
+stats.kpi	Nøgletal
+stats.members	Medlemmer
+stats.withCard	med kort
+stats.avgCheck	Gennemsnitlig bon
+stats.byMembers	blandt medlemmer
+stats.pointsInCirculation	Point i omløb
+stats.accrued	optjent
+stats.revenue	Omsætning
+stats.revenuePerMonth	fra medlemmer / md.
+stats.levelDistribution	Fordeling efter niveau
+stats.noLevels	Niveauer er ikke konfigureret endnu
+stats.totalClients	Samlede kunder i programmet
+stats.fromValue	fra {{value}}
+stats.levelPointValue	point = {{value}}
+scenarios.title	Smarte scenarier
+scenarios.subtitle	Autopilot til fastholdelse: systemet finder kunder og belønner dem for dig
+scenarios.add	Scenarie
+scenarios.fired	udløst {{count}} gange
+scenarios.lastRun	sidst kørt {{when}}
+scenarios.neverRun	ikke kørt endnu
+scenarios.empty	Der er endnu ingen scenarier
+scenarios.emptySub	Byg det første — systemet fastholder kunderne for dig
+scenarios.channel	Kanal
+scenarios.channelSoon	efter tilslutning af integration
+scenarios.pickTemplate	Vælg et scenarie
+scenarios.pickTemplateSub	En færdig skabelon — justér tærsklerne senere
+scenarios.create	Opret
+scenarios.deleteConfirm	Slet scenariet?
+scenarios.deleteConfirmSub	Reglen holder op med at udløses. Det kan ikke fortrydes.
+scenarios.triggers.inactive_days	inaktiv i {{days}} dage
+scenarios.triggers.low_subscription	≤ {{classes_left}} hold tilbage
+scenarios.triggers.birthday	fødselsdag
+scenarios.triggers.nth_visit	besøg nr. {{n}}
+scenarios.triggers.referral	henviste en ven
+scenarios.actions.points	giv {{points}} point
+scenarios.actions.gift_classes	giv {{classes}} hold
+scenarios.actions.certificate	udsted et certifikat på {{amount}} ₽
+scenarios.actions.renewal_offer	tilbyd fornyelse med {{discount}}% rabat
+scenarios.templates.win_back.name	Vi savner dig
+scenarios.templates.win_back.desc	Vind en kunde tilbage, som ikke har besøgt jer længe
+scenarios.templates.expiring_subscription.name	Abonnementet er ved at løbe ud
+scenarios.templates.expiring_subscription.desc	Tilbyd fornyelse før holdene er brugt op
+scenarios.templates.birthday_gift.name	Fødselsdagsgave
+scenarios.templates.birthday_gift.desc	Glæd en kunde på deres særlige dag
+scenarios.templates.fifth_visit.name	Loyalitetsbelønning
+scenarios.templates.fifth_visit.desc	Et gratis hold for loyalitet
+scenarios.templates.referral_thanks.name	Tak for vennen
+scenarios.templates.referral_thanks.desc	Beløn den, der kom med en ny kunde
+scenarios.ifClient	Hvis kunden
+scenarios.then	→
+scenarios.toasts.created	Scenariet er oprettet
+scenarios.toasts.updated	Scenariet er opdateret
+scenarios.toasts.deleted	Scenariet er slettet
+scenarios.toasts.failed	Kunne ikke gemme scenariet
+scenarios.delete	Slet
+segmentsBoard.title	Segmenter og anbefalinger
+segmentsBoard.subtitle	Aktive kundegrupper, hver med én tydelig opfordring til handling
+segmentsBoard.empty	Der er intet her, og det er godt
+segmentsBoard.clients	kunder
+segmentsBoard.daysAgo	{{count}} dage siden
+segmentsBoard.neverVisited	ingen besøg
+segmentsBoard.more	og {{count}} mere
+segmentsBoard.segments.at_risk.name	På vej væk
+segmentsBoard.segments.at_risk.desc	Aktive, inaktive i 21+ dage
+segmentsBoard.segments.at_risk.action	Giv bonus
+segmentsBoard.segments.vip_idle.name	VIP er blevet stille
+segmentsBoard.segments.vip_idle.desc	VIP-kunder, inaktive i 14+ dage
+segmentsBoard.segments.vip_idle.action	Kør kampagne
+segmentsBoard.segments.expiring_subscription.name	Abonnementet udløber
+segmentsBoard.segments.expiring_subscription.desc	≤2 hold eller ≤7 dage tilbage
+segmentsBoard.segments.expiring_subscription.action	Kør kampagne
+segmentsBoard.segments.lost_newcomers.name	Kom aldrig tilbage
+segmentsBoard.segments.lost_newcomers.desc	Kom én gang, væk i 14+ dage
+segmentsBoard.segments.lost_newcomers.action	Kør kampagne
+segmentsBoard.segments.upsell_candidates.name	Klar til en pakke
+segmentsBoard.segments.upsell_candidates.desc	8+ besøg denne måned, ingen pakke
+segmentsBoard.segments.upsell_candidates.action	Kør kampagne
+segmentsBoard.campaignSub	Segment „{{name}}” · {{count}} kunder
+segmentsBoard.pointsLabel	Hvor mange point skal tildeles
+segmentsBoard.messageLabel	Beskedtekst
+segmentsBoard.messagePlaceholder	f.eks. Vi savner dig! Kom tilbage — vi venter på dig.
+segmentsBoard.emailNote	E-mailen sendes kun til kunder med en e-mailadresse
+segmentsBoard.confirm	Send
+segmentsBoard.toasts.pointsDone	Point er tildelt · {{processed}} behandlet, {{emails}} underrettet
+segmentsBoard.toasts.emailDone	Kampagnen er sendt · {{emails}} e-mails af {{processed}}
+retention.title	Fornyelser af abonnementer
+retention.subtitle	Hvor godt kunderne kommer tilbage efter en ny pakke
+retention.renewalRate	Forny
+retention.avgPackages	Pakker pr. kunde
+retention.sold	Solgt
+retention.renewed	Fornyet
+retention.empty	Ingen abonnementsalg endnu
+retention.emptySub	Analysen vises efter de første pakkesalg

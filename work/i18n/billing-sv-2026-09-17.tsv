@@ -1,0 +1,294 @@
+== sv
+legal.terms	Användarvillkor
+legal.privacy	Integritetspolicy
+tabs.plans	Planer och priser
+tabs.invoices	Betalningshistorik
+tabs.method	Betalningsmetod
+tabsShort.plans	Planer
+tabsShort.invoices	Historik
+tabsShort.method	Betalning
+paymentsHistory.title	Fullständig betalningshistorik
+paymentsHistory.subtitle	Alla fakturor för denna studio
+paymentsHistory.clearFilter	Rensa
+paymentsHistory.loadMore	Ladda fler
+planNames.start	Start
+planNames.pro	Pro
+planNames.business	Business
+seats.title	Hur många medarbetare har studion?
+seats.hint	från {{amount}} per månad
+seats.stepNote	Varje extra plats kostar {{amount}} per månad
+seats.unlimitedNote	Obegränsat antal medarbetare
+seats.perSeat	Per medarbetare
+limits.staff	Personal
+limits.ai	Velora AI-förfrågningar
+limits.unlimited	Obegränsat
+banner.trialEnds	Din provperiod slutar {{date}} — välj en plan
+banner.renews	Din {{plan}}-prenumeration förnyas {{date}}
+banner.expires	Din {{plan}}-prenumeration löper ut {{date}}
+banner.choosePlan	Välj plan
+banner.dismiss	Stäng
+banner.unpaid	Din plan är inte betald. Betala under Planer och fakturering för att fortsätta.
+banner.suspended	Åtkomsten är avstängd eftersom planfakturan är förfallen. Betala den under Planer och fakturering.
+paymentReturn.done	Betalningen genomfördes — {{plan}}-planen är aktiv.
+paymentReturn.processing	Betalningen behandlas — din prenumeration aktiveras om några minuter.
+header.eyebrow	Velora · Fakturering
+header.title	Planer och fakturering
+header.subtitle	Hantera prenumerationen, betalningsmetoder och betalningshistorik
+header.totalSpent	Totalt spenderat
+header.monthsWithUs	Månader med oss
+header.saved	Sparat
+header.nextCharge	Nästa debitering
+header.currentPlan	AKTUELL PLAN
+header.noPlanName	Ingen plan
+header.noPlan	Ingen aktiv prenumeration
+header.active	Aktiv
+header.activeUntil	Aktiv · till {{date}}
+header.trialPlanName	Provplan
+header.trial	Provperiod
+header.trialUntil	Provperiod · till {{date}}
+header.expired	Utgången
+header.percentRate	{{rate}} % av försäljningen
+header.modePercent	Procentplan
+header.modeFixed	Fast
+header.modeCombo	Kombinerad
+header.unpaid	Planen är obetald
+header.awaitingPayment	Inväntar betalning
+mode.title	Betalningsmodell
+mode.subscription	Fast prenumeration
+mode.percent	% av försäljningen
+mode.combo	Kombination fast + %
+mode.short.subscription	Fast
+mode.short.percent	Procent
+mode.short.combo	Kombinerad
+mode.descriptions.subscription	Betala ett fast belopp varje månad. Förutsägbart och fördelaktigt.
+mode.descriptions.percent	Ingen fast avgift: {{rate}} % av varje försäljning, även kontantbetalningar.
+mode.descriptions.combo	Halv prenumeration + {{rate}} % av varje försäljning, även kontantbetalningar.
+mode.badges.popular	Populär
+mode.badges.flexible	Flexibel
+mode.percentCard.title	Modellen ”3 % av försäljningen”
+mode.percentCard.description	Betala bara när du tjänar: 3 % av varje försäljning, utan fast prenumerationsavgift. Onlinebetalningar delas direkt; kontanter och insättningar samlas och kommer på en faktura varje månad.
+mode.percentCard.noFixed	Ingen fast avgift
+mode.percentCard.payForResult	Betala för resultat
+mode.percentCard.oneClick	Aktivering med ett klick
+mode.percentCard.cta	Aktivera 3 %-modellen
+mode.percentCard.ctaShort	Aktivera 3 %
+mode.activateSuccess	Betalningsmodellen har uppdaterats
+mode.activateError	Det gick inte att uppdatera betalningsmodellen
+mode.alreadyActive	Denna betalningsmodell är redan aktiv — nedan kan du förnya eller byta plan
+mode.confirmSwitchTitle	Byta betalningsmodell?
+mode.confirmSwitchMessage	Din prenumeration är aktiv. Bytet träder i kraft omedelbart och resten av den betalda perioden GÅR HELT FÖRLORAD: oanvända dagar återbetalas inte och förs inte över.
+mode.termsTitle	Bekräfta planvillkoren
+mode.termsMessage	I den här planen behåller plattformen {{rate}} % av varje försäljning.\n\nFör onlinebetalningar dras avgiften automatiskt vid betalningen. För kontanter, terminal och påfyllning av insättningar dras den INTE direkt — den samlas och du får en separat faktura en gång i månaden.\n\nDu har {{days}} dagar på dig att betala fakturan. Om den inte betalas i tid stängs åtkomsten till CRM och kundernas miniapp av tills betalning sker.\n\nAktuellt betalningsbelopp visas i Fakturering; du kan betala när som helst, även i förskott.
+mode.termsConfirm	Jag godkänner villkoren
+mode.termsMinimum	Minsta månadsavgift är {{amount}} {{currency}}. Om plattformen under en kalendermånad har tjänat mindre än detta från din studio faktureras du mellanskillnaden. Tjänar du mer än minimibeloppet kommer ingen faktura. En obetald minimiavgift stänger åtkomsten på samma sätt som en obetald provisionsfaktura.
+mode.termsBurn	VARNING: Du har betald tid kvar. När du byter faktureringsmodell FÖRLORAR du den helt — oanvända dagar återbetalas inte och förs inte över.
+mode.termsCombo	Bytet är ett KÖP: direkt efter bekräftelse ser du beloppet att betala. Resten av den nuvarande betalda perioden går förlorad — den återbetalas inte och förs inte över. Modellen fast + % aktiveras ENDAST efter betalning; tills dess är din plan oförändrad och inget debiteras.
+combo.rateBadge	{{rate}}%
+combo.summary	Fast {{fixed}}/månad + {{rate}} % av försäljningen (kontanter faktureras månadsvis)
+combo.cta	Aktivera kombinerad plan
+combo.ctaShort	Aktivera kombination
+period.1	1 månad
+period.3	3 månader
+period.6	6 månader
+period.12	1 år
+period.24	2 år
+period.title	Betalningsperiod
+period.discountActive	{{percent}} % rabatt är aktiv
+period.noDiscount	Ingen rabatt
+period.discountLabel	−{{percent}} % rabatt
+calculator.title	Beräkningsparametrar
+calculator.monthlyTurnover	Din månatliga onlineomsättning
+calculator.turnoverRangeMin	50 tusen
+calculator.turnoverRangeMax	3 mn+
+calculator.chooseFeeLabel	Välj provisionssats (påverkar funktioner)
+calculator.feeOptions.basic	Grundläggande
+calculator.feeOptions.standard	Standard
+calculator.feeOptions.pro	Pro
+calculator.feeOptions.max	Max
+calculator.chooseFixedLabel	Välj fast basdel (inlösenavgiften är alltid 3 %)
+calculator.fixedOptions.start	Start
+calculator.fixedOptions.optima	Optima
+calculator.fixedOptions.business	Business
+calculator.economyPercentTitle	PLANBESPARING
+calculator.economyComboTitle	BESPARING MED KOMBINERAD PLAN
+calculator.turnover	Studions omsättning
+calculator.systemFee	Systemavgift
+calculator.totalMonthlyPayment	TOTAL MÅNADSBETALNING
+calculator.onlyPayForResult	Du betalar ingen fast avgift, bara för resultat
+calculator.activatePercent	Aktivera modellen {{percent}} %
+calculator.baseSubscription	Basprenumeration (fast)
+calculator.acquiringFee	Betalningsinlösen / avgift
+calculator.activateCombo	Aktivera kombinerad plan
+planCards.bestChoice	Bästa valet
+planCards.current	Aktuell
+planCards.perMonth	/ månad
+planCards.currentPlan	Aktuell plan
+planCards.yourPrice	Ditt pris
+planCards.staffLimit	Upp till {{count}} medarbetare
+planCards.staffUnlimited	Obegränsat antal medarbetare
+paymentSchedule.title	Betalningsplan
+paymentSchedule.total	Totalt att betala
+paymentSchedule.morePayments	+ {{count}} ytterligare betalningar på {{amount}}
+paymentSchedule.processing	Omdirigerar till betalning…
+paymentSchedule.payFor	Betala för {{count}} månader
+paymentSchedule.vatNote	Exkl. moms — skatt läggs till i kassan enligt ditt land
+trust.title	Varför över 2 400 företag litar på oss
+trust.reviews.0.text	Vi bytte från Altegio. Skillnaden är som mellan en taxi och ett privatjet.
+trust.reviews.0.author	Maria K., FORM Pilates
+trust.reviews.1.text	Det bästa är att veta exakt vad jag betalar varje månad. Inga överraskningar.
+trust.reviews.1.author	Artem N., Barbershop Bros
+trust.reviews.2.text	Supporten svarade på fyra minuter. Det har jag aldrig sett någon annanstans.
+trust.reviews.2.author	Elena D., SPA LUNA
+upgrade.priceLine	Pris {{price}}/månad
+upgrade.discountNote	 {{percent}} % rabatt när du betalar för {{period}} månader
+upgrade.planLabel	Plan
+upgrade.periodLabel	Period
+upgrade.periodValue_one	{{count}} månad
+upgrade.periodValue_other	{{count}} månader
+upgrade.discountLabel	Rabatt
+upgrade.scheduledBadge	Från {{date}} — planen ”{{plan}}”
+upgrade.vatNote	Exkl. moms — skatt läggs till i kassan enligt företagsuppgifterna; EU-företag med momsnummer använder omvänd skattskyldighet.
+method.notLinked	Inte ansluten
+method.badgeTitle	Betalningsmetoden är skyddad
+method.tokenSub	Leverantörstoken · löper ut {{expiry}}
+method.tokenNote	De verkliga kortuppgifterna lagras av betalningsleverantören (PCI DSS L1). Vi behåller bara en engångstoken för förnyelser.
+method.securityTitle	Standarder för dataskydd
+method.security.pciDss	PCI DSS-nivå 1-kryptering
+method.security.secure3d	3D Secure-skydd för transaktioner
+method.security.noStorage	Kortuppgifterna passerar aldrig våra servrar
+method.security.autoLink	Kortet ansluts vid första betalningen
+method.noCardDetail	Du behöver inte ange uppgifterna separat — betalningen sker på Stripes säkra sida.
+method.renewDone	Fakturan har skapats — betalningen behandlas
+method.renewBusy	Skapar faktura…
+method.renewSuccess	Förnyelsefakturan har skapats
+method.renewError	Det gick inte att skapa fakturan. Försök igen.
+method.renewNow	Förnya nu med kort •••• {{last4}}
+method.autopayTitle	Inställningar för automatisk betalning
+method.autopaySuccess	Inställningen har sparats
+method.autopayError	Det gick inte att spara inställningen. Försök igen.
+method.autopay.cardOnly	Tillgänglig vid kortbetalning
+method.autopay.autoRenew.label	Automatisk förnyelse
+method.autopay.autoRenew.desc	Stäng av för att avsluta vid slutet av den betalda perioden
+method.autopay.autoRenew.until	Prenumerationen förnyas inte — åtkomst till {{date}}
+method.autopay.emailNotify.label	E-postaviseringar
+method.autopay.emailNotify.desc	Fakturan skickas med e-post efter varje betalning
+method.autopay.remind3d.label	Påminn 3 dagar före
+method.autopay.remind3d.desc	Vi påminner dig före automatisk debitering
+method.autopay.sms.label	SMS-avisering
+method.autopay.sms.desc	Ett sms skickas när kortet debiteras
+method.portal.title	Faktureringsuppgifter och moms
+method.portal.subtitle	Fakturor, anslutet kort och debiteringshistorik finns i Stripes kundportal.
+method.portal.cta	Öppna i Stripe
+method.ibanBadgeLabel	Banköverföring (SEPA)
+method.ibanBadgeNote	Fakturor kommer med e-post med en betalningslänk — inget dras automatiskt från kortet. Du kan också betala tidigare från fakturasidan.
+invoices.title	Betalningshistorik
+invoices.totalPaid	totalt betalt {{amount}}
+invoices.exportCsv	Exportera CSV
+invoices.exportError	Det gick inte att exportera CSV. Försök igen.
+invoices.receiptError	Det gick inte att öppna fakturan. Försök igen.
+invoices.invoiceNo	Faktura #{{id}}
+invoices.methodCard	Betald med kort
+invoices.methodIban	Betald med banköverföring (IBAN)
+invoices.syncHint	Kontrollera status hos betaltjänsten
+invoices.syncChanged	Status har uppdaterats: {{status}}
+invoices.syncUnchanged	Betaltjänsten bekräftade samma status
+invoices.syncError	Det gick inte att kontrollera status. Försök igen.
+invoices.kindOfflineFee	Provision för offlineförsäljning
+invoices.kindMinFee	Minsta månadsavgift
+invoices.kindOnlineFee	Provision för onlinebetalningar
+invoices.methodWithheld	Innehållen av Stripe vid betalning
+table.date	Datum
+table.description	Beskrivning
+table.amount	Belopp
+table.status	Status
+table.receipt	Faktura
+status.paid	Betald
+status.pending	Väntande
+status.failed	Obetald
+status.refunded	Återbetald
+empty.noInvoices	Inga fakturor ännu — de visas efter den första betalningen.
+empty.noCard	Ditt kort visas automatiskt efter den första betalningen.
+empty.monthsWithUs	Du har inte köpt någon prenumeration ännu
+empty.noData	Inga data
+savings.title	Dina besparingar
+savings.prepayTitle	Dina besparingar vid förskottsbetalning
+savings.emptyState	Välj en längre period och börja spara
+savings.youSave	Du sparar {{amount}} under {{months}} månader
+savings.freeMonths	Det motsvarar {{count}} gratis månader
+savings.amountLabel	{{amount}} sparat
+savings.comparedToMonthly	jämfört med månadsbetalning
+savings.forMonths_one	För {{count}} månad
+savings.forMonths_other	För {{count}} månader
+pay	Betala
+continuePlan	Fortsätt med planen
+payModal.titleNew	Starta planen {{plan}}
+payModal.titleSwitch	Byt till {{plan}}
+payModal.titleRenew	Förnya {{plan}}
+payModal.totalLabel	Din plan kommer att kosta
+payModal.burnWarning	Att byta till en annan plan startar om perioden: den återstående delen av din {{plan}}-plan GÅR FÖRLORAD — den återbetalas inte och förs inte över. En förnyelse av samma plan behåller den.
+payModal.switched	Planen har bytts: inget att betala — bytet täcktes av återstoden av den aktuella perioden.
+payModal.renewNote	Detta förnyar samma plan: månaderna du köper läggs till den aktuella betalda perioden. Inget går förlorat.
+payModal.cardNote	Kortbetalning på Stripes säkra sida · återbetalning inom 7 dagar
+payModal.freeUntil	Inget debiteras före {{date}}: du har {{count}} dagar kvar av den betalda perioden. Faktureringen startar då.
+payModal.taxLabel	Moms
+payModal.taxLine	Moms {{rate}} %
+payModal.reverseCharge	Omvänd skattskyldighet
+payModal.totalWithTax	Totalt med moms
+payModal.taxServerNote	Skatten beräknas från dina faktureringsuppgifter. Fakturan visar samma belopp.
+payModal.taxReview	Vi kunde inte fastställa skatten utifrån dina faktureringsuppgifter, så totalen visas utan den och betalningen kan inte slutföras. Kontrollera land och betalaradress eller kontakta supporten.
+offlineFee.title	Avgift för offlineförsäljning
+offlineFee.accruing	Upplupen från kontanter och insättningar med {{rate}} %. Faktureras månadsvis; du har {{days}} dagar på dig att betala.
+offlineFee.due	Fakturan är utfärdad. Dagar kvar till betalning: {{days}}.
+offlineFee.suspended	Betalningen är förfallen — åtkomsten till CRM och miniappen har stängts av.
+offlineFee.pay	Betala
+offlineFee.suspendedMin	Minsta månadsavgiften är förfallen — åtkomsten till CRM och miniappen har stängts av.
+offlineFee.alsoAccruing	Dessutom ackumuleras denna månad: {{amount}} — det kommer på nästa faktura.
+offlineFee.minimum	Minsta månadsavgiften är {{amount}}. Tjänar du mindre under månaden betalar du mellanskillnaden; tjänar du mer kommer ingen faktura.
+offlineFee.pendingBill	Upplupen enligt den tidigare modellen, inväntar faktura.
+offlineFee.notBilledYet	Ingen faktura har utfärdats ännu: det upplupna beloppet är under lägsta fakturabelopp eller fakturan förbereds fortfarande. Inget går förlorat — det kommer på nästa faktura.
+trial.title	Erbjudande för nya studior
+trial.subtitle	Din studio har just skapats
+trial.headline	{{days}} dagar gratis
+trial.noCard	Inget kort krävs — du har inget att betala nu
+trial.perks.allModules	Full åtkomst till alla moduler: kalender, kunder, ekonomi, aviseringar och Velora AI
+trial.perks.noCommitment	Ingen bindning: om det inte passar behöver du bara inte förnya
+trial.perks.keepData	Allt du lägger in under provperioden förblir ditt
+trial.activate	Aktivera
+trial.decline	Avböj
+trial.cardHint	Du har ännu inte aktiverat den kostnadsfria perioden för denna studio. Den är tillgänglig tills du köper en plan.
+profile.title	Faktureringsuppgifter
+profile.editTitle	Redigera faktureringsuppgifter
+profile.subtitle	Din adress står på fakturan och avgör skattesatsen. Den sparas på ditt konto — vi frågar inte igen i en annan studio.
+profile.subtitlePay	Fyll i en gång, så går betalningen direkt nästa gång. Din adress står på fakturan och avgör skattesatsen.
+profile.cardTitle	Faktureringsuppgifter
+profile.cardSubtitle	Sparas på ditt konto och används i alla studior. Så här visas de på fakturan.
+profile.cardEmpty	Inte ifyllt ännu — vi ber om det före den första betalningen. Du kan lägga till det nu.
+profile.add	Lägg till faktureringsuppgifter
+profile.edit	Redigera
+profile.save	Spara
+profile.saveAndPay	Spara och fortsätt till betalning
+profile.cancel	Avbryt
+profile.saved	Faktureringsuppgifterna har sparats
+profile.vatNone	Inte angivet
+profile.fields.country	Land eller region
+profile.fields.countryPlaceholder	Välj ett land
+profile.fields.address	Adress
+profile.fields.line1	Adressrad 1
+profile.fields.line1Placeholder	Gata och nummer
+profile.fields.line2	Adressrad 2 — valfritt
+profile.fields.line2Placeholder	Lägenhet, svit, enhetsnummer osv.
+profile.fields.postalCode	Postnummer
+profile.fields.postalCodePlaceholder	110 00
+profile.fields.city	Stad
+profile.fields.cityPlaceholder	Prag
+profile.fields.vat	Momsnummer — valfritt
+profile.fields.vatPlaceholder	{{prefix}}12345678
+profile.fields.vatHint	Endast för företag. Numret kontrolleras i EU-registret (VIES) när du sparar — vi godtar inte overifierade nummer. Med ett giltigt nummer faktureras ett företag i ett annat EU-land utan skatt (omvänd skattskyldighet). Privatpersoner har inget sådant nummer — lämna fältet tomt.
+profile.fields.countrySearch	Börja skriva ett namn
+profile.fields.countryNotFound	Landet hittades inte
+profile.fields.vatOutsideEu	Vi ber inte om momsnummer: utanför EU avgörs skatten av betalarens land, inte numret, så det påverkar inte fakturan.
+profile.fields.vatPending	Ditt nummer har sparats, men EU-registret var inte tillgängligt då, så det är ännu inte bekräftat och nästa faktura inkluderar full moms. Du behöver inte fylla i det igen: vi fortsätter att kontrollera det och så snart registret svarar tas skatten inte längre ut. För en redan betald faktura återbetalar supporten skatten.
+profile.errors.required	Detta fält är obligatoriskt
+profile.preview.invoice	Faktura
+profile.preview.billTo	Faktureras till
+profile.preview.note	Så här visas dina uppgifter på varje faktura. Du kan ändra dem när som helst under Plan och fakturering → Betalningsmetod.

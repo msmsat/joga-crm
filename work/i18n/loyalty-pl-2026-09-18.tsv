@@ -1,0 +1,240 @@
+== pl
+header.allConfigured	Wszystkie programy są skonfigurowane
+header.allConfiguredSub	Twój system lojalnościowy działa pełną parą
+header.setup	Skonfiguruj programy lojalnościowe
+header.setupSub	Skonfigurowano {{count}} z {{total}} programów · Każdy program zwiększa retencję klientów
+header.start	Zacznij
+programs.loyalty.title	Karty lojalnościowe
+programs.loyalty.desc	System zbierania punktów z poziomami
+programs.loyalty.statLabel	klientów
+programs.discounts.title	Rabaty i cashback
+programs.discounts.desc	Indywidualne oferty dla klientów
+programs.discounts.statLabel	aktywnych
+programs.certificates.title	Bony podarunkowe
+programs.certificates.desc	Bony podarunkowe i imienne
+programs.certificates.statLabel	sprzedanych
+programs.referral.title	Polecenia
+programs.referral.desc	Program „Przyprowadź znajomego”
+programs.referral.statLabel	poleceń
+programs.promocodes.title	Kody promocyjne
+programs.promocodes.desc	Kody rabatowe z limitem użyć
+programs.promocodes.statLabel	aktywnych
+programs.deposit.title	Depozyt
+programs.deposit.desc	Saldo środków klienta w studiu
+programs.deposit.statLabel	z saldem
+card.active	Aktywny
+card.disable	Wyłącz
+card.notConfigured	Nieskonfigurowany
+card.configure	Skonfiguruj
+drawer.subtitle	Ustawienia programu
+drawer.saving	Zapisywanie…
+drawer.save	Zapisz i aktywuj
+drawer.cancel	Anuluj
+drawer.close	Zamknij
+config.mainParams	Główne parametry
+config.programName	Nazwa programu
+config.pointsRate	Kurs punktów ({{currency}} za 1 punkt)
+config.levels	Poziomy
+config.pointValue	1 punkt =
+config.pointValueHint	Punkty naliczają się według tego samego kursu na każdym poziomie, ale nie mają tej samej wartości. Przypisz Gold 1, a Diamond 2 — punkt zdobyty przez klienta obniży wtedy cenę przy kasie dwukrotnie bardziej. To daje poziom: im więcej ktoś wydał w studiu, tym więcej warte są jego punkty.
+config.expiry	Okres ważności
+config.expiryTooltip	Jak długo klient może wykorzystywać zgromadzone punkty
+config.expiryOptions.3m	3 mies.
+config.expiryOptions.6m	6 mies.
+config.expiryOptions.1y	1 rok
+config.expiryOptions.never	Bez wygaśnięcia
+config.newLevelName	Nowy poziom
+config.addLevel	+ Poziom
+config.levelFrom	od
+config.levelTo	do
+config.deleteLevelTitle	Usunąć ten poziom?
+config.deleteLevelMessage	Klienci z poziomu „{{name}}” przejdą na sąsiedni poziom zgodnie z łączną kwotą wydatków.
+config.discountType	Typ rabatu
+config.discountTypes.percentage	Procent (%)
+config.discountTypes.fixed	Stały ({{currency}})
+config.discountTypes.cashback	Cashback
+config.cashbackPercent	Procent cashbacku
+config.discountSize	Wysokość rabatu
+config.minPurchase	Minimalna kwota zakupu
+config.noLimit	Bez limitu
+config.conditions	Warunki stosowania
+config.appliesToAll	Stosuj do wszystkich usług
+config.stackable	Łącz z innymi rabatami
+config.visibleInCabinet	Pokaż klientowi na jego koncie
+config.certType	Typ bonu
+config.certTypes.named	Imienny
+config.certTypes.gift	Podarunkowy
+config.certTypes.service	Na usługę
+config.denominations	Nominały
+config.addDenom	+ Dodaj
+config.service	Usługa
+config.noServices	W katalogu nie ma jeszcze usług — dodaj je w sekcji „Katalog”
+config.params	Parametry
+config.expiryDays	Okres ważności (dni)
+config.certIssue	Wystaw bon
+config.certCustomAmount	Własna kwota
+config.certRecipientName	Imię odbiorcy
+config.certRecipientPlaceholder	Opcjonalne
+config.certLinkClient	Powiąż z klientem
+config.certClientSearchPlaceholder	Zacznij wpisywać imię…
+config.certAccount	Konto depozytowe
+config.certAccountNone	Nie zapisuj w księdze
+config.certIssueButton	Wystaw
+config.certIssuedTitle	Bon został wystawiony
+config.certCopyCode	Kopiuj kod
+config.certCopied	Skopiowano
+config.certIssueAnother	Wystaw kolejny
+config.certIssued	Wystawione bony
+config.certEmpty	Nie wystawiono jeszcze bonów
+config.certStatus.active	Aktywny
+config.certStatus.used	Wykorzystany
+config.certStatus.expired	Wygasł
+config.certRedeem	Zrealizuj
+config.certRedeemTitle	Zrealizować ten bon?
+config.certRedeemMessage	Bon {{code}} zostanie oznaczony jako wykorzystany. Nie można tego cofnąć.
+config.referrerBonusTitle	Bonus za polecenie
+config.referrerBonus	Bonus dla polecającego ({{currency}})
+config.newClientDiscount	Rabat dla nowego klienta (%)
+config.triggerCondition	Warunek naliczenia
+config.triggerConditions.first_visit	Po pierwszej wizycie
+config.triggerConditions.first_payment	Po pierwszej płatności
+config.triggerConditions.registration	Od razu po rejestracji
+config.bonusAccrual	Naliczanie bonusu
+config.bonusTypes.points	Punkty
+config.bonusTypes.deposit	Na depozyt
+config.bonusTypes.discount	Jako rabat
+config.promoCreate	Utwórz kod promocyjny
+config.promoCodePlaceholder	LATO25
+config.promoValidUntil	Ważny do
+config.promoUsageLimit	Limit użyć
+config.promoAdd	+ Dodaj kod promocyjny
+config.promoList	Kody promocyjne
+config.promoEmpty	Nie ma jeszcze kodów promocyjnych
+config.promoUntil	do
+config.promoStatus.active	Aktywny
+config.promoStatus.expired	Wygasł
+config.promoStatus.exhausted	Limit osiągnięty
+config.promoStatus.disabled	Wyłączony
+config.depositTotal	Łączne saldo
+config.depositTotalSub	na wszystkich depozytach klientów
+config.depositTopClients	Najlepsi klienci według salda
+config.depositEmpty	Nikt nie ma jeszcze depozytu
+config.depositHint	Doładowania i wypłaty odbywają się w profilu klienta. Program poleceń może wypłacać bonusy na depozyt zamiast w punktach.
+validation.required	To pole jest wymagane
+validation.minOne	Musi wynosić co najmniej 1
+validation.minZero	Nie może być ujemne
+validation.positive	Musi być większe od 0
+validation.range0to100	Od 0 do 100
+toasts.saved	Program aktywowany
+toasts.saveFailed	Nie udało się zapisać
+toasts.toggleFailed	Nie udało się zaktualizować programu
+toasts.loadFailed	Nie udało się wczytać danych
+toasts.retry	Spróbuj ponownie
+stats.notConnected	Program nie jest podłączony
+stats.willAppear	Dane pojawią się po konfiguracji
+stats.noData	Brak danych
+stats.connectProgram	Podłącz program
+stats.revenueHeadline	Przychód od członków
+stats.membersHeadline	Członkowie programu
+stats.returnedClients	Klienci, którzy wrócili
+stats.returnedClientsSub	2+ wizyty w ciągu 90 dni
+stats.avgCheckHeadline	Średni rachunek na członka
+stats.bonusCostHeadline	Koszt bonusów
+stats.bonusCostSub	w tym miesiącu
+stats.roiHeadline	ROI
+stats.roiValue	×{{value}}
+stats.perMonth	w tym miesiącu
+stats.cardHolders	posiadacze kart
+stats.kpi	Kluczowe wskaźniki
+stats.members	Członkowie
+stats.withCard	z kartą
+stats.avgCheck	Średni rachunek
+stats.byMembers	wśród członków
+stats.pointsInCirculation	Punkty w obiegu
+stats.accrued	naliczone
+stats.revenue	Przychód
+stats.revenuePerMonth	od członków / mies.
+stats.levelDistribution	Rozkład według poziomów
+stats.noLevels	Poziomy nie są jeszcze skonfigurowane
+stats.totalClients	Łączna liczba klientów w programie
+stats.fromValue	od {{value}}
+stats.levelPointValue	punkt = {{value}}
+scenarios.title	Inteligentne scenariusze
+scenarios.subtitle	Autopilot retencji: system znajduje klientów i nagradza ich za Ciebie
+scenarios.add	Scenariusz
+scenarios.fired	uruchomiono {{count}} razy
+scenarios.lastRun	ostatnie uruchomienie {{when}}
+scenarios.neverRun	jeszcze nie uruchomiono
+scenarios.empty	Nie ma jeszcze scenariuszy
+scenarios.emptySub	Utwórz pierwszy — system będzie zatrzymywać klientów za Ciebie
+scenarios.channel	Kanał
+scenarios.channelSoon	po podłączeniu integracji
+scenarios.pickTemplate	Wybierz scenariusz
+scenarios.pickTemplateSub	Gotowy szablon — progi dostosujesz później
+scenarios.create	Utwórz
+scenarios.deleteConfirm	Usunąć scenariusz?
+scenarios.deleteConfirmSub	Reguła przestanie się uruchamiać. Tej operacji nie można cofnąć.
+scenarios.triggers.inactive_days	aktywny {{days}} dni temu
+scenarios.triggers.low_subscription	pozostało ≤ {{classes_left}} zajęć
+scenarios.triggers.birthday	urodziny
+scenarios.triggers.nth_visit	wizyta nr {{n}}
+scenarios.triggers.referral	przyprowadził znajomego
+scenarios.actions.points	podaruj {{points}} punktów
+scenarios.actions.gift_classes	podaruj {{classes}} zajęć
+scenarios.actions.certificate	wystaw bon na {{amount}} ₽
+scenarios.actions.renewal_offer	zaproponuj odnowienie z rabatem {{discount}}%
+scenarios.templates.win_back.name	Tęsknimy za Tobą
+scenarios.templates.win_back.desc	Odzyskaj klienta, który od dawna nie odwiedzał studia
+scenarios.templates.expiring_subscription.name	Abonament się kończy
+scenarios.templates.expiring_subscription.desc	Zaproponuj odnowienie, zanim skończą się zajęcia
+scenarios.templates.birthday_gift.name	Prezent urodzinowy
+scenarios.templates.birthday_gift.desc	Spraw radość klientowi w jego wyjątkowym dniu
+scenarios.templates.fifth_visit.name	Nagroda za lojalność
+scenarios.templates.fifth_visit.desc	Darmowe zajęcia za lojalność
+scenarios.templates.referral_thanks.name	Dziękujemy za znajomego
+scenarios.templates.referral_thanks.desc	Nagródź osobę, która przyprowadziła nowego klienta
+scenarios.ifClient	Jeśli klient
+scenarios.then	→
+scenarios.toasts.created	Scenariusz utworzony
+scenarios.toasts.updated	Scenariusz zaktualizowany
+scenarios.toasts.deleted	Scenariusz usunięty
+scenarios.toasts.failed	Nie udało się zapisać scenariusza
+scenarios.delete	Usuń
+segmentsBoard.title	Segmenty i rekomendacje
+segmentsBoard.subtitle	Aktywne grupy klientów, każda z jednym jasnym działaniem
+segmentsBoard.empty	Nie ma tu niczego i to dobrze
+segmentsBoard.clients	klientów
+segmentsBoard.daysAgo	{{count}} dni temu
+segmentsBoard.neverVisited	brak wizyt
+segmentsBoard.more	i jeszcze {{count}}
+segmentsBoard.segments.at_risk.name	Na granicy odejścia
+segmentsBoard.segments.at_risk.desc	Aktywni, nieaktywni od 21+ dni
+segmentsBoard.segments.at_risk.action	Daj bonus
+segmentsBoard.segments.vip_idle.name	VIP bez aktywności
+segmentsBoard.segments.vip_idle.desc	Klienci VIP, nieaktywni od 14+ dni
+segmentsBoard.segments.vip_idle.action	Uruchom kampanię
+segmentsBoard.segments.expiring_subscription.name	Abonament wygasa
+segmentsBoard.segments.expiring_subscription.desc	Pozostały ≤2 zajęcia lub ≤7 dni
+segmentsBoard.segments.expiring_subscription.action	Uruchom kampanię
+segmentsBoard.segments.lost_newcomers.name	Nigdy nie wrócili
+segmentsBoard.segments.lost_newcomers.desc	Przyszli raz, nie ma ich od 14+ dni
+segmentsBoard.segments.lost_newcomers.action	Uruchom kampanię
+segmentsBoard.segments.upsell_candidates.name	Gotowi na pakiet
+segmentsBoard.segments.upsell_candidates.desc	8+ wizyt w tym miesiącu, bez pakietu
+segmentsBoard.segments.upsell_candidates.action	Uruchom kampanię
+segmentsBoard.campaignSub	Segment „{{name}}” · {{count}} klientów
+segmentsBoard.pointsLabel	Ile punktów przyznać
+segmentsBoard.messageLabel	Treść wiadomości
+segmentsBoard.messagePlaceholder	np. Tęsknimy za Tobą! Wróć — czekamy na Ciebie.
+segmentsBoard.emailNote	E-mail trafia tylko do klientów z adresem e-mail
+segmentsBoard.confirm	Wyślij
+segmentsBoard.toasts.pointsDone	Punkty przyznane · przetworzono {{processed}}, powiadomiono {{emails}}
+segmentsBoard.toasts.emailDone	Kampania wysłana · {{emails}} e-maili z {{processed}}
+retention.title	Odnowienia abonamentów
+retention.subtitle	Jak dobrze klienci wracają po nowy pakiet
+retention.renewalRate	Odnów
+retention.avgPackages	Pakiety na klienta
+retention.sold	Sprzedane
+retention.renewed	Odnowione
+retention.empty	Nie ma jeszcze sprzedaży abonamentów
+retention.emptySub	Analityka pojawi się po pierwszej sprzedaży pakietów

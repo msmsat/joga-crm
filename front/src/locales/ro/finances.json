@@ -1,0 +1,510 @@
+{
+  "tabs": {
+    "accounts": "Conturi",
+    "operations": "Operațiuni",
+    "salaries": "Salarizare",
+    "counterparties": "Contrapărți",
+    "documents": "Documente",
+    "onlinePayments": "Plăți online",
+    "paymentMethods": "Metode de plată",
+    "reports": "Rapoarte",
+    "goals": "Obiective"
+  },
+  "common": {
+    "save": "Salvează",
+    "cancel": "Anulează",
+    "create": "Creează",
+    "edit": "Editează",
+    "delete": "Șterge",
+    "loading": "Se încarcă…",
+    "all": "Toate",
+    "confirm": "Confirmă",
+    "monthsShort": [
+      "ian.",
+      "feb.",
+      "mar.",
+      "apr.",
+      "mai",
+      "iun.",
+      "iul.",
+      "aug.",
+      "sept.",
+      "oct.",
+      "nov.",
+      "dec."
+    ],
+    "weekdaysShort": [
+      "lun.",
+      "mar.",
+      "mie.",
+      "joi",
+      "vin.",
+      "sâm.",
+      "dum."
+    ]
+  },
+  "info": {
+    "accounts": "Conturile sunt casele de marcat, conturile bancare și achizițiile online ale studioului. Aici vezi fiecare sold și capitalul total.",
+    "operations": "Operațiunile sunt toate veniturile și cheltuielile studioului. Crearea unei operațiuni modifică imediat soldul contului asociat.",
+    "salaries": "Salariile sunt calculate din tariful angajatului (fix, orar sau procentual) pentru perioada selectată.",
+    "counterparties": "Contrapărțile sunt organizațiile și persoanele cu care studioul decontează: furnizori, proprietari, parteneri.",
+    "documents": "Documentele sunt contracte, acte și facturi legate de contrapărți sau documente interne.",
+    "onlinePayments": "Plăți online — conectarea Stripe pentru plăți cu cardul. Contul este creat pentru studioul tău, astfel încât banii ajung direct la tine, fără Velora ca intermediar.",
+    "paymentMethods": "Metodele de plată arată cum plătesc clienții la studio și statisticile pentru fiecare metodă.",
+    "reports": "Rapoartele arată evoluția veniturilor, cheltuielilor și profitului pentru perioada selectată.",
+    "goals": "Obiectivele financiare sunt planul de economii al studioului, cu urmărire automată sau manuală a progresului."
+  },
+  "accounts": {
+    "loading": "Se încarcă conturile…",
+    "totalCapital": "Capitalul total al studioului",
+    "donutTotal": "Total {{symbol}}",
+    "todayChange": "azi",
+    "system": "SISTEM",
+    "today": "azi",
+    "editTitle": "Editează contul",
+    "namePlaceholder": "Nume",
+    "balancePlaceholder": "Sold, {{symbol}}",
+    "types": {
+      "cash": "Numerar",
+      "bank": "Card",
+      "online": "Online"
+    },
+    "typesShort": {
+      "cash": "Numerar",
+      "bank": "Card",
+      "online": "Online"
+    },
+    "history": "Istoric",
+    "historyTitle": "Istoric: {{name}}",
+    "income30d": "Venituri (30 z.)",
+    "expense30d": "Cheltuieli (30 z.)",
+    "samplePayment": "Plată pentru serviciu",
+    "sampleTime": "Astăzi, 14:32",
+    "openAllOperations": "Deschide toate operațiunile",
+    "newSavingsTitle": "Cont nou de economii",
+    "createSavings": "Creează cont de economii",
+    "deleteConfirmTitle": "Ștergi acest cont?",
+    "deleteConfirmText": "Toate fondurile sale vor fi excluse din statisticile generale. Această acțiune nu poate fi anulată.",
+    "toasts": {
+      "loadFailed": "Nu s-au putut încărca conturile",
+      "deleted": "Cont șters",
+      "deleteFailed": "Nu s-a putut șterge contul",
+      "saved": "Setări salvate",
+      "saveFailed": "Nu s-a putut salva contul",
+      "created": "Cont de economii creat",
+      "createFailed": "Nu s-a putut crea contul"
+    }
+  },
+  "operations": {
+    "income": "Venit",
+    "expense": "Cheltuială",
+    "balance": "Sold",
+    "searchPlaceholder": "Caută după titlu și categorie…",
+    "close": "Închide",
+    "operation": "Operațiune",
+    "export": "Exportă",
+    "newOperationTitle": "Operațiune nouă",
+    "titleLabel": "Titlu",
+    "titlePlaceholder": "De exemplu, plată abonament",
+    "amountLabel": "Sumă, {{symbol}}",
+    "dateLabel": "Dată",
+    "categoryLabel": "Categorie",
+    "categoryPlaceholder": "Categorie",
+    "accountLabel": "Cont",
+    "noAccount": "Fără cont",
+    "methodLabel": "Metodă de plată",
+    "noMethod": "Nespecificat",
+    "counterpartyLabel": "Contraparte",
+    "noCounterparty": "Fără contraparte",
+    "newCounterparty": "+ Contraparte nouă",
+    "clientLabel": "Client",
+    "clientHint": "Punctele și nivelul de fidelitate vor fi atribuite clientului",
+    "clientSearchPlaceholder": "Începe să tastezi un nume…",
+    "noClient": "Fără client",
+    "editTitle": "Editează operațiunea",
+    "saving": "Se salvează…",
+    "loading": "Se încarcă operațiunile…",
+    "emptyTitle": "Nu s-au găsit operațiuni",
+    "emptyBody": "Schimbă filtrele sau creează prima operațiune",
+    "pending": "În așteptare",
+    "detailAccount": "Cont destinatar",
+    "detailCategory": "Categorie",
+    "detailMethod": "Metodă de plată",
+    "detailCounterparty": "Contraparte",
+    "receipt": "Chitanță",
+    "loadMore": "Încarcă mai multe ({{count}})",
+    "toasts": {
+      "loadFailed": "Nu s-au putut încărca operațiunile",
+      "loadMoreFailed": "Nu s-au putut încărca mai multe operațiuni",
+      "deleted": "Operațiune ștearsă",
+      "deleteFailed": "Nu s-a putut șterge operațiunea",
+      "enterAmount": "Introdu o sumă",
+      "created": "Operațiune creată",
+      "createFailed": "Nu s-a putut crea operațiunea",
+      "updated": "Operațiune actualizată",
+      "updateFailed": "Nu s-a putut salva operațiunea",
+      "exportFailed": "Nu s-au putut exporta operațiunile",
+      "receiptDownloaded": "Chitanță descărcată"
+    },
+    "categoryPresets": {
+      "in": [
+        {
+          "value": "Abonamente",
+          "label": "Abonamente"
+        },
+        {
+          "value": "Servicii",
+          "label": "Servicii"
+        },
+        {
+          "value": "Certificate cadou",
+          "label": "Certificate cadou"
+        },
+        {
+          "value": "Depozit",
+          "label": "Depozit"
+        },
+        {
+          "value": "Altele",
+          "label": "Altele"
+        }
+      ],
+      "out": [
+        {
+          "value": "Rambursări",
+          "label": "Rambursări"
+        },
+        {
+          "value": "Chirie",
+          "label": "Chirie"
+        },
+        {
+          "value": "Salarii",
+          "label": "Salarii"
+        },
+        {
+          "value": "Aprovizionare",
+          "label": "Aprovizionare"
+        },
+        {
+          "value": "Marketing",
+          "label": "Marketing"
+        },
+        {
+          "value": "Impozite",
+          "label": "Impozite"
+        },
+        {
+          "value": "Altele",
+          "label": "Altele"
+        }
+      ]
+    }
+  },
+  "salaries": {
+    "loading": "Se încarcă salarizarea…",
+    "noRows": "Nu există angajați de calculat",
+    "fund": "Fond de salarii",
+    "fundSub": "luna curentă",
+    "sessions": "Sesiuni",
+    "sessionsSub": "total desfășurate",
+    "paidOf": "angajați",
+    "sessionsCount": "{{count}} sesiuni",
+    "paid": "Plătit",
+    "pending": "În așteptare",
+    "paying": "…",
+    "payAction": "Plătește",
+    "cancelAction": "Anulează salariul",
+    "perMonth": "/lună",
+    "accrualTitle": "Calcul pentru perioadă",
+    "rate": "Tarif",
+    "rateNotSet": "neconfigurat",
+    "sessionsInPeriod": "Sesiuni în perioadă",
+    "hoursWorked": "Ore lucrate",
+    "lessonsRevenue": "Venituri din sesiuni",
+    "totalToPay": "Total de plată",
+    "rateWarning": "Tariful nu este configurat — setează-l în profilul angajatului pentru a putea calcula drepturile salariale.",
+    "rateUnit": {
+      "hourly": "oră",
+      "percent": "%",
+      "fixed": "fix"
+    },
+    "paidAt": "Plătit {{date}}",
+    "historyTitle": "Istoricul plăților",
+    "historyEmpty": "Nu există încă plăți",
+    "historyLoading": "Se încarcă istoricul…",
+    "toasts": {
+      "loadFailed": "Nu s-a putut încărca salarizarea",
+      "paid": "Salariu plătit: {{name}}",
+      "payFailed": "Nu s-a putut plăti salariul",
+      "canceled": "Salariu anulat: {{name}}",
+      "historyLoadFailed": "Nu s-a putut încărca istoricul plăților"
+    }
+  },
+  "counterparties": {
+    "count": "{{count}} contrapărți",
+    "totalDebt": "Datorie totală:",
+    "add": "Adaugă",
+    "newTitle": "Contraparte nouă",
+    "nameLabel": "Nume / Nume complet",
+    "namePlaceholder": "Companie SRL sau Ion Popescu",
+    "innLabel": "Cod fiscal",
+    "categoryLabel": "Categorie",
+    "categoryPlaceholder": "Chirie, furnizor…",
+    "typeLabel": "Tipul contrapărții",
+    "types": {
+      "legal": {
+        "label": "Persoană juridică",
+        "desc": "Organizație sau companie"
+      },
+      "ie": {
+        "label": "Persoană fizică autorizată",
+        "desc": "Antreprenor individual"
+      },
+      "person": {
+        "label": "Persoană fizică",
+        "desc": "Persoană privată"
+      }
+    },
+    "addSubmit": "Adaugă contrapartea",
+    "you": "Tu",
+    "otherCategory": "Altele",
+    "deals": "tranzacții",
+    "dealsLabel": "Tranzacții",
+    "debtLabel": "Datorie",
+    "documents": "Documente",
+    "edit": "Editează",
+    "delete": "Șterge",
+    "deleteConfirmTitle": "Ștergi contrapartea?",
+    "deleteConfirmText": "Documentele asociate și istoricul tranzacțiilor vor rămâne, dar contrapartea va fi eliminată din listă.",
+    "toasts": {
+      "loadFailed": "Nu s-au putut încărca contrapărțile",
+      "enterName": "Introdu un nume",
+      "saved": "Modificări salvate",
+      "saveFailed": "Nu s-au putut salva modificările",
+      "added": "Contraparte adăugată",
+      "addFailed": "Nu s-a putut adăuga contrapartea",
+      "deleted": "Contraparte ștearsă",
+      "deleteFailed": "Nu s-a putut șterge contrapartea",
+      "documentsOpened": "Documente deschise"
+    }
+  },
+  "documents": {
+    "signed": "Semnate",
+    "pendingCount": "În așteptarea semnării",
+    "draftCount": "Interne (nesemnate)",
+    "searchPlaceholder": "Caută după titlu sau contraparte…",
+    "filters": {
+      "all": "Toate",
+      "signed": "Semnate",
+      "pending": "În așteptarea semnării"
+    },
+    "upload": "Încarcă",
+    "addTitle": "Adaugă document în bibliotecă",
+    "dropzoneTitle": "Apasă sau trage un fișier aici",
+    "dropzoneHint": "PDF, DOCX, XLSX (până la 15 MB)",
+    "dropzoneChange": "Apasă pentru a alege alt fișier",
+    "titleLabel": "Titlul documentului",
+    "titlePlaceholder": "De exemplu, Proces-verbal de recepție nr. 48",
+    "partyLabel": "Contraparte (dacă există)",
+    "partyPlaceholder": "Numele companiei sau al PFA-ului",
+    "needsSignature": "Documentul necesită semnătură?",
+    "needsSignatureHint": "Starea va fi „În așteptarea semnării”",
+    "saveToBase": "Salvează în bibliotecă",
+    "emptyTitle": "Acest dosar este gol",
+    "emptyBody": "Încarcă un document nou sau schimbă filtrele",
+    "internalDoc": "Document intern",
+    "uploaded": "Încărcat {{date}}",
+    "download": "Descarcă",
+    "open": "Deschide",
+    "fileRequired": "Atașează un fișier",
+    "options": "Opțiuni",
+    "status": {
+      "title": "Stare",
+      "signed": "Semnat",
+      "pending": "În așteptarea semnării",
+      "draft": "Nesemnat"
+    },
+    "delete": "Șterge",
+    "toasts": {
+      "loadFailed": "Nu s-au putut încărca documentele",
+      "titleRequired": "Încarcă un fișier sau introdu un titlu",
+      "created": "Document încărcat în bibliotecă",
+      "createFailed": "Nu s-a putut salva documentul",
+      "badFormat": "Formate permise: PDF, DOCX, XLSX",
+      "downloadFailed": "Nu s-a putut descărca fișierul",
+      "noFile": "Nu este atașat niciun fișier acestui document",
+      "openFailed": "Nu s-a putut deschide fișierul",
+      "statusChanged": "Stare: {{label}}",
+      "statusFailed": "Nu s-a putut schimba starea",
+      "deleted": "Document șters",
+      "deleteFailed": "Nu s-a putut șterge documentul"
+    }
+  },
+  "goals": {
+    "loading": "Se încarcă obiectivele…",
+    "active": "Obiective în desfășurare",
+    "done": "Finalizate",
+    "avgProgress": "Progres total",
+    "trackingTitle": "Urmărirea planului",
+    "createGoal": "Creează obiectiv",
+    "newTitle": "Obiectiv financiar nou",
+    "titleLabel": "Titlul obiectivului",
+    "titlePlaceholder": "De exemplu, aparate reformer noi",
+    "targetLabel": "Suma țintă, {{symbol}}",
+    "targetPlaceholder": "500000",
+    "deadlineLabel": "Termen-limită",
+    "trackingLabel": "Cum urmărești progresul?",
+    "trackingAuto": "Automat (indicator CRM)",
+    "trackingAutoDesc": "Leagă obiectivul de veniturile unei categorii alese. CRM-ul va actualiza singur bara de progres.",
+    "trackingManual": "Manual (economii personale)",
+    "trackingManualDesc": "Pe card va apărea butonul „Adaugă fonduri”. Progresul depinde numai de tine.",
+    "opTypeLabel": "Tip de operațiune",
+    "categoryLabel": "Categorie",
+    "categoryPlaceholder": "Alege o categorie",
+    "editTitle": "Editează obiectivul",
+    "nameLabel": "Titlu",
+    "namePlaceholder": "Titlul obiectivului",
+    "amountLabel": "Sumă, {{symbol}}",
+    "achieved": "Obiectiv atins",
+    "priority": {
+      "high": "Prioritate ridicată",
+      "medium": "Prioritate medie",
+      "low": "Prioritate scăzută"
+    },
+    "autoCollect": "Urmărit automat",
+    "deadlinePrefix": "Termen:",
+    "noDeadline": "Fără termen-limită",
+    "fundPlaceholder": "Sumă, {{symbol}}",
+    "fund": "Adaugă",
+    "addFunds": "Adaugă fonduri",
+    "autoHint": "Valoarea se actualizează automat din veniturile categoriei",
+    "deleteConfirmTitle": "Ștergi obiectivul?",
+    "deleteConfirmText": "Progresul acestui obiectiv se va pierde. Această acțiune nu poate fi anulată.",
+    "toasts": {
+      "loadFailed": "Nu s-au putut încărca obiectivele",
+      "fillRequired": "Completează titlul și suma",
+      "chooseCategory": "Alege o categorie pentru obiectivul automat",
+      "created": "Obiectiv creat",
+      "createFailed": "Nu s-a putut crea obiectivul",
+      "enterName": "Introdu un nume",
+      "updated": "Obiectiv actualizat",
+      "updateFailed": "Nu s-a putut actualiza obiectivul",
+      "deleted": "Obiectiv șters",
+      "deleteFailed": "Nu s-a putut șterge obiectivul",
+      "funded": "Fonduri adăugate",
+      "fundFailed": "Nu s-au putut adăuga fondurile"
+    }
+  },
+  "onlinePayments": {
+    "description": "Conectează Stripe, iar clienții tăi vor putea plăti cu cardul la casă. Banii intră direct în contul studioului — Velora nu îi reține niciodată. Comisionul depinde de planul tău.",
+    "gatewaysTitle": "Furnizori de plăți",
+    "gateways": {
+      "stripe": {
+        "name": "Stripe"
+      },
+      "states": {
+        "none": {
+          "label": "Neconectat",
+          "hint": "Acceptă plăți cu cardul în contul studioului",
+          "action": "Conectează"
+        },
+        "incomplete": {
+          "label": "Lipsesc informații",
+          "hint": "Stripe așteaptă informațiile studioului tău — plățile rămân dezactivate până atunci",
+          "action": "Continuă"
+        },
+        "action": {
+          "label": "Este necesară o acțiune",
+          "hint": "Stripe a respins unele informații și așteaptă corectări — situația nu se va rezolva automat",
+          "action": "Corectează informațiile"
+        },
+        "review": {
+          "label": "În verificare",
+          "hint": "Informațiile au fost trimise, iar Stripe le verifică. De obicei durează până la o zi",
+          "action": "Deschide Stripe"
+        },
+        "active": {
+          "label": "Conectat",
+          "hint": "Plățile cu cardul intră în contul Stripe al studioului",
+          "action": "Setări"
+        }
+      }
+    },
+    "toasts": {
+      "gatewayUpdated": "Setările furnizorului au fost actualizate",
+      "stripeReturned": "Informațiile au fost trimise către Stripe",
+      "stripeLinkExpired": "Legătura Stripe a expirat — apasă din nou Conectează"
+    }
+  },
+  "paymentMethods": {
+    "totalTurnover": "Cifra de afaceri a perioadei",
+    "periods": {
+      "month": "Lună",
+      "quarter": "Trimestru",
+      "year": "An"
+    },
+    "amount": "Sumă",
+    "share": "Pondere",
+    "transactions": "tranzacții",
+    "methods": {
+      "cash": {
+        "name": "Numerar"
+      },
+      "card": {
+        "name": "Card bancar"
+      },
+      "qr": {
+        "name": "SBP (QR)"
+      },
+      "transfer": {
+        "name": "Transfer"
+      },
+      "stripe": {
+        "name": "Stripe"
+      },
+      "": {
+        "name": "Nespecificat"
+      }
+    }
+  },
+  "reports": {
+    "metrics": {
+      "revenue": "Venituri",
+      "expenses": "Cheltuieli",
+      "profit": "Profit",
+      "margin": "Marjă"
+    },
+    "vsPreviousPeriod": "față de perioada anterioară",
+    "cashflowTitle": "Flux de numerar",
+    "cashflowSub": "Analiza veniturilor și cheltuielilor",
+    "period": "Perioadă",
+    "income": "Venit",
+    "expense": "Cheltuială",
+    "profit": "Profit",
+    "periods": {
+      "today": "Astăzi",
+      "week": "Săptămână",
+      "month": "Lună",
+      "year": "An"
+    },
+    "legendIncome": "Venituri",
+    "legendExpense": "Cheltuieli",
+    "exportCsv": "Exportă CSV",
+    "expenseStructure": "Structura cheltuielilor",
+    "incomeStructure": "Structura veniturilor",
+    "total": "Total",
+    "otherCategory": "Fără categorie",
+    "noData": "Nu există date pentru această perioadă",
+    "insightsTitle": "Rezumat financiar și analize",
+    "insightsPlaceholder": "Aici va apărea rezumatul financiar generat de IA: analiza tendințelor, structura cheltuielilor și recomandări",
+    "toasts": {
+      "exportFailed": "Nu s-au putut exporta operațiunile"
+    }
+  },
+  "confirmModal": {
+    "cancel": "Anulează",
+    "confirm": "Confirmă",
+    "delete": "Șterge"
+  }
+}

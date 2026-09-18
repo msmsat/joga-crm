@@ -1,0 +1,377 @@
+== da
+tabs.accounts	Konti
+tabs.operations	Transaktioner
+tabs.salaries	Løn
+tabs.counterparties	Modparter
+tabs.documents	Dokumenter
+tabs.onlinePayments	Onlinebetalinger
+tabs.paymentMethods	Betalingsmetoder
+tabs.reports	Rapporter
+tabs.goals	Mål
+common.save	Gem
+common.cancel	Annuller
+common.create	Opret
+common.edit	Rediger
+common.delete	Slet
+common.loading	Indlæser…
+common.all	Alle
+common.confirm	Bekræft
+common.monthsShort.0	Jan
+common.monthsShort.1	Feb
+common.monthsShort.2	Mar
+common.monthsShort.3	Apr
+common.monthsShort.4	Maj
+common.monthsShort.5	Jun
+common.monthsShort.6	Jul
+common.monthsShort.7	Aug
+common.monthsShort.8	Sep
+common.monthsShort.9	Okt
+common.monthsShort.10	Nov
+common.monthsShort.11	Dec
+common.weekdaysShort.0	Man
+common.weekdaysShort.1	Tir
+common.weekdaysShort.2	Ons
+common.weekdaysShort.3	Tor
+common.weekdaysShort.4	Fre
+common.weekdaysShort.5	Lør
+common.weekdaysShort.6	Søn
+info.accounts	Konti er studiets kasser, bankkonti og online betalingsindløsning. Her kan du se hver saldo og den samlede kapital.
+info.operations	Transaktioner er alle studiets indtægter og udgifter. Når du opretter en transaktion, ændres den tilknyttede kontos saldo straks.
+info.salaries	Løn beregnes ud fra medarbejderens sats (fast, time- eller procentbaseret) for den valgte periode.
+info.counterparties	Modparter er organisationer og personer, som studiet afregner med: leverandører, udlejere og partnere.
+info.documents	Dokumenter er kontrakter, akter og fakturaer knyttet til modparter eller interne dokumenter.
+info.onlinePayments	Onlinebetalinger — tilslut Stripe til kortbetalinger. Kontoen oprettes til dit studie, så pengene går direkte til dig uden om Velora.
+info.paymentMethods	Betalingsmetoder viser, hvordan kunder betaler i studiet, og statistik for hver metode.
+info.reports	Rapporter viser tendenser for indtægter, udgifter og overskud i den valgte periode.
+info.goals	Finansielle mål er studiets opsparingsplan med automatisk eller manuel opfølgning på fremskridt.
+accounts.loading	Indlæser konti…
+accounts.totalCapital	Studiets samlede kapital
+accounts.donutTotal	{{symbol}} i alt
+accounts.todayChange	i dag
+accounts.system	SYSTEM
+accounts.today	i dag
+accounts.editTitle	Rediger konto
+accounts.namePlaceholder	Navn
+accounts.balancePlaceholder	Saldo, {{symbol}}
+accounts.types.cash	Kontant
+accounts.types.bank	Kort
+accounts.types.online	Online
+accounts.typesShort.cash	Kontant
+accounts.typesShort.bank	Kort
+accounts.typesShort.online	Online
+accounts.history	Historik
+accounts.historyTitle	Historik: {{name}}
+accounts.income30d	Indtægter (30 d.)
+accounts.expense30d	Udgifter (30 d.)
+accounts.samplePayment	Betaling for tjeneste
+accounts.sampleTime	I dag, 14:32
+accounts.openAllOperations	Åbn alle transaktioner
+accounts.newSavingsTitle	Ny opsparingskonto
+accounts.createSavings	Opret opsparingskonto
+accounts.deleteConfirmTitle	Slet denne konto?
+accounts.deleteConfirmText	Alle dens midler vil blive udelukket fra den samlede statistik. Denne handling kan ikke fortrydes.
+accounts.toasts.loadFailed	Kunne ikke indlæse konti
+accounts.toasts.deleted	Kontoen er slettet
+accounts.toasts.deleteFailed	Kunne ikke slette konto
+accounts.toasts.saved	Indstillingerne er gemt
+accounts.toasts.saveFailed	Kunne ikke gemme konto
+accounts.toasts.created	Opsparingskontoen er oprettet
+accounts.toasts.createFailed	Kunne ikke oprette konto
+operations.income	Indtægt
+operations.expense	Udgift
+operations.balance	Saldo
+operations.searchPlaceholder	Søg efter titel og kategori…
+operations.close	Luk
+operations.operation	Transaktion
+operations.export	Eksporter
+operations.newOperationTitle	Ny transaktion
+operations.titleLabel	Titel
+operations.titlePlaceholder	F.eks. abonnementsbetaling
+operations.amountLabel	Beløb, {{symbol}}
+operations.dateLabel	Dato
+operations.categoryLabel	Kategori
+operations.categoryPlaceholder	Kategori
+operations.accountLabel	Konto
+operations.noAccount	Ingen konto
+operations.methodLabel	Betalingsmetode
+operations.noMethod	Ikke angivet
+operations.counterpartyLabel	Modpart
+operations.noCounterparty	Ingen modpart
+operations.newCounterparty	+ Ny modpart
+operations.clientLabel	Klient
+operations.clientHint	Loyalitetspoint og niveau tilføjes klienten
+operations.clientSearchPlaceholder	Begynd at skrive et navn…
+operations.noClient	Ingen klient
+operations.editTitle	Rediger transaktion
+operations.saving	Gemmer…
+operations.loading	Indlæser transaktioner…
+operations.emptyTitle	Ingen transaktioner fundet
+operations.emptyBody	Skift filtrene eller opret den første transaktion
+operations.pending	Afventer
+operations.detailAccount	Modtagende konto
+operations.detailCategory	Kategori
+operations.detailMethod	Betalingsmetode
+operations.detailCounterparty	Modpart
+operations.receipt	Kvittering
+operations.loadMore	Indlæs flere ({{count}})
+operations.toasts.loadFailed	Kunne ikke indlæse transaktioner
+operations.toasts.loadMoreFailed	Kunne ikke indlæse flere transaktioner
+operations.toasts.deleted	Transaktionen er slettet
+operations.toasts.deleteFailed	Kunne ikke slette transaktionen
+operations.toasts.enterAmount	Indtast et beløb
+operations.toasts.created	Transaktionen er oprettet
+operations.toasts.createFailed	Kunne ikke oprette transaktionen
+operations.toasts.updated	Transaktionen er opdateret
+operations.toasts.updateFailed	Kunne ikke gemme transaktionen
+operations.toasts.exportFailed	Kunne ikke eksportere transaktioner
+operations.toasts.receiptDownloaded	Kvitteringen er hentet
+operations.categoryPresets.in.0.value	Abonnementer
+operations.categoryPresets.in.0.label	Abonnementer
+operations.categoryPresets.in.1.value	Tjenester
+operations.categoryPresets.in.1.label	Tjenester
+operations.categoryPresets.in.2.value	Gavekort
+operations.categoryPresets.in.2.label	Gavekort
+operations.categoryPresets.in.3.value	Indskud
+operations.categoryPresets.in.3.label	Indskud
+operations.categoryPresets.in.4.value	Andet
+operations.categoryPresets.in.4.label	Andet
+operations.categoryPresets.out.0.value	Refusioner
+operations.categoryPresets.out.0.label	Refusioner
+operations.categoryPresets.out.1.value	Husleje
+operations.categoryPresets.out.1.label	Husleje
+operations.categoryPresets.out.2.value	Løn
+operations.categoryPresets.out.2.label	Løn
+operations.categoryPresets.out.3.value	Indkøb
+operations.categoryPresets.out.3.label	Indkøb
+operations.categoryPresets.out.4.value	Markedsføring
+operations.categoryPresets.out.4.label	Markedsføring
+operations.categoryPresets.out.5.value	Skatter
+operations.categoryPresets.out.5.label	Skatter
+operations.categoryPresets.out.6.value	Andet
+operations.categoryPresets.out.6.label	Andet
+salaries.loading	Indlæser løn…
+salaries.noRows	Intet personale at beregne for
+salaries.fund	Lønfond
+salaries.fundSub	aktuel måned
+salaries.sessions	Sessioner
+salaries.sessionsSub	antal afholdte
+salaries.paidOf	personale
+salaries.sessionsCount	{{count}} sessioner
+salaries.paid	Betalt
+salaries.pending	Afventer
+salaries.paying	…
+salaries.payAction	Betal
+salaries.cancelAction	Annuller løn
+salaries.perMonth	/md.
+salaries.accrualTitle	Optjening for periode
+salaries.rate	Sats
+salaries.rateNotSet	ikke angivet
+salaries.sessionsInPeriod	Sessioner i perioden
+salaries.hoursWorked	Arbejdede timer
+salaries.lessonsRevenue	Indtægt fra sessioner
+salaries.totalToPay	I alt til betaling
+salaries.rateWarning	Satsen er ikke angivet — indstil den i medarbejderens profil, så optjeningen kan beregnes.
+salaries.rateUnit.hourly	t
+salaries.rateUnit.percent	%
+salaries.rateUnit.fixed	fast
+salaries.paidAt	Betalt {{date}}
+salaries.historyTitle	Betalingshistorik
+salaries.historyEmpty	Ingen betalinger endnu
+salaries.historyLoading	Indlæser historik…
+salaries.toasts.loadFailed	Kunne ikke indlæse løn
+salaries.toasts.paid	Løn udbetalt: {{name}}
+salaries.toasts.payFailed	Kunne ikke udbetale løn
+salaries.toasts.canceled	Løn annulleret: {{name}}
+salaries.toasts.historyLoadFailed	Kunne ikke indlæse betalingshistorik
+counterparties.count	{{count}} modparter
+counterparties.totalDebt	Samlet gæld:
+counterparties.add	Tilføj
+counterparties.newTitle	Ny modpart
+counterparties.nameLabel	Navn / Fulde navn
+counterparties.namePlaceholder	Virksomhed ApS eller Jens Jensen
+counterparties.innLabel	Skatte-id
+counterparties.categoryLabel	Kategori
+counterparties.categoryPlaceholder	Husleje, leverandør…
+counterparties.typeLabel	Type af modpart
+counterparties.types.legal.label	Juridisk person
+counterparties.types.legal.desc	Organisation eller virksomhed
+counterparties.types.ie.label	Selvstændig
+counterparties.types.ie.desc	Individuel erhvervsdrivende
+counterparties.types.person.label	Privatperson
+counterparties.types.person.desc	Fysisk person
+counterparties.addSubmit	Tilføj modpart
+counterparties.you	Dig
+counterparties.otherCategory	Andet
+counterparties.deals	aftaler
+counterparties.dealsLabel	Aftaler
+counterparties.debtLabel	Gæld
+counterparties.documents	Dokumenter
+counterparties.edit	Rediger
+counterparties.delete	Slet
+counterparties.deleteConfirmTitle	Slet modpart?
+counterparties.deleteConfirmText	Relaterede dokumenter og aftalehistorik bevares, men modparten fjernes fra listen.
+counterparties.toasts.loadFailed	Kunne ikke indlæse modparter
+counterparties.toasts.enterName	Indtast et navn
+counterparties.toasts.saved	Ændringer gemt
+counterparties.toasts.saveFailed	Kunne ikke gemme
+counterparties.toasts.added	Modpart tilføjet
+counterparties.toasts.addFailed	Kunne ikke tilføje modpart
+counterparties.toasts.deleted	Modpart slettet
+counterparties.toasts.deleteFailed	Kunne ikke slette modpart
+counterparties.toasts.documentsOpened	Dokumenter åbnet
+documents.signed	Underskrevet
+documents.pendingCount	Afventer underskrift
+documents.draftCount	Internt (ikke underskrevet)
+documents.searchPlaceholder	Søg efter titel eller modpart…
+documents.filters.all	Alle
+documents.filters.signed	Underskrevet
+documents.filters.pending	Afventer underskrift
+documents.upload	Upload
+documents.addTitle	Tilføj dokument til biblioteket
+documents.dropzoneTitle	Klik eller træk en fil
+documents.dropzoneHint	PDF, DOCX, XLSX (op til 15 MB)
+documents.dropzoneChange	Klik for at vælge en anden fil
+documents.titleLabel	Dokumenttitel
+documents.titlePlaceholder	F.eks. Acceptakt nr. 48
+documents.partyLabel	Modpart (hvis relevant)
+documents.partyPlaceholder	Virksomhedsnavn eller selvstændigs navn
+documents.needsSignature	Kræver dokumentet underskrift?
+documents.needsSignatureHint	Status bliver ”Afventer underskrift”
+documents.saveToBase	Gem i biblioteket
+documents.emptyTitle	Denne mappe er tom
+documents.emptyBody	Upload et nyt dokument eller skift filtrene
+documents.internalDoc	Internt dokument
+documents.uploaded	Uploadet {{date}}
+documents.download	Download
+documents.open	Åbn
+documents.fileRequired	Vedhæft en fil
+documents.options	Indstillinger
+documents.status.title	Status
+documents.status.signed	Underskrevet
+documents.status.pending	Afventer underskrift
+documents.status.draft	Ikke underskrevet
+documents.delete	Slet
+documents.toasts.loadFailed	Kunne ikke indlæse dokumenter
+documents.toasts.titleRequired	Upload en fil eller indtast en titel
+documents.toasts.created	Dokumentet er uploadet til biblioteket
+documents.toasts.createFailed	Kunne ikke gemme dokumentet
+documents.toasts.badFormat	Tilladte formater: PDF, DOCX, XLSX
+documents.toasts.downloadFailed	Kunne ikke downloade filen
+documents.toasts.noFile	Der er ikke vedhæftet en fil til dette dokument
+documents.toasts.openFailed	Kunne ikke åbne filen
+documents.toasts.statusChanged	Status: {{label}}
+documents.toasts.statusFailed	Kunne ikke ændre status
+documents.toasts.deleted	Dokumentet er slettet
+documents.toasts.deleteFailed	Kunne ikke slette dokumentet
+goals.loading	Indlæser mål…
+goals.active	Mål i gang
+goals.done	Fuldført
+goals.avgProgress	Samlet fremskridt
+goals.trackingTitle	Planopfølgning
+goals.createGoal	Opret mål
+goals.newTitle	Nyt finansielt mål
+goals.titleLabel	Måltitel
+goals.titlePlaceholder	F.eks. nye reformer-maskiner
+goals.targetLabel	Målbeløb, {{symbol}}
+goals.targetPlaceholder	500000
+goals.deadlineLabel	Frist
+goals.trackingLabel	Hvordan skal fremskridt spores?
+goals.trackingAuto	Automatisk (CRM-måling)
+goals.trackingAutoDesc	Knyt målet til indtægter fra en valgt kategori. CRM flytter selv statuslinjen.
+goals.trackingManual	Manuelt (personlig opsparing)
+goals.trackingManualDesc	Knappen ”Tilføj midler” vises på kortet. Fremskridt afhænger kun af dig.
+goals.opTypeLabel	Transaktionstype
+goals.categoryLabel	Kategori
+goals.categoryPlaceholder	Vælg en kategori
+goals.editTitle	Rediger mål
+goals.nameLabel	Titel
+goals.namePlaceholder	Måltitel
+goals.amountLabel	Beløb, {{symbol}}
+goals.achieved	Mål nået
+goals.priority.high	Høj prioritet
+goals.priority.medium	Mellem prioritet
+goals.priority.low	Lav prioritet
+goals.autoCollect	Sporer automatisk
+goals.deadlinePrefix	Frist:
+goals.noDeadline	Ingen frist
+goals.fundPlaceholder	Beløb, {{symbol}}
+goals.fund	Tilføj
+goals.addFunds	Tilføj midler
+goals.autoHint	Værdien opdateres automatisk fra kategoriens indtægter
+goals.deleteConfirmTitle	Slet mål?
+goals.deleteConfirmText	Fremskridtet for dette mål går tabt. Handlingen kan ikke fortrydes.
+goals.toasts.loadFailed	Kunne ikke indlæse mål
+goals.toasts.fillRequired	Udfyld titel og beløb
+goals.toasts.chooseCategory	Vælg en kategori til det automatiske mål
+goals.toasts.created	Målet er oprettet
+goals.toasts.createFailed	Kunne ikke oprette målet
+goals.toasts.enterName	Indtast et navn
+goals.toasts.updated	Målet er opdateret
+goals.toasts.updateFailed	Kunne ikke opdatere målet
+goals.toasts.deleted	Målet er slettet
+goals.toasts.deleteFailed	Kunne ikke slette målet
+goals.toasts.funded	Midler tilføjet
+goals.toasts.fundFailed	Kunne ikke tilføje midler
+onlinePayments.description	Tilslut Stripe, så dine klienter kan betale med kort ved kassen. Pengene går direkte ind på studiets konto — Velora holder dem aldrig. Provisionen følger din plan.
+onlinePayments.gatewaysTitle	Betalingsudbydere
+onlinePayments.gateways.stripe.name	Stripe
+onlinePayments.gateways.states.none.label	Ikke tilsluttet
+onlinePayments.gateways.states.none.hint	Acceptér kortbetalinger på studiets konto
+onlinePayments.gateways.states.none.action	Tilslut
+onlinePayments.gateways.states.incomplete.label	Oplysninger mangler
+onlinePayments.gateways.states.incomplete.hint	Stripe venter på studiets oplysninger — betalinger er slået fra indtil da
+onlinePayments.gateways.states.incomplete.action	Fortsæt
+onlinePayments.gateways.states.action.label	Handling påkrævet
+onlinePayments.gateways.states.action.hint	Stripe afviste nogle oplysninger og venter på rettelser — det løses ikke af sig selv
+onlinePayments.gateways.states.action.action	Ret oplysninger
+onlinePayments.gateways.states.review.label	Under gennemgang
+onlinePayments.gateways.states.review.hint	Oplysninger er indsendt, og Stripe gennemgår dem. Det tager normalt op til en dag
+onlinePayments.gateways.states.review.action	Åbn Stripe
+onlinePayments.gateways.states.active.label	Tilsluttet
+onlinePayments.gateways.states.active.hint	Kortbetalinger går ind på studiets Stripe-konto
+onlinePayments.gateways.states.active.action	Indstillinger
+onlinePayments.toasts.gatewayUpdated	Indstillinger for betalingsudbyder er opdateret
+onlinePayments.toasts.stripeReturned	Oplysninger er indsendt til Stripe
+onlinePayments.toasts.stripeLinkExpired	Stripe-linket er udløbet — tryk Tilslut igen
+paymentMethods.totalTurnover	Omsætning for perioden
+paymentMethods.periods.month	Måned
+paymentMethods.periods.quarter	Kvartal
+paymentMethods.periods.year	År
+paymentMethods.amount	Beløb
+paymentMethods.share	Andel
+paymentMethods.transactions	transaktioner
+paymentMethods.methods.cash.name	Kontant
+paymentMethods.methods.card.name	Bankkort
+paymentMethods.methods.qr.name	SBP (QR)
+paymentMethods.methods.transfer.name	Overførsel
+paymentMethods.methods.stripe.name	Stripe
+paymentMethods.methods..name	Ikke angivet
+reports.metrics.revenue	Indtægter
+reports.metrics.expenses	Udgifter
+reports.metrics.profit	Overskud
+reports.metrics.margin	Margin
+reports.vsPreviousPeriod	sammenlignet med forrige periode
+reports.cashflowTitle	Pengestrøm
+reports.cashflowSub	Analyse af indtægter og udgifter
+reports.period	Periode
+reports.income	Indtægt
+reports.expense	Udgift
+reports.profit	Overskud
+reports.periods.today	I dag
+reports.periods.week	Uge
+reports.periods.month	Måned
+reports.periods.year	År
+reports.legendIncome	Indtægter
+reports.legendExpense	Udgifter
+reports.exportCsv	Eksporter CSV
+reports.expenseStructure	Udgiftsfordeling
+reports.incomeStructure	Indtægtsfordeling
+reports.total	I alt
+reports.otherCategory	Ukategoriseret
+reports.noData	Ingen data for denne periode
+reports.insightsTitle	Finansielt overblik og indsigter
+reports.insightsPlaceholder	Et AI-baseret finansielt overblik vises her: trendanalyse, udgiftsfordeling og anbefalinger
+reports.toasts.exportFailed	Kunne ikke eksportere transaktioner
+confirmModal.cancel	Annuller
+confirmModal.confirm	Bekræft
+confirmModal.delete	Slet

@@ -1,0 +1,248 @@
+== pl
+loading	Ładowanie…
+chModal.eyebrow	Kanał powiadomień
+chModal.connected	Połączono
+chModal.notConnected	Nie połączono
+chModal.setup	Konfiguracja połączenia
+chModal.details	Szczegóły połączenia
+chModal.ready	Kanał działa
+chModal.readyHint	Powiadomienia o włączonych zdarzeniach są wysyłane automatycznie.
+chModal.bot	Bot
+chModal.token	Token
+chModal.phone	Numer
+chModal.account	Konto
+chModal.sender	Nadawca
+channels.title	Kanały dostawy
+channels.connect	Połącz
+channels.connected	Połączono
+channels.openSettings	Ustawienia {{channel}}
+channels.waLockedHint	Kanał odblokuje się, gdy Meta będzie mieć Twoją metodę płatności, zweryfikowaną firmę i zatwierdzone szablony
+channels.waBlocker.payment	Brak metody płatności — przypomnienia nie są dostarczane. Skonfiguruj
+channels.waBlocker.verification	Firma nie jest zweryfikowana w Meta — limit 250/dzień. Jak to naprawić
+channels.waBlocker.templates	Szablony są nadal sprawdzane przez Meta — nic nie zostanie wysłane. Szczegóły
+roles.client	Klient
+roles.trainer	Trener
+roles.admin	Administrator
+roles.owner	Właściciel
+roles.activeCount_one	{{count}} aktywny
+roles.activeCount_few	{{count}} aktywne
+roles.activeCount_many	{{count}} aktywnych
+matrix.saving	Zapisywanie…
+matrix.allSaved	Wszystkie zmiany zapisane
+matrix.notSaved	Nie zapisano
+matrix.activateAll	Włącz wszystkie
+matrix.deactivateAll	Wyczyść wszystkie pola wyboru
+matrix.activeCount_one	Aktywne wyzwalacze: {{count}} z {{total}}
+matrix.activeCount_few	Aktywne wyzwalacze: {{count}} z {{total}}
+matrix.activeCount_many	Aktywne wyzwalacze: {{count}} z {{total}}
+matrix.scenariosFor	Scenariusze dla: {{role}}
+matrix.configureFor_one	Skonfiguruj kanały dla {{count}} wyzwalacza systemowego
+matrix.configureFor_few	Skonfiguruj kanały dla {{count}} wyzwalaczy systemowych
+matrix.configureFor_many	Skonfiguruj kanały dla {{count}} wyzwalaczy systemowych
+matrix.eventColumn	Zdarzenie systemowe
+matrix.noActiveChannels	Brak aktywnych kanałów
+matrix.noActiveChannelsHint	Włącz co najmniej jeden kanał dostawy w panelu po lewej
+matrix.adviceLabel	Wskazówka:
+matrix.advice	Dla każdej roli osobno ustaw, co jest wysyłane i gdzie — Velora zajmie się tym automatycznie.
+matrix.tiers.critical	Wymagane · nie można wyłączyć
+matrix.tiers.operational	Operacyjne
+matrix.tiers.optional	Opcjonalne
+matrix.lock.critical	Wymagane powiadomienie — nie można wyłączyć
+matrix.lock.lastChannel	Ostatni kanał dostawy — nie można wyłączyć
+matrix.channelDisconnected	Kanał nie jest połączony
+events.c1.title	Rezerwacja potwierdzona
+events.c1.desc	Po udanej rezerwacji zajęć
+events.c2.title	Przypomnienie o zajęciach
+events.c2.desc	24 godziny i 2 godziny przed
+events.c3.title	Zajęcia odwołane
+events.c3.desc	Gdy trener lub studio odwołuje
+events.c4.title	Płatność udana
+events.c4.desc	Potwierdzenie po udanym obciążeniu
+events.c5.title	Mało zajęć pozostało
+events.c5.desc	Gdy w pakiecie zostały 1–2 wizyty
+events.c6.title	Pakiet wygasa
+events.c6.desc	3 dni przed datą wygaśnięcia
+events.c7.title	Urodziny
+events.c7.desc	Życzenia ze specjalną ofertą
+events.c8.title	Prośba o opinię
+events.c8.desc	Po udziale w zajęciach
+events.c9.title	Zwrot środków
+events.c9.desc	Przy anulowaniu i przetwarzaniu zwrotu
+events.c10.title	Zajęcia jeszcze nieopłacone
+events.c10.desc	Klient uczestniczył, ale nie zapłacił
+events.c11.title	Zajęcia przeniesione
+events.c11.desc	Zmieniono czas, salę lub trenera
+events.c12.title	Bonus naliczony
+events.c12.desc	Punkty lub bonus dodano klientowi
+events.c13.title	Kawa po zajęciach
+events.c13.desc	Kto z grupy idzie na kawę
+events.t1.title	Nowa rezerwacja u trenera
+events.t1.desc	Klient zarezerwował indywidualną sesję
+events.t2.title	Klient anulował rezerwację
+events.t2.desc	Klient anulował mniej niż 2 godziny przed
+events.t3.title	Przypomnienie o zajęciach
+events.t3.desc	1 godzinę przed rozpoczęciem
+events.t4.title	Lista grupy
+events.t4.desc	30 min przed zajęciami grupowymi
+events.t5.title	Zmiana harmonogramu
+events.t5.desc	Administrator zmienił termin lub lokalizację
+events.t6.title	Wynagrodzenie naliczone
+events.t6.desc	Tygodniowe wyliczenie wypłaty
+events.t7.title	Nowa opinia o trenerze
+events.t7.desc	Klient wystawił ocenę po zajęciach
+events.t8.title	Urodziny klienta
+events.t8.desc	Przypomnienie o osobistych życzeniach
+events.t9.title	Zajęcia odwołane
+events.t9.desc	Studio lub administrator odwołał Twoje zajęcia
+events.a1.title	Nowa rezerwacja online
+events.a1.desc	Klient zarezerwował przez stronę lub widżet
+events.a2.title	Anulowanie w ostatniej chwili
+events.a2.desc	Mniej niż 1 godzinę przed zajęciami
+events.a3.title	Nowy klient w systemie
+events.a3.desc	Rejestracja nowego użytkownika
+events.a4.title	Płatność otrzymana
+events.a4.desc	Każde udane obciążenie
+events.a6.title	Pakiety się kończą
+events.a6.desc	Grupa klientów z ≤1 zajęciami pozostałymi
+events.a7.title	Konflikt w harmonogramie
+events.a7.desc	Nakładające się zajęcia w dzienniku
+events.a8.title	Raport dzienny
+events.a8.desc	Podsumowanie na koniec dnia
+events.a9.title	Próba logowania
+events.a9.desc	Logowanie z nowego urządzenia
+events.a10.title	Zwrot środków
+events.a10.desc	Administrator dokonał zwrotu
+events.o1.title	Podsumowanie dnia
+events.o1.desc	Przychód, rezerwacje, frekwencja w danym dniu
+events.o2.title	Raport tygodniowy
+events.o2.desc	Wskaźniki: wzrost klientów, LTV, konwersja
+events.o3.title	Duża płatność
+events.o3.desc	Obciążenie powyżej ustawionego progu
+events.o4.title	Anomalia danych
+events.o4.desc	Gwałtowny spadek rezerwacji lub przychodów
+events.o5.title	Nowy członek zespołu
+events.o5.desc	Administrator utworzył nowe konto
+events.o6.title	Odnowienie planu
+events.o6.desc	Przypomnienie o opłaceniu subskrypcji Velora
+events.o7.title	Zmieniono uprawnienia dostępu
+events.o7.desc	Zmieniono uprawnienia członka zespołu
+events.o8.title	Osiągnięto KPI
+events.o8.desc	Miesięczny cel osiągnięty
+events.o9.title	Eksport danych
+events.o9.desc	Ktoś wyeksportował bazę klientów
+tg.title	Telegram
+tg.subtitleConnected	Kanał połączony
+tg.subtitleDisconnected	Połącz bota powiadomień
+tg.connected	Połączono
+tg.pasteToken	Wklej token bota otrzymany od @BotFather.
+tg.invalidToken	Nieprawidłowy format tokenu
+tg.howToGet	Jak uzyskać token:
+tg.steps.1	Otwórz @BotFather w Telegramie
+tg.steps.2	Wyślij polecenie /newbot i postępuj zgodnie z instrukcjami
+tg.steps.3	Skopiuj wydany token
+tg.steps.4	Wklej go w polu powyżej
+tg.connect	Połącz
+tg.disconnect	Rozłącz
+tg.disconnectTitle	Rozłączyć Telegram?
+tg.disconnectMessage	Klienci i personel przestaną otrzymywać powiadomienia przez ten kanał.
+tg.close	Zamknij
+tg.cancel	Anuluj
+emailCh.title	E-mail
+emailCh.subtitle	Adres nadawcy wiadomości do klientów
+emailCh.verifiedLabel	Zweryfikowano
+emailCh.emailLabel	E-mail nadawcy
+emailCh.emailPlaceholder	admin@studio.com
+emailCh.invalidEmail	Wpisz prawidłowy e-mail
+emailCh.sendCode	Wyślij kod
+emailCh.codeSentTo	Kod wysłano do
+emailCh.codeHint	Wpisz 6-cyfrowy kod z e-maila.
+emailCh.codeLabel	Kod weryfikacyjny
+emailCh.resend	Wyślij kod ponownie
+emailCh.viaVelora	E-maile są wysyłane przez serwer Velora w Twoim imieniu.
+emailCh.wrongCode	Nieprawidłowy lub wygasły kod
+emailCh.verify	Zweryfikuj
+emailCh.back	Wróć
+emailCh.cancel	Anuluj
+wa.title	WhatsApp
+wa.subtitleConnected	Kanał połączony
+wa.subtitleDisconnected	Zaloguj się kontem firmowym Meta
+wa.connected	Połączono
+wa.paymentRequiredTitle	Potrzebna będzie karta
+wa.paymentRequired	Połączenie numeru jest bezpłatne, ale Meta dostarcza przypomnienia klientom dopiero po dodaniu karty. Dodajesz ją osobno —
+wa.paymentMissingTitle	Brak metody płatności
+wa.paymentMissing	Obecnie działają tylko odpowiedzi bota na wiadomości przychodzące. Meta odrzuca przypomnienia, potwierdzenia i wysyłki masowe, dopóki karta nie zostanie dodana —
+wa.paymentOkTitle	Płatność połączona
+wa.paymentOk	powiadomienia są dostarczane w pełni.
+wa.paymentUnknown	Nie udało się sprawdzić metody płatności w Meta — pokażemy stan przy następnej próbie.
+wa.paymentLink	Centrum rozliczeń Meta
+wa.paymentRecheck	Sprawdź ponownie
+wa.paymentFound	Płatność połączona
+wa.verify.title	Firma nie jest zweryfikowana w Meta
+wa.verify.lead	Numer działa, ale z ograniczeniem do 250 unikalnych odbiorców dziennie. Weryfikacja znosi limit i odblokowuje pełne uruchomienie. Studio musi zrobić to samodzielnie — konto WhatsApp należy do Ciebie, a Velora nie może działać w Twoim imieniu.
+wa.verify.stepsTitle	Jak zweryfikować firmę:
+wa.verify.step1a	Otwórz
+wa.verify.link	Centrum bezpieczeństwa Meta Business
+wa.verify.step1b	i kliknij „Rozpocznij weryfikację”. Potrzebujesz uprawnień administratora konta firmowego.
+wa.verify.step2	Wypełnij dane prawne: nazwę dokładnie jak w dokumentach, adres, telefon i witrynę. Witryna musi działać i używać HTTPS.
+wa.verify.step3	Prześlij dokument rejestracyjny firmy i poczekaj, aż Meta go sprawdzi.
+wa.verify.step4	Potwierdź związek z firmą: e-mail w domenie witryny, rozmowa lub SMS na podany telefon albo weryfikacja domeny.
+wa.verify.step5	Poczekaj na decyzję — zwykle 1–5 dni roboczych. Status jest w tym samym centrum bezpieczeństwa; w razie odrzucenia Meta podaje powód i pozwala złożyć wniosek ponownie.
+wa.verify.docsTitle	Akceptowane dokumenty (po jednym z każdej grupy):
+wa.verify.doc1	Rejestracja: akt założycielski, odpis z rejestru, licencja firmy lub dokument podatkowy.
+wa.verify.doc2	Dowód obecności: działająca strona, oficjalna strona w mediach społecznościowych lub wpis w katalogu firm.
+wa.verify.pitfallTitle	Najczęstszy powód odrzucenia
+wa.verify.pitfall	Nazwa firmy w Meta i w dokumencie musi być identyczna znak po znaku, wraz z formą prawną i interpunkcją. „Romashka LLC” i „Romashka, LLC” są uznawane za różne nazwy.
+wa.templatesTitle	Szablony wiadomości
+wa.templates	Meta nie pozwoli Ci napisać do klienta jako pierwszemu bez wcześniej zatwierdzonego szablonu. Utwórz szablony dla każdego zdarzenia — trafią do sprawdzenia i zaczną działać po zatwierdzeniu.
+wa.templatesAction	Przygotuj szablony
+wa.templatesPending	Tworzenie szablonów…
+wa.templatesDone_one	Szablony gotowe: {{count}}. Oczekują na weryfikację Meta
+wa.templatesDone_few	Szablony gotowe: {{count}}. Oczekują na weryfikację Meta
+wa.templatesDone_many	Szablony gotowe: {{count}}. Oczekują na weryfikację Meta
+wa.templatesPartial	Meta odrzuciła część szablonów: {{failed}}. Zobacz dziennik, aby poznać szczegóły
+wa.templatesRejectedTitle_one	Meta odrzuciła {{count}} szablon
+wa.templatesRejectedTitle_few	Meta odrzuciła {{count}} szablony
+wa.templatesRejectedTitle_many	Meta odrzuciła {{count}} szablonów
+wa.templatesRejected	— te powiadomienia nie są dostarczane. Sprawdź treść na koncie Meta i utwórz szablony ponownie.
+wa.templatesPendingTitle_one	{{count}} szablon w trakcie weryfikacji
+wa.templatesPendingTitle_few	{{count}} szablony w trakcie weryfikacji
+wa.templatesPendingTitle_many	{{count}} szablonów w trakcie weryfikacji
+wa.templatesPendingHint	— Meta może potrzebować do jednego dnia. {{approved}} są już zatwierdzone i dostarczane.
+wa.templatesOkTitle	Szablony zatwierdzone
+wa.templatesOk_one	{{count}} przeszedł weryfikację Meta — powiadomienia są dostarczane.
+wa.templatesOk_few	Wszystkie {{count}} przeszły weryfikację Meta — powiadomienia są dostarczane.
+wa.templatesOk_many	Wszystkie {{count}} przeszły weryfikację Meta — powiadomienia są dostarczane.
+wa.paidWarning	Wiadomości WhatsApp są płatne
+wa.approxPrice	ok.
+wa.pricingLoading	Ładowanie bieżącej ceny…
+wa.perMessage	za wiadomość
+wa.viaMeta	rozliczane bezpośrednio przez Meta
+wa.windowNotice	Dostarczenie jest gwarantowane tylko w 24-godzinnym oknie rozmowy.
+wa.connect	Połącz WhatsApp
+wa.disconnect	Rozłącz
+wa.disconnectTitle	Rozłączyć WhatsApp?
+wa.disconnectMessage	Klienci i personel przestaną otrzymywać powiadomienia przez ten kanał.
+wa.close	Zamknij
+wa.cancel	Anuluj
+tabs.matrix	Ustawienia
+tabs.log	Dziennik dostaw
+log.title	Dziennik dostaw
+log.subtitle	Co wysłano, do kogo i kiedy oraz jak zakończyła się każda wysyłka.
+log.status.sent	Dostarczono
+log.status.rejected	Odrzucono
+log.status.error	Błąd połączenia
+log.status.pending	W toku
+log.searchPlaceholder	Telefon, e-mail lub kod zdarzenia
+log.allChannels	Wszystkie kanały
+log.reset	Resetuj
+log.refreshing	Odświeżanie…
+log.otherEvent	Wysyłka poza katalogiem
+log.empty	Jeszcze nic nie wysłano
+log.emptyHint	Tutaj pojawi się każde powiadomienie wysłane przez studio klientom i personelowi.
+log.emptyFiltered	Nic nie znaleziono
+log.emptyFilteredHint	Spróbuj zmienić filtry lub wyszukać inny numer.
+log.loadError	Nie udało się załadować dziennika
+log.loadErrorHint	Odśwież stronę — jeśli to nie pomoże, skontaktuj się z pomocą techniczną.
+log.range	{{from}}–{{to}} z {{total}}
+log.prev	Wróć
+log.next	Dalej

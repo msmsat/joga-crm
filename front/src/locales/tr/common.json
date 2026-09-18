@@ -170,7 +170,48 @@
     "lessonAction": "Dersin QR kodu",
     "lessonCaption": "Bu derse kaydolmak için kamerayı doğrultun",
     "packageAction": "Paketin QR kodu",
+<<<<<<< HEAD
     "packageCaption": "Paketi satın almak için kamerayı doğrultun",
     "serviceAction": "Hizmetin QR kodu"
+=======
+    "packageCaption": "Paketi satın almak için kamerayı doğrultun"
+  },
+  "auth": {
+    "noAccount": "Hesabınız yok mu?",
+    "haveAccount": "Zaten hesabınız var mı?",
+    "welcomeBack": "Tekrar hoş geldiniz",
+    "choosePassword": "Yeni bir parola oluşturun",
+    "confirmationCode": "Onay kodu",
+    "loginSubtitle": "Velora'ya devam etmek için giriş yapın",
+    "resetInstruction": "Talimatları e-postanıza göndereceğiz",
+    "codeSent": "Kod {{identifier}} adresine gönderildi",
+    "googleFailed": "Google ile giriş başarısız oldu",
+    "googleAccountMissing": "Bu Google adresi için henüz hesap yok. Belgeleri kabul ettikten sonra bir hesap oluşturacağız.",
+    "divider": "veya şununla giriş yapın",
+    "codeFromEmail": "E-postadaki kod",
+    "rememberMe": "Beni hatırla",
+    "forgotPassword": "Parolanızı mı unuttunuz?",
+    "signInSystem": "Giriş yap",
+    "sendInstructions": "Talimatları gönder",
+    "passwordChanged": "Parola değiştirildi. Artık giriş yapabilirsiniz.",
+    "contactSub": "Hesap oluşturmak için e-postanızı girin",
+    "nameTitle": "Size nasıl hitap edelim?",
+    "nameSub": "Ad veya takma ad — seçim sizin",
+    "accountCreated": "Hesap oluşturuldu. {{email}} adresine onay e-postası gönderdik.",
+    "dashboard": "Panele git",
+    "or": "veya",
+    "registerByEmail": "E-posta ile kaydol",
+    "displayNamePlaceholder": "Örneğin: Anna, Max, StüdyoSahibi",
+    "displayNameHint": "Bu ad arayüzde ve bildirimlerde görünür. Ayarlardan değiştirebilirsiniz.",
+    "codeSix": "6 haneli kodu girin",
+    "users": "işletme Velora'yı zaten kullanıyor",
+    "strength": {
+      "weak": "Zayıf",
+      "medium": "Orta",
+      "good": "İyi",
+      "strong": "Güçlü",
+      "excellent": "Mükemmel"
+    }
+>>>>>>> bcf4a067f80368999140a9359ef17c722154c536
   }
 }

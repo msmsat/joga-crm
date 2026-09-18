@@ -1,0 +1,294 @@
+== el
+legal.terms	Όροι χρήσης
+legal.privacy	Πολιτική απορρήτου
+tabs.plans	Προγράμματα και τιμές
+tabs.invoices	Ιστορικό πληρωμών
+tabs.method	Τρόπος πληρωμής
+tabsShort.plans	Προγράμματα
+tabsShort.invoices	Ιστορικό
+tabsShort.method	Πληρωμή
+paymentsHistory.title	Πλήρες ιστορικό πληρωμών
+paymentsHistory.subtitle	Όλα τα τιμολόγια για αυτό το στούντιο
+paymentsHistory.clearFilter	Εκκαθάριση
+paymentsHistory.loadMore	Φόρτωση περισσότερων
+planNames.start	Start
+planNames.pro	Pro
+planNames.business	Business
+seats.title	Πόσα μέλη προσωπικού έχει το στούντιο
+seats.hint	από {{amount}} τον μήνα
+seats.stepNote	Κάθε επιπλέον θέση προσθέτει {{amount}} τον μήνα
+seats.unlimitedNote	Χωρίς όριο προσωπικού
+seats.perSeat	Ανά μέλος προσωπικού
+limits.staff	Προσωπικό
+limits.ai	Αιτήματα Velora AI
+limits.unlimited	Απεριόριστα
+banner.trialEnds	Η δοκιμή σας λήγει στις {{date}} — επιλέξτε πρόγραμμα
+banner.renews	Η συνδρομή {{plan}} ανανεώνεται στις {{date}}
+banner.expires	Η συνδρομή {{plan}} λήγει στις {{date}}
+banner.choosePlan	Επιλέξτε πρόγραμμα
+banner.dismiss	Κλείσιμο
+banner.unpaid	Το πρόγραμμά σας δεν έχει πληρωθεί. Για να συνεχίσετε, πληρώστε στις ενότητες Προγράμματα και χρέωση.
+banner.suspended	Η πρόσβαση έχει ανασταλεί επειδή το τιμολόγιο του προγράμματος είναι ληξιπρόθεσμο. Πληρώστε το στις ενότητες Προγράμματα και χρέωση.
+paymentReturn.done	Η πληρωμή ολοκληρώθηκε — το πρόγραμμα {{plan}} είναι ενεργό.
+paymentReturn.processing	Η πληρωμή επεξεργάζεται — η συνδρομή σας θα ενεργοποιηθεί σε λίγα λεπτά.
+header.eyebrow	Velora · Χρέωση
+header.title	Προγράμματα και χρέωση
+header.subtitle	Διαχειριστείτε τη συνδρομή, τους τρόπους πληρωμής και το ιστορικό πληρωμών
+header.totalSpent	Συνολική δαπάνη
+header.monthsWithUs	Μήνες μαζί μας
+header.saved	Εξοικονομήθηκαν
+header.nextCharge	Επόμενη χρέωση
+header.currentPlan	ΤΡΕΧΟΝ ΠΡΟΓΡΑΜΜΑ
+header.noPlanName	Χωρίς πρόγραμμα
+header.noPlan	Δεν υπάρχει ενεργή συνδρομή
+header.active	Ενεργό
+header.activeUntil	Ενεργό · έως {{date}}
+header.trialPlanName	Δοκιμαστικό πρόγραμμα
+header.trial	Δοκιμαστική περίοδος
+header.trialUntil	Δοκιμαστική περίοδος · έως {{date}}
+header.expired	Έληξε
+header.percentRate	{{rate}}% των πωλήσεων
+header.modePercent	Ποσοστιαίο πρόγραμμα
+header.modeFixed	Σταθερό
+header.modeCombo	Συνδυαστικό
+header.unpaid	Το πρόγραμμα δεν έχει πληρωθεί
+header.awaitingPayment	Αναμονή πληρωμής
+mode.title	Μοντέλο πληρωμής
+mode.subscription	Σταθερή συνδρομή
+mode.percent	% των πωλήσεων
+mode.combo	Συνδυασμός σταθερού + %
+mode.short.subscription	Σταθερό
+mode.short.percent	Ποσοστό
+mode.short.combo	Συνδυαστικό
+mode.descriptions.subscription	Πληρώστε ένα ποσό τον μήνα. Προβλέψιμο και οικονομικό.
+mode.descriptions.percent	Χωρίς σταθερή χρέωση: {{rate}}% από κάθε πώληση, συμπεριλαμβανομένων των μετρητών.
+mode.descriptions.combo	Μισή συνδρομή + {{rate}}% από κάθε πώληση, συμπεριλαμβανομένων των μετρητών.
+mode.badges.popular	Δημοφιλές
+mode.badges.flexible	Ευέλικτο
+mode.percentCard.title	Το μοντέλο «3% των πωλήσεων»
+mode.percentCard.description	Πληρώνετε μόνο όταν κερδίζετε: 3% από κάθε πώληση, χωρίς σταθερή χρέωση συνδρομής. Οι ηλεκτρονικές πληρωμές διαχωρίζονται αμέσως· τα μετρητά και οι καταθέσεις συγκεντρώνονται και έρχονται σε ένα τιμολόγιο κάθε μήνα.
+mode.percentCard.noFixed	Χωρίς σταθερή χρέωση
+mode.percentCard.payForResult	Πληρωμή για αποτέλεσμα
+mode.percentCard.oneClick	Ενεργοποίηση με ένα κλικ
+mode.percentCard.cta	Ενεργοποίηση μοντέλου 3%
+mode.percentCard.ctaShort	Ενεργοποίηση 3%
+mode.activateSuccess	Το μοντέλο πληρωμής ενημερώθηκε
+mode.activateError	Δεν ήταν δυνατή η ενημέρωση του μοντέλου πληρωμής
+mode.alreadyActive	Αυτό το μοντέλο πληρωμής είναι ήδη ενεργό — παρακάτω μπορείτε να ανανεώσετε ή να αλλάξετε πρόγραμμα
+mode.confirmSwitchTitle	Αλλαγή μοντέλου πληρωμής;
+mode.confirmSwitchMessage	Η συνδρομή σας είναι ενεργή. Η αλλαγή ισχύει αμέσως και το υπόλοιπο της πληρωμένης περιόδου ΧΑΝΕΤΑΙ ΟΛΟΚΛΗΡΩΤΙΚΑ: οι αχρησιμοποίητες ημέρες δεν επιστρέφονται ούτε μεταφέρονται.
+mode.termsTitle	Επιβεβαιώστε τους όρους προγράμματος
+mode.termsMessage	Σε αυτό το πρόγραμμα η πλατφόρμα παρακρατεί {{rate}}% από κάθε πώληση.\n\nΣτις ηλεκτρονικές πληρωμές η χρέωση παρακρατείται αυτόματα τη στιγμή της πληρωμής. Για μετρητά, τερματικό και αναπληρώσεις καταθέσεων ΔΕΝ παρακρατείται αμέσως — συσσωρεύεται και λαμβάνετε ξεχωριστό τιμολόγιο μία φορά τον μήνα.\n\nΈχετε {{days}} ημέρες για να πληρώσετε το τιμολόγιο. Αν δεν πληρωθεί εγκαίρως, η πρόσβαση στο CRM και τη μίνι εφαρμογή πελατών αναστέλλεται έως την εξόφληση.\n\nΤο τρέχον οφειλόμενο ποσό εμφανίζεται στη Χρέωση· μπορείτε να πληρώσετε οποτεδήποτε, ακόμη και νωρίτερα.
+mode.termsConfirm	Αποδέχομαι τους όρους
+mode.termsMinimum	Η ελάχιστη μηνιαία χρέωση είναι {{amount}} {{currency}}. Αν σε έναν ημερολογιακό μήνα η πλατφόρμα κέρδισε λιγότερα από το στούντιό σας (για παράδειγμα, δεν υπήρξαν καθόλου πωλήσεις μέσω CRM), τιμολογείστε για τη διαφορά. Αν κερδίσετε περισσότερα από το ελάχιστο, δεν υπάρχει τιμολόγιο. Απλήρωτη ελάχιστη χρέωση αναστέλλει την πρόσβαση όπως και ένα απλήρωτο τιμολόγιο προμήθειας.
+mode.termsBurn	ΠΡΟΕΙΔΟΠΟΙΗΣΗ: σας απομένει πληρωμένη περίοδος. Η αλλαγή μοντέλου χρέωσης ΤΗ ΧΑΝΕΙ ΟΛΟΚΛΗΡΩΤΙΚΑ — οι αχρησιμοποίητες ημέρες δεν επιστρέφονται ούτε μεταφέρονται.
+mode.termsCombo	Η αλλαγή είναι ΑΓΟΡΑ: αμέσως μετά την επιβεβαίωση θα δείτε το οφειλόμενο ποσό. Το υπόλοιπο της τρέχουσας πληρωμένης περιόδου χάνεται — δεν επιστρέφεται ούτε μεταφέρεται. Το μοντέλο σταθερό + % ενεργοποιείται ΜΟΝΟ μετά την πληρωμή· μέχρι τότε το πρόγραμμα παραμένει όπως είναι και δεν χρεώνεται τίποτα.
+combo.rateBadge	{{rate}}%
+combo.summary	Σταθερό {{fixed}}/μήνα + {{rate}}% των πωλήσεων (τα μετρητά τιμολογούνται μηνιαίως)
+combo.cta	Ενεργοποίηση συνδυαστικού προγράμματος
+combo.ctaShort	Ενεργοποίηση συνδυασμού
+period.1	1 μήνας
+period.3	3 μήνες
+period.6	6 μήνες
+period.12	1 έτος
+period.24	2 έτη
+period.title	Περίοδος πληρωμής
+period.discountActive	Η έκπτωση {{percent}}% είναι ενεργή
+period.noDiscount	Χωρίς έκπτωση
+period.discountLabel	−{{percent}}% έκπτωση
+calculator.title	Παράμετροι υπολογισμού
+calculator.monthlyTurnover	Ο μηνιαίος διαδικτυακός τζίρος σας
+calculator.turnoverRangeMin	50 χιλ.
+calculator.turnoverRangeMax	3 εκ.+
+calculator.chooseFeeLabel	Επιλέξτε ποσοστό προμήθειας (επηρεάζει τις δυνατότητες)
+calculator.feeOptions.basic	Βασικό
+calculator.feeOptions.standard	Τυπικό
+calculator.feeOptions.pro	Pro
+calculator.feeOptions.max	Μέγιστο
+calculator.chooseFixedLabel	Επιλέξτε βασικό σταθερό μέρος (η αποδοχή πληρωμών είναι πάντα 3%)
+calculator.fixedOptions.start	Start
+calculator.fixedOptions.optima	Optima
+calculator.fixedOptions.business	Business
+calculator.economyPercentTitle	ΟΙΚΟΝΟΜΙΚΑ ΠΡΟΓΡΑΜΜΑΤΟΣ
+calculator.economyComboTitle	ΟΙΚΟΝΟΜΙΚΑ ΣΥΝΔΥΑΣΤΙΚΟΥ ΠΡΟΓΡΑΜΜΑΤΟΣ
+calculator.turnover	Τζίρος στούντιο
+calculator.systemFee	Χρέωση συστήματος
+calculator.totalMonthlyPayment	ΣΥΝΟΛΙΚΗ ΜΗΝΙΑΙΑ ΠΛΗΡΩΜΗ
+calculator.onlyPayForResult	Δεν πληρώνετε σταθερή χρέωση, μόνο για αποτελέσματα
+calculator.activatePercent	Ενεργοποίηση μοντέλου {{percent}}%
+calculator.baseSubscription	Βασική συνδρομή (σταθερή)
+calculator.acquiringFee	Αποδοχή πληρωμών / χρέωση
+calculator.activateCombo	Ενεργοποίηση συνδυαστικού προγράμματος
+planCards.bestChoice	Καλύτερη επιλογή
+planCards.current	Τρέχον
+planCards.perMonth	/ μήνα
+planCards.currentPlan	Τρέχον πρόγραμμα
+planCards.yourPrice	Η τιμή σας
+planCards.staffLimit	Έως {{count}} μέλη προσωπικού
+planCards.staffUnlimited	Απεριόριστο προσωπικό
+paymentSchedule.title	Πρόγραμμα πληρωμών
+paymentSchedule.total	Σύνολο οφειλής
+paymentSchedule.morePayments	+ {{count}} επιπλέον πληρωμές των {{amount}}
+paymentSchedule.processing	Ανακατεύθυνση στην πληρωμή…
+paymentSchedule.payFor	Πληρωμή για {{count}} μήν.
+paymentSchedule.vatNote	Χωρίς ΦΠΑ — ο φόρος προστίθεται στο ταμείο βάσει της χώρας σας
+trust.title	Γιατί μας εμπιστεύονται πάνω από 2.400 επιχειρήσεις
+trust.reviews.0.text	Αλλάξαμε από το Altegio. Η διαφορά είναι σαν ανάμεσα σε ταξί και ιδιωτικό τζετ.
+trust.reviews.0.author	Maria K., FORM Pilates
+trust.reviews.1.text	Το καλύτερο είναι ότι ξέρω ακριβώς τι πληρώνω κάθε μήνα. Χωρίς εκπλήξεις.
+trust.reviews.1.author	Artem N., Barbershop Bros
+trust.reviews.2.text	Η υποστήριξη απάντησε σε 4 λεπτά. Δεν το έχω δει πουθενά αλλού.
+trust.reviews.2.author	Elena D., SPA LUNA
+upgrade.priceLine	Τιμή {{price}}/μήνα
+upgrade.discountNote	 {{percent}}% έκπτωση για πληρωμή {{period}} μήν.
+upgrade.planLabel	Πρόγραμμα
+upgrade.periodLabel	Περίοδος
+upgrade.periodValue_one	{{count}} μήνας
+upgrade.periodValue_other	{{count}} μήνες
+upgrade.discountLabel	Έκπτωση
+upgrade.scheduledBadge	Από {{date}} — πρόγραμμα «{{plan}}»
+upgrade.vatNote	Χωρίς ΦΠΑ — ο φόρος προστίθεται στο ταμείο βάσει των εταιρικών στοιχείων σας· εταιρείες ΕΕ με αριθμό ΦΠΑ έχουν αντίστροφη χρέωση.
+method.notLinked	Δεν έχει συνδεθεί
+method.badgeTitle	Ο τρόπος πληρωμής είναι ασφαλής
+method.tokenSub	Διακριτικό παρόχου · λήγει {{expiry}}
+method.tokenNote	Τα πραγματικά στοιχεία κάρτας αποθηκεύονται από τον πάροχο πληρωμών (PCI DSS L1). Κρατάμε μόνο ένα διακριτικό μίας χρήσης για ανανεώσεις.
+method.securityTitle	Πρότυπα προστασίας δεδομένων
+method.security.pciDss	Κρυπτογράφηση PCI DSS επιπέδου 1
+method.security.secure3d	Προστασία συναλλαγών 3D Secure
+method.security.noStorage	Τα στοιχεία κάρτας δεν αγγίζουν ποτέ τους διακομιστές μας
+method.security.autoLink	Η κάρτα συνδέεται στην πρώτη πληρωμή
+method.noCardDetail	Δεν χρειάζεται να εισάγετε στοιχεία ξεχωριστά — η πληρωμή γίνεται στην ασφαλή σελίδα της Stripe.
+method.renewDone	Δημιουργήθηκε τιμολόγιο — επεξεργασία πληρωμής
+method.renewBusy	Δημιουργία τιμολογίου…
+method.renewSuccess	Δημιουργήθηκε τιμολόγιο ανανέωσης
+method.renewError	Δεν ήταν δυνατή η δημιουργία τιμολογίου. Δοκιμάστε ξανά.
+method.renewNow	Ανανέωση τώρα με κάρτα •••• {{last4}}
+method.autopayTitle	Ρυθμίσεις αυτόματης πληρωμής
+method.autopaySuccess	Η ρύθμιση αποθηκεύτηκε
+method.autopayError	Δεν ήταν δυνατή η αποθήκευση της ρύθμισης. Δοκιμάστε ξανά.
+method.autopay.cardOnly	Διαθέσιμο με πληρωμή κάρτας
+method.autopay.autoRenew.label	Αυτόματη ανανέωση
+method.autopay.autoRenew.desc	Απενεργοποιήστε για ακύρωση στο τέλος της πληρωμένης περιόδου
+method.autopay.autoRenew.until	Η συνδρομή δεν θα ανανεωθεί — πρόσβαση έως {{date}}
+method.autopay.emailNotify.label	Ειδοποιήσεις email
+method.autopay.emailNotify.desc	Η απόδειξη στέλνεται με email μετά από κάθε πληρωμή
+method.autopay.remind3d.label	Υπενθύμιση 3 ημέρες πριν
+method.autopay.remind3d.desc	Θα σας υπενθυμίσουμε πριν από την αυτόματη χρέωση
+method.autopay.sms.label	Ειδοποίηση SMS
+method.autopay.sms.desc	Στέλνεται μήνυμα κειμένου κατά τη χρέωση
+method.portal.title	Στοιχεία χρέωσης και ΦΠΑ
+method.portal.subtitle	Τα τιμολόγια, η συνδεδεμένη κάρτα και το ιστορικό χρεώσεων βρίσκονται στην πύλη πελατών Stripe.
+method.portal.cta	Άνοιγμα στο Stripe
+method.ibanBadgeLabel	Τραπεζική μεταφορά (SEPA)
+method.ibanBadgeNote	Τα τιμολόγια έρχονται με email με σύνδεσμο πληρωμής — τίποτα δεν χρεώνεται αυτόματα σε κάρτα. Μπορείτε να πληρώσετε νωρίς από τη σελίδα τιμολογίου.
+invoices.title	Ιστορικό πληρωμών
+invoices.totalPaid	συνολικά πληρώθηκαν {{amount}}
+invoices.exportCsv	Εξαγωγή CSV
+invoices.exportError	Δεν ήταν δυνατή η εξαγωγή CSV. Δοκιμάστε ξανά.
+invoices.receiptError	Δεν ήταν δυνατό το άνοιγμα της απόδειξης. Δοκιμάστε ξανά.
+invoices.invoiceNo	Τιμολόγιο #{{id}}
+invoices.methodCard	Πληρώθηκε με κάρτα
+invoices.methodIban	Πληρώθηκε με τραπεζική μεταφορά (IBAN)
+invoices.syncHint	Ελέγξτε την κατάσταση με την υπηρεσία πληρωμών
+invoices.syncChanged	Η κατάσταση ενημερώθηκε: {{status}}
+invoices.syncUnchanged	Η υπηρεσία πληρωμών επιβεβαίωσε την ίδια κατάσταση
+invoices.syncError	Δεν ήταν δυνατός ο έλεγχος της κατάστασης. Δοκιμάστε ξανά.
+invoices.kindOfflineFee	Προμήθεια πωλήσεων εκτός σύνδεσης
+invoices.kindMinFee	Ελάχιστη μηνιαία χρέωση
+invoices.kindOnlineFee	Προμήθεια διαδικτυακών πληρωμών
+invoices.methodWithheld	Παρακρατήθηκε από τη Stripe κατά την πληρωμή
+table.date	Ημερομηνία
+table.description	Περιγραφή
+table.amount	Ποσό
+table.status	Κατάσταση
+table.receipt	Απόδειξη
+status.paid	Πληρώθηκε
+status.pending	Σε αναμονή
+status.failed	Δεν πληρώθηκε
+status.refunded	Επιστράφηκε
+empty.noInvoices	Δεν υπάρχουν ακόμη τιμολόγια — θα εμφανιστούν μετά την πρώτη πληρωμή.
+empty.noCard	Η κάρτα σας θα εμφανιστεί αυτόματα μετά την πρώτη πληρωμή.
+empty.monthsWithUs	Δεν έχετε αγοράσει συνδρομή ακόμη
+empty.noData	Δεν υπάρχουν δεδομένα
+savings.title	Οι εξοικονομήσεις σας
+savings.prepayTitle	Οι εξοικονομήσεις σας με προπληρωμή
+savings.emptyState	Επιλέξτε μεγαλύτερη περίοδο και αρχίστε να εξοικονομείτε
+savings.youSave	Εξοικονομείτε {{amount}} σε {{months}} μήν.
+savings.freeMonths	Είναι σαν {{count}} μήν. δωρεάν
+savings.amountLabel	{{amount}} εξοικονόμηση
+savings.comparedToMonthly	σε σύγκριση με μηνιαία πληρωμή
+savings.forMonths_one	Για {{count}} μήνα
+savings.forMonths_other	Για {{count}} μήνες
+pay	Πληρωμή
+continuePlan	Συνέχεια προγράμματος
+payModal.titleNew	Ξεκινήστε το πρόγραμμα {{plan}}
+payModal.titleSwitch	Μετάβαση σε {{plan}}
+payModal.titleRenew	Ανανέωση {{plan}}
+payModal.totalLabel	Το πρόγραμμά σας θα κοστίσει
+payModal.burnWarning	Η μετάβαση σε άλλο πρόγραμμα επανεκκινεί την περίοδο: το υπόλοιπο του προγράμματός σας {{plan}} ΧΑΝΕΤΑΙ — δεν επιστρέφεται ούτε μεταφέρεται. Η ανανέωση του ίδιου προγράμματος το διατηρεί.
+payModal.switched	Το πρόγραμμα άλλαξε: δεν υπάρχει πληρωμή — η αλλαγή καλύφθηκε από το υπόλοιπο της τρέχουσας περιόδου.
+payModal.renewNote	Αυτό ανανεώνει το ίδιο πρόγραμμα: οι μήνες που αγοράζετε προστίθενται στην τρέχουσα πληρωμένη περίοδο. Τίποτα δεν χάνεται.
+payModal.cardNote	Πληρωμή κάρτας στην ασφαλή σελίδα Stripe · επιστροφή εντός 7 ημερών
+payModal.freeUntil	Δεν χρεώνεται τίποτα έως {{date}}: σας απομένουν {{count}} ημέρες από την ήδη πληρωμένη περίοδο. Η χρέωση αρχίζει εκείνη την ημερομηνία.
+payModal.taxLabel	ΦΠΑ
+payModal.taxLine	ΦΠΑ {{rate}}%
+payModal.reverseCharge	Αντίστροφη χρέωση
+payModal.totalWithTax	Σύνολο με ΦΠΑ
+payModal.taxServerNote	Ο φόρος υπολογίζεται από τα στοιχεία χρέωσής σας. Το τιμολόγιο θα δείξει το ίδιο ποσό.
+payModal.taxReview	Δεν μπορέσαμε να καθορίσουμε τον φόρο για τα στοιχεία χρέωσής σας, οπότε το σύνολο εμφανίζεται χωρίς αυτόν και η πληρωμή δεν μπορεί να ολοκληρωθεί. Ελέγξτε τη χώρα και διεύθυνση του πληρωτή ή επικοινωνήστε με την υποστήριξη.
+offlineFee.title	Χρέωση πωλήσεων εκτός σύνδεσης
+offlineFee.accruing	Συσσωρεύεται από μετρητά και καταθέσεις με {{rate}}%. Τιμολογείται μηνιαία, έχετε {{days}} ημέρες για πληρωμή.
+offlineFee.due	Εκδόθηκε τιμολόγιο. Ημέρες που απομένουν για πληρωμή: {{days}}.
+offlineFee.suspended	Η πληρωμή είναι ληξιπρόθεσμη — η πρόσβαση στο CRM και τη μίνι εφαρμογή έχει ανασταλεί.
+offlineFee.pay	Πληρωμή
+offlineFee.suspendedMin	Η ελάχιστη μηνιαία χρέωση είναι ληξιπρόθεσμη — η πρόσβαση στο CRM και τη μίνι εφαρμογή έχει ανασταλεί.
+offlineFee.alsoAccruing	Επιπλέον συσσωρεύονται αυτόν τον μήνα: {{amount}} — θα μπουν στο επόμενο τιμολόγιο.
+offlineFee.minimum	Η ελάχιστη μηνιαία χρέωση είναι {{amount}}. Αν κερδίσετε λιγότερα σε έναν μήνα, συμπληρώνετε τη διαφορά· αν κερδίσετε περισσότερα, δεν υπάρχει τιμολόγιο.
+offlineFee.pendingBill	Συσσωρεύτηκε με το προηγούμενο μοντέλο, αναμένει τιμολόγιο.
+offlineFee.notBilledYet	Δεν έχει εκδοθεί ακόμη τιμολόγιο: το συσσωρευμένο ποσό είναι κάτω από το ελάχιστο μέγεθος τιμολογίου ή ετοιμάζεται ακόμη. Τίποτα δεν χάνεται — θα μπει στο επόμενο τιμολόγιο.
+trial.title	Προσφορά για νέα στούντιο
+trial.subtitle	Το στούντιό σας μόλις δημιουργήθηκε
+trial.headline	{{days}} ημέρες δωρεάν
+trial.noCard	Δεν απαιτείται κάρτα — δεν υπάρχει κάτι να πληρώσετε τώρα
+trial.perks.allModules	Πλήρης πρόσβαση σε κάθε ενότητα: ημερολόγιο, πελάτες, οικονομικά, ειδοποιήσεις και Velora AI
+trial.perks.noCommitment	Χωρίς δέσμευση: αν δεν σας ταιριάζει, απλώς μην ανανεώσετε
+trial.perks.keepData	Όλα όσα ρυθμίζετε στη δοκιμή παραμένουν δικά σας
+trial.activate	Ενεργοποίηση
+trial.decline	Απόρριψη
+trial.cardHint	Δεν έχετε ενεργοποιήσει ακόμη τη δωρεάν περίοδο αυτού του στούντιο. Παραμένει διαθέσιμη μέχρι να αγοράσετε πρόγραμμα.
+profile.title	Στοιχεία χρέωσης
+profile.editTitle	Επεξεργασία στοιχείων χρέωσης
+profile.subtitle	Η διεύθυνσή σας εμφανίζεται στο τιμολόγιο και ορίζει τον φορολογικό συντελεστή. Αποθηκεύεται στον λογαριασμό σας — δεν θα τη ζητήσουμε ξανά σε άλλο στούντιο.
+profile.subtitlePay	Συμπληρώστε το μία φορά και η πληρωμή περνά αμέσως την επόμενη φορά. Η διεύθυνσή σας εμφανίζεται στο τιμολόγιο και ορίζει τον φορολογικό συντελεστή.
+profile.cardTitle	Στοιχεία χρέωσης
+profile.cardSubtitle	Αποθηκεύονται στον λογαριασμό σας και χρησιμοποιούνται σε όλα τα στούντιό σας. Έτσι εμφανίζονται στο τιμολόγιο.
+profile.cardEmpty	Δεν έχουν συμπληρωθεί ακόμη — θα τα ζητήσουμε πριν από την πρώτη πληρωμή. Μπορείτε να τα προσθέσετε τώρα.
+profile.add	Προσθήκη στοιχείων χρέωσης
+profile.edit	Επεξεργασία
+profile.save	Αποθήκευση
+profile.saveAndPay	Αποθήκευση και συνέχιση στην πληρωμή
+profile.cancel	Ακύρωση
+profile.saved	Τα στοιχεία χρέωσης αποθηκεύτηκαν
+profile.vatNone	Δεν δόθηκε
+profile.fields.country	Χώρα ή περιοχή
+profile.fields.countryPlaceholder	Επιλέξτε χώρα
+profile.fields.address	Διεύθυνση
+profile.fields.line1	Γραμμή διεύθυνσης 1
+profile.fields.line1Placeholder	Οδός και αριθμός
+profile.fields.line2	Γραμμή διεύθυνσης 2 — προαιρετικό
+profile.fields.line2Placeholder	Διαμέρισμα, σουίτα, αριθμός μονάδας κ.λπ.
+profile.fields.postalCode	Ταχυδρομικός κώδικας
+profile.fields.postalCodePlaceholder	110 00
+profile.fields.city	Πόλη
+profile.fields.cityPlaceholder	Πράγα
+profile.fields.vat	Αριθμός ΦΠΑ — προαιρετικό
+profile.fields.vatPlaceholder	{{prefix}}12345678
+profile.fields.vatHint	Μόνο για επιχειρήσεις. Ο αριθμός ελέγχεται στο μητρώο της ΕΕ (VIES) τη στιγμή της αποθήκευσης — δεν δεχόμαστε μη επιβεβαιωμένους αριθμούς. Με έγκυρο αριθμό, εταιρεία σε άλλη χώρα της ΕΕ τιμολογείται χωρίς φόρο (αντίστροφη χρέωση). Τα φυσικά πρόσωπα δεν έχουν — αφήστε το κενό.
+profile.fields.countrySearch	Αρχίστε να πληκτρολογείτε όνομα
+profile.fields.countryNotFound	Δεν βρέθηκε χώρα
+profile.fields.vatOutsideEu	Δεν ζητάμε αριθμό ΦΠΑ: εκτός ΕΕ ο φόρος ορίζεται από τη χώρα του πληρωτή, όχι από τον αριθμό του, οπότε δεν αλλάζει το τιμολόγιο.
+profile.fields.vatPending	Ο αριθμός σας έχει αποθηκευτεί, αλλά το μητρώο της ΕΕ δεν ήταν διαθέσιμο τότε, επομένως δεν έχει επιβεβαιωθεί ακόμη και το επόμενο τιμολόγιό σας θα περιλαμβάνει πλήρη ΦΠΑ. Δεν χρειάζεται να τον εισαγάγετε ξανά: συνεχίζουμε να ελέγχουμε και, μόλις απαντήσει το μητρώο, ο φόρος σταματά να χρεώνεται. Για ήδη πληρωμένο τιμολόγιο, η υποστήριξη θα επιστρέψει τον φόρο.
+profile.errors.required	Αυτό το πεδίο είναι υποχρεωτικό
+profile.preview.invoice	Τιμολόγιο
+profile.preview.billTo	Χρέωση προς
+profile.preview.note	Έτσι εμφανίζονται τα στοιχεία σας σε κάθε τιμολόγιο. Μπορείτε να τα αλλάξετε οποτεδήποτε στις ενότητες Προγράμματα και χρέωση → Τρόπος πληρωμής.

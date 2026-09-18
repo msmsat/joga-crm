@@ -1,0 +1,321 @@
+{
+  "header": {
+    "allConfigured": "Tüm programlar yapılandırıldı",
+    "allConfiguredSub": "Sadakat sisteminiz tam kapasite çalışıyor",
+    "setup": "Sadakat programlarını yapılandırın",
+    "setupSub": "{{total}} programdan {{count}} tanesi yapılandırıldı · Her program müşteri bağlılığını artırır",
+    "start": "Başlayın"
+  },
+  "programs": {
+    "loyalty": {
+      "title": "Sadakat kartları",
+      "desc": "Seviyeli puan biriktirme sistemi",
+      "statLabel": "müşteri"
+    },
+    "discounts": {
+      "title": "İndirimler ve cashback",
+      "desc": "Müşteriler için kişisel teklifler",
+      "statLabel": "aktif"
+    },
+    "certificates": {
+      "title": "Hediye sertifikaları",
+      "desc": "Hediye ve isimli sertifikalar",
+      "statLabel": "satıldı"
+    },
+    "referral": {
+      "title": "Tavsiyeler",
+      "desc": "„Bir arkadaşını getir” programı",
+      "statLabel": "tavsiye"
+    },
+    "promocodes": {
+      "title": "Promosyon kodları",
+      "desc": "Kullanım sınırı olan indirim kodları",
+      "statLabel": "aktif"
+    },
+    "deposit": {
+      "title": "Depozito",
+      "desc": "Müşterinin stüdyodaki para bakiyesi",
+      "statLabel": "bakiyeli"
+    }
+  },
+  "card": {
+    "active": "Aktif",
+    "disable": "Devre dışı bırak",
+    "notConfigured": "Yapılandırılmadı",
+    "configure": "Yapılandır"
+  },
+  "drawer": {
+    "subtitle": "Program ayarları",
+    "saving": "Kaydediliyor…",
+    "save": "Kaydet ve etkinleştir",
+    "cancel": "İptal",
+    "close": "Kapat"
+  },
+  "config": {
+    "mainParams": "Ana parametreler",
+    "programName": "Program adı",
+    "pointsRate": "Puan oranı (1 puan için {{currency}})",
+    "levels": "Seviyeler",
+    "pointValue": "1 puan =",
+    "pointValueHint": "Puanlar her seviyede aynı oranda kazanılır, ancak değerleri aynı değildir. Gold'a 1, Diamond'a 2 verin; müşterinin kazandığı bir puan kasada fiyatı iki kat daha fazla düşürür. Seviyenin faydası budur: Bir kişi stüdyoda ne kadar çok harcarsa puanları o kadar değerli olur.",
+    "expiry": "Geçerlilik süresi",
+    "expiryTooltip": "Müşterinin biriktirdiği puanları ne kadar süre kullanabileceği",
+    "expiryOptions": {
+      "3m": "3 ay",
+      "6m": "6 ay",
+      "1y": "1 yıl",
+      "never": "Süresiz"
+    },
+    "newLevelName": "Yeni seviye",
+    "addLevel": "+ Seviye",
+    "levelFrom": "başlangıç",
+    "levelTo": "bitiş",
+    "deleteLevelTitle": "Bu seviye silinsin mi?",
+    "deleteLevelMessage": "„{{name}}” seviyesindeki müşteriler toplam harcamalarına göre komşu seviyeye taşınır.",
+    "discountType": "İndirim türü",
+    "discountTypes": {
+      "percentage": "Yüzde (%)",
+      "fixed": "Sabit ({{currency}})",
+      "cashback": "Cashback"
+    },
+    "cashbackPercent": "Cashback yüzdesi",
+    "discountSize": "İndirim tutarı",
+    "minPurchase": "Minimum alışveriş tutarı",
+    "noLimit": "Sınır yok",
+    "conditions": "Uygulama koşulları",
+    "appliesToAll": "Tüm hizmetlere uygula",
+    "stackable": "Diğer indirimlerle birleştir",
+    "visibleInCabinet": "Müşterinin hesabında göster",
+    "certType": "Sertifika türü",
+    "certTypes": {
+      "named": "İsimli",
+      "gift": "Hediye",
+      "service": "Bir hizmet için"
+    },
+    "denominations": "Tutarlar",
+    "addDenom": "+ Ekle",
+    "service": "Hizmet",
+    "noServices": "Katalogda henüz hizmet yok — bunları „Katalog” bölümünden ekleyin",
+    "params": "Parametreler",
+    "expiryDays": "Geçerlilik süresi (gün)",
+    "certIssue": "Sertifika düzenle",
+    "certCustomAmount": "Özel tutar",
+    "certRecipientName": "Alıcının adı",
+    "certRecipientPlaceholder": "İsteğe bağlı",
+    "certLinkClient": "Bir müşteriye bağla",
+    "certClientSearchPlaceholder": "Bir ad yazmaya başlayın…",
+    "certAccount": "Depozito hesabı",
+    "certAccountNone": "Deftere kaydetme",
+    "certIssueButton": "Düzenle",
+    "certIssuedTitle": "Sertifika düzenlendi",
+    "certCopyCode": "Kodu kopyala",
+    "certCopied": "Kopyalandı",
+    "certIssueAnother": "Bir tane daha düzenle",
+    "certIssued": "Düzenlenen sertifikalar",
+    "certEmpty": "Henüz sertifika düzenlenmedi",
+    "certStatus": {
+      "active": "Aktif",
+      "used": "Kullanıldı",
+      "expired": "Süresi doldu"
+    },
+    "certRedeem": "Kullan",
+    "certRedeemTitle": "Bu sertifika kullanılsın mı?",
+    "certRedeemMessage": "{{code}} sertifikası kullanılmış olarak işaretlenecek. Bu işlem geri alınamaz.",
+    "referrerBonusTitle": "Tavsiye bonusu",
+    "referrerBonus": "Tavsiye eden için bonus ({{currency}})",
+    "newClientDiscount": "Yeni müşteri indirimi (%)",
+    "triggerCondition": "Tahakkuk koşulu",
+    "triggerConditions": {
+      "first_visit": "İlk ziyaretten sonra",
+      "first_payment": "İlk ödemeden sonra",
+      "registration": "Kayıt sırasında hemen"
+    },
+    "bonusAccrual": "Bonus tahakkuku",
+    "bonusTypes": {
+      "points": "Puanlar",
+      "deposit": "Depozitoya",
+      "discount": "İndirim olarak"
+    },
+    "promoCreate": "Promosyon kodu oluştur",
+    "promoCodePlaceholder": "YAZ25",
+    "promoValidUntil": "Geçerlilik bitişi",
+    "promoUsageLimit": "Kullanım sınırı",
+    "promoAdd": "+ Promosyon kodu ekle",
+    "promoList": "Promosyon kodları",
+    "promoEmpty": "Henüz promosyon kodu yok",
+    "promoUntil": "kadar",
+    "promoStatus": {
+      "active": "Aktif",
+      "expired": "Süresi doldu",
+      "exhausted": "Sınıra ulaşıldı",
+      "disabled": "Devre dışı"
+    },
+    "depositTotal": "Toplam bakiye",
+    "depositTotalSub": "tüm müşteri mevduatlarında",
+    "depositTopClients": "Bakiyeye göre en iyi müşteriler",
+    "depositEmpty": "Henüz kimsenin depozitosu yok",
+    "depositHint": "Yüklemeler ve çekimler müşteri profilinden yapılır. Tavsiye programı bonusları puan yerine depozitoya ödeyebilir."
+  },
+  "validation": {
+    "required": "Bu alan zorunludur",
+    "minOne": "En az 1 olmalıdır",
+    "minZero": "Negatif olamaz",
+    "positive": "0'dan büyük olmalıdır",
+    "range0to100": "0 ile 100 arası"
+  },
+  "toasts": {
+    "saved": "Program etkinleştirildi",
+    "saveFailed": "Kaydedilemedi",
+    "toggleFailed": "Program güncellenemedi",
+    "loadFailed": "Veriler yüklenemedi",
+    "retry": "Tekrar dene"
+  },
+  "stats": {
+    "notConnected": "Program bağlı değil",
+    "willAppear": "Veriler yapılandırmadan sonra görünür",
+    "noData": "Veri yok",
+    "connectProgram": "Program bağla",
+    "revenueHeadline": "Üyelerden gelir",
+    "membersHeadline": "Program üyeleri",
+    "returnedClients": "Geri dönen müşteriler",
+    "returnedClientsSub": "90 günde 2+ ziyaret",
+    "avgCheckHeadline": "Üye başına ortalama fiş",
+    "bonusCostHeadline": "Bonus maliyeti",
+    "bonusCostSub": "bu ay",
+    "roiHeadline": "ROI",
+    "roiValue": "×{{value}}",
+    "perMonth": "bu ay",
+    "cardHolders": "kart sahipleri",
+    "kpi": "Temel göstergeler",
+    "members": "Üyeler",
+    "withCard": "kartlı",
+    "avgCheck": "Ortalama fiş",
+    "byMembers": "üyeler arasında",
+    "pointsInCirculation": "Dolaşımdaki puanlar",
+    "accrued": "biriken",
+    "revenue": "Gelir",
+    "revenuePerMonth": "üyelerden / ay",
+    "levelDistribution": "Seviyeye göre dağılım",
+    "noLevels": "Seviyeler henüz yapılandırılmadı",
+    "totalClients": "Programdaki toplam müşteri",
+    "fromValue": "{{value}} değerinden itibaren",
+    "levelPointValue": "puan = {{value}}"
+  },
+  "scenarios": {
+    "title": "Akıllı senaryolar",
+    "subtitle": "Elde tutma otopilotu: sistem müşterileri bulur ve sizin yerinize ödüllendirir",
+    "add": "Senaryo",
+    "fired": "{{count}} kez tetiklendi",
+    "lastRun": "son çalıştırma {{when}}",
+    "neverRun": "henüz çalıştırılmadı",
+    "empty": "Henüz senaryo yok",
+    "emptySub": "İlkini oluşturun — sistem müşterileri sizin için elde tutar",
+    "channel": "Kanal",
+    "channelSoon": "entegrasyon bağlandıktan sonra",
+    "pickTemplate": "Senaryo seçin",
+    "pickTemplateSub": "Hazır şablon — eşikleri daha sonra ayarlayın",
+    "create": "Oluştur",
+    "deleteConfirm": "Senaryo silinsin mi?",
+    "deleteConfirmSub": "Kural tetiklenmeyi bırakacak. Bu işlem geri alınamaz.",
+    "triggers": {
+      "inactive_days": "{{days}} gündür pasif",
+      "low_subscription": "≤ {{classes_left}} ders kaldı",
+      "birthday": "doğum günü",
+      "nth_visit": "{{n}}. ziyaret",
+      "referral": "bir arkadaş getirdi"
+    },
+    "actions": {
+      "points": "{{points}} puan hediye et",
+      "gift_classes": "{{classes}} ders hediye et",
+      "certificate": "{{amount}} ₽ tutarında sertifika düzenle",
+      "renewal_offer": "%{{discount}} indirimle yenileme teklif et"
+    },
+    "templates": {
+      "win_back": {
+        "name": "Sizi özledik",
+        "desc": "Uzun süredir gelmeyen bir müşteriyi geri kazanın"
+      },
+      "expiring_subscription": {
+        "name": "Abonelik bitmek üzere",
+        "desc": "Dersler bitmeden yenileme teklif edin"
+      },
+      "birthday_gift": {
+        "name": "Doğum günü hediyesi",
+        "desc": "Özel gününde müşteriyi sevindirin"
+      },
+      "fifth_visit": {
+        "name": "Sadakat ödülü",
+        "desc": "Sadakat için ücretsiz ders"
+      },
+      "referral_thanks": {
+        "name": "Arkadaş için teşekkürler",
+        "desc": "Yeni bir müşteri getiren kişiyi ödüllendirin"
+      }
+    },
+    "ifClient": "Eğer müşteri",
+    "then": "→",
+    "toasts": {
+      "created": "Senaryo oluşturuldu",
+      "updated": "Senaryo güncellendi",
+      "deleted": "Senaryo silindi",
+      "failed": "Senaryo kaydedilemedi"
+    },
+    "delete": "Sil"
+  },
+  "segmentsBoard": {
+    "title": "Segmentler ve öneriler",
+    "subtitle": "Her biri için net bir eylem olan canlı müşteri grupları",
+    "empty": "Burada hiçbir şey yok ve bu iyi",
+    "clients": "müşteri",
+    "daysAgo": "{{count}} gün önce",
+    "neverVisited": "ziyaret yok",
+    "more": "ve {{count}} kişi daha",
+    "segments": {
+      "at_risk": {
+        "name": "Ayrılmak üzereler",
+        "desc": "Aktif, 21+ gündür pasif",
+        "action": "Bonus ver"
+      },
+      "vip_idle": {
+        "name": "Sessiz VIP",
+        "desc": "VIP müşteriler, 14+ gündür pasif",
+        "action": "Kampanya başlat"
+      },
+      "expiring_subscription": {
+        "name": "Abonelik sona eriyor",
+        "desc": "≤2 ders veya ≤7 gün kaldı",
+        "action": "Kampanya başlat"
+      },
+      "lost_newcomers": {
+        "name": "Hiç geri dönmediler",
+        "desc": "Bir kez geldiler, 14+ gündür yoklar",
+        "action": "Kampanya başlat"
+      },
+      "upsell_candidates": {
+        "name": "Pakete hazır",
+        "desc": "Bu ay 8+ ziyaret, paket yok",
+        "action": "Kampanya başlat"
+      }
+    },
+    "campaignSub": "„{{name}}” segmenti · {{count}} müşteri",
+    "pointsLabel": "Kaç puan verilecek",
+    "messageLabel": "Mesaj metni",
+    "messagePlaceholder": "örn. Sizi özledik! Geri dönün — sizi bekliyoruz.",
+    "emailNote": "E-posta yalnızca e-posta adresi olan müşterilere gider",
+    "confirm": "Gönder",
+    "toasts": {
+      "pointsDone": "Puanlar verildi · {{processed}} işlendi, {{emails}} bilgilendirildi",
+      "emailDone": "Kampanya gönderildi · {{processed}} kişiden {{emails}} e-posta"
+    }
+  },
+  "retention": {
+    "title": "Abonelik yenilemeleri",
+    "subtitle": "Müşterilerin yeni bir paket için ne kadar iyi geri döndüğü",
+    "renewalRate": "Yenile",
+    "avgPackages": "Müşteri başına paket",
+    "sold": "Satıldı",
+    "renewed": "Yenilendi",
+    "empty": "Henüz abonelik satışı yok",
+    "emptySub": "Analizler ilk paket satışlarından sonra görünür"
+  }
+}

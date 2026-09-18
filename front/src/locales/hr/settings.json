@@ -1,0 +1,483 @@
+{
+  "nav": {
+    "sectionLabel": "Postavke sustava",
+    "general": "Općenito",
+    "appearance": "Izgled",
+    "notifications": "Obavijesti",
+    "billing": "Naplata",
+    "security": "Sigurnost",
+    "integrations": "Integracije",
+    "data": "Podaci",
+    "logout": "Promijeni CRM"
+  },
+  "toast": {
+    "saved": "Spremljeno",
+    "error": "Nešto je pošlo po zlu"
+  },
+  "workspace": {
+    "title": "Vaši CRM sustavi",
+    "subtitle": "Odaberite radni prostor ili stvorite novi",
+    "current": "Trenutačni",
+    "membersCount_one": "{{count}} član",
+    "membersCount_few": "{{count}} člana",
+    "membersCount_other": "{{count}} članova",
+    "clientsCount_one": "{{count}} klijent",
+    "clientsCount_few": "{{count}} klijenta",
+    "clientsCount_other": "{{count}} klijenata",
+    "createNew": "Stvori novi studio",
+    "loadError": "Nije moguće učitati vaše studije",
+    "selectError": "Nije moguće prebaciti se na ovaj studio"
+  },
+  "general": {
+    "company": {
+      "title": "Podaci o tvrtki",
+      "subtitle": "Javne informacije o vašem poslovanju",
+      "name": "Naziv tvrtke",
+      "namePh": "npr. Moj studio",
+      "desc": "Opis",
+      "descPh": "Čime se vaš studio bavi…",
+      "phone": "Telefon",
+      "email": "E-pošta",
+      "site": "Web-stranica",
+      "sitePh": "https://studio.com",
+      "address": "Adresa",
+      "addressPh": "Primjer ulice 123, grad"
+    },
+    "reset": "Poništi",
+    "resetToast": "Postavke su poništene",
+    "locale": {
+      "title": "Jezik i regija",
+      "subtitle": "Postavke lokalizacije sučelja",
+      "timezone": "Vremenska zona",
+      "timezoneSearch": "Grad ili pomak",
+      "timezoneNotFound": "Vremenska zona nije pronađena",
+      "currency": "Valuta",
+      "currencySearch": "Pretraži valutu",
+      "currencyNotFound": "Valuta nije pronađena",
+      "language": "Jezik sučelja",
+      "languageSearch": "Pretraži jezike",
+      "languageNotFound": "Jezik nije pronađen",
+      "dateFormat": "Format datuma",
+      "firstDay": "Prvi dan u tjednu",
+      "firstDayLabels": [
+        "Ponedjeljak",
+        "Nedjelja"
+      ]
+    },
+    "booking": {
+      "title": "Model rezerviranja",
+      "subtitle": "Kako klijenti rezerviraju kod vas",
+      "mode": "Model rezerviranja",
+      "modeHint": "Događaji — klijenti se prijavljuju na zakazani termin. Individualno — klijent bira stručnjaka i vrijeme. Kombinirano — oboje istovremeno.",
+      "profile": "Nazivlje djelatnosti",
+      "profileHint": "Određuje riječi za osoblje i ponudu. Mijenja samo nazivlje — nikad uloge, cijene ni model rezerviranja.",
+      "strict": "Strogi raspored",
+      "strictHint": "Zabranjuje dvostruku rezervaciju stručnjaka ili ekskluzivnog prostora. Obavezan je prije uključivanja individualnog rezerviranja.",
+      "spaceAxis": "Koristi {{spacePlural}} u rasporedu",
+      "spaceAxisHint": "Isključeno — klijent rezervira osobu, a prostor nema stupac u dnevniku. Uključeno — termin je vezan uz prostor.",
+      "spaceAxisDefaultOn": "Zadano za vašu djelatnost: uključeno",
+      "spaceAxisDefaultOff": "Zadano za vašu djelatnost: isključeno",
+      "modes": {
+        "event": "Događaji",
+        "resource": "Individualno",
+        "hybrid": "Kombinirano"
+      },
+      "profiles": {
+        "studio": "Grupne prakse i studiji",
+        "sport": "Sport i teretane",
+        "beauty": "Ljepota i njega",
+        "recovery": "Tijelo i oporavak",
+        "relax": "Spa i opuštanje",
+        "other": "Ostalo"
+      },
+      "preview": {
+        "event": "Događaj",
+        "resource": "Individualno"
+      },
+      "errors": {
+        "AUDIT_BLOCKED": "Raspored sadrži rezervacije koje nisu usklađene sa strogim rasporedom.",
+        "STRICT_SCHEDULE_REQUIRED": "Najprije uključite strogi raspored.",
+        "RESOURCE_HISTORY_EXISTS": "Strogi raspored nije moguće isključiti: studio ima individualne rezervacije."
+      },
+      "findings": {
+        "overlap": "Preklapajuće rezervacije",
+        "unknown_timezone": "Nepoznata vremenska zona",
+        "undefined_branch": "Podružnica nije postavljena",
+        "invalid_duration": "Neispravno trajanje",
+        "invalid_resource_row": "Nepotpuna individualna rezervacija",
+        "missing_branch_assignment": "Stručnjak nije dodijeljen podružnici",
+        "missing_working_hours": "Stručnjak nema radno vrijeme",
+        "inactive_specialist": "Stručnjak nije aktivan",
+        "other": "Potrebna je provjera"
+      }
+    }
+  },
+  "appearance": {
+    "theme": {
+      "title": "Tema",
+      "subtitle": "Odaberite vizualni stil sučelja",
+      "light": "Svijetla",
+      "dark": "Tamna",
+      "auto": "Sustav"
+    },
+    "accent": {
+      "title": "Boja naglaska",
+      "subtitle": "Prilagodite glavnu boju sučelja",
+      "note": "Vaš je odabir spremljen, ali se još ne primjenjuje na sučelje — stiže u budućem ažuriranju.",
+      "noteTitle": "Uskoro",
+      "colors": {
+        "peach": "Breskva",
+        "pistachio": "Pistacija",
+        "lavender": "Lavanda",
+        "pink": "Ružičasta",
+        "gold": "Zlatna",
+        "mint": "Menta"
+      }
+    },
+    "language": {
+      "title": "Jezik sučelja",
+      "subtitle": "Vaš osobni jezik — ne utječe na postavke studija",
+      "search": "Pretraži jezike",
+      "empty": "Jezik nije pronađen"
+    }
+  },
+  "notifications": {
+    "myPrefs": {
+      "title": "Moje obavijesti",
+      "subtitle": "Osobne postavke — ne utječu na ostatak studija",
+      "hint": "Obavezne obavijesti ne mogu se isključiti — osiguravaju da nikada ne propustite promjene rasporeda i plaćanja.",
+      "empty": "Nema neobaveznih obavijesti za vašu ulogu",
+      "channels": {
+        "email": "E-pošta",
+        "telegram": "Telegram",
+        "whatsapp": "WhatsApp"
+      }
+    },
+    "telegram": {
+      "title": "Telegram za obavijesti",
+      "subtitle": "Gdje vam osobno slati događaje — rezervacije, obračun plaća, izvještaje",
+      "chatId": "Vaš Telegram chat_id",
+      "chatIdPh": "npr. 123456789",
+      "hintBefore": "Svoj chat_id možete pronaći kod bota ",
+      "hintAfter": " na Telegramu — započnite chat s njime i poslat će vam vaš ID.",
+      "invalidChatId": "Telegram chat_id mora biti broj, bez simbola",
+      "saved": "Telegram je povezan za obavijesti",
+      "saveFailed": "Spremanje Telegrama nije uspjelo"
+    },
+    "email": {
+      "title": "E-pošta za obavijesti",
+      "subtitle": "Gdje slati sistemske e-poruke",
+      "primary": "Glavna e-pošta",
+      "backup": "Rezervna e-pošta",
+      "backupPh": "backup@studio.com",
+      "saved": "Postavke obavijesti su spremljene"
+    }
+  },
+  "billing": {
+    "plans": {
+      "start": "Start",
+      "pro": "Pro",
+      "business": "Business",
+      "free_trial": "Besplatno probno razdoblje"
+    },
+    "status": {
+      "active": "Aktivno",
+      "trial": "Probno razdoblje",
+      "expired": "Isteklo"
+    },
+    "plan": {
+      "title": "Trenutačni plan",
+      "expiresAt": "Aktivno do {{date}}",
+      "maxStaff": "Do {{count}} zaposlenika",
+      "staffUnlimited": "Neograničeno zaposlenika",
+      "noSubscription": "Nema aktivne pretplate",
+      "noSubscriptionCta": "Odaberite plan",
+      "trialCta": "Odaberite plan"
+    },
+    "upgrade": "Prijeđite na {{plan}}",
+    "renew": "Obnovi",
+    "autopay": {
+      "title": "Automatska obnova",
+      "subtitle": "Naplaćuje se sa spremljene kartice",
+      "autoRenew": "Automatska obnova",
+      "notifyBefore": "Podsjetit ćemo vas {{count}} dana prije naplate"
+    },
+    "payment": {
+      "title": "Način plaćanja",
+      "cardSummary": "Kartica •••• {{last4}}",
+      "notLinked": "Nijedna kartica nije povezana",
+      "change": "Promijeni"
+    },
+    "history": {
+      "title": "Povijest plaćanja",
+      "subtitle": "Posljednjih 12 plaćanja",
+      "exportCsv": "Izvezi CSV",
+      "empty": "Još nema plaćanja",
+      "showAll": "Prikaži sve",
+      "period": "{{count}} mj.",
+      "noDate": "—",
+      "status": {
+        "paid": "Plaćeno",
+        "pending": "Na čekanju",
+        "failed": "Nije plaćeno",
+        "refunded": "Vraćeno"
+      }
+    },
+    "toast": {
+      "autopaySaved": "Postavke automatske obnove su spremljene",
+      "renewed": "Obnova je pokrenuta",
+      "csvExportError": "Izvoz CSV-a nije uspio"
+    }
+  },
+  "security": {
+    "account": {
+      "title": "Sigurnost računa",
+      "subtitle": "Zaštitite pristup svom radnom prostoru"
+    },
+    "twoFa": {
+      "title": "Dvofaktorska provjera autentičnosti",
+      "sub": "Kôd e-poštom pri svakoj prijavi",
+      "active": "Aktivno",
+      "disabled": "Isključeno",
+      "enableTitle": "Uključi 2FA",
+      "disableTitle": "Isključi 2FA",
+      "enableWarning": "Nakon uključivanja svaka će prijava zahtijevati kôd poslan na {{email}}. Provjerite imate li mu pristup — u protivnom možete izgubiti pristup računu.",
+      "disableWarning": "Nakon isključivanja za prijavu će biti dovoljna samo lozinka, bez koda e-poštom.",
+      "enabledToast": "Dvofaktorska provjera autentičnosti je uključena",
+      "disabledToast": "Dvofaktorska provjera autentičnosti je isključena"
+    },
+    "password": {
+      "title": "Lozinka računa",
+      "sub": "Promjena se potvrđuje kodom e-poštom",
+      "change": "Promijeni lozinku",
+      "changed": "Lozinka je uspješno promijenjena",
+      "current": "Trenutačna lozinka",
+      "currentPh": "Unesite trenutačnu lozinku",
+      "new": "Nova lozinka",
+      "newPh": "Najmanje 8 znakova",
+      "repeat": "Ponovite lozinku",
+      "repeatPh": "Ponovno unesite novu lozinku",
+      "mismatch": "Lozinke se ne podudaraju",
+      "forgot": "Zaboravili ste lozinku?",
+      "resetTitle": "Oporavak lozinke",
+      "step1Sub": "Potvrdimo da ste to vi",
+      "step2Sub": "Kôd je poslan na {{email}}",
+      "step3Sub": "Odaberite novu lozinku",
+      "resetIntro": "Poslat ćemo 6-znamenkasti kôd na e-adresu vašeg računa. Ne morate znati trenutačnu lozinku — kôd dokazuje da je sandučić vaš.",
+      "sendCode": "Pošalji kôd",
+      "back": "Natrag",
+      "save": "Spremi lozinku",
+      "resetDone": "Lozinka je ažurirana",
+      "resetLogoutHint": "Ostali će uređaji biti odjavljeni — na ovome ostajete prijavljeni.",
+      "rules": {
+        "len": "8+ znakova",
+        "letter": "Sadrži slovo",
+        "digit": "Sadrži znamenku",
+        "simple": "Bez 111 ili qwerty"
+      }
+    },
+    "sessions": {
+      "title": "Aktivne sesije",
+      "sub": "Gdje je vaš račun trenutačno prijavljen",
+      "count": "{{count}} uređaja",
+      "manage": "Upravljaj",
+      "hide": "Sakrij",
+      "current": "Trenutačna",
+      "terminate": "Prekini",
+      "terminateAll": "Prekini sve ostale sesije",
+      "terminatedToast": "Sesija je uspješno prekinuta",
+      "terminatedAllToast": "Ostale sesije su prekinute",
+      "justNow": "Aktivno sada",
+      "minutesAgo": "prije {{count}} min",
+      "hoursAgo": "prije {{count}} h",
+      "daysAgo": "prije {{count}} d",
+      "unknownLocation": "Nepoznato"
+    },
+    "otp": {
+      "sentHint": "Poslali smo 6-znamenkasti kôd na vašu e-poštu. Unesite ga u nastavku.",
+      "resend": "Ponovno pošalji kôd",
+      "resendIn": "Ponovno pošalji za {{count}} s",
+      "confirm": "Potvrdi",
+      "cancel": "Odustani",
+      "sendCode": "Pošalji kôd",
+      "continue": "Nastavi"
+    },
+    "danger": {
+      "title": "Upravljanje podacima (opasna zona)",
+      "export": {
+        "title": "Izvezi sve podatke",
+        "sub": "Preuzmite arhivu baze klijenata i povijesti",
+        "prepare": "Pripremi arhivu",
+        "hide": "Sakrij",
+        "clients": "Baza klijenata (CSV)",
+        "finances": "Financijske transakcije",
+        "schedule": "Termini i raspored",
+        "start": "Pokreni izvoz",
+        "started": "Arhiva se priprema, poveznica će biti poslana na vašu e-poštu",
+        "emptySelection": "Odaberite barem jedan odjeljak za izvoz"
+      },
+      "wipe": {
+        "title": "Obriši bazu podataka",
+        "sub": "Briše sve klijente i rezervacije. Postavke ostaju sačuvane.",
+        "action": "Obriši podatke",
+        "toast": "Baza podataka je uspješno obrisana",
+        "consequence1": "Trajno se brišu: klijenti, termini, rezervacije, transakcije, dokumenti, pretplate klijenata, povijest vjernosti",
+        "consequence2": "Ne mijenjaju se: studio, podružnice, {{spacePlural}}, usluge, osoblje, pretplata i postavke",
+        "consequence3": "Ova je radnja nepovratna — nakon potvrde ne može se poništiti"
+      },
+      "deleteAccount": {
+        "title": "Izbriši račun tvrtke",
+        "sub": "Potpuno i nepovratno uništenje poslovanja u sustavu",
+        "action": "Izbriši zauvijek",
+        "consequence1": "Studio i svi njegovi podaci bit će trajno izbrisani, uključujući klijente, termine, financije i postavke",
+        "consequence2": "Vaš osobni račun ostaje — briše se samo ovaj studio",
+        "consequence3": "Brisanje nije dostupno uz aktivnu pretplatu ili ako studio ima druge vlasnike"
+      }
+    }
+  },
+  "integrations": {
+    "title": "Integracije",
+    "subtitle": "Povežite vanjske kanale i ekosustave jednim klikom",
+    "loadError": "Učitavanje statusa integracija nije uspjelo",
+    "items": {
+      "telegram": {
+        "name": "Telegram bot",
+        "sub": "Obavijesti klijentima i rezervacije putem bota"
+      },
+      "whatsapp": {
+        "name": "WhatsApp Business",
+        "sub": "Masovne poruke i automatske obavijesti klijentima"
+      },
+      "instagram": {
+        "name": "Instagram Direct",
+        "sub": "AI agent za automatske odgovore i online rezervacije"
+      },
+      "google_calendar": {
+        "name": "Google Calendar",
+        "sub": "Sinkronizacija rasporeda studija"
+      }
+    },
+    "status": {
+      "connected": "Povezano",
+      "notActive": "Nije povezano"
+    },
+    "actions": {
+      "configure": "Konfiguriraj",
+      "connect": "Poveži",
+      "disconnect": "Odspoji"
+    },
+    "fields": {
+      "keyLabel": "Ključ",
+      "connectedAtLabel": "Povezano",
+      "telegramToken": "API token bota (od @BotFather)",
+      "telegramTokenPh": "123456789:ABCDefGhIJKlmNoPQRsTUVwxyZ",
+      "whatsappToken": "Pristupni token",
+      "whatsappTokenPh": "EAAxxxxxxxxxxxxx",
+      "whatsappPhoneId": "ID telefonskog broja",
+      "whatsappPhoneIdPh": "1029384756",
+      "whatsappWabaId": "WABA ID (neobavezno)",
+      "whatsappWabaIdPh": "1029384756",
+      "instagramToken": "Pristupni token",
+      "instagramTokenPh": "IGQWR...",
+      "instagramUserId": "ID poslovnog Instagram računa",
+      "instagramUserIdPh": "17841400000000000"
+    },
+    "guide": {
+      "howToTitle": "Kako povezati",
+      "telegram": {
+        "steps": [
+          "Otvorite @BotFather u Telegramu i pošaljite /newbot",
+          "Odaberite ime i korisničko ime za bot — BotFather će vam poslati API token",
+          "Zalijepite token ispod i kliknite Poveži"
+        ]
+      },
+      "whatsapp": {
+        "steps": [
+          "Stvorite aplikaciju u Meta for Developers i dodajte proizvod WhatsApp",
+          "U API Setup kopirajte privremeni ili trajni pristupni token",
+          "Kopirajte i ID telefonskog broja testnog ili potvrđenog broja",
+          "Zalijepite obje vrijednosti ispod i kliknite Poveži"
+        ]
+      },
+      "instagram": {
+        "steps": [
+          "Povežite Instagram račun studija s Facebook stranicom — to je potrebno za Direct API",
+          "Stvorite aplikaciju u Meta for Developers s proizvodom Instagram Graph API",
+          "Izradite pristupni token s dozvolama instagram_basic i instagram_manage_messages",
+          "Kopirajte ID poslovnog Instagram računa i token te ih zalijepite ispod",
+          "Bez Meta odobrenja veza radi samo za testne račune aplikacije"
+        ]
+      },
+      "google_calendar": {
+        "steps": [
+          "Kliknite Poveži — otvorit će se prozor za prijavu u Google",
+          "Odaberite račun s kojim je povezan kalendar studija",
+          "Odobrite pristup kalendaru — termini će se početi automatski prikazivati u njemu"
+        ]
+      }
+    },
+    "capabilities": {
+      "notify": "obavijesti klijentima na ovom kanalu",
+      "booking": "online rezerviranje putem ovog kanala",
+      "dm_agent": "AI agent za automatske odgovore u Directu",
+      "schedule_sync": "sinkronizacija rasporeda s Google Calendarom"
+    },
+    "disconnect": {
+      "title": "Odspojiti {{name}}?",
+      "willStop": "Ovo će prestati raditi:",
+      "checkbox": "Razumijem posljedice",
+      "cancel": "Odustani",
+      "confirm": "Odspoji"
+    },
+    "google": {
+      "connected": "Google Calendar je povezan",
+      "denied": "Pristup Google Calendaru nije odobren",
+      "error": "Povezivanje s Google Calendarom nije uspjelo",
+      "primary": "glavni",
+      "calendar": "Kalendar",
+      "selectCalendar": "Odaberite kalendar",
+      "loadingCalendars": "Učitavanje kalendara…",
+      "syncMode": "Način sinkronizacije",
+      "syncModeOptions": {
+        "push": "Samo iz CRM-a u Google",
+        "two_way": "Dvosmjerno"
+      },
+      "syncNow": "Sinkroniziraj sada",
+      "lastSync": "Zadnja sinkronizacija: {{date}}",
+      "neverSynced": "Još nije sinkronizirano",
+      "timezoneWarning": "Vremenska zona studija nije postavljena — događaji se šalju u UTC-u i mogu odstupati od stvarnih termina. Postavite vremensku zonu u odjeljku Općenito.",
+      "syncResult": "Sinkronizirano: poslano {{pushed}}, preuzeto {{pulled}}",
+      "settingsSaved": "Postavke Google Calendara su spremljene"
+    },
+    "toast": {
+      "connected": "Integracija je povezana",
+      "disconnected": "Integracija je odspojena"
+    }
+  },
+  "data": {
+    "export": {
+      "title": "Izvezi izvještaje i popise",
+      "subtitle": "Preuzmite datoteke u tabličnim formatima za računovodstvo i analitiku",
+      "clearFilter": "Očisti razdoblje",
+      "items": {
+        "clients": {
+          "name": "Popis klijenata"
+        },
+        "schedule": {
+          "name": "Povijest dnevnika i rezervacija"
+        },
+        "finances": {
+          "name": "Financijski izvještaj"
+        },
+        "subscriptions": {
+          "name": "Pretplate klijenata"
+        }
+      },
+      "rows_one": "{{count}} zapis",
+      "rows_few": "{{count}} zapisa",
+      "rows_other": "{{count}} zapisa",
+      "loading": "Učitavanje...",
+      "empty": "nema podataka za ovo razdoblje"
+    }
+  }
+}

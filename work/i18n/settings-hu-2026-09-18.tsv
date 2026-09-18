@@ -1,0 +1,333 @@
+== hu
+nav.sectionLabel	Rendszerbeállítások
+nav.general	Általános
+nav.appearance	Megjelenés
+nav.notifications	Értesítések
+nav.billing	Számlázás
+nav.security	Biztonság
+nav.integrations	Integrációk
+nav.data	Adatok
+nav.logout	CRM váltása
+toast.saved	Mentve
+toast.error	Hiba történt
+workspace.title	Az Ön CRM-rendszerei
+workspace.subtitle	Válasszon munkaterületet, vagy hozzon létre újat
+workspace.current	Jelenlegi
+workspace.membersCount_one	{{count}} tag
+workspace.membersCount_other	{{count}} tag
+workspace.clientsCount_one	{{count}} ügyfél
+workspace.clientsCount_other	{{count}} ügyfél
+workspace.createNew	Új stúdió létrehozása
+workspace.loadError	A stúdiók betöltése nem sikerült
+workspace.selectError	Nem lehet erre a stúdióra váltani
+general.company.title	Cégadatok
+general.company.subtitle	Nyilvános információk a vállalkozásáról
+general.company.name	Cégnév
+general.company.namePh	pl. Az én stúdióm
+general.company.desc	Leírás
+general.company.descPh	Mivel foglalkozik a stúdiója…
+general.company.phone	Telefon
+general.company.email	E-mail
+general.company.site	Webhely
+general.company.sitePh	https://studio.com
+general.company.address	Cím
+general.company.addressPh	Példa utca 123., város
+general.reset	Visszaállítás
+general.resetToast	Beállítások visszaállítva
+general.locale.title	Nyelv és régió
+general.locale.subtitle	Felület lokalizációs beállításai
+general.locale.timezone	Időzóna
+general.locale.timezoneSearch	Város vagy eltérés
+general.locale.timezoneNotFound	Nem található időzóna
+general.locale.currency	Pénznem
+general.locale.currencySearch	Pénznem vagy kód keresése
+general.locale.currencyNotFound	Nem található pénznem
+general.locale.language	Felület nyelve
+general.locale.languageSearch	Nyelv keresése
+general.locale.languageNotFound	Nem található nyelv
+general.locale.dateFormat	Dátumformátum
+general.locale.firstDay	A hét első napja
+general.locale.firstDayLabels.0	Hétfő
+general.locale.firstDayLabels.1	Vasárnap
+general.booking.title	Foglalási modell
+general.booking.subtitle	Így foglalnak Önhöz az ügyfelek
+general.booking.mode	Foglalási modell
+general.booking.modeHint	Események — az ügyfelek egy meghirdetett órára jelentkeznek. Egyéni — az ügyfél szakembert és időpontot választ. Vegyes — a kettő együtt.
+general.booking.profile	Ágazati szóhasználat
+general.booking.profileHint	Kiválasztja a személyzethez és ajánlatokhoz használt szavakat. Csak a megfogalmazást módosítja — a szerepköröket, árakat vagy foglalási modellt soha.
+general.booking.strict	Szigorú időbeosztás
+general.booking.strictHint	Megtiltja egy szakember vagy kizárólagos tér dupla foglalását. Az egyéni foglalás bekapcsolása előtt kötelező.
+general.booking.spaceAxis	{{spacePlural}} használata az időbeosztásban
+general.booking.spaceAxisHint	Kikapcsolva — az ügyfél személyt foglal, a térnek nincs oszlopa a naplóban. Bekapcsolva — az óra egy térhez kapcsolódik.
+general.booking.spaceAxisDefaultOn	Alapértelmezés az Ön ágazatában: be
+general.booking.spaceAxisDefaultOff	Alapértelmezés az Ön ágazatában: ki
+general.booking.modes.event	Események
+general.booking.modes.resource	Egyéni
+general.booking.modes.hybrid	Vegyes
+general.booking.profiles.studio	Csoportos foglalkozások és stúdiók
+general.booking.profiles.sport	Sport és edzőtermek
+general.booking.profiles.beauty	Szépség és ápolás
+general.booking.profiles.recovery	Test és regeneráció
+general.booking.profiles.relax	Spa és kikapcsolódás
+general.booking.profiles.other	Egyéb
+general.booking.preview.event	Esemény
+general.booking.preview.resource	Egyéni
+general.booking.errors.AUDIT_BLOCKED	Az időbeosztás olyan foglalásokat tartalmaz, amelyek nem egyeztethetők össze a szigorú időbeosztással.
+general.booking.errors.STRICT_SCHEDULE_REQUIRED	Előbb kapcsolja be a szigorú időbeosztást.
+general.booking.errors.RESOURCE_HISTORY_EXISTS	A szigorú időbeosztás nem kapcsolható ki: a stúdiónak vannak egyéni foglalásai.
+general.booking.findings.overlap	Átfedő foglalások
+general.booking.findings.unknown_timezone	Ismeretlen időzóna
+general.booking.findings.undefined_branch	Nincs beállítva telephely
+general.booking.findings.invalid_duration	Érvénytelen időtartam
+general.booking.findings.invalid_resource_row	Hiányos egyéni foglalás
+general.booking.findings.missing_branch_assignment	A szakember nincs telephelyhez rendelve
+general.booking.findings.missing_working_hours	A szakembernek nincs munkaideje
+general.booking.findings.inactive_specialist	A szakember inaktív
+general.booking.findings.other	Felülvizsgálat szükséges
+appearance.theme.title	Téma
+appearance.theme.subtitle	Válassza ki a felület vizuális stílusát
+appearance.theme.light	Világos
+appearance.theme.dark	Sötét
+appearance.theme.auto	Rendszer
+appearance.accent.title	Kiemelőszín
+appearance.accent.subtitle	Szabja személyre a felület fő színét
+appearance.accent.note	A választása mentve van, de még nem jelenik meg a felületen — egy jövőbeli frissítésben érkezik.
+appearance.accent.noteTitle	Hamarosan
+appearance.accent.colors.peach	Barack
+appearance.accent.colors.pistachio	Pisztácia
+appearance.accent.colors.lavender	Levendula
+appearance.accent.colors.pink	Rózsaszín
+appearance.accent.colors.gold	Arany
+appearance.accent.colors.mint	Menta
+appearance.language.title	Felület nyelve
+appearance.language.subtitle	Az Ön személyes nyelve — nem érinti a stúdió beállításait
+appearance.language.search	Nyelv keresése
+appearance.language.empty	Nem található nyelv
+notifications.myPrefs.title	Értesítéseim
+notifications.myPrefs.subtitle	Személyes beállítások — nem érintik a stúdió többi részét
+notifications.myPrefs.hint	A kötelező értesítések nem kapcsolhatók ki — ezek gondoskodnak arról, hogy ne maradjon le az időbeosztás változásairól és a fizetésekről.
+notifications.myPrefs.empty	Az Ön szerepköréhez nincsenek választható értesítések
+notifications.myPrefs.channels.email	E-mail
+notifications.myPrefs.channels.telegram	Telegram
+notifications.myPrefs.channels.whatsapp	WhatsApp
+notifications.telegram.title	Telegram értesítésekhez
+notifications.telegram.subtitle	Hová küldjük Önnek személyesen az eseményeket — foglalásokat, bérszámfejtést, jelentéseket
+notifications.telegram.chatId	Az Ön Telegram chat_id azonosítója
+notifications.telegram.chatIdPh	pl. 123456789
+notifications.telegram.hintBefore	A chat_id azonosítóját a botnál találja: 
+notifications.telegram.hintAfter	 a Telegramban — indítson vele beszélgetést, és elküldi az azonosítóját.
+notifications.telegram.invalidChatId	A Telegram chat_id csak szám lehet, szimbólumok nélkül
+notifications.telegram.saved	A Telegram kapcsolódott az értesítésekhez
+notifications.telegram.saveFailed	A Telegram mentése nem sikerült
+notifications.email.title	E-mail értesítésekhez
+notifications.email.subtitle	Hová küldjük a rendszer e-mailjeit
+notifications.email.primary	Elsődleges e-mail
+notifications.email.backup	Tartalék e-mail
+notifications.email.backupPh	backup@studio.com
+notifications.email.saved	Értesítési beállítások mentve
+billing.plans.start	Start
+billing.plans.pro	Pro
+billing.plans.business	Business
+billing.plans.free_trial	Ingyenes próbaidőszak
+billing.status.active	Aktív
+billing.status.trial	Próbaidőszak
+billing.status.expired	Lejárt
+billing.plan.title	Jelenlegi csomag
+billing.plan.expiresAt	Aktív eddig: {{date}}
+billing.plan.maxStaff	Legfeljebb {{count}} munkatárs
+billing.plan.staffUnlimited	Korlátlan számú munkatárs
+billing.plan.noSubscription	Nincs aktív előfizetés
+billing.plan.noSubscriptionCta	Csomag kiválasztása
+billing.plan.trialCta	Csomag kiválasztása
+billing.upgrade	Váltás erre: {{plan}}
+billing.renew	Megújítás
+billing.autopay.title	Automatikus megújítás
+billing.autopay.subtitle	A mentett kártyáját terheljük
+billing.autopay.autoRenew	Automatikus megújítás
+billing.autopay.notifyBefore	{{count}} nappal a terhelés előtt emlékeztetjük
+billing.payment.title	Fizetési mód
+billing.payment.cardSummary	Kártya •••• {{last4}}
+billing.payment.notLinked	Nincs kapcsolt kártya
+billing.payment.change	Módosítás
+billing.history.title	Fizetési előzmények
+billing.history.subtitle	Az utolsó 12 fizetés
+billing.history.exportCsv	CSV exportálása
+billing.history.empty	Még nincs fizetés
+billing.history.showAll	Összes megjelenítése
+billing.history.period	{{count}} hó
+billing.history.noDate	—
+billing.history.status.paid	Fizetve
+billing.history.status.pending	Függőben
+billing.history.status.failed	Nincs kifizetve
+billing.history.status.refunded	Visszatérítve
+billing.toast.autopaySaved	Az automatikus megújítás beállításai mentve
+billing.toast.renewed	A megújítás elindult
+billing.toast.csvExportError	A CSV exportálása nem sikerült
+security.account.title	Fiókbiztonság
+security.account.subtitle	Védje a munkaterületéhez való hozzáférést
+security.twoFa.title	Kétlépcsős hitelesítés
+security.twoFa.sub	E-mailes kód minden bejelentkezésnél
+security.twoFa.active	Aktív
+security.twoFa.disabled	Kikapcsolva
+security.twoFa.enableTitle	2FA bekapcsolása
+security.twoFa.disableTitle	2FA kikapcsolása
+security.twoFa.enableWarning	Bekapcsolás után minden bejelentkezéshez szükség lesz a {{email}} címre küldött kódra. Győződjön meg róla, hogy hozzáfér — különben elveszítheti a fiókjához való hozzáférést.
+security.twoFa.disableWarning	Kikapcsolás után e-mailes kód nélkül, csak a jelszóval is bejelentkezhet.
+security.twoFa.enabledToast	A kétlépcsős hitelesítés be van kapcsolva
+security.twoFa.disabledToast	A kétlépcsős hitelesítés ki van kapcsolva
+security.password.title	Fiókjelszó
+security.password.sub	A módosítást e-mailes kód erősíti meg
+security.password.change	Jelszó módosítása
+security.password.changed	A jelszó sikeresen módosítva
+security.password.current	Jelenlegi jelszó
+security.password.currentPh	Adja meg jelenlegi jelszavát
+security.password.new	Új jelszó
+security.password.newPh	Legalább 8 karakter
+security.password.repeat	Jelszó megismétlése
+security.password.repeatPh	Adja meg újra az új jelszót
+security.password.mismatch	A jelszavak nem egyeznek
+security.password.forgot	Elfelejtette a jelszavát?
+security.password.resetTitle	Jelszó-helyreállítás
+security.password.step1Sub	Erősítsük meg, hogy Ön az
+security.password.step2Sub	A kódot erre a címre küldtük: {{email}}
+security.password.step3Sub	Válasszon új jelszót
+security.password.resetIntro	Egy 6 számjegyű kódot küldünk a fiókjához tartozó e-mail-címre. Nem kell ismernie a jelenlegi jelszót — a kód igazolja, hogy a postafiók az Öné.
+security.password.sendCode	Kód küldése
+security.password.back	Vissza
+security.password.save	Jelszó mentése
+security.password.resetDone	Jelszó frissítve
+security.password.resetLogoutHint	A többi eszköz kijelentkezik — ezen az eszközön bejelentkezve marad.
+security.password.rules.len	8+ karakter
+security.password.rules.letter	Van benne betű
+security.password.rules.digit	Van benne számjegy
+security.password.rules.simple	Ne legyen 111 vagy qwerty
+security.sessions.title	Aktív munkamenetek
+security.sessions.sub	Ahol a fiókja jelenleg be van jelentkezve
+security.sessions.count	{{count}} eszköz
+security.sessions.manage	Kezelés
+security.sessions.hide	Elrejtés
+security.sessions.current	Jelenlegi
+security.sessions.terminate	Megszakítás
+security.sessions.terminateAll	Az összes többi munkamenet megszakítása
+security.sessions.terminatedToast	A munkamenet sikeresen megszakítva
+security.sessions.terminatedAllToast	A többi munkamenet megszakítva
+security.sessions.justNow	Most aktív
+security.sessions.minutesAgo	{{count}} perce
+security.sessions.hoursAgo	{{count}} órája
+security.sessions.daysAgo	{{count}} napja
+security.sessions.unknownLocation	Ismeretlen
+security.otp.sentHint	Küldtünk egy 6 számjegyű kódot az e-mail-címére. Adja meg alább.
+security.otp.resend	Kód újraküldése
+security.otp.resendIn	Újraküldés {{count}} mp múlva
+security.otp.confirm	Megerősítés
+security.otp.cancel	Mégse
+security.otp.sendCode	Kód küldése
+security.otp.continue	Folytatás
+security.danger.title	Adatkezelés (veszélyzóna)
+security.danger.export.title	Összes adat exportálása
+security.danger.export.sub	Töltse le az ügyféladatbázis és az előzmények archívumát
+security.danger.export.prepare	Archívum előkészítése
+security.danger.export.hide	Elrejtés
+security.danger.export.clients	Ügyféladatbázis (CSV)
+security.danger.export.finances	Pénzügyi tranzakciók
+security.danger.export.schedule	Órák és időbeosztás
+security.danger.export.start	Export indítása
+security.danger.export.started	Az archívum előkészítése folyamatban van, a linket e-mailben küldjük el
+security.danger.export.emptySelection	Válasszon legalább egy exportálandó részt
+security.danger.wipe.title	Adatbázis törlése
+security.danger.wipe.sub	Törli az összes ügyfelet és foglalást. A beállítások megmaradnak.
+security.danger.wipe.action	Adatok törlése
+security.danger.wipe.toast	Az adatbázis sikeresen törölve
+security.danger.wipe.consequence1	Végleg törlődik: ügyfelek, órák, foglalások, műveletek, dokumentumok, ügyfél-előfizetések, hűségelőzmények
+security.danger.wipe.consequence2	Változatlan marad: stúdió, telephelyek, {{spacePlural}}, szolgáltatások, személyzet, előfizetés és beállítások
+security.danger.wipe.consequence3	Ez a művelet visszafordíthatatlan — jóváhagyás után nem vonható vissza
+security.danger.deleteAccount.title	Vállalati fiók törlése
+security.danger.deleteAccount.sub	A vállalkozás teljes és visszafordíthatatlan törlése a rendszerből
+security.danger.deleteAccount.action	Végleges törlés
+security.danger.deleteAccount.consequence1	A stúdió és minden adata végleg törlődik, beleértve az ügyfeleket, órákat, pénzügyeket és beállításokat
+security.danger.deleteAccount.consequence2	Személyes fiókja megmarad — csak ez a stúdió törlődik
+security.danger.deleteAccount.consequence3	Törlés nem érhető el aktív előfizetés esetén, vagy ha a stúdiónak más tulajdonosai is vannak
+integrations.title	Integrációk
+integrations.subtitle	Külső csatornák és ökoszisztémák kapcsolása egy kattintással
+integrations.loadError	Az integrációk állapotának betöltése nem sikerült
+integrations.items.telegram.name	Telegram bot
+integrations.items.telegram.sub	Ügyfélértesítések és foglalás boton keresztül
+integrations.items.whatsapp.name	WhatsApp Business
+integrations.items.whatsapp.sub	Tömeges üzenetek és automatikus ügyfélértesítések
+integrations.items.instagram.name	Instagram Direct
+integrations.items.instagram.sub	AI-ügynök automatikus válaszokhoz és online foglaláshoz
+integrations.items.google_calendar.name	Google Calendar
+integrations.items.google_calendar.sub	Stúdióidőbeosztás szinkronizálása
+integrations.status.connected	Kapcsolódva
+integrations.status.notActive	Nincs kapcsolódva
+integrations.actions.configure	Beállítás
+integrations.actions.connect	Kapcsolódás
+integrations.actions.disconnect	Leválasztás
+integrations.fields.keyLabel	Kulcs
+integrations.fields.connectedAtLabel	Kapcsolódva
+integrations.fields.telegramToken	Bot API-token (a @BotFather-től)
+integrations.fields.telegramTokenPh	123456789:ABCDefGhIJKlmNoPQRsTUVwxyZ
+integrations.fields.whatsappToken	Hozzáférési token
+integrations.fields.whatsappTokenPh	EAAxxxxxxxxxxxxx
+integrations.fields.whatsappPhoneId	Telefonszám-azonosító
+integrations.fields.whatsappPhoneIdPh	1029384756
+integrations.fields.whatsappWabaId	WABA-azonosító (opcionális)
+integrations.fields.whatsappWabaIdPh	1029384756
+integrations.fields.instagramToken	Hozzáférési token
+integrations.fields.instagramTokenPh	IGQWR...
+integrations.fields.instagramUserId	Instagram üzleti fiók azonosítója
+integrations.fields.instagramUserIdPh	17841400000000000
+integrations.guide.howToTitle	Kapcsolódás menete
+integrations.guide.telegram.steps.0	Nyissa meg a @BotFather botot a Telegramban, és küldje el: /newbot
+integrations.guide.telegram.steps.1	Válasszon nevet és felhasználónevet a botnak — a BotFather API-tokent küld
+integrations.guide.telegram.steps.2	Illessze be a tokent alább, és kattintson a Kapcsolódásra
+integrations.guide.whatsapp.steps.0	Hozzon létre alkalmazást a Meta for Developersben, és adja hozzá a WhatsApp terméket
+integrations.guide.whatsapp.steps.1	Az API Setupban másolja ki az ideiglenes vagy állandó hozzáférési tokent
+integrations.guide.whatsapp.steps.2	Másolja ki a teszt- vagy hitelesített szám telefonszám-azonosítóját is
+integrations.guide.whatsapp.steps.3	Illessze be mindkét értéket alább, és kattintson a Kapcsolódásra
+integrations.guide.instagram.steps.0	Kapcsolja a stúdió Instagram-fiókját egy Facebook-oldalhoz — ez szükséges a Direct API-hoz
+integrations.guide.instagram.steps.1	Hozzon létre alkalmazást a Meta for Developersben Instagram Graph API termékkel
+integrations.guide.instagram.steps.2	Hozzon létre hozzáférési tokent instagram_basic és instagram_manage_messages jogosultsággal
+integrations.guide.instagram.steps.3	Másolja ki az Instagram üzleti fiók azonosítóját és a tokent, majd illessze be alább
+integrations.guide.instagram.steps.4	Meta-felülvizsgálat nélkül a kapcsolat csak az alkalmazás tesztfiókjain működik
+integrations.guide.google_calendar.steps.0	Kattintson a Kapcsolódásra — megnyílik a Google bejelentkezési ablaka
+integrations.guide.google_calendar.steps.1	Válassza ki azt a fiókot, amelyhez a stúdió naptára kapcsolódik
+integrations.guide.google_calendar.steps.2	Adjon hozzáférést a naptárhoz — az órák automatikusan megjelennek benne
+integrations.capabilities.notify	ügyfélértesítések ezen a csatornán
+integrations.capabilities.booking	online foglalás ezen a csatornán
+integrations.capabilities.dm_agent	AI-ügynök automatikus válaszokhoz a Directben
+integrations.capabilities.schedule_sync	időbeosztás-szinkronizálás a Google Calendarrel
+integrations.disconnect.title	Leválasztja ezt: {{name}}?
+integrations.disconnect.willStop	Ez nem fog tovább működni:
+integrations.disconnect.checkbox	Értem a következményeket
+integrations.disconnect.cancel	Mégse
+integrations.disconnect.confirm	Leválasztás
+integrations.google.connected	A Google Calendar kapcsolódott
+integrations.google.denied	A Google Calendar hozzáférése nem lett megadva
+integrations.google.error	Nem sikerült kapcsolódni a Google Calendarhoz
+integrations.google.primary	elsődleges
+integrations.google.calendar	Naptár
+integrations.google.selectCalendar	Válasszon naptárt
+integrations.google.loadingCalendars	Naptárak betöltése…
+integrations.google.syncMode	Szinkronizálási mód
+integrations.google.syncModeOptions.push	Csak CRM-ből Google-ba
+integrations.google.syncModeOptions.two_way	Kétirányú
+integrations.google.syncNow	Szinkronizálás most
+integrations.google.lastSync	Utoljára szinkronizálva: {{date}}
+integrations.google.neverSynced	Még nincs szinkronizálva
+integrations.google.timezoneWarning	A stúdió időzónája nincs beállítva — az események UTC-ben kerülnek elküldésre, és eltérhetnek a tényleges óraidőktől. Az időzónát az Általános résznél állíthatja be.
+integrations.google.syncResult	Szinkronizálva: {{pushed}} elküldve, {{pulled}} fogadva
+integrations.google.settingsSaved	A Google Calendar beállításai mentve
+integrations.toast.connected	Az integráció kapcsolódott
+integrations.toast.disconnected	Az integráció leválasztva
+data.export.title	Jelentések és listák exportálása
+data.export.subtitle	Táblázatos formátumú fájlok letöltése könyveléshez és elemzéshez
+data.export.clearFilter	Időszak törlése
+data.export.items.clients.name	Ügyféllista
+data.export.items.schedule.name	Napló- és foglalási előzmények
+data.export.items.finances.name	Pénzügyi jelentés
+data.export.items.subscriptions.name	Ügyfél-előfizetések
+data.export.rows_one	{{count}} rekord
+data.export.rows_other	{{count}} rekord
+data.export.loading	Betöltés...
+data.export.empty	nincs adat ehhez az időszakhoz

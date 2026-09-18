@@ -439,3 +439,1052 @@ namespace (`notifications`) across the languages that do not yet contain it.
 
 - Built and strictly verified the 240-value Finnish `notifications.json`
   from `notifications-fi-2026-09-17.tsv`, including Finnish plural forms.
+
+## 2026-09-17 — notifications / Norwegian batch
+
+- Built and strictly verified the 240-value Norwegian Bokmål
+  `notifications.json` from `notifications-no-2026-09-17.tsv`, including
+  Norwegian plural forms.
+
+## 2026-09-17 — notifications / Greek batch
+
+- Built and strictly verified the 240-value Greek `notifications.json` from
+  `notifications-el-2026-09-17.tsv`, including Greek plural forms.
+
+## 2026-09-17 — notifications / Hungarian batch
+
+- Built and strictly verified the 240-value Hungarian `notifications.json`
+  from `notifications-hu-2026-09-17.tsv`, including Hungarian plural forms.
+
+## 2026-09-17 — notifications / Polish batch
+
+- Built and strictly verified the 247-value Polish `notifications.json` from
+  `notifications-pl-2026-09-17.tsv`, including Polish plural forms.
+
+## 2026-09-17 — notifications / Romanian batch
+
+- Built and strictly verified the 247-value Romanian `notifications.json`
+  from `notifications-ro-2026-09-17.tsv`, including Romanian plural forms.
+
+## 2026-09-17 — notifications / Serbian batch
+
+- Built and strictly verified the 247-value Serbian Cyrillic
+  `notifications.json` from `notifications-sr-2026-09-17.tsv`, including
+  Serbian plural forms.
+
+## 2026-09-17 — notifications / Swedish batch
+
+- Built and strictly verified the 240-value Swedish `notifications.json` from
+  `notifications-sv-2026-09-17.tsv`, including Swedish plural forms.
+
+## 2026-09-17 — notifications / Turkish batch
+
+- Built and strictly verified the 240-value Turkish `notifications.json` from
+  `notifications-tr-2026-09-17.tsv`, including Turkish plural forms.
+
+### Next concrete step
+
+Ran the full strict validation checkpoint: 102 required locale files remain
+missing and there are zero non-missing validation errors. Continue the next
+required missing namespace (`ai`) across incomplete UI languages, beginning
+with Albanian.
+
+## 2026-09-17 — AI / Albanian batch
+
+- Built and strictly verified the 286-value Albanian `ai.json` from
+  `ai-sq-2026-09-17.tsv`, including Albanian plural forms.
+
+### Next concrete step
+
+Continue the AI namespace with Bulgarian.
+
+## 2026-09-17 — AI / Bulgarian batch
+
+- Built and strictly verified the 286-value Bulgarian `ai.json` from
+  `ai-bg-2026-09-17.tsv`, including Bulgarian plural forms.
+
+### Next concrete step
+
+Continue the AI namespace with Croatian.
+
+## 2026-09-17 — AI / Croatian batch
+
+- Built and strictly verified the 291-value Croatian `ai.json` from
+  `ai-hr-2026-09-17.tsv`, including Croatian plural forms.
+
+### Next concrete step
+
+Continue the AI namespace with Danish.
+
+## 2026-09-17 — AI / Danish batch
+
+- Built and strictly verified the 286-value Danish `ai.json` from
+  `ai-da-2026-09-17.tsv`, including Danish plural forms.
+
+### Next concrete step
+
+Continue the AI namespace with Finnish.
+
+## 2026-09-17 — AI / Finnish batch
+
+- Built and strictly verified the 286-value Finnish `ai.json` from
+  `ai-fi-2026-09-17.tsv`, including Finnish plural forms.
+
+### Next concrete step
+
+Continue the AI namespace with French.
+
+## 2026-09-17 — AI / French batch
+
+- Built and strictly verified the 286-value French `ai.json` from
+  `ai-fr-2026-09-17.tsv`, including French plural forms.
+
+### Next concrete step
+
+Continue the AI namespace with Greek.
+
+## 2026-09-17 — AI / Greek batch
+
+- Built and strictly verified the 286-value Greek `ai.json` from
+  `ai-el-2026-09-17.tsv`, including Greek plural forms.
+
+### Next concrete step
+
+Continue the AI namespace with Hungarian.
+
+## 2026-09-17 — AI / Hungarian batch
+
+- Built and strictly verified the 286-value Hungarian `ai.json` from
+  `ai-hu-2026-09-17.tsv`, including Hungarian plural forms.
+
+### Next concrete step
+
+Continue the AI namespace with Italian.
+
+## 2026-09-17 — AI / Italian batch
+
+- Built and strictly verified the 286-value Italian `ai.json` from
+  `ai-it-2026-09-17.tsv`, including Italian plural forms.
+
+### Next concrete step
+
+Continue the AI namespace with Norwegian.
+
+## 2026-09-17 — AI / Norwegian batch
+
+- Built and strictly verified the 286-value Norwegian `ai.json` from
+  `ai-no-2026-09-17.tsv`, including Norwegian plural forms.
+
+### Next concrete step
+
+Continue the AI namespace with Polish.
+
+## 2026-09-17 — AI / Polish batch
+
+- Built and strictly verified the 291-value Polish `ai.json` from
+  `ai-pl-2026-09-17.tsv`, including Polish plural forms.
+
+### Next concrete step
+
+Continue the AI namespace with Portuguese.
+
+## 2026-09-17 — AI / Portuguese batch
+
+- Built and strictly verified the 286-value Portuguese `ai.json` from
+  `ai-pt-2026-09-17.tsv`, including Portuguese plural forms.
+
+### Next concrete step
+
+Continue the AI namespace with Romanian.
+
+## 2026-09-17 — AI / Romanian batch
+
+- Built and strictly verified the 291-value Romanian `ai.json` from
+  `ai-ro-2026-09-17.tsv`, including Romanian plural forms.
+
+### Next concrete step
+
+Continue the AI namespace with Serbian.
+
+## 2026-09-17 — AI / Serbian batch
+
+- Built and strictly verified the 291-value Serbian Cyrillic `ai.json` from
+  `ai-sr-2026-09-17.tsv`, including Serbian plural forms.
+
+### Next concrete step
+
+Continue the AI namespace with Spanish.
+
+## 2026-09-17 — AI / Spanish batch
+
+- Built and strictly verified the 286-value Spanish `ai.json` from
+  `ai-es-2026-09-17.tsv`, including Spanish plural forms.
+
+### Next concrete step
+
+Continue the AI namespace with Swedish.
+
+## 2026-09-17 — AI / Swedish batch
+
+- Built and strictly verified the 286-value Swedish `ai.json` from
+  `ai-sv-2026-09-17.tsv`, including Swedish plural forms.
+
+### Next concrete step
+
+Continue the AI namespace with Turkish.
+
+## 2026-09-17 — AI / Turkish batch
+
+- Built and strictly verified the 286-value Turkish `ai.json` from
+  `ai-tr-2026-09-17.tsv`, including Turkish plural forms.
+- The complete strict validator now reports 85 required files missing and zero
+  non-missing errors. The `ai` namespace is complete for all 22 UI languages.
+
+### Next concrete step
+
+Continue the next incomplete namespace (`billing`) across the remaining 17
+UI languages.
+
+## 2026-09-17 — billing / Albanian batch
+
+- Built and strictly verified the 293-value Albanian `billing.json` from
+  `billing-sq-2026-09-17.tsv`, preserving all placeholders and multi-line
+  payment terms.
+
+### Next concrete step
+
+Continue the billing namespace with Bulgarian.
+
+## 2026-09-17 — billing / Bulgarian batch
+
+- Built and strictly verified the 293-value Bulgarian `billing.json` from
+  `billing-bg-2026-09-17.tsv`, preserving all placeholders and multi-line
+  payment terms.
+
+### Next concrete step
+
+Continue the billing namespace with Croatian.
+
+## 2026-09-17 — billing / Croatian batch
+
+- Built and strictly verified the 295-value Croatian `billing.json` from
+  `billing-hr-2026-09-17.tsv`, including Croatian plural forms and preserving
+  all placeholders and multi-line payment terms.
+
+### Next concrete step
+
+Continue the billing namespace with Danish.
+
+## 2026-09-17 — billing / Danish batch
+
+- Built and strictly verified the 293-value Danish `billing.json` from
+  `billing-da-2026-09-17.tsv`, preserving all placeholders and multi-line
+  payment terms.
+
+### Next concrete step
+
+Continue the billing namespace with Finnish.
+
+## 2026-09-17 — billing / Finnish batch
+
+- Built and strictly verified the 293-value Finnish `billing.json` from
+  `billing-fi-2026-09-17.tsv`, preserving all placeholders and multi-line
+  payment terms.
+
+### Next concrete step
+
+Continue the billing namespace with French.
+
+## 2026-09-17 — billing / French batch
+
+- Built and strictly verified the 293-value French `billing.json` from
+  `billing-fr-2026-09-17.tsv`, preserving all placeholders and multi-line
+  payment terms.
+
+### Next concrete step
+
+Continue the billing namespace with Greek.
+
+## 2026-09-17 — billing / Greek batch
+
+- Built and strictly verified the 293-value Greek `billing.json` from
+  `billing-el-2026-09-17.tsv`, preserving all placeholders and multi-line
+  payment terms.
+
+### Next concrete step
+
+Continue the billing namespace with Hungarian.
+
+## 2026-09-17 — billing / Hungarian batch
+
+- Built and strictly verified the 293-value Hungarian `billing.json` from
+  `billing-hu-2026-09-17.tsv`, preserving all placeholders and multi-line
+  payment terms.
+
+### Next concrete step
+
+Continue the billing namespace with Italian.
+
+## 2026-09-17 — billing / Italian batch
+
+- Built and strictly verified the 293-value Italian `billing.json` from
+  `billing-it-2026-09-17.tsv`, preserving all placeholders and multi-line
+  payment terms.
+
+### Next concrete step
+
+Continue the billing namespace with Norwegian.
+
+## 2026-09-17 — billing / Norwegian batch
+
+- Built and strictly verified the 293-value Norwegian `billing.json` from
+  `billing-no-2026-09-17.tsv`; all keys, placeholders, line breaks, and
+  plural forms match the English source.
+
+### Next concrete step
+
+Continue the billing namespace with Polish.
+
+## 2026-09-17 — billing / Polish batch
+
+- Built and strictly verified the 295-value Polish `billing.json` from
+  `billing-pl-2026-09-17.tsv`, including the `one`, `few`, and `many`
+  plural forms required by Polish.
+
+### Next concrete step
+
+Continue the billing namespace with Portuguese.
+
+## 2026-09-17 — billing / Portuguese batch
+
+- Built and strictly verified the 293-value Portuguese `billing.json` from
+  `billing-pt-2026-09-17.tsv`, preserving placeholders and payment terms.
+
+### Next concrete step
+
+Continue the billing namespace with Romanian.
+
+## 2026-09-17 — billing / Romanian batch
+
+- Built and strictly verified the 295-value Romanian `billing.json` from
+  `billing-ro-2026-09-17.tsv`, including all Romanian plural forms.
+
+### Next concrete step
+
+Continue the billing namespace with Serbian.
+
+## 2026-09-17 — billing / Serbian batch
+
+- Built and strictly verified the 295-value Cyrillic Serbian `billing.json`
+  from `billing-sr-2026-09-17.tsv`, including the required plural forms.
+
+### Next concrete step
+
+Continue the billing namespace with Spanish.
+
+## 2026-09-17 — billing / Spanish batch
+
+- Built and strictly verified the 293-value Spanish `billing.json` from
+  `billing-es-2026-09-17.tsv`, including every placeholder and newline.
+
+### Next concrete step
+
+Continue the billing namespace with Swedish.
+
+## 2026-09-17 — billing / Swedish batch
+
+- Built and strictly verified the 293-value Swedish `billing.json` from
+  `billing-sv-2026-09-17.tsv`, preserving every placeholder and newline.
+
+### Next concrete step
+
+Continue the billing namespace with Turkish.
+
+## 2026-09-17 — billing / Turkish batch
+
+- Built and strictly verified the 293-value Turkish `billing.json` from
+  `billing-tr-2026-09-17.tsv`, preserving all placeholders and line breaks.
+
+### Next concrete step
+
+Begin the remaining `finances` namespace batches.
+
+## 2026-09-17 — finances / Albanian batch
+
+- Built and strictly verified the 376-value Albanian `finances.json` from
+  `finances-sq-2026-09-17.tsv`, including every structured payment and
+  reporting key.
+
+### Next concrete step
+
+Continue the `finances` namespace with Bulgarian.
+
+## 2026-09-17 — finances / Bulgarian batch
+
+- Built and strictly verified the 376-value Bulgarian `finances.json` from
+  `finances-bg-2026-09-17.tsv`, including every structured payment and
+  reporting key.
+
+### Next concrete step
+
+Continue the `finances` namespace with Croatian.
+
+## 2026-09-17 — finances / Croatian batch
+
+- Built and strictly verified the 376-value Croatian `finances.json` from
+  `finances-hr-2026-09-17.tsv`, including every structured payment and
+  reporting key.
+
+### Next concrete step
+
+Continue the `finances` namespace with Danish.
+
+## 2026-09-17 — finances / Danish batch
+
+- Built and strictly verified the 376-value Danish `finances.json` from
+  `finances-da-2026-09-17.tsv`, including every structured payment and
+  reporting key.
+
+### Next concrete step
+
+Continue the `finances` namespace with Finnish.
+
+## 2026-09-17 — finances / Finnish batch
+
+- Built and strictly verified the 376-value Finnish `finances.json` from
+  `finances-fi-2026-09-17.tsv`, including every structured payment and
+  reporting key.
+
+### Next concrete step
+
+Continue the `finances` namespace with French.
+
+## 2026-09-17 — finances / French batch
+
+- Built and strictly verified the 376-value French `finances.json` from
+  `finances-fr-2026-09-17.tsv`, including every structured payment and
+  reporting key.
+
+### Next concrete step
+
+Continue the `finances` namespace with Greek.
+
+## 2026-09-17 — finances / Greek batch
+
+- Built and strictly verified the 376-value Greek `finances.json` from
+  `finances-el-2026-09-17.tsv`, including every structured payment and
+  reporting key.
+
+### Next concrete step
+
+Continue the `finances` namespace with Hungarian.
+
+## 2026-09-17 — finances / Hungarian batch
+
+- Built and strictly verified the 376-value Hungarian `finances.json` from
+  `finances-hu-2026-09-17.tsv`, including every structured payment and
+  reporting key.
+
+### Next concrete step
+
+Continue the `finances` namespace with Italian.
+
+## 2026-09-17 — finances / Italian batch
+
+- Built and strictly verified the 376-value Italian `finances.json` from
+  `finances-it-2026-09-17.tsv`, including every structured payment and
+  reporting key.
+
+### Next concrete step
+
+Continue the `finances` namespace with Norwegian.
+
+## 2026-09-17 — finances / Norwegian batch
+
+- Built and strictly verified the 376-value Norwegian `finances.json` from
+  `finances-no-2026-09-17.tsv`, including every structured payment and
+  reporting key.
+
+### Next concrete step
+
+Continue the `finances` namespace with Polish.
+
+## 2026-09-17 — finances / Polish batch
+
+- Built and strictly verified the 376-value Polish `finances.json` from
+  `finances-pl-2026-09-17.tsv`, including every structured payment and
+  reporting key.
+
+### Next concrete step
+
+Continue the `finances` namespace with Portuguese.
+
+## 2026-09-17 — finances / Portuguese batch
+
+- Built and strictly verified the 376-value Portuguese `finances.json` from
+  `finances-pt-2026-09-17.tsv`, including every structured payment and
+  reporting key.
+
+### Next concrete step
+
+Continue the `finances` namespace with Romanian.
+
+## 2026-09-17 — finances / Romanian batch
+
+- Built and strictly verified the 376-value Romanian `finances.json` from
+  `finances-ro-2026-09-17.tsv`, including every structured payment and
+  reporting key.
+
+### Next concrete step
+
+Continue the `finances` namespace with Serbian.
+
+## 2026-09-17 — finances / Serbian batch
+
+- Built and strictly verified the 376-value Serbian `finances.json` from
+  `finances-sr-2026-09-17.tsv`, including every structured payment and
+  reporting key.
+
+### Next concrete step
+
+Continue the `finances` namespace with Spanish.
+
+## 2026-09-17 — finances / Spanish batch
+
+- Built and strictly verified the 376-value Spanish `finances.json` from
+  `finances-es-2026-09-17.tsv`, including every structured payment and
+  reporting key.
+
+### Next concrete step
+
+Continue the `finances` namespace with Swedish.
+
+## 2026-09-17 — finances / Swedish batch
+
+- Built and strictly verified the 376-value Swedish `finances.json` from
+  `finances-sv-2026-09-17.tsv`, including every structured payment and
+  reporting key.
+
+### Next concrete step
+
+Continue the `finances` namespace with Turkish.
+
+## 2026-09-17 — finances / Turkish batch
+
+- Built and strictly verified the 376-value Turkish `finances.json` from
+  `finances-tr-2026-09-17.tsv`, including every structured payment and
+  reporting key.
+
+### Next concrete step
+
+Start the `loyalty` namespace with Albanian.
+
+## 2026-09-18 — loyalty / Albanian batch
+
+- Built and strictly verified the 239-value Albanian `loyalty.json` from
+  `loyalty-sq-2026-09-17.tsv`, including programs, automation scenarios,
+  audience segments, and retention analytics.
+
+### Next concrete step
+
+Continue the `loyalty` namespace with Bulgarian.
+
+## 2026-09-18 — loyalty / Bulgarian batch
+
+- Built and strictly verified the 239-value Bulgarian `loyalty.json` from
+  `loyalty-bg-2026-09-18.tsv`, including programs, automation scenarios,
+  audience segments, and retention analytics.
+
+### Next concrete step
+
+Continue the `loyalty` namespace with Croatian.
+
+## 2026-09-18 — loyalty / Croatian batch
+
+- Built and strictly verified the 239-value Croatian `loyalty.json` from
+  `loyalty-hr-2026-09-18.tsv`, including programs, automation scenarios,
+  audience segments, and retention analytics.
+
+### Next concrete step
+
+Continue the `loyalty` namespace with Danish.
+
+## 2026-09-18 — loyalty / Danish batch
+
+- Built and strictly verified the 239-value Danish `loyalty.json` from
+  `loyalty-da-2026-09-18.tsv`, including programs, automation scenarios,
+  audience segments, and retention analytics.
+
+### Next concrete step
+
+Continue the `loyalty` namespace with Finnish.
+
+## 2026-09-18 — loyalty / Finnish batch
+
+- Built and strictly verified the 239-value Finnish `loyalty.json` from
+  `loyalty-fi-2026-09-18.tsv`, including programs, automation scenarios,
+  audience segments, and retention analytics.
+
+### Next concrete step
+
+Continue the `loyalty` namespace with French.
+
+## 2026-09-18 — loyalty / French batch
+
+- Built and strictly verified the 239-value French `loyalty.json` from
+  `loyalty-fr-2026-09-18.tsv`, including programs, automation scenarios,
+  audience segments, and retention analytics.
+
+### Next concrete step
+
+Continue the `loyalty` namespace with Greek.
+
+## 2026-09-18 — loyalty / Greek batch
+
+- Built and strictly verified the 239-value Greek `loyalty.json` from
+  `loyalty-el-2026-09-18.tsv`, including programs, automation scenarios,
+  audience segments, and retention analytics.
+
+### Next concrete step
+
+Continue the `loyalty` namespace with Hungarian.
+
+## 2026-09-18 — loyalty / Hungarian batch
+
+- Built and strictly verified the 239-value Hungarian `loyalty.json` from
+  `loyalty-hu-2026-09-18.tsv`, including programs, automation scenarios,
+  audience segments, and retention analytics.
+
+### Next concrete step
+
+Continue the `loyalty` namespace with Italian.
+
+## 2026-09-18 — loyalty / Italian batch
+
+- Built and strictly verified the 239-value Italian `loyalty.json` from
+  `loyalty-it-2026-09-18.tsv`, including programs, automation scenarios,
+  audience segments, and retention analytics.
+
+### Next concrete step
+
+Continue the `loyalty` namespace with Norwegian.
+
+## 2026-09-18 — loyalty / Norwegian batch
+
+- Built and strictly verified the 239-value Norwegian `loyalty.json` from
+  `loyalty-no-2026-09-18.tsv`, including programs, automation scenarios,
+  audience segments, and retention analytics.
+
+### Next concrete step
+
+Continue the `loyalty` namespace with Polish.
+
+## 2026-09-18 — loyalty / Polish batch
+
+- Built and strictly verified the 239-value Polish `loyalty.json` from
+  `loyalty-pl-2026-09-18.tsv`, including programs, automation scenarios,
+  audience segments, and retention analytics.
+
+### Next concrete step
+
+Continue the `loyalty` namespace with Portuguese.
+
+## 2026-09-18 — loyalty / Portuguese batch
+
+- Built and strictly verified the 239-value Portuguese `loyalty.json` from
+  `loyalty-pt-2026-09-18.tsv`, including programs, automation scenarios,
+  audience segments, and retention analytics.
+
+### Next concrete step
+
+Continue the `loyalty` namespace with Romanian.
+
+## 2026-09-18 — loyalty / Romanian batch
+
+- Built and strictly verified the 239-value Romanian `loyalty.json` from
+  `loyalty-ro-2026-09-18.tsv`, including programs, automation scenarios,
+  audience segments, and retention analytics.
+
+### Next concrete step
+
+Continue the `loyalty` namespace with Serbian.
+
+## 2026-09-18 — loyalty / Serbian batch
+
+- Built and strictly verified the 239-value Serbian `loyalty.json` from
+  `loyalty-sr-2026-09-18.tsv`, including programs, automation scenarios,
+  audience segments, and retention analytics.
+
+### Next concrete step
+
+Continue the `loyalty` namespace with Spanish.
+
+## 2026-09-18 — loyalty / Spanish batch
+
+- Built and strictly verified the 239-value Spanish `loyalty.json` from
+  `loyalty-es-2026-09-18.tsv`, including programs, automation scenarios,
+  audience segments, and retention analytics.
+
+### Next concrete step
+
+Continue the `loyalty` namespace with Swedish.
+
+## 2026-09-18 — loyalty / Swedish batch
+
+- Built and strictly verified the 239-value Swedish `loyalty.json` from
+  `loyalty-sv-2026-09-18.tsv`, including programs, automation scenarios,
+  audience segments, and retention analytics.
+
+### Next concrete step
+
+Continue the `loyalty` namespace with Turkish.
+
+## 2026-09-18 — loyalty / Turkish batch
+
+- Built and strictly verified the 239-value Turkish `loyalty.json` from
+  `loyalty-tr-2026-09-18.tsv`, including programs, automation scenarios,
+  audience segments, and retention analytics.
+
+### Next concrete step
+
+Start the `reports` namespace with Albanian.
+
+## 2026-09-18 — reports / Albanian batch
+
+- Built and strictly verified the 375-value Albanian `reports.json` from
+  `reports-sq-2026-09-18.tsv`, including insights, sales, client and team
+  analytics, schedule utilization, and metric explanations.
+
+### Next concrete step
+
+Continue the `reports` namespace with Bulgarian.
+
+## 2026-09-18 — reports / Bulgarian batch
+
+- Built and strictly verified the 375-value Bulgarian `reports.json` from
+  `reports-bg-2026-09-18.tsv`, including insights, sales, client and team
+  analytics, schedule utilization, and metric explanations.
+
+### Next concrete step
+
+Continue the `reports` namespace with Croatian.
+
+## 2026-09-18 — reports / Croatian batch
+
+- Built and strictly verified the 379-value Croatian `reports.json` from
+  `reports-hr-2026-09-18.tsv`, including Croatian `few` plural forms for
+  relative dates and schedule losses.
+
+### Next concrete step
+
+Continue the `reports` namespace with Danish.
+
+## 2026-09-18 — reports / Danish batch
+
+- Built and strictly verified the 375-value Danish `reports.json` from
+  `reports-da-2026-09-18.tsv`, covering all report tabs, insight messages,
+  schedule analysis, client segments, and metric explanations.
+
+### Next concrete step
+
+Continue the `reports` namespace with Finnish.
+
+## 2026-09-18 — reports / Finnish batch
+
+- Built and strictly verified the 375-value Finnish `reports.json` from
+  `reports-fi-2026-09-18.tsv`, including all analytics, schedule terminology,
+  and metric explanations.
+
+### Next concrete step
+
+Continue the `reports` namespace with French.
+
+## 2026-09-18 — reports / French batch
+
+- Built and strictly verified the 375-value French `reports.json` from
+  `reports-fr-2026-09-18.tsv`, including all report tabs, client segments,
+  schedule-loss analytics, and metric explanations.
+
+### Next concrete step
+
+Continue the `reports` namespace with Greek.
+
+## 2026-09-18 — reports / Greek batch
+
+- Built and strictly verified the 375-value Greek `reports.json` from
+  `reports-el-2026-09-18.tsv`, including insights, full report analytics,
+  utilization and loss metrics, and formula explanations.
+
+### Next concrete step
+
+Continue the `reports` namespace with Hungarian.
+
+## 2026-09-18 — reports / Hungarian batch
+
+- Built and strictly verified the 375-value Hungarian `reports.json` from
+  `reports-hu-2026-09-18.tsv`, covering all analytics, segments, scheduling,
+  cancellations, and formula explanations.
+
+### Next concrete step
+
+Continue the `reports` namespace with Italian.
+
+## 2026-09-18 — reports / Italian batch
+
+- Built and strictly verified the 375-value Italian `reports.json` from
+  `reports-it-2026-09-18.tsv`, including all report tabs, scheduling analysis,
+  client segmentation, and detailed metric guidance.
+
+### Next concrete step
+
+Continue the `reports` namespace with Norwegian.
+
+## 2026-09-18 — reports / Norwegian batch
+
+- Built and strictly verified the 375-value Norwegian `reports.json` from
+  `reports-no-2026-09-18.tsv`, including complete reports, schedule analysis,
+  client segmentation, and metric descriptions.
+
+### Next concrete step
+
+Continue the `reports` namespace with Polish.
+
+## 2026-09-18 — reports / Polish batch
+
+- Built and strictly verified the 379-value Polish `reports.json` from
+  `reports-pl-2026-09-18.tsv`, including the required `one`/`few`/`many`
+  plural forms for dates and schedule losses.
+
+### Next concrete step
+
+Continue the `reports` namespace with Portuguese.
+
+## 2026-09-18 — reports / Portuguese batch
+
+- Built and strictly verified the 375-value Portuguese `reports.json` from
+  `reports-pt-2026-09-18.tsv`, covering all reports, schedule insights,
+  client groups, and detailed metric explanations.
+
+### Next concrete step
+
+Continue the `reports` namespace with Romanian.
+
+## 2026-09-18 — reports / Romanian batch
+
+- Built and strictly verified the 379-value Romanian `reports.json` from
+  `reports-ro-2026-09-18.tsv`, including required `one`/`few`/`other` forms,
+  report analytics, client groups, and formula explanations.
+
+### Next concrete step
+
+Continue the `reports` namespace with Serbian.
+
+## 2026-09-18 — reports / Serbian batch
+
+- Built and strictly verified the 379-value Serbian `reports.json` from
+  `reports-sr-2026-09-18.tsv`, using Cyrillic and required `one`/`few`/`other`
+  plural forms across client dates and schedule losses.
+
+### Next concrete step
+
+Continue the `reports` namespace with Spanish.
+
+## 2026-09-18 — reports / Spanish batch
+
+- Built and strictly verified the 375-value Spanish `reports.json` from
+  `reports-es-2026-09-18.tsv`, including all reports, schedule loss insights,
+  client segmentation, and detailed metric guidance.
+
+### Next concrete step
+
+Continue the `reports` namespace with Swedish.
+
+## 2026-09-18 — reports / Swedish batch
+
+- Built and strictly verified the 375-value Swedish `reports.json` from
+  `reports-sv-2026-09-18.tsv`, covering all reports, scheduling metrics,
+  client groups, and formula explanations.
+
+### Next concrete step
+
+Continue the `reports` namespace with Turkish.
+
+## 2026-09-18 — reports / Turkish batch
+
+- Built and strictly verified the 375-value Turkish `reports.json` from
+  `reports-tr-2026-09-18.tsv`, covering all report tabs, schedule analysis,
+  client segmentation, and metric explanations.
+- Whole-tree validation now has zero non-missing errors; the only 17 missing
+  resources are the intentionally remaining target-language `settings` files.
+
+### Next concrete step
+
+Complete the `settings` namespace for the 17 target languages.
+
+## 2026-09-18 — settings / Albanian batch
+
+- Built and strictly verified the 332-value Albanian `settings.json` from
+  `settings-sq-2026-09-18.tsv`, including booking configuration, billing,
+  account security, external integrations, and data export.
+
+### Next concrete step
+
+Continue the `settings` namespace with Bulgarian.
+
+## 2026-09-18 — settings / Bulgarian batch
+
+- Built and strictly verified the 332-value Bulgarian `settings.json` from
+  `settings-bg-2026-09-18.tsv`, including billing, account security,
+  integrations, and data export.
+
+### Next concrete step
+
+Continue the `settings` namespace with Croatian.
+
+## 2026-09-18 — settings / Croatian batch
+
+- Built and strictly verified the 335-value Croatian `settings.json` from
+  `settings-hr-2026-09-18.tsv`, including all Croatian plural forms for
+  workspace counts and report exports.
+
+### Next concrete step
+
+Continue the `settings` namespace with Danish.
+
+## 2026-09-18 — settings / Danish batch
+
+- Built and strictly verified the 332-value Danish `settings.json` from
+  `settings-da-2026-09-18.tsv`, including account-security, billing,
+  integration, and export flows.
+
+### Next concrete step
+
+Continue the `settings` namespace with Finnish.
+
+## 2026-09-18 — settings / Finnish batch
+
+- Built and strictly verified the 332-value Finnish `settings.json` from
+  `settings-fi-2026-09-18.tsv`, with natural UI wording across configuration,
+  security, integration, and export screens.
+
+### Next concrete step
+
+Continue the `settings` namespace with French.
+
+## 2026-09-18 — settings / French batch
+
+- Built and strictly verified the 332-value French `settings.json` from
+  `settings-fr-2026-09-18.tsv`, covering all configuration and security
+  dialogs without changing messaging or miniapp behavior.
+
+### Next concrete step
+
+Continue the `settings` namespace with Greek.
+
+## 2026-09-18 — settings / Greek batch
+
+- Built and strictly verified the 332-value Greek `settings.json` from
+  `settings-el-2026-09-18.tsv`, including the full currency search UI,
+  account security, integrations, and data export.
+
+### Next concrete step
+
+Continue the `settings` namespace with Hungarian.
+
+## 2026-09-18 — settings / Hungarian batch
+
+- Built and strictly verified the 332-value Hungarian `settings.json` from
+  `settings-hu-2026-09-18.tsv`, including regional settings, security,
+  integration guidance, and report export controls.
+
+### Next concrete step
+
+Continue the `settings` namespace with Italian.
+
+## 2026-09-18 — settings / Italian batch
+
+- Built and strictly verified the 332-value Italian `settings.json` from
+  `settings-it-2026-09-18.tsv`, with all placeholders and every UI section
+  preserved.
+
+### Next concrete step
+
+Continue the `settings` namespace with Norwegian.
+
+## 2026-09-18 — settings / Norwegian batch
+
+- Built and strictly verified the 332-value Norwegian `settings.json` from
+  `settings-no-2026-09-18.tsv`, including all account and integrations
+  controls.
+
+### Next concrete step
+
+Continue the `settings` namespace with Polish.
+
+## 2026-09-18 — settings / Polish batch
+
+- Built and strictly verified the 335-value Polish `settings.json` from
+  `settings-pl-2026-09-18.tsv`, including Polish `one`/`few`/`many` forms.
+
+### Next concrete step
+
+Continue the `settings` namespace with Portuguese.
+
+## 2026-09-18 — settings / Portuguese batch
+
+- Built and strictly verified the 332-value Portuguese `settings.json` from
+  `settings-pt-2026-09-18.tsv`, covering all settings sections and dialogs.
+
+### Next concrete step
+
+Continue the `settings` namespace with Romanian.
+
+## 2026-09-18 — settings / Romanian batch
+
+- Built and strictly verified the 335-value Romanian `settings.json` from
+  `settings-ro-2026-09-18.tsv`, including Romanian `one`/`few`/`other` forms.
+
+### Next concrete step
+
+Continue the `settings` namespace with Serbian.
+
+## 2026-09-18 — settings / Serbian batch
+
+- Built and strictly verified the 335-value Cyrillic Serbian `settings.json`
+  from `settings-sr-2026-09-18.tsv`, including Serbian `one`/`few`/`other`
+  forms.
+
+### Next concrete step
+
+Continue the `settings` namespace with Spanish.
+
+## 2026-09-18 — settings / Spanish batch
+
+- Built and strictly verified the 332-value Spanish `settings.json` from
+  `settings-es-2026-09-18.tsv`, covering every configuration, security,
+  integration, and export string.
+
+### Next concrete step
+
+Continue the `settings` namespace with Swedish.
+
+## 2026-09-18 — settings / Swedish batch
+
+- Built and strictly verified the 332-value Swedish `settings.json` from
+  `settings-sv-2026-09-18.tsv`, including all configuration, security,
+  integration, and export controls.
+
+### Next concrete step
+
+Complete the `settings` namespace with Turkish.
+
+## 2026-09-18 — settings / Turkish batch
+
+- Built and strictly verified the 332-value Turkish `settings.json` from
+  `settings-tr-2026-09-18.tsv`, completing the final missing target-language
+  settings dictionary.
+
+### Next concrete step
+
+Run full-tree validation, then connect the completed UI language set without
+changing the outbound-message or miniapp language scopes.

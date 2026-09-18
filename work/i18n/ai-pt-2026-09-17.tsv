@@ -1,0 +1,287 @@
+== pt
+telegram.tokenLabel	Token do bot
+telegram.tokenPlaceholder	1234567890:ABC...
+telegram.tokenInvalidFormat	Formato de token inválido
+telegram.verifyButton	Verificar e ligar
+telegram.verifiedToast	O bot @{{username}} foi ligado
+telegram.verifyFailedToast	O Telegram rejeitou este token
+telegram.disconnect	Desligar
+telegram.disconnectedToast	O bot foi desligado
+telegram.disconnectConfirmTitle	Desligar o bot?
+telegram.disconnectConfirmMessage	A resposta automática do Telegram deixará de funcionar até voltar a ligar um bot.
+telegram.gateTooltip	Ligue primeiro um bot
+telegram.statsPending	Aparecerá quando a resposta automática começar a funcionar
+telegram.instructionTitle	Como obter um token
+telegram.instructionStep1	Abra o @BotFather no Telegram
+telegram.instructionStep2	Envie o comando /newbot e escolha um nome e nome de utilizador para o bot
+telegram.instructionStep3	Copie o token que receber
+telegram.instructionStep4	Cole-o aqui e clique em "Verificar e ligar"
+instagram.connectButton	Ligar Instagram
+instagram.connectedToast	O Instagram foi ligado
+instagram.connectErrorToast	Não foi possível ligar o Instagram — tente novamente
+instagram.expiresUntil	Acesso válido até {{date}}
+instagram.disconnect	Desligar
+instagram.disconnectedToast	O Instagram foi desligado
+instagram.disconnectConfirmTitle	Desligar o Instagram?
+instagram.disconnectConfirmMessage	A resposta automática do Instagram deixará de responder aos clientes até voltar a ligar a conta.
+instagram.gateTooltip	Ligue primeiro uma conta
+instagram.statsPending	Aparecerá quando a resposta automática começar a funcionar
+instagram.instructionTitle	Como ligar
+instagram.instructionStep1	A conta do estúdio deve ser profissional — Business ou Creator (Definições do Instagram → Tipo de conta)
+instagram.instructionStep2	Clique em "Ligar Instagram" e inicie sessão com a conta do estúdio
+instagram.instructionStep3	Permita o acesso às mensagens
+instagram.instructionStep4	Voltará aqui automaticamente
+whatsapp.numberLabel	Número do WhatsApp Business
+whatsapp.connectLink	ou introduza um token manualmente
+whatsapp.gateTooltip	Ligue primeiro um número do WhatsApp
+whatsapp.statsPending	Aparecerá quando a resposta automática começar a funcionar
+whatsapp.instructionTitle	Como ligar
+whatsapp.instructionStep1	Clique em “Ligar WhatsApp” — abrirá uma janela da Meta
+whatsapp.instructionStep2	Inicie sessão no Facebook, escolha uma conta empresarial e um número (ou adicione um novo) e confirme-o com o código
+whatsapp.instructionStep3	O número é ligado uma vez — o mesmo é usado para notificações de clientes; volte aqui e ative a resposta automática
+whatsapp.connectButton	Ligar WhatsApp
+whatsapp.connectedToast	O número do WhatsApp foi ligado
+whatsapp.connectErrorToast	Não foi possível ligar o número do WhatsApp
+whatsapp.disconnect	Desligar
+whatsapp.disconnectedToast	O WhatsApp foi desligado
+whatsapp.disconnectConfirmTitle	Desligar o WhatsApp?
+whatsapp.disconnectConfirmMessage	O número também será desligado das notificações e integrações do estúdio.
+history.title	Histórico de conversas
+history.empty	Inicie a sua primeira conversa
+history.today	Hoje
+history.yesterday	Ontem
+history.earlier	Anteriormente
+history.messagesCount_one	{{count}} mensagem
+history.messagesCount_other	{{count}} mensagens
+history.deleteConfirmTitle	Eliminar esta conversa?
+history.deleteConfirmMessage	Todas as mensagens desta conversa serão eliminadas permanentemente.
+actions.newChat	Nova conversa
+actions.deleteChat	Eliminar conversa
+actions.confirmTitle	Confirme a ação
+actions.confirm	Confirmar
+actions.cancel	Cancelar
+actions.cancelled	Ação cancelada.
+actions.done	Concluído em {{date}}
+actions.effect	O que muda
+actions.undo	Anular
+actions.undoTitle	Anular esta ação?
+actions.undoMessage	Vou reverter o que foi feito: {{action}}. As aulas já reservadas pelos clientes permanecerão — só uma pessoa pode removê-las.
+actions.args.lesson_id	Aula
+actions.args.client_id	Cliente
+actions.args.reservation_id	Reserva
+actions.args.alternate_with	Alternar com
+actions.args.service_id	Serviço
+actions.args.teacher_id	Treinador
+actions.args.hall_id	Sala
+actions.args.start_time	Começa
+actions.args.duration_min	Duração, min
+actions.args.total_spots	Lugares
+actions.args.price	Preço
+actions.args.name	Nome próprio
+actions.args.last_name	Apelido
+actions.args.phone	Telefone
+actions.args.email	E-mail
+actions.args.city	Cidade
+actions.args.birth_date	Data de nascimento
+actions.args.source	Origem
+actions.args.frozen	Suspenso
+actions.args.date_from	De
+actions.args.date_to	Até
+actions.args.weekdays	Dias da semana
+actions.args.time_from	De
+actions.args.time_to	Até
+actions.args.break_at	Pausa às
+actions.args.break_min	Pausa, min
+actions.args.extend_hours	Alargar o horário do treinador
+actions.args.salary	Salário
+actions.args.access_role	Acesso
+actions.args.department	Função
+actions.args.password	Palavra-passe do funcionário
+actions.args.rate	Tarifa
+actions.args.rate_type	Tipo de pagamento
+actions.args.service_ids	Serviços
+actions.args.schedule	Horário
+actions.bool.yes	sim
+actions.bool.no	não
+settings.title	Definições da IA
+settings.model	Modelo
+settings.language	Idioma
+models.comingSoon	Em breve
+models.velora-3.5	Velora AI 3.5
+languages.auto	Automático
+languages.ru	Russo
+languages.en	Inglês
+languages.uk	Ucraniano
+languages.cs	Checo
+languages.de	Alemão
+chat.thinking	A Velora AI está a pensar
+chat.thinkingAnswer	A Velora AI está a ponderar a resposta
+chat.readyTitle	A Velora AI está pronta para ajudar
+chat.thinkingTitle	A Velora AI está a pensar...
+chat.readySubtitle	Faça uma pergunta ou escolha uma sugestão
+chat.thinkingSubtitle	A processar o seu pedido
+chat.placeholder	Escreva uma mensagem...
+chat.drawerPlaceholder	Pergunte-me o que quiser...
+chat.navbarPlaceholder	Pergunte à IA ou defina uma tarefa...
+chat.enterToSend	Enter para enviar
+chat.shiftEnterNewline	Shift+Enter para nova linha
+chat.aiDisclaimer	A Velora AI pode cometer erros. Confirme as informações importantes.
+chat.continueInChat	Continuar na conversa →
+chat.emptyTitle	Como posso ajudar?
+chat.emptySubtitle	Faça qualquer pergunta sobre o seu estúdio, clientes ou negócio
+chat.charCount_one	{{count}} / 4000 caráter
+chat.charCount_other	{{count}} / 4000 carateres
+chat.suggestions.revenue	Mostrar estatísticas de receitas deste mês
+chat.suggestions.sms	Escrever um SMS de lembrete para uma marcação
+chat.suggestions.promo	Ideias para uma promoção de verão
+chat.suggestions.retention	Como posso melhorar a retenção de clientes?
+chat.drawerSuggestions.revenueAnalysis	Análise de receitas
+chat.drawerSuggestions.emailTemplate	Modelo de e-mail
+chat.drawerSuggestions.promoIdeas	Ideias de promoção
+chat.drawerSuggestions.clientReport	Relatório de cliente
+drawer.historyBack	Conversas
+drawer.historyLabel	Histórico
+agents.title	Agentes de IA
+agents.info.title	O que são agentes de IA
+agents.info.lead	Um assistente que responde aos clientes nos mensageiros do estúdio enquanto está ocupado.
+agents.info.b1	Responde a toda a hora — ninguém espera por um administrador
+agents.info.b2	Conhece o horário, os serviços e os preços do seu estúdio
+agents.info.b3	Define o tom e o comprimento das respostas
+agents.info.note	Um canal começa a funcionar assim que for ligado nas definições
+agents.activeCount	{{active}} / {{total}}
+agents.stateOn	A responder
+agents.stateOffline	Não ligado
+agents.configureButton	Configurar agentes
+agents.enable	Ativar
+agents.disable	Desativar
+agents.modalTitle	Configuração do agente de IA
+agents.modalSubtitle	Respostas automáticas em mensageiros
+agents.tabPrompt	Instrução de sistema
+agents.statusDisabled	Desativado
+agents.statHandled	Tratadas
+agents.statRating	Avaliação
+agents.styleTitle	Estilo de resposta
+agents.styleAllChannels	aplica-se a todos os canais
+agents.toneLabel	Tom das respostas
+agents.tone.friendly	Amigável
+agents.tone.formal	Formal
+agents.tone.neutral	Neutro
+agents.maxLengthLabel	Comprimento máximo da resposta (carateres)
+agents.maxLengthError	Introduza um número entre 50 e 4000
+agents.offHoursLabel	Resposta automática apenas fora do horário de trabalho
+agents.promptHint	Este texto define a personalidade do agente — como comunica, o que sabe e que temas evita.
+agents.promptPlaceholder	É um assistente de estúdio educado...
+agents.promptCount_one	{{count}} / 2000 caráter
+agents.promptCount_other	{{count}} / 2000 carateres
+agents.tgChannelInactive	O canal Telegram está desligado nas Reservas online — o bot não recebe mensagens, por isso o agente permanece em silêncio.
+errors.tg_token_required	Ligue primeiro um bot Telegram — ainda não foi guardado nenhum token.
+errors.ig_not_connected	O Instagram ainda não está ligado.
+errors.wa_not_connected	O número do WhatsApp ainda não está ligado — ligue-o em Notificações.
+errors.assistant_unavailable	O assistente está temporariamente indisponível — tente novamente mais tarde.
+errors.trial_exhausted	Utilizou todos os 500 pedidos de teste do assistente de IA. Escolha um plano pago para continuar.
+errors.quota_exceeded	Utilizou todos os pedidos de IA deste plano. O limite é reposto no início do mês — ou mude para um plano superior.
+toasts.settingsSaved	Definições guardadas
+toolStatus.add_client_note	A adicionar uma nota…
+toolStatus.add_client_tag	A adicionar uma etiqueta…
+toolStatus.add_loyalty_points	A adicionar pontos…
+toolStatus.book_client	A reservar a aula…
+toolStatus.cancel_booking	A cancelar a reserva…
+toolStatus.pay_booking	A registar o pagamento da aula…
+toolStatus.clear_schedule	A limpar o horário…
+toolStatus.create_account	A criar uma conta…
+toolStatus.create_branch	A criar uma filial…
+toolStatus.create_client	A criar um cliente…
+toolStatus.create_counterparty	A criar uma contraparte…
+toolStatus.create_hall	A criar uma sala…
+toolStatus.create_lesson	A criar uma aula…
+toolStatus.create_operation	A registar a transação…
+toolStatus.create_package	A criar um passe…
+toolStatus.create_promo	A criar um código promocional…
+toolStatus.create_service	A criar um serviço…
+toolStatus.create_staff	A adicionar um membro da equipa…
+toolStatus.default	A trabalhar…
+toolStatus.delete_client	A eliminar o cliente…
+toolStatus.delete_staff	A remover o membro da equipa…
+toolStatus.fill_schedule	A preencher o horário…
+toolStatus.find_clients	A procurar clientes…
+toolStatus.forget_fact	A esquecer a informação…
+toolStatus.freeze_client	A suspender o cliente…
+toolStatus.get_booking_settings	A verificar regras de reserva…
+toolStatus.get_catalog_settings	A verificar definições dos passes…
+toolStatus.get_client	A abrir a ficha do cliente…
+toolStatus.get_client_events	A ler o histórico do cliente…
+toolStatus.get_inactive_clients	A procurar clientes inativos…
+toolStatus.get_client_notes	A ler notas do cliente…
+toolStatus.get_client_subscription	A verificar o passe do cliente…
+toolStatus.get_delivery_log	A verificar o registo de envio…
+toolStatus.get_finance_goals	A verificar objetivos financeiros…
+toolStatus.get_finance_summary	A verificar finanças…
+toolStatus.get_lesson	A abrir a aula…
+toolStatus.get_loyalty_programs	A verificar programas de fidelização…
+toolStatus.get_loyalty_summary	A verificar fidelização…
+toolStatus.get_notification_matrix	A verificar notificações…
+toolStatus.get_payroll	A calcular salários…
+toolStatus.get_rooms	A verificar salas…
+toolStatus.get_schedule	A verificar o horário…
+toolStatus.get_segments	A verificar segmentos de clientes…
+toolStatus.get_services	A verificar serviços…
+toolStatus.get_staff	A verificar a equipa…
+toolStatus.get_staff_profile	A abrir a ficha do membro da equipa…
+toolStatus.get_stats	A processar números…
+toolStatus.get_team_report	A medir o retorno por treinador…
+toolStatus.get_studio_facts	A recordar o que sei sobre o estúdio…
+toolStatus.get_today_agenda	A verificar o dia de hoje…
+toolStatus.issue_certificate	A emitir o certificado…
+toolStatus.list_operations	A verificar receitas e despesas…
+toolStatus.open_ui	A abrir o ecrã…
+toolStatus.remember_fact	A memorizar…
+toolStatus.remove_client_tag	A remover a etiqueta…
+toolStatus.sell_subscription	A vender o passe…
+toolStatus.set_client_discount	A definir o desconto…
+toolStatus.set_staff_day	A marcar o dia no horário…
+toolStatus.set_staff_schedule	A definir o horário…
+toolStatus.toggle_notification_event	A alternar a notificação…
+toolStatus.ui_section	A verificar como funciona a secção…
+toolStatus.update_booking_rules	A atualizar regras de reserva…
+toolStatus.update_client	A atualizar dados do cliente…
+toolStatus.update_lesson	A atualizar a aula…
+toolStatus.update_service	A atualizar o serviço…
+toolStatus.update_staff	A atualizar o membro da equipa…
+quota.trialLow	Restam poucos pedidos de teste.
+quota.label	Pedidos ao assistente de IA
+quota.value	{{used}} de {{limit}}
+quota.low	Está perto do limite mensal.
+quota.upgrade	Escolher um plano
+quota.monthPeriod	Por mês civil (UTC)
+quota.trialPeriod	Para todo o período de teste
+rating.up	Boa resposta
+rating.down	Má resposta
+memory.title	O assistente lembra-se
+memory.forget	Esquecer
+memory.forgetConfirmTitle	Esquecer esta informação?
+memory.forgetConfirmMessage	O assistente deixará de a usar nas respostas.
+memory.deleted	Informação removida
+plan.pages.who	Quem e o quê
+plan.pages.when	Quando
+plan.pages.check	Rever
+plan.stepOf	Passo {{current}} de {{total}}
+plan.next	Seguinte
+plan.back	Voltar
+plan.confirm	Aprovar
+plan.confirmDanger	Aprovar
+plan.choose	Escolher
+plan.nothingFound	Nada encontrado
+plan.nothingToFill	Não há nada para preencher aqui — continue diretamente.
+plan.fromStep	criado no passo {{n}}
+plan.values.group	grupo
+plan.values.individual	individual
+plan.values.trainer	treinador
+plan.values.admin	administrador
+plan.values.owner	proprietário
+plan.values.hourly	por hora
+plan.values.percent	% das receitas
+plan.values.fixed	por aula
+plan.title_one	Aprovar — {{count}} ação
+plan.title_other	Aprovar — {{count}} ações
+plan.stillEmpty_one	Falta {{count}} campo
+plan.stillEmpty_other	Faltam {{count}} campos

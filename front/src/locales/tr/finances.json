@@ -1,0 +1,510 @@
+{
+  "tabs": {
+    "accounts": "Hesaplar",
+    "operations": "İşlemler",
+    "salaries": "Bordro",
+    "counterparties": "Karşı taraflar",
+    "documents": "Belgeler",
+    "onlinePayments": "Çevrimiçi ödemeler",
+    "paymentMethods": "Ödeme yöntemleri",
+    "reports": "Raporlar",
+    "goals": "Hedefler"
+  },
+  "common": {
+    "save": "Kaydet",
+    "cancel": "İptal",
+    "create": "Oluştur",
+    "edit": "Düzenle",
+    "delete": "Sil",
+    "loading": "Yükleniyor…",
+    "all": "Tümü",
+    "confirm": "Onayla",
+    "monthsShort": [
+      "Oca",
+      "Şub",
+      "Mar",
+      "Nis",
+      "May",
+      "Haz",
+      "Tem",
+      "Ağu",
+      "Eyl",
+      "Eki",
+      "Kas",
+      "Ara"
+    ],
+    "weekdaysShort": [
+      "Pzt",
+      "Sal",
+      "Çar",
+      "Per",
+      "Cum",
+      "Cmt",
+      "Paz"
+    ]
+  },
+  "info": {
+    "accounts": "Hesaplar stüdyonun kasaları, banka hesapları ve çevrimiçi tahsilatlarıdır. Her bakiyeyi ve toplam sermayeyi burada görebilirsiniz.",
+    "operations": "İşlemler, stüdyonun tüm gelir ve giderleridir. Bir işlem oluşturulduğunda bağlı hesabın bakiyesi hemen değişir.",
+    "salaries": "Maaşlar, seçilen dönem için ekip üyesinin ücretine göre (sabit, saatlik veya yüzdelik) hesaplanır.",
+    "counterparties": "Karşı taraflar, stüdyonun hesaplaştığı kuruluş ve kişilerdir: tedarikçiler, mal sahipleri ve ortaklar.",
+    "documents": "Belgeler, karşı taraflara bağlı sözleşmeler, tutanaklar ve faturalar ya da dahili belgelerdir.",
+    "onlinePayments": "Çevrimiçi ödemeler — kart ödemeleri için Stripe'ı bağlayın. Hesap stüdyonuz adına oluşturulur; böylece para Velora'ya uğramadan doğrudan size gelir.",
+    "paymentMethods": "Ödeme yöntemleri, müşterilerin stüdyoda nasıl ödeme yaptığını ve her yöntem için istatistikleri gösterir.",
+    "reports": "Raporlar, seçilen dönemde gelir, gider ve kâr eğilimlerini gösterir.",
+    "goals": "Finansal hedefler, otomatik veya manuel ilerleme takibiyle stüdyonun tasarruf planıdır."
+  },
+  "accounts": {
+    "loading": "Hesaplar yükleniyor…",
+    "totalCapital": "Stüdyonun toplam sermayesi",
+    "donutTotal": "Toplam {{symbol}}",
+    "todayChange": "bugün",
+    "system": "SİSTEM",
+    "today": "bugün",
+    "editTitle": "Hesabı düzenle",
+    "namePlaceholder": "Ad",
+    "balancePlaceholder": "Bakiye, {{symbol}}",
+    "types": {
+      "cash": "Nakit",
+      "bank": "Kart",
+      "online": "Çevrimiçi"
+    },
+    "typesShort": {
+      "cash": "Nakit",
+      "bank": "Kart",
+      "online": "Çevrimiçi"
+    },
+    "history": "Geçmiş",
+    "historyTitle": "Geçmiş: {{name}}",
+    "income30d": "Gelir (30 gün)",
+    "expense30d": "Gider (30 gün)",
+    "samplePayment": "Hizmet ödemesi",
+    "sampleTime": "Bugün, 14:32",
+    "openAllOperations": "Tüm işlemleri aç",
+    "newSavingsTitle": "Yeni tasarruf hesabı",
+    "createSavings": "Tasarruf hesabı oluştur",
+    "deleteConfirmTitle": "Bu hesap silinsin mi?",
+    "deleteConfirmText": "Tüm fonları genel istatistiklerden çıkarılır. Bu işlem geri alınamaz.",
+    "toasts": {
+      "loadFailed": "Hesaplar yüklenemedi",
+      "deleted": "Hesap silindi",
+      "deleteFailed": "Hesap silinemedi",
+      "saved": "Ayarlar kaydedildi",
+      "saveFailed": "Hesap kaydedilemedi",
+      "created": "Tasarruf hesabı oluşturuldu",
+      "createFailed": "Hesap oluşturulamadı"
+    }
+  },
+  "operations": {
+    "income": "Gelir",
+    "expense": "Gider",
+    "balance": "Bakiye",
+    "searchPlaceholder": "Başlık ve kategoriye göre ara…",
+    "close": "Kapat",
+    "operation": "İşlem",
+    "export": "Dışa aktar",
+    "newOperationTitle": "Yeni işlem",
+    "titleLabel": "Başlık",
+    "titlePlaceholder": "Örneğin, abonelik ödemesi",
+    "amountLabel": "Tutar, {{symbol}}",
+    "dateLabel": "Tarih",
+    "categoryLabel": "Kategori",
+    "categoryPlaceholder": "Kategori",
+    "accountLabel": "Hesap",
+    "noAccount": "Hesap yok",
+    "methodLabel": "Ödeme yöntemi",
+    "noMethod": "Belirtilmedi",
+    "counterpartyLabel": "Karşı taraf",
+    "noCounterparty": "Karşı taraf yok",
+    "newCounterparty": "+ Yeni karşı taraf",
+    "clientLabel": "Müşteri",
+    "clientHint": "Sadakat puanları ve seviyesi müşteriye tanımlanacaktır",
+    "clientSearchPlaceholder": "Bir ad yazmaya başlayın…",
+    "noClient": "Müşteri yok",
+    "editTitle": "İşlemi düzenle",
+    "saving": "Kaydediliyor…",
+    "loading": "İşlemler yükleniyor…",
+    "emptyTitle": "İşlem bulunamadı",
+    "emptyBody": "Filtreleri değiştirin veya ilk işlemi oluşturun",
+    "pending": "Beklemede",
+    "detailAccount": "Alıcı hesap",
+    "detailCategory": "Kategori",
+    "detailMethod": "Ödeme yöntemi",
+    "detailCounterparty": "Karşı taraf",
+    "receipt": "Makbuz",
+    "loadMore": "Daha fazla yükle ({{count}})",
+    "toasts": {
+      "loadFailed": "İşlemler yüklenemedi",
+      "loadMoreFailed": "Daha fazla işlem yüklenemedi",
+      "deleted": "İşlem silindi",
+      "deleteFailed": "İşlem silinemedi",
+      "enterAmount": "Bir tutar girin",
+      "created": "İşlem oluşturuldu",
+      "createFailed": "İşlem oluşturulamadı",
+      "updated": "İşlem güncellendi",
+      "updateFailed": "İşlem kaydedilemedi",
+      "exportFailed": "İşlemler dışa aktarılamadı",
+      "receiptDownloaded": "Makbuz indirildi"
+    },
+    "categoryPresets": {
+      "in": [
+        {
+          "value": "Üyelikler",
+          "label": "Üyelikler"
+        },
+        {
+          "value": "Hizmetler",
+          "label": "Hizmetler"
+        },
+        {
+          "value": "Hediye sertifikaları",
+          "label": "Hediye sertifikaları"
+        },
+        {
+          "value": "Depozito",
+          "label": "Depozito"
+        },
+        {
+          "value": "Diğer",
+          "label": "Diğer"
+        }
+      ],
+      "out": [
+        {
+          "value": "İadeler",
+          "label": "İadeler"
+        },
+        {
+          "value": "Kira",
+          "label": "Kira"
+        },
+        {
+          "value": "Maaşlar",
+          "label": "Maaşlar"
+        },
+        {
+          "value": "Tedarik",
+          "label": "Tedarik"
+        },
+        {
+          "value": "Pazarlama",
+          "label": "Pazarlama"
+        },
+        {
+          "value": "Vergiler",
+          "label": "Vergiler"
+        },
+        {
+          "value": "Diğer",
+          "label": "Diğer"
+        }
+      ]
+    }
+  },
+  "salaries": {
+    "loading": "Bordro yükleniyor…",
+    "noRows": "Hesaplanacak ekip üyesi yok",
+    "fund": "Maaş fonu",
+    "fundSub": "geçerli ay",
+    "sessions": "Seanslar",
+    "sessionsSub": "toplam gerçekleştirilen",
+    "paidOf": "ekip üyesi",
+    "sessionsCount": "{{count}} seans",
+    "paid": "Ödendi",
+    "pending": "Beklemede",
+    "paying": "…",
+    "payAction": "Öde",
+    "cancelAction": "Maaşı iptal et",
+    "perMonth": "/ay",
+    "accrualTitle": "Dönem tahakkuku",
+    "rate": "Ücret",
+    "rateNotSet": "ayarlanmadı",
+    "sessionsInPeriod": "Dönemdeki seanslar",
+    "hoursWorked": "Çalışılan saatler",
+    "lessonsRevenue": "Seans geliri",
+    "totalToPay": "Toplam ödeme",
+    "rateWarning": "Ücret ayarlanmamış — tahakkukun hesaplanabilmesi için ekip üyesi profilinden ayarlayın.",
+    "rateUnit": {
+      "hourly": "saat",
+      "percent": "%",
+      "fixed": "sabit"
+    },
+    "paidAt": "Ödendi {{date}}",
+    "historyTitle": "Ödeme geçmişi",
+    "historyEmpty": "Henüz ödeme yok",
+    "historyLoading": "Geçmiş yükleniyor…",
+    "toasts": {
+      "loadFailed": "Bordro yüklenemedi",
+      "paid": "Maaş ödendi: {{name}}",
+      "payFailed": "Maaş ödenemedi",
+      "canceled": "Maaş iptal edildi: {{name}}",
+      "historyLoadFailed": "Ödeme geçmişi yüklenemedi"
+    }
+  },
+  "counterparties": {
+    "count": "{{count}} karşı taraf",
+    "totalDebt": "Toplam borç:",
+    "add": "Ekle",
+    "newTitle": "Yeni karşı taraf",
+    "nameLabel": "Ad / Tam ad",
+    "namePlaceholder": "Şirket Ltd. veya Ahmet Yılmaz",
+    "innLabel": "Vergi numarası",
+    "categoryLabel": "Kategori",
+    "categoryPlaceholder": "Kira, tedarikçi…",
+    "typeLabel": "Karşı taraf türü",
+    "types": {
+      "legal": {
+        "label": "Tüzel kişi",
+        "desc": "Kuruluş veya şirket"
+      },
+      "ie": {
+        "label": "Şahıs işletmesi",
+        "desc": "Bireysel girişimci"
+      },
+      "person": {
+        "label": "Gerçek kişi",
+        "desc": "Özel kişi"
+      }
+    },
+    "addSubmit": "Karşı taraf ekle",
+    "you": "Siz",
+    "otherCategory": "Diğer",
+    "deals": "işlem",
+    "dealsLabel": "İşlemler",
+    "debtLabel": "Borç",
+    "documents": "Belgeler",
+    "edit": "Düzenle",
+    "delete": "Sil",
+    "deleteConfirmTitle": "Karşı taraf silinsin mi?",
+    "deleteConfirmText": "İlgili belgeler ve işlem geçmişi korunur, ancak karşı taraf listeden kaldırılır.",
+    "toasts": {
+      "loadFailed": "Karşı taraflar yüklenemedi",
+      "enterName": "Bir ad girin",
+      "saved": "Değişiklikler kaydedildi",
+      "saveFailed": "Kaydedilemedi",
+      "added": "Karşı taraf eklendi",
+      "addFailed": "Karşı taraf eklenemedi",
+      "deleted": "Karşı taraf silindi",
+      "deleteFailed": "Karşı taraf silinemedi",
+      "documentsOpened": "Belgeler açıldı"
+    }
+  },
+  "documents": {
+    "signed": "İmzalanmış",
+    "pendingCount": "İmza bekliyor",
+    "draftCount": "Dahili (imzasız)",
+    "searchPlaceholder": "Başlığa veya karşı tarafa göre ara…",
+    "filters": {
+      "all": "Tümü",
+      "signed": "İmzalanmış",
+      "pending": "İmza bekliyor"
+    },
+    "upload": "Yükle",
+    "addTitle": "Kitaplığa belge ekle",
+    "dropzoneTitle": "Tıklayın veya bir dosya sürükleyin",
+    "dropzoneHint": "PDF, DOCX, XLSX (15 MB'a kadar)",
+    "dropzoneChange": "Başka bir dosya seçmek için tıklayın",
+    "titleLabel": "Belge başlığı",
+    "titlePlaceholder": "Örneğin, Teslim tutanağı No. 48",
+    "partyLabel": "Karşı taraf (varsa)",
+    "partyPlaceholder": "Şirket veya şahıs işletmesi adı",
+    "needsSignature": "Belgenin imzalanması gerekiyor mu?",
+    "needsSignatureHint": "Durum “İmza bekliyor” olacaktır",
+    "saveToBase": "Kitaplığa kaydet",
+    "emptyTitle": "Bu klasör boş",
+    "emptyBody": "Yeni bir belge yükleyin veya filtreleri değiştirin",
+    "internalDoc": "Dahili belge",
+    "uploaded": "Yüklendi {{date}}",
+    "download": "İndir",
+    "open": "Aç",
+    "fileRequired": "Bir dosya ekleyin",
+    "options": "Seçenekler",
+    "status": {
+      "title": "Durum",
+      "signed": "İmzalandı",
+      "pending": "İmza bekliyor",
+      "draft": "İmzasız"
+    },
+    "delete": "Sil",
+    "toasts": {
+      "loadFailed": "Belgeler yüklenemedi",
+      "titleRequired": "Bir dosya yükleyin veya başlık girin",
+      "created": "Belge kitaplığa yüklendi",
+      "createFailed": "Belge kaydedilemedi",
+      "badFormat": "İzin verilen biçimler: PDF, DOCX, XLSX",
+      "downloadFailed": "Dosya indirilemedi",
+      "noFile": "Bu belgeye dosya eklenmemiş",
+      "openFailed": "Dosya açılamadı",
+      "statusChanged": "Durum: {{label}}",
+      "statusFailed": "Durum değiştirilemedi",
+      "deleted": "Belge silindi",
+      "deleteFailed": "Belge silinemedi"
+    }
+  },
+  "goals": {
+    "loading": "Hedefler yükleniyor…",
+    "active": "Devam eden hedefler",
+    "done": "Tamamlandı",
+    "avgProgress": "Genel ilerleme",
+    "trackingTitle": "Plan takibi",
+    "createGoal": "Hedef oluştur",
+    "newTitle": "Yeni finansal hedef",
+    "titleLabel": "Hedef başlığı",
+    "titlePlaceholder": "Örneğin, yeni reformer makineleri",
+    "targetLabel": "Hedef tutar, {{symbol}}",
+    "targetPlaceholder": "500000",
+    "deadlineLabel": "Son tarih",
+    "trackingLabel": "İlerleme nasıl takip edilsin?",
+    "trackingAuto": "Otomatik (CRM metriği)",
+    "trackingAutoDesc": "Hedefi seçilmiş bir kategorinin gelirine bağlayın. CRM ilerleme çubuğunu kendisi günceller.",
+    "trackingManual": "Manuel (kişisel tasarruf)",
+    "trackingManualDesc": "Kartta “Fon ekle” düğmesi görünür. İlerleme yalnızca size bağlıdır.",
+    "opTypeLabel": "İşlem türü",
+    "categoryLabel": "Kategori",
+    "categoryPlaceholder": "Bir kategori seçin",
+    "editTitle": "Hedefi düzenle",
+    "nameLabel": "Başlık",
+    "namePlaceholder": "Hedef başlığı",
+    "amountLabel": "Tutar, {{symbol}}",
+    "achieved": "Hedefe ulaşıldı",
+    "priority": {
+      "high": "Yüksek öncelik",
+      "medium": "Orta öncelik",
+      "low": "Düşük öncelik"
+    },
+    "autoCollect": "Otomatik takip",
+    "deadlinePrefix": "Son tarih:",
+    "noDeadline": "Son tarih yok",
+    "fundPlaceholder": "Tutar, {{symbol}}",
+    "fund": "Ekle",
+    "addFunds": "Fon ekle",
+    "autoHint": "Değer, kategori gelirine göre otomatik olarak güncellenir",
+    "deleteConfirmTitle": "Hedef silinsin mi?",
+    "deleteConfirmText": "Bu hedefin ilerlemesi kaybolacak. Bu işlem geri alınamaz.",
+    "toasts": {
+      "loadFailed": "Hedefler yüklenemedi",
+      "fillRequired": "Başlığı ve tutarı doldurun",
+      "chooseCategory": "Otomatik hedef için bir kategori seçin",
+      "created": "Hedef oluşturuldu",
+      "createFailed": "Hedef oluşturulamadı",
+      "enterName": "Bir ad girin",
+      "updated": "Hedef güncellendi",
+      "updateFailed": "Hedef güncellenemedi",
+      "deleted": "Hedef silindi",
+      "deleteFailed": "Hedef silinemedi",
+      "funded": "Fon eklendi",
+      "fundFailed": "Fon eklenemedi"
+    }
+  },
+  "onlinePayments": {
+    "description": "Stripe'ı bağlayın; müşterileriniz kasada kartla ödeme yapabilsin. Para doğrudan stüdyonuzun hesabına gelir — Velora parayı asla tutmaz. Komisyon planınıza bağlıdır.",
+    "gatewaysTitle": "Ödeme sağlayıcıları",
+    "gateways": {
+      "stripe": {
+        "name": "Stripe"
+      },
+      "states": {
+        "none": {
+          "label": "Bağlı değil",
+          "hint": "Stüdyo hesabına kartla ödeme alın",
+          "action": "Bağlan"
+        },
+        "incomplete": {
+          "label": "Bilgiler eksik",
+          "hint": "Stripe stüdyonuzun bilgilerini bekliyor — o zamana kadar ödemeler kapalı kalır",
+          "action": "Devam"
+        },
+        "action": {
+          "label": "İşlem gerekli",
+          "hint": "Stripe bazı bilgileri reddetti ve düzeltme bekliyor — bu kendiliğinden çözülmez",
+          "action": "Bilgileri düzelt"
+        },
+        "review": {
+          "label": "İnceleniyor",
+          "hint": "Bilgiler gönderildi, Stripe inceliyor. Bu genellikle bir güne kadar sürer",
+          "action": "Stripe'ı aç"
+        },
+        "active": {
+          "label": "Bağlı",
+          "hint": "Kart ödemeleri stüdyonun Stripe hesabına gelir",
+          "action": "Ayarlar"
+        }
+      }
+    },
+    "toasts": {
+      "gatewayUpdated": "Sağlayıcı ayarları güncellendi",
+      "stripeReturned": "Bilgiler Stripe'a gönderildi",
+      "stripeLinkExpired": "Stripe bağlantısının süresi doldu — tekrar Bağlan'a basın"
+    }
+  },
+  "paymentMethods": {
+    "totalTurnover": "Dönem cirosu",
+    "periods": {
+      "month": "Ay",
+      "quarter": "Çeyrek",
+      "year": "Yıl"
+    },
+    "amount": "Tutar",
+    "share": "Pay",
+    "transactions": "işlem",
+    "methods": {
+      "cash": {
+        "name": "Nakit"
+      },
+      "card": {
+        "name": "Banka kartı"
+      },
+      "qr": {
+        "name": "SBP (QR)"
+      },
+      "transfer": {
+        "name": "Havale"
+      },
+      "stripe": {
+        "name": "Stripe"
+      },
+      "": {
+        "name": "Belirtilmedi"
+      }
+    }
+  },
+  "reports": {
+    "metrics": {
+      "revenue": "Gelirler",
+      "expenses": "Giderler",
+      "profit": "Kâr",
+      "margin": "Marj"
+    },
+    "vsPreviousPeriod": "önceki döneme göre",
+    "cashflowTitle": "Nakit akışı",
+    "cashflowSub": "Gelir ve gider analizi",
+    "period": "Dönem",
+    "income": "Gelir",
+    "expense": "Gider",
+    "profit": "Kâr",
+    "periods": {
+      "today": "Bugün",
+      "week": "Hafta",
+      "month": "Ay",
+      "year": "Yıl"
+    },
+    "legendIncome": "Gelirler",
+    "legendExpense": "Giderler",
+    "exportCsv": "CSV dışa aktar",
+    "expenseStructure": "Gider dağılımı",
+    "incomeStructure": "Gelir dağılımı",
+    "total": "Toplam",
+    "otherCategory": "Kategorisiz",
+    "noData": "Bu dönem için veri yok",
+    "insightsTitle": "Finansal özet ve içgörüler",
+    "insightsPlaceholder": "YZ destekli finansal özet burada görünür: eğilim analizi, gider dağılımı ve öneriler",
+    "toasts": {
+      "exportFailed": "İşlemler dışa aktarılamadı"
+    }
+  },
+  "confirmModal": {
+    "cancel": "İptal",
+    "confirm": "Onayla",
+    "delete": "Sil"
+  }
+}

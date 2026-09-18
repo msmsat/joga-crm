@@ -1,0 +1,321 @@
+{
+  "header": {
+    "allConfigured": "Alla program är konfigurerade",
+    "allConfiguredSub": "Ditt lojalitetssystem fungerar för fullt",
+    "setup": "Ställ in lojalitetsprogram",
+    "setupSub": "{{count}} av {{total}} program är konfigurerade · Varje program stärker kundlojaliteten",
+    "start": "Kom igång"
+  },
+  "programs": {
+    "loyalty": {
+      "title": "Lojalitetskort",
+      "desc": "Nivåbaserat system för poängintjäning",
+      "statLabel": "kunder"
+    },
+    "discounts": {
+      "title": "Rabatter och cashback",
+      "desc": "Personliga erbjudanden för kunder",
+      "statLabel": "aktiva"
+    },
+    "certificates": {
+      "title": "Presentkort",
+      "desc": "Presentkort och personliga certifikat",
+      "statLabel": "sålda"
+    },
+    "referral": {
+      "title": "Rekommendationer",
+      "desc": "Programmet ”Ta med en vän”",
+      "statLabel": "rekommendationer"
+    },
+    "promocodes": {
+      "title": "Kampanjkoder",
+      "desc": "Rabattkoder med användningsgräns",
+      "statLabel": "aktiva"
+    },
+    "deposit": {
+      "title": "Insättning",
+      "desc": "Kundens penningbalans hos studion",
+      "statLabel": "med saldo"
+    }
+  },
+  "card": {
+    "active": "Aktiv",
+    "disable": "Inaktivera",
+    "notConfigured": "Inte konfigurerad",
+    "configure": "Konfigurera"
+  },
+  "drawer": {
+    "subtitle": "Programinställningar",
+    "saving": "Sparar…",
+    "save": "Spara och aktivera",
+    "cancel": "Avbryt",
+    "close": "Stäng"
+  },
+  "config": {
+    "mainParams": "Huvudparametrar",
+    "programName": "Programnamn",
+    "pointsRate": "Poängkurs ({{currency}} per 1 poäng)",
+    "levels": "Nivåer",
+    "pointValue": "1 poäng =",
+    "pointValueHint": "Poäng tjänas in enligt samma kurs på varje nivå, men de har inte samma värde. Ge Gold 1 och Diamond 2, så minskar en poäng som kunden tjänar in priset dubbelt så mycket i kassan. Det är vad en nivå ger: ju mer någon har spenderat i studion, desto mer värda är poängen.",
+    "expiry": "Giltighetstid",
+    "expiryTooltip": "Hur länge en kund kan använda sina intjänade poäng",
+    "expiryOptions": {
+      "3m": "3 mån.",
+      "6m": "6 mån.",
+      "1y": "1 år",
+      "never": "Ingen utgångstid"
+    },
+    "newLevelName": "Ny nivå",
+    "addLevel": "+ Nivå",
+    "levelFrom": "från",
+    "levelTo": "till",
+    "deleteLevelTitle": "Radera denna nivå?",
+    "deleteLevelMessage": "Kunder på nivån ”{{name}}” flyttas till angränsande nivå utifrån sina totala utgifter.",
+    "discountType": "Rabattyp",
+    "discountTypes": {
+      "percentage": "Procent (%)",
+      "fixed": "Fast ({{currency}})",
+      "cashback": "Cashback"
+    },
+    "cashbackPercent": "Cashback-procent",
+    "discountSize": "Rabattbelopp",
+    "minPurchase": "Minsta köpbelopp",
+    "noLimit": "Ingen gräns",
+    "conditions": "Villkor för tillämpning",
+    "appliesToAll": "Tillämpa på alla tjänster",
+    "stackable": "Kombinera med andra rabatter",
+    "visibleInCabinet": "Visa för kunden i kundens konto",
+    "certType": "Certifikattyp",
+    "certTypes": {
+      "named": "Personligt",
+      "gift": "Gåva",
+      "service": "För en tjänst"
+    },
+    "denominations": "Belopp",
+    "addDenom": "+ Lägg till",
+    "service": "Tjänst",
+    "noServices": "Det finns ännu inga tjänster i katalogen — lägg till dem under ”Katalog”",
+    "params": "Parametrar",
+    "expiryDays": "Giltighetstid (dagar)",
+    "certIssue": "Utfärda certifikat",
+    "certCustomAmount": "Eget belopp",
+    "certRecipientName": "Mottagarens namn",
+    "certRecipientPlaceholder": "Valfritt",
+    "certLinkClient": "Koppla till en kund",
+    "certClientSearchPlaceholder": "Börja skriva ett namn…",
+    "certAccount": "Insättningskonto",
+    "certAccountNone": "Bokför inte i huvudboken",
+    "certIssueButton": "Utfärda",
+    "certIssuedTitle": "Certifikatet har utfärdats",
+    "certCopyCode": "Kopiera kod",
+    "certCopied": "Kopierat",
+    "certIssueAnother": "Utfärda ett till",
+    "certIssued": "Utfärdade certifikat",
+    "certEmpty": "Inga certifikat har utfärdats ännu",
+    "certStatus": {
+      "active": "Aktiv",
+      "used": "Använt",
+      "expired": "Utgånget"
+    },
+    "certRedeem": "Lös in",
+    "certRedeemTitle": "Lösa in detta certifikat?",
+    "certRedeemMessage": "Certifikatet {{code}} markeras som använt. Åtgärden kan inte ångras.",
+    "referrerBonusTitle": "Rekommendationsbonus",
+    "referrerBonus": "Bonus till rekommenderaren ({{currency}})",
+    "newClientDiscount": "Rabatt för ny kund (%)",
+    "triggerCondition": "Villkor för intjäning",
+    "triggerConditions": {
+      "first_visit": "Efter första besöket",
+      "first_payment": "Efter första betalningen",
+      "registration": "Direkt vid registrering"
+    },
+    "bonusAccrual": "Bonusintjäning",
+    "bonusTypes": {
+      "points": "Poäng",
+      "deposit": "Till insättning",
+      "discount": "Som rabatt"
+    },
+    "promoCreate": "Skapa kampanjkod",
+    "promoCodePlaceholder": "SOMMAR25",
+    "promoValidUntil": "Giltig till",
+    "promoUsageLimit": "Användningsgräns",
+    "promoAdd": "+ Lägg till kampanjkod",
+    "promoList": "Kampanjkoder",
+    "promoEmpty": "Det finns inga kampanjkoder ännu",
+    "promoUntil": "till",
+    "promoStatus": {
+      "active": "Aktiv",
+      "expired": "Utgånget",
+      "exhausted": "Gränsen är nådd",
+      "disabled": "Inaktiverad"
+    },
+    "depositTotal": "Totalt saldo",
+    "depositTotalSub": "i alla kundinsättningar",
+    "depositTopClients": "Främsta kunder efter saldo",
+    "depositEmpty": "Ingen har en insättning ännu",
+    "depositHint": "Påfyllningar och uttag görs på kundens profil. Rekommendationsprogrammet kan betala bonusar till insättningen i stället för som poäng."
+  },
+  "validation": {
+    "required": "Det här fältet måste fyllas i",
+    "minOne": "Måste vara minst 1",
+    "minZero": "Får inte vara negativt",
+    "positive": "Måste vara större än 0",
+    "range0to100": "0 till 100"
+  },
+  "toasts": {
+    "saved": "Programmet har aktiverats",
+    "saveFailed": "Det gick inte att spara",
+    "toggleFailed": "Det gick inte att uppdatera programmet",
+    "loadFailed": "Det gick inte att läsa in data",
+    "retry": "Försök igen"
+  },
+  "stats": {
+    "notConnected": "Programmet är inte anslutet",
+    "willAppear": "Data visas efter konfigurationen",
+    "noData": "Inga data",
+    "connectProgram": "Anslut ett program",
+    "revenueHeadline": "Intäkter från medlemmar",
+    "membersHeadline": "Programmedlemmar",
+    "returnedClients": "Återvändande kunder",
+    "returnedClientsSub": "2+ besök på 90 dagar",
+    "avgCheckHeadline": "Genomsnittsköp per medlem",
+    "bonusCostHeadline": "Kostnad för bonusar",
+    "bonusCostSub": "den här månaden",
+    "roiHeadline": "ROI",
+    "roiValue": "×{{value}}",
+    "perMonth": "den här månaden",
+    "cardHolders": "kortinnehavare",
+    "kpi": "Nyckeltal",
+    "members": "Medlemmar",
+    "withCard": "med kort",
+    "avgCheck": "Genomsnittsköp",
+    "byMembers": "bland medlemmar",
+    "pointsInCirculation": "Poäng i omlopp",
+    "accrued": "intjänade",
+    "revenue": "Intäkter",
+    "revenuePerMonth": "från medlemmar / mån",
+    "levelDistribution": "Fördelning per nivå",
+    "noLevels": "Nivåerna är inte konfigurerade ännu",
+    "totalClients": "Totalt antal kunder i programmet",
+    "fromValue": "från {{value}}",
+    "levelPointValue": "poäng = {{value}}"
+  },
+  "scenarios": {
+    "title": "Smarta scenarier",
+    "subtitle": "Autopilot för kundlojalitet: systemet hittar kunder och belönar dem åt dig",
+    "add": "Scenario",
+    "fired": "utlöst {{count}} gånger",
+    "lastRun": "senast kört {{when}}",
+    "neverRun": "inte kört ännu",
+    "empty": "Det finns inga scenarier ännu",
+    "emptySub": "Skapa det första — systemet behåller kunderna åt dig",
+    "channel": "Kanal",
+    "channelSoon": "efter att integrationen har anslutits",
+    "pickTemplate": "Välj ett scenario",
+    "pickTemplateSub": "En färdig mall — justera trösklarna senare",
+    "create": "Skapa",
+    "deleteConfirm": "Radera scenariot?",
+    "deleteConfirmSub": "Regeln slutar att utlösas. Åtgärden kan inte ångras.",
+    "triggers": {
+      "inactive_days": "inaktiv i {{days}} dagar",
+      "low_subscription": "≤ {{classes_left}} pass kvar",
+      "birthday": "födelsedag",
+      "nth_visit": "besök nr {{n}}",
+      "referral": "tog med en vän"
+    },
+    "actions": {
+      "points": "ge {{points}} poäng",
+      "gift_classes": "ge {{classes}} pass",
+      "certificate": "utfärda ett certifikat på {{amount}} ₽",
+      "renewal_offer": "erbjud förnyelse med {{discount}} % rabatt"
+    },
+    "templates": {
+      "win_back": {
+        "name": "Vi saknar dig",
+        "desc": "Få tillbaka en kund som inte har besökt er på länge"
+      },
+      "expiring_subscription": {
+        "name": "Abonnemanget håller på att ta slut",
+        "desc": "Erbjud förnyelse innan passen tar slut"
+      },
+      "birthday_gift": {
+        "name": "Födelsedagspresent",
+        "desc": "Gläd en kund på deras speciella dag"
+      },
+      "fifth_visit": {
+        "name": "Lojalitetsbelöning",
+        "desc": "Ett gratis pass för lojalitet"
+      },
+      "referral_thanks": {
+        "name": "Tack för vännen",
+        "desc": "Belöna den som tog med en ny kund"
+      }
+    },
+    "ifClient": "Om kunden",
+    "then": "→",
+    "toasts": {
+      "created": "Scenariot har skapats",
+      "updated": "Scenariot har uppdaterats",
+      "deleted": "Scenariot har raderats",
+      "failed": "Det gick inte att spara scenariot"
+    },
+    "delete": "Radera"
+  },
+  "segmentsBoard": {
+    "title": "Segment och rekommendationer",
+    "subtitle": "Aktiva kundgrupper, var och en med en tydlig uppmaning",
+    "empty": "Det finns inget här, och det är bra",
+    "clients": "kunder",
+    "daysAgo": "{{count}} dagar sedan",
+    "neverVisited": "inga besök",
+    "more": "och {{count}} till",
+    "segments": {
+      "at_risk": {
+        "name": "På väg att lämna",
+        "desc": "Aktiva, inaktiva i 21+ dagar",
+        "action": "Ge bonus"
+      },
+      "vip_idle": {
+        "name": "VIP har tystnat",
+        "desc": "VIP-kunder, inaktiva i 14+ dagar",
+        "action": "Kör kampanj"
+      },
+      "expiring_subscription": {
+        "name": "Abonnemanget löper ut",
+        "desc": "≤2 pass eller ≤7 dagar kvar",
+        "action": "Kör kampanj"
+      },
+      "lost_newcomers": {
+        "name": "Kom aldrig tillbaka",
+        "desc": "Kom en gång, borta i 14+ dagar",
+        "action": "Kör kampanj"
+      },
+      "upsell_candidates": {
+        "name": "Redo för paket",
+        "desc": "8+ besök den här månaden, inget paket",
+        "action": "Kör kampanj"
+      }
+    },
+    "campaignSub": "Segmentet ”{{name}}” · {{count}} kunder",
+    "pointsLabel": "Hur många poäng ska tilldelas",
+    "messageLabel": "Meddelandetext",
+    "messagePlaceholder": "t.ex. Vi saknar dig! Kom tillbaka — vi väntar på dig.",
+    "emailNote": "E-post skickas bara till kunder med e-postadress",
+    "confirm": "Skicka",
+    "toasts": {
+      "pointsDone": "Poäng har tilldelats · {{processed}} behandlade, {{emails}} meddelade",
+      "emailDone": "Kampanjen har skickats · {{emails}} e-postmeddelanden av {{processed}}"
+    }
+  },
+  "retention": {
+    "title": "Förnyelser av abonnemang",
+    "subtitle": "Hur väl kunder återvänder för ett nytt paket",
+    "renewalRate": "Förnya",
+    "avgPackages": "Paket per kund",
+    "sold": "Sålda",
+    "renewed": "Förnyade",
+    "empty": "Det finns inga abonnemangsförsäljningar ännu",
+    "emptySub": "Analys visas efter de första paketförsäljningarna"
+  }
+}

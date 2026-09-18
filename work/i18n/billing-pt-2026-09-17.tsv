@@ -1,0 +1,294 @@
+== pt
+legal.terms	Termos de serviço
+legal.privacy	Política de privacidade
+tabs.plans	Planos e preços
+tabs.invoices	Histórico de pagamentos
+tabs.method	Método de pagamento
+tabsShort.plans	Planos
+tabsShort.invoices	Histórico
+tabsShort.method	Pagamento
+paymentsHistory.title	Histórico completo de pagamentos
+paymentsHistory.subtitle	Todas as faturas deste estúdio
+paymentsHistory.clearFilter	Limpar
+paymentsHistory.loadMore	Carregar mais
+planNames.start	Start
+planNames.pro	Pro
+planNames.business	Business
+seats.title	Quantos membros da equipa tem o estúdio?
+seats.hint	a partir de {{amount}} por mês
+seats.stepNote	Cada lugar adicional custa {{amount}} por mês
+seats.unlimitedNote	Equipa ilimitada
+seats.perSeat	Por membro da equipa
+limits.staff	Equipa
+limits.ai	Pedidos Velora AI
+limits.unlimited	Ilimitado
+banner.trialEnds	O período experimental termina em {{date}} — escolha um plano
+banner.renews	A sua subscrição {{plan}} renova em {{date}}
+banner.expires	A sua subscrição {{plan}} expira em {{date}}
+banner.choosePlan	Escolher plano
+banner.dismiss	Fechar
+banner.unpaid	O seu plano não foi pago. Para continuar, pague em Planos e faturação.
+banner.suspended	O acesso foi suspenso porque a fatura do plano está vencida. Pague-a em Planos e faturação.
+paymentReturn.done	Pagamento concluído — o plano {{plan}} está ativo.
+paymentReturn.processing	O pagamento está a ser processado — a sua subscrição será ativada em alguns minutos.
+header.eyebrow	Velora · Faturação
+header.title	Planos e faturação
+header.subtitle	Gira a subscrição, os métodos de pagamento e o histórico de pagamentos
+header.totalSpent	Total gasto
+header.monthsWithUs	Meses connosco
+header.saved	Poupado
+header.nextCharge	Próxima cobrança
+header.currentPlan	PLANO ATUAL
+header.noPlanName	Sem plano
+header.noPlan	Sem subscrição ativa
+header.active	Ativo
+header.activeUntil	Ativo · até {{date}}
+header.trialPlanName	Plano experimental
+header.trial	Período experimental
+header.trialUntil	Período experimental · até {{date}}
+header.expired	Expirado
+header.percentRate	{{rate}}% das vendas
+header.modePercent	Plano percentual
+header.modeFixed	Fixo
+header.modeCombo	Combinado
+header.unpaid	Plano não pago
+header.awaitingPayment	A aguardar pagamento
+mode.title	Modelo de pagamento
+mode.subscription	Subscrição fixa
+mode.percent	% das vendas
+mode.combo	Combinação de fixo + %
+mode.short.subscription	Fixo
+mode.short.percent	Percentagem
+mode.short.combo	Combinado
+mode.descriptions.subscription	Pague um valor fixo todos os meses. Previsível e vantajoso.
+mode.descriptions.percent	Sem tarifa fixa: {{rate}}% de cada venda, incluindo dinheiro.
+mode.descriptions.combo	Metade da subscrição + {{rate}}% de cada venda, incluindo dinheiro.
+mode.badges.popular	Popular
+mode.badges.flexible	Flexível
+mode.percentCard.title	Modelo «3% das vendas»
+mode.percentCard.description	Pague apenas quando ganha: 3% de cada venda, sem mensalidade fixa. Os pagamentos online são divididos de imediato; dinheiro e carregamentos de depósitos acumulam-se e chegam numa fatura mensal.
+mode.percentCard.noFixed	Sem tarifa fixa
+mode.percentCard.payForResult	Pague pelo resultado
+mode.percentCard.oneClick	Ativação com um clique
+mode.percentCard.cta	Ativar modelo de 3%
+mode.percentCard.ctaShort	Ativar 3%
+mode.activateSuccess	O modelo de pagamento foi atualizado
+mode.activateError	Não foi possível atualizar o modelo de pagamento
+mode.alreadyActive	Este modelo de pagamento já está ativo — abaixo pode renovar ou alterar o plano
+mode.confirmSwitchTitle	Alterar o modelo de pagamento?
+mode.confirmSwitchMessage	A sua subscrição está ativa. A alteração entra em vigor imediatamente e o restante período pago PERDE-SE POR COMPLETO: os dias não utilizados não são reembolsados nem transitam.
+mode.termsTitle	Confirme as condições do plano
+mode.termsMessage	Neste plano, a plataforma retém {{rate}}% de cada venda.\n\nNos pagamentos online, a tarifa é retida automaticamente no momento do pagamento. Para dinheiro, terminal e recargas de depósitos, NÃO é retida de imediato — acumula e recebe uma fatura separada uma vez por mês.\n\nTem {{days}} dias para pagar a fatura. Se não for paga a tempo, o acesso ao CRM e à miniaplicação de clientes é suspenso até ao pagamento.\n\nO valor atual a pagar é apresentado em Faturação; pode pagar a qualquer momento, mesmo antecipadamente.
+mode.termsConfirm	Aceito as condições
+mode.termsMinimum	A tarifa mensal mínima é {{amount}} {{currency}}. Se, durante um mês de calendário, a plataforma tiver ganho menos do que isso com o seu estúdio (por exemplo, não houve vendas através do CRM), será faturada a diferença. Se ganhar mais do que o mínimo, não há fatura. Uma tarifa mínima não paga suspende o acesso da mesma forma que uma fatura de comissão não paga.
+mode.termsBurn	ATENÇÃO: Ainda lhe resta período pago. Ao alterar o modelo de faturação, PERDE-O por completo — os dias não utilizados não são reembolsados nem transitam.
+mode.termsCombo	A alteração é uma COMPRA: logo após confirmar, verá o valor a pagar. O restante período pago atual perde-se — não é reembolsado nem transita. O modelo fixo + % é ativado APENAS após o pagamento; até lá, o seu plano mantém-se como está e nada é cobrado.
+combo.rateBadge	{{rate}}%
+combo.summary	Fixo {{fixed}}/mês + {{rate}}% das vendas (dinheiro faturado mensalmente)
+combo.cta	Ativar plano combinado
+combo.ctaShort	Ativar combinação
+period.1	1 mês
+period.3	3 meses
+period.6	6 meses
+period.12	1 ano
+period.24	2 anos
+period.title	Período de pagamento
+period.discountActive	Desconto de {{percent}}% ativo
+period.noDiscount	Sem desconto
+period.discountLabel	−{{percent}}% de desconto
+calculator.title	Parâmetros do cálculo
+calculator.monthlyTurnover	O seu volume mensal online
+calculator.turnoverRangeMin	50 mil
+calculator.turnoverRangeMax	3 M+
+calculator.chooseFeeLabel	Escolha a taxa de comissão (afeta as funcionalidades)
+calculator.feeOptions.basic	Básico
+calculator.feeOptions.standard	Standard
+calculator.feeOptions.pro	Pro
+calculator.feeOptions.max	Máximo
+calculator.chooseFixedLabel	Escolha a parte fixa base (a aquisição é sempre 3%)
+calculator.fixedOptions.start	Start
+calculator.fixedOptions.optima	Optima
+calculator.fixedOptions.business	Business
+calculator.economyPercentTitle	POUPANÇA DO PLANO
+calculator.economyComboTitle	POUPANÇA DO PLANO COMBINADO
+calculator.turnover	Volume de negócios do estúdio
+calculator.systemFee	Tarifa do sistema
+calculator.totalMonthlyPayment	PAGAMENTO MENSAL TOTAL
+calculator.onlyPayForResult	Não paga tarifa fixa, apenas pelos resultados
+calculator.activatePercent	Ativar modelo de {{percent}}%
+calculator.baseSubscription	Subscrição base (fixa)
+calculator.acquiringFee	Aquisição de pagamentos / tarifa
+calculator.activateCombo	Ativar plano combinado
+planCards.bestChoice	Melhor escolha
+planCards.current	Atual
+planCards.perMonth	/ mês
+planCards.currentPlan	Plano atual
+planCards.yourPrice	O seu preço
+planCards.staffLimit	Até {{count}} membros da equipa
+planCards.staffUnlimited	Equipa ilimitada
+paymentSchedule.title	Calendário de pagamentos
+paymentSchedule.total	Total a pagar
+paymentSchedule.morePayments	+ {{count}} pagamentos adicionais de {{amount}}
+paymentSchedule.processing	A redirecionar para o pagamento…
+paymentSchedule.payFor	Pagar {{count}} meses
+paymentSchedule.vatNote	Sem IVA — o imposto será adicionado no pagamento conforme o seu país
+trust.title	Porque é que mais de 2 400 negócios confiam em nós
+trust.reviews.0.text	Mudámos do Altegio. A diferença é como entre um táxi e um jato privado.
+trust.reviews.0.author	Maria K., FORM Pilates
+trust.reviews.1.text	O melhor é saber exatamente o que pago todos os meses. Sem surpresas.
+trust.reviews.1.author	Artem N., Barbershop Bros
+trust.reviews.2.text	O apoio respondeu em 4 minutos. Nunca vi isto em mais lado nenhum.
+trust.reviews.2.author	Elena D., SPA LUNA
+upgrade.priceLine	Preço {{price}}/mês
+upgrade.discountNote	 {{percent}}% de desconto ao pagar {{period}} meses
+upgrade.planLabel	Plano
+upgrade.periodLabel	Período
+upgrade.periodValue_one	{{count}} mês
+upgrade.periodValue_other	{{count}} meses
+upgrade.discountLabel	Desconto
+upgrade.scheduledBadge	A partir de {{date}} — plano «{{plan}}»
+upgrade.vatNote	Sem IVA — o imposto é adicionado no pagamento com base nos dados da sua empresa; empresas da UE com número de IVA beneficiam de autoliquidação.
+method.notLinked	Não associado
+method.badgeTitle	O método de pagamento está protegido
+method.tokenSub	Token do fornecedor · expira {{expiry}}
+method.tokenNote	Os dados reais do cartão são guardados pelo fornecedor de pagamentos (PCI DSS L1). Mantemos apenas um token de utilização única para renovações.
+method.securityTitle	Normas de proteção de dados
+method.security.pciDss	Encriptação PCI DSS nível 1
+method.security.secure3d	Proteção de transações 3D Secure
+method.security.noStorage	Os dados do cartão nunca passam pelos nossos servidores
+method.security.autoLink	O cartão é associado no primeiro pagamento
+method.noCardDetail	Não precisa introduzir os dados separadamente — o pagamento é feito na página segura da Stripe.
+method.renewDone	A fatura foi criada — o pagamento está a ser processado
+method.renewBusy	A criar fatura…
+method.renewSuccess	A fatura de renovação foi criada
+method.renewError	Não foi possível criar a fatura. Tente novamente.
+method.renewNow	Renovar agora com o cartão •••• {{last4}}
+method.autopayTitle	Definições de pagamento automático
+method.autopaySuccess	Definição guardada
+method.autopayError	Não foi possível guardar a definição. Tente novamente.
+method.autopay.cardOnly	Disponível ao pagar com cartão
+method.autopay.autoRenew.label	Renovação automática
+method.autopay.autoRenew.desc	Desative para cancelar no fim do período pago
+method.autopay.autoRenew.until	A subscrição não será renovada — acesso até {{date}}
+method.autopay.emailNotify.label	Notificações por e-mail
+method.autopay.emailNotify.desc	A fatura é enviada por e-mail após cada pagamento
+method.autopay.remind3d.label	Lembrar 3 dias antes
+method.autopay.remind3d.desc	Lembraremos antes da cobrança automática
+method.autopay.sms.label	Notificação por SMS
+method.autopay.sms.desc	É enviada uma mensagem quando ocorre a cobrança
+method.portal.title	Dados de faturação e IVA
+method.portal.subtitle	As faturas, o cartão associado e o histórico de cobranças estão no portal de cliente da Stripe.
+method.portal.cta	Abrir na Stripe
+method.ibanBadgeLabel	Transferência bancária (SEPA)
+method.ibanBadgeNote	As faturas chegam por e-mail com uma ligação de pagamento — nada é cobrado automaticamente no cartão. Também pode pagar antecipadamente na página da fatura.
+invoices.title	Histórico de pagamentos
+invoices.totalPaid	total pago {{amount}}
+invoices.exportCsv	Exportar CSV
+invoices.exportError	Não foi possível exportar o CSV. Tente novamente.
+invoices.receiptError	Não foi possível abrir a fatura. Tente novamente.
+invoices.invoiceNo	Fatura #{{id}}
+invoices.methodCard	Pago com cartão
+invoices.methodIban	Pago por transferência bancária (IBAN)
+invoices.syncHint	Verifique o estado no serviço de pagamentos
+invoices.syncChanged	Estado atualizado: {{status}}
+invoices.syncUnchanged	O serviço de pagamentos confirmou o mesmo estado
+invoices.syncError	Não foi possível verificar o estado. Tente novamente.
+invoices.kindOfflineFee	Comissão de vendas offline
+invoices.kindMinFee	Tarifa mensal mínima
+invoices.kindOnlineFee	Comissão de pagamentos online
+invoices.methodWithheld	Retido pela Stripe no pagamento
+table.date	Data
+table.description	Descrição
+table.amount	Montante
+table.status	Estado
+table.receipt	Fatura
+status.paid	Pago
+status.pending	Pendente
+status.failed	Não pago
+status.refunded	Reembolsado
+empty.noInvoices	Ainda não há faturas — aparecerão após o primeiro pagamento.
+empty.noCard	O seu cartão aparecerá automaticamente após o primeiro pagamento.
+empty.monthsWithUs	Ainda não comprou uma subscrição
+empty.noData	Sem dados
+savings.title	As suas poupanças
+savings.prepayTitle	As suas poupanças ao pagar antecipadamente
+savings.emptyState	Escolha um período mais longo e comece a poupar
+savings.youSave	Poupa {{amount}} em {{months}} meses
+savings.freeMonths	É como {{count}} meses grátis
+savings.amountLabel	{{amount}} poupados
+savings.comparedToMonthly	comparado com o pagamento mensal
+savings.forMonths_one	Por {{count}} mês
+savings.forMonths_other	Por {{count}} meses
+pay	Pagar
+continuePlan	Continuar plano
+payModal.titleNew	Iniciar plano {{plan}}
+payModal.titleSwitch	Mudar para {{plan}}
+payModal.titleRenew	Renovar {{plan}}
+payModal.totalLabel	O seu plano custará
+payModal.burnWarning	Mudar para outro plano reinicia o período: a parte restante do seu plano {{plan}} PERDE-SE — não é reembolsada nem transita. Renovar o mesmo plano preserva-a.
+payModal.switched	O plano foi alterado: não há nada a pagar — a alteração foi coberta pela parte restante do período atual.
+payModal.renewNote	Isto renova o mesmo plano: os meses que comprar são adicionados ao período pago atual. Nada se perde.
+payModal.cardNote	Pagamento com cartão na página segura da Stripe · reembolso em 7 dias
+payModal.freeUntil	Nada será cobrado até {{date}}: restam-lhe {{count}} dias do período pago. A faturação começa nessa data.
+payModal.taxLabel	IVA
+payModal.taxLine	IVA {{rate}}%
+payModal.reverseCharge	Autoliquidação
+payModal.totalWithTax	Total com IVA
+payModal.taxServerNote	O imposto é calculado a partir dos seus dados de faturação. A fatura mostrará o mesmo montante.
+payModal.taxReview	Não foi possível determinar o imposto pelos seus dados de faturação, pelo que o total é apresentado sem imposto e o pagamento não pode ser concluído. Verifique o país e a morada do pagador ou contacte o apoio.
+offlineFee.title	Tarifa de vendas offline
+offlineFee.accruing	Acumulada de dinheiro e depósitos a {{rate}}%. Faturada mensalmente; tem {{days}} dias para pagar.
+offlineFee.due	A fatura foi emitida. Dias restantes para pagamento: {{days}}.
+offlineFee.suspended	O pagamento está vencido — o acesso ao CRM e à miniaplicação foi suspenso.
+offlineFee.pay	Pagar
+offlineFee.suspendedMin	A tarifa mensal mínima está vencida — o acesso ao CRM e à miniaplicação foi suspenso.
+offlineFee.alsoAccruing	Além disso, está a acumular este mês: {{amount}} — será incluído na próxima fatura.
+offlineFee.minimum	A tarifa mensal mínima é {{amount}}. Se ganhar menos durante o mês, paga a diferença; se ganhar mais, não há fatura.
+offlineFee.pendingBill	Acumulada segundo o modelo anterior, a aguardar fatura.
+offlineFee.notBilledYet	Ainda não foi emitida fatura: o montante acumulado está abaixo do mínimo de faturação ou a fatura ainda está a ser preparada. Nada se perde — será incluído na próxima fatura.
+trial.title	Oferta para novos estúdios
+trial.subtitle	O seu estúdio acabou de ser criado
+trial.headline	{{days}} dias grátis
+trial.noCard	Não é necessário cartão — não tem nada a pagar agora
+trial.perks.allModules	Acesso completo a todos os módulos: agenda, clientes, finanças, notificações e Velora AI
+trial.perks.noCommitment	Sem compromisso: se não lhe servir, basta não renovar
+trial.perks.keepData	Tudo o que introduzir durante o teste continua a ser seu
+trial.activate	Ativar
+trial.decline	Recusar
+trial.cardHint	Ainda não ativou o período gratuito deste estúdio. Este permanece disponível até comprar um plano.
+profile.title	Dados de faturação
+profile.editTitle	Editar dados de faturação
+profile.subtitle	A sua morada é incluída na fatura e determina a taxa de imposto. Fica guardada na sua conta — não voltaremos a pedir noutro estúdio.
+profile.subtitlePay	Preencha uma vez e o pagamento seguirá diretamente da próxima vez. A sua morada é incluída na fatura e determina a taxa de imposto.
+profile.cardTitle	Dados de faturação
+profile.cardSubtitle	Guardados na sua conta e usados em todos os estúdios. É assim que aparecem na fatura.
+profile.cardEmpty	Ainda não preenchidos — pediremos antes do primeiro pagamento. Pode adicioná-los agora.
+profile.add	Adicionar dados de faturação
+profile.edit	Editar
+profile.save	Guardar
+profile.saveAndPay	Guardar e continuar para pagamento
+profile.cancel	Cancelar
+profile.saved	Dados de faturação guardados
+profile.vatNone	Não indicado
+profile.fields.country	País ou região
+profile.fields.countryPlaceholder	Escolha um país
+profile.fields.address	Morada
+profile.fields.line1	Linha de morada 1
+profile.fields.line1Placeholder	Rua e número
+profile.fields.line2	Linha de morada 2 — opcional
+profile.fields.line2Placeholder	Apartamento, suite, número da unidade, etc.
+profile.fields.postalCode	Código postal
+profile.fields.postalCodePlaceholder	110 00
+profile.fields.city	Cidade
+profile.fields.cityPlaceholder	Praga
+profile.fields.vat	Número de IVA — opcional
+profile.fields.vatPlaceholder	{{prefix}}12345678
+profile.fields.vatHint	Apenas para empresas. O número é verificado no registo da UE (VIES) ao guardar — não aceitamos números não verificados. Com um número válido, uma empresa de outro país da UE é faturada sem imposto (autoliquidação). Os particulares não o têm — deixe em branco.
+profile.fields.countrySearch	Comece a escrever um nome
+profile.fields.countryNotFound	País não encontrado
+profile.fields.vatOutsideEu	Não pedimos número de IVA: fora da UE, o imposto é definido pelo país do pagador, não pelo número, portanto não afeta a fatura.
+profile.fields.vatPending	O seu número foi guardado, mas o registo da UE estava indisponível nessa altura, por isso ainda não está confirmado e a próxima fatura incluirá IVA completo. Não precisa voltar a introduzi-lo: continuaremos a verificá-lo e, assim que o registo responder, o imposto deixa de ser cobrado. Para uma fatura já paga, o apoio reembolsará o imposto.
+profile.errors.required	Este campo é obrigatório
+profile.preview.invoice	Fatura
+profile.preview.billTo	Faturar a
+profile.preview.note	É assim que os seus dados aparecem em cada fatura. Pode alterá-los a qualquer momento em Plano e faturação → Método de pagamento.

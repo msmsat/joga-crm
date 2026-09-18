@@ -1,0 +1,287 @@
+== da
+telegram.tokenLabel	Bot-token
+telegram.tokenPlaceholder	1234567890:ABC...
+telegram.tokenInvalidFormat	Ugyldigt tokenformat
+telegram.verifyButton	Bekræft og forbind
+telegram.verifiedToast	Botten @{{username}} er forbundet
+telegram.verifyFailedToast	Telegram afviste dette token
+telegram.disconnect	Afbryd forbindelsen
+telegram.disconnectedToast	Botten er afbrudt
+telegram.disconnectConfirmTitle	Vil du afbryde botten?
+telegram.disconnectConfirmMessage	Det automatiske Telegram-svar holder op med at virke, indtil du forbinder en bot igen.
+telegram.gateTooltip	Forbind først en bot
+telegram.statsPending	Vises, når det automatiske svar begynder at virke
+telegram.instructionTitle	Sådan får du et token
+telegram.instructionStep1	Åbn @BotFather i Telegram
+telegram.instructionStep2	Send kommandoen /newbot, og vælg et navn og brugernavn til botten
+telegram.instructionStep3	Kopiér tokenet, du får
+telegram.instructionStep4	Indsæt det her, og klik på "Bekræft og forbind"
+instagram.connectButton	Forbind Instagram
+instagram.connectedToast	Instagram er forbundet
+instagram.connectErrorToast	Kunne ikke forbinde Instagram — prøv igen
+instagram.expiresUntil	Adgang gyldig til {{date}}
+instagram.disconnect	Afbryd forbindelsen
+instagram.disconnectedToast	Instagram er afbrudt
+instagram.disconnectConfirmTitle	Vil du afbryde Instagram?
+instagram.disconnectConfirmMessage	Det automatiske Instagram-svar holder op med at svare kunder, indtil du forbinder kontoen igen.
+instagram.gateTooltip	Forbind først en konto
+instagram.statsPending	Vises, når det automatiske svar begynder at virke
+instagram.instructionTitle	Sådan forbinder du
+instagram.instructionStep1	Studioets konto skal være professionel — Business eller Creator (Instagram-indstillinger → Kontotype)
+instagram.instructionStep2	Klik på "Forbind Instagram", og log ind med studioets konto
+instagram.instructionStep3	Giv adgang til beskeder
+instagram.instructionStep4	Du kommer automatisk tilbage hertil
+whatsapp.numberLabel	WhatsApp Business-nummer
+whatsapp.connectLink	eller indtast et token manuelt
+whatsapp.gateTooltip	Forbind først et WhatsApp-nummer
+whatsapp.statsPending	Vises, når det automatiske svar begynder at virke
+whatsapp.instructionTitle	Sådan forbinder du
+whatsapp.instructionStep1	Klik på “Forbind WhatsApp” — et Meta-vindue åbnes
+whatsapp.instructionStep2	Log ind på Facebook, vælg en virksomhedskonto og et nummer (eller tilføj et nyt), og bekræft det med koden
+whatsapp.instructionStep3	Nummeret forbindes én gang — det samme bruges til kundeunderretninger; kom tilbage hertil og slå det automatiske svar til
+whatsapp.connectButton	Forbind WhatsApp
+whatsapp.connectedToast	WhatsApp-nummeret er forbundet
+whatsapp.connectErrorToast	Kunne ikke forbinde WhatsApp-nummeret
+whatsapp.disconnect	Afbryd forbindelsen
+whatsapp.disconnectedToast	WhatsApp er afbrudt
+whatsapp.disconnectConfirmTitle	Vil du afbryde WhatsApp?
+whatsapp.disconnectConfirmMessage	Nummeret bliver også afbrudt fra studioets underretninger og integrationer.
+history.title	Chathistorik
+history.empty	Start din første samtale
+history.today	I dag
+history.yesterday	I går
+history.earlier	Tidligere
+history.messagesCount_one	{{count}} besked
+history.messagesCount_other	{{count}} beskeder
+history.deleteConfirmTitle	Vil du slette denne chat?
+history.deleteConfirmMessage	Alle beskeder i denne samtale slettes permanent.
+actions.newChat	Ny chat
+actions.deleteChat	Slet chat
+actions.confirmTitle	Bekræft handlingen
+actions.confirm	Bekræft
+actions.cancel	Annuller
+actions.cancelled	Handlingen blev annulleret.
+actions.done	Udført {{date}}
+actions.effect	Hvad ændres
+actions.undo	Fortryd
+actions.undoTitle	Vil du fortryde denne handling?
+actions.undoMessage	Jeg ruller det udførte tilbage: {{action}}. Hold, som kunder allerede har booket, bliver stående — kun en person kan fjerne dem.
+actions.args.lesson_id	Hold
+actions.args.client_id	Kunde
+actions.args.reservation_id	Booking
+actions.args.alternate_with	Skiftevis med
+actions.args.service_id	Ydelse
+actions.args.teacher_id	Træner
+actions.args.hall_id	Lokale
+actions.args.start_time	Starter
+actions.args.duration_min	Varighed, min.
+actions.args.total_spots	Pladser
+actions.args.price	Pris
+actions.args.name	Fornavn
+actions.args.last_name	Efternavn
+actions.args.phone	Telefon
+actions.args.email	E-mail
+actions.args.city	By
+actions.args.birth_date	Fødselsdato
+actions.args.source	Kilde
+actions.args.frozen	Frosset
+actions.args.date_from	Fra
+actions.args.date_to	Til
+actions.args.weekdays	Ugedage
+actions.args.time_from	Fra
+actions.args.time_to	Til
+actions.args.break_at	Pause kl.
+actions.args.break_min	Pause, min.
+actions.args.extend_hours	Udvid trænerens arbejdstid
+actions.args.salary	Løn
+actions.args.access_role	Adgang
+actions.args.department	Stilling
+actions.args.password	Medarbejderadgangskode
+actions.args.rate	Sats
+actions.args.rate_type	Løntype
+actions.args.service_ids	Ydelser
+actions.args.schedule	Skema
+actions.bool.yes	ja
+actions.bool.no	nej
+settings.title	AI-indstillinger
+settings.model	Model
+settings.language	Sprog
+models.comingSoon	Kommer snart
+models.velora-3.5	Velora AI 3.5
+languages.auto	Automatisk
+languages.ru	Russisk
+languages.en	Engelsk
+languages.uk	Ukrainsk
+languages.cs	Tjekkisk
+languages.de	Tysk
+chat.thinking	Velora AI tænker
+chat.thinkingAnswer	Velora AI overvejer svaret
+chat.readyTitle	Velora AI er klar til at hjælpe
+chat.thinkingTitle	Velora AI tænker...
+chat.readySubtitle	Stil et spørgsmål, eller vælg et forslag
+chat.thinkingSubtitle	Behandler din anmodning
+chat.placeholder	Skriv en besked...
+chat.drawerPlaceholder	Spørg mig om hvad som helst...
+chat.navbarPlaceholder	Spørg AI, eller opret en opgave...
+chat.enterToSend	Enter for at sende
+chat.shiftEnterNewline	Shift+Enter for ny linje
+chat.aiDisclaimer	Velora AI kan tage fejl. Tjek vigtige oplysninger.
+chat.continueInChat	Fortsæt i chat →
+chat.emptyTitle	Hvordan kan jeg hjælpe?
+chat.emptySubtitle	Stil et spørgsmål om dit studio, dine kunder eller din virksomhed
+chat.charCount_one	{{count}} / 4000 tegn
+chat.charCount_other	{{count}} / 4000 tegn
+chat.suggestions.revenue	Vis omsætningsstatistik for denne måned
+chat.suggestions.sms	Skriv en SMS-påmindelse om en aftale
+chat.suggestions.promo	Idéer til en sommerpromotion
+chat.suggestions.retention	Hvordan kan jeg forbedre kundeoplevelsen og fastholdelsen?
+chat.drawerSuggestions.revenueAnalysis	Omsætningsanalyse
+chat.drawerSuggestions.emailTemplate	E-mailskabelon
+chat.drawerSuggestions.promoIdeas	Promotionsidéer
+chat.drawerSuggestions.clientReport	Kunderapport
+drawer.historyBack	Chats
+drawer.historyLabel	Historik
+agents.title	AI-agenter
+agents.info.title	Hvad er AI-agenter?
+agents.info.lead	En assistent, der svarer kunder i dit studios beskedtjenester, mens du har travlt.
+agents.info.b1	Svarer døgnet rundt — ingen venter på en administrator
+agents.info.b2	Kender dit studios skema, ydelser og priser
+agents.info.b3	Du bestemmer tonen og længden på svarene
+agents.info.note	En kanal begynder at virke, når den er forbundet i indstillingerne
+agents.activeCount	{{active}} / {{total}}
+agents.stateOn	Svarer
+agents.stateOffline	Ikke forbundet
+agents.configureButton	Opsæt agenter
+agents.enable	Aktivér
+agents.disable	Deaktivér
+agents.modalTitle	Opsætning af AI-agent
+agents.modalSubtitle	Automatiske svar i beskedtjenester
+agents.tabPrompt	Systemprompt
+agents.statusDisabled	Deaktiveret
+agents.statHandled	Behandlet
+agents.statRating	Bedømmelse
+agents.styleTitle	Svarstil
+agents.styleAllChannels	gælder alle kanaler
+agents.toneLabel	Svarens tone
+agents.tone.friendly	Venlig
+agents.tone.formal	Formel
+agents.tone.neutral	Neutral
+agents.maxLengthLabel	Maksimal svarlængde (tegn)
+agents.maxLengthError	Angiv et tal fra 50 til 4000
+agents.offHoursLabel	Automatisk svar kun uden for arbejdstid
+agents.promptHint	Denne tekst bestemmer agentens personlighed — hvordan den kommunikerer, hvad den ved, og hvilke emner den undgår.
+agents.promptPlaceholder	Du er en høflig studioassistent...
+agents.promptCount_one	{{count}} / 2000 tegn
+agents.promptCount_other	{{count}} / 2000 tegn
+agents.tgChannelInactive	Telegram-kanalen er slået fra i Online booking — botten modtager ingen beskeder, så agenten forbliver tavs.
+errors.tg_token_required	Forbind først en Telegram-bot — der er endnu ikke gemt et token.
+errors.ig_not_connected	Instagram er ikke forbundet endnu.
+errors.wa_not_connected	WhatsApp-nummeret er ikke forbundet endnu — forbind det under Underretninger.
+errors.assistant_unavailable	Assistenten er midlertidigt utilgængelig — prøv igen senere.
+errors.trial_exhausted	Du har brugt alle 500 prøveforespørgsler til AI-assistenten. Vælg et betalingsabonnement for at fortsætte.
+errors.quota_exceeded	Du har brugt alle AI-forespørgsler på dette abonnement. Grænsen nulstilles ved månedens start — eller opgradér abonnementet.
+toasts.settingsSaved	Indstillingerne er gemt
+toolStatus.add_client_note	Skriver en note…
+toolStatus.add_client_tag	Tilføjer et mærke…
+toolStatus.add_loyalty_points	Tilføjer point…
+toolStatus.book_client	Booker holdet…
+toolStatus.cancel_booking	Annullerer bookingen…
+toolStatus.pay_booking	Registrerer holdbetalingen…
+toolStatus.clear_schedule	Rydder skemaet…
+toolStatus.create_account	Opretter en konto…
+toolStatus.create_branch	Opretter en afdeling…
+toolStatus.create_client	Opretter en kunde…
+toolStatus.create_counterparty	Opretter en modpart…
+toolStatus.create_hall	Opretter et lokale…
+toolStatus.create_lesson	Opretter et hold…
+toolStatus.create_operation	Registrerer transaktionen…
+toolStatus.create_package	Opretter et klippekort…
+toolStatus.create_promo	Opretter en rabatkode…
+toolStatus.create_service	Opretter en ydelse…
+toolStatus.create_staff	Tilføjer et teammedlem…
+toolStatus.default	Arbejder…
+toolStatus.delete_client	Sletter kunden…
+toolStatus.delete_staff	Fjerner teammedlemmet…
+toolStatus.fill_schedule	Udfylder skemaet…
+toolStatus.find_clients	Søger efter kunder…
+toolStatus.forget_fact	Glemmer oplysningen…
+toolStatus.freeze_client	Fryser kunden…
+toolStatus.get_booking_settings	Tjekker bookingregler…
+toolStatus.get_catalog_settings	Tjekker klippekortindstillinger…
+toolStatus.get_client	Åbner kundekortet…
+toolStatus.get_client_events	Læser kundehistorikken…
+toolStatus.get_inactive_clients	Finder inaktive kunder…
+toolStatus.get_client_notes	Læser kundenoter…
+toolStatus.get_client_subscription	Tjekker kundens klippekort…
+toolStatus.get_delivery_log	Tjekker leveringsloggen…
+toolStatus.get_finance_goals	Tjekker økonomiske mål…
+toolStatus.get_finance_summary	Tjekker økonomien…
+toolStatus.get_lesson	Åbner holdet…
+toolStatus.get_loyalty_programs	Tjekker loyalitetsprogrammer…
+toolStatus.get_loyalty_summary	Tjekker loyalitet…
+toolStatus.get_notification_matrix	Tjekker underretninger…
+toolStatus.get_payroll	Beregner løn…
+toolStatus.get_rooms	Tjekker lokaler…
+toolStatus.get_schedule	Tjekker skemaet…
+toolStatus.get_segments	Tjekker kundesegmenter…
+toolStatus.get_services	Tjekker ydelser…
+toolStatus.get_staff	Tjekker teamet…
+toolStatus.get_staff_profile	Åbner teammedlemmets kort…
+toolStatus.get_stats	Bearbejder tallene…
+toolStatus.get_team_report	Måler tilbagevenden pr. træner…
+toolStatus.get_studio_facts	Genkalder, hvad jeg ved om studiet…
+toolStatus.get_today_agenda	Tjekker i dag…
+toolStatus.issue_certificate	Udsteder certifikatet…
+toolStatus.list_operations	Tjekker indtægter og udgifter…
+toolStatus.open_ui	Åbner skærmen…
+toolStatus.remember_fact	Husker…
+toolStatus.remove_client_tag	Fjerner mærket…
+toolStatus.sell_subscription	Sælger klippekortet…
+toolStatus.set_client_discount	Angiver rabatten…
+toolStatus.set_staff_day	Markerer dagen i skemaet…
+toolStatus.set_staff_schedule	Angiver skemaet…
+toolStatus.toggle_notification_event	Skifter underretningen…
+toolStatus.ui_section	Tjekker, hvordan sektionen virker…
+toolStatus.update_booking_rules	Opdaterer bookingregler…
+toolStatus.update_client	Opdaterer kundeoplysninger…
+toolStatus.update_lesson	Opdaterer holdet…
+toolStatus.update_service	Opdaterer ydelsen…
+toolStatus.update_staff	Opdaterer teammedlemmet…
+quota.trialLow	Der er få prøveforespørgsler tilbage.
+quota.label	Forespørgsler til AI-assistenten
+quota.value	{{used}} af {{limit}}
+quota.low	Du er tæt på den månedlige grænse.
+quota.upgrade	Vælg et abonnement
+quota.monthPeriod	Pr. kalendermåned (UTC)
+quota.trialPeriod	For hele prøveperioden
+rating.up	Godt svar
+rating.down	Dårligt svar
+memory.title	Assistenten husker
+memory.forget	Glem
+memory.forgetConfirmTitle	Glemme denne oplysning?
+memory.forgetConfirmMessage	Assistenten vil holde op med at bruge den i svar.
+memory.deleted	Oplysningen er fjernet
+plan.pages.who	Hvem og hvad
+plan.pages.when	Hvornår
+plan.pages.check	Gennemse
+plan.stepOf	Trin {{current}} af {{total}}
+plan.next	Næste
+plan.back	Tilbage
+plan.confirm	Godkend
+plan.confirmDanger	Godkend
+plan.choose	Vælg
+plan.nothingFound	Intet fundet
+plan.nothingToFill	Der er intet at udfylde her — fortsæt direkte.
+plan.fromStep	oprettet i trin {{n}}
+plan.values.group	gruppe
+plan.values.individual	individuel
+plan.values.trainer	træner
+plan.values.admin	administrator
+plan.values.owner	ejer
+plan.values.hourly	pr. time
+plan.values.percent	% af omsætningen
+plan.values.fixed	pr. hold
+plan.title_one	Godkend — {{count}} handling
+plan.title_other	Godkend — {{count}} handlinger
+plan.stillEmpty_one	{{count}} felt tilbage
+plan.stillEmpty_other	{{count}} felter tilbage

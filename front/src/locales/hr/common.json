@@ -170,7 +170,48 @@
     "lessonAction": "QR kod termina",
     "lessonCaption": "Usmjerite kameru i prijavite se na ovaj termin",
     "packageAction": "QR kod paketa",
+<<<<<<< HEAD
     "packageCaption": "Usmjerite kameru i kupite paket",
     "serviceAction": "QR kod usluge"
+=======
+    "packageCaption": "Usmjerite kameru i kupite paket"
+  },
+  "auth": {
+    "noAccount": "Nemate račun?",
+    "haveAccount": "Već imate račun?",
+    "welcomeBack": "Dobro došli natrag",
+    "choosePassword": "Izradite novu lozinku",
+    "confirmationCode": "Potvrdni kôd",
+    "loginSubtitle": "Prijavite se za nastavak rada u Velori",
+    "resetInstruction": "Poslat ćemo upute na vašu e-poštu",
+    "codeSent": "Kôd je poslan na {{identifier}}",
+    "googleFailed": "Prijava Googleom nije uspjela",
+    "googleAccountMissing": "Za ovu Google adresu još nema računa. Izradit ćemo ga nakon što prihvatite dokumente.",
+    "divider": "ili se prijavite putem",
+    "codeFromEmail": "Kôd iz e-pošte",
+    "rememberMe": "Zapamti me",
+    "forgotPassword": "Zaboravili ste lozinku?",
+    "signInSystem": "Prijavite se",
+    "sendInstructions": "Pošalji upute",
+    "passwordChanged": "Lozinka je promijenjena. Sada se možete prijaviti.",
+    "contactSub": "Unesite e-poštu za izradu računa",
+    "nameTitle": "Kako da vas zovemo?",
+    "nameSub": "Ime ili nadimak — vaš izbor",
+    "accountCreated": "Račun je izrađen. Poslali smo poruku za potvrdu na {{email}}.",
+    "dashboard": "Idi na nadzornu ploču",
+    "or": "ili",
+    "registerByEmail": "Registrirajte se e-poštom",
+    "displayNamePlaceholder": "Na primjer: Ana, Max, VlasnikStudija",
+    "displayNameHint": "Ovo se ime prikazuje u sučelju i obavijestima. Možete ga promijeniti u postavkama.",
+    "codeSix": "Unesite 6-znamenkasti kôd",
+    "users": "tvrtki već koristi Velora",
+    "strength": {
+      "weak": "Slabo",
+      "medium": "Srednje",
+      "good": "Dobro",
+      "strong": "Jako",
+      "excellent": "Odlično"
+    }
+>>>>>>> bcf4a067f80368999140a9359ef17c722154c536
   }
 }

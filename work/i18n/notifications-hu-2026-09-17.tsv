@@ -1,0 +1,241 @@
+== hu
+loading	Betöltés…
+chModal.eyebrow	Értesítési csatorna
+chModal.connected	Kapcsolódva
+chModal.notConnected	Nincs kapcsolódva
+chModal.setup	Kapcsolat beállítása
+chModal.details	Kapcsolat részletei
+chModal.ready	A csatorna működik
+chModal.readyHint	Az engedélyezett események értesítései automatikusan elküldésre kerülnek.
+chModal.bot	Bot
+chModal.token	Token
+chModal.phone	Szám
+chModal.account	Fiók
+chModal.sender	Feladó
+channels.title	Kézbesítési csatornák
+channels.connect	Csatlakoztatás
+channels.connected	Kapcsolódva
+channels.openSettings	{{channel}} beállításai
+channels.waLockedHint	A csatorna akkor nyílik meg, amikor a Meta rendelkezik a fizetési móddal, hitelesített vállalkozással és jóváhagyott sablonokkal
+channels.waBlocker.payment	Nincs fizetési mód — az emlékeztetők nem érkeznek meg. Állítsa be
+channels.waBlocker.verification	A vállalkozás nincs hitelesítve a Metánál — napi 250-es korlát. Javítási útmutató
+channels.waBlocker.templates	A sablonok még Meta-felülvizsgálat alatt állnak — semmi nem lesz elküldve. Részletek
+roles.client	Ügyfél
+roles.trainer	Edző
+roles.admin	Rendszergazda
+roles.owner	Tulajdonos
+roles.activeCount_one	{{count}} aktív
+roles.activeCount_other	{{count}} aktív
+matrix.saving	Mentés…
+matrix.allSaved	Minden módosítás mentve
+matrix.notSaved	Nincs mentve
+matrix.activateAll	Összes aktiválása
+matrix.deactivateAll	Minden jelölőnégyzet törlése
+matrix.activeCount_one	Aktív eseményindító: {{count}} / {{total}}
+matrix.activeCount_other	Aktív eseményindító: {{count}} / {{total}}
+matrix.scenariosFor	Forgatókönyvek ehhez: {{role}}
+matrix.configureFor_one	Csatornák beállítása {{count}} rendszerindítóhoz
+matrix.configureFor_other	Csatornák beállítása {{count}} rendszerindítóhoz
+matrix.eventColumn	Rendszeresemény
+matrix.noActiveChannels	Nincsenek aktív csatornák
+matrix.noActiveChannelsHint	Kapcsoljon be legalább egy kézbesítési csatornát a bal oldali panelen
+matrix.adviceLabel	Tipp:
+matrix.advice	Állítsa be szerepenként külön, mi hová kerül elküldésre — a Velora automatikusan kezeli.
+matrix.tiers.critical	Kötelező · nem kapcsolható ki
+matrix.tiers.operational	Működési
+matrix.tiers.optional	Opcionális
+matrix.lock.critical	Kötelező értesítés — nem kapcsolható ki
+matrix.lock.lastChannel	Utolsó kézbesítési csatorna — nem kapcsolható ki
+matrix.channelDisconnected	A csatorna nincs csatlakoztatva
+events.c1.title	Foglalás megerősítve
+events.c1.desc	Sikeres foglalás után
+events.c2.title	Óraemlékeztető
+events.c2.desc	24 órával és 2 órával előtte
+events.c3.title	Az óra elmarad
+events.c3.desc	Amikor az edző vagy a stúdió lemondja
+events.c4.title	Sikeres fizetés
+events.c4.desc	Bizonylat a sikeres terhelés után
+events.c5.title	Kevés óra maradt
+events.c5.desc	Amikor 1–2 látogatás marad a csomagban
+events.c6.title	A csomag lejár
+events.c6.desc	3 nappal a lejárat előtt
+events.c7.title	Születésnap
+events.c7.desc	Köszöntés különleges ajánlattal
+events.c8.title	Értékelési kérés
+events.c8.desc	Órán való részvétel után
+events.c9.title	Visszatérítés
+events.c9.desc	Lemondáskor és a visszatérítés feldolgozásakor
+events.c10.title	Az óra még nincs kifizetve
+events.c10.desc	Az ügyfél részt vett, de még nem fizetett
+events.c11.title	Az óra át lett ütemezve
+events.c11.desc	Az idő, terem vagy edző megváltozott
+events.c12.title	Bónusz jóváírva
+events.c12.desc	Pont vagy bónusz került az ügyfélhez
+events.c13.title	Kávé az óra után
+events.c13.desc	Ki megy a csoportból kávézni
+events.t1.title	Új foglalás edzőnél
+events.t1.desc	Egy ügyfél személyes alkalmat foglalt
+events.t2.title	Az ügyfél lemondta a foglalást
+events.t2.desc	Az ügyfél kevesebb mint 2 órával előtte mondta le
+events.t3.title	Óraemlékeztető
+events.t3.desc	1 órával a kezdés előtt
+events.t4.title	Csoportnévsor
+events.t4.desc	30 perccel csoportos óra előtt
+events.t5.title	Időpontváltozás
+events.t5.desc	A rendszergazda módosította az időpontot vagy helyszínt
+events.t6.title	Bér elszámolva
+events.t6.desc	Heti kifizetési számítás
+events.t7.title	Új edzőértékelés
+events.t7.desc	Az ügyfél értékelést adott az óra után
+events.t8.title	Az ügyfél születésnapja
+events.t8.desc	Emlékeztető személyes felköszöntéshez
+events.t9.title	Az óra elmarad
+events.t9.desc	A stúdió vagy rendszergazda lemondta az óráját
+events.a1.title	Új online foglalás
+events.a1.desc	Az ügyfél a webhelyen vagy widgeten foglalt
+events.a2.title	Utolsó pillanatos lemondás
+events.a2.desc	Kevesebb mint 1 órával az óra előtt
+events.a3.title	Új ügyfél a rendszerben
+events.a3.desc	Új felhasználó regisztrációja
+events.a4.title	Fizetés érkezett
+events.a4.desc	Bármely sikeres terhelés
+events.a6.title	A csomagok fogynak
+events.a6.desc	Ügyfelek csoportja, akiknek ≤1 órájuk maradt
+events.a7.title	Ütemezési ütközés
+events.a7.desc	Átfedő órák a naplóban
+events.a8.title	Napi jelentés
+events.a8.desc	Nap végi összefoglaló
+events.a9.title	Bejelentkezési kísérlet
+events.a9.desc	Bejelentkezés új eszközről
+events.a10.title	Visszatérítés
+events.a10.desc	A rendszergazda visszatérítést adott ki
+events.o1.title	Napi összefoglaló
+events.o1.desc	A nap bevétele, foglalásai és részvétele
+events.o2.title	Heti jelentés
+events.o2.desc	Mutatók: ügyfélnövekedés, LTV, konverzió
+events.o3.title	Nagy összegű fizetés
+events.o3.desc	A beállított küszöb feletti terhelés
+events.o4.title	Adatanomália
+events.o4.desc	Meredek visszaesés a foglalásokban vagy bevételben
+events.o5.title	Új munkatárs
+events.o5.desc	A rendszergazda új fiókot hozott létre
+events.o6.title	Csomagmegújítás
+events.o6.desc	Emlékeztető a Velora-előfizetés fizetésére
+events.o7.title	Hozzáférési jogok módosultak
+events.o7.desc	A munkatárs engedélyei módosultak
+events.o8.title	KPI elérve
+events.o8.desc	A havi cél teljesült
+events.o9.title	Adatok exportálása
+events.o9.desc	Valaki exportálta az ügyféladatbázist
+tg.title	Telegram
+tg.subtitleConnected	A csatorna csatlakoztatva
+tg.subtitleDisconnected	Kapcsolja össze az értesítési botot
+tg.connected	Kapcsolódva
+tg.pasteToken	Illessze be az @BotFather-től kapott bot tokent.
+tg.invalidToken	Érvénytelen tokenformátum
+tg.howToGet	Token beszerzése:
+tg.steps.1	Nyissa meg a @BotFather-t a Telegramban
+tg.steps.2	Küldje el a /newbot parancsot, és kövesse az utasításokat
+tg.steps.3	Másolja ki a kiadott tokent
+tg.steps.4	Illessze be a fenti mezőbe
+tg.connect	Csatlakoztatás
+tg.disconnect	Kapcsolat bontása
+tg.disconnectTitle	Bontja a Telegram-kapcsolatot?
+tg.disconnectMessage	Az ügyfelek és a munkatársak nem kapnak több értesítést ezen a csatornán.
+tg.close	Bezárás
+tg.cancel	Mégse
+emailCh.title	E-mail
+emailCh.subtitle	Feladói cím az ügyféllevelekhez
+emailCh.verifiedLabel	Ellenőrizve
+emailCh.emailLabel	Feladó e-mail-címe
+emailCh.emailPlaceholder	admin@studio.com
+emailCh.invalidEmail	Adjon meg érvényes e-mail-címet
+emailCh.sendCode	Kód küldése
+emailCh.codeSentTo	Kód elküldve ide:
+emailCh.codeHint	Adja meg az e-mailben kapott 6 számjegyű kódot.
+emailCh.codeLabel	Ellenőrzőkód
+emailCh.resend	Kód újraküldése
+emailCh.viaVelora	Az e-mailek a Velora szerverén keresztül, az Ön nevében kerülnek kiküldésre.
+emailCh.wrongCode	Érvénytelen vagy lejárt kód
+emailCh.verify	Ellenőrzés
+emailCh.back	Vissza
+emailCh.cancel	Mégse
+wa.title	WhatsApp
+wa.subtitleConnected	A csatorna csatlakoztatva
+wa.subtitleDisconnected	Jelentkezzen be Meta-vállalkozási fiókjával
+wa.connected	Kapcsolódva
+wa.paymentRequiredTitle	Kártyára lesz szükség
+wa.paymentRequired	A szám csatlakoztatása ingyenes, de a Meta csak kártya hozzáadása után kézbesíti az ügyfélemlékeztetőket. Ezt külön adja hozzá —
+wa.paymentMissingTitle	Nincs fizetési mód
+wa.paymentMissing	Jelenleg csak a bot bejövő üzenetekre adott válaszai működnek. A Meta elutasítja az emlékeztetőket, visszaigazolásokat és körleveleket, amíg nem ad hozzá kártyát —
+wa.paymentOkTitle	Fizetés csatlakoztatva
+wa.paymentOk	az értesítések teljes körűen kézbesülnek.
+wa.paymentUnknown	Nem tudtuk ellenőrizni a fizetési módot a Metánál — a következő próbálkozáskor megjelenítjük az állapotot.
+wa.paymentLink	Meta számlázási központ
+wa.paymentRecheck	Ellenőrzés újra
+wa.paymentFound	Fizetés csatlakoztatva
+wa.verify.title	A vállalkozás nincs hitelesítve a Metánál
+wa.verify.lead	A szám működik, de csökkentett napi 250 egyedi címzett korláttal. A hitelesítés feloldja a korlátot és lehetővé teszi a teljes indulást. A stúdiónak ezt magának kell elvégeznie — a WhatsApp-fiók az Öné, a Velora nem járhat el az Ön nevében.
+wa.verify.stepsTitle	A vállalkozás hitelesítése:
+wa.verify.step1a	Nyissa meg a
+wa.verify.link	Meta Business Security Centert
+wa.verify.step1b	és válassza a „Hitelesítés indítása” lehetőséget. Rendszergazdai jog kell a vállalkozási fiókhoz.
+wa.verify.step2	Töltse ki a jogi adatokat: a név pontosan az iratok szerint, cím, telefon és weboldal. A webhelynek működnie kell és HTTPS-t kell használnia.
+wa.verify.step3	Töltsön fel vállalkozási regisztrációs dokumentumot, és várja meg, amíg a Meta elolvassa.
+wa.verify.step4	Erősítse meg kapcsolatát a vállalkozással: e-mail a webhely domainjén, hívás vagy SMS a megadott telefonra, illetve domainhitelesítés.
+wa.verify.step5	Várja meg a döntést — általában 1–5 munkanap. Az állapot ugyanabban a Biztonsági központban látható; elutasításkor a Meta megadja az okot és új jelentkezést enged.
+wa.verify.docsTitle	Elfogadható dokumentumok (minden csoportból egy):
+wa.verify.doc1	Regisztráció: alapító okirat, cégjegyzékkivonat, üzleti engedély vagy adózási dokumentum.
+wa.verify.doc2	Jelenlét igazolása: működő webhely, hivatalos közösségimédia-oldal vagy üzleti címtárbejegyzés.
+wa.verify.pitfallTitle	A leggyakoribb elutasítás
+wa.verify.pitfall	A Meta-fiókban és a dokumentumban szereplő cégnévnek karakterről karakterre egyeznie kell, beleértve a cégformát és az írásjeleket is. A „Romashka LLC” és a „Romashka, LLC” különböző névnek számít.
+wa.templatesTitle	Üzenetsablonok
+wa.templates	A Meta nem engedi, hogy először írjon az ügyfélnek előre jóváhagyott sablon nélkül. Hozzon létre sablont minden eseményhez — ellenőrzésre kerülnek, és jóváhagyás után működnek.
+wa.templatesAction	Sablonok előkészítése
+wa.templatesPending	Sablonok létrehozása…
+wa.templatesDone_one	Sablonok készen: {{count}}. Meta-ellenőrzésre vár
+wa.templatesDone_other	Sablonok készen: {{count}}. Meta-ellenőrzésre vár
+wa.templatesPartial	A Meta néhány sablont elutasított: {{failed}}. A részletekhez nézze meg a naplót
+wa.templatesRejectedTitle_one	A Meta {{count}} sablont elutasított
+wa.templatesRejectedTitle_other	A Meta {{count}} sablont elutasított
+wa.templatesRejected	— ezek az értesítések nem kerülnek kézbesítésre. Ellenőrizze a szöveget Meta-fiókjában, és hozza létre újra a sablonokat.
+wa.templatesPendingTitle_one	{{count}} sablon felülvizsgálat alatt
+wa.templatesPendingTitle_other	{{count}} sablon felülvizsgálat alatt
+wa.templatesPendingHint	— a Metánál ez akár egy napot is igénybe vehet. {{approved}} már jóváhagyott és kézbesítésre kerül.
+wa.templatesOkTitle	Sablonok jóváhagyva
+wa.templatesOk_one	{{count}} átment a Meta ellenőrzésén — az értesítések kézbesülnek.
+wa.templatesOk_other	Mind a(z) {{count}} átment a Meta ellenőrzésén — az értesítések kézbesülnek.
+wa.paidWarning	A WhatsApp-üzenetek fizetősek
+wa.approxPrice	kb.
+wa.pricingLoading	Aktuális ár betöltése…
+wa.perMessage	üzenetenként
+wa.viaMeta	közvetlenül a Meta számlázza
+wa.windowNotice	A kézbesítés csak a 24 órás beszélgetési ablakon belül garantált.
+wa.connect	WhatsApp csatlakoztatása
+wa.disconnect	Kapcsolat bontása
+wa.disconnectTitle	Bontja a WhatsApp-kapcsolatot?
+wa.disconnectMessage	Az ügyfelek és a munkatársak nem kapnak több értesítést ezen a csatornán.
+wa.close	Bezárás
+wa.cancel	Mégse
+tabs.matrix	Beállítások
+tabs.log	Kézbesítési napló
+log.title	Kézbesítési napló
+log.subtitle	Mi ment ki, kinek és mikor, valamint hogyan ért véget az egyes küldés.
+log.status.sent	Kézbesítve
+log.status.rejected	Elutasítva
+log.status.error	Kapcsolati hiba
+log.status.pending	Folyamatban
+log.searchPlaceholder	Telefon, e-mail vagy eseménykód
+log.allChannels	Minden csatorna
+log.reset	Visszaállítás
+log.refreshing	Frissítés…
+log.otherEvent	Küldés a katalóguson kívül
+log.empty	Még semmit sem küldtek
+log.emptyHint	Itt jelenik meg minden értesítés, amelyet a stúdió ügyfeleknek és munkatársaknak küld.
+log.emptyFiltered	Nincs találat
+log.emptyFilteredHint	Próbálja meg módosítani a szűrőket vagy másik számra keresni.
+log.loadError	Nem sikerült betölteni a naplót
+log.loadErrorHint	Frissítse az oldalt — ha ez nem segít, forduljon az ügyfélszolgálathoz.
+log.range	{{from}}–{{to}} / {{total}}
+log.prev	Vissza
+log.next	Következő

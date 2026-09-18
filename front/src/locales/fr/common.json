@@ -170,7 +170,48 @@
     "lessonAction": "QR code du cours",
     "lessonCaption": "Pointez la caméra pour réserver ce cours",
     "packageAction": "QR code de l'abonnement",
+<<<<<<< HEAD
     "packageCaption": "Pointez la caméra pour acheter l'abonnement",
     "serviceAction": "QR code du service"
+=======
+    "packageCaption": "Pointez la caméra pour acheter l'abonnement"
+  },
+  "auth": {
+    "noAccount": "Vous n'avez pas de compte ?",
+    "haveAccount": "Vous avez déjà un compte ?",
+    "welcomeBack": "Bon retour",
+    "choosePassword": "Créez un nouveau mot de passe",
+    "confirmationCode": "Code de confirmation",
+    "loginSubtitle": "Connectez-vous pour continuer dans Velora",
+    "resetInstruction": "Nous enverrons les instructions à votre e-mail",
+    "codeSent": "Le code a été envoyé à {{identifier}}",
+    "googleFailed": "La connexion avec Google a échoué",
+    "googleAccountMissing": "Aucun compte n'existe encore pour cette adresse Google. Nous en créerons un après acceptation des documents.",
+    "divider": "ou connectez-vous avec",
+    "codeFromEmail": "Code reçu par e-mail",
+    "rememberMe": "Se souvenir de moi",
+    "forgotPassword": "Mot de passe oublié ?",
+    "signInSystem": "Se connecter",
+    "sendInstructions": "Envoyer les instructions",
+    "passwordChanged": "Le mot de passe a été modifié. Vous pouvez maintenant vous connecter.",
+    "contactSub": "Saisissez votre e-mail pour créer un compte",
+    "nameTitle": "Comment devons-nous vous appeler ?",
+    "nameSub": "Nom ou pseudonyme — à vous de choisir",
+    "accountCreated": "Le compte a été créé. Nous avons envoyé un e-mail de confirmation à {{email}}.",
+    "dashboard": "Accéder au tableau de bord",
+    "or": "ou",
+    "registerByEmail": "S'inscrire avec un e-mail",
+    "displayNamePlaceholder": "Par exemple : Anna, Max, PropriétaireStudio",
+    "displayNameHint": "Ce nom apparaît dans l'interface et les notifications. Vous pouvez le modifier dans les paramètres.",
+    "codeSix": "Saisissez le code à 6 chiffres",
+    "users": "entreprises utilisent déjà Velora",
+    "strength": {
+      "weak": "Faible",
+      "medium": "Moyen",
+      "good": "Bon",
+      "strong": "Fort",
+      "excellent": "Excellent"
+    }
+>>>>>>> bcf4a067f80368999140a9359ef17c722154c536
   }
 }

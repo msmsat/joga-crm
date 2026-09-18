@@ -1,0 +1,240 @@
+== sr
+header.allConfigured	Сви програми су подешени
+header.allConfiguredSub	Ваш систем лојалности ради пуним капацитетом
+header.setup	Подесите програме лојалности
+header.setupSub	Подешено је {{count}} од {{total}} програма · Сваки програм повећава задржавање клијената
+header.start	Почните
+programs.loyalty.title	Картице лојалности
+programs.loyalty.desc	Систем сакупљања поена по нивоима
+programs.loyalty.statLabel	клијената
+programs.discounts.title	Попусти и кешбек
+programs.discounts.desc	Персонализоване понуде за клијенте
+programs.discounts.statLabel	активно
+programs.certificates.title	Поклон ваучери
+programs.certificates.desc	Поклон и именски ваучери
+programs.certificates.statLabel	продато
+programs.referral.title	Препоруке
+programs.referral.desc	Програм „Доведите пријатеља”
+programs.referral.statLabel	препорука
+programs.promocodes.title	Промокодови
+programs.promocodes.desc	Кодови за попуст с ограничењем коришћења
+programs.promocodes.statLabel	активно
+programs.deposit.title	Депозит
+programs.deposit.desc	Новчано стање клијента у студију
+programs.deposit.statLabel	са стањем
+card.active	Активно
+card.disable	Онемогући
+card.notConfigured	Није подешено
+card.configure	Подеси
+drawer.subtitle	Подешавања програма
+drawer.saving	Чување…
+drawer.save	Сачувај и активирај
+drawer.cancel	Откажи
+drawer.close	Затвори
+config.mainParams	Главни параметри
+config.programName	Назив програма
+config.pointsRate	Курс поена ({{currency}} за 1 поен)
+config.levels	Нивои
+config.pointValue	1 поен =
+config.pointValueHint	Поени се стичу по истом курсу на сваком нивоу, али немају исту вредност. Дајте Gold-у 1, а Diamond-у 2, па ће поен који је клијент зарадио смањити цену на каси двоструко више. То је предност нивоа: што је неко више потрошио у студију, то његови поени више вреде.
+config.expiry	Рок важења
+config.expiryTooltip	Колико дуго клијент може да троши сакупљене поене
+config.expiryOptions.3m	3 мес.
+config.expiryOptions.6m	6 мес.
+config.expiryOptions.1y	1 год.
+config.expiryOptions.never	Без истека
+config.newLevelName	Нови ниво
+config.addLevel	+ Ниво
+config.levelFrom	од
+config.levelTo	до
+config.deleteLevelTitle	Обрисати овај ниво?
+config.deleteLevelMessage	Клијенти на нивоу „{{name}}” прећи ће на суседни ниво према укупној потрошњи.
+config.discountType	Врста попуста
+config.discountTypes.percentage	Проценат (%)
+config.discountTypes.fixed	Фиксно ({{currency}})
+config.discountTypes.cashback	Кешбек
+config.cashbackPercent	Проценат кешбека
+config.discountSize	Износ попуста
+config.minPurchase	Минимални износ куповине
+config.noLimit	Без ограничења
+config.conditions	Услови примене
+config.appliesToAll	Примени на све услуге
+config.stackable	Комбинуј с другим попустима
+config.visibleInCabinet	Прикажи клијенту у његовом налогу
+config.certType	Врста ваучера
+config.certTypes.named	Именски
+config.certTypes.gift	Поклон
+config.certTypes.service	За услугу
+config.denominations	Номинали
+config.addDenom	+ Додај
+config.service	Услуга
+config.noServices	Још нема услуга у каталогу — додајте их у „Каталог”
+config.params	Параметри
+config.expiryDays	Рок важења (дани)
+config.certIssue	Издај ваучер
+config.certCustomAmount	Сопствени износ
+config.certRecipientName	Име примаоца
+config.certRecipientPlaceholder	Опционо
+config.certLinkClient	Повежи с клијентом
+config.certClientSearchPlaceholder	Почните да куцате име…
+config.certAccount	Депозитни рачун
+config.certAccountNone	Не евидентирај у књизи
+config.certIssueButton	Издај
+config.certIssuedTitle	Ваучер је издат
+config.certCopyCode	Копирај код
+config.certCopied	Копирано
+config.certIssueAnother	Издај још један
+config.certIssued	Издати ваучери
+config.certEmpty	Још нема издатих ваучера
+config.certStatus.active	Активан
+config.certStatus.used	Искоришћен
+config.certStatus.expired	Истакао
+config.certRedeem	Искористи
+config.certRedeemTitle	Искористити овај ваучер?
+config.certRedeemMessage	Ваучер {{code}} биће означен као искоришћен. Ово не може да се опозове.
+config.referrerBonusTitle	Бонус за препоруку
+config.referrerBonus	Бонус за препоручиоца ({{currency}})
+config.newClientDiscount	Попуст за новог клијента (%)
+config.triggerCondition	Услов обрачуна
+config.triggerConditions.first_visit	После прве посете
+config.triggerConditions.first_payment	После прве уплате
+config.triggerConditions.registration	Одмах при регистрацији
+config.bonusAccrual	Обрачун бонуса
+config.bonusTypes.points	Поени
+config.bonusTypes.deposit	На депозит
+config.bonusTypes.discount	Као попуст
+config.promoCreate	Креирај промокод
+config.promoCodePlaceholder	ЛЕТО25
+config.promoValidUntil	Важи до
+config.promoUsageLimit	Ограничење коришћења
+config.promoAdd	+ Додај промокод
+config.promoList	Промокодови
+config.promoEmpty	Још нема промокодова
+config.promoUntil	до
+config.promoStatus.active	Активан
+config.promoStatus.expired	Истакао
+config.promoStatus.exhausted	Ограничење је достигнуто
+config.promoStatus.disabled	Онемогућен
+config.depositTotal	Укупно стање
+config.depositTotalSub	на свим депозитима клијената
+config.depositTopClients	Најбољи клијенти по стању
+config.depositEmpty	Још нико нема депозит
+config.depositHint	Допуне и исплате обављају се на профилу клијента. Програм препорука може да уплаћује бонусе на депозит уместо поена.
+validation.required	Ово поље је обавезно
+validation.minOne	Мора бити најмање 1
+validation.minZero	Не може бити негативно
+validation.positive	Мора бити веће од 0
+validation.range0to100	Од 0 до 100
+toasts.saved	Програм је активиран
+toasts.saveFailed	Чување није успело
+toasts.toggleFailed	Ажурирање програма није успело
+toasts.loadFailed	Учитавање података није успело
+toasts.retry	Покушајте поново
+stats.notConnected	Програм није повезан
+stats.willAppear	Подаци ће се појавити после подешавања
+stats.noData	Нема података
+stats.connectProgram	Повежи програм
+stats.revenueHeadline	Приход од чланова
+stats.membersHeadline	Чланови програма
+stats.returnedClients	Клијенти који су се вратили
+stats.returnedClientsSub	2+ посете у 90 дана
+stats.avgCheckHeadline	Просечан рачун по члану
+stats.bonusCostHeadline	Трошак бонуса
+stats.bonusCostSub	овог месеца
+stats.roiHeadline	ROI
+stats.roiValue	×{{value}}
+stats.perMonth	овог месеца
+stats.cardHolders	власници картица
+stats.kpi	Кључни показатељи
+stats.members	Чланови
+stats.withCard	са картицом
+stats.avgCheck	Просечан рачун
+stats.byMembers	међу члановима
+stats.pointsInCirculation	Поени у оптицају
+stats.accrued	обрачунато
+stats.revenue	Приход
+stats.revenuePerMonth	од чланова / мес.
+stats.levelDistribution	Расподела по нивоима
+stats.noLevels	Нивои још нису подешени
+stats.totalClients	Укупно клијената у програму
+stats.fromValue	од {{value}}
+stats.levelPointValue	поен = {{value}}
+scenarios.title	Паметни сценарији
+scenarios.subtitle	Аутопилот за задржавање: систем проналази клијенте и награђује их уместо вас
+scenarios.add	Сценарио
+scenarios.fired	покренут {{count}} пута
+scenarios.lastRun	последње покретање {{when}}
+scenarios.neverRun	још није покренут
+scenarios.empty	Још нема сценарија
+scenarios.emptySub	Направите први — систем ће задржавати клијенте уместо вас
+scenarios.channel	Канал
+scenarios.channelSoon	након повезивања интеграције
+scenarios.pickTemplate	Изаберите сценарио
+scenarios.pickTemplateSub	Готов шаблон — подесите прагове касније
+scenarios.create	Креирај
+scenarios.deleteConfirm	Обрисати сценарио?
+scenarios.deleteConfirmSub	Правило ће престати да се покреће. Ово не може да се опозове.
+scenarios.triggers.inactive_days	неактиван {{days}} дана
+scenarios.triggers.low_subscription	преостало ≤ {{classes_left}} термина
+scenarios.triggers.birthday	рођендан
+scenarios.triggers.nth_visit	посета бр. {{n}}
+scenarios.triggers.referral	довео је пријатеља
+scenarios.actions.points	поклоните {{points}} поена
+scenarios.actions.gift_classes	поклоните {{classes}} термина
+scenarios.actions.certificate	издајте ваучер од {{amount}} ₽
+scenarios.actions.renewal_offer	понудите обнову уз {{discount}}% попуста
+scenarios.templates.win_back.name	Недостајете нам
+scenarios.templates.win_back.desc	Вратите клијента који дуго није долазио
+scenarios.templates.expiring_subscription.name	Претплата је при крају
+scenarios.templates.expiring_subscription.desc	Понудите обнову пре него што потроши термине
+scenarios.templates.birthday_gift.name	Рођендански поклон
+scenarios.templates.birthday_gift.desc	Обрадујте клијента на његов посебан дан
+scenarios.templates.fifth_visit.name	Награда за лојалност
+scenarios.templates.fifth_visit.desc	Бесплатан термин за лојалност
+scenarios.templates.referral_thanks.name	Хвала на пријатељу
+scenarios.templates.referral_thanks.desc	Наградите онога ко је довео новог клијента
+scenarios.ifClient	Ако клијент
+scenarios.then	→
+scenarios.toasts.created	Сценарио је креиран
+scenarios.toasts.updated	Сценарио је ажуриран
+scenarios.toasts.deleted	Сценарио је обрисан
+scenarios.toasts.failed	Сценарио није сачуван
+scenarios.delete	Обриши
+segmentsBoard.title	Сегменти и препоруке
+segmentsBoard.subtitle	Активне групе клијената, свака са једним јасним следећим кораком
+segmentsBoard.empty	Овде нема ничега и то је добро
+segmentsBoard.clients	клијената
+segmentsBoard.daysAgo	пре {{count}} дана
+segmentsBoard.neverVisited	без посета
+segmentsBoard.more	и још {{count}}
+segmentsBoard.segments.at_risk.name	На путу да оду
+segmentsBoard.segments.at_risk.desc	Активни, неактивни 21+ дан
+segmentsBoard.segments.at_risk.action	Дај бонус
+segmentsBoard.segments.vip_idle.name	VIP без активности
+segmentsBoard.segments.vip_idle.desc	VIP клијенти, неактивни 14+ дана
+segmentsBoard.segments.vip_idle.action	Покрени кампању
+segmentsBoard.segments.expiring_subscription.name	Претплата истиче
+segmentsBoard.segments.expiring_subscription.desc	Преостало ≤2 термина или ≤7 дана
+segmentsBoard.segments.expiring_subscription.action	Покрени кампању
+segmentsBoard.segments.lost_newcomers.name	Никад се нису вратили
+segmentsBoard.segments.lost_newcomers.desc	Дошли једном, нема их 14+ дана
+segmentsBoard.segments.lost_newcomers.action	Покрени кампању
+segmentsBoard.segments.upsell_candidates.name	Спремни за пакет
+segmentsBoard.segments.upsell_candidates.desc	8+ посета овог месеца, без пакета
+segmentsBoard.segments.upsell_candidates.action	Покрени кампању
+segmentsBoard.campaignSub	Сегмент „{{name}}” · {{count}} клијената
+segmentsBoard.pointsLabel	Колико поена доделити
+segmentsBoard.messageLabel	Текст поруке
+segmentsBoard.messagePlaceholder	нпр. Недостајете нам! Вратите се — чекамо вас.
+segmentsBoard.emailNote	Имејл се шаље само клијентима који имају имејл адресу
+segmentsBoard.confirm	Пошаљи
+segmentsBoard.toasts.pointsDone	Поени су додељени · обрађено {{processed}}, обавештено {{emails}}
+segmentsBoard.toasts.emailDone	Кампања је послата · {{emails}} имејлова од {{processed}}
+retention.title	Обнове претплата
+retention.subtitle	Колико се добро клијенти враћају по нови пакет
+retention.renewalRate	Обнови
+retention.avgPackages	Пакети по клијенту
+retention.sold	Продато
+retention.renewed	Обновљено
+retention.empty	Још нема продаја претплата
+retention.emptySub	Аналитика ће се појавити после првих продаја пакета

@@ -1,0 +1,510 @@
+{
+  "tabs": {
+    "accounts": "Konta",
+    "operations": "Operacje",
+    "salaries": "Wynagrodzenia",
+    "counterparties": "Kontrahenci",
+    "documents": "Dokumenty",
+    "onlinePayments": "Płatności online",
+    "paymentMethods": "Metody płatności",
+    "reports": "Raporty",
+    "goals": "Cele"
+  },
+  "common": {
+    "save": "Zapisz",
+    "cancel": "Anuluj",
+    "create": "Utwórz",
+    "edit": "Edytuj",
+    "delete": "Usuń",
+    "loading": "Ładowanie…",
+    "all": "Wszystkie",
+    "confirm": "Potwierdź",
+    "monthsShort": [
+      "Sty",
+      "Lut",
+      "Mar",
+      "Kwi",
+      "Maj",
+      "Cze",
+      "Lip",
+      "Sie",
+      "Wrz",
+      "Paź",
+      "Lis",
+      "Gru"
+    ],
+    "weekdaysShort": [
+      "Pon",
+      "Wt",
+      "Śr",
+      "Czw",
+      "Pt",
+      "Sob",
+      "Nd"
+    ]
+  },
+  "info": {
+    "accounts": "Konta to kasy studia, rachunki bankowe i obsługa płatności online. Tutaj zobaczysz każde saldo i łączny kapitał.",
+    "operations": "Operacje to wszystkie przychody i wydatki studia. Utworzenie operacji od razu zmienia saldo powiązanego konta.",
+    "salaries": "Wynagrodzenia są obliczane na podstawie stawki członka zespołu (stałej, godzinowej lub procentowej) za wybrany okres.",
+    "counterparties": "Kontrahenci to organizacje i osoby, z którymi studio się rozlicza: dostawcy, wynajmujący, partnerzy.",
+    "documents": "Dokumenty to umowy, akty i faktury powiązane z kontrahentami albo dokumenty wewnętrzne.",
+    "onlinePayments": "Płatności online — połącz Stripe do płatności kartą. Konto jest tworzone dla Twojego studia, więc pieniądze trafiają bezpośrednio do Ciebie, bez pośrednictwa Velora.",
+    "paymentMethods": "Metody płatności pokazują, jak klienci płacą w studiu, oraz statystyki dla każdej z nich.",
+    "reports": "Raporty pokazują trendy przychodów, wydatków i zysków w wybranym okresie.",
+    "goals": "Cele finansowe to plan oszczędzania studia z automatycznym lub ręcznym śledzeniem postępów."
+  },
+  "accounts": {
+    "loading": "Ładowanie kont…",
+    "totalCapital": "Łączny kapitał studia",
+    "donutTotal": "{{symbol}} łącznie",
+    "todayChange": "dzisiaj",
+    "system": "SYSTEM",
+    "today": "dzisiaj",
+    "editTitle": "Edytuj konto",
+    "namePlaceholder": "Nazwa",
+    "balancePlaceholder": "Saldo, {{symbol}}",
+    "types": {
+      "cash": "Gotówka",
+      "bank": "Karta",
+      "online": "Online"
+    },
+    "typesShort": {
+      "cash": "Gotówka",
+      "bank": "Karta",
+      "online": "Online"
+    },
+    "history": "Historia",
+    "historyTitle": "Historia: {{name}}",
+    "income30d": "Przychód (30 dni)",
+    "expense30d": "Wydatek (30 dni)",
+    "samplePayment": "Płatność za usługę",
+    "sampleTime": "Dzisiaj, 14:32",
+    "openAllOperations": "Otwórz wszystkie operacje",
+    "newSavingsTitle": "Nowe konto oszczędnościowe",
+    "createSavings": "Utwórz konto oszczędnościowe",
+    "deleteConfirmTitle": "Usunąć to konto?",
+    "deleteConfirmText": "Wszystkie jego środki zostaną wykluczone z ogólnych statystyk. Tej operacji nie można cofnąć.",
+    "toasts": {
+      "loadFailed": "Nie udało się załadować kont",
+      "deleted": "Konto usunięte",
+      "deleteFailed": "Nie udało się usunąć konta",
+      "saved": "Ustawienia zapisane",
+      "saveFailed": "Nie udało się zapisać konta",
+      "created": "Konto oszczędnościowe utworzone",
+      "createFailed": "Nie udało się utworzyć konta"
+    }
+  },
+  "operations": {
+    "income": "Przychód",
+    "expense": "Wydatek",
+    "balance": "Saldo",
+    "searchPlaceholder": "Szukaj według tytułu i kategorii…",
+    "close": "Zamknij",
+    "operation": "Operacja",
+    "export": "Eksportuj",
+    "newOperationTitle": "Nowa operacja",
+    "titleLabel": "Tytuł",
+    "titlePlaceholder": "Np. płatność za abonament",
+    "amountLabel": "Kwota, {{symbol}}",
+    "dateLabel": "Data",
+    "categoryLabel": "Kategoria",
+    "categoryPlaceholder": "Kategoria",
+    "accountLabel": "Konto",
+    "noAccount": "Brak konta",
+    "methodLabel": "Metoda płatności",
+    "noMethod": "Nie określono",
+    "counterpartyLabel": "Kontrahent",
+    "noCounterparty": "Brak kontrahenta",
+    "newCounterparty": "+ Nowy kontrahent",
+    "clientLabel": "Klient",
+    "clientHint": "Punkty lojalnościowe i poziom zostaną przypisane klientowi",
+    "clientSearchPlaceholder": "Zacznij wpisywać nazwę…",
+    "noClient": "Brak klienta",
+    "editTitle": "Edytuj operację",
+    "saving": "Zapisywanie…",
+    "loading": "Ładowanie operacji…",
+    "emptyTitle": "Nie znaleziono operacji",
+    "emptyBody": "Zmień filtry lub utwórz pierwszą operację",
+    "pending": "Oczekuje",
+    "detailAccount": "Konto odbiorcze",
+    "detailCategory": "Kategoria",
+    "detailMethod": "Metoda płatności",
+    "detailCounterparty": "Kontrahent",
+    "receipt": "Potwierdzenie",
+    "loadMore": "Załaduj więcej ({{count}})",
+    "toasts": {
+      "loadFailed": "Nie udało się załadować operacji",
+      "loadMoreFailed": "Nie udało się załadować kolejnych operacji",
+      "deleted": "Operacja usunięta",
+      "deleteFailed": "Nie udało się usunąć operacji",
+      "enterAmount": "Wprowadź kwotę",
+      "created": "Operacja utworzona",
+      "createFailed": "Nie udało się utworzyć operacji",
+      "updated": "Operacja zaktualizowana",
+      "updateFailed": "Nie udało się zapisać operacji",
+      "exportFailed": "Nie udało się wyeksportować operacji",
+      "receiptDownloaded": "Potwierdzenie pobrane"
+    },
+    "categoryPresets": {
+      "in": [
+        {
+          "value": "Członkostwa",
+          "label": "Członkostwa"
+        },
+        {
+          "value": "Usługi",
+          "label": "Usługi"
+        },
+        {
+          "value": "Bony podarunkowe",
+          "label": "Bony podarunkowe"
+        },
+        {
+          "value": "Depozyt",
+          "label": "Depozyt"
+        },
+        {
+          "value": "Inne",
+          "label": "Inne"
+        }
+      ],
+      "out": [
+        {
+          "value": "Zwroty",
+          "label": "Zwroty"
+        },
+        {
+          "value": "Czynsz",
+          "label": "Czynsz"
+        },
+        {
+          "value": "Wynagrodzenia",
+          "label": "Wynagrodzenia"
+        },
+        {
+          "value": "Zakupy",
+          "label": "Zakupy"
+        },
+        {
+          "value": "Marketing",
+          "label": "Marketing"
+        },
+        {
+          "value": "Podatki",
+          "label": "Podatki"
+        },
+        {
+          "value": "Inne",
+          "label": "Inne"
+        }
+      ]
+    }
+  },
+  "salaries": {
+    "loading": "Ładowanie wynagrodzeń…",
+    "noRows": "Brak personelu do obliczenia",
+    "fund": "Fundusz wynagrodzeń",
+    "fundSub": "bieżący miesiąc",
+    "sessions": "Sesje",
+    "sessionsSub": "łącznie przeprowadzono",
+    "paidOf": "personel",
+    "sessionsCount": "{{count}} sesji",
+    "paid": "Opłacono",
+    "pending": "Oczekuje",
+    "paying": "…",
+    "payAction": "Zapłać",
+    "cancelAction": "Anuluj wynagrodzenie",
+    "perMonth": "/mies.",
+    "accrualTitle": "Naliczanie za okres",
+    "rate": "Stawka",
+    "rateNotSet": "nie ustawiono",
+    "sessionsInPeriod": "Sesje w okresie",
+    "hoursWorked": "Przepracowane godziny",
+    "lessonsRevenue": "Przychód z sesji",
+    "totalToPay": "Łącznie do zapłaty",
+    "rateWarning": "Stawka nie jest ustawiona — ustaw ją w profilu członka personelu, aby można było obliczyć naliczenie.",
+    "rateUnit": {
+      "hourly": "godz.",
+      "percent": "%",
+      "fixed": "stała"
+    },
+    "paidAt": "Opłacono {{date}}",
+    "historyTitle": "Historia płatności",
+    "historyEmpty": "Brak płatności",
+    "historyLoading": "Ładowanie historii…",
+    "toasts": {
+      "loadFailed": "Nie udało się załadować wynagrodzeń",
+      "paid": "Wynagrodzenie wypłacone: {{name}}",
+      "payFailed": "Nie udało się wypłacić wynagrodzenia",
+      "canceled": "Wynagrodzenie anulowane: {{name}}",
+      "historyLoadFailed": "Nie udało się załadować historii płatności"
+    }
+  },
+  "counterparties": {
+    "count": "{{count}} kontrahentów",
+    "totalDebt": "Łączne zadłużenie:",
+    "add": "Dodaj",
+    "newTitle": "Nowy kontrahent",
+    "nameLabel": "Nazwa / Imię i nazwisko",
+    "namePlaceholder": "Firma sp. z o.o. lub Jan Kowalski",
+    "innLabel": "Identyfikator podatkowy",
+    "categoryLabel": "Kategoria",
+    "categoryPlaceholder": "Czynsz, dostawca…",
+    "typeLabel": "Typ kontrahenta",
+    "types": {
+      "legal": {
+        "label": "Osoba prawna",
+        "desc": "Organizacja lub firma"
+      },
+      "ie": {
+        "label": "Jednoosobowa działalność",
+        "desc": "Przedsiębiorca indywidualny"
+      },
+      "person": {
+        "label": "Osoba fizyczna",
+        "desc": "Osoba prywatna"
+      }
+    },
+    "addSubmit": "Dodaj kontrahenta",
+    "you": "Ty",
+    "otherCategory": "Inne",
+    "deals": "umowy",
+    "dealsLabel": "Umowy",
+    "debtLabel": "Dług",
+    "documents": "Dokumenty",
+    "edit": "Edytuj",
+    "delete": "Usuń",
+    "deleteConfirmTitle": "Usunąć kontrahenta?",
+    "deleteConfirmText": "Powiązane dokumenty i historia umów pozostaną, ale kontrahent zostanie usunięty z listy.",
+    "toasts": {
+      "loadFailed": "Nie udało się załadować kontrahentów",
+      "enterName": "Wprowadź nazwę",
+      "saved": "Zmiany zapisane",
+      "saveFailed": "Nie udało się zapisać",
+      "added": "Kontrahent dodany",
+      "addFailed": "Nie udało się dodać kontrahenta",
+      "deleted": "Kontrahent usunięty",
+      "deleteFailed": "Nie udało się usunąć kontrahenta",
+      "documentsOpened": "Dokumenty otwarte"
+    }
+  },
+  "documents": {
+    "signed": "Podpisano",
+    "pendingCount": "Oczekuje na podpis",
+    "draftCount": "Wewnętrzny (niepodpisany)",
+    "searchPlaceholder": "Szukaj według tytułu lub kontrahenta…",
+    "filters": {
+      "all": "Wszystkie",
+      "signed": "Podpisane",
+      "pending": "Oczekuje na podpis"
+    },
+    "upload": "Prześlij",
+    "addTitle": "Dodaj dokument do biblioteki",
+    "dropzoneTitle": "Kliknij lub przeciągnij plik",
+    "dropzoneHint": "PDF, DOCX, XLSX (do 15 MB)",
+    "dropzoneChange": "Kliknij, aby wybrać inny plik",
+    "titleLabel": "Tytuł dokumentu",
+    "titlePlaceholder": "Np. protokół odbioru nr 48",
+    "partyLabel": "Kontrahent (jeśli dotyczy)",
+    "partyPlaceholder": "Nazwa firmy lub przedsiębiorcy",
+    "needsSignature": "Czy dokument wymaga podpisu?",
+    "needsSignatureHint": "Status będzie „Oczekuje na podpis”",
+    "saveToBase": "Zapisz w bibliotece",
+    "emptyTitle": "Ten folder jest pusty",
+    "emptyBody": "Prześlij nowy dokument lub zmień filtry",
+    "internalDoc": "Dokument wewnętrzny",
+    "uploaded": "Przesłano {{date}}",
+    "download": "Pobierz",
+    "open": "Otwórz",
+    "fileRequired": "Dołącz plik",
+    "options": "Opcje",
+    "status": {
+      "title": "Status",
+      "signed": "Podpisano",
+      "pending": "Oczekuje na podpis",
+      "draft": "Niepodpisany"
+    },
+    "delete": "Usuń",
+    "toasts": {
+      "loadFailed": "Nie udało się załadować dokumentów",
+      "titleRequired": "Prześlij plik lub wprowadź tytuł",
+      "created": "Dokument przesłano do biblioteki",
+      "createFailed": "Nie udało się zapisać dokumentu",
+      "badFormat": "Dozwolone formaty: PDF, DOCX, XLSX",
+      "downloadFailed": "Nie udało się pobrać pliku",
+      "noFile": "Do tego dokumentu nie dołączono pliku",
+      "openFailed": "Nie udało się otworzyć pliku",
+      "statusChanged": "Status: {{label}}",
+      "statusFailed": "Nie udało się zmienić statusu",
+      "deleted": "Dokument usunięty",
+      "deleteFailed": "Nie udało się usunąć dokumentu"
+    }
+  },
+  "goals": {
+    "loading": "Ładowanie celów…",
+    "active": "Cele w toku",
+    "done": "Ukończone",
+    "avgProgress": "Łączny postęp",
+    "trackingTitle": "Śledzenie planu",
+    "createGoal": "Utwórz cel",
+    "newTitle": "Nowy cel finansowy",
+    "titleLabel": "Tytuł celu",
+    "titlePlaceholder": "Np. nowe maszyny reformer",
+    "targetLabel": "Kwota docelowa, {{symbol}}",
+    "targetPlaceholder": "500000",
+    "deadlineLabel": "Termin",
+    "trackingLabel": "Jak śledzić postęp?",
+    "trackingAuto": "Automatycznie (metryka CRM)",
+    "trackingAutoDesc": "Połącz cel z przychodem wybranej kategorii. CRM sam przesunie pasek postępu.",
+    "trackingManual": "Ręcznie (osobiste oszczędności)",
+    "trackingManualDesc": "Na karcie pojawi się przycisk „Dodaj środki”. Postęp zależy tylko od Ciebie.",
+    "opTypeLabel": "Typ operacji",
+    "categoryLabel": "Kategoria",
+    "categoryPlaceholder": "Wybierz kategorię",
+    "editTitle": "Edytuj cel",
+    "nameLabel": "Tytuł",
+    "namePlaceholder": "Tytuł celu",
+    "amountLabel": "Kwota, {{symbol}}",
+    "achieved": "Cel osiągnięty",
+    "priority": {
+      "high": "Wysoki priorytet",
+      "medium": "Średni priorytet",
+      "low": "Niski priorytet"
+    },
+    "autoCollect": "Automatyczne śledzenie",
+    "deadlinePrefix": "Termin:",
+    "noDeadline": "Bez terminu",
+    "fundPlaceholder": "Kwota, {{symbol}}",
+    "fund": "Dodaj",
+    "addFunds": "Dodaj środki",
+    "autoHint": "Wartość aktualizuje się automatycznie na podstawie przychodu kategorii",
+    "deleteConfirmTitle": "Usunąć cel?",
+    "deleteConfirmText": "Postęp tego celu zostanie utracony. Tej operacji nie można cofnąć.",
+    "toasts": {
+      "loadFailed": "Nie udało się załadować celów",
+      "fillRequired": "Uzupełnij tytuł i kwotę",
+      "chooseCategory": "Wybierz kategorię dla celu automatycznego",
+      "created": "Cel utworzony",
+      "createFailed": "Nie udało się utworzyć celu",
+      "enterName": "Wprowadź nazwę",
+      "updated": "Cel zaktualizowany",
+      "updateFailed": "Nie udało się zaktualizować celu",
+      "deleted": "Cel usunięty",
+      "deleteFailed": "Nie udało się usunąć celu",
+      "funded": "Środki dodane",
+      "fundFailed": "Nie udało się dodać środków"
+    }
+  },
+  "onlinePayments": {
+    "description": "Połącz Stripe, a Twoi klienci będą mogli płacić kartą przy kasie. Pieniądze trafiają bezpośrednio na konto Twojego studia — Velora nigdy ich nie przechowuje. Prowizja zależy od Twojego planu.",
+    "gatewaysTitle": "Dostawcy płatności",
+    "gateways": {
+      "stripe": {
+        "name": "Stripe"
+      },
+      "states": {
+        "none": {
+          "label": "Nie połączono",
+          "hint": "Przyjmuj płatności kartą na konto studia",
+          "action": "Połącz"
+        },
+        "incomplete": {
+          "label": "Brak danych",
+          "hint": "Stripe czeka na dane Twojego studia — płatności pozostają wyłączone do tego czasu",
+          "action": "Kontynuuj"
+        },
+        "action": {
+          "label": "Wymagane działanie",
+          "hint": "Stripe odrzucił część danych i oczekuje poprawek — nie rozwiąże się to samo",
+          "action": "Popraw dane"
+        },
+        "review": {
+          "label": "W trakcie weryfikacji",
+          "hint": "Dane zostały przesłane, Stripe je weryfikuje. Zwykle trwa to do jednego dnia",
+          "action": "Otwórz Stripe"
+        },
+        "active": {
+          "label": "Połączono",
+          "hint": "Płatności kartą trafiają na konto Stripe studia",
+          "action": "Ustawienia"
+        }
+      }
+    },
+    "toasts": {
+      "gatewayUpdated": "Ustawienia dostawcy płatności zaktualizowane",
+      "stripeReturned": "Dane przesłano do Stripe",
+      "stripeLinkExpired": "Link Stripe wygasł — naciśnij Połącz ponownie"
+    }
+  },
+  "paymentMethods": {
+    "totalTurnover": "Obrót za okres",
+    "periods": {
+      "month": "Miesiąc",
+      "quarter": "Kwartał",
+      "year": "Rok"
+    },
+    "amount": "Kwota",
+    "share": "Udział",
+    "transactions": "transakcje",
+    "methods": {
+      "cash": {
+        "name": "Gotówka"
+      },
+      "card": {
+        "name": "Karta bankowa"
+      },
+      "qr": {
+        "name": "SBP (QR)"
+      },
+      "transfer": {
+        "name": "Przelew"
+      },
+      "stripe": {
+        "name": "Stripe"
+      },
+      "": {
+        "name": "Nie określono"
+      }
+    }
+  },
+  "reports": {
+    "metrics": {
+      "revenue": "Przychody",
+      "expenses": "Wydatki",
+      "profit": "Zysk",
+      "margin": "Marża"
+    },
+    "vsPreviousPeriod": "względem poprzedniego okresu",
+    "cashflowTitle": "Przepływ środków",
+    "cashflowSub": "Analiza przychodów i wydatków",
+    "period": "Okres",
+    "income": "Przychód",
+    "expense": "Wydatek",
+    "profit": "Zysk",
+    "periods": {
+      "today": "Dzisiaj",
+      "week": "Tydzień",
+      "month": "Miesiąc",
+      "year": "Rok"
+    },
+    "legendIncome": "Przychody",
+    "legendExpense": "Wydatki",
+    "exportCsv": "Eksportuj CSV",
+    "expenseStructure": "Struktura wydatków",
+    "incomeStructure": "Struktura przychodów",
+    "total": "Łącznie",
+    "otherCategory": "Bez kategorii",
+    "noData": "Brak danych dla tego okresu",
+    "insightsTitle": "Podsumowanie i analizy finansowe",
+    "insightsPlaceholder": "Tutaj pojawi się podsumowanie finansowe oparte na AI: analiza trendów, struktura wydatków i rekomendacje",
+    "toasts": {
+      "exportFailed": "Nie udało się wyeksportować operacji"
+    }
+  },
+  "confirmModal": {
+    "cancel": "Anuluj",
+    "confirm": "Potwierdź",
+    "delete": "Usuń"
+  }
+}

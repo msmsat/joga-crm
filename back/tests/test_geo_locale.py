@@ -29,14 +29,30 @@ def _locale(request, token=None):
 
 
 def test_country_maps_to_translated_language():
+    assert geo_locale.language_for_country("AL") == "sq"
+    assert geo_locale.language_for_country("BG") == "bg"
+    assert geo_locale.language_for_country("HR") == "hr"
     assert geo_locale.language_for_country("CZ") == "cs"
     assert geo_locale.language_for_country("sk") == "cs"
+    assert geo_locale.language_for_country("DK") == "da"
+    assert geo_locale.language_for_country("FI") == "fi"
+    assert geo_locale.language_for_country("FR") == "fr"
     assert geo_locale.language_for_country("AT") == "de"
+    assert geo_locale.language_for_country("GR") == "el"
+    assert geo_locale.language_for_country("HU") == "hu"
+    assert geo_locale.language_for_country("IT") == "it"
+    assert geo_locale.language_for_country("NO") == "no"
+    assert geo_locale.language_for_country("PL") == "pl"
+    assert geo_locale.language_for_country("PT") == "pt"
+    assert geo_locale.language_for_country("RO") == "ro"
+    assert geo_locale.language_for_country("RS") == "sr"
+    assert geo_locale.language_for_country("MX") == "es"
+    assert geo_locale.language_for_country("SE") == "sv"
+    assert geo_locale.language_for_country("TR") == "tr"
     assert geo_locale.language_for_country("UA") == "uk"
     # Russian is opt-in. Unknown/unsupported countries use English explicitly.
     assert geo_locale.language_for_country("KZ") == "en"
     assert geo_locale.language_for_country("RU") == "en"
-    assert geo_locale.language_for_country("FR") == "en"
     assert geo_locale.language_for_country(None) == "en"
 
 

@@ -100,6 +100,15 @@ async def send_email(
         print("=" * 40 + "\n")
         return True
 
+    # timeout задаём явно: дефолт aiosmtplib — 60 секунд, и это не только
+    # «письмо шло долго». Уведомления уходят ПРЯМО в запросе (notifier.deliver),
+    # а запрос всё это время держит соединение из пула БД (database.py). Одна
+    # запись в мини-приложении шлёт три письма — клиенту, админу, тренеру, — то
+    # есть подвисший SMTP запирал соединение на три минуты. Несколько таких
+    # записей осушали пул, и вместе с почтой ложилось всё приложение, включая
+    # CRM. 20 секунд — потолок ожидания, после которого notifier помечает
+    # отправку ошибкой в журнале и идёт дальше; живой провайдер отвечает за
+    # доли секунды и этого предела не видит.
     await aiosmtplib.send(
         build_message(to, subject, html, sender, brand, greeting, calendar, lang),
         hostname=host,
@@ -107,6 +116,7 @@ async def send_email(
         username=user,
         password=password,
         start_tls=True,
+        timeout=20,
     )
     return True
 

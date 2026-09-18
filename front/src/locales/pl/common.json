@@ -170,7 +170,48 @@
     "lessonAction": "Kod QR zajęć",
     "lessonCaption": "Skieruj aparat, aby zapisać się na te zajęcia",
     "packageAction": "Kod QR karnetu",
+<<<<<<< HEAD
     "packageCaption": "Skieruj aparat, aby kupić karnet",
     "serviceAction": "Kod QR usługi"
+=======
+    "packageCaption": "Skieruj aparat, aby kupić karnet"
+  },
+  "auth": {
+    "noAccount": "Nie masz konta?",
+    "haveAccount": "Masz już konto?",
+    "welcomeBack": "Witamy ponownie",
+    "choosePassword": "Utwórz nowe hasło",
+    "confirmationCode": "Kod potwierdzający",
+    "loginSubtitle": "Zaloguj się, aby kontynuować w Velora",
+    "resetInstruction": "Wyślemy instrukcje na Twój e-mail",
+    "codeSent": "Kod wysłano na {{identifier}}",
+    "googleFailed": "Logowanie przez Google nie powiodło się",
+    "googleAccountMissing": "Dla tego adresu Google nie ma jeszcze konta. Utworzymy je po zaakceptowaniu dokumentów.",
+    "divider": "lub zaloguj się przez",
+    "codeFromEmail": "Kod z e-maila",
+    "rememberMe": "Zapamiętaj mnie",
+    "forgotPassword": "Nie pamiętasz hasła?",
+    "signInSystem": "Zaloguj się",
+    "sendInstructions": "Wyślij instrukcje",
+    "passwordChanged": "Hasło zostało zmienione. Możesz się teraz zalogować.",
+    "contactSub": "Podaj e-mail, aby utworzyć konto",
+    "nameTitle": "Jak mamy się do Ciebie zwracać?",
+    "nameSub": "Imię lub pseudonim — Twój wybór",
+    "accountCreated": "Konto zostało utworzone. Wysłaliśmy wiadomość potwierdzającą na {{email}}.",
+    "dashboard": "Przejdź do panelu",
+    "or": "lub",
+    "registerByEmail": "Zarejestruj się przez e-mail",
+    "displayNamePlaceholder": "Na przykład: Anna, Max, WłaścicielStudia",
+    "displayNameHint": "Ta nazwa pojawi się w interfejsie i powiadomieniach. Możesz ją zmienić w ustawieniach.",
+    "codeSix": "Podaj 6-cyfrowy kod",
+    "users": "firm już używa Velora",
+    "strength": {
+      "weak": "Słabe",
+      "medium": "Średnie",
+      "good": "Dobre",
+      "strong": "Silne",
+      "excellent": "Doskonałe"
+    }
+>>>>>>> bcf4a067f80368999140a9359ef17c722154c536
   }
 }

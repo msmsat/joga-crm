@@ -1,0 +1,377 @@
+== hu
+tabs.accounts	Számlák
+tabs.operations	Műveletek
+tabs.salaries	Bérszámfejtés
+tabs.counterparties	Partnerek
+tabs.documents	Dokumentumok
+tabs.onlinePayments	Online fizetések
+tabs.paymentMethods	Fizetési módok
+tabs.reports	Jelentések
+tabs.goals	Célok
+common.save	Mentés
+common.cancel	Mégse
+common.create	Létrehozás
+common.edit	Szerkesztés
+common.delete	Törlés
+common.loading	Betöltés…
+common.all	Összes
+common.confirm	Megerősítés
+common.monthsShort.0	Jan
+common.monthsShort.1	Febr
+common.monthsShort.2	Márc
+common.monthsShort.3	Ápr
+common.monthsShort.4	Máj
+common.monthsShort.5	Jún
+common.monthsShort.6	Júl
+common.monthsShort.7	Aug
+common.monthsShort.8	Szept
+common.monthsShort.9	Okt
+common.monthsShort.10	Nov
+common.monthsShort.11	Dec
+common.weekdaysShort.0	H
+common.weekdaysShort.1	K
+common.weekdaysShort.2	Sze
+common.weekdaysShort.3	Cs
+common.weekdaysShort.4	P
+common.weekdaysShort.5	Szo
+common.weekdaysShort.6	V
+info.accounts	A számlák a stúdió pénztárai, bankszámlái és online fizetési fogadása. Itt látja az egyes egyenlegeket és a teljes tőkét.
+info.operations	A műveletek a stúdió összes bevételét és kiadását jelentik. Egy művelet létrehozása azonnal módosítja a kapcsolt számla egyenlegét.
+info.salaries	A bérek a munkatárs díjazása (fix, óradíjas vagy százalékos) alapján számítódnak a kiválasztott időszakra.
+info.counterparties	A partnerek olyan szervezetek és magánszemélyek, akikkel a stúdió elszámol: beszállítók, bérbeadók, üzleti partnerek.
+info.documents	A dokumentumok a partnerekhez kapcsolódó szerződések, bizonylatok és számlák, vagy belső dokumentumok.
+info.onlinePayments	Online fizetések — csatlakoztassa a Stripe-ot kártyás fizetésekhez. A fiók a stúdiójához jön létre, így a pénz közvetlenül Önhöz érkezik, nem a Velorán keresztül.
+info.paymentMethods	A fizetési módok megmutatják, hogyan fizetnek az ügyfelek a stúdióban, és az egyes módok statisztikáit.
+info.reports	A jelentések a bevételek, kiadások és nyereség trendjeit mutatják a kiválasztott időszakban.
+info.goals	A pénzügyi célok a stúdió megtakarítási terve automatikus vagy manuális haladáskövetéssel.
+accounts.loading	Számlák betöltése…
+accounts.totalCapital	Stúdió teljes tőkéje
+accounts.donutTotal	{{symbol}} összesen
+accounts.todayChange	ma
+accounts.system	RENDSZER
+accounts.today	ma
+accounts.editTitle	Számla szerkesztése
+accounts.namePlaceholder	Név
+accounts.balancePlaceholder	Egyenleg, {{symbol}}
+accounts.types.cash	Készpénz
+accounts.types.bank	Kártya
+accounts.types.online	Online
+accounts.typesShort.cash	Készpénz
+accounts.typesShort.bank	Kártya
+accounts.typesShort.online	Online
+accounts.history	Előzmények
+accounts.historyTitle	Előzmények: {{name}}
+accounts.income30d	Bevétel (30 n.)
+accounts.expense30d	Kiadás (30 n.)
+accounts.samplePayment	Szolgáltatási díj
+accounts.sampleTime	Ma, 14:32
+accounts.openAllOperations	Összes művelet megnyitása
+accounts.newSavingsTitle	Új megtakarítási számla
+accounts.createSavings	Megtakarítási számla létrehozása
+accounts.deleteConfirmTitle	Törli ezt a számlát?
+accounts.deleteConfirmText	Minden rajta lévő összeg kikerül az általános statisztikából. Ez a művelet nem vonható vissza.
+accounts.toasts.loadFailed	A számlák betöltése sikertelen
+accounts.toasts.deleted	Számla törölve
+accounts.toasts.deleteFailed	A számla törlése sikertelen
+accounts.toasts.saved	Beállítások mentve
+accounts.toasts.saveFailed	A számla mentése sikertelen
+accounts.toasts.created	Megtakarítási számla létrehozva
+accounts.toasts.createFailed	A számla létrehozása sikertelen
+operations.income	Bevétel
+operations.expense	Kiadás
+operations.balance	Egyenleg
+operations.searchPlaceholder	Keresés cím és kategória szerint…
+operations.close	Bezárás
+operations.operation	Művelet
+operations.export	Exportálás
+operations.newOperationTitle	Új művelet
+operations.titleLabel	Cím
+operations.titlePlaceholder	Például előfizetési díj
+operations.amountLabel	Összeg, {{symbol}}
+operations.dateLabel	Dátum
+operations.categoryLabel	Kategória
+operations.categoryPlaceholder	Kategória
+operations.accountLabel	Számla
+operations.noAccount	Nincs számla
+operations.methodLabel	Fizetési mód
+operations.noMethod	Nincs megadva
+operations.counterpartyLabel	Partner
+operations.noCounterparty	Nincs partner
+operations.newCounterparty	+ Új partner
+operations.clientLabel	Ügyfél
+operations.clientHint	A hűségpontok és a szint az ügyfélhez kerülnek jóváírásra
+operations.clientSearchPlaceholder	Kezdjen el nevet írni…
+operations.noClient	Nincs ügyfél
+operations.editTitle	Művelet szerkesztése
+operations.saving	Mentés…
+operations.loading	Műveletek betöltése…
+operations.emptyTitle	Nem található művelet
+operations.emptyBody	Módosítsa a szűrőket vagy hozzon létre egy első műveletet
+operations.pending	Függőben
+operations.detailAccount	Fogadó számla
+operations.detailCategory	Kategória
+operations.detailMethod	Fizetési mód
+operations.detailCounterparty	Partner
+operations.receipt	Bizonylat
+operations.loadMore	További betöltése ({{count}})
+operations.toasts.loadFailed	A műveletek betöltése sikertelen
+operations.toasts.loadMoreFailed	További műveletek betöltése sikertelen
+operations.toasts.deleted	Művelet törölve
+operations.toasts.deleteFailed	A művelet törlése sikertelen
+operations.toasts.enterAmount	Adjon meg egy összeget
+operations.toasts.created	Művelet létrehozva
+operations.toasts.createFailed	A művelet létrehozása sikertelen
+operations.toasts.updated	Művelet frissítve
+operations.toasts.updateFailed	A művelet mentése sikertelen
+operations.toasts.exportFailed	A műveletek exportálása sikertelen
+operations.toasts.receiptDownloaded	Bizonylat letöltve
+operations.categoryPresets.in.0.value	Előfizetések
+operations.categoryPresets.in.0.label	Előfizetések
+operations.categoryPresets.in.1.value	Szolgáltatások
+operations.categoryPresets.in.1.label	Szolgáltatások
+operations.categoryPresets.in.2.value	Ajándékutalványok
+operations.categoryPresets.in.2.label	Ajándékutalványok
+operations.categoryPresets.in.3.value	Letét
+operations.categoryPresets.in.3.label	Letét
+operations.categoryPresets.in.4.value	Egyéb
+operations.categoryPresets.in.4.label	Egyéb
+operations.categoryPresets.out.0.value	Visszatérítések
+operations.categoryPresets.out.0.label	Visszatérítések
+operations.categoryPresets.out.1.value	Bérleti díj
+operations.categoryPresets.out.1.label	Bérleti díj
+operations.categoryPresets.out.2.value	Bérek
+operations.categoryPresets.out.2.label	Bérek
+operations.categoryPresets.out.3.value	Beszerzések
+operations.categoryPresets.out.3.label	Beszerzések
+operations.categoryPresets.out.4.value	Marketing
+operations.categoryPresets.out.4.label	Marketing
+operations.categoryPresets.out.5.value	Adók
+operations.categoryPresets.out.5.label	Adók
+operations.categoryPresets.out.6.value	Egyéb
+operations.categoryPresets.out.6.label	Egyéb
+salaries.loading	Bérszámfejtés betöltése…
+salaries.noRows	Nincs számítható munkatárs
+salaries.fund	Béralap
+salaries.fundSub	aktuális hónap
+salaries.sessions	Alkalmak
+salaries.sessionsSub	összesen megtartva
+salaries.paidOf	munkatárs
+salaries.sessionsCount	{{count}} alkalom
+salaries.paid	Kifizetve
+salaries.pending	Függőben
+salaries.paying	…
+salaries.payAction	Fizetés
+salaries.cancelAction	Bér törlése
+salaries.perMonth	/hó
+salaries.accrualTitle	Elszámolás időszakra
+salaries.rate	Díjazás
+salaries.rateNotSet	nincs beállítva
+salaries.sessionsInPeriod	Alkalmak az időszakban
+salaries.hoursWorked	Ledolgozott órák
+salaries.lessonsRevenue	Alkalmak bevétele
+salaries.totalToPay	Összesen fizetendő
+salaries.rateWarning	A díjazás nincs beállítva — állítsa be a munkatárs profiljában, hogy az elszámolás kiszámítható legyen.
+salaries.rateUnit.hourly	óra
+salaries.rateUnit.percent	%
+salaries.rateUnit.fixed	fix
+salaries.paidAt	Kifizetve {{date}}
+salaries.historyTitle	Fizetési előzmények
+salaries.historyEmpty	Még nincs fizetés
+salaries.historyLoading	Előzmények betöltése…
+salaries.toasts.loadFailed	A bérszámfejtés betöltése sikertelen
+salaries.toasts.paid	Bér kifizetve: {{name}}
+salaries.toasts.payFailed	A bér kifizetése sikertelen
+salaries.toasts.canceled	Bér törölve: {{name}}
+salaries.toasts.historyLoadFailed	A fizetési előzmények betöltése sikertelen
+counterparties.count	{{count}} partner
+counterparties.totalDebt	Teljes tartozás:
+counterparties.add	Hozzáadás
+counterparties.newTitle	Új partner
+counterparties.nameLabel	Név / Teljes név
+counterparties.namePlaceholder	Cég Kft. vagy Kovács János
+counterparties.innLabel	Adóazonosító
+counterparties.categoryLabel	Kategória
+counterparties.categoryPlaceholder	Bérleti díj, beszállító…
+counterparties.typeLabel	Partner típusa
+counterparties.types.legal.label	Jogi személy
+counterparties.types.legal.desc	Szervezet vagy vállalat
+counterparties.types.ie.label	Egyéni vállalkozó
+counterparties.types.ie.desc	Önálló vállalkozó
+counterparties.types.person.label	Magánszemély
+counterparties.types.person.desc	Privát személy
+counterparties.addSubmit	Partner hozzáadása
+counterparties.you	Ön
+counterparties.otherCategory	Egyéb
+counterparties.deals	megállapodások
+counterparties.dealsLabel	Megállapodások
+counterparties.debtLabel	Tartozás
+counterparties.documents	Dokumentumok
+counterparties.edit	Szerkesztés
+counterparties.delete	Törlés
+counterparties.deleteConfirmTitle	Törli a partnert?
+counterparties.deleteConfirmText	A kapcsolódó dokumentumok és a megállapodások előzményei megmaradnak, de a partner lekerül a listáról.
+counterparties.toasts.loadFailed	A partnerek betöltése sikertelen
+counterparties.toasts.enterName	Adjon meg egy nevet
+counterparties.toasts.saved	Módosítások mentve
+counterparties.toasts.saveFailed	Mentés sikertelen
+counterparties.toasts.added	Partner hozzáadva
+counterparties.toasts.addFailed	A partner hozzáadása sikertelen
+counterparties.toasts.deleted	Partner törölve
+counterparties.toasts.deleteFailed	A partner törlése sikertelen
+counterparties.toasts.documentsOpened	Dokumentumok megnyitva
+documents.signed	Aláírva
+documents.pendingCount	Aláírásra vár
+documents.draftCount	Belső (aláíratlan)
+documents.searchPlaceholder	Keresés cím vagy partner alapján…
+documents.filters.all	Összes
+documents.filters.signed	Aláírt
+documents.filters.pending	Aláírásra vár
+documents.upload	Feltöltés
+documents.addTitle	Dokumentum hozzáadása a könyvtárhoz
+documents.dropzoneTitle	Kattintson vagy húzzon ide egy fájlt
+documents.dropzoneHint	PDF, DOCX, XLSX (legfeljebb 15 MB)
+documents.dropzoneChange	Kattintson másik fájl kiválasztásához
+documents.titleLabel	Dokumentum címe
+documents.titlePlaceholder	Például átvételi jegyzőkönyv #48
+documents.partyLabel	Partner (ha van)
+documents.partyPlaceholder	Cégnév vagy egyéni vállalkozó neve
+documents.needsSignature	Szükséges a dokumentumhoz aláírás?
+documents.needsSignatureHint	Az állapot: „Aláírásra vár”
+documents.saveToBase	Mentés a könyvtárba
+documents.emptyTitle	Ez a mappa üres
+documents.emptyBody	Töltsön fel új dokumentumot vagy módosítsa a szűrőket
+documents.internalDoc	Belső dokumentum
+documents.uploaded	Feltöltve {{date}}
+documents.download	Letöltés
+documents.open	Megnyitás
+documents.fileRequired	Csatoljon egy fájlt
+documents.options	Beállítások
+documents.status.title	Állapot
+documents.status.signed	Aláírva
+documents.status.pending	Aláírásra vár
+documents.status.draft	Aláíratlan
+documents.delete	Törlés
+documents.toasts.loadFailed	A dokumentumok betöltése sikertelen
+documents.toasts.titleRequired	Töltsön fel fájlt vagy adjon meg címet
+documents.toasts.created	Dokumentum feltöltve a könyvtárba
+documents.toasts.createFailed	A dokumentum mentése sikertelen
+documents.toasts.badFormat	Engedélyezett formátumok: PDF, DOCX, XLSX
+documents.toasts.downloadFailed	A fájl letöltése sikertelen
+documents.toasts.noFile	Ehhez a dokumentumhoz nincs fájl csatolva
+documents.toasts.openFailed	A fájl megnyitása sikertelen
+documents.toasts.statusChanged	Állapot: {{label}}
+documents.toasts.statusFailed	Az állapot módosítása sikertelen
+documents.toasts.deleted	Dokumentum törölve
+documents.toasts.deleteFailed	A dokumentum törlése sikertelen
+goals.loading	Célok betöltése…
+goals.active	Folyamatban lévő célok
+goals.done	Teljesítve
+goals.avgProgress	Általános előrehaladás
+goals.trackingTitle	Terv követése
+goals.createGoal	Cél létrehozása
+goals.newTitle	Új pénzügyi cél
+goals.titleLabel	Cél címe
+goals.titlePlaceholder	Például új reformer gépek
+goals.targetLabel	Célösszeg, {{symbol}}
+goals.targetPlaceholder	500000
+goals.deadlineLabel	Határidő
+goals.trackingLabel	Hogyan kövesse az előrehaladást?
+goals.trackingAuto	Automatikusan (CRM-mutató)
+goals.trackingAutoDesc	Kapcsolja a célt egy választott kategória bevételéhez. A CRM maga mozgatja az előrehaladási sávot.
+goals.trackingManual	Manuálisan (személyes megtakarítás)
+goals.trackingManualDesc	A kártyán megjelenik a „Pénz hozzáadása” gomb. Az előrehaladás csak Öntől függ.
+goals.opTypeLabel	Művelet típusa
+goals.categoryLabel	Kategória
+goals.categoryPlaceholder	Válasszon kategóriát
+goals.editTitle	Cél szerkesztése
+goals.nameLabel	Cím
+goals.namePlaceholder	Cél címe
+goals.amountLabel	Összeg, {{symbol}}
+goals.achieved	Cél elérve
+goals.priority.high	Magas prioritás
+goals.priority.medium	Közepes prioritás
+goals.priority.low	Alacsony prioritás
+goals.autoCollect	Automatikusan követett
+goals.deadlinePrefix	Határidő:
+goals.noDeadline	Nincs határidő
+goals.fundPlaceholder	Összeg, {{symbol}}
+goals.fund	Hozzáadás
+goals.addFunds	Pénz hozzáadása
+goals.autoHint	Az érték automatikusan frissül a kategória bevételéből
+goals.deleteConfirmTitle	Törli a célt?
+goals.deleteConfirmText	A cél előrehaladása elveszik. Ez a művelet nem vonható vissza.
+goals.toasts.loadFailed	A célok betöltése sikertelen
+goals.toasts.fillRequired	Töltse ki a címet és az összeget
+goals.toasts.chooseCategory	Válasszon kategóriát az automatikus célhoz
+goals.toasts.created	Cél létrehozva
+goals.toasts.createFailed	A cél létrehozása sikertelen
+goals.toasts.enterName	Adjon meg egy nevet
+goals.toasts.updated	Cél frissítve
+goals.toasts.updateFailed	A cél frissítése sikertelen
+goals.toasts.deleted	Cél törölve
+goals.toasts.deleteFailed	A cél törlése sikertelen
+goals.toasts.funded	Pénz hozzáadva
+goals.toasts.fundFailed	A pénz hozzáadása sikertelen
+onlinePayments.description	Csatlakoztassa a Stripe-ot, és ügyfelei kártyával fizethetnek a pénztárnál. A pénz közvetlenül a stúdió számlájára érkezik — a Velora soha nem tartja azt. A jutalék a csomagját követi.
+onlinePayments.gatewaysTitle	Fizetési szolgáltatók
+onlinePayments.gateways.stripe.name	Stripe
+onlinePayments.gateways.states.none.label	Nincs csatlakoztatva
+onlinePayments.gateways.states.none.hint	Fogadjon kártyás fizetéseket a stúdió számláján
+onlinePayments.gateways.states.none.action	Csatlakoztatás
+onlinePayments.gateways.states.incomplete.label	Hiányzó adatok
+onlinePayments.gateways.states.incomplete.hint	A Stripe a stúdió adataira vár — a fizetések addig kikapcsolva maradnak
+onlinePayments.gateways.states.incomplete.action	Folytatás
+onlinePayments.gateways.states.action.label	Teendő szükséges
+onlinePayments.gateways.states.action.hint	A Stripe néhány adatot elutasított és javításra vár — ez nem oldódik meg magától
+onlinePayments.gateways.states.action.action	Adatok javítása
+onlinePayments.gateways.states.review.label	Ellenőrzés alatt
+onlinePayments.gateways.states.review.hint	Az adatok elküldve, a Stripe ellenőrzi őket. Ez általában legfeljebb egy napot vesz igénybe
+onlinePayments.gateways.states.review.action	Stripe megnyitása
+onlinePayments.gateways.states.active.label	Csatlakoztatva
+onlinePayments.gateways.states.active.hint	A kártyás fizetések a stúdió Stripe-számlájára érkeznek
+onlinePayments.gateways.states.active.action	Beállítások
+onlinePayments.toasts.gatewayUpdated	A fizetési szolgáltató beállításai frissültek
+onlinePayments.toasts.stripeReturned	Az adatok elküldve a Stripe-nak
+onlinePayments.toasts.stripeLinkExpired	A Stripe-hivatkozás lejárt — nyomja meg újra a Csatlakoztatás gombot
+paymentMethods.totalTurnover	Időszaki forgalom
+paymentMethods.periods.month	Hónap
+paymentMethods.periods.quarter	Negyedév
+paymentMethods.periods.year	Év
+paymentMethods.amount	Összeg
+paymentMethods.share	Arány
+paymentMethods.transactions	tranzakció
+paymentMethods.methods.cash.name	Készpénz
+paymentMethods.methods.card.name	Bankkártya
+paymentMethods.methods.qr.name	SBP (QR)
+paymentMethods.methods.transfer.name	Átutalás
+paymentMethods.methods.stripe.name	Stripe
+paymentMethods.methods..name	Nincs megadva
+reports.metrics.revenue	Bevétel
+reports.metrics.expenses	Kiadások
+reports.metrics.profit	Nyereség
+reports.metrics.margin	Árrés
+reports.vsPreviousPeriod	az előző időszakhoz képest
+reports.cashflowTitle	Pénzforgalom
+reports.cashflowSub	Bevételek és kiadások elemzése
+reports.period	Időszak
+reports.income	Bevétel
+reports.expense	Kiadás
+reports.profit	Nyereség
+reports.periods.today	Ma
+reports.periods.week	Hét
+reports.periods.month	Hónap
+reports.periods.year	Év
+reports.legendIncome	Bevétel
+reports.legendExpense	Kiadások
+reports.exportCsv	CSV exportálása
+reports.expenseStructure	Kiadások szerkezete
+reports.incomeStructure	Bevételek szerkezete
+reports.total	Összesen
+reports.otherCategory	Nem kategorizált
+reports.noData	Nincs adat erre az időszakra
+reports.insightsTitle	Pénzügyi összefoglaló és elemzések
+reports.insightsPlaceholder	Itt jelenik meg az AI-alapú pénzügyi összefoglaló: trendelemzés, kiadások szerkezete és ajánlások
+reports.toasts.exportFailed	A műveletek exportálása sikertelen
+confirmModal.cancel	Mégse
+confirmModal.confirm	Megerősítés
+confirmModal.delete	Törlés

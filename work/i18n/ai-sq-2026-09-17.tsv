@@ -1,0 +1,287 @@
+== sq
+telegram.tokenLabel	Tokeni i botit
+telegram.tokenPlaceholder	1234567890:ABC...
+telegram.tokenInvalidFormat	Formati i tokenit është i pavlefshëm
+telegram.verifyButton	Verifiko dhe lidhu
+telegram.verifiedToast	Boti @{{username}} u lidh
+telegram.verifyFailedToast	Telegrami e refuzoi këtë token
+telegram.disconnect	Shkëpute
+telegram.disconnectedToast	Boti u shkëput
+telegram.disconnectConfirmTitle	Ta shkëputim botin?
+telegram.disconnectConfirmMessage	Përgjigjësi automatik i Telegramit do të ndalojë së punuari derisa të rilidhni një bot.
+telegram.gateTooltip	Lidhni fillimisht një bot
+telegram.statsPending	Do të shfaqet sapo përgjigjësi automatik të fillojë të punojë
+telegram.instructionTitle	Si të merrni një token
+telegram.instructionStep1	Hapni @BotFather në Telegram
+telegram.instructionStep2	Dërgoni komandën /newbot, zgjidhni një emër dhe emër përdoruesi për botin
+telegram.instructionStep3	Kopjoni tokenin që ju jep
+telegram.instructionStep4	Ngjiteni këtu dhe klikoni "Verifiko dhe lidhu"
+instagram.connectButton	Lidh Instagramin
+instagram.connectedToast	Instagrami u lidh
+instagram.connectErrorToast	Nuk u lidh dot Instagrami — provoni përsëri
+instagram.expiresUntil	Qasja vlen deri më {{date}}
+instagram.disconnect	Shkëpute
+instagram.disconnectedToast	Instagrami u shkëput
+instagram.disconnectConfirmTitle	Ta shkëputim Instagramin?
+instagram.disconnectConfirmMessage	Përgjigjësi automatik i Instagramit do të ndalojë së përgjigjuri klientëve derisa të rilidhni llogarinë.
+instagram.gateTooltip	Lidhni fillimisht një llogari
+instagram.statsPending	Do të shfaqet sapo përgjigjësi automatik të fillojë të punojë
+instagram.instructionTitle	Si të lidheni
+instagram.instructionStep1	Llogaria e studios duhet të jetë profesionale — Business ose Creator (Cilësimet e Instagramit → Lloji i llogarisë)
+instagram.instructionStep2	Klikoni "Lidh Instagramin" dhe hyni me llogarinë e studios
+instagram.instructionStep3	Lejoni qasjen te mesazhet
+instagram.instructionStep4	Do të ktheheni këtu automatikisht
+whatsapp.numberLabel	Numri i WhatsApp Business
+whatsapp.connectLink	ose futni tokenin me dorë
+whatsapp.gateTooltip	Lidhni fillimisht një numër WhatsApp
+whatsapp.statsPending	Do të shfaqet sapo përgjigjësi automatik të fillojë të punojë
+whatsapp.instructionTitle	Si të lidheni
+whatsapp.instructionStep1	Klikoni “Lidh WhatsApp” — hapet një dritare e Meta-s
+whatsapp.instructionStep2	Hyni në Facebook, zgjidhni një llogari biznesi dhe një numër (ose shtoni të ri) dhe konfirmojeni me kodin
+whatsapp.instructionStep3	Numri lidhet një herë — i njëjti përdoret për njoftimet e klientëve; kthehuni këtu dhe aktivizoni përgjigjësin automatik
+whatsapp.connectButton	Lidh WhatsApp
+whatsapp.connectedToast	Numri i WhatsApp u lidh
+whatsapp.connectErrorToast	Nuk u lidh dot numri i WhatsApp
+whatsapp.disconnect	Shkëpute
+whatsapp.disconnectedToast	WhatsApp u shkëput
+whatsapp.disconnectConfirmTitle	Ta shkëputim WhatsApp-in?
+whatsapp.disconnectConfirmMessage	Numri do të shkëputet gjithashtu nga njoftimet dhe integrimet e studios.
+history.title	Historia e bisedave
+history.empty	Nisni bisedën tuaj të parë
+history.today	Sot
+history.yesterday	Dje
+history.earlier	Më herët
+history.messagesCount_one	{{count}} mesazh
+history.messagesCount_other	{{count}} mesazhe
+history.deleteConfirmTitle	Ta fshijmë këtë bisedë?
+history.deleteConfirmMessage	Të gjitha mesazhet në këtë bisedë do të fshihen përgjithmonë.
+actions.newChat	Bisedë e re
+actions.deleteChat	Fshi bisedën
+actions.confirmTitle	Konfirmoni veprimin
+actions.confirm	Konfirmo
+actions.cancel	Anulo
+actions.cancelled	Veprimi u anulua.
+actions.done	U krye më {{date}}
+actions.effect	Çfarë ndryshon
+actions.undo	Zhbëje
+actions.undoTitle	Ta zhbëjmë këtë veprim?
+actions.undoMessage	Do të kthej mbrapsht atë që u bë: {{action}}. Orët që klientët i kanë rezervuar tashmë do të mbeten — vetëm një person mund t'i heqë ato.
+actions.args.lesson_id	Ora
+actions.args.client_id	Klienti
+actions.args.reservation_id	Rezervimi
+actions.args.alternate_with	Alterno me
+actions.args.service_id	Shërbimi
+actions.args.teacher_id	Trajneri
+actions.args.hall_id	Salla
+actions.args.start_time	Fillon
+actions.args.duration_min	Kohëzgjatja, min
+actions.args.total_spots	Vende
+actions.args.price	Çmimi
+actions.args.name	Emri
+actions.args.last_name	Mbiemri
+actions.args.phone	Telefoni
+actions.args.email	Emaili
+actions.args.city	Qyteti
+actions.args.birth_date	Data e lindjes
+actions.args.source	Burimi
+actions.args.frozen	Pezulluar
+actions.args.date_from	Nga
+actions.args.date_to	Deri më
+actions.args.weekdays	Ditët e javës
+actions.args.time_from	Nga
+actions.args.time_to	Deri në
+actions.args.break_at	Pushim në
+actions.args.break_min	Pushim, min
+actions.args.extend_hours	Zgjero orarin e trajnerit
+actions.args.salary	Pagesa
+actions.args.access_role	Qasja
+actions.args.department	Pozicioni
+actions.args.password	Fjalëkalimi i punonjësit
+actions.args.rate	Tarifa
+actions.args.rate_type	Lloji i pagesës
+actions.args.service_ids	Shërbimet
+actions.args.schedule	Orari
+actions.bool.yes	po
+actions.bool.no	jo
+settings.title	Cilësimet e AI-së
+settings.model	Modeli
+settings.language	Gjuha
+models.comingSoon	Së shpejti
+models.velora-3.5	Velora AI 3.5
+languages.auto	Automatike
+languages.ru	Rusisht
+languages.en	Anglisht
+languages.uk	Ukrainisht
+languages.cs	Çekisht
+languages.de	Gjermanisht
+chat.thinking	Velora AI po mendon
+chat.thinkingAnswer	Velora AI po e shqyrton
+chat.readyTitle	Velora AI është gati të ndihmojë
+chat.thinkingTitle	Velora AI po mendon...
+chat.readySubtitle	Bëni një pyetje ose zgjidhni një sugjerim
+chat.thinkingSubtitle	Po përpunon kërkesën tuaj
+chat.placeholder	Shkruani një mesazh...
+chat.drawerPlaceholder	Më pyesni çfarëdo...
+chat.navbarPlaceholder	Pyetni AI-në ose caktoni një detyrë...
+chat.enterToSend	Enter për të dërguar
+chat.shiftEnterNewline	Shift+Enter për rresht të ri
+chat.aiDisclaimer	Velora AI mund të gabojë. Kontrolloni informacionin e rëndësishëm.
+chat.continueInChat	Vazhdo në bisedë →
+chat.emptyTitle	Si mund të ndihmoj?
+chat.emptySubtitle	Bëni çfarëdo pyetje për studion, klientët ose biznesin tuaj
+chat.charCount_one	{{count}} / 4000 karakter
+chat.charCount_other	{{count}} / 4000 karaktere
+chat.suggestions.revenue	Shfaq statistikat e të ardhurave për këtë muaj
+chat.suggestions.sms	Shkruaj një SMS kujtues për një takim
+chat.suggestions.promo	Ide për një promovim veror
+chat.suggestions.retention	Si mund ta përmirësoj mbajtjen e klientëve?
+chat.drawerSuggestions.revenueAnalysis	Analiza e të ardhurave
+chat.drawerSuggestions.emailTemplate	Model emaili
+chat.drawerSuggestions.promoIdeas	Ide promovimi
+chat.drawerSuggestions.clientReport	Raport klienti
+drawer.historyBack	Bisedat
+drawer.historyLabel	Historia
+agents.title	Agjentët e AI-së
+agents.info.title	Çfarë janë agjentët e AI-së
+agents.info.lead	Një asistent që u përgjigjet klientëve në mesazherët e studios ndërsa jeni të zënë.
+agents.info.b1	Përgjigjet gjatë gjithë kohës — askush nuk pret administratorin
+agents.info.b2	Njeh orarin, shërbimet dhe çmimet e studios suaj
+agents.info.b3	Ju caktoni tonin dhe gjatësinë e përgjigjeve
+agents.info.note	Një kanal fillon të punojë sapo të lidhet në cilësime
+agents.activeCount	{{active}} / {{total}}
+agents.stateOn	Po përgjigjet
+agents.stateOffline	Nuk është lidhur
+agents.configureButton	Konfiguro agjentët
+agents.enable	Aktivizo
+agents.disable	Çaktivizo
+agents.modalTitle	Konfigurimi i agjentit AI
+agents.modalSubtitle	Përgjigje automatike në mesazherë
+agents.tabPrompt	Udhëzimi i sistemit
+agents.statusDisabled	Çaktivizuar
+agents.statHandled	Të trajtuara
+agents.statRating	Vlerësimi
+agents.styleTitle	Stili i përgjigjeve
+agents.styleAllChannels	zbatohet për të gjitha kanalet
+agents.toneLabel	Toni i përgjigjeve
+agents.tone.friendly	Miqësor
+agents.tone.formal	Formal
+agents.tone.neutral	Neutral
+agents.maxLengthLabel	Gjatësia maksimale e përgjigjes (karaktere)
+agents.maxLengthError	Vendosni një numër nga 50 deri në 4000
+agents.offHoursLabel	Përgjigje automatike vetëm jashtë orarit të punës
+agents.promptHint	Ky tekst përcakton personalitetin e agjentit — si komunikon, çfarë di dhe cilat tema i shmang.
+agents.promptPlaceholder	Ju jeni një asistent i sjellshëm i studios...
+agents.promptCount_one	{{count}} / 2000 karakter
+agents.promptCount_other	{{count}} / 2000 karaktere
+agents.tgChannelInactive	Kanali Telegram është i çaktivizuar te Rezervimi online — boti nuk merr mesazhe, prandaj agjenti hesht.
+errors.tg_token_required	Lidhni fillimisht një bot Telegram — ende nuk është ruajtur token.
+errors.ig_not_connected	Instagrami ende nuk është lidhur.
+errors.wa_not_connected	Numri WhatsApp ende nuk është lidhur — lidheni te Njoftimet.
+errors.assistant_unavailable	Asistenti nuk është i disponueshëm përkohësisht — provoni më vonë.
+errors.trial_exhausted	Keni përdorur të gjitha 500 kërkesat provuese për asistentin AI. Zgjidhni një plan me pagesë për të vazhduar.
+errors.quota_exceeded	Keni përdorur të gjitha kërkesat AI në këtë plan. Kufiri rivendoset në fillim të muajit — ose përmirësoni planin.
+toasts.settingsSaved	Cilësimet u ruajtën
+toolStatus.add_client_note	Po shkruhet një shënim…
+toolStatus.add_client_tag	Po shtohet një etiketë…
+toolStatus.add_loyalty_points	Po shtohen pikë…
+toolStatus.book_client	Po rezervohet ora…
+toolStatus.cancel_booking	Po anulohet rezervimi…
+toolStatus.pay_booking	Po regjistrohet pagesa e orës…
+toolStatus.clear_schedule	Po pastrohet orari…
+toolStatus.create_account	Po krijohet një llogari…
+toolStatus.create_branch	Po krijohet një degë…
+toolStatus.create_client	Po krijohet një klient…
+toolStatus.create_counterparty	Po krijohet një palë…
+toolStatus.create_hall	Po krijohet një sallë…
+toolStatus.create_lesson	Po krijohet një orë…
+toolStatus.create_operation	Po regjistrohet transaksioni…
+toolStatus.create_package	Po krijohet një paketë…
+toolStatus.create_promo	Po krijohet një kod promocional…
+toolStatus.create_service	Po krijohet një shërbim…
+toolStatus.create_staff	Po shtohet një anëtar ekipi…
+toolStatus.default	Po punohet…
+toolStatus.delete_client	Po fshihet klienti…
+toolStatus.delete_staff	Po hiqet anëtari i ekipit…
+toolStatus.fill_schedule	Po plotësohet orari…
+toolStatus.find_clients	Po kërkohen klientët…
+toolStatus.forget_fact	Po harrohet fakti…
+toolStatus.freeze_client	Po pezullohet klienti…
+toolStatus.get_booking_settings	Po kontrollohen rregullat e rezervimit…
+toolStatus.get_catalog_settings	Po kontrollohen cilësimet e paketave…
+toolStatus.get_client	Po hapet karta e klientit…
+toolStatus.get_client_events	Po lexohet historia e klientit…
+toolStatus.get_inactive_clients	Po kërkohen klientët joaktivë…
+toolStatus.get_client_notes	Po lexohen shënimet e klientit…
+toolStatus.get_client_subscription	Po kontrollohet paketa e klientit…
+toolStatus.get_delivery_log	Po kontrollohet regjistri i dërgesave…
+toolStatus.get_finance_goals	Po kontrollohen objektivat financiare…
+toolStatus.get_finance_summary	Po kontrollohen financat…
+toolStatus.get_lesson	Po hapet ora…
+toolStatus.get_loyalty_programs	Po kontrollohen programet e besnikërisë…
+toolStatus.get_loyalty_summary	Po kontrollohet besnikëria…
+toolStatus.get_notification_matrix	Po kontrollohen njoftimet…
+toolStatus.get_payroll	Po llogaritet paga…
+toolStatus.get_rooms	Po kontrollohen sallat…
+toolStatus.get_schedule	Po kontrollohet orari…
+toolStatus.get_segments	Po kontrollohen segmentet e klientëve…
+toolStatus.get_services	Po kontrollohen shërbimet…
+toolStatus.get_staff	Po kontrollohet ekipi…
+toolStatus.get_staff_profile	Po hapet karta e anëtarit të ekipit…
+toolStatus.get_stats	Po përpunohen shifrat…
+toolStatus.get_team_report	Po matet kthimi sipas trajnerit…
+toolStatus.get_studio_facts	Po rikujtohet çfarë dihet për studion…
+toolStatus.get_today_agenda	Po kontrollohet dita e sotme…
+toolStatus.issue_certificate	Po lëshohet certifikata…
+toolStatus.list_operations	Po kontrollohen të ardhurat dhe shpenzimet…
+toolStatus.open_ui	Po hapet ekrani…
+toolStatus.remember_fact	Po mbahet mend…
+toolStatus.remove_client_tag	Po hiqet etiketa…
+toolStatus.sell_subscription	Po shitet paketa…
+toolStatus.set_client_discount	Po caktohet zbritja…
+toolStatus.set_staff_day	Po shënohet dita në orar…
+toolStatus.set_staff_schedule	Po caktohet orari…
+toolStatus.toggle_notification_event	Po aktivizohet njoftimi…
+toolStatus.ui_section	Po kontrollohet si funksionon seksioni…
+toolStatus.update_booking_rules	Po përditësohen rregullat e rezervimit…
+toolStatus.update_client	Po përditësohen të dhënat e klientit…
+toolStatus.update_lesson	Po përditësohet ora…
+toolStatus.update_service	Po përditësohet shërbimi…
+toolStatus.update_staff	Po përditësohet anëtari i ekipit…
+quota.trialLow	Kanë mbetur pak kërkesa provuese.
+quota.label	Kërkesat për asistentin AI
+quota.value	{{used}} nga {{limit}}
+quota.low	Jeni pranë kufirit mujor.
+quota.upgrade	Zgjidhni një plan
+quota.monthPeriod	Për muaj kalendarik (UTC)
+quota.trialPeriod	Për gjithë provën
+rating.up	Përgjigje e mirë
+rating.down	Përgjigje e dobët
+memory.title	Asistenti mban mend
+memory.forget	Harroje
+memory.forgetConfirmTitle	Ta harrojmë këtë fakt?
+memory.forgetConfirmMessage	Asistenti do të ndalojë së përdoruri atë në përgjigje.
+memory.deleted	Fakti u hoq
+plan.pages.who	Kush dhe çfarë
+plan.pages.when	Kur
+plan.pages.check	Kontrollo
+plan.stepOf	Hapi {{current}} nga {{total}}
+plan.next	Tjetra
+plan.back	Mbrapa
+plan.confirm	Mirato
+plan.confirmDanger	Mirato
+plan.choose	Zgjidh
+plan.nothingFound	Nuk u gjet asgjë
+plan.nothingToFill	Këtu nuk ka asgjë për plotësuar — vazhdoni drejtpërdrejt.
+plan.fromStep	krijuar nga hapi {{n}}
+plan.values.group	grup
+plan.values.individual	individual
+plan.values.trainer	trajner
+plan.values.admin	administrator
+plan.values.owner	pronar
+plan.values.hourly	për orë
+plan.values.percent	% e të ardhurave
+plan.values.fixed	për orë
+plan.title_one	Konfirmoni — {{count}} veprim
+plan.title_other	Konfirmoni — {{count}} veprime
+plan.stillEmpty_one	Ka mbetur {{count}} fushë
+plan.stillEmpty_other	Kanë mbetur {{count}} fusha
