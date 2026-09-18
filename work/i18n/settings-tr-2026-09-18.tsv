@@ -1,0 +1,333 @@
+== tr
+nav.sectionLabel	Sistem ayarları
+nav.general	Genel
+nav.appearance	Görünüm
+nav.notifications	Bildirimler
+nav.billing	Faturalandırma
+nav.security	Güvenlik
+nav.integrations	Entegrasyonlar
+nav.data	Veriler
+nav.logout	CRM değiştir
+toast.saved	Kaydedildi
+toast.error	Bir şeyler ters gitti
+workspace.title	CRM sistemleriniz
+workspace.subtitle	Bir çalışma alanı seçin veya yeni bir tane oluşturun
+workspace.current	Geçerli
+workspace.membersCount_one	{{count}} üye
+workspace.membersCount_other	{{count}} üye
+workspace.clientsCount_one	{{count}} müşteri
+workspace.clientsCount_other	{{count}} müşteri
+workspace.createNew	Yeni stüdyo oluştur
+workspace.loadError	Stüdyolarınız yüklenemedi
+workspace.selectError	Bu stüdyoya geçilemedi
+general.company.title	Şirket bilgileri
+general.company.subtitle	İşletmenizle ilgili herkese açık bilgiler
+general.company.name	Şirket adı
+general.company.namePh	ör. Stüdyom
+general.company.desc	Açıklama
+general.company.descPh	Stüdyonuz ne yapıyor…
+general.company.phone	Telefon
+general.company.email	E-posta
+general.company.site	Web sitesi
+general.company.sitePh	https://studio.com
+general.company.address	Adres
+general.company.addressPh	Örnek Sokak 123, şehir
+general.reset	Sıfırla
+general.resetToast	Ayarlar sıfırlandı
+general.locale.title	Dil ve bölge
+general.locale.subtitle	Arayüz yerelleştirme ayarları
+general.locale.timezone	Saat dilimi
+general.locale.timezoneSearch	Şehir veya fark
+general.locale.timezoneNotFound	Saat dilimi bulunamadı
+general.locale.currency	Para birimi
+general.locale.currencySearch	Para birimi veya kod ara
+general.locale.currencyNotFound	Para birimi bulunamadı
+general.locale.language	Arayüz dili
+general.locale.languageSearch	Dil ara
+general.locale.languageNotFound	Dil bulunamadı
+general.locale.dateFormat	Tarih biçimi
+general.locale.firstDay	Haftanın ilk günü
+general.locale.firstDayLabels.0	Pazartesi
+general.locale.firstDayLabels.1	Pazar
+general.booking.title	Rezervasyon modeli
+general.booking.subtitle	Müşterileriniz sizden nasıl rezervasyon yapar
+general.booking.mode	Rezervasyon modeli
+general.booking.modeHint	Etkinlikler — müşteriler planlanmış bir derse kaydolur. Bireysel — müşteri uzman ve saat seçer. Karma — ikisi aynı anda.
+general.booking.profile	Sektör terminolojisi
+general.booking.profileHint	Personel ve teklifler için kullanılacak kelimeleri seçer. Yalnızca ifadeleri değiştirir — rolleri, fiyatları veya rezervasyon modelini asla değiştirmez.
+general.booking.strict	Sıkı takvim
+general.booking.strictHint	Bir uzman veya özel alan için çifte rezervasyonu engeller. Bireysel rezervasyon açılmadan önce gereklidir.
+general.booking.spaceAxis	Takvimde {{spacePlural}} kullan
+general.booking.spaceAxisHint	Kapalı — müşteri bir kişi rezerve eder ve alanın günlükte sütunu olmaz. Açık — ders bir alana bağlıdır.
+general.booking.spaceAxisDefaultOn	Sektörünüz için varsayılan: açık
+general.booking.spaceAxisDefaultOff	Sektörünüz için varsayılan: kapalı
+general.booking.modes.event	Etkinlikler
+general.booking.modes.resource	Bireysel
+general.booking.modes.hybrid	Karma
+general.booking.profiles.studio	Grup çalışmaları ve stüdyolar
+general.booking.profiles.sport	Spor ve spor salonları
+general.booking.profiles.beauty	Güzellik ve bakım
+general.booking.profiles.recovery	Vücut ve iyileşme
+general.booking.profiles.relax	Spa ve rahatlama
+general.booking.profiles.other	Diğer
+general.booking.preview.event	Etkinlik
+general.booking.preview.resource	Bireysel
+general.booking.errors.AUDIT_BLOCKED	Takvim, sıkı takvimle uyumlu olmayan rezervasyonlar içeriyor.
+general.booking.errors.STRICT_SCHEDULE_REQUIRED	Önce sıkı takvimi açın.
+general.booking.errors.RESOURCE_HISTORY_EXISTS	Sıkı takvim kapatılamaz: stüdyoda bireysel rezervasyonlar var.
+general.booking.findings.overlap	Çakışan rezervasyonlar
+general.booking.findings.unknown_timezone	Bilinmeyen saat dilimi
+general.booking.findings.undefined_branch	Şube ayarlanmadı
+general.booking.findings.invalid_duration	Geçersiz süre
+general.booking.findings.invalid_resource_row	Eksik bireysel rezervasyon
+general.booking.findings.missing_branch_assignment	Uzman şubeye atanmamış
+general.booking.findings.missing_working_hours	Uzmanın çalışma saatleri yok
+general.booking.findings.inactive_specialist	Uzman etkin değil
+general.booking.findings.other	İncelenmesi gerekiyor
+appearance.theme.title	Tema
+appearance.theme.subtitle	Arayüzün görsel stilini seçin
+appearance.theme.light	Açık
+appearance.theme.dark	Koyu
+appearance.theme.auto	Sistem
+appearance.accent.title	Vurgu rengi
+appearance.accent.subtitle	Arayüzün ana rengini kişiselleştirin
+appearance.accent.note	Seçiminiz kaydedildi ancak henüz arayüze uygulanmıyor — gelecekteki bir güncellemede gelecek.
+appearance.accent.noteTitle	Yakında
+appearance.accent.colors.peach	Şeftali
+appearance.accent.colors.pistachio	Antep fıstığı
+appearance.accent.colors.lavender	Lavanta
+appearance.accent.colors.pink	Pembe
+appearance.accent.colors.gold	Altın
+appearance.accent.colors.mint	Nane
+appearance.language.title	Arayüz dili
+appearance.language.subtitle	Kişisel diliniz — stüdyo ayarlarını etkilemez
+appearance.language.search	Dil ara
+appearance.language.empty	Dil bulunamadı
+notifications.myPrefs.title	Bildirimlerim
+notifications.myPrefs.subtitle	Kişisel tercihler — stüdyonun geri kalanını etkilemez
+notifications.myPrefs.hint	Zorunlu bildirimler kapatılamaz — takvim değişikliklerini ve ödemeleri asla kaçırmamanızı sağlar.
+notifications.myPrefs.empty	Rolünüz için isteğe bağlı bildirim yok
+notifications.myPrefs.channels.email	E-posta
+notifications.myPrefs.channels.telegram	Telegram
+notifications.myPrefs.channels.whatsapp	WhatsApp
+notifications.telegram.title	Bildirimler için Telegram
+notifications.telegram.subtitle	Size kişisel olarak nereden etkinlik gönderileceği — rezervasyonlar, maaş bordrosu, raporlar
+notifications.telegram.chatId	Telegram chat_id'niz
+notifications.telegram.chatIdPh	ör. 123456789
+notifications.telegram.hintBefore	chat_id'nizi şu bottan bulabilirsiniz: 
+notifications.telegram.hintAfter	 Telegram'da onunla sohbet başlatın; size ID'nizi gönderir.
+notifications.telegram.invalidChatId	Telegram chat_id yalnızca sembolsüz bir sayı olmalıdır
+notifications.telegram.saved	Telegram bildirimler için bağlandı
+notifications.telegram.saveFailed	Telegram kaydedilemedi
+notifications.email.title	Bildirimler için e-posta
+notifications.email.subtitle	Sistem e-postalarının gönderileceği yer
+notifications.email.primary	Birincil e-posta
+notifications.email.backup	Yedek e-posta
+notifications.email.backupPh	backup@studio.com
+notifications.email.saved	Bildirim ayarları kaydedildi
+billing.plans.start	Start
+billing.plans.pro	Pro
+billing.plans.business	Business
+billing.plans.free_trial	Ücretsiz deneme
+billing.status.active	Etkin
+billing.status.trial	Deneme
+billing.status.expired	Süresi doldu
+billing.plan.title	Geçerli plan
+billing.plan.expiresAt	{{date}} tarihine kadar etkin
+billing.plan.maxStaff	En fazla {{count}} çalışan
+billing.plan.staffUnlimited	Sınırsız çalışan
+billing.plan.noSubscription	Etkin abonelik yok
+billing.plan.noSubscriptionCta	Plan seçin
+billing.plan.trialCta	Plan seçin
+billing.upgrade	{{plan}} planına geç
+billing.renew	Yenile
+billing.autopay.title	Otomatik yenileme
+billing.autopay.subtitle	Kayıtlı kartınızdan tahsil edilir
+billing.autopay.autoRenew	Otomatik yenileme
+billing.autopay.notifyBefore	Tahsilattan {{count}} gün önce hatırlatırız
+billing.payment.title	Ödeme yöntemi
+billing.payment.cardSummary	Kart •••• {{last4}}
+billing.payment.notLinked	Bağlı kart yok
+billing.payment.change	Değiştir
+billing.history.title	Ödeme geçmişi
+billing.history.subtitle	Son 12 ödeme
+billing.history.exportCsv	CSV dışa aktar
+billing.history.empty	Henüz ödeme yok
+billing.history.showAll	Tümünü göster
+billing.history.period	{{count}} ay
+billing.history.noDate	—
+billing.history.status.paid	Ödendi
+billing.history.status.pending	Beklemede
+billing.history.status.failed	Ödenmedi
+billing.history.status.refunded	İade edildi
+billing.toast.autopaySaved	Otomatik yenileme ayarları kaydedildi
+billing.toast.renewed	Yenileme başlatıldı
+billing.toast.csvExportError	CSV dışa aktarılamadı
+security.account.title	Hesap güvenliği
+security.account.subtitle	Çalışma alanınıza erişimi koruyun
+security.twoFa.title	İki aşamalı doğrulama
+security.twoFa.sub	Her girişte e-posta kodu
+security.twoFa.active	Etkin
+security.twoFa.disabled	Devre dışı
+security.twoFa.enableTitle	2FA'yı etkinleştir
+security.twoFa.disableTitle	2FA'yı devre dışı bırak
+security.twoFa.enableWarning	Etkinleştirildiğinde, her giriş {{email}} adresine gönderilen bir kod gerektirir. Bu adrese erişebildiğinizden emin olun — aksi hâlde hesabınıza erişimi kaybedebilirsiniz.
+security.twoFa.disableWarning	Devre dışı bırakıldığında, e-posta kodu olmadan giriş için yalnızca parola yeterli olur.
+security.twoFa.enabledToast	İki aşamalı doğrulama etkinleştirildi
+security.twoFa.disabledToast	İki aşamalı doğrulama devre dışı bırakıldı
+security.password.title	Hesap parolası
+security.password.sub	Değişiklik e-posta koduyla onaylanır
+security.password.change	Parolayı değiştir
+security.password.changed	Parola başarıyla değiştirildi
+security.password.current	Geçerli parola
+security.password.currentPh	Geçerli parolanızı girin
+security.password.new	Yeni parola
+security.password.newPh	En az 8 karakter
+security.password.repeat	Parolayı tekrarlayın
+security.password.repeatPh	Yeni parolayı tekrar girin
+security.password.mismatch	Parolalar eşleşmiyor
+security.password.forgot	Parolanızı mı unuttunuz?
+security.password.resetTitle	Parola kurtarma
+security.password.step1Sub	Sizin olduğunuzu doğrulayalım
+security.password.step2Sub	Kod {{email}} adresine gönderildi
+security.password.step3Sub	Yeni bir parola seçin
+security.password.resetIntro	Hesap e-posta adresinize 6 haneli bir kod göndereceğiz. Geçerli parolayı bilmeniz gerekmez — kod posta kutusunun size ait olduğunu kanıtlar.
+security.password.sendCode	Kod gönder
+security.password.back	Geri
+security.password.save	Parolayı kaydet
+security.password.resetDone	Parola güncellendi
+security.password.resetLogoutHint	Diğer cihazların oturumu kapatılır — bu cihazda oturumunuz açık kalır.
+security.password.rules.len	8+ karakter
+security.password.rules.letter	Harf içerir
+security.password.rules.digit	Rakam içerir
+security.password.rules.simple	111 veya qwerty olmasın
+security.sessions.title	Etkin oturumlar
+security.sessions.sub	Hesabınızın şu anda oturum açtığı yerler
+security.sessions.count	{{count}} cihaz
+security.sessions.manage	Yönet
+security.sessions.hide	Gizle
+security.sessions.current	Geçerli
+security.sessions.terminate	Sonlandır
+security.sessions.terminateAll	Diğer tüm oturumları sonlandır
+security.sessions.terminatedToast	Oturum başarıyla sonlandırıldı
+security.sessions.terminatedAllToast	Diğer oturumlar sonlandırıldı
+security.sessions.justNow	Şimdi etkin
+security.sessions.minutesAgo	{{count}} dk. önce
+security.sessions.hoursAgo	{{count}} sa. önce
+security.sessions.daysAgo	{{count}} gün önce
+security.sessions.unknownLocation	Bilinmiyor
+security.otp.sentHint	E-postanıza 6 haneli bir kod gönderdik. Aşağıya girin.
+security.otp.resend	Kodu yeniden gönder
+security.otp.resendIn	{{count}} sn. sonra yeniden gönder
+security.otp.confirm	Onayla
+security.otp.cancel	İptal
+security.otp.sendCode	Kod gönder
+security.otp.continue	Devam et
+security.danger.title	Veri yönetimi (tehlike bölgesi)
+security.danger.export.title	Tüm verileri dışa aktar
+security.danger.export.sub	Müşteri veritabanı ve geçmişinin arşivini indirin
+security.danger.export.prepare	Arşiv hazırla
+security.danger.export.hide	Gizle
+security.danger.export.clients	Müşteri veritabanı (CSV)
+security.danger.export.finances	Finansal işlemler
+security.danger.export.schedule	Dersler ve takvim
+security.danger.export.start	Dışa aktarmayı başlat
+security.danger.export.started	Arşiv hazırlanıyor, e-postanıza bir bağlantı gönderilecek
+security.danger.export.emptySelection	Dışa aktarmak için en az bir bölüm seçin
+security.danger.wipe.title	Veritabanını temizle
+security.danger.wipe.sub	Tüm müşterileri ve rezervasyonları siler. Ayarlar korunur.
+security.danger.wipe.action	Verileri temizle
+security.danger.wipe.toast	Veritabanı başarıyla temizlendi
+security.danger.wipe.consequence1	Kalıcı olarak silinir: müşteriler, dersler, rezervasyonlar, işlemler, belgeler, müşteri abonelikleri, sadakat geçmişi
+security.danger.wipe.consequence2	Değişmeden kalır: stüdyo, şubeler, {{spacePlural}}, hizmetler, personel, abonelik ve ayarlar
+security.danger.wipe.consequence3	Bu işlem geri alınamaz — onaydan sonra iptal edilemez
+security.danger.deleteAccount.title	Şirket hesabını sil
+security.danger.deleteAccount.sub	İşletmenin sistemden tamamen ve geri döndürülemez biçimde silinmesi
+security.danger.deleteAccount.action	Sonsuza dek sil
+security.danger.deleteAccount.consequence1	Stüdyo ve müşteriler, dersler, finanslar, ayarlar dâhil tüm verileri kalıcı olarak silinecek
+security.danger.deleteAccount.consequence2	Kişisel hesabınız kalır — yalnızca bu stüdyo silinir
+security.danger.deleteAccount.consequence3	Etkin abonelik varken veya stüdyonun başka sahipleri varsa silme kullanılamaz
+integrations.title	Entegrasyonlar
+integrations.subtitle	Harici kanalları ve ekosistemleri tek tıklamayla bağlayın
+integrations.loadError	Entegrasyon durumu yüklenemedi
+integrations.items.telegram.name	Telegram botu
+integrations.items.telegram.sub	Bot ile müşteri bildirimleri ve rezervasyonlar
+integrations.items.whatsapp.name	WhatsApp Business
+integrations.items.whatsapp.sub	Toplu mesajlar ve otomatik müşteri bildirimleri
+integrations.items.instagram.name	Instagram Direct
+integrations.items.instagram.sub	Otomatik yanıtlar ve çevrim içi rezervasyonlar için AI temsilcisi
+integrations.items.google_calendar.name	Google Calendar
+integrations.items.google_calendar.sub	Stüdyo takvimi eşitleme
+integrations.status.connected	Bağlı
+integrations.status.notActive	Bağlı değil
+integrations.actions.configure	Yapılandır
+integrations.actions.connect	Bağlan
+integrations.actions.disconnect	Bağlantıyı kes
+integrations.fields.keyLabel	Anahtar
+integrations.fields.connectedAtLabel	Bağlı
+integrations.fields.telegramToken	Bot API belirteci (@BotFather'dan)
+integrations.fields.telegramTokenPh	123456789:ABCDefGhIJKlmNoPQRsTUVwxyZ
+integrations.fields.whatsappToken	Erişim belirteci
+integrations.fields.whatsappTokenPh	EAAxxxxxxxxxxxxx
+integrations.fields.whatsappPhoneId	Telefon numarası kimliği
+integrations.fields.whatsappPhoneIdPh	1029384756
+integrations.fields.whatsappWabaId	WABA kimliği (isteğe bağlı)
+integrations.fields.whatsappWabaIdPh	1029384756
+integrations.fields.instagramToken	Erişim belirteci
+integrations.fields.instagramTokenPh	IGQWR...
+integrations.fields.instagramUserId	Instagram işletme hesabı kimliği
+integrations.fields.instagramUserIdPh	17841400000000000
+integrations.guide.howToTitle	Nasıl bağlanır
+integrations.guide.telegram.steps.0	Telegram'da @BotFather'ı açın ve /newbot gönderin
+integrations.guide.telegram.steps.1	Bot için ad ve kullanıcı adı seçin — BotFather size API belirteci gönderir
+integrations.guide.telegram.steps.2	Belirteci aşağıya yapıştırın ve Bağlan'a tıklayın
+integrations.guide.whatsapp.steps.0	Meta for Developers'ta bir uygulama oluşturun ve WhatsApp ürününü ekleyin
+integrations.guide.whatsapp.steps.1	API Setup'ta geçici veya kalıcı erişim belirtecini kopyalayın
+integrations.guide.whatsapp.steps.2	Test veya doğrulanmış numaranın telefon numarası kimliğini de kopyalayın
+integrations.guide.whatsapp.steps.3	Her iki değeri aşağıya yapıştırın ve Bağlan'a tıklayın
+integrations.guide.instagram.steps.0	Stüdyonun Instagram hesabını bir Facebook Sayfasına bağlayın — Direct API için gereklidir
+integrations.guide.instagram.steps.1	Instagram Graph API ürünüyle Meta for Developers'ta bir uygulama oluşturun
+integrations.guide.instagram.steps.2	instagram_basic ve instagram_manage_messages izinleriyle erişim belirteci oluşturun
+integrations.guide.instagram.steps.3	Instagram işletme hesabı kimliğini ve belirteci kopyalayıp aşağıya yapıştırın
+integrations.guide.instagram.steps.4	Meta incelemesi olmadan bağlantı yalnızca uygulamanın test hesaplarında çalışır
+integrations.guide.google_calendar.steps.0	Bağlan'a tıklayın — Google oturum açma penceresi açılır
+integrations.guide.google_calendar.steps.1	Stüdyo takviminin bağlı olduğu hesabı seçin
+integrations.guide.google_calendar.steps.2	Takvim erişimi verin — dersler otomatik olarak görünmeye başlar
+integrations.capabilities.notify	bu kanalda müşteri bildirimleri
+integrations.capabilities.booking	bu kanal üzerinden çevrim içi rezervasyon
+integrations.capabilities.dm_agent	Direct'te otomatik yanıtlar için AI temsilcisi
+integrations.capabilities.schedule_sync	Google Calendar ile takvim eşitleme
+integrations.disconnect.title	{{name}} bağlantısı kesilsin mi?
+integrations.disconnect.willStop	Bunlar çalışmayı durdurur:
+integrations.disconnect.checkbox	Sonuçları anlıyorum
+integrations.disconnect.cancel	İptal
+integrations.disconnect.confirm	Bağlantıyı kes
+integrations.google.connected	Google Calendar bağlandı
+integrations.google.denied	Google Calendar erişimi verilmedi
+integrations.google.error	Google Calendar bağlanamadı
+integrations.google.primary	birincil
+integrations.google.calendar	Takvim
+integrations.google.selectCalendar	Takvim seçin
+integrations.google.loadingCalendars	Takvimler yükleniyor…
+integrations.google.syncMode	Eşitleme modu
+integrations.google.syncModeOptions.push	Yalnızca CRM'den Google'a
+integrations.google.syncModeOptions.two_way	Çift yönlü
+integrations.google.syncNow	Şimdi eşitle
+integrations.google.lastSync	Son eşitleme: {{date}}
+integrations.google.neverSynced	Henüz eşitlenmedi
+integrations.google.timezoneWarning	Stüdyo saat dilimi ayarlanmadı — etkinlikler UTC olarak gönderilir ve gerçek ders saatlerinden farklı olabilir. Saat dilimini Genel bölümünde ayarlayın.
+integrations.google.syncResult	Eşitlendi: {{pushed}} gönderildi, {{pulled}} alındı
+integrations.google.settingsSaved	Google Calendar ayarları kaydedildi
+integrations.toast.connected	Entegrasyon bağlandı
+integrations.toast.disconnected	Entegrasyon bağlantısı kesildi
+data.export.title	Raporları ve listeleri dışa aktar
+data.export.subtitle	Muhasebe ve analiz için tablo biçiminde dosyalar indirin
+data.export.clearFilter	Dönemi temizle
+data.export.items.clients.name	Müşteri listesi
+data.export.items.schedule.name	Günlük ve rezervasyon geçmişi
+data.export.items.finances.name	Finansal rapor
+data.export.items.subscriptions.name	Müşteri abonelikleri
+data.export.rows_one	{{count}} kayıt
+data.export.rows_other	{{count}} kayıt
+data.export.loading	Yükleniyor...
+data.export.empty	bu dönem için veri yok

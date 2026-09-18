@@ -1,0 +1,480 @@
+{
+  "nav": {
+    "sectionLabel": "Järjestelmäasetukset",
+    "general": "Yleiset",
+    "appearance": "Ulkoasu",
+    "notifications": "Ilmoitukset",
+    "billing": "Laskutus",
+    "security": "Tietoturva",
+    "integrations": "Integraatiot",
+    "data": "Tiedot",
+    "logout": "Vaihda CRM:ää"
+  },
+  "toast": {
+    "saved": "Tallennettu",
+    "error": "Jokin meni pieleen"
+  },
+  "workspace": {
+    "title": "CRM-järjestelmäsi",
+    "subtitle": "Valitse työtila tai luo uusi",
+    "current": "Nykyinen",
+    "membersCount_one": "{{count}} jäsen",
+    "membersCount_other": "{{count}} jäsentä",
+    "clientsCount_one": "{{count}} asiakas",
+    "clientsCount_other": "{{count}} asiakasta",
+    "createNew": "Luo uusi studio",
+    "loadError": "Studioitasi ei voitu ladata",
+    "selectError": "Tähän studioon ei voitu vaihtaa"
+  },
+  "general": {
+    "company": {
+      "title": "Yritystiedot",
+      "subtitle": "Julkiset tiedot yrityksestäsi",
+      "name": "Yrityksen nimi",
+      "namePh": "esim. Oma studio",
+      "desc": "Kuvaus",
+      "descPh": "Mitä studiosi tekee…",
+      "phone": "Puhelin",
+      "email": "Sähköposti",
+      "site": "Verkkosivusto",
+      "sitePh": "https://studio.com",
+      "address": "Osoite",
+      "addressPh": "Esimerkkikatu 123, kaupunki"
+    },
+    "reset": "Palauta",
+    "resetToast": "Asetukset palautettu",
+    "locale": {
+      "title": "Kieli ja alue",
+      "subtitle": "Käyttöliittymän lokalisointiasetukset",
+      "timezone": "Aikavyöhyke",
+      "timezoneSearch": "Kaupunki tai poikkeama",
+      "timezoneNotFound": "Aikavyöhykettä ei löytynyt",
+      "currency": "Valuutta",
+      "currencySearch": "Hae valuuttaa",
+      "currencyNotFound": "Valuuttaa ei löytynyt",
+      "language": "Käyttöliittymän kieli",
+      "languageSearch": "Hae kieltä",
+      "languageNotFound": "Kieltä ei löytynyt",
+      "dateFormat": "Päivämäärän muoto",
+      "firstDay": "Viikon ensimmäinen päivä",
+      "firstDayLabels": [
+        "Maanantai",
+        "Sunnuntai"
+      ]
+    },
+    "booking": {
+      "title": "Varausmalli",
+      "subtitle": "Näin asiakkaat varaavat sinulta",
+      "mode": "Varausmalli",
+      "modeHint": "Tapahtumat — asiakkaat ilmoittautuvat aikataulutettuun tuntiin. Yksilöllinen — asiakas valitsee asiantuntijan ja ajan. Yhdistetty — molemmat yhtä aikaa.",
+      "profile": "Toimialan sanasto",
+      "profileHint": "Valitsee henkilöstöstä ja tarjonnasta käytettävät sanat. Se muuttaa vain sanamuotoja — ei koskaan rooleja, hintoja tai varausmallia.",
+      "strict": "Tiukka aikataulu",
+      "strictHint": "Estää asiantuntijan tai yksinoikeudellisen tilan päällekkäiset varaukset. Vaaditaan ennen yksilöllisen varauksen käyttöönottoa.",
+      "spaceAxis": "Käytä {{spacePlural}} aikataulussa",
+      "spaceAxisHint": "Pois — asiakas varaa henkilön eikä tilalla ole saraketta päiväkirjassa. Päällä — tunti sidotaan tilaan.",
+      "spaceAxisDefaultOn": "Toimialasi oletus: päällä",
+      "spaceAxisDefaultOff": "Toimialasi oletus: pois",
+      "modes": {
+        "event": "Tapahtumat",
+        "resource": "Yksilöllinen",
+        "hybrid": "Yhdistetty"
+      },
+      "profiles": {
+        "studio": "Ryhmätoiminta ja studiot",
+        "sport": "Urheilu ja kuntosalit",
+        "beauty": "Kauneus ja hoito",
+        "recovery": "Keho ja palautuminen",
+        "relax": "Kylpylä ja rentoutus",
+        "other": "Muu"
+      },
+      "preview": {
+        "event": "Tapahtuma",
+        "resource": "Yksilöllinen"
+      },
+      "errors": {
+        "AUDIT_BLOCKED": "Aikataulussa on varauksia, jotka eivät sovi tiukkaan aikatauluun.",
+        "STRICT_SCHEDULE_REQUIRED": "Ota ensin käyttöön tiukka aikataulu.",
+        "RESOURCE_HISTORY_EXISTS": "Tiukkaa aikataulua ei voi poistaa käytöstä: studiolla on yksilöllisiä varauksia."
+      },
+      "findings": {
+        "overlap": "Päällekkäiset varaukset",
+        "unknown_timezone": "Tuntematon aikavyöhyke",
+        "undefined_branch": "Toimipistettä ei ole määritetty",
+        "invalid_duration": "Virheellinen kesto",
+        "invalid_resource_row": "Puutteellinen yksilöllinen varaus",
+        "missing_branch_assignment": "Asiantuntijaa ei ole liitetty toimipisteeseen",
+        "missing_working_hours": "Asiantuntijalla ei ole työaikoja",
+        "inactive_specialist": "Asiantuntija ei ole aktiivinen",
+        "other": "Vaatii tarkistusta"
+      }
+    }
+  },
+  "appearance": {
+    "theme": {
+      "title": "Teema",
+      "subtitle": "Valitse käyttöliittymän visuaalinen tyyli",
+      "light": "Vaalea",
+      "dark": "Tumma",
+      "auto": "Järjestelmä"
+    },
+    "accent": {
+      "title": "Korostusväri",
+      "subtitle": "Mukauta käyttöliittymän pääväriä",
+      "note": "Valintasi on tallennettu, mutta sitä ei vielä käytetä käyttöliittymässä — se tulee tulevassa päivityksessä.",
+      "noteTitle": "Tulossa pian",
+      "colors": {
+        "peach": "Persikka",
+        "pistachio": "Pistaasi",
+        "lavender": "Laventeli",
+        "pink": "Vaaleanpunainen",
+        "gold": "Kulta",
+        "mint": "Minttu"
+      }
+    },
+    "language": {
+      "title": "Käyttöliittymän kieli",
+      "subtitle": "Henkilökohtainen kielesi — ei vaikuta studion asetuksiin",
+      "search": "Hae kieltä",
+      "empty": "Kieltä ei löytynyt"
+    }
+  },
+  "notifications": {
+    "myPrefs": {
+      "title": "Omat ilmoitukseni",
+      "subtitle": "Henkilökohtaiset asetukset — eivät vaikuta muuhun studioon",
+      "hint": "Pakollisia ilmoituksia ei voi poistaa käytöstä — niiden ansiosta et koskaan jää paitsi aikataulumuutoksista ja maksuista.",
+      "empty": "Roolillesi ei ole valinnaisia ilmoituksia",
+      "channels": {
+        "email": "Sähköposti",
+        "telegram": "Telegram",
+        "whatsapp": "WhatsApp"
+      }
+    },
+    "telegram": {
+      "title": "Telegram-ilmoitukset",
+      "subtitle": "Mihin lähetetään sinulle henkilökohtaiset tapahtumat — varaukset, palkanlaskenta ja raportit",
+      "chatId": "Telegram chat_id -tunnuksesi",
+      "chatIdPh": "esim. 123456789",
+      "hintBefore": "Löydät chat_id-tunnuksesi botilta ",
+      "hintAfter": " Telegramissa — aloita keskustelu sen kanssa, niin se lähettää tunnuksesi.",
+      "invalidChatId": "Telegram chat_id -tunnuksen on oltava numero ilman symboleja",
+      "saved": "Telegram on yhdistetty ilmoituksia varten",
+      "saveFailed": "Telegramin tallennus epäonnistui"
+    },
+    "email": {
+      "title": "Ilmoitusten sähköposti",
+      "subtitle": "Mihin järjestelmän sähköpostit lähetetään",
+      "primary": "Ensisijainen sähköposti",
+      "backup": "Varasähköposti",
+      "backupPh": "backup@studio.com",
+      "saved": "Ilmoitusasetukset tallennettu"
+    }
+  },
+  "billing": {
+    "plans": {
+      "start": "Start",
+      "pro": "Pro",
+      "business": "Business",
+      "free_trial": "Maksuton kokeilu"
+    },
+    "status": {
+      "active": "Aktiivinen",
+      "trial": "Kokeilu",
+      "expired": "Vanhentunut"
+    },
+    "plan": {
+      "title": "Nykyinen tilaus",
+      "expiresAt": "Aktiivinen {{date}} asti",
+      "maxStaff": "Enintään {{count}} työntekijää",
+      "staffUnlimited": "Rajaton määrä työntekijöitä",
+      "noSubscription": "Ei aktiivista tilausta",
+      "noSubscriptionCta": "Valitse tilaus",
+      "trialCta": "Valitse tilaus"
+    },
+    "upgrade": "Päivitä tasolle {{plan}}",
+    "renew": "Uusi",
+    "autopay": {
+      "title": "Automaattinen uusinta",
+      "subtitle": "Veloitetaan tallennetulta kortiltasi",
+      "autoRenew": "Automaattinen uusinta",
+      "notifyBefore": "Muistutamme sinua {{count}} päivää ennen veloitusta"
+    },
+    "payment": {
+      "title": "Maksutapa",
+      "cardSummary": "Kortti •••• {{last4}}",
+      "notLinked": "Korttia ei ole yhdistetty",
+      "change": "Vaihda"
+    },
+    "history": {
+      "title": "Maksuhistoria",
+      "subtitle": "Viimeiset 12 maksua",
+      "exportCsv": "Vie CSV",
+      "empty": "Ei vielä maksuja",
+      "showAll": "Näytä kaikki",
+      "period": "{{count}} kk",
+      "noDate": "—",
+      "status": {
+        "paid": "Maksettu",
+        "pending": "Odottaa",
+        "failed": "Maksamatta",
+        "refunded": "Hyvitetty"
+      }
+    },
+    "toast": {
+      "autopaySaved": "Automaattisen uusinnan asetukset tallennettu",
+      "renewed": "Uusinta käynnistetty",
+      "csvExportError": "CSV-vienti epäonnistui"
+    }
+  },
+  "security": {
+    "account": {
+      "title": "Tilin tietoturva",
+      "subtitle": "Suojaa työtilasi käyttöoikeus"
+    },
+    "twoFa": {
+      "title": "Kaksivaiheinen tunnistautuminen",
+      "sub": "Sähköpostikoodi jokaisella kirjautumiskerralla",
+      "active": "Aktiivinen",
+      "disabled": "Pois käytöstä",
+      "enableTitle": "Ota 2FA käyttöön",
+      "disableTitle": "Poista 2FA käytöstä",
+      "enableWarning": "Kun toiminto on käytössä, jokainen kirjautuminen vaatii koodin, joka lähetetään osoitteeseen {{email}}. Varmista, että pääset siihen käsiksi — muuten saatat menettää pääsyn tiliisi.",
+      "disableWarning": "Kun toiminto on poistettu käytöstä, pelkkä salasana riittää kirjautumiseen ilman sähköpostikoodia.",
+      "enabledToast": "Kaksivaiheinen tunnistautuminen on käytössä",
+      "disabledToast": "Kaksivaiheinen tunnistautuminen on poistettu käytöstä"
+    },
+    "password": {
+      "title": "Tilin salasana",
+      "sub": "Muutos vahvistetaan sähköpostikoodilla",
+      "change": "Vaihda salasana",
+      "changed": "Salasana vaihdettu onnistuneesti",
+      "current": "Nykyinen salasana",
+      "currentPh": "Kirjoita nykyinen salasanasi",
+      "new": "Uusi salasana",
+      "newPh": "Vähintään 8 merkkiä",
+      "repeat": "Toista salasana",
+      "repeatPh": "Kirjoita uusi salasana uudelleen",
+      "mismatch": "Salasanat eivät täsmää",
+      "forgot": "Unohditko salasanasi?",
+      "resetTitle": "Salasanan palautus",
+      "step1Sub": "Varmistetaan, että olet sinä",
+      "step2Sub": "Koodi on lähetetty osoitteeseen {{email}}",
+      "step3Sub": "Valitse uusi salasana",
+      "resetIntro": "Lähetämme 6-numeroisen koodin tilisi sähköpostiosoitteeseen. Nykyistä salasanaa ei tarvitse tietää — koodi todistaa, että postilaatikko on sinun.",
+      "sendCode": "Lähetä koodi",
+      "back": "Takaisin",
+      "save": "Tallenna salasana",
+      "resetDone": "Salasana päivitetty",
+      "resetLogoutHint": "Muut laitteet kirjataan ulos — pysyt kirjautuneena tällä laitteella.",
+      "rules": {
+        "len": "Vähintään 8 merkkiä",
+        "letter": "Sisältää kirjaimen",
+        "digit": "Sisältää numeron",
+        "simple": "Ei 111 tai qwerty"
+      }
+    },
+    "sessions": {
+      "title": "Aktiiviset istunnot",
+      "sub": "Missä tilillesi on juuri nyt kirjauduttu",
+      "count": "{{count}} laitetta",
+      "manage": "Hallitse",
+      "hide": "Piilota",
+      "current": "Nykyinen",
+      "terminate": "Lopeta",
+      "terminateAll": "Lopeta kaikki muut istunnot",
+      "terminatedToast": "Istunto lopetettu onnistuneesti",
+      "terminatedAllToast": "Muut istunnot lopetettu",
+      "justNow": "Aktiivinen nyt",
+      "minutesAgo": "{{count}} min sitten",
+      "hoursAgo": "{{count}} h sitten",
+      "daysAgo": "{{count}} pv sitten",
+      "unknownLocation": "Tuntematon"
+    },
+    "otp": {
+      "sentHint": "Lähetimme 6-numeroisen koodin sähköpostiisi. Kirjoita se alle.",
+      "resend": "Lähetä koodi uudelleen",
+      "resendIn": "Lähetä uudelleen {{count}} s kuluttua",
+      "confirm": "Vahvista",
+      "cancel": "Peruuta",
+      "sendCode": "Lähetä koodi",
+      "continue": "Jatka"
+    },
+    "danger": {
+      "title": "Tietojen hallinta (vaaravyöhyke)",
+      "export": {
+        "title": "Vie kaikki tiedot",
+        "sub": "Lataa arkisto asiakastietokannasta ja historiasta",
+        "prepare": "Valmistele arkisto",
+        "hide": "Piilota",
+        "clients": "Asiakastietokanta (CSV)",
+        "finances": "Rahoitustapahtumat",
+        "schedule": "Tunnit ja aikataulu",
+        "start": "Aloita vienti",
+        "started": "Arkistoa valmistellaan, ja linkki lähetetään sähköpostiisi",
+        "emptySelection": "Valitse vietäväksi vähintään yksi osio"
+      },
+      "wipe": {
+        "title": "Tyhjennä tietokanta",
+        "sub": "Poistaa kaikki asiakkaat ja varaukset. Asetukset säilytetään.",
+        "action": "Tyhjennä tiedot",
+        "toast": "Tietokanta tyhjennetty onnistuneesti",
+        "consequence1": "Poistetaan pysyvästi: asiakkaat, tunnit, varaukset, tapahtumat, asiakirjat, asiakastilaukset, kanta-asiakashistoria",
+        "consequence2": "Ei muutoksia: studio, toimipisteet, {{spacePlural}}, palvelut, henkilöstö, tilaus ja asetukset",
+        "consequence3": "Toimintoa ei voi perua vahvistamisen jälkeen"
+      },
+      "deleteAccount": {
+        "title": "Poista yritystili",
+        "sub": "Yrityksen täydellinen ja peruuttamaton poistaminen järjestelmästä",
+        "action": "Poista pysyvästi",
+        "consequence1": "Studio ja kaikki sen tiedot poistetaan pysyvästi, mukaan lukien asiakkaat, tunnit, taloustiedot ja asetukset",
+        "consequence2": "Henkilökohtainen tilisi säilyy — vain tämä studio poistetaan",
+        "consequence3": "Poisto ei ole käytettävissä aktiivisen tilauksen aikana tai jos studiolla on muita omistajia"
+      }
+    }
+  },
+  "integrations": {
+    "title": "Integraatiot",
+    "subtitle": "Yhdistä ulkoiset kanavat ja ekosysteemit yhdellä napsautuksella",
+    "loadError": "Integraatioiden tilaa ei voitu ladata",
+    "items": {
+      "telegram": {
+        "name": "Telegram-botti",
+        "sub": "Asiakasilmoitukset ja varaukset botin kautta"
+      },
+      "whatsapp": {
+        "name": "WhatsApp Business",
+        "sub": "Joukkoviestit ja automaattiset asiakasilmoitukset"
+      },
+      "instagram": {
+        "name": "Instagram Direct",
+        "sub": "AI-agentti automaattisille vastauksille ja verkkovarauksille"
+      },
+      "google_calendar": {
+        "name": "Google Calendar",
+        "sub": "Studion aikataulun synkronointi"
+      }
+    },
+    "status": {
+      "connected": "Yhdistetty",
+      "notActive": "Ei yhdistetty"
+    },
+    "actions": {
+      "configure": "Määritä",
+      "connect": "Yhdistä",
+      "disconnect": "Katkaise yhteys"
+    },
+    "fields": {
+      "keyLabel": "Avain",
+      "connectedAtLabel": "Yhdistetty",
+      "telegramToken": "Botin API-tunnus (BotFatherilta)",
+      "telegramTokenPh": "123456789:ABCDefGhIJKlmNoPQRsTUVwxyZ",
+      "whatsappToken": "Käyttöoikeustunnus",
+      "whatsappTokenPh": "EAAxxxxxxxxxxxxx",
+      "whatsappPhoneId": "Puhelinnumeron tunnus",
+      "whatsappPhoneIdPh": "1029384756",
+      "whatsappWabaId": "WABA-tunnus (valinnainen)",
+      "whatsappWabaIdPh": "1029384756",
+      "instagramToken": "Käyttöoikeustunnus",
+      "instagramTokenPh": "IGQWR...",
+      "instagramUserId": "Instagram-yritystilin tunnus",
+      "instagramUserIdPh": "17841400000000000"
+    },
+    "guide": {
+      "howToTitle": "Näin yhdistät",
+      "telegram": {
+        "steps": [
+          "Avaa @BotFather Telegramissa ja lähetä /newbot",
+          "Valitse botille nimi ja käyttäjätunnus — BotFather lähettää sinulle API-tunnuksen",
+          "Liitä tunnus alle ja napsauta Yhdistä"
+        ]
+      },
+      "whatsapp": {
+        "steps": [
+          "Luo sovellus Meta for Developersissa ja lisää WhatsApp-tuote",
+          "Kopioi väliaikainen tai pysyvä käyttöoikeustunnus API Setupista",
+          "Kopioi myös testi- tai vahvistetun numeron puhelinnumeron tunnus",
+          "Liitä molemmat arvot alle ja napsauta Yhdistä"
+        ]
+      },
+      "instagram": {
+        "steps": [
+          "Yhdistä studion Instagram-tili Facebook-sivuun — se vaaditaan Direct APIa varten",
+          "Luo sovellus Meta for Developersissa, jossa on Instagram Graph API -tuote",
+          "Luo käyttöoikeustunnus oikeuksilla instagram_basic ja instagram_manage_messages",
+          "Kopioi Instagram-yritystilin tunnus ja käyttöoikeustunnus sekä liitä ne alle",
+          "Ilman Metan hyväksyntää yhteys toimii vain sovelluksen testitileillä"
+        ]
+      },
+      "google_calendar": {
+        "steps": [
+          "Napsauta Yhdistä — Google-kirjautumisikkuna avautuu",
+          "Valitse tili, johon studion kalenteri on yhdistetty",
+          "Myönnä kalenterin käyttöoikeus — tunnit alkavat näkyä siellä automaattisesti"
+        ]
+      }
+    },
+    "capabilities": {
+      "notify": "asiakasilmoitukset tällä kanavalla",
+      "booking": "verkkovaraus tämän kanavan kautta",
+      "dm_agent": "AI-agentti automaattisille vastauksille Directissä",
+      "schedule_sync": "aikataulun synkronointi Google Calendarin kanssa"
+    },
+    "disconnect": {
+      "title": "Katkaistaanko yhteys palveluun {{name}}?",
+      "willStop": "Tämä lakkaa toimimasta:",
+      "checkbox": "Ymmärrän seuraukset",
+      "cancel": "Peruuta",
+      "confirm": "Katkaise yhteys"
+    },
+    "google": {
+      "connected": "Google Calendar on yhdistetty",
+      "denied": "Google Calendarin käyttöoikeutta ei myönnetty",
+      "error": "Google Calendariin yhdistäminen epäonnistui",
+      "primary": "ensisijainen",
+      "calendar": "Kalenteri",
+      "selectCalendar": "Valitse kalenteri",
+      "loadingCalendars": "Ladataan kalentereita…",
+      "syncMode": "Synkronointitapa",
+      "syncModeOptions": {
+        "push": "Vain CRM:stä Googleen",
+        "two_way": "Kaksisuuntainen"
+      },
+      "syncNow": "Synkronoi nyt",
+      "lastSync": "Synkronoitu viimeksi: {{date}}",
+      "neverSynced": "Ei vielä synkronoitu",
+      "timezoneWarning": "Studion aikavyöhykettä ei ole asetettu — tapahtumat lähetetään UTC-ajassa ja voivat poiketa todellisista tuntiajoista. Aseta aikavyöhyke kohdassa Yleiset.",
+      "syncResult": "Synkronoitu: {{pushed}} lähetetty, {{pulled}} haettu",
+      "settingsSaved": "Google Calendarin asetukset tallennettu"
+    },
+    "toast": {
+      "connected": "Integraatio yhdistetty",
+      "disconnected": "Integraation yhteys katkaistu"
+    }
+  },
+  "data": {
+    "export": {
+      "title": "Vie raportit ja luettelot",
+      "subtitle": "Lataa tiedostoja taulukkomuodoissa kirjanpitoa ja analytiikkaa varten",
+      "clearFilter": "Tyhjennä ajanjakso",
+      "items": {
+        "clients": {
+          "name": "Asiakasluettelo"
+        },
+        "schedule": {
+          "name": "Päiväkirja- ja varaushistoria"
+        },
+        "finances": {
+          "name": "Taloudellinen raportti"
+        },
+        "subscriptions": {
+          "name": "Asiakastilaukset"
+        }
+      },
+      "rows_one": "{{count}} tietue",
+      "rows_other": "{{count}} tietuetta",
+      "loading": "Ladataan...",
+      "empty": "ei tietoja tältä ajanjaksolta"
+    }
+  }
+}

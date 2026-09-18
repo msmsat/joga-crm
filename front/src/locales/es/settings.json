@@ -1,0 +1,480 @@
+{
+  "nav": {
+    "sectionLabel": "Ajustes del sistema",
+    "general": "General",
+    "appearance": "Apariencia",
+    "notifications": "Notificaciones",
+    "billing": "Facturación",
+    "security": "Seguridad",
+    "integrations": "Integraciones",
+    "data": "Datos",
+    "logout": "Cambiar CRM"
+  },
+  "toast": {
+    "saved": "Guardado",
+    "error": "Algo salió mal"
+  },
+  "workspace": {
+    "title": "Tus sistemas CRM",
+    "subtitle": "Elige un espacio de trabajo o crea uno nuevo",
+    "current": "Actual",
+    "membersCount_one": "{{count}} miembro",
+    "membersCount_other": "{{count}} miembros",
+    "clientsCount_one": "{{count}} cliente",
+    "clientsCount_other": "{{count}} clientes",
+    "createNew": "Crear un nuevo estudio",
+    "loadError": "No se han podido cargar tus estudios",
+    "selectError": "No se ha podido cambiar a este estudio"
+  },
+  "general": {
+    "company": {
+      "title": "Datos de la empresa",
+      "subtitle": "Información pública sobre tu negocio",
+      "name": "Nombre de la empresa",
+      "namePh": "p. ej. Mi estudio",
+      "desc": "Descripción",
+      "descPh": "A qué se dedica tu estudio…",
+      "phone": "Teléfono",
+      "email": "Correo electrónico",
+      "site": "Sitio web",
+      "sitePh": "https://studio.com",
+      "address": "Dirección",
+      "addressPh": "Calle Ejemplo 123, ciudad"
+    },
+    "reset": "Restablecer",
+    "resetToast": "Ajustes restablecidos",
+    "locale": {
+      "title": "Idioma y región",
+      "subtitle": "Ajustes de localización de la interfaz",
+      "timezone": "Zona horaria",
+      "timezoneSearch": "Ciudad o diferencia horaria",
+      "timezoneNotFound": "No se ha encontrado ninguna zona horaria",
+      "currency": "Moneda",
+      "currencySearch": "Buscar moneda o código",
+      "currencyNotFound": "No se ha encontrado ninguna moneda",
+      "language": "Idioma de la interfaz",
+      "languageSearch": "Buscar idioma",
+      "languageNotFound": "No se ha encontrado ningún idioma",
+      "dateFormat": "Formato de fecha",
+      "firstDay": "Primer día de la semana",
+      "firstDayLabels": [
+        "Lunes",
+        "Domingo"
+      ]
+    },
+    "booking": {
+      "title": "Modelo de reserva",
+      "subtitle": "Cómo reservan contigo los clientes",
+      "mode": "Modelo de reserva",
+      "modeHint": "Eventos — los clientes se apuntan a una clase programada. Individual — el cliente elige un especialista y una hora. Mixto — ambos a la vez.",
+      "profile": "Terminología del sector",
+      "profileHint": "Elige las palabras para el personal y los servicios. Solo cambia la redacción, nunca los roles, los precios ni el modelo de reserva.",
+      "strict": "Agenda estricta",
+      "strictHint": "Prohíbe la doble reserva de un especialista o un espacio exclusivo. Es obligatoria antes de activar la reserva individual.",
+      "spaceAxis": "Usar {{spacePlural}} en la agenda",
+      "spaceAxisHint": "Desactivado — el cliente reserva a una persona y el espacio no tiene columna en el diario. Activado — una clase está vinculada a un espacio.",
+      "spaceAxisDefaultOn": "Predeterminado para tu sector: activado",
+      "spaceAxisDefaultOff": "Predeterminado para tu sector: desactivado",
+      "modes": {
+        "event": "Eventos",
+        "resource": "Individual",
+        "hybrid": "Mixto"
+      },
+      "profiles": {
+        "studio": "Prácticas grupales y estudios",
+        "sport": "Deporte y gimnasios",
+        "beauty": "Belleza y cuidado",
+        "recovery": "Cuerpo y recuperación",
+        "relax": "Spa y relajación",
+        "other": "Otro"
+      },
+      "preview": {
+        "event": "Evento",
+        "resource": "Individual"
+      },
+      "errors": {
+        "AUDIT_BLOCKED": "La agenda contiene reservas que no son compatibles con una agenda estricta.",
+        "STRICT_SCHEDULE_REQUIRED": "Activa primero la agenda estricta.",
+        "RESOURCE_HISTORY_EXISTS": "La agenda estricta no se puede desactivar: el estudio tiene reservas individuales."
+      },
+      "findings": {
+        "overlap": "Reservas solapadas",
+        "unknown_timezone": "Zona horaria desconocida",
+        "undefined_branch": "Sede no definida",
+        "invalid_duration": "Duración no válida",
+        "invalid_resource_row": "Reserva individual incompleta",
+        "missing_branch_assignment": "El especialista no está asignado a la sede",
+        "missing_working_hours": "El especialista no tiene horario laboral",
+        "inactive_specialist": "El especialista está inactivo",
+        "other": "Requiere revisión"
+      }
+    }
+  },
+  "appearance": {
+    "theme": {
+      "title": "Tema",
+      "subtitle": "Elige el estilo visual de la interfaz",
+      "light": "Claro",
+      "dark": "Oscuro",
+      "auto": "Sistema"
+    },
+    "accent": {
+      "title": "Color de acento",
+      "subtitle": "Personaliza el color principal de la interfaz",
+      "note": "Tu elección se ha guardado, pero todavía no se aplica a la interfaz; llegará en una futura actualización.",
+      "noteTitle": "Próximamente",
+      "colors": {
+        "peach": "Melocotón",
+        "pistachio": "Pistacho",
+        "lavender": "Lavanda",
+        "pink": "Rosa",
+        "gold": "Dorado",
+        "mint": "Menta"
+      }
+    },
+    "language": {
+      "title": "Idioma de la interfaz",
+      "subtitle": "Tu idioma personal no afecta a los ajustes del estudio",
+      "search": "Buscar idioma",
+      "empty": "No se ha encontrado ningún idioma"
+    }
+  },
+  "notifications": {
+    "myPrefs": {
+      "title": "Mis notificaciones",
+      "subtitle": "Preferencias personales — no afectan al resto del estudio",
+      "hint": "Las notificaciones obligatorias no se pueden desactivar; así no te perderás nunca cambios en la agenda ni pagos.",
+      "empty": "No hay notificaciones opcionales para tu rol",
+      "channels": {
+        "email": "Correo electrónico",
+        "telegram": "Telegram",
+        "whatsapp": "WhatsApp"
+      }
+    },
+    "telegram": {
+      "title": "Telegram para notificaciones",
+      "subtitle": "Dónde enviarte personalmente eventos — reservas, nóminas e informes",
+      "chatId": "Tu chat_id de Telegram",
+      "chatIdPh": "p. ej. 123456789",
+      "hintBefore": "Puedes encontrar tu chat_id en el bot ",
+      "hintAfter": " de Telegram — inicia un chat con él y te enviará tu ID.",
+      "invalidChatId": "El chat_id de Telegram debe ser un número sin símbolos",
+      "saved": "Telegram está conectado para recibir notificaciones",
+      "saveFailed": "No se ha podido guardar Telegram"
+    },
+    "email": {
+      "title": "Correo para notificaciones",
+      "subtitle": "Dónde enviar los correos del sistema",
+      "primary": "Correo principal",
+      "backup": "Correo de respaldo",
+      "backupPh": "backup@studio.com",
+      "saved": "Ajustes de notificaciones guardados"
+    }
+  },
+  "billing": {
+    "plans": {
+      "start": "Start",
+      "pro": "Pro",
+      "business": "Business",
+      "free_trial": "Prueba gratuita"
+    },
+    "status": {
+      "active": "Activo",
+      "trial": "Prueba",
+      "expired": "Caducado"
+    },
+    "plan": {
+      "title": "Plan actual",
+      "expiresAt": "Activo hasta {{date}}",
+      "maxStaff": "Hasta {{count}} empleados",
+      "staffUnlimited": "Empleados ilimitados",
+      "noSubscription": "No hay suscripción activa",
+      "noSubscriptionCta": "Elegir un plan",
+      "trialCta": "Elegir un plan"
+    },
+    "upgrade": "Cambiar a {{plan}}",
+    "renew": "Renovar",
+    "autopay": {
+      "title": "Renovación automática",
+      "subtitle": "Se cobrará en tu tarjeta guardada",
+      "autoRenew": "Renovación automática",
+      "notifyBefore": "Te avisaremos {{count}} días antes del cobro"
+    },
+    "payment": {
+      "title": "Método de pago",
+      "cardSummary": "Tarjeta •••• {{last4}}",
+      "notLinked": "No hay ninguna tarjeta vinculada",
+      "change": "Cambiar"
+    },
+    "history": {
+      "title": "Historial de pagos",
+      "subtitle": "Últimos 12 pagos",
+      "exportCsv": "Exportar CSV",
+      "empty": "Aún no hay pagos",
+      "showAll": "Mostrar todo",
+      "period": "{{count}} meses",
+      "noDate": "—",
+      "status": {
+        "paid": "Pagado",
+        "pending": "Pendiente",
+        "failed": "Sin pagar",
+        "refunded": "Reembolsado"
+      }
+    },
+    "toast": {
+      "autopaySaved": "Ajustes de renovación automática guardados",
+      "renewed": "Renovación iniciada",
+      "csvExportError": "No se ha podido exportar el CSV"
+    }
+  },
+  "security": {
+    "account": {
+      "title": "Seguridad de la cuenta",
+      "subtitle": "Protege el acceso a tu espacio de trabajo"
+    },
+    "twoFa": {
+      "title": "Autenticación de dos factores",
+      "sub": "Código por correo en cada inicio de sesión",
+      "active": "Activa",
+      "disabled": "Desactivada",
+      "enableTitle": "Activar 2FA",
+      "disableTitle": "Desactivar 2FA",
+      "enableWarning": "Una vez activada, cada inicio de sesión requerirá un código enviado a {{email}}. Asegúrate de tener acceso a esa dirección; de lo contrario, podrías perder el acceso a tu cuenta.",
+      "disableWarning": "Una vez desactivada, bastará con la contraseña para iniciar sesión, sin código por correo.",
+      "enabledToast": "La autenticación de dos factores está activada",
+      "disabledToast": "La autenticación de dos factores está desactivada"
+    },
+    "password": {
+      "title": "Contraseña de la cuenta",
+      "sub": "El cambio se confirma con un código por correo",
+      "change": "Cambiar contraseña",
+      "changed": "Contraseña cambiada correctamente",
+      "current": "Contraseña actual",
+      "currentPh": "Introduce tu contraseña actual",
+      "new": "Nueva contraseña",
+      "newPh": "Al menos 8 caracteres",
+      "repeat": "Repite la contraseña",
+      "repeatPh": "Introduce de nuevo la nueva contraseña",
+      "mismatch": "Las contraseñas no coinciden",
+      "forgot": "¿Has olvidado tu contraseña?",
+      "resetTitle": "Recuperación de contraseña",
+      "step1Sub": "Confirmemos que eres tú",
+      "step2Sub": "Código enviado a {{email}}",
+      "step3Sub": "Elige una nueva contraseña",
+      "resetIntro": "Enviaremos un código de 6 dígitos al correo de tu cuenta. No necesitas saber la contraseña actual: el código demuestra que la bandeja de entrada es tuya.",
+      "sendCode": "Enviar código",
+      "back": "Atrás",
+      "save": "Guardar contraseña",
+      "resetDone": "Contraseña actualizada",
+      "resetLogoutHint": "Los demás dispositivos cerrarán sesión; en este seguirás conectado.",
+      "rules": {
+        "len": "8+ caracteres",
+        "letter": "Contiene una letra",
+        "digit": "Contiene un dígito",
+        "simple": "Sin 111 ni qwerty"
+      }
+    },
+    "sessions": {
+      "title": "Sesiones activas",
+      "sub": "Dónde está iniciada sesión actualmente tu cuenta",
+      "count": "{{count}} dispositivos",
+      "manage": "Gestionar",
+      "hide": "Ocultar",
+      "current": "Actual",
+      "terminate": "Finalizar",
+      "terminateAll": "Finalizar todas las demás sesiones",
+      "terminatedToast": "Sesión finalizada correctamente",
+      "terminatedAllToast": "Las demás sesiones han finalizado",
+      "justNow": "Activa ahora",
+      "minutesAgo": "hace {{count}} min",
+      "hoursAgo": "hace {{count}} h",
+      "daysAgo": "hace {{count}} d",
+      "unknownLocation": "Desconocido"
+    },
+    "otp": {
+      "sentHint": "Te hemos enviado un código de 6 dígitos a tu correo. Introdúcelo a continuación.",
+      "resend": "Reenviar código",
+      "resendIn": "Reenviar en {{count}} s",
+      "confirm": "Confirmar",
+      "cancel": "Cancelar",
+      "sendCode": "Enviar código",
+      "continue": "Continuar"
+    },
+    "danger": {
+      "title": "Gestión de datos (zona peligrosa)",
+      "export": {
+        "title": "Exportar todos los datos",
+        "sub": "Descarga un archivo de la base de clientes y del historial",
+        "prepare": "Preparar archivo",
+        "hide": "Ocultar",
+        "clients": "Base de clientes (CSV)",
+        "finances": "Transacciones financieras",
+        "schedule": "Clases y agenda",
+        "start": "Iniciar exportación",
+        "started": "El archivo se está preparando; se enviará un enlace a tu correo",
+        "emptySelection": "Elige al menos una sección para exportar"
+      },
+      "wipe": {
+        "title": "Vaciar base de datos",
+        "sub": "Elimina todos los clientes y reservas. Los ajustes se conservarán.",
+        "action": "Vaciar datos",
+        "toast": "La base de datos se ha vaciado correctamente",
+        "consequence1": "Se eliminarán de forma permanente: clientes, clases, reservas, operaciones, documentos, suscripciones de clientes e historial de fidelización",
+        "consequence2": "Sin cambios: estudio, sedes, {{spacePlural}}, servicios, personal, suscripción y ajustes",
+        "consequence3": "Esta acción es irreversible; no se puede deshacer tras confirmarla"
+      },
+      "deleteAccount": {
+        "title": "Eliminar cuenta de empresa",
+        "sub": "Destrucción completa e irreversible del negocio en el sistema",
+        "action": "Eliminar para siempre",
+        "consequence1": "El estudio y todos sus datos se eliminarán permanentemente, incluidos clientes, clases, finanzas y ajustes",
+        "consequence2": "Tu cuenta personal se conserva; solo se elimina este estudio",
+        "consequence3": "La eliminación no está disponible con una suscripción activa o si el estudio tiene otros propietarios"
+      }
+    }
+  },
+  "integrations": {
+    "title": "Integraciones",
+    "subtitle": "Conecta canales y ecosistemas externos con un clic",
+    "loadError": "No se ha podido cargar el estado de las integraciones",
+    "items": {
+      "telegram": {
+        "name": "Bot de Telegram",
+        "sub": "Notificaciones a clientes y reservas mediante bot"
+      },
+      "whatsapp": {
+        "name": "WhatsApp Business",
+        "sub": "Envíos masivos y notificaciones automáticas a clientes"
+      },
+      "instagram": {
+        "name": "Instagram Direct",
+        "sub": "Agente de IA para respuestas automáticas y reservas en línea"
+      },
+      "google_calendar": {
+        "name": "Google Calendar",
+        "sub": "Sincronización de la agenda del estudio"
+      }
+    },
+    "status": {
+      "connected": "Conectado",
+      "notActive": "No conectado"
+    },
+    "actions": {
+      "configure": "Configurar",
+      "connect": "Conectar",
+      "disconnect": "Desconectar"
+    },
+    "fields": {
+      "keyLabel": "Clave",
+      "connectedAtLabel": "Conectado",
+      "telegramToken": "Token de API del bot (de @BotFather)",
+      "telegramTokenPh": "123456789:ABCDefGhIJKlmNoPQRsTUVwxyZ",
+      "whatsappToken": "Token de acceso",
+      "whatsappTokenPh": "EAAxxxxxxxxxxxxx",
+      "whatsappPhoneId": "ID del número de teléfono",
+      "whatsappPhoneIdPh": "1029384756",
+      "whatsappWabaId": "ID de WABA (opcional)",
+      "whatsappWabaIdPh": "1029384756",
+      "instagramToken": "Token de acceso",
+      "instagramTokenPh": "IGQWR...",
+      "instagramUserId": "ID de cuenta profesional de Instagram",
+      "instagramUserIdPh": "17841400000000000"
+    },
+    "guide": {
+      "howToTitle": "Cómo conectar",
+      "telegram": {
+        "steps": [
+          "Abre @BotFather en Telegram y envía /newbot",
+          "Elige un nombre y un nombre de usuario para el bot; BotFather te enviará un token de API",
+          "Pega el token a continuación y haz clic en Conectar"
+        ]
+      },
+      "whatsapp": {
+        "steps": [
+          "Crea una aplicación en Meta for Developers y añade el producto WhatsApp",
+          "En API Setup, copia el token de acceso temporal o permanente",
+          "Copia también el ID del número de teléfono del número de prueba o verificado",
+          "Pega ambos valores a continuación y haz clic en Conectar"
+        ]
+      },
+      "instagram": {
+        "steps": [
+          "Vincula la cuenta de Instagram del estudio a una Página de Facebook; es necesario para Direct API",
+          "Crea una aplicación en Meta for Developers con el producto Instagram Graph API",
+          "Genera un token de acceso con los permisos instagram_basic e instagram_manage_messages",
+          "Copia el ID de la cuenta profesional de Instagram y el token, y pégalos a continuación",
+          "Sin la revisión de Meta, la conexión solo funciona con las cuentas de prueba de la aplicación"
+        ]
+      },
+      "google_calendar": {
+        "steps": [
+          "Haz clic en Conectar; se abrirá una ventana de inicio de sesión de Google",
+          "Elige la cuenta a la que está vinculado el calendario del estudio",
+          "Concede acceso al calendario; las clases empezarán a aparecer en él automáticamente"
+        ]
+      }
+    },
+    "capabilities": {
+      "notify": "notificaciones a clientes en este canal",
+      "booking": "reservas en línea a través de este canal",
+      "dm_agent": "agente de IA para respuestas automáticas en Direct",
+      "schedule_sync": "sincronización de la agenda con Google Calendar"
+    },
+    "disconnect": {
+      "title": "¿Desconectar {{name}}?",
+      "willStop": "Esto dejará de funcionar:",
+      "checkbox": "Entiendo las consecuencias",
+      "cancel": "Cancelar",
+      "confirm": "Desconectar"
+    },
+    "google": {
+      "connected": "Google Calendar conectado",
+      "denied": "No se ha concedido acceso a Google Calendar",
+      "error": "No se ha podido conectar Google Calendar",
+      "primary": "principal",
+      "calendar": "Calendario",
+      "selectCalendar": "Selecciona un calendario",
+      "loadingCalendars": "Cargando calendarios…",
+      "syncMode": "Modo de sincronización",
+      "syncModeOptions": {
+        "push": "Solo de CRM a Google",
+        "two_way": "Bidireccional"
+      },
+      "syncNow": "Sincronizar ahora",
+      "lastSync": "Última sincronización: {{date}}",
+      "neverSynced": "Aún no se ha sincronizado",
+      "timezoneWarning": "La zona horaria del estudio no está configurada; los eventos se envían en UTC y pueden diferir de las horas reales de las clases. Configura la zona horaria en General.",
+      "syncResult": "Sincronizado: {{pushed}} enviados, {{pulled}} recibidos",
+      "settingsSaved": "Ajustes de Google Calendar guardados"
+    },
+    "toast": {
+      "connected": "Integración conectada",
+      "disconnected": "Integración desconectada"
+    }
+  },
+  "data": {
+    "export": {
+      "title": "Exportar informes y listas",
+      "subtitle": "Descarga archivos en formatos de tabla para contabilidad y análisis",
+      "clearFilter": "Borrar período",
+      "items": {
+        "clients": {
+          "name": "Lista de clientes"
+        },
+        "schedule": {
+          "name": "Historial de diario y reservas"
+        },
+        "finances": {
+          "name": "Informe financiero"
+        },
+        "subscriptions": {
+          "name": "Suscripciones de clientes"
+        }
+      },
+      "rows_one": "{{count}} registro",
+      "rows_other": "{{count}} registros",
+      "loading": "Cargando...",
+      "empty": "no hay datos para este período"
+    }
+  }
+}

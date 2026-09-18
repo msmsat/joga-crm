@@ -6,6 +6,7 @@ import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import { placePopover } from "./ui/popoverPosition";
 import { LANGUAGES } from "../utils/lang";
+import { CURRENCIES, getCurrencySymbol } from "../utils/currency";
 
 import PhoneInput, { isSupportedCountry } from 'react-phone-number-input/input';
 import type { Country } from 'react-phone-number-input';
@@ -576,34 +577,13 @@ export const browserTimezone = (): string => {
 // весь UI.tsx не нужен. Реэкспорт оставлен, чтобы импорты по проекту не менять.
 export { LANGUAGES } from "../utils/lang";
 
-// Таблица символов — полная и такой остаётся: getCurrencySymbol() рисует
-// деньги во всём продукте, и студия, выбравшая злотый, пока список был
-// длинным, не должна вдруг увидеть рубли. Выбирать же можно только из
-// CURRENCY_OPTIONS ниже.
-export const CURRENCIES = [
-  { value: "RUB", symbol: "₽" }, { value: "USD", symbol: "$" },
-  { value: "EUR", symbol: "€" }, { value: "KZT", symbol: "₸" },
-  { value: "UAH", symbol: "₴" }, { value: "GBP", symbol: "£" },
-  { value: "AED", symbol: "د.إ" }, { value: "TRY", symbol: "₺" },
-  { value: "CZK", symbol: "Kč" }, { value: "PLN", symbol: "zł" },
-  { value: "HUF", symbol: "Ft" }, { value: "RON", symbol: "lei" },
-  { value: "BGN", symbol: "лв" }, { value: "SEK", symbol: "kr" },
-  { value: "NOK", symbol: "kr" }, { value: "DKK", symbol: "kr" },
-  { value: "CHF", symbol: "CHF" }, { value: "ISK", symbol: "kr" },
-  { value: "RSD", symbol: "дин." },
-];
-
-// Что предлагаем выбрать — валюты стран, где говорят на языках из LANGUAGES:
-// ₽ (ru), ₴ (uk), Kč (cs), € и CHF (de: Германия/Австрия/Швейцария),
-// $ и £ (en). Расширять вместе со списком языков.
-const PICKABLE = ["RUB", "USD", "EUR", "UAH", "GBP", "CZK", "CHF"];
-export const CURRENCY_OPTIONS = CURRENCIES.filter(c => PICKABLE.includes(c.value));
-
-// Фолбэк — евро: в нём платформа выставляет счета, и он же подставляется
-// онбордингу, когда страна визита ничего не подсказала (utils/geo.ts).
-export function getCurrencySymbol(code: string | undefined): string {
-  return CURRENCIES.find(c => c.value === code)?.symbol ?? "€";
-}
+// Таблица валют переехала в utils/currency.ts — по той же причине, что и
+// LANGUAGES: её читают лендинг, самопроверка geo.check.ts и форматтеры денег,
+// которым портал, телефонный инпут и иллюстрации онбординга не нужны.
+// Реэкспорт оставлен, чтобы импорты по проекту не менять.
+// Выбирать можно любую из них: список собран от языков интерфейса, и урезать
+// его нечем — студия, которая читает продукт по-испански, платит песо, а не евро.
+export { CURRENCIES, getCurrencySymbol };
 
 export function StepIndicator({ current, total }: { current: number; total: number }) {
   return (
@@ -628,16 +608,28 @@ export function StepIndicator({ current, total }: { current: number; total: numb
   );
 }
 
-export function PremiumSelect({ value, onChange, options, placeholder }: {
+export function PremiumSelect({ value, onChange, options, placeholder, searchable, searchPlaceholder, emptyText }: {
   value: string;
   onChange: (v: string) => void;
-  options: { value: string; label: string; symbol?: string; flag?: string }[];
+  options: { value: string; label: string; symbol?: string; flag?: string; hint?: string }[];
   placeholder: string;
+  /** Поле поиска над списком — как у kit-Select. Появилось ради валют: их
+   *  больше сотни, и прокрутка перестала быть способом что-то найти. */
+  searchable?: boolean;
+  searchPlaceholder?: string;
+  /** Что показать, когда под запрос ничего не подошло. Без него — пустая панель. */
+  emptyText?: string;
 }) {
   const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
   const ref = useRef<HTMLDivElement>(null);
   const btnRef = useRef<HTMLButtonElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
+  const searchRef = useRef<HTMLInputElement>(null);
+  // Курсор в поле поиска ставится один раз за открытие — флаг отличает первое
+  // появление панели от её пересчёта при скролле (иначе фокус возвращался бы в
+  // поиск каждый раз, когда страница под списком шевельнулась).
+  const searchFocused = useRef(false);
   // Рендерим список в портал с position:fixed — иначе его обрезают overflow:hidden
   // родители (например .ob-left/.ob-right-scroll в онбординге), см. Tooltip/InfoHint.
   // Ширину/лево берём из rect кнопки напрямую (не из измерения самого портала —
@@ -648,7 +640,7 @@ export function PremiumSelect({ value, onChange, options, placeholder }: {
     const recalc = () => {
       if (!btnRef.current) return;
       const rect = btnRef.current.getBoundingClientRect();
-      const { top, left } = placePopover(rect, { w: rect.width, h: 200 }, "bottom", 6);
+      const { top, left } = placePopover(rect, { w: rect.width, h: searchable ? 296 : 200 }, "bottom", 6);
       setPlacement({ top, left, width: rect.width });
     };
     recalc();
@@ -658,7 +650,7 @@ export function PremiumSelect({ value, onChange, options, placeholder }: {
       window.removeEventListener("resize", recalc);
       window.removeEventListener("scroll", recalc, true);
     };
-  }, [open]);
+  }, [open, searchable]);
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
@@ -670,14 +662,38 @@ export function PremiumSelect({ value, onChange, options, placeholder }: {
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
+  // Курсор в поле поиска — эффектом, а не autoFocus, и только ПОСЛЕ того, как
+  // посчиталась позиция панели: до этого она стоит visibility: hidden, а скрытый
+  // элемент фокус не принимает — молча, без ошибки. Человек открывал список и
+  // печатал в пустоту.
+  useEffect(() => {
+    if (!open) { searchFocused.current = false; return; }
+    if (!searchable || !placement || searchFocused.current) return;
+    searchFocused.current = true;
+    searchRef.current?.focus();
+  }, [open, searchable, placement]);
+
   const selected = options.find(o => o.value === value);
+  // Ищем и по названию, и по коду: «евро» и «EUR» одинаково законный способ
+  // назвать валюту, а код (он же value) в подписи не участвует — его рисует
+  // отдельная колонка hint, и без этой ветки поиск по «EUR» ничего не нашёл бы.
+  const needle = query.trim().toLowerCase();
+  const visible = searchable && needle
+    ? options.filter(o => o.label.toLowerCase().includes(needle) || o.value.toLowerCase().includes(needle))
+    : options;
+
+  // Открыли — начинаем с чистого поля: прошлый запрос спрятал бы половину списка.
+  const toggle = (next: boolean) => {
+    if (next) setQuery("");
+    setOpen(next);
+  };
 
   return (
     <div ref={ref} style={{ position: "relative" }}>
       <button
         ref={btnRef}
         type="button"
-        onClick={() => setOpen(!open)}
+        onClick={() => toggle(!open)}
         style={{
           width: "100%", padding: "13px 16px", background: "var(--bg-card)",
           border: open ? "1.5px solid #FCAE91" : "1.5px solid #EEEBE6",
@@ -692,9 +708,11 @@ export function PremiumSelect({ value, onChange, options, placeholder }: {
           {selected?.flag && <span style={{ flexShrink: 0 }}>{selected.flag}</span>}
           {selected?.symbol && (
             <span style={{
-              width: "22px", height: "22px", background: "rgba(252,174,145,0.15)", borderRadius: "6px",
+              // Ширина плавает: «€» и «FCFA» обязаны одинаково умещаться внутрь
+              // плашки, а не вылезать из неё буквами наружу.
+              minWidth: "22px", height: "22px", padding: "0 5px", background: "rgba(252,174,145,0.15)", borderRadius: "6px",
               display: "flex", alignItems: "center", justifyContent: "center", fontSize: "12px", fontWeight: 700, color: "#FCAE91",
-              flexShrink: 0,
+              flexShrink: 0, boxSizing: "border-box",
             }}>{selected.symbol}</span>
           )}
           <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{selected?.label || placeholder}</span>
@@ -712,10 +730,33 @@ export function PremiumSelect({ value, onChange, options, placeholder }: {
           width: placement ? `${placement.width}px` : undefined,
           visibility: placement ? "visible" : "hidden",
           background: "#1E1E1E", border: "1.5px solid rgba(255,255,255,0.08)", borderRadius: "14px",
-          zIndex: 1200, maxHeight: "200px", overflowY: "auto",
+          zIndex: 1200, maxHeight: searchable ? "296px" : "200px", overflowY: "auto",
           boxShadow: "0 16px 48px rgba(0,0,0,0.4)", animation: "dropDown 0.15s cubic-bezier(0.34,1.1,0.64,1)",
         }}>
-          {options.map((opt) => (
+          {searchable && (
+            <div style={{
+              position: "sticky", top: 0, zIndex: 1, padding: "8px", background: "#1E1E1E",
+              borderBottom: "1px solid rgba(255,255,255,0.08)", borderRadius: "14px 14px 0 0",
+            }}>
+              <input
+                ref={searchRef}
+                value={query}
+                onKeyDown={e => { if (e.key === "Escape") { e.stopPropagation(); setOpen(false); btnRef.current?.focus(); } }}
+                onChange={e => setQuery(e.target.value)}
+                placeholder={searchPlaceholder}
+                style={{
+                  width: "100%", padding: "8px 10px", background: "rgba(255,255,255,0.06)",
+                  border: "1px solid rgba(255,255,255,0.10)", borderRadius: "10px",
+                  color: "rgba(255,255,255,0.9)", fontSize: "13px", fontFamily: "inherit",
+                  outline: "none", boxSizing: "border-box",
+                }}
+              />
+            </div>
+          )}
+          {emptyText && visible.length === 0 && (
+            <div style={{ padding: "14px", fontSize: "13px", color: "rgba(255,255,255,0.45)" }}>{emptyText}</div>
+          )}
+          {visible.map((opt) => (
             <button
               key={opt.value} type="button" onClick={() => { onChange(opt.value); setOpen(false); }}
               style={{
@@ -731,15 +772,22 @@ export function PremiumSelect({ value, onChange, options, placeholder }: {
               {opt.flag && <span>{opt.flag}</span>}
               {opt.symbol && (
                 <span style={{
-                  width: "22px", height: "22px",
+                  minWidth: "22px", height: "22px", padding: "0 5px", flexShrink: 0, boxSizing: "border-box",
                   background: opt.value === value ? "rgba(252,174,145,0.2)" : "rgba(255,255,255,0.08)",
                   borderRadius: "6px", display: "flex", alignItems: "center", justifyContent: "center",
                   fontSize: "11px", fontWeight: 700, color: opt.value === value ? "#FCAE91" : "rgba(255,255,255,0.5)",
                 }}>{opt.symbol}</span>
               )}
-              {opt.label}
+              <span style={{ flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{opt.label}</span>
+              {/* Приписка (код валюты) — отдельной колонкой справа: внутри label
+                  её первой съедало бы многоточие, а различает строки именно она. */}
+              {opt.hint && (
+                <span style={{ flexShrink: 0, fontSize: "11px", fontWeight: 700, letterSpacing: "0.3px", color: "rgba(255,255,255,0.4)" }}>
+                  {opt.hint}
+                </span>
+              )}
               {opt.value === value && (
-                <svg style={{ marginLeft: "auto" }} width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <svg style={{ flexShrink: 0 }} width="14" height="14" viewBox="0 0 14 14" fill="none">
                   <path d="M2.5 7L5.5 10L11.5 4" stroke="#FCAE91" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               )}

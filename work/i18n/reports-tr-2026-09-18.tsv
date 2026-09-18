@@ -1,0 +1,376 @@
+== tr
+tabs.overview	Genel bakış
+tabs.sales	Satışlar
+tabs.clients	Müşteriler
+tabs.team	Ekip
+tabs.schedule	Takvim
+toolbar.period.day	Gün
+toolbar.period.week	Hafta
+toolbar.period.month	Ay
+toolbar.period.year	Yıl
+toolbar.period.custom	Özel
+toolbar.vsPrevious	önceki döneme göre: {{from}}–{{to}}
+toolbar.allBranches	Tüm şubeler
+toolbar.allHalls	Tüm {{spacePlural}}
+toolbar.allTrainers	Tüm eğitmenler
+toolbar.allServices	Tüm hizmetler
+toolbar.export	Dışa aktar
+insights.title	Dikkat gerektiriyor
+insights.action	Aç
+insights.empty	Şimdilik her şey yolunda — gösterilecek öneri yok
+insights.revenue_up_clients_down	Gelir artıyor ancak aktif müşteri sayısı düşüyor — müşteri kaybını kontrol edin
+insights.clients_at_risk	{{count}} müşteri 3 haftadan uzun süredir katılmadı — kayıp riski
+insights.lesson_overfull	„{{name}}” {{weekday, weekday}} günü {{hour}}:00’da üç haftadır art arda %{{pct}} dolu — başka bir seans eklemeyi düşünün
+insights.trial_low_conversion	{{buyers}} deneme alıcısının yalnızca %{{pct}}’si sonrasında abonelik aldı — kampanya düzenlemeyi düşünün
+insights.fastest_growing_product	„{{name}}” en hızlı büyüyor: önceki döneme göre +%{{pct}}
+insights.renewals_low	Süresi dolmuş aboneliği olan müşterilerin yalnızca %{{pct}}’si yeniliyor — hatırlatıcı göndermeyi düşünün
+insights.new_no_second_visit	{{count}} yeni müşteri bir kez geldi ve tekrar rezervasyon yapmadı — hatırlatıcı göndermeyi düşünün
+insights.subs_expiring_week	{{count}} müşterinin aboneliği bu hafta sona eriyor — yenileme teklif etmeyi düşünün
+insights.vip_inactive	VIP müşteri „{{name}}” {{days}} gündür ziyaret etmedi — kişisel bir mesaj göndermeyi düşünün
+insights.high_return_free_evenings	„{{name}}” yüksek geri dönüş oranına sahip (%{{return_pct}}), ancak akşamlar boş — bir seans ekleyin
+insights.trainer_overloaded	„{{name}}” %{{load_pct}} oranında yüklü — takvimi dengelemeyi düşünün
+insights.low_rating	„{{name}}”in puanı {{rating}} — daha yakından incelemeye değer
+insights.slot_chronic_low	„{{name}}” {{weekday, isodowWeekday}} günü {{hour}}:00’da {{weeks}} haftadır %{{pct}} dolu — taşıyın veya iptal edin
+insights.hall_idle_evenings	„{{name}}” akşam saatlerinin %{{pct}}’sinde boş — bir seans planlamayı düşünün
+insights.slot_overfull	{{weekday, isodowWeekday}} günü {{hour}}:00 saati üç haftadır %{{pct}} dolu — başka bir seans eklemeyi düşünün
+insights.loss_hotspot	Bu dönemde {{label}} saatinde {{cancels}} seans iptal edildi — iptaller en çok bu saat çevresinde toplanıyor
+table.loading	Yükleniyor…
+table.noProduct	Ürün yok
+empty.noData.title	Burada henüz bir şey yok
+empty.noData.text	Seçilen dönemde etkinlik kaydedilmedi. Aralığı genişletin veya Günlük’te bir müşteri ayarlayarak başlayın.
+empty.noData.widen	Yılı göster
+empty.noRevenue	Bu dönemde ödeme yok
+empty.noSales	Bu bölümde satış yok
+empty.noProducts	Henüz paket veya hizmet satılmadı
+empty.noLessons	Bu dönemde seans yok
+empty.noTrainerLessons	Bu eğitmen henüz seans düzenlemedi
+empty.noRows	Bu bölümde kayıt yok
+empty.noLosses	Bu dönemde iptal veya gelmeme yok
+overview.kpi.revenue	Gelir
+overview.kpi.profit	Kâr
+overview.kpi.attendance	Katılım
+overview.kpi.activeClients	Aktif müşteriler
+overview.kpi.fillRate	Doluluk oranı
+overview.chart.metric.revenue	Gelir
+overview.chart.metric.profit	Kâr
+overview.chart.metric.attendance	Katılım
+overview.chart.metric.new_clients	Yeni müşteriler
+overview.chart.metric.fill_rate	Doluluk oranı
+overview.revenueStructure.title	Gelir yapısı
+overview.category.subscriptions	Abonelikler
+overview.category.services	Hizmetler
+overview.category.certificates	Hediye kartları
+overview.category.rent	Kira
+overview.category.salary	Maaşlar
+overview.category.refunds	İadeler
+overview.clientDynamics.title	Müşteri dinamikleri
+overview.clientDynamics.new	Yeni
+overview.clientDynamics.returned	Geri dönen
+overview.clientDynamics.lost	Kaybedilen
+overview.drilldown.title	İşlem
+overview.drilldown.category	Kategori
+overview.drilldown.amount	Tutar
+overview.drilldown.lesson	Seans
+overview.drilldown.time	Saat
+overview.drilldown.occupancy	Doluluk
+overview.drilldown.date	Tarih
+overview.drilldown.method	Yöntem
+overview.drilldown.trainer	Eğitmen
+overview.drilldown.rowsCount	kayıt
+overview.drilldown.search	Tabloda ara
+overview.drilldown.shownOf	{{total}} kaydın {{shown}} tanesi gösteriliyor
+overview.drilldown.noMatches	„{{query}}” için sonuç bulunamadı
+overview.drilldown.reset	Sıfırla
+overview.drilldown.export	CSV dışa aktar
+overview.drilldown.subtitle.money	Bu bölümdeki işlemler
+overview.drilldown.subtitle.lessons	Bu bölümdeki seanslar
+overview.drilldown.hint.operations	İşlemi Finans’ta açmak için satıra tıklayın
+overview.drilldown.hint.lessons	O günü Günlük’te açmak için satıra tıklayın
+overview.drilldown.stat.net	Net
+overview.drilldown.stat.income	Gelir
+overview.drilldown.stat.expense	Gider
+overview.drilldown.stat.operations	İşlemler
+overview.drilldown.stat.topCategory	En büyük kategori
+overview.drilldown.stat.lessons	Seanslar
+overview.drilldown.stat.booked	Rezerve edilen yerler
+overview.drilldown.stat.avgFill	Ortalama doluluk
+overview.drilldown.stat.trainers	Eğitmenler
+overview.drilldown.stat.cancelled	İptal edildi
+sales.kpi.revenue	Gelir
+sales.kpi.salesCount	Satışlar
+sales.kpi.avgCheck	Ortalama sepet
+sales.kpi.repeatShare	Tekrar satın alma oranı
+sales.kpi.renewals	Yenileme oranı
+sales.chart.title	Satışlar
+sales.incomeOperations	Gelir işlemleri
+sales.breakdown.byCategory	Ne satın alıyorlar
+sales.breakdown.byMethod	Nasıl ödüyorlar
+sales.breakdown.buyerType	Kim satın alıyor
+sales.breakdown.new	Yeni
+sales.breakdown.returning	Geri dönen
+sales.breakdown.noClient	Müşteri yok
+sales.method.card	Kart
+sales.method.cash	Nakit
+sales.method.qr	QR kod
+sales.method.transfer	Havale
+sales.products.title	Ürünler
+sales.products.name	Ürün
+sales.products.sold	Satılan
+sales.products.revenue	Gelir
+sales.products.avgCheck	Ortalama sepet
+sales.products.repeatShare	Tekrar satın alma oranı
+sales.products.trend	Trend
+sales.products.trendHint	Aynı uzunluktaki önceki dönemle karşılaştırıldığında
+clients.kpi.new	Yeni
+clients.kpi.returned	Geri dönen
+clients.kpi.lost	Kaybedilen
+clients.kpi.retention	Müşteri tutma
+clients.kpi.avgValue	Müşteri değeri
+clients.chart.title	Yeni ve geri dönen
+clients.chart.new	Yeni
+clients.chart.returned	Geri dönen
+clients.riskTitle	Risk segmentleri
+clients.loyalTitle	Sadık
+clients.list	Liste
+clients.campaign	Kampanya başlat
+clients.exportList	Listeyi dışa aktar
+clients.emptySegment	„{{name}}” segmentinde şu anda müşteri yok
+clients.segments.new.name	Yeni müşteriler
+clients.segments.new.desc	Seçilen dönemde kaydolanlar
+clients.segments.returned.name	Geri dönen müşteriler
+clients.segments.returned.desc	Bu dönemde ve önceki dönemde ziyaret edenler
+clients.segments.lost.name	Kaybedilen müşteriler
+clients.segments.lost.desc	Önceki dönemde geldi, bu dönemde geri dönmedi
+clients.segments.active.name	Aktif müşteriler
+clients.segments.active.desc	Seçilen dönemde en az bir seansa gelenler
+clients.segments.at_risk.name	Riskte
+clients.segments.at_risk.desc	Aktif, ancak 21+ gündür ziyaret yok
+clients.segments.vip_idle.name	Pasif VIP’ler
+clients.segments.vip_idle.desc	VIP müşteriler, 14+ gündür ziyaret yok
+clients.segments.expiring_subscription.name	Abonelik bitiyor
+clients.segments.expiring_subscription.desc	≤2 seans veya ≤7 gün kaldı
+clients.segments.lost_newcomers.name	Hiç geri dönmediler
+clients.segments.lost_newcomers.desc	Bir kez geldiler, 14+ gündür yoklar
+clients.segments.upsell_candidates.name	Üst pakete hazır
+clients.segments.upsell_candidates.desc	Bu ay 8+ ziyaret, paket yok
+clients.segments.frequent.name	Sık gelenler
+clients.segments.frequent.desc	Dönemde 8+ ziyaret
+clients.segments.high_ltv.name	Yüksek LTV
+clients.segments.high_ltv.desc	Toplam harcamada en üst %10
+clients.segments.referrers.name	Tavsiye edenler
+clients.segments.referrers.desc	Dönemde bir tavsiye tamamladılar
+clients.listSearch	Ad veya telefonla ara
+clients.shownOf	{{total}} kaydın {{shown}} tanesi gösteriliyor
+clients.noMatches	„{{query}}” için kimse bulunamadı
+clients.resetSearch	Sıfırla
+clients.neverVisited	Hiç ziyaret etmedi
+clients.valueLabel.visits	Ziyaretler
+clients.valueLabel.spent	Harcanan
+clients.valueLabel.daysIdle	Pasif günler
+clients.valueLabel.remaining	Kalan seanslar
+clients.valueLabel.value	Değer
+clients.relative.today	Bugün
+clients.relative.daysAgo_one	{{count}} gün önce
+clients.relative.daysAgo_other	{{count}} gün önce
+team.kpi.lessonsCount	Seanslar
+team.kpi.revenuePerHour	Gelir/saat
+team.kpi.avgFillPct	Doluluk oranı
+team.kpi.cancelNoshowPct	İptaller/gelmeme
+team.kpi.avgRating	Puan
+team.table.title	Eğitmenler
+team.table.trainer	Eğitmen
+team.table.lessons	Seanslar
+team.table.fillPct	Doluluk oranı
+team.table.attendance	Katılım
+team.table.revenue	Gelir
+team.table.returnRate	Geri dönüş oranı
+team.table.cancels	İptaller
+team.table.fillPctHint	Planlanan yerlerin dolan kısmı
+team.table.returnRateHint	Bu eğitmenle tekrar rezervasyon yapan müşteriler
+team.table.cancelsHint	İptal edilen seanslar ve müşteri gelmemeleri
+team.table.ratingHint	Müşterilerin bu eğitmenin seanslarına verdiği ortalama puan
+team.drawer.revenueByWeek	Haftalık gelir
+team.drawer.loadByWeekday	Haftanın gününe göre yük
+team.drawer.loadByHour	Günün saatine göre yük
+team.drawer.loadDim.weekday	Güne göre
+team.drawer.loadDim.hour	Saate göre
+team.drawer.schedule.title	Takvim
+team.drawer.schedule.empty	Bu dönemde seans yok
+team.drawer.topLessons	Favori seanslar
+team.drawer.returnBlock	Müşteri geri dönüşü
+team.drawer.returnOf	{{total}} müşterinin {{returned}} tanesi geri döndü (%{{pct}})
+team.drawer.openProfile	Profili aç
+team.drawer.held	Gerçekleşti
+team.drawer.attendance	Katılım
+team.weekdays.0	Paz
+team.weekdays.1	Pzt
+team.weekdays.2	Sal
+team.weekdays.3	Çar
+team.weekdays.4	Per
+team.weekdays.5	Cum
+team.weekdays.6	Cmt
+schedule.weekdaysMonFirst.0	Pzt
+schedule.weekdaysMonFirst.1	Sal
+schedule.weekdaysMonFirst.2	Çar
+schedule.weekdaysMonFirst.3	Per
+schedule.weekdaysMonFirst.4	Cum
+schedule.weekdaysMonFirst.5	Cmt
+schedule.weekdaysMonFirst.6	Paz
+schedule.kpi.avgFillPct	Doluluk oranı
+schedule.kpi.freeSpots	Boş yerler
+schedule.kpi.cancels	İptaller
+schedule.kpi.noshows	Gelmeme
+schedule.kpi.lostRevenue	Kaçan gelir
+schedule.heatmap.title	Gün ve saate göre yük
+schedule.heatmap.legend	Doluluk oranı:
+schedule.heatmap.tooltip	{{lessons}} seans · {{attendance}} katıldı · %{{pct}}
+schedule.heatmap.empty	Seans yok
+schedule.slices.topProfitable	En kârlı
+schedule.slices.topFilled	En dolu
+schedule.slices.chronicLow	Sürekli düşük doluluklu
+schedule.slices.halls	Kullanım: {{spacePlural}}
+schedule.slices.held	{{count}} gerçekleşti
+schedule.slices.weeks	{{count}} hf.
+schedule.slices.move	Taşı
+schedule.slices.cancel	İptal et
+schedule.slices.eveningIdle	akşamları boş %{{pct}}
+schedule.losses.title	İptaller ve gelmemeler
+schedule.losses.dim.hour	Saate göre
+schedule.losses.dim.service	Hizmete göre
+schedule.losses.dim.trainer	Eğitmene göre
+schedule.losses.cancels_one	{{count}} iptal
+schedule.losses.cancels_other	{{count}} iptal
+schedule.losses.noshows_one	{{count}} gelmeme
+schedule.losses.noshows_other	{{count}} gelmeme
+schedule.losses.lostSpots_one	−{{count}} yer
+schedule.losses.lostSpots_other	−{{count}} yer
+schedule.status.confirmed	Onaylandı
+schedule.status.pending	Beklemede
+schedule.status.cancelled	İptal edildi
+schedule.slot.summary	{{from}} — {{to}} için
+schedule.slot.lessonsCount	Toplam seans
+export.csv	CSV indir
+scopeNote.label	Tüm stüdyo
+scopeNote.money	Şube ve {{space}} filtreleri parayı etkilemez — ödeme bunlara bağlı değildir
+scopeNote.clientBase	Eğitmen, {{space}}, şube ve hizmet bu metriği değiştirmez — müşteri bunlara bağlı değildir
+descriptions.overview.metric.revenue	Dönem boyunca stüdyoya giren tüm para
+descriptions.overview.metric.profit	Dönemin giderlerinden sonra kalan tutar
+descriptions.overview.metric.attendance	Müşterilerin gerçekten katıldığı seanslar
+descriptions.overview.metric.new_clients	Bu dönemde kaydolan müşteriler
+descriptions.overview.metric.fill_rate	Seansların ne kadar dolu olduğu: mevcut yerlerden rezerve edilen yerler
+descriptions.overview.revenueStructure	Bu dönemde gelirinizin nelerden oluştuğu
+descriptions.overview.clientDynamics	Kaç kişinin ilk kez geldiği, geri döndüğü veya gelmeyi bıraktığı
+descriptions.sales.chart	Günlük gelir ve satın alma sayısı
+descriptions.sales.byCategory	Her ürünün gelirdeki payı
+descriptions.sales.byMethod	Gelirin ödeme yöntemine göre dağılımı
+descriptions.sales.buyerType	Gelirin ne kadarının yeni müşterilerden, ne kadarının düzenli müşterilerden geldiği
+descriptions.sales.products	Her ürün: kaç tane satıldığı, ne kadar getirdiği ve satışların artıp artmadığı
+descriptions.clients.chart	Haftaya göre ilk kez gelen ve geri dönen müşteri sayısı
+descriptions.clients.riskSegments	Şimdi ulaşmazsanız kaybedebileceğiniz müşteriler
+descriptions.clients.loyalSegments	En çok ziyaret eden, en çok harcayan ve arkadaş getirenler
+descriptions.team.trainers	Yük, gelir ve müşteri geri dönüş oranına göre karşılaştırma
+descriptions.team.loadWeekday	Eğitmenin haftanın hangi günlerinde yoğun, ne zaman boş olduğu
+descriptions.team.loadHour	Seanslarının hangi saatlerde dolduğu ve ne zaman boş kaldığı
+descriptions.team.schedule	Seçilen dönemde eğitmenin tüm seansları
+descriptions.schedule.heatmap	Takvimin nerede aşırı dolu, nerede boş olduğu
+descriptions.schedule.topProfitable	Takviminizde en çok para kazandıran saatler
+descriptions.schedule.topFilled	Müşterilerin en istekli rezerve ettiği saatler
+descriptions.schedule.chronicLow	Haftalardır yerlerin üçte birinden azını dolduran zaman aralıkları
+descriptions.schedule.halls	{{spacePlural}} alanlarınızın zamanın ne kadarında gerçekten kullanıldığı
+descriptions.schedule.losses	Stüdyonun nerede yer kaybettiği: iptal edilen seanslar veya gelmeyen müşteriler
+formulas.salesCount.title	Satışlar
+formulas.salesCount.text	Bu dönemde müşterilerin size kaç kez ödeme yaptığı. Bir kişinin birden fazla ödeme yapması ayrı satışlar olarak sayılır.
+formulas.revenue.title	Gelir
+formulas.revenue.text	Ödeme tarihine göre bu dönemde stüdyoya giren tüm para. Paketler, tek seanslar, hediye kartları ve perakende — hepsi birlikte.
+formulas.profit.title	Kâr
+formulas.profit.text	Bu dönemin kira, maaş ve malzeme gibi giderlerinden sonra kalan tutar. Bu gerçek kârınızdır.
+formulas.attendance.title	Katılım
+formulas.attendance.text	Müşterilerin gerçekten yaptığı ziyaret sayısı. Yalnızca katıldı olarak işaretlenen seanslar sayılır.
+formulas.bookings.title	Rezervasyonlar
+formulas.bookings.text	Müşterilerin seanslar için yaptığı rezervasyon sayısı. İptal edilen rezervasyonlar sayılmaz.
+formulas.noshow.title	Gelmeme
+formulas.noshow.text	Müşteri rezervasyon yaptı, seans gerçekleşti ancak gelmedi. Her durum, başka birinin alabileceği bir yerdir.
+formulas.activeClients.title	Aktif müşteriler
+formulas.activeClients.text	Bu dönemde en az bir kez gelen farklı kişi sayısı. Ziyaret sayısından bağımsız olarak her müşteri bir kez sayılır.
+formulas.occupancy.title	Doluluk
+formulas.occupancy.text	Seanslarınızın ne kadar dolu olduğu: planlanan yerlerden dolan yerler. %100, boş yer kalmadığı anlamına gelir.
+formulas.avgCheck.title	Ortalama sepet
+formulas.avgCheck.text	Bir ödemenin ortalama olarak ne getirdiği. Müşteriler daha uzun paketler veya ekler aldığında yükselir.
+formulas.retention.title	Müşteri tutma
+formulas.retention.text	Önceki dönemin müşterilerinden bu dönemde geri dönenlerin sayısı. İnsanları tutup tutmadığınızı veya her ay sıfırdan başlayıp başlamadığınızı gösterir.
+formulas.newClients.title	Yeni müşteriler
+formulas.newClients.text	Bu dönemde müşteri tabanınızda ilk kez görünen kişiler.
+formulas.returning.title	Geri dönen
+formulas.returning.text	Daha önce ziyaret etmiş ve bu dönemde tekrar gelen müşteriler.
+formulas.lost.title	Kaybedilen
+formulas.lost.text	Önceki dönemde ziyaret ettiler, bu dönemde ise hiç gelmediler. Yine de onlarla iletişime geçmeye değer.
+formulas.clientValue.title	Müşteri değeri
+formulas.clientValue.text	Bir müşterinin bu dönemde ortalama olarak getirdiği tutar.
+formulas.repeatPurchaseShare.title	Tekrar satın alma oranı
+formulas.repeatPurchaseShare.text	Sizden birden fazla kez satın alan müşterilerin oranı. Oran yükseldikçe geri gelme alışkanlığı güçlenir.
+formulas.renewalRate.title	Yenileme oranı
+formulas.renewalRate.text	Önceki paketi bittikten sonra yeni paket alan müşteri sayısı.
+formulas.revenuePerHour.title	Saatlik gelir (eğitmen)
+formulas.revenuePerHour.text	Bir eğitmenin bir saatlik çalışmasının ne kadar para getirdiği. Eğitmenleri adil karşılaştırmanızı sağlar — biri daha az seans yapabilir ama her biri daha çok kazandırabilir.
+formulas.trainerReturnRate.title	Geri dönüş oranı (eğitmen)
+formulas.trainerReturnRate.text	Bir eğitmenin müşterilerinden onunla tekrar rezervasyon yapanların oranı.
+formulas.missedRevenue.title	Kaçan gelir
+formulas.missedRevenue.text	Geçmiş seanslardaki boş yerler nedeniyle stüdyonun kazanamadığı para: boş yerler çarpı seans fiyatı.
+formulas.losses.title	İptaller ve gelmemeler
+formulas.losses.text	„İptal”, iptal edilen bir seanstdır; „gelmeme”, rezervasyon yapıp gelmeyen müşteridir. Saat/hizmet/eğitmen kırılımları sekmeyle aynı filtreleri kullanır ve başlıktaki KPI’larla tutarlıdır.
+formulas.lessonRevenue.title	Seans geliri
+formulas.lessonRevenue.text	Bir seansın geliri için kabaca tahmin: katılımcılar çarpı fiyat. Ödemeler belirli bir seansa bağlı değildir; bu yüzden kesin bir tutar değil, tahmindir.
+formulas.filtersScope.title	Filtre kapsamı
+formulas.filtersScope.text	Şube ve {{space}} filtreleri yalnızca seans metriklerine uygulanır. Ödemelerin böyle bir bağlantısı yoktur, bu nedenle para tüm stüdyo için gösterilir.
+formulas.avgValue.title	Müşteri değeri
+formulas.avgValue.text	Bir müşterinin bu dönemde ortalama olarak getirdiği tutar.
+formulas.cancelNoshow.title	İptaller ve gelmemeler
+formulas.cancelNoshow.text	Aksayan seansların oranı: planlanan her şey içindeki iptaller ve gelmemeler.
+formulas.avgRating.title	Ortalama puan
+formulas.avgRating.text	Müşterilerin bu eğitmenin seanslarına verdiği ortalama puan.
+formulas.teamScope.title	Veri kapsamı
+formulas.teamScope.text	Bu yalnızca belirli bir eğitmene bağlı geliri sayar; bu nedenle tüm eğitmenlerin toplamı stüdyonun genel gelirinden düşük olabilir.
+formulas.lessonsCount.title	Seanslar
+formulas.lessonsCount.text	Eğitmenlerin bu dönemde gerçekleştirdiği seans sayısı.
+formulas.load.title	Yük
+formulas.load.text	Bir eğitmenin gününün ne kadar dolu olduğu: stüdyonun çalışma aralığındaki rezerve saatleri.
+formulas.weeklyClients.title	Yeni ve geri dönen
+formulas.weeklyClients.text	Haftaya göre: kaç kişinin ilk kez geldiği ve kaçının geri döndüğü. Sağlıklı bir stüdyo her iki çizgide de büyür.
+formulas.byCategory.title	Kategoriye göre gelir
+formulas.byCategory.text	Gerçekte ne üzerinden kazandığınız: paketler, tek seanslar, hediye kartları ve perakende.
+formulas.byMethod.title	Ödeme yöntemleri
+formulas.byMethod.text	Müşterilerin nasıl ödeme yaptığı. Kartla ödeme gerekip gerekmediğini ve ne kadar paranın kasayı atladığını görmenize yardımcı olur.
+formulas.buyerType.title	Kim ödüyor
+formulas.buyerType.text	Yeni müşteriler ve düzenli müşteriler. Gelirin neredeyse tamamı yeni müşterilerden geliyorsa stüdyo onları tutamıyor demektir.
+formulas.products.title	Ne satıyor
+formulas.products.text	Dönemdeki tüm paketler ve hizmetler: kaç tane satıldığı, ne kadar getirdiği ve satışların artıp artmadığı.
+formulas.topProfitable.title	En kârlı saatler
+formulas.topProfitable.text	Takviminizde en çok para kazandıran saatler. En iyi eğitmenlerinizi bu saatlere koyun.
+formulas.topFilled.title	En dolu saatler
+formulas.topFilled.text	Müşterilerin en istekli rezerve ettiği saatler. Tamamen dolularsa başka bir seans eklemeye değer.
+formulas.chronicLow.title	Sürekli boş saatler
+formulas.chronicLow.text	Birkaç haftadır yerlerin üçte birinden azını dolduran saatler. Taşınacak veya kaldırılacak adaylar.
+formulas.hallUtil.title	Kullanım: {{spacePlural}}
+formulas.hallUtil.text	{{spacePlural}} alanlarınızın zamanın ne kadarında gerçekten kullanıldığı. Boş zaman, karşılığını vermeyen kiradır.
+formulas.heatmap.title	Gün ve saate göre yük
+formulas.heatmap.text	Renk, zaman aralığının dönem içindeki ortalama doluluk oranını gösterir. O gün ve saatteki seansları görmek için hücreye tıklayın.
+formulas.riskSegments.title	Risk segmentleri
+formulas.riskSegments.text	Taşıdıkları risk türüne göre gruplandırılmış müşteriler — onları kaybetmek veya getirmedikleri gelir. Her kartın kendi nedeni ve net bir sonraki adımı vardır: mesaj yazın, yenileme veya üst paket sunun.
+formulas.loyalSegments.title	Sadık
+formulas.loyalSegments.text	Zaten en çok değeri getiren müşteriler: en sık gelir, en çok harcar veya arkadaş getirirler. Onlarla ilgilenmeye ve ödüllendirmeye değer.
+formulas.segment.at_risk.title	Riskte
+formulas.segment.at_risk.text	Eskiden düzenli gelirlerdi, şimdi kayboldular. Tek bir mesajla hâlâ geri kazanılabilirler.
+formulas.segment.vip_idle.title	Pasif VIP’ler
+formulas.segment.vip_idle.text	Herkesten fazla harcayıp bir süredir ziyaret etmeyen müşteriler.
+formulas.segment.expiring_subscription.title	Abonelik bitiyor
+formulas.segment.expiring_subscription.text	Bu müşterilerin 1–2 seansı kaldı. Yenileme teklif etmek için en iyi zaman.
+formulas.segment.lost_newcomers.title	Geri dönmeyen yeni müşteriler
+formulas.segment.lost_newcomers.text	Bir kez geldiler ve kayboldular. Genellikle ilk seansla ilgilidir — incelemeye değer.
+formulas.segment.upsell_candidates.title	Daha fazlasına hazır
+formulas.segment.upsell_candidates.text	Sık geliyorlar ama en basit paketi alıyorlar. Daha pahalı abonelik sunmaya değer.
+formulas.segment.frequent.title	Düzenli gelenler
+formulas.segment.frequent.text	Herkesten daha sık geliyorlar. Stüdyo gelirinin omurgasıdırlar.
+formulas.segment.high_ltv.title	En değerli
+formulas.segment.high_ltv.text	Tüm zaman boyunca stüdyoya herkesten daha fazla para getirdiler.
+formulas.segment.referrers.title	Arkadaş getirenler
+formulas.segment.referrers.text	Tavsiyeleriyle size başka insanlar getiren müşteriler.

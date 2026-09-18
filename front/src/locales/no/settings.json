@@ -1,0 +1,480 @@
+{
+  "nav": {
+    "sectionLabel": "Systeminnstillinger",
+    "general": "Generelt",
+    "appearance": "Utseende",
+    "notifications": "Varsler",
+    "billing": "Fakturering",
+    "security": "Sikkerhet",
+    "integrations": "Integrasjoner",
+    "data": "Data",
+    "logout": "Bytt CRM"
+  },
+  "toast": {
+    "saved": "Lagret",
+    "error": "Noe gikk galt"
+  },
+  "workspace": {
+    "title": "Dine CRM-systemer",
+    "subtitle": "Velg et arbeidsområde, eller opprett et nytt",
+    "current": "Gjeldende",
+    "membersCount_one": "{{count}} medlem",
+    "membersCount_other": "{{count}} medlemmer",
+    "clientsCount_one": "{{count}} klient",
+    "clientsCount_other": "{{count}} klienter",
+    "createNew": "Opprett nytt studio",
+    "loadError": "Kunne ikke laste inn studioene dine",
+    "selectError": "Kunne ikke bytte til dette studioet"
+  },
+  "general": {
+    "company": {
+      "title": "Bedriftsopplysninger",
+      "subtitle": "Offentlig informasjon om virksomheten din",
+      "name": "Bedriftsnavn",
+      "namePh": "f.eks. Mitt studio",
+      "desc": "Beskrivelse",
+      "descPh": "Hva gjør studioet ditt…",
+      "phone": "Telefon",
+      "email": "E-post",
+      "site": "Nettsted",
+      "sitePh": "https://studio.com",
+      "address": "Adresse",
+      "addressPh": "Eksempelveien 123, by"
+    },
+    "reset": "Tilbakestill",
+    "resetToast": "Innstillinger tilbakestilt",
+    "locale": {
+      "title": "Språk og region",
+      "subtitle": "Innstillinger for lokalisering av grensesnittet",
+      "timezone": "Tidssone",
+      "timezoneSearch": "By eller tidsforskjell",
+      "timezoneNotFound": "Ingen tidssone funnet",
+      "currency": "Valuta",
+      "currencySearch": "Søk etter valuta eller kode",
+      "currencyNotFound": "Ingen valuta funnet",
+      "language": "Grensesnittspråk",
+      "languageSearch": "Søk etter språk",
+      "languageNotFound": "Ingen språk funnet",
+      "dateFormat": "Datoformat",
+      "firstDay": "Første dag i uken",
+      "firstDayLabels": [
+        "Mandag",
+        "Søndag"
+      ]
+    },
+    "booking": {
+      "title": "Bestillingsmodell",
+      "subtitle": "Slik bestiller klientene hos deg",
+      "mode": "Bestillingsmodell",
+      "modeHint": "Arrangementer — klienter melder seg på en planlagt time. Individuell — klienten velger en spesialist og et tidspunkt. Blandet — begge deler samtidig.",
+      "profile": "Bransjeordlyd",
+      "profileHint": "Velger ord for ansatte og tilbud. Det endrer bare formuleringer — aldri roller, priser eller bestillingsmodell.",
+      "strict": "Streng timeplan",
+      "strictHint": "Forbyr dobbeltbestilling av en spesialist eller et eksklusivt rom. Kreves før individuell bestilling kan slås på.",
+      "spaceAxis": "Bruk {{spacePlural}} i timeplanen",
+      "spaceAxisHint": "Av — klienten bestiller en person, og rommet har ingen kolonne i journalen. På — en time er knyttet til et rom.",
+      "spaceAxisDefaultOn": "Standard for din bransje: på",
+      "spaceAxisDefaultOff": "Standard for din bransje: av",
+      "modes": {
+        "event": "Arrangementer",
+        "resource": "Individuell",
+        "hybrid": "Blandet"
+      },
+      "profiles": {
+        "studio": "Gruppetrening og studioer",
+        "sport": "Sport og treningssentre",
+        "beauty": "Skjønnhet og pleie",
+        "recovery": "Kropp og restitusjon",
+        "relax": "Spa og avslapning",
+        "other": "Annet"
+      },
+      "preview": {
+        "event": "Arrangement",
+        "resource": "Individuell"
+      },
+      "errors": {
+        "AUDIT_BLOCKED": "Timeplanen inneholder bestillinger som ikke er kompatible med en streng timeplan.",
+        "STRICT_SCHEDULE_REQUIRED": "Slå først på streng timeplan.",
+        "RESOURCE_HISTORY_EXISTS": "Streng timeplan kan ikke slås av: studioet har individuelle bestillinger."
+      },
+      "findings": {
+        "overlap": "Overlappende bestillinger",
+        "unknown_timezone": "Ukjent tidssone",
+        "undefined_branch": "Avdeling er ikke angitt",
+        "invalid_duration": "Ugyldig varighet",
+        "invalid_resource_row": "Ufullstendig individuell bestilling",
+        "missing_branch_assignment": "Spesialisten er ikke tilordnet avdelingen",
+        "missing_working_hours": "Spesialisten har ingen arbeidstid",
+        "inactive_specialist": "Spesialisten er inaktiv",
+        "other": "Må gjennomgås"
+      }
+    }
+  },
+  "appearance": {
+    "theme": {
+      "title": "Tema",
+      "subtitle": "Velg grensesnittets visuelle stil",
+      "light": "Lyst",
+      "dark": "Mørkt",
+      "auto": "System"
+    },
+    "accent": {
+      "title": "Aksentfarge",
+      "subtitle": "Tilpass grensesnittets hovedfarge",
+      "note": "Valget ditt er lagret, men er ennå ikke brukt i grensesnittet — det kommer i en fremtidig oppdatering.",
+      "noteTitle": "Kommer snart",
+      "colors": {
+        "peach": "Fersken",
+        "pistachio": "Pistasj",
+        "lavender": "Lavendel",
+        "pink": "Rosa",
+        "gold": "Gull",
+        "mint": "Mynte"
+      }
+    },
+    "language": {
+      "title": "Grensesnittspråk",
+      "subtitle": "Ditt personlige språk — påvirker ikke studioinnstillingene",
+      "search": "Søk etter språk",
+      "empty": "Ingen språk funnet"
+    }
+  },
+  "notifications": {
+    "myPrefs": {
+      "title": "Mine varsler",
+      "subtitle": "Personlige preferanser — påvirker ikke resten av studioet",
+      "hint": "Obligatoriske varsler kan ikke slås av — de gjør at du aldri går glipp av endringer i timeplanen og betalinger.",
+      "empty": "Ingen valgfrie varsler for rollen din",
+      "channels": {
+        "email": "E-post",
+        "telegram": "Telegram",
+        "whatsapp": "WhatsApp"
+      }
+    },
+    "telegram": {
+      "title": "Telegram for varsler",
+      "subtitle": "Hvor personlige hendelser skal sendes til deg — bestillinger, lønn og rapporter",
+      "chatId": "Din Telegram chat_id",
+      "chatIdPh": "f.eks. 123456789",
+      "hintBefore": "Du finner chat_id-en din hos boten ",
+      "hintAfter": " på Telegram — start en chat med den, så sender den ID-en din.",
+      "invalidChatId": "Telegram chat_id må være et tall uten symboler",
+      "saved": "Telegram er koblet til varsler",
+      "saveFailed": "Kunne ikke lagre Telegram"
+    },
+    "email": {
+      "title": "E-post for varsler",
+      "subtitle": "Hvor system-e-poster skal sendes",
+      "primary": "Primær e-post",
+      "backup": "Reserve-e-post",
+      "backupPh": "backup@studio.com",
+      "saved": "Varslingsinnstillinger lagret"
+    }
+  },
+  "billing": {
+    "plans": {
+      "start": "Start",
+      "pro": "Pro",
+      "business": "Business",
+      "free_trial": "Gratis prøveperiode"
+    },
+    "status": {
+      "active": "Aktiv",
+      "trial": "Prøveperiode",
+      "expired": "Utløpt"
+    },
+    "plan": {
+      "title": "Gjeldende abonnement",
+      "expiresAt": "Aktiv til {{date}}",
+      "maxStaff": "Opptil {{count}} ansatte",
+      "staffUnlimited": "Ubegrenset antall ansatte",
+      "noSubscription": "Ingen aktivt abonnement",
+      "noSubscriptionCta": "Velg abonnement",
+      "trialCta": "Velg abonnement"
+    },
+    "upgrade": "Oppgrader til {{plan}}",
+    "renew": "Forny",
+    "autopay": {
+      "title": "Automatisk fornyelse",
+      "subtitle": "Belastes det lagrede kortet ditt",
+      "autoRenew": "Automatisk fornyelse",
+      "notifyBefore": "Vi minner deg på det {{count}} dager før belastning"
+    },
+    "payment": {
+      "title": "Betalingsmåte",
+      "cardSummary": "Kort •••• {{last4}}",
+      "notLinked": "Ingen kort er koblet til",
+      "change": "Endre"
+    },
+    "history": {
+      "title": "Betalingshistorikk",
+      "subtitle": "Siste 12 betalinger",
+      "exportCsv": "Eksporter CSV",
+      "empty": "Ingen betalinger ennå",
+      "showAll": "Vis alle",
+      "period": "{{count}} mnd.",
+      "noDate": "—",
+      "status": {
+        "paid": "Betalt",
+        "pending": "Venter",
+        "failed": "Ikke betalt",
+        "refunded": "Refundert"
+      }
+    },
+    "toast": {
+      "autopaySaved": "Innstillinger for automatisk fornyelse er lagret",
+      "renewed": "Fornyelse startet",
+      "csvExportError": "Kunne ikke eksportere CSV"
+    }
+  },
+  "security": {
+    "account": {
+      "title": "Kontosikkerhet",
+      "subtitle": "Beskytt tilgangen til arbeidsområdet ditt"
+    },
+    "twoFa": {
+      "title": "Tofaktorautentisering",
+      "sub": "E-postkode ved hver innlogging",
+      "active": "Aktiv",
+      "disabled": "Deaktivert",
+      "enableTitle": "Aktiver 2FA",
+      "disableTitle": "Deaktiver 2FA",
+      "enableWarning": "Når det er aktivert, vil hver innlogging kreve en kode sendt til {{email}}. Sørg for at du har tilgang til den — ellers risikerer du å miste tilgangen til kontoen din.",
+      "disableWarning": "Når det er deaktivert, er bare passordet nok for å logge inn uten e-postkode.",
+      "enabledToast": "Tofaktorautentisering er aktivert",
+      "disabledToast": "Tofaktorautentisering er deaktivert"
+    },
+    "password": {
+      "title": "Kontopassord",
+      "sub": "Endringen bekreftes med en e-postkode",
+      "change": "Bytt passord",
+      "changed": "Passordet er endret",
+      "current": "Nåværende passord",
+      "currentPh": "Skriv inn nåværende passord",
+      "new": "Nytt passord",
+      "newPh": "Minst 8 tegn",
+      "repeat": "Gjenta passordet",
+      "repeatPh": "Skriv inn det nye passordet igjen",
+      "mismatch": "Passordene samsvarer ikke",
+      "forgot": "Har du glemt passordet?",
+      "resetTitle": "Gjenopprett passord",
+      "step1Sub": "La oss bekrefte at det er deg",
+      "step2Sub": "Koden er sendt til {{email}}",
+      "step3Sub": "Velg et nytt passord",
+      "resetIntro": "Vi sender en sekssifret kode til e-postadressen tilknyttet kontoen din. Du trenger ikke kjenne det nåværende passordet — koden beviser at innboksen er din.",
+      "sendCode": "Send kode",
+      "back": "Tilbake",
+      "save": "Lagre passord",
+      "resetDone": "Passordet er oppdatert",
+      "resetLogoutHint": "Andre enheter blir logget ut — du forblir innlogget på denne.",
+      "rules": {
+        "len": "8+ tegn",
+        "letter": "Har en bokstav",
+        "digit": "Har et siffer",
+        "simple": "Ingen 111 eller qwerty"
+      }
+    },
+    "sessions": {
+      "title": "Aktive økter",
+      "sub": "Hvor kontoen din for øyeblikket er logget inn",
+      "count": "{{count}} enheter",
+      "manage": "Administrer",
+      "hide": "Skjul",
+      "current": "Gjeldende",
+      "terminate": "Avslutt",
+      "terminateAll": "Avslutt alle andre økter",
+      "terminatedToast": "Økten ble avsluttet",
+      "terminatedAllToast": "Andre økter er avsluttet",
+      "justNow": "Aktiv nå",
+      "minutesAgo": "for {{count}} min siden",
+      "hoursAgo": "for {{count}} t siden",
+      "daysAgo": "for {{count}} d siden",
+      "unknownLocation": "Ukjent"
+    },
+    "otp": {
+      "sentHint": "Vi har sendt en sekssifret kode til e-posten din. Skriv den inn nedenfor.",
+      "resend": "Send koden på nytt",
+      "resendIn": "Send på nytt om {{count}} sek.",
+      "confirm": "Bekreft",
+      "cancel": "Avbryt",
+      "sendCode": "Send kode",
+      "continue": "Fortsett"
+    },
+    "danger": {
+      "title": "Databehandling (faresone)",
+      "export": {
+        "title": "Eksporter alle data",
+        "sub": "Last ned et arkiv med klientbasen og historikken",
+        "prepare": "Forbered arkiv",
+        "hide": "Skjul",
+        "clients": "Klientbase (CSV)",
+        "finances": "Finansielle transaksjoner",
+        "schedule": "Timer og timeplan",
+        "start": "Start eksport",
+        "started": "Arkivet forberedes, og en lenke sendes til e-posten din",
+        "emptySelection": "Velg minst én seksjon for eksport"
+      },
+      "wipe": {
+        "title": "Tøm database",
+        "sub": "Sletter alle klienter og bestillinger. Innstillingene beholdes.",
+        "action": "Tøm data",
+        "toast": "Databasen er tømt",
+        "consequence1": "Slettes permanent: klienter, timer, bestillinger, transaksjoner, dokumenter, klientabonnementer, lojalitetshistorikk",
+        "consequence2": "Uendret: studio, avdelinger, {{spacePlural}}, tjenester, ansatte, abonnement og innstillinger",
+        "consequence3": "Denne handlingen kan ikke angres etter bekreftelse"
+      },
+      "deleteAccount": {
+        "title": "Slett bedriftskonto",
+        "sub": "Fullstendig og irreversibel sletting av virksomheten fra systemet",
+        "action": "Slett for alltid",
+        "consequence1": "Studioet og alle dataene blir slettet permanent, inkludert klienter, timer, økonomi og innstillinger",
+        "consequence2": "Den personlige kontoen din beholdes — bare dette studioet slettes",
+        "consequence3": "Sletting er ikke tilgjengelig med et aktivt abonnement eller hvis studioet har andre eiere"
+      }
+    }
+  },
+  "integrations": {
+    "title": "Integrasjoner",
+    "subtitle": "Koble til eksterne kanaler og økosystemer med ett klikk",
+    "loadError": "Kunne ikke laste inn integrasjonsstatus",
+    "items": {
+      "telegram": {
+        "name": "Telegram-bot",
+        "sub": "Klientvarsler og bestilling via bot"
+      },
+      "whatsapp": {
+        "name": "WhatsApp Business",
+        "sub": "Masseutsendelser og automatiske klientvarsler"
+      },
+      "instagram": {
+        "name": "Instagram Direct",
+        "sub": "AI-agent for automatiske svar og nettbestilling"
+      },
+      "google_calendar": {
+        "name": "Google Calendar",
+        "sub": "Synkronisering av studioets timeplan"
+      }
+    },
+    "status": {
+      "connected": "Tilkoblet",
+      "notActive": "Ikke tilkoblet"
+    },
+    "actions": {
+      "configure": "Konfigurer",
+      "connect": "Koble til",
+      "disconnect": "Koble fra"
+    },
+    "fields": {
+      "keyLabel": "Nøkkel",
+      "connectedAtLabel": "Tilkoblet",
+      "telegramToken": "Bot-API-token (fra @BotFather)",
+      "telegramTokenPh": "123456789:ABCDefGhIJKlmNoPQRsTUVwxyZ",
+      "whatsappToken": "Tilgangstoken",
+      "whatsappTokenPh": "EAAxxxxxxxxxxxxx",
+      "whatsappPhoneId": "Telefonnummer-ID",
+      "whatsappPhoneIdPh": "1029384756",
+      "whatsappWabaId": "WABA-ID (valgfritt)",
+      "whatsappWabaIdPh": "1029384756",
+      "instagramToken": "Tilgangstoken",
+      "instagramTokenPh": "IGQWR...",
+      "instagramUserId": "Instagram-ID for bedriftskonto",
+      "instagramUserIdPh": "17841400000000000"
+    },
+    "guide": {
+      "howToTitle": "Slik kobler du til",
+      "telegram": {
+        "steps": [
+          "Åpne @BotFather i Telegram og send /newbot",
+          "Velg navn og brukernavn for boten — BotFather sender deg en API-token",
+          "Lim inn tokenet nedenfor og klikk på Koble til"
+        ]
+      },
+      "whatsapp": {
+        "steps": [
+          "Opprett en app i Meta for Developers og legg til WhatsApp-produktet",
+          "Kopier det midlertidige eller permanente tilgangstokenet i API Setup",
+          "Kopier også telefonnummer-ID-en til test- eller det bekreftede nummeret",
+          "Lim inn begge verdiene nedenfor og klikk på Koble til"
+        ]
+      },
+      "instagram": {
+        "steps": [
+          "Koble studioets Instagram-konto til en Facebook-side — det kreves for Direct API",
+          "Opprett en app i Meta for Developers med produktet Instagram Graph API",
+          "Opprett et tilgangstoken med tillatelsene instagram_basic og instagram_manage_messages",
+          "Kopier Instagram-ID for bedriftskonto og tokenet, og lim dem inn nedenfor",
+          "Uten Metas godkjenning virker tilkoblingen bare for appens testkontoer"
+        ]
+      },
+      "google_calendar": {
+        "steps": [
+          "Klikk på Koble til — et Google-innloggingsvindu åpnes",
+          "Velg kontoen studioets kalender er koblet til",
+          "Gi kalenderadgang — timene vil begynne å vises der automatisk"
+        ]
+      }
+    },
+    "capabilities": {
+      "notify": "klientvarsler på denne kanalen",
+      "booking": "nettbestilling gjennom denne kanalen",
+      "dm_agent": "AI-agent for automatiske svar i Direct",
+      "schedule_sync": "synkronisering av timeplan med Google Calendar"
+    },
+    "disconnect": {
+      "title": "Koble fra {{name}}?",
+      "willStop": "Dette vil slutte å fungere:",
+      "checkbox": "Jeg forstår konsekvensene",
+      "cancel": "Avbryt",
+      "confirm": "Koble fra"
+    },
+    "google": {
+      "connected": "Google Calendar er tilkoblet",
+      "denied": "Tilgang til Google Calendar ble ikke gitt",
+      "error": "Kunne ikke koble til Google Calendar",
+      "primary": "primær",
+      "calendar": "Kalender",
+      "selectCalendar": "Velg en kalender",
+      "loadingCalendars": "Laster inn kalendere…",
+      "syncMode": "Synkroniseringsmodus",
+      "syncModeOptions": {
+        "push": "Bare fra CRM til Google",
+        "two_way": "Toveis"
+      },
+      "syncNow": "Synkroniser nå",
+      "lastSync": "Sist synkronisert: {{date}}",
+      "neverSynced": "Ikke synkronisert ennå",
+      "timezoneWarning": "Studioets tidssone er ikke angitt — hendelser sendes i UTC og kan avvike fra faktiske timetider. Angi tidssonen under Generelt.",
+      "syncResult": "Synkronisert: {{pushed}} sendt, {{pulled}} hentet",
+      "settingsSaved": "Innstillinger for Google Calendar er lagret"
+    },
+    "toast": {
+      "connected": "Integrasjon tilkoblet",
+      "disconnected": "Integrasjon frakoblet"
+    }
+  },
+  "data": {
+    "export": {
+      "title": "Eksporter rapporter og lister",
+      "subtitle": "Last ned filer i tabellformater for regnskap og analyse",
+      "clearFilter": "Fjern periode",
+      "items": {
+        "clients": {
+          "name": "Klientliste"
+        },
+        "schedule": {
+          "name": "Journal- og bestillingshistorikk"
+        },
+        "finances": {
+          "name": "Finansiell rapport"
+        },
+        "subscriptions": {
+          "name": "Klientabonnementer"
+        }
+      },
+      "rows_one": "{{count}} post",
+      "rows_other": "{{count}} poster",
+      "loading": "Laster inn...",
+      "empty": "ingen data for denne perioden"
+    }
+  }
+}

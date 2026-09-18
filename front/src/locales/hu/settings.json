@@ -1,0 +1,480 @@
+{
+  "nav": {
+    "sectionLabel": "Rendszerbeállítások",
+    "general": "Általános",
+    "appearance": "Megjelenés",
+    "notifications": "Értesítések",
+    "billing": "Számlázás",
+    "security": "Biztonság",
+    "integrations": "Integrációk",
+    "data": "Adatok",
+    "logout": "CRM váltása"
+  },
+  "toast": {
+    "saved": "Mentve",
+    "error": "Hiba történt"
+  },
+  "workspace": {
+    "title": "Az Ön CRM-rendszerei",
+    "subtitle": "Válasszon munkaterületet, vagy hozzon létre újat",
+    "current": "Jelenlegi",
+    "membersCount_one": "{{count}} tag",
+    "membersCount_other": "{{count}} tag",
+    "clientsCount_one": "{{count}} ügyfél",
+    "clientsCount_other": "{{count}} ügyfél",
+    "createNew": "Új stúdió létrehozása",
+    "loadError": "A stúdiók betöltése nem sikerült",
+    "selectError": "Nem lehet erre a stúdióra váltani"
+  },
+  "general": {
+    "company": {
+      "title": "Cégadatok",
+      "subtitle": "Nyilvános információk a vállalkozásáról",
+      "name": "Cégnév",
+      "namePh": "pl. Az én stúdióm",
+      "desc": "Leírás",
+      "descPh": "Mivel foglalkozik a stúdiója…",
+      "phone": "Telefon",
+      "email": "E-mail",
+      "site": "Webhely",
+      "sitePh": "https://studio.com",
+      "address": "Cím",
+      "addressPh": "Példa utca 123., város"
+    },
+    "reset": "Visszaállítás",
+    "resetToast": "Beállítások visszaállítva",
+    "locale": {
+      "title": "Nyelv és régió",
+      "subtitle": "Felület lokalizációs beállításai",
+      "timezone": "Időzóna",
+      "timezoneSearch": "Város vagy eltérés",
+      "timezoneNotFound": "Nem található időzóna",
+      "currency": "Pénznem",
+      "currencySearch": "Pénznem vagy kód keresése",
+      "currencyNotFound": "Nem található pénznem",
+      "language": "Felület nyelve",
+      "languageSearch": "Nyelv keresése",
+      "languageNotFound": "Nem található nyelv",
+      "dateFormat": "Dátumformátum",
+      "firstDay": "A hét első napja",
+      "firstDayLabels": [
+        "Hétfő",
+        "Vasárnap"
+      ]
+    },
+    "booking": {
+      "title": "Foglalási modell",
+      "subtitle": "Így foglalnak Önhöz az ügyfelek",
+      "mode": "Foglalási modell",
+      "modeHint": "Események — az ügyfelek egy meghirdetett órára jelentkeznek. Egyéni — az ügyfél szakembert és időpontot választ. Vegyes — a kettő együtt.",
+      "profile": "Ágazati szóhasználat",
+      "profileHint": "Kiválasztja a személyzethez és ajánlatokhoz használt szavakat. Csak a megfogalmazást módosítja — a szerepköröket, árakat vagy foglalási modellt soha.",
+      "strict": "Szigorú időbeosztás",
+      "strictHint": "Megtiltja egy szakember vagy kizárólagos tér dupla foglalását. Az egyéni foglalás bekapcsolása előtt kötelező.",
+      "spaceAxis": "{{spacePlural}} használata az időbeosztásban",
+      "spaceAxisHint": "Kikapcsolva — az ügyfél személyt foglal, a térnek nincs oszlopa a naplóban. Bekapcsolva — az óra egy térhez kapcsolódik.",
+      "spaceAxisDefaultOn": "Alapértelmezés az Ön ágazatában: be",
+      "spaceAxisDefaultOff": "Alapértelmezés az Ön ágazatában: ki",
+      "modes": {
+        "event": "Események",
+        "resource": "Egyéni",
+        "hybrid": "Vegyes"
+      },
+      "profiles": {
+        "studio": "Csoportos foglalkozások és stúdiók",
+        "sport": "Sport és edzőtermek",
+        "beauty": "Szépség és ápolás",
+        "recovery": "Test és regeneráció",
+        "relax": "Spa és kikapcsolódás",
+        "other": "Egyéb"
+      },
+      "preview": {
+        "event": "Esemény",
+        "resource": "Egyéni"
+      },
+      "errors": {
+        "AUDIT_BLOCKED": "Az időbeosztás olyan foglalásokat tartalmaz, amelyek nem egyeztethetők össze a szigorú időbeosztással.",
+        "STRICT_SCHEDULE_REQUIRED": "Előbb kapcsolja be a szigorú időbeosztást.",
+        "RESOURCE_HISTORY_EXISTS": "A szigorú időbeosztás nem kapcsolható ki: a stúdiónak vannak egyéni foglalásai."
+      },
+      "findings": {
+        "overlap": "Átfedő foglalások",
+        "unknown_timezone": "Ismeretlen időzóna",
+        "undefined_branch": "Nincs beállítva telephely",
+        "invalid_duration": "Érvénytelen időtartam",
+        "invalid_resource_row": "Hiányos egyéni foglalás",
+        "missing_branch_assignment": "A szakember nincs telephelyhez rendelve",
+        "missing_working_hours": "A szakembernek nincs munkaideje",
+        "inactive_specialist": "A szakember inaktív",
+        "other": "Felülvizsgálat szükséges"
+      }
+    }
+  },
+  "appearance": {
+    "theme": {
+      "title": "Téma",
+      "subtitle": "Válassza ki a felület vizuális stílusát",
+      "light": "Világos",
+      "dark": "Sötét",
+      "auto": "Rendszer"
+    },
+    "accent": {
+      "title": "Kiemelőszín",
+      "subtitle": "Szabja személyre a felület fő színét",
+      "note": "A választása mentve van, de még nem jelenik meg a felületen — egy jövőbeli frissítésben érkezik.",
+      "noteTitle": "Hamarosan",
+      "colors": {
+        "peach": "Barack",
+        "pistachio": "Pisztácia",
+        "lavender": "Levendula",
+        "pink": "Rózsaszín",
+        "gold": "Arany",
+        "mint": "Menta"
+      }
+    },
+    "language": {
+      "title": "Felület nyelve",
+      "subtitle": "Az Ön személyes nyelve — nem érinti a stúdió beállításait",
+      "search": "Nyelv keresése",
+      "empty": "Nem található nyelv"
+    }
+  },
+  "notifications": {
+    "myPrefs": {
+      "title": "Értesítéseim",
+      "subtitle": "Személyes beállítások — nem érintik a stúdió többi részét",
+      "hint": "A kötelező értesítések nem kapcsolhatók ki — ezek gondoskodnak arról, hogy ne maradjon le az időbeosztás változásairól és a fizetésekről.",
+      "empty": "Az Ön szerepköréhez nincsenek választható értesítések",
+      "channels": {
+        "email": "E-mail",
+        "telegram": "Telegram",
+        "whatsapp": "WhatsApp"
+      }
+    },
+    "telegram": {
+      "title": "Telegram értesítésekhez",
+      "subtitle": "Hová küldjük Önnek személyesen az eseményeket — foglalásokat, bérszámfejtést, jelentéseket",
+      "chatId": "Az Ön Telegram chat_id azonosítója",
+      "chatIdPh": "pl. 123456789",
+      "hintBefore": "A chat_id azonosítóját a botnál találja: ",
+      "hintAfter": " a Telegramban — indítson vele beszélgetést, és elküldi az azonosítóját.",
+      "invalidChatId": "A Telegram chat_id csak szám lehet, szimbólumok nélkül",
+      "saved": "A Telegram kapcsolódott az értesítésekhez",
+      "saveFailed": "A Telegram mentése nem sikerült"
+    },
+    "email": {
+      "title": "E-mail értesítésekhez",
+      "subtitle": "Hová küldjük a rendszer e-mailjeit",
+      "primary": "Elsődleges e-mail",
+      "backup": "Tartalék e-mail",
+      "backupPh": "backup@studio.com",
+      "saved": "Értesítési beállítások mentve"
+    }
+  },
+  "billing": {
+    "plans": {
+      "start": "Start",
+      "pro": "Pro",
+      "business": "Business",
+      "free_trial": "Ingyenes próbaidőszak"
+    },
+    "status": {
+      "active": "Aktív",
+      "trial": "Próbaidőszak",
+      "expired": "Lejárt"
+    },
+    "plan": {
+      "title": "Jelenlegi csomag",
+      "expiresAt": "Aktív eddig: {{date}}",
+      "maxStaff": "Legfeljebb {{count}} munkatárs",
+      "staffUnlimited": "Korlátlan számú munkatárs",
+      "noSubscription": "Nincs aktív előfizetés",
+      "noSubscriptionCta": "Csomag kiválasztása",
+      "trialCta": "Csomag kiválasztása"
+    },
+    "upgrade": "Váltás erre: {{plan}}",
+    "renew": "Megújítás",
+    "autopay": {
+      "title": "Automatikus megújítás",
+      "subtitle": "A mentett kártyáját terheljük",
+      "autoRenew": "Automatikus megújítás",
+      "notifyBefore": "{{count}} nappal a terhelés előtt emlékeztetjük"
+    },
+    "payment": {
+      "title": "Fizetési mód",
+      "cardSummary": "Kártya •••• {{last4}}",
+      "notLinked": "Nincs kapcsolt kártya",
+      "change": "Módosítás"
+    },
+    "history": {
+      "title": "Fizetési előzmények",
+      "subtitle": "Az utolsó 12 fizetés",
+      "exportCsv": "CSV exportálása",
+      "empty": "Még nincs fizetés",
+      "showAll": "Összes megjelenítése",
+      "period": "{{count}} hó",
+      "noDate": "—",
+      "status": {
+        "paid": "Fizetve",
+        "pending": "Függőben",
+        "failed": "Nincs kifizetve",
+        "refunded": "Visszatérítve"
+      }
+    },
+    "toast": {
+      "autopaySaved": "Az automatikus megújítás beállításai mentve",
+      "renewed": "A megújítás elindult",
+      "csvExportError": "A CSV exportálása nem sikerült"
+    }
+  },
+  "security": {
+    "account": {
+      "title": "Fiókbiztonság",
+      "subtitle": "Védje a munkaterületéhez való hozzáférést"
+    },
+    "twoFa": {
+      "title": "Kétlépcsős hitelesítés",
+      "sub": "E-mailes kód minden bejelentkezésnél",
+      "active": "Aktív",
+      "disabled": "Kikapcsolva",
+      "enableTitle": "2FA bekapcsolása",
+      "disableTitle": "2FA kikapcsolása",
+      "enableWarning": "Bekapcsolás után minden bejelentkezéshez szükség lesz a {{email}} címre küldött kódra. Győződjön meg róla, hogy hozzáfér — különben elveszítheti a fiókjához való hozzáférést.",
+      "disableWarning": "Kikapcsolás után e-mailes kód nélkül, csak a jelszóval is bejelentkezhet.",
+      "enabledToast": "A kétlépcsős hitelesítés be van kapcsolva",
+      "disabledToast": "A kétlépcsős hitelesítés ki van kapcsolva"
+    },
+    "password": {
+      "title": "Fiókjelszó",
+      "sub": "A módosítást e-mailes kód erősíti meg",
+      "change": "Jelszó módosítása",
+      "changed": "A jelszó sikeresen módosítva",
+      "current": "Jelenlegi jelszó",
+      "currentPh": "Adja meg jelenlegi jelszavát",
+      "new": "Új jelszó",
+      "newPh": "Legalább 8 karakter",
+      "repeat": "Jelszó megismétlése",
+      "repeatPh": "Adja meg újra az új jelszót",
+      "mismatch": "A jelszavak nem egyeznek",
+      "forgot": "Elfelejtette a jelszavát?",
+      "resetTitle": "Jelszó-helyreállítás",
+      "step1Sub": "Erősítsük meg, hogy Ön az",
+      "step2Sub": "A kódot erre a címre küldtük: {{email}}",
+      "step3Sub": "Válasszon új jelszót",
+      "resetIntro": "Egy 6 számjegyű kódot küldünk a fiókjához tartozó e-mail-címre. Nem kell ismernie a jelenlegi jelszót — a kód igazolja, hogy a postafiók az Öné.",
+      "sendCode": "Kód küldése",
+      "back": "Vissza",
+      "save": "Jelszó mentése",
+      "resetDone": "Jelszó frissítve",
+      "resetLogoutHint": "A többi eszköz kijelentkezik — ezen az eszközön bejelentkezve marad.",
+      "rules": {
+        "len": "8+ karakter",
+        "letter": "Van benne betű",
+        "digit": "Van benne számjegy",
+        "simple": "Ne legyen 111 vagy qwerty"
+      }
+    },
+    "sessions": {
+      "title": "Aktív munkamenetek",
+      "sub": "Ahol a fiókja jelenleg be van jelentkezve",
+      "count": "{{count}} eszköz",
+      "manage": "Kezelés",
+      "hide": "Elrejtés",
+      "current": "Jelenlegi",
+      "terminate": "Megszakítás",
+      "terminateAll": "Az összes többi munkamenet megszakítása",
+      "terminatedToast": "A munkamenet sikeresen megszakítva",
+      "terminatedAllToast": "A többi munkamenet megszakítva",
+      "justNow": "Most aktív",
+      "minutesAgo": "{{count}} perce",
+      "hoursAgo": "{{count}} órája",
+      "daysAgo": "{{count}} napja",
+      "unknownLocation": "Ismeretlen"
+    },
+    "otp": {
+      "sentHint": "Küldtünk egy 6 számjegyű kódot az e-mail-címére. Adja meg alább.",
+      "resend": "Kód újraküldése",
+      "resendIn": "Újraküldés {{count}} mp múlva",
+      "confirm": "Megerősítés",
+      "cancel": "Mégse",
+      "sendCode": "Kód küldése",
+      "continue": "Folytatás"
+    },
+    "danger": {
+      "title": "Adatkezelés (veszélyzóna)",
+      "export": {
+        "title": "Összes adat exportálása",
+        "sub": "Töltse le az ügyféladatbázis és az előzmények archívumát",
+        "prepare": "Archívum előkészítése",
+        "hide": "Elrejtés",
+        "clients": "Ügyféladatbázis (CSV)",
+        "finances": "Pénzügyi tranzakciók",
+        "schedule": "Órák és időbeosztás",
+        "start": "Export indítása",
+        "started": "Az archívum előkészítése folyamatban van, a linket e-mailben küldjük el",
+        "emptySelection": "Válasszon legalább egy exportálandó részt"
+      },
+      "wipe": {
+        "title": "Adatbázis törlése",
+        "sub": "Törli az összes ügyfelet és foglalást. A beállítások megmaradnak.",
+        "action": "Adatok törlése",
+        "toast": "Az adatbázis sikeresen törölve",
+        "consequence1": "Végleg törlődik: ügyfelek, órák, foglalások, műveletek, dokumentumok, ügyfél-előfizetések, hűségelőzmények",
+        "consequence2": "Változatlan marad: stúdió, telephelyek, {{spacePlural}}, szolgáltatások, személyzet, előfizetés és beállítások",
+        "consequence3": "Ez a művelet visszafordíthatatlan — jóváhagyás után nem vonható vissza"
+      },
+      "deleteAccount": {
+        "title": "Vállalati fiók törlése",
+        "sub": "A vállalkozás teljes és visszafordíthatatlan törlése a rendszerből",
+        "action": "Végleges törlés",
+        "consequence1": "A stúdió és minden adata végleg törlődik, beleértve az ügyfeleket, órákat, pénzügyeket és beállításokat",
+        "consequence2": "Személyes fiókja megmarad — csak ez a stúdió törlődik",
+        "consequence3": "Törlés nem érhető el aktív előfizetés esetén, vagy ha a stúdiónak más tulajdonosai is vannak"
+      }
+    }
+  },
+  "integrations": {
+    "title": "Integrációk",
+    "subtitle": "Külső csatornák és ökoszisztémák kapcsolása egy kattintással",
+    "loadError": "Az integrációk állapotának betöltése nem sikerült",
+    "items": {
+      "telegram": {
+        "name": "Telegram bot",
+        "sub": "Ügyfélértesítések és foglalás boton keresztül"
+      },
+      "whatsapp": {
+        "name": "WhatsApp Business",
+        "sub": "Tömeges üzenetek és automatikus ügyfélértesítések"
+      },
+      "instagram": {
+        "name": "Instagram Direct",
+        "sub": "AI-ügynök automatikus válaszokhoz és online foglaláshoz"
+      },
+      "google_calendar": {
+        "name": "Google Calendar",
+        "sub": "Stúdióidőbeosztás szinkronizálása"
+      }
+    },
+    "status": {
+      "connected": "Kapcsolódva",
+      "notActive": "Nincs kapcsolódva"
+    },
+    "actions": {
+      "configure": "Beállítás",
+      "connect": "Kapcsolódás",
+      "disconnect": "Leválasztás"
+    },
+    "fields": {
+      "keyLabel": "Kulcs",
+      "connectedAtLabel": "Kapcsolódva",
+      "telegramToken": "Bot API-token (a @BotFather-től)",
+      "telegramTokenPh": "123456789:ABCDefGhIJKlmNoPQRsTUVwxyZ",
+      "whatsappToken": "Hozzáférési token",
+      "whatsappTokenPh": "EAAxxxxxxxxxxxxx",
+      "whatsappPhoneId": "Telefonszám-azonosító",
+      "whatsappPhoneIdPh": "1029384756",
+      "whatsappWabaId": "WABA-azonosító (opcionális)",
+      "whatsappWabaIdPh": "1029384756",
+      "instagramToken": "Hozzáférési token",
+      "instagramTokenPh": "IGQWR...",
+      "instagramUserId": "Instagram üzleti fiók azonosítója",
+      "instagramUserIdPh": "17841400000000000"
+    },
+    "guide": {
+      "howToTitle": "Kapcsolódás menete",
+      "telegram": {
+        "steps": [
+          "Nyissa meg a @BotFather botot a Telegramban, és küldje el: /newbot",
+          "Válasszon nevet és felhasználónevet a botnak — a BotFather API-tokent küld",
+          "Illessze be a tokent alább, és kattintson a Kapcsolódásra"
+        ]
+      },
+      "whatsapp": {
+        "steps": [
+          "Hozzon létre alkalmazást a Meta for Developersben, és adja hozzá a WhatsApp terméket",
+          "Az API Setupban másolja ki az ideiglenes vagy állandó hozzáférési tokent",
+          "Másolja ki a teszt- vagy hitelesített szám telefonszám-azonosítóját is",
+          "Illessze be mindkét értéket alább, és kattintson a Kapcsolódásra"
+        ]
+      },
+      "instagram": {
+        "steps": [
+          "Kapcsolja a stúdió Instagram-fiókját egy Facebook-oldalhoz — ez szükséges a Direct API-hoz",
+          "Hozzon létre alkalmazást a Meta for Developersben Instagram Graph API termékkel",
+          "Hozzon létre hozzáférési tokent instagram_basic és instagram_manage_messages jogosultsággal",
+          "Másolja ki az Instagram üzleti fiók azonosítóját és a tokent, majd illessze be alább",
+          "Meta-felülvizsgálat nélkül a kapcsolat csak az alkalmazás tesztfiókjain működik"
+        ]
+      },
+      "google_calendar": {
+        "steps": [
+          "Kattintson a Kapcsolódásra — megnyílik a Google bejelentkezési ablaka",
+          "Válassza ki azt a fiókot, amelyhez a stúdió naptára kapcsolódik",
+          "Adjon hozzáférést a naptárhoz — az órák automatikusan megjelennek benne"
+        ]
+      }
+    },
+    "capabilities": {
+      "notify": "ügyfélértesítések ezen a csatornán",
+      "booking": "online foglalás ezen a csatornán",
+      "dm_agent": "AI-ügynök automatikus válaszokhoz a Directben",
+      "schedule_sync": "időbeosztás-szinkronizálás a Google Calendarrel"
+    },
+    "disconnect": {
+      "title": "Leválasztja ezt: {{name}}?",
+      "willStop": "Ez nem fog tovább működni:",
+      "checkbox": "Értem a következményeket",
+      "cancel": "Mégse",
+      "confirm": "Leválasztás"
+    },
+    "google": {
+      "connected": "A Google Calendar kapcsolódott",
+      "denied": "A Google Calendar hozzáférése nem lett megadva",
+      "error": "Nem sikerült kapcsolódni a Google Calendarhoz",
+      "primary": "elsődleges",
+      "calendar": "Naptár",
+      "selectCalendar": "Válasszon naptárt",
+      "loadingCalendars": "Naptárak betöltése…",
+      "syncMode": "Szinkronizálási mód",
+      "syncModeOptions": {
+        "push": "Csak CRM-ből Google-ba",
+        "two_way": "Kétirányú"
+      },
+      "syncNow": "Szinkronizálás most",
+      "lastSync": "Utoljára szinkronizálva: {{date}}",
+      "neverSynced": "Még nincs szinkronizálva",
+      "timezoneWarning": "A stúdió időzónája nincs beállítva — az események UTC-ben kerülnek elküldésre, és eltérhetnek a tényleges óraidőktől. Az időzónát az Általános résznél állíthatja be.",
+      "syncResult": "Szinkronizálva: {{pushed}} elküldve, {{pulled}} fogadva",
+      "settingsSaved": "A Google Calendar beállításai mentve"
+    },
+    "toast": {
+      "connected": "Az integráció kapcsolódott",
+      "disconnected": "Az integráció leválasztva"
+    }
+  },
+  "data": {
+    "export": {
+      "title": "Jelentések és listák exportálása",
+      "subtitle": "Táblázatos formátumú fájlok letöltése könyveléshez és elemzéshez",
+      "clearFilter": "Időszak törlése",
+      "items": {
+        "clients": {
+          "name": "Ügyféllista"
+        },
+        "schedule": {
+          "name": "Napló- és foglalási előzmények"
+        },
+        "finances": {
+          "name": "Pénzügyi jelentés"
+        },
+        "subscriptions": {
+          "name": "Ügyfél-előfizetések"
+        }
+      },
+      "rows_one": "{{count}} rekord",
+      "rows_other": "{{count}} rekord",
+      "loading": "Betöltés...",
+      "empty": "nincs adat ehhez az időszakhoz"
+    }
+  }
+}

@@ -54,6 +54,8 @@
       "timezoneSearch": "Город или смещение",
       "timezoneNotFound": "Пояс не найден",
       "currency": "Валюта",
+      "currencySearch": "Валюта или код",
+      "currencyNotFound": "Валюта не найдена",
       "language": "Язык интерфейса",
       "languageSearch": "Поиск языка",
       "languageNotFound": "Язык не найден",

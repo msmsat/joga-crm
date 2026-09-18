@@ -50,6 +50,8 @@
       "timezoneSearch": "Stadt oder Zeitversatz",
       "timezoneNotFound": "Keine Zeitzone gefunden",
       "currency": "Währung",
+      "currencySearch": "Währung oder Code",
+      "currencyNotFound": "Keine Währung gefunden",
       "language": "Sprache der Oberfläche",
       "languageSearch": "Sprache suchen",
       "languageNotFound": "Keine Sprache gefunden",

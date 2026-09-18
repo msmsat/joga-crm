@@ -17,14 +17,31 @@ def _default_booking_capabilities() -> BookingCapabilities:
         space_is_axis=True,
     )
 
-# Три списка ниже 1-в-1 совпадают с components/UI.tsx (CURRENCIES/LANGUAGES/
-# TIMEZONES) — тем же онбординг заполняет Studio при регистрации, и Настройки
-# должны принимать любое значение, уже выбранное там.
+# Три списка ниже 1-в-1 совпадают с фронтом (front/src/utils/currency.ts,
+# utils/lang.ts и components/UI.tsx TIMEZONES) — тем же онбординг заполняет
+# Studio при регистрации, и Настройки должны принимать любое значение, уже
+# выбранное там.
+#
+# Валют больше сотни, потому что список собран от ЯЗЫКОВ интерфейса, а не от
+# стран, где мы продаём: английский государственный от Ирландии до Вануату,
+# испанский — от Испании до Аргентины, французский — по всей Западной Африке.
+# Отсюда и XOF с KES рядом с CZK. BGN оставлен ради студий, заведённых до
+# перехода Болгарии на евро 01.01.2026.
 Currency = Literal[
-    "RUB", "USD", "EUR", "KZT", "UAH", "GBP", "AED", "TRY",
-    "CZK", "PLN", "HUF", "RON", "BGN", "SEK", "NOK", "DKK", "CHF", "ISK", "RSD",
+    "AED", "ALL", "AMD", "AOA", "ARS", "AUD", "AZN", "BAM", "BBD", "BGN",
+    "BIF", "BMD", "BOB", "BRL", "BSD", "BWP", "BYN", "BZD", "CAD", "CDF",
+    "CHF", "CLP", "COP", "CRC", "CUP", "CVE", "CZK", "DJF", "DKK", "DOP",
+    "EUR", "FJD", "FKP", "GBP", "GEL", "GHS", "GIP", "GMD", "GNF", "GTQ",
+    "GYD", "HKD", "HNL", "HTG", "HUF", "ILS", "INR", "ISK", "JMD", "KES",
+    "KGS", "KMF", "KYD", "KZT", "LKR", "LRD", "LSL", "MDL", "MGA", "MKD",
+    "MOP", "MUR", "MWK", "MXN", "MYR", "MZN", "NAD", "NGN", "NIO", "NOK",
+    "NZD", "PAB", "PEN", "PGK", "PHP", "PKR", "PLN", "PYG", "RON", "RSD",
+    "RUB", "RWF", "SBD", "SCR", "SDG", "SEK", "SGD", "SLE", "SSP", "STN",
+    "SZL", "TJS", "TMT", "TOP", "TRY", "TTD", "TZS", "UAH", "UGX", "USD",
+    "UYU", "UZS", "VES", "VUV", "WST", "XAF", "XCD", "XOF", "XPF", "ZAR",
+    "ZMW", "ZWG",
 ]
-# Коды ISO 639-1, 1-в-1 с LANGUAGES во front/src/components/UI.tsx: у каждого
+# Коды ISO 639-1, 1-в-1 с LANGUAGES во front/src/utils/lang.ts: у каждого
 # есть папка перевода во front/src/locales. "kz" и "ar" в списке нет — их не
 # переводили и выбрать их больше негде, но они остаются здесь принимаемыми,
 # потому что студия могла сохранить их, пока список был декоративным: без них

@@ -1,0 +1,483 @@
+{
+  "nav": {
+    "sectionLabel": "Setări de sistem",
+    "general": "General",
+    "appearance": "Aspect",
+    "notifications": "Notificări",
+    "billing": "Facturare",
+    "security": "Securitate",
+    "integrations": "Integrări",
+    "data": "Date",
+    "logout": "Schimbă CRM-ul"
+  },
+  "toast": {
+    "saved": "Salvat",
+    "error": "Ceva nu a mers bine"
+  },
+  "workspace": {
+    "title": "Sistemele tale CRM",
+    "subtitle": "Alege un spațiu de lucru sau creează unul nou",
+    "current": "Curent",
+    "membersCount_one": "{{count}} membru",
+    "membersCount_few": "{{count}} membri",
+    "membersCount_other": "{{count}} de membri",
+    "clientsCount_one": "{{count}} client",
+    "clientsCount_few": "{{count}} clienți",
+    "clientsCount_other": "{{count}} de clienți",
+    "createNew": "Creează un studio nou",
+    "loadError": "Nu s-au putut încărca studiourile tale",
+    "selectError": "Nu s-a putut trece la acest studio"
+  },
+  "general": {
+    "company": {
+      "title": "Detalii companie",
+      "subtitle": "Informații publice despre afacerea ta",
+      "name": "Numele companiei",
+      "namePh": "ex. Studioul meu",
+      "desc": "Descriere",
+      "descPh": "Cu ce se ocupă studioul tău…",
+      "phone": "Telefon",
+      "email": "E-mail",
+      "site": "Site web",
+      "sitePh": "https://studio.com",
+      "address": "Adresă",
+      "addressPh": "Str. Exemplu 123, oraș"
+    },
+    "reset": "Resetează",
+    "resetToast": "Setări resetate",
+    "locale": {
+      "title": "Limbă și regiune",
+      "subtitle": "Setări de localizare a interfeței",
+      "timezone": "Fus orar",
+      "timezoneSearch": "Oraș sau diferență",
+      "timezoneNotFound": "Nu a fost găsit niciun fus orar",
+      "currency": "Monedă",
+      "currencySearch": "Caută monedă sau cod",
+      "currencyNotFound": "Nu a fost găsită nicio monedă",
+      "language": "Limba interfeței",
+      "languageSearch": "Caută limbă",
+      "languageNotFound": "Nu a fost găsită nicio limbă",
+      "dateFormat": "Format dată",
+      "firstDay": "Prima zi a săptămânii",
+      "firstDayLabels": [
+        "Luni",
+        "Duminică"
+      ]
+    },
+    "booking": {
+      "title": "Model de rezervare",
+      "subtitle": "Cum rezervă clienții la tine",
+      "mode": "Model de rezervare",
+      "modeHint": "Evenimente — clienții se înscriu la o clasă programată. Individual — clientul alege un specialist și o oră. Mixt — ambele în același timp.",
+      "profile": "Terminologie de industrie",
+      "profileHint": "Alege cuvintele pentru personal și oferte. Modifică doar formularea — niciodată rolurile, prețurile sau modelul de rezervare.",
+      "strict": "Program strict",
+      "strictHint": "Interzice dubla rezervare a unui specialist sau a unui spațiu exclusiv. Este necesar înainte de activarea rezervărilor individuale.",
+      "spaceAxis": "Folosește {{spacePlural}} în program",
+      "spaceAxisHint": "Dezactivat — clientul rezervă o persoană, iar spațiul nu are coloană în jurnal. Activat — o clasă este legată de un spațiu.",
+      "spaceAxisDefaultOn": "Implicit pentru industria ta: activat",
+      "spaceAxisDefaultOff": "Implicit pentru industria ta: dezactivat",
+      "modes": {
+        "event": "Evenimente",
+        "resource": "Individual",
+        "hybrid": "Mixt"
+      },
+      "profiles": {
+        "studio": "Activități de grup și studiouri",
+        "sport": "Sport și săli de fitness",
+        "beauty": "Frumusețe și îngrijire",
+        "recovery": "Corp și recuperare",
+        "relax": "Spa și relaxare",
+        "other": "Altele"
+      },
+      "preview": {
+        "event": "Eveniment",
+        "resource": "Individual"
+      },
+      "errors": {
+        "AUDIT_BLOCKED": "Programul conține rezervări incompatibile cu un program strict.",
+        "STRICT_SCHEDULE_REQUIRED": "Activează mai întâi programul strict.",
+        "RESOURCE_HISTORY_EXISTS": "Programul strict nu poate fi dezactivat: studioul are rezervări individuale."
+      },
+      "findings": {
+        "overlap": "Rezervări suprapuse",
+        "unknown_timezone": "Fus orar necunoscut",
+        "undefined_branch": "Sucursala nu este setată",
+        "invalid_duration": "Durată nevalidă",
+        "invalid_resource_row": "Rezervare individuală incompletă",
+        "missing_branch_assignment": "Specialistul nu este alocat sucursalei",
+        "missing_working_hours": "Specialistul nu are program de lucru",
+        "inactive_specialist": "Specialistul este inactiv",
+        "other": "Necesită verificare"
+      }
+    }
+  },
+  "appearance": {
+    "theme": {
+      "title": "Temă",
+      "subtitle": "Alege stilul vizual al interfeței",
+      "light": "Deschisă",
+      "dark": "Închisă",
+      "auto": "Sistem"
+    },
+    "accent": {
+      "title": "Culoare de accent",
+      "subtitle": "Personalizează culoarea principală a interfeței",
+      "note": "Alegerea ta este salvată, dar încă nu se aplică în interfață — va fi disponibilă într-o actualizare viitoare.",
+      "noteTitle": "În curând",
+      "colors": {
+        "peach": "Piersică",
+        "pistachio": "Fistic",
+        "lavender": "Lavandă",
+        "pink": "Roz",
+        "gold": "Auriu",
+        "mint": "Mentă"
+      }
+    },
+    "language": {
+      "title": "Limba interfeței",
+      "subtitle": "Limba ta personală — nu afectează setările studioului",
+      "search": "Caută limbă",
+      "empty": "Nu a fost găsită nicio limbă"
+    }
+  },
+  "notifications": {
+    "myPrefs": {
+      "title": "Notificările mele",
+      "subtitle": "Preferințe personale — nu afectează restul studioului",
+      "hint": "Notificările obligatorii nu pot fi oprite — astfel nu vei pierde niciodată modificări ale programului și plăți.",
+      "empty": "Nu există notificări opționale pentru rolul tău",
+      "channels": {
+        "email": "E-mail",
+        "telegram": "Telegram",
+        "whatsapp": "WhatsApp"
+      }
+    },
+    "telegram": {
+      "title": "Telegram pentru notificări",
+      "subtitle": "Unde să primești personal evenimente — rezervări, salarizare, rapoarte",
+      "chatId": "Chat_id-ul tău Telegram",
+      "chatIdPh": "ex. 123456789",
+      "hintBefore": "Îți poți găsi chat_id-ul la botul ",
+      "hintAfter": " pe Telegram — începe o conversație cu el și îți va trimite ID-ul.",
+      "invalidChatId": "Chat_id-ul Telegram trebuie să fie un număr, fără simboluri",
+      "saved": "Telegram este conectat pentru notificări",
+      "saveFailed": "Nu s-a putut salva Telegram"
+    },
+    "email": {
+      "title": "E-mail pentru notificări",
+      "subtitle": "Unde se trimit e-mailurile de sistem",
+      "primary": "E-mail principal",
+      "backup": "E-mail de rezervă",
+      "backupPh": "backup@studio.com",
+      "saved": "Setările de notificări au fost salvate"
+    }
+  },
+  "billing": {
+    "plans": {
+      "start": "Start",
+      "pro": "Pro",
+      "business": "Business",
+      "free_trial": "Perioadă de probă gratuită"
+    },
+    "status": {
+      "active": "Activ",
+      "trial": "Perioadă de probă",
+      "expired": "Expirat"
+    },
+    "plan": {
+      "title": "Plan curent",
+      "expiresAt": "Activ până la {{date}}",
+      "maxStaff": "Până la {{count}} angajați",
+      "staffUnlimited": "Angajați nelimitați",
+      "noSubscription": "Nu există abonament activ",
+      "noSubscriptionCta": "Alege un plan",
+      "trialCta": "Alege un plan"
+    },
+    "upgrade": "Treci la {{plan}}",
+    "renew": "Reînnoiește",
+    "autopay": {
+      "title": "Reînnoire automată",
+      "subtitle": "Se taxează de pe cardul salvat",
+      "autoRenew": "Reînnoire automată",
+      "notifyBefore": "Îți vom aminti cu {{count}} zile înainte de taxare"
+    },
+    "payment": {
+      "title": "Metodă de plată",
+      "cardSummary": "Card •••• {{last4}}",
+      "notLinked": "Nu este conectat niciun card",
+      "change": "Schimbă"
+    },
+    "history": {
+      "title": "Istoric plăți",
+      "subtitle": "Ultimele 12 plăți",
+      "exportCsv": "Exportă CSV",
+      "empty": "Nu există încă plăți",
+      "showAll": "Arată tot",
+      "period": "{{count}} luni",
+      "noDate": "—",
+      "status": {
+        "paid": "Plătit",
+        "pending": "În așteptare",
+        "failed": "Neplătit",
+        "refunded": "Rambursat"
+      }
+    },
+    "toast": {
+      "autopaySaved": "Setările de reînnoire automată au fost salvate",
+      "renewed": "Reînnoirea a început",
+      "csvExportError": "Nu s-a putut exporta CSV-ul"
+    }
+  },
+  "security": {
+    "account": {
+      "title": "Securitatea contului",
+      "subtitle": "Protejează accesul la spațiul tău de lucru"
+    },
+    "twoFa": {
+      "title": "Autentificare cu doi factori",
+      "sub": "Cod e-mail la fiecare autentificare",
+      "active": "Activă",
+      "disabled": "Dezactivată",
+      "enableTitle": "Activează 2FA",
+      "disableTitle": "Dezactivează 2FA",
+      "enableWarning": "După activare, fiecare autentificare va necesita un cod trimis la {{email}}. Asigură-te că ai acces la adresa respectivă — altfel riști să pierzi accesul la cont.",
+      "disableWarning": "După dezactivare, doar parola va fi suficientă pentru autentificare, fără cod e-mail.",
+      "enabledToast": "Autentificarea cu doi factori este activă",
+      "disabledToast": "Autentificarea cu doi factori este dezactivată"
+    },
+    "password": {
+      "title": "Parola contului",
+      "sub": "Schimbarea se confirmă cu un cod e-mail",
+      "change": "Schimbă parola",
+      "changed": "Parola a fost schimbată cu succes",
+      "current": "Parola curentă",
+      "currentPh": "Introdu parola curentă",
+      "new": "Parolă nouă",
+      "newPh": "Cel puțin 8 caractere",
+      "repeat": "Repetă parola",
+      "repeatPh": "Introdu din nou parola nouă",
+      "mismatch": "Parolele nu coincid",
+      "forgot": "Ai uitat parola?",
+      "resetTitle": "Recuperare parolă",
+      "step1Sub": "Să confirmăm că ești tu",
+      "step2Sub": "Cod trimis la {{email}}",
+      "step3Sub": "Alege o parolă nouă",
+      "resetIntro": "Vom trimite un cod de 6 cifre la adresa de e-mail a contului tău. Nu trebuie să știi parola curentă — codul dovedește că inboxul îți aparține.",
+      "sendCode": "Trimite codul",
+      "back": "Înapoi",
+      "save": "Salvează parola",
+      "resetDone": "Parola a fost actualizată",
+      "resetLogoutHint": "Celelalte dispozitive vor fi deconectate — pe acesta vei rămâne conectat.",
+      "rules": {
+        "len": "8+ caractere",
+        "letter": "Are o literă",
+        "digit": "Are o cifră",
+        "simple": "Fără 111 sau qwerty"
+      }
+    },
+    "sessions": {
+      "title": "Sesiuni active",
+      "sub": "Unde contul tău este conectat în prezent",
+      "count": "{{count}} dispozitive",
+      "manage": "Gestionează",
+      "hide": "Ascunde",
+      "current": "Curentă",
+      "terminate": "Încheie",
+      "terminateAll": "Încheie toate celelalte sesiuni",
+      "terminatedToast": "Sesiunea a fost încheiată cu succes",
+      "terminatedAllToast": "Celelalte sesiuni au fost încheiate",
+      "justNow": "Activă acum",
+      "minutesAgo": "acum {{count}} min.",
+      "hoursAgo": "acum {{count}} h",
+      "daysAgo": "acum {{count}} zile",
+      "unknownLocation": "Necunoscut"
+    },
+    "otp": {
+      "sentHint": "Am trimis un cod de 6 cifre la e-mailul tău. Introdu-l mai jos.",
+      "resend": "Retrimite codul",
+      "resendIn": "Retrimite peste {{count}} s",
+      "confirm": "Confirmă",
+      "cancel": "Anulează",
+      "sendCode": "Trimite codul",
+      "continue": "Continuă"
+    },
+    "danger": {
+      "title": "Gestionarea datelor (zonă periculoasă)",
+      "export": {
+        "title": "Exportă toate datele",
+        "sub": "Descarcă o arhivă a bazei de clienți și a istoricului",
+        "prepare": "Pregătește arhiva",
+        "hide": "Ascunde",
+        "clients": "Bază de clienți (CSV)",
+        "finances": "Tranzacții financiare",
+        "schedule": "Lecții și program",
+        "start": "Începe exportul",
+        "started": "Arhiva este în pregătire, un link va fi trimis la e-mailul tău",
+        "emptySelection": "Alege cel puțin o secțiune de exportat"
+      },
+      "wipe": {
+        "title": "Golește baza de date",
+        "sub": "Șterge toți clienții și rezervările. Setările vor fi păstrate.",
+        "action": "Golește datele",
+        "toast": "Baza de date a fost golită cu succes",
+        "consequence1": "Șterse definitiv: clienți, lecții, rezervări, operațiuni, documente, abonamente clienți, istoric de loialitate",
+        "consequence2": "Neschimbate: studio, sucursale, {{spacePlural}}, servicii, personal, abonament și setări",
+        "consequence3": "Această acțiune este ireversibilă — nu poate fi anulată după confirmare"
+      },
+      "deleteAccount": {
+        "title": "Șterge contul companiei",
+        "sub": "Distrugerea completă și ireversibilă a afacerii în sistem",
+        "action": "Șterge definitiv",
+        "consequence1": "Studioul și toate datele sale vor fi șterse definitiv, inclusiv clienții, lecțiile, finanțele și setările",
+        "consequence2": "Contul tău personal rămâne — se șterge doar acest studio",
+        "consequence3": "Ștergerea nu este disponibilă cu un abonament activ sau dacă studioul are alți proprietari"
+      }
+    }
+  },
+  "integrations": {
+    "title": "Integrări",
+    "subtitle": "Conectează canale și ecosisteme externe cu un singur clic",
+    "loadError": "Nu s-a putut încărca starea integrărilor",
+    "items": {
+      "telegram": {
+        "name": "Bot Telegram",
+        "sub": "Notificări clienți și rezervări prin bot"
+      },
+      "whatsapp": {
+        "name": "WhatsApp Business",
+        "sub": "Mesaje în masă și notificări automate pentru clienți"
+      },
+      "instagram": {
+        "name": "Instagram Direct",
+        "sub": "Agent AI pentru răspunsuri automate și rezervări online"
+      },
+      "google_calendar": {
+        "name": "Google Calendar",
+        "sub": "Sincronizarea programului studioului"
+      }
+    },
+    "status": {
+      "connected": "Conectat",
+      "notActive": "Neconectat"
+    },
+    "actions": {
+      "configure": "Configurează",
+      "connect": "Conectează",
+      "disconnect": "Deconectează"
+    },
+    "fields": {
+      "keyLabel": "Cheie",
+      "connectedAtLabel": "Conectat",
+      "telegramToken": "Token API bot (de la @BotFather)",
+      "telegramTokenPh": "123456789:ABCDefGhIJKlmNoPQRsTUVwxyZ",
+      "whatsappToken": "Token de acces",
+      "whatsappTokenPh": "EAAxxxxxxxxxxxxx",
+      "whatsappPhoneId": "ID număr de telefon",
+      "whatsappPhoneIdPh": "1029384756",
+      "whatsappWabaId": "ID WABA (opțional)",
+      "whatsappWabaIdPh": "1029384756",
+      "instagramToken": "Token de acces",
+      "instagramTokenPh": "IGQWR...",
+      "instagramUserId": "ID cont business Instagram",
+      "instagramUserIdPh": "17841400000000000"
+    },
+    "guide": {
+      "howToTitle": "Cum conectezi",
+      "telegram": {
+        "steps": [
+          "Deschide @BotFather în Telegram și trimite /newbot",
+          "Alege un nume și un nume de utilizator pentru bot — BotFather îți va trimite un token API",
+          "Lipește tokenul mai jos și apasă Conectează"
+        ]
+      },
+      "whatsapp": {
+        "steps": [
+          "Creează o aplicație în Meta for Developers și adaugă produsul WhatsApp",
+          "În API Setup, copiază tokenul de acces temporar sau permanent",
+          "Copiază și ID-ul numărului de telefon al numărului de test sau verificat",
+          "Lipește ambele valori mai jos și apasă Conectează"
+        ]
+      },
+      "instagram": {
+        "steps": [
+          "Conectează contul Instagram al studioului la o Pagină Facebook — necesar pentru Direct API",
+          "Creează o aplicație în Meta for Developers cu produsul Instagram Graph API",
+          "Generează un token de acces cu permisiunile instagram_basic și instagram_manage_messages",
+          "Copiază ID-ul contului business Instagram și tokenul, apoi lipește-le mai jos",
+          "Fără aprobarea Meta, conexiunea funcționează doar pentru conturile de test ale aplicației"
+        ]
+      },
+      "google_calendar": {
+        "steps": [
+          "Apasă Conectează — se va deschide o fereastră de autentificare Google",
+          "Alege contul la care este conectat calendarul studioului",
+          "Acordă acces la calendar — lecțiile vor începe să apară automat în el"
+        ]
+      }
+    },
+    "capabilities": {
+      "notify": "notificări clienți pe acest canal",
+      "booking": "rezervări online prin acest canal",
+      "dm_agent": "agent AI pentru răspunsuri automate în Direct",
+      "schedule_sync": "sincronizarea programului cu Google Calendar"
+    },
+    "disconnect": {
+      "title": "Deconectezi {{name}}?",
+      "willStop": "Acest lucru nu va mai funcționa:",
+      "checkbox": "Înțeleg consecințele",
+      "cancel": "Anulează",
+      "confirm": "Deconectează"
+    },
+    "google": {
+      "connected": "Google Calendar este conectat",
+      "denied": "Accesul la Google Calendar nu a fost acordat",
+      "error": "Nu s-a putut conecta Google Calendar",
+      "primary": "principal",
+      "calendar": "Calendar",
+      "selectCalendar": "Selectează un calendar",
+      "loadingCalendars": "Se încarcă calendarele…",
+      "syncMode": "Mod de sincronizare",
+      "syncModeOptions": {
+        "push": "Doar din CRM în Google",
+        "two_way": "Bidirecțional"
+      },
+      "syncNow": "Sincronizează acum",
+      "lastSync": "Ultima sincronizare: {{date}}",
+      "neverSynced": "Nu a fost sincronizat încă",
+      "timezoneWarning": "Fusul orar al studioului nu este setat — evenimentele sunt trimise în UTC și pot diferi de orele reale ale claselor. Setează fusul orar la General.",
+      "syncResult": "Sincronizat: {{pushed}} trimise, {{pulled}} primite",
+      "settingsSaved": "Setările Google Calendar au fost salvate"
+    },
+    "toast": {
+      "connected": "Integrarea este conectată",
+      "disconnected": "Integrarea este deconectată"
+    }
+  },
+  "data": {
+    "export": {
+      "title": "Exportă rapoarte și liste",
+      "subtitle": "Descarcă fișiere în formate tabelare pentru contabilitate și analiză",
+      "clearFilter": "Șterge perioada",
+      "items": {
+        "clients": {
+          "name": "Listă de clienți"
+        },
+        "schedule": {
+          "name": "Istoric jurnal și rezervări"
+        },
+        "finances": {
+          "name": "Raport financiar"
+        },
+        "subscriptions": {
+          "name": "Abonamente clienți"
+        }
+      },
+      "rows_one": "{{count}} înregistrare",
+      "rows_few": "{{count}} înregistrări",
+      "rows_other": "{{count}} de înregistrări",
+      "loading": "Se încarcă...",
+      "empty": "nu există date pentru această perioadă"
+    }
+  }
+}

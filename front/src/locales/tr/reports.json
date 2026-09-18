@@ -1,0 +1,611 @@
+{
+  "tabs": {
+    "overview": "Genel bakış",
+    "sales": "Satışlar",
+    "clients": "Müşteriler",
+    "team": "Ekip",
+    "schedule": "Takvim"
+  },
+  "toolbar": {
+    "period": {
+      "day": "Gün",
+      "week": "Hafta",
+      "month": "Ay",
+      "year": "Yıl",
+      "custom": "Özel"
+    },
+    "vsPrevious": "önceki döneme göre: {{from}}–{{to}}",
+    "allBranches": "Tüm şubeler",
+    "allHalls": "Tüm {{spacePlural}}",
+    "allTrainers": "Tüm eğitmenler",
+    "allServices": "Tüm hizmetler",
+    "export": "Dışa aktar"
+  },
+  "insights": {
+    "title": "Dikkat gerektiriyor",
+    "action": "Aç",
+    "empty": "Şimdilik her şey yolunda — gösterilecek öneri yok",
+    "revenue_up_clients_down": "Gelir artıyor ancak aktif müşteri sayısı düşüyor — müşteri kaybını kontrol edin",
+    "clients_at_risk": "{{count}} müşteri 3 haftadan uzun süredir katılmadı — kayıp riski",
+    "lesson_overfull": "„{{name}}” {{weekday, weekday}} günü {{hour}}:00’da üç haftadır art arda %{{pct}} dolu — başka bir seans eklemeyi düşünün",
+    "trial_low_conversion": "{{buyers}} deneme alıcısının yalnızca %{{pct}}’si sonrasında abonelik aldı — kampanya düzenlemeyi düşünün",
+    "fastest_growing_product": "„{{name}}” en hızlı büyüyor: önceki döneme göre +%{{pct}}",
+    "renewals_low": "Süresi dolmuş aboneliği olan müşterilerin yalnızca %{{pct}}’si yeniliyor — hatırlatıcı göndermeyi düşünün",
+    "new_no_second_visit": "{{count}} yeni müşteri bir kez geldi ve tekrar rezervasyon yapmadı — hatırlatıcı göndermeyi düşünün",
+    "subs_expiring_week": "{{count}} müşterinin aboneliği bu hafta sona eriyor — yenileme teklif etmeyi düşünün",
+    "vip_inactive": "VIP müşteri „{{name}}” {{days}} gündür ziyaret etmedi — kişisel bir mesaj göndermeyi düşünün",
+    "high_return_free_evenings": "„{{name}}” yüksek geri dönüş oranına sahip (%{{return_pct}}), ancak akşamlar boş — bir seans ekleyin",
+    "trainer_overloaded": "„{{name}}” %{{load_pct}} oranında yüklü — takvimi dengelemeyi düşünün",
+    "low_rating": "„{{name}}”in puanı {{rating}} — daha yakından incelemeye değer",
+    "slot_chronic_low": "„{{name}}” {{weekday, isodowWeekday}} günü {{hour}}:00’da {{weeks}} haftadır %{{pct}} dolu — taşıyın veya iptal edin",
+    "hall_idle_evenings": "„{{name}}” akşam saatlerinin %{{pct}}’sinde boş — bir seans planlamayı düşünün",
+    "slot_overfull": "{{weekday, isodowWeekday}} günü {{hour}}:00 saati üç haftadır %{{pct}} dolu — başka bir seans eklemeyi düşünün",
+    "loss_hotspot": "Bu dönemde {{label}} saatinde {{cancels}} seans iptal edildi — iptaller en çok bu saat çevresinde toplanıyor"
+  },
+  "table": {
+    "loading": "Yükleniyor…",
+    "noProduct": "Ürün yok"
+  },
+  "empty": {
+    "noData": {
+      "title": "Burada henüz bir şey yok",
+      "text": "Seçilen dönemde etkinlik kaydedilmedi. Aralığı genişletin veya Günlük’te bir müşteri ayarlayarak başlayın.",
+      "widen": "Yılı göster"
+    },
+    "noRevenue": "Bu dönemde ödeme yok",
+    "noSales": "Bu bölümde satış yok",
+    "noProducts": "Henüz paket veya hizmet satılmadı",
+    "noLessons": "Bu dönemde seans yok",
+    "noTrainerLessons": "Bu eğitmen henüz seans düzenlemedi",
+    "noRows": "Bu bölümde kayıt yok",
+    "noLosses": "Bu dönemde iptal veya gelmeme yok"
+  },
+  "overview": {
+    "kpi": {
+      "revenue": "Gelir",
+      "profit": "Kâr",
+      "attendance": "Katılım",
+      "activeClients": "Aktif müşteriler",
+      "fillRate": "Doluluk oranı"
+    },
+    "chart": {
+      "metric": {
+        "revenue": "Gelir",
+        "profit": "Kâr",
+        "attendance": "Katılım",
+        "new_clients": "Yeni müşteriler",
+        "fill_rate": "Doluluk oranı"
+      }
+    },
+    "revenueStructure": {
+      "title": "Gelir yapısı"
+    },
+    "category": {
+      "subscriptions": "Abonelikler",
+      "services": "Hizmetler",
+      "certificates": "Hediye kartları",
+      "rent": "Kira",
+      "salary": "Maaşlar",
+      "refunds": "İadeler"
+    },
+    "clientDynamics": {
+      "title": "Müşteri dinamikleri",
+      "new": "Yeni",
+      "returned": "Geri dönen",
+      "lost": "Kaybedilen"
+    },
+    "drilldown": {
+      "title": "İşlem",
+      "category": "Kategori",
+      "amount": "Tutar",
+      "lesson": "Seans",
+      "time": "Saat",
+      "occupancy": "Doluluk",
+      "date": "Tarih",
+      "method": "Yöntem",
+      "trainer": "Eğitmen",
+      "rowsCount": "kayıt",
+      "search": "Tabloda ara",
+      "shownOf": "{{total}} kaydın {{shown}} tanesi gösteriliyor",
+      "noMatches": "„{{query}}” için sonuç bulunamadı",
+      "reset": "Sıfırla",
+      "export": "CSV dışa aktar",
+      "subtitle": {
+        "money": "Bu bölümdeki işlemler",
+        "lessons": "Bu bölümdeki seanslar"
+      },
+      "hint": {
+        "operations": "İşlemi Finans’ta açmak için satıra tıklayın",
+        "lessons": "O günü Günlük’te açmak için satıra tıklayın"
+      },
+      "stat": {
+        "net": "Net",
+        "income": "Gelir",
+        "expense": "Gider",
+        "operations": "İşlemler",
+        "topCategory": "En büyük kategori",
+        "lessons": "Seanslar",
+        "booked": "Rezerve edilen yerler",
+        "avgFill": "Ortalama doluluk",
+        "trainers": "Eğitmenler",
+        "cancelled": "İptal edildi"
+      }
+    }
+  },
+  "sales": {
+    "kpi": {
+      "revenue": "Gelir",
+      "salesCount": "Satışlar",
+      "avgCheck": "Ortalama sepet",
+      "repeatShare": "Tekrar satın alma oranı",
+      "renewals": "Yenileme oranı"
+    },
+    "chart": {
+      "title": "Satışlar"
+    },
+    "incomeOperations": "Gelir işlemleri",
+    "breakdown": {
+      "byCategory": "Ne satın alıyorlar",
+      "byMethod": "Nasıl ödüyorlar",
+      "buyerType": "Kim satın alıyor",
+      "new": "Yeni",
+      "returning": "Geri dönen",
+      "noClient": "Müşteri yok"
+    },
+    "method": {
+      "card": "Kart",
+      "cash": "Nakit",
+      "qr": "QR kod",
+      "transfer": "Havale"
+    },
+    "products": {
+      "title": "Ürünler",
+      "name": "Ürün",
+      "sold": "Satılan",
+      "revenue": "Gelir",
+      "avgCheck": "Ortalama sepet",
+      "repeatShare": "Tekrar satın alma oranı",
+      "trend": "Trend",
+      "trendHint": "Aynı uzunluktaki önceki dönemle karşılaştırıldığında"
+    }
+  },
+  "clients": {
+    "kpi": {
+      "new": "Yeni",
+      "returned": "Geri dönen",
+      "lost": "Kaybedilen",
+      "retention": "Müşteri tutma",
+      "avgValue": "Müşteri değeri"
+    },
+    "chart": {
+      "title": "Yeni ve geri dönen",
+      "new": "Yeni",
+      "returned": "Geri dönen"
+    },
+    "riskTitle": "Risk segmentleri",
+    "loyalTitle": "Sadık",
+    "list": "Liste",
+    "campaign": "Kampanya başlat",
+    "exportList": "Listeyi dışa aktar",
+    "emptySegment": "„{{name}}” segmentinde şu anda müşteri yok",
+    "segments": {
+      "new": {
+        "name": "Yeni müşteriler",
+        "desc": "Seçilen dönemde kaydolanlar"
+      },
+      "returned": {
+        "name": "Geri dönen müşteriler",
+        "desc": "Bu dönemde ve önceki dönemde ziyaret edenler"
+      },
+      "lost": {
+        "name": "Kaybedilen müşteriler",
+        "desc": "Önceki dönemde geldi, bu dönemde geri dönmedi"
+      },
+      "active": {
+        "name": "Aktif müşteriler",
+        "desc": "Seçilen dönemde en az bir seansa gelenler"
+      },
+      "at_risk": {
+        "name": "Riskte",
+        "desc": "Aktif, ancak 21+ gündür ziyaret yok"
+      },
+      "vip_idle": {
+        "name": "Pasif VIP’ler",
+        "desc": "VIP müşteriler, 14+ gündür ziyaret yok"
+      },
+      "expiring_subscription": {
+        "name": "Abonelik bitiyor",
+        "desc": "≤2 seans veya ≤7 gün kaldı"
+      },
+      "lost_newcomers": {
+        "name": "Hiç geri dönmediler",
+        "desc": "Bir kez geldiler, 14+ gündür yoklar"
+      },
+      "upsell_candidates": {
+        "name": "Üst pakete hazır",
+        "desc": "Bu ay 8+ ziyaret, paket yok"
+      },
+      "frequent": {
+        "name": "Sık gelenler",
+        "desc": "Dönemde 8+ ziyaret"
+      },
+      "high_ltv": {
+        "name": "Yüksek LTV",
+        "desc": "Toplam harcamada en üst %10"
+      },
+      "referrers": {
+        "name": "Tavsiye edenler",
+        "desc": "Dönemde bir tavsiye tamamladılar"
+      }
+    },
+    "listSearch": "Ad veya telefonla ara",
+    "shownOf": "{{total}} kaydın {{shown}} tanesi gösteriliyor",
+    "noMatches": "„{{query}}” için kimse bulunamadı",
+    "resetSearch": "Sıfırla",
+    "neverVisited": "Hiç ziyaret etmedi",
+    "valueLabel": {
+      "visits": "Ziyaretler",
+      "spent": "Harcanan",
+      "daysIdle": "Pasif günler",
+      "remaining": "Kalan seanslar",
+      "value": "Değer"
+    },
+    "relative": {
+      "today": "Bugün",
+      "daysAgo_one": "{{count}} gün önce",
+      "daysAgo_other": "{{count}} gün önce"
+    }
+  },
+  "team": {
+    "kpi": {
+      "lessonsCount": "Seanslar",
+      "revenuePerHour": "Gelir/saat",
+      "avgFillPct": "Doluluk oranı",
+      "cancelNoshowPct": "İptaller/gelmeme",
+      "avgRating": "Puan"
+    },
+    "table": {
+      "title": "Eğitmenler",
+      "trainer": "Eğitmen",
+      "lessons": "Seanslar",
+      "fillPct": "Doluluk oranı",
+      "attendance": "Katılım",
+      "revenue": "Gelir",
+      "returnRate": "Geri dönüş oranı",
+      "cancels": "İptaller",
+      "fillPctHint": "Planlanan yerlerin dolan kısmı",
+      "returnRateHint": "Bu eğitmenle tekrar rezervasyon yapan müşteriler",
+      "cancelsHint": "İptal edilen seanslar ve müşteri gelmemeleri",
+      "ratingHint": "Müşterilerin bu eğitmenin seanslarına verdiği ortalama puan"
+    },
+    "drawer": {
+      "revenueByWeek": "Haftalık gelir",
+      "loadByWeekday": "Haftanın gününe göre yük",
+      "loadByHour": "Günün saatine göre yük",
+      "loadDim": {
+        "weekday": "Güne göre",
+        "hour": "Saate göre"
+      },
+      "schedule": {
+        "title": "Takvim",
+        "empty": "Bu dönemde seans yok"
+      },
+      "topLessons": "Favori seanslar",
+      "returnBlock": "Müşteri geri dönüşü",
+      "returnOf": "{{total}} müşterinin {{returned}} tanesi geri döndü (%{{pct}})",
+      "openProfile": "Profili aç",
+      "held": "Gerçekleşti",
+      "attendance": "Katılım"
+    },
+    "weekdays": [
+      "Paz",
+      "Pzt",
+      "Sal",
+      "Çar",
+      "Per",
+      "Cum",
+      "Cmt"
+    ]
+  },
+  "schedule": {
+    "weekdaysMonFirst": [
+      "Pzt",
+      "Sal",
+      "Çar",
+      "Per",
+      "Cum",
+      "Cmt",
+      "Paz"
+    ],
+    "kpi": {
+      "avgFillPct": "Doluluk oranı",
+      "freeSpots": "Boş yerler",
+      "cancels": "İptaller",
+      "noshows": "Gelmeme",
+      "lostRevenue": "Kaçan gelir"
+    },
+    "heatmap": {
+      "title": "Gün ve saate göre yük",
+      "legend": "Doluluk oranı:",
+      "tooltip": "{{lessons}} seans · {{attendance}} katıldı · %{{pct}}",
+      "empty": "Seans yok"
+    },
+    "slices": {
+      "topProfitable": "En kârlı",
+      "topFilled": "En dolu",
+      "chronicLow": "Sürekli düşük doluluklu",
+      "halls": "Kullanım: {{spacePlural}}",
+      "held": "{{count}} gerçekleşti",
+      "weeks": "{{count}} hf.",
+      "move": "Taşı",
+      "cancel": "İptal et",
+      "eveningIdle": "akşamları boş %{{pct}}"
+    },
+    "losses": {
+      "title": "İptaller ve gelmemeler",
+      "dim": {
+        "hour": "Saate göre",
+        "service": "Hizmete göre",
+        "trainer": "Eğitmene göre"
+      },
+      "cancels_one": "{{count}} iptal",
+      "cancels_other": "{{count}} iptal",
+      "noshows_one": "{{count}} gelmeme",
+      "noshows_other": "{{count}} gelmeme",
+      "lostSpots_one": "−{{count}} yer",
+      "lostSpots_other": "−{{count}} yer"
+    },
+    "status": {
+      "confirmed": "Onaylandı",
+      "pending": "Beklemede",
+      "cancelled": "İptal edildi"
+    },
+    "slot": {
+      "summary": "{{from}} — {{to}} için",
+      "lessonsCount": "Toplam seans"
+    }
+  },
+  "export": {
+    "csv": "CSV indir"
+  },
+  "scopeNote": {
+    "label": "Tüm stüdyo",
+    "money": "Şube ve {{space}} filtreleri parayı etkilemez — ödeme bunlara bağlı değildir",
+    "clientBase": "Eğitmen, {{space}}, şube ve hizmet bu metriği değiştirmez — müşteri bunlara bağlı değildir"
+  },
+  "descriptions": {
+    "overview": {
+      "metric": {
+        "revenue": "Dönem boyunca stüdyoya giren tüm para",
+        "profit": "Dönemin giderlerinden sonra kalan tutar",
+        "attendance": "Müşterilerin gerçekten katıldığı seanslar",
+        "new_clients": "Bu dönemde kaydolan müşteriler",
+        "fill_rate": "Seansların ne kadar dolu olduğu: mevcut yerlerden rezerve edilen yerler"
+      },
+      "revenueStructure": "Bu dönemde gelirinizin nelerden oluştuğu",
+      "clientDynamics": "Kaç kişinin ilk kez geldiği, geri döndüğü veya gelmeyi bıraktığı"
+    },
+    "sales": {
+      "chart": "Günlük gelir ve satın alma sayısı",
+      "byCategory": "Her ürünün gelirdeki payı",
+      "byMethod": "Gelirin ödeme yöntemine göre dağılımı",
+      "buyerType": "Gelirin ne kadarının yeni müşterilerden, ne kadarının düzenli müşterilerden geldiği",
+      "products": "Her ürün: kaç tane satıldığı, ne kadar getirdiği ve satışların artıp artmadığı"
+    },
+    "clients": {
+      "chart": "Haftaya göre ilk kez gelen ve geri dönen müşteri sayısı",
+      "riskSegments": "Şimdi ulaşmazsanız kaybedebileceğiniz müşteriler",
+      "loyalSegments": "En çok ziyaret eden, en çok harcayan ve arkadaş getirenler"
+    },
+    "team": {
+      "trainers": "Yük, gelir ve müşteri geri dönüş oranına göre karşılaştırma",
+      "loadWeekday": "Eğitmenin haftanın hangi günlerinde yoğun, ne zaman boş olduğu",
+      "loadHour": "Seanslarının hangi saatlerde dolduğu ve ne zaman boş kaldığı",
+      "schedule": "Seçilen dönemde eğitmenin tüm seansları"
+    },
+    "schedule": {
+      "heatmap": "Takvimin nerede aşırı dolu, nerede boş olduğu",
+      "topProfitable": "Takviminizde en çok para kazandıran saatler",
+      "topFilled": "Müşterilerin en istekli rezerve ettiği saatler",
+      "chronicLow": "Haftalardır yerlerin üçte birinden azını dolduran zaman aralıkları",
+      "halls": "{{spacePlural}} alanlarınızın zamanın ne kadarında gerçekten kullanıldığı",
+      "losses": "Stüdyonun nerede yer kaybettiği: iptal edilen seanslar veya gelmeyen müşteriler"
+    }
+  },
+  "formulas": {
+    "salesCount": {
+      "title": "Satışlar",
+      "text": "Bu dönemde müşterilerin size kaç kez ödeme yaptığı. Bir kişinin birden fazla ödeme yapması ayrı satışlar olarak sayılır."
+    },
+    "revenue": {
+      "title": "Gelir",
+      "text": "Ödeme tarihine göre bu dönemde stüdyoya giren tüm para. Paketler, tek seanslar, hediye kartları ve perakende — hepsi birlikte."
+    },
+    "profit": {
+      "title": "Kâr",
+      "text": "Bu dönemin kira, maaş ve malzeme gibi giderlerinden sonra kalan tutar. Bu gerçek kârınızdır."
+    },
+    "attendance": {
+      "title": "Katılım",
+      "text": "Müşterilerin gerçekten yaptığı ziyaret sayısı. Yalnızca katıldı olarak işaretlenen seanslar sayılır."
+    },
+    "bookings": {
+      "title": "Rezervasyonlar",
+      "text": "Müşterilerin seanslar için yaptığı rezervasyon sayısı. İptal edilen rezervasyonlar sayılmaz."
+    },
+    "noshow": {
+      "title": "Gelmeme",
+      "text": "Müşteri rezervasyon yaptı, seans gerçekleşti ancak gelmedi. Her durum, başka birinin alabileceği bir yerdir."
+    },
+    "activeClients": {
+      "title": "Aktif müşteriler",
+      "text": "Bu dönemde en az bir kez gelen farklı kişi sayısı. Ziyaret sayısından bağımsız olarak her müşteri bir kez sayılır."
+    },
+    "occupancy": {
+      "title": "Doluluk",
+      "text": "Seanslarınızın ne kadar dolu olduğu: planlanan yerlerden dolan yerler. %100, boş yer kalmadığı anlamına gelir."
+    },
+    "avgCheck": {
+      "title": "Ortalama sepet",
+      "text": "Bir ödemenin ortalama olarak ne getirdiği. Müşteriler daha uzun paketler veya ekler aldığında yükselir."
+    },
+    "retention": {
+      "title": "Müşteri tutma",
+      "text": "Önceki dönemin müşterilerinden bu dönemde geri dönenlerin sayısı. İnsanları tutup tutmadığınızı veya her ay sıfırdan başlayıp başlamadığınızı gösterir."
+    },
+    "newClients": {
+      "title": "Yeni müşteriler",
+      "text": "Bu dönemde müşteri tabanınızda ilk kez görünen kişiler."
+    },
+    "returning": {
+      "title": "Geri dönen",
+      "text": "Daha önce ziyaret etmiş ve bu dönemde tekrar gelen müşteriler."
+    },
+    "lost": {
+      "title": "Kaybedilen",
+      "text": "Önceki dönemde ziyaret ettiler, bu dönemde ise hiç gelmediler. Yine de onlarla iletişime geçmeye değer."
+    },
+    "clientValue": {
+      "title": "Müşteri değeri",
+      "text": "Bir müşterinin bu dönemde ortalama olarak getirdiği tutar."
+    },
+    "repeatPurchaseShare": {
+      "title": "Tekrar satın alma oranı",
+      "text": "Sizden birden fazla kez satın alan müşterilerin oranı. Oran yükseldikçe geri gelme alışkanlığı güçlenir."
+    },
+    "renewalRate": {
+      "title": "Yenileme oranı",
+      "text": "Önceki paketi bittikten sonra yeni paket alan müşteri sayısı."
+    },
+    "revenuePerHour": {
+      "title": "Saatlik gelir (eğitmen)",
+      "text": "Bir eğitmenin bir saatlik çalışmasının ne kadar para getirdiği. Eğitmenleri adil karşılaştırmanızı sağlar — biri daha az seans yapabilir ama her biri daha çok kazandırabilir."
+    },
+    "trainerReturnRate": {
+      "title": "Geri dönüş oranı (eğitmen)",
+      "text": "Bir eğitmenin müşterilerinden onunla tekrar rezervasyon yapanların oranı."
+    },
+    "missedRevenue": {
+      "title": "Kaçan gelir",
+      "text": "Geçmiş seanslardaki boş yerler nedeniyle stüdyonun kazanamadığı para: boş yerler çarpı seans fiyatı."
+    },
+    "losses": {
+      "title": "İptaller ve gelmemeler",
+      "text": "„İptal”, iptal edilen bir seanstdır; „gelmeme”, rezervasyon yapıp gelmeyen müşteridir. Saat/hizmet/eğitmen kırılımları sekmeyle aynı filtreleri kullanır ve başlıktaki KPI’larla tutarlıdır."
+    },
+    "lessonRevenue": {
+      "title": "Seans geliri",
+      "text": "Bir seansın geliri için kabaca tahmin: katılımcılar çarpı fiyat. Ödemeler belirli bir seansa bağlı değildir; bu yüzden kesin bir tutar değil, tahmindir."
+    },
+    "filtersScope": {
+      "title": "Filtre kapsamı",
+      "text": "Şube ve {{space}} filtreleri yalnızca seans metriklerine uygulanır. Ödemelerin böyle bir bağlantısı yoktur, bu nedenle para tüm stüdyo için gösterilir."
+    },
+    "avgValue": {
+      "title": "Müşteri değeri",
+      "text": "Bir müşterinin bu dönemde ortalama olarak getirdiği tutar."
+    },
+    "cancelNoshow": {
+      "title": "İptaller ve gelmemeler",
+      "text": "Aksayan seansların oranı: planlanan her şey içindeki iptaller ve gelmemeler."
+    },
+    "avgRating": {
+      "title": "Ortalama puan",
+      "text": "Müşterilerin bu eğitmenin seanslarına verdiği ortalama puan."
+    },
+    "teamScope": {
+      "title": "Veri kapsamı",
+      "text": "Bu yalnızca belirli bir eğitmene bağlı geliri sayar; bu nedenle tüm eğitmenlerin toplamı stüdyonun genel gelirinden düşük olabilir."
+    },
+    "lessonsCount": {
+      "title": "Seanslar",
+      "text": "Eğitmenlerin bu dönemde gerçekleştirdiği seans sayısı."
+    },
+    "load": {
+      "title": "Yük",
+      "text": "Bir eğitmenin gününün ne kadar dolu olduğu: stüdyonun çalışma aralığındaki rezerve saatleri."
+    },
+    "weeklyClients": {
+      "title": "Yeni ve geri dönen",
+      "text": "Haftaya göre: kaç kişinin ilk kez geldiği ve kaçının geri döndüğü. Sağlıklı bir stüdyo her iki çizgide de büyür."
+    },
+    "byCategory": {
+      "title": "Kategoriye göre gelir",
+      "text": "Gerçekte ne üzerinden kazandığınız: paketler, tek seanslar, hediye kartları ve perakende."
+    },
+    "byMethod": {
+      "title": "Ödeme yöntemleri",
+      "text": "Müşterilerin nasıl ödeme yaptığı. Kartla ödeme gerekip gerekmediğini ve ne kadar paranın kasayı atladığını görmenize yardımcı olur."
+    },
+    "buyerType": {
+      "title": "Kim ödüyor",
+      "text": "Yeni müşteriler ve düzenli müşteriler. Gelirin neredeyse tamamı yeni müşterilerden geliyorsa stüdyo onları tutamıyor demektir."
+    },
+    "products": {
+      "title": "Ne satıyor",
+      "text": "Dönemdeki tüm paketler ve hizmetler: kaç tane satıldığı, ne kadar getirdiği ve satışların artıp artmadığı."
+    },
+    "topProfitable": {
+      "title": "En kârlı saatler",
+      "text": "Takviminizde en çok para kazandıran saatler. En iyi eğitmenlerinizi bu saatlere koyun."
+    },
+    "topFilled": {
+      "title": "En dolu saatler",
+      "text": "Müşterilerin en istekli rezerve ettiği saatler. Tamamen dolularsa başka bir seans eklemeye değer."
+    },
+    "chronicLow": {
+      "title": "Sürekli boş saatler",
+      "text": "Birkaç haftadır yerlerin üçte birinden azını dolduran saatler. Taşınacak veya kaldırılacak adaylar."
+    },
+    "hallUtil": {
+      "title": "Kullanım: {{spacePlural}}",
+      "text": "{{spacePlural}} alanlarınızın zamanın ne kadarında gerçekten kullanıldığı. Boş zaman, karşılığını vermeyen kiradır."
+    },
+    "heatmap": {
+      "title": "Gün ve saate göre yük",
+      "text": "Renk, zaman aralığının dönem içindeki ortalama doluluk oranını gösterir. O gün ve saatteki seansları görmek için hücreye tıklayın."
+    },
+    "riskSegments": {
+      "title": "Risk segmentleri",
+      "text": "Taşıdıkları risk türüne göre gruplandırılmış müşteriler — onları kaybetmek veya getirmedikleri gelir. Her kartın kendi nedeni ve net bir sonraki adımı vardır: mesaj yazın, yenileme veya üst paket sunun."
+    },
+    "loyalSegments": {
+      "title": "Sadık",
+      "text": "Zaten en çok değeri getiren müşteriler: en sık gelir, en çok harcar veya arkadaş getirirler. Onlarla ilgilenmeye ve ödüllendirmeye değer."
+    },
+    "segment": {
+      "at_risk": {
+        "title": "Riskte",
+        "text": "Eskiden düzenli gelirlerdi, şimdi kayboldular. Tek bir mesajla hâlâ geri kazanılabilirler."
+      },
+      "vip_idle": {
+        "title": "Pasif VIP’ler",
+        "text": "Herkesten fazla harcayıp bir süredir ziyaret etmeyen müşteriler."
+      },
+      "expiring_subscription": {
+        "title": "Abonelik bitiyor",
+        "text": "Bu müşterilerin 1–2 seansı kaldı. Yenileme teklif etmek için en iyi zaman."
+      },
+      "lost_newcomers": {
+        "title": "Geri dönmeyen yeni müşteriler",
+        "text": "Bir kez geldiler ve kayboldular. Genellikle ilk seansla ilgilidir — incelemeye değer."
+      },
+      "upsell_candidates": {
+        "title": "Daha fazlasına hazır",
+        "text": "Sık geliyorlar ama en basit paketi alıyorlar. Daha pahalı abonelik sunmaya değer."
+      },
+      "frequent": {
+        "title": "Düzenli gelenler",
+        "text": "Herkesten daha sık geliyorlar. Stüdyo gelirinin omurgasıdırlar."
+      },
+      "high_ltv": {
+        "title": "En değerli",
+        "text": "Tüm zaman boyunca stüdyoya herkesten daha fazla para getirdiler."
+      },
+      "referrers": {
+        "title": "Arkadaş getirenler",
+        "text": "Tavsiyeleriyle size başka insanlar getiren müşteriler."
+      }
+    }
+  }
+}

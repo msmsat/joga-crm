@@ -1,0 +1,333 @@
+== sv
+nav.sectionLabel	Systeminställningar
+nav.general	Allmänt
+nav.appearance	Utseende
+nav.notifications	Notiser
+nav.billing	Fakturering
+nav.security	Säkerhet
+nav.integrations	Integrationer
+nav.data	Data
+nav.logout	Byt CRM
+toast.saved	Sparat
+toast.error	Något gick fel
+workspace.title	Dina CRM-system
+workspace.subtitle	Välj en arbetsyta eller skapa en ny
+workspace.current	Aktuell
+workspace.membersCount_one	{{count}} medlem
+workspace.membersCount_other	{{count}} medlemmar
+workspace.clientsCount_one	{{count}} kund
+workspace.clientsCount_other	{{count}} kunder
+workspace.createNew	Skapa en ny studio
+workspace.loadError	Det gick inte att läsa in dina studior
+workspace.selectError	Det gick inte att växla till den här studion
+general.company.title	Företagsuppgifter
+general.company.subtitle	Offentlig information om din verksamhet
+general.company.name	Företagsnamn
+general.company.namePh	t.ex. Min studio
+general.company.desc	Beskrivning
+general.company.descPh	Vad gör din studio…
+general.company.phone	Telefon
+general.company.email	E-post
+general.company.site	Webbplats
+general.company.sitePh	https://studio.com
+general.company.address	Adress
+general.company.addressPh	Exempelgatan 123, stad
+general.reset	Återställ
+general.resetToast	Inställningarna har återställts
+general.locale.title	Språk och region
+general.locale.subtitle	Inställningar för gränssnittets lokalisering
+general.locale.timezone	Tidszon
+general.locale.timezoneSearch	Stad eller förskjutning
+general.locale.timezoneNotFound	Ingen tidszon hittades
+general.locale.currency	Valuta
+general.locale.currencySearch	Sök efter valuta eller kod
+general.locale.currencyNotFound	Ingen valuta hittades
+general.locale.language	Gränssnittsspråk
+general.locale.languageSearch	Sök efter språk
+general.locale.languageNotFound	Inget språk hittades
+general.locale.dateFormat	Datumformat
+general.locale.firstDay	Första veckodagen
+general.locale.firstDayLabels.0	Måndag
+general.locale.firstDayLabels.1	Söndag
+general.booking.title	Bokningsmodell
+general.booking.subtitle	Så bokar kunder hos dig
+general.booking.mode	Bokningsmodell
+general.booking.modeHint	Evenemang — kunder anmäler sig till ett schemalagt pass. Individuellt — kunden väljer en specialist och en tid. Blandat — båda samtidigt.
+general.booking.profile	Branschordval
+general.booking.profileHint	Väljer ord för personal och erbjudanden. Det ändrar bara formuleringar — aldrig roller, priser eller bokningsmodell.
+general.booking.strict	Strikt schema
+general.booking.strictHint	Förbjuder dubbelbokning av en specialist eller ett exklusivt rum. Krävs innan individuell bokning kan aktiveras.
+general.booking.spaceAxis	Använd {{spacePlural}} i schemat
+general.booking.spaceAxisHint	Av — kunden bokar en person och rummet har ingen kolumn i journalen. På — ett pass kopplas till ett rum.
+general.booking.spaceAxisDefaultOn	Standard för din bransch: på
+general.booking.spaceAxisDefaultOff	Standard för din bransch: av
+general.booking.modes.event	Evenemang
+general.booking.modes.resource	Individuellt
+general.booking.modes.hybrid	Blandat
+general.booking.profiles.studio	Gruppverksamhet och studior
+general.booking.profiles.sport	Sport och gym
+general.booking.profiles.beauty	Skönhet och vård
+general.booking.profiles.recovery	Kropp och återhämtning
+general.booking.profiles.relax	Spa och avkoppling
+general.booking.profiles.other	Annat
+general.booking.preview.event	Evenemang
+general.booking.preview.resource	Individuellt
+general.booking.errors.AUDIT_BLOCKED	Schemat innehåller bokningar som inte är förenliga med ett strikt schema.
+general.booking.errors.STRICT_SCHEDULE_REQUIRED	Aktivera först det strikta schemat.
+general.booking.errors.RESOURCE_HISTORY_EXISTS	Det strikta schemat kan inte stängas av: studion har individuella bokningar.
+general.booking.findings.overlap	Överlappande bokningar
+general.booking.findings.unknown_timezone	Okänd tidszon
+general.booking.findings.undefined_branch	Filial är inte angiven
+general.booking.findings.invalid_duration	Ogiltig längd
+general.booking.findings.invalid_resource_row	Ofullständig individuell bokning
+general.booking.findings.missing_branch_assignment	Specialisten är inte tilldelad filialen
+general.booking.findings.missing_working_hours	Specialisten har inga arbetstider
+general.booking.findings.inactive_specialist	Specialisten är inaktiv
+general.booking.findings.other	Behöver granskas
+appearance.theme.title	Tema
+appearance.theme.subtitle	Välj gränssnittets visuella stil
+appearance.theme.light	Ljust
+appearance.theme.dark	Mörkt
+appearance.theme.auto	System
+appearance.accent.title	Accentfärg
+appearance.accent.subtitle	Anpassa gränssnittets huvudfärg
+appearance.accent.note	Ditt val har sparats men används ännu inte i gränssnittet — det kommer i en framtida uppdatering.
+appearance.accent.noteTitle	Kommer snart
+appearance.accent.colors.peach	Persika
+appearance.accent.colors.pistachio	Pistage
+appearance.accent.colors.lavender	Lavendel
+appearance.accent.colors.pink	Rosa
+appearance.accent.colors.gold	Guld
+appearance.accent.colors.mint	Mynta
+appearance.language.title	Gränssnittsspråk
+appearance.language.subtitle	Ditt personliga språk — påverkar inte studioinställningarna
+appearance.language.search	Sök efter språk
+appearance.language.empty	Inget språk hittades
+notifications.myPrefs.title	Mina notiser
+notifications.myPrefs.subtitle	Personliga inställningar — påverkar inte resten av studion
+notifications.myPrefs.hint	Obligatoriska notiser kan inte stängas av — de ser till att du aldrig missar ändringar i schemat och betalningar.
+notifications.myPrefs.empty	Inga valfria notiser för din roll
+notifications.myPrefs.channels.email	E-post
+notifications.myPrefs.channels.telegram	Telegram
+notifications.myPrefs.channels.whatsapp	WhatsApp
+notifications.telegram.title	Telegram för notiser
+notifications.telegram.subtitle	Vart vi skickar personliga händelser till dig — bokningar, löner och rapporter
+notifications.telegram.chatId	Ditt Telegram chat_id
+notifications.telegram.chatIdPh	t.ex. 123456789
+notifications.telegram.hintBefore	Du hittar ditt chat_id hos boten 
+notifications.telegram.hintAfter	 på Telegram — starta en chatt med den så skickar den ditt ID.
+notifications.telegram.invalidChatId	Telegram chat_id måste vara ett nummer utan symboler
+notifications.telegram.saved	Telegram är anslutet för notiser
+notifications.telegram.saveFailed	Det gick inte att spara Telegram
+notifications.email.title	E-post för notiser
+notifications.email.subtitle	Vart systemets e-post ska skickas
+notifications.email.primary	Primär e-post
+notifications.email.backup	Reserv-e-post
+notifications.email.backupPh	backup@studio.com
+notifications.email.saved	Notisinställningarna har sparats
+billing.plans.start	Start
+billing.plans.pro	Pro
+billing.plans.business	Business
+billing.plans.free_trial	Gratis provperiod
+billing.status.active	Aktiv
+billing.status.trial	Provperiod
+billing.status.expired	Utgången
+billing.plan.title	Aktuellt abonnemang
+billing.plan.expiresAt	Aktivt till {{date}}
+billing.plan.maxStaff	Upp till {{count}} anställda
+billing.plan.staffUnlimited	Obegränsat antal anställda
+billing.plan.noSubscription	Inget aktivt abonnemang
+billing.plan.noSubscriptionCta	Välj ett abonnemang
+billing.plan.trialCta	Välj ett abonnemang
+billing.upgrade	Uppgradera till {{plan}}
+billing.renew	Förnya
+billing.autopay.title	Automatisk förnyelse
+billing.autopay.subtitle	Debiteras från ditt sparade kort
+billing.autopay.autoRenew	Automatisk förnyelse
+billing.autopay.notifyBefore	Vi påminner dig {{count}} dagar före debiteringen
+billing.payment.title	Betalningsmetod
+billing.payment.cardSummary	Kort •••• {{last4}}
+billing.payment.notLinked	Inget kort är anslutet
+billing.payment.change	Ändra
+billing.history.title	Betalningshistorik
+billing.history.subtitle	Senaste 12 betalningarna
+billing.history.exportCsv	Exportera CSV
+billing.history.empty	Inga betalningar ännu
+billing.history.showAll	Visa alla
+billing.history.period	{{count}} mån.
+billing.history.noDate	—
+billing.history.status.paid	Betald
+billing.history.status.pending	Väntar
+billing.history.status.failed	Inte betald
+billing.history.status.refunded	Återbetald
+billing.toast.autopaySaved	Inställningar för automatisk förnyelse har sparats
+billing.toast.renewed	Förnyelsen har startat
+billing.toast.csvExportError	Det gick inte att exportera CSV
+security.account.title	Kontosäkerhet
+security.account.subtitle	Skydda åtkomsten till din arbetsyta
+security.twoFa.title	Tvåfaktorsautentisering
+security.twoFa.sub	E-postkod vid varje inloggning
+security.twoFa.active	Aktiv
+security.twoFa.disabled	Inaktiverad
+security.twoFa.enableTitle	Aktivera 2FA
+security.twoFa.disableTitle	Inaktivera 2FA
+security.twoFa.enableWarning	När funktionen är aktiverad kräver varje inloggning en kod som skickas till {{email}}. Se till att du har åtkomst till adressen — annars riskerar du att förlora åtkomsten till kontot.
+security.twoFa.disableWarning	När funktionen är inaktiverad räcker det med lösenordet för att logga in, utan e-postkod.
+security.twoFa.enabledToast	Tvåfaktorsautentisering är aktiverad
+security.twoFa.disabledToast	Tvåfaktorsautentisering är inaktiverad
+security.password.title	Kontolösenord
+security.password.sub	Ändringen bekräftas med en e-postkod
+security.password.change	Byt lösenord
+security.password.changed	Lösenordet har ändrats
+security.password.current	Nuvarande lösenord
+security.password.currentPh	Ange ditt nuvarande lösenord
+security.password.new	Nytt lösenord
+security.password.newPh	Minst 8 tecken
+security.password.repeat	Upprepa lösenordet
+security.password.repeatPh	Ange det nya lösenordet igen
+security.password.mismatch	Lösenorden stämmer inte överens
+security.password.forgot	Har du glömt lösenordet?
+security.password.resetTitle	Återställ lösenord
+security.password.step1Sub	Låt oss bekräfta att det är du
+security.password.step2Sub	Koden har skickats till {{email}}
+security.password.step3Sub	Välj ett nytt lösenord
+security.password.resetIntro	Vi skickar en sexsiffrig kod till e-postadressen för ditt konto. Du behöver inte känna till nuvarande lösenord — koden visar att inkorgen är din.
+security.password.sendCode	Skicka kod
+security.password.back	Tillbaka
+security.password.save	Spara lösenord
+security.password.resetDone	Lösenordet har uppdaterats
+security.password.resetLogoutHint	Andra enheter loggas ut — du förblir inloggad på den här.
+security.password.rules.len	8+ tecken
+security.password.rules.letter	Har en bokstav
+security.password.rules.digit	Har en siffra
+security.password.rules.simple	Inget 111 eller qwerty
+security.sessions.title	Aktiva sessioner
+security.sessions.sub	Var ditt konto är inloggat just nu
+security.sessions.count	{{count}} enheter
+security.sessions.manage	Hantera
+security.sessions.hide	Dölj
+security.sessions.current	Aktuell
+security.sessions.terminate	Avsluta
+security.sessions.terminateAll	Avsluta alla andra sessioner
+security.sessions.terminatedToast	Sessionen har avslutats
+security.sessions.terminatedAllToast	Andra sessioner har avslutats
+security.sessions.justNow	Aktiv nu
+security.sessions.minutesAgo	för {{count}} min sedan
+security.sessions.hoursAgo	för {{count}} h sedan
+security.sessions.daysAgo	för {{count}} d sedan
+security.sessions.unknownLocation	Okänd
+security.otp.sentHint	Vi har skickat en sexsiffrig kod till din e-post. Ange den nedan.
+security.otp.resend	Skicka koden igen
+security.otp.resendIn	Skicka igen om {{count}} s
+security.otp.confirm	Bekräfta
+security.otp.cancel	Avbryt
+security.otp.sendCode	Skicka kod
+security.otp.continue	Fortsätt
+security.danger.title	Datahantering (riskzon)
+security.danger.export.title	Exportera all data
+security.danger.export.sub	Ladda ner ett arkiv med kundbasen och historiken
+security.danger.export.prepare	Förbered arkiv
+security.danger.export.hide	Dölj
+security.danger.export.clients	Kundbas (CSV)
+security.danger.export.finances	Finansiella transaktioner
+security.danger.export.schedule	Pass och schema
+security.danger.export.start	Starta export
+security.danger.export.started	Arkivet förbereds och en länk skickas till din e-post
+security.danger.export.emptySelection	Välj minst ett avsnitt att exportera
+security.danger.wipe.title	Rensa databas
+security.danger.wipe.sub	Tar bort alla kunder och bokningar. Inställningarna behålls.
+security.danger.wipe.action	Rensa data
+security.danger.wipe.toast	Databasen har rensats
+security.danger.wipe.consequence1	Tas bort permanent: kunder, pass, bokningar, transaktioner, dokument, kundabonnemang och lojalitetshistorik
+security.danger.wipe.consequence2	Oförändrat: studio, filialer, {{spacePlural}}, tjänster, personal, abonnemang och inställningar
+security.danger.wipe.consequence3	Åtgärden går inte att ångra efter bekräftelse
+security.danger.deleteAccount.title	Ta bort företagskonto
+security.danger.deleteAccount.sub	Fullständig och oåterkallelig radering av verksamheten från systemet
+security.danger.deleteAccount.action	Ta bort för alltid
+security.danger.deleteAccount.consequence1	Studion och alla dess data tas bort permanent, inklusive kunder, pass, ekonomi och inställningar
+security.danger.deleteAccount.consequence2	Ditt personliga konto behålls — bara denna studio tas bort
+security.danger.deleteAccount.consequence3	Radering är inte tillgänglig med ett aktivt abonnemang eller om studion har andra ägare
+integrations.title	Integrationer
+integrations.subtitle	Anslut externa kanaler och ekosystem med ett klick
+integrations.loadError	Det gick inte att läsa in integrationsstatus
+integrations.items.telegram.name	Telegram-bot
+integrations.items.telegram.sub	Kundnotiser och bokningar via bot
+integrations.items.whatsapp.name	WhatsApp Business
+integrations.items.whatsapp.sub	Massutskick och automatiska kundnotiser
+integrations.items.instagram.name	Instagram Direct
+integrations.items.instagram.sub	AI-agent för automatiska svar och onlinebokning
+integrations.items.google_calendar.name	Google Calendar
+integrations.items.google_calendar.sub	Synkronisering av studions schema
+integrations.status.connected	Ansluten
+integrations.status.notActive	Inte ansluten
+integrations.actions.configure	Konfigurera
+integrations.actions.connect	Anslut
+integrations.actions.disconnect	Koppla från
+integrations.fields.keyLabel	Nyckel
+integrations.fields.connectedAtLabel	Ansluten
+integrations.fields.telegramToken	Botens API-token (från @BotFather)
+integrations.fields.telegramTokenPh	123456789:ABCDefGhIJKlmNoPQRsTUVwxyZ
+integrations.fields.whatsappToken	Åtkomsttoken
+integrations.fields.whatsappTokenPh	EAAxxxxxxxxxxxxx
+integrations.fields.whatsappPhoneId	Telefonnummer-ID
+integrations.fields.whatsappPhoneIdPh	1029384756
+integrations.fields.whatsappWabaId	WABA-ID (valfritt)
+integrations.fields.whatsappWabaIdPh	1029384756
+integrations.fields.instagramToken	Åtkomsttoken
+integrations.fields.instagramTokenPh	IGQWR...
+integrations.fields.instagramUserId	Instagram-ID för företagskonto
+integrations.fields.instagramUserIdPh	17841400000000000
+integrations.guide.howToTitle	Så ansluter du
+integrations.guide.telegram.steps.0	Öppna @BotFather i Telegram och skicka /newbot
+integrations.guide.telegram.steps.1	Välj ett namn och användarnamn för boten — BotFather skickar en API-token till dig
+integrations.guide.telegram.steps.2	Klistra in token nedan och klicka på Anslut
+integrations.guide.whatsapp.steps.0	Skapa en app i Meta for Developers och lägg till WhatsApp-produkten
+integrations.guide.whatsapp.steps.1	Kopiera den tillfälliga eller permanenta åtkomsttoken i API Setup
+integrations.guide.whatsapp.steps.2	Kopiera även telefonnummer-ID:t för test- eller det verifierade numret
+integrations.guide.whatsapp.steps.3	Klistra in båda värdena nedan och klicka på Anslut
+integrations.guide.instagram.steps.0	Koppla studions Instagram-konto till en Facebook-sida — det krävs för Direct API
+integrations.guide.instagram.steps.1	Skapa en app i Meta for Developers med produkten Instagram Graph API
+integrations.guide.instagram.steps.2	Skapa en åtkomsttoken med behörigheterna instagram_basic och instagram_manage_messages
+integrations.guide.instagram.steps.3	Kopiera Instagram-ID:t för företagskontot och token, och klistra in dem nedan
+integrations.guide.instagram.steps.4	Utan Metas granskning fungerar anslutningen bara för appens testkonton
+integrations.guide.google_calendar.steps.0	Klicka på Anslut — ett Google-inloggningsfönster öppnas
+integrations.guide.google_calendar.steps.1	Välj det konto som studions kalender är kopplad till
+integrations.guide.google_calendar.steps.2	Ge kalenderåtkomst — passen börjar automatiskt visas där
+integrations.capabilities.notify	kundnotiser på denna kanal
+integrations.capabilities.booking	onlinebokning via denna kanal
+integrations.capabilities.dm_agent	AI-agent för automatiska svar i Direct
+integrations.capabilities.schedule_sync	schemasynkronisering med Google Calendar
+integrations.disconnect.title	Koppla från {{name}}?
+integrations.disconnect.willStop	Detta slutar att fungera:
+integrations.disconnect.checkbox	Jag förstår konsekvenserna
+integrations.disconnect.cancel	Avbryt
+integrations.disconnect.confirm	Koppla från
+integrations.google.connected	Google Calendar är ansluten
+integrations.google.denied	Åtkomst till Google Calendar beviljades inte
+integrations.google.error	Det gick inte att ansluta Google Calendar
+integrations.google.primary	primär
+integrations.google.calendar	Kalender
+integrations.google.selectCalendar	Välj en kalender
+integrations.google.loadingCalendars	Läser in kalendrar…
+integrations.google.syncMode	Synkroniseringsläge
+integrations.google.syncModeOptions.push	Endast från CRM till Google
+integrations.google.syncModeOptions.two_way	Tvåvägs
+integrations.google.syncNow	Synkronisera nu
+integrations.google.lastSync	Senast synkroniserad: {{date}}
+integrations.google.neverSynced	Inte synkroniserad ännu
+integrations.google.timezoneWarning	Studions tidszon är inte angiven — händelser skickas i UTC och kan avvika från faktiska passtider. Ange tidszonen under Allmänt.
+integrations.google.syncResult	Synkroniserad: {{pushed}} skickade, {{pulled}} hämtade
+integrations.google.settingsSaved	Inställningar för Google Calendar har sparats
+integrations.toast.connected	Integrationen är ansluten
+integrations.toast.disconnected	Integrationen är frånkopplad
+data.export.title	Exportera rapporter och listor
+data.export.subtitle	Ladda ner filer i tabellformat för bokföring och analys
+data.export.clearFilter	Rensa period
+data.export.items.clients.name	Kundlista
+data.export.items.schedule.name	Journal- och bokningshistorik
+data.export.items.finances.name	Ekonomisk rapport
+data.export.items.subscriptions.name	Kundabonnemang
+data.export.rows_one	{{count}} post
+data.export.rows_other	{{count}} poster
+data.export.loading	Läser in...
+data.export.empty	inga data för denna period

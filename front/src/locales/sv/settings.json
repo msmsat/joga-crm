@@ -1,0 +1,480 @@
+{
+  "nav": {
+    "sectionLabel": "Systeminställningar",
+    "general": "Allmänt",
+    "appearance": "Utseende",
+    "notifications": "Notiser",
+    "billing": "Fakturering",
+    "security": "Säkerhet",
+    "integrations": "Integrationer",
+    "data": "Data",
+    "logout": "Byt CRM"
+  },
+  "toast": {
+    "saved": "Sparat",
+    "error": "Något gick fel"
+  },
+  "workspace": {
+    "title": "Dina CRM-system",
+    "subtitle": "Välj en arbetsyta eller skapa en ny",
+    "current": "Aktuell",
+    "membersCount_one": "{{count}} medlem",
+    "membersCount_other": "{{count}} medlemmar",
+    "clientsCount_one": "{{count}} kund",
+    "clientsCount_other": "{{count}} kunder",
+    "createNew": "Skapa en ny studio",
+    "loadError": "Det gick inte att läsa in dina studior",
+    "selectError": "Det gick inte att växla till den här studion"
+  },
+  "general": {
+    "company": {
+      "title": "Företagsuppgifter",
+      "subtitle": "Offentlig information om din verksamhet",
+      "name": "Företagsnamn",
+      "namePh": "t.ex. Min studio",
+      "desc": "Beskrivning",
+      "descPh": "Vad gör din studio…",
+      "phone": "Telefon",
+      "email": "E-post",
+      "site": "Webbplats",
+      "sitePh": "https://studio.com",
+      "address": "Adress",
+      "addressPh": "Exempelgatan 123, stad"
+    },
+    "reset": "Återställ",
+    "resetToast": "Inställningarna har återställts",
+    "locale": {
+      "title": "Språk och region",
+      "subtitle": "Inställningar för gränssnittets lokalisering",
+      "timezone": "Tidszon",
+      "timezoneSearch": "Stad eller förskjutning",
+      "timezoneNotFound": "Ingen tidszon hittades",
+      "currency": "Valuta",
+      "currencySearch": "Sök efter valuta eller kod",
+      "currencyNotFound": "Ingen valuta hittades",
+      "language": "Gränssnittsspråk",
+      "languageSearch": "Sök efter språk",
+      "languageNotFound": "Inget språk hittades",
+      "dateFormat": "Datumformat",
+      "firstDay": "Första veckodagen",
+      "firstDayLabels": [
+        "Måndag",
+        "Söndag"
+      ]
+    },
+    "booking": {
+      "title": "Bokningsmodell",
+      "subtitle": "Så bokar kunder hos dig",
+      "mode": "Bokningsmodell",
+      "modeHint": "Evenemang — kunder anmäler sig till ett schemalagt pass. Individuellt — kunden väljer en specialist och en tid. Blandat — båda samtidigt.",
+      "profile": "Branschordval",
+      "profileHint": "Väljer ord för personal och erbjudanden. Det ändrar bara formuleringar — aldrig roller, priser eller bokningsmodell.",
+      "strict": "Strikt schema",
+      "strictHint": "Förbjuder dubbelbokning av en specialist eller ett exklusivt rum. Krävs innan individuell bokning kan aktiveras.",
+      "spaceAxis": "Använd {{spacePlural}} i schemat",
+      "spaceAxisHint": "Av — kunden bokar en person och rummet har ingen kolumn i journalen. På — ett pass kopplas till ett rum.",
+      "spaceAxisDefaultOn": "Standard för din bransch: på",
+      "spaceAxisDefaultOff": "Standard för din bransch: av",
+      "modes": {
+        "event": "Evenemang",
+        "resource": "Individuellt",
+        "hybrid": "Blandat"
+      },
+      "profiles": {
+        "studio": "Gruppverksamhet och studior",
+        "sport": "Sport och gym",
+        "beauty": "Skönhet och vård",
+        "recovery": "Kropp och återhämtning",
+        "relax": "Spa och avkoppling",
+        "other": "Annat"
+      },
+      "preview": {
+        "event": "Evenemang",
+        "resource": "Individuellt"
+      },
+      "errors": {
+        "AUDIT_BLOCKED": "Schemat innehåller bokningar som inte är förenliga med ett strikt schema.",
+        "STRICT_SCHEDULE_REQUIRED": "Aktivera först det strikta schemat.",
+        "RESOURCE_HISTORY_EXISTS": "Det strikta schemat kan inte stängas av: studion har individuella bokningar."
+      },
+      "findings": {
+        "overlap": "Överlappande bokningar",
+        "unknown_timezone": "Okänd tidszon",
+        "undefined_branch": "Filial är inte angiven",
+        "invalid_duration": "Ogiltig längd",
+        "invalid_resource_row": "Ofullständig individuell bokning",
+        "missing_branch_assignment": "Specialisten är inte tilldelad filialen",
+        "missing_working_hours": "Specialisten har inga arbetstider",
+        "inactive_specialist": "Specialisten är inaktiv",
+        "other": "Behöver granskas"
+      }
+    }
+  },
+  "appearance": {
+    "theme": {
+      "title": "Tema",
+      "subtitle": "Välj gränssnittets visuella stil",
+      "light": "Ljust",
+      "dark": "Mörkt",
+      "auto": "System"
+    },
+    "accent": {
+      "title": "Accentfärg",
+      "subtitle": "Anpassa gränssnittets huvudfärg",
+      "note": "Ditt val har sparats men används ännu inte i gränssnittet — det kommer i en framtida uppdatering.",
+      "noteTitle": "Kommer snart",
+      "colors": {
+        "peach": "Persika",
+        "pistachio": "Pistage",
+        "lavender": "Lavendel",
+        "pink": "Rosa",
+        "gold": "Guld",
+        "mint": "Mynta"
+      }
+    },
+    "language": {
+      "title": "Gränssnittsspråk",
+      "subtitle": "Ditt personliga språk — påverkar inte studioinställningarna",
+      "search": "Sök efter språk",
+      "empty": "Inget språk hittades"
+    }
+  },
+  "notifications": {
+    "myPrefs": {
+      "title": "Mina notiser",
+      "subtitle": "Personliga inställningar — påverkar inte resten av studion",
+      "hint": "Obligatoriska notiser kan inte stängas av — de ser till att du aldrig missar ändringar i schemat och betalningar.",
+      "empty": "Inga valfria notiser för din roll",
+      "channels": {
+        "email": "E-post",
+        "telegram": "Telegram",
+        "whatsapp": "WhatsApp"
+      }
+    },
+    "telegram": {
+      "title": "Telegram för notiser",
+      "subtitle": "Vart vi skickar personliga händelser till dig — bokningar, löner och rapporter",
+      "chatId": "Ditt Telegram chat_id",
+      "chatIdPh": "t.ex. 123456789",
+      "hintBefore": "Du hittar ditt chat_id hos boten ",
+      "hintAfter": " på Telegram — starta en chatt med den så skickar den ditt ID.",
+      "invalidChatId": "Telegram chat_id måste vara ett nummer utan symboler",
+      "saved": "Telegram är anslutet för notiser",
+      "saveFailed": "Det gick inte att spara Telegram"
+    },
+    "email": {
+      "title": "E-post för notiser",
+      "subtitle": "Vart systemets e-post ska skickas",
+      "primary": "Primär e-post",
+      "backup": "Reserv-e-post",
+      "backupPh": "backup@studio.com",
+      "saved": "Notisinställningarna har sparats"
+    }
+  },
+  "billing": {
+    "plans": {
+      "start": "Start",
+      "pro": "Pro",
+      "business": "Business",
+      "free_trial": "Gratis provperiod"
+    },
+    "status": {
+      "active": "Aktiv",
+      "trial": "Provperiod",
+      "expired": "Utgången"
+    },
+    "plan": {
+      "title": "Aktuellt abonnemang",
+      "expiresAt": "Aktivt till {{date}}",
+      "maxStaff": "Upp till {{count}} anställda",
+      "staffUnlimited": "Obegränsat antal anställda",
+      "noSubscription": "Inget aktivt abonnemang",
+      "noSubscriptionCta": "Välj ett abonnemang",
+      "trialCta": "Välj ett abonnemang"
+    },
+    "upgrade": "Uppgradera till {{plan}}",
+    "renew": "Förnya",
+    "autopay": {
+      "title": "Automatisk förnyelse",
+      "subtitle": "Debiteras från ditt sparade kort",
+      "autoRenew": "Automatisk förnyelse",
+      "notifyBefore": "Vi påminner dig {{count}} dagar före debiteringen"
+    },
+    "payment": {
+      "title": "Betalningsmetod",
+      "cardSummary": "Kort •••• {{last4}}",
+      "notLinked": "Inget kort är anslutet",
+      "change": "Ändra"
+    },
+    "history": {
+      "title": "Betalningshistorik",
+      "subtitle": "Senaste 12 betalningarna",
+      "exportCsv": "Exportera CSV",
+      "empty": "Inga betalningar ännu",
+      "showAll": "Visa alla",
+      "period": "{{count}} mån.",
+      "noDate": "—",
+      "status": {
+        "paid": "Betald",
+        "pending": "Väntar",
+        "failed": "Inte betald",
+        "refunded": "Återbetald"
+      }
+    },
+    "toast": {
+      "autopaySaved": "Inställningar för automatisk förnyelse har sparats",
+      "renewed": "Förnyelsen har startat",
+      "csvExportError": "Det gick inte att exportera CSV"
+    }
+  },
+  "security": {
+    "account": {
+      "title": "Kontosäkerhet",
+      "subtitle": "Skydda åtkomsten till din arbetsyta"
+    },
+    "twoFa": {
+      "title": "Tvåfaktorsautentisering",
+      "sub": "E-postkod vid varje inloggning",
+      "active": "Aktiv",
+      "disabled": "Inaktiverad",
+      "enableTitle": "Aktivera 2FA",
+      "disableTitle": "Inaktivera 2FA",
+      "enableWarning": "När funktionen är aktiverad kräver varje inloggning en kod som skickas till {{email}}. Se till att du har åtkomst till adressen — annars riskerar du att förlora åtkomsten till kontot.",
+      "disableWarning": "När funktionen är inaktiverad räcker det med lösenordet för att logga in, utan e-postkod.",
+      "enabledToast": "Tvåfaktorsautentisering är aktiverad",
+      "disabledToast": "Tvåfaktorsautentisering är inaktiverad"
+    },
+    "password": {
+      "title": "Kontolösenord",
+      "sub": "Ändringen bekräftas med en e-postkod",
+      "change": "Byt lösenord",
+      "changed": "Lösenordet har ändrats",
+      "current": "Nuvarande lösenord",
+      "currentPh": "Ange ditt nuvarande lösenord",
+      "new": "Nytt lösenord",
+      "newPh": "Minst 8 tecken",
+      "repeat": "Upprepa lösenordet",
+      "repeatPh": "Ange det nya lösenordet igen",
+      "mismatch": "Lösenorden stämmer inte överens",
+      "forgot": "Har du glömt lösenordet?",
+      "resetTitle": "Återställ lösenord",
+      "step1Sub": "Låt oss bekräfta att det är du",
+      "step2Sub": "Koden har skickats till {{email}}",
+      "step3Sub": "Välj ett nytt lösenord",
+      "resetIntro": "Vi skickar en sexsiffrig kod till e-postadressen för ditt konto. Du behöver inte känna till nuvarande lösenord — koden visar att inkorgen är din.",
+      "sendCode": "Skicka kod",
+      "back": "Tillbaka",
+      "save": "Spara lösenord",
+      "resetDone": "Lösenordet har uppdaterats",
+      "resetLogoutHint": "Andra enheter loggas ut — du förblir inloggad på den här.",
+      "rules": {
+        "len": "8+ tecken",
+        "letter": "Har en bokstav",
+        "digit": "Har en siffra",
+        "simple": "Inget 111 eller qwerty"
+      }
+    },
+    "sessions": {
+      "title": "Aktiva sessioner",
+      "sub": "Var ditt konto är inloggat just nu",
+      "count": "{{count}} enheter",
+      "manage": "Hantera",
+      "hide": "Dölj",
+      "current": "Aktuell",
+      "terminate": "Avsluta",
+      "terminateAll": "Avsluta alla andra sessioner",
+      "terminatedToast": "Sessionen har avslutats",
+      "terminatedAllToast": "Andra sessioner har avslutats",
+      "justNow": "Aktiv nu",
+      "minutesAgo": "för {{count}} min sedan",
+      "hoursAgo": "för {{count}} h sedan",
+      "daysAgo": "för {{count}} d sedan",
+      "unknownLocation": "Okänd"
+    },
+    "otp": {
+      "sentHint": "Vi har skickat en sexsiffrig kod till din e-post. Ange den nedan.",
+      "resend": "Skicka koden igen",
+      "resendIn": "Skicka igen om {{count}} s",
+      "confirm": "Bekräfta",
+      "cancel": "Avbryt",
+      "sendCode": "Skicka kod",
+      "continue": "Fortsätt"
+    },
+    "danger": {
+      "title": "Datahantering (riskzon)",
+      "export": {
+        "title": "Exportera all data",
+        "sub": "Ladda ner ett arkiv med kundbasen och historiken",
+        "prepare": "Förbered arkiv",
+        "hide": "Dölj",
+        "clients": "Kundbas (CSV)",
+        "finances": "Finansiella transaktioner",
+        "schedule": "Pass och schema",
+        "start": "Starta export",
+        "started": "Arkivet förbereds och en länk skickas till din e-post",
+        "emptySelection": "Välj minst ett avsnitt att exportera"
+      },
+      "wipe": {
+        "title": "Rensa databas",
+        "sub": "Tar bort alla kunder och bokningar. Inställningarna behålls.",
+        "action": "Rensa data",
+        "toast": "Databasen har rensats",
+        "consequence1": "Tas bort permanent: kunder, pass, bokningar, transaktioner, dokument, kundabonnemang och lojalitetshistorik",
+        "consequence2": "Oförändrat: studio, filialer, {{spacePlural}}, tjänster, personal, abonnemang och inställningar",
+        "consequence3": "Åtgärden går inte att ångra efter bekräftelse"
+      },
+      "deleteAccount": {
+        "title": "Ta bort företagskonto",
+        "sub": "Fullständig och oåterkallelig radering av verksamheten från systemet",
+        "action": "Ta bort för alltid",
+        "consequence1": "Studion och alla dess data tas bort permanent, inklusive kunder, pass, ekonomi och inställningar",
+        "consequence2": "Ditt personliga konto behålls — bara denna studio tas bort",
+        "consequence3": "Radering är inte tillgänglig med ett aktivt abonnemang eller om studion har andra ägare"
+      }
+    }
+  },
+  "integrations": {
+    "title": "Integrationer",
+    "subtitle": "Anslut externa kanaler och ekosystem med ett klick",
+    "loadError": "Det gick inte att läsa in integrationsstatus",
+    "items": {
+      "telegram": {
+        "name": "Telegram-bot",
+        "sub": "Kundnotiser och bokningar via bot"
+      },
+      "whatsapp": {
+        "name": "WhatsApp Business",
+        "sub": "Massutskick och automatiska kundnotiser"
+      },
+      "instagram": {
+        "name": "Instagram Direct",
+        "sub": "AI-agent för automatiska svar och onlinebokning"
+      },
+      "google_calendar": {
+        "name": "Google Calendar",
+        "sub": "Synkronisering av studions schema"
+      }
+    },
+    "status": {
+      "connected": "Ansluten",
+      "notActive": "Inte ansluten"
+    },
+    "actions": {
+      "configure": "Konfigurera",
+      "connect": "Anslut",
+      "disconnect": "Koppla från"
+    },
+    "fields": {
+      "keyLabel": "Nyckel",
+      "connectedAtLabel": "Ansluten",
+      "telegramToken": "Botens API-token (från @BotFather)",
+      "telegramTokenPh": "123456789:ABCDefGhIJKlmNoPQRsTUVwxyZ",
+      "whatsappToken": "Åtkomsttoken",
+      "whatsappTokenPh": "EAAxxxxxxxxxxxxx",
+      "whatsappPhoneId": "Telefonnummer-ID",
+      "whatsappPhoneIdPh": "1029384756",
+      "whatsappWabaId": "WABA-ID (valfritt)",
+      "whatsappWabaIdPh": "1029384756",
+      "instagramToken": "Åtkomsttoken",
+      "instagramTokenPh": "IGQWR...",
+      "instagramUserId": "Instagram-ID för företagskonto",
+      "instagramUserIdPh": "17841400000000000"
+    },
+    "guide": {
+      "howToTitle": "Så ansluter du",
+      "telegram": {
+        "steps": [
+          "Öppna @BotFather i Telegram och skicka /newbot",
+          "Välj ett namn och användarnamn för boten — BotFather skickar en API-token till dig",
+          "Klistra in token nedan och klicka på Anslut"
+        ]
+      },
+      "whatsapp": {
+        "steps": [
+          "Skapa en app i Meta for Developers och lägg till WhatsApp-produkten",
+          "Kopiera den tillfälliga eller permanenta åtkomsttoken i API Setup",
+          "Kopiera även telefonnummer-ID:t för test- eller det verifierade numret",
+          "Klistra in båda värdena nedan och klicka på Anslut"
+        ]
+      },
+      "instagram": {
+        "steps": [
+          "Koppla studions Instagram-konto till en Facebook-sida — det krävs för Direct API",
+          "Skapa en app i Meta for Developers med produkten Instagram Graph API",
+          "Skapa en åtkomsttoken med behörigheterna instagram_basic och instagram_manage_messages",
+          "Kopiera Instagram-ID:t för företagskontot och token, och klistra in dem nedan",
+          "Utan Metas granskning fungerar anslutningen bara för appens testkonton"
+        ]
+      },
+      "google_calendar": {
+        "steps": [
+          "Klicka på Anslut — ett Google-inloggningsfönster öppnas",
+          "Välj det konto som studions kalender är kopplad till",
+          "Ge kalenderåtkomst — passen börjar automatiskt visas där"
+        ]
+      }
+    },
+    "capabilities": {
+      "notify": "kundnotiser på denna kanal",
+      "booking": "onlinebokning via denna kanal",
+      "dm_agent": "AI-agent för automatiska svar i Direct",
+      "schedule_sync": "schemasynkronisering med Google Calendar"
+    },
+    "disconnect": {
+      "title": "Koppla från {{name}}?",
+      "willStop": "Detta slutar att fungera:",
+      "checkbox": "Jag förstår konsekvenserna",
+      "cancel": "Avbryt",
+      "confirm": "Koppla från"
+    },
+    "google": {
+      "connected": "Google Calendar är ansluten",
+      "denied": "Åtkomst till Google Calendar beviljades inte",
+      "error": "Det gick inte att ansluta Google Calendar",
+      "primary": "primär",
+      "calendar": "Kalender",
+      "selectCalendar": "Välj en kalender",
+      "loadingCalendars": "Läser in kalendrar…",
+      "syncMode": "Synkroniseringsläge",
+      "syncModeOptions": {
+        "push": "Endast från CRM till Google",
+        "two_way": "Tvåvägs"
+      },
+      "syncNow": "Synkronisera nu",
+      "lastSync": "Senast synkroniserad: {{date}}",
+      "neverSynced": "Inte synkroniserad ännu",
+      "timezoneWarning": "Studions tidszon är inte angiven — händelser skickas i UTC och kan avvika från faktiska passtider. Ange tidszonen under Allmänt.",
+      "syncResult": "Synkroniserad: {{pushed}} skickade, {{pulled}} hämtade",
+      "settingsSaved": "Inställningar för Google Calendar har sparats"
+    },
+    "toast": {
+      "connected": "Integrationen är ansluten",
+      "disconnected": "Integrationen är frånkopplad"
+    }
+  },
+  "data": {
+    "export": {
+      "title": "Exportera rapporter och listor",
+      "subtitle": "Ladda ner filer i tabellformat för bokföring och analys",
+      "clearFilter": "Rensa period",
+      "items": {
+        "clients": {
+          "name": "Kundlista"
+        },
+        "schedule": {
+          "name": "Journal- och bokningshistorik"
+        },
+        "finances": {
+          "name": "Ekonomisk rapport"
+        },
+        "subscriptions": {
+          "name": "Kundabonnemang"
+        }
+      },
+      "rows_one": "{{count}} post",
+      "rows_other": "{{count}} poster",
+      "loading": "Läser in...",
+      "empty": "inga data för denna period"
+    }
+  }
+}

@@ -1268,3 +1268,223 @@ Continue the `reports` namespace with Portuguese.
 ### Next concrete step
 
 Continue the `reports` namespace with Romanian.
+
+## 2026-09-18 — reports / Romanian batch
+
+- Built and strictly verified the 379-value Romanian `reports.json` from
+  `reports-ro-2026-09-18.tsv`, including required `one`/`few`/`other` forms,
+  report analytics, client groups, and formula explanations.
+
+### Next concrete step
+
+Continue the `reports` namespace with Serbian.
+
+## 2026-09-18 — reports / Serbian batch
+
+- Built and strictly verified the 379-value Serbian `reports.json` from
+  `reports-sr-2026-09-18.tsv`, using Cyrillic and required `one`/`few`/`other`
+  plural forms across client dates and schedule losses.
+
+### Next concrete step
+
+Continue the `reports` namespace with Spanish.
+
+## 2026-09-18 — reports / Spanish batch
+
+- Built and strictly verified the 375-value Spanish `reports.json` from
+  `reports-es-2026-09-18.tsv`, including all reports, schedule loss insights,
+  client segmentation, and detailed metric guidance.
+
+### Next concrete step
+
+Continue the `reports` namespace with Swedish.
+
+## 2026-09-18 — reports / Swedish batch
+
+- Built and strictly verified the 375-value Swedish `reports.json` from
+  `reports-sv-2026-09-18.tsv`, covering all reports, scheduling metrics,
+  client groups, and formula explanations.
+
+### Next concrete step
+
+Continue the `reports` namespace with Turkish.
+
+## 2026-09-18 — reports / Turkish batch
+
+- Built and strictly verified the 375-value Turkish `reports.json` from
+  `reports-tr-2026-09-18.tsv`, covering all report tabs, schedule analysis,
+  client segmentation, and metric explanations.
+- Whole-tree validation now has zero non-missing errors; the only 17 missing
+  resources are the intentionally remaining target-language `settings` files.
+
+### Next concrete step
+
+Complete the `settings` namespace for the 17 target languages.
+
+## 2026-09-18 — settings / Albanian batch
+
+- Built and strictly verified the 332-value Albanian `settings.json` from
+  `settings-sq-2026-09-18.tsv`, including booking configuration, billing,
+  account security, external integrations, and data export.
+
+### Next concrete step
+
+Continue the `settings` namespace with Bulgarian.
+
+## 2026-09-18 — settings / Bulgarian batch
+
+- Built and strictly verified the 332-value Bulgarian `settings.json` from
+  `settings-bg-2026-09-18.tsv`, including billing, account security,
+  integrations, and data export.
+
+### Next concrete step
+
+Continue the `settings` namespace with Croatian.
+
+## 2026-09-18 — settings / Croatian batch
+
+- Built and strictly verified the 335-value Croatian `settings.json` from
+  `settings-hr-2026-09-18.tsv`, including all Croatian plural forms for
+  workspace counts and report exports.
+
+### Next concrete step
+
+Continue the `settings` namespace with Danish.
+
+## 2026-09-18 — settings / Danish batch
+
+- Built and strictly verified the 332-value Danish `settings.json` from
+  `settings-da-2026-09-18.tsv`, including account-security, billing,
+  integration, and export flows.
+
+### Next concrete step
+
+Continue the `settings` namespace with Finnish.
+
+## 2026-09-18 — settings / Finnish batch
+
+- Built and strictly verified the 332-value Finnish `settings.json` from
+  `settings-fi-2026-09-18.tsv`, with natural UI wording across configuration,
+  security, integration, and export screens.
+
+### Next concrete step
+
+Continue the `settings` namespace with French.
+
+## 2026-09-18 — settings / French batch
+
+- Built and strictly verified the 332-value French `settings.json` from
+  `settings-fr-2026-09-18.tsv`, covering all configuration and security
+  dialogs without changing messaging or miniapp behavior.
+
+### Next concrete step
+
+Continue the `settings` namespace with Greek.
+
+## 2026-09-18 — settings / Greek batch
+
+- Built and strictly verified the 332-value Greek `settings.json` from
+  `settings-el-2026-09-18.tsv`, including the full currency search UI,
+  account security, integrations, and data export.
+
+### Next concrete step
+
+Continue the `settings` namespace with Hungarian.
+
+## 2026-09-18 — settings / Hungarian batch
+
+- Built and strictly verified the 332-value Hungarian `settings.json` from
+  `settings-hu-2026-09-18.tsv`, including regional settings, security,
+  integration guidance, and report export controls.
+
+### Next concrete step
+
+Continue the `settings` namespace with Italian.
+
+## 2026-09-18 — settings / Italian batch
+
+- Built and strictly verified the 332-value Italian `settings.json` from
+  `settings-it-2026-09-18.tsv`, with all placeholders and every UI section
+  preserved.
+
+### Next concrete step
+
+Continue the `settings` namespace with Norwegian.
+
+## 2026-09-18 — settings / Norwegian batch
+
+- Built and strictly verified the 332-value Norwegian `settings.json` from
+  `settings-no-2026-09-18.tsv`, including all account and integrations
+  controls.
+
+### Next concrete step
+
+Continue the `settings` namespace with Polish.
+
+## 2026-09-18 — settings / Polish batch
+
+- Built and strictly verified the 335-value Polish `settings.json` from
+  `settings-pl-2026-09-18.tsv`, including Polish `one`/`few`/`many` forms.
+
+### Next concrete step
+
+Continue the `settings` namespace with Portuguese.
+
+## 2026-09-18 — settings / Portuguese batch
+
+- Built and strictly verified the 332-value Portuguese `settings.json` from
+  `settings-pt-2026-09-18.tsv`, covering all settings sections and dialogs.
+
+### Next concrete step
+
+Continue the `settings` namespace with Romanian.
+
+## 2026-09-18 — settings / Romanian batch
+
+- Built and strictly verified the 335-value Romanian `settings.json` from
+  `settings-ro-2026-09-18.tsv`, including Romanian `one`/`few`/`other` forms.
+
+### Next concrete step
+
+Continue the `settings` namespace with Serbian.
+
+## 2026-09-18 — settings / Serbian batch
+
+- Built and strictly verified the 335-value Cyrillic Serbian `settings.json`
+  from `settings-sr-2026-09-18.tsv`, including Serbian `one`/`few`/`other`
+  forms.
+
+### Next concrete step
+
+Continue the `settings` namespace with Spanish.
+
+## 2026-09-18 — settings / Spanish batch
+
+- Built and strictly verified the 332-value Spanish `settings.json` from
+  `settings-es-2026-09-18.tsv`, covering every configuration, security,
+  integration, and export string.
+
+### Next concrete step
+
+Continue the `settings` namespace with Swedish.
+
+## 2026-09-18 — settings / Swedish batch
+
+- Built and strictly verified the 332-value Swedish `settings.json` from
+  `settings-sv-2026-09-18.tsv`, including all configuration, security,
+  integration, and export controls.
+
+### Next concrete step
+
+Complete the `settings` namespace with Turkish.
+
+## 2026-09-18 — settings / Turkish batch
+
+- Built and strictly verified the 332-value Turkish `settings.json` from
+  `settings-tr-2026-09-18.tsv`, completing the final missing target-language
+  settings dictionary.
+
+### Next concrete step
+
+Run full-tree validation, then connect the completed UI language set without
+changing the outbound-message or miniapp language scopes.

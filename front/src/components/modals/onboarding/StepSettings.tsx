@@ -1,5 +1,7 @@
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { PremiumSelect, TIMEZONES, CURRENCY_OPTIONS, WEEK_START_OPTIONS } from "../../UI";
+import { PremiumSelect, TIMEZONES, WEEK_START_OPTIONS } from "../../UI";
+import { currencyOptionsFor } from "../../../utils/currencyOptions";
 import type { OnboardingData } from "./types";
 
 interface Props {
@@ -15,11 +17,11 @@ const labelStyle: React.CSSProperties = {
 const WEEK_START_DAY_KEY: Record<string, string> = { monday: "mon", sunday: "sun" };
 
 export default function StepSettings({ data, onChange }: Props) {
-  const { t } = useTranslation(["onboarding", "common"]);
+  const { t, i18n } = useTranslation(["onboarding", "common"]);
 
   // У пояса подпись уже готова (города — имена собственные, их не переводят),
-  // у валюты переводится название.
-  const currencyOptions = CURRENCY_OPTIONS.map(o => ({ ...o, label: t(`onboarding:settings.currencies.${o.value}`) }));
+  // у валюты переводится название — и сортируется по нему же (currencyOptions.ts).
+  const currencyOptions = useMemo(() => currencyOptionsFor(t, i18n.language), [t, i18n.language]);
   const weekStartOptions = WEEK_START_OPTIONS.map(o => ({ ...o, label: t(`common:days.${WEEK_START_DAY_KEY[o.value]}`) }));
 
   return (
@@ -54,6 +56,9 @@ export default function StepSettings({ data, onChange }: Props) {
             onChange={v => onChange({ currency: v })}
             options={currencyOptions}
             placeholder={t("onboarding:settings.currencyPlaceholder")}
+            searchable
+            searchPlaceholder={t("onboarding:settings.currencySearch")}
+            emptyText={t("onboarding:settings.currencyNotFound")}
           />
         </div>
       </div>

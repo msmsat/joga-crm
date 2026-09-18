@@ -1,0 +1,480 @@
+{
+  "nav": {
+    "sectionLabel": "Sistem ayarları",
+    "general": "Genel",
+    "appearance": "Görünüm",
+    "notifications": "Bildirimler",
+    "billing": "Faturalandırma",
+    "security": "Güvenlik",
+    "integrations": "Entegrasyonlar",
+    "data": "Veriler",
+    "logout": "CRM değiştir"
+  },
+  "toast": {
+    "saved": "Kaydedildi",
+    "error": "Bir şeyler ters gitti"
+  },
+  "workspace": {
+    "title": "CRM sistemleriniz",
+    "subtitle": "Bir çalışma alanı seçin veya yeni bir tane oluşturun",
+    "current": "Geçerli",
+    "membersCount_one": "{{count}} üye",
+    "membersCount_other": "{{count}} üye",
+    "clientsCount_one": "{{count}} müşteri",
+    "clientsCount_other": "{{count}} müşteri",
+    "createNew": "Yeni stüdyo oluştur",
+    "loadError": "Stüdyolarınız yüklenemedi",
+    "selectError": "Bu stüdyoya geçilemedi"
+  },
+  "general": {
+    "company": {
+      "title": "Şirket bilgileri",
+      "subtitle": "İşletmenizle ilgili herkese açık bilgiler",
+      "name": "Şirket adı",
+      "namePh": "ör. Stüdyom",
+      "desc": "Açıklama",
+      "descPh": "Stüdyonuz ne yapıyor…",
+      "phone": "Telefon",
+      "email": "E-posta",
+      "site": "Web sitesi",
+      "sitePh": "https://studio.com",
+      "address": "Adres",
+      "addressPh": "Örnek Sokak 123, şehir"
+    },
+    "reset": "Sıfırla",
+    "resetToast": "Ayarlar sıfırlandı",
+    "locale": {
+      "title": "Dil ve bölge",
+      "subtitle": "Arayüz yerelleştirme ayarları",
+      "timezone": "Saat dilimi",
+      "timezoneSearch": "Şehir veya fark",
+      "timezoneNotFound": "Saat dilimi bulunamadı",
+      "currency": "Para birimi",
+      "currencySearch": "Para birimi veya kod ara",
+      "currencyNotFound": "Para birimi bulunamadı",
+      "language": "Arayüz dili",
+      "languageSearch": "Dil ara",
+      "languageNotFound": "Dil bulunamadı",
+      "dateFormat": "Tarih biçimi",
+      "firstDay": "Haftanın ilk günü",
+      "firstDayLabels": [
+        "Pazartesi",
+        "Pazar"
+      ]
+    },
+    "booking": {
+      "title": "Rezervasyon modeli",
+      "subtitle": "Müşterileriniz sizden nasıl rezervasyon yapar",
+      "mode": "Rezervasyon modeli",
+      "modeHint": "Etkinlikler — müşteriler planlanmış bir derse kaydolur. Bireysel — müşteri uzman ve saat seçer. Karma — ikisi aynı anda.",
+      "profile": "Sektör terminolojisi",
+      "profileHint": "Personel ve teklifler için kullanılacak kelimeleri seçer. Yalnızca ifadeleri değiştirir — rolleri, fiyatları veya rezervasyon modelini asla değiştirmez.",
+      "strict": "Sıkı takvim",
+      "strictHint": "Bir uzman veya özel alan için çifte rezervasyonu engeller. Bireysel rezervasyon açılmadan önce gereklidir.",
+      "spaceAxis": "Takvimde {{spacePlural}} kullan",
+      "spaceAxisHint": "Kapalı — müşteri bir kişi rezerve eder ve alanın günlükte sütunu olmaz. Açık — ders bir alana bağlıdır.",
+      "spaceAxisDefaultOn": "Sektörünüz için varsayılan: açık",
+      "spaceAxisDefaultOff": "Sektörünüz için varsayılan: kapalı",
+      "modes": {
+        "event": "Etkinlikler",
+        "resource": "Bireysel",
+        "hybrid": "Karma"
+      },
+      "profiles": {
+        "studio": "Grup çalışmaları ve stüdyolar",
+        "sport": "Spor ve spor salonları",
+        "beauty": "Güzellik ve bakım",
+        "recovery": "Vücut ve iyileşme",
+        "relax": "Spa ve rahatlama",
+        "other": "Diğer"
+      },
+      "preview": {
+        "event": "Etkinlik",
+        "resource": "Bireysel"
+      },
+      "errors": {
+        "AUDIT_BLOCKED": "Takvim, sıkı takvimle uyumlu olmayan rezervasyonlar içeriyor.",
+        "STRICT_SCHEDULE_REQUIRED": "Önce sıkı takvimi açın.",
+        "RESOURCE_HISTORY_EXISTS": "Sıkı takvim kapatılamaz: stüdyoda bireysel rezervasyonlar var."
+      },
+      "findings": {
+        "overlap": "Çakışan rezervasyonlar",
+        "unknown_timezone": "Bilinmeyen saat dilimi",
+        "undefined_branch": "Şube ayarlanmadı",
+        "invalid_duration": "Geçersiz süre",
+        "invalid_resource_row": "Eksik bireysel rezervasyon",
+        "missing_branch_assignment": "Uzman şubeye atanmamış",
+        "missing_working_hours": "Uzmanın çalışma saatleri yok",
+        "inactive_specialist": "Uzman etkin değil",
+        "other": "İncelenmesi gerekiyor"
+      }
+    }
+  },
+  "appearance": {
+    "theme": {
+      "title": "Tema",
+      "subtitle": "Arayüzün görsel stilini seçin",
+      "light": "Açık",
+      "dark": "Koyu",
+      "auto": "Sistem"
+    },
+    "accent": {
+      "title": "Vurgu rengi",
+      "subtitle": "Arayüzün ana rengini kişiselleştirin",
+      "note": "Seçiminiz kaydedildi ancak henüz arayüze uygulanmıyor — gelecekteki bir güncellemede gelecek.",
+      "noteTitle": "Yakında",
+      "colors": {
+        "peach": "Şeftali",
+        "pistachio": "Antep fıstığı",
+        "lavender": "Lavanta",
+        "pink": "Pembe",
+        "gold": "Altın",
+        "mint": "Nane"
+      }
+    },
+    "language": {
+      "title": "Arayüz dili",
+      "subtitle": "Kişisel diliniz — stüdyo ayarlarını etkilemez",
+      "search": "Dil ara",
+      "empty": "Dil bulunamadı"
+    }
+  },
+  "notifications": {
+    "myPrefs": {
+      "title": "Bildirimlerim",
+      "subtitle": "Kişisel tercihler — stüdyonun geri kalanını etkilemez",
+      "hint": "Zorunlu bildirimler kapatılamaz — takvim değişikliklerini ve ödemeleri asla kaçırmamanızı sağlar.",
+      "empty": "Rolünüz için isteğe bağlı bildirim yok",
+      "channels": {
+        "email": "E-posta",
+        "telegram": "Telegram",
+        "whatsapp": "WhatsApp"
+      }
+    },
+    "telegram": {
+      "title": "Bildirimler için Telegram",
+      "subtitle": "Size kişisel olarak nereden etkinlik gönderileceği — rezervasyonlar, maaş bordrosu, raporlar",
+      "chatId": "Telegram chat_id'niz",
+      "chatIdPh": "ör. 123456789",
+      "hintBefore": "chat_id'nizi şu bottan bulabilirsiniz: ",
+      "hintAfter": " Telegram'da onunla sohbet başlatın; size ID'nizi gönderir.",
+      "invalidChatId": "Telegram chat_id yalnızca sembolsüz bir sayı olmalıdır",
+      "saved": "Telegram bildirimler için bağlandı",
+      "saveFailed": "Telegram kaydedilemedi"
+    },
+    "email": {
+      "title": "Bildirimler için e-posta",
+      "subtitle": "Sistem e-postalarının gönderileceği yer",
+      "primary": "Birincil e-posta",
+      "backup": "Yedek e-posta",
+      "backupPh": "backup@studio.com",
+      "saved": "Bildirim ayarları kaydedildi"
+    }
+  },
+  "billing": {
+    "plans": {
+      "start": "Start",
+      "pro": "Pro",
+      "business": "Business",
+      "free_trial": "Ücretsiz deneme"
+    },
+    "status": {
+      "active": "Etkin",
+      "trial": "Deneme",
+      "expired": "Süresi doldu"
+    },
+    "plan": {
+      "title": "Geçerli plan",
+      "expiresAt": "{{date}} tarihine kadar etkin",
+      "maxStaff": "En fazla {{count}} çalışan",
+      "staffUnlimited": "Sınırsız çalışan",
+      "noSubscription": "Etkin abonelik yok",
+      "noSubscriptionCta": "Plan seçin",
+      "trialCta": "Plan seçin"
+    },
+    "upgrade": "{{plan}} planına geç",
+    "renew": "Yenile",
+    "autopay": {
+      "title": "Otomatik yenileme",
+      "subtitle": "Kayıtlı kartınızdan tahsil edilir",
+      "autoRenew": "Otomatik yenileme",
+      "notifyBefore": "Tahsilattan {{count}} gün önce hatırlatırız"
+    },
+    "payment": {
+      "title": "Ödeme yöntemi",
+      "cardSummary": "Kart •••• {{last4}}",
+      "notLinked": "Bağlı kart yok",
+      "change": "Değiştir"
+    },
+    "history": {
+      "title": "Ödeme geçmişi",
+      "subtitle": "Son 12 ödeme",
+      "exportCsv": "CSV dışa aktar",
+      "empty": "Henüz ödeme yok",
+      "showAll": "Tümünü göster",
+      "period": "{{count}} ay",
+      "noDate": "—",
+      "status": {
+        "paid": "Ödendi",
+        "pending": "Beklemede",
+        "failed": "Ödenmedi",
+        "refunded": "İade edildi"
+      }
+    },
+    "toast": {
+      "autopaySaved": "Otomatik yenileme ayarları kaydedildi",
+      "renewed": "Yenileme başlatıldı",
+      "csvExportError": "CSV dışa aktarılamadı"
+    }
+  },
+  "security": {
+    "account": {
+      "title": "Hesap güvenliği",
+      "subtitle": "Çalışma alanınıza erişimi koruyun"
+    },
+    "twoFa": {
+      "title": "İki aşamalı doğrulama",
+      "sub": "Her girişte e-posta kodu",
+      "active": "Etkin",
+      "disabled": "Devre dışı",
+      "enableTitle": "2FA'yı etkinleştir",
+      "disableTitle": "2FA'yı devre dışı bırak",
+      "enableWarning": "Etkinleştirildiğinde, her giriş {{email}} adresine gönderilen bir kod gerektirir. Bu adrese erişebildiğinizden emin olun — aksi hâlde hesabınıza erişimi kaybedebilirsiniz.",
+      "disableWarning": "Devre dışı bırakıldığında, e-posta kodu olmadan giriş için yalnızca parola yeterli olur.",
+      "enabledToast": "İki aşamalı doğrulama etkinleştirildi",
+      "disabledToast": "İki aşamalı doğrulama devre dışı bırakıldı"
+    },
+    "password": {
+      "title": "Hesap parolası",
+      "sub": "Değişiklik e-posta koduyla onaylanır",
+      "change": "Parolayı değiştir",
+      "changed": "Parola başarıyla değiştirildi",
+      "current": "Geçerli parola",
+      "currentPh": "Geçerli parolanızı girin",
+      "new": "Yeni parola",
+      "newPh": "En az 8 karakter",
+      "repeat": "Parolayı tekrarlayın",
+      "repeatPh": "Yeni parolayı tekrar girin",
+      "mismatch": "Parolalar eşleşmiyor",
+      "forgot": "Parolanızı mı unuttunuz?",
+      "resetTitle": "Parola kurtarma",
+      "step1Sub": "Sizin olduğunuzu doğrulayalım",
+      "step2Sub": "Kod {{email}} adresine gönderildi",
+      "step3Sub": "Yeni bir parola seçin",
+      "resetIntro": "Hesap e-posta adresinize 6 haneli bir kod göndereceğiz. Geçerli parolayı bilmeniz gerekmez — kod posta kutusunun size ait olduğunu kanıtlar.",
+      "sendCode": "Kod gönder",
+      "back": "Geri",
+      "save": "Parolayı kaydet",
+      "resetDone": "Parola güncellendi",
+      "resetLogoutHint": "Diğer cihazların oturumu kapatılır — bu cihazda oturumunuz açık kalır.",
+      "rules": {
+        "len": "8+ karakter",
+        "letter": "Harf içerir",
+        "digit": "Rakam içerir",
+        "simple": "111 veya qwerty olmasın"
+      }
+    },
+    "sessions": {
+      "title": "Etkin oturumlar",
+      "sub": "Hesabınızın şu anda oturum açtığı yerler",
+      "count": "{{count}} cihaz",
+      "manage": "Yönet",
+      "hide": "Gizle",
+      "current": "Geçerli",
+      "terminate": "Sonlandır",
+      "terminateAll": "Diğer tüm oturumları sonlandır",
+      "terminatedToast": "Oturum başarıyla sonlandırıldı",
+      "terminatedAllToast": "Diğer oturumlar sonlandırıldı",
+      "justNow": "Şimdi etkin",
+      "minutesAgo": "{{count}} dk. önce",
+      "hoursAgo": "{{count}} sa. önce",
+      "daysAgo": "{{count}} gün önce",
+      "unknownLocation": "Bilinmiyor"
+    },
+    "otp": {
+      "sentHint": "E-postanıza 6 haneli bir kod gönderdik. Aşağıya girin.",
+      "resend": "Kodu yeniden gönder",
+      "resendIn": "{{count}} sn. sonra yeniden gönder",
+      "confirm": "Onayla",
+      "cancel": "İptal",
+      "sendCode": "Kod gönder",
+      "continue": "Devam et"
+    },
+    "danger": {
+      "title": "Veri yönetimi (tehlike bölgesi)",
+      "export": {
+        "title": "Tüm verileri dışa aktar",
+        "sub": "Müşteri veritabanı ve geçmişinin arşivini indirin",
+        "prepare": "Arşiv hazırla",
+        "hide": "Gizle",
+        "clients": "Müşteri veritabanı (CSV)",
+        "finances": "Finansal işlemler",
+        "schedule": "Dersler ve takvim",
+        "start": "Dışa aktarmayı başlat",
+        "started": "Arşiv hazırlanıyor, e-postanıza bir bağlantı gönderilecek",
+        "emptySelection": "Dışa aktarmak için en az bir bölüm seçin"
+      },
+      "wipe": {
+        "title": "Veritabanını temizle",
+        "sub": "Tüm müşterileri ve rezervasyonları siler. Ayarlar korunur.",
+        "action": "Verileri temizle",
+        "toast": "Veritabanı başarıyla temizlendi",
+        "consequence1": "Kalıcı olarak silinir: müşteriler, dersler, rezervasyonlar, işlemler, belgeler, müşteri abonelikleri, sadakat geçmişi",
+        "consequence2": "Değişmeden kalır: stüdyo, şubeler, {{spacePlural}}, hizmetler, personel, abonelik ve ayarlar",
+        "consequence3": "Bu işlem geri alınamaz — onaydan sonra iptal edilemez"
+      },
+      "deleteAccount": {
+        "title": "Şirket hesabını sil",
+        "sub": "İşletmenin sistemden tamamen ve geri döndürülemez biçimde silinmesi",
+        "action": "Sonsuza dek sil",
+        "consequence1": "Stüdyo ve müşteriler, dersler, finanslar, ayarlar dâhil tüm verileri kalıcı olarak silinecek",
+        "consequence2": "Kişisel hesabınız kalır — yalnızca bu stüdyo silinir",
+        "consequence3": "Etkin abonelik varken veya stüdyonun başka sahipleri varsa silme kullanılamaz"
+      }
+    }
+  },
+  "integrations": {
+    "title": "Entegrasyonlar",
+    "subtitle": "Harici kanalları ve ekosistemleri tek tıklamayla bağlayın",
+    "loadError": "Entegrasyon durumu yüklenemedi",
+    "items": {
+      "telegram": {
+        "name": "Telegram botu",
+        "sub": "Bot ile müşteri bildirimleri ve rezervasyonlar"
+      },
+      "whatsapp": {
+        "name": "WhatsApp Business",
+        "sub": "Toplu mesajlar ve otomatik müşteri bildirimleri"
+      },
+      "instagram": {
+        "name": "Instagram Direct",
+        "sub": "Otomatik yanıtlar ve çevrim içi rezervasyonlar için AI temsilcisi"
+      },
+      "google_calendar": {
+        "name": "Google Calendar",
+        "sub": "Stüdyo takvimi eşitleme"
+      }
+    },
+    "status": {
+      "connected": "Bağlı",
+      "notActive": "Bağlı değil"
+    },
+    "actions": {
+      "configure": "Yapılandır",
+      "connect": "Bağlan",
+      "disconnect": "Bağlantıyı kes"
+    },
+    "fields": {
+      "keyLabel": "Anahtar",
+      "connectedAtLabel": "Bağlı",
+      "telegramToken": "Bot API belirteci (@BotFather'dan)",
+      "telegramTokenPh": "123456789:ABCDefGhIJKlmNoPQRsTUVwxyZ",
+      "whatsappToken": "Erişim belirteci",
+      "whatsappTokenPh": "EAAxxxxxxxxxxxxx",
+      "whatsappPhoneId": "Telefon numarası kimliği",
+      "whatsappPhoneIdPh": "1029384756",
+      "whatsappWabaId": "WABA kimliği (isteğe bağlı)",
+      "whatsappWabaIdPh": "1029384756",
+      "instagramToken": "Erişim belirteci",
+      "instagramTokenPh": "IGQWR...",
+      "instagramUserId": "Instagram işletme hesabı kimliği",
+      "instagramUserIdPh": "17841400000000000"
+    },
+    "guide": {
+      "howToTitle": "Nasıl bağlanır",
+      "telegram": {
+        "steps": [
+          "Telegram'da @BotFather'ı açın ve /newbot gönderin",
+          "Bot için ad ve kullanıcı adı seçin — BotFather size API belirteci gönderir",
+          "Belirteci aşağıya yapıştırın ve Bağlan'a tıklayın"
+        ]
+      },
+      "whatsapp": {
+        "steps": [
+          "Meta for Developers'ta bir uygulama oluşturun ve WhatsApp ürününü ekleyin",
+          "API Setup'ta geçici veya kalıcı erişim belirtecini kopyalayın",
+          "Test veya doğrulanmış numaranın telefon numarası kimliğini de kopyalayın",
+          "Her iki değeri aşağıya yapıştırın ve Bağlan'a tıklayın"
+        ]
+      },
+      "instagram": {
+        "steps": [
+          "Stüdyonun Instagram hesabını bir Facebook Sayfasına bağlayın — Direct API için gereklidir",
+          "Instagram Graph API ürünüyle Meta for Developers'ta bir uygulama oluşturun",
+          "instagram_basic ve instagram_manage_messages izinleriyle erişim belirteci oluşturun",
+          "Instagram işletme hesabı kimliğini ve belirteci kopyalayıp aşağıya yapıştırın",
+          "Meta incelemesi olmadan bağlantı yalnızca uygulamanın test hesaplarında çalışır"
+        ]
+      },
+      "google_calendar": {
+        "steps": [
+          "Bağlan'a tıklayın — Google oturum açma penceresi açılır",
+          "Stüdyo takviminin bağlı olduğu hesabı seçin",
+          "Takvim erişimi verin — dersler otomatik olarak görünmeye başlar"
+        ]
+      }
+    },
+    "capabilities": {
+      "notify": "bu kanalda müşteri bildirimleri",
+      "booking": "bu kanal üzerinden çevrim içi rezervasyon",
+      "dm_agent": "Direct'te otomatik yanıtlar için AI temsilcisi",
+      "schedule_sync": "Google Calendar ile takvim eşitleme"
+    },
+    "disconnect": {
+      "title": "{{name}} bağlantısı kesilsin mi?",
+      "willStop": "Bunlar çalışmayı durdurur:",
+      "checkbox": "Sonuçları anlıyorum",
+      "cancel": "İptal",
+      "confirm": "Bağlantıyı kes"
+    },
+    "google": {
+      "connected": "Google Calendar bağlandı",
+      "denied": "Google Calendar erişimi verilmedi",
+      "error": "Google Calendar bağlanamadı",
+      "primary": "birincil",
+      "calendar": "Takvim",
+      "selectCalendar": "Takvim seçin",
+      "loadingCalendars": "Takvimler yükleniyor…",
+      "syncMode": "Eşitleme modu",
+      "syncModeOptions": {
+        "push": "Yalnızca CRM'den Google'a",
+        "two_way": "Çift yönlü"
+      },
+      "syncNow": "Şimdi eşitle",
+      "lastSync": "Son eşitleme: {{date}}",
+      "neverSynced": "Henüz eşitlenmedi",
+      "timezoneWarning": "Stüdyo saat dilimi ayarlanmadı — etkinlikler UTC olarak gönderilir ve gerçek ders saatlerinden farklı olabilir. Saat dilimini Genel bölümünde ayarlayın.",
+      "syncResult": "Eşitlendi: {{pushed}} gönderildi, {{pulled}} alındı",
+      "settingsSaved": "Google Calendar ayarları kaydedildi"
+    },
+    "toast": {
+      "connected": "Entegrasyon bağlandı",
+      "disconnected": "Entegrasyon bağlantısı kesildi"
+    }
+  },
+  "data": {
+    "export": {
+      "title": "Raporları ve listeleri dışa aktar",
+      "subtitle": "Muhasebe ve analiz için tablo biçiminde dosyalar indirin",
+      "clearFilter": "Dönemi temizle",
+      "items": {
+        "clients": {
+          "name": "Müşteri listesi"
+        },
+        "schedule": {
+          "name": "Günlük ve rezervasyon geçmişi"
+        },
+        "finances": {
+          "name": "Finansal rapor"
+        },
+        "subscriptions": {
+          "name": "Müşteri abonelikleri"
+        }
+      },
+      "rows_one": "{{count}} kayıt",
+      "rows_other": "{{count}} kayıt",
+      "loading": "Yükleniyor...",
+      "empty": "bu dönem için veri yok"
+    }
+  }
+}

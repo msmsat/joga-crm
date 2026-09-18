@@ -50,6 +50,8 @@
       "timezoneSearch": "City or offset",
       "timezoneNotFound": "No timezone found",
       "currency": "Currency",
+      "currencySearch": "Currency or code",
+      "currencyNotFound": "No currency found",
       "language": "Interface language",
       "languageSearch": "Search language",
       "languageNotFound": "No language found",

@@ -1,0 +1,380 @@
+== sr
+tabs.overview	Преглед
+tabs.sales	Продаја
+tabs.clients	Клијенти
+tabs.team	Тим
+tabs.schedule	Распоред
+toolbar.period.day	Дан
+toolbar.period.week	Недеља
+toolbar.period.month	Месец
+toolbar.period.year	Година
+toolbar.period.custom	Прилагођено
+toolbar.vsPrevious	у односу на претходни период: {{from}}–{{to}}
+toolbar.allBranches	Све филијале
+toolbar.allHalls	Сви {{spacePlural}}
+toolbar.allTrainers	Сви тренери
+toolbar.allServices	Све услуге
+toolbar.export	Извези
+insights.title	Захтева пажњу
+insights.action	Отвори
+insights.empty	За сада је све у реду — нема савета за приказ
+insights.revenue_up_clients_down	Приход расте, али број активних клијената опада — проверите одлив клијената
+insights.clients_at_risk	{{count}} клијент(а) није присуствовао више од 3 недеље — ризик од одлива
+insights.lesson_overfull	„{{name}}” {{weekday, weekday}} у {{hour}}:00 је попуњен {{pct}}% већ три недеље заредом — размислите о додавању још једног термина
+insights.trial_low_conversion	Само {{pct}}% од {{buyers}} купаца пробног пакета касније је купило претплату — размислите о кампањи
+insights.fastest_growing_product	„{{name}}” расте најбрже: +{{pct}}% у односу на претходни период
+insights.renewals_low	Само {{pct}}% клијената са истеклом претплатом обнавља је — размислите о подсетнику
+insights.new_no_second_visit	{{count}} нових клијената дошло је једном и више није резервисало — размислите о подсетнику
+insights.subs_expiring_week	{{count}} клијената има претплату која истиче ове недеље — размислите о понуди за обнову
+insights.vip_inactive	VIP клијент „{{name}}” није посетио студио {{days}} дана — размислите о личној поруци
+insights.high_return_free_evenings	„{{name}}” има високу стопу повратка ({{return_pct}}%), али су вечери слободне — додајте термин
+insights.trainer_overloaded	„{{name}}” је оптерећен {{load_pct}}% — размислите о уравнотежењу распореда
+insights.low_rating	„{{name}}” има оцену {{rating}} — вреди детаљније погледати
+insights.slot_chronic_low	„{{name}}” {{weekday, isodowWeekday}} у {{hour}}:00 је попуњен {{pct}}% већ {{weeks}} недеља заредом — преместите или откажите
+insights.hall_idle_evenings	„{{name}}” је неактиван {{pct}}% вечерњих сати — размислите о заказивању термина
+insights.slot_overfull	Термин {{weekday, isodowWeekday}} у {{hour}}:00 је попуњен {{pct}}% већ три недеље заредом — размислите о додавању још једног термина
+insights.loss_hotspot	{{cancels}} термина је отказано у {{label}} овог периода — највише отказивања је око тог сата
+table.loading	Учитавање…
+table.noProduct	Нема производа
+empty.noData.title	Овде још нема ничега
+empty.noData.text	Није забележена активност за изабрани период. Проширите опсег или почните тако што ћете заказати клијента у Дневнику.
+empty.noData.widen	Прикажи годину
+empty.noRevenue	Нема уплата у овом периоду
+empty.noSales	Нема продаје у овом сегменту
+empty.noProducts	Још нису продати пакети ни услуге
+empty.noLessons	Нема термина у овом периоду
+empty.noTrainerLessons	Овај тренер још није одржао термин
+empty.noRows	Нема записа у овом сегменту
+empty.noLosses	Нема отказивања ни недолазака у овом периоду
+overview.kpi.revenue	Приход
+overview.kpi.profit	Добит
+overview.kpi.attendance	Присуство
+overview.kpi.activeClients	Активни клијенти
+overview.kpi.fillRate	Стопа попуњености
+overview.chart.metric.revenue	Приход
+overview.chart.metric.profit	Добит
+overview.chart.metric.attendance	Присуство
+overview.chart.metric.new_clients	Нови клијенти
+overview.chart.metric.fill_rate	Стопа попуњености
+overview.revenueStructure.title	Структура прихода
+overview.category.subscriptions	Претплате
+overview.category.services	Услуге
+overview.category.certificates	Поклон-картице
+overview.category.rent	Закуп
+overview.category.salary	Плате
+overview.category.refunds	Повраћаји
+overview.clientDynamics.title	Динамика клијената
+overview.clientDynamics.new	Нови
+overview.clientDynamics.returned	Вратили се
+overview.clientDynamics.lost	Изгубљени
+overview.drilldown.title	Операција
+overview.drilldown.category	Категорија
+overview.drilldown.amount	Износ
+overview.drilldown.lesson	Термин
+overview.drilldown.time	Време
+overview.drilldown.occupancy	Попуњеност
+overview.drilldown.date	Датум
+overview.drilldown.method	Начин
+overview.drilldown.trainer	Тренер
+overview.drilldown.rowsCount	записа
+overview.drilldown.search	Претражи табелу
+overview.drilldown.shownOf	Приказано {{shown}} од {{total}}
+overview.drilldown.noMatches	Ништа није пронађено за „{{query}}”
+overview.drilldown.reset	Ресетуј
+overview.drilldown.export	Извези CSV
+overview.drilldown.subtitle.money	Операције у овом сегменту
+overview.drilldown.subtitle.lessons	Термини у овом сегменту
+overview.drilldown.hint.operations	Кликните ред да отворите операцију у Финансијама
+overview.drilldown.hint.lessons	Кликните ред да отворите тај дан у Дневнику
+overview.drilldown.stat.net	Нето
+overview.drilldown.stat.income	Приход
+overview.drilldown.stat.expense	Расход
+overview.drilldown.stat.operations	Операције
+overview.drilldown.stat.topCategory	Главна категорија
+overview.drilldown.stat.lessons	Термини
+overview.drilldown.stat.booked	Резервисана места
+overview.drilldown.stat.avgFill	Просечна попуњеност
+overview.drilldown.stat.trainers	Тренери
+overview.drilldown.stat.cancelled	Отказано
+sales.kpi.revenue	Приход
+sales.kpi.salesCount	Продаје
+sales.kpi.avgCheck	Просечан рачун
+sales.kpi.repeatShare	Удео поновних куповина
+sales.kpi.renewals	Стопа обнове
+sales.chart.title	Продаја
+sales.incomeOperations	Приходне операције
+sales.breakdown.byCategory	Шта купују
+sales.breakdown.byMethod	Како плаћају
+sales.breakdown.buyerType	Ко купује
+sales.breakdown.new	Нови
+sales.breakdown.returning	Повратници
+sales.breakdown.noClient	Без клијента
+sales.method.card	Картица
+sales.method.cash	Готовина
+sales.method.qr	QR код
+sales.method.transfer	Пренос
+sales.products.title	Производи
+sales.products.name	Производ
+sales.products.sold	Продато
+sales.products.revenue	Приход
+sales.products.avgCheck	Просечан рачун
+sales.products.repeatShare	Удео поновних куповина
+sales.products.trend	Тренд
+sales.products.trendHint	У поређењу са претходним периодом истог трајања
+clients.kpi.new	Нови
+clients.kpi.returned	Вратили се
+clients.kpi.lost	Изгубљени
+clients.kpi.retention	Задржавање
+clients.kpi.avgValue	Вредност клијента
+clients.chart.title	Нови и повратници
+clients.chart.new	Нови
+clients.chart.returned	Повратници
+clients.riskTitle	Ризични сегменти
+clients.loyalTitle	Лојални
+clients.list	Листа
+clients.campaign	Покрени кампању
+clients.exportList	Извези листу
+clients.emptySegment	Сегмент „{{name}}” тренутно нема клијената
+clients.segments.new.name	Нови клијенти
+clients.segments.new.desc	Регистровани у изабраном периоду
+clients.segments.returned.name	Клијенти повратници
+clients.segments.returned.desc	Посетили су овај и претходни период
+clients.segments.lost.name	Изгубљени клијенти
+clients.segments.lost.desc	Посетили су претходни период, али се нису вратили у овом
+clients.segments.active.name	Активни клијенти
+clients.segments.active.desc	Дошли су на најмање један термин у изабраном периоду
+clients.segments.at_risk.name	На ивици
+clients.segments.at_risk.desc	Активни, без посете 21+ дан
+clients.segments.vip_idle.name	Неактивни VIP
+clients.segments.vip_idle.desc	VIP клијенти, без посете 14+ дана
+clients.segments.expiring_subscription.name	Претплата при крају
+clients.segments.expiring_subscription.desc	Преостало је ≤2 термина или ≤7 дана
+clients.segments.lost_newcomers.name	Никада се нису вратили
+clients.segments.lost_newcomers.desc	Дошли су једном, нема их 14+ дана
+clients.segments.upsell_candidates.name	Спремни за виши пакет
+clients.segments.upsell_candidates.desc	8+ посета овог месеца, без пакета
+clients.segments.frequent.name	Чести
+clients.segments.frequent.desc	8+ посета у периоду
+clients.segments.high_ltv.name	Висок LTV
+clients.segments.high_ltv.desc	Најбољих 10% по укупној потрошњи
+clients.segments.referrers.name	Препоручиоци
+clients.segments.referrers.desc	Остварили су препоруку у периоду
+clients.listSearch	Претражи по имену или телефону
+clients.shownOf	Приказано {{shown}} од {{total}}
+clients.noMatches	Нико није пронађен за „{{query}}”
+clients.resetSearch	Ресетуј
+clients.neverVisited	Никада није посетио
+clients.valueLabel.visits	Посете
+clients.valueLabel.spent	Потрошено
+clients.valueLabel.daysIdle	Дани неактивности
+clients.valueLabel.remaining	Преостали термини
+clients.valueLabel.value	Вредност
+clients.relative.today	Данас
+clients.relative.daysAgo_one	Пре {{count}} дан
+clients.relative.daysAgo_few	Пре {{count}} дана
+clients.relative.daysAgo_other	Пре {{count}} дана
+team.kpi.lessonsCount	Термини
+team.kpi.revenuePerHour	Приход/сат
+team.kpi.avgFillPct	Стопа попуњености
+team.kpi.cancelNoshowPct	Отказивања/недоласци
+team.kpi.avgRating	Оцена
+team.table.title	Тренери
+team.table.trainer	Тренер
+team.table.lessons	Термини
+team.table.fillPct	Стопа попуњености
+team.table.attendance	Присуство
+team.table.revenue	Приход
+team.table.returnRate	Стопа повратка
+team.table.cancels	Отказивања
+team.table.fillPctHint	Попуњена места од планираних
+team.table.returnRateHint	Клијенти који су поново резервисали код овог тренера
+team.table.cancelsHint	Отказани термини и недоласци клијената
+team.table.ratingHint	Просечна оцена коју су клијенти дали терминима овог тренера
+team.drawer.revenueByWeek	Приход по недељи
+team.drawer.loadByWeekday	Оптерећење по дану у недељи
+team.drawer.loadByHour	Оптерећење по добу дана
+team.drawer.loadDim.weekday	По дану
+team.drawer.loadDim.hour	По сату
+team.drawer.schedule.title	Распоред
+team.drawer.schedule.empty	Нема термина у овом периоду
+team.drawer.topLessons	Омиљени термини
+team.drawer.returnBlock	Повратак клијената
+team.drawer.returnOf	{{returned}} од {{total}} клијената се вратило ({{pct}}%)
+team.drawer.openProfile	Отвори профил
+team.drawer.held	Одржано
+team.drawer.attendance	Присуство
+team.weekdays.0	Нед
+team.weekdays.1	Пон
+team.weekdays.2	Уто
+team.weekdays.3	Сре
+team.weekdays.4	Чет
+team.weekdays.5	Пет
+team.weekdays.6	Суб
+schedule.weekdaysMonFirst.0	Пон
+schedule.weekdaysMonFirst.1	Уто
+schedule.weekdaysMonFirst.2	Сре
+schedule.weekdaysMonFirst.3	Чет
+schedule.weekdaysMonFirst.4	Пет
+schedule.weekdaysMonFirst.5	Суб
+schedule.weekdaysMonFirst.6	Нед
+schedule.kpi.avgFillPct	Стопа попуњености
+schedule.kpi.freeSpots	Слободна места
+schedule.kpi.cancels	Отказивања
+schedule.kpi.noshows	Недоласци
+schedule.kpi.lostRevenue	Пропуштен приход
+schedule.heatmap.title	Оптерећење по дану и сату
+schedule.heatmap.legend	Стопа попуњености:
+schedule.heatmap.tooltip	{{lessons}} термина · {{attendance}} присутно · {{pct}}%
+schedule.heatmap.empty	Нема термина
+schedule.slices.topProfitable	Најисплативији
+schedule.slices.topFilled	Најпопуњенији
+schedule.slices.chronicLow	Хронично слабо попуњени
+schedule.slices.halls	Искоришћеност: {{spacePlural}}
+schedule.slices.held	{{count}} одржано
+schedule.slices.weeks	{{count}} нед.
+schedule.slices.move	Премести
+schedule.slices.cancel	Откажи
+schedule.slices.eveningIdle	вечерњи застој {{pct}}%
+schedule.losses.title	Отказивања и недоласци
+schedule.losses.dim.hour	По времену
+schedule.losses.dim.service	По услузи
+schedule.losses.dim.trainer	По тренеру
+schedule.losses.cancels_one	{{count}} отказивање
+schedule.losses.cancels_few	{{count}} отказивања
+schedule.losses.cancels_other	{{count}} отказивања
+schedule.losses.noshows_one	{{count}} недолазак
+schedule.losses.noshows_few	{{count}} недоласка
+schedule.losses.noshows_other	{{count}} недолазака
+schedule.losses.lostSpots_one	−{{count}} место
+schedule.losses.lostSpots_few	−{{count}} места
+schedule.losses.lostSpots_other	−{{count}} места
+schedule.status.confirmed	Потврђено
+schedule.status.pending	На чекању
+schedule.status.cancelled	Отказано
+schedule.slot.summary	за {{from}} — {{to}}
+schedule.slot.lessonsCount	Укупно термина
+export.csv	Преузми CSV
+scopeNote.label	Цео студио
+scopeNote.money	Филтери Филијала и {{space}} не утичу на новац — уплата није везана за њих
+scopeNote.clientBase	Тренер, {{space}}, филијала и услуга не мењају ову метрику — клијент није везан за њих
+descriptions.overview.metric.revenue	Сав новац који је стигао у студио током периода
+descriptions.overview.metric.profit	Оно што остане после трошкова периода
+descriptions.overview.metric.attendance	Термини којима су клијенти стварно присуствовали
+descriptions.overview.metric.new_clients	Клијенти регистровани током овог периода
+descriptions.overview.metric.fill_rate	Колико су термини пуни: резервисана места од доступних места
+descriptions.overview.revenueStructure	Од чега се састоји ваш приход овог периода
+descriptions.overview.clientDynamics	Колико их је дошло први пут, вратило се или престало да долази
+descriptions.sales.chart	Приход и број куповина по дану
+descriptions.sales.byCategory	Удео сваког производа у приходу
+descriptions.sales.byMethod	Како се приход распоређује по начину плаћања
+descriptions.sales.buyerType	Колико прихода долази од нових клијената у односу на сталне
+descriptions.sales.products	Сваки производ: колико је продато, за колико и да ли продаја расте
+descriptions.clients.chart	Колико је клијената дошло први пут, а колико се вратило, по недељи
+descriptions.clients.riskSegments	Клијенти које бисте могли изгубити ако им се сада не јавите
+descriptions.clients.loyalSegments	Они који најчешће долазе, највише троше и доводе пријатеље
+descriptions.team.trainers	Поређење по оптерећењу, приходу и стопи повратка клијената
+descriptions.team.loadWeekday	Којим данима у недељи је тренер заузет, а када је слободан
+descriptions.team.loadHour	У које време се његови термини пуне, а када остају празни
+descriptions.team.schedule	Сви термини тренера у изабраном периоду
+descriptions.schedule.heatmap	Где је распоред пребукиран, а где празан
+descriptions.schedule.topProfitable	Времена у распореду која доносе највише новца
+descriptions.schedule.topFilled	Времена која клијенти најрадије резервишу
+descriptions.schedule.chronicLow	Термини који недељама попуњавају мање од трећине места
+descriptions.schedule.halls	Колико су често ваши {{spacePlural}} стварно у употреби
+descriptions.schedule.losses	Где студио губи места: отказани термини или недоласци клијената
+formulas.salesCount.title	Продаје
+formulas.salesCount.text	Колико су вам пута клијенти платили у овом периоду. Једна особа која плати више пута рачуна се као засебне продаје.
+formulas.revenue.title	Приход
+formulas.revenue.text	Сав новац који је стигао у студио у овом периоду према датуму плаћања. Пакети, појединачни термини, поклон-картице и малопродаја — све заједно.
+formulas.profit.title	Добит
+formulas.profit.text	Оно што остане после трошкова овог периода: закупа, плата и материјала. То је ваша стварна добит.
+formulas.attendance.title	Присуство
+formulas.attendance.text	Колико су посета клијенти стварно остварили. Броје се само термини означени као посећени.
+formulas.bookings.title	Резервације
+formulas.bookings.text	Колико су резервација клијенти направили за термине. Отказане резервације се не броје.
+formulas.noshow.title	Недолазак
+formulas.noshow.text	Клијент је резервисао, термин се одржао, али се није појавио. Сваки такав случај је место које је неко други могао заузети.
+formulas.activeClients.title	Активни клијенти
+formulas.activeClients.text	Колико је различитих људи дошло барем једном у овом периоду. Сваки клијент се броји једном, без обзира на број посета.
+formulas.occupancy.title	Попуњеност
+formulas.occupancy.text	Колико су ваши термини пуни: попуњена места од онога што сте планирали. 100% значи да нема више места.
+formulas.avgCheck.title	Просечан рачун
+formulas.avgCheck.text	Колико једна уплата доноси у просеку. Расте када клијенти купују дуже пакете или додатке.
+formulas.retention.title	Задржавање
+formulas.retention.text	Колико се клијената из претходног периода вратило у овом. Показује да ли задржавате људе или сваког месеца крећете од нуле.
+formulas.newClients.title	Нови клијенти
+formulas.newClients.text	Људи који су се први пут појавили у вашој бази клијената током овог периода.
+formulas.returning.title	Повратници
+formulas.returning.text	Клијенти који су већ долазили и поново се вратили у овом периоду.
+formulas.lost.title	Изгубљени
+formulas.lost.text	Посетили су у претходном периоду, а у овом нису дошли ниједном. И даље вреди да им се јавите.
+formulas.clientValue.title	Вредност клијента
+formulas.clientValue.text	Колико један клијент у просеку доноси у овом периоду.
+formulas.repeatPurchaseShare.title	Удео поновних куповина
+formulas.repeatPurchaseShare.text	Удео клијената који су купили од вас више пута. Што је већи, јача је навика да се враћају.
+formulas.renewalRate.title	Стопа обнове
+formulas.renewalRate.text	Колико је клијената купило нови пакет после истека претходног.
+formulas.revenuePerHour.title	Приход по сату (тренер)
+formulas.revenuePerHour.text	Колико новца доноси један сат рада тренера. Омогућава поштено поређење тренера — неко може да води мање термина, али сваки доноси више.
+formulas.trainerReturnRate.title	Стопа повратка (тренер)
+formulas.trainerReturnRate.text	Удео клијената тренера који су поново резервисали код њега.
+formulas.missedRevenue.title	Пропуштен приход
+formulas.missedRevenue.text	Новац који студио није зарадио због празних места на претходним терминима: слободна места помножена ценом термина.
+formulas.losses.title	Отказивања и недоласци
+formulas.losses.text	„Отказивање” је отказан термин; „недолазак” је клијент који је резервисао, али није дошао. Рашчламбе по времену/услузи/тренеру користе исте филтере као картица и усклађене су са KPI-јима заглавља.
+formulas.lessonRevenue.title	Приход термина
+formulas.lessonRevenue.text	Груба процена прихода термина: број присутних помножен ценом. Уплате нису везане за одређени термин, па је ово процена, а не тачан износ.
+formulas.filtersScope.title	Опсег филтера
+formulas.filtersScope.text	Филтери Филијала и {{space}} примењују се само на метрике термина. Уплате немају такву везу, па се новац приказује за цео студио.
+formulas.avgValue.title	Вредност клијента
+formulas.avgValue.text	Колико један клијент у просеку доноси у овом периоду.
+formulas.cancelNoshow.title	Отказивања и недоласци
+formulas.cancelNoshow.text	Удео поремећених термина: отказивања и недоласци од свега планираног.
+formulas.avgRating.title	Просечна оцена
+formulas.avgRating.text	Просечна оцена коју су клијенти дали терминима овог тренера.
+formulas.teamScope.title	Опсег података
+formulas.teamScope.text	Ово броји само приход везан за одређеног тренера, па укупан износ свих тренера може бити мањи од укупног прихода студија.
+formulas.lessonsCount.title	Термини
+formulas.lessonsCount.text	Колико су термина тренери одржали у овом периоду.
+formulas.load.title	Оптерећење
+formulas.load.text	Колико је дан тренера попуњен: његови резервисани сати у оквиру радног времена студија.
+formulas.weeklyClients.title	Нови и повратници
+formulas.weeklyClients.text	По недељи: колико је људи дошло први пут, а колико се вратило. Здрав студио расте на обе линије.
+formulas.byCategory.title	Приход по категорији
+formulas.byCategory.text	На чему заиста зарађујете: пакетима, појединачним терминима, поклон-картицама и малопродајом.
+formulas.byMethod.title	Начини плаћања
+formulas.byMethod.text	Како клијенти плаћају. Помаже да видите да ли вам треба обрада картица и колико новца заобилази касу.
+formulas.buyerType.title	Ко плаћа
+formulas.buyerType.text	Нови клијенти наспрам сталних. Ако готово сав приход долази од нових клијената, студио их не задржава.
+formulas.products.title	Шта се продаје
+formulas.products.text	Сви пакети и услуге у периоду: колико је продато, за колико и да ли продаја расте.
+formulas.topProfitable.title	Најисплативији термини
+formulas.topProfitable.text	Времена у распореду која доносе највише новца. Ту поставите најбоље тренере.
+formulas.topFilled.title	Најпопуњенији термини
+formulas.topFilled.text	Времена која клијенти најрадије резервишу. Ако су потпуно попуњена, вреди додати још један термин.
+formulas.chronicLow.title	Хронично празни термини
+formulas.chronicLow.text	Времена која неколико недеља попуњавају мање од трећине места. Кандидати за премештање или укидање.
+formulas.hallUtil.title	Искоришћеност: {{spacePlural}}
+formulas.hallUtil.text	Колико су често ваши {{spacePlural}} стварно у употреби. Празно време је закуп који се не исплати.
+formulas.heatmap.title	Оптерећење по дану и сату
+formulas.heatmap.text	Боја приказује просечну стопу попуњености термина у периоду. Кликните ћелију да видите термине тог дана и сата.
+formulas.riskSegments.title	Ризични сегменти
+formulas.riskSegments.text	Клијенти груписани по врсти ризика који носе — да их изгубите или приходу који не доносе. Свака картица има свој разлог и јасан следећи корак: пошаљите им поруку, понудите обнову или виши пакет.
+formulas.loyalSegments.title	Лојални
+formulas.loyalSegments.text	Клијенти који вам већ доносе највише вредности: најчешће долазе, највише троше или доводе пријатеље. Вреди их неговати и награђивати.
+formulas.segment.at_risk.title	На ивици
+formulas.segment.at_risk.text	Некада су редовно долазили, а сада су нестали. Још могу да се врате једном поруком.
+formulas.segment.vip_idle.title	Неактивни VIP
+formulas.segment.vip_idle.text	Клијенти који су потрошили више од свих, али већ неко време нису долазили.
+formulas.segment.expiring_subscription.title	Претплата при крају
+formulas.segment.expiring_subscription.text	Овим клијентима остају 1–2 термина. Најбољи је тренутак да понудите обнову.
+formulas.segment.lost_newcomers.title	Новопридошли који се нису вратили
+formulas.segment.lost_newcomers.text	Дошли су једном и нестали. Обично је ствар у првом термину — вреди истражити.
+formulas.segment.upsell_candidates.title	Спремни за више
+formulas.segment.upsell_candidates.text	Често долазе, али купују најједноставнији пакет. Вреди им понудити скупљу претплату.
+formulas.segment.frequent.title	Редовни
+formulas.segment.frequent.text	Долазе чешће од свих осталих. Окосница су прихода студија.
+formulas.segment.high_ltv.title	Највреднији
+formulas.segment.high_ltv.text	Студију су укупно донели више новца од свих осталих.
+formulas.segment.referrers.title	Доводе пријатеље
+formulas.segment.referrers.text	Клијенти чије су препоруке довеле друге људе код вас.

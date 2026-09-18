@@ -1,0 +1,333 @@
+== fi
+nav.sectionLabel	Järjestelmäasetukset
+nav.general	Yleiset
+nav.appearance	Ulkoasu
+nav.notifications	Ilmoitukset
+nav.billing	Laskutus
+nav.security	Tietoturva
+nav.integrations	Integraatiot
+nav.data	Tiedot
+nav.logout	Vaihda CRM:ää
+toast.saved	Tallennettu
+toast.error	Jokin meni pieleen
+workspace.title	CRM-järjestelmäsi
+workspace.subtitle	Valitse työtila tai luo uusi
+workspace.current	Nykyinen
+workspace.membersCount_one	{{count}} jäsen
+workspace.membersCount_other	{{count}} jäsentä
+workspace.clientsCount_one	{{count}} asiakas
+workspace.clientsCount_other	{{count}} asiakasta
+workspace.createNew	Luo uusi studio
+workspace.loadError	Studioitasi ei voitu ladata
+workspace.selectError	Tähän studioon ei voitu vaihtaa
+general.company.title	Yritystiedot
+general.company.subtitle	Julkiset tiedot yrityksestäsi
+general.company.name	Yrityksen nimi
+general.company.namePh	esim. Oma studio
+general.company.desc	Kuvaus
+general.company.descPh	Mitä studiosi tekee…
+general.company.phone	Puhelin
+general.company.email	Sähköposti
+general.company.site	Verkkosivusto
+general.company.sitePh	https://studio.com
+general.company.address	Osoite
+general.company.addressPh	Esimerkkikatu 123, kaupunki
+general.reset	Palauta
+general.resetToast	Asetukset palautettu
+general.locale.title	Kieli ja alue
+general.locale.subtitle	Käyttöliittymän lokalisointiasetukset
+general.locale.timezone	Aikavyöhyke
+general.locale.timezoneSearch	Kaupunki tai poikkeama
+general.locale.timezoneNotFound	Aikavyöhykettä ei löytynyt
+general.locale.currency	Valuutta
+general.locale.currencySearch	Hae valuuttaa
+general.locale.currencyNotFound	Valuuttaa ei löytynyt
+general.locale.language	Käyttöliittymän kieli
+general.locale.languageSearch	Hae kieltä
+general.locale.languageNotFound	Kieltä ei löytynyt
+general.locale.dateFormat	Päivämäärän muoto
+general.locale.firstDay	Viikon ensimmäinen päivä
+general.locale.firstDayLabels.0	Maanantai
+general.locale.firstDayLabels.1	Sunnuntai
+general.booking.title	Varausmalli
+general.booking.subtitle	Näin asiakkaat varaavat sinulta
+general.booking.mode	Varausmalli
+general.booking.modeHint	Tapahtumat — asiakkaat ilmoittautuvat aikataulutettuun tuntiin. Yksilöllinen — asiakas valitsee asiantuntijan ja ajan. Yhdistetty — molemmat yhtä aikaa.
+general.booking.profile	Toimialan sanasto
+general.booking.profileHint	Valitsee henkilöstöstä ja tarjonnasta käytettävät sanat. Se muuttaa vain sanamuotoja — ei koskaan rooleja, hintoja tai varausmallia.
+general.booking.strict	Tiukka aikataulu
+general.booking.strictHint	Estää asiantuntijan tai yksinoikeudellisen tilan päällekkäiset varaukset. Vaaditaan ennen yksilöllisen varauksen käyttöönottoa.
+general.booking.spaceAxis	Käytä {{spacePlural}} aikataulussa
+general.booking.spaceAxisHint	Pois — asiakas varaa henkilön eikä tilalla ole saraketta päiväkirjassa. Päällä — tunti sidotaan tilaan.
+general.booking.spaceAxisDefaultOn	Toimialasi oletus: päällä
+general.booking.spaceAxisDefaultOff	Toimialasi oletus: pois
+general.booking.modes.event	Tapahtumat
+general.booking.modes.resource	Yksilöllinen
+general.booking.modes.hybrid	Yhdistetty
+general.booking.profiles.studio	Ryhmätoiminta ja studiot
+general.booking.profiles.sport	Urheilu ja kuntosalit
+general.booking.profiles.beauty	Kauneus ja hoito
+general.booking.profiles.recovery	Keho ja palautuminen
+general.booking.profiles.relax	Kylpylä ja rentoutus
+general.booking.profiles.other	Muu
+general.booking.preview.event	Tapahtuma
+general.booking.preview.resource	Yksilöllinen
+general.booking.errors.AUDIT_BLOCKED	Aikataulussa on varauksia, jotka eivät sovi tiukkaan aikatauluun.
+general.booking.errors.STRICT_SCHEDULE_REQUIRED	Ota ensin käyttöön tiukka aikataulu.
+general.booking.errors.RESOURCE_HISTORY_EXISTS	Tiukkaa aikataulua ei voi poistaa käytöstä: studiolla on yksilöllisiä varauksia.
+general.booking.findings.overlap	Päällekkäiset varaukset
+general.booking.findings.unknown_timezone	Tuntematon aikavyöhyke
+general.booking.findings.undefined_branch	Toimipistettä ei ole määritetty
+general.booking.findings.invalid_duration	Virheellinen kesto
+general.booking.findings.invalid_resource_row	Puutteellinen yksilöllinen varaus
+general.booking.findings.missing_branch_assignment	Asiantuntijaa ei ole liitetty toimipisteeseen
+general.booking.findings.missing_working_hours	Asiantuntijalla ei ole työaikoja
+general.booking.findings.inactive_specialist	Asiantuntija ei ole aktiivinen
+general.booking.findings.other	Vaatii tarkistusta
+appearance.theme.title	Teema
+appearance.theme.subtitle	Valitse käyttöliittymän visuaalinen tyyli
+appearance.theme.light	Vaalea
+appearance.theme.dark	Tumma
+appearance.theme.auto	Järjestelmä
+appearance.accent.title	Korostusväri
+appearance.accent.subtitle	Mukauta käyttöliittymän pääväriä
+appearance.accent.note	Valintasi on tallennettu, mutta sitä ei vielä käytetä käyttöliittymässä — se tulee tulevassa päivityksessä.
+appearance.accent.noteTitle	Tulossa pian
+appearance.accent.colors.peach	Persikka
+appearance.accent.colors.pistachio	Pistaasi
+appearance.accent.colors.lavender	Laventeli
+appearance.accent.colors.pink	Vaaleanpunainen
+appearance.accent.colors.gold	Kulta
+appearance.accent.colors.mint	Minttu
+appearance.language.title	Käyttöliittymän kieli
+appearance.language.subtitle	Henkilökohtainen kielesi — ei vaikuta studion asetuksiin
+appearance.language.search	Hae kieltä
+appearance.language.empty	Kieltä ei löytynyt
+notifications.myPrefs.title	Omat ilmoitukseni
+notifications.myPrefs.subtitle	Henkilökohtaiset asetukset — eivät vaikuta muuhun studioon
+notifications.myPrefs.hint	Pakollisia ilmoituksia ei voi poistaa käytöstä — niiden ansiosta et koskaan jää paitsi aikataulumuutoksista ja maksuista.
+notifications.myPrefs.empty	Roolillesi ei ole valinnaisia ilmoituksia
+notifications.myPrefs.channels.email	Sähköposti
+notifications.myPrefs.channels.telegram	Telegram
+notifications.myPrefs.channels.whatsapp	WhatsApp
+notifications.telegram.title	Telegram-ilmoitukset
+notifications.telegram.subtitle	Mihin lähetetään sinulle henkilökohtaiset tapahtumat — varaukset, palkanlaskenta ja raportit
+notifications.telegram.chatId	Telegram chat_id -tunnuksesi
+notifications.telegram.chatIdPh	esim. 123456789
+notifications.telegram.hintBefore	Löydät chat_id-tunnuksesi botilta 
+notifications.telegram.hintAfter	 Telegramissa — aloita keskustelu sen kanssa, niin se lähettää tunnuksesi.
+notifications.telegram.invalidChatId	Telegram chat_id -tunnuksen on oltava numero ilman symboleja
+notifications.telegram.saved	Telegram on yhdistetty ilmoituksia varten
+notifications.telegram.saveFailed	Telegramin tallennus epäonnistui
+notifications.email.title	Ilmoitusten sähköposti
+notifications.email.subtitle	Mihin järjestelmän sähköpostit lähetetään
+notifications.email.primary	Ensisijainen sähköposti
+notifications.email.backup	Varasähköposti
+notifications.email.backupPh	backup@studio.com
+notifications.email.saved	Ilmoitusasetukset tallennettu
+billing.plans.start	Start
+billing.plans.pro	Pro
+billing.plans.business	Business
+billing.plans.free_trial	Maksuton kokeilu
+billing.status.active	Aktiivinen
+billing.status.trial	Kokeilu
+billing.status.expired	Vanhentunut
+billing.plan.title	Nykyinen tilaus
+billing.plan.expiresAt	Aktiivinen {{date}} asti
+billing.plan.maxStaff	Enintään {{count}} työntekijää
+billing.plan.staffUnlimited	Rajaton määrä työntekijöitä
+billing.plan.noSubscription	Ei aktiivista tilausta
+billing.plan.noSubscriptionCta	Valitse tilaus
+billing.plan.trialCta	Valitse tilaus
+billing.upgrade	Päivitä tasolle {{plan}}
+billing.renew	Uusi
+billing.autopay.title	Automaattinen uusinta
+billing.autopay.subtitle	Veloitetaan tallennetulta kortiltasi
+billing.autopay.autoRenew	Automaattinen uusinta
+billing.autopay.notifyBefore	Muistutamme sinua {{count}} päivää ennen veloitusta
+billing.payment.title	Maksutapa
+billing.payment.cardSummary	Kortti •••• {{last4}}
+billing.payment.notLinked	Korttia ei ole yhdistetty
+billing.payment.change	Vaihda
+billing.history.title	Maksuhistoria
+billing.history.subtitle	Viimeiset 12 maksua
+billing.history.exportCsv	Vie CSV
+billing.history.empty	Ei vielä maksuja
+billing.history.showAll	Näytä kaikki
+billing.history.period	{{count}} kk
+billing.history.noDate	—
+billing.history.status.paid	Maksettu
+billing.history.status.pending	Odottaa
+billing.history.status.failed	Maksamatta
+billing.history.status.refunded	Hyvitetty
+billing.toast.autopaySaved	Automaattisen uusinnan asetukset tallennettu
+billing.toast.renewed	Uusinta käynnistetty
+billing.toast.csvExportError	CSV-vienti epäonnistui
+security.account.title	Tilin tietoturva
+security.account.subtitle	Suojaa työtilasi käyttöoikeus
+security.twoFa.title	Kaksivaiheinen tunnistautuminen
+security.twoFa.sub	Sähköpostikoodi jokaisella kirjautumiskerralla
+security.twoFa.active	Aktiivinen
+security.twoFa.disabled	Pois käytöstä
+security.twoFa.enableTitle	Ota 2FA käyttöön
+security.twoFa.disableTitle	Poista 2FA käytöstä
+security.twoFa.enableWarning	Kun toiminto on käytössä, jokainen kirjautuminen vaatii koodin, joka lähetetään osoitteeseen {{email}}. Varmista, että pääset siihen käsiksi — muuten saatat menettää pääsyn tiliisi.
+security.twoFa.disableWarning	Kun toiminto on poistettu käytöstä, pelkkä salasana riittää kirjautumiseen ilman sähköpostikoodia.
+security.twoFa.enabledToast	Kaksivaiheinen tunnistautuminen on käytössä
+security.twoFa.disabledToast	Kaksivaiheinen tunnistautuminen on poistettu käytöstä
+security.password.title	Tilin salasana
+security.password.sub	Muutos vahvistetaan sähköpostikoodilla
+security.password.change	Vaihda salasana
+security.password.changed	Salasana vaihdettu onnistuneesti
+security.password.current	Nykyinen salasana
+security.password.currentPh	Kirjoita nykyinen salasanasi
+security.password.new	Uusi salasana
+security.password.newPh	Vähintään 8 merkkiä
+security.password.repeat	Toista salasana
+security.password.repeatPh	Kirjoita uusi salasana uudelleen
+security.password.mismatch	Salasanat eivät täsmää
+security.password.forgot	Unohditko salasanasi?
+security.password.resetTitle	Salasanan palautus
+security.password.step1Sub	Varmistetaan, että olet sinä
+security.password.step2Sub	Koodi on lähetetty osoitteeseen {{email}}
+security.password.step3Sub	Valitse uusi salasana
+security.password.resetIntro	Lähetämme 6-numeroisen koodin tilisi sähköpostiosoitteeseen. Nykyistä salasanaa ei tarvitse tietää — koodi todistaa, että postilaatikko on sinun.
+security.password.sendCode	Lähetä koodi
+security.password.back	Takaisin
+security.password.save	Tallenna salasana
+security.password.resetDone	Salasana päivitetty
+security.password.resetLogoutHint	Muut laitteet kirjataan ulos — pysyt kirjautuneena tällä laitteella.
+security.password.rules.len	Vähintään 8 merkkiä
+security.password.rules.letter	Sisältää kirjaimen
+security.password.rules.digit	Sisältää numeron
+security.password.rules.simple	Ei 111 tai qwerty
+security.sessions.title	Aktiiviset istunnot
+security.sessions.sub	Missä tilillesi on juuri nyt kirjauduttu
+security.sessions.count	{{count}} laitetta
+security.sessions.manage	Hallitse
+security.sessions.hide	Piilota
+security.sessions.current	Nykyinen
+security.sessions.terminate	Lopeta
+security.sessions.terminateAll	Lopeta kaikki muut istunnot
+security.sessions.terminatedToast	Istunto lopetettu onnistuneesti
+security.sessions.terminatedAllToast	Muut istunnot lopetettu
+security.sessions.justNow	Aktiivinen nyt
+security.sessions.minutesAgo	{{count}} min sitten
+security.sessions.hoursAgo	{{count}} h sitten
+security.sessions.daysAgo	{{count}} pv sitten
+security.sessions.unknownLocation	Tuntematon
+security.otp.sentHint	Lähetimme 6-numeroisen koodin sähköpostiisi. Kirjoita se alle.
+security.otp.resend	Lähetä koodi uudelleen
+security.otp.resendIn	Lähetä uudelleen {{count}} s kuluttua
+security.otp.confirm	Vahvista
+security.otp.cancel	Peruuta
+security.otp.sendCode	Lähetä koodi
+security.otp.continue	Jatka
+security.danger.title	Tietojen hallinta (vaaravyöhyke)
+security.danger.export.title	Vie kaikki tiedot
+security.danger.export.sub	Lataa arkisto asiakastietokannasta ja historiasta
+security.danger.export.prepare	Valmistele arkisto
+security.danger.export.hide	Piilota
+security.danger.export.clients	Asiakastietokanta (CSV)
+security.danger.export.finances	Rahoitustapahtumat
+security.danger.export.schedule	Tunnit ja aikataulu
+security.danger.export.start	Aloita vienti
+security.danger.export.started	Arkistoa valmistellaan, ja linkki lähetetään sähköpostiisi
+security.danger.export.emptySelection	Valitse vietäväksi vähintään yksi osio
+security.danger.wipe.title	Tyhjennä tietokanta
+security.danger.wipe.sub	Poistaa kaikki asiakkaat ja varaukset. Asetukset säilytetään.
+security.danger.wipe.action	Tyhjennä tiedot
+security.danger.wipe.toast	Tietokanta tyhjennetty onnistuneesti
+security.danger.wipe.consequence1	Poistetaan pysyvästi: asiakkaat, tunnit, varaukset, tapahtumat, asiakirjat, asiakastilaukset, kanta-asiakashistoria
+security.danger.wipe.consequence2	Ei muutoksia: studio, toimipisteet, {{spacePlural}}, palvelut, henkilöstö, tilaus ja asetukset
+security.danger.wipe.consequence3	Toimintoa ei voi perua vahvistamisen jälkeen
+security.danger.deleteAccount.title	Poista yritystili
+security.danger.deleteAccount.sub	Yrityksen täydellinen ja peruuttamaton poistaminen järjestelmästä
+security.danger.deleteAccount.action	Poista pysyvästi
+security.danger.deleteAccount.consequence1	Studio ja kaikki sen tiedot poistetaan pysyvästi, mukaan lukien asiakkaat, tunnit, taloustiedot ja asetukset
+security.danger.deleteAccount.consequence2	Henkilökohtainen tilisi säilyy — vain tämä studio poistetaan
+security.danger.deleteAccount.consequence3	Poisto ei ole käytettävissä aktiivisen tilauksen aikana tai jos studiolla on muita omistajia
+integrations.title	Integraatiot
+integrations.subtitle	Yhdistä ulkoiset kanavat ja ekosysteemit yhdellä napsautuksella
+integrations.loadError	Integraatioiden tilaa ei voitu ladata
+integrations.items.telegram.name	Telegram-botti
+integrations.items.telegram.sub	Asiakasilmoitukset ja varaukset botin kautta
+integrations.items.whatsapp.name	WhatsApp Business
+integrations.items.whatsapp.sub	Joukkoviestit ja automaattiset asiakasilmoitukset
+integrations.items.instagram.name	Instagram Direct
+integrations.items.instagram.sub	AI-agentti automaattisille vastauksille ja verkkovarauksille
+integrations.items.google_calendar.name	Google Calendar
+integrations.items.google_calendar.sub	Studion aikataulun synkronointi
+integrations.status.connected	Yhdistetty
+integrations.status.notActive	Ei yhdistetty
+integrations.actions.configure	Määritä
+integrations.actions.connect	Yhdistä
+integrations.actions.disconnect	Katkaise yhteys
+integrations.fields.keyLabel	Avain
+integrations.fields.connectedAtLabel	Yhdistetty
+integrations.fields.telegramToken	Botin API-tunnus (BotFatherilta)
+integrations.fields.telegramTokenPh	123456789:ABCDefGhIJKlmNoPQRsTUVwxyZ
+integrations.fields.whatsappToken	Käyttöoikeustunnus
+integrations.fields.whatsappTokenPh	EAAxxxxxxxxxxxxx
+integrations.fields.whatsappPhoneId	Puhelinnumeron tunnus
+integrations.fields.whatsappPhoneIdPh	1029384756
+integrations.fields.whatsappWabaId	WABA-tunnus (valinnainen)
+integrations.fields.whatsappWabaIdPh	1029384756
+integrations.fields.instagramToken	Käyttöoikeustunnus
+integrations.fields.instagramTokenPh	IGQWR...
+integrations.fields.instagramUserId	Instagram-yritystilin tunnus
+integrations.fields.instagramUserIdPh	17841400000000000
+integrations.guide.howToTitle	Näin yhdistät
+integrations.guide.telegram.steps.0	Avaa @BotFather Telegramissa ja lähetä /newbot
+integrations.guide.telegram.steps.1	Valitse botille nimi ja käyttäjätunnus — BotFather lähettää sinulle API-tunnuksen
+integrations.guide.telegram.steps.2	Liitä tunnus alle ja napsauta Yhdistä
+integrations.guide.whatsapp.steps.0	Luo sovellus Meta for Developersissa ja lisää WhatsApp-tuote
+integrations.guide.whatsapp.steps.1	Kopioi väliaikainen tai pysyvä käyttöoikeustunnus API Setupista
+integrations.guide.whatsapp.steps.2	Kopioi myös testi- tai vahvistetun numeron puhelinnumeron tunnus
+integrations.guide.whatsapp.steps.3	Liitä molemmat arvot alle ja napsauta Yhdistä
+integrations.guide.instagram.steps.0	Yhdistä studion Instagram-tili Facebook-sivuun — se vaaditaan Direct APIa varten
+integrations.guide.instagram.steps.1	Luo sovellus Meta for Developersissa, jossa on Instagram Graph API -tuote
+integrations.guide.instagram.steps.2	Luo käyttöoikeustunnus oikeuksilla instagram_basic ja instagram_manage_messages
+integrations.guide.instagram.steps.3	Kopioi Instagram-yritystilin tunnus ja käyttöoikeustunnus sekä liitä ne alle
+integrations.guide.instagram.steps.4	Ilman Metan hyväksyntää yhteys toimii vain sovelluksen testitileillä
+integrations.guide.google_calendar.steps.0	Napsauta Yhdistä — Google-kirjautumisikkuna avautuu
+integrations.guide.google_calendar.steps.1	Valitse tili, johon studion kalenteri on yhdistetty
+integrations.guide.google_calendar.steps.2	Myönnä kalenterin käyttöoikeus — tunnit alkavat näkyä siellä automaattisesti
+integrations.capabilities.notify	asiakasilmoitukset tällä kanavalla
+integrations.capabilities.booking	verkkovaraus tämän kanavan kautta
+integrations.capabilities.dm_agent	AI-agentti automaattisille vastauksille Directissä
+integrations.capabilities.schedule_sync	aikataulun synkronointi Google Calendarin kanssa
+integrations.disconnect.title	Katkaistaanko yhteys palveluun {{name}}?
+integrations.disconnect.willStop	Tämä lakkaa toimimasta:
+integrations.disconnect.checkbox	Ymmärrän seuraukset
+integrations.disconnect.cancel	Peruuta
+integrations.disconnect.confirm	Katkaise yhteys
+integrations.google.connected	Google Calendar on yhdistetty
+integrations.google.denied	Google Calendarin käyttöoikeutta ei myönnetty
+integrations.google.error	Google Calendariin yhdistäminen epäonnistui
+integrations.google.primary	ensisijainen
+integrations.google.calendar	Kalenteri
+integrations.google.selectCalendar	Valitse kalenteri
+integrations.google.loadingCalendars	Ladataan kalentereita…
+integrations.google.syncMode	Synkronointitapa
+integrations.google.syncModeOptions.push	Vain CRM:stä Googleen
+integrations.google.syncModeOptions.two_way	Kaksisuuntainen
+integrations.google.syncNow	Synkronoi nyt
+integrations.google.lastSync	Synkronoitu viimeksi: {{date}}
+integrations.google.neverSynced	Ei vielä synkronoitu
+integrations.google.timezoneWarning	Studion aikavyöhykettä ei ole asetettu — tapahtumat lähetetään UTC-ajassa ja voivat poiketa todellisista tuntiajoista. Aseta aikavyöhyke kohdassa Yleiset.
+integrations.google.syncResult	Synkronoitu: {{pushed}} lähetetty, {{pulled}} haettu
+integrations.google.settingsSaved	Google Calendarin asetukset tallennettu
+integrations.toast.connected	Integraatio yhdistetty
+integrations.toast.disconnected	Integraation yhteys katkaistu
+data.export.title	Vie raportit ja luettelot
+data.export.subtitle	Lataa tiedostoja taulukkomuodoissa kirjanpitoa ja analytiikkaa varten
+data.export.clearFilter	Tyhjennä ajanjakso
+data.export.items.clients.name	Asiakasluettelo
+data.export.items.schedule.name	Päiväkirja- ja varaushistoria
+data.export.items.finances.name	Taloudellinen raportti
+data.export.items.subscriptions.name	Asiakastilaukset
+data.export.rows_one	{{count}} tietue
+data.export.rows_other	{{count}} tietuetta
+data.export.loading	Ladataan...
+data.export.empty	ei tietoja tältä ajanjaksolta

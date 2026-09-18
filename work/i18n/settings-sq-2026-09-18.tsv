@@ -1,0 +1,333 @@
+== sq
+nav.sectionLabel	Cilësimet e sistemit
+nav.general	Të përgjithshme
+nav.appearance	Pamja
+nav.notifications	Njoftimet
+nav.billing	Pagesat
+nav.security	Siguria
+nav.integrations	Integrimet
+nav.data	Të dhënat
+nav.logout	Ndrysho CRM-në
+toast.saved	U ruajt
+toast.error	Diçka shkoi keq
+workspace.title	Sistemet tuaja CRM
+workspace.subtitle	Zgjidhni një hapësirë pune ose krijoni një të re
+workspace.current	Aktuale
+workspace.membersCount_one	{{count}} anëtar
+workspace.membersCount_other	{{count}} anëtarë
+workspace.clientsCount_one	{{count}} klient
+workspace.clientsCount_other	{{count}} klientë
+workspace.createNew	Krijo një studio të re
+workspace.loadError	Nuk u ngarkuan dot studiot tuaja
+workspace.selectError	Nuk u kalua dot te kjo studio
+general.company.title	Të dhënat e kompanisë
+general.company.subtitle	Informacion publik për biznesin tuaj
+general.company.name	Emri i kompanisë
+general.company.namePh	p.sh. Studioja ime
+general.company.desc	Përshkrimi
+general.company.descPh	Çfarë bën studioja juaj…
+general.company.phone	Telefoni
+general.company.email	Email
+general.company.site	Faqja e internetit
+general.company.sitePh	https://studio.com
+general.company.address	Adresa
+general.company.addressPh	Rruga Shembull 123, Qyteti
+general.reset	Rivendos
+general.resetToast	Cilësimet u rivendosën
+general.locale.title	Gjuha dhe rajoni
+general.locale.subtitle	Cilësimet e lokalizimit të ndërfaqes
+general.locale.timezone	Zona kohore
+general.locale.timezoneSearch	Qyteti ose diferenca kohore
+general.locale.timezoneNotFound	Nuk u gjet zonë kohore
+general.locale.currency	Monedha
+general.locale.currencySearch	Kërko monedhën
+general.locale.currencyNotFound	Nuk u gjet monedhë
+general.locale.language	Gjuha e ndërfaqes
+general.locale.languageSearch	Kërko gjuhën
+general.locale.languageNotFound	Nuk u gjet gjuhë
+general.locale.dateFormat	Formati i datës
+general.locale.firstDay	Dita e parë e javës
+general.locale.firstDayLabels.0	E hënë
+general.locale.firstDayLabels.1	E diel
+general.booking.title	Modeli i rezervimit
+general.booking.subtitle	Si ju rezervojnë klientët
+general.booking.mode	Modeli i rezervimit
+general.booking.modeHint	Evente — klientët regjistrohen në një orë të planifikuar. Individuale — klienti zgjedh specialistin dhe orën. E përzier — të dyja njëkohësisht.
+general.booking.profile	Formulimi për industrinë
+general.booking.profileHint	Zgjedh fjalët për stafin dhe ofertat. Ndryshon vetëm formulimin — kurrë rolet, çmimet ose modelin e rezervimit.
+general.booking.strict	Orar i rreptë
+general.booking.strictHint	Ndalon rezervimin e dyfishtë të një specialisti ose hapësire ekskluzive. Kërkohet para se të aktivizohet rezervimi individual.
+general.booking.spaceAxis	Përdor {{spacePlural}} në orar
+general.booking.spaceAxisHint	Joaktiv — klienti rezervon një person dhe hapësira nuk ka kolonë në ditar. Aktiv — një orë lidhet me një hapësirë.
+general.booking.spaceAxisDefaultOn	Parazgjedhja për industrinë tuaj: aktiv
+general.booking.spaceAxisDefaultOff	Parazgjedhja për industrinë tuaj: joaktiv
+general.booking.modes.event	Evente
+general.booking.modes.resource	Individuale
+general.booking.modes.hybrid	E përzier
+general.booking.profiles.studio	Praktika dhe studio në grup
+general.booking.profiles.sport	Sport dhe palestra
+general.booking.profiles.beauty	Bukuri dhe kujdes personal
+general.booking.profiles.recovery	Trup dhe rikuperim
+general.booking.profiles.relax	Spa dhe relaks
+general.booking.profiles.other	Tjetër
+general.booking.preview.event	Event
+general.booking.preview.resource	Individuale
+general.booking.errors.AUDIT_BLOCKED	Orari përmban rezervime që nuk përputhen me një orar të rreptë.
+general.booking.errors.STRICT_SCHEDULE_REQUIRED	Aktivizoni së pari orarin e rreptë.
+general.booking.errors.RESOURCE_HISTORY_EXISTS	Orari i rreptë nuk mund të çaktivizohet: studioja ka rezervime individuale.
+general.booking.findings.overlap	Rezervime që mbivendosen
+general.booking.findings.unknown_timezone	Zonë kohore e panjohur
+general.booking.findings.undefined_branch	Filialja nuk është caktuar
+general.booking.findings.invalid_duration	Kohëzgjatje e pavlefshme
+general.booking.findings.invalid_resource_row	Rezervim individual i paplotë
+general.booking.findings.missing_branch_assignment	Specialisti nuk është caktuar në filialen përkatëse
+general.booking.findings.missing_working_hours	Specialisti nuk ka orar pune
+general.booking.findings.inactive_specialist	Specialisti është joaktiv
+general.booking.findings.other	Kërkon shqyrtim
+appearance.theme.title	Tema
+appearance.theme.subtitle	Zgjidhni stilin vizual të ndërfaqes
+appearance.theme.light	E çelët
+appearance.theme.dark	E errët
+appearance.theme.auto	Sistemi
+appearance.accent.title	Ngjyra theksuese
+appearance.accent.subtitle	Personalizoni ngjyrën kryesore të ndërfaqes
+appearance.accent.note	Zgjedhja juaj ruhet, por ende nuk zbatohet në ndërfaqe — vjen në një përditësim të ardhshëm.
+appearance.accent.noteTitle	Së shpejti
+appearance.accent.colors.peach	Pjeshkë
+appearance.accent.colors.pistachio	Fistik
+appearance.accent.colors.lavender	Livando
+appearance.accent.colors.pink	Rozë
+appearance.accent.colors.gold	Ari
+appearance.accent.colors.mint	Mentë
+appearance.language.title	Gjuha e ndërfaqes
+appearance.language.subtitle	Gjuha juaj personale — nuk ndikon cilësimet e studios
+appearance.language.search	Kërko gjuhën
+appearance.language.empty	Nuk u gjet gjuhë
+notifications.myPrefs.title	Njoftimet e mia
+notifications.myPrefs.subtitle	Preferencat personale — nuk ndikojnë pjesën tjetër të studios
+notifications.myPrefs.hint	Njoftimet e detyrueshme nuk mund të çaktivizohen — ato sigurojnë që të mos humbisni ndryshimet në orar dhe pagesat.
+notifications.myPrefs.empty	Nuk ka njoftime opsionale për rolin tuaj
+notifications.myPrefs.channels.email	Email
+notifications.myPrefs.channels.telegram	Telegram
+notifications.myPrefs.channels.whatsapp	WhatsApp
+notifications.telegram.title	Telegram për njoftime
+notifications.telegram.subtitle	Ku t’ju dërgohen personalisht ngjarjet — rezervimet, listëpagesat, raportet
+notifications.telegram.chatId	chat_id juaj në Telegram
+notifications.telegram.chatIdPh	p.sh. 123456789
+notifications.telegram.hintBefore	Mund ta gjeni chat_id tuaj te boti 
+notifications.telegram.hintAfter	 në Telegram — filloni një bisedë me të dhe ai do t’ju dërgojë ID-në tuaj.
+notifications.telegram.invalidChatId	chat_id i Telegram duhet të jetë numër, pa simbole
+notifications.telegram.saved	Telegram u lidh për njoftime
+notifications.telegram.saveFailed	Ruajtja e Telegram dështoi
+notifications.email.title	Email për njoftime
+notifications.email.subtitle	Ku të dërgohen email-et e sistemit
+notifications.email.primary	Email kryesor
+notifications.email.backup	Email rezervë
+notifications.email.backupPh	backup@studio.com
+notifications.email.saved	Cilësimet e njoftimeve u ruajtën
+billing.plans.start	Start
+billing.plans.pro	Pro
+billing.plans.business	Business
+billing.plans.free_trial	Provë falas
+billing.status.active	Aktive
+billing.status.trial	Provë
+billing.status.expired	Skaduar
+billing.plan.title	Plani aktual
+billing.plan.expiresAt	Aktiv deri më {{date}}
+billing.plan.maxStaff	Deri në {{count}} staf
+billing.plan.staffUnlimited	Staf i pakufizuar
+billing.plan.noSubscription	Nuk ka abonim aktiv
+billing.plan.noSubscriptionCta	Zgjidhni një plan
+billing.plan.trialCta	Zgjidhni një plan
+billing.upgrade	Përmirëso në {{plan}}
+billing.renew	Rinovo
+billing.autopay.title	Rinovim automatik
+billing.autopay.subtitle	Tarifohet në kartën tuaj të ruajtur
+billing.autopay.autoRenew	Rinovim automatik
+billing.autopay.notifyBefore	Do t’ju kujtojmë {{count}} ditë para tarifimit
+billing.payment.title	Mënyra e pagesës
+billing.payment.cardSummary	Kartë •••• {{last4}}
+billing.payment.notLinked	Nuk ka kartë të lidhur
+billing.payment.change	Ndrysho
+billing.history.title	Historiku i pagesave
+billing.history.subtitle	12 pagesat e fundit
+billing.history.exportCsv	Eksporto CSV
+billing.history.empty	Nuk ka pagesa ende
+billing.history.showAll	Shfaq të gjitha
+billing.history.period	{{count}} muaj
+billing.history.noDate	—
+billing.history.status.paid	Paguar
+billing.history.status.pending	Në pritje
+billing.history.status.failed	Nuk u pagua
+billing.history.status.refunded	Rimbursuar
+billing.toast.autopaySaved	Cilësimet e rinovimit automatik u ruajtën
+billing.toast.renewed	Rinovimi filloi
+billing.toast.csvExportError	Nuk u eksportua dot CSV
+security.account.title	Siguria e llogarisë
+security.account.subtitle	Mbroni hyrjen në hapësirën tuaj të punës
+security.twoFa.title	Autentikim me dy faktorë
+security.twoFa.sub	Kod me email në çdo hyrje
+security.twoFa.active	Aktiv
+security.twoFa.disabled	Joaktiv
+security.twoFa.enableTitle	Aktivizo 2FA
+security.twoFa.disableTitle	Çaktivizo 2FA
+security.twoFa.enableWarning	Pasi të aktivizohet, çdo hyrje do të kërkojë një kod të dërguar te {{email}}. Sigurohuni që keni qasje në të — përndryshe rrezikoni të humbni qasjen në llogari.
+security.twoFa.disableWarning	Pasi të çaktivizohet, vetëm fjalëkalimi do të mjaftojë për hyrje, pa kod email-i.
+security.twoFa.enabledToast	Autentikimi me dy faktorë u aktivizua
+security.twoFa.disabledToast	Autentikimi me dy faktorë u çaktivizua
+security.password.title	Fjalëkalimi i llogarisë
+security.password.sub	Ndryshimi konfirmohet me kod email-i
+security.password.change	Ndrysho fjalëkalimin
+security.password.changed	Fjalëkalimi u ndryshua me sukses
+security.password.current	Fjalëkalimi aktual
+security.password.currentPh	Vendosni fjalëkalimin aktual
+security.password.new	Fjalëkalim i ri
+security.password.newPh	Të paktën 8 karaktere
+security.password.repeat	Përsërit fjalëkalimin
+security.password.repeatPh	Vendosni përsëri fjalëkalimin e ri
+security.password.mismatch	Fjalëkalimet nuk përputhen
+security.password.forgot	Harruat fjalëkalimin?
+security.password.resetTitle	Rikuperimi i fjalëkalimit
+security.password.step1Sub	Le të konfirmojmë që jeni ju
+security.password.step2Sub	Kodi u dërgua te {{email}}
+security.password.step3Sub	Zgjidhni një fjalëkalim të ri
+security.password.resetIntro	Do të dërgojmë me email një kod 6-shifror në adresën e llogarisë suaj. Nuk ka nevojë të dini fjalëkalimin aktual — kodi vërteton që kutia postare është e juaja.
+security.password.sendCode	Dërgo kodin
+security.password.back	Mbrapa
+security.password.save	Ruaj fjalëkalimin
+security.password.resetDone	Fjalëkalimi u përditësua
+security.password.resetLogoutHint	Pajisjet e tjera do të dalin nga llogaria — ju mbeteni i kyçur në këtë pajisje.
+security.password.rules.len	8+ karaktere
+security.password.rules.letter	Ka një shkronjë
+security.password.rules.digit	Ka një shifër
+security.password.rules.simple	Pa 111 ose qwerty
+security.sessions.title	Sesione aktive
+security.sessions.sub	Ku është e kyçur aktualisht llogaria juaj
+security.sessions.count	{{count}} pajisje
+security.sessions.manage	Menaxho
+security.sessions.hide	Fshih
+security.sessions.current	Aktuale
+security.sessions.terminate	Përfundo
+security.sessions.terminateAll	Përfundo të gjitha sesionet e tjera
+security.sessions.terminatedToast	Sesioni u përfundua me sukses
+security.sessions.terminatedAllToast	Sesione të tjera u përfunduan
+security.sessions.justNow	Aktiv tani
+security.sessions.minutesAgo	{{count}} min më parë
+security.sessions.hoursAgo	{{count}} orë më parë
+security.sessions.daysAgo	{{count}} ditë më parë
+security.sessions.unknownLocation	E panjohur
+security.otp.sentHint	Ju kemi dërguar një kod 6-shifror në email. Vendoseni më poshtë.
+security.otp.resend	Ridërgo kodin
+security.otp.resendIn	Ridërgo pas {{count}}s
+security.otp.confirm	Konfirmo
+security.otp.cancel	Anulo
+security.otp.sendCode	Dërgo kodin
+security.otp.continue	Vazhdo
+security.danger.title	Menaxhimi i të dhënave (Zonë e rrezikshme)
+security.danger.export.title	Eksporto të gjitha të dhënat
+security.danger.export.sub	Shkarko një arkiv të bazës së klientëve dhe historikut
+security.danger.export.prepare	Përgatit arkivin
+security.danger.export.hide	Fshih
+security.danger.export.clients	Baza e klientëve (CSV)
+security.danger.export.finances	Transaksionet financiare
+security.danger.export.schedule	Terminet dhe orari
+security.danger.export.start	Fillo eksportimin
+security.danger.export.started	Arkivi po përgatitet, një lidhje do të dërgohet në emailin tuaj
+security.danger.export.emptySelection	Zgjidhni të paktën një seksion për eksportim
+security.danger.wipe.title	Pastro bazën e të dhënave
+security.danger.wipe.sub	Fshin të gjithë klientët dhe rezervimet. Cilësimet ruhen.
+security.danger.wipe.action	Pastro të dhënat
+security.danger.wipe.toast	Baza e të dhënave u pastrua me sukses
+security.danger.wipe.consequence1	Fshihen përgjithmonë: klientët, terminet, rezervimet, veprimet, dokumentet, abonimet e klientëve, historiku i besnikërisë
+security.danger.wipe.consequence2	Të pandryshuara: studioja, filialet, {{spacePlural}}, shërbimet, stafi, abonimi dhe cilësimet
+security.danger.wipe.consequence3	Ky veprim është i pakthyeshëm — nuk mund të zhbëhet pasi konfirmohet
+security.danger.deleteAccount.title	Fshi llogarinë e kompanisë
+security.danger.deleteAccount.sub	Shkatërrim i plotë dhe i pakthyeshëm i biznesit në sistem
+security.danger.deleteAccount.action	Fshi përgjithmonë
+security.danger.deleteAccount.consequence1	Studioja dhe të gjitha të dhënat e saj do të fshihen përgjithmonë, përfshirë klientët, terminet, financat dhe cilësimet
+security.danger.deleteAccount.consequence2	Llogaria juaj personale mbetet — fshihet vetëm kjo studio
+security.danger.deleteAccount.consequence3	Fshirja nuk është e mundur me abonim aktiv ose nëse studioja ka pronarë të tjerë
+integrations.title	Integrimet
+integrations.subtitle	Lidhni kanalet dhe ekosistemet e jashtme me një klikim
+integrations.loadError	Nuk u ngarkua dot statusi i integrimit
+integrations.items.telegram.name	Bot Telegram
+integrations.items.telegram.sub	Njoftimet e klientëve dhe rezervimet përmes botit
+integrations.items.whatsapp.name	WhatsApp Business
+integrations.items.whatsapp.sub	Dërgime masive mesazhesh dhe njoftime automatike për klientët
+integrations.items.instagram.name	Instagram Direct
+integrations.items.instagram.sub	Agjent AI për përgjigje automatike dhe rezervim online
+integrations.items.google_calendar.name	Google Calendar
+integrations.items.google_calendar.sub	Sinkronizimi i orarit të studios
+integrations.status.connected	I lidhur
+integrations.status.notActive	I palidhur
+integrations.actions.configure	Konfiguro
+integrations.actions.connect	Lidhu
+integrations.actions.disconnect	Shkëput
+integrations.fields.keyLabel	Çelësi
+integrations.fields.connectedAtLabel	I lidhur
+integrations.fields.telegramToken	Tokeni API i botit (nga @BotFather)
+integrations.fields.telegramTokenPh	123456789:ABCDefGhIJKlmNoPQRsTUVwxyZ
+integrations.fields.whatsappToken	Tokeni i qasjes
+integrations.fields.whatsappTokenPh	EAAxxxxxxxxxxxxx
+integrations.fields.whatsappPhoneId	ID e numrit të telefonit
+integrations.fields.whatsappPhoneIdPh	1029384756
+integrations.fields.whatsappWabaId	ID WABA (opsionale)
+integrations.fields.whatsappWabaIdPh	1029384756
+integrations.fields.instagramToken	Tokeni i qasjes
+integrations.fields.instagramTokenPh	IGQWR...
+integrations.fields.instagramUserId	ID e llogarisë së biznesit në Instagram
+integrations.fields.instagramUserIdPh	17841400000000000
+integrations.guide.howToTitle	Si të lidheni
+integrations.guide.telegram.steps.0	Hapni @BotFather në Telegram dhe dërgoni /newbot
+integrations.guide.telegram.steps.1	Zgjidhni emrin dhe emrin e përdoruesit për botin — BotFather do t’ju dërgojë një token API
+integrations.guide.telegram.steps.2	Ngjiteni tokenin më poshtë dhe klikoni Lidhu
+integrations.guide.whatsapp.steps.0	Krijoni një aplikacion në Meta for Developers dhe shtoni produktin WhatsApp
+integrations.guide.whatsapp.steps.1	Te API Setup, kopjoni tokenin e përkohshëm ose të përhershëm të qasjes
+integrations.guide.whatsapp.steps.2	Kopjoni gjithashtu ID e numrit të telefonit të numrit testues ose të verifikuar
+integrations.guide.whatsapp.steps.3	Ngjitini të dy vlerat më poshtë dhe klikoni Lidhu
+integrations.guide.instagram.steps.0	Lidhni llogarinë Instagram të studios me një Facebook Page — kërkohet për API-n Direct
+integrations.guide.instagram.steps.1	Krijoni një aplikacion në Meta for Developers me produktin Instagram Graph API
+integrations.guide.instagram.steps.2	Gjeneroni një token qasjeje me lejet instagram_basic dhe instagram_manage_messages
+integrations.guide.instagram.steps.3	Kopjoni ID e llogarisë së biznesit në Instagram dhe tokenin, pastaj ngjitini më poshtë
+integrations.guide.instagram.steps.4	Pa kaluar shqyrtimin e Meta-s, lidhja funksionon vetëm për llogaritë e testimit të aplikacionit
+integrations.guide.google_calendar.steps.0	Klikoni Lidhu — do të hapet dritarja e hyrjes në Google
+integrations.guide.google_calendar.steps.1	Zgjidhni llogarinë me të cilën lidhet kalendari i studios
+integrations.guide.google_calendar.steps.2	Jepni qasje te kalendari — orët do të fillojnë të shfaqen automatikisht në të
+integrations.capabilities.notify	njoftimet e klientëve në këtë kanal
+integrations.capabilities.booking	rezervim online përmes këtij kanali
+integrations.capabilities.dm_agent	agjent AI për përgjigje automatike në Direct
+integrations.capabilities.schedule_sync	sinkronizimi i orarit me Google Calendar
+integrations.disconnect.title	Të shkëputet {{name}}?
+integrations.disconnect.willStop	Kjo do të ndalojë së funksionuari:
+integrations.disconnect.checkbox	I kuptoj pasojat
+integrations.disconnect.cancel	Anulo
+integrations.disconnect.confirm	Shkëput
+integrations.google.connected	Google Calendar u lidh
+integrations.google.denied	Qasja në Google Calendar nuk u dha
+integrations.google.error	Lidhja me Google Calendar dështoi
+integrations.google.primary	kryesor
+integrations.google.calendar	Kalendari
+integrations.google.selectCalendar	Zgjidhni një kalendar
+integrations.google.loadingCalendars	Po ngarkohen kalendarët…
+integrations.google.syncMode	Mënyra e sinkronizimit
+integrations.google.syncModeOptions.push	Vetëm CRM në Google
+integrations.google.syncModeOptions.two_way	Në të dy drejtimet
+integrations.google.syncNow	Sinkronizo tani
+integrations.google.lastSync	Sinkronizimi i fundit: {{date}}
+integrations.google.neverSynced	Ende nuk është sinkronizuar
+integrations.google.timezoneWarning	Zona kohore e studios nuk është caktuar — ngjarjet dërgohen në UTC dhe mund të devijojnë nga orët reale të termineve. Caktojeni zonën kohore te Të përgjithshme.
+integrations.google.syncResult	U sinkronizua: {{pushed}} të dërguara, {{pulled}} të marra
+integrations.google.settingsSaved	Cilësimet e Google Calendar u ruajtën
+integrations.toast.connected	Integrimi u lidh
+integrations.toast.disconnected	Integrimi u shkëput
+data.export.title	Eksporto raportet dhe listat
+data.export.subtitle	Shkarko skedarë në formate tabelare për kontabilitet dhe analizë
+data.export.clearFilter	Pastro periudhën
+data.export.items.clients.name	Lista e klientëve
+data.export.items.schedule.name	Historiku i ditarit dhe rezervimeve
+data.export.items.finances.name	Raport financiar
+data.export.items.subscriptions.name	Abonimet e klientëve
+data.export.rows_one	{{count}} regjistrim
+data.export.rows_other	{{count}} regjistrime
+data.export.loading	Po ngarkohet...
+data.export.empty	pa të dhëna për këtë periudhë

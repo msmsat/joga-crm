@@ -1,0 +1,376 @@
+== sv
+tabs.overview	Översikt
+tabs.sales	Försäljning
+tabs.clients	Kunder
+tabs.team	Team
+tabs.schedule	Schema
+toolbar.period.day	Dag
+toolbar.period.week	Vecka
+toolbar.period.month	Månad
+toolbar.period.year	År
+toolbar.period.custom	Anpassat
+toolbar.vsPrevious	jämfört med föregående period: {{from}}–{{to}}
+toolbar.allBranches	Alla filialer
+toolbar.allHalls	Alla {{spacePlural}}
+toolbar.allTrainers	Alla tränare
+toolbar.allServices	Alla tjänster
+toolbar.export	Exportera
+insights.title	Kräver uppmärksamhet
+insights.action	Öppna
+insights.empty	Allt är bra just nu — inga råd att visa
+insights.revenue_up_clients_down	Omsättningen ökar, men aktiva kunder minskar — kontrollera kundbortfall
+insights.clients_at_risk	{{count}} kund(er) har inte deltagit på över 3 veckor — risk för bortfall
+insights.lesson_overfull	„{{name}}” {{weekday, weekday}} kl. {{hour}}:00 har varit {{pct}} % full i tre veckor i rad — överväg att lägga till ett pass
+insights.trial_low_conversion	Endast {{pct}} % av {{buyers}} provköpare köpte sedan ett abonnemang — överväg en kampanj
+insights.fastest_growing_product	„{{name}}” växer snabbast: +{{pct}} % jämfört med föregående period
+insights.renewals_low	Endast {{pct}} % av kunder med utgånget abonnemang förnyar — överväg en påminnelse
+insights.new_no_second_visit	{{count}} nya kunder kom en gång och bokade aldrig igen — överväg en påminnelse
+insights.subs_expiring_week	{{count}} kunder har ett abonnemang som går ut denna vecka — överväg att erbjuda förnyelse
+insights.vip_inactive	VIP-kunden „{{name}}” har inte besökt er på {{days}} dagar — överväg ett personligt meddelande
+insights.high_return_free_evenings	„{{name}}” har en hög återvändandegrad ({{return_pct}} %), men kvällarna är lediga — lägg till ett pass
+insights.trainer_overloaded	„{{name}}” är belastad till {{load_pct}} % — överväg att balansera schemat
+insights.low_rating	„{{name}}” har betyget {{rating}} — värt att titta närmare på
+insights.slot_chronic_low	„{{name}}” {{weekday, isodowWeekday}} kl. {{hour}}:00 har varit {{pct}} % full i {{weeks}} veckor i rad — flytta eller ställ in det
+insights.hall_idle_evenings	„{{name}}” står tom {{pct}} % av kvällstimmarna — överväg att schemalägga ett pass
+insights.slot_overfull	Tiden {{weekday, isodowWeekday}} kl. {{hour}}:00 har varit {{pct}} % full i tre veckor i rad — överväg att lägga till ett pass
+insights.loss_hotspot	{{cancels}} pass ställdes in kl. {{label}} under denna period — flest inställningar samlas kring denna timme
+table.loading	Laddar…
+table.noProduct	Ingen produkt
+empty.noData.title	Här finns inget ännu
+empty.noData.text	Ingen aktivitet registrerades under den valda perioden. Utöka intervallet eller börja med att boka en kund i Journalen.
+empty.noData.widen	Visa året
+empty.noRevenue	Inga betalningar under denna period
+empty.noSales	Ingen försäljning i detta urval
+empty.noProducts	Inga paket eller tjänster har sålts ännu
+empty.noLessons	Inga pass under denna period
+empty.noTrainerLessons	Denna tränare har inte hållit några pass ännu
+empty.noRows	Inga poster i detta urval
+empty.noLosses	Inga inställningar eller uteblivanden under denna period
+overview.kpi.revenue	Omsättning
+overview.kpi.profit	Vinst
+overview.kpi.attendance	Närvaro
+overview.kpi.activeClients	Aktiva kunder
+overview.kpi.fillRate	Beläggningsgrad
+overview.chart.metric.revenue	Omsättning
+overview.chart.metric.profit	Vinst
+overview.chart.metric.attendance	Närvaro
+overview.chart.metric.new_clients	Nya kunder
+overview.chart.metric.fill_rate	Beläggningsgrad
+overview.revenueStructure.title	Omsättningsstruktur
+overview.category.subscriptions	Abonnemang
+overview.category.services	Tjänster
+overview.category.certificates	Presentkort
+overview.category.rent	Hyra
+overview.category.salary	Löner
+overview.category.refunds	Återbetalningar
+overview.clientDynamics.title	Kunddynamik
+overview.clientDynamics.new	Nya
+overview.clientDynamics.returned	Återkom
+overview.clientDynamics.lost	Förlorade
+overview.drilldown.title	Transaktion
+overview.drilldown.category	Kategori
+overview.drilldown.amount	Belopp
+overview.drilldown.lesson	Pass
+overview.drilldown.time	Tid
+overview.drilldown.occupancy	Beläggning
+overview.drilldown.date	Datum
+overview.drilldown.method	Metod
+overview.drilldown.trainer	Tränare
+overview.drilldown.rowsCount	poster
+overview.drilldown.search	Sök i tabellen
+overview.drilldown.shownOf	Visar {{shown}} av {{total}}
+overview.drilldown.noMatches	Inget hittades för „{{query}}”
+overview.drilldown.reset	Återställ
+overview.drilldown.export	Exportera CSV
+overview.drilldown.subtitle.money	Transaktioner i detta urval
+overview.drilldown.subtitle.lessons	Pass i detta urval
+overview.drilldown.hint.operations	Klicka på en rad för att öppna transaktionen i Ekonomi
+overview.drilldown.hint.lessons	Klicka på en rad för att öppna den dagen i Journalen
+overview.drilldown.stat.net	Netto
+overview.drilldown.stat.income	Intäkt
+overview.drilldown.stat.expense	Utgift
+overview.drilldown.stat.operations	Transaktioner
+overview.drilldown.stat.topCategory	Största kategori
+overview.drilldown.stat.lessons	Pass
+overview.drilldown.stat.booked	Bokade platser
+overview.drilldown.stat.avgFill	Genomsnittlig beläggning
+overview.drilldown.stat.trainers	Tränare
+overview.drilldown.stat.cancelled	Inställt
+sales.kpi.revenue	Omsättning
+sales.kpi.salesCount	Försäljningar
+sales.kpi.avgCheck	Genomsnittsköp
+sales.kpi.repeatShare	Andel återköp
+sales.kpi.renewals	Förnyelsegrad
+sales.chart.title	Försäljning
+sales.incomeOperations	Intäktstransaktioner
+sales.breakdown.byCategory	Vad de köper
+sales.breakdown.byMethod	Hur de betalar
+sales.breakdown.buyerType	Vem som köper
+sales.breakdown.new	Nya
+sales.breakdown.returning	Återkommande
+sales.breakdown.noClient	Ingen kund
+sales.method.card	Kort
+sales.method.cash	Kontant
+sales.method.qr	QR-kod
+sales.method.transfer	Överföring
+sales.products.title	Produkter
+sales.products.name	Produkt
+sales.products.sold	Sålda
+sales.products.revenue	Omsättning
+sales.products.avgCheck	Genomsnittsköp
+sales.products.repeatShare	Andel återköp
+sales.products.trend	Trend
+sales.products.trendHint	Jämfört med föregående period med samma längd
+clients.kpi.new	Nya
+clients.kpi.returned	Återkom
+clients.kpi.lost	Förlorade
+clients.kpi.retention	Kundbevarande
+clients.kpi.avgValue	Kundvärde
+clients.chart.title	Nya och återkommande
+clients.chart.new	Nya
+clients.chart.returned	Återkommande
+clients.riskTitle	Risksegment
+clients.loyalTitle	Lojala
+clients.list	Lista
+clients.campaign	Starta kampanj
+clients.exportList	Exportera lista
+clients.emptySegment	Segmentet „{{name}}” har inga kunder just nu
+clients.segments.new.name	Nya kunder
+clients.segments.new.desc	Registrerade under den valda perioden
+clients.segments.returned.name	Återkommande kunder
+clients.segments.returned.desc	Besökte denna period och den föregående
+clients.segments.lost.name	Förlorade kunder
+clients.segments.lost.desc	Besökte föregående period men kom inte tillbaka denna
+clients.segments.active.name	Aktiva kunder
+clients.segments.active.desc	Kom till minst ett pass under den valda perioden
+clients.segments.at_risk.name	I riskzonen
+clients.segments.at_risk.desc	Aktiva, men inget besök på 21+ dagar
+clients.segments.vip_idle.name	Inaktiva VIP-kunder
+clients.segments.vip_idle.desc	VIP-kunder utan besök på 14+ dagar
+clients.segments.expiring_subscription.name	Abonnemang löper ut
+clients.segments.expiring_subscription.desc	≤2 pass eller ≤7 dagar kvar
+clients.segments.lost_newcomers.name	Kom aldrig tillbaka
+clients.segments.lost_newcomers.desc	Kom en gång, borta i 14+ dagar
+clients.segments.upsell_candidates.name	Redo för uppgradering
+clients.segments.upsell_candidates.desc	8+ besök denna månad, inget paket
+clients.segments.frequent.name	Frekventa
+clients.segments.frequent.desc	8+ besök under perioden
+clients.segments.high_ltv.name	Högt LTV
+clients.segments.high_ltv.desc	Topp 10 % efter total konsumtion
+clients.segments.referrers.name	Rekommenderar andra
+clients.segments.referrers.desc	Genomförde en rekommendation under perioden
+clients.listSearch	Sök efter namn eller telefon
+clients.shownOf	Visar {{shown}} av {{total}}
+clients.noMatches	Ingen hittades för „{{query}}”
+clients.resetSearch	Återställ
+clients.neverVisited	Aldrig besökt
+clients.valueLabel.visits	Besök
+clients.valueLabel.spent	Spenderat
+clients.valueLabel.daysIdle	Inaktiva dagar
+clients.valueLabel.remaining	Pass kvar
+clients.valueLabel.value	Värde
+clients.relative.today	I dag
+clients.relative.daysAgo_one	för {{count}} dag sedan
+clients.relative.daysAgo_other	för {{count}} dagar sedan
+team.kpi.lessonsCount	Pass
+team.kpi.revenuePerHour	Omsättning/timme
+team.kpi.avgFillPct	Beläggningsgrad
+team.kpi.cancelNoshowPct	Inställningar/uteblivanden
+team.kpi.avgRating	Betyg
+team.table.title	Tränare
+team.table.trainer	Tränare
+team.table.lessons	Pass
+team.table.fillPct	Beläggningsgrad
+team.table.attendance	Närvaro
+team.table.revenue	Omsättning
+team.table.returnRate	Återvändandegrad
+team.table.cancels	Inställningar
+team.table.fillPctHint	Fyllda platser av de planerade
+team.table.returnRateHint	Kunder som bokade med denna tränare igen
+team.table.cancelsHint	Inställda pass och kunders uteblivanden
+team.table.ratingHint	Genomsnittligt betyg som kunder gav denna tränares pass
+team.drawer.revenueByWeek	Omsättning per vecka
+team.drawer.loadByWeekday	Belastning per veckodag
+team.drawer.loadByHour	Belastning efter tid på dagen
+team.drawer.loadDim.weekday	Per dag
+team.drawer.loadDim.hour	Per timme
+team.drawer.schedule.title	Schema
+team.drawer.schedule.empty	Inga pass under denna period
+team.drawer.topLessons	Favoritpass
+team.drawer.returnBlock	Kundernas återkomst
+team.drawer.returnOf	{{returned}} av {{total}} kunder kom tillbaka ({{pct}} %)
+team.drawer.openProfile	Öppna profil
+team.drawer.held	Genomförda
+team.drawer.attendance	Närvaro
+team.weekdays.0	sön
+team.weekdays.1	mån
+team.weekdays.2	tis
+team.weekdays.3	ons
+team.weekdays.4	tors
+team.weekdays.5	fre
+team.weekdays.6	lör
+schedule.weekdaysMonFirst.0	mån
+schedule.weekdaysMonFirst.1	tis
+schedule.weekdaysMonFirst.2	ons
+schedule.weekdaysMonFirst.3	tors
+schedule.weekdaysMonFirst.4	fre
+schedule.weekdaysMonFirst.5	lör
+schedule.weekdaysMonFirst.6	sön
+schedule.kpi.avgFillPct	Beläggningsgrad
+schedule.kpi.freeSpots	Lediga platser
+schedule.kpi.cancels	Inställningar
+schedule.kpi.noshows	Uteblivanden
+schedule.kpi.lostRevenue	Förlorad omsättning
+schedule.heatmap.title	Belastning per dag och timme
+schedule.heatmap.legend	Beläggningsgrad:
+schedule.heatmap.tooltip	{{lessons}} pass · {{attendance}} deltog · {{pct}} %
+schedule.heatmap.empty	Inga pass
+schedule.slices.topProfitable	Mest lönsamma
+schedule.slices.topFilled	Mest fyllda
+schedule.slices.chronicLow	Kroniskt låg beläggning
+schedule.slices.halls	Utnyttjande: {{spacePlural}}
+schedule.slices.held	{{count}} genomförda
+schedule.slices.weeks	{{count}} v.
+schedule.slices.move	Flytta
+schedule.slices.cancel	Ställ in
+schedule.slices.eveningIdle	ledig kvällstid {{pct}} %
+schedule.losses.title	Inställningar och uteblivanden
+schedule.losses.dim.hour	Efter tid
+schedule.losses.dim.service	Efter tjänst
+schedule.losses.dim.trainer	Efter tränare
+schedule.losses.cancels_one	{{count}} inställning
+schedule.losses.cancels_other	{{count}} inställningar
+schedule.losses.noshows_one	{{count}} uteblivande
+schedule.losses.noshows_other	{{count}} uteblivanden
+schedule.losses.lostSpots_one	−{{count}} plats
+schedule.losses.lostSpots_other	−{{count}} platser
+schedule.status.confirmed	Bekräftad
+schedule.status.pending	Väntande
+schedule.status.cancelled	Inställd
+schedule.slot.summary	för {{from}} — {{to}}
+schedule.slot.lessonsCount	Pass totalt
+export.csv	Ladda ner CSV
+scopeNote.label	Hela studion
+scopeNote.money	Filtren Filial och {{space}} påverkar inte pengar — en betalning är inte knuten till dem
+scopeNote.clientBase	Tränare, {{space}}, filial och tjänst ändrar inte detta mått — en kund är inte knuten till dem
+descriptions.overview.metric.revenue	Alla pengar som kom in i studion under perioden
+descriptions.overview.metric.profit	Det som återstår efter periodens utgifter
+descriptions.overview.metric.attendance	Pass som kunder faktiskt deltog i
+descriptions.overview.metric.new_clients	Kunder registrerade under denna period
+descriptions.overview.metric.fill_rate	Hur fulla passen är: bokade platser av tillgängliga platser
+descriptions.overview.revenueStructure	Vad din omsättning består av under denna period
+descriptions.overview.clientDynamics	Hur många som kom för första gången, återvände eller slutade komma
+descriptions.sales.chart	Omsättning och antal köp per dag
+descriptions.sales.byCategory	Varje produkts andel av omsättningen
+descriptions.sales.byMethod	Hur omsättningen fördelas per betalningsmetod
+descriptions.sales.buyerType	Hur mycket omsättning som kommer från nya kunder jämfört med återkommande
+descriptions.sales.products	Varje produkt: hur många som såldes, för hur mycket och om försäljningen växer
+descriptions.clients.chart	Hur många kunder som kom för första gången och hur många som återvände, per vecka
+descriptions.clients.riskSegments	Kunder du kan förlora om du inte kontaktar dem nu
+descriptions.clients.loyalSegments	De som besöker mest, spenderar mest och tar med vänner
+descriptions.team.trainers	Jämförelse efter belastning, omsättning och kundernas återvändandegrad
+descriptions.team.loadWeekday	Vilka veckodagar tränaren är upptagen och när de är lediga
+descriptions.team.loadHour	Vilken tid deras pass fylls och när de står tomma
+descriptions.team.schedule	Alla tränarens pass under den valda perioden
+descriptions.schedule.heatmap	Var schemat är överbokat och var det är tomt
+descriptions.schedule.topProfitable	Tiderna i ditt schema som ger mest pengar
+descriptions.schedule.topFilled	Tiderna som kunder bokar mest ivrigt
+descriptions.schedule.chronicLow	Tidsluckor som fyllts till mindre än en tredjedel av platserna i veckor
+descriptions.schedule.halls	Hur mycket av tiden dina {{spacePlural}} faktiskt används
+descriptions.schedule.losses	Var studion förlorar platser: inställda pass eller kunder som uteblir
+formulas.salesCount.title	Försäljningar
+formulas.salesCount.text	Hur många gånger kunder betalade dig under denna period. En person som betalar flera gånger räknas som separata försäljningar.
+formulas.revenue.title	Omsättning
+formulas.revenue.text	Alla pengar som kom in i studion under denna period, efter betalningsdatum. Paket, enskilda pass, presentkort och detaljhandel — allt tillsammans.
+formulas.profit.title	Vinst
+formulas.profit.text	Det som återstår efter utgifterna denna period: hyra, löner och material. Detta är din faktiska vinst.
+formulas.attendance.title	Närvaro
+formulas.attendance.text	Hur många besök kunder faktiskt genomförde. Endast pass markerade som deltagna räknas.
+formulas.bookings.title	Bokningar
+formulas.bookings.text	Hur många bokningar kunder gjorde för pass. Avbokade bokningar räknas inte.
+formulas.noshow.title	Uteblivande
+formulas.noshow.text	En kund bokade, passet ägde rum, men kunden kom inte. Varje sådant fall är en plats någon annan kunde ha tagit.
+formulas.activeClients.title	Aktiva kunder
+formulas.activeClients.text	Hur många olika personer som kom minst en gång under denna period. Varje kund räknas en gång, oavsett antal besök.
+formulas.occupancy.title	Beläggning
+formulas.occupancy.text	Hur fulla dina pass är: fyllda platser av det du planerade. 100 % betyder att det inte finns mer plats.
+formulas.avgCheck.title	Genomsnittsköp
+formulas.avgCheck.text	Vad en betalning i genomsnitt ger. Det ökar när kunder köper längre paket eller tillägg.
+formulas.retention.title	Kundbevarande
+formulas.retention.text	Hur många av föregående periods kunder som kom tillbaka denna period. Visar om du behåller folk eller börjar från noll varje månad.
+formulas.newClients.title	Nya kunder
+formulas.newClients.text	Personer som dök upp i din kundbas för första gången under denna period.
+formulas.returning.title	Återkommande
+formulas.returning.text	Kunder som hade besökt tidigare och kom tillbaka igen under denna period.
+formulas.lost.title	Förlorade
+formulas.lost.text	Besökte under föregående period och har inte dykt upp en enda gång denna. Det är fortfarande värt att kontakta dem.
+formulas.clientValue.title	Kundvärde
+formulas.clientValue.text	Vad en kund i genomsnitt ger under denna period.
+formulas.repeatPurchaseShare.title	Andel återköp
+formulas.repeatPurchaseShare.text	Andelen kunder som köpte av dig mer än en gång. Ju högre den är, desto starkare är vanan att komma tillbaka.
+formulas.renewalRate.title	Förnyelsegrad
+formulas.renewalRate.text	Hur många kunder som köpte ett nytt paket efter att det föregående löpt ut.
+formulas.revenuePerHour.title	Omsättning per timme (tränare)
+formulas.revenuePerHour.text	Hur mycket pengar en timmes arbete av en tränare ger. Gör att du kan jämföra tränare rättvist — en kan hålla färre pass, men varje pass ger mer.
+formulas.trainerReturnRate.title	Återvändandegrad (tränare)
+formulas.trainerReturnRate.text	Andelen av en tränares kunder som bokade med dem igen.
+formulas.missedRevenue.title	Förlorad omsättning
+formulas.missedRevenue.text	Pengar studion inte tjänade på grund av tomma platser i tidigare pass: lediga platser multiplicerade med passets pris.
+formulas.losses.title	Inställningar och uteblivanden
+formulas.losses.text	En „inställning” är ett inställt pass; ett „uteblivande” är en kund som bokade men inte kom. Uppdelningarna per tid/tjänst/tränare använder samma filter som fliken och stämmer med KPI:erna i rubriken.
+formulas.lessonRevenue.title	Omsättning från pass
+formulas.lessonRevenue.text	En grov uppskattning av ett pass omsättning: deltagare multiplicerat med priset. Betalningar är inte kopplade till ett visst pass, så detta är en uppskattning, inte en exakt siffra.
+formulas.filtersScope.title	Filtrens omfattning
+formulas.filtersScope.text	Filtren Filial och {{space}} gäller bara passmått. Betalningar har ingen sådan koppling, så belopp visas för hela studion.
+formulas.avgValue.title	Kundvärde
+formulas.avgValue.text	Vad en kund i genomsnitt ger under denna period.
+formulas.cancelNoshow.title	Inställningar och uteblivanden
+formulas.cancelNoshow.text	Andelen störda pass: inställningar och uteblivanden av allt som var planerat.
+formulas.avgRating.title	Genomsnittligt betyg
+formulas.avgRating.text	Det genomsnittliga betyg kunder gav denna tränares pass.
+formulas.teamScope.title	Dataomfattning
+formulas.teamScope.text	Detta räknar bara omsättning kopplad till en viss tränare, så summan för alla tränare kan vara lägre än studions totala omsättning.
+formulas.lessonsCount.title	Pass
+formulas.lessonsCount.text	Hur många pass tränarna höll under denna period.
+formulas.load.title	Belastning
+formulas.load.text	Hur fullpackad en tränares dag är: deras bokade timmar av studions öppettid.
+formulas.weeklyClients.title	Nya och återkommande
+formulas.weeklyClients.text	Per vecka: hur många som kom till dig för första gången och hur många som kom tillbaka. En sund studio växer på båda linjerna.
+formulas.byCategory.title	Omsättning per kategori
+formulas.byCategory.text	Vad du faktiskt tjänar på: paket, enskilda pass, presentkort och detaljhandel.
+formulas.byMethod.title	Betalningsmetoder
+formulas.byMethod.text	Hur kunder betalar. Hjälper dig se om du behöver kortbetalning och hur mycket pengar som går förbi kassan.
+formulas.buyerType.title	Vem som betalar
+formulas.buyerType.text	Nya kunder jämfört med återkommande. Om nästan all omsättning kommer från nya kunder behåller studion inte folk.
+formulas.products.title	Vad som säljer
+formulas.products.text	Alla paket och tjänster under perioden: hur många som såldes, för hur mycket och om försäljningen växer.
+formulas.topProfitable.title	Mest lönsamma tider
+formulas.topProfitable.text	Tiderna i ditt schema som ger mest pengar. Lägg dina bästa tränare där.
+formulas.topFilled.title	Mest fyllda tider
+formulas.topFilled.text	Tiderna som kunder bokar mest ivrigt. Om de är helt fyllda är det värt att lägga till ett pass till.
+formulas.chronicLow.title	Kroniskt tomma tider
+formulas.chronicLow.text	Tider som har fyllts till mindre än en tredjedel av platserna i flera veckor. Kandidater att flytta eller ta bort.
+formulas.hallUtil.title	Utnyttjande: {{spacePlural}}
+formulas.hallUtil.text	Hur mycket av tiden dina {{spacePlural}} faktiskt används. Tom tid är hyra som inte lönar sig.
+formulas.heatmap.title	Belastning per dag och timme
+formulas.heatmap.text	Färgen visar tidsluckans genomsnittliga beläggningsgrad under perioden. Klicka på en cell för att se passen den dagen och timmen.
+formulas.riskSegments.title	Risksegment
+formulas.riskSegments.text	Kunder grupperade efter den typ av risk de innebär — att förlora dem eller intäkten de inte ger. Varje kort har sitt eget skäl och ett tydligt nästa steg: skriv till dem, erbjud förnyelse eller uppgradering.
+formulas.loyalSegments.title	Lojala
+formulas.loyalSegments.text	Kunder som redan ger mest värde: de besöker oftast, spenderar mest eller tar med vänner. Värt att ta hand om och belöna.
+formulas.segment.at_risk.title	I riskzonen
+formulas.segment.at_risk.text	De brukade komma regelbundet och har nu försvunnit. De kan fortfarande vinnas tillbaka med ett meddelande.
+formulas.segment.vip_idle.title	Inaktiva VIP-kunder
+formulas.segment.vip_idle.text	Kunder som har spenderat mer än alla andra, men inte besökt er på ett tag.
+formulas.segment.expiring_subscription.title	Abonnemang löper ut
+formulas.segment.expiring_subscription.text	Dessa kunder har 1–2 pass kvar. Bästa tillfället att erbjuda en förnyelse.
+formulas.segment.lost_newcomers.title	Nya kunder som inte återvände
+formulas.segment.lost_newcomers.text	De kom en gång och försvann. Det handlar ofta om det första passet — värt att undersöka.
+formulas.segment.upsell_candidates.title	Redo för mer
+formulas.segment.upsell_candidates.text	De kommer ofta, men köper det enklaste paketet. Värt att erbjuda ett dyrare abonnemang.
+formulas.segment.frequent.title	Stamkunder
+formulas.segment.frequent.text	De kommer oftare än alla andra. Ryggraden i studions omsättning.
+formulas.segment.high_ltv.title	Mest värdefulla
+formulas.segment.high_ltv.text	Har gett studion mer pengar än alla andra, totalt sett.
+formulas.segment.referrers.title	Tar med vänner
+formulas.segment.referrers.text	Kunder vars rekommendationer har gett dig andra människor.

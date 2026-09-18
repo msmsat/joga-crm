@@ -1,0 +1,615 @@
+{
+  "tabs": {
+    "overview": "Prezentare generală",
+    "sales": "Vânzări",
+    "clients": "Clienți",
+    "team": "Echipă",
+    "schedule": "Program"
+  },
+  "toolbar": {
+    "period": {
+      "day": "Zi",
+      "week": "Săptămână",
+      "month": "Lună",
+      "year": "An",
+      "custom": "Personalizat"
+    },
+    "vsPrevious": "față de perioada anterioară: {{from}}–{{to}}",
+    "allBranches": "Toate filialele",
+    "allHalls": "Toate {{spacePlural}}",
+    "allTrainers": "Toți antrenorii",
+    "allServices": "Toate serviciile",
+    "export": "Exportă"
+  },
+  "insights": {
+    "title": "Necesită atenție",
+    "action": "Deschide",
+    "empty": "Totul este bine deocamdată — nu există recomandări de afișat",
+    "revenue_up_clients_down": "Veniturile cresc, dar numărul clienților activi scade — verifică pierderea clienților",
+    "clients_at_risk": "{{count}} client(ți) nu au participat de peste 3 săptămâni — risc de pierdere",
+    "lesson_overfull": "„{{name}}” {{weekday, weekday}} la {{hour}}:00 este plin(ă) în proporție de {{pct}}% de trei săptămâni la rând — ia în calcul o sesiune suplimentară",
+    "trial_low_conversion": "Doar {{pct}}% dintre cei {{buyers}} cumpărători de probă au cumpărat ulterior un abonament — ia în calcul o campanie",
+    "fastest_growing_product": "„{{name}}” crește cel mai rapid: +{{pct}}% față de perioada anterioară",
+    "renewals_low": "Doar {{pct}}% dintre clienții cu abonament expirat reînnoiesc — ia în calcul un memento",
+    "new_no_second_visit": "{{count}} clienți noi au venit o dată și nu au mai rezervat — ia în calcul un memento",
+    "subs_expiring_week": "{{count}} clienți au un abonament care expiră săptămâna aceasta — ia în calcul o ofertă de reînnoire",
+    "vip_inactive": "Clientul VIP „{{name}}” nu a mai vizitat de {{days}} zile — ia în calcul un mesaj personal",
+    "high_return_free_evenings": "„{{name}}” are o rată mare de revenire ({{return_pct}}%), dar serile sunt libere — adaugă o sesiune",
+    "trainer_overloaded": "„{{name}}” este încărcat(ă) la {{load_pct}}% — ia în calcul echilibrarea programului",
+    "low_rating": "„{{name}}” are un scor de {{rating}} — merită analizat mai atent",
+    "slot_chronic_low": "„{{name}}” {{weekday, isodowWeekday}} la {{hour}}:00 este plin(ă) în proporție de {{pct}}% de {{weeks}} săptămâni la rând — mută sau anulează",
+    "hall_idle_evenings": "„{{name}}” este nefolosit(ă) în {{pct}}% din orele de seară — ia în calcul programarea unei sesiuni",
+    "slot_overfull": "Intervalul de {{weekday, isodowWeekday}} la {{hour}}:00 este plin în proporție de {{pct}}% de trei săptămâni la rând — ia în calcul o sesiune suplimentară",
+    "loss_hotspot": "{{cancels}} sesiuni au fost anulate la {{label}} în această perioadă — cele mai multe anulări se concentrează în jurul acestei ore"
+  },
+  "table": {
+    "loading": "Se încarcă…",
+    "noProduct": "Fără produs"
+  },
+  "empty": {
+    "noData": {
+      "title": "Încă nu este nimic aici",
+      "text": "Nu a fost înregistrată activitate pentru perioada selectată. Extinde intervalul sau începe prin a programa un client în Jurnal.",
+      "widen": "Afișează anul"
+    },
+    "noRevenue": "Fără plăți în această perioadă",
+    "noSales": "Fără vânzări în această secțiune",
+    "noProducts": "Nu s-au vândut încă pachete sau servicii",
+    "noLessons": "Fără sesiuni în această perioadă",
+    "noTrainerLessons": "Acest antrenor nu a ținut încă sesiuni",
+    "noRows": "Fără înregistrări în această secțiune",
+    "noLosses": "Fără anulări sau absențe în această perioadă"
+  },
+  "overview": {
+    "kpi": {
+      "revenue": "Venituri",
+      "profit": "Profit",
+      "attendance": "Prezență",
+      "activeClients": "Clienți activi",
+      "fillRate": "Rată de ocupare"
+    },
+    "chart": {
+      "metric": {
+        "revenue": "Venituri",
+        "profit": "Profit",
+        "attendance": "Prezență",
+        "new_clients": "Clienți noi",
+        "fill_rate": "Rată de ocupare"
+      }
+    },
+    "revenueStructure": {
+      "title": "Structura veniturilor"
+    },
+    "category": {
+      "subscriptions": "Abonamente",
+      "services": "Servicii",
+      "certificates": "Carduri cadou",
+      "rent": "Chirie",
+      "salary": "Salarii",
+      "refunds": "Rambursări"
+    },
+    "clientDynamics": {
+      "title": "Dinamica clienților",
+      "new": "Noi",
+      "returned": "Au revenit",
+      "lost": "Pierduți"
+    },
+    "drilldown": {
+      "title": "Operațiune",
+      "category": "Categorie",
+      "amount": "Sumă",
+      "lesson": "Sesiune",
+      "time": "Oră",
+      "occupancy": "Ocupare",
+      "date": "Dată",
+      "method": "Metodă",
+      "trainer": "Antrenor",
+      "rowsCount": "înregistrări",
+      "search": "Caută în tabel",
+      "shownOf": "Se afișează {{shown}} din {{total}}",
+      "noMatches": "Nu s-a găsit nimic pentru „{{query}}”",
+      "reset": "Resetează",
+      "export": "Exportă CSV",
+      "subtitle": {
+        "money": "Operațiuni în această secțiune",
+        "lessons": "Sesiuni în această secțiune"
+      },
+      "hint": {
+        "operations": "Apasă pe un rând pentru a deschide operațiunea în Finanțe",
+        "lessons": "Apasă pe un rând pentru a deschide acea zi în Jurnal"
+      },
+      "stat": {
+        "net": "Net",
+        "income": "Venit",
+        "expense": "Cheltuială",
+        "operations": "Operațiuni",
+        "topCategory": "Categorie principală",
+        "lessons": "Sesiuni",
+        "booked": "Locuri rezervate",
+        "avgFill": "Ocupare medie",
+        "trainers": "Antrenori",
+        "cancelled": "Anulat"
+      }
+    }
+  },
+  "sales": {
+    "kpi": {
+      "revenue": "Venituri",
+      "salesCount": "Vânzări",
+      "avgCheck": "Bon mediu",
+      "repeatShare": "Ponderea recumpărărilor",
+      "renewals": "Rată de reînnoire"
+    },
+    "chart": {
+      "title": "Vânzări"
+    },
+    "incomeOperations": "Operațiuni de venit",
+    "breakdown": {
+      "byCategory": "Ce cumpără",
+      "byMethod": "Cum plătesc",
+      "buyerType": "Cine cumpără",
+      "new": "Noi",
+      "returning": "Recurenți",
+      "noClient": "Fără client"
+    },
+    "method": {
+      "card": "Card",
+      "cash": "Numerar",
+      "qr": "Cod QR",
+      "transfer": "Transfer"
+    },
+    "products": {
+      "title": "Produse",
+      "name": "Produs",
+      "sold": "Vândute",
+      "revenue": "Venituri",
+      "avgCheck": "Bon mediu",
+      "repeatShare": "Ponderea recumpărărilor",
+      "trend": "Tendință",
+      "trendHint": "Comparat cu perioada anterioară de aceeași durată"
+    }
+  },
+  "clients": {
+    "kpi": {
+      "new": "Noi",
+      "returned": "Au revenit",
+      "lost": "Pierduți",
+      "retention": "Retenție",
+      "avgValue": "Valoarea clientului"
+    },
+    "chart": {
+      "title": "Noi vs. recurenți",
+      "new": "Noi",
+      "returned": "Recurenți"
+    },
+    "riskTitle": "Segmente de risc",
+    "loyalTitle": "Fideli",
+    "list": "Listă",
+    "campaign": "Pornește campania",
+    "exportList": "Exportă lista",
+    "emptySegment": "Segmentul „{{name}}” nu are clienți momentan",
+    "segments": {
+      "new": {
+        "name": "Clienți noi",
+        "desc": "Înregistrați în perioada selectată"
+      },
+      "returned": {
+        "name": "Clienți recurenți",
+        "desc": "Au vizitat această perioadă și pe cea anterioară"
+      },
+      "lost": {
+        "name": "Clienți pierduți",
+        "desc": "Au vizitat perioada anterioară, dar nu au revenit în aceasta"
+      },
+      "active": {
+        "name": "Clienți activi",
+        "desc": "Au venit la cel puțin o sesiune în perioada selectată"
+      },
+      "at_risk": {
+        "name": "La limită",
+        "desc": "Activi, dar fără vizită de 21+ zile"
+      },
+      "vip_idle": {
+        "name": "VIP inactivi",
+        "desc": "Clienți VIP fără vizită de 14+ zile"
+      },
+      "expiring_subscription": {
+        "name": "Abonament pe cale să expire",
+        "desc": "Mai au ≤2 sesiuni sau ≤7 zile"
+      },
+      "lost_newcomers": {
+        "name": "Nu au revenit niciodată",
+        "desc": "Au venit o dată, lipsesc de 14+ zile"
+      },
+      "upsell_candidates": {
+        "name": "Pregătiți pentru upgrade",
+        "desc": "8+ vizite luna aceasta, fără pachet"
+      },
+      "frequent": {
+        "name": "Frecvenți",
+        "desc": "8+ vizite în perioadă"
+      },
+      "high_ltv": {
+        "name": "LTV ridicat",
+        "desc": "Top 10% după cheltuiala totală"
+      },
+      "referrers": {
+        "name": "Recomandatori",
+        "desc": "Au finalizat o recomandare în perioadă"
+      }
+    },
+    "listSearch": "Caută după nume sau telefon",
+    "shownOf": "Se afișează {{shown}} din {{total}}",
+    "noMatches": "Nu a fost găsit nimeni pentru „{{query}}”",
+    "resetSearch": "Resetează",
+    "neverVisited": "Nu a vizitat niciodată",
+    "valueLabel": {
+      "visits": "Vizite",
+      "spent": "Cheltuit",
+      "daysIdle": "Zile inactive",
+      "remaining": "Sesiuni rămase",
+      "value": "Valoare"
+    },
+    "relative": {
+      "today": "Astăzi",
+      "daysAgo_one": "acum {{count}} zi",
+      "daysAgo_few": "acum {{count}} zile",
+      "daysAgo_other": "acum {{count}} de zile"
+    }
+  },
+  "team": {
+    "kpi": {
+      "lessonsCount": "Sesiuni",
+      "revenuePerHour": "Venit/oră",
+      "avgFillPct": "Rată de ocupare",
+      "cancelNoshowPct": "Anulări/absențe",
+      "avgRating": "Evaluare"
+    },
+    "table": {
+      "title": "Antrenori",
+      "trainer": "Antrenor",
+      "lessons": "Sesiuni",
+      "fillPct": "Rată de ocupare",
+      "attendance": "Prezență",
+      "revenue": "Venituri",
+      "returnRate": "Rată de revenire",
+      "cancels": "Anulări",
+      "fillPctHint": "Locuri ocupate din cele programate",
+      "returnRateHint": "Clienți care au rezervat din nou cu acest antrenor",
+      "cancelsHint": "Sesiuni anulate și absențe ale clienților",
+      "ratingHint": "Evaluarea medie acordată de clienți sesiunilor acestui antrenor"
+    },
+    "drawer": {
+      "revenueByWeek": "Venituri pe săptămână",
+      "loadByWeekday": "Încărcare după ziua săptămânii",
+      "loadByHour": "Încărcare după ora zilei",
+      "loadDim": {
+        "weekday": "După zi",
+        "hour": "După oră"
+      },
+      "schedule": {
+        "title": "Program",
+        "empty": "Fără sesiuni în această perioadă"
+      },
+      "topLessons": "Sesiuni preferate",
+      "returnBlock": "Revenirea clienților",
+      "returnOf": "{{returned}} din {{total}} clienți au revenit ({{pct}}%)",
+      "openProfile": "Deschide profilul",
+      "held": "Ținute",
+      "attendance": "Prezență"
+    },
+    "weekdays": [
+      "dum.",
+      "lun.",
+      "mar.",
+      "mie.",
+      "joi",
+      "vin.",
+      "sâm."
+    ]
+  },
+  "schedule": {
+    "weekdaysMonFirst": [
+      "lun.",
+      "mar.",
+      "mie.",
+      "joi",
+      "vin.",
+      "sâm.",
+      "dum."
+    ],
+    "kpi": {
+      "avgFillPct": "Rată de ocupare",
+      "freeSpots": "Locuri libere",
+      "cancels": "Anulări",
+      "noshows": "Absențe",
+      "lostRevenue": "Venituri pierdute"
+    },
+    "heatmap": {
+      "title": "Încărcare după zi și oră",
+      "legend": "Rată de ocupare:",
+      "tooltip": "{{lessons}} sesiuni · {{attendance}} au participat · {{pct}}%",
+      "empty": "Fără sesiuni"
+    },
+    "slices": {
+      "topProfitable": "Cele mai profitabile",
+      "topFilled": "Cele mai pline",
+      "chronicLow": "Cronic slab ocupate",
+      "halls": "Utilizare: {{spacePlural}}",
+      "held": "{{count}} desfășurate",
+      "weeks": "{{count}} săpt.",
+      "move": "Mută",
+      "cancel": "Anulează",
+      "eveningIdle": "inactiv seara {{pct}}%"
+    },
+    "losses": {
+      "title": "Anulări și absențe",
+      "dim": {
+        "hour": "După oră",
+        "service": "După serviciu",
+        "trainer": "După antrenor"
+      },
+      "cancels_one": "{{count}} anulare",
+      "cancels_few": "{{count}} anulări",
+      "cancels_other": "{{count}} de anulări",
+      "noshows_one": "{{count}} absență",
+      "noshows_few": "{{count}} absențe",
+      "noshows_other": "{{count}} de absențe",
+      "lostSpots_one": "−{{count}} loc",
+      "lostSpots_few": "−{{count}} locuri",
+      "lostSpots_other": "−{{count}} de locuri"
+    },
+    "status": {
+      "confirmed": "Confirmată",
+      "pending": "În așteptare",
+      "cancelled": "Anulată"
+    },
+    "slot": {
+      "summary": "pentru {{from}} — {{to}}",
+      "lessonsCount": "Total sesiuni"
+    }
+  },
+  "export": {
+    "csv": "Descarcă CSV"
+  },
+  "scopeNote": {
+    "label": "Întregul studio",
+    "money": "Filtrele Filială și {{space}} nu afectează banii — o plată nu este legată de ele",
+    "clientBase": "Antrenorul, {{space}}, filiala și serviciul nu schimbă această metrică — un client nu este legat de ele"
+  },
+  "descriptions": {
+    "overview": {
+      "metric": {
+        "revenue": "Toți banii care au intrat în studio în timpul perioadei",
+        "profit": "Ce rămâne după cheltuielile perioadei",
+        "attendance": "Sesiuni la care clienții au participat efectiv",
+        "new_clients": "Clienți înregistrați în această perioadă",
+        "fill_rate": "Cât de pline sunt sesiunile: locuri rezervate din locurile disponibile"
+      },
+      "revenueStructure": "Din ce sunt formate veniturile tale în această perioadă",
+      "clientDynamics": "Câți au venit prima dată, au revenit sau au încetat să vină"
+    },
+    "sales": {
+      "chart": "Venituri și număr de cumpărături pe zi",
+      "byCategory": "Ponderea fiecărui produs în venituri",
+      "byMethod": "Cum se împart veniturile după metoda de plată",
+      "buyerType": "Cât venit vine de la clienți noi față de clienți recurenți",
+      "products": "Fiecare produs: câte s-au vândut, cu cât și dacă vânzările cresc"
+    },
+    "clients": {
+      "chart": "Câți clienți au venit prima dată și câți au revenit, pe săptămână",
+      "riskSegments": "Clienți pe care i-ai putea pierde dacă nu îi contactezi acum",
+      "loyalSegments": "Cei care vizitează cel mai mult, cheltuie cel mai mult și aduc prieteni"
+    },
+    "team": {
+      "trainers": "Comparație după încărcare, venituri și rata de revenire a clienților",
+      "loadWeekday": "În ce zile ale săptămânii antrenorul este ocupat și când este liber",
+      "loadHour": "La ce ore se umplu sesiunile lui și când rămân goale",
+      "schedule": "Toate sesiunile antrenorului în perioada selectată"
+    },
+    "schedule": {
+      "heatmap": "Unde programul este suprarezervat și unde este gol",
+      "topProfitable": "Orele din program care aduc cei mai mulți bani",
+      "topFilled": "Orele pe care clienții le rezervă cel mai dornic",
+      "chronicLow": "Intervale care se umplu sub o treime din locuri de săptămâni",
+      "halls": "Cât timp sunt {{spacePlural}} tăi în uz efectiv",
+      "losses": "Unde studioul pierde locuri: sesiuni anulate sau clienți care nu apar"
+    }
+  },
+  "formulas": {
+    "salesCount": {
+      "title": "Vânzări",
+      "text": "De câte ori te-au plătit clienții în această perioadă. O persoană care plătește de mai multe ori contează ca vânzări separate."
+    },
+    "revenue": {
+      "title": "Venituri",
+      "text": "Toți banii care au intrat în studio în această perioadă, după data plății. Pachete, sesiuni individuale, carduri cadou și vânzări cu amănuntul — toate împreună."
+    },
+    "profit": {
+      "title": "Profit",
+      "text": "Ce rămâne după cheltuielile acestei perioade: chirie, salarii, materiale. Acesta este profitul tău real."
+    },
+    "attendance": {
+      "title": "Prezență",
+      "text": "Câte vizite au făcut efectiv clienții. Sunt numărate doar sesiunile marcate ca frecventate."
+    },
+    "bookings": {
+      "title": "Rezervări",
+      "text": "Câte rezervări au făcut clienții pentru sesiuni. Rezervările anulate nu sunt numărate."
+    },
+    "noshow": {
+      "title": "Absență",
+      "text": "Un client a rezervat, sesiunea a avut loc, dar nu a apărut. Fiecare caz este un loc pe care l-ar fi putut lua altcineva."
+    },
+    "activeClients": {
+      "title": "Clienți activi",
+      "text": "Câte persoane diferite au venit cel puțin o dată în această perioadă. Fiecare client contează o singură dată, indiferent de câte vizite a făcut."
+    },
+    "occupancy": {
+      "title": "Ocupare",
+      "text": "Cât de pline sunt sesiunile tale: locuri ocupate din cele planificate. 100% înseamnă că nu mai este loc."
+    },
+    "avgCheck": {
+      "title": "Bon mediu",
+      "text": "Cât aduce în medie o plată. Crește când clienții cumpără pachete mai lungi sau extraopțiuni."
+    },
+    "retention": {
+      "title": "Retenție",
+      "text": "Câți clienți din perioada anterioară au revenit în această perioadă. Arată dacă îi păstrezi sau începi de la zero în fiecare lună."
+    },
+    "newClients": {
+      "title": "Clienți noi",
+      "text": "Persoane care au apărut pentru prima dată în baza ta de clienți în această perioadă."
+    },
+    "returning": {
+      "title": "Recurenți",
+      "text": "Clienți care mai vizitaseră și au revenit din nou în această perioadă."
+    },
+    "lost": {
+      "title": "Pierduți",
+      "text": "Au vizitat în perioada anterioară și nu au apărut nici măcar o dată în aceasta. Încă merită să iei legătura cu ei."
+    },
+    "clientValue": {
+      "title": "Valoarea clientului",
+      "text": "Cât aduce în medie un client în această perioadă."
+    },
+    "repeatPurchaseShare": {
+      "title": "Ponderea recumpărărilor",
+      "text": "Ponderea clienților care au cumpărat de la tine de mai multe ori. Cu cât este mai mare, cu atât este mai puternic obiceiul de a reveni."
+    },
+    "renewalRate": {
+      "title": "Rată de reînnoire",
+      "text": "Câți clienți au cumpărat un pachet nou după ce cel anterior a expirat."
+    },
+    "revenuePerHour": {
+      "title": "Venit pe oră (antrenor)",
+      "text": "Câți bani aduce o oră de muncă a unui antrenor. Permite compararea echitabilă a antrenorilor — unul poate ține mai puține sesiuni, dar fiecare aduce mai mult."
+    },
+    "trainerReturnRate": {
+      "title": "Rată de revenire (antrenor)",
+      "text": "Ponderea clienților unui antrenor care au rezervat din nou cu el."
+    },
+    "missedRevenue": {
+      "title": "Venituri pierdute",
+      "text": "Bani pe care studioul nu i-a câștigat din cauza locurilor libere de la sesiunile trecute: locuri libere înmulțite cu prețul sesiunii."
+    },
+    "losses": {
+      "title": "Anulări și absențe",
+      "text": "O „anulare” este o sesiune anulată; o „absență” este un client care a rezervat, dar nu a venit. Defalcările pe timp/serviciu/antrenor folosesc aceleași filtre ca fila și corespund KPI-urilor din antet."
+    },
+    "lessonRevenue": {
+      "title": "Venitul sesiunii",
+      "text": "O estimare aproximativă a venitului unei sesiuni: participanți înmulțiți cu prețul. Plățile nu sunt legate de o sesiune anume, deci este o estimare, nu o sumă exactă."
+    },
+    "filtersScope": {
+      "title": "Aria filtrelor",
+      "text": "Filtrele Filială și {{space}} se aplică doar metricilor de sesiuni. Plățile nu au această legătură, astfel încât banii sunt afișați pentru întregul studio."
+    },
+    "avgValue": {
+      "title": "Valoarea clientului",
+      "text": "Cât aduce în medie un client în această perioadă."
+    },
+    "cancelNoshow": {
+      "title": "Anulări și absențe",
+      "text": "Ponderea sesiunilor perturbate: anulări și absențe din tot ce a fost programat."
+    },
+    "avgRating": {
+      "title": "Evaluare medie",
+      "text": "Evaluarea medie acordată de clienți sesiunilor acestui antrenor."
+    },
+    "teamScope": {
+      "title": "Aria datelor",
+      "text": "Aici se numără doar venitul legat de un antrenor anume, astfel că totalul tuturor antrenorilor poate fi mai mic decât venitul general al studioului."
+    },
+    "lessonsCount": {
+      "title": "Sesiuni",
+      "text": "Câte sesiuni au ținut antrenorii în această perioadă."
+    },
+    "load": {
+      "title": "Încărcare",
+      "text": "Cât de plină este ziua unui antrenor: orele lui rezervate din intervalul de funcționare al studioului."
+    },
+    "weeklyClients": {
+      "title": "Noi și recurenți",
+      "text": "Pe săptămână: câte persoane au venit prima dată și câte au revenit. Un studio sănătos crește pe ambele linii."
+    },
+    "byCategory": {
+      "title": "Venituri pe categorie",
+      "text": "Din ce câștigi cu adevărat: pachete, sesiuni individuale, carduri cadou și vânzări cu amănuntul."
+    },
+    "byMethod": {
+      "title": "Metode de plată",
+      "text": "Cum plătesc clienții. Ajută să vezi dacă ai nevoie de plăți cu cardul și câți bani ocolesc casa."
+    },
+    "buyerType": {
+      "title": "Cine plătește",
+      "text": "Clienți noi față de recurenți. Dacă aproape toate veniturile vin de la clienți noi, studioul nu îi păstrează."
+    },
+    "products": {
+      "title": "Ce se vinde",
+      "text": "Toate pachetele și serviciile perioadei: câte s-au vândut, cu cât și dacă vânzările cresc."
+    },
+    "topProfitable": {
+      "title": "Cele mai profitabile intervale",
+      "text": "Orele din program care aduc cei mai mulți bani. Pune acolo cei mai buni antrenori."
+    },
+    "topFilled": {
+      "title": "Cele mai pline intervale",
+      "text": "Orele pe care clienții le rezervă cel mai dornic. Dacă sunt complet pline, merită să adaugi încă o sesiune."
+    },
+    "chronicLow": {
+      "title": "Intervale cronic goale",
+      "text": "Ore care se umplu sub o treime din locuri de câteva săptămâni. Candidate pentru mutare sau eliminare."
+    },
+    "hallUtil": {
+      "title": "Utilizare: {{spacePlural}}",
+      "text": "Cât timp sunt {{spacePlural}} tăi în uz efectiv. Timpul gol este chirie care nu se amortizează."
+    },
+    "heatmap": {
+      "title": "Încărcare după zi și oră",
+      "text": "Culoarea arată rata medie de ocupare a intervalului în perioadă. Apasă pe o celulă pentru a vedea sesiunile din acea zi și oră."
+    },
+    "riskSegments": {
+      "title": "Segmente de risc",
+      "text": "Clienți grupați după tipul de risc pe care îl reprezintă — să îi pierzi sau venitul pe care nu îl aduc. Fiecare card are propriul motiv și un pas următor clar: scrie-le, oferă reînnoire sau upgrade."
+    },
+    "loyalSegments": {
+      "title": "Fideli",
+      "text": "Clienți care deja aduc cea mai mare valoare: vizitează cel mai des, cheltuie cel mai mult sau aduc prieteni. Merită să ai grijă de ei și să îi răsplătești."
+    },
+    "segment": {
+      "at_risk": {
+        "title": "La limită",
+        "text": "Veneau regulat și acum au dispărut. Încă pot fi recuperați cu un mesaj."
+      },
+      "vip_idle": {
+        "title": "VIP inactivi",
+        "text": "Clienți care au cheltuit mai mult decât oricine, dar nu au mai vizitat de ceva timp."
+      },
+      "expiring_subscription": {
+        "title": "Abonament pe cale să expire",
+        "text": "Acești clienți mai au 1–2 sesiuni. Acum este cel mai bun moment să oferi reînnoirea."
+      },
+      "lost_newcomers": {
+        "title": "Clienți noi care nu au revenit",
+        "text": "Au venit o dată și au dispărut. De obicei ține de prima sesiune — merită investigat."
+      },
+      "upsell_candidates": {
+        "title": "Pregătiți pentru mai mult",
+        "text": "Vin des, dar cumpără cel mai simplu pachet. Merită să le oferi un abonament mai scump."
+      },
+      "frequent": {
+        "title": "Frecvenți",
+        "text": "Vin mai des decât toți ceilalți. Coloana vertebrală a veniturilor studioului."
+      },
+      "high_ltv": {
+        "title": "Cei mai valoroși",
+        "text": "Au adus studioului mai mulți bani decât toți ceilalți, pe toată perioada."
+      },
+      "referrers": {
+        "title": "Aduc prieteni",
+        "text": "Clienți ale căror recomandări au adus alte persoane la tine."
+      }
+    }
+  }
+}

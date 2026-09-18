@@ -1,0 +1,611 @@
+{
+  "tabs": {
+    "overview": "Översikt",
+    "sales": "Försäljning",
+    "clients": "Kunder",
+    "team": "Team",
+    "schedule": "Schema"
+  },
+  "toolbar": {
+    "period": {
+      "day": "Dag",
+      "week": "Vecka",
+      "month": "Månad",
+      "year": "År",
+      "custom": "Anpassat"
+    },
+    "vsPrevious": "jämfört med föregående period: {{from}}–{{to}}",
+    "allBranches": "Alla filialer",
+    "allHalls": "Alla {{spacePlural}}",
+    "allTrainers": "Alla tränare",
+    "allServices": "Alla tjänster",
+    "export": "Exportera"
+  },
+  "insights": {
+    "title": "Kräver uppmärksamhet",
+    "action": "Öppna",
+    "empty": "Allt är bra just nu — inga råd att visa",
+    "revenue_up_clients_down": "Omsättningen ökar, men aktiva kunder minskar — kontrollera kundbortfall",
+    "clients_at_risk": "{{count}} kund(er) har inte deltagit på över 3 veckor — risk för bortfall",
+    "lesson_overfull": "„{{name}}” {{weekday, weekday}} kl. {{hour}}:00 har varit {{pct}} % full i tre veckor i rad — överväg att lägga till ett pass",
+    "trial_low_conversion": "Endast {{pct}} % av {{buyers}} provköpare köpte sedan ett abonnemang — överväg en kampanj",
+    "fastest_growing_product": "„{{name}}” växer snabbast: +{{pct}} % jämfört med föregående period",
+    "renewals_low": "Endast {{pct}} % av kunder med utgånget abonnemang förnyar — överväg en påminnelse",
+    "new_no_second_visit": "{{count}} nya kunder kom en gång och bokade aldrig igen — överväg en påminnelse",
+    "subs_expiring_week": "{{count}} kunder har ett abonnemang som går ut denna vecka — överväg att erbjuda förnyelse",
+    "vip_inactive": "VIP-kunden „{{name}}” har inte besökt er på {{days}} dagar — överväg ett personligt meddelande",
+    "high_return_free_evenings": "„{{name}}” har en hög återvändandegrad ({{return_pct}} %), men kvällarna är lediga — lägg till ett pass",
+    "trainer_overloaded": "„{{name}}” är belastad till {{load_pct}} % — överväg att balansera schemat",
+    "low_rating": "„{{name}}” har betyget {{rating}} — värt att titta närmare på",
+    "slot_chronic_low": "„{{name}}” {{weekday, isodowWeekday}} kl. {{hour}}:00 har varit {{pct}} % full i {{weeks}} veckor i rad — flytta eller ställ in det",
+    "hall_idle_evenings": "„{{name}}” står tom {{pct}} % av kvällstimmarna — överväg att schemalägga ett pass",
+    "slot_overfull": "Tiden {{weekday, isodowWeekday}} kl. {{hour}}:00 har varit {{pct}} % full i tre veckor i rad — överväg att lägga till ett pass",
+    "loss_hotspot": "{{cancels}} pass ställdes in kl. {{label}} under denna period — flest inställningar samlas kring denna timme"
+  },
+  "table": {
+    "loading": "Laddar…",
+    "noProduct": "Ingen produkt"
+  },
+  "empty": {
+    "noData": {
+      "title": "Här finns inget ännu",
+      "text": "Ingen aktivitet registrerades under den valda perioden. Utöka intervallet eller börja med att boka en kund i Journalen.",
+      "widen": "Visa året"
+    },
+    "noRevenue": "Inga betalningar under denna period",
+    "noSales": "Ingen försäljning i detta urval",
+    "noProducts": "Inga paket eller tjänster har sålts ännu",
+    "noLessons": "Inga pass under denna period",
+    "noTrainerLessons": "Denna tränare har inte hållit några pass ännu",
+    "noRows": "Inga poster i detta urval",
+    "noLosses": "Inga inställningar eller uteblivanden under denna period"
+  },
+  "overview": {
+    "kpi": {
+      "revenue": "Omsättning",
+      "profit": "Vinst",
+      "attendance": "Närvaro",
+      "activeClients": "Aktiva kunder",
+      "fillRate": "Beläggningsgrad"
+    },
+    "chart": {
+      "metric": {
+        "revenue": "Omsättning",
+        "profit": "Vinst",
+        "attendance": "Närvaro",
+        "new_clients": "Nya kunder",
+        "fill_rate": "Beläggningsgrad"
+      }
+    },
+    "revenueStructure": {
+      "title": "Omsättningsstruktur"
+    },
+    "category": {
+      "subscriptions": "Abonnemang",
+      "services": "Tjänster",
+      "certificates": "Presentkort",
+      "rent": "Hyra",
+      "salary": "Löner",
+      "refunds": "Återbetalningar"
+    },
+    "clientDynamics": {
+      "title": "Kunddynamik",
+      "new": "Nya",
+      "returned": "Återkom",
+      "lost": "Förlorade"
+    },
+    "drilldown": {
+      "title": "Transaktion",
+      "category": "Kategori",
+      "amount": "Belopp",
+      "lesson": "Pass",
+      "time": "Tid",
+      "occupancy": "Beläggning",
+      "date": "Datum",
+      "method": "Metod",
+      "trainer": "Tränare",
+      "rowsCount": "poster",
+      "search": "Sök i tabellen",
+      "shownOf": "Visar {{shown}} av {{total}}",
+      "noMatches": "Inget hittades för „{{query}}”",
+      "reset": "Återställ",
+      "export": "Exportera CSV",
+      "subtitle": {
+        "money": "Transaktioner i detta urval",
+        "lessons": "Pass i detta urval"
+      },
+      "hint": {
+        "operations": "Klicka på en rad för att öppna transaktionen i Ekonomi",
+        "lessons": "Klicka på en rad för att öppna den dagen i Journalen"
+      },
+      "stat": {
+        "net": "Netto",
+        "income": "Intäkt",
+        "expense": "Utgift",
+        "operations": "Transaktioner",
+        "topCategory": "Största kategori",
+        "lessons": "Pass",
+        "booked": "Bokade platser",
+        "avgFill": "Genomsnittlig beläggning",
+        "trainers": "Tränare",
+        "cancelled": "Inställt"
+      }
+    }
+  },
+  "sales": {
+    "kpi": {
+      "revenue": "Omsättning",
+      "salesCount": "Försäljningar",
+      "avgCheck": "Genomsnittsköp",
+      "repeatShare": "Andel återköp",
+      "renewals": "Förnyelsegrad"
+    },
+    "chart": {
+      "title": "Försäljning"
+    },
+    "incomeOperations": "Intäktstransaktioner",
+    "breakdown": {
+      "byCategory": "Vad de köper",
+      "byMethod": "Hur de betalar",
+      "buyerType": "Vem som köper",
+      "new": "Nya",
+      "returning": "Återkommande",
+      "noClient": "Ingen kund"
+    },
+    "method": {
+      "card": "Kort",
+      "cash": "Kontant",
+      "qr": "QR-kod",
+      "transfer": "Överföring"
+    },
+    "products": {
+      "title": "Produkter",
+      "name": "Produkt",
+      "sold": "Sålda",
+      "revenue": "Omsättning",
+      "avgCheck": "Genomsnittsköp",
+      "repeatShare": "Andel återköp",
+      "trend": "Trend",
+      "trendHint": "Jämfört med föregående period med samma längd"
+    }
+  },
+  "clients": {
+    "kpi": {
+      "new": "Nya",
+      "returned": "Återkom",
+      "lost": "Förlorade",
+      "retention": "Kundbevarande",
+      "avgValue": "Kundvärde"
+    },
+    "chart": {
+      "title": "Nya och återkommande",
+      "new": "Nya",
+      "returned": "Återkommande"
+    },
+    "riskTitle": "Risksegment",
+    "loyalTitle": "Lojala",
+    "list": "Lista",
+    "campaign": "Starta kampanj",
+    "exportList": "Exportera lista",
+    "emptySegment": "Segmentet „{{name}}” har inga kunder just nu",
+    "segments": {
+      "new": {
+        "name": "Nya kunder",
+        "desc": "Registrerade under den valda perioden"
+      },
+      "returned": {
+        "name": "Återkommande kunder",
+        "desc": "Besökte denna period och den föregående"
+      },
+      "lost": {
+        "name": "Förlorade kunder",
+        "desc": "Besökte föregående period men kom inte tillbaka denna"
+      },
+      "active": {
+        "name": "Aktiva kunder",
+        "desc": "Kom till minst ett pass under den valda perioden"
+      },
+      "at_risk": {
+        "name": "I riskzonen",
+        "desc": "Aktiva, men inget besök på 21+ dagar"
+      },
+      "vip_idle": {
+        "name": "Inaktiva VIP-kunder",
+        "desc": "VIP-kunder utan besök på 14+ dagar"
+      },
+      "expiring_subscription": {
+        "name": "Abonnemang löper ut",
+        "desc": "≤2 pass eller ≤7 dagar kvar"
+      },
+      "lost_newcomers": {
+        "name": "Kom aldrig tillbaka",
+        "desc": "Kom en gång, borta i 14+ dagar"
+      },
+      "upsell_candidates": {
+        "name": "Redo för uppgradering",
+        "desc": "8+ besök denna månad, inget paket"
+      },
+      "frequent": {
+        "name": "Frekventa",
+        "desc": "8+ besök under perioden"
+      },
+      "high_ltv": {
+        "name": "Högt LTV",
+        "desc": "Topp 10 % efter total konsumtion"
+      },
+      "referrers": {
+        "name": "Rekommenderar andra",
+        "desc": "Genomförde en rekommendation under perioden"
+      }
+    },
+    "listSearch": "Sök efter namn eller telefon",
+    "shownOf": "Visar {{shown}} av {{total}}",
+    "noMatches": "Ingen hittades för „{{query}}”",
+    "resetSearch": "Återställ",
+    "neverVisited": "Aldrig besökt",
+    "valueLabel": {
+      "visits": "Besök",
+      "spent": "Spenderat",
+      "daysIdle": "Inaktiva dagar",
+      "remaining": "Pass kvar",
+      "value": "Värde"
+    },
+    "relative": {
+      "today": "I dag",
+      "daysAgo_one": "för {{count}} dag sedan",
+      "daysAgo_other": "för {{count}} dagar sedan"
+    }
+  },
+  "team": {
+    "kpi": {
+      "lessonsCount": "Pass",
+      "revenuePerHour": "Omsättning/timme",
+      "avgFillPct": "Beläggningsgrad",
+      "cancelNoshowPct": "Inställningar/uteblivanden",
+      "avgRating": "Betyg"
+    },
+    "table": {
+      "title": "Tränare",
+      "trainer": "Tränare",
+      "lessons": "Pass",
+      "fillPct": "Beläggningsgrad",
+      "attendance": "Närvaro",
+      "revenue": "Omsättning",
+      "returnRate": "Återvändandegrad",
+      "cancels": "Inställningar",
+      "fillPctHint": "Fyllda platser av de planerade",
+      "returnRateHint": "Kunder som bokade med denna tränare igen",
+      "cancelsHint": "Inställda pass och kunders uteblivanden",
+      "ratingHint": "Genomsnittligt betyg som kunder gav denna tränares pass"
+    },
+    "drawer": {
+      "revenueByWeek": "Omsättning per vecka",
+      "loadByWeekday": "Belastning per veckodag",
+      "loadByHour": "Belastning efter tid på dagen",
+      "loadDim": {
+        "weekday": "Per dag",
+        "hour": "Per timme"
+      },
+      "schedule": {
+        "title": "Schema",
+        "empty": "Inga pass under denna period"
+      },
+      "topLessons": "Favoritpass",
+      "returnBlock": "Kundernas återkomst",
+      "returnOf": "{{returned}} av {{total}} kunder kom tillbaka ({{pct}} %)",
+      "openProfile": "Öppna profil",
+      "held": "Genomförda",
+      "attendance": "Närvaro"
+    },
+    "weekdays": [
+      "sön",
+      "mån",
+      "tis",
+      "ons",
+      "tors",
+      "fre",
+      "lör"
+    ]
+  },
+  "schedule": {
+    "weekdaysMonFirst": [
+      "mån",
+      "tis",
+      "ons",
+      "tors",
+      "fre",
+      "lör",
+      "sön"
+    ],
+    "kpi": {
+      "avgFillPct": "Beläggningsgrad",
+      "freeSpots": "Lediga platser",
+      "cancels": "Inställningar",
+      "noshows": "Uteblivanden",
+      "lostRevenue": "Förlorad omsättning"
+    },
+    "heatmap": {
+      "title": "Belastning per dag och timme",
+      "legend": "Beläggningsgrad:",
+      "tooltip": "{{lessons}} pass · {{attendance}} deltog · {{pct}} %",
+      "empty": "Inga pass"
+    },
+    "slices": {
+      "topProfitable": "Mest lönsamma",
+      "topFilled": "Mest fyllda",
+      "chronicLow": "Kroniskt låg beläggning",
+      "halls": "Utnyttjande: {{spacePlural}}",
+      "held": "{{count}} genomförda",
+      "weeks": "{{count}} v.",
+      "move": "Flytta",
+      "cancel": "Ställ in",
+      "eveningIdle": "ledig kvällstid {{pct}} %"
+    },
+    "losses": {
+      "title": "Inställningar och uteblivanden",
+      "dim": {
+        "hour": "Efter tid",
+        "service": "Efter tjänst",
+        "trainer": "Efter tränare"
+      },
+      "cancels_one": "{{count}} inställning",
+      "cancels_other": "{{count}} inställningar",
+      "noshows_one": "{{count}} uteblivande",
+      "noshows_other": "{{count}} uteblivanden",
+      "lostSpots_one": "−{{count}} plats",
+      "lostSpots_other": "−{{count}} platser"
+    },
+    "status": {
+      "confirmed": "Bekräftad",
+      "pending": "Väntande",
+      "cancelled": "Inställd"
+    },
+    "slot": {
+      "summary": "för {{from}} — {{to}}",
+      "lessonsCount": "Pass totalt"
+    }
+  },
+  "export": {
+    "csv": "Ladda ner CSV"
+  },
+  "scopeNote": {
+    "label": "Hela studion",
+    "money": "Filtren Filial och {{space}} påverkar inte pengar — en betalning är inte knuten till dem",
+    "clientBase": "Tränare, {{space}}, filial och tjänst ändrar inte detta mått — en kund är inte knuten till dem"
+  },
+  "descriptions": {
+    "overview": {
+      "metric": {
+        "revenue": "Alla pengar som kom in i studion under perioden",
+        "profit": "Det som återstår efter periodens utgifter",
+        "attendance": "Pass som kunder faktiskt deltog i",
+        "new_clients": "Kunder registrerade under denna period",
+        "fill_rate": "Hur fulla passen är: bokade platser av tillgängliga platser"
+      },
+      "revenueStructure": "Vad din omsättning består av under denna period",
+      "clientDynamics": "Hur många som kom för första gången, återvände eller slutade komma"
+    },
+    "sales": {
+      "chart": "Omsättning och antal köp per dag",
+      "byCategory": "Varje produkts andel av omsättningen",
+      "byMethod": "Hur omsättningen fördelas per betalningsmetod",
+      "buyerType": "Hur mycket omsättning som kommer från nya kunder jämfört med återkommande",
+      "products": "Varje produkt: hur många som såldes, för hur mycket och om försäljningen växer"
+    },
+    "clients": {
+      "chart": "Hur många kunder som kom för första gången och hur många som återvände, per vecka",
+      "riskSegments": "Kunder du kan förlora om du inte kontaktar dem nu",
+      "loyalSegments": "De som besöker mest, spenderar mest och tar med vänner"
+    },
+    "team": {
+      "trainers": "Jämförelse efter belastning, omsättning och kundernas återvändandegrad",
+      "loadWeekday": "Vilka veckodagar tränaren är upptagen och när de är lediga",
+      "loadHour": "Vilken tid deras pass fylls och när de står tomma",
+      "schedule": "Alla tränarens pass under den valda perioden"
+    },
+    "schedule": {
+      "heatmap": "Var schemat är överbokat och var det är tomt",
+      "topProfitable": "Tiderna i ditt schema som ger mest pengar",
+      "topFilled": "Tiderna som kunder bokar mest ivrigt",
+      "chronicLow": "Tidsluckor som fyllts till mindre än en tredjedel av platserna i veckor",
+      "halls": "Hur mycket av tiden dina {{spacePlural}} faktiskt används",
+      "losses": "Var studion förlorar platser: inställda pass eller kunder som uteblir"
+    }
+  },
+  "formulas": {
+    "salesCount": {
+      "title": "Försäljningar",
+      "text": "Hur många gånger kunder betalade dig under denna period. En person som betalar flera gånger räknas som separata försäljningar."
+    },
+    "revenue": {
+      "title": "Omsättning",
+      "text": "Alla pengar som kom in i studion under denna period, efter betalningsdatum. Paket, enskilda pass, presentkort och detaljhandel — allt tillsammans."
+    },
+    "profit": {
+      "title": "Vinst",
+      "text": "Det som återstår efter utgifterna denna period: hyra, löner och material. Detta är din faktiska vinst."
+    },
+    "attendance": {
+      "title": "Närvaro",
+      "text": "Hur många besök kunder faktiskt genomförde. Endast pass markerade som deltagna räknas."
+    },
+    "bookings": {
+      "title": "Bokningar",
+      "text": "Hur många bokningar kunder gjorde för pass. Avbokade bokningar räknas inte."
+    },
+    "noshow": {
+      "title": "Uteblivande",
+      "text": "En kund bokade, passet ägde rum, men kunden kom inte. Varje sådant fall är en plats någon annan kunde ha tagit."
+    },
+    "activeClients": {
+      "title": "Aktiva kunder",
+      "text": "Hur många olika personer som kom minst en gång under denna period. Varje kund räknas en gång, oavsett antal besök."
+    },
+    "occupancy": {
+      "title": "Beläggning",
+      "text": "Hur fulla dina pass är: fyllda platser av det du planerade. 100 % betyder att det inte finns mer plats."
+    },
+    "avgCheck": {
+      "title": "Genomsnittsköp",
+      "text": "Vad en betalning i genomsnitt ger. Det ökar när kunder köper längre paket eller tillägg."
+    },
+    "retention": {
+      "title": "Kundbevarande",
+      "text": "Hur många av föregående periods kunder som kom tillbaka denna period. Visar om du behåller folk eller börjar från noll varje månad."
+    },
+    "newClients": {
+      "title": "Nya kunder",
+      "text": "Personer som dök upp i din kundbas för första gången under denna period."
+    },
+    "returning": {
+      "title": "Återkommande",
+      "text": "Kunder som hade besökt tidigare och kom tillbaka igen under denna period."
+    },
+    "lost": {
+      "title": "Förlorade",
+      "text": "Besökte under föregående period och har inte dykt upp en enda gång denna. Det är fortfarande värt att kontakta dem."
+    },
+    "clientValue": {
+      "title": "Kundvärde",
+      "text": "Vad en kund i genomsnitt ger under denna period."
+    },
+    "repeatPurchaseShare": {
+      "title": "Andel återköp",
+      "text": "Andelen kunder som köpte av dig mer än en gång. Ju högre den är, desto starkare är vanan att komma tillbaka."
+    },
+    "renewalRate": {
+      "title": "Förnyelsegrad",
+      "text": "Hur många kunder som köpte ett nytt paket efter att det föregående löpt ut."
+    },
+    "revenuePerHour": {
+      "title": "Omsättning per timme (tränare)",
+      "text": "Hur mycket pengar en timmes arbete av en tränare ger. Gör att du kan jämföra tränare rättvist — en kan hålla färre pass, men varje pass ger mer."
+    },
+    "trainerReturnRate": {
+      "title": "Återvändandegrad (tränare)",
+      "text": "Andelen av en tränares kunder som bokade med dem igen."
+    },
+    "missedRevenue": {
+      "title": "Förlorad omsättning",
+      "text": "Pengar studion inte tjänade på grund av tomma platser i tidigare pass: lediga platser multiplicerade med passets pris."
+    },
+    "losses": {
+      "title": "Inställningar och uteblivanden",
+      "text": "En „inställning” är ett inställt pass; ett „uteblivande” är en kund som bokade men inte kom. Uppdelningarna per tid/tjänst/tränare använder samma filter som fliken och stämmer med KPI:erna i rubriken."
+    },
+    "lessonRevenue": {
+      "title": "Omsättning från pass",
+      "text": "En grov uppskattning av ett pass omsättning: deltagare multiplicerat med priset. Betalningar är inte kopplade till ett visst pass, så detta är en uppskattning, inte en exakt siffra."
+    },
+    "filtersScope": {
+      "title": "Filtrens omfattning",
+      "text": "Filtren Filial och {{space}} gäller bara passmått. Betalningar har ingen sådan koppling, så belopp visas för hela studion."
+    },
+    "avgValue": {
+      "title": "Kundvärde",
+      "text": "Vad en kund i genomsnitt ger under denna period."
+    },
+    "cancelNoshow": {
+      "title": "Inställningar och uteblivanden",
+      "text": "Andelen störda pass: inställningar och uteblivanden av allt som var planerat."
+    },
+    "avgRating": {
+      "title": "Genomsnittligt betyg",
+      "text": "Det genomsnittliga betyg kunder gav denna tränares pass."
+    },
+    "teamScope": {
+      "title": "Dataomfattning",
+      "text": "Detta räknar bara omsättning kopplad till en viss tränare, så summan för alla tränare kan vara lägre än studions totala omsättning."
+    },
+    "lessonsCount": {
+      "title": "Pass",
+      "text": "Hur många pass tränarna höll under denna period."
+    },
+    "load": {
+      "title": "Belastning",
+      "text": "Hur fullpackad en tränares dag är: deras bokade timmar av studions öppettid."
+    },
+    "weeklyClients": {
+      "title": "Nya och återkommande",
+      "text": "Per vecka: hur många som kom till dig för första gången och hur många som kom tillbaka. En sund studio växer på båda linjerna."
+    },
+    "byCategory": {
+      "title": "Omsättning per kategori",
+      "text": "Vad du faktiskt tjänar på: paket, enskilda pass, presentkort och detaljhandel."
+    },
+    "byMethod": {
+      "title": "Betalningsmetoder",
+      "text": "Hur kunder betalar. Hjälper dig se om du behöver kortbetalning och hur mycket pengar som går förbi kassan."
+    },
+    "buyerType": {
+      "title": "Vem som betalar",
+      "text": "Nya kunder jämfört med återkommande. Om nästan all omsättning kommer från nya kunder behåller studion inte folk."
+    },
+    "products": {
+      "title": "Vad som säljer",
+      "text": "Alla paket och tjänster under perioden: hur många som såldes, för hur mycket och om försäljningen växer."
+    },
+    "topProfitable": {
+      "title": "Mest lönsamma tider",
+      "text": "Tiderna i ditt schema som ger mest pengar. Lägg dina bästa tränare där."
+    },
+    "topFilled": {
+      "title": "Mest fyllda tider",
+      "text": "Tiderna som kunder bokar mest ivrigt. Om de är helt fyllda är det värt att lägga till ett pass till."
+    },
+    "chronicLow": {
+      "title": "Kroniskt tomma tider",
+      "text": "Tider som har fyllts till mindre än en tredjedel av platserna i flera veckor. Kandidater att flytta eller ta bort."
+    },
+    "hallUtil": {
+      "title": "Utnyttjande: {{spacePlural}}",
+      "text": "Hur mycket av tiden dina {{spacePlural}} faktiskt används. Tom tid är hyra som inte lönar sig."
+    },
+    "heatmap": {
+      "title": "Belastning per dag och timme",
+      "text": "Färgen visar tidsluckans genomsnittliga beläggningsgrad under perioden. Klicka på en cell för att se passen den dagen och timmen."
+    },
+    "riskSegments": {
+      "title": "Risksegment",
+      "text": "Kunder grupperade efter den typ av risk de innebär — att förlora dem eller intäkten de inte ger. Varje kort har sitt eget skäl och ett tydligt nästa steg: skriv till dem, erbjud förnyelse eller uppgradering."
+    },
+    "loyalSegments": {
+      "title": "Lojala",
+      "text": "Kunder som redan ger mest värde: de besöker oftast, spenderar mest eller tar med vänner. Värt att ta hand om och belöna."
+    },
+    "segment": {
+      "at_risk": {
+        "title": "I riskzonen",
+        "text": "De brukade komma regelbundet och har nu försvunnit. De kan fortfarande vinnas tillbaka med ett meddelande."
+      },
+      "vip_idle": {
+        "title": "Inaktiva VIP-kunder",
+        "text": "Kunder som har spenderat mer än alla andra, men inte besökt er på ett tag."
+      },
+      "expiring_subscription": {
+        "title": "Abonnemang löper ut",
+        "text": "Dessa kunder har 1–2 pass kvar. Bästa tillfället att erbjuda en förnyelse."
+      },
+      "lost_newcomers": {
+        "title": "Nya kunder som inte återvände",
+        "text": "De kom en gång och försvann. Det handlar ofta om det första passet — värt att undersöka."
+      },
+      "upsell_candidates": {
+        "title": "Redo för mer",
+        "text": "De kommer ofta, men köper det enklaste paketet. Värt att erbjuda ett dyrare abonnemang."
+      },
+      "frequent": {
+        "title": "Stamkunder",
+        "text": "De kommer oftare än alla andra. Ryggraden i studions omsättning."
+      },
+      "high_ltv": {
+        "title": "Mest värdefulla",
+        "text": "Har gett studion mer pengar än alla andra, totalt sett."
+      },
+      "referrers": {
+        "title": "Tar med vänner",
+        "text": "Kunder vars rekommendationer har gett dig andra människor."
+      }
+    }
+  }
+}

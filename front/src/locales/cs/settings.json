@@ -52,6 +52,8 @@
       "timezoneSearch": "Město nebo posun",
       "timezoneNotFound": "Časové pásmo nenalezeno",
       "currency": "Měna",
+      "currencySearch": "Měna nebo kód",
+      "currencyNotFound": "Žádná měna nenalezena",
       "language": "Jazyk rozhraní",
       "languageSearch": "Hledat jazyk",
       "languageNotFound": "Jazyk nenalezen",

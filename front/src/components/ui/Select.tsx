@@ -4,6 +4,11 @@ import { createPortal } from 'react-dom';
 export interface SelectOption {
   value: string;
   label: string;
+  /** Приписка справа от строки, приглушённая: код валюты, которым названия
+   *  различаются между собой («доллар» их два десятка). Стоит отдельной
+   *  колонкой, а не внутри label, потому что многоточие съедает хвост строки —
+   *  то есть ровно ту часть, ради которой приписку и показывают. */
+  hint?: string;
 }
 
 export interface SelectProps {
@@ -53,9 +58,13 @@ export function Select({
   // Отфильтрованный список — единственный, по которому идут и стрелки, и Enter,
   // и отрисовка: разойдись они, Enter выбирал бы не ту строку, что подсвечена.
   // Поиск по подстроке в любом месте названия, регистр не важен: «корея» должна
-  // находить и «Северную», и «Южную».
+  // находить и «Северную», и «Южную». Значение ищется наравне с подписью: коды
+  // валют и стран («CZK», «DE») человек набирает чаще, чем слово целиком.
   const visible = searchable && query.trim()
-    ? options.filter(o => o.label.toLowerCase().includes(query.trim().toLowerCase()))
+    ? options.filter(o => {
+        const needle = query.trim().toLowerCase();
+        return o.label.toLowerCase().includes(needle) || o.value.toLowerCase().includes(needle);
+      })
     : options;
 
   // Клик мимо — закрыть (список теперь в портале вне ref, проверяем и его).
@@ -124,9 +133,19 @@ export function Select({
 
   // Фокус в поле поиска сразу при открытии: иначе до него надо доехать мышью, и
   // весь смысл поиска теряется — быстрее было бы листать.
+  //
+  // В зависимостях `trigger`, а не только `open`: панель рисуется лишь после
+  // того, как посчитана её позиция (`open && trigger` ниже), и на первом проходе
+  // инпута ещё нет — focus() уходил в null молча, без ошибки. Флаг держит фокус
+  // однократным: `trigger` пересчитывается на каждый скролл, и без него поле
+  // поиска забирало бы курсор обратно у того, кто уже ходит по списку стрелками.
+  const focused = useRef(false);
   useEffect(() => {
-    if (open && searchable) searchRef.current?.focus();
-  }, [open, searchable]);
+    if (!open) { focused.current = false; return; }
+    if (!searchable || !trigger || focused.current) return;
+    focused.current = true;
+    searchRef.current?.focus();
+  }, [open, searchable, trigger]);
 
   // Прокрутку ставим сами, через scrollTop контейнера. scrollIntoView здесь не
   // годится: он листает ВСЕ прокручиваемые предки, и вместо списка уезжала вниз
@@ -265,13 +284,20 @@ export function Select({
                   fontSize: '14px', fontWeight: active ? 700 : 500,
                   color: active ? 'var(--peach, #F9A08B)' : 'var(--text, #1A1A1A)',
                   background: hl ? 'rgba(252,174,145,0.1)' : 'transparent',
-                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                  display: 'flex', alignItems: 'center', gap: '8px',
                   fontFamily: 'Manrope, sans-serif',
                 }}
               >
-                {o.label}
+                <span style={{ flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {o.label}
+                </span>
+                {o.hint && (
+                  <span style={{ flexShrink: 0, fontSize: '12px', fontWeight: 600, color: 'var(--text3, #AAA)', letterSpacing: '0.3px' }}>
+                    {o.hint}
+                  </span>
+                )}
                 {active && (
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" style={{ flexShrink: 0 }}>
                     <polyline points="20 6 9 17 4 12" />
                   </svg>
                 )}

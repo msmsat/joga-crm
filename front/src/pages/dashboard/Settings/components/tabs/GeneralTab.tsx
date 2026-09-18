@@ -3,7 +3,8 @@ import { useTranslation } from "react-i18next";
 import { icons } from "../ui/SettingsIcons";
 import SectionHeader from "../ui/SectionHeader";
 import { Button, EmptyState, Input, Select, useToast } from "../../../../../components/ui/index";
-import { CURRENCY_OPTIONS, LANGUAGES, TIMEZONES } from "../../../../../components/UI";
+import { LANGUAGES, TIMEZONES } from "../../../../../components/UI";
+import { currencyOptionsFor } from "../../../../../utils/currencyOptions";
 import { resolveImageUrl } from "../../../../../api/client";
 import { useGeneralSettings } from "../../hooks/useGeneralSettings";
 import BookingModelCard from "./BookingModelCard";
@@ -19,7 +20,7 @@ const COMPANY_FIELDS = ["name", "description", "phone", "email", "website", "add
 type LocaleField = "timezone" | "language" | "currency";
 
 export default function GeneralTab() {
-  const { t } = useTranslation(['settings', 'onboarding']);
+  const { t, i18n } = useTranslation(['settings', 'onboarding']);
   const toast = useToast();
   const { data, isLoading, isError, refetch, save, uploadLogo } = useGeneralSettings();
   const [draft, setDraft] = useState<GeneralSettings | null>(null);
@@ -54,8 +55,10 @@ export default function GeneralTab() {
 
   // Те же списки значений и подписи (namespace "onboarding"), что и на шаге
   // регион-настроек онбординга (StepSettings) — набор валют/поясов/языков
-  // должен совпадать один в один, обычный kit Select, без визуальных правок.
-  const currencyOptions = CURRENCY_OPTIONS.map(c => ({ value: c.value, label: `${c.symbol}  ${t(`onboarding:settings.currencies.${c.value}`)}` }));
+  // должен совпадать один в один. Kit Select без визуальных правок; поиск у
+  // валюты включён по той же причине, что и у пояса: строк больше сотни.
+  const currencyOptions = currencyOptionsFor(t, i18n.language)
+    .map(c => ({ value: c.value, label: `${c.symbol}  ${c.label}`, hint: c.hint }));
   const languageOptions = LANGUAGES;
   const timezoneOptions = TIMEZONES;
 
@@ -217,7 +220,16 @@ export default function GeneralTab() {
           </div>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px" }}>
             <div style={{ fontSize: "13px", fontWeight: 600, color: "var(--onyx)" }}>{t('general.locale.currency')}</div>
-            <div style={{ width: "min(260px, 46%)", minWidth: "150px" }}><Select value={draft.currency ?? ''} onChange={v => setLocale('currency', v)} options={currencyOptions} /></div>
+            <div style={{ width: "min(260px, 46%)", minWidth: "150px" }}>
+              <Select
+                value={draft.currency ?? ''}
+                onChange={v => setLocale('currency', v)}
+                options={currencyOptions}
+                searchable
+                searchPlaceholder={t('general.locale.currencySearch')}
+                emptyText={t('general.locale.currencyNotFound')}
+              />
+            </div>
           </div>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px" }}>
             <div style={{ fontSize: "13px", fontWeight: 600, color: "var(--onyx)" }}>{t('general.locale.language')}</div>

@@ -1,0 +1,333 @@
+== no
+nav.sectionLabel	Systeminnstillinger
+nav.general	Generelt
+nav.appearance	Utseende
+nav.notifications	Varsler
+nav.billing	Fakturering
+nav.security	Sikkerhet
+nav.integrations	Integrasjoner
+nav.data	Data
+nav.logout	Bytt CRM
+toast.saved	Lagret
+toast.error	Noe gikk galt
+workspace.title	Dine CRM-systemer
+workspace.subtitle	Velg et arbeidsområde, eller opprett et nytt
+workspace.current	Gjeldende
+workspace.membersCount_one	{{count}} medlem
+workspace.membersCount_other	{{count}} medlemmer
+workspace.clientsCount_one	{{count}} klient
+workspace.clientsCount_other	{{count}} klienter
+workspace.createNew	Opprett nytt studio
+workspace.loadError	Kunne ikke laste inn studioene dine
+workspace.selectError	Kunne ikke bytte til dette studioet
+general.company.title	Bedriftsopplysninger
+general.company.subtitle	Offentlig informasjon om virksomheten din
+general.company.name	Bedriftsnavn
+general.company.namePh	f.eks. Mitt studio
+general.company.desc	Beskrivelse
+general.company.descPh	Hva gjør studioet ditt…
+general.company.phone	Telefon
+general.company.email	E-post
+general.company.site	Nettsted
+general.company.sitePh	https://studio.com
+general.company.address	Adresse
+general.company.addressPh	Eksempelveien 123, by
+general.reset	Tilbakestill
+general.resetToast	Innstillinger tilbakestilt
+general.locale.title	Språk og region
+general.locale.subtitle	Innstillinger for lokalisering av grensesnittet
+general.locale.timezone	Tidssone
+general.locale.timezoneSearch	By eller tidsforskjell
+general.locale.timezoneNotFound	Ingen tidssone funnet
+general.locale.currency	Valuta
+general.locale.currencySearch	Søk etter valuta eller kode
+general.locale.currencyNotFound	Ingen valuta funnet
+general.locale.language	Grensesnittspråk
+general.locale.languageSearch	Søk etter språk
+general.locale.languageNotFound	Ingen språk funnet
+general.locale.dateFormat	Datoformat
+general.locale.firstDay	Første dag i uken
+general.locale.firstDayLabels.0	Mandag
+general.locale.firstDayLabels.1	Søndag
+general.booking.title	Bestillingsmodell
+general.booking.subtitle	Slik bestiller klientene hos deg
+general.booking.mode	Bestillingsmodell
+general.booking.modeHint	Arrangementer — klienter melder seg på en planlagt time. Individuell — klienten velger en spesialist og et tidspunkt. Blandet — begge deler samtidig.
+general.booking.profile	Bransjeordlyd
+general.booking.profileHint	Velger ord for ansatte og tilbud. Det endrer bare formuleringer — aldri roller, priser eller bestillingsmodell.
+general.booking.strict	Streng timeplan
+general.booking.strictHint	Forbyr dobbeltbestilling av en spesialist eller et eksklusivt rom. Kreves før individuell bestilling kan slås på.
+general.booking.spaceAxis	Bruk {{spacePlural}} i timeplanen
+general.booking.spaceAxisHint	Av — klienten bestiller en person, og rommet har ingen kolonne i journalen. På — en time er knyttet til et rom.
+general.booking.spaceAxisDefaultOn	Standard for din bransje: på
+general.booking.spaceAxisDefaultOff	Standard for din bransje: av
+general.booking.modes.event	Arrangementer
+general.booking.modes.resource	Individuell
+general.booking.modes.hybrid	Blandet
+general.booking.profiles.studio	Gruppetrening og studioer
+general.booking.profiles.sport	Sport og treningssentre
+general.booking.profiles.beauty	Skjønnhet og pleie
+general.booking.profiles.recovery	Kropp og restitusjon
+general.booking.profiles.relax	Spa og avslapning
+general.booking.profiles.other	Annet
+general.booking.preview.event	Arrangement
+general.booking.preview.resource	Individuell
+general.booking.errors.AUDIT_BLOCKED	Timeplanen inneholder bestillinger som ikke er kompatible med en streng timeplan.
+general.booking.errors.STRICT_SCHEDULE_REQUIRED	Slå først på streng timeplan.
+general.booking.errors.RESOURCE_HISTORY_EXISTS	Streng timeplan kan ikke slås av: studioet har individuelle bestillinger.
+general.booking.findings.overlap	Overlappende bestillinger
+general.booking.findings.unknown_timezone	Ukjent tidssone
+general.booking.findings.undefined_branch	Avdeling er ikke angitt
+general.booking.findings.invalid_duration	Ugyldig varighet
+general.booking.findings.invalid_resource_row	Ufullstendig individuell bestilling
+general.booking.findings.missing_branch_assignment	Spesialisten er ikke tilordnet avdelingen
+general.booking.findings.missing_working_hours	Spesialisten har ingen arbeidstid
+general.booking.findings.inactive_specialist	Spesialisten er inaktiv
+general.booking.findings.other	Må gjennomgås
+appearance.theme.title	Tema
+appearance.theme.subtitle	Velg grensesnittets visuelle stil
+appearance.theme.light	Lyst
+appearance.theme.dark	Mørkt
+appearance.theme.auto	System
+appearance.accent.title	Aksentfarge
+appearance.accent.subtitle	Tilpass grensesnittets hovedfarge
+appearance.accent.note	Valget ditt er lagret, men er ennå ikke brukt i grensesnittet — det kommer i en fremtidig oppdatering.
+appearance.accent.noteTitle	Kommer snart
+appearance.accent.colors.peach	Fersken
+appearance.accent.colors.pistachio	Pistasj
+appearance.accent.colors.lavender	Lavendel
+appearance.accent.colors.pink	Rosa
+appearance.accent.colors.gold	Gull
+appearance.accent.colors.mint	Mynte
+appearance.language.title	Grensesnittspråk
+appearance.language.subtitle	Ditt personlige språk — påvirker ikke studioinnstillingene
+appearance.language.search	Søk etter språk
+appearance.language.empty	Ingen språk funnet
+notifications.myPrefs.title	Mine varsler
+notifications.myPrefs.subtitle	Personlige preferanser — påvirker ikke resten av studioet
+notifications.myPrefs.hint	Obligatoriske varsler kan ikke slås av — de gjør at du aldri går glipp av endringer i timeplanen og betalinger.
+notifications.myPrefs.empty	Ingen valgfrie varsler for rollen din
+notifications.myPrefs.channels.email	E-post
+notifications.myPrefs.channels.telegram	Telegram
+notifications.myPrefs.channels.whatsapp	WhatsApp
+notifications.telegram.title	Telegram for varsler
+notifications.telegram.subtitle	Hvor personlige hendelser skal sendes til deg — bestillinger, lønn og rapporter
+notifications.telegram.chatId	Din Telegram chat_id
+notifications.telegram.chatIdPh	f.eks. 123456789
+notifications.telegram.hintBefore	Du finner chat_id-en din hos boten 
+notifications.telegram.hintAfter	 på Telegram — start en chat med den, så sender den ID-en din.
+notifications.telegram.invalidChatId	Telegram chat_id må være et tall uten symboler
+notifications.telegram.saved	Telegram er koblet til varsler
+notifications.telegram.saveFailed	Kunne ikke lagre Telegram
+notifications.email.title	E-post for varsler
+notifications.email.subtitle	Hvor system-e-poster skal sendes
+notifications.email.primary	Primær e-post
+notifications.email.backup	Reserve-e-post
+notifications.email.backupPh	backup@studio.com
+notifications.email.saved	Varslingsinnstillinger lagret
+billing.plans.start	Start
+billing.plans.pro	Pro
+billing.plans.business	Business
+billing.plans.free_trial	Gratis prøveperiode
+billing.status.active	Aktiv
+billing.status.trial	Prøveperiode
+billing.status.expired	Utløpt
+billing.plan.title	Gjeldende abonnement
+billing.plan.expiresAt	Aktiv til {{date}}
+billing.plan.maxStaff	Opptil {{count}} ansatte
+billing.plan.staffUnlimited	Ubegrenset antall ansatte
+billing.plan.noSubscription	Ingen aktivt abonnement
+billing.plan.noSubscriptionCta	Velg abonnement
+billing.plan.trialCta	Velg abonnement
+billing.upgrade	Oppgrader til {{plan}}
+billing.renew	Forny
+billing.autopay.title	Automatisk fornyelse
+billing.autopay.subtitle	Belastes det lagrede kortet ditt
+billing.autopay.autoRenew	Automatisk fornyelse
+billing.autopay.notifyBefore	Vi minner deg på det {{count}} dager før belastning
+billing.payment.title	Betalingsmåte
+billing.payment.cardSummary	Kort •••• {{last4}}
+billing.payment.notLinked	Ingen kort er koblet til
+billing.payment.change	Endre
+billing.history.title	Betalingshistorikk
+billing.history.subtitle	Siste 12 betalinger
+billing.history.exportCsv	Eksporter CSV
+billing.history.empty	Ingen betalinger ennå
+billing.history.showAll	Vis alle
+billing.history.period	{{count}} mnd.
+billing.history.noDate	—
+billing.history.status.paid	Betalt
+billing.history.status.pending	Venter
+billing.history.status.failed	Ikke betalt
+billing.history.status.refunded	Refundert
+billing.toast.autopaySaved	Innstillinger for automatisk fornyelse er lagret
+billing.toast.renewed	Fornyelse startet
+billing.toast.csvExportError	Kunne ikke eksportere CSV
+security.account.title	Kontosikkerhet
+security.account.subtitle	Beskytt tilgangen til arbeidsområdet ditt
+security.twoFa.title	Tofaktorautentisering
+security.twoFa.sub	E-postkode ved hver innlogging
+security.twoFa.active	Aktiv
+security.twoFa.disabled	Deaktivert
+security.twoFa.enableTitle	Aktiver 2FA
+security.twoFa.disableTitle	Deaktiver 2FA
+security.twoFa.enableWarning	Når det er aktivert, vil hver innlogging kreve en kode sendt til {{email}}. Sørg for at du har tilgang til den — ellers risikerer du å miste tilgangen til kontoen din.
+security.twoFa.disableWarning	Når det er deaktivert, er bare passordet nok for å logge inn uten e-postkode.
+security.twoFa.enabledToast	Tofaktorautentisering er aktivert
+security.twoFa.disabledToast	Tofaktorautentisering er deaktivert
+security.password.title	Kontopassord
+security.password.sub	Endringen bekreftes med en e-postkode
+security.password.change	Bytt passord
+security.password.changed	Passordet er endret
+security.password.current	Nåværende passord
+security.password.currentPh	Skriv inn nåværende passord
+security.password.new	Nytt passord
+security.password.newPh	Minst 8 tegn
+security.password.repeat	Gjenta passordet
+security.password.repeatPh	Skriv inn det nye passordet igjen
+security.password.mismatch	Passordene samsvarer ikke
+security.password.forgot	Har du glemt passordet?
+security.password.resetTitle	Gjenopprett passord
+security.password.step1Sub	La oss bekrefte at det er deg
+security.password.step2Sub	Koden er sendt til {{email}}
+security.password.step3Sub	Velg et nytt passord
+security.password.resetIntro	Vi sender en sekssifret kode til e-postadressen tilknyttet kontoen din. Du trenger ikke kjenne det nåværende passordet — koden beviser at innboksen er din.
+security.password.sendCode	Send kode
+security.password.back	Tilbake
+security.password.save	Lagre passord
+security.password.resetDone	Passordet er oppdatert
+security.password.resetLogoutHint	Andre enheter blir logget ut — du forblir innlogget på denne.
+security.password.rules.len	8+ tegn
+security.password.rules.letter	Har en bokstav
+security.password.rules.digit	Har et siffer
+security.password.rules.simple	Ingen 111 eller qwerty
+security.sessions.title	Aktive økter
+security.sessions.sub	Hvor kontoen din for øyeblikket er logget inn
+security.sessions.count	{{count}} enheter
+security.sessions.manage	Administrer
+security.sessions.hide	Skjul
+security.sessions.current	Gjeldende
+security.sessions.terminate	Avslutt
+security.sessions.terminateAll	Avslutt alle andre økter
+security.sessions.terminatedToast	Økten ble avsluttet
+security.sessions.terminatedAllToast	Andre økter er avsluttet
+security.sessions.justNow	Aktiv nå
+security.sessions.minutesAgo	for {{count}} min siden
+security.sessions.hoursAgo	for {{count}} t siden
+security.sessions.daysAgo	for {{count}} d siden
+security.sessions.unknownLocation	Ukjent
+security.otp.sentHint	Vi har sendt en sekssifret kode til e-posten din. Skriv den inn nedenfor.
+security.otp.resend	Send koden på nytt
+security.otp.resendIn	Send på nytt om {{count}} sek.
+security.otp.confirm	Bekreft
+security.otp.cancel	Avbryt
+security.otp.sendCode	Send kode
+security.otp.continue	Fortsett
+security.danger.title	Databehandling (faresone)
+security.danger.export.title	Eksporter alle data
+security.danger.export.sub	Last ned et arkiv med klientbasen og historikken
+security.danger.export.prepare	Forbered arkiv
+security.danger.export.hide	Skjul
+security.danger.export.clients	Klientbase (CSV)
+security.danger.export.finances	Finansielle transaksjoner
+security.danger.export.schedule	Timer og timeplan
+security.danger.export.start	Start eksport
+security.danger.export.started	Arkivet forberedes, og en lenke sendes til e-posten din
+security.danger.export.emptySelection	Velg minst én seksjon for eksport
+security.danger.wipe.title	Tøm database
+security.danger.wipe.sub	Sletter alle klienter og bestillinger. Innstillingene beholdes.
+security.danger.wipe.action	Tøm data
+security.danger.wipe.toast	Databasen er tømt
+security.danger.wipe.consequence1	Slettes permanent: klienter, timer, bestillinger, transaksjoner, dokumenter, klientabonnementer, lojalitetshistorikk
+security.danger.wipe.consequence2	Uendret: studio, avdelinger, {{spacePlural}}, tjenester, ansatte, abonnement og innstillinger
+security.danger.wipe.consequence3	Denne handlingen kan ikke angres etter bekreftelse
+security.danger.deleteAccount.title	Slett bedriftskonto
+security.danger.deleteAccount.sub	Fullstendig og irreversibel sletting av virksomheten fra systemet
+security.danger.deleteAccount.action	Slett for alltid
+security.danger.deleteAccount.consequence1	Studioet og alle dataene blir slettet permanent, inkludert klienter, timer, økonomi og innstillinger
+security.danger.deleteAccount.consequence2	Den personlige kontoen din beholdes — bare dette studioet slettes
+security.danger.deleteAccount.consequence3	Sletting er ikke tilgjengelig med et aktivt abonnement eller hvis studioet har andre eiere
+integrations.title	Integrasjoner
+integrations.subtitle	Koble til eksterne kanaler og økosystemer med ett klikk
+integrations.loadError	Kunne ikke laste inn integrasjonsstatus
+integrations.items.telegram.name	Telegram-bot
+integrations.items.telegram.sub	Klientvarsler og bestilling via bot
+integrations.items.whatsapp.name	WhatsApp Business
+integrations.items.whatsapp.sub	Masseutsendelser og automatiske klientvarsler
+integrations.items.instagram.name	Instagram Direct
+integrations.items.instagram.sub	AI-agent for automatiske svar og nettbestilling
+integrations.items.google_calendar.name	Google Calendar
+integrations.items.google_calendar.sub	Synkronisering av studioets timeplan
+integrations.status.connected	Tilkoblet
+integrations.status.notActive	Ikke tilkoblet
+integrations.actions.configure	Konfigurer
+integrations.actions.connect	Koble til
+integrations.actions.disconnect	Koble fra
+integrations.fields.keyLabel	Nøkkel
+integrations.fields.connectedAtLabel	Tilkoblet
+integrations.fields.telegramToken	Bot-API-token (fra @BotFather)
+integrations.fields.telegramTokenPh	123456789:ABCDefGhIJKlmNoPQRsTUVwxyZ
+integrations.fields.whatsappToken	Tilgangstoken
+integrations.fields.whatsappTokenPh	EAAxxxxxxxxxxxxx
+integrations.fields.whatsappPhoneId	Telefonnummer-ID
+integrations.fields.whatsappPhoneIdPh	1029384756
+integrations.fields.whatsappWabaId	WABA-ID (valgfritt)
+integrations.fields.whatsappWabaIdPh	1029384756
+integrations.fields.instagramToken	Tilgangstoken
+integrations.fields.instagramTokenPh	IGQWR...
+integrations.fields.instagramUserId	Instagram-ID for bedriftskonto
+integrations.fields.instagramUserIdPh	17841400000000000
+integrations.guide.howToTitle	Slik kobler du til
+integrations.guide.telegram.steps.0	Åpne @BotFather i Telegram og send /newbot
+integrations.guide.telegram.steps.1	Velg navn og brukernavn for boten — BotFather sender deg en API-token
+integrations.guide.telegram.steps.2	Lim inn tokenet nedenfor og klikk på Koble til
+integrations.guide.whatsapp.steps.0	Opprett en app i Meta for Developers og legg til WhatsApp-produktet
+integrations.guide.whatsapp.steps.1	Kopier det midlertidige eller permanente tilgangstokenet i API Setup
+integrations.guide.whatsapp.steps.2	Kopier også telefonnummer-ID-en til test- eller det bekreftede nummeret
+integrations.guide.whatsapp.steps.3	Lim inn begge verdiene nedenfor og klikk på Koble til
+integrations.guide.instagram.steps.0	Koble studioets Instagram-konto til en Facebook-side — det kreves for Direct API
+integrations.guide.instagram.steps.1	Opprett en app i Meta for Developers med produktet Instagram Graph API
+integrations.guide.instagram.steps.2	Opprett et tilgangstoken med tillatelsene instagram_basic og instagram_manage_messages
+integrations.guide.instagram.steps.3	Kopier Instagram-ID for bedriftskonto og tokenet, og lim dem inn nedenfor
+integrations.guide.instagram.steps.4	Uten Metas godkjenning virker tilkoblingen bare for appens testkontoer
+integrations.guide.google_calendar.steps.0	Klikk på Koble til — et Google-innloggingsvindu åpnes
+integrations.guide.google_calendar.steps.1	Velg kontoen studioets kalender er koblet til
+integrations.guide.google_calendar.steps.2	Gi kalenderadgang — timene vil begynne å vises der automatisk
+integrations.capabilities.notify	klientvarsler på denne kanalen
+integrations.capabilities.booking	nettbestilling gjennom denne kanalen
+integrations.capabilities.dm_agent	AI-agent for automatiske svar i Direct
+integrations.capabilities.schedule_sync	synkronisering av timeplan med Google Calendar
+integrations.disconnect.title	Koble fra {{name}}?
+integrations.disconnect.willStop	Dette vil slutte å fungere:
+integrations.disconnect.checkbox	Jeg forstår konsekvensene
+integrations.disconnect.cancel	Avbryt
+integrations.disconnect.confirm	Koble fra
+integrations.google.connected	Google Calendar er tilkoblet
+integrations.google.denied	Tilgang til Google Calendar ble ikke gitt
+integrations.google.error	Kunne ikke koble til Google Calendar
+integrations.google.primary	primær
+integrations.google.calendar	Kalender
+integrations.google.selectCalendar	Velg en kalender
+integrations.google.loadingCalendars	Laster inn kalendere…
+integrations.google.syncMode	Synkroniseringsmodus
+integrations.google.syncModeOptions.push	Bare fra CRM til Google
+integrations.google.syncModeOptions.two_way	Toveis
+integrations.google.syncNow	Synkroniser nå
+integrations.google.lastSync	Sist synkronisert: {{date}}
+integrations.google.neverSynced	Ikke synkronisert ennå
+integrations.google.timezoneWarning	Studioets tidssone er ikke angitt — hendelser sendes i UTC og kan avvike fra faktiske timetider. Angi tidssonen under Generelt.
+integrations.google.syncResult	Synkronisert: {{pushed}} sendt, {{pulled}} hentet
+integrations.google.settingsSaved	Innstillinger for Google Calendar er lagret
+integrations.toast.connected	Integrasjon tilkoblet
+integrations.toast.disconnected	Integrasjon frakoblet
+data.export.title	Eksporter rapporter og lister
+data.export.subtitle	Last ned filer i tabellformater for regnskap og analyse
+data.export.clearFilter	Fjern periode
+data.export.items.clients.name	Klientliste
+data.export.items.schedule.name	Journal- og bestillingshistorikk
+data.export.items.finances.name	Finansiell rapport
+data.export.items.subscriptions.name	Klientabonnementer
+data.export.rows_one	{{count}} post
+data.export.rows_other	{{count}} poster
+data.export.loading	Laster inn...
+data.export.empty	ingen data for denne perioden

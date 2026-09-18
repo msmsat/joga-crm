@@ -11,7 +11,7 @@
 | `Button` | `components/ui/index` | 4 варианта: `primary` (персиковый градиент), `dark` (оникс), `ghost`, `danger`; `loading`, `icon`, `size` |
 | `Card` | `components/ui/index` | Карточка-поверхность: radius 16, мягкая тень, `hover` для кликабельных |
 | `Input` | `components/ui/index` | Поле с label, glow-фокусом персиковым и состоянием `error` |
-| `Select` | `components/ui/index` | Кастомный дропдаун в стиле кита; `searchable` + `searchPlaceholder`/`emptyText` — поле поиска над списком для длинных перечней (страны) |
+| `Select` | `components/ui/index` | Кастомный дропдаун в стиле кита; `searchable` + `searchPlaceholder`/`emptyText` — поле поиска над списком для длинных перечней (страны, валюты), ищет и по подписи, и по значению; `hint` у опции — приглушённая приписка справа (код валюты), которую не съедает многоточие |
 | `Switch` | `components/ui/index` | Тумблер вкл/выкл: капсула, персиковая заливка при `checked`, `disabled` |
 | `Segmented` | `components/ui/modal` | Переключатель 2–3 значений: белая «таблетка» едет под активным сегментом (замена дропдауна на коротких списках) |
 | `Dialog` / `ModalShell` + `ModalHeader/Body/Footer` | `components/ui/index` | Каркас всех модалок: затемняющий оверлей (**без backdrop-filter — блюр во весь вьюпорт был причиной лагов открытия, не возвращать**), вход/выход по opacity, Esc |

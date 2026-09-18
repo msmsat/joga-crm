@@ -17,7 +17,7 @@ import { getLoyalty, type LoyaltyOverview } from './api/loyalty';
 import { useTelegram } from './hooks/useTelegram';
 import { useIsDesktop } from './hooks/useIsDesktop';
 import { visibleNavItems } from './components/navItems';
-import { readDeepLink, readEntry, readTab, rememberStudio, setStudioRef } from './lib/entry';
+import { readDeepLink, readEntry, readTab, rememberStudio, setStudioRef, type DeepLink } from './lib/entry';
 import { applyBranding, applyDefaultLanguage } from './lib/branding';
 import { getSession, saveSession, clearSession, reconcileSession } from './lib/session';
 import { startPresence } from './lib/presence';
@@ -32,16 +32,30 @@ import './App.css';
 const GUEST_TABS = ['home', 'sched'];
 
 /**
- * Раздел, с которого открывается приложение, — расписание, а не главная.
+ * Раздел, с которого открывается приложение, — главная.
  *
- * Человек приходит по ссылке студии за одним: посмотреть, что и когда идёт, и
- * записаться. Главная это только пересказывала — чтобы попасть к занятиям, с
- * неё всё равно надо было нажать ещё раз. Расписание сразу показывает дни и
- * даёт выбрать нужный, а главная никуда не делась: она первым пунктом меню.
+ * Главная — витрина студии целиком: приветствие, ближайшая запись, направления
+ * и переход в расписание одним нажатием. Открывать сразу расписание значит
+ * показывать человеку список дней вместо студии, в которую он пришёл, — и
+ * прятать всё остальное за пунктом меню, о котором он ещё не знает.
  *
- * `?tab=` из ссылки сильнее — письмо про запись обязано открыть запись.
+ * `?tab=` из ссылки сильнее — QR на занятие (`tab=sched`) и письмо про запись
+ * (`tab=my`) обязаны открыть именно свой раздел.
  */
-const DEFAULT_TAB = 'sched';
+const DEFAULT_TAB = 'home';
+
+/**
+ * Раздел, которого требует сама ссылка. QR-коды студии печатаются с явным
+ * `?tab=` (front/src/lib/miniapp.ts), но ссылку пересылают и правят руками, а
+ * теперь по умолчанию открывается главная: адрес с занятием без `tab` иначе
+ * молча привёл бы не туда — занятие ждало бы в расписании, которого никто не
+ * открыл. Номер занятия значит расписание, номер абонемента — покупку.
+ */
+const deepLinkTab = (link: DeepLink): string | undefined => {
+  if (link.lessonId != null) return 'sched';
+  if (link.packageId != null) return 'prof';
+  return undefined;
+};
 
 export default function App() {
   const { t } = useTranslation();
@@ -51,7 +65,7 @@ export default function App() {
   // Ссылка из письма студии ведёт в конкретный раздел (`?tab=my`), а не «в
   // приложение вообще»: клиент открыл письмо про запись — он должен увидеть
   // запись. Читаем один раз при первом рендере: дальше вкладками управляет меню.
-  const [activeTab, setActiveTab] = useState(() => readTab() ?? DEFAULT_TAB);
+  const [activeTab, setActiveTab] = useState(() => readTab() ?? deepLinkTab(deepLink) ?? DEFAULT_TAB);
   // Разделы, которые человек уже открывал. Первое открытие монтирует раздел,
   // дальше он остаётся в DOM и просто прячется — переключение вкладки стало
   // «показать другой», а не «собрать заново». Пересборка стоила скелета вместо
