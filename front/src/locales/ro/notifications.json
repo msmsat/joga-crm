@@ -1,0 +1,361 @@
+{
+  "loading": "Se încarcă…",
+  "chModal": {
+    "eyebrow": "Canal de notificări",
+    "connected": "Conectat",
+    "notConnected": "Neconectat",
+    "setup": "Configurare conexiune",
+    "details": "Detalii conexiune",
+    "ready": "Canalul funcționează",
+    "readyHint": "Notificările pentru evenimentele activate sunt trimise automat.",
+    "bot": "Bot",
+    "token": "Token",
+    "phone": "Număr",
+    "account": "Cont",
+    "sender": "Expeditor"
+  },
+  "channels": {
+    "title": "Canale de livrare",
+    "connect": "Conectează",
+    "connected": "Conectat",
+    "openSettings": "Setări {{channel}}",
+    "waLockedHint": "Canalul se deblochează când Meta are metoda de plată, o afacere verificată și șabloane aprobate",
+    "waBlocker": {
+      "payment": "Nu există metodă de plată — mementourile nu sunt livrate. Configurează",
+      "verification": "Afacerea nu este verificată cu Meta — limită 250/zi. Cum rezolvi",
+      "templates": "Șabloanele sunt încă în verificare la Meta — nu se va trimite nimic. Detalii"
+    }
+  },
+  "roles": {
+    "client": "Client",
+    "trainer": "Antrenor",
+    "admin": "Administrator",
+    "owner": "Proprietar",
+    "activeCount_one": "{{count}} activ",
+    "activeCount_few": "{{count}} active",
+    "activeCount_other": "{{count}} active"
+  },
+  "matrix": {
+    "saving": "Se salvează…",
+    "allSaved": "Toate modificările au fost salvate",
+    "notSaved": "Nesalvat",
+    "activateAll": "Activează toate",
+    "deactivateAll": "Șterge toate casetele bifate",
+    "scenariosFor": "Scenarii pentru: {{role}}",
+    "eventColumn": "Eveniment de sistem",
+    "noActiveChannels": "Nu există canale active",
+    "noActiveChannelsHint": "Activează cel puțin un canal de livrare în panoul din stânga",
+    "adviceLabel": "Sfat:",
+    "advice": "Configurează separat pentru fiecare rol ce se trimite și unde — Velora se ocupă automat.",
+    "tiers": {
+      "critical": "Obligatoriu · nu poate fi dezactivat",
+      "operational": "Operațional",
+      "optional": "Opțional"
+    },
+    "lock": {
+      "critical": "Notificare obligatorie — nu poate fi dezactivată",
+      "lastChannel": "Ultimul canal de livrare — nu poate fi dezactivat"
+    },
+    "channelDisconnected": "Canalul nu este conectat",
+    "activeCount_one": "Declanșatoare active: {{count}} din {{total}}",
+    "activeCount_few": "Declanșatoare active: {{count}} din {{total}}",
+    "activeCount_other": "Declanșatoare active: {{count}} din {{total}}",
+    "configureFor_one": "Configurează canale pentru {{count}} declanșator de sistem",
+    "configureFor_few": "Configurează canale pentru {{count}} declanșatoare de sistem",
+    "configureFor_other": "Configurează canale pentru {{count}} de declanșatoare de sistem"
+  },
+  "events": {
+    "c1": {
+      "title": "Rezervare confirmată",
+      "desc": "La rezervarea reușită a unei clase"
+    },
+    "c2": {
+      "title": "Memento pentru clasă",
+      "desc": "Cu 24 de ore și 2 ore înainte"
+    },
+    "c3": {
+      "title": "Clasa a fost anulată",
+      "desc": "Când antrenorul sau studioul anulează"
+    },
+    "c4": {
+      "title": "Plată reușită",
+      "desc": "Chitanță după o taxare reușită"
+    },
+    "c5": {
+      "title": "Puține clase rămase",
+      "desc": "Când mai rămân 1–2 vizite în pachet"
+    },
+    "c6": {
+      "title": "Pachetul expiră",
+      "desc": "Cu 3 zile înainte de expirare"
+    },
+    "c7": {
+      "title": "Zi de naștere",
+      "desc": "Felicitare cu ofertă specială"
+    },
+    "c8": {
+      "title": "Cerere de recenzie",
+      "desc": "După participarea la o clasă"
+    },
+    "c9": {
+      "title": "Rambursare",
+      "desc": "La anulare și procesarea rambursării"
+    },
+    "c10": {
+      "title": "Clasa nu este încă plătită",
+      "desc": "Clientul a participat dar nu a plătit"
+    },
+    "c11": {
+      "title": "Clasa a fost reprogramată",
+      "desc": "Ora, sala sau antrenorul s-a schimbat"
+    },
+    "c12": {
+      "title": "Bonus acordat",
+      "desc": "Puncte sau bonus adăugat clientului"
+    },
+    "c13": {
+      "title": "Cafea după clasă",
+      "desc": "Cine din grup merge la cafea"
+    },
+    "t1": {
+      "title": "Rezervare nouă la antrenor",
+      "desc": "Un client a rezervat o sesiune personală"
+    },
+    "t2": {
+      "title": "Clientul a anulat rezervarea",
+      "desc": "Clientul a anulat cu mai puțin de 2 h înainte"
+    },
+    "t3": {
+      "title": "Memento pentru clasă",
+      "desc": "Cu 1 oră înainte de început"
+    },
+    "t4": {
+      "title": "Lista grupului",
+      "desc": "Cu 30 min. înainte de o clasă de grup"
+    },
+    "t5": {
+      "title": "Modificare de program",
+      "desc": "Administratorul a schimbat intervalul sau locația"
+    },
+    "t6": {
+      "title": "Salariu calculat",
+      "desc": "Calcul săptămânal al plății"
+    },
+    "t7": {
+      "title": "Recenzie nouă pentru antrenor",
+      "desc": "Clientul a lăsat o evaluare după clasă"
+    },
+    "t8": {
+      "title": "Ziua de naștere a clientului",
+      "desc": "Memento de felicitare personală"
+    },
+    "t9": {
+      "title": "Clasa a fost anulată",
+      "desc": "Studioul sau administratorul a anulat clasa dvs."
+    },
+    "a1": {
+      "title": "Rezervare online nouă",
+      "desc": "Clientul a rezervat prin site sau widget"
+    },
+    "a2": {
+      "title": "Anulare în ultimul moment",
+      "desc": "Cu mai puțin de 1 oră înainte de clasă"
+    },
+    "a3": {
+      "title": "Client nou în sistem",
+      "desc": "Înregistrare utilizator nou"
+    },
+    "a4": {
+      "title": "Plată primită",
+      "desc": "Orice taxare reușită"
+    },
+    "a6": {
+      "title": "Pachetele se termină",
+      "desc": "Grup de clienți cu ≤1 clasă rămasă"
+    },
+    "a7": {
+      "title": "Conflict de program",
+      "desc": "Clase suprapuse în jurnal"
+    },
+    "a8": {
+      "title": "Raport zilnic",
+      "desc": "Rezumat la finalul zilei"
+    },
+    "a9": {
+      "title": "Încercare de conectare",
+      "desc": "Autentificare de pe un dispozitiv nou"
+    },
+    "a10": {
+      "title": "Rambursare",
+      "desc": "Administratorul a emis o rambursare"
+    },
+    "o1": {
+      "title": "Rezumat zilnic",
+      "desc": "Venituri, rezervări, participare în ziua respectivă"
+    },
+    "o2": {
+      "title": "Raport săptămânal",
+      "desc": "Indicatori: creștere clienți, LTV, conversie"
+    },
+    "o3": {
+      "title": "Plată mare",
+      "desc": "Taxare peste pragul stabilit"
+    },
+    "o4": {
+      "title": "Anomalie de date",
+      "desc": "Scădere bruscă a rezervărilor sau veniturilor"
+    },
+    "o5": {
+      "title": "Membru nou în echipă",
+      "desc": "Administratorul a creat un cont nou"
+    },
+    "o6": {
+      "title": "Reînnoire plan",
+      "desc": "Memento pentru plata abonamentului Velora"
+    },
+    "o7": {
+      "title": "Drepturi de acces modificate",
+      "desc": "Permisiunile membrului echipei s-au schimbat"
+    },
+    "o8": {
+      "title": "KPI atins",
+      "desc": "Obiectivul lunar a fost atins"
+    },
+    "o9": {
+      "title": "Export date",
+      "desc": "Cineva a exportat baza de date a clienților"
+    }
+  },
+  "tg": {
+    "title": "Telegram",
+    "subtitleConnected": "Canal conectat",
+    "subtitleDisconnected": "Conectează botul de notificări",
+    "connected": "Conectat",
+    "pasteToken": "Lipește tokenul botului primit de la @BotFather.",
+    "invalidToken": "Format de token nevalid",
+    "howToGet": "Cum obții un token:",
+    "steps": {
+      "1": "Deschide @BotFather în Telegram",
+      "2": "Trimite comanda /newbot și urmează instrucțiunile",
+      "3": "Copiază tokenul emis",
+      "4": "Lipește-l în câmpul de mai sus"
+    },
+    "connect": "Conectează",
+    "disconnect": "Deconectează",
+    "disconnectTitle": "Deconectați Telegram?",
+    "disconnectMessage": "Clienții și personalul nu vor mai primi notificări prin acest canal.",
+    "close": "Închide",
+    "cancel": "Anulează"
+  },
+  "emailCh": {
+    "title": "E-mail",
+    "subtitle": "Adresa expeditorului pentru e-mailurile către clienți",
+    "verifiedLabel": "Verificat",
+    "emailLabel": "E-mail expeditor",
+    "emailPlaceholder": "admin@studio.com",
+    "invalidEmail": "Introduceți un e-mail valid",
+    "sendCode": "Trimite codul",
+    "codeSentTo": "Cod trimis către",
+    "codeHint": "Introduceți codul de 6 cifre din e-mail.",
+    "codeLabel": "Cod de verificare",
+    "resend": "Retrimite codul",
+    "viaVelora": "E-mailurile sunt trimise prin serverul Velora în numele dvs.",
+    "wrongCode": "Cod nevalid sau expirat",
+    "verify": "Verifică",
+    "back": "Înapoi",
+    "cancel": "Anulează"
+  },
+  "wa": {
+    "title": "WhatsApp",
+    "subtitleConnected": "Canal conectat",
+    "subtitleDisconnected": "Conectați-vă cu contul dvs. de afaceri Meta",
+    "connected": "Conectat",
+    "paymentRequiredTitle": "Va fi necesar un card",
+    "paymentRequired": "Conectarea numărului este gratuită, dar Meta livrează mementouri clienților numai după ce este adăugat un card. Îl adăugați separat —",
+    "paymentMissingTitle": "Nu există metodă de plată",
+    "paymentMissing": "Acum funcționează doar răspunsurile botului la mesajele primite. Meta respinge mementourile, confirmările și difuzările până când adăugați un card —",
+    "paymentOkTitle": "Plată conectată",
+    "paymentOk": "notificările sunt livrate integral.",
+    "paymentUnknown": "Nu am putut verifica metoda de plată cu Meta — vom afișa starea la următoarea încercare.",
+    "paymentLink": "Centrul de facturare Meta",
+    "paymentRecheck": "Verifică din nou",
+    "paymentFound": "Plată conectată",
+    "verify": {
+      "title": "Afacerea nu este verificată cu Meta",
+      "lead": "Numărul funcționează, dar cu o limită redusă de 250 de destinatari unici pe zi. Verificarea elimină limita și deblochează lansarea completă. Studioul trebuie să facă singur acest lucru — contul WhatsApp vă aparține, iar Velora nu poate acționa în numele dvs.",
+      "stepsTitle": "Cum verificați afacerea:",
+      "step1a": "Deschideți",
+      "link": "Centrul de securitate Meta Business",
+      "step1b": "și apăsați „Începe verificarea”. Aveți nevoie de drepturi de administrator pe contul de afaceri.",
+      "step2": "Completați datele juridice: numele exact ca în documente, adresa, telefonul și site-ul. Site-ul trebuie să fie activ și să folosească HTTPS.",
+      "step3": "Încărcați un document de înregistrare a afacerii și așteptați ca Meta să îl analizeze.",
+      "step4": "Confirmați conexiunea cu afacerea: e-mail pe domeniul site-ului, apel sau SMS la telefonul indicat sau verificarea domeniului.",
+      "step5": "Așteptați decizia — de obicei 1–5 zile lucrătoare. Starea este în același Centru de securitate; dacă este respinsă, Meta indică motivul și permite o nouă cerere.",
+      "docsTitle": "Documente acceptate (unul din fiecare grup):",
+      "doc1": "Înregistrare: certificat de constituire, extras de registru, licență de afaceri sau document fiscal.",
+      "doc2": "Dovadă de prezență: un site funcțional, pagină oficială de social media sau listare într-un director de afaceri.",
+      "pitfallTitle": "Cel mai frecvent motiv de respingere",
+      "pitfall": "Numele afacerii din Meta și din document trebuie să coincidă caracter cu caracter, inclusiv forma juridică și punctuația. „Romashka LLC” și „Romashka, LLC” sunt considerate nume diferite."
+    },
+    "templatesTitle": "Șabloane de mesaje",
+    "templates": "Meta nu vă permite să scrieți primul unui client fără un șablon preaprobat. Creați șabloane pentru fiecare eveniment — merg la verificare și încep să funcționeze după aprobare.",
+    "templatesAction": "Pregătește șabloane",
+    "templatesPending": "Se creează șabloane…",
+    "templatesPartial": "Meta a respins unele șabloane: {{failed}}. Consultați jurnalul pentru detalii",
+    "templatesRejected": "— acele notificări nu sunt livrate. Verificați formularea în contul Meta și recreați șabloanele.",
+    "templatesPendingHint": "— Meta poate dura până la o zi. {{approved}} sunt deja aprobate și se livrează.",
+    "templatesOkTitle": "Șabloane aprobate",
+    "paidWarning": "Mesajele WhatsApp sunt contra cost",
+    "approxPrice": "aprox.",
+    "pricingLoading": "Se încarcă prețul actual…",
+    "perMessage": "pe mesaj",
+    "viaMeta": "facturat direct de Meta",
+    "windowNotice": "Livrarea este garantată numai în fereastra de conversație de 24 de ore.",
+    "connect": "Conectează WhatsApp",
+    "disconnect": "Deconectează",
+    "disconnectTitle": "Deconectați WhatsApp?",
+    "disconnectMessage": "Clienții și personalul nu vor mai primi notificări prin acest canal.",
+    "close": "Închide",
+    "cancel": "Anulează",
+    "templatesDone_one": "Șabloane gata: {{count}}. Se așteaptă verificarea Meta",
+    "templatesDone_few": "Șabloane gata: {{count}}. Se așteaptă verificarea Meta",
+    "templatesDone_other": "Șabloane gata: {{count}}. Se așteaptă verificarea Meta",
+    "templatesRejectedTitle_one": "Meta a respins {{count}} șablon",
+    "templatesRejectedTitle_few": "Meta a respins {{count}} șabloane",
+    "templatesRejectedTitle_other": "Meta a respins {{count}} de șabloane",
+    "templatesPendingTitle_one": "{{count}} șablon în verificare",
+    "templatesPendingTitle_few": "{{count}} șabloane în verificare",
+    "templatesPendingTitle_other": "{{count}} de șabloane în verificare",
+    "templatesOk_one": "{{count}} a trecut verificarea Meta — notificările sunt livrate.",
+    "templatesOk_few": "Toate {{count}} au trecut verificarea Meta — notificările sunt livrate.",
+    "templatesOk_other": "Toate {{count}} au trecut verificarea Meta — notificările sunt livrate."
+  },
+  "tabs": {
+    "matrix": "Setări",
+    "log": "Jurnal de livrare"
+  },
+  "log": {
+    "title": "Jurnal de livrare",
+    "subtitle": "Ce s-a trimis, cui și când, precum și cum s-a încheiat fiecare trimitere.",
+    "status": {
+      "sent": "Livrat",
+      "rejected": "Respins",
+      "error": "Eroare de conexiune",
+      "pending": "În curs"
+    },
+    "searchPlaceholder": "Telefon, e-mail sau cod de eveniment",
+    "allChannels": "Toate canalele",
+    "reset": "Resetează",
+    "refreshing": "Se reîmprospătează…",
+    "otherEvent": "Trimitere în afara catalogului",
+    "empty": "Nu s-a trimis încă nimic",
+    "emptyHint": "Fiecare notificare trimisă de studio către clienți și personal va apărea aici.",
+    "emptyFiltered": "Nu s-a găsit nimic",
+    "emptyFilteredHint": "Încercați să modificați filtrele sau să căutați alt număr.",
+    "loadError": "Jurnalul nu a putut fi încărcat",
+    "loadErrorHint": "Reîmprospătați pagina — dacă nu ajută, contactați asistența.",
+    "range": "{{from}}–{{to}} din {{total}}",
+    "prev": "Înapoi",
+    "next": "Următorul"
+  }
+}

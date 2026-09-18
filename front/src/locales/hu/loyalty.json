@@ -1,0 +1,321 @@
+{
+  "header": {
+    "allConfigured": "Minden program be van állítva",
+    "allConfiguredSub": "Hűségprogram-rendszere teljes erővel működik",
+    "setup": "Hűségprogramok beállítása",
+    "setupSub": "{{count}} / {{total}} program beállítva · Minden program erősíti az ügyfélmegtartást",
+    "start": "Kezdés"
+  },
+  "programs": {
+    "loyalty": {
+      "title": "Hűségkártyák",
+      "desc": "Többszintű pontgyűjtő rendszer",
+      "statLabel": "ügyfél"
+    },
+    "discounts": {
+      "title": "Kedvezmények és cashback",
+      "desc": "Személyes ajánlatok ügyfeleknek",
+      "statLabel": "aktív"
+    },
+    "certificates": {
+      "title": "Ajándékutalványok",
+      "desc": "Ajándék- és névre szóló utalványok",
+      "statLabel": "eladott"
+    },
+    "referral": {
+      "title": "Ajánlások",
+      "desc": "„Hozz egy barátot” program",
+      "statLabel": "ajánlás"
+    },
+    "promocodes": {
+      "title": "Promóciós kódok",
+      "desc": "Használati korláttal rendelkező kedvezménykódok",
+      "statLabel": "aktív"
+    },
+    "deposit": {
+      "title": "Letét",
+      "desc": "Az ügyfél pénzegyenlege a stúdióban",
+      "statLabel": "egyenleggel"
+    }
+  },
+  "card": {
+    "active": "Aktív",
+    "disable": "Letiltás",
+    "notConfigured": "Nincs beállítva",
+    "configure": "Beállítás"
+  },
+  "drawer": {
+    "subtitle": "Programbeállítások",
+    "saving": "Mentés…",
+    "save": "Mentés és aktiválás",
+    "cancel": "Mégse",
+    "close": "Bezárás"
+  },
+  "config": {
+    "mainParams": "Fő paraméterek",
+    "programName": "Program neve",
+    "pointsRate": "Pontarány ({{currency}} 1 pontért)",
+    "levels": "Szintek",
+    "pointValue": "1 pont =",
+    "pointValueHint": "A pontok minden szinten azonos arányban gyűlnek, de nem azonos az értékük. Adjon a Goldnak 1-et, a Diamondonak 2-t, így az ügyfél által szerzett pont kétszer annyival csökkenti az árat a pénztárnál. Ezt adja egy szint: minél többet költött valaki a stúdióban, annál értékesebbek a pontjai.",
+    "expiry": "Lejárati idő",
+    "expiryTooltip": "Mennyi ideig használhatja fel az ügyfél az összegyűjtött pontokat",
+    "expiryOptions": {
+      "3m": "3 hó",
+      "6m": "6 hó",
+      "1y": "1 év",
+      "never": "Nincs lejárat"
+    },
+    "newLevelName": "Új szint",
+    "addLevel": "+ Szint",
+    "levelFrom": "ettől",
+    "levelTo": "eddig",
+    "deleteLevelTitle": "Törli ezt a szintet?",
+    "deleteLevelMessage": "A „{{name}}” szint ügyfelei összes költésük alapján a szomszédos szintre kerülnek.",
+    "discountType": "Kedvezmény típusa",
+    "discountTypes": {
+      "percentage": "Százalék (%)",
+      "fixed": "Fix ({{currency}})",
+      "cashback": "Cashback"
+    },
+    "cashbackPercent": "Cashback százalék",
+    "discountSize": "Kedvezmény összege",
+    "minPurchase": "Minimális vásárlási összeg",
+    "noLimit": "Nincs korlát",
+    "conditions": "Alkalmazási feltételek",
+    "appliesToAll": "Alkalmazás minden szolgáltatásra",
+    "stackable": "Halmozható más kedvezményekkel",
+    "visibleInCabinet": "Megjelenítés az ügyfél fiókjában",
+    "certType": "Utalvány típusa",
+    "certTypes": {
+      "named": "Névre szóló",
+      "gift": "Ajándék",
+      "service": "Szolgáltatásra"
+    },
+    "denominations": "Címletek",
+    "addDenom": "+ Hozzáadás",
+    "service": "Szolgáltatás",
+    "noServices": "Még nincsenek szolgáltatások a katalógusban — adja hozzá őket a „Katalógusban”",
+    "params": "Paraméterek",
+    "expiryDays": "Lejárati idő (nap)",
+    "certIssue": "Utalvány kiállítása",
+    "certCustomAmount": "Egyéni összeg",
+    "certRecipientName": "Címzett neve",
+    "certRecipientPlaceholder": "Opcionális",
+    "certLinkClient": "Kapcsolás ügyfélhez",
+    "certClientSearchPlaceholder": "Kezdjen el nevet írni…",
+    "certAccount": "Letéti számla",
+    "certAccountNone": "Ne rögzítse a főkönyvben",
+    "certIssueButton": "Kiállítás",
+    "certIssuedTitle": "Az utalvány kiállítva",
+    "certCopyCode": "Kód másolása",
+    "certCopied": "Másolva",
+    "certIssueAnother": "Másik kiállítása",
+    "certIssued": "Kiállított utalványok",
+    "certEmpty": "Még nincs kiállított utalvány",
+    "certStatus": {
+      "active": "Aktív",
+      "used": "Felhasznált",
+      "expired": "Lejárt"
+    },
+    "certRedeem": "Beváltás",
+    "certRedeemTitle": "Beváltja ezt az utalványt?",
+    "certRedeemMessage": "A {{code}} utalvány felhasználtnak lesz jelölve. Ez nem vonható vissza.",
+    "referrerBonusTitle": "Ajánlási bónusz",
+    "referrerBonus": "Bónusz az ajánlónak ({{currency}})",
+    "newClientDiscount": "Új ügyfél kedvezménye (%)",
+    "triggerCondition": "Jóváírás feltétele",
+    "triggerConditions": {
+      "first_visit": "Az első látogatás után",
+      "first_payment": "Az első fizetés után",
+      "registration": "Azonnal regisztrációkor"
+    },
+    "bonusAccrual": "Bónusz jóváírása",
+    "bonusTypes": {
+      "points": "Pontok",
+      "deposit": "Letétre",
+      "discount": "Kedvezményként"
+    },
+    "promoCreate": "Promóciós kód létrehozása",
+    "promoCodePlaceholder": "NYÁR25",
+    "promoValidUntil": "Érvényes eddig",
+    "promoUsageLimit": "Használati korlát",
+    "promoAdd": "+ Promóciós kód hozzáadása",
+    "promoList": "Promóciós kódok",
+    "promoEmpty": "Még nincsenek promóciós kódok",
+    "promoUntil": "eddig",
+    "promoStatus": {
+      "active": "Aktív",
+      "expired": "Lejárt",
+      "exhausted": "A korlát elérve",
+      "disabled": "Letiltva"
+    },
+    "depositTotal": "Teljes egyenleg",
+    "depositTotalSub": "az összes ügyfélletéten",
+    "depositTopClients": "Legjobb ügyfelek egyenleg szerint",
+    "depositEmpty": "Még senkinek sincs letétje",
+    "depositHint": "A feltöltések és kifizetések az ügyfél profilján történnek. Az ajánlási program pontok helyett a letétre is fizethet bónuszt."
+  },
+  "validation": {
+    "required": "Ez a mező kötelező",
+    "minOne": "Legalább 1-nek kell lennie",
+    "minZero": "Nem lehet negatív",
+    "positive": "0-nál nagyobbnak kell lennie",
+    "range0to100": "0–100"
+  },
+  "toasts": {
+    "saved": "Program aktiválva",
+    "saveFailed": "Mentés sikertelen",
+    "toggleFailed": "A program frissítése sikertelen",
+    "loadFailed": "Az adatok betöltése sikertelen",
+    "retry": "Próbálja újra"
+  },
+  "stats": {
+    "notConnected": "A program nincs kapcsolva",
+    "willAppear": "Az adatok a beállítás után jelennek meg",
+    "noData": "Nincs adat",
+    "connectProgram": "Program kapcsolása",
+    "revenueHeadline": "Tagoktól származó bevétel",
+    "membersHeadline": "Programtagok",
+    "returnedClients": "Visszatért ügyfelek",
+    "returnedClientsSub": "2+ látogatás 90 nap alatt",
+    "avgCheckHeadline": "Átlagos kosár tagonként",
+    "bonusCostHeadline": "Bónuszok költsége",
+    "bonusCostSub": "ebben a hónapban",
+    "roiHeadline": "ROI",
+    "roiValue": "×{{value}}",
+    "perMonth": "ebben a hónapban",
+    "cardHolders": "kártyabirtokosok",
+    "kpi": "Fő mutatók",
+    "members": "Tagok",
+    "withCard": "kártyával",
+    "avgCheck": "Átlagos kosár",
+    "byMembers": "tagok körében",
+    "pointsInCirculation": "Forgalomban lévő pontok",
+    "accrued": "jóváírva",
+    "revenue": "Bevétel",
+    "revenuePerMonth": "tagoktól / hó",
+    "levelDistribution": "Megoszlás szintenként",
+    "noLevels": "A szintek még nincsenek beállítva",
+    "totalClients": "Ügyfelek összesen a programban",
+    "fromValue": "{{value}} értéktől",
+    "levelPointValue": "pont = {{value}}"
+  },
+  "scenarios": {
+    "title": "Intelligens forgatókönyvek",
+    "subtitle": "Ügyfélmegtartási robotpilóta: a rendszer megtalálja és jutalmazza az ügyfeleket Ön helyett",
+    "add": "Forgatókönyv",
+    "fired": "{{count}} alkalommal futott le",
+    "lastRun": "utolsó futás: {{when}}",
+    "neverRun": "még nem futott le",
+    "empty": "Még nincsenek forgatókönyvek",
+    "emptySub": "Készítse el az elsőt — a rendszer megtartja az ügyfeleket Ön helyett",
+    "channel": "Csatorna",
+    "channelSoon": "az integráció kapcsolása után",
+    "pickTemplate": "Válasszon forgatókönyvet",
+    "pickTemplateSub": "Kész sablon — a küszöbértékeket később hangolhatja",
+    "create": "Létrehozás",
+    "deleteConfirm": "Törli a forgatókönyvet?",
+    "deleteConfirmSub": "A szabály nem fog többé lefutni. Ez nem vonható vissza.",
+    "triggers": {
+      "inactive_days": "{{days}} napja inaktív",
+      "low_subscription": "≤ {{classes_left}} alkalom maradt",
+      "birthday": "születésnap",
+      "nth_visit": "{{n}}. látogatás",
+      "referral": "barátot ajánlott"
+    },
+    "actions": {
+      "points": "ajándékozzon {{points}} pontot",
+      "gift_classes": "ajándékozzon {{classes}} alkalmat",
+      "certificate": "adjon ki {{amount}} ₽ értékű utalványt",
+      "renewal_offer": "ajánljon megújítást {{discount}}% kedvezménnyel"
+    },
+    "templates": {
+      "win_back": {
+        "name": "Hiányzik nekünk",
+        "desc": "Hozzon vissza egy ügyfelet, aki rég nem járt Önöknél"
+      },
+      "expiring_subscription": {
+        "name": "Közeleg az előfizetés vége",
+        "desc": "Ajánljon megújítást, mielőtt elfogynak az alkalmak"
+      },
+      "birthday_gift": {
+        "name": "Születésnapi ajándék",
+        "desc": "Lepje meg az ügyfelet a különleges napján"
+      },
+      "fifth_visit": {
+        "name": "Hűségjutalom",
+        "desc": "Ingyenes alkalom a hűségért"
+      },
+      "referral_thanks": {
+        "name": "Köszönjük a barátot",
+        "desc": "Jutalmazza azt, aki új ügyfelet hozott"
+      }
+    },
+    "ifClient": "Ha az ügyfél",
+    "then": "→",
+    "toasts": {
+      "created": "Forgatókönyv létrehozva",
+      "updated": "Forgatókönyv frissítve",
+      "deleted": "Forgatókönyv törölve",
+      "failed": "A forgatókönyv nem menthető"
+    },
+    "delete": "Törlés"
+  },
+  "segmentsBoard": {
+    "title": "Szegmensek és ajánlások",
+    "subtitle": "Aktív ügyfélcsoportok, mindegyikhez egyértelmű teendővel",
+    "empty": "Itt nincs semmi, és ez jó",
+    "clients": "ügyfél",
+    "daysAgo": "{{count}} nappal ezelőtt",
+    "neverVisited": "nincs látogatás",
+    "more": "és további {{count}}",
+    "segments": {
+      "at_risk": {
+        "name": "Elpártolás előtt",
+        "desc": "Aktívak, 21+ napja inaktívak",
+        "action": "Bónusz adása"
+      },
+      "vip_idle": {
+        "name": "Elcsendesedett VIP",
+        "desc": "VIP ügyfelek, 14+ napja inaktívak",
+        "action": "Kampány indítása"
+      },
+      "expiring_subscription": {
+        "name": "Lejáró előfizetés",
+        "desc": "≤2 alkalom vagy ≤7 nap maradt",
+        "action": "Kampány indítása"
+      },
+      "lost_newcomers": {
+        "name": "Soha nem tértek vissza",
+        "desc": "Egyszer jöttek, 14+ napja távol vannak",
+        "action": "Kampány indítása"
+      },
+      "upsell_candidates": {
+        "name": "Készen állnak csomagra",
+        "desc": "8+ látogatás ebben a hónapban, csomag nélkül",
+        "action": "Kampány indítása"
+      }
+    },
+    "campaignSub": "„{{name}}” szegmens · {{count}} ügyfél",
+    "pointsLabel": "Hány pontot adjon",
+    "messageLabel": "Üzenet szövege",
+    "messagePlaceholder": "pl. Hiányzik nekünk! Térjen vissza — várjuk Önt.",
+    "emailNote": "Az e-mail csak e-mail-címmel rendelkező ügyfeleknek megy ki",
+    "confirm": "Küldés",
+    "toasts": {
+      "pointsDone": "Pontok jóváírva · {{processed}} feldolgozva, {{emails}} értesítve",
+      "emailDone": "Kampány elküldve · {{emails}} e-mail / {{processed}}"
+    }
+  },
+  "retention": {
+    "title": "Előfizetés-megújítások",
+    "subtitle": "Milyen jól térnek vissza az ügyfelek új csomagért",
+    "renewalRate": "Megújítás",
+    "avgPackages": "Csomag ügyfelenként",
+    "sold": "Eladva",
+    "renewed": "Megújítva",
+    "empty": "Még nincs előfizetésértékesítés",
+    "emptySub": "Az elemzés az első csomageladások után jelenik meg"
+  }
+}

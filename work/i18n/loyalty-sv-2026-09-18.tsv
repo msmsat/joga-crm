@@ -1,0 +1,240 @@
+== sv
+header.allConfigured	Alla program är konfigurerade
+header.allConfiguredSub	Ditt lojalitetssystem fungerar för fullt
+header.setup	Ställ in lojalitetsprogram
+header.setupSub	{{count}} av {{total}} program är konfigurerade · Varje program stärker kundlojaliteten
+header.start	Kom igång
+programs.loyalty.title	Lojalitetskort
+programs.loyalty.desc	Nivåbaserat system för poängintjäning
+programs.loyalty.statLabel	kunder
+programs.discounts.title	Rabatter och cashback
+programs.discounts.desc	Personliga erbjudanden för kunder
+programs.discounts.statLabel	aktiva
+programs.certificates.title	Presentkort
+programs.certificates.desc	Presentkort och personliga certifikat
+programs.certificates.statLabel	sålda
+programs.referral.title	Rekommendationer
+programs.referral.desc	Programmet ”Ta med en vän”
+programs.referral.statLabel	rekommendationer
+programs.promocodes.title	Kampanjkoder
+programs.promocodes.desc	Rabattkoder med användningsgräns
+programs.promocodes.statLabel	aktiva
+programs.deposit.title	Insättning
+programs.deposit.desc	Kundens penningbalans hos studion
+programs.deposit.statLabel	med saldo
+card.active	Aktiv
+card.disable	Inaktivera
+card.notConfigured	Inte konfigurerad
+card.configure	Konfigurera
+drawer.subtitle	Programinställningar
+drawer.saving	Sparar…
+drawer.save	Spara och aktivera
+drawer.cancel	Avbryt
+drawer.close	Stäng
+config.mainParams	Huvudparametrar
+config.programName	Programnamn
+config.pointsRate	Poängkurs ({{currency}} per 1 poäng)
+config.levels	Nivåer
+config.pointValue	1 poäng =
+config.pointValueHint	Poäng tjänas in enligt samma kurs på varje nivå, men de har inte samma värde. Ge Gold 1 och Diamond 2, så minskar en poäng som kunden tjänar in priset dubbelt så mycket i kassan. Det är vad en nivå ger: ju mer någon har spenderat i studion, desto mer värda är poängen.
+config.expiry	Giltighetstid
+config.expiryTooltip	Hur länge en kund kan använda sina intjänade poäng
+config.expiryOptions.3m	3 mån.
+config.expiryOptions.6m	6 mån.
+config.expiryOptions.1y	1 år
+config.expiryOptions.never	Ingen utgångstid
+config.newLevelName	Ny nivå
+config.addLevel	+ Nivå
+config.levelFrom	från
+config.levelTo	till
+config.deleteLevelTitle	Radera denna nivå?
+config.deleteLevelMessage	Kunder på nivån ”{{name}}” flyttas till angränsande nivå utifrån sina totala utgifter.
+config.discountType	Rabattyp
+config.discountTypes.percentage	Procent (%)
+config.discountTypes.fixed	Fast ({{currency}})
+config.discountTypes.cashback	Cashback
+config.cashbackPercent	Cashback-procent
+config.discountSize	Rabattbelopp
+config.minPurchase	Minsta köpbelopp
+config.noLimit	Ingen gräns
+config.conditions	Villkor för tillämpning
+config.appliesToAll	Tillämpa på alla tjänster
+config.stackable	Kombinera med andra rabatter
+config.visibleInCabinet	Visa för kunden i kundens konto
+config.certType	Certifikattyp
+config.certTypes.named	Personligt
+config.certTypes.gift	Gåva
+config.certTypes.service	För en tjänst
+config.denominations	Belopp
+config.addDenom	+ Lägg till
+config.service	Tjänst
+config.noServices	Det finns ännu inga tjänster i katalogen — lägg till dem under ”Katalog”
+config.params	Parametrar
+config.expiryDays	Giltighetstid (dagar)
+config.certIssue	Utfärda certifikat
+config.certCustomAmount	Eget belopp
+config.certRecipientName	Mottagarens namn
+config.certRecipientPlaceholder	Valfritt
+config.certLinkClient	Koppla till en kund
+config.certClientSearchPlaceholder	Börja skriva ett namn…
+config.certAccount	Insättningskonto
+config.certAccountNone	Bokför inte i huvudboken
+config.certIssueButton	Utfärda
+config.certIssuedTitle	Certifikatet har utfärdats
+config.certCopyCode	Kopiera kod
+config.certCopied	Kopierat
+config.certIssueAnother	Utfärda ett till
+config.certIssued	Utfärdade certifikat
+config.certEmpty	Inga certifikat har utfärdats ännu
+config.certStatus.active	Aktiv
+config.certStatus.used	Använt
+config.certStatus.expired	Utgånget
+config.certRedeem	Lös in
+config.certRedeemTitle	Lösa in detta certifikat?
+config.certRedeemMessage	Certifikatet {{code}} markeras som använt. Åtgärden kan inte ångras.
+config.referrerBonusTitle	Rekommendationsbonus
+config.referrerBonus	Bonus till rekommenderaren ({{currency}})
+config.newClientDiscount	Rabatt för ny kund (%)
+config.triggerCondition	Villkor för intjäning
+config.triggerConditions.first_visit	Efter första besöket
+config.triggerConditions.first_payment	Efter första betalningen
+config.triggerConditions.registration	Direkt vid registrering
+config.bonusAccrual	Bonusintjäning
+config.bonusTypes.points	Poäng
+config.bonusTypes.deposit	Till insättning
+config.bonusTypes.discount	Som rabatt
+config.promoCreate	Skapa kampanjkod
+config.promoCodePlaceholder	SOMMAR25
+config.promoValidUntil	Giltig till
+config.promoUsageLimit	Användningsgräns
+config.promoAdd	+ Lägg till kampanjkod
+config.promoList	Kampanjkoder
+config.promoEmpty	Det finns inga kampanjkoder ännu
+config.promoUntil	till
+config.promoStatus.active	Aktiv
+config.promoStatus.expired	Utgånget
+config.promoStatus.exhausted	Gränsen är nådd
+config.promoStatus.disabled	Inaktiverad
+config.depositTotal	Totalt saldo
+config.depositTotalSub	i alla kundinsättningar
+config.depositTopClients	Främsta kunder efter saldo
+config.depositEmpty	Ingen har en insättning ännu
+config.depositHint	Påfyllningar och uttag görs på kundens profil. Rekommendationsprogrammet kan betala bonusar till insättningen i stället för som poäng.
+validation.required	Det här fältet måste fyllas i
+validation.minOne	Måste vara minst 1
+validation.minZero	Får inte vara negativt
+validation.positive	Måste vara större än 0
+validation.range0to100	0 till 100
+toasts.saved	Programmet har aktiverats
+toasts.saveFailed	Det gick inte att spara
+toasts.toggleFailed	Det gick inte att uppdatera programmet
+toasts.loadFailed	Det gick inte att läsa in data
+toasts.retry	Försök igen
+stats.notConnected	Programmet är inte anslutet
+stats.willAppear	Data visas efter konfigurationen
+stats.noData	Inga data
+stats.connectProgram	Anslut ett program
+stats.revenueHeadline	Intäkter från medlemmar
+stats.membersHeadline	Programmedlemmar
+stats.returnedClients	Återvändande kunder
+stats.returnedClientsSub	2+ besök på 90 dagar
+stats.avgCheckHeadline	Genomsnittsköp per medlem
+stats.bonusCostHeadline	Kostnad för bonusar
+stats.bonusCostSub	den här månaden
+stats.roiHeadline	ROI
+stats.roiValue	×{{value}}
+stats.perMonth	den här månaden
+stats.cardHolders	kortinnehavare
+stats.kpi	Nyckeltal
+stats.members	Medlemmar
+stats.withCard	med kort
+stats.avgCheck	Genomsnittsköp
+stats.byMembers	bland medlemmar
+stats.pointsInCirculation	Poäng i omlopp
+stats.accrued	intjänade
+stats.revenue	Intäkter
+stats.revenuePerMonth	från medlemmar / mån
+stats.levelDistribution	Fördelning per nivå
+stats.noLevels	Nivåerna är inte konfigurerade ännu
+stats.totalClients	Totalt antal kunder i programmet
+stats.fromValue	från {{value}}
+stats.levelPointValue	poäng = {{value}}
+scenarios.title	Smarta scenarier
+scenarios.subtitle	Autopilot för kundlojalitet: systemet hittar kunder och belönar dem åt dig
+scenarios.add	Scenario
+scenarios.fired	utlöst {{count}} gånger
+scenarios.lastRun	senast kört {{when}}
+scenarios.neverRun	inte kört ännu
+scenarios.empty	Det finns inga scenarier ännu
+scenarios.emptySub	Skapa det första — systemet behåller kunderna åt dig
+scenarios.channel	Kanal
+scenarios.channelSoon	efter att integrationen har anslutits
+scenarios.pickTemplate	Välj ett scenario
+scenarios.pickTemplateSub	En färdig mall — justera trösklarna senare
+scenarios.create	Skapa
+scenarios.deleteConfirm	Radera scenariot?
+scenarios.deleteConfirmSub	Regeln slutar att utlösas. Åtgärden kan inte ångras.
+scenarios.triggers.inactive_days	inaktiv i {{days}} dagar
+scenarios.triggers.low_subscription	≤ {{classes_left}} pass kvar
+scenarios.triggers.birthday	födelsedag
+scenarios.triggers.nth_visit	besök nr {{n}}
+scenarios.triggers.referral	tog med en vän
+scenarios.actions.points	ge {{points}} poäng
+scenarios.actions.gift_classes	ge {{classes}} pass
+scenarios.actions.certificate	utfärda ett certifikat på {{amount}} ₽
+scenarios.actions.renewal_offer	erbjud förnyelse med {{discount}} % rabatt
+scenarios.templates.win_back.name	Vi saknar dig
+scenarios.templates.win_back.desc	Få tillbaka en kund som inte har besökt er på länge
+scenarios.templates.expiring_subscription.name	Abonnemanget håller på att ta slut
+scenarios.templates.expiring_subscription.desc	Erbjud förnyelse innan passen tar slut
+scenarios.templates.birthday_gift.name	Födelsedagspresent
+scenarios.templates.birthday_gift.desc	Gläd en kund på deras speciella dag
+scenarios.templates.fifth_visit.name	Lojalitetsbelöning
+scenarios.templates.fifth_visit.desc	Ett gratis pass för lojalitet
+scenarios.templates.referral_thanks.name	Tack för vännen
+scenarios.templates.referral_thanks.desc	Belöna den som tog med en ny kund
+scenarios.ifClient	Om kunden
+scenarios.then	→
+scenarios.toasts.created	Scenariot har skapats
+scenarios.toasts.updated	Scenariot har uppdaterats
+scenarios.toasts.deleted	Scenariot har raderats
+scenarios.toasts.failed	Det gick inte att spara scenariot
+scenarios.delete	Radera
+segmentsBoard.title	Segment och rekommendationer
+segmentsBoard.subtitle	Aktiva kundgrupper, var och en med en tydlig uppmaning
+segmentsBoard.empty	Det finns inget här, och det är bra
+segmentsBoard.clients	kunder
+segmentsBoard.daysAgo	{{count}} dagar sedan
+segmentsBoard.neverVisited	inga besök
+segmentsBoard.more	och {{count}} till
+segmentsBoard.segments.at_risk.name	På väg att lämna
+segmentsBoard.segments.at_risk.desc	Aktiva, inaktiva i 21+ dagar
+segmentsBoard.segments.at_risk.action	Ge bonus
+segmentsBoard.segments.vip_idle.name	VIP har tystnat
+segmentsBoard.segments.vip_idle.desc	VIP-kunder, inaktiva i 14+ dagar
+segmentsBoard.segments.vip_idle.action	Kör kampanj
+segmentsBoard.segments.expiring_subscription.name	Abonnemanget löper ut
+segmentsBoard.segments.expiring_subscription.desc	≤2 pass eller ≤7 dagar kvar
+segmentsBoard.segments.expiring_subscription.action	Kör kampanj
+segmentsBoard.segments.lost_newcomers.name	Kom aldrig tillbaka
+segmentsBoard.segments.lost_newcomers.desc	Kom en gång, borta i 14+ dagar
+segmentsBoard.segments.lost_newcomers.action	Kör kampanj
+segmentsBoard.segments.upsell_candidates.name	Redo för paket
+segmentsBoard.segments.upsell_candidates.desc	8+ besök den här månaden, inget paket
+segmentsBoard.segments.upsell_candidates.action	Kör kampanj
+segmentsBoard.campaignSub	Segmentet ”{{name}}” · {{count}} kunder
+segmentsBoard.pointsLabel	Hur många poäng ska tilldelas
+segmentsBoard.messageLabel	Meddelandetext
+segmentsBoard.messagePlaceholder	t.ex. Vi saknar dig! Kom tillbaka — vi väntar på dig.
+segmentsBoard.emailNote	E-post skickas bara till kunder med e-postadress
+segmentsBoard.confirm	Skicka
+segmentsBoard.toasts.pointsDone	Poäng har tilldelats · {{processed}} behandlade, {{emails}} meddelade
+segmentsBoard.toasts.emailDone	Kampanjen har skickats · {{emails}} e-postmeddelanden av {{processed}}
+retention.title	Förnyelser av abonnemang
+retention.subtitle	Hur väl kunder återvänder för ett nytt paket
+retention.renewalRate	Förnya
+retention.avgPackages	Paket per kund
+retention.sold	Sålda
+retention.renewed	Förnyade
+retention.empty	Det finns inga abonnemangsförsäljningar ännu
+retention.emptySub	Analys visas efter de första paketförsäljningarna

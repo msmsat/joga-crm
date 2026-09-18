@@ -1,0 +1,377 @@
+== fi
+tabs.accounts	Tilit
+tabs.operations	Tapahtumat
+tabs.salaries	Palkat
+tabs.counterparties	Vastapuolet
+tabs.documents	Asiakirjat
+tabs.onlinePayments	Verkkomaksut
+tabs.paymentMethods	Maksutavat
+tabs.reports	Raportit
+tabs.goals	Tavoitteet
+common.save	Tallenna
+common.cancel	Peruuta
+common.create	Luo
+common.edit	Muokkaa
+common.delete	Poista
+common.loading	Ladataan…
+common.all	Kaikki
+common.confirm	Vahvista
+common.monthsShort.0	Tammi
+common.monthsShort.1	Helmi
+common.monthsShort.2	Maalis
+common.monthsShort.3	Huhti
+common.monthsShort.4	Touko
+common.monthsShort.5	Kesä
+common.monthsShort.6	Heinä
+common.monthsShort.7	Elo
+common.monthsShort.8	Syys
+common.monthsShort.9	Loka
+common.monthsShort.10	Marras
+common.monthsShort.11	Joulu
+common.weekdaysShort.0	Ma
+common.weekdaysShort.1	Ti
+common.weekdaysShort.2	Ke
+common.weekdaysShort.3	To
+common.weekdaysShort.4	Pe
+common.weekdaysShort.5	La
+common.weekdaysShort.6	Su
+info.accounts	Tilit ovat studion kassoja, pankkitilejä ja verkkomaksujen vastaanottoa. Näet täällä jokaisen saldon ja kokonaispääoman.
+info.operations	Tapahtumat ovat kaikki studion tulot ja menot. Tapahtuman luominen muuttaa heti siihen liitetyn tilin saldoa.
+info.salaries	Palkat lasketaan henkilöstön jäsenen palkkion (kiinteä, tunti- tai prosenttiperusteinen) mukaan valitulta ajalta.
+info.counterparties	Vastapuolet ovat organisaatioita ja henkilöitä, joiden kanssa studio tekee tilityksiä: toimittajia, vuokranantajia ja kumppaneita.
+info.documents	Asiakirjat ovat vastapuoliin liittyviä sopimuksia, todistuksia ja laskuja tai sisäisiä asiakirjoja.
+info.onlinePayments	Verkkomaksut — yhdistä Stripe korttimaksuja varten. Tili luodaan studiolle, joten rahat menevät suoraan sinulle eivätkä koskaan Veloran kautta.
+info.paymentMethods	Maksutavat näyttävät, miten asiakkaat maksavat studiolla, sekä kunkin tavan tilastot.
+info.reports	Raportit näyttävät tulojen, menojen ja voiton kehityksen valitulla ajanjaksolla.
+info.goals	Taloudelliset tavoitteet ovat studion säästösuunnitelma automaattisella tai manuaalisella edistymisen seurannalla.
+accounts.loading	Ladataan tilejä…
+accounts.totalCapital	Studion kokonaispääoma
+accounts.donutTotal	{{symbol}} yhteensä
+accounts.todayChange	tänään
+accounts.system	JÄRJESTELMÄ
+accounts.today	tänään
+accounts.editTitle	Muokkaa tiliä
+accounts.namePlaceholder	Nimi
+accounts.balancePlaceholder	Saldo, {{symbol}}
+accounts.types.cash	Käteinen
+accounts.types.bank	Kortti
+accounts.types.online	Verkossa
+accounts.typesShort.cash	Käteinen
+accounts.typesShort.bank	Kortti
+accounts.typesShort.online	Verkossa
+accounts.history	Historia
+accounts.historyTitle	Historia: {{name}}
+accounts.income30d	Tulot (30 pv)
+accounts.expense30d	Menot (30 pv)
+accounts.samplePayment	Palvelumaksu
+accounts.sampleTime	Tänään, 14:32
+accounts.openAllOperations	Avaa kaikki tapahtumat
+accounts.newSavingsTitle	Uusi säästötili
+accounts.createSavings	Luo säästötili
+accounts.deleteConfirmTitle	Poistetaanko tämä tili?
+accounts.deleteConfirmText	Kaikki sen varat jätetään pois yleisistä tilastoista. Toimintoa ei voi kumota.
+accounts.toasts.loadFailed	Tilien lataaminen epäonnistui
+accounts.toasts.deleted	Tili poistettu
+accounts.toasts.deleteFailed	Tilin poistaminen epäonnistui
+accounts.toasts.saved	Asetukset tallennettu
+accounts.toasts.saveFailed	Tilin tallentaminen epäonnistui
+accounts.toasts.created	Säästötili luotu
+accounts.toasts.createFailed	Tilin luominen epäonnistui
+operations.income	Tulo
+operations.expense	Meno
+operations.balance	Saldo
+operations.searchPlaceholder	Hae otsikon ja luokan mukaan…
+operations.close	Sulje
+operations.operation	Tapahtuma
+operations.export	Vie
+operations.newOperationTitle	Uusi tapahtuma
+operations.titleLabel	Otsikko
+operations.titlePlaceholder	Esim. tilausmaksu
+operations.amountLabel	Summa, {{symbol}}
+operations.dateLabel	Päivä
+operations.categoryLabel	Luokka
+operations.categoryPlaceholder	Luokka
+operations.accountLabel	Tili
+operations.noAccount	Ei tiliä
+operations.methodLabel	Maksutapa
+operations.noMethod	Ei määritetty
+operations.counterpartyLabel	Vastapuoli
+operations.noCounterparty	Ei vastapuolta
+operations.newCounterparty	+ Uusi vastapuoli
+operations.clientLabel	Asiakas
+operations.clientHint	Asiakkaalle hyvitetään kanta-asiakaspisteet ja taso
+operations.clientSearchPlaceholder	Aloita nimen kirjoittaminen…
+operations.noClient	Ei asiakasta
+operations.editTitle	Muokkaa tapahtumaa
+operations.saving	Tallennetaan…
+operations.loading	Ladataan tapahtumia…
+operations.emptyTitle	Tapahtumia ei löytynyt
+operations.emptyBody	Muuta suodattimia tai luo ensimmäinen tapahtuma
+operations.pending	Odottaa
+operations.detailAccount	Vastaanottava tili
+operations.detailCategory	Luokka
+operations.detailMethod	Maksutapa
+operations.detailCounterparty	Vastapuoli
+operations.receipt	Kuitti
+operations.loadMore	Lataa lisää ({{count}})
+operations.toasts.loadFailed	Tapahtumien lataaminen epäonnistui
+operations.toasts.loadMoreFailed	Useampien tapahtumien lataaminen epäonnistui
+operations.toasts.deleted	Tapahtuma poistettu
+operations.toasts.deleteFailed	Tapahtuman poistaminen epäonnistui
+operations.toasts.enterAmount	Anna summa
+operations.toasts.created	Tapahtuma luotu
+operations.toasts.createFailed	Tapahtuman luominen epäonnistui
+operations.toasts.updated	Tapahtuma päivitetty
+operations.toasts.updateFailed	Tapahtuman tallentaminen epäonnistui
+operations.toasts.exportFailed	Tapahtumien vienti epäonnistui
+operations.toasts.receiptDownloaded	Kuitti ladattu
+operations.categoryPresets.in.0.value	Jäsenyydet
+operations.categoryPresets.in.0.label	Jäsenyydet
+operations.categoryPresets.in.1.value	Palvelut
+operations.categoryPresets.in.1.label	Palvelut
+operations.categoryPresets.in.2.value	Lahjakortit
+operations.categoryPresets.in.2.label	Lahjakortit
+operations.categoryPresets.in.3.value	Talletus
+operations.categoryPresets.in.3.label	Talletus
+operations.categoryPresets.in.4.value	Muu
+operations.categoryPresets.in.4.label	Muu
+operations.categoryPresets.out.0.value	Palautukset
+operations.categoryPresets.out.0.label	Palautukset
+operations.categoryPresets.out.1.value	Vuokra
+operations.categoryPresets.out.1.label	Vuokra
+operations.categoryPresets.out.2.value	Palkat
+operations.categoryPresets.out.2.label	Palkat
+operations.categoryPresets.out.3.value	Hankinnat
+operations.categoryPresets.out.3.label	Hankinnat
+operations.categoryPresets.out.4.value	Markkinointi
+operations.categoryPresets.out.4.label	Markkinointi
+operations.categoryPresets.out.5.value	Verot
+operations.categoryPresets.out.5.label	Verot
+operations.categoryPresets.out.6.value	Muu
+operations.categoryPresets.out.6.label	Muu
+salaries.loading	Ladataan palkkoja…
+salaries.noRows	Ei laskettavaa henkilöstöä
+salaries.fund	Palkkarahasto
+salaries.fundSub	kuluva kuukausi
+salaries.sessions	Tapaamiset
+salaries.sessionsSub	pidetty yhteensä
+salaries.paidOf	henkilöstö
+salaries.sessionsCount	{{count}} tapaamista
+salaries.paid	Maksettu
+salaries.pending	Odottaa
+salaries.paying	…
+salaries.payAction	Maksa
+salaries.cancelAction	Peru palkka
+salaries.perMonth	/kk
+salaries.accrualTitle	Kertymä ajalta
+salaries.rate	Palkkio
+salaries.rateNotSet	ei asetettu
+salaries.sessionsInPeriod	Tapaamiset ajanjaksolla
+salaries.hoursWorked	Tehdyt tunnit
+salaries.lessonsRevenue	Tapaamistulot
+salaries.totalToPay	Maksettavaa yhteensä
+salaries.rateWarning	Palkkiota ei ole asetettu — aseta se henkilöstön jäsenen profiiliin, jotta kertymä voidaan laskea.
+salaries.rateUnit.hourly	h
+salaries.rateUnit.percent	%
+salaries.rateUnit.fixed	kiinteä
+salaries.paidAt	Maksettu {{date}}
+salaries.historyTitle	Maksuhistoria
+salaries.historyEmpty	Ei maksuja vielä
+salaries.historyLoading	Ladataan historiaa…
+salaries.toasts.loadFailed	Palkkojen lataaminen epäonnistui
+salaries.toasts.paid	Palkka maksettu: {{name}}
+salaries.toasts.payFailed	Palkan maksaminen epäonnistui
+salaries.toasts.canceled	Palkka peruttu: {{name}}
+salaries.toasts.historyLoadFailed	Maksuhistorian lataaminen epäonnistui
+counterparties.count	{{count}} vastapuolta
+counterparties.totalDebt	Kokonaisvelka:
+counterparties.add	Lisää
+counterparties.newTitle	Uusi vastapuoli
+counterparties.nameLabel	Nimi / Koko nimi
+counterparties.namePlaceholder	Yritys Oy tai Matti Meikäläinen
+counterparties.innLabel	Verotunnus
+counterparties.categoryLabel	Luokka
+counterparties.categoryPlaceholder	Vuokra, toimittaja…
+counterparties.typeLabel	Vastapuolen tyyppi
+counterparties.types.legal.label	Oikeushenkilö
+counterparties.types.legal.desc	Organisaatio tai yritys
+counterparties.types.ie.label	Yksityinen elinkeinonharjoittaja
+counterparties.types.ie.desc	Yksinyrittäjä
+counterparties.types.person.label	Yksityishenkilö
+counterparties.types.person.desc	Luonnollinen henkilö
+counterparties.addSubmit	Lisää vastapuoli
+counterparties.you	Sinä
+counterparties.otherCategory	Muu
+counterparties.deals	sopimukset
+counterparties.dealsLabel	Sopimukset
+counterparties.debtLabel	Velka
+counterparties.documents	Asiakirjat
+counterparties.edit	Muokkaa
+counterparties.delete	Poista
+counterparties.deleteConfirmTitle	Poistetaanko vastapuoli?
+counterparties.deleteConfirmText	Liittyvät asiakirjat ja sopimushistoria säilyvät, mutta vastapuoli poistetaan luettelosta.
+counterparties.toasts.loadFailed	Vastapuolten lataaminen epäonnistui
+counterparties.toasts.enterName	Anna nimi
+counterparties.toasts.saved	Muutokset tallennettu
+counterparties.toasts.saveFailed	Tallentaminen epäonnistui
+counterparties.toasts.added	Vastapuoli lisätty
+counterparties.toasts.addFailed	Vastapuolen lisääminen epäonnistui
+counterparties.toasts.deleted	Vastapuoli poistettu
+counterparties.toasts.deleteFailed	Vastapuolen poistaminen epäonnistui
+counterparties.toasts.documentsOpened	Asiakirjat avattu
+documents.signed	Allekirjoitettu
+documents.pendingCount	Odottaa allekirjoitusta
+documents.draftCount	Sisäinen (allekirjoittamaton)
+documents.searchPlaceholder	Hae otsikon tai vastapuolen mukaan…
+documents.filters.all	Kaikki
+documents.filters.signed	Allekirjoitettu
+documents.filters.pending	Odottaa allekirjoitusta
+documents.upload	Lataa
+documents.addTitle	Lisää asiakirja kirjastoon
+documents.dropzoneTitle	Napsauta tai vedä tiedosto tähän
+documents.dropzoneHint	PDF, DOCX, XLSX (enintään 15 Mt)
+documents.dropzoneChange	Valitse toinen tiedosto napsauttamalla
+documents.titleLabel	Asiakirjan otsikko
+documents.titlePlaceholder	Esim. vastaanottoasiakirja nro 48
+documents.partyLabel	Vastapuoli (jos on)
+documents.partyPlaceholder	Yrityksen tai yksinyrittäjän nimi
+documents.needsSignature	Tarvitseeko asiakirja allekirjoituksen?
+documents.needsSignatureHint	Tila on ”Odottaa allekirjoitusta”
+documents.saveToBase	Tallenna kirjastoon
+documents.emptyTitle	Tämä kansio on tyhjä
+documents.emptyBody	Lataa uusi asiakirja tai muuta suodattimia
+documents.internalDoc	Sisäinen asiakirja
+documents.uploaded	Ladattu {{date}}
+documents.download	Lataa tiedosto
+documents.open	Avaa
+documents.fileRequired	Liitä tiedosto
+documents.options	Asetukset
+documents.status.title	Tila
+documents.status.signed	Allekirjoitettu
+documents.status.pending	Odottaa allekirjoitusta
+documents.status.draft	Allekirjoittamaton
+documents.delete	Poista
+documents.toasts.loadFailed	Asiakirjojen lataaminen epäonnistui
+documents.toasts.titleRequired	Lataa tiedosto tai anna otsikko
+documents.toasts.created	Asiakirja ladattu kirjastoon
+documents.toasts.createFailed	Asiakirjan tallentaminen epäonnistui
+documents.toasts.badFormat	Sallitut muodot: PDF, DOCX, XLSX
+documents.toasts.downloadFailed	Tiedoston lataaminen epäonnistui
+documents.toasts.noFile	Tähän asiakirjaan ei ole liitetty tiedostoa
+documents.toasts.openFailed	Tiedoston avaaminen epäonnistui
+documents.toasts.statusChanged	Tila: {{label}}
+documents.toasts.statusFailed	Tilan muuttaminen epäonnistui
+documents.toasts.deleted	Asiakirja poistettu
+documents.toasts.deleteFailed	Asiakirjan poistaminen epäonnistui
+goals.loading	Ladataan tavoitteita…
+goals.active	Käynnissä olevat tavoitteet
+goals.done	Valmiit
+goals.avgProgress	Kokonaisedistyminen
+goals.trackingTitle	Suunnitelman seuranta
+goals.createGoal	Luo tavoite
+goals.newTitle	Uusi taloudellinen tavoite
+goals.titleLabel	Tavoitteen otsikko
+goals.titlePlaceholder	Esim. uudet reformer-laitteet
+goals.targetLabel	Tavoitesumma, {{symbol}}
+goals.targetPlaceholder	500000
+goals.deadlineLabel	Määräaika
+goals.trackingLabel	Miten edistymistä seurataan?
+goals.trackingAuto	Automaattisesti (CRM-mittari)
+goals.trackingAutoDesc	Yhdistä tavoite valitun luokan tuloihin. CRM liikuttaa etenemispalkkia itse.
+goals.trackingManual	Manuaalisesti (omat säästöt)
+goals.trackingManualDesc	Korttiin ilmestyy ”Lisää varoja” -painike. Edistyminen riippuu vain sinusta.
+goals.opTypeLabel	Tapahtuman tyyppi
+goals.categoryLabel	Luokka
+goals.categoryPlaceholder	Valitse luokka
+goals.editTitle	Muokkaa tavoitetta
+goals.nameLabel	Otsikko
+goals.namePlaceholder	Tavoitteen otsikko
+goals.amountLabel	Summa, {{symbol}}
+goals.achieved	Tavoite saavutettu
+goals.priority.high	Korkea prioriteetti
+goals.priority.medium	Keskitasoinen prioriteetti
+goals.priority.low	Matala prioriteetti
+goals.autoCollect	Automaattinen seuranta
+goals.deadlinePrefix	Määräaika:
+goals.noDeadline	Ei määräaikaa
+goals.fundPlaceholder	Summa, {{symbol}}
+goals.fund	Lisää
+goals.addFunds	Lisää varoja
+goals.autoHint	Arvo päivittyy automaattisesti luokan tuloista
+goals.deleteConfirmTitle	Poistetaanko tavoite?
+goals.deleteConfirmText	Tämän tavoitteen edistyminen menetetään. Toimintoa ei voi kumota.
+goals.toasts.loadFailed	Tavoitteiden lataaminen epäonnistui
+goals.toasts.fillRequired	Täytä otsikko ja summa
+goals.toasts.chooseCategory	Valitse luokka automaattiselle tavoitteelle
+goals.toasts.created	Tavoite luotu
+goals.toasts.createFailed	Tavoitteen luominen epäonnistui
+goals.toasts.enterName	Anna nimi
+goals.toasts.updated	Tavoite päivitetty
+goals.toasts.updateFailed	Tavoitteen päivittäminen epäonnistui
+goals.toasts.deleted	Tavoite poistettu
+goals.toasts.deleteFailed	Tavoitteen poistaminen epäonnistui
+goals.toasts.funded	Varat lisätty
+goals.toasts.fundFailed	Varojen lisääminen epäonnistui
+onlinePayments.description	Yhdistä Stripe, niin asiakkaasi voivat maksaa kortilla kassalla. Rahat tulevat suoraan studiosi tilille — Velora ei koskaan pidä niitä hallussaan. Provisio määräytyy suunnitelmasi mukaan.
+onlinePayments.gatewaysTitle	Maksupalveluntarjoajat
+onlinePayments.gateways.stripe.name	Stripe
+onlinePayments.gateways.states.none.label	Ei yhdistetty
+onlinePayments.gateways.states.none.hint	Vastaanota korttimaksuja studion tilille
+onlinePayments.gateways.states.none.action	Yhdistä
+onlinePayments.gateways.states.incomplete.label	Tietoja puuttuu
+onlinePayments.gateways.states.incomplete.hint	Stripe odottaa studiosi tietoja — maksut pysyvät pois käytöstä siihen asti
+onlinePayments.gateways.states.incomplete.action	Jatka
+onlinePayments.gateways.states.action.label	Toimia tarvitaan
+onlinePayments.gateways.states.action.hint	Stripe hylkäsi osan tiedoista ja odottaa korjauksia — se ei ratkea itsestään
+onlinePayments.gateways.states.action.action	Korjaa tiedot
+onlinePayments.gateways.states.review.label	Tarkistettavana
+onlinePayments.gateways.states.review.hint	Tiedot on lähetetty, ja Stripe tarkistaa niitä. Tämä kestää yleensä enintään päivän
+onlinePayments.gateways.states.review.action	Avaa Stripe
+onlinePayments.gateways.states.active.label	Yhdistetty
+onlinePayments.gateways.states.active.hint	Korttimaksut tulevat studion Stripe-tilille
+onlinePayments.gateways.states.active.action	Asetukset
+onlinePayments.toasts.gatewayUpdated	Maksupalveluntarjoajan asetukset päivitetty
+onlinePayments.toasts.stripeReturned	Tiedot lähetetty Stripelle
+onlinePayments.toasts.stripeLinkExpired	Stripe-linkki on vanhentunut — paina Yhdistä uudelleen
+paymentMethods.totalTurnover	Liikevaihto ajalta
+paymentMethods.periods.month	Kuukausi
+paymentMethods.periods.quarter	Neljännesvuosi
+paymentMethods.periods.year	Vuosi
+paymentMethods.amount	Summa
+paymentMethods.share	Osuus
+paymentMethods.transactions	tapahtumaa
+paymentMethods.methods.cash.name	Käteinen
+paymentMethods.methods.card.name	Pankkikortti
+paymentMethods.methods.qr.name	SBP (QR)
+paymentMethods.methods.transfer.name	Siirto
+paymentMethods.methods.stripe.name	Stripe
+paymentMethods.methods..name	Ei määritetty
+reports.metrics.revenue	Tuotot
+reports.metrics.expenses	Kulut
+reports.metrics.profit	Voitto
+reports.metrics.margin	Kate
+reports.vsPreviousPeriod	verrattuna edelliseen kauteen
+reports.cashflowTitle	Kassavirta
+reports.cashflowSub	Tulojen ja menojen analyysi
+reports.period	Ajanjakso
+reports.income	Tulo
+reports.expense	Meno
+reports.profit	Voitto
+reports.periods.today	Tänään
+reports.periods.week	Viikko
+reports.periods.month	Kuukausi
+reports.periods.year	Vuosi
+reports.legendIncome	Tulot
+reports.legendExpense	Menot
+reports.exportCsv	Vie CSV
+reports.expenseStructure	Menojen rakenne
+reports.incomeStructure	Tulojen rakenne
+reports.total	Yhteensä
+reports.otherCategory	Luokittelematon
+reports.noData	Ei tietoja tältä ajalta
+reports.insightsTitle	Taloudellinen yhteenveto ja havainnot
+reports.insightsPlaceholder	Tekoälypohjainen taloudellinen yhteenveto näkyy täällä: trendianalyysi, menojen rakenne ja suositukset
+reports.toasts.exportFailed	Tapahtumien vienti epäonnistui
+confirmModal.cancel	Peruuta
+confirmModal.confirm	Vahvista
+confirmModal.delete	Poista

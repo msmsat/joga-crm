@@ -1,0 +1,321 @@
+{
+  "header": {
+    "allConfigured": "Alle programmer er sat op",
+    "allConfiguredSub": "Dit loyalitetssystem kører for fuld kraft",
+    "setup": "Opsæt loyalitetsprogrammer",
+    "setupSub": "{{count}} af {{total}} programmer er sat op · Hvert program styrker fastholdelsen af kunder",
+    "start": "Kom i gang"
+  },
+  "programs": {
+    "loyalty": {
+      "title": "Loyalitetskort",
+      "desc": "Niveaudelt pointoptjeningssystem",
+      "statLabel": "kunder"
+    },
+    "discounts": {
+      "title": "Rabatter og cashback",
+      "desc": "Personlige tilbud til kunder",
+      "statLabel": "aktive"
+    },
+    "certificates": {
+      "title": "Gavekort",
+      "desc": "Gavekort og personlige certifikater",
+      "statLabel": "solgt"
+    },
+    "referral": {
+      "title": "Henvisninger",
+      "desc": "Programmet „Tag en ven med”",
+      "statLabel": "henvisninger"
+    },
+    "promocodes": {
+      "title": "Rabatkoder",
+      "desc": "Rabatkoder med en brugsgrænse",
+      "statLabel": "aktive"
+    },
+    "deposit": {
+      "title": "Indestående",
+      "desc": "Kundens kontantbalance hos studiet",
+      "statLabel": "med saldo"
+    }
+  },
+  "card": {
+    "active": "Aktiv",
+    "disable": "Deaktivér",
+    "notConfigured": "Ikke konfigureret",
+    "configure": "Konfigurér"
+  },
+  "drawer": {
+    "subtitle": "Programindstillinger",
+    "saving": "Gemmer…",
+    "save": "Gem og aktivér",
+    "cancel": "Annullér",
+    "close": "Luk"
+  },
+  "config": {
+    "mainParams": "Hovedparametre",
+    "programName": "Programnavn",
+    "pointsRate": "Pointkurs ({{currency}} pr. 1 point)",
+    "levels": "Niveauer",
+    "pointValue": "1 point =",
+    "pointValueHint": "Point optjenes med samme kurs på hvert niveau, men de har ikke samme værdi. Giv Gold 1 og Diamond 2, så et point optjent af kunden giver dobbelt så stort afslag ved kassen. Det er det, et niveau giver: Jo mere man har brugt i studiet, jo mere er pointene værd.",
+    "expiry": "Udløbsperiode",
+    "expiryTooltip": "Hvor længe en kunde kan bruge optjente point",
+    "expiryOptions": {
+      "3m": "3 mdr.",
+      "6m": "6 mdr.",
+      "1y": "1 år",
+      "never": "Uden udløb"
+    },
+    "newLevelName": "Nyt niveau",
+    "addLevel": "+ Niveau",
+    "levelFrom": "fra",
+    "levelTo": "til",
+    "deleteLevelTitle": "Slet dette niveau?",
+    "deleteLevelMessage": "Kunder på niveauet „{{name}}” flyttes til det tilstødende niveau efter deres samlede forbrug.",
+    "discountType": "Rabattype",
+    "discountTypes": {
+      "percentage": "Procent (%)",
+      "fixed": "Fast ({{currency}})",
+      "cashback": "Cashback"
+    },
+    "cashbackPercent": "Cashback-procent",
+    "discountSize": "Rabatbeløb",
+    "minPurchase": "Mindste købsbeløb",
+    "noLimit": "Ingen grænse",
+    "conditions": "Anvendelsesbetingelser",
+    "appliesToAll": "Anvend på alle tjenester",
+    "stackable": "Kombinér med andre rabatter",
+    "visibleInCabinet": "Vis kunden i kundens konto",
+    "certType": "Certifikattype",
+    "certTypes": {
+      "named": "Personligt",
+      "gift": "Gave",
+      "service": "Til en tjeneste"
+    },
+    "denominations": "Beløb",
+    "addDenom": "+ Tilføj",
+    "service": "Tjeneste",
+    "noServices": "Der er endnu ingen tjenester i kataloget — tilføj dem under „Katalog”",
+    "params": "Parametre",
+    "expiryDays": "Udløbsperiode (dage)",
+    "certIssue": "Udsted certifikat",
+    "certCustomAmount": "Valgfrit beløb",
+    "certRecipientName": "Modtagerens navn",
+    "certRecipientPlaceholder": "Valgfrit",
+    "certLinkClient": "Knyt til en kunde",
+    "certClientSearchPlaceholder": "Begynd at skrive et navn…",
+    "certAccount": "Indestående-konto",
+    "certAccountNone": "Registrer ikke i regnskabet",
+    "certIssueButton": "Udsted",
+    "certIssuedTitle": "Certifikat udstedt",
+    "certCopyCode": "Kopiér kode",
+    "certCopied": "Kopieret",
+    "certIssueAnother": "Udsted endnu et",
+    "certIssued": "Udstedte certifikater",
+    "certEmpty": "Der er endnu ikke udstedt certifikater",
+    "certStatus": {
+      "active": "Aktiv",
+      "used": "Indløst",
+      "expired": "Udløbet"
+    },
+    "certRedeem": "Indløs",
+    "certRedeemTitle": "Indløse dette certifikat?",
+    "certRedeemMessage": "Certifikat {{code}} markeres som indløst. Det kan ikke fortrydes.",
+    "referrerBonusTitle": "Henvisningsbonus",
+    "referrerBonus": "Bonus til henviseren ({{currency}})",
+    "newClientDiscount": "Rabat til ny kunde (%)",
+    "triggerCondition": "Optjeningsbetingelse",
+    "triggerConditions": {
+      "first_visit": "Efter første besøg",
+      "first_payment": "Efter første betaling",
+      "registration": "Straks ved registrering"
+    },
+    "bonusAccrual": "Bonusoptjening",
+    "bonusTypes": {
+      "points": "Point",
+      "deposit": "Til indestående",
+      "discount": "Som rabat"
+    },
+    "promoCreate": "Opret rabatkode",
+    "promoCodePlaceholder": "SOMMER25",
+    "promoValidUntil": "Gyldig til",
+    "promoUsageLimit": "Brugsgrænse",
+    "promoAdd": "+ Tilføj rabatkode",
+    "promoList": "Rabatkoder",
+    "promoEmpty": "Der er endnu ingen rabatkoder",
+    "promoUntil": "til",
+    "promoStatus": {
+      "active": "Aktiv",
+      "expired": "Udløbet",
+      "exhausted": "Grænsen er nået",
+      "disabled": "Deaktiveret"
+    },
+    "depositTotal": "Samlet saldo",
+    "depositTotalSub": "på tværs af kunders indeståender",
+    "depositTopClients": "Topkunder efter saldo",
+    "depositEmpty": "Ingen har et indestående endnu",
+    "depositHint": "Indbetalinger og udbetalinger sker på kundens profil. Henvisningsprogrammet kan udbetale bonusser til indeståendet i stedet for som point."
+  },
+  "validation": {
+    "required": "Dette felt er påkrævet",
+    "minOne": "Skal være mindst 1",
+    "minZero": "Må ikke være negativt",
+    "positive": "Skal være større end 0",
+    "range0to100": "0 til 100"
+  },
+  "toasts": {
+    "saved": "Programmet er aktiveret",
+    "saveFailed": "Kunne ikke gemme",
+    "toggleFailed": "Kunne ikke opdatere programmet",
+    "loadFailed": "Kunne ikke indlæse data",
+    "retry": "Prøv igen"
+  },
+  "stats": {
+    "notConnected": "Programmet er ikke tilsluttet",
+    "willAppear": "Data vises efter opsætning",
+    "noData": "Ingen data",
+    "connectProgram": "Tilslut et program",
+    "revenueHeadline": "Omsætning fra medlemmer",
+    "membersHeadline": "Programmedlemmer",
+    "returnedClients": "Tilbagevendte kunder",
+    "returnedClientsSub": "2+ besøg på 90 dage",
+    "avgCheckHeadline": "Gennemsnitlig bon pr. medlem",
+    "bonusCostHeadline": "Bonusomkostning",
+    "bonusCostSub": "denne måned",
+    "roiHeadline": "ROI",
+    "roiValue": "×{{value}}",
+    "perMonth": "denne måned",
+    "cardHolders": "kortindehavere",
+    "kpi": "Nøgletal",
+    "members": "Medlemmer",
+    "withCard": "med kort",
+    "avgCheck": "Gennemsnitlig bon",
+    "byMembers": "blandt medlemmer",
+    "pointsInCirculation": "Point i omløb",
+    "accrued": "optjent",
+    "revenue": "Omsætning",
+    "revenuePerMonth": "fra medlemmer / md.",
+    "levelDistribution": "Fordeling efter niveau",
+    "noLevels": "Niveauer er ikke konfigureret endnu",
+    "totalClients": "Samlede kunder i programmet",
+    "fromValue": "fra {{value}}",
+    "levelPointValue": "point = {{value}}"
+  },
+  "scenarios": {
+    "title": "Smarte scenarier",
+    "subtitle": "Autopilot til fastholdelse: systemet finder kunder og belønner dem for dig",
+    "add": "Scenarie",
+    "fired": "udløst {{count}} gange",
+    "lastRun": "sidst kørt {{when}}",
+    "neverRun": "ikke kørt endnu",
+    "empty": "Der er endnu ingen scenarier",
+    "emptySub": "Byg det første — systemet fastholder kunderne for dig",
+    "channel": "Kanal",
+    "channelSoon": "efter tilslutning af integration",
+    "pickTemplate": "Vælg et scenarie",
+    "pickTemplateSub": "En færdig skabelon — justér tærsklerne senere",
+    "create": "Opret",
+    "deleteConfirm": "Slet scenariet?",
+    "deleteConfirmSub": "Reglen holder op med at udløses. Det kan ikke fortrydes.",
+    "triggers": {
+      "inactive_days": "inaktiv i {{days}} dage",
+      "low_subscription": "≤ {{classes_left}} hold tilbage",
+      "birthday": "fødselsdag",
+      "nth_visit": "besøg nr. {{n}}",
+      "referral": "henviste en ven"
+    },
+    "actions": {
+      "points": "giv {{points}} point",
+      "gift_classes": "giv {{classes}} hold",
+      "certificate": "udsted et certifikat på {{amount}} ₽",
+      "renewal_offer": "tilbyd fornyelse med {{discount}}% rabat"
+    },
+    "templates": {
+      "win_back": {
+        "name": "Vi savner dig",
+        "desc": "Vind en kunde tilbage, som ikke har besøgt jer længe"
+      },
+      "expiring_subscription": {
+        "name": "Abonnementet er ved at løbe ud",
+        "desc": "Tilbyd fornyelse før holdene er brugt op"
+      },
+      "birthday_gift": {
+        "name": "Fødselsdagsgave",
+        "desc": "Glæd en kunde på deres særlige dag"
+      },
+      "fifth_visit": {
+        "name": "Loyalitetsbelønning",
+        "desc": "Et gratis hold for loyalitet"
+      },
+      "referral_thanks": {
+        "name": "Tak for vennen",
+        "desc": "Beløn den, der kom med en ny kunde"
+      }
+    },
+    "ifClient": "Hvis kunden",
+    "then": "→",
+    "toasts": {
+      "created": "Scenariet er oprettet",
+      "updated": "Scenariet er opdateret",
+      "deleted": "Scenariet er slettet",
+      "failed": "Kunne ikke gemme scenariet"
+    },
+    "delete": "Slet"
+  },
+  "segmentsBoard": {
+    "title": "Segmenter og anbefalinger",
+    "subtitle": "Aktive kundegrupper, hver med én tydelig opfordring til handling",
+    "empty": "Der er intet her, og det er godt",
+    "clients": "kunder",
+    "daysAgo": "{{count}} dage siden",
+    "neverVisited": "ingen besøg",
+    "more": "og {{count}} mere",
+    "segments": {
+      "at_risk": {
+        "name": "På vej væk",
+        "desc": "Aktive, inaktive i 21+ dage",
+        "action": "Giv bonus"
+      },
+      "vip_idle": {
+        "name": "VIP er blevet stille",
+        "desc": "VIP-kunder, inaktive i 14+ dage",
+        "action": "Kør kampagne"
+      },
+      "expiring_subscription": {
+        "name": "Abonnementet udløber",
+        "desc": "≤2 hold eller ≤7 dage tilbage",
+        "action": "Kør kampagne"
+      },
+      "lost_newcomers": {
+        "name": "Kom aldrig tilbage",
+        "desc": "Kom én gang, væk i 14+ dage",
+        "action": "Kør kampagne"
+      },
+      "upsell_candidates": {
+        "name": "Klar til en pakke",
+        "desc": "8+ besøg denne måned, ingen pakke",
+        "action": "Kør kampagne"
+      }
+    },
+    "campaignSub": "Segment „{{name}}” · {{count}} kunder",
+    "pointsLabel": "Hvor mange point skal tildeles",
+    "messageLabel": "Beskedtekst",
+    "messagePlaceholder": "f.eks. Vi savner dig! Kom tilbage — vi venter på dig.",
+    "emailNote": "E-mailen sendes kun til kunder med en e-mailadresse",
+    "confirm": "Send",
+    "toasts": {
+      "pointsDone": "Point er tildelt · {{processed}} behandlet, {{emails}} underrettet",
+      "emailDone": "Kampagnen er sendt · {{emails}} e-mails af {{processed}}"
+    }
+  },
+  "retention": {
+    "title": "Fornyelser af abonnementer",
+    "subtitle": "Hvor godt kunderne kommer tilbage efter en ny pakke",
+    "renewalRate": "Forny",
+    "avgPackages": "Pakker pr. kunde",
+    "sold": "Solgt",
+    "renewed": "Fornyet",
+    "empty": "Ingen abonnementsalg endnu",
+    "emptySub": "Analysen vises efter de første pakkesalg"
+  }
+}

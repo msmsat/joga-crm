@@ -1,0 +1,321 @@
+{
+  "header": {
+    "allConfigured": "Сви програми су подешени",
+    "allConfiguredSub": "Ваш систем лојалности ради пуним капацитетом",
+    "setup": "Подесите програме лојалности",
+    "setupSub": "Подешено је {{count}} од {{total}} програма · Сваки програм повећава задржавање клијената",
+    "start": "Почните"
+  },
+  "programs": {
+    "loyalty": {
+      "title": "Картице лојалности",
+      "desc": "Систем сакупљања поена по нивоима",
+      "statLabel": "клијената"
+    },
+    "discounts": {
+      "title": "Попусти и кешбек",
+      "desc": "Персонализоване понуде за клијенте",
+      "statLabel": "активно"
+    },
+    "certificates": {
+      "title": "Поклон ваучери",
+      "desc": "Поклон и именски ваучери",
+      "statLabel": "продато"
+    },
+    "referral": {
+      "title": "Препоруке",
+      "desc": "Програм „Доведите пријатеља”",
+      "statLabel": "препорука"
+    },
+    "promocodes": {
+      "title": "Промокодови",
+      "desc": "Кодови за попуст с ограничењем коришћења",
+      "statLabel": "активно"
+    },
+    "deposit": {
+      "title": "Депозит",
+      "desc": "Новчано стање клијента у студију",
+      "statLabel": "са стањем"
+    }
+  },
+  "card": {
+    "active": "Активно",
+    "disable": "Онемогући",
+    "notConfigured": "Није подешено",
+    "configure": "Подеси"
+  },
+  "drawer": {
+    "subtitle": "Подешавања програма",
+    "saving": "Чување…",
+    "save": "Сачувај и активирај",
+    "cancel": "Откажи",
+    "close": "Затвори"
+  },
+  "config": {
+    "mainParams": "Главни параметри",
+    "programName": "Назив програма",
+    "pointsRate": "Курс поена ({{currency}} за 1 поен)",
+    "levels": "Нивои",
+    "pointValue": "1 поен =",
+    "pointValueHint": "Поени се стичу по истом курсу на сваком нивоу, али немају исту вредност. Дајте Gold-у 1, а Diamond-у 2, па ће поен који је клијент зарадио смањити цену на каси двоструко више. То је предност нивоа: што је неко више потрошио у студију, то његови поени више вреде.",
+    "expiry": "Рок важења",
+    "expiryTooltip": "Колико дуго клијент може да троши сакупљене поене",
+    "expiryOptions": {
+      "3m": "3 мес.",
+      "6m": "6 мес.",
+      "1y": "1 год.",
+      "never": "Без истека"
+    },
+    "newLevelName": "Нови ниво",
+    "addLevel": "+ Ниво",
+    "levelFrom": "од",
+    "levelTo": "до",
+    "deleteLevelTitle": "Обрисати овај ниво?",
+    "deleteLevelMessage": "Клијенти на нивоу „{{name}}” прећи ће на суседни ниво према укупној потрошњи.",
+    "discountType": "Врста попуста",
+    "discountTypes": {
+      "percentage": "Проценат (%)",
+      "fixed": "Фиксно ({{currency}})",
+      "cashback": "Кешбек"
+    },
+    "cashbackPercent": "Проценат кешбека",
+    "discountSize": "Износ попуста",
+    "minPurchase": "Минимални износ куповине",
+    "noLimit": "Без ограничења",
+    "conditions": "Услови примене",
+    "appliesToAll": "Примени на све услуге",
+    "stackable": "Комбинуј с другим попустима",
+    "visibleInCabinet": "Прикажи клијенту у његовом налогу",
+    "certType": "Врста ваучера",
+    "certTypes": {
+      "named": "Именски",
+      "gift": "Поклон",
+      "service": "За услугу"
+    },
+    "denominations": "Номинали",
+    "addDenom": "+ Додај",
+    "service": "Услуга",
+    "noServices": "Још нема услуга у каталогу — додајте их у „Каталог”",
+    "params": "Параметри",
+    "expiryDays": "Рок важења (дани)",
+    "certIssue": "Издај ваучер",
+    "certCustomAmount": "Сопствени износ",
+    "certRecipientName": "Име примаоца",
+    "certRecipientPlaceholder": "Опционо",
+    "certLinkClient": "Повежи с клијентом",
+    "certClientSearchPlaceholder": "Почните да куцате име…",
+    "certAccount": "Депозитни рачун",
+    "certAccountNone": "Не евидентирај у књизи",
+    "certIssueButton": "Издај",
+    "certIssuedTitle": "Ваучер је издат",
+    "certCopyCode": "Копирај код",
+    "certCopied": "Копирано",
+    "certIssueAnother": "Издај још један",
+    "certIssued": "Издати ваучери",
+    "certEmpty": "Још нема издатих ваучера",
+    "certStatus": {
+      "active": "Активан",
+      "used": "Искоришћен",
+      "expired": "Истакао"
+    },
+    "certRedeem": "Искористи",
+    "certRedeemTitle": "Искористити овај ваучер?",
+    "certRedeemMessage": "Ваучер {{code}} биће означен као искоришћен. Ово не може да се опозове.",
+    "referrerBonusTitle": "Бонус за препоруку",
+    "referrerBonus": "Бонус за препоручиоца ({{currency}})",
+    "newClientDiscount": "Попуст за новог клијента (%)",
+    "triggerCondition": "Услов обрачуна",
+    "triggerConditions": {
+      "first_visit": "После прве посете",
+      "first_payment": "После прве уплате",
+      "registration": "Одмах при регистрацији"
+    },
+    "bonusAccrual": "Обрачун бонуса",
+    "bonusTypes": {
+      "points": "Поени",
+      "deposit": "На депозит",
+      "discount": "Као попуст"
+    },
+    "promoCreate": "Креирај промокод",
+    "promoCodePlaceholder": "ЛЕТО25",
+    "promoValidUntil": "Важи до",
+    "promoUsageLimit": "Ограничење коришћења",
+    "promoAdd": "+ Додај промокод",
+    "promoList": "Промокодови",
+    "promoEmpty": "Још нема промокодова",
+    "promoUntil": "до",
+    "promoStatus": {
+      "active": "Активан",
+      "expired": "Истакао",
+      "exhausted": "Ограничење је достигнуто",
+      "disabled": "Онемогућен"
+    },
+    "depositTotal": "Укупно стање",
+    "depositTotalSub": "на свим депозитима клијената",
+    "depositTopClients": "Најбољи клијенти по стању",
+    "depositEmpty": "Још нико нема депозит",
+    "depositHint": "Допуне и исплате обављају се на профилу клијента. Програм препорука може да уплаћује бонусе на депозит уместо поена."
+  },
+  "validation": {
+    "required": "Ово поље је обавезно",
+    "minOne": "Мора бити најмање 1",
+    "minZero": "Не може бити негативно",
+    "positive": "Мора бити веће од 0",
+    "range0to100": "Од 0 до 100"
+  },
+  "toasts": {
+    "saved": "Програм је активиран",
+    "saveFailed": "Чување није успело",
+    "toggleFailed": "Ажурирање програма није успело",
+    "loadFailed": "Учитавање података није успело",
+    "retry": "Покушајте поново"
+  },
+  "stats": {
+    "notConnected": "Програм није повезан",
+    "willAppear": "Подаци ће се појавити после подешавања",
+    "noData": "Нема података",
+    "connectProgram": "Повежи програм",
+    "revenueHeadline": "Приход од чланова",
+    "membersHeadline": "Чланови програма",
+    "returnedClients": "Клијенти који су се вратили",
+    "returnedClientsSub": "2+ посете у 90 дана",
+    "avgCheckHeadline": "Просечан рачун по члану",
+    "bonusCostHeadline": "Трошак бонуса",
+    "bonusCostSub": "овог месеца",
+    "roiHeadline": "ROI",
+    "roiValue": "×{{value}}",
+    "perMonth": "овог месеца",
+    "cardHolders": "власници картица",
+    "kpi": "Кључни показатељи",
+    "members": "Чланови",
+    "withCard": "са картицом",
+    "avgCheck": "Просечан рачун",
+    "byMembers": "међу члановима",
+    "pointsInCirculation": "Поени у оптицају",
+    "accrued": "обрачунато",
+    "revenue": "Приход",
+    "revenuePerMonth": "од чланова / мес.",
+    "levelDistribution": "Расподела по нивоима",
+    "noLevels": "Нивои још нису подешени",
+    "totalClients": "Укупно клијената у програму",
+    "fromValue": "од {{value}}",
+    "levelPointValue": "поен = {{value}}"
+  },
+  "scenarios": {
+    "title": "Паметни сценарији",
+    "subtitle": "Аутопилот за задржавање: систем проналази клијенте и награђује их уместо вас",
+    "add": "Сценарио",
+    "fired": "покренут {{count}} пута",
+    "lastRun": "последње покретање {{when}}",
+    "neverRun": "још није покренут",
+    "empty": "Још нема сценарија",
+    "emptySub": "Направите први — систем ће задржавати клијенте уместо вас",
+    "channel": "Канал",
+    "channelSoon": "након повезивања интеграције",
+    "pickTemplate": "Изаберите сценарио",
+    "pickTemplateSub": "Готов шаблон — подесите прагове касније",
+    "create": "Креирај",
+    "deleteConfirm": "Обрисати сценарио?",
+    "deleteConfirmSub": "Правило ће престати да се покреће. Ово не може да се опозове.",
+    "triggers": {
+      "inactive_days": "неактиван {{days}} дана",
+      "low_subscription": "преостало ≤ {{classes_left}} термина",
+      "birthday": "рођендан",
+      "nth_visit": "посета бр. {{n}}",
+      "referral": "довео је пријатеља"
+    },
+    "actions": {
+      "points": "поклоните {{points}} поена",
+      "gift_classes": "поклоните {{classes}} термина",
+      "certificate": "издајте ваучер од {{amount}} ₽",
+      "renewal_offer": "понудите обнову уз {{discount}}% попуста"
+    },
+    "templates": {
+      "win_back": {
+        "name": "Недостајете нам",
+        "desc": "Вратите клијента који дуго није долазио"
+      },
+      "expiring_subscription": {
+        "name": "Претплата је при крају",
+        "desc": "Понудите обнову пре него што потроши термине"
+      },
+      "birthday_gift": {
+        "name": "Рођендански поклон",
+        "desc": "Обрадујте клијента на његов посебан дан"
+      },
+      "fifth_visit": {
+        "name": "Награда за лојалност",
+        "desc": "Бесплатан термин за лојалност"
+      },
+      "referral_thanks": {
+        "name": "Хвала на пријатељу",
+        "desc": "Наградите онога ко је довео новог клијента"
+      }
+    },
+    "ifClient": "Ако клијент",
+    "then": "→",
+    "toasts": {
+      "created": "Сценарио је креиран",
+      "updated": "Сценарио је ажуриран",
+      "deleted": "Сценарио је обрисан",
+      "failed": "Сценарио није сачуван"
+    },
+    "delete": "Обриши"
+  },
+  "segmentsBoard": {
+    "title": "Сегменти и препоруке",
+    "subtitle": "Активне групе клијената, свака са једним јасним следећим кораком",
+    "empty": "Овде нема ничега и то је добро",
+    "clients": "клијената",
+    "daysAgo": "пре {{count}} дана",
+    "neverVisited": "без посета",
+    "more": "и још {{count}}",
+    "segments": {
+      "at_risk": {
+        "name": "На путу да оду",
+        "desc": "Активни, неактивни 21+ дан",
+        "action": "Дај бонус"
+      },
+      "vip_idle": {
+        "name": "VIP без активности",
+        "desc": "VIP клијенти, неактивни 14+ дана",
+        "action": "Покрени кампању"
+      },
+      "expiring_subscription": {
+        "name": "Претплата истиче",
+        "desc": "Преостало ≤2 термина или ≤7 дана",
+        "action": "Покрени кампању"
+      },
+      "lost_newcomers": {
+        "name": "Никад се нису вратили",
+        "desc": "Дошли једном, нема их 14+ дана",
+        "action": "Покрени кампању"
+      },
+      "upsell_candidates": {
+        "name": "Спремни за пакет",
+        "desc": "8+ посета овог месеца, без пакета",
+        "action": "Покрени кампању"
+      }
+    },
+    "campaignSub": "Сегмент „{{name}}” · {{count}} клијената",
+    "pointsLabel": "Колико поена доделити",
+    "messageLabel": "Текст поруке",
+    "messagePlaceholder": "нпр. Недостајете нам! Вратите се — чекамо вас.",
+    "emailNote": "Имејл се шаље само клијентима који имају имејл адресу",
+    "confirm": "Пошаљи",
+    "toasts": {
+      "pointsDone": "Поени су додељени · обрађено {{processed}}, обавештено {{emails}}",
+      "emailDone": "Кампања је послата · {{emails}} имејлова од {{processed}}"
+    }
+  },
+  "retention": {
+    "title": "Обнове претплата",
+    "subtitle": "Колико се добро клијенти враћају по нови пакет",
+    "renewalRate": "Обнови",
+    "avgPackages": "Пакети по клијенту",
+    "sold": "Продато",
+    "renewed": "Обновљено",
+    "empty": "Још нема продаја претплата",
+    "emptySub": "Аналитика ће се појавити после првих продаја пакета"
+  }
+}

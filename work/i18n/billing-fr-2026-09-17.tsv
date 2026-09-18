@@ -1,0 +1,294 @@
+== fr
+legal.terms	Conditions d’utilisation
+legal.privacy	Politique de confidentialité
+tabs.plans	Offres et tarifs
+tabs.invoices	Historique des paiements
+tabs.method	Mode de paiement
+tabsShort.plans	Offres
+tabsShort.invoices	Historique
+tabsShort.method	Paiement
+paymentsHistory.title	Historique complet des paiements
+paymentsHistory.subtitle	Toutes les factures de ce studio
+paymentsHistory.clearFilter	Effacer
+paymentsHistory.loadMore	Charger plus
+planNames.start	Start
+planNames.pro	Pro
+planNames.business	Business
+seats.title	Combien de collaborateurs dans le studio
+seats.hint	à partir de {{amount}} par mois
+seats.stepNote	Chaque place supplémentaire ajoute {{amount}} par mois
+seats.unlimitedNote	Nombre de collaborateurs illimité
+seats.perSeat	Par collaborateur
+limits.staff	Collaborateurs
+limits.ai	Requêtes Velora AI
+limits.unlimited	Illimité
+banner.trialEnds	Votre essai se termine le {{date}} — choisissez une offre
+banner.renews	Votre abonnement {{plan}} est renouvelé le {{date}}
+banner.expires	Votre abonnement {{plan}} se termine le {{date}}
+banner.choosePlan	Choisir une offre
+banner.dismiss	Fermer
+banner.unpaid	Votre offre n’a pas été payée. Pour continuer, payez dans Offres et facturation.
+banner.suspended	L’accès est suspendu car une facture de l’offre est en retard. Payez-la dans Offres et facturation.
+paymentReturn.done	Paiement effectué — l’offre {{plan}} est active.
+paymentReturn.processing	Paiement en cours de traitement — votre abonnement sera activé dans quelques minutes.
+header.eyebrow	Velora · Facturation
+header.title	Offres et facturation
+header.subtitle	Gérez votre abonnement, vos modes de paiement et votre historique des paiements
+header.totalSpent	Total dépensé
+header.monthsWithUs	Mois avec nous
+header.saved	Économisé
+header.nextCharge	Prochain prélèvement
+header.currentPlan	OFFRE ACTUELLE
+header.noPlanName	Aucune offre
+header.noPlan	Aucun abonnement actif
+header.active	Active
+header.activeUntil	Active · jusqu’au {{date}}
+header.trialPlanName	Offre d’essai
+header.trial	Période d’essai
+header.trialUntil	Période d’essai · jusqu’au {{date}}
+header.expired	Expirée
+header.percentRate	{{rate}}% des ventes
+header.modePercent	Offre à pourcentage
+header.modeFixed	Fixe
+header.modeCombo	Combinée
+header.unpaid	Offre non payée
+header.awaitingPayment	En attente de paiement
+mode.title	Modèle de paiement
+mode.subscription	Abonnement fixe
+mode.percent	% des ventes
+mode.combo	Combinaison fixe + %
+mode.short.subscription	Fixe
+mode.short.percent	Pourcentage
+mode.short.combo	Combinée
+mode.descriptions.subscription	Payez un montant chaque mois. Prévisible et rentable.
+mode.descriptions.percent	Aucun frais fixe : {{rate}}% de chaque vente, espèces comprises.
+mode.descriptions.combo	La moitié de l’abonnement + {{rate}}% de chaque vente, espèces comprises.
+mode.badges.popular	Populaire
+mode.badges.flexible	Flexible
+mode.percentCard.title	Le modèle « 3% des ventes »
+mode.percentCard.description	Payez uniquement lorsque vous gagnez : 3% de chaque vente, sans frais fixes d’abonnement. Les paiements en ligne sont répartis instantanément ; les espèces et acomptes s’accumulent et arrivent sur une seule facture mensuelle.
+mode.percentCard.noFixed	Aucun frais fixe
+mode.percentCard.payForResult	Payez pour les résultats
+mode.percentCard.oneClick	Activation en un clic
+mode.percentCard.cta	Activer le modèle à 3%
+mode.percentCard.ctaShort	Activer 3%
+mode.activateSuccess	Modèle de paiement mis à jour
+mode.activateError	Impossible de mettre à jour le modèle de paiement
+mode.alreadyActive	Ce modèle de paiement est déjà actif — vous pouvez renouveler ou modifier l’offre ci-dessous
+mode.confirmSwitchTitle	Changer de modèle de paiement ?
+mode.confirmSwitchMessage	Votre abonnement est actif. Le changement prend effet immédiatement et le reste de la période payée EST ENTIÈREMENT PERDU : les jours inutilisés ne sont ni remboursés ni reportés.
+mode.termsTitle	Confirmer les conditions de l’offre
+mode.termsMessage	Avec cette offre, la plateforme retient {{rate}}% de chaque vente.\n\nPour les paiements en ligne, les frais sont retenus automatiquement au moment du paiement. Pour les espèces, terminaux et recharges d’acomptes, ils ne sont PAS retenus immédiatement — ils s’accumulent et vous recevez une facture séparée une fois par mois.\n\nVous disposez de {{days}} jours pour payer cette facture. Si elle n’est pas réglée à temps, l’accès au CRM et à la mini-application client est suspendu jusqu’au règlement.\n\nLe montant actuel dû est affiché dans Facturation ; vous pouvez payer à tout moment, y compris à l’avance.
+mode.termsConfirm	J’accepte les conditions
+mode.termsMinimum	La facturation mensuelle minimale est de {{amount}} {{currency}}. Si, sur un mois civil, la plateforme a gagné moins que cela avec votre studio (par exemple, aucune vente via le CRM), la différence vous est facturée. Au-delà du minimum, aucune facture n’est émise. Des frais minimum impayés suspendent l’accès comme une facture de commission impayée.
+mode.termsBurn	ATTENTION : il vous reste une période payée. Le changement de modèle de facturation LA FAIT ENTIÈREMENT PERDRE — les jours inutilisés ne sont ni remboursés ni reportés.
+mode.termsCombo	Le changement est un ACHAT : juste après confirmation, vous verrez le montant dû. Le reste de votre période payée actuelle est perdu — il n’est ni remboursé ni reporté. Le modèle fixe + % s’active UNIQUEMENT après paiement ; jusque-là votre offre reste inchangée et rien n’est prélevé.
+combo.rateBadge	{{rate}}%
+combo.summary	Fixe {{fixed}}/mois + {{rate}}% des ventes (espèces facturées mensuellement)
+combo.cta	Activer l’offre combinée
+combo.ctaShort	Activer le combiné
+period.1	1 mois
+period.3	3 mois
+period.6	6 mois
+period.12	1 an
+period.24	2 ans
+period.title	Période de paiement
+period.discountActive	Remise de {{percent}}% active
+period.noDiscount	Aucune remise
+period.discountLabel	−{{percent}}% de remise
+calculator.title	Paramètres de calcul
+calculator.monthlyTurnover	Votre chiffre d’affaires mensuel en ligne
+calculator.turnoverRangeMin	50 k
+calculator.turnoverRangeMax	3 M+
+calculator.chooseFeeLabel	Choisissez un taux de commission (il influe sur les fonctionnalités)
+calculator.feeOptions.basic	Essentiel
+calculator.feeOptions.standard	Standard
+calculator.feeOptions.pro	Pro
+calculator.feeOptions.max	Max
+calculator.chooseFixedLabel	Choisissez la part fixe de base (l’acquisition est toujours à 3%)
+calculator.fixedOptions.start	Start
+calculator.fixedOptions.optima	Optima
+calculator.fixedOptions.business	Business
+calculator.economyPercentTitle	ÉCONOMIE DE L’OFFRE
+calculator.economyComboTitle	ÉCONOMIE DE L’OFFRE COMBINÉE
+calculator.turnover	Chiffre d’affaires du studio
+calculator.systemFee	Frais de plateforme
+calculator.totalMonthlyPayment	PAIEMENT MENSUEL TOTAL
+calculator.onlyPayForResult	Vous ne payez pas de frais fixe, seulement les résultats
+calculator.activatePercent	Activer le modèle à {{percent}}%
+calculator.baseSubscription	Abonnement de base (fixe)
+calculator.acquiringFee	Acquisition / frais
+calculator.activateCombo	Activer l’offre combinée
+planCards.bestChoice	Meilleur choix
+planCards.current	Actuelle
+planCards.perMonth	/ mois
+planCards.currentPlan	Offre actuelle
+planCards.yourPrice	Votre prix
+planCards.staffLimit	Jusqu’à {{count}} collaborateurs
+planCards.staffUnlimited	Collaborateurs illimités
+paymentSchedule.title	Échéancier de paiement
+paymentSchedule.total	Total dû
+paymentSchedule.morePayments	+ {{count}} paiements supplémentaires de {{amount}}
+paymentSchedule.processing	Redirection vers le paiement…
+paymentSchedule.payFor	Payer {{count}} mois
+paymentSchedule.vatNote	Hors TVA — la taxe est ajoutée au paiement selon votre pays
+trust.title	Pourquoi plus de 2 400 entreprises nous font confiance
+trust.reviews.0.text	Nous avons quitté Altegio. La différence, c’est comme entre un taxi et un jet privé.
+trust.reviews.0.author	Maria K., FORM Pilates
+trust.reviews.1.text	Le mieux, c’est de savoir exactement ce que je paie chaque mois. Aucune surprise.
+trust.reviews.1.author	Artem N., Barbershop Bros
+trust.reviews.2.text	Le support a répondu en 4 minutes. Je n’ai jamais vu cela ailleurs.
+trust.reviews.2.author	Elena D., SPA LUNA
+upgrade.priceLine	Prix {{price}}/mois
+upgrade.discountNote	 {{percent}}% de réduction pour {{period}} mois
+upgrade.planLabel	Offre
+upgrade.periodLabel	Période
+upgrade.periodValue_one	{{count}} mois
+upgrade.periodValue_other	{{count}} mois
+upgrade.discountLabel	Réduction
+upgrade.scheduledBadge	À partir du {{date}} — offre « {{plan}} »
+upgrade.vatNote	Hors TVA — la taxe est ajoutée au paiement selon les données de votre entreprise ; les entreprises UE avec un numéro de TVA bénéficient de l’autoliquidation.
+method.notLinked	Non associé
+method.badgeTitle	Mode de paiement sécurisé
+method.tokenSub	Jeton du prestataire · expire {{expiry}}
+method.tokenNote	Vos véritables données de carte sont conservées par le prestataire de paiement (PCI DSS L1). Nous ne gardons qu’un jeton à usage unique pour les renouvellements.
+method.securityTitle	Normes de protection des données
+method.security.pciDss	Chiffrement PCI DSS niveau 1
+method.security.secure3d	Protection des transactions 3D Secure
+method.security.noStorage	Les données de carte ne passent jamais par nos serveurs
+method.security.autoLink	La carte est associée au premier paiement
+method.noCardDetail	Inutile de saisir vos données séparément — le paiement se fait sur la page sécurisée de Stripe.
+method.renewDone	Facture créée — traitement du paiement
+method.renewBusy	Création de la facture…
+method.renewSuccess	Facture de renouvellement créée
+method.renewError	Impossible de créer la facture. Veuillez réessayer.
+method.renewNow	Renouveler maintenant avec la carte •••• {{last4}}
+method.autopayTitle	Paramètres de paiement automatique
+method.autopaySuccess	Paramètre enregistré
+method.autopayError	Impossible d’enregistrer le paramètre. Veuillez réessayer.
+method.autopay.cardOnly	Disponible lors du paiement par carte
+method.autopay.autoRenew.label	Renouvellement automatique
+method.autopay.autoRenew.desc	Désactivez pour annuler à la fin de la période payée
+method.autopay.autoRenew.until	L’abonnement ne sera pas renouvelé — accès jusqu’au {{date}}
+method.autopay.emailNotify.label	Notifications par e-mail
+method.autopay.emailNotify.desc	Un reçu est envoyé par e-mail après chaque paiement
+method.autopay.remind3d.label	Rappeler 3 jours avant
+method.autopay.remind3d.desc	Nous vous rappellerons avant le prélèvement automatique
+method.autopay.sms.label	Alerte SMS
+method.autopay.sms.desc	Un message est envoyé lors du prélèvement
+method.portal.title	Informations de facturation et TVA
+method.portal.subtitle	Les factures, la carte associée et l’historique des prélèvements se trouvent dans le portail client Stripe.
+method.portal.cta	Ouvrir dans Stripe
+method.ibanBadgeLabel	Virement bancaire (SEPA)
+method.ibanBadgeNote	Les factures arrivent par e-mail avec un lien de paiement — rien n’est prélevé automatiquement sur une carte. Vous pouvez aussi payer à l’avance depuis la page de facture.
+invoices.title	Historique des paiements
+invoices.totalPaid	total payé {{amount}}
+invoices.exportCsv	Exporter en CSV
+invoices.exportError	Impossible d’exporter le CSV. Veuillez réessayer.
+invoices.receiptError	Impossible d’ouvrir le reçu. Veuillez réessayer.
+invoices.invoiceNo	Facture n°{{id}}
+invoices.methodCard	Payée par carte
+invoices.methodIban	Payée par virement bancaire (IBAN)
+invoices.syncHint	Vérifiez le statut auprès du service de paiement
+invoices.syncChanged	Statut mis à jour : {{status}}
+invoices.syncUnchanged	Le service de paiement a confirmé le même statut
+invoices.syncError	Impossible de vérifier le statut. Veuillez réessayer.
+invoices.kindOfflineFee	Commission sur ventes hors ligne
+invoices.kindMinFee	Frais mensuels minimum
+invoices.kindOnlineFee	Commission sur paiements en ligne
+invoices.methodWithheld	Prélevé par Stripe lors du paiement
+table.date	Date
+table.description	Description
+table.amount	Montant
+table.status	Statut
+table.receipt	Reçu
+status.paid	Payée
+status.pending	En attente
+status.failed	Non payée
+status.refunded	Remboursée
+empty.noInvoices	Aucune facture pour le moment — elles apparaîtront après votre premier paiement.
+empty.noCard	Votre carte apparaîtra automatiquement après le premier paiement.
+empty.monthsWithUs	Vous n’avez pas encore acheté d’abonnement
+empty.noData	Aucune donnée
+savings.title	Vos économies
+savings.prepayTitle	Vos économies en payant à l’avance
+savings.emptyState	Choisissez une période plus longue et commencez à économiser
+savings.youSave	Vous économisez {{amount}} sur {{months}} mois
+savings.freeMonths	C’est comme {{count}} mois offerts
+savings.amountLabel	{{amount}} d’économies
+savings.comparedToMonthly	par rapport au paiement mensuel
+savings.forMonths_one	Pour {{count}} mois
+savings.forMonths_other	Pour {{count}} mois
+pay	Payer
+continuePlan	Continuer l’offre
+payModal.titleNew	Démarrer l’offre {{plan}}
+payModal.titleSwitch	Passer à {{plan}}
+payModal.titleRenew	Renouveler {{plan}}
+payModal.totalLabel	Votre offre coûtera
+payModal.burnWarning	Le passage à une autre offre redémarre la période : le reste de votre offre {{plan}} EST PERDU — il n’est ni remboursé ni reporté. Le renouvellement de la même offre le conserve.
+payModal.switched	Offre modifiée : rien à payer — le changement est couvert par le reste de la période actuelle.
+payModal.renewNote	Cela renouvelle la même offre : les mois achetés s’ajoutent à votre période payée actuelle. Rien n’est perdu.
+payModal.cardNote	Paiement par carte sur la page sécurisée de Stripe · remboursement sous 7 jours
+payModal.freeUntil	Aucun prélèvement jusqu’au {{date}} : il vous reste {{count}} jour(s) de votre période déjà payée. La facturation commence à cette date.
+payModal.taxLabel	TVA
+payModal.taxLine	TVA {{rate}}%
+payModal.reverseCharge	Autoliquidation
+payModal.totalWithTax	Total TTC
+payModal.taxServerNote	La taxe est calculée à partir de vos informations de facturation. La facture affichera le même montant.
+payModal.taxReview	Nous n’avons pas pu déterminer la taxe pour vos informations de facturation ; le total est donc affiché sans elle et le paiement ne peut pas être finalisé. Vérifiez le pays et l’adresse du payeur ou contactez le support.
+offlineFee.title	Frais sur ventes hors ligne
+offlineFee.accruing	Cumulés sur les espèces et acomptes à {{rate}}%. Facturés mensuellement, vous avez {{days}} jours pour payer.
+offlineFee.due	Facture émise. Jours restants pour payer : {{days}}.
+offlineFee.suspended	Paiement en retard — l’accès au CRM et à la mini-application est suspendu.
+offlineFee.pay	Payer
+offlineFee.suspendedMin	Frais mensuels minimum en retard — l’accès au CRM et à la mini-application est suspendu.
+offlineFee.alsoAccruing	En plus, montant cumulé ce mois-ci : {{amount}} — il figurera sur la prochaine facture.
+offlineFee.minimum	Les frais mensuels minimum sont de {{amount}}. Si vous gagnez moins sur un mois, vous complétez la différence ; si vous gagnez plus, aucune facture n’est émise.
+offlineFee.pendingBill	Cumulés sous le modèle précédent, en attente de facture.
+offlineFee.notBilledYet	Aucune facture n’est encore émise : le montant cumulé est inférieur au montant minimal de facture ou est toujours en préparation. Rien n’est perdu — il figurera sur la prochaine facture.
+trial.title	Offre pour les nouveaux studios
+trial.subtitle	Votre studio vient d’être créé
+trial.headline	{{days}} jours gratuits
+trial.noCard	Aucune carte requise — rien à payer maintenant
+trial.perks.allModules	Accès complet à chaque module : journal, clients, finances, notifications et Velora AI
+trial.perks.noCommitment	Sans engagement : si cela ne vous convient pas, ne renouvelez simplement pas
+trial.perks.keepData	Tout ce que vous configurez pendant l’essai vous appartient
+trial.activate	Activer
+trial.decline	Refuser
+trial.cardHint	Vous n’avez pas encore activé la période gratuite de ce studio. Elle reste disponible jusqu’à l’achat d’une offre.
+profile.title	Informations de facturation
+profile.editTitle	Modifier les informations de facturation
+profile.subtitle	Votre adresse apparaît sur la facture et définit le taux de taxe. Elle est stockée sur votre compte — nous ne la redemanderons pas dans un autre studio.
+profile.subtitlePay	Remplissez ceci une fois et le paiement passera directement la prochaine fois. Votre adresse apparaît sur la facture et définit le taux de taxe.
+profile.cardTitle	Informations de facturation
+profile.cardSubtitle	Stockées sur votre compte et utilisées dans tous vos studios. Voici comment elles apparaissent sur la facture.
+profile.cardEmpty	Pas encore renseignées — nous les demanderons avant votre premier paiement. Vous pouvez les ajouter maintenant.
+profile.add	Ajouter les informations de facturation
+profile.edit	Modifier
+profile.save	Enregistrer
+profile.saveAndPay	Enregistrer et passer au paiement
+profile.cancel	Annuler
+profile.saved	Informations de facturation enregistrées
+profile.vatNone	Non renseigné
+profile.fields.country	Pays ou région
+profile.fields.countryPlaceholder	Sélectionnez un pays
+profile.fields.address	Adresse
+profile.fields.line1	Ligne d’adresse 1
+profile.fields.line1Placeholder	Rue et numéro
+profile.fields.line2	Ligne d’adresse 2 — facultatif
+profile.fields.line2Placeholder	Appartement, bureau, numéro d’unité, etc.
+profile.fields.postalCode	Code postal
+profile.fields.postalCodePlaceholder	110 00
+profile.fields.city	Ville
+profile.fields.cityPlaceholder	Prague
+profile.fields.vat	Numéro de TVA — facultatif
+profile.fields.vatPlaceholder	{{prefix}}12345678
+profile.fields.vatHint	Réservé aux entreprises. Le numéro est vérifié dans le registre européen (VIES) lors de l’enregistrement — nous n’acceptons pas les numéros non vérifiés. Avec un numéro valide, une entreprise située dans un autre pays de l’UE est facturée hors taxe (autoliquidation). Les particuliers n’en ont pas — laissez le champ vide.
+profile.fields.countrySearch	Commencez à saisir un nom
+profile.fields.countryNotFound	Aucun pays trouvé
+profile.fields.vatOutsideEu	Nous ne demandons pas de numéro de TVA : hors UE, la taxe est déterminée par le pays du payeur, et non son numéro, donc cela ne change rien à la facture.
+profile.fields.vatPending	Votre numéro est enregistré, mais le registre européen était indisponible à ce moment-là ; il n’est donc pas encore confirmé et votre prochaine facture inclura la TVA complète. Inutile de le ressaisir : nous continuons de vérifier et, dès que le registre répond, la taxe cesse d’être facturée. Pour une facture déjà payée, le support remboursera la taxe.
+profile.errors.required	Ce champ est obligatoire
+profile.preview.invoice	Facture
+profile.preview.billTo	Facturer à
+profile.preview.note	Voici comment vos informations apparaissent sur chaque facture. Vous pouvez les modifier à tout moment dans Offres et facturation → Mode de paiement.

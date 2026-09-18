@@ -1,0 +1,510 @@
+{
+  "tabs": {
+    "accounts": "Cuentas",
+    "operations": "Operaciones",
+    "salaries": "Nómina",
+    "counterparties": "Contrapartes",
+    "documents": "Documentos",
+    "onlinePayments": "Pagos en línea",
+    "paymentMethods": "Métodos de pago",
+    "reports": "Informes",
+    "goals": "Objetivos"
+  },
+  "common": {
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "create": "Crear",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "loading": "Cargando…",
+    "all": "Todos",
+    "confirm": "Confirmar",
+    "monthsShort": [
+      "ene.",
+      "feb.",
+      "mar.",
+      "abr.",
+      "may.",
+      "jun.",
+      "jul.",
+      "ag.",
+      "sept.",
+      "oct.",
+      "nov.",
+      "dic."
+    ],
+    "weekdaysShort": [
+      "lun.",
+      "mar.",
+      "mié.",
+      "jue.",
+      "vie.",
+      "sáb.",
+      "dom."
+    ]
+  },
+  "info": {
+    "accounts": "Las cuentas son las cajas, cuentas bancarias y cobros en línea del estudio. Aquí puedes ver cada saldo y el capital total.",
+    "operations": "Las operaciones son todos los ingresos y gastos del estudio. Al crear una operación, el saldo de la cuenta vinculada se actualiza de inmediato.",
+    "salaries": "Las nóminas se calculan según la tarifa del miembro del equipo (fija, por hora o porcentual) para el periodo seleccionado.",
+    "counterparties": "Las contrapartes son organizaciones y personas con las que el estudio liquida operaciones: proveedores, arrendadores y socios.",
+    "documents": "Los documentos son contratos, actas y facturas vinculados a contrapartes, o documentos internos.",
+    "onlinePayments": "Pagos en línea: conecta Stripe para recibir pagos con tarjeta. La cuenta se crea para tu estudio, por lo que el dinero llega directamente a ti sin pasar por Velora.",
+    "paymentMethods": "Los métodos de pago muestran cómo pagan los clientes en el estudio y las estadísticas de cada método.",
+    "reports": "Los informes muestran las tendencias de ingresos, gastos y beneficios durante el periodo seleccionado.",
+    "goals": "Los objetivos financieros son el plan de ahorro del estudio, con seguimiento automático o manual del progreso."
+  },
+  "accounts": {
+    "loading": "Cargando cuentas…",
+    "totalCapital": "Capital total del estudio",
+    "donutTotal": "Total {{symbol}}",
+    "todayChange": "hoy",
+    "system": "SISTEMA",
+    "today": "hoy",
+    "editTitle": "Editar cuenta",
+    "namePlaceholder": "Nombre",
+    "balancePlaceholder": "Saldo, {{symbol}}",
+    "types": {
+      "cash": "Efectivo",
+      "bank": "Tarjeta",
+      "online": "En línea"
+    },
+    "typesShort": {
+      "cash": "Efectivo",
+      "bank": "Tarjeta",
+      "online": "En línea"
+    },
+    "history": "Historial",
+    "historyTitle": "Historial: {{name}}",
+    "income30d": "Ingresos (30 d)",
+    "expense30d": "Gastos (30 d)",
+    "samplePayment": "Pago de servicio",
+    "sampleTime": "Hoy, 14:32",
+    "openAllOperations": "Abrir todas las operaciones",
+    "newSavingsTitle": "Nueva cuenta de ahorro",
+    "createSavings": "Crear cuenta de ahorro",
+    "deleteConfirmTitle": "¿Eliminar esta cuenta?",
+    "deleteConfirmText": "Todos sus fondos quedarán excluidos de las estadísticas generales. Esta acción no se puede deshacer.",
+    "toasts": {
+      "loadFailed": "No se pudieron cargar las cuentas",
+      "deleted": "Cuenta eliminada",
+      "deleteFailed": "No se pudo eliminar la cuenta",
+      "saved": "Ajustes guardados",
+      "saveFailed": "No se pudo guardar la cuenta",
+      "created": "Cuenta de ahorro creada",
+      "createFailed": "No se pudo crear la cuenta"
+    }
+  },
+  "operations": {
+    "income": "Ingreso",
+    "expense": "Gasto",
+    "balance": "Saldo",
+    "searchPlaceholder": "Buscar por título y categoría…",
+    "close": "Cerrar",
+    "operation": "Operación",
+    "export": "Exportar",
+    "newOperationTitle": "Nueva operación",
+    "titleLabel": "Título",
+    "titlePlaceholder": "Por ejemplo, pago de suscripción",
+    "amountLabel": "Importe, {{symbol}}",
+    "dateLabel": "Fecha",
+    "categoryLabel": "Categoría",
+    "categoryPlaceholder": "Categoría",
+    "accountLabel": "Cuenta",
+    "noAccount": "Sin cuenta",
+    "methodLabel": "Método de pago",
+    "noMethod": "Sin especificar",
+    "counterpartyLabel": "Contraparte",
+    "noCounterparty": "Sin contraparte",
+    "newCounterparty": "+ Nueva contraparte",
+    "clientLabel": "Cliente",
+    "clientHint": "Los puntos y el nivel de fidelidad se asignarán al cliente",
+    "clientSearchPlaceholder": "Empieza a escribir un nombre…",
+    "noClient": "Sin cliente",
+    "editTitle": "Editar operación",
+    "saving": "Guardando…",
+    "loading": "Cargando operaciones…",
+    "emptyTitle": "No se encontraron operaciones",
+    "emptyBody": "Cambia los filtros o crea la primera operación",
+    "pending": "Pendiente",
+    "detailAccount": "Cuenta receptora",
+    "detailCategory": "Categoría",
+    "detailMethod": "Método de pago",
+    "detailCounterparty": "Contraparte",
+    "receipt": "Recibo",
+    "loadMore": "Cargar más ({{count}})",
+    "toasts": {
+      "loadFailed": "No se pudieron cargar las operaciones",
+      "loadMoreFailed": "No se pudieron cargar más operaciones",
+      "deleted": "Operación eliminada",
+      "deleteFailed": "No se pudo eliminar la operación",
+      "enterAmount": "Introduce un importe",
+      "created": "Operación creada",
+      "createFailed": "No se pudo crear la operación",
+      "updated": "Operación actualizada",
+      "updateFailed": "No se pudo guardar la operación",
+      "exportFailed": "No se pudieron exportar las operaciones",
+      "receiptDownloaded": "Recibo descargado"
+    },
+    "categoryPresets": {
+      "in": [
+        {
+          "value": "Membresías",
+          "label": "Membresías"
+        },
+        {
+          "value": "Servicios",
+          "label": "Servicios"
+        },
+        {
+          "value": "Certificados regalo",
+          "label": "Certificados regalo"
+        },
+        {
+          "value": "Depósito",
+          "label": "Depósito"
+        },
+        {
+          "value": "Otros",
+          "label": "Otros"
+        }
+      ],
+      "out": [
+        {
+          "value": "Reembolsos",
+          "label": "Reembolsos"
+        },
+        {
+          "value": "Alquiler",
+          "label": "Alquiler"
+        },
+        {
+          "value": "Nómina",
+          "label": "Nómina"
+        },
+        {
+          "value": "Suministros",
+          "label": "Suministros"
+        },
+        {
+          "value": "Marketing",
+          "label": "Marketing"
+        },
+        {
+          "value": "Impuestos",
+          "label": "Impuestos"
+        },
+        {
+          "value": "Otros",
+          "label": "Otros"
+        }
+      ]
+    }
+  },
+  "salaries": {
+    "loading": "Cargando nóminas…",
+    "noRows": "No hay personal para calcular",
+    "fund": "Fondo de nómina",
+    "fundSub": "mes actual",
+    "sessions": "Sesiones",
+    "sessionsSub": "total realizadas",
+    "paidOf": "miembros del equipo",
+    "sessionsCount": "{{count}} sesiones",
+    "paid": "Pagado",
+    "pending": "Pendiente",
+    "paying": "…",
+    "payAction": "Pagar",
+    "cancelAction": "Cancelar nómina",
+    "perMonth": "/mes",
+    "accrualTitle": "Devengo del periodo",
+    "rate": "Tarifa",
+    "rateNotSet": "sin configurar",
+    "sessionsInPeriod": "Sesiones del periodo",
+    "hoursWorked": "Horas trabajadas",
+    "lessonsRevenue": "Ingresos de sesiones",
+    "totalToPay": "Total a pagar",
+    "rateWarning": "La tarifa no está configurada; establécela en el perfil del miembro del equipo para calcular el devengo.",
+    "rateUnit": {
+      "hourly": "h",
+      "percent": "%",
+      "fixed": "fija"
+    },
+    "paidAt": "Pagado {{date}}",
+    "historyTitle": "Historial de pagos",
+    "historyEmpty": "Aún no hay pagos",
+    "historyLoading": "Cargando historial…",
+    "toasts": {
+      "loadFailed": "No se pudo cargar la nómina",
+      "paid": "Nómina pagada: {{name}}",
+      "payFailed": "No se pudo pagar la nómina",
+      "canceled": "Nómina cancelada: {{name}}",
+      "historyLoadFailed": "No se pudo cargar el historial de pagos"
+    }
+  },
+  "counterparties": {
+    "count": "{{count}} contrapartes",
+    "totalDebt": "Deuda total:",
+    "add": "Añadir",
+    "newTitle": "Nueva contraparte",
+    "nameLabel": "Nombre / Nombre completo",
+    "namePlaceholder": "Empresa S. L. o Juan Pérez",
+    "innLabel": "NIF",
+    "categoryLabel": "Categoría",
+    "categoryPlaceholder": "Alquiler, proveedor…",
+    "typeLabel": "Tipo de contraparte",
+    "types": {
+      "legal": {
+        "label": "Persona jurídica",
+        "desc": "Organización o empresa"
+      },
+      "ie": {
+        "label": "Autónomo",
+        "desc": "Empresario individual"
+      },
+      "person": {
+        "label": "Persona física",
+        "desc": "Particular"
+      }
+    },
+    "addSubmit": "Añadir contraparte",
+    "you": "Tú",
+    "otherCategory": "Otros",
+    "deals": "operaciones",
+    "dealsLabel": "Operaciones",
+    "debtLabel": "Deuda",
+    "documents": "Documentos",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "deleteConfirmTitle": "¿Eliminar la contraparte?",
+    "deleteConfirmText": "Los documentos relacionados y el historial de operaciones se conservarán, pero la contraparte desaparecerá de la lista.",
+    "toasts": {
+      "loadFailed": "No se pudieron cargar las contrapartes",
+      "enterName": "Introduce un nombre",
+      "saved": "Cambios guardados",
+      "saveFailed": "No se pudieron guardar los cambios",
+      "added": "Contraparte añadida",
+      "addFailed": "No se pudo añadir la contraparte",
+      "deleted": "Contraparte eliminada",
+      "deleteFailed": "No se pudo eliminar la contraparte",
+      "documentsOpened": "Documentos abiertos"
+    }
+  },
+  "documents": {
+    "signed": "Firmados",
+    "pendingCount": "Pendientes de firma",
+    "draftCount": "Internos (sin firmar)",
+    "searchPlaceholder": "Buscar por título o contraparte…",
+    "filters": {
+      "all": "Todos",
+      "signed": "Firmados",
+      "pending": "Pendientes de firma"
+    },
+    "upload": "Subir",
+    "addTitle": "Añadir documento a la biblioteca",
+    "dropzoneTitle": "Haz clic o arrastra un archivo",
+    "dropzoneHint": "PDF, DOCX, XLSX (hasta 15 MB)",
+    "dropzoneChange": "Haz clic para elegir otro archivo",
+    "titleLabel": "Título del documento",
+    "titlePlaceholder": "Por ejemplo, Acta de recepción n.º 48",
+    "partyLabel": "Contraparte (si existe)",
+    "partyPlaceholder": "Nombre de empresa o autónomo",
+    "needsSignature": "¿El documento necesita firma?",
+    "needsSignatureHint": "El estado será «Pendiente de firma»",
+    "saveToBase": "Guardar en la biblioteca",
+    "emptyTitle": "Esta carpeta está vacía",
+    "emptyBody": "Sube un documento nuevo o cambia los filtros",
+    "internalDoc": "Documento interno",
+    "uploaded": "Subido {{date}}",
+    "download": "Descargar",
+    "open": "Abrir",
+    "fileRequired": "Adjunta un archivo",
+    "options": "Opciones",
+    "status": {
+      "title": "Estado",
+      "signed": "Firmado",
+      "pending": "Pendiente de firma",
+      "draft": "Sin firmar"
+    },
+    "delete": "Eliminar",
+    "toasts": {
+      "loadFailed": "No se pudieron cargar los documentos",
+      "titleRequired": "Sube un archivo o introduce un título",
+      "created": "Documento subido a la biblioteca",
+      "createFailed": "No se pudo guardar el documento",
+      "badFormat": "Formatos permitidos: PDF, DOCX, XLSX",
+      "downloadFailed": "No se pudo descargar el archivo",
+      "noFile": "No hay ningún archivo adjunto a este documento",
+      "openFailed": "No se pudo abrir el archivo",
+      "statusChanged": "Estado: {{label}}",
+      "statusFailed": "No se pudo cambiar el estado",
+      "deleted": "Documento eliminado",
+      "deleteFailed": "No se pudo eliminar el documento"
+    }
+  },
+  "goals": {
+    "loading": "Cargando objetivos…",
+    "active": "Objetivos en curso",
+    "done": "Completados",
+    "avgProgress": "Progreso global",
+    "trackingTitle": "Seguimiento del plan",
+    "createGoal": "Crear objetivo",
+    "newTitle": "Nuevo objetivo financiero",
+    "titleLabel": "Título del objetivo",
+    "titlePlaceholder": "Por ejemplo, nuevas máquinas reformer",
+    "targetLabel": "Importe objetivo, {{symbol}}",
+    "targetPlaceholder": "500000",
+    "deadlineLabel": "Fecha límite",
+    "trackingLabel": "¿Cómo hacer el seguimiento del progreso?",
+    "trackingAuto": "Automático (métrica de CRM)",
+    "trackingAutoDesc": "Vincula el objetivo a los ingresos de una categoría elegida. El CRM actualizará la barra de progreso por sí mismo.",
+    "trackingManual": "Manual (ahorro personal)",
+    "trackingManualDesc": "Aparecerá un botón «Añadir fondos» en la tarjeta. El progreso depende solo de ti.",
+    "opTypeLabel": "Tipo de operación",
+    "categoryLabel": "Categoría",
+    "categoryPlaceholder": "Elige una categoría",
+    "editTitle": "Editar objetivo",
+    "nameLabel": "Título",
+    "namePlaceholder": "Título del objetivo",
+    "amountLabel": "Importe, {{symbol}}",
+    "achieved": "Objetivo alcanzado",
+    "priority": {
+      "high": "Prioridad alta",
+      "medium": "Prioridad media",
+      "low": "Prioridad baja"
+    },
+    "autoCollect": "Seguimiento automático",
+    "deadlinePrefix": "Fecha límite:",
+    "noDeadline": "Sin fecha límite",
+    "fundPlaceholder": "Importe, {{symbol}}",
+    "fund": "Añadir",
+    "addFunds": "Añadir fondos",
+    "autoHint": "El valor se actualiza automáticamente según los ingresos de la categoría",
+    "deleteConfirmTitle": "¿Eliminar objetivo?",
+    "deleteConfirmText": "Se perderá el progreso de este objetivo. Esta acción no se puede deshacer.",
+    "toasts": {
+      "loadFailed": "No se pudieron cargar los objetivos",
+      "fillRequired": "Completa el título y el importe",
+      "chooseCategory": "Elige una categoría para el objetivo automático",
+      "created": "Objetivo creado",
+      "createFailed": "No se pudo crear el objetivo",
+      "enterName": "Introduce un nombre",
+      "updated": "Objetivo actualizado",
+      "updateFailed": "No se pudo actualizar el objetivo",
+      "deleted": "Objetivo eliminado",
+      "deleteFailed": "No se pudo eliminar el objetivo",
+      "funded": "Fondos añadidos",
+      "fundFailed": "No se pudieron añadir los fondos"
+    }
+  },
+  "onlinePayments": {
+    "description": "Conecta Stripe y tus clientes podrán pagar con tarjeta en caja. El dinero llega directamente a la cuenta de tu estudio; Velora nunca lo retiene. La comisión depende de tu plan.",
+    "gatewaysTitle": "Proveedores de pago",
+    "gateways": {
+      "stripe": {
+        "name": "Stripe"
+      },
+      "states": {
+        "none": {
+          "label": "Sin conectar",
+          "hint": "Acepta pagos con tarjeta en la cuenta del estudio",
+          "action": "Conectar"
+        },
+        "incomplete": {
+          "label": "Faltan datos",
+          "hint": "Stripe está esperando los datos de tu estudio; los pagos permanecerán desactivados hasta entonces",
+          "action": "Continuar"
+        },
+        "action": {
+          "label": "Se requiere una acción",
+          "hint": "Stripe rechazó algunos datos y espera correcciones; no se resolverá automáticamente",
+          "action": "Corregir datos"
+        },
+        "review": {
+          "label": "En revisión",
+          "hint": "Los datos se han enviado y Stripe los está revisando. Normalmente tarda hasta un día",
+          "action": "Abrir Stripe"
+        },
+        "active": {
+          "label": "Conectado",
+          "hint": "Los pagos con tarjeta llegan a la cuenta Stripe del estudio",
+          "action": "Ajustes"
+        }
+      }
+    },
+    "toasts": {
+      "gatewayUpdated": "Ajustes del proveedor actualizados",
+      "stripeReturned": "Datos enviados a Stripe",
+      "stripeLinkExpired": "El enlace de Stripe ha caducado; pulsa Conectar de nuevo"
+    }
+  },
+  "paymentMethods": {
+    "totalTurnover": "Facturación del periodo",
+    "periods": {
+      "month": "Mes",
+      "quarter": "Trimestre",
+      "year": "Año"
+    },
+    "amount": "Importe",
+    "share": "Porcentaje",
+    "transactions": "transacciones",
+    "methods": {
+      "cash": {
+        "name": "Efectivo"
+      },
+      "card": {
+        "name": "Tarjeta bancaria"
+      },
+      "qr": {
+        "name": "SBP (QR)"
+      },
+      "transfer": {
+        "name": "Transferencia"
+      },
+      "stripe": {
+        "name": "Stripe"
+      },
+      "": {
+        "name": "Sin especificar"
+      }
+    }
+  },
+  "reports": {
+    "metrics": {
+      "revenue": "Ingresos",
+      "expenses": "Gastos",
+      "profit": "Beneficio",
+      "margin": "Margen"
+    },
+    "vsPreviousPeriod": "frente al periodo anterior",
+    "cashflowTitle": "Flujo de caja",
+    "cashflowSub": "Análisis de ingresos y gastos",
+    "period": "Periodo",
+    "income": "Ingreso",
+    "expense": "Gasto",
+    "profit": "Beneficio",
+    "periods": {
+      "today": "Hoy",
+      "week": "Semana",
+      "month": "Mes",
+      "year": "Año"
+    },
+    "legendIncome": "Ingresos",
+    "legendExpense": "Gastos",
+    "exportCsv": "Exportar CSV",
+    "expenseStructure": "Estructura de gastos",
+    "incomeStructure": "Estructura de ingresos",
+    "total": "Total",
+    "otherCategory": "Sin categoría",
+    "noData": "No hay datos para este periodo",
+    "insightsTitle": "Resumen y análisis financieros",
+    "insightsPlaceholder": "Aquí aparecerá el resumen financiero con IA: análisis de tendencias, estructura de gastos y recomendaciones",
+    "toasts": {
+      "exportFailed": "No se pudieron exportar las operaciones"
+    }
+  },
+  "confirmModal": {
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "delete": "Eliminar"
+  }
+}

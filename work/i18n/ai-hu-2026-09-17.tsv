@@ -1,0 +1,287 @@
+== hu
+telegram.tokenLabel	Bot-token
+telegram.tokenPlaceholder	1234567890:ABC...
+telegram.tokenInvalidFormat	Érvénytelen tokenformátum
+telegram.verifyButton	Ellenőrzés és kapcsolódás
+telegram.verifiedToast	A @{{username}} bot kapcsolódott
+telegram.verifyFailedToast	A Telegram elutasította ezt a tokent
+telegram.disconnect	Kapcsolat bontása
+telegram.disconnectedToast	A bot lekapcsolódott
+telegram.disconnectConfirmTitle	Bontja a bot kapcsolatát?
+telegram.disconnectConfirmMessage	A Telegram automatikus válaszadója addig nem működik, amíg újra nem kapcsol egy botot.
+telegram.gateTooltip	Először kapcsoljon botot
+telegram.statsPending	Az automatikus válaszadó indulásakor jelenik meg
+telegram.instructionTitle	Token igénylése
+telegram.instructionStep1	Nyissa meg a @BotFather alkalmazást a Telegramban
+telegram.instructionStep2	Küldje el a /newbot parancsot, majd válasszon nevet és felhasználónevet a botnak
+telegram.instructionStep3	Másolja ki a kapott tokent
+telegram.instructionStep4	Illessze be ide, és kattintson az „Ellenőrzés és kapcsolódás” gombra
+instagram.connectButton	Instagram kapcsolása
+instagram.connectedToast	Az Instagram kapcsolódott
+instagram.connectErrorToast	Az Instagram kapcsolása nem sikerült — próbálja újra
+instagram.expiresUntil	A hozzáférés {{date}} napjáig érvényes
+instagram.disconnect	Kapcsolat bontása
+instagram.disconnectedToast	Az Instagram lekapcsolódott
+instagram.disconnectConfirmTitle	Bontja az Instagram kapcsolatát?
+instagram.disconnectConfirmMessage	Az Instagram automatikus válaszadója addig nem válaszol az ügyfeleknek, amíg újra nem kapcsolja a fiókot.
+instagram.gateTooltip	Először kapcsoljon fiókot
+instagram.statsPending	Az automatikus válaszadó indulásakor jelenik meg
+instagram.instructionTitle	Kapcsolódás
+instagram.instructionStep1	A stúdió fiókjának professzionálisnak kell lennie — Business vagy Creator (Instagram-beállítások → Fióktípus)
+instagram.instructionStep2	Kattintson az „Instagram kapcsolása” gombra, és jelentkezzen be a stúdió fiókjával
+instagram.instructionStep3	Engedélyezze az üzenetekhez való hozzáférést
+instagram.instructionStep4	Automatikusan visszakerül ide
+whatsapp.numberLabel	WhatsApp Business-szám
+whatsapp.connectLink	vagy írja be kézzel a tokent
+whatsapp.gateTooltip	Először kapcsoljon WhatsApp-számot
+whatsapp.statsPending	Az automatikus válaszadó indulásakor jelenik meg
+whatsapp.instructionTitle	Kapcsolódás
+whatsapp.instructionStep1	Kattintson a „WhatsApp kapcsolása” lehetőségre — megnyílik egy Meta-ablak
+whatsapp.instructionStep2	Jelentkezzen be a Facebookba, válasszon üzleti fiókot és számot (vagy adjon hozzá újat), majd erősítse meg kóddal
+whatsapp.instructionStep3	A szám egyszer kapcsolódik — ugyanazt használjuk ügyfélértesítésekhez; térjen vissza ide, és kapcsolja be az automatikus válaszadót
+whatsapp.connectButton	WhatsApp kapcsolása
+whatsapp.connectedToast	A WhatsApp-szám kapcsolódott
+whatsapp.connectErrorToast	A WhatsApp-szám kapcsolása nem sikerült
+whatsapp.disconnect	Kapcsolat bontása
+whatsapp.disconnectedToast	A WhatsApp lekapcsolódott
+whatsapp.disconnectConfirmTitle	Bontja a WhatsApp kapcsolatát?
+whatsapp.disconnectConfirmMessage	A szám a stúdió értesítéseiről és integrációiról is lekapcsolódik.
+history.title	Csevegési előzmények
+history.empty	Kezdje el az első beszélgetést
+history.today	Ma
+history.yesterday	Tegnap
+history.earlier	Korábban
+history.messagesCount_one	{{count}} üzenet
+history.messagesCount_other	{{count}} üzenet
+history.deleteConfirmTitle	Törli ezt a csevegést?
+history.deleteConfirmMessage	A beszélgetés összes üzenete végleg törlődik.
+actions.newChat	Új csevegés
+actions.deleteChat	Csevegés törlése
+actions.confirmTitle	Művelet megerősítése
+actions.confirm	Megerősítés
+actions.cancel	Mégse
+actions.cancelled	A művelet megszakítva.
+actions.done	Elkészült: {{date}}
+actions.effect	Mi változik
+actions.undo	Visszavonás
+actions.undoTitle	Visszavonja ezt a műveletet?
+actions.undoMessage	Visszaállítom a végrehajtott műveletet: {{action}}. Az ügyfelek által már lefoglalt órák megmaradnak — ezeket csak ember távolíthatja el.
+actions.args.lesson_id	Óra
+actions.args.client_id	Ügyfél
+actions.args.reservation_id	Foglalás
+actions.args.alternate_with	Váltás ezzel
+actions.args.service_id	Szolgáltatás
+actions.args.teacher_id	Edző
+actions.args.hall_id	Terem
+actions.args.start_time	Kezdés
+actions.args.duration_min	Időtartam, perc
+actions.args.total_spots	Helyek
+actions.args.price	Ár
+actions.args.name	Keresztnév
+actions.args.last_name	Vezetéknév
+actions.args.phone	Telefon
+actions.args.email	E-mail
+actions.args.city	Város
+actions.args.birth_date	Születési dátum
+actions.args.source	Forrás
+actions.args.frozen	Felfüggesztve
+actions.args.date_from	Ettől
+actions.args.date_to	Eddig
+actions.args.weekdays	A hét napjai
+actions.args.time_from	Ettől
+actions.args.time_to	Eddig
+actions.args.break_at	Szünet ekkor
+actions.args.break_min	Szünet, perc
+actions.args.extend_hours	Az edző munkaidejének bővítése
+actions.args.salary	Fizetés
+actions.args.access_role	Hozzáférés
+actions.args.department	Pozíció
+actions.args.password	Munkatársi jelszó
+actions.args.rate	Díjazás
+actions.args.rate_type	Fizetési típus
+actions.args.service_ids	Szolgáltatások
+actions.args.schedule	Időbeosztás
+actions.bool.yes	igen
+actions.bool.no	nem
+settings.title	AI-beállítások
+settings.model	Modell
+settings.language	Nyelv
+models.comingSoon	Hamarosan
+models.velora-3.5	Velora AI 3.5
+languages.auto	Automatikus
+languages.ru	Orosz
+languages.en	Angol
+languages.uk	Ukrán
+languages.cs	Cseh
+languages.de	Német
+chat.thinking	A Velora AI gondolkodik
+chat.thinkingAnswer	A Velora AI átgondolja a választ
+chat.readyTitle	A Velora AI készen áll a segítségre
+chat.thinkingTitle	A Velora AI gondolkodik...
+chat.readySubtitle	Tegyen fel kérdést, vagy válasszon javaslatot
+chat.thinkingSubtitle	A kérés feldolgozása folyamatban
+chat.placeholder	Írjon üzenetet...
+chat.drawerPlaceholder	Kérdezzen bármit...
+chat.navbarPlaceholder	Kérdezze az AI-t, vagy adjon feladatot...
+chat.enterToSend	Küldés Enterrel
+chat.shiftEnterNewline	Új sor Shift+Enterrel
+chat.aiDisclaimer	A Velora AI hibázhat. Ellenőrizze a fontos információkat.
+chat.continueInChat	Folytatás a csevegésben →
+chat.emptyTitle	Hogyan segíthetek?
+chat.emptySubtitle	Kérdezzen bármit a stúdiójáról, az ügyfeleiről vagy a vállalkozásáról
+chat.charCount_one	{{count}} / 4000 karakter
+chat.charCount_other	{{count}} / 4000 karakter
+chat.suggestions.revenue	Mutasd e hónap bevételi statisztikáit
+chat.suggestions.sms	Írj SMS-emlékeztetőt egy időpontról
+chat.suggestions.promo	Ötletek nyári promócióhoz
+chat.suggestions.retention	Hogyan javíthatom az ügyfélmegtartást?
+chat.drawerSuggestions.revenueAnalysis	Bevételelemzés
+chat.drawerSuggestions.emailTemplate	E-mail-sablon
+chat.drawerSuggestions.promoIdeas	Promóciós ötletek
+chat.drawerSuggestions.clientReport	Ügyféljelentés
+drawer.historyBack	Csevegések
+drawer.historyLabel	Előzmények
+agents.title	AI-ügynökök
+agents.info.title	Mik az AI-ügynökök?
+agents.info.lead	Asszisztens, amely válaszol az ügyfeleknek a stúdió üzenetküldőiben, amikor Ön elfoglalt.
+agents.info.b1	Éjjel-nappal válaszol — senki sem vár adminisztrátorra
+agents.info.b2	Ismeri a stúdió időbeosztását, szolgáltatásait és árait
+agents.info.b3	Ön határozza meg a válaszok hangnemét és hosszát
+agents.info.note	A csatorna a beállításokban való kapcsolás után kezd működni
+agents.activeCount	{{active}} / {{total}}
+agents.stateOn	Válaszol
+agents.stateOffline	Nincs kapcsolódva
+agents.configureButton	Ügynökök beállítása
+agents.enable	Engedélyezés
+agents.disable	Letiltás
+agents.modalTitle	AI-ügynök beállítása
+agents.modalSubtitle	Automatikus válaszok üzenetküldőkben
+agents.tabPrompt	Rendszerutasítás
+agents.statusDisabled	Letiltva
+agents.statHandled	Kezelt
+agents.statRating	Értékelés
+agents.styleTitle	Válaszstílus
+agents.styleAllChannels	minden csatornára érvényes
+agents.toneLabel	A válasz hangneme
+agents.tone.friendly	Barátságos
+agents.tone.formal	Hivatalos
+agents.tone.neutral	Semleges
+agents.maxLengthLabel	Válasz maximális hossza (karakter)
+agents.maxLengthError	Adjon meg 50 és 4000 közötti számot
+agents.offHoursLabel	Automatikus válasz csak munkaidőn kívül
+agents.promptHint	Ez a szöveg határozza meg az ügynök személyiségét — hogyan kommunikál, mit tud, és milyen témákat kerül.
+agents.promptPlaceholder	Ön egy udvarias stúdióasszisztens...
+agents.promptCount_one	{{count}} / 2000 karakter
+agents.promptCount_other	{{count}} / 2000 karakter
+agents.tgChannelInactive	A Telegram-csatorna ki van kapcsolva az Online foglalásban — a bot nem kap üzeneteket, így az ügynök hallgat.
+errors.tg_token_required	Először kapcsoljon Telegram-botot — még nincs mentett token.
+errors.ig_not_connected	Az Instagram még nincs kapcsolva.
+errors.wa_not_connected	A WhatsApp-szám még nincs kapcsolva — kapcsolja az Értesítéseknél.
+errors.assistant_unavailable	Az asszisztens átmenetileg nem érhető el — próbálja újra később.
+errors.trial_exhausted	Elhasználta az AI-asszisztens mind az 500 próbakérését. A folytatáshoz válasszon fizetős csomagot.
+errors.quota_exceeded	Elhasználta a csomag összes AI-kérését. A keret a hónap elején újraindul — vagy váltson magasabb csomagra.
+toasts.settingsSaved	Beállítások mentve
+toolStatus.add_client_note	Jegyzet írása…
+toolStatus.add_client_tag	Címke hozzáadása…
+toolStatus.add_loyalty_points	Pontok hozzáadása…
+toolStatus.book_client	Óra foglalása…
+toolStatus.cancel_booking	Foglalás lemondása…
+toolStatus.pay_booking	Óra fizetésének rögzítése…
+toolStatus.clear_schedule	Időbeosztás törlése…
+toolStatus.create_account	Fiók létrehozása…
+toolStatus.create_branch	Telephely létrehozása…
+toolStatus.create_client	Ügyfél létrehozása…
+toolStatus.create_counterparty	Partner létrehozása…
+toolStatus.create_hall	Terem létrehozása…
+toolStatus.create_lesson	Óra létrehozása…
+toolStatus.create_operation	Tranzakció rögzítése…
+toolStatus.create_package	Bérlet létrehozása…
+toolStatus.create_promo	Promóciós kód létrehozása…
+toolStatus.create_service	Szolgáltatás létrehozása…
+toolStatus.create_staff	Csapattag hozzáadása…
+toolStatus.default	Feldolgozás…
+toolStatus.delete_client	Ügyfél törlése…
+toolStatus.delete_staff	Csapattag eltávolítása…
+toolStatus.fill_schedule	Időbeosztás feltöltése…
+toolStatus.find_clients	Ügyfelek keresése…
+toolStatus.forget_fact	Információ elfelejtése…
+toolStatus.freeze_client	Ügyfél felfüggesztése…
+toolStatus.get_booking_settings	Foglalási szabályok ellenőrzése…
+toolStatus.get_catalog_settings	Bérletbeállítások ellenőrzése…
+toolStatus.get_client	Ügyfélkártya megnyitása…
+toolStatus.get_client_events	Ügyféltörténet olvasása…
+toolStatus.get_inactive_clients	Inaktív ügyfelek keresése…
+toolStatus.get_client_notes	Ügyféljegyzetek olvasása…
+toolStatus.get_client_subscription	Ügyfélbérlet ellenőrzése…
+toolStatus.get_delivery_log	Kézbesítési napló ellenőrzése…
+toolStatus.get_finance_goals	Pénzügyi célok ellenőrzése…
+toolStatus.get_finance_summary	Pénzügyek ellenőrzése…
+toolStatus.get_lesson	Óra megnyitása…
+toolStatus.get_loyalty_programs	Hűségprogramok ellenőrzése…
+toolStatus.get_loyalty_summary	Hűség ellenőrzése…
+toolStatus.get_notification_matrix	Értesítések ellenőrzése…
+toolStatus.get_payroll	Bérszámfejtés számítása…
+toolStatus.get_rooms	Termek ellenőrzése…
+toolStatus.get_schedule	Időbeosztás ellenőrzése…
+toolStatus.get_segments	Ügyfélszegmensek ellenőrzése…
+toolStatus.get_services	Szolgáltatások ellenőrzése…
+toolStatus.get_staff	Csapat ellenőrzése…
+toolStatus.get_staff_profile	Csapattag-kártya megnyitása…
+toolStatus.get_stats	Számok feldolgozása…
+toolStatus.get_team_report	Visszatérés mérése edzőnként…
+toolStatus.get_studio_facts	A stúdióról tudottak felidézése…
+toolStatus.get_today_agenda	Mai nap ellenőrzése…
+toolStatus.issue_certificate	Tanúsítvány kiállítása…
+toolStatus.list_operations	Bevételek és kiadások ellenőrzése…
+toolStatus.open_ui	Képernyő megnyitása…
+toolStatus.remember_fact	Megjegyzés…
+toolStatus.remove_client_tag	Címke eltávolítása…
+toolStatus.sell_subscription	Bérlet eladása…
+toolStatus.set_client_discount	Kedvezmény beállítása…
+toolStatus.set_staff_day	Nap jelölése az időbeosztásban…
+toolStatus.set_staff_schedule	Időbeosztás beállítása…
+toolStatus.toggle_notification_event	Értesítés váltása…
+toolStatus.ui_section	Szakasz működésének ellenőrzése…
+toolStatus.update_booking_rules	Foglalási szabályok frissítése…
+toolStatus.update_client	Ügyféladatok frissítése…
+toolStatus.update_lesson	Óra frissítése…
+toolStatus.update_service	Szolgáltatás frissítése…
+toolStatus.update_staff	Csapattag frissítése…
+quota.trialLow	Kevés próbakérés maradt.
+quota.label	AI-asszisztens kérései
+quota.value	{{used}} / {{limit}}
+quota.low	Közel van a havi korláthoz.
+quota.upgrade	Csomag választása
+quota.monthPeriod	Naptári hónaponként (UTC)
+quota.trialPeriod	A teljes próbaidőszakra
+rating.up	Jó válasz
+rating.down	Rossz válasz
+memory.title	Az asszisztens emlékszik
+memory.forget	Elfelejtés
+memory.forgetConfirmTitle	Elfelejti ezt az információt?
+memory.forgetConfirmMessage	Az asszisztens nem fogja többé használni a válaszokban.
+memory.deleted	Információ eltávolítva
+plan.pages.who	Ki és mi
+plan.pages.when	Mikor
+plan.pages.check	Ellenőrzés
+plan.stepOf	{{current}}. lépés / {{total}}
+plan.next	Tovább
+plan.back	Vissza
+plan.confirm	Jóváhagyás
+plan.confirmDanger	Jóváhagyás
+plan.choose	Válasszon
+plan.nothingFound	Nincs találat
+plan.nothingToFill	Itt nincs mit kitölteni — folytassa közvetlenül.
+plan.fromStep	létrehozva a(z) {{n}}. lépésben
+plan.values.group	csoport
+plan.values.individual	egyéni
+plan.values.trainer	edző
+plan.values.admin	adminisztrátor
+plan.values.owner	tulajdonos
+plan.values.hourly	óránként
+plan.values.percent	% a bevételből
+plan.values.fixed	óránként
+plan.title_one	Jóváhagyás — {{count}} művelet
+plan.title_other	Jóváhagyás — {{count}} művelet
+plan.stillEmpty_one	{{count}} mező maradt
+plan.stillEmpty_other	{{count}} mező maradt

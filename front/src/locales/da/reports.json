@@ -1,0 +1,611 @@
+{
+  "tabs": {
+    "overview": "Oversigt",
+    "sales": "Salg",
+    "clients": "Kunder",
+    "team": "Team",
+    "schedule": "Kalender"
+  },
+  "toolbar": {
+    "period": {
+      "day": "Dag",
+      "week": "Uge",
+      "month": "Måned",
+      "year": "År",
+      "custom": "Brugerdefineret"
+    },
+    "vsPrevious": "sammenlignet med forrige periode: {{from}}–{{to}}",
+    "allBranches": "Alle afdelinger",
+    "allHalls": "Alle {{spacePlural}}",
+    "allTrainers": "Alle trænere",
+    "allServices": "Alle ydelser",
+    "export": "Eksportér"
+  },
+  "insights": {
+    "title": "Kræver opmærksomhed",
+    "action": "Åbn",
+    "empty": "Alt ser godt ud lige nu — ingen anbefalinger at vise",
+    "revenue_up_clients_down": "Omsætningen stiger, men antallet af aktive kunder falder — undersøg kundefrafald",
+    "clients_at_risk": "{{count}} kunde(r) har ikke deltaget i over 3 uger — risiko for frafald",
+    "lesson_overfull": "\"{{name}}\" {{weekday, weekday}} kl. {{hour}}:00 har været {{pct}} % fyldt tre uger i træk — overvej at tilføje et hold mere",
+    "trial_low_conversion": "Kun {{pct}} % af {{buyers}} prøveforløbskøbere købte efterfølgende et abonnement — overvej en kampagne",
+    "fastest_growing_product": "\"{{name}}\" vokser hurtigst: +{{pct}} % sammenlignet med forrige periode",
+    "renewals_low": "Kun {{pct}} % af kunder med et udløbet abonnement fornyer — overvej en påmindelse",
+    "new_no_second_visit": "{{count}} nye kunder kom én gang og bookede aldrig igen — overvej en påmindelse",
+    "subs_expiring_week": "{{count}} kunder har et abonnement, der udløber i denne uge — overvej at tilbyde fornyelse",
+    "vip_inactive": "VIP-kunden \"{{name}}\" har ikke besøgt jer i {{days}} dage — overvej en personlig besked",
+    "high_return_free_evenings": "\"{{name}}\" har en høj tilbagevendingsrate ({{return_pct}} %), men ledige aftener — tilføj et hold",
+    "trainer_overloaded": "\"{{name}}\" er belastet {{load_pct}} % — overvej at omfordele kalenderen",
+    "low_rating": "\"{{name}}\" har en vurdering på {{rating}} — det er værd at se nærmere på",
+    "slot_chronic_low": "\"{{name}}\" {{weekday, isodowWeekday}} kl. {{hour}}:00 har været {{pct}} % fyldt i {{weeks}} uger i træk — flyt eller aflys det",
+    "hall_idle_evenings": "\"{{name}}\" står tomt {{pct}} % af aftentimerne — overvej at planlægge et hold",
+    "slot_overfull": "Tidspunktet {{weekday, isodowWeekday}} kl. {{hour}}:00 har været {{pct}} % fyldt tre uger i træk — overvej at tilføje et hold mere",
+    "loss_hotspot": "{{cancels}} hold blev aflyst {{label}} i denne periode — de fleste aflysninger samler sig om denne time"
+  },
+  "table": {
+    "loading": "Indlæser…",
+    "noProduct": "Intet produkt"
+  },
+  "empty": {
+    "noData": {
+      "title": "Der er ikke noget her endnu",
+      "text": "Der blev ikke registreret aktivitet i den valgte periode. Udvid perioden, eller begynd med at booke en kunde i Journalen.",
+      "widen": "Vis året"
+    },
+    "noRevenue": "Ingen betalinger i denne periode",
+    "noSales": "Intet salg i dette udsnit",
+    "noProducts": "Ingen pakker eller ydelser solgt endnu",
+    "noLessons": "Ingen hold i denne periode",
+    "noTrainerLessons": "Denne træner har ikke afholdt nogen hold endnu",
+    "noRows": "Ingen poster i dette udsnit",
+    "noLosses": "Ingen aflysninger eller udeblivelser i denne periode"
+  },
+  "overview": {
+    "kpi": {
+      "revenue": "Omsætning",
+      "profit": "Overskud",
+      "attendance": "Fremmøde",
+      "activeClients": "Aktive kunder",
+      "fillRate": "Belægningsgrad"
+    },
+    "chart": {
+      "metric": {
+        "revenue": "Omsætning",
+        "profit": "Overskud",
+        "attendance": "Fremmøde",
+        "new_clients": "Nye kunder",
+        "fill_rate": "Belægningsgrad"
+      }
+    },
+    "revenueStructure": {
+      "title": "Omsætningsstruktur"
+    },
+    "category": {
+      "subscriptions": "Abonnementer",
+      "services": "Ydelser",
+      "certificates": "Gavekort",
+      "rent": "Leje",
+      "salary": "Løn",
+      "refunds": "Refunderinger"
+    },
+    "clientDynamics": {
+      "title": "Kundedynamik",
+      "new": "Nye",
+      "returned": "Vendte tilbage",
+      "lost": "Mistede"
+    },
+    "drilldown": {
+      "title": "Transaktion",
+      "category": "Kategori",
+      "amount": "Beløb",
+      "lesson": "Hold",
+      "time": "Tid",
+      "occupancy": "Belægning",
+      "date": "Dato",
+      "method": "Metode",
+      "trainer": "Træner",
+      "rowsCount": "poster",
+      "search": "Søg i tabellen",
+      "shownOf": "Viser {{shown}} af {{total}}",
+      "noMatches": "Intet fundet for “{{query}}”",
+      "reset": "Nulstil",
+      "export": "Eksportér CSV",
+      "subtitle": {
+        "money": "Transaktioner i dette udsnit",
+        "lessons": "Hold i dette udsnit"
+      },
+      "hint": {
+        "operations": "Klik på en række for at åbne transaktionen i Økonomi",
+        "lessons": "Klik på en række for at åbne den pågældende dag i Journalen"
+      },
+      "stat": {
+        "net": "Netto",
+        "income": "Indtægt",
+        "expense": "Udgift",
+        "operations": "Transaktioner",
+        "topCategory": "Største kategori",
+        "lessons": "Hold",
+        "booked": "Booket af pladser",
+        "avgFill": "Gennemsnitlig belægning",
+        "trainers": "Trænere",
+        "cancelled": "Aflyst"
+      }
+    }
+  },
+  "sales": {
+    "kpi": {
+      "revenue": "Omsætning",
+      "salesCount": "Salg",
+      "avgCheck": "Gennemsnitligt køb",
+      "repeatShare": "Andel genkøb",
+      "renewals": "Fornyelsesrate"
+    },
+    "chart": {
+      "title": "Salg"
+    },
+    "incomeOperations": "Indtægtstransaktioner",
+    "breakdown": {
+      "byCategory": "Hvad de køber",
+      "byMethod": "Hvordan de betaler",
+      "buyerType": "Hvem køber",
+      "new": "Nye",
+      "returning": "Tilbagevendende",
+      "noClient": "Ingen kunde"
+    },
+    "method": {
+      "card": "Kort",
+      "cash": "Kontant",
+      "qr": "QR-kode",
+      "transfer": "Overførsel"
+    },
+    "products": {
+      "title": "Produkter",
+      "name": "Produkt",
+      "sold": "Solgt",
+      "revenue": "Omsætning",
+      "avgCheck": "Gennemsnitligt køb",
+      "repeatShare": "Andel genkøb",
+      "trend": "Udvikling",
+      "trendHint": "Sammenlignet med den foregående periode af samme længde"
+    }
+  },
+  "clients": {
+    "kpi": {
+      "new": "Nye",
+      "returned": "Vendte tilbage",
+      "lost": "Mistede",
+      "retention": "Fastholdelse",
+      "avgValue": "Kundeværdi"
+    },
+    "chart": {
+      "title": "Nye kontra tilbagevendende",
+      "new": "Nye",
+      "returned": "Tilbagevendende"
+    },
+    "riskTitle": "Risikosegmenter",
+    "loyalTitle": "Loyale",
+    "list": "Liste",
+    "campaign": "Start kampagne",
+    "exportList": "Eksportér liste",
+    "emptySegment": "Segmentet \"{{name}}\" har ingen kunder lige nu",
+    "segments": {
+      "new": {
+        "name": "Nye kunder",
+        "desc": "Registreret i den valgte periode"
+      },
+      "returned": {
+        "name": "Tilbagevendende kunder",
+        "desc": "Besøgte både denne og den foregående periode"
+      },
+      "lost": {
+        "name": "Mistede kunder",
+        "desc": "Besøgte i forrige periode, men kom ikke tilbage i denne"
+      },
+      "active": {
+        "name": "Aktive kunder",
+        "desc": "Kom til mindst ét hold i den valgte periode"
+      },
+      "at_risk": {
+        "name": "På kanten",
+        "desc": "Aktive, men intet besøg i 21+ dage"
+      },
+      "vip_idle": {
+        "name": "Inaktive VIP'er",
+        "desc": "VIP-kunder uden besøg i 14+ dage"
+      },
+      "expiring_subscription": {
+        "name": "Abonnement udløber",
+        "desc": "≤2 hold tilbage eller ≤7 dage tilbage"
+      },
+      "lost_newcomers": {
+        "name": "Vendte aldrig tilbage",
+        "desc": "Kom én gang, væk i 14+ dage"
+      },
+      "upsell_candidates": {
+        "name": "Klar til opgradering",
+        "desc": "8+ besøg denne måned, ingen pakke"
+      },
+      "frequent": {
+        "name": "Hyppige",
+        "desc": "8+ besøg i perioden"
+      },
+      "high_ltv": {
+        "name": "Høj LTV",
+        "desc": "Øverste 10 % efter samlet forbrug"
+      },
+      "referrers": {
+        "name": "Henvisere",
+        "desc": "Gennemførte en henvisning i perioden"
+      }
+    },
+    "listSearch": "Søg efter navn eller telefon",
+    "shownOf": "Viser {{shown}} af {{total}}",
+    "noMatches": "Ingen fundet for \"{{query}}\"",
+    "resetSearch": "Nulstil",
+    "neverVisited": "Aldrig besøgt",
+    "valueLabel": {
+      "visits": "Besøg",
+      "spent": "Forbrugt",
+      "daysIdle": "Dage inaktiv",
+      "remaining": "Hold tilbage",
+      "value": "Værdi"
+    },
+    "relative": {
+      "today": "I dag",
+      "daysAgo_one": "for {{count}} dag siden",
+      "daysAgo_other": "for {{count}} dage siden"
+    }
+  },
+  "team": {
+    "kpi": {
+      "lessonsCount": "Hold",
+      "revenuePerHour": "Omsætning/time",
+      "avgFillPct": "Belægningsgrad",
+      "cancelNoshowPct": "Aflysninger/udeblivelser",
+      "avgRating": "Vurdering"
+    },
+    "table": {
+      "title": "Trænere",
+      "trainer": "Træner",
+      "lessons": "Hold",
+      "fillPct": "Belægningsgrad",
+      "attendance": "Fremmøde",
+      "revenue": "Omsætning",
+      "returnRate": "Tilbagevendingsrate",
+      "cancels": "Aflysninger",
+      "fillPctHint": "Fyldte pladser af det planlagte",
+      "returnRateHint": "Kunder, der bookede hos denne træner igen",
+      "cancelsHint": "Aflyste hold og kunders udeblivelser",
+      "ratingHint": "Den gennemsnitlige vurdering kunder gav denne træners hold"
+    },
+    "drawer": {
+      "revenueByWeek": "Omsætning pr. uge",
+      "loadByWeekday": "Belastning efter ugedag",
+      "loadByHour": "Belastning efter tidspunkt",
+      "loadDim": {
+        "weekday": "Efter dag",
+        "hour": "Efter time"
+      },
+      "schedule": {
+        "title": "Kalender",
+        "empty": "Ingen hold i denne periode"
+      },
+      "topLessons": "Foretrukne hold",
+      "returnBlock": "Kundernes tilbagevenden",
+      "returnOf": "{{returned}} af {{total}} kunder vendte tilbage ({{pct}} %)",
+      "openProfile": "Åbn profil",
+      "held": "Afholdt",
+      "attendance": "Fremmøde"
+    },
+    "weekdays": [
+      "Søn",
+      "Man",
+      "Tir",
+      "Ons",
+      "Tor",
+      "Fre",
+      "Lør"
+    ]
+  },
+  "schedule": {
+    "weekdaysMonFirst": [
+      "Man",
+      "Tir",
+      "Ons",
+      "Tor",
+      "Fre",
+      "Lør",
+      "Søn"
+    ],
+    "kpi": {
+      "avgFillPct": "Belægningsgrad",
+      "freeSpots": "Ledige pladser",
+      "cancels": "Aflysninger",
+      "noshows": "Udeblivelser",
+      "lostRevenue": "Mistet omsætning"
+    },
+    "heatmap": {
+      "title": "Belastning efter dag og time",
+      "legend": "Belægningsgrad:",
+      "tooltip": "{{lessons}} hold · {{attendance}} deltog · {{pct}} %",
+      "empty": "Ingen hold"
+    },
+    "slices": {
+      "topProfitable": "Mest indbringende",
+      "topFilled": "Mest fyldte",
+      "chronicLow": "Kronisk underfyldte",
+      "halls": "Udnyttelse: {{spacePlural}}",
+      "held": "{{count}} afholdt",
+      "weeks": "{{count}} uger",
+      "move": "Flyt",
+      "cancel": "Aflys",
+      "eveningIdle": "aften tom {{pct}} %"
+    },
+    "losses": {
+      "title": "Aflysninger og udeblivelser",
+      "dim": {
+        "hour": "Efter tidspunkt",
+        "service": "Efter ydelse",
+        "trainer": "Efter træner"
+      },
+      "cancels_one": "{{count}} aflysning",
+      "cancels_other": "{{count}} aflysninger",
+      "noshows_one": "{{count}} udeblivelse",
+      "noshows_other": "{{count}} udeblivelser",
+      "lostSpots_one": "−{{count}} plads",
+      "lostSpots_other": "−{{count}} pladser"
+    },
+    "status": {
+      "confirmed": "Bekræftet",
+      "pending": "Afventer",
+      "cancelled": "Aflyst"
+    },
+    "slot": {
+      "summary": "for {{from}} — {{to}}",
+      "lessonsCount": "Hold i alt"
+    }
+  },
+  "export": {
+    "csv": "Download CSV"
+  },
+  "scopeNote": {
+    "label": "Hele studiet",
+    "money": "Filtrene Afdeling og {{space}} påvirker ikke beløb — en betaling er ikke knyttet til dem",
+    "clientBase": "Træner, {{space}}, afdeling og ydelse ændrer ikke denne måling — en kunde er ikke knyttet til dem"
+  },
+  "descriptions": {
+    "overview": {
+      "metric": {
+        "revenue": "Alle penge, der kom ind i studiet i perioden",
+        "profit": "Det, der er tilbage efter periodens udgifter",
+        "attendance": "Hold, som kunderne faktisk deltog i",
+        "new_clients": "Kunder registreret i denne periode",
+        "fill_rate": "Hvor fyldte holdene er: bookede pladser ud af tilgængelige pladser"
+      },
+      "revenueStructure": "Hvad din omsætning består af i denne periode",
+      "clientDynamics": "Hvor mange der kom første gang, vendte tilbage eller holdt op med at komme"
+    },
+    "sales": {
+      "chart": "Omsætning og antal køb pr. dag",
+      "byCategory": "Hvert produkts andel af omsætningen",
+      "byMethod": "Hvordan omsætningen fordeler sig efter betalingsmetode",
+      "buyerType": "Hvor meget omsætning der kommer fra nye kunder kontra faste kunder",
+      "products": "Hvert produkt: hvor mange der er solgt, for hvor meget, og om salget vokser"
+    },
+    "clients": {
+      "chart": "Hvor mange kunder der kom første gang, og hvor mange der vendte tilbage, pr. uge",
+      "riskSegments": "Kunder, du kan miste, hvis du ikke kontakter dem nu",
+      "loyalSegments": "Dem der besøger mest, bruger mest og tager venner med"
+    },
+    "team": {
+      "trainers": "Sammenligning efter belastning, omsætning og kundernes tilbagevendingsrate",
+      "loadWeekday": "Hvilke ugedage træneren har travlt, og hvornår vedkommende er ledig",
+      "loadHour": "Hvornår deres hold fyldes, og hvornår de står tomme",
+      "schedule": "Alle trænerens hold i den valgte periode"
+    },
+    "schedule": {
+      "heatmap": "Hvor kalenderen er overbooket, og hvor den er tom",
+      "topProfitable": "Tidspunkterne i kalenderen, der indbringer mest",
+      "topFilled": "Tidspunkterne som kunderne booker mest ivrigt",
+      "chronicLow": "Tidspunkter, der i ugevis har været fyldt mindre end en tredjedel",
+      "halls": "Hvor stor en del af tiden dine {{spacePlural}} faktisk er i brug",
+      "losses": "Hvor studiet mister pladser: aflyste hold eller kunder, der udebliver"
+    }
+  },
+  "formulas": {
+    "salesCount": {
+      "title": "Salg",
+      "text": "Hvor mange gange kunderne betalte dig i denne periode. Én person, der betaler flere gange, tæller som separate salg."
+    },
+    "revenue": {
+      "title": "Omsætning",
+      "text": "Alle penge, der kom ind i studiet i denne periode, efter betalingsdato. Pakker, enkelttimer, gavekort og varer — alt sammen."
+    },
+    "profit": {
+      "title": "Overskud",
+      "text": "Det, der er tilbage efter denne periodes udgifter: husleje, løn og materialer. Det er dit faktiske overskud."
+    },
+    "attendance": {
+      "title": "Fremmøde",
+      "text": "Hvor mange besøg kunderne faktisk gennemførte. Kun hold markeret som deltog tælles med."
+    },
+    "bookings": {
+      "title": "Bookinger",
+      "text": "Hvor mange bookinger kunderne lavede til hold. Aflyste bookinger tælles ikke med."
+    },
+    "noshow": {
+      "title": "Udeblivelse",
+      "text": "En kunde bookede, holdet blev afholdt, og kunden mødte ikke op. Hver udeblivelse er en plads, som en anden kunne have taget."
+    },
+    "activeClients": {
+      "title": "Aktive kunder",
+      "text": "Hvor mange forskellige personer der kom mindst én gang i perioden. Hver kunde tæller én gang, uanset hvor mange besøg de havde."
+    },
+    "occupancy": {
+      "title": "Belægning",
+      "text": "Hvor fyldte dine hold er: fyldte pladser ud af det, du planlagde. 100 % betyder, at der ikke er mere plads."
+    },
+    "avgCheck": {
+      "title": "Gennemsnitligt køb",
+      "text": "Hvad én betaling i gennemsnit indbringer. Tallet stiger, når kunder køber længere pakker eller tilkøb."
+    },
+    "retention": {
+      "title": "Fastholdelse",
+      "text": "Hvor mange af sidste periodes kunder der kom igen i denne periode. Det viser, om du fastholder folk eller starter fra nul hver måned."
+    },
+    "newClients": {
+      "title": "Nye kunder",
+      "text": "Personer, der dukkede op i din kundebase for første gang i denne periode."
+    },
+    "returning": {
+      "title": "Tilbagevendende",
+      "text": "Kunder, der har besøgt før og kom igen i denne periode."
+    },
+    "lost": {
+      "title": "Mistede",
+      "text": "Besøgte i sidste periode og er ikke kommet én gang i denne. Det er stadig værd at kontakte dem."
+    },
+    "clientValue": {
+      "title": "Kundeværdi",
+      "text": "Hvad én kunde i gennemsnit indbringer i denne periode."
+    },
+    "repeatPurchaseShare": {
+      "title": "Andel genkøb",
+      "text": "Andelen af kunder, der købte hos dig mere end én gang. Jo højere den er, jo stærkere er vanen med at vende tilbage."
+    },
+    "renewalRate": {
+      "title": "Fornyelsesrate",
+      "text": "Hvor mange kunder der købte en ny pakke, efter den forrige var udløbet."
+    },
+    "revenuePerHour": {
+      "title": "Omsætning pr. time (træner)",
+      "text": "Hvor mange penge en times arbejde fra en træner indbringer. Det lader dig sammenligne trænere fair — én kan have færre hold, men hvert hold giver mere."
+    },
+    "trainerReturnRate": {
+      "title": "Tilbagevendingsrate (træner)",
+      "text": "Andelen af en træners kunder, der bookede hos dem igen."
+    },
+    "missedRevenue": {
+      "title": "Mistet omsætning",
+      "text": "Penge studiet ikke tjente på grund af tomme pladser på tidligere hold: ledige pladser ganget med holdets pris."
+    },
+    "losses": {
+      "title": "Aflysninger og udeblivelser",
+      "text": "En „aflysning” er et aflyst hold; en „udeblivelse” er en kunde, der bookede, men ikke kom. Opdelingerne efter tidspunkt/ydelse/træner bruger de samme filtre som fanen og stemmer med KPI'erne i overskriften."
+    },
+    "lessonRevenue": {
+      "title": "Holdomsætning",
+      "text": "Et groft skøn over et holds omsætning: antal deltagere ganget med prisen. Betalinger er ikke knyttet til et bestemt hold, så dette er et overslag, ikke et præcist tal."
+    },
+    "filtersScope": {
+      "title": "Filtrenes omfang",
+      "text": "Filtrene Afdeling og {{space}} gælder kun holdmålinger. Betalinger har ingen sådan kobling, så beløb vises for hele studiet."
+    },
+    "avgValue": {
+      "title": "Kundeværdi",
+      "text": "Hvad én kunde i gennemsnit indbringer i denne periode."
+    },
+    "cancelNoshow": {
+      "title": "Aflysninger og udeblivelser",
+      "text": "Andelen af afbrudte hold: aflysninger og udeblivelser ud af alt det planlagte."
+    },
+    "avgRating": {
+      "title": "Gennemsnitlig vurdering",
+      "text": "Den gennemsnitlige vurdering kunder gav denne træners hold."
+    },
+    "teamScope": {
+      "title": "Dataomfang",
+      "text": "Dette tæller kun omsætning knyttet til en bestemt træner, så summen for alle trænere kan være lavere end studiets samlede omsætning."
+    },
+    "lessonsCount": {
+      "title": "Hold",
+      "text": "Hvor mange hold trænerne afholdt i denne periode."
+    },
+    "load": {
+      "title": "Belastning",
+      "text": "Hvor fyldt en træners dag er: deres bookede timer ud af studiets åbningstid."
+    },
+    "weeklyClients": {
+      "title": "Nye og tilbagevendende",
+      "text": "Pr. uge: hvor mange der kom til dig for første gang, og hvor mange der kom igen. Et sundt studie vokser på begge kurver."
+    },
+    "byCategory": {
+      "title": "Omsætning efter kategori",
+      "text": "Hvad du faktisk tjener på: pakker, enkelttimer, gavekort og varer."
+    },
+    "byMethod": {
+      "title": "Betalingsmetoder",
+      "text": "Hvordan kunder betaler. Det hjælper dig med at se, om du har brug for kortbetaling, og hvor mange penge der går uden om kassen."
+    },
+    "buyerType": {
+      "title": "Hvem betaler",
+      "text": "Nye kunder kontra faste kunder. Hvis næsten al omsætning kommer fra nye kunder, fastholder studiet ikke folk."
+    },
+    "products": {
+      "title": "Hvad der sælger",
+      "text": "Alle pakker og ydelser i perioden: hvor mange der er solgt, for hvor meget, og om salget vokser."
+    },
+    "topProfitable": {
+      "title": "Mest indbringende tidspunkter",
+      "text": "Tidspunkterne i kalenderen, der indbringer mest. Læg dine bedste trænere der."
+    },
+    "topFilled": {
+      "title": "Mest fyldte tidspunkter",
+      "text": "Tidspunkterne som kunderne booker mest ivrigt. Hvis de er helt fyldte, er det værd at tilføje et hold mere."
+    },
+    "chronicLow": {
+      "title": "Kronisk tomme tidspunkter",
+      "text": "Tidspunkter der har været fyldt mindre end en tredjedel i flere uger. Kandidater til at flytte eller fjerne."
+    },
+    "hallUtil": {
+      "title": "Udnyttelse: {{spacePlural}}",
+      "text": "Hvor stor en del af tiden dine {{spacePlural}} faktisk er i brug. Tom tid er husleje, der ikke betaler sig."
+    },
+    "heatmap": {
+      "title": "Belastning efter dag og time",
+      "text": "Farven viser tidspunktets gennemsnitlige belægningsgrad i perioden. Klik på en celle for at se holdene den dag og time."
+    },
+    "riskSegments": {
+      "title": "Risikosegmenter",
+      "text": "Kunder grupperet efter den type risiko, de udgør — at du mister dem, eller den omsætning de ikke skaber. Hvert kort har sin egen begrundelse og et tydeligt næste skridt: skriv til dem, tilbyd fornyelse eller opgradering."
+    },
+    "loyalSegments": {
+      "title": "Loyale",
+      "text": "Kunder, der allerede skaber mest værdi: de kommer oftest, bruger mest eller tager venner med. De er værd at passe på og belønne."
+    },
+    "segment": {
+      "at_risk": {
+        "title": "På kanten",
+        "text": "De plejede at komme regelmæssigt og er nu forsvundet. De kan stadig vindes tilbage med én besked."
+      },
+      "vip_idle": {
+        "title": "Inaktive VIP'er",
+        "text": "Kunder, der har brugt mere end alle andre, men ikke har besøgt jer i et stykke tid."
+      },
+      "expiring_subscription": {
+        "title": "Abonnement udløber",
+        "text": "Disse kunder har 1–2 hold tilbage. Det bedste tidspunkt at tilbyde en fornyelse."
+      },
+      "lost_newcomers": {
+        "title": "Nye kunder, der ikke vendte tilbage",
+        "text": "De kom én gang og forsvandt. Det skyldes ofte det første hold — værd at undersøge."
+      },
+      "upsell_candidates": {
+        "title": "Klar til mere",
+        "text": "De kommer ofte, men køber den enkleste pakke. Det er værd at tilbyde et dyrere abonnement."
+      },
+      "frequent": {
+        "title": "Faste kunder",
+        "text": "De kommer oftere end alle andre. Rygraden i studiets omsætning."
+      },
+      "high_ltv": {
+        "title": "Mest værdifulde",
+        "text": "De har indbragt studiet flere penge end nogen andre, samlet set."
+      },
+      "referrers": {
+        "title": "Tager venner med",
+        "text": "Kunder, hvis anbefalinger har bragt andre mennesker til dig."
+      }
+    }
+  }
+}

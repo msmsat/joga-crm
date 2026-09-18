@@ -1,0 +1,393 @@
+{
+  "legal": {
+    "terms": "Vilkår for bruk",
+    "privacy": "Personvernerklæring"
+  },
+  "tabs": {
+    "plans": "Planer og priser",
+    "invoices": "Betalingshistorikk",
+    "method": "Betalingsmåte"
+  },
+  "tabsShort": {
+    "plans": "Planer",
+    "invoices": "Historikk",
+    "method": "Betaling"
+  },
+  "paymentsHistory": {
+    "title": "Full betalingshistorikk",
+    "subtitle": "Alle fakturaer for dette studioet",
+    "clearFilter": "Tøm",
+    "loadMore": "Last inn mer"
+  },
+  "planNames": {
+    "start": "Start",
+    "pro": "Pro",
+    "business": "Business"
+  },
+  "seats": {
+    "title": "Hvor mange ansatte har studioet?",
+    "hint": "fra {{amount}} per måned",
+    "stepNote": "Hver ekstra plass koster {{amount}} per måned",
+    "unlimitedNote": "Ubegrenset antall ansatte",
+    "perSeat": "Per ansatt"
+  },
+  "limits": {
+    "staff": "Ansatte",
+    "ai": "Velora AI-forespørsler",
+    "unlimited": "Ubegrenset"
+  },
+  "banner": {
+    "trialEnds": "Prøveperioden din slutter {{date}} — velg en plan",
+    "renews": "{{plan}}-abonnementet ditt fornyes {{date}}",
+    "expires": "{{plan}}-abonnementet ditt utløper {{date}}",
+    "choosePlan": "Velg plan",
+    "dismiss": "Lukk",
+    "unpaid": "Planen din er ikke betalt. Betal under Planer og fakturering for å fortsette.",
+    "suspended": "Tilgangen er suspendert fordi planfakturaen er forfalt. Betal den under Planer og fakturering."
+  },
+  "paymentReturn": {
+    "done": "Betalingen er gjennomført — {{plan}}-planen er aktiv.",
+    "processing": "Betalingen behandles — abonnementet ditt aktiveres om noen minutter."
+  },
+  "header": {
+    "eyebrow": "Velora · Fakturering",
+    "title": "Planer og fakturering",
+    "subtitle": "Administrer abonnementet, betalingsmåter og betalingshistorikk",
+    "totalSpent": "Totalt brukt",
+    "monthsWithUs": "Måneder med oss",
+    "saved": "Spart",
+    "nextCharge": "Neste belastning",
+    "currentPlan": "GJELDENDE PLAN",
+    "noPlanName": "Ingen plan",
+    "noPlan": "Ingen aktivt abonnement",
+    "active": "Aktiv",
+    "activeUntil": "Aktiv · til {{date}}",
+    "trialPlanName": "Prøveplan",
+    "trial": "Prøveperiode",
+    "trialUntil": "Prøveperiode · til {{date}}",
+    "expired": "Utløpt",
+    "percentRate": "{{rate}} % av salget",
+    "modePercent": "Prosentplan",
+    "modeFixed": "Fast",
+    "modeCombo": "Kombinert",
+    "unpaid": "Planen er ikke betalt",
+    "awaitingPayment": "Venter på betaling"
+  },
+  "mode": {
+    "title": "Betalingsmodell",
+    "subscription": "Fast abonnement",
+    "percent": "% av salget",
+    "combo": "Fast + % kombinert",
+    "short": {
+      "subscription": "Fast",
+      "percent": "Prosent",
+      "combo": "Kombinert"
+    },
+    "descriptions": {
+      "subscription": "Betal et fast beløp hver måned. Forutsigbart og lønnsomt.",
+      "percent": "Ingen fast avgift: {{rate}} % av hvert salg, også kontantbetalinger.",
+      "combo": "Halvt abonnement + {{rate}} % av hvert salg, også kontantbetalinger."
+    },
+    "badges": {
+      "popular": "Populær",
+      "flexible": "Fleksibel"
+    },
+    "percentCard": {
+      "title": "«3 % av salget»-modellen",
+      "description": "Betal bare når du tjener: 3 % av hvert salg, uten fast abonnementsavgift. Nettbetalinger deles straks; kontantbetalinger og innskudd samles og kommer som én faktura hver måned.",
+      "noFixed": "Ingen fast avgift",
+      "payForResult": "Betal for resultatet",
+      "oneClick": "Aktivering med ett klikk",
+      "cta": "Aktiver 3 %-modellen",
+      "ctaShort": "Aktiver 3 %"
+    },
+    "activateSuccess": "Betalingsmodellen er oppdatert",
+    "activateError": "Kunne ikke oppdatere betalingsmodellen",
+    "alreadyActive": "Denne betalingsmodellen er allerede aktiv — nedenfor kan du fornye eller bytte plan",
+    "confirmSwitchTitle": "Bytte betalingsmodell?",
+    "confirmSwitchMessage": "Abonnementet ditt er aktivt. Byttet trer i kraft umiddelbart, og resten av den betalte perioden GÅR HELT TAPT: ubrukte dager refunderes ikke og overføres ikke.",
+    "termsTitle": "Bekreft planvilkårene",
+    "termsMessage": "På denne planen beholder plattformen {{rate}} % av hvert salg.\n\nFor nettbetalinger trekkes avgiften automatisk når betalingen skjer. For kontanter, terminal og påfyll av innskudd trekkes den IKKE med én gang — den samles og du får en egen faktura én gang i måneden.\n\nDu har {{days}} dager på å betale fakturaen. Betales den ikke i tide, suspenderes tilgang til CRM og kundenes miniapp til den er betalt.\n\nDet gjeldende beløpet vises i Fakturering; du kan betale når som helst, også på forhånd.",
+    "termsConfirm": "Jeg godtar vilkårene",
+    "termsMinimum": "Den minste månedlige avgiften er {{amount}} {{currency}}. Hvis plattformen i løpet av en kalendermåned har tjent mindre enn dette fra studioet ditt (for eksempel fordi det ikke var noen salg gjennom CRM), faktureres du differansen. Tjener du mer enn minimumet, kommer ingen faktura. En ubetalt minsteavgift suspenderer tilgangen på samme måte som en ubetalt provisjonsfaktura.",
+    "termsBurn": "ADVARSEL: Du har igjen betalt tid. Ved å bytte faktureringsmodell MISTER du den helt — ubrukte dager refunderes ikke og overføres ikke.",
+    "termsCombo": "Byttet er et KJØP: rett etter bekreftelsen ser du beløpet som skal betales. Resten av den nåværende betalte perioden går tapt — den refunderes ikke og overføres ikke. Modellen fast + % aktiveres BARE etter betaling; frem til da forblir planen din uendret og du belastes ikke."
+  },
+  "combo": {
+    "rateBadge": "{{rate}}%",
+    "summary": "Fast {{fixed}}/måned + {{rate}} % av salget (kontanter faktureres månedlig)",
+    "cta": "Aktiver kombinert plan",
+    "ctaShort": "Aktiver kombinasjon"
+  },
+  "period": {
+    "1": "1 måned",
+    "3": "3 måneder",
+    "6": "6 måneder",
+    "12": "1 år",
+    "24": "2 år",
+    "title": "Betalingsperiode",
+    "discountActive": "{{percent}} % rabatt er aktiv",
+    "noDiscount": "Ingen rabatt",
+    "discountLabel": "−{{percent}} % rabatt"
+  },
+  "calculator": {
+    "title": "Beregningens parametere",
+    "monthlyTurnover": "Din månedlige omsetning på nett",
+    "turnoverRangeMin": "50 tusen",
+    "turnoverRangeMax": "3 mill.+",
+    "chooseFeeLabel": "Velg provisjonssats (påvirker funksjoner)",
+    "feeOptions": {
+      "basic": "Grunnleggende",
+      "standard": "Standard",
+      "pro": "Pro",
+      "max": "Maks"
+    },
+    "chooseFixedLabel": "Velg fast grunndel (oppkjøpsavgiften er alltid 3 %)",
+    "fixedOptions": {
+      "start": "Start",
+      "optima": "Optima",
+      "business": "Business"
+    },
+    "economyPercentTitle": "PLANBESPARELSE",
+    "economyComboTitle": "BESPARELSE MED KOMBINERT PLAN",
+    "turnover": "Studioets omsetning",
+    "systemFee": "Systemavgift",
+    "totalMonthlyPayment": "TOTAL MÅNEDLIG BETALING",
+    "onlyPayForResult": "Du betaler ingen fast avgift, bare for resultater",
+    "activatePercent": "Aktiver {{percent}} %-modellen",
+    "baseSubscription": "Grunnabonnement (fast)",
+    "acquiringFee": "Betalingsinnløsning / avgift",
+    "activateCombo": "Aktiver kombinert plan"
+  },
+  "planCards": {
+    "bestChoice": "Beste valg",
+    "current": "Nåværende",
+    "perMonth": "/ måned",
+    "currentPlan": "Gjeldende plan",
+    "yourPrice": "Din pris",
+    "staffLimit": "Opptil {{count}} ansatte",
+    "staffUnlimited": "Ubegrenset antall ansatte"
+  },
+  "paymentSchedule": {
+    "title": "Betalingsplan",
+    "total": "Totalt å betale",
+    "morePayments": "+ {{count}} flere betalinger på {{amount}}",
+    "processing": "Du videresendes til betaling …",
+    "payFor": "Betal for {{count}} måneder",
+    "vatNote": "Ekskl. mva. — skatt legges til i kassen etter landet ditt"
+  },
+  "trust": {
+    "title": "Hvorfor over 2 400 virksomheter stoler på oss",
+    "reviews": [
+      {
+        "text": "Vi byttet fra Altegio. Forskjellen er som mellom en taxi og et privatfly.",
+        "author": "Maria K., FORM Pilates"
+      },
+      {
+        "text": "Det beste er å vite nøyaktig hva jeg betaler hver måned. Ingen overraskelser.",
+        "author": "Artem N., Barbershop Bros"
+      },
+      {
+        "text": "Kundestøtten svarte på fire minutter. Det har jeg ikke sett noe annet sted.",
+        "author": "Elena D., SPA LUNA"
+      }
+    ]
+  },
+  "upgrade": {
+    "priceLine": "Pris {{price}}/måned",
+    "discountNote": " {{percent}} % rabatt ved betaling for {{period}} måneder",
+    "planLabel": "Plan",
+    "periodLabel": "Periode",
+    "periodValue_one": "{{count}} måned",
+    "periodValue_other": "{{count}} måneder",
+    "discountLabel": "Rabatt",
+    "scheduledBadge": "Fra {{date}} — «{{plan}}»-planen",
+    "vatNote": "Ekskl. mva. — skatt legges til i kassen basert på selskapsopplysningene dine; EU-selskaper med mva.-nummer bruker omvendt avgiftsplikt."
+  },
+  "method": {
+    "notLinked": "Ikke koblet til",
+    "badgeTitle": "Betalingsmåten er beskyttet",
+    "tokenSub": "Leverandørtoken · utløper {{expiry}}",
+    "tokenNote": "De reelle kortopplysningene lagres av betalingsleverandøren (PCI DSS L1). Vi beholder bare en engangstoken for fornyelser.",
+    "securityTitle": "Standarder for databeskyttelse",
+    "security": {
+      "pciDss": "PCI DSS nivå 1-kryptering",
+      "secure3d": "3D Secure-beskyttelse av transaksjoner",
+      "noStorage": "Kortopplysningene går aldri gjennom serverne våre",
+      "autoLink": "Kortet kobles til ved første betaling"
+    },
+    "noCardDetail": "Du trenger ikke oppgi opplysningene separat — betalingen skjer på Stripes sikre side.",
+    "renewDone": "Fakturaen er opprettet — betalingen behandles",
+    "renewBusy": "Oppretter faktura …",
+    "renewSuccess": "Fornyelsesfakturaen er opprettet",
+    "renewError": "Kunne ikke opprette fakturaen. Prøv igjen.",
+    "renewNow": "Forny nå med kort •••• {{last4}}",
+    "autopayTitle": "Innstillinger for automatisk betaling",
+    "autopaySuccess": "Innstillingen er lagret",
+    "autopayError": "Kunne ikke lagre innstillingen. Prøv igjen.",
+    "autopay": {
+      "cardOnly": "Tilgjengelig når du betaler med kort",
+      "autoRenew": {
+        "label": "Automatisk fornyelse",
+        "desc": "Slå av for å avslutte ved slutten av den betalte perioden",
+        "until": "Abonnementet fornyes ikke — tilgang til {{date}}"
+      },
+      "emailNotify": {
+        "label": "E-postvarsler",
+        "desc": "Fakturaen sendes på e-post etter hver betaling"
+      },
+      "remind3d": {
+        "label": "Påminn 3 dager før",
+        "desc": "Vi minner deg på før automatisk belastning"
+      },
+      "sms": {
+        "label": "SMS-varsel",
+        "desc": "En tekstmelding sendes når kortet belastes"
+      }
+    },
+    "portal": {
+      "title": "Faktureringsopplysninger og mva.",
+      "subtitle": "Fakturaer, tilknyttet kort og belastningshistorikk finner du i Stripes kundeportal.",
+      "cta": "Åpne i Stripe"
+    },
+    "ibanBadgeLabel": "Bankoverføring (SEPA)",
+    "ibanBadgeNote": "Fakturaer sendes på e-post med betalingslenke — ingenting belastes automatisk fra kortet. Du kan også betale tidligere fra fakturasiden."
+  },
+  "invoices": {
+    "title": "Betalingshistorikk",
+    "totalPaid": "totalt betalt {{amount}}",
+    "exportCsv": "Eksporter CSV",
+    "exportError": "Kunne ikke eksportere CSV. Prøv igjen.",
+    "receiptError": "Kunne ikke åpne fakturaen. Prøv igjen.",
+    "invoiceNo": "Faktura #{{id}}",
+    "methodCard": "Betalt med kort",
+    "methodIban": "Betalt med bankoverføring (IBAN)",
+    "syncHint": "Kontroller status hos betalingstjenesten",
+    "syncChanged": "Status er oppdatert: {{status}}",
+    "syncUnchanged": "Betalingstjenesten bekreftet samme status",
+    "syncError": "Kunne ikke kontrollere status. Prøv igjen.",
+    "kindOfflineFee": "Provisjon for salg utenfor nett",
+    "kindMinFee": "Minste månedlige avgift",
+    "kindOnlineFee": "Provisjon for nettbetalinger",
+    "methodWithheld": "Trukket av Stripe ved betaling"
+  },
+  "table": {
+    "date": "Dato",
+    "description": "Beskrivelse",
+    "amount": "Beløp",
+    "status": "Status",
+    "receipt": "Faktura"
+  },
+  "status": {
+    "paid": "Betalt",
+    "pending": "Avventer",
+    "failed": "Ubetalt",
+    "refunded": "Refundert"
+  },
+  "empty": {
+    "noInvoices": "Ingen fakturaer ennå — de vises etter den første betalingen.",
+    "noCard": "Kortet ditt vises automatisk etter den første betalingen.",
+    "monthsWithUs": "Du har ikke kjøpt abonnement ennå",
+    "noData": "Ingen data"
+  },
+  "savings": {
+    "title": "Dine besparelser",
+    "prepayTitle": "Dine besparelser ved forhåndsbetaling",
+    "emptyState": "Velg en lengre periode og begynn å spare",
+    "youSave": "Du sparer {{amount}} over {{months}} måneder",
+    "freeMonths": "Det tilsvarer {{count}} gratis måneder",
+    "amountLabel": "{{amount}} spart",
+    "comparedToMonthly": "sammenlignet med månedsbetaling",
+    "forMonths_one": "For {{count}} måned",
+    "forMonths_other": "For {{count}} måneder"
+  },
+  "pay": "Betal",
+  "continuePlan": "Fortsett med planen",
+  "payModal": {
+    "titleNew": "Start {{plan}}-planen",
+    "titleSwitch": "Bytt til {{plan}}",
+    "titleRenew": "Forny {{plan}}",
+    "totalLabel": "Planen din vil koste",
+    "burnWarning": "Bytte til en annen plan starter perioden på nytt: resten av {{plan}}-planen din GÅR TAPT — den refunderes ikke og overføres ikke. Fornyelse av samme plan beholder den.",
+    "switched": "Planen er byttet: ingenting å betale — byttet dekkes av resten av den gjeldende perioden.",
+    "renewNote": "Dette fornyer samme plan: månedene du kjøper, legges til den nåværende betalte perioden. Ingenting går tapt.",
+    "cardNote": "Kortbetaling på Stripes sikre side · refusjon innen 7 dager",
+    "freeUntil": "Ingenting belastes før {{date}}: du har {{count}} dager igjen av den betalte perioden. Faktureringen starter da.",
+    "taxLabel": "Mva.",
+    "taxLine": "Mva. {{rate}} %",
+    "reverseCharge": "Omvendt avgiftsplikt",
+    "totalWithTax": "Totalt med mva.",
+    "taxServerNote": "Avgiften beregnes fra faktureringsopplysningene dine. Fakturaen viser samme beløp.",
+    "taxReview": "Vi kunne ikke fastslå avgiften fra faktureringsopplysningene dine, så totalen vises uten den og betalingen kan ikke fullføres. Kontroller landet og betaleradressen, eller kontakt kundestøtte."
+  },
+  "offlineFee": {
+    "title": "Avgift for salg utenfor nett",
+    "accruing": "Påløpt fra kontanter og innskudd med {{rate}} %. Faktureres månedlig, og du har {{days}} dager på å betale.",
+    "due": "Fakturaen er utstedt. Dager igjen til betaling: {{days}}.",
+    "suspended": "Betalingen er forfalt — tilgang til CRM og miniappen er suspendert.",
+    "pay": "Betal",
+    "suspendedMin": "Den minste månedlige avgiften er forfalt — tilgang til CRM og miniappen er suspendert.",
+    "alsoAccruing": "I tillegg påløper denne måneden: {{amount}} — det kommer på neste faktura.",
+    "minimum": "Den minste månedlige avgiften er {{amount}}. Tjener du mindre i løpet av måneden, betaler du differansen; tjener du mer, kommer ingen faktura.",
+    "pendingBill": "Påløpt etter den tidligere modellen, venter på faktura.",
+    "notBilledYet": "Ingen faktura er utstedt ennå: beløpet som har påløpt er under minste fakturabeløp, eller fakturaen forberedes fortsatt. Ingenting går tapt — det kommer på neste faktura."
+  },
+  "trial": {
+    "title": "Tilbud for nye studioer",
+    "subtitle": "Studioet ditt er nettopp opprettet",
+    "headline": "{{days}} dager gratis",
+    "noCard": "Ingen kort kreves — du har ingenting å betale nå",
+    "perks": {
+      "allModules": "Full tilgang til alle moduler: kalender, kunder, økonomi, varsler og Velora AI",
+      "noCommitment": "Ingen binding: hvis det ikke passer, lar du bare være å fornye",
+      "keepData": "Alt du legger inn i prøveperioden, forblir ditt"
+    },
+    "activate": "Aktiver",
+    "decline": "Avslå",
+    "cardHint": "Du har ennå ikke aktivert den gratis perioden for dette studioet. Den er tilgjengelig til du kjøper en plan."
+  },
+  "profile": {
+    "title": "Faktureringsopplysninger",
+    "editTitle": "Endre faktureringsopplysninger",
+    "subtitle": "Adressen din står på fakturaen og bestemmer avgiftssatsen. Den lagres på kontoen din — vi spør ikke på nytt i et annet studio.",
+    "subtitlePay": "Fyll ut én gang, så går betalingen direkte neste gang. Adressen din står på fakturaen og bestemmer avgiftssatsen.",
+    "cardTitle": "Faktureringsopplysninger",
+    "cardSubtitle": "Lagres på kontoen din og brukes i alle studioer. Slik vises de på fakturaen.",
+    "cardEmpty": "Ikke fylt ut ennå — vi ber om det før første betaling. Du kan legge det til nå.",
+    "add": "Legg til faktureringsopplysninger",
+    "edit": "Endre",
+    "save": "Lagre",
+    "saveAndPay": "Lagre og fortsett til betaling",
+    "cancel": "Avbryt",
+    "saved": "Faktureringsopplysningene er lagret",
+    "vatNone": "Ikke oppgitt",
+    "fields": {
+      "country": "Land eller region",
+      "countryPlaceholder": "Velg et land",
+      "address": "Adresse",
+      "line1": "Adresselinje 1",
+      "line1Placeholder": "Gate og nummer",
+      "line2": "Adresselinje 2 — valgfritt",
+      "line2Placeholder": "Leilighet, suite, enhetsnummer osv.",
+      "postalCode": "Postnummer",
+      "postalCodePlaceholder": "110 00",
+      "city": "By",
+      "cityPlaceholder": "Praha",
+      "vat": "Mva.-nummer — valgfritt",
+      "vatPlaceholder": "{{prefix}}12345678",
+      "vatHint": "Kun for virksomheter. Nummeret kontrolleres i EUs register (VIES) når du lagrer — ubekreftede nummer godtas ikke. Med et gyldig nummer faktureres et selskap i et annet EU-land uten avgift (omvendt avgiftsplikt). Privatpersoner har ikke et slikt nummer — la feltet stå tomt.",
+      "countrySearch": "Begynn å skrive et navn",
+      "countryNotFound": "Landet ble ikke funnet",
+      "vatOutsideEu": "Vi ber ikke om mva.-nummer: utenfor EU avgjøres avgiften av betalerens land, ikke nummeret, så det påvirker ikke fakturaen.",
+      "vatPending": "Nummeret ditt er lagret, men EU-registeret var ikke tilgjengelig da, så det er ennå ikke bekreftet og neste faktura inkluderer full mva. Du trenger ikke fylle det ut igjen: vi fortsetter å kontrollere det, og så snart registeret svarer, belastes ikke avgift lenger. For en allerede betalt faktura refunderer kundestøtten avgiften."
+    },
+    "errors": {
+      "required": "Dette feltet er obligatorisk"
+    },
+    "preview": {
+      "invoice": "Faktura",
+      "billTo": "Faktureres til",
+      "note": "Slik vises opplysningene dine på hver faktura. Du kan når som helst endre dem under Plan og fakturering → Betalingsmåte."
+    }
+  }
+}

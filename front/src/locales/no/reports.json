@@ -1,0 +1,611 @@
+{
+  "tabs": {
+    "overview": "Oversikt",
+    "sales": "Salg",
+    "clients": "Kunder",
+    "team": "Team",
+    "schedule": "Timeplan"
+  },
+  "toolbar": {
+    "period": {
+      "day": "Dag",
+      "week": "Uke",
+      "month": "Måned",
+      "year": "År",
+      "custom": "Egendefinert"
+    },
+    "vsPrevious": "sammenlignet med forrige periode: {{from}}–{{to}}",
+    "allBranches": "Alle avdelinger",
+    "allHalls": "Alle {{spacePlural}}",
+    "allTrainers": "Alle trenere",
+    "allServices": "Alle tjenester",
+    "export": "Eksporter"
+  },
+  "insights": {
+    "title": "Krever oppmerksomhet",
+    "action": "Åpne",
+    "empty": "Alt er bra akkurat nå — ingen råd å vise",
+    "revenue_up_clients_down": "Inntekten øker, men aktive kunder blir færre — sjekk kundefrafall",
+    "clients_at_risk": "{{count}} kunde(r) har ikke deltatt på over 3 uker — risiko for frafall",
+    "lesson_overfull": "«{{name}}» {{weekday, weekday}} kl. {{hour}}:00 har vært {{pct}} % fullt tre uker på rad — vurder å legge til en økt",
+    "trial_low_conversion": "Bare {{pct}} % av {{buyers}} prøvekjøpere kjøpte senere et abonnement — vurder en kampanje",
+    "fastest_growing_product": "«{{name}}» vokser raskest: +{{pct}} % sammenlignet med forrige periode",
+    "renewals_low": "Bare {{pct}} % av kunder med utløpt abonnement fornyer — vurder en påminnelse",
+    "new_no_second_visit": "{{count}} nye kunder kom én gang og bestilte aldri igjen — vurder en påminnelse",
+    "subs_expiring_week": "{{count}} kunder har et abonnement som utløper denne uken — vurder å tilby fornyelse",
+    "vip_inactive": "VIP-kunden «{{name}}» har ikke besøkt dere på {{days}} dager — vurder en personlig melding",
+    "high_return_free_evenings": "«{{name}}» har høy returrate ({{return_pct}} %), men ledige kvelder — legg til en økt",
+    "trainer_overloaded": "«{{name}}» er belastet {{load_pct}} % — vurder å balansere timeplanen",
+    "low_rating": "«{{name}}» har en vurdering på {{rating}} — verdt å se nærmere på",
+    "slot_chronic_low": "«{{name}}» {{weekday, isodowWeekday}} kl. {{hour}}:00 har vært {{pct}} % fullt i {{weeks}} uker på rad — flytt eller avlys det",
+    "hall_idle_evenings": "«{{name}}» er ubrukt {{pct}} % av kveldstimene — vurder å sette opp en økt",
+    "slot_overfull": "Tidspunktet {{weekday, isodowWeekday}} kl. {{hour}}:00 har vært {{pct}} % fullt tre uker på rad — vurder å legge til en økt",
+    "loss_hotspot": "{{cancels}} økter ble avlyst på {{label}} i denne perioden — flest avlysninger samler seg rundt denne timen"
+  },
+  "table": {
+    "loading": "Laster…",
+    "noProduct": "Ingen produkt"
+  },
+  "empty": {
+    "noData": {
+      "title": "Det er ingenting her ennå",
+      "text": "Ingen aktivitet ble registrert i valgt periode. Utvid perioden, eller start med å booke en kunde i Journalen.",
+      "widen": "Vis året"
+    },
+    "noRevenue": "Ingen betalinger i denne perioden",
+    "noSales": "Ingen salg i dette utsnittet",
+    "noProducts": "Ingen pakker eller tjenester solgt ennå",
+    "noLessons": "Ingen økter i denne perioden",
+    "noTrainerLessons": "Denne treneren har ikke holdt noen økter ennå",
+    "noRows": "Ingen oppføringer i dette utsnittet",
+    "noLosses": "Ingen avlysninger eller uteblivelser i denne perioden"
+  },
+  "overview": {
+    "kpi": {
+      "revenue": "Inntekt",
+      "profit": "Fortjeneste",
+      "attendance": "Oppmøte",
+      "activeClients": "Aktive kunder",
+      "fillRate": "Fyllingsgrad"
+    },
+    "chart": {
+      "metric": {
+        "revenue": "Inntekt",
+        "profit": "Fortjeneste",
+        "attendance": "Oppmøte",
+        "new_clients": "Nye kunder",
+        "fill_rate": "Fyllingsgrad"
+      }
+    },
+    "revenueStructure": {
+      "title": "Inntektsstruktur"
+    },
+    "category": {
+      "subscriptions": "Abonnementer",
+      "services": "Tjenester",
+      "certificates": "Gavekort",
+      "rent": "Leie",
+      "salary": "Lønn",
+      "refunds": "Refusjoner"
+    },
+    "clientDynamics": {
+      "title": "Kundedynamikk",
+      "new": "Nye",
+      "returned": "Kom tilbake",
+      "lost": "Tapte"
+    },
+    "drilldown": {
+      "title": "Transaksjon",
+      "category": "Kategori",
+      "amount": "Beløp",
+      "lesson": "Økt",
+      "time": "Tid",
+      "occupancy": "Belegg",
+      "date": "Dato",
+      "method": "Metode",
+      "trainer": "Trener",
+      "rowsCount": "oppføringer",
+      "search": "Søk i tabellen",
+      "shownOf": "Viser {{shown}} av {{total}}",
+      "noMatches": "Ingenting funnet for «{{query}}»",
+      "reset": "Tilbakestill",
+      "export": "Eksporter CSV",
+      "subtitle": {
+        "money": "Transaksjoner i dette utsnittet",
+        "lessons": "Økter i dette utsnittet"
+      },
+      "hint": {
+        "operations": "Klikk på en rad for å åpne transaksjonen i Økonomi",
+        "lessons": "Klikk på en rad for å åpne den dagen i Journalen"
+      },
+      "stat": {
+        "net": "Netto",
+        "income": "Inntekt",
+        "expense": "Utgift",
+        "operations": "Transaksjoner",
+        "topCategory": "Største kategori",
+        "lessons": "Økter",
+        "booked": "Reserverte plasser",
+        "avgFill": "Gjennomsnittlig belegg",
+        "trainers": "Trenere",
+        "cancelled": "Avlyst"
+      }
+    }
+  },
+  "sales": {
+    "kpi": {
+      "revenue": "Inntekt",
+      "salesCount": "Salg",
+      "avgCheck": "Gjennomsnittskjøp",
+      "repeatShare": "Andel gjenkjøp",
+      "renewals": "Fornyelsesrate"
+    },
+    "chart": {
+      "title": "Salg"
+    },
+    "incomeOperations": "Inntektstransaksjoner",
+    "breakdown": {
+      "byCategory": "Hva de kjøper",
+      "byMethod": "Hvordan de betaler",
+      "buyerType": "Hvem som kjøper",
+      "new": "Nye",
+      "returning": "Faste",
+      "noClient": "Ingen kunde"
+    },
+    "method": {
+      "card": "Kort",
+      "cash": "Kontant",
+      "qr": "QR-kode",
+      "transfer": "Overføring"
+    },
+    "products": {
+      "title": "Produkter",
+      "name": "Produkt",
+      "sold": "Solgt",
+      "revenue": "Inntekt",
+      "avgCheck": "Gjennomsnittskjøp",
+      "repeatShare": "Andel gjenkjøp",
+      "trend": "Utvikling",
+      "trendHint": "Sammenlignet med forrige periode med samme varighet"
+    }
+  },
+  "clients": {
+    "kpi": {
+      "new": "Nye",
+      "returned": "Kom tilbake",
+      "lost": "Tapte",
+      "retention": "Kundetilbakeholdelse",
+      "avgValue": "Kundeverdi"
+    },
+    "chart": {
+      "title": "Nye og faste",
+      "new": "Nye",
+      "returned": "Faste"
+    },
+    "riskTitle": "Risikosegmenter",
+    "loyalTitle": "Lojale",
+    "list": "Liste",
+    "campaign": "Start kampanje",
+    "exportList": "Eksporter liste",
+    "emptySegment": "Segmentet «{{name}}» har ingen kunder akkurat nå",
+    "segments": {
+      "new": {
+        "name": "Nye kunder",
+        "desc": "Registrert i den valgte perioden"
+      },
+      "returned": {
+        "name": "Faste kunder",
+        "desc": "Besøkte denne perioden og den forrige"
+      },
+      "lost": {
+        "name": "Tapte kunder",
+        "desc": "Besøkte forrige periode, men kom ikke tilbake i denne"
+      },
+      "active": {
+        "name": "Aktive kunder",
+        "desc": "Kom på minst én økt i den valgte perioden"
+      },
+      "at_risk": {
+        "name": "I faresonen",
+        "desc": "Aktive, men uten besøk på 21+ dager"
+      },
+      "vip_idle": {
+        "name": "Inaktive VIP-er",
+        "desc": "VIP-kunder uten besøk på 14+ dager"
+      },
+      "expiring_subscription": {
+        "name": "Abonnement utløper",
+        "desc": "≤2 økter eller ≤7 dager igjen"
+      },
+      "lost_newcomers": {
+        "name": "Kom aldri tilbake",
+        "desc": "Kom én gang, borte i 14+ dager"
+      },
+      "upsell_candidates": {
+        "name": "Klar for oppgradering",
+        "desc": "8+ besøk denne måneden, ingen pakke"
+      },
+      "frequent": {
+        "name": "Hyppige",
+        "desc": "8+ besøk i perioden"
+      },
+      "high_ltv": {
+        "name": "Høy LTV",
+        "desc": "Topp 10 % etter samlet forbruk"
+      },
+      "referrers": {
+        "name": "Anbefalere",
+        "desc": "Fullførte en anbefaling i perioden"
+      }
+    },
+    "listSearch": "Søk etter navn eller telefon",
+    "shownOf": "Viser {{shown}} av {{total}}",
+    "noMatches": "Ingen funnet for «{{query}}»",
+    "resetSearch": "Tilbakestill",
+    "neverVisited": "Aldri besøkt",
+    "valueLabel": {
+      "visits": "Besøk",
+      "spent": "Brukt",
+      "daysIdle": "Inaktive dager",
+      "remaining": "Økter igjen",
+      "value": "Verdi"
+    },
+    "relative": {
+      "today": "I dag",
+      "daysAgo_one": "for {{count}} dag siden",
+      "daysAgo_other": "for {{count}} dager siden"
+    }
+  },
+  "team": {
+    "kpi": {
+      "lessonsCount": "Økter",
+      "revenuePerHour": "Inntekt/time",
+      "avgFillPct": "Fyllingsgrad",
+      "cancelNoshowPct": "Avlysninger/uteblivelser",
+      "avgRating": "Vurdering"
+    },
+    "table": {
+      "title": "Trenere",
+      "trainer": "Trener",
+      "lessons": "Økter",
+      "fillPct": "Fyllingsgrad",
+      "attendance": "Oppmøte",
+      "revenue": "Inntekt",
+      "returnRate": "Returrate",
+      "cancels": "Avlysninger",
+      "fillPctHint": "Fylte plasser av de som var planlagt",
+      "returnRateHint": "Kunder som bestilte med denne treneren igjen",
+      "cancelsHint": "Avlyste økter og kunders uteblivelser",
+      "ratingHint": "Gjennomsnittsvurdering kunder ga denne trenerens økter"
+    },
+    "drawer": {
+      "revenueByWeek": "Inntekt per uke",
+      "loadByWeekday": "Belastning per ukedag",
+      "loadByHour": "Belastning etter tid på dagen",
+      "loadDim": {
+        "weekday": "Etter dag",
+        "hour": "Etter time"
+      },
+      "schedule": {
+        "title": "Timeplan",
+        "empty": "Ingen økter i denne perioden"
+      },
+      "topLessons": "Favorittøkter",
+      "returnBlock": "Kundenes tilbakekomst",
+      "returnOf": "{{returned}} av {{total}} kunder kom tilbake ({{pct}} %)",
+      "openProfile": "Åpne profil",
+      "held": "Holdt",
+      "attendance": "Oppmøte"
+    },
+    "weekdays": [
+      "søn",
+      "man",
+      "tir",
+      "ons",
+      "tor",
+      "fre",
+      "lør"
+    ]
+  },
+  "schedule": {
+    "weekdaysMonFirst": [
+      "man",
+      "tir",
+      "ons",
+      "tor",
+      "fre",
+      "lør",
+      "søn"
+    ],
+    "kpi": {
+      "avgFillPct": "Fyllingsgrad",
+      "freeSpots": "Ledige plasser",
+      "cancels": "Avlysninger",
+      "noshows": "Uteblivelser",
+      "lostRevenue": "Tapt inntekt"
+    },
+    "heatmap": {
+      "title": "Belastning etter dag og time",
+      "legend": "Fyllingsgrad:",
+      "tooltip": "{{lessons}} økter · {{attendance}} deltok · {{pct}} %",
+      "empty": "Ingen økter"
+    },
+    "slices": {
+      "topProfitable": "Mest lønnsomme",
+      "topFilled": "Mest fylte",
+      "chronicLow": "Kronisk underfylte",
+      "halls": "Utnyttelse: {{spacePlural}}",
+      "held": "{{count}} holdt",
+      "weeks": "{{count}} uker",
+      "move": "Flytt",
+      "cancel": "Avlys",
+      "eveningIdle": "ledig på kveldstid {{pct}} %"
+    },
+    "losses": {
+      "title": "Avlysninger og uteblivelser",
+      "dim": {
+        "hour": "Etter tidspunkt",
+        "service": "Etter tjeneste",
+        "trainer": "Etter trener"
+      },
+      "cancels_one": "{{count}} avlysning",
+      "cancels_other": "{{count}} avlysninger",
+      "noshows_one": "{{count}} uteblivelse",
+      "noshows_other": "{{count}} uteblivelser",
+      "lostSpots_one": "−{{count}} plass",
+      "lostSpots_other": "−{{count}} plasser"
+    },
+    "status": {
+      "confirmed": "Bekreftet",
+      "pending": "Venter",
+      "cancelled": "Avlyst"
+    },
+    "slot": {
+      "summary": "for {{from}} — {{to}}",
+      "lessonsCount": "Økter totalt"
+    }
+  },
+  "export": {
+    "csv": "Last ned CSV"
+  },
+  "scopeNote": {
+    "label": "Hele studioet",
+    "money": "Filtrene Avdeling og {{space}} påvirker ikke beløp — en betaling er ikke knyttet til dem",
+    "clientBase": "Trener, {{space}}, avdeling og tjeneste endrer ikke denne målingen — en kunde er ikke knyttet til dem"
+  },
+  "descriptions": {
+    "overview": {
+      "metric": {
+        "revenue": "Alle penger som kom inn i studioet i perioden",
+        "profit": "Det som er igjen etter periodens utgifter",
+        "attendance": "Økter kundene faktisk deltok på",
+        "new_clients": "Kunder registrert i denne perioden",
+        "fill_rate": "Hvor fulle øktene er: reserverte plasser av tilgjengelige plasser"
+      },
+      "revenueStructure": "Hva inntekten din består av i denne perioden",
+      "clientDynamics": "Hvor mange som kom for første gang, kom tilbake eller sluttet å komme"
+    },
+    "sales": {
+      "chart": "Inntekt og antall kjøp per dag",
+      "byCategory": "Hvert produkts andel av inntekten",
+      "byMethod": "Hvordan inntekten fordeler seg etter betalingsmåte",
+      "buyerType": "Hvor mye inntekt som kommer fra nye kunder kontra faste",
+      "products": "Hvert produkt: hvor mange solgt, for hvor mye og om salget vokser"
+    },
+    "clients": {
+      "chart": "Hvor mange kunder som kom for første gang og hvor mange som kom tilbake, per uke",
+      "riskSegments": "Kunder du kan miste hvis du ikke tar kontakt nå",
+      "loyalSegments": "De som besøker mest, bruker mest og tar med venner"
+    },
+    "team": {
+      "trainers": "Sammenligning etter belastning, inntekt og kundenes returrate",
+      "loadWeekday": "Hvilke ukedager treneren er opptatt, og når de er ledige",
+      "loadHour": "Når øktene fylles opp, og når de er tomme",
+      "schedule": "Alle trenerens økter i den valgte perioden"
+    },
+    "schedule": {
+      "heatmap": "Hvor timeplanen er overbooket og hvor den er tom",
+      "topProfitable": "Tidspunktene i timeplanen som gir mest penger",
+      "topFilled": "Tidspunktene kundene bestiller mest ivrig",
+      "chronicLow": "Tidspunkter som har vært fylt mindre enn en tredjedel i ukevis",
+      "halls": "Hvor mye av tiden {{spacePlural}} faktisk er i bruk",
+      "losses": "Hvor studioet mister plasser: avlyste økter eller kunder som uteblir"
+    }
+  },
+  "formulas": {
+    "salesCount": {
+      "title": "Salg",
+      "text": "Hvor mange ganger kundene betalte deg i denne perioden. Én person som betaler flere ganger teller som separate salg."
+    },
+    "revenue": {
+      "title": "Inntekt",
+      "text": "Alle penger som kom inn i studioet denne perioden, etter betalingsdato. Pakker, enkeltøkter, gavekort og varesalg — alt sammen."
+    },
+    "profit": {
+      "title": "Fortjeneste",
+      "text": "Det som er igjen etter utgiftene denne perioden: leie, lønn og utstyr. Dette er den reelle fortjenesten din."
+    },
+    "attendance": {
+      "title": "Oppmøte",
+      "text": "Hvor mange besøk kundene faktisk gjennomførte. Bare økter markert som deltatt teller."
+    },
+    "bookings": {
+      "title": "Bestillinger",
+      "text": "Hvor mange bestillinger kundene gjorde til økter. Avlyste bestillinger teller ikke."
+    },
+    "noshow": {
+      "title": "Uteblivelse",
+      "text": "En kunde bestilte, økten ble holdt, men kunden møtte ikke. Hvert tilfelle er en plass noen andre kunne ha tatt."
+    },
+    "activeClients": {
+      "title": "Aktive kunder",
+      "text": "Hvor mange forskjellige personer som kom minst én gang i denne perioden. Hver kunde teller én gang, uansett hvor mange besøk de hadde."
+    },
+    "occupancy": {
+      "title": "Belegg",
+      "text": "Hvor fulle øktene dine er: fylte plasser av det du planla. 100 % betyr at det ikke er mer plass."
+    },
+    "avgCheck": {
+      "title": "Gjennomsnittskjøp",
+      "text": "Hva én betaling i gjennomsnitt gir. Det øker når kunder kjøper lengre pakker eller tillegg."
+    },
+    "retention": {
+      "title": "Kundetilbakeholdelse",
+      "text": "Hvor mange av forrige periodes kunder som kom tilbake i denne perioden. Viser om du beholder folk eller starter fra null hver måned."
+    },
+    "newClients": {
+      "title": "Nye kunder",
+      "text": "Personer som dukket opp i kundebasen din for første gang i denne perioden."
+    },
+    "returning": {
+      "title": "Faste kunder",
+      "text": "Kunder som har besøkt før og kom tilbake igjen i denne perioden."
+    },
+    "lost": {
+      "title": "Tapte kunder",
+      "text": "Besøkte forrige periode og har ikke dukket opp én gang i denne. Det er fortsatt verdt å ta kontakt."
+    },
+    "clientValue": {
+      "title": "Kundeverdi",
+      "text": "Hva én kunde i gjennomsnitt gir i denne perioden."
+    },
+    "repeatPurchaseShare": {
+      "title": "Andel gjenkjøp",
+      "text": "Andelen kunder som kjøpte fra deg mer enn én gang. Jo høyere den er, desto sterkere er vanen med å komme tilbake."
+    },
+    "renewalRate": {
+      "title": "Fornyelsesrate",
+      "text": "Hvor mange kunder som kjøpte en ny pakke etter at den forrige var utløpt."
+    },
+    "revenuePerHour": {
+      "title": "Inntekt per time (trener)",
+      "text": "Hvor mye penger én time av en treners arbeid gir. Lar deg sammenligne trenere rettferdig — én kan holde færre økter, men hver gir mer."
+    },
+    "trainerReturnRate": {
+      "title": "Returrate (trener)",
+      "text": "Andelen av en treners kunder som bestilte med dem igjen."
+    },
+    "missedRevenue": {
+      "title": "Tapt inntekt",
+      "text": "Penger studioet ikke tjente på grunn av tomme plasser i tidligere økter: ledige plasser ganget med øktens pris."
+    },
+    "losses": {
+      "title": "Avlysninger og uteblivelser",
+      "text": "En «avlysning» er en avlyst økt; en «uteblivelse» er en kunde som bestilte, men ikke kom. Fordelingene på tid/tjeneste/trener bruker de samme filtrene som fanen og stemmer med KPI-ene i overskriften."
+    },
+    "lessonRevenue": {
+      "title": "Inntekt fra økt",
+      "text": "Et grovt estimat av en økts inntekt: deltakere ganget med pris. Betalinger er ikke knyttet til en bestemt økt, så dette er et anslag, ikke et eksakt tall."
+    },
+    "filtersScope": {
+      "title": "Filtrenes omfang",
+      "text": "Filtrene Avdeling og {{space}} gjelder bare øktmålinger. Betalinger har ingen slik kobling, så beløp vises for hele studioet."
+    },
+    "avgValue": {
+      "title": "Kundeverdi",
+      "text": "Hva én kunde i gjennomsnitt gir i denne perioden."
+    },
+    "cancelNoshow": {
+      "title": "Avlysninger og uteblivelser",
+      "text": "Andelen forstyrrede økter: avlysninger og uteblivelser av alt som var planlagt."
+    },
+    "avgRating": {
+      "title": "Gjennomsnittsvurdering",
+      "text": "Gjennomsnittsvurderingen kundene ga denne trenerens økter."
+    },
+    "teamScope": {
+      "title": "Dataomfang",
+      "text": "Dette teller bare inntekt knyttet til en bestemt trener, så summen for alle trenere kan være lavere enn studioets totale inntekt."
+    },
+    "lessonsCount": {
+      "title": "Økter",
+      "text": "Hvor mange økter trenerne holdt i denne perioden."
+    },
+    "load": {
+      "title": "Belastning",
+      "text": "Hvor fullpakket en treners dag er: deres bestilte timer av studioets åpningstid."
+    },
+    "weeklyClients": {
+      "title": "Nye og faste",
+      "text": "Per uke: hvor mange som kom til deg for første gang og hvor mange som kom tilbake. Et sunt studio vokser på begge linjer."
+    },
+    "byCategory": {
+      "title": "Inntekt per kategori",
+      "text": "Hva du faktisk tjener på: pakker, enkeltøkter, gavekort og varesalg."
+    },
+    "byMethod": {
+      "title": "Betalingsmåter",
+      "text": "Hvordan kunder betaler. Hjelper deg å se om du trenger kortbetaling og hvor mye penger som går utenom kassen."
+    },
+    "buyerType": {
+      "title": "Hvem som betaler",
+      "text": "Nye kunder mot faste. Hvis nesten all inntekt kommer fra nye kunder, beholder ikke studioet folk."
+    },
+    "products": {
+      "title": "Hva som selger",
+      "text": "Alle pakker og tjenester i perioden: hvor mange som er solgt, for hvor mye og om salget vokser."
+    },
+    "topProfitable": {
+      "title": "Mest lønnsomme tidspunkter",
+      "text": "Tidspunktene i timeplanen som gir mest penger. Legg de beste trenerne dine der."
+    },
+    "topFilled": {
+      "title": "Mest fylte tidspunkter",
+      "text": "Tidspunktene kundene bestiller mest ivrig. Hvis de er helt fulle, er det verdt å legge til en økt til."
+    },
+    "chronicLow": {
+      "title": "Kronisk tomme tidspunkter",
+      "text": "Tidspunkter som har vært fylt mindre enn en tredjedel i flere uker. Kandidater for å flyttes eller fjernes."
+    },
+    "hallUtil": {
+      "title": "Utnyttelse: {{spacePlural}}",
+      "text": "Hvor mye av tiden {{spacePlural}} faktisk er i bruk. Tom tid er leie som ikke lønner seg."
+    },
+    "heatmap": {
+      "title": "Belastning etter dag og time",
+      "text": "Fargen viser det gjennomsnittlige fyllet for tidspunktet i perioden. Klikk en celle for å se øktene den dagen og timen."
+    },
+    "riskSegments": {
+      "title": "Risikosegmenter",
+      "text": "Kunder gruppert etter risikoen de medfører — å miste dem eller inntekten de ikke gir. Hvert kort har sin egen grunn og et tydelig neste steg: skriv til dem, tilby fornyelse eller oppgradering."
+    },
+    "loyalSegments": {
+      "title": "Lojale",
+      "text": "Kunder som allerede gir mest verdi: de besøker oftest, bruker mest eller tar med venner. Verdt å ta vare på og belønne."
+    },
+    "segment": {
+      "at_risk": {
+        "title": "I faresonen",
+        "text": "De pleide å komme regelmessig og har nå forsvunnet. De kan fortsatt vinnes tilbake med én melding."
+      },
+      "vip_idle": {
+        "title": "Inaktive VIP-er",
+        "text": "Kunder som har brukt mer enn noen andre, men ikke besøkt dere på en stund."
+      },
+      "expiring_subscription": {
+        "title": "Abonnement utløper",
+        "text": "Disse kundene har 1–2 økter igjen. Det beste tidspunktet å tilby fornyelse."
+      },
+      "lost_newcomers": {
+        "title": "Nye kunder som ikke kom tilbake",
+        "text": "De kom én gang og forsvant. Det handler ofte om den første økten — verdt å undersøke."
+      },
+      "upsell_candidates": {
+        "title": "Klar for mer",
+        "text": "De kommer ofte, men kjøper den enkleste pakken. Verdt å tilby et dyrere abonnement."
+      },
+      "frequent": {
+        "title": "Faste",
+        "text": "De kommer oftere enn noen andre. Ryggraden i studioets inntekt."
+      },
+      "high_ltv": {
+        "title": "Mest verdifulle",
+        "text": "Har gitt studioet mer penger enn noen andre, gjennom hele tiden."
+      },
+      "referrers": {
+        "title": "Tar med venner",
+        "text": "Kunder hvis anbefalinger har brakt andre mennesker til deg."
+      }
+    }
+  }
+}

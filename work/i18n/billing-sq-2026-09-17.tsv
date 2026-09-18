@@ -1,0 +1,294 @@
+== sq
+legal.terms	Kushtet e shërbimit
+legal.privacy	Politika e privatësisë
+tabs.plans	Planet dhe çmimet
+tabs.invoices	Historia e pagesave
+tabs.method	Mënyra e pagesës
+tabsShort.plans	Planet
+tabsShort.invoices	Historia
+tabsShort.method	Pagesa
+paymentsHistory.title	Historia e plotë e pagesave
+paymentsHistory.subtitle	Të gjitha faturat për këtë studio
+paymentsHistory.clearFilter	Pastro
+paymentsHistory.loadMore	Ngarko më shumë
+planNames.start	Start
+planNames.pro	Pro
+planNames.business	Business
+seats.title	Sa anëtarë stafi ka studioja
+seats.hint	nga {{amount}} në muaj
+seats.stepNote	Çdo vend shtesë kushton {{amount}} në muaj
+seats.unlimitedNote	Pa kufi stafi
+seats.perSeat	Për anëtar stafi
+limits.staff	Stafi
+limits.ai	Kërkesat Velora AI
+limits.unlimited	Pa kufi
+banner.trialEnds	Prova juaj përfundon më {{date}} — zgjidhni një plan
+banner.renews	Abonimi juaj {{plan}} rinovohet më {{date}}
+banner.expires	Abonimi juaj {{plan}} përfundon më {{date}}
+banner.choosePlan	Zgjidhni një plan
+banner.dismiss	Mbyll
+banner.unpaid	Plani juaj nuk është paguar. Për të vazhduar, paguani te Planet dhe faturimi.
+banner.suspended	Qasja është pezulluar sepse fatura e planit ka kaluar afatin. Paguajeni te Planet dhe faturimi.
+paymentReturn.done	Pagesa u krye — plani {{plan}} është aktiv.
+paymentReturn.processing	Po përpunohet pagesa — abonimi juaj do të aktivizohet pas pak minutash.
+header.eyebrow	Velora · Faturimi
+header.title	Planet dhe faturimi
+header.subtitle	Menaxhoni abonimin, mënyrat e pagesës dhe historinë e pagesave
+header.totalSpent	Totali i shpenzuar
+header.monthsWithUs	Muaj me ne
+header.saved	Kursyer
+header.nextCharge	Tarifa e ardhshme
+header.currentPlan	PLANI AKTUAL
+header.noPlanName	Pa plan
+header.noPlan	Pa abonim aktiv
+header.active	Aktiv
+header.activeUntil	Aktiv · deri më {{date}}
+header.trialPlanName	Plan provues
+header.trial	Periudha e provës
+header.trialUntil	Periudha e provës · deri më {{date}}
+header.expired	Skaduar
+header.percentRate	{{rate}}% e shitjeve
+header.modePercent	Plan me përqindje
+header.modeFixed	Fiks
+header.modeCombo	Kombinuar
+header.unpaid	Plani nuk është paguar
+header.awaitingPayment	Në pritje të pagesës
+mode.title	Modeli i pagesës
+mode.subscription	Abonim fiks
+mode.percent	% e shitjeve
+mode.combo	Kombinim fiks + %
+mode.short.subscription	Fiks
+mode.short.percent	Përqindje
+mode.short.combo	Kombinuar
+mode.descriptions.subscription	Paguani një shumë çdo muaj. E parashikueshme dhe me kosto të leverdishme.
+mode.descriptions.percent	Pa tarifë fikse: {{rate}}% e çdo shitjeje, përfshirë paratë në dorë.
+mode.descriptions.combo	Gjysma e abonimit + {{rate}}% e çdo shitjeje, përfshirë paratë në dorë.
+mode.badges.popular	Popullor
+mode.badges.flexible	Fleksibël
+mode.percentCard.title	Modeli „3% e shitjeve“
+mode.percentCard.description	Paguani vetëm kur fitoni: 3% e çdo shitjeje, pa tarifë fikse abonimi. Pagesat online ndahen menjëherë; paratë në dorë dhe depozitat grumbullohen dhe vijnë si një faturë çdo muaj.
+mode.percentCard.noFixed	Pa tarifë fikse
+mode.percentCard.payForResult	Paguani për rezultatet
+mode.percentCard.oneClick	Aktivizim me një klikim
+mode.percentCard.cta	Aktivizo modelin 3%
+mode.percentCard.ctaShort	Aktivizo 3%
+mode.activateSuccess	Modeli i pagesës u përditësua
+mode.activateError	Nuk u përditësua dot modeli i pagesës
+mode.alreadyActive	Ky model pagese është tashmë aktiv — më poshtë mund të rinovoni ose ndryshoni planin
+mode.confirmSwitchTitle	Të ndryshojmë modelin e pagesës?
+mode.confirmSwitchMessage	Abonimi juaj është aktiv. Ndryshimi i modelit hyn në fuqi menjëherë dhe pjesa e mbetur e periudhës së paguar HUMB PLOTËSISHT: ditët e papërdorura nuk rimbursohen dhe nuk kalohen përpara.
+mode.termsTitle	Konfirmoni kushtet e planit
+mode.termsMessage	Në këtë plan platforma mban {{rate}}% të çdo shitjeje.\n\nPër pagesat online tarifa mbahet automatikisht në çastin e pagesës. Për paratë në dorë, terminal dhe rimbushje depozitash NUK mbahet menjëherë — grumbullohet dhe merrni një faturë të veçantë një herë në muaj.\n\nKeni {{days}} ditë për të paguar faturën. Nëse nuk paguhet në kohë, qasja te CRM-ja dhe mini-aplikacioni i klientëve pezullohet derisa të shlyhet.\n\nShuma aktuale për t’u paguar shfaqet te Faturimi; mund ta paguani në çdo kohë, edhe paraprakisht.
+mode.termsConfirm	Pranoj kushtet
+mode.termsMinimum	Tarifa minimale mujore është {{amount}} {{currency}}. Nëse gjatë një muaji kalendarik platforma fitoi më pak se kjo shumë nga studioja juaj (për shembull, nuk pati fare shitje përmes CRM-së), faturoheni për diferencën. Nëse fitoni më shumë se minimumi, nuk ka faturë. Një tarifë minimale e papaguar pezullon qasjen njësoj si një faturë komisioni e papaguar.
+mode.termsBurn	KUJDES: ju ka mbetur periudhë e paguar. Ndryshimi i modelit të faturimit e HUMB plotësisht — ditët e papërdorura nuk rimbursohen dhe nuk kalohen përpara.
+mode.termsCombo	Ndryshimi është BLERJE: menjëherë pasi të konfirmoni do të shihni shumën për t’u paguar. Pjesa e mbetur e periudhës aktuale të paguar humbet — nuk rimbursohet dhe nuk kalon përpara. Modeli fiks + % aktivizohet VETËM pas pagesës; deri atëherë plani juaj mbetet siç është dhe nuk tarifohet asgjë.
+combo.rateBadge	{{rate}}%
+combo.summary	Fiks {{fixed}}/muaj + {{rate}}% e shitjeve (paratë në dorë faturohen çdo muaj)
+combo.cta	Aktivizo planin e kombinuar
+combo.ctaShort	Aktivizo kombinimin
+period.1	1 muaj
+period.3	3 muaj
+period.6	6 muaj
+period.12	1 vit
+period.24	2 vite
+period.title	Periudha e pagesës
+period.discountActive	Zbritja {{percent}}% është aktive
+period.noDiscount	Pa zbritje
+period.discountLabel	−{{percent}}% zbritje
+calculator.title	Parametrat e llogaritjes
+calculator.monthlyTurnover	Xhiroja juaj mujore online
+calculator.turnoverRangeMin	50 mijë
+calculator.turnoverRangeMax	3 mln+
+calculator.chooseFeeLabel	Zgjidhni normën e komisionit (ndikon në funksionet)
+calculator.feeOptions.basic	Bazë
+calculator.feeOptions.standard	Standard
+calculator.feeOptions.pro	Pro
+calculator.feeOptions.max	Maks
+calculator.chooseFixedLabel	Zgjidhni pjesën bazë fikse (blerja është gjithmonë 3%)
+calculator.fixedOptions.start	Start
+calculator.fixedOptions.optima	Optima
+calculator.fixedOptions.business	Business
+calculator.economyPercentTitle	EKONOMIA E PLANIT
+calculator.economyComboTitle	EKONOMIA E PLANIT TË KOMBINUAR
+calculator.turnover	Xhiroja e studios
+calculator.systemFee	Tarifa e sistemit
+calculator.totalMonthlyPayment	PAGESA TOTALE MUJORE
+calculator.onlyPayForResult	Nuk paguani tarifë fikse, vetëm për rezultatet
+calculator.activatePercent	Aktivizo modelin {{percent}}%
+calculator.baseSubscription	Abonimi bazë (fiks)
+calculator.acquiringFee	Pranimi i pagesave / tarifë
+calculator.activateCombo	Aktivizo planin e kombinuar
+planCards.bestChoice	Zgjedhja më e mirë
+planCards.current	Aktual
+planCards.perMonth	/ muaj
+planCards.currentPlan	Plani aktual
+planCards.yourPrice	Çmimi juaj
+planCards.staffLimit	Deri në {{count}} anëtarë stafi
+planCards.staffUnlimited	Staf pa kufi
+paymentSchedule.title	Orari i pagesave
+paymentSchedule.total	Totali për pagesë
+paymentSchedule.morePayments	+ {{count}} pagesa të tjera nga {{amount}}
+paymentSchedule.processing	Po ridrejtoheni te pagesa…
+paymentSchedule.payFor	Paguaj për {{count}} muaj
+paymentSchedule.vatNote	Pa TVSH — tatimi shtohet në arkë sipas vendit tuaj
+trust.title	Pse na besojnë mbi 2 400 biznese
+trust.reviews.0.text	Kaluam nga Altegio. Ndryshimi është si mes një taksie dhe një avioni privat.
+trust.reviews.0.author	Maria K., FORM Pilates
+trust.reviews.1.text	Më e mira është të di saktësisht çfarë paguaj çdo muaj. Pa surpriza.
+trust.reviews.1.author	Artem N., Barbershop Bros
+trust.reviews.2.text	Mbështetja u përgjigj për 4 minuta. Nuk e kam parë askund tjetër.
+trust.reviews.2.author	Elena D., SPA LUNA
+upgrade.priceLine	Çmimi {{price}}/muaj
+upgrade.discountNote	 {{percent}}% ulje kur paguani për {{period}} muaj
+upgrade.planLabel	Plan
+upgrade.periodLabel	Periudha
+upgrade.periodValue_one	{{count}} muaj
+upgrade.periodValue_other	{{count}} muaj
+upgrade.discountLabel	Zbritje
+upgrade.scheduledBadge	Nga {{date}} — plani „{{plan}}“
+upgrade.vatNote	Pa TVSH — tatimi shtohet në arkë sipas të dhënave të kompanisë suaj; kompanitë e BE-së me numër TVSH-je përfitojnë nga ngarkesa e kundërt.
+method.notLinked	Nuk është lidhur
+method.badgeTitle	Mënyra e pagesës është e siguruar
+method.tokenSub	Token i ofruesit · skadon më {{expiry}}
+method.tokenNote	Të dhënat e vërteta të kartës ruhen nga ofruesi i pagesave (PCI DSS L1). Ne mbajmë vetëm një token njëpërdorimësh për rinovime.
+method.securityTitle	Standardet e mbrojtjes së të dhënave
+method.security.pciDss	Enkriptim PCI DSS Niveli 1
+method.security.secure3d	Mbrojtje transaksioni 3D Secure
+method.security.noStorage	Të dhënat e kartës nuk kalojnë kurrë nëpër serverët tanë
+method.security.autoLink	Karta lidhet në pagesën e parë
+method.noCardDetail	Nuk keni nevojë t’i vendosni të dhënat veçmas — pagesa bëhet në faqen e sigurt të Stripe.
+method.renewDone	Fatura u krijua — pagesa po përpunohet
+method.renewBusy	Po krijohet fatura…
+method.renewSuccess	Fatura e rinovimit u krijua
+method.renewError	Nuk u krijua dot fatura. Provoni përsëri.
+method.renewNow	Rinovo tani me kartën •••• {{last4}}
+method.autopayTitle	Cilësimet e pagesës automatike
+method.autopaySuccess	Cilësimi u ruajt
+method.autopayError	Nuk u ruajt dot cilësimi. Provoni përsëri.
+method.autopay.cardOnly	E disponueshme kur paguani me kartë
+method.autopay.autoRenew.label	Rinovim automatik
+method.autopay.autoRenew.desc	Fikeni për ta anuluar në fund të periudhës së paguar
+method.autopay.autoRenew.until	Abonimi nuk do të rinovohet — qasje deri më {{date}}
+method.autopay.emailNotify.label	Njoftime me email
+method.autopay.emailNotify.desc	Fatura dërgohet me email pas çdo pagese
+method.autopay.remind3d.label	Kujto 3 ditë më parë
+method.autopay.remind3d.desc	Do t’ju kujtojmë para tarifimit automatik
+method.autopay.sms.label	Njoftim SMS
+method.autopay.sms.desc	Dërgohet mesazh me tekst kur tarifohet
+method.portal.title	Të dhënat e faturimit dhe TVSH-ja
+method.portal.subtitle	Faturat, karta e lidhur dhe historia e tarifimeve janë në portalin e klientit Stripe.
+method.portal.cta	Hap në Stripe
+method.ibanBadgeLabel	Transfertë bankare (SEPA)
+method.ibanBadgeNote	Faturat vijnë me email me një lidhje pagese — asgjë nuk tarifohet automatikisht nga karta. Mund të paguani edhe më herët nga faqja e faturës.
+invoices.title	Historia e pagesave
+invoices.totalPaid	gjithsej e paguar {{amount}}
+invoices.exportCsv	Eksporto CSV
+invoices.exportError	Nuk u eksportua dot CSV-ja. Provoni përsëri.
+invoices.receiptError	Nuk u hap dot fatura. Provoni përsëri.
+invoices.invoiceNo	Fatura #{{id}}
+invoices.methodCard	Paguar me kartë
+invoices.methodIban	Paguar me transfertë bankare (IBAN)
+invoices.syncHint	Kontrolloni statusin me shërbimin e pagesave
+invoices.syncChanged	Statusi u përditësua: {{status}}
+invoices.syncUnchanged	Shërbimi i pagesave konfirmoi të njëjtin status
+invoices.syncError	Nuk u kontrollua dot statusi. Provoni përsëri.
+invoices.kindOfflineFee	Komision për shitje offline
+invoices.kindMinFee	Tarifa minimale mujore
+invoices.kindOnlineFee	Komision për pagesa online
+invoices.methodWithheld	Mbajtur nga Stripe në pagesë
+table.date	Data
+table.description	Përshkrimi
+table.amount	Shuma
+table.status	Statusi
+table.receipt	Fatura
+status.paid	Paguar
+status.pending	Në pritje
+status.failed	E papaguar
+status.refunded	Rimbursuar
+empty.noInvoices	Ende nuk ka fatura — ato do të shfaqen pas pagesës së parë.
+empty.noCard	Karta juaj do të shfaqet automatikisht pas pagesës së parë.
+empty.monthsWithUs	Ende nuk keni blerë një abonim
+empty.noData	Pa të dhëna
+savings.title	Kursimet tuaja
+savings.prepayTitle	Kursimet tuaja kur paguani paraprakisht
+savings.emptyState	Zgjidhni periudhë më të gjatë dhe filloni të kurseni
+savings.youSave	Kurseni {{amount}} gjatë {{months}} muajve
+savings.freeMonths	Kjo është si {{count}} muaj falas
+savings.amountLabel	{{amount}} kursime
+savings.comparedToMonthly	krahasuar me pagesën mujore
+savings.forMonths_one	Për {{count}} muaj
+savings.forMonths_other	Për {{count}} muaj
+pay	Paguaj
+continuePlan	Vazhdo planin
+payModal.titleNew	Nis planin {{plan}}
+payModal.titleSwitch	Kalo te {{plan}}
+payModal.titleRenew	Rinovo {{plan}}
+payModal.totalLabel	Plani juaj do të kushtojë
+payModal.burnWarning	Kalimi në një plan tjetër rinis periudhën: pjesa e mbetur e planit tuaj {{plan}} HUMB — nuk rimbursohet dhe nuk kalon përpara. Rinovimi i të njëjtit plan e ruan.
+payModal.switched	Plani ndryshoi: nuk ka asgjë për të paguar — ndryshimi u mbulua nga pjesa e mbetur e periudhës aktuale.
+payModal.renewNote	Kjo rinovon të njëjtin plan: muajt që blini i shtohen periudhës aktuale të paguar. Asgjë nuk humbet.
+payModal.cardNote	Pagesë me kartë në faqen e sigurt të Stripe · rimbursim brenda 7 ditësh
+payModal.freeUntil	Asgjë nuk tarifohet deri më {{date}}: ju kanë mbetur {{count}} ditë nga periudha e paguar. Faturimi fillon në atë datë.
+payModal.taxLabel	TVSH
+payModal.taxLine	TVSH {{rate}}%
+payModal.reverseCharge	Ngarkesë e kundërt
+payModal.totalWithTax	Totali me TVSH
+payModal.taxServerNote	Tatimi llogaritet nga të dhënat tuaja të faturimit. Fatura do të tregojë të njëjtën shumë.
+payModal.taxReview	Nuk përcaktuam dot tatimin për të dhënat tuaja të faturimit, prandaj totali shfaqet pa të dhe pagesa nuk mund të përfundojë. Kontrolloni vendin dhe adresën e paguesit ose kontaktoni mbështetjen.
+offlineFee.title	Tarifa e shitjeve offline
+offlineFee.accruing	Grumbulluar nga paratë në dorë dhe depozitat me {{rate}}%. Faturuar çdo muaj, keni {{days}} ditë për të paguar.
+offlineFee.due	Fatura u lëshua. Ditët e mbetura për pagesë: {{days}}.
+offlineFee.suspended	Pagesa ka kaluar afatin — qasja te CRM-ja dhe mini-aplikacioni është pezulluar.
+offlineFee.pay	Paguaj
+offlineFee.suspendedMin	Tarifa minimale mujore ka kaluar afatin — qasja te CRM-ja dhe mini-aplikacioni është pezulluar.
+offlineFee.alsoAccruing	Plus që po grumbullohet këtë muaj: {{amount}} — do të hyjë në faturën tjetër.
+offlineFee.minimum	Tarifa minimale mujore është {{amount}}. Nëse fitoni më pak gjatë muajit, plotësoni diferencën; nëse fitoni më shumë, nuk ka faturë.
+offlineFee.pendingBill	Grumbulluar sipas modelit të mëparshëm, në pritje të faturës.
+offlineFee.notBilledYet	Ende nuk është lëshuar faturë: shuma e grumbulluar është nën madhësinë minimale të faturës ose ende po përgatitet. Asgjë nuk humbet — hyn në faturën tjetër.
+trial.title	Oferta për studio të reja
+trial.subtitle	Studioja juaj sapo u krijua
+trial.headline	{{days}} ditë falas
+trial.noCard	Nuk kërkohet kartë — nuk ka asgjë për të paguar tani
+trial.perks.allModules	Qasje e plotë në çdo modul: ditari, klientët, financat, njoftimet dhe Velora AI
+trial.perks.noCommitment	Pa detyrim: nëse nuk ju përshtatet, thjesht mos rinovoni
+trial.perks.keepData	Gjithçka që vendosni gjatë provës mbetet e juaja
+trial.activate	Aktivizo
+trial.decline	Refuzo
+trial.cardHint	Ende nuk e keni aktivizuar periudhën falas të kësaj studioje. Ajo mbetet e disponueshme derisa të blini një plan.
+profile.title	Të dhënat e faturimit
+profile.editTitle	Ndrysho të dhënat e faturimit
+profile.subtitle	Adresa juaj vendoset në faturë dhe përcakton normën e tatimit. Ruhet në llogarinë tuaj — nuk do ta kërkojmë përsëri në një studio tjetër.
+profile.subtitlePay	Plotësojeni një herë dhe pagesa kalon drejtpërdrejt herën tjetër. Adresa juaj vendoset në faturë dhe përcakton normën e tatimit.
+profile.cardTitle	Të dhënat e faturimit
+profile.cardSubtitle	Ruhen në llogarinë tuaj dhe përdoren në të gjitha studiot. Kështu shfaqen në faturë.
+profile.cardEmpty	Ende nuk janë plotësuar — do t’jua kërkojmë para pagesës së parë. Mund t’i shtoni tani.
+profile.add	Shto të dhënat e faturimit
+profile.edit	Ndrysho
+profile.save	Ruaj
+profile.saveAndPay	Ruaj dhe vazhdo te pagesa
+profile.cancel	Anulo
+profile.saved	Të dhënat e faturimit u ruajtën
+profile.vatNone	Nuk është dhënë
+profile.fields.country	Vendi ose rajoni
+profile.fields.countryPlaceholder	Zgjidhni një vend
+profile.fields.address	Adresa
+profile.fields.line1	Rreshti 1 i adresës
+profile.fields.line1Placeholder	Rruga dhe numri
+profile.fields.line2	Rreshti 2 i adresës — opsional
+profile.fields.line2Placeholder	Apartamenti, suita, numri i njësisë etj.
+profile.fields.postalCode	Kodi postar
+profile.fields.postalCodePlaceholder	110 00
+profile.fields.city	Qyteti
+profile.fields.cityPlaceholder	Pragë
+profile.fields.vat	Numri i TVSH-së — opsional
+profile.fields.vatPlaceholder	{{prefix}}12345678
+profile.fields.vatHint	Vetëm për biznese. Numri kontrollohet në regjistrin e BE-së (VIES) kur e ruani — nuk pranojmë numra të paverifikuar. Me një numër të vlefshëm, një kompani në një vend tjetër të BE-së faturohet pa tatim (ngarkesë e kundërt). Individët nuk e kanë — lëreni bosh.
+profile.fields.countrySearch	Filloni të shkruani emrin
+profile.fields.countryNotFound	Nuk u gjet vend
+profile.fields.vatOutsideEu	Nuk kërkojmë numër TVSH-je: jashtë BE-së tatimi caktohet nga vendi i paguesit, jo nga numri, prandaj nuk ndikon në faturë.
+profile.fields.vatPending	Numri juaj është ruajtur, por regjistri i BE-së nuk ishte i disponueshëm atë çast, ndaj ende nuk është konfirmuar dhe fatura juaj e ardhshme do të përfshijë TVSH të plotë. Nuk duhet ta fusni përsëri: vazhdojmë ta kontrollojmë dhe sapo regjistri të përgjigjet, tatimi nuk tarifohet më. Për një faturë tashmë të paguar, mbështetja do ta rimbursojë tatimin.
+profile.errors.required	Kjo fushë kërkohet
+profile.preview.invoice	Faturë
+profile.preview.billTo	Faturohet për
+profile.preview.note	Kështu shfaqen të dhënat tuaja në çdo faturë. Mund t’i ndryshoni kurdo te Plani dhe faturimi → Mënyra e pagesës.

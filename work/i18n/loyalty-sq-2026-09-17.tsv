@@ -1,0 +1,240 @@
+== sq
+header.allConfigured	Të gjitha programet janë konfiguruar
+header.allConfiguredSub	Sistemi juaj i besnikërisë funksionon me fuqi të plotë
+header.setup	Konfiguro programet e besnikërisë
+header.setupSub	{{count}} nga {{total}} programe të konfiguruara · Çdo program rrit mbajtjen e klientëve
+header.start	Fillo
+programs.loyalty.title	Kartat e besnikërisë
+programs.loyalty.desc	Sistem pikësh me nivele
+programs.loyalty.statLabel	klientë
+programs.discounts.title	Zbritje dhe cashback
+programs.discounts.desc	Oferta personale për klientët
+programs.discounts.statLabel	aktive
+programs.certificates.title	Certifikata dhuratë
+programs.certificates.desc	Certifikata dhuratë dhe me emër
+programs.certificates.statLabel	shitura
+programs.referral.title	Rekomandime
+programs.referral.desc	Programi „Sill një mik”
+programs.referral.statLabel	rekomandime
+programs.promocodes.title	Kode promocionale
+programs.promocodes.desc	Kode zbritjeje me kufi përdorimi
+programs.promocodes.statLabel	aktive
+programs.deposit.title	Depozitë
+programs.deposit.desc	Bilanci i parave të klientit në studio
+programs.deposit.statLabel	me bilanc
+card.active	Aktiv
+card.disable	Çaktivizo
+card.notConfigured	Nuk është konfiguruar
+card.configure	Konfiguro
+drawer.subtitle	Cilësimet e programit
+drawer.saving	Po ruhet…
+drawer.save	Ruaj dhe aktivizo
+drawer.cancel	Anulo
+drawer.close	Mbyll
+config.mainParams	Parametrat kryesorë
+config.programName	Emri i programit
+config.pointsRate	Norma e pikëve ({{currency}} për 1 pikë)
+config.levels	Nivelet
+config.pointValue	1 pikë =
+config.pointValueHint	Pikët fitohen me të njëjtën normë në çdo nivel, por nuk kanë të njëjtën vlerë. Jepini Gold 1 dhe Diamond 2, dhe një pikë e fituar nga klienti do të ulë çmimin dy herë më shumë në arkë. Ky është kuptimi i një niveli: sa më shumë të ketë shpenzuar dikush në studio, aq më të vlefshme janë pikët e tij.
+config.expiry	Afati i skadimit
+config.expiryTooltip	Sa gjatë mund t'i përdorë klienti pikët e grumbulluara
+config.expiryOptions.3m	3 muaj
+config.expiryOptions.6m	6 muaj
+config.expiryOptions.1y	1 vit
+config.expiryOptions.never	Pa skadim
+config.newLevelName	Nivel i ri
+config.addLevel	+ Nivel
+config.levelFrom	nga
+config.levelTo	deri
+config.deleteLevelTitle	Ta fshish këtë nivel?
+config.deleteLevelMessage	Klientët në nivelin „{{name}}” do të kalojnë në nivelin fqinj sipas shpenzimeve të tyre totale.
+config.discountType	Lloji i zbritjes
+config.discountTypes.percentage	Përqindje (%)
+config.discountTypes.fixed	Fikse ({{currency}})
+config.discountTypes.cashback	Cashback
+config.cashbackPercent	Përqindja e cashback-ut
+config.discountSize	Vlera e zbritjes
+config.minPurchase	Shuma minimale e blerjes
+config.noLimit	Pa kufi
+config.conditions	Kushtet e zbatimit
+config.appliesToAll	Zbatoje për të gjitha shërbimet
+config.stackable	Kombinoje me zbritje të tjera
+config.visibleInCabinet	Shfaqe klientit në llogarinë e tij
+config.certType	Lloji i certifikatës
+config.certTypes.named	Me emër
+config.certTypes.gift	Dhuratë
+config.certTypes.service	Për një shërbim
+config.denominations	Vlerat nominale
+config.addDenom	+ Shto
+config.service	Shërbimi
+config.noServices	Nuk ka ende shërbime në katalog — shtojini te „Katalogu”
+config.params	Parametrat
+config.expiryDays	Afati i skadimit (ditë)
+config.certIssue	Lësho certifikatë
+config.certCustomAmount	Shumë e personalizuar
+config.certRecipientName	Emri i marrësit
+config.certRecipientPlaceholder	Opsionale
+config.certLinkClient	Lidhe me një klient
+config.certClientSearchPlaceholder	Filloni të shkruani një emër…
+config.certAccount	Llogaria e depozitës
+config.certAccountNone	Mos e regjistro në libër
+config.certIssueButton	Lësho
+config.certIssuedTitle	Certifikata u lëshua
+config.certCopyCode	Kopjo kodin
+config.certCopied	U kopjua
+config.certIssueAnother	Lësho një tjetër
+config.certIssued	Certifikata të lëshuara
+config.certEmpty	Nuk ka ende certifikata të lëshuara
+config.certStatus.active	Aktive
+config.certStatus.used	E përdorur
+config.certStatus.expired	E skaduar
+config.certRedeem	Përdor
+config.certRedeemTitle	Ta përdorësh këtë certifikatë?
+config.certRedeemMessage	Certifikata {{code}} do të shënohet si e përdorur. Kjo nuk mund të zhbëhet.
+config.referrerBonusTitle	Bonus për rekomandim
+config.referrerBonus	Bonus për rekomanduesin ({{currency}})
+config.newClientDiscount	Zbritje për klientin e ri (%)
+config.triggerCondition	Kushti i fitimit
+config.triggerConditions.first_visit	Pas vizitës së parë
+config.triggerConditions.first_payment	Pas pagesës së parë
+config.triggerConditions.registration	Menjëherë pas regjistrimit
+config.bonusAccrual	Fitimi i bonusit
+config.bonusTypes.points	Pikë
+config.bonusTypes.deposit	Në depozitë
+config.bonusTypes.discount	Si zbritje
+config.promoCreate	Krijo kod promocional
+config.promoCodePlaceholder	VERË25
+config.promoValidUntil	I vlefshëm deri më
+config.promoUsageLimit	Kufiri i përdorimit
+config.promoAdd	+ Shto kod promocional
+config.promoList	Kode promocionale
+config.promoEmpty	Nuk ka ende kode promocionale
+config.promoUntil	deri
+config.promoStatus.active	Aktiv
+config.promoStatus.expired	I skaduar
+config.promoStatus.exhausted	Kufiri u arrit
+config.promoStatus.disabled	I çaktivizuar
+config.depositTotal	Bilanci total
+config.depositTotalSub	në të gjitha depozitat e klientëve
+config.depositTopClients	Klientët kryesorë sipas bilancit
+config.depositEmpty	Askush nuk ka ende depozitë
+config.depositHint	Mbushjet dhe tërheqjet kryhen te profili i klientit. Programi i rekomandimeve mund të japë bonuse në depozitë në vend të pikëve.
+validation.required	Kjo fushë është e detyrueshme
+validation.minOne	Duhet të jetë së paku 1
+validation.minZero	Nuk mund të jetë negativ
+validation.positive	Duhet të jetë më i madh se 0
+validation.range0to100	0 deri në 100
+toasts.saved	Programi u aktivizua
+toasts.saveFailed	Ruajtja dështoi
+toasts.toggleFailed	Programi nuk u përditësua
+toasts.loadFailed	Të dhënat nuk u ngarkuan
+toasts.retry	Provo përsëri
+stats.notConnected	Programi nuk është lidhur
+stats.willAppear	Të dhënat do të shfaqen pas konfigurimit
+stats.noData	Nuk ka të dhëna
+stats.connectProgram	Lidh një program
+stats.revenueHeadline	Të ardhura nga anëtarët
+stats.membersHeadline	Anëtarët e programit
+stats.returnedClients	Klientë të rikthyer
+stats.returnedClientsSub	2+ vizita në 90 ditë
+stats.avgCheckHeadline	Shuma mesatare për anëtar
+stats.bonusCostHeadline	Kostoja e bonuseve
+stats.bonusCostSub	këtë muaj
+stats.roiHeadline	ROI
+stats.roiValue	×{{value}}
+stats.perMonth	këtë muaj
+stats.cardHolders	mbajtës karte
+stats.kpi	Treguesit kryesorë
+stats.members	Anëtarë
+stats.withCard	me kartë
+stats.avgCheck	Shuma mesatare
+stats.byMembers	ndër anëtarët
+stats.pointsInCirculation	Pikë në qarkullim
+stats.accrued	fituara
+stats.revenue	Të ardhura
+stats.revenuePerMonth	nga anëtarët / muaj
+stats.levelDistribution	Shpërndarja sipas nivelit
+stats.noLevels	Nivelet nuk janë konfiguruar ende
+stats.totalClients	Klientë gjithsej në program
+stats.fromValue	nga {{value}}
+stats.levelPointValue	pikë = {{value}}
+scenarios.title	Skenarë inteligjentë
+scenarios.subtitle	Autopilot për mbajtjen e klientëve: sistemi i gjen klientët dhe i shpërblen për ju
+scenarios.add	Skenar
+scenarios.fired	u aktivizua {{count}} herë
+scenarios.lastRun	ekzekutimi i fundit {{when}}
+scenarios.neverRun	ende nuk është ekzekutuar
+scenarios.empty	Nuk ka ende skenarë
+scenarios.emptySub	Krijoni të parin — sistemi do të mbajë klientët për ju
+scenarios.channel	Kanali
+scenarios.channelSoon	pas lidhjes së integrimit
+scenarios.pickTemplate	Zgjidh një skenar
+scenarios.pickTemplateSub	Një shabllon gati — rregullo pragjet më vonë
+scenarios.create	Krijo
+scenarios.deleteConfirm	Ta fshish skenarin?
+scenarios.deleteConfirmSub	Rregulli do të ndalojë së aktivizuari. Kjo nuk mund të zhbëhet.
+scenarios.triggers.inactive_days	joaktiv për {{days}} ditë
+scenarios.triggers.low_subscription	≤ {{classes_left}} seanca të mbetura
+scenarios.triggers.birthday	ditëlindje
+scenarios.triggers.nth_visit	vizita nr. {{n}}
+scenarios.triggers.referral	solli një mik
+scenarios.actions.points	dhuro {{points}} pikë
+scenarios.actions.gift_classes	dhuro {{classes}} seanca
+scenarios.actions.certificate	lësho një certifikatë {{amount}} ₽
+scenarios.actions.renewal_offer	ofroj rinovim me {{discount}}% zbritje
+scenarios.templates.win_back.name	Na mungon
+scenarios.templates.win_back.desc	Rikthe një klient që nuk ka ardhur prej kohësh
+scenarios.templates.expiring_subscription.name	Abonimi po mbaron
+scenarios.templates.expiring_subscription.desc	Ofro rinovim para se të mbarojnë seancat
+scenarios.templates.birthday_gift.name	Dhuratë për ditëlindje
+scenarios.templates.birthday_gift.desc	Gëzoje klientin në ditën e tij të veçantë
+scenarios.templates.fifth_visit.name	Shpërblim besnikërie
+scenarios.templates.fifth_visit.desc	Një seancë falas për besnikëri
+scenarios.templates.referral_thanks.name	Faleminderit për mikun
+scenarios.templates.referral_thanks.desc	Shpërble atë që solli një klient të ri
+scenarios.ifClient	Nëse klienti
+scenarios.then	→
+scenarios.toasts.created	Skenari u krijua
+scenarios.toasts.updated	Skenari u përditësua
+scenarios.toasts.deleted	Skenari u fshi
+scenarios.toasts.failed	Skenari nuk u ruajt
+scenarios.delete	Fshi
+segmentsBoard.title	Segmente dhe rekomandime
+segmentsBoard.subtitle	Grupe aktive klientësh, secili me një veprim të qartë
+segmentsBoard.empty	Këtu nuk ka asgjë, dhe kjo është mirë
+segmentsBoard.clients	klientë
+segmentsBoard.daysAgo	{{count}} ditë më parë
+segmentsBoard.neverVisited	asnjë vizitë
+segmentsBoard.more	dhe {{count}} të tjerë
+segmentsBoard.segments.at_risk.name	Rrezik largimi
+segmentsBoard.segments.at_risk.desc	Aktivë, joaktivë për 21+ ditë
+segmentsBoard.segments.at_risk.action	Jep bonus
+segmentsBoard.segments.vip_idle.name	VIP i heshtur
+segmentsBoard.segments.vip_idle.desc	Klientë VIP, joaktivë për 14+ ditë
+segmentsBoard.segments.vip_idle.action	Nis fushatë
+segmentsBoard.segments.expiring_subscription.name	Abonimi po mbaron
+segmentsBoard.segments.expiring_subscription.desc	≤2 seanca ose ≤7 ditë të mbetura
+segmentsBoard.segments.expiring_subscription.action	Nis fushatë
+segmentsBoard.segments.lost_newcomers.name	Nuk u kthyen kurrë
+segmentsBoard.segments.lost_newcomers.desc	Erdhën një herë, mungojnë prej 14+ ditësh
+segmentsBoard.segments.lost_newcomers.action	Nis fushatë
+segmentsBoard.segments.upsell_candidates.name	Gati për paketë
+segmentsBoard.segments.upsell_candidates.desc	8+ vizita këtë muaj, pa paketë
+segmentsBoard.segments.upsell_candidates.action	Nis fushatë
+segmentsBoard.campaignSub	Segmenti „{{name}}” · {{count}} klientë
+segmentsBoard.pointsLabel	Sa pikë të jepen
+segmentsBoard.messageLabel	Teksti i mesazhit
+segmentsBoard.messagePlaceholder	p.sh. Na mungon! Kthehu — po të presim.
+segmentsBoard.emailNote	Emaili u dërgohet vetëm klientëve që kanë email
+segmentsBoard.confirm	Dërgo
+segmentsBoard.toasts.pointsDone	Pikët u dhanë · {{processed}} u përpunuan, {{emails}} u njoftuan
+segmentsBoard.toasts.emailDone	Fushata u dërgua · {{emails}} emaile nga {{processed}}
+retention.title	Rinovimet e abonimeve
+retention.subtitle	Sa mirë kthehen klientët për një paketë të re
+retention.renewalRate	Rinovo
+retention.avgPackages	Paketa për klient
+retention.sold	Shitur
+retention.renewed	Rinovuar
+retention.empty	Nuk ka ende shitje abonimesh
+retention.emptySub	Analitika do të shfaqet pas shitjeve të para të paketave

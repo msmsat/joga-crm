@@ -1,0 +1,294 @@
+== hu
+legal.terms	Szolgáltatási feltételek
+legal.privacy	Adatvédelmi irányelvek
+tabs.plans	Csomagok és árak
+tabs.invoices	Fizetési előzmények
+tabs.method	Fizetési mód
+tabsShort.plans	Csomagok
+tabsShort.invoices	Előzmények
+tabsShort.method	Fizetés
+paymentsHistory.title	Teljes fizetési előzmény
+paymentsHistory.subtitle	A stúdió összes számlája
+paymentsHistory.clearFilter	Törlés
+paymentsHistory.loadMore	További betöltése
+planNames.start	Start
+planNames.pro	Pro
+planNames.business	Business
+seats.title	Hány munkatárs dolgozik a stúdióban
+seats.hint	{{amount}}/hótól
+seats.stepNote	Minden további hely {{amount}}-val növeli a havi díjat
+seats.unlimitedNote	Nincs létszámkorlát
+seats.perSeat	Munkatársanként
+limits.staff	Munkatársak
+limits.ai	Velora AI-kérések
+limits.unlimited	Korlátlan
+banner.trialEnds	A próbaidőszak {{date}} napján véget ér — válasszon csomagot
+banner.renews	A(z) {{plan}} előfizetése {{date}} napján megújul
+banner.expires	A(z) {{plan}} előfizetése {{date}} napján lejár
+banner.choosePlan	Csomag választása
+banner.dismiss	Bezárás
+banner.unpaid	A csomag nincs kifizetve. A folytatáshoz fizessen a Csomagok és számlázás résznél.
+banner.suspended	A hozzáférés fel van függesztve, mert a csomag számlája lejárt. Fizesse ki a Csomagok és számlázás résznél.
+paymentReturn.done	A fizetés sikeres — a(z) {{plan}} csomag aktív.
+paymentReturn.processing	A fizetés feldolgozása folyamatban — előfizetése néhány percen belül aktiválódik.
+header.eyebrow	Velora · Számlázás
+header.title	Csomagok és számlázás
+header.subtitle	Kezelje előfizetését, fizetési módjait és fizetési előzményeit
+header.totalSpent	Összes költés
+header.monthsWithUs	Velünk töltött hónapok
+header.saved	Megtakarítás
+header.nextCharge	Következő terhelés
+header.currentPlan	JELENLEGI CSOMAG
+header.noPlanName	Nincs csomag
+header.noPlan	Nincs aktív előfizetés
+header.active	Aktív
+header.activeUntil	Aktív · {{date}} napjáig
+header.trialPlanName	Próbacsomag
+header.trial	Próbaidőszak
+header.trialUntil	Próbaidőszak · {{date}} napjáig
+header.expired	Lejárt
+header.percentRate	{{rate}}% az értékesítésből
+header.modePercent	Százalékos csomag
+header.modeFixed	Fix
+header.modeCombo	Kombinált
+header.unpaid	A csomag nincs kifizetve
+header.awaitingPayment	Fizetésre vár
+mode.title	Fizetési modell
+mode.subscription	Fix előfizetés
+mode.percent	% az értékesítésből
+mode.combo	Fix + % kombináció
+mode.short.subscription	Fix
+mode.short.percent	Százalék
+mode.short.combo	Kombinált
+mode.descriptions.subscription	Havonta egy összeget fizet. Kiszámítható és költséghatékony.
+mode.descriptions.percent	Nincs fix díj: minden értékesítés {{rate}}%-a, a készpénzt is beleértve.
+mode.descriptions.combo	Fél előfizetés + minden értékesítés {{rate}}%-a, a készpénzt is beleértve.
+mode.badges.popular	Népszerű
+mode.badges.flexible	Rugalmas
+mode.percentCard.title	A „3% az értékesítésből” modell
+mode.percentCard.description	Csak akkor fizet, amikor keres: minden értékesítés 3%-át, fix előfizetési díj nélkül. Az online fizetések azonnal feloszlanak; a készpénz és előlegek összegyűlnek, és havonta egy számlán érkeznek.
+mode.percentCard.noFixed	Nincs fix díj
+mode.percentCard.payForResult	Fizetés az eredményekért
+mode.percentCard.oneClick	Egykattintásos aktiválás
+mode.percentCard.cta	Aktiválja a 3%-os modellt
+mode.percentCard.ctaShort	3% aktiválása
+mode.activateSuccess	Fizetési modell frissítve
+mode.activateError	A fizetési modell nem frissíthető
+mode.alreadyActive	Ez a fizetési modell már aktív — alább megújíthatja vagy módosíthatja a csomagot
+mode.confirmSwitchTitle	Fizetési modell váltása?
+mode.confirmSwitchMessage	Előfizetése aktív. A modellváltás azonnal életbe lép, és a fizetett időszak hátralévő része TELJES EGÉSZÉBEN ELVÉSZ: a fel nem használt napok nem visszatéríthetők és nem vihetők át.
+mode.termsTitle	Csomagfeltételek megerősítése
+mode.termsMessage	Ebben a csomagban a platform minden értékesítés {{rate}}%-át visszatartja.\n\nOnline fizetésnél a díjat automatikusan a fizetéskor vonjuk le. Készpénz, terminál és előlegfeltöltés esetén NEM vonjuk le azonnal — felhalmozódik, és havonta külön számlát kap.\n\n{{days}} napja van a számla kifizetésére. Ha nem fizeti ki időben, a CRM-hez és az ügyfél miniapphoz való hozzáférés a rendezésig fel lesz függesztve.\n\nAz aktuális esedékes összeg a Számlázásban látható; bármikor fizethet, akár előre is.
+mode.termsConfirm	Elfogadom a feltételeket
+mode.termsMinimum	A minimum havi díj {{amount}} {{currency}}. Ha egy naptári hónapban a platform ennél kevesebbet keresett az Ön stúdióján (például egyáltalán nem volt CRM-en keresztüli értékesítés), a különbözetről számlát kap. Ha többet keres a minimumnál, nincs számla. A ki nem fizetett minimumdíj ugyanúgy felfüggeszti a hozzáférést, mint egy ki nem fizetett jutalékszámla.
+mode.termsBurn	FIGYELMEZTETÉS: maradt fizetett időszaka. A számlázási modell váltása TELJESEN ELVESZÍTI — a fel nem használt napok nem visszatéríthetők és nem vihetők át.
+mode.termsCombo	A váltás VÁSÁRLÁS: közvetlenül a megerősítés után látni fogja az esedékes összeget. A jelenlegi fizetett időszak fennmaradó része elvész — nem jár vissza és nem vihető át. A fix + % modell CSAK fizetés után kapcsol be; addig a csomag változatlan, és nincs terhelés.
+combo.rateBadge	{{rate}}%
+combo.summary	Fix {{fixed}}/hó + {{rate}}% az értékesítésből (készpénz havonta számlázva)
+combo.cta	Kombinált csomag aktiválása
+combo.ctaShort	Kombinált aktiválása
+period.1	1 hónap
+period.3	3 hónap
+period.6	6 hónap
+period.12	1 év
+period.24	2 év
+period.title	Fizetési időszak
+period.discountActive	{{percent}}% kedvezmény aktív
+period.noDiscount	Nincs kedvezmény
+period.discountLabel	−{{percent}}% kedvezmény
+calculator.title	Számítási paraméterek
+calculator.monthlyTurnover	Havi online forgalma
+calculator.turnoverRangeMin	50 E
+calculator.turnoverRangeMax	3 M+
+calculator.chooseFeeLabel	Válasszon jutalékrátát (hatással van a funkciókra)
+calculator.feeOptions.basic	Alap
+calculator.feeOptions.standard	Standard
+calculator.feeOptions.pro	Pro
+calculator.feeOptions.max	Max.
+calculator.chooseFixedLabel	Válasszon alap fix részt (a kártyaelfogadás mindig 3%)
+calculator.fixedOptions.start	Start
+calculator.fixedOptions.optima	Optima
+calculator.fixedOptions.business	Business
+calculator.economyPercentTitle	CSOMAGGAZDASÁGOSSÁG
+calculator.economyComboTitle	KOMBINÁLT CSOMAG GAZDASÁGOSSÁGA
+calculator.turnover	Stúdió forgalma
+calculator.systemFee	Rendszerdíj
+calculator.totalMonthlyPayment	TELJES HAVI FIZETÉS
+calculator.onlyPayForResult	Nem fizet fix díjat, csak az eredményekért
+calculator.activatePercent	{{percent}}%-os modell aktiválása
+calculator.baseSubscription	Alapelőfizetés (fix)
+calculator.acquiringFee	Kártyaelfogadás / díj
+calculator.activateCombo	Kombinált csomag aktiválása
+planCards.bestChoice	Legjobb választás
+planCards.current	Jelenlegi
+planCards.perMonth	/ hó
+planCards.currentPlan	Jelenlegi csomag
+planCards.yourPrice	Az Ön ára
+planCards.staffLimit	Legfeljebb {{count}} munkatárs
+planCards.staffUnlimited	Korlátlan munkatárs
+paymentSchedule.title	Fizetési ütemezés
+paymentSchedule.total	Fizetendő összesen
+paymentSchedule.morePayments	+ {{count}} további {{amount}} összegű fizetés
+paymentSchedule.processing	Átirányítás a fizetéshez…
+paymentSchedule.payFor	Fizetés {{count}} hóra
+paymentSchedule.vatNote	ÁFA nélkül — az adó a pénztárnál, országa alapján kerül hozzáadásra
+trust.title	Miért bízik bennünk több mint 2 400 vállalkozás
+trust.reviews.0.text	Altegióról váltottunk. A különbség olyan, mint taxi és magánrepülő között.
+trust.reviews.0.author	Maria K., FORM Pilates
+trust.reviews.1.text	A legjobb, hogy pontosan tudom, mennyit fizetek minden hónapban. Semmi meglepetés.
+trust.reviews.1.author	Artem N., Barbershop Bros
+trust.reviews.2.text	Az ügyfélszolgálat 4 perc alatt válaszolt. Ilyet még sehol sem láttam.
+trust.reviews.2.author	Elena D., SPA LUNA
+upgrade.priceLine	Ár {{price}}/hó
+upgrade.discountNote	 {{percent}}% kedvezmény {{period}} havi fizetésnél
+upgrade.planLabel	Csomag
+upgrade.periodLabel	Időszak
+upgrade.periodValue_one	{{count}} hónap
+upgrade.periodValue_other	{{count}} hónap
+upgrade.discountLabel	Kedvezmény
+upgrade.scheduledBadge	{{date}} napjától — „{{plan}}” csomag
+upgrade.vatNote	ÁFA nélkül — az adó a pénztárnál a vállalati adatai alapján kerül hozzáadásra; ÁFA-számmal rendelkező EU-s vállalatok fordított adózást kapnak.
+method.notLinked	Nincs összekapcsolva
+method.badgeTitle	A fizetési mód védett
+method.tokenSub	Szolgáltatói token · lejár: {{expiry}}
+method.tokenNote	Valódi kártyaadatait a fizetési szolgáltató tárolja (PCI DSS L1). Mi csak egy egyszer használatos tokent őrzünk a megújításokhoz.
+method.securityTitle	Adatvédelmi szabványok
+method.security.pciDss	PCI DSS 1. szintű titkosítás
+method.security.secure3d	3D Secure tranzakcióvédelem
+method.security.noStorage	A kártyaadatok sosem érintik szervereinket
+method.security.autoLink	A kártya az első fizetéskor kapcsolódik
+method.noCardDetail	Nem kell külön megadnia az adatokat — a fizetés a Stripe biztonságos oldalán történik.
+method.renewDone	Számla létrehozva — fizetés feldolgozás alatt
+method.renewBusy	Számla létrehozása…
+method.renewSuccess	Megújítási számla létrehozva
+method.renewError	A számla nem hozható létre. Próbálja újra.
+method.renewNow	Megújítás most kártyával •••• {{last4}}
+method.autopayTitle	Automatikus fizetési beállítások
+method.autopaySuccess	Beállítás mentve
+method.autopayError	A beállítás nem menthető. Próbálja újra.
+method.autopay.cardOnly	Kártyás fizetésnél érhető el
+method.autopay.autoRenew.label	Automatikus megújítás
+method.autopay.autoRenew.desc	Kapcsolja ki a fizetett időszak végén való lemondáshoz
+method.autopay.autoRenew.until	Az előfizetés nem újul meg — hozzáférés {{date}} napjáig
+method.autopay.emailNotify.label	E-mailes értesítések
+method.autopay.emailNotify.desc	Minden fizetés után e-mailben küldünk nyugtát
+method.autopay.remind3d.label	Emlékeztetés 3 nappal korábban
+method.autopay.remind3d.desc	Emlékeztetjük az automatikus terhelés előtt
+method.autopay.sms.label	SMS-értesítés
+method.autopay.sms.desc	Terheléskor szöveges üzenet érkezik
+method.portal.title	Számlázási adatok és ÁFA
+method.portal.subtitle	A számlák, a kapcsolt kártya és a terhelési előzmények a Stripe ügyfélportálon találhatók.
+method.portal.cta	Megnyitás a Stripe-ban
+method.ibanBadgeLabel	Banki átutalás (SEPA)
+method.ibanBadgeNote	A számlák e-mailben, fizetési hivatkozással érkeznek — a kártyát semmi nem terheli automatikusan. A számlaoldalról előre is fizethet.
+invoices.title	Fizetési előzmények
+invoices.totalPaid	összesen fizetve: {{amount}}
+invoices.exportCsv	CSV exportálása
+invoices.exportError	A CSV nem exportálható. Próbálja újra.
+invoices.receiptError	A nyugta nem nyitható meg. Próbálja újra.
+invoices.invoiceNo	Számla #{{id}}
+invoices.methodCard	Fizetve kártyával
+invoices.methodIban	Fizetve banki átutalással (IBAN)
+invoices.syncHint	Ellenőrizze az állapotot a fizetési szolgáltatásnál
+invoices.syncChanged	Állapot frissítve: {{status}}
+invoices.syncUnchanged	A fizetési szolgáltatás ugyanazt az állapotot erősítette meg
+invoices.syncError	Az állapot nem ellenőrizhető. Próbálja újra.
+invoices.kindOfflineFee	Offline értékesítési jutalék
+invoices.kindMinFee	Minimum havi díj
+invoices.kindOnlineFee	Online fizetések jutaléka
+invoices.methodWithheld	A Stripe visszatartotta fizetéskor
+table.date	Dátum
+table.description	Leírás
+table.amount	Összeg
+table.status	Állapot
+table.receipt	Nyugta
+status.paid	Fizetve
+status.pending	Függőben
+status.failed	Nincs kifizetve
+status.refunded	Visszatérítve
+empty.noInvoices	Még nincs számla — az első fizetés után jelennek meg.
+empty.noCard	A kártyája az első fizetés után automatikusan megjelenik.
+empty.monthsWithUs	Még nem vásárolt előfizetést
+empty.noData	Nincs adat
+savings.title	Megtakarításai
+savings.prepayTitle	Megtakarításai előrefizetéskor
+savings.emptyState	Válasszon hosszabb időszakot, és elkezd megtakarítani
+savings.youSave	{{amount}}-t takarít meg {{months}} hónap alatt
+savings.freeMonths	Ez olyan, mintha {{count}} hónap ingyen lenne
+savings.amountLabel	{{amount}} megtakarítás
+savings.comparedToMonthly	a havi fizetéshez képest
+savings.forMonths_one	{{count}} hónapra
+savings.forMonths_other	{{count}} hónapra
+pay	Fizetés
+continuePlan	Csomag folytatása
+payModal.titleNew	A(z) {{plan}} csomag indítása
+payModal.titleSwitch	Váltás erre: {{plan}}
+payModal.titleRenew	{{plan}} megújítása
+payModal.totalLabel	A csomag ára
+payModal.burnWarning	Másik csomagra váltáskor az időszak újraindul: a(z) {{plan}} csomag hátralévő része ELVÉSZ — nem visszatéríthető és nem vihető át. Ugyanazon csomag megújítása megtartja.
+payModal.switched	A csomag megváltozott: nincs fizetnivaló — a váltást a jelenlegi időszak hátralévő része fedezte.
+payModal.renewNote	Ez ugyanazt a csomagot újítja meg: a megvásárolt hónapok hozzáadódnak a jelenlegi fizetett időszakhoz. Semmi sem vész el.
+payModal.cardNote	Kártyás fizetés a Stripe biztonságos oldalán · 7 napos visszatérítés
+payModal.freeUntil	{{date}} napjáig nincs terhelés: már fizetett időszakából még {{count}} nap maradt. A számlázás azon a napon kezdődik.
+payModal.taxLabel	ÁFA
+payModal.taxLine	ÁFA {{rate}}%
+payModal.reverseCharge	Fordított adózás
+payModal.totalWithTax	Összesen ÁFÁ-val
+payModal.taxServerNote	Az adót a számlázási adatai alapján számítjuk. A számla ugyanazt az összeget mutatja.
+payModal.taxReview	Nem tudtuk meghatározni a számlázási adatainak adóját, ezért az összeg anélkül jelenik meg, és a fizetés nem fejezhető be. Ellenőrizze a fizető országát és címét, vagy forduljon az ügyfélszolgálathoz.
+offlineFee.title	Offline értékesítési díj
+offlineFee.accruing	Készpénzből és előlegekből {{rate}}%-kal halmozódott fel. Havi számlázás, {{days}} nap a fizetésre.
+offlineFee.due	Számla kiállítva. Fizetésig hátralévő napok: {{days}}.
+offlineFee.suspended	A fizetés lejárt — a CRM és a miniapp hozzáférése fel van függesztve.
+offlineFee.pay	Fizetés
+offlineFee.suspendedMin	A minimum havi díj lejárt — a CRM és a miniapp hozzáférése fel van függesztve.
+offlineFee.alsoAccruing	Emellett ebben a hónapban felhalmozódik: {{amount}} — a következő számlába kerül.
+offlineFee.minimum	A minimum havi díj {{amount}}. Ha egy hónapban kevesebbet keres, kiegészíti a különbözetet; ha többet, nincs számla.
+offlineFee.pendingBill	Az előző modell szerint felhalmozódott, számlára vár.
+offlineFee.notBilledYet	Még nincs kiállított számla: a felhalmozott összeg a minimum számlaméret alatt van, vagy még készül. Semmi sem vész el — a következő számlába kerül.
+trial.title	Ajánlat új stúdióknak
+trial.subtitle	Stúdiója most jött létre
+trial.headline	{{days}} nap ingyen
+trial.noCard	Nem kell kártya — most nincs fizetnivaló
+trial.perks.allModules	Teljes hozzáférés minden modulhoz: napló, ügyfelek, pénzügyek, értesítések és Velora AI
+trial.perks.noCommitment	Nincs kötelezettség: ha nem megfelelő, egyszerűen ne újítsa meg
+trial.perks.keepData	Minden, amit a próba alatt beállít, az Öné marad
+trial.activate	Aktiválás
+trial.decline	Elutasítás
+trial.cardHint	Még nem aktiválta ennek a stúdiónak az ingyenes időszakát. Az elérhető marad, amíg csomagot nem vásárol.
+profile.title	Számlázási adatok
+profile.editTitle	Számlázási adatok szerkesztése
+profile.subtitle	Címe a számlán szerepel és meghatározza az adókulcsot. Fiókjában tároljuk — másik stúdióban nem kérjük újra.
+profile.subtitlePay	Töltse ki egyszer, és a fizetés legközelebb közvetlenül átmegy. Címe a számlán szerepel és meghatározza az adókulcsot.
+profile.cardTitle	Számlázási adatok
+profile.cardSubtitle	Fiókjában tároljuk és minden stúdiójában használjuk. Így jelennek meg a számlán.
+profile.cardEmpty	Még nincs kitöltve — az első fizetés előtt kérni fogjuk. Most is hozzáadhatja.
+profile.add	Számlázási adatok hozzáadása
+profile.edit	Szerkesztés
+profile.save	Mentés
+profile.saveAndPay	Mentés és továbblépés a fizetéshez
+profile.cancel	Mégse
+profile.saved	Számlázási adatok mentve
+profile.vatNone	Nincs megadva
+profile.fields.country	Ország vagy régió
+profile.fields.countryPlaceholder	Válasszon országot
+profile.fields.address	Cím
+profile.fields.line1	Cím 1. sora
+profile.fields.line1Placeholder	Utca és házszám
+profile.fields.line2	Cím 2. sora — opcionális
+profile.fields.line2Placeholder	Lakás, iroda, egységszám stb.
+profile.fields.postalCode	Irányítószám
+profile.fields.postalCodePlaceholder	110 00
+profile.fields.city	Város
+profile.fields.cityPlaceholder	Prága
+profile.fields.vat	ÁFA-szám — opcionális
+profile.fields.vatPlaceholder	{{prefix}}12345678
+profile.fields.vatHint	Csak vállalkozásoknak. A számot mentéskor az EU-nyilvántartás (VIES) ellenőrzi — nem fogadunk el nem ellenőrzött számot. Érvényes számmal egy másik EU-országban lévő vállalat adó nélkül kap számlát (fordított adózás). Magánszemélyeknek nincs ilyenük — hagyja üresen.
+profile.fields.countrySearch	Kezdjen el nevet gépelni
+profile.fields.countryNotFound	Nem található ország
+profile.fields.vatOutsideEu	Nem kérünk ÁFA-számot: az EU-n kívül az adót a fizető országa, nem a száma határozza meg, így az nem változtat a számlán.
+profile.fields.vatPending	A száma el van mentve, de az EU-nyilvántartás akkor nem volt elérhető, ezért még nincs megerősítve, és a következő számlája teljes ÁFÁ-t tartalmaz. Nem kell újra megadnia: továbbra is ellenőrizzük, és amikor a nyilvántartás válaszol, az adót többé nem számítjuk fel. Már kifizetett számlánál az ügyfélszolgálat visszatéríti az adót.
+profile.errors.required	Ez a mező kötelező
+profile.preview.invoice	Számla
+profile.preview.billTo	Számlázva erre
+profile.preview.note	Így jelennek meg az adatai minden számlán. Bármikor módosíthatja őket a Csomagok és számlázás → Fizetési mód résznél.

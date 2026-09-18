@@ -1,0 +1,393 @@
+{
+  "legal": {
+    "terms": "Szolgáltatási feltételek",
+    "privacy": "Adatvédelmi irányelvek"
+  },
+  "tabs": {
+    "plans": "Csomagok és árak",
+    "invoices": "Fizetési előzmények",
+    "method": "Fizetési mód"
+  },
+  "tabsShort": {
+    "plans": "Csomagok",
+    "invoices": "Előzmények",
+    "method": "Fizetés"
+  },
+  "paymentsHistory": {
+    "title": "Teljes fizetési előzmény",
+    "subtitle": "A stúdió összes számlája",
+    "clearFilter": "Törlés",
+    "loadMore": "További betöltése"
+  },
+  "planNames": {
+    "start": "Start",
+    "pro": "Pro",
+    "business": "Business"
+  },
+  "seats": {
+    "title": "Hány munkatárs dolgozik a stúdióban",
+    "hint": "{{amount}}/hótól",
+    "stepNote": "Minden további hely {{amount}}-val növeli a havi díjat",
+    "unlimitedNote": "Nincs létszámkorlát",
+    "perSeat": "Munkatársanként"
+  },
+  "limits": {
+    "staff": "Munkatársak",
+    "ai": "Velora AI-kérések",
+    "unlimited": "Korlátlan"
+  },
+  "banner": {
+    "trialEnds": "A próbaidőszak {{date}} napján véget ér — válasszon csomagot",
+    "renews": "A(z) {{plan}} előfizetése {{date}} napján megújul",
+    "expires": "A(z) {{plan}} előfizetése {{date}} napján lejár",
+    "choosePlan": "Csomag választása",
+    "dismiss": "Bezárás",
+    "unpaid": "A csomag nincs kifizetve. A folytatáshoz fizessen a Csomagok és számlázás résznél.",
+    "suspended": "A hozzáférés fel van függesztve, mert a csomag számlája lejárt. Fizesse ki a Csomagok és számlázás résznél."
+  },
+  "paymentReturn": {
+    "done": "A fizetés sikeres — a(z) {{plan}} csomag aktív.",
+    "processing": "A fizetés feldolgozása folyamatban — előfizetése néhány percen belül aktiválódik."
+  },
+  "header": {
+    "eyebrow": "Velora · Számlázás",
+    "title": "Csomagok és számlázás",
+    "subtitle": "Kezelje előfizetését, fizetési módjait és fizetési előzményeit",
+    "totalSpent": "Összes költés",
+    "monthsWithUs": "Velünk töltött hónapok",
+    "saved": "Megtakarítás",
+    "nextCharge": "Következő terhelés",
+    "currentPlan": "JELENLEGI CSOMAG",
+    "noPlanName": "Nincs csomag",
+    "noPlan": "Nincs aktív előfizetés",
+    "active": "Aktív",
+    "activeUntil": "Aktív · {{date}} napjáig",
+    "trialPlanName": "Próbacsomag",
+    "trial": "Próbaidőszak",
+    "trialUntil": "Próbaidőszak · {{date}} napjáig",
+    "expired": "Lejárt",
+    "percentRate": "{{rate}}% az értékesítésből",
+    "modePercent": "Százalékos csomag",
+    "modeFixed": "Fix",
+    "modeCombo": "Kombinált",
+    "unpaid": "A csomag nincs kifizetve",
+    "awaitingPayment": "Fizetésre vár"
+  },
+  "mode": {
+    "title": "Fizetési modell",
+    "subscription": "Fix előfizetés",
+    "percent": "% az értékesítésből",
+    "combo": "Fix + % kombináció",
+    "short": {
+      "subscription": "Fix",
+      "percent": "Százalék",
+      "combo": "Kombinált"
+    },
+    "descriptions": {
+      "subscription": "Havonta egy összeget fizet. Kiszámítható és költséghatékony.",
+      "percent": "Nincs fix díj: minden értékesítés {{rate}}%-a, a készpénzt is beleértve.",
+      "combo": "Fél előfizetés + minden értékesítés {{rate}}%-a, a készpénzt is beleértve."
+    },
+    "badges": {
+      "popular": "Népszerű",
+      "flexible": "Rugalmas"
+    },
+    "percentCard": {
+      "title": "A „3% az értékesítésből” modell",
+      "description": "Csak akkor fizet, amikor keres: minden értékesítés 3%-át, fix előfizetési díj nélkül. Az online fizetések azonnal feloszlanak; a készpénz és előlegek összegyűlnek, és havonta egy számlán érkeznek.",
+      "noFixed": "Nincs fix díj",
+      "payForResult": "Fizetés az eredményekért",
+      "oneClick": "Egykattintásos aktiválás",
+      "cta": "Aktiválja a 3%-os modellt",
+      "ctaShort": "3% aktiválása"
+    },
+    "activateSuccess": "Fizetési modell frissítve",
+    "activateError": "A fizetési modell nem frissíthető",
+    "alreadyActive": "Ez a fizetési modell már aktív — alább megújíthatja vagy módosíthatja a csomagot",
+    "confirmSwitchTitle": "Fizetési modell váltása?",
+    "confirmSwitchMessage": "Előfizetése aktív. A modellváltás azonnal életbe lép, és a fizetett időszak hátralévő része TELJES EGÉSZÉBEN ELVÉSZ: a fel nem használt napok nem visszatéríthetők és nem vihetők át.",
+    "termsTitle": "Csomagfeltételek megerősítése",
+    "termsMessage": "Ebben a csomagban a platform minden értékesítés {{rate}}%-át visszatartja.\n\nOnline fizetésnél a díjat automatikusan a fizetéskor vonjuk le. Készpénz, terminál és előlegfeltöltés esetén NEM vonjuk le azonnal — felhalmozódik, és havonta külön számlát kap.\n\n{{days}} napja van a számla kifizetésére. Ha nem fizeti ki időben, a CRM-hez és az ügyfél miniapphoz való hozzáférés a rendezésig fel lesz függesztve.\n\nAz aktuális esedékes összeg a Számlázásban látható; bármikor fizethet, akár előre is.",
+    "termsConfirm": "Elfogadom a feltételeket",
+    "termsMinimum": "A minimum havi díj {{amount}} {{currency}}. Ha egy naptári hónapban a platform ennél kevesebbet keresett az Ön stúdióján (például egyáltalán nem volt CRM-en keresztüli értékesítés), a különbözetről számlát kap. Ha többet keres a minimumnál, nincs számla. A ki nem fizetett minimumdíj ugyanúgy felfüggeszti a hozzáférést, mint egy ki nem fizetett jutalékszámla.",
+    "termsBurn": "FIGYELMEZTETÉS: maradt fizetett időszaka. A számlázási modell váltása TELJESEN ELVESZÍTI — a fel nem használt napok nem visszatéríthetők és nem vihetők át.",
+    "termsCombo": "A váltás VÁSÁRLÁS: közvetlenül a megerősítés után látni fogja az esedékes összeget. A jelenlegi fizetett időszak fennmaradó része elvész — nem jár vissza és nem vihető át. A fix + % modell CSAK fizetés után kapcsol be; addig a csomag változatlan, és nincs terhelés."
+  },
+  "combo": {
+    "rateBadge": "{{rate}}%",
+    "summary": "Fix {{fixed}}/hó + {{rate}}% az értékesítésből (készpénz havonta számlázva)",
+    "cta": "Kombinált csomag aktiválása",
+    "ctaShort": "Kombinált aktiválása"
+  },
+  "period": {
+    "1": "1 hónap",
+    "3": "3 hónap",
+    "6": "6 hónap",
+    "12": "1 év",
+    "24": "2 év",
+    "title": "Fizetési időszak",
+    "discountActive": "{{percent}}% kedvezmény aktív",
+    "noDiscount": "Nincs kedvezmény",
+    "discountLabel": "−{{percent}}% kedvezmény"
+  },
+  "calculator": {
+    "title": "Számítási paraméterek",
+    "monthlyTurnover": "Havi online forgalma",
+    "turnoverRangeMin": "50 E",
+    "turnoverRangeMax": "3 M+",
+    "chooseFeeLabel": "Válasszon jutalékrátát (hatással van a funkciókra)",
+    "feeOptions": {
+      "basic": "Alap",
+      "standard": "Standard",
+      "pro": "Pro",
+      "max": "Max."
+    },
+    "chooseFixedLabel": "Válasszon alap fix részt (a kártyaelfogadás mindig 3%)",
+    "fixedOptions": {
+      "start": "Start",
+      "optima": "Optima",
+      "business": "Business"
+    },
+    "economyPercentTitle": "CSOMAGGAZDASÁGOSSÁG",
+    "economyComboTitle": "KOMBINÁLT CSOMAG GAZDASÁGOSSÁGA",
+    "turnover": "Stúdió forgalma",
+    "systemFee": "Rendszerdíj",
+    "totalMonthlyPayment": "TELJES HAVI FIZETÉS",
+    "onlyPayForResult": "Nem fizet fix díjat, csak az eredményekért",
+    "activatePercent": "{{percent}}%-os modell aktiválása",
+    "baseSubscription": "Alapelőfizetés (fix)",
+    "acquiringFee": "Kártyaelfogadás / díj",
+    "activateCombo": "Kombinált csomag aktiválása"
+  },
+  "planCards": {
+    "bestChoice": "Legjobb választás",
+    "current": "Jelenlegi",
+    "perMonth": "/ hó",
+    "currentPlan": "Jelenlegi csomag",
+    "yourPrice": "Az Ön ára",
+    "staffLimit": "Legfeljebb {{count}} munkatárs",
+    "staffUnlimited": "Korlátlan munkatárs"
+  },
+  "paymentSchedule": {
+    "title": "Fizetési ütemezés",
+    "total": "Fizetendő összesen",
+    "morePayments": "+ {{count}} további {{amount}} összegű fizetés",
+    "processing": "Átirányítás a fizetéshez…",
+    "payFor": "Fizetés {{count}} hóra",
+    "vatNote": "ÁFA nélkül — az adó a pénztárnál, országa alapján kerül hozzáadásra"
+  },
+  "trust": {
+    "title": "Miért bízik bennünk több mint 2 400 vállalkozás",
+    "reviews": [
+      {
+        "text": "Altegióról váltottunk. A különbség olyan, mint taxi és magánrepülő között.",
+        "author": "Maria K., FORM Pilates"
+      },
+      {
+        "text": "A legjobb, hogy pontosan tudom, mennyit fizetek minden hónapban. Semmi meglepetés.",
+        "author": "Artem N., Barbershop Bros"
+      },
+      {
+        "text": "Az ügyfélszolgálat 4 perc alatt válaszolt. Ilyet még sehol sem láttam.",
+        "author": "Elena D., SPA LUNA"
+      }
+    ]
+  },
+  "upgrade": {
+    "priceLine": "Ár {{price}}/hó",
+    "discountNote": " {{percent}}% kedvezmény {{period}} havi fizetésnél",
+    "planLabel": "Csomag",
+    "periodLabel": "Időszak",
+    "periodValue_one": "{{count}} hónap",
+    "periodValue_other": "{{count}} hónap",
+    "discountLabel": "Kedvezmény",
+    "scheduledBadge": "{{date}} napjától — „{{plan}}” csomag",
+    "vatNote": "ÁFA nélkül — az adó a pénztárnál a vállalati adatai alapján kerül hozzáadásra; ÁFA-számmal rendelkező EU-s vállalatok fordított adózást kapnak."
+  },
+  "method": {
+    "notLinked": "Nincs összekapcsolva",
+    "badgeTitle": "A fizetési mód védett",
+    "tokenSub": "Szolgáltatói token · lejár: {{expiry}}",
+    "tokenNote": "Valódi kártyaadatait a fizetési szolgáltató tárolja (PCI DSS L1). Mi csak egy egyszer használatos tokent őrzünk a megújításokhoz.",
+    "securityTitle": "Adatvédelmi szabványok",
+    "security": {
+      "pciDss": "PCI DSS 1. szintű titkosítás",
+      "secure3d": "3D Secure tranzakcióvédelem",
+      "noStorage": "A kártyaadatok sosem érintik szervereinket",
+      "autoLink": "A kártya az első fizetéskor kapcsolódik"
+    },
+    "noCardDetail": "Nem kell külön megadnia az adatokat — a fizetés a Stripe biztonságos oldalán történik.",
+    "renewDone": "Számla létrehozva — fizetés feldolgozás alatt",
+    "renewBusy": "Számla létrehozása…",
+    "renewSuccess": "Megújítási számla létrehozva",
+    "renewError": "A számla nem hozható létre. Próbálja újra.",
+    "renewNow": "Megújítás most kártyával •••• {{last4}}",
+    "autopayTitle": "Automatikus fizetési beállítások",
+    "autopaySuccess": "Beállítás mentve",
+    "autopayError": "A beállítás nem menthető. Próbálja újra.",
+    "autopay": {
+      "cardOnly": "Kártyás fizetésnél érhető el",
+      "autoRenew": {
+        "label": "Automatikus megújítás",
+        "desc": "Kapcsolja ki a fizetett időszak végén való lemondáshoz",
+        "until": "Az előfizetés nem újul meg — hozzáférés {{date}} napjáig"
+      },
+      "emailNotify": {
+        "label": "E-mailes értesítések",
+        "desc": "Minden fizetés után e-mailben küldünk nyugtát"
+      },
+      "remind3d": {
+        "label": "Emlékeztetés 3 nappal korábban",
+        "desc": "Emlékeztetjük az automatikus terhelés előtt"
+      },
+      "sms": {
+        "label": "SMS-értesítés",
+        "desc": "Terheléskor szöveges üzenet érkezik"
+      }
+    },
+    "portal": {
+      "title": "Számlázási adatok és ÁFA",
+      "subtitle": "A számlák, a kapcsolt kártya és a terhelési előzmények a Stripe ügyfélportálon találhatók.",
+      "cta": "Megnyitás a Stripe-ban"
+    },
+    "ibanBadgeLabel": "Banki átutalás (SEPA)",
+    "ibanBadgeNote": "A számlák e-mailben, fizetési hivatkozással érkeznek — a kártyát semmi nem terheli automatikusan. A számlaoldalról előre is fizethet."
+  },
+  "invoices": {
+    "title": "Fizetési előzmények",
+    "totalPaid": "összesen fizetve: {{amount}}",
+    "exportCsv": "CSV exportálása",
+    "exportError": "A CSV nem exportálható. Próbálja újra.",
+    "receiptError": "A nyugta nem nyitható meg. Próbálja újra.",
+    "invoiceNo": "Számla #{{id}}",
+    "methodCard": "Fizetve kártyával",
+    "methodIban": "Fizetve banki átutalással (IBAN)",
+    "syncHint": "Ellenőrizze az állapotot a fizetési szolgáltatásnál",
+    "syncChanged": "Állapot frissítve: {{status}}",
+    "syncUnchanged": "A fizetési szolgáltatás ugyanazt az állapotot erősítette meg",
+    "syncError": "Az állapot nem ellenőrizhető. Próbálja újra.",
+    "kindOfflineFee": "Offline értékesítési jutalék",
+    "kindMinFee": "Minimum havi díj",
+    "kindOnlineFee": "Online fizetések jutaléka",
+    "methodWithheld": "A Stripe visszatartotta fizetéskor"
+  },
+  "table": {
+    "date": "Dátum",
+    "description": "Leírás",
+    "amount": "Összeg",
+    "status": "Állapot",
+    "receipt": "Nyugta"
+  },
+  "status": {
+    "paid": "Fizetve",
+    "pending": "Függőben",
+    "failed": "Nincs kifizetve",
+    "refunded": "Visszatérítve"
+  },
+  "empty": {
+    "noInvoices": "Még nincs számla — az első fizetés után jelennek meg.",
+    "noCard": "A kártyája az első fizetés után automatikusan megjelenik.",
+    "monthsWithUs": "Még nem vásárolt előfizetést",
+    "noData": "Nincs adat"
+  },
+  "savings": {
+    "title": "Megtakarításai",
+    "prepayTitle": "Megtakarításai előrefizetéskor",
+    "emptyState": "Válasszon hosszabb időszakot, és elkezd megtakarítani",
+    "youSave": "{{amount}}-t takarít meg {{months}} hónap alatt",
+    "freeMonths": "Ez olyan, mintha {{count}} hónap ingyen lenne",
+    "amountLabel": "{{amount}} megtakarítás",
+    "comparedToMonthly": "a havi fizetéshez képest",
+    "forMonths_one": "{{count}} hónapra",
+    "forMonths_other": "{{count}} hónapra"
+  },
+  "pay": "Fizetés",
+  "continuePlan": "Csomag folytatása",
+  "payModal": {
+    "titleNew": "A(z) {{plan}} csomag indítása",
+    "titleSwitch": "Váltás erre: {{plan}}",
+    "titleRenew": "{{plan}} megújítása",
+    "totalLabel": "A csomag ára",
+    "burnWarning": "Másik csomagra váltáskor az időszak újraindul: a(z) {{plan}} csomag hátralévő része ELVÉSZ — nem visszatéríthető és nem vihető át. Ugyanazon csomag megújítása megtartja.",
+    "switched": "A csomag megváltozott: nincs fizetnivaló — a váltást a jelenlegi időszak hátralévő része fedezte.",
+    "renewNote": "Ez ugyanazt a csomagot újítja meg: a megvásárolt hónapok hozzáadódnak a jelenlegi fizetett időszakhoz. Semmi sem vész el.",
+    "cardNote": "Kártyás fizetés a Stripe biztonságos oldalán · 7 napos visszatérítés",
+    "freeUntil": "{{date}} napjáig nincs terhelés: már fizetett időszakából még {{count}} nap maradt. A számlázás azon a napon kezdődik.",
+    "taxLabel": "ÁFA",
+    "taxLine": "ÁFA {{rate}}%",
+    "reverseCharge": "Fordított adózás",
+    "totalWithTax": "Összesen ÁFÁ-val",
+    "taxServerNote": "Az adót a számlázási adatai alapján számítjuk. A számla ugyanazt az összeget mutatja.",
+    "taxReview": "Nem tudtuk meghatározni a számlázási adatainak adóját, ezért az összeg anélkül jelenik meg, és a fizetés nem fejezhető be. Ellenőrizze a fizető országát és címét, vagy forduljon az ügyfélszolgálathoz."
+  },
+  "offlineFee": {
+    "title": "Offline értékesítési díj",
+    "accruing": "Készpénzből és előlegekből {{rate}}%-kal halmozódott fel. Havi számlázás, {{days}} nap a fizetésre.",
+    "due": "Számla kiállítva. Fizetésig hátralévő napok: {{days}}.",
+    "suspended": "A fizetés lejárt — a CRM és a miniapp hozzáférése fel van függesztve.",
+    "pay": "Fizetés",
+    "suspendedMin": "A minimum havi díj lejárt — a CRM és a miniapp hozzáférése fel van függesztve.",
+    "alsoAccruing": "Emellett ebben a hónapban felhalmozódik: {{amount}} — a következő számlába kerül.",
+    "minimum": "A minimum havi díj {{amount}}. Ha egy hónapban kevesebbet keres, kiegészíti a különbözetet; ha többet, nincs számla.",
+    "pendingBill": "Az előző modell szerint felhalmozódott, számlára vár.",
+    "notBilledYet": "Még nincs kiállított számla: a felhalmozott összeg a minimum számlaméret alatt van, vagy még készül. Semmi sem vész el — a következő számlába kerül."
+  },
+  "trial": {
+    "title": "Ajánlat új stúdióknak",
+    "subtitle": "Stúdiója most jött létre",
+    "headline": "{{days}} nap ingyen",
+    "noCard": "Nem kell kártya — most nincs fizetnivaló",
+    "perks": {
+      "allModules": "Teljes hozzáférés minden modulhoz: napló, ügyfelek, pénzügyek, értesítések és Velora AI",
+      "noCommitment": "Nincs kötelezettség: ha nem megfelelő, egyszerűen ne újítsa meg",
+      "keepData": "Minden, amit a próba alatt beállít, az Öné marad"
+    },
+    "activate": "Aktiválás",
+    "decline": "Elutasítás",
+    "cardHint": "Még nem aktiválta ennek a stúdiónak az ingyenes időszakát. Az elérhető marad, amíg csomagot nem vásárol."
+  },
+  "profile": {
+    "title": "Számlázási adatok",
+    "editTitle": "Számlázási adatok szerkesztése",
+    "subtitle": "Címe a számlán szerepel és meghatározza az adókulcsot. Fiókjában tároljuk — másik stúdióban nem kérjük újra.",
+    "subtitlePay": "Töltse ki egyszer, és a fizetés legközelebb közvetlenül átmegy. Címe a számlán szerepel és meghatározza az adókulcsot.",
+    "cardTitle": "Számlázási adatok",
+    "cardSubtitle": "Fiókjában tároljuk és minden stúdiójában használjuk. Így jelennek meg a számlán.",
+    "cardEmpty": "Még nincs kitöltve — az első fizetés előtt kérni fogjuk. Most is hozzáadhatja.",
+    "add": "Számlázási adatok hozzáadása",
+    "edit": "Szerkesztés",
+    "save": "Mentés",
+    "saveAndPay": "Mentés és továbblépés a fizetéshez",
+    "cancel": "Mégse",
+    "saved": "Számlázási adatok mentve",
+    "vatNone": "Nincs megadva",
+    "fields": {
+      "country": "Ország vagy régió",
+      "countryPlaceholder": "Válasszon országot",
+      "address": "Cím",
+      "line1": "Cím 1. sora",
+      "line1Placeholder": "Utca és házszám",
+      "line2": "Cím 2. sora — opcionális",
+      "line2Placeholder": "Lakás, iroda, egységszám stb.",
+      "postalCode": "Irányítószám",
+      "postalCodePlaceholder": "110 00",
+      "city": "Város",
+      "cityPlaceholder": "Prága",
+      "vat": "ÁFA-szám — opcionális",
+      "vatPlaceholder": "{{prefix}}12345678",
+      "vatHint": "Csak vállalkozásoknak. A számot mentéskor az EU-nyilvántartás (VIES) ellenőrzi — nem fogadunk el nem ellenőrzött számot. Érvényes számmal egy másik EU-országban lévő vállalat adó nélkül kap számlát (fordított adózás). Magánszemélyeknek nincs ilyenük — hagyja üresen.",
+      "countrySearch": "Kezdjen el nevet gépelni",
+      "countryNotFound": "Nem található ország",
+      "vatOutsideEu": "Nem kérünk ÁFA-számot: az EU-n kívül az adót a fizető országa, nem a száma határozza meg, így az nem változtat a számlán.",
+      "vatPending": "A száma el van mentve, de az EU-nyilvántartás akkor nem volt elérhető, ezért még nincs megerősítve, és a következő számlája teljes ÁFÁ-t tartalmaz. Nem kell újra megadnia: továbbra is ellenőrizzük, és amikor a nyilvántartás válaszol, az adót többé nem számítjuk fel. Már kifizetett számlánál az ügyfélszolgálat visszatéríti az adót."
+    },
+    "errors": {
+      "required": "Ez a mező kötelező"
+    },
+    "preview": {
+      "invoice": "Számla",
+      "billTo": "Számlázva erre",
+      "note": "Így jelennek meg az adatai minden számlán. Bármikor módosíthatja őket a Csomagok és számlázás → Fizetési mód résznél."
+    }
+  }
+}

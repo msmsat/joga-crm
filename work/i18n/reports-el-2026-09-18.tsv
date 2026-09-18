@@ -1,0 +1,376 @@
+== el
+tabs.overview	Επισκόπηση
+tabs.sales	Πωλήσεις
+tabs.clients	Πελάτες
+tabs.team	Ομάδα
+tabs.schedule	Πρόγραμμα
+toolbar.period.day	Ημέρα
+toolbar.period.week	Εβδομάδα
+toolbar.period.month	Μήνας
+toolbar.period.year	Έτος
+toolbar.period.custom	Προσαρμοσμένο
+toolbar.vsPrevious	σε σύγκριση με την προηγούμενη περίοδο: {{from}}–{{to}}
+toolbar.allBranches	Όλα τα υποκαταστήματα
+toolbar.allHalls	Όλοι οι {{spacePlural}}
+toolbar.allTrainers	Όλοι οι εκπαιδευτές
+toolbar.allServices	Όλες οι υπηρεσίες
+toolbar.export	Εξαγωγή
+insights.title	Χρειάζεται προσοχή
+insights.action	Άνοιγμα
+insights.empty	Όλα είναι καλά προς το παρόν — δεν υπάρχουν προτάσεις για εμφάνιση
+insights.revenue_up_clients_down	Τα έσοδα αυξάνονται, αλλά οι ενεργοί πελάτες μειώνονται — ελέγξτε την αποχώρηση πελατών
+insights.clients_at_risk	{{count}} πελάτης(-ες) δεν έχουν συμμετάσχει για πάνω από 3 εβδομάδες — κίνδυνος αποχώρησης
+insights.lesson_overfull	Το «{{name}}» {{weekday, weekday}} στις {{hour}}:00 είναι γεμάτο κατά {{pct}}% τρεις εβδομάδες στη σειρά — εξετάστε την προσθήκη ενός ακόμη μαθήματος
+insights.trial_low_conversion	Μόνο το {{pct}}% από τους {{buyers}} πελάτες δοκιμής αγόρασε στη συνέχεια συνδρομή — εξετάστε μια καμπάνια
+insights.fastest_growing_product	Το «{{name}}» αναπτύσσεται ταχύτερα: +{{pct}}% σε σχέση με την προηγούμενη περίοδο
+insights.renewals_low	Μόνο το {{pct}}% των πελατών με ληγμένη συνδρομή ανανεώνει — εξετάστε μια υπενθύμιση
+insights.new_no_second_visit	{{count}} νέοι πελάτες ήρθαν μία φορά και δεν έκαναν ξανά κράτηση — εξετάστε μια υπενθύμιση
+insights.subs_expiring_week	{{count}} πελάτες έχουν συνδρομή που λήγει αυτή την εβδομάδα — εξετάστε να προσφέρετε ανανέωση
+insights.vip_inactive	Ο VIP πελάτης «{{name}}» δεν έχει επισκεφθεί εδώ και {{days}} ημέρες — εξετάστε ένα προσωπικό μήνυμα
+insights.high_return_free_evenings	Το «{{name}}» έχει υψηλό ποσοστό επιστροφής ({{return_pct}}%), αλλά τα βράδια είναι ελεύθερα — προσθέστε ένα μάθημα
+insights.trainer_overloaded	Ο/Η «{{name}}» έχει φόρτο {{load_pct}}% — εξετάστε την εξισορρόπηση του προγράμματος
+insights.low_rating	Το «{{name}}» έχει βαθμολογία {{rating}} — αξίζει πιο προσεκτική εξέταση
+insights.slot_chronic_low	Το «{{name}}» {{weekday, isodowWeekday}} στις {{hour}}:00 είναι γεμάτο κατά {{pct}}% επί {{weeks}} εβδομάδες στη σειρά — μετακινήστε ή ακυρώστε το
+insights.hall_idle_evenings	Ο χώρος «{{name}}» είναι αδρανής το {{pct}}% των βραδινών ωρών — εξετάστε να προγραμματίσετε μάθημα
+insights.slot_overfull	Η ώρα {{weekday, isodowWeekday}} στις {{hour}}:00 είναι γεμάτη κατά {{pct}}% τρεις εβδομάδες στη σειρά — εξετάστε την προσθήκη ενός ακόμη μαθήματος
+insights.loss_hotspot	{{cancels}} μαθήματα ακυρώθηκαν στις {{label}} αυτή την περίοδο — οι περισσότερες ακυρώσεις συγκεντρώνονται γύρω από αυτή την ώρα
+table.loading	Φόρτωση…
+table.noProduct	Χωρίς προϊόν
+empty.noData.title	Δεν υπάρχει τίποτα ακόμη
+empty.noData.text	Δεν καταγράφηκε δραστηριότητα για την επιλεγμένη περίοδο. Διευρύνετε το εύρος ή ξεκινήστε κλείνοντας έναν πελάτη στο Ημερολόγιο.
+empty.noData.widen	Εμφάνιση έτους
+empty.noRevenue	Δεν υπάρχουν πληρωμές αυτή την περίοδο
+empty.noSales	Δεν υπάρχουν πωλήσεις σε αυτή την ενότητα
+empty.noProducts	Δεν έχουν πουληθεί ακόμη πακέτα ή υπηρεσίες
+empty.noLessons	Δεν υπάρχουν μαθήματα αυτή την περίοδο
+empty.noTrainerLessons	Αυτός ο εκπαιδευτής δεν έχει πραγματοποιήσει ακόμη μαθήματα
+empty.noRows	Δεν υπάρχουν εγγραφές σε αυτή την ενότητα
+empty.noLosses	Δεν υπάρχουν ακυρώσεις ή απουσίες αυτή την περίοδο
+overview.kpi.revenue	Έσοδα
+overview.kpi.profit	Κέρδος
+overview.kpi.attendance	Συμμετοχή
+overview.kpi.activeClients	Ενεργοί πελάτες
+overview.kpi.fillRate	Ποσοστό πληρότητας
+overview.chart.metric.revenue	Έσοδα
+overview.chart.metric.profit	Κέρδος
+overview.chart.metric.attendance	Συμμετοχή
+overview.chart.metric.new_clients	Νέοι πελάτες
+overview.chart.metric.fill_rate	Ποσοστό πληρότητας
+overview.revenueStructure.title	Δομή εσόδων
+overview.category.subscriptions	Συνδρομές
+overview.category.services	Υπηρεσίες
+overview.category.certificates	Δωροκάρτες
+overview.category.rent	Ενοίκιο
+overview.category.salary	Μισθοί
+overview.category.refunds	Επιστροφές χρημάτων
+overview.clientDynamics.title	Δυναμική πελατών
+overview.clientDynamics.new	Νέοι
+overview.clientDynamics.returned	Επέστρεψαν
+overview.clientDynamics.lost	Χάθηκαν
+overview.drilldown.title	Συναλλαγή
+overview.drilldown.category	Κατηγορία
+overview.drilldown.amount	Ποσό
+overview.drilldown.lesson	Μάθημα
+overview.drilldown.time	Ώρα
+overview.drilldown.occupancy	Πληρότητα
+overview.drilldown.date	Ημερομηνία
+overview.drilldown.method	Μέθοδος
+overview.drilldown.trainer	Εκπαιδευτής
+overview.drilldown.rowsCount	εγγραφές
+overview.drilldown.search	Αναζήτηση στον πίνακα
+overview.drilldown.shownOf	Εμφάνιση {{shown}} από {{total}}
+overview.drilldown.noMatches	Δεν βρέθηκε τίποτα για «{{query}}»
+overview.drilldown.reset	Επαναφορά
+overview.drilldown.export	Εξαγωγή CSV
+overview.drilldown.subtitle.money	Συναλλαγές σε αυτή την ενότητα
+overview.drilldown.subtitle.lessons	Μαθήματα σε αυτή την ενότητα
+overview.drilldown.hint.operations	Πατήστε μια γραμμή για να ανοίξετε τη συναλλαγή στα Οικονομικά
+overview.drilldown.hint.lessons	Πατήστε μια γραμμή για να ανοίξετε εκείνη την ημέρα στο Ημερολόγιο
+overview.drilldown.stat.net	Καθαρό
+overview.drilldown.stat.income	Έσοδα
+overview.drilldown.stat.expense	Έξοδα
+overview.drilldown.stat.operations	Συναλλαγές
+overview.drilldown.stat.topCategory	Κορυφαία κατηγορία
+overview.drilldown.stat.lessons	Μαθήματα
+overview.drilldown.stat.booked	Κρατημένες θέσεις
+overview.drilldown.stat.avgFill	Μέση πληρότητα
+overview.drilldown.stat.trainers	Εκπαιδευτές
+overview.drilldown.stat.cancelled	Ακυρώθηκε
+sales.kpi.revenue	Έσοδα
+sales.kpi.salesCount	Πωλήσεις
+sales.kpi.avgCheck	Μέση απόδειξη
+sales.kpi.repeatShare	Ποσοστό επαναγορών
+sales.kpi.renewals	Ποσοστό ανανεώσεων
+sales.chart.title	Πωλήσεις
+sales.incomeOperations	Συναλλαγές εσόδων
+sales.breakdown.byCategory	Τι αγοράζουν
+sales.breakdown.byMethod	Πώς πληρώνουν
+sales.breakdown.buyerType	Ποιος αγοράζει
+sales.breakdown.new	Νέοι
+sales.breakdown.returning	Επιστρέφοντες
+sales.breakdown.noClient	Χωρίς πελάτη
+sales.method.card	Κάρτα
+sales.method.cash	Μετρητά
+sales.method.qr	Κωδικός QR
+sales.method.transfer	Έμβασμα
+sales.products.title	Προϊόντα
+sales.products.name	Προϊόν
+sales.products.sold	Πωλήθηκαν
+sales.products.revenue	Έσοδα
+sales.products.avgCheck	Μέση απόδειξη
+sales.products.repeatShare	Ποσοστό επαναγορών
+sales.products.trend	Τάση
+sales.products.trendHint	Σε σύγκριση με την προηγούμενη περίοδο ίδιας διάρκειας
+clients.kpi.new	Νέοι
+clients.kpi.returned	Επέστρεψαν
+clients.kpi.lost	Χάθηκαν
+clients.kpi.retention	Διατήρηση
+clients.kpi.avgValue	Αξία πελάτη
+clients.chart.title	Νέοι έναντι επιστρεφόντων
+clients.chart.new	Νέοι
+clients.chart.returned	Επιστρέφοντες
+clients.riskTitle	Τμήματα κινδύνου
+clients.loyalTitle	Πιστοί
+clients.list	Λίστα
+clients.campaign	Έναρξη καμπάνιας
+clients.exportList	Εξαγωγή λίστας
+clients.emptySegment	Το τμήμα «{{name}}» δεν έχει πελάτες αυτή τη στιγμή
+clients.segments.new.name	Νέοι πελάτες
+clients.segments.new.desc	Εγγράφηκαν στην επιλεγμένη περίοδο
+clients.segments.returned.name	Επιστρέφοντες πελάτες
+clients.segments.returned.desc	Επισκέφθηκαν αυτή και την προηγούμενη περίοδο
+clients.segments.lost.name	Χαμένοι πελάτες
+clients.segments.lost.desc	Επισκέφθηκαν την προηγούμενη περίοδο, αλλά δεν επέστρεψαν σε αυτή
+clients.segments.active.name	Ενεργοί πελάτες
+clients.segments.active.desc	Ήρθαν σε τουλάχιστον ένα μάθημα στην επιλεγμένη περίοδο
+clients.segments.at_risk.name	Στο όριο
+clients.segments.at_risk.desc	Ενεργοί, χωρίς επίσκεψη για 21+ ημέρες
+clients.segments.vip_idle.name	Αδρανείς VIP
+clients.segments.vip_idle.desc	VIP πελάτες, χωρίς επίσκεψη για 14+ ημέρες
+clients.segments.expiring_subscription.name	Συνδρομή που λήγει
+clients.segments.expiring_subscription.desc	Απομένουν ≤2 μαθήματα ή ≤7 ημέρες
+clients.segments.lost_newcomers.name	Δεν επέστρεψαν ποτέ
+clients.segments.lost_newcomers.desc	Ήρθαν μία φορά, απόντες για 14+ ημέρες
+clients.segments.upsell_candidates.name	Έτοιμοι για αναβάθμιση
+clients.segments.upsell_candidates.desc	8+ επισκέψεις αυτόν τον μήνα, χωρίς πακέτο
+clients.segments.frequent.name	Συχνοί
+clients.segments.frequent.desc	8+ επισκέψεις στην περίοδο
+clients.segments.high_ltv.name	Υψηλό LTV
+clients.segments.high_ltv.desc	Κορυφαίο 10% βάσει συνολικών δαπανών
+clients.segments.referrers.name	Συστήνουν φίλους
+clients.segments.referrers.desc	Ολοκλήρωσαν σύσταση στην περίοδο
+clients.listSearch	Αναζήτηση με όνομα ή τηλέφωνο
+clients.shownOf	Εμφάνιση {{shown}} από {{total}}
+clients.noMatches	Δεν βρέθηκε κανείς για «{{query}}»
+clients.resetSearch	Επαναφορά
+clients.neverVisited	Δεν επισκέφθηκε ποτέ
+clients.valueLabel.visits	Επισκέψεις
+clients.valueLabel.spent	Δαπάνη
+clients.valueLabel.daysIdle	Ημέρες αδράνειας
+clients.valueLabel.remaining	Μαθήματα που απομένουν
+clients.valueLabel.value	Αξία
+clients.relative.today	Σήμερα
+clients.relative.daysAgo_one	πριν από {{count}} ημέρα
+clients.relative.daysAgo_other	πριν από {{count}} ημέρες
+team.kpi.lessonsCount	Μαθήματα
+team.kpi.revenuePerHour	Έσοδα/ώρα
+team.kpi.avgFillPct	Ποσοστό πληρότητας
+team.kpi.cancelNoshowPct	Ακυρώσεις/απουσίες
+team.kpi.avgRating	Βαθμολογία
+team.table.title	Εκπαιδευτές
+team.table.trainer	Εκπαιδευτής
+team.table.lessons	Μαθήματα
+team.table.fillPct	Ποσοστό πληρότητας
+team.table.attendance	Συμμετοχή
+team.table.revenue	Έσοδα
+team.table.returnRate	Ποσοστό επιστροφής
+team.table.cancels	Ακυρώσεις
+team.table.fillPctHint	Γεμάτες θέσεις από όσες είχαν προγραμματιστεί
+team.table.returnRateHint	Πελάτες που έκαναν ξανά κράτηση με αυτόν τον εκπαιδευτή
+team.table.cancelsHint	Ακυρωμένα μαθήματα και απουσίες πελατών
+team.table.ratingHint	Μέση βαθμολογία που έδωσαν οι πελάτες στα μαθήματα αυτού του εκπαιδευτή
+team.drawer.revenueByWeek	Έσοδα ανά εβδομάδα
+team.drawer.loadByWeekday	Φόρτος ανά ημέρα εβδομάδας
+team.drawer.loadByHour	Φόρτος ανά ώρα της ημέρας
+team.drawer.loadDim.weekday	Ανά ημέρα
+team.drawer.loadDim.hour	Ανά ώρα
+team.drawer.schedule.title	Πρόγραμμα
+team.drawer.schedule.empty	Δεν υπάρχουν μαθήματα αυτή την περίοδο
+team.drawer.topLessons	Αγαπημένα μαθήματα
+team.drawer.returnBlock	Επιστροφή πελατών
+team.drawer.returnOf	{{returned}} από {{total}} πελάτες επέστρεψαν ({{pct}}%)
+team.drawer.openProfile	Άνοιγμα προφίλ
+team.drawer.held	Πραγματοποιήθηκαν
+team.drawer.attendance	Συμμετοχή
+team.weekdays.0	Κυρ
+team.weekdays.1	Δευ
+team.weekdays.2	Τρι
+team.weekdays.3	Τετ
+team.weekdays.4	Πέμ
+team.weekdays.5	Παρ
+team.weekdays.6	Σάβ
+schedule.weekdaysMonFirst.0	Δευ
+schedule.weekdaysMonFirst.1	Τρι
+schedule.weekdaysMonFirst.2	Τετ
+schedule.weekdaysMonFirst.3	Πέμ
+schedule.weekdaysMonFirst.4	Παρ
+schedule.weekdaysMonFirst.5	Σάβ
+schedule.weekdaysMonFirst.6	Κυρ
+schedule.kpi.avgFillPct	Ποσοστό πληρότητας
+schedule.kpi.freeSpots	Ελεύθερες θέσεις
+schedule.kpi.cancels	Ακυρώσεις
+schedule.kpi.noshows	Απουσίες
+schedule.kpi.lostRevenue	Χαμένα έσοδα
+schedule.heatmap.title	Φόρτος ανά ημέρα και ώρα
+schedule.heatmap.legend	Ποσοστό πληρότητας:
+schedule.heatmap.tooltip	{{lessons}} μαθήματα · {{attendance}} συμμετείχαν · {{pct}}%
+schedule.heatmap.empty	Δεν υπάρχουν μαθήματα
+schedule.slices.topProfitable	Πιο κερδοφόρα
+schedule.slices.topFilled	Πιο γεμάτα
+schedule.slices.chronicLow	Χρόνια χαμηλή πληρότητα
+schedule.slices.halls	Αξιοποίηση: {{spacePlural}}
+schedule.slices.held	{{count}} πραγματοποιήθηκαν
+schedule.slices.weeks	{{count}} εβδ.
+schedule.slices.move	Μετακίνηση
+schedule.slices.cancel	Ακύρωση
+schedule.slices.eveningIdle	αδρανές τα βράδια {{pct}}%
+schedule.losses.title	Ακυρώσεις και απουσίες
+schedule.losses.dim.hour	Ανά ώρα
+schedule.losses.dim.service	Ανά υπηρεσία
+schedule.losses.dim.trainer	Ανά εκπαιδευτή
+schedule.losses.cancels_one	{{count}} ακύρωση
+schedule.losses.cancels_other	{{count}} ακυρώσεις
+schedule.losses.noshows_one	{{count}} απουσία
+schedule.losses.noshows_other	{{count}} απουσίες
+schedule.losses.lostSpots_one	−{{count}} θέση
+schedule.losses.lostSpots_other	−{{count}} θέσεις
+schedule.status.confirmed	Επιβεβαιώθηκε
+schedule.status.pending	Σε εκκρεμότητα
+schedule.status.cancelled	Ακυρώθηκε
+schedule.slot.summary	για {{from}} — {{to}}
+schedule.slot.lessonsCount	Σύνολο μαθημάτων
+export.csv	Λήψη CSV
+scopeNote.label	Σε όλο το στούντιο
+scopeNote.money	Τα φίλτρα Υποκατάστημα και {{space}} δεν επηρεάζουν τα χρήματα — η πληρωμή δεν συνδέεται με αυτά
+scopeNote.clientBase	Ο εκπαιδευτής, το {{space}}, το υποκατάστημα και η υπηρεσία δεν αλλάζουν αυτόν τον δείκτη — ο πελάτης δεν συνδέεται με αυτά
+descriptions.overview.metric.revenue	Όλα τα χρήματα που μπήκαν στο στούντιο κατά την περίοδο
+descriptions.overview.metric.profit	Ό,τι απομένει μετά τα έξοδα της περιόδου
+descriptions.overview.metric.attendance	Μαθήματα στα οποία οι πελάτες πραγματικά συμμετείχαν
+descriptions.overview.metric.new_clients	Πελάτες που εγγράφηκαν σε αυτή την περίοδο
+descriptions.overview.metric.fill_rate	Πόσο γεμάτα είναι τα μαθήματα: κρατημένες θέσεις από διαθέσιμες θέσεις
+descriptions.overview.revenueStructure	Από τι αποτελείται το εισόδημά σας αυτή την περίοδο
+descriptions.overview.clientDynamics	Πόσοι ήρθαν πρώτη φορά, επέστρεψαν ή σταμάτησαν να έρχονται
+descriptions.sales.chart	Έσοδα και αριθμός αγορών ανά ημέρα
+descriptions.sales.byCategory	Το μερίδιο κάθε προϊόντος στα έσοδα
+descriptions.sales.byMethod	Πώς κατανέμονται τα έσοδα ανά μέθοδο πληρωμής
+descriptions.sales.buyerType	Πόσα έσοδα προέρχονται από νέους πελάτες έναντι σταθερών
+descriptions.sales.products	Κάθε προϊόν: πόσα πουλήθηκαν, για πόσο και αν οι πωλήσεις αυξάνονται
+descriptions.clients.chart	Πόσοι πελάτες ήρθαν πρώτη φορά και πόσοι επέστρεψαν, ανά εβδομάδα
+descriptions.clients.riskSegments	Πελάτες που μπορεί να χάσετε αν δεν επικοινωνήσετε τώρα
+descriptions.clients.loyalSegments	Εκείνοι που επισκέπτονται περισσότερο, ξοδεύουν περισσότερο και φέρνουν φίλους
+descriptions.team.trainers	Σύγκριση κατά φόρτο, έσοδα και ποσοστό επιστροφής πελατών
+descriptions.team.loadWeekday	Ποιες ημέρες της εβδομάδας είναι απασχολημένος ο εκπαιδευτής και πότε είναι ελεύθερος
+descriptions.team.loadHour	Πότε γεμίζουν οι συνεδρίες του και πότε μένουν άδειες
+descriptions.team.schedule	Όλες οι συνεδρίες του εκπαιδευτή στην επιλεγμένη περίοδο
+descriptions.schedule.heatmap	Πού το πρόγραμμα είναι υπερκρατημένο και πού άδειο
+descriptions.schedule.topProfitable	Οι ώρες του προγράμματός σας που φέρνουν τα περισσότερα χρήματα
+descriptions.schedule.topFilled	Οι ώρες που οι πελάτες κλείνουν πιο πρόθυμα
+descriptions.schedule.chronicLow	Χρονικές ζώνες που γεμίζουν λιγότερο από το ένα τρίτο των θέσεων για εβδομάδες
+descriptions.schedule.halls	Πόσο από τον χρόνο οι {{spacePlural}} σας χρησιμοποιούνται πραγματικά
+descriptions.schedule.losses	Πού το στούντιο χάνει θέσεις: μαθήματα που ακυρώνονται ή πελάτες που δεν εμφανίζονται
+formulas.salesCount.title	Πωλήσεις
+formulas.salesCount.text	Πόσες φορές σας πλήρωσαν οι πελάτες αυτή την περίοδο. Ένα άτομο που πληρώνει περισσότερες φορές μετρά ως ξεχωριστές πωλήσεις.
+formulas.revenue.title	Έσοδα
+formulas.revenue.text	Όλα τα χρήματα που μπήκαν στο στούντιο αυτή την περίοδο, βάσει της ημερομηνίας πληρωμής. Πακέτα, μεμονωμένες συνεδρίες, δωροκάρτες και λιανική — όλα μαζί.
+formulas.profit.title	Κέρδος
+formulas.profit.text	Ό,τι απομένει μετά τα έξοδα αυτής της περιόδου: ενοίκιο, μισθοί, προμήθειες. Αυτό είναι το πραγματικό σας κέρδος.
+formulas.attendance.title	Συμμετοχή
+formulas.attendance.text	Πόσες επισκέψεις πραγματοποίησαν οι πελάτες. Μετρώνται μόνο συνεδρίες που σημειώθηκαν ως συμμετοχή.
+formulas.bookings.title	Κρατήσεις
+formulas.bookings.text	Πόσες κρατήσεις έκαναν οι πελάτες για συνεδρίες. Οι ακυρωμένες κρατήσεις δεν μετρώνται.
+formulas.noshow.title	Απουσία
+formulas.noshow.text	Ένας πελάτης έκανε κράτηση, η συνεδρία έγινε, αλλά δεν εμφανίστηκε. Κάθε τέτοια περίπτωση είναι μια θέση που θα μπορούσε να πάρει κάποιος άλλος.
+formulas.activeClients.title	Ενεργοί πελάτες
+formulas.activeClients.text	Πόσα διαφορετικά άτομα ήρθαν τουλάχιστον μία φορά σε αυτή την περίοδο. Κάθε πελάτης μετρά μία φορά, ανεξάρτητα από πόσες επισκέψεις έκανε.
+formulas.occupancy.title	Πληρότητα
+formulas.occupancy.text	Πόσο γεμάτες είναι οι συνεδρίες σας: γεμάτες θέσεις από όσες προγραμματίσατε. 100% σημαίνει ότι δεν έμεινε χώρος.
+formulas.avgCheck.title	Μέση απόδειξη
+formulas.avgCheck.text	Τι αποφέρει κατά μέσο όρο μία πληρωμή. Αυξάνεται όταν οι πελάτες αγοράζουν μεγαλύτερα πακέτα ή πρόσθετα.
+formulas.retention.title	Διατήρηση
+formulas.retention.text	Πόσοι από τους πελάτες της προηγούμενης περιόδου επέστρεψαν αυτή την περίοδο. Δείχνει αν κρατάτε πελάτες ή ξεκινάτε από το μηδέν κάθε μήνα.
+formulas.newClients.title	Νέοι πελάτες
+formulas.newClients.text	Άνθρωποι που εμφανίστηκαν στη βάση πελατών σας για πρώτη φορά αυτή την περίοδο.
+formulas.returning.title	Επιστρέφοντες
+formulas.returning.text	Πελάτες που είχαν επισκεφθεί στο παρελθόν και επέστρεψαν ξανά αυτή την περίοδο.
+formulas.lost.title	Χαμένοι
+formulas.lost.text	Επισκέφθηκαν την προηγούμενη περίοδο και δεν εμφανίστηκαν ούτε μία φορά σε αυτή. Αξίζει ακόμη να επικοινωνήσετε μαζί τους.
+formulas.clientValue.title	Αξία πελάτη
+formulas.clientValue.text	Τι αποφέρει κατά μέσο όρο ένας πελάτης αυτή την περίοδο.
+formulas.repeatPurchaseShare.title	Ποσοστό επαναγορών
+formulas.repeatPurchaseShare.text	Το ποσοστό πελατών που αγόρασαν από εσάς περισσότερες από μία φορές. Όσο υψηλότερο είναι, τόσο ισχυρότερη η συνήθεια να επιστρέφουν.
+formulas.renewalRate.title	Ποσοστό ανανεώσεων
+formulas.renewalRate.text	Πόσοι πελάτες αγόρασαν νέο πακέτο μετά τη λήξη του προηγούμενου.
+formulas.revenuePerHour.title	Έσοδα ανά ώρα (εκπαιδευτής)
+formulas.revenuePerHour.text	Πόσα χρήματα αποφέρει μία ώρα εργασίας ενός εκπαιδευτή. Επιτρέπει δίκαιη σύγκριση εκπαιδευτών — κάποιος μπορεί να κάνει λιγότερα μαθήματα, αλλά το καθένα να αποφέρει περισσότερα.
+formulas.trainerReturnRate.title	Ποσοστό επιστροφής (εκπαιδευτής)
+formulas.trainerReturnRate.text	Το ποσοστό πελατών ενός εκπαιδευτή που έκαναν ξανά κράτηση μαζί του.
+formulas.missedRevenue.title	Χαμένα έσοδα
+formulas.missedRevenue.text	Χρήματα που δεν κέρδισε το στούντιο λόγω κενών θέσεων σε προηγούμενα μαθήματα: ελεύθερες θέσεις επί την τιμή της συνεδρίας.
+formulas.losses.title	Ακυρώσεις και απουσίες
+formulas.losses.text	Η «ακύρωση» είναι ένα ακυρωμένο μάθημα· η «απουσία» είναι πελάτης που έκανε κράτηση αλλά δεν ήρθε. Οι αναλύσεις ανά ώρα/υπηρεσία/εκπαιδευτή χρησιμοποιούν τα ίδια φίλτρα με την καρτέλα και συμφωνούν με τους KPI της κεφαλίδας.
+formulas.lessonRevenue.title	Έσοδα μαθήματος
+formulas.lessonRevenue.text	Μια πρόχειρη εκτίμηση των εσόδων συνεδρίας: συμμετέχοντες επί την τιμή. Οι πληρωμές δεν συνδέονται με συγκεκριμένη συνεδρία, επομένως πρόκειται για εκτίμηση και όχι ακριβές ποσό.
+formulas.filtersScope.title	Εύρος φίλτρων
+formulas.filtersScope.text	Τα φίλτρα Υποκατάστημα και {{space}} ισχύουν μόνο για δείκτες μαθημάτων. Οι πληρωμές δεν έχουν τέτοιο δεσμό, άρα τα χρήματα εμφανίζονται για όλο το στούντιο.
+formulas.avgValue.title	Αξία πελάτη
+formulas.avgValue.text	Τι αποφέρει κατά μέσο όρο ένας πελάτης αυτή την περίοδο.
+formulas.cancelNoshow.title	Ακυρώσεις και απουσίες
+formulas.cancelNoshow.text	Το ποσοστό διαταραγμένων μαθημάτων: ακυρώσεις και απουσίες από όλα όσα προγραμματίστηκαν.
+formulas.avgRating.title	Μέση βαθμολογία
+formulas.avgRating.text	Η μέση βαθμολογία που έδωσαν οι πελάτες στις συνεδρίες αυτού του εκπαιδευτή.
+formulas.teamScope.title	Εύρος δεδομένων
+formulas.teamScope.text	Αυτό μετρά μόνο τα έσοδα που συνδέονται με συγκεκριμένο εκπαιδευτή, οπότε το σύνολο όλων των εκπαιδευτών μπορεί να είναι μικρότερο από τα συνολικά έσοδα του στούντιο.
+formulas.lessonsCount.title	Μαθήματα
+formulas.lessonsCount.text	Πόσες συνεδρίες πραγματοποίησαν οι εκπαιδευτές αυτή την περίοδο.
+formulas.load.title	Φόρτος
+formulas.load.text	Πόσο γεμάτη είναι η ημέρα ενός εκπαιδευτή: οι κρατημένες ώρες του μέσα στο ωράριο λειτουργίας του στούντιο.
+formulas.weeklyClients.title	Νέοι και επιστρέφοντες
+formulas.weeklyClients.text	Ανά εβδομάδα: πόσοι άνθρωποι ήρθαν σε εσάς πρώτη φορά και πόσοι επέστρεψαν. Ένα υγιές στούντιο αναπτύσσεται και στις δύο γραμμές.
+formulas.byCategory.title	Έσοδα ανά κατηγορία
+formulas.byCategory.text	Από πού κερδίζετε πραγματικά: πακέτα, μεμονωμένες συνεδρίες, δωροκάρτες, λιανική.
+formulas.byMethod.title	Μέθοδοι πληρωμής
+formulas.byMethod.text	Πώς πληρώνουν οι πελάτες. Βοηθά να δείτε αν χρειάζεστε επεξεργασία καρτών και πόσα χρήματα παρακάμπτουν το ταμείο.
+formulas.buyerType.title	Ποιος πληρώνει
+formulas.buyerType.text	Νέοι πελάτες έναντι τακτικών. Αν σχεδόν όλα τα έσοδα προέρχονται από νέους πελάτες, το στούντιο δεν διατηρεί πελάτες.
+formulas.products.title	Τι πουλάει
+formulas.products.text	Όλα τα πακέτα και οι υπηρεσίες της περιόδου: πόσα πουλήθηκαν, για πόσο και αν οι πωλήσεις αυξάνονται.
+formulas.topProfitable.title	Πιο κερδοφόρες ώρες
+formulas.topProfitable.text	Οι ώρες του προγράμματός σας που αποφέρουν τα περισσότερα χρήματα. Βάλτε εκεί τους καλύτερους εκπαιδευτές σας.
+formulas.topFilled.title	Πιο γεμάτες ώρες
+formulas.topFilled.text	Οι ώρες που οι πελάτες κλείνουν πιο πρόθυμα. Αν είναι εντελώς γεμάτες, αξίζει να προσθέσετε άλλο ένα μάθημα.
+formulas.chronicLow.title	Χρόνια άδειες ώρες
+formulas.chronicLow.text	Ώρες που γεμίζουν λιγότερο από το ένα τρίτο των θέσεων για αρκετές εβδομάδες. Υποψήφιες για μετακίνηση ή κατάργηση.
+formulas.hallUtil.title	Αξιοποίηση: {{spacePlural}}
+formulas.hallUtil.text	Πόσο από τον χρόνο οι {{spacePlural}} σας χρησιμοποιούνται πραγματικά. Ο αδρανής χρόνος είναι ενοίκιο που δεν αποδίδει.
+formulas.heatmap.title	Φόρτος ανά ημέρα και ώρα
+formulas.heatmap.text	Το χρώμα δείχνει το μέσο ποσοστό πληρότητας της ώρας στην περίοδο. Πατήστε ένα κελί για να δείτε τις συνεδρίες εκείνης της ημέρας και ώρας.
+formulas.riskSegments.title	Τμήματα κινδύνου
+formulas.riskSegments.text	Πελάτες ομαδοποιημένοι ανά τύπο κινδύνου — να τους χάσετε ή τα έσοδα που δεν φέρνουν. Κάθε κάρτα έχει δικό της λόγο και σαφές επόμενο βήμα: στείλτε μήνυμα, προσφέρετε ανανέωση ή αναβάθμιση.
+formulas.loyalSegments.title	Πιστοί
+formulas.loyalSegments.text	Πελάτες που ήδη σας φέρνουν τη μεγαλύτερη αξία: επισκέπτονται συχνότερα, ξοδεύουν περισσότερο ή φέρνουν φίλους. Αξίζει να τους φροντίζετε και να τους επιβραβεύετε.
+formulas.segment.at_risk.title	Στο όριο
+formulas.segment.at_risk.text	Συνήθιζαν να έρχονται τακτικά και τώρα εξαφανίστηκαν. Μπορούν ακόμη να επιστρέψουν με ένα μήνυμα.
+formulas.segment.vip_idle.title	Αδρανείς VIP
+formulas.segment.vip_idle.text	Πελάτες που έχουν ξοδέψει περισσότερα από όλους, αλλά δεν επισκέφθηκαν εδώ και καιρό.
+formulas.segment.expiring_subscription.title	Συνδρομή που λήγει
+formulas.segment.expiring_subscription.text	Σε αυτούς τους πελάτες απομένουν 1–2 μαθήματα. Είναι η καλύτερη στιγμή να προσφέρετε ανανέωση.
+formulas.segment.lost_newcomers.title	Νεοφερμένοι που δεν επέστρεψαν
+formulas.segment.lost_newcomers.text	Ήρθαν μία φορά και εξαφανίστηκαν. Συνήθως έχει να κάνει με εκείνο το πρώτο μάθημα — αξίζει διερεύνηση.
+formulas.segment.upsell_candidates.title	Έτοιμοι για περισσότερα
+formulas.segment.upsell_candidates.text	Επισκέπτονται συχνά, αλλά αγοράζουν το απλούστερο πακέτο. Αξίζει να τους προσφέρετε ακριβότερη συνδρομή.
+formulas.segment.frequent.title	Τακτικοί
+formulas.segment.frequent.text	Επισκέπτονται συχνότερα από όλους τους άλλους. Η ραχοκοκαλιά των εσόδων του στούντιο.
+formulas.segment.high_ltv.title	Πιο πολύτιμοι
+formulas.segment.high_ltv.text	Έφεραν στο στούντιο περισσότερα χρήματα από όλους, διαχρονικά.
+formulas.segment.referrers.title	Φέρνουν φίλους
+formulas.segment.referrers.text	Πελάτες των οποίων οι συστάσεις έφεραν άλλους ανθρώπους σε εσάς.

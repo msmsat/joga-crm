@@ -1,0 +1,377 @@
+== tr
+tabs.accounts	Hesaplar
+tabs.operations	İşlemler
+tabs.salaries	Bordro
+tabs.counterparties	Karşı taraflar
+tabs.documents	Belgeler
+tabs.onlinePayments	Çevrimiçi ödemeler
+tabs.paymentMethods	Ödeme yöntemleri
+tabs.reports	Raporlar
+tabs.goals	Hedefler
+common.save	Kaydet
+common.cancel	İptal
+common.create	Oluştur
+common.edit	Düzenle
+common.delete	Sil
+common.loading	Yükleniyor…
+common.all	Tümü
+common.confirm	Onayla
+common.monthsShort.0	Oca
+common.monthsShort.1	Şub
+common.monthsShort.2	Mar
+common.monthsShort.3	Nis
+common.monthsShort.4	May
+common.monthsShort.5	Haz
+common.monthsShort.6	Tem
+common.monthsShort.7	Ağu
+common.monthsShort.8	Eyl
+common.monthsShort.9	Eki
+common.monthsShort.10	Kas
+common.monthsShort.11	Ara
+common.weekdaysShort.0	Pzt
+common.weekdaysShort.1	Sal
+common.weekdaysShort.2	Çar
+common.weekdaysShort.3	Per
+common.weekdaysShort.4	Cum
+common.weekdaysShort.5	Cmt
+common.weekdaysShort.6	Paz
+info.accounts	Hesaplar stüdyonun kasaları, banka hesapları ve çevrimiçi tahsilatlarıdır. Her bakiyeyi ve toplam sermayeyi burada görebilirsiniz.
+info.operations	İşlemler, stüdyonun tüm gelir ve giderleridir. Bir işlem oluşturulduğunda bağlı hesabın bakiyesi hemen değişir.
+info.salaries	Maaşlar, seçilen dönem için ekip üyesinin ücretine göre (sabit, saatlik veya yüzdelik) hesaplanır.
+info.counterparties	Karşı taraflar, stüdyonun hesaplaştığı kuruluş ve kişilerdir: tedarikçiler, mal sahipleri ve ortaklar.
+info.documents	Belgeler, karşı taraflara bağlı sözleşmeler, tutanaklar ve faturalar ya da dahili belgelerdir.
+info.onlinePayments	Çevrimiçi ödemeler — kart ödemeleri için Stripe'ı bağlayın. Hesap stüdyonuz adına oluşturulur; böylece para Velora'ya uğramadan doğrudan size gelir.
+info.paymentMethods	Ödeme yöntemleri, müşterilerin stüdyoda nasıl ödeme yaptığını ve her yöntem için istatistikleri gösterir.
+info.reports	Raporlar, seçilen dönemde gelir, gider ve kâr eğilimlerini gösterir.
+info.goals	Finansal hedefler, otomatik veya manuel ilerleme takibiyle stüdyonun tasarruf planıdır.
+accounts.loading	Hesaplar yükleniyor…
+accounts.totalCapital	Stüdyonun toplam sermayesi
+accounts.donutTotal	Toplam {{symbol}}
+accounts.todayChange	bugün
+accounts.system	SİSTEM
+accounts.today	bugün
+accounts.editTitle	Hesabı düzenle
+accounts.namePlaceholder	Ad
+accounts.balancePlaceholder	Bakiye, {{symbol}}
+accounts.types.cash	Nakit
+accounts.types.bank	Kart
+accounts.types.online	Çevrimiçi
+accounts.typesShort.cash	Nakit
+accounts.typesShort.bank	Kart
+accounts.typesShort.online	Çevrimiçi
+accounts.history	Geçmiş
+accounts.historyTitle	Geçmiş: {{name}}
+accounts.income30d	Gelir (30 gün)
+accounts.expense30d	Gider (30 gün)
+accounts.samplePayment	Hizmet ödemesi
+accounts.sampleTime	Bugün, 14:32
+accounts.openAllOperations	Tüm işlemleri aç
+accounts.newSavingsTitle	Yeni tasarruf hesabı
+accounts.createSavings	Tasarruf hesabı oluştur
+accounts.deleteConfirmTitle	Bu hesap silinsin mi?
+accounts.deleteConfirmText	Tüm fonları genel istatistiklerden çıkarılır. Bu işlem geri alınamaz.
+accounts.toasts.loadFailed	Hesaplar yüklenemedi
+accounts.toasts.deleted	Hesap silindi
+accounts.toasts.deleteFailed	Hesap silinemedi
+accounts.toasts.saved	Ayarlar kaydedildi
+accounts.toasts.saveFailed	Hesap kaydedilemedi
+accounts.toasts.created	Tasarruf hesabı oluşturuldu
+accounts.toasts.createFailed	Hesap oluşturulamadı
+operations.income	Gelir
+operations.expense	Gider
+operations.balance	Bakiye
+operations.searchPlaceholder	Başlık ve kategoriye göre ara…
+operations.close	Kapat
+operations.operation	İşlem
+operations.export	Dışa aktar
+operations.newOperationTitle	Yeni işlem
+operations.titleLabel	Başlık
+operations.titlePlaceholder	Örneğin, abonelik ödemesi
+operations.amountLabel	Tutar, {{symbol}}
+operations.dateLabel	Tarih
+operations.categoryLabel	Kategori
+operations.categoryPlaceholder	Kategori
+operations.accountLabel	Hesap
+operations.noAccount	Hesap yok
+operations.methodLabel	Ödeme yöntemi
+operations.noMethod	Belirtilmedi
+operations.counterpartyLabel	Karşı taraf
+operations.noCounterparty	Karşı taraf yok
+operations.newCounterparty	+ Yeni karşı taraf
+operations.clientLabel	Müşteri
+operations.clientHint	Sadakat puanları ve seviyesi müşteriye tanımlanacaktır
+operations.clientSearchPlaceholder	Bir ad yazmaya başlayın…
+operations.noClient	Müşteri yok
+operations.editTitle	İşlemi düzenle
+operations.saving	Kaydediliyor…
+operations.loading	İşlemler yükleniyor…
+operations.emptyTitle	İşlem bulunamadı
+operations.emptyBody	Filtreleri değiştirin veya ilk işlemi oluşturun
+operations.pending	Beklemede
+operations.detailAccount	Alıcı hesap
+operations.detailCategory	Kategori
+operations.detailMethod	Ödeme yöntemi
+operations.detailCounterparty	Karşı taraf
+operations.receipt	Makbuz
+operations.loadMore	Daha fazla yükle ({{count}})
+operations.toasts.loadFailed	İşlemler yüklenemedi
+operations.toasts.loadMoreFailed	Daha fazla işlem yüklenemedi
+operations.toasts.deleted	İşlem silindi
+operations.toasts.deleteFailed	İşlem silinemedi
+operations.toasts.enterAmount	Bir tutar girin
+operations.toasts.created	İşlem oluşturuldu
+operations.toasts.createFailed	İşlem oluşturulamadı
+operations.toasts.updated	İşlem güncellendi
+operations.toasts.updateFailed	İşlem kaydedilemedi
+operations.toasts.exportFailed	İşlemler dışa aktarılamadı
+operations.toasts.receiptDownloaded	Makbuz indirildi
+operations.categoryPresets.in.0.value	Üyelikler
+operations.categoryPresets.in.0.label	Üyelikler
+operations.categoryPresets.in.1.value	Hizmetler
+operations.categoryPresets.in.1.label	Hizmetler
+operations.categoryPresets.in.2.value	Hediye sertifikaları
+operations.categoryPresets.in.2.label	Hediye sertifikaları
+operations.categoryPresets.in.3.value	Depozito
+operations.categoryPresets.in.3.label	Depozito
+operations.categoryPresets.in.4.value	Diğer
+operations.categoryPresets.in.4.label	Diğer
+operations.categoryPresets.out.0.value	İadeler
+operations.categoryPresets.out.0.label	İadeler
+operations.categoryPresets.out.1.value	Kira
+operations.categoryPresets.out.1.label	Kira
+operations.categoryPresets.out.2.value	Maaşlar
+operations.categoryPresets.out.2.label	Maaşlar
+operations.categoryPresets.out.3.value	Tedarik
+operations.categoryPresets.out.3.label	Tedarik
+operations.categoryPresets.out.4.value	Pazarlama
+operations.categoryPresets.out.4.label	Pazarlama
+operations.categoryPresets.out.5.value	Vergiler
+operations.categoryPresets.out.5.label	Vergiler
+operations.categoryPresets.out.6.value	Diğer
+operations.categoryPresets.out.6.label	Diğer
+salaries.loading	Bordro yükleniyor…
+salaries.noRows	Hesaplanacak ekip üyesi yok
+salaries.fund	Maaş fonu
+salaries.fundSub	geçerli ay
+salaries.sessions	Seanslar
+salaries.sessionsSub	toplam gerçekleştirilen
+salaries.paidOf	ekip üyesi
+salaries.sessionsCount	{{count}} seans
+salaries.paid	Ödendi
+salaries.pending	Beklemede
+salaries.paying	…
+salaries.payAction	Öde
+salaries.cancelAction	Maaşı iptal et
+salaries.perMonth	/ay
+salaries.accrualTitle	Dönem tahakkuku
+salaries.rate	Ücret
+salaries.rateNotSet	ayarlanmadı
+salaries.sessionsInPeriod	Dönemdeki seanslar
+salaries.hoursWorked	Çalışılan saatler
+salaries.lessonsRevenue	Seans geliri
+salaries.totalToPay	Toplam ödeme
+salaries.rateWarning	Ücret ayarlanmamış — tahakkukun hesaplanabilmesi için ekip üyesi profilinden ayarlayın.
+salaries.rateUnit.hourly	saat
+salaries.rateUnit.percent	%
+salaries.rateUnit.fixed	sabit
+salaries.paidAt	Ödendi {{date}}
+salaries.historyTitle	Ödeme geçmişi
+salaries.historyEmpty	Henüz ödeme yok
+salaries.historyLoading	Geçmiş yükleniyor…
+salaries.toasts.loadFailed	Bordro yüklenemedi
+salaries.toasts.paid	Maaş ödendi: {{name}}
+salaries.toasts.payFailed	Maaş ödenemedi
+salaries.toasts.canceled	Maaş iptal edildi: {{name}}
+salaries.toasts.historyLoadFailed	Ödeme geçmişi yüklenemedi
+counterparties.count	{{count}} karşı taraf
+counterparties.totalDebt	Toplam borç:
+counterparties.add	Ekle
+counterparties.newTitle	Yeni karşı taraf
+counterparties.nameLabel	Ad / Tam ad
+counterparties.namePlaceholder	Şirket Ltd. veya Ahmet Yılmaz
+counterparties.innLabel	Vergi numarası
+counterparties.categoryLabel	Kategori
+counterparties.categoryPlaceholder	Kira, tedarikçi…
+counterparties.typeLabel	Karşı taraf türü
+counterparties.types.legal.label	Tüzel kişi
+counterparties.types.legal.desc	Kuruluş veya şirket
+counterparties.types.ie.label	Şahıs işletmesi
+counterparties.types.ie.desc	Bireysel girişimci
+counterparties.types.person.label	Gerçek kişi
+counterparties.types.person.desc	Özel kişi
+counterparties.addSubmit	Karşı taraf ekle
+counterparties.you	Siz
+counterparties.otherCategory	Diğer
+counterparties.deals	işlem
+counterparties.dealsLabel	İşlemler
+counterparties.debtLabel	Borç
+counterparties.documents	Belgeler
+counterparties.edit	Düzenle
+counterparties.delete	Sil
+counterparties.deleteConfirmTitle	Karşı taraf silinsin mi?
+counterparties.deleteConfirmText	İlgili belgeler ve işlem geçmişi korunur, ancak karşı taraf listeden kaldırılır.
+counterparties.toasts.loadFailed	Karşı taraflar yüklenemedi
+counterparties.toasts.enterName	Bir ad girin
+counterparties.toasts.saved	Değişiklikler kaydedildi
+counterparties.toasts.saveFailed	Kaydedilemedi
+counterparties.toasts.added	Karşı taraf eklendi
+counterparties.toasts.addFailed	Karşı taraf eklenemedi
+counterparties.toasts.deleted	Karşı taraf silindi
+counterparties.toasts.deleteFailed	Karşı taraf silinemedi
+counterparties.toasts.documentsOpened	Belgeler açıldı
+documents.signed	İmzalanmış
+documents.pendingCount	İmza bekliyor
+documents.draftCount	Dahili (imzasız)
+documents.searchPlaceholder	Başlığa veya karşı tarafa göre ara…
+documents.filters.all	Tümü
+documents.filters.signed	İmzalanmış
+documents.filters.pending	İmza bekliyor
+documents.upload	Yükle
+documents.addTitle	Kitaplığa belge ekle
+documents.dropzoneTitle	Tıklayın veya bir dosya sürükleyin
+documents.dropzoneHint	PDF, DOCX, XLSX (15 MB'a kadar)
+documents.dropzoneChange	Başka bir dosya seçmek için tıklayın
+documents.titleLabel	Belge başlığı
+documents.titlePlaceholder	Örneğin, Teslim tutanağı No. 48
+documents.partyLabel	Karşı taraf (varsa)
+documents.partyPlaceholder	Şirket veya şahıs işletmesi adı
+documents.needsSignature	Belgenin imzalanması gerekiyor mu?
+documents.needsSignatureHint	Durum “İmza bekliyor” olacaktır
+documents.saveToBase	Kitaplığa kaydet
+documents.emptyTitle	Bu klasör boş
+documents.emptyBody	Yeni bir belge yükleyin veya filtreleri değiştirin
+documents.internalDoc	Dahili belge
+documents.uploaded	Yüklendi {{date}}
+documents.download	İndir
+documents.open	Aç
+documents.fileRequired	Bir dosya ekleyin
+documents.options	Seçenekler
+documents.status.title	Durum
+documents.status.signed	İmzalandı
+documents.status.pending	İmza bekliyor
+documents.status.draft	İmzasız
+documents.delete	Sil
+documents.toasts.loadFailed	Belgeler yüklenemedi
+documents.toasts.titleRequired	Bir dosya yükleyin veya başlık girin
+documents.toasts.created	Belge kitaplığa yüklendi
+documents.toasts.createFailed	Belge kaydedilemedi
+documents.toasts.badFormat	İzin verilen biçimler: PDF, DOCX, XLSX
+documents.toasts.downloadFailed	Dosya indirilemedi
+documents.toasts.noFile	Bu belgeye dosya eklenmemiş
+documents.toasts.openFailed	Dosya açılamadı
+documents.toasts.statusChanged	Durum: {{label}}
+documents.toasts.statusFailed	Durum değiştirilemedi
+documents.toasts.deleted	Belge silindi
+documents.toasts.deleteFailed	Belge silinemedi
+goals.loading	Hedefler yükleniyor…
+goals.active	Devam eden hedefler
+goals.done	Tamamlandı
+goals.avgProgress	Genel ilerleme
+goals.trackingTitle	Plan takibi
+goals.createGoal	Hedef oluştur
+goals.newTitle	Yeni finansal hedef
+goals.titleLabel	Hedef başlığı
+goals.titlePlaceholder	Örneğin, yeni reformer makineleri
+goals.targetLabel	Hedef tutar, {{symbol}}
+goals.targetPlaceholder	500000
+goals.deadlineLabel	Son tarih
+goals.trackingLabel	İlerleme nasıl takip edilsin?
+goals.trackingAuto	Otomatik (CRM metriği)
+goals.trackingAutoDesc	Hedefi seçilmiş bir kategorinin gelirine bağlayın. CRM ilerleme çubuğunu kendisi günceller.
+goals.trackingManual	Manuel (kişisel tasarruf)
+goals.trackingManualDesc	Kartta “Fon ekle” düğmesi görünür. İlerleme yalnızca size bağlıdır.
+goals.opTypeLabel	İşlem türü
+goals.categoryLabel	Kategori
+goals.categoryPlaceholder	Bir kategori seçin
+goals.editTitle	Hedefi düzenle
+goals.nameLabel	Başlık
+goals.namePlaceholder	Hedef başlığı
+goals.amountLabel	Tutar, {{symbol}}
+goals.achieved	Hedefe ulaşıldı
+goals.priority.high	Yüksek öncelik
+goals.priority.medium	Orta öncelik
+goals.priority.low	Düşük öncelik
+goals.autoCollect	Otomatik takip
+goals.deadlinePrefix	Son tarih:
+goals.noDeadline	Son tarih yok
+goals.fundPlaceholder	Tutar, {{symbol}}
+goals.fund	Ekle
+goals.addFunds	Fon ekle
+goals.autoHint	Değer, kategori gelirine göre otomatik olarak güncellenir
+goals.deleteConfirmTitle	Hedef silinsin mi?
+goals.deleteConfirmText	Bu hedefin ilerlemesi kaybolacak. Bu işlem geri alınamaz.
+goals.toasts.loadFailed	Hedefler yüklenemedi
+goals.toasts.fillRequired	Başlığı ve tutarı doldurun
+goals.toasts.chooseCategory	Otomatik hedef için bir kategori seçin
+goals.toasts.created	Hedef oluşturuldu
+goals.toasts.createFailed	Hedef oluşturulamadı
+goals.toasts.enterName	Bir ad girin
+goals.toasts.updated	Hedef güncellendi
+goals.toasts.updateFailed	Hedef güncellenemedi
+goals.toasts.deleted	Hedef silindi
+goals.toasts.deleteFailed	Hedef silinemedi
+goals.toasts.funded	Fon eklendi
+goals.toasts.fundFailed	Fon eklenemedi
+onlinePayments.description	Stripe'ı bağlayın; müşterileriniz kasada kartla ödeme yapabilsin. Para doğrudan stüdyonuzun hesabına gelir — Velora parayı asla tutmaz. Komisyon planınıza bağlıdır.
+onlinePayments.gatewaysTitle	Ödeme sağlayıcıları
+onlinePayments.gateways.stripe.name	Stripe
+onlinePayments.gateways.states.none.label	Bağlı değil
+onlinePayments.gateways.states.none.hint	Stüdyo hesabına kartla ödeme alın
+onlinePayments.gateways.states.none.action	Bağlan
+onlinePayments.gateways.states.incomplete.label	Bilgiler eksik
+onlinePayments.gateways.states.incomplete.hint	Stripe stüdyonuzun bilgilerini bekliyor — o zamana kadar ödemeler kapalı kalır
+onlinePayments.gateways.states.incomplete.action	Devam
+onlinePayments.gateways.states.action.label	İşlem gerekli
+onlinePayments.gateways.states.action.hint	Stripe bazı bilgileri reddetti ve düzeltme bekliyor — bu kendiliğinden çözülmez
+onlinePayments.gateways.states.action.action	Bilgileri düzelt
+onlinePayments.gateways.states.review.label	İnceleniyor
+onlinePayments.gateways.states.review.hint	Bilgiler gönderildi, Stripe inceliyor. Bu genellikle bir güne kadar sürer
+onlinePayments.gateways.states.review.action	Stripe'ı aç
+onlinePayments.gateways.states.active.label	Bağlı
+onlinePayments.gateways.states.active.hint	Kart ödemeleri stüdyonun Stripe hesabına gelir
+onlinePayments.gateways.states.active.action	Ayarlar
+onlinePayments.toasts.gatewayUpdated	Sağlayıcı ayarları güncellendi
+onlinePayments.toasts.stripeReturned	Bilgiler Stripe'a gönderildi
+onlinePayments.toasts.stripeLinkExpired	Stripe bağlantısının süresi doldu — tekrar Bağlan'a basın
+paymentMethods.totalTurnover	Dönem cirosu
+paymentMethods.periods.month	Ay
+paymentMethods.periods.quarter	Çeyrek
+paymentMethods.periods.year	Yıl
+paymentMethods.amount	Tutar
+paymentMethods.share	Pay
+paymentMethods.transactions	işlem
+paymentMethods.methods.cash.name	Nakit
+paymentMethods.methods.card.name	Banka kartı
+paymentMethods.methods.qr.name	SBP (QR)
+paymentMethods.methods.transfer.name	Havale
+paymentMethods.methods.stripe.name	Stripe
+paymentMethods.methods..name	Belirtilmedi
+reports.metrics.revenue	Gelirler
+reports.metrics.expenses	Giderler
+reports.metrics.profit	Kâr
+reports.metrics.margin	Marj
+reports.vsPreviousPeriod	önceki döneme göre
+reports.cashflowTitle	Nakit akışı
+reports.cashflowSub	Gelir ve gider analizi
+reports.period	Dönem
+reports.income	Gelir
+reports.expense	Gider
+reports.profit	Kâr
+reports.periods.today	Bugün
+reports.periods.week	Hafta
+reports.periods.month	Ay
+reports.periods.year	Yıl
+reports.legendIncome	Gelirler
+reports.legendExpense	Giderler
+reports.exportCsv	CSV dışa aktar
+reports.expenseStructure	Gider dağılımı
+reports.incomeStructure	Gelir dağılımı
+reports.total	Toplam
+reports.otherCategory	Kategorisiz
+reports.noData	Bu dönem için veri yok
+reports.insightsTitle	Finansal özet ve içgörüler
+reports.insightsPlaceholder	YZ destekli finansal özet burada görünür: eğilim analizi, gider dağılımı ve öneriler
+reports.toasts.exportFailed	İşlemler dışa aktarılamadı
+confirmModal.cancel	İptal
+confirmModal.confirm	Onayla
+confirmModal.delete	Sil

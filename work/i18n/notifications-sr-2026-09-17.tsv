@@ -1,0 +1,248 @@
+== sr
+loading	Учитавање…
+chModal.eyebrow	Канал обавештења
+chModal.connected	Повезан
+chModal.notConnected	Није повезан
+chModal.setup	Подешавање везе
+chModal.details	Детаљи везе
+chModal.ready	Канал ради
+chModal.readyHint	Обавештења за укључене догађаје шаљу се аутоматски.
+chModal.bot	Бот
+chModal.token	Токен
+chModal.phone	Број
+chModal.account	Налог
+chModal.sender	Пошиљалац
+channels.title	Канали испоруке
+channels.connect	Повежи
+channels.connected	Повезан
+channels.openSettings	Подешавања за {{channel}}
+channels.waLockedHint	Канал се откључава када Meta има ваш начин плаћања, потврђену фирму и одобрене шаблоне
+channels.waBlocker.payment	Нема начина плаћања — подсетници се не испоручују. Подесите
+channels.waBlocker.verification	Фирма није потврђена у Meta — ограничење 250/дан. Како поправити
+channels.waBlocker.templates	Шаблони су још на прегледу у Meta — ништа неће бити послато. Детаљи
+roles.client	Клијент
+roles.trainer	Тренер
+roles.admin	Администратор
+roles.owner	Власник
+roles.activeCount_one	{{count}} активан
+roles.activeCount_few	{{count}} активна
+roles.activeCount_other	{{count}} активних
+matrix.saving	Чување…
+matrix.allSaved	Све промене су сачуване
+matrix.notSaved	Није сачувано
+matrix.activateAll	Активирај све
+matrix.deactivateAll	Очисти сва поља за потврду
+matrix.activeCount_one	Активни окидачи: {{count}} од {{total}}
+matrix.activeCount_few	Активни окидачи: {{count}} од {{total}}
+matrix.activeCount_other	Активни окидачи: {{count}} од {{total}}
+matrix.scenariosFor	Сценарији за: {{role}}
+matrix.configureFor_one	Подеси канале за {{count}} системски окидач
+matrix.configureFor_few	Подеси канале за {{count}} системска окидача
+matrix.configureFor_other	Подеси канале за {{count}} системских окидача
+matrix.eventColumn	Системски догађај
+matrix.noActiveChannels	Нема активних канала
+matrix.noActiveChannelsHint	Укључите бар један канал испоруке у левом панелу
+matrix.adviceLabel	Савет:
+matrix.advice	Подесите засебно за сваку улогу шта се шаље и где — Velora ће то аутоматски обрадити.
+matrix.tiers.critical	Обавезно · не може се искључити
+matrix.tiers.operational	Оперативно
+matrix.tiers.optional	Опционо
+matrix.lock.critical	Обавезно обавештење — не може се искључити
+matrix.lock.lastChannel	Последњи канал испоруке — не може се искључити
+matrix.channelDisconnected	Канал није повезан
+events.c1.title	Резервација потврђена
+events.c1.desc	После успешне резервације термина
+events.c2.title	Подсетник за термин
+events.c2.desc	24 сата и 2 сата раније
+events.c3.title	Термин отказан
+events.c3.desc	Када тренер или студио откажу
+events.c4.title	Успешно плаћање
+events.c4.desc	Рачун после успешне наплате
+events.c5.title	Мало термина преостало
+events.c5.desc	Када је у пакету остало 1–2 посете
+events.c6.title	Пакет истиче
+events.c6.desc	3 дана пре истека
+events.c7.title	Рођендан
+events.c7.desc	Честитка с посебном понудом
+events.c8.title	Захтев за оцену
+events.c8.desc	После присуствовања термину
+events.c9.title	Повраћај новца
+events.c9.desc	При отказивању и обради повраћаја
+events.c10.title	Термин још није плаћен
+events.c10.desc	Клијент је присуствовао, али није платио
+events.c11.title	Термин је померен
+events.c11.desc	Време, сала или тренер су промењени
+events.c12.title	Бонус је додељен
+events.c12.desc	Клијенту су додати поени или бонус
+events.c13.title	Кафа после термина
+events.c13.desc	Ко из групе иде на кафу
+events.t1.title	Нова резервација код тренера
+events.t1.desc	Клијент је резервисао лични термин
+events.t2.title	Клијент је отказао резервацију
+events.t2.desc	Клијент је отказао мање од 2 ч. раније
+events.t3.title	Подсетник за термин
+events.t3.desc	1 сат пре почетка
+events.t4.title	Списак групе
+events.t4.desc	30 мин. пре групног термина
+events.t5.title	Промена распореда
+events.t5.desc	Администратор је променио термин или локацију
+events.t6.title	Зарада обрачуната
+events.t6.desc	Недељни обрачун исплате
+events.t7.title	Нова оцена тренера
+events.t7.desc	Клијент је оставио оцену после термина
+events.t8.title	Рођендан клијента
+events.t8.desc	Подсетник да лично честитате
+events.t9.title	Термин отказан
+events.t9.desc	Студио или администратор је отказао ваш термин
+events.a1.title	Нова онлајн резервација
+events.a1.desc	Клијент је резервисао преко сајта или виџета
+events.a2.title	Отказивање у последњем тренутку
+events.a2.desc	Мање од 1 сата пре термина
+events.a3.title	Нови клијент у систему
+events.a3.desc	Регистрација новог корисника
+events.a4.title	Уплата примљена
+events.a4.desc	Свака успешна наплата
+events.a6.title	Пакети при крају
+events.a6.desc	Група клијената са ≤1 преосталим термином
+events.a7.title	Сукоб у распореду
+events.a7.desc	Преклапајући термини у дневнику
+events.a8.title	Дневни извештај
+events.a8.desc	Сажетак на крају дана
+events.a9.title	Покушај пријаве
+events.a9.desc	Пријава с новог уређаја
+events.a10.title	Повраћај новца
+events.a10.desc	Администратор је издао повраћај
+events.o1.title	Дневни сажетак
+events.o1.desc	Приход, резервације, присуство за дан
+events.o2.title	Недељни извештај
+events.o2.desc	Показатељи: раст клијената, LTV, конверзија
+events.o3.title	Велика уплата
+events.o3.desc	Наплата изнад постављеног прага
+events.o4.title	Аномалија података
+events.o4.desc	Оштар пад резервација или прихода
+events.o5.title	Нови члан особља
+events.o5.desc	Администратор је направио нови налог
+events.o6.title	Обнова плана
+events.o6.desc	Подсетник за плаћање Velora претплате
+events.o7.title	Права приступа су измењена
+events.o7.desc	Дозволе члана особља су измењене
+events.o8.title	KPI достигнут
+events.o8.desc	Месечни циљ је остварен
+events.o9.title	Извоз података
+events.o9.desc	Неко је извезао базу клијената
+tg.title	Telegram
+tg.subtitleConnected	Канал је повезан
+tg.subtitleDisconnected	Повежите бот за обавештења
+tg.connected	Повезан
+tg.pasteToken	Налепите токен бота који сте добили од @BotFather.
+tg.invalidToken	Неисправан формат токена
+tg.howToGet	Како да добијете токен:
+tg.steps.1	Отворите @BotFather у Telegram-у
+tg.steps.2	Пошаљите команду /newbot и пратите упутства
+tg.steps.3	Копирајте издати токен
+tg.steps.4	Налепите га у поље изнад
+tg.connect	Повежи
+tg.disconnect	Прекини везу
+tg.disconnectTitle	Прекинути Telegram везу?
+tg.disconnectMessage	Клијенти и особље више неће примати обавештења преко овог канала.
+tg.close	Затвори
+tg.cancel	Откажи
+emailCh.title	Имејл
+emailCh.subtitle	Адреса пошиљаоца за имејлове клијентима
+emailCh.verifiedLabel	Потврђено
+emailCh.emailLabel	Имејл пошиљаоца
+emailCh.emailPlaceholder	admin@studio.com
+emailCh.invalidEmail	Унесите исправан имејл
+emailCh.sendCode	Пошаљи код
+emailCh.codeSentTo	Код је послат на
+emailCh.codeHint	Унесите 6-цифрени код из имејла.
+emailCh.codeLabel	Код за потврду
+emailCh.resend	Пошаљи код поново
+emailCh.viaVelora	Имејлови се шаљу преко Velora сервера у ваше име.
+emailCh.wrongCode	Неисправан или истекао код
+emailCh.verify	Потврди
+emailCh.back	Назад
+emailCh.cancel	Откажи
+wa.title	WhatsApp
+wa.subtitleConnected	Канал је повезан
+wa.subtitleDisconnected	Пријавите се Meta пословним налогом
+wa.connected	Повезан
+wa.paymentRequiredTitle	Биће потребна картица
+wa.paymentRequired	Повезивање броја је бесплатно, али Meta доставља подсетнике клијентима тек када се дода картица. Додајете је посебно —
+wa.paymentMissingTitle	Нема начина плаћања
+wa.paymentMissing	Тренутно раде само одговори бота на долазне поруке. Meta одбија подсетнике, потврде и масовне поруке док се не дода картица —
+wa.paymentOkTitle	Плаћање је повезано
+wa.paymentOk	обавештења се испоручују у целости.
+wa.paymentUnknown	Нисмо могли да проверимо начин плаћања у Meta — приказаћемо стање при следећем покушају.
+wa.paymentLink	Meta центар за наплату
+wa.paymentRecheck	Провери поново
+wa.paymentFound	Плаћање је повезано
+wa.verify.title	Фирма није потврђена у Meta
+wa.verify.lead	Број ради, али с умањеним ограничењем од 250 јединствених прималаца дневно. Потврда уклања ограничење и откључава потпуно покретање. Студио то мора урадити сам — WhatsApp налог припада вама и Velora не може поступати у ваше име.
+wa.verify.stepsTitle	Како да потврдите фирму:
+wa.verify.step1a	Отворите
+wa.verify.link	Meta Business Security Center
+wa.verify.step1b	и притисните „Покрени потврду”. Потребна су вам администраторска права на пословном налогу.
+wa.verify.step2	Попуните правне податке: назив тачно као у документима, адресу, телефон и сајт. Сајт мора радити и користити HTTPS.
+wa.verify.step3	Отпремите документ о регистрацији фирме и сачекајте да га Meta прегледа.
+wa.verify.step4	Потврдите повезаност са фирмом: имејл на домену сајта, позив или SMS на наведени телефон или потврда домена.
+wa.verify.step5	Сачекајте одлуку — обично 1–5 радних дана. Статус је у истом Безбедносном центру; ако буде одбијено, Meta наводи разлог и дозвољава нову пријаву.
+wa.verify.docsTitle	Одговарајући документи (по један из сваке групе):
+wa.verify.doc1	Регистрација: потврда о оснивању, извод из регистра, пословна лиценца или порески документ.
+wa.verify.doc2	Доказ присуства: функционалан сајт, званична страница на друштвеној мрежи или унос у пословном именику.
+wa.verify.pitfallTitle	Најчешћи разлог одбијања
+wa.verify.pitfall	Назив фирме у Meta и у документу мора да се подудара карактер по карактер, укључујући правни облик и интерпункцију. „Romashka LLC” и „Romashka, LLC” сматрају се различитим називима.
+wa.templatesTitle	Шаблони порука
+wa.templates	Meta вам не дозвољава да први пошаљете поруку клијенту без унапред одобреног шаблона. Направите шаблоне за сваки догађај — иду на преглед и почињу да раде по одобрењу.
+wa.templatesAction	Припреми шаблоне
+wa.templatesPending	Креирање шаблона…
+wa.templatesDone_one	Шаблони су спремни: {{count}}. Чека се Meta преглед
+wa.templatesDone_few	Шаблони су спремни: {{count}}. Чека се Meta преглед
+wa.templatesDone_other	Шаблони су спремни: {{count}}. Чека се Meta преглед
+wa.templatesPartial	Meta је одбила неке шаблоне: {{failed}}. Погледајте дневник за детаље
+wa.templatesRejectedTitle_one	Meta је одбила {{count}} шаблон
+wa.templatesRejectedTitle_few	Meta је одбила {{count}} шаблона
+wa.templatesRejectedTitle_other	Meta је одбила {{count}} шаблона
+wa.templatesRejected	— та обавештења се не испоручују. Проверите текст у Meta налогу и поново направите шаблоне.
+wa.templatesPendingTitle_one	{{count}} шаблон на прегледу
+wa.templatesPendingTitle_few	{{count}} шаблона на прегледу
+wa.templatesPendingTitle_other	{{count}} шаблона на прегледу
+wa.templatesPendingHint	— Meta може потрајати до једног дана. {{approved}} су већ одобрени и испоручују се.
+wa.templatesOkTitle	Шаблони су одобрени
+wa.templatesOk_one	{{count}} је прошао Meta преглед — обавештења се испоручују.
+wa.templatesOk_few	Сва {{count}} су прошла Meta преглед — обавештења се испоручују.
+wa.templatesOk_other	Свих {{count}} је прошло Meta преглед — обавештења се испоручују.
+wa.paidWarning	WhatsApp поруке се наплаћују
+wa.approxPrice	прибл.
+wa.pricingLoading	Учитавање тренутне цене…
+wa.perMessage	по поруци
+wa.viaMeta	Meta наплаћује директно
+wa.windowNotice	Испорука је загарантована само у 24-часовном прозору разговора.
+wa.connect	Повежи WhatsApp
+wa.disconnect	Прекини везу
+wa.disconnectTitle	Прекинути WhatsApp везу?
+wa.disconnectMessage	Клијенти и особље више неће примати обавештења преко овог канала.
+wa.close	Затвори
+wa.cancel	Откажи
+tabs.matrix	Подешавања
+tabs.log	Дневник испоруке
+log.title	Дневник испоруке
+log.subtitle	Шта је послато, коме и када, као и како се свако слање завршило.
+log.status.sent	Испоручено
+log.status.rejected	Одбијено
+log.status.error	Грешка везе
+log.status.pending	У току
+log.searchPlaceholder	Телефон, имејл или код догађаја
+log.allChannels	Сви канали
+log.reset	Ресетуј
+log.refreshing	Освежавање…
+log.otherEvent	Слање ван каталога
+log.empty	Још ништа није послато
+log.emptyHint	Овде ће се приказати свако обавештење које студио шаље клијентима и особљу.
+log.emptyFiltered	Ништа није пронађено
+log.emptyFilteredHint	Покушајте да промените филтере или потражите други број.
+log.loadError	Није могуће учитати дневник
+log.loadErrorHint	Освежите страницу — ако не помогне, обратите се подршци.
+log.range	{{from}}–{{to}} од {{total}}
+log.prev	Назад
+log.next	Следеће

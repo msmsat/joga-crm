@@ -1,0 +1,395 @@
+{
+  "legal": {
+    "terms": "Termeni de serviciu",
+    "privacy": "Politica de confidențialitate"
+  },
+  "tabs": {
+    "plans": "Planuri și prețuri",
+    "invoices": "Istoric plăți",
+    "method": "Metodă de plată"
+  },
+  "tabsShort": {
+    "plans": "Planuri",
+    "invoices": "Istoric",
+    "method": "Plată"
+  },
+  "paymentsHistory": {
+    "title": "Istoric complet al plăților",
+    "subtitle": "Toate facturile acestui studio",
+    "clearFilter": "Șterge",
+    "loadMore": "Încarcă mai multe"
+  },
+  "planNames": {
+    "start": "Start",
+    "pro": "Pro",
+    "business": "Business"
+  },
+  "seats": {
+    "title": "Câți membri are echipa studioului?",
+    "hint": "de la {{amount}} pe lună",
+    "stepNote": "Fiecare loc suplimentar costă {{amount}} pe lună",
+    "unlimitedNote": "Echipă nelimitată",
+    "perSeat": "Per membru al echipei"
+  },
+  "limits": {
+    "staff": "Echipă",
+    "ai": "Solicitări Velora AI",
+    "unlimited": "Nelimitat"
+  },
+  "banner": {
+    "trialEnds": "Perioada de probă se încheie la {{date}} — alege un plan",
+    "renews": "Abonamentul {{plan}} se reînnoiește la {{date}}",
+    "expires": "Abonamentul {{plan}} expiră la {{date}}",
+    "choosePlan": "Alege un plan",
+    "dismiss": "Închide",
+    "unpaid": "Planul tău nu a fost plătit. Pentru a continua, plătește în Planuri și facturare.",
+    "suspended": "Accesul a fost suspendat deoarece factura planului este restantă. Plătește-o în Planuri și facturare."
+  },
+  "paymentReturn": {
+    "done": "Plata a reușit — planul {{plan}} este activ.",
+    "processing": "Plata este procesată — abonamentul tău va fi activat în câteva minute."
+  },
+  "header": {
+    "eyebrow": "Velora · Facturare",
+    "title": "Planuri și facturare",
+    "subtitle": "Gestionează abonamentul, metodele de plată și istoricul plăților",
+    "totalSpent": "Total cheltuit",
+    "monthsWithUs": "Luni cu noi",
+    "saved": "Economisit",
+    "nextCharge": "Următoarea taxare",
+    "currentPlan": "PLANUL CURENT",
+    "noPlanName": "Fără plan",
+    "noPlan": "Fără abonament activ",
+    "active": "Activ",
+    "activeUntil": "Activ · până la {{date}}",
+    "trialPlanName": "Plan de probă",
+    "trial": "Perioadă de probă",
+    "trialUntil": "Perioadă de probă · până la {{date}}",
+    "expired": "Expirat",
+    "percentRate": "{{rate}}% din vânzări",
+    "modePercent": "Plan procentual",
+    "modeFixed": "Fix",
+    "modeCombo": "Combinat",
+    "unpaid": "Plan neplătit",
+    "awaitingPayment": "În așteptarea plății"
+  },
+  "mode": {
+    "title": "Model de plată",
+    "subscription": "Abonament fix",
+    "percent": "% din vânzări",
+    "combo": "Combinație fix + %",
+    "short": {
+      "subscription": "Fix",
+      "percent": "Procent",
+      "combo": "Combinat"
+    },
+    "descriptions": {
+      "subscription": "Plătește o sumă fixă în fiecare lună. Previziibil și avantajos.",
+      "percent": "Fără taxă fixă: {{rate}}% din fiecare vânzare, inclusiv numerar.",
+      "combo": "Jumătate de abonament + {{rate}}% din fiecare vânzare, inclusiv numerar."
+    },
+    "badges": {
+      "popular": "Popular",
+      "flexible": "Flexibil"
+    },
+    "percentCard": {
+      "title": "Modelul „3% din vânzări”",
+      "description": "Plătește doar când câștigi: 3% din fiecare vânzare, fără taxă fixă de abonament. Plățile online se împart imediat; numerarul și reîncărcările depozitelor se acumulează și vin într-o singură factură lunar.",
+      "noFixed": "Fără taxă fixă",
+      "payForResult": "Plătește pentru rezultat",
+      "oneClick": "Activare cu un clic",
+      "cta": "Activează modelul de 3%",
+      "ctaShort": "Activează 3%"
+    },
+    "activateSuccess": "Modelul de plată a fost actualizat",
+    "activateError": "Nu s-a putut actualiza modelul de plată",
+    "alreadyActive": "Acest model de plată este deja activ — mai jos poți reînnoi sau schimba planul",
+    "confirmSwitchTitle": "Schimbi modelul de plată?",
+    "confirmSwitchMessage": "Abonamentul tău este activ. Schimbarea intră în vigoare imediat, iar restul perioadei plătite SE PIERDE COMPLET: zilele nefolosite nu se rambursează și nu se transferă.",
+    "termsTitle": "Confirmă condițiile planului",
+    "termsMessage": "În acest plan, platforma reține {{rate}}% din fiecare vânzare.\n\nPentru plățile online, taxa este reținută automat în momentul plății. Pentru numerar, terminal și reîncărcări de depozite NU este reținută imediat — se acumulează și primești o factură separată o dată pe lună.\n\nAi {{days}} zile pentru a plăti factura. Dacă nu este plătită la timp, accesul la CRM și miniaplicația clienților este suspendat până la plată.\n\nSuma curentă de plată este afișată în Facturare; poți plăti oricând, inclusiv în avans.",
+    "termsConfirm": "Accept condițiile",
+    "termsMinimum": "Taxa minimă lunară este {{amount}} {{currency}}. Dacă într-o lună calendaristică platforma a câștigat mai puțin de atât de la studioul tău, se facturează diferența. Dacă câștigi mai mult decât minimul, nu se emite factură. O taxă minimă neplătită suspendă accesul la fel ca o factură de comision neplătită.",
+    "termsBurn": "ATENȚIE: Mai ai timp plătit rămas. Schimbarea modelului de facturare îl PIERDE COMPLET — zilele nefolosite nu se rambursează și nu se transferă.",
+    "termsCombo": "Schimbarea este o ACHIZIȚIE: imediat după confirmare vei vedea suma de plată. Restul perioadei plătite curente se pierde — nu se rambursează și nu se transferă. Modelul fix + % se activează NUMAI după plată; până atunci planul rămâne neschimbat și nu se percepe nimic."
+  },
+  "combo": {
+    "rateBadge": "{{rate}}%",
+    "summary": "Fix {{fixed}}/lună + {{rate}}% din vânzări (numerarul se facturează lunar)",
+    "cta": "Activează planul combinat",
+    "ctaShort": "Activează combinația"
+  },
+  "period": {
+    "1": "1 lună",
+    "3": "3 luni",
+    "6": "6 luni",
+    "12": "1 an",
+    "24": "2 ani",
+    "title": "Perioada de plată",
+    "discountActive": "Reducerea de {{percent}}% este activă",
+    "noDiscount": "Fără reducere",
+    "discountLabel": "−{{percent}}% reducere"
+  },
+  "calculator": {
+    "title": "Parametrii calculului",
+    "monthlyTurnover": "Cifra ta de afaceri online lunară",
+    "turnoverRangeMin": "50 mii",
+    "turnoverRangeMax": "3 mil.+",
+    "chooseFeeLabel": "Alege rata de comision (afectează funcțiile)",
+    "feeOptions": {
+      "basic": "De bază",
+      "standard": "Standard",
+      "pro": "Pro",
+      "max": "Maxim"
+    },
+    "chooseFixedLabel": "Alege componenta fixă de bază (taxa de procesare este întotdeauna 3%)",
+    "fixedOptions": {
+      "start": "Start",
+      "optima": "Optima",
+      "business": "Business"
+    },
+    "economyPercentTitle": "ECONOMIA PLANULUI",
+    "economyComboTitle": "ECONOMIA PLANULUI COMBINAT",
+    "turnover": "Cifra de afaceri a studioului",
+    "systemFee": "Taxă de sistem",
+    "totalMonthlyPayment": "PLATA LUNARĂ TOTALĂ",
+    "onlyPayForResult": "Nu plătești taxă fixă, doar pentru rezultate",
+    "activatePercent": "Activează modelul {{percent}}%",
+    "baseSubscription": "Abonament de bază (fix)",
+    "acquiringFee": "Procesare plăți / taxă",
+    "activateCombo": "Activează planul combinat"
+  },
+  "planCards": {
+    "bestChoice": "Cea mai bună alegere",
+    "current": "Curent",
+    "perMonth": "/ lună",
+    "currentPlan": "Plan curent",
+    "yourPrice": "Prețul tău",
+    "staffLimit": "Până la {{count}} membri ai echipei",
+    "staffUnlimited": "Echipă nelimitată"
+  },
+  "paymentSchedule": {
+    "title": "Program de plată",
+    "total": "Total de plată",
+    "morePayments": "+ {{count}} plăți suplimentare de {{amount}}",
+    "processing": "Redirecționare la plată…",
+    "payFor": "Plătește pentru {{count}} luni",
+    "vatNote": "Fără TVA — taxa se adaugă la plată în funcție de țara ta"
+  },
+  "trust": {
+    "title": "De ce au încredere în noi peste 2 400 de afaceri",
+    "reviews": [
+      {
+        "text": "Am trecut de la Altegio. Diferența e ca între un taxi și un avion privat.",
+        "author": "Maria K., FORM Pilates"
+      },
+      {
+        "text": "Cel mai bine este că știu exact cât plătesc în fiecare lună. Fără surprize.",
+        "author": "Artem N., Barbershop Bros"
+      },
+      {
+        "text": "Asistența a răspuns în 4 minute. Nu am mai văzut asta nicăieri.",
+        "author": "Elena D., SPA LUNA"
+      }
+    ]
+  },
+  "upgrade": {
+    "priceLine": "Preț {{price}}/lună",
+    "discountNote": " {{percent}}% reducere la plata pentru {{period}} luni",
+    "planLabel": "Plan",
+    "periodLabel": "Perioadă",
+    "periodValue_one": "{{count}} lună",
+    "periodValue_few": "{{count}} luni",
+    "periodValue_other": "{{count}} de luni",
+    "discountLabel": "Reducere",
+    "scheduledBadge": "De la {{date}} — planul „{{plan}}”",
+    "vatNote": "Fără TVA — taxa se adaugă la plată pe baza datelor companiei; firmele UE cu număr TVA beneficiază de taxare inversă."
+  },
+  "method": {
+    "notLinked": "Neconectat",
+    "badgeTitle": "Metoda de plată este protejată",
+    "tokenSub": "Token furnizor · expiră la {{expiry}}",
+    "tokenNote": "Datele reale ale cardului sunt păstrate de furnizorul de plăți (PCI DSS L1). Păstrăm doar un token de unică folosință pentru reînnoiri.",
+    "securityTitle": "Standarde de protecție a datelor",
+    "security": {
+      "pciDss": "Criptare PCI DSS nivelul 1",
+      "secure3d": "Protecție tranzacții 3D Secure",
+      "noStorage": "Datele cardului nu trec niciodată prin serverele noastre",
+      "autoLink": "Cardul se conectează la prima plată"
+    },
+    "noCardDetail": "Nu trebuie să introduci datele separat — plata se face pe pagina securizată Stripe.",
+    "renewDone": "Factura a fost creată — plata este procesată",
+    "renewBusy": "Se creează factura…",
+    "renewSuccess": "Factura de reînnoire a fost creată",
+    "renewError": "Nu s-a putut crea factura. Încearcă din nou.",
+    "renewNow": "Reînnoiește acum cu cardul •••• {{last4}}",
+    "autopayTitle": "Setări de plată automată",
+    "autopaySuccess": "Setarea a fost salvată",
+    "autopayError": "Nu s-a putut salva setarea. Încearcă din nou.",
+    "autopay": {
+      "cardOnly": "Disponibil la plata cu cardul",
+      "autoRenew": {
+        "label": "Reînnoire automată",
+        "desc": "Dezactivează pentru a anula la finalul perioadei plătite",
+        "until": "Abonamentul nu se va reînnoi — acces până la {{date}}"
+      },
+      "emailNotify": {
+        "label": "Notificări prin e-mail",
+        "desc": "Factura este trimisă prin e-mail după fiecare plată"
+      },
+      "remind3d": {
+        "label": "Amintește cu 3 zile înainte",
+        "desc": "Îți vom aminti înainte de debitarea automată"
+      },
+      "sms": {
+        "label": "Notificare SMS",
+        "desc": "Se trimite un mesaj când are loc debitarea"
+      }
+    },
+    "portal": {
+      "title": "Date de facturare și TVA",
+      "subtitle": "Facturile, cardul conectat și istoricul debitărilor se află în portalul pentru clienți Stripe.",
+      "cta": "Deschide în Stripe"
+    },
+    "ibanBadgeLabel": "Transfer bancar (SEPA)",
+    "ibanBadgeNote": "Facturile vin prin e-mail cu un link de plată — nimic nu este debitat automat de pe card. Poți plăti mai devreme și din pagina facturii."
+  },
+  "invoices": {
+    "title": "Istoric plăți",
+    "totalPaid": "total plătit {{amount}}",
+    "exportCsv": "Exportă CSV",
+    "exportError": "Nu s-a putut exporta CSV-ul. Încearcă din nou.",
+    "receiptError": "Nu s-a putut deschide factura. Încearcă din nou.",
+    "invoiceNo": "Factura #{{id}}",
+    "methodCard": "Plătită cu cardul",
+    "methodIban": "Plătită prin transfer bancar (IBAN)",
+    "syncHint": "Verifică starea la serviciul de plăți",
+    "syncChanged": "Stare actualizată: {{status}}",
+    "syncUnchanged": "Serviciul de plăți a confirmat aceeași stare",
+    "syncError": "Nu s-a putut verifica starea. Încearcă din nou.",
+    "kindOfflineFee": "Comision pentru vânzări offline",
+    "kindMinFee": "Taxă minimă lunară",
+    "kindOnlineFee": "Comision pentru plăți online",
+    "methodWithheld": "Reținut de Stripe la plată"
+  },
+  "table": {
+    "date": "Dată",
+    "description": "Descriere",
+    "amount": "Sumă",
+    "status": "Stare",
+    "receipt": "Factură"
+  },
+  "status": {
+    "paid": "Plătită",
+    "pending": "În așteptare",
+    "failed": "Neplătită",
+    "refunded": "Rambursată"
+  },
+  "empty": {
+    "noInvoices": "Nu există încă facturi — vor apărea după prima plată.",
+    "noCard": "Cardul tău va apărea automat după prima plată.",
+    "monthsWithUs": "Încă nu ai cumpărat un abonament",
+    "noData": "Fără date"
+  },
+  "savings": {
+    "title": "Economiile tale",
+    "prepayTitle": "Economiile tale la plata în avans",
+    "emptyState": "Alege o perioadă mai lungă și începe să economisești",
+    "youSave": "Economisești {{amount}} în {{months}} luni",
+    "freeMonths": "Este ca și cum ai avea {{count}} luni gratuite",
+    "amountLabel": "{{amount}} economisiți",
+    "comparedToMonthly": "comparativ cu plata lunară",
+    "forMonths_one": "Pentru {{count}} lună",
+    "forMonths_few": "Pentru {{count}} luni",
+    "forMonths_other": "Pentru {{count}} de luni"
+  },
+  "pay": "Plătește",
+  "continuePlan": "Continuă planul",
+  "payModal": {
+    "titleNew": "Începe planul {{plan}}",
+    "titleSwitch": "Treci la {{plan}}",
+    "titleRenew": "Reînnoiește {{plan}}",
+    "totalLabel": "Planul tău va costa",
+    "burnWarning": "Trecerea la alt plan reîncepe perioada: partea rămasă din planul {{plan}} SE PIERDE — nu se rambursează și nu se transferă. Reînnoirea aceluiași plan o păstrează.",
+    "switched": "Planul a fost schimbat: nu ai nimic de plătit — schimbarea a fost acoperită de partea rămasă a perioadei curente.",
+    "renewNote": "Aceasta reînnoiește același plan: lunile cumpărate se adaugă la perioada plătită curentă. Nimic nu se pierde.",
+    "cardNote": "Plată cu cardul pe pagina securizată Stripe · rambursare în 7 zile",
+    "freeUntil": "Nu se percepe nimic până la {{date}}: mai ai {{count}} zile din perioada plătită. Facturarea începe atunci.",
+    "taxLabel": "TVA",
+    "taxLine": "TVA {{rate}}%",
+    "reverseCharge": "Taxare inversă",
+    "totalWithTax": "Total cu TVA",
+    "taxServerNote": "Taxa este calculată din datele tale de facturare. Factura va arăta aceeași sumă.",
+    "taxReview": "Nu am putut determina taxa din datele tale de facturare, astfel totalul este afișat fără ea și plata nu poate fi finalizată. Verifică țara și adresa plătitorului sau contactează asistența."
+  },
+  "offlineFee": {
+    "title": "Taxă pentru vânzări offline",
+    "accruing": "Acumulată din numerar și depozite la {{rate}}%. Facturată lunar; ai {{days}} zile pentru plată.",
+    "due": "Factura a fost emisă. Zile rămase pentru plată: {{days}}.",
+    "suspended": "Plata este restantă — accesul la CRM și miniaplicație a fost suspendat.",
+    "pay": "Plătește",
+    "suspendedMin": "Taxa minimă lunară este restantă — accesul la CRM și miniaplicație a fost suspendat.",
+    "alsoAccruing": "În plus, se acumulează luna aceasta: {{amount}} — va intra pe următoarea factură.",
+    "minimum": "Taxa minimă lunară este {{amount}}. Dacă câștigi mai puțin în cursul lunii, plătești diferența; dacă mai mult, nu se emite factură.",
+    "pendingBill": "Acumulată conform modelului anterior, în așteptarea facturii.",
+    "notBilledYet": "Încă nu a fost emisă factură: suma acumulată este sub valoarea minimă de facturare sau factura este în curs de pregătire. Nimic nu se pierde — va intra pe următoarea factură."
+  },
+  "trial": {
+    "title": "Ofertă pentru studiouri noi",
+    "subtitle": "Studioul tău tocmai a fost creat",
+    "headline": "{{days}} zile gratuite",
+    "noCard": "Nu este necesar cardul — nu ai nimic de plătit acum",
+    "perks": {
+      "allModules": "Acces complet la fiecare modul: programări, clienți, finanțe, notificări și Velora AI",
+      "noCommitment": "Fără obligații: dacă nu ți se potrivește, pur și simplu nu reînnoi",
+      "keepData": "Tot ce introduci în perioada de probă rămâne al tău"
+    },
+    "activate": "Activează",
+    "decline": "Refuză",
+    "cardHint": "Nu ai activat încă perioada gratuită pentru acest studio. Ea rămâne disponibilă până cumperi un plan."
+  },
+  "profile": {
+    "title": "Date de facturare",
+    "editTitle": "Editează datele de facturare",
+    "subtitle": "Adresa ta apare pe factură și stabilește rata taxei. Este salvată în cont — nu o vom cere din nou pentru alt studio.",
+    "subtitlePay": "Completează o dată, iar data viitoare plata merge direct. Adresa ta apare pe factură și stabilește rata taxei.",
+    "cardTitle": "Date de facturare",
+    "cardSubtitle": "Salvate în cont și folosite în toate studiourile. Așa apar pe factură.",
+    "cardEmpty": "Nu sunt completate încă — le vom cere înainte de prima plată. Le poți adăuga acum.",
+    "add": "Adaugă date de facturare",
+    "edit": "Editează",
+    "save": "Salvează",
+    "saveAndPay": "Salvează și continuă la plată",
+    "cancel": "Anulează",
+    "saved": "Datele de facturare au fost salvate",
+    "vatNone": "Nespecificat",
+    "fields": {
+      "country": "Țară sau regiune",
+      "countryPlaceholder": "Alege o țară",
+      "address": "Adresă",
+      "line1": "Linia de adresă 1",
+      "line1Placeholder": "Stradă și număr",
+      "line2": "Linia de adresă 2 — opțional",
+      "line2Placeholder": "Apartament, suită, număr unitate etc.",
+      "postalCode": "Cod poștal",
+      "postalCodePlaceholder": "110 00",
+      "city": "Oraș",
+      "cityPlaceholder": "Praga",
+      "vat": "Număr TVA — opțional",
+      "vatPlaceholder": "{{prefix}}12345678",
+      "vatHint": "Doar pentru companii. Numărul este verificat în registrul UE (VIES) la salvare — nu acceptăm numere neverificate. Cu un număr valid, o companie din altă țară UE este facturată fără taxă (taxare inversă). Persoanele fizice nu îl au — lasă câmpul gol.",
+      "countrySearch": "Începe să scrii un nume",
+      "countryNotFound": "Țara nu a fost găsită",
+      "vatOutsideEu": "Nu cerem un număr TVA: în afara UE, taxa este stabilită de țara plătitorului, nu de număr, deci nu afectează factura.",
+      "vatPending": "Numărul tău a fost salvat, însă registrul UE nu era disponibil atunci, deci nu este încă confirmat și următoarea factură va include TVA integral. Nu trebuie să îl introduci din nou: vom continua să îl verificăm și, de îndată ce registrul răspunde, taxa nu va mai fi percepută. Pentru o factură deja plătită, asistența va rambursa taxa."
+    },
+    "errors": {
+      "required": "Acest câmp este obligatoriu"
+    },
+    "preview": {
+      "invoice": "Factură",
+      "billTo": "Facturat către",
+      "note": "Așa apar datele tale pe fiecare factură. Le poți modifica oricând în Plan și facturare → Metodă de plată."
+    }
+  }
+}

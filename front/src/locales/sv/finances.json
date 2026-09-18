@@ -1,0 +1,510 @@
+{
+  "tabs": {
+    "accounts": "Konton",
+    "operations": "Transaktioner",
+    "salaries": "Löner",
+    "counterparties": "Motparter",
+    "documents": "Dokument",
+    "onlinePayments": "Onlinebetalningar",
+    "paymentMethods": "Betalningsmetoder",
+    "reports": "Rapporter",
+    "goals": "Mål"
+  },
+  "common": {
+    "save": "Spara",
+    "cancel": "Avbryt",
+    "create": "Skapa",
+    "edit": "Redigera",
+    "delete": "Radera",
+    "loading": "Laddar…",
+    "all": "Alla",
+    "confirm": "Bekräfta",
+    "monthsShort": [
+      "jan",
+      "feb",
+      "mar",
+      "apr",
+      "maj",
+      "jun",
+      "jul",
+      "aug",
+      "sep",
+      "okt",
+      "nov",
+      "dec"
+    ],
+    "weekdaysShort": [
+      "mån",
+      "tis",
+      "ons",
+      "tors",
+      "fre",
+      "lör",
+      "sön"
+    ]
+  },
+  "info": {
+    "accounts": "Konton är studions kassor, bankkonton och onlineinlösen. Här ser du varje saldo och det totala kapitalet.",
+    "operations": "Transaktioner är studions alla intäkter och utgifter. När du skapar en transaktion ändras saldot på det kopplade kontot direkt.",
+    "salaries": "Löner beräknas utifrån teammedlemmens ersättning (fast, per timme eller procent) för den valda perioden.",
+    "counterparties": "Motparter är organisationer och personer som studion gör upp med: leverantörer, hyresvärdar och partners.",
+    "documents": "Dokument är avtal, handlingar och fakturor som är kopplade till motparter, eller interna dokument.",
+    "onlinePayments": "Onlinebetalningar — anslut Stripe för kortbetalningar. Kontot skapas för din studio, så pengarna går direkt till dig utan att passera Velora.",
+    "paymentMethods": "Betalningsmetoder visar hur kunder betalar i studion och statistik för varje metod.",
+    "reports": "Rapporter visar trender för intäkter, utgifter och vinst under den valda perioden.",
+    "goals": "Finansiella mål är studions sparplan med automatisk eller manuell uppföljning av framstegen."
+  },
+  "accounts": {
+    "loading": "Laddar konton…",
+    "totalCapital": "Studions totala kapital",
+    "donutTotal": "Totalt {{symbol}}",
+    "todayChange": "idag",
+    "system": "SYSTEM",
+    "today": "idag",
+    "editTitle": "Redigera konto",
+    "namePlaceholder": "Namn",
+    "balancePlaceholder": "Saldo, {{symbol}}",
+    "types": {
+      "cash": "Kontanter",
+      "bank": "Kort",
+      "online": "Online"
+    },
+    "typesShort": {
+      "cash": "Kontanter",
+      "bank": "Kort",
+      "online": "Online"
+    },
+    "history": "Historik",
+    "historyTitle": "Historik: {{name}}",
+    "income30d": "Intäkter (30 d)",
+    "expense30d": "Utgifter (30 d)",
+    "samplePayment": "Betalning för tjänst",
+    "sampleTime": "Idag, 14:32",
+    "openAllOperations": "Öppna alla transaktioner",
+    "newSavingsTitle": "Nytt sparkonto",
+    "createSavings": "Skapa sparkonto",
+    "deleteConfirmTitle": "Radera detta konto?",
+    "deleteConfirmText": "Alla dess medel tas bort från den övergripande statistiken. Åtgärden kan inte ångras.",
+    "toasts": {
+      "loadFailed": "Det gick inte att läsa in konton",
+      "deleted": "Kontot har raderats",
+      "deleteFailed": "Det gick inte att radera kontot",
+      "saved": "Inställningarna har sparats",
+      "saveFailed": "Det gick inte att spara kontot",
+      "created": "Sparkontot har skapats",
+      "createFailed": "Det gick inte att skapa kontot"
+    }
+  },
+  "operations": {
+    "income": "Intäkt",
+    "expense": "Utgift",
+    "balance": "Saldo",
+    "searchPlaceholder": "Sök efter titel och kategori…",
+    "close": "Stäng",
+    "operation": "Transaktion",
+    "export": "Exportera",
+    "newOperationTitle": "Ny transaktion",
+    "titleLabel": "Titel",
+    "titlePlaceholder": "Till exempel, prenumerationsbetalning",
+    "amountLabel": "Belopp, {{symbol}}",
+    "dateLabel": "Datum",
+    "categoryLabel": "Kategori",
+    "categoryPlaceholder": "Kategori",
+    "accountLabel": "Konto",
+    "noAccount": "Inget konto",
+    "methodLabel": "Betalningsmetod",
+    "noMethod": "Ej angivet",
+    "counterpartyLabel": "Motpart",
+    "noCounterparty": "Ingen motpart",
+    "newCounterparty": "+ Ny motpart",
+    "clientLabel": "Kund",
+    "clientHint": "Lojalitetspoäng och nivå tilldelas kunden",
+    "clientSearchPlaceholder": "Börja skriva ett namn…",
+    "noClient": "Ingen kund",
+    "editTitle": "Redigera transaktion",
+    "saving": "Sparar…",
+    "loading": "Laddar transaktioner…",
+    "emptyTitle": "Inga transaktioner hittades",
+    "emptyBody": "Ändra filtren eller skapa den första transaktionen",
+    "pending": "Väntande",
+    "detailAccount": "Mottagande konto",
+    "detailCategory": "Kategori",
+    "detailMethod": "Betalningsmetod",
+    "detailCounterparty": "Motpart",
+    "receipt": "Kvitto",
+    "loadMore": "Ladda fler ({{count}})",
+    "toasts": {
+      "loadFailed": "Det gick inte att läsa in transaktioner",
+      "loadMoreFailed": "Det gick inte att läsa in fler transaktioner",
+      "deleted": "Transaktionen har raderats",
+      "deleteFailed": "Det gick inte att radera transaktionen",
+      "enterAmount": "Ange ett belopp",
+      "created": "Transaktionen har skapats",
+      "createFailed": "Det gick inte att skapa transaktionen",
+      "updated": "Transaktionen har uppdaterats",
+      "updateFailed": "Det gick inte att spara transaktionen",
+      "exportFailed": "Det gick inte att exportera transaktioner",
+      "receiptDownloaded": "Kvittot har hämtats"
+    },
+    "categoryPresets": {
+      "in": [
+        {
+          "value": "Medlemskap",
+          "label": "Medlemskap"
+        },
+        {
+          "value": "Tjänster",
+          "label": "Tjänster"
+        },
+        {
+          "value": "Presentkort",
+          "label": "Presentkort"
+        },
+        {
+          "value": "Insättning",
+          "label": "Insättning"
+        },
+        {
+          "value": "Övrigt",
+          "label": "Övrigt"
+        }
+      ],
+      "out": [
+        {
+          "value": "Återbetalningar",
+          "label": "Återbetalningar"
+        },
+        {
+          "value": "Hyra",
+          "label": "Hyra"
+        },
+        {
+          "value": "Löner",
+          "label": "Löner"
+        },
+        {
+          "value": "Inköp",
+          "label": "Inköp"
+        },
+        {
+          "value": "Marknadsföring",
+          "label": "Marknadsföring"
+        },
+        {
+          "value": "Skatter",
+          "label": "Skatter"
+        },
+        {
+          "value": "Övrigt",
+          "label": "Övrigt"
+        }
+      ]
+    }
+  },
+  "salaries": {
+    "loading": "Laddar löner…",
+    "noRows": "Det finns ingen personal att beräkna",
+    "fund": "Lönefond",
+    "fundSub": "innevarande månad",
+    "sessions": "Pass",
+    "sessionsSub": "totalt genomförda",
+    "paidOf": "teammedlemmar",
+    "sessionsCount": "{{count}} pass",
+    "paid": "Betald",
+    "pending": "Väntande",
+    "paying": "…",
+    "payAction": "Betala",
+    "cancelAction": "Avbryt löneutbetalning",
+    "perMonth": "/mån",
+    "accrualTitle": "Intjäning för perioden",
+    "rate": "Ersättning",
+    "rateNotSet": "inte angiven",
+    "sessionsInPeriod": "Pass under perioden",
+    "hoursWorked": "Arbetade timmar",
+    "lessonsRevenue": "Intäkter från pass",
+    "totalToPay": "Totalt att betala",
+    "rateWarning": "Ersättningen är inte angiven — ställ in den i teammedlemmens profil så att lönen kan beräknas.",
+    "rateUnit": {
+      "hourly": "tim",
+      "percent": "%",
+      "fixed": "fast"
+    },
+    "paidAt": "Betald {{date}}",
+    "historyTitle": "Betalningshistorik",
+    "historyEmpty": "Inga betalningar ännu",
+    "historyLoading": "Laddar historik…",
+    "toasts": {
+      "loadFailed": "Det gick inte att läsa in löner",
+      "paid": "Lön utbetald: {{name}}",
+      "payFailed": "Det gick inte att betala lönen",
+      "canceled": "Löneutbetalning avbruten: {{name}}",
+      "historyLoadFailed": "Det gick inte att läsa in betalningshistoriken"
+    }
+  },
+  "counterparties": {
+    "count": "{{count}} motparter",
+    "totalDebt": "Total skuld:",
+    "add": "Lägg till",
+    "newTitle": "Ny motpart",
+    "nameLabel": "Namn / Fullständigt namn",
+    "namePlaceholder": "Företag AB eller Anna Andersson",
+    "innLabel": "Organisationsnummer",
+    "categoryLabel": "Kategori",
+    "categoryPlaceholder": "Hyra, leverantör…",
+    "typeLabel": "Typ av motpart",
+    "types": {
+      "legal": {
+        "label": "Juridisk person",
+        "desc": "Organisation eller företag"
+      },
+      "ie": {
+        "label": "Enskild näringsidkare",
+        "desc": "Egenföretagare"
+      },
+      "person": {
+        "label": "Fysisk person",
+        "desc": "Privatperson"
+      }
+    },
+    "addSubmit": "Lägg till motpart",
+    "you": "Du",
+    "otherCategory": "Övrigt",
+    "deals": "affärer",
+    "dealsLabel": "Affärer",
+    "debtLabel": "Skuld",
+    "documents": "Dokument",
+    "edit": "Redigera",
+    "delete": "Radera",
+    "deleteConfirmTitle": "Radera motparten?",
+    "deleteConfirmText": "Relaterade dokument och affärshistorik finns kvar, men motparten tas bort från listan.",
+    "toasts": {
+      "loadFailed": "Det gick inte att läsa in motparter",
+      "enterName": "Ange ett namn",
+      "saved": "Ändringarna har sparats",
+      "saveFailed": "Det gick inte att spara",
+      "added": "Motparten har lagts till",
+      "addFailed": "Det gick inte att lägga till motparten",
+      "deleted": "Motparten har raderats",
+      "deleteFailed": "Det gick inte att radera motparten",
+      "documentsOpened": "Dokument har öppnats"
+    }
+  },
+  "documents": {
+    "signed": "Signerade",
+    "pendingCount": "Väntar på signering",
+    "draftCount": "Interna (osignerade)",
+    "searchPlaceholder": "Sök efter titel eller motpart…",
+    "filters": {
+      "all": "Alla",
+      "signed": "Signerade",
+      "pending": "Väntar på signering"
+    },
+    "upload": "Ladda upp",
+    "addTitle": "Lägg till dokument i biblioteket",
+    "dropzoneTitle": "Klicka eller dra en fil hit",
+    "dropzoneHint": "PDF, DOCX, XLSX (upp till 15 MB)",
+    "dropzoneChange": "Klicka för att välja en annan fil",
+    "titleLabel": "Dokumenttitel",
+    "titlePlaceholder": "Till exempel, mottagningsprotokoll nr 48",
+    "partyLabel": "Motpart (om någon)",
+    "partyPlaceholder": "Företagsnamn eller enskild näringsidkare",
+    "needsSignature": "Behöver dokumentet signeras?",
+    "needsSignatureHint": "Statusen blir ”Väntar på signering”",
+    "saveToBase": "Spara i biblioteket",
+    "emptyTitle": "Den här mappen är tom",
+    "emptyBody": "Ladda upp ett nytt dokument eller ändra filtren",
+    "internalDoc": "Internt dokument",
+    "uploaded": "Uppladdat {{date}}",
+    "download": "Ladda ner",
+    "open": "Öppna",
+    "fileRequired": "Bifoga en fil",
+    "options": "Alternativ",
+    "status": {
+      "title": "Status",
+      "signed": "Signerad",
+      "pending": "Väntar på signering",
+      "draft": "Osignerad"
+    },
+    "delete": "Radera",
+    "toasts": {
+      "loadFailed": "Det gick inte att läsa in dokument",
+      "titleRequired": "Ladda upp en fil eller ange en titel",
+      "created": "Dokumentet har laddats upp till biblioteket",
+      "createFailed": "Det gick inte att spara dokumentet",
+      "badFormat": "Tillåtna format: PDF, DOCX, XLSX",
+      "downloadFailed": "Det gick inte att ladda ner filen",
+      "noFile": "Ingen fil är bifogad till dokumentet",
+      "openFailed": "Det gick inte att öppna filen",
+      "statusChanged": "Status: {{label}}",
+      "statusFailed": "Det gick inte att ändra statusen",
+      "deleted": "Dokumentet har raderats",
+      "deleteFailed": "Det gick inte att radera dokumentet"
+    }
+  },
+  "goals": {
+    "loading": "Laddar mål…",
+    "active": "Pågående mål",
+    "done": "Slutförda",
+    "avgProgress": "Övergripande framsteg",
+    "trackingTitle": "Planuppföljning",
+    "createGoal": "Skapa mål",
+    "newTitle": "Nytt finansiellt mål",
+    "titleLabel": "Måltitel",
+    "titlePlaceholder": "Till exempel, nya reformermaskiner",
+    "targetLabel": "Målbelopp, {{symbol}}",
+    "targetPlaceholder": "500000",
+    "deadlineLabel": "Tidsfrist",
+    "trackingLabel": "Hur ska framstegen följas?",
+    "trackingAuto": "Automatiskt (CRM-mått)",
+    "trackingAutoDesc": "Koppla målet till intäkter från en vald kategori. CRM uppdaterar förloppsindikatorn automatiskt.",
+    "trackingManual": "Manuellt (personligt sparande)",
+    "trackingManualDesc": "Knappen ”Lägg till medel” visas på kortet. Framstegen beror helt på dig.",
+    "opTypeLabel": "Transaktionstyp",
+    "categoryLabel": "Kategori",
+    "categoryPlaceholder": "Välj en kategori",
+    "editTitle": "Redigera mål",
+    "nameLabel": "Titel",
+    "namePlaceholder": "Måltitel",
+    "amountLabel": "Belopp, {{symbol}}",
+    "achieved": "Målet har uppnåtts",
+    "priority": {
+      "high": "Hög prioritet",
+      "medium": "Medelhög prioritet",
+      "low": "Låg prioritet"
+    },
+    "autoCollect": "Spåras automatiskt",
+    "deadlinePrefix": "Tidsfrist:",
+    "noDeadline": "Ingen tidsfrist",
+    "fundPlaceholder": "Belopp, {{symbol}}",
+    "fund": "Lägg till",
+    "addFunds": "Lägg till medel",
+    "autoHint": "Värdet uppdateras automatiskt utifrån kategoriintäkter",
+    "deleteConfirmTitle": "Radera målet?",
+    "deleteConfirmText": "Framstegen för detta mål går förlorade. Åtgärden kan inte ångras.",
+    "toasts": {
+      "loadFailed": "Det gick inte att läsa in mål",
+      "fillRequired": "Fyll i titel och belopp",
+      "chooseCategory": "Välj en kategori för det automatiska målet",
+      "created": "Målet har skapats",
+      "createFailed": "Det gick inte att skapa målet",
+      "enterName": "Ange ett namn",
+      "updated": "Målet har uppdaterats",
+      "updateFailed": "Det gick inte att uppdatera målet",
+      "deleted": "Målet har raderats",
+      "deleteFailed": "Det gick inte att radera målet",
+      "funded": "Medel har lagts till",
+      "fundFailed": "Det gick inte att lägga till medel"
+    }
+  },
+  "onlinePayments": {
+    "description": "Anslut Stripe så kan dina kunder betala med kort i kassan. Pengarna går direkt till studions konto — Velora håller dem aldrig. Avgiften följer din plan.",
+    "gatewaysTitle": "Betalningsleverantörer",
+    "gateways": {
+      "stripe": {
+        "name": "Stripe"
+      },
+      "states": {
+        "none": {
+          "label": "Inte ansluten",
+          "hint": "Ta emot kortbetalningar till studions konto",
+          "action": "Anslut"
+        },
+        "incomplete": {
+          "label": "Uppgifter saknas",
+          "hint": "Stripe väntar på uppgifter om din studio — betalningar är avstängda tills dess",
+          "action": "Fortsätt"
+        },
+        "action": {
+          "label": "Åtgärd krävs",
+          "hint": "Stripe har avvisat vissa uppgifter och väntar på rättelser — det löser sig inte automatiskt",
+          "action": "Rätta uppgifter"
+        },
+        "review": {
+          "label": "Under granskning",
+          "hint": "Uppgifterna har skickats in och Stripe granskar dem. Det tar vanligtvis upp till en dag",
+          "action": "Öppna Stripe"
+        },
+        "active": {
+          "label": "Ansluten",
+          "hint": "Kortbetalningar går till studions Stripe-konto",
+          "action": "Inställningar"
+        }
+      }
+    },
+    "toasts": {
+      "gatewayUpdated": "Leverantörens inställningar har uppdaterats",
+      "stripeReturned": "Uppgifter har skickats till Stripe",
+      "stripeLinkExpired": "Stripe-länken har gått ut — tryck på Anslut igen"
+    }
+  },
+  "paymentMethods": {
+    "totalTurnover": "Omsättning för perioden",
+    "periods": {
+      "month": "Månad",
+      "quarter": "Kvartal",
+      "year": "År"
+    },
+    "amount": "Belopp",
+    "share": "Andel",
+    "transactions": "transaktioner",
+    "methods": {
+      "cash": {
+        "name": "Kontanter"
+      },
+      "card": {
+        "name": "Bankkort"
+      },
+      "qr": {
+        "name": "SBP (QR)"
+      },
+      "transfer": {
+        "name": "Överföring"
+      },
+      "stripe": {
+        "name": "Stripe"
+      },
+      "": {
+        "name": "Ej angivet"
+      }
+    }
+  },
+  "reports": {
+    "metrics": {
+      "revenue": "Intäkter",
+      "expenses": "Utgifter",
+      "profit": "Vinst",
+      "margin": "Marginal"
+    },
+    "vsPreviousPeriod": "jämfört med föregående period",
+    "cashflowTitle": "Kassaflöde",
+    "cashflowSub": "Analys av intäkter och utgifter",
+    "period": "Period",
+    "income": "Intäkt",
+    "expense": "Utgift",
+    "profit": "Vinst",
+    "periods": {
+      "today": "Idag",
+      "week": "Vecka",
+      "month": "Månad",
+      "year": "År"
+    },
+    "legendIncome": "Intäkter",
+    "legendExpense": "Utgifter",
+    "exportCsv": "Exportera CSV",
+    "expenseStructure": "Utgiftsstruktur",
+    "incomeStructure": "Intäktsstruktur",
+    "total": "Totalt",
+    "otherCategory": "Okategoriserat",
+    "noData": "Det finns inga data för den här perioden",
+    "insightsTitle": "Finansiell sammanfattning och insikter",
+    "insightsPlaceholder": "En AI-driven finansiell sammanfattning visas här: trendanalys, utgiftsstruktur och rekommendationer",
+    "toasts": {
+      "exportFailed": "Det gick inte att exportera transaktioner"
+    }
+  },
+  "confirmModal": {
+    "cancel": "Avbryt",
+    "confirm": "Bekräfta",
+    "delete": "Radera"
+  }
+}

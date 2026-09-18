@@ -1,0 +1,380 @@
+== ro
+tabs.overview	Prezentare generală
+tabs.sales	Vânzări
+tabs.clients	Clienți
+tabs.team	Echipă
+tabs.schedule	Program
+toolbar.period.day	Zi
+toolbar.period.week	Săptămână
+toolbar.period.month	Lună
+toolbar.period.year	An
+toolbar.period.custom	Personalizat
+toolbar.vsPrevious	față de perioada anterioară: {{from}}–{{to}}
+toolbar.allBranches	Toate filialele
+toolbar.allHalls	Toate {{spacePlural}}
+toolbar.allTrainers	Toți antrenorii
+toolbar.allServices	Toate serviciile
+toolbar.export	Exportă
+insights.title	Necesită atenție
+insights.action	Deschide
+insights.empty	Totul este bine deocamdată — nu există recomandări de afișat
+insights.revenue_up_clients_down	Veniturile cresc, dar numărul clienților activi scade — verifică pierderea clienților
+insights.clients_at_risk	{{count}} client(ți) nu au participat de peste 3 săptămâni — risc de pierdere
+insights.lesson_overfull	„{{name}}” {{weekday, weekday}} la {{hour}}:00 este plin(ă) în proporție de {{pct}}% de trei săptămâni la rând — ia în calcul o sesiune suplimentară
+insights.trial_low_conversion	Doar {{pct}}% dintre cei {{buyers}} cumpărători de probă au cumpărat ulterior un abonament — ia în calcul o campanie
+insights.fastest_growing_product	„{{name}}” crește cel mai rapid: +{{pct}}% față de perioada anterioară
+insights.renewals_low	Doar {{pct}}% dintre clienții cu abonament expirat reînnoiesc — ia în calcul un memento
+insights.new_no_second_visit	{{count}} clienți noi au venit o dată și nu au mai rezervat — ia în calcul un memento
+insights.subs_expiring_week	{{count}} clienți au un abonament care expiră săptămâna aceasta — ia în calcul o ofertă de reînnoire
+insights.vip_inactive	Clientul VIP „{{name}}” nu a mai vizitat de {{days}} zile — ia în calcul un mesaj personal
+insights.high_return_free_evenings	„{{name}}” are o rată mare de revenire ({{return_pct}}%), dar serile sunt libere — adaugă o sesiune
+insights.trainer_overloaded	„{{name}}” este încărcat(ă) la {{load_pct}}% — ia în calcul echilibrarea programului
+insights.low_rating	„{{name}}” are un scor de {{rating}} — merită analizat mai atent
+insights.slot_chronic_low	„{{name}}” {{weekday, isodowWeekday}} la {{hour}}:00 este plin(ă) în proporție de {{pct}}% de {{weeks}} săptămâni la rând — mută sau anulează
+insights.hall_idle_evenings	„{{name}}” este nefolosit(ă) în {{pct}}% din orele de seară — ia în calcul programarea unei sesiuni
+insights.slot_overfull	Intervalul de {{weekday, isodowWeekday}} la {{hour}}:00 este plin în proporție de {{pct}}% de trei săptămâni la rând — ia în calcul o sesiune suplimentară
+insights.loss_hotspot	{{cancels}} sesiuni au fost anulate la {{label}} în această perioadă — cele mai multe anulări se concentrează în jurul acestei ore
+table.loading	Se încarcă…
+table.noProduct	Fără produs
+empty.noData.title	Încă nu este nimic aici
+empty.noData.text	Nu a fost înregistrată activitate pentru perioada selectată. Extinde intervalul sau începe prin a programa un client în Jurnal.
+empty.noData.widen	Afișează anul
+empty.noRevenue	Fără plăți în această perioadă
+empty.noSales	Fără vânzări în această secțiune
+empty.noProducts	Nu s-au vândut încă pachete sau servicii
+empty.noLessons	Fără sesiuni în această perioadă
+empty.noTrainerLessons	Acest antrenor nu a ținut încă sesiuni
+empty.noRows	Fără înregistrări în această secțiune
+empty.noLosses	Fără anulări sau absențe în această perioadă
+overview.kpi.revenue	Venituri
+overview.kpi.profit	Profit
+overview.kpi.attendance	Prezență
+overview.kpi.activeClients	Clienți activi
+overview.kpi.fillRate	Rată de ocupare
+overview.chart.metric.revenue	Venituri
+overview.chart.metric.profit	Profit
+overview.chart.metric.attendance	Prezență
+overview.chart.metric.new_clients	Clienți noi
+overview.chart.metric.fill_rate	Rată de ocupare
+overview.revenueStructure.title	Structura veniturilor
+overview.category.subscriptions	Abonamente
+overview.category.services	Servicii
+overview.category.certificates	Carduri cadou
+overview.category.rent	Chirie
+overview.category.salary	Salarii
+overview.category.refunds	Rambursări
+overview.clientDynamics.title	Dinamica clienților
+overview.clientDynamics.new	Noi
+overview.clientDynamics.returned	Au revenit
+overview.clientDynamics.lost	Pierduți
+overview.drilldown.title	Operațiune
+overview.drilldown.category	Categorie
+overview.drilldown.amount	Sumă
+overview.drilldown.lesson	Sesiune
+overview.drilldown.time	Oră
+overview.drilldown.occupancy	Ocupare
+overview.drilldown.date	Dată
+overview.drilldown.method	Metodă
+overview.drilldown.trainer	Antrenor
+overview.drilldown.rowsCount	înregistrări
+overview.drilldown.search	Caută în tabel
+overview.drilldown.shownOf	Se afișează {{shown}} din {{total}}
+overview.drilldown.noMatches	Nu s-a găsit nimic pentru „{{query}}”
+overview.drilldown.reset	Resetează
+overview.drilldown.export	Exportă CSV
+overview.drilldown.subtitle.money	Operațiuni în această secțiune
+overview.drilldown.subtitle.lessons	Sesiuni în această secțiune
+overview.drilldown.hint.operations	Apasă pe un rând pentru a deschide operațiunea în Finanțe
+overview.drilldown.hint.lessons	Apasă pe un rând pentru a deschide acea zi în Jurnal
+overview.drilldown.stat.net	Net
+overview.drilldown.stat.income	Venit
+overview.drilldown.stat.expense	Cheltuială
+overview.drilldown.stat.operations	Operațiuni
+overview.drilldown.stat.topCategory	Categorie principală
+overview.drilldown.stat.lessons	Sesiuni
+overview.drilldown.stat.booked	Locuri rezervate
+overview.drilldown.stat.avgFill	Ocupare medie
+overview.drilldown.stat.trainers	Antrenori
+overview.drilldown.stat.cancelled	Anulat
+sales.kpi.revenue	Venituri
+sales.kpi.salesCount	Vânzări
+sales.kpi.avgCheck	Bon mediu
+sales.kpi.repeatShare	Ponderea recumpărărilor
+sales.kpi.renewals	Rată de reînnoire
+sales.chart.title	Vânzări
+sales.incomeOperations	Operațiuni de venit
+sales.breakdown.byCategory	Ce cumpără
+sales.breakdown.byMethod	Cum plătesc
+sales.breakdown.buyerType	Cine cumpără
+sales.breakdown.new	Noi
+sales.breakdown.returning	Recurenți
+sales.breakdown.noClient	Fără client
+sales.method.card	Card
+sales.method.cash	Numerar
+sales.method.qr	Cod QR
+sales.method.transfer	Transfer
+sales.products.title	Produse
+sales.products.name	Produs
+sales.products.sold	Vândute
+sales.products.revenue	Venituri
+sales.products.avgCheck	Bon mediu
+sales.products.repeatShare	Ponderea recumpărărilor
+sales.products.trend	Tendință
+sales.products.trendHint	Comparat cu perioada anterioară de aceeași durată
+clients.kpi.new	Noi
+clients.kpi.returned	Au revenit
+clients.kpi.lost	Pierduți
+clients.kpi.retention	Retenție
+clients.kpi.avgValue	Valoarea clientului
+clients.chart.title	Noi vs. recurenți
+clients.chart.new	Noi
+clients.chart.returned	Recurenți
+clients.riskTitle	Segmente de risc
+clients.loyalTitle	Fideli
+clients.list	Listă
+clients.campaign	Pornește campania
+clients.exportList	Exportă lista
+clients.emptySegment	Segmentul „{{name}}” nu are clienți momentan
+clients.segments.new.name	Clienți noi
+clients.segments.new.desc	Înregistrați în perioada selectată
+clients.segments.returned.name	Clienți recurenți
+clients.segments.returned.desc	Au vizitat această perioadă și pe cea anterioară
+clients.segments.lost.name	Clienți pierduți
+clients.segments.lost.desc	Au vizitat perioada anterioară, dar nu au revenit în aceasta
+clients.segments.active.name	Clienți activi
+clients.segments.active.desc	Au venit la cel puțin o sesiune în perioada selectată
+clients.segments.at_risk.name	La limită
+clients.segments.at_risk.desc	Activi, dar fără vizită de 21+ zile
+clients.segments.vip_idle.name	VIP inactivi
+clients.segments.vip_idle.desc	Clienți VIP fără vizită de 14+ zile
+clients.segments.expiring_subscription.name	Abonament pe cale să expire
+clients.segments.expiring_subscription.desc	Mai au ≤2 sesiuni sau ≤7 zile
+clients.segments.lost_newcomers.name	Nu au revenit niciodată
+clients.segments.lost_newcomers.desc	Au venit o dată, lipsesc de 14+ zile
+clients.segments.upsell_candidates.name	Pregătiți pentru upgrade
+clients.segments.upsell_candidates.desc	8+ vizite luna aceasta, fără pachet
+clients.segments.frequent.name	Frecvenți
+clients.segments.frequent.desc	8+ vizite în perioadă
+clients.segments.high_ltv.name	LTV ridicat
+clients.segments.high_ltv.desc	Top 10% după cheltuiala totală
+clients.segments.referrers.name	Recomandatori
+clients.segments.referrers.desc	Au finalizat o recomandare în perioadă
+clients.listSearch	Caută după nume sau telefon
+clients.shownOf	Se afișează {{shown}} din {{total}}
+clients.noMatches	Nu a fost găsit nimeni pentru „{{query}}”
+clients.resetSearch	Resetează
+clients.neverVisited	Nu a vizitat niciodată
+clients.valueLabel.visits	Vizite
+clients.valueLabel.spent	Cheltuit
+clients.valueLabel.daysIdle	Zile inactive
+clients.valueLabel.remaining	Sesiuni rămase
+clients.valueLabel.value	Valoare
+clients.relative.today	Astăzi
+clients.relative.daysAgo_one	acum {{count}} zi
+clients.relative.daysAgo_few	acum {{count}} zile
+clients.relative.daysAgo_other	acum {{count}} de zile
+team.kpi.lessonsCount	Sesiuni
+team.kpi.revenuePerHour	Venit/oră
+team.kpi.avgFillPct	Rată de ocupare
+team.kpi.cancelNoshowPct	Anulări/absențe
+team.kpi.avgRating	Evaluare
+team.table.title	Antrenori
+team.table.trainer	Antrenor
+team.table.lessons	Sesiuni
+team.table.fillPct	Rată de ocupare
+team.table.attendance	Prezență
+team.table.revenue	Venituri
+team.table.returnRate	Rată de revenire
+team.table.cancels	Anulări
+team.table.fillPctHint	Locuri ocupate din cele programate
+team.table.returnRateHint	Clienți care au rezervat din nou cu acest antrenor
+team.table.cancelsHint	Sesiuni anulate și absențe ale clienților
+team.table.ratingHint	Evaluarea medie acordată de clienți sesiunilor acestui antrenor
+team.drawer.revenueByWeek	Venituri pe săptămână
+team.drawer.loadByWeekday	Încărcare după ziua săptămânii
+team.drawer.loadByHour	Încărcare după ora zilei
+team.drawer.loadDim.weekday	După zi
+team.drawer.loadDim.hour	După oră
+team.drawer.schedule.title	Program
+team.drawer.schedule.empty	Fără sesiuni în această perioadă
+team.drawer.topLessons	Sesiuni preferate
+team.drawer.returnBlock	Revenirea clienților
+team.drawer.returnOf	{{returned}} din {{total}} clienți au revenit ({{pct}}%)
+team.drawer.openProfile	Deschide profilul
+team.drawer.held	Ținute
+team.drawer.attendance	Prezență
+team.weekdays.0	dum.
+team.weekdays.1	lun.
+team.weekdays.2	mar.
+team.weekdays.3	mie.
+team.weekdays.4	joi
+team.weekdays.5	vin.
+team.weekdays.6	sâm.
+schedule.weekdaysMonFirst.0	lun.
+schedule.weekdaysMonFirst.1	mar.
+schedule.weekdaysMonFirst.2	mie.
+schedule.weekdaysMonFirst.3	joi
+schedule.weekdaysMonFirst.4	vin.
+schedule.weekdaysMonFirst.5	sâm.
+schedule.weekdaysMonFirst.6	dum.
+schedule.kpi.avgFillPct	Rată de ocupare
+schedule.kpi.freeSpots	Locuri libere
+schedule.kpi.cancels	Anulări
+schedule.kpi.noshows	Absențe
+schedule.kpi.lostRevenue	Venituri pierdute
+schedule.heatmap.title	Încărcare după zi și oră
+schedule.heatmap.legend	Rată de ocupare:
+schedule.heatmap.tooltip	{{lessons}} sesiuni · {{attendance}} au participat · {{pct}}%
+schedule.heatmap.empty	Fără sesiuni
+schedule.slices.topProfitable	Cele mai profitabile
+schedule.slices.topFilled	Cele mai pline
+schedule.slices.chronicLow	Cronic slab ocupate
+schedule.slices.halls	Utilizare: {{spacePlural}}
+schedule.slices.held	{{count}} desfășurate
+schedule.slices.weeks	{{count}} săpt.
+schedule.slices.move	Mută
+schedule.slices.cancel	Anulează
+schedule.slices.eveningIdle	inactiv seara {{pct}}%
+schedule.losses.title	Anulări și absențe
+schedule.losses.dim.hour	După oră
+schedule.losses.dim.service	După serviciu
+schedule.losses.dim.trainer	După antrenor
+schedule.losses.cancels_one	{{count}} anulare
+schedule.losses.cancels_few	{{count}} anulări
+schedule.losses.cancels_other	{{count}} de anulări
+schedule.losses.noshows_one	{{count}} absență
+schedule.losses.noshows_few	{{count}} absențe
+schedule.losses.noshows_other	{{count}} de absențe
+schedule.losses.lostSpots_one	−{{count}} loc
+schedule.losses.lostSpots_few	−{{count}} locuri
+schedule.losses.lostSpots_other	−{{count}} de locuri
+schedule.status.confirmed	Confirmată
+schedule.status.pending	În așteptare
+schedule.status.cancelled	Anulată
+schedule.slot.summary	pentru {{from}} — {{to}}
+schedule.slot.lessonsCount	Total sesiuni
+export.csv	Descarcă CSV
+scopeNote.label	Întregul studio
+scopeNote.money	Filtrele Filială și {{space}} nu afectează banii — o plată nu este legată de ele
+scopeNote.clientBase	Antrenorul, {{space}}, filiala și serviciul nu schimbă această metrică — un client nu este legat de ele
+descriptions.overview.metric.revenue	Toți banii care au intrat în studio în timpul perioadei
+descriptions.overview.metric.profit	Ce rămâne după cheltuielile perioadei
+descriptions.overview.metric.attendance	Sesiuni la care clienții au participat efectiv
+descriptions.overview.metric.new_clients	Clienți înregistrați în această perioadă
+descriptions.overview.metric.fill_rate	Cât de pline sunt sesiunile: locuri rezervate din locurile disponibile
+descriptions.overview.revenueStructure	Din ce sunt formate veniturile tale în această perioadă
+descriptions.overview.clientDynamics	Câți au venit prima dată, au revenit sau au încetat să vină
+descriptions.sales.chart	Venituri și număr de cumpărături pe zi
+descriptions.sales.byCategory	Ponderea fiecărui produs în venituri
+descriptions.sales.byMethod	Cum se împart veniturile după metoda de plată
+descriptions.sales.buyerType	Cât venit vine de la clienți noi față de clienți recurenți
+descriptions.sales.products	Fiecare produs: câte s-au vândut, cu cât și dacă vânzările cresc
+descriptions.clients.chart	Câți clienți au venit prima dată și câți au revenit, pe săptămână
+descriptions.clients.riskSegments	Clienți pe care i-ai putea pierde dacă nu îi contactezi acum
+descriptions.clients.loyalSegments	Cei care vizitează cel mai mult, cheltuie cel mai mult și aduc prieteni
+descriptions.team.trainers	Comparație după încărcare, venituri și rata de revenire a clienților
+descriptions.team.loadWeekday	În ce zile ale săptămânii antrenorul este ocupat și când este liber
+descriptions.team.loadHour	La ce ore se umplu sesiunile lui și când rămân goale
+descriptions.team.schedule	Toate sesiunile antrenorului în perioada selectată
+descriptions.schedule.heatmap	Unde programul este suprarezervat și unde este gol
+descriptions.schedule.topProfitable	Orele din program care aduc cei mai mulți bani
+descriptions.schedule.topFilled	Orele pe care clienții le rezervă cel mai dornic
+descriptions.schedule.chronicLow	Intervale care se umplu sub o treime din locuri de săptămâni
+descriptions.schedule.halls	Cât timp sunt {{spacePlural}} tăi în uz efectiv
+descriptions.schedule.losses	Unde studioul pierde locuri: sesiuni anulate sau clienți care nu apar
+formulas.salesCount.title	Vânzări
+formulas.salesCount.text	De câte ori te-au plătit clienții în această perioadă. O persoană care plătește de mai multe ori contează ca vânzări separate.
+formulas.revenue.title	Venituri
+formulas.revenue.text	Toți banii care au intrat în studio în această perioadă, după data plății. Pachete, sesiuni individuale, carduri cadou și vânzări cu amănuntul — toate împreună.
+formulas.profit.title	Profit
+formulas.profit.text	Ce rămâne după cheltuielile acestei perioade: chirie, salarii, materiale. Acesta este profitul tău real.
+formulas.attendance.title	Prezență
+formulas.attendance.text	Câte vizite au făcut efectiv clienții. Sunt numărate doar sesiunile marcate ca frecventate.
+formulas.bookings.title	Rezervări
+formulas.bookings.text	Câte rezervări au făcut clienții pentru sesiuni. Rezervările anulate nu sunt numărate.
+formulas.noshow.title	Absență
+formulas.noshow.text	Un client a rezervat, sesiunea a avut loc, dar nu a apărut. Fiecare caz este un loc pe care l-ar fi putut lua altcineva.
+formulas.activeClients.title	Clienți activi
+formulas.activeClients.text	Câte persoane diferite au venit cel puțin o dată în această perioadă. Fiecare client contează o singură dată, indiferent de câte vizite a făcut.
+formulas.occupancy.title	Ocupare
+formulas.occupancy.text	Cât de pline sunt sesiunile tale: locuri ocupate din cele planificate. 100% înseamnă că nu mai este loc.
+formulas.avgCheck.title	Bon mediu
+formulas.avgCheck.text	Cât aduce în medie o plată. Crește când clienții cumpără pachete mai lungi sau extraopțiuni.
+formulas.retention.title	Retenție
+formulas.retention.text	Câți clienți din perioada anterioară au revenit în această perioadă. Arată dacă îi păstrezi sau începi de la zero în fiecare lună.
+formulas.newClients.title	Clienți noi
+formulas.newClients.text	Persoane care au apărut pentru prima dată în baza ta de clienți în această perioadă.
+formulas.returning.title	Recurenți
+formulas.returning.text	Clienți care mai vizitaseră și au revenit din nou în această perioadă.
+formulas.lost.title	Pierduți
+formulas.lost.text	Au vizitat în perioada anterioară și nu au apărut nici măcar o dată în aceasta. Încă merită să iei legătura cu ei.
+formulas.clientValue.title	Valoarea clientului
+formulas.clientValue.text	Cât aduce în medie un client în această perioadă.
+formulas.repeatPurchaseShare.title	Ponderea recumpărărilor
+formulas.repeatPurchaseShare.text	Ponderea clienților care au cumpărat de la tine de mai multe ori. Cu cât este mai mare, cu atât este mai puternic obiceiul de a reveni.
+formulas.renewalRate.title	Rată de reînnoire
+formulas.renewalRate.text	Câți clienți au cumpărat un pachet nou după ce cel anterior a expirat.
+formulas.revenuePerHour.title	Venit pe oră (antrenor)
+formulas.revenuePerHour.text	Câți bani aduce o oră de muncă a unui antrenor. Permite compararea echitabilă a antrenorilor — unul poate ține mai puține sesiuni, dar fiecare aduce mai mult.
+formulas.trainerReturnRate.title	Rată de revenire (antrenor)
+formulas.trainerReturnRate.text	Ponderea clienților unui antrenor care au rezervat din nou cu el.
+formulas.missedRevenue.title	Venituri pierdute
+formulas.missedRevenue.text	Bani pe care studioul nu i-a câștigat din cauza locurilor libere de la sesiunile trecute: locuri libere înmulțite cu prețul sesiunii.
+formulas.losses.title	Anulări și absențe
+formulas.losses.text	O „anulare” este o sesiune anulată; o „absență” este un client care a rezervat, dar nu a venit. Defalcările pe timp/serviciu/antrenor folosesc aceleași filtre ca fila și corespund KPI-urilor din antet.
+formulas.lessonRevenue.title	Venitul sesiunii
+formulas.lessonRevenue.text	O estimare aproximativă a venitului unei sesiuni: participanți înmulțiți cu prețul. Plățile nu sunt legate de o sesiune anume, deci este o estimare, nu o sumă exactă.
+formulas.filtersScope.title	Aria filtrelor
+formulas.filtersScope.text	Filtrele Filială și {{space}} se aplică doar metricilor de sesiuni. Plățile nu au această legătură, astfel încât banii sunt afișați pentru întregul studio.
+formulas.avgValue.title	Valoarea clientului
+formulas.avgValue.text	Cât aduce în medie un client în această perioadă.
+formulas.cancelNoshow.title	Anulări și absențe
+formulas.cancelNoshow.text	Ponderea sesiunilor perturbate: anulări și absențe din tot ce a fost programat.
+formulas.avgRating.title	Evaluare medie
+formulas.avgRating.text	Evaluarea medie acordată de clienți sesiunilor acestui antrenor.
+formulas.teamScope.title	Aria datelor
+formulas.teamScope.text	Aici se numără doar venitul legat de un antrenor anume, astfel că totalul tuturor antrenorilor poate fi mai mic decât venitul general al studioului.
+formulas.lessonsCount.title	Sesiuni
+formulas.lessonsCount.text	Câte sesiuni au ținut antrenorii în această perioadă.
+formulas.load.title	Încărcare
+formulas.load.text	Cât de plină este ziua unui antrenor: orele lui rezervate din intervalul de funcționare al studioului.
+formulas.weeklyClients.title	Noi și recurenți
+formulas.weeklyClients.text	Pe săptămână: câte persoane au venit prima dată și câte au revenit. Un studio sănătos crește pe ambele linii.
+formulas.byCategory.title	Venituri pe categorie
+formulas.byCategory.text	Din ce câștigi cu adevărat: pachete, sesiuni individuale, carduri cadou și vânzări cu amănuntul.
+formulas.byMethod.title	Metode de plată
+formulas.byMethod.text	Cum plătesc clienții. Ajută să vezi dacă ai nevoie de plăți cu cardul și câți bani ocolesc casa.
+formulas.buyerType.title	Cine plătește
+formulas.buyerType.text	Clienți noi față de recurenți. Dacă aproape toate veniturile vin de la clienți noi, studioul nu îi păstrează.
+formulas.products.title	Ce se vinde
+formulas.products.text	Toate pachetele și serviciile perioadei: câte s-au vândut, cu cât și dacă vânzările cresc.
+formulas.topProfitable.title	Cele mai profitabile intervale
+formulas.topProfitable.text	Orele din program care aduc cei mai mulți bani. Pune acolo cei mai buni antrenori.
+formulas.topFilled.title	Cele mai pline intervale
+formulas.topFilled.text	Orele pe care clienții le rezervă cel mai dornic. Dacă sunt complet pline, merită să adaugi încă o sesiune.
+formulas.chronicLow.title	Intervale cronic goale
+formulas.chronicLow.text	Ore care se umplu sub o treime din locuri de câteva săptămâni. Candidate pentru mutare sau eliminare.
+formulas.hallUtil.title	Utilizare: {{spacePlural}}
+formulas.hallUtil.text	Cât timp sunt {{spacePlural}} tăi în uz efectiv. Timpul gol este chirie care nu se amortizează.
+formulas.heatmap.title	Încărcare după zi și oră
+formulas.heatmap.text	Culoarea arată rata medie de ocupare a intervalului în perioadă. Apasă pe o celulă pentru a vedea sesiunile din acea zi și oră.
+formulas.riskSegments.title	Segmente de risc
+formulas.riskSegments.text	Clienți grupați după tipul de risc pe care îl reprezintă — să îi pierzi sau venitul pe care nu îl aduc. Fiecare card are propriul motiv și un pas următor clar: scrie-le, oferă reînnoire sau upgrade.
+formulas.loyalSegments.title	Fideli
+formulas.loyalSegments.text	Clienți care deja aduc cea mai mare valoare: vizitează cel mai des, cheltuie cel mai mult sau aduc prieteni. Merită să ai grijă de ei și să îi răsplătești.
+formulas.segment.at_risk.title	La limită
+formulas.segment.at_risk.text	Veneau regulat și acum au dispărut. Încă pot fi recuperați cu un mesaj.
+formulas.segment.vip_idle.title	VIP inactivi
+formulas.segment.vip_idle.text	Clienți care au cheltuit mai mult decât oricine, dar nu au mai vizitat de ceva timp.
+formulas.segment.expiring_subscription.title	Abonament pe cale să expire
+formulas.segment.expiring_subscription.text	Acești clienți mai au 1–2 sesiuni. Acum este cel mai bun moment să oferi reînnoirea.
+formulas.segment.lost_newcomers.title	Clienți noi care nu au revenit
+formulas.segment.lost_newcomers.text	Au venit o dată și au dispărut. De obicei ține de prima sesiune — merită investigat.
+formulas.segment.upsell_candidates.title	Pregătiți pentru mai mult
+formulas.segment.upsell_candidates.text	Vin des, dar cumpără cel mai simplu pachet. Merită să le oferi un abonament mai scump.
+formulas.segment.frequent.title	Frecvenți
+formulas.segment.frequent.text	Vin mai des decât toți ceilalți. Coloana vertebrală a veniturilor studioului.
+formulas.segment.high_ltv.title	Cei mai valoroși
+formulas.segment.high_ltv.text	Au adus studioului mai mulți bani decât toți ceilalți, pe toată perioada.
+formulas.segment.referrers.title	Aduc prieteni
+formulas.segment.referrers.text	Clienți ale căror recomandări au adus alte persoane la tine.

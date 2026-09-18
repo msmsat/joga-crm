@@ -1,0 +1,376 @@
+== bg
+tabs.overview	Преглед
+tabs.sales	Продажби
+tabs.clients	Клиенти
+tabs.team	Екип
+tabs.schedule	График
+toolbar.period.day	Ден
+toolbar.period.week	Седмица
+toolbar.period.month	Месец
+toolbar.period.year	Година
+toolbar.period.custom	По избор
+toolbar.vsPrevious	спрямо предишния период: {{from}}–{{to}}
+toolbar.allBranches	Всички филиали
+toolbar.allHalls	Всички {{spacePlural}}
+toolbar.allTrainers	Всички треньори
+toolbar.allServices	Всички услуги
+toolbar.export	Експортирай
+insights.title	Нуждае се от внимание
+insights.action	Отвори
+insights.empty	Засега всичко е наред — няма съвети за показване
+insights.revenue_up_clients_down	Приходите растат, но активните клиенти намаляват — проверете за отпадане
+insights.clients_at_risk	{{count}} клиент(и) не са посещавали повече от 3 седмици — риск от отпадане
+insights.lesson_overfull	„{{name}}” в {{weekday, weekday}} от {{hour}}:00 е запълнен {{pct}}% три седмици поред — помислете за още една сесия
+insights.trial_low_conversion	Само {{pct}}% от {{buyers}} пробни купувачи са купили абонамент — помислете за кампания
+insights.fastest_growing_product	„{{name}}” расте най-бързо: +{{pct}}% спрямо предишния период
+insights.renewals_low	Само {{pct}}% от клиентите с изтекъл абонамент подновяват — помислете за напомняне
+insights.new_no_second_visit	{{count}} нови клиенти са дошли веднъж и никога не са резервирали пак — помислете за напомняне
+insights.subs_expiring_week	{{count}} клиенти имат абонамент, изтичащ тази седмица — предложете подновяване
+insights.vip_inactive	VIP клиентът „{{name}}” не е посещавал от {{days}} дни — помислете за лично съобщение
+insights.high_return_free_evenings	„{{name}}” има висок процент на връщане ({{return_pct}}%), но вечерите са свободни — добавете сесия
+insights.trainer_overloaded	„{{name}}” е натоварен {{load_pct}}% — помислете за ребалансиране на графика
+insights.low_rating	„{{name}}” има оценка {{rating}} — заслужава си да се разгледа по-отблизо
+insights.slot_chronic_low	„{{name}}” в {{weekday, isodowWeekday}} от {{hour}}:00 е запълнен {{pct}}% в продължение на {{weeks}} седмици — преместете го или го отменете
+insights.hall_idle_evenings	„{{name}}” не се използва {{pct}}% от вечерните часове — помислете за сесия
+insights.slot_overfull	Часът {{weekday, isodowWeekday}} {{hour}}:00 е запълнен {{pct}}% три седмици поред — помислете за още една сесия
+insights.loss_hotspot	{{cancels}} сесии бяха отменени в {{label}} през този период — повечето отмени са около този час
+table.loading	Зареждане…
+table.noProduct	Няма продукт
+empty.noData.title	Тук все още няма нищо
+empty.noData.text	Няма записана активност за избрания период. Разширете периода или започнете, като запишете клиент в Дневника.
+empty.noData.widen	Покажи годината
+empty.noRevenue	Няма плащания в този период
+empty.noSales	Няма продажби в този сегмент
+empty.noProducts	Все още няма продадени пакети или услуги
+empty.noLessons	Няма сесии в този период
+empty.noTrainerLessons	Този треньор все още не е провеждал сесии
+empty.noRows	Няма записи в този сегмент
+empty.noLosses	Няма отмени или неявявания в този период
+overview.kpi.revenue	Приходи
+overview.kpi.profit	Печалба
+overview.kpi.attendance	Посещаемост
+overview.kpi.activeClients	Активни клиенти
+overview.kpi.fillRate	Запълняемост
+overview.chart.metric.revenue	Приходи
+overview.chart.metric.profit	Печалба
+overview.chart.metric.attendance	Посещаемост
+overview.chart.metric.new_clients	Нови клиенти
+overview.chart.metric.fill_rate	Запълняемост
+overview.revenueStructure.title	Структура на приходите
+overview.category.subscriptions	Абонаменти
+overview.category.services	Услуги
+overview.category.certificates	Сертификати
+overview.category.rent	Наем
+overview.category.salary	Заплата
+overview.category.refunds	Възстановявания
+overview.clientDynamics.title	Динамика на клиентите
+overview.clientDynamics.new	Нови
+overview.clientDynamics.returned	Върнали се
+overview.clientDynamics.lost	Изгубени
+overview.drilldown.title	Операция
+overview.drilldown.category	Категория
+overview.drilldown.amount	Сума
+overview.drilldown.lesson	Сесия
+overview.drilldown.time	Час
+overview.drilldown.occupancy	Запълняемост
+overview.drilldown.date	Дата
+overview.drilldown.method	Метод
+overview.drilldown.trainer	Треньор
+overview.drilldown.rowsCount	записа
+overview.drilldown.search	Търсене в таблицата
+overview.drilldown.shownOf	Показани {{shown}} от {{total}}
+overview.drilldown.noMatches	Нищо не е намерено за „{{query}}”
+overview.drilldown.reset	Нулирай
+overview.drilldown.export	Експортирай CSV
+overview.drilldown.subtitle.money	Операции в този сегмент
+overview.drilldown.subtitle.lessons	Сесии в този сегмент
+overview.drilldown.hint.operations	Щракнете върху ред, за да отворите операцията във Финанси
+overview.drilldown.hint.lessons	Щракнете върху ред, за да отворите този ден в Дневника
+overview.drilldown.stat.net	Нетно
+overview.drilldown.stat.income	Приход
+overview.drilldown.stat.expense	Разход
+overview.drilldown.stat.operations	Операции
+overview.drilldown.stat.topCategory	Водеща категория
+overview.drilldown.stat.lessons	Сесии
+overview.drilldown.stat.booked	Резервирани места
+overview.drilldown.stat.avgFill	Средна запълняемост
+overview.drilldown.stat.trainers	Треньори
+overview.drilldown.stat.cancelled	Отменени
+sales.kpi.revenue	Приходи
+sales.kpi.salesCount	Продажби
+sales.kpi.avgCheck	Средна сметка
+sales.kpi.repeatShare	Дял на повторните
+sales.kpi.renewals	Процент подновявания
+sales.chart.title	Продажби
+sales.incomeOperations	Операции по приходите
+sales.breakdown.byCategory	Какво купуват
+sales.breakdown.byMethod	Как плащат
+sales.breakdown.buyerType	Кой купува
+sales.breakdown.new	Нови
+sales.breakdown.returning	Връщащи се
+sales.breakdown.noClient	Без клиент
+sales.method.card	Карта
+sales.method.cash	В брой
+sales.method.qr	QR код
+sales.method.transfer	Превод
+sales.products.title	Продукти
+sales.products.name	Продукт
+sales.products.sold	Продадени
+sales.products.revenue	Приходи
+sales.products.avgCheck	Средна сметка
+sales.products.repeatShare	Дял на повторните
+sales.products.trend	Тенденция
+sales.products.trendHint	Спрямо предишния период със същата продължителност
+clients.kpi.new	Нови
+clients.kpi.returned	Върнали се
+clients.kpi.lost	Изгубени
+clients.kpi.retention	Задържане
+clients.kpi.avgValue	Стойност на клиента
+clients.chart.title	Нови срещу върнали се
+clients.chart.new	Нови
+clients.chart.returned	Върнали се
+clients.riskTitle	Рискови сегменти
+clients.loyalTitle	Лоялни
+clients.list	Списък
+clients.campaign	Стартирай кампания
+clients.exportList	Експортирай списъка
+clients.emptySegment	Сегментът „{{name}}” няма клиенти в момента
+clients.segments.new.name	Нови клиенти
+clients.segments.new.desc	Регистрирани през избрания период
+clients.segments.returned.name	Върнали се клиенти
+clients.segments.returned.desc	Посетили този и предходния период
+clients.segments.lost.name	Изгубени клиенти
+clients.segments.lost.desc	Посетили предходния период, но не са се върнали този
+clients.segments.active.name	Активни клиенти
+clients.segments.active.desc	Дошли на поне една сесия през избрания период
+clients.segments.at_risk.name	На ръба
+clients.segments.at_risk.desc	Активни, без посещение 21+ дни
+clients.segments.vip_idle.name	VIP без активност
+clients.segments.vip_idle.desc	VIP клиенти, без посещение 14+ дни
+clients.segments.expiring_subscription.name	Абонаментът изтича
+clients.segments.expiring_subscription.desc	Остават ≤2 сесии или ≤7 дни
+clients.segments.lost_newcomers.name	Никога не се върнаха
+clients.segments.lost_newcomers.desc	Дошли веднъж, няма ги 14+ дни
+clients.segments.upsell_candidates.name	Готови за пакет
+clients.segments.upsell_candidates.desc	8+ посещения този месец, без пакет
+clients.segments.frequent.name	Чести
+clients.segments.frequent.desc	8+ посещения в периода
+clients.segments.high_ltv.name	Висока LTV
+clients.segments.high_ltv.desc	Топ 10% по общи разходи
+clients.segments.referrers.name	Препоръчващи
+clients.segments.referrers.desc	Направили препоръка през периода
+clients.listSearch	Търсене по име или телефон
+clients.shownOf	Показани {{shown}} от {{total}}
+clients.noMatches	Не е намерен никой за „{{query}}”
+clients.resetSearch	Нулирай
+clients.neverVisited	Никога не е посещавал
+clients.valueLabel.visits	Посещения
+clients.valueLabel.spent	Похарчени
+clients.valueLabel.daysIdle	Дни без активност
+clients.valueLabel.remaining	Оставащи сесии
+clients.valueLabel.value	Стойност
+clients.relative.today	Днес
+clients.relative.daysAgo_one	Преди {{count}} ден
+clients.relative.daysAgo_other	Преди {{count}} дни
+team.kpi.lessonsCount	Сесии
+team.kpi.revenuePerHour	Приход/час
+team.kpi.avgFillPct	Запълняемост
+team.kpi.cancelNoshowPct	Отмени/неявявания
+team.kpi.avgRating	Оценка
+team.table.title	Треньори
+team.table.trainer	Треньор
+team.table.lessons	Сесии
+team.table.fillPct	Запълняемост
+team.table.attendance	Посещаемост
+team.table.revenue	Приходи
+team.table.returnRate	Процент на връщане
+team.table.cancels	Отмени
+team.table.fillPctHint	Запълнени места от планираните
+team.table.returnRateHint	Клиенти, които са резервирали отново при този треньор
+team.table.cancelsHint	Отменени сесии и неявявания на клиенти
+team.table.ratingHint	Средната оценка, която клиентите са дали на сесиите на този треньор
+team.drawer.revenueByWeek	Приходи по седмици
+team.drawer.loadByWeekday	Натоварване по ден от седмицата
+team.drawer.loadByHour	Натоварване по час
+team.drawer.loadDim.weekday	По ден
+team.drawer.loadDim.hour	По час
+team.drawer.schedule.title	График
+team.drawer.schedule.empty	Няма сесии в този период
+team.drawer.topLessons	Любими сесии
+team.drawer.returnBlock	Връщане на клиенти
+team.drawer.returnOf	{{returned}} от {{total}} клиенти са се върнали ({{pct}}%)
+team.drawer.openProfile	Отвори профила
+team.drawer.held	Проведени
+team.drawer.attendance	Посещаемост
+team.weekdays.0	Нед
+team.weekdays.1	Пон
+team.weekdays.2	Вто
+team.weekdays.3	Сря
+team.weekdays.4	Чет
+team.weekdays.5	Пет
+team.weekdays.6	Съб
+schedule.weekdaysMonFirst.0	Пон
+schedule.weekdaysMonFirst.1	Вто
+schedule.weekdaysMonFirst.2	Сря
+schedule.weekdaysMonFirst.3	Чет
+schedule.weekdaysMonFirst.4	Пет
+schedule.weekdaysMonFirst.5	Съб
+schedule.weekdaysMonFirst.6	Нед
+schedule.kpi.avgFillPct	Запълняемост
+schedule.kpi.freeSpots	Свободни места
+schedule.kpi.cancels	Отмени
+schedule.kpi.noshows	Неявявания
+schedule.kpi.lostRevenue	Пропуснати приходи
+schedule.heatmap.title	Натоварване по ден и час
+schedule.heatmap.legend	Запълняемост:
+schedule.heatmap.tooltip	{{lessons}} сесии · {{attendance}} посетили · {{pct}}%
+schedule.heatmap.empty	Няма сесии
+schedule.slices.topProfitable	Най-печеливши
+schedule.slices.topFilled	Най-запълнени
+schedule.slices.chronicLow	Хронично слабо запълнени
+schedule.slices.halls	Използване: {{spacePlural}}
+schedule.slices.held	{{count}} проведени
+schedule.slices.weeks	{{count}} седм.
+schedule.slices.move	Премести
+schedule.slices.cancel	Отмени
+schedule.slices.eveningIdle	свободни вечери {{pct}}%
+schedule.losses.title	Отмени и неявявания
+schedule.losses.dim.hour	По час
+schedule.losses.dim.service	По услуга
+schedule.losses.dim.trainer	По треньор
+schedule.losses.cancels_one	{{count}} отмяна
+schedule.losses.cancels_other	{{count}} отмени
+schedule.losses.noshows_one	{{count}} неявяване
+schedule.losses.noshows_other	{{count}} неявявания
+schedule.losses.lostSpots_one	−{{count}} място
+schedule.losses.lostSpots_other	−{{count}} места
+schedule.status.confirmed	Потвърдено
+schedule.status.pending	В изчакване
+schedule.status.cancelled	Отменено
+schedule.slot.summary	за {{from}} — {{to}}
+schedule.slot.lessonsCount	Сесии общо
+export.csv	Изтегли CSV
+scopeNote.label	За цялото студио
+scopeNote.money	Филтрите Филиал и {{space}} не влияят на парите — плащането не е свързано с тях
+scopeNote.clientBase	Треньорът, {{space}}, филиалът и услугата не променят този показател — клиентът не е свързан с тях
+descriptions.overview.metric.revenue	Всички пари, постъпили в студиото през периода
+descriptions.overview.metric.profit	Какво остава след разходите за периода
+descriptions.overview.metric.attendance	Сесии, които клиентите действително са посетили
+descriptions.overview.metric.new_clients	Клиенти, регистрирани през този период
+descriptions.overview.metric.fill_rate	Колко са запълнени сесиите: резервирани места от наличните
+descriptions.overview.revenueStructure	От какво са съставени парите ви през този период
+descriptions.overview.clientDynamics	Колко са дошли за първи път, върнали са се и са спрели да идват
+descriptions.sales.chart	Приходи и брой покупки по дни
+descriptions.sales.byCategory	Делът на всеки продукт в приходите
+descriptions.sales.byMethod	Как приходите се разпределят по метод на плащане
+descriptions.sales.buyerType	Колко приходи идват от нови клиенти спрямо редовни
+descriptions.sales.products	Всеки продукт: колко е продаден, за колко и дали расте
+descriptions.clients.chart	Колко клиенти са дошли за първи път и колко са се върнали, по седмици
+descriptions.clients.riskSegments	Клиенти, които може да загубите, ако не се свържете с тях сега
+descriptions.clients.loyalSegments	Тези, които посещават най-често, харчат най-много и водят приятели
+descriptions.team.trainers	Сравнение по натоварване, приходи и процент на връщане на клиенти
+descriptions.team.loadWeekday	Кои дни от седмицата треньорът е зает и кога е свободен
+descriptions.team.loadHour	В колко часа сесиите му се запълват и кога остават празни
+descriptions.team.schedule	Всички сесии на треньора през избрания период
+descriptions.schedule.heatmap	Къде графикът е препълнен и къде е празен
+descriptions.schedule.topProfitable	Часовете в графика ви, които носят най-много пари
+descriptions.schedule.topFilled	Часовете, които клиентите резервират най-охотно
+descriptions.schedule.chronicLow	Слотове, запълвани под една трета от местата в продължение на седмици
+descriptions.schedule.halls	Колко от времето вашите {{spacePlural}} наистина се използват
+descriptions.schedule.losses	Къде студиото губи места: отменени сесии или неявили се клиенти
+formulas.salesCount.title	Продажби
+formulas.salesCount.text	Колко пъти клиентите са ви платили през този период. Един човек, който плаща повече от веднъж, се брои като отделни продажби.
+formulas.revenue.title	Приходи
+formulas.revenue.text	Всички пари, постъпили в студиото през този период, по дата на плащане. Пакети, единични сесии, карти подарък и продажби на дребно — всичко заедно.
+formulas.profit.title	Печалба
+formulas.profit.text	Какво остава след разходите за този период: наем, заплати, доставки. Това е реалният ви доход.
+formulas.attendance.title	Посещаемост
+formulas.attendance.text	Колко посещения действително са направили клиентите. Броят се само сесиите, отбелязани като посетени.
+formulas.bookings.title	Резервации
+formulas.bookings.text	Колко резервации са направили клиентите за сесии. Отменените резервации не се броят.
+formulas.noshow.title	Неявяване
+formulas.noshow.text	Клиент е резервирал, сесията се е провела, но той не е дошъл. Всяко такова неявяване е място, което някой друг можеше да заеме.
+formulas.activeClients.title	Активни клиенти
+formulas.activeClients.text	Колко различни хора са дошли поне веднъж този период. Всеки клиент се брои веднъж, независимо от броя посещения.
+formulas.occupancy.title	Запълняемост
+formulas.occupancy.text	Колко са пълни сесиите: заети места от планираните. 100% означава, че няма свободни места.
+formulas.avgCheck.title	Средна сметка
+formulas.avgCheck.text	Колко носи средно едно плащане. Расте, когато клиентите купуват по-дълги пакети или добавки.
+formulas.retention.title	Задържане
+formulas.retention.text	Колко от клиентите от предходния период са се върнали този период. Показва дали задържате хората или започвате от нулата всеки месец.
+formulas.newClients.title	Нови клиенти
+formulas.newClients.text	Хора, появили се за първи път в базата ви от клиенти този период.
+formulas.returning.title	Върнали се
+formulas.returning.text	Клиенти, които са посещавали преди и са се върнали отново този период.
+formulas.lost.title	Изгубени
+formulas.lost.text	Посетили предходния период и не са се появили нито веднъж този. Все още си заслужава да се свържете с тях.
+formulas.clientValue.title	Стойност на клиента
+formulas.clientValue.text	Колко носи средно един клиент този период.
+formulas.repeatPurchaseShare.title	Дял на повторните покупки
+formulas.repeatPurchaseShare.text	Делът на клиентите, купили от вас повече от веднъж. Колкото е по-висок, толкова по-силен е навикът да се връщат при вас.
+formulas.renewalRate.title	Процент подновявания
+formulas.renewalRate.text	Колко клиенти са купили нов пакет, след като предишният им е изтекъл.
+formulas.revenuePerHour.title	Приход на час (треньор)
+formulas.revenuePerHour.text	Колко пари носи един час работа на треньор. Позволява честно сравнение на треньорите — единият може да води по-малко сесии, но всяка да носи повече.
+formulas.trainerReturnRate.title	Процент на връщане (треньор)
+formulas.trainerReturnRate.text	Делът на клиентите на треньора, които са резервирали отново при него.
+formulas.missedRevenue.title	Пропуснати приходи
+formulas.missedRevenue.text	Парите, които студиото не е спечелило заради свободни места в минали сесии: свободни места, умножени по цената на сесията.
+formulas.losses.title	Отмени и неявявания
+formulas.losses.text	„Отмяна” е отменена сесия; „неявяване” е клиент, който е резервирал, но не е дошъл. Разбивките по час/услуга/треньор използват същите филтри като раздела и съвпадат с основните показатели в заглавието.
+formulas.lessonRevenue.title	Приход от сесия
+formulas.lessonRevenue.text	Приблизителна оценка на прихода от сесия: посетители, умножени по цена. Плащанията не са свързани с конкретна сесия, затова това е оценка, а не точна стойност.
+formulas.filtersScope.title	Обхват на филтрите
+formulas.filtersScope.text	Филтрите Филиал и {{space}} важат само за показателите на сесиите. Плащанията нямат такава връзка, затова парите се показват за цялото студио.
+formulas.avgValue.title	Стойност на клиента
+formulas.avgValue.text	Колко носи средно един клиент този период.
+formulas.cancelNoshow.title	Отмени и неявявания
+formulas.cancelNoshow.text	Делът на прекъснатите сесии: отмени и неявявания от всичко планирано.
+formulas.avgRating.title	Средна оценка
+formulas.avgRating.text	Средната оценка, която клиентите са дали на сесиите на този треньор.
+formulas.teamScope.title	Обхват на данните
+formulas.teamScope.text	Това брои само приходи, свързани с конкретен треньор, така че общата сума за всички треньори може да е по-ниска от общите приходи на студиото.
+formulas.lessonsCount.title	Сесии
+formulas.lessonsCount.text	Колко сесии са провели треньорите този период.
+formulas.load.title	Натоварване
+formulas.load.text	Колко е запълнен денят на треньора: резервираните му часове от работния прозорец на студиото.
+formulas.weeklyClients.title	Нови и върнали се
+formulas.weeklyClients.text	По седмици: колко хора са дошли за първи път и колко са се върнали. Здравото студио расте и по двете линии.
+formulas.byCategory.title	Приходи по категории
+formulas.byCategory.text	От какво реално печелите: пакети, единични сесии, карти подарък, продажби на дребно.
+formulas.byMethod.title	Методи на плащане
+formulas.byMethod.text	Как плащат клиентите. Помага да видите дали ви трябва обработка на карти и колко пари заобикалят касата.
+formulas.buyerType.title	Кой плаща
+formulas.buyerType.text	Нови клиенти срещу редовни. Ако почти всички приходи идват от нови клиенти, студиото не задържа хората.
+formulas.products.title	Какво се продава
+formulas.products.text	Всички пакети и услуги за периода: колко са продадени, за колко и дали продажбите растат.
+formulas.topProfitable.title	Най-печеливши слотове
+formulas.topProfitable.text	Часовете в графика, които носят най-много пари. Поставете най-добрите си треньори там.
+formulas.topFilled.title	Най-запълнени слотове
+formulas.topFilled.text	Часовете, които клиентите резервират най-охотно. Ако са плътно запълнени, струва си да добавите още една сесия.
+formulas.chronicLow.title	Хронично празни слотове
+formulas.chronicLow.text	Часове, запълвани под една трета от местата няколко седмици. Кандидати за преместване или премахване.
+formulas.hallUtil.title	Използване: {{spacePlural}}
+formulas.hallUtil.text	Колко от времето вашите {{spacePlural}} наистина се използват. Свободното време е наем, който не се изплаща.
+formulas.heatmap.title	Натоварване по ден и час
+formulas.heatmap.text	Цветът показва средната запълняемост на слота за периода. Щракнете върху клетка, за да видите сесиите в този ден и час.
+formulas.riskSegments.title	Рискови сегменти
+formulas.riskSegments.text	Клиенти, групирани по вида риск, който носят — да ги загубите или по приходите, които не носят. Всяка карта има собствена причина и ясен следващ ход: изпратете съобщение, предложете подновяване или по-скъп пакет.
+formulas.loyalSegments.title	Лоялни
+formulas.loyalSegments.text	Клиенти, които вече ви носят най-много стойност: посещават най-често, харчат най-много или водят приятели. Струва си да се грижите за тях и да ги награждавате.
+formulas.segment.at_risk.title	На ръба
+formulas.segment.at_risk.text	Посещавали са редовно, а сега са изчезнали. Все още могат да се върнат с едно съобщение.
+formulas.segment.vip_idle.title	VIP без активност
+formulas.segment.vip_idle.text	Клиенти, похарчили повече от всички, но не са посещавали от известно време.
+formulas.segment.expiring_subscription.title	Абонаментът изтича
+formulas.segment.expiring_subscription.text	На тези клиенти остават 1–2 сесии. Най-добрият момент да предложите подновяване.
+formulas.segment.lost_newcomers.title	Нови, които не се върнаха
+formulas.segment.lost_newcomers.text	Дошли веднъж и изчезнали. Обикновено всичко опира до първата сесия — заслужава си да се провери.
+formulas.segment.upsell_candidates.title	Готови за повече
+formulas.segment.upsell_candidates.text	Посещават често, но купуват най-простия пакет. Струва си да им предложите по-скъп абонамент.
+formulas.segment.frequent.title	Редовни
+formulas.segment.frequent.text	Посещават по-често от всички. Гръбнакът на приходите на студиото.
+formulas.segment.high_ltv.title	Най-ценни
+formulas.segment.high_ltv.text	Донесли са на студиото повече пари от всички останали, за цялото време.
+formulas.segment.referrers.title	Водят приятели
+formulas.segment.referrers.text	Клиенти, чиито препоръки са довели други хора при вас.

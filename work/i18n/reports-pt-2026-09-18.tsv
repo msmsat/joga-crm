@@ -1,0 +1,376 @@
+== pt
+tabs.overview	Visão geral
+tabs.sales	Vendas
+tabs.clients	Clientes
+tabs.team	Equipa
+tabs.schedule	Agenda
+toolbar.period.day	Dia
+toolbar.period.week	Semana
+toolbar.period.month	Mês
+toolbar.period.year	Ano
+toolbar.period.custom	Personalizado
+toolbar.vsPrevious	vs. período anterior: {{from}}–{{to}}
+toolbar.allBranches	Todas as unidades
+toolbar.allHalls	Todos os {{spacePlural}}
+toolbar.allTrainers	Todos os instrutores
+toolbar.allServices	Todos os serviços
+toolbar.export	Exportar
+insights.title	Requer atenção
+insights.action	Abrir
+insights.empty	Por enquanto está tudo bem — não há recomendações para mostrar
+insights.revenue_up_clients_down	A receita aumentou, mas os clientes ativos diminuíram — verifique a perda de clientes
+insights.clients_at_risk	{{count}} cliente(s) não participam há mais de 3 semanas — risco de perda
+insights.lesson_overfull	«{{name}}» em {{weekday, weekday}} às {{hour}}:00 está {{pct}}% cheio há três semanas seguidas — considere adicionar mais uma sessão
+insights.trial_low_conversion	Apenas {{pct}}% de {{buyers}} compradores de teste compraram uma subscrição depois — considere uma campanha
+insights.fastest_growing_product	«{{name}}» cresce mais rápido: +{{pct}}% vs. o período anterior
+insights.renewals_low	Apenas {{pct}}% dos clientes com subscrição expirada renovam — considere um lembrete
+insights.new_no_second_visit	{{count}} novos clientes vieram uma vez e nunca mais reservaram — considere um lembrete
+insights.subs_expiring_week	{{count}} clientes têm uma subscrição a expirar esta semana — considere oferecer renovação
+insights.vip_inactive	O cliente VIP «{{name}}» não visita há {{days}} dias — considere uma mensagem pessoal
+insights.high_return_free_evenings	«{{name}}» tem uma alta taxa de retorno ({{return_pct}}%), mas as noites estão livres — adicione uma sessão
+insights.trainer_overloaded	«{{name}}» está com {{load_pct}}% de carga — considere reequilibrar a agenda
+insights.low_rating	«{{name}}» tem avaliação de {{rating}} — vale a pena analisar melhor
+insights.slot_chronic_low	«{{name}}» em {{weekday, isodowWeekday}} às {{hour}}:00 está {{pct}}% cheio há {{weeks}} semanas seguidas — mova ou cancele
+insights.hall_idle_evenings	«{{name}}» fica inativo {{pct}}% das horas da noite — considere agendar uma sessão
+insights.slot_overfull	O horário de {{weekday, isodowWeekday}} às {{hour}}:00 está {{pct}}% cheio há três semanas seguidas — considere adicionar mais uma sessão
+insights.loss_hotspot	{{cancels}} sessões foram canceladas às {{label}} neste período — a maioria dos cancelamentos concentra-se nesta hora
+table.loading	A carregar…
+table.noProduct	Sem produto
+empty.noData.title	Ainda não há nada aqui
+empty.noData.text	Não foi registada atividade no período selecionado. Alargue o intervalo ou comece por marcar um cliente no Diário.
+empty.noData.widen	Mostrar o ano
+empty.noRevenue	Sem pagamentos neste período
+empty.noSales	Sem vendas nesta seleção
+empty.noProducts	Ainda não foram vendidos pacotes ou serviços
+empty.noLessons	Sem sessões neste período
+empty.noTrainerLessons	Este instrutor ainda não realizou sessões
+empty.noRows	Sem registos nesta seleção
+empty.noLosses	Sem cancelamentos ou faltas neste período
+overview.kpi.revenue	Receita
+overview.kpi.profit	Lucro
+overview.kpi.attendance	Presença
+overview.kpi.activeClients	Clientes ativos
+overview.kpi.fillRate	Taxa de ocupação
+overview.chart.metric.revenue	Receita
+overview.chart.metric.profit	Lucro
+overview.chart.metric.attendance	Presença
+overview.chart.metric.new_clients	Novos clientes
+overview.chart.metric.fill_rate	Taxa de ocupação
+overview.revenueStructure.title	Estrutura da receita
+overview.category.subscriptions	Subscrições
+overview.category.services	Serviços
+overview.category.certificates	Cartões-presente
+overview.category.rent	Renda
+overview.category.salary	Salários
+overview.category.refunds	Reembolsos
+overview.clientDynamics.title	Dinâmica dos clientes
+overview.clientDynamics.new	Novos
+overview.clientDynamics.returned	Regressaram
+overview.clientDynamics.lost	Perdidos
+overview.drilldown.title	Operação
+overview.drilldown.category	Categoria
+overview.drilldown.amount	Montante
+overview.drilldown.lesson	Sessão
+overview.drilldown.time	Hora
+overview.drilldown.occupancy	Ocupação
+overview.drilldown.date	Data
+overview.drilldown.method	Método
+overview.drilldown.trainer	Instrutor
+overview.drilldown.rowsCount	registos
+overview.drilldown.search	Pesquisar na tabela
+overview.drilldown.shownOf	A mostrar {{shown}} de {{total}}
+overview.drilldown.noMatches	Nada encontrado para «{{query}}»
+overview.drilldown.reset	Repor
+overview.drilldown.export	Exportar CSV
+overview.drilldown.subtitle.money	Operações nesta seleção
+overview.drilldown.subtitle.lessons	Sessões nesta seleção
+overview.drilldown.hint.operations	Clique numa linha para abrir a operação em Finanças
+overview.drilldown.hint.lessons	Clique numa linha para abrir esse dia no Diário
+overview.drilldown.stat.net	Líquido
+overview.drilldown.stat.income	Receita
+overview.drilldown.stat.expense	Despesa
+overview.drilldown.stat.operations	Operações
+overview.drilldown.stat.topCategory	Categoria principal
+overview.drilldown.stat.lessons	Sessões
+overview.drilldown.stat.booked	Lugares reservados
+overview.drilldown.stat.avgFill	Ocupação média
+overview.drilldown.stat.trainers	Instrutores
+overview.drilldown.stat.cancelled	Cancelado
+sales.kpi.revenue	Receita
+sales.kpi.salesCount	Vendas
+sales.kpi.avgCheck	Ticket médio
+sales.kpi.repeatShare	Percentagem de recompras
+sales.kpi.renewals	Taxa de renovação
+sales.chart.title	Vendas
+sales.incomeOperations	Operações de receita
+sales.breakdown.byCategory	O que compram
+sales.breakdown.byMethod	Como pagam
+sales.breakdown.buyerType	Quem compra
+sales.breakdown.new	Novos
+sales.breakdown.returning	Recorrentes
+sales.breakdown.noClient	Sem cliente
+sales.method.card	Cartão
+sales.method.cash	Dinheiro
+sales.method.qr	Código QR
+sales.method.transfer	Transferência
+sales.products.title	Produtos
+sales.products.name	Produto
+sales.products.sold	Vendidos
+sales.products.revenue	Receita
+sales.products.avgCheck	Ticket médio
+sales.products.repeatShare	Percentagem de recompras
+sales.products.trend	Tendência
+sales.products.trendHint	Comparado com o período anterior da mesma duração
+clients.kpi.new	Novos
+clients.kpi.returned	Regressaram
+clients.kpi.lost	Perdidos
+clients.kpi.retention	Retenção
+clients.kpi.avgValue	Valor do cliente
+clients.chart.title	Novos vs. recorrentes
+clients.chart.new	Novos
+clients.chart.returned	Recorrentes
+clients.riskTitle	Segmentos de risco
+clients.loyalTitle	Fiéis
+clients.list	Lista
+clients.campaign	Iniciar campanha
+clients.exportList	Exportar lista
+clients.emptySegment	O segmento «{{name}}» não tem clientes neste momento
+clients.segments.new.name	Novos clientes
+clients.segments.new.desc	Registados no período selecionado
+clients.segments.returned.name	Clientes recorrentes
+clients.segments.returned.desc	Visitaram este período e o anterior
+clients.segments.lost.name	Clientes perdidos
+clients.segments.lost.desc	Visitaram no período anterior, mas não voltaram neste
+clients.segments.active.name	Clientes ativos
+clients.segments.active.desc	Vieram a pelo menos uma sessão no período selecionado
+clients.segments.at_risk.name	Em risco
+clients.segments.at_risk.desc	Ativos, mas sem visita há 21+ dias
+clients.segments.vip_idle.name	VIP inativos
+clients.segments.vip_idle.desc	Clientes VIP sem visita há 14+ dias
+clients.segments.expiring_subscription.name	Subscrição a terminar
+clients.segments.expiring_subscription.desc	Restam ≤2 sessões ou ≤7 dias
+clients.segments.lost_newcomers.name	Nunca voltaram
+clients.segments.lost_newcomers.desc	Vieram uma vez, ausentes há 14+ dias
+clients.segments.upsell_candidates.name	Prontos para upgrade
+clients.segments.upsell_candidates.desc	8+ visitas este mês, sem pacote
+clients.segments.frequent.name	Frequentes
+clients.segments.frequent.desc	8+ visitas no período
+clients.segments.high_ltv.name	LTV elevado
+clients.segments.high_ltv.desc	Top 10% por gasto total
+clients.segments.referrers.name	Recomendadores
+clients.segments.referrers.desc	Concluíram uma recomendação no período
+clients.listSearch	Pesquisar por nome ou telefone
+clients.shownOf	A mostrar {{shown}} de {{total}}
+clients.noMatches	Ninguém encontrado para «{{query}}»
+clients.resetSearch	Repor
+clients.neverVisited	Nunca visitou
+clients.valueLabel.visits	Visitas
+clients.valueLabel.spent	Gasto
+clients.valueLabel.daysIdle	Dias inativo
+clients.valueLabel.remaining	Sessões restantes
+clients.valueLabel.value	Valor
+clients.relative.today	Hoje
+clients.relative.daysAgo_one	há {{count}} dia
+clients.relative.daysAgo_other	há {{count}} dias
+team.kpi.lessonsCount	Sessões
+team.kpi.revenuePerHour	Receita/hora
+team.kpi.avgFillPct	Taxa de ocupação
+team.kpi.cancelNoshowPct	Cancelamentos/faltas
+team.kpi.avgRating	Avaliação
+team.table.title	Instrutores
+team.table.trainer	Instrutor
+team.table.lessons	Sessões
+team.table.fillPct	Taxa de ocupação
+team.table.attendance	Presença
+team.table.revenue	Receita
+team.table.returnRate	Taxa de retorno
+team.table.cancels	Cancelamentos
+team.table.fillPctHint	Lugares ocupados dos que estavam planeados
+team.table.returnRateHint	Clientes que voltaram a reservar com este instrutor
+team.table.cancelsHint	Sessões canceladas e faltas dos clientes
+team.table.ratingHint	Avaliação média que os clientes deram às sessões deste instrutor
+team.drawer.revenueByWeek	Receita por semana
+team.drawer.loadByWeekday	Carga por dia da semana
+team.drawer.loadByHour	Carga por hora do dia
+team.drawer.loadDim.weekday	Por dia
+team.drawer.loadDim.hour	Por hora
+team.drawer.schedule.title	Agenda
+team.drawer.schedule.empty	Sem sessões neste período
+team.drawer.topLessons	Sessões favoritas
+team.drawer.returnBlock	Regresso dos clientes
+team.drawer.returnOf	{{returned}} de {{total}} clientes regressaram ({{pct}}%)
+team.drawer.openProfile	Abrir perfil
+team.drawer.held	Realizadas
+team.drawer.attendance	Presença
+team.weekdays.0	dom.
+team.weekdays.1	seg.
+team.weekdays.2	ter.
+team.weekdays.3	qua.
+team.weekdays.4	qui.
+team.weekdays.5	sex.
+team.weekdays.6	sáb.
+schedule.weekdaysMonFirst.0	seg.
+schedule.weekdaysMonFirst.1	ter.
+schedule.weekdaysMonFirst.2	qua.
+schedule.weekdaysMonFirst.3	qui.
+schedule.weekdaysMonFirst.4	sex.
+schedule.weekdaysMonFirst.5	sáb.
+schedule.weekdaysMonFirst.6	dom.
+schedule.kpi.avgFillPct	Taxa de ocupação
+schedule.kpi.freeSpots	Lugares livres
+schedule.kpi.cancels	Cancelamentos
+schedule.kpi.noshows	Faltas
+schedule.kpi.lostRevenue	Receita perdida
+schedule.heatmap.title	Carga por dia e hora
+schedule.heatmap.legend	Taxa de ocupação:
+schedule.heatmap.tooltip	{{lessons}} sessões · {{attendance}} presentes · {{pct}}%
+schedule.heatmap.empty	Sem sessões
+schedule.slices.topProfitable	Mais rentáveis
+schedule.slices.topFilled	Mais cheios
+schedule.slices.chronicLow	Cronicamente pouco cheios
+schedule.slices.halls	Utilização: {{spacePlural}}
+schedule.slices.held	{{count}} realizadas
+schedule.slices.weeks	{{count}} sem.
+schedule.slices.move	Mover
+schedule.slices.cancel	Cancelar
+schedule.slices.eveningIdle	inativo à noite {{pct}}%
+schedule.losses.title	Cancelamentos e faltas
+schedule.losses.dim.hour	Por hora
+schedule.losses.dim.service	Por serviço
+schedule.losses.dim.trainer	Por instrutor
+schedule.losses.cancels_one	{{count}} cancelamento
+schedule.losses.cancels_other	{{count}} cancelamentos
+schedule.losses.noshows_one	{{count}} falta
+schedule.losses.noshows_other	{{count}} faltas
+schedule.losses.lostSpots_one	−{{count}} lugar
+schedule.losses.lostSpots_other	−{{count}} lugares
+schedule.status.confirmed	Confirmado
+schedule.status.pending	Pendente
+schedule.status.cancelled	Cancelado
+schedule.slot.summary	para {{from}} — {{to}}
+schedule.slot.lessonsCount	Total de sessões
+export.csv	Transferir CSV
+scopeNote.label	Todo o estúdio
+scopeNote.money	Os filtros Unidade e {{space}} não afetam os valores — um pagamento não está ligado a eles
+scopeNote.clientBase	O instrutor, {{space}}, unidade e serviço não alteram esta métrica — um cliente não está ligado a eles
+descriptions.overview.metric.revenue	Todo o dinheiro que entrou no estúdio durante o período
+descriptions.overview.metric.profit	O que resta depois das despesas do período
+descriptions.overview.metric.attendance	Sessões em que os clientes efetivamente participaram
+descriptions.overview.metric.new_clients	Clientes registados durante este período
+descriptions.overview.metric.fill_rate	Quão cheias estão as sessões: lugares reservados de lugares disponíveis
+descriptions.overview.revenueStructure	De que é composta a sua receita neste período
+descriptions.overview.clientDynamics	Quantos vieram pela primeira vez, regressaram ou deixaram de vir
+descriptions.sales.chart	Receita e número de compras por dia
+descriptions.sales.byCategory	A parte de cada produto na receita
+descriptions.sales.byMethod	Como a receita se divide por método de pagamento
+descriptions.sales.buyerType	Quanta receita vem de novos clientes em comparação com os recorrentes
+descriptions.sales.products	Cada produto: quantos foram vendidos, por quanto e se as vendas estão a crescer
+descriptions.clients.chart	Quantos clientes vieram pela primeira vez e quantos regressaram, por semana
+descriptions.clients.riskSegments	Clientes que pode perder se não entrar em contacto agora
+descriptions.clients.loyalSegments	Os que visitam mais, gastam mais e trazem amigos
+descriptions.team.trainers	Comparação por carga, receita e taxa de retorno dos clientes
+descriptions.team.loadWeekday	Em que dias da semana o instrutor está ocupado e quando está livre
+descriptions.team.loadHour	A que horas as suas sessões enchem ou ficam vazias
+descriptions.team.schedule	Todas as sessões do instrutor no período selecionado
+descriptions.schedule.heatmap	Onde a agenda está sobrelotada e onde está vazia
+descriptions.schedule.topProfitable	As horas da sua agenda que trazem mais dinheiro
+descriptions.schedule.topFilled	As horas que os clientes reservam com mais vontade
+descriptions.schedule.chronicLow	Horários com menos de um terço dos lugares preenchidos há semanas
+descriptions.schedule.halls	Quanto do tempo os seus {{spacePlural}} estão realmente em uso
+descriptions.schedule.losses	Onde o estúdio perde lugares: sessões canceladas ou clientes que não aparecem
+formulas.salesCount.title	Vendas
+formulas.salesCount.text	Quantas vezes os clientes lhe pagaram neste período. Uma pessoa que paga mais de uma vez conta como vendas separadas.
+formulas.revenue.title	Receita
+formulas.revenue.text	Todo o dinheiro que entrou no estúdio neste período, pela data de pagamento. Pacotes, sessões avulsas, cartões-presente e vendas a retalho — tudo junto.
+formulas.profit.title	Lucro
+formulas.profit.text	O que resta depois das despesas deste período: renda, salários, materiais. Este é o seu lucro real.
+formulas.attendance.title	Presença
+formulas.attendance.text	Quantas visitas os clientes realmente realizaram. Só contam as sessões marcadas como frequentadas.
+formulas.bookings.title	Reservas
+formulas.bookings.text	Quantas reservas os clientes fizeram para sessões. As reservas canceladas não contam.
+formulas.noshow.title	Falta
+formulas.noshow.text	Um cliente reservou, a sessão aconteceu, mas não compareceu. Cada caso é um lugar que outra pessoa poderia ter ocupado.
+formulas.activeClients.title	Clientes ativos
+formulas.activeClients.text	Quantas pessoas diferentes vieram pelo menos uma vez neste período. Cada cliente conta uma vez, independentemente do número de visitas.
+formulas.occupancy.title	Ocupação
+formulas.occupancy.text	Quão cheias estão as suas sessões: lugares ocupados dos que planeou. 100% significa que não resta espaço.
+formulas.avgCheck.title	Ticket médio
+formulas.avgCheck.text	Quanto rende em média um pagamento. Aumenta quando os clientes compram pacotes mais longos ou extras.
+formulas.retention.title	Retenção
+formulas.retention.text	Quantos clientes do período anterior regressaram neste período. Mostra se mantém os clientes ou recomeça do zero todos os meses.
+formulas.newClients.title	Novos clientes
+formulas.newClients.text	Pessoas que apareceram na sua base de clientes pela primeira vez neste período.
+formulas.returning.title	Recorrentes
+formulas.returning.text	Clientes que já tinham visitado e voltaram neste período.
+formulas.lost.title	Perdidos
+formulas.lost.text	Visitaram no período anterior e não apareceram uma única vez neste. Ainda vale a pena contactá-los.
+formulas.clientValue.title	Valor do cliente
+formulas.clientValue.text	Quanto rende em média um cliente neste período.
+formulas.repeatPurchaseShare.title	Percentagem de recompras
+formulas.repeatPurchaseShare.text	A percentagem de clientes que compraram a si mais de uma vez. Quanto maior, mais forte é o hábito de voltar.
+formulas.renewalRate.title	Taxa de renovação
+formulas.renewalRate.text	Quantos clientes compraram um novo pacote depois de o anterior ter expirado.
+formulas.revenuePerHour.title	Receita por hora (instrutor)
+formulas.revenuePerHour.text	Quanto dinheiro rende uma hora de trabalho de um instrutor. Permite comparar instrutores com justiça — um pode dar menos sessões, mas cada uma rende mais.
+formulas.trainerReturnRate.title	Taxa de retorno (instrutor)
+formulas.trainerReturnRate.text	A percentagem dos clientes de um instrutor que voltaram a reservar com ele.
+formulas.missedRevenue.title	Receita perdida
+formulas.missedRevenue.text	Dinheiro que o estúdio não ganhou por lugares vazios em sessões passadas: lugares livres multiplicados pelo preço da sessão.
+formulas.losses.title	Cancelamentos e faltas
+formulas.losses.text	Um «cancelamento» é uma sessão cancelada; uma «falta» é um cliente que reservou mas não veio. As divisões por hora/serviço/instrutor usam os mesmos filtros do separador e correspondem aos KPI do cabeçalho.
+formulas.lessonRevenue.title	Receita da sessão
+formulas.lessonRevenue.text	Uma estimativa aproximada da receita de uma sessão: participantes multiplicados pelo preço. Os pagamentos não estão ligados a uma sessão específica, por isso é uma estimativa, não um valor exato.
+formulas.filtersScope.title	Âmbito dos filtros
+formulas.filtersScope.text	Os filtros Unidade e {{space}} aplicam-se apenas às métricas de sessões. Os pagamentos não têm essa ligação, por isso os valores são mostrados para todo o estúdio.
+formulas.avgValue.title	Valor do cliente
+formulas.avgValue.text	Quanto rende em média um cliente neste período.
+formulas.cancelNoshow.title	Cancelamentos e faltas
+formulas.cancelNoshow.text	A percentagem de sessões perturbadas: cancelamentos e faltas de tudo o que foi agendado.
+formulas.avgRating.title	Avaliação média
+formulas.avgRating.text	A avaliação média que os clientes deram às sessões deste instrutor.
+formulas.teamScope.title	Âmbito dos dados
+formulas.teamScope.text	Isto conta apenas a receita ligada a um instrutor específico, pelo que o total de todos os instrutores pode ser inferior à receita global do estúdio.
+formulas.lessonsCount.title	Sessões
+formulas.lessonsCount.text	Quantas sessões os instrutores realizaram neste período.
+formulas.load.title	Carga
+formulas.load.text	Quão preenchido está o dia de um instrutor: as horas reservadas dentro do horário de funcionamento do estúdio.
+formulas.weeklyClients.title	Novos e recorrentes
+formulas.weeklyClients.text	Por semana: quantas pessoas vieram pela primeira vez e quantas regressaram. Um estúdio saudável cresce nas duas linhas.
+formulas.byCategory.title	Receita por categoria
+formulas.byCategory.text	No que realmente ganha: pacotes, sessões avulsas, cartões-presente e vendas a retalho.
+formulas.byMethod.title	Métodos de pagamento
+formulas.byMethod.text	Como os clientes pagam. Ajuda a ver se precisa de pagamentos por cartão e quanto dinheiro passa fora da caixa.
+formulas.buyerType.title	Quem paga
+formulas.buyerType.text	Novos clientes versus recorrentes. Se quase toda a receita vem de novos clientes, o estúdio não os retém.
+formulas.products.title	O que vende
+formulas.products.text	Todos os pacotes e serviços do período: quantos foram vendidos, por quanto e se as vendas estão a crescer.
+formulas.topProfitable.title	Horários mais rentáveis
+formulas.topProfitable.text	As horas da sua agenda que trazem mais dinheiro. Coloque aí os seus melhores instrutores.
+formulas.topFilled.title	Horários mais cheios
+formulas.topFilled.text	As horas que os clientes reservam com mais vontade. Se estão completamente cheias, vale a pena adicionar outra sessão.
+formulas.chronicLow.title	Horários cronicamente vazios
+formulas.chronicLow.text	Horários que enchem menos de um terço dos lugares há várias semanas. Candidatos a mover ou eliminar.
+formulas.hallUtil.title	Utilização: {{spacePlural}}
+formulas.hallUtil.text	Quanto do tempo os seus {{spacePlural}} estão realmente em uso. Tempo vazio é renda que não se paga.
+formulas.heatmap.title	Carga por dia e hora
+formulas.heatmap.text	A cor mostra a taxa média de ocupação do horário no período. Clique numa célula para ver as sessões desse dia e hora.
+formulas.riskSegments.title	Segmentos de risco
+formulas.riskSegments.text	Clientes agrupados pelo tipo de risco que representam — perdê-los ou a receita que não trazem. Cada cartão tem um motivo e um próximo passo claro: escreva-lhes, ofereça renovação ou um upgrade.
+formulas.loyalSegments.title	Fiéis
+formulas.loyalSegments.text	Clientes que já trazem mais valor: visitam mais, gastam mais ou trazem amigos. Vale a pena cuidar deles e recompensá-los.
+formulas.segment.at_risk.title	Em risco
+formulas.segment.at_risk.text	Costumavam vir regularmente e agora desapareceram. Ainda podem ser recuperados com uma mensagem.
+formulas.segment.vip_idle.title	VIP inativos
+formulas.segment.vip_idle.text	Clientes que gastaram mais do que todos os outros, mas não visitam há algum tempo.
+formulas.segment.expiring_subscription.title	Subscrição a terminar
+formulas.segment.expiring_subscription.text	Estes clientes têm 1–2 sessões restantes. É a melhor altura para oferecer renovação.
+formulas.segment.lost_newcomers.title	Novos clientes que não voltaram
+formulas.segment.lost_newcomers.text	Vieram uma vez e desapareceram. Normalmente está relacionado com a primeira sessão — vale a pena investigar.
+formulas.segment.upsell_candidates.title	Prontos para mais
+formulas.segment.upsell_candidates.text	Vêm frequentemente, mas compram o pacote mais simples. Vale a pena oferecer uma subscrição mais cara.
+formulas.segment.frequent.title	Frequentes
+formulas.segment.frequent.text	Vêm mais do que todos os outros. A espinha dorsal da receita do estúdio.
+formulas.segment.high_ltv.title	Mais valiosos
+formulas.segment.high_ltv.text	Trouxeram ao estúdio mais dinheiro do que todos os outros, em todo o período.
+formulas.segment.referrers.title	Trazem amigos
+formulas.segment.referrers.text	Clientes cujas recomendações trouxeram outras pessoas até si.

@@ -1,0 +1,611 @@
+{
+  "tabs": {
+    "overview": "Përmbledhje",
+    "sales": "Shitje",
+    "clients": "Klientë",
+    "team": "Ekipi",
+    "schedule": "Orari"
+  },
+  "toolbar": {
+    "period": {
+      "day": "Ditë",
+      "week": "Javë",
+      "month": "Muaj",
+      "year": "Vit",
+      "custom": "E personalizuar"
+    },
+    "vsPrevious": "krahasuar me periudhën e mëparshme: {{from}}–{{to}}",
+    "allBranches": "Të gjitha degët",
+    "allHalls": "Të gjitha {{spacePlural}}",
+    "allTrainers": "Të gjithë trajnerët",
+    "allServices": "Të gjitha shërbimet",
+    "export": "Eksporto"
+  },
+  "insights": {
+    "title": "Kërkon vëmendje",
+    "action": "Hap",
+    "empty": "Gjithçka është në rregull tani — nuk ka këshilla për të shfaqur",
+    "revenue_up_clients_down": "Të ardhurat po rriten, por klientët aktivë po bien — kontrolloni largimin e klientëve",
+    "clients_at_risk": "{{count}} klient(ë) nuk kanë marrë pjesë prej më shumë se 3 javësh — rrezik largimi",
+    "lesson_overfull": "„{{name}}” të {{weekday, weekday}} në {{hour}}:00 ka qenë {{pct}}% e mbushur për tre javë rresht — mendoni të shtoni një seancë tjetër",
+    "trial_low_conversion": "Vetëm {{pct}}% e {{buyers}} blerësve të provës blenë një abonim — mendoni për një fushatë",
+    "fastest_growing_product": "„{{name}}” po rritet më shpejt: +{{pct}}% krahasuar me periudhën e mëparshme",
+    "renewals_low": "Vetëm {{pct}}% e klientëve me abonim të skaduar e rinovojnë — mendoni për një kujtesë",
+    "new_no_second_visit": "{{count}} klientë të rinj erdhën një herë dhe nuk rezervuan më — mendoni për një kujtesë",
+    "subs_expiring_week": "{{count}} klientë kanë një abonim që skadon këtë javë — ofroni rinovim",
+    "vip_inactive": "Klienti VIP „{{name}}” nuk ka vizituar prej {{days}} ditësh — mendoni për një mesazh personal",
+    "high_return_free_evenings": "„{{name}}” ka normë të lartë kthimi ({{return_pct}}%), por mbrëmjet janë të lira — shtoni një seancë",
+    "trainer_overloaded": "„{{name}}” është ngarkuar {{load_pct}}% — mendoni të ribalanconi orarin",
+    "low_rating": "„{{name}}” ka vlerësim {{rating}} — ia vlen të shihet më nga afër",
+    "slot_chronic_low": "„{{name}}” të {{weekday, isodowWeekday}} në {{hour}}:00 ka qenë {{pct}}% e mbushur për {{weeks}} javë rresht — zhvendoseni ose anullojeni",
+    "hall_idle_evenings": "„{{name}}” është i papërdorur {{pct}}% të orëve të mbrëmjes — mendoni të caktoni një seancë",
+    "slot_overfull": "Koha e {{weekday, isodowWeekday}} në {{hour}}:00 ka qenë {{pct}}% e mbushur për tre javë rresht — mendoni të shtoni një seancë tjetër",
+    "loss_hotspot": "{{cancels}} seanca u anuluan në {{label}} këtë periudhë — shumica e anulimeve përqendrohen rreth kësaj ore"
+  },
+  "table": {
+    "loading": "Po ngarkohet…",
+    "noProduct": "Pa produkt"
+  },
+  "empty": {
+    "noData": {
+      "title": "Nuk ka ende asgjë këtu",
+      "text": "Nuk u regjistrua aktivitet për periudhën e zgjedhur. Zgjeroni intervalin ose filloni duke rezervuar një klient në Ditar.",
+      "widen": "Shfaq vitin"
+    },
+    "noRevenue": "Nuk ka pagesa në këtë periudhë",
+    "noSales": "Nuk ka shitje në këtë segment",
+    "noProducts": "Nuk janë shitur ende paketa ose shërbime",
+    "noLessons": "Nuk ka seanca në këtë periudhë",
+    "noTrainerLessons": "Ky trajner nuk ka mbajtur ende seanca",
+    "noRows": "Nuk ka regjistrime në këtë segment",
+    "noLosses": "Nuk ka anulime ose mungesa në këtë periudhë"
+  },
+  "overview": {
+    "kpi": {
+      "revenue": "Të ardhura",
+      "profit": "Fitim",
+      "attendance": "Pjesëmarrje",
+      "activeClients": "Klientë aktivë",
+      "fillRate": "Norma e mbushjes"
+    },
+    "chart": {
+      "metric": {
+        "revenue": "Të ardhura",
+        "profit": "Fitim",
+        "attendance": "Pjesëmarrje",
+        "new_clients": "Klientë të rinj",
+        "fill_rate": "Norma e mbushjes"
+      }
+    },
+    "revenueStructure": {
+      "title": "Struktura e të ardhurave"
+    },
+    "category": {
+      "subscriptions": "Abonime",
+      "services": "Shërbime",
+      "certificates": "Certifikata",
+      "rent": "Qira",
+      "salary": "Pagë",
+      "refunds": "Rimbursime"
+    },
+    "clientDynamics": {
+      "title": "Dinamika e klientëve",
+      "new": "Të rinj",
+      "returned": "Të rikthyer",
+      "lost": "Të humbur"
+    },
+    "drilldown": {
+      "title": "Operacion",
+      "category": "Kategori",
+      "amount": "Shuma",
+      "lesson": "Seancë",
+      "time": "Koha",
+      "occupancy": "Zënia",
+      "date": "Data",
+      "method": "Metoda",
+      "trainer": "Trajneri",
+      "rowsCount": "regjistrime",
+      "search": "Kërko në tabelë",
+      "shownOf": "Po shfaqen {{shown}} nga {{total}}",
+      "noMatches": "Nuk u gjet gjë për „{{query}}”",
+      "reset": "Rivendos",
+      "export": "Eksporto CSV",
+      "subtitle": {
+        "money": "Operacione në këtë segment",
+        "lessons": "Seanca në këtë segment"
+      },
+      "hint": {
+        "operations": "Klikoni një rresht për të hapur operacionin te Financat",
+        "lessons": "Klikoni një rresht për të hapur atë ditë te Ditari"
+      },
+      "stat": {
+        "net": "Neto",
+        "income": "Të ardhura",
+        "expense": "Shpenzime",
+        "operations": "Operacione",
+        "topCategory": "Kategoria kryesore",
+        "lessons": "Seanca",
+        "booked": "Vende të rezervuara",
+        "avgFill": "Zënie mesatare",
+        "trainers": "Trajnerë",
+        "cancelled": "Anuluar"
+      }
+    }
+  },
+  "sales": {
+    "kpi": {
+      "revenue": "Të ardhura",
+      "salesCount": "Shitje",
+      "avgCheck": "Shuma mesatare",
+      "repeatShare": "Pjesa e përsëritur",
+      "renewals": "Norma e rinovimit"
+    },
+    "chart": {
+      "title": "Shitje"
+    },
+    "incomeOperations": "Operacione të të ardhurave",
+    "breakdown": {
+      "byCategory": "Çfarë blejnë",
+      "byMethod": "Si paguajnë",
+      "buyerType": "Kush blen",
+      "new": "Të rinj",
+      "returning": "Të rikthyer",
+      "noClient": "Pa klient"
+    },
+    "method": {
+      "card": "Kartë",
+      "cash": "Para në dorë",
+      "qr": "Kod QR",
+      "transfer": "Transferim"
+    },
+    "products": {
+      "title": "Produkte",
+      "name": "Produkt",
+      "sold": "Shitur",
+      "revenue": "Të ardhura",
+      "avgCheck": "Shuma mesatare",
+      "repeatShare": "Pjesa e përsëritur",
+      "trend": "Tendenca",
+      "trendHint": "Krahasuar me periudhën e mëparshme me të njëjtën kohëzgjatje"
+    }
+  },
+  "clients": {
+    "kpi": {
+      "new": "Të rinj",
+      "returned": "Të rikthyer",
+      "lost": "Të humbur",
+      "retention": "Mbajtje",
+      "avgValue": "Vlera e klientit"
+    },
+    "chart": {
+      "title": "Të rinj kundrejt të rikthyerve",
+      "new": "Të rinj",
+      "returned": "Të rikthyer"
+    },
+    "riskTitle": "Segmente rreziku",
+    "loyalTitle": "Besnikë",
+    "list": "Lista",
+    "campaign": "Nis fushatë",
+    "exportList": "Eksporto listën",
+    "emptySegment": "Segmenti „{{name}}” nuk ka klientë tani",
+    "segments": {
+      "new": {
+        "name": "Klientë të rinj",
+        "desc": "U regjistruan në periudhën e zgjedhur"
+      },
+      "returned": {
+        "name": "Klientë të rikthyer",
+        "desc": "Vizituan këtë periudhë dhe atë para saj"
+      },
+      "lost": {
+        "name": "Klientë të humbur",
+        "desc": "Vizituan periudhën e kaluar, nuk u kthyen këtë periudhë"
+      },
+      "active": {
+        "name": "Klientë aktivë",
+        "desc": "Erdhën në të paktën një seancë në periudhën e zgjedhur"
+      },
+      "at_risk": {
+        "name": "Në prag largimi",
+        "desc": "Aktivë, pa vizitë për 21+ ditë"
+      },
+      "vip_idle": {
+        "name": "VIP pa aktivitet",
+        "desc": "Klientë VIP, pa vizitë për 14+ ditë"
+      },
+      "expiring_subscription": {
+        "name": "Abonimi po përfundon",
+        "desc": "≤2 seanca ose ≤7 ditë të mbetura"
+      },
+      "lost_newcomers": {
+        "name": "Nuk u kthyen kurrë",
+        "desc": "Erdhën një herë, mungojnë 14+ ditë"
+      },
+      "upsell_candidates": {
+        "name": "Gati për paketë",
+        "desc": "8+ vizita këtë muaj, pa paketë"
+      },
+      "frequent": {
+        "name": "Të shpeshtë",
+        "desc": "8+ vizita në periudhë"
+      },
+      "high_ltv": {
+        "name": "LTV i lartë",
+        "desc": "10% më të mirët sipas shpenzimeve gjatë gjithë kohës"
+      },
+      "referrers": {
+        "name": "Rekomandues",
+        "desc": "Përfunduan rekomandim në periudhë"
+      }
+    },
+    "listSearch": "Kërko sipas emrit ose telefonit",
+    "shownOf": "Po shfaqen {{shown}} nga {{total}}",
+    "noMatches": "Nuk u gjet askush për „{{query}}”",
+    "resetSearch": "Rivendos",
+    "neverVisited": "Nuk ka vizituar kurrë",
+    "valueLabel": {
+      "visits": "Vizita",
+      "spent": "Shpenzuar",
+      "daysIdle": "Ditë pa aktivitet",
+      "remaining": "Seanca të mbetura",
+      "value": "Vlera"
+    },
+    "relative": {
+      "today": "Sot",
+      "daysAgo_one": "{{count}} ditë më parë",
+      "daysAgo_other": "{{count}} ditë më parë"
+    }
+  },
+  "team": {
+    "kpi": {
+      "lessonsCount": "Seanca",
+      "revenuePerHour": "Të ardhura/orë",
+      "avgFillPct": "Norma e mbushjes",
+      "cancelNoshowPct": "Anulime/mungesa",
+      "avgRating": "Vlerësim"
+    },
+    "table": {
+      "title": "Trajnerë",
+      "trainer": "Trajner",
+      "lessons": "Seanca",
+      "fillPct": "Norma e mbushjes",
+      "attendance": "Pjesëmarrje",
+      "revenue": "Të ardhura",
+      "returnRate": "Norma e kthimit",
+      "cancels": "Anulime",
+      "fillPctHint": "Vende të zëna nga ato të planifikuara",
+      "returnRateHint": "Klientë që rezervuan sërish me këtë trajner",
+      "cancelsHint": "Seanca të anuluara dhe mungesa klientësh",
+      "ratingHint": "Vlerësimi mesatar që klientët i dhanë seancave të këtij trajneri"
+    },
+    "drawer": {
+      "revenueByWeek": "Të ardhura sipas javës",
+      "loadByWeekday": "Ngarkesa sipas ditës së javës",
+      "loadByHour": "Ngarkesa sipas orës",
+      "loadDim": {
+        "weekday": "Sipas ditës",
+        "hour": "Sipas orës"
+      },
+      "schedule": {
+        "title": "Orari",
+        "empty": "Nuk ka seanca në këtë periudhë"
+      },
+      "topLessons": "Seancat e preferuara",
+      "returnBlock": "Kthimi i klientit",
+      "returnOf": "{{returned}} nga {{total}} klientë u kthyen ({{pct}}%)",
+      "openProfile": "Hap profilin",
+      "held": "Të mbajtura",
+      "attendance": "Pjesëmarrje"
+    },
+    "weekdays": [
+      "Die",
+      "Hën",
+      "Mar",
+      "Mër",
+      "Enj",
+      "Pre",
+      "Sht"
+    ]
+  },
+  "schedule": {
+    "weekdaysMonFirst": [
+      "Hën",
+      "Mar",
+      "Mër",
+      "Enj",
+      "Pre",
+      "Sht",
+      "Die"
+    ],
+    "kpi": {
+      "avgFillPct": "Norma e mbushjes",
+      "freeSpots": "Vende të lira",
+      "cancels": "Anulime",
+      "noshows": "Mungesa",
+      "lostRevenue": "Të ardhura të humbura"
+    },
+    "heatmap": {
+      "title": "Ngarkesa sipas ditës dhe orës",
+      "legend": "Norma e mbushjes:",
+      "tooltip": "{{lessons}} seanca · {{attendance}} pjesëmarrës · {{pct}}%",
+      "empty": "Nuk ka seanca"
+    },
+    "slices": {
+      "topProfitable": "Më fitimprurëset",
+      "topFilled": "Më të mbushurat",
+      "chronicLow": "Kronikisht pak të mbushura",
+      "halls": "Përdorimi: {{spacePlural}}",
+      "held": "{{count}} të mbajtura",
+      "weeks": "{{count}} javë",
+      "move": "Zhvendos",
+      "cancel": "Anulo",
+      "eveningIdle": "mbrëmje të lira {{pct}}%"
+    },
+    "losses": {
+      "title": "Anulime dhe mungesa",
+      "dim": {
+        "hour": "Sipas orës",
+        "service": "Sipas shërbimit",
+        "trainer": "Sipas trajnerit"
+      },
+      "cancels_one": "{{count}} anulim",
+      "cancels_other": "{{count}} anulime",
+      "noshows_one": "{{count}} mungesë",
+      "noshows_other": "{{count}} mungesa",
+      "lostSpots_one": "−{{count}} vend",
+      "lostSpots_other": "−{{count}} vende"
+    },
+    "status": {
+      "confirmed": "Konfirmuar",
+      "pending": "Në pritje",
+      "cancelled": "Anuluar"
+    },
+    "slot": {
+      "summary": "për {{from}} — {{to}}",
+      "lessonsCount": "Seanca gjithsej"
+    }
+  },
+  "export": {
+    "csv": "Shkarko CSV"
+  },
+  "scopeNote": {
+    "label": "Për gjithë studion",
+    "money": "Filtrat Dega dhe {{space}} nuk ndikojnë te paratë — pagesa nuk lidhet me to",
+    "clientBase": "Trajneri, {{space}}, dega dhe shërbimi nuk e ndryshojnë këtë tregues — një klient nuk lidhet me to"
+  },
+  "descriptions": {
+    "overview": {
+      "metric": {
+        "revenue": "Të gjitha paratë që hynë në studio gjatë periudhës",
+        "profit": "Ajo që mbetet pas shpenzimeve të periudhës",
+        "attendance": "Seanca ku klientët morën pjesë realisht",
+        "new_clients": "Klientët e regjistruar gjatë kësaj periudhe",
+        "fill_rate": "Sa të mbushura janë seancat: vende të rezervuara nga vendet e disponueshme"
+      },
+      "revenueStructure": "Nga përbëhen të ardhurat tuaja këtë periudhë",
+      "clientDynamics": "Sa erdhën për herë të parë, sa u kthyen dhe sa ndaluan së ardhuri"
+    },
+    "sales": {
+      "chart": "Të ardhura dhe numër blerjesh sipas ditës",
+      "byCategory": "Pjesa e secilit produkt në të ardhura",
+      "byMethod": "Si ndahen të ardhurat sipas metodës së pagesës",
+      "buyerType": "Sa të ardhura vijnë nga klientë të rinj krahasuar me të rregulltit",
+      "products": "Çdo produkt: sa u shit, për sa dhe nëse po rritet"
+    },
+    "clients": {
+      "chart": "Sa klientë erdhën për herë të parë dhe sa u kthyen, sipas javës",
+      "riskSegments": "Klientët që mund të humbni nëse nuk i kontaktoni tani",
+      "loyalSegments": "Ata që vizitojnë më shpesh, shpenzojnë më shumë dhe sjellin miq"
+    },
+    "team": {
+      "trainers": "Krahasim sipas ngarkesës, të ardhurave dhe normës së kthimit të klientëve",
+      "loadWeekday": "Cilat ditë të javës trajneri është i zënë dhe kur është i lirë",
+      "loadHour": "Në ç'orë mbushen seancat e tij dhe kur mbeten bosh",
+      "schedule": "Të gjitha seancat e trajnerit në periudhën e zgjedhur"
+    },
+    "schedule": {
+      "heatmap": "Ku orari është i tejmbushur dhe ku është bosh",
+      "topProfitable": "Kohët e orarit tuaj që sjellin më shumë para",
+      "topFilled": "Kohët që klientët rezervojnë më me dëshirë",
+      "chronicLow": "Orë që për javë kanë mbushur më pak se një të tretën e vendeve",
+      "halls": "Sa kohë {{spacePlural}} tuaja përdoren realisht",
+      "losses": "Ku studioja humb vende: seanca të anuluara ose klientë që nuk paraqiten"
+    }
+  },
+  "formulas": {
+    "salesCount": {
+      "title": "Shitje",
+      "text": "Sa herë klientët ju paguan këtë periudhë. Nëse një person paguan më shumë se një herë, llogaritet si shitje më vete."
+    },
+    "revenue": {
+      "title": "Të ardhura",
+      "text": "Të gjitha paratë që hynë në studio këtë periudhë, sipas datës së pagesës. Paketa, seanca të veçanta, karta dhuratë dhe shitje me pakicë — të gjitha bashkë."
+    },
+    "profit": {
+      "title": "Fitim",
+      "text": "Ajo që mbetet pas shpenzimeve të kësaj periudhe: qira, paga, furnizime. Kjo është fitimi juaj real."
+    },
+    "attendance": {
+      "title": "Pjesëmarrje",
+      "text": "Sa vizita bënë realisht klientët. Numërohen vetëm seancat e shënuara si të ndjekura."
+    },
+    "bookings": {
+      "title": "Rezervime",
+      "text": "Sa rezervime bënë klientët për seanca. Rezervimet e anuluara nuk numërohen."
+    },
+    "noshow": {
+      "title": "Mungesë",
+      "text": "Klienti rezervoi, seanca u zhvillua dhe ai nuk erdhi. Secila mungesë është një vend që mund ta kishte zënë dikush tjetër."
+    },
+    "activeClients": {
+      "title": "Klientë aktivë",
+      "text": "Sa persona të ndryshëm erdhën të paktën një herë këtë periudhë. Çdo klient numërohet një herë, pavarësisht sa vizita ka bërë."
+    },
+    "occupancy": {
+      "title": "Zënia",
+      "text": "Sa të mbushura janë seancat: vende të zëna nga ato të planifikuara. 100% do të thotë se nuk ka më vende."
+    },
+    "avgCheck": {
+      "title": "Shuma mesatare",
+      "text": "Sa sjell mesatarisht një pagesë. Rritet kur klientët blejnë paketa më të gjata ose shtesa."
+    },
+    "retention": {
+      "title": "Mbajtje",
+      "text": "Sa klientë të periudhës së kaluar u kthyen këtë periudhë. Tregon nëse po mbani klientët apo filloni nga zero çdo muaj."
+    },
+    "newClients": {
+      "title": "Klientë të rinj",
+      "text": "Persona që u shfaqën për herë të parë në bazën tuaj të klientëve këtë periudhë."
+    },
+    "returning": {
+      "title": "Të rikthyer",
+      "text": "Klientë që kishin vizituar më parë dhe u kthyen përsëri këtë periudhë."
+    },
+    "lost": {
+      "title": "Të humbur",
+      "text": "Vizituan periudhën e kaluar dhe nuk u shfaqën asnjë herë këtë periudhë. Ende ia vlen t'i kontaktoni."
+    },
+    "clientValue": {
+      "title": "Vlera e klientit",
+      "text": "Sa sjell mesatarisht një klient këtë periudhë."
+    },
+    "repeatPurchaseShare": {
+      "title": "Pjesa e blerjeve të përsëritura",
+      "text": "Pjesa e klientëve që blenë prej jush më shumë se një herë. Sa më e lartë të jetë, aq më i fortë është zakoni për t'u kthyer te ju."
+    },
+    "renewalRate": {
+      "title": "Norma e rinovimit",
+      "text": "Sa klientë blenë një paketë të re pasi u mbaroi e mëparshmja."
+    },
+    "revenuePerHour": {
+      "title": "Të ardhura për orë (trajner)",
+      "text": "Sa para sjell një orë punë e trajnerit. Ju lejon të krahasoni trajnerët drejt — njëri mund të mbajë më pak seanca, por secila sjell më shumë."
+    },
+    "trainerReturnRate": {
+      "title": "Norma e kthimit (trajner)",
+      "text": "Pjesa e klientëve të trajnerit që rezervuan përsëri me të."
+    },
+    "missedRevenue": {
+      "title": "Të ardhura të humbura",
+      "text": "Paratë që studioja nuk i fitoi për shkak të vendeve bosh në seancat e kaluara: vende të lira shumëzuar me çmimin e seancës."
+    },
+    "losses": {
+      "title": "Anulime dhe mungesa",
+      "text": "Një „anulim” është një seancë e anuluar; një „mungesë” është klienti që rezervoi por nuk erdhi. Ndarjet sipas orës/shërbimit/trajnerit përdorin të njëjtët filtra si skeda dhe përputhen me treguesit kryesorë në krye."
+    },
+    "lessonRevenue": {
+      "title": "Të ardhura nga seanca",
+      "text": "Vlerësim i përafërt i të ardhurave të seancës: pjesëmarrësit shumëzuar me çmimin. Pagesat nuk lidhen me një seancë të caktuar, prandaj ky është përafrim, jo shifër e saktë."
+    },
+    "filtersScope": {
+      "title": "Fusha e filtrave",
+      "text": "Filtrat Dega dhe {{space}} zbatohen vetëm te treguesit e seancave. Pagesat nuk kanë lidhje të tillë, prandaj paratë shfaqen për gjithë studion."
+    },
+    "avgValue": {
+      "title": "Vlera e klientit",
+      "text": "Sa sjell mesatarisht një klient këtë periudhë."
+    },
+    "cancelNoshow": {
+      "title": "Anulime dhe mungesa",
+      "text": "Pjesa e seancave të ndërprera: anulime dhe mungesa nga gjithçka e planifikuar."
+    },
+    "avgRating": {
+      "title": "Vlerësimi mesatar",
+      "text": "Vlerësimi mesatar që klientët i dhanë seancave të këtij trajneri."
+    },
+    "teamScope": {
+      "title": "Fusha e të dhënave",
+      "text": "Kjo numëron vetëm të ardhurat e lidhura me një trajner të caktuar, prandaj totali për të gjithë trajnerët mund të jetë më i ulët se të ardhura e përgjithshme e studios."
+    },
+    "lessonsCount": {
+      "title": "Seanca",
+      "text": "Sa seanca mbajtën trajnerët këtë periudhë."
+    },
+    "load": {
+      "title": "Ngarkesa",
+      "text": "Sa e mbushur është dita e trajnerit: orët e rezervuara nga dritarja e punës së studios."
+    },
+    "weeklyClients": {
+      "title": "Të rinj dhe të rikthyer",
+      "text": "Sipas javës: sa persona erdhën për herë të parë dhe sa u kthyen. Një studio e shëndetshme rritet në të dyja linjat."
+    },
+    "byCategory": {
+      "title": "Të ardhura sipas kategorisë",
+      "text": "Nga çfarë fitoni realisht: paketa, seanca të veçanta, karta dhuratë, shitje me pakicë."
+    },
+    "byMethod": {
+      "title": "Metodat e pagesës",
+      "text": "Si paguajnë klientët. Ju ndihmon të shihni nëse ju nevojitet pagesa me kartë dhe sa para anashkalojnë arkën."
+    },
+    "buyerType": {
+      "title": "Kush paguan",
+      "text": "Klientë të rinj kundrejt të rregulltve. Nëse pothuajse të gjitha të ardhurat vijnë nga klientë të rinj, studioja nuk i mban njerëzit."
+    },
+    "products": {
+      "title": "Çfarë shitet",
+      "text": "Të gjitha paketat dhe shërbimet e periudhës: sa u shitën, për sa dhe nëse shitjet po rriten."
+    },
+    "topProfitable": {
+      "title": "Oraret më fitimprurëse",
+      "text": "Kohët e orarit që sjellin më shumë para. Vendosni trajnerët tuaj më të mirë aty."
+    },
+    "topFilled": {
+      "title": "Oraret më të mbushura",
+      "text": "Kohët që klientët i rezervojnë më me dëshirë. Nëse janë plot, ia vlen të shtoni një seancë tjetër."
+    },
+    "chronicLow": {
+      "title": "Oraret kronikisht bosh",
+      "text": "Kohë që për disa javë kanë mbushur më pak se një të tretën e vendeve. Kandidatë për zhvendosje ose heqje."
+    },
+    "hallUtil": {
+      "title": "Përdorimi: {{spacePlural}}",
+      "text": "Sa kohë {{spacePlural}} tuaja përdoren realisht. Koha pa përdorim është qira që nuk shpërblehet."
+    },
+    "heatmap": {
+      "title": "Ngarkesa sipas ditës dhe orës",
+      "text": "Ngjyra tregon normën mesatare të mbushjes së orarit për periudhën. Klikoni një qelizë për të parë seancat e asaj dite dhe ore."
+    },
+    "riskSegments": {
+      "title": "Segmente rreziku",
+      "text": "Klientë të grupuar sipas llojit të rrezikut që sjellin — humbjen e tyre ose të ardhurat që nuk po sjellin. Çdo kartë ka arsyen e vet dhe hapin e qartë vijues: dërgoni mesazh, ofroni rinovim ose paketë më të mirë."
+    },
+    "loyalSegments": {
+      "title": "Besnikë",
+      "text": "Klientë që tashmë ju sjellin më shumë vlerë: vizitojnë më shpesh, shpenzojnë më shumë ose sjellin miq. Ia vlen t'i kujdesni dhe t'i shpërbleni."
+    },
+    "segment": {
+      "at_risk": {
+        "title": "Në prag largimi",
+        "text": "Vizitonin rregullisht dhe tani janë zhdukur. Ende mund të rikthehen me një mesazh."
+      },
+      "vip_idle": {
+        "title": "VIP pa aktivitet",
+        "text": "Klientë që kanë shpenzuar më shumë se të gjithë, por nuk kanë vizituar kohët e fundit."
+      },
+      "expiring_subscription": {
+        "title": "Abonimi po përfundon",
+        "text": "Këtyre klientëve u kanë mbetur 1–2 seanca. Momenti më i mirë për të ofruar rinovim."
+      },
+      "lost_newcomers": {
+        "title": "Të rinj që nuk u kthyen",
+        "text": "Erdhën një herë dhe u zhdukën. Zakonisht lidhet me seancën e parë — ia vlen të hetohet."
+      },
+      "upsell_candidates": {
+        "title": "Gati për më shumë",
+        "text": "Vizitojnë shpesh, por blejnë paketën më të thjeshtë. Ia vlen t'u ofrohet abonim më i shtrenjtë."
+      },
+      "frequent": {
+        "title": "Të rregullt",
+        "text": "Vizitojnë më shpesh se kushdo tjetër. Shtylla kurrizore e të ardhurave të studios."
+      },
+      "high_ltv": {
+        "title": "Më të vlefshmit",
+        "text": "I kanë sjellë studios më shumë para se kushdo tjetër, në total."
+      },
+      "referrers": {
+        "title": "Sjellin miq",
+        "text": "Klientë, rekomandimet e të cilëve kanë sjellë njerëz të tjerë te ju."
+      }
+    }
+  }
+}

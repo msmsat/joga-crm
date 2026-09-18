@@ -1,0 +1,240 @@
+== hu
+header.allConfigured	Minden program be van állítva
+header.allConfiguredSub	Hűségprogram-rendszere teljes erővel működik
+header.setup	Hűségprogramok beállítása
+header.setupSub	{{count}} / {{total}} program beállítva · Minden program erősíti az ügyfélmegtartást
+header.start	Kezdés
+programs.loyalty.title	Hűségkártyák
+programs.loyalty.desc	Többszintű pontgyűjtő rendszer
+programs.loyalty.statLabel	ügyfél
+programs.discounts.title	Kedvezmények és cashback
+programs.discounts.desc	Személyes ajánlatok ügyfeleknek
+programs.discounts.statLabel	aktív
+programs.certificates.title	Ajándékutalványok
+programs.certificates.desc	Ajándék- és névre szóló utalványok
+programs.certificates.statLabel	eladott
+programs.referral.title	Ajánlások
+programs.referral.desc	„Hozz egy barátot” program
+programs.referral.statLabel	ajánlás
+programs.promocodes.title	Promóciós kódok
+programs.promocodes.desc	Használati korláttal rendelkező kedvezménykódok
+programs.promocodes.statLabel	aktív
+programs.deposit.title	Letét
+programs.deposit.desc	Az ügyfél pénzegyenlege a stúdióban
+programs.deposit.statLabel	egyenleggel
+card.active	Aktív
+card.disable	Letiltás
+card.notConfigured	Nincs beállítva
+card.configure	Beállítás
+drawer.subtitle	Programbeállítások
+drawer.saving	Mentés…
+drawer.save	Mentés és aktiválás
+drawer.cancel	Mégse
+drawer.close	Bezárás
+config.mainParams	Fő paraméterek
+config.programName	Program neve
+config.pointsRate	Pontarány ({{currency}} 1 pontért)
+config.levels	Szintek
+config.pointValue	1 pont =
+config.pointValueHint	A pontok minden szinten azonos arányban gyűlnek, de nem azonos az értékük. Adjon a Goldnak 1-et, a Diamondonak 2-t, így az ügyfél által szerzett pont kétszer annyival csökkenti az árat a pénztárnál. Ezt adja egy szint: minél többet költött valaki a stúdióban, annál értékesebbek a pontjai.
+config.expiry	Lejárati idő
+config.expiryTooltip	Mennyi ideig használhatja fel az ügyfél az összegyűjtött pontokat
+config.expiryOptions.3m	3 hó
+config.expiryOptions.6m	6 hó
+config.expiryOptions.1y	1 év
+config.expiryOptions.never	Nincs lejárat
+config.newLevelName	Új szint
+config.addLevel	+ Szint
+config.levelFrom	ettől
+config.levelTo	eddig
+config.deleteLevelTitle	Törli ezt a szintet?
+config.deleteLevelMessage	A „{{name}}” szint ügyfelei összes költésük alapján a szomszédos szintre kerülnek.
+config.discountType	Kedvezmény típusa
+config.discountTypes.percentage	Százalék (%)
+config.discountTypes.fixed	Fix ({{currency}})
+config.discountTypes.cashback	Cashback
+config.cashbackPercent	Cashback százalék
+config.discountSize	Kedvezmény összege
+config.minPurchase	Minimális vásárlási összeg
+config.noLimit	Nincs korlát
+config.conditions	Alkalmazási feltételek
+config.appliesToAll	Alkalmazás minden szolgáltatásra
+config.stackable	Halmozható más kedvezményekkel
+config.visibleInCabinet	Megjelenítés az ügyfél fiókjában
+config.certType	Utalvány típusa
+config.certTypes.named	Névre szóló
+config.certTypes.gift	Ajándék
+config.certTypes.service	Szolgáltatásra
+config.denominations	Címletek
+config.addDenom	+ Hozzáadás
+config.service	Szolgáltatás
+config.noServices	Még nincsenek szolgáltatások a katalógusban — adja hozzá őket a „Katalógusban”
+config.params	Paraméterek
+config.expiryDays	Lejárati idő (nap)
+config.certIssue	Utalvány kiállítása
+config.certCustomAmount	Egyéni összeg
+config.certRecipientName	Címzett neve
+config.certRecipientPlaceholder	Opcionális
+config.certLinkClient	Kapcsolás ügyfélhez
+config.certClientSearchPlaceholder	Kezdjen el nevet írni…
+config.certAccount	Letéti számla
+config.certAccountNone	Ne rögzítse a főkönyvben
+config.certIssueButton	Kiállítás
+config.certIssuedTitle	Az utalvány kiállítva
+config.certCopyCode	Kód másolása
+config.certCopied	Másolva
+config.certIssueAnother	Másik kiállítása
+config.certIssued	Kiállított utalványok
+config.certEmpty	Még nincs kiállított utalvány
+config.certStatus.active	Aktív
+config.certStatus.used	Felhasznált
+config.certStatus.expired	Lejárt
+config.certRedeem	Beváltás
+config.certRedeemTitle	Beváltja ezt az utalványt?
+config.certRedeemMessage	A {{code}} utalvány felhasználtnak lesz jelölve. Ez nem vonható vissza.
+config.referrerBonusTitle	Ajánlási bónusz
+config.referrerBonus	Bónusz az ajánlónak ({{currency}})
+config.newClientDiscount	Új ügyfél kedvezménye (%)
+config.triggerCondition	Jóváírás feltétele
+config.triggerConditions.first_visit	Az első látogatás után
+config.triggerConditions.first_payment	Az első fizetés után
+config.triggerConditions.registration	Azonnal regisztrációkor
+config.bonusAccrual	Bónusz jóváírása
+config.bonusTypes.points	Pontok
+config.bonusTypes.deposit	Letétre
+config.bonusTypes.discount	Kedvezményként
+config.promoCreate	Promóciós kód létrehozása
+config.promoCodePlaceholder	NYÁR25
+config.promoValidUntil	Érvényes eddig
+config.promoUsageLimit	Használati korlát
+config.promoAdd	+ Promóciós kód hozzáadása
+config.promoList	Promóciós kódok
+config.promoEmpty	Még nincsenek promóciós kódok
+config.promoUntil	eddig
+config.promoStatus.active	Aktív
+config.promoStatus.expired	Lejárt
+config.promoStatus.exhausted	A korlát elérve
+config.promoStatus.disabled	Letiltva
+config.depositTotal	Teljes egyenleg
+config.depositTotalSub	az összes ügyfélletéten
+config.depositTopClients	Legjobb ügyfelek egyenleg szerint
+config.depositEmpty	Még senkinek sincs letétje
+config.depositHint	A feltöltések és kifizetések az ügyfél profilján történnek. Az ajánlási program pontok helyett a letétre is fizethet bónuszt.
+validation.required	Ez a mező kötelező
+validation.minOne	Legalább 1-nek kell lennie
+validation.minZero	Nem lehet negatív
+validation.positive	0-nál nagyobbnak kell lennie
+validation.range0to100	0–100
+toasts.saved	Program aktiválva
+toasts.saveFailed	Mentés sikertelen
+toasts.toggleFailed	A program frissítése sikertelen
+toasts.loadFailed	Az adatok betöltése sikertelen
+toasts.retry	Próbálja újra
+stats.notConnected	A program nincs kapcsolva
+stats.willAppear	Az adatok a beállítás után jelennek meg
+stats.noData	Nincs adat
+stats.connectProgram	Program kapcsolása
+stats.revenueHeadline	Tagoktól származó bevétel
+stats.membersHeadline	Programtagok
+stats.returnedClients	Visszatért ügyfelek
+stats.returnedClientsSub	2+ látogatás 90 nap alatt
+stats.avgCheckHeadline	Átlagos kosár tagonként
+stats.bonusCostHeadline	Bónuszok költsége
+stats.bonusCostSub	ebben a hónapban
+stats.roiHeadline	ROI
+stats.roiValue	×{{value}}
+stats.perMonth	ebben a hónapban
+stats.cardHolders	kártyabirtokosok
+stats.kpi	Fő mutatók
+stats.members	Tagok
+stats.withCard	kártyával
+stats.avgCheck	Átlagos kosár
+stats.byMembers	tagok körében
+stats.pointsInCirculation	Forgalomban lévő pontok
+stats.accrued	jóváírva
+stats.revenue	Bevétel
+stats.revenuePerMonth	tagoktól / hó
+stats.levelDistribution	Megoszlás szintenként
+stats.noLevels	A szintek még nincsenek beállítva
+stats.totalClients	Ügyfelek összesen a programban
+stats.fromValue	{{value}} értéktől
+stats.levelPointValue	pont = {{value}}
+scenarios.title	Intelligens forgatókönyvek
+scenarios.subtitle	Ügyfélmegtartási robotpilóta: a rendszer megtalálja és jutalmazza az ügyfeleket Ön helyett
+scenarios.add	Forgatókönyv
+scenarios.fired	{{count}} alkalommal futott le
+scenarios.lastRun	utolsó futás: {{when}}
+scenarios.neverRun	még nem futott le
+scenarios.empty	Még nincsenek forgatókönyvek
+scenarios.emptySub	Készítse el az elsőt — a rendszer megtartja az ügyfeleket Ön helyett
+scenarios.channel	Csatorna
+scenarios.channelSoon	az integráció kapcsolása után
+scenarios.pickTemplate	Válasszon forgatókönyvet
+scenarios.pickTemplateSub	Kész sablon — a küszöbértékeket később hangolhatja
+scenarios.create	Létrehozás
+scenarios.deleteConfirm	Törli a forgatókönyvet?
+scenarios.deleteConfirmSub	A szabály nem fog többé lefutni. Ez nem vonható vissza.
+scenarios.triggers.inactive_days	{{days}} napja inaktív
+scenarios.triggers.low_subscription	≤ {{classes_left}} alkalom maradt
+scenarios.triggers.birthday	születésnap
+scenarios.triggers.nth_visit	{{n}}. látogatás
+scenarios.triggers.referral	barátot ajánlott
+scenarios.actions.points	ajándékozzon {{points}} pontot
+scenarios.actions.gift_classes	ajándékozzon {{classes}} alkalmat
+scenarios.actions.certificate	adjon ki {{amount}} ₽ értékű utalványt
+scenarios.actions.renewal_offer	ajánljon megújítást {{discount}}% kedvezménnyel
+scenarios.templates.win_back.name	Hiányzik nekünk
+scenarios.templates.win_back.desc	Hozzon vissza egy ügyfelet, aki rég nem járt Önöknél
+scenarios.templates.expiring_subscription.name	Közeleg az előfizetés vége
+scenarios.templates.expiring_subscription.desc	Ajánljon megújítást, mielőtt elfogynak az alkalmak
+scenarios.templates.birthday_gift.name	Születésnapi ajándék
+scenarios.templates.birthday_gift.desc	Lepje meg az ügyfelet a különleges napján
+scenarios.templates.fifth_visit.name	Hűségjutalom
+scenarios.templates.fifth_visit.desc	Ingyenes alkalom a hűségért
+scenarios.templates.referral_thanks.name	Köszönjük a barátot
+scenarios.templates.referral_thanks.desc	Jutalmazza azt, aki új ügyfelet hozott
+scenarios.ifClient	Ha az ügyfél
+scenarios.then	→
+scenarios.toasts.created	Forgatókönyv létrehozva
+scenarios.toasts.updated	Forgatókönyv frissítve
+scenarios.toasts.deleted	Forgatókönyv törölve
+scenarios.toasts.failed	A forgatókönyv nem menthető
+scenarios.delete	Törlés
+segmentsBoard.title	Szegmensek és ajánlások
+segmentsBoard.subtitle	Aktív ügyfélcsoportok, mindegyikhez egyértelmű teendővel
+segmentsBoard.empty	Itt nincs semmi, és ez jó
+segmentsBoard.clients	ügyfél
+segmentsBoard.daysAgo	{{count}} nappal ezelőtt
+segmentsBoard.neverVisited	nincs látogatás
+segmentsBoard.more	és további {{count}}
+segmentsBoard.segments.at_risk.name	Elpártolás előtt
+segmentsBoard.segments.at_risk.desc	Aktívak, 21+ napja inaktívak
+segmentsBoard.segments.at_risk.action	Bónusz adása
+segmentsBoard.segments.vip_idle.name	Elcsendesedett VIP
+segmentsBoard.segments.vip_idle.desc	VIP ügyfelek, 14+ napja inaktívak
+segmentsBoard.segments.vip_idle.action	Kampány indítása
+segmentsBoard.segments.expiring_subscription.name	Lejáró előfizetés
+segmentsBoard.segments.expiring_subscription.desc	≤2 alkalom vagy ≤7 nap maradt
+segmentsBoard.segments.expiring_subscription.action	Kampány indítása
+segmentsBoard.segments.lost_newcomers.name	Soha nem tértek vissza
+segmentsBoard.segments.lost_newcomers.desc	Egyszer jöttek, 14+ napja távol vannak
+segmentsBoard.segments.lost_newcomers.action	Kampány indítása
+segmentsBoard.segments.upsell_candidates.name	Készen állnak csomagra
+segmentsBoard.segments.upsell_candidates.desc	8+ látogatás ebben a hónapban, csomag nélkül
+segmentsBoard.segments.upsell_candidates.action	Kampány indítása
+segmentsBoard.campaignSub	„{{name}}” szegmens · {{count}} ügyfél
+segmentsBoard.pointsLabel	Hány pontot adjon
+segmentsBoard.messageLabel	Üzenet szövege
+segmentsBoard.messagePlaceholder	pl. Hiányzik nekünk! Térjen vissza — várjuk Önt.
+segmentsBoard.emailNote	Az e-mail csak e-mail-címmel rendelkező ügyfeleknek megy ki
+segmentsBoard.confirm	Küldés
+segmentsBoard.toasts.pointsDone	Pontok jóváírva · {{processed}} feldolgozva, {{emails}} értesítve
+segmentsBoard.toasts.emailDone	Kampány elküldve · {{emails}} e-mail / {{processed}}
+retention.title	Előfizetés-megújítások
+retention.subtitle	Milyen jól térnek vissza az ügyfelek új csomagért
+retention.renewalRate	Megújítás
+retention.avgPackages	Csomag ügyfelenként
+retention.sold	Eladva
+retention.renewed	Megújítva
+retention.empty	Még nincs előfizetésértékesítés
+retention.emptySub	Az elemzés az első csomageladások után jelenik meg

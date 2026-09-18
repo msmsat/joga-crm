@@ -1,0 +1,377 @@
+== pl
+tabs.accounts	Konta
+tabs.operations	Operacje
+tabs.salaries	Wynagrodzenia
+tabs.counterparties	Kontrahenci
+tabs.documents	Dokumenty
+tabs.onlinePayments	Płatności online
+tabs.paymentMethods	Metody płatności
+tabs.reports	Raporty
+tabs.goals	Cele
+common.save	Zapisz
+common.cancel	Anuluj
+common.create	Utwórz
+common.edit	Edytuj
+common.delete	Usuń
+common.loading	Ładowanie…
+common.all	Wszystkie
+common.confirm	Potwierdź
+common.monthsShort.0	Sty
+common.monthsShort.1	Lut
+common.monthsShort.2	Mar
+common.monthsShort.3	Kwi
+common.monthsShort.4	Maj
+common.monthsShort.5	Cze
+common.monthsShort.6	Lip
+common.monthsShort.7	Sie
+common.monthsShort.8	Wrz
+common.monthsShort.9	Paź
+common.monthsShort.10	Lis
+common.monthsShort.11	Gru
+common.weekdaysShort.0	Pon
+common.weekdaysShort.1	Wt
+common.weekdaysShort.2	Śr
+common.weekdaysShort.3	Czw
+common.weekdaysShort.4	Pt
+common.weekdaysShort.5	Sob
+common.weekdaysShort.6	Nd
+info.accounts	Konta to kasy studia, rachunki bankowe i obsługa płatności online. Tutaj zobaczysz każde saldo i łączny kapitał.
+info.operations	Operacje to wszystkie przychody i wydatki studia. Utworzenie operacji od razu zmienia saldo powiązanego konta.
+info.salaries	Wynagrodzenia są obliczane na podstawie stawki członka zespołu (stałej, godzinowej lub procentowej) za wybrany okres.
+info.counterparties	Kontrahenci to organizacje i osoby, z którymi studio się rozlicza: dostawcy, wynajmujący, partnerzy.
+info.documents	Dokumenty to umowy, akty i faktury powiązane z kontrahentami albo dokumenty wewnętrzne.
+info.onlinePayments	Płatności online — połącz Stripe do płatności kartą. Konto jest tworzone dla Twojego studia, więc pieniądze trafiają bezpośrednio do Ciebie, bez pośrednictwa Velora.
+info.paymentMethods	Metody płatności pokazują, jak klienci płacą w studiu, oraz statystyki dla każdej z nich.
+info.reports	Raporty pokazują trendy przychodów, wydatków i zysków w wybranym okresie.
+info.goals	Cele finansowe to plan oszczędzania studia z automatycznym lub ręcznym śledzeniem postępów.
+accounts.loading	Ładowanie kont…
+accounts.totalCapital	Łączny kapitał studia
+accounts.donutTotal	{{symbol}} łącznie
+accounts.todayChange	dzisiaj
+accounts.system	SYSTEM
+accounts.today	dzisiaj
+accounts.editTitle	Edytuj konto
+accounts.namePlaceholder	Nazwa
+accounts.balancePlaceholder	Saldo, {{symbol}}
+accounts.types.cash	Gotówka
+accounts.types.bank	Karta
+accounts.types.online	Online
+accounts.typesShort.cash	Gotówka
+accounts.typesShort.bank	Karta
+accounts.typesShort.online	Online
+accounts.history	Historia
+accounts.historyTitle	Historia: {{name}}
+accounts.income30d	Przychód (30 dni)
+accounts.expense30d	Wydatek (30 dni)
+accounts.samplePayment	Płatność za usługę
+accounts.sampleTime	Dzisiaj, 14:32
+accounts.openAllOperations	Otwórz wszystkie operacje
+accounts.newSavingsTitle	Nowe konto oszczędnościowe
+accounts.createSavings	Utwórz konto oszczędnościowe
+accounts.deleteConfirmTitle	Usunąć to konto?
+accounts.deleteConfirmText	Wszystkie jego środki zostaną wykluczone z ogólnych statystyk. Tej operacji nie można cofnąć.
+accounts.toasts.loadFailed	Nie udało się załadować kont
+accounts.toasts.deleted	Konto usunięte
+accounts.toasts.deleteFailed	Nie udało się usunąć konta
+accounts.toasts.saved	Ustawienia zapisane
+accounts.toasts.saveFailed	Nie udało się zapisać konta
+accounts.toasts.created	Konto oszczędnościowe utworzone
+accounts.toasts.createFailed	Nie udało się utworzyć konta
+operations.income	Przychód
+operations.expense	Wydatek
+operations.balance	Saldo
+operations.searchPlaceholder	Szukaj według tytułu i kategorii…
+operations.close	Zamknij
+operations.operation	Operacja
+operations.export	Eksportuj
+operations.newOperationTitle	Nowa operacja
+operations.titleLabel	Tytuł
+operations.titlePlaceholder	Np. płatność za abonament
+operations.amountLabel	Kwota, {{symbol}}
+operations.dateLabel	Data
+operations.categoryLabel	Kategoria
+operations.categoryPlaceholder	Kategoria
+operations.accountLabel	Konto
+operations.noAccount	Brak konta
+operations.methodLabel	Metoda płatności
+operations.noMethod	Nie określono
+operations.counterpartyLabel	Kontrahent
+operations.noCounterparty	Brak kontrahenta
+operations.newCounterparty	+ Nowy kontrahent
+operations.clientLabel	Klient
+operations.clientHint	Punkty lojalnościowe i poziom zostaną przypisane klientowi
+operations.clientSearchPlaceholder	Zacznij wpisywać nazwę…
+operations.noClient	Brak klienta
+operations.editTitle	Edytuj operację
+operations.saving	Zapisywanie…
+operations.loading	Ładowanie operacji…
+operations.emptyTitle	Nie znaleziono operacji
+operations.emptyBody	Zmień filtry lub utwórz pierwszą operację
+operations.pending	Oczekuje
+operations.detailAccount	Konto odbiorcze
+operations.detailCategory	Kategoria
+operations.detailMethod	Metoda płatności
+operations.detailCounterparty	Kontrahent
+operations.receipt	Potwierdzenie
+operations.loadMore	Załaduj więcej ({{count}})
+operations.toasts.loadFailed	Nie udało się załadować operacji
+operations.toasts.loadMoreFailed	Nie udało się załadować kolejnych operacji
+operations.toasts.deleted	Operacja usunięta
+operations.toasts.deleteFailed	Nie udało się usunąć operacji
+operations.toasts.enterAmount	Wprowadź kwotę
+operations.toasts.created	Operacja utworzona
+operations.toasts.createFailed	Nie udało się utworzyć operacji
+operations.toasts.updated	Operacja zaktualizowana
+operations.toasts.updateFailed	Nie udało się zapisać operacji
+operations.toasts.exportFailed	Nie udało się wyeksportować operacji
+operations.toasts.receiptDownloaded	Potwierdzenie pobrane
+operations.categoryPresets.in.0.value	Członkostwa
+operations.categoryPresets.in.0.label	Członkostwa
+operations.categoryPresets.in.1.value	Usługi
+operations.categoryPresets.in.1.label	Usługi
+operations.categoryPresets.in.2.value	Bony podarunkowe
+operations.categoryPresets.in.2.label	Bony podarunkowe
+operations.categoryPresets.in.3.value	Depozyt
+operations.categoryPresets.in.3.label	Depozyt
+operations.categoryPresets.in.4.value	Inne
+operations.categoryPresets.in.4.label	Inne
+operations.categoryPresets.out.0.value	Zwroty
+operations.categoryPresets.out.0.label	Zwroty
+operations.categoryPresets.out.1.value	Czynsz
+operations.categoryPresets.out.1.label	Czynsz
+operations.categoryPresets.out.2.value	Wynagrodzenia
+operations.categoryPresets.out.2.label	Wynagrodzenia
+operations.categoryPresets.out.3.value	Zakupy
+operations.categoryPresets.out.3.label	Zakupy
+operations.categoryPresets.out.4.value	Marketing
+operations.categoryPresets.out.4.label	Marketing
+operations.categoryPresets.out.5.value	Podatki
+operations.categoryPresets.out.5.label	Podatki
+operations.categoryPresets.out.6.value	Inne
+operations.categoryPresets.out.6.label	Inne
+salaries.loading	Ładowanie wynagrodzeń…
+salaries.noRows	Brak personelu do obliczenia
+salaries.fund	Fundusz wynagrodzeń
+salaries.fundSub	bieżący miesiąc
+salaries.sessions	Sesje
+salaries.sessionsSub	łącznie przeprowadzono
+salaries.paidOf	personel
+salaries.sessionsCount	{{count}} sesji
+salaries.paid	Opłacono
+salaries.pending	Oczekuje
+salaries.paying	…
+salaries.payAction	Zapłać
+salaries.cancelAction	Anuluj wynagrodzenie
+salaries.perMonth	/mies.
+salaries.accrualTitle	Naliczanie za okres
+salaries.rate	Stawka
+salaries.rateNotSet	nie ustawiono
+salaries.sessionsInPeriod	Sesje w okresie
+salaries.hoursWorked	Przepracowane godziny
+salaries.lessonsRevenue	Przychód z sesji
+salaries.totalToPay	Łącznie do zapłaty
+salaries.rateWarning	Stawka nie jest ustawiona — ustaw ją w profilu członka personelu, aby można było obliczyć naliczenie.
+salaries.rateUnit.hourly	godz.
+salaries.rateUnit.percent	%
+salaries.rateUnit.fixed	stała
+salaries.paidAt	Opłacono {{date}}
+salaries.historyTitle	Historia płatności
+salaries.historyEmpty	Brak płatności
+salaries.historyLoading	Ładowanie historii…
+salaries.toasts.loadFailed	Nie udało się załadować wynagrodzeń
+salaries.toasts.paid	Wynagrodzenie wypłacone: {{name}}
+salaries.toasts.payFailed	Nie udało się wypłacić wynagrodzenia
+salaries.toasts.canceled	Wynagrodzenie anulowane: {{name}}
+salaries.toasts.historyLoadFailed	Nie udało się załadować historii płatności
+counterparties.count	{{count}} kontrahentów
+counterparties.totalDebt	Łączne zadłużenie:
+counterparties.add	Dodaj
+counterparties.newTitle	Nowy kontrahent
+counterparties.nameLabel	Nazwa / Imię i nazwisko
+counterparties.namePlaceholder	Firma sp. z o.o. lub Jan Kowalski
+counterparties.innLabel	Identyfikator podatkowy
+counterparties.categoryLabel	Kategoria
+counterparties.categoryPlaceholder	Czynsz, dostawca…
+counterparties.typeLabel	Typ kontrahenta
+counterparties.types.legal.label	Osoba prawna
+counterparties.types.legal.desc	Organizacja lub firma
+counterparties.types.ie.label	Jednoosobowa działalność
+counterparties.types.ie.desc	Przedsiębiorca indywidualny
+counterparties.types.person.label	Osoba fizyczna
+counterparties.types.person.desc	Osoba prywatna
+counterparties.addSubmit	Dodaj kontrahenta
+counterparties.you	Ty
+counterparties.otherCategory	Inne
+counterparties.deals	umowy
+counterparties.dealsLabel	Umowy
+counterparties.debtLabel	Dług
+counterparties.documents	Dokumenty
+counterparties.edit	Edytuj
+counterparties.delete	Usuń
+counterparties.deleteConfirmTitle	Usunąć kontrahenta?
+counterparties.deleteConfirmText	Powiązane dokumenty i historia umów pozostaną, ale kontrahent zostanie usunięty z listy.
+counterparties.toasts.loadFailed	Nie udało się załadować kontrahentów
+counterparties.toasts.enterName	Wprowadź nazwę
+counterparties.toasts.saved	Zmiany zapisane
+counterparties.toasts.saveFailed	Nie udało się zapisać
+counterparties.toasts.added	Kontrahent dodany
+counterparties.toasts.addFailed	Nie udało się dodać kontrahenta
+counterparties.toasts.deleted	Kontrahent usunięty
+counterparties.toasts.deleteFailed	Nie udało się usunąć kontrahenta
+counterparties.toasts.documentsOpened	Dokumenty otwarte
+documents.signed	Podpisano
+documents.pendingCount	Oczekuje na podpis
+documents.draftCount	Wewnętrzny (niepodpisany)
+documents.searchPlaceholder	Szukaj według tytułu lub kontrahenta…
+documents.filters.all	Wszystkie
+documents.filters.signed	Podpisane
+documents.filters.pending	Oczekuje na podpis
+documents.upload	Prześlij
+documents.addTitle	Dodaj dokument do biblioteki
+documents.dropzoneTitle	Kliknij lub przeciągnij plik
+documents.dropzoneHint	PDF, DOCX, XLSX (do 15 MB)
+documents.dropzoneChange	Kliknij, aby wybrać inny plik
+documents.titleLabel	Tytuł dokumentu
+documents.titlePlaceholder	Np. protokół odbioru nr 48
+documents.partyLabel	Kontrahent (jeśli dotyczy)
+documents.partyPlaceholder	Nazwa firmy lub przedsiębiorcy
+documents.needsSignature	Czy dokument wymaga podpisu?
+documents.needsSignatureHint	Status będzie „Oczekuje na podpis”
+documents.saveToBase	Zapisz w bibliotece
+documents.emptyTitle	Ten folder jest pusty
+documents.emptyBody	Prześlij nowy dokument lub zmień filtry
+documents.internalDoc	Dokument wewnętrzny
+documents.uploaded	Przesłano {{date}}
+documents.download	Pobierz
+documents.open	Otwórz
+documents.fileRequired	Dołącz plik
+documents.options	Opcje
+documents.status.title	Status
+documents.status.signed	Podpisano
+documents.status.pending	Oczekuje na podpis
+documents.status.draft	Niepodpisany
+documents.delete	Usuń
+documents.toasts.loadFailed	Nie udało się załadować dokumentów
+documents.toasts.titleRequired	Prześlij plik lub wprowadź tytuł
+documents.toasts.created	Dokument przesłano do biblioteki
+documents.toasts.createFailed	Nie udało się zapisać dokumentu
+documents.toasts.badFormat	Dozwolone formaty: PDF, DOCX, XLSX
+documents.toasts.downloadFailed	Nie udało się pobrać pliku
+documents.toasts.noFile	Do tego dokumentu nie dołączono pliku
+documents.toasts.openFailed	Nie udało się otworzyć pliku
+documents.toasts.statusChanged	Status: {{label}}
+documents.toasts.statusFailed	Nie udało się zmienić statusu
+documents.toasts.deleted	Dokument usunięty
+documents.toasts.deleteFailed	Nie udało się usunąć dokumentu
+goals.loading	Ładowanie celów…
+goals.active	Cele w toku
+goals.done	Ukończone
+goals.avgProgress	Łączny postęp
+goals.trackingTitle	Śledzenie planu
+goals.createGoal	Utwórz cel
+goals.newTitle	Nowy cel finansowy
+goals.titleLabel	Tytuł celu
+goals.titlePlaceholder	Np. nowe maszyny reformer
+goals.targetLabel	Kwota docelowa, {{symbol}}
+goals.targetPlaceholder	500000
+goals.deadlineLabel	Termin
+goals.trackingLabel	Jak śledzić postęp?
+goals.trackingAuto	Automatycznie (metryka CRM)
+goals.trackingAutoDesc	Połącz cel z przychodem wybranej kategorii. CRM sam przesunie pasek postępu.
+goals.trackingManual	Ręcznie (osobiste oszczędności)
+goals.trackingManualDesc	Na karcie pojawi się przycisk „Dodaj środki”. Postęp zależy tylko od Ciebie.
+goals.opTypeLabel	Typ operacji
+goals.categoryLabel	Kategoria
+goals.categoryPlaceholder	Wybierz kategorię
+goals.editTitle	Edytuj cel
+goals.nameLabel	Tytuł
+goals.namePlaceholder	Tytuł celu
+goals.amountLabel	Kwota, {{symbol}}
+goals.achieved	Cel osiągnięty
+goals.priority.high	Wysoki priorytet
+goals.priority.medium	Średni priorytet
+goals.priority.low	Niski priorytet
+goals.autoCollect	Automatyczne śledzenie
+goals.deadlinePrefix	Termin:
+goals.noDeadline	Bez terminu
+goals.fundPlaceholder	Kwota, {{symbol}}
+goals.fund	Dodaj
+goals.addFunds	Dodaj środki
+goals.autoHint	Wartość aktualizuje się automatycznie na podstawie przychodu kategorii
+goals.deleteConfirmTitle	Usunąć cel?
+goals.deleteConfirmText	Postęp tego celu zostanie utracony. Tej operacji nie można cofnąć.
+goals.toasts.loadFailed	Nie udało się załadować celów
+goals.toasts.fillRequired	Uzupełnij tytuł i kwotę
+goals.toasts.chooseCategory	Wybierz kategorię dla celu automatycznego
+goals.toasts.created	Cel utworzony
+goals.toasts.createFailed	Nie udało się utworzyć celu
+goals.toasts.enterName	Wprowadź nazwę
+goals.toasts.updated	Cel zaktualizowany
+goals.toasts.updateFailed	Nie udało się zaktualizować celu
+goals.toasts.deleted	Cel usunięty
+goals.toasts.deleteFailed	Nie udało się usunąć celu
+goals.toasts.funded	Środki dodane
+goals.toasts.fundFailed	Nie udało się dodać środków
+onlinePayments.description	Połącz Stripe, a Twoi klienci będą mogli płacić kartą przy kasie. Pieniądze trafiają bezpośrednio na konto Twojego studia — Velora nigdy ich nie przechowuje. Prowizja zależy od Twojego planu.
+onlinePayments.gatewaysTitle	Dostawcy płatności
+onlinePayments.gateways.stripe.name	Stripe
+onlinePayments.gateways.states.none.label	Nie połączono
+onlinePayments.gateways.states.none.hint	Przyjmuj płatności kartą na konto studia
+onlinePayments.gateways.states.none.action	Połącz
+onlinePayments.gateways.states.incomplete.label	Brak danych
+onlinePayments.gateways.states.incomplete.hint	Stripe czeka na dane Twojego studia — płatności pozostają wyłączone do tego czasu
+onlinePayments.gateways.states.incomplete.action	Kontynuuj
+onlinePayments.gateways.states.action.label	Wymagane działanie
+onlinePayments.gateways.states.action.hint	Stripe odrzucił część danych i oczekuje poprawek — nie rozwiąże się to samo
+onlinePayments.gateways.states.action.action	Popraw dane
+onlinePayments.gateways.states.review.label	W trakcie weryfikacji
+onlinePayments.gateways.states.review.hint	Dane zostały przesłane, Stripe je weryfikuje. Zwykle trwa to do jednego dnia
+onlinePayments.gateways.states.review.action	Otwórz Stripe
+onlinePayments.gateways.states.active.label	Połączono
+onlinePayments.gateways.states.active.hint	Płatności kartą trafiają na konto Stripe studia
+onlinePayments.gateways.states.active.action	Ustawienia
+onlinePayments.toasts.gatewayUpdated	Ustawienia dostawcy płatności zaktualizowane
+onlinePayments.toasts.stripeReturned	Dane przesłano do Stripe
+onlinePayments.toasts.stripeLinkExpired	Link Stripe wygasł — naciśnij Połącz ponownie
+paymentMethods.totalTurnover	Obrót za okres
+paymentMethods.periods.month	Miesiąc
+paymentMethods.periods.quarter	Kwartał
+paymentMethods.periods.year	Rok
+paymentMethods.amount	Kwota
+paymentMethods.share	Udział
+paymentMethods.transactions	transakcje
+paymentMethods.methods.cash.name	Gotówka
+paymentMethods.methods.card.name	Karta bankowa
+paymentMethods.methods.qr.name	SBP (QR)
+paymentMethods.methods.transfer.name	Przelew
+paymentMethods.methods.stripe.name	Stripe
+paymentMethods.methods..name	Nie określono
+reports.metrics.revenue	Przychody
+reports.metrics.expenses	Wydatki
+reports.metrics.profit	Zysk
+reports.metrics.margin	Marża
+reports.vsPreviousPeriod	względem poprzedniego okresu
+reports.cashflowTitle	Przepływ środków
+reports.cashflowSub	Analiza przychodów i wydatków
+reports.period	Okres
+reports.income	Przychód
+reports.expense	Wydatek
+reports.profit	Zysk
+reports.periods.today	Dzisiaj
+reports.periods.week	Tydzień
+reports.periods.month	Miesiąc
+reports.periods.year	Rok
+reports.legendIncome	Przychody
+reports.legendExpense	Wydatki
+reports.exportCsv	Eksportuj CSV
+reports.expenseStructure	Struktura wydatków
+reports.incomeStructure	Struktura przychodów
+reports.total	Łącznie
+reports.otherCategory	Bez kategorii
+reports.noData	Brak danych dla tego okresu
+reports.insightsTitle	Podsumowanie i analizy finansowe
+reports.insightsPlaceholder	Tutaj pojawi się podsumowanie finansowe oparte na AI: analiza trendów, struktura wydatków i rekomendacje
+reports.toasts.exportFailed	Nie udało się wyeksportować operacji
+confirmModal.cancel	Anuluj
+confirmModal.confirm	Potwierdź
+confirmModal.delete	Usuń

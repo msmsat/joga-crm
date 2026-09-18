@@ -1,0 +1,510 @@
+{
+  "tabs": {
+    "accounts": "Konti",
+    "operations": "Transaktioner",
+    "salaries": "Løn",
+    "counterparties": "Modparter",
+    "documents": "Dokumenter",
+    "onlinePayments": "Onlinebetalinger",
+    "paymentMethods": "Betalingsmetoder",
+    "reports": "Rapporter",
+    "goals": "Mål"
+  },
+  "common": {
+    "save": "Gem",
+    "cancel": "Annuller",
+    "create": "Opret",
+    "edit": "Rediger",
+    "delete": "Slet",
+    "loading": "Indlæser…",
+    "all": "Alle",
+    "confirm": "Bekræft",
+    "monthsShort": [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "Maj",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Okt",
+      "Nov",
+      "Dec"
+    ],
+    "weekdaysShort": [
+      "Man",
+      "Tir",
+      "Ons",
+      "Tor",
+      "Fre",
+      "Lør",
+      "Søn"
+    ]
+  },
+  "info": {
+    "accounts": "Konti er studiets kasser, bankkonti og online betalingsindløsning. Her kan du se hver saldo og den samlede kapital.",
+    "operations": "Transaktioner er alle studiets indtægter og udgifter. Når du opretter en transaktion, ændres den tilknyttede kontos saldo straks.",
+    "salaries": "Løn beregnes ud fra medarbejderens sats (fast, time- eller procentbaseret) for den valgte periode.",
+    "counterparties": "Modparter er organisationer og personer, som studiet afregner med: leverandører, udlejere og partnere.",
+    "documents": "Dokumenter er kontrakter, akter og fakturaer knyttet til modparter eller interne dokumenter.",
+    "onlinePayments": "Onlinebetalinger — tilslut Stripe til kortbetalinger. Kontoen oprettes til dit studie, så pengene går direkte til dig uden om Velora.",
+    "paymentMethods": "Betalingsmetoder viser, hvordan kunder betaler i studiet, og statistik for hver metode.",
+    "reports": "Rapporter viser tendenser for indtægter, udgifter og overskud i den valgte periode.",
+    "goals": "Finansielle mål er studiets opsparingsplan med automatisk eller manuel opfølgning på fremskridt."
+  },
+  "accounts": {
+    "loading": "Indlæser konti…",
+    "totalCapital": "Studiets samlede kapital",
+    "donutTotal": "{{symbol}} i alt",
+    "todayChange": "i dag",
+    "system": "SYSTEM",
+    "today": "i dag",
+    "editTitle": "Rediger konto",
+    "namePlaceholder": "Navn",
+    "balancePlaceholder": "Saldo, {{symbol}}",
+    "types": {
+      "cash": "Kontant",
+      "bank": "Kort",
+      "online": "Online"
+    },
+    "typesShort": {
+      "cash": "Kontant",
+      "bank": "Kort",
+      "online": "Online"
+    },
+    "history": "Historik",
+    "historyTitle": "Historik: {{name}}",
+    "income30d": "Indtægter (30 d.)",
+    "expense30d": "Udgifter (30 d.)",
+    "samplePayment": "Betaling for tjeneste",
+    "sampleTime": "I dag, 14:32",
+    "openAllOperations": "Åbn alle transaktioner",
+    "newSavingsTitle": "Ny opsparingskonto",
+    "createSavings": "Opret opsparingskonto",
+    "deleteConfirmTitle": "Slet denne konto?",
+    "deleteConfirmText": "Alle dens midler vil blive udelukket fra den samlede statistik. Denne handling kan ikke fortrydes.",
+    "toasts": {
+      "loadFailed": "Kunne ikke indlæse konti",
+      "deleted": "Kontoen er slettet",
+      "deleteFailed": "Kunne ikke slette konto",
+      "saved": "Indstillingerne er gemt",
+      "saveFailed": "Kunne ikke gemme konto",
+      "created": "Opsparingskontoen er oprettet",
+      "createFailed": "Kunne ikke oprette konto"
+    }
+  },
+  "operations": {
+    "income": "Indtægt",
+    "expense": "Udgift",
+    "balance": "Saldo",
+    "searchPlaceholder": "Søg efter titel og kategori…",
+    "close": "Luk",
+    "operation": "Transaktion",
+    "export": "Eksporter",
+    "newOperationTitle": "Ny transaktion",
+    "titleLabel": "Titel",
+    "titlePlaceholder": "F.eks. abonnementsbetaling",
+    "amountLabel": "Beløb, {{symbol}}",
+    "dateLabel": "Dato",
+    "categoryLabel": "Kategori",
+    "categoryPlaceholder": "Kategori",
+    "accountLabel": "Konto",
+    "noAccount": "Ingen konto",
+    "methodLabel": "Betalingsmetode",
+    "noMethod": "Ikke angivet",
+    "counterpartyLabel": "Modpart",
+    "noCounterparty": "Ingen modpart",
+    "newCounterparty": "+ Ny modpart",
+    "clientLabel": "Klient",
+    "clientHint": "Loyalitetspoint og niveau tilføjes klienten",
+    "clientSearchPlaceholder": "Begynd at skrive et navn…",
+    "noClient": "Ingen klient",
+    "editTitle": "Rediger transaktion",
+    "saving": "Gemmer…",
+    "loading": "Indlæser transaktioner…",
+    "emptyTitle": "Ingen transaktioner fundet",
+    "emptyBody": "Skift filtrene eller opret den første transaktion",
+    "pending": "Afventer",
+    "detailAccount": "Modtagende konto",
+    "detailCategory": "Kategori",
+    "detailMethod": "Betalingsmetode",
+    "detailCounterparty": "Modpart",
+    "receipt": "Kvittering",
+    "loadMore": "Indlæs flere ({{count}})",
+    "toasts": {
+      "loadFailed": "Kunne ikke indlæse transaktioner",
+      "loadMoreFailed": "Kunne ikke indlæse flere transaktioner",
+      "deleted": "Transaktionen er slettet",
+      "deleteFailed": "Kunne ikke slette transaktionen",
+      "enterAmount": "Indtast et beløb",
+      "created": "Transaktionen er oprettet",
+      "createFailed": "Kunne ikke oprette transaktionen",
+      "updated": "Transaktionen er opdateret",
+      "updateFailed": "Kunne ikke gemme transaktionen",
+      "exportFailed": "Kunne ikke eksportere transaktioner",
+      "receiptDownloaded": "Kvitteringen er hentet"
+    },
+    "categoryPresets": {
+      "in": [
+        {
+          "value": "Abonnementer",
+          "label": "Abonnementer"
+        },
+        {
+          "value": "Tjenester",
+          "label": "Tjenester"
+        },
+        {
+          "value": "Gavekort",
+          "label": "Gavekort"
+        },
+        {
+          "value": "Indskud",
+          "label": "Indskud"
+        },
+        {
+          "value": "Andet",
+          "label": "Andet"
+        }
+      ],
+      "out": [
+        {
+          "value": "Refusioner",
+          "label": "Refusioner"
+        },
+        {
+          "value": "Husleje",
+          "label": "Husleje"
+        },
+        {
+          "value": "Løn",
+          "label": "Løn"
+        },
+        {
+          "value": "Indkøb",
+          "label": "Indkøb"
+        },
+        {
+          "value": "Markedsføring",
+          "label": "Markedsføring"
+        },
+        {
+          "value": "Skatter",
+          "label": "Skatter"
+        },
+        {
+          "value": "Andet",
+          "label": "Andet"
+        }
+      ]
+    }
+  },
+  "salaries": {
+    "loading": "Indlæser løn…",
+    "noRows": "Intet personale at beregne for",
+    "fund": "Lønfond",
+    "fundSub": "aktuel måned",
+    "sessions": "Sessioner",
+    "sessionsSub": "antal afholdte",
+    "paidOf": "personale",
+    "sessionsCount": "{{count}} sessioner",
+    "paid": "Betalt",
+    "pending": "Afventer",
+    "paying": "…",
+    "payAction": "Betal",
+    "cancelAction": "Annuller løn",
+    "perMonth": "/md.",
+    "accrualTitle": "Optjening for periode",
+    "rate": "Sats",
+    "rateNotSet": "ikke angivet",
+    "sessionsInPeriod": "Sessioner i perioden",
+    "hoursWorked": "Arbejdede timer",
+    "lessonsRevenue": "Indtægt fra sessioner",
+    "totalToPay": "I alt til betaling",
+    "rateWarning": "Satsen er ikke angivet — indstil den i medarbejderens profil, så optjeningen kan beregnes.",
+    "rateUnit": {
+      "hourly": "t",
+      "percent": "%",
+      "fixed": "fast"
+    },
+    "paidAt": "Betalt {{date}}",
+    "historyTitle": "Betalingshistorik",
+    "historyEmpty": "Ingen betalinger endnu",
+    "historyLoading": "Indlæser historik…",
+    "toasts": {
+      "loadFailed": "Kunne ikke indlæse løn",
+      "paid": "Løn udbetalt: {{name}}",
+      "payFailed": "Kunne ikke udbetale løn",
+      "canceled": "Løn annulleret: {{name}}",
+      "historyLoadFailed": "Kunne ikke indlæse betalingshistorik"
+    }
+  },
+  "counterparties": {
+    "count": "{{count}} modparter",
+    "totalDebt": "Samlet gæld:",
+    "add": "Tilføj",
+    "newTitle": "Ny modpart",
+    "nameLabel": "Navn / Fulde navn",
+    "namePlaceholder": "Virksomhed ApS eller Jens Jensen",
+    "innLabel": "Skatte-id",
+    "categoryLabel": "Kategori",
+    "categoryPlaceholder": "Husleje, leverandør…",
+    "typeLabel": "Type af modpart",
+    "types": {
+      "legal": {
+        "label": "Juridisk person",
+        "desc": "Organisation eller virksomhed"
+      },
+      "ie": {
+        "label": "Selvstændig",
+        "desc": "Individuel erhvervsdrivende"
+      },
+      "person": {
+        "label": "Privatperson",
+        "desc": "Fysisk person"
+      }
+    },
+    "addSubmit": "Tilføj modpart",
+    "you": "Dig",
+    "otherCategory": "Andet",
+    "deals": "aftaler",
+    "dealsLabel": "Aftaler",
+    "debtLabel": "Gæld",
+    "documents": "Dokumenter",
+    "edit": "Rediger",
+    "delete": "Slet",
+    "deleteConfirmTitle": "Slet modpart?",
+    "deleteConfirmText": "Relaterede dokumenter og aftalehistorik bevares, men modparten fjernes fra listen.",
+    "toasts": {
+      "loadFailed": "Kunne ikke indlæse modparter",
+      "enterName": "Indtast et navn",
+      "saved": "Ændringer gemt",
+      "saveFailed": "Kunne ikke gemme",
+      "added": "Modpart tilføjet",
+      "addFailed": "Kunne ikke tilføje modpart",
+      "deleted": "Modpart slettet",
+      "deleteFailed": "Kunne ikke slette modpart",
+      "documentsOpened": "Dokumenter åbnet"
+    }
+  },
+  "documents": {
+    "signed": "Underskrevet",
+    "pendingCount": "Afventer underskrift",
+    "draftCount": "Internt (ikke underskrevet)",
+    "searchPlaceholder": "Søg efter titel eller modpart…",
+    "filters": {
+      "all": "Alle",
+      "signed": "Underskrevet",
+      "pending": "Afventer underskrift"
+    },
+    "upload": "Upload",
+    "addTitle": "Tilføj dokument til biblioteket",
+    "dropzoneTitle": "Klik eller træk en fil",
+    "dropzoneHint": "PDF, DOCX, XLSX (op til 15 MB)",
+    "dropzoneChange": "Klik for at vælge en anden fil",
+    "titleLabel": "Dokumenttitel",
+    "titlePlaceholder": "F.eks. Acceptakt nr. 48",
+    "partyLabel": "Modpart (hvis relevant)",
+    "partyPlaceholder": "Virksomhedsnavn eller selvstændigs navn",
+    "needsSignature": "Kræver dokumentet underskrift?",
+    "needsSignatureHint": "Status bliver ”Afventer underskrift”",
+    "saveToBase": "Gem i biblioteket",
+    "emptyTitle": "Denne mappe er tom",
+    "emptyBody": "Upload et nyt dokument eller skift filtrene",
+    "internalDoc": "Internt dokument",
+    "uploaded": "Uploadet {{date}}",
+    "download": "Download",
+    "open": "Åbn",
+    "fileRequired": "Vedhæft en fil",
+    "options": "Indstillinger",
+    "status": {
+      "title": "Status",
+      "signed": "Underskrevet",
+      "pending": "Afventer underskrift",
+      "draft": "Ikke underskrevet"
+    },
+    "delete": "Slet",
+    "toasts": {
+      "loadFailed": "Kunne ikke indlæse dokumenter",
+      "titleRequired": "Upload en fil eller indtast en titel",
+      "created": "Dokumentet er uploadet til biblioteket",
+      "createFailed": "Kunne ikke gemme dokumentet",
+      "badFormat": "Tilladte formater: PDF, DOCX, XLSX",
+      "downloadFailed": "Kunne ikke downloade filen",
+      "noFile": "Der er ikke vedhæftet en fil til dette dokument",
+      "openFailed": "Kunne ikke åbne filen",
+      "statusChanged": "Status: {{label}}",
+      "statusFailed": "Kunne ikke ændre status",
+      "deleted": "Dokumentet er slettet",
+      "deleteFailed": "Kunne ikke slette dokumentet"
+    }
+  },
+  "goals": {
+    "loading": "Indlæser mål…",
+    "active": "Mål i gang",
+    "done": "Fuldført",
+    "avgProgress": "Samlet fremskridt",
+    "trackingTitle": "Planopfølgning",
+    "createGoal": "Opret mål",
+    "newTitle": "Nyt finansielt mål",
+    "titleLabel": "Måltitel",
+    "titlePlaceholder": "F.eks. nye reformer-maskiner",
+    "targetLabel": "Målbeløb, {{symbol}}",
+    "targetPlaceholder": "500000",
+    "deadlineLabel": "Frist",
+    "trackingLabel": "Hvordan skal fremskridt spores?",
+    "trackingAuto": "Automatisk (CRM-måling)",
+    "trackingAutoDesc": "Knyt målet til indtægter fra en valgt kategori. CRM flytter selv statuslinjen.",
+    "trackingManual": "Manuelt (personlig opsparing)",
+    "trackingManualDesc": "Knappen ”Tilføj midler” vises på kortet. Fremskridt afhænger kun af dig.",
+    "opTypeLabel": "Transaktionstype",
+    "categoryLabel": "Kategori",
+    "categoryPlaceholder": "Vælg en kategori",
+    "editTitle": "Rediger mål",
+    "nameLabel": "Titel",
+    "namePlaceholder": "Måltitel",
+    "amountLabel": "Beløb, {{symbol}}",
+    "achieved": "Mål nået",
+    "priority": {
+      "high": "Høj prioritet",
+      "medium": "Mellem prioritet",
+      "low": "Lav prioritet"
+    },
+    "autoCollect": "Sporer automatisk",
+    "deadlinePrefix": "Frist:",
+    "noDeadline": "Ingen frist",
+    "fundPlaceholder": "Beløb, {{symbol}}",
+    "fund": "Tilføj",
+    "addFunds": "Tilføj midler",
+    "autoHint": "Værdien opdateres automatisk fra kategoriens indtægter",
+    "deleteConfirmTitle": "Slet mål?",
+    "deleteConfirmText": "Fremskridtet for dette mål går tabt. Handlingen kan ikke fortrydes.",
+    "toasts": {
+      "loadFailed": "Kunne ikke indlæse mål",
+      "fillRequired": "Udfyld titel og beløb",
+      "chooseCategory": "Vælg en kategori til det automatiske mål",
+      "created": "Målet er oprettet",
+      "createFailed": "Kunne ikke oprette målet",
+      "enterName": "Indtast et navn",
+      "updated": "Målet er opdateret",
+      "updateFailed": "Kunne ikke opdatere målet",
+      "deleted": "Målet er slettet",
+      "deleteFailed": "Kunne ikke slette målet",
+      "funded": "Midler tilføjet",
+      "fundFailed": "Kunne ikke tilføje midler"
+    }
+  },
+  "onlinePayments": {
+    "description": "Tilslut Stripe, så dine klienter kan betale med kort ved kassen. Pengene går direkte ind på studiets konto — Velora holder dem aldrig. Provisionen følger din plan.",
+    "gatewaysTitle": "Betalingsudbydere",
+    "gateways": {
+      "stripe": {
+        "name": "Stripe"
+      },
+      "states": {
+        "none": {
+          "label": "Ikke tilsluttet",
+          "hint": "Acceptér kortbetalinger på studiets konto",
+          "action": "Tilslut"
+        },
+        "incomplete": {
+          "label": "Oplysninger mangler",
+          "hint": "Stripe venter på studiets oplysninger — betalinger er slået fra indtil da",
+          "action": "Fortsæt"
+        },
+        "action": {
+          "label": "Handling påkrævet",
+          "hint": "Stripe afviste nogle oplysninger og venter på rettelser — det løses ikke af sig selv",
+          "action": "Ret oplysninger"
+        },
+        "review": {
+          "label": "Under gennemgang",
+          "hint": "Oplysninger er indsendt, og Stripe gennemgår dem. Det tager normalt op til en dag",
+          "action": "Åbn Stripe"
+        },
+        "active": {
+          "label": "Tilsluttet",
+          "hint": "Kortbetalinger går ind på studiets Stripe-konto",
+          "action": "Indstillinger"
+        }
+      }
+    },
+    "toasts": {
+      "gatewayUpdated": "Indstillinger for betalingsudbyder er opdateret",
+      "stripeReturned": "Oplysninger er indsendt til Stripe",
+      "stripeLinkExpired": "Stripe-linket er udløbet — tryk Tilslut igen"
+    }
+  },
+  "paymentMethods": {
+    "totalTurnover": "Omsætning for perioden",
+    "periods": {
+      "month": "Måned",
+      "quarter": "Kvartal",
+      "year": "År"
+    },
+    "amount": "Beløb",
+    "share": "Andel",
+    "transactions": "transaktioner",
+    "methods": {
+      "cash": {
+        "name": "Kontant"
+      },
+      "card": {
+        "name": "Bankkort"
+      },
+      "qr": {
+        "name": "SBP (QR)"
+      },
+      "transfer": {
+        "name": "Overførsel"
+      },
+      "stripe": {
+        "name": "Stripe"
+      },
+      "": {
+        "name": "Ikke angivet"
+      }
+    }
+  },
+  "reports": {
+    "metrics": {
+      "revenue": "Indtægter",
+      "expenses": "Udgifter",
+      "profit": "Overskud",
+      "margin": "Margin"
+    },
+    "vsPreviousPeriod": "sammenlignet med forrige periode",
+    "cashflowTitle": "Pengestrøm",
+    "cashflowSub": "Analyse af indtægter og udgifter",
+    "period": "Periode",
+    "income": "Indtægt",
+    "expense": "Udgift",
+    "profit": "Overskud",
+    "periods": {
+      "today": "I dag",
+      "week": "Uge",
+      "month": "Måned",
+      "year": "År"
+    },
+    "legendIncome": "Indtægter",
+    "legendExpense": "Udgifter",
+    "exportCsv": "Eksporter CSV",
+    "expenseStructure": "Udgiftsfordeling",
+    "incomeStructure": "Indtægtsfordeling",
+    "total": "I alt",
+    "otherCategory": "Ukategoriseret",
+    "noData": "Ingen data for denne periode",
+    "insightsTitle": "Finansielt overblik og indsigter",
+    "insightsPlaceholder": "Et AI-baseret finansielt overblik vises her: trendanalyse, udgiftsfordeling og anbefalinger",
+    "toasts": {
+      "exportFailed": "Kunne ikke eksportere transaktioner"
+    }
+  },
+  "confirmModal": {
+    "cancel": "Annuller",
+    "confirm": "Bekræft",
+    "delete": "Slet"
+  }
+}

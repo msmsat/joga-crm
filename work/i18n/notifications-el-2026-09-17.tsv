@@ -1,0 +1,241 @@
+== el
+loading	Φόρτωση…
+chModal.eyebrow	Κανάλι ειδοποιήσεων
+chModal.connected	Συνδέθηκε
+chModal.notConnected	Δεν συνδέθηκε
+chModal.setup	Ρύθμιση σύνδεσης
+chModal.details	Στοιχεία σύνδεσης
+chModal.ready	Το κανάλι λειτουργεί
+chModal.readyHint	Οι ειδοποιήσεις για ενεργοποιημένα συμβάντα στέλνονται αυτόματα.
+chModal.bot	Bot
+chModal.token	Διακριτικό
+chModal.phone	Αριθμός
+chModal.account	Λογαριασμός
+chModal.sender	Αποστολέας
+channels.title	Κανάλια αποστολής
+channels.connect	Σύνδεση
+channels.connected	Συνδέθηκε
+channels.openSettings	Ρυθμίσεις {{channel}}
+channels.waLockedHint	Το κανάλι ξεκλειδώνει όταν η Meta έχει τον τρόπο πληρωμής σας, επιβεβαιωμένη επιχείρηση και εγκεκριμένα πρότυπα
+channels.waBlocker.payment	Δεν υπάρχει τρόπος πληρωμής — οι υπενθυμίσεις δεν παραδίδονται. Ρυθμίστε
+channels.waBlocker.verification	Η επιχείρηση δεν έχει επιβεβαιωθεί στη Meta — όριο 250/ημέρα. Πώς διορθώνεται
+channels.waBlocker.templates	Τα πρότυπα είναι ακόμη υπό έλεγχο στη Meta — δεν θα σταλεί τίποτα. Λεπτομέρειες
+roles.client	Πελάτης
+roles.trainer	Προπονητής
+roles.admin	Διαχειριστής
+roles.owner	Ιδιοκτήτης
+roles.activeCount_one	{{count}} ενεργό
+roles.activeCount_other	{{count}} ενεργά
+matrix.saving	Αποθήκευση…
+matrix.allSaved	Όλες οι αλλαγές αποθηκεύτηκαν
+matrix.notSaved	Δεν αποθηκεύτηκε
+matrix.activateAll	Ενεργοποίηση όλων
+matrix.deactivateAll	Εκκαθάριση όλων των πλαισίων
+matrix.activeCount_one	Ενεργοί κανόνες: {{count}} από {{total}}
+matrix.activeCount_other	Ενεργοί κανόνες: {{count}} από {{total}}
+matrix.scenariosFor	Σενάρια για: {{role}}
+matrix.configureFor_one	Ρύθμιση καναλιών για {{count}} ενεργοποιητή συστήματος
+matrix.configureFor_other	Ρύθμιση καναλιών για {{count}} ενεργοποιητές συστήματος
+matrix.eventColumn	Συμβάν συστήματος
+matrix.noActiveChannels	Δεν υπάρχουν ενεργά κανάλια
+matrix.noActiveChannelsHint	Ενεργοποιήστε τουλάχιστον ένα κανάλι αποστολής στο αριστερό πλαίσιο
+matrix.adviceLabel	Συμβουλή:
+matrix.advice	Ρυθμίστε χωριστά για κάθε ρόλο τι αποστέλλεται και πού — η Velora θα το χειριστεί αυτόματα.
+matrix.tiers.critical	Απαιτείται · δεν απενεργοποιείται
+matrix.tiers.operational	Λειτουργικό
+matrix.tiers.optional	Προαιρετικό
+matrix.lock.critical	Απαιτούμενη ειδοποίηση — δεν απενεργοποιείται
+matrix.lock.lastChannel	Τελευταίο κανάλι αποστολής — δεν απενεργοποιείται
+matrix.channelDisconnected	Το κανάλι δεν είναι συνδεδεμένο
+events.c1.title	Η κράτηση επιβεβαιώθηκε
+events.c1.desc	Μετά από επιτυχημένη κράτηση μαθήματος
+events.c2.title	Υπενθύμιση μαθήματος
+events.c2.desc	24 ώρες και 2 ώρες πριν
+events.c3.title	Το μάθημα ακυρώθηκε
+events.c3.desc	Όταν ακυρώνει ο προπονητής ή το στούντιο
+events.c4.title	Επιτυχής πληρωμή
+events.c4.desc	Απόδειξη μετά από επιτυχή χρέωση
+events.c5.title	Λίγα μαθήματα απομένουν
+events.c5.desc	Όταν απομένουν 1–2 επισκέψεις στο πακέτο
+events.c6.title	Το πακέτο λήγει
+events.c6.desc	3 ημέρες πριν από τη λήξη
+events.c7.title	Γενέθλια
+events.c7.desc	Ευχές με ειδική προσφορά
+events.c8.title	Αίτημα αξιολόγησης
+events.c8.desc	Μετά τη συμμετοχή σε μάθημα
+events.c9.title	Επιστροφή χρημάτων
+events.c9.desc	Κατά την ακύρωση και επεξεργασία επιστροφής
+events.c10.title	Το μάθημα δεν έχει πληρωθεί
+events.c10.desc	Ο πελάτης παρευρέθηκε αλλά δεν έχει πληρώσει
+events.c11.title	Το μάθημα μεταφέρθηκε
+events.c11.desc	Άλλαξε ώρα, αίθουσα ή προπονητής
+events.c12.title	Προστέθηκε μπόνους
+events.c12.desc	Πόντοι ή μπόνους προστέθηκαν στον πελάτη
+events.c13.title	Καφές μετά το μάθημα
+events.c13.desc	Ποιος από την ομάδα πάει για καφέ
+events.t1.title	Νέα κράτηση με προπονητή
+events.t1.desc	Πελάτης έκλεισε προσωπική συνεδρία
+events.t2.title	Ο πελάτης ακύρωσε την κράτηση
+events.t2.desc	Ο πελάτης ακύρωσε λιγότερο από 2 ώρες πριν
+events.t3.title	Υπενθύμιση μαθήματος
+events.t3.desc	1 ώρα πριν την έναρξη
+events.t4.title	Λίστα ομάδας
+events.t4.desc	30 λεπτά πριν από ομαδικό μάθημα
+events.t5.title	Αλλαγή προγράμματος
+events.t5.desc	Ο διαχειριστής άλλαξε ώρα ή τοποθεσία
+events.t6.title	Δεδουλευμένος μισθός
+events.t6.desc	Εβδομαδιαίος υπολογισμός πληρωμής
+events.t7.title	Νέα αξιολόγηση προπονητή
+events.t7.desc	Ο πελάτης άφησε βαθμολογία μετά το μάθημα
+events.t8.title	Γενέθλια πελάτη
+events.t8.desc	Υπενθύμιση για προσωπικές ευχές
+events.t9.title	Το μάθημα ακυρώθηκε
+events.t9.desc	Το στούντιο ή ο διαχειριστής ακύρωσε το μάθημά σας
+events.a1.title	Νέα διαδικτυακή κράτηση
+events.a1.desc	Ο πελάτης έκλεισε μέσω ιστότοπου ή γραφικού στοιχείου
+events.a2.title	Ακύρωση τελευταίας στιγμής
+events.a2.desc	Λιγότερο από 1 ώρα πριν το μάθημα
+events.a3.title	Νέος πελάτης στο σύστημα
+events.a3.desc	Εγγραφή νέου χρήστη
+events.a4.title	Λήψη πληρωμής
+events.a4.desc	Κάθε επιτυχής χρέωση
+events.a6.title	Τα πακέτα εξαντλούνται
+events.a6.desc	Ομάδα πελατών με ≤1 μάθημα που απομένει
+events.a7.title	Σύγκρουση προγράμματος
+events.a7.desc	Επικαλυπτόμενα μαθήματα στο ημερολόγιο
+events.a8.title	Ημερήσια αναφορά
+events.a8.desc	Σύνοψη τέλους ημέρας
+events.a9.title	Απόπειρα σύνδεσης
+events.a9.desc	Σύνδεση από νέα συσκευή
+events.a10.title	Επιστροφή χρημάτων
+events.a10.desc	Ο διαχειριστής εξέδωσε επιστροφή
+events.o1.title	Ημερήσια σύνοψη
+events.o1.desc	Έσοδα, κρατήσεις, προσέλευση της ημέρας
+events.o2.title	Εβδομαδιαία αναφορά
+events.o2.desc	Δείκτες: ανάπτυξη πελατών, LTV, μετατροπή
+events.o3.title	Μεγάλη πληρωμή
+events.o3.desc	Χρέωση πάνω από το καθορισμένο όριο
+events.o4.title	Ανωμαλία δεδομένων
+events.o4.desc	Απότομη πτώση σε κρατήσεις ή έσοδα
+events.o5.title	Νέο μέλος προσωπικού
+events.o5.desc	Ο διαχειριστής δημιούργησε νέο λογαριασμό
+events.o6.title	Ανανέωση προγράμματος
+events.o6.desc	Υπενθύμιση πληρωμής της συνδρομής Velora
+events.o7.title	Τα δικαιώματα πρόσβασης άλλαξαν
+events.o7.desc	Τα δικαιώματα του μέλους προσωπικού άλλαξαν
+events.o8.title	Επίτευξη KPI
+events.o8.desc	Επιτεύχθηκε ο μηνιαίος στόχος
+events.o9.title	Εξαγωγή δεδομένων
+events.o9.desc	Κάποιος εξήγαγε τη βάση δεδομένων πελατών
+tg.title	Telegram
+tg.subtitleConnected	Το κανάλι συνδέθηκε
+tg.subtitleDisconnected	Συνδέστε το bot ειδοποιήσεων
+tg.connected	Συνδέθηκε
+tg.pasteToken	Επικολλήστε το διακριτικό bot που πήρατε από το @BotFather.
+tg.invalidToken	Μη έγκυρη μορφή διακριτικού
+tg.howToGet	Πώς να πάρετε διακριτικό:
+tg.steps.1	Ανοίξτε το @BotFather στο Telegram
+tg.steps.2	Στείλτε την εντολή /newbot και ακολουθήστε τις οδηγίες
+tg.steps.3	Αντιγράψτε το διακριτικό που εκδόθηκε
+tg.steps.4	Επικολλήστε το στο παραπάνω πεδίο
+tg.connect	Σύνδεση
+tg.disconnect	Αποσύνδεση
+tg.disconnectTitle	Αποσύνδεση Telegram;
+tg.disconnectMessage	Οι πελάτες και το προσωπικό θα σταματήσουν να λαμβάνουν ειδοποιήσεις από αυτό το κανάλι.
+tg.close	Κλείσιμο
+tg.cancel	Ακύρωση
+emailCh.title	Email
+emailCh.subtitle	Διεύθυνση αποστολέα για email πελατών
+emailCh.verifiedLabel	Επιβεβαιώθηκε
+emailCh.emailLabel	Email αποστολέα
+emailCh.emailPlaceholder	admin@studio.com
+emailCh.invalidEmail	Εισαγάγετε έγκυρο email
+emailCh.sendCode	Αποστολή κωδικού
+emailCh.codeSentTo	Ο κωδικός στάλθηκε στο
+emailCh.codeHint	Εισαγάγετε τον 6ψήφιο κωδικό από το email.
+emailCh.codeLabel	Κωδικός επιβεβαίωσης
+emailCh.resend	Επανάληψη αποστολής κωδικού
+emailCh.viaVelora	Τα email αποστέλλονται μέσω του διακομιστή Velora για λογαριασμό σας.
+emailCh.wrongCode	Μη έγκυρος ή ληγμένος κωδικός
+emailCh.verify	Επιβεβαίωση
+emailCh.back	Πίσω
+emailCh.cancel	Ακύρωση
+wa.title	WhatsApp
+wa.subtitleConnected	Το κανάλι συνδέθηκε
+wa.subtitleDisconnected	Συνδεθείτε με τον εταιρικό λογαριασμό Meta
+wa.connected	Συνδέθηκε
+wa.paymentRequiredTitle	Θα χρειαστεί κάρτα
+wa.paymentRequired	Η σύνδεση του αριθμού είναι δωρεάν, αλλά η Meta παραδίδει υπενθυμίσεις σε πελάτες μόνο όταν προστεθεί κάρτα. Την προσθέτετε ξεχωριστά —
+wa.paymentMissingTitle	Δεν υπάρχει τρόπος πληρωμής
+wa.paymentMissing	Προς το παρόν λειτουργούν μόνο οι απαντήσεις bot σε εισερχόμενα μηνύματα. Η Meta απορρίπτει υπενθυμίσεις, επιβεβαιώσεις και μαζικές αποστολές μέχρι να προστεθεί κάρτα —
+wa.paymentOkTitle	Η πληρωμή συνδέθηκε
+wa.paymentOk	οι ειδοποιήσεις παραδίδονται πλήρως.
+wa.paymentUnknown	Δεν μπορέσαμε να ελέγξουμε τον τρόπο πληρωμής στη Meta — θα δείξουμε την κατάσταση στην επόμενη προσπάθεια.
+wa.paymentLink	Κέντρο χρεώσεων Meta
+wa.paymentRecheck	Έλεγχος ξανά
+wa.paymentFound	Η πληρωμή συνδέθηκε
+wa.verify.title	Η επιχείρηση δεν έχει επιβεβαιωθεί στη Meta
+wa.verify.lead	Ο αριθμός λειτουργεί, αλλά με μειωμένο όριο 250 μοναδικών παραληπτών την ημέρα. Η επιβεβαίωση αφαιρεί το όριο και ξεκλειδώνει πλήρη έναρξη. Το στούντιο πρέπει να το κάνει μόνο του — ο λογαριασμός WhatsApp ανήκει σε εσάς και η Velora δεν μπορεί να ενεργήσει εκ μέρους σας.
+wa.verify.stepsTitle	Πώς να επιβεβαιώσετε την επιχείρηση:
+wa.verify.step1a	Ανοίξτε το
+wa.verify.link	Κέντρο Ασφαλείας Meta Business
+wa.verify.step1b	και επιλέξτε «Έναρξη επιβεβαίωσης». Χρειάζεστε δικαιώματα διαχειριστή στον εταιρικό λογαριασμό.
+wa.verify.step2	Συμπληρώστε τα νομικά στοιχεία: το όνομα ακριβώς όπως στα έγγραφα, διεύθυνση, τηλέφωνο και ιστότοπο. Ο ιστότοπος πρέπει να λειτουργεί και να χρησιμοποιεί HTTPS.
+wa.verify.step3	Ανεβάστε έγγραφο εγγραφής επιχείρησης και περιμένετε να το ελέγξει η Meta.
+wa.verify.step4	Επιβεβαιώστε τη σύνδεσή σας με την επιχείρηση: email στο domain του ιστότοπου, κλήση ή SMS στο δηλωμένο τηλέφωνο ή επιβεβαίωση domain.
+wa.verify.step5	Περιμένετε την απόφαση — συνήθως 1–5 εργάσιμες ημέρες. Η κατάσταση εμφανίζεται στο ίδιο Κέντρο Ασφαλείας· σε απόρριψη, η Meta δηλώνει τον λόγο και επιτρέπει νέα αίτηση.
+wa.verify.docsTitle	Αποδεκτά έγγραφα (ένα από κάθε ομάδα):
+wa.verify.doc1	Εγγραφή: πιστοποιητικό σύστασης, απόσπασμα μητρώου, άδεια επιχείρησης ή φορολογικό έγγραφο.
+wa.verify.doc2	Απόδειξη παρουσίας: λειτουργικός ιστότοπος, επίσημη σελίδα κοινωνικών μέσων ή καταχώριση σε επαγγελματικό κατάλογο.
+wa.verify.pitfallTitle	Η συνηθέστερη απόρριψη
+wa.verify.pitfall	Το όνομα της επιχείρησης στη Meta και στο έγγραφο πρέπει να ταιριάζει χαρακτήρα προς χαρακτήρα, μαζί με τη νομική μορφή και τη στίξη. Τα «Romashka LLC» και «Romashka, LLC» θεωρούνται διαφορετικά ονόματα.
+wa.templatesTitle	Πρότυπα μηνυμάτων
+wa.templates	Η Meta δεν σας επιτρέπει να στείλετε πρώτοι μήνυμα σε πελάτη χωρίς προεγκεκριμένο πρότυπο. Δημιουργήστε πρότυπα για κάθε συμβάν — θα ελεγχθούν και θα λειτουργήσουν μετά την έγκριση.
+wa.templatesAction	Προετοιμασία προτύπων
+wa.templatesPending	Δημιουργία προτύπων…
+wa.templatesDone_one	Πρότυπα έτοιμα: {{count}}. Αναμένεται έλεγχος Meta
+wa.templatesDone_other	Πρότυπα έτοιμα: {{count}}. Αναμένεται έλεγχος Meta
+wa.templatesPartial	Η Meta απέρριψε ορισμένα πρότυπα: {{failed}}. Δείτε το αρχείο καταγραφής για λεπτομέρειες
+wa.templatesRejectedTitle_one	Η Meta απέρριψε {{count}} πρότυπο
+wa.templatesRejectedTitle_other	Η Meta απέρριψε {{count}} πρότυπα
+wa.templatesRejected	— αυτές οι ειδοποιήσεις δεν παραδίδονται. Ελέγξτε τη διατύπωση στον λογαριασμό Meta και δημιουργήστε ξανά τα πρότυπα.
+wa.templatesPendingTitle_one	{{count}} πρότυπο υπό έλεγχο
+wa.templatesPendingTitle_other	{{count}} πρότυπα υπό έλεγχο
+wa.templatesPendingHint	— η Meta μπορεί να χρειαστεί έως μία ημέρα. {{approved}} έχουν ήδη εγκριθεί και παραδίδονται.
+wa.templatesOkTitle	Τα πρότυπα εγκρίθηκαν
+wa.templatesOk_one	{{count}} πέρασε τον έλεγχο Meta — οι ειδοποιήσεις παραδίδονται.
+wa.templatesOk_other	Και τα {{count}} πέρασαν τον έλεγχο Meta — οι ειδοποιήσεις παραδίδονται.
+wa.paidWarning	Τα μηνύματα WhatsApp χρεώνονται
+wa.approxPrice	περ.
+wa.pricingLoading	Φόρτωση τρέχουσας τιμής…
+wa.perMessage	ανά μήνυμα
+wa.viaMeta	χρεώνεται απευθείας από τη Meta
+wa.windowNotice	Η παράδοση εγγυάται μόνο εντός του παραθύρου συνομιλίας 24 ωρών.
+wa.connect	Σύνδεση WhatsApp
+wa.disconnect	Αποσύνδεση
+wa.disconnectTitle	Αποσύνδεση WhatsApp;
+wa.disconnectMessage	Οι πελάτες και το προσωπικό θα σταματήσουν να λαμβάνουν ειδοποιήσεις από αυτό το κανάλι.
+wa.close	Κλείσιμο
+wa.cancel	Ακύρωση
+tabs.matrix	Ρυθμίσεις
+tabs.log	Αρχείο αποστολών
+log.title	Αρχείο αποστολών
+log.subtitle	Τι στάλθηκε, σε ποιον και πότε, και πώς ολοκληρώθηκε κάθε αποστολή.
+log.status.sent	Παραδόθηκε
+log.status.rejected	Απορρίφθηκε
+log.status.error	Αποτυχία σύνδεσης
+log.status.pending	Σε εξέλιξη
+log.searchPlaceholder	Τηλέφωνο, email ή κωδικός συμβάντος
+log.allChannels	Όλα τα κανάλια
+log.reset	Επαναφορά
+log.refreshing	Ανανέωση…
+log.otherEvent	Αποστολή εκτός καταλόγου
+log.empty	Δεν έχει σταλεί τίποτα ακόμη
+log.emptyHint	Κάθε ειδοποίηση που στέλνει το στούντιο σε πελάτες και προσωπικό θα εμφανίζεται εδώ.
+log.emptyFiltered	Δεν βρέθηκε τίποτα
+log.emptyFilteredHint	Δοκιμάστε να αλλάξετε τα φίλτρα ή να αναζητήσετε άλλο αριθμό.
+log.loadError	Δεν ήταν δυνατή η φόρτωση του αρχείου
+log.loadErrorHint	Ανανεώστε τη σελίδα — αν δεν βοηθήσει, επικοινωνήστε με την υποστήριξη.
+log.range	{{from}}–{{to}} από {{total}}
+log.prev	Πίσω
+log.next	Επόμενο

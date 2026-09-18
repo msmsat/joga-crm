@@ -1,0 +1,287 @@
+== tr
+telegram.tokenLabel	Bot belirteci
+telegram.tokenPlaceholder	1234567890:ABC...
+telegram.tokenInvalidFormat	Geçersiz belirteç biçimi
+telegram.verifyButton	Doğrula ve bağlan
+telegram.verifiedToast	@{{username}} botu bağlandı
+telegram.verifyFailedToast	Telegram bu belirteci reddetti
+telegram.disconnect	Bağlantıyı kes
+telegram.disconnectedToast	Botun bağlantısı kesildi
+telegram.disconnectConfirmTitle	Botun bağlantısı kesilsin mi?
+telegram.disconnectConfirmMessage	Telegram otomatik yanıtlayıcısı, yeniden bir bot bağlayana kadar çalışmayı durdurur.
+telegram.gateTooltip	Önce bir bot bağlayın
+telegram.statsPending	Otomatik yanıtlayıcı çalışmaya başladığında görünür
+telegram.instructionTitle	Belirteç nasıl alınır
+telegram.instructionStep1	Telegram’da @BotFather’ı açın
+telegram.instructionStep2	/newbot komutunu gönderin, bot için ad ve kullanıcı adı seçin
+telegram.instructionStep3	Size verilen belirteci kopyalayın
+telegram.instructionStep4	Buraya yapıştırıp “Doğrula ve bağlan”a tıklayın
+instagram.connectButton	Instagram’ı bağla
+instagram.connectedToast	Instagram bağlandı
+instagram.connectErrorToast	Instagram bağlanamadı — tekrar deneyin
+instagram.expiresUntil	Erişim {{date}} tarihine kadar geçerli
+instagram.disconnect	Bağlantıyı kes
+instagram.disconnectedToast	Instagram’ın bağlantısı kesildi
+instagram.disconnectConfirmTitle	Instagram’ın bağlantısı kesilsin mi?
+instagram.disconnectConfirmMessage	Instagram otomatik yanıtlayıcısı, hesabı yeniden bağlayana kadar müşterilere yanıt vermeyi durdurur.
+instagram.gateTooltip	Önce bir hesap bağlayın
+instagram.statsPending	Otomatik yanıtlayıcı çalışmaya başladığında görünür
+instagram.instructionTitle	Nasıl bağlanılır
+instagram.instructionStep1	Stüdyo hesabı profesyonel olmalıdır — Business veya Creator (Instagram Ayarları → Hesap türü)
+instagram.instructionStep2	“Instagram’ı bağla”ya tıklayın ve stüdyo hesabıyla oturum açın
+instagram.instructionStep3	Mesajlara erişime izin verin
+instagram.instructionStep4	Otomatik olarak buraya döneceksiniz
+whatsapp.numberLabel	WhatsApp Business numarası
+whatsapp.connectLink	veya belirteci elle girin
+whatsapp.gateTooltip	Önce bir WhatsApp numarası bağlayın
+whatsapp.statsPending	Otomatik yanıtlayıcı çalışmaya başladığında görünür
+whatsapp.instructionTitle	Nasıl bağlanılır
+whatsapp.instructionStep1	“WhatsApp’ı bağla”ya tıklayın — bir Meta penceresi açılır
+whatsapp.instructionStep2	Facebook’ta oturum açın, bir işletme hesabı ve numara seçin (veya yeni ekleyin) ve kodla doğrulayın
+whatsapp.instructionStep3	Numara bir kez bağlanır — aynı numara müşteri bildirimleri için kullanılır; buraya dönüp otomatik yanıtlayıcıyı açın
+whatsapp.connectButton	WhatsApp’ı bağla
+whatsapp.connectedToast	WhatsApp numarası bağlandı
+whatsapp.connectErrorToast	WhatsApp numarası bağlanamadı
+whatsapp.disconnect	Bağlantıyı kes
+whatsapp.disconnectedToast	WhatsApp’ın bağlantısı kesildi
+whatsapp.disconnectConfirmTitle	WhatsApp’ın bağlantısı kesilsin mi?
+whatsapp.disconnectConfirmMessage	Numaranın stüdyo bildirimleri ve entegrasyonlarıyla bağlantısı da kesilir.
+history.title	Sohbet geçmişi
+history.empty	İlk görüşmenizi başlatın
+history.today	Bugün
+history.yesterday	Dün
+history.earlier	Daha önce
+history.messagesCount_one	{{count}} mesaj
+history.messagesCount_other	{{count}} mesaj
+history.deleteConfirmTitle	Bu sohbet silinsin mi?
+history.deleteConfirmMessage	Bu görüşmedeki tüm mesajlar kalıcı olarak silinir.
+actions.newChat	Yeni sohbet
+actions.deleteChat	Sohbeti sil
+actions.confirmTitle	İşlemi onaylayın
+actions.confirm	Onayla
+actions.cancel	İptal
+actions.cancelled	İşlem iptal edildi.
+actions.done	{{date}} tarihinde tamamlandı
+actions.effect	Ne değişecek
+actions.undo	Geri al
+actions.undoTitle	Bu işlem geri alınsın mı?
+actions.undoMessage	Yapılanı geri alacağım: {{action}}. Müşterilerin zaten ayırdığı dersler kalır — bunları yalnızca bir kişi kaldırabilir.
+actions.args.lesson_id	Ders
+actions.args.client_id	Müşteri
+actions.args.reservation_id	Rezervasyon
+actions.args.alternate_with	Şununla dönüşümlü
+actions.args.service_id	Hizmet
+actions.args.teacher_id	Eğitmen
+actions.args.hall_id	Salon
+actions.args.start_time	Başlangıç
+actions.args.duration_min	Süre, dk
+actions.args.total_spots	Yerler
+actions.args.price	Fiyat
+actions.args.name	Ad
+actions.args.last_name	Soyad
+actions.args.phone	Telefon
+actions.args.email	E-posta
+actions.args.city	Şehir
+actions.args.birth_date	Doğum tarihi
+actions.args.source	Kaynak
+actions.args.frozen	Dondurulmuş
+actions.args.date_from	Başlangıç
+actions.args.date_to	Bitiş
+actions.args.weekdays	Haftanın günleri
+actions.args.time_from	Başlangıç
+actions.args.time_to	Bitiş
+actions.args.break_at	Mola saati
+actions.args.break_min	Mola, dk
+actions.args.extend_hours	Eğitmenin çalışma saatini uzat
+actions.args.salary	Maaş
+actions.args.access_role	Erişim
+actions.args.department	Pozisyon
+actions.args.password	Çalışan parolası
+actions.args.rate	Ücret
+actions.args.rate_type	Ödeme türü
+actions.args.service_ids	Hizmetler
+actions.args.schedule	Program
+actions.bool.yes	evet
+actions.bool.no	hayır
+settings.title	AI ayarları
+settings.model	Model
+settings.language	Dil
+models.comingSoon	Yakında
+models.velora-3.5	Velora AI 3.5
+languages.auto	Otomatik
+languages.ru	Rusça
+languages.en	İngilizce
+languages.uk	Ukraynaca
+languages.cs	Çekçe
+languages.de	Almanca
+chat.thinking	Velora AI düşünüyor
+chat.thinkingAnswer	Velora AI yanıtı değerlendiriyor
+chat.readyTitle	Velora AI yardıma hazır
+chat.thinkingTitle	Velora AI düşünüyor...
+chat.readySubtitle	Bir soru sorun veya öneri seçin
+chat.thinkingSubtitle	İsteğiniz işleniyor
+chat.placeholder	Bir mesaj yazın...
+chat.drawerPlaceholder	Bana istediğinizi sorun...
+chat.navbarPlaceholder	AI’a sorun veya görev atayın...
+chat.enterToSend	Göndermek için Enter
+chat.shiftEnterNewline	Yeni satır için Shift+Enter
+chat.aiDisclaimer	Velora AI hata yapabilir. Önemli bilgileri kontrol edin.
+chat.continueInChat	Sohbette devam et →
+chat.emptyTitle	Nasıl yardımcı olabilirim?
+chat.emptySubtitle	Stüdyonuz, müşterileriniz veya işiniz hakkında soru sorun
+chat.charCount_one	{{count}} / 4000 karakter
+chat.charCount_other	{{count}} / 4000 karakter
+chat.suggestions.revenue	Bu ayın gelir istatistiklerini göster
+chat.suggestions.sms	Bir randevu için SMS hatırlatması yaz
+chat.suggestions.promo	Yaz kampanyası için fikirler
+chat.suggestions.retention	Müşteri bağlılığını nasıl artırabilirim?
+chat.drawerSuggestions.revenueAnalysis	Gelir analizi
+chat.drawerSuggestions.emailTemplate	E-posta şablonu
+chat.drawerSuggestions.promoIdeas	Kampanya fikirleri
+chat.drawerSuggestions.clientReport	Müşteri raporu
+drawer.historyBack	Sohbetler
+drawer.historyLabel	Geçmiş
+agents.title	AI aracıları
+agents.info.title	AI aracıları nedir
+agents.info.lead	Meşgul olduğunuzda stüdyonuzun mesajlaşma kanallarında müşterilere yanıt veren bir asistan.
+agents.info.b1	Günün her saati yanıt verir — kimse yönetici beklemez
+agents.info.b2	Stüdyonuzun programını, hizmetlerini ve fiyatlarını bilir
+agents.info.b3	Yanıtların tonunu ve uzunluğunu siz belirlersiniz
+agents.info.note	Bir kanal, ayarlarda bağlandığında çalışmaya başlar
+agents.activeCount	{{active}} / {{total}}
+agents.stateOn	Yanıtlıyor
+agents.stateOffline	Bağlı değil
+agents.configureButton	Aracıları yapılandır
+agents.enable	Etkinleştir
+agents.disable	Devre dışı bırak
+agents.modalTitle	AI aracısı kurulumu
+agents.modalSubtitle	Mesajlaşma kanallarında otomatik yanıtlar
+agents.tabPrompt	Sistem yönergesi
+agents.statusDisabled	Devre dışı
+agents.statHandled	İşlendi
+agents.statRating	Değerlendirme
+agents.styleTitle	Yanıt stili
+agents.styleAllChannels	tüm kanallar için geçerlidir
+agents.toneLabel	Yanıt tonu
+agents.tone.friendly	Samimi
+agents.tone.formal	Resmî
+agents.tone.neutral	Tarafsız
+agents.maxLengthLabel	Azami yanıt uzunluğu (karakter)
+agents.maxLengthError	50 ile 4000 arasında sayı girin
+agents.offHoursLabel	Yalnızca çalışma saatleri dışında otomatik yanıt
+agents.promptHint	Bu metin aracının kişiliğini belirler — nasıl iletişim kurduğu, ne bildiği ve hangi konulardan kaçındığı.
+agents.promptPlaceholder	Nazik bir stüdyo asistanısınız...
+agents.promptCount_one	{{count}} / 2000 karakter
+agents.promptCount_other	{{count}} / 2000 karakter
+agents.tgChannelInactive	Telegram kanalı Çevrimiçi rezervasyonda kapalı — bot mesaj almaz, bu nedenle aracı sessiz kalır.
+errors.tg_token_required	Önce bir Telegram botu bağlayın — henüz belirteç kaydedilmedi.
+errors.ig_not_connected	Instagram henüz bağlı değil.
+errors.wa_not_connected	WhatsApp numarası henüz bağlı değil — Bildirimler’de bağlayın.
+errors.assistant_unavailable	Asistan geçici olarak kullanılamıyor — daha sonra tekrar deneyin.
+errors.trial_exhausted	AI asistanının 500 deneme isteğinin tamamını kullandınız. Devam etmek için ücretli plan seçin.
+errors.quota_exceeded	Bu plandaki tüm AI isteklerini kullandınız. Limit ay başında sıfırlanır — veya planınızı yükseltin.
+toasts.settingsSaved	Ayarlar kaydedildi
+toolStatus.add_client_note	Not yazılıyor…
+toolStatus.add_client_tag	Etiket ekleniyor…
+toolStatus.add_loyalty_points	Puan ekleniyor…
+toolStatus.book_client	Ders ayırtılıyor…
+toolStatus.cancel_booking	Rezervasyon iptal ediliyor…
+toolStatus.pay_booking	Ders ödemesi kaydediliyor…
+toolStatus.clear_schedule	Program temizleniyor…
+toolStatus.create_account	Hesap oluşturuluyor…
+toolStatus.create_branch	Şube oluşturuluyor…
+toolStatus.create_client	Müşteri oluşturuluyor…
+toolStatus.create_counterparty	Karşı taraf oluşturuluyor…
+toolStatus.create_hall	Salon oluşturuluyor…
+toolStatus.create_lesson	Ders oluşturuluyor…
+toolStatus.create_operation	İşlem kaydediliyor…
+toolStatus.create_package	Paket oluşturuluyor…
+toolStatus.create_promo	Promosyon kodu oluşturuluyor…
+toolStatus.create_service	Hizmet oluşturuluyor…
+toolStatus.create_staff	Ekip üyesi ekleniyor…
+toolStatus.default	Çalışılıyor…
+toolStatus.delete_client	Müşteri siliniyor…
+toolStatus.delete_staff	Ekip üyesi kaldırılıyor…
+toolStatus.fill_schedule	Program dolduruluyor…
+toolStatus.find_clients	Müşteriler aranıyor…
+toolStatus.forget_fact	Bilgi unutuluyor…
+toolStatus.freeze_client	Müşteri donduruluyor…
+toolStatus.get_booking_settings	Rezervasyon kuralları denetleniyor…
+toolStatus.get_catalog_settings	Paket ayarları denetleniyor…
+toolStatus.get_client	Müşteri kartı açılıyor…
+toolStatus.get_client_events	Müşteri geçmişi okunuyor…
+toolStatus.get_inactive_clients	Etkin olmayan müşteriler aranıyor…
+toolStatus.get_client_notes	Müşteri notları okunuyor…
+toolStatus.get_client_subscription	Müşteri paketi denetleniyor…
+toolStatus.get_delivery_log	Teslimat günlüğü denetleniyor…
+toolStatus.get_finance_goals	Finansal hedefler denetleniyor…
+toolStatus.get_finance_summary	Finanslar denetleniyor…
+toolStatus.get_lesson	Ders açılıyor…
+toolStatus.get_loyalty_programs	Sadakat programları denetleniyor…
+toolStatus.get_loyalty_summary	Sadakat denetleniyor…
+toolStatus.get_notification_matrix	Bildirimler denetleniyor…
+toolStatus.get_payroll	Bordro hesaplanıyor…
+toolStatus.get_rooms	Salonlar denetleniyor…
+toolStatus.get_schedule	Program denetleniyor…
+toolStatus.get_segments	Müşteri segmentleri denetleniyor…
+toolStatus.get_services	Hizmetler denetleniyor…
+toolStatus.get_staff	Ekip denetleniyor…
+toolStatus.get_staff_profile	Ekip üyesi kartı açılıyor…
+toolStatus.get_stats	Sayılar işleniyor…
+toolStatus.get_team_report	Eğitmene göre geri dönüş ölçülüyor…
+toolStatus.get_studio_facts	Stüdyo hakkında bildiklerim anımsanıyor…
+toolStatus.get_today_agenda	Bugün denetleniyor…
+toolStatus.issue_certificate	Sertifika düzenleniyor…
+toolStatus.list_operations	Gelir ve giderler denetleniyor…
+toolStatus.open_ui	Ekran açılıyor…
+toolStatus.remember_fact	Hatırlanıyor…
+toolStatus.remove_client_tag	Etiket kaldırılıyor…
+toolStatus.sell_subscription	Paket satılıyor…
+toolStatus.set_client_discount	İndirim ayarlanıyor…
+toolStatus.set_staff_day	Gün programda işaretleniyor…
+toolStatus.set_staff_schedule	Program ayarlanıyor…
+toolStatus.toggle_notification_event	Bildirim değiştiriliyor…
+toolStatus.ui_section	Bölümün nasıl çalıştığı denetleniyor…
+toolStatus.update_booking_rules	Rezervasyon kuralları güncelleniyor…
+toolStatus.update_client	Müşteri bilgileri güncelleniyor…
+toolStatus.update_lesson	Ders güncelleniyor…
+toolStatus.update_service	Hizmet güncelleniyor…
+toolStatus.update_staff	Ekip üyesi güncelleniyor…
+quota.trialLow	Az sayıda deneme isteği kaldı.
+quota.label	AI asistanı istekleri
+quota.value	{{used}} / {{limit}}
+quota.low	Aylık sınıra yaklaştınız.
+quota.upgrade	Plan seçin
+quota.monthPeriod	Takvim ayı başına (UTC)
+quota.trialPeriod	Tüm deneme süresi için
+rating.up	İyi yanıt
+rating.down	Kötü yanıt
+memory.title	Asistan hatırlıyor
+memory.forget	Unut
+memory.forgetConfirmTitle	Bu bilgi unutulsun mu?
+memory.forgetConfirmMessage	Asistan bunu yanıtlarda kullanmayı bırakır.
+memory.deleted	Bilgi kaldırıldı
+plan.pages.who	Kim ve ne
+plan.pages.when	Ne zaman
+plan.pages.check	Gözden geçir
+plan.stepOf	{{current}} / {{total}}. adım
+plan.next	İleri
+plan.back	Geri
+plan.confirm	Onayla
+plan.confirmDanger	Onayla
+plan.choose	Seç
+plan.nothingFound	Hiçbir şey bulunamadı
+plan.nothingToFill	Burada doldurulacak bir şey yok — doğrudan devam edin.
+plan.fromStep	{{n}}. adımda oluşturuldu
+plan.values.group	grup
+plan.values.individual	bireysel
+plan.values.trainer	eğitmen
+plan.values.admin	yönetici
+plan.values.owner	sahip
+plan.values.hourly	saatlik
+plan.values.percent	gelirin %’si
+plan.values.fixed	ders başına
+plan.title_one	Onayla — {{count}} işlem
+plan.title_other	Onayla — {{count}} işlem
+plan.stillEmpty_one	{{count}} alan kaldı
+plan.stillEmpty_other	{{count}} alan kaldı

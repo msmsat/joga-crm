@@ -1,0 +1,296 @@
+== hr
+legal.terms	Uvjeti korištenja
+legal.privacy	Pravila privatnosti
+tabs.plans	Planovi i cijene
+tabs.invoices	Povijest plaćanja
+tabs.method	Način plaćanja
+tabsShort.plans	Planovi
+tabsShort.invoices	Povijest
+tabsShort.method	Plaćanje
+paymentsHistory.title	Potpuna povijest plaćanja
+paymentsHistory.subtitle	Sve fakture za ovaj studio
+paymentsHistory.clearFilter	Očisti
+paymentsHistory.loadMore	Učitaj više
+planNames.start	Start
+planNames.pro	Pro
+planNames.business	Business
+seats.title	Koliko je zaposlenika u studiju
+seats.hint	od {{amount}} mjesečno
+seats.stepNote	Svako dodatno mjesto dodaje {{amount}} mjesečno
+seats.unlimitedNote	Bez ograničenja broja zaposlenika
+seats.perSeat	Po zaposleniku
+limits.staff	Zaposlenici
+limits.ai	Zahtjevi za Velora AI
+limits.unlimited	Neograničeno
+banner.trialEnds	Vaše probno razdoblje završava {{date}} — odaberite plan
+banner.renews	Vaša pretplata {{plan}} obnavlja se {{date}}
+banner.expires	Vaša pretplata {{plan}} završava {{date}}
+banner.choosePlan	Odaberite plan
+banner.dismiss	Zatvori
+banner.unpaid	Vaš plan nije plaćen. Za nastavak platite u Planovi i naplata.
+banner.suspended	Pristup je obustavljen jer je faktura plana dospjela. Platite je u Planovi i naplata.
+paymentReturn.done	Plaćanje je prošlo — plan {{plan}} je aktivan.
+paymentReturn.processing	Plaćanje se obrađuje — pretplata će se aktivirati za nekoliko minuta.
+header.eyebrow	Velora · Naplata
+header.title	Planovi i naplata
+header.subtitle	Upravljajte pretplatom, načinima plaćanja i poviješću plaćanja
+header.totalSpent	Ukupno potrošeno
+header.monthsWithUs	Mjeseci s nama
+header.saved	Ušteđeno
+header.nextCharge	Sljedeća naplata
+header.currentPlan	TRENUTAČNI PLAN
+header.noPlanName	Bez plana
+header.noPlan	Nema aktivne pretplate
+header.active	Aktivan
+header.activeUntil	Aktivan · do {{date}}
+header.trialPlanName	Probni plan
+header.trial	Probno razdoblje
+header.trialUntil	Probno razdoblje · do {{date}}
+header.expired	Istekao
+header.percentRate	{{rate}}% prodaje
+header.modePercent	Postotni plan
+header.modeFixed	Fiksni
+header.modeCombo	Kombinirani
+header.unpaid	Plan nije plaćen
+header.awaitingPayment	Čeka plaćanje
+mode.title	Model plaćanja
+mode.subscription	Fiksna pretplata
+mode.percent	% prodaje
+mode.combo	Fiksno + % kombinacija
+mode.short.subscription	Fiksno
+mode.short.percent	Postotak
+mode.short.combo	Kombinirano
+mode.descriptions.subscription	Plaćate jedan iznos mjesečno. Predvidljivo i isplativo.
+mode.descriptions.percent	Bez fiksne naknade: {{rate}}% svake prodaje, uključujući gotovinu.
+mode.descriptions.combo	Pola pretplate + {{rate}}% svake prodaje, uključujući gotovinu.
+mode.badges.popular	Popularno
+mode.badges.flexible	Fleksibilno
+mode.percentCard.title	Model „3% od prodaje“
+mode.percentCard.description	Plaćate samo kad zarađujete: 3% svake prodaje, bez fiksne pretplatničke naknade. Internetska plaćanja dijele se odmah; gotovina i depoziti se skupljaju i stižu kao jedna faktura svaki mjesec.
+mode.percentCard.noFixed	Bez fiksne naknade
+mode.percentCard.payForResult	Plaćanje za rezultat
+mode.percentCard.oneClick	Aktivacija jednim klikom
+mode.percentCard.cta	Aktiviraj model 3%
+mode.percentCard.ctaShort	Aktiviraj 3%
+mode.activateSuccess	Model plaćanja je ažuriran
+mode.activateError	Nije moguće ažurirati model plaćanja
+mode.alreadyActive	Ovaj model plaćanja već je aktivan — u nastavku možete obnoviti ili promijeniti plan
+mode.confirmSwitchTitle	Promijeniti model plaćanja?
+mode.confirmSwitchMessage	Vaša pretplata je aktivna. Promjena modela vrijedi odmah, a ostatak plaćenog razdoblja U POTPUNOSTI SE GUBI: neiskorišteni dani se ne vraćaju i ne prenose.
+mode.termsTitle	Potvrdite uvjete plana
+mode.termsMessage	Na ovom planu platforma zadržava {{rate}}% svake prodaje.\n\nZa internetska plaćanja naknada se zadržava automatski u trenutku plaćanja. Za gotovinu, terminal i nadoplate depozita NE zadržava se odmah — obračunava se i jednom mjesečno dobivate posebnu fakturu.\n\nImate {{days}} dana za plaćanje te fakture. Ako nije plaćena na vrijeme, pristup CRM-u i miniaplikaciji za klijente obustavlja se dok ne bude podmirena.\n\nTrenutačni iznos za plaćanje vidljiv je u Naplati; možete platiti u bilo kojem trenutku, uključujući unaprijed.
+mode.termsConfirm	Prihvaćam uvjete
+mode.termsMinimum	Minimalna mjesečna naknada iznosi {{amount}} {{currency}}. Ako je u kalendarskom mjesecu platforma od vašeg studija zaradila manje od toga (na primjer, nije bilo prodaje kroz CRM), dobivate fakturu za razliku. Zaradite više od minimuma i nema fakture. Neplaćena minimalna naknada obustavlja pristup jednako kao neplaćena faktura provizije.
+mode.termsBurn	UPOZORENJE: ostalo vam je plaćeno razdoblje. Promjena modela naplate GA U POTPUNOSTI GUBI — neiskorišteni dani se ne vraćaju i ne prenose.
+mode.termsCombo	Promjena je KUPNJA: odmah nakon potvrde vidjet ćete dugovani iznos. Ostatak trenutačnog plaćenog razdoblja gubi se — ne vraća se i ne prenosi. Model fiksno + % uključuje se SAMO nakon plaćanja; do tada plan ostaje kakav jest i ništa se ne naplaćuje.
+combo.rateBadge	{{rate}}%
+combo.summary	Fiksno {{fixed}}/mj. + {{rate}}% prodaje (gotovina se fakturira mjesečno)
+combo.cta	Aktiviraj Kombinirani plan
+combo.ctaShort	Aktiviraj kombinirano
+period.1	1 mjesec
+period.3	3 mjeseca
+period.6	6 mjeseci
+period.12	1 godina
+period.24	2 godine
+period.title	Razdoblje plaćanja
+period.discountActive	Aktivan je popust od {{percent}}%
+period.noDiscount	Bez popusta
+period.discountLabel	−{{percent}}% popusta
+calculator.title	Parametri izračuna
+calculator.monthlyTurnover	Vaš mjesečni online promet
+calculator.turnoverRangeMin	50 tis.
+calculator.turnoverRangeMax	3 mil.+
+calculator.chooseFeeLabel	Odaberite stopu provizije (utječe na značajke)
+calculator.feeOptions.basic	Osnovni
+calculator.feeOptions.standard	Standardni
+calculator.feeOptions.pro	Pro
+calculator.feeOptions.max	Maks.
+calculator.chooseFixedLabel	Odaberite osnovni fiksni dio (prihvat kartica uvijek je 3%)
+calculator.fixedOptions.start	Start
+calculator.fixedOptions.optima	Optima
+calculator.fixedOptions.business	Business
+calculator.economyPercentTitle	EKONOMIJA PLANA
+calculator.economyComboTitle	EKONOMIJA KOMBINIRANOG PLANA
+calculator.turnover	Promet studija
+calculator.systemFee	Naknada sustava
+calculator.totalMonthlyPayment	UKUPNO MJESEČNO PLAĆANJE
+calculator.onlyPayForResult	Ne plaćate fiksnu naknadu, samo za rezultat
+calculator.activatePercent	Aktiviraj model {{percent}}%
+calculator.baseSubscription	Osnovna pretplata (fiksno)
+calculator.acquiringFee	Prihvat kartica / naknada
+calculator.activateCombo	Aktiviraj Kombinirani plan
+planCards.bestChoice	Najbolji izbor
+planCards.current	Trenutačni
+planCards.perMonth	/ mj.
+planCards.currentPlan	Trenutačni plan
+planCards.yourPrice	Vaša cijena
+planCards.staffLimit	Do {{count}} zaposlenika
+planCards.staffUnlimited	Neograničen broj zaposlenika
+paymentSchedule.title	Raspored plaćanja
+paymentSchedule.total	Ukupno za platiti
+paymentSchedule.morePayments	+ još {{count}} plaćanja po {{amount}}
+paymentSchedule.processing	Preusmjeravanje na plaćanje…
+paymentSchedule.payFor	Plati za {{count}} mj.
+paymentSchedule.vatNote	Bez PDV-a — porez se dodaje pri naplati prema vašoj državi
+trust.title	Zašto nam vjeruje više od 2.400 tvrtki
+trust.reviews.0.text	Prešli smo s Altegia. Razlika je kao između taksija i privatnog aviona.
+trust.reviews.0.author	Maria K., FORM Pilates
+trust.reviews.1.text	Najbolje je što točno znam koliko plaćam svaki mjesec. Nema iznenađenja.
+trust.reviews.1.author	Artem N., Barbershop Bros
+trust.reviews.2.text	Podrška je odgovorila za 4 minute. To nikad nisam vidjela nigdje drugdje.
+trust.reviews.2.author	Elena D., SPA LUNA
+upgrade.priceLine	Cijena {{price}}/mj.
+upgrade.discountNote	 {{percent}}% popusta pri plaćanju za {{period}} mj.
+upgrade.planLabel	Plan
+upgrade.periodLabel	Razdoblje
+upgrade.periodValue_one	{{count}} mjesec
+upgrade.periodValue_few	{{count}} mjeseca
+upgrade.periodValue_other	{{count}} mjeseci
+upgrade.discountLabel	Popust
+upgrade.scheduledBadge	Od {{date}} — plan „{{plan}}“
+upgrade.vatNote	Bez PDV-a — porez se dodaje pri naplati prema podacima vaše tvrtke; tvrtke iz EU-a s PDV brojem imaju prijenos porezne obveze.
+method.notLinked	Nije povezano
+method.badgeTitle	Način plaćanja je zaštićen
+method.tokenSub	Token pružatelja · istječe {{expiry}}
+method.tokenNote	Stvarne podatke kartice čuva pružatelj plaćanja (PCI DSS L1). Mi čuvamo samo jednokratni token za obnove.
+method.securityTitle	Standardi zaštite podataka
+method.security.pciDss	PCI DSS šifriranje razine 1
+method.security.secure3d	3D Secure zaštita transakcija
+method.security.noStorage	Podaci kartice nikad ne prolaze našim poslužiteljima
+method.security.autoLink	Kartica se povezuje pri prvoj uplati
+method.noCardDetail	Ne morate zasebno unositi podatke — plaćanje se obavlja na sigurnoj Stripe stranici.
+method.renewDone	Faktura je izrađena — plaćanje se obrađuje
+method.renewBusy	Izrada fakture…
+method.renewSuccess	Faktura za obnovu je izrađena
+method.renewError	Nije moguće izraditi fakturu. Pokušajte ponovno.
+method.renewNow	Obnovi sada karticom •••• {{last4}}
+method.autopayTitle	Postavke automatskog plaćanja
+method.autopaySuccess	Postavka je spremljena
+method.autopayError	Nije moguće spremiti postavku. Pokušajte ponovno.
+method.autopay.cardOnly	Dostupno pri plaćanju karticom
+method.autopay.autoRenew.label	Automatska obnova
+method.autopay.autoRenew.desc	Isključite za otkazivanje na kraju plaćenog razdoblja
+method.autopay.autoRenew.until	Pretplata se neće obnoviti — pristup do {{date}}
+method.autopay.emailNotify.label	Obavijesti e-poštom
+method.autopay.emailNotify.desc	Račun se šalje e-poštom nakon svakog plaćanja
+method.autopay.remind3d.label	Podsjeti 3 dana ranije
+method.autopay.remind3d.desc	Podsjetit ćemo vas prije automatske naplate
+method.autopay.sms.label	SMS obavijest
+method.autopay.sms.desc	Tekstualna poruka šalje se pri naplati
+method.portal.title	Podaci za naplatu i PDV
+method.portal.subtitle	Fakture, povezana kartica i povijest naplate nalaze se na Stripe korisničkom portalu.
+method.portal.cta	Otvori u Stripeu
+method.ibanBadgeLabel	Bankovni prijenos (SEPA)
+method.ibanBadgeNote	Fakture stižu e-poštom s poveznicom za plaćanje — ništa se ne naplaćuje automatski s kartice. Možete platiti i ranije na stranici fakture.
+invoices.title	Povijest plaćanja
+invoices.totalPaid	ukupno plaćeno {{amount}}
+invoices.exportCsv	Izvezi CSV
+invoices.exportError	Nije moguće izvesti CSV. Pokušajte ponovno.
+invoices.receiptError	Nije moguće otvoriti račun. Pokušajte ponovno.
+invoices.invoiceNo	Faktura #{{id}}
+invoices.methodCard	Plaćeno karticom
+invoices.methodIban	Plaćeno bankovnim prijenosom (IBAN)
+invoices.syncHint	Provjerite status kod usluge plaćanja
+invoices.syncChanged	Status je ažuriran: {{status}}
+invoices.syncUnchanged	Usluga plaćanja potvrdila je isti status
+invoices.syncError	Nije moguće provjeriti status. Pokušajte ponovno.
+invoices.kindOfflineFee	Provizija za offline prodaju
+invoices.kindMinFee	Minimalna mjesečna naknada
+invoices.kindOnlineFee	Provizija za online plaćanja
+invoices.methodWithheld	Stripe je zadržao pri plaćanju
+table.date	Datum
+table.description	Opis
+table.amount	Iznos
+table.status	Status
+table.receipt	Račun
+status.paid	Plaćeno
+status.pending	Na čekanju
+status.failed	Nije plaćeno
+status.refunded	Vraćeno
+empty.noInvoices	Još nema faktura — pojavit će se nakon prve uplate.
+empty.noCard	Kartica će se automatski pojaviti nakon prve uplate.
+empty.monthsWithUs	Još niste kupili pretplatu
+empty.noData	Nema podataka
+savings.title	Vaše uštede
+savings.prepayTitle	Vaše uštede pri plaćanju unaprijed
+savings.emptyState	Odaberite dulje razdoblje i počnite štedjeti
+savings.youSave	Štedite {{amount}} tijekom {{months}} mj.
+savings.freeMonths	To je kao {{count}} mj. besplatno
+savings.amountLabel	{{amount}} uštede
+savings.comparedToMonthly	u usporedbi s mjesečnim plaćanjem
+savings.forMonths_one	Za {{count}} mjesec
+savings.forMonths_few	Za {{count}} mjeseca
+savings.forMonths_other	Za {{count}} mjeseci
+pay	Plati
+continuePlan	Nastavi plan
+payModal.titleNew	Pokreni plan {{plan}}
+payModal.titleSwitch	Prijeđi na {{plan}}
+payModal.titleRenew	Obnovi {{plan}}
+payModal.totalLabel	Vaš plan koštat će
+payModal.burnWarning	Prelazak na drugi plan ponovno pokreće razdoblje: ostatak vašeg plana {{plan}} U POTPUNOSTI SE GUBI — ne vraća se i ne prenosi. Obnova istog plana ga zadržava.
+payModal.switched	Plan je promijenjen: nema plaćanja — promjena je pokrivena ostatkom trenutačnog razdoblja.
+payModal.renewNote	Ovo obnavlja isti plan: kupljeni mjeseci dodaju se trenutačnom plaćenom razdoblju. Ništa se ne gubi.
+payModal.cardNote	Plaćanje karticom na sigurnoj Stripe stranici · povrat novca u 7 dana
+payModal.freeUntil	Ništa se ne naplaćuje do {{date}}: ostalo vam je {{count}} dana već plaćenog razdoblja. Naplata počinje tog datuma.
+payModal.taxLabel	PDV
+payModal.taxLine	PDV {{rate}}%
+payModal.reverseCharge	Prijenos porezne obveze
+payModal.totalWithTax	Ukupno s PDV-om
+payModal.taxServerNote	Porez se izračunava iz podataka za naplatu. Faktura će pokazati isti iznos.
+payModal.taxReview	Nismo mogli utvrditi porez za vaše podatke za naplatu, pa se ukupni iznos prikazuje bez njega i plaćanje se ne može dovršiti. Provjerite državu i adresu platitelja ili kontaktirajte podršku.
+offlineFee.title	Naknada za offline prodaju
+offlineFee.accruing	Obračunato od gotovine i depozita po {{rate}}%. Fakturira se mjesečno, imate {{days}} dana za plaćanje.
+offlineFee.due	Faktura je izdana. Preostalo dana za plaćanje: {{days}}.
+offlineFee.suspended	Plaćanje je dospjelo — pristup CRM-u i miniaplikaciji je obustavljen.
+offlineFee.pay	Plati
+offlineFee.suspendedMin	Minimalna mjesečna naknada je dospjela — pristup CRM-u i miniaplikaciji je obustavljen.
+offlineFee.alsoAccruing	Uz to se ovaj mjesec obračunava: {{amount}} — ide u sljedeću fakturu.
+offlineFee.minimum	Minimalna mjesečna naknada iznosi {{amount}}. Zaradite manje u mjesecu i nadoplaćujete razliku; zaradite više i nema fakture.
+offlineFee.pendingBill	Obračunato prema prethodnom modelu, čeka fakturu.
+offlineFee.notBilledYet	Faktura još nije izdana: obračunati iznos je ispod minimalne veličine fakture ili se još priprema. Ništa se ne gubi — ide u sljedeću fakturu.
+trial.title	Ponuda za nove studije
+trial.subtitle	Vaš studio je upravo stvoren
+trial.headline	{{days}} dana besplatno
+trial.noCard	Kartica nije potrebna — sada nema ništa za platiti
+trial.perks.allModules	Potpun pristup svakom modulu: dnevnik, klijenti, financije, obavijesti i Velora AI
+trial.perks.noCommitment	Bez obveze: ako vam ne odgovara, jednostavno ne obnovite
+trial.perks.keepData	Sve što postavite tijekom probe ostaje vaše
+trial.activate	Aktiviraj
+trial.decline	Odbij
+trial.cardHint	Još niste aktivirali besplatno razdoblje ovog studija. Ostaje dostupno dok ne kupite plan.
+profile.title	Podaci za naplatu
+profile.editTitle	Uredi podatke za naplatu
+profile.subtitle	Vaša adresa ide na fakturu i određuje poreznu stopu. Sprema se na vaš račun — nećemo je ponovo tražiti u drugom studiju.
+profile.subtitlePay	Ispunite ovo jednom i plaćanje će sljedeći put proći odmah. Vaša adresa ide na fakturu i određuje poreznu stopu.
+profile.cardTitle	Podaci za naplatu
+profile.cardSubtitle	Spremljeni su na vaš račun i koriste se u svim studijima. Ovako se pojavljuju na fakturi.
+profile.cardEmpty	Još nisu uneseni — tražit ćemo ih prije prve uplate. Možete ih dodati sada.
+profile.add	Dodaj podatke za naplatu
+profile.edit	Uredi
+profile.save	Spremi
+profile.saveAndPay	Spremi i nastavi na plaćanje
+profile.cancel	Odustani
+profile.saved	Podaci za naplatu spremljeni
+profile.vatNone	Nije navedeno
+profile.fields.country	Država ili regija
+profile.fields.countryPlaceholder	Odaberite državu
+profile.fields.address	Adresa
+profile.fields.line1	Redak adrese 1
+profile.fields.line1Placeholder	Ulica i broj
+profile.fields.line2	Redak adrese 2 — neobavezno
+profile.fields.line2Placeholder	Stan, apartman, broj jedinice itd.
+profile.fields.postalCode	Poštanski broj
+profile.fields.postalCodePlaceholder	110 00
+profile.fields.city	Grad
+profile.fields.cityPlaceholder	Prag
+profile.fields.vat	PDV broj — neobavezno
+profile.fields.vatPlaceholder	{{prefix}}12345678
+profile.fields.vatHint	Samo za tvrtke. Broj se provjerava u registru EU-a (VIES) pri spremanju — ne prihvaćamo neprovjerene brojeve. S važećim brojem tvrtka u drugoj državi EU-a dobiva fakturu bez poreza (prijenos porezne obveze). Fizičke osobe ga nemaju — ostavite prazno.
+profile.fields.countrySearch	Počnite tipkati ime
+profile.fields.countryNotFound	Država nije pronađena
+profile.fields.vatOutsideEu	Ne tražimo PDV broj: izvan EU-a porez određuje država platitelja, a ne broj, pa ne utječe na fakturu.
+profile.fields.vatPending	Vaš je broj spremljen, ali registar EU-a tada nije bio dostupan, pa još nije potvrđen i sljedeća faktura uključivat će puni PDV. Ne morate ga ponovno unositi: nastavljamo provjeravati i čim registar odgovori porez se prestaje naplaćivati. Za već plaćenu fakturu podrška će vratiti porez.
+profile.errors.required	Ovo je polje obavezno
+profile.preview.invoice	Faktura
+profile.preview.billTo	Račun za
+profile.preview.note	Ovako se vaši podaci pojavljuju na svakoj fakturi. Možete ih promijeniti bilo kada u Planovi i naplata → Način plaćanja.

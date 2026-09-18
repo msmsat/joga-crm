@@ -1,0 +1,321 @@
+{
+  "header": {
+    "allConfigured": "Të gjitha programet janë konfiguruar",
+    "allConfiguredSub": "Sistemi juaj i besnikërisë funksionon me fuqi të plotë",
+    "setup": "Konfiguro programet e besnikërisë",
+    "setupSub": "{{count}} nga {{total}} programe të konfiguruara · Çdo program rrit mbajtjen e klientëve",
+    "start": "Fillo"
+  },
+  "programs": {
+    "loyalty": {
+      "title": "Kartat e besnikërisë",
+      "desc": "Sistem pikësh me nivele",
+      "statLabel": "klientë"
+    },
+    "discounts": {
+      "title": "Zbritje dhe cashback",
+      "desc": "Oferta personale për klientët",
+      "statLabel": "aktive"
+    },
+    "certificates": {
+      "title": "Certifikata dhuratë",
+      "desc": "Certifikata dhuratë dhe me emër",
+      "statLabel": "shitura"
+    },
+    "referral": {
+      "title": "Rekomandime",
+      "desc": "Programi „Sill një mik”",
+      "statLabel": "rekomandime"
+    },
+    "promocodes": {
+      "title": "Kode promocionale",
+      "desc": "Kode zbritjeje me kufi përdorimi",
+      "statLabel": "aktive"
+    },
+    "deposit": {
+      "title": "Depozitë",
+      "desc": "Bilanci i parave të klientit në studio",
+      "statLabel": "me bilanc"
+    }
+  },
+  "card": {
+    "active": "Aktiv",
+    "disable": "Çaktivizo",
+    "notConfigured": "Nuk është konfiguruar",
+    "configure": "Konfiguro"
+  },
+  "drawer": {
+    "subtitle": "Cilësimet e programit",
+    "saving": "Po ruhet…",
+    "save": "Ruaj dhe aktivizo",
+    "cancel": "Anulo",
+    "close": "Mbyll"
+  },
+  "config": {
+    "mainParams": "Parametrat kryesorë",
+    "programName": "Emri i programit",
+    "pointsRate": "Norma e pikëve ({{currency}} për 1 pikë)",
+    "levels": "Nivelet",
+    "pointValue": "1 pikë =",
+    "pointValueHint": "Pikët fitohen me të njëjtën normë në çdo nivel, por nuk kanë të njëjtën vlerë. Jepini Gold 1 dhe Diamond 2, dhe një pikë e fituar nga klienti do të ulë çmimin dy herë më shumë në arkë. Ky është kuptimi i një niveli: sa më shumë të ketë shpenzuar dikush në studio, aq më të vlefshme janë pikët e tij.",
+    "expiry": "Afati i skadimit",
+    "expiryTooltip": "Sa gjatë mund t'i përdorë klienti pikët e grumbulluara",
+    "expiryOptions": {
+      "3m": "3 muaj",
+      "6m": "6 muaj",
+      "1y": "1 vit",
+      "never": "Pa skadim"
+    },
+    "newLevelName": "Nivel i ri",
+    "addLevel": "+ Nivel",
+    "levelFrom": "nga",
+    "levelTo": "deri",
+    "deleteLevelTitle": "Ta fshish këtë nivel?",
+    "deleteLevelMessage": "Klientët në nivelin „{{name}}” do të kalojnë në nivelin fqinj sipas shpenzimeve të tyre totale.",
+    "discountType": "Lloji i zbritjes",
+    "discountTypes": {
+      "percentage": "Përqindje (%)",
+      "fixed": "Fikse ({{currency}})",
+      "cashback": "Cashback"
+    },
+    "cashbackPercent": "Përqindja e cashback-ut",
+    "discountSize": "Vlera e zbritjes",
+    "minPurchase": "Shuma minimale e blerjes",
+    "noLimit": "Pa kufi",
+    "conditions": "Kushtet e zbatimit",
+    "appliesToAll": "Zbatoje për të gjitha shërbimet",
+    "stackable": "Kombinoje me zbritje të tjera",
+    "visibleInCabinet": "Shfaqe klientit në llogarinë e tij",
+    "certType": "Lloji i certifikatës",
+    "certTypes": {
+      "named": "Me emër",
+      "gift": "Dhuratë",
+      "service": "Për një shërbim"
+    },
+    "denominations": "Vlerat nominale",
+    "addDenom": "+ Shto",
+    "service": "Shërbimi",
+    "noServices": "Nuk ka ende shërbime në katalog — shtojini te „Katalogu”",
+    "params": "Parametrat",
+    "expiryDays": "Afati i skadimit (ditë)",
+    "certIssue": "Lësho certifikatë",
+    "certCustomAmount": "Shumë e personalizuar",
+    "certRecipientName": "Emri i marrësit",
+    "certRecipientPlaceholder": "Opsionale",
+    "certLinkClient": "Lidhe me një klient",
+    "certClientSearchPlaceholder": "Filloni të shkruani një emër…",
+    "certAccount": "Llogaria e depozitës",
+    "certAccountNone": "Mos e regjistro në libër",
+    "certIssueButton": "Lësho",
+    "certIssuedTitle": "Certifikata u lëshua",
+    "certCopyCode": "Kopjo kodin",
+    "certCopied": "U kopjua",
+    "certIssueAnother": "Lësho një tjetër",
+    "certIssued": "Certifikata të lëshuara",
+    "certEmpty": "Nuk ka ende certifikata të lëshuara",
+    "certStatus": {
+      "active": "Aktive",
+      "used": "E përdorur",
+      "expired": "E skaduar"
+    },
+    "certRedeem": "Përdor",
+    "certRedeemTitle": "Ta përdorësh këtë certifikatë?",
+    "certRedeemMessage": "Certifikata {{code}} do të shënohet si e përdorur. Kjo nuk mund të zhbëhet.",
+    "referrerBonusTitle": "Bonus për rekomandim",
+    "referrerBonus": "Bonus për rekomanduesin ({{currency}})",
+    "newClientDiscount": "Zbritje për klientin e ri (%)",
+    "triggerCondition": "Kushti i fitimit",
+    "triggerConditions": {
+      "first_visit": "Pas vizitës së parë",
+      "first_payment": "Pas pagesës së parë",
+      "registration": "Menjëherë pas regjistrimit"
+    },
+    "bonusAccrual": "Fitimi i bonusit",
+    "bonusTypes": {
+      "points": "Pikë",
+      "deposit": "Në depozitë",
+      "discount": "Si zbritje"
+    },
+    "promoCreate": "Krijo kod promocional",
+    "promoCodePlaceholder": "VERË25",
+    "promoValidUntil": "I vlefshëm deri më",
+    "promoUsageLimit": "Kufiri i përdorimit",
+    "promoAdd": "+ Shto kod promocional",
+    "promoList": "Kode promocionale",
+    "promoEmpty": "Nuk ka ende kode promocionale",
+    "promoUntil": "deri",
+    "promoStatus": {
+      "active": "Aktiv",
+      "expired": "I skaduar",
+      "exhausted": "Kufiri u arrit",
+      "disabled": "I çaktivizuar"
+    },
+    "depositTotal": "Bilanci total",
+    "depositTotalSub": "në të gjitha depozitat e klientëve",
+    "depositTopClients": "Klientët kryesorë sipas bilancit",
+    "depositEmpty": "Askush nuk ka ende depozitë",
+    "depositHint": "Mbushjet dhe tërheqjet kryhen te profili i klientit. Programi i rekomandimeve mund të japë bonuse në depozitë në vend të pikëve."
+  },
+  "validation": {
+    "required": "Kjo fushë është e detyrueshme",
+    "minOne": "Duhet të jetë së paku 1",
+    "minZero": "Nuk mund të jetë negativ",
+    "positive": "Duhet të jetë më i madh se 0",
+    "range0to100": "0 deri në 100"
+  },
+  "toasts": {
+    "saved": "Programi u aktivizua",
+    "saveFailed": "Ruajtja dështoi",
+    "toggleFailed": "Programi nuk u përditësua",
+    "loadFailed": "Të dhënat nuk u ngarkuan",
+    "retry": "Provo përsëri"
+  },
+  "stats": {
+    "notConnected": "Programi nuk është lidhur",
+    "willAppear": "Të dhënat do të shfaqen pas konfigurimit",
+    "noData": "Nuk ka të dhëna",
+    "connectProgram": "Lidh një program",
+    "revenueHeadline": "Të ardhura nga anëtarët",
+    "membersHeadline": "Anëtarët e programit",
+    "returnedClients": "Klientë të rikthyer",
+    "returnedClientsSub": "2+ vizita në 90 ditë",
+    "avgCheckHeadline": "Shuma mesatare për anëtar",
+    "bonusCostHeadline": "Kostoja e bonuseve",
+    "bonusCostSub": "këtë muaj",
+    "roiHeadline": "ROI",
+    "roiValue": "×{{value}}",
+    "perMonth": "këtë muaj",
+    "cardHolders": "mbajtës karte",
+    "kpi": "Treguesit kryesorë",
+    "members": "Anëtarë",
+    "withCard": "me kartë",
+    "avgCheck": "Shuma mesatare",
+    "byMembers": "ndër anëtarët",
+    "pointsInCirculation": "Pikë në qarkullim",
+    "accrued": "fituara",
+    "revenue": "Të ardhura",
+    "revenuePerMonth": "nga anëtarët / muaj",
+    "levelDistribution": "Shpërndarja sipas nivelit",
+    "noLevels": "Nivelet nuk janë konfiguruar ende",
+    "totalClients": "Klientë gjithsej në program",
+    "fromValue": "nga {{value}}",
+    "levelPointValue": "pikë = {{value}}"
+  },
+  "scenarios": {
+    "title": "Skenarë inteligjentë",
+    "subtitle": "Autopilot për mbajtjen e klientëve: sistemi i gjen klientët dhe i shpërblen për ju",
+    "add": "Skenar",
+    "fired": "u aktivizua {{count}} herë",
+    "lastRun": "ekzekutimi i fundit {{when}}",
+    "neverRun": "ende nuk është ekzekutuar",
+    "empty": "Nuk ka ende skenarë",
+    "emptySub": "Krijoni të parin — sistemi do të mbajë klientët për ju",
+    "channel": "Kanali",
+    "channelSoon": "pas lidhjes së integrimit",
+    "pickTemplate": "Zgjidh një skenar",
+    "pickTemplateSub": "Një shabllon gati — rregullo pragjet më vonë",
+    "create": "Krijo",
+    "deleteConfirm": "Ta fshish skenarin?",
+    "deleteConfirmSub": "Rregulli do të ndalojë së aktivizuari. Kjo nuk mund të zhbëhet.",
+    "triggers": {
+      "inactive_days": "joaktiv për {{days}} ditë",
+      "low_subscription": "≤ {{classes_left}} seanca të mbetura",
+      "birthday": "ditëlindje",
+      "nth_visit": "vizita nr. {{n}}",
+      "referral": "solli një mik"
+    },
+    "actions": {
+      "points": "dhuro {{points}} pikë",
+      "gift_classes": "dhuro {{classes}} seanca",
+      "certificate": "lësho një certifikatë {{amount}} ₽",
+      "renewal_offer": "ofroj rinovim me {{discount}}% zbritje"
+    },
+    "templates": {
+      "win_back": {
+        "name": "Na mungon",
+        "desc": "Rikthe një klient që nuk ka ardhur prej kohësh"
+      },
+      "expiring_subscription": {
+        "name": "Abonimi po mbaron",
+        "desc": "Ofro rinovim para se të mbarojnë seancat"
+      },
+      "birthday_gift": {
+        "name": "Dhuratë për ditëlindje",
+        "desc": "Gëzoje klientin në ditën e tij të veçantë"
+      },
+      "fifth_visit": {
+        "name": "Shpërblim besnikërie",
+        "desc": "Një seancë falas për besnikëri"
+      },
+      "referral_thanks": {
+        "name": "Faleminderit për mikun",
+        "desc": "Shpërble atë që solli një klient të ri"
+      }
+    },
+    "ifClient": "Nëse klienti",
+    "then": "→",
+    "toasts": {
+      "created": "Skenari u krijua",
+      "updated": "Skenari u përditësua",
+      "deleted": "Skenari u fshi",
+      "failed": "Skenari nuk u ruajt"
+    },
+    "delete": "Fshi"
+  },
+  "segmentsBoard": {
+    "title": "Segmente dhe rekomandime",
+    "subtitle": "Grupe aktive klientësh, secili me një veprim të qartë",
+    "empty": "Këtu nuk ka asgjë, dhe kjo është mirë",
+    "clients": "klientë",
+    "daysAgo": "{{count}} ditë më parë",
+    "neverVisited": "asnjë vizitë",
+    "more": "dhe {{count}} të tjerë",
+    "segments": {
+      "at_risk": {
+        "name": "Rrezik largimi",
+        "desc": "Aktivë, joaktivë për 21+ ditë",
+        "action": "Jep bonus"
+      },
+      "vip_idle": {
+        "name": "VIP i heshtur",
+        "desc": "Klientë VIP, joaktivë për 14+ ditë",
+        "action": "Nis fushatë"
+      },
+      "expiring_subscription": {
+        "name": "Abonimi po mbaron",
+        "desc": "≤2 seanca ose ≤7 ditë të mbetura",
+        "action": "Nis fushatë"
+      },
+      "lost_newcomers": {
+        "name": "Nuk u kthyen kurrë",
+        "desc": "Erdhën një herë, mungojnë prej 14+ ditësh",
+        "action": "Nis fushatë"
+      },
+      "upsell_candidates": {
+        "name": "Gati për paketë",
+        "desc": "8+ vizita këtë muaj, pa paketë",
+        "action": "Nis fushatë"
+      }
+    },
+    "campaignSub": "Segmenti „{{name}}” · {{count}} klientë",
+    "pointsLabel": "Sa pikë të jepen",
+    "messageLabel": "Teksti i mesazhit",
+    "messagePlaceholder": "p.sh. Na mungon! Kthehu — po të presim.",
+    "emailNote": "Emaili u dërgohet vetëm klientëve që kanë email",
+    "confirm": "Dërgo",
+    "toasts": {
+      "pointsDone": "Pikët u dhanë · {{processed}} u përpunuan, {{emails}} u njoftuan",
+      "emailDone": "Fushata u dërgua · {{emails}} emaile nga {{processed}}"
+    }
+  },
+  "retention": {
+    "title": "Rinovimet e abonimeve",
+    "subtitle": "Sa mirë kthehen klientët për një paketë të re",
+    "renewalRate": "Rinovo",
+    "avgPackages": "Paketa për klient",
+    "sold": "Shitur",
+    "renewed": "Rinovuar",
+    "empty": "Nuk ka ende shitje abonimesh",
+    "emptySub": "Analitika do të shfaqet pas shitjeve të para të paketave"
+  }
+}

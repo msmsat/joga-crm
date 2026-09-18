@@ -1,0 +1,321 @@
+{
+  "header": {
+    "allConfigured": "Toate programele sunt configurate",
+    "allConfiguredSub": "Sistemul tău de fidelizare funcționează la capacitate maximă",
+    "setup": "Configurează programele de fidelizare",
+    "setupSub": "{{count}} din {{total}} programe configurate · Fiecare program crește retenția clienților",
+    "start": "Începe"
+  },
+  "programs": {
+    "loyalty": {
+      "title": "Carduri de fidelitate",
+      "desc": "Sistem de acumulare de puncte pe niveluri",
+      "statLabel": "clienți"
+    },
+    "discounts": {
+      "title": "Reduceri și cashback",
+      "desc": "Oferte personale pentru clienți",
+      "statLabel": "active"
+    },
+    "certificates": {
+      "title": "Certificate cadou",
+      "desc": "Certificate cadou și nominale",
+      "statLabel": "vândute"
+    },
+    "referral": {
+      "title": "Recomandări",
+      "desc": "Programul „Adu un prieten”",
+      "statLabel": "recomandări"
+    },
+    "promocodes": {
+      "title": "Coduri promoționale",
+      "desc": "Coduri de reducere cu limită de utilizare",
+      "statLabel": "active"
+    },
+    "deposit": {
+      "title": "Depozit",
+      "desc": "Soldul de bani al clientului la studio",
+      "statLabel": "cu sold"
+    }
+  },
+  "card": {
+    "active": "Activ",
+    "disable": "Dezactivează",
+    "notConfigured": "Neconfigurat",
+    "configure": "Configurează"
+  },
+  "drawer": {
+    "subtitle": "Setările programului",
+    "saving": "Se salvează…",
+    "save": "Salvează și activează",
+    "cancel": "Anulează",
+    "close": "Închide"
+  },
+  "config": {
+    "mainParams": "Parametri principali",
+    "programName": "Numele programului",
+    "pointsRate": "Cursul punctelor ({{currency}} pentru 1 punct)",
+    "levels": "Niveluri",
+    "pointValue": "1 punct =",
+    "pointValueHint": "Punctele sunt obținute la aceeași rată la fiecare nivel, dar nu au aceeași valoare. Dă-i nivelului Gold 1 și Diamond 2, iar un punct câștigat de client va reduce prețul la casă de două ori mai mult. Acesta este avantajul unui nivel: cu cât cineva a cheltuit mai mult la studio, cu atât punctele sale valorează mai mult.",
+    "expiry": "Perioada de expirare",
+    "expiryTooltip": "Cât timp poate un client să cheltuiască punctele acumulate",
+    "expiryOptions": {
+      "3m": "3 luni",
+      "6m": "6 luni",
+      "1y": "1 an",
+      "never": "Fără expirare"
+    },
+    "newLevelName": "Nivel nou",
+    "addLevel": "+ Nivel",
+    "levelFrom": "de la",
+    "levelTo": "până la",
+    "deleteLevelTitle": "Ștergi acest nivel?",
+    "deleteLevelMessage": "Clienții de la nivelul „{{name}}” vor trece la nivelul învecinat în funcție de cheltuielile lor totale.",
+    "discountType": "Tipul reducerii",
+    "discountTypes": {
+      "percentage": "Procent (%)",
+      "fixed": "Fixă ({{currency}})",
+      "cashback": "Cashback"
+    },
+    "cashbackPercent": "Procentul cashbackului",
+    "discountSize": "Valoarea reducerii",
+    "minPurchase": "Valoarea minimă a cumpărăturii",
+    "noLimit": "Fără limită",
+    "conditions": "Condiții de aplicare",
+    "appliesToAll": "Aplică tuturor serviciilor",
+    "stackable": "Combină cu alte reduceri",
+    "visibleInCabinet": "Arată clientului în contul său",
+    "certType": "Tipul certificatului",
+    "certTypes": {
+      "named": "Nominal",
+      "gift": "Cadou",
+      "service": "Pentru un serviciu"
+    },
+    "denominations": "Valori nominale",
+    "addDenom": "+ Adaugă",
+    "service": "Serviciu",
+    "noServices": "Nu există încă servicii în catalog — adaugă-le la „Catalog”",
+    "params": "Parametri",
+    "expiryDays": "Perioada de expirare (zile)",
+    "certIssue": "Emite certificat",
+    "certCustomAmount": "Sumă personalizată",
+    "certRecipientName": "Numele destinatarului",
+    "certRecipientPlaceholder": "Opțional",
+    "certLinkClient": "Leagă de un client",
+    "certClientSearchPlaceholder": "Începe să scrii un nume…",
+    "certAccount": "Cont de depozit",
+    "certAccountNone": "Nu înregistra în registru",
+    "certIssueButton": "Emite",
+    "certIssuedTitle": "Certificatul a fost emis",
+    "certCopyCode": "Copiază codul",
+    "certCopied": "Copiat",
+    "certIssueAnother": "Emite altul",
+    "certIssued": "Certificate emise",
+    "certEmpty": "Nu au fost emise încă certificate",
+    "certStatus": {
+      "active": "Activ",
+      "used": "Folosit",
+      "expired": "Expirat"
+    },
+    "certRedeem": "Folosește",
+    "certRedeemTitle": "Folosești acest certificat?",
+    "certRedeemMessage": "Certificatul {{code}} va fi marcat ca folosit. Această acțiune nu poate fi anulată.",
+    "referrerBonusTitle": "Bonus pentru recomandare",
+    "referrerBonus": "Bonus pentru recomandator ({{currency}})",
+    "newClientDiscount": "Reducere pentru client nou (%)",
+    "triggerCondition": "Condiție de acordare",
+    "triggerConditions": {
+      "first_visit": "După prima vizită",
+      "first_payment": "După prima plată",
+      "registration": "Imediat la înregistrare"
+    },
+    "bonusAccrual": "Acordarea bonusului",
+    "bonusTypes": {
+      "points": "Puncte",
+      "deposit": "În depozit",
+      "discount": "Ca reducere"
+    },
+    "promoCreate": "Creează cod promoțional",
+    "promoCodePlaceholder": "VARĂ25",
+    "promoValidUntil": "Valabil până la",
+    "promoUsageLimit": "Limita de utilizare",
+    "promoAdd": "+ Adaugă cod promoțional",
+    "promoList": "Coduri promoționale",
+    "promoEmpty": "Nu există încă coduri promoționale",
+    "promoUntil": "până la",
+    "promoStatus": {
+      "active": "Activ",
+      "expired": "Expirat",
+      "exhausted": "Limita a fost atinsă",
+      "disabled": "Dezactivat"
+    },
+    "depositTotal": "Sold total",
+    "depositTotalSub": "în toate depozitele clienților",
+    "depositTopClients": "Cei mai buni clienți după sold",
+    "depositEmpty": "Nimeni nu are încă depozit",
+    "depositHint": "Alimentările și retragerile se fac din profilul clientului. Programul de recomandări poate plăti bonusuri în depozit în loc de puncte."
+  },
+  "validation": {
+    "required": "Acest câmp este obligatoriu",
+    "minOne": "Trebuie să fie cel puțin 1",
+    "minZero": "Nu poate fi negativ",
+    "positive": "Trebuie să fie mai mare decât 0",
+    "range0to100": "De la 0 la 100"
+  },
+  "toasts": {
+    "saved": "Program activat",
+    "saveFailed": "Nu s-a putut salva",
+    "toggleFailed": "Nu s-a putut actualiza programul",
+    "loadFailed": "Nu s-au putut încărca datele",
+    "retry": "Încearcă din nou"
+  },
+  "stats": {
+    "notConnected": "Programul nu este conectat",
+    "willAppear": "Datele vor apărea după configurare",
+    "noData": "Fără date",
+    "connectProgram": "Conectează un program",
+    "revenueHeadline": "Venituri de la membri",
+    "membersHeadline": "Membrii programului",
+    "returnedClients": "Clienți reveniți",
+    "returnedClientsSub": "2+ vizite în 90 de zile",
+    "avgCheckHeadline": "Bon mediu per membru",
+    "bonusCostHeadline": "Costul bonusurilor",
+    "bonusCostSub": "luna aceasta",
+    "roiHeadline": "ROI",
+    "roiValue": "×{{value}}",
+    "perMonth": "luna aceasta",
+    "cardHolders": "posesori de card",
+    "kpi": "Indicatori principali",
+    "members": "Membri",
+    "withCard": "cu card",
+    "avgCheck": "Bon mediu",
+    "byMembers": "printre membri",
+    "pointsInCirculation": "Puncte în circulație",
+    "accrued": "acumulate",
+    "revenue": "Venituri",
+    "revenuePerMonth": "de la membri / lună",
+    "levelDistribution": "Distribuție pe niveluri",
+    "noLevels": "Nivelurile nu sunt încă configurate",
+    "totalClients": "Total clienți în program",
+    "fromValue": "de la {{value}}",
+    "levelPointValue": "punct = {{value}}"
+  },
+  "scenarios": {
+    "title": "Scenarii inteligente",
+    "subtitle": "Pilot automat pentru retenție: sistemul găsește clienți și îi răsplătește pentru tine",
+    "add": "Scenariu",
+    "fired": "a fost declanșat de {{count}} ori",
+    "lastRun": "ultima rulare {{when}}",
+    "neverRun": "încă nu a rulat",
+    "empty": "Nu există încă scenarii",
+    "emptySub": "Creează primul — sistemul va reține clienții pentru tine",
+    "channel": "Canal",
+    "channelSoon": "după conectarea integrării",
+    "pickTemplate": "Alege un scenariu",
+    "pickTemplateSub": "Un șablon gata — ajustează pragurile mai târziu",
+    "create": "Creează",
+    "deleteConfirm": "Ștergi scenariul?",
+    "deleteConfirmSub": "Regula nu va mai fi declanșată. Această acțiune nu poate fi anulată.",
+    "triggers": {
+      "inactive_days": "inactiv de {{days}} zile",
+      "low_subscription": "≤ {{classes_left}} sesiuni rămase",
+      "birthday": "zi de naștere",
+      "nth_visit": "vizita nr. {{n}}",
+      "referral": "a adus un prieten"
+    },
+    "actions": {
+      "points": "oferă {{points}} puncte",
+      "gift_classes": "oferă {{classes}} sesiuni",
+      "certificate": "emite un certificat de {{amount}} ₽",
+      "renewal_offer": "oferă reînnoire cu reducere de {{discount}}%"
+    },
+    "templates": {
+      "win_back": {
+        "name": "Ne este dor de tine",
+        "desc": "Recuperează un client care nu a mai venit de ceva timp"
+      },
+      "expiring_subscription": {
+        "name": "Abonamentul se termină",
+        "desc": "Oferă reînnoire înainte să se termine sesiunile"
+      },
+      "birthday_gift": {
+        "name": "Cadou de ziua de naștere",
+        "desc": "Bucură un client în ziua sa specială"
+      },
+      "fifth_visit": {
+        "name": "Recompensă de fidelitate",
+        "desc": "O sesiune gratuită pentru fidelitate"
+      },
+      "referral_thanks": {
+        "name": "Mulțumim pentru prieten",
+        "desc": "Răsplătește persoana care a adus un client nou"
+      }
+    },
+    "ifClient": "Dacă clientul",
+    "then": "→",
+    "toasts": {
+      "created": "Scenariu creat",
+      "updated": "Scenariu actualizat",
+      "deleted": "Scenariu șters",
+      "failed": "Nu s-a putut salva scenariul"
+    },
+    "delete": "Șterge"
+  },
+  "segmentsBoard": {
+    "title": "Segmente și recomandări",
+    "subtitle": "Grupuri active de clienți, fiecare cu un îndemn clar la acțiune",
+    "empty": "Nu este nimic aici și e bine așa",
+    "clients": "clienți",
+    "daysAgo": "acum {{count}} zile",
+    "neverVisited": "fără vizite",
+    "more": "și încă {{count}}",
+    "segments": {
+      "at_risk": {
+        "name": "Pe punctul de a pleca",
+        "desc": "Activi, inactivi de 21+ zile",
+        "action": "Oferă bonus"
+      },
+      "vip_idle": {
+        "name": "VIP fără activitate",
+        "desc": "Clienți VIP, inactivi de 14+ zile",
+        "action": "Lansează campanie"
+      },
+      "expiring_subscription": {
+        "name": "Abonament pe cale să expire",
+        "desc": "≤2 sesiuni sau ≤7 zile rămase",
+        "action": "Lansează campanie"
+      },
+      "lost_newcomers": {
+        "name": "Nu s-au mai întors",
+        "desc": "Au venit o dată, lipsesc de 14+ zile",
+        "action": "Lansează campanie"
+      },
+      "upsell_candidates": {
+        "name": "Pregătiți pentru un pachet",
+        "desc": "8+ vizite luna aceasta, fără pachet",
+        "action": "Lansează campanie"
+      }
+    },
+    "campaignSub": "Segmentul „{{name}}” · {{count}} clienți",
+    "pointsLabel": "Câte puncte să fie acordate",
+    "messageLabel": "Textul mesajului",
+    "messagePlaceholder": "ex. Ne este dor de tine! Revino — te așteptăm.",
+    "emailNote": "E-mailul este trimis numai clienților cu adresă de e-mail",
+    "confirm": "Trimite",
+    "toasts": {
+      "pointsDone": "Puncte acordate · {{processed}} procesați, {{emails}} notificați",
+      "emailDone": "Campanie trimisă · {{emails}} e-mailuri din {{processed}}"
+    }
+  },
+  "retention": {
+    "title": "Reînnoiri de abonamente",
+    "subtitle": "Cât de bine revin clienții pentru un pachet nou",
+    "renewalRate": "Reînnoire",
+    "avgPackages": "Pachete per client",
+    "sold": "Vândute",
+    "renewed": "Reînnoite",
+    "empty": "Nu există încă vânzări de abonamente",
+    "emptySub": "Analiza va apărea după primele vânzări de pachete"
+  }
+}

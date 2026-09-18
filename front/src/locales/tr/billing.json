@@ -1,0 +1,393 @@
+{
+  "legal": {
+    "terms": "Hizmet koşulları",
+    "privacy": "Gizlilik politikası"
+  },
+  "tabs": {
+    "plans": "Planlar ve fiyatlar",
+    "invoices": "Ödeme geçmişi",
+    "method": "Ödeme yöntemi"
+  },
+  "tabsShort": {
+    "plans": "Planlar",
+    "invoices": "Geçmiş",
+    "method": "Ödeme"
+  },
+  "paymentsHistory": {
+    "title": "Tüm ödeme geçmişi",
+    "subtitle": "Bu stüdyoya ait tüm faturalar",
+    "clearFilter": "Temizle",
+    "loadMore": "Daha fazla yükle"
+  },
+  "planNames": {
+    "start": "Start",
+    "pro": "Pro",
+    "business": "Business"
+  },
+  "seats": {
+    "title": "Stüdyoda kaç ekip üyesi var?",
+    "hint": "aylık {{amount}} tutarından başlayan fiyatlarla",
+    "stepNote": "Her ek koltuk aylık {{amount}} tutarındadır",
+    "unlimitedNote": "Sınırsız ekip",
+    "perSeat": "Ekip üyesi başına"
+  },
+  "limits": {
+    "staff": "Ekip",
+    "ai": "Velora AI istekleri",
+    "unlimited": "Sınırsız"
+  },
+  "banner": {
+    "trialEnds": "Deneme süreniz {{date}} tarihinde bitiyor — bir plan seçin",
+    "renews": "{{plan}} aboneliğiniz {{date}} tarihinde yenilenir",
+    "expires": "{{plan}} aboneliğiniz {{date}} tarihinde sona erer",
+    "choosePlan": "Plan seç",
+    "dismiss": "Kapat",
+    "unpaid": "Planınız ödenmemiş. Devam etmek için Planlar ve faturalandırma bölümünden ödeme yapın.",
+    "suspended": "Plan faturası vadesi geçtiği için erişim askıya alındı. Planlar ve faturalandırma bölümünden ödeyin."
+  },
+  "paymentReturn": {
+    "done": "Ödeme tamamlandı — {{plan}} planı etkin.",
+    "processing": "Ödeme işleniyor — aboneliğiniz birkaç dakika içinde etkinleştirilecek."
+  },
+  "header": {
+    "eyebrow": "Velora · Faturalandırma",
+    "title": "Planlar ve faturalandırma",
+    "subtitle": "Aboneliğinizi, ödeme yöntemlerinizi ve ödeme geçmişinizi yönetin",
+    "totalSpent": "Toplam harcama",
+    "monthsWithUs": "Bizimle geçen aylar",
+    "saved": "Tasarruf",
+    "nextCharge": "Sonraki tahsilat",
+    "currentPlan": "GEÇERLİ PLAN",
+    "noPlanName": "Plan yok",
+    "noPlan": "Etkin abonelik yok",
+    "active": "Etkin",
+    "activeUntil": "Etkin · {{date}} tarihine kadar",
+    "trialPlanName": "Deneme planı",
+    "trial": "Deneme süresi",
+    "trialUntil": "Deneme süresi · {{date}} tarihine kadar",
+    "expired": "Süresi doldu",
+    "percentRate": "Satışların %{{rate}}’i",
+    "modePercent": "Yüzde planı",
+    "modeFixed": "Sabit",
+    "modeCombo": "Karma",
+    "unpaid": "Plan ödenmemiş",
+    "awaitingPayment": "Ödeme bekleniyor"
+  },
+  "mode": {
+    "title": "Ödeme modeli",
+    "subscription": "Sabit abonelik",
+    "percent": "Satışların %’si",
+    "combo": "Sabit + % birleşimi",
+    "short": {
+      "subscription": "Sabit",
+      "percent": "Yüzde",
+      "combo": "Karma"
+    },
+    "descriptions": {
+      "subscription": "Her ay sabit bir tutar ödeyin. Öngörülebilir ve avantajlıdır.",
+      "percent": "Sabit ücret yok: nakit dahil her satışın %{{rate}}’i.",
+      "combo": "Yarım abonelik + nakit dahil her satışın %{{rate}}’i."
+    },
+    "badges": {
+      "popular": "Popüler",
+      "flexible": "Esnek"
+    },
+    "percentCard": {
+      "title": "“Satışların %3’ü” modeli",
+      "description": "Yalnızca kazandığınızda ödeyin: sabit abonelik ücreti olmadan her satışın %3’ü. Çevrimiçi ödemeler anında bölünür; nakit ve depozito yüklemeleri birikir ve her ay tek fatura olarak gelir.",
+      "noFixed": "Sabit ücret yok",
+      "payForResult": "Sonuç için ödeme yapın",
+      "oneClick": "Tek tıkla etkinleştirme",
+      "cta": "%3 modelini etkinleştir",
+      "ctaShort": "%3’ü etkinleştir"
+    },
+    "activateSuccess": "Ödeme modeli güncellendi",
+    "activateError": "Ödeme modeli güncellenemedi",
+    "alreadyActive": "Bu ödeme modeli zaten etkin — aşağıdan planı yenileyebilir veya değiştirebilirsiniz",
+    "confirmSwitchTitle": "Ödeme modeli değiştirilsin mi?",
+    "confirmSwitchMessage": "Aboneliğiniz etkin. Değişiklik hemen geçerli olur ve ödenmiş dönemin kalan kısmı TAMAMEN KAYBOLUR: kullanılmayan günler iade edilmez veya aktarılmaz.",
+    "termsTitle": "Plan koşullarını onaylayın",
+    "termsMessage": "Bu planda platform her satışın %{{rate}}’ini alır.\n\nÇevrimiçi ödemelerde ücret ödeme anında otomatik olarak kesilir. Nakit, terminal ve depozito yüklemelerinde HEMEN kesilmez — birikir ve ayda bir kez ayrı fatura alırsınız.\n\nFaturayı ödemek için {{days}} gününüz vardır. Zamanında ödenmezse CRM ve müşteri mini uygulamasına erişim ödenene kadar askıya alınır.\n\nGüncel ödenecek tutar Faturalandırma’da gösterilir; istediğiniz zaman, hatta önceden ödeme yapabilirsiniz.",
+    "termsConfirm": "Koşulları kabul ediyorum",
+    "termsMinimum": "Asgari aylık ücret {{amount}} {{currency}} tutarındadır. Bir takvim ayında platform stüdyonuzdan bu tutardan az kazanırsa fark faturalandırılır. Asgariden fazla kazanırsanız fatura olmaz. Ödenmemiş asgari ücret, ödenmemiş komisyon faturası gibi erişimi askıya alır.",
+    "termsBurn": "DİKKAT: Ödenmiş süreniz kaldı. Faturalandırma modelini değiştirdiğinizde bu süreyi TAMAMEN KAYBEDERSİNİZ — kullanılmayan günler iade edilmez veya aktarılmaz.",
+    "termsCombo": "Değişiklik bir SATIN ALMADIR: onaydan hemen sonra ödenecek tutarı görürsünüz. Mevcut ödenmiş dönemin kalanı kaybolur — iade edilmez veya aktarılmaz. Sabit + % modeli YALNIZCA ödemeden sonra etkinleşir; o zamana kadar planınız aynı kalır ve ücret alınmaz."
+  },
+  "combo": {
+    "rateBadge": "%{{rate}}",
+    "summary": "Sabit {{fixed}}/ay + satışların %{{rate}}’i (nakit aylık faturalandırılır)",
+    "cta": "Karma planı etkinleştir",
+    "ctaShort": "Birleşimi etkinleştir"
+  },
+  "period": {
+    "1": "1 ay",
+    "3": "3 ay",
+    "6": "6 ay",
+    "12": "1 yıl",
+    "24": "2 yıl",
+    "title": "Ödeme dönemi",
+    "discountActive": "%{{percent}} indirim etkin",
+    "noDiscount": "İndirim yok",
+    "discountLabel": "−%{{percent}} indirim"
+  },
+  "calculator": {
+    "title": "Hesaplama parametreleri",
+    "monthlyTurnover": "Aylık çevrimiçi cironuz",
+    "turnoverRangeMin": "50 bin",
+    "turnoverRangeMax": "3 mn+",
+    "chooseFeeLabel": "Komisyon oranını seçin (özellikleri etkiler)",
+    "feeOptions": {
+      "basic": "Temel",
+      "standard": "Standart",
+      "pro": "Pro",
+      "max": "Maksimum"
+    },
+    "chooseFixedLabel": "Sabit temel kısmı seçin (tahsilat ücreti her zaman %3’tür)",
+    "fixedOptions": {
+      "start": "Start",
+      "optima": "Optima",
+      "business": "Business"
+    },
+    "economyPercentTitle": "PLAN TASARRUFU",
+    "economyComboTitle": "KARMA PLAN TASARRUFU",
+    "turnover": "Stüdyo cirosu",
+    "systemFee": "Sistem ücreti",
+    "totalMonthlyPayment": "TOPLAM AYLIK ÖDEME",
+    "onlyPayForResult": "Sabit ücret ödemezsiniz, yalnızca sonuç için ödeme yaparsınız",
+    "activatePercent": "%{{percent}} modelini etkinleştir",
+    "baseSubscription": "Temel abonelik (sabit)",
+    "acquiringFee": "Ödeme alma / ücret",
+    "activateCombo": "Karma planı etkinleştir"
+  },
+  "planCards": {
+    "bestChoice": "En iyi seçim",
+    "current": "Mevcut",
+    "perMonth": "/ ay",
+    "currentPlan": "Mevcut plan",
+    "yourPrice": "Fiyatınız",
+    "staffLimit": "En fazla {{count}} ekip üyesi",
+    "staffUnlimited": "Sınırsız ekip"
+  },
+  "paymentSchedule": {
+    "title": "Ödeme takvimi",
+    "total": "Toplam ödenecek",
+    "morePayments": "{{amount}} tutarında + {{count}} ek ödeme",
+    "processing": "Ödemeye yönlendiriliyorsunuz…",
+    "payFor": "{{count}} ay için öde",
+    "vatNote": "KDV hariç — vergi ülkenize göre ödeme sırasında eklenir"
+  },
+  "trust": {
+    "title": "2.400’den fazla işletme neden bize güveniyor",
+    "reviews": [
+      {
+        "text": "Altegio’dan geçtik. Fark, taksi ile özel jet arasındaki fark gibi.",
+        "author": "Maria K., FORM Pilates"
+      },
+      {
+        "text": "En güzeli her ay tam olarak ne ödediğimi bilmek. Sürpriz yok.",
+        "author": "Artem N., Barbershop Bros"
+      },
+      {
+        "text": "Destek 4 dakikada yanıt verdi. Bunu başka hiçbir yerde görmedim.",
+        "author": "Elena D., SPA LUNA"
+      }
+    ]
+  },
+  "upgrade": {
+    "priceLine": "Fiyat {{price}}/ay",
+    "discountNote": " {{period}} ay ödemede %{{percent}} indirim",
+    "planLabel": "Plan",
+    "periodLabel": "Dönem",
+    "periodValue_one": "{{count}} ay",
+    "periodValue_other": "{{count}} ay",
+    "discountLabel": "İndirim",
+    "scheduledBadge": "{{date}} tarihinden itibaren — “{{plan}}” planı",
+    "vatNote": "KDV hariç — vergi şirket bilgilerinize göre ödeme sırasında eklenir; KDV numarası olan AB şirketleri ters vergilendirmeden yararlanır."
+  },
+  "method": {
+    "notLinked": "Bağlı değil",
+    "badgeTitle": "Ödeme yöntemi korunuyor",
+    "tokenSub": "Sağlayıcı belirteci · {{expiry}} tarihinde sona erer",
+    "tokenNote": "Gerçek kart verileri ödeme sağlayıcısı tarafından saklanır (PCI DSS L1). Yenilemeler için yalnızca tek kullanımlık belirteç tutarız.",
+    "securityTitle": "Veri koruma standartları",
+    "security": {
+      "pciDss": "PCI DSS Seviye 1 şifreleme",
+      "secure3d": "3D Secure işlem koruması",
+      "noStorage": "Kart verileri asla sunucularımızdan geçmez",
+      "autoLink": "Kart ilk ödemede bağlanır"
+    },
+    "noCardDetail": "Verileri ayrıca girmeniz gerekmez — ödeme Stripe’ın güvenli sayfasında yapılır.",
+    "renewDone": "Fatura oluşturuldu — ödeme işleniyor",
+    "renewBusy": "Fatura oluşturuluyor…",
+    "renewSuccess": "Yenileme faturası oluşturuldu",
+    "renewError": "Fatura oluşturulamadı. Tekrar deneyin.",
+    "renewNow": "•••• {{last4}} kartıyla şimdi yenile",
+    "autopayTitle": "Otomatik ödeme ayarları",
+    "autopaySuccess": "Ayar kaydedildi",
+    "autopayError": "Ayar kaydedilemedi. Tekrar deneyin.",
+    "autopay": {
+      "cardOnly": "Kartla ödeme yaparken kullanılabilir",
+      "autoRenew": {
+        "label": "Otomatik yenileme",
+        "desc": "Ödenmiş dönemin sonunda iptal etmek için kapatın",
+        "until": "Abonelik yenilenmeyecek — {{date}} tarihine kadar erişim"
+      },
+      "emailNotify": {
+        "label": "E-posta bildirimleri",
+        "desc": "Her ödemeden sonra fatura e-posta ile gönderilir"
+      },
+      "remind3d": {
+        "label": "3 gün önce hatırlat",
+        "desc": "Otomatik tahsilattan önce hatırlatacağız"
+      },
+      "sms": {
+        "label": "SMS bildirimi",
+        "desc": "Tahsilat yapıldığında kısa mesaj gönderilir"
+      }
+    },
+    "portal": {
+      "title": "Fatura bilgileri ve KDV",
+      "subtitle": "Faturalar, bağlı kart ve tahsilat geçmişi Stripe müşteri portalındadır.",
+      "cta": "Stripe’ta aç"
+    },
+    "ibanBadgeLabel": "Banka havalesi (SEPA)",
+    "ibanBadgeNote": "Faturalar ödeme bağlantısıyla e-posta üzerinden gelir — karttan otomatik olarak hiçbir şey çekilmez. Fatura sayfasından daha erken de ödeme yapabilirsiniz."
+  },
+  "invoices": {
+    "title": "Ödeme geçmişi",
+    "totalPaid": "toplam ödenen {{amount}}",
+    "exportCsv": "CSV dışa aktar",
+    "exportError": "CSV dışa aktarılamadı. Tekrar deneyin.",
+    "receiptError": "Fatura açılamadı. Tekrar deneyin.",
+    "invoiceNo": "Fatura #{{id}}",
+    "methodCard": "Kartla ödendi",
+    "methodIban": "Banka havalesiyle ödendi (IBAN)",
+    "syncHint": "Durumu ödeme hizmetinden kontrol edin",
+    "syncChanged": "Durum güncellendi: {{status}}",
+    "syncUnchanged": "Ödeme hizmeti aynı durumu doğruladı",
+    "syncError": "Durum kontrol edilemedi. Tekrar deneyin.",
+    "kindOfflineFee": "Çevrimdışı satış komisyonu",
+    "kindMinFee": "Asgari aylık ücret",
+    "kindOnlineFee": "Çevrimiçi ödeme komisyonu",
+    "methodWithheld": "Ödeme sırasında Stripe tarafından kesildi"
+  },
+  "table": {
+    "date": "Tarih",
+    "description": "Açıklama",
+    "amount": "Tutar",
+    "status": "Durum",
+    "receipt": "Fatura"
+  },
+  "status": {
+    "paid": "Ödendi",
+    "pending": "Beklemede",
+    "failed": "Ödenmedi",
+    "refunded": "İade edildi"
+  },
+  "empty": {
+    "noInvoices": "Henüz fatura yok — ilk ödemeden sonra görünürler.",
+    "noCard": "Kartınız ilk ödemeden sonra otomatik olarak görünür.",
+    "monthsWithUs": "Henüz abonelik satın almadınız",
+    "noData": "Veri yok"
+  },
+  "savings": {
+    "title": "Tasarruflarınız",
+    "prepayTitle": "Peşin ödeme yaptığınızda tasarruflarınız",
+    "emptyState": "Daha uzun bir dönem seçin ve tasarruf etmeye başlayın",
+    "youSave": "{{months}} ayda {{amount}} tasarruf edersiniz",
+    "freeMonths": "Bu, {{count}} ücretsiz ay gibidir",
+    "amountLabel": "{{amount}} tasarruf",
+    "comparedToMonthly": "aylık ödemeye kıyasla",
+    "forMonths_one": "{{count}} ay için",
+    "forMonths_other": "{{count}} ay için"
+  },
+  "pay": "Öde",
+  "continuePlan": "Plana devam et",
+  "payModal": {
+    "titleNew": "{{plan}} planını başlat",
+    "titleSwitch": "{{plan}} planına geç",
+    "titleRenew": "{{plan}} planını yenile",
+    "totalLabel": "Planınızın maliyeti",
+    "burnWarning": "Başka bir plana geçmek dönemi yeniden başlatır: {{plan}} planınızın kalan kısmı KAYBOLUR — iade edilmez veya aktarılmaz. Aynı planı yenilemek onu korur.",
+    "switched": "Plan değiştirildi: ödenecek bir şey yok — değişiklik mevcut dönemin kalan kısmıyla karşılandı.",
+    "renewNote": "Bu, aynı planı yeniler: satın aldığınız aylar mevcut ödenmiş döneme eklenir. Hiçbir şey kaybolmaz.",
+    "cardNote": "Stripe’ın güvenli sayfasında kartla ödeme · 7 gün içinde iade",
+    "freeUntil": "{{date}} tarihine kadar hiçbir ücret alınmaz: ödenmiş dönemden {{count}} gününüz kaldı. Faturalandırma o tarihte başlar.",
+    "taxLabel": "KDV",
+    "taxLine": "%{{rate}} KDV",
+    "reverseCharge": "Ters vergilendirme",
+    "totalWithTax": "KDV dahil toplam",
+    "taxServerNote": "Vergi, fatura bilgilerinizden hesaplanır. Fatura aynı tutarı gösterir.",
+    "taxReview": "Fatura bilgilerinizden vergiyi belirleyemedik; bu nedenle toplam vergi olmadan gösterilir ve ödeme tamamlanamaz. Ödeyenin ülkesini ve adresini kontrol edin veya destekle iletişime geçin."
+  },
+  "offlineFee": {
+    "title": "Çevrimdışı satış ücreti",
+    "accruing": "Nakit ve depozitolardan %{{rate}} oranında birikmiştir. Aylık faturalandırılır; ödeme için {{days}} gününüz vardır.",
+    "due": "Fatura kesildi. Ödeme için kalan gün: {{days}}.",
+    "suspended": "Ödeme vadesi geçti — CRM ve mini uygulama erişimi askıya alındı.",
+    "pay": "Öde",
+    "suspendedMin": "Asgari aylık ücret vadesi geçti — CRM ve mini uygulama erişimi askıya alındı.",
+    "alsoAccruing": "Ayrıca bu ay biriken: {{amount}} — sonraki faturaya eklenecek.",
+    "minimum": "Asgari aylık ücret {{amount}} tutarındadır. Ay içinde daha az kazanırsanız farkı ödersiniz; daha fazla kazanırsanız fatura olmaz.",
+    "pendingBill": "Önceki modele göre birikmiş, fatura bekliyor.",
+    "notBilledYet": "Henüz fatura kesilmedi: biriken tutar asgari fatura tutarının altında veya fatura hâlâ hazırlanıyor. Hiçbir şey kaybolmaz — sonraki faturaya eklenir."
+  },
+  "trial": {
+    "title": "Yeni stüdyolar için teklif",
+    "subtitle": "Stüdyonuz yeni oluşturuldu",
+    "headline": "{{days}} gün ücretsiz",
+    "noCard": "Kart gerekmez — şimdi ödeyecek bir şeyiniz yok",
+    "perks": {
+      "allModules": "Her modüle tam erişim: takvim, müşteriler, finans, bildirimler ve Velora AI",
+      "noCommitment": "Taahhüt yok: size uygun değilse yenilemeyin",
+      "keepData": "Deneme sırasında girdiğiniz her şey sizin kalır"
+    },
+    "activate": "Etkinleştir",
+    "decline": "Reddet",
+    "cardHint": "Bu stüdyo için ücretsiz dönemi henüz etkinleştirmediniz. Bir plan satın alana kadar kullanılabilir kalır."
+  },
+  "profile": {
+    "title": "Fatura bilgileri",
+    "editTitle": "Fatura bilgilerini düzenle",
+    "subtitle": "Adresiniz faturada yer alır ve vergi oranını belirler. Hesabınıza kaydedilir — başka bir stüdyoda tekrar sormayız.",
+    "subtitlePay": "Bir kez doldurun, sonraki sefer ödeme doğrudan ilerler. Adresiniz faturada yer alır ve vergi oranını belirler.",
+    "cardTitle": "Fatura bilgileri",
+    "cardSubtitle": "Hesabınıza kaydedilir ve tüm stüdyolarda kullanılır. Faturada böyle görünür.",
+    "cardEmpty": "Henüz doldurulmadı — ilk ödemeden önce isteyeceğiz. Şimdi ekleyebilirsiniz.",
+    "add": "Fatura bilgileri ekle",
+    "edit": "Düzenle",
+    "save": "Kaydet",
+    "saveAndPay": "Kaydet ve ödemeye devam et",
+    "cancel": "İptal",
+    "saved": "Fatura bilgileri kaydedildi",
+    "vatNone": "Belirtilmedi",
+    "fields": {
+      "country": "Ülke veya bölge",
+      "countryPlaceholder": "Bir ülke seçin",
+      "address": "Adres",
+      "line1": "Adres satırı 1",
+      "line1Placeholder": "Sokak ve numara",
+      "line2": "Adres satırı 2 — isteğe bağlı",
+      "line2Placeholder": "Daire, süit, birim numarası vb.",
+      "postalCode": "Posta kodu",
+      "postalCodePlaceholder": "110 00",
+      "city": "Şehir",
+      "cityPlaceholder": "Prag",
+      "vat": "KDV numarası — isteğe bağlı",
+      "vatPlaceholder": "{{prefix}}12345678",
+      "vatHint": "Yalnızca işletmeler için. Numara kaydederken AB sicilinde (VIES) doğrulanır — doğrulanmamış numaraları kabul etmeyiz. Geçerli numarayla başka bir AB ülkesindeki şirket vergisiz faturalandırılır (ters vergilendirme). Bireysel müşterilerin numarası yoktur — alanı boş bırakın.",
+      "countrySearch": "Bir ad yazmaya başlayın",
+      "countryNotFound": "Ülke bulunamadı",
+      "vatOutsideEu": "KDV numarası istemiyoruz: AB dışında vergi numaraya değil, ödeyenin ülkesine göre belirlenir; bu nedenle faturayı etkilemez.",
+      "vatPending": "Numaranız kaydedildi ancak AB sicili o anda kullanılamıyordu; bu yüzden henüz onaylanmadı ve sonraki faturanız tam KDV içerir. Tekrar girmeniz gerekmez: kontrol etmeye devam edeceğiz ve sicil yanıt verir vermez vergi alınmayacaktır. Önceden ödenmiş bir fatura için destek vergiyi iade eder."
+    },
+    "errors": {
+      "required": "Bu alan zorunludur"
+    },
+    "preview": {
+      "invoice": "Fatura",
+      "billTo": "Fatura adresi",
+      "note": "Bilgileriniz her faturada böyle görünür. Bunları istediğiniz zaman Plan ve faturalandırma → Ödeme yöntemi bölümünden değiştirebilirsiniz."
+    }
+  }
+}

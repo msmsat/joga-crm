@@ -1,0 +1,393 @@
+{
+  "legal": {
+    "terms": "Termini di servizio",
+    "privacy": "Informativa sulla privacy"
+  },
+  "tabs": {
+    "plans": "Piani e prezzi",
+    "invoices": "Cronologia pagamenti",
+    "method": "Metodo di pagamento"
+  },
+  "tabsShort": {
+    "plans": "Piani",
+    "invoices": "Cronologia",
+    "method": "Pagamento"
+  },
+  "paymentsHistory": {
+    "title": "Cronologia completa dei pagamenti",
+    "subtitle": "Tutte le fatture di questo studio",
+    "clearFilter": "Cancella",
+    "loadMore": "Carica altro"
+  },
+  "planNames": {
+    "start": "Start",
+    "pro": "Pro",
+    "business": "Business"
+  },
+  "seats": {
+    "title": "Quanti membri dello staff ci sono nello studio",
+    "hint": "da {{amount}} al mese",
+    "stepNote": "Ogni posto aggiuntivo aggiunge {{amount}} al mese",
+    "unlimitedNote": "Staff senza limiti",
+    "perSeat": "Per membro dello staff"
+  },
+  "limits": {
+    "staff": "Staff",
+    "ai": "Richieste Velora AI",
+    "unlimited": "Illimitato"
+  },
+  "banner": {
+    "trialEnds": "La tua prova termina il {{date}} — scegli un piano",
+    "renews": "Il tuo abbonamento {{plan}} si rinnova il {{date}}",
+    "expires": "Il tuo abbonamento {{plan}} termina il {{date}}",
+    "choosePlan": "Scegli un piano",
+    "dismiss": "Chiudi",
+    "unpaid": "Il tuo piano non è stato pagato. Per continuare, paga in Piani e fatturazione.",
+    "suspended": "L’accesso è sospeso perché una fattura del piano è scaduta. Pagala in Piani e fatturazione."
+  },
+  "paymentReturn": {
+    "done": "Il pagamento è andato a buon fine — il piano {{plan}} è attivo.",
+    "processing": "Pagamento in elaborazione — il tuo abbonamento si attiverà tra pochi minuti."
+  },
+  "header": {
+    "eyebrow": "Velora · Fatturazione",
+    "title": "Piani e fatturazione",
+    "subtitle": "Gestisci abbonamento, metodi di pagamento e cronologia pagamenti",
+    "totalSpent": "Totale speso",
+    "monthsWithUs": "Mesi con noi",
+    "saved": "Risparmiato",
+    "nextCharge": "Prossimo addebito",
+    "currentPlan": "PIANO ATTUALE",
+    "noPlanName": "Nessun piano",
+    "noPlan": "Nessun abbonamento attivo",
+    "active": "Attivo",
+    "activeUntil": "Attivo · fino al {{date}}",
+    "trialPlanName": "Piano di prova",
+    "trial": "Periodo di prova",
+    "trialUntil": "Periodo di prova · fino al {{date}}",
+    "expired": "Scaduto",
+    "percentRate": "{{rate}}% delle vendite",
+    "modePercent": "Piano percentuale",
+    "modeFixed": "Fisso",
+    "modeCombo": "Combinato",
+    "unpaid": "Piano non pagato",
+    "awaitingPayment": "In attesa di pagamento"
+  },
+  "mode": {
+    "title": "Modello di pagamento",
+    "subscription": "Abbonamento fisso",
+    "percent": "% delle vendite",
+    "combo": "Combinazione fisso + %",
+    "short": {
+      "subscription": "Fisso",
+      "percent": "Percentuale",
+      "combo": "Combinato"
+    },
+    "descriptions": {
+      "subscription": "Paga un importo al mese. Prevedibile e conveniente.",
+      "percent": "Nessun costo fisso: {{rate}}% di ogni vendita, contanti inclusi.",
+      "combo": "Metà abbonamento + {{rate}}% di ogni vendita, contanti inclusi."
+    },
+    "badges": {
+      "popular": "Popolare",
+      "flexible": "Flessibile"
+    },
+    "percentCard": {
+      "title": "Il modello «3% delle vendite»",
+      "description": "Paga solo quando guadagni: 3% di ogni vendita, senza quota fissa di abbonamento. I pagamenti online si dividono subito; contanti e depositi maturano e arrivano in un’unica fattura ogni mese.",
+      "noFixed": "Nessun costo fisso",
+      "payForResult": "Paga per i risultati",
+      "oneClick": "Attivazione con un clic",
+      "cta": "Attiva il modello al 3%",
+      "ctaShort": "Attiva 3%"
+    },
+    "activateSuccess": "Modello di pagamento aggiornato",
+    "activateError": "Impossibile aggiornare il modello di pagamento",
+    "alreadyActive": "Questo modello di pagamento è già attivo — qui sotto puoi rinnovare o cambiare piano",
+    "confirmSwitchTitle": "Cambiare modello di pagamento?",
+    "confirmSwitchMessage": "Il tuo abbonamento è attivo. Il cambio ha effetto immediato e il resto del periodo pagato VIENE COMPLETAMENTE PERSO: i giorni inutilizzati non sono rimborsati né trasferiti.",
+    "termsTitle": "Conferma le condizioni del piano",
+    "termsMessage": "Con questo piano la piattaforma trattiene {{rate}}% di ogni vendita.\n\nPer i pagamenti online la commissione è trattenuta automaticamente al momento del pagamento. Per contanti, terminale e ricariche di depositi NON è trattenuta subito — matura e ricevi una fattura separata una volta al mese.\n\nHai {{days}} giorni per pagare la fattura. Se non viene pagata in tempo, l’accesso al CRM e alla mini-app dei clienti viene sospeso fino al saldo.\n\nL’importo dovuto è visibile in Fatturazione; puoi pagare in qualsiasi momento, anche in anticipo.",
+    "termsConfirm": "Accetto le condizioni",
+    "termsMinimum": "Il costo mensile minimo è {{amount}} {{currency}}. Se in un mese di calendario la piattaforma ha guadagnato meno di tale importo dal tuo studio (ad esempio, non ci sono state vendite tramite il CRM), ricevi una fattura per la differenza. Se guadagni più del minimo, non c’è fattura. Un costo minimo non pagato sospende l’accesso come una fattura di commissione non pagata.",
+    "termsBurn": "ATTENZIONE: ti resta un periodo pagato. Il cambio del modello di fatturazione LO PERDE COMPLETAMENTE — i giorni inutilizzati non sono rimborsati né trasferiti.",
+    "termsCombo": "Il cambio è un ACQUISTO: subito dopo la conferma vedrai l’importo dovuto. Il resto del periodo pagato attuale viene perso — non è rimborsato né trasferito. Il modello fisso + % si attiva SOLO dopo il pagamento; fino ad allora il piano rimane com’è e non viene addebitato nulla."
+  },
+  "combo": {
+    "rateBadge": "{{rate}}%",
+    "summary": "Fisso {{fixed}}/mese + {{rate}}% delle vendite (contanti fatturati mensilmente)",
+    "cta": "Attiva il piano combinato",
+    "ctaShort": "Attiva combinato"
+  },
+  "period": {
+    "1": "1 mese",
+    "3": "3 mesi",
+    "6": "6 mesi",
+    "12": "1 anno",
+    "24": "2 anni",
+    "title": "Periodo di pagamento",
+    "discountActive": "Sconto del {{percent}}% attivo",
+    "noDiscount": "Nessuno sconto",
+    "discountLabel": "−{{percent}}% di sconto"
+  },
+  "calculator": {
+    "title": "Parametri di calcolo",
+    "monthlyTurnover": "Il tuo fatturato online mensile",
+    "turnoverRangeMin": "50 mila",
+    "turnoverRangeMax": "3 M+",
+    "chooseFeeLabel": "Scegli una commissione (influisce sulle funzioni)",
+    "feeOptions": {
+      "basic": "Base",
+      "standard": "Standard",
+      "pro": "Pro",
+      "max": "Max"
+    },
+    "chooseFixedLabel": "Scegli una quota fissa di base (l’acquiring è sempre al 3%)",
+    "fixedOptions": {
+      "start": "Start",
+      "optima": "Optima",
+      "business": "Business"
+    },
+    "economyPercentTitle": "ECONOMIA DEL PIANO",
+    "economyComboTitle": "ECONOMIA DEL PIANO COMBINATO",
+    "turnover": "Fatturato dello studio",
+    "systemFee": "Costo di sistema",
+    "totalMonthlyPayment": "PAGAMENTO MENSILE TOTALE",
+    "onlyPayForResult": "Non paghi un costo fisso, solo per i risultati",
+    "activatePercent": "Attiva il modello al {{percent}}%",
+    "baseSubscription": "Abbonamento base (fisso)",
+    "acquiringFee": "Acquiring / costo",
+    "activateCombo": "Attiva il piano combinato"
+  },
+  "planCards": {
+    "bestChoice": "Scelta migliore",
+    "current": "Attuale",
+    "perMonth": "/ mese",
+    "currentPlan": "Piano attuale",
+    "yourPrice": "Il tuo prezzo",
+    "staffLimit": "Fino a {{count}} membri dello staff",
+    "staffUnlimited": "Staff illimitato"
+  },
+  "paymentSchedule": {
+    "title": "Piano di pagamenti",
+    "total": "Totale dovuto",
+    "morePayments": "+ {{count}} altri pagamenti di {{amount}}",
+    "processing": "Reindirizzamento al pagamento…",
+    "payFor": "Paga per {{count}} mesi",
+    "vatNote": "IVA esclusa — l’imposta viene aggiunta al pagamento in base al tuo paese"
+  },
+  "trust": {
+    "title": "Perché oltre 2.400 aziende si fidano di noi",
+    "reviews": [
+      {
+        "text": "Siamo passati da Altegio. La differenza è come tra un taxi e un jet privato.",
+        "author": "Maria K., FORM Pilates"
+      },
+      {
+        "text": "La parte migliore è sapere esattamente quanto pago ogni mese. Nessuna sorpresa.",
+        "author": "Artem N., Barbershop Bros"
+      },
+      {
+        "text": "L’assistenza ha risposto in 4 minuti. Non l’ho mai visto da nessun’altra parte.",
+        "author": "Elena D., SPA LUNA"
+      }
+    ]
+  },
+  "upgrade": {
+    "priceLine": "Prezzo {{price}}/mese",
+    "discountNote": " {{percent}}% di sconto pagando per {{period}} mesi",
+    "planLabel": "Piano",
+    "periodLabel": "Periodo",
+    "periodValue_one": "{{count}} mese",
+    "periodValue_other": "{{count}} mesi",
+    "discountLabel": "Sconto",
+    "scheduledBadge": "Dal {{date}} — piano «{{plan}}»",
+    "vatNote": "IVA esclusa — l’imposta viene aggiunta al pagamento in base ai dati della tua azienda; le aziende UE con partita IVA ricevono l’inversione contabile."
+  },
+  "method": {
+    "notLinked": "Non collegato",
+    "badgeTitle": "Metodo di pagamento protetto",
+    "tokenSub": "Token del fornitore · scade {{expiry}}",
+    "tokenNote": "I dati reali della carta sono conservati dal fornitore di pagamenti (PCI DSS L1). Conserviamo solo un token monouso per i rinnovi.",
+    "securityTitle": "Standard di protezione dei dati",
+    "security": {
+      "pciDss": "Crittografia PCI DSS livello 1",
+      "secure3d": "Protezione transazioni 3D Secure",
+      "noStorage": "I dati della carta non passano mai dai nostri server",
+      "autoLink": "La carta viene collegata al primo pagamento"
+    },
+    "noCardDetail": "Non devi inserire i dati separatamente — il pagamento avviene sulla pagina sicura di Stripe.",
+    "renewDone": "Fattura creata — pagamento in elaborazione",
+    "renewBusy": "Creazione fattura…",
+    "renewSuccess": "Fattura di rinnovo creata",
+    "renewError": "Impossibile creare la fattura. Riprova.",
+    "renewNow": "Rinnova ora con carta •••• {{last4}}",
+    "autopayTitle": "Impostazioni di pagamento automatico",
+    "autopaySuccess": "Impostazione salvata",
+    "autopayError": "Impossibile salvare l’impostazione. Riprova.",
+    "autopay": {
+      "cardOnly": "Disponibile pagando con carta",
+      "autoRenew": {
+        "label": "Rinnovo automatico",
+        "desc": "Disattiva per annullare alla fine del periodo pagato",
+        "until": "L’abbonamento non si rinnoverà — accesso fino al {{date}}"
+      },
+      "emailNotify": {
+        "label": "Notifiche e-mail",
+        "desc": "Ricevuta inviata per e-mail dopo ogni pagamento"
+      },
+      "remind3d": {
+        "label": "Ricorda 3 giorni prima",
+        "desc": "Ti ricorderemo prima dell’addebito automatico"
+      },
+      "sms": {
+        "label": "Avviso SMS",
+        "desc": "Messaggio inviato al momento dell’addebito"
+      }
+    },
+    "portal": {
+      "title": "Dati di fatturazione e IVA",
+      "subtitle": "Fatture, carta collegata e cronologia addebiti sono nel portale clienti Stripe.",
+      "cta": "Apri in Stripe"
+    },
+    "ibanBadgeLabel": "Bonifico bancario (SEPA)",
+    "ibanBadgeNote": "Le fatture arrivano via e-mail con un link di pagamento — nulla viene addebitato automaticamente sulla carta. Puoi anche pagare in anticipo dalla pagina della fattura."
+  },
+  "invoices": {
+    "title": "Cronologia pagamenti",
+    "totalPaid": "totale pagato {{amount}}",
+    "exportCsv": "Esporta CSV",
+    "exportError": "Impossibile esportare il CSV. Riprova.",
+    "receiptError": "Impossibile aprire la ricevuta. Riprova.",
+    "invoiceNo": "Fattura n.{{id}}",
+    "methodCard": "Pagato con carta",
+    "methodIban": "Pagato con bonifico bancario (IBAN)",
+    "syncHint": "Controlla lo stato con il servizio di pagamento",
+    "syncChanged": "Stato aggiornato: {{status}}",
+    "syncUnchanged": "Il servizio di pagamento ha confermato lo stesso stato",
+    "syncError": "Impossibile controllare lo stato. Riprova.",
+    "kindOfflineFee": "Commissione vendite offline",
+    "kindMinFee": "Costo mensile minimo",
+    "kindOnlineFee": "Commissione pagamenti online",
+    "methodWithheld": "Trattenuto da Stripe al pagamento"
+  },
+  "table": {
+    "date": "Data",
+    "description": "Descrizione",
+    "amount": "Importo",
+    "status": "Stato",
+    "receipt": "Ricevuta"
+  },
+  "status": {
+    "paid": "Pagato",
+    "pending": "In attesa",
+    "failed": "Non pagato",
+    "refunded": "Rimborsato"
+  },
+  "empty": {
+    "noInvoices": "Nessuna fattura per ora — compariranno dopo il primo pagamento.",
+    "noCard": "La tua carta apparirà automaticamente dopo il primo pagamento.",
+    "monthsWithUs": "Non hai ancora acquistato un abbonamento",
+    "noData": "Nessun dato"
+  },
+  "savings": {
+    "title": "I tuoi risparmi",
+    "prepayTitle": "I tuoi risparmi pagando in anticipo",
+    "emptyState": "Scegli un periodo più lungo e inizierai a risparmiare",
+    "youSave": "Risparmi {{amount}} in {{months}} mesi",
+    "freeMonths": "È come avere {{count}} mesi gratis",
+    "amountLabel": "{{amount}} di risparmio",
+    "comparedToMonthly": "rispetto al pagamento mensile",
+    "forMonths_one": "Per {{count}} mese",
+    "forMonths_other": "Per {{count}} mesi"
+  },
+  "pay": "Paga",
+  "continuePlan": "Continua piano",
+  "payModal": {
+    "titleNew": "Avvia il piano {{plan}}",
+    "titleSwitch": "Passa a {{plan}}",
+    "titleRenew": "Rinnova {{plan}}",
+    "totalLabel": "Il tuo piano costerà",
+    "burnWarning": "Il passaggio a un piano diverso riavvia il periodo: il resto del tuo piano {{plan}} VIENE PERSO — non viene rimborsato né trasferito. Il rinnovo dello stesso piano lo conserva.",
+    "switched": "Piano modificato: non c’è niente da pagare — il passaggio è coperto dal residuo del periodo corrente.",
+    "renewNote": "Questo rinnova lo stesso piano: i mesi acquistati si aggiungono al periodo pagato attuale. Non si perde nulla.",
+    "cardNote": "Pagamento con carta sulla pagina sicura di Stripe · rimborso entro 7 giorni",
+    "freeUntil": "Non viene addebitato nulla fino al {{date}}: ti restano {{count}} giorni del periodo già pagato. La fatturazione inizia in quella data.",
+    "taxLabel": "IVA",
+    "taxLine": "IVA {{rate}}%",
+    "reverseCharge": "Inversione contabile",
+    "totalWithTax": "Totale IVA inclusa",
+    "taxServerNote": "L’imposta è calcolata dai dati di fatturazione. La fattura mostrerà lo stesso importo.",
+    "taxReview": "Non siamo riusciti a determinare l’imposta per i tuoi dati di fatturazione; il totale viene quindi mostrato senza di essa e il pagamento non può essere completato. Controlla paese e indirizzo del pagatore o contatta l’assistenza."
+  },
+  "offlineFee": {
+    "title": "Costo per vendite offline",
+    "accruing": "Maturato da contanti e depositi al {{rate}}%. Fatturato mensilmente, hai {{days}} giorni per pagare.",
+    "due": "Fattura emessa. Giorni rimasti per pagare: {{days}}.",
+    "suspended": "Pagamento scaduto — l’accesso al CRM e alla mini-app è sospeso.",
+    "pay": "Paga",
+    "suspendedMin": "Costo mensile minimo scaduto — l’accesso al CRM e alla mini-app è sospeso.",
+    "alsoAccruing": "In più maturano questo mese: {{amount}} — andranno nella prossima fattura.",
+    "minimum": "Il costo mensile minimo è {{amount}}. Se guadagni meno in un mese, integri la differenza; se guadagni di più, non c’è fattura.",
+    "pendingBill": "Maturato con il modello precedente, in attesa di fattura.",
+    "notBilledYet": "Nessuna fattura emessa ancora: l’importo maturato è sotto la dimensione minima della fattura o è ancora in preparazione. Non si perde nulla — andrà nella prossima fattura."
+  },
+  "trial": {
+    "title": "Offerta per nuovi studi",
+    "subtitle": "Il tuo studio è stato appena creato",
+    "headline": "{{days}} giorni gratis",
+    "noCard": "Non serve una carta — non c’è niente da pagare ora",
+    "perks": {
+      "allModules": "Accesso completo a ogni modulo: diario, clienti, finanze, notifiche e Velora AI",
+      "noCommitment": "Nessun vincolo: se non fa per te, semplicemente non rinnovare",
+      "keepData": "Tutto ciò che configuri durante la prova rimane tuo"
+    },
+    "activate": "Attiva",
+    "decline": "Rifiuta",
+    "cardHint": "Non hai ancora attivato il periodo gratuito di questo studio. Resta disponibile finché non acquisti un piano."
+  },
+  "profile": {
+    "title": "Dati di fatturazione",
+    "editTitle": "Modifica dati di fatturazione",
+    "subtitle": "Il tuo indirizzo compare in fattura e imposta l’aliquota fiscale. È memorizzato nel tuo account — non lo chiederemo di nuovo in un altro studio.",
+    "subtitlePay": "Compilalo una volta e il pagamento andrà direttamente a buon fine la prossima volta. Il tuo indirizzo compare in fattura e imposta l’aliquota fiscale.",
+    "cardTitle": "Dati di fatturazione",
+    "cardSubtitle": "Memorizzati nel tuo account e usati in tutti i tuoi studi. Ecco come appaiono in fattura.",
+    "cardEmpty": "Non ancora compilati — li chiederemo prima del primo pagamento. Puoi aggiungerli ora.",
+    "add": "Aggiungi dati di fatturazione",
+    "edit": "Modifica",
+    "save": "Salva",
+    "saveAndPay": "Salva e continua al pagamento",
+    "cancel": "Annulla",
+    "saved": "Dati di fatturazione salvati",
+    "vatNone": "Non fornito",
+    "fields": {
+      "country": "Paese o regione",
+      "countryPlaceholder": "Seleziona un paese",
+      "address": "Indirizzo",
+      "line1": "Riga indirizzo 1",
+      "line1Placeholder": "Via e numero",
+      "line2": "Riga indirizzo 2 — facoltativo",
+      "line2Placeholder": "Appartamento, interno, numero unità, ecc.",
+      "postalCode": "Codice postale",
+      "postalCodePlaceholder": "110 00",
+      "city": "Città",
+      "cityPlaceholder": "Praga",
+      "vat": "Partita IVA — facoltativo",
+      "vatPlaceholder": "{{prefix}}12345678",
+      "vatHint": "Solo per aziende. Il numero viene controllato nel registro UE (VIES) al salvataggio — non accettiamo numeri non verificati. Con un numero valido, un’azienda in un altro paese UE riceve fattura senza imposta (inversione contabile). Le persone fisiche non ne hanno uno — lascia vuoto.",
+      "countrySearch": "Inizia a digitare un nome",
+      "countryNotFound": "Nessun paese trovato",
+      "vatOutsideEu": "Non chiediamo una partita IVA: fuori dall’UE l’imposta è stabilita dal paese del pagatore, non dal numero, quindi non cambia la fattura.",
+      "vatPending": "Il tuo numero è salvato, ma il registro UE non era disponibile in quel momento, quindi non è ancora confermato e la prossima fattura includerà l’IVA completa. Non devi reinserirlo: continuiamo a controllare e, quando il registro risponde, l’imposta smette di essere addebitata. Per una fattura già pagata, l’assistenza rimborserà l’imposta."
+    },
+    "errors": {
+      "required": "Questo campo è obbligatorio"
+    },
+    "preview": {
+      "invoice": "Fattura",
+      "billTo": "Fatturare a",
+      "note": "Ecco come i tuoi dati appaiono su ogni fattura. Puoi modificarli in qualsiasi momento in Piani e fatturazione → Metodo di pagamento."
+    }
+  }
+}

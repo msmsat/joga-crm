@@ -1,0 +1,287 @@
+== sv
+telegram.tokenLabel	Bot-token
+telegram.tokenPlaceholder	1234567890:ABC...
+telegram.tokenInvalidFormat	Ogiltigt tokenformat
+telegram.verifyButton	Verifiera och anslut
+telegram.verifiedToast	Botten @{{username}} är ansluten
+telegram.verifyFailedToast	Telegram avvisade denna token
+telegram.disconnect	Koppla från
+telegram.disconnectedToast	Botten är frånkopplad
+telegram.disconnectConfirmTitle	Koppla från botten?
+telegram.disconnectConfirmMessage	Telegram-svararen slutar fungera tills du ansluter en bot igen.
+telegram.gateTooltip	Anslut först en bot
+telegram.statsPending	Visas när det automatiska svaret börjar fungera
+telegram.instructionTitle	Så här får du en token
+telegram.instructionStep1	Öppna @BotFather i Telegram
+telegram.instructionStep2	Skicka kommandot /newbot och välj ett namn och användarnamn för botten
+telegram.instructionStep3	Kopiera token som du får
+telegram.instructionStep4	Klistra in den här och klicka på ”Verifiera och anslut”
+instagram.connectButton	Anslut Instagram
+instagram.connectedToast	Instagram är anslutet
+instagram.connectErrorToast	Kunde inte ansluta Instagram — försök igen
+instagram.expiresUntil	Åtkomst giltig till {{date}}
+instagram.disconnect	Koppla från
+instagram.disconnectedToast	Instagram är frånkopplat
+instagram.disconnectConfirmTitle	Koppla från Instagram?
+instagram.disconnectConfirmMessage	Instagrams automatiska svar slutar svara kunder tills du ansluter kontot igen.
+instagram.gateTooltip	Anslut först ett konto
+instagram.statsPending	Visas när det automatiska svaret börjar fungera
+instagram.instructionTitle	Så här ansluter du
+instagram.instructionStep1	Studions konto måste vara professionellt — Business eller Creator (Instagram-inställningar → Kontotyp)
+instagram.instructionStep2	Klicka på ”Anslut Instagram” och logga in med studions konto
+instagram.instructionStep3	Tillåt åtkomst till meddelanden
+instagram.instructionStep4	Du kommer tillbaka hit automatiskt
+whatsapp.numberLabel	WhatsApp Business-nummer
+whatsapp.connectLink	eller ange en token manuellt
+whatsapp.gateTooltip	Anslut först ett WhatsApp-nummer
+whatsapp.statsPending	Visas när det automatiska svaret börjar fungera
+whatsapp.instructionTitle	Så här ansluter du
+whatsapp.instructionStep1	Klicka på ”Anslut WhatsApp” — ett Meta-fönster öppnas
+whatsapp.instructionStep2	Logga in på Facebook, välj ett företagskonto och ett nummer (eller lägg till ett nytt) och bekräfta det med koden
+whatsapp.instructionStep3	Numret ansluts en gång — samma används för kundnotiser; kom tillbaka hit och aktivera det automatiska svaret
+whatsapp.connectButton	Anslut WhatsApp
+whatsapp.connectedToast	WhatsApp-numret är anslutet
+whatsapp.connectErrorToast	Kunde inte ansluta WhatsApp-numret
+whatsapp.disconnect	Koppla från
+whatsapp.disconnectedToast	WhatsApp är frånkopplat
+whatsapp.disconnectConfirmTitle	Koppla från WhatsApp?
+whatsapp.disconnectConfirmMessage	Numret kopplas också från studions notiser och integrationer.
+history.title	Chatthistorik
+history.empty	Starta din första konversation
+history.today	I dag
+history.yesterday	I går
+history.earlier	Tidigare
+history.messagesCount_one	{{count}} meddelande
+history.messagesCount_other	{{count}} meddelanden
+history.deleteConfirmTitle	Ta bort den här chatten?
+history.deleteConfirmMessage	Alla meddelanden i denna konversation tas bort permanent.
+actions.newChat	Ny chatt
+actions.deleteChat	Ta bort chatt
+actions.confirmTitle	Bekräfta åtgärden
+actions.confirm	Bekräfta
+actions.cancel	Avbryt
+actions.cancelled	Åtgärden avbröts.
+actions.done	Klar {{date}}
+actions.effect	Vad som ändras
+actions.undo	Ångra
+actions.undoTitle	Ångra den här åtgärden?
+actions.undoMessage	Jag återställer det som gjordes: {{action}}. Pass som kunder redan har bokat ligger kvar — bara en person kan ta bort dem.
+actions.args.lesson_id	Pass
+actions.args.client_id	Kund
+actions.args.reservation_id	Bokning
+actions.args.alternate_with	Växla med
+actions.args.service_id	Tjänst
+actions.args.teacher_id	Tränare
+actions.args.hall_id	Sal
+actions.args.start_time	Börjar
+actions.args.duration_min	Längd, min
+actions.args.total_spots	Platser
+actions.args.price	Pris
+actions.args.name	Förnamn
+actions.args.last_name	Efternamn
+actions.args.phone	Telefon
+actions.args.email	E-post
+actions.args.city	Stad
+actions.args.birth_date	Födelsedatum
+actions.args.source	Källa
+actions.args.frozen	Fryst
+actions.args.date_from	Från
+actions.args.date_to	Till
+actions.args.weekdays	Veckodagar
+actions.args.time_from	Från
+actions.args.time_to	Till
+actions.args.break_at	Paus kl.
+actions.args.break_min	Paus, min
+actions.args.extend_hours	Utöka tränarens arbetstid
+actions.args.salary	Lön
+actions.args.access_role	Åtkomst
+actions.args.department	Befattning
+actions.args.password	Anställds lösenord
+actions.args.rate	Ersättning
+actions.args.rate_type	Ersättningstyp
+actions.args.service_ids	Tjänster
+actions.args.schedule	Schema
+actions.bool.yes	ja
+actions.bool.no	nej
+settings.title	AI-inställningar
+settings.model	Modell
+settings.language	Språk
+models.comingSoon	Kommer snart
+models.velora-3.5	Velora AI 3.5
+languages.auto	Automatiskt
+languages.ru	Ryska
+languages.en	Engelska
+languages.uk	Ukrainska
+languages.cs	Tjeckiska
+languages.de	Tyska
+chat.thinking	Velora AI tänker
+chat.thinkingAnswer	Velora AI funderar på svaret
+chat.readyTitle	Velora AI är redo att hjälpa
+chat.thinkingTitle	Velora AI tänker...
+chat.readySubtitle	Ställ en fråga eller välj ett förslag
+chat.thinkingSubtitle	Behandlar din förfrågan
+chat.placeholder	Skriv ett meddelande...
+chat.drawerPlaceholder	Fråga mig vad som helst...
+chat.navbarPlaceholder	Fråga AI eller skapa en uppgift...
+chat.enterToSend	Retur för att skicka
+chat.shiftEnterNewline	Skift+Retur för ny rad
+chat.aiDisclaimer	Velora AI kan ha fel. Kontrollera viktig information.
+chat.continueInChat	Fortsätt i chatten →
+chat.emptyTitle	Hur kan jag hjälpa?
+chat.emptySubtitle	Ställ en fråga om din studio, dina kunder eller din verksamhet
+chat.charCount_one	{{count}} / 4000 tecken
+chat.charCount_other	{{count}} / 4000 tecken
+chat.suggestions.revenue	Visa intäktsstatistik för den här månaden
+chat.suggestions.sms	Skriv ett SMS-påminnelse om en tid
+chat.suggestions.promo	Idéer för en sommarkampanj
+chat.suggestions.retention	Hur kan jag förbättra kundlojaliteten?
+chat.drawerSuggestions.revenueAnalysis	Intäktsanalys
+chat.drawerSuggestions.emailTemplate	E-postmall
+chat.drawerSuggestions.promoIdeas	Kampanjidéer
+chat.drawerSuggestions.clientReport	Kundrapport
+drawer.historyBack	Chattar
+drawer.historyLabel	Historik
+agents.title	AI-agenter
+agents.info.title	Vad är AI-agenter?
+agents.info.lead	En assistent som svarar kunder i studions meddelandetjänster medan du är upptagen.
+agents.info.b1	Svarar dygnet runt — ingen väntar på en administratör
+agents.info.b2	Känner till studions schema, tjänster och priser
+agents.info.b3	Du anger ton och längd på svaren
+agents.info.note	En kanal börjar fungera när den ansluts i inställningarna
+agents.activeCount	{{active}} / {{total}}
+agents.stateOn	Svarar
+agents.stateOffline	Inte ansluten
+agents.configureButton	Konfigurera agenter
+agents.enable	Aktivera
+agents.disable	Inaktivera
+agents.modalTitle	Inställning av AI-agent
+agents.modalSubtitle	Automatiska svar i meddelandetjänster
+agents.tabPrompt	Systeminstruktion
+agents.statusDisabled	Inaktiverad
+agents.statHandled	Hanterade
+agents.statRating	Betyg
+agents.styleTitle	Svarsstil
+agents.styleAllChannels	gäller alla kanaler
+agents.toneLabel	Svarens ton
+agents.tone.friendly	Vänlig
+agents.tone.formal	Formell
+agents.tone.neutral	Neutral
+agents.maxLengthLabel	Maximal svarslängd (tecken)
+agents.maxLengthError	Ange ett tal från 50 till 4000
+agents.offHoursLabel	Automatiskt svar endast utanför arbetstid
+agents.promptHint	Den här texten definierar agentens personlighet — hur den kommunicerar, vad den vet och vilka ämnen den undviker.
+agents.promptPlaceholder	Du är en artig studioassistent...
+agents.promptCount_one	{{count}} / 2000 tecken
+agents.promptCount_other	{{count}} / 2000 tecken
+agents.tgChannelInactive	Telegram-kanalen är avstängd i Onlinebokning — botten tar inte emot meddelanden, så agenten förblir tyst.
+errors.tg_token_required	Anslut först en Telegram-bot — ingen token har sparats ännu.
+errors.ig_not_connected	Instagram är inte anslutet ännu.
+errors.wa_not_connected	WhatsApp-numret är inte anslutet ännu — anslut det under Notiser.
+errors.assistant_unavailable	Assistenten är tillfälligt otillgänglig — försök igen senare.
+errors.trial_exhausted	Du har använt alla 500 provförfrågningar för AI-assistenten. Välj en betald plan för att fortsätta.
+errors.quota_exceeded	Du har använt alla AI-förfrågningar i denna plan. Gränsen återställs i början av månaden — eller uppgradera planen.
+toasts.settingsSaved	Inställningar sparade
+toolStatus.add_client_note	Skriver en anteckning…
+toolStatus.add_client_tag	Lägger till en etikett…
+toolStatus.add_loyalty_points	Lägger till poäng…
+toolStatus.book_client	Bokar passet…
+toolStatus.cancel_booking	Avbokar bokningen…
+toolStatus.pay_booking	Registrerar betalning för passet…
+toolStatus.clear_schedule	Rensar schemat…
+toolStatus.create_account	Skapar ett konto…
+toolStatus.create_branch	Skapar en filial…
+toolStatus.create_client	Skapar en kund…
+toolStatus.create_counterparty	Skapar en motpart…
+toolStatus.create_hall	Skapar en sal…
+toolStatus.create_lesson	Skapar ett pass…
+toolStatus.create_operation	Registrerar transaktionen…
+toolStatus.create_package	Skapar ett klippkort…
+toolStatus.create_promo	Skapar en kampanjkod…
+toolStatus.create_service	Skapar en tjänst…
+toolStatus.create_staff	Lägger till en teammedlem…
+toolStatus.default	Arbetar…
+toolStatus.delete_client	Tar bort kunden…
+toolStatus.delete_staff	Tar bort teammedlemmen…
+toolStatus.fill_schedule	Fyller i schemat…
+toolStatus.find_clients	Söker kunder…
+toolStatus.forget_fact	Glömmer uppgiften…
+toolStatus.freeze_client	Fryser kunden…
+toolStatus.get_booking_settings	Kontrollerar bokningsregler…
+toolStatus.get_catalog_settings	Kontrollerar klippkortsinställningar…
+toolStatus.get_client	Öppnar kundkortet…
+toolStatus.get_client_events	Läser kundhistoriken…
+toolStatus.get_inactive_clients	Söker inaktiva kunder…
+toolStatus.get_client_notes	Läser kundanteckningar…
+toolStatus.get_client_subscription	Kontrollerar kundens klippkort…
+toolStatus.get_delivery_log	Kontrollerar leveransloggen…
+toolStatus.get_finance_goals	Kontrollerar ekonomiska mål…
+toolStatus.get_finance_summary	Kontrollerar ekonomin…
+toolStatus.get_lesson	Öppnar passet…
+toolStatus.get_loyalty_programs	Kontrollerar lojalitetsprogram…
+toolStatus.get_loyalty_summary	Kontrollerar lojalitet…
+toolStatus.get_notification_matrix	Kontrollerar notiser…
+toolStatus.get_payroll	Beräknar löner…
+toolStatus.get_rooms	Kontrollerar salar…
+toolStatus.get_schedule	Kontrollerar schemat…
+toolStatus.get_segments	Kontrollerar kundsegment…
+toolStatus.get_services	Kontrollerar tjänster…
+toolStatus.get_staff	Kontrollerar teamet…
+toolStatus.get_staff_profile	Öppnar teammedlemmens kort…
+toolStatus.get_stats	Bearbetar siffrorna…
+toolStatus.get_team_report	Mäter återkomst per tränare…
+toolStatus.get_studio_facts	Minns vad jag vet om studion…
+toolStatus.get_today_agenda	Kontrollerar i dag…
+toolStatus.issue_certificate	Utfärdar certifikatet…
+toolStatus.list_operations	Kontrollerar intäkter och utgifter…
+toolStatus.open_ui	Öppnar skärmen…
+toolStatus.remember_fact	Kommer ihåg…
+toolStatus.remove_client_tag	Tar bort etiketten…
+toolStatus.sell_subscription	Säljer klippkortet…
+toolStatus.set_client_discount	Ställer in rabatten…
+toolStatus.set_staff_day	Markerar dagen i schemat…
+toolStatus.set_staff_schedule	Ställer in schemat…
+toolStatus.toggle_notification_event	Växlar notisen…
+toolStatus.ui_section	Kontrollerar hur avsnittet fungerar…
+toolStatus.update_booking_rules	Uppdaterar bokningsregler…
+toolStatus.update_client	Uppdaterar kunduppgifter…
+toolStatus.update_lesson	Uppdaterar passet…
+toolStatus.update_service	Uppdaterar tjänsten…
+toolStatus.update_staff	Uppdaterar teammedlemmen…
+quota.trialLow	Få provförfrågningar återstår.
+quota.label	Förfrågningar till AI-assistenten
+quota.value	{{used}} av {{limit}}
+quota.low	Du är nära månadsgränsen.
+quota.upgrade	Välj en plan
+quota.monthPeriod	Per kalendermånad (UTC)
+quota.trialPeriod	För hela provperioden
+rating.up	Bra svar
+rating.down	Dåligt svar
+memory.title	Assistenten minns
+memory.forget	Glöm
+memory.forgetConfirmTitle	Glömma denna uppgift?
+memory.forgetConfirmMessage	Assistenten slutar använda den i svar.
+memory.deleted	Uppgiften har tagits bort
+plan.pages.who	Vem och vad
+plan.pages.when	När
+plan.pages.check	Granska
+plan.stepOf	Steg {{current}} av {{total}}
+plan.next	Nästa
+plan.back	Tillbaka
+plan.confirm	Godkänn
+plan.confirmDanger	Godkänn
+plan.choose	Välj
+plan.nothingFound	Inget hittades
+plan.nothingToFill	Det finns inget att fylla i här — fortsätt direkt.
+plan.fromStep	skapat i steg {{n}}
+plan.values.group	grupp
+plan.values.individual	individuell
+plan.values.trainer	tränare
+plan.values.admin	administratör
+plan.values.owner	ägare
+plan.values.hourly	per timme
+plan.values.percent	% av intäkterna
+plan.values.fixed	per pass
+plan.title_one	Godkänn — {{count}} åtgärd
+plan.title_other	Godkänn — {{count}} åtgärder
+plan.stillEmpty_one	{{count}} fält återstår
+plan.stillEmpty_other	{{count}} fält återstår

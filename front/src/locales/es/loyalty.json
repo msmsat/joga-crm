@@ -1,0 +1,321 @@
+{
+  "header": {
+    "allConfigured": "Todos los programas están configurados",
+    "allConfiguredSub": "Tu sistema de fidelización funciona a pleno rendimiento",
+    "setup": "Configura los programas de fidelización",
+    "setupSub": "{{count}} de {{total}} programas configurados · Cada programa mejora la retención de clientes",
+    "start": "Empezar"
+  },
+  "programs": {
+    "loyalty": {
+      "title": "Tarjetas de fidelización",
+      "desc": "Sistema de acumulación de puntos por niveles",
+      "statLabel": "clientes"
+    },
+    "discounts": {
+      "title": "Descuentos y cashback",
+      "desc": "Ofertas personalizadas para clientes",
+      "statLabel": "activos"
+    },
+    "certificates": {
+      "title": "Certificados regalo",
+      "desc": "Certificados regalo y nominativos",
+      "statLabel": "vendidos"
+    },
+    "referral": {
+      "title": "Referidos",
+      "desc": "Programa «Trae a un amigo»",
+      "statLabel": "referidos"
+    },
+    "promocodes": {
+      "title": "Códigos promocionales",
+      "desc": "Códigos de descuento con límite de uso",
+      "statLabel": "activos"
+    },
+    "deposit": {
+      "title": "Depósito",
+      "desc": "Saldo monetario del cliente en el estudio",
+      "statLabel": "con saldo"
+    }
+  },
+  "card": {
+    "active": "Activo",
+    "disable": "Desactivar",
+    "notConfigured": "Sin configurar",
+    "configure": "Configurar"
+  },
+  "drawer": {
+    "subtitle": "Ajustes del programa",
+    "saving": "Guardando…",
+    "save": "Guardar y activar",
+    "cancel": "Cancelar",
+    "close": "Cerrar"
+  },
+  "config": {
+    "mainParams": "Parámetros principales",
+    "programName": "Nombre del programa",
+    "pointsRate": "Tasa de puntos ({{currency}} por 1 punto)",
+    "levels": "Niveles",
+    "pointValue": "1 punto =",
+    "pointValueHint": "Los puntos se obtienen con la misma tasa en todos los niveles, pero no tienen el mismo valor. Asigna 1 a Gold y 2 a Diamond: así, un punto ganado por el cliente reducirá el precio en caja el doble. Eso es lo que aporta un nivel: cuanto más haya gastado alguien en el estudio, más valdrán sus puntos.",
+    "expiry": "Periodo de caducidad",
+    "expiryTooltip": "Durante cuánto tiempo puede un cliente gastar los puntos acumulados",
+    "expiryOptions": {
+      "3m": "3 meses",
+      "6m": "6 meses",
+      "1y": "1 año",
+      "never": "Sin caducidad"
+    },
+    "newLevelName": "Nuevo nivel",
+    "addLevel": "+ Nivel",
+    "levelFrom": "desde",
+    "levelTo": "hasta",
+    "deleteLevelTitle": "¿Eliminar este nivel?",
+    "deleteLevelMessage": "Los clientes del nivel «{{name}}» pasarán al nivel contiguo según su gasto total.",
+    "discountType": "Tipo de descuento",
+    "discountTypes": {
+      "percentage": "Porcentaje (%)",
+      "fixed": "Fijo ({{currency}})",
+      "cashback": "Cashback"
+    },
+    "cashbackPercent": "Porcentaje de cashback",
+    "discountSize": "Importe del descuento",
+    "minPurchase": "Importe mínimo de compra",
+    "noLimit": "Sin límite",
+    "conditions": "Condiciones de aplicación",
+    "appliesToAll": "Aplicar a todos los servicios",
+    "stackable": "Combinar con otros descuentos",
+    "visibleInCabinet": "Mostrar al cliente en su cuenta",
+    "certType": "Tipo de certificado",
+    "certTypes": {
+      "named": "Nominativo",
+      "gift": "Regalo",
+      "service": "Para un servicio"
+    },
+    "denominations": "Importes",
+    "addDenom": "+ Añadir",
+    "service": "Servicio",
+    "noServices": "Aún no hay servicios en el catálogo; añádelos en «Catálogo»",
+    "params": "Parámetros",
+    "expiryDays": "Periodo de caducidad (días)",
+    "certIssue": "Emitir certificado",
+    "certCustomAmount": "Importe personalizado",
+    "certRecipientName": "Nombre del destinatario",
+    "certRecipientPlaceholder": "Opcional",
+    "certLinkClient": "Vincular a un cliente",
+    "certClientSearchPlaceholder": "Empieza a escribir un nombre…",
+    "certAccount": "Cuenta de depósito",
+    "certAccountNone": "No registrar en el libro mayor",
+    "certIssueButton": "Emitir",
+    "certIssuedTitle": "Certificado emitido",
+    "certCopyCode": "Copiar código",
+    "certCopied": "Copiado",
+    "certIssueAnother": "Emitir otro",
+    "certIssued": "Certificados emitidos",
+    "certEmpty": "Aún no se han emitido certificados",
+    "certStatus": {
+      "active": "Activo",
+      "used": "Canjeado",
+      "expired": "Caducado"
+    },
+    "certRedeem": "Canjear",
+    "certRedeemTitle": "¿Canjear este certificado?",
+    "certRedeemMessage": "El certificado {{code}} se marcará como usado. Esta acción no se puede deshacer.",
+    "referrerBonusTitle": "Bonificación por referido",
+    "referrerBonus": "Bonificación para quien recomienda ({{currency}})",
+    "newClientDiscount": "Descuento para nuevo cliente (%)",
+    "triggerCondition": "Condición de acumulación",
+    "triggerConditions": {
+      "first_visit": "Después de la primera visita",
+      "first_payment": "Después del primer pago",
+      "registration": "Inmediatamente al registrarse"
+    },
+    "bonusAccrual": "Acumulación de bonificación",
+    "bonusTypes": {
+      "points": "Puntos",
+      "deposit": "Al depósito",
+      "discount": "Como descuento"
+    },
+    "promoCreate": "Crear código promocional",
+    "promoCodePlaceholder": "VERANO25",
+    "promoValidUntil": "Válido hasta",
+    "promoUsageLimit": "Límite de uso",
+    "promoAdd": "+ Añadir código promocional",
+    "promoList": "Códigos promocionales",
+    "promoEmpty": "Aún no hay códigos promocionales",
+    "promoUntil": "hasta",
+    "promoStatus": {
+      "active": "Activo",
+      "expired": "Caducado",
+      "exhausted": "Límite alcanzado",
+      "disabled": "Desactivado"
+    },
+    "depositTotal": "Saldo total",
+    "depositTotalSub": "en todos los depósitos de clientes",
+    "depositTopClients": "Mejores clientes por saldo",
+    "depositEmpty": "Nadie tiene aún un depósito",
+    "depositHint": "Las recargas y retiradas se realizan desde el perfil del cliente. El programa de referidos puede abonar bonificaciones en el depósito en lugar de puntos."
+  },
+  "validation": {
+    "required": "Este campo es obligatorio",
+    "minOne": "Debe ser al menos 1",
+    "minZero": "No puede ser negativo",
+    "positive": "Debe ser mayor que 0",
+    "range0to100": "De 0 a 100"
+  },
+  "toasts": {
+    "saved": "Programa activado",
+    "saveFailed": "No se pudo guardar",
+    "toggleFailed": "No se pudo actualizar el programa",
+    "loadFailed": "No se pudieron cargar los datos",
+    "retry": "Reintentar"
+  },
+  "stats": {
+    "notConnected": "El programa no está conectado",
+    "willAppear": "Los datos aparecerán tras la configuración",
+    "noData": "No hay datos",
+    "connectProgram": "Conectar un programa",
+    "revenueHeadline": "Ingresos de miembros",
+    "membersHeadline": "Miembros del programa",
+    "returnedClients": "Clientes que han vuelto",
+    "returnedClientsSub": "2+ visitas en 90 días",
+    "avgCheckHeadline": "Ticket medio por miembro",
+    "bonusCostHeadline": "Coste de las bonificaciones",
+    "bonusCostSub": "este mes",
+    "roiHeadline": "ROI",
+    "roiValue": "×{{value}}",
+    "perMonth": "este mes",
+    "cardHolders": "poseedores de tarjeta",
+    "kpi": "Indicadores clave",
+    "members": "Miembros",
+    "withCard": "con tarjeta",
+    "avgCheck": "Ticket medio",
+    "byMembers": "entre miembros",
+    "pointsInCirculation": "Puntos en circulación",
+    "accrued": "acumulados",
+    "revenue": "Ingresos",
+    "revenuePerMonth": "de miembros / mes",
+    "levelDistribution": "Distribución por nivel",
+    "noLevels": "Los niveles aún no están configurados",
+    "totalClients": "Total de clientes en el programa",
+    "fromValue": "desde {{value}}",
+    "levelPointValue": "punto = {{value}}"
+  },
+  "scenarios": {
+    "title": "Escenarios inteligentes",
+    "subtitle": "Piloto automático de retención: el sistema encuentra clientes y los recompensa por ti",
+    "add": "Escenario",
+    "fired": "activado {{count}} veces",
+    "lastRun": "última ejecución {{when}}",
+    "neverRun": "aún no se ha ejecutado",
+    "empty": "Aún no hay escenarios",
+    "emptySub": "Crea el primero: el sistema retendrá a los clientes por ti",
+    "channel": "Canal",
+    "channelSoon": "tras conectar la integración",
+    "pickTemplate": "Elegir un escenario",
+    "pickTemplateSub": "Una plantilla lista: ajusta los umbrales más tarde",
+    "create": "Crear",
+    "deleteConfirm": "¿Eliminar el escenario?",
+    "deleteConfirmSub": "La regla dejará de activarse. Esta acción no se puede deshacer.",
+    "triggers": {
+      "inactive_days": "inactivo durante {{days}} días",
+      "low_subscription": "quedan ≤ {{classes_left}} clases",
+      "birthday": "cumpleaños",
+      "nth_visit": "visita n.º {{n}}",
+      "referral": "ha traído a un amigo"
+    },
+    "actions": {
+      "points": "regalar {{points}} puntos",
+      "gift_classes": "regalar {{classes}} clases",
+      "certificate": "emitir un certificado de {{amount}} ₽",
+      "renewal_offer": "ofrecer renovación con {{discount}}% de descuento"
+    },
+    "templates": {
+      "win_back": {
+        "name": "Te echamos de menos",
+        "desc": "Recupera a un cliente que no ha venido desde hace tiempo"
+      },
+      "expiring_subscription": {
+        "name": "La suscripción se está acabando",
+        "desc": "Ofrece renovación antes de que se acaben las clases"
+      },
+      "birthday_gift": {
+        "name": "Regalo de cumpleaños",
+        "desc": "Sorprende a un cliente en su día especial"
+      },
+      "fifth_visit": {
+        "name": "Recompensa de fidelidad",
+        "desc": "Una clase gratuita por fidelidad"
+      },
+      "referral_thanks": {
+        "name": "Gracias por el amigo",
+        "desc": "Recompensa a quien trajo a un cliente nuevo"
+      }
+    },
+    "ifClient": "Si el cliente",
+    "then": "→",
+    "toasts": {
+      "created": "Escenario creado",
+      "updated": "Escenario actualizado",
+      "deleted": "Escenario eliminado",
+      "failed": "No se pudo guardar el escenario"
+    },
+    "delete": "Eliminar"
+  },
+  "segmentsBoard": {
+    "title": "Segmentos y recomendaciones",
+    "subtitle": "Grupos de clientes activos, cada uno con una acción clara",
+    "empty": "No hay nada aquí, y eso es bueno",
+    "clients": "clientes",
+    "daysAgo": "hace {{count}} días",
+    "neverVisited": "sin visitas",
+    "more": "y {{count}} más",
+    "segments": {
+      "at_risk": {
+        "name": "A punto de irse",
+        "desc": "Activos, inactivos durante 21+ días",
+        "action": "Dar bonificación"
+      },
+      "vip_idle": {
+        "name": "VIP sin actividad",
+        "desc": "Clientes VIP, inactivos durante 14+ días",
+        "action": "Lanzar campaña"
+      },
+      "expiring_subscription": {
+        "name": "Suscripción a punto de caducar",
+        "desc": "Quedan ≤2 clases o ≤7 días",
+        "action": "Lanzar campaña"
+      },
+      "lost_newcomers": {
+        "name": "Nunca volvieron",
+        "desc": "Vinieron una vez, ausentes durante 14+ días",
+        "action": "Lanzar campaña"
+      },
+      "upsell_candidates": {
+        "name": "Listos para un paquete",
+        "desc": "8+ visitas este mes, sin paquete",
+        "action": "Lanzar campaña"
+      }
+    },
+    "campaignSub": "Segmento «{{name}}» · {{count}} clientes",
+    "pointsLabel": "Cuántos puntos conceder",
+    "messageLabel": "Texto del mensaje",
+    "messagePlaceholder": "ej. ¡Te echamos de menos! Vuelve: te estamos esperando.",
+    "emailNote": "El correo se envía solo a clientes con dirección de correo",
+    "confirm": "Enviar",
+    "toasts": {
+      "pointsDone": "Puntos concedidos · {{processed}} procesados, {{emails}} notificados",
+      "emailDone": "Campaña enviada · {{emails}} correos de {{processed}}"
+    }
+  },
+  "retention": {
+    "title": "Renovaciones de suscripciones",
+    "subtitle": "Qué tan bien vuelven los clientes por un nuevo paquete",
+    "renewalRate": "Renovar",
+    "avgPackages": "Paquetes por cliente",
+    "sold": "Vendidos",
+    "renewed": "Renovados",
+    "empty": "Aún no hay ventas de suscripciones",
+    "emptySub": "Los análisis aparecerán tras las primeras ventas de paquetes"
+  }
+}

@@ -1,0 +1,294 @@
+== fi
+legal.terms	Käyttöehdot
+legal.privacy	Tietosuojakäytäntö
+tabs.plans	Paketit ja hinnat
+tabs.invoices	Maksuhistoria
+tabs.method	Maksutapa
+tabsShort.plans	Paketit
+tabsShort.invoices	Historia
+tabsShort.method	Maksu
+paymentsHistory.title	Täydellinen maksuhistoria
+paymentsHistory.subtitle	Kaikki tämän studion laskut
+paymentsHistory.clearFilter	Tyhjennä
+paymentsHistory.loadMore	Lataa lisää
+planNames.start	Start
+planNames.pro	Pro
+planNames.business	Business
+seats.title	Kuinka monta työntekijää studiossa on
+seats.hint	alkaen {{amount}} kuukaudessa
+seats.stepNote	Jokainen lisäpaikka maksaa {{amount}} kuukaudessa
+seats.unlimitedNote	Ei työntekijärajaa
+seats.perSeat	Työntekijää kohti
+limits.staff	Työntekijät
+limits.ai	Velora AI -pyynnöt
+limits.unlimited	Rajaton
+banner.trialEnds	Kokeilusi päättyy {{date}} — valitse paketti
+banner.renews	{{plan}}-tilauksesi uusiutuu {{date}}
+banner.expires	{{plan}}-tilauksesi päättyy {{date}}
+banner.choosePlan	Valitse paketti
+banner.dismiss	Sulje
+banner.unpaid	Pakettiasi ei ole maksettu. Jatkaaksesi maksa kohdassa Paketit ja laskutus.
+banner.suspended	Käyttö on keskeytetty, koska paketin lasku on erääntynyt. Maksa se kohdassa Paketit ja laskutus.
+paymentReturn.done	Maksu onnistui — {{plan}}-paketti on aktiivinen.
+paymentReturn.processing	Maksua käsitellään — tilauksesi aktivoituu muutamassa minuutissa.
+header.eyebrow	Velora · Laskutus
+header.title	Paketit ja laskutus
+header.subtitle	Hallitse tilaustasi, maksutapoja ja maksuhistoriaa
+header.totalSpent	Käytetty yhteensä
+header.monthsWithUs	Kuukautta kanssamme
+header.saved	Säästetty
+header.nextCharge	Seuraava veloitus
+header.currentPlan	NYKYINEN PAKETTI
+header.noPlanName	Ei pakettia
+header.noPlan	Ei aktiivista tilausta
+header.active	Aktiivinen
+header.activeUntil	Aktiivinen · {{date}} asti
+header.trialPlanName	Kokeilupaketti
+header.trial	Kokeilujakso
+header.trialUntil	Kokeilujakso · {{date}} asti
+header.expired	Vanhentunut
+header.percentRate	{{rate}}% myynnistä
+header.modePercent	Prosenttipaketti
+header.modeFixed	Kiinteä
+header.modeCombo	Yhdistelmä
+header.unpaid	Pakettia ei ole maksettu
+header.awaitingPayment	Odottaa maksua
+mode.title	Maksumalli
+mode.subscription	Kiinteä tilaus
+mode.percent	% myynnistä
+mode.combo	Kiinteä + % -yhdistelmä
+mode.short.subscription	Kiinteä
+mode.short.percent	Prosentti
+mode.short.combo	Yhdistelmä
+mode.descriptions.subscription	Maksa yksi summa kuukaudessa. Ennustettava ja kustannustehokas.
+mode.descriptions.percent	Ei kiinteää maksua: {{rate}}% jokaisesta myynnistä, myös käteisestä.
+mode.descriptions.combo	Puolet tilauksesta + {{rate}}% jokaisesta myynnistä, myös käteisestä.
+mode.badges.popular	Suosittu
+mode.badges.flexible	Joustava
+mode.percentCard.title	”3 % myynnistä” -malli
+mode.percentCard.description	Maksa vain kun tienaat: 3 % jokaisesta myynnistä, ei kiinteää tilausmaksua. Verkkomaksut jaetaan heti; käteinen ja talletukset kertyvät ja tulevat yhtenä laskuna joka kuukausi.
+mode.percentCard.noFixed	Ei kiinteää maksua
+mode.percentCard.payForResult	Maksa tuloksista
+mode.percentCard.oneClick	Yhden napsautuksen aktivointi
+mode.percentCard.cta	Aktivoi 3 % -malli
+mode.percentCard.ctaShort	Aktivoi 3 %
+mode.activateSuccess	Maksumalli päivitetty
+mode.activateError	Maksumallin päivitys epäonnistui
+mode.alreadyActive	Tämä maksumalli on jo aktiivinen — voit uusia tai vaihtaa paketin alla
+mode.confirmSwitchTitle	Vaihdetaanko maksumallia?
+mode.confirmSwitchMessage	Tilauksesi on aktiivinen. Mallin vaihto tulee voimaan heti, ja maksetun kauden loppuosa MENETETÄÄN KOKONAAN: käyttämättömiä päiviä ei palauteta eikä siirretä.
+mode.termsTitle	Vahvista paketin ehdot
+mode.termsMessage	Tässä paketissa alusta pidättää {{rate}}% jokaisesta myynnistä.\n\nVerkkomaksuissa maksu pidätetään automaattisesti maksun hetkellä. Käteisestä, päätteestä ja talletusten lisäyksistä sitä EI pidätetä heti — se kertyy, ja saat erillisen laskun kerran kuussa.\n\nSinulla on {{days}} päivää aikaa maksaa lasku. Jos sitä ei makseta ajoissa, pääsy CRM:ään ja asiakkaan minisovellukseen keskeytetään, kunnes lasku on maksettu.\n\nNykyinen maksettava määrä näkyy Laskutuksessa; voit maksaa milloin tahansa, myös etukäteen.
+mode.termsConfirm	Hyväksyn ehdot
+mode.termsMinimum	Vähimmäiskuukausimaksu on {{amount}} {{currency}}. Jos alusta ansaitsi kalenterikuukaudessa studioltasi vähemmän (esimerkiksi CRM:n kautta ei ollut lainkaan myyntiä), sinua laskutetaan erotuksesta. Jos ansaitset enemmän kuin vähimmäismäärän, laskua ei tule. Maksamaton vähimmäismaksu keskeyttää pääsyn samalla tavalla kuin maksamaton provisiolasku.
+mode.termsBurn	VAROITUS: sinulla on maksettua aikaa jäljellä. Laskutusmallin vaihto MENETTÄÄ SEN KOKONAAN — käyttämättömiä päiviä ei palauteta eikä siirretä.
+mode.termsCombo	Vaihto on OSTOPÄÄTÖS: heti vahvistuksen jälkeen näet maksettavan summan. Nykyisen maksetun kautesi loppuosa menetetään — sitä ei palauteta eikä siirretä. Kiinteä + % -malli käynnistyy VAIN maksun jälkeen; siihen asti pakettisi pysyy ennallaan eikä mitään veloiteta.
+combo.rateBadge	{{rate}}%
+combo.summary	Kiinteä {{fixed}}/kk + {{rate}}% myynnistä (käteinen laskutetaan kuukausittain)
+combo.cta	Aktivoi yhdistelmäpaketti
+combo.ctaShort	Aktivoi yhdistelmä
+period.1	1 kuukausi
+period.3	3 kuukautta
+period.6	6 kuukautta
+period.12	1 vuosi
+period.24	2 vuotta
+period.title	Maksukausi
+period.discountActive	{{percent}}% alennus käytössä
+period.noDiscount	Ei alennusta
+period.discountLabel	−{{percent}}% alennus
+calculator.title	Laskentaparametrit
+calculator.monthlyTurnover	Kuukausittainen verkkoliikevaihtosi
+calculator.turnoverRangeMin	50 t.
+calculator.turnoverRangeMax	3 M+
+calculator.chooseFeeLabel	Valitse provisioaste (vaikuttaa ominaisuuksiin)
+calculator.feeOptions.basic	Perus
+calculator.feeOptions.standard	Vakio
+calculator.feeOptions.pro	Pro
+calculator.feeOptions.max	Enintään
+calculator.chooseFixedLabel	Valitse kiinteä perusosa (maksunvälitys on aina 3 %)
+calculator.fixedOptions.start	Start
+calculator.fixedOptions.optima	Optima
+calculator.fixedOptions.business	Business
+calculator.economyPercentTitle	PAKETIN TALOUDELLISUUS
+calculator.economyComboTitle	YHDISTELMÄPAKETIN TALOUDELLISUUS
+calculator.turnover	Studion liikevaihto
+calculator.systemFee	Järjestelmämaksu
+calculator.totalMonthlyPayment	KUUKAUSIMAKSU YHTEENSÄ
+calculator.onlyPayForResult	Et maksa kiinteää maksua, vain tuloksista
+calculator.activatePercent	Aktivoi {{percent}} % -malli
+calculator.baseSubscription	Perustilaus (kiinteä)
+calculator.acquiringFee	Maksunvälitys / maksu
+calculator.activateCombo	Aktivoi yhdistelmäpaketti
+planCards.bestChoice	Paras valinta
+planCards.current	Nykyinen
+planCards.perMonth	/ kk
+planCards.currentPlan	Nykyinen paketti
+planCards.yourPrice	Hintasi
+planCards.staffLimit	Enintään {{count}} työntekijää
+planCards.staffUnlimited	Rajattomasti työntekijöitä
+paymentSchedule.title	Maksuaikataulu
+paymentSchedule.total	Maksettavaa yhteensä
+paymentSchedule.morePayments	+ {{count}} lisämaksua, {{amount}} kukin
+paymentSchedule.processing	Ohjataan maksuun…
+paymentSchedule.payFor	Maksa {{count}} kk
+paymentSchedule.vatNote	Ilman ALV:tä — vero lisätään kassalla maasi perusteella
+trust.title	Miksi yli 2 400 yritystä luottaa meihin
+trust.reviews.0.text	Vaihdoimme Altegiosta. Ero on kuin taksin ja yksityiskoneen välillä.
+trust.reviews.0.author	Maria K., FORM Pilates
+trust.reviews.1.text	Parasta on tietää täsmälleen, mitä maksan joka kuukausi. Ei yllätyksiä.
+trust.reviews.1.author	Artem N., Barbershop Bros
+trust.reviews.2.text	Tuki vastasi neljässä minuutissa. En ole nähnyt sitä missään muualla.
+trust.reviews.2.author	Elena D., SPA LUNA
+upgrade.priceLine	Hinta {{price}}/kk
+upgrade.discountNote	 {{percent}}% alennus, kun maksat {{period}} kk
+upgrade.planLabel	Paketti
+upgrade.periodLabel	Kausi
+upgrade.periodValue_one	{{count}} kuukausi
+upgrade.periodValue_other	{{count}} kuukautta
+upgrade.discountLabel	Alennus
+upgrade.scheduledBadge	Alkaen {{date}} — paketti ”{{plan}}”
+upgrade.vatNote	Ilman ALV:tä — vero lisätään kassalla yritystietojesi perusteella; EU-yritykset, joilla on ALV-numero, saavat käännetyn verovelvollisuuden.
+method.notLinked	Ei liitetty
+method.badgeTitle	Maksutapa on suojattu
+method.tokenSub	Palveluntarjoajan tunniste · vanhenee {{expiry}}
+method.tokenNote	Maksupalveluntarjoaja säilyttää oikeat korttitietosi (PCI DSS L1). Säilytämme vain kertakäyttöisen tunnisteen uusintoja varten.
+method.securityTitle	Tietosuojastandardit
+method.security.pciDss	PCI DSS -tason 1 salaus
+method.security.secure3d	3D Secure -tapahtumasuojaus
+method.security.noStorage	Korttitiedot eivät koskaan kulje palvelimiemme kautta
+method.security.autoLink	Kortti liitetään ensimmäisessä maksussa
+method.noCardDetail	Tietoja ei tarvitse syöttää erikseen — maksu tapahtuu Stripen suojatulla sivulla.
+method.renewDone	Lasku luotu — maksua käsitellään
+method.renewBusy	Luodaan laskua…
+method.renewSuccess	Uusintalasku luotu
+method.renewError	Laskua ei voitu luoda. Yritä uudelleen.
+method.renewNow	Uusi nyt kortilla •••• {{last4}}
+method.autopayTitle	Automaattisen maksun asetukset
+method.autopaySuccess	Asetus tallennettu
+method.autopayError	Asetusta ei voitu tallentaa. Yritä uudelleen.
+method.autopay.cardOnly	Käytettävissä korttimaksussa
+method.autopay.autoRenew.label	Automaattinen uusinta
+method.autopay.autoRenew.desc	Poista käytöstä peruuttaaksesi maksetun kauden lopussa
+method.autopay.autoRenew.until	Tilaus ei uusiudu — käyttöoikeus {{date}} asti
+method.autopay.emailNotify.label	Sähköposti-ilmoitukset
+method.autopay.emailNotify.desc	Kuitti lähetetään sähköpostitse jokaisen maksun jälkeen
+method.autopay.remind3d.label	Muistuta 3 päivää aiemmin
+method.autopay.remind3d.desc	Muistutamme ennen automaattista veloitusta
+method.autopay.sms.label	Tekstiviesti-ilmoitus
+method.autopay.sms.desc	Tekstiviesti lähetetään veloituksen yhteydessä
+method.portal.title	Laskutustiedot ja ALV
+method.portal.subtitle	Laskut, liitetty kortti ja veloitushistoria ovat Stripen asiakasportaalissa.
+method.portal.cta	Avaa Stripessä
+method.ibanBadgeLabel	Pankkisiirto (SEPA)
+method.ibanBadgeNote	Laskut saapuvat sähköpostitse maksulinkin kanssa — korttia ei veloiteta automaattisesti. Voit maksaa myös aikaisin laskusivulta.
+invoices.title	Maksuhistoria
+invoices.totalPaid	maksettu yhteensä {{amount}}
+invoices.exportCsv	Vie CSV
+invoices.exportError	CSV-vienti epäonnistui. Yritä uudelleen.
+invoices.receiptError	Kuittia ei voitu avata. Yritä uudelleen.
+invoices.invoiceNo	Lasku #{{id}}
+invoices.methodCard	Maksettu kortilla
+invoices.methodIban	Maksettu pankkisiirrolla (IBAN)
+invoices.syncHint	Tarkista tila maksupalvelusta
+invoices.syncChanged	Tila päivitetty: {{status}}
+invoices.syncUnchanged	Maksupalvelu vahvisti saman tilan
+invoices.syncError	Tilaa ei voitu tarkistaa. Yritä uudelleen.
+invoices.kindOfflineFee	Offline-myynnin provisio
+invoices.kindMinFee	Vähimmäiskuukausimaksu
+invoices.kindOnlineFee	Verkkomaksujen provisio
+invoices.methodWithheld	Stripe pidätti maksun yhteydessä
+table.date	Päivämäärä
+table.description	Kuvaus
+table.amount	Summa
+table.status	Tila
+table.receipt	Kuitti
+status.paid	Maksettu
+status.pending	Odottaa
+status.failed	Maksamatta
+status.refunded	Hyvitetty
+empty.noInvoices	Laskuja ei vielä ole — ne näkyvät ensimmäisen maksun jälkeen.
+empty.noCard	Korttisi näkyy automaattisesti ensimmäisen maksun jälkeen.
+empty.monthsWithUs	Et ole vielä ostanut tilausta
+empty.noData	Ei tietoja
+savings.title	Säästösi
+savings.prepayTitle	Säästösi ennakkomaksulla
+savings.emptyState	Valitse pidempi jakso ja alat säästää
+savings.youSave	Säästät {{amount}} {{months}} kuukaudessa
+savings.freeMonths	Se on kuin {{count}} kuukautta ilmaiseksi
+savings.amountLabel	{{amount}} säästöä
+savings.comparedToMonthly	verrattuna kuukausimaksuun
+savings.forMonths_one	{{count}} kuukaudelle
+savings.forMonths_other	{{count}} kuukaudelle
+pay	Maksa
+continuePlan	Jatka pakettia
+payModal.titleNew	Aloita {{plan}}-paketti
+payModal.titleSwitch	Vaihda pakettiin {{plan}}
+payModal.titleRenew	Uusi {{plan}}
+payModal.totalLabel	Pakettisi maksaa
+payModal.burnWarning	Toiseen pakettiin vaihtaminen aloittaa kauden alusta: {{plan}}-pakettisi loppuosa MENETETÄÄN — sitä ei palauteta eikä siirretä. Saman paketin uusiminen säilyttää sen.
+payModal.switched	Paketti vaihdettu: ei maksettavaa — vaihto katettiin nykyisen kauden jäljellä olevalla osalla.
+payModal.renewNote	Tämä uusii saman paketin: ostamasi kuukaudet lisätään nykyiseen maksettuun kauteen. Mitään ei menetetä.
+payModal.cardNote	Korttimaksu Stripen suojatulla sivulla · 7 päivän palautus
+payModal.freeUntil	Mitään ei veloiteta ennen {{date}}: maksetusta kaudestasi on jäljellä {{count}} päivää. Laskutus alkaa sinä päivänä.
+payModal.taxLabel	ALV
+payModal.taxLine	ALV {{rate}}%
+payModal.reverseCharge	Käännetty verovelvollisuus
+payModal.totalWithTax	Yhteensä sis. ALV
+payModal.taxServerNote	Vero lasketaan laskutustietojesi perusteella. Lasku näyttää saman summan.
+payModal.taxReview	Emme voineet määrittää veroa laskutustiedoillesi, joten summa näytetään ilman sitä eikä maksua voi suorittaa. Tarkista maksajan maa ja osoite tai ota yhteyttä tukeen.
+offlineFee.title	Offline-myynnin maksu
+offlineFee.accruing	Kertynyt käteisestä ja talletuksista {{rate}} %:lla. Laskutetaan kuukausittain, maksuaikaa {{days}} päivää.
+offlineFee.due	Lasku on myönnetty. Päiviä jäljellä maksuun: {{days}}.
+offlineFee.suspended	Maksu on erääntynyt — pääsy CRM:ään ja minisovellukseen on keskeytetty.
+offlineFee.pay	Maksa
+offlineFee.suspendedMin	Vähimmäiskuukausimaksu on erääntynyt — pääsy CRM:ään ja minisovellukseen on keskeytetty.
+offlineFee.alsoAccruing	Lisäksi kertyy tässä kuussa: {{amount}} — se tulee seuraavaan laskuun.
+offlineFee.minimum	Vähimmäiskuukausimaksu on {{amount}}. Jos ansaitset kuukaudessa vähemmän, täydennät erotuksen; jos enemmän, laskua ei tule.
+offlineFee.pendingBill	Kertynyt edellisellä mallilla, odottaa laskua.
+offlineFee.notBilledYet	Laskua ei ole vielä myönnetty: kertynyt määrä on alle vähimmäislaskun tai sitä valmistellaan yhä. Mitään ei menetetä — se tulee seuraavaan laskuun.
+trial.title	Tarjous uusille studioille
+trial.subtitle	Studiosi on juuri luotu
+trial.headline	{{days}} päivää ilmaiseksi
+trial.noCard	Korttia ei tarvita — nyt ei ole maksettavaa
+trial.perks.allModules	Täysi käyttöoikeus jokaiseen moduuliin: päiväkirja, asiakkaat, talous, ilmoitukset ja Velora AI
+trial.perks.noCommitment	Ei sitoumusta: jos se ei sovi, älä vain uusi tilausta
+trial.perks.keepData	Kaikki kokeilun aikana tekemäsi asetukset jäävät sinun
+trial.activate	Aktivoi
+trial.decline	Hylkää
+trial.cardHint	Et ole vielä aktivoinut tämän studion ilmaista kautta. Se on käytettävissä, kunnes ostat paketin.
+profile.title	Laskutustiedot
+profile.editTitle	Muokkaa laskutustietoja
+profile.subtitle	Osoitteesi lisätään laskuun ja määrittää verokannan. Se tallennetaan tilillesi — emme kysy sitä uudelleen toisessa studiossa.
+profile.subtitlePay	Täytä tämä kerran, ja seuraava maksu menee suoraan läpi. Osoitteesi lisätään laskuun ja määrittää verokannan.
+profile.cardTitle	Laskutustiedot
+profile.cardSubtitle	Tallennetaan tilillesi ja käytetään kaikissa studioissasi. Näin ne näkyvät laskussa.
+profile.cardEmpty	Ei vielä täytetty — pyydämme ne ennen ensimmäistä maksua. Voit lisätä ne nyt.
+profile.add	Lisää laskutustiedot
+profile.edit	Muokkaa
+profile.save	Tallenna
+profile.saveAndPay	Tallenna ja jatka maksuun
+profile.cancel	Peruuta
+profile.saved	Laskutustiedot tallennettu
+profile.vatNone	Ei annettu
+profile.fields.country	Maa tai alue
+profile.fields.countryPlaceholder	Valitse maa
+profile.fields.address	Osoite
+profile.fields.line1	Osoiterivi 1
+profile.fields.line1Placeholder	Katu ja numero
+profile.fields.line2	Osoiterivi 2 — valinnainen
+profile.fields.line2Placeholder	Asunto, toimisto, yksikkönumero jne.
+profile.fields.postalCode	Postinumero
+profile.fields.postalCodePlaceholder	110 00
+profile.fields.city	Kaupunki
+profile.fields.cityPlaceholder	Praha
+profile.fields.vat	ALV-numero — valinnainen
+profile.fields.vatPlaceholder	{{prefix}}12345678
+profile.fields.vatHint	Vain yrityksille. Numero tarkistetaan EU-rekisteristä (VIES) tallennushetkellä — emme hyväksy vahvistamattomia numeroita. Kelvollisella numerolla toisessa EU-maassa oleva yritys laskutetaan ilman veroa (käännetty verovelvollisuus). Yksityishenkilöillä ei ole sitä — jätä kenttä tyhjäksi.
+profile.fields.countrySearch	Aloita nimen kirjoittaminen
+profile.fields.countryNotFound	Maata ei löytynyt
+profile.fields.vatOutsideEu	Emme pyydä ALV-numeroa: EU:n ulkopuolella vero määräytyy maksajan maan, ei numeron mukaan, joten sillä ei ole vaikutusta laskuun.
+profile.fields.vatPending	Numerosi on tallennettu, mutta EU-rekisteri ei ollut tuolloin käytettävissä, joten sitä ei ole vielä vahvistettu ja seuraava laskusi sisältää täyden ALV:n. Sinun ei tarvitse syöttää sitä uudelleen: tarkistamme edelleen, ja kun rekisteri vastaa, veroa ei enää veloiteta. Tuki palauttaa veron jo maksetusta laskusta.
+profile.errors.required	Tämä kenttä on pakollinen
+profile.preview.invoice	Lasku
+profile.preview.billTo	Laskutusosoite
+profile.preview.note	Näin tietosi näkyvät jokaisessa laskussa. Voit muuttaa niitä milloin tahansa kohdassa Paketit ja laskutus → Maksutapa.

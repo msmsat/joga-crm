@@ -1,0 +1,240 @@
+== el
+header.allConfigured	Όλα τα προγράμματα έχουν ρυθμιστεί
+header.allConfiguredSub	Το σύστημα επιβράβευσής σας λειτουργεί στο μέγιστο
+header.setup	Ρυθμίστε προγράμματα επιβράβευσης
+header.setupSub	{{count}} από {{total}} προγράμματα έχουν ρυθμιστεί · Κάθε πρόγραμμα ενισχύει τη διατήρηση πελατών
+header.start	Ξεκινήστε
+programs.loyalty.title	Κάρτες επιβράβευσης
+programs.loyalty.desc	Σύστημα συλλογής πόντων με επίπεδα
+programs.loyalty.statLabel	πελάτες
+programs.discounts.title	Εκπτώσεις και cashback
+programs.discounts.desc	Προσωπικές προσφορές για πελάτες
+programs.discounts.statLabel	ενεργά
+programs.certificates.title	Δωροεπιταγές
+programs.certificates.desc	Δωροεπιταγές και ονομαστικά πιστοποιητικά
+programs.certificates.statLabel	πωλήθηκαν
+programs.referral.title	Συστάσεις
+programs.referral.desc	Πρόγραμμα «Φέρτε έναν φίλο»
+programs.referral.statLabel	συστάσεις
+programs.promocodes.title	Κωδικοί προσφοράς
+programs.promocodes.desc	Κωδικοί έκπτωσης με όριο χρήσης
+programs.promocodes.statLabel	ενεργοί
+programs.deposit.title	Κατάθεση
+programs.deposit.desc	Χρηματικό υπόλοιπο πελάτη στο στούντιο
+programs.deposit.statLabel	με υπόλοιπο
+card.active	Ενεργό
+card.disable	Απενεργοποίηση
+card.notConfigured	Δεν έχει ρυθμιστεί
+card.configure	Ρύθμιση
+drawer.subtitle	Ρυθμίσεις προγράμματος
+drawer.saving	Αποθήκευση…
+drawer.save	Αποθήκευση και ενεργοποίηση
+drawer.cancel	Ακύρωση
+drawer.close	Κλείσιμο
+config.mainParams	Κύριες παράμετροι
+config.programName	Όνομα προγράμματος
+config.pointsRate	Ισοτιμία πόντων ({{currency}} ανά 1 πόντο)
+config.levels	Επίπεδα
+config.pointValue	1 πόντος =
+config.pointValueHint	Οι πόντοι κερδίζονται με την ίδια ισοτιμία σε κάθε επίπεδο, αλλά δεν έχουν την ίδια αξία. Δώστε στο Gold 1 και στο Diamond 2, και ένας πόντος που κέρδισε ο πελάτης θα μειώνει την τιμή στο ταμείο δύο φορές περισσότερο. Αυτό προσφέρει ένα επίπεδο: όσο περισσότερα έχει ξοδέψει κάποιος στο στούντιο, τόσο μεγαλύτερη αξία έχουν οι πόντοι του.
+config.expiry	Περίοδος λήξης
+config.expiryTooltip	Για πόσο καιρό μπορεί ο πελάτης να χρησιμοποιεί τους συγκεντρωμένους πόντους
+config.expiryOptions.3m	3 μήν.
+config.expiryOptions.6m	6 μήν.
+config.expiryOptions.1y	1 έτος
+config.expiryOptions.never	Χωρίς λήξη
+config.newLevelName	Νέο επίπεδο
+config.addLevel	+ Επίπεδο
+config.levelFrom	από
+config.levelTo	έως
+config.deleteLevelTitle	Διαγραφή αυτού του επιπέδου;
+config.deleteLevelMessage	Οι πελάτες στο επίπεδο «{{name}}» θα μετακινηθούν στο γειτονικό επίπεδο σύμφωνα με τις συνολικές δαπάνες τους.
+config.discountType	Τύπος έκπτωσης
+config.discountTypes.percentage	Ποσοστό (%)
+config.discountTypes.fixed	Σταθερή ({{currency}})
+config.discountTypes.cashback	Cashback
+config.cashbackPercent	Ποσοστό cashback
+config.discountSize	Ποσό έκπτωσης
+config.minPurchase	Ελάχιστο ποσό αγοράς
+config.noLimit	Χωρίς όριο
+config.conditions	Όροι εφαρμογής
+config.appliesToAll	Εφαρμογή σε όλες τις υπηρεσίες
+config.stackable	Συνδυασμός με άλλες εκπτώσεις
+config.visibleInCabinet	Εμφάνιση στον πελάτη στον λογαριασμό του
+config.certType	Τύπος πιστοποιητικού
+config.certTypes.named	Ονομαστικό
+config.certTypes.gift	Δώρο
+config.certTypes.service	Για υπηρεσία
+config.denominations	Ονομαστικές αξίες
+config.addDenom	+ Προσθήκη
+config.service	Υπηρεσία
+config.noServices	Δεν υπάρχουν ακόμη υπηρεσίες στον κατάλογο — προσθέστε τες στον «Κατάλογο»
+config.params	Παράμετροι
+config.expiryDays	Περίοδος λήξης (ημέρες)
+config.certIssue	Έκδοση πιστοποιητικού
+config.certCustomAmount	Προσαρμοσμένο ποσό
+config.certRecipientName	Όνομα παραλήπτη
+config.certRecipientPlaceholder	Προαιρετικό
+config.certLinkClient	Σύνδεση με πελάτη
+config.certClientSearchPlaceholder	Αρχίστε να πληκτρολογείτε ένα όνομα…
+config.certAccount	Λογαριασμός κατάθεσης
+config.certAccountNone	Να μην καταγραφεί στο καθολικό
+config.certIssueButton	Έκδοση
+config.certIssuedTitle	Το πιστοποιητικό εκδόθηκε
+config.certCopyCode	Αντιγραφή κωδικού
+config.certCopied	Αντιγράφηκε
+config.certIssueAnother	Έκδοση άλλου
+config.certIssued	Εκδοθέντα πιστοποιητικά
+config.certEmpty	Δεν έχουν εκδοθεί ακόμη πιστοποιητικά
+config.certStatus.active	Ενεργό
+config.certStatus.used	Χρησιμοποιήθηκε
+config.certStatus.expired	Έληξε
+config.certRedeem	Εξαργύρωση
+config.certRedeemTitle	Εξαργύρωση αυτού του πιστοποιητικού;
+config.certRedeemMessage	Το πιστοποιητικό {{code}} θα επισημανθεί ως χρησιμοποιημένο. Αυτό δεν αναιρείται.
+config.referrerBonusTitle	Μπόνους σύστασης
+config.referrerBonus	Μπόνους για τον συστήνοντα ({{currency}})
+config.newClientDiscount	Έκπτωση για νέο πελάτη (%)
+config.triggerCondition	Συνθήκη απονομής
+config.triggerConditions.first_visit	Μετά την πρώτη επίσκεψη
+config.triggerConditions.first_payment	Μετά την πρώτη πληρωμή
+config.triggerConditions.registration	Αμέσως με την εγγραφή
+config.bonusAccrual	Απόδοση μπόνους
+config.bonusTypes.points	Πόντοι
+config.bonusTypes.deposit	Στην κατάθεση
+config.bonusTypes.discount	Ως έκπτωση
+config.promoCreate	Δημιουργία κωδικού προσφοράς
+config.promoCodePlaceholder	ΚΑΛΟΚΑΙΡΙ25
+config.promoValidUntil	Ισχύει έως
+config.promoUsageLimit	Όριο χρήσης
+config.promoAdd	+ Προσθήκη κωδικού
+config.promoList	Κωδικοί προσφοράς
+config.promoEmpty	Δεν υπάρχουν ακόμη κωδικοί προσφοράς
+config.promoUntil	έως
+config.promoStatus.active	Ενεργός
+config.promoStatus.expired	Έληξε
+config.promoStatus.exhausted	Το όριο εξαντλήθηκε
+config.promoStatus.disabled	Απενεργοποιημένος
+config.depositTotal	Συνολικό υπόλοιπο
+config.depositTotalSub	σε όλες τις καταθέσεις πελατών
+config.depositTopClients	Κορυφαίοι πελάτες ανά υπόλοιπο
+config.depositEmpty	Κανείς δεν έχει ακόμη κατάθεση
+config.depositHint	Οι προσθήκες και οι αναλήψεις γίνονται από το προφίλ του πελάτη. Το πρόγραμμα συστάσεων μπορεί να καταβάλει μπόνους στην κατάθεση αντί για πόντους.
+validation.required	Αυτό το πεδίο είναι υποχρεωτικό
+validation.minOne	Πρέπει να είναι τουλάχιστον 1
+validation.minZero	Δεν μπορεί να είναι αρνητικό
+validation.positive	Πρέπει να είναι μεγαλύτερο από 0
+validation.range0to100	0 έως 100
+toasts.saved	Το πρόγραμμα ενεργοποιήθηκε
+toasts.saveFailed	Η αποθήκευση απέτυχε
+toasts.toggleFailed	Η ενημέρωση του προγράμματος απέτυχε
+toasts.loadFailed	Η φόρτωση δεδομένων απέτυχε
+toasts.retry	Δοκιμάστε ξανά
+stats.notConnected	Το πρόγραμμα δεν είναι συνδεδεμένο
+stats.willAppear	Τα δεδομένα θα εμφανιστούν μετά τη ρύθμιση
+stats.noData	Δεν υπάρχουν δεδομένα
+stats.connectProgram	Συνδέστε ένα πρόγραμμα
+stats.revenueHeadline	Έσοδα από μέλη
+stats.membersHeadline	Μέλη προγράμματος
+stats.returnedClients	Πελάτες που επέστρεψαν
+stats.returnedClientsSub	2+ επισκέψεις σε 90 ημέρες
+stats.avgCheckHeadline	Μέση απόδειξη ανά μέλος
+stats.bonusCostHeadline	Κόστος μπόνους
+stats.bonusCostSub	αυτόν τον μήνα
+stats.roiHeadline	ROI
+stats.roiValue	×{{value}}
+stats.perMonth	αυτόν τον μήνα
+stats.cardHolders	κάτοχοι κάρτας
+stats.kpi	Βασικοί δείκτες
+stats.members	Μέλη
+stats.withCard	με κάρτα
+stats.avgCheck	Μέση απόδειξη
+stats.byMembers	μεταξύ μελών
+stats.pointsInCirculation	Πόντοι σε κυκλοφορία
+stats.accrued	συγκεντρωμένοι
+stats.revenue	Έσοδα
+stats.revenuePerMonth	από μέλη / μήνα
+stats.levelDistribution	Κατανομή ανά επίπεδο
+stats.noLevels	Τα επίπεδα δεν έχουν ακόμη ρυθμιστεί
+stats.totalClients	Συνολικοί πελάτες στο πρόγραμμα
+stats.fromValue	από {{value}}
+stats.levelPointValue	πόντος = {{value}}
+scenarios.title	Έξυπνα σενάρια
+scenarios.subtitle	Αυτόματος πιλότος διατήρησης: το σύστημα βρίσκει πελάτες και τους επιβραβεύει για εσάς
+scenarios.add	Σενάριο
+scenarios.fired	ενεργοποιήθηκε {{count}} φορές
+scenarios.lastRun	τελευταία εκτέλεση {{when}}
+scenarios.neverRun	δεν έχει εκτελεστεί ακόμη
+scenarios.empty	Δεν υπάρχουν ακόμη σενάρια
+scenarios.emptySub	Δημιουργήστε το πρώτο — το σύστημα θα διατηρεί πελάτες για εσάς
+scenarios.channel	Κανάλι
+scenarios.channelSoon	μετά τη σύνδεση ενσωμάτωσης
+scenarios.pickTemplate	Επιλέξτε ένα σενάριο
+scenarios.pickTemplateSub	Ένα έτοιμο πρότυπο — ρυθμίστε τα όρια αργότερα
+scenarios.create	Δημιουργία
+scenarios.deleteConfirm	Διαγραφή σεναρίου;
+scenarios.deleteConfirmSub	Ο κανόνας θα σταματήσει να ενεργοποιείται. Αυτό δεν αναιρείται.
+scenarios.triggers.inactive_days	ανενεργός για {{days}} ημέρες
+scenarios.triggers.low_subscription	≤ {{classes_left}} μαθήματα απομένουν
+scenarios.triggers.birthday	γενέθλια
+scenarios.triggers.nth_visit	επίσκεψη #{{n}}
+scenarios.triggers.referral	έφερε έναν φίλο
+scenarios.actions.points	δώστε {{points}} πόντους
+scenarios.actions.gift_classes	δώστε {{classes}} μαθήματα
+scenarios.actions.certificate	εκδώστε πιστοποιητικό {{amount}} ₽
+scenarios.actions.renewal_offer	προσφέρετε ανανέωση με έκπτωση {{discount}}%
+scenarios.templates.win_back.name	Μας λείπετε
+scenarios.templates.win_back.desc	Επαναφέρετε έναν πελάτη που δεν έχει έρθει εδώ και καιρό
+scenarios.templates.expiring_subscription.name	Η συνδρομή τελειώνει
+scenarios.templates.expiring_subscription.desc	Προσφέρετε ανανέωση πριν εξαντληθούν τα μαθήματα
+scenarios.templates.birthday_gift.name	Δώρο γενεθλίων
+scenarios.templates.birthday_gift.desc	Χαρίστε χαρά σε έναν πελάτη την ξεχωριστή του ημέρα
+scenarios.templates.fifth_visit.name	Επιβράβευση αφοσίωσης
+scenarios.templates.fifth_visit.desc	Ένα δωρεάν μάθημα για αφοσίωση
+scenarios.templates.referral_thanks.name	Ευχαριστούμε για τον φίλο
+scenarios.templates.referral_thanks.desc	Επιβραβεύστε εκείνον που έφερε νέο πελάτη
+scenarios.ifClient	Αν ο πελάτης
+scenarios.then	→
+scenarios.toasts.created	Το σενάριο δημιουργήθηκε
+scenarios.toasts.updated	Το σενάριο ενημερώθηκε
+scenarios.toasts.deleted	Το σενάριο διαγράφηκε
+scenarios.toasts.failed	Δεν ήταν δυνατή η αποθήκευση του σεναρίου
+scenarios.delete	Διαγραφή
+segmentsBoard.title	Τμήματα και προτάσεις
+segmentsBoard.subtitle	Ενεργές ομάδες πελατών, καθεμία με μία σαφή ενέργεια
+segmentsBoard.empty	Δεν υπάρχει τίποτα εδώ, και αυτό είναι καλό
+segmentsBoard.clients	πελάτες
+segmentsBoard.daysAgo	πριν από {{count}} ημέρες
+segmentsBoard.neverVisited	χωρίς επισκέψεις
+segmentsBoard.more	και {{count}} ακόμη
+segmentsBoard.segments.at_risk.name	Έτοιμοι να φύγουν
+segmentsBoard.segments.at_risk.desc	Ενεργοί, ανενεργοί για 21+ ημέρες
+segmentsBoard.segments.at_risk.action	Δώστε μπόνους
+segmentsBoard.segments.vip_idle.name	VIP χωρίς δραστηριότητα
+segmentsBoard.segments.vip_idle.desc	VIP πελάτες, ανενεργοί για 14+ ημέρες
+segmentsBoard.segments.vip_idle.action	Εκτελέστε καμπάνια
+segmentsBoard.segments.expiring_subscription.name	Η συνδρομή λήγει
+segmentsBoard.segments.expiring_subscription.desc	≤2 μαθήματα ή ≤7 ημέρες απομένουν
+segmentsBoard.segments.expiring_subscription.action	Εκτελέστε καμπάνια
+segmentsBoard.segments.lost_newcomers.name	Δεν επέστρεψαν ποτέ
+segmentsBoard.segments.lost_newcomers.desc	Ήρθαν μία φορά, λείπουν για 14+ ημέρες
+segmentsBoard.segments.lost_newcomers.action	Εκτελέστε καμπάνια
+segmentsBoard.segments.upsell_candidates.name	Έτοιμοι για πακέτο
+segmentsBoard.segments.upsell_candidates.desc	8+ επισκέψεις αυτόν τον μήνα, χωρίς πακέτο
+segmentsBoard.segments.upsell_candidates.action	Εκτελέστε καμπάνια
+segmentsBoard.campaignSub	Τμήμα «{{name}}» · {{count}} πελάτες
+segmentsBoard.pointsLabel	Πόσοι πόντοι θα δοθούν
+segmentsBoard.messageLabel	Κείμενο μηνύματος
+segmentsBoard.messagePlaceholder	π.χ. Μας λείπετε! Επιστρέψτε — σας περιμένουμε.
+segmentsBoard.emailNote	Το email στέλνεται μόνο σε πελάτες με διεύθυνση email
+segmentsBoard.confirm	Αποστολή
+segmentsBoard.toasts.pointsDone	Οι πόντοι δόθηκαν · {{processed}} επεξεργάστηκαν, {{emails}} ειδοποιήθηκαν
+segmentsBoard.toasts.emailDone	Η καμπάνια στάλθηκε · {{emails}} email από {{processed}}
+retention.title	Ανανεώσεις συνδρομών
+retention.subtitle	Πόσο καλά επιστρέφουν οι πελάτες για νέο πακέτο
+retention.renewalRate	Ανανέωση
+retention.avgPackages	Πακέτα ανά πελάτη
+retention.sold	Πωλήθηκαν
+retention.renewed	Ανανεώθηκαν
+retention.empty	Δεν υπάρχουν ακόμη πωλήσεις συνδρομών
+retention.emptySub	Τα αναλυτικά στοιχεία θα εμφανιστούν μετά τις πρώτες πωλήσεις πακέτων

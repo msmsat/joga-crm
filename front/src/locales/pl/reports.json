@@ -1,0 +1,615 @@
+{
+  "tabs": {
+    "overview": "Przegląd",
+    "sales": "Sprzedaż",
+    "clients": "Klienci",
+    "team": "Zespół",
+    "schedule": "Grafik"
+  },
+  "toolbar": {
+    "period": {
+      "day": "Dzień",
+      "week": "Tydzień",
+      "month": "Miesiąc",
+      "year": "Rok",
+      "custom": "Niestandardowy"
+    },
+    "vsPrevious": "w porównaniu z poprzednim okresem: {{from}}–{{to}}",
+    "allBranches": "Wszystkie oddziały",
+    "allHalls": "Wszystkie {{spacePlural}}",
+    "allTrainers": "Wszyscy trenerzy",
+    "allServices": "Wszystkie usługi",
+    "export": "Eksportuj"
+  },
+  "insights": {
+    "title": "Wymaga uwagi",
+    "action": "Otwórz",
+    "empty": "Na razie wszystko jest w porządku — brak porad do wyświetlenia",
+    "revenue_up_clients_down": "Przychody rosną, ale liczba aktywnych klientów spada — sprawdź odpływ klientów",
+    "clients_at_risk": "{{count}} klient(ów) nie uczestniczyło od ponad 3 tygodni — ryzyko odpływu",
+    "lesson_overfull": "„{{name}}” {{weekday, weekday}} o {{hour}}:00 jest zapełnione w {{pct}}% od trzech tygodni — rozważ dodanie kolejnych zajęć",
+    "trial_low_conversion": "Tylko {{pct}}% z {{buyers}} klientów próbnych kupiło później abonament — rozważ kampanię",
+    "fastest_growing_product": "„{{name}}” rośnie najszybciej: +{{pct}}% w porównaniu z poprzednim okresem",
+    "renewals_low": "Tylko {{pct}}% klientów z wygasłym abonamentem odnawia go — rozważ przypomnienie",
+    "new_no_second_visit": "{{count}} nowych klientów przyszło raz i nigdy więcej nie zarezerwowało wizyty — rozważ przypomnienie",
+    "subs_expiring_week": "{{count}} klientów ma abonament wygasający w tym tygodniu — rozważ ofertę odnowienia",
+    "vip_inactive": "Klient VIP „{{name}}” nie odwiedził nas od {{days}} dni — rozważ osobistą wiadomość",
+    "high_return_free_evenings": "„{{name}}” ma wysoki wskaźnik powrotów ({{return_pct}}%), ale wieczory są wolne — dodaj zajęcia",
+    "trainer_overloaded": "„{{name}}” ma obciążenie {{load_pct}}% — rozważ zrównoważenie grafiku",
+    "low_rating": "„{{name}}” ma ocenę {{rating}} — warto przyjrzeć się temu bliżej",
+    "slot_chronic_low": "„{{name}}” {{weekday, isodowWeekday}} o {{hour}}:00 jest zapełnione w {{pct}}% od {{weeks}} tygodni — przenieś je lub odwołaj",
+    "hall_idle_evenings": "„{{name}}” jest niewykorzystane przez {{pct}}% wieczornych godzin — rozważ zaplanowanie zajęć",
+    "slot_overfull": "Slot {{weekday, isodowWeekday}} o {{hour}}:00 jest zapełniony w {{pct}}% od trzech tygodni — rozważ dodanie kolejnych zajęć",
+    "loss_hotspot": "{{cancels}} zajęć odwołano o {{label}} w tym okresie — najwięcej odwołań przypada na tę godzinę"
+  },
+  "table": {
+    "loading": "Ładowanie…",
+    "noProduct": "Brak produktu"
+  },
+  "empty": {
+    "noData": {
+      "title": "Nie ma tu jeszcze nic",
+      "text": "W wybranym okresie nie zarejestrowano aktywności. Poszerz zakres albo zacznij od zapisania klienta w Dzienniku.",
+      "widen": "Pokaż rok"
+    },
+    "noRevenue": "Brak płatności w tym okresie",
+    "noSales": "Brak sprzedaży w tym fragmencie",
+    "noProducts": "Nie sprzedano jeszcze żadnych pakietów ani usług",
+    "noLessons": "Brak zajęć w tym okresie",
+    "noTrainerLessons": "Ten trener nie przeprowadził jeszcze żadnych zajęć",
+    "noRows": "Brak rekordów w tym fragmencie",
+    "noLosses": "Brak odwołań ani nieobecności w tym okresie"
+  },
+  "overview": {
+    "kpi": {
+      "revenue": "Przychody",
+      "profit": "Zysk",
+      "attendance": "Frekwencja",
+      "activeClients": "Aktywni klienci",
+      "fillRate": "Wskaźnik zapełnienia"
+    },
+    "chart": {
+      "metric": {
+        "revenue": "Przychody",
+        "profit": "Zysk",
+        "attendance": "Frekwencja",
+        "new_clients": "Nowi klienci",
+        "fill_rate": "Wskaźnik zapełnienia"
+      }
+    },
+    "revenueStructure": {
+      "title": "Struktura przychodów"
+    },
+    "category": {
+      "subscriptions": "Abonamenty",
+      "services": "Usługi",
+      "certificates": "Bony podarunkowe",
+      "rent": "Czynsz",
+      "salary": "Wynagrodzenia",
+      "refunds": "Zwroty"
+    },
+    "clientDynamics": {
+      "title": "Dynamika klientów",
+      "new": "Nowi",
+      "returned": "Powrócili",
+      "lost": "Utraceni"
+    },
+    "drilldown": {
+      "title": "Operacja",
+      "category": "Kategoria",
+      "amount": "Kwota",
+      "lesson": "Zajęcia",
+      "time": "Godzina",
+      "occupancy": "Zapełnienie",
+      "date": "Data",
+      "method": "Metoda",
+      "trainer": "Trener",
+      "rowsCount": "rekordy",
+      "search": "Szukaj w tabeli",
+      "shownOf": "Wyświetlono {{shown}} z {{total}}",
+      "noMatches": "Nic nie znaleziono dla „{{query}}”",
+      "reset": "Resetuj",
+      "export": "Eksportuj CSV",
+      "subtitle": {
+        "money": "Operacje w tym fragmencie",
+        "lessons": "Zajęcia w tym fragmencie"
+      },
+      "hint": {
+        "operations": "Kliknij wiersz, aby otworzyć operację w Finansach",
+        "lessons": "Kliknij wiersz, aby otworzyć ten dzień w Dzienniku"
+      },
+      "stat": {
+        "net": "Netto",
+        "income": "Przychód",
+        "expense": "Wydatek",
+        "operations": "Operacje",
+        "topCategory": "Główna kategoria",
+        "lessons": "Zajęcia",
+        "booked": "Zarezerwowane miejsca",
+        "avgFill": "Średnie zapełnienie",
+        "trainers": "Trenerzy",
+        "cancelled": "Odwołane"
+      }
+    }
+  },
+  "sales": {
+    "kpi": {
+      "revenue": "Przychody",
+      "salesCount": "Sprzedaże",
+      "avgCheck": "Średni paragon",
+      "repeatShare": "Udział ponownych zakupów",
+      "renewals": "Wskaźnik odnowień"
+    },
+    "chart": {
+      "title": "Sprzedaż"
+    },
+    "incomeOperations": "Operacje przychodowe",
+    "breakdown": {
+      "byCategory": "Co kupują",
+      "byMethod": "Jak płacą",
+      "buyerType": "Kto kupuje",
+      "new": "Nowi",
+      "returning": "Powracający",
+      "noClient": "Bez klienta"
+    },
+    "method": {
+      "card": "Karta",
+      "cash": "Gotówka",
+      "qr": "Kod QR",
+      "transfer": "Przelew"
+    },
+    "products": {
+      "title": "Produkty",
+      "name": "Produkt",
+      "sold": "Sprzedano",
+      "revenue": "Przychody",
+      "avgCheck": "Średni paragon",
+      "repeatShare": "Udział ponownych zakupów",
+      "trend": "Trend",
+      "trendHint": "W porównaniu z poprzednim okresem o tej samej długości"
+    }
+  },
+  "clients": {
+    "kpi": {
+      "new": "Nowi",
+      "returned": "Powrócili",
+      "lost": "Utraceni",
+      "retention": "Utrzymanie",
+      "avgValue": "Wartość klienta"
+    },
+    "chart": {
+      "title": "Nowi a powracający",
+      "new": "Nowi",
+      "returned": "Powracający"
+    },
+    "riskTitle": "Segmenty ryzyka",
+    "loyalTitle": "Lojalni",
+    "list": "Lista",
+    "campaign": "Uruchom kampanię",
+    "exportList": "Eksportuj listę",
+    "emptySegment": "Segment „{{name}}” nie ma obecnie klientów",
+    "segments": {
+      "new": {
+        "name": "Nowi klienci",
+        "desc": "Zarejestrowani w wybranym okresie"
+      },
+      "returned": {
+        "name": "Powracający klienci",
+        "desc": "Odwiedzili ten i poprzedni okres"
+      },
+      "lost": {
+        "name": "Utraceni klienci",
+        "desc": "Odwiedzili poprzedni okres, ale nie wrócili w tym"
+      },
+      "active": {
+        "name": "Aktywni klienci",
+        "desc": "Przyszli na co najmniej jedne zajęcia w wybranym okresie"
+      },
+      "at_risk": {
+        "name": "Na krawędzi",
+        "desc": "Aktywni, ale bez wizyty od 21+ dni"
+      },
+      "vip_idle": {
+        "name": "Nieaktywni VIP",
+        "desc": "Klienci VIP bez wizyty od 14+ dni"
+      },
+      "expiring_subscription": {
+        "name": "Kończący się abonament",
+        "desc": "Pozostały ≤2 zajęcia lub ≤7 dni"
+      },
+      "lost_newcomers": {
+        "name": "Nigdy nie wrócili",
+        "desc": "Przyszli raz, nie ma ich od 14+ dni"
+      },
+      "upsell_candidates": {
+        "name": "Gotowi na wyższy pakiet",
+        "desc": "8+ wizyt w tym miesiącu, bez pakietu"
+      },
+      "frequent": {
+        "name": "Części goście",
+        "desc": "8+ wizyt w okresie"
+      },
+      "high_ltv": {
+        "name": "Wysokie LTV",
+        "desc": "Górne 10% według całkowitych wydatków"
+      },
+      "referrers": {
+        "name": "Polecający",
+        "desc": "Dokonali polecenia w okresie"
+      }
+    },
+    "listSearch": "Szukaj po imieniu lub telefonie",
+    "shownOf": "Wyświetlono {{shown}} z {{total}}",
+    "noMatches": "Nie znaleziono nikogo dla „{{query}}”",
+    "resetSearch": "Resetuj",
+    "neverVisited": "Nigdy nie odwiedził",
+    "valueLabel": {
+      "visits": "Wizyty",
+      "spent": "Wydano",
+      "daysIdle": "Dni bez aktywności",
+      "remaining": "Pozostałe zajęcia",
+      "value": "Wartość"
+    },
+    "relative": {
+      "today": "Dzisiaj",
+      "daysAgo_one": "{{count}} dzień temu",
+      "daysAgo_few": "{{count}} dni temu",
+      "daysAgo_many": "{{count}} dni temu"
+    }
+  },
+  "team": {
+    "kpi": {
+      "lessonsCount": "Zajęcia",
+      "revenuePerHour": "Przychody/godz.",
+      "avgFillPct": "Wskaźnik zapełnienia",
+      "cancelNoshowPct": "Odwołania/nieobecności",
+      "avgRating": "Ocena"
+    },
+    "table": {
+      "title": "Trenerzy",
+      "trainer": "Trener",
+      "lessons": "Zajęcia",
+      "fillPct": "Wskaźnik zapełnienia",
+      "attendance": "Frekwencja",
+      "revenue": "Przychody",
+      "returnRate": "Wskaźnik powrotów",
+      "cancels": "Odwołania",
+      "fillPctHint": "Zajęte miejsca spośród zaplanowanych",
+      "returnRateHint": "Klienci, którzy ponownie zarezerwowali u tego trenera",
+      "cancelsHint": "Odwołane zajęcia i nieobecności klientów",
+      "ratingHint": "Średnia ocena, którą klienci wystawili zajęciom tego trenera"
+    },
+    "drawer": {
+      "revenueByWeek": "Przychody według tygodnia",
+      "loadByWeekday": "Obciążenie według dnia tygodnia",
+      "loadByHour": "Obciążenie według pory dnia",
+      "loadDim": {
+        "weekday": "Według dnia",
+        "hour": "Według godziny"
+      },
+      "schedule": {
+        "title": "Grafik",
+        "empty": "Brak zajęć w tym okresie"
+      },
+      "topLessons": "Ulubione zajęcia",
+      "returnBlock": "Powroty klientów",
+      "returnOf": "Powróciło {{returned}} z {{total}} klientów ({{pct}}%)",
+      "openProfile": "Otwórz profil",
+      "held": "Odbyły się",
+      "attendance": "Frekwencja"
+    },
+    "weekdays": [
+      "niedz.",
+      "pon.",
+      "wt.",
+      "śr.",
+      "czw.",
+      "pt.",
+      "sob."
+    ]
+  },
+  "schedule": {
+    "weekdaysMonFirst": [
+      "pon.",
+      "wt.",
+      "śr.",
+      "czw.",
+      "pt.",
+      "sob.",
+      "niedz."
+    ],
+    "kpi": {
+      "avgFillPct": "Wskaźnik zapełnienia",
+      "freeSpots": "Wolne miejsca",
+      "cancels": "Odwołania",
+      "noshows": "Nieobecności",
+      "lostRevenue": "Utracone przychody"
+    },
+    "heatmap": {
+      "title": "Obciążenie według dnia i godziny",
+      "legend": "Wskaźnik zapełnienia:",
+      "tooltip": "{{lessons}} zajęć · {{attendance}} uczestników · {{pct}}%",
+      "empty": "Brak zajęć"
+    },
+    "slices": {
+      "topProfitable": "Najbardziej dochodowe",
+      "topFilled": "Najbardziej zapełnione",
+      "chronicLow": "Chronicznie słabo zapełnione",
+      "halls": "Wykorzystanie: {{spacePlural}}",
+      "held": "{{count}} odbyło się",
+      "weeks": "{{count}} tyg.",
+      "move": "Przenieś",
+      "cancel": "Odwołaj",
+      "eveningIdle": "wieczorem wolne {{pct}}%"
+    },
+    "losses": {
+      "title": "Odwołania i nieobecności",
+      "dim": {
+        "hour": "Według godziny",
+        "service": "Według usługi",
+        "trainer": "Według trenera"
+      },
+      "cancels_one": "{{count}} odwołanie",
+      "cancels_few": "{{count}} odwołania",
+      "cancels_many": "{{count}} odwołań",
+      "noshows_one": "{{count}} nieobecność",
+      "noshows_few": "{{count}} nieobecności",
+      "noshows_many": "{{count}} nieobecności",
+      "lostSpots_one": "−{{count}} miejsce",
+      "lostSpots_few": "−{{count}} miejsca",
+      "lostSpots_many": "−{{count}} miejsc"
+    },
+    "status": {
+      "confirmed": "Potwierdzone",
+      "pending": "Oczekujące",
+      "cancelled": "Odwołane"
+    },
+    "slot": {
+      "summary": "dla {{from}} — {{to}}",
+      "lessonsCount": "Wszystkie zajęcia"
+    }
+  },
+  "export": {
+    "csv": "Pobierz CSV"
+  },
+  "scopeNote": {
+    "label": "Całe studio",
+    "money": "Filtry Oddział i {{space}} nie wpływają na kwoty — płatność nie jest z nimi powiązana",
+    "clientBase": "Trener, {{space}}, oddział i usługa nie zmieniają tej miary — klient nie jest z nimi powiązany"
+  },
+  "descriptions": {
+    "overview": {
+      "metric": {
+        "revenue": "Wszystkie pieniądze, które wpłynęły do studia w tym okresie",
+        "profit": "To, co zostaje po wydatkach okresu",
+        "attendance": "Zajęcia, w których klienci faktycznie uczestniczyli",
+        "new_clients": "Klienci zarejestrowani w tym okresie",
+        "fill_rate": "Jak pełne są zajęcia: zarezerwowane miejsca spośród dostępnych"
+      },
+      "revenueStructure": "Z czego składają się Twoje przychody w tym okresie",
+      "clientDynamics": "Ilu przyszło pierwszy raz, wróciło lub przestało przychodzić"
+    },
+    "sales": {
+      "chart": "Przychody i liczba zakupów według dnia",
+      "byCategory": "Udział każdego produktu w przychodach",
+      "byMethod": "Jak przychody rozkładają się według metody płatności",
+      "buyerType": "Ile przychodów pochodzi od nowych klientów, a ile od stałych",
+      "products": "Każdy produkt: ile sprzedano, za ile i czy sprzedaż rośnie"
+    },
+    "clients": {
+      "chart": "Ilu klientów przyszło pierwszy raz, a ilu wróciło, według tygodnia",
+      "riskSegments": "Klienci, których możesz stracić, jeśli nie skontaktujesz się z nimi teraz",
+      "loyalSegments": "Ci, którzy odwiedzają najczęściej, wydają najwięcej i przyprowadzają znajomych"
+    },
+    "team": {
+      "trainers": "Porównanie według obciążenia, przychodów i wskaźnika powrotów klientów",
+      "loadWeekday": "W które dni tygodnia trener jest zajęty, a kiedy wolny",
+      "loadHour": "O której jego zajęcia się zapełniają, a kiedy pozostają puste",
+      "schedule": "Wszystkie zajęcia trenera w wybranym okresie"
+    },
+    "schedule": {
+      "heatmap": "Gdzie grafik jest przepełniony, a gdzie pusty",
+      "topProfitable": "Godziny w grafiku, które przynoszą najwięcej pieniędzy",
+      "topFilled": "Godziny, które klienci rezerwują najchętniej",
+      "chronicLow": "Sloty zapełniające się poniżej jednej trzeciej miejsc od wielu tygodni",
+      "halls": "Jaką część czasu Twoje {{spacePlural}} są faktycznie używane",
+      "losses": "Gdzie studio traci miejsca: odwołane zajęcia lub nieobecni klienci"
+    }
+  },
+  "formulas": {
+    "salesCount": {
+      "title": "Sprzedaże",
+      "text": "Ile razy klienci zapłacili Ci w tym okresie. Jedna osoba płacąca wiele razy liczy się jako osobne sprzedaże."
+    },
+    "revenue": {
+      "title": "Przychody",
+      "text": "Wszystkie pieniądze, które wpłynęły do studia w tym okresie według daty płatności. Pakiety, pojedyncze sesje, bony podarunkowe i sprzedaż detaliczna — razem."
+    },
+    "profit": {
+      "title": "Zysk",
+      "text": "To, co zostaje po wydatkach tego okresu: czynszu, wynagrodzeniach, materiałach. To Twój rzeczywisty zysk."
+    },
+    "attendance": {
+      "title": "Frekwencja",
+      "text": "Ile wizyt klienci faktycznie odbyli. Liczą się tylko sesje oznaczone jako odbyte."
+    },
+    "bookings": {
+      "title": "Rezerwacje",
+      "text": "Ile rezerwacji klienci zrobili na zajęcia. Anulowane rezerwacje nie są liczone."
+    },
+    "noshow": {
+      "title": "Nieobecność",
+      "text": "Klient zarezerwował, zajęcia się odbyły, ale nie przyszedł. Każdy taki przypadek to miejsce, które mógł zająć ktoś inny."
+    },
+    "activeClients": {
+      "title": "Aktywni klienci",
+      "text": "Ile różnych osób przyszło co najmniej raz w tym okresie. Każdy klient liczy się raz, niezależnie od liczby wizyt."
+    },
+    "occupancy": {
+      "title": "Zapełnienie",
+      "text": "Jak pełne są Twoje zajęcia: zajęte miejsca spośród zaplanowanych. 100% oznacza, że nie ma już wolnych miejsc."
+    },
+    "avgCheck": {
+      "title": "Średni paragon",
+      "text": "Ile średnio przynosi jedna płatność. Rośnie, gdy klienci kupują dłuższe pakiety lub dodatki."
+    },
+    "retention": {
+      "title": "Utrzymanie",
+      "text": "Ilu klientów z poprzedniego okresu wróciło w tym okresie. Pokazuje, czy utrzymujesz klientów, czy co miesiąc zaczynasz od zera."
+    },
+    "newClients": {
+      "title": "Nowi klienci",
+      "text": "Osoby, które pojawiły się w Twojej bazie klientów pierwszy raz w tym okresie."
+    },
+    "returning": {
+      "title": "Powracający",
+      "text": "Klienci, którzy odwiedzili wcześniej i ponownie wrócili w tym okresie."
+    },
+    "lost": {
+      "title": "Utraceni",
+      "text": "Odwiedzili poprzedni okres i ani razu nie pojawili się w tym. Wciąż warto się z nimi skontaktować."
+    },
+    "clientValue": {
+      "title": "Wartość klienta",
+      "text": "Ile średnio przynosi jeden klient w tym okresie."
+    },
+    "repeatPurchaseShare": {
+      "title": "Udział ponownych zakupów",
+      "text": "Udział klientów, którzy kupili od Ciebie więcej niż raz. Im wyższy, tym silniejszy nawyk powracania."
+    },
+    "renewalRate": {
+      "title": "Wskaźnik odnowień",
+      "text": "Ilu klientów kupiło nowy pakiet po wygaśnięciu poprzedniego."
+    },
+    "revenuePerHour": {
+      "title": "Przychody na godzinę (trener)",
+      "text": "Ile pieniędzy przynosi jedna godzina pracy trenera. Pozwala uczciwie porównywać trenerów — ktoś może prowadzić mniej zajęć, ale każde przynosi więcej."
+    },
+    "trainerReturnRate": {
+      "title": "Wskaźnik powrotów (trener)",
+      "text": "Udział klientów trenera, którzy ponownie zarezerwowali u niego zajęcia."
+    },
+    "missedRevenue": {
+      "title": "Utracone przychody",
+      "text": "Pieniądze, których studio nie zarobiło przez wolne miejsca na poprzednich zajęciach: wolne miejsca pomnożone przez cenę sesji."
+    },
+    "losses": {
+      "title": "Odwołania i nieobecności",
+      "text": "„Odwołanie” to odwołane zajęcia; „nieobecność” to klient, który zarezerwował, ale nie przyszedł. Podziały według czasu/usługi/trenera używają tych samych filtrów co karta i są zgodne z KPI w nagłówku."
+    },
+    "lessonRevenue": {
+      "title": "Przychody z zajęć",
+      "text": "Przybliżona ocena przychodów z sesji: uczestnicy pomnożeni przez cenę. Płatności nie są powiązane z konkretną sesją, więc to przybliżenie, a nie dokładna wartość."
+    },
+    "filtersScope": {
+      "title": "Zakres filtrów",
+      "text": "Filtry Oddział i {{space}} dotyczą tylko metryk zajęć. Płatności nie mają takiego powiązania, więc kwoty są pokazywane dla całego studia."
+    },
+    "avgValue": {
+      "title": "Wartość klienta",
+      "text": "Ile średnio przynosi jeden klient w tym okresie."
+    },
+    "cancelNoshow": {
+      "title": "Odwołania i nieobecności",
+      "text": "Udział zakłóconych zajęć: odwołania i nieobecności ze wszystkich zaplanowanych."
+    },
+    "avgRating": {
+      "title": "Średnia ocena",
+      "text": "Średnia ocena, którą klienci wystawili zajęciom tego trenera."
+    },
+    "teamScope": {
+      "title": "Zakres danych",
+      "text": "To liczy tylko przychody powiązane z konkretnym trenerem, więc suma wszystkich trenerów może być niższa od łącznych przychodów studia."
+    },
+    "lessonsCount": {
+      "title": "Zajęcia",
+      "text": "Ile sesji trenerzy przeprowadzili w tym okresie."
+    },
+    "load": {
+      "title": "Obciążenie",
+      "text": "Jak wypełniony jest dzień trenera: jego zarezerwowane godziny w czasie pracy studia."
+    },
+    "weeklyClients": {
+      "title": "Nowi i powracający",
+      "text": "Według tygodnia: ile osób przyszło pierwszy raz, a ile wróciło. Zdrowe studio rośnie na obu liniach."
+    },
+    "byCategory": {
+      "title": "Przychody według kategorii",
+      "text": "Na czym naprawdę zarabiasz: pakietach, pojedynczych sesjach, bonach podarunkowych i sprzedaży detalicznej."
+    },
+    "byMethod": {
+      "title": "Metody płatności",
+      "text": "Jak płacą klienci. Pomaga zobaczyć, czy potrzebujesz płatności kartą i ile pieniędzy omija kasę."
+    },
+    "buyerType": {
+      "title": "Kto płaci",
+      "text": "Nowi klienci a stali. Jeśli prawie wszystkie przychody pochodzą od nowych klientów, studio ich nie utrzymuje."
+    },
+    "products": {
+      "title": "Co się sprzedaje",
+      "text": "Wszystkie pakiety i usługi z okresu: ile sprzedano, za ile i czy sprzedaż rośnie."
+    },
+    "topProfitable": {
+      "title": "Najbardziej dochodowe terminy",
+      "text": "Godziny w grafiku, które przynoszą najwięcej pieniędzy. Ustaw tam najlepszych trenerów."
+    },
+    "topFilled": {
+      "title": "Najbardziej zapełnione terminy",
+      "text": "Godziny, które klienci rezerwują najchętniej. Jeśli są całkowicie pełne, warto dodać kolejne zajęcia."
+    },
+    "chronicLow": {
+      "title": "Chronicznie puste terminy",
+      "text": "Godziny, które od kilku tygodni zapełniają mniej niż jedną trzecią miejsc. Kandydaci do przeniesienia lub usunięcia."
+    },
+    "hallUtil": {
+      "title": "Wykorzystanie: {{spacePlural}}",
+      "text": "Jaką część czasu Twoje {{spacePlural}} są faktycznie używane. Pusty czas to czynsz, który się nie zwraca."
+    },
+    "heatmap": {
+      "title": "Obciążenie według dnia i godziny",
+      "text": "Kolor pokazuje średni wskaźnik zapełnienia slotu w okresie. Kliknij komórkę, aby zobaczyć sesje z tego dnia i godziny."
+    },
+    "riskSegments": {
+      "title": "Segmenty ryzyka",
+      "text": "Klienci pogrupowani według rodzaju ryzyka — utraty ich lub przychodów, których nie przynoszą. Każda karta ma własny powód i jasny kolejny krok: napisz do nich, zaproponuj odnowienie lub wyższy pakiet."
+    },
+    "loyalSegments": {
+      "title": "Lojalni",
+      "text": "Klienci, którzy już przynoszą najwięcej wartości: odwiedzają najczęściej, wydają najwięcej lub przyprowadzają znajomych. Warto o nich dbać i ich nagradzać."
+    },
+    "segment": {
+      "at_risk": {
+        "title": "Na krawędzi",
+        "text": "Kiedyś przychodzili regularnie, a teraz zniknęli. Nadal można ich odzyskać jedną wiadomością."
+      },
+      "vip_idle": {
+        "title": "Nieaktywni VIP",
+        "text": "Klienci, którzy wydali więcej niż wszyscy inni, ale od pewnego czasu nie odwiedzają studia."
+      },
+      "expiring_subscription": {
+        "title": "Kończący się abonament",
+        "text": "Tym klientom zostały 1–2 zajęcia. To najlepszy moment, aby zaproponować odnowienie."
+      },
+      "lost_newcomers": {
+        "title": "Nowi klienci, którzy nie wrócili",
+        "text": "Przyszli raz i zniknęli. Zwykle decydujące są pierwsze zajęcia — warto to zbadać."
+      },
+      "upsell_candidates": {
+        "title": "Gotowi na więcej",
+        "text": "Często odwiedzają studio, ale kupują najprostszy pakiet. Warto zaproponować im droższy abonament."
+      },
+      "frequent": {
+        "title": "Stali bywalcy",
+        "text": "Odwiedzają częściej niż wszyscy inni. Trzon przychodów studia."
+      },
+      "high_ltv": {
+        "title": "Najcenniejsi",
+        "text": "Przynieśli studiowi najwięcej pieniędzy ze wszystkich, w całym czasie."
+      },
+      "referrers": {
+        "title": "Przyprowadzają znajomych",
+        "text": "Klienci, których polecenia przyprowadziły do Ciebie inne osoby."
+      }
+    }
+  }
+}

@@ -1,0 +1,241 @@
+== tr
+loading	Yükleniyor…
+chModal.eyebrow	Bildirim kanalı
+chModal.connected	Bağlı
+chModal.notConnected	Bağlı değil
+chModal.setup	Bağlantı kurulumu
+chModal.details	Bağlantı ayrıntıları
+chModal.ready	Kanal çalışıyor
+chModal.readyHint	Etkinleştirilen etkinliklerin bildirimleri otomatik gönderilir.
+chModal.bot	Bot
+chModal.token	Token
+chModal.phone	Numara
+chModal.account	Hesap
+chModal.sender	Gönderen
+channels.title	Teslimat kanalları
+channels.connect	Bağlan
+channels.connected	Bağlı
+channels.openSettings	{{channel}} ayarları
+channels.waLockedHint	Meta ödeme yönteminize, doğrulanmış işletmeye ve onaylı şablonlara sahip olduğunda kanal açılır
+channels.waBlocker.payment	Ödeme yöntemi yok — hatırlatıcılar teslim edilmiyor. Ayarla
+channels.waBlocker.verification	İşletme Meta'da doğrulanmadı — günlük 250 sınırı. Nasıl düzeltilir
+channels.waBlocker.templates	Şablonlar hâlâ Meta incelemesinde — hiçbir şey gönderilmeyecek. Ayrıntılar
+roles.client	Müşteri
+roles.trainer	Eğitmen
+roles.admin	Yönetici
+roles.owner	Sahip
+roles.activeCount_one	{{count}} etkin
+roles.activeCount_other	{{count}} etkin
+matrix.saving	Kaydediliyor…
+matrix.allSaved	Tüm değişiklikler kaydedildi
+matrix.notSaved	Kaydedilmedi
+matrix.activateAll	Tümünü etkinleştir
+matrix.deactivateAll	Tüm onay kutularını temizle
+matrix.activeCount_one	Etkin tetikleyiciler: {{count}} / {{total}}
+matrix.activeCount_other	Etkin tetikleyiciler: {{count}} / {{total}}
+matrix.scenariosFor	Şunun için senaryolar: {{role}}
+matrix.configureFor_one	{{count}} sistem tetikleyicisi için kanalları yapılandır
+matrix.configureFor_other	{{count}} sistem tetikleyicisi için kanalları yapılandır
+matrix.eventColumn	Sistem olayı
+matrix.noActiveChannels	Etkin kanal yok
+matrix.noActiveChannelsHint	Soldaki panelden en az bir teslimat kanalı etkinleştirin
+matrix.adviceLabel	İpucu:
+matrix.advice	Her rol için neyin nereye gönderileceğini ayrı ayrı yapılandırın — Velora bunu otomatik yönetir.
+matrix.tiers.critical	Zorunlu · kapatılamaz
+matrix.tiers.operational	Operasyonel
+matrix.tiers.optional	İsteğe bağlı
+matrix.lock.critical	Zorunlu bildirim — kapatılamaz
+matrix.lock.lastChannel	Son teslimat kanalı — kapatılamaz
+matrix.channelDisconnected	Kanal bağlı değil
+events.c1.title	Rezervasyon onaylandı
+events.c1.desc	Başarılı ders rezervasyonunda
+events.c2.title	Ders hatırlatıcısı
+events.c2.desc	24 saat ve 2 saat önce
+events.c3.title	Ders iptal edildi
+events.c3.desc	Eğitmen veya stüdyo iptal ettiğinde
+events.c4.title	Ödeme başarılı
+events.c4.desc	Başarılı çekimden sonra makbuz
+events.c5.title	Dersler azalıyor
+events.c5.desc	Paket içinde 1–2 ziyaret kaldığında
+events.c6.title	Paketin süresi doluyor
+events.c6.desc	Sona erme tarihinden 3 gün önce
+events.c7.title	Doğum günü
+events.c7.desc	Özel teklifli kutlama
+events.c8.title	Değerlendirme isteği
+events.c8.desc	Dersten sonra
+events.c9.title	İade
+events.c9.desc	İptal ve iade işleme alınırken
+events.c10.title	Ders henüz ödenmedi
+events.c10.desc	Müşteri katıldı ama ödeme yapmadı
+events.c11.title	Ders yeniden planlandı
+events.c11.desc	Saat, salon veya eğitmen değişti
+events.c12.title	Bonus eklendi
+events.c12.desc	Müşteriye puan veya bonus eklendi
+events.c13.title	Dersten sonra kahve
+events.c13.desc	Gruptan kimin kahveye gittiği
+events.t1.title	Eğitmende yeni rezervasyon
+events.t1.desc	Müşteri kişisel seans rezervasyonu yaptı
+events.t2.title	Müşteri rezervasyonu iptal etti
+events.t2.desc	Müşteri 2 saatten az kala iptal etti
+events.t3.title	Ders hatırlatıcısı
+events.t3.desc	Başlangıçtan 1 saat önce
+events.t4.title	Grup listesi
+events.t4.desc	Grup dersinden 30 dk. önce
+events.t5.title	Takvim değişikliği
+events.t5.desc	Yönetici saat veya konumu değiştirdi
+events.t6.title	Maaş tahakkuk etti
+events.t6.desc	Haftalık ödeme hesaplaması
+events.t7.title	Yeni eğitmen değerlendirmesi
+events.t7.desc	Müşteri dersten sonra puan verdi
+events.t8.title	Müşterinin doğum günü
+events.t8.desc	Kişisel olarak kutlamak için hatırlatıcı
+events.t9.title	Ders iptal edildi
+events.t9.desc	Stüdyo veya yönetici dersinizi iptal etti
+events.a1.title	Yeni çevrimiçi rezervasyon
+events.a1.desc	Müşteri site veya widget üzerinden rezervasyon yaptı
+events.a2.title	Son dakika iptali
+events.a2.desc	Dersten 1 saatten az önce
+events.a3.title	Sistemde yeni müşteri
+events.a3.desc	Yeni kullanıcı kaydı
+events.a4.title	Ödeme alındı
+events.a4.desc	Her başarılı çekim
+events.a6.title	Paketler azalıyor
+events.a6.desc	≤1 dersi kalmış müşteri grubu
+events.a7.title	Takvim çakışması
+events.a7.desc	Günlükte çakışan dersler
+events.a8.title	Günlük rapor
+events.a8.desc	Gün sonu özeti
+events.a9.title	Giriş denemesi
+events.a9.desc	Yeni bir cihazdan giriş
+events.a10.title	İade
+events.a10.desc	Yönetici iade işlemi yaptı
+events.o1.title	Günlük özet
+events.o1.desc	Günün geliri, rezervasyonları, katılımı
+events.o2.title	Haftalık rapor
+events.o2.desc	Göstergeler: müşteri büyümesi, LTV, dönüşüm
+events.o3.title	Büyük ödeme
+events.o3.desc	Belirlenen eşiğin üzerindeki çekim
+events.o4.title	Veri anormalliği
+events.o4.desc	Rezervasyon veya gelirde keskin düşüş
+events.o5.title	Yeni ekip üyesi
+events.o5.desc	Yönetici yeni hesap oluşturdu
+events.o6.title	Plan yenilemesi
+events.o6.desc	Velora aboneliğini ödeme hatırlatıcısı
+events.o7.title	Erişim hakları değişti
+events.o7.desc	Ekip üyesinin izinleri değiştirildi
+events.o8.title	KPI'a ulaşıldı
+events.o8.desc	Aylık hedefe ulaşıldı
+events.o9.title	Veri dışa aktarma
+events.o9.desc	Birisi müşteri veritabanını dışa aktardı
+tg.title	Telegram
+tg.subtitleConnected	Kanal bağlı
+tg.subtitleDisconnected	Bildirim botunu bağlayın
+tg.connected	Bağlı
+tg.pasteToken	@BotFather'dan aldığınız bot tokenini yapıştırın.
+tg.invalidToken	Geçersiz token biçimi
+tg.howToGet	Token nasıl alınır:
+tg.steps.1	Telegram'da @BotFather'ı açın
+tg.steps.2	/newbot komutunu gönderin ve yönergeleri izleyin
+tg.steps.3	Verilen tokeni kopyalayın
+tg.steps.4	Yukarıdaki alana yapıştırın
+tg.connect	Bağlan
+tg.disconnect	Bağlantıyı kes
+tg.disconnectTitle	Telegram bağlantısı kesilsin mi?
+tg.disconnectMessage	Müşteriler ve personel bu kanal üzerinden bildirim almayı bırakacak.
+tg.close	Kapat
+tg.cancel	İptal
+emailCh.title	E-posta
+emailCh.subtitle	Müşteri e-postaları için gönderen adresi
+emailCh.verifiedLabel	Doğrulandı
+emailCh.emailLabel	Gönderen e-postası
+emailCh.emailPlaceholder	admin@studio.com
+emailCh.invalidEmail	Geçerli bir e-posta girin
+emailCh.sendCode	Kod gönder
+emailCh.codeSentTo	Kod şuraya gönderildi:
+emailCh.codeHint	E-postadaki 6 haneli kodu girin.
+emailCh.codeLabel	Doğrulama kodu
+emailCh.resend	Kodu yeniden gönder
+emailCh.viaVelora	E-postalar sizin adınıza Velora sunucusu üzerinden gönderilir.
+emailCh.wrongCode	Geçersiz veya süresi dolmuş kod
+emailCh.verify	Doğrula
+emailCh.back	Geri
+emailCh.cancel	İptal
+wa.title	WhatsApp
+wa.subtitleConnected	Kanal bağlı
+wa.subtitleDisconnected	Meta işletme hesabınızla oturum açın
+wa.connected	Bağlı
+wa.paymentRequiredTitle	Kart gerekli olacak
+wa.paymentRequired	Numarayı bağlamak ücretsizdir, ancak Meta müşteri hatırlatıcılarını yalnızca kart eklendikten sonra teslim eder. Kartı ayrı olarak eklersiniz —
+wa.paymentMissingTitle	Ödeme yöntemi yok
+wa.paymentMissing	Şu anda yalnızca botun gelen mesajlara verdiği yanıtlar çalışır. Kart eklenene kadar Meta hatırlatıcıları, onayları ve toplu gönderileri reddeder —
+wa.paymentOkTitle	Ödeme bağlandı
+wa.paymentOk	bildirimler eksiksiz teslim edilir.
+wa.paymentUnknown	Meta ile ödeme yöntemini kontrol edemedik — durumu sonraki denemede göstereceğiz.
+wa.paymentLink	Meta faturalandırma merkezi
+wa.paymentRecheck	Yeniden kontrol et
+wa.paymentFound	Ödeme bağlandı
+wa.verify.title	İşletme Meta'da doğrulanmadı
+wa.verify.lead	Numara çalışır, ancak günlük 250 benzersiz alıcı sınırıyla. Doğrulama sınırı kaldırır ve tam kullanımı açar. Stüdyo bunu kendi yapmalıdır — WhatsApp hesabı size aittir ve Velora sizin adınıza işlem yapamaz.
+wa.verify.stepsTitle	İşletme nasıl doğrulanır:
+wa.verify.step1a	Şunu açın:
+wa.verify.link	Meta Business Security Center
+wa.verify.step1b	ve “Doğrulamayı başlat”ı tıklayın. İşletme hesabında yönetici yetkisine ihtiyacınız var.
+wa.verify.step2	Yasal bilgileri doldurun: belgelerdeki adın aynısı, adres, telefon ve web sitesi. Site çalışıyor olmalı ve HTTPS kullanmalıdır.
+wa.verify.step3	İşletme kayıt belgesini yükleyin ve Meta'nın incelemesini bekleyin.
+wa.verify.step4	İşletmeyle bağlantınızı onaylayın: site alan adında e-posta, listelenen telefona çağrı veya SMS ya da alan adı doğrulaması.
+wa.verify.step5	Kararı bekleyin — genellikle 1–5 iş günü. Durum aynı Güvenlik Merkezindedir; reddedilirse Meta nedeni belirtir ve yeniden başvuruya izin verir.
+wa.verify.docsTitle	Kabul edilen belgeler (her gruptan bir adet):
+wa.verify.doc1	Kayıt: kuruluş belgesi, sicil kaydı, işletme ruhsatı veya vergi belgesi.
+wa.verify.doc2	Varlık kanıtı: çalışan bir web sitesi, resmi sosyal medya sayfası veya işletme dizini kaydı.
+wa.verify.pitfallTitle	En yaygın ret nedeni
+wa.verify.pitfall	Meta'daki işletme adı ile belgedeki ad, yasal biçim ve noktalama dâhil karakter karakter eşleşmelidir. “Romashka LLC” ve “Romashka, LLC” farklı ad sayılır.
+wa.templatesTitle	Mesaj şablonları
+wa.templates	Meta, önceden onaylanmış şablon olmadan müşteriye ilk mesajı göndermenize izin vermez. Her etkinlik için şablon oluşturun — incelemeye gider ve onaylanınca çalışmaya başlar.
+wa.templatesAction	Şablonları hazırla
+wa.templatesPending	Şablonlar oluşturuluyor…
+wa.templatesDone_one	Şablonlar hazır: {{count}}. Meta incelemesi bekleniyor
+wa.templatesDone_other	Şablonlar hazır: {{count}}. Meta incelemesi bekleniyor
+wa.templatesPartial	Meta bazı şablonları reddetti: {{failed}}. Ayrıntılar için günlükleri inceleyin
+wa.templatesRejectedTitle_one	Meta {{count}} şablonu reddetti
+wa.templatesRejectedTitle_other	Meta {{count}} şablonu reddetti
+wa.templatesRejected	— bu bildirimler teslim edilmiyor. Meta hesabınızdaki metni kontrol edin ve şablonları yeniden oluşturun.
+wa.templatesPendingTitle_one	{{count}} şablon incelemede
+wa.templatesPendingTitle_other	{{count}} şablon incelemede
+wa.templatesPendingHint	— Meta'nın incelemesi bir güne kadar sürebilir. {{approved}} zaten onaylandı ve teslim ediliyor.
+wa.templatesOkTitle	Şablonlar onaylandı
+wa.templatesOk_one	{{count}} şablon Meta incelemesini geçti — bildirimler teslim ediliyor.
+wa.templatesOk_other	{{count}} şablon Meta incelemesini geçti — bildirimler teslim ediliyor.
+wa.paidWarning	WhatsApp mesajları ücretlidir
+wa.approxPrice	yakl.
+wa.pricingLoading	Güncel fiyat yükleniyor…
+wa.perMessage	mesaj başına
+wa.viaMeta	Meta tarafından doğrudan faturalandırılır
+wa.windowNotice	Teslimat yalnızca 24 saatlik konuşma penceresinde garanti edilir.
+wa.connect	WhatsApp'ı bağla
+wa.disconnect	Bağlantıyı kes
+wa.disconnectTitle	WhatsApp bağlantısı kesilsin mi?
+wa.disconnectMessage	Müşteriler ve personel bu kanal üzerinden bildirim almayı bırakacak.
+wa.close	Kapat
+wa.cancel	İptal
+tabs.matrix	Ayarlar
+tabs.log	Teslimat günlüğü
+log.title	Teslimat günlüğü
+log.subtitle	Ne gönderildiği, kime ve ne zaman gittiği, ayrıca her gönderimin nasıl sonuçlandığı.
+log.status.sent	Teslim edildi
+log.status.rejected	Reddedildi
+log.status.error	Bağlantı hatası
+log.status.pending	Sürüyor
+log.searchPlaceholder	Telefon, e-posta veya olay kodu
+log.allChannels	Tüm kanallar
+log.reset	Sıfırla
+log.refreshing	Yenileniyor…
+log.otherEvent	Katalog dışına gönder
+log.empty	Henüz hiçbir şey gönderilmedi
+log.emptyHint	Stüdyonun müşterilere ve personele gönderdiği her bildirim burada görünür.
+log.emptyFiltered	Hiçbir şey bulunamadı
+log.emptyFilteredHint	Filtreleri değiştirmeyi veya farklı numara aramayı deneyin.
+log.loadError	Günlük yüklenemedi
+log.loadErrorHint	Sayfayı yenileyin — yardımcı olmazsa destek ekibiyle iletişime geçin.
+log.range	{{from}}–{{to}} / {{total}}
+log.prev	Geri
+log.next	Sonraki

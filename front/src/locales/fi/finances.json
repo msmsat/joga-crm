@@ -1,0 +1,510 @@
+{
+  "tabs": {
+    "accounts": "Tilit",
+    "operations": "Tapahtumat",
+    "salaries": "Palkat",
+    "counterparties": "Vastapuolet",
+    "documents": "Asiakirjat",
+    "onlinePayments": "Verkkomaksut",
+    "paymentMethods": "Maksutavat",
+    "reports": "Raportit",
+    "goals": "Tavoitteet"
+  },
+  "common": {
+    "save": "Tallenna",
+    "cancel": "Peruuta",
+    "create": "Luo",
+    "edit": "Muokkaa",
+    "delete": "Poista",
+    "loading": "Ladataan…",
+    "all": "Kaikki",
+    "confirm": "Vahvista",
+    "monthsShort": [
+      "Tammi",
+      "Helmi",
+      "Maalis",
+      "Huhti",
+      "Touko",
+      "Kesä",
+      "Heinä",
+      "Elo",
+      "Syys",
+      "Loka",
+      "Marras",
+      "Joulu"
+    ],
+    "weekdaysShort": [
+      "Ma",
+      "Ti",
+      "Ke",
+      "To",
+      "Pe",
+      "La",
+      "Su"
+    ]
+  },
+  "info": {
+    "accounts": "Tilit ovat studion kassoja, pankkitilejä ja verkkomaksujen vastaanottoa. Näet täällä jokaisen saldon ja kokonaispääoman.",
+    "operations": "Tapahtumat ovat kaikki studion tulot ja menot. Tapahtuman luominen muuttaa heti siihen liitetyn tilin saldoa.",
+    "salaries": "Palkat lasketaan henkilöstön jäsenen palkkion (kiinteä, tunti- tai prosenttiperusteinen) mukaan valitulta ajalta.",
+    "counterparties": "Vastapuolet ovat organisaatioita ja henkilöitä, joiden kanssa studio tekee tilityksiä: toimittajia, vuokranantajia ja kumppaneita.",
+    "documents": "Asiakirjat ovat vastapuoliin liittyviä sopimuksia, todistuksia ja laskuja tai sisäisiä asiakirjoja.",
+    "onlinePayments": "Verkkomaksut — yhdistä Stripe korttimaksuja varten. Tili luodaan studiolle, joten rahat menevät suoraan sinulle eivätkä koskaan Veloran kautta.",
+    "paymentMethods": "Maksutavat näyttävät, miten asiakkaat maksavat studiolla, sekä kunkin tavan tilastot.",
+    "reports": "Raportit näyttävät tulojen, menojen ja voiton kehityksen valitulla ajanjaksolla.",
+    "goals": "Taloudelliset tavoitteet ovat studion säästösuunnitelma automaattisella tai manuaalisella edistymisen seurannalla."
+  },
+  "accounts": {
+    "loading": "Ladataan tilejä…",
+    "totalCapital": "Studion kokonaispääoma",
+    "donutTotal": "{{symbol}} yhteensä",
+    "todayChange": "tänään",
+    "system": "JÄRJESTELMÄ",
+    "today": "tänään",
+    "editTitle": "Muokkaa tiliä",
+    "namePlaceholder": "Nimi",
+    "balancePlaceholder": "Saldo, {{symbol}}",
+    "types": {
+      "cash": "Käteinen",
+      "bank": "Kortti",
+      "online": "Verkossa"
+    },
+    "typesShort": {
+      "cash": "Käteinen",
+      "bank": "Kortti",
+      "online": "Verkossa"
+    },
+    "history": "Historia",
+    "historyTitle": "Historia: {{name}}",
+    "income30d": "Tulot (30 pv)",
+    "expense30d": "Menot (30 pv)",
+    "samplePayment": "Palvelumaksu",
+    "sampleTime": "Tänään, 14:32",
+    "openAllOperations": "Avaa kaikki tapahtumat",
+    "newSavingsTitle": "Uusi säästötili",
+    "createSavings": "Luo säästötili",
+    "deleteConfirmTitle": "Poistetaanko tämä tili?",
+    "deleteConfirmText": "Kaikki sen varat jätetään pois yleisistä tilastoista. Toimintoa ei voi kumota.",
+    "toasts": {
+      "loadFailed": "Tilien lataaminen epäonnistui",
+      "deleted": "Tili poistettu",
+      "deleteFailed": "Tilin poistaminen epäonnistui",
+      "saved": "Asetukset tallennettu",
+      "saveFailed": "Tilin tallentaminen epäonnistui",
+      "created": "Säästötili luotu",
+      "createFailed": "Tilin luominen epäonnistui"
+    }
+  },
+  "operations": {
+    "income": "Tulo",
+    "expense": "Meno",
+    "balance": "Saldo",
+    "searchPlaceholder": "Hae otsikon ja luokan mukaan…",
+    "close": "Sulje",
+    "operation": "Tapahtuma",
+    "export": "Vie",
+    "newOperationTitle": "Uusi tapahtuma",
+    "titleLabel": "Otsikko",
+    "titlePlaceholder": "Esim. tilausmaksu",
+    "amountLabel": "Summa, {{symbol}}",
+    "dateLabel": "Päivä",
+    "categoryLabel": "Luokka",
+    "categoryPlaceholder": "Luokka",
+    "accountLabel": "Tili",
+    "noAccount": "Ei tiliä",
+    "methodLabel": "Maksutapa",
+    "noMethod": "Ei määritetty",
+    "counterpartyLabel": "Vastapuoli",
+    "noCounterparty": "Ei vastapuolta",
+    "newCounterparty": "+ Uusi vastapuoli",
+    "clientLabel": "Asiakas",
+    "clientHint": "Asiakkaalle hyvitetään kanta-asiakaspisteet ja taso",
+    "clientSearchPlaceholder": "Aloita nimen kirjoittaminen…",
+    "noClient": "Ei asiakasta",
+    "editTitle": "Muokkaa tapahtumaa",
+    "saving": "Tallennetaan…",
+    "loading": "Ladataan tapahtumia…",
+    "emptyTitle": "Tapahtumia ei löytynyt",
+    "emptyBody": "Muuta suodattimia tai luo ensimmäinen tapahtuma",
+    "pending": "Odottaa",
+    "detailAccount": "Vastaanottava tili",
+    "detailCategory": "Luokka",
+    "detailMethod": "Maksutapa",
+    "detailCounterparty": "Vastapuoli",
+    "receipt": "Kuitti",
+    "loadMore": "Lataa lisää ({{count}})",
+    "toasts": {
+      "loadFailed": "Tapahtumien lataaminen epäonnistui",
+      "loadMoreFailed": "Useampien tapahtumien lataaminen epäonnistui",
+      "deleted": "Tapahtuma poistettu",
+      "deleteFailed": "Tapahtuman poistaminen epäonnistui",
+      "enterAmount": "Anna summa",
+      "created": "Tapahtuma luotu",
+      "createFailed": "Tapahtuman luominen epäonnistui",
+      "updated": "Tapahtuma päivitetty",
+      "updateFailed": "Tapahtuman tallentaminen epäonnistui",
+      "exportFailed": "Tapahtumien vienti epäonnistui",
+      "receiptDownloaded": "Kuitti ladattu"
+    },
+    "categoryPresets": {
+      "in": [
+        {
+          "value": "Jäsenyydet",
+          "label": "Jäsenyydet"
+        },
+        {
+          "value": "Palvelut",
+          "label": "Palvelut"
+        },
+        {
+          "value": "Lahjakortit",
+          "label": "Lahjakortit"
+        },
+        {
+          "value": "Talletus",
+          "label": "Talletus"
+        },
+        {
+          "value": "Muu",
+          "label": "Muu"
+        }
+      ],
+      "out": [
+        {
+          "value": "Palautukset",
+          "label": "Palautukset"
+        },
+        {
+          "value": "Vuokra",
+          "label": "Vuokra"
+        },
+        {
+          "value": "Palkat",
+          "label": "Palkat"
+        },
+        {
+          "value": "Hankinnat",
+          "label": "Hankinnat"
+        },
+        {
+          "value": "Markkinointi",
+          "label": "Markkinointi"
+        },
+        {
+          "value": "Verot",
+          "label": "Verot"
+        },
+        {
+          "value": "Muu",
+          "label": "Muu"
+        }
+      ]
+    }
+  },
+  "salaries": {
+    "loading": "Ladataan palkkoja…",
+    "noRows": "Ei laskettavaa henkilöstöä",
+    "fund": "Palkkarahasto",
+    "fundSub": "kuluva kuukausi",
+    "sessions": "Tapaamiset",
+    "sessionsSub": "pidetty yhteensä",
+    "paidOf": "henkilöstö",
+    "sessionsCount": "{{count}} tapaamista",
+    "paid": "Maksettu",
+    "pending": "Odottaa",
+    "paying": "…",
+    "payAction": "Maksa",
+    "cancelAction": "Peru palkka",
+    "perMonth": "/kk",
+    "accrualTitle": "Kertymä ajalta",
+    "rate": "Palkkio",
+    "rateNotSet": "ei asetettu",
+    "sessionsInPeriod": "Tapaamiset ajanjaksolla",
+    "hoursWorked": "Tehdyt tunnit",
+    "lessonsRevenue": "Tapaamistulot",
+    "totalToPay": "Maksettavaa yhteensä",
+    "rateWarning": "Palkkiota ei ole asetettu — aseta se henkilöstön jäsenen profiiliin, jotta kertymä voidaan laskea.",
+    "rateUnit": {
+      "hourly": "h",
+      "percent": "%",
+      "fixed": "kiinteä"
+    },
+    "paidAt": "Maksettu {{date}}",
+    "historyTitle": "Maksuhistoria",
+    "historyEmpty": "Ei maksuja vielä",
+    "historyLoading": "Ladataan historiaa…",
+    "toasts": {
+      "loadFailed": "Palkkojen lataaminen epäonnistui",
+      "paid": "Palkka maksettu: {{name}}",
+      "payFailed": "Palkan maksaminen epäonnistui",
+      "canceled": "Palkka peruttu: {{name}}",
+      "historyLoadFailed": "Maksuhistorian lataaminen epäonnistui"
+    }
+  },
+  "counterparties": {
+    "count": "{{count}} vastapuolta",
+    "totalDebt": "Kokonaisvelka:",
+    "add": "Lisää",
+    "newTitle": "Uusi vastapuoli",
+    "nameLabel": "Nimi / Koko nimi",
+    "namePlaceholder": "Yritys Oy tai Matti Meikäläinen",
+    "innLabel": "Verotunnus",
+    "categoryLabel": "Luokka",
+    "categoryPlaceholder": "Vuokra, toimittaja…",
+    "typeLabel": "Vastapuolen tyyppi",
+    "types": {
+      "legal": {
+        "label": "Oikeushenkilö",
+        "desc": "Organisaatio tai yritys"
+      },
+      "ie": {
+        "label": "Yksityinen elinkeinonharjoittaja",
+        "desc": "Yksinyrittäjä"
+      },
+      "person": {
+        "label": "Yksityishenkilö",
+        "desc": "Luonnollinen henkilö"
+      }
+    },
+    "addSubmit": "Lisää vastapuoli",
+    "you": "Sinä",
+    "otherCategory": "Muu",
+    "deals": "sopimukset",
+    "dealsLabel": "Sopimukset",
+    "debtLabel": "Velka",
+    "documents": "Asiakirjat",
+    "edit": "Muokkaa",
+    "delete": "Poista",
+    "deleteConfirmTitle": "Poistetaanko vastapuoli?",
+    "deleteConfirmText": "Liittyvät asiakirjat ja sopimushistoria säilyvät, mutta vastapuoli poistetaan luettelosta.",
+    "toasts": {
+      "loadFailed": "Vastapuolten lataaminen epäonnistui",
+      "enterName": "Anna nimi",
+      "saved": "Muutokset tallennettu",
+      "saveFailed": "Tallentaminen epäonnistui",
+      "added": "Vastapuoli lisätty",
+      "addFailed": "Vastapuolen lisääminen epäonnistui",
+      "deleted": "Vastapuoli poistettu",
+      "deleteFailed": "Vastapuolen poistaminen epäonnistui",
+      "documentsOpened": "Asiakirjat avattu"
+    }
+  },
+  "documents": {
+    "signed": "Allekirjoitettu",
+    "pendingCount": "Odottaa allekirjoitusta",
+    "draftCount": "Sisäinen (allekirjoittamaton)",
+    "searchPlaceholder": "Hae otsikon tai vastapuolen mukaan…",
+    "filters": {
+      "all": "Kaikki",
+      "signed": "Allekirjoitettu",
+      "pending": "Odottaa allekirjoitusta"
+    },
+    "upload": "Lataa",
+    "addTitle": "Lisää asiakirja kirjastoon",
+    "dropzoneTitle": "Napsauta tai vedä tiedosto tähän",
+    "dropzoneHint": "PDF, DOCX, XLSX (enintään 15 Mt)",
+    "dropzoneChange": "Valitse toinen tiedosto napsauttamalla",
+    "titleLabel": "Asiakirjan otsikko",
+    "titlePlaceholder": "Esim. vastaanottoasiakirja nro 48",
+    "partyLabel": "Vastapuoli (jos on)",
+    "partyPlaceholder": "Yrityksen tai yksinyrittäjän nimi",
+    "needsSignature": "Tarvitseeko asiakirja allekirjoituksen?",
+    "needsSignatureHint": "Tila on ”Odottaa allekirjoitusta”",
+    "saveToBase": "Tallenna kirjastoon",
+    "emptyTitle": "Tämä kansio on tyhjä",
+    "emptyBody": "Lataa uusi asiakirja tai muuta suodattimia",
+    "internalDoc": "Sisäinen asiakirja",
+    "uploaded": "Ladattu {{date}}",
+    "download": "Lataa tiedosto",
+    "open": "Avaa",
+    "fileRequired": "Liitä tiedosto",
+    "options": "Asetukset",
+    "status": {
+      "title": "Tila",
+      "signed": "Allekirjoitettu",
+      "pending": "Odottaa allekirjoitusta",
+      "draft": "Allekirjoittamaton"
+    },
+    "delete": "Poista",
+    "toasts": {
+      "loadFailed": "Asiakirjojen lataaminen epäonnistui",
+      "titleRequired": "Lataa tiedosto tai anna otsikko",
+      "created": "Asiakirja ladattu kirjastoon",
+      "createFailed": "Asiakirjan tallentaminen epäonnistui",
+      "badFormat": "Sallitut muodot: PDF, DOCX, XLSX",
+      "downloadFailed": "Tiedoston lataaminen epäonnistui",
+      "noFile": "Tähän asiakirjaan ei ole liitetty tiedostoa",
+      "openFailed": "Tiedoston avaaminen epäonnistui",
+      "statusChanged": "Tila: {{label}}",
+      "statusFailed": "Tilan muuttaminen epäonnistui",
+      "deleted": "Asiakirja poistettu",
+      "deleteFailed": "Asiakirjan poistaminen epäonnistui"
+    }
+  },
+  "goals": {
+    "loading": "Ladataan tavoitteita…",
+    "active": "Käynnissä olevat tavoitteet",
+    "done": "Valmiit",
+    "avgProgress": "Kokonaisedistyminen",
+    "trackingTitle": "Suunnitelman seuranta",
+    "createGoal": "Luo tavoite",
+    "newTitle": "Uusi taloudellinen tavoite",
+    "titleLabel": "Tavoitteen otsikko",
+    "titlePlaceholder": "Esim. uudet reformer-laitteet",
+    "targetLabel": "Tavoitesumma, {{symbol}}",
+    "targetPlaceholder": "500000",
+    "deadlineLabel": "Määräaika",
+    "trackingLabel": "Miten edistymistä seurataan?",
+    "trackingAuto": "Automaattisesti (CRM-mittari)",
+    "trackingAutoDesc": "Yhdistä tavoite valitun luokan tuloihin. CRM liikuttaa etenemispalkkia itse.",
+    "trackingManual": "Manuaalisesti (omat säästöt)",
+    "trackingManualDesc": "Korttiin ilmestyy ”Lisää varoja” -painike. Edistyminen riippuu vain sinusta.",
+    "opTypeLabel": "Tapahtuman tyyppi",
+    "categoryLabel": "Luokka",
+    "categoryPlaceholder": "Valitse luokka",
+    "editTitle": "Muokkaa tavoitetta",
+    "nameLabel": "Otsikko",
+    "namePlaceholder": "Tavoitteen otsikko",
+    "amountLabel": "Summa, {{symbol}}",
+    "achieved": "Tavoite saavutettu",
+    "priority": {
+      "high": "Korkea prioriteetti",
+      "medium": "Keskitasoinen prioriteetti",
+      "low": "Matala prioriteetti"
+    },
+    "autoCollect": "Automaattinen seuranta",
+    "deadlinePrefix": "Määräaika:",
+    "noDeadline": "Ei määräaikaa",
+    "fundPlaceholder": "Summa, {{symbol}}",
+    "fund": "Lisää",
+    "addFunds": "Lisää varoja",
+    "autoHint": "Arvo päivittyy automaattisesti luokan tuloista",
+    "deleteConfirmTitle": "Poistetaanko tavoite?",
+    "deleteConfirmText": "Tämän tavoitteen edistyminen menetetään. Toimintoa ei voi kumota.",
+    "toasts": {
+      "loadFailed": "Tavoitteiden lataaminen epäonnistui",
+      "fillRequired": "Täytä otsikko ja summa",
+      "chooseCategory": "Valitse luokka automaattiselle tavoitteelle",
+      "created": "Tavoite luotu",
+      "createFailed": "Tavoitteen luominen epäonnistui",
+      "enterName": "Anna nimi",
+      "updated": "Tavoite päivitetty",
+      "updateFailed": "Tavoitteen päivittäminen epäonnistui",
+      "deleted": "Tavoite poistettu",
+      "deleteFailed": "Tavoitteen poistaminen epäonnistui",
+      "funded": "Varat lisätty",
+      "fundFailed": "Varojen lisääminen epäonnistui"
+    }
+  },
+  "onlinePayments": {
+    "description": "Yhdistä Stripe, niin asiakkaasi voivat maksaa kortilla kassalla. Rahat tulevat suoraan studiosi tilille — Velora ei koskaan pidä niitä hallussaan. Provisio määräytyy suunnitelmasi mukaan.",
+    "gatewaysTitle": "Maksupalveluntarjoajat",
+    "gateways": {
+      "stripe": {
+        "name": "Stripe"
+      },
+      "states": {
+        "none": {
+          "label": "Ei yhdistetty",
+          "hint": "Vastaanota korttimaksuja studion tilille",
+          "action": "Yhdistä"
+        },
+        "incomplete": {
+          "label": "Tietoja puuttuu",
+          "hint": "Stripe odottaa studiosi tietoja — maksut pysyvät pois käytöstä siihen asti",
+          "action": "Jatka"
+        },
+        "action": {
+          "label": "Toimia tarvitaan",
+          "hint": "Stripe hylkäsi osan tiedoista ja odottaa korjauksia — se ei ratkea itsestään",
+          "action": "Korjaa tiedot"
+        },
+        "review": {
+          "label": "Tarkistettavana",
+          "hint": "Tiedot on lähetetty, ja Stripe tarkistaa niitä. Tämä kestää yleensä enintään päivän",
+          "action": "Avaa Stripe"
+        },
+        "active": {
+          "label": "Yhdistetty",
+          "hint": "Korttimaksut tulevat studion Stripe-tilille",
+          "action": "Asetukset"
+        }
+      }
+    },
+    "toasts": {
+      "gatewayUpdated": "Maksupalveluntarjoajan asetukset päivitetty",
+      "stripeReturned": "Tiedot lähetetty Stripelle",
+      "stripeLinkExpired": "Stripe-linkki on vanhentunut — paina Yhdistä uudelleen"
+    }
+  },
+  "paymentMethods": {
+    "totalTurnover": "Liikevaihto ajalta",
+    "periods": {
+      "month": "Kuukausi",
+      "quarter": "Neljännesvuosi",
+      "year": "Vuosi"
+    },
+    "amount": "Summa",
+    "share": "Osuus",
+    "transactions": "tapahtumaa",
+    "methods": {
+      "cash": {
+        "name": "Käteinen"
+      },
+      "card": {
+        "name": "Pankkikortti"
+      },
+      "qr": {
+        "name": "SBP (QR)"
+      },
+      "transfer": {
+        "name": "Siirto"
+      },
+      "stripe": {
+        "name": "Stripe"
+      },
+      "": {
+        "name": "Ei määritetty"
+      }
+    }
+  },
+  "reports": {
+    "metrics": {
+      "revenue": "Tuotot",
+      "expenses": "Kulut",
+      "profit": "Voitto",
+      "margin": "Kate"
+    },
+    "vsPreviousPeriod": "verrattuna edelliseen kauteen",
+    "cashflowTitle": "Kassavirta",
+    "cashflowSub": "Tulojen ja menojen analyysi",
+    "period": "Ajanjakso",
+    "income": "Tulo",
+    "expense": "Meno",
+    "profit": "Voitto",
+    "periods": {
+      "today": "Tänään",
+      "week": "Viikko",
+      "month": "Kuukausi",
+      "year": "Vuosi"
+    },
+    "legendIncome": "Tulot",
+    "legendExpense": "Menot",
+    "exportCsv": "Vie CSV",
+    "expenseStructure": "Menojen rakenne",
+    "incomeStructure": "Tulojen rakenne",
+    "total": "Yhteensä",
+    "otherCategory": "Luokittelematon",
+    "noData": "Ei tietoja tältä ajalta",
+    "insightsTitle": "Taloudellinen yhteenveto ja havainnot",
+    "insightsPlaceholder": "Tekoälypohjainen taloudellinen yhteenveto näkyy täällä: trendianalyysi, menojen rakenne ja suositukset",
+    "toasts": {
+      "exportFailed": "Tapahtumien vienti epäonnistui"
+    }
+  },
+  "confirmModal": {
+    "cancel": "Peruuta",
+    "confirm": "Vahvista",
+    "delete": "Poista"
+  }
+}

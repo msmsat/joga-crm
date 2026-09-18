@@ -1,0 +1,240 @@
+== it
+header.allConfigured	Tutti i programmi sono configurati
+header.allConfiguredSub	Il tuo sistema fedeltà funziona al massimo delle sue capacità
+header.setup	Configura i programmi fedeltà
+header.setupSub	{{count}} programmi su {{total}} configurati · Ogni programma aumenta la fidelizzazione dei clienti
+header.start	Inizia
+programs.loyalty.title	Carte fedeltà
+programs.loyalty.desc	Sistema di accumulo punti a livelli
+programs.loyalty.statLabel	clienti
+programs.discounts.title	Sconti e cashback
+programs.discounts.desc	Offerte personalizzate per i clienti
+programs.discounts.statLabel	attivi
+programs.certificates.title	Buoni regalo
+programs.certificates.desc	Buoni regalo e nominativi
+programs.certificates.statLabel	venduti
+programs.referral.title	Segnalazioni
+programs.referral.desc	Programma «Porta un amico»
+programs.referral.statLabel	segnalazioni
+programs.promocodes.title	Codici promozionali
+programs.promocodes.desc	Codici sconto con limite di utilizzo
+programs.promocodes.statLabel	attivi
+programs.deposit.title	Deposito
+programs.deposit.desc	Saldo monetario del cliente presso lo studio
+programs.deposit.statLabel	con saldo
+card.active	Attivo
+card.disable	Disattiva
+card.notConfigured	Non configurato
+card.configure	Configura
+drawer.subtitle	Impostazioni del programma
+drawer.saving	Salvataggio…
+drawer.save	Salva e attiva
+drawer.cancel	Annulla
+drawer.close	Chiudi
+config.mainParams	Parametri principali
+config.programName	Nome del programma
+config.pointsRate	Tasso punti ({{currency}} per 1 punto)
+config.levels	Livelli
+config.pointValue	1 punto =
+config.pointValueHint	I punti si guadagnano allo stesso tasso in ogni livello, ma non hanno lo stesso valore. Dai 1 a Gold e 2 a Diamond: un punto guadagnato dal cliente ridurrà allora il prezzo alla cassa del doppio. È questo il vantaggio di un livello: più una persona ha speso nello studio, più valgono i suoi punti.
+config.expiry	Periodo di validità
+config.expiryTooltip	Per quanto tempo un cliente può spendere i punti accumulati
+config.expiryOptions.3m	3 mesi
+config.expiryOptions.6m	6 mesi
+config.expiryOptions.1y	1 anno
+config.expiryOptions.never	Senza scadenza
+config.newLevelName	Nuovo livello
+config.addLevel	+ Livello
+config.levelFrom	da
+config.levelTo	a
+config.deleteLevelTitle	Eliminare questo livello?
+config.deleteLevelMessage	I clienti del livello «{{name}}» passeranno al livello adiacente in base alla loro spesa totale.
+config.discountType	Tipo di sconto
+config.discountTypes.percentage	Percentuale (%)
+config.discountTypes.fixed	Fisso ({{currency}})
+config.discountTypes.cashback	Cashback
+config.cashbackPercent	Percentuale cashback
+config.discountSize	Importo dello sconto
+config.minPurchase	Importo minimo di acquisto
+config.noLimit	Nessun limite
+config.conditions	Condizioni di applicazione
+config.appliesToAll	Applica a tutti i servizi
+config.stackable	Cumulabile con altri sconti
+config.visibleInCabinet	Mostra al cliente nel suo account
+config.certType	Tipo di buono
+config.certTypes.named	Nominativo
+config.certTypes.gift	Regalo
+config.certTypes.service	Per un servizio
+config.denominations	Tagli
+config.addDenom	+ Aggiungi
+config.service	Servizio
+config.noServices	Non ci sono ancora servizi nel catalogo — aggiungili in «Catalogo»
+config.params	Parametri
+config.expiryDays	Periodo di validità (giorni)
+config.certIssue	Emetti un buono
+config.certCustomAmount	Importo personalizzato
+config.certRecipientName	Nome del destinatario
+config.certRecipientPlaceholder	Facoltativo
+config.certLinkClient	Collega a un cliente
+config.certClientSearchPlaceholder	Inizia a digitare un nome…
+config.certAccount	Conto deposito
+config.certAccountNone	Non registrare nel libro contabile
+config.certIssueButton	Emetti
+config.certIssuedTitle	Buono emesso
+config.certCopyCode	Copia codice
+config.certCopied	Copiato
+config.certIssueAnother	Emettine un altro
+config.certIssued	Buoni emessi
+config.certEmpty	Nessun buono emesso per ora
+config.certStatus.active	Attivo
+config.certStatus.used	Utilizzato
+config.certStatus.expired	Scaduto
+config.certRedeem	Riscatta
+config.certRedeemTitle	Riscattare questo buono?
+config.certRedeemMessage	Il buono {{code}} verrà contrassegnato come utilizzato. L'azione non può essere annullata.
+config.referrerBonusTitle	Bonus per segnalazione
+config.referrerBonus	Bonus per chi segnala ({{currency}})
+config.newClientDiscount	Sconto per nuovo cliente (%)
+config.triggerCondition	Condizione di accredito
+config.triggerConditions.first_visit	Dopo la prima visita
+config.triggerConditions.first_payment	Dopo il primo pagamento
+config.triggerConditions.registration	Subito alla registrazione
+config.bonusAccrual	Accredito bonus
+config.bonusTypes.points	Punti
+config.bonusTypes.deposit	Al deposito
+config.bonusTypes.discount	Come sconto
+config.promoCreate	Crea codice promozionale
+config.promoCodePlaceholder	ESTATE25
+config.promoValidUntil	Valido fino al
+config.promoUsageLimit	Limite di utilizzo
+config.promoAdd	+ Aggiungi codice promozionale
+config.promoList	Codici promozionali
+config.promoEmpty	Non ci sono ancora codici promozionali
+config.promoUntil	fino al
+config.promoStatus.active	Attivo
+config.promoStatus.expired	Scaduto
+config.promoStatus.exhausted	Limite raggiunto
+config.promoStatus.disabled	Disattivato
+config.depositTotal	Saldo totale
+config.depositTotalSub	su tutti i depositi dei clienti
+config.depositTopClients	Migliori clienti per saldo
+config.depositEmpty	Nessuno ha ancora un deposito
+config.depositHint	Ricariche e prelievi avvengono nel profilo del cliente. Il programma di segnalazione può versare i bonus sul deposito invece che in punti.
+validation.required	Questo campo è obbligatorio
+validation.minOne	Deve essere almeno 1
+validation.minZero	Non può essere negativo
+validation.positive	Deve essere maggiore di 0
+validation.range0to100	Da 0 a 100
+toasts.saved	Programma attivato
+toasts.saveFailed	Salvataggio non riuscito
+toasts.toggleFailed	Impossibile aggiornare il programma
+toasts.loadFailed	Impossibile caricare i dati
+toasts.retry	Riprova
+stats.notConnected	Programma non connesso
+stats.willAppear	I dati appariranno dopo la configurazione
+stats.noData	Nessun dato
+stats.connectProgram	Connetti un programma
+stats.revenueHeadline	Ricavi dai membri
+stats.membersHeadline	Membri del programma
+stats.returnedClients	Clienti tornati
+stats.returnedClientsSub	2+ visite in 90 giorni
+stats.avgCheckHeadline	Scontrino medio per membro
+stats.bonusCostHeadline	Costo dei bonus
+stats.bonusCostSub	questo mese
+stats.roiHeadline	ROI
+stats.roiValue	×{{value}}
+stats.perMonth	questo mese
+stats.cardHolders	possessori di carta
+stats.kpi	Indicatori chiave
+stats.members	Membri
+stats.withCard	con carta
+stats.avgCheck	Scontrino medio
+stats.byMembers	tra i membri
+stats.pointsInCirculation	Punti in circolazione
+stats.accrued	accreditati
+stats.revenue	Ricavi
+stats.revenuePerMonth	dai membri / mese
+stats.levelDistribution	Distribuzione per livello
+stats.noLevels	I livelli non sono ancora configurati
+stats.totalClients	Clienti totali nel programma
+stats.fromValue	da {{value}}
+stats.levelPointValue	punto = {{value}}
+scenarios.title	Scenari intelligenti
+scenarios.subtitle	Pilota automatico per la fidelizzazione: il sistema trova i clienti e li premia al posto tuo
+scenarios.add	Scenario
+scenarios.fired	attivato {{count}} volte
+scenarios.lastRun	ultima esecuzione {{when}}
+scenarios.neverRun	mai eseguito
+scenarios.empty	Non ci sono ancora scenari
+scenarios.emptySub	Crea il primo — il sistema fidelizzerà i clienti per te
+scenarios.channel	Canale
+scenarios.channelSoon	dopo aver collegato l'integrazione
+scenarios.pickTemplate	Scegli uno scenario
+scenarios.pickTemplateSub	Un modello pronto — regola le soglie più tardi
+scenarios.create	Crea
+scenarios.deleteConfirm	Eliminare lo scenario?
+scenarios.deleteConfirmSub	La regola smetterà di attivarsi. Questa azione non può essere annullata.
+scenarios.triggers.inactive_days	inattivo da {{days}} giorni
+scenarios.triggers.low_subscription	≤ {{classes_left}} lezioni rimanenti
+scenarios.triggers.birthday	compleanno
+scenarios.triggers.nth_visit	visita n. {{n}}
+scenarios.triggers.referral	ha portato un amico
+scenarios.actions.points	regala {{points}} punti
+scenarios.actions.gift_classes	regala {{classes}} lezioni
+scenarios.actions.certificate	emetti un buono da {{amount}} ₽
+scenarios.actions.renewal_offer	offri il rinnovo con {{discount}}% di sconto
+scenarios.templates.win_back.name	Ci manchi
+scenarios.templates.win_back.desc	Fai tornare un cliente che non viene da tempo
+scenarios.templates.expiring_subscription.name	Abbonamento in esaurimento
+scenarios.templates.expiring_subscription.desc	Offri il rinnovo prima che finiscano le lezioni
+scenarios.templates.birthday_gift.name	Regalo di compleanno
+scenarios.templates.birthday_gift.desc	Sorprendi un cliente nel suo giorno speciale
+scenarios.templates.fifth_visit.name	Premio fedeltà
+scenarios.templates.fifth_visit.desc	Una lezione gratuita per la fedeltà
+scenarios.templates.referral_thanks.name	Grazie per l'amico
+scenarios.templates.referral_thanks.desc	Premia chi ha portato un nuovo cliente
+scenarios.ifClient	Se il cliente
+scenarios.then	→
+scenarios.toasts.created	Scenario creato
+scenarios.toasts.updated	Scenario aggiornato
+scenarios.toasts.deleted	Scenario eliminato
+scenarios.toasts.failed	Impossibile salvare lo scenario
+scenarios.delete	Elimina
+segmentsBoard.title	Segmenti e suggerimenti
+segmentsBoard.subtitle	Gruppi di clienti attivi, ciascuno con una chiara azione da compiere
+segmentsBoard.empty	Qui non c'è nulla, ed è un bene
+segmentsBoard.clients	clienti
+segmentsBoard.daysAgo	{{count}} giorni fa
+segmentsBoard.neverVisited	nessuna visita
+segmentsBoard.more	e altri {{count}}
+segmentsBoard.segments.at_risk.name	Sul punto di andarsene
+segmentsBoard.segments.at_risk.desc	Attivi, inattivi da 21+ giorni
+segmentsBoard.segments.at_risk.action	Offri bonus
+segmentsBoard.segments.vip_idle.name	VIP silenzioso
+segmentsBoard.segments.vip_idle.desc	Clienti VIP, inattivi da 14+ giorni
+segmentsBoard.segments.vip_idle.action	Avvia campagna
+segmentsBoard.segments.expiring_subscription.name	Abbonamento in scadenza
+segmentsBoard.segments.expiring_subscription.desc	≤2 lezioni o ≤7 giorni rimanenti
+segmentsBoard.segments.expiring_subscription.action	Avvia campagna
+segmentsBoard.segments.lost_newcomers.name	Mai tornati
+segmentsBoard.segments.lost_newcomers.desc	Venuti una volta, assenti da 14+ giorni
+segmentsBoard.segments.lost_newcomers.action	Avvia campagna
+segmentsBoard.segments.upsell_candidates.name	Pronti per un pacchetto
+segmentsBoard.segments.upsell_candidates.desc	8+ visite questo mese, nessun pacchetto
+segmentsBoard.segments.upsell_candidates.action	Avvia campagna
+segmentsBoard.campaignSub	Segmento «{{name}}» · {{count}} clienti
+segmentsBoard.pointsLabel	Quanti punti assegnare
+segmentsBoard.messageLabel	Testo del messaggio
+segmentsBoard.messagePlaceholder	es. Ci manchi! Torna — ti aspettiamo.
+segmentsBoard.emailNote	L'e-mail viene inviata solo ai clienti con un indirizzo e-mail
+segmentsBoard.confirm	Invia
+segmentsBoard.toasts.pointsDone	Punti assegnati · {{processed}} elaborati, {{emails}} avvisati
+segmentsBoard.toasts.emailDone	Campagna inviata · {{emails}} e-mail su {{processed}}
+retention.title	Rinnovi degli abbonamenti
+retention.subtitle	Quanto bene i clienti tornano per un nuovo pacchetto
+retention.renewalRate	Rinnovo
+retention.avgPackages	Pacchetti per cliente
+retention.sold	Venduti
+retention.renewed	Rinnovati
+retention.empty	Non ci sono ancora vendite di abbonamenti
+retention.emptySub	L'analisi apparirà dopo le prime vendite di pacchetti

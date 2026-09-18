@@ -1,0 +1,321 @@
+{
+  "header": {
+    "allConfigured": "Kaikki ohjelmat on määritetty",
+    "allConfiguredSub": "Asiakasuskollisuusjärjestelmäsi toimii täydellä teholla",
+    "setup": "Määritä kanta-asiakasohjelmat",
+    "setupSub": "{{count}} / {{total}} ohjelmaa on määritetty · Jokainen ohjelma parantaa asiakkaiden pysyvyyttä",
+    "start": "Aloita"
+  },
+  "programs": {
+    "loyalty": {
+      "title": "Kanta-asiakaskortit",
+      "desc": "Tasopohjainen pisteiden keruujärjestelmä",
+      "statLabel": "asiakasta"
+    },
+    "discounts": {
+      "title": "Alennukset ja cashback",
+      "desc": "Henkilökohtaisia tarjouksia asiakkaille",
+      "statLabel": "aktiivista"
+    },
+    "certificates": {
+      "title": "Lahjakortit",
+      "desc": "Lahja- ja nimelliset sertifikaatit",
+      "statLabel": "myytyä"
+    },
+    "referral": {
+      "title": "Suosittelut",
+      "desc": "”Tuo ystävä” -ohjelma",
+      "statLabel": "suosittelua"
+    },
+    "promocodes": {
+      "title": "Alennuskoodit",
+      "desc": "Alennuskoodeja käyttörajalla",
+      "statLabel": "aktiivista"
+    },
+    "deposit": {
+      "title": "Talletus",
+      "desc": "Asiakkaan rahasaldo studiolla",
+      "statLabel": "saldollista"
+    }
+  },
+  "card": {
+    "active": "Aktiivinen",
+    "disable": "Poista käytöstä",
+    "notConfigured": "Ei määritetty",
+    "configure": "Määritä"
+  },
+  "drawer": {
+    "subtitle": "Ohjelman asetukset",
+    "saving": "Tallennetaan…",
+    "save": "Tallenna ja aktivoi",
+    "cancel": "Peruuta",
+    "close": "Sulje"
+  },
+  "config": {
+    "mainParams": "Pääasetukset",
+    "programName": "Ohjelman nimi",
+    "pointsRate": "Pistekurssi ({{currency}} / 1 piste)",
+    "levels": "Tasot",
+    "pointValue": "1 piste =",
+    "pointValueHint": "Pisteitä kertyy samalla kurssilla jokaisella tasolla, mutta niiden arvo ei ole sama. Anna Goldille 1 ja Diamondille 2, jolloin asiakkaan ansaitsema piste alentaa kassalla hintaa kaksinkertaisesti. Tämä on tason hyöty: mitä enemmän asiakas on käyttänyt studiolla, sitä arvokkaampia hänen pisteensä ovat.",
+    "expiry": "Voimassaoloaika",
+    "expiryTooltip": "Kuinka kauan asiakas voi käyttää kertyneitä pisteitä",
+    "expiryOptions": {
+      "3m": "3 kk",
+      "6m": "6 kk",
+      "1y": "1 v",
+      "never": "Ei vanhene"
+    },
+    "newLevelName": "Uusi taso",
+    "addLevel": "+ Taso",
+    "levelFrom": "alkaen",
+    "levelTo": "asti",
+    "deleteLevelTitle": "Poistetaanko tämä taso?",
+    "deleteLevelMessage": "Tason ”{{name}}” asiakkaat siirtyvät viereiselle tasolle kokonaiskulutuksensa perusteella.",
+    "discountType": "Alennuksen tyyppi",
+    "discountTypes": {
+      "percentage": "Prosentti (%)",
+      "fixed": "Kiinteä ({{currency}})",
+      "cashback": "Cashback"
+    },
+    "cashbackPercent": "Cashback-prosentti",
+    "discountSize": "Alennuksen määrä",
+    "minPurchase": "Ostoksen vähimmäissumma",
+    "noLimit": "Ei rajaa",
+    "conditions": "Soveltamisehdot",
+    "appliesToAll": "Käytä kaikissa palveluissa",
+    "stackable": "Yhdistä muihin alennuksiin",
+    "visibleInCabinet": "Näytä asiakkaalle hänen tilillään",
+    "certType": "Sertifikaatin tyyppi",
+    "certTypes": {
+      "named": "Nimellinen",
+      "gift": "Lahja",
+      "service": "Palveluun"
+    },
+    "denominations": "Arvot",
+    "addDenom": "+ Lisää",
+    "service": "Palvelu",
+    "noServices": "Luettelossa ei ole vielä palveluja — lisää ne kohdassa ”Luettelo”",
+    "params": "Parametrit",
+    "expiryDays": "Voimassaoloaika (päivää)",
+    "certIssue": "Myönnä sertifikaatti",
+    "certCustomAmount": "Oma summa",
+    "certRecipientName": "Vastaanottajan nimi",
+    "certRecipientPlaceholder": "Valinnainen",
+    "certLinkClient": "Liitä asiakkaaseen",
+    "certClientSearchPlaceholder": "Ala kirjoittaa nimeä…",
+    "certAccount": "Talletustili",
+    "certAccountNone": "Älä kirjaa kirjanpitoon",
+    "certIssueButton": "Myönnä",
+    "certIssuedTitle": "Sertifikaatti myönnetty",
+    "certCopyCode": "Kopioi koodi",
+    "certCopied": "Kopioitu",
+    "certIssueAnother": "Myönnä toinen",
+    "certIssued": "Myönnetyt sertifikaatit",
+    "certEmpty": "Sertifikaatteja ei ole vielä myönnetty",
+    "certStatus": {
+      "active": "Aktiivinen",
+      "used": "Käytetty",
+      "expired": "Vanhentunut"
+    },
+    "certRedeem": "Lunasta",
+    "certRedeemTitle": "Lunastetaanko tämä sertifikaatti?",
+    "certRedeemMessage": "Sertifikaatti {{code}} merkitään käytetyksi. Tätä ei voi perua.",
+    "referrerBonusTitle": "Suosittelubonus",
+    "referrerBonus": "Bonus suosittelijalle ({{currency}})",
+    "newClientDiscount": "Alennus uudelle asiakkaalle (%)",
+    "triggerCondition": "Kertymisehto",
+    "triggerConditions": {
+      "first_visit": "Ensimmäisen käynnin jälkeen",
+      "first_payment": "Ensimmäisen maksun jälkeen",
+      "registration": "Heti rekisteröitymisen yhteydessä"
+    },
+    "bonusAccrual": "Bonuksen kertyminen",
+    "bonusTypes": {
+      "points": "Pisteet",
+      "deposit": "Talletukseen",
+      "discount": "Alennuksena"
+    },
+    "promoCreate": "Luo alennuskoodi",
+    "promoCodePlaceholder": "KESÄ25",
+    "promoValidUntil": "Voimassa asti",
+    "promoUsageLimit": "Käyttöraja",
+    "promoAdd": "+ Lisää alennuskoodi",
+    "promoList": "Alennuskoodit",
+    "promoEmpty": "Alennuskoodeja ei ole vielä",
+    "promoUntil": "asti",
+    "promoStatus": {
+      "active": "Aktiivinen",
+      "expired": "Vanhentunut",
+      "exhausted": "Käyttöraja saavutettu",
+      "disabled": "Poistettu käytöstä"
+    },
+    "depositTotal": "Kokonaissaldo",
+    "depositTotalSub": "kaikissa asiakastalletuksissa",
+    "depositTopClients": "Parhaat asiakkaat saldon mukaan",
+    "depositEmpty": "Kenelläkään ei ole vielä talletusta",
+    "depositHint": "Lisäykset ja nostot tehdään asiakkaan profiilissa. Suositteluohjelma voi maksaa bonuksia talletukseen pisteiden sijaan."
+  },
+  "validation": {
+    "required": "Tämä kenttä on pakollinen",
+    "minOne": "Arvon on oltava vähintään 1",
+    "minZero": "Arvo ei voi olla negatiivinen",
+    "positive": "Arvon on oltava suurempi kuin 0",
+    "range0to100": "0–100"
+  },
+  "toasts": {
+    "saved": "Ohjelma aktivoitu",
+    "saveFailed": "Tallennus epäonnistui",
+    "toggleFailed": "Ohjelmaa ei voitu päivittää",
+    "loadFailed": "Tietoja ei voitu ladata",
+    "retry": "Yritä uudelleen"
+  },
+  "stats": {
+    "notConnected": "Ohjelmaa ei ole yhdistetty",
+    "willAppear": "Tiedot näkyvät määrityksen jälkeen",
+    "noData": "Ei tietoja",
+    "connectProgram": "Yhdistä ohjelma",
+    "revenueHeadline": "Jäsenten tuotto",
+    "membersHeadline": "Ohjelman jäsenet",
+    "returnedClients": "Palanneet asiakkaat",
+    "returnedClientsSub": "2+ käyntiä 90 päivässä",
+    "avgCheckHeadline": "Keskimääräinen ostos jäsentä kohden",
+    "bonusCostHeadline": "Bonusten kustannus",
+    "bonusCostSub": "tässä kuussa",
+    "roiHeadline": "ROI",
+    "roiValue": "×{{value}}",
+    "perMonth": "tässä kuussa",
+    "cardHolders": "kortinhaltijaa",
+    "kpi": "Keskeiset mittarit",
+    "members": "Jäsenet",
+    "withCard": "kortilla",
+    "avgCheck": "Keskimääräinen ostos",
+    "byMembers": "jäsenten keskuudessa",
+    "pointsInCirculation": "Kierrossa olevat pisteet",
+    "accrued": "kertynyt",
+    "revenue": "Tuotto",
+    "revenuePerMonth": "jäseniltä / kk",
+    "levelDistribution": "Jakauma tasoittain",
+    "noLevels": "Tasoja ei ole vielä määritetty",
+    "totalClients": "Asiakkaita ohjelmassa yhteensä",
+    "fromValue": "alkaen {{value}}",
+    "levelPointValue": "piste = {{value}}"
+  },
+  "scenarios": {
+    "title": "Älykkäät skenaariot",
+    "subtitle": "Asiakaspidon autopilotti: järjestelmä löytää asiakkaat ja palkitsee heidät puolestasi",
+    "add": "Skenaario",
+    "fired": "lauennut {{count}} kertaa",
+    "lastRun": "viimeksi ajettu {{when}}",
+    "neverRun": "ei vielä ajettu",
+    "empty": "Skenaarioita ei ole vielä",
+    "emptySub": "Luo ensimmäinen — järjestelmä pitää asiakkaat puolestasi",
+    "channel": "Kanava",
+    "channelSoon": "integraation yhdistämisen jälkeen",
+    "pickTemplate": "Valitse skenaario",
+    "pickTemplateSub": "Valmis malli — säädä raja-arvoja myöhemmin",
+    "create": "Luo",
+    "deleteConfirm": "Poistetaanko skenaario?",
+    "deleteConfirmSub": "Sääntö lakkaa laukeamasta. Tätä ei voi perua.",
+    "triggers": {
+      "inactive_days": "ei aktiivinen {{days}} päivään",
+      "low_subscription": "≤ {{classes_left}} tuntia jäljellä",
+      "birthday": "syntymäpäivä",
+      "nth_visit": "käynti nro {{n}}",
+      "referral": "suositteli ystävää"
+    },
+    "actions": {
+      "points": "anna {{points}} pistettä",
+      "gift_classes": "anna {{classes}} tuntia",
+      "certificate": "myönnä {{amount}} ₽:n sertifikaatti",
+      "renewal_offer": "tarjoa uusimista {{discount}} % alennuksella"
+    },
+    "templates": {
+      "win_back": {
+        "name": "Kaipaamme sinua",
+        "desc": "Palauta asiakas, joka ei ole käynyt vähään aikaan"
+      },
+      "expiring_subscription": {
+        "name": "Jäsenyys loppumassa",
+        "desc": "Tarjoa uusimista ennen kuin tunnit loppuvat"
+      },
+      "birthday_gift": {
+        "name": "Syntymäpäivälahja",
+        "desc": "Ilahduta asiakasta hänen erityisenä päivänään"
+      },
+      "fifth_visit": {
+        "name": "Uskollisuuspalkinto",
+        "desc": "Ilmainen tunti uskollisuudesta"
+      },
+      "referral_thanks": {
+        "name": "Kiitos ystävästä",
+        "desc": "Palkitse se, joka toi uuden asiakkaan"
+      }
+    },
+    "ifClient": "Jos asiakas",
+    "then": "→",
+    "toasts": {
+      "created": "Skenaario luotu",
+      "updated": "Skenaario päivitetty",
+      "deleted": "Skenaario poistettu",
+      "failed": "Skenaariota ei voitu tallentaa"
+    },
+    "delete": "Poista"
+  },
+  "segmentsBoard": {
+    "title": "Segmentit ja suositukset",
+    "subtitle": "Aktiiviset asiakasryhmät, joilla jokaisella on yksi selkeä toimintakehotus",
+    "empty": "Täällä ei ole mitään, ja se on hyvä asia",
+    "clients": "asiakasta",
+    "daysAgo": "{{count}} päivää sitten",
+    "neverVisited": "ei käyntejä",
+    "more": "ja {{count}} muuta",
+    "segments": {
+      "at_risk": {
+        "name": "Lähdössä pois",
+        "desc": "Aktiiviset, passiivisia 21+ päivää",
+        "action": "Anna bonus"
+      },
+      "vip_idle": {
+        "name": "VIP hiljentynyt",
+        "desc": "VIP-asiakkaat, passiivisia 14+ päivää",
+        "action": "Käynnistä kampanja"
+      },
+      "expiring_subscription": {
+        "name": "Jäsenyys loppumassa",
+        "desc": "≤2 tuntia tai ≤7 päivää jäljellä",
+        "action": "Käynnistä kampanja"
+      },
+      "lost_newcomers": {
+        "name": "Eivät palanneet koskaan",
+        "desc": "Kävivät kerran, poissa 14+ päivää",
+        "action": "Käynnistä kampanja"
+      },
+      "upsell_candidates": {
+        "name": "Valmis paketille",
+        "desc": "8+ käyntiä tässä kuussa, ei pakettia",
+        "action": "Käynnistä kampanja"
+      }
+    },
+    "campaignSub": "Segmentti ”{{name}}” · {{count}} asiakasta",
+    "pointsLabel": "Kuinka monta pistettä annetaan",
+    "messageLabel": "Viestin teksti",
+    "messagePlaceholder": "esim. Kaipaamme sinua! Tule takaisin — odotamme sinua.",
+    "emailNote": "Sähköposti lähetetään vain asiakkaille, joilla on sähköpostiosoite",
+    "confirm": "Lähetä",
+    "toasts": {
+      "pointsDone": "Pisteet myönnetty · {{processed}} käsitelty, {{emails}} ilmoitettu",
+      "emailDone": "Kampanja lähetetty · {{emails}} sähköpostia / {{processed}}"
+    }
+  },
+  "retention": {
+    "title": "Jäsenyyksien uusimiset",
+    "subtitle": "Kuinka hyvin asiakkaat palaavat uuden paketin pariin",
+    "renewalRate": "Uusi",
+    "avgPackages": "Paketteja asiakasta kohden",
+    "sold": "Myyty",
+    "renewed": "Uusittu",
+    "empty": "Jäsenyysmyyntiä ei ole vielä",
+    "emptySub": "Analytiikka näkyy ensimmäisten pakettimyyntien jälkeen"
+  }
+}
