@@ -323,3 +323,56 @@ def test_individual_service_cannot_be_scheduled_as_an_event(monkeypatch):
         finally:
             await resource.cleanup(ids)
     asyncio.run(run())
+
+
+def test_reschedule_preview_does_not_let_the_booking_block_itself(monkeypatch):
+    """`exclude_lesson_id` возвращает в список время самой переносимой записи.
+
+    Поле переноса в карточке журнала (ResourceMoveField) показывает свободное
+    время мастера. Без исключения занятие занимает само себя: собственное время
+    и соседние минуты пропадают из списка, хотя quote переноса считается с
+    таким исключением и это время примет. Список обязан показывать ровно то,
+    что сервер согласится подтвердить, — иначе он врёт в обратную сторону.
+    """
+    moment = booking_quotes.utcnow
+    monkeypatch.setattr(booking_quotes, "utcnow", lambda now=None: moment(now or resource.NOW))
+
+    async def run():
+        ids = await resource.seed()
+        try:
+            await _owner(ids)
+            app = _app(ids)
+            async with _client(app) as http:
+                day = str(resource.hours.DAY)
+                scope = {"service_id": ids["service"], "branch_id": ids["branch_a"],
+                         "date_from": day, "date_to": day}
+
+                free = await http.get("/schedule/availability", params=scope)
+                taken = free.json()["slots"][0]["starts_at"]
+
+                quote = await http.post("/schedule/booking-quotes", json={
+                    "booking_mode": "resource", "client_id": ids["client"],
+                    "service_id": ids["service"], "branch_id": ids["branch_a"],
+                    "starts_at": taken})
+                booked = (await http.post("/schedule/bookings",
+                                          json={"quote_id": quote.json()["quote_id"]})).json()
+
+                plain = await http.get("/schedule/availability", params=scope)
+                assert taken not in [s["starts_at"] for s in plain.json()["slots"]], \
+                    "занятое время не должно предлагаться при обычном просмотре"
+
+                excluded = await http.get("/schedule/availability", params={
+                    **scope, "exclude_lesson_id": booked["lesson_id"]})
+                assert excluded.status_code == 200, excluded.text
+                back = [s["starts_at"] for s in excluded.json()["slots"]]
+                assert taken in back, "своё же время обязано вернуться в список переноса"
+
+                # И это не украшение списка: сервер такой перенос действительно принимает.
+                same = await http.post(
+                    f'/schedule/reservations/{booked["reservation_id"]}/reschedule-quotes',
+                    json={"booking_mode": "resource", "service_id": ids["service"],
+                          "branch_id": ids["branch_a"], "starts_at": taken})
+                assert same.status_code == 201, same.text
+        finally:
+            await resource.cleanup(ids)
+    asyncio.run(run())

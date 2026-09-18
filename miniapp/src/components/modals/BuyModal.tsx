@@ -26,6 +26,9 @@ interface BuyModalProps {
   /** Пришли из Клуба «использовать сертификат» — код уже подставлен в оплату.
    * Профиль пересоздаёт модалку по ключу, поэтому берётся начальным состоянием. */
   initialCertificate?: string | null;
+  /** Пришли по QR абонемента — он и должен быть выбран. Тем же способом, что и
+   *  сертификат: начальным состоянием, модалку пересоздаёт профиль по ключу. */
+  initialPackageId?: number;
 }
 
 export default function BuyModal({
@@ -35,13 +38,14 @@ export default function BuyModal({
   packages,
   canPayOnline,
   initialCertificate = null,
+  initialPackageId,
 }: BuyModalProps) {
   const { t } = useTranslation();
   const { tg, vibrateLight } = useTelegram();
 
   // Раскрывающаяся карточка заменена на выбор: раскрытие прятало кнопку оплаты
   // внутрь карточки, и до неё было два тапа вместо одного.
-  const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [selectedId, setSelectedId] = useState<number | null>(initialPackageId ?? null);
   const [isPaymentOpen, setIsPaymentOpen] = useState(false);
   const [options, setOptions] = useState<CheckoutOptions>(() => ({
     ...NO_OPTIONS,

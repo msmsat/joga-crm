@@ -75,6 +75,11 @@ class GeneralRead(BaseSchema):
     # event ли перед ними занятие или resource) — HB-14/16.
     booking_capabilities: BookingCapabilities = Field(default_factory=_default_booking_capabilities)
     terminology: Optional[dict] = None
+    # Публичная ссылка на мини-приложение — та же, что в настройках записи
+    # (schemas/settings/booking.py), и считается тем же способом. Здесь она
+    # нужна ролям, которым «Онлайн-запись» закрыта: QR занятия рисуется в
+    # Журнале, а Журнал открыт и админу, и тренеру. Только чтение.
+    miniapp_url: str = ""
 
 
 class GeneralReadPublic(BaseSchema):
@@ -90,6 +95,7 @@ class GeneralReadPublic(BaseSchema):
     first_day_of_week: Optional[str] = None
     journal_time_step: int
     booking_capabilities: BookingCapabilities = Field(default_factory=_default_booking_capabilities)
+    miniapp_url: str = ""
 
 
 class GeneralUpdate(BaseSchema):

@@ -36,6 +36,8 @@ interface ProfileProps {
   openBuy?: boolean;
   /** Покупку закрыли: намерение отработано и не должно всплыть снова. */
   onBuyIntentUsed?: () => void;
+  /** Абонемент из QR-кода студии — подставить его в форму покупки выбранным. */
+  initialPackageId?: number;
 }
 
 export default function Profile({
@@ -45,6 +47,7 @@ export default function Profile({
   onPendingCertificateUsed,
   openBuy = false,
   onBuyIntentUsed,
+  initialPackageId,
 }: ProfileProps) {
   const { t, i18n } = useTranslation();
   const { tg, vibrateLight } = useTelegram();
@@ -413,7 +416,9 @@ export default function Profile({
       <BuyModal
         // Пересоздаём при смене сертификата: форма оплаты берёт код в начальное
         // состояние, а чинить его эффектом — лишний каскад рендеров.
-        key={pendingCertificate ?? 'plain'}
+        // Абонемент из QR тоже уходит в ключ: выбранный пакет форма берёт в
+        // начальное состояние ровно тем же способом, что и код сертификата.
+        key={pendingCertificate ?? (initialPackageId != null ? `pkg${initialPackageId}` : 'plain')}
         isOpen={isBuyOpen || Boolean(pendingCertificate) || openBuy}
         onClose={() => {
           setIsBuyOpen(false);
@@ -425,6 +430,7 @@ export default function Profile({
           onCatalogRefresh?.();
         }}
         packages={catalog?.packages ?? []}
+        initialPackageId={initialPackageId}
         canPayOnline={catalog?.can_pay_online ?? false}
         initialCertificate={pendingCertificate ?? null}
       />

@@ -16,6 +16,7 @@
 | `Segmented` | `components/ui/modal` | Переключатель 2–3 значений: белая «таблетка» едет под активным сегментом (замена дропдауна на коротких списках) |
 | `Dialog` / `ModalShell` + `ModalHeader/Body/Footer` | `components/ui/index` | Каркас всех модалок: затемняющий оверлей (**без backdrop-filter — блюр во весь вьюпорт был причиной лагов открытия, не возвращать**), вход/выход по opacity, Esc |
 | `ConfirmModal` | `components/ui/index` | Замена `window.confirm` (danger-режим для удалений) |
+| `QrShareModal` | `components/ui/index` | QR-код чего угодно одним окном: превью-плаката, «Копировать», «Печать» (отдельное окно с листом A4) и «Для сторис» — картинка 1080×1920 (на телефоне уходит в `navigator.share`, на десктопе скачивается). Текст плаката задают пропсы `kicker`/`title`/`subtitle`/`caption`. Используется в Журнале (занятие), Каталоге (абонемент) и Онлайн-записи (мини-приложение); ссылку собирает `miniappLink()` из `lib/miniapp.ts` — её параметры разбирает `miniapp/src/lib/entry.ts`, менять их надо с обеих сторон |
 | `Tooltip` | `components/ui/index` | Ониксовая капсула, `side: top/bottom/left/right` |
 | `InfoHint` | `components/ui/index` | i-кнопка с Apple-style поповером-описанием по клику, `side: top/bottom/left/right` |
 | `Toast` (`useToast`) | `components/ui/index` | Уведомления об успехе/ошибке |

@@ -6,9 +6,10 @@ import { Accounts } from './screens/Accounts'
 import { Feed } from './screens/Feed'
 import { Login } from './screens/Login'
 import { Overview } from './screens/Overview'
+import { Visits } from './screens/Visits'
 
 export default function App() {
-  // Роутера нет намеренно — как в мини-приложении: экранов четыре, и состояние
+  // Роутера нет намеренно — как в мини-приложении: экранов пять, и состояние
   // описывает их дешевле, чем библиотека маршрутизации. Заодно бэкенду не нужен
   // catch-all, который перехватывал бы пути API.
   const [name, setName] = useState<string | null>(null)
@@ -32,6 +33,7 @@ export default function App() {
   return (
     <Shell tab={tab} onTab={setTab} name={name} onLogout={() => { session.clear(); setName(null) }}>
       {tab === 'overview' && <Overview />}
+      {tab === 'visits' && <Visits />}
       {tab === 'accounts' && <Accounts />}
       {tab === 'feed' && <Feed />}
     </Shell>

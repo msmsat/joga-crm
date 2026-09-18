@@ -154,5 +154,22 @@
     "title": "Něco se pokazilo",
     "description": "Na této stránce došlo k chybě. Zkuste ji načíst znovu — zbytek aplikace funguje dál.",
     "reload": "Načíst stránku znovu"
+  },
+  "qr": {
+    "title": "QR kód",
+    "subtitle": "Vytiskněte ho, dejte do stories nebo zkopírujte odkaz.",
+    "copy": "Kopírovat",
+    "print": "Tisk",
+    "story": "Do stories",
+    "copied": "Odkaz zkopírován",
+    "copyFailed": "Odkaz se nepodařilo zkopírovat",
+    "printBlocked": "Prohlížeč zablokoval okno tisku",
+    "storySaved": "Obrázek uložen",
+    "storyFailed": "Obrázek se nepodařilo vytvořit",
+    "scanHint": "Namiřte foťák a rezervujte si místo",
+    "lessonAction": "QR kód lekce",
+    "lessonCaption": "Namiřte foťák a rezervujte si tuto lekci",
+    "packageAction": "QR kód permanentky",
+    "packageCaption": "Namiřte foťák a kupte si permanentku"
   }
 }

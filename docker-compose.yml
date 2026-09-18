@@ -24,7 +24,7 @@ services:
       # Перебивает DATABASE_URL из env_file: в контейнере база не на localhost.
       DATABASE_URL: postgresql+asyncpg://velora:${POSTGRES_PASSWORD}@db:5432/velora
     ports:
-      # Только для cloudflared: туннель api.jogaua.online смотрит сюда и отдаёт
+      # Только для cloudflared: туннель api.veloria.pro смотрит сюда и отдаёт
       # мини-приложение и вебхуки напрямую, МИНУЯ Caddy. Через Caddy их не увести:
       # он режет префикс /api, а бот, Stripe и Meta уже знают голые пути
       # (/s/{id}, /global/*, /checkout/webhook/stripe) — так это и работало до докера.

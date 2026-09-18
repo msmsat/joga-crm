@@ -19,7 +19,6 @@
       "desc": "Mini aplikacja rezerwacji — do bio, stories i kampanii",
       "copy": "Kopiuj link",
       "open": "Otwórz mini aplikację",
-      "print": "Drukuj QR",
       "posterTitle": "Zarezerwuj zajęcia online",
       "scanHint": "Skieruj aparat telefonu na kod"
     }
@@ -159,7 +158,6 @@
     "botDisconnected": "Bot odłączony",
     "codeCopied": "Kod skopiowany!",
     "linkCopied": "Link skopiowany!",
-    "printBlocked": "Zezwól na wyskakujące okna, aby wydrukować kod QR",
     "stripeReturned": "Dane wysłane do Stripe",
     "stripeLinkExpired": "Link Stripe wygasł — spróbuj ponownie"
   },

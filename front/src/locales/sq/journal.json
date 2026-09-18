@@ -178,6 +178,7 @@
     "price": "Çmimi",
     "noSlots": "Në këtë datë nuk ka orar të lirë",
     "configIncomplete": "Orari i këtij shërbimi ende nuk është vendosur",
-    "moveTitle": "Zhvendosja e rezervimit"
+    "moveTitle": "Zhvendosja e rezervimit",
+    "moveBusy": "Në këtë orë specialisti është i zënë"
   }
 }

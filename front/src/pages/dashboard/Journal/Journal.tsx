@@ -82,11 +82,10 @@ export default function Journal() {
   const [addModalBooking] = useState<Booking | null>(null);
   const [newBookingSlot, setNewBookingSlot] = useState<{ trainer: number; timeStart: number; timeEnd: number; columnIndex?: number } | null>(null);
   const [showNewForm, setShowNewForm] = useState(false);
-  const [showResourceBooking, setShowResourceBooking] = useState(false);
-  const [moveTarget, setMoveTarget] = useState<{
-    reservationId: number; clientId: number; version: number;
-    serviceId: number; branchId: number | null;
-  } | null>(null);
+  // Индивидуальная запись открывается из двух мест, и оба уже знают контекст:
+  // с клетки сетки — мастер и день, из тулбара — только день. Форма без этого
+  // спрашивала всё заново, хотя человек ровно что кликнул по колонке мастера.
+  const [resourceBooking, setResourceBooking] = useState<{ teacherId: number | null; date: string } | null>(null);
   // Кнопка индивидуальной записи появляется, только когда такая услуга есть:
   // иначе она вела бы в форму без единого варианта.
   const { services: journalServices } = useServiceOptions();
@@ -304,6 +303,14 @@ export default function Journal() {
 
       // 1. Если кликнули внутри попапа (по кнопке) — не закрываем, пусть кнопка отработает
       if (popupRef.current && popupRef.current.contains(target)) return;
+
+      // 1b. Модалки кита живут в портале на <body>, то есть формально «вне
+      // попапа» — но открывает их сам попап, и клик по ним идёт ВНУТРЬ того,
+      // что он же и показал. Без этого исключения окно QR-кода и подтверждение
+      // «Создать услугу?» закрывались на первом же mousedown в любом месте:
+      // попап исчезал вместе с ними, и кнопка не успевала получить click —
+      // «нажал скопировать, окно закрылось, ничего не скопировалось».
+      if (target.closest('.v-overlay, .modal-overlay')) return;
 
       // 2. Если кликнули по любой карточке занятия — игнорируем! 
       if (target.closest('.booking-card')) return;
@@ -696,7 +703,9 @@ export default function Journal() {
             handleDateInputSubmit={handleDateInputSubmit}
             setIsEditingDate={setIsEditingDate}
             setDateInputVal={setDateInputVal}
-            onResourceBooking={hasResourceServices ? () => setShowResourceBooking(true) : undefined}
+            onResourceBooking={hasResourceServices
+              ? () => setResourceBooking({ teacherId: null, date: toDateStr(new Date(calYear, calMonth, selectedDay)) })
+              : undefined}
             spaceIsAxis={spaceIsAxis}
           />
 
@@ -807,16 +816,6 @@ export default function Journal() {
           onAddClients={confirmAddClients} // Изменено здесь
           showToast={showToast}
           pushHistoryEntry={history.push}
-          onReschedule={(booking, reservationId, clientId) => {
-            setPopupBooking(null);
-            setMoveTarget({
-              reservationId,
-              clientId,
-              version: booking.version ?? 1,
-              serviceId: booking.serviceId!,
-              branchId: booking.branchId,
-            });
-          }}
         />
       )}
 
@@ -835,24 +834,25 @@ export default function Journal() {
           closeNewForm={closeNewForm}
           onCreate={createLessonFromModal}
           spaceIsAxis={spaceIsAxis}
-          onResourceBooking={hasResourceServices ? () => { closeNewForm(); setShowResourceBooking(true); } : undefined}
+          // Мастера и день забираем ДО закрытия формы: closeNewForm обнуляет слот.
+          onResourceBooking={hasResourceServices ? () => {
+            const slot = newBookingSlot;
+            closeNewForm();
+            setResourceBooking({
+              teacherId: slot?.trainer ?? null,
+              date: toDateStr(new Date(calYear, calMonth, selectedDay)),
+            });
+          } : undefined}
         />
       )}
 
       {/* HB-22: «записать на индивидуальную услугу» — отдельная команда, не
           создание события. Проходит теми же quote/confirm, что Mini-app. */}
-      {showResourceBooking && (
+      {resourceBooking && (
         <ResourceBookingModal
-          onClose={() => setShowResourceBooking(false)}
-          onCreated={mutations.invalidate}
-        />
-      )}
-
-      {moveTarget && (
-        <ResourceBookingModal
-          clientId={moveTarget.clientId}
-          move={moveTarget}
-          onClose={() => setMoveTarget(null)}
+          teacherId={resourceBooking.teacherId}
+          defaultDate={resourceBooking.date}
+          onClose={() => setResourceBooking(null)}
           onCreated={mutations.invalidate}
         />
       )}

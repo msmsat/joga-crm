@@ -154,5 +154,22 @@
     "title": "Bir şeyler ters gitti",
     "description": "Bu sayfada bir hata oluştu. Yeniden yüklemeyi deneyin — uygulamanın geri kalanı çalışmaya devam ediyor.",
     "reload": "Sayfayı yenile"
+  },
+  "qr": {
+    "title": "QR kod",
+    "subtitle": "Yazdırın, hikâyeye koyun ya da bağlantıyı kopyalayın.",
+    "copy": "Kopyala",
+    "print": "Yazdır",
+    "story": "Hikâye için",
+    "copied": "Bağlantı kopyalandı",
+    "copyFailed": "Bağlantı kopyalanamadı",
+    "printBlocked": "Tarayıcı yazdırma penceresini engelledi",
+    "storySaved": "Görsel kaydedildi",
+    "storyFailed": "Görsel oluşturulamadı",
+    "scanHint": "Kaydolmak için kamerayı doğrultun",
+    "lessonAction": "Dersin QR kodu",
+    "lessonCaption": "Bu derse kaydolmak için kamerayı doğrultun",
+    "packageAction": "Paketin QR kodu",
+    "packageCaption": "Paketi satın almak için kamerayı doğrultun"
   }
 }

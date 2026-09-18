@@ -154,5 +154,22 @@
     "title": "Ceva nu a mers bine",
     "description": "Această pagină a întâmpinat o eroare. Încercați să o reîncărcați — restul aplicației funcționează.",
     "reload": "Reîncarcă pagina"
+  },
+  "qr": {
+    "title": "Cod QR",
+    "subtitle": "Printează-l, pune-l în stories sau copiază linkul.",
+    "copy": "Copiază",
+    "print": "Printează",
+    "story": "Pentru stories",
+    "copied": "Link copiat",
+    "copyFailed": "Linkul nu a putut fi copiat",
+    "printBlocked": "Browserul a blocat fereastra de printare",
+    "storySaved": "Imagine salvată",
+    "storyFailed": "Imaginea nu a putut fi creată",
+    "scanHint": "Îndreaptă camera ca să te înscrii",
+    "lessonAction": "Codul QR al clasei",
+    "lessonCaption": "Îndreaptă camera ca să te înscrii la această clasă",
+    "packageAction": "Codul QR al abonamentului",
+    "packageCaption": "Îndreaptă camera ca să cumperi abonamentul"
   }
 }

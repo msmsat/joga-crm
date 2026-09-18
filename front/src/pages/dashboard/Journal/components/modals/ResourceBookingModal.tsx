@@ -5,6 +5,7 @@ import { ModalShell, ModalHeader, ModalBody, ModalFooter, GhostButton, PrimaryBu
 import { Select, useToast } from '../../../../../components/ui/index';
 import { hybridApi } from '../../../../../api/booking/hybrid.api';
 import { servicesApi } from '../../../../../api/studio/services.api';
+import { staffApi } from '../../../../../api/staff/staff.api';
 import { studioApi } from '../../../../../api/studio/studio.api';
 import { clientsApi } from '../../../../../api/clients/clients.api';
 import { errorMessage } from '../../../../../api/errorMessage';
@@ -20,6 +21,10 @@ import type { AvailabilitySlot, QuoteRead } from '../../../../../api/booking/hyb
  * Запись идёт теми же quote/confirm, что и в Mini-app (§6.3). Прямого INSERT
  * из журнала нет и не будет: иначе правила покрытия, буферов и занятости
  * пришлось бы держать во второй реализации.
+ *
+ * Переноса здесь нет: индивидуальную запись двигают прямо в её карточке
+ * (components/ResourceMoveField.tsx) — там меняются только день и время, а
+ * услуга, филиал и клиент при переносе и так заданы бронью.
  */
 type Props = {
   onClose: () => void;
@@ -27,24 +32,22 @@ type Props = {
   /** Карточка клиента открывает эту же форму с предвыбранным человеком. */
   clientId?: number | null;
   defaultDate?: string;
-  /** Перенос существующей брони: тот же выбор времени, другая пара команд.
-   *  `version` уходит как expected_version — чужая правка между показом и
-   *  подтверждением обязана дать VERSION_CONFLICT, а не переписать интервал. */
-  move?: { reservationId: number; version: number; serviceId: number; branchId: number | null } | null;
+  /** Мастер, по колонке которого кликнули в журнале. Сужает список услуг до
+   *  тех, которые он делает, и время — до его свободного: спрашивать это
+   *  заново, когда человек только что выбрал мастера мышью, незачем. */
+  teacherId?: number | null;
 };
 
 const iso = (date: Date) =>
   `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 
-export function ResourceBookingModal({ onClose, onCreated, clientId = null, defaultDate, move = null }: Props) {
+export function ResourceBookingModal({ onClose, onCreated, clientId = null, defaultDate, teacherId = null }: Props) {
   const { t } = useTranslation(['journal', 'common']);
   const toast = useToast();
   const terms = useBusinessTerms('resource');
 
-  // Услуга и филиал переноса заданы самой бронью: перенос — это другое ВРЕМЯ
-  // той же услуги (§6.5), выбирать их заново нечего.
-  const [serviceId, setServiceId] = useState<number | null>(move?.serviceId ?? null);
-  const [branchId, setBranchId] = useState<number | null>(move?.branchId ?? null);
+  const [serviceId, setServiceId] = useState<number | null>(null);
+  const [branchId, setBranchId] = useState<number | null>(null);
   const [client, setClient] = useState<number | null>(clientId);
   const [date, setDate] = useState(defaultDate ?? iso(new Date()));
   const [quote, setQuote] = useState<QuoteRead | null>(null);
@@ -58,18 +61,33 @@ export function ResourceBookingModal({ onClose, onCreated, clientId = null, defa
     enabled: clientId == null,
   });
 
+  // Карточка мастера, по колонке которого кликнули, — ради его списка услуг.
+  // Отдельный запрос, а не поле списка сотрудников: в списке услуг нет, и
+  // тащить их всем ради одного выбранного было бы дороже.
+  const { data: teacher } = useQuery({
+    queryKey: queryKeys.staffProfile(teacherId ?? 0),
+    queryFn: () => staffApi.getProfile(teacherId!),
+    enabled: teacherId != null,
+  });
+
   // Только услуги с механикой resource: событие создаётся другой формой.
-  const bookable = useMemo(
-    () => services.filter(s => s.booking_mode === 'resource' && s.is_bookable),
-    [services],
-  );
+  // Мастер известен — сужаем до того, что делает он: в журнале кликают по его
+  // колонке, и предлагать услуги, которых он не оказывает, значит вести к
+  // пустому списку времени.
+  const bookable = useMemo(() => {
+    const resource = services.filter(s => s.booking_mode === 'resource' && s.is_bookable);
+    if (teacherId == null || !teacher) return resource;
+    const own = new Set(teacher.services.map(item => item.id));
+    return resource.filter(s => own.has(s.id));
+  }, [services, teacher, teacherId]);
 
   // Доступность — обычный запрос react-query: ключ содержит весь выбор, и
   // устаревший ответ прошлой услуги/даты не перезаписывает текущий список.
   const { data: availability } = useQuery({
-    queryKey: ['resource-availability', serviceId, branchId, date],
+    queryKey: ['resource-availability', serviceId, branchId, date, teacherId],
     queryFn: () => hybridApi.availability({
       service_id: serviceId!, branch_id: branchId!, date_from: date, date_to: date,
+      teacher_id: teacherId ?? undefined,
     }),
     enabled: serviceId != null && branchId != null,
   });
@@ -83,9 +101,7 @@ export function ResourceBookingModal({ onClose, onCreated, clientId = null, defa
         booking_mode: 'resource' as const, client_id: client, service_id: serviceId,
         branch_id: branchId, teacher_id: slot.teacher_ids[0] ?? null, starts_at: slot.starts_at,
       };
-      setQuote(move
-        ? await hybridApi.moveQuote(move.reservationId, request)
-        : await hybridApi.quote(request));
+      setQuote(await hybridApi.quote(request));
     } catch (err) {
       toast.error(errorMessage(err, t));
     }
@@ -95,8 +111,7 @@ export function ResourceBookingModal({ onClose, onCreated, clientId = null, defa
     if (!quote || saving) return;
     setSaving(true);
     try {
-      if (move) await hybridApi.move(move.reservationId, quote.quote_id, move.version);
-      else await hybridApi.confirm(quote.quote_id);
+      await hybridApi.confirm(quote.quote_id);
       onCreated();
       onClose();
     } catch (err) {
@@ -116,26 +131,22 @@ export function ResourceBookingModal({ onClose, onCreated, clientId = null, defa
   return (
     <ModalShell size="sm" onClose={onClose} maxWidth="640px">
       <ModalHeader
-        title={t(move ? 'journal:resourceBooking.moveTitle' : 'journal:resourceBooking.title')}
+        title={t('journal:resourceBooking.title')}
         subtitle={terms.ready ? terms.message('choose_offering') : undefined}
       />
       <ModalBody>
         <div style={{ display: 'grid', gap: '12px' }}>
-          {!move && (
-            <>
-              <div>
-                <label className="vk-label">{t('journal:resourceBooking.service')}</label>
-                <Select value={serviceId ? String(serviceId) : ''} onChange={v => { setServiceId(Number(v)); setQuote(null); }}
-                        options={bookable.map(s => ({ value: String(s.id), label: s.name }))} />
-              </div>
-              <div>
-                <label className="vk-label">{t('journal:resourceBooking.branch')}</label>
-                <Select value={branchId ? String(branchId) : ''} onChange={v => { setBranchId(Number(v)); setQuote(null); }}
-                        options={branches.map(b => ({ value: String(b.id), label: b.name }))} />
-              </div>
-            </>
-          )}
-          {clientId == null && !move && (
+          <div>
+            <label className="vk-label">{t('journal:resourceBooking.service')}</label>
+            <Select value={serviceId ? String(serviceId) : ''} onChange={v => { setServiceId(Number(v)); setQuote(null); }}
+                    options={bookable.map(s => ({ value: String(s.id), label: s.name }))} />
+          </div>
+          <div>
+            <label className="vk-label">{t('journal:resourceBooking.branch')}</label>
+            <Select value={branchId ? String(branchId) : ''} onChange={v => { setBranchId(Number(v)); setQuote(null); }}
+                    options={branches.map(b => ({ value: String(b.id), label: b.name }))} />
+          </div>
+          {clientId == null && (
             <div>
               <label className="vk-label">{t('journal:resourceBooking.client')}</label>
               <Select value={client ? String(client) : ''} onChange={v => { setClient(Number(v)); setQuote(null); }}

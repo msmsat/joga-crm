@@ -19,7 +19,6 @@
       "desc": "Mini-aplicație de rezervări — pentru bio, stories și campanii",
       "copy": "Copiază linkul",
       "open": "Deschide mini-aplicația",
-      "print": "Printează QR",
       "posterTitle": "Rezervați-vă ședința online",
       "scanHint": "Îndreptați camera telefonului spre cod"
     }
@@ -159,7 +158,6 @@
     "botDisconnected": "Bot deconectat",
     "codeCopied": "Cod copiat!",
     "linkCopied": "Link copiat!",
-    "printBlocked": "Permiteți ferestrele pop-up pentru a printa codul QR",
     "stripeReturned": "Datele au fost trimise către Stripe",
     "stripeLinkExpired": "Linkul Stripe a expirat — încercați din nou"
   },

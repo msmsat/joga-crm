@@ -8,8 +8,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_db
 from ratelimit import limiter
-from schemas.admin import LandingVisitRequest
-from services.geo_locale import visitor_country
+from schemas.admin import LandingVisitRequest, PresenceBeatRequest
+from services import presence
+from services.geo_locale import locate_ip, visitor_country, visitor_ip
 from services.visit_collector import clip, device_from_ua, record_visit
 
 logger = logging.getLogger(__name__)
@@ -34,10 +35,17 @@ async def landing_visit(request: Request, db: AsyncSession = Depends(get_db)):
     if not anon_id or not path:
         return Response(status_code=204)
 
-    country = visitor_country(
-        request.headers.get("CF-IPCountry"),
+    # Адрес считаем один раз: он и сам едет в строку, и служит запасным
+    # источником страны, когда заголовка Cloudflare нет (заход мимо туннеля).
+    ip = visitor_ip(
+        request.headers.get("CF-Connecting-IP"),
+        request.headers.get("X-Forwarded-For"),
         request.client.host if request.client else None,
     )
+    # Место ищем один раз: заголовок Cloudflare главнее базы по стране (он от
+    # самой сети и точнее), а регион с городом взять неоткуда, кроме базы.
+    place = locate_ip(ip)
+    country = visitor_country(request.headers.get("CF-IPCountry"), ip)
     device = device_from_ua(request.headers.get("User-Agent"))
 
     try:
@@ -51,10 +59,29 @@ async def landing_visit(request: Request, db: AsyncSession = Depends(get_db)):
             utm_campaign=body.utm_campaign,
             lang=body.lang,
             country=country,
+            region=place.region,
+            city=place.city,
             device=device,
+            ip=ip,
         )
     except Exception:
         # Счётчик никогда не ломает страницу, ради которой его позвали.
         logger.warning("не удалось записать визит лендинга", exc_info=True)
 
+    return Response(status_code=204)
+
+
+@router.post("/presence/beat", status_code=204, include_in_schema=False)
+# 120 в минуту при сигнале раз в 20 секунд — запас на общий IP: за одним NAT
+# сидит целый офис или вся мобильная сота, и лимит лендинга их бы обрезал.
+@limiter.limit("120/minute")
+async def presence_beat(request: Request):
+    # Ни базы, ни ожидания: сигнал только двигает отметку в памяти. Тело, как и
+    # у маяка визитов, разбирается вручную — 204 на мусор вместо рассказа о схеме.
+    try:
+        body = PresenceBeatRequest.model_validate(await request.json())
+    except (ValidationError, ValueError):
+        return Response(status_code=204)
+
+    presence.touch(body.surface, clip(body.anon_id, 64) or "")
     return Response(status_code=204)

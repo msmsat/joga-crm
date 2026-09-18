@@ -17,9 +17,10 @@ import { getLoyalty, type LoyaltyOverview } from './api/loyalty';
 import { useTelegram } from './hooks/useTelegram';
 import { useIsDesktop } from './hooks/useIsDesktop';
 import { visibleNavItems } from './components/navItems';
-import { readEntry, readTab, rememberStudio, setGuestStudio } from './lib/entry';
+import { readDeepLink, readEntry, readTab, rememberStudio, setStudioRef } from './lib/entry';
 import { applyBranding, applyDefaultLanguage } from './lib/branding';
-import { getSession, saveSession, clearSession } from './lib/session';
+import { getSession, saveSession, clearSession, reconcileSession } from './lib/session';
+import { startPresence } from './lib/presence';
 import './App.css';
 
 /**
@@ -44,6 +45,9 @@ const DEFAULT_TAB = 'sched';
 
 export default function App() {
   const { t } = useTranslation();
+  // Куда ведёт ссылка внутри раздела: QR-код студии печатается на конкретное
+  // занятие или конкретный абонемент. Читается один раз, как и `?tab=`.
+  const [deepLink] = useState(readDeepLink);
   // Ссылка из письма студии ведёт в конкретный раздел (`?tab=my`), а не «в
   // приложение вообще»: клиент открыл письмо про запись — он должен увидеть
   // запись. Читаем один раз при первом рендере: дальше вкладками управляет меню.
@@ -63,8 +67,10 @@ export default function App() {
   // раз, когда клиент просто зашёл купить абонемент.
   const [pendingCertificate, setPendingCertificate] = useState<string | null>(null);
   // Запись упёрлась в «Предоплату при записи» (402): человека несёт в покупку
-  // абонемента — тем же путём, что и сертификат из Клуба.
-  const [wantsSubscription, setWantsSubscription] = useState(false);
+  // абонемента — тем же путём, что и сертификат из Клуба. Второй повод — QR
+  // абонемента: код обещает конкретный абонемент, и открыться должна покупка,
+  // а не общий профиль, в котором его ещё надо найти.
+  const [wantsSubscription, setWantsSubscription] = useState(() => deepLink.packageId != null);
   const { tg } = useTelegram();
   const isDesktop = useIsDesktop();
   // Область прокрутки приложения. На телефоне прокручивается она, а не документ, —
@@ -105,6 +111,15 @@ export default function App() {
   const loadCatalog = async () => {
     try {
       const data = await getStudioCatalog();
+      // Витрина пришла от студии из ссылки — теперь к ней же приводим сессию:
+      // карточка клиента действует только в своей студии. Чужая откладывается
+      // (не удаляется), своя, если она есть на устройстве, включается сама.
+      // Перезагрузка, а не догрузка: с другой сессией меняется всё — и каталог,
+      // и цены, и кабинет, и их проще перечитать разом, чем сшивать на лету.
+      if (reconcileSession(data.studio.id)) {
+        window.location.reload();
+        return;
+      }
       // Брендинг применяем здесь, а не в рендере: цвет и тема живут в токенах
       // на <html>, их видит и то, что рисуется вне React (оверлеи, фон body).
       applyBranding(data.studio.accent_color, data.studio.dark_mode);
@@ -115,7 +130,7 @@ export default function App() {
       // токеном. Код из ссылки сильнее номера из ответа: по нему студия зовёт
       // клиентов, и именно он должен остаться в памяти приложения.
       rememberStudio(entry.studioRef ?? data.studio.id);
-      setGuestStudio(entry.studioRef ?? String(data.studio.id));
+      setStudioRef(entry.studioRef ?? String(data.studio.id));
       setCatalog(data);
     } catch (error) {
       console.error('Не вдалося завантажити дані студії:', error);
@@ -132,10 +147,13 @@ export default function App() {
     setIsLoading(false);
   };
 
+  // Счётчик «кто сейчас в мини-приложении» для панели платформы.
+  useEffect(() => startPresence(), []);
+
   useEffect(() => {
     // Студию из ссылки api/client.ts подставляет в запросы, пока сессии нет:
     // гостю сервер не может взять её из токена. Ставим до первого запроса.
-    setGuestStudio(entry.studioRef);
+    setStudioRef(entry.studioRef);
 
     if (tg) {
       tg.ready();
@@ -337,6 +355,7 @@ export default function App() {
         catalog={catalog}
         onBuySubscription={goBuySubscription}
         onNeedAuth={requireAuth}
+        focusLesson={deepLink.lessonId != null ? { id: deepLink.lessonId, date: deepLink.date } : undefined}
       />
     ),
     my: <MyLessons catalog={catalog} />,
@@ -348,6 +367,7 @@ export default function App() {
         onPendingCertificateUsed={() => setPendingCertificate(null)}
         openBuy={wantsSubscription}
         onBuyIntentUsed={() => setWantsSubscription(false)}
+        initialPackageId={deepLink.packageId}
       />
     ),
     club: <Club data={loyalty} onUseCertificate={useCertificate} />,
@@ -394,6 +414,7 @@ export default function App() {
             studioName={catalog?.studio.name}
             logoUrl={catalog?.studio.logo_url}
             userName={user?.name}
+            studioId={catalog?.studio.id}
             onAddAccount={() => setIsAddingAccount(true)}
             isGuest={!user}
           />

@@ -154,5 +154,22 @@
     "title": "Coś poszło nie tak",
     "description": "Na tej stronie wystąpił błąd. Spróbuj ją odświeżyć — reszta aplikacji działa dalej.",
     "reload": "Odśwież stronę"
+  },
+  "qr": {
+    "title": "Kod QR",
+    "subtitle": "Wydrukuj, wrzuć na stories albo skopiuj link.",
+    "copy": "Kopiuj",
+    "print": "Drukuj",
+    "story": "Na stories",
+    "copied": "Link skopiowany",
+    "copyFailed": "Nie udało się skopiować linku",
+    "printBlocked": "Przeglądarka zablokowała okno drukowania",
+    "storySaved": "Obraz zapisany",
+    "storyFailed": "Nie udało się utworzyć obrazu",
+    "scanHint": "Skieruj aparat, aby się zapisać",
+    "lessonAction": "Kod QR zajęć",
+    "lessonCaption": "Skieruj aparat, aby zapisać się na te zajęcia",
+    "packageAction": "Kod QR karnetu",
+    "packageCaption": "Skieruj aparat, aby kupić karnet"
   }
 }

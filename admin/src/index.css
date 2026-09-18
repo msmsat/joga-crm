@@ -1,4 +1,155 @@
 @import "tailwindcss";
 
-:root { color-scheme: light; }
-body { margin: 0; font-family: Manrope, system-ui, sans-serif; }
+/**
+ * Панель платформы — приборная доска, а не витрина: один человек смотрит,
+ * идут ли люди. Поэтому структура здесь рисуется ЛИНИЯМИ, а не тенями.
+ *
+ * Прежняя граница `#EFEAE6` на жемчужном фоне давала контраст 1.05:1 — линия
+ * формально была, а глаз её не видел, и таблицы разваливались в кашу. Ground
+ * стал глубже фона карточки: белая карточка теперь отделена и цветом, и
+ * контуром, а не только мягкой тенью.
+ */
+:root {
+  color-scheme: light;
+
+  --ground: #F1EDE9;   /* фон страницы — заметно глубже карточки */
+  --surface: #FFFFFF;
+  --line: #D9CFC6;     /* видимая линия: 1.6:1 к белому */
+  --line-strong: #BCAC9E;
+  --wash: #FAF5F1;     /* подсветка строки под курсором */
+  --ink: #1A1A1A;
+  --muted: #6B6560;
+  --accent: #F9A08B;
+  --live: #7FAF86;
+  --alert: #C4687C;
+}
+
+body {
+  margin: 0;
+  font-family: Manrope, system-ui, sans-serif;
+  background: var(--ground);
+  color: var(--ink);
+}
+
+/* Цифры в колонках обязаны стоять друг под другом: это таблица чисел. */
+table, .tabular { font-variant-numeric: tabular-nums; }
+
+@layer components {
+  /* ── Поверхности ───────────────────────────────────────────────────────── */
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+  }
+
+  .panel-pad { padding: 24px; }
+
+  /* ── Таблицы: строку видно целиком, а не угадываешь её границы ─────────── */
+  .tbl { width: 100%; border-collapse: collapse; font-size: 14px; }
+
+  .tbl thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: var(--surface);
+    border-bottom: 1px solid var(--line-strong);
+    padding: 12px 16px;
+    text-align: left;
+    font-weight: 600;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  .tbl tbody td {
+    border-bottom: 1px solid var(--line);
+    padding: 12px 16px;
+    vertical-align: top;
+  }
+
+  .tbl tbody tr { transition: background-color .12s ease, box-shadow .12s ease; }
+
+  /* Наведение: подсветка строки И персиковая засечка слева — вторая нужна,
+     чтобы строку было видно на краю экрана, где заливка почти не читается. */
+  .tbl tbody tr:hover {
+    background: var(--wash);
+    box-shadow: inset 3px 0 0 var(--accent);
+  }
+
+  .tbl tbody tr:last-child td { border-bottom: none; }
+
+  /* ── Кнопки-фильтры ────────────────────────────────────────────────────── */
+  .chip {
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--muted);
+    border-radius: 10px;
+    padding: 7px 14px;
+    font-size: 14px;
+    line-height: 1.2;
+    cursor: pointer;
+    transition: border-color .12s ease, background-color .12s ease, color .12s ease;
+  }
+
+  .chip:hover { border-color: var(--line-strong); color: var(--ink); }
+
+  .chip[aria-pressed="true"] {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: #FFFFFF;
+  }
+
+  .chip[aria-pressed="true"]:hover { background: #000000; }
+
+  /* ── Поля ──────────────────────────────────────────────────────────────── */
+  .field {
+    border: 1px solid var(--line);
+    background: var(--surface);
+    border-radius: 10px;
+    padding: 9px 13px;
+    font: inherit;
+    color: var(--ink);
+    outline: none;
+    transition: border-color .12s ease, box-shadow .12s ease;
+  }
+
+  .field:hover { border-color: var(--line-strong); }
+  .field:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(249, 160, 139, .25); }
+
+  /* Клавиатура должна быть видна всюду, а не только в полях. */
+  :where(button, a, input, [tabindex]):focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  /* ── Метка «впервые» ───────────────────────────────────────────────────── */
+  .mark-new {
+    background: var(--accent);
+    color: #1A1A1A;
+    border-radius: 6px;
+    padding: 1px 6px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  /* Технические строки — адрес и идентификатор браузера. Моноширинный шрифт
+     тут не украшение: их читают посимвольно и сравнивают между строками. */
+  .code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 12.5px;
+    color: var(--ink);
+  }
+}
+
+/* Строка, прилетевшая только что: короткая вспышка, чтобы новое было видно
+   без сравнения списков глазами. Одна вспышка на строку, без повторов. */
+@keyframes arrived {
+  from { background: #FCE4DA; }
+  to { background: transparent; }
+}
+
+.row-arrived { animation: arrived 1.4s ease-out; }
+
+@media (prefers-reduced-motion: reduce) {
+  .row-arrived { animation: none; }
+  .tbl tbody tr, .chip, .field { transition: none; }
+}

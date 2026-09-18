@@ -178,6 +178,7 @@
     "price": "Prezzo",
     "noSlots": "Nessun orario libero in questa data",
     "configIncomplete": "Il calendario di questo servizio non è ancora configurato",
-    "moveTitle": "Sposta prenotazione"
+    "moveTitle": "Sposta prenotazione",
+    "moveBusy": "A quest'ora lo specialista è occupato"
   }
 }

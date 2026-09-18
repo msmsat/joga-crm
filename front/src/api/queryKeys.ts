@@ -38,6 +38,7 @@ export const queryKeys = {
   checkoutServices: ['checkout', 'services'] as const,
   subscriptionConfig: ['catalog', 'subscription-config'] as const,
   staff: ['staff'] as const,
+  staffProfile: (id: number) => ['staff', id] as const,
   halls: ['halls'] as const,
   journalLessons: (from: string, to: string) => ['journal-lessons', from, to] as const,
   journalLessonsAll: ['journal-lessons'] as const, // префикс: инвалидация всех диапазонов разом

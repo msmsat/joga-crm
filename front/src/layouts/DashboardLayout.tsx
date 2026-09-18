@@ -12,6 +12,7 @@ import PhoneGate from '../components/PhoneGate';
 import { useMe } from '../hooks/useMe';
 import { getUserRoleFromToken } from '../utils/auth';
 import { billingApi } from '../api/billing/billing.api';
+import { startPresence } from '../api/presence';
 import { hasBillingAccess } from '../lib/billingAccess';
 import SubscriptionBanner from '../components/SubscriptionBanner';
 import { useBusinessTerms } from '../hooks/useBusinessTerms';
@@ -63,6 +64,10 @@ export default function DashboardLayout() {
   // отчётов подставляют его сами. Без вызова на уровне оболочки слово
   // появлялось бы только на страницах, которые сами спрашивают термины.
   useBusinessTerms();
+  // Счётчик «кто сейчас в кабинете» для панели платформы. На уровне оболочки,
+  // а не страницы: человек ходит по разделам, и на каждом переходе счётчик
+  // обнулялся бы и заводился заново.
+  useEffect(() => startPresence('crm'), []);
   const { data: appearance } = useQuery({
     queryKey: queryKeys.appearance,
     queryFn: () => settingsApi.getAppearance(),

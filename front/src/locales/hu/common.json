@@ -154,5 +154,22 @@
     "title": "Valami hiba történt",
     "description": "Ezen az oldalon hiba lépett fel. Próbálja újratölteni — az alkalmazás többi része működik.",
     "reload": "Oldal újratöltése"
+  },
+  "qr": {
+    "title": "QR-kód",
+    "subtitle": "Nyomtasd ki, tedd ki sztoriba, vagy másold a linket.",
+    "copy": "Másolás",
+    "print": "Nyomtatás",
+    "story": "Sztorihoz",
+    "copied": "A link a vágólapon",
+    "copyFailed": "A linket nem sikerült másolni",
+    "printBlocked": "A böngésző blokkolta a nyomtatási ablakot",
+    "storySaved": "A kép mentve",
+    "storyFailed": "A képet nem sikerült elkészíteni",
+    "scanHint": "Irányítsd rá a kamerát a foglaláshoz",
+    "lessonAction": "Az óra QR-kódja",
+    "lessonCaption": "Irányítsd rá a kamerát, és foglalj erre az órára",
+    "packageAction": "A bérlet QR-kódja",
+    "packageCaption": "Irányítsd rá a kamerát, és vedd meg a bérletet"
   }
 }

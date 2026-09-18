@@ -19,7 +19,6 @@
       "desc": "Booking-miniapp — til bio, stories og kampanjer",
       "copy": "Kopier lenke",
       "open": "Åpne miniappen",
-      "print": "Skriv ut QR",
       "posterTitle": "Book økten din på nett",
       "scanHint": "Rett telefonkameraet mot koden"
     }
@@ -159,7 +158,6 @@
     "botDisconnected": "Bot frakoblet",
     "codeCopied": "Koden er kopiert!",
     "linkCopied": "Lenken er kopiert!",
-    "printBlocked": "Tillat sprettoppvinduer for å skrive ut QR-koden",
     "stripeReturned": "Opplysningene er sendt til Stripe",
     "stripeLinkExpired": "Stripe-lenken er utløpt — prøv igjen"
   },

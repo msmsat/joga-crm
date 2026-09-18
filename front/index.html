@@ -27,7 +27,12 @@
           var tk = localStorage.getItem('token');
           var sub = tk && JSON.parse(atob(tk.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))).sub;
           var t = sub && localStorage.getItem('velora_theme:' + sub);
-          if (t === 'dark' || (t === 'auto' && matchMedia('(prefers-color-scheme: dark)').matches))
+          // auto — по часам устройства (6:00-18:00 светлая), а не по
+          // prefers-color-scheme: тот отражает статичный тумблер ОС и не
+          // меняется сам в течение дня. Условие то же, что в isAutoDark()
+          // из ThemeContext.tsx.
+          var h = new Date().getHours();
+          if (t === 'dark' || (t === 'auto' && (h < 6 || h >= 18)))
             document.documentElement.classList.add('dark');
         }
       } catch (e) {}

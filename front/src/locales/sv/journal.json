@@ -178,6 +178,7 @@
     "price": "Pris",
     "noSlots": "Ingen ledig tid detta datum",
     "configIncomplete": "Schemat för den här tjänsten är inte uppsatt ännu",
-    "moveTitle": "Flytta bokning"
+    "moveTitle": "Flytta bokning",
+    "moveBusy": "Specialisten är upptagen vid den tiden"
   }
 }

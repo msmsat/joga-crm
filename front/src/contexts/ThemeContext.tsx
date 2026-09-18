@@ -10,6 +10,16 @@ function applyDarkClass(dark: boolean) {
   document.documentElement.classList.toggle("dark", dark);
 }
 
+// "Системная" тема — это НЕ prefers-color-scheme: та отражает статичный
+// переключатель тёмного режима ОС, который большинство никогда не трогает,
+// и на практике не "живёт" сама. Вместо этого auto светлеет/темнеет по часам
+// устройства — ровно то же условие продублировано в инлайн-скрипте
+// index.html (см. его комментарий).
+function isAutoDark() {
+  const h = new Date().getHours();
+  return h < 6 || h >= 18;
+}
+
 /**
  * Снимает `.dark` везде, кроме кабинета. Живёт отдельно от ThemeProvider и
  * висит на роутере, а не на layout'е, потому что класс ставится ДО React
@@ -50,8 +60,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   // страницы, и класс должен встать ДО первого кадра — иначе видна вспышка
   // светлого, ради устранения которой всё и затевалось.
   useLayoutEffect(() => {
-    const dark = theme === "dark"
-      || (theme === "auto" && matchMedia("(prefers-color-scheme: dark)").matches);
+    const dark = theme === "dark" || (theme === "auto" && isAutoDark());
     applyDarkClass(dark);
     // Затравку пишем и с серверного ответа, а не только по клику в AppearanceTab:
     // иначе на новом устройстве первый заход мигнёт светлым (её читает инлайн-
@@ -61,13 +70,12 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     if (data?.theme) saveThemeSeed(data.theme);
   }, [theme, data?.theme]);
 
-  // auto → слушаем смену системной темы на лету.
+  // auto → пока кабинет открыт, пересчитываем каждую минуту: смена должна
+  // произойти ровно в 6:00/18:00 по часам устройства, а не после перезахода.
   useEffect(() => {
     if (theme !== "auto") return;
-    const mq = matchMedia("(prefers-color-scheme: dark)");
-    const onChange = (e: MediaQueryListEvent) => applyDarkClass(e.matches);
-    mq.addEventListener("change", onChange);
-    return () => mq.removeEventListener("change", onChange);
+    const id = setInterval(() => applyDarkClass(isAutoDark()), 60_000);
+    return () => clearInterval(id);
   }, [theme]);
 
   return children;

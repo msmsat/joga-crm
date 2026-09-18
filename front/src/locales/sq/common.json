@@ -154,5 +154,22 @@
     "title": "Diçka shkoi keq",
     "description": "Kjo faqe hasi një gabim. Provoni ta rifreskoni — pjesa tjetër e aplikacionit vazhdon të punojë.",
     "reload": "Rifresko faqen"
+  },
+  "qr": {
+    "title": "Kod QR",
+    "subtitle": "Printojeni, vendoseni në stories ose kopjoni lidhjen.",
+    "copy": "Kopjo",
+    "print": "Printo",
+    "story": "Për stories",
+    "copied": "Lidhja u kopjua",
+    "copyFailed": "Lidhja nuk u kopjua dot",
+    "printBlocked": "Shfletuesi bllokoi dritaren e printimit",
+    "storySaved": "Imazhi u ruajt",
+    "storyFailed": "Imazhi nuk u krijua dot",
+    "scanHint": "Drejtoni kamerën për t'u regjistruar",
+    "lessonAction": "Kodi QR i orës",
+    "lessonCaption": "Drejtoni kamerën për t'u regjistruar në këtë orë",
+    "packageAction": "Kodi QR i abonimit",
+    "packageCaption": "Drejtoni kamerën për të blerë abonimin"
   }
 }

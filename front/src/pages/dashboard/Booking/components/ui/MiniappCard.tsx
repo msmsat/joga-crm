@@ -1,30 +1,27 @@
-import { useRef } from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { QRCodeSVG } from 'qrcode.react'
-import { IconPrint } from './BookingIcons'
-import { Button } from '../../../../../components/ui/index'
+import * as Icons from '../../../../../components/Icons'
+import { Button, QrShareModal } from '../../../../../components/ui/index'
 import { useToast } from '../../../../../components/ui/Toast'
 import { useStudioSettings } from '../../../../../hooks/useStudioCurrency'
 
 const COLOR = '#5BAB72'
-
-const esc = (s: string) =>
-  s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c] as string))
 
 /**
  * Ссылка, по которой клиент открывает мини-приложение студии. Ровно та же, что
  * бот отдаёт на /start — собирает её бэк (`miniapp_url` в настройках записи),
  * потому что адрес зависит от окружения, а не от того, где открыт фронт.
  *
- * QR ведёт туда же: студии нужен код на стойку и в раздатку, а не только
- * ссылка для сторис. Печать открывает отдельное окно с плакатом — так лист
- * получается сам по себе, без войны с версткой дашборда в @media print.
+ * Сам код и всё, что с ним делают (печать плаката, картинка для сторис,
+ * копирование), живут в общей модалке кита — там же, где QR занятия и
+ * абонемента: три копии одного плаката разъехались бы на первой правке.
  */
 export function MiniappCard({ url }: { url: string }) {
   const { t } = useTranslation('booking')
   const toast = useToast()
-  const qrRef = useRef<HTMLDivElement>(null)
   const { data: studio } = useStudioSettings()
+  const [isQrOpen, setIsQrOpen] = useState(false)
 
   function copy() {
     if (!url) return
@@ -32,49 +29,12 @@ export function MiniappCard({ url }: { url: string }) {
     toast.success(t('toasts.linkCopied'))
   }
 
-  // Схему прячем: «api.jogaua.online/s/k3m9x2ptqv» читается, «https://…» — просто шум.
+  // Схему прячем: «api.veloria.pro/s/k3m9x2ptqv» читается, «https://…» — просто шум.
   const pretty = url.replace(/^https?:\/\//, '')
-
-  function printQr() {
-    // Печатаем ровно тот <svg>, что на экране: у него есть viewBox, поэтому на
-    // листе он тянется до 300px без потери чёткости — растр пришлось бы рисовать заново.
-    const svg = qrRef.current?.querySelector('svg')?.outerHTML
-    if (!svg) return
-    const w = window.open('', '_blank', 'width=760,height=980')
-    if (!w) { toast.error(t('toasts.printBlocked')); return }
-    w.document.write(`<!doctype html><html><head><meta charset="utf-8">
-<title>${esc(studio?.name || pretty)}</title>
-<style>
-  @page { size: A4; margin: 0 }
-  * { margin: 0; padding: 0; box-sizing: border-box }
-  body { font-family: Manrope, Inter, system-ui, sans-serif; color: #1A1A1A; background: #fff;
-         min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 48px }
-  .sheet { text-align: center; max-width: 540px }
-  .studio { font-size: 14px; font-weight: 700; letter-spacing: .22em; text-transform: uppercase;
-            color: #9A9A9A; margin-bottom: 12px }
-  h1 { font-size: 38px; line-height: 1.15; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 32px }
-  .qr { display: inline-block; padding: 26px; border-radius: 28px; border: 1.5px solid #EEEBE6;
-        box-shadow: 0 18px 48px rgba(0,0,0,.07) }
-  .qr svg { display: block; width: 300px; height: 300px }
-  .hint { margin-top: 28px; font-size: 17px; color: #666 }
-  .url { margin-top: 10px; font-size: 15px; font-family: ui-monospace, Menlo, monospace; color: #1A1A1A }
-  @media print { body { padding: 0 } .qr { box-shadow: none } }
-</style></head>
-<body onload="print()" onafterprint="close()">
-  <div class="sheet">
-    ${studio?.name ? `<div class="studio">${esc(studio.name)}</div>` : ''}
-    <h1>${esc(t('channels.miniapp.posterTitle'))}</h1>
-    <div class="qr">${svg}</div>
-    <div class="hint">${esc(t('channels.miniapp.scanHint'))}</div>
-    <div class="url">${esc(pretty)}</div>
-  </div>
-</body></html>`)
-    w.document.close()
-  }
 
   return (
     <div className="channel-card miniapp-card" style={{ '--channel-color': COLOR } as React.CSSProperties}>
-      <div className="miniapp-qr" ref={qrRef}>
+      <div className="miniapp-qr">
         {url
           ? <QRCodeSVG value={url} size={84} level="M" bgColor="#FFFFFF" fgColor="#1A1A1A" marginSize={0} />
           : <div className="miniapp-qr-empty" />}
@@ -119,11 +79,22 @@ export function MiniappCard({ url }: { url: string }) {
         </div>
 
         <div className="miniapp-print">
-          <Button variant="primary" size="sm" fullWidth icon={<IconPrint />} onClick={printQr} disabled={!url}>
-            {t('channels.miniapp.print')}
+          <Button variant="primary" size="sm" fullWidth icon={<Icons.QrCode />} onClick={() => setIsQrOpen(true)} disabled={!url}>
+            {t('common:qr.title')}
           </Button>
         </div>
       </div>
+
+      {isQrOpen && url && (
+        <QrShareModal
+          url={url}
+          kicker={studio?.name}
+          title={t('channels.miniapp.posterTitle')}
+          caption={t('channels.miniapp.scanHint')}
+          fileName={studio?.name}
+          onClose={() => setIsQrOpen(false)}
+        />
+      )}
     </div>
   )
 }

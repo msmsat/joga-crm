@@ -1080,6 +1080,12 @@
   padding: 0 2px;
 }
 .sub-card-foot .cat-action-btn { padding: 7px 13px; font-size: 12px; }
+/* Кнопка QR — квадратная: подпись ей не нужна (иконка читается сама), а
+   рядом стоит текстовая «Снять с продажи», и две текстовых в 260px не влезли бы. */
+.sub-card-foot .cat-action-btn.sub-card-qr {
+  padding: 7px; flex: 0 0 auto; margin-left: auto; color: var(--muted);
+}
+.sub-card-foot .cat-action-btn.sub-card-qr:hover { color: var(--onyx); }
 
 /* ─── ПРЕВЬЮ ЗАЛА: план помещения ──────────────────────────────────────────
    Ковриков в сетке ровно столько, сколько мест: вместимость видно, а не

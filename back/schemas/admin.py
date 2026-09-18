@@ -33,3 +33,11 @@ class LandingVisitRequest(BaseModel):
     utm_medium: str | None = None
     utm_campaign: str | None = None
     lang: str | None = None
+
+
+class PresenceBeatRequest(BaseModel):
+    """Сигнал «я всё ещё здесь». Поверхность проверяется по списку в
+    `services.presence.SURFACES`, а не принимается на веру."""
+
+    surface: str
+    anon_id: str

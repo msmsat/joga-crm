@@ -39,22 +39,24 @@
 
 ## 1. Публичный адрес CRM — до всего остального
 
-Сейчас `WEB_APP_URL=http://localhost:5173`. На него Stripe возвращает владельца
-после онбординга Connect и после оплаты тарифа; с него же берётся домен для
-регистрации Apple/Google Pay. С localhost live не заработает — preflight это блокирует.
+На `WEB_APP_URL` Stripe возвращает владельца после онбординга Connect и после
+оплаты тарифа; с него же берётся домен для регистрации Apple/Google Pay. С
+localhost live не заработает — preflight это блокирует.
 
-Нужно: домен вида `crm.jogaua.online`, отдающий фронт по https (второй hostname в
-существующем cloudflared-туннеле на `web:80`, либо A-запись + `SITE_ADDRESS` в
-корневом `.env`, тогда Caddy выпустит сертификат сам).
+Как это устроено сейчас: A-записи `@` и `api` у регистратора смотрят на IP
+сервера, `SITE_ADDRESS` и `API_ADDRESS` в корневом `.env` задают домены, Caddy
+сам выпускает и продлевает сертификаты Let's Encrypt. Cloudflare в пути запроса
+не участвует. Обе переменные принимают несколько доменов через запятую — так
+старый и новый контур работают одновременно на время переезда.
 
 Затем в `back/.env`:
 
 ```ini
-WEB_APP_URL=https://crm.jogaua.online
-CORS_ORIGINS=https://crm.jogaua.online
+WEB_APP_URL=https://veloria.pro
+CORS_ORIGINS=https://veloria.pro
 ```
 
-`BACKEND_URL=https://api.jogaua.online` и `MINIAPP_URL` уже боевые — их не трогаем.
+`BACKEND_URL=https://api.veloria.pro` и `MINIAPP_URL` уже боевые — их не трогаем.
 
 Тот же адрес добавить в Google Cloud Console (Authorized JavaScript origins) —
 иначе перестанет работать вход через Google.
@@ -253,7 +255,7 @@ STRIPE_PUBLISHABLE_KEY=pk_live_...
 
 ### 7.1 Оплата тарифа
 
-- URL: `https://api.jogaua.online/billing/webhook/stripe`
+- URL: `https://api.veloria.pro/billing/webhook/stripe`
 - События: `customer.subscription.created`, `customer.subscription.updated`,
   `customer.subscription.deleted`, `invoice.paid`, `invoice.payment_failed`,
   `charge.refunded`, `setup_intent.succeeded`, `customer.tax_id.updated`
@@ -268,7 +270,7 @@ STRIPE_PUBLISHABLE_KEY=pk_live_...
 
 ### 7.2 Касса студий
 
-- URL: `https://api.jogaua.online/checkout/webhook/stripe`
+- URL: `https://api.veloria.pro/checkout/webhook/stripe`
 - События: `checkout.session.completed`, `checkout.session.expired`,
   `checkout.session.async_payment_succeeded`, `checkout.session.async_payment_failed`,
   `charge.refunded`, `charge.dispute.created`, `charge.dispute.closed`
@@ -290,7 +292,7 @@ Stripe» (`stripe_connect.register_payment_method_domain`) — но домен �
 `/.well-known/apple-developer-merchantid-domain-association`. Он лежит в
 [`front/public/.well-known/`](../front/public/.well-known/) и попадает в `dist` при
 сборке — то есть раздаёт его Caddy вместе с фронтом, а НЕ бэкенд: домен CRM
-(`jogaua.online`) обслуживает фронт, и запрос до api туда не доходит. Файл общий для
+(`veloria.pro`) обслуживает фронт, и запрос до api туда не доходит. Файл общий для
 всех продавцов Stripe, менять его не нужно; обновлять — только если Stripe объявит
 новый.
 

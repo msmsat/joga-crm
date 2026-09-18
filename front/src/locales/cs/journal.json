@@ -182,6 +182,7 @@
     "price": "Cena",
     "noSlots": "V tento den není volný čas",
     "configIncomplete": "Rozvrh této služby zatím není nastaven",
-    "moveTitle": "Přesun rezervace"
+    "moveTitle": "Přesun rezervace",
+    "moveBusy": "V tento čas má specialista obsazeno"
   }
 }

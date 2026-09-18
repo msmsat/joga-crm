@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { accountId, clearSession, getAccounts, getSession, saveSession, type Session } from '../lib/session';
+import {
+  accountId, clearSession, getAccounts, getSession, saveSession, studioOf, type Session,
+} from '../lib/session';
 import { cn } from '../lib/utils';
 
 type Props = {
@@ -9,6 +11,11 @@ type Props = {
   /** Вход ещё одним аккаунтом: экран входа поднимает App — под живой сессией
    *  сверка кода обязана идти без Bearer (см. api/auth.ts, `anon`). */
   onAddAccount: () => void;
+  /** Студия, которую приложение показывает. Меню предлагает только её карточки:
+   *  в чужой студии карточка не действует, и приложение всё равно вернуло бы
+   *  всё назад (`reconcileSession`) — предлагать такое переключение значит
+   *  обещать то, чего не будет. */
+  studioId?: number;
 };
 
 /**
@@ -26,7 +33,7 @@ type Props = {
  * расписание, абонемент, лояльность и профиль загружены под старый токен, и
  * ровно так же (reload) на смену токена уже отвечает api/client.ts на 401.
  */
-export default function AccountMenu({ userName, onAddAccount }: Props) {
+export default function AccountMenu({ userName, onAddAccount, studioId }: Props) {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const anchor = useRef<HTMLDivElement>(null);
@@ -54,7 +61,13 @@ export default function AccountMenu({ userName, onAddAccount }: Props) {
   // Список читаем только на открытии: меняется он через reload, так что
   // держать его в состоянии и синхронизировать нечего.
   const activeId = accountId(getSession()?.token ?? '');
-  const others = isOpen ? getAccounts().filter((a) => accountId(a.token) !== activeId) : [];
+  // Карточки этой же студии — и только они. Студия неизвестна (каталог ещё не
+  // пришёл) — показываем всё, как раньше: это не хуже прежнего поведения.
+  const here = (account: Session) =>
+    studioId === undefined || studioOf(account.token) === studioId;
+  const others = isOpen
+    ? getAccounts().filter((a) => accountId(a.token) !== activeId && here(a))
+    : [];
 
   const pick = (account: Session) => {
     saveSession(account);
@@ -63,9 +76,10 @@ export default function AccountMenu({ userName, onAddAccount }: Props) {
 
   const logout = () => {
     clearSession();
-    // Остались другие аккаунты — выход из этого не должен выкидывать на экран
-    // входа: кабинет продолжается под следующим.
-    const next = getAccounts()[0];
+    // Остались другие аккаунты ЭТОЙ студии — выход из этого не должен выкидывать
+    // на экран входа: кабинет продолжается под следующим. Карточка чужой студии
+    // на эту роль не годится — в текущей студии она не действует.
+    const next = getAccounts().find(here);
     if (next) saveSession(next);
     window.location.reload();
   };

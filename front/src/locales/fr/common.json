@@ -154,5 +154,22 @@
     "title": "Une erreur est survenue",
     "description": "Cette page a rencontré une erreur. Essayez de la recharger — le reste de l'application continue de fonctionner.",
     "reload": "Recharger la page"
+  },
+  "qr": {
+    "title": "QR code",
+    "subtitle": "Imprimez-le, publiez-le en story ou copiez le lien.",
+    "copy": "Copier",
+    "print": "Imprimer",
+    "story": "Pour les stories",
+    "copied": "Lien copié",
+    "copyFailed": "Impossible de copier le lien",
+    "printBlocked": "Le navigateur a bloqué la fenêtre d'impression",
+    "storySaved": "Image enregistrée",
+    "storyFailed": "Impossible de créer l'image",
+    "scanHint": "Pointez la caméra pour réserver",
+    "lessonAction": "QR code du cours",
+    "lessonCaption": "Pointez la caméra pour réserver ce cours",
+    "packageAction": "QR code de l'abonnement",
+    "packageCaption": "Pointez la caméra pour acheter l'abonnement"
   }
 }

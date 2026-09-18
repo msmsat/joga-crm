@@ -38,7 +38,10 @@ export interface Terminology {
 export interface EventQuoteRequest { booking_mode: 'event'; lesson_id: number; spot_number?: number | null; payment_method?: 'venue' | 'card' }
 export interface ResourceQuoteRequest { booking_mode: 'resource'; service_id: number; branch_id: number; teacher_id?: number | null; starts_at: string; payment_method?: 'venue' | 'card' }
 export type QuoteRequest = EventQuoteRequest | ResourceQuoteRequest;
-export interface AvailabilityQuery { service_id: number; branch_id: number; date_from: string; date_to: string; teacher_id?: number }
+/** `hall_id` и `exclude_lesson_id` принимает только CRM-ручка (`/schedule/availability`):
+ *  первое — выбор зала, второе — перенос, при котором занятие не должно
+ *  занимать само себя (иначе предпросмотр прячет время, которое сервер примет). */
+export interface AvailabilityQuery { service_id: number; branch_id: number; date_from: string; date_to: string; teacher_id?: number; hall_id?: number; exclude_lesson_id?: number }
 export interface AvailabilitySlot { starts_at: string; local_start: string; tz_iana: string; teacher_ids: number[] }
 export interface AvailabilityRead { slots: AvailabilitySlot[]; reason: string | null }
 export type BookingStatus = 'active' | 'pending' | 'hold' | 'attended' | 'cancelled';

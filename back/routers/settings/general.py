@@ -6,6 +6,10 @@ from dependencies import StudioContext, get_current_user, get_studio_context, re
 from models import Studio, User
 from schemas.schedule.hybrid import AVAILABLE_BOOKING_MODES, BookingCapabilities
 from services import hybrid_audit, schedule_guard, terminology
+# Адрес мини-приложения — тот же модуль, из которого его берут письма, чтобы
+# ссылка «Открыть приложение» в письме и QR в кабинете вели в одно место.
+from services.email_layout import MINIAPP_URL
+from services.studio_link import ref_of
 from schemas.settings.general import (
     AppearanceRead,
     AppearanceUpdate,
@@ -32,6 +36,17 @@ async def _get_studio(studio_id: int, db: AsyncSession) -> Studio:
     if studio is None:
         raise HTTPException(status_code=404, detail="Студия не найдена")
     return studio
+
+
+def _miniapp_url(studio: Studio) -> str:
+    """Публичная ссылка на мини-приложение студии — `/s/<public_code>`.
+
+    Считается ровно как в настройках записи (routers/booking/settings.py), но
+    отдаётся ВСЕМ ролям: из неё кабинет собирает QR занятия и абонемента, а
+    Журнал и Каталог открыты не только владельцу. Секрета в ссылке нет —
+    по ней студия зовёт клиентов.
+    """
+    return f"{MINIAPP_URL}/s/{ref_of(studio, studio.id)}"
 
 
 def _capabilities(studio: Studio) -> BookingCapabilities:
@@ -64,12 +79,18 @@ async def get_general_settings(
 ):
     studio = await _get_studio(ctx.studio_id, db)
     capabilities = _capabilities(studio)
+    # Ссылка публичная и одинаковая для всех ролей: по ней студия зовёт
+    # клиентов, и секрета в ней нет. Кабинет печатает из неё QR занятия и
+    # абонемента — в Журнале и Каталоге, куда владелец заходит не один.
+    common = {
+        "booking_capabilities": capabilities,
+        "terminology": terminology.configuration(studio, locale),
+        "miniapp_url": _miniapp_url(studio),
+    }
     if ctx.role == "owner":
-        return GeneralRead.model_validate(studio).model_copy(
-            update={"booking_capabilities": capabilities, "terminology": terminology.configuration(studio, locale)})
+        return GeneralRead.model_validate(studio).model_copy(update=common)
     # Не-owner (admin/trainer): без контактов и адреса студии (ТЗ эпика 2, задача 1).
-    return GeneralReadPublic.model_validate(studio).model_copy(
-        update={"booking_capabilities": capabilities, "terminology": terminology.configuration(studio, locale)})
+    return GeneralReadPublic.model_validate(studio).model_copy(update=common)
 
 
 @router.patch("/general", response_model=GeneralRead)
@@ -115,8 +136,13 @@ async def update_general_settings(
         from services.whatsapp import sync_templates_on_connect
 
         background.add_task(sync_templates_on_connect, ctx.studio_id)
-    return GeneralRead.model_validate(studio).model_copy(
-        update={"booking_capabilities": _capabilities(studio), "terminology": terminology.configuration(studio, locale)})
+    # miniapp_url обязателен и здесь: ответ PATCH уезжает в кэш настроек на
+    # фронте, и без поля он стёр бы ссылку, полученную при GET.
+    return GeneralRead.model_validate(studio).model_copy(update={
+        "booking_capabilities": _capabilities(studio),
+        "terminology": terminology.configuration(studio, locale),
+        "miniapp_url": _miniapp_url(studio),
+    })
 
 
 @router.get("/appearance", response_model=AppearanceRead)

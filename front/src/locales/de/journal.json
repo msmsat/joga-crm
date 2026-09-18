@@ -178,6 +178,7 @@
     "price": "Preis",
     "noSlots": "An diesem Tag ist keine Zeit frei",
     "configIncomplete": "Der Zeitplan dieser Leistung ist noch nicht eingerichtet",
-    "moveTitle": "Buchung verschieben"
+    "moveTitle": "Buchung verschieben",
+    "moveBusy": "Zu dieser Zeit ist die Fachkraft belegt"
   }
 }

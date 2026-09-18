@@ -6,14 +6,19 @@
     "pending": "Setup needed",
     "connectInNotifications": "Connect in Notifications",
     "manage": "Manage in Notifications",
-    "telegram": { "name": "Telegram bot", "desc": "Automatic booking via the bot" },
-    "stripe": { "name": "Payments", "desc": "Stripe: cards, Apple Pay, Google Pay" },
+    "telegram": {
+      "name": "Telegram bot",
+      "desc": "Automatic booking via the bot"
+    },
+    "stripe": {
+      "name": "Payments",
+      "desc": "Stripe: cards, Apple Pay, Google Pay"
+    },
     "miniapp": {
       "name": "Client link",
       "desc": "Booking mini app — for bio, stories and campaigns",
       "copy": "Copy link",
       "open": "Open mini app",
-      "print": "Print QR",
       "posterTitle": "Book your class online",
       "scanHint": "Point your phone camera at the code"
     }
@@ -22,26 +27,66 @@
   "sections": {
     "main": {
       "title": "General settings",
-      "prefill": { "label": "Prepayment on booking", "sub": "Require payment before confirmation" },
-      "trialLesson": { "label": "First class free", "sub": "A new client's first booking is on the studio" },
-      "trainerConfirm": { "label": "Trainer confirmation", "sub": "Booking waits for manual approval" },
-      "bookingActive": { "label": "Online booking active", "sub": "Show the widget to clients" }
+      "prefill": {
+        "label": "Prepayment on booking",
+        "sub": "Require payment before confirmation"
+      },
+      "trialLesson": {
+        "label": "First class free",
+        "sub": "A new client's first booking is on the studio"
+      },
+      "trainerConfirm": {
+        "label": "Trainer confirmation",
+        "sub": "Booking waits for manual approval"
+      },
+      "bookingActive": {
+        "label": "Online booking active",
+        "sub": "Show the widget to clients"
+      }
     },
     "rules": {
       "title": "Limits & rules",
-      "advance": { "label": "Block booking less than", "sub": "Minimum time before class" },
-      "window": { "label": "Booking opens", "sub": "How many days ahead" },
-      "cancel": { "label": "Cancel without penalty", "sub": "Before class the client can cancel" },
-      "repeat": { "label": "Repeat booking", "sub": "Allow a client to book twice" },
-      "workHours": { "label": "Widget working hours", "sub": "Classes outside these hours cannot be booked online" }
+      "advance": {
+        "label": "Block booking less than",
+        "sub": "Minimum time before class"
+      },
+      "window": {
+        "label": "Booking opens",
+        "sub": "How many days ahead"
+      },
+      "cancel": {
+        "label": "Cancel without penalty",
+        "sub": "Before class the client can cancel"
+      },
+      "repeat": {
+        "label": "Repeat booking",
+        "sub": "Allow a client to book twice"
+      },
+      "workHours": {
+        "label": "Widget working hours",
+        "sub": "Classes outside these hours cannot be booked online"
+      }
     },
     "branding": {
       "title": "Widget branding",
       "sub": "Look and feel of the booking page",
       "accentColor": "Accent color",
-      "logo": { "label": "Studio logo", "sub": "Shown in the widget header", "upload": "Upload", "uploading": "Uploading…", "remove": "Remove", "uploadFailed": "Failed to upload logo" },
-      "darkMode": { "label": "Dark theme", "sub": "Widget in dark appearance" },
-      "language": { "label": "Default language", "sub": "Primary interface language" }
+      "logo": {
+        "label": "Studio logo",
+        "sub": "Shown in the widget header",
+        "upload": "Upload",
+        "uploading": "Uploading…",
+        "remove": "Remove",
+        "uploadFailed": "Failed to upload logo"
+      },
+      "darkMode": {
+        "label": "Dark theme",
+        "sub": "Widget in dark appearance"
+      },
+      "language": {
+        "label": "Default language",
+        "sub": "Primary interface language"
+      }
     },
     "notifications": {
       "title": "Notifications",
@@ -51,9 +96,18 @@
         "reminder2h": "Reminder: in 2 hours",
         "reviewRequest": "Thanks for visiting! Rate the class"
       },
-      "reminder24h": { "label": "24h reminder", "sub": "Morning before class" },
-      "reminder2h": { "label": "2h reminder", "sub": "Shortly before class" },
-      "reviewRequest": { "label": "Review request", "sub": "Once the visit is marked" }
+      "reminder24h": {
+        "label": "24h reminder",
+        "sub": "Morning before class"
+      },
+      "reminder2h": {
+        "label": "2h reminder",
+        "sub": "Shortly before class"
+      },
+      "reviewRequest": {
+        "label": "Review request",
+        "sub": "Once the visit is marked"
+      }
     },
     "coffee": {
       "enabled": {
@@ -72,17 +126,38 @@
     }
   },
   "options": {
-    "advance": { "1h": "1 hour", "2h": "2 hours", "4h": "4 hours", "12h": "12 hours", "24h": "24 hours" },
-    "window": { "7d": "7 days", "14d": "14 days", "30d": "30 days", "60d": "60 days" },
-    "cancel": { "2h": "2 hours", "4h": "4 hours", "12h": "12 hours", "24h": "24 hours" },
-    "lang": { "uk": "Українська", "ru": "Русский", "en": "English", "cs": "Čeština", "de": "Deutsch" }
+    "advance": {
+      "1h": "1 hour",
+      "2h": "2 hours",
+      "4h": "4 hours",
+      "12h": "12 hours",
+      "24h": "24 hours"
+    },
+    "window": {
+      "7d": "7 days",
+      "14d": "14 days",
+      "30d": "30 days",
+      "60d": "60 days"
+    },
+    "cancel": {
+      "2h": "2 hours",
+      "4h": "4 hours",
+      "12h": "12 hours",
+      "24h": "24 hours"
+    },
+    "lang": {
+      "uk": "Українська",
+      "ru": "Русский",
+      "en": "English",
+      "cs": "Čeština",
+      "de": "Deutsch"
+    }
   },
   "toasts": {
     "botConnected": "Bot connected",
     "botDisconnected": "Bot disconnected",
     "codeCopied": "Code copied!",
     "linkCopied": "Link copied!",
-    "printBlocked": "Allow pop-ups to print the QR code",
     "stripeReturned": "Details sent to Stripe",
     "stripeLinkExpired": "The Stripe link expired — please try again"
   },

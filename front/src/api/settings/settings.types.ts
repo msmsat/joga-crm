@@ -26,10 +26,13 @@ export interface GeneralSettings {
   date_format: string | null
   first_day_of_week: string | null
   journal_time_step: number
+  /** Публичная ссылка на мини-приложение студии (`/s/<код>`) — считает сервер,
+   *  только чтение. Из неё собираются QR занятия, абонемента и самой студии. */
+  miniapp_url: string
 }
 
 // Поля, доступные для PATCH — logo_url пишется отдельным эндпоинтом (studioApi.uploadStudioLogo).
-export type GeneralUpdate = Partial<Omit<GeneralSettings, 'logo_url' | 'booking_capabilities' | 'terminology'>> & {
+export type GeneralUpdate = Partial<Omit<GeneralSettings, 'logo_url' | 'booking_capabilities' | 'terminology' | 'miniapp_url'>> & {
   booking_mode?: StudioBookingMode;
   terminology_profile?: TerminologyProfile;
   strict_schedule_enabled?: boolean;

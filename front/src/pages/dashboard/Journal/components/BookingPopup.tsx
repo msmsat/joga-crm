@@ -10,11 +10,13 @@ import { scheduleApi } from '../../../../api/schedule';
 import { errorMessage } from '../../../../api/errorMessage';
 import { formatIndexToTimeStr, parseTimeToIndex, generateTimeIntervals, MIN_TIME_INDEX, MAX_TIME_INDEX } from '../utils';
 import { useServiceOptions, CREATE_SERVICE_OPTION } from '../hooks/useServiceOptions';
+import { ResourceMoveField } from './ResourceMoveField';
 import type { useJournalMutations } from '../hooks/useJournalMutations';
 import type { HistoryEntry } from '../hooks/useUndoHistory';
-import { useToast, Select, ConfirmModal } from '../../../../components/ui/index';
+import { useToast, Select, ConfirmModal, QrShareModal } from '../../../../components/ui/index';
+import { miniappLink } from '../../../../lib/miniapp';
 import { formatMoney } from '../../../../lib/money';
-import { useStudioCurrency } from '../../../../hooks/useStudioCurrency';
+import { useStudioCurrency, useStudioSettings } from '../../../../hooks/useStudioCurrency';
 
 const MIN_TIME_IDX = MIN_TIME_INDEX;
 const MAX_TIME_IDX = MAX_TIME_INDEX;
@@ -29,8 +31,6 @@ interface BookingPopupProps {
   popupRef: React.RefObject<HTMLDivElement | null>;
   popupPos: { x: number; y: number };
   canEdit: boolean;
-  /** HB-22: перенос индивидуальной записи — общий сервис с версией. */
-  onReschedule?: (booking: Booking, reservationId: number, clientId: number) => void;
   timeStep: number;
   setPopupBooking: (b: Booking | null) => void;
   isEditingBooking: boolean;
@@ -52,7 +52,6 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
   popupRef,
   popupPos,
   canEdit,
-  onReschedule,
   timeStep,
   setPopupBooking,
   isEditingBooking,
@@ -68,7 +67,7 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
 }) => {
   const toast = useToast();
   const navigate = useNavigate();
-  const { t } = useTranslation('journal');
+  const { t, i18n } = useTranslation('journal');
   const isCancelled = popupBooking.status === 'cancelled';
   const isResource = popupBooking.bookingMode === 'resource';
 
@@ -77,6 +76,7 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
   const [editEndInput, setEditEndInput] = useState('');
   const [editActiveDropdown, setEditActiveDropdown] = useState<'start' | 'end' | null>(null);
   const [showCatalogConfirm, setShowCatalogConfirm] = useState(false);
+  const [showQr, setShowQr] = useState(false);
 
   // Стейты добавления клиента
   // Бронь, по которой сейчас спрашиваем способ оплаты (id записи) — строка
@@ -90,6 +90,28 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
 
   const startScrollRef = useRef<HTMLDivElement>(null);
   const endScrollRef = useRef<HTMLDivElement>(null);
+
+  // QR занятия: ссылка мини-приложения студии с номером занятия. Плакат и
+  // картинку для сторис рисует общая модалка кита — здесь только что на них
+  // написать. Индивидуальной записи (resource) код не положен: это чужое
+  // забронированное время, звать на него посторонних некуда.
+  const { data: studio } = useStudioSettings();
+  const qrUrl = miniappLink(studio?.miniapp_url ?? '', {
+    tab: 'sched',
+    lesson: popupBooking.id,
+    d: popupBooking.date,
+  });
+  const canShareQr = !isCancelled && !isResource && Boolean(studio?.miniapp_url);
+  const qrSubtitle = [
+    popupBooking.date
+      ? new Date(`${popupBooking.date}T00:00:00`).toLocaleDateString(i18n.language, {
+          weekday: 'short', day: 'numeric', month: 'long',
+        })
+      : null,
+    `${formatIndexToTimeStr(popupBooking.timeStart)}–${formatIndexToTimeStr(popupBooking.timeEnd)}`,
+    popupBooking.hall || null,
+    trainers.find(tr => tr.id === popupBooking.trainer)?.full || null,
+  ].filter(Boolean).join(' · ');
 
   const KP_INTERVALS = useMemo(() => generateTimeIntervals(timeStep), [timeStep]);
   const { services, options: serviceOptions } = useServiceOptions();
@@ -537,7 +559,19 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
               <div style={{ fontWeight: 700 }}>{trainers.find(t => t.id === popupBooking.trainer)?.full}</div>
             </div>
 
-            {popupBooking.maxClients > 0 && (
+            {/* HB-22 п.3: у индивидуальной записи один клиент и одна услуга —
+                добавлять сюда некого, и единственное, что с ней делают из
+                журнала, — двигают во времени. Поэтому перенос стоит прямо
+                здесь, а не за кнопкой, открывающей форму записи заново. */}
+            {canEdit && isResource && (
+              <ResourceMoveField
+                booking={popupBooking}
+                reservationId={bookedClients?.[0]?.reservation_id ?? null}
+                onMoved={() => { setPopupBooking(null); mutations.invalidate(); }}
+              />
+            )}
+
+            {!isResource && popupBooking.maxClients > 0 && (
               <div style={{ marginTop: 8, background: 'rgba(var(--ink),0.02)', padding: '14px 16px', borderRadius: '16px', border: '1px solid rgba(var(--ink),0.03)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
                   <span style={{ fontSize: 11, fontWeight: 800, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
@@ -726,46 +760,45 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
           </>
         ) : (
           <>
-            {/* HB-22 п.3: у индивидуальной записи один клиент и одна услуга —
-                добавлять сюда некого, а перенос идёт через подтверждение нового
-                времени (quote + expected_version), а не через правку занятия. */}
-            {canEdit && isResource && (
-              <button
-                className="bp-btn primary text-btn"
-                // Список записанных грузится асинхронно, а перенос без клиента
-                // и брони невозможен. Кнопка ждёт данные видимо, а не молча:
-                // «нажал — ничего не произошло» человек читает как поломку.
-                disabled={!bookedClients?.[0]?.reservation_id}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  const target = bookedClients?.[0];
-                  if (target) onReschedule?.(popupBooking, target.reservation_id, target.client_id);
-                }}
-              >
-                <Icons.Edit /> {bookedClients ? t('bookingPopup.reschedule') : t('bookingPopup.loading')}
-              </button>
-            )}
-
             {canEdit && !isResource && (
               <>
                 <button className="bp-btn primary text-btn" onClick={(e) => { e.stopPropagation(); setIsAddingClient(true); }}>
                   <Icons.UserPlus /> {t('bookingPopup.add')}
                 </button>
 
-                <button className="bp-btn ghost text-btn" title={t('bookingPopup.editLesson')} onClick={(e) => {
-                  e.stopPropagation();
-                  setEditForm({
-                    serviceId: popupBooking.serviceId,
-                    title: popupBooking.title, hall: popupBooking.hall,
-                    maxClients: String(popupBooking.maxClients),
-                    timeStart: popupBooking.timeStart, timeEnd: popupBooking.timeEnd
-                  });
-                  setIsEditingBooking(true);
-                }}>
-                  <Icons.Edit /> {t('bookingPopup.edit')}
+                {/* Только карандаш: рядом встали QR и удаление, и три подписи
+                    подряд выдавливали корзину за край попапа. Смысл кнопки
+                    иконка несёт сама, название остаётся подсказкой. */}
+                <button
+                  className="bp-btn ghost icon-only"
+                  title={t('bookingPopup.editLesson')}
+                  aria-label={t('bookingPopup.edit')}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setEditForm({
+                      serviceId: popupBooking.serviceId,
+                      title: popupBooking.title, hall: popupBooking.hall,
+                      maxClients: String(popupBooking.maxClients),
+                      timeStart: popupBooking.timeStart, timeEnd: popupBooking.timeEnd
+                    });
+                    setIsEditingBooking(true);
+                  }}
+                >
+                  <Icons.Edit />
                 </button>
 
               </>
+            )}
+
+            {canShareQr && (
+              <button
+                className="bp-btn ghost icon-only"
+                title={t('common:qr.lessonAction')}
+                aria-label={t('common:qr.lessonAction')}
+                onClick={(e) => { e.stopPropagation(); setShowQr(true); }}
+              >
+                <Icons.QrCode />
+              </button>
             )}
 
             {canEdit && (
@@ -778,6 +811,18 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
       </div>
       )}
     </div>
+
+    {showQr && (
+      <QrShareModal
+        url={qrUrl}
+        kicker={studio?.name}
+        title={popupBooking.title}
+        subtitle={qrSubtitle}
+        caption={t('common:qr.lessonCaption')}
+        fileName={popupBooking.title}
+        onClose={() => setShowQr(false)}
+      />
+    )}
 
     {showCatalogConfirm && (
       <ConfirmModal

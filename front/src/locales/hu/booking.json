@@ -19,7 +19,6 @@
       "desc": "Foglalási mini alkalmazás — bióhoz, storyhoz és kampányokhoz",
       "copy": "Link másolása",
       "open": "Mini alkalmazás megnyitása",
-      "print": "QR nyomtatása",
       "posterTitle": "Foglaljon órát online",
       "scanHint": "Irányítsa a telefon kameráját a kódra"
     }
@@ -159,7 +158,6 @@
     "botDisconnected": "A bot leválasztva",
     "codeCopied": "A kód másolva!",
     "linkCopied": "A link másolva!",
-    "printBlocked": "Engedélyezze a felugró ablakokat a QR-kód nyomtatásához",
     "stripeReturned": "Az adatok elküldve a Stripe-nak",
     "stripeLinkExpired": "A Stripe link lejárt — próbálja újra"
   },

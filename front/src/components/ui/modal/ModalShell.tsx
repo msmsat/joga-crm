@@ -11,6 +11,10 @@ export interface ModalShellProps {
   maxWidth?: string;            // ширина карточки, если дефолт (460/860) не подходит
   closeOnBackdrop?: boolean;    // клик мимо закрывает (по умолчанию true)
   dismissible?: boolean;        // false — не закрыть ни Esc, ни кликом мимо (гейт)
+  /** Этаж выше базового (.v-overlay, 1000) — когда модалка открывается поверх
+   *  собственного слоя страницы: попап журнала стоит на 9000 и иначе накрыл бы
+   *  её собой. Та же мера, что у ConfirmModal. */
+  zIndex?: number;
 }
 
 const EXIT_MS = 200;
@@ -25,7 +29,7 @@ export const useModalClose = () => useContext(CloseContext);
 // Содержимое (Header/поля/Footer) передаётся как children.
 // Анимация — в классах .v-overlay / .v-modal (App.css). Без backdrop-filter:
 // блюр во весь вьюпорт и был причиной лагов открытия (см. комментарий там).
-export function ModalShell({ onClose, children, size = 'sm', left, leftStyle, leftWidth, maxWidth, closeOnBackdrop = true, dismissible = true }: ModalShellProps) {
+export function ModalShell({ onClose, children, size = 'sm', left, leftStyle, leftWidth, maxWidth, closeOnBackdrop = true, dismissible = true, zIndex }: ModalShellProps) {
   const [leaving, setLeaving] = useState(false);
 
   const requestClose = () => {
@@ -47,6 +51,7 @@ export function ModalShell({ onClose, children, size = 'sm', left, leftStyle, le
   return createPortal(
     <div
       className={leaving ? 'v-overlay is-leaving' : 'v-overlay'}
+      style={zIndex != null ? { zIndex } : undefined}
       onClick={() => { if (closeOnBackdrop) requestClose(); }}
     >
       <div

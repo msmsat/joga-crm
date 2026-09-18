@@ -19,7 +19,6 @@
       "desc": "Booking-miniapp — til bio, stories og kampagner",
       "copy": "Kopiér link",
       "open": "Åbn miniappen",
-      "print": "Udskriv QR",
       "posterTitle": "Book dit hold online",
       "scanHint": "Ret telefonens kamera mod koden"
     }
@@ -159,7 +158,6 @@
     "botDisconnected": "Bot afbrudt",
     "codeCopied": "Koden er kopieret!",
     "linkCopied": "Linket er kopieret!",
-    "printBlocked": "Tillad pop op-vinduer for at udskrive QR-koden",
     "stripeReturned": "Oplysningerne er sendt til Stripe",
     "stripeLinkExpired": "Stripe-linket er udløbet — prøv igen"
   },

@@ -144,6 +144,12 @@ class CrmAvailabilityQuery(AvailabilityQuery):
     # Без этого поля админский предпросмотр слотов расходился бы с quote,
     # который зал учитывает.
     hall_id: Optional[int] = Field(default=None, gt=0)
+    # Перенос: занятие, которое переносим, не должно занимать само себя. Его
+    # quote уже считается с этим исключением (services/resource_reschedule),
+    # и без того же исключения здесь список свободного времени врал бы в
+    # обратную сторону — прятал минуты, которые сервер на самом деле примет.
+    # Только CRM: у клиента экрана переноса с предпросмотром слотов нет.
+    exclude_lesson_id: Optional[int] = Field(default=None, gt=0)
 
 
 class PublicAvailabilityQuery(AvailabilityQuery):

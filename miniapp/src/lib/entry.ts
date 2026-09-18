@@ -29,21 +29,25 @@ export type Entry = {
 const TABS = ['home', 'sched', 'my', 'club', 'prof'];
 
 /**
- * Студия гостя — того, кто открыл ссылку студии, но ещё не входил.
+ * Студия, которую приложение сейчас показывает, — из ссылки или из памяти.
  *
- * Клиенту студию называет токен (`client.studio_id` на бэкенде), гостю — никто:
- * токена у него нет и до самой брони не будет. Поэтому App кладёт сюда студию
- * из ссылки один раз на старте, а api/client.ts подставляет её в запросы, пока
- * сессии нет. Модульная переменная, а не проп: единственный, кому это нужно, —
- * обёртка над fetch, и тащить студию до неё через все страницы незачем.
+ * Едет в КАЖДЫЙ запрос, а не только в гостевые. Карточка клиента принадлежит
+ * одной студии (`Client.studio_id` на бэкенде), и токен через `sub` указывает
+ * на эту же карточку — поэтому «где я вошёл» и «куда ведёт ссылка» это разные
+ * вопросы, и ответ на второй сервер должен услышать. Пока приложение молчало о
+ * ссылке при живой сессии, клиент студии A открывал ссылку студии B и получал
+ * студию A целиком: брендинг вплоть до тёмной темы, каталог и расписание.
+ *
+ * Модульная переменная, а не проп: единственный, кому это нужно, — обёртка над
+ * fetch, и тащить студию до неё через все страницы незачем.
  */
-let guestStudioRef: string | null = null;
+let studioRef: string | null = null;
 
-export const setGuestStudio = (studioRef: string | null) => {
-  guestStudioRef = studioRef;
+export const setStudioRef = (ref: string | null) => {
+  studioRef = ref;
 };
 
-export const getGuestStudio = (): string | null => guestStudioRef;
+export const getStudioRef = (): string | null => studioRef;
 
 /**
  * Последняя студия, которую приложение реально открывало.
@@ -83,6 +87,44 @@ function recallStudio(): string | null {
 export function readTab(): string | undefined {
   const tab = new URLSearchParams(window.location.search).get('tab');
   return tab && TABS.includes(tab) ? tab : undefined;
+}
+
+/**
+ * Куда именно ведёт ссылка внутри раздела: на конкретное занятие или на
+ * конкретный абонемент.
+ *
+ * Это адрес QR-кодов, которые студия печатает и выкладывает в сторис
+ * (front/src/components/ui/QrShareModal.tsx). Код на занятие обязан открыть
+ * ЭТО занятие: у всех занятий студии он иначе одинаковый, и печатать его
+ * отдельно для каждого было бы незачем.
+ *
+ * Дата едет вместе с занятием (`d`) осознанно: расписание грузится по дням, и
+ * без неё приложению пришлось бы перебирать дни в поисках номера. Занятия в
+ * найденном дне уже нет (отменили, прошло) — ссылка просто открывает этот день,
+ * а не пустой экран с ошибкой.
+ */
+export type DeepLink = {
+  lessonId?: number;
+  /** `YYYY-MM-DD` — день, в котором искать занятие. */
+  date?: string;
+  packageId?: number;
+};
+
+const numeric = (value: string | null): number | undefined => {
+  // Мусор в адресе игнорируем молча: ссылку правят руками и пересылают.
+  if (!value || !/^\d+$/.test(value)) return undefined;
+  const parsed = Number(value);
+  return Number.isSafeInteger(parsed) && parsed > 0 ? parsed : undefined;
+};
+
+export function readDeepLink(): DeepLink {
+  const params = new URLSearchParams(window.location.search);
+  const date = params.get('d');
+  return {
+    lessonId: numeric(params.get('lesson')),
+    date: date && /^\d{4}-\d{2}-\d{2}$/.test(date) ? date : undefined,
+    packageId: numeric(params.get('pkg')),
+  };
 }
 
 function parseStartParam(startParam: string | undefined) {

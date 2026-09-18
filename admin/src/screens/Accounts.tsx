@@ -40,44 +40,44 @@ export function Accounts() {
         value={q}
         onChange={(e) => setQ(e.target.value)}
         placeholder="Поиск по студии или почте владельца"
-        className="w-full max-w-md rounded-lg border border-[#E6E2DE] px-3 py-2 outline-none focus:border-[#FCAE91]"
+        className="field w-full max-w-md"
       />
-      <p className="text-sm text-[#666]">Найдено: {total}</p>
-      {error && <p className="text-[#D88C9A]">{error}</p>}
+      <p className="text-sm text-[var(--muted)]">Найдено: {total}</p>
+      {error && <p className="text-[var(--alert)]">{error}</p>}
 
-      <div className="overflow-x-auto rounded-2xl bg-white shadow-[0_8px_24px_-4px_rgba(0,0,0,0.04)]">
-        <table className="w-full min-w-[900px] text-sm">
+      <div className="panel overflow-x-auto">
+        <table className="tbl min-w-[900px]">
           <thead>
-            <tr className="border-b border-[#EFEAE6] text-left text-[#666]">
-              <th className="p-4">Студия</th>
-              <th className="p-4">Владелец</th>
-              <th className="p-4">Создана</th>
-              <th className="p-4">Тариф</th>
-              <th className="p-4">Пробный до</th>
-              <th className="p-4">Последний вход</th>
-              <th className="p-4">Заплачено</th>
+            <tr>
+              <th>Студия</th>
+              <th>Владелец</th>
+              <th>Создана</th>
+              <th>Тариф</th>
+              <th>Пробный до</th>
+              <th>Последний вход</th>
+              <th>Заплачено</th>
             </tr>
           </thead>
           <tbody>
             {items.map((a) => (
-              <tr key={a.studio_id} className="border-b border-[#F6F3F0]">
-                <td className="p-4 font-medium text-[#1A1A1A]">{a.name}</td>
-                <td className="p-4 text-[#666]">
+              <tr key={a.studio_id}>
+                <td className="font-medium">{a.name}</td>
+                <td className="text-[var(--muted)]">
                   {a.owner.name ?? '—'}<br />
                   <span className="text-xs">{a.owner.email ?? '—'}</span>
                 </td>
-                <td className="p-4 text-[#666]">{formatDate(a.created_at)}</td>
-                <td className="p-4 text-[#666]">
+                <td className="text-[var(--muted)]">{formatDate(a.created_at)}</td>
+                <td className="text-[var(--muted)]">
                   {a.plan.name ?? '—'}<br />
                   <span className="text-xs">{a.plan.status ?? '—'}</span>
                 </td>
-                <td className="p-4 text-[#666]">{formatDate(a.expires_at)}</td>
-                <td className="p-4 text-[#666]">{formatDateTime(a.last_login_at)}</td>
-                <td className="p-4">
+                <td className="text-[var(--muted)]">{formatDate(a.expires_at)}</td>
+                <td className="text-[var(--muted)]">{formatDateTime(a.last_login_at)}</td>
+                <td>
                   {a.paid.length === 0
-                    ? <span className="text-[#666]">—</span>
+                    ? <span className="text-[var(--muted)]">—</span>
                     : a.paid.map((p) => (
-                        <div key={p.currency} className="text-[#1A1A1A]">
+                        <div key={p.currency}>
                           {formatMoney(p.amount, p.currency)}
                         </div>
                       ))}

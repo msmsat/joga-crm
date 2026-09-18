@@ -178,6 +178,7 @@
     "price": "Ár",
     "noSlots": "Ezen a napon nincs szabad időpont",
     "configIncomplete": "Ennek a szolgáltatásnak az órarendje még nincs beállítva",
-    "moveTitle": "Foglalás áthelyezése"
+    "moveTitle": "Foglalás áthelyezése",
+    "moveBusy": "Ekkor a szakember foglalt"
   }
 }
