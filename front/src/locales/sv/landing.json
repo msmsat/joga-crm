@@ -49,7 +49,7 @@
         "label": "Kanaler för onlinebokning"
       },
       {
-        "value": "från 30 €",
+        "value": "från 20 €",
         "label": "Per månad och studio"
       }
     ],
@@ -222,15 +222,15 @@
   "pricing": {
     "label": "priser",
     "title": "Din plan beror på\nstorleken på ditt team",
-    "lead": "30 € för två personer, +5 € för varje nästa plats, obegränsat — 150 €. Alla 16 moduler och Velora AI ingår på varje nivå: du betalar för teamets storlek, inte för att låsa upp knappar. Tre betalningsmodeller att välja mellan och upp till 30 % rabatt när du betalar i förskott.",
+    "lead": "20 € för en person, 30 € för två personer, +5 € för varje nästa plats, obegränsat — 150 €. Alla 16 moduler och Velora AI ingår på varje nivå: du betalar för teamets storlek, inte för att låsa upp knappar. Tre betalningsmodeller att välja mellan och upp till 30 % rabatt när du betalar i förskott.",
     "team": "team",
     "seats_one": "person",
     "seats_other": "personer",
     "unlimited": "utan gräns",
-    "scaleMin": "2 platser",
+    "scaleMin": "1 plats",
     "scaleMax": "∞ obegränsat",
     "sliderAria": "Hur många personer arbetar i din studio",
-    "hint": "**30 €** för två personer, **+5 €** för varje extra plats. Obegränsat — **150 €** per månad.",
+    "hint": "**20 €** för en person, **30 €** för två personer, **+5 €** för varje extra plats. Obegränsat — **150 €** per månad.",
     "period": "betalningsperiod",
     "months": "{{count}} mån.",
     "noDiscount": "—",
@@ -253,12 +253,12 @@
     "models": [
       {
         "title": "Prenumeration",
-        "price": "från 30 € / mån.",
+        "price": "från 20 € / mån.",
         "desc": "Ett fast belopp. Du känner till kostnaden i förväg — inga överraskningar i slutet av månaden."
       },
       {
         "title": "3 % av intäkterna",
-        "price": "minst 30 € / mån.",
+        "price": "minst 20 € / mån.",
         "desc": "Betala efter omsättning. Under en lugn månad fyller du bara på skillnaden till minimibeloppet."
       },
       {

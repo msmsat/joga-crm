@@ -285,6 +285,8 @@
       "addPhoto": "Foto",
       "removePhoto": "Fjern foto",
       "photoUploading": "Uploader…",
+      "dropHint": "Slip for at vedhæfte",
+      "photoAlt": "Notefoto",
       "justNow": "lige nu",
       "deleteTitle": "Slet note?",
       "deleteMessage": "Denne note kan ikke gendannes."

@@ -266,12 +266,7 @@
     "cannotDeleteLastOwner": "Ainoaa omistajaa ei voi poistaa"
   },
   "ownerModal": {
-    "header": "OMISTAJAN YHTEYSTIEDOT",
-    "heading": "Yhteystiedot",
-    "sub": "Studion omistajan puhelin ja sähköposti",
-    "cardNote": "sähköposti on kirjautumistunnus",
-    "loginWarning": "Sähköposti on omistajan kirjautumistunnus. Kirjaudu tallennuksen jälkeen uudella osoitteella.",
-    "lockedHint": "Nimeä, kuvaa, roolia ja oikeuksia ei muokata täällä — ne ovat «Profiili»-osiossa."
+    "loginWarning": "Sähköposti on omistajan kirjautumistunnus. Kirjaudu tallennuksen jälkeen uudella osoitteella."
   },
   "list": {
     "pendingLabel": "Kutsu odottaa",

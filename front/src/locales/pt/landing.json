@@ -49,7 +49,7 @@
         "label": "Canais de marcação online"
       },
       {
-        "value": "desde 30 €",
+        "value": "desde 20 €",
         "label": "Por mês, por estúdio"
       }
     ],
@@ -222,15 +222,15 @@
   "pricing": {
     "label": "preços",
     "title": "O seu plano depende\ndo tamanho da sua equipa",
-    "lead": "30 € para duas pessoas, +5 € por cada lugar seguinte, ilimitado — 150 €. Todos os 16 módulos e a Velora AI estão em todos os níveis: paga pelo tamanho da equipa, não para desbloquear botões. Três modelos de pagamento à escolha e até 30% de desconto ao pagar antecipadamente.",
+    "lead": "20 € para uma pessoa, 30 € para duas pessoas, +5 € por cada lugar seguinte, ilimitado — 150 €. Todos os 16 módulos e a Velora AI estão em todos os níveis: paga pelo tamanho da equipa, não para desbloquear botões. Três modelos de pagamento à escolha e até 30% de desconto ao pagar antecipadamente.",
     "team": "equipa",
     "seats_one": "pessoa",
     "seats_other": "pessoas",
     "unlimited": "sem limite",
-    "scaleMin": "2 lugares",
+    "scaleMin": "1 lugar",
     "scaleMax": "∞ ilimitado",
     "sliderAria": "Quantas pessoas trabalham no seu estúdio",
-    "hint": "**30 €** para duas pessoas, **+5 €** por cada lugar adicional. Ilimitado — **150 €** por mês.",
+    "hint": "**20 €** para uma pessoa, **30 €** para duas pessoas, **+5 €** por cada lugar adicional. Ilimitado — **150 €** por mês.",
     "period": "período de faturação",
     "months": "{{count}} meses",
     "noDiscount": "—",
@@ -253,12 +253,12 @@
     "models": [
       {
         "title": "Subscrição",
-        "price": "desde 30 € / mês",
+        "price": "desde 20 € / mês",
         "desc": "Um valor fixo. Sabe o custo antecipadamente, sem surpresas no fim do mês."
       },
       {
         "title": "3% da receita",
-        "price": "mínimo de 30 € / mês",
+        "price": "mínimo de 20 € / mês",
         "desc": "Pague conforme a faturação. Num mês calmo, só completa a diferença até ao mínimo."
       },
       {

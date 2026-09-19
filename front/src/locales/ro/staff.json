@@ -266,12 +266,7 @@
     "cannotDeleteLastOwner": "Nu poate fi eliminat singurul proprietar"
   },
   "ownerModal": {
-    "header": "CONTACTELE PROPRIETARULUI",
-    "heading": "Date de contact",
-    "sub": "Telefonul și emailul proprietarului studioului",
-    "cardNote": "emailul este numele de autentificare",
-    "loginWarning": "Emailul este loginul proprietarului. După salvare, autentifică-te cu noua adresă.",
-    "lockedHint": "Numele, fotografia, rolul și drepturile de acces nu se editează aici — se află în secțiunea «Profil»."
+    "loginWarning": "Emailul este loginul proprietarului. După salvare, autentifică-te cu noua adresă."
   },
   "list": {
     "pendingLabel": "Invitație în așteptare",

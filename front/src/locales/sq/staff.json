@@ -266,12 +266,7 @@
     "cannotDeleteLastOwner": "Pronari i vetëm nuk mund të hiqet"
   },
   "ownerModal": {
-    "header": "KONTAKTET E PRONARIT",
-    "heading": "Të dhënat e kontaktit",
-    "sub": "Telefoni dhe email-i i pronarit të studios",
-    "cardNote": "email-i është emri i hyrjes",
-    "loginWarning": "Email-i është emri i hyrjes së pronarit. Pas ruajtjes, hyni me adresën e re.",
-    "lockedHint": "Emri, fotoja, roli dhe të drejtat nuk redaktohen këtu — janë te seksioni «Profili»."
+    "loginWarning": "Email-i është emri i hyrjes së pronarit. Pas ruajtjes, hyni me adresën e re."
   },
   "list": {
     "pendingLabel": "Ftesa në pritje",

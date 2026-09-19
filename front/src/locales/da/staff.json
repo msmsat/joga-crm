@@ -266,12 +266,7 @@
     "cannotDeleteLastOwner": "Den eneste ejer kan ikke fjernes"
   },
   "ownerModal": {
-    "header": "EJERENS KONTAKTOPLYSNINGER",
-    "heading": "Kontaktoplysninger",
-    "sub": "Telefon og e-mail på studiets ejer",
-    "cardNote": "e-mailen er login",
-    "loginWarning": "E-mailen er ejerens login. Efter du har gemt, skal du logge ind med den nye adresse.",
-    "lockedHint": "Navn, billede, rolle og rettigheder redigeres ikke her — de findes i afsnittet «Profil»."
+    "loginWarning": "E-mailen er ejerens login. Efter du har gemt, skal du logge ind med den nye adresse."
   },
   "list": {
     "pendingLabel": "Afventer invitationen",

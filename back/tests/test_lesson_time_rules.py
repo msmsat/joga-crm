@@ -67,6 +67,9 @@ class _R:
     def scalar(self):
         return self._v
 
+    def first(self):
+        return self._v
+
 
 class _DB:
     """execute() отдаёт значения из seq по порядку вызовов (паттерн test_loyalty_points)."""

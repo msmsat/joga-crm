@@ -170,11 +170,8 @@
     "lessonAction": "QR-kode til holdet",
     "lessonCaption": "Ret kameraet mod koden for at booke holdet",
     "packageAction": "QR-kode til klippekortet",
-<<<<<<< HEAD
     "packageCaption": "Ret kameraet mod koden for at købe klippekortet",
     "serviceAction": "QR-kode til ydelsen"
-=======
-    "packageCaption": "Ret kameraet mod koden for at købe klippekortet"
   },
   "auth": {
     "noAccount": "Har du ikke en konto?",
@@ -212,6 +209,11 @@
       "strong": "Stærk",
       "excellent": "Fremragende"
     }
->>>>>>> bcf4a067f80368999140a9359ef17c722154c536
+  },
+  "lightbox": {
+    "close": "Luk",
+    "prev": "Forrige foto",
+    "next": "Næste foto",
+    "counter": "{{current}} af {{total}}"
   }
 }

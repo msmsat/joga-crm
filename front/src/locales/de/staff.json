@@ -266,12 +266,7 @@
     "cannotDeleteLastOwner": "Der einzige Inhaber kann nicht entfernt werden"
   },
   "ownerModal": {
-    "header": "KONTAKTDATEN DES INHABERS",
-    "heading": "Kontaktdaten",
-    "sub": "Telefon und E-Mail der Studioinhaberin bzw. des Studioinhabers",
-    "cardNote": "E-Mail ist der Anmeldename",
-    "loginWarning": "Die E-Mail ist der Anmeldename. Melden Sie sich nach dem Speichern mit der neuen Adresse an.",
-    "lockedHint": "Name, Foto, Rolle und Rechte werden hier nicht bearbeitet — sie stehen im Bereich «Profil»."
+    "loginWarning": "Die E-Mail ist der Anmeldename. Melden Sie sich nach dem Speichern mit der neuen Adresse an."
   },
   "list": {
     "pendingLabel": "Einladung ausstehend",

@@ -285,6 +285,8 @@
       "addPhoto": "Foto",
       "removePhoto": "Hiq foton",
       "photoUploading": "Duke ngarkuar…",
+      "dropHint": "Lëshoni për ta bashkëngjitur",
+      "photoAlt": "Foto e shënimit",
       "justNow": "sapo tani",
       "deleteTitle": "Të fshihet shënimi?",
       "deleteMessage": "Ky shënim nuk mund të rikthehet."

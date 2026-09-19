@@ -266,12 +266,7 @@
     "cannotDeleteLastOwner": "Tek sahip kaldırılamaz"
   },
   "ownerModal": {
-    "header": "SAHİP İLETİŞİM BİLGİLERİ",
-    "heading": "İletişim bilgileri",
-    "sub": "Stüdyo sahibinin telefonu ve e-postası",
-    "cardNote": "e-posta, giriş kullanıcı adıdır",
-    "loginWarning": "E-posta, sahibin giriş adıdır. Kaydettikten sonra yeni adresle giriş yapın.",
-    "lockedHint": "Ad, fotoğraf, rol ve erişim hakları burada düzenlenmez — «Profil» bölümünde bulunur."
+    "loginWarning": "E-posta, sahibin giriş adıdır. Kaydettikten sonra yeni adresle giriş yapın."
   },
   "list": {
     "pendingLabel": "Davet bekleniyor",

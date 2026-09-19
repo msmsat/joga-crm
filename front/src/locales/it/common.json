@@ -170,11 +170,8 @@
     "lessonAction": "Codice QR della lezione",
     "lessonCaption": "Inquadra con la fotocamera per prenotare questa lezione",
     "packageAction": "Codice QR dell'abbonamento",
-<<<<<<< HEAD
     "packageCaption": "Inquadra con la fotocamera per acquistare l'abbonamento",
     "serviceAction": "Codice QR del servizio"
-=======
-    "packageCaption": "Inquadra con la fotocamera per acquistare l'abbonamento"
   },
   "auth": {
     "noAccount": "Non hai un account?",
@@ -212,6 +209,11 @@
       "strong": "Forte",
       "excellent": "Eccellente"
     }
->>>>>>> bcf4a067f80368999140a9359ef17c722154c536
+  },
+  "lightbox": {
+    "close": "Chiudi",
+    "prev": "Foto precedente",
+    "next": "Foto successiva",
+    "counter": "{{current}} di {{total}}"
   }
 }

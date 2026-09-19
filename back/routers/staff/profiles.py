@@ -22,7 +22,7 @@ from services.contacts import (
     ensure_user_contacts_free, normalize, normalized_column,
 )
 from services.invites import send_invite
-from services.members import full_name
+from services.members import full_name, is_specialist, is_specialist_clause
 from services.notifier import notify
 from services.plan_limits import check_plan_limit
 from services import schedule_guard
@@ -180,8 +180,12 @@ def _is_online(user: User) -> bool:
     return user.last_online_at == date.today()
 
 
-def _staff_list_item(user: User, membership: StudioMember) -> dict:
-    """Контакты — с аккаунта, профиль в студии (имя, фото, роль) — с membership."""
+def _staff_list_item(user: User, membership: StudioMember, specialist: bool) -> dict:
+    """Контакты — с аккаунта, профиль в студии (имя, фото, роль) — с membership.
+
+    `specialist` считает СЕРВЕР одним правилом (`members.is_specialist_clause`):
+    владелец с услугами — тоже мастер, а по одной роли этого не видно.
+    """
     return {
         "id": user.id,
         # Имя и фото — студийные: как владелец назвал человека у СЕБЯ в команде.
@@ -199,6 +203,8 @@ def _staff_list_item(user: User, membership: StudioMember) -> dict:
         "is_active": membership.status == "active",
         "photo_url": membership.photo_url,
         "avatar_gradient": user.avatar_gradient,
+        # Кому можно поставить занятие и за кем закрепить колонку в журнале.
+        "is_specialist": specialist,
     }
 
 
@@ -217,7 +223,7 @@ async def list_staff(
     studio_id = ctx.studio_id
 
     stmt = (
-        select(User, StudioMember)
+        select(User, StudioMember, is_specialist_clause(studio_id))
         .join(StudioMember, StudioMember.user_id == User.id)
         .where(StudioMember.studio_id == studio_id)
         .order_by(StudioMember.name)
@@ -232,13 +238,13 @@ async def list_staff(
     # ponytail: срез в Python ок на десятках сотрудников; тысячи — тогда offset/limit в SQL.
     by_role: dict[str, int] = {}
     online_count = 0
-    for u, sm in rows:
+    for u, sm, _ in rows:
         by_role[sm.role] = by_role.get(sm.role, 0) + 1
         if _is_online(u):
             online_count += 1
 
     page_rows = rows[offset:offset + limit]
-    staff_items = [_staff_list_item(u, sm) for u, sm in page_rows]
+    staff_items = [_staff_list_item(u, sm, spec) for u, sm, spec in page_rows]
 
     return {
         "summary": {
@@ -556,7 +562,11 @@ async def create_staff(
 
     studio = await _studio_of(studio_id, db)
     invite_url = await send_invite(user, studio, membership.role, name=membership.name)
-    return {"ok": True, "staff": _staff_list_item(user, membership), "invite_url": invite_url}
+    return {
+        "ok": True,
+        "staff": _staff_list_item(user, membership, await is_specialist(db, studio_id, user.id)),
+        "invite_url": invite_url,
+    }
 
 
 # ─── POST /staff/{staff_id}/invite ────────────────────────────────────────────
@@ -576,7 +586,11 @@ async def resend_invite(
     user, membership = await _get_staff_member(staff_id, ctx.studio_id, db)
     studio = await _studio_of(ctx.studio_id, db)
     invite_url = await send_invite(user, studio, membership.role, name=membership.name)
-    return {"ok": True, "staff": _staff_list_item(user, membership), "invite_url": invite_url}
+    return {
+        "ok": True,
+        "staff": _staff_list_item(user, membership, await is_specialist(db, ctx.studio_id, user.id)),
+        "invite_url": invite_url,
+    }
 
 
 # ─── PUT /staff/{staff_id} ────────────────────────────────────────────────────
@@ -659,7 +673,7 @@ async def update_staff(
             "role": data.role,
         })
 
-    return {"ok": True, "staff": _staff_list_item(user, membership)}
+    return {"ok": True, "staff": _staff_list_item(user, membership, await is_specialist(db, studio_id, user.id))}
 
 
 # ─── DELETE /staff/{staff_id} ─────────────────────────────────────────────────

@@ -8,7 +8,7 @@ import { useClientActions, type NoteItem } from '../hooks/useClientActions';
 import { InlineEdit } from './InlineEdit';
 import ClientOffersPanel from './ClientOffersPanel';
 import { ClientProducts } from './ClientProducts';
-import { NotePhotos } from './NotePhotos';
+import { NotePhotos, NoteDropZone } from './NotePhotos';
 import { WalletTab } from './WalletTab';
 import { useClientEvents, useClientNotes, useClientActivity, useClientInviteCode, useReferralEnabled, useFreezeEnabled } from '../hooks/useClientsList';
 import { formatDate, formatMoney, getAvatarColor, getInitials } from '../utils/mapClient';
@@ -808,7 +808,7 @@ function ClientPanel({ client, profile, onClose, onDelete }: {
                   )}
                 </div>
                 {actions.editingNoteId === note.id ? (
-                  <div>
+                  <NoteDropZone onFiles={actions.addNotePhoto}>
                     <textarea
                       autoFocus
                       value={actions.editingNoteText}
@@ -818,15 +818,15 @@ function ClientPanel({ client, profile, onClose, onDelete }: {
                     />
                     <NotePhotos
                       photos={actions.notePhotos}
+                      pending={actions.notePending}
                       onAdd={actions.addNotePhoto}
                       onRemove={actions.removeNotePhoto}
-                      uploading={actions.notePhotoUploading}
                     />
                     <div style={{ display: 'flex', gap: '6px', marginTop: '8px' }}>
                       <button onClick={() => actions.saveNote(note.id)} style={{ padding: '6px 14px', borderRadius: '7px', border: 'none', background: 'var(--peach)', color: '#fff', fontSize: '11px', fontWeight: 700, cursor: 'pointer', fontFamily: 'Manrope', transition: 'all 0.2s' }}>{t('panel.notes.save')}</button>
                       <button onClick={actions.cancelEditNote} style={{ padding: '6px 14px', borderRadius: '7px', border: '1px solid var(--border)', background: 'transparent', color: 'var(--text3)', fontSize: '11px', fontWeight: 600, cursor: 'pointer', fontFamily: 'Manrope', transition: 'all 0.2s' }}>{t('panel.notes.cancel')}</button>
                     </div>
-                  </div>
+                  </NoteDropZone>
                 ) : (
                   <>
                     {note.text && <div style={{ fontSize: '13px', color: 'var(--text)', lineHeight: 1.6 }}>{note.text}</div>}
@@ -837,7 +837,8 @@ function ClientPanel({ client, profile, onClose, onDelete }: {
             ))}
 
             {actions.isAddingNote ? (
-              <div style={{ animation: 'fadeSlide 0.25s ease both' }}>
+              <NoteDropZone onFiles={actions.addNotePhoto}>
+                <div style={{ animation: 'fadeSlide 0.25s ease both' }}>
                 <textarea
                   autoFocus
                   value={actions.newNoteText}
@@ -849,15 +850,16 @@ function ClientPanel({ client, profile, onClose, onDelete }: {
                 />
                 <NotePhotos
                   photos={actions.notePhotos}
+                  pending={actions.notePending}
                   onAdd={actions.addNotePhoto}
                   onRemove={actions.removeNotePhoto}
-                  uploading={actions.notePhotoUploading}
                 />
                 <div style={{ display: 'flex', gap: '6px', marginTop: '8px' }}>
                   <button onClick={actions.saveNewNote} style={{ padding: '7px 16px', borderRadius: '8px', border: 'none', background: 'var(--peach)', color: '#fff', fontSize: '12px', fontWeight: 700, cursor: 'pointer', fontFamily: 'Manrope', transition: 'all 0.2s' }}>{t('panel.notes.save')}</button>
                   <button onClick={actions.cancelAddNote} style={{ padding: '7px 16px', borderRadius: '8px', border: '1px solid var(--border)', background: 'transparent', color: 'var(--text3)', fontSize: '12px', fontWeight: 600, cursor: 'pointer', fontFamily: 'Manrope', transition: 'all 0.2s' }}>{t('panel.notes.cancel')}</button>
                 </div>
-              </div>
+                </div>
+              </NoteDropZone>
             ) : canEdit ? (
               <button
                 onClick={actions.startAddNote}

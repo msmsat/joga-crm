@@ -289,6 +289,8 @@
       "addPhoto": "Zdjęcie",
       "removePhoto": "Usuń zdjęcie",
       "photoUploading": "Wysyłanie…",
+      "dropHint": "Upuść, aby dodać",
+      "photoAlt": "Zdjęcie notatki",
       "justNow": "przed chwilą",
       "deleteTitle": "Usunąć notatkę?",
       "deleteMessage": "Tej notatki nie można odzyskać."

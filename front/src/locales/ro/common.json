@@ -170,11 +170,8 @@
     "lessonAction": "Codul QR al clasei",
     "lessonCaption": "Îndreaptă camera ca să te înscrii la această clasă",
     "packageAction": "Codul QR al abonamentului",
-<<<<<<< HEAD
     "packageCaption": "Îndreaptă camera ca să cumperi abonamentul",
     "serviceAction": "Codul QR al serviciului"
-=======
-    "packageCaption": "Îndreaptă camera ca să cumperi abonamentul"
   },
   "auth": {
     "noAccount": "Nu aveți un cont?",
@@ -212,6 +209,11 @@
       "strong": "Puternică",
       "excellent": "Excelentă"
     }
->>>>>>> bcf4a067f80368999140a9359ef17c722154c536
+  },
+  "lightbox": {
+    "close": "Închide",
+    "prev": "Fotografia anterioară",
+    "next": "Fotografia următoare",
+    "counter": "{{current}} din {{total}}"
   }
 }

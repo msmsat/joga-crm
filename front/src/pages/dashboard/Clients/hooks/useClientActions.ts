@@ -30,7 +30,9 @@ export function useClientActions(clientId: number) {
   // Одно поле на обе формы: правка и добавление взаимоисключающи (каждая из них
   // закрывает другую), и вторая копия состояния просто расходилась бы с первой.
   const [notePhotos, setNotePhotos]       = useState<string[]>([]);
-  const [notePhotoUploading, setNotePhotoUploading] = useState(false);
+  // Локальные blob-превью файлов, которые сейчас грузятся. Живут до ответа
+  // сервера и освобождаются в done() — иначе вкладка копит их до перезагрузки.
+  const [notePending, setNotePending]     = useState<string[]>([]);
   const [showBooking, setShowBooking]     = useState(false);
   const [showBonus, setShowBonus]         = useState(false);
   const [selectedBonus, setSelectedBonus] = useState<string | null>(null);
@@ -138,15 +140,27 @@ export function useClientActions(clientId: number) {
     setNotePhotos([]);
   }, []);
 
-  /** Файл уходит на сервер сразу — форма держит уже сохранённую ссылку. */
-  const addNotePhoto = useCallback((files: FileList | null) => {
-    const list = Array.from(files ?? []);
+  /** Файл уходит на сервер сразу — форма держит уже сохранённую ссылку.
+   *  Пока он летит, в строке стоит локальное превью: иначе выбор файла минуту
+   *  выглядит так, будто ничего не произошло. */
+  const addNotePhoto = useCallback((files: FileList | File[] | null) => {
+    const list = Array.from(files ?? []).filter(f => f.type.startsWith('image/'));
     if (!list.length) return;
-    setNotePhotoUploading(true);
-    Promise.all(list.map(f => clientsApi.uploadNotePhoto(clientId, f)))
-      .then(res => setNotePhotos(prev => [...prev, ...res.map(r => r.url)]))
-      .catch((e: Error) => toast.error(errorMessage(e, t)))
-      .finally(() => setNotePhotoUploading(false));
+
+    const previews = list.map(f => URL.createObjectURL(f));
+    setNotePending(prev => [...prev, ...previews]);
+
+    const done = (preview: string) => {
+      URL.revokeObjectURL(preview);
+      setNotePending(prev => prev.filter(p => p !== preview));
+    };
+
+    list.forEach((file, i) => {
+      clientsApi.uploadNotePhoto(clientId, file)
+        .then(r => setNotePhotos(prev => [...prev, r.url]))
+        .catch((e: Error) => toast.error(errorMessage(e, t)))
+        .finally(() => done(previews[i]));
+    });
   }, [clientId, toast, t]);
 
   const removeNotePhoto = useCallback((url: string) => {
@@ -238,7 +252,7 @@ export function useClientActions(clientId: number) {
     startEditNote, saveNote, cancelEditNote,
     deletingNoteId, requestDeleteNote, cancelDeleteNote, confirmDeleteNote,
     isAddingNote, newNoteText, setNewNoteText, startAddNote, saveNewNote, cancelAddNote,
-    notePhotos, notePhotoUploading, addNotePhoto, removeNotePhoto,
+    notePhotos, notePending, addNotePhoto, removeNotePhoto,
     showBooking, toggleBooking, confirmBooking,
     bookingDate, setBookingDate,
     bookingWindowStart, shiftBookingWindow,

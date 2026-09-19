@@ -49,7 +49,7 @@
         "label": "Online rezervasyon kanalı"
       },
       {
-        "value": "30 €'dan başlayan",
+        "value": "20 €'dan başlayan",
         "label": "Aylık, stüdyo başına"
       }
     ],
@@ -222,15 +222,15 @@
   "pricing": {
     "label": "fiyatlandırma",
     "title": "Planınız ekip\\\nbüyüklüğünüze bağlıdır",
-    "lead": "İki kişi için 30 €, her ek koltuk için +5 €, sınırsız — 150 €. Tüm 16 modül ve Velora AI her seviyeye dahildir: düğmeleri açmak için değil, ekip büyüklüğü için ödeme yaparsınız. Seçebileceğiniz üç ödeme modeli ve peşin ödemede %30'a varan indirim.",
+    "lead": "Tek kişi için 20 €, iki kişi için 30 €, her ek koltuk için +5 €, sınırsız — 150 €. Tüm 16 modül ve Velora AI her seviyeye dahildir: düğmeleri açmak için değil, ekip büyüklüğü için ödeme yaparsınız. Seçebileceğiniz üç ödeme modeli ve peşin ödemede %30'a varan indirim.",
     "team": "ekip",
     "seats_one": "kişi",
     "seats_other": "kişi",
     "unlimited": "sınırsız",
-    "scaleMin": "2 koltuk",
+    "scaleMin": "1 koltuk",
     "scaleMax": "∞ sınırsız",
     "sliderAria": "Stüdyonuzda kaç kişi çalışıyor",
-    "hint": "İki kişi için **30 €**, her ek koltuk için **+5 €**. Sınırsız — ayda **150 €**.",
+    "hint": "Tek kişi için **20 €**, iki kişi için **30 €**, her ek koltuk için **+5 €**. Sınırsız — ayda **150 €**.",
     "period": "ödeme dönemi",
     "months": "{{count}} ay",
     "noDiscount": "—",
@@ -253,12 +253,12 @@
     "models": [
       {
         "title": "Abonelik",
-        "price": "30 € / ay'dan başlayan",
+        "price": "20 € / ay'dan başlayan",
         "desc": "Sabit bir tutar. Maliyeti baştan bilirsiniz — ay sonunda sürpriz yok."
       },
       {
         "title": "Gelirin %3'ü",
-        "price": "en az 30 € / ay",
+        "price": "en az 20 € / ay",
         "desc": "Ciroya göre ödeyin. Sakin bir ayda yalnızca asgari tutara kadar farkı tamamlarsınız."
       },
       {

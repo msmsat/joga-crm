@@ -170,11 +170,8 @@
     "lessonAction": "Kodi QR i orës",
     "lessonCaption": "Drejtoni kamerën për t'u regjistruar në këtë orë",
     "packageAction": "Kodi QR i abonimit",
-<<<<<<< HEAD
     "packageCaption": "Drejtoni kamerën për të blerë abonimin",
     "serviceAction": "Kodi QR i shërbimit"
-=======
-    "packageCaption": "Drejtoni kamerën për të blerë abonimin"
   },
   "auth": {
     "noAccount": "Nuk keni llogari?",
@@ -212,6 +209,11 @@
       "strong": "I fortë",
       "excellent": "Shkëlqyeshëm"
     }
->>>>>>> bcf4a067f80368999140a9359ef17c722154c536
+  },
+  "lightbox": {
+    "close": "Mbyll",
+    "prev": "Fotoja e mëparshme",
+    "next": "Fotoja tjetër",
+    "counter": "{{current}} nga {{total}}"
   }
 }

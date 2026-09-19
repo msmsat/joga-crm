@@ -266,12 +266,7 @@
     "cannotDeleteLastOwner": "No se puede eliminar al único propietario"
   },
   "ownerModal": {
-    "header": "CONTACTOS DEL PROPIETARIO",
-    "heading": "Datos de contacto",
-    "sub": "Teléfono y email del propietario del estudio",
-    "cardNote": "el email es el usuario de acceso",
-    "loginWarning": "El email es el usuario del propietario. Tras guardar, inicia sesión con la nueva dirección.",
-    "lockedHint": "El nombre, la foto, el rol y los permisos no se editan aquí — están en la sección «Perfil»."
+    "loginWarning": "El email es el usuario del propietario. Tras guardar, inicia sesión con la nueva dirección."
   },
   "list": {
     "pendingLabel": "Invitación pendiente",

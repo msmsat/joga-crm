@@ -19,7 +19,7 @@ from schemas.schedule.lessons import (
 )
 from services import gcal
 from services.booking_access import can_book
-from services.members import full_name
+from services.members import full_name, is_specialist_clause
 from services.notifier import lesson_context, notify
 from services import booking, schedule_guard
 from services.working_hours import assert_within_working_hours
@@ -270,29 +270,31 @@ async def get_eligible_clients(
 
 
 async def _teacher_name_in_studio(teacher_id: int, studio_id: int, db: AsyncSession) -> str:
-    """Тренер должен состоять в студии И иметь роль доступа «Тренер»; возвращает
-    денормализованное имя. Нет членства — 404, роль не та — 400.
+    """Занятие ставится только МАСТЕРУ студии; возвращает денормализованное имя.
+    Нет членства — 404, не мастер — 400.
 
-    Занятие ведёт тренер и никто другой: владелец/администратор расписание
-    составляют, но в сетке не стоят. Проверка живёт здесь, а не в create_lesson,
-    потому что через эту же функцию проходит и смена тренера в update_lesson, и
-    инструменты ассистента (create_lesson/fill_schedule зовут тот же роутер) —
-    ассистент ставил занятия на владельца, подставляя его id.
+    Мастер — роль «Тренер» либо владелец с назначенными услугами
+    (`members.is_specialist_clause`). Администратор в сетке не стоит:
+    расписание он составляет, а ведёт занятия не он. Проверка живёт здесь, а не
+    в create_lesson, потому что через эту же функцию проходит и смена тренера в
+    update_lesson, и инструменты ассистента (create_lesson/fill_schedule зовут
+    тот же роутер) — ассистент ставил занятия на владельца, подставляя его id.
 
     Имя берём с членства: в журнале этой студии он подписан так, как его назвал
     её владелец (docs/ROADMAP_ACCOUNTS, решение 9).
     """
-    member = (await db.execute(
-        select(StudioMember)
+    row = (await db.execute(
+        select(StudioMember, is_specialist_clause(studio_id))
         .where(StudioMember.user_id == teacher_id, StudioMember.studio_id == studio_id)
-    )).scalar_one_or_none()
-    if member is None:
+    )).first()
+    if row is None:
         raise HTTPException(status_code=404, detail="Тренер не найден в студии")
-    if member.role != "trainer":
+    member, is_specialist = row
+    if not is_specialist:
         raise HTTPException(
             status_code=400,
-            detail=f"{full_name(member)} — не тренер: занятие можно поставить "
-                   "только сотруднику с ролью доступа «Тренер»",
+            detail=f"{full_name(member)} — не мастер: занятие ставится сотруднику "
+                   "с ролью доступа «Тренер» либо владельцу, которому назначены услуги",
         )
     return full_name(member)
 

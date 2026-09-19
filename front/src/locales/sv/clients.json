@@ -285,6 +285,8 @@
       "addPhoto": "Foto",
       "removePhoto": "Ta bort foto",
       "photoUploading": "Laddar upp…",
+      "dropHint": "Släpp för att bifoga",
+      "photoAlt": "Anteckningsbild",
       "justNow": "just nu",
       "deleteTitle": "Ta bort anteckning?",
       "deleteMessage": "Den här anteckningen kan inte återställas."

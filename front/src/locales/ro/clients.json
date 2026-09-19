@@ -289,6 +289,8 @@
       "addPhoto": "Foto",
       "removePhoto": "Elimină fotografia",
       "photoUploading": "Se încarcă…",
+      "dropHint": "Eliberaţi pentru a ataşa",
+      "photoAlt": "Fotografia notei",
       "justNow": "chiar acum",
       "deleteTitle": "Ștergeți nota?",
       "deleteMessage": "Această notă nu poate fi recuperată."

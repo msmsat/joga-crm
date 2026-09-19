@@ -49,7 +49,7 @@
         "label": "Online booking channels"
       },
       {
-        "value": "from €30",
+        "value": "from €20",
         "label": "Per month, per studio"
       }
     ],
@@ -222,15 +222,15 @@
   "pricing": {
     "label": "pricing",
     "title": "Your plan is\nyour team size",
-    "lead": "€30 for two people, every next seat +€5, unlimited — €150. All 16 modules and Velora AI are in every step: you pay for the size of your team, not to unlock buttons. Three payment models to choose from, and up to 30% off when you pay ahead.",
+    "lead": "€20 for one person, €30 for two people, every next seat +€5, unlimited — €150. All 16 modules and Velora AI are in every step: you pay for the size of your team, not to unlock buttons. Three payment models to choose from, and up to 30% off when you pay ahead.",
     "team": "team",
     "seats_one": "person",
     "seats_other": "people",
     "unlimited": "no limit",
-    "scaleMin": "2 seats",
+    "scaleMin": "1 seat",
     "scaleMax": "∞ unlimited",
     "sliderAria": "How many people work at your studio",
-    "hint": "**€30** for two, every next seat **+€5**. Unlimited — **€150** a month.",
+    "hint": "**€20** for one, **€30** for two, every next seat **+€5**. Unlimited — **€150** a month.",
     "period": "billing period",
     "months": "{{count}} mo",
     "noDiscount": "—",
@@ -253,12 +253,12 @@
     "models": [
       {
         "title": "Subscription",
-        "price": "from €30 / mo",
+        "price": "from €20 / mo",
         "desc": "A fixed amount. You know the cost up front — no surprises at the end of the month."
       },
       {
         "title": "3% of revenue",
-        "price": "minimum €30 / mo",
+        "price": "minimum €20 / mo",
         "desc": "Pay from turnover. In a quiet month you only top up the difference to the minimum."
       },
       {

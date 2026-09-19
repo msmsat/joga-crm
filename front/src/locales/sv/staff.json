@@ -266,12 +266,7 @@
     "cannotDeleteLastOwner": "Det går inte att ta bort den enda ägaren"
   },
   "ownerModal": {
-    "header": "ÄGARENS KONTAKTER",
-    "heading": "Kontaktuppgifter",
-    "sub": "Telefon och e-post till studions ägare",
-    "cardNote": "e-posten är inloggningsnamnet",
-    "loginWarning": "E-posten är ägarens inloggning. Efter att du sparat loggar du in med den nya adressen.",
-    "lockedHint": "Namn, foto, roll och behörigheter redigeras inte här — de finns i avsnittet «Profil»."
+    "loginWarning": "E-posten är ägarens inloggning. Efter att du sparat loggar du in med den nya adressen."
   },
   "list": {
     "pendingLabel": "Inbjudan väntar",

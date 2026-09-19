@@ -49,7 +49,7 @@
         "label": "canale de programări online"
       },
       {
-        "value": "de la 30 €",
+        "value": "de la 20 €",
         "label": "pe lună, per studio"
       }
     ],
@@ -222,16 +222,16 @@
   "pricing": {
     "label": "prețuri",
     "title": "Planul dvs. depinde de\\\ndimensiunea echipei",
-    "lead": "30 € pentru două persoane, +5 € pentru fiecare loc următor, nelimitat — 150 €. Toate cele 16 module și Velora AI sunt incluse la fiecare nivel: plătiți pentru mărimea echipei, nu pentru deblocarea butoanelor. Trei modele de plată la alegere și până la 30% reducere la plata în avans.",
+    "lead": "20 € pentru o persoană, 30 € pentru două persoane, +5 € pentru fiecare loc următor, nelimitat — 150 €. Toate cele 16 module și Velora AI sunt incluse la fiecare nivel: plătiți pentru mărimea echipei, nu pentru deblocarea butoanelor. Trei modele de plată la alegere și până la 30% reducere la plata în avans.",
     "team": "echipă",
     "seats_one": "persoană",
     "seats_few": "persoane",
     "seats_other": "de persoane",
     "unlimited": "nelimitat",
-    "scaleMin": "2 locuri",
+    "scaleMin": "1 loc",
     "scaleMax": "∞ nelimitat",
     "sliderAria": "Câte persoane lucrează în studioul dvs.",
-    "hint": "**30 €** pentru două persoane, **+5 €** pentru fiecare loc în plus. Nelimitat — **150 €** pe lună.",
+    "hint": "**20 €** pentru o persoană, **30 €** pentru două persoane, **+5 €** pentru fiecare loc în plus. Nelimitat — **150 €** pe lună.",
     "period": "perioada de plată",
     "months": "{{count}} luni",
     "noDiscount": "—",
@@ -254,12 +254,12 @@
     "models": [
       {
         "title": "Abonament",
-        "price": "de la 30 € / lună",
+        "price": "de la 20 € / lună",
         "desc": "O sumă fixă. Cunoașteți costul dinainte — fără surprize la sfârșitul lunii."
       },
       {
         "title": "3% din venituri",
-        "price": "minimum 30 € / lună",
+        "price": "minimum 20 € / lună",
         "desc": "Plătiți în funcție de cifră de afaceri. Într-o lună liniștită, completați doar diferența până la suma minimă."
       },
       {

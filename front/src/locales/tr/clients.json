@@ -285,6 +285,8 @@
       "addPhoto": "Fotoğraf",
       "removePhoto": "Fotoğrafı kaldır",
       "photoUploading": "Yükleniyor…",
+      "dropHint": "Eklemek için bırakın",
+      "photoAlt": "Not fotoğrafı",
       "justNow": "az önce",
       "deleteTitle": "Not silinsin mi?",
       "deleteMessage": "Bu not geri alınamaz."

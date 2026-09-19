@@ -45,6 +45,9 @@ interface EditStaffModalProps {
   onSave?: (updated: StaffMember) => Promise<void> | void;
   onDelete?: (id: number) => Promise<void> | void;
   ownerCount?: number;
+  /** Владелец правит САМ СЕБЯ: контакты — его собственные, их менять можно
+      (сервер разрешает ровно этот случай, PUT /staff/{id}). */
+  isSelf?: boolean;
 }
 
 const ROLE_ICONS: Record<string, React.ReactNode> = {
@@ -330,7 +333,7 @@ export function FocusInput({
 }
 
 // ─── MAIN MODAL ───────────────────────────────────────────────────────────────
-export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelete, ownerCount }: EditStaffModalProps) {
+export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelete, ownerCount, isSelf }: EditStaffModalProps) {
   const { t } = useTranslation(["staff", "common"]);
   const navigate = useNavigate();
   const [activeTab, setActiveTab]     = useState<TabId>("profile");
@@ -451,10 +454,10 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
       await onSave?.({
         ...form,
         rate: form.salary ? parseFloat(form.salary) : undefined,
-        service_ids: form.role === "trainer" ? form.serviceIds : [],
-        // Назначения филиалов имеют смысл только у специалиста: администратор
-        // в Resource-доступности не участвует.
-        branch_ids: form.role === "trainer" ? form.branchIds : [],
+        service_ids: canHaveServices ? form.serviceIds : [],
+        // Назначения филиалов имеют смысл только у того, кто ведёт услуги:
+        // администратор в Resource-доступности не участвует.
+        branch_ids: canHaveServices ? form.branchIds : [],
       });
       setSaving(false);
       setSaved(true);
@@ -480,12 +483,18 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
   const emailFormatOk = EMAIL_RE.test(form.email.trim());
   const phoneFormatOk = form.phone.replace(/\D/g, "").length >= 6;
 
+  // Владелец остаётся владельцем: роль ему здесь не меняют (её и в StaffUpdate
+  // нет), но услуги назначают — назначенная услуга и делает его мастером.
+  const isOwnerCard = form.role === "owner";
+  const canHaveServices = form.role === "trainer" || isOwnerCard;
+
   // Контакт сотрудника — идентификатор его аккаунта: занят кем-то ещё → «Сохранить» серая.
   // Себя исключаем (exclude_id), и проверяем только изменённое — ровно то, что проверит
   // сервер на PUT: исторические дубли не должны запирать правку остальных полей.
   // Активированный аккаунт правит контакты сам, в своём профиле — форма их
-  // только показывает, и проверять занятость незачем (бэк ответит 403).
-  const contactsLocked = staff?.is_active === true;
+  // только показывает, и проверять занятость незачем (бэк ответит 403). Свои
+  // собственные контакты — исключение: их сервер менять разрешает.
+  const contactsLocked = staff?.is_active === true && !isSelf;
 
   const emailCheck = useContactCheck("staff", "email", form.email, {
     excludeId: form.id, enabled: isOpen && !contactsLocked && emailFormatOk && form.email !== staff?.email,
@@ -929,6 +938,12 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
                         <FieldLabel>{t("common:fields.email")}</FieldLabel>
                         <FocusInput type="email" value={form.email} onChange={v => set("email", v)} placeholder="email@studio.ru" error={emailError} hint={emailCheck.checking ? checkingHint : undefined} />
                       </div>
+                      {/* Свой email — это логин: сменил здесь, входить дальше новым. */}
+                      {isSelf && form.email.trim() !== staff.email && (
+                        <p style={{ gridColumn: "1 / -1", fontSize: "11.5px", fontWeight: 600, color: "#8A6A5E", margin: 0, lineHeight: 1.55 }}>
+                          {t("staff:ownerModal.loginWarning")}
+                        </p>
+                      )}
                     </div>
                   )}
 
@@ -954,7 +969,27 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
                   <div>
                     <FieldLabel>{t("common:fields.position")}</FieldLabel>
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "7px", marginBottom: "10px" }}>
-                      {PRESET_ROLES.map(r => {
+                      {/* Владельца не понижают: роль показываем отмеченной и не
+                          кликаемой — менять её этим экраном нечем и незачем. */}
+                      {isOwnerCard ? (
+                        <div style={{
+                          padding: "11px 6px",
+                          background: "rgba(252,174,145,0.1)",
+                          border: "1.5px solid #FCAE91", borderRadius: "12px",
+                          display: "flex", flexDirection: "column", alignItems: "center", gap: "5px",
+                          boxShadow: "0 4px 16px rgba(252,174,145,0.15)",
+                          fontFamily: "Manrope, sans-serif",
+                        }}>
+                          <span style={{ display: "flex", alignItems: "center", justifyContent: "center", color: "#FCAE91" }}>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M4 18h16M4 18l1.4-9L10 13l2-7 2 7 4.6-4L20 18" />
+                            </svg>
+                          </span>
+                          <span style={{ fontSize: "9.5px", fontWeight: 700, color: "var(--onyx)", textAlign: "center", lineHeight: 1.2 }}>
+                            {t("staff:roles.owner")}
+                          </span>
+                        </div>
+                      ) : PRESET_ROLES.map(r => {
                         const isSelected = form.role === r.id;
                         return (
                           <button key={r.id} type="button" className="ei-role-card"
@@ -997,7 +1032,7 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
                       })}
                     </div>
                   </div>
-                  {form.role === "trainer" && (
+                  {canHaveServices && (
                     <div>
                       <FieldLabel>{t("common:fields.services")}</FieldLabel>
                       <div style={{ display: "flex", flexWrap: "wrap", gap: "7px", marginBottom: "10px" }}>
@@ -1278,7 +1313,7 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
                   {/* HB-18: филиалы и перерывы — предпосылка Resource-доступности.
                       Пустой недельный график сам по себе означает не «круглосуточно»,
                       а незавершённую настройку (см. resource_hours: CONFIG_INCOMPLETE). */}
-                  {form.role === "trainer" && form.id > 0 && (
+                  {canHaveServices && form.id > 0 && (
                     <StaffAvailabilitySection
                       staffId={form.id}
                       branches={availableBranches}

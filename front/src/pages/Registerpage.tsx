@@ -11,11 +11,8 @@ import { authApi, ApiError } from '../api';
 import { setActiveToken } from '../utils/auth';
 import { legalFooterLinks, LEGAL_LINK_PROPS, PRIVACY_URL, TERMS_URL } from '../utils/legal';
 import { getAnonId } from "../lib/anonId";
-<<<<<<< HEAD
 import { submitOnEnter } from "../lib/submitOnEnter";
-=======
 import { useTranslation } from 'react-i18next';
->>>>>>> bcf4a067f80368999140a9359ef17c722154c536
 
 // ─── STEP TYPES ──────────────────────────────────────────────────────────────
 

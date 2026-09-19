@@ -49,7 +49,7 @@
         "label": "Kanäle für Online-Buchung"
       },
       {
-        "value": "ab 30 €",
+        "value": "ab 20 €",
         "label": "Pro Monat und Studio"
       }
     ],
@@ -222,15 +222,15 @@
   "pricing": {
     "label": "preise",
     "title": "Der Tarif ist\nIhre Teamgröße",
-    "lead": "30 € für zwei Personen, jeder weitere Platz +5 €, unbegrenzt — 150 €. Alle 16 Module und Velora AI sind in jeder Stufe enthalten: Sie zahlen für die Größe Ihres Teams, nicht für freigeschaltete Knöpfe. Drei Zahlungsmodelle zur Auswahl, bei Vorauszahlung bis zu 30 % Rabatt.",
+    "lead": "20 € für eine Person, 30 € für zwei Personen, jeder weitere Platz +5 €, unbegrenzt — 150 €. Alle 16 Module und Velora AI sind in jeder Stufe enthalten: Sie zahlen für die Größe Ihres Teams, nicht für freigeschaltete Knöpfe. Drei Zahlungsmodelle zur Auswahl, bei Vorauszahlung bis zu 30 % Rabatt.",
     "team": "team",
     "seats_one": "Person",
     "seats_other": "Personen",
     "unlimited": "ohne Begrenzung",
-    "scaleMin": "2 Plätze",
+    "scaleMin": "1 Platz",
     "scaleMax": "∞ unbegrenzt",
     "sliderAria": "Wie viele Personen arbeiten im Studio",
-    "hint": "**30 €** für zwei, jeder weitere Platz **+5 €**. Unbegrenzt — **150 €** im Monat.",
+    "hint": "**20 €** für eine Person, **30 €** für zwei, jeder weitere Platz **+5 €**. Unbegrenzt — **150 €** im Monat.",
     "period": "zahlungszeitraum",
     "months_one": "{{count}} Mon.",
     "months_other": "{{count}} Mon.",
@@ -254,12 +254,12 @@
     "models": [
       {
         "title": "Abonnement",
-        "price": "ab 30 € / Mon.",
+        "price": "ab 20 € / Mon.",
         "desc": "Ein fester Betrag. Sie kennen die Kosten im Voraus — keine Überraschungen am Monatsende."
       },
       {
         "title": "3 % vom Umsatz",
-        "price": "mindestens 30 € / Mon.",
+        "price": "mindestens 20 € / Mon.",
         "desc": "Sie zahlen vom Umsatz. In einem leeren Monat zahlen Sie nur die Differenz zum Minimum."
       },
       {

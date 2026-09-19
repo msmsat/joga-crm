@@ -281,6 +281,8 @@
       "addPhoto": "Фото",
       "removePhoto": "Видалити фото",
       "photoUploading": "Завантаження…",
+      "dropHint": "Відпустіть — прикріпимо",
+      "photoAlt": "Фото нотатки",
       "justNow": "щойно",
       "deleteTitle": "Видалити нотатку?",
       "deleteMessage": "Цю нотатку не можна відновити."

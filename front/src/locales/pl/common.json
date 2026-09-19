@@ -170,11 +170,8 @@
     "lessonAction": "Kod QR zajęć",
     "lessonCaption": "Skieruj aparat, aby zapisać się na te zajęcia",
     "packageAction": "Kod QR karnetu",
-<<<<<<< HEAD
     "packageCaption": "Skieruj aparat, aby kupić karnet",
     "serviceAction": "Kod QR usługi"
-=======
-    "packageCaption": "Skieruj aparat, aby kupić karnet"
   },
   "auth": {
     "noAccount": "Nie masz konta?",
@@ -212,6 +209,11 @@
       "strong": "Silne",
       "excellent": "Doskonałe"
     }
->>>>>>> bcf4a067f80368999140a9359ef17c722154c536
+  },
+  "lightbox": {
+    "close": "Zamknij",
+    "prev": "Poprzednie zdjęcie",
+    "next": "Następne zdjęcie",
+    "counter": "{{current}} z {{total}}"
   }
 }

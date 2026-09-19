@@ -170,11 +170,8 @@
     "lessonAction": "QR-kod för passet",
     "lessonCaption": "Rikta kameran för att boka passet",
     "packageAction": "QR-kod för klippkortet",
-<<<<<<< HEAD
     "packageCaption": "Rikta kameran för att köpa klippkortet",
     "serviceAction": "QR-kod för tjänsten"
-=======
-    "packageCaption": "Rikta kameran för att köpa klippkortet"
   },
   "auth": {
     "noAccount": "Har du inget konto?",
@@ -212,6 +209,11 @@
       "strong": "Stark",
       "excellent": "Utmärkt"
     }
->>>>>>> bcf4a067f80368999140a9359ef17c722154c536
+  },
+  "lightbox": {
+    "close": "Stäng",
+    "prev": "Föregående bild",
+    "next": "Nästa bild",
+    "counter": "{{current}} av {{total}}"
   }
 }

@@ -285,6 +285,8 @@
       "addPhoto": "Bilde",
       "removePhoto": "Fjern bilde",
       "photoUploading": "Laster opp…",
+      "dropHint": "Slipp for å legge ved",
+      "photoAlt": "Notatbilde",
       "justNow": "akkurat nå",
       "deleteTitle": "Slette notat?",
       "deleteMessage": "Dette notatet kan ikke gjenopprettes."

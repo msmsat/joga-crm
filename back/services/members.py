@@ -10,16 +10,58 @@
 """
 from collections.abc import Iterable
 
+from sqlalchemy import and_, or_
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
-from models import Studio, StudioMember
+from models import Service, Studio, StudioMember, user_services
 from services.i18n import resolve
 
 
 def full_name(member: StudioMember) -> str:
     """«Имя Фамилия» одной строкой — как показываем сотрудника в интерфейсе."""
     return " ".join(filter(None, (member.name, member.last_name)))
+
+
+def is_specialist_clause(studio_id: int):
+    """Предикат «этот член студии — мастер»: для WHERE и для колонки SELECT.
+
+    Мастер = роль доступа «Тренер», ЛИБО владелец, которому назначены услуги
+    этой студии. Владельца-мастера не делает ни вторая роль, ни второе членство:
+    он остаётся владельцем, а мастером его делает назначенная услуга — ровно то
+    действие, которым он правит себя в «Сотрудниках». Владелец без услуг
+    мастером не становится, поэтому обычная студия ничего не замечает.
+    Администратор мастером не становится вовсе: услуг ему не назначают.
+
+    Правило ОДНО на весь продукт: список команды (колонка журнала), каталог
+    ассистента, проверка «кому можно поставить занятие» и Resource-доступность
+    витрины. Копии разошлись бы на первой правке — витрина предлагала бы
+    мастера, которому журнал занятие поставить уже не даёт.
+    """
+    has_service = (
+        select(user_services.c.user_id)
+        .join(Service, Service.id == user_services.c.service_id)
+        .where(
+            user_services.c.user_id == StudioMember.user_id,
+            Service.studio_id == studio_id,
+        )
+        .correlate(StudioMember)
+        .exists()
+    )
+    return or_(
+        StudioMember.role == "trainer",
+        and_(StudioMember.role == "owner", has_service),
+    )
+
+
+async def is_specialist(db: AsyncSession, studio_id: int, user_id: int) -> bool:
+    """Тот же вопрос про ОДНОГО человека — когда предикат некуда встроить.
+    Не член студии → False."""
+    return bool((await db.execute(
+        select(is_specialist_clause(studio_id))
+        .select_from(StudioMember)
+        .where(StudioMember.studio_id == studio_id, StudioMember.user_id == user_id)
+    )).scalars().first())
 
 
 async def member_name(db: AsyncSession, studio_id: int, user_id: int) -> str:

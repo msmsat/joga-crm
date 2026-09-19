@@ -266,12 +266,7 @@
     "cannotDeleteLastOwner": "Cannot remove the only owner"
   },
   "ownerModal": {
-    "header": "OWNER CONTACTS",
-    "heading": "Contact details",
-    "sub": "Phone and email of the studio owner",
-    "cardNote": "email is the sign-in login",
-    "loginWarning": "Email is the owner's login. After saving, sign in with the new address.",
-    "lockedHint": "Name, photo, role and access rights are not edited here — they live in the «Profile» section."
+    "loginWarning": "Email is the owner's login. After saving, sign in with the new address."
   },
   "list": {
     "pendingLabel": "Invitation pending",

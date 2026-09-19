@@ -285,6 +285,8 @@
       "addPhoto": "Foto",
       "removePhoto": "Remover foto",
       "photoUploading": "A enviar…",
+      "dropHint": "Largue para anexar",
+      "photoAlt": "Foto da nota",
       "justNow": "mesmo agora",
       "deleteTitle": "Eliminar a nota?",
       "deleteMessage": "Esta nota não pode ser recuperada."

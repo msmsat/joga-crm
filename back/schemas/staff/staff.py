@@ -88,6 +88,10 @@ class StaffListItem(BaseSchema):
     is_online: bool
     # False — приглашение отправлено, но сотрудник ещё не задал пароль и не вошёл.
     is_active: bool = True
+    # Мастер: роль «Тренер» либо владелец с назначенными услугами
+    # (services/members.is_specialist_clause). По одной роли этого не видно,
+    # поэтому флаг считает сервер — журнал по нему рисует колонки.
+    is_specialist: bool = False
     photo_url: Optional[str] = None
     avatar_gradient: Optional[str] = None
 

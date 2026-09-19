@@ -281,6 +281,8 @@
       "addPhoto": "Foto",
       "removePhoto": "Foto entfernen",
       "photoUploading": "Wird hochgeladen…",
+      "dropHint": "Loslassen zum Anhängen",
+      "photoAlt": "Foto zur Notiz",
       "justNow": "gerade eben",
       "deleteTitle": "Notiz löschen?",
       "deleteMessage": "Diese Notiz lässt sich nicht wiederherstellen."

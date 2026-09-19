@@ -285,6 +285,8 @@
       "addPhoto": "Fotó",
       "removePhoto": "Fotó eltávolítása",
       "photoUploading": "Feltöltés…",
+      "dropHint": "Engedje el a csatoláshoz",
+      "photoAlt": "Jegyzet fényképe",
       "justNow": "épp most",
       "deleteTitle": "Törli a jegyzetet?",
       "deleteMessage": "Ez a jegyzet nem állítható vissza."

@@ -281,6 +281,8 @@
       "addPhoto": "Foto",
       "removePhoto": "Odebrat fotku",
       "photoUploading": "Nahrávání…",
+      "dropHint": "Pusťte a přiložíme",
+      "photoAlt": "Fotka poznámky",
       "justNow": "právě teď",
       "deleteTitle": "Smazat poznámku?",
       "deleteMessage": "Tuto poznámku nelze obnovit."

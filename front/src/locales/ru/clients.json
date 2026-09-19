@@ -281,6 +281,8 @@
       "addPhoto": "Фото",
       "removePhoto": "Удалить фото",
       "photoUploading": "Загрузка…",
+      "dropHint": "Отпустите — прикрепим",
+      "photoAlt": "Фото заметки",
       "justNow": "только что",
       "deleteTitle": "Удалить заметку?",
       "deleteMessage": "Заметку нельзя будет восстановить."

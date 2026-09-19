@@ -170,11 +170,8 @@
     "lessonAction": "Código QR da aula",
     "lessonCaption": "Aponte a câmara para marcar esta aula",
     "packageAction": "Código QR do passe",
-<<<<<<< HEAD
     "packageCaption": "Aponte a câmara para comprar o passe",
     "serviceAction": "Código QR do serviço"
-=======
-    "packageCaption": "Aponte a câmara para comprar o passe"
   },
   "auth": {
     "noAccount": "Não tem uma conta?",
@@ -212,6 +209,11 @@
       "strong": "Forte",
       "excellent": "Excelente"
     }
->>>>>>> bcf4a067f80368999140a9359ef17c722154c536
+  },
+  "lightbox": {
+    "close": "Fechar",
+    "prev": "Foto anterior",
+    "next": "Foto seguinte",
+    "counter": "{{current}} de {{total}}"
   }
 }

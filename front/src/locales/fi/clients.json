@@ -285,6 +285,8 @@
       "addPhoto": "Kuva",
       "removePhoto": "Poista kuva",
       "photoUploading": "Ladataan…",
+      "dropHint": "Pudota liittääksesi",
+      "photoAlt": "Muistiinpanon kuva",
       "justNow": "juuri nyt",
       "deleteTitle": "Poistetaanko muistiinpano?",
       "deleteMessage": "Tätä muistiinpanoa ei voi palauttaa."

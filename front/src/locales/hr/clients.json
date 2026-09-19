@@ -289,6 +289,8 @@
       "addPhoto": "Fotografija",
       "removePhoto": "Ukloni fotografiju",
       "photoUploading": "Učitavanje…",
+      "dropHint": "Pustite za privitak",
+      "photoAlt": "Fotografija bilješke",
       "justNow": "upravo sada",
       "deleteTitle": "Izbrisati bilješku?",
       "deleteMessage": "Ova se bilješka ne može vratiti."

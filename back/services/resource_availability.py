@@ -11,6 +11,7 @@ from models import (BranchWorkingHours, Hall, Lesson, Service, StaffBranchAssign
 from models.base import user_services
 from schemas.schedule import hybrid
 from services.booking_rules import load_rules
+from services.members import is_specialist_clause
 from services.resource_slots import Availability, AvailabilityData, by_staff, generate
 
 
@@ -74,11 +75,13 @@ def _eligible_staff(query, *, studio_id: int, branch_ids: list[int]):
     и на список мастеров для клиента (`resource_staff`). Две копии разошлись бы
     при первой же правке: список показал бы мастера, у которого сервер потом не
     найдёт ни одного слота, — или спрятал бы того, к кому запись проходит.
-    Активное членство с ролью trainer (владелец-мастер — отдельная модель, §2)
-    и явное назначение на филиал; услуги каждый вызывающий добавляет сам.
+    Активное членство мастера (роль «Тренер» либо владелец с услугами —
+    `members.is_specialist_clause`) и явное назначение на филиал; услуги
+    каждый вызывающий добавляет сам.
     """
     return query.join(StaffBranchAssignment, StaffBranchAssignment.user_id == StudioMember.user_id).where(
-        StudioMember.studio_id == studio_id, StudioMember.status == "active", StudioMember.role == "trainer",
+        StudioMember.studio_id == studio_id, StudioMember.status == "active",
+        is_specialist_clause(studio_id),
         StaffBranchAssignment.studio_id == studio_id, StaffBranchAssignment.branch_id.in_(branch_ids))
 
 

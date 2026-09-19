@@ -266,12 +266,7 @@
     "cannotDeleteLastOwner": "Az egyetlen tulajdonos nem távolítható el"
   },
   "ownerModal": {
-    "header": "A TULAJDONOS ELÉRHETŐSÉGEI",
-    "heading": "Elérhetőségi adatok",
-    "sub": "A stúdió tulajdonosának telefonszáma és e-mailje",
-    "cardNote": "az e-mail a belépési azonosító",
-    "loginWarning": "Az e-mail a tulajdonos belépési azonosítója. Mentés után az új címmel lépjen be.",
-    "lockedHint": "A név, a fotó, a szerepkör és a jogosultságok nem itt módosulnak — a «Profil» részben találhatók."
+    "loginWarning": "Az e-mail a tulajdonos belépési azonosítója. Mentés után az új címmel lépjen be."
   },
   "list": {
     "pendingLabel": "Meghívó függőben",

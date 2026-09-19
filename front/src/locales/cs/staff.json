@@ -266,12 +266,7 @@
     "cannotDeleteLastOwner": "Jediného vlastníka nelze odebrat"
   },
   "ownerModal": {
-    "header": "KONTAKTY VLASTNÍKA",
-    "heading": "Kontaktní údaje",
-    "sub": "Telefon a e-mail vlastníka studia",
-    "cardNote": "e-mail je přihlašovací jméno",
-    "loginWarning": "E-mail je přihlašovací jméno vlastníka. Po uložení se přihlaste novou adresou.",
-    "lockedHint": "Jméno, fotka, role a přístupová práva se zde neupravují — najdete je v sekci «Profil»."
+    "loginWarning": "E-mail je přihlašovací jméno vlastníka. Po uložení se přihlaste novou adresou."
   },
   "list": {
     "pendingLabel": "Čeká na přijetí pozvánky",

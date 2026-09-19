@@ -281,6 +281,8 @@
       "addPhoto": "Photo",
       "removePhoto": "Remove photo",
       "photoUploading": "Uploading…",
+      "dropHint": "Drop to attach",
+      "photoAlt": "Note photo",
       "justNow": "just now",
       "deleteTitle": "Delete note?",
       "deleteMessage": "This note cannot be recovered."

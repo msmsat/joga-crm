@@ -8,7 +8,7 @@ import { ZapIcon } from './BillingIcons';
 import styles from '../../Billing.module.css';
 
 interface Props {
-  /** Ступени каталога по возрастанию: «s2» … «s20», «unlimited». */
+  /** Ступени каталога по возрастанию: «s1» … «s20», «unlimited». */
   planIds: PlanType[];
   plans: Record<PlanType, PlanInfo>;
   selected: PlanType;
@@ -32,7 +32,7 @@ interface Props {
 }
 
 /**
- * Тариф = места. Ползунок идёт по ступеням каталога (от 2 сотрудников до 20 и
+ * Тариф = места. Ползунок идёт по ступеням каталога (от 1 сотрудника до 20 и
  * «безлимит» на конце), рядом — период оплаты, справа — что за эти деньги
  * получает студия.
  *
@@ -54,7 +54,13 @@ export default function PlanCalculator({
   const last = Math.max(planIds.length - 1, 0);
   const fill = last ? (index / last) * 100 : 0;
   const base = plans[planIds[0]]?.monthly ?? 0;
-  const step = (plans[planIds[1]]?.monthly ?? 0) - base;
+  // Шаг берём в КОНЦЕ линии мест, а не в её начале: вход одиночки (s1) лежит
+  // ниже линии, и разность первых двух ступеней обещала бы +10 € вместо +5 €.
+  // Безлимит в счёт не идёт — его цена к шагу за место отношения не имеет.
+  const lineIds = planIds.filter(id => planSeats(id) !== null);
+  const step = lineIds.length > 1
+    ? (plans[lineIds[lineIds.length - 1]]?.monthly ?? 0) - (plans[lineIds[lineIds.length - 2]]?.monthly ?? 0)
+    : 0;
 
   // Периоды и скидки диктует каталог: захардкоженные «6 / 12 / 24» пережили бы
   // правку и обещали скидку, которой сервер уже не даёт.

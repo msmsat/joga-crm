@@ -170,11 +170,8 @@
     "lessonAction": "Class QR code",
     "lessonCaption": "Point your camera to book this class",
     "packageAction": "Pass QR code",
-<<<<<<< HEAD
     "packageCaption": "Point your camera to buy this pass",
     "serviceAction": "Service QR code"
-=======
-    "packageCaption": "Point your camera to buy this pass"
   },
   "auth": {
     "noAccount": "No account?",
@@ -212,6 +209,11 @@
       "strong": "Strong",
       "excellent": "Excellent"
     }
->>>>>>> bcf4a067f80368999140a9359ef17c722154c536
+  },
+  "lightbox": {
+    "close": "Close",
+    "prev": "Previous photo",
+    "next": "Next photo",
+    "counter": "{{current}} of {{total}}"
   }
 }

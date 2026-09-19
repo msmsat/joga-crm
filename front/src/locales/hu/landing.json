@@ -49,7 +49,7 @@
         "label": "online foglalási csatorna"
       },
       {
-        "value": "30 €-tól",
+        "value": "20 €-tól",
         "label": "havonta, stúdiónként"
       }
     ],
@@ -222,15 +222,15 @@
   "pricing": {
     "label": "árak",
     "title": "Az Ön csomagja a\\\ncsapat méretétől függ",
-    "lead": "30 € két főre, +5 € minden további helyért, korlátlan — 150 €. Mind a 16 modul és a Velora AI minden szinten benne van: a csapat méretéért fizet, nem a gombok feloldásáért. Három fizetési modell közül választhat, előrefizetéssel akár 30% kedvezménnyel.",
+    "lead": "20 € egy főre, 30 € két főre, +5 € minden további helyért, korlátlan — 150 €. Mind a 16 modul és a Velora AI minden szinten benne van: a csapat méretéért fizet, nem a gombok feloldásáért. Három fizetési modell közül választhat, előrefizetéssel akár 30% kedvezménnyel.",
     "team": "csapat",
     "seats_one": "fő",
     "seats_other": "fő",
     "unlimited": "korlátlan",
-    "scaleMin": "2 hely",
+    "scaleMin": "1 hely",
     "scaleMax": "∞ korlátlan",
     "sliderAria": "Hányan dolgoznak az Ön stúdiójában",
-    "hint": "**30 €** két főre, **+5 €** minden további helyért. Korlátlan — **150 €** havonta.",
+    "hint": "**20 €** egy főre, **30 €** két főre, **+5 €** minden további helyért. Korlátlan — **150 €** havonta.",
     "period": "fizetési időszak",
     "months": "{{count}} hó",
     "noDiscount": "—",
@@ -253,12 +253,12 @@
     "models": [
       {
         "title": "Előfizetés",
-        "price": "30 € / hó-tól",
+        "price": "20 € / hó-tól",
         "desc": "Fix összeg. Előre tudja a költséget — nincs meglepetés a hónap végén."
       },
       {
         "title": "A bevétel 3%-a",
-        "price": "legalább 30 € / hó",
+        "price": "legalább 20 € / hó",
         "desc": "Forgalom alapján fizet. Csendesebb hónapban csak a különbözetet tölti fel a minimumig."
       },
       {
