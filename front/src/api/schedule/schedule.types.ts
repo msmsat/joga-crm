@@ -24,6 +24,9 @@ export interface Lesson {
   status: 'confirmed' | 'pending' | 'cancelled'
   level: string | null
   cancel_reason: string | null
+  /** Заметка студии о занятии и снимки к ней. Клиенту не уходят никуда. */
+  notes: string
+  photos: string[]
   clients_notified: boolean
   service_id: number | null
   service_color: string | null
@@ -49,6 +52,8 @@ export interface LessonCreate {
   total_spots?: number
   level?: string | null
   equipment?: string | null
+  notes?: string
+  photos?: string[]
 }
 
 // Записанный на занятие клиент (для попапа занятия)

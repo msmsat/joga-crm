@@ -25,8 +25,7 @@
     "done": "Valmis, sulje",
     "saving": "Tallennetaan…",
     "saved": "Tallennettu!",
-    "upload": "Lataa",
-    "undo": "Kumoa"
+    "upload": "Lataa"
   },
   "validation": {
     "required": "Pakollinen kenttä",
@@ -144,15 +143,7 @@
       "unknown_event": "Tuntematon tapahtuma",
       "not_personal": "Henkilökohtaiset asetukset eivät muuta pakollisia ilmoituksia"
     },
-    "trial_already_used": "Ilmainen kokeilu ei ole enää käytettävissä tälle studiolle.",
-    "invalid_credentials": "Virheellinen sähköpostiosoite, puhelinnumero tai salasana.",
-    "account_not_verified": "Tiliäsi ei ole vielä aktivoitu. Hyväksy sähköpostikutsu tai vahvista sähköpostiosoitteesi koodilla.",
-    "invalid_code": "Koodi on virheellinen tai vanhentunut.",
-    "invalid_current_password": "Nykyinen salasana on virheellinen.",
-    "password_unchanged": "Uuden salasanan on oltava eri kuin nykyinen.",
-    "invalid_request": "Tarkista syöttämäsi tiedot ja yritä uudelleen.",
-    "session_expired": "Istuntosi on vanhentunut. Kirjaudu uudelleen sisään.",
-    "limit_exceeded": "Olet saavuttanut tilauksesi rajan."
+    "trial_already_used": "Ilmainen kokeilu ei ole enää käytettävissä tälle studiolle."
   },
   "units": {
     "min": "min",
@@ -179,11 +170,8 @@
     "lessonAction": "Tunnin QR-koodi",
     "lessonCaption": "Suuntaa kamera ja varaa paikka tunnille",
     "packageAction": "Sarjakortin QR-koodi",
-<<<<<<< HEAD
     "packageCaption": "Suuntaa kamera ja osta sarjakortti",
     "serviceAction": "Palvelun QR-koodi"
-=======
-    "packageCaption": "Suuntaa kamera ja osta sarjakortti"
   },
   "auth": {
     "noAccount": "Eikö sinulla ole tiliä?",
@@ -222,10 +210,16 @@
       "excellent": "Erinomainen"
     }
   },
-  "planLimit": {
-    "title": "Tilauksen raja saavutettu",
-    "description": "Jatka päivittämällä laajempaan tilaukseen.",
-    "later": "Myöhemmin",
-    "upgrade": "Päivitä tilaus"
+  "lightbox": {
+    "close": "Sulje",
+    "prev": "Edellinen kuva",
+    "next": "Seuraava kuva",
+    "counter": "{{current}} / {{total}}"
+  },
+  "notePhotos": {
+    "add": "Kuva",
+    "remove": "Poista kuva",
+    "alt": "Muistiinpanon kuva",
+    "drop": "Pudota liittääksesi"
   }
 }

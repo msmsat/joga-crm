@@ -12,7 +12,7 @@ import { useAccounts, useCounterparties, useOperations, useFinanceMutations } fr
 import { PAYMENT_METHOD_KEYS } from '../../constants';
 import { financesApi } from '../../../../../api/finances/finances.api';
 import { clientsApi } from '../../../../../api/clients/clients.api';
-import { categoryLabel, categoryValue, type CategoryPreset } from '../../categoryLabels';
+import { submitOnEnter } from '../../../../../lib/submitOnEnter';
 
 const PAGE_SIZE = 20;
 const todayISO = () => new Date().toISOString().slice(0, 10);
@@ -29,11 +29,9 @@ export default function OperationsTab({ showToast, initialSearch }: {
   showToast: (msg: string, t?: ToastType) => void;
   initialSearch: string;
 }) {
-  const { t, i18n } = useTranslation('finances');
-  const categoryPresets = t('operations.categoryPresets', { returnObjects: true }) as Record<'in' | 'out', CategoryPreset[]>;
-  const allCategoryPresets = [...categoryPresets.in, ...categoryPresets.out];
+  const { t } = useTranslation('finances');
   const currency = getCurrencySymbol(useStudioCurrency());
-  const fmt = (n: number) => `${currency}${n.toLocaleString(i18n.language)}`;
+  const fmt = (n: number) => `${currency}${n.toLocaleString('ru-RU')}`;
 
   const [search, setSearch] = useState(initialSearch || '');
   const [debouncedSearch, setDebouncedSearch] = useState(initialSearch || '');
@@ -396,12 +394,13 @@ export default function OperationsTab({ showToast, initialSearch }: {
                   промахнуться регистром и заплатить 3 % с продажи, которой уже нет.
                   Нативный datalist: подставляется в клик, ничего не ломает и не
                   тянет ни строчки зависимостей. */}
-              <input value={categoryLabel(nCategory, allCategoryPresets)} onChange={e => setNCategory(categoryValue(e.target.value, categoryPresets[nType]))} onFocus={() => setAddFocused('c')} onBlur={() => setAddFocused(null)} placeholder={t('operations.categoryPlaceholder')} list="op-categories" style={inp('c')} />
+              <input value={nCategory} onChange={e => setNCategory(e.target.value)} onFocus={() => setAddFocused('c')} onBlur={() => setAddFocused(null)} placeholder={t('operations.categoryPlaceholder')} list="op-categories" style={inp('c')} />
               <datalist id="op-categories">
                 {/* Значение одно на все языки — оно ложится в БД, по нему группируются
                     отчёты и его же пишет автооткат возврата по карте. Переводится
                     только подпись. */}
-                {categoryPresets[nType].map(c => <option key={c.value} value={c.label} />)}
+                {(t(`operations.categoryPresets.${nType}`, { returnObjects: true }) as { value: string; label: string }[])
+                  .map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
               </datalist>
             </div>
             <div>
@@ -492,7 +491,7 @@ export default function OperationsTab({ showToast, initialSearch }: {
                           <span style={{ fontSize: '10px', background: '#FFF3CD', color: '#856404', padding: '2px 8px', borderRadius: '20px', fontWeight: 700 }}>{t('operations.pending')}</span>
                         )}
                       </div>
-                      <div style={{ fontSize: '12px', color: 'var(--muted)' }}>{acc || categoryLabel(op.category ?? '', allCategoryPresets) || '—'}</div>
+                      <div style={{ fontSize: '12px', color: 'var(--muted)' }}>{acc || op.category || '—'}</div>
                     </div>
                     <div style={{ textAlign: 'right', flexShrink: 0, paddingRight: '12px' }}>
                       <div style={{ fontSize: '15px', fontWeight: 800, color, letterSpacing: '-0.3px' }}>{isIncome ? '+' : '−'}{fmt(op.amount)}</div>
@@ -523,7 +522,7 @@ export default function OperationsTab({ showToast, initialSearch }: {
                             </div>
                             <div>
                               <div style={{ fontSize: '11px', color: 'var(--muted)', fontWeight: 700, marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.4px' }}>{t('operations.categoryLabel')}</div>
-                              <input value={categoryLabel(eCategory, allCategoryPresets)} onChange={e => setECategory(categoryValue(e.target.value, allCategoryPresets))} onFocus={() => setEFocused('ec')} onBlur={() => setEFocused(null)} style={einp('ec')} />
+                              <input value={eCategory} onChange={e => setECategory(e.target.value)} onFocus={() => setEFocused('ec')} onBlur={() => setEFocused(null)} style={einp('ec')} />
                             </div>
                             <div>
                               <div style={{ fontSize: '11px', color: 'var(--muted)', fontWeight: 700, marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.4px' }}>{t('operations.accountLabel')}</div>
@@ -554,7 +553,7 @@ export default function OperationsTab({ showToast, initialSearch }: {
                         </div>
                       ) : (
                         <div key="view" className={styles.morphContainer} style={{ padding: '20px 24px', background: 'rgba(252,174,145,0.03)', display: 'grid', gridTemplateColumns: cp ? '1fr 1fr 1fr 1fr' : '1fr 1fr 1fr', gap: '24px' }}>
-                          {[[t('operations.detailAccount'), acc || '—'], [t('operations.detailCategory'), categoryLabel(op.category ?? '', allCategoryPresets) || '—'], [t('operations.detailMethod'), op.method ? t(`paymentMethods.methods.${op.method}.name`, op.method) : '—'], ...(cp ? [[t('operations.detailCounterparty'), cp]] : [])].map(([l, v]) => (
+                          {[[t('operations.detailAccount'), acc || '—'], [t('operations.detailCategory'), op.category ?? '—'], [t('operations.detailMethod'), op.method ? t(`paymentMethods.methods.${op.method}.name`, op.method) : '—'], ...(cp ? [[t('operations.detailCounterparty'), cp]] : [])].map(([l, v]) => (
                             <div key={l as string}>
                               <div style={{ fontSize: '11px', color: 'var(--muted)', fontWeight: 700, marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.4px' }}>{l}</div>
                               <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--onyx)' }}>{v}</div>

@@ -90,7 +90,7 @@
       "title": "Контакти",
       "phone": "Телефон",
       "email": "Email",
-      "telegram": "Telegram",
+      "instagram": "Instagram",
       "birthDate": "Дата народження",
       "city": "Місто",
       "copyHint": " · клікніть, щоб скопіювати"
@@ -278,9 +278,6 @@
       "cancel": "Скасувати",
       "addPlaceholder": "Введіть нотатку...",
       "add": "Додати нотатку",
-      "addPhoto": "Фото",
-      "removePhoto": "Видалити фото",
-      "photoUploading": "Завантаження…",
       "justNow": "щойно",
       "deleteTitle": "Видалити нотатку?",
       "deleteMessage": "Цю нотатку не можна відновити."
@@ -364,7 +361,10 @@
       "phone": "Телефон",
       "phonePlaceholder": "+380 50 000-00-00",
       "email": "Email",
-      "emailPlaceholder": "client@example.com"
+      "emailPlaceholder": "client@example.com",
+      "instagram": "Instagram",
+      "instagramOptional": "необов'язково",
+      "instagramPlaceholder": "username"
     },
     "step2": {
       "bday": "Дата народження",
@@ -412,7 +412,8 @@
       "name": "Введіть ім'я (щонайменше 2 символи)",
       "phone": "Некоректний номер телефону",
       "email": "Некоректний email",
-      "city": "Введіть місто"
+      "city": "Введіть місто",
+      "instagram": "Нік латиницею: літери, цифри, крапка та підкреслення"
     }
   },
   "deleteModal": {

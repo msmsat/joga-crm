@@ -149,53 +149,53 @@
     "categoryPresets": {
       "in": [
         {
-          "value": "Абонементы",
+          "value": "Abonime",
           "label": "Abonime"
         },
         {
-          "value": "Услуги",
+          "value": "Shërbime",
           "label": "Shërbime"
         },
         {
-          "value": "Сертификаты",
+          "value": "Certifikata dhurate",
           "label": "Certifikata dhurate"
         },
         {
-          "value": "Депозит",
+          "value": "Depozitë",
           "label": "Depozitë"
         },
         {
-          "value": "Прочее",
+          "value": "Të tjera",
           "label": "Të tjera"
         }
       ],
       "out": [
         {
-          "value": "Возвраты",
+          "value": "Rimbursime",
           "label": "Rimbursime"
         },
         {
-          "value": "Аренда",
+          "value": "Qira",
           "label": "Qira"
         },
         {
-          "value": "Зарплата",
+          "value": "Paga",
           "label": "Paga"
         },
         {
-          "value": "Закупки",
+          "value": "Furnizime",
           "label": "Furnizime"
         },
         {
-          "value": "Реклама",
+          "value": "Marketing",
           "label": "Marketing"
         },
         {
-          "value": "Налоги",
+          "value": "Taksa",
           "label": "Taksa"
         },
         {
-          "value": "Прочее",
+          "value": "Të tjera",
           "label": "Të tjera"
         }
       ]

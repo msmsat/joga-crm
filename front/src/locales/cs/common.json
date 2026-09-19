@@ -25,8 +25,7 @@
     "done": "Hotovo, zavřít",
     "saving": "Ukládání…",
     "saved": "Uloženo!",
-    "upload": "Nahrát",
-    "undo": "Zpět"
+    "upload": "Nahrát"
   },
   "validation": {
     "required": "Povinné pole",
@@ -144,15 +143,7 @@
       "unknown_event": "Neznámá událost",
       "not_personal": "Osobní nastavení nemění povinná oznámení"
     },
-    "trial_already_used": "Bezplatná zkušební verze už pro toto studio není k dispozici.",
-    "invalid_credentials": "Nesprávný e-mail, telefonní číslo nebo heslo.",
-    "account_not_verified": "Váš účet ještě není aktivován. Přijměte pozvánku z e-mailu nebo potvrďte e-mail pomocí kódu.",
-    "invalid_code": "Kód je neplatný nebo vypršel.",
-    "invalid_current_password": "Současné heslo je nesprávné.",
-    "password_unchanged": "Nové heslo se musí lišit od současného.",
-    "invalid_request": "Zkontrolujte zadané údaje a zkuste to znovu.",
-    "session_expired": "Platnost přihlášení vypršela. Přihlaste se znovu.",
-    "limit_exceeded": "Dosáhli jste limitu svého tarifu."
+    "trial_already_used": "Bezplatná zkušební verze už pro toto studio není k dispozici."
   },
   "units": {
     "min": "min",
@@ -179,11 +170,8 @@
     "lessonAction": "QR kód lekce",
     "lessonCaption": "Namiřte foťák a rezervujte si tuto lekci",
     "packageAction": "QR kód permanentky",
-<<<<<<< HEAD
     "packageCaption": "Namiřte foťák a kupte si permanentku",
     "serviceAction": "QR kód služby"
-=======
-    "packageCaption": "Namiřte foťák a kupte si permanentku"
   },
   "auth": {
     "noAccount": "Nemáte účet?",
@@ -222,10 +210,16 @@
       "excellent": "Výborné"
     }
   },
-  "planLimit": {
-    "title": "Dosažen limit tarifu",
-    "description": "Pro pokračování přejděte na vyšší tarif.",
-    "later": "Později",
-    "upgrade": "Zvýšit tarif"
+  "lightbox": {
+    "close": "Zavřít",
+    "prev": "Předchozí fotka",
+    "next": "Další fotka",
+    "counter": "{{current}} z {{total}}"
+  },
+  "notePhotos": {
+    "add": "Foto",
+    "remove": "Odebrat fotku",
+    "alt": "Fotka poznámky",
+    "drop": "Pusťte a přiložíme"
   }
 }

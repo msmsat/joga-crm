@@ -149,53 +149,53 @@
     "categoryPresets": {
       "in": [
         {
-          "value": "Абонементы",
+          "value": "Pretplate",
           "label": "Pretplate"
         },
         {
-          "value": "Услуги",
+          "value": "Usluge",
           "label": "Usluge"
         },
         {
-          "value": "Сертификаты",
+          "value": "Poklon-bonovi",
           "label": "Poklon-bonovi"
         },
         {
-          "value": "Депозит",
+          "value": "Depozit",
           "label": "Depozit"
         },
         {
-          "value": "Прочее",
+          "value": "Ostalo",
           "label": "Ostalo"
         }
       ],
       "out": [
         {
-          "value": "Возвраты",
+          "value": "Povrati",
           "label": "Povrati"
         },
         {
-          "value": "Аренда",
+          "value": "Najam",
           "label": "Najam"
         },
         {
-          "value": "Зарплата",
+          "value": "Plaće",
           "label": "Plaće"
         },
         {
-          "value": "Закупки",
+          "value": "Nabava",
           "label": "Nabava"
         },
         {
-          "value": "Реклама",
+          "value": "Marketing",
           "label": "Marketing"
         },
         {
-          "value": "Налоги",
+          "value": "Porezi",
           "label": "Porezi"
         },
         {
-          "value": "Прочее",
+          "value": "Ostalo",
           "label": "Ostalo"
         }
       ]

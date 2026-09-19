@@ -25,8 +25,7 @@
     "done": "Fertig, schließen",
     "saving": "Wird gespeichert…",
     "saved": "Gespeichert!",
-    "upload": "Hochladen",
-    "undo": "Rückgängig"
+    "upload": "Hochladen"
   },
   "validation": {
     "required": "Pflichtfeld",
@@ -144,15 +143,7 @@
       "unknown_event": "Unbekanntes Ereignis",
       "not_personal": "Persönliche Einstellungen ändern keine Pflichtbenachrichtigungen"
     },
-    "trial_already_used": "Die kostenlose Testphase steht für dieses Studio nicht mehr zur Verfügung.",
-    "invalid_credentials": "E-Mail-Adresse, Telefonnummer oder Passwort ist falsch.",
-    "account_not_verified": "Ihr Konto ist noch nicht aktiviert. Nehmen Sie die Einladung in der E-Mail an oder bestätigen Sie Ihre E-Mail-Adresse mit dem Code.",
-    "invalid_code": "Der Code ist ungültig oder abgelaufen.",
-    "invalid_current_password": "Das aktuelle Passwort ist falsch.",
-    "password_unchanged": "Das neue Passwort muss sich vom aktuellen unterscheiden.",
-    "invalid_request": "Prüfen Sie Ihre Eingaben und versuchen Sie es erneut.",
-    "session_expired": "Ihre Sitzung ist abgelaufen. Bitte melden Sie sich erneut an.",
-    "limit_exceeded": "Sie haben das Limit Ihres Tarifs erreicht."
+    "trial_already_used": "Die kostenlose Testphase steht für dieses Studio nicht mehr zur Verfügung."
   },
   "units": {
     "min": "Min.",
@@ -179,11 +170,8 @@
     "lessonAction": "QR-Code des Kurses",
     "lessonCaption": "Kamera darauf richten und diesen Kurs buchen",
     "packageAction": "QR-Code des Abos",
-<<<<<<< HEAD
     "packageCaption": "Kamera darauf richten und das Abo kaufen",
     "serviceAction": "QR-Code der Leistung"
-=======
-    "packageCaption": "Kamera darauf richten und das Abo kaufen"
   },
   "auth": {
     "noAccount": "Noch kein Konto?",
@@ -222,10 +210,16 @@
       "excellent": "Ausgezeichnet"
     }
   },
-  "planLimit": {
-    "title": "Tariflimit erreicht",
-    "description": "Wechseln Sie zu einem höheren Tarif, um fortzufahren.",
-    "later": "Später",
-    "upgrade": "Tarif upgraden"
+  "lightbox": {
+    "close": "Schließen",
+    "prev": "Vorheriges Foto",
+    "next": "Nächstes Foto",
+    "counter": "{{current}} von {{total}}"
+  },
+  "notePhotos": {
+    "add": "Foto",
+    "remove": "Foto entfernen",
+    "alt": "Foto zur Notiz",
+    "drop": "Loslassen zum Anhängen"
   }
 }

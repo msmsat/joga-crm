@@ -2,7 +2,7 @@ from dataclasses import asdict
 from datetime import date, datetime
 from typing import Literal, Optional
 
-from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import and_, cast, extract, func, or_
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -19,7 +19,6 @@ from models import (
     StudioSubscriptionProgramConfig, SubscriptionPackage, User,
 )
 from routers.clients._scope import client_scope
-from routers.studio.media import NOTE_PHOTOS_DIR, save_image
 from routers.clients.loyalty import expire_points
 from routers.clients.subscriptions import attach_subscription
 from routers.finances.accounts import get_or_create_default_account
@@ -53,7 +52,6 @@ from schemas import (
     NoteCreate,
     NoteCreatedOut,
     NoteOut,
-    NotePhotoOut,
     NoteUpdate,
     OkFrozenOut,
     OkOut,
@@ -480,6 +478,7 @@ async def get_client(
             expires_at=subscription_alert.expires_at.isoformat(),
             type=subscription_alert.type,
         ) if subscription_alert else None,
+        instagram=client.instagram,
         birth_date=client.birth_date.isoformat() if client.birth_date else None,
         city=client.city,
         source=client.source,
@@ -729,6 +728,7 @@ async def create_client(
         last_name=body.last_name,
         phone=body.phone,
         email=body.email,
+        instagram=body.instagram,
         birth_date=body.birth_date,
         city=body.city,
         tags=body.tags or [],
@@ -962,24 +962,6 @@ async def add_note(
         photos=note.photos or [],
         created_at=note.created_at.isoformat(),
     )
-
-
-# ─── POST /clients/{id}/notes/photo ───────────────────────────────────────────
-
-@router.post("/{client_id}/notes/photo", response_model=NotePhotoOut)
-async def upload_note_photo(
-    client_id: int,
-    file: UploadFile = File(...),
-    ctx: StudioContext = Depends(require_role("owner", "admin")),
-    db: AsyncSession = Depends(get_db),
-):
-    """Файл кладётся сразу, ссылка возвращается форме — заметка сохранит её
-    вместе с текстом. Отдельным шагом, а не multipart к самой заметке: снимки
-    добавляют и к уже существующей заметке, и черновик до сохранения должен их
-    показывать.
-    """
-    await _get_client_or_404(client_id, ctx, db)
-    return NotePhotoOut(url=await save_image(file, NOTE_PHOTOS_DIR, max_size_mb=10))
 
 
 # ─── PATCH /clients/{id}/notes/{note_id} ─────────────────────────────────────

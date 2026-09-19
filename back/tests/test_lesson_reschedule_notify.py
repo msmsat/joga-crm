@@ -63,6 +63,9 @@ class _Lesson:
         self.total_spots = 8
         self.service_id = None
         self.cancel_reason = None
+        # Заметка студии о занятии и снимки к ней — как на реальной модели.
+        self.notes = ""
+        self.photos = []
         self.clients_notified = False
         # HB-04: новые поля Lesson (branch_id/booking_mode/tz_iana, HB-02) —
         # фейковый объект должен нести их, как реальная ORM-модель.

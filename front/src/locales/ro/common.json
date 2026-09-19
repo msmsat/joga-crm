@@ -25,8 +25,7 @@
     "done": "Gata, închide",
     "saving": "Se salvează…",
     "saved": "Salvat!",
-    "upload": "Încarcă",
-    "undo": "Anulează"
+    "upload": "Încarcă"
   },
   "validation": {
     "required": "Câmp obligatoriu",
@@ -144,15 +143,7 @@
       "unknown_event": "Eveniment necunoscut",
       "not_personal": "Setările personale nu modifică notificările obligatorii"
     },
-    "trial_already_used": "Perioada de probă gratuită nu mai este disponibilă pentru acest studio.",
-    "invalid_credentials": "Adresă de e-mail, număr de telefon sau parolă incorectă.",
-    "account_not_verified": "Contul tău nu este încă activat. Acceptă invitația din e-mail sau confirmă adresa cu ajutorul codului.",
-    "invalid_code": "Codul nu este valid sau a expirat.",
-    "invalid_current_password": "Parola actuală este incorectă.",
-    "password_unchanged": "Noua parolă trebuie să fie diferită de cea actuală.",
-    "invalid_request": "Verifică datele introduse și încearcă din nou.",
-    "session_expired": "Sesiunea a expirat. Autentifică-te din nou.",
-    "limit_exceeded": "Ai atins limita planului tău."
+    "trial_already_used": "Perioada de probă gratuită nu mai este disponibilă pentru acest studio."
   },
   "units": {
     "min": "min",
@@ -179,11 +170,8 @@
     "lessonAction": "Codul QR al clasei",
     "lessonCaption": "Îndreaptă camera ca să te înscrii la această clasă",
     "packageAction": "Codul QR al abonamentului",
-<<<<<<< HEAD
     "packageCaption": "Îndreaptă camera ca să cumperi abonamentul",
     "serviceAction": "Codul QR al serviciului"
-=======
-    "packageCaption": "Îndreaptă camera ca să cumperi abonamentul"
   },
   "auth": {
     "noAccount": "Nu aveți un cont?",
@@ -222,10 +210,16 @@
       "excellent": "Excelentă"
     }
   },
-  "planLimit": {
-    "title": "Limita planului a fost atinsă",
-    "description": "Treci la un plan superior pentru a continua.",
-    "later": "Mai târziu",
-    "upgrade": "Alege un plan superior"
+  "lightbox": {
+    "close": "Închide",
+    "prev": "Fotografia anterioară",
+    "next": "Fotografia următoare",
+    "counter": "{{current}} din {{total}}"
+  },
+  "notePhotos": {
+    "add": "Foto",
+    "remove": "Elimină fotografia",
+    "alt": "Fotografia notei",
+    "drop": "Eliberaţi pentru a ataşa"
   }
 }

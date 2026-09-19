@@ -25,8 +25,7 @@
     "done": "Listo, cerrar",
     "saving": "Guardando…",
     "saved": "¡Guardado!",
-    "upload": "Subir",
-    "undo": "Deshacer"
+    "upload": "Subir"
   },
   "validation": {
     "required": "Campo obligatorio",
@@ -144,15 +143,7 @@
       "unknown_event": "Evento desconocido",
       "not_personal": "Los ajustes personales no cambian las notificaciones obligatorias"
     },
-    "trial_already_used": "La prueba gratuita ya no está disponible para este estudio.",
-    "invalid_credentials": "Correo electrónico, teléfono o contraseña incorrectos.",
-    "account_not_verified": "Tu cuenta aún no está activada. Acepta la invitación del correo o confirma tu dirección con el código.",
-    "invalid_code": "El código no es válido o ha caducado.",
-    "invalid_current_password": "La contraseña actual es incorrecta.",
-    "password_unchanged": "La nueva contraseña debe ser distinta de la actual.",
-    "invalid_request": "Revisa los datos introducidos e inténtalo de nuevo.",
-    "session_expired": "Tu sesión ha caducado. Vuelve a iniciar sesión.",
-    "limit_exceeded": "Has alcanzado el límite de tu plan."
+    "trial_already_used": "La prueba gratuita ya no está disponible para este estudio."
   },
   "units": {
     "min": "min",
@@ -179,11 +170,8 @@
     "lessonAction": "Código QR de la clase",
     "lessonCaption": "Apunta la cámara para reservar esta clase",
     "packageAction": "Código QR del bono",
-<<<<<<< HEAD
     "packageCaption": "Apunta la cámara para comprar el bono",
     "serviceAction": "Código QR del servicio"
-=======
-    "packageCaption": "Apunta la cámara para comprar el bono"
   },
   "auth": {
     "noAccount": "¿No tienes una cuenta?",
@@ -222,10 +210,16 @@
       "excellent": "Excelente"
     }
   },
-  "planLimit": {
-    "title": "Límite del plan alcanzado",
-    "description": "Cambia a un plan superior para continuar.",
-    "later": "Más tarde",
-    "upgrade": "Mejorar plan"
+  "lightbox": {
+    "close": "Cerrar",
+    "prev": "Foto anterior",
+    "next": "Foto siguiente",
+    "counter": "{{current}} de {{total}}"
+  },
+  "notePhotos": {
+    "add": "Foto",
+    "remove": "Quitar foto",
+    "alt": "Foto de la nota",
+    "drop": "Suelta para adjuntar"
   }
 }

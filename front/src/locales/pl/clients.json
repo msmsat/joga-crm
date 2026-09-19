@@ -90,7 +90,7 @@
       "title": "Dane kontaktowe",
       "phone": "Telefon",
       "email": "E-mail",
-      "telegram": "Telegram",
+      "instagram": "Instagram",
       "birthDate": "Data urodzenia",
       "city": "Miasto",
       "copyHint": " · kliknij, aby skopiować"
@@ -286,9 +286,6 @@
       "cancel": "Anuluj",
       "addPlaceholder": "Wpisz notatkę…",
       "add": "Dodaj notatkę",
-      "addPhoto": "Zdjęcie",
-      "removePhoto": "Usuń zdjęcie",
-      "photoUploading": "Wysyłanie…",
       "justNow": "przed chwilą",
       "deleteTitle": "Usunąć notatkę?",
       "deleteMessage": "Tej notatki nie można odzyskać."
@@ -372,7 +369,10 @@
       "phone": "Telefon",
       "phonePlaceholder": "+48 500 000 000",
       "email": "E-mail",
-      "emailPlaceholder": "klient@przyklad.pl"
+      "emailPlaceholder": "klient@przyklad.pl",
+      "instagram": "Instagram",
+      "instagramOptional": "opcjonalnie",
+      "instagramPlaceholder": "username"
     },
     "step2": {
       "bday": "Data urodzenia",
@@ -424,7 +424,8 @@
       "name": "Wpisz imię (co najmniej 2 znaki)",
       "phone": "Nieprawidłowy numer telefonu",
       "email": "Nieprawidłowy e-mail",
-      "city": "Wpisz miasto"
+      "city": "Wpisz miasto",
+      "instagram": "Nazwa użytkownika: litery łacińskie, cyfry, kropka i podkreślenie"
     }
   },
   "deleteModal": {

@@ -266,12 +266,7 @@
     "cannotDeleteLastOwner": "Kan ikke fjerne den eneste eieren"
   },
   "ownerModal": {
-    "header": "EIERENS KONTAKTER",
-    "heading": "Kontaktopplysninger",
-    "sub": "Telefon og e-post til studioets eier",
-    "cardNote": "e-posten er innloggingsnavnet",
-    "loginWarning": "E-posten er eierens innlogging. Etter lagring logger du inn med den nye adressen.",
-    "lockedHint": "Navn, bilde, rolle og tilgangsrettigheter redigeres ikke her — de ligger i «Profil»-delen."
+    "loginWarning": "E-posten er eierens innlogging. Etter lagring logger du inn med den nye adressen."
   },
   "list": {
     "pendingLabel": "Invitasjon venter",

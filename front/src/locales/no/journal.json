@@ -96,7 +96,8 @@
       "confirm": "Gå til Katalogen"
     },
     "reschedule": "Flytt",
-    "loading": "Laster…"
+    "loading": "Laster…",
+    "openClient": "Åpne kundekortet"
   },
   "addClientModal": {
     "title": "Legg til kunde",
@@ -180,5 +181,20 @@
     "configIncomplete": "Timeplanen for denne tjenesten er ikke satt opp ennå",
     "moveTitle": "Flytt booking",
     "moveBusy": "Spesialisten er opptatt på dette tidspunktet"
+  },
+  "lessonNotes": {
+    "title": "Notat om timen",
+    "add": "Legg til notat",
+    "placeholder": "Hva er viktig å huske om denne timen…"
+  },
+  "clientCard": {
+    "title": "Kunde",
+    "phoneVerified": "bekreftet",
+    "visits": "Besøk",
+    "spent": "Brukt",
+    "debt": "Gjeld",
+    "notes": "Notater",
+    "openFull": "Åpne kortet",
+    "copied": "Kopiert"
   }
 }

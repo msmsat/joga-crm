@@ -107,7 +107,7 @@ export const AddClientModal: React.FC<AddClientModalProps> = ({
                     <div className="client-ava">{[c.name, c.last_name].filter(Boolean).map(n => n![0]).join('')}</div>
                     <div style={{ flex: 1 }}>
                       <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--onyx)' }}>{c.name} {c.last_name ?? ''}</div>
-                      <div style={{ fontSize: 11, color: 'var(--muted)' }}>{c.phone ?? ''} · {t('bookingPopup.visitsCount', { count: c.visit_count })}</div>
+                      <div style={{ fontSize: 11, color: 'var(--muted)' }}>{c.phone ?? ''} · {c.visit_count} визитов</div>
                     </div>
                     {isSelected && (
                       <div style={{ color: 'var(--peach)' }}><Icons.Check /></div>

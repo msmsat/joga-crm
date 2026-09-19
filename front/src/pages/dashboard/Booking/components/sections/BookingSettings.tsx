@@ -118,8 +118,8 @@ export function BookingSettings(s: Props) {
             ].map((bar, i) => (
               <rect key={i} x={10 + i * 52} y={bar.y} width={40} height={bar.h} rx="6" fill={bar.c}/>
             ))}
-            {['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'].map((d, i) => (
-              <text key={d} x={30 + i * 52} y="57" fontSize="8" fill="var(--text3)" textAnchor="middle">{t(`common:days.short.${d}`)}</text>
+            {['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'].map((d, i) => (
+              <text key={i} x={30 + i * 52} y="57" fontSize="8" fill="var(--text3)" textAnchor="middle">{d}</text>
             ))}
           </svg>
         </div>

@@ -125,29 +125,29 @@ operations.toasts.updated	Operacioni u përditësua
 operations.toasts.updateFailed	Nuk u ruajt dot operacioni
 operations.toasts.exportFailed	Nuk u eksportuan dot operacionet
 operations.toasts.receiptDownloaded	Fatura u shkarkua
-operations.categoryPresets.in.0.value	Абонементы
+operations.categoryPresets.in.0.value	Abonime
 operations.categoryPresets.in.0.label	Abonime
-operations.categoryPresets.in.1.value	Услуги
+operations.categoryPresets.in.1.value	Shërbime
 operations.categoryPresets.in.1.label	Shërbime
-operations.categoryPresets.in.2.value	Сертификаты
+operations.categoryPresets.in.2.value	Certifikata dhurate
 operations.categoryPresets.in.2.label	Certifikata dhurate
-operations.categoryPresets.in.3.value	Депозит
+operations.categoryPresets.in.3.value	Depozitë
 operations.categoryPresets.in.3.label	Depozitë
-operations.categoryPresets.in.4.value	Прочее
+operations.categoryPresets.in.4.value	Të tjera
 operations.categoryPresets.in.4.label	Të tjera
-operations.categoryPresets.out.0.value	Возвраты
+operations.categoryPresets.out.0.value	Rimbursime
 operations.categoryPresets.out.0.label	Rimbursime
-operations.categoryPresets.out.1.value	Аренда
+operations.categoryPresets.out.1.value	Qira
 operations.categoryPresets.out.1.label	Qira
-operations.categoryPresets.out.2.value	Зарплата
+operations.categoryPresets.out.2.value	Paga
 operations.categoryPresets.out.2.label	Paga
-operations.categoryPresets.out.3.value	Закупки
+operations.categoryPresets.out.3.value	Furnizime
 operations.categoryPresets.out.3.label	Furnizime
-operations.categoryPresets.out.4.value	Реклама
+operations.categoryPresets.out.4.value	Marketing
 operations.categoryPresets.out.4.label	Marketing
-operations.categoryPresets.out.5.value	Налоги
+operations.categoryPresets.out.5.value	Taksa
 operations.categoryPresets.out.5.label	Taksa
-operations.categoryPresets.out.6.value	Прочее
+operations.categoryPresets.out.6.value	Të tjera
 operations.categoryPresets.out.6.label	Të tjera
 salaries.loading	Po ngarkohen pagat…
 salaries.noRows	Nuk ka staf për llogaritje

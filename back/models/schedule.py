@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import List, Optional
-from sqlalchemy import Integer, String, Boolean, DateTime, Float, JSON, ForeignKey, CheckConstraint, Index, func, text
+from sqlalchemy import Integer, String, Text, Boolean, DateTime, Float, JSON, ForeignKey, CheckConstraint, Index, func, text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base import Base
@@ -87,6 +87,11 @@ class Lesson(Base):
     service_id: Mapped[Optional[int]] = mapped_column(ForeignKey("services.id", ondelete="SET NULL"), nullable=True, index=True)
     status: Mapped[str] = mapped_column(String(20), default="confirmed")
     cancel_reason: Mapped[Optional[str]] = mapped_column(String(300), nullable=True)
+    # Заметка студии о занятии: что принести, к чему готовиться, что случилось.
+    # Клиенту не показывается нигде — это запись для своих, как заметка в
+    # карточке клиента (ClientNote), и фото в ней те же: пути /static/notes/.
+    notes: Mapped[str] = mapped_column(Text, default="", server_default="", nullable=False)
+    photos: Mapped[list] = mapped_column(JSON, default=list, server_default="[]", nullable=False)
     clients_notified: Mapped[bool] = mapped_column(Boolean, default=False)
     gcal_event_id: Mapped[Optional[str]] = mapped_column(String(120), nullable=True, index=True)
 

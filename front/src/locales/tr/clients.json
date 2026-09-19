@@ -90,7 +90,7 @@
       "title": "İletişim bilgileri",
       "phone": "Telefon",
       "email": "E-posta",
-      "telegram": "Telegram",
+      "instagram": "Instagram",
       "birthDate": "Doğum tarihi",
       "city": "Şehir",
       "copyHint": " · kopyalamak için tıklayın"
@@ -282,9 +282,6 @@
       "cancel": "İptal",
       "addPlaceholder": "Bir not yazın…",
       "add": "Not ekle",
-      "addPhoto": "Fotoğraf",
-      "removePhoto": "Fotoğrafı kaldır",
-      "photoUploading": "Yükleniyor…",
       "justNow": "az önce",
       "deleteTitle": "Not silinsin mi?",
       "deleteMessage": "Bu not geri alınamaz."
@@ -368,7 +365,10 @@
       "phone": "Telefon",
       "phonePlaceholder": "+90 530 000 0000",
       "email": "E-posta",
-      "emailPlaceholder": "musteri@ornek.tr"
+      "emailPlaceholder": "musteri@ornek.tr",
+      "instagram": "Instagram",
+      "instagramOptional": "isteğe bağlı",
+      "instagramPlaceholder": "username"
     },
     "step2": {
       "bday": "Doğum tarihi",
@@ -418,7 +418,8 @@
       "name": "Bir ad girin (en az 2 karakter)",
       "phone": "Geçersiz telefon numarası",
       "email": "Geçersiz e-posta",
-      "city": "Bir şehir girin"
+      "city": "Bir şehir girin",
+      "instagram": "Kullanıcı adı: Latin harfleri, rakamlar, nokta ve alt çizgi"
     }
   },
   "deleteModal": {

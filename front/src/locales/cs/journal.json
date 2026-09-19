@@ -97,7 +97,8 @@
       "confirm": "Přejít do Katalogu"
     },
     "reschedule": "Přesunout",
-    "loading": "Načítání…"
+    "loading": "Načítání…",
+    "openClient": "Otevřít kartu klienta"
   },
   "addClientModal": {
     "title": "Přidat klienta",
@@ -184,5 +185,20 @@
     "configIncomplete": "Rozvrh této služby zatím není nastaven",
     "moveTitle": "Přesun rezervace",
     "moveBusy": "V tento čas má specialista obsazeno"
+  },
+  "lessonNotes": {
+    "title": "Poznámka k lekci",
+    "add": "Přidat poznámku",
+    "placeholder": "Co je dobré si o této lekci pamatovat…"
+  },
+  "clientCard": {
+    "title": "Klient",
+    "phoneVerified": "ověřeno",
+    "visits": "Návštěvy",
+    "spent": "Utraceno",
+    "debt": "Dluh",
+    "notes": "Poznámky",
+    "openFull": "Otevřít kartu",
+    "copied": "Zkopírováno"
   }
 }

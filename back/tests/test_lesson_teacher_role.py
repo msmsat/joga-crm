@@ -1,8 +1,10 @@
-"""Занятие ставится только на сотрудника с ролью доступа «Тренер».
+"""Занятие ставится только МАСТЕРУ студии.
 
-Владелец и администратор расписание составляют, но в сетке журнала не стоят —
-раньше бэк принимал любого участника студии, и ассистент ставил занятия на
-владельца. Образец фейковой сессии — tests/test_lesson_service_required.py.
+Мастер — роль доступа «Тренер» либо владелец, которому назначены услуги
+(services/members.is_specialist_clause). Администратор и владелец без услуг
+расписание составляют, но в сетке журнала не стоят — раньше бэк принимал
+любого участника студии, и ассистент ставил занятия на владельца.
+Образец фейковой сессии — tests/test_lesson_service_required.py.
 
 Запуск из back/:  python -m tests.test_lesson_teacher_role
 """
@@ -63,6 +65,9 @@ class _R:
     def scalar(self):
         return self._v
 
+    def first(self):
+        return self._v
+
 
 class _DB:
     def __init__(self, seq):
@@ -103,37 +108,53 @@ def _create_body(teacher_id=2):
     )
 
 
-def test_create_on_owner_rejected():
-    db = _DB([_Studio(), _Member(role="owner")])  # lock_studio, затем роль
-    _expect_400(L.create_lesson(_create_body(), _ctx(), db), "не тренер")
-    assert db.committed is False
+def _row(role, specialist):
+    """Строка запроса «членство + мастер ли он» — одна на обе проверки."""
+    return (_Member(role=role), specialist)
 
 
-def test_create_on_admin_rejected():
-    db = _DB([_Studio(), _Member(role="admin")])  # lock_studio, затем роль
-    _expect_400(L.create_lesson(_create_body(), _ctx(), db), "не тренер")
-    assert db.committed is False
-
-
-def test_create_on_trainer_passes_role_check():
-    """Роль подходит — проверка пропускает дальше (падаем уже на услуге)."""
-    db = _DB([_Studio(), _Member(role="trainer"), None])  # lock_studio, роль ok, услуги в фейковой студии нет → 404
+def _passes_role_check(db):
+    """Проверка пропустила дальше — падаем уже на услуге (её в фейке нет)."""
     try:
         asyncio.run(L.create_lesson(_create_body(), _ctx(), db))
         raise AssertionError("ожидали 404 (услуга не найдена)")
     except HTTPException as e:
-        assert e.status_code == 404
+        assert e.status_code == 404, f"ожидали 404, получили {e.status_code}"
 
 
-def test_update_teacher_to_owner_rejected():
-    db = _DB([_Studio(), _Lesson(), _Member(role="owner")])  # lock_studio, get_scoped_lesson, затем проверка роли
-    _expect_400(L.update_lesson(1, LessonUpdateRequest(teacher_id=2), _ctx(), db), "не тренер")
+def test_create_on_owner_without_services_rejected():
+    db = _DB([_Studio(), _row("owner", False)])  # lock_studio, затем мастер?
+    _expect_400(L.create_lesson(_create_body(), _ctx(), db), "не мастер")
+    assert db.committed is False
+
+
+def test_create_on_owner_with_services_passes_role_check():
+    """Владелец, которому назначены услуги, — мастер: занятие ему ставится."""
+    db = _DB([_Studio(), _row("owner", True), None])
+    _passes_role_check(db)
+
+
+def test_create_on_admin_rejected():
+    db = _DB([_Studio(), _row("admin", False)])  # lock_studio, затем мастер?
+    _expect_400(L.create_lesson(_create_body(), _ctx(), db), "не мастер")
+    assert db.committed is False
+
+
+def test_create_on_trainer_passes_role_check():
+    db = _DB([_Studio(), _row("trainer", True), None])
+    _passes_role_check(db)
+
+
+def test_update_teacher_to_owner_without_services_rejected():
+    db = _DB([_Studio(), _Lesson(), _row("owner", False)])  # lock_studio, get_scoped_lesson, проверка
+    _expect_400(L.update_lesson(1, LessonUpdateRequest(teacher_id=2), _ctx(), db), "не мастер")
     assert db.committed is False
 
 
 if __name__ == "__main__":
-    test_create_on_owner_rejected()
+    test_create_on_owner_without_services_rejected()
+    test_create_on_owner_with_services_passes_role_check()
     test_create_on_admin_rejected()
     test_create_on_trainer_passes_role_check()
-    test_update_teacher_to_owner_rejected()
-    print("ALL PASS — занятие только на роль «Тренер»")
+    test_update_teacher_to_owner_without_services_rejected()
+    print("ALL PASS — занятие только мастеру (тренер или владелец с услугами)")

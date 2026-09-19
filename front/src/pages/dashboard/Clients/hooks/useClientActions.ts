@@ -8,6 +8,7 @@ import { useToast } from '../../../../components/ui/Toast';
 import { errorMessage } from '../../../../api/errorMessage';
 import { useClientMutations } from './useClientsList';
 import { clientsApi } from '../../../../api/clients/clients.api';
+import { useNotePhotos } from '../../../../hooks/useNotePhotos';
 
 export interface NoteItem {
   id: number;
@@ -29,8 +30,10 @@ export function useClientActions(clientId: number) {
   const [newNoteText, setNewNoteText]     = useState('');
   // Одно поле на обе формы: правка и добавление взаимоисключающи (каждая из них
   // закрывает другую), и вторая копия состояния просто расходилась бы с первой.
-  const [notePhotos, setNotePhotos]       = useState<string[]>([]);
-  const [notePhotoUploading, setNotePhotoUploading] = useState(false);
+  const {
+    photos: notePhotos, pending: notePending,
+    add: addNotePhoto, remove: removeNotePhoto, reset: setNotePhotos,
+  } = useNotePhotos();
   const [showBooking, setShowBooking]     = useState(false);
   const [showBonus, setShowBonus]         = useState(false);
   const [selectedBonus, setSelectedBonus] = useState<string | null>(null);
@@ -83,7 +86,7 @@ export function useClientActions(clientId: number) {
     setEditingNoteText(text);
     setNotePhotos(photos);
     setIsAddingNote(false);
-  }, []);
+  }, [setNotePhotos]);
 
   const saveNote = useCallback((id: number) => {
     const text = editingNoteText;
@@ -91,13 +94,13 @@ export function useClientActions(clientId: number) {
     setEditingNoteId(null);
     setNotePhotos([]);
     mutations.updateNote(clientId, id, text, photos).catch((e: Error) => toast.error(errorMessage(e, t)));
-  }, [editingNoteText, notePhotos, clientId, mutations, toast, t]);
+  }, [editingNoteText, notePhotos, clientId, mutations, toast, t, setNotePhotos]);
 
   const cancelEditNote = useCallback(() => {
     setEditingNoteId(null);
     setEditingNoteText('');
     setNotePhotos([]);
-  }, []);
+  }, [setNotePhotos]);
 
   const requestDeleteNote = useCallback((id: number) => {
     setDeletingNoteId(id);
@@ -119,7 +122,7 @@ export function useClientActions(clientId: number) {
     setEditingNoteId(null);
     setNewNoteText('');
     setNotePhotos([]);
-  }, []);
+  }, [setNotePhotos]);
 
   const saveNewNote = useCallback(() => {
     const text = newNoteText.trim();
@@ -130,28 +133,13 @@ export function useClientActions(clientId: number) {
     setNewNoteText('');
     setNotePhotos([]);
     mutations.createNote(clientId, text, photos).catch((e: Error) => toast.error(errorMessage(e, t)));
-  }, [newNoteText, notePhotos, clientId, mutations, toast, t]);
+  }, [newNoteText, notePhotos, clientId, mutations, toast, t, setNotePhotos]);
 
   const cancelAddNote = useCallback(() => {
     setIsAddingNote(false);
     setNewNoteText('');
     setNotePhotos([]);
-  }, []);
-
-  /** Файл уходит на сервер сразу — форма держит уже сохранённую ссылку. */
-  const addNotePhoto = useCallback((files: FileList | null) => {
-    const list = Array.from(files ?? []);
-    if (!list.length) return;
-    setNotePhotoUploading(true);
-    Promise.all(list.map(f => clientsApi.uploadNotePhoto(clientId, f)))
-      .then(res => setNotePhotos(prev => [...prev, ...res.map(r => r.url)]))
-      .catch((e: Error) => toast.error(errorMessage(e, t)))
-      .finally(() => setNotePhotoUploading(false));
-  }, [clientId, toast, t]);
-
-  const removeNotePhoto = useCallback((url: string) => {
-    setNotePhotos(prev => prev.filter(p => p !== url));
-  }, []);
+  }, [setNotePhotos]);
 
   const openWhatsApp = useCallback((phone: string) => {
     const digits = phone.replace(/\D/g, '');
@@ -238,7 +226,7 @@ export function useClientActions(clientId: number) {
     startEditNote, saveNote, cancelEditNote,
     deletingNoteId, requestDeleteNote, cancelDeleteNote, confirmDeleteNote,
     isAddingNote, newNoteText, setNewNoteText, startAddNote, saveNewNote, cancelAddNote,
-    notePhotos, notePhotoUploading, addNotePhoto, removeNotePhoto,
+    notePhotos, notePending, addNotePhoto, removeNotePhoto,
     showBooking, toggleBooking, confirmBooking,
     bookingDate, setBookingDate,
     bookingWindowStart, shiftBookingWindow,
@@ -247,7 +235,7 @@ export function useClientActions(clientId: number) {
     eventFilter, setEventFilter,
     copyToClipboard, openWhatsApp,
     remindAboutSubscription,
-    updateField: (field: 'phone' | 'email' | 'birth_date' | 'city', value: string | null) =>
+    updateField: (field: 'phone' | 'email' | 'instagram' | 'birth_date' | 'city', value: string | null) =>
       mutations.update(clientId, { [field]: value } as ClientUpdate).catch((e: Error) => toast.error(errorMessage(e, t))),
     updateRegistrationDate: (date: string) => mutations.updateRegistrationDate(clientId, date).catch((e: Error) => toast.error(errorMessage(e, t))),
   };

@@ -13,8 +13,8 @@ import { StaffStats } from './components/StaffStats';
 import { AddEmployeeModal }  from './components/modals/AddEmployeeModal';
 import EditStaffModal from '../../../components/modals/EditStaffModal';
 import { DeleteConfirmModal } from './components/modals/DeleteConfirmModal';
-import { OwnerContactsModal } from './components/modals/OwnerContactsModal';
 import { useToast } from '../../../components/ui/Toast';
+import { getActiveEmail } from '../../../utils/auth';
 import { ApiError, resolveImageUrl } from '../../../api/client';
 import { staffApi } from '../../../api/staff';
 import { settingsApi } from '../../../api/settings/settings.api';
@@ -461,7 +461,8 @@ export default function Staff() {
                     </button>
                   )}
 
-                  {/* Владелец правит только контакты — открывается OwnerContactsModal */}
+                  {/* Владельца правим той же карточкой, что и остальных: роль
+                      остаётся owner, а назначенные услуги делают его мастером. */}
                   <button
                     onClick={() => setIsEditModalOpen(true)}
                     style={{
@@ -571,7 +572,7 @@ export default function Staff() {
                 )}
 
                 {/* Schedule grid */}
-                {!isOwner && activeStaffId && schedules[activeStaffId] && (
+                {activeStaffId && schedules[activeStaffId] && (
                   <>
                     <div className="sec-title">
                       <span>{t('staff:profile.weekSchedule')}</span>
@@ -804,48 +805,9 @@ export default function Staff() {
         }}
       />
 
-      {/* ── EDIT OWNER CONTACTS ──────────────────────────────────────────── */}
-      {isEditModalOpen && isOwner && profile && (
-      <OwnerContactsModal
-        owner={{
-          id: profile.id,
-          name: profile.name,
-          last_name: profile.last_name ?? undefined,
-          email: profile.email,
-          phone: profile.phone ?? '',
-          photo_url: resolveImageUrl(profile.photo_url),
-          is_online: profile.is_online,
-        }}
-        onClose={() => setIsEditModalOpen(false)}
-        onSave={async ({ email, phone }) => {
-          if (!activeStaffId) return;
-          try {
-            // PUT заменяет запись целиком — остальные поля отправляем как есть,
-            // role не отправляем вовсе, чтобы владелец остался владельцем.
-            await update(activeStaffId, {
-              name: profile.name,
-              last_name: profile.last_name ?? undefined,
-              email,
-              phone: phone || undefined,
-              rate: profile.rate ?? undefined,
-              rate_type: profile.rate_type ?? undefined,
-              service_ids: profile.services.map(s => s.id),
-              photo_url: profile.photo_url ?? undefined,
-              schedule: profile.week_working_hours,
-            });
-            refetchProfile();
-            showToast(t('staff:toasts.changesSaved'));
-          } catch (err) {
-            toast.error(err instanceof ApiError ? err.message : t('staff:toasts.errorSave'));
-            throw err;
-          }
-        }}
-      />
-      )}
-
       {/* ── EDIT EMPLOYEE MODAL ──────────────────────────────────────────── */}
       <EditStaffModal
-        isOpen={isEditModalOpen && !isOwner}
+        isOpen={isEditModalOpen}
         staff={isEditModalOpen && profile ? {
           id: profile.id,
           name: profile.name,
@@ -872,7 +834,9 @@ export default function Staff() {
               last_name: updated.last_name,
               email: updated.email,
               phone: updated.phone || undefined,
-              role: updated.role,
+              // Роль владельца не отправляем вовсе: "owner" в StaffUpdate не
+              // входит, и понизить себя до тренера нельзя даже промахом.
+              ...(updated.role === 'owner' ? {} : { role: updated.role }),
               rate: updated.rate,
               rate_type: (updated.rate_type as 'fixed' | 'percent' | 'hourly') || undefined,
               service_ids: updated.service_ids ?? [],
@@ -895,6 +859,9 @@ export default function Staff() {
           }
         }}
         ownerCount={ownerCount}
+        // Свои контакты владелец правит здесь же — сервер разрешает менять их
+        // хозяину аккаунта (routers/staff/profiles.update_staff).
+        isSelf={profile?.email === getActiveEmail()}
         onDelete={async (id) => {
           try {
             await deleteStaff(id);

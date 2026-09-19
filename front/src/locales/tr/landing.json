@@ -11,7 +11,7 @@
   },
   "hero": {
     "badge": "2026'nın yeni CRM standardı",
-    "title": "Kullanmaktan\n*keyif* alacağınız CRM",
+    "title": "Kullanmaktan\\\n*keyif* alacağınız CRM",
     "lead": "Yoga ve pilates stüdyoları için premium B2B CRM. Rezervasyonlar, müşteriler, ekip ve finans tek yerde. Ekstra tıklama yok, karmaşa yok.",
     "cta": "30 gün ücretsiz deneyin",
     "perks": [
@@ -49,7 +49,7 @@
         "label": "Online rezervasyon kanalı"
       },
       {
-        "value": "30 €'dan başlayan",
+        "value": "20 €'dan başlayan",
         "label": "Aylık, stüdyo başına"
       }
     ],
@@ -62,7 +62,7 @@
   },
   "compare": {
     "label": "fark",
-    "title": "Yolunuza çıkan\nşeyleri kaldırdık",
+    "title": "Yolunuza çıkan\\\nşeyleri kaldırdık",
     "lead": "Velora kendi deneyimimizden doğdu: stüdyolar yönettik ve her gün aynı duvara çarptık — bir müşteriyi kaydetmek için dokuz tıklama isteyen bir CRM. İşte değişenler.",
     "usual": "Alışılagelen yol",
     "velora": "Velora'da",
@@ -91,7 +91,7 @@
   },
   "showcase": {
     "label": "hepsi bir arada",
-    "title": "Bir düzine hizmet yerine\ntek platform",
+    "title": "Bir düzine hizmet yerine\\\ntek platform",
     "lead": "Rezervasyonlar, müşteriler, para, iletişim ve AI tek arayüzde. Tek bir gereksiz modül yok: her ekran sahibin gerçek bir sorununu çözer.",
     "blocks": {
       "journal": {
@@ -148,7 +148,7 @@
   },
   "modules": {
     "label": "modüller",
-    "title": "16 modül,\nzaten dahil",
+    "title": "16 modül,\\\nzaten dahil",
     "lead": "“Yakında” yazan yer tutucular koleksiyonu değil — listelenen her şey çalışır ve plana dahildir. Her bölümü kimin göreceğini roller belirler.",
     "items": {
       "dashboard": {
@@ -221,16 +221,16 @@
   },
   "pricing": {
     "label": "fiyatlandırma",
-    "title": "Planınız ekip\nbüyüklüğünüze bağlıdır",
-    "lead": "İki kişi için 15 €, her ek koltuk için +5 €, sınırsız — 120 €. Tüm 16 modül ve Velora AI her seviyeye dahildir: düğmeleri açmak için değil, ekip büyüklüğü için ödeme yaparsınız. Seçebileceğiniz üç ödeme modeli ve peşin ödemede %40'a varan indirim.",
+    "title": "Planınız ekip\\\nbüyüklüğünüze bağlıdır",
+    "lead": "Tek kişi için 20 €, iki kişi için 30 €, her ek koltuk için +5 €, sınırsız — 150 €. Tüm 16 modül ve Velora AI her seviyeye dahildir: düğmeleri açmak için değil, ekip büyüklüğü için ödeme yaparsınız. Seçebileceğiniz üç ödeme modeli ve peşin ödemede %30'a varan indirim.",
     "team": "ekip",
     "seats_one": "kişi",
     "seats_other": "kişi",
     "unlimited": "sınırsız",
-    "scaleMin": "2 koltuk",
+    "scaleMin": "1 koltuk",
     "scaleMax": "∞ sınırsız",
     "sliderAria": "Stüdyonuzda kaç kişi çalışıyor",
-    "hint": "İki kişi için **30 €**, her ek koltuk için **+5 €**. Sınırsız — ayda **150 €**.",
+    "hint": "Tek kişi için **20 €**, iki kişi için **30 €**, her ek koltuk için **+5 €**. Sınırsız — ayda **150 €**.",
     "period": "ödeme dönemi",
     "months": "{{count}} ay",
     "noDiscount": "—",
@@ -253,12 +253,12 @@
     "models": [
       {
         "title": "Abonelik",
-        "price": "30 € / ay'dan başlayan",
+        "price": "20 € / ay'dan başlayan",
         "desc": "Sabit bir tutar. Maliyeti baştan bilirsiniz — ay sonunda sürpriz yok."
       },
       {
         "title": "Gelirin %3'ü",
-        "price": "en az 30 € / ay",
+        "price": "en az 20 € / ay",
         "desc": "Ciroya göre ödeyin. Sakin bir ayda yalnızca asgari tutara kadar farkı tamamlarsınız."
       },
       {
@@ -304,7 +304,7 @@
   },
   "about": {
     "label": "hakkımızda",
-    "title": "Velora, kendileri de stüdyo işletmiş\ninsanlar tarafından geliştiriliyor",
+    "title": "Velora, kendileri de stüdyo işletmiş\\\ninsanlar tarafından geliştiriliyor",
     "lead": "“Herkes için CRM” yapmıyoruz. Belirli bir iş için — takvim, müşteriler, para, iletişim — araç geliştiriyor; ezber cevaplar göndermek yerine soruları kendimiz yanıtlıyoruz.",
     "p1": "Bir stüdyonun müşterileri o stüdyonun müşterileri olarak kalır. Velora ortak bir katalog kurmaz, müşterilerinize başkalarının reklamlarını göstermez ve bir kişi size geri döndüğünde komisyon almaz.",
     "p2": "Şu anda ürün yoga ve pilates stüdyoları için; takvimlerinin, üyeliklerinin ve eğitmenlerinin gerçekten çalışma biçimi için tasarlandı. Diğer sektörler de aynı özenle sonra gelecek."

@@ -266,12 +266,7 @@
     "cannotDeleteLastOwner": "Jedinog vlasnika nije moguće ukloniti"
   },
   "ownerModal": {
-    "header": "KONTAKTI VLASNIKA",
-    "heading": "Kontakt podaci",
-    "sub": "Telefon i e-pošta vlasnika studija",
-    "cardNote": "e-pošta je korisničko ime",
-    "loginWarning": "E-pošta je korisničko ime vlasnika. Nakon spremanja prijavite se novom adresom.",
-    "lockedHint": "Ime, fotografija, uloga i prava ovdje se ne uređuju — nalaze se u odjeljku «Profil»."
+    "loginWarning": "E-pošta je korisničko ime vlasnika. Nakon spremanja prijavite se novom adresom."
   },
   "list": {
     "pendingLabel": "Čeka prihvaćanje pozivnice",

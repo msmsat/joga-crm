@@ -266,12 +266,7 @@
     "cannotDeleteLastOwner": "Nie można usunąć jedynego właściciela"
   },
   "ownerModal": {
-    "header": "KONTAKTY WŁAŚCICIELA",
-    "heading": "Dane kontaktowe",
-    "sub": "Telefon i email właściciela studia",
-    "cardNote": "email jest loginem do logowania",
-    "loginWarning": "Email jest loginem właściciela. Po zapisaniu zaloguj się nowym adresem.",
-    "lockedHint": "Imię, zdjęcie, rola i uprawnienia nie są edytowane tutaj — znajdują się w sekcji «Profil»."
+    "loginWarning": "Email jest loginem właściciela. Po zapisaniu zaloguj się nowym adresem."
   },
   "list": {
     "pendingLabel": "Oczekuje na zaproszenie",

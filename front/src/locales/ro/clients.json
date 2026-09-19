@@ -90,7 +90,7 @@
       "title": "Contacte",
       "phone": "Telefon",
       "email": "E-mail",
-      "telegram": "Telegram",
+      "instagram": "Instagram",
       "birthDate": "Data nașterii",
       "city": "Oraș",
       "copyHint": " · faceți clic pentru copiere"
@@ -286,9 +286,6 @@
       "cancel": "Anulează",
       "addPlaceholder": "Introduceți o notă…",
       "add": "Adaugă notă",
-      "addPhoto": "Foto",
-      "removePhoto": "Elimină fotografia",
-      "photoUploading": "Se încarcă…",
       "justNow": "chiar acum",
       "deleteTitle": "Ștergeți nota?",
       "deleteMessage": "Această notă nu poate fi recuperată."
@@ -372,7 +369,10 @@
       "phone": "Telefon",
       "phonePlaceholder": "+40 700 000 000",
       "email": "E-mail",
-      "emailPlaceholder": "client@exemplu.ro"
+      "emailPlaceholder": "client@exemplu.ro",
+      "instagram": "Instagram",
+      "instagramOptional": "opțional",
+      "instagramPlaceholder": "username"
     },
     "step2": {
       "bday": "Data nașterii",
@@ -424,7 +424,8 @@
       "name": "Introduceți un nume (cel puțin 2 caractere)",
       "phone": "Număr de telefon nevalid",
       "email": "E-mail nevalid",
-      "city": "Introduceți un oraș"
+      "city": "Introduceți un oraș",
+      "instagram": "Nume de utilizator: litere latine, cifre, punct și liniuță jos"
     }
   },
   "deleteModal": {

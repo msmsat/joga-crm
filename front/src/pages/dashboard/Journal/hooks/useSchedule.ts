@@ -137,12 +137,13 @@ export function useSchedule(
     }
   }, [qc, calendarView, calYear, calMonth, selectedDay, staff, halls, staffLoaded, hallsLoaded]);
 
-  // Колонки — тренеры, плюс любой сотрудник (включая владельца), ведущий занятие
-  // в загруженном диапазоне: занятие не должно остаться без колонки.
+  // Колонки — мастера (тренеры и владелец с услугами, см. is_specialist), плюс
+  // любой сотрудник, ведущий занятие в загруженном диапазоне: занятие не должно
+  // остаться без колонки.
   const trainers = useMemo(() => {
     const teacherIdsWithLessons = new Set(bookings.map(b => b.trainer));
     return staff
-      .filter(s => s.role === 'trainer' || teacherIdsWithLessons.has(s.id))
+      .filter(s => s.is_specialist || teacherIdsWithLessons.has(s.id))
       .map(staffToTrainer);
   }, [staff, bookings]);
 

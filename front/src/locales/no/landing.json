@@ -11,7 +11,7 @@
   },
   "hero": {
     "badge": "Den nye CRM-standarden for 2026",
-    "title": "Et CRM du vil\n*elske* å bruke",
+    "title": "Et CRM du vil\\\n*elske* å bruke",
     "lead": "Et førsteklasses B2B-CRM for yoga- og pilatesstudioer. Bookinger, kunder, team og økonomi på ett sted. Ingen ekstra klikk, ingen forvirring.",
     "cta": "Prøv gratis i 30 dager",
     "perks": [
@@ -49,7 +49,7 @@
         "label": "kanaler for nettbooking"
       },
       {
-        "value": "fra 30 €",
+        "value": "fra 20 €",
         "label": "per måned og studio"
       }
     ],
@@ -62,7 +62,7 @@
   },
   "compare": {
     "label": "forskjellen",
-    "title": "Vi fjernet det\nsom stod i veien",
+    "title": "Vi fjernet det\\\nsom stod i veien",
     "lead": "Velora vokste ut av vår egen erfaring: Vi drev studioer og møtte hver dag den samme veggen — et CRM der det krevdes ni klikk for å booke en kunde. Her er hva som endret seg.",
     "usual": "Den vanlige måten",
     "velora": "I Velora",
@@ -91,7 +91,7 @@
   },
   "showcase": {
     "label": "alt på ett sted",
-    "title": "Én plattform i stedet\nfor et dusin tjenester",
+    "title": "Én plattform i stedet\\\nfor et dusin tjenester",
     "lead": "Bookinger, kunder, penger, kommunikasjon og AI i ett grensesnitt. Ikke én overflødig modul: hver visning løser et reelt problem for eieren.",
     "blocks": {
       "journal": {
@@ -148,7 +148,7 @@
   },
   "modules": {
     "label": "moduler",
-    "title": "16 moduler,\nallerede inkludert",
+    "title": "16 moduler,\\\nallerede inkludert",
     "lead": "Ikke en samling plassholdere med «kommer snart» — alt som står oppført fungerer og er inkludert i planen. Roller bestemmer hvem som ser hver seksjon.",
     "items": {
       "dashboard": {
@@ -221,16 +221,16 @@
   },
   "pricing": {
     "label": "priser",
-    "title": "Planen din avhenger av\nstørrelsen på teamet",
-    "lead": "15 € for to personer, +5 € for hver neste plass, ubegrenset — 120 €. Alle 16 moduler og Velora AI er inkludert på hvert nivå: du betaler for teamets størrelse, ikke for å låse opp knapper. Tre betalingsmodeller å velge mellom og opptil 40 % rabatt ved forskuddsbetaling.",
+    "title": "Planen din avhenger av\\\nstørrelsen på teamet",
+    "lead": "20 € for én person, 30 € for to personer, +5 € for hver neste plass, ubegrenset — 150 €. Alle 16 moduler og Velora AI er inkludert på hvert nivå: du betaler for teamets størrelse, ikke for å låse opp knapper. Tre betalingsmodeller å velge mellom og opptil 30 % rabatt ved forskuddsbetaling.",
     "team": "team",
     "seats_one": "person",
     "seats_other": "personer",
     "unlimited": "ubegrenset",
-    "scaleMin": "2 plasser",
+    "scaleMin": "1 plass",
     "scaleMax": "∞ ubegrenset",
     "sliderAria": "Hvor mange personer jobber i studioet ditt",
-    "hint": "**30 €** for to personer, **+5 €** for hver ekstra plass. Ubegrenset — **150 €** per måned.",
+    "hint": "**20 €** for én person, **30 €** for to personer, **+5 €** for hver ekstra plass. Ubegrenset — **150 €** per måned.",
     "period": "betalingsperiode",
     "months": "{{count}} md.",
     "noDiscount": "—",
@@ -253,12 +253,12 @@
     "models": [
       {
         "title": "Abonnement",
-        "price": "fra 30 € / md.",
+        "price": "fra 20 € / md.",
         "desc": "Et fast beløp. Du kjenner kostnaden på forhånd — ingen overraskelser ved månedsslutt."
       },
       {
         "title": "3 % av inntektene",
-        "price": "minst 30 € / md.",
+        "price": "minst 20 € / md.",
         "desc": "Betal etter omsetning. I en rolig måned fyller du bare på differansen opp til minstebeløpet."
       },
       {
@@ -304,7 +304,7 @@
   },
   "about": {
     "label": "om oss",
-    "title": "Velora bygges av mennesker\nsom selv har drevet studioer",
+    "title": "Velora bygges av mennesker\\\nsom selv har drevet studioer",
     "lead": "Vi bygger ikke et «CRM for alle». Vi bygger et verktøy for en konkret jobb — timeplan, kunder, penger, kommunikasjon — og svarer selv på spørsmål i stedet for å sende ferdige svar.",
     "p1": "Et studios kunder forblir studioets kunder. Velora bygger ingen felles katalog, viser ikke kundene dine andres annonser og tar ingen prosent når noen kommer tilbake til deg.",
     "p2": "Akkurat nå er produktet laget for yoga- og pilatesstudioer — for hvordan timeplaner, medlemskap og trenere faktisk fungerer. Andre bransjer følger med samme omtanke."

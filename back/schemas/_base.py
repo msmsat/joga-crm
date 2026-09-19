@@ -2,7 +2,7 @@ from typing import Annotated, Optional
 
 from pydantic import BaseModel, BeforeValidator, ConfigDict, EmailStr
 
-from contact_format import normalize_email, to_e164
+from contact_format import normalize_email, normalize_instagram, to_e164
 
 
 class BaseSchema(BaseModel):
@@ -15,6 +15,9 @@ class BaseSchema(BaseModel):
 NormEmail = Annotated[EmailStr, BeforeValidator(normalize_email)]
 Phone = Annotated[str, BeforeValidator(to_e164)]
 OptPhone = Annotated[Optional[str], BeforeValidator(to_e164)]
+# Ник в Instagram: вставленную ссылку и «@» снимаем на входе, чтобы в БД лежал
+# один вид записи, а не три.
+OptInstagram = Annotated[Optional[str], BeforeValidator(normalize_instagram)]
 
 # Логин принимает и email, и телефон в одном поле: телефон канонизируем, чтобы
 # он совпал с хранимым, но при мусоре на входе НЕ падаем в 422 — пусть эндпоинт

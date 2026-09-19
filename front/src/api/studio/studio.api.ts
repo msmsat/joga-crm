@@ -28,6 +28,15 @@ export const studioApi = {
     return client.postForm<UploadLogoResponse>('/studio/upload-staff-photo', form)
   },
 
+  // Снимок для заметки — о клиенте или о занятии. Один эндпоинт на оба: заметку
+  // о занятии пишут до того, как занятие существует, и привязать загрузку к
+  // сущности нельзя.
+  uploadNotePhoto: (file: File) => {
+    const form = new FormData()
+    form.append('file', file)
+    return client.postForm<UploadLogoResponse>('/studio/upload-note-photo', form)
+  },
+
   uploadHallPhoto: (file: File) => {
     const form = new FormData()
     form.append('file', file)

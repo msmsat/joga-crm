@@ -77,7 +77,7 @@ test('the selector exposes every completed UI locale and migrates legacy Czech',
   const b = await browser({ ui_language_choice: 'cz' });
   assert.deepEqual(
     Array.from(b.lang.LANGUAGES, ({ value }) => value),
-    ['en', 'ru', 'sq', 'bg', 'hr', 'cs', 'da', 'fi', 'fr', 'de', 'el', 'hu', 'it', 'no', 'pl', 'pt', 'ro', 'sr', 'es', 'sv', 'tr', 'uk'],
+    ['cs', 'en', 'uk', 'ru', 'de', 'pl', 'hu', 'ro', 'hr', 'sr', 'bg', 'it', 'fr', 'es', 'pt', 'tr', 'el', 'sq', 'da', 'sv', 'no', 'fi'],
   );
   assert.equal(b.lang.chosenLang(), 'cs');
 });

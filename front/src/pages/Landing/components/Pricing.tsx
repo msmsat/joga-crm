@@ -8,7 +8,7 @@ import { bold } from "./rich";
 import { GridBg } from "./Illustrations";
 
 // Единственный источник истины о ценах и лимитах — back/routers/billing/plans.py
-// (SEAT_BASE / SEAT_STEP / UNLIMITED_PRICE / _limits). Здесь тот же прайс
+// (SOLO_PRICE / SEAT_BASE / SEAT_STEP / UNLIMITED_PRICE / _limits). Здесь тот же прайс
 // формулой, а не тремя выдуманными коробками: витрина обязана показывать ту же
 // линию мест, что и кабинет (/dashboard/billing), иначе человек платит не за то,
 // что ему обещала страница. При смене цен правим оба места.
@@ -16,10 +16,12 @@ import { GridBg } from "./Illustrations";
 // Раньше тут стояли рубли (990 / 2 490 / 5 990 ₽) и список фич, которых в
 // продукте нет: White-label, API, SLA, выделенный менеджер. Обещать их со
 // страницы, где рядом кнопка оплаты, нельзя.
-const MIN_SEATS = 2;
+const MIN_SEATS = 1;
 const MAX_SEATS = 20;
-const SEAT_BASE = 30;   // € / мес за MIN_SEATS мест
-const SEAT_STEP = 5;    // + за каждое место сверх минимума
+const LINE_SEATS = 2;   // с этой ступени линия ровная: +SEAT_STEP за место
+const SOLO_PRICE = 20;  // € / мес за одного — вход НИЖЕ линии, своей ценой
+const SEAT_BASE = 30;   // € / мес за LINE_SEATS мест
+const SEAT_STEP = 5;    // + за каждое место сверх LINE_SEATS
 const UNLIMITED_PRICE = 150;
 const UNLIMITED_AI = 5000;
 const AI_PER_SEAT = 150;
@@ -52,7 +54,11 @@ export function Pricing() {
   const amount = (value: number) => t("pricing.amount", { value: money(value) });
 
   const seats = pos > MAX_SEATS ? null : pos;
-  const monthly = seats === null ? UNLIMITED_PRICE : SEAT_BASE + (seats - MIN_SEATS) * SEAT_STEP;
+  const monthly = seats === null
+    ? UNLIMITED_PRICE
+    : seats < LINE_SEATS
+      ? SOLO_PRICE
+      : SEAT_BASE + (seats - LINE_SEATS) * SEAT_STEP;
   const off = PERIODS.find(p => p.months === period)?.off ?? 0;
   const perMonth = round2(monthly * (1 - off));
   const total = round2(perMonth * period);

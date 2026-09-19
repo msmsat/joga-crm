@@ -20,6 +20,8 @@ export interface ClientData {
   registration_date?: string;
   phone?: string;
   email?: string;
+  /** Ник в Instagram без «@»; приходит только в карточке. */
+  instagram?: string;
   birth_date?: string;
   city?: string;
   source?: string;

@@ -48,7 +48,7 @@ from models import (
     StudioMember, StudioWorkingHours,
 )
 from services import lesson_time, studio_time
-from services.members import full_name
+from services.members import full_name, is_specialist_clause
 
 # Бронь занимает место, пока она не отменена. Одно выражение на весь продукт:
 # «pending» (ждёт подтверждения тренером) и «attended» место ДЕРЖАТ, и любая
@@ -176,7 +176,8 @@ async def services(db: AsyncSession, studio_id: int) -> list[ServiceRef]:
 
 
 async def trainers(db: AsyncSession, studio_id: int) -> list[TrainerRef]:
-    """Тренеры студии: членства с ролью доступа «Тренер».
+    """Мастера студии: роль доступа «Тренер» — и владелец, если ему назначены
+    услуги (`members.is_specialist_clause`, одно правило на весь продукт).
 
     `active` — принятое приглашение (`status == "active"`). Это единственный
     признак «работает / не работает» в продукте: архива сотрудников нет,
@@ -185,7 +186,7 @@ async def trainers(db: AsyncSession, studio_id: int) -> list[TrainerRef]:
     """
     rows = (await db.execute(
         select(StudioMember)
-        .where(StudioMember.studio_id == studio_id, StudioMember.role == "trainer")
+        .where(StudioMember.studio_id == studio_id, is_specialist_clause(studio_id))
         .order_by(StudioMember.user_id)
     )).scalars().all()
     return [TrainerRef(m.user_id, full_name(m), m.status == "active") for m in rows]

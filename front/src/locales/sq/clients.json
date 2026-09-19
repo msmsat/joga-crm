@@ -90,7 +90,7 @@
       "title": "Kontaktet",
       "phone": "Telefon",
       "email": "E-mail",
-      "telegram": "Telegram",
+      "instagram": "Instagram",
       "birthDate": "Data e lindjes",
       "city": "Qyteti",
       "copyHint": " · klikoni për të kopjuar"
@@ -282,9 +282,6 @@
       "cancel": "Anulo",
       "addPlaceholder": "Shkruani një shënim…",
       "add": "Shto shënim",
-      "addPhoto": "Foto",
-      "removePhoto": "Hiq foton",
-      "photoUploading": "Duke ngarkuar…",
       "justNow": "sapo tani",
       "deleteTitle": "Të fshihet shënimi?",
       "deleteMessage": "Ky shënim nuk mund të rikthehet."
@@ -368,7 +365,10 @@
       "phone": "Telefon",
       "phonePlaceholder": "+355 69 000 0000",
       "email": "E-mail",
-      "emailPlaceholder": "klient@shembull.al"
+      "emailPlaceholder": "klient@shembull.al",
+      "instagram": "Instagram",
+      "instagramOptional": "opsionale",
+      "instagramPlaceholder": "username"
     },
     "step2": {
       "bday": "Data e lindjes",
@@ -418,7 +418,8 @@
       "name": "Shkruani një emër (të paktën 2 karaktere)",
       "phone": "Numër telefoni i pavlefshëm",
       "email": "E-mail i pavlefshëm",
-      "city": "Shkruani një qytet"
+      "city": "Shkruani një qytet",
+      "instagram": "Emri i përdoruesit: shkronja latine, shifra, pikë dhe nënvizë"
     }
   },
   "deleteModal": {

@@ -25,8 +25,7 @@
     "done": "Terminé, fermer",
     "saving": "Enregistrement…",
     "saved": "Enregistré !",
-    "upload": "Téléverser",
-    "undo": "Annuler"
+    "upload": "Téléverser"
   },
   "validation": {
     "required": "Champ obligatoire",
@@ -144,15 +143,7 @@
       "unknown_event": "Événement inconnu",
       "not_personal": "Les réglages personnels ne modifient pas les notifications obligatoires"
     },
-    "trial_already_used": "L'essai gratuit n'est plus disponible pour ce studio.",
-    "invalid_credentials": "Adresse e-mail, numéro de téléphone ou mot de passe incorrect.",
-    "account_not_verified": "Votre compte n’est pas encore activé. Acceptez l’invitation reçue par e-mail ou confirmez votre adresse avec le code.",
-    "invalid_code": "Le code est invalide ou a expiré.",
-    "invalid_current_password": "Le mot de passe actuel est incorrect.",
-    "password_unchanged": "Le nouveau mot de passe doit être différent du mot de passe actuel.",
-    "invalid_request": "Vérifiez les données saisies et réessayez.",
-    "session_expired": "Votre session a expiré. Veuillez vous reconnecter.",
-    "limit_exceeded": "Vous avez atteint la limite de votre forfait."
+    "trial_already_used": "L'essai gratuit n'est plus disponible pour ce studio."
   },
   "units": {
     "min": "min",
@@ -179,11 +170,8 @@
     "lessonAction": "QR code du cours",
     "lessonCaption": "Pointez la caméra pour réserver ce cours",
     "packageAction": "QR code de l'abonnement",
-<<<<<<< HEAD
     "packageCaption": "Pointez la caméra pour acheter l'abonnement",
     "serviceAction": "QR code du service"
-=======
-    "packageCaption": "Pointez la caméra pour acheter l'abonnement"
   },
   "auth": {
     "noAccount": "Vous n'avez pas de compte ?",
@@ -222,10 +210,16 @@
       "excellent": "Excellent"
     }
   },
-  "planLimit": {
-    "title": "Limite du forfait atteinte",
-    "description": "Passez au forfait supérieur pour continuer.",
-    "later": "Plus tard",
-    "upgrade": "Changer de forfait"
+  "lightbox": {
+    "close": "Fermer",
+    "prev": "Photo précédente",
+    "next": "Photo suivante",
+    "counter": "{{current}} sur {{total}}"
+  },
+  "notePhotos": {
+    "add": "Photo",
+    "remove": "Supprimer la photo",
+    "alt": "Photo de la note",
+    "drop": "Déposez pour joindre"
   }
 }

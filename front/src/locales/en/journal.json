@@ -96,7 +96,8 @@
       "confirm": "Go to Catalog"
     },
     "reschedule": "Reschedule",
-    "loading": "Loading…"
+    "loading": "Loading…",
+    "openClient": "Open client card"
   },
   "addClientModal": {
     "title": "Add client",
@@ -180,5 +181,20 @@
     "configIncomplete": "The schedule for this service is not set up yet",
     "moveTitle": "Reschedule booking",
     "moveBusy": "The specialist is busy at this time"
+  },
+  "lessonNotes": {
+    "title": "Lesson note",
+    "add": "Add a note",
+    "placeholder": "Anything worth remembering about this class…"
+  },
+  "clientCard": {
+    "title": "Client",
+    "phoneVerified": "verified",
+    "visits": "Visits",
+    "spent": "Spent",
+    "debt": "Debt",
+    "notes": "Notes",
+    "openFull": "Open full card",
+    "copied": "Copied"
   }
 }

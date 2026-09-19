@@ -25,8 +25,7 @@
     "done": "Færdig, luk",
     "saving": "Gemmer…",
     "saved": "Gemt!",
-    "upload": "Upload",
-    "undo": "Fortryd"
+    "upload": "Upload"
   },
   "validation": {
     "required": "Obligatorisk felt",
@@ -144,15 +143,7 @@
       "unknown_event": "Ukendt hændelse",
       "not_personal": "Personlige indstillinger kan ikke ændre obligatoriske notifikationer"
     },
-    "trial_already_used": "Den gratis prøveperiode er ikke længere tilgængelig for dette studie.",
-    "invalid_credentials": "Forkert e-mailadresse, telefonnummer eller adgangskode.",
-    "account_not_verified": "Din konto er endnu ikke aktiveret. Acceptér invitationen i e-mailen, eller bekræft din e-mailadresse med koden.",
-    "invalid_code": "Koden er ugyldig eller udløbet.",
-    "invalid_current_password": "Den nuværende adgangskode er forkert.",
-    "password_unchanged": "Den nye adgangskode skal være forskellig fra den nuværende.",
-    "invalid_request": "Kontrollér de indtastede oplysninger, og prøv igen.",
-    "session_expired": "Din session er udløbet. Log ind igen.",
-    "limit_exceeded": "Du har nået grænsen for din plan."
+    "trial_already_used": "Den gratis prøveperiode er ikke længere tilgængelig for dette studie."
   },
   "units": {
     "min": "min",
@@ -179,11 +170,8 @@
     "lessonAction": "QR-kode til holdet",
     "lessonCaption": "Ret kameraet mod koden for at booke holdet",
     "packageAction": "QR-kode til klippekortet",
-<<<<<<< HEAD
     "packageCaption": "Ret kameraet mod koden for at købe klippekortet",
     "serviceAction": "QR-kode til ydelsen"
-=======
-    "packageCaption": "Ret kameraet mod koden for at købe klippekortet"
   },
   "auth": {
     "noAccount": "Har du ikke en konto?",
@@ -222,10 +210,16 @@
       "excellent": "Fremragende"
     }
   },
-  "planLimit": {
-    "title": "Plangrænsen er nået",
-    "description": "Opgrader din plan for at fortsætte.",
-    "later": "Senere",
-    "upgrade": "Opgrader plan"
+  "lightbox": {
+    "close": "Luk",
+    "prev": "Forrige foto",
+    "next": "Næste foto",
+    "counter": "{{current}} af {{total}}"
+  },
+  "notePhotos": {
+    "add": "Foto",
+    "remove": "Fjern foto",
+    "alt": "Notefoto",
+    "drop": "Slip for at vedhæfte"
   }
 }

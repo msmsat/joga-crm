@@ -147,7 +147,7 @@ async def google_auth(body: GoogleAuthRequest, request: Request, db: AsyncSessio
         print("!" * 40 + "\n")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail={"code": "invalid_google_token", "message": "Invalid Google sign-in token."},
+            detail="Недействительный токен Google",
         )
 
     # Ищем по email и только по нему: аккаунт глобальный, роль в студии к
@@ -201,7 +201,7 @@ async def login(body: LoginRequest, request: Request, db: AsyncSession = Depends
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail={"code": "invalid_credentials", "message": "Invalid email, phone number or password."},
+            detail="Неверный email, телефон или пароль",
         )
 
     if not user.is_verified:
@@ -210,13 +210,13 @@ async def login(body: LoginRequest, request: Request, db: AsyncSession = Depends
             # Сюда попадает и приглашённый сотрудник, который ещё не открыл
             # письмо: пароля у него нет вовсе, поэтому «введите код» одно
             # ничего бы ему не подсказало.
-            detail={"code": "account_not_verified", "message": "Accept your email invitation or verify your email before signing in."},
+            detail="Аккаунт ещё не активирован. Примите приглашение по ссылке из письма или подтвердите email кодом.",
         )
 
     if not verify_password(body.password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail={"code": "invalid_credentials", "message": "Invalid email, phone number or password."},
+            detail="Неверный email, телефон или пароль",
         )
 
     return await _finish_login(user, request, db)
@@ -237,7 +237,7 @@ async def login_2fa(body: Login2FARequest, request: Request, db: AsyncSession = 
     ).scalars().first()
 
     if user is None or not await otp.verify(db, user, "login_2fa", body.code):
-        raise HTTPException(status_code=400, detail={"code": "invalid_code", "message": "The code is invalid or has expired."})
+        raise HTTPException(status_code=400, detail="Неверный или истёкший код")
 
     access_token = await _build_token_for_user(user, db)
     await _record_login_session(user, access_token, request, db)

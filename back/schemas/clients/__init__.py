@@ -8,7 +8,7 @@ from schemas.clients.clients import (
     SegmentRulesOut,
     SegmentRulesUpdate,
 )
-from schemas.clients.notes import NoteCreate, NotePhotoOut, NoteUpdate
+from schemas.clients.notes import NoteCreate, NoteUpdate
 from schemas.clients.responses import (
     ActionMessageOut,
     ActiveSubscriptionOut,
@@ -39,7 +39,6 @@ __all__ = [
     "SegmentRulesUpdate",
     "NoteCreate",
     "NoteUpdate",
-    "NotePhotoOut",
     # responses
     "ActionMessageOut",
     "ActiveSubscriptionOut",

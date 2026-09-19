@@ -25,8 +25,7 @@
     "done": "Готово, затвори",
     "saving": "Чување…",
     "saved": "Сачувано!",
-    "upload": "Отпреми",
-    "undo": "Поништи"
+    "upload": "Отпреми"
   },
   "validation": {
     "required": "Обавезно поље",
@@ -144,15 +143,7 @@
       "unknown_event": "Непознат догађај",
       "not_personal": "Лична подешавања не мењају обавезна обавештења"
     },
-    "trial_already_used": "Бесплатни пробни период више није доступан за овај студио.",
-    "invalid_credentials": "Погрешна имејл адреса, број телефона или лозинка.",
-    "account_not_verified": "Ваш налог још није активиран. Прихватите позивницу из имејла или потврдите адресу кодом.",
-    "invalid_code": "Код није важећи или је истекао.",
-    "invalid_current_password": "Тренутна лозинка није исправна.",
-    "password_unchanged": "Нова лозинка мора да се разликује од тренутне.",
-    "invalid_request": "Проверите унете податке и покушајте поново.",
-    "session_expired": "Ваша сесија је истекла. Пријавите се поново.",
-    "limit_exceeded": "Достигли сте ограничење свог плана."
+    "trial_already_used": "Бесплатни пробни период више није доступан за овај студио."
   },
   "units": {
     "min": "мин",
@@ -179,11 +170,8 @@
     "lessonAction": "QR kod termina",
     "lessonCaption": "Usmerite kameru i prijavite se na ovaj termin",
     "packageAction": "QR kod paketa",
-<<<<<<< HEAD
     "packageCaption": "Usmerite kameru i kupite paket",
     "serviceAction": "QR kod usluge"
-=======
-    "packageCaption": "Usmerite kameru i kupite paket"
   },
   "auth": {
     "noAccount": "Немате налог?",
@@ -222,10 +210,16 @@
       "excellent": "Одлично"
     }
   },
-  "planLimit": {
-    "title": "Достигнуто ограничење плана",
-    "description": "Пређите на виши план да бисте наставили.",
-    "later": "Касније",
-    "upgrade": "Пређи на виши план"
+  "lightbox": {
+    "close": "Затвори",
+    "prev": "Претhодна фотографија",
+    "next": "Следећа фотографија",
+    "counter": "{{current}} од {{total}}"
+  },
+  "notePhotos": {
+    "add": "Фотографија",
+    "remove": "Уклони фотографију",
+    "alt": "Фотографија белешке",
+    "drop": "Пустите да приложите"
   }
 }

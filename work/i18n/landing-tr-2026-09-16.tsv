@@ -8,7 +8,7 @@ nav.startShort	Başla
 nav.startFull	Ücretsiz başla
 nav.language	Dil
 hero.badge	2026'nın yeni CRM standardı
-hero.title	Kullanmaktan\n*keyif* alacağınız CRM
+hero.title	Kullanmaktan\\n*keyif* alacağınız CRM
 hero.lead	Yoga ve pilates stüdyoları için premium B2B CRM. Rezervasyonlar, müşteriler, ekip ve finans tek yerde. Ekstra tıklama yok, karmaşa yok.
 hero.cta	30 gün ücretsiz deneyin
 hero.perks.0	30 gün ücretsiz
@@ -39,7 +39,7 @@ stats.trust.1	Roller sunucuda da uygulanır
 stats.trust.2	İstediğiniz zaman CSV dışa aktarımı
 stats.trust.3	Talep üzerine silme
 compare.label	fark
-compare.title	Yolunuza çıkan\nşeyleri kaldırdık
+compare.title	Yolunuza çıkan\\nşeyleri kaldırdık
 compare.lead	Velora kendi deneyimimizden doğdu: stüdyolar yönettik ve her gün aynı duvara çarptık — bir müşteriyi kaydetmek için dokuz tıklama isteyen bir CRM. İşte değişenler.
 compare.usual	Alışılagelen yol
 compare.velora	Velora'da
@@ -54,7 +54,7 @@ compare.pairs.3.good	Roller erişimi hem arayüzde hem sunucuda sınırlar
 compare.pairs.4.bad	Bir asistan mı? En iyi ihtimalle müşteri araması
 compare.pairs.4.good	Velora AI işletmeniz hakkında soruları yanıtlar — Telegram ve Instagram'da müşterilerinizin sorularını da
 showcase.label	hepsi bir arada
-showcase.title	Bir düzine hizmet yerine\ntek platform
+showcase.title	Bir düzine hizmet yerine\\ntek platform
 showcase.lead	Rezervasyonlar, müşteriler, para, iletişim ve AI tek arayüzde. Tek bir gereksiz modül yok: her ekran sahibin gerçek bir sorununu çözer.
 showcase.blocks.journal.title	Takviminiz
 showcase.blocks.journal.lead	Eğitmenlerin sütun, saatlerin satır olduğu günlük ızgara. Yöneticinin yaptığı her şey burada gerçekleşir.
@@ -85,7 +85,7 @@ ctaStrip.title	Veri taşımadan, peşin ödeme yapmadan deneyin
 ctaStrip.button	Ücretsiz başla
 ctaStrip.note	30 gün ücretsiz • Kart gerekmez • Başlangıç desteği
 modules.label	modüller
-modules.title	16 modül,\nzaten dahil
+modules.title	16 modül,\\nzaten dahil
 modules.lead	“Yakında” yazan yer tutucular koleksiyonu değil — listelenen her şey çalışır ve plana dahildir. Her bölümü kimin göreceğini roller belirler.
 modules.items.dashboard.title	Genel bakış
 modules.items.dashboard.desc	Gelir, aktif müşteriler, rezervasyonlar ve müşteri sadakati — eğilimlerle
@@ -122,7 +122,7 @@ modules.items.data.desc	CSV dışa aktarımı, talep üzerine silme
 modules.integrations	Entegrasyonlar
 modules.integrationsNote	stüdyo ayarlarında bağlanır
 pricing.label	fiyatlandırma
-pricing.title	Planınız ekip\nbüyüklüğünüze bağlıdır
+pricing.title	Planınız ekip\\nbüyüklüğünüze bağlıdır
 pricing.lead	İki kişi için 15 €, her ek koltuk için +5 €, sınırsız — 120 €. Tüm 16 modül ve Velora AI her seviyeye dahildir: düğmeleri açmak için değil, ekip büyüklüğü için ödeme yaparsınız. Seçebileceğiniz üç ödeme modeli ve peşin ödemede %40'a varan indirim.
 pricing.team	ekip
 pricing.seats_one	kişi
@@ -177,7 +177,7 @@ faq.notFoundTitle	Cevabı bulamadınız mı?
 faq.notFoundLead	Bize yazın — botlar veya bekleme sırası olmadan bizzat yanıtlarız.
 faq.copied	Kopyalandı
 about.label	hakkımızda
-about.title	Velora, kendileri de stüdyo işletmiş\ninsanlar tarafından geliştiriliyor
+about.title	Velora, kendileri de stüdyo işletmiş\\ninsanlar tarafından geliştiriliyor
 about.lead	“Herkes için CRM” yapmıyoruz. Belirli bir iş için — takvim, müşteriler, para, iletişim — araç geliştiriyor; ezber cevaplar göndermek yerine soruları kendimiz yanıtlıyoruz.
 about.p1	Bir stüdyonun müşterileri o stüdyonun müşterileri olarak kalır. Velora ortak bir katalog kurmaz, müşterilerinize başkalarının reklamlarını göstermez ve bir kişi size geri döndüğünde komisyon almaz.
 about.p2	Şu anda ürün yoga ve pilates stüdyoları için; takvimlerinin, üyeliklerinin ve eğitmenlerinin gerçekten çalışma biçimi için tasarlandı. Diğer sektörler de aynı özenle sonra gelecek.

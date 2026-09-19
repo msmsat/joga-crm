@@ -11,7 +11,8 @@ import { useQuery } from '@tanstack/react-query';
 import { useServiceOptions, CREATE_SERVICE_OPTION } from '../../hooks/useServiceOptions';
 import { studioApi } from '../../../../../api/studio/studio.api';
 import { queryKeys } from '../../../../../api/queryKeys';
-import { Select, ConfirmModal } from '../../../../../components/ui/index';
+import { Select, ConfirmModal, NotePhotos, NoteDropZone } from '../../../../../components/ui/index';
+import { useNotePhotos } from '../../../../../hooks/useNotePhotos';
 
 interface NewBookingModalProps {
   trainers: Trainer[];
@@ -24,7 +25,10 @@ interface NewBookingModalProps {
   modalRef: React.RefObject<HTMLDivElement | null>;
   timeStep: number;
   closeNewForm: () => void;
-  onCreate: (form: { serviceId: number; title: string; hall: string; maxClients: number; branchId: number | null }) => void;
+  onCreate: (form: {
+    serviceId: number; title: string; hall: string; maxClients: number; branchId: number | null;
+    notes: string; photos: string[];
+  }) => void;
   /** Перевод в форму индивидуальной записи — там, где все услуги такие. */
   onResourceBooking?: () => void;
   /** Участвует ли место в расписании. `undefined` — термины ещё не пришли. */
@@ -74,6 +78,12 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({
   const [endInput, setEndInput] = useState('');
   const [activeDropdown, setActiveDropdown] = useState<'start' | 'end' | null>(null);
   const [showCatalogConfirm, setShowCatalogConfirm] = useState(false);
+  // Заметка — дело добровольное: поля нет, пока его не попросят. Занятие
+  // создают в три касания, и постоянная пустая простыня мешала бы всем ради
+  // меньшинства случаев.
+  const [notesOpen, setNotesOpen] = useState(false);
+  const [notes, setNotes] = useState('');
+  const notePhotos = useNotePhotos();
   const navigate = useNavigate();
 
   const startScrollRef = useRef<HTMLDivElement>(null);
@@ -170,6 +180,8 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({
       hall: spaceIsAxis === false ? '' : newForm.hall,
       branchId: spaceIsAxis === false ? newForm.branchId : null,
       maxClients: maxClientsNum,
+      notes: notes.trim(),
+      photos: notePhotos.photos,
     });
     closeNewForm();
   };
@@ -377,6 +389,43 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({
                   );
                 })}
               </div>
+            </div>
+            <div className="kp-section">
+              {notesOpen || notes || notePhotos.photos.length > 0 ? (
+                <NoteDropZone onFiles={notePhotos.add}>
+                  <div className="kp-section-title">{t('lessonNotes.title')}</div>
+                  <textarea
+                    autoFocus
+                    value={notes}
+                    onChange={e => setNotes(e.target.value)}
+                    placeholder={t('lessonNotes.placeholder')}
+                    onClick={e => e.stopPropagation()}
+                    style={{
+                      width: '100%', minHeight: 64, padding: '10px 12px', borderRadius: 10,
+                      border: '1px solid var(--border)', outline: 'none', resize: 'vertical',
+                      fontSize: 13, fontFamily: 'Manrope', color: 'var(--onyx)', lineHeight: 1.55,
+                      background: 'var(--bg)', boxSizing: 'border-box',
+                    }}
+                    onFocus={e => { e.target.style.borderColor = 'var(--peach)'; }}
+                    onBlur={e => { e.target.style.borderColor = 'var(--border)'; }}
+                  />
+                  <NotePhotos
+                    photos={notePhotos.photos}
+                    pending={notePhotos.pending}
+                    onAdd={notePhotos.add}
+                    onRemove={notePhotos.remove}
+                  />
+                </NoteDropZone>
+              ) : (
+                <button
+                  type="button"
+                  className="btn-ghost-sm"
+                  style={{ width: '100%', justifyContent: 'center' }}
+                  onClick={e => { e.stopPropagation(); setNotesOpen(true); }}
+                >
+                  {t('lessonNotes.add')}
+                </button>
+              )}
             </div>
           </div>
 

@@ -96,7 +96,8 @@
       "confirm": "Aller au Catalogue"
     },
     "reschedule": "Reporter",
-    "loading": "Chargement…"
+    "loading": "Chargement…",
+    "openClient": "Ouvrir la fiche client"
   },
   "addClientModal": {
     "title": "Ajouter un client",
@@ -180,5 +181,20 @@
     "configIncomplete": "Le planning de cette prestation n’est pas encore configuré",
     "moveTitle": "Reporter la réservation",
     "moveBusy": "Le spécialiste est occupé à cette heure"
+  },
+  "lessonNotes": {
+    "title": "Note sur le cours",
+    "add": "Ajouter une note",
+    "placeholder": "Ce qu'il faut retenir de ce cours…"
+  },
+  "clientCard": {
+    "title": "Client",
+    "phoneVerified": "vérifié",
+    "visits": "Visites",
+    "spent": "Dépensé",
+    "debt": "Dette",
+    "notes": "Notes",
+    "openFull": "Ouvrir la fiche",
+    "copied": "Copié"
   }
 }

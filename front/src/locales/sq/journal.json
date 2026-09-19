@@ -96,7 +96,8 @@
       "confirm": "Shko te Katalogu"
     },
     "reschedule": "Zhvendos",
-    "loading": "Po ngarkohet…"
+    "loading": "Po ngarkohet…",
+    "openClient": "Hap kartelën e klientit"
   },
   "addClientModal": {
     "title": "Shto klient",
@@ -180,5 +181,20 @@
     "configIncomplete": "Orari i këtij shërbimi ende nuk është vendosur",
     "moveTitle": "Zhvendosja e rezervimit",
     "moveBusy": "Në këtë orë specialisti është i zënë"
+  },
+  "lessonNotes": {
+    "title": "Shënim për orarin",
+    "add": "Shto një shënim",
+    "placeholder": "Çfarë ia vlen të mbahet mend për këtë orar…"
+  },
+  "clientCard": {
+    "title": "Klient",
+    "phoneVerified": "i verifikuar",
+    "visits": "Vizita",
+    "spent": "Shpenzuar",
+    "debt": "Borxh",
+    "notes": "Shënime",
+    "openFull": "Hap kartelën",
+    "copied": "U kopjua"
   }
 }

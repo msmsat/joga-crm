@@ -49,7 +49,7 @@
         "label": "Onlinebookingkanaler"
       },
       {
-        "value": "fra 30 €",
+        "value": "fra 20 €",
         "label": "Pr. måned, pr. studie"
       }
     ],
@@ -222,15 +222,15 @@
   "pricing": {
     "label": "priser",
     "title": "Din plan afhænger\naf dit teams størrelse",
-    "lead": "30 € for to personer, +5 € for hver næste plads, ubegrænset — 150 €. Alle 16 moduler og Velora AI er med på alle niveauer: Du betaler for teamets størrelse, ikke for at låse knapper op. Vælg mellem tre betalingsmodeller og få op til 30 % rabat ved forudbetaling.",
+    "lead": "20 € for én person, 30 € for to personer, +5 € for hver næste plads, ubegrænset — 150 €. Alle 16 moduler og Velora AI er med på alle niveauer: Du betaler for teamets størrelse, ikke for at låse knapper op. Vælg mellem tre betalingsmodeller og få op til 30 % rabat ved forudbetaling.",
     "team": "team",
     "seats_one": "person",
     "seats_other": "personer",
     "unlimited": "uden grænse",
-    "scaleMin": "2 pladser",
+    "scaleMin": "1 plads",
     "scaleMax": "∞ ubegrænset",
     "sliderAria": "Hvor mange personer arbejder i dit studie",
-    "hint": "**30 €** for to personer, **+5 €** for hver ekstra plads. Ubegrænset — **150 €** om måneden.",
+    "hint": "**20 €** for én person, **30 €** for to personer, **+5 €** for hver ekstra plads. Ubegrænset — **150 €** om måneden.",
     "period": "betalingsperiode",
     "months": "{{count}} mdr.",
     "noDiscount": "—",
@@ -253,12 +253,12 @@
     "models": [
       {
         "title": "Abonnement",
-        "price": "fra 30 € / md.",
+        "price": "fra 20 € / md.",
         "desc": "Et fast beløb. Du kender prisen på forhånd — ingen overraskelser sidst på måneden."
       },
       {
         "title": "3 % af omsætningen",
-        "price": "mindst 30 € / md.",
+        "price": "mindst 20 € / md.",
         "desc": "Betal af omsætningen. I en rolig måned fylder du kun forskellen op til minimum."
       },
       {

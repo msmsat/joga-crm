@@ -3,7 +3,7 @@ from typing import List, Literal, Optional
 
 from pydantic import Field
 
-from schemas._base import BaseSchema, OptPhone, Phone
+from schemas._base import BaseSchema, OptInstagram, OptPhone, Phone
 
 
 class ClientCreate(BaseSchema):
@@ -13,6 +13,8 @@ class ClientCreate(BaseSchema):
     # «8 999 …» без кода страны для Meta — другой номер (contact_format.to_e164).
     phone: Phone
     email: str = Field(min_length=1)
+    # Необязательный: клиента заводят и без директа.
+    instagram: OptInstagram = None
     birth_date: Optional[date] = None
     city: str = Field(min_length=1)
     tags: Optional[List[str]] = []
@@ -28,6 +30,7 @@ class ClientUpdate(BaseSchema):
     last_name: Optional[str] = None
     phone: OptPhone = None
     email: Optional[str] = None
+    instagram: OptInstagram = None
     birth_date: Optional[date] = None
     city: Optional[str] = None
     source: Optional[str] = None

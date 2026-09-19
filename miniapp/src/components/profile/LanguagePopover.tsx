@@ -66,11 +66,11 @@ function FlagRU() {
 // верхнем регистре: у украинского он «uk», и «UK» рядом с «EN» читается как
 // United Kingdom. Поэтому пишем страну флага, а не тег локали.
 const LANGUAGES = [
-  { code: 'uk', short: 'UA', name: 'Українська', flag: <FlagUA /> },
-  { code: 'en', short: 'EN', name: 'English', flag: <FlagGB /> },
   { code: 'cs', short: 'CZ', name: 'Čeština', flag: <FlagCZ /> },
-  { code: 'de', short: 'DE', name: 'Deutsch', flag: <FlagDE /> },
+  { code: 'en', short: 'EN', name: 'English', flag: <FlagGB /> },
+  { code: 'uk', short: 'UA', name: 'Українська', flag: <FlagUA /> },
   { code: 'ru', short: 'RU', name: 'Русский', flag: <FlagRU /> },
+  { code: 'de', short: 'DE', name: 'Deutsch', flag: <FlagDE /> },
 ];
 
 /** Высота панели: строка списка — 44 плюс подбивка. Нужна ДО отрисовки. */

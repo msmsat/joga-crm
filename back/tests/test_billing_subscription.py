@@ -32,7 +32,7 @@ def test_every_plan_period_has_lookup_key():
         for plan_id in PLANS
         for months in PERIOD_DISCOUNTS
     }
-    assert len(keys) == len(PLANS) * len(PERIOD_DISCOUNTS) == 80
+    assert len(keys) == len(PLANS) * len(PERIOD_DISCOUNTS) == 84
 
 
 def test_intervals_cover_all_periods():

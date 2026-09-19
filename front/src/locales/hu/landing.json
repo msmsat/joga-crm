@@ -11,7 +11,7 @@
   },
   "hero": {
     "badge": "A 2026-os év új CRM-szabványa",
-    "title": "CRM, amelyet\n*öröm* használni",
+    "title": "CRM, amelyet\\\n*öröm* használni",
     "lead": "Prémium B2B CRM jóga- és pilatesstúdióknak. Foglalások, ügyfelek, csapat és pénzügyek egy helyen. Felesleges kattintások és zűrzavar nélkül.",
     "cta": "Próbálja ki ingyen 30 napig",
     "perks": [
@@ -49,7 +49,7 @@
         "label": "online foglalási csatorna"
       },
       {
-        "value": "30 €-tól",
+        "value": "20 €-tól",
         "label": "havonta, stúdiónként"
       }
     ],
@@ -62,7 +62,7 @@
   },
   "compare": {
     "label": "a különbség",
-    "title": "Eltávolítottuk azt,\nami hátráltatta Önt",
+    "title": "Eltávolítottuk azt,\\\nami hátráltatta Önt",
     "lead": "A Velora saját tapasztalatból született: stúdiókat vezettünk, és nap mint nap ugyanabba a falba ütköztünk — egy CRM-be, ahol kilenc kattintás kellett egy ügyfél foglalásához. Íme, mi változott.",
     "usual": "A megszokott út",
     "velora": "A Velorában",
@@ -91,7 +91,7 @@
   },
   "showcase": {
     "label": "minden egy helyen",
-    "title": "Egy platform\ntucatnyi szolgáltatás helyett",
+    "title": "Egy platform\\\ntucatnyi szolgáltatás helyett",
     "lead": "Foglalások, ügyfelek, pénz, kommunikáció és AI egyetlen felületen. Egyetlen fölösleges modul sincs: minden nézet egy valódi tulajdonosi problémát old meg.",
     "blocks": {
       "journal": {
@@ -148,7 +148,7 @@
   },
   "modules": {
     "label": "modulok",
-    "title": "16 modul,\nmár benne van",
+    "title": "16 modul,\\\nmár benne van",
     "lead": "Nem „hamarosan” feliratú helyőrzők gyűjteménye — minden felsorolt funkció működik és a csomag része. A szerepkörök döntik el, ki melyik szakaszt látja.",
     "items": {
       "dashboard": {
@@ -221,16 +221,16 @@
   },
   "pricing": {
     "label": "árak",
-    "title": "Az Ön csomagja a\ncsapat méretétől függ",
-    "lead": "15 € két főre, +5 € minden további helyért, korlátlan — 120 €. Mind a 16 modul és a Velora AI minden szinten benne van: a csapat méretéért fizet, nem a gombok feloldásáért. Három fizetési modell közül választhat, előrefizetéssel akár 40% kedvezménnyel.",
+    "title": "Az Ön csomagja a\\\ncsapat méretétől függ",
+    "lead": "20 € egy főre, 30 € két főre, +5 € minden további helyért, korlátlan — 150 €. Mind a 16 modul és a Velora AI minden szinten benne van: a csapat méretéért fizet, nem a gombok feloldásáért. Három fizetési modell közül választhat, előrefizetéssel akár 30% kedvezménnyel.",
     "team": "csapat",
     "seats_one": "fő",
     "seats_other": "fő",
     "unlimited": "korlátlan",
-    "scaleMin": "2 hely",
+    "scaleMin": "1 hely",
     "scaleMax": "∞ korlátlan",
     "sliderAria": "Hányan dolgoznak az Ön stúdiójában",
-    "hint": "**30 €** két főre, **+5 €** minden további helyért. Korlátlan — **150 €** havonta.",
+    "hint": "**20 €** egy főre, **30 €** két főre, **+5 €** minden további helyért. Korlátlan — **150 €** havonta.",
     "period": "fizetési időszak",
     "months": "{{count}} hó",
     "noDiscount": "—",
@@ -253,12 +253,12 @@
     "models": [
       {
         "title": "Előfizetés",
-        "price": "30 € / hó-tól",
+        "price": "20 € / hó-tól",
         "desc": "Fix összeg. Előre tudja a költséget — nincs meglepetés a hónap végén."
       },
       {
         "title": "A bevétel 3%-a",
-        "price": "legalább 30 € / hó",
+        "price": "legalább 20 € / hó",
         "desc": "Forgalom alapján fizet. Csendesebb hónapban csak a különbözetet tölti fel a minimumig."
       },
       {
@@ -304,7 +304,7 @@
   },
   "about": {
     "label": "rólunk",
-    "title": "A Velorát olyan emberek építik,\nakik maguk is vezettek stúdiókat",
+    "title": "A Velorát olyan emberek építik,\\\nakik maguk is vezettek stúdiókat",
     "lead": "Nem „CRM-et építünk mindenkinek”. Egy konkrét munkához készítünk eszközt — naptárhoz, ügyfelekhez, pénzhez, kommunikációhoz — és a kérdésekre magunk válaszolunk sablonválaszok helyett.",
     "p1": "Egy stúdió ügyfelei a stúdió ügyfelei maradnak. A Velora nem épít közös katalógust, nem mutat mások hirdetéseit az ügyfeleinek, és nem kér százalékot, amikor valaki visszatér Önhöz.",
     "p2": "Jelenleg a termék jóga- és pilatesstúdiókra készült — arra, ahogyan a naptáruk, bérleteik és oktatóik valóban működnek. Más ágazatok ugyanolyan körültekintéssel következnek."

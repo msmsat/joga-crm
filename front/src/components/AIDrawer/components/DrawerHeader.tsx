@@ -27,7 +27,7 @@ export default function DrawerHeader({ showHistory, onHistoryToggle, onNewChat, 
           <button
             onClick={onHistoryToggle}
             className={`${styles.historyBtn} ${showHistory ? styles.historyBtnActive : ''}`}
-            title={t(showHistory ? 'drawer.historyBack' : 'drawer.historyLabel')}
+            title={showHistory ? 'Вернуться к чату' : 'История чатов'}
           >
             <div className={styles.historyBtnIcon}>
               {showHistory ? (

@@ -9,13 +9,17 @@ import { formatIndexToTimeStr, parseTimeToIndex } from '../utils';
 import type { Booking } from '../types';
 
 /**
- * Перенос индивидуальной записи — прямо в её карточке, двумя полями.
+ * Перенос индивидуальной записи — два поля во всплывающем окне.
  *
  * Раньше «Перенести» открывала полноценную форму записи в режиме переноса: та
  * спрашивала дату, показывала плитку слотов, потом расчёт, потом подтверждение.
  * Для «сдвинуть Ирину с 14:00 на 15:30» это четыре экрана и три клика на ровном
  * месте — услуга, филиал и клиент при переносе и так заданы самой бронью и
  * менять их нельзя (§6.5).
+ *
+ * Поля жили прямо в карточке занятия и занимали её треть всегда — даже когда
+ * ничего не переносят. Теперь они появляются по кнопке (MoveBookingModal), а
+ * здесь остаётся только содержимое окна.
  *
  * Здесь остаётся ровно то, что меняется: день и время. Время — то же поле с
  * выпадающим списком, что у правки занятия, но в списке СВОБОДНОЕ время мастера,
@@ -115,20 +119,7 @@ export function ResourceMoveField({ booking, reservationId, onMoved }: Props) {
   }
 
   return (
-    <div
-      style={{
-        marginTop: 8, background: 'rgba(var(--ink),0.02)', padding: '14px 16px',
-        borderRadius: '16px', border: '1px solid rgba(var(--ink),0.03)',
-      }}
-      onClick={e => e.stopPropagation()}
-    >
-      <div style={{
-        fontSize: 11, fontWeight: 800, color: 'var(--muted)',
-        textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 10,
-      }}>
-        {t('resourceBooking.moveTitle')}
-      </div>
-
+    <div onClick={e => e.stopPropagation()}>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
         <label style={FIELD}>
           <span style={FIELD_KICKER}>{t('resourceBooking.date')}</span>

@@ -149,53 +149,53 @@
     "categoryPresets": {
       "in": [
         {
-          "value": "Абонементы",
+          "value": "Előfizetések",
           "label": "Előfizetések"
         },
         {
-          "value": "Услуги",
+          "value": "Szolgáltatások",
           "label": "Szolgáltatások"
         },
         {
-          "value": "Сертификаты",
+          "value": "Ajándékutalványok",
           "label": "Ajándékutalványok"
         },
         {
-          "value": "Депозит",
+          "value": "Letét",
           "label": "Letét"
         },
         {
-          "value": "Прочее",
+          "value": "Egyéb",
           "label": "Egyéb"
         }
       ],
       "out": [
         {
-          "value": "Возвраты",
+          "value": "Visszatérítések",
           "label": "Visszatérítések"
         },
         {
-          "value": "Аренда",
+          "value": "Bérleti díj",
           "label": "Bérleti díj"
         },
         {
-          "value": "Зарплата",
+          "value": "Bérek",
           "label": "Bérek"
         },
         {
-          "value": "Закупки",
+          "value": "Beszerzések",
           "label": "Beszerzések"
         },
         {
-          "value": "Реклама",
+          "value": "Marketing",
           "label": "Marketing"
         },
         {
-          "value": "Налоги",
+          "value": "Adók",
           "label": "Adók"
         },
         {
-          "value": "Прочее",
+          "value": "Egyéb",
           "label": "Egyéb"
         }
       ]

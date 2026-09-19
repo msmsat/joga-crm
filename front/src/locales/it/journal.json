@@ -96,7 +96,8 @@
       "confirm": "Vai al Catalogo"
     },
     "reschedule": "Sposta",
-    "loading": "Caricamento…"
+    "loading": "Caricamento…",
+    "openClient": "Apri la scheda cliente"
   },
   "addClientModal": {
     "title": "Aggiungi cliente",
@@ -180,5 +181,20 @@
     "configIncomplete": "Il calendario di questo servizio non è ancora configurato",
     "moveTitle": "Sposta prenotazione",
     "moveBusy": "A quest'ora lo specialista è occupato"
+  },
+  "lessonNotes": {
+    "title": "Nota sulla lezione",
+    "add": "Aggiungi una nota",
+    "placeholder": "Cosa vale la pena ricordare di questa lezione…"
+  },
+  "clientCard": {
+    "title": "Cliente",
+    "phoneVerified": "verificato",
+    "visits": "Visite",
+    "spent": "Speso",
+    "debt": "Debito",
+    "notes": "Note",
+    "openFull": "Apri la scheda",
+    "copied": "Copiato"
   }
 }

@@ -125,29 +125,29 @@ operations.toasts.updated	Operazione aggiornata
 operations.toasts.updateFailed	Impossibile salvare l'operazione
 operations.toasts.exportFailed	Impossibile esportare le operazioni
 operations.toasts.receiptDownloaded	Ricevuta scaricata
-operations.categoryPresets.in.0.value	Абонементы
+operations.categoryPresets.in.0.value	Abbonamenti
 operations.categoryPresets.in.0.label	Abbonamenti
-operations.categoryPresets.in.1.value	Услуги
+operations.categoryPresets.in.1.value	Servizi
 operations.categoryPresets.in.1.label	Servizi
-operations.categoryPresets.in.2.value	Сертификаты
+operations.categoryPresets.in.2.value	Buoni regalo
 operations.categoryPresets.in.2.label	Buoni regalo
-operations.categoryPresets.in.3.value	Депозит
+operations.categoryPresets.in.3.value	Deposito
 operations.categoryPresets.in.3.label	Deposito
-operations.categoryPresets.in.4.value	Прочее
+operations.categoryPresets.in.4.value	Altro
 operations.categoryPresets.in.4.label	Altro
-operations.categoryPresets.out.0.value	Возвраты
+operations.categoryPresets.out.0.value	Rimborsi
 operations.categoryPresets.out.0.label	Rimborsi
-operations.categoryPresets.out.1.value	Аренда
+operations.categoryPresets.out.1.value	Affitto
 operations.categoryPresets.out.1.label	Affitto
-operations.categoryPresets.out.2.value	Зарплата
+operations.categoryPresets.out.2.value	Stipendi
 operations.categoryPresets.out.2.label	Stipendi
-operations.categoryPresets.out.3.value	Закупки
+operations.categoryPresets.out.3.value	Acquisti
 operations.categoryPresets.out.3.label	Acquisti
-operations.categoryPresets.out.4.value	Реклама
+operations.categoryPresets.out.4.value	Marketing
 operations.categoryPresets.out.4.label	Marketing
-operations.categoryPresets.out.5.value	Налоги
+operations.categoryPresets.out.5.value	Imposte
 operations.categoryPresets.out.5.label	Imposte
-operations.categoryPresets.out.6.value	Прочее
+operations.categoryPresets.out.6.value	Altro
 operations.categoryPresets.out.6.label	Altro
 salaries.loading	Caricamento paghe…
 salaries.noRows	Nessun membro dello staff da calcolare

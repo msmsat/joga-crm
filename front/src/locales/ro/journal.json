@@ -97,7 +97,8 @@
       "confirm": "Mergi la Catalog"
     },
     "reschedule": "Reprogramează",
-    "loading": "Se încarcă…"
+    "loading": "Se încarcă…",
+    "openClient": "Deschide fișa clientului"
   },
   "addClientModal": {
     "title": "Adaugă client",
@@ -184,5 +185,20 @@
     "configIncomplete": "Orarul acestui serviciu nu este încă configurat",
     "moveTitle": "Reprogramarea programării",
     "moveBusy": "La această oră specialistul este ocupat"
+  },
+  "lessonNotes": {
+    "title": "Notă despre lecție",
+    "add": "Adaugă o notă",
+    "placeholder": "Ce merită reținut despre această lecție…"
+  },
+  "clientCard": {
+    "title": "Client",
+    "phoneVerified": "verificat",
+    "visits": "Vizite",
+    "spent": "Cheltuit",
+    "debt": "Datorie",
+    "notes": "Note",
+    "openFull": "Deschide fișa",
+    "copied": "Copiat"
   }
 }

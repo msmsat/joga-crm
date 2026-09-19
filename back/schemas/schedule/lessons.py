@@ -4,6 +4,7 @@ from typing import Any, List, Optional
 from pydantic import Field, model_validator
 
 from schemas._base import BaseSchema
+from schemas.photos import NotePhotos
 
 
 class LessonRead(BaseSchema):
@@ -23,6 +24,10 @@ class LessonRead(BaseSchema):
     status: str
     booked_count: int = 0
     cancel_reason: Optional[str] = None
+    # Внутренняя заметка студии о занятии и снимки к ней. Клиенту не уходят
+    # ни одним каналом — ни в мини-приложение, ни в напоминания.
+    notes: str = ""
+    photos: List[str] = []
     clients_notified: bool = False
     # HB-02/04: снимок механики и филиала. `branch_id` синхронизируется с
     # Hall.branch_id роутером при создании/переносе (routers/schedule/lessons.py)
@@ -123,6 +128,9 @@ class LessonCreateRequest(BaseSchema):
     price: Optional[int] = None
     level: str = ""
     equipment: str = ""
+    # Необязательная заметка: форма создания её спрашивает, но не требует.
+    notes: str = ""
+    photos: NotePhotos = []
 
 
 class LessonUpdateRequest(BaseSchema):
@@ -138,6 +146,9 @@ class LessonUpdateRequest(BaseSchema):
     total_spots: Optional[int] = None
     price: Optional[int] = None
     cancel_reason: Optional[str] = None
+    notes: Optional[str] = None
+    # None — «фото не трогать»: правка одного текста не должна стирать снимки.
+    photos: Optional[NotePhotos] = None
 
 
 class LessonCancelRequest(BaseSchema):

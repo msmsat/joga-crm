@@ -49,7 +49,7 @@
         "label": "Verkkovarauskanavaa"
       },
       {
-        "value": "alkaen 30 €",
+        "value": "alkaen 20 €",
         "label": "Kuukaudessa studiota kohden"
       }
     ],
@@ -222,15 +222,15 @@
   "pricing": {
     "label": "hinnat",
     "title": "Pakettisi määräytyy\ntiimisi koon mukaan",
-    "lead": "30 € kahdesta henkilöstä, +5 € jokaisesta seuraavasta paikasta, rajaton — 150 €. Kaikki 16 moduulia ja Velora AI sisältyvät joka tasoon: maksat tiimisi koosta, et painikkeiden avaamisesta. Valittavana on kolme maksutapaa ja ennakkoon maksaessa jopa 30 % alennus.",
+    "lead": "20 € yhdestä henkilöstä, 30 € kahdesta henkilöstä, +5 € jokaisesta seuraavasta paikasta, rajaton — 150 €. Kaikki 16 moduulia ja Velora AI sisältyvät joka tasoon: maksat tiimisi koosta, et painikkeiden avaamisesta. Valittavana on kolme maksutapaa ja ennakkoon maksaessa jopa 30 % alennus.",
     "team": "tiimi",
     "seats_one": "henkilö",
     "seats_other": "henkilöä",
     "unlimited": "ei rajaa",
-    "scaleMin": "2 paikkaa",
+    "scaleMin": "1 paikka",
     "scaleMax": "∞ rajaton",
     "sliderAria": "Kuinka monta henkilöä studiossasi työskentelee",
-    "hint": "**30 €** kahdesta henkilöstä, **+5 €** jokaisesta lisäpaikasta. Rajaton — **150 €** kuukaudessa.",
+    "hint": "**20 €** yhdestä henkilöstä, **30 €** kahdesta henkilöstä, **+5 €** jokaisesta lisäpaikasta. Rajaton — **150 €** kuukaudessa.",
     "period": "laskutuskausi",
     "months": "{{count}} kk",
     "noDiscount": "—",
@@ -253,12 +253,12 @@
     "models": [
       {
         "title": "Tilaus",
-        "price": "alkaen 30 € / kk",
+        "price": "alkaen 20 € / kk",
         "desc": "Kiinteä summa. Tiedät kustannuksen etukäteen — ei yllätyksiä kuun lopussa."
       },
       {
         "title": "3 % liikevaihdosta",
-        "price": "vähintään 30 € / kk",
+        "price": "vähintään 20 € / kk",
         "desc": "Maksa liikevaihdosta. Hiljaisena kuukautena täydennät vain erotuksen vähimmäismäärään."
       },
       {

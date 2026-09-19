@@ -90,7 +90,7 @@
       "title": "Kontakty",
       "phone": "Telefon",
       "email": "E-mail",
-      "telegram": "Telegram",
+      "instagram": "Instagram",
       "birthDate": "Datum narození",
       "city": "Město",
       "copyHint": " · klikněte pro zkopírování"
@@ -278,9 +278,6 @@
       "cancel": "Zrušit",
       "addPlaceholder": "Zadejte poznámku...",
       "add": "Přidat poznámku",
-      "addPhoto": "Foto",
-      "removePhoto": "Odebrat fotku",
-      "photoUploading": "Nahrávání…",
       "justNow": "právě teď",
       "deleteTitle": "Smazat poznámku?",
       "deleteMessage": "Tuto poznámku nelze obnovit."
@@ -364,7 +361,10 @@
       "phone": "Telefon",
       "phonePlaceholder": "+420 601 000 000",
       "email": "E-mail",
-      "emailPlaceholder": "klient@example.com"
+      "emailPlaceholder": "klient@example.com",
+      "instagram": "Instagram",
+      "instagramOptional": "nepovinné",
+      "instagramPlaceholder": "username"
     },
     "step2": {
       "bday": "Datum narození",
@@ -412,7 +412,8 @@
       "name": "Zadejte jméno (alespoň 2 znaky)",
       "phone": "Neplatné telefonní číslo",
       "email": "Neplatný e-mail",
-      "city": "Zadejte město"
+      "city": "Zadejte město",
+      "instagram": "Přezdívka latinkou: písmena, číslice, tečka a podtržítko"
     }
   },
   "deleteModal": {

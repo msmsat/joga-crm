@@ -125,29 +125,29 @@ operations.toasts.updated	Transaktionen er opdateret
 operations.toasts.updateFailed	Kunne ikke gemme transaktionen
 operations.toasts.exportFailed	Kunne ikke eksportere transaktioner
 operations.toasts.receiptDownloaded	Kvitteringen er hentet
-operations.categoryPresets.in.0.value	Абонементы
+operations.categoryPresets.in.0.value	Abonnementer
 operations.categoryPresets.in.0.label	Abonnementer
-operations.categoryPresets.in.1.value	Услуги
+operations.categoryPresets.in.1.value	Tjenester
 operations.categoryPresets.in.1.label	Tjenester
-operations.categoryPresets.in.2.value	Сертификаты
+operations.categoryPresets.in.2.value	Gavekort
 operations.categoryPresets.in.2.label	Gavekort
-operations.categoryPresets.in.3.value	Депозит
+operations.categoryPresets.in.3.value	Indskud
 operations.categoryPresets.in.3.label	Indskud
-operations.categoryPresets.in.4.value	Прочее
+operations.categoryPresets.in.4.value	Andet
 operations.categoryPresets.in.4.label	Andet
-operations.categoryPresets.out.0.value	Возвраты
+operations.categoryPresets.out.0.value	Refusioner
 operations.categoryPresets.out.0.label	Refusioner
-operations.categoryPresets.out.1.value	Аренда
+operations.categoryPresets.out.1.value	Husleje
 operations.categoryPresets.out.1.label	Husleje
-operations.categoryPresets.out.2.value	Зарплата
+operations.categoryPresets.out.2.value	Løn
 operations.categoryPresets.out.2.label	Løn
-operations.categoryPresets.out.3.value	Закупки
+operations.categoryPresets.out.3.value	Indkøb
 operations.categoryPresets.out.3.label	Indkøb
-operations.categoryPresets.out.4.value	Реклама
+operations.categoryPresets.out.4.value	Markedsføring
 operations.categoryPresets.out.4.label	Markedsføring
-operations.categoryPresets.out.5.value	Налоги
+operations.categoryPresets.out.5.value	Skatter
 operations.categoryPresets.out.5.label	Skatter
-operations.categoryPresets.out.6.value	Прочее
+operations.categoryPresets.out.6.value	Andet
 operations.categoryPresets.out.6.label	Andet
 salaries.loading	Indlæser løn…
 salaries.noRows	Intet personale at beregne for

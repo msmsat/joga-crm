@@ -98,7 +98,8 @@
       "confirm": "Przejdź do Katalogu"
     },
     "reschedule": "Przenieś",
-    "loading": "Ładowanie…"
+    "loading": "Ładowanie…",
+    "openClient": "Otwórz kartę klienta"
   },
   "addClientModal": {
     "title": "Dodaj klienta",
@@ -188,5 +189,20 @@
     "configIncomplete": "Grafik tej usługi nie jest jeszcze skonfigurowany",
     "moveTitle": "Przeniesienie rezerwacji",
     "moveBusy": "O tej porze specjalista jest zajęty"
+  },
+  "lessonNotes": {
+    "title": "Notatka o zajęciach",
+    "add": "Dodaj notatkę",
+    "placeholder": "Co warto pamiętać o tych zajęciach…"
+  },
+  "clientCard": {
+    "title": "Klient",
+    "phoneVerified": "potwierdzony",
+    "visits": "Wizyty",
+    "spent": "Wydane",
+    "debt": "Dług",
+    "notes": "Notatki",
+    "openFull": "Otwórz kartę",
+    "copied": "Skopiowano"
   }
 }

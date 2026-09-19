@@ -25,8 +25,7 @@
     "done": "Fatto, chiudi",
     "saving": "Salvataggio…",
     "saved": "Salvato!",
-    "upload": "Carica",
-    "undo": "Annulla"
+    "upload": "Carica"
   },
   "validation": {
     "required": "Campo obbligatorio",
@@ -144,15 +143,7 @@
       "unknown_event": "Evento sconosciuto",
       "not_personal": "Le impostazioni personali non modificano le notifiche obbligatorie"
     },
-    "trial_already_used": "La prova gratuita non è più disponibile per questo studio.",
-    "invalid_credentials": "Email, numero di telefono o password non corretti.",
-    "account_not_verified": "Il tuo account non è ancora attivo. Accetta l’invito ricevuto via email o conferma l’indirizzo con il codice.",
-    "invalid_code": "Il codice non è valido o è scaduto.",
-    "invalid_current_password": "La password attuale non è corretta.",
-    "password_unchanged": "La nuova password deve essere diversa da quella attuale.",
-    "invalid_request": "Controlla i dati inseriti e riprova.",
-    "session_expired": "La sessione è scaduta. Accedi di nuovo.",
-    "limit_exceeded": "Hai raggiunto il limite del tuo piano."
+    "trial_already_used": "La prova gratuita non è più disponibile per questo studio."
   },
   "units": {
     "min": "min",
@@ -179,11 +170,8 @@
     "lessonAction": "Codice QR della lezione",
     "lessonCaption": "Inquadra con la fotocamera per prenotare questa lezione",
     "packageAction": "Codice QR dell'abbonamento",
-<<<<<<< HEAD
     "packageCaption": "Inquadra con la fotocamera per acquistare l'abbonamento",
     "serviceAction": "Codice QR del servizio"
-=======
-    "packageCaption": "Inquadra con la fotocamera per acquistare l'abbonamento"
   },
   "auth": {
     "noAccount": "Non hai un account?",
@@ -222,10 +210,16 @@
       "excellent": "Eccellente"
     }
   },
-  "planLimit": {
-    "title": "Limite del piano raggiunto",
-    "description": "Passa a un piano superiore per continuare.",
-    "later": "Più tardi",
-    "upgrade": "Passa al piano superiore"
+  "lightbox": {
+    "close": "Chiudi",
+    "prev": "Foto precedente",
+    "next": "Foto successiva",
+    "counter": "{{current}} di {{total}}"
+  },
+  "notePhotos": {
+    "add": "Foto",
+    "remove": "Rimuovi foto",
+    "alt": "Foto della nota",
+    "drop": "Rilascia per allegare"
   }
 }

@@ -28,6 +28,11 @@ class Client(Base):
     # так не оставить.
     phone_verified: Mapped[bool] = mapped_column(Boolean, default=False, server_default="false", nullable=False)
     email: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    # Ник в Instagram (голый, без «@» и без ссылки — см. contact_format).
+    # Это НЕ канал доставки, а способ администратора открыть директ клиента:
+    # половина записей приходит оттуда, и в карточке ник полезнее телеграма,
+    # который и так равен телефону. Не путать с `ig_id` выше — там IGSID Meta.
+    instagram: Mapped[Optional[str]] = mapped_column(String(30), nullable=True)
     birth_date: Mapped[Optional[date]] = mapped_column(Date, nullable=True)
     city: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
     avatar_color: Mapped[Optional[str]] = mapped_column(String(7), nullable=True)

@@ -149,53 +149,53 @@
     "categoryPresets": {
       "in": [
         {
-          "value": "Абонементы",
+          "value": "Membresías",
           "label": "Membresías"
         },
         {
-          "value": "Услуги",
+          "value": "Servicios",
           "label": "Servicios"
         },
         {
-          "value": "Сертификаты",
+          "value": "Certificados regalo",
           "label": "Certificados regalo"
         },
         {
-          "value": "Депозит",
+          "value": "Depósito",
           "label": "Depósito"
         },
         {
-          "value": "Прочее",
+          "value": "Otros",
           "label": "Otros"
         }
       ],
       "out": [
         {
-          "value": "Возвраты",
+          "value": "Reembolsos",
           "label": "Reembolsos"
         },
         {
-          "value": "Аренда",
+          "value": "Alquiler",
           "label": "Alquiler"
         },
         {
-          "value": "Зарплата",
+          "value": "Nómina",
           "label": "Nómina"
         },
         {
-          "value": "Закупки",
+          "value": "Suministros",
           "label": "Suministros"
         },
         {
-          "value": "Реклама",
+          "value": "Marketing",
           "label": "Marketing"
         },
         {
-          "value": "Налоги",
+          "value": "Impuestos",
           "label": "Impuestos"
         },
         {
-          "value": "Прочее",
+          "value": "Otros",
           "label": "Otros"
         }
       ]

@@ -25,8 +25,7 @@
     "done": "Klart, stäng",
     "saving": "Sparar…",
     "saved": "Sparat!",
-    "upload": "Ladda upp",
-    "undo": "Ångra"
+    "upload": "Ladda upp"
   },
   "validation": {
     "required": "Obligatoriskt fält",
@@ -144,15 +143,7 @@
       "unknown_event": "Okänd händelse",
       "not_personal": "Personliga inställningar ändrar inte obligatoriska aviseringar"
     },
-    "trial_already_used": "Den kostnadsfria provperioden är inte längre tillgänglig för den här studion.",
-    "invalid_credentials": "Fel e-postadress, telefonnummer eller lösenord.",
-    "account_not_verified": "Ditt konto är inte aktiverat ännu. Acceptera inbjudan i e-postmeddelandet eller bekräfta din e-postadress med koden.",
-    "invalid_code": "Koden är ogiltig eller har gått ut.",
-    "invalid_current_password": "Det nuvarande lösenordet är felaktigt.",
-    "password_unchanged": "Det nya lösenordet måste skilja sig från det nuvarande.",
-    "invalid_request": "Kontrollera uppgifterna och försök igen.",
-    "session_expired": "Din session har gått ut. Logga in igen.",
-    "limit_exceeded": "Du har nått gränsen för din plan."
+    "trial_already_used": "Den kostnadsfria provperioden är inte längre tillgänglig för den här studion."
   },
   "units": {
     "min": "min",
@@ -179,11 +170,8 @@
     "lessonAction": "QR-kod för passet",
     "lessonCaption": "Rikta kameran för att boka passet",
     "packageAction": "QR-kod för klippkortet",
-<<<<<<< HEAD
     "packageCaption": "Rikta kameran för att köpa klippkortet",
     "serviceAction": "QR-kod för tjänsten"
-=======
-    "packageCaption": "Rikta kameran för att köpa klippkortet"
   },
   "auth": {
     "noAccount": "Har du inget konto?",
@@ -222,10 +210,16 @@
       "excellent": "Utmärkt"
     }
   },
-  "planLimit": {
-    "title": "Plangränsen har nåtts",
-    "description": "Uppgradera din plan för att fortsätta.",
-    "later": "Senare",
-    "upgrade": "Uppgradera plan"
+  "lightbox": {
+    "close": "Stäng",
+    "prev": "Föregående bild",
+    "next": "Nästa bild",
+    "counter": "{{current}} av {{total}}"
+  },
+  "notePhotos": {
+    "add": "Foto",
+    "remove": "Ta bort foto",
+    "alt": "Anteckningsbild",
+    "drop": "Släpp för att bifoga"
   }
 }

@@ -40,6 +40,9 @@ class _Lesson:
         self.total_spots = 8
         self.service_id = service_id
         self.cancel_reason = None
+        # Заметка студии о занятии и снимки к ней — как на реальной модели.
+        self.notes = ""
+        self.photos = []
         self.clients_notified = False
         # HB-04: новые поля Lesson (branch_id/booking_mode/tz_iana, HB-02) —
         # фейковый объект должен нести их, как реальная ORM-модель.
@@ -72,6 +75,12 @@ class _Teacher:
         self.role = role
 
 
+def _teacher_row(teacher=None):
+    """Строка `_teacher_name_in_studio`: членство и признак мастера (услуги
+    у тренера в фейковой БД не ищем — их наличие и есть этот True)."""
+    return (teacher or _Teacher(), True)
+
+
 class _R:
     def __init__(self, v):
         self._v = v
@@ -86,6 +95,9 @@ class _R:
         return self._v if isinstance(self._v, list) else [self._v]
 
     def scalar(self):
+        return self._v
+
+    def first(self):
         return self._v
 
 
@@ -109,6 +121,8 @@ class _DB:
         if getattr(obj, "id", None) is None:
             obj.id = 1
         if getattr(obj, "clients_notified", None) is None:
+            obj.notes = ""
+            obj.photos = []
             obj.clients_notified = False
         # HB-02: booking_mode — ORM client-side default (default="event"),
         # который реальный flush применяет сам; фейковая сессия ничего не
@@ -146,7 +160,7 @@ def test_create_denormalizes_name_from_service():
     # недельный график тренера — графика нет, не ограничивает), студия для
     # снимка зоны (P1.2: None → зона не подтверждена, снимок не ставится),
     # a7 conflict → []
-    db = _DB([_Studio(), _Teacher(), _Service(id=1, name="Хатха-йога"), None, None, None, None, []])
+    db = _DB([_Studio(), _teacher_row(), _Service(id=1, name="Хатха-йога"), None, None, None, None, []])
     result = asyncio.run(L.create_lesson(body, _ctx(), db))
     assert result.name == "Хатха-йога"
     assert db.committed is True
@@ -158,7 +172,7 @@ def test_create_denormalizes_price_from_service():
     body = LessonCreateRequest(
         service_id=1, teacher_id=1, start_time=datetime.now() + timedelta(hours=4),
     )
-    db = _DB([_Studio(), _Teacher(), _Service(id=1, name="Хатха-йога", price=1500), None, None, None, None, []])
+    db = _DB([_Studio(), _teacher_row(), _Service(id=1, name="Хатха-йога", price=1500), None, None, None, None, []])
     assert asyncio.run(L.create_lesson(body, _ctx(), db)).price == 1500
 
 
@@ -166,7 +180,7 @@ def test_create_explicit_price_wins_over_service():
     body = LessonCreateRequest(
         service_id=1, teacher_id=1, start_time=datetime.now() + timedelta(hours=4), price=0,
     )
-    db = _DB([_Studio(), _Teacher(), _Service(id=1, price=1500), None, None, None, None, []])
+    db = _DB([_Studio(), _teacher_row(), _Service(id=1, price=1500), None, None, None, None, []])
     assert asyncio.run(L.create_lesson(body, _ctx(), db)).price == 0
 
 
@@ -174,7 +188,7 @@ def test_create_service_not_in_studio_404():
     body = LessonCreateRequest(
         service_id=99, teacher_id=1, start_time=datetime.now() + timedelta(hours=4),
     )
-    db = _DB([_Studio(), _Teacher(), None])  # lock_studio, teacher ok, service не найдена в студии
+    db = _DB([_Studio(), _teacher_row(), None])  # lock_studio, teacher ok, service не найдена в студии
     try:
         asyncio.run(L.create_lesson(body, _ctx(), db))
         raise AssertionError("ожидали 404")

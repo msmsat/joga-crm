@@ -10,7 +10,8 @@ from slowapi.errors import RateLimitExceeded
 from slowapi import _rate_limit_exceeded_handler
 
 from ratelimit import limiter
-from database import async_session_maker
+from database import async_session_maker, engine
+from services.schema_readiness import ensure_database_schema
 from services.alerts import alert_on_server_error, install as install_alerts
 from services.scenario_runner import start_scenario_loop
 from services.daily_notify import start_daily_notify_loop
@@ -55,6 +56,7 @@ logging.basicConfig(
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    await ensure_database_schema(engine)
     # Фоновый исполнитель умных сценариев лояльности (V5-4, задача 2).
     task = start_scenario_loop(async_session_maker)
     # Ежедневные уведомления: дни рождения, отчёты дня/недели, тариф (N-4, задача 6).

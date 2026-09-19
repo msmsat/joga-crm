@@ -125,29 +125,29 @@ operations.toasts.updated	Операцията е актуализирана
 operations.toasts.updateFailed	Операцията не можа да се запази
 operations.toasts.exportFailed	Операциите не можаха да се експортират
 operations.toasts.receiptDownloaded	Касовата бележка е изтеглена
-operations.categoryPresets.in.0.value	Абонементы
+operations.categoryPresets.in.0.value	Абонаменти
 operations.categoryPresets.in.0.label	Абонаменти
 operations.categoryPresets.in.1.value	Услуги
 operations.categoryPresets.in.1.label	Услуги
-operations.categoryPresets.in.2.value	Сертификаты
+operations.categoryPresets.in.2.value	Подаръчни сертификати
 operations.categoryPresets.in.2.label	Подаръчни сертификати
 operations.categoryPresets.in.3.value	Депозит
 operations.categoryPresets.in.3.label	Депозит
-operations.categoryPresets.in.4.value	Прочее
+operations.categoryPresets.in.4.value	Друго
 operations.categoryPresets.in.4.label	Друго
-operations.categoryPresets.out.0.value	Возвраты
+operations.categoryPresets.out.0.value	Възстановявания
 operations.categoryPresets.out.0.label	Възстановявания
-operations.categoryPresets.out.1.value	Аренда
+operations.categoryPresets.out.1.value	Наем
 operations.categoryPresets.out.1.label	Наем
-operations.categoryPresets.out.2.value	Зарплата
+operations.categoryPresets.out.2.value	Заплата
 operations.categoryPresets.out.2.label	Заплата
-operations.categoryPresets.out.3.value	Закупки
+operations.categoryPresets.out.3.value	Доставки
 operations.categoryPresets.out.3.label	Доставки
-operations.categoryPresets.out.4.value	Реклама
+operations.categoryPresets.out.4.value	Маркетинг
 operations.categoryPresets.out.4.label	Маркетинг
-operations.categoryPresets.out.5.value	Налоги
+operations.categoryPresets.out.5.value	Данъци
 operations.categoryPresets.out.5.label	Данъци
-operations.categoryPresets.out.6.value	Прочее
+operations.categoryPresets.out.6.value	Друго
 operations.categoryPresets.out.6.label	Друго
 salaries.loading	Зареждане на заплати…
 salaries.noRows	Няма служители за изчисляване

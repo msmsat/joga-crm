@@ -110,6 +110,10 @@ export interface StaffListItem {
   is_online: boolean
   // false — приглашение отправлено, но сотрудник ещё не задал пароль и не вошёл.
   is_active: boolean
+  // Мастер: роль «Тренер» либо владелец, которому назначены услуги. Считает
+  // сервер (services/members.is_specialist_clause) — по одной role этого не
+  // видно, поэтому колонки журнала смотрят сюда, а не на role.
+  is_specialist: boolean
   photo_url: string | null
   avatar_gradient: string | null
 }

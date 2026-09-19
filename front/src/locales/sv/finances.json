@@ -149,53 +149,53 @@
     "categoryPresets": {
       "in": [
         {
-          "value": "Абонементы",
+          "value": "Medlemskap",
           "label": "Medlemskap"
         },
         {
-          "value": "Услуги",
+          "value": "Tjänster",
           "label": "Tjänster"
         },
         {
-          "value": "Сертификаты",
+          "value": "Presentkort",
           "label": "Presentkort"
         },
         {
-          "value": "Депозит",
+          "value": "Insättning",
           "label": "Insättning"
         },
         {
-          "value": "Прочее",
+          "value": "Övrigt",
           "label": "Övrigt"
         }
       ],
       "out": [
         {
-          "value": "Возвраты",
+          "value": "Återbetalningar",
           "label": "Återbetalningar"
         },
         {
-          "value": "Аренда",
+          "value": "Hyra",
           "label": "Hyra"
         },
         {
-          "value": "Зарплата",
+          "value": "Löner",
           "label": "Löner"
         },
         {
-          "value": "Закупки",
+          "value": "Inköp",
           "label": "Inköp"
         },
         {
-          "value": "Реклама",
+          "value": "Marknadsföring",
           "label": "Marknadsföring"
         },
         {
-          "value": "Налоги",
+          "value": "Skatter",
           "label": "Skatter"
         },
         {
-          "value": "Прочее",
+          "value": "Övrigt",
           "label": "Övrigt"
         }
       ]

@@ -125,29 +125,29 @@ operations.toasts.updated	Operacja zaktualizowana
 operations.toasts.updateFailed	Nie udało się zapisać operacji
 operations.toasts.exportFailed	Nie udało się wyeksportować operacji
 operations.toasts.receiptDownloaded	Potwierdzenie pobrane
-operations.categoryPresets.in.0.value	Абонементы
+operations.categoryPresets.in.0.value	Członkostwa
 operations.categoryPresets.in.0.label	Członkostwa
-operations.categoryPresets.in.1.value	Услуги
+operations.categoryPresets.in.1.value	Usługi
 operations.categoryPresets.in.1.label	Usługi
-operations.categoryPresets.in.2.value	Сертификаты
+operations.categoryPresets.in.2.value	Bony podarunkowe
 operations.categoryPresets.in.2.label	Bony podarunkowe
-operations.categoryPresets.in.3.value	Депозит
+operations.categoryPresets.in.3.value	Depozyt
 operations.categoryPresets.in.3.label	Depozyt
-operations.categoryPresets.in.4.value	Прочее
+operations.categoryPresets.in.4.value	Inne
 operations.categoryPresets.in.4.label	Inne
-operations.categoryPresets.out.0.value	Возвраты
+operations.categoryPresets.out.0.value	Zwroty
 operations.categoryPresets.out.0.label	Zwroty
-operations.categoryPresets.out.1.value	Аренда
+operations.categoryPresets.out.1.value	Czynsz
 operations.categoryPresets.out.1.label	Czynsz
-operations.categoryPresets.out.2.value	Зарплата
+operations.categoryPresets.out.2.value	Wynagrodzenia
 operations.categoryPresets.out.2.label	Wynagrodzenia
-operations.categoryPresets.out.3.value	Закупки
+operations.categoryPresets.out.3.value	Zakupy
 operations.categoryPresets.out.3.label	Zakupy
-operations.categoryPresets.out.4.value	Реклама
+operations.categoryPresets.out.4.value	Marketing
 operations.categoryPresets.out.4.label	Marketing
-operations.categoryPresets.out.5.value	Налоги
+operations.categoryPresets.out.5.value	Podatki
 operations.categoryPresets.out.5.label	Podatki
-operations.categoryPresets.out.6.value	Прочее
+operations.categoryPresets.out.6.value	Inne
 operations.categoryPresets.out.6.label	Inne
 salaries.loading	Ładowanie wynagrodzeń…
 salaries.noRows	Brak personelu do obliczenia

@@ -57,6 +57,7 @@ export function mapListItem(item: ClientListItem): ClientData {
 export function mapProfile(profile: ClientProfile): ClientData {
   return {
     ...mapListItem(profile),
+    instagram:  profile.instagram  ?? undefined,
     birth_date: profile.birth_date ?? undefined,
     city:       profile.city       ?? undefined,
     source:     profile.source     ?? undefined,

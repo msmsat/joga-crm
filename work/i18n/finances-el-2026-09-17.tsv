@@ -125,29 +125,29 @@ operations.toasts.updated	Η συναλλαγή ενημερώθηκε
 operations.toasts.updateFailed	Αποτυχία αποθήκευσης συναλλαγής
 operations.toasts.exportFailed	Αποτυχία εξαγωγής συναλλαγών
 operations.toasts.receiptDownloaded	Η απόδειξη λήφθηκε
-operations.categoryPresets.in.0.value	Абонементы
+operations.categoryPresets.in.0.value	Συνδρομές
 operations.categoryPresets.in.0.label	Συνδρομές
-operations.categoryPresets.in.1.value	Услуги
+operations.categoryPresets.in.1.value	Υπηρεσίες
 operations.categoryPresets.in.1.label	Υπηρεσίες
-operations.categoryPresets.in.2.value	Сертификаты
+operations.categoryPresets.in.2.value	Δωροεπιταγές
 operations.categoryPresets.in.2.label	Δωροεπιταγές
-operations.categoryPresets.in.3.value	Депозит
+operations.categoryPresets.in.3.value	Κατάθεση
 operations.categoryPresets.in.3.label	Κατάθεση
-operations.categoryPresets.in.4.value	Прочее
+operations.categoryPresets.in.4.value	Άλλο
 operations.categoryPresets.in.4.label	Άλλο
-operations.categoryPresets.out.0.value	Возвраты
+operations.categoryPresets.out.0.value	Επιστροφές
 operations.categoryPresets.out.0.label	Επιστροφές
-operations.categoryPresets.out.1.value	Аренда
+operations.categoryPresets.out.1.value	Ενοίκιο
 operations.categoryPresets.out.1.label	Ενοίκιο
-operations.categoryPresets.out.2.value	Зарплата
+operations.categoryPresets.out.2.value	Μισθοί
 operations.categoryPresets.out.2.label	Μισθοί
-operations.categoryPresets.out.3.value	Закупки
+operations.categoryPresets.out.3.value	Προμήθειες
 operations.categoryPresets.out.3.label	Προμήθειες
-operations.categoryPresets.out.4.value	Реклама
+operations.categoryPresets.out.4.value	Μάρκετινγκ
 operations.categoryPresets.out.4.label	Μάρκετινγκ
-operations.categoryPresets.out.5.value	Налоги
+operations.categoryPresets.out.5.value	Φόροι
 operations.categoryPresets.out.5.label	Φόροι
-operations.categoryPresets.out.6.value	Прочее
+operations.categoryPresets.out.6.value	Άλλο
 operations.categoryPresets.out.6.label	Άλλο
 salaries.loading	Φόρτωση μισθοδοσίας…
 salaries.noRows	Δεν υπάρχει προσωπικό για υπολογισμό

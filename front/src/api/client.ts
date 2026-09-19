@@ -1,7 +1,5 @@
 import { clearActiveToken, getActiveToken } from '../utils/auth'
 import { reactTo401 } from '../lib/authFailure'
-import i18n from '../i18n'
-import { serverErrorText } from './errorText'
 
 const BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8000'
 
@@ -31,7 +29,19 @@ function getToken(): string | null {
 }
 
 function normalizeError(data: unknown): string {
-  return serverErrorText(data, i18n.t.bind(i18n))
+  if (data && typeof data === 'object' && 'detail' in data) {
+    const detail = (data as { detail: unknown }).detail
+    if (Array.isArray(detail) && detail.length > 0) {
+      const first = detail[0] as { msg?: string; loc?: string[] }
+      return first.msg ?? String(first)
+    }
+    if (typeof detail === 'string') return detail
+    // detail-объект от бэкенда: {code, message} (лимиты тарифа, истёкшая подписка)
+    if (detail && typeof detail === 'object' && 'message' in detail) {
+      return String((detail as { message: unknown }).message)
+    }
+  }
+  return 'Неизвестная ошибка'
 }
 
 // Код из detail-объекта {code, message}, если бэкенд его прислал.
@@ -84,11 +94,11 @@ async function request<T>(method: string, path: string, options: RequestOptions 
       // Сообщение берём с сервера, а не пишем «Сессия истекла»: на входе это
       // «Неверный email, телефон или пароль», и прочитать надо именно его.
       const data: unknown = await res.json().catch(() => null)
-      throw new ApiError(401, data ? normalizeError(data) : i18n.t('common:errors.session_expired'), detailCode(data))
+      throw new ApiError(401, data ? normalizeError(data) : 'Сессия истекла', detailCode(data))
     }
     clearActiveToken()
     window.location.href = '/login'
-    throw new ApiError(401, i18n.t('common:errors.session_expired'))
+    throw new ApiError(401, 'Сессия истекла')
   }
 
   // 402 — глобальный гейт подписки (задача 8b/12b): подписка неактивна. Страховка на
@@ -99,7 +109,7 @@ async function request<T>(method: string, path: string, options: RequestOptions 
     if (!window.location.pathname.startsWith('/dashboard/billing')) {
       window.location.href = '/dashboard/billing'
     }
-    throw new ApiError(402, data ? normalizeError(data) : i18n.t('billing:banner.unpaid'), detailCode(data))
+    throw new ApiError(402, data ? normalizeError(data) : 'Подписка неактивна', detailCode(data))
   }
 
   // 400 no_active_studio — токен мультистудийного пользователя без выбранной студии
@@ -111,14 +121,14 @@ async function request<T>(method: string, path: string, options: RequestOptions 
     if (code === 'no_active_studio' && !window.location.pathname.startsWith('/select-crm')) {
       window.location.href = '/select-crm'
     }
-    throw new ApiError(400, data ? normalizeError(data) : i18n.t('common:errors.invalid_request'), code)
+    throw new ApiError(400, data ? normalizeError(data) : 'Некорректный запрос', code)
   }
 
   // 403 — читаем тело: это может быть отказ доступа ИЛИ лимит тарифа {code, message}.
   if (res.status === 403) {
     const data: unknown = await res.json().catch(() => null)
     const code = detailCode(data)
-    const message = data ? normalizeError(data) : i18n.t('common:errors.403')
+    const message = data ? normalizeError(data) : 'Нет доступа'
     // Лимит тарифа — не голая ошибка, а точка продажи апгрейда: глобальный листенер в
     // DashboardLayout покажет модалку «Улучшить тариф» (ловим один раз тут, а не в каждой форме).
     if (code === 'limit_exceeded') {
@@ -129,7 +139,7 @@ async function request<T>(method: string, path: string, options: RequestOptions 
 
   // 204 / пустое тело (например DELETE) — парсить нечего.
   if (res.status === 204) {
-    if (!res.ok) throw new ApiError(res.status, i18n.t('common:errors.unknown'))
+    if (!res.ok) throw new ApiError(res.status, 'Ошибка запроса')
     return undefined as T
   }
 
@@ -152,7 +162,7 @@ export async function downloadFile(path: string): Promise<void> {
   const res = await fetch(`${BASE_URL}${path}`, { headers })
   if (!res.ok) {
     const data: unknown = await res.json().catch(() => null)
-    throw new ApiError(res.status, data ? normalizeError(data) : i18n.t('common:errors.unknown'))
+    throw new ApiError(res.status, data ? normalizeError(data) : 'Не удалось скачать файл')
   }
 
   const disposition = res.headers.get('Content-Disposition') ?? ''
@@ -181,7 +191,7 @@ export async function openFile(path: string): Promise<void> {
   const res = await fetch(`${BASE_URL}${path}`, { headers })
   if (!res.ok) {
     const data: unknown = await res.json().catch(() => null)
-    throw new ApiError(res.status, data ? normalizeError(data) : i18n.t('common:errors.unknown'))
+    throw new ApiError(res.status, data ? normalizeError(data) : 'Не удалось открыть файл')
   }
 
   const blob = await res.blob()
@@ -207,7 +217,7 @@ export async function streamRequest(
   })
   if (!res.ok) {
     const data: unknown = await res.json().catch(() => null)
-    throw new ApiError(res.status, data ? normalizeError(data) : i18n.t('common:errors.unknown'), detailCode(data))
+    throw new ApiError(res.status, data ? normalizeError(data) : 'Ошибка запроса', detailCode(data))
   }
   // Не SSE — сервер ответил чем-то другим (прокси, страница ошибки). Вызывающий
   // код уходит на обычный /messages: стрим это улучшение, а не единственный путь.

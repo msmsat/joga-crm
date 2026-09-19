@@ -96,7 +96,8 @@
       "confirm": "Gå til Katalog"
     },
     "reschedule": "Flyt",
-    "loading": "Indlæser…"
+    "loading": "Indlæser…",
+    "openClient": "Åbn kundekortet"
   },
   "addClientModal": {
     "title": "Tilføj kunde",
@@ -180,5 +181,20 @@
     "configIncomplete": "Skemaet for denne ydelse er endnu ikke sat op",
     "moveTitle": "Flyt booking",
     "moveBusy": "Specialisten er optaget på dette tidspunkt"
+  },
+  "lessonNotes": {
+    "title": "Note til holdet",
+    "add": "Tilføj note",
+    "placeholder": "Hvad er vigtigt at huske om denne time…"
+  },
+  "clientCard": {
+    "title": "Kunde",
+    "phoneVerified": "bekræftet",
+    "visits": "Besøg",
+    "spent": "Brugt",
+    "debt": "Gæld",
+    "notes": "Noter",
+    "openFull": "Åbn kortet",
+    "copied": "Kopieret"
   }
 }

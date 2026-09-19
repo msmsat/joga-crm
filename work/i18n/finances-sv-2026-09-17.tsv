@@ -125,29 +125,29 @@ operations.toasts.updated	Transaktionen har uppdaterats
 operations.toasts.updateFailed	Det gick inte att spara transaktionen
 operations.toasts.exportFailed	Det gick inte att exportera transaktioner
 operations.toasts.receiptDownloaded	Kvittot har hämtats
-operations.categoryPresets.in.0.value	Абонементы
+operations.categoryPresets.in.0.value	Medlemskap
 operations.categoryPresets.in.0.label	Medlemskap
-operations.categoryPresets.in.1.value	Услуги
+operations.categoryPresets.in.1.value	Tjänster
 operations.categoryPresets.in.1.label	Tjänster
-operations.categoryPresets.in.2.value	Сертификаты
+operations.categoryPresets.in.2.value	Presentkort
 operations.categoryPresets.in.2.label	Presentkort
-operations.categoryPresets.in.3.value	Депозит
+operations.categoryPresets.in.3.value	Insättning
 operations.categoryPresets.in.3.label	Insättning
-operations.categoryPresets.in.4.value	Прочее
+operations.categoryPresets.in.4.value	Övrigt
 operations.categoryPresets.in.4.label	Övrigt
-operations.categoryPresets.out.0.value	Возвраты
+operations.categoryPresets.out.0.value	Återbetalningar
 operations.categoryPresets.out.0.label	Återbetalningar
-operations.categoryPresets.out.1.value	Аренда
+operations.categoryPresets.out.1.value	Hyra
 operations.categoryPresets.out.1.label	Hyra
-operations.categoryPresets.out.2.value	Зарплата
+operations.categoryPresets.out.2.value	Löner
 operations.categoryPresets.out.2.label	Löner
-operations.categoryPresets.out.3.value	Закупки
+operations.categoryPresets.out.3.value	Inköp
 operations.categoryPresets.out.3.label	Inköp
-operations.categoryPresets.out.4.value	Реклама
+operations.categoryPresets.out.4.value	Marknadsföring
 operations.categoryPresets.out.4.label	Marknadsföring
-operations.categoryPresets.out.5.value	Налоги
+operations.categoryPresets.out.5.value	Skatter
 operations.categoryPresets.out.5.label	Skatter
-operations.categoryPresets.out.6.value	Прочее
+operations.categoryPresets.out.6.value	Övrigt
 operations.categoryPresets.out.6.label	Övrigt
 salaries.loading	Laddar löner…
 salaries.noRows	Det finns ingen personal att beräkna

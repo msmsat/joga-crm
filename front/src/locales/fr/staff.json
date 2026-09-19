@@ -266,12 +266,7 @@
     "cannotDeleteLastOwner": "Impossible de retirer l'unique propriétaire"
   },
   "ownerModal": {
-    "header": "COORDONNÉES DU PROPRIÉTAIRE",
-    "heading": "Coordonnées",
-    "sub": "Téléphone et e-mail du propriétaire du studio",
-    "cardNote": "l'e-mail est l'identifiant de connexion",
-    "loginWarning": "L'e-mail est l'identifiant du propriétaire. Après l'enregistrement, connectez-vous avec la nouvelle adresse.",
-    "lockedHint": "Le nom, la photo, le rôle et les droits ne se modifient pas ici — ils se trouvent dans la section « Profil »."
+    "loginWarning": "L'e-mail est l'identifiant du propriétaire. Après l'enregistrement, connectez-vous avec la nouvelle adresse."
   },
   "list": {
     "pendingLabel": "Invitation en attente",

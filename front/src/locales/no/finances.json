@@ -149,53 +149,53 @@
     "categoryPresets": {
       "in": [
         {
-          "value": "Абонементы",
+          "value": "Medlemskap",
           "label": "Medlemskap"
         },
         {
-          "value": "Услуги",
+          "value": "Tjenester",
           "label": "Tjenester"
         },
         {
-          "value": "Сертификаты",
+          "value": "Gavekort",
           "label": "Gavekort"
         },
         {
-          "value": "Депозит",
+          "value": "Innskudd",
           "label": "Innskudd"
         },
         {
-          "value": "Прочее",
+          "value": "Annet",
           "label": "Annet"
         }
       ],
       "out": [
         {
-          "value": "Возвраты",
+          "value": "Refusjoner",
           "label": "Refusjoner"
         },
         {
-          "value": "Аренда",
+          "value": "Leie",
           "label": "Leie"
         },
         {
-          "value": "Зарплата",
+          "value": "Lønn",
           "label": "Lønn"
         },
         {
-          "value": "Закупки",
+          "value": "Innkjøp",
           "label": "Innkjøp"
         },
         {
-          "value": "Реклама",
+          "value": "Markedsføring",
           "label": "Markedsføring"
         },
         {
-          "value": "Налоги",
+          "value": "Skatter",
           "label": "Skatter"
         },
         {
-          "value": "Прочее",
+          "value": "Annet",
           "label": "Annet"
         }
       ]

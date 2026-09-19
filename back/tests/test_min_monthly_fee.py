@@ -35,10 +35,10 @@ from routers.billing.plans import MIN_MONTHLY_FEE, PLANS
 # ------------------------------------------------------------ 1. сумма минимума
 
 def test_minimum_is_the_cheapest_plan():
-    """30 € — месяц нижней ступени (2 места). Плоский для всех: percent-студия
+    """20 € — месяц нижней ступени (1 место). Плоский для всех: percent-студия
     после триала числится на средней ступени, и брать с неё её цену за пустой
     месяц несоразмерно."""
-    assert MIN_MONTHLY_FEE == PLANS["s2"]["price"] == 3000
+    assert MIN_MONTHLY_FEE == PLANS["s1"]["price"] == 2000
 
 
 def test_minimum_never_exceeds_the_cheapest_subscription():
@@ -54,18 +54,18 @@ def _shortfall(revenue: int) -> int:
 
 
 def test_empty_month_is_billed_in_full():
-    assert _shortfall(0) == 3000
+    assert _shortfall(0) == 2000
 
 
 def test_partial_month_is_topped_up_to_the_minimum():
-    """Заработали 27 € → счёт на 3 €, а не на все 30 и не на ноль."""
-    assert _shortfall(2700) == 300
+    """Заработали 17 € → счёт на 3 €, а не на все 20 и не на ноль."""
+    assert _shortfall(1700) == 300
 
 
 def test_one_cent_sale_does_not_cancel_the_minimum():
     """Главная причина считать разницу, а не «строго ноль»: порог по нулю
     обходился бы одной продажей на копейку."""
-    assert _shortfall(1) == 2999
+    assert _shortfall(1) == 1999
     assert _shortfall(1) >= OFB.MIN_INVOICE_AMOUNT, "счёт обязан выставиться"
 
 

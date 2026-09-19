@@ -25,8 +25,7 @@
     "done": "Pronto, fechar",
     "saving": "A guardar…",
     "saved": "Guardado!",
-    "upload": "Carregar",
-    "undo": "Anular"
+    "upload": "Carregar"
   },
   "validation": {
     "required": "Campo obrigatório",
@@ -144,15 +143,7 @@
       "unknown_event": "Evento desconhecido",
       "not_personal": "As definições pessoais não alteram as notificações obrigatórias"
     },
-    "trial_already_used": "O período experimental gratuito já não está disponível para este estúdio.",
-    "invalid_credentials": "Email, número de telefone ou palavra-passe incorretos.",
-    "account_not_verified": "A sua conta ainda não está ativada. Aceite o convite recebido por email ou confirme o endereço com o código.",
-    "invalid_code": "O código é inválido ou expirou.",
-    "invalid_current_password": "A palavra-passe atual está incorreta.",
-    "password_unchanged": "A nova palavra-passe deve ser diferente da atual.",
-    "invalid_request": "Verifique os dados introduzidos e tente novamente.",
-    "session_expired": "A sua sessão expirou. Inicie sessão novamente.",
-    "limit_exceeded": "Atingiu o limite do seu plano."
+    "trial_already_used": "O período experimental gratuito já não está disponível para este estúdio."
   },
   "units": {
     "min": "min",
@@ -179,11 +170,8 @@
     "lessonAction": "Código QR da aula",
     "lessonCaption": "Aponte a câmara para marcar esta aula",
     "packageAction": "Código QR do passe",
-<<<<<<< HEAD
     "packageCaption": "Aponte a câmara para comprar o passe",
     "serviceAction": "Código QR do serviço"
-=======
-    "packageCaption": "Aponte a câmara para comprar o passe"
   },
   "auth": {
     "noAccount": "Não tem uma conta?",
@@ -222,10 +210,16 @@
       "excellent": "Excelente"
     }
   },
-  "planLimit": {
-    "title": "Limite do plano atingido",
-    "description": "Mude para um plano superior para continuar.",
-    "later": "Mais tarde",
-    "upgrade": "Melhorar plano"
+  "lightbox": {
+    "close": "Fechar",
+    "prev": "Foto anterior",
+    "next": "Foto seguinte",
+    "counter": "{{current}} de {{total}}"
+  },
+  "notePhotos": {
+    "add": "Foto",
+    "remove": "Remover foto",
+    "alt": "Foto da nota",
+    "drop": "Largue para anexar"
   }
 }

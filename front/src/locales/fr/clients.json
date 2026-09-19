@@ -90,7 +90,7 @@
       "title": "Coordonnées",
       "phone": "Téléphone",
       "email": "E-mail",
-      "telegram": "Telegram",
+      "instagram": "Instagram",
       "birthDate": "Date de naissance",
       "city": "Ville",
       "copyHint": " · cliquez pour copier"
@@ -282,9 +282,6 @@
       "cancel": "Annuler",
       "addPlaceholder": "Saisir une note…",
       "add": "Ajouter une note",
-      "addPhoto": "Photo",
-      "removePhoto": "Supprimer la photo",
-      "photoUploading": "Envoi…",
       "justNow": "à l'instant",
       "deleteTitle": "Supprimer la note ?",
       "deleteMessage": "Cette note ne peut pas être récupérée."
@@ -368,7 +365,10 @@
       "phone": "Téléphone",
       "phonePlaceholder": "+33 6 00 00 00 00",
       "email": "E-mail",
-      "emailPlaceholder": "client@exemple.fr"
+      "emailPlaceholder": "client@exemple.fr",
+      "instagram": "Instagram",
+      "instagramOptional": "facultatif",
+      "instagramPlaceholder": "username"
     },
     "step2": {
       "bday": "Date de naissance",
@@ -418,7 +418,8 @@
       "name": "Saisissez un nom (au moins 2 caractères)",
       "phone": "Numéro de téléphone non valide",
       "email": "Adresse e-mail non valide",
-      "city": "Saisissez une ville"
+      "city": "Saisissez une ville",
+      "instagram": "Identifiant : lettres latines, chiffres, point et tiret bas"
     }
   },
   "deleteModal": {

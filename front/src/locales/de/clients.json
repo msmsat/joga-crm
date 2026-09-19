@@ -90,7 +90,7 @@
       "title": "Kontakte",
       "phone": "Telefon",
       "email": "E-Mail",
-      "telegram": "Telegram",
+      "instagram": "Instagram",
       "birthDate": "Geburtsdatum",
       "city": "Stadt",
       "copyHint": " · zum Kopieren klicken"
@@ -278,9 +278,6 @@
       "cancel": "Abbrechen",
       "addPlaceholder": "Notiz eingeben...",
       "add": "Notiz hinzufügen",
-      "addPhoto": "Foto",
-      "removePhoto": "Foto entfernen",
-      "photoUploading": "Wird hochgeladen…",
       "justNow": "gerade eben",
       "deleteTitle": "Notiz löschen?",
       "deleteMessage": "Diese Notiz lässt sich nicht wiederherstellen."
@@ -364,7 +361,10 @@
       "phone": "Telefon",
       "phonePlaceholder": "+49 30 0000000",
       "email": "E-Mail",
-      "emailPlaceholder": "kunde@example.com"
+      "emailPlaceholder": "kunde@example.com",
+      "instagram": "Instagram",
+      "instagramOptional": "optional",
+      "instagramPlaceholder": "username"
     },
     "step2": {
       "bday": "Geburtsdatum",
@@ -412,7 +412,8 @@
       "name": "Geben Sie einen Namen ein (mindestens 2 Zeichen)",
       "phone": "Ungültige Telefonnummer",
       "email": "Ungültige E-Mail",
-      "city": "Geben Sie eine Stadt ein"
+      "city": "Geben Sie eine Stadt ein",
+      "instagram": "Nutzername: lateinische Buchstaben, Ziffern, Punkt und Unterstrich"
     }
   },
   "deleteModal": {

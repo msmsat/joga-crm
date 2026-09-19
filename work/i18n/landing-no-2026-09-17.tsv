@@ -8,7 +8,7 @@ nav.startShort	Start
 nav.startFull	Start gratis
 nav.language	Språk
 hero.badge	Den nye CRM-standarden for 2026
-hero.title	Et CRM du vil\n*elske* å bruke
+hero.title	Et CRM du vil\\n*elske* å bruke
 hero.lead	Et førsteklasses B2B-CRM for yoga- og pilatesstudioer. Bookinger, kunder, team og økonomi på ett sted. Ingen ekstra klikk, ingen forvirring.
 hero.cta	Prøv gratis i 30 dager
 hero.perks.0	30 dager gratis
@@ -39,7 +39,7 @@ stats.trust.1	Roller håndheves på serveren
 stats.trust.2	CSV-eksport når som helst
 stats.trust.3	Sletting på forespørsel
 compare.label	forskjellen
-compare.title	Vi fjernet det\nsom stod i veien
+compare.title	Vi fjernet det\\nsom stod i veien
 compare.lead	Velora vokste ut av vår egen erfaring: Vi drev studioer og møtte hver dag den samme veggen — et CRM der det krevdes ni klikk for å booke en kunde. Her er hva som endret seg.
 compare.usual	Den vanlige måten
 compare.velora	I Velora
@@ -54,7 +54,7 @@ compare.pairs.3.good	Roller begrenser tilgang både i grensesnittet og på serve
 compare.pairs.4.bad	En assistent? I beste fall kundesøk
 compare.pairs.4.good	Velora AI svarer på spørsmål om virksomheten din — og kundenes spørsmål i Telegram og Instagram
 showcase.label	alt på ett sted
-showcase.title	Én plattform i stedet\nfor et dusin tjenester
+showcase.title	Én plattform i stedet\\nfor et dusin tjenester
 showcase.lead	Bookinger, kunder, penger, kommunikasjon og AI i ett grensesnitt. Ikke én overflødig modul: hver visning løser et reelt problem for eieren.
 showcase.blocks.journal.title	Timeplanen din
 showcase.blocks.journal.lead	Et dagsrutenett der trenere er kolonner og timer er rader. Alt en administrator gjør, skjer her.
@@ -85,7 +85,7 @@ ctaStrip.title	Prøv uten datamigrering og uten forskuddsbetaling
 ctaStrip.button	Start gratis
 ctaStrip.note	30 dager gratis • Ingen kort • Hjelp til oppstart
 modules.label	moduler
-modules.title	16 moduler,\nallerede inkludert
+modules.title	16 moduler,\\nallerede inkludert
 modules.lead	Ikke en samling plassholdere med «kommer snart» — alt som står oppført fungerer og er inkludert i planen. Roller bestemmer hvem som ser hver seksjon.
 modules.items.dashboard.title	Oversikt
 modules.items.dashboard.desc	Inntekter, aktive kunder, bookinger og kundelojalitet — med trender
@@ -122,7 +122,7 @@ modules.items.data.desc	CSV-eksport, sletting på forespørsel
 modules.integrations	Integrasjoner
 modules.integrationsNote	koblet til i studioinnstillingene
 pricing.label	priser
-pricing.title	Planen din avhenger av\nstørrelsen på teamet
+pricing.title	Planen din avhenger av\\nstørrelsen på teamet
 pricing.lead	15 € for to personer, +5 € for hver neste plass, ubegrenset — 120 €. Alle 16 moduler og Velora AI er inkludert på hvert nivå: du betaler for teamets størrelse, ikke for å låse opp knapper. Tre betalingsmodeller å velge mellom og opptil 40 % rabatt ved forskuddsbetaling.
 pricing.team	team
 pricing.seats_one	person
@@ -177,7 +177,7 @@ faq.notFoundTitle	Fant du ikke svaret?
 faq.notFoundLead	Skriv til oss — vi svarer selv, uten roboter og uten kø.
 faq.copied	Kopiert
 about.label	om oss
-about.title	Velora bygges av mennesker\nsom selv har drevet studioer
+about.title	Velora bygges av mennesker\\nsom selv har drevet studioer
 about.lead	Vi bygger ikke et «CRM for alle». Vi bygger et verktøy for en konkret jobb — timeplan, kunder, penger, kommunikasjon — og svarer selv på spørsmål i stedet for å sende ferdige svar.
 about.p1	Et studios kunder forblir studioets kunder. Velora bygger ingen felles katalog, viser ikke kundene dine andres annonser og tar ingen prosent når noen kommer tilbake til deg.
 about.p2	Akkurat nå er produktet laget for yoga- og pilatesstudioer — for hvordan timeplaner, medlemskap og trenere faktisk fungerer. Andre bransjer følger med samme omtanke.
