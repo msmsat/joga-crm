@@ -97,7 +97,8 @@
       "confirm": "Idi u Katalog"
     },
     "reschedule": "Premjesti",
-    "loading": "Učitavanje…"
+    "loading": "Učitavanje…",
+    "openClient": "Otvori karticu klijenta"
   },
   "addClientModal": {
     "title": "Dodaj klijenta",
@@ -184,5 +185,20 @@
     "configIncomplete": "Raspored ove usluge još nije postavljen",
     "moveTitle": "Premještanje rezervacije",
     "moveBusy": "U to vrijeme stručnjak je zauzet"
+  },
+  "lessonNotes": {
+    "title": "Bilješka o satu",
+    "add": "Dodaj bilješku",
+    "placeholder": "Što je važno zapamtiti o ovom satu…"
+  },
+  "clientCard": {
+    "title": "Klijent",
+    "phoneVerified": "potvrđen",
+    "visits": "Posjeti",
+    "spent": "Potrošeno",
+    "debt": "Dug",
+    "notes": "Bilješke",
+    "openFull": "Otvori karticu",
+    "copied": "Kopirano"
   }
 }

@@ -4,11 +4,6 @@ import { useTranslation } from "react-i18next";
 import { LANGUAGES, rememberLang } from "../../../utils/lang";
 import { EASE } from "./tokens";
 
-const LANDING_LANGUAGES = [
-  ...LANGUAGES.filter(l => l.value === "uk"),
-  ...LANGUAGES.filter(l => l.value !== "uk"),
-];
-
 /**
  * Выбор языка в шапке лендинга. Кто ещё не выбирал, получает страницу на языке
  * своей страны (lib/detectLanguage.ts), а этот переключатель — единственное
@@ -98,7 +93,7 @@ export function LangSwitch() {
             transition={{ duration: 0.2, ease: EASE }}
             className="lp-language-list absolute right-0 top-[calc(100%+8px)] z-50 min-w-[178px] rounded-xl border border-white/10 bg-[#181818] p-1.5 shadow-[0_20px_50px_-16px_rgba(0,0,0,0.8)]"
           >
-            {LANDING_LANGUAGES.map(l => {
+            {LANGUAGES.map(l => {
               const active = l.value === current.value;
               return (
                 <li key={l.value} role="option" aria-selected={active}>

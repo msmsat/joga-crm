@@ -86,7 +86,7 @@ export function useClientActions(clientId: number) {
     setEditingNoteText(text);
     setNotePhotos(photos);
     setIsAddingNote(false);
-  }, []);
+  }, [setNotePhotos]);
 
   const saveNote = useCallback((id: number) => {
     const text = editingNoteText;
@@ -94,13 +94,13 @@ export function useClientActions(clientId: number) {
     setEditingNoteId(null);
     setNotePhotos([]);
     mutations.updateNote(clientId, id, text, photos).catch((e: Error) => toast.error(errorMessage(e, t)));
-  }, [editingNoteText, notePhotos, clientId, mutations, toast, t]);
+  }, [editingNoteText, notePhotos, clientId, mutations, toast, t, setNotePhotos]);
 
   const cancelEditNote = useCallback(() => {
     setEditingNoteId(null);
     setEditingNoteText('');
     setNotePhotos([]);
-  }, []);
+  }, [setNotePhotos]);
 
   const requestDeleteNote = useCallback((id: number) => {
     setDeletingNoteId(id);
@@ -122,7 +122,7 @@ export function useClientActions(clientId: number) {
     setEditingNoteId(null);
     setNewNoteText('');
     setNotePhotos([]);
-  }, []);
+  }, [setNotePhotos]);
 
   const saveNewNote = useCallback(() => {
     const text = newNoteText.trim();
@@ -133,13 +133,13 @@ export function useClientActions(clientId: number) {
     setNewNoteText('');
     setNotePhotos([]);
     mutations.createNote(clientId, text, photos).catch((e: Error) => toast.error(errorMessage(e, t)));
-  }, [newNoteText, notePhotos, clientId, mutations, toast, t]);
+  }, [newNoteText, notePhotos, clientId, mutations, toast, t, setNotePhotos]);
 
   const cancelAddNote = useCallback(() => {
     setIsAddingNote(false);
     setNewNoteText('');
     setNotePhotos([]);
-  }, []);
+  }, [setNotePhotos]);
 
   const openWhatsApp = useCallback((phone: string) => {
     const digits = phone.replace(/\D/g, '');

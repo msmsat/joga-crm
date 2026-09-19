@@ -96,7 +96,8 @@
       "confirm": "Tovább a Katalógusba"
     },
     "reschedule": "Áthelyezés",
-    "loading": "Betöltés…"
+    "loading": "Betöltés…",
+    "openClient": "Ügyfélkarton megnyitása"
   },
   "addClientModal": {
     "title": "Ügyfél hozzáadása",
@@ -180,5 +181,20 @@
     "configIncomplete": "Ennek a szolgáltatásnak az órarendje még nincs beállítva",
     "moveTitle": "Foglalás áthelyezése",
     "moveBusy": "Ekkor a szakember foglalt"
+  },
+  "lessonNotes": {
+    "title": "Jegyzet az órához",
+    "add": "Jegyzet hozzáadása",
+    "placeholder": "Amit érdemes megjegyezni erről az óráról…"
+  },
+  "clientCard": {
+    "title": "Ügyfél",
+    "phoneVerified": "megerősítve",
+    "visits": "Látogatások",
+    "spent": "Elköltött",
+    "debt": "Tartozás",
+    "notes": "Jegyzetek",
+    "openFull": "Karton megnyitása",
+    "copied": "Másolva"
   }
 }

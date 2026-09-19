@@ -6,10 +6,10 @@ export const MODEL_OPTIONS: { value: AIModel }[] = [
 ];
 
 export const LANGUAGE_OPTIONS: { value: AILanguage }[] = [
-  { value: 'auto' },
-  { value: 'ru' },
+  { value: 'cs' },
   { value: 'en' },
   { value: 'uk' },
-  { value: 'cs' },
+  { value: 'ru' },
   { value: 'de' },
+  { value: 'auto' },
 ];

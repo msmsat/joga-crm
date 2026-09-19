@@ -10,6 +10,8 @@ from fastapi import HTTPException
 
 import routers.schedule.lessons as L
 from dependencies import StudioContext
+from pydantic import ValidationError
+
 from schemas.schedule.lessons import LessonCancelRequest, LessonUpdateRequest
 
 
@@ -39,6 +41,9 @@ class _Lesson:
         self.total_spots = 8
         self.service_id = None
         self.cancel_reason = None
+        # Заметка студии о занятии и снимки к ней — как на реальной модели.
+        self.notes = ""
+        self.photos = []
         self.clients_notified = False
         # HB-04: новые поля Lesson (branch_id/booking_mode/tz_iana, HB-02) —
         # фейковый объект должен нести их, как реальная ORM-модель.
@@ -138,6 +143,46 @@ def test_update_cancel_reason_plus_other_field_still_blocked_when_soon():
     except HTTPException as e:
         assert e.status_code == 400
         assert "2 часа" in e.detail
+
+
+# ─── Заметка о занятии живёт по тому же правилу, что и причина отмены ──────
+def test_update_notes_bypasses_time_rule():
+    """Заметку о занятии пишут ЧАЩЕ ВСЕГО после него («пришла с травмой»,
+    «просила сменить коврик»). Окно «не позднее чем за 2 часа» запретило бы
+    ровно этот случай, поэтому notes/photos стоят в _FREE_FIELDS рядом с
+    cancel_reason."""
+    lesson = _Lesson(start_time=datetime.now() - timedelta(hours=3))
+    db = _DB([_Studio(), lesson, 0])
+    body = LessonUpdateRequest(notes="Ира ушла раньше", photos=["/static/notes/" + "a" * 32 + ".jpg"])
+    result = asyncio.run(L.update_lesson(1, body, _ctx(), db))
+    assert lesson.notes == "Ира ушла раньше"
+    assert result.photos == ["/static/notes/" + "a" * 32 + ".jpg"]
+    assert db.committed is True
+
+
+def test_update_notes_plus_move_still_blocked_when_soon():
+    """Заметка не должна становиться лазейкой для переноса: как только рядом
+    появляется поле, которое занятие ДВИГАЕТ, правило времени возвращается."""
+    lesson = _Lesson(start_time=datetime.now() + timedelta(minutes=30))
+    db = _DB([_Studio(), lesson])
+    body = LessonUpdateRequest(notes="x", start_time=datetime.now() + timedelta(days=1))
+    try:
+        asyncio.run(L.update_lesson(1, body, _ctx(), db))
+        raise AssertionError("ожидали HTTPException(400)")
+    except HTTPException as e:
+        assert e.status_code == 400
+        assert "2 часа" in e.detail
+
+
+def test_note_photo_must_come_from_upload():
+    """В photos попадает только путь, выданный загрузкой: произвольная строка —
+    это чужой адрес в карточке студии (см. schemas/photos.py)."""
+    for bad in ("https://evil.example/pixel.png", "javascript:alert(1)", "/static/logos/x.jpg"):
+        try:
+            LessonUpdateRequest(photos=[bad])
+            raise AssertionError(f"ожидали отказ на {bad!r}")
+        except ValidationError:
+            pass
 
 
 # ─── LessonRead несёт новые поля из list/get (через _LESSON_FIELDS) ─────────

@@ -27,10 +27,10 @@ export const CANCEL_OPTS = [
 // ISO 639-1: 'cz' не существует, чешский — 'cs', и Intl.* в мини-приложении
 // разбирает даты именно по этому коду.
 export const LANG_OPTS = [
+  { value: 'cs', key: 'lang.cs' },
+  { value: 'en', key: 'lang.en' },
   { value: 'uk', key: 'lang.uk' },
   { value: 'ru', key: 'lang.ru' },
-  { value: 'en', key: 'lang.en' },
-  { value: 'cs', key: 'lang.cs' },
   { value: 'de', key: 'lang.de' },
 ] as const
 
@@ -54,7 +54,8 @@ export const advanceValue = (min: number) => ADVANCE_OPTS[nearest(ADVANCE_OPTS.m
 export const windowValue  = (days: number) => WINDOW_OPTS[nearest(WINDOW_OPTS.map(o => o.value), days)].value
 export const cancelValue  = (min: number) => CANCEL_OPTS[nearest(CANCEL_OPTS.map(o => o.value), min)].value
 // 'cz' — код чешского до перехода на ISO 639-1; у студий, настроивших виджет
-// раньше, он так и лежит в базе, и без подмены выбор молча съезжал бы на 'uk'.
+// раньше, он так и лежит в базе, и без подмены выбор молча съезжал бы на
+// первый доступный язык.
 export const langValue    = (code: string) =>
   LANG_OPTS.find(o => o.value === (code === 'cz' ? 'cs' : code))?.value ?? LANG_OPTS[0].value
 

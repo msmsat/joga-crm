@@ -621,6 +621,13 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
                       // клиента: перед занятием чаще нужно вспомнить, кто это и
                       // что о нём записано, чем отметить приход.
                       onClick={e => { e.stopPropagation(); setPeekClientId(c.client_id); }}
+                      onKeyDown={e => {
+                        if (e.key !== 'Enter' && e.key !== ' ') return;
+                        e.preventDefault(); e.stopPropagation();
+                        setPeekClientId(c.client_id);
+                      }}
+                      role="button"
+                      tabIndex={0}
                       title={t('bookingPopup.openClient')}
                       style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '6px 8px', borderRadius: 12, background: 'rgba(var(--ink),0.02)', cursor: 'pointer', transition: 'background 0.15s' }}
                       onMouseEnter={e => { e.currentTarget.style.background = 'rgba(var(--ink),0.05)'; }}

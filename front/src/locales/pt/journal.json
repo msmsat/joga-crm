@@ -96,7 +96,8 @@
       "confirm": "Ir para o Catálogo"
     },
     "reschedule": "Reagendar",
-    "loading": "A carregar…"
+    "loading": "A carregar…",
+    "openClient": "Abrir a ficha do cliente"
   },
   "addClientModal": {
     "title": "Adicionar cliente",
@@ -180,5 +181,20 @@
     "configIncomplete": "O horário deste serviço ainda não está configurado",
     "moveTitle": "Reagendar marcação",
     "moveBusy": "O especialista está ocupado a esta hora"
+  },
+  "lessonNotes": {
+    "title": "Nota da aula",
+    "add": "Adicionar nota",
+    "placeholder": "O que é importante lembrar sobre esta aula…"
+  },
+  "clientCard": {
+    "title": "Cliente",
+    "phoneVerified": "verificado",
+    "visits": "Visitas",
+    "spent": "Gasto",
+    "debt": "Dívida",
+    "notes": "Notas",
+    "openFull": "Abrir a ficha",
+    "copied": "Copiado"
   }
 }

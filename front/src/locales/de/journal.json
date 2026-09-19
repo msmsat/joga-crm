@@ -96,7 +96,8 @@
       "confirm": "Zum Katalog"
     },
     "reschedule": "Verschieben",
-    "loading": "Wird geladen…"
+    "loading": "Wird geladen…",
+    "openClient": "Kundenkarte öffnen"
   },
   "addClientModal": {
     "title": "Kunde hinzufügen",
@@ -180,5 +181,20 @@
     "configIncomplete": "Der Zeitplan dieser Leistung ist noch nicht eingerichtet",
     "moveTitle": "Buchung verschieben",
     "moveBusy": "Zu dieser Zeit ist die Fachkraft belegt"
+  },
+  "lessonNotes": {
+    "title": "Notiz zur Stunde",
+    "add": "Notiz hinzufügen",
+    "placeholder": "Was zu dieser Stunde wichtig ist…"
+  },
+  "clientCard": {
+    "title": "Kunde",
+    "phoneVerified": "bestätigt",
+    "visits": "Besuche",
+    "spent": "Ausgegeben",
+    "debt": "Schuld",
+    "notes": "Notizen",
+    "openFull": "Karte öffnen",
+    "copied": "Kopiert"
   }
 }

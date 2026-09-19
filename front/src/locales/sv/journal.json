@@ -96,7 +96,8 @@
       "confirm": "Gå till Katalogen"
     },
     "reschedule": "Flytta",
-    "loading": "Laddar…"
+    "loading": "Laddar…",
+    "openClient": "Öppna kundkortet"
   },
   "addClientModal": {
     "title": "Lägg till kund",
@@ -180,5 +181,20 @@
     "configIncomplete": "Schemat för den här tjänsten är inte uppsatt ännu",
     "moveTitle": "Flytta bokning",
     "moveBusy": "Specialisten är upptagen vid den tiden"
+  },
+  "lessonNotes": {
+    "title": "Anteckning om passet",
+    "add": "Lägg till anteckning",
+    "placeholder": "Vad är viktigt att komma ihåg om passet…"
+  },
+  "clientCard": {
+    "title": "Kund",
+    "phoneVerified": "bekräftad",
+    "visits": "Besök",
+    "spent": "Spenderat",
+    "debt": "Skuld",
+    "notes": "Anteckningar",
+    "openFull": "Öppna kortet",
+    "copied": "Kopierat"
   }
 }

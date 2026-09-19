@@ -96,7 +96,8 @@
       "confirm": "Katalog'a git"
     },
     "reschedule": "Ertele",
-    "loading": "Yükleniyor…"
+    "loading": "Yükleniyor…",
+    "openClient": "Müşteri kartını aç"
   },
   "addClientModal": {
     "title": "Müşteri ekle",
@@ -180,5 +181,20 @@
     "configIncomplete": "Bu hizmetin takvimi henüz ayarlanmadı",
     "moveTitle": "Randevuyu erteleme",
     "moveBusy": "Bu saatte uzman dolu"
+  },
+  "lessonNotes": {
+    "title": "Ders notu",
+    "add": "Not ekle",
+    "placeholder": "Bu ders hakkında hatırlanmaya değer şeyler…"
+  },
+  "clientCard": {
+    "title": "Müşteri",
+    "phoneVerified": "doğrulandı",
+    "visits": "Ziyaretler",
+    "spent": "Harcanan",
+    "debt": "Borç",
+    "notes": "Notlar",
+    "openFull": "Kartı aç",
+    "copied": "Kopyalandı"
   }
 }

@@ -96,7 +96,8 @@
       "confirm": "Siirry Luetteloon"
     },
     "reschedule": "Siirrä",
-    "loading": "Ladataan…"
+    "loading": "Ladataan…",
+    "openClient": "Avaa asiakaskortti"
   },
   "addClientModal": {
     "title": "Lisää asiakas",
@@ -180,5 +181,20 @@
     "configIncomplete": "Tämän palvelun aikataulua ei ole vielä määritetty",
     "moveTitle": "Varauksen siirto",
     "moveBusy": "Asiantuntija on varattu tähän aikaan"
+  },
+  "lessonNotes": {
+    "title": "Tunnin muistiinpano",
+    "add": "Lisää muistiinpano",
+    "placeholder": "Mitä tästä tunnista kannattaa muistaa…"
+  },
+  "clientCard": {
+    "title": "Asiakas",
+    "phoneVerified": "vahvistettu",
+    "visits": "Käynnit",
+    "spent": "Käytetty",
+    "debt": "Velka",
+    "notes": "Muistiinpanot",
+    "openFull": "Avaa kortti",
+    "copied": "Kopioitu"
   }
 }
