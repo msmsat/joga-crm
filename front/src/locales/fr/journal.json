@@ -36,6 +36,7 @@
     "groupLimit": "Effectif du groupe",
     "maxSpots": "Places max",
     "assignTrainer": "Assigner un coach",
+    "searchTrainer": "Rechercher un coach",
     "cancel": "Annuler",
     "create": "Créer le cours",
     "errors": {
@@ -184,8 +185,16 @@
   },
   "lessonNotes": {
     "title": "Note sur le cours",
+    "short": "Note",
     "add": "Ajouter une note",
-    "placeholder": "Ce qu'il faut retenir de ce cours…"
+    "placeholder": "Ce qu'il faut retenir de ce cours…",
+    "expand": "Tout afficher",
+    "collapse": "Réduire",
+    "deleteConfirm": {
+      "title": "Supprimer la note ?",
+      "message": "Le texte et les photos de la note seront perdus définitivement.",
+      "confirm": "Supprimer la note"
+    }
   },
   "clientCard": {
     "title": "Client",

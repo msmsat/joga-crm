@@ -36,6 +36,7 @@
     "groupLimit": "Ryhmän koko",
     "maxSpots": "Enimmäispaikat",
     "assignTrainer": "Määritä ohjaaja",
+    "searchTrainer": "Hae ohjaajaa",
     "cancel": "Peruuta",
     "create": "Luo tunti",
     "errors": {
@@ -184,8 +185,16 @@
   },
   "lessonNotes": {
     "title": "Tunnin muistiinpano",
+    "short": "Muistiinpano",
     "add": "Lisää muistiinpano",
-    "placeholder": "Mitä tästä tunnista kannattaa muistaa…"
+    "placeholder": "Mitä tästä tunnista kannattaa muistaa…",
+    "expand": "Näytä kaikki",
+    "collapse": "Piilota",
+    "deleteConfirm": {
+      "title": "Poistetaanko muistiinpano?",
+      "message": "Muistiinpanon teksti ja kuvat katoavat lopullisesti.",
+      "confirm": "Poista muistiinpano"
+    }
   },
   "clientCard": {
     "title": "Asiakas",

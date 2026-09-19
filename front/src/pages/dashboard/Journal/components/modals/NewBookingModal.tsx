@@ -14,6 +14,9 @@ import { queryKeys } from '../../../../../api/queryKeys';
 import { Select, ConfirmModal, NotePhotos, NoteDropZone } from '../../../../../components/ui/index';
 import { useNotePhotos } from '../../../../../hooks/useNotePhotos';
 
+/** С этого числа тренеров список получает поиск: глазами по длинному уже не ищут. */
+const TRAINER_SEARCH_FROM = 8;
+
 interface NewBookingModalProps {
   trainers: Trainer[];
   halls: string[];
@@ -78,10 +81,9 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({
   const [endInput, setEndInput] = useState('');
   const [activeDropdown, setActiveDropdown] = useState<'start' | 'end' | null>(null);
   const [showCatalogConfirm, setShowCatalogConfirm] = useState(false);
-  // Заметка — дело добровольное: поля нет, пока его не попросят. Занятие
-  // создают в три касания, и постоянная пустая простыня мешала бы всем ради
-  // меньшинства случаев.
-  const [notesOpen, setNotesOpen] = useState(false);
+  const [trainerQuery, setTrainerQuery] = useState('');
+  // Заметка пишется прямо здесь, своим рядом: она про занятие, которое ещё не
+  // существует, и отдельное окно ради двух строк текста гоняли бы зря.
   const [notes, setNotes] = useState('');
   const notePhotos = useNotePhotos();
   const navigate = useNavigate();
@@ -91,6 +93,11 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({
 
   const KP_INTERVALS = useMemo(() => generateTimeIntervals(timeStep), [timeStep]);
   const { services, options: serviceOptions, onlyResourceServices } = useServiceOptions();
+
+  const shownTrainers = useMemo(() => {
+    const q = trainerQuery.trim().toLowerCase();
+    return q ? trainers.filter(item => item.name.toLowerCase().includes(q)) : trainers;
+  }, [trainers, trainerQuery]);
 
   // Валидация до отправки (зеркалит серверные правила, lessons.py): услуга
   // выбрана, лимит — целое 1-50, конец позже начала.
@@ -155,7 +162,7 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({
   // ФИКСАЦИЯ ВРЕМЕНИ
   const commitTime = (type: 'start' | 'end', val: string) => {
     const idx = parseTimeToIndex(val);
-    
+
     if (type === 'start') {
       setNewBookingSlot(prev => prev ? { ...prev, timeStart: idx, timeEnd: Math.max(prev.timeEnd, idx + 0.25) } : null);
     } else {
@@ -365,67 +372,70 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({
               </div>
             </div>
 
-            <div className="kp-section">
-              <div className="kp-section-title">{t('newBooking.assignTrainer')}</div>
-              <div className="kp-trainers">
-                {trainers.map(t => {
-                  const isActive = newBookingSlot.trainer === t.id;
-                  return (
-                    <div
-                      key={t.id}
-                      className="kp-trainer"
-                      onClick={() => setNewBookingSlot(s => s ? { ...s, trainer: t.id } : s)}
-                      style={{
-                        border: `1px solid ${isActive ? t.color : 'var(--border)'}`,
-                        background: isActive ? t.bg : 'var(--bg)',
-                        boxShadow: isActive ? `0 4px 12px ${t.color}20` : 'none',
-                        transform: isActive ? 'translateY(-1px)' : 'none'
-                      }}
-                    >
-                      <div className="kp-trainer-av" style={{ background: isActive ? t.color : 'var(--border2)', color: isActive ? 'white' : 'var(--muted)' }}>{t.initials}</div>
-                      <span className="kp-trainer-name" style={{ fontWeight: isActive ? 800 : 600, color: isActive ? t.color : 'var(--onyx)' }}>{t.name}</span>
-                      {isActive && <span style={{ color: t.color, display: 'flex', flexShrink: 0 }}><Icons.Check /></span>}
-                    </div>
-                  );
-                })}
+            <div className="kp-col">
+              <div className="kp-section kp-trainers-sec">
+                <div className="kp-section-title">{t('newBooking.assignTrainer')}</div>
+                {/* Поиск появляется только там, где список длинный: в студии на
+                    трёх тренеров поле отняло бы строку и не дало ничего. */}
+                {trainers.length >= TRAINER_SEARCH_FROM && (
+                  <input
+                    type="text"
+                    className="kp-trainer-search"
+                    placeholder={t('newBooking.searchTrainer')}
+                    value={trainerQuery}
+                    onChange={e => setTrainerQuery(e.target.value)}
+                    onClick={e => e.stopPropagation()}
+                  />
+                )}
+                <div className="kp-trainers">
+                  {shownTrainers.map(t => {
+                    const isActive = newBookingSlot.trainer === t.id;
+                    return (
+                      <div
+                        key={t.id}
+                        className="kp-trainer"
+                        onClick={() => setNewBookingSlot(s => s ? { ...s, trainer: t.id } : s)}
+                        style={{
+                          border: `1px solid ${isActive ? t.color : 'var(--border)'}`,
+                          background: isActive ? t.bg : 'var(--bg)',
+                          boxShadow: isActive ? `0 4px 12px ${t.color}20` : 'none',
+                          transform: isActive ? 'translateY(-1px)' : 'none'
+                        }}
+                      >
+                        <div className="kp-trainer-av" style={{ background: isActive ? t.color : 'var(--border2)', color: isActive ? 'white' : 'var(--muted)' }}>{t.initials}</div>
+                        <span className="kp-trainer-name" style={{ fontWeight: isActive ? 800 : 600, color: isActive ? t.color : 'var(--onyx)' }}>{t.name}</span>
+                        {isActive && <span style={{ color: t.color, display: 'flex', flexShrink: 0 }}><Icons.Check /></span>}
+                      </div>
+                    );
+                  })}
+                  {shownTrainers.length === 0 && (
+                    <div className="kp-trainers-empty">{t('grid.noTrainers')}</div>
+                  )}
+                </div>
               </div>
-            </div>
-            <div className="kp-section">
-              {notesOpen || notes || notePhotos.photos.length > 0 ? (
+
+              {/* Заметка — в самом низу правой колонки, под тренерами: текст и
+                  снимки кладутся прямо здесь, без второго окна поверх формы.
+                  Список тренеров над ней скроллится, чтобы заметка оставалась
+                  на месте, а форма не росла вниз. */}
+              <div className="kp-note-row" onClick={e => e.stopPropagation()}>
+                <div className="kp-section-title">{t('lessonNotes.short')}</div>
                 <NoteDropZone onFiles={notePhotos.add}>
-                  <div className="kp-section-title">{t('lessonNotes.title')}</div>
                   <textarea
-                    autoFocus
+                    className="kp-note-input"
+                    placeholder={t('lessonNotes.placeholder')}
                     value={notes}
                     onChange={e => setNotes(e.target.value)}
-                    placeholder={t('lessonNotes.placeholder')}
-                    onClick={e => e.stopPropagation()}
-                    style={{
-                      width: '100%', minHeight: 64, padding: '10px 12px', borderRadius: 10,
-                      border: '1px solid var(--border)', outline: 'none', resize: 'vertical',
-                      fontSize: 13, fontFamily: 'Manrope', color: 'var(--onyx)', lineHeight: 1.55,
-                      background: 'var(--bg)', boxSizing: 'border-box',
-                    }}
-                    onFocus={e => { e.target.style.borderColor = 'var(--peach)'; }}
-                    onBlur={e => { e.target.style.borderColor = 'var(--border)'; }}
-                  />
-                  <NotePhotos
-                    photos={notePhotos.photos}
-                    pending={notePhotos.pending}
-                    onAdd={notePhotos.add}
-                    onRemove={notePhotos.remove}
                   />
                 </NoteDropZone>
-              ) : (
-                <button
-                  type="button"
-                  className="btn-ghost-sm"
-                  style={{ width: '100%', justifyContent: 'center' }}
-                  onClick={e => { e.stopPropagation(); setNotesOpen(true); }}
-                >
-                  {t('lessonNotes.add')}
-                </button>
-              )}
+                <NotePhotos
+                  photos={notePhotos.photos}
+                  pending={notePhotos.pending}
+                  onAdd={notePhotos.add}
+                  onRemove={notePhotos.remove}
+                  zIndex={400}
+                />
+              </div>
             </div>
           </div>
 

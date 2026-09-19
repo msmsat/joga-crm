@@ -36,6 +36,7 @@
     "groupLimit": "Gruppestørrelse",
     "maxSpots": "Maks. plasser",
     "assignTrainer": "Tildel instruktør",
+    "searchTrainer": "Søk instruktør",
     "cancel": "Avbryt",
     "create": "Opprett økt",
     "errors": {
@@ -184,8 +185,16 @@
   },
   "lessonNotes": {
     "title": "Notat om timen",
+    "short": "Notat",
     "add": "Legg til notat",
-    "placeholder": "Hva er viktig å huske om denne timen…"
+    "placeholder": "Hva er viktig å huske om denne timen…",
+    "expand": "Vis alt",
+    "collapse": "Skjul",
+    "deleteConfirm": {
+      "title": "Slette notatet?",
+      "message": "Notatets tekst og bilder forsvinner for godt.",
+      "confirm": "Slett notatet"
+    }
   },
   "clientCard": {
     "title": "Kunde",

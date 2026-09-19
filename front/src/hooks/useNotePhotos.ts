@@ -2,7 +2,7 @@ import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { studioApi } from '../api/studio/studio.api';
 import { errorMessage } from '../api/errorMessage';
-import { useToast } from '../components/ui/index';
+import { useToast } from '../components/ui/Toast';
 
 /**
  * Снимки в черновике заметки — о клиенте или о занятии.
@@ -12,10 +12,10 @@ import { useToast } from '../components/ui/index';
  * Пока файл летит, в строке стоит локальное превью — иначе выбор файла минуту
  * выглядит так, будто ничего не произошло.
  */
-export function useNotePhotos() {
+export function useNotePhotos(initial: string[] = []) {
   const { t } = useTranslation('common');
   const toast = useToast();
-  const [photos, setPhotos] = useState<string[]>([]);
+  const [photos, setPhotos] = useState<string[]>(initial);
   // blob-превью незавершённых загрузок. Живут до ответа сервера и
   // освобождаются в done() — иначе вкладка копит их до перезагрузки.
   const [pending, setPending] = useState<string[]>([]);

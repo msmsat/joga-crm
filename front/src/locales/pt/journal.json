@@ -36,6 +36,7 @@
     "groupLimit": "Limite do grupo",
     "maxSpots": "Lugares máx.",
     "assignTrainer": "Atribuir instrutor",
+    "searchTrainer": "Procurar instrutor",
     "cancel": "Cancelar",
     "create": "Criar aula",
     "errors": {
@@ -184,8 +185,16 @@
   },
   "lessonNotes": {
     "title": "Nota da aula",
+    "short": "Nota",
     "add": "Adicionar nota",
-    "placeholder": "O que é importante lembrar sobre esta aula…"
+    "placeholder": "O que é importante lembrar sobre esta aula…",
+    "expand": "Mostrar tudo",
+    "collapse": "Recolher",
+    "deleteConfirm": {
+      "title": "Eliminar a nota?",
+      "message": "O texto e as fotos da nota desaparecem para sempre.",
+      "confirm": "Eliminar a nota"
+    }
   },
   "clientCard": {
     "title": "Cliente",

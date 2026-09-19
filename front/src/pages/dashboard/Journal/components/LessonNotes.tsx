@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as Icons from '../../../../components/Icons';
-import { NotePhotos, NoteDropZone, useToast } from '../../../../components/ui/index';
-import { useNotePhotos } from '../../../../hooks/useNotePhotos';
+import { NotePhotos, ConfirmModal, useToast } from '../../../../components/ui/index';
 import { errorMessage } from '../../../../api/errorMessage';
+import { LessonNoteEditor } from './LessonNoteEditor';
 import type { Booking } from '../types';
 import type { useJournalMutations } from '../hooks/useJournalMutations';
 
-/** Этаж выше попапа журнала (9000): иначе кадр открылся бы под ним. */
-const PHOTO_FLOOR = 9600;
+/** Этаж выше попапа журнала (9000) и ниже подтверждений (9999). */
+const FLOOR = 9500;
 
 /**
  * Заметка студии о занятии — то, что нужно знать перед ним и вспомнить после:
@@ -17,6 +17,11 @@ const PHOTO_FLOOR = 9600;
  * Клиенту не уходит никуда: ни в мини-приложение, ни в напоминания. Пишется и
  * после занятия — сервер для заметки снял окно «не позднее чем за 2 часа»
  * (routers/schedule/lessons._FREE_FIELDS), потому что ровно тогда её и пишут.
+ *
+ * Открыл занятие — заметка уже перед глазами, целиком, а рядом правка и
+ * удаление. И правка, и новая заметка разворачиваются здесь же, на месте
+ * блока: окно поверх попапа закрывало собой занятие, ради которого заметку и
+ * пишут.
  */
 export function LessonNotes({ booking, canEdit, mutations, onSaved }: {
   booking: Booking;
@@ -26,110 +31,113 @@ export function LessonNotes({ booking, canEdit, mutations, onSaved }: {
 }) {
   const { t } = useTranslation('journal');
   const toast = useToast();
-  const photos = useNotePhotos();
   const [editing, setEditing] = useState(false);
-  const [text, setText] = useState('');
-  const [saving, setSaving] = useState(false);
+  const [removing, setRemoving] = useState(false);
+  const [expanded, setExpanded] = useState(false);
+  // Длинная заметка свёрнута до четырёх строк, чтобы не занимать собой весь
+  // попап. Порог берём по самому тексту, а не замером высоты: ради одной
+  // кнопки «показать всё» это был бы ResizeObserver на каждой карточке.
+  const isLong = booking.notes.length > 200 || booking.notes.split('\n').length > 4;
 
-  const start = () => {
-    setText(booking.notes);
-    photos.reset(booking.photos);
-    setEditing(true);
-  };
-
-  const save = async () => {
-    const next: Booking = { ...booking, notes: text.trim(), photos: photos.photos };
-    setSaving(true);
+  const save = async (text: string, photos: string[]) => {
+    const next: Booking = { ...booking, notes: text, photos };
     try {
-      await mutations.updateLesson(booking, next, { notes: next.notes, photos: next.photos });
+      await mutations.updateLesson(booking, next, { notes: text, photos });
       onSaved(next);
       setEditing(false);
     } catch (error) {
       toast.error(errorMessage(error, t));
-    } finally {
-      setSaving(false);
+      throw error;
     }
   };
 
   if (editing) {
     return (
-      <div style={CARD} onClick={e => e.stopPropagation()}>
-        <NoteDropZone onFiles={photos.add}>
-          <textarea
-            autoFocus
-            value={text}
-            onChange={e => setText(e.target.value)}
-            placeholder={t('lessonNotes.placeholder')}
-            style={{
-              width: '100%', minHeight: 72, padding: '10px 12px', borderRadius: 10,
-              border: '1.5px solid var(--peach)', outline: 'none', resize: 'vertical',
-              fontSize: 13, fontFamily: 'Manrope', color: 'var(--onyx)', lineHeight: 1.55,
-              background: 'var(--bg)', boxSizing: 'border-box',
-            }}
-          />
-          <NotePhotos
-            photos={photos.photos}
-            pending={photos.pending}
-            onAdd={photos.add}
-            onRemove={photos.remove}
-            zIndex={PHOTO_FLOOR}
-          />
-        </NoteDropZone>
-        <div style={{ display: 'flex', gap: 6, marginTop: 10 }}>
-          <button className="bp-btn primary text-btn" disabled={saving} style={{ flex: 1, justifyContent: 'center' }} onClick={save}>
-            {t('common:buttons.save')}
-          </button>
-          <button className="bp-btn ghost text-btn" onClick={() => setEditing(false)}>
-            {t('common:buttons.cancel')}
-          </button>
-        </div>
-      </div>
+      <LessonNoteEditor
+        text={booking.notes}
+        photos={booking.photos}
+        zIndex={FLOOR + 100}
+        onSave={save}
+        onCancel={() => setEditing(false)}
+      />
     );
   }
 
-  const empty = !booking.notes && booking.photos.length === 0;
-
   // Пустую заметку показываем только тому, кто может её написать: тренеру
-  // пустая строка «Заметки» не говорит ничего.
-  if (empty) {
+  // пустая строка «Заметка о занятии» не говорит ничего.
+  if (!booking.notes && booking.photos.length === 0) {
     if (!canEdit) return null;
     return (
       <button
-        className="bp-btn ghost text-btn"
-        style={{ width: '100%', marginTop: 8, justifyContent: 'center', color: 'var(--muted)' }}
-        onClick={e => { e.stopPropagation(); start(); }}
+        type="button"
+        className="ln-add"
+        onClick={e => { e.stopPropagation(); setEditing(true); }}
       >
-        <Icons.Clipboard /> {t('lessonNotes.add')}
+        <span className="ln-add-ic"><Icons.Clipboard /></span>
+        <span className="ln-add-text">
+          <span className="ln-add-title">{t('lessonNotes.add')}</span>
+          <span className="ln-add-sub">{t('lessonNotes.placeholder')}</span>
+        </span>
+        <span className="ln-add-plus"><Icons.Plus /></span>
       </button>
     );
   }
 
   return (
-    <div style={CARD} onClick={e => e.stopPropagation()}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-        <span style={{ fontSize: 11, fontWeight: 800, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-          {t('lessonNotes.title')}
-        </span>
-        {canEdit && (
+    <>
+      <div className="ln-card" onClick={e => e.stopPropagation()}>
+        <div className="ln-head">
+          <span className="ln-title">
+            <Icons.Clipboard /> {t('lessonNotes.title')}
+          </span>
+          {canEdit && (
+            <div className="ln-acts">
+              <button
+                className="bp-btn ghost ln-act"
+                title={t('common:buttons.edit')}
+                aria-label={t('common:buttons.edit')}
+                onClick={e => { e.stopPropagation(); setEditing(true); }}
+              >
+                <Icons.Edit />
+              </button>
+              <button
+                className="bp-btn danger ln-act"
+                title={t('common:buttons.delete')}
+                aria-label={t('common:buttons.delete')}
+                onClick={e => { e.stopPropagation(); setRemoving(true); }}
+              >
+                <Icons.Trash />
+              </button>
+            </div>
+          )}
+        </div>
+        {/* Длинная заметка не распирает попап: первые четыре строки, дальше —
+            по кнопке, целиком и без правки. Прокрутки вбок нет ни при какой
+            длине слова (ссылка в заметке — обычное дело). */}
+        {booking.notes && (
+          <div className={`ln-text ${expanded ? 'is-open' : ''}`}>{booking.notes}</div>
+        )}
+        {booking.notes && isLong && (
           <button
-            className="btn-icon"
-            title={t('common:buttons.edit')}
-            style={{ color: 'var(--muted)' }}
-            onClick={e => { e.stopPropagation(); start(); }}
+            type="button"
+            className="ln-more"
+            onClick={e => { e.stopPropagation(); setExpanded(v => !v); }}
           >
-            <Icons.Edit />
+            {expanded ? t('lessonNotes.collapse') : t('lessonNotes.expand')}
           </button>
         )}
+        <NotePhotos photos={booking.photos} zIndex={FLOOR + 100}/>
       </div>
-      {booking.notes && (
-        <div style={{ fontSize: 13, color: 'var(--onyx)', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{booking.notes}</div>
+      {removing && (
+        <ConfirmModal
+          title={t('lessonNotes.deleteConfirm.title')}
+          message={t('lessonNotes.deleteConfirm.message')}
+          confirmText={t('lessonNotes.deleteConfirm.confirm')}
+          danger
+          onConfirm={() => save('', [])}
+          onClose={() => setRemoving(false)}
+        />
       )}
-      <NotePhotos photos={booking.photos} zIndex={PHOTO_FLOOR}/>
-    </div>
+    </>
   );
 }
-
-const CARD: React.CSSProperties = {
-  marginTop: 8, background: 'rgba(var(--ink),0.02)', padding: '14px 16px',
-  borderRadius: 16, border: '1px solid rgba(var(--ink),0.03)',
-};

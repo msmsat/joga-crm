@@ -2,6 +2,31 @@
 import { useState, useRef, useCallback, useEffect, useLayoutEffect } from 'react';
 import type { Booking } from '../types';
 
+/** Ниже этих порогов геометрию задаёт CSS: форма нового занятия центрируется
+ *  по экрану, попап занятия на телефоне становится нижним шитом. Инлайновая
+ *  высота им только мешает — там её снимаем. */
+const KP_CSS_SIZE = '(max-width: 1100px), (max-height: 820px)';
+const POPUP_CSS_SIZE = '(max-width: 767px)';
+
+/**
+ * Потолок окна, привязанного к слоту.
+ *
+ * `max-height: 100dvh` тут врёт: окно начинается не от верха экрана, а от своей
+ * строки в сетке, и остаток до низа меньше на высоту топбара. Форма с заметкой
+ * и длинным списком тренеров уезжала подвалом за край — прокручивать было
+ * нечего, окно обрезал сам экран. Отдаём ровно ту высоту, что осталась в
+ * полезной зоне: дальше окно прокручивается внутри себя (overflow-y: auto).
+ *
+ * Считается от зоны, а не от текущего положения окна: иначе каждое изменение
+ * высоты двигало бы окно, сдвиг менял бы потолок, и окно схлопывалось бы само
+ * в себя через ResizeObserver.
+ */
+const fitHeight = (el: HTMLElement | null, available: number, cssOwnsSize: string) => {
+  if (!el) return;
+  const value = window.matchMedia(cssOwnsSize).matches ? '' : `${Math.round(available)}px`;
+  if (el.style.maxHeight !== value) el.style.maxHeight = value;
+};
+
 interface UsePopupPositionProps {
   popupBooking: Booking | null;
   isEditingBooking: boolean;
@@ -33,6 +58,7 @@ export function usePopupPosition({
 
   const MODAL_W = 580;
   const MODAL_H = 480;
+
 
   // Границы «полезной зоны» страницы: gridWrapperRef лежит ровно между
   // сайдбаром/топбаром (снаружи) и правой панелью Журнала (сосед по flex) —
@@ -80,15 +106,21 @@ export function usePopupPosition({
     // minX побеждает и она заходит на правую панель (контент важнее декора).
     finalX = Math.max(minX, Math.min(finalX, maxX - MODAL_W_REAL));
 
+    // Высоту считаем по тому, сколько её вообще осталось: выше зоны окно не
+    // поднимется, ниже экрана не опустится.
+    const available = window.innerHeight - minY - GAP;
+    const modalH = Math.min(MODAL_H_REAL, available);
+
     let finalY = rect.top;
 
-    if (finalY + MODAL_H_REAL > window.innerHeight - GAP) {
-      finalY = window.innerHeight - MODAL_H_REAL - GAP;
+    if (finalY + modalH > window.innerHeight - GAP) {
+      finalY = window.innerHeight - modalH - GAP;
     }
     if (finalY < minY) {
       finalY = minY;
     }
 
+    fitHeight(modalRef.current, available, KP_CSS_SIZE);
     setNewFormPos({ x: finalX, y: finalY });
   }, [newBookingSlot, getZoneRect]);
 
@@ -125,15 +157,22 @@ export function usePopupPosition({
       finalX = Math.max(minX, maxX - popupW);
     }
 
+    const available = viewportH - minY - GAP;
+    const h = Math.min(popupH, available);
+
     let finalY = card.top;
 
-    if (finalY + popupH > viewportH - GAP) {
-      finalY = card.bottom - popupH - 2;
+    if (finalY + h > viewportH - GAP) {
+      finalY = card.bottom - h - 2;
     }
+    // Карточка занятия может сама стоять у нижнего края (или частично за ним) —
+    // тогда «прижаться к её низу» означало бы уехать за экран вслед за ней.
+    finalY = Math.min(finalY, viewportH - h - GAP);
     if (finalY < minY) {
       finalY = minY;
     }
 
+    fitHeight(popupRef.current, available, POPUP_CSS_SIZE);
     setPopupPos({ x: finalX, y: finalY });
   }, [popupBooking, getZoneRect]);
 

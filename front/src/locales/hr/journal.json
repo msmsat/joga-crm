@@ -36,6 +36,7 @@
     "groupLimit": "Ograničenje grupe",
     "maxSpots": "Maks. mjesta",
     "assignTrainer": "Dodijeli trenera",
+    "searchTrainer": "Traži trenera",
     "cancel": "Odustani",
     "create": "Kreiraj termin",
     "errors": {
@@ -188,8 +189,16 @@
   },
   "lessonNotes": {
     "title": "Bilješka o satu",
+    "short": "Bilješka",
     "add": "Dodaj bilješku",
-    "placeholder": "Što je važno zapamtiti o ovom satu…"
+    "placeholder": "Što je važno zapamtiti o ovom satu…",
+    "expand": "Prikaži sve",
+    "collapse": "Sažmi",
+    "deleteConfirm": {
+      "title": "Izbrisati bilješku?",
+      "message": "Tekst i fotografije bilješke nestat će zauvijek.",
+      "confirm": "Izbriši bilješku"
+    }
   },
   "clientCard": {
     "title": "Klijent",

@@ -534,6 +534,9 @@
   overflow-x: hidden;
   overscroll-behavior: contain;
 }
+/* Панель прокручивается, а не ужимает свои секции: сжатый flex-ребёнок
+   теряет высоту, и содержимое секций наезжало друг на друга. */
+.j-right > * { flex-shrink: 0; }
 .j-right::-webkit-scrollbar { width: 4px; }
 .j-right::-webkit-scrollbar-thumb { background: rgba(var(--ink),0.08); border-radius: 2px; }
 
@@ -682,6 +685,10 @@
   z-index: 9000;
   overflow-y: auto;
   overflow-x: hidden;
+  /* Колесо внутри попапа не уходит на сетку под ним: сетка при скролле тащит
+     за собой карточку занятия, попап перепозиционируется следом — и выглядит
+     это так, будто прокрутка не работает вовсе. */
+  overscroll-behavior: contain;
   animation: popup-in 0.35s cubic-bezier(0.34,1.56,0.64,1);
   display: flex;
   flex-direction: column;
@@ -690,6 +697,11 @@
   from { opacity: 0; transform: scale(0.92) translateY(12px); }
   to { opacity: 1; transform: scale(1) translateY(0); }
 }
+
+/* Мало места — попап прокручивается, а не ужимает содержимое. Flex-элементы
+   по умолчанию сжимаются: шапка, строки и блок заметки теряли высоту и
+   наезжали друг на друга, и это читалось как «скролла нет». */
+.booking-popup > *, .bp-body > * { flex-shrink: 0; }
 
 .bp-header { padding: 24px 24px 16px; border-bottom: none; }
 .bp-body { padding: 0 24px 16px; display: flex; flex-direction: column; gap: 16px; }
@@ -775,6 +787,106 @@
 .bp-btn.danger:hover .icon-trash { transform: scale(1.1); }
 .bp-btn.danger:hover .trash-lid { transform: translateY(-3px) rotate(-12deg); }
 .bp-btn.danger:hover .trash-bin { transform: translateY(1px); }
+
+/* ── Заметка о занятии в попапе ──────────────────────────────
+   Открыл занятие — заметка уже здесь, с правкой и удалением под рукой. */
+.ln-card {
+  margin-top: 8px; padding: 14px 16px;
+  background: rgba(var(--ink),0.02);
+  border: 1px solid rgba(var(--ink),0.03);
+  border-radius: 16px;
+}
+.ln-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+.ln-title {
+  display: flex; align-items: center; gap: 6px; min-width: 0;
+  font-size: 11px; font-weight: 800; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+.ln-title svg { flex-shrink: 0; opacity: 0.7; }
+.ln-acts { display: flex; gap: 6px; flex-shrink: 0; }
+/* Те же кнопки попапа, только под шапку карточки: 44px здесь спорили бы
+   с заголовком. Класс парный (.bp-btn.ln-act) — иначе .bp-btn.icon-only
+   и прочие двойные селекторы перебивали бы размер. */
+.bp-btn.ln-act { width: 34px; flex: 0 0 34px; height: 34px; padding: 0; border-radius: 11px; }
+/* Свёрнуто — четыре строки, дальше «Показать всё». Прокрутки вбок нет ни
+   при какой длине слова: ссылку в заметке переносим, а не уезжаем за край. */
+.ln-text {
+  font-size: 13px; color: var(--onyx); line-height: 1.6;
+  white-space: pre-wrap; overflow-wrap: anywhere;
+  display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.ln-text.is-open { display: block; overflow: visible; }
+.ln-more {
+  align-self: flex-start; margin-top: 10px; padding: 6px 12px;
+  border: none; border-radius: 10px;
+  background: rgba(249,160,139,0.12); color: var(--peach);
+  font-family: var(--font); font-size: 11.5px; font-weight: 800;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.ln-more:hover { background: rgba(249,160,139,0.22); transform: translateY(-1px); }
+.ln-more:active { transform: scale(0.96); }
+
+/* Приглашение написать заметку: карточка с персиковым отсветом, а не серая
+   полоска в ряду кнопок. Подзаголовок подсказывает, что сюда вообще пишут. */
+.ln-add {
+  width: 100%; margin-top: 12px; padding: 14px 16px;
+  display: flex; align-items: center; gap: 14px; text-align: left;
+  border: 1px solid rgba(249,160,139,0.28); border-radius: 18px;
+  background: linear-gradient(135deg, rgba(249,160,139,0.12), rgba(249,160,139,0.02) 70%);
+  cursor: pointer; font-family: var(--font);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 0.3s ease, border-color 0.25s ease;
+}
+.ln-add:hover {
+  transform: translateY(-2px);
+  border-color: var(--peach);
+  box-shadow: 0 14px 32px -14px rgba(249,160,139,0.75);
+}
+.ln-add:active { transform: scale(0.985); }
+.ln-add-ic {
+  width: 38px; height: 38px; border-radius: 13px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(249,160,139,0.18); color: var(--peach);
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.ln-add:hover .ln-add-ic { transform: rotate(-7deg) scale(1.07); }
+.ln-add-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.ln-add-title { font-size: 13.5px; font-weight: 800; color: var(--onyx); letter-spacing: -0.2px; }
+.ln-add-sub {
+  font-size: 11.5px; font-weight: 600; color: var(--muted);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.ln-add-plus {
+  margin-left: auto; flex-shrink: 0;
+  width: 26px; height: 26px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--peach); color: white;
+  box-shadow: 0 6px 16px -6px rgba(249,160,139,0.9);
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.ln-add:hover .ln-add-plus { transform: rotate(90deg) scale(1.08); }
+
+/* Правка разворачивается на месте заметки — своим появлением, а не рывком. */
+.ln-edit { animation: ln-open 0.28s cubic-bezier(0.34, 1.3, 0.64, 1); }
+@keyframes ln-open {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: none; }
+}
+.ln-input {
+  width: 100%; box-sizing: border-box; min-height: 104px; max-height: 40dvh;
+  padding: 12px 14px; border-radius: 12px; border: 1px solid var(--border);
+  background: var(--bg-card); color: var(--text);
+  font-family: var(--font); font-size: 13px; line-height: 1.6;
+  overflow-wrap: anywhere; resize: none; outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.ln-input::placeholder { color: var(--muted); }
+.ln-input:focus { border-color: var(--peach); box-shadow: 0 0 0 4px rgba(249,160,139,0.12); }
+.ln-foot { display: flex; gap: 8px; margin-top: 12px; }
+.bp-btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none !important; box-shadow: none; }
+
 
 /* ════════════════════════════════════════════════════════════
    12. МОДАЛЬНОЕ ОКНО (добавление клиента)
@@ -906,6 +1018,8 @@
   display: flex; flex-direction: column; gap: 28px;
   flex: 1; min-height: 0; overflow-y: auto;
 }
+/* Поля держат свою высоту — прокручивается тело, а не сжимаются ряды */
+.pm-body > * { flex-shrink: 0; }
 .pm-body::-webkit-scrollbar { width: 4px; }
 .pm-body::-webkit-scrollbar-thumb { background: rgba(var(--ink),0.1); border-radius: 4px; }
 
@@ -1026,6 +1140,9 @@
   max-height: calc(100dvh - 32px);
   overflow: hidden;
   overflow-y: auto;
+  /* Прокрутка не проваливается на сетку под формой — иначе сетка уезжает,
+     форма перепозиционируется следом и кажется, что скролл не работает. */
+  overscroll-behavior: contain;
   animation: modal-in 0.3s ease;
 }
 .kp-head {
@@ -1049,8 +1166,29 @@
   padding: var(--card-pad);
 }
 .kp-col { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+/* То же правило, что и в попапе: секции держат свою высоту, а форма при
+   нехватке места прокручивается целиком. Список тренеров внутри своей секции
+   прокручивается сам — его потолок задан отдельно. */
+.kp-col > * { flex-shrink: 0; }
 .kp-halls { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .kp-times { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+/* Заметка — в самом низу правой колонки: пишется прямо здесь, снимки
+   кладутся туда же, без второго окна поверх формы. `margin-top: auto`
+   прижимает её к низу, даже когда тренеров всего двое. */
+.kp-note-row { margin-top: auto; display: flex; flex-direction: column; gap: 8px; }
+.kp-note-input {
+  width: 100%; box-sizing: border-box; min-height: 76px; max-height: 180px;
+  padding: 12px 14px; border-radius: 12px; border: 1px solid var(--border);
+  background: var(--bg); color: var(--text);
+  font-family: var(--font); font-size: 13px; line-height: 1.6;
+  /* Без ручки размера: уголок с полосками в правом нижнем углу спорил с
+     округлой рамкой, а высоту поля решает раскладка формы, а не мышь. */
+  overflow-wrap: anywhere; resize: none; outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.kp-note-input::placeholder { color: var(--muted); }
+.kp-note-input:focus { border-color: var(--peach); box-shadow: 0 0 0 4px rgba(249,160,139,0.12); }
 .kp-section { display: flex; flex-direction: column; gap: 8px; }
 
 .kp-limit {
@@ -1061,7 +1199,29 @@
 .kp-limit-label { font-size: 12px; font-weight: 700; color: var(--muted); }
 .kp-limit-input { width: 56px; height: 28px; }
 
-.kp-trainers { display: flex; flex-direction: column; gap: 8px; }
+/* Потолок списка посчитан от соседней колонки МИНУС блок заметки под ним:
+   тренеры забирают всё место до заметки, дальше скроллятся сами (с восьми
+   тренеров к списку добавляется и поиск), а форма вниз не растёт. */
+.kp-trainers-sec { flex: 0 0 auto; min-height: 0; }
+.kp-trainers {
+  display: flex; flex-direction: column; gap: 8px; box-sizing: border-box;
+  max-height: 224px; overflow-y: auto;
+  /* Воздух под тень и подъём выделенной карточки: край скролл-контейнера
+     срезал их, и верхняя карточка выглядела подрезанной заголовком. */
+  padding: 4px; margin: -4px;
+}
+.kp-trainers-empty { font-size: 12px; font-weight: 600; color: var(--muted); padding: 6px 2px; }
+.kp-trainer-search {
+  width: 100%; height: 36px; padding: 0 12px; box-sizing: border-box;
+  border: 1px solid var(--border); border-radius: 10px;
+  background: var(--bg); color: var(--onyx);
+  font-family: var(--font); font-size: 12.5px; font-weight: 600;
+  outline: none; transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.kp-trainer-search::placeholder { color: var(--muted); font-weight: 600; }
+.kp-trainer-search:focus { border-color: var(--peach); box-shadow: 0 0 0 4px rgba(249,160,139,0.12); }
+.kp-trainers::-webkit-scrollbar { width: 4px; }
+.kp-trainers::-webkit-scrollbar-thumb { background: rgba(var(--ink),0.15); border-radius: 2px; }
 .kp-trainer {
   padding: 0 12px 0 5px; border-radius: 10px; cursor: pointer;
   display: flex; align-items: center; gap: 10px;
@@ -1183,12 +1343,14 @@
 
   .kp-chip { height: 34px; padding: 0; font-size: 12px; }
   .kp-time-input, .kp-limit { height: 34px; }
+  .kp-note-input { min-height: 60px; padding: 10px 12px; font-size: 12.5px; }
+  .kp-trainer-search { height: 32px; font-size: 12px; }
   .kp-limit { padding: 0 5px 0 10px; }
   .kp-limit-label { font-size: 11px; }
   .kp-limit-input { width: 46px; height: 24px; }
 
-  /* Тренеров может быть много — список скроллится сам, а не растит модалку */
-  .kp-trainers { gap: 6px; max-height: 170px; overflow-y: auto; }
+  /* Экран низкий — и колонка, от которой считается потолок, короче */
+  .kp-trainers { gap: 6px; max-height: 190px; }
   .kp-trainer { height: 34px; }
   .kp-trainer-av { width: 24px; height: 24px; border-radius: 6px; font-size: 10px; }
   .kp-trainer-name { font-size: 12px; }
@@ -1753,6 +1915,8 @@
     gap: 8px;
   }
   .bp-btn.text-btn { padding: 0 10px; }
+  /* Правка и удаление заметки — под палец, а не под курсор */
+  .bp-btn.ln-act { width: 40px; flex: 0 0 40px; height: 40px; }
 
   /* Модалка нового занятия уже центрируется с 1100px — здесь только ширина */
   .keypad-modal { width: 100%; max-width: 100%; }

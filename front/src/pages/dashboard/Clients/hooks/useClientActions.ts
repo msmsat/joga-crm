@@ -8,7 +8,6 @@ import { useToast } from '../../../../components/ui/Toast';
 import { errorMessage } from '../../../../api/errorMessage';
 import { useClientMutations } from './useClientsList';
 import { clientsApi } from '../../../../api/clients/clients.api';
-import { useNotePhotos } from '../../../../hooks/useNotePhotos';
 
 export interface NoteItem {
   id: number;
@@ -27,13 +26,9 @@ export function useClientActions(clientId: number) {
   const [editingNoteText, setEditingNoteText] = useState('');
   const [isAddingNote, setIsAddingNote]   = useState(false);
   const [deletingNoteId, setDeletingNoteId] = useState<number | null>(null);
-  const [newNoteText, setNewNoteText]     = useState('');
-  // Одно поле на обе формы: правка и добавление взаимоисключающи (каждая из них
-  // закрывает другую), и вторая копия состояния просто расходилась бы с первой.
-  const {
-    photos: notePhotos, pending: notePending,
-    add: addNotePhoto, remove: removeNotePhoto, reset: setNotePhotos,
-  } = useNotePhotos();
+  // Черновик заметки живёт в окне правки (NoteEditorModal), здесь — только
+  // то, С ЧЕМ его открыли: текст и снимки существующей заметки.
+  const [notePhotos, setNotePhotos]       = useState<string[]>([]);
   const [showBooking, setShowBooking]     = useState(false);
   const [showBonus, setShowBonus]         = useState(false);
   const [selectedBonus, setSelectedBonus] = useState<string | null>(null);
@@ -86,21 +81,20 @@ export function useClientActions(clientId: number) {
     setEditingNoteText(text);
     setNotePhotos(photos);
     setIsAddingNote(false);
-  }, [setNotePhotos]);
+  }, []);
 
-  const saveNote = useCallback((id: number) => {
-    const text = editingNoteText;
-    const photos = notePhotos;
+  const saveNote = useCallback((id: number, text: string, photos: string[]) => {
     setEditingNoteId(null);
     setNotePhotos([]);
-    mutations.updateNote(clientId, id, text, photos).catch((e: Error) => toast.error(errorMessage(e, t)));
-  }, [editingNoteText, notePhotos, clientId, mutations, toast, t, setNotePhotos]);
+    return mutations.updateNote(clientId, id, text, photos)
+      .catch((e: Error) => { toast.error(errorMessage(e, t)); throw e; });
+  }, [clientId, mutations, toast, t]);
 
   const cancelEditNote = useCallback(() => {
     setEditingNoteId(null);
     setEditingNoteText('');
     setNotePhotos([]);
-  }, [setNotePhotos]);
+  }, []);
 
   const requestDeleteNote = useCallback((id: number) => {
     setDeletingNoteId(id);
@@ -120,26 +114,21 @@ export function useClientActions(clientId: number) {
   const startAddNote = useCallback(() => {
     setIsAddingNote(true);
     setEditingNoteId(null);
-    setNewNoteText('');
+    setEditingNoteText('');
     setNotePhotos([]);
-  }, [setNotePhotos]);
+  }, []);
 
-  const saveNewNote = useCallback(() => {
-    const text = newNoteText.trim();
-    const photos = notePhotos;
-    // Заметка из одних снимков — тоже заметка: пустой текст не повод её потерять.
-    if (!text && photos.length === 0) return;
+  const saveNewNote = useCallback((text: string, photos: string[]) => {
     setIsAddingNote(false);
-    setNewNoteText('');
-    setNotePhotos([]);
-    mutations.createNote(clientId, text, photos).catch((e: Error) => toast.error(errorMessage(e, t)));
-  }, [newNoteText, notePhotos, clientId, mutations, toast, t, setNotePhotos]);
+    return mutations.createNote(clientId, text, photos)
+      .catch((e: Error) => { toast.error(errorMessage(e, t)); throw e; });
+  }, [clientId, mutations, toast, t]);
 
   const cancelAddNote = useCallback(() => {
     setIsAddingNote(false);
-    setNewNoteText('');
+    setEditingNoteText('');
     setNotePhotos([]);
-  }, [setNotePhotos]);
+  }, []);
 
   const openWhatsApp = useCallback((phone: string) => {
     const digits = phone.replace(/\D/g, '');
@@ -222,11 +211,10 @@ export function useClientActions(clientId: number) {
   return {
     toggleFreeze,
     showTagPanel, toggleTagPanel, addTag, removeTag,
-    editingNoteId, editingNoteText, setEditingNoteText,
+    editingNoteId, editingNoteText,
     startEditNote, saveNote, cancelEditNote,
     deletingNoteId, requestDeleteNote, cancelDeleteNote, confirmDeleteNote,
-    isAddingNote, newNoteText, setNewNoteText, startAddNote, saveNewNote, cancelAddNote,
-    notePhotos, notePending, addNotePhoto, removeNotePhoto,
+    isAddingNote, startAddNote, saveNewNote, cancelAddNote, notePhotos,
     showBooking, toggleBooking, confirmBooking,
     bookingDate, setBookingDate,
     bookingWindowStart, shiftBookingWindow,

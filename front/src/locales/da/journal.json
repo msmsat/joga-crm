@@ -36,6 +36,7 @@
     "groupLimit": "Holdstørrelse",
     "maxSpots": "Maks. pladser",
     "assignTrainer": "Tildel underviser",
+    "searchTrainer": "Søg underviser",
     "cancel": "Annuller",
     "create": "Opret hold",
     "errors": {
@@ -184,8 +185,16 @@
   },
   "lessonNotes": {
     "title": "Note til holdet",
+    "short": "Note",
     "add": "Tilføj note",
-    "placeholder": "Hvad er vigtigt at huske om denne time…"
+    "placeholder": "Hvad er vigtigt at huske om denne time…",
+    "expand": "Vis alt",
+    "collapse": "Skjul",
+    "deleteConfirm": {
+      "title": "Slet noten?",
+      "message": "Notens tekst og billeder forsvinder for altid.",
+      "confirm": "Slet noten"
+    }
   },
   "clientCard": {
     "title": "Kunde",

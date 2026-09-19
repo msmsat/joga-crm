@@ -36,6 +36,7 @@
     "groupLimit": "Limit grupy",
     "maxSpots": "Maks. miejsc",
     "assignTrainer": "Przypisz trenera",
+    "searchTrainer": "Szukaj trenera",
     "cancel": "Anuluj",
     "create": "Utwórz zajęcia",
     "errors": {
@@ -192,8 +193,16 @@
   },
   "lessonNotes": {
     "title": "Notatka o zajęciach",
+    "short": "Notatka",
     "add": "Dodaj notatkę",
-    "placeholder": "Co warto pamiętać o tych zajęciach…"
+    "placeholder": "Co warto pamiętać o tych zajęciach…",
+    "expand": "Pokaż całość",
+    "collapse": "Zwiń",
+    "deleteConfirm": {
+      "title": "Usunąć notatkę?",
+      "message": "Tekst i zdjęcia notatki znikną bezpowrotnie.",
+      "confirm": "Usuń notatkę"
+    }
   },
   "clientCard": {
     "title": "Klient",

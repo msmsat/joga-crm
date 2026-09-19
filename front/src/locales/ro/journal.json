@@ -36,6 +36,7 @@
     "groupLimit": "Limita grupei",
     "maxSpots": "Locuri max.",
     "assignTrainer": "Atribuie antrenor",
+    "searchTrainer": "Caută antrenor",
     "cancel": "Anulează",
     "create": "Creează ședința",
     "errors": {
@@ -188,8 +189,16 @@
   },
   "lessonNotes": {
     "title": "Notă despre lecție",
+    "short": "Notiță",
     "add": "Adaugă o notă",
-    "placeholder": "Ce merită reținut despre această lecție…"
+    "placeholder": "Ce merită reținut despre această lecție…",
+    "expand": "Arată tot",
+    "collapse": "Restrânge",
+    "deleteConfirm": {
+      "title": "Ștergi notița?",
+      "message": "Textul și fotografiile notiței se vor pierde definitiv.",
+      "confirm": "Șterge notița"
+    }
   },
   "clientCard": {
     "title": "Client",

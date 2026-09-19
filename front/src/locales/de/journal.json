@@ -36,6 +36,7 @@
     "groupLimit": "Gruppengröße",
     "maxSpots": "Max. Plätze",
     "assignTrainer": "Trainer zuweisen",
+    "searchTrainer": "Trainer suchen",
     "cancel": "Abbrechen",
     "create": "Kurs erstellen",
     "errors": {
@@ -184,8 +185,16 @@
   },
   "lessonNotes": {
     "title": "Notiz zur Stunde",
+    "short": "Notiz",
     "add": "Notiz hinzufügen",
-    "placeholder": "Was zu dieser Stunde wichtig ist…"
+    "placeholder": "Was zu dieser Stunde wichtig ist…",
+    "expand": "Alles anzeigen",
+    "collapse": "Einklappen",
+    "deleteConfirm": {
+      "title": "Notiz löschen?",
+      "message": "Text und Fotos der Notiz sind dann unwiderruflich weg.",
+      "confirm": "Notiz löschen"
+    }
   },
   "clientCard": {
     "title": "Kunde",

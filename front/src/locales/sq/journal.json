@@ -36,6 +36,7 @@
     "groupLimit": "Kufiri i grupit",
     "maxSpots": "Vende maksimale",
     "assignTrainer": "Cakto trajnerin",
+    "searchTrainer": "Kërko trajner",
     "cancel": "Anulo",
     "create": "Krijo mësimin",
     "errors": {
@@ -184,8 +185,16 @@
   },
   "lessonNotes": {
     "title": "Shënim për orarin",
+    "short": "Shënim",
     "add": "Shto një shënim",
-    "placeholder": "Çfarë ia vlen të mbahet mend për këtë orar…"
+    "placeholder": "Çfarë ia vlen të mbahet mend për këtë orar…",
+    "expand": "Shfaq të gjithë",
+    "collapse": "Palos",
+    "deleteConfirm": {
+      "title": "Të fshihet shënimi?",
+      "message": "Teksti dhe fotot e shënimit do të humbasin përgjithmonë.",
+      "confirm": "Fshi shënimin"
+    }
   },
   "clientCard": {
     "title": "Klient",

@@ -36,6 +36,7 @@
     "groupLimit": "Grup limiti",
     "maxSpots": "Maks. kontenjan",
     "assignTrainer": "Eğitmen ata",
+    "searchTrainer": "Eğitmen ara",
     "cancel": "İptal",
     "create": "Ders oluştur",
     "errors": {
@@ -184,8 +185,16 @@
   },
   "lessonNotes": {
     "title": "Ders notu",
+    "short": "Not",
     "add": "Not ekle",
-    "placeholder": "Bu ders hakkında hatırlanmaya değer şeyler…"
+    "placeholder": "Bu ders hakkında hatırlanmaya değer şeyler…",
+    "expand": "Tümünü göster",
+    "collapse": "Daralt",
+    "deleteConfirm": {
+      "title": "Not silinsin mi?",
+      "message": "Notun metni ve fotoğrafları kalıcı olarak silinir.",
+      "confirm": "Notu sil"
+    }
   },
   "clientCard": {
     "title": "Müşteri",

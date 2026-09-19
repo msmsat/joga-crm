@@ -36,6 +36,7 @@
     "groupLimit": "Group limit",
     "maxSpots": "Max spots",
     "assignTrainer": "Assign trainer",
+    "searchTrainer": "Search trainer",
     "cancel": "Cancel",
     "create": "Create lesson",
     "errors": {
@@ -184,8 +185,16 @@
   },
   "lessonNotes": {
     "title": "Lesson note",
+    "short": "Note",
     "add": "Add a note",
-    "placeholder": "Anything worth remembering about this class…"
+    "placeholder": "Anything worth remembering about this class…",
+    "expand": "Show all",
+    "collapse": "Collapse",
+    "deleteConfirm": {
+      "title": "Delete the note?",
+      "message": "The note text and photos will be gone for good.",
+      "confirm": "Delete note"
+    }
   },
   "clientCard": {
     "title": "Client",

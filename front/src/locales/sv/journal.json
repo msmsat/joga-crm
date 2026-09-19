@@ -36,6 +36,7 @@
     "groupLimit": "Gruppstorlek",
     "maxSpots": "Max antal platser",
     "assignTrainer": "Tilldela instruktör",
+    "searchTrainer": "Sök instruktör",
     "cancel": "Avbryt",
     "create": "Skapa pass",
     "errors": {
@@ -184,8 +185,16 @@
   },
   "lessonNotes": {
     "title": "Anteckning om passet",
+    "short": "Anteckning",
     "add": "Lägg till anteckning",
-    "placeholder": "Vad är viktigt att komma ihåg om passet…"
+    "placeholder": "Vad är viktigt att komma ihåg om passet…",
+    "expand": "Visa allt",
+    "collapse": "Dölj",
+    "deleteConfirm": {
+      "title": "Radera anteckningen?",
+      "message": "Anteckningens text och bilder försvinner för gott.",
+      "confirm": "Radera anteckningen"
+    }
   },
   "clientCard": {
     "title": "Kund",

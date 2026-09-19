@@ -14,7 +14,7 @@ import { formatDate, formatMoney, getAvatarColor, getInitials } from '../utils/m
 import { useStudioCurrency } from '../../../../hooks/useStudioCurrency';
 import { getStudioRole } from '../../../../utils/auth';
 import { getCurrencySymbol } from '../../../../components/UI';
-import { ConfirmModal, NotePhotos, NoteDropZone } from '../../../../components/ui/index';
+import { ConfirmModal, NotePhotos, NoteEditorModal } from '../../../../components/ui/index';
 import { ResourceBookingModal } from '../../Journal/components/modals/ResourceBookingModal';
 
 // ─── SVG ICONS ────────────────────────────────────────────────────────────────
@@ -810,60 +810,19 @@ function ClientPanel({ client, profile, onClose, onDelete }: {
                     </div>
                   )}
                 </div>
-                {actions.editingNoteId === note.id ? (
-                  <NoteDropZone onFiles={actions.addNotePhoto}>
-                    <textarea
-                      autoFocus
-                      value={actions.editingNoteText}
-                      onChange={e => actions.setEditingNoteText(e.target.value)}
-                      onKeyDown={e => { if (e.key === 'Enter' && e.ctrlKey) actions.saveNote(note.id); }}
-                      style={{ width: '100%', minHeight: '80px', padding: '8px 10px', borderRadius: '8px', border: '2px solid var(--peach)', outline: 'none', boxShadow: '0 0 0 4px rgba(249,160,139,0.15)', fontSize: '13px', fontFamily: 'Manrope', color: 'var(--text)', resize: 'vertical', boxSizing: 'border-box', lineHeight: 1.6, background: 'var(--bg-card)' }}
-                    />
-                    <NotePhotos
-                      photos={actions.notePhotos}
-                      pending={actions.notePending}
-                      onAdd={actions.addNotePhoto}
-                      onRemove={actions.removeNotePhoto}
-                    />
-                    <div style={{ display: 'flex', gap: '6px', marginTop: '8px' }}>
-                      <button onClick={() => actions.saveNote(note.id)} style={{ padding: '6px 14px', borderRadius: '7px', border: 'none', background: 'var(--peach)', color: '#fff', fontSize: '11px', fontWeight: 700, cursor: 'pointer', fontFamily: 'Manrope', transition: 'all 0.2s' }}>{t('panel.notes.save')}</button>
-                      <button onClick={actions.cancelEditNote} style={{ padding: '6px 14px', borderRadius: '7px', border: '1px solid var(--border)', background: 'transparent', color: 'var(--text3)', fontSize: '11px', fontWeight: 600, cursor: 'pointer', fontFamily: 'Manrope', transition: 'all 0.2s' }}>{t('panel.notes.cancel')}</button>
-                    </div>
-                  </NoteDropZone>
-                ) : (
-                  <>
-                    {note.text && <div style={{ fontSize: '13px', color: 'var(--text)', lineHeight: 1.6 }}>{note.text}</div>}
-                    <NotePhotos photos={note.photos}/>
-                  </>
+                {note.text && (
+                  // Длинная заметка не распирает панель: четыре строки здесь,
+                  // остальное — в окне правки.
+                  <div style={{
+                    fontSize: '13px', color: 'var(--text)', lineHeight: 1.6,
+                    display: '-webkit-box', WebkitLineClamp: 4, WebkitBoxOrient: 'vertical', overflow: 'hidden',
+                  }}>{note.text}</div>
                 )}
+                <NotePhotos photos={note.photos}/>
               </div>
             ))}
 
-            {actions.isAddingNote ? (
-              <NoteDropZone onFiles={actions.addNotePhoto}>
-                <div style={{ animation: 'fadeSlide 0.25s ease both' }}>
-                <textarea
-                  autoFocus
-                  value={actions.newNoteText}
-                  onChange={e => actions.setNewNoteText(e.target.value)}
-                  placeholder={t('panel.notes.addPlaceholder')}
-                  style={{ width: '100%', minHeight: '72px', padding: '10px 12px', borderRadius: '10px', border: '1px solid var(--border)', outline: 'none', fontSize: '13px', fontFamily: 'Manrope', color: 'var(--text)', resize: 'vertical', boxSizing: 'border-box', lineHeight: 1.6, background: 'var(--bg-card)', transition: 'border-color 0.2s, box-shadow 0.2s' }}
-                  onFocus={e => { e.target.style.borderColor='var(--peach)'; e.target.style.boxShadow='0 0 0 4px rgba(249,160,139,0.12)'; }}
-                  onBlur={e => { e.target.style.borderColor='var(--border)'; e.target.style.boxShadow='none'; }}
-                />
-                <NotePhotos
-                  photos={actions.notePhotos}
-                  pending={actions.notePending}
-                  onAdd={actions.addNotePhoto}
-                  onRemove={actions.removeNotePhoto}
-                />
-                <div style={{ display: 'flex', gap: '6px', marginTop: '8px' }}>
-                  <button onClick={actions.saveNewNote} style={{ padding: '7px 16px', borderRadius: '8px', border: 'none', background: 'var(--peach)', color: '#fff', fontSize: '12px', fontWeight: 700, cursor: 'pointer', fontFamily: 'Manrope', transition: 'all 0.2s' }}>{t('panel.notes.save')}</button>
-                  <button onClick={actions.cancelAddNote} style={{ padding: '7px 16px', borderRadius: '8px', border: '1px solid var(--border)', background: 'transparent', color: 'var(--text3)', fontSize: '12px', fontWeight: 600, cursor: 'pointer', fontFamily: 'Manrope', transition: 'all 0.2s' }}>{t('panel.notes.cancel')}</button>
-                </div>
-                </div>
-              </NoteDropZone>
-            ) : canEdit ? (
+            {canEdit ? (
               <button
                 onClick={actions.startAddNote}
                 style={{ width: '100%', padding: '10px', borderRadius: '10px', border: 'none', background: 'rgba(var(--ink),0.03)', fontSize: '12px', fontWeight: 600, color: 'var(--text2)', cursor: 'pointer', fontFamily: 'Manrope', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', transition: 'all 0.2s' }}
@@ -1006,6 +965,23 @@ function ClientPanel({ client, profile, onClose, onDelete }: {
             })}
           </div>
         </div>
+      )}
+
+      {/* Правка заметки — своим окном: панель клиента и так ограничена высотой
+          экрана, и форма, растущая внутри неё, уводила список заметок вниз. */}
+      {(actions.isAddingNote || actions.editingNoteId != null) && (
+        <NoteEditorModal
+          title={t('panel.notes.title')}
+          placeholder={t('panel.notes.addPlaceholder')}
+          text={actions.editingNoteText}
+          photos={actions.notePhotos}
+          onSave={(text, photos) => (
+            actions.editingNoteId != null
+              ? actions.saveNote(actions.editingNoteId, text, photos)
+              : actions.saveNewNote(text, photos)
+          )}
+          onClose={actions.editingNoteId != null ? actions.cancelEditNote : actions.cancelAddNote}
+        />
       )}
 
       {actions.deletingNoteId != null && (

@@ -31,6 +31,8 @@ export { EmptyState } from './EmptyState';
 export type { EmptyStateProps } from './EmptyState';
 export { Lightbox } from './Lightbox';
 export { NotePhotos, NoteDropZone } from './NotePhotos';
+export { NoteEditorModal } from './NoteEditorModal';
+export type { NoteEditorModalProps } from './NoteEditorModal';
 export { photoLayoutId } from './photoLayoutId';
 export type { LightboxProps } from './Lightbox';
 export { ActionCard } from './ActionCard';

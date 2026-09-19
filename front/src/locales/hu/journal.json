@@ -36,6 +36,7 @@
     "groupLimit": "Csoportlétszám",
     "maxSpots": "Max. helyek",
     "assignTrainer": "Oktató kijelölése",
+    "searchTrainer": "Oktató keresése",
     "cancel": "Mégse",
     "create": "Óra létrehozása",
     "errors": {
@@ -184,8 +185,16 @@
   },
   "lessonNotes": {
     "title": "Jegyzet az órához",
+    "short": "Jegyzet",
     "add": "Jegyzet hozzáadása",
-    "placeholder": "Amit érdemes megjegyezni erről az óráról…"
+    "placeholder": "Amit érdemes megjegyezni erről az óráról…",
+    "expand": "Összes megjelenítése",
+    "collapse": "Összecsukás",
+    "deleteConfirm": {
+      "title": "Törlöd a jegyzetet?",
+      "message": "A jegyzet szövege és fotói véglegesen elvesznek.",
+      "confirm": "Jegyzet törlése"
+    }
   },
   "clientCard": {
     "title": "Ügyfél",

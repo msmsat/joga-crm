@@ -36,6 +36,7 @@
     "groupLimit": "Limit skupiny",
     "maxSpots": "Max. míst",
     "assignTrainer": "Přiřadit trenéra",
+    "searchTrainer": "Hledat trenéra",
     "cancel": "Zrušit",
     "create": "Vytvořit lekci",
     "errors": {
@@ -188,8 +189,16 @@
   },
   "lessonNotes": {
     "title": "Poznámka k lekci",
+    "short": "Poznámka",
     "add": "Přidat poznámku",
-    "placeholder": "Co je dobré si o této lekci pamatovat…"
+    "placeholder": "Co je dobré si o této lekci pamatovat…",
+    "expand": "Zobrazit celé",
+    "collapse": "Sbalit",
+    "deleteConfirm": {
+      "title": "Smazat poznámku?",
+      "message": "Text poznámky i fotky zmizí nenávratně.",
+      "confirm": "Smazat poznámku"
+    }
   },
   "clientCard": {
     "title": "Klient",
