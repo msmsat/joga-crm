@@ -179,6 +179,10 @@
     "lessonAction": "Tunnin QR-koodi",
     "lessonCaption": "Suuntaa kamera ja varaa paikka tunnille",
     "packageAction": "Sarjakortin QR-koodi",
+<<<<<<< HEAD
+    "packageCaption": "Suuntaa kamera ja osta sarjakortti",
+    "serviceAction": "Palvelun QR-koodi"
+=======
     "packageCaption": "Suuntaa kamera ja osta sarjakortti"
   },
   "auth": {

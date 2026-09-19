@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { createPortal } from 'react-dom';
 
@@ -24,6 +25,18 @@ export function DeleteConfirmModal({
 }: DeleteConfirmModalProps) {
   const { t } = useTranslation(['staff', 'common']);
   const resolvedConfirmText = confirmText ?? t('common:buttons.delete');
+
+  // Enter подтверждает, Esc отменяет — как у общей ConfirmModal кита.
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+      else if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); onConfirm(); }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [isOpen, onClose, onConfirm]);
+
   if (!isOpen) return null;
 
   return createPortal(

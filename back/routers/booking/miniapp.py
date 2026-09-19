@@ -264,9 +264,11 @@ async def auth_telegram(
     # обязаны брать studio_id из client.studio_id в get_current_client, а не
     # из этого claim'а — тогда смена студии клиента видна сразу, без
     # переиздания токена.
+    # Срок — общий, из security.ACCESS_TOKEN_EXPIRE_MINUTES: у клиента мини-приложения
+    # нет ни пароля, ни причины входить чаще владельца студии, а свой срок здесь
+    # означал бы второе место, где его надо не забыть поменять.
     token = create_access_token(
         {"sub": str(client.id), "typ": "client", "studio_id": client.studio_id},
-        expires_minutes=60 * 24 * 30,
     )
     return ClientAuthResponse(
         token=token,

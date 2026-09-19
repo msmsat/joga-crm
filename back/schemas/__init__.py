@@ -43,6 +43,7 @@ from schemas.clients import (
     NoteCreate,
     NoteCreatedOut,
     NoteOut,
+    NotePhotoOut,
     NoteUpdate,
     OkFrozenOut,
     OkOut,
@@ -111,6 +112,7 @@ __all__ = [
     "MessageSend",
     "NoteCreate",
     "NoteUpdate",
+    "NotePhotoOut",
     # clients — responses
     "ActionMessageOut",
     "ActiveSubscriptionOut",

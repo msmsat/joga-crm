@@ -179,6 +179,10 @@
     "lessonAction": "Codul QR al clasei",
     "lessonCaption": "Îndreaptă camera ca să te înscrii la această clasă",
     "packageAction": "Codul QR al abonamentului",
+<<<<<<< HEAD
+    "packageCaption": "Îndreaptă camera ca să cumperi abonamentul",
+    "serviceAction": "Codul QR al serviciului"
+=======
     "packageCaption": "Îndreaptă camera ca să cumperi abonamentul"
   },
   "auth": {

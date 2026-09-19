@@ -17,7 +17,11 @@ if not SECRET_KEY:
         "Сгенерируйте: python -c \"import secrets; print(secrets.token_hex(32))\""
     )
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7 # Токен будет жить 7 дней
+# Полгода. Было 7 дней, и это означало «войди заново каждую неделю» — refresh-токена
+# в продукте нет, обновлять сессию нечем, поэтому TTL и есть весь срок жизни входа.
+# Отзыв от этого не страдает: сессия, выданная логином, лежит в `user_sessions`, и
+# «Выйти со всех устройств» / смена пароля гасят её мгновенно, не дожидаясь `exp`.
+ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 180
 
 # Настройка алгоритма хэширования паролей
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")

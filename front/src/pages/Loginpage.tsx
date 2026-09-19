@@ -8,8 +8,14 @@ import { GoogleSignIn } from '../components/cookies/GoogleSignIn';
 import { openCookieSettings } from '../utils/cookieConsent';
 import { authApi, ApiError } from '../api';
 import { setActiveToken } from '../utils/auth';
+<<<<<<< HEAD
+import { LEGAL_FOOTER_LINKS, LEGAL_LINK_PROPS, PRIVACY_URL, TERMS_URL } from '../utils/legal';
+import { TRIAL_DAYS } from '../api/billing/billing.types';
+import { submitOnEnter } from '../lib/submitOnEnter';
+=======
 import { legalFooterLinks, LEGAL_LINK_PROPS, PRIVACY_URL, TERMS_URL } from '../utils/legal';
 import { useTranslation } from 'react-i18next';
+>>>>>>> bcf4a067f80368999140a9359ef17c722154c536
 
 // ─── MAIN LOGIN PAGE ──────────────────────────────────────────────────────────
 export default function LoginPage() {
@@ -259,7 +265,7 @@ export default function LoginPage() {
           }}
         >
           {/* ── CARD ── */}
-          <div className="login-card">
+          <div className="login-card" onKeyDown={submitOnEnter(loading ? null : handleSubmit)}>
             {/* Header */}
             <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
               {(mode === "forgot" || mode === "login2fa") && (

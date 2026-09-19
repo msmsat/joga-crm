@@ -42,7 +42,7 @@ class PlanRead(BaseSchema):
 class PlansCatalogRead(BaseSchema):
     """Каталог тарифов — единственный источник истины о ценах и лимитах."""
     plans: list[PlanRead]
-    period_discounts: dict[int, float]   # {1: 0, 3: 0.15, 6: 0.25, 12: 0.40}
+    period_discounts: dict[int, float]   # {1: 0, 3: 0.20, 6: 0.25, 12: 0.30}
     # Валюта подписки (BILLING_CURRENCY), а НЕ валюта кассы студии: тарифы всегда
     # списываются в валюте Stripe-аккаунта, чем бы студия ни торговала у себя.
     currency: str                        # ISO-код, например EUR

@@ -11,6 +11,7 @@ import styles from '../../Finances.module.css';
 import { useStudioCurrency } from '../../../../../hooks/useStudioCurrency';
 import { getCurrencySymbol } from '../../../../../components/UI';
 import { useAccounts, useFinanceMutations } from '../../hooks/useFinances';
+import { submitOnEnter } from '../../../../../lib/submitOnEnter';
 
 const ACCOUNT_COLORS = ['#FCAE91', '#A3C9A8', '#7EB5D6', '#D88C9A'];
 
@@ -156,7 +157,7 @@ export default function AccountsTab({ showToast, onNavigateToOperations }: {
               <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3px', background: acc.color }} />
 
               {isEditing ? (
-                <div className={styles.morphContainer} onClick={e => e.stopPropagation()}>
+                <div className={styles.morphContainer} onClick={e => e.stopPropagation()} onKeyDown={submitOnEnter(editName.trim() ? () => handleUpdate(acc.id) : null)}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
                     <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(249, 160, 139, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#F9A08B' }}><Ico.Edit /></div>
                     <div style={{ fontSize: '12px', fontWeight: 800, color: 'var(--onyx)' }}>{t('accounts.editTitle')}</div>
@@ -228,7 +229,7 @@ export default function AccountsTab({ showToast, onNavigateToOperations }: {
         {/* Плитка создания (Копилки) */}
         <div style={{ border: addOpen ? '1.5px solid #F9A08B' : '1.5px dashed rgba(var(--ink),0.08)', borderRadius: '16px', padding: '24px', background: addOpen ? 'var(--bg-card)' : 'transparent', boxShadow: addOpen ? '0 12px 28px rgba(249, 160, 139, 0.04)' : 'none', minHeight: '130px', display: 'flex', flexDirection: 'column', justifyContent: 'center', fontFamily: "'Manrope', sans-serif", transition: 'all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1)', boxSizing: 'border-box' }}>
           {addOpen ? (
-            <div className={styles.morphContainer}>
+            <div className={styles.morphContainer} onKeyDown={submitOnEnter(newName.trim() ? handleSaveNew : null)}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
                 <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(249, 160, 139, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#F9A08B' }}><Ico.Plus /></div>
                 <div style={{ fontSize: '12px', fontWeight: 800, color: 'var(--onyx)' }}>{t('accounts.newSavingsTitle')}</div>

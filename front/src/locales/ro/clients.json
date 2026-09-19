@@ -286,6 +286,9 @@
       "cancel": "Anulează",
       "addPlaceholder": "Introduceți o notă…",
       "add": "Adaugă notă",
+      "addPhoto": "Foto",
+      "removePhoto": "Elimină fotografia",
+      "photoUploading": "Se încarcă…",
       "justNow": "chiar acum",
       "deleteTitle": "Ștergeți nota?",
       "deleteMessage": "Această notă nu poate fi recuperată."

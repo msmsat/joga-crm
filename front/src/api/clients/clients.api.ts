@@ -88,11 +88,19 @@ export const clientsApi = {
   getNotes: (id: number) =>
     client.get<ClientNote[]>(`/clients/${id}/notes`),
 
-  createNote: (id: number, text: string) =>
-    client.post<NoteCreatedOut>(`/clients/${id}/notes`, { text }),
+  createNote: (id: number, text: string, photos: string[] = []) =>
+    client.post<NoteCreatedOut>(`/clients/${id}/notes`, { text, photos }),
 
-  updateNote: (clientId: number, noteId: number, text: string) =>
-    client.patch<OkOut>(`/clients/${clientId}/notes/${noteId}`, { text }),
+  updateNote: (clientId: number, noteId: number, text: string, photos?: string[]) =>
+    client.patch<OkOut>(`/clients/${clientId}/notes/${noteId}`, { text, photos }),
+
+  // Файл уходит сразу, в заметку кладётся уже ссылка — черновик показывает
+  // снимки до сохранения, и они же переживают правку текста.
+  uploadNotePhoto: (clientId: number, file: File) => {
+    const form = new FormData()
+    form.append('file', file)
+    return client.postForm<{ url: string }>(`/clients/${clientId}/notes/photo`, form)
+  },
 
   deleteNote: (clientId: number, noteId: number) =>
     client.delete<OkOut>(`/clients/${clientId}/notes/${noteId}`),

@@ -286,6 +286,9 @@
       "cancel": "Anuluj",
       "addPlaceholder": "Wpisz notatkę…",
       "add": "Dodaj notatkę",
+      "addPhoto": "Zdjęcie",
+      "removePhoto": "Usuń zdjęcie",
+      "photoUploading": "Wysyłanie…",
       "justNow": "przed chwilą",
       "deleteTitle": "Usunąć notatkę?",
       "deleteMessage": "Tej notatki nie można odzyskać."

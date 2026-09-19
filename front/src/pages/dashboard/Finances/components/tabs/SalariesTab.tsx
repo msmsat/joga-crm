@@ -13,6 +13,7 @@ import { queryKeys } from '../../../../../api/queryKeys';
 import { errorMessage } from '../../../../../api/errorMessage';
 import type { SalaryRow } from '../../../../../api/finances/finances.types';
 import { useSalaries, useSalaryHistory, useFinanceMutations } from '../../hooks/useFinances';
+import { submitOnEnter } from '../../../../../lib/submitOnEnter';
 
 const fmtDate = (iso: string) => new Date(iso).toLocaleDateString(i18n.language, { day: 'numeric', month: 'short', year: 'numeric' });
 
@@ -323,7 +324,10 @@ function RateRow({ row, color, currency, t }: {
 
   if (editing) {
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+      <div
+        style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}
+        onKeyDown={submitOnEnter(saveRate.isPending ? null : () => saveRate.mutate())}
+      >
         <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
           <div style={{ flex: 1 }}>
             <Input type="number" value={rateValue} onChange={setRateValue} placeholder={t('salaries.rate')} />

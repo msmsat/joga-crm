@@ -90,6 +90,7 @@ export default function PhoneSheet({ isOpen, onClose, onSaved, layer = 1 }: Prop
         inputMode="tel"
         value={phone}
         onChange={(e) => setPhone(e.target.value)}
+        onKeyDown={(e) => e.key === 'Enter' && !isSaving && phone.trim().length >= 6 && save({ phone: phone.trim() })}
         placeholder={t('phoneSheet.placeholder')}
         disabled={isSaving}
         autoComplete="tel"

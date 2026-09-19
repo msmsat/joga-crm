@@ -61,8 +61,11 @@ export type BookingPageAction =
   | { type: 'close' }
   | { type: 'booked' };
 
-export const initialBookingPage = (branchIds: number[]): BookingPageState => ({
-  branchIds, serviceId: null, master: null, sheet: null,
+/** `serviceId` приходит из QR-кода услуги: экран открывается уже с ней в
+ *  фильтре. Услугу, которую никто из мастеров не делает, снимет `reconcile` —
+ *  отдельной проверки здесь не нужно. */
+export const initialBookingPage = (branchIds: number[], serviceId: number | null = null): BookingPageState => ({
+  branchIds, serviceId, master: null, sheet: null,
 });
 
 export const fullName = (member: ResourceStaffMember): string =>

@@ -4,9 +4,12 @@ import { useTranslation } from 'react-i18next';
 import type { Service } from '../types';
 import { SERVICE_CATEGORIES, SCH_TIMES } from '../constants';
 import { useServiceList, useServiceWeek } from '../hooks/useCatalogList';
-import { useStudioCurrency } from '../../../../hooks/useStudioCurrency';
+import { useStudioCurrency, useStudioSettings } from '../../../../hooks/useStudioCurrency';
+import * as Icons from '../../../../components/Icons';
 import { useToast } from '../../../../components/ui/Toast';
 import { ConfirmModal } from '../../../../components/ui/ConfirmModal';
+import { QrShareModal } from '../../../../components/ui/index';
+import { miniappLink } from '../../../../lib/miniapp';
 import { errorMessage } from '../../../../api/errorMessage';
 import { getCurrencySymbol } from '../../../../components/UI';
 import { ServiceModal } from './modals/EditService';
@@ -37,6 +40,17 @@ export function ServiceSection() {
 
   // null → нет модалки; { service: null } → создание; { service } → редактирование
   const [serviceModal, setServiceModal] = useState<{ service: Service | null } | null>(null);
+
+  // QR услуги ведёт в мини-приложение на раздел записи с уже выбранной услугой:
+  // групповая — расписание, отфильтрованное по ней; индивидуальная — список
+  // мастеров, которые её делают. Куда именно, решает само приложение по своему
+  // каталогу (miniapp/src/pages/shedule.tsx) — печатный код переживёт смену
+  // механики услуги, потому что механика в нём не зашита.
+  const [showQr, setShowQr] = useState(false);
+  const { data: studio } = useStudioSettings();
+  // Кода нет у услуги, на которую всё равно нельзя записаться: он вёл бы в
+  // пустой список.
+  const canShareQr = Boolean(studio?.miniapp_url) && Boolean(activeService?.is_bookable);
 
   // Группы — по фактическим категориям услуг; SERVICE_CATEGORIES задаёт только
   // порядок. Раньше список строился ПО списку категорий, и услуга с чужой или
@@ -114,6 +128,17 @@ export function ServiceSection() {
           <>
             <div className="cat-hero" style={{ background: `linear-gradient(135deg, ${activeService.color}12, transparent 70%)` }}>
               <div className="cat-hero-actions">
+                {canShareQr && (
+                  <button
+                    className="cat-h-btn"
+                    style={{ padding: '8px', gap: 0 }}
+                    title={t('common:qr.serviceAction')}
+                    aria-label={t('common:qr.serviceAction')}
+                    onClick={() => setShowQr(true)}
+                  >
+                    <Icons.QrCode />
+                  </button>
+                )}
                 <button className="cat-h-btn" onClick={() => setServiceModal({ service: activeService })}>
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                   {t('common:buttons.edit')}
@@ -257,6 +282,24 @@ export function ServiceSection() {
               throw error;
             }
           }}
+        />
+      )}
+
+      {showQr && activeService && (
+        <QrShareModal
+          url={miniappLink(studio?.miniapp_url ?? '', { tab: 'sched', service: activeService.id })}
+          kicker={studio?.name}
+          title={activeService.name}
+          subtitle={[
+            activeService.type === 'group'
+              ? t('catalog:services.types.groupFull')
+              : t('catalog:services.types.individualFull'),
+            `${activeService.duration_min} ${t('common:units.min')}`,
+            `${currency}${activeService.price.toLocaleString()}`,
+          ].join(' · ')}
+          caption={t('common:qr.scanHint')}
+          fileName={activeService.name}
+          onClose={() => setShowQr(false)}
         />
       )}
 

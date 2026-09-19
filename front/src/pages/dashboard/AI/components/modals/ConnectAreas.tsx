@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui-shadcn/button';
 import { Input } from '@/components/ui-shadcn/input';
+import { submitOnEnter } from '@/lib/submitOnEnter';
 
 // Блоки подключения канала (токен / OAuth / номер) — то, что раньше жило
 // в AgentSetupModal как три JSX-переменные. Стиль общий: секция-карточка,
@@ -54,7 +55,7 @@ export function TelegramConnect({
           </button>
         </div>
       ) : (
-        <div className="flex items-start gap-2.5">
+        <div className="flex items-start gap-2.5" onKeyDown={submitOnEnter(valid && !isVerifying ? onVerify : null)}>
           <div className="flex-1">
             <Input
               value={token}

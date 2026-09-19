@@ -49,7 +49,7 @@
         "label": "kanala za online rezervacije"
       },
       {
-        "value": "od 15 €",
+        "value": "od 30 €",
         "label": "mjesečno po studiju"
       }
     ],
@@ -231,7 +231,7 @@
     "scaleMin": "2 mjesta",
     "scaleMax": "∞ neograničeno",
     "sliderAria": "Koliko osoba radi u vašem studiju",
-    "hint": "**15 €** za dvije osobe, **+5 €** za svako dodatno mjesto. Neograničeno — **120 €** mjesečno.",
+    "hint": "**30 €** za dvije osobe, **+5 €** za svako dodatno mjesto. Neograničeno — **150 €** mjesečno.",
     "period": "razdoblje plaćanja",
     "months": "{{count}} mj.",
     "noDiscount": "—",
@@ -254,12 +254,12 @@
     "models": [
       {
         "title": "Pretplata",
-        "price": "od 15 € / mj.",
+        "price": "od 30 € / mj.",
         "desc": "Fiksan iznos. Trošak znate unaprijed — bez iznenađenja na kraju mjeseca."
       },
       {
         "title": "3 % prihoda",
-        "price": "najmanje 15 € / mj.",
+        "price": "najmanje 30 € / mj.",
         "desc": "Plaćajte prema prometu. U mirnijem mjesecu doplaćujete samo razliku do minimalnog iznosa."
       },
       {

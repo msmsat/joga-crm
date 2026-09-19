@@ -278,6 +278,9 @@
       "cancel": "Скасувати",
       "addPlaceholder": "Введіть нотатку...",
       "add": "Додати нотатку",
+      "addPhoto": "Фото",
+      "removePhoto": "Видалити фото",
+      "photoUploading": "Завантаження…",
       "justNow": "щойно",
       "deleteTitle": "Видалити нотатку?",
       "deleteMessage": "Цю нотатку не можна відновити."

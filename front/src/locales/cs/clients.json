@@ -278,6 +278,9 @@
       "cancel": "Zrušit",
       "addPlaceholder": "Zadejte poznámku...",
       "add": "Přidat poznámku",
+      "addPhoto": "Foto",
+      "removePhoto": "Odebrat fotku",
+      "photoUploading": "Nahrávání…",
       "justNow": "právě teď",
       "deleteTitle": "Smazat poznámku?",
       "deleteMessage": "Tuto poznámku nelze obnovit."

@@ -179,6 +179,10 @@
     "lessonAction": "Código QR da aula",
     "lessonCaption": "Aponte a câmara para marcar esta aula",
     "packageAction": "Código QR do passe",
+<<<<<<< HEAD
+    "packageCaption": "Aponte a câmara para comprar o passe",
+    "serviceAction": "Código QR do serviço"
+=======
     "packageCaption": "Aponte a câmara para comprar o passe"
   },
   "auth": {

@@ -280,7 +280,6 @@ def _auth_response(client: Client) -> ClientAuthResponse:
     """Тот же токен, что выдаёт вход через Telegram, — см. шапку файла."""
     token = create_access_token(
         {"sub": str(client.id), "typ": "client", "studio_id": client.studio_id},
-        expires_minutes=60 * 24 * 30,
     )
     return ClientAuthResponse(
         token=token,

@@ -12,6 +12,7 @@ import { clientsApi } from '../../../../api/clients/clients.api';
 export interface NoteItem {
   id: number;
   text: string;
+  photos: string[];
   date: string;
 }
 
@@ -26,6 +27,10 @@ export function useClientActions(clientId: number) {
   const [isAddingNote, setIsAddingNote]   = useState(false);
   const [deletingNoteId, setDeletingNoteId] = useState<number | null>(null);
   const [newNoteText, setNewNoteText]     = useState('');
+  // Одно поле на обе формы: правка и добавление взаимоисключающи (каждая из них
+  // закрывает другую), и вторая копия состояния просто расходилась бы с первой.
+  const [notePhotos, setNotePhotos]       = useState<string[]>([]);
+  const [notePhotoUploading, setNotePhotoUploading] = useState(false);
   const [showBooking, setShowBooking]     = useState(false);
   const [showBonus, setShowBonus]         = useState(false);
   const [selectedBonus, setSelectedBonus] = useState<string | null>(null);
@@ -46,6 +51,7 @@ export function useClientActions(clientId: number) {
     setEditingNoteId(null);
     setIsAddingNote(false);
     setDeletingNoteId(null);
+    setNotePhotos([]);
     setShowBooking(false);
     setShowBonus(false);
     setSelectedBonus(null);
@@ -72,21 +78,25 @@ export function useClientActions(clientId: number) {
     mutations.removeTag(clientId, tag).catch((e: Error) => toast.error(errorMessage(e, t)));
   }, [clientId, mutations, toast, t]);
 
-  const startEditNote = useCallback((id: number, text: string) => {
+  const startEditNote = useCallback((id: number, text: string, photos: string[]) => {
     setEditingNoteId(id);
     setEditingNoteText(text);
+    setNotePhotos(photos);
     setIsAddingNote(false);
   }, []);
 
   const saveNote = useCallback((id: number) => {
     const text = editingNoteText;
+    const photos = notePhotos;
     setEditingNoteId(null);
-    mutations.updateNote(clientId, id, text).catch((e: Error) => toast.error(errorMessage(e, t)));
-  }, [editingNoteText, clientId, mutations, toast, t]);
+    setNotePhotos([]);
+    mutations.updateNote(clientId, id, text, photos).catch((e: Error) => toast.error(errorMessage(e, t)));
+  }, [editingNoteText, notePhotos, clientId, mutations, toast, t]);
 
   const cancelEditNote = useCallback(() => {
     setEditingNoteId(null);
     setEditingNoteText('');
+    setNotePhotos([]);
   }, []);
 
   const requestDeleteNote = useCallback((id: number) => {
@@ -108,19 +118,39 @@ export function useClientActions(clientId: number) {
     setIsAddingNote(true);
     setEditingNoteId(null);
     setNewNoteText('');
+    setNotePhotos([]);
   }, []);
 
   const saveNewNote = useCallback(() => {
     const text = newNoteText.trim();
-    if (!text) return;
+    const photos = notePhotos;
+    // Заметка из одних снимков — тоже заметка: пустой текст не повод её потерять.
+    if (!text && photos.length === 0) return;
     setIsAddingNote(false);
     setNewNoteText('');
-    mutations.createNote(clientId, text).catch((e: Error) => toast.error(errorMessage(e, t)));
-  }, [newNoteText, clientId, mutations, toast, t]);
+    setNotePhotos([]);
+    mutations.createNote(clientId, text, photos).catch((e: Error) => toast.error(errorMessage(e, t)));
+  }, [newNoteText, notePhotos, clientId, mutations, toast, t]);
 
   const cancelAddNote = useCallback(() => {
     setIsAddingNote(false);
     setNewNoteText('');
+    setNotePhotos([]);
+  }, []);
+
+  /** Файл уходит на сервер сразу — форма держит уже сохранённую ссылку. */
+  const addNotePhoto = useCallback((files: FileList | null) => {
+    const list = Array.from(files ?? []);
+    if (!list.length) return;
+    setNotePhotoUploading(true);
+    Promise.all(list.map(f => clientsApi.uploadNotePhoto(clientId, f)))
+      .then(res => setNotePhotos(prev => [...prev, ...res.map(r => r.url)]))
+      .catch((e: Error) => toast.error(errorMessage(e, t)))
+      .finally(() => setNotePhotoUploading(false));
+  }, [clientId, toast, t]);
+
+  const removeNotePhoto = useCallback((url: string) => {
+    setNotePhotos(prev => prev.filter(p => p !== url));
   }, []);
 
   const openWhatsApp = useCallback((phone: string) => {
@@ -208,6 +238,7 @@ export function useClientActions(clientId: number) {
     startEditNote, saveNote, cancelEditNote,
     deletingNoteId, requestDeleteNote, cancelDeleteNote, confirmDeleteNote,
     isAddingNote, newNoteText, setNewNoteText, startAddNote, saveNewNote, cancelAddNote,
+    notePhotos, notePhotoUploading, addNotePhoto, removeNotePhoto,
     showBooking, toggleBooking, confirmBooking,
     bookingDate, setBookingDate,
     bookingWindowStart, shiftBookingWindow,

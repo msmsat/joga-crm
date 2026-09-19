@@ -11,6 +11,7 @@ import { queryKeys } from "../../../../../api/queryKeys";
 import { errorMessage } from "../../../../../api/errorMessage";
 import { Button, EmptyState, Input, useToast } from "../../../../../components/ui/index";
 import type { NotificationSettings } from "../../../../../api/notifications/notifications.types";
+import { submitOnEnter } from "../../../../../lib/submitOnEnter";
 
 // Эта вкладка — только для персонала (владелец/админ/тренер), клиенты сюда не
 // заходят вообще (у них отдельное мини-приложение). Telegram/Instagram
@@ -123,7 +124,7 @@ export default function NotificationsTab() {
         )}
       </div>
 
-      <div className="card" style={{ padding: "28px" }}>
+      <div className="card" style={{ padding: "28px" }} onKeyDown={submitOnEnter(isSavingTg ? null : handleSaveTg)}>
         <SectionHeader icon={icons.telegram} title={t('notifications.telegram.title')} subtitle={t('notifications.telegram.subtitle')} />
         <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
           <Input
@@ -142,7 +143,7 @@ export default function NotificationsTab() {
       </div>
 
       {isOwner && (
-        <div className="card" style={{ padding: "28px" }}>
+        <div className="card" style={{ padding: "28px" }} onKeyDown={submitOnEnter(saveEmail.isPending ? null : () => saveEmail.mutate())}>
           <SectionHeader icon={icons.mail} title={t('notifications.email.title')} subtitle={t('notifications.email.subtitle')} />
           <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
             <Input label={t('notifications.email.primary')} value={primaryEmail} onChange={setPrimaryEmail} type="email" />

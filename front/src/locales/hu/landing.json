@@ -49,7 +49,7 @@
         "label": "online foglalási csatorna"
       },
       {
-        "value": "15 €-tól",
+        "value": "30 €-tól",
         "label": "havonta, stúdiónként"
       }
     ],
@@ -230,7 +230,7 @@
     "scaleMin": "2 hely",
     "scaleMax": "∞ korlátlan",
     "sliderAria": "Hányan dolgoznak az Ön stúdiójában",
-    "hint": "**15 €** két főre, **+5 €** minden további helyért. Korlátlan — **120 €** havonta.",
+    "hint": "**30 €** két főre, **+5 €** minden további helyért. Korlátlan — **150 €** havonta.",
     "period": "fizetési időszak",
     "months": "{{count}} hó",
     "noDiscount": "—",
@@ -253,12 +253,12 @@
     "models": [
       {
         "title": "Előfizetés",
-        "price": "15 € / hó-tól",
+        "price": "30 € / hó-tól",
         "desc": "Fix összeg. Előre tudja a költséget — nincs meglepetés a hónap végén."
       },
       {
         "title": "A bevétel 3%-a",
-        "price": "legalább 15 € / hó",
+        "price": "legalább 30 € / hó",
         "desc": "Forgalom alapján fizet. Csendesebb hónapban csak a különbözetet tölti fel a minimumig."
       },
       {

@@ -282,6 +282,9 @@
       "cancel": "Avbryt",
       "addPlaceholder": "Skriv et notat…",
       "add": "Legg til notat",
+      "addPhoto": "Bilde",
+      "removePhoto": "Fjern bilde",
+      "photoUploading": "Laster opp…",
       "justNow": "akkurat nå",
       "deleteTitle": "Slette notat?",
       "deleteMessage": "Dette notatet kan ikke gjenopprettes."

@@ -128,6 +128,10 @@ class ClientNote(Base):
     studio_id: Mapped[int] = mapped_column(ForeignKey("studios.id", ondelete="CASCADE"), index=True)
     author_id: Mapped[Optional[int]] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
     text: Mapped[str] = mapped_column(Text)
+    # Пути вида /static/notes/<uuid>.jpg — сами файлы лежат рядом с логотипами и
+    # фото залов, кладёт их тот же save_image. В заметке только ссылки: base64 в
+    # тексте раздул бы и таблицу, и каждый ответ профиля клиента.
+    photos: Mapped[list] = mapped_column(JSON, default=list, server_default="[]", nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=False), server_default=func.now())
     updated_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=False), nullable=True)
 

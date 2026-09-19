@@ -16,6 +16,7 @@ import { useToast } from '../../../../../components/ui/Toast';
 import { errorMessage } from '../../../../../api/errorMessage';
 import { ApiError } from '../../../../../api/client';
 import { useContactCheck } from '../../../../../hooks/useContactCheck';
+import { submitOnEnter } from '../../../../../lib/submitOnEnter';
 
 export interface AddClientModalProps {
   isOpen: boolean;
@@ -273,6 +274,7 @@ export function AddClientModal({ isOpen, onClose, onSuccess }: AddClientModalPro
         <div
           className="v-modal-lg v-modal-wizard v-modal-steps"
           onClick={e => e.stopPropagation()}
+          onKeyDown={submitOnEnter(step < TOTAL ? (canGoNext() ? goNext : null) : handleFinish)}
           style={{
             ['--v-modal-w' as string]: '780px',
             ['--v-left-w' as string]: '236px',

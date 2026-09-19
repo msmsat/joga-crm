@@ -49,7 +49,7 @@
         "label": "Canales de reserva online"
       },
       {
-        "value": "desde 15 €",
+        "value": "desde 30 €",
         "label": "Al mes y por estudio"
       }
     ],
@@ -222,7 +222,7 @@
   "pricing": {
     "label": "precios",
     "title": "Tu plan depende\ndel tamaño de tu equipo",
-    "lead": "15 € para dos personas, +5 € por cada plaza adicional, ilimitado: 120 €. Los 16 módulos y Velora AI están en todos los niveles: pagas por el tamaño de tu equipo, no por desbloquear botones. Elige entre tres modelos de pago y consigue hasta un 40 % de descuento al pagar por adelantado.",
+    "lead": "30 € para dos personas, +5 € por cada plaza adicional, ilimitado: 150 €. Los 16 módulos y Velora AI están en todos los niveles: pagas por el tamaño de tu equipo, no por desbloquear botones. Elige entre tres modelos de pago y consigue hasta un 30 % de descuento al pagar por adelantado.",
     "team": "equipo",
     "seats_one": "persona",
     "seats_other": "personas",
@@ -230,7 +230,7 @@
     "scaleMin": "2 plazas",
     "scaleMax": "∞ ilimitado",
     "sliderAria": "Cuántas personas trabajan en tu estudio",
-    "hint": "**15 €** para dos personas, **+5 €** por cada plaza adicional. Ilimitado: **120 €** al mes.",
+    "hint": "**30 €** para dos personas, **+5 €** por cada plaza adicional. Ilimitado: **150 €** al mes.",
     "period": "periodo de facturación",
     "months": "{{count}} meses",
     "noDiscount": "—",
@@ -253,12 +253,12 @@
     "models": [
       {
         "title": "Suscripción",
-        "price": "desde 15 € / mes",
+        "price": "desde 30 € / mes",
         "desc": "Una cantidad fija. Conoces el coste de antemano, sin sorpresas a fin de mes."
       },
       {
         "title": "3 % de los ingresos",
-        "price": "mínimo 15 € / mes",
+        "price": "mínimo 30 € / mes",
         "desc": "Paga según la facturación. En un mes tranquilo solo completas la diferencia hasta el mínimo."
       },
       {

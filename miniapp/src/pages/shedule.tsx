@@ -18,6 +18,8 @@ interface SheduleProps {
   onNeedAuth: (retry: () => void) => void;
   /** Занятие из QR-кода студии: открыть его день и сам лист брони. */
   focusLesson?: { id: number; date?: string };
+  /** Услуга из QR-кода студии: открыть раздел с уже выбранной услугой. */
+  focusServiceId?: number;
 }
 
 /**
@@ -31,12 +33,24 @@ interface SheduleProps {
  * Оба раздела гибридной студии остаются смонтированными и прячутся атрибутом:
  * переключение не теряет ни выбранного мастера, ни пролистанную неделю.
  */
-export default function Shedule({ catalog, onBuySubscription, onNeedAuth, focusLesson }: SheduleProps) {
+export default function Shedule({ catalog, onBuySubscription, onNeedAuth, focusLesson, focusServiceId }: SheduleProps) {
   const { t } = useTranslation();
   const mode = catalog?.booking_capabilities.booking_mode ?? 'event';
-  // Ссылка на занятие открывает групповой раздел: индивидуальная запись идёт
-  // от мастера, занятия с номером там нет.
-  const [view, setView] = useState<ScheduleView>(focusLesson ? 'event' : 'resource');
+  // Ссылка на УСЛУГУ сама говорит, какой это раздел, — но не словом в адресе, а
+  // механикой услуги в каталоге: напечатанный код переживает превращение услуги
+  // из групповой в индивидуальную. Каталог приезжает позже первого кадра,
+  // поэтому раздел ВЫЧИСЛЯЕТСЯ, а не выставляется эффектом.
+  const focusMode = focusServiceId != null
+    ? catalog?.services.find((service) => service.id === focusServiceId)?.booking_mode
+    : undefined;
+
+  // Выбор человека сильнее ссылки — но только после того, как он его сделал.
+  // `null` — «ещё не переключал»: тогда раздел называет ссылка, а по умолчанию
+  // открыта индивидуальная запись. Ссылка на занятие — всегда групповой раздел:
+  // индивидуальная запись идёт от мастера, занятия с номером там нет.
+  const [picked, setPicked] = useState<ScheduleView | null>(focusLesson ? 'event' : null);
+  const view: ScheduleView = picked
+    ?? (focusMode === 'event' ? 'event' : 'resource');
   const showResource = mode === 'resource' || (mode === 'hybrid' && view === 'resource');
   const rules = catalog?.rules ?? null;
 
@@ -44,7 +58,7 @@ export default function Shedule({ catalog, onBuySubscription, onNeedAuth, focusL
   // переноса в «Моих записях»: экран добавляет шаги ДО выбора времени, а не
   // вторую механику брони.
   const resource = useResourceBooking({ onNeedAuth, catalog });
-  const segment = mode === 'hybrid' ? <ModeSwitch value={view} onChange={setView} /> : null;
+  const segment = mode === 'hybrid' ? <ModeSwitch value={view} onChange={setPicked} /> : null;
 
   return (
     <>
@@ -53,7 +67,7 @@ export default function Shedule({ catalog, onBuySubscription, onNeedAuth, focusL
           <ScreenHeader kicker={catalog?.studio.name} title={t('booking.title')} />
           {segment}
           {rules && !rules.booking_active && <BookingClosedNotice />}
-          <BookingPage catalog={catalog} resource={resource} />
+          <BookingPage catalog={catalog} resource={resource} focusServiceId={focusMode === 'resource' ? focusServiceId : undefined} />
         </div>
       )}
 
@@ -65,6 +79,7 @@ export default function Shedule({ catalog, onBuySubscription, onNeedAuth, focusL
             onNeedAuth={onNeedAuth}
             segment={segment}
             focusLesson={focusLesson}
+            focusServiceId={focusMode === 'event' ? focusServiceId : undefined}
           />
         </div>
       )}

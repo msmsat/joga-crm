@@ -179,6 +179,10 @@
     "lessonAction": "QR kod termina",
     "lessonCaption": "Usmjerite kameru i prijavite se na ovaj termin",
     "packageAction": "QR kod paketa",
+<<<<<<< HEAD
+    "packageCaption": "Usmjerite kameru i kupite paket",
+    "serviceAction": "QR kod usluge"
+=======
     "packageCaption": "Usmjerite kameru i kupite paket"
   },
   "auth": {

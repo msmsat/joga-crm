@@ -1535,6 +1535,13 @@
     "tr": "Not ekle",
     "uk": "Додати нотатку"
   },
+  "clients:panel.notes.addPhoto": {
+    "ru": "Фото",
+    "en": "Photo",
+    "uk": "Фото",
+    "cs": "Foto",
+    "de": "Foto"
+  },
   "clients:panel.offers.title": {
     "en": "Personal discount",
     "ru": "Персональная скидка",

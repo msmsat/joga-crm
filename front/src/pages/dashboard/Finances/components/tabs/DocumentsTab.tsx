@@ -11,6 +11,7 @@ import styles from '../../Finances.module.css';
 import { useDocuments, useCounterparties, useFinanceMutations } from '../../hooks/useFinances';
 import { financesApi } from '../../../../../api/finances/finances.api';
 import { queryKeys } from '../../../../../api/queryKeys';
+import { submitOnEnter } from '../../../../../lib/submitOnEnter';
 
 // Бэкенд отдаёт doc_type/file_ext/counterparty_id/created_at — вид ждёт type/ext/party/date.
 // UI-статусы: signed | pending | draft (бэкенд хранит их же строкой).
@@ -207,7 +208,11 @@ export default function DocumentsTab({ showToast }: { showToast: (msg: string, t
             <button onClick={() => { setAddOpen(false); setSelectedFile(null); }} style={{ background: 'none', border: 'none', color: 'var(--text3)', cursor: 'pointer', transition: 'color 0.2s' }} onMouseEnter={e => e.currentTarget.style.color='var(--onyx)'} onMouseLeave={e => e.currentTarget.style.color='var(--text3)'}><Ico.X /></button>
           </div>
 
-          <div className="split-tablet" style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '32px' }}>
+          <div
+            className="split-tablet"
+            style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '32px' }}
+            onKeyDown={submitOnEnter(newDoc.title.trim() && selectedFile && !saving ? handleCreate : null)}
+          >
             <div
               style={{ border: isDragHover ? '2px dashed #F9A08B' : '2px dashed rgba(var(--ink),0.12)', borderRadius: '16px', background: isDragHover ? 'rgba(249, 160, 139, 0.03)' : 'rgba(var(--ink),0.01)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 20px', cursor: 'pointer', transition: 'all 0.2s' }}
               onMouseEnter={() => setIsDragHover(true)} onMouseLeave={() => setIsDragHover(false)}

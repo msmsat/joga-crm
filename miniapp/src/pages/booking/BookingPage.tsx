@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { SectionLabel } from '../../components/ui/SectionLabel';
@@ -24,6 +24,8 @@ import type { useResourceBooking } from '../../hooks/useResourceBooking';
 type Props = {
   catalog: StudioCatalog | null;
   resource: ReturnType<typeof useResourceBooking>;
+  /** Услуга из QR-кода студии: экран открывается с её мастерами. */
+  focusServiceId?: number;
 };
 
 const personIcon = (
@@ -58,13 +60,24 @@ const slot = {
  * сегодня нет окна, всё равно тот, к кому можно записаться. Услуга фильтрует
  * только по тому, оказывает ли он её.
  */
-export default function BookingPage({ catalog, resource }: Props) {
+export default function BookingPage({ catalog, resource, focusServiceId }: Props) {
   const { t, i18n } = useTranslation();
   const terms = useBusinessTerms('resource');
   const branches = catalog?.branches ?? [];
   const services = catalog?.services ?? [];
 
   const [page, setPage] = useState(() => initialBookingPage(ALL_BRANCHES));
+
+  // Услуга из QR-кода приезжает не к первому кадру: раздел зависит от механики
+  // услуги, а её называет каталог. Поэтому не начальное состояние, а эффект —
+  // и ровно один раз: дальше фильтром распоряжается человек, и вернуть его к
+  // услуге с плаката на каждый перерендер значило бы отобрать у него выбор.
+  const focused = useRef(false);
+  useEffect(() => {
+    if (focusServiceId == null || focused.current) return;
+    focused.current = true;
+    setPage((current) => ({ ...current, serviceId: focusServiceId }));
+  }, [focusServiceId]);
   // Каталог мог доехать позже первого рендера (перечитан после входа): филиал,
   // которого в нём нет, выбранным не считается.
   const branchIds = knownBranches(page.branchIds, branches.map((branch) => branch.id));

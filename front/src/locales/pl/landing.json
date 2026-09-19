@@ -49,7 +49,7 @@
         "label": "kanały rezerwacji online"
       },
       {
-        "value": "od 15 €",
+        "value": "od 30 €",
         "label": "miesięcznie za studio"
       }
     ],
@@ -231,7 +231,7 @@
     "scaleMin": "2 miejsca",
     "scaleMax": "∞ bez limitu",
     "sliderAria": "Ile osób pracuje w Twoim studiu",
-    "hint": "**15 €** za dwie osoby, **+5 €** za każde dodatkowe miejsce. Bez limitu — **120 €** miesięcznie.",
+    "hint": "**30 €** za dwie osoby, **+5 €** za każde dodatkowe miejsce. Bez limitu — **150 €** miesięcznie.",
     "period": "okres płatności",
     "months": "{{count}} mies.",
     "noDiscount": "—",
@@ -254,12 +254,12 @@
     "models": [
       {
         "title": "Subskrypcja",
-        "price": "od 15 € / mies.",
+        "price": "od 30 € / mies.",
         "desc": "Stała kwota. Koszt znasz z góry — bez niespodzianek na koniec miesiąca."
       },
       {
         "title": "3% przychodu",
-        "price": "co najmniej 15 € / mies.",
+        "price": "co najmniej 30 € / mies.",
         "desc": "Płać według obrotu. W spokojniejszym miesiącu dopłacasz tylko różnicę do minimum."
       },
       {

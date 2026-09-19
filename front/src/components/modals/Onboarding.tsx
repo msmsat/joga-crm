@@ -19,6 +19,7 @@ import { DEFAULT_WORKING_HOURS } from "./onboarding/types";
 import { chosenLang, initialLang, rememberLang } from "../../utils/lang";
 import { FALLBACK_CURRENCY, currencyForCountry } from "../../utils/geo";
 import { setActiveToken } from '../../utils/auth';
+import { submitOnEnter } from "../../lib/submitOnEnter";
 
 type Step = 1 | 2 | 3 | 4 | 5;
 
@@ -230,6 +231,7 @@ export default function OnboardingPage() {
     <>
     <div
       className="velora-modal ob-modal"
+      onKeyDown={submitOnEnter(isSubmitting || !canProceedCurrent ? null : (step === 5 ? handleFinish : goNext))}
       style={{
         width: "100%", maxWidth: "920px", minHeight: "min(560px, calc(100dvh - 40px))", maxHeight: "calc(100dvh - 40px)",
         background: "var(--bg)", borderRadius: "24px",

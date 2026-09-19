@@ -159,8 +159,10 @@ export function ClientListModal({ open, onClose, title, subtitle, rows, valueLab
     </div>
   );
 
+  // enterSubmits=false: поле вверху ищет по списку, а главная кнопка заводит
+  // рассылку — Enter в поиске не должен её запускать.
   return (
-    <ModalShell onClose={onClose} size="lg" left={left}>
+    <ModalShell onClose={onClose} size="lg" left={left} enterSubmits={false}>
       <ModalHeader title={title} />
       <ModalBody>
         {loading ? (

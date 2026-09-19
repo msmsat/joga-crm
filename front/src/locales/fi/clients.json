@@ -282,6 +282,9 @@
       "cancel": "Peruuta",
       "addPlaceholder": "Kirjoita muistiinpano…",
       "add": "Lisää muistiinpano",
+      "addPhoto": "Kuva",
+      "removePhoto": "Poista kuva",
+      "photoUploading": "Ladataan…",
       "justNow": "juuri nyt",
       "deleteTitle": "Poistetaanko muistiinpano?",
       "deleteMessage": "Tätä muistiinpanoa ei voi palauttaa."

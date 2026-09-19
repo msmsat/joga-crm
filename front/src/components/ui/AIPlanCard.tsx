@@ -9,6 +9,7 @@ import { Switch } from './Switch';
 import { usePlanSources, type PlanOption } from './planSources';
 import { formatArg, visibleArgs } from './argFormat';
 import type { AIPlanField, AIPlanProposal, AIPlanStep } from '../../api/ai/ai.types';
+import { submitOnEnter } from '../../lib/submitOnEnter';
 
 export type PlanAnswers = Record<string, Record<string, unknown>>;
 
@@ -290,7 +291,14 @@ export function AIPlanCard({ plan, onConfirm, onCancel, loading = false }: AIPla
         {t(`ai:plan.pages.${PAGES[page].key}`)}
       </div>
 
-      <div style={{ display: 'grid', gap: 12, marginTop: 12 }}>
+      {/* Enter в поле = кнопка шага: «Далее», а на последнем — «Утверждаю»
+          (и только когда заполнено всё, ровно как у самой кнопки). */}
+      <div
+        style={{ display: 'grid', gap: 12, marginTop: 12 }}
+        onKeyDown={submitOnEnter(
+          loading ? null : !last ? () => setPage(page + 1) : empty.length > 0 ? null : () => onConfirm(answers)
+        )}
+      >
         {onPage.map(({ step, field }) => (
           <FieldControl
             key={`${step.n}.${field.name}`}

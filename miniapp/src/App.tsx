@@ -180,7 +180,8 @@ export default function App() {
       // эндпоинта на валидацию токена нет, а если он всё же протух, первый
       // же авторизованный запрос поймает 401 и client.ts сам сбросит сессию
       // (см. api/client.ts). Это же и есть «запомнить меня»: токен живёт
-      // 30 дней и лежит в localStorage независимо от того, какой дверью вошли.
+      // полгода (security.ACCESS_TOKEN_EXPIRE_MINUTES) и лежит в localStorage
+      // независимо от того, какой дверью вошли.
       const session = getSession();
       if (session?.token) {
         // Полного профиля тут ещё нет — из downstream-страниц используется
@@ -370,6 +371,7 @@ export default function App() {
         onBuySubscription={goBuySubscription}
         onNeedAuth={requireAuth}
         focusLesson={deepLink.lessonId != null ? { id: deepLink.lessonId, date: deepLink.date } : undefined}
+        focusServiceId={deepLink.serviceId}
       />
     ),
     my: <MyLessons catalog={catalog} />,

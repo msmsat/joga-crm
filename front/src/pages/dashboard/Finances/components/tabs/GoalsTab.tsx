@@ -9,6 +9,7 @@ import { useStudioCurrency } from '../../../../../hooks/useStudioCurrency';
 import { getCurrencySymbol } from '../../../../../components/UI';
 import { InfoHint } from '../../../../../components/ui/InfoHint';
 import { useGoals, useFinanceMutations, useOperationCategories } from '../../hooks/useFinances';
+import { submitOnEnter } from '../../../../../lib/submitOnEnter';
 
 const GOAL_COLORS = ['#FCAE91', '#A3C9A8', '#7EB5D6', '#D88C9A'];
 const goalColor = (id: number) => GOAL_COLORS[id % GOAL_COLORS.length];
@@ -170,7 +171,11 @@ export default function GoalsTab({ showToast }: { showToast: (msg: string, t?: T
             <button onClick={() => setAddOpen(false)} style={{ background: 'none', border: 'none', color: 'var(--text3)', cursor: 'pointer', transition: 'color 0.2s' }} onMouseEnter={e => e.currentTarget.style.color='var(--onyx)'} onMouseLeave={e => e.currentTarget.style.color='var(--text3)'}><Ico.X /></button>
           </div>
 
-          <div className="split-tablet" style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '32px' }}>
+          <div
+            className="split-tablet"
+            style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '32px' }}
+            onKeyDown={submitOnEnter(form.title.trim() && form.target ? handleAdd : null)}
+          >
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <div>
                 <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '8px' }}>{t('goals.titleLabel')}</label>
@@ -243,7 +248,7 @@ export default function GoalsTab({ showToast }: { showToast: (msg: string, t?: T
           return (
             <div key={g.id} className={styles.goalCard} style={{ background: done ? 'rgba(163,201,168,0.03)' : 'var(--bg-card)', border: done ? '1px solid rgba(163,201,168,0.4)' : '1px solid rgba(var(--ink),0.15)', borderRadius: '16px', padding: '24px', transition: 'all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)', position: 'relative', overflow: 'hidden' }}>
               {editingGoalId === g.id ? (
-                <div key="edit" className={styles.morphContainer}>
+                <div key="edit" className={styles.morphContainer} onKeyDown={submitOnEnter(() => saveGoalEdit(g))}>
                   <div style={{ fontSize: '13px', fontWeight: 800, color: 'var(--onyx)', marginBottom: '14px' }}>{t('goals.editTitle')}</div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '14px' }}>
                     <div>

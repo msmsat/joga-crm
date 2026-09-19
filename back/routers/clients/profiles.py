@@ -2,7 +2,7 @@ from dataclasses import asdict
 from datetime import date, datetime
 from typing import Literal, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile
 from sqlalchemy import and_, cast, extract, func, or_
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -19,6 +19,7 @@ from models import (
     StudioSubscriptionProgramConfig, SubscriptionPackage, User,
 )
 from routers.clients._scope import client_scope
+from routers.studio.media import NOTE_PHOTOS_DIR, save_image
 from routers.clients.loyalty import expire_points
 from routers.clients.subscriptions import attach_subscription
 from routers.finances.accounts import get_or_create_default_account
@@ -52,6 +53,7 @@ from schemas import (
     NoteCreate,
     NoteCreatedOut,
     NoteOut,
+    NotePhotoOut,
     NoteUpdate,
     OkFrozenOut,
     OkOut,
@@ -488,6 +490,7 @@ async def get_client(
             NoteOut(
                 id=n.id,
                 text=n.text,
+                photos=n.photos or [],
                 created_at=n.created_at.isoformat(),
                 updated_at=n.updated_at.isoformat() if n.updated_at else None,
             )
@@ -641,6 +644,7 @@ async def get_client_notes(
         NoteOut(
             id=n.id,
             text=n.text,
+            photos=n.photos or [],
             created_at=n.created_at.isoformat(),
             updated_at=n.updated_at.isoformat() if n.updated_at else None,
         )
@@ -947,11 +951,35 @@ async def add_note(
         studio_id=studio_id,
         author_id=current_user.id,
         text=body.text,
+        photos=body.photos,
     )
     db.add(note)
     await db.commit()
     await db.refresh(note)
-    return NoteCreatedOut(id=note.id, text=note.text, created_at=note.created_at.isoformat())
+    return NoteCreatedOut(
+        id=note.id,
+        text=note.text,
+        photos=note.photos or [],
+        created_at=note.created_at.isoformat(),
+    )
+
+
+# ─── POST /clients/{id}/notes/photo ───────────────────────────────────────────
+
+@router.post("/{client_id}/notes/photo", response_model=NotePhotoOut)
+async def upload_note_photo(
+    client_id: int,
+    file: UploadFile = File(...),
+    ctx: StudioContext = Depends(require_role("owner", "admin")),
+    db: AsyncSession = Depends(get_db),
+):
+    """Файл кладётся сразу, ссылка возвращается форме — заметка сохранит её
+    вместе с текстом. Отдельным шагом, а не multipart к самой заметке: снимки
+    добавляют и к уже существующей заметке, и черновик до сохранения должен их
+    показывать.
+    """
+    await _get_client_or_404(client_id, ctx, db)
+    return NotePhotoOut(url=await save_image(file, NOTE_PHOTOS_DIR, max_size_mb=10))
 
 
 # ─── PATCH /clients/{id}/notes/{note_id} ─────────────────────────────────────
@@ -973,6 +1001,8 @@ async def update_note(
     if not note:
         raise HTTPException(status_code=404, detail="Заметка не найдена")
     note.text = body.text
+    if body.photos is not None:
+        note.photos = body.photos
     note.updated_at = datetime.utcnow()
     await db.commit()
     return OkOut(ok=True)

@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { submitOnEnter } from '../../../lib/submitOnEnter';
 
 export interface ModalShellProps {
   onClose: () => void;
@@ -15,6 +16,10 @@ export interface ModalShellProps {
    *  собственного слоя страницы: попап журнала стоит на 9000 и иначе накрыл бы
    *  её собой. Та же мера, что у ConfirmModal. */
   zIndex?: number;
+  /** false — Enter в полях ничего не нажимает. Нужно там, где поле ищет по
+   *  списку, а главная кнопка делает совсем другое (модалка списка клиентов:
+   *  Enter в поиске запускал бы рассылку). */
+  enterSubmits?: boolean;
 }
 
 const EXIT_MS = 200;
@@ -29,8 +34,17 @@ export const useModalClose = () => useContext(CloseContext);
 // Содержимое (Header/поля/Footer) передаётся как children.
 // Анимация — в классах .v-overlay / .v-modal (App.css). Без backdrop-filter:
 // блюр во весь вьюпорт и был причиной лагов открытия (см. комментарий там).
-export function ModalShell({ onClose, children, size = 'sm', left, leftStyle, leftWidth, maxWidth, closeOnBackdrop = true, dismissible = true, zIndex }: ModalShellProps) {
+export function ModalShell({ onClose, children, size = 'sm', left, leftStyle, leftWidth, maxWidth, closeOnBackdrop = true, dismissible = true, zIndex, enterSubmits = true }: ModalShellProps) {
   const [leaving, setLeaving] = useState(false);
+
+  // Enter в любом поле модалки = клик по главной кнопке (её помечает
+  // PrimaryButton). Ищем в DOM, а не через состояние: кнопка одна, а её
+  // доступность (disabled/loading) и так уже посчитана самой кнопкой.
+  // Вложенные модалки живут в своих порталах и сюда не всплывают.
+  const submit = submitOnEnter(!enterSubmits ? null : e => {
+    const btn = e.currentTarget.querySelector<HTMLButtonElement>('[data-modal-submit]');
+    if (btn && !btn.disabled) btn.click();
+  });
 
   const requestClose = () => {
     if (leaving || !dismissible) return;
@@ -57,6 +71,7 @@ export function ModalShell({ onClose, children, size = 'sm', left, leftStyle, le
       <div
         className={isLg ? 'v-modal v-modal-lg' : 'v-modal'}
         onClick={e => e.stopPropagation()}
+        onKeyDown={submit}
         style={{
           background: 'var(--bg-card, #FDFCFB)', borderRadius: isLg ? '24px' : '20px',
           boxShadow: '0 40px 100px rgba(26,26,26,0.18), 0 8px 32px rgba(26,26,26,0.07)',

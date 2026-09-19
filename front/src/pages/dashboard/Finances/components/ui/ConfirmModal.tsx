@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 
@@ -6,6 +7,18 @@ export function ConfirmModal({ open, title, text, onConfirm, onCancel, danger = 
   onConfirm: () => void; onCancel: () => void; danger?: boolean;
 }) {
   const { t } = useTranslation('finances');
+
+  // Enter подтверждает, Esc отменяет — как у общей ConfirmModal кита.
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onCancel();
+      else if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); onConfirm(); }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [open, onCancel, onConfirm]);
+
   if (!open) return null;
 
   return createPortal(
