@@ -25,7 +25,8 @@
     "done": "Gata, închide",
     "saving": "Se salvează…",
     "saved": "Salvat!",
-    "upload": "Încarcă"
+    "upload": "Încarcă",
+    "undo": "Anulează"
   },
   "validation": {
     "required": "Câmp obligatoriu",
@@ -143,7 +144,15 @@
       "unknown_event": "Eveniment necunoscut",
       "not_personal": "Setările personale nu modifică notificările obligatorii"
     },
-    "trial_already_used": "Perioada de probă gratuită nu mai este disponibilă pentru acest studio."
+    "trial_already_used": "Perioada de probă gratuită nu mai este disponibilă pentru acest studio.",
+    "invalid_credentials": "Adresă de e-mail, număr de telefon sau parolă incorectă.",
+    "account_not_verified": "Contul tău nu este încă activat. Acceptă invitația din e-mail sau confirmă adresa cu ajutorul codului.",
+    "invalid_code": "Codul nu este valid sau a expirat.",
+    "invalid_current_password": "Parola actuală este incorectă.",
+    "password_unchanged": "Noua parolă trebuie să fie diferită de cea actuală.",
+    "invalid_request": "Verifică datele introduse și încearcă din nou.",
+    "session_expired": "Sesiunea a expirat. Autentifică-te din nou.",
+    "limit_exceeded": "Ai atins limita planului tău."
   },
   "units": {
     "min": "min",
@@ -208,5 +217,11 @@
       "strong": "Puternică",
       "excellent": "Excelentă"
     }
+  },
+  "planLimit": {
+    "title": "Limita planului a fost atinsă",
+    "description": "Treci la un plan superior pentru a continua.",
+    "later": "Mai târziu",
+    "upgrade": "Alege un plan superior"
   }
 }

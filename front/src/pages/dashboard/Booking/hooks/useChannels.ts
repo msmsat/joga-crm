@@ -34,7 +34,7 @@ export function useChannels() {
     onSuccess: (_row, { payload }) => {
       // Тот же бот виден на страницах Velora AI и Уведомлений — освежаем все три.
       invalidateChannelGroup(qc)
-      toast.success(payload.is_active ? 'Бот подключён' : 'Бот отключён')
+      toast.success(t(payload.is_active ? 'booking:channels.connected' : 'booking:channels.disconnected'))
     },
     onError: (err) => toast.error(errorMessage(err, t)),
   })

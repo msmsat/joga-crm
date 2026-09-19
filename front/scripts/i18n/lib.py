@@ -233,6 +233,10 @@ def check(lang, ns, flat, tree=None, root=None):
             src = en.get(_base(k))
         if src is None:
             continue
+        if ns == 'finances' and re.fullmatch(r'operations\.categoryPresets\.(in|out)\.\d+\.value', k) and v != src:
+            problems.append(f'{k}: immutable server category must equal English source')
+        if isinstance(v, str) and '\\\n' in v and '\\\n' not in str(src):
+            problems.append(f'{k}: stray backslash before line break')
         if isinstance(src, str) and src.strip() and (not isinstance(v, str) or not v.strip()):
             problems.append(f'{k}: empty translation for non-empty source')
         if _placeholders(src) != _placeholders(v):

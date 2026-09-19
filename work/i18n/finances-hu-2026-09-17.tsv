@@ -125,29 +125,29 @@ operations.toasts.updated	Művelet frissítve
 operations.toasts.updateFailed	A művelet mentése sikertelen
 operations.toasts.exportFailed	A műveletek exportálása sikertelen
 operations.toasts.receiptDownloaded	Bizonylat letöltve
-operations.categoryPresets.in.0.value	Előfizetések
+operations.categoryPresets.in.0.value	Абонементы
 operations.categoryPresets.in.0.label	Előfizetések
-operations.categoryPresets.in.1.value	Szolgáltatások
+operations.categoryPresets.in.1.value	Услуги
 operations.categoryPresets.in.1.label	Szolgáltatások
-operations.categoryPresets.in.2.value	Ajándékutalványok
+operations.categoryPresets.in.2.value	Сертификаты
 operations.categoryPresets.in.2.label	Ajándékutalványok
-operations.categoryPresets.in.3.value	Letét
+operations.categoryPresets.in.3.value	Депозит
 operations.categoryPresets.in.3.label	Letét
-operations.categoryPresets.in.4.value	Egyéb
+operations.categoryPresets.in.4.value	Прочее
 operations.categoryPresets.in.4.label	Egyéb
-operations.categoryPresets.out.0.value	Visszatérítések
+operations.categoryPresets.out.0.value	Возвраты
 operations.categoryPresets.out.0.label	Visszatérítések
-operations.categoryPresets.out.1.value	Bérleti díj
+operations.categoryPresets.out.1.value	Аренда
 operations.categoryPresets.out.1.label	Bérleti díj
-operations.categoryPresets.out.2.value	Bérek
+operations.categoryPresets.out.2.value	Зарплата
 operations.categoryPresets.out.2.label	Bérek
-operations.categoryPresets.out.3.value	Beszerzések
+operations.categoryPresets.out.3.value	Закупки
 operations.categoryPresets.out.3.label	Beszerzések
-operations.categoryPresets.out.4.value	Marketing
+operations.categoryPresets.out.4.value	Реклама
 operations.categoryPresets.out.4.label	Marketing
-operations.categoryPresets.out.5.value	Adók
+operations.categoryPresets.out.5.value	Налоги
 operations.categoryPresets.out.5.label	Adók
-operations.categoryPresets.out.6.value	Egyéb
+operations.categoryPresets.out.6.value	Прочее
 operations.categoryPresets.out.6.label	Egyéb
 salaries.loading	Bérszámfejtés betöltése…
 salaries.noRows	Nincs számítható munkatárs

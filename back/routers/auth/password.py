@@ -73,7 +73,7 @@ async def reset_password(
     # Один и тот же ответ на «нет такого email» и «неверный код» — по разнице
     # сообщений иначе перебирают адреса.
     if not user or not await otp.verify(db, user, RESET_ACTION, body.code):
-        raise HTTPException(status_code=400, detail="Неверный или истёкший код")
+        raise HTTPException(status_code=400, detail={"code": "invalid_code", "message": "The code is invalid or has expired."})
 
     user.hashed_password = get_password_hash(body.new_password)
     user.is_verified = True  # код с почты доказал, что адрес принадлежит ему
@@ -104,9 +104,9 @@ async def change_password(
     код с почты (X-OTP-Token). После успеха — отозвать остальные сессии,
     иначе смена пароля не выкидывает того, кто угнал открытую вкладку."""
     if not verify_password(request.current_password, user.hashed_password):
-        raise HTTPException(status_code=400, detail="Неверный текущий пароль")
+        raise HTTPException(status_code=400, detail={"code": "invalid_current_password", "message": "The current password is incorrect."})
     if request.new_password == request.current_password:
-        raise HTTPException(status_code=400, detail="Новый пароль должен отличаться от текущего")
+        raise HTTPException(status_code=400, detail={"code": "password_unchanged", "message": "The new password must differ from the current password."})
 
     user.hashed_password = get_password_hash(request.new_password)
     await db.commit()

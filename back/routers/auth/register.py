@@ -56,7 +56,7 @@ async def register(
         if existing_user.is_verified:
             raise HTTPException(
                 status_code=400,
-                detail="Пользователь с таким email уже зарегистрирован",
+                detail={"code": "email_taken", "message": "This email is already registered."},
             )
         existing_user.name = body.name
         existing_user.hashed_password = hashed_pwd
@@ -111,7 +111,7 @@ async def verify_email(
     # «неверный код»: три разных ответа работали как проверялка «есть ли у вас
     # аккаунт с таким адресом» — ровно то, что закрыто в forgot-password.
     if user is None or user.is_verified or not await otp.verify(db, user, VERIFY_ACTION, body.code):
-        raise HTTPException(status_code=400, detail="Неверный или истёкший код подтверждения")
+        raise HTTPException(status_code=400, detail={"code": "invalid_code", "message": "The confirmation code is invalid or has expired."})
 
     user.is_verified = True
     await db.commit()

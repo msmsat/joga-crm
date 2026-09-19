@@ -11,7 +11,7 @@
   },
   "hero": {
     "badge": "Noul standard CRM al anului 2026",
-    "title": "Un CRM pe care\\\n*veți iubi* să-l folosiți",
+    "title": "Un CRM pe care\n*veți iubi* să-l folosiți",
     "lead": "CRM B2B premium pentru studiouri de yoga și pilates. Programări, clienți, echipă și finanțe într-un singur loc. Fără clicuri în plus, fără confuzie.",
     "cta": "Încercați gratuit 30 de zile",
     "perks": [
@@ -62,7 +62,7 @@
   },
   "compare": {
     "label": "diferența",
-    "title": "Am eliminat ce\\\nvă stătea în cale",
+    "title": "Am eliminat ce\nvă stătea în cale",
     "lead": "Velora s-a născut din propria noastră experiență: administram studiouri și ne loveam zilnic de același zid — un CRM în care sunt necesare nouă clicuri pentru a programa un client. Iată ce s-a schimbat.",
     "usual": "Modul obișnuit",
     "velora": "În Velora",
@@ -91,7 +91,7 @@
   },
   "showcase": {
     "label": "toate într-un singur loc",
-    "title": "O platformă în locul\\\nunui zeci de servicii",
+    "title": "O platformă în locul\na zeci de servicii",
     "lead": "Programări, clienți, bani, comunicare și AI într-o singură interfață. Niciun modul inutil: fiecare ecran rezolvă o problemă reală a proprietarului.",
     "blocks": {
       "journal": {
@@ -148,7 +148,7 @@
   },
   "modules": {
     "label": "module",
-    "title": "16 module,\\\ndeja incluse",
+    "title": "16 module,\ndeja incluse",
     "lead": "Nu o colecție de substituenți „în curând” — tot ce este listat funcționează și este inclus în plan. Rolurile stabilesc cine vede fiecare secțiune.",
     "items": {
       "dashboard": {
@@ -221,7 +221,7 @@
   },
   "pricing": {
     "label": "prețuri",
-    "title": "Planul dvs. depinde de\\\ndimensiunea echipei",
+    "title": "Planul dvs. depinde de\ndimensiunea echipei",
     "lead": "15 € pentru două persoane, +5 € pentru fiecare loc următor, nelimitat — 120 €. Toate cele 16 module și Velora AI sunt incluse la fiecare nivel: plătiți pentru mărimea echipei, nu pentru deblocarea butoanelor. Trei modele de plată la alegere și până la 40% reducere la plata în avans.",
     "team": "echipă",
     "seats_one": "persoană",
@@ -305,7 +305,7 @@
   },
   "about": {
     "label": "despre noi",
-    "title": "Velora este construită de oameni\\\ncare au condus chiar ei studiouri",
+    "title": "Velora este construită de oameni\ncare au condus chiar ei studiouri",
     "lead": "Nu construim un „CRM pentru toți”. Construim un instrument pentru o muncă anume — program, clienți, bani, comunicare — și răspundem singuri la întrebări în loc să trimitem răspunsuri gata făcute.",
     "p1": "Clienții unui studio rămân clienții acelui studio. Velora nu construiește un catalog comun, nu le arată clienților dvs. reclamele altora și nu ia un procent când o persoană revine la dvs.",
     "p2": "În prezent produsul este creat pentru studiouri de yoga și pilates — pentru modul în care funcționează cu adevărat programele, abonamentele și antrenorii lor. Alte domenii vor urma cu aceeași grijă."

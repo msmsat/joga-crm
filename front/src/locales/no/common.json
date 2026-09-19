@@ -25,7 +25,8 @@
     "done": "Ferdig, lukk",
     "saving": "Lagrer…",
     "saved": "Lagret!",
-    "upload": "Last opp"
+    "upload": "Last opp",
+    "undo": "Angre"
   },
   "validation": {
     "required": "Obligatorisk felt",
@@ -143,7 +144,15 @@
       "unknown_event": "Ukjent hendelse",
       "not_personal": "Personlige innstillinger endrer ikke obligatoriske varsler"
     },
-    "trial_already_used": "Gratis prøveperiode er ikke lenger tilgjengelig for dette studioet."
+    "trial_already_used": "Gratis prøveperiode er ikke lenger tilgjengelig for dette studioet.",
+    "invalid_credentials": "Feil e-postadresse, telefonnummer eller passord.",
+    "account_not_verified": "Kontoen din er ikke aktivert ennå. Godta invitasjonen i e-posten eller bekreft e-postadressen med koden.",
+    "invalid_code": "Koden er ugyldig eller har utløpt.",
+    "invalid_current_password": "Det nåværende passordet er feil.",
+    "password_unchanged": "Det nye passordet må være forskjellig fra det nåværende.",
+    "invalid_request": "Kontroller opplysningene du skrev inn, og prøv igjen.",
+    "session_expired": "Økten din har utløpt. Logg inn på nytt.",
+    "limit_exceeded": "Du har nådd grensen for abonnementet ditt."
   },
   "units": {
     "min": "min",
@@ -208,5 +217,11 @@
       "strong": "Sterk",
       "excellent": "Utmerket"
     }
+  },
+  "planLimit": {
+    "title": "Abonnementsgrensen er nådd",
+    "description": "Oppgrader abonnementet for å fortsette.",
+    "later": "Senere",
+    "upgrade": "Oppgrader abonnement"
   }
 }

@@ -11,7 +11,7 @@
   },
   "hero": {
     "badge": "Novi CRM standard za 2026.",
-    "title": "CRM koji ćete\\\n*voljeti* koristiti",
+    "title": "CRM koji ćete\n*voljeti* koristiti",
     "lead": "Premium B2B CRM za studije joge i pilatesa. Rezervacije, klijenti, tim i financije na jednom mjestu. Bez dodatnih klikova i zbrke.",
     "cta": "Isprobajte besplatno 30 dana",
     "perks": [
@@ -62,7 +62,7 @@
   },
   "compare": {
     "label": "razlika",
-    "title": "Uklonili smo ono\\\nšto vam stoji na putu",
+    "title": "Uklonili smo ono\nšto vam stoji na putu",
     "lead": "Velora je nastala iz vlastitog iskustva: vodili smo studije i svaki dan nailazili na isti zid — CRM u kojem je potrebno devet klikova za rezervaciju klijenta. Evo što se promijenilo.",
     "usual": "Uobičajeni način",
     "velora": "U Velori",
@@ -91,7 +91,7 @@
   },
   "showcase": {
     "label": "sve na jednom mjestu",
-    "title": "Jedna platforma umjesto\\\ndesetaka usluga",
+    "title": "Jedna platforma umjesto\ndesetaka usluga",
     "lead": "Rezervacije, klijenti, novac, komunikacija i AI u jednom sučelju. Nijedan suvišan modul: svaki prikaz rješava stvaran problem vlasnika.",
     "blocks": {
       "journal": {
@@ -148,7 +148,7 @@
   },
   "modules": {
     "label": "moduli",
-    "title": "16 modula,\\\nveć uključenih",
+    "title": "16 modula,\nveć uključenih",
     "lead": "Nije zbirka praznih mjesta s oznakom „uskoro” — sve navedeno radi i uključeno je u plan. Uloge određuju tko vidi koji odjeljak.",
     "items": {
       "dashboard": {
@@ -221,7 +221,7 @@
   },
   "pricing": {
     "label": "cijene",
-    "title": "Vaš plan ovisi o\\\nveličini tima",
+    "title": "Vaš plan ovisi o\nveličini tima",
     "lead": "15 € za dvije osobe, +5 € za svako sljedeće mjesto, neograničeno — 120 €. Svih 16 modula i Velora AI uključeni su na svakoj razini: plaćate veličinu tima, a ne otključavanje gumba. Tri modela plaćanja po izboru i do 40 % popusta pri uplati unaprijed.",
     "team": "tim",
     "seats_one": "osoba",
@@ -305,7 +305,7 @@
   },
   "about": {
     "label": "o nama",
-    "title": "Veloru grade ljudi\\\nkoji su i sami vodili studije",
+    "title": "Veloru grade ljudi\nkoji su i sami vodili studije",
     "lead": "Ne gradimo „CRM za sve”. Gradimo alat za određeni posao — raspored, klijente, novac, komunikaciju — i sami odgovaramo na pitanja umjesto da šaljemo gotove odgovore.",
     "p1": "Klijenti jednog studija ostaju klijenti tog studija. Velora ne stvara zajednički katalog, ne prikazuje vašim klijentima tuđe oglase i ne uzima postotak kada vam se osoba vrati.",
     "p2": "Trenutačno je proizvod izgrađen za studije joge i pilatesa — za način na koji zaista funkcioniraju njihovi rasporedi, članarine i treneri. Druge će djelatnosti slijediti s istom pažnjom."

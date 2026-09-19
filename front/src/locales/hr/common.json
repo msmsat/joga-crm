@@ -25,7 +25,8 @@
     "done": "Gotovo, zatvori",
     "saving": "Spremanje…",
     "saved": "Spremljeno!",
-    "upload": "Učitaj"
+    "upload": "Učitaj",
+    "undo": "Poništi"
   },
   "validation": {
     "required": "Obavezno polje",
@@ -143,7 +144,15 @@
       "unknown_event": "Nepoznat događaj",
       "not_personal": "Osobne postavke ne mijenjaju obavezne obavijesti"
     },
-    "trial_already_used": "Besplatno probno razdoblje više nije dostupno za ovaj studio."
+    "trial_already_used": "Besplatno probno razdoblje više nije dostupno za ovaj studio.",
+    "invalid_credentials": "Pogrešna e-adresa, broj telefona ili lozinka.",
+    "account_not_verified": "Vaš račun još nije aktiviran. Prihvatite pozivnicu iz e-pošte ili potvrdite adresu kodom.",
+    "invalid_code": "Kod nije valjan ili je istekao.",
+    "invalid_current_password": "Trenutačna lozinka nije ispravna.",
+    "password_unchanged": "Nova lozinka mora se razlikovati od trenutačne.",
+    "invalid_request": "Provjerite unesene podatke i pokušajte ponovno.",
+    "session_expired": "Vaša je sesija istekla. Prijavite se ponovno.",
+    "limit_exceeded": "Dosegnuli ste ograničenje svojeg plana."
   },
   "units": {
     "min": "min",
@@ -208,5 +217,11 @@
       "strong": "Jako",
       "excellent": "Odlično"
     }
+  },
+  "planLimit": {
+    "title": "Dosegnuto ograničenje plana",
+    "description": "Prijeđite na viši plan za nastavak.",
+    "later": "Kasnije",
+    "upgrade": "Nadogradi plan"
   }
 }

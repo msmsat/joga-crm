@@ -149,53 +149,53 @@
     "categoryPresets": {
       "in": [
         {
-          "value": "Üyelikler",
+          "value": "Абонементы",
           "label": "Üyelikler"
         },
         {
-          "value": "Hizmetler",
+          "value": "Услуги",
           "label": "Hizmetler"
         },
         {
-          "value": "Hediye sertifikaları",
+          "value": "Сертификаты",
           "label": "Hediye sertifikaları"
         },
         {
-          "value": "Depozito",
+          "value": "Депозит",
           "label": "Depozito"
         },
         {
-          "value": "Diğer",
+          "value": "Прочее",
           "label": "Diğer"
         }
       ],
       "out": [
         {
-          "value": "İadeler",
+          "value": "Возвраты",
           "label": "İadeler"
         },
         {
-          "value": "Kira",
+          "value": "Аренда",
           "label": "Kira"
         },
         {
-          "value": "Maaşlar",
+          "value": "Зарплата",
           "label": "Maaşlar"
         },
         {
-          "value": "Tedarik",
+          "value": "Закупки",
           "label": "Tedarik"
         },
         {
-          "value": "Pazarlama",
+          "value": "Реклама",
           "label": "Pazarlama"
         },
         {
-          "value": "Vergiler",
+          "value": "Налоги",
           "label": "Vergiler"
         },
         {
-          "value": "Diğer",
+          "value": "Прочее",
           "label": "Diğer"
         }
       ]

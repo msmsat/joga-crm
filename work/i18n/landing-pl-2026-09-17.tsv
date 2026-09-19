@@ -8,7 +8,7 @@ nav.startShort	Zacznij
 nav.startFull	Zacznij za darmo
 nav.language	Język
 hero.badge	Nowy standard CRM na 2026 rok
-hero.title	CRM, którego\\n*polubisz* używać
+hero.title	CRM, którego\n*polubisz* używać
 hero.lead	Premium B2B CRM dla studiów jogi i pilatesu. Rezerwacje, klienci, zespół i finanse w jednym miejscu. Bez zbędnych kliknięć i zamieszania.
 hero.cta	Wypróbuj bezpłatnie przez 30 dni
 hero.perks.0	30 dni za darmo
@@ -39,7 +39,7 @@ stats.trust.1	Role są egzekwowane na serwerze
 stats.trust.2	Eksport CSV w każdej chwili
 stats.trust.3	Usunięcie na żądanie
 compare.label	różnica
-compare.title	Usunęliśmy to,\\nco stało na drodze
+compare.title	Usunęliśmy to,\nco stało na drodze
 compare.lead	Velora powstała z naszego doświadczenia: prowadziliśmy studia i codziennie napotykaliśmy tę samą ścianę — CRM, w którym potrzeba dziewięciu kliknięć, aby zapisać klienta. Oto, co się zmieniło.
 compare.usual	Zwykły sposób
 compare.velora	W Velora
@@ -54,7 +54,7 @@ compare.pairs.3.good	Role ograniczają dostęp zarówno w interfejsie, jak i na 
 compare.pairs.4.bad	Asystent? W najlepszym razie wyszukiwanie klienta
 compare.pairs.4.good	Velora AI odpowiada na pytania o Twoją firmę — i na pytania klientów w Telegramie oraz Instagramie
 showcase.label	wszystko w jednym
-showcase.title	Jedna platforma zamiast\\ndziesiątek usług
+showcase.title	Jedna platforma zamiast\ndziesiątek usług
 showcase.lead	Rezerwacje, klienci, pieniądze, komunikacja i AI w jednym interfejsie. Ani jednego zbędnego modułu: każdy widok rozwiązuje prawdziwy problem właściciela.
 showcase.blocks.journal.title	Twój harmonogram
 showcase.blocks.journal.lead	Dzienna siatka, w której trenerzy są kolumnami, a godziny wierszami. Tutaj dzieje się wszystko, co robi administrator.
@@ -85,7 +85,7 @@ ctaStrip.title	Wypróbuj bez migracji danych i bez przedpłaty
 ctaStrip.button	Zacznij za darmo
 ctaStrip.note	30 dni za darmo • Bez karty • Pomoc na start
 modules.label	moduły
-modules.title	16 modułów,\\njuż w cenie
+modules.title	16 modułów,\njuż w cenie
 modules.lead	To nie zbiór atrap z napisem „wkrótce” — wszystko na liście działa i jest w planie. Role określają, kto widzi każdą sekcję.
 modules.items.dashboard.title	Przegląd
 modules.items.dashboard.desc	Przychody, aktywni klienci, rezerwacje i lojalność klientów — z trendami
@@ -122,7 +122,7 @@ modules.items.data.desc	Eksport CSV, usunięcie na żądanie
 modules.integrations	Integracje
 modules.integrationsNote	podłączone w ustawieniach studia
 pricing.label	cennik
-pricing.title	Twój plan zależy od\\nwielkości zespołu
+pricing.title	Twój plan zależy od\nwielkości zespołu
 pricing.lead	15 € za dwie osoby, +5 € za każde kolejne miejsce, bez limitu — 120 €. Wszystkie 16 modułów i Velora AI są na każdym poziomie: płacisz za wielkość zespołu, a nie za odblokowywanie przycisków. Do wyboru są trzy modele płatności oraz do 40% zniżki przy przedpłacie.
 pricing.team	zespół
 pricing.seats_one	osoba
@@ -178,7 +178,7 @@ faq.notFoundTitle	Nie znalazłeś odpowiedzi?
 faq.notFoundLead	Napisz do nas — odpowiadamy osobiście, bez botów i bez kolejki.
 faq.copied	Skopiowano
 about.label	o nas
-about.title	Velorę tworzą ludzie,\\nktórzy sami prowadzili studia
+about.title	Velorę tworzą ludzie,\nktórzy sami prowadzili studia
 about.lead	Nie budujemy „CRM dla wszystkich”. Budujemy narzędzie do konkretnej pracy — harmonogramu, klientów, pieniędzy i komunikacji — i sami odpowiadamy na pytania zamiast wysyłać gotowe odpowiedzi.
 about.p1	Klienci studia pozostają jego klientami. Velora nie tworzy wspólnego katalogu, nie pokazuje Twoim klientom reklam innych firm i nie pobiera prowizji, gdy ktoś do Ciebie wraca.
 about.p2	Obecnie produkt jest zbudowany dla studiów jogi i pilatesu — dla sposobu, w jaki naprawdę działają ich harmonogramy, karnety i trenerzy. Inne branże pojawią się z taką samą uważnością.

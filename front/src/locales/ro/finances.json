@@ -149,53 +149,53 @@
     "categoryPresets": {
       "in": [
         {
-          "value": "Abonamente",
+          "value": "Абонементы",
           "label": "Abonamente"
         },
         {
-          "value": "Servicii",
+          "value": "Услуги",
           "label": "Servicii"
         },
         {
-          "value": "Certificate cadou",
+          "value": "Сертификаты",
           "label": "Certificate cadou"
         },
         {
-          "value": "Depozit",
+          "value": "Депозит",
           "label": "Depozit"
         },
         {
-          "value": "Altele",
+          "value": "Прочее",
           "label": "Altele"
         }
       ],
       "out": [
         {
-          "value": "Rambursări",
+          "value": "Возвраты",
           "label": "Rambursări"
         },
         {
-          "value": "Chirie",
+          "value": "Аренда",
           "label": "Chirie"
         },
         {
-          "value": "Salarii",
+          "value": "Зарплата",
           "label": "Salarii"
         },
         {
-          "value": "Aprovizionare",
+          "value": "Закупки",
           "label": "Aprovizionare"
         },
         {
-          "value": "Marketing",
+          "value": "Реклама",
           "label": "Marketing"
         },
         {
-          "value": "Impozite",
+          "value": "Налоги",
           "label": "Impozite"
         },
         {
-          "value": "Altele",
+          "value": "Прочее",
           "label": "Altele"
         }
       ]

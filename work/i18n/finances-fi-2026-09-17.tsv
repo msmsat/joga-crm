@@ -125,29 +125,29 @@ operations.toasts.updated	Tapahtuma päivitetty
 operations.toasts.updateFailed	Tapahtuman tallentaminen epäonnistui
 operations.toasts.exportFailed	Tapahtumien vienti epäonnistui
 operations.toasts.receiptDownloaded	Kuitti ladattu
-operations.categoryPresets.in.0.value	Jäsenyydet
+operations.categoryPresets.in.0.value	Абонементы
 operations.categoryPresets.in.0.label	Jäsenyydet
-operations.categoryPresets.in.1.value	Palvelut
+operations.categoryPresets.in.1.value	Услуги
 operations.categoryPresets.in.1.label	Palvelut
-operations.categoryPresets.in.2.value	Lahjakortit
+operations.categoryPresets.in.2.value	Сертификаты
 operations.categoryPresets.in.2.label	Lahjakortit
-operations.categoryPresets.in.3.value	Talletus
+operations.categoryPresets.in.3.value	Депозит
 operations.categoryPresets.in.3.label	Talletus
-operations.categoryPresets.in.4.value	Muu
+operations.categoryPresets.in.4.value	Прочее
 operations.categoryPresets.in.4.label	Muu
-operations.categoryPresets.out.0.value	Palautukset
+operations.categoryPresets.out.0.value	Возвраты
 operations.categoryPresets.out.0.label	Palautukset
-operations.categoryPresets.out.1.value	Vuokra
+operations.categoryPresets.out.1.value	Аренда
 operations.categoryPresets.out.1.label	Vuokra
-operations.categoryPresets.out.2.value	Palkat
+operations.categoryPresets.out.2.value	Зарплата
 operations.categoryPresets.out.2.label	Palkat
-operations.categoryPresets.out.3.value	Hankinnat
+operations.categoryPresets.out.3.value	Закупки
 operations.categoryPresets.out.3.label	Hankinnat
-operations.categoryPresets.out.4.value	Markkinointi
+operations.categoryPresets.out.4.value	Реклама
 operations.categoryPresets.out.4.label	Markkinointi
-operations.categoryPresets.out.5.value	Verot
+operations.categoryPresets.out.5.value	Налоги
 operations.categoryPresets.out.5.label	Verot
-operations.categoryPresets.out.6.value	Muu
+operations.categoryPresets.out.6.value	Прочее
 operations.categoryPresets.out.6.label	Muu
 salaries.loading	Ladataan palkkoja…
 salaries.noRows	Ei laskettavaa henkilöstöä

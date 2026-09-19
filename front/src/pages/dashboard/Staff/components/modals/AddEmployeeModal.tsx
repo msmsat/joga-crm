@@ -891,7 +891,7 @@ export function AddEmployeeModal({ isOpen, onClose, onSuccess }: AddEmployeeModa
                                   onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 6px 16px rgba(var(--ink),0.25)"; }}
                                   onMouseLeave={e => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "0 4px 12px rgba(26,26,26,0.15)"; }}
                                 >
-                                  {t("common:buttons.yes", { defaultValue: "Да, перейти" })}
+                                  {t("common:buttons.continue")}
                                 </button>
                               </div>
 

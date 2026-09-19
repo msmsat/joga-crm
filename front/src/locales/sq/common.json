@@ -25,7 +25,8 @@
     "done": "Gati, mbyll",
     "saving": "Duke ruajtur…",
     "saved": "U ruajt!",
-    "upload": "Ngarko"
+    "upload": "Ngarko",
+    "undo": "Zhbëj"
   },
   "validation": {
     "required": "Fushë e detyrueshme",
@@ -143,7 +144,15 @@
       "unknown_event": "Ngjarje e panjohur",
       "not_personal": "Cilësimet personale nuk i ndryshojnë njoftimet e detyrueshme"
     },
-    "trial_already_used": "Prova falas nuk është më e disponueshme për këtë studio."
+    "trial_already_used": "Prova falas nuk është më e disponueshme për këtë studio.",
+    "invalid_credentials": "Emaili, numri i telefonit ose fjalëkalimi është i pasaktë.",
+    "account_not_verified": "Llogaria juaj ende nuk është aktivizuar. Pranoni ftesën në email ose konfirmoni adresën me kodin.",
+    "invalid_code": "Kodi është i pavlefshëm ose ka skaduar.",
+    "invalid_current_password": "Fjalëkalimi aktual është i pasaktë.",
+    "password_unchanged": "Fjalëkalimi i ri duhet të jetë i ndryshëm nga ai aktual.",
+    "invalid_request": "Kontrolloni të dhënat e futura dhe provoni përsëri.",
+    "session_expired": "Seanca juaj ka skaduar. Hyni përsëri.",
+    "limit_exceeded": "Keni arritur kufirin e planit tuaj."
   },
   "units": {
     "min": "min",
@@ -208,5 +217,11 @@
       "strong": "I fortë",
       "excellent": "Shkëlqyeshëm"
     }
+  },
+  "planLimit": {
+    "title": "Kufiri i planit është arritur",
+    "description": "Kaloni në një plan më të lartë për të vazhduar.",
+    "later": "Më vonë",
+    "upgrade": "Përmirësoni planin"
   }
 }

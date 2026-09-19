@@ -149,53 +149,53 @@
     "categoryPresets": {
       "in": [
         {
-          "value": "Jäsenyydet",
+          "value": "Абонементы",
           "label": "Jäsenyydet"
         },
         {
-          "value": "Palvelut",
+          "value": "Услуги",
           "label": "Palvelut"
         },
         {
-          "value": "Lahjakortit",
+          "value": "Сертификаты",
           "label": "Lahjakortit"
         },
         {
-          "value": "Talletus",
+          "value": "Депозит",
           "label": "Talletus"
         },
         {
-          "value": "Muu",
+          "value": "Прочее",
           "label": "Muu"
         }
       ],
       "out": [
         {
-          "value": "Palautukset",
+          "value": "Возвраты",
           "label": "Palautukset"
         },
         {
-          "value": "Vuokra",
+          "value": "Аренда",
           "label": "Vuokra"
         },
         {
-          "value": "Palkat",
+          "value": "Зарплата",
           "label": "Palkat"
         },
         {
-          "value": "Hankinnat",
+          "value": "Закупки",
           "label": "Hankinnat"
         },
         {
-          "value": "Markkinointi",
+          "value": "Реклама",
           "label": "Markkinointi"
         },
         {
-          "value": "Verot",
+          "value": "Налоги",
           "label": "Verot"
         },
         {
-          "value": "Muu",
+          "value": "Прочее",
           "label": "Muu"
         }
       ]

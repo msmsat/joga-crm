@@ -25,7 +25,8 @@
     "done": "Tamam, kapat",
     "saving": "Kaydediliyor…",
     "saved": "Kaydedildi!",
-    "upload": "Yükle"
+    "upload": "Yükle",
+    "undo": "Geri al"
   },
   "validation": {
     "required": "Zorunlu alan",
@@ -143,7 +144,15 @@
       "unknown_event": "Bilinmeyen olay",
       "not_personal": "Kişisel ayarlar zorunlu bildirimleri değiştiremez"
     },
-    "trial_already_used": "Ücretsiz deneme bu stüdyo için artık kullanılamıyor."
+    "trial_already_used": "Ücretsiz deneme bu stüdyo için artık kullanılamıyor.",
+    "invalid_credentials": "E-posta, telefon numarası veya şifre hatalı.",
+    "account_not_verified": "Hesabınız henüz etkinleştirilmedi. E-postadaki daveti kabul edin veya e-posta adresinizi kodla doğrulayın.",
+    "invalid_code": "Kod geçersiz veya süresi dolmuş.",
+    "invalid_current_password": "Mevcut şifre yanlış.",
+    "password_unchanged": "Yeni şifre mevcut şifreden farklı olmalıdır.",
+    "invalid_request": "Girdiğiniz bilgileri kontrol edip tekrar deneyin.",
+    "session_expired": "Oturumunuzun süresi doldu. Lütfen tekrar giriş yapın.",
+    "limit_exceeded": "Planınızın sınırına ulaştınız."
   },
   "units": {
     "min": "dk",
@@ -208,5 +217,11 @@
       "strong": "Güçlü",
       "excellent": "Mükemmel"
     }
+  },
+  "planLimit": {
+    "title": "Plan sınırına ulaşıldı",
+    "description": "Devam etmek için planınızı yükseltin.",
+    "later": "Daha sonra",
+    "upgrade": "Planı yükselt"
   }
 }

@@ -8,7 +8,7 @@ nav.startShort	Počnite
 nav.startFull	Počnite besplatno
 nav.language	Jezik
 hero.badge	Novi CRM standard za 2026.
-hero.title	CRM koji ćete\\n*voljeti* koristiti
+hero.title	CRM koji ćete\n*voljeti* koristiti
 hero.lead	Premium B2B CRM za studije joge i pilatesa. Rezervacije, klijenti, tim i financije na jednom mjestu. Bez dodatnih klikova i zbrke.
 hero.cta	Isprobajte besplatno 30 dana
 hero.perks.0	30 dana besplatno
@@ -39,7 +39,7 @@ stats.trust.1	Uloge se primjenjuju i na poslužitelju
 stats.trust.2	CSV izvoz u svakom trenutku
 stats.trust.3	Brisanje na zahtjev
 compare.label	razlika
-compare.title	Uklonili smo ono\\nšto vam stoji na putu
+compare.title	Uklonili smo ono\nšto vam stoji na putu
 compare.lead	Velora je nastala iz vlastitog iskustva: vodili smo studije i svaki dan nailazili na isti zid — CRM u kojem je potrebno devet klikova za rezervaciju klijenta. Evo što se promijenilo.
 compare.usual	Uobičajeni način
 compare.velora	U Velori
@@ -54,7 +54,7 @@ compare.pairs.3.good	Uloge ograničavaju pristup i u sučelju i na poslužitelju
 compare.pairs.4.bad	Asistent? U najboljem slučaju pretraga klijenta
 compare.pairs.4.good	Velora AI odgovara na pitanja o vašem poslovanju — i na pitanja vaših klijenata u Telegramu i Instagramu
 showcase.label	sve na jednom mjestu
-showcase.title	Jedna platforma umjesto\\ndesetaka usluga
+showcase.title	Jedna platforma umjesto\ndesetaka usluga
 showcase.lead	Rezervacije, klijenti, novac, komunikacija i AI u jednom sučelju. Nijedan suvišan modul: svaki prikaz rješava stvaran problem vlasnika.
 showcase.blocks.journal.title	Vaš raspored
 showcase.blocks.journal.lead	Dnevna mreža u kojoj su treneri stupci, a sati redovi. Ovdje se događa sve što administrator radi.
@@ -85,7 +85,7 @@ ctaStrip.title	Isprobajte bez migracije podataka i bez plaćanja unaprijed
 ctaStrip.button	Počnite besplatno
 ctaStrip.note	30 dana besplatno • Bez kartice • Pomoć pri početku
 modules.label	moduli
-modules.title	16 modula,\\nveć uključenih
+modules.title	16 modula,\nveć uključenih
 modules.lead	Nije zbirka praznih mjesta s oznakom „uskoro” — sve navedeno radi i uključeno je u plan. Uloge određuju tko vidi koji odjeljak.
 modules.items.dashboard.title	Pregled
 modules.items.dashboard.desc	Prihodi, aktivni klijenti, rezervacije i lojalnost klijenata — s trendovima
@@ -122,7 +122,7 @@ modules.items.data.desc	CSV izvoz, brisanje na zahtjev
 modules.integrations	Integracije
 modules.integrationsNote	povezane u postavkama studija
 pricing.label	cijene
-pricing.title	Vaš plan ovisi o\\nveličini tima
+pricing.title	Vaš plan ovisi o\nveličini tima
 pricing.lead	15 € za dvije osobe, +5 € za svako sljedeće mjesto, neograničeno — 120 €. Svih 16 modula i Velora AI uključeni su na svakoj razini: plaćate veličinu tima, a ne otključavanje gumba. Tri modela plaćanja po izboru i do 40 % popusta pri uplati unaprijed.
 pricing.team	tim
 pricing.seats_one	osoba
@@ -178,7 +178,7 @@ faq.notFoundTitle	Niste pronašli odgovor?
 faq.notFoundLead	Pišite nam — odgovaramo osobno, bez botova i bez čekanja.
 faq.copied	Kopirano
 about.label	o nama
-about.title	Veloru grade ljudi\\nkoji su i sami vodili studije
+about.title	Veloru grade ljudi\nkoji su i sami vodili studije
 about.lead	Ne gradimo „CRM za sve”. Gradimo alat za određeni posao — raspored, klijente, novac, komunikaciju — i sami odgovaramo na pitanja umjesto da šaljemo gotove odgovore.
 about.p1	Klijenti jednog studija ostaju klijenti tog studija. Velora ne stvara zajednički katalog, ne prikazuje vašim klijentima tuđe oglase i ne uzima postotak kada vam se osoba vrati.
 about.p2	Trenutačno je proizvod izgrađen za studije joge i pilatesa — za način na koji zaista funkcioniraju njihovi rasporedi, članarine i treneri. Druge će djelatnosti slijediti s istom pažnjom.

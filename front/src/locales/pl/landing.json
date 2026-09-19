@@ -11,7 +11,7 @@
   },
   "hero": {
     "badge": "Nowy standard CRM na 2026 rok",
-    "title": "CRM, którego\\\n*polubisz* używać",
+    "title": "CRM, którego\n*polubisz* używać",
     "lead": "Premium B2B CRM dla studiów jogi i pilatesu. Rezerwacje, klienci, zespół i finanse w jednym miejscu. Bez zbędnych kliknięć i zamieszania.",
     "cta": "Wypróbuj bezpłatnie przez 30 dni",
     "perks": [
@@ -62,7 +62,7 @@
   },
   "compare": {
     "label": "różnica",
-    "title": "Usunęliśmy to,\\\nco stało na drodze",
+    "title": "Usunęliśmy to,\nco stało na drodze",
     "lead": "Velora powstała z naszego doświadczenia: prowadziliśmy studia i codziennie napotykaliśmy tę samą ścianę — CRM, w którym potrzeba dziewięciu kliknięć, aby zapisać klienta. Oto, co się zmieniło.",
     "usual": "Zwykły sposób",
     "velora": "W Velora",
@@ -91,7 +91,7 @@
   },
   "showcase": {
     "label": "wszystko w jednym",
-    "title": "Jedna platforma zamiast\\\ndziesiątek usług",
+    "title": "Jedna platforma zamiast\ndziesiątek usług",
     "lead": "Rezerwacje, klienci, pieniądze, komunikacja i AI w jednym interfejsie. Ani jednego zbędnego modułu: każdy widok rozwiązuje prawdziwy problem właściciela.",
     "blocks": {
       "journal": {
@@ -148,7 +148,7 @@
   },
   "modules": {
     "label": "moduły",
-    "title": "16 modułów,\\\njuż w cenie",
+    "title": "16 modułów,\njuż w cenie",
     "lead": "To nie zbiór atrap z napisem „wkrótce” — wszystko na liście działa i jest w planie. Role określają, kto widzi każdą sekcję.",
     "items": {
       "dashboard": {
@@ -221,7 +221,7 @@
   },
   "pricing": {
     "label": "cennik",
-    "title": "Twój plan zależy od\\\nwielkości zespołu",
+    "title": "Twój plan zależy od\nwielkości zespołu",
     "lead": "15 € za dwie osoby, +5 € za każde kolejne miejsce, bez limitu — 120 €. Wszystkie 16 modułów i Velora AI są na każdym poziomie: płacisz za wielkość zespołu, a nie za odblokowywanie przycisków. Do wyboru są trzy modele płatności oraz do 40% zniżki przy przedpłacie.",
     "team": "zespół",
     "seats_one": "osoba",
@@ -305,7 +305,7 @@
   },
   "about": {
     "label": "o nas",
-    "title": "Velorę tworzą ludzie,\\\nktórzy sami prowadzili studia",
+    "title": "Velorę tworzą ludzie,\nktórzy sami prowadzili studia",
     "lead": "Nie budujemy „CRM dla wszystkich”. Budujemy narzędzie do konkretnej pracy — harmonogramu, klientów, pieniędzy i komunikacji — i sami odpowiadamy na pytania zamiast wysyłać gotowe odpowiedzi.",
     "p1": "Klienci studia pozostają jego klientami. Velora nie tworzy wspólnego katalogu, nie pokazuje Twoim klientom reklam innych firm i nie pobiera prowizji, gdy ktoś do Ciebie wraca.",
     "p2": "Obecnie produkt jest zbudowany dla studiów jogi i pilatesu — dla sposobu, w jaki naprawdę działają ich harmonogramy, karnety i trenerzy. Inne branże pojawią się z taką samą uważnością."

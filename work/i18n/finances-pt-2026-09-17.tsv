@@ -125,29 +125,29 @@ operations.toasts.updated	Operação atualizada
 operations.toasts.updateFailed	Não foi possível guardar a operação
 operations.toasts.exportFailed	Não foi possível exportar as operações
 operations.toasts.receiptDownloaded	Recibo transferido
-operations.categoryPresets.in.0.value	Subscrições
+operations.categoryPresets.in.0.value	Абонементы
 operations.categoryPresets.in.0.label	Subscrições
-operations.categoryPresets.in.1.value	Serviços
+operations.categoryPresets.in.1.value	Услуги
 operations.categoryPresets.in.1.label	Serviços
-operations.categoryPresets.in.2.value	Certificados de oferta
+operations.categoryPresets.in.2.value	Сертификаты
 operations.categoryPresets.in.2.label	Certificados de oferta
-operations.categoryPresets.in.3.value	Depósito
+operations.categoryPresets.in.3.value	Депозит
 operations.categoryPresets.in.3.label	Depósito
-operations.categoryPresets.in.4.value	Outro
+operations.categoryPresets.in.4.value	Прочее
 operations.categoryPresets.in.4.label	Outro
-operations.categoryPresets.out.0.value	Reembolsos
+operations.categoryPresets.out.0.value	Возвраты
 operations.categoryPresets.out.0.label	Reembolsos
-operations.categoryPresets.out.1.value	Renda
+operations.categoryPresets.out.1.value	Аренда
 operations.categoryPresets.out.1.label	Renda
-operations.categoryPresets.out.2.value	Salários
+operations.categoryPresets.out.2.value	Зарплата
 operations.categoryPresets.out.2.label	Salários
-operations.categoryPresets.out.3.value	Compras
+operations.categoryPresets.out.3.value	Закупки
 operations.categoryPresets.out.3.label	Compras
-operations.categoryPresets.out.4.value	Marketing
+operations.categoryPresets.out.4.value	Реклама
 operations.categoryPresets.out.4.label	Marketing
-operations.categoryPresets.out.5.value	Impostos
+operations.categoryPresets.out.5.value	Налоги
 operations.categoryPresets.out.5.label	Impostos
-operations.categoryPresets.out.6.value	Outro
+operations.categoryPresets.out.6.value	Прочее
 operations.categoryPresets.out.6.label	Outro
 salaries.loading	A carregar salários…
 salaries.noRows	Não há pessoal para calcular

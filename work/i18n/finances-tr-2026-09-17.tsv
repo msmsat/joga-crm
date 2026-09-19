@@ -125,29 +125,29 @@ operations.toasts.updated	İşlem güncellendi
 operations.toasts.updateFailed	İşlem kaydedilemedi
 operations.toasts.exportFailed	İşlemler dışa aktarılamadı
 operations.toasts.receiptDownloaded	Makbuz indirildi
-operations.categoryPresets.in.0.value	Üyelikler
+operations.categoryPresets.in.0.value	Абонементы
 operations.categoryPresets.in.0.label	Üyelikler
-operations.categoryPresets.in.1.value	Hizmetler
+operations.categoryPresets.in.1.value	Услуги
 operations.categoryPresets.in.1.label	Hizmetler
-operations.categoryPresets.in.2.value	Hediye sertifikaları
+operations.categoryPresets.in.2.value	Сертификаты
 operations.categoryPresets.in.2.label	Hediye sertifikaları
-operations.categoryPresets.in.3.value	Depozito
+operations.categoryPresets.in.3.value	Депозит
 operations.categoryPresets.in.3.label	Depozito
-operations.categoryPresets.in.4.value	Diğer
+operations.categoryPresets.in.4.value	Прочее
 operations.categoryPresets.in.4.label	Diğer
-operations.categoryPresets.out.0.value	İadeler
+operations.categoryPresets.out.0.value	Возвраты
 operations.categoryPresets.out.0.label	İadeler
-operations.categoryPresets.out.1.value	Kira
+operations.categoryPresets.out.1.value	Аренда
 operations.categoryPresets.out.1.label	Kira
-operations.categoryPresets.out.2.value	Maaşlar
+operations.categoryPresets.out.2.value	Зарплата
 operations.categoryPresets.out.2.label	Maaşlar
-operations.categoryPresets.out.3.value	Tedarik
+operations.categoryPresets.out.3.value	Закупки
 operations.categoryPresets.out.3.label	Tedarik
-operations.categoryPresets.out.4.value	Pazarlama
+operations.categoryPresets.out.4.value	Реклама
 operations.categoryPresets.out.4.label	Pazarlama
-operations.categoryPresets.out.5.value	Vergiler
+operations.categoryPresets.out.5.value	Налоги
 operations.categoryPresets.out.5.label	Vergiler
-operations.categoryPresets.out.6.value	Diğer
+operations.categoryPresets.out.6.value	Прочее
 operations.categoryPresets.out.6.label	Diğer
 salaries.loading	Bordro yükleniyor…
 salaries.noRows	Hesaplanacak ekip üyesi yok

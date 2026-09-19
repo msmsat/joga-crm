@@ -42,6 +42,20 @@ class StrictLocaleVerificationTests(unittest.TestCase):
     def source(self, value: object) -> None:
         self.write("en", "common", value)
 
+    def test_financial_category_values_cannot_be_translated(self):
+        self.write('en', 'finances', {'operations': {'categoryPresets': {
+            'out': [{'value': 'Возвраты', 'label': 'Refunds'}]}}})
+        problems = lib.check('fr', 'finances', {
+            'operations.categoryPresets.out.0.value': 'Remboursements',
+            'operations.categoryPresets.out.0.label': 'Remboursements',
+        })
+        self.assertTrue(any('immutable' in p for p in problems), problems)
+
+    def test_stray_backslash_before_translated_line_break_is_rejected(self):
+        self.source({'title': 'First\nSecond'})
+        problems = lib.check('fr', 'common', {'title': 'Premier\\\nDeuxième'})
+        self.assertTrue(any('backslash' in p for p in problems), problems)
+
     def test_duplicate_json_key_is_rejected_instead_of_silently_overwritten(self):
         """Changing an earlier duplicate must not be hidden by ``json.load``."""
         self.source({"label": "English"})

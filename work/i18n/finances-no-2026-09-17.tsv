@@ -125,29 +125,29 @@ operations.toasts.updated	Transaksjonen er oppdatert
 operations.toasts.updateFailed	Kunne ikke lagre transaksjonen
 operations.toasts.exportFailed	Kunne ikke eksportere transaksjoner
 operations.toasts.receiptDownloaded	Kvittering lastet ned
-operations.categoryPresets.in.0.value	Medlemskap
+operations.categoryPresets.in.0.value	Абонементы
 operations.categoryPresets.in.0.label	Medlemskap
-operations.categoryPresets.in.1.value	Tjenester
+operations.categoryPresets.in.1.value	Услуги
 operations.categoryPresets.in.1.label	Tjenester
-operations.categoryPresets.in.2.value	Gavekort
+operations.categoryPresets.in.2.value	Сертификаты
 operations.categoryPresets.in.2.label	Gavekort
-operations.categoryPresets.in.3.value	Innskudd
+operations.categoryPresets.in.3.value	Депозит
 operations.categoryPresets.in.3.label	Innskudd
-operations.categoryPresets.in.4.value	Annet
+operations.categoryPresets.in.4.value	Прочее
 operations.categoryPresets.in.4.label	Annet
-operations.categoryPresets.out.0.value	Refusjoner
+operations.categoryPresets.out.0.value	Возвраты
 operations.categoryPresets.out.0.label	Refusjoner
-operations.categoryPresets.out.1.value	Leie
+operations.categoryPresets.out.1.value	Аренда
 operations.categoryPresets.out.1.label	Leie
-operations.categoryPresets.out.2.value	Lønn
+operations.categoryPresets.out.2.value	Зарплата
 operations.categoryPresets.out.2.label	Lønn
-operations.categoryPresets.out.3.value	Innkjøp
+operations.categoryPresets.out.3.value	Закупки
 operations.categoryPresets.out.3.label	Innkjøp
-operations.categoryPresets.out.4.value	Markedsføring
+operations.categoryPresets.out.4.value	Реклама
 operations.categoryPresets.out.4.label	Markedsføring
-operations.categoryPresets.out.5.value	Skatter
+operations.categoryPresets.out.5.value	Налоги
 operations.categoryPresets.out.5.label	Skatter
-operations.categoryPresets.out.6.value	Annet
+operations.categoryPresets.out.6.value	Прочее
 operations.categoryPresets.out.6.label	Annet
 salaries.loading	Laster lønn…
 salaries.noRows	Ingen ansatte å beregne for

@@ -25,7 +25,8 @@
     "done": "Terminé, fermer",
     "saving": "Enregistrement…",
     "saved": "Enregistré !",
-    "upload": "Téléverser"
+    "upload": "Téléverser",
+    "undo": "Annuler"
   },
   "validation": {
     "required": "Champ obligatoire",
@@ -143,7 +144,15 @@
       "unknown_event": "Événement inconnu",
       "not_personal": "Les réglages personnels ne modifient pas les notifications obligatoires"
     },
-    "trial_already_used": "L'essai gratuit n'est plus disponible pour ce studio."
+    "trial_already_used": "L'essai gratuit n'est plus disponible pour ce studio.",
+    "invalid_credentials": "Adresse e-mail, numéro de téléphone ou mot de passe incorrect.",
+    "account_not_verified": "Votre compte n’est pas encore activé. Acceptez l’invitation reçue par e-mail ou confirmez votre adresse avec le code.",
+    "invalid_code": "Le code est invalide ou a expiré.",
+    "invalid_current_password": "Le mot de passe actuel est incorrect.",
+    "password_unchanged": "Le nouveau mot de passe doit être différent du mot de passe actuel.",
+    "invalid_request": "Vérifiez les données saisies et réessayez.",
+    "session_expired": "Votre session a expiré. Veuillez vous reconnecter.",
+    "limit_exceeded": "Vous avez atteint la limite de votre forfait."
   },
   "units": {
     "min": "min",
@@ -208,5 +217,11 @@
       "strong": "Fort",
       "excellent": "Excellent"
     }
+  },
+  "planLimit": {
+    "title": "Limite du forfait atteinte",
+    "description": "Passez au forfait supérieur pour continuer.",
+    "later": "Plus tard",
+    "upgrade": "Changer de forfait"
   }
 }

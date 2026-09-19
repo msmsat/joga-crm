@@ -1120,7 +1120,7 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
                                   e.currentTarget.style.boxShadow = "0 4px 12px rgba(26,26,26,0.15)"; 
                                 }}
                               >
-                                {t("common:buttons.yes", { defaultValue: "Да, перейти" })}
+                                {t("common:buttons.continue")}
                               </button>
                             </div>
                           </div>

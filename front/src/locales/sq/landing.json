@@ -11,7 +11,7 @@
   },
   "hero": {
     "badge": "Standardi i ri CRM për vitin 2026",
-    "title": "Një CRM që do ta\\\n*donit* ta përdornit",
+    "title": "Një CRM që do ta\n*donit* ta përdornit",
     "lead": "CRM premium B2B për studio yoga dhe pilates. Rezervime, klientë, ekip dhe financa në një vend. Pa klikime të panevojshme, pa ngatërresë.",
     "cta": "Provojeni falas për 30 ditë",
     "perks": [
@@ -62,7 +62,7 @@
   },
   "compare": {
     "label": "dallimi",
-    "title": "Hoqëm atë që\\\nju pengonte",
+    "title": "Hoqëm atë që\nju pengonte",
     "lead": "Velora lindi nga përvoja jonë: drejtonim studio dhe çdo ditë ndesheshim me të njëjtin mur — një CRM ku duheshin nëntë klikime për të rezervuar një klient. Ja çfarë ndryshoi.",
     "usual": "Mënyra e zakonshme",
     "velora": "Në Velora",
@@ -91,7 +91,7 @@
   },
   "showcase": {
     "label": "gjithçka në një vend",
-    "title": "Një platformë në vend të\\\ndhjetëra shërbimeve",
+    "title": "Një platformë në vend të\ndhjetëra shërbimeve",
     "lead": "Rezervime, klientë, para, komunikim dhe AI në një ndërfaqe të vetme. Asnjë modul i tepërt: çdo pamje zgjidh një problem real të pronarit.",
     "blocks": {
       "journal": {
@@ -148,7 +148,7 @@
   },
   "modules": {
     "label": "modulet",
-    "title": "16 module,\\\ntashmë të përfshira",
+    "title": "16 module,\ntashmë të përfshira",
     "lead": "Jo një koleksion vendmbajtësish „së shpejti” — gjithçka e listuar funksionon dhe përfshihet në plan. Rolet vendosin kush e sheh secilin seksion.",
     "items": {
       "dashboard": {
@@ -221,7 +221,7 @@
   },
   "pricing": {
     "label": "çmimet",
-    "title": "Plani juaj varet nga\\\nmadhësia e ekipit",
+    "title": "Plani juaj varet nga\nmadhësia e ekipit",
     "lead": "15 € për dy persona, +5 € për çdo vend tjetër, pa kufi — 120 €. Të 16 modulet dhe Velora AI përfshihen në çdo nivel: paguani për madhësinë e ekipit, jo për të zhbllokuar butona. Tre modele pagese për të zgjedhur dhe deri në 40% ulje me pagesë paraprake.",
     "team": "ekip",
     "seats_one": "person",
@@ -304,7 +304,7 @@
   },
   "about": {
     "label": "rreth nesh",
-    "title": "Velora ndërtohet nga njerëz\\\nqë vetë kanë drejtuar studio",
+    "title": "Velora ndërtohet nga njerëz\nqë vetë kanë drejtuar studio",
     "lead": "Nuk po ndërtojmë „CRM për të gjithë”. Po ndërtojmë një mjet për një punë të caktuar — orar, klientë, para, komunikim — dhe u përgjigjemi vetë pyetjeve në vend që të dërgojmë përgjigje të gatshme.",
     "p1": "Klientët e një studioje mbeten klientët e saj. Velora nuk ndërton një katalog të përbashkët, nuk u shfaq klientëve tuaj reklama të të tjerëve dhe nuk merr përqindje kur një person kthehet te ju.",
     "p2": "Tani për tani produkti është krijuar për studio yoga dhe pilates — për mënyrën si funksionojnë vërtet oraret, anëtarësimet dhe trajnerët e tyre. Industri të tjera do të vijnë me të njëjtën kujdes."

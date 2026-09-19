@@ -25,7 +25,8 @@
     "done": "Færdig, luk",
     "saving": "Gemmer…",
     "saved": "Gemt!",
-    "upload": "Upload"
+    "upload": "Upload",
+    "undo": "Fortryd"
   },
   "validation": {
     "required": "Obligatorisk felt",
@@ -143,7 +144,15 @@
       "unknown_event": "Ukendt hændelse",
       "not_personal": "Personlige indstillinger kan ikke ændre obligatoriske notifikationer"
     },
-    "trial_already_used": "Den gratis prøveperiode er ikke længere tilgængelig for dette studie."
+    "trial_already_used": "Den gratis prøveperiode er ikke længere tilgængelig for dette studie.",
+    "invalid_credentials": "Forkert e-mailadresse, telefonnummer eller adgangskode.",
+    "account_not_verified": "Din konto er endnu ikke aktiveret. Acceptér invitationen i e-mailen, eller bekræft din e-mailadresse med koden.",
+    "invalid_code": "Koden er ugyldig eller udløbet.",
+    "invalid_current_password": "Den nuværende adgangskode er forkert.",
+    "password_unchanged": "Den nye adgangskode skal være forskellig fra den nuværende.",
+    "invalid_request": "Kontrollér de indtastede oplysninger, og prøv igen.",
+    "session_expired": "Din session er udløbet. Log ind igen.",
+    "limit_exceeded": "Du har nået grænsen for din plan."
   },
   "units": {
     "min": "min",
@@ -208,5 +217,11 @@
       "strong": "Stærk",
       "excellent": "Fremragende"
     }
+  },
+  "planLimit": {
+    "title": "Plangrænsen er nået",
+    "description": "Opgrader din plan for at fortsætte.",
+    "later": "Senere",
+    "upgrade": "Opgrader plan"
   }
 }

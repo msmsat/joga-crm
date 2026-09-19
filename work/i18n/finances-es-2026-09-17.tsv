@@ -125,29 +125,29 @@ operations.toasts.updated	Operación actualizada
 operations.toasts.updateFailed	No se pudo guardar la operación
 operations.toasts.exportFailed	No se pudieron exportar las operaciones
 operations.toasts.receiptDownloaded	Recibo descargado
-operations.categoryPresets.in.0.value	Membresías
+operations.categoryPresets.in.0.value	Абонементы
 operations.categoryPresets.in.0.label	Membresías
-operations.categoryPresets.in.1.value	Servicios
+operations.categoryPresets.in.1.value	Услуги
 operations.categoryPresets.in.1.label	Servicios
-operations.categoryPresets.in.2.value	Certificados regalo
+operations.categoryPresets.in.2.value	Сертификаты
 operations.categoryPresets.in.2.label	Certificados regalo
-operations.categoryPresets.in.3.value	Depósito
+operations.categoryPresets.in.3.value	Депозит
 operations.categoryPresets.in.3.label	Depósito
-operations.categoryPresets.in.4.value	Otros
+operations.categoryPresets.in.4.value	Прочее
 operations.categoryPresets.in.4.label	Otros
-operations.categoryPresets.out.0.value	Reembolsos
+operations.categoryPresets.out.0.value	Возвраты
 operations.categoryPresets.out.0.label	Reembolsos
-operations.categoryPresets.out.1.value	Alquiler
+operations.categoryPresets.out.1.value	Аренда
 operations.categoryPresets.out.1.label	Alquiler
-operations.categoryPresets.out.2.value	Nómina
+operations.categoryPresets.out.2.value	Зарплата
 operations.categoryPresets.out.2.label	Nómina
-operations.categoryPresets.out.3.value	Suministros
+operations.categoryPresets.out.3.value	Закупки
 operations.categoryPresets.out.3.label	Suministros
-operations.categoryPresets.out.4.value	Marketing
+operations.categoryPresets.out.4.value	Реклама
 operations.categoryPresets.out.4.label	Marketing
-operations.categoryPresets.out.5.value	Impuestos
+operations.categoryPresets.out.5.value	Налоги
 operations.categoryPresets.out.5.label	Impuestos
-operations.categoryPresets.out.6.value	Otros
+operations.categoryPresets.out.6.value	Прочее
 operations.categoryPresets.out.6.label	Otros
 salaries.loading	Cargando nóminas…
 salaries.noRows	No hay personal para calcular

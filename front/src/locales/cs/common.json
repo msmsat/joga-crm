@@ -25,7 +25,8 @@
     "done": "Hotovo, zavřít",
     "saving": "Ukládání…",
     "saved": "Uloženo!",
-    "upload": "Nahrát"
+    "upload": "Nahrát",
+    "undo": "Zpět"
   },
   "validation": {
     "required": "Povinné pole",
@@ -143,7 +144,15 @@
       "unknown_event": "Neznámá událost",
       "not_personal": "Osobní nastavení nemění povinná oznámení"
     },
-    "trial_already_used": "Bezplatná zkušební verze už pro toto studio není k dispozici."
+    "trial_already_used": "Bezplatná zkušební verze už pro toto studio není k dispozici.",
+    "invalid_credentials": "Nesprávný e-mail, telefonní číslo nebo heslo.",
+    "account_not_verified": "Váš účet ještě není aktivován. Přijměte pozvánku z e-mailu nebo potvrďte e-mail pomocí kódu.",
+    "invalid_code": "Kód je neplatný nebo vypršel.",
+    "invalid_current_password": "Současné heslo je nesprávné.",
+    "password_unchanged": "Nové heslo se musí lišit od současného.",
+    "invalid_request": "Zkontrolujte zadané údaje a zkuste to znovu.",
+    "session_expired": "Platnost přihlášení vypršela. Přihlaste se znovu.",
+    "limit_exceeded": "Dosáhli jste limitu svého tarifu."
   },
   "units": {
     "min": "min",
@@ -208,5 +217,11 @@
       "strong": "Silné",
       "excellent": "Výborné"
     }
+  },
+  "planLimit": {
+    "title": "Dosažen limit tarifu",
+    "description": "Pro pokračování přejděte na vyšší tarif.",
+    "later": "Později",
+    "upgrade": "Zvýšit tarif"
   }
 }

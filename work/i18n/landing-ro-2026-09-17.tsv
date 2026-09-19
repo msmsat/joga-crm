@@ -8,7 +8,7 @@ nav.startShort	Începeți
 nav.startFull	Începeți gratuit
 nav.language	Limbă
 hero.badge	Noul standard CRM al anului 2026
-hero.title	Un CRM pe care\\n*veți iubi* să-l folosiți
+hero.title	Un CRM pe care\n*veți iubi* să-l folosiți
 hero.lead	CRM B2B premium pentru studiouri de yoga și pilates. Programări, clienți, echipă și finanțe într-un singur loc. Fără clicuri în plus, fără confuzie.
 hero.cta	Încercați gratuit 30 de zile
 hero.perks.0	30 de zile gratuite
@@ -39,7 +39,7 @@ stats.trust.1	Rolurile sunt aplicate și pe server
 stats.trust.2	Export CSV oricând
 stats.trust.3	Ștergere la cerere
 compare.label	diferența
-compare.title	Am eliminat ce\\nvă stătea în cale
+compare.title	Am eliminat ce\nvă stătea în cale
 compare.lead	Velora s-a născut din propria noastră experiență: administram studiouri și ne loveam zilnic de același zid — un CRM în care sunt necesare nouă clicuri pentru a programa un client. Iată ce s-a schimbat.
 compare.usual	Modul obișnuit
 compare.velora	În Velora
@@ -54,7 +54,7 @@ compare.pairs.3.good	Rolurile limitează accesul atât în interfață, cât și
 compare.pairs.4.bad	Un asistent? În cel mai bun caz, căutare de clienți
 compare.pairs.4.good	Velora AI răspunde la întrebări despre afacerea dvs. — și la întrebările clienților în Telegram și Instagram
 showcase.label	toate într-un singur loc
-showcase.title	O platformă în locul\\nunui zeci de servicii
+showcase.title	O platformă în locul\na zeci de servicii
 showcase.lead	Programări, clienți, bani, comunicare și AI într-o singură interfață. Niciun modul inutil: fiecare ecran rezolvă o problemă reală a proprietarului.
 showcase.blocks.journal.title	Programul dvs.
 showcase.blocks.journal.lead	O grilă zilnică în care antrenorii sunt coloane, iar orele sunt rânduri. Aici se întâmplă tot ce face administratorul.
@@ -85,7 +85,7 @@ ctaStrip.title	Încercați fără migrare de date și fără plată în avans
 ctaStrip.button	Începeți gratuit
 ctaStrip.note	30 de zile gratuite • Fără card • Ajutor la început
 modules.label	module
-modules.title	16 module,\\ndeja incluse
+modules.title	16 module,\ndeja incluse
 modules.lead	Nu o colecție de substituenți „în curând” — tot ce este listat funcționează și este inclus în plan. Rolurile stabilesc cine vede fiecare secțiune.
 modules.items.dashboard.title	Prezentare generală
 modules.items.dashboard.desc	Venituri, clienți activi, programări și fidelitatea clienților — cu tendințe
@@ -122,7 +122,7 @@ modules.items.data.desc	Export CSV, ștergere la cerere
 modules.integrations	Integrări
 modules.integrationsNote	conectate din setările studioului
 pricing.label	prețuri
-pricing.title	Planul dvs. depinde de\\ndimensiunea echipei
+pricing.title	Planul dvs. depinde de\ndimensiunea echipei
 pricing.lead	15 € pentru două persoane, +5 € pentru fiecare loc următor, nelimitat — 120 €. Toate cele 16 module și Velora AI sunt incluse la fiecare nivel: plătiți pentru mărimea echipei, nu pentru deblocarea butoanelor. Trei modele de plată la alegere și până la 40% reducere la plata în avans.
 pricing.team	echipă
 pricing.seats_one	persoană
@@ -178,7 +178,7 @@ faq.notFoundTitle	Nu ați găsit răspunsul?
 faq.notFoundLead	Scrieți-ne — răspundem personal, fără boți și fără coadă.
 faq.copied	Copiat
 about.label	despre noi
-about.title	Velora este construită de oameni\\ncare au condus chiar ei studiouri
+about.title	Velora este construită de oameni\ncare au condus chiar ei studiouri
 about.lead	Nu construim un „CRM pentru toți”. Construim un instrument pentru o muncă anume — program, clienți, bani, comunicare — și răspundem singuri la întrebări în loc să trimitem răspunsuri gata făcute.
 about.p1	Clienții unui studio rămân clienții acelui studio. Velora nu construiește un catalog comun, nu le arată clienților dvs. reclamele altora și nu ia un procent când o persoană revine la dvs.
 about.p2	În prezent produsul este creat pentru studiouri de yoga și pilates — pentru modul în care funcționează cu adevărat programele, abonamentele și antrenorii lor. Alte domenii vor urma cu aceeași grijă.

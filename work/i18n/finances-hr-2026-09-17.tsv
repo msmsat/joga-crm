@@ -125,29 +125,29 @@ operations.toasts.updated	Operacija je ažurirana
 operations.toasts.updateFailed	Spremanje operacije nije uspjelo
 operations.toasts.exportFailed	Izvoz operacija nije uspio
 operations.toasts.receiptDownloaded	Račun je preuzet
-operations.categoryPresets.in.0.value	Pretplate
+operations.categoryPresets.in.0.value	Абонементы
 operations.categoryPresets.in.0.label	Pretplate
-operations.categoryPresets.in.1.value	Usluge
+operations.categoryPresets.in.1.value	Услуги
 operations.categoryPresets.in.1.label	Usluge
-operations.categoryPresets.in.2.value	Poklon-bonovi
+operations.categoryPresets.in.2.value	Сертификаты
 operations.categoryPresets.in.2.label	Poklon-bonovi
-operations.categoryPresets.in.3.value	Depozit
+operations.categoryPresets.in.3.value	Депозит
 operations.categoryPresets.in.3.label	Depozit
-operations.categoryPresets.in.4.value	Ostalo
+operations.categoryPresets.in.4.value	Прочее
 operations.categoryPresets.in.4.label	Ostalo
-operations.categoryPresets.out.0.value	Povrati
+operations.categoryPresets.out.0.value	Возвраты
 operations.categoryPresets.out.0.label	Povrati
-operations.categoryPresets.out.1.value	Najam
+operations.categoryPresets.out.1.value	Аренда
 operations.categoryPresets.out.1.label	Najam
-operations.categoryPresets.out.2.value	Plaće
+operations.categoryPresets.out.2.value	Зарплата
 operations.categoryPresets.out.2.label	Plaće
-operations.categoryPresets.out.3.value	Nabava
+operations.categoryPresets.out.3.value	Закупки
 operations.categoryPresets.out.3.label	Nabava
-operations.categoryPresets.out.4.value	Marketing
+operations.categoryPresets.out.4.value	Реклама
 operations.categoryPresets.out.4.label	Marketing
-operations.categoryPresets.out.5.value	Porezi
+operations.categoryPresets.out.5.value	Налоги
 operations.categoryPresets.out.5.label	Porezi
-operations.categoryPresets.out.6.value	Ostalo
+operations.categoryPresets.out.6.value	Прочее
 operations.categoryPresets.out.6.label	Ostalo
 salaries.loading	Učitavanje plaća…
 salaries.noRows	Nema osoblja za izračun

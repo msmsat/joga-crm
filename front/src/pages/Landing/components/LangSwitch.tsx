@@ -17,6 +17,8 @@ export function LangSwitch() {
   const { t, i18n } = useTranslation("landing");
   const [open, setOpen] = useState(false);
   const boxRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const listRef = useRef<HTMLUListElement>(null);
 
   const current = LANGUAGES.find(l => l.value === i18n.language) ?? LANGUAGES[0];
 
@@ -28,7 +30,10 @@ export function LangSwitch() {
       if (!boxRef.current?.contains(e.target as Node)) setOpen(false);
     };
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
+      if (e.key === "Escape") {
+        setOpen(false);
+        triggerRef.current?.focus();
+      }
     };
     document.addEventListener("mousedown", onDown);
     document.addEventListener("keydown", onKey);
@@ -42,13 +47,23 @@ export function LangSwitch() {
     i18n.changeLanguage(code);
     rememberLang(code);
     setOpen(false);
+    triggerRef.current?.focus();
   }
 
   return (
-    <div ref={boxRef} className="relative">
+    <div ref={boxRef} className="relative" onBlur={e => {
+      if (!e.currentTarget.contains(e.relatedTarget)) setOpen(false);
+    }}>
       <button
+        ref={triggerRef}
         type="button"
         onClick={() => setOpen(v => !v)}
+        onKeyDown={e => {
+          if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+            e.preventDefault();
+            setOpen(true);
+          }
+        }}
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-label={`${t("nav.language")}: ${current.label}`}
@@ -84,12 +99,25 @@ export function LangSwitch() {
       <AnimatePresence>
         {open && (
           <motion.ul
+            ref={listRef}
             role="listbox"
+            aria-label={t('nav.language')}
+            onAnimationComplete={() => {
+              if (open) listRef.current?.querySelector<HTMLButtonElement>('[aria-selected="true"] button')?.focus();
+            }}
+            onKeyDown={e => {
+              const buttons = Array.from(e.currentTarget.querySelectorAll('button'));
+              const index = buttons.indexOf(document.activeElement as HTMLButtonElement);
+              const next = e.key === 'Home' ? 0 : e.key === 'End' ? buttons.length - 1
+                : e.key === 'ArrowDown' ? (index + 1) % buttons.length
+                : e.key === 'ArrowUp' ? (index - 1 + buttons.length) % buttons.length : -1;
+              if (next >= 0) { e.preventDefault(); buttons[next]?.focus(); }
+            }}
             initial={{ opacity: 0, y: -6 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.2, ease: EASE }}
-            className="absolute right-0 top-[calc(100%+8px)] z-50 min-w-[178px] overflow-hidden rounded-xl border border-white/10 bg-[#181818] p-1.5 shadow-[0_20px_50px_-16px_rgba(0,0,0,0.8)]"
+            className="absolute right-0 top-[calc(100%+8px)] z-50 max-h-[min(360px,calc(100dvh-100px))] min-w-[178px] overflow-y-auto overscroll-contain rounded-xl border border-white/10 bg-[#181818] p-1.5 shadow-[0_20px_50px_-16px_rgba(0,0,0,0.8)]"
           >
             {LANGUAGES.map(l => {
               const active = l.value === current.value;

@@ -1,25 +1,24 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 // Глобальная модалка «Достигнут лимит тарифа». Слушает событие velora:plan-limit,
 // которое диспатчит api/client.ts при 403 limit_exceeded — так любое место создания
 // (сотрудник, клиент) получает апселл без своей обработки ошибки.
 export default function PlanLimitModal() {
   const navigate = useNavigate();
-  const [message, setMessage] = useState<string | null>(null);
+  const { t } = useTranslation();
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    const onLimit = (e: Event) => {
-      const detail = (e as CustomEvent<{ message?: string }>).detail;
-      setMessage(detail?.message || 'Достигнут лимит вашего тарифа.');
-    };
+    const onLimit = () => setOpen(true);
     window.addEventListener('velora:plan-limit', onLimit);
     return () => window.removeEventListener('velora:plan-limit', onLimit);
   }, []);
 
-  if (message === null) return null;
+  if (!open) return null;
 
-  const close = () => setMessage(null);
+  const close = () => setOpen(false);
   const upgrade = () => { close(); navigate('/dashboard/billing'); };
 
   return (
@@ -49,10 +48,10 @@ export default function PlanLimitModal() {
         </div>
 
         <div style={{ fontSize: '19px', fontWeight: 800, letterSpacing: '-0.3px', marginBottom: '10px' }}>
-          Достигнут лимит тарифа
+          {t('planLimit.title')}
         </div>
         <div style={{ fontSize: '14px', color: 'var(--muted, #666666)', lineHeight: 1.55, marginBottom: '28px' }}>
-          {message} Улучшите тариф, чтобы продолжить.
+          {t('errors.limit_exceeded')} {t('planLimit.description')}
         </div>
 
         <div style={{ display: 'flex', gap: '12px' }}>
@@ -64,7 +63,7 @@ export default function PlanLimitModal() {
               color: 'var(--muted, #666666)', fontSize: '14px', fontWeight: 700, fontFamily: 'var(--font)',
             }}
           >
-            Позже
+            {t('planLimit.later')}
           </button>
           <button
             onClick={upgrade}
@@ -75,7 +74,7 @@ export default function PlanLimitModal() {
               boxShadow: '0 6px 16px rgba(249,160,139,0.4)',
             }}
           >
-            Улучшить тариф
+            {t('planLimit.upgrade')}
           </button>
         </div>
       </div>

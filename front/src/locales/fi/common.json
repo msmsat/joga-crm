@@ -25,7 +25,8 @@
     "done": "Valmis, sulje",
     "saving": "Tallennetaan…",
     "saved": "Tallennettu!",
-    "upload": "Lataa"
+    "upload": "Lataa",
+    "undo": "Kumoa"
   },
   "validation": {
     "required": "Pakollinen kenttä",
@@ -143,7 +144,15 @@
       "unknown_event": "Tuntematon tapahtuma",
       "not_personal": "Henkilökohtaiset asetukset eivät muuta pakollisia ilmoituksia"
     },
-    "trial_already_used": "Ilmainen kokeilu ei ole enää käytettävissä tälle studiolle."
+    "trial_already_used": "Ilmainen kokeilu ei ole enää käytettävissä tälle studiolle.",
+    "invalid_credentials": "Virheellinen sähköpostiosoite, puhelinnumero tai salasana.",
+    "account_not_verified": "Tiliäsi ei ole vielä aktivoitu. Hyväksy sähköpostikutsu tai vahvista sähköpostiosoitteesi koodilla.",
+    "invalid_code": "Koodi on virheellinen tai vanhentunut.",
+    "invalid_current_password": "Nykyinen salasana on virheellinen.",
+    "password_unchanged": "Uuden salasanan on oltava eri kuin nykyinen.",
+    "invalid_request": "Tarkista syöttämäsi tiedot ja yritä uudelleen.",
+    "session_expired": "Istuntosi on vanhentunut. Kirjaudu uudelleen sisään.",
+    "limit_exceeded": "Olet saavuttanut tilauksesi rajan."
   },
   "units": {
     "min": "min",
@@ -208,5 +217,11 @@
       "strong": "Vahva",
       "excellent": "Erinomainen"
     }
+  },
+  "planLimit": {
+    "title": "Tilauksen raja saavutettu",
+    "description": "Jatka päivittämällä laajempaan tilaukseen.",
+    "later": "Myöhemmin",
+    "upgrade": "Päivitä tilaus"
   }
 }

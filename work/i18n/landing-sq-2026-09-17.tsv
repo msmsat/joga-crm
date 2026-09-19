@@ -8,7 +8,7 @@ nav.startShort	Filloni
 nav.startFull	Filloni falas
 nav.language	Gjuha
 hero.badge	Standardi i ri CRM për vitin 2026
-hero.title	Një CRM që do ta\\n*donit* ta përdornit
+hero.title	Një CRM që do ta\n*donit* ta përdornit
 hero.lead	CRM premium B2B për studio yoga dhe pilates. Rezervime, klientë, ekip dhe financa në një vend. Pa klikime të panevojshme, pa ngatërresë.
 hero.cta	Provojeni falas për 30 ditë
 hero.perks.0	30 ditë falas
@@ -39,7 +39,7 @@ stats.trust.1	Rolet zbatohen edhe në server
 stats.trust.2	Eksport CSV kurdoherë
 stats.trust.3	Fshirje me kërkesë
 compare.label	dallimi
-compare.title	Hoqëm atë që\\nju pengonte
+compare.title	Hoqëm atë që\nju pengonte
 compare.lead	Velora lindi nga përvoja jonë: drejtonim studio dhe çdo ditë ndesheshim me të njëjtin mur — një CRM ku duheshin nëntë klikime për të rezervuar një klient. Ja çfarë ndryshoi.
 compare.usual	Mënyra e zakonshme
 compare.velora	Në Velora
@@ -54,7 +54,7 @@ compare.pairs.3.good	Rolet e kufizojnë qasjen si në ndërfaqe, ashtu edhe në 
 compare.pairs.4.bad	Një asistent? Në rastin më të mirë, kërkim klientësh
 compare.pairs.4.good	Velora AI u përgjigjet pyetjeve për biznesin tuaj — dhe pyetjeve të klientëve tuaj në Telegram dhe Instagram
 showcase.label	gjithçka në një vend
-showcase.title	Një platformë në vend të\\ndhjetëra shërbimeve
+showcase.title	Një platformë në vend të\ndhjetëra shërbimeve
 showcase.lead	Rezervime, klientë, para, komunikim dhe AI në një ndërfaqe të vetme. Asnjë modul i tepërt: çdo pamje zgjidh një problem real të pronarit.
 showcase.blocks.journal.title	Orari juaj
 showcase.blocks.journal.lead	Rrjetë ditore ku trajnerët janë kolona dhe orët janë rreshta. Këtu ndodh gjithçka që bën administratori.
@@ -85,7 +85,7 @@ ctaStrip.title	Provojeni pa migrim të të dhënave dhe pa pagesë paraprake
 ctaStrip.button	Filloni falas
 ctaStrip.note	30 ditë falas • Pa kartë • Ndihmë për fillimin
 modules.label	modulet
-modules.title	16 module,\\ntashmë të përfshira
+modules.title	16 module,\ntashmë të përfshira
 modules.lead	Jo një koleksion vendmbajtësish „së shpejti” — gjithçka e listuar funksionon dhe përfshihet në plan. Rolet vendosin kush e sheh secilin seksion.
 modules.items.dashboard.title	Pasqyrë
 modules.items.dashboard.desc	Të ardhura, klientë aktivë, rezervime dhe besnikëria e klientëve — me trende
@@ -122,7 +122,7 @@ modules.items.data.desc	Eksport CSV, fshirje me kërkesë
 modules.integrations	Integrimet
 modules.integrationsNote	lidhen në cilësimet e studios
 pricing.label	çmimet
-pricing.title	Plani juaj varet nga\\nmadhësia e ekipit
+pricing.title	Plani juaj varet nga\nmadhësia e ekipit
 pricing.lead	15 € për dy persona, +5 € për çdo vend tjetër, pa kufi — 120 €. Të 16 modulet dhe Velora AI përfshihen në çdo nivel: paguani për madhësinë e ekipit, jo për të zhbllokuar butona. Tre modele pagese për të zgjedhur dhe deri në 40% ulje me pagesë paraprake.
 pricing.team	ekip
 pricing.seats_one	person
@@ -177,7 +177,7 @@ faq.notFoundTitle	Nuk e gjetët përgjigjen?
 faq.notFoundLead	Na shkruani — përgjigjemi personalisht, pa robotë dhe pa pritje.
 faq.copied	U kopjua
 about.label	rreth nesh
-about.title	Velora ndërtohet nga njerëz\\nqë vetë kanë drejtuar studio
+about.title	Velora ndërtohet nga njerëz\nqë vetë kanë drejtuar studio
 about.lead	Nuk po ndërtojmë „CRM për të gjithë”. Po ndërtojmë një mjet për një punë të caktuar — orar, klientë, para, komunikim — dhe u përgjigjemi vetë pyetjeve në vend që të dërgojmë përgjigje të gatshme.
 about.p1	Klientët e një studioje mbeten klientët e saj. Velora nuk ndërton një katalog të përbashkët, nuk u shfaq klientëve tuaj reklama të të tjerëve dhe nuk merr përqindje kur një person kthehet te ju.
 about.p2	Tani për tani produkti është krijuar për studio yoga dhe pilates — për mënyrën si funksionojnë vërtet oraret, anëtarësimet dhe trajnerët e tyre. Industri të tjera do të vijnë me të njëjtën kujdes.

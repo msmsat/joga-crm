@@ -1,5 +1,6 @@
 import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { useTranslation } from 'react-i18next';
 
 type ToastVariant = 'success' | 'error' | 'info' | 'undo';
 
@@ -62,6 +63,7 @@ interface UndoMeta {
 }
 
 export function ToastProvider({ children }: { children: React.ReactNode }) {
+  const { t: translate } = useTranslation();
   const [toasts, setToasts] = useState<ToastItem[]>([]);
   const nextId = useRef(0);
   const timers = useRef<Map<number, ReturnType<typeof setTimeout>>>(new Map());
@@ -111,7 +113,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     });
     setToasts(prev => [...prev, {
       id, message, variant: 'undo', leaving: false,
-      duration, actionLabel: opts.actionLabel ?? 'Отменить',
+      duration, actionLabel: opts.actionLabel,
     }]);
     timers.current.set(id, setTimeout(() => expireUndo(id), duration));
   }, [expireUndo]);
@@ -234,7 +236,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
                 {t.variant === 'undo' && (
                   <>
                     <button type="button" className="undo-action" onClick={() => clickUndo(t.id)}>
-                      {t.actionLabel}
+                      {t.actionLabel ?? translate('buttons.undo')}
                     </button>
                     <div className="undo-progress" style={{ animationDuration: `${t.duration}ms` }} />
                   </>

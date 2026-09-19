@@ -25,7 +25,8 @@
     "done": "Gotowe, zamknij",
     "saving": "Zapisywanie…",
     "saved": "Zapisano!",
-    "upload": "Prześlij"
+    "upload": "Prześlij",
+    "undo": "Cofnij"
   },
   "validation": {
     "required": "Pole wymagane",
@@ -143,7 +144,15 @@
       "unknown_event": "Nieznane zdarzenie",
       "not_personal": "Ustawienia osobiste nie zmieniają powiadomień obowiązkowych"
     },
-    "trial_already_used": "Bezpłatny okres próbny nie jest już dostępny dla tego studia."
+    "trial_already_used": "Bezpłatny okres próbny nie jest już dostępny dla tego studia.",
+    "invalid_credentials": "Nieprawidłowy adres e-mail, numer telefonu lub hasło.",
+    "account_not_verified": "Twoje konto nie zostało jeszcze aktywowane. Przyjmij zaproszenie z wiadomości e-mail lub potwierdź adres za pomocą kodu.",
+    "invalid_code": "Kod jest nieprawidłowy lub wygasł.",
+    "invalid_current_password": "Obecne hasło jest nieprawidłowe.",
+    "password_unchanged": "Nowe hasło musi różnić się od obecnego.",
+    "invalid_request": "Sprawdź wprowadzone dane i spróbuj ponownie.",
+    "session_expired": "Sesja wygasła. Zaloguj się ponownie.",
+    "limit_exceeded": "Osiągnięto limit Twojego planu."
   },
   "units": {
     "min": "min",
@@ -208,5 +217,11 @@
       "strong": "Silne",
       "excellent": "Doskonałe"
     }
+  },
+  "planLimit": {
+    "title": "Osiągnięto limit planu",
+    "description": "Przejdź na wyższy plan, aby kontynuować.",
+    "later": "Później",
+    "upgrade": "Zmień plan na wyższy"
   }
 }

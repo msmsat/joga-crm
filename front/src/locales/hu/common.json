@@ -25,7 +25,8 @@
     "done": "Kész, bezárás",
     "saving": "Mentés…",
     "saved": "Elmentve!",
-    "upload": "Feltöltés"
+    "upload": "Feltöltés",
+    "undo": "Visszavonás"
   },
   "validation": {
     "required": "Kötelező mező",
@@ -143,7 +144,15 @@
       "unknown_event": "Ismeretlen esemény",
       "not_personal": "A személyes beállítások nem módosítják a kötelező értesítéseket"
     },
-    "trial_already_used": "Az ingyenes próbaidőszak már nem érhető el ehhez a stúdióhoz."
+    "trial_already_used": "Az ingyenes próbaidőszak már nem érhető el ehhez a stúdióhoz.",
+    "invalid_credentials": "Hibás e-mail-cím, telefonszám vagy jelszó.",
+    "account_not_verified": "A fiókja még nincs aktiválva. Fogadja el az e-mailben kapott meghívót, vagy erősítse meg e-mail-címét a kóddal.",
+    "invalid_code": "A kód érvénytelen vagy lejárt.",
+    "invalid_current_password": "A jelenlegi jelszó hibás.",
+    "password_unchanged": "Az új jelszónak különböznie kell a jelenlegitől.",
+    "invalid_request": "Ellenőrizze a megadott adatokat, és próbálja újra.",
+    "session_expired": "A munkamenet lejárt. Jelentkezzen be újra.",
+    "limit_exceeded": "Elérte az előfizetési csomagja korlátját."
   },
   "units": {
     "min": "perc",
@@ -208,5 +217,11 @@
       "strong": "Erős",
       "excellent": "Kiváló"
     }
+  },
+  "planLimit": {
+    "title": "Elérte a csomag korlátját",
+    "description": "A folytatáshoz váltson magasabb csomagra.",
+    "later": "Később",
+    "upgrade": "Váltás magasabb csomagra"
   }
 }

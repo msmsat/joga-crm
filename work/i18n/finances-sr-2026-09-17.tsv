@@ -125,29 +125,29 @@ operations.toasts.updated	Операција је ажурирана
 operations.toasts.updateFailed	Чување операције није успело
 operations.toasts.exportFailed	Извоз операција није успео
 operations.toasts.receiptDownloaded	Признаница је преузета
-operations.categoryPresets.in.0.value	Чланарине
+operations.categoryPresets.in.0.value	Абонементы
 operations.categoryPresets.in.0.label	Чланарине
-operations.categoryPresets.in.1.value	Услуге
+operations.categoryPresets.in.1.value	Услуги
 operations.categoryPresets.in.1.label	Услуге
-operations.categoryPresets.in.2.value	Поклон сертификати
+operations.categoryPresets.in.2.value	Сертификаты
 operations.categoryPresets.in.2.label	Поклон сертификати
 operations.categoryPresets.in.3.value	Депозит
 operations.categoryPresets.in.3.label	Депозит
-operations.categoryPresets.in.4.value	Остало
+operations.categoryPresets.in.4.value	Прочее
 operations.categoryPresets.in.4.label	Остало
-operations.categoryPresets.out.0.value	Повраћаји
+operations.categoryPresets.out.0.value	Возвраты
 operations.categoryPresets.out.0.label	Повраћаји
-operations.categoryPresets.out.1.value	Закупнина
+operations.categoryPresets.out.1.value	Аренда
 operations.categoryPresets.out.1.label	Закупнина
-operations.categoryPresets.out.2.value	Зараде
+operations.categoryPresets.out.2.value	Зарплата
 operations.categoryPresets.out.2.label	Зараде
-operations.categoryPresets.out.3.value	Набавке
+operations.categoryPresets.out.3.value	Закупки
 operations.categoryPresets.out.3.label	Набавке
-operations.categoryPresets.out.4.value	Маркетинг
+operations.categoryPresets.out.4.value	Реклама
 operations.categoryPresets.out.4.label	Маркетинг
-operations.categoryPresets.out.5.value	Порези
+operations.categoryPresets.out.5.value	Налоги
 operations.categoryPresets.out.5.label	Порези
-operations.categoryPresets.out.6.value	Остало
+operations.categoryPresets.out.6.value	Прочее
 operations.categoryPresets.out.6.label	Остало
 salaries.loading	Учитавање зарада…
 salaries.noRows	Нема чланова тима за обрачун

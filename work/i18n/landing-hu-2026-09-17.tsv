@@ -8,7 +8,7 @@ nav.startShort	Kezdés
 nav.startFull	Kezdje ingyen
 nav.language	Nyelv
 hero.badge	A 2026-os év új CRM-szabványa
-hero.title	CRM, amelyet\\n*öröm* használni
+hero.title	CRM, amelyet\n*öröm* használni
 hero.lead	Prémium B2B CRM jóga- és pilatesstúdióknak. Foglalások, ügyfelek, csapat és pénzügyek egy helyen. Felesleges kattintások és zűrzavar nélkül.
 hero.cta	Próbálja ki ingyen 30 napig
 hero.perks.0	30 nap ingyen
@@ -39,7 +39,7 @@ stats.trust.1	A szerepkörök a szerveren is érvényesek
 stats.trust.2	CSV-export bármikor
 stats.trust.3	Törlés kérésre
 compare.label	a különbség
-compare.title	Eltávolítottuk azt,\\nami hátráltatta Önt
+compare.title	Eltávolítottuk azt,\nami hátráltatta Önt
 compare.lead	A Velora saját tapasztalatból született: stúdiókat vezettünk, és nap mint nap ugyanabba a falba ütköztünk — egy CRM-be, ahol kilenc kattintás kellett egy ügyfél foglalásához. Íme, mi változott.
 compare.usual	A megszokott út
 compare.velora	A Velorában
@@ -54,7 +54,7 @@ compare.pairs.3.good	A szerepkörök a felületen és a szerveren is korlátozz�
 compare.pairs.4.bad	Egy asszisztens? Legjobb esetben ügyfélkeresés
 compare.pairs.4.good	A Velora AI válaszol a vállalkozásával kapcsolatos kérdésekre — és ügyfelei Telegram- és Instagram-kérdéseire is
 showcase.label	minden egy helyen
-showcase.title	Egy platform\\ntucatnyi szolgáltatás helyett
+showcase.title	Egy platform\ntucatnyi szolgáltatás helyett
 showcase.lead	Foglalások, ügyfelek, pénz, kommunikáció és AI egyetlen felületen. Egyetlen fölösleges modul sincs: minden nézet egy valódi tulajdonosi problémát old meg.
 showcase.blocks.journal.title	Az Ön naptára
 showcase.blocks.journal.lead	Napi rács, ahol az oktatók oszlopok, az órák sorok. Itt történik minden, amit egy adminisztrátor elvégez.
@@ -85,7 +85,7 @@ ctaStrip.title	Próbálja ki adatmigrálás és előrefizetés nélkül
 ctaStrip.button	Kezdje ingyen
 ctaStrip.note	30 nap ingyen • Bankkártya nélkül • Segítség az induláshoz
 modules.label	modulok
-modules.title	16 modul,\\nmár benne van
+modules.title	16 modul,\nmár benne van
 modules.lead	Nem „hamarosan” feliratú helyőrzők gyűjteménye — minden felsorolt funkció működik és a csomag része. A szerepkörök döntik el, ki melyik szakaszt látja.
 modules.items.dashboard.title	Áttekintés
 modules.items.dashboard.desc	Bevétel, aktív ügyfelek, foglalások és ügyfélhűség — trendekkel
@@ -122,7 +122,7 @@ modules.items.data.desc	CSV-export, törlés kérésre
 modules.integrations	Integrációk
 modules.integrationsNote	a stúdió beállításaiban kapcsolható
 pricing.label	árak
-pricing.title	Az Ön csomagja a\\ncsapat méretétől függ
+pricing.title	Az Ön csomagja a\ncsapat méretétől függ
 pricing.lead	15 € két főre, +5 € minden további helyért, korlátlan — 120 €. Mind a 16 modul és a Velora AI minden szinten benne van: a csapat méretéért fizet, nem a gombok feloldásáért. Három fizetési modell közül választhat, előrefizetéssel akár 40% kedvezménnyel.
 pricing.team	csapat
 pricing.seats_one	fő
@@ -177,7 +177,7 @@ faq.notFoundTitle	Nem találta meg a választ?
 faq.notFoundLead	Írjon nekünk — személyesen válaszolunk, botok és várakozás nélkül.
 faq.copied	Másolva
 about.label	rólunk
-about.title	A Velorát olyan emberek építik,\\nakik maguk is vezettek stúdiókat
+about.title	A Velorát olyan emberek építik,\nakik maguk is vezettek stúdiókat
 about.lead	Nem „CRM-et építünk mindenkinek”. Egy konkrét munkához készítünk eszközt — naptárhoz, ügyfelekhez, pénzhez, kommunikációhoz — és a kérdésekre magunk válaszolunk sablonválaszok helyett.
 about.p1	Egy stúdió ügyfelei a stúdió ügyfelei maradnak. A Velora nem épít közös katalógust, nem mutat mások hirdetéseit az ügyfeleinek, és nem kér százalékot, amikor valaki visszatér Önhöz.
 about.p2	Jelenleg a termék jóga- és pilatesstúdiókra készült — arra, ahogyan a naptáruk, bérleteik és oktatóik valóban működnek. Más ágazatok ugyanolyan körültekintéssel következnek.

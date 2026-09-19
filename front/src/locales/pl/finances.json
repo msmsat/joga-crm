@@ -149,53 +149,53 @@
     "categoryPresets": {
       "in": [
         {
-          "value": "Członkostwa",
+          "value": "Абонементы",
           "label": "Członkostwa"
         },
         {
-          "value": "Usługi",
+          "value": "Услуги",
           "label": "Usługi"
         },
         {
-          "value": "Bony podarunkowe",
+          "value": "Сертификаты",
           "label": "Bony podarunkowe"
         },
         {
-          "value": "Depozyt",
+          "value": "Депозит",
           "label": "Depozyt"
         },
         {
-          "value": "Inne",
+          "value": "Прочее",
           "label": "Inne"
         }
       ],
       "out": [
         {
-          "value": "Zwroty",
+          "value": "Возвраты",
           "label": "Zwroty"
         },
         {
-          "value": "Czynsz",
+          "value": "Аренда",
           "label": "Czynsz"
         },
         {
-          "value": "Wynagrodzenia",
+          "value": "Зарплата",
           "label": "Wynagrodzenia"
         },
         {
-          "value": "Zakupy",
+          "value": "Закупки",
           "label": "Zakupy"
         },
         {
-          "value": "Marketing",
+          "value": "Реклама",
           "label": "Marketing"
         },
         {
-          "value": "Podatki",
+          "value": "Налоги",
           "label": "Podatki"
         },
         {
-          "value": "Inne",
+          "value": "Прочее",
           "label": "Inne"
         }
       ]

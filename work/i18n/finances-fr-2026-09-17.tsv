@@ -125,29 +125,29 @@ operations.toasts.updated	Opération mise à jour
 operations.toasts.updateFailed	Impossible d'enregistrer l'opération
 operations.toasts.exportFailed	Impossible d'exporter les opérations
 operations.toasts.receiptDownloaded	Reçu téléchargé
-operations.categoryPresets.in.0.value	Abonnements
+operations.categoryPresets.in.0.value	Абонементы
 operations.categoryPresets.in.0.label	Abonnements
-operations.categoryPresets.in.1.value	Services
+operations.categoryPresets.in.1.value	Услуги
 operations.categoryPresets.in.1.label	Services
-operations.categoryPresets.in.2.value	Cartes-cadeaux
+operations.categoryPresets.in.2.value	Сертификаты
 operations.categoryPresets.in.2.label	Cartes-cadeaux
-operations.categoryPresets.in.3.value	Dépôt
+operations.categoryPresets.in.3.value	Депозит
 operations.categoryPresets.in.3.label	Dépôt
-operations.categoryPresets.in.4.value	Autre
+operations.categoryPresets.in.4.value	Прочее
 operations.categoryPresets.in.4.label	Autre
-operations.categoryPresets.out.0.value	Remboursements
+operations.categoryPresets.out.0.value	Возвраты
 operations.categoryPresets.out.0.label	Remboursements
-operations.categoryPresets.out.1.value	Loyer
+operations.categoryPresets.out.1.value	Аренда
 operations.categoryPresets.out.1.label	Loyer
-operations.categoryPresets.out.2.value	Salaires
+operations.categoryPresets.out.2.value	Зарплата
 operations.categoryPresets.out.2.label	Salaires
-operations.categoryPresets.out.3.value	Achats
+operations.categoryPresets.out.3.value	Закупки
 operations.categoryPresets.out.3.label	Achats
-operations.categoryPresets.out.4.value	Marketing
+operations.categoryPresets.out.4.value	Реклама
 operations.categoryPresets.out.4.label	Marketing
-operations.categoryPresets.out.5.value	Impôts
+operations.categoryPresets.out.5.value	Налоги
 operations.categoryPresets.out.5.label	Impôts
-operations.categoryPresets.out.6.value	Autre
+operations.categoryPresets.out.6.value	Прочее
 operations.categoryPresets.out.6.label	Autre
 salaries.loading	Chargement de la paie…
 salaries.noRows	Aucun membre du personnel à calculer

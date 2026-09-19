@@ -125,29 +125,29 @@ operations.toasts.updated	Operațiune actualizată
 operations.toasts.updateFailed	Nu s-a putut salva operațiunea
 operations.toasts.exportFailed	Nu s-au putut exporta operațiunile
 operations.toasts.receiptDownloaded	Chitanță descărcată
-operations.categoryPresets.in.0.value	Abonamente
+operations.categoryPresets.in.0.value	Абонементы
 operations.categoryPresets.in.0.label	Abonamente
-operations.categoryPresets.in.1.value	Servicii
+operations.categoryPresets.in.1.value	Услуги
 operations.categoryPresets.in.1.label	Servicii
-operations.categoryPresets.in.2.value	Certificate cadou
+operations.categoryPresets.in.2.value	Сертификаты
 operations.categoryPresets.in.2.label	Certificate cadou
-operations.categoryPresets.in.3.value	Depozit
+operations.categoryPresets.in.3.value	Депозит
 operations.categoryPresets.in.3.label	Depozit
-operations.categoryPresets.in.4.value	Altele
+operations.categoryPresets.in.4.value	Прочее
 operations.categoryPresets.in.4.label	Altele
-operations.categoryPresets.out.0.value	Rambursări
+operations.categoryPresets.out.0.value	Возвраты
 operations.categoryPresets.out.0.label	Rambursări
-operations.categoryPresets.out.1.value	Chirie
+operations.categoryPresets.out.1.value	Аренда
 operations.categoryPresets.out.1.label	Chirie
-operations.categoryPresets.out.2.value	Salarii
+operations.categoryPresets.out.2.value	Зарплата
 operations.categoryPresets.out.2.label	Salarii
-operations.categoryPresets.out.3.value	Aprovizionare
+operations.categoryPresets.out.3.value	Закупки
 operations.categoryPresets.out.3.label	Aprovizionare
-operations.categoryPresets.out.4.value	Marketing
+operations.categoryPresets.out.4.value	Реклама
 operations.categoryPresets.out.4.label	Marketing
-operations.categoryPresets.out.5.value	Impozite
+operations.categoryPresets.out.5.value	Налоги
 operations.categoryPresets.out.5.label	Impozite
-operations.categoryPresets.out.6.value	Altele
+operations.categoryPresets.out.6.value	Прочее
 operations.categoryPresets.out.6.label	Altele
 salaries.loading	Se încarcă salarizarea…
 salaries.noRows	Nu există angajați de calculat
