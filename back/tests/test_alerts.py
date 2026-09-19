@@ -48,6 +48,15 @@ def test_alert_throttles_repeats():
     assert len(sent) == 2, f"повторы не схлопнулись: {sent}"
 
 
+def test_alert_identifies_environment_and_host(monkeypatch):
+    sent = []
+    monkeypatch.setenv("APP_ENV", "dev")
+    monkeypatch.setattr(alerts.socket, "gethostname", lambda: "developer-pc")
+    with _enabled(sent):
+        alerts.alert("database schema mismatch")
+    assert sent == ["[dev · developer-pc]\ndatabase schema mismatch"]
+
+
 def test_handler_reports_exception_with_traceback():
     sent = []
     alerts.install()

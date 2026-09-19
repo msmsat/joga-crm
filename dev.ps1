@@ -8,6 +8,17 @@ param([switch]$Stripe)
 $root = $PSScriptRoot
 $envPath = Join-Path $root 'back\.env'
 
+# Apply pending migrations before reload starts serving the new models.
+Push-Location (Join-Path $root 'back')
+try {
+    & .\venv\Scripts\python.exe -m alembic upgrade head
+    if ($LASTEXITCODE -ne 0) {
+        throw 'Database migration failed. Development servers were not started.'
+    }
+} finally {
+    Pop-Location
+}
+
 # ---------------------------------------------------------------------------
 # Вебхуки Stripe: только по флагу -Stripe.
 #

@@ -17,6 +17,7 @@
 import json
 import logging
 import os
+import socket
 import threading
 import time
 import traceback
@@ -83,7 +84,8 @@ def alert(text: str, *, key: str | None = None) -> None:
         return
     if _throttled(key or text[:120]):
         return
-    _spawn(_post, (token, chat_id, text))
+    origin = f"[{os.getenv('APP_ENV') or 'unknown'} · {socket.gethostname()}]"
+    _spawn(_post, (token, chat_id, f"{origin}\n{text}"))
 
 
 class _AlertHandler(logging.Handler):
