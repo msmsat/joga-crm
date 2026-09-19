@@ -215,5 +215,11 @@
     "prev": "Forrige bilde",
     "next": "Neste bilde",
     "counter": "{{current}} av {{total}}"
+  },
+  "notePhotos": {
+    "add": "Bilde",
+    "remove": "Fjern bilde",
+    "alt": "Notatbilde",
+    "drop": "Slipp for å legge ved"
   }
 }

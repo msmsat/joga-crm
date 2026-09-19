@@ -90,7 +90,7 @@
       "title": "Kontakti",
       "phone": "Telefon",
       "email": "E-pošta",
-      "telegram": "Telegram",
+      "instagram": "Instagram",
       "birthDate": "Datum rođenja",
       "city": "Grad",
       "copyHint": " · kliknite za kopiranje"
@@ -286,11 +286,6 @@
       "cancel": "Otkaži",
       "addPlaceholder": "Unesite bilješku…",
       "add": "Dodaj bilješku",
-      "addPhoto": "Fotografija",
-      "removePhoto": "Ukloni fotografiju",
-      "photoUploading": "Učitavanje…",
-      "dropHint": "Pustite za privitak",
-      "photoAlt": "Fotografija bilješke",
       "justNow": "upravo sada",
       "deleteTitle": "Izbrisati bilješku?",
       "deleteMessage": "Ova se bilješka ne može vratiti."
@@ -374,7 +369,10 @@
       "phone": "Telefon",
       "phonePlaceholder": "+385 91 000 0000",
       "email": "E-pošta",
-      "emailPlaceholder": "klijent@primjer.hr"
+      "emailPlaceholder": "klijent@primjer.hr",
+      "instagram": "Instagram",
+      "instagramOptional": "neobavezno",
+      "instagramPlaceholder": "username"
     },
     "step2": {
       "bday": "Datum rođenja",
@@ -426,7 +424,8 @@
       "name": "Unesite ime (najmanje 2 znaka)",
       "phone": "Neispravan broj telefona",
       "email": "Neispravna e-pošta",
-      "city": "Unesite grad"
+      "city": "Unesite grad",
+      "instagram": "Korisničko ime: latinična slova, brojke, točka i podvlaka"
     }
   },
   "deleteModal": {

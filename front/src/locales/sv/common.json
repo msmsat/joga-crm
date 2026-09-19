@@ -215,5 +215,11 @@
     "prev": "Föregående bild",
     "next": "Nästa bild",
     "counter": "{{current}} av {{total}}"
+  },
+  "notePhotos": {
+    "add": "Foto",
+    "remove": "Ta bort foto",
+    "alt": "Anteckningsbild",
+    "drop": "Släpp för att bifoga"
   }
 }

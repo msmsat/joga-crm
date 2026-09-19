@@ -90,7 +90,7 @@
       "title": "Kontaktoplysninger",
       "phone": "Telefon",
       "email": "E-mail",
-      "telegram": "Telegram",
+      "instagram": "Instagram",
       "birthDate": "Fødselsdato",
       "city": "By",
       "copyHint": " · klik for at kopiere"
@@ -282,11 +282,6 @@
       "cancel": "Annuller",
       "addPlaceholder": "Skriv en note…",
       "add": "Tilføj note",
-      "addPhoto": "Foto",
-      "removePhoto": "Fjern foto",
-      "photoUploading": "Uploader…",
-      "dropHint": "Slip for at vedhæfte",
-      "photoAlt": "Notefoto",
       "justNow": "lige nu",
       "deleteTitle": "Slet note?",
       "deleteMessage": "Denne note kan ikke gendannes."
@@ -370,7 +365,10 @@
       "phone": "Telefon",
       "phonePlaceholder": "+45 20 00 00 00",
       "email": "E-mail",
-      "emailPlaceholder": "kunde@eksempel.dk"
+      "emailPlaceholder": "kunde@eksempel.dk",
+      "instagram": "Instagram",
+      "instagramOptional": "valgfrit",
+      "instagramPlaceholder": "username"
     },
     "step2": {
       "bday": "Fødselsdato",
@@ -420,7 +418,8 @@
       "name": "Indtast et navn (mindst 2 tegn)",
       "phone": "Ugyldigt telefonnummer",
       "email": "Ugyldig e-mail",
-      "city": "Indtast en by"
+      "city": "Indtast en by",
+      "instagram": "Brugernavn: latinske bogstaver, tal, punktum og understreg"
     }
   },
   "deleteModal": {

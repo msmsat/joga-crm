@@ -215,5 +215,11 @@
     "prev": "Forrige foto",
     "next": "Næste foto",
     "counter": "{{current}} af {{total}}"
+  },
+  "notePhotos": {
+    "add": "Foto",
+    "remove": "Fjern foto",
+    "alt": "Notefoto",
+    "drop": "Slip for at vedhæfte"
   }
 }

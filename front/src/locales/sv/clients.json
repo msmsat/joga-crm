@@ -90,7 +90,7 @@
       "title": "Kontaktuppgifter",
       "phone": "Telefon",
       "email": "E-post",
-      "telegram": "Telegram",
+      "instagram": "Instagram",
       "birthDate": "Födelsedatum",
       "city": "Ort",
       "copyHint": " · klicka för att kopiera"
@@ -282,11 +282,6 @@
       "cancel": "Avbryt",
       "addPlaceholder": "Skriv en anteckning…",
       "add": "Lägg till anteckning",
-      "addPhoto": "Foto",
-      "removePhoto": "Ta bort foto",
-      "photoUploading": "Laddar upp…",
-      "dropHint": "Släpp för att bifoga",
-      "photoAlt": "Anteckningsbild",
       "justNow": "just nu",
       "deleteTitle": "Ta bort anteckning?",
       "deleteMessage": "Den här anteckningen kan inte återställas."
@@ -370,7 +365,10 @@
       "phone": "Telefon",
       "phonePlaceholder": "+46 70 000 00 00",
       "email": "E-post",
-      "emailPlaceholder": "kund@exempel.se"
+      "emailPlaceholder": "kund@exempel.se",
+      "instagram": "Instagram",
+      "instagramOptional": "valfritt",
+      "instagramPlaceholder": "username"
     },
     "step2": {
       "bday": "Födelsedatum",
@@ -420,7 +418,8 @@
       "name": "Ange ett namn (minst 2 tecken)",
       "phone": "Ogiltigt telefonnummer",
       "email": "Ogiltig e-post",
-      "city": "Ange en ort"
+      "city": "Ange en ort",
+      "instagram": "Användarnamn: latinska bokstäver, siffror, punkt och understreck"
     }
   },
   "deleteModal": {

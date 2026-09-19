@@ -8,14 +8,13 @@ import { useClientActions, type NoteItem } from '../hooks/useClientActions';
 import { InlineEdit } from './InlineEdit';
 import ClientOffersPanel from './ClientOffersPanel';
 import { ClientProducts } from './ClientProducts';
-import { NotePhotos, NoteDropZone } from './NotePhotos';
 import { WalletTab } from './WalletTab';
 import { useClientEvents, useClientNotes, useClientActivity, useClientInviteCode, useReferralEnabled, useFreezeEnabled } from '../hooks/useClientsList';
 import { formatDate, formatMoney, getAvatarColor, getInitials } from '../utils/mapClient';
 import { useStudioCurrency } from '../../../../hooks/useStudioCurrency';
 import { getStudioRole } from '../../../../utils/auth';
 import { getCurrencySymbol } from '../../../../components/UI';
-import { ConfirmModal } from '../../../../components/ui/index';
+import { ConfirmModal, NotePhotos, NoteDropZone } from '../../../../components/ui/index';
 import { ResourceBookingModal } from '../../Journal/components/modals/ResourceBookingModal';
 
 // ─── SVG ICONS ────────────────────────────────────────────────────────────────
@@ -75,9 +74,13 @@ const IconLocation = () => (
     <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
   </svg>
 );
-const IconTelegram = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M22 2L11 13"/><path d="M22 2L15 22L11 13L2 9L22 2Z"/>
+// Телеграма в контактах нет намеренно: его ник равен телефону строкой выше,
+// а директ — отдельный адрес, который иначе негде держать.
+const IconInstagram = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+    <rect x="2.5" y="2.5" width="19" height="19" rx="5.6"/>
+    <circle cx="12" cy="12" r="4.4"/>
+    <circle cx="17.4" cy="6.6" r="1.1" fill="currentColor" stroke="none"/>
   </svg>
 );
 const IconCopy = () => (
@@ -587,10 +590,10 @@ function ClientPanel({ client, profile, onClose, onDelete }: {
               {(() => {
                 const phoneDigits = client.phone ? client.phone.replace(/\D/g, '') : '';
                 // П.3.2 — edit: ключ ClientUpdate + тип инпута; ссылка — по значению, карандаш — редактирование
-                const rows: { icon: JSX.Element; val: string; sub: string; href: string | null; copyValue: string | null; edit?: { key: 'phone' | 'email' | 'birth_date' | 'city'; type: 'tel' | 'email' | 'date' | 'text' } }[] = [
+                const rows: { icon: JSX.Element; val: string; sub: string; href: string | null; copyValue: string | null; edit?: { key: 'phone' | 'email' | 'instagram' | 'birth_date' | 'city'; type: 'tel' | 'email' | 'date' | 'text' } }[] = [
                   { icon: <IconPhone/>,    val: client.phone ?? '—',      sub: t('panel.contacts.phone'),     href: client.phone ? `tel:${phoneDigits}` : null,             copyValue: client.phone ?? null, edit: { key: 'phone', type: 'tel' } },
                   { icon: <IconMail/>,     val: client.email ?? '—',      sub: t('panel.contacts.email'),     href: client.email ? `mailto:${client.email}` : null,          copyValue: client.email ?? null, edit: { key: 'email', type: 'email' } },
-                  { icon: <IconTelegram/>, val: client.phone ? `+${phoneDigits}` : '—', sub: t('panel.contacts.telegram'), href: phoneDigits ? `https://t.me/+${phoneDigits}` : null, copyValue: null },
+                  { icon: <IconInstagram/>, val: client.instagram ? `@${client.instagram}` : '—', sub: t('panel.contacts.instagram'), href: client.instagram ? `https://instagram.com/${client.instagram}` : null, copyValue: client.instagram ? `@${client.instagram}` : null, edit: { key: 'instagram', type: 'text' } },
                   { icon: <IconCalendar/>, val: client.birth_date ?? '—', sub: t('panel.contacts.birthDate'), href: null, copyValue: null, edit: { key: 'birth_date', type: 'date' } },
                   { icon: <IconLocation/>, val: client.city ?? '—',       sub: t('panel.contacts.city'),      href: null, copyValue: null, edit: { key: 'city', type: 'text' } },
                 ];

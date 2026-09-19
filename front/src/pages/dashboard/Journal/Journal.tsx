@@ -541,6 +541,7 @@ export default function Journal() {
   // ── Создать занятие на сервере (данные формы приходят из модалки) ──
   const createLessonFromModal = (form: {
     serviceId: number; title: string; hall: string; maxClients: number; branchId: number | null;
+    notes: string; photos: string[];
   }) => {
     if (!newBookingSlot) return;
     const trainer = trainers.find(t => t.id === newBookingSlot.trainer);
@@ -569,6 +570,8 @@ export default function Journal() {
       date: dateStr,
       cancelReason: null,
       clientsNotified: false,
+      notes: form.notes,
+      photos: form.photos,
       serviceId: form.serviceId,
       // Этот путь создаёт СОБЫТИЕ. Индивидуальная запись идёт через quote и
       // confirm (ResourceBookingModal), а не через создание занятия.
@@ -587,6 +590,8 @@ export default function Journal() {
       start_time: indexToDateTime(dateStr, newBookingSlot.timeStart),
       duration_min: Math.round((newBookingSlot.timeEnd - newBookingSlot.timeStart) * 60),
       total_spots: form.maxClients,
+      notes: form.notes,
+      photos: form.photos,
     };
 
     mutations.createLesson(createPayload, optimisticBooking)

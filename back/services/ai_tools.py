@@ -779,6 +779,7 @@ class CreateClientArgs(BaseModel):
     email: str
     city: str
     last_name: Optional[str] = None
+    instagram: Optional[str] = Field(None, description="Ник в Instagram, можно со ссылкой или «@» — сервер приведёт к нику")
     birth_date: Optional[date] = None
     source: Optional[str] = None
 
@@ -826,6 +827,7 @@ class UpdateClientArgs(BaseModel):
     last_name: Optional[str] = None
     phone: Optional[str] = None
     email: Optional[str] = None
+    instagram: Optional[str] = Field(None, description="Ник в Instagram, можно со ссылкой или «@» — сервер приведёт к нику")
     birth_date: Optional[date] = None
     city: Optional[str] = None
     source: Optional[str] = None
@@ -2391,6 +2393,7 @@ async def create_client(ctx: StudioContext, db: AsyncSession, args: CreateClient
         body=ClientCreate(
             name=args.name, last_name=args.last_name, phone=args.phone, email=args.email,
             city=args.city, birth_date=args.birth_date, source=args.source,
+            instagram=args.instagram,
         ),
         ctx=ctx, current_user=ctx.user, db=db,
     )

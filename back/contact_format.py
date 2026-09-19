@@ -45,6 +45,29 @@ def to_e164(value: str | None) -> str | None:
     return candidate
 
 
+# Ник в Instagram: до 30 знаков — латиница, цифры, точка, подчёркивание.
+INSTAGRAM_NICK = re.compile(r"^[A-Za-z0-9._]{1,30}$")
+_IG_URL = re.compile(r"^(?:https?://)?(?:www\.)?instagram\.com/", re.I)
+
+
+def normalize_instagram(value: str | None) -> str | None:
+    """Пустое → None. Ссылку и «@ник» приводит к голому нику, иначе ValueError.
+
+    Храним ник, а не ссылку: обратно ссылка собирается одной строкой, а вот
+    выковыривать ник из вставленного адреса с хвостом `?igsh=…` пришлось бы на
+    каждом экране. Регистр гасим — в Instagram ники нечувствительны к нему.
+    """
+    if not value or not value.strip():
+        return None
+
+    nick = _IG_URL.sub("", value.strip()).split("?")[0].strip("/").lstrip("@")
+    if not INSTAGRAM_NICK.match(nick):
+        raise ValueError(
+            "Ник в Instagram — латиница, цифры, точка и подчёркивание, до 30 знаков"
+        )
+    return nick.lower()
+
+
 def demo() -> None:
     assert normalize_email("  Ivan@Mail.RU ") == "ivan@mail.ru"
     assert normalize_email("") is None and normalize_email(None) is None
@@ -64,6 +87,22 @@ def demo() -> None:
     for bad in ("+7999", "123", "+0123456789", "0722274620"):
         try:
             to_e164(bad)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError(f"должно было отклониться: {bad!r}")
+
+    # Instagram: что бы ни вставили — в БД ложится голый ник в нижнем регистре.
+    assert normalize_instagram("  @Velora.Studio ") == "velora.studio"
+    assert normalize_instagram("https://www.instagram.com/velora_studio/?igsh=abc") == "velora_studio"
+    assert normalize_instagram("instagram.com/velora_studio") == "velora_studio"
+    assert normalize_instagram(normalize_instagram("@Velora")) == "velora"
+    assert normalize_instagram("") is None and normalize_instagram(None) is None
+
+    # Пробел, кириллица и чужая ссылка — это не ник.
+    for bad in ("two words", "велора", "https://t.me/velora", "a" * 31):
+        try:
+            normalize_instagram(bad)
         except ValueError:
             pass
         else:

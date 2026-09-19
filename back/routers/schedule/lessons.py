@@ -30,11 +30,17 @@ logger = logging.getLogger(__name__)
 MIN_CREATE_LEAD = timedelta(hours=3)
 MIN_CHANGE_LEAD = timedelta(hours=2)
 
+# Поля, которые занятие НЕ двигают: их правят и у отменённого, и за минуту до
+# начала, и через неделю после. Всё остальное подчиняется окну MIN_CHANGE_LEAD.
+_FREE_FIELDS = {"cancel_reason", "notes", "photos"}
+
 
 _LESSON_FIELDS = (
     "id", "name", "teacher_name", "teacher_id", "hall_id", "start_time",
     "duration_min", "price", "level", "equipment", "total_spots",
     "service_id", "status", "cancel_reason", "clients_notified",
+    # Заметка студии о занятии и снимки к ней (для своих, клиенту не уходят).
+    "notes", "photos",
     # HB-04: branch_id/booking_mode/tz_iana — уже есть на модели (HB-02), но
     # без этой строки они не долетали бы до ответа: _lesson_read собирает
     # dict по явному списку, а не ORM-объект целиком.
@@ -546,6 +552,8 @@ async def create_lesson(
         level=body.level,
         equipment=body.equipment,
         service_id=body.service_id,
+        notes=body.notes,
+        photos=body.photos,
         status="confirmed",
     )
     db.add(lesson)
@@ -584,12 +592,13 @@ async def update_lesson(
 
     # Отменённое занятие нельзя менять — кроме причины отмены (задача 9,
     # инфо-вид отменённого занятия): она правится и после отмены.
-    if lesson.status == "cancelled" and set(fields.keys()) - {"cancel_reason"}:
+    if lesson.status == "cancelled" and set(fields.keys()) - _FREE_FIELDS:
         raise HTTPException(status_code=400, detail="Занятие отменено, изменить его нельзя")
 
-    # Правка только причины отмены (задача 9, инфо-вид отменённого занятия) —
-    # правило времени не применяется: занятие уже прошло/отменено, ничего не переносим.
-    if set(fields.keys()) != {"cancel_reason"}:
+    # Правка полей, которые занятие не двигают, — правило времени не применяется:
+    # заметку о занятии чаще всего и пишут ПОСЛЕ него («пришла с травмой»,
+    # «просила сменить коврик»), а окно в два часа запретило бы ровно это.
+    if set(fields.keys()) - _FREE_FIELDS:
         now = datetime.now()
         if lesson.start_time < now + MIN_CHANGE_LEAD:
             raise HTTPException(

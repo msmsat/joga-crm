@@ -113,6 +113,8 @@ export interface ClientListItem {
 
 export interface ClientProfile extends ClientListItem {
   subscription_alert: ActiveSubscription | null
+  /** Ник в Instagram без «@» — ссылку карточка собирает сама. */
+  instagram: string | null
   birth_date: string | null
   city: string | null
   source: string | null
@@ -133,6 +135,7 @@ export interface ClientCreate {
   last_name?: string | null
   phone: string
   email: string
+  instagram?: string | null
   birth_date?: string | null
   city: string
   tags?: string[]
@@ -152,6 +155,7 @@ export interface ClientUpdate {
   last_name?: string | null
   phone?: string | null
   email?: string | null
+  instagram?: string | null
   birth_date?: string | null
   city?: string | null
   source?: string | null

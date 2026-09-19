@@ -90,7 +90,7 @@
       "title": "Yhteystiedot",
       "phone": "Puhelin",
       "email": "Sähköposti",
-      "telegram": "Telegram",
+      "instagram": "Instagram",
       "birthDate": "Syntymäaika",
       "city": "Kaupunki",
       "copyHint": " · kopioi napsauttamalla"
@@ -282,11 +282,6 @@
       "cancel": "Peruuta",
       "addPlaceholder": "Kirjoita muistiinpano…",
       "add": "Lisää muistiinpano",
-      "addPhoto": "Kuva",
-      "removePhoto": "Poista kuva",
-      "photoUploading": "Ladataan…",
-      "dropHint": "Pudota liittääksesi",
-      "photoAlt": "Muistiinpanon kuva",
       "justNow": "juuri nyt",
       "deleteTitle": "Poistetaanko muistiinpano?",
       "deleteMessage": "Tätä muistiinpanoa ei voi palauttaa."
@@ -370,7 +365,10 @@
       "phone": "Puhelin",
       "phonePlaceholder": "+358 40 000 0000",
       "email": "Sähköposti",
-      "emailPlaceholder": "asiakas@esimerkki.fi"
+      "emailPlaceholder": "asiakas@esimerkki.fi",
+      "instagram": "Instagram",
+      "instagramOptional": "valinnainen",
+      "instagramPlaceholder": "username"
     },
     "step2": {
       "bday": "Syntymäaika",
@@ -420,7 +418,8 @@
       "name": "Syötä nimi (vähintään 2 merkkiä)",
       "phone": "Virheellinen puhelinnumero",
       "email": "Virheellinen sähköposti",
-      "city": "Syötä kaupunki"
+      "city": "Syötä kaupunki",
+      "instagram": "Käyttäjänimi: latinalaiset kirjaimet, numerot, piste ja alaviiva"
     }
   },
   "deleteModal": {

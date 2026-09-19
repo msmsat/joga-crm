@@ -539,7 +539,10 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
   // же пропадала и единственная кнопка «Удалить сотрудника». Блок вынесен в
   // переменную и рисуется дважды (в панели и внизу формы), видим всегда ровно
   // один: класс .vm-wide-only / .vm-narrow-only переключает их по ширине.
-  const deleteBlock = staff?.role === 'owner' && (ownerCount ?? 1) <= 1 ? (
+  // Себя из команды не удаляют: это выход из собственной студии одной кнопкой,
+  // и вернуться было бы некуда. Владельцев в студии может быть и двое —
+  // проверки «последний владелец» для этого мало.
+  const deleteBlock = isSelf ? null : staff?.role === 'owner' && (ownerCount ?? 1) <= 1 ? (
     <div style={{
       padding: "11px 13px", borderRadius: "10px",
       background: "rgba(216,140,154,0.07)",

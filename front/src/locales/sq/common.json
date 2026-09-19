@@ -215,5 +215,11 @@
     "prev": "Fotoja e mëparshme",
     "next": "Fotoja tjetër",
     "counter": "{{current}} nga {{total}}"
+  },
+  "notePhotos": {
+    "add": "Foto",
+    "remove": "Hiq foton",
+    "alt": "Foto e shënimit",
+    "drop": "Lëshoni për ta bashkëngjitur"
   }
 }

@@ -215,5 +215,11 @@
     "prev": "Předchozí fotka",
     "next": "Další fotka",
     "counter": "{{current}} z {{total}}"
+  },
+  "notePhotos": {
+    "add": "Foto",
+    "remove": "Odebrat fotku",
+    "alt": "Fotka poznámky",
+    "drop": "Pusťte a přiložíme"
   }
 }

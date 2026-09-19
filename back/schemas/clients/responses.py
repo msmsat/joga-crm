@@ -76,6 +76,8 @@ class ClientListItemOut(BaseSchema):
 
 class ClientProfileOut(ClientListItemOut):
     subscription_alert: Optional[ActiveSubscriptionOut] = None
+    # Голый ник без «@» — ссылку карточка собирает сама.
+    instagram: Optional[str] = None
     birth_date: Optional[str] = None
     city: Optional[str] = None
     source: Optional[str] = None

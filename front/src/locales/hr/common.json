@@ -215,5 +215,11 @@
     "prev": "Prethodna fotografija",
     "next": "Sljedeća fotografija",
     "counter": "{{current}} od {{total}}"
+  },
+  "notePhotos": {
+    "add": "Fotografija",
+    "remove": "Ukloni fotografiju",
+    "alt": "Fotografija bilješke",
+    "drop": "Pustite za privitak"
   }
 }

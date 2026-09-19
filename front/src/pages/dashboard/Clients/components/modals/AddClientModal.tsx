@@ -4,7 +4,7 @@ import type { KeyboardEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
-import { EMAIL_RE, useClientForm } from '../../hooks/useClientForm';
+import { EMAIL_RE, INSTAGRAM_RE, instagramNick, useClientForm } from '../../hooks/useClientForm';
 import type { ClientFormState } from '../../hooks/useClientForm';
 import { useClientMutations } from '../../hooks/useClientsList';
 import { loyaltyApi } from '../../../../../api/loyalty/loyalty.api';
@@ -126,6 +126,91 @@ function Field({ label, value, onChange, error, hint, placeholder, type = 'text'
   );
 }
 
+// ─── INSTAGRAM ────────────────────────────────────────────────────────────────
+// Глиф Instagram: фирменный градиент живёт только в иконке — крупных заливок
+// чужим брендом в кабинете быть не должно (CLAUDE.md §6).
+function IconInstagram({ active }: { active: boolean }) {
+  return (
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" strokeWidth="1.9" strokeLinecap="round">
+      <defs>
+        <linearGradient id="acIgGrad" x1="0" y1="24" x2="24" y2="0">
+          <stop offset="0" stopColor="#FEDA75"/><stop offset="0.35" stopColor="#FA7E1E"/>
+          <stop offset="0.7" stopColor="#D62976"/><stop offset="1" stopColor="#962FBF"/>
+        </linearGradient>
+      </defs>
+      <g stroke={active ? 'url(#acIgGrad)' : 'currentColor'} style={{ transition: 'stroke 0.25s' }}>
+        <rect x="2.5" y="2.5" width="19" height="19" rx="5.6"/>
+        <circle cx="12" cy="12" r="4.4"/>
+        <circle cx="17.4" cy="6.6" r="1.1" fill={active ? 'url(#acIgGrad)' : 'currentColor'} stroke="none"/>
+      </g>
+    </svg>
+  );
+}
+
+/** Ник в Instagram. Необязательный: «@» рисует само поле, ссылку на профиль
+    показывает справа, как только ник становится похож на настоящий. */
+function InstagramField({ value, onChange, error }: {
+  value: string; onChange: (v: string) => void; error?: string;
+}) {
+  const { t } = useTranslation('clients');
+  const [focused, setFocused] = useState(false);
+  const valid = INSTAGRAM_RE.test(value);
+  const lit = focused || valid;
+  return (
+    <div style={{ marginBottom: '16px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+        <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.6px' }}>
+          {t('addModal.step1.instagram')}
+        </span>
+        <span style={{ fontSize: '9px', fontWeight: 700, letterSpacing: '0.4px', textTransform: 'uppercase', padding: '2px 7px', borderRadius: '20px', color: 'var(--text3)', background: 'rgba(var(--ink),0.05)' }}>
+          {t('addModal.step1.instagramOptional')}
+        </span>
+      </div>
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: '8px', padding: '0 12px', height: '43px',
+        borderRadius: '10px',
+        border: `1.5px solid ${error ? '#D88C9A' : focused ? 'var(--peach)' : 'var(--border)'}`,
+        background: focused ? 'rgba(249,160,139,0.02)' : 'rgba(var(--ink),0.015)',
+        boxShadow: focused ? '0 0 0 3px rgba(249,160,139,0.12)' : 'none',
+        transition: 'border-color 0.2s, box-shadow 0.2s, background 0.2s',
+        boxSizing: 'border-box',
+      }}>
+        <span style={{ display: 'flex', color: 'var(--text3)', flexShrink: 0 }}><IconInstagram active={lit}/></span>
+        <span style={{ fontSize: '13px', fontWeight: 700, color: lit ? 'var(--peach)' : 'var(--text3)', transition: 'color 0.2s' }}>@</span>
+        <input
+          value={value}
+          onChange={e => onChange(instagramNick(e.target.value))}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+          placeholder={t('addModal.step1.instagramPlaceholder')}
+          autoCapitalize="none"
+          autoCorrect="off"
+          spellCheck={false}
+          style={{
+            flex: 1, minWidth: 0, border: 'none', outline: 'none', background: 'transparent',
+            fontSize: '13px', fontWeight: 500, color: 'var(--text)', fontFamily: "'Manrope',sans-serif",
+          }}
+        />
+        {valid && (
+          <a
+            href={`https://instagram.com/${value}`}
+            target="_blank"
+            rel="noopener"
+            title={`instagram.com/${value}`}
+            style={{ display: 'flex', color: 'var(--peach)', flexShrink: 0, animation: 'acCheckPop 0.28s cubic-bezier(0.34,1.56,0.64,1) both' }}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+              <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
+            </svg>
+          </a>
+        )}
+      </div>
+      {error && <div style={{ fontSize: '11px', color: '#D88C9A', fontWeight: 600, marginTop: '4px' }}>{error}</div>}
+    </div>
+  );
+}
+
 // ─── TAG INPUT ────────────────────────────────────────────────────────────────
 function TagInput({ tags, onChange }: { tags: string[]; onChange: (tags: string[]) => void }) {
   const { t } = useTranslation('clients');
@@ -226,6 +311,7 @@ export function AddClientModal({ isOpen, onClose, onSuccess }: AddClientModalPro
       last_name:          parts.slice(1).join(' ') || null,
       phone:              form.phone,
       email:              form.email,
+      instagram:          form.instagram.trim() || null,
       city:               form.city,
       birth_date:         form.bday || null,
       tags:               form.tags.length ? form.tags : undefined,
@@ -397,6 +483,7 @@ export function AddClientModal({ isOpen, onClose, onSuccess }: AddClientModalPro
                     hint={emailCheck.checking ? t('common:validation.checkingContact') : undefined}
                     placeholder={t('addModal.step1.emailPlaceholder')} type="email"
                   />
+                  <InstagramField value={form.instagram} onChange={v => set('instagram', v)} error={errors.instagram}/>
                 </div>
               )}
 
@@ -546,6 +633,9 @@ export function AddClientModal({ isOpen, onClose, onSuccess }: AddClientModalPro
                       {[
                         { l: t('addModal.step4.fields.phone'),        v: form.phone || '—' },
                         { l: t('addModal.step4.fields.email'),        v: form.email || '—' },
+                        // Только если заполнен: пустая плитка «Instagram —» в
+                        // сводке ничего не говорит, а место занимает.
+                        ...(form.instagram ? [{ l: t('addModal.step1.instagram'), v: `@${form.instagram}` }] : []),
                         { l: t('addModal.step4.fields.bday'),         v: form.bday ? new Date(form.bday).toLocaleDateString(i18n.language, { day: 'numeric', month: 'short', year: 'numeric' }) : '—' },
                         { l: t('addModal.step4.fields.city'),         v: form.city  || '—' },
                         { l: t('addModal.step4.fields.subscription'), v: selectedPackage ? selectedPackage.name : t('addModal.step3.noPackage') },

@@ -215,5 +215,11 @@
     "prev": "Előző fénykép",
     "next": "Következő fénykép",
     "counter": "{{current}} / {{total}}"
+  },
+  "notePhotos": {
+    "add": "Fotó",
+    "remove": "Fotó eltávolítása",
+    "alt": "Jegyzet fényképe",
+    "drop": "Engedje el a csatoláshoz"
   }
 }

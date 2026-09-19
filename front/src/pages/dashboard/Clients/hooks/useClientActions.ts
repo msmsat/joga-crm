@@ -8,6 +8,7 @@ import { useToast } from '../../../../components/ui/Toast';
 import { errorMessage } from '../../../../api/errorMessage';
 import { useClientMutations } from './useClientsList';
 import { clientsApi } from '../../../../api/clients/clients.api';
+import { useNotePhotos } from '../../../../hooks/useNotePhotos';
 
 export interface NoteItem {
   id: number;
@@ -29,10 +30,10 @@ export function useClientActions(clientId: number) {
   const [newNoteText, setNewNoteText]     = useState('');
   // Одно поле на обе формы: правка и добавление взаимоисключающи (каждая из них
   // закрывает другую), и вторая копия состояния просто расходилась бы с первой.
-  const [notePhotos, setNotePhotos]       = useState<string[]>([]);
-  // Локальные blob-превью файлов, которые сейчас грузятся. Живут до ответа
-  // сервера и освобождаются в done() — иначе вкладка копит их до перезагрузки.
-  const [notePending, setNotePending]     = useState<string[]>([]);
+  const {
+    photos: notePhotos, pending: notePending,
+    add: addNotePhoto, remove: removeNotePhoto, reset: setNotePhotos,
+  } = useNotePhotos();
   const [showBooking, setShowBooking]     = useState(false);
   const [showBonus, setShowBonus]         = useState(false);
   const [selectedBonus, setSelectedBonus] = useState<string | null>(null);
@@ -140,33 +141,6 @@ export function useClientActions(clientId: number) {
     setNotePhotos([]);
   }, []);
 
-  /** Файл уходит на сервер сразу — форма держит уже сохранённую ссылку.
-   *  Пока он летит, в строке стоит локальное превью: иначе выбор файла минуту
-   *  выглядит так, будто ничего не произошло. */
-  const addNotePhoto = useCallback((files: FileList | File[] | null) => {
-    const list = Array.from(files ?? []).filter(f => f.type.startsWith('image/'));
-    if (!list.length) return;
-
-    const previews = list.map(f => URL.createObjectURL(f));
-    setNotePending(prev => [...prev, ...previews]);
-
-    const done = (preview: string) => {
-      URL.revokeObjectURL(preview);
-      setNotePending(prev => prev.filter(p => p !== preview));
-    };
-
-    list.forEach((file, i) => {
-      clientsApi.uploadNotePhoto(clientId, file)
-        .then(r => setNotePhotos(prev => [...prev, r.url]))
-        .catch((e: Error) => toast.error(errorMessage(e, t)))
-        .finally(() => done(previews[i]));
-    });
-  }, [clientId, toast, t]);
-
-  const removeNotePhoto = useCallback((url: string) => {
-    setNotePhotos(prev => prev.filter(p => p !== url));
-  }, []);
-
   const openWhatsApp = useCallback((phone: string) => {
     const digits = phone.replace(/\D/g, '');
     if (!digits) { toast.error(t('panel.toasts.noPhone')); return; }
@@ -261,7 +235,7 @@ export function useClientActions(clientId: number) {
     eventFilter, setEventFilter,
     copyToClipboard, openWhatsApp,
     remindAboutSubscription,
-    updateField: (field: 'phone' | 'email' | 'birth_date' | 'city', value: string | null) =>
+    updateField: (field: 'phone' | 'email' | 'instagram' | 'birth_date' | 'city', value: string | null) =>
       mutations.update(clientId, { [field]: value } as ClientUpdate).catch((e: Error) => toast.error(errorMessage(e, t))),
     updateRegistrationDate: (date: string) => mutations.updateRegistrationDate(clientId, date).catch((e: Error) => toast.error(errorMessage(e, t))),
   };

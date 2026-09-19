@@ -215,5 +215,11 @@
     "prev": "Önceki fotoğraf",
     "next": "Sonraki fotoğraf",
     "counter": "{{current}} / {{total}}"
+  },
+  "notePhotos": {
+    "add": "Fotoğraf",
+    "remove": "Fotoğrafı kaldır",
+    "alt": "Not fotoğrafı",
+    "drop": "Eklemek için bırakın"
   }
 }

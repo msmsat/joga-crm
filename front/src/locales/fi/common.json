@@ -215,5 +215,11 @@
     "prev": "Edellinen kuva",
     "next": "Seuraava kuva",
     "counter": "{{current}} / {{total}}"
+  },
+  "notePhotos": {
+    "add": "Kuva",
+    "remove": "Poista kuva",
+    "alt": "Muistiinpanon kuva",
+    "drop": "Pudota liittääksesi"
   }
 }

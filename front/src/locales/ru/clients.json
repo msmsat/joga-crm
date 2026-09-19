@@ -90,7 +90,7 @@
       "title": "Контакты",
       "phone": "Телефон",
       "email": "Email",
-      "telegram": "Telegram",
+      "instagram": "Instagram",
       "birthDate": "День рождения",
       "city": "Город",
       "copyHint": " · нажмите для копирования"
@@ -278,11 +278,6 @@
       "cancel": "Отмена",
       "addPlaceholder": "Введите заметку...",
       "add": "Добавить заметку",
-      "addPhoto": "Фото",
-      "removePhoto": "Удалить фото",
-      "photoUploading": "Загрузка…",
-      "dropHint": "Отпустите — прикрепим",
-      "photoAlt": "Фото заметки",
       "justNow": "только что",
       "deleteTitle": "Удалить заметку?",
       "deleteMessage": "Заметку нельзя будет восстановить."
@@ -366,7 +361,10 @@
       "phone": "Телефон",
       "phonePlaceholder": "+7 900 000-00-00",
       "email": "Email",
-      "emailPlaceholder": "client@example.com"
+      "emailPlaceholder": "client@example.com",
+      "instagram": "Instagram",
+      "instagramOptional": "необязательно",
+      "instagramPlaceholder": "username"
     },
     "step2": {
       "bday": "День рождения",
@@ -414,7 +412,8 @@
       "name": "Введите имя (минимум 2 символа)",
       "phone": "Некорректный номер телефона",
       "email": "Некорректный email",
-      "city": "Укажите город"
+      "city": "Укажите город",
+      "instagram": "Ник латиницей: буквы, цифры, точка и подчёркивание"
     }
   },
   "deleteModal": {

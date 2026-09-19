@@ -90,7 +90,7 @@
       "title": "Контакти",
       "phone": "Телефон",
       "email": "Имейл",
-      "telegram": "Telegram",
+      "instagram": "Instagram",
       "birthDate": "Дата на раждане",
       "city": "Град",
       "copyHint": " · щракнете за копиране"
@@ -282,11 +282,6 @@
       "cancel": "Отмени",
       "addPlaceholder": "Въведете бележка…",
       "add": "Добави бележка",
-      "addPhoto": "Снимка",
-      "removePhoto": "Премахване на снимката",
-      "photoUploading": "Качване…",
-      "dropHint": "Пуснете, за да прикачите",
-      "photoAlt": "Снимка към бележката",
       "justNow": "току-що",
       "deleteTitle": "Да се изтрие бележката?",
       "deleteMessage": "Тази бележка не може да бъде възстановена."
@@ -370,7 +365,10 @@
       "phone": "Телефон",
       "phonePlaceholder": "+359 88 000 0000",
       "email": "Имейл",
-      "emailPlaceholder": "klient@primer.bg"
+      "emailPlaceholder": "klient@primer.bg",
+      "instagram": "Instagram",
+      "instagramOptional": "по избор",
+      "instagramPlaceholder": "username"
     },
     "step2": {
       "bday": "Дата на раждане",
@@ -420,7 +418,8 @@
       "name": "Въведете име (поне 2 знака)",
       "phone": "Невалиден телефонен номер",
       "email": "Невалиден имейл",
-      "city": "Въведете град"
+      "city": "Въведете град",
+      "instagram": "Име с латиница: букви, цифри, точка и долна черта"
     }
   },
   "deleteModal": {

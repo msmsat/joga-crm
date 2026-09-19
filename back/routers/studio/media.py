@@ -19,7 +19,7 @@ LOGOS_DIR = "static/logos"
 BRANCH_PHOTOS_DIR = "static/branches"
 STAFF_PHOTOS_DIR = "static/staff"
 HALL_PHOTOS_DIR = "static/halls"
-NOTE_PHOTOS_DIR = "static/notes"  # снимки в заметках о клиенте (routers/clients/profiles.py)
+NOTE_PHOTOS_DIR = "static/notes"  # снимки в заметках — о клиенте и о занятии
 ALLOWED_EXTENSIONS = {"jpg", "jpeg", "png", "webp", "gif"}
 MIME_TO_EXT = {
     "image/jpeg": "jpg",
@@ -128,4 +128,22 @@ async def upload_hall_photo(
     _ctx: StudioContext = Depends(require_role("owner")),
 ):
     url = await save_image(file, HALL_PHOTOS_DIR, max_size_mb=10)
+    return {"url": url}
+
+
+@router.post("/upload-note-photo")
+async def upload_note_photo(
+    file: UploadFile = File(...),
+    _ctx: StudioContext = Depends(require_role("owner", "admin")),
+):
+    """Снимок для заметки — о клиенте или о занятии. Один эндпоинт на оба:
+    заметку о занятии пишут ДО того, как занятие существует (форма создания),
+    поэтому привязать загрузку к сущности нельзя, а вторая копия того же
+    сохранения разошлась бы с первой на первой же правке.
+
+    Возвращённый путь принимает только та схема, что проверяет его формат
+    (schemas/photos.NotePhotos) — произвольную строку в заметку
+    положить нельзя.
+    """
+    url = await save_image(file, NOTE_PHOTOS_DIR, max_size_mb=10)
     return {"url": url}

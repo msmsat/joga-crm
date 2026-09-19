@@ -1,8 +1,9 @@
 import { useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { resolveImageUrl } from '../../../../api/client';
-import { Lightbox, photoLayoutId } from '../../../../components/ui/index';
+import { resolveImageUrl } from '../../api/client';
+import { Lightbox } from './Lightbox';
+import { photoLayoutId } from './photoLayoutId';
 
 const IconPlus = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
@@ -38,14 +39,17 @@ const VISIBLE = 5;   // дальше последняя плитка берёт 
  * `layoutId`, поэтому видно, ЧТО открылось, а не просто «появилось окно».
  */
 export function NotePhotos({
-  photos, pending = [], onAdd, onRemove,
+  photos, pending = [], onAdd, onRemove, zIndex,
 }: {
   photos: string[];
   pending?: string[];          // локальные превью, пока файл летит на сервер
   onAdd?: (files: FileList | File[] | null) => void;
   onRemove?: (url: string) => void;
+  /** Этаж просмотра. Нужен там, где заметка живёт на своём слое: попап
+   *  журнала стоит на 9000 и накрыл бы кадр собой. */
+  zIndex?: number;
 }) {
-  const { t } = useTranslation('clients');
+  const { t } = useTranslation('common');
   const inputRef = useRef<HTMLInputElement>(null);
   const [open, setOpen] = useState<number | null>(null);
   const [hover, setHover] = useState<string | null>(null);
@@ -75,7 +79,7 @@ export function NotePhotos({
             onClick={() => setOpen(i)}
             onMouseEnter={() => setHover(url)}
             onMouseLeave={() => setHover(null)}
-            aria-label={t('panel.notes.photoAlt')}
+            aria-label={t('notePhotos.alt')}
             whileHover={{ y: -2 }}
             whileTap={{ scale: 0.97 }}
             transition={{ type: 'spring', stiffness: 320, damping: 34 }}
@@ -102,8 +106,8 @@ export function NotePhotos({
               <span
                 role="button"
                 tabIndex={-1}
-                title={t('panel.notes.removePhoto')}
-                aria-label={t('panel.notes.removePhoto')}
+                title={t('notePhotos.remove')}
+                aria-label={t('notePhotos.remove')}
                 onClick={e => { e.stopPropagation(); onRemove(url); }}
                 style={{
                   position: 'absolute', top: '4px', right: '4px', width: '18px', height: '18px',
@@ -161,14 +165,14 @@ export function NotePhotos({
               transitionProperty: 'background, border-color, color', transitionDuration: '0.18s',
             }}
           >
-            <IconPlus/>{t('panel.notes.addPhoto')}
+            <IconPlus/>{t('notePhotos.add')}
           </motion.button>
         </>
       )}
 
       {/* В просмотр уходят ВСЕ снимки, даже те, что не влезли в строку: плитка
           «+N» открывает их с того же места, откуда строка оборвалась. */}
-      <Lightbox photos={safe.map(u => resolveImageUrl(u) ?? u)} index={open} onIndex={setOpen}/>
+      <Lightbox photos={safe.map(u => resolveImageUrl(u) ?? u)} index={open} onIndex={setOpen} zIndex={zIndex}/>
     </div>
   );
 }
@@ -179,7 +183,7 @@ export function NotePhotos({
  * на диск ради загрузки незачем.
  */
 export function NoteDropZone({ onFiles, children }: { onFiles: (files: File[]) => void; children: React.ReactNode }) {
-  const { t } = useTranslation('clients');
+  const { t } = useTranslation('common');
   const [over, setOver] = useState(false);
 
   const images = (list: FileList | null | undefined) =>
@@ -209,7 +213,7 @@ export function NoteDropZone({ onFiles, children }: { onFiles: (files: File[]) =
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           fontSize: '12px', fontWeight: 700, color: 'var(--peach)', fontFamily: 'Manrope',
           backdropFilter: 'blur(1px)',
-        }}>{t('panel.notes.dropHint')}</div>
+        }}>{t('notePhotos.drop')}</div>
       )}
     </div>
   );

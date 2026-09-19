@@ -10,7 +10,9 @@ import { scheduleApi } from '../../../../api/schedule';
 import { errorMessage } from '../../../../api/errorMessage';
 import { formatIndexToTimeStr, parseTimeToIndex, generateTimeIntervals, MIN_TIME_INDEX, MAX_TIME_INDEX } from '../utils';
 import { useServiceOptions, CREATE_SERVICE_OPTION } from '../hooks/useServiceOptions';
-import { ResourceMoveField } from './ResourceMoveField';
+import { MoveBookingModal } from './modals/MoveBookingModal';
+import { ClientQuickCard } from './ClientQuickCard';
+import { LessonNotes } from './LessonNotes';
 import type { useJournalMutations } from '../hooks/useJournalMutations';
 import type { HistoryEntry } from '../hooks/useUndoHistory';
 import { useToast, Select, ConfirmModal, QrShareModal } from '../../../../components/ui/index';
@@ -77,6 +79,9 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
   const [editActiveDropdown, setEditActiveDropdown] = useState<'start' | 'end' | null>(null);
   const [showCatalogConfirm, setShowCatalogConfirm] = useState(false);
   const [showQr, setShowQr] = useState(false);
+  const [showMove, setShowMove] = useState(false);
+  // Кого из записанных открыли карточкой. null — никого.
+  const [peekClientId, setPeekClientId] = useState<number | null>(null);
 
   // Стейты добавления клиента
   // Бронь, по которой сейчас спрашиваем способ оплаты (id записи) — строка
@@ -561,15 +566,27 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
 
             {/* HB-22 п.3: у индивидуальной записи один клиент и одна услуга —
                 добавлять сюда некого, и единственное, что с ней делают из
-                журнала, — двигают во времени. Поэтому перенос стоит прямо
-                здесь, а не за кнопкой, открывающей форму записи заново. */}
+                журнала, — двигают во времени. Поля переноса живут во
+                всплывающем окне: в карточке они занимали её треть всегда,
+                даже когда её открыли просто посмотреть. */}
             {canEdit && isResource && (
-              <ResourceMoveField
-                booking={popupBooking}
-                reservationId={bookedClients?.[0]?.reservation_id ?? null}
-                onMoved={() => { setPopupBooking(null); mutations.invalidate(); }}
-              />
+              <button
+                className="bp-btn ghost text-btn"
+                style={{ width: '100%', marginTop: 8, justifyContent: 'center' }}
+                onClick={e => { e.stopPropagation(); setShowMove(true); }}
+              >
+                <Icons.Clock /> {t('bookingPopup.reschedule')}
+              </button>
             )}
+
+            {/* Заметка занятия — под составом, но ДО списка записанных: это
+                про само занятие, а не про конкретного человека. */}
+            <LessonNotes
+              booking={popupBooking}
+              canEdit={canEdit}
+              mutations={mutations}
+              onSaved={setPopupBooking}
+            />
 
             {!isResource && popupBooking.maxClients > 0 && (
               <div style={{ marginTop: 8, background: 'rgba(var(--ink),0.02)', padding: '14px 16px', borderRadius: '16px', border: '1px solid rgba(var(--ink),0.03)' }}>
@@ -598,7 +615,17 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
                 </div>
                 <div style={{ maxHeight: 168, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 4 }}>
                   {bookedClients.map(c => (
-                    <div key={c.reservation_id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '6px 8px', borderRadius: 12, background: 'rgba(var(--ink),0.02)' }}>
+                    <div
+                      key={c.reservation_id}
+                      // Мимо кнопок «пришёл» и «убрать» строка открывает карточку
+                      // клиента: перед занятием чаще нужно вспомнить, кто это и
+                      // что о нём записано, чем отметить приход.
+                      onClick={e => { e.stopPropagation(); setPeekClientId(c.client_id); }}
+                      title={t('bookingPopup.openClient')}
+                      style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '6px 8px', borderRadius: 12, background: 'rgba(var(--ink),0.02)', cursor: 'pointer', transition: 'background 0.15s' }}
+                      onMouseEnter={e => { e.currentTarget.style.background = 'rgba(var(--ink),0.05)'; }}
+                      onMouseLeave={e => { e.currentTarget.style.background = 'rgba(var(--ink),0.02)'; }}
+                    >
                       <div style={{
                         width: 26, height: 26, borderRadius: '50%', flexShrink: 0,
                         background: c.avatar_color ?? 'var(--peach)', color: 'white',
@@ -822,6 +849,19 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
         fileName={popupBooking.title}
         onClose={() => setShowQr(false)}
       />
+    )}
+
+    {showMove && (
+      <MoveBookingModal
+        booking={popupBooking}
+        reservationId={bookedClients?.[0]?.reservation_id ?? null}
+        onMoved={() => { setPopupBooking(null); mutations.invalidate(); }}
+        onClose={() => setShowMove(false)}
+      />
+    )}
+
+    {peekClientId != null && (
+      <ClientQuickCard clientId={peekClientId} onClose={() => setPeekClientId(null)}/>
     )}
 
     {showCatalogConfirm && (

@@ -215,5 +215,11 @@
     "prev": "Fotografia anterioară",
     "next": "Fotografia următoare",
     "counter": "{{current}} din {{total}}"
+  },
+  "notePhotos": {
+    "add": "Foto",
+    "remove": "Elimină fotografia",
+    "alt": "Fotografia notei",
+    "drop": "Eliberaţi pentru a ataşa"
   }
 }

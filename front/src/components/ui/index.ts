@@ -30,6 +30,7 @@ export { ErrorBoundary } from './ErrorBoundary';
 export { EmptyState } from './EmptyState';
 export type { EmptyStateProps } from './EmptyState';
 export { Lightbox } from './Lightbox';
+export { NotePhotos, NoteDropZone } from './NotePhotos';
 export { photoLayoutId } from './photoLayoutId';
 export type { LightboxProps } from './Lightbox';
 export { ActionCard } from './ActionCard';

@@ -215,5 +215,11 @@
     "prev": "Foto anterior",
     "next": "Foto seguinte",
     "counter": "{{current}} de {{total}}"
+  },
+  "notePhotos": {
+    "add": "Foto",
+    "remove": "Remover foto",
+    "alt": "Foto da nota",
+    "drop": "Largue para anexar"
   }
 }

@@ -90,7 +90,7 @@
       "title": "Контакти",
       "phone": "Телефон",
       "email": "Имејл",
-      "telegram": "Telegram",
+      "instagram": "Instagram",
       "birthDate": "Датум рођења",
       "city": "Град",
       "copyHint": " · кликните за копирање"
@@ -286,11 +286,6 @@
       "cancel": "Откажи",
       "addPlaceholder": "Унесите белешку…",
       "add": "Додај белешку",
-      "addPhoto": "Фотографија",
-      "removePhoto": "Уклони фотографију",
-      "photoUploading": "Отпремање…",
-      "dropHint": "Пустите да приложите",
-      "photoAlt": "Фотографија белешке",
       "justNow": "управо сада",
       "deleteTitle": "Обрисати белешку?",
       "deleteMessage": "Ова белешка не може бити враћена."
@@ -374,7 +369,10 @@
       "phone": "Телефон",
       "phonePlaceholder": "+381 60 000 0000",
       "email": "Имејл",
-      "emailPlaceholder": "klijent@primer.rs"
+      "emailPlaceholder": "klijent@primer.rs",
+      "instagram": "Instagram",
+      "instagramOptional": "опционо",
+      "instagramPlaceholder": "username"
     },
     "step2": {
       "bday": "Датум рођења",
@@ -426,7 +424,8 @@
       "name": "Унесите име (најмање 2 знака)",
       "phone": "Неисправан број телефона",
       "email": "Неисправан имејл",
-      "city": "Унесите град"
+      "city": "Унесите град",
+      "instagram": "Корисничко име: латинична слова, бројеви, тачка и доња црта"
     }
   },
   "deleteModal": {

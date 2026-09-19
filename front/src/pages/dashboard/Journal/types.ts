@@ -31,6 +31,9 @@ export interface Booking {
   date?: string;
   cancelReason: string | null;
   clientsNotified: boolean;
+  /** Заметка студии о занятии и снимки к ней — внутренние, клиенту не уходят. */
+  notes: string;
+  photos: string[];
   serviceId: number | null;
   /** HB-22: карточка индивидуальной записи не рисует счётчик участников. */
   bookingMode: 'event' | 'resource';

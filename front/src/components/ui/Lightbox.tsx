@@ -45,7 +45,8 @@ const glass: React.CSSProperties = {
  * Своё затемнение, а не `.v-overlay` кита: на телефоне тот превращается в шит
  * снизу — верная раскладка для формы и заведомо неверная для фотографии.
  */
-export function Lightbox({ photos, index, onIndex, zIndex = 2000 }: LightboxProps) {
+export function Lightbox({ photos, index, onIndex, zIndex }: LightboxProps) {
+  const floor = zIndex ?? 2000;
   const { t } = useTranslation('common');
   const still = useReducedMotion();
   const open = index != null && index >= 0 && index < photos.length;
@@ -96,7 +97,7 @@ export function Lightbox({ photos, index, onIndex, zIndex = 2000 }: LightboxProp
           transition={{ duration: 0.2, ease: 'easeOut' }}
           onClick={() => onIndex(null)}
           style={{
-            position: 'fixed', inset: 0, zIndex,
+            position: 'fixed', inset: 0, zIndex: floor,
             background: 'rgba(28,22,20,0.94)',
             display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
             padding: `16px 16px calc(16px + env(safe-area-inset-bottom))`,
