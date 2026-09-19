@@ -143,7 +143,8 @@
       "unknown_event": "Unbekanntes Ereignis",
       "not_personal": "Persönliche Einstellungen ändern keine Pflichtbenachrichtigungen"
     },
-    "trial_already_used": "Die kostenlose Testphase steht für dieses Studio nicht mehr zur Verfügung."
+    "trial_already_used": "Die kostenlose Testphase steht für dieses Studio nicht mehr zur Verfügung.",
+    "saveFailed": "Speichern fehlgeschlagen"
   },
   "units": {
     "min": "Min.",
@@ -221,5 +222,11 @@
     "remove": "Foto entfernen",
     "alt": "Foto zur Notiz",
     "drop": "Loslassen zum Anhängen"
+  },
+  "loading": "Wird geladen…",
+  "actions": {
+    "connected": "Verbunden",
+    "disconnected": "Getrennt",
+    "codeSent": "Code gesendet"
   }
 }

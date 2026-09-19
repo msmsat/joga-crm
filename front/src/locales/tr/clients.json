@@ -429,5 +429,8 @@
     "cancel": "İptal",
     "confirm": "Sil",
     "success": "Müşteri silindi"
+  },
+  "toasts": {
+    "clientAdded": "Müşteri eklendi"
   }
 }

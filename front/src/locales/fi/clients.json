@@ -429,5 +429,8 @@
     "cancel": "Peruuta",
     "confirm": "Poista",
     "success": "Asiakas poistettu"
+  },
+  "toasts": {
+    "clientAdded": "Asiakas lisätty"
   }
 }

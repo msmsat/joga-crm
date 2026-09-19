@@ -143,7 +143,8 @@
       "unknown_event": "Unknown event",
       "not_personal": "Personal settings can't change required notifications"
     },
-    "trial_already_used": "The free trial is no longer available for this studio."
+    "trial_already_used": "The free trial is no longer available for this studio.",
+    "saveFailed": "Could not save"
   },
   "units": {
     "min": "min",
@@ -221,5 +222,11 @@
     "remove": "Remove photo",
     "alt": "Note photo",
     "drop": "Drop to attach"
+  },
+  "loading": "Loading…",
+  "actions": {
+    "connected": "Connected",
+    "disconnected": "Disconnected",
+    "codeSent": "Code sent"
   }
 }

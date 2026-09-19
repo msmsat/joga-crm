@@ -429,5 +429,8 @@
     "cancel": "Mégse",
     "confirm": "Törlés",
     "success": "Ügyfél törölve"
+  },
+  "toasts": {
+    "clientAdded": "Az ügyfél hozzáadva"
   }
 }

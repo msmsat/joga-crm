@@ -423,5 +423,8 @@
     "cancel": "Cancel",
     "confirm": "Delete",
     "success": "Client deleted"
+  },
+  "toasts": {
+    "clientAdded": "Client added"
   }
 }

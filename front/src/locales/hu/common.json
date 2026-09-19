@@ -143,7 +143,8 @@
       "unknown_event": "Ismeretlen esemény",
       "not_personal": "A személyes beállítások nem módosítják a kötelező értesítéseket"
     },
-    "trial_already_used": "Az ingyenes próbaidőszak már nem érhető el ehhez a stúdióhoz."
+    "trial_already_used": "Az ingyenes próbaidőszak már nem érhető el ehhez a stúdióhoz.",
+    "saveFailed": "A mentés nem sikerült"
   },
   "units": {
     "min": "perc",
@@ -221,5 +222,11 @@
     "remove": "Fotó eltávolítása",
     "alt": "Jegyzet fényképe",
     "drop": "Engedje el a csatoláshoz"
+  },
+  "loading": "Betöltés…",
+  "actions": {
+    "connected": "Csatlakoztatva",
+    "disconnected": "Leválasztva",
+    "codeSent": "A kód elküldve"
   }
 }

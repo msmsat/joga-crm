@@ -143,7 +143,8 @@
       "unknown_event": "Tuntematon tapahtuma",
       "not_personal": "Henkilökohtaiset asetukset eivät muuta pakollisia ilmoituksia"
     },
-    "trial_already_used": "Ilmainen kokeilu ei ole enää käytettävissä tälle studiolle."
+    "trial_already_used": "Ilmainen kokeilu ei ole enää käytettävissä tälle studiolle.",
+    "saveFailed": "Tallennus epäonnistui"
   },
   "units": {
     "min": "min",
@@ -221,5 +222,11 @@
     "remove": "Poista kuva",
     "alt": "Muistiinpanon kuva",
     "drop": "Pudota liittääksesi"
+  },
+  "loading": "Ladataan…",
+  "actions": {
+    "connected": "Yhdistetty",
+    "disconnected": "Yhteys katkaistu",
+    "codeSent": "Koodi lähetetty"
   }
 }

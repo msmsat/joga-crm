@@ -143,7 +143,8 @@
       "unknown_event": "Nepoznat događaj",
       "not_personal": "Osobne postavke ne mijenjaju obavezne obavijesti"
     },
-    "trial_already_used": "Besplatno probno razdoblje više nije dostupno za ovaj studio."
+    "trial_already_used": "Besplatno probno razdoblje više nije dostupno za ovaj studio.",
+    "saveFailed": "Spremanje nije uspjelo"
   },
   "units": {
     "min": "min",
@@ -221,5 +222,11 @@
     "remove": "Ukloni fotografiju",
     "alt": "Fotografija bilješke",
     "drop": "Pustite za privitak"
+  },
+  "loading": "Učitavanje…",
+  "actions": {
+    "connected": "Povezano",
+    "disconnected": "Odspojeno",
+    "codeSent": "Kôd je poslan"
   }
 }

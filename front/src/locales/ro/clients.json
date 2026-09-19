@@ -435,5 +435,8 @@
     "cancel": "Anulează",
     "confirm": "Șterge",
     "success": "Client șters"
+  },
+  "toasts": {
+    "clientAdded": "Client adăugat"
   }
 }

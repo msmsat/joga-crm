@@ -143,7 +143,8 @@
       "unknown_event": "Neznámá událost",
       "not_personal": "Osobní nastavení nemění povinná oznámení"
     },
-    "trial_already_used": "Bezplatná zkušební verze už pro toto studio není k dispozici."
+    "trial_already_used": "Bezplatná zkušební verze už pro toto studio není k dispozici.",
+    "saveFailed": "Uložení se nezdařilo"
   },
   "units": {
     "min": "min",
@@ -221,5 +222,11 @@
     "remove": "Odebrat fotku",
     "alt": "Fotka poznámky",
     "drop": "Pusťte a přiložíme"
+  },
+  "loading": "Načítání…",
+  "actions": {
+    "connected": "Připojeno",
+    "disconnected": "Odpojeno",
+    "codeSent": "Kód byl odeslán"
   }
 }

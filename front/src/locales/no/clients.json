@@ -429,5 +429,8 @@
     "cancel": "Avbryt",
     "confirm": "Slett",
     "success": "Kunde slettet"
+  },
+  "toasts": {
+    "clientAdded": "Kunden er lagt til"
   }
 }

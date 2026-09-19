@@ -143,7 +143,8 @@
       "unknown_event": "Ukendt hændelse",
       "not_personal": "Personlige indstillinger kan ikke ændre obligatoriske notifikationer"
     },
-    "trial_already_used": "Den gratis prøveperiode er ikke længere tilgængelig for dette studie."
+    "trial_already_used": "Den gratis prøveperiode er ikke længere tilgængelig for dette studie.",
+    "saveFailed": "Kunne ikke gemme"
   },
   "units": {
     "min": "min",
@@ -221,5 +222,11 @@
     "remove": "Fjern foto",
     "alt": "Notefoto",
     "drop": "Slip for at vedhæfte"
+  },
+  "loading": "Indlæser…",
+  "actions": {
+    "connected": "Forbundet",
+    "disconnected": "Afbrudt",
+    "codeSent": "Koden er sendt"
   }
 }

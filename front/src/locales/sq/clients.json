@@ -429,5 +429,8 @@
     "cancel": "Anulo",
     "confirm": "Fshi",
     "success": "Klienti u fshi"
+  },
+  "toasts": {
+    "clientAdded": "Klienti u shtua"
   }
 }

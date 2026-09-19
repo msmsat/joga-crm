@@ -143,7 +143,8 @@
       "unknown_event": "Nieznane zdarzenie",
       "not_personal": "Ustawienia osobiste nie zmieniają powiadomień obowiązkowych"
     },
-    "trial_already_used": "Bezpłatny okres próbny nie jest już dostępny dla tego studia."
+    "trial_already_used": "Bezpłatny okres próbny nie jest już dostępny dla tego studia.",
+    "saveFailed": "Nie udało się zapisać"
   },
   "units": {
     "min": "min",
@@ -221,5 +222,11 @@
     "remove": "Usuń zdjęcie",
     "alt": "Zdjęcie notatki",
     "drop": "Upuść, aby dodać"
+  },
+  "loading": "Wczytywanie…",
+  "actions": {
+    "connected": "Połączono",
+    "disconnected": "Odłączono",
+    "codeSent": "Kod został wysłany"
   }
 }

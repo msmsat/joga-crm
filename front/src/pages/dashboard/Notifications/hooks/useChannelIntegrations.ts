@@ -40,7 +40,7 @@ export function useChannelIntegrations(onConnected?: (key: 'telegram' | 'whatsap
     onSuccess: () => {
       invalidateChannelGroup(qc)
       onConnected?.('telegram')
-      toast.success(t('common:actions.saved', 'Подключено'))
+      toast.success(t('common:actions.connected'))
     },
     onError,
   })
@@ -50,20 +50,20 @@ export function useChannelIntegrations(onConnected?: (key: 'telegram' | 'whatsap
     onSuccess: () => {
       invalidateAfterDisconnect()
       invalidateChannelGroup(qc)
-      toast.success(t('common:actions.saved', 'Отключено'))
+      toast.success(t('common:actions.disconnected'))
     },
     onError,
   })
 
   const requestEmailCode = useMutation({
     mutationFn: (email: string) => notificationsApi.requestEmailCode(email),
-    onSuccess: () => { invalidate(); toast.success(t('common:actions.saved', 'Код отправлен')) },
+    onSuccess: () => { invalidate(); toast.success(t('common:actions.codeSent')) },
     onError,
   })
 
   const verifyEmailCode = useMutation({
     mutationFn: (code: string) => notificationsApi.verifyEmailCode(code),
-    onSuccess: () => { invalidate(); onConnected?.('email'); toast.success(t('common:actions.saved', 'Подключено')) },
+    onSuccess: () => { invalidate(); onConnected?.('email'); toast.success(t('common:actions.connected')) },
     onError,
   })
 
@@ -117,7 +117,7 @@ export function useChannelIntegrations(onConnected?: (key: 'telegram' | 'whatsap
     onSuccess: () => {
       invalidateAfterDisconnect()
       invalidateChannelGroup(qc)
-      toast.success(t('common:actions.saved', 'Отключено'))
+      toast.success(t('common:actions.disconnected'))
     },
     onError,
   })
