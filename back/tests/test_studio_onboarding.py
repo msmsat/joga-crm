@@ -55,6 +55,9 @@ class _R:
     def scalar_one_or_none(self):
         return self._v
 
+    def first(self):
+        return self._v
+
     def scalars(self):
         return self
 
@@ -136,6 +139,38 @@ def test_create_studio_with_defaults_does_not_touch_is_onboarded_or_commit():
 
 # ─── POST /auth/studios ────────────────────────────────────────────────────
 
+def test_onboarding_saves_phone_for_owner_and_studio():
+    user = _User(is_onboarded=False)
+    db = _DB([None])
+    out = _run(O.complete_onboarding(_onboarding_data(phone=" +79990000001 "), user, db))
+    assert out["access_token"]
+    assert user.phone == "+79990000001"
+    assert user.is_onboarded and db.committed
+    studio = next(x for x in db.added if type(x).__name__ == "Studio")
+    assert studio.phone == user.phone
+    assert not [x for x in db.added if type(x).__name__ == "StudioBillingPlan"]
+
+
+def test_onboarding_preserves_existing_owner_phone():
+    user = _User(is_onboarded=False)
+    user.phone = "+420777123456"
+    db = _DB()
+    _run(O.complete_onboarding(_onboarding_data(), user, db))
+    assert user.phone == "+420777123456"
+    assert db.committed
+
+
+def test_onboarding_rejects_taken_owner_phone_before_creating_studio():
+    user = _User(is_onboarded=False)
+    db = _DB([(2,)])
+    try:
+        _run(O.complete_onboarding(_onboarding_data(), user, db))
+        assert False, "Expected contact conflict"
+    except HTTPException as err:
+        assert err.status_code == 409
+    assert user.phone is None and not user.is_onboarded
+    assert not db.added and not db.committed
+
 def test_create_studio_endpoint_works_even_when_not_yet_onboarded():
     """Ключевое отличие от /onboarding: здесь блокировки is_onboarded нет
     вовсе — ни в одну, ни в другую сторону."""
@@ -149,9 +184,11 @@ def test_create_studio_endpoint_works_even_when_not_yet_onboarded():
 
 def test_create_studio_endpoint_works_when_already_onboarded():
     user = _User(is_onboarded=True)
+    user.phone = "+420777123456"
     db = _DB()
     out = _run(O.create_studio(_onboarding_data(studioName="Второй филиал"), user, db))
     assert out.access_token
+    assert user.phone == "+420777123456"
 
 
 # ─── GET /auth/studios ──────────────────────────────────────────────────────

@@ -115,6 +115,10 @@ export default function DashboardLayout() {
   // и означает, что оплата не нужна.
   const paywalled =
     subActive === false && !offerTrial && !paymentReturn && !PAYWALL_ALLOWED.includes(currentPath);
+  // Окно акции не даёт доступа к данным. До ответа плана и активации
+  // закрытый раздел не монтируем, иначе его запросы вернут 402 под модалкой.
+  const waitingForAccess = role === 'owner' && subActive !== true
+    && !PAYWALL_ALLOWED.includes(currentPath);
 
   // PhoneGate (ниже) блокирует экран целиком и закрыть его нельзя — но сам Outlet
   // (Дашборд с графиками, живой лентой на 60с-поллинге и т.д.) всё равно монтировался
@@ -157,7 +161,7 @@ export default function DashboardLayout() {
           position: 'relative', // 🔥 Включает контекст наложения для этой области
           zIndex: 1             // 🔥 Делает весь контент и графики ниже уровня topbar
         }}>
-          {paywalled ? <Navigate to="/dashboard/billing" replace /> : needsPhone ? null : (
+          {paywalled ? <Navigate to="/dashboard/billing" replace /> : needsPhone || waitingForAccess ? null : (
             <ErrorBoundary key={location.pathname}>
               <Outlet />
             </ErrorBoundary>

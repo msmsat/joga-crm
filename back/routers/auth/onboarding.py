@@ -8,6 +8,7 @@ from models import Client, User, Studio, StudioWorkingHours, StudioMember
 from schemas import OnboardingRequest, SelectStudioRequest, StudioListItem, TokenResponse
 from security import create_access_token
 from services import terminology
+from services.contacts import ensure_user_contacts_free
 from dependencies import ALGORITHM, SECRET_KEY, get_current_user, oauth2_scheme
 from jose import jwt
 
@@ -101,10 +102,13 @@ async def complete_onboarding(
         raise HTTPException(status_code=400, detail="Онбординг уже пройден")
     _validate_onboarding_request(request)
 
-    # Телефон студии в аккаунт владельца НЕ переносится и на уникальность не
-    # проверяется: это контакт бизнеса, его можно указать хоть общий на сеть
-    # студий, хоть чужой (docs/ROADMAP_ACCOUNTS, «Вне scope»). Личный номер
-    # владельца спрашивает PhoneGate при входе в кабинет, если его ещё нет.
+    # Первый контакт владельца берём из онбординга, чтобы не спрашивать
+    # его повторно после активации тарифа. Уже заданный личный номер сохраняем.
+    if not current_user.phone:
+        await ensure_user_contacts_free(
+            db, phone=request.phone.strip(), exclude_id=current_user.id,
+        )
+        current_user.phone = request.phone.strip()
     new_studio = await _create_studio_with_defaults(current_user, request, db)
 
     current_user.is_onboarded = True

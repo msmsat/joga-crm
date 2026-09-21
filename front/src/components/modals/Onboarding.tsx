@@ -118,10 +118,8 @@ export default function OnboardingPage() {
     { title: t("onboarding:steps.schedule.title"), desc: t("onboarding:steps.schedule.desc") },
   ];
 
-  // Это контакт БИЗНЕСА, а не аккаунта владельца: на занятость не проверяем —
-  // один номер можно указать и студии, и филиалу, и тренеру одновременно
-  // (docs/ROADMAP_ACCOUNTS, «Вне scope»). Личный номер владельца спрашивает
-  // PhoneGate в кабинете. Проверяем только формат.
+  // При первом онбординге этот номер также заполнит пустой профиль владельца.
+  // Формат проверяем здесь, занятость номера аккаунта — на сервере.
 
   function goNext() {
     if (animating) return;

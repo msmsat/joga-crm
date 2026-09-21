@@ -9,6 +9,7 @@ import { NAV, NAV_BOTTOM, prefetchJournal, type NavEntry } from './navItems';
 import { Tooltip } from './Tooltip';
 import { UserMenu } from './UserMenu';
 import { MobileNav } from './MobileNav';
+import { useBillingAccess } from '../../hooks/useBillingAccess';
 
 // ─── РЕЖИМ «РЕЛЬСЫ» ──────────────────────────────────────────────────────────
 // На ноутбучных экранах 240px подписей — непозволительная роскошь: меню
@@ -48,6 +49,7 @@ export interface SidebarProps {
 
 // Боковое меню каркаса (стили — классы .sidebar/.nav-item в App.css).
 export function Sidebar({ role }: SidebarProps) {
+  const billingAccess = useBillingAccess();
   const { t } = useTranslation('menu');
   const { data: studio } = useStudioSettings();
   const { isRail, canToggle, toggle } = useRail();
@@ -60,6 +62,7 @@ export function Sidebar({ role }: SidebarProps) {
   const { data: countData } = useQuery({
     queryKey: queryKeys.clientsCount,
     queryFn: () => clientsApi.getCount(),
+    enabled: billingAccess,
   });
   // Ошибка запроса (нет прав, сеть) — бейджа просто нет, а не «0 клиентов».
   const clientsCount = countData?.count ?? null;
@@ -72,7 +75,7 @@ export function Sidebar({ role }: SidebarProps) {
         key={item.to}
         to={item.to}
         end={item.end}
-        onMouseEnter={item.prefetch}
+        onMouseEnter={billingAccess ? item.prefetch : undefined}
         className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
         style={{ textDecoration: 'none' }}
       >
@@ -91,7 +94,7 @@ export function Sidebar({ role }: SidebarProps) {
   };
 
   const journalLink = (
-    <NavLink to="/dashboard/journal" onMouseEnter={prefetchJournal} className="sidebar-journal" style={{ textDecoration: 'none' }}>
+    <NavLink to="/dashboard/journal" onMouseEnter={billingAccess ? prefetchJournal : undefined} className="sidebar-journal" style={{ textDecoration: 'none' }}>
       <div className="journal-icon">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5"><rect x="3" y="4" width="18" height="18" rx="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" /></svg>
       </div>

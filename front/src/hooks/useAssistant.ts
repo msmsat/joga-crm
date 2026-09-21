@@ -15,6 +15,7 @@ import { currentAiEntity } from './useAiEntity';
 import { useToast } from '../components/ui/Toast';
 import { errorMessage } from '../api/errorMessage';
 import { ApiError } from '../api/client';
+import { useBillingAccess } from './useBillingAccess';
 
 const MAX_MESSAGE_LENGTH = 4000;
 
@@ -119,6 +120,7 @@ function viewport(): 'phone' | 'tablet' | 'desktop' {
 }
 
 export function useAssistant(surface: AISurface = 'drawer') {
+  const billingAccess = useBillingAccess();
   const qc = useQueryClient();
   const toast = useToast();
   const { t } = useTranslation();
@@ -166,6 +168,7 @@ export function useAssistant(surface: AISurface = 'drawer') {
   const sessionsQuery = useQuery({
     queryKey: queryKeys.aiSessions,
     queryFn: () => aiApi.getSessions(),
+    enabled: billingAccess,
     staleTime: 30_000,
   });
 
@@ -181,7 +184,7 @@ export function useAssistant(surface: AISurface = 'drawer') {
   const messagesQuery = useQuery({
     queryKey: queryKeys.aiMessages(activeSessionId ?? noSessionKey),
     queryFn: () => aiApi.getMessages(activeSessionId as number),
-    enabled: activeSessionId != null,
+    enabled: billingAccess && activeSessionId != null,
     placeholderData: [],
     // Свежий локальный кэш не перезапрашиваем: иначе GET, стартовавший на
     // переключении ключа, дочитывался посреди стрима и на секунду затирал
