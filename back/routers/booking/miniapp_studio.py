@@ -21,7 +21,7 @@ from models import (
 from schemas._base import BaseSchema
 from schemas.schedule.hybrid import BookingCapabilities
 from services.booking_rules import load_rules
-from services import terminology
+from services import catalog, terminology
 from services.notifier import _fmt_amount
 from services.pricing import resolve_price
 from services.studio_link import require_studio_id
@@ -116,11 +116,27 @@ class PackageInfo(BaseSchema):
     discount_label: Optional[str]
 
 
+class StaffInfo(BaseSchema):
+    """Мастер студии — справочник имён, а не витрина людей.
+
+    Нужен там, где у приложения есть НОМЕР сотрудника, а имени взять негде:
+    QR-код сотрудника (`?staff=<id>`) открывает расписание, отфильтрованное по
+    нему, и чип фильтра обязан назвать его по имени даже в день, когда занятий
+    у него нет. Ровно та же подстраховка, что у услуг (`serviceLabel`).
+
+    `id` — `users.id`, тот же номер, что в `Lesson.teacher_id` и в карточке
+    сотрудника CRM. Имя — подпись ЭТОЙ студии (`StudioMember`).
+    """
+    id: int
+    name: str
+
+
 class StudioCatalog(BaseSchema):
     studio: StudioInfo
     rules: BookingRules
     branches: list[BranchInfo]
     services: list[ServiceInfo]
+    staff: list[StaffInfo]
     packages: list[PackageInfo]
     can_pay_online: bool
     # Безопасный блок §6.4 — тот же тип, что и в CRM (routers/settings/general.py),
@@ -248,6 +264,11 @@ async def get_studio_catalog(
         select(Service).where(Service.studio_id == studio_id).order_by(Service.name)
     )).scalars().all()
 
+    # Мастера — одним правилом на весь продукт (`members.is_specialist_clause`),
+    # а не «роль == тренер»: владелец с назначенными услугами тоже стоит в
+    # журнале и тоже может раздать свой QR.
+    trainers = await catalog.trainers(db, studio_id)
+
     packages = (await db.execute(
         select(SubscriptionPackage)
         .where(SubscriptionPackage.studio_id == studio_id, SubscriptionPackage.is_active == True)
@@ -338,6 +359,7 @@ async def get_studio_catalog(
             )
             for service in services
         ],
+        staff=[StaffInfo(id=trainer.id, name=trainer.name) for trainer in trainers],
         packages=[
             PackageInfo(
                 id=package.id,

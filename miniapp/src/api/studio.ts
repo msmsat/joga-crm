@@ -85,6 +85,17 @@ export interface SubscriptionPackageInfo {
   discount_label: string | null;
 }
 
+/**
+ * Мастер студии — справочник имён, а не витрина. Нужен там, где у приложения
+ * есть номер сотрудника, а имени взять неоткуда: QR-код сотрудника ведёт на
+ * `?staff=<id>`, и чип фильтра обязан назвать его даже в день, когда занятий
+ * у него нет. `id` — тот же номер, что в `LessonResponse.teacher_id`.
+ */
+export interface StudioStaff {
+  id: number;
+  name: string;
+}
+
 export interface StudioCatalog {
   booking_capabilities: BookingCapabilities;
   terminology: Terminology;
@@ -92,6 +103,7 @@ export interface StudioCatalog {
   rules: BookingRules;
   branches: Studio[];
   services: StudioService[];
+  staff: StudioStaff[];
   packages: SubscriptionPackageInfo[];
   can_pay_online: boolean;
 }

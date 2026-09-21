@@ -172,7 +172,8 @@
     "lessonCaption": "Bu derse kaydolmak için kamerayı doğrultun",
     "packageAction": "Paketin QR kodu",
     "packageCaption": "Paketi satın almak için kamerayı doğrultun",
-    "serviceAction": "Hizmetin QR kodu"
+    "serviceAction": "Hizmetin QR kodu",
+    "staffAction": "Çalışanın QR kodu"
   },
   "auth": {
     "haveAccount": "Zaten hesabınız var mı?",

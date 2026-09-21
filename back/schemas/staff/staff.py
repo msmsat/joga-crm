@@ -117,6 +117,10 @@ class StaffProfileResponse(BaseSchema):
     department: Optional[str] = None
     is_online: bool
     is_active: bool
+    # То же, что в StaffListItem, и по той же причине: по одной роли не видно,
+    # мастер ли человек. Карточка смотрит сюда, решая, есть ли смысл в QR-коде
+    # записи к нему.
+    is_specialist: bool = False
     photo_url: Optional[str] = None
     avatar_gradient: Optional[str] = None
     salary: Optional[float] = None

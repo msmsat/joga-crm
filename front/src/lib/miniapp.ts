@@ -27,6 +27,7 @@ export function miniappLink(
 if (import.meta.env.DEV) {
   console.assert(miniappLink('https://a.app/s/k3', { lesson: 7 }) === 'https://a.app/s/k3?lesson=7', 'miniappLink: параметр');
   console.assert(miniappLink('https://a.app/s/k3?x=1', { pkg: 2 }) === 'https://a.app/s/k3?x=1&pkg=2', 'miniappLink: второй параметр');
+  console.assert(miniappLink('https://a.app/s/k3', { tab: 'sched', staff: 42 }) === 'https://a.app/s/k3?tab=sched&staff=42', 'miniappLink: сотрудник');
   console.assert(miniappLink('https://a.app/s/k3', { lesson: undefined }) === 'https://a.app/s/k3', 'miniappLink: пустое не пишем');
   console.assert(miniappLink('', { lesson: 7 }) === '', 'miniappLink: без базы ссылки нет');
 }

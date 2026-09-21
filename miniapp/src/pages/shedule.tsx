@@ -20,6 +20,8 @@ interface SheduleProps {
   focusLesson?: { id: number; date?: string };
   /** Услуга из QR-кода студии: открыть раздел с уже выбранной услугой. */
   focusServiceId?: number;
+  /** Сотрудник из QR-кода студии: запись к нему либо расписание по нему. */
+  focusStaffId?: number;
 }
 
 /**
@@ -33,7 +35,7 @@ interface SheduleProps {
  * Оба раздела гибридной студии остаются смонтированными и прячутся атрибутом:
  * переключение не теряет ни выбранного мастера, ни пролистанную неделю.
  */
-export default function Shedule({ catalog, onBuySubscription, onNeedAuth, focusLesson, focusServiceId }: SheduleProps) {
+export default function Shedule({ catalog, onBuySubscription, onNeedAuth, focusLesson, focusServiceId, focusStaffId }: SheduleProps) {
   const { t } = useTranslation();
   const mode = catalog?.booking_capabilities.booking_mode ?? 'event';
   // Ссылка на УСЛУГУ сама говорит, какой это раздел, — но не словом в адресе, а
@@ -43,6 +45,17 @@ export default function Shedule({ catalog, onBuySubscription, onNeedAuth, focusL
   const focusMode = focusServiceId != null
     ? catalog?.services.find((service) => service.id === focusServiceId)?.booking_mode
     : undefined;
+
+  // Ссылка на СОТРУДНИКА — то же правило, но спросить некого: услуга знает свою
+  // механику, человек не знает, он может и вести группы, и принимать
+  // индивидуально. Поэтому раздел называет режим студии, а не режим чего-то
+  // внутри неё: `event` — расписание с фильтром по тренеру, иначе — запись к
+  // мастеру. Именно режим, а не текущий `view`: раздел выбирается один раз,
+  // и переключение вкладки руками не должно потом открывать лист брони само.
+  // ponytail: в гибридной студии код тренера, который ведёт ТОЛЬКО группы,
+  // откроет индивидуальную запись, где его нет; если такие студии появятся —
+  // спрашивать у /booking/staff, числится ли он мастером.
+  const staffSection = focusStaffId != null && mode === 'event' ? 'event' : 'resource';
 
   // Выбор человека сильнее ссылки — но только после того, как он его сделал.
   // `null` — «ещё не переключал»: тогда раздел называет ссылка, а по умолчанию
@@ -67,7 +80,12 @@ export default function Shedule({ catalog, onBuySubscription, onNeedAuth, focusL
           <ScreenHeader kicker={catalog?.studio.name} title={t('booking.title')} />
           {segment}
           {rules && !rules.booking_active && <BookingClosedNotice />}
-          <BookingPage catalog={catalog} resource={resource} focusServiceId={focusMode === 'resource' ? focusServiceId : undefined} />
+          <BookingPage
+            catalog={catalog}
+            resource={resource}
+            focusServiceId={focusMode === 'resource' ? focusServiceId : undefined}
+            focusStaffId={staffSection === 'resource' ? focusStaffId : undefined}
+          />
         </div>
       )}
 
@@ -80,6 +98,7 @@ export default function Shedule({ catalog, onBuySubscription, onNeedAuth, focusL
             segment={segment}
             focusLesson={focusLesson}
             focusServiceId={focusMode === 'event' ? focusServiceId : undefined}
+            focusStaffId={staffSection === 'event' ? focusStaffId : undefined}
           />
         </div>
       )}

@@ -172,7 +172,8 @@
     "lessonCaption": "Kamera darauf richten und diesen Kurs buchen",
     "packageAction": "QR-Code des Abos",
     "packageCaption": "Kamera darauf richten und das Abo kaufen",
-    "serviceAction": "QR-Code der Leistung"
+    "serviceAction": "QR-Code der Leistung",
+    "staffAction": "QR-Code des Mitarbeiters"
   },
   "auth": {
     "haveAccount": "Sie haben bereits ein Konto?",

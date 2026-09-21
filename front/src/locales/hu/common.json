@@ -172,7 +172,8 @@
     "lessonCaption": "Irányítsd rá a kamerát, és foglalj erre az órára",
     "packageAction": "A bérlet QR-kódja",
     "packageCaption": "Irányítsd rá a kamerát, és vedd meg a bérletet",
-    "serviceAction": "A szolgáltatás QR-kódja"
+    "serviceAction": "A szolgáltatás QR-kódja",
+    "staffAction": "A munkatárs QR-kódja"
   },
   "auth": {
     "haveAccount": "Már van fiókja?",

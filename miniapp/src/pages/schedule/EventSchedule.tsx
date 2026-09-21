@@ -61,13 +61,15 @@ interface EventScheduleProps {
   focusLesson?: { id: number; date?: string };
   /** Групповая услуга из QR-кода студии: расписание сразу отфильтровано по ней. */
   focusServiceId?: number;
+  /** Тренер из QR-кода студии: расписание сразу отфильтровано по нему. */
+  focusStaffId?: number;
 }
 
 /**
  * Расписание групповых занятий по дням (booking_mode `event`, и групповой
  * раздел `hybrid`). Индивидуальная запись живёт отдельно — pages/booking.
  */
-export default function EventSchedule({ catalog, onBuySubscription, onNeedAuth, segment, focusLesson, focusServiceId }: EventScheduleProps) {
+export default function EventSchedule({ catalog, onBuySubscription, onNeedAuth, segment, focusLesson, focusServiceId, focusStaffId }: EventScheduleProps) {
   const branches = catalog?.branches ?? [];
   const isMultiStudio = branches.length > 1;
   const rules = catalog?.rules ?? null;
@@ -123,6 +125,15 @@ export default function EventSchedule({ catalog, onBuySubscription, onNeedAuth, 
     focusedService.current = true;
     setFilters((current) => ({ ...current, service: focusServiceId }));
   }, [focusServiceId]);
+
+  // Тренер из QR-кода — тем же порядком. Фильтр по НОМЕРУ, поэтому ждать
+  // каталог незачем: имя нужно только чипу, и оно приедет к нему само.
+  const focusedStaff = useRef(false);
+  useEffect(() => {
+    if (focusStaffId == null || focusedStaff.current) return;
+    focusedStaff.current = true;
+    setFilters((current) => ({ ...current, teacher: focusStaffId }));
+  }, [focusStaffId]);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   // Каталог мог перечитаться без одного из филиалов — выбранным он не считается.
   const studioIds = knownBranches(filters.studioIds, branches.map((branch) => branch.id));
@@ -221,17 +232,22 @@ export default function EventSchedule({ catalog, onBuySubscription, onNeedAuth, 
     });
     return [...seen.entries()].map(([id, name]) => ({ id, name }));
   }, [dayClasses]);
-  const teachers = useMemo(
-    () => [...new Set(dayClasses.map((lesson) => lesson.teacher).filter(Boolean))],
-    [dayClasses],
-  );
+  const teachers = useMemo(() => {
+    const seen = new Map<number, string>();
+    dayClasses.forEach((lesson) => {
+      if (lesson.teacher_id != null && lesson.teacher && !seen.has(lesson.teacher_id)) {
+        seen.set(lesson.teacher_id, lesson.teacher);
+      }
+    });
+    return [...seen.entries()].map(([id, name]) => ({ id, name }));
+  }, [dayClasses]);
 
   const visible = useMemo(
     () =>
       dayClasses.filter(
         (lesson) =>
           (!filters.service || lesson.service_id === filters.service) &&
-          (!filters.teacher || lesson.teacher === filters.teacher),
+          (!filters.teacher || lesson.teacher_id === filters.teacher),
       ),
     [dayClasses, filters],
   );
@@ -247,6 +263,13 @@ export default function EventSchedule({ catalog, onBuySubscription, onNeedAuth, 
       ?? catalog?.services.find((item) => item.id === id)?.name;
     return name ? t(`lesson.name.${name}`, { defaultValue: name }) : String(id);
   };
+
+  /** То же для тренера: занятий этого дня может не быть вовсе (человек пришёл
+   *  по его QR-коду в выходной), и тогда имя называет справочник студии. */
+  const teacherLabel = (id: number): string =>
+    teachers.find((item) => item.id === id)?.name
+    ?? catalog?.staff.find((item) => item.id === id)?.name
+    ?? String(id);
 
   const activeCount = (filters.service ? 1 : 0) + (filters.teacher ? 1 : 0);
   const studioLabel = studioIds.length === 0
@@ -362,7 +385,7 @@ export default function EventSchedule({ catalog, onBuySubscription, onNeedAuth, 
               className="flex h-9 shrink-0 items-center gap-1.5 rounded-full bg-card pl-3.5 pr-2.5 shadow-soft transition-shadow duration-300 dt:h-10 dt:pl-4 dt:pr-3 dt:hover:shadow-lift"
             >
               <span className="whitespace-nowrap text-[12px] font-bold text-foreground">
-                {key === 'service' ? serviceLabel(value as number) : value}
+                {key === 'service' ? serviceLabel(value) : teacherLabel(value)}
               </span>
               <svg viewBox="0 0 24 24" fill="none" stroke="var(--v-muted-foreground)" strokeWidth="2.6" strokeLinecap="round" className="h-3 w-3">
                 <path d="M18 6L6 18M6 6l12 12" />

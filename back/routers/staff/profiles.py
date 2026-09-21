@@ -452,6 +452,7 @@ async def get_staff_profile(
         "department": membership.department,
         "is_online": _is_online(user),
         "is_active": membership.status == "active",
+        "is_specialist": await is_specialist(db, studio_id, staff_id),
         "photo_url": membership.photo_url,
         "avatar_gradient": user.avatar_gradient,
         "salary": membership.salary,

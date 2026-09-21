@@ -172,7 +172,8 @@
     "lessonCaption": "Skieruj aparat, aby zapisać się na te zajęcia",
     "packageAction": "Kod QR karnetu",
     "packageCaption": "Skieruj aparat, aby kupić karnet",
-    "serviceAction": "Kod QR usługi"
+    "serviceAction": "Kod QR usługi",
+    "staffAction": "Kod QR pracownika"
   },
   "auth": {
     "haveAccount": "Masz już konto?",

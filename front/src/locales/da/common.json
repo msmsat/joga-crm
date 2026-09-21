@@ -172,7 +172,8 @@
     "lessonCaption": "Ret kameraet mod koden for at booke holdet",
     "packageAction": "QR-kode til klippekortet",
     "packageCaption": "Ret kameraet mod koden for at købe klippekortet",
-    "serviceAction": "QR-kode til ydelsen"
+    "serviceAction": "QR-kode til ydelsen",
+    "staffAction": "QR-kode til medarbejderen"
   },
   "auth": {
     "haveAccount": "Har du allerede en konto?",

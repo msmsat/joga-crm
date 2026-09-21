@@ -172,7 +172,8 @@
     "lessonCaption": "Apunta la cámara para reservar esta clase",
     "packageAction": "Código QR del bono",
     "packageCaption": "Apunta la cámara para comprar el bono",
-    "serviceAction": "Código QR del servicio"
+    "serviceAction": "Código QR del servicio",
+    "staffAction": "Código QR del empleado"
   },
   "auth": {
     "haveAccount": "¿Ya tienes una cuenta?",

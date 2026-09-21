@@ -17,7 +17,9 @@ import { useToast } from '../../../components/ui/Toast';
 import { getActiveEmail } from '../../../utils/auth';
 import { ApiError, resolveImageUrl } from '../../../api/client';
 import { staffApi } from '../../../api/staff';
-import { settingsApi } from '../../../api/settings/settings.api';
+import { useStudioSettings } from '../../../hooks/useStudioCurrency';
+import { QrShareModal } from '../../../components/ui/index';
+import { miniappLink } from '../../../lib/miniapp';
 import { getCurrencySymbol } from '../../../components/UI';
 import type { StaffListItem, StaffWorkingHoursItem, StaffProfile, StaffMonthScheduleResponse } from '../../../api/staff/staff.types';
 
@@ -161,11 +163,17 @@ export default function Staff() {
   const toast = useToast();
   const [dontAskDelete, setDontAskDelete] = useState(false);
   const [scheduleView,  setScheduleView]  = useState<'week' | 'month'>('week');
-  const [currency, setCurrency] = useState<string>();
+  // Настройки студии — общий кэш на всё приложение: отсюда и валюта карточек,
+  // и адрес мини-приложения для QR-кода сотрудника.
+  const { data: studio } = useStudioSettings();
+  const currency = studio?.currency ?? undefined;
 
-  useEffect(() => {
-    settingsApi.getGeneral().then(s => setCurrency(s.currency ?? undefined)).catch(() => {});
-  }, []);
+  // QR-код сотрудника ведёт в мини-приложение на раздел записи с уже выбранным
+  // человеком: в студии с индивидуальной записью — сразу лист брони к нему, в
+  // студии с занятиями — расписание, отфильтрованное по нему. Куда именно,
+  // решает само приложение по режиму студии (miniapp/src/pages/shedule.tsx), —
+  // напечатанный код переживёт смену режима, как и код услуги.
+  const [showQr, setShowQr] = useState(false);
 
   // ── Employee modals ───────────────────────────────────────────────────────
   const [isAddModalOpen,  setIsAddModalOpen]  = useState(false);
@@ -450,6 +458,25 @@ export default function Staff() {
                 <div className="hero-actions">
                   {/* Приглашение и его отмена живут на карточке в левом списке:
                       профиль для ожидающего сотрудника не открывается вовсе. */}
+
+                  {/* Код только у мастера: администратора в мини-приложении нет,
+                      и его код вёл бы в список, где этого человека не найти. */}
+                  {profile.is_specialist && studio?.miniapp_url && (
+                    <button
+                      className="h-btn"
+                      title={t('common:qr.staffAction')}
+                      onClick={() => setShowQr(true)}
+                    >
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="3" y="3" width="7" height="7" rx="1.5" />
+                        <rect x="14" y="3" width="7" height="7" rx="1.5" />
+                        <rect x="3" y="14" width="7" height="7" rx="1.5" />
+                        <path d="M14 14h3v3h-3zM20 14v3M14 20h3M20 20h1" />
+                      </svg>
+                      {t('common:qr.title')}
+                    </button>
+                  )}
+
                   {profile.phone && (
                     <button
                       className="h-btn"
@@ -872,6 +899,22 @@ export default function Staff() {
           }
         }}
       />
+
+      {showQr && profile && (
+        <QrShareModal
+          url={miniappLink(studio?.miniapp_url ?? '', { tab: 'sched', staff: profile.id })}
+          kicker={studio?.name}
+          title={[profile.name, profile.last_name].filter(Boolean).join(' ')}
+          // Должность, если владелец её заполнил, иначе роль: «Тренер» лучше
+          // пустой строки, а «Старший барбер» лучше «Тренера».
+          subtitle={profile.department || t(`staff:roles.${profile.role}`, { defaultValue: profile.role })}
+          // Подпись под кодом — общая «Наведите камеру, чтобы записаться».
+          // Своей у кода сотрудника нет намеренно: «к мастеру» или «к тренеру»
+          // зависит от отрасли студии, а общая строка верна в любой.
+          fileName={[profile.name, profile.last_name].filter(Boolean).join('-')}
+          onClose={() => setShowQr(false)}
+        />
+      )}
 
     </div>
   );

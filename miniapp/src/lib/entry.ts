@@ -114,6 +114,14 @@ export type DeepLink = {
    * услуги из групповой в индивидуальную и обратно.
    */
   serviceId?: number;
+  /**
+   * Сотрудник с QR-кода из раздела «Сотрудники» — код на стойке, на зеркале у
+   * кресла, в шапке профиля мастера. По тому же правилу, что и услуга: в ссылке
+   * только номер, а куда он ведёт — в запись к мастеру или в расписание,
+   * отфильтрованное по тренеру, — решает режим студии (pages/shedule.tsx).
+   * Напечатанный код переживает смену режима.
+   */
+  staffId?: number;
 };
 
 const numeric = (value: string | null): number | undefined => {
@@ -131,6 +139,7 @@ export function readDeepLink(): DeepLink {
     date: date && /^\d{4}-\d{2}-\d{2}$/.test(date) ? date : undefined,
     packageId: numeric(params.get('pkg')),
     serviceId: numeric(params.get('service')),
+    staffId: numeric(params.get('staff')),
   };
 }
 

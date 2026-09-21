@@ -172,7 +172,8 @@
     "lessonCaption": "Rikta kameran för att boka passet",
     "packageAction": "QR-kod för klippkortet",
     "packageCaption": "Rikta kameran för att köpa klippkortet",
-    "serviceAction": "QR-kod för tjänsten"
+    "serviceAction": "QR-kod för tjänsten",
+    "staffAction": "QR-kod för medarbetaren"
   },
   "auth": {
     "haveAccount": "Har du redan ett konto?",

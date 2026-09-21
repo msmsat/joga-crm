@@ -53,6 +53,7 @@ const DEFAULT_TAB = 'home';
  */
 const deepLinkTab = (link: DeepLink): string | undefined => {
   if (link.lessonId != null) return 'sched';
+  if (link.staffId != null) return 'sched';
   if (link.packageId != null) return 'prof';
   return undefined;
 };
@@ -372,6 +373,7 @@ export default function App() {
         onNeedAuth={requireAuth}
         focusLesson={deepLink.lessonId != null ? { id: deepLink.lessonId, date: deepLink.date } : undefined}
         focusServiceId={deepLink.serviceId}
+        focusStaffId={deepLink.staffId}
       />
     ),
     my: <MyLessons catalog={catalog} />,

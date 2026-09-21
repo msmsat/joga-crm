@@ -26,6 +26,8 @@ type Props = {
   resource: ReturnType<typeof useResourceBooking>;
   /** Услуга из QR-кода студии: экран открывается с её мастерами. */
   focusServiceId?: number;
+  /** Мастер из QR-кода студии: сразу открыть лист записи к нему. */
+  focusStaffId?: number;
 };
 
 const personIcon = (
@@ -60,7 +62,7 @@ const slot = {
  * сегодня нет окна, всё равно тот, к кому можно записаться. Услуга фильтрует
  * только по тому, оказывает ли он её.
  */
-export default function BookingPage({ catalog, resource, focusServiceId }: Props) {
+export default function BookingPage({ catalog, resource, focusServiceId, focusStaffId }: Props) {
   const { t, i18n } = useTranslation();
   const terms = useBusinessTerms('resource');
   const branches = catalog?.branches ?? [];
@@ -124,6 +126,26 @@ export default function BookingPage({ catalog, resource, focusServiceId }: Props
 
   const openMaster = (master: MasterChoice) =>
     openTime(apply({ type: 'openMaster', master, staff: list, services }).sheet);
+
+  // Мастер с QR-кода: лист записи открывается сам, как будто нажали его
+  // карточку. Ждём ответ сервера — `staff === null` значит «ещё не знаем», и
+  // до него выбирать не из чего. Номера в списке нет (человек уже не мастер,
+  // код со старой вывески) — ничего не открываем: экран остаётся обычным
+  // списком мастеров, а не пустым листом с чужим именем.
+  const focusedStaff = useRef(false);
+  useEffect(() => {
+    if (focusStaffId == null || focusedStaff.current || !staff) return;
+    focusedStaff.current = true;
+    // `openMaster` — это ровно то же, что делает касание карточки: меняет и
+    // состояние экрана, и состояние брони. Правило про setState в эффекте
+    // здесь и должно быть нарушено: внешнее событие — приезд списка мастеров, —
+    // а другого места, где список впервые оказывается в руках, нет. Сторож
+    // выше оставляет ровно одно такое срабатывание за жизнь экрана.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (staff.some((member) => member.teacher_id === focusStaffId)) openMaster(focusStaffId);
+    // `openMaster` пересоздаётся каждым рендером — в зависимостях ему делать нечего.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [focusStaffId, staff]);
 
   const pickService = (service: StudioService) =>
     openTime(apply({ type: 'pickService', serviceId: service.id, staff: list }).sheet);

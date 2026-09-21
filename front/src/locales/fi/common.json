@@ -172,7 +172,8 @@
     "lessonCaption": "Suuntaa kamera ja varaa paikka tunnille",
     "packageAction": "Sarjakortin QR-koodi",
     "packageCaption": "Suuntaa kamera ja osta sarjakortti",
-    "serviceAction": "Palvelun QR-koodi"
+    "serviceAction": "Palvelun QR-koodi",
+    "staffAction": "Työntekijän QR-koodi"
   },
   "auth": {
     "haveAccount": "Onko sinulla jo tili?",

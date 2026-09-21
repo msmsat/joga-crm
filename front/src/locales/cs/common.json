@@ -172,7 +172,8 @@
     "lessonCaption": "Namiřte foťák a rezervujte si tuto lekci",
     "packageAction": "QR kód permanentky",
     "packageCaption": "Namiřte foťák a kupte si permanentku",
-    "serviceAction": "QR kód služby"
+    "serviceAction": "QR kód služby",
+    "staffAction": "QR kód zaměstnance"
   },
   "auth": {
     "haveAccount": "Už máte účet?",

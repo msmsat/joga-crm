@@ -10,10 +10,14 @@ export type Filters = {
   /** HB-19: числовой ID услуги. По названию два одноимённых направления
    *  разных филиалов сливались в один пункт и один фильтр. */
   service: number | null;
-  teacher: string | null;
+  /** `users.id` тренера — по той же причине, что и услуга: два однофамильца
+   *  сливались в один пункт, а QR-код сотрудника называет его номером. */
+  teacher: number | null;
 };
 
 export type ServiceOption = { id: number; name: string };
+
+export type TeacherOption = { id: number; name: string };
 
 type Props = {
   isOpen: boolean;
@@ -24,7 +28,7 @@ type Props = {
   isMultiStudio: boolean;
   /** Варианты собраны из реально загруженных занятий, а не из справочника. */
   services: ServiceOption[];
-  teachers: string[];
+  teachers: TeacherOption[];
   resultCount: number;
 };
 
@@ -147,11 +151,11 @@ export default function FilterSheet({
         </Chip>
         {teachers.map((teacher) => (
           <Chip
-            key={teacher}
-            isActive={value.teacher === teacher}
-            onClick={() => onChange({ ...value, teacher })}
+            key={teacher.id}
+            isActive={value.teacher === teacher.id}
+            onClick={() => onChange({ ...value, teacher: teacher.id })}
           >
-            {teacher}
+            {teacher.name}
           </Chip>
         ))}
       </Group>

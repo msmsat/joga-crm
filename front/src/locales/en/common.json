@@ -172,7 +172,8 @@
     "lessonCaption": "Point your camera to book this class",
     "packageAction": "Pass QR code",
     "packageCaption": "Point your camera to buy this pass",
-    "serviceAction": "Service QR code"
+    "serviceAction": "Service QR code",
+    "staffAction": "Staff QR code"
   },
   "auth": {
     "haveAccount": "Already have an account?",

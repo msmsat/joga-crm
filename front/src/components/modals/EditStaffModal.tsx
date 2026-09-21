@@ -706,6 +706,35 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
           border-color: var(--onyx) !important;
           box-shadow: 0 4px 12px rgba(26, 26, 26, 0.08) !important;
         }
+
+        /* 11. ТЕЛЕФОН: четыре раздела в один ряд ───────────────────────────
+           Ряд со скроллом вбок прятал «График» за краем экрана: о нём узнавали,
+           только случайно смахнув ряд. Иконка встаёт НАД подписью — подписи
+           достаётся вся ширина колонки, и в ряд влезают все четыре на любом
+           языке. Кнопка становится блочной (а не flex) намеренно: подпись в ней
+           — голый текстовый узел, и в flex-контейнере многоточие к нему не
+           применяется, длинное слово (польское «Wynagrodzenie») просто
+           обрезалось бы по-живому. !important — размеры кнопок заданы инлайном,
+           а инлайн перебивает медиазапрос. */
+        @media (max-width: 767px) {
+          .ei-tabs {
+            display: grid !important;
+            grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+            gap: 3px !important;
+            padding: 14px 48px 0 20px !important; /* справа — место под крестик */
+            overflow: visible !important;
+          }
+          .ei-tab {
+            display: block !important;
+            padding: 7px 2px 8px !important;
+            font-size: 10px !important;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+          .ei-tab > span { justify-content: center; margin-bottom: 3px; }
+        }
       `}</style>
 
       <div
@@ -1424,10 +1453,19 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
             </div>
           </div>
 
-          {/* Удаление на планшете: левой панели нет, блок приезжает сюда */}
-          <div className="vm-narrow-only" style={{ padding: "12px 24px 0", flexShrink: 0 }}>
-            {deleteBlock}
-          </div>
+          {/* Удаление на планшете и телефоне: левой панели нет, блок приезжает
+              сюда — но только на «Профиль». На узком экране он стоит вплотную
+              над «Сохранить», и на «Роли», «Зарплате» и «Графике» красная кнопка
+              оказывалась ровно там, где палец ждёт сохранение. Удаление —
+              действие над сотрудником целиком, его место рядом с карточкой, а
+              не под каждым разделом.
+              deleteBlock в условии: у самого себя его нет вовсе (isSelf), и
+              пустая обёртка оставляла бы 12px пустоты над футером. */}
+          {activeTab === "profile" && deleteBlock && (
+            <div className="vm-narrow-only" style={{ padding: "12px 24px 0", flexShrink: 0 }}>
+              {deleteBlock}
+            </div>
+          )}
 
           {/* ── Footer: Save button ── */}
           <div style={{

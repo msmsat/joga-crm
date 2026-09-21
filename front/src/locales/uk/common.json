@@ -172,7 +172,8 @@
     "lessonCaption": "Наведіть камеру, щоб записатися на заняття",
     "packageAction": "QR-код абонемента",
     "packageCaption": "Наведіть камеру, щоб придбати абонемент",
-    "serviceAction": "QR-код послуги"
+    "serviceAction": "QR-код послуги",
+    "staffAction": "QR-код співробітника"
   },
   "auth": {
     "haveAccount": "Вже є обліковий запис?",
