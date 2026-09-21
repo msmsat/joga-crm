@@ -3174,7 +3174,8 @@
   top: 0;
   left: 0;
   right: 0;
-  bottom: var(--mnav-safe, 60px);
+  /* Размер видимой области меняется вместе с адресной строкой телефона. */
+  height: calc(100dvh - var(--mnav-safe, 60px));
   z-index: 140;
   background: rgba(0,0,0,0.38);
   animation: mdrawer-tint 0.2s ease both;
@@ -3235,10 +3236,13 @@
 }
 
 .mdrawer-body {
-  flex: 1;
+  flex: 1 1 auto;
   min-height: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
+  touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
   padding: 0 12px 14px;
 }
 

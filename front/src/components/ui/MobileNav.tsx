@@ -71,26 +71,38 @@ export function MobileNav({ role, clientsCount }: MobileNavProps) {
   // Свайп вправо закрывает панель — она оттуда и выехала. Вертикальный скролл
   // списка при этом жив: touch-action: pan-y отдаёт браузеру вертикаль, а
   // горизонталь оставляет нам (см. .mdrawer в App.css).
-  const startX = useRef<number | null>(null);
+  const touchStart = useRef<{ x: number; y: number } | null>(null);
+  const touchAxis = useRef<'x' | 'y' | null>(null);
   const panelRef = useRef<HTMLElement>(null);
   const onTouchStart = (e: React.TouchEvent) => {
-    startX.current = e.touches[0].clientX;
-    // Панель идёт ровно за пальцем: собственный transition (.mdrawer) на время
-    // жеста снимаем, иначе она догоняет его четверть секунды.
-    if (panelRef.current) panelRef.current.style.transition = 'none';
+    touchStart.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    touchAxis.current = null;
   };
   const onTouchMove = (e: React.TouchEvent) => {
-    if (startX.current === null || !panelRef.current) return;
-    const dx = Math.max(0, e.touches[0].clientX - startX.current);
-    panelRef.current.style.transform = `translateX(${dx}px)`;
+    if (!touchStart.current || !panelRef.current) return;
+    const dx = e.touches[0].clientX - touchStart.current.x;
+    const dy = e.touches[0].clientY - touchStart.current.y;
+    if (!touchAxis.current && Math.max(Math.abs(dx), Math.abs(dy)) > 8) {
+      touchAxis.current = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y';
+    }
+    // Вертикальное движение целиком принадлежит прокрутке списка.
+    if (touchAxis.current !== 'x') return;
+    panelRef.current.style.transition = 'none';
+    panelRef.current.style.transform = `translateX(${Math.max(0, dx)}px)`;
+  };
+  const resetTouch = () => {
+    if (panelRef.current) {
+      panelRef.current.style.transition = '';
+      panelRef.current.style.transform = '';
+    }
+    touchStart.current = null;
+    touchAxis.current = null;
   };
   const onTouchEnd = (e: React.TouchEvent) => {
-    if (startX.current === null || !panelRef.current) return;
-    const dx = e.changedTouches[0].clientX - startX.current;
-    panelRef.current.style.transition = '';
-    panelRef.current.style.transform = '';
-    startX.current = null;
-    if (dx > 70) close();
+    const dismiss = touchAxis.current === 'x' && touchStart.current !== null
+      && e.changedTouches[0].clientX - touchStart.current.x > 70;
+    resetTouch();
+    if (dismiss) close();
   };
 
   const visible = (item: NavEntry) => !item.owner || role === 'owner';
@@ -192,6 +204,7 @@ export function MobileNav({ role, clientsCount }: MobileNavProps) {
             onTouchStart={onTouchStart}
             onTouchMove={onTouchMove}
             onTouchEnd={onTouchEnd}
+            onTouchCancel={resetTouch}
           >
             <div className="mdrawer-head">
               <span className="mdrawer-title">{t('more.title')}</span>
