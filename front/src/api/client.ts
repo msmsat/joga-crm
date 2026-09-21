@@ -67,10 +67,10 @@ interface RequestOptions {
 
 async function request<T>(method: string, path: string, options: RequestOptions = {}): Promise<T> {
   const headers: Record<string, string> = { ...options.headers }
+  const requestToken = options.auth !== false ? getToken() : null
 
   if (options.auth !== false) {
-    const token = getToken()
-    if (token) headers['Authorization'] = `Bearer ${token}`
+    if (requestToken) headers['Authorization'] = `Bearer ${requestToken}`
   }
 
   if (options.body !== undefined) {
@@ -90,7 +90,8 @@ async function request<T>(method: string, path: string, options: RequestOptions 
   // разобрано почему). Главное следствие: неверный пароль на /auth/login больше
   // не перезагружает страницу входа и не выкидывает из текущего аккаунта.
   if (res.status === 401) {
-    if (reactTo401(options) === 'report') {
+    // A response from before login/account switching cannot end the new session.
+    if (reactTo401(options) === 'report' || !requestToken || requestToken !== getToken() || options.signal?.aborted) {
       // Сообщение берём с сервера, а не пишем «Сессия истекла»: на входе это
       // «Неверный email, телефон или пароль», и прочитать надо именно его.
       const data: unknown = await res.json().catch(() => null)
