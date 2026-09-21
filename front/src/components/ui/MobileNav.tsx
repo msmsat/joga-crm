@@ -68,9 +68,8 @@ export function MobileNav({ role, clientsCount }: MobileNavProps) {
     return () => window.removeEventListener('keydown', onKey);
   }, [open]);
 
-  // Свайп вправо закрывает панель — она оттуда и выехала. Вертикальный скролл
-  // списка при этом жив: touch-action: pan-y отдаёт браузеру вертикаль, а
-  // горизонталь оставляет нам (см. .mdrawer в App.css).
+  // Закрытие свайпом — только за шапку. Список и меню аккаунта не участвуют
+  // в перетаскивании: их сенсорная прокрутка полностью нативная, в том числе в Safari.
   const touchStart = useRef<{ x: number; y: number } | null>(null);
   const touchAxis = useRef<'x' | 'y' | null>(null);
   const panelRef = useRef<HTMLElement>(null);
@@ -201,12 +200,14 @@ export function MobileNav({ role, clientsCount }: MobileNavProps) {
             role="dialog"
             aria-label={t('more.title')}
             onClick={e => e.stopPropagation()}
-            onTouchStart={onTouchStart}
-            onTouchMove={onTouchMove}
-            onTouchEnd={onTouchEnd}
-            onTouchCancel={resetTouch}
           >
-            <div className="mdrawer-head">
+            <div
+              className="mdrawer-head"
+              onTouchStart={onTouchStart}
+              onTouchMove={onTouchMove}
+              onTouchEnd={onTouchEnd}
+              onTouchCancel={resetTouch}
+            >
               <span className="mdrawer-title">{t('more.title')}</span>
               <button type="button" className="mdrawer-close" onClick={close} aria-label={t('common:buttons.close')}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">

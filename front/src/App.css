@@ -3186,10 +3186,13 @@
   position: absolute;
   top: 0;
   right: 0;
-  bottom: 0;
+  height: 100%;
+  min-height: 0;
   width: min(84%, 360px);
-  display: flex;
-  flex-direction: column;
+  /* Средняя строка сжимается до доступной высоты и скроллится сама.
+     Не полагаемся на расчёт вложенного flex-скроллера в iOS Safari. */
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
   background: var(--bg-card);
   border-left: 1px solid var(--border);
   border-radius: 20px 0 0 20px;
@@ -3199,9 +3202,7 @@
      (та же засада, что у шитов модалок, см. .v-modal в телефонном блоке). */
   animation: mdrawer-in 0.3s cubic-bezier(0.32, 0.72, 0, 1) backwards;
   transition: transform 0.24s cubic-bezier(0.32, 0.72, 0, 1);
-  /* Вертикаль отдаём браузеру (список скроллится), горизонталь оставляем себе:
-     свайп вправо закрывает панель. */
-  touch-action: pan-y;
+  touch-action: auto;
 }
 @keyframes mdrawer-in { from { transform: translateX(100%) } to { transform: translateX(0) } }
 
@@ -3213,6 +3214,7 @@
   gap: 8px;
   flex-shrink: 0;
   padding: 15px 14px 9px;
+  touch-action: pan-y;
 }
 .mdrawer-title {
   font-size: 15px;
@@ -3236,11 +3238,11 @@
 }
 
 .mdrawer-body {
-  flex: 1 1 auto;
   min-height: 0;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  touch-action: pan-y;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  overscroll-behavior-y: contain;
+  touch-action: auto;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: thin;
   padding: 0 12px 14px;
