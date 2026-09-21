@@ -523,11 +523,15 @@ export function StepIndicator({ current, total }: { current: number; total: numb
         const isActive = current === step;
         return (
           <div key={i} style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            {/* Пройденный шаг — графит, а не фисташка: зелёный тут читался как
+                «успех», хотя это просто «уже позади», и был третьим цветом в
+                палитре из персика и жемчуга. var(--onyx) заодно переворачивается
+                в тёмной теме сам. */}
             <div style={{
               width: isActive ? "28px" : "8px",
               height: "8px",
               borderRadius: "4px",
-              background: isActive ? "#FCAE91" : isDone ? "#A3C9A8" : "#E8E4DF",
+              background: isActive ? "#FCAE91" : isDone ? "var(--onyx)" : "rgba(var(--ink),0.10)",
               transition: "all 0.4s cubic-bezier(0.34,1.1,0.64,1)",
             }} />
           </div>
@@ -537,11 +541,16 @@ export function StepIndicator({ current, total }: { current: number; total: numb
   );
 }
 
-export function PremiumSelect({ value, onChange, options, placeholder, searchable, searchPlaceholder, emptyText }: {
+export function PremiumSelect({ value, onChange, options, placeholder, searchable, searchPlaceholder, emptyText, panelMinWidth }: {
   value: string;
   onChange: (v: string) => void;
   options: { value: string; label: string; symbol?: string; flag?: string; hint?: string }[];
   placeholder: string;
+  /** Нижняя граница ширины списка, когда сама кнопка узкая. Появилось ради
+   *  языка на телефоне: там кнопка ужимается до флага, а «Українська» в 56px
+   *  не прочитать. Список тогда шире кнопки — placePopover центрирует его по
+   *  ней и держит в пределах экрана. */
+  panelMinWidth?: number;
   /** Поле поиска над списком — как у kit-Select. Появилось ради валют: их
    *  больше сотни, и прокрутка перестала быть способом что-то найти. */
   searchable?: boolean;
@@ -569,8 +578,9 @@ export function PremiumSelect({ value, onChange, options, placeholder, searchabl
     const recalc = () => {
       if (!btnRef.current) return;
       const rect = btnRef.current.getBoundingClientRect();
-      const { top, left } = placePopover(rect, { w: rect.width, h: searchable ? 296 : 200 }, "bottom", 6);
-      setPlacement({ top, left, width: rect.width });
+      const width = Math.max(rect.width, panelMinWidth ?? 0);
+      const { top, left } = placePopover(rect, { w: width, h: searchable ? 296 : 200 }, "bottom", 6);
+      setPlacement({ top, left, width });
     };
     recalc();
     window.addEventListener("resize", recalc);
@@ -579,7 +589,7 @@ export function PremiumSelect({ value, onChange, options, placeholder, searchabl
       window.removeEventListener("resize", recalc);
       window.removeEventListener("scroll", recalc, true);
     };
-  }, [open, searchable]);
+  }, [open, searchable, panelMinWidth]);
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {

@@ -239,6 +239,9 @@ export default function OnboardingPage() {
       onChange={(v) => patch({ language: v })}
       options={LANGUAGES}
       placeholder={t("onboarding:settings.languagePlaceholder")}
+      // На узком экране кнопка ужимается до одного флага (App.css), а список
+      // языков в такую ширину не прочитать — держим его читаемым отдельно.
+      panelMinWidth={196}
     />
   );
 
@@ -314,9 +317,9 @@ export default function OnboardingPage() {
             </div>
           </div>
           <div style={{ marginTop: "28px" }}>
-            <p style={{ fontSize: "11px", fontWeight: 700, color: "#FCAE91", letterSpacing: "2px", textTransform: "uppercase", margin: "0 0 8px" }}>
-              {t("onboarding:wizard.stepOf", { step, total: 5 })}
-            </p>
+            <div style={{ marginBottom: "12px" }}>
+              <span className="ob-step-tag">{t("onboarding:wizard.stepOf", { step, total: 5 })}</span>
+            </div>
             <h2 style={{ fontSize: "21px", fontWeight: 900, color: "var(--onyx)", letterSpacing: "-0.7px", lineHeight: 1.25, margin: "0 0 8px", whiteSpace: "pre-line" }}>
               {meta.title}
             </h2>
@@ -379,13 +382,19 @@ export default function OnboardingPage() {
           {/* Названия шага здесь нет намеренно: у каждого шага собственный
               заголовок строкой ниже (StepIdentity и остальные), и на узком
               экране «График работы» оказывался написан дважды подряд. */}
-          <span className="ob-mhead-step">{t("onboarding:wizard.stepOf", { step, total: 5 })}</span>
+          <span className="ob-step-tag">{t("onboarding:wizard.stepOf", { step, total: 5 })}</span>
 
-          {/* Полоса, а не точки: на узкой строке пять отрезков с подписями не
-              читаются, а заполнение видно боковым зрением и оживает на каждом
-              переходе. */}
-          <div className="ob-mbar">
-            <div className="ob-mbar-fill" style={{ width: `${(step / 5) * 100}%` }} />
+          {/* Пять отрезков, а не одна полоса: видно и сколько пройдено, и
+              сколько осталось — заполненная на 40% полоска этого не говорит.
+              Пройденное — графитом, текущий — персиком: тот же язык, что у
+              точек в левой панели на десктопе. */}
+          <div className="ob-mbar" aria-hidden="true">
+            {[1, 2, 3, 4, 5].map(i => (
+              <span
+                key={i}
+                className={`ob-mseg${step > i ? " is-done" : step === i ? " is-now" : ""}`}
+              />
+            ))}
           </div>
 
           {/* Сцена направления — единственная иллюстрация, которая отвечает на
@@ -423,10 +432,14 @@ export default function OnboardingPage() {
               type="button"
               className="ob-btn-back"
               onClick={goBack}
+              // Графитовый контур рядом с персиковой кнопкой: пара «чёрное
+              // + акцент» читается как пара действий, а прежний серый на сером
+              // выглядел выключенным. Рамка через --ink — в тёмной теме она
+              // светлеет сама, а не остаётся бежевой полоской.
               style={{
                 padding: "13px 18px", background: "transparent",
-                border: "1.5px solid #EEEBE6", borderRadius: "12px",
-                fontSize: "14px", fontWeight: 600, color: "var(--text3)",
+                border: "1.5px solid rgba(var(--ink),0.16)", borderRadius: "12px",
+                fontSize: "14px", fontWeight: 700, color: "var(--onyx)",
                 cursor: "pointer", display: "flex", alignItems: "center",
                 gap: "6px", fontFamily: "inherit", transition: "background 0.15s ease",
               }}
