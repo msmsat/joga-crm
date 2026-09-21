@@ -138,7 +138,7 @@ _DANGER_NOTE = {
 }
 
 # Необратимое действие — предупреждение отдельным блоком, а не строкой в тексте.
-_DANGER = {"delete_data", "delete_account"}
+_DANGER = {"delete_data", "delete_account", "delete_user"}
 
 
 async def issue(db: AsyncSession, user: User, action: str) -> None:

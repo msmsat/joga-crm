@@ -4,13 +4,16 @@
 }
 
 /* ─── Page layout (адаптив под маленькие desktop-экраны) ─── */
+/* Поле снизу больше, чем по бокам: колонку замыкает «Удалить аккаунт», и
+   на равных полях необратимая кнопка упиралась в край экрана. Запас держим
+   на всех ступенях — иначе на низких экранах он пропадает первым. */
 .page {
   width: 100%;
   min-height: calc(100dvh - 80px);
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 40px;
+  padding: 40px 40px 72px;
   box-sizing: border-box;
 }
 
@@ -23,12 +26,12 @@
 }
 
 @media (max-width: 1440px) {
-  .page { padding: 28px; }
+  .page { padding: 28px 28px 60px; }
   .grid { grid-template-columns: minmax(300px, 340px) minmax(0, 1fr); gap: 28px; }
 }
 
 @media (max-width: 1280px) {
-  .page { padding: 24px 20px; }
+  .page { padding: 24px 20px 56px; }
   .grid { grid-template-columns: minmax(280px, 320px) minmax(0, 1fr); gap: 20px; }
 }
 
@@ -39,12 +42,12 @@
 }
 
 @media (max-height: 820px) {
-  .page { padding-top: 24px; padding-bottom: 24px; }
+  .page { padding-top: 24px; padding-bottom: 48px; }
 }
 
 /* Телефон: 40px полей по бокам — это восьмая часть экрана в никуда */
 @media (max-width: 767px) {
-  .page { padding: 16px 14px; min-height: 0; }
+  .page { padding: 16px 14px 36px; min-height: 0; }
   .grid { gap: 14px; }
 
   /* «Войти» и «Регистрация» — вход в ЧУЖОЙ аккаунт, действие редкое: две
