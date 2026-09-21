@@ -323,6 +323,7 @@
         "consequence2": "Unchanged: studio, branches, {{spacePlural}}, services, staff, subscription and settings",
         "consequence3": "This action is irreversible — it cannot be undone once confirmed"
       },
+      "confirmNameLabel": "Type {{name}} to confirm",
       "deleteAccount": {
         "title": "Delete company account",
         "sub": "Complete and irreversible destruction of the business in the system",

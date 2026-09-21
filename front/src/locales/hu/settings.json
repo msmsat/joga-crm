@@ -323,6 +323,7 @@
         "consequence2": "Változatlan marad: stúdió, telephelyek, {{spacePlural}}, szolgáltatások, személyzet, előfizetés és beállítások",
         "consequence3": "Ez a művelet visszafordíthatatlan — jóváhagyás után nem vonható vissza"
       },
+      "confirmNameLabel": "A megerősítéshez írja be: {{name}}",
       "deleteAccount": {
         "title": "Vállalati fiók törlése",
         "sub": "A vállalkozás teljes és visszafordíthatatlan törlése a rendszerből",

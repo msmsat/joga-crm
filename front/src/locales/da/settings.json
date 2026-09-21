@@ -323,6 +323,7 @@
         "consequence2": "Uændret: studie, afdelinger, {{spacePlural}}, ydelser, personale, abonnement og indstillinger",
         "consequence3": "Denne handling kan ikke fortrydes efter bekræftelse"
       },
+      "confirmNameLabel": "Skriv {{name}} for at bekræfte",
       "deleteAccount": {
         "title": "Slet virksomhedskonto",
         "sub": "Fuldstændig og uigenkaldelig sletning af virksomheden fra systemet",

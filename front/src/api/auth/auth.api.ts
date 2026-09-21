@@ -106,4 +106,12 @@ export const authApi = {
 
   logoutCurrentSession: () =>
     client.delete<void>('/auth/sessions/current'),
+
+  // Удаление СВОЕГО аккаунта вместе с почтой — не то же самое, что
+  // settingsApi.deleteAccount: та удаляет студию и оставляет человека в
+  // продукте. Почта набирается руками и сверяется на сервере.
+  deleteMe: (confirmEmail: string, otpToken: string) =>
+    client.delete<void>('/auth/me', { confirm_email: confirmEmail }, {
+      headers: { 'X-OTP-Token': otpToken },
+    }),
 }

@@ -9,7 +9,14 @@
   },
   "security": {
     "changePassword": "Byt lösenord",
-    "logout": "Logga ut"
+    "logout": "Logga ut",
+    "deleteAccount": {
+      "button": "Radera konto",
+      "title": "Radera kontot för alltid",
+      "warnAccount": "Kontot och e-postadressen {{email}} raderas för gott — du kan registrera dig igen med samma adress",
+      "warnStudios": "Studior där du är ensam ägare raderas med allt innehåll: kunder, pass, ekonomi och inställningar",
+      "warnBilling": "En aktiv prenumeration avslutas direkt, utan återbetalning för resten av den betalda perioden"
+    }
   },
   "accounts": {
     "title": "Mina studios",

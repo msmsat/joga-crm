@@ -323,6 +323,7 @@
         "consequence2": "Invariati: studio, sedi, {{spacePlural}}, servizi, personale, abbonamento e impostazioni",
         "consequence3": "Questa azione è irreversibile — non può essere annullata dopo la conferma"
       },
+      "confirmNameLabel": "Digita {{name}} per confermare",
       "deleteAccount": {
         "title": "Elimina account aziendale",
         "sub": "Distruzione completa e irreversibile dell’attività nel sistema",

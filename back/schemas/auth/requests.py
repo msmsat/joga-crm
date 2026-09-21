@@ -134,6 +134,17 @@ class ProfileUpdate(BaseSchema):
     tg_id: Optional[int] = None
 
 
+class DeleteMeRequest(BaseSchema):
+    """Подтверждение удаления аккаунта: человек набирает свою почту руками.
+
+    Не EmailStr: здесь это не адрес для отправки, а набранная строка, которую
+    сверяют с почтой аккаунта. Отклонить её валидатором формата значит ответить
+    «неверный email» вместо честного «не совпадает».
+    """
+
+    confirm_email: str
+
+
 class WorkingHoursInput(BaseSchema):
     dayOfWeek: int
     isOpen: bool

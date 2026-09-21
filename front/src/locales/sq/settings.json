@@ -323,6 +323,7 @@
         "consequence2": "Të pandryshuara: studioja, filialet, {{spacePlural}}, shërbimet, stafi, abonimi dhe cilësimet",
         "consequence3": "Ky veprim është i pakthyeshëm — nuk mund të zhbëhet pasi konfirmohet"
       },
+      "confirmNameLabel": "Shkruani {{name}} për të konfirmuar",
       "deleteAccount": {
         "title": "Fshi llogarinë e kompanisë",
         "sub": "Shkatërrim i plotë dhe i pakthyeshëm i biznesit në sistem",

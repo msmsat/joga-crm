@@ -323,6 +323,7 @@
         "consequence2": "Sin cambios: estudio, sedes, {{spacePlural}}, servicios, personal, suscripción y ajustes",
         "consequence3": "Esta acción es irreversible; no se puede deshacer tras confirmarla"
       },
+      "confirmNameLabel": "Escribe {{name}} para confirmar",
       "deleteAccount": {
         "title": "Eliminar cuenta de empresa",
         "sub": "Destrucción completa e irreversible del negocio en el sistema",

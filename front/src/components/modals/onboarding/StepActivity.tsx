@@ -247,7 +247,7 @@ export default function StepActivity({ data, onChange }: Props) {
             </div>
 
             {isOpen && (
-              <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", padding: "14px 2px 6px" }}>
+              <div className="ob-chips" style={{ display: "flex", flexWrap: "wrap", gap: "10px", padding: "14px 2px 6px" }}>
                 {section.items.map(id => <Chip key={id} id={id} dim={dim} />)}
               </div>
             )}

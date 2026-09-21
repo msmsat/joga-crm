@@ -9,7 +9,14 @@
   },
   "security": {
     "changePassword": "Changer le mot de passe",
-    "logout": "Déconnexion"
+    "logout": "Déconnexion",
+    "deleteAccount": {
+      "button": "Supprimer le compte",
+      "title": "Supprimer le compte définitivement",
+      "warnAccount": "Le compte et l'e-mail {{email}} seront supprimés définitivement — vous pourrez vous réinscrire avec cet e-mail",
+      "warnStudios": "Les studios dont vous êtes l'unique propriétaire seront supprimés avec tout leur contenu : clients, cours, finances et paramètres",
+      "warnBilling": "Un abonnement actif est annulé immédiatement, sans remboursement de la période payée restante"
+    }
   },
   "accounts": {
     "title": "Mes studios",

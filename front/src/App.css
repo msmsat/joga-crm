@@ -1836,7 +1836,58 @@
    мастер идёт в одну колонку на всю ширину (flex сам растянет .ob-right). */
 @media (max-width: 820px) {
   .ob-left  { display: none !important; }
-  .ob-right { padding: 32px 28px !important; }
+  /* Свет из-под левой панели пропадал вместе с ней, и форма оставалась на
+     ровной заливке. Те же два пятна, что рисует .ob-left, — но на всю
+     колонку: цвет живёт в углах, поля дышат. */
+  .ob-right {
+    padding: 32px 28px !important;
+    background-image:
+      radial-gradient(circle at 6% -6%, rgba(252,174,145,0.10) 0%, transparent 46%),
+      radial-gradient(circle at 104% 2%, rgba(163,201,168,0.09) 0%, transparent 40%);
+    background-repeat: no-repeat;
+  }
+}
+
+/* ── ШАПКА МАСТЕРА НА УЗКОМ ЭКРАНЕ (.ob-mhead) ─────────────────────────────
+   Всё, что уносит с собой скрытая .ob-left: логотип, язык, номер шага,
+   прогресс и крестик выхода. В разметке блок есть всегда (Onboarding.tsx),
+   а прячется на десктопе — через min-width ПОСЛЕ базовых правил: медиазапрос
+   специфичности не добавляет, и «показать на телефоне» правило, стоящее выше,
+   было бы перебито базовым. */
+.ob-mhead { display: flex; flex-direction: column; gap: 12px; flex-shrink: 0; margin-bottom: 20px; }
+.ob-mhead-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.ob-mhead-tools { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+/* Ширина плавающая: на 320px язык ужимается, но не выдавливает логотип. */
+.ob-mhead-lang { flex: 0 1 132px; min-width: 96px; }
+.ob-mhead-step {
+  font-size: 11px; font-weight: 700; color: #FCAE91;
+  letter-spacing: 1.6px; text-transform: uppercase; white-space: nowrap;
+  margin-top: 2px;
+}
+.ob-mbar { height: 6px; border-radius: 99px; background: rgba(var(--ink),0.07); overflow: hidden; }
+.ob-mbar-fill {
+  height: 100%; border-radius: 99px;
+  background: linear-gradient(90deg, #FCAE91, #F9A08B);
+  box-shadow: 0 2px 10px rgba(252,174,145,0.45);
+  transition: width 0.45s cubic-bezier(0.34,1.1,0.64,1);
+}
+/* Сцена направления: высота задана, картинка вписывается в неё сама
+   (svg с viewBox и max-height: 100% ужимается, сохраняя пропорции). */
+.ob-mscene { height: 96px; display: flex; align-items: center; justify-content: center; }
+
+/* Строка «данные защищены» под кнопкой — только на узком экране, на десктопе
+   она стоит в левой панели. */
+.ob-note-safe {
+  display: flex; align-items: center; justify-content: center; gap: 7px;
+  margin: 10px 0 0; font-size: 11px; font-weight: 500; color: var(--muted); text-align: center;
+}
+.ob-note-dot {
+  width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
+  background: #A3C9A8; animation: stepPulse 2s infinite;
+}
+
+@media (min-width: 821px) {
+  .ob-mhead, .ob-note-safe { display: none; }
 }
 
 @keyframes slideInRight {
@@ -3062,13 +3113,67 @@
      а карточка — весь экран: скруглённое окно 920px посреди телефона
      оставляло формам полосу в 300px при пустых 30px по краям. */
   .ob-right { padding: 22px 18px !important; }
-  .ob-page { padding: 0 !important; }
+  /* dvh, а не vh: у обёртки высота задана инлайном (App.tsx), и в Safari её
+     100vh на полсотни пикселей выше карточки в 100dvh — мастер во весь экран
+     всё равно прокручивался. */
+  .ob-page { padding: 0 !important; min-height: 100dvh !important; }
   .ob-modal {
     max-width: 100% !important;
     min-height: 100dvh !important;
     max-height: 100dvh !important;
     border-radius: 0 !important;
   }
+
+  .ob-mhead { gap: 10px; margin-bottom: 16px; }
+  .ob-mscene { height: 88px; }
+  /* Телефон в альбомной ориентации: 375px высоты минус шапка, сцена и подвал
+     оставляли форме полсотни пикселей. Картинка здесь — первое, чем можно
+     пожертвовать. */
+  @media (max-height: 620px) { .ob-mscene { display: none; } }
+
+  /* Поля мастера — 16px: при меньшем кегле Safari на iPhone увеличивает
+     страницу на фокусе и обратно уже не отматывает, и остаток мастера человек
+     проходит в зуме, возя экран вбок. Поля кита и так 52px высотой, кегль их
+     не ломает. */
+  .ob-right input, .ob-right textarea, .ob-right select { font-size: 16px !important; }
+  /* Поиск в выпадающем списке (валюта на шаге 4) живёт в портале, а не внутри
+     .ob-right, — по тому же зуму ему нужна своя строка. */
+  .pselect-search { font-size: 16px !important; }
+
+  /* Направления: чип — тач-цель, а не строка списка. Размеры инлайновые
+     (StepActivity.tsx), отсюда только !important. */
+  .ob-chips { gap: 8px !important; }
+  .ob-chips button { padding: 12px 15px !important; }
+
+  /* ── График работы ───────────────────────────────────────────────────────
+     «Пн + переключатель + 09:00 — 21:00» — это 330px при доступных 284:
+     на 320px-экране пара времени вылезала за карточку. Раскладываем в два
+     яруса: день с переключателем сверху, время — отдельной строкой во всю
+     ширину, оба поля поровну. Заодно переключатель дорастает до честных
+     44px по ширине нажатия. */
+  .ob-day { flex-wrap: wrap; row-gap: 10px; padding: 12px 14px !important; }
+  .ob-day > span:first-child { flex: 1 1 auto; font-size: 13px !important; }
+  .ob-day > button { width: 46px !important; height: 26px !important; border-radius: 13px !important; }
+  .ob-day > button > div { width: 20px !important; height: 20px !important; }
+  .ob-day-times { flex-basis: 100%; }
+  .ob-day-times input {
+    flex: 1 1 0; min-width: 0; text-align: center;
+    padding: 11px 8px !important; border-radius: 10px !important;
+  }
+
+  /* ── Кнопки мастера ──────────────────────────────────────────────────────
+     Главное действие на телефоне — палец, а не курсор: подъём по hover на
+     тапе залипает (см. общее правило по карточкам выше), поэтому вместо него
+     нажатие отвечает вдавливанием. Высоту добираем до 54px — на неё
+     целятся большим пальцем одной рукой. */
+  .ob-actions { margin-top: 16px !important; padding-top: 14px !important; }
+  .ob-btn-back { padding: 16px 16px !important; border-radius: 14px !important; }
+  .ob-btn-next { padding: 17px 20px !important; font-size: 16px !important; border-radius: 14px !important; }
+  .ob-btn-back:hover, .ob-btn-next:hover { transform: none !important; }
+  .ob-btn-back:active, .ob-btn-next:active { transform: scale(0.97) !important; }
+  .ob-note-progress { display: none; }
+  /* Под индикатор жестов iPhone: иначе «Продолжить» упирается в самый край. */
+  .ob-footer { padding-bottom: env(safe-area-inset-bottom, 0px); }
 }
 
 /* ==========================================================================

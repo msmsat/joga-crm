@@ -323,6 +323,7 @@
         "consequence2": "Bleibt unverändert: Studio, Filialen, {{spacePlural}}, Leistungen, Mitarbeitende, Tarif und Einstellungen",
         "consequence3": "Diese Aktion ist unumkehrbar — nach der Bestätigung lässt sie sich nicht rückgängig machen"
       },
+      "confirmNameLabel": "Geben Sie zur Bestätigung {{name}} ein",
       "deleteAccount": {
         "title": "Firmenkonto löschen",
         "sub": "Vollständige und unumkehrbare Löschung des Unternehmens im System",

@@ -325,6 +325,7 @@
         "consequence2": "Beze změny zůstanou: studio, pobočky, {{spacePlural}}, služby, zaměstnanci, předplatné a nastavení",
         "consequence3": "Tato akce je nevratná — po potvrzení ji nelze vzít zpět"
       },
+      "confirmNameLabel": "Pro potvrzení napište {{name}}",
       "deleteAccount": {
         "title": "Smazat účet firmy",
         "sub": "Úplné a nevratné zničení podniku v systému",

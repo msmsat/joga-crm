@@ -669,6 +669,7 @@ export function PremiumSelect({ value, onChange, options, placeholder, searchabl
             }}>
               <input
                 ref={searchRef}
+                className="pselect-search"
                 value={query}
                 onKeyDown={e => { if (e.key === "Escape") { e.stopPropagation(); setOpen(false); btnRef.current?.focus(); } }}
                 onChange={e => setQuery(e.target.value)}

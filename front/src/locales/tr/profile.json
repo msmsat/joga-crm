@@ -9,7 +9,14 @@
   },
   "security": {
     "changePassword": "Şifre değiştir",
-    "logout": "Çıkış yap"
+    "logout": "Çıkış yap",
+    "deleteAccount": {
+      "button": "Hesabı sil",
+      "title": "Hesabı kalıcı olarak sil",
+      "warnAccount": "Hesap ve {{email}} e-posta adresi kalıcı olarak silinir — bu e-posta ile yeniden kayıt olabilirsiniz",
+      "warnStudios": "Tek sahibi olduğunuz stüdyolar içindeki her şeyle birlikte silinir: müşteriler, dersler, finans ve ayarlar",
+      "warnBilling": "Etkin abonelik hemen iptal edilir, ödenmiş dönemin kalanı için geri ödeme yapılmaz"
+    }
   },
   "accounts": {
     "title": "Stüdyolarım",

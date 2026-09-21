@@ -9,7 +9,14 @@
   },
   "security": {
     "changePassword": "Schimbă parola",
-    "logout": "Deconectare"
+    "logout": "Deconectare",
+    "deleteAccount": {
+      "button": "Șterge contul",
+      "title": "Șterge contul definitiv",
+      "warnAccount": "Contul și adresa {{email}} vor fi șterse definitiv — cu această adresă vă puteți înregistra din nou",
+      "warnStudios": "Studiourile în care sunteți singurul proprietar vor fi șterse cu tot conținutul: clienți, cursuri, finanțe și setări",
+      "warnBilling": "Un abonament activ se anulează imediat, fără rambursare pentru perioada plătită rămasă"
+    }
   },
   "accounts": {
     "title": "Studiourile mele",

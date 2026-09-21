@@ -67,6 +67,7 @@ export default function StepSchedule({ data, onChange }: Props) {
           {data.workingHours.map((day, idx) => (
             <div
               key={day.dayOfWeek}
+              className="ob-day"
               style={{
                 display: "flex", alignItems: "center", gap: "12px",
                 padding: "11px 16px",
@@ -86,7 +87,12 @@ export default function StepSchedule({ data, onChange }: Props) {
               <Toggle checked={day.isOpen} onChange={v => patchHours(idx, { isOpen: v })} />
 
               {day.isOpen ? (
-                <>
+                // Отдельный контейнер, а не три соседа в строке дня: на телефоне
+                // «Пн + переключатель + 09:00 — 21:00» в 320px не помещается, и
+                // пара времени переносится на вторую строку целиком (App.css,
+                // .ob-day-times). Тот же gap, что у строки, — на десктопе
+                // раскладка не меняется.
+                <div className="ob-day-times" style={{ display: "flex", alignItems: "center", gap: "12px" }}>
                   <input
                     type="time"
                     value={day.openTime}
@@ -116,7 +122,7 @@ export default function StepSchedule({ data, onChange }: Props) {
                     onFocus={e => (e.target.style.borderColor = "#FCAE91")}
                     onBlur={e => (e.target.style.borderColor = "#EEEBE6")}
                   />
-                </>
+                </div>
               ) : (
                 <span style={{ fontSize: "12px", color: "#CCCCCC", fontStyle: "italic" }}>{t("onboarding:schedule.dayOff")}</span>
               )}

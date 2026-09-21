@@ -229,6 +229,41 @@ export default function OnboardingPage() {
 
   const meta = STEP_META[step - 1];
 
+  // Логотип, язык и крестик нужны в ДВУХ местах: в левой панели на десктопе и
+  // в шапке узкого экрана (.ob-mhead), где левой панели нет. Элементы собраны
+  // один раз и вставляются в обе разметки — иначе вторая копия начинает жить
+  // своей жизнью и расходится с первой при любой правке.
+  const languageSelect = (
+    <PremiumSelect
+      value={data.language}
+      onChange={(v) => patch({ language: v })}
+      options={LANGUAGES}
+      placeholder={t("onboarding:settings.languagePlaceholder")}
+    />
+  );
+
+  // Выход — только для дополнительной студии. Первичный онбординг закрывать
+  // некуда: без студии в CRM работать нельзя, поэтому там крестика нет
+  // намеренно. А из «создать ещё одну» иначе не выбраться — только
+  // перезагрузкой страницы.
+  const exitButton = isNewStudio ? (
+    <button
+      type="button"
+      onClick={() => navigate("/select-crm")}
+      aria-label={t("common:buttons.close", { defaultValue: "Закрыть" })}
+      style={{
+        width: "34px", height: "34px", flexShrink: 0,
+        display: "flex", alignItems: "center", justifyContent: "center",
+        border: "none", borderRadius: "10px",
+        background: "rgba(var(--ink),0.05)", color: "var(--muted)", cursor: "pointer",
+      }}
+    >
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+        <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+      </svg>
+    </button>
+  ) : null;
+
   const animStyle: React.CSSProperties = {
     flex: 1,
     animation: animating
@@ -274,35 +309,8 @@ export default function OnboardingPage() {
           <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "12px" }}>
             <Logo />
             <div style={{ display: "flex", alignItems: "center", gap: "10px", flexShrink: 0 }}>
-              <div style={{ width: "132px", flexShrink: 0 }}>
-                <PremiumSelect
-                  value={data.language}
-                  onChange={(v) => patch({ language: v })}
-                  options={LANGUAGES}
-                  placeholder={t("onboarding:settings.languagePlaceholder")}
-                />
-              </div>
-              {/* Выход — только для дополнительной студии. Первичный онбординг
-                  закрывать некуда: без студии в CRM работать нельзя, поэтому
-                  там крестика нет намеренно. А из «создать ещё одну» иначе не
-                  выбраться — только перезагрузкой страницы. */}
-              {isNewStudio && (
-                <button
-                  type="button"
-                  onClick={() => navigate("/select-crm")}
-                  aria-label={t("common:buttons.close", { defaultValue: "Закрыть" })}
-                  style={{
-                    width: "34px", height: "34px", flexShrink: 0,
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    border: "none", borderRadius: "10px",
-                    background: "rgba(var(--ink),0.05)", color: "var(--muted)", cursor: "pointer",
-                  }}
-                >
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
-                    <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-                  </svg>
-                </button>
-              )}
+              <div style={{ width: "132px", flexShrink: 0 }}>{languageSelect}</div>
+              {exitButton}
             </div>
           </div>
           <div style={{ marginTop: "28px" }}>
@@ -353,6 +361,44 @@ export default function OnboardingPage() {
         flex: "1 1 0", padding: "44px 40px", display: "flex", flexDirection: "column",
         position: "relative", overflow: "hidden", minWidth: 0, minHeight: 0,
       }}>
+        {/* ── ШАПКА УЗКОГО ЭКРАНА ──
+            Левая панель на экране уже 820px скрыта (App.css), и вместе с ней
+            уходили логотип, выбор языка, индикатор шагов и крестик выхода:
+            на телефоне мастер оставался голой формой, в которой не видно ни
+            сколько ещё шагов, ни как сменить язык. Здесь тот же набор одной
+            полосой; на десктопе блок скрыт (см. .ob-mhead в App.css). */}
+        <div className="ob-mhead">
+          <div className="ob-mhead-top">
+            <Logo />
+            <div className="ob-mhead-tools">
+              <div className="ob-mhead-lang">{languageSelect}</div>
+              {exitButton}
+            </div>
+          </div>
+
+          {/* Названия шага здесь нет намеренно: у каждого шага собственный
+              заголовок строкой ниже (StepIdentity и остальные), и на узком
+              экране «График работы» оказывался написан дважды подряд. */}
+          <span className="ob-mhead-step">{t("onboarding:wizard.stepOf", { step, total: 5 })}</span>
+
+          {/* Полоса, а не точки: на узкой строке пять отрезков с подписями не
+              читаются, а заполнение видно боковым зрением и оживает на каждом
+              переходе. */}
+          <div className="ob-mbar">
+            <div className="ob-mbar-fill" style={{ width: `${(step / 5) * 100}%` }} />
+          </div>
+
+          {/* Сцена направления — единственная иллюстрация, которая отвечает на
+              ввод: отметил «Йогу» — человечек сел в позу. На шаге выбора она
+              объясняет смысл шага лучше подзаголовка, поэтому её одну и
+              оставляем на телефоне, остальные шаги отдают место полям. */}
+          {step === 2 && (
+            <div className="ob-mscene">
+              <ActivityScene activityType={data.activityTypes[data.activityTypes.length - 1] ?? ""} />
+            </div>
+          )}
+        </div>
+
         <div className="ob-right-scroll" style={{
           flex: 1, minHeight: 0, display: "flex", flexDirection: "column",
           overflowX: "hidden", overflowY: "auto", marginRight: "-8px", paddingRight: "8px",
@@ -368,13 +414,14 @@ export default function OnboardingPage() {
 
         {/* ── ACTION BUTTONS (закреплённый футер) ── */}
         <div className="ob-footer" style={{ flexShrink: 0 }}>
-        <div style={{
+        <div className="ob-actions" style={{
           display: "flex", alignItems: "center", gap: "10px",
           marginTop: "24px", paddingTop: "18px", borderTop: "1px solid #F0EDE8",
         }}>
           {step > 1 && (
             <button
               type="button"
+              className="ob-btn-back"
               onClick={goBack}
               style={{
                 padding: "13px 18px", background: "transparent",
@@ -395,6 +442,7 @@ export default function OnboardingPage() {
 
           <button
             type="button"
+            className="ob-btn-next"
             disabled={isSubmitting || !canProceedCurrent}
             onClick={step === 5 ? handleFinish : goNext}
             style={{
@@ -431,8 +479,17 @@ export default function OnboardingPage() {
           </button>
         </div>
 
-        <p style={{ textAlign: "center", fontSize: "11px", color: "#CCCCCC", margin: "8px 0 0", fontWeight: 500 }}>
+        <p className="ob-note-progress" style={{ textAlign: "center", fontSize: "11px", color: "#CCCCCC", margin: "8px 0 0", fontWeight: 500 }}>
           {t("onboarding:wizard.progress", { step, total: 5 })}
+        </p>
+
+        {/* На узком экране прогресс уже есть в шапке, а вот обещание «данные не
+            уйдут на сторону» терялось вместе с левой панелью — и терялось ровно
+            там, где человек отдаёт телефон студии. Меняем строки местами: на
+            телефоне под кнопкой стоит эта, на десктопе — прогресс. */}
+        <p className="ob-note-safe">
+          <span className="ob-note-dot" />
+          {t("onboarding:wizard.securityNote")}
         </p>
         </div>
       </div>

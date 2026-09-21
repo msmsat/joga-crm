@@ -9,7 +9,14 @@
   },
   "security": {
     "changePassword": "Vaihda salasana",
-    "logout": "Kirjaudu ulos"
+    "logout": "Kirjaudu ulos",
+    "deleteAccount": {
+      "button": "Poista tili",
+      "title": "Poista tili pysyvästi",
+      "warnAccount": "Tili ja sähköposti {{email}} poistetaan lopullisesti — samalla sähköpostilla voi rekisteröityä uudelleen",
+      "warnStudios": "Studiot, joissa olet ainoa omistaja, poistetaan kaikkine tietoineen: asiakkaat, tunnit, taloustiedot ja asetukset",
+      "warnBilling": "Voimassa oleva tilaus päättyy heti, eikä jäljellä olevasta maksetusta jaksosta hyvitetä"
+    }
   },
   "accounts": {
     "title": "Omat studiot",

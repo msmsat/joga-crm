@@ -9,7 +9,14 @@
   },
   "security": {
     "changePassword": "Cambiar contraseña",
-    "logout": "Cerrar sesión"
+    "logout": "Cerrar sesión",
+    "deleteAccount": {
+      "button": "Eliminar cuenta",
+      "title": "Eliminar la cuenta para siempre",
+      "warnAccount": "La cuenta y el correo {{email}} se eliminarán definitivamente — podrás registrarte de nuevo con este correo",
+      "warnStudios": "Los estudios de los que eres el único propietario se eliminarán con todo su contenido: clientes, clases, finanzas y ajustes",
+      "warnBilling": "Una suscripción activa se cancela de inmediato, sin reembolso del periodo pagado restante"
+    }
   },
   "accounts": {
     "title": "Mis estudios",

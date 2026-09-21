@@ -42,7 +42,9 @@ export default function StepIdentity({ data, onChange }: Props) {
       </div>
 
       {/* Logo upload */}
-      <div style={{ display: "flex", alignItems: "center", gap: "20px", marginBottom: "24px" }}>
+      {/* flexWrap — ради узкого экрана: квадрат 72px, «Заменить логотип» и
+          «Убрать» в одну строку на 320px не встают и вылезали за край. */}
+      <div style={{ display: "flex", alignItems: "center", gap: "20px", marginBottom: "24px", flexWrap: "wrap" }}>
         <div
           onClick={() => fileRef.current?.click()}
           style={{

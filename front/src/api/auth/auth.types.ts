@@ -152,7 +152,9 @@ export interface DeclineInvitePayload {
 }
 
 // EPIC 5: единый OTP-механизм — action скопирован из схемы бэкенда (schemas/auth/otp.py).
-export type OtpAction = 'change_password' | 'delete_data' | 'delete_account' | 'enable_2fa' | 'login_2fa'
+// delete_account — удаление студии (Настройки → Безопасность), delete_user —
+// удаление личного аккаунта вместе с почтой (Профиль).
+export type OtpAction = 'change_password' | 'delete_data' | 'delete_account' | 'delete_user' | 'enable_2fa' | 'login_2fa'
 
 export interface OtpRequestResponse {
   expires_in: number

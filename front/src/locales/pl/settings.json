@@ -325,6 +325,7 @@
         "consequence2": "Bez zmian: studio, oddziały, {{spacePlural}}, usługi, personel, subskrypcja i ustawienia",
         "consequence3": "To działanie jest nieodwracalne — po potwierdzeniu nie można go cofnąć"
       },
+      "confirmNameLabel": "Wpisz {{name}}, aby potwierdzić",
       "deleteAccount": {
         "title": "Usuń konto firmowe",
         "sub": "Całkowite i nieodwracalne usunięcie firmy z systemu",

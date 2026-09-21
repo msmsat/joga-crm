@@ -325,6 +325,7 @@
         "consequence2": "Ne mijenjaju se: studio, podružnice, {{spacePlural}}, usluge, osoblje, pretplata i postavke",
         "consequence3": "Ova je radnja nepovratna — nakon potvrde ne može se poništiti"
       },
+      "confirmNameLabel": "Za potvrdu upišite {{name}}",
       "deleteAccount": {
         "title": "Izbriši račun tvrtke",
         "sub": "Potpuno i nepovratno uništenje poslovanja u sustavu",

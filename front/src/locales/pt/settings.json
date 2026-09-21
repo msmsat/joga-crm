@@ -323,6 +323,7 @@
         "consequence2": "Sem alteração: estúdio, filiais, {{spacePlural}}, serviços, equipa, subscrição e definições",
         "consequence3": "Esta ação é irreversível — não pode ser anulada após a confirmação"
       },
+      "confirmNameLabel": "Escreva {{name}} para confirmar",
       "deleteAccount": {
         "title": "Eliminar conta da empresa",
         "sub": "Destruição completa e irreversível da empresa no sistema",

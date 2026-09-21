@@ -9,7 +9,14 @@
   },
   "security": {
     "changePassword": "Zmień hasło",
-    "logout": "Wyloguj się"
+    "logout": "Wyloguj się",
+    "deleteAccount": {
+      "button": "Usuń konto",
+      "title": "Usuń konto na zawsze",
+      "warnAccount": "Konto i adres {{email}} zostaną usunięte bezpowrotnie — tym adresem można zarejestrować się ponownie",
+      "warnStudios": "Studia, w których jesteś jedynym właścicielem, zostaną usunięte z całą zawartością: klientami, zajęciami, finansami i ustawieniami",
+      "warnBilling": "Aktywna subskrypcja zostaje anulowana od razu, bez zwrotu za pozostałą część opłaconego okresu"
+    }
   },
   "accounts": {
     "title": "Moje studia",

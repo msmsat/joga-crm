@@ -9,7 +9,14 @@
   },
   "security": {
     "changePassword": "Alterar palavra-passe",
-    "logout": "Terminar sessão"
+    "logout": "Terminar sessão",
+    "deleteAccount": {
+      "button": "Eliminar conta",
+      "title": "Eliminar a conta para sempre",
+      "warnAccount": "A conta e o e-mail {{email}} serão eliminados definitivamente — pode registar-se novamente com este e-mail",
+      "warnStudios": "Os estúdios de que é o único proprietário serão eliminados com todo o conteúdo: clientes, aulas, finanças e definições",
+      "warnBilling": "Uma subscrição ativa é cancelada de imediato, sem reembolso do período pago restante"
+    }
   },
   "accounts": {
     "title": "Os meus estúdios",

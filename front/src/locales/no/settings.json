@@ -323,6 +323,7 @@
         "consequence2": "Uendret: studio, avdelinger, {{spacePlural}}, tjenester, ansatte, abonnement og innstillinger",
         "consequence3": "Denne handlingen kan ikke angres etter bekreftelse"
       },
+      "confirmNameLabel": "Skriv {{name}} for å bekrefte",
       "deleteAccount": {
         "title": "Slett bedriftskonto",
         "sub": "Fullstendig og irreversibel sletting av virksomheten fra systemet",

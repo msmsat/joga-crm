@@ -9,7 +9,14 @@
   },
   "security": {
     "changePassword": "Jelszó módosítása",
-    "logout": "Kijelentkezés"
+    "logout": "Kijelentkezés",
+    "deleteAccount": {
+      "button": "Fiók törlése",
+      "title": "Fiók végleges törlése",
+      "warnAccount": "A fiók és a(z) {{email}} e-mail-cím véglegesen törlődik — ezzel az e-mail-címmel újra regisztrálhat",
+      "warnStudios": "Azok a stúdiók, amelyeknek Ön az egyedüli tulajdonosa, minden tartalmukkal együtt törlődnek: ügyfelek, órák, pénzügyek és beállítások",
+      "warnBilling": "Az aktív előfizetés azonnal megszűnik, a hátralévő kifizetett időszakra nincs visszatérítés"
+    }
   },
   "accounts": {
     "title": "Stúdióim",

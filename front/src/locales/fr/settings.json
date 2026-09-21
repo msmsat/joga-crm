@@ -323,6 +323,7 @@
         "consequence2": "Inchangés : studio, établissements, {{spacePlural}}, prestations, personnel, abonnement et paramètres",
         "consequence3": "Cette action est irréversible — elle ne peut plus être annulée après confirmation"
       },
+      "confirmNameLabel": "Saisissez {{name}} pour confirmer",
       "deleteAccount": {
         "title": "Supprimer le compte de l’entreprise",
         "sub": "Destruction complète et irréversible de l’activité dans le système",

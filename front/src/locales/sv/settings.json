@@ -323,6 +323,7 @@
         "consequence2": "Oförändrat: studio, filialer, {{spacePlural}}, tjänster, personal, abonnemang och inställningar",
         "consequence3": "Åtgärden går inte att ångra efter bekräftelse"
       },
+      "confirmNameLabel": "Skriv {{name}} för att bekräfta",
       "deleteAccount": {
         "title": "Ta bort företagskonto",
         "sub": "Fullständig och oåterkallelig radering av verksamheten från systemet",

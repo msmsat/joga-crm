@@ -9,7 +9,14 @@
   },
   "security": {
     "changePassword": "Passwort ändern",
-    "logout": "Abmelden"
+    "logout": "Abmelden",
+    "deleteAccount": {
+      "button": "Konto löschen",
+      "title": "Konto endgültig löschen",
+      "warnAccount": "Das Konto und die E-Mail {{email}} werden unwiderruflich gelöscht — mit dieser E-Mail können Sie sich erneut registrieren",
+      "warnStudios": "Studios, deren einziger Inhaber Sie sind, werden mit allen Inhalten gelöscht: Kunden, Kurse, Finanzen und Einstellungen",
+      "warnBilling": "Ein aktives Abo wird sofort gekündigt, ohne Erstattung für den restlichen bezahlten Zeitraum"
+    }
   },
   "accounts": {
     "title": "Meine Studios",

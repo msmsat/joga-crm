@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { icons } from '../ui/ProfileIcons';
 import { ChangePasswordModal } from '../../../Settings/components/modals/ChangePasswordModal';
+import { DeleteAccountModal } from '../modals/DeleteAccountModal';
 import { useLogout } from '../../hooks/useLogout';
 import { CookieIcon } from '../../../../../components/cookies/CookieIcon';
 import { openCookieSettings } from '../../../../../utils/cookieConsent';
@@ -36,9 +37,10 @@ function NeutralButton({ onClick, children }: { onClick: () => void; children: R
   );
 }
 
-export default function SecuritySettings() {
+export default function SecuritySettings({ email }: { email: string }) {
   const { t } = useTranslation(["profile", "cookies"]);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const { handleLogout, isLoggingOut } = useLogout();
 
   return (
@@ -78,11 +80,41 @@ export default function SecuritySettings() {
         {icons.logout} {t("security.logout")}
       </button>
 
+      {/* Удаление аккаунта — ниже выхода и отделено воздухом: соседство с
+          «Выйти» без отступа сделало бы промах пальцем необратимым. Обводка
+          вместо заливки: это не действие, которое предлагают, а действие,
+          которое должно быть доступно. */}
+      <button
+        onClick={() => setShowDeleteModal(true)}
+        style={{
+          marginTop: '12px',
+          display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '10px',
+          padding: '16px 20px', borderRadius: '14px',
+          background: 'transparent', border: '1.5px solid rgba(216,140,154,0.3)',
+          color: '#C0607A', fontSize: '13px', fontWeight: 700,
+          cursor: 'pointer', transition: 'all 0.2s',
+        }}
+        onMouseEnter={e => {
+          e.currentTarget.style.background = 'rgba(216,140,154,0.08)';
+          e.currentTarget.style.borderColor = '#D88C9A';
+        }}
+        onMouseLeave={e => {
+          e.currentTarget.style.background = 'transparent';
+          e.currentTarget.style.borderColor = 'rgba(216,140,154,0.3)';
+        }}
+      >
+        {icons.trash} {t("security.deleteAccount.button")}
+      </button>
+
       {showPasswordModal && (
         <ChangePasswordModal
           onClose={() => setShowPasswordModal(false)}
           onSuccess={() => setShowPasswordModal(false)}
         />
+      )}
+
+      {showDeleteModal && (
+        <DeleteAccountModal email={email} onClose={() => setShowDeleteModal(false)} />
       )}
     </div>
   );

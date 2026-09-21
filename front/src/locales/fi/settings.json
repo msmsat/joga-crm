@@ -323,6 +323,7 @@
         "consequence2": "Ei muutoksia: studio, toimipisteet, {{spacePlural}}, palvelut, henkilöstö, tilaus ja asetukset",
         "consequence3": "Toimintoa ei voi perua vahvistamisen jälkeen"
       },
+      "confirmNameLabel": "Vahvista kirjoittamalla {{name}}",
       "deleteAccount": {
         "title": "Poista yritystili",
         "sub": "Yrityksen täydellinen ja peruuttamaton poistaminen järjestelmästä",

@@ -9,7 +9,14 @@
   },
   "security": {
     "changePassword": "Změnit heslo",
-    "logout": "Odhlásit se"
+    "logout": "Odhlásit se",
+    "deleteAccount": {
+      "button": "Smazat účet",
+      "title": "Trvale smazat účet",
+      "warnAccount": "Účet a e-mail {{email}} budou nenávratně smazány — s tímto e-mailem se můžete zaregistrovat znovu",
+      "warnStudios": "Studia, kde jste jediný vlastník, se smažou se vším obsahem: klienty, lekcemi, financemi i nastavením",
+      "warnBilling": "Aktivní předplatné se zruší okamžitě, bez vrácení peněz za zbytek zaplaceného období"
+    }
   },
   "accounts": {
     "title": "Moje studia",

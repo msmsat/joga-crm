@@ -9,7 +9,14 @@
   },
   "security": {
     "changePassword": "Skift adgangskode",
-    "logout": "Log ud"
+    "logout": "Log ud",
+    "deleteAccount": {
+      "button": "Slet konto",
+      "title": "Slet kontoen permanent",
+      "warnAccount": "Kontoen og e-mailen {{email}} slettes uigenkaldeligt — du kan oprette dig igen med samme e-mail",
+      "warnStudios": "Studier, hvor du er eneste ejer, slettes med alt indhold: kunder, hold, økonomi og indstillinger",
+      "warnBilling": "Et aktivt abonnement opsiges med det samme uden refusion for resten af den betalte periode"
+    }
   },
   "accounts": {
     "title": "Mine studier",

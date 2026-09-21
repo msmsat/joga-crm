@@ -1,5 +1,6 @@
 from schemas.auth.requests import (
     ChangePasswordRequest,
+    DeleteMeRequest,
     ForgotPasswordRequest,
     GoogleAuthRequest,
     InviteAcceptRequest,
@@ -20,6 +21,7 @@ from schemas.auth.otp import OtpAction, OtpRequestIn, OtpRequestOut, OtpVerifyIn
 
 __all__ = [
     "ChangePasswordRequest",
+    "DeleteMeRequest",
     "ForgotPasswordRequest",
     "GoogleAuthRequest",
     "InviteAcceptRequest",

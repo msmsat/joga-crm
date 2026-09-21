@@ -49,7 +49,7 @@ export default function Profile() {
               handleSwitchAccount={handleSwitchAccount}
             />
             <AnotherAccount />
-            <SecuritySettings />
+            <SecuritySettings email={email} />
           </div>
 
           {/* Right column */}

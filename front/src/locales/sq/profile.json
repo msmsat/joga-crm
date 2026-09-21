@@ -9,7 +9,14 @@
   },
   "security": {
     "changePassword": "Ndrysho fjalëkalimin",
-    "logout": "Dil"
+    "logout": "Dil",
+    "deleteAccount": {
+      "button": "Fshi llogarinë",
+      "title": "Fshi llogarinë përgjithmonë",
+      "warnAccount": "Llogaria dhe email-i {{email}} fshihen përfundimisht — me këtë email mund të regjistroheni sërish",
+      "warnStudios": "Studiot ku jeni pronari i vetëm fshihen me gjithçka brenda: klientët, orët, financat dhe cilësimet",
+      "warnBilling": "Abonimi aktiv anulohet menjëherë, pa rimbursim për pjesën e mbetur të periudhës së paguar"
+    }
   },
   "accounts": {
     "title": "Studiot e mia",

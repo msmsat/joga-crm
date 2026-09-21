@@ -9,7 +9,14 @@
   },
   "security": {
     "changePassword": "Change password",
-    "logout": "Log out"
+    "logout": "Log out",
+    "deleteAccount": {
+      "button": "Delete account",
+      "title": "Delete account permanently",
+      "warnAccount": "Your account and the email {{email}} are erased for good — you can sign up with this email again",
+      "warnStudios": "Studios where you are the only owner are deleted with everything in them: clients, classes, finances and settings",
+      "warnBilling": "An active subscription is cancelled right away, with no refund for the rest of the paid period"
+    }
   },
   "accounts": {
     "title": "My studios",

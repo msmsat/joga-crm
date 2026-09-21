@@ -323,6 +323,7 @@
         "consequence2": "Değişmeden kalır: stüdyo, şubeler, {{spacePlural}}, hizmetler, personel, abonelik ve ayarlar",
         "consequence3": "Bu işlem geri alınamaz — onaydan sonra iptal edilemez"
       },
+      "confirmNameLabel": "Onaylamak için {{name}} yazın",
       "deleteAccount": {
         "title": "Şirket hesabını sil",
         "sub": "İşletmenin sistemden tamamen ve geri döndürülemez biçimde silinmesi",

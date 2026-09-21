@@ -9,7 +9,14 @@
   },
   "security": {
     "changePassword": "Cambia password",
-    "logout": "Esci"
+    "logout": "Esci",
+    "deleteAccount": {
+      "button": "Elimina account",
+      "title": "Elimina l'account per sempre",
+      "warnAccount": "L'account e l'email {{email}} verranno eliminati definitivamente — con questa email potrai registrarti di nuovo",
+      "warnStudios": "Gli studi di cui sei l'unico proprietario verranno eliminati con tutto il loro contenuto: clienti, lezioni, finanze e impostazioni",
+      "warnBilling": "Un abbonamento attivo viene annullato subito, senza rimborso per il periodo pagato restante"
+    }
   },
   "accounts": {
     "title": "I miei studi",

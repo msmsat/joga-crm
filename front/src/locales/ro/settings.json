@@ -325,6 +325,7 @@
         "consequence2": "Neschimbate: studio, sucursale, {{spacePlural}}, servicii, personal, abonament și setări",
         "consequence3": "Această acțiune este ireversibilă — nu poate fi anulată după confirmare"
       },
+      "confirmNameLabel": "Scrieți {{name}} pentru confirmare",
       "deleteAccount": {
         "title": "Șterge contul companiei",
         "sub": "Distrugerea completă și ireversibilă a afacerii în sistem",

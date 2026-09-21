@@ -9,7 +9,14 @@
   },
   "security": {
     "changePassword": "Promijeni lozinku",
-    "logout": "Odjava"
+    "logout": "Odjava",
+    "deleteAccount": {
+      "button": "Izbriši račun",
+      "title": "Trajno izbriši račun",
+      "warnAccount": "Račun i e-pošta {{email}} bit će nepovratno izbrisani — s tom se e-poštom možete ponovno registrirati",
+      "warnStudios": "Studiji u kojima ste jedini vlasnik bit će izbrisani sa svime u njima: klijentima, satovima, financijama i postavkama",
+      "warnBilling": "Aktivna pretplata otkazuje se odmah, bez povrata za ostatak plaćenog razdoblja"
+    }
   },
   "accounts": {
     "title": "Moji studiji",

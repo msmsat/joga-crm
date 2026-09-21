@@ -9,7 +9,14 @@
   },
   "security": {
     "changePassword": "Endre passord",
-    "logout": "Logg ut"
+    "logout": "Logg ut",
+    "deleteAccount": {
+      "button": "Slett konto",
+      "title": "Slett kontoen for godt",
+      "warnAccount": "Kontoen og e-posten {{email}} slettes for godt — du kan registrere deg på nytt med samme e-post",
+      "warnStudios": "Studioer der du er eneste eier, slettes med alt innhold: kunder, timer, økonomi og innstillinger",
+      "warnBilling": "Et aktivt abonnement avsluttes umiddelbart, uten refusjon for resten av den betalte perioden"
+    }
   },
   "accounts": {
     "title": "Mine studioer",
