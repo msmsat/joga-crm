@@ -38,6 +38,11 @@
   "badge": {
     "beta": "BÉTA"
   },
+  "more": {
+    "title": "Összes szakasz",
+    "business": "Üzlet",
+    "comms": "Ügyfelek és kommunikáció"
+  },
   "navbar": {
     "create": "Létrehozás"
   },

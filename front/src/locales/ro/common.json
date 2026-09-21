@@ -175,7 +175,6 @@
     "serviceAction": "Codul QR al serviciului"
   },
   "auth": {
-    "noAccount": "Nu aveți un cont?",
     "haveAccount": "Aveți deja un cont?",
     "welcomeBack": "Bine ați revenit",
     "choosePassword": "Creați o parolă nouă",
@@ -185,9 +184,7 @@
     "codeSent": "Codul a fost trimis la {{identifier}}",
     "googleFailed": "Conectarea cu Google a eșuat",
     "googleAccountMissing": "Încă nu există un cont pentru această adresă Google. Vom crea unul după ce acceptați documentele.",
-    "divider": "sau conectați-vă cu",
     "codeFromEmail": "Cod din e-mail",
-    "rememberMe": "Ține-mă minte",
     "forgotPassword": "Ați uitat parola?",
     "signInSystem": "Conectare",
     "sendInstructions": "Trimite instrucțiunile",
@@ -197,12 +194,9 @@
     "nameSub": "Nume sau poreclă — alegerea dvs.",
     "accountCreated": "Contul a fost creat. Am trimis un e-mail de confirmare la {{email}}.",
     "dashboard": "Mergi la panou",
-    "or": "sau",
-    "registerByEmail": "Înregistrați-vă cu e-mail",
     "displayNamePlaceholder": "De exemplu: Ana, Max, ProprietarStudio",
     "displayNameHint": "Acest nume apare în interfață și notificări. Îl puteți schimba în setări.",
     "codeSix": "Introduceți codul din 6 cifre",
-    "users": "companii folosesc deja Velora",
     "strength": {
       "weak": "Slabă",
       "medium": "Medie",

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import "../App.css";
 import {
   Orbs, Logo, InputField, PasswordStrength, StepDots,
-  IconEmail, IconUser, IconLock, IconEyeOpen, IconEyeClosed, ErrorAlert
+  IconEmail, IconUser, IconLock, PasswordEye, ErrorAlert
 } from "../components/UI"; // 🔥 Весь UI подтягивается отсюда
 import { useNavigate } from "react-router-dom";
 import { GoogleSignIn } from '../components/cookies/GoogleSignIn';
@@ -15,17 +15,23 @@ import { submitOnEnter } from "../lib/submitOnEnter";
 import { useTranslation } from 'react-i18next';
 
 // ─── STEP TYPES ──────────────────────────────────────────────────────────────
-
-type Step = 0 | 1 | 2 | 3 | 4;
+//
+// Шагов четыре, и первый — сразу поле email. Экрана выбора способа («кнопка
+// Google, разделитель ИЛИ, кнопка „Зарегистрироваться по email“») больше нет:
+// он спрашивал «как вы хотите начать» вместо того, чтобы дать начать. Поле
+// стоит первым, Google — под ним, оба видны сразу.
+type Step = 1 | 2 | 3 | 4;
 
 // ─── CONSENT ─────────────────────────────────────────────────────────────────
 
 /** Clickwrap-галочка: одно согласие покрывает Условия (вместе с приложением об
  *  обработке данных) и Политику — у документов общая редакция.
  *
- *  Стоит на ОБОИХ путях регистрации: и на email-шаге, и перед кнопкой Google.
- *  Мелкий текст «регистрируясь, вы принимаете» под Google был бы browsewrap —
- *  доказательства согласия он не даёт, а через Google приходит половина людей. */
+ *  Стоит ОДИН раз — на первом шаге, рядом с полем email, и покрывает оба пути
+ *  сразу: и регистрацию по почте, и Google (та кнопка до галочки не срабатывает
+ *  и отправляет сюда). Мелкий текст «регистрируясь, вы принимаете» под кнопкой
+ *  был бы browsewrap — доказательства согласия он не даёт, а через Google
+ *  приходит половина людей. */
 function ConsentCheck({ checked, error, onChange }: { checked: boolean; error?: string; onChange: (v: boolean) => void }) {
   const { t } = useTranslation();
   return (
@@ -50,7 +56,7 @@ function ConsentCheck({ checked, error, onChange }: { checked: boolean; error?: 
 export default function RegisterPage() {
   const { t } = useTranslation();
   const footerLinks = legalFooterLinks(t);
-  const [step, setStep] = useState<Step>(0);
+  const [step, setStep] = useState<Step>(1);
   const [mounted, setMounted] = useState(false);
   const navigate = useNavigate();
 
@@ -72,10 +78,11 @@ export default function RegisterPage() {
   const clearErr = (key: string) => setErrors((e) => { const n = { ...e }; delete n[key]; return n; });
 
   const handleGoogleSuccess = async (credential: string) => {
-    // Кнопка Google живёт в iframe — перехватить сам клик нельзя, поэтому
-    // непринятые документы ловим здесь, а кнопку до галочки гасим (см. разметку).
+    // Клик по кнопке до галочки перехватывает прозрачная кнопка поверх неё
+    // (см. разметку), но One Tap всплывает сам, мимо кнопки, — поэтому проверка
+    // нужна и здесь. Ошибка показывается у самой галочки.
     if (!agree) {
-      setErrors({ agree: t("join:errors.consentRequired") });
+      setErrors((e) => ({ ...e, agree: t("join:errors.consentRequired") }));
       return;
     }
     setLoading(true);
@@ -101,6 +108,9 @@ export default function RegisterPage() {
     if (s === 1) {
       if (!email.trim()) errs.email = t("validation.required");
       else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errs.email = t("validation.email");
+      // Согласие спрашиваем ОДИН раз и здесь же: оно разблокирует кнопку
+      // Google на этом экране, и второй раз на шаге пароля не нужно.
+      if (!agree) errs.agree = t("join:errors.consentRequired");
     }
     if (s === 2) {
       if (!displayName.trim()) errs.displayName = t("validation.required");
@@ -109,7 +119,10 @@ export default function RegisterPage() {
     if (s === 3) {
       if (!password) errs.password = t("join:errors.passwordRequired");
       else if (password.length < 8) errs.password = t("validation.minLength", { n: 8 });
-      if (!agree) errs.agree = t("join:errors.consentRequired");
+      // Согласия здесь НЕ проверяем: галочка осталась на первом шаге, и ошибке
+      // про неё тут не под чем появиться — человек увидел бы молчащую кнопку.
+      // Без галочки до этого шага не доходят, а если бы дошли — откажет сервер
+      // (accept_terms), и отказ будет видно в ErrorAlert.
     }
     if (s === 4) {
       if (!code) errs.code = t("auth.confirmationCode");
@@ -157,12 +170,7 @@ export default function RegisterPage() {
   };
 
   const totalSteps = 4;
-  const progressStep = step === 0 ? 0 : step - 1;
-
-  // ── ICONS ──
-  const eyeIcon = (open: boolean) => open 
-    ? <IconEyeOpen />
-    : <IconEyeClosed />;
+  const progressStep = step - 1;
 
   const stepMeta = [
     { title: "", sub: "" },
@@ -180,12 +188,28 @@ export default function RegisterPage() {
       {/* ── NAV ── */}
       <nav className="flex-between" style={{ padding: "20px 40px", position: "relative", zIndex: 10, opacity: mounted ? 1 : 0, transition: "opacity 0.4s ease" }}>
         <Logo />
-        <div className="text-muted" style={{ fontSize: 13, display: "flex", alignItems: "center", gap: 6 }}>
-          {t("auth.haveAccount")} {" "}
-          <button onClick={() => navigate("/login")} style={{ background: "none", border: "none", color: "var(--peach)", fontWeight: 700, fontSize: 13, cursor: "pointer", padding: 0 }}>
-            {t("profile:accounts.login")} →
-          </button>
-        </div>
+        {/* «Назад» — на лендинг, как и на странице входа: сюда приходят по
+            прямой ссылке, и history.back() уводил бы куда угодно. Ссылка «Уже
+            есть аккаунт? Войти» из шапки уехала вниз, в тёмную плашку — к
+            остальным дверям. */}
+        <button
+          onClick={() => navigate("/")}
+          style={{
+            display: "inline-flex", alignItems: "center", gap: 7,
+            padding: "9px 16px 9px 13px", borderRadius: 10,
+            background: "transparent", border: "1.5px solid var(--border)",
+            color: "var(--muted)", fontFamily: "var(--font)",
+            fontSize: 13, fontWeight: 600, cursor: "pointer",
+            transition: "border-color 0.2s, color 0.2s",
+          }}
+          onMouseOver={(e) => { e.currentTarget.style.borderColor = "var(--peach)"; e.currentTarget.style.color = "var(--onyx)"; }}
+          onMouseOut={(e) => { e.currentTarget.style.borderColor = "var(--border)"; e.currentTarget.style.color = "var(--muted)"; }}
+        >
+          <svg width="13" height="13" viewBox="0 0 12 12" fill="none" aria-hidden>
+            <path d="M7.5 2L3.5 6L7.5 10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          {t("buttons.back")}
+        </button>
       </nav>
 
       {/* ── MAIN ── */}
@@ -212,45 +236,8 @@ export default function RegisterPage() {
                   {t("auth.dashboard")} →
                 </button>
               </div>
-            ) : step === 0 ? (
-              /* ── STEP 0: METHOD PICKER ── */
-              <div className="step-enter flex-col gap-24">
-                <div className="flex-col gap-8">
-                  <div style={{ display: "inline-flex", alignItems: "center", gap: 7, padding: "5px 12px", background: "linear-gradient(135deg, rgba(249,160,139,0.12), rgba(249,160,139,0.06))", border: "1px solid rgba(249,160,139,0.28)", borderRadius: 100, width: "fit-content" }}>
-                    <div style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--peach)", boxShadow: "0 0 0 3px var(--peach-glow)", animation: "pulse 2.4s ease-in-out infinite" }} />
-                    <span style={{ fontSize: 12, fontWeight: 600, color: "var(--peach)", letterSpacing: "0.3px" }}>{t("landing:hero.perks.0")}</span>
-                  </div>
-                  <h1 style={{ fontSize: 26, fontWeight: 800, letterSpacing: "-0.5px", lineHeight: 1.2 }}>{t("profile:accounts.register")}</h1>
-                  <p className="text-muted" style={{ fontSize: 14, lineHeight: "1.6" }}>{t("landing:cta.lead")}</p>
-                </div>
-
-                <ConsentCheck checked={agree} error={errors.agree} onChange={(v) => { setAgree(v); clearErr("agree"); }} />
-
-                {/* Пока документы не приняты, кнопка Google не кликается: она в
-                    iframe, поэтому гасим её обёрткой, а не атрибутом disabled. */}
-                <div style={{ display: "flex", justifyContent: "center", width: "100%", opacity: agree ? 1 : 0.45, pointerEvents: agree ? "auto" : "none", transition: "opacity 0.2s" }}>
-                  <GoogleSignIn
-                      /* См. Loginpage: 320px кнопки Google не влезают в
-                         карточку на самом узком экране. */
-                      width={Math.min(320, window.innerWidth - 76)}
-                      onCredential={(credential) => handleGoogleSuccess(credential)}
-                      onError={() => setSubmitError(t("auth.googleFailed"))}
-                  />
-                </div>
-
-                <div className="flex-center gap-12">
-                  <div style={{ flex: 1, height: 1, background: "var(--border)" }} />
-                  <span style={{ fontSize: 12, fontWeight: 600, color: "rgba(102,102,102,0.5)", textTransform: "uppercase" }}>{t("auth.or")}</span>
-                  <div style={{ flex: 1, height: 1, background: "var(--border)" }} />
-                </div>
-
-                <button className="btn-gradient" onClick={() => setStep(1)}>
-                  {<IconEmail />} {t("auth.registerByEmail")}
-                </button>
-
-              </div>
             ) : (
-              /* ── STEPS 1–3 ── */
+              /* ── ШАГИ 1–4: email + согласие → имя → пароль → код ── */
               <div className="step-enter flex-col gap-24">
                 <div className="flex-col gap-16">
                   <StepDots current={progressStep} total={totalSteps} />
@@ -264,6 +251,7 @@ export default function RegisterPage() {
                   {step === 1 && (
                     <>
                       <InputField label="Email *" type="email" placeholder="you@example.com" value={email} onChange={(v: string) => { setEmail(v); clearErr("email"); }} icon={<IconEmail />} error={errors.email} autoComplete="email" />
+                      <ConsentCheck checked={agree} error={errors.agree} onChange={(v) => { setAgree(v); clearErr("agree"); }} />
                     </>
                   )}
                   {step === 2 && (
@@ -275,7 +263,7 @@ export default function RegisterPage() {
                         label={`${t("join:fields.password")} *`} type={showPassword ? "text" : "password"} placeholder={t("validation.minLength", { n: 8 })}
                         value={password} onChange={(v: string) => { setPassword(v); clearErr("password"); }}
                         icon={<IconLock />} error={errors.password} autoComplete="new-password"
-                        rightSlot={<button className="btn-icon-clear" style={{ color: showPassword ? "var(--peach)" : "var(--muted)" }} onClick={() => setShowPassword((v) => !v)}>{eyeIcon(showPassword)}</button>}
+                        rightSlot={<PasswordEye shown={showPassword} onToggle={() => setShowPassword(v => !v)} />}
                       />
                       <PasswordStrength password={password} />
                     </div>
@@ -304,13 +292,11 @@ export default function RegisterPage() {
                   </div>
                 )}
 
-                {step === 3 && (
-                  <ConsentCheck checked={agree} error={errors.agree} onChange={(v) => { setAgree(v); clearErr("agree"); }} />
-                )}
-
                 <div style={{ display: "flex", gap: 10 }}>
-                  {/* Кнопку "Назад" прячем на 4 шаге, чтобы юзер не отправил дубль */}
-                  {step < 4 && (
+                  {/* «Назад» нет на первом шаге (отступать некуда — из шапки
+                      уводит кнопка на лендинг) и на четвёртом: письмо уже
+                      отправлено, и возврат означал бы второе такое же. */}
+                  {step > 1 && step < 4 && (
                     <button className="btn-back" onClick={() => setStep((s) => (s - 1) as Step)}>←</button>
                   )}
                   
@@ -323,33 +309,73 @@ export default function RegisterPage() {
                     {loading ? <><span className="spinner" /> {t("status.loading")}</> : step === 3 ? t("profile:accounts.register") : step === 4 ? `${t("buttons.continue")} →` : `${t("buttons.continue")} →`}
                   </button>
                 </div>
+
+                {/* ── ТЁМНАЯ ПЛАШКА ─────────────────────────────────────────
+                    Та же, что на странице входа: вторая дверь под основной.
+                    Кнопка Google видна сразу — способ должен быть на виду, а не
+                    появляться из ниоткуда, — но до галочки она не срабатывает,
+                    а ОБЪЯСНЯЕТ, чего не хватает. Перехватить её клик напрямую
+                    нельзя (кнопка живёт в iframe Google), поэтому поверх неё
+                    лежит прозрачная кнопка-перехватчик: пока согласия нет, клик
+                    достаётся ей, и она показывает ошибку у самой галочки —
+                    там, где её и надо поставить. Просто `pointer-events: none`
+                    тут не годится: нажатие уходило бы в пустоту, и человек
+                    решал бы, что кнопка сломана.
+                    Согласие всё равно получено ДО того, как Google отдаст нам
+                    хоть какие-то данные, — clickwrap в чистом виде.
+                    Проверка остаётся и в обработчике: One Tap может всплыть
+                    сам, без этой кнопки (GoogleSignIn, useOneTap). */}
+                {step === 1 && (
+                  <div style={{
+                    padding: 16, borderRadius: 18, background: "var(--onyx, #1A1A1A)",
+                    display: "flex", flexDirection: "column", gap: 14,
+                  }}>
+                    <div style={{ position: "relative", display: "flex", justifyContent: "center", width: "100%" }}>
+                      {/* 132 = поля страницы, карточки и самой плашки —
+                          ширина кнопки Google задаётся пикселем (iframe). */}
+                      <div style={{ opacity: agree ? 1 : 0.5, transition: "opacity 0.2s", width: "100%", display: "flex", justifyContent: "center" }}>
+                        <GoogleSignIn
+                          dark
+                          width={Math.min(320, window.innerWidth - 132)}
+                          onCredential={(credential) => handleGoogleSuccess(credential)}
+                          onError={() => setSubmitError(t("auth.googleFailed"))}
+                        />
+                      </div>
+                      {!agree && (
+                        <button
+                          type="button"
+                          aria-label={t("join:errors.consentRequired")}
+                          onClick={() => setErrors((e) => ({ ...e, agree: t("join:errors.consentRequired") }))}
+                          style={{ position: "absolute", inset: 0, background: "transparent", border: "none", cursor: "pointer" }}
+                        />
+                      )}
+                    </div>
+
+                    {/* Волосок стоит всегда: кнопка Google над ним теперь тоже
+                        всегда на месте, и отступ не должен прыгать от галочки. */}
+                    <div style={{
+                      display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+                      fontSize: 13, color: "rgba(255,255,255,0.6)",
+                      borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: 12,
+                    }}>
+                      {t("auth.haveAccount")}
+                      <button
+                        onClick={() => navigate("/login")}
+                        style={{
+                          background: "none", border: "none", padding: 0,
+                          color: "var(--peach, #FCAE91)", fontFamily: "var(--font)",
+                          fontSize: 13, fontWeight: 800, cursor: "pointer",
+                        }}
+                      >
+                        {t("landing:nav.login")}
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>
 
-          {/* ── BELOW CARD ── */}
-          {!done && (
-            <div className="flex-col flex-center" style={{ marginTop: 24, gap: 16 }}>
-              <div className="flex-center gap-10">
-                <div style={{ display: "flex" }}>
-                  {["#F9A08B","#A3C9A8","#D88C9A","#7EB8D4","#B8A9D9"].map((c, i) => (
-                    <div key={i} className="flex-center" style={{ width: 26, height: 26, borderRadius: "50%", background: `linear-gradient(135deg, ${c}, ${c}cc)`, border: "2px solid var(--bg-card)", marginLeft: i > 0 ? -8 : 0, zIndex: 5 - i, fontSize: 10, fontWeight: 700, color: "white" }}>
-                      {["V","E","L","O","R"][i]}
-                    </div>
-                  ))}
-                </div>
-                <span style={{ fontSize: 12, color: "rgba(102,102,102,0.6)", fontWeight: 500 }}><b style={{ color: "var(--onyx)" }}>2 400+</b> {t("auth.users")}</span>
-              </div>
-              <div className="flex-center" style={{ gap: 20 }}>
-                {[ { label: "SSL" }, { label: "GDPR" }, { label: "2FA" } ].map((item, i) => (
-                  <div key={i} className="flex-center" style={{ gap: 5, fontSize: 11, fontWeight: 500, color: "rgba(102,102,102,0.6)" }}>
-                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1L1.5 3V6.5C1.5 9.26142 3.73858 11.5 6.5 12C9.26142 11.5 11.5 9.26142 11.5 6.5V3L6.5 1Z" stroke="var(--pistachio)" strokeWidth="1.3" strokeLinejoin="round" /><path d="M4.5 6.5L5.9 7.9L8.5 5" stroke="var(--pistachio)" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                    {item.label}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
       </div>
 

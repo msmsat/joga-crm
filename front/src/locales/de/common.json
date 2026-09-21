@@ -175,7 +175,6 @@
     "serviceAction": "QR-Code der Leistung"
   },
   "auth": {
-    "noAccount": "Noch kein Konto?",
     "haveAccount": "Sie haben bereits ein Konto?",
     "welcomeBack": "Willkommen zurück",
     "choosePassword": "Neues Passwort erstellen",
@@ -185,9 +184,7 @@
     "codeSent": "Der Code wurde an {{identifier}} gesendet",
     "googleFailed": "Google-Anmeldung fehlgeschlagen",
     "googleAccountMissing": "Für diese Google-Adresse gibt es noch kein Konto. Wir erstellen es, nachdem Sie die Dokumente akzeptiert haben.",
-    "divider": "oder anmelden mit",
     "codeFromEmail": "Code aus der E-Mail",
-    "rememberMe": "Angemeldet bleiben",
     "forgotPassword": "Passwort vergessen?",
     "signInSystem": "Anmelden",
     "sendInstructions": "Anweisungen senden",
@@ -197,12 +194,9 @@
     "nameSub": "Name oder Spitzname — Ihre Wahl",
     "accountCreated": "Das Konto wurde erstellt. Wir haben eine Bestätigungs-E-Mail an {{email}} gesendet.",
     "dashboard": "Zum Dashboard",
-    "or": "oder",
-    "registerByEmail": "Mit E-Mail registrieren",
     "displayNamePlaceholder": "Zum Beispiel: Anna, Max, StudioInhaber",
     "displayNameHint": "Dieser Name wird in der Oberfläche und in Benachrichtigungen angezeigt. Sie können ihn in den Einstellungen ändern.",
     "codeSix": "Geben Sie den 6-stelligen Code ein",
-    "users": "Unternehmen nutzen bereits Velora",
     "strength": {
       "weak": "Schwach",
       "medium": "Mittel",

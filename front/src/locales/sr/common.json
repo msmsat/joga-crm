@@ -175,7 +175,6 @@
     "serviceAction": "QR kod usluge"
   },
   "auth": {
-    "noAccount": "Немате налог?",
     "haveAccount": "Већ имате налог?",
     "welcomeBack": "Добро дошли назад",
     "choosePassword": "Направите нову лозинку",
@@ -185,9 +184,7 @@
     "codeSent": "Код је послат на {{identifier}}",
     "googleFailed": "Пријава преко Google-а није успела",
     "googleAccountMissing": "За ову Google адресу још нема налога. Направићемо га након што прихватите документе.",
-    "divider": "или се пријавите преко",
     "codeFromEmail": "Код из email-а",
-    "rememberMe": "Запамти ме",
     "forgotPassword": "Заборавили сте лозинку?",
     "signInSystem": "Пријавите се",
     "sendInstructions": "Пошаљи упутства",
@@ -197,12 +194,9 @@
     "nameSub": "Име или надимак — ваш избор",
     "accountCreated": "Налог је направљен. Послали смо потврдни email на {{email}}.",
     "dashboard": "Идите на контролну таблу",
-    "or": "или",
-    "registerByEmail": "Региструјте се email-ом",
     "displayNamePlaceholder": "На пример: Ана, Макс, ВласникСтудија",
     "displayNameHint": "Ово име се приказује у интерфејсу и обавештењима. Можете га променити у подешавањима.",
     "codeSix": "Унесите шестоцифрени код",
-    "users": "предузећа већ користи Velora",
     "strength": {
       "weak": "Слабо",
       "medium": "Средње",

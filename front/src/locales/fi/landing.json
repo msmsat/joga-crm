@@ -5,9 +5,9 @@
     "pricing": "Hinnat",
     "faq": "UKK",
     "login": "Kirjaudu sisään",
-    "startShort": "Aloita",
     "startFull": "Aloita maksutta",
-    "language": "Kieli"
+    "language": "Kieli",
+    "sections": "Osiot"
   },
   "hero": {
     "badge": "Uusi CRM-standardi vuonna 2026",

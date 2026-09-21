@@ -93,6 +93,7 @@
       "relax": "Spa ja rentoutuminen",
       "other": "Muu"
     },
+    "all": "Kaikki",
     "selectAll": "Valitse koko osio"
   },
   "contact": {
@@ -119,7 +120,6 @@
     "currencyNotFound": "Valuuttaa ei löytynyt",
     "dateFormatLabel": "Päivämäärän muoto",
     "dateFormatPlaceholder": "Muoto",
-    "firstDayLabel": "Viikon ensimmäinen päivä",
     "currencies": {
       "AED": "Arabiemiirikuntien dirhami",
       "ALL": "Albanian lek",

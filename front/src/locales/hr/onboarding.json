@@ -93,6 +93,7 @@
       "relax": "Spa i opuštanje",
       "other": "Ostalo"
     },
+    "all": "Sve",
     "selectAll": "Odaberi cijeli odjeljak"
   },
   "contact": {
@@ -119,7 +120,6 @@
     "currencyNotFound": "Nema pronađene valute",
     "dateFormatLabel": "Format datuma",
     "dateFormatPlaceholder": "Format",
-    "firstDayLabel": "Prvi dan tjedna",
     "currencies": {
       "AED": "UAE dirham",
       "ALL": "Albanski lek",

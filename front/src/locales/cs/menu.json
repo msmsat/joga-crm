@@ -38,6 +38,11 @@
   "badge": {
     "beta": "BETA"
   },
+  "more": {
+    "title": "Všechny sekce",
+    "business": "Podnikání",
+    "comms": "Klienti a komunikace"
+  },
   "navbar": {
     "create": "Vytvořit"
   },

@@ -5,9 +5,9 @@
     "pricing": "Árak",
     "faq": "Gyakori kérdések",
     "login": "Belépés",
-    "startShort": "Kezdés",
     "startFull": "Kezdje ingyen",
-    "language": "Nyelv"
+    "language": "Nyelv",
+    "sections": "Szakaszok"
   },
   "hero": {
     "badge": "A 2026-os év új CRM-szabványa",

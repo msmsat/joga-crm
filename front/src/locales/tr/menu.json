@@ -38,6 +38,11 @@
   "badge": {
     "beta": "BETA"
   },
+  "more": {
+    "title": "Tüm bölümler",
+    "business": "İşletme",
+    "comms": "Müşteriler ve iletişim"
+  },
   "navbar": {
     "create": "Oluştur"
   },

@@ -1,6 +1,7 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { submitOnEnter } from '../../../lib/submitOnEnter';
+import { useSheetDrag } from './sheetDrag';
 
 export interface ModalShellProps {
   onClose: () => void;
@@ -62,6 +63,11 @@ export function ModalShell({ onClose, children, size = 'sm', left, leftStyle, le
 
   const isLg = size === 'lg';
 
+  // Смахивание вниз — только на телефоне и только у закрываемых окон (гейт
+  // обязан остаться на экране). Тот же requestClose, что у крестика.
+  const cardRef = useRef<HTMLDivElement>(null);
+  useSheetDrag(cardRef, requestClose, dismissible);
+
   return createPortal(
     <div
       className={leaving ? 'v-overlay is-leaving' : 'v-overlay'}
@@ -69,6 +75,7 @@ export function ModalShell({ onClose, children, size = 'sm', left, leftStyle, le
       onClick={() => { if (closeOnBackdrop) requestClose(); }}
     >
       <div
+        ref={cardRef}
         className={isLg ? 'v-modal v-modal-lg' : 'v-modal'}
         onClick={e => e.stopPropagation()}
         onKeyDown={submit}

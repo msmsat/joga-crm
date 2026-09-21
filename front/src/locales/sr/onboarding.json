@@ -93,6 +93,7 @@
       "relax": "Спа и опуштање",
       "other": "Друго"
     },
+    "all": "Sve",
     "selectAll": "Изабери цео одељак"
   },
   "contact": {
@@ -119,7 +120,6 @@
     "currencyNotFound": "Није пронађена ниједна валута",
     "dateFormatLabel": "Формат датума",
     "dateFormatPlaceholder": "Формат",
-    "firstDayLabel": "Први дан недеље",
     "currencies": {
       "AED": "Дирхам УАЕ",
       "ALL": "Албански лек",

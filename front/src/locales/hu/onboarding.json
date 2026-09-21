@@ -93,6 +93,7 @@
       "relax": "Spa és pihenés",
       "other": "Egyéb"
     },
+    "all": "Mind",
     "selectAll": "Teljes szakasz kijelölése"
   },
   "contact": {
@@ -119,7 +120,6 @@
     "currencyNotFound": "Nincs ilyen pénznem",
     "dateFormatLabel": "Dátumformátum",
     "dateFormatPlaceholder": "Formátum",
-    "firstDayLabel": "A hét első napja",
     "currencies": {
       "AED": "EAE-dirham",
       "ALL": "Albán lek",

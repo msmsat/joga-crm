@@ -175,7 +175,6 @@
     "serviceAction": "QR kód služby"
   },
   "auth": {
-    "noAccount": "Nemáte účet?",
     "haveAccount": "Už máte účet?",
     "welcomeBack": "Vítejte zpět",
     "choosePassword": "Vytvořte nové heslo",
@@ -185,9 +184,7 @@
     "codeSent": "Kód byl odeslán na {{identifier}}",
     "googleFailed": "Přihlášení přes Google se nezdařilo",
     "googleAccountMissing": "Pro tuto adresu Google zatím neexistuje účet. Vytvoříme ho po přijetí dokumentů.",
-    "divider": "nebo se přihlaste přes",
     "codeFromEmail": "Kód z e-mailu",
-    "rememberMe": "Zapamatovat si mě",
     "forgotPassword": "Zapomněli jste heslo?",
     "signInSystem": "Přihlásit se",
     "sendInstructions": "Odeslat pokyny",
@@ -197,12 +194,9 @@
     "nameSub": "Jméno nebo přezdívka — je to na vás",
     "accountCreated": "Účet byl vytvořen. Na {{email}} jsme poslali potvrzovací e-mail.",
     "dashboard": "Přejít na přehled",
-    "or": "nebo",
-    "registerByEmail": "Registrovat se e-mailem",
     "displayNamePlaceholder": "Například: Anna, Max, MajitelStudia",
     "displayNameHint": "Toto jméno se zobrazí v rozhraní a oznámeních. Můžete ho změnit v nastavení.",
     "codeSix": "Zadejte šestimístný kód",
-    "users": "firem již používá Veloru",
     "strength": {
       "weak": "Slabé",
       "medium": "Střední",

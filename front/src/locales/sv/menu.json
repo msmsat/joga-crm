@@ -38,6 +38,11 @@
   "badge": {
     "beta": "BETA"
   },
+  "more": {
+    "title": "Alla avsnitt",
+    "business": "Verksamhet",
+    "comms": "Kunder och kommunikation"
+  },
   "navbar": {
     "create": "Skapa"
   },

@@ -38,6 +38,11 @@
   "badge": {
     "beta": "BETA"
   },
+  "more": {
+    "title": "Alle seksjoner",
+    "business": "Forretning",
+    "comms": "Kunder og kommunikasjon"
+  },
   "navbar": {
     "create": "Opprett"
   },

@@ -38,6 +38,11 @@
   "badge": {
     "beta": "BETA"
   },
+  "more": {
+    "title": "Të gjitha seksionet",
+    "business": "Biznesi",
+    "comms": "Klientët dhe komunikimi"
+  },
   "navbar": {
     "create": "Krijo"
   },

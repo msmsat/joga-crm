@@ -93,6 +93,7 @@
       "relax": "Spa dhe relaks",
       "other": "Tjetër"
     },
+    "all": "Të gjitha",
     "selectAll": "Zgjidh të gjithë seksionin"
   },
   "contact": {
@@ -119,7 +120,6 @@
     "currencyNotFound": "Nuk u gjet asnjë monedhë",
     "dateFormatLabel": "Formati i datës",
     "dateFormatPlaceholder": "Formati",
-    "firstDayLabel": "Dita e parë e javës",
     "currencies": {
       "AED": "Dirhami i Emirateve të Bashkuara Arabe",
       "ALL": "Leku shqiptar",

@@ -93,6 +93,7 @@
       "relax": "Spa ve dinlenme",
       "other": "Diğer"
     },
+    "all": "Tümü",
     "selectAll": "Tüm bölümü seç"
   },
   "contact": {
@@ -119,7 +120,6 @@
     "currencyNotFound": "Para birimi bulunamadı",
     "dateFormatLabel": "Tarih biçimi",
     "dateFormatPlaceholder": "Biçim",
-    "firstDayLabel": "Haftanın ilk günü",
     "currencies": {
       "AED": "Birleşik Arap Emirlikleri dirhemi",
       "ALL": "Arnavutluk leki",

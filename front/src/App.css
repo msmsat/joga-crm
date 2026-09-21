@@ -1816,8 +1816,10 @@
    Цель: панель навигации (.ob-footer) всегда видна, контент шага скроллится,
    а на совсем низких экранах ужимаем отступы и прячем декоративную иллюстрацию.
    ========================================= */
+/* Отпускать высоту модалки на низких экранах больше не нужно: она задана
+   одним значением (Onboarding.tsx, height: min(720px, 100dvh - 40px)) и сама
+   ужимается по экрану. Остались только поля. */
 @media (max-height: 760px) {
-  .ob-modal { min-height: 0 !important; }
   .ob-left  { padding: 28px 30px !important; }
   .ob-right { padding: 28px 32px !important; }
 }
@@ -2816,7 +2818,17 @@
   .topbar-head { flex: 1 1 auto !important; }
   .topbar-actions { flex: 0 0 auto !important; }
   .topbar-actions > button { margin-right: 0 !important; }
-  .topbar-actions > button:first-child { margin-right: 8px !important; }
+  /* Кнопка ассистента остаётся С ПОДПИСЬЮ «AI»: одна «искра» — тот же символ,
+     что у пункта «Velora AI» в меню, и по иконке было не понять, что делает
+     верхняя кнопка. Со словом модель читается сразу: снизу — куда перейти,
+     «+» — что создать, «✦ AI» — ассистент. «+» остаётся квадратной: что
+     делает плюс, объяснять не нужно. */
+  .topbar-actions > button:first-child {
+    margin-right: 8px !important;
+    padding: 0 11px !important;
+    width: auto;
+  }
+  .topbar-actions > button:first-child .tb-label { display: inline; font-size: 12.5px; }
 
   /* ── Сетки: две колонки только там, где значение коротко ─────────────── */
   .grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -3151,98 +3163,184 @@
   text-align: center;
 }
 
-/* ── Шит «Ещё» ──────────────────────────────────────────────────────────── */
-.msheet-overlay {
+/* ── Панель «Ещё» ────────────────────────────────────────────────────────────
+   Не шит снизу во весь экран: тот читался как отдельная страница, а не как
+   меню. Панель выезжает СПРАВА и упирается в нижнюю навигацию, не накрывая её.
+   Этаж ниже .mnav (150) — и это главное в блоке: навигация остаётся видимой и
+   нажимаемой, поэтому «Ещё» закрывается вторым тапом по той же кнопке, а не
+   поиском крестика. Полоса слева от панели (затемнение) — тоже «закрыть». */
+.mdrawer-scrim {
   position: fixed;
-  inset: 0;
-  z-index: 180;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: var(--mnav-safe, 60px);
+  z-index: 140;
+  background: rgba(0,0,0,0.38);
+  animation: mdrawer-tint 0.2s ease both;
+}
+@keyframes mdrawer-tint { from { opacity: 0 } to { opacity: 1 } }
+
+.mdrawer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(84%, 360px);
   display: flex;
-  align-items: flex-end;
-  background: rgba(0,0,0,0.44);
-  animation: msheet-tint 0.2s ease both;
-}
-@keyframes msheet-tint { from { opacity: 0 } to { opacity: 1 } }
-
-.msheet {
-  width: 100%;
-  max-height: 82dvh;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  padding: 0 14px calc(var(--mnav-safe, 60px) + 14px);
+  flex-direction: column;
   background: var(--bg-card);
-  border-radius: 22px 22px 0 0;
-  box-shadow: 0 -24px 64px -12px rgba(0,0,0,0.28);
-  animation: msheet-up 0.32s cubic-bezier(0.32, 0.72, 0, 1) both;
+  border-left: 1px solid var(--border);
+  border-radius: 20px 0 0 20px;
+  box-shadow: -18px 0 52px -12px rgba(0,0,0,0.3);
+  /* backwards, а не both: с заливкой вперёд анимация продолжала держать
+     transform и перебивала инлайновый стиль — свайп вправо не сдвигал панель
+     (та же засада, что у шитов модалок, см. .v-modal в телефонном блоке). */
+  animation: mdrawer-in 0.3s cubic-bezier(0.32, 0.72, 0, 1) backwards;
   transition: transform 0.24s cubic-bezier(0.32, 0.72, 0, 1);
+  /* Вертикаль отдаём браузеру (список скроллится), горизонталь оставляем себе:
+     свайп вправо закрывает панель. */
+  touch-action: pan-y;
 }
-@keyframes msheet-up { from { transform: translateY(100%) } to { transform: translateY(0) } }
+@keyframes mdrawer-in { from { transform: translateX(100%) } to { transform: translateX(0) } }
 
-/* «Ручка» — она же зона свайпа вниз, поэтому у неё своя высота, а не 4px */
-.msheet-grip {
+/* Шапка: человек должен видеть, ЧТО он открыл, а не гадать по полоске. */
+.mdrawer-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-shrink: 0;
+  padding: 15px 14px 9px;
+}
+.mdrawer-title {
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+  color: var(--onyx);
+}
+.mdrawer-close {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 26px;
-  margin-bottom: 6px;
-  cursor: grab;
-  touch-action: none;
-}
-.msheet-grip span {
-  width: 38px;
-  height: 4px;
-  border-radius: 4px;
-  background: rgba(var(--ink),0.16);
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  border: none;
+  border-radius: 9px;
+  background: rgba(var(--ink),0.05);
+  color: var(--text3);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.msheet-grid {
+.mdrawer-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 0 12px 14px;
+}
+
+.mdrawer-group + .mdrawer-group { margin-top: 16px; }
+.mdrawer-gtitle {
+  margin: 0 0 8px 4px;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--text3);
+}
+
+/* Крупные плитки — только для первой группы: в эти разделы заходят каждый
+   день, и именно они должны ловить взгляд раньше остальных строк. */
+.mdrawer-tiles {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
 }
-
-.msheet-item {
+.mdrawer-tile {
   display: flex;
-  align-items: center;
-  gap: 10px;
-  min-height: 50px;
-  padding: 0 14px;
+  flex-direction: column;
+  justify-content: center;
+  gap: 9px;
+  min-height: 76px;
+  padding: 12px;
   border-radius: 14px;
-  background: rgba(var(--ink),0.03);
+  background: rgba(var(--ink),0.035);
   color: var(--text2);
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 12.5px;
+  font-weight: 700;
   text-decoration: none;
   -webkit-tap-highlight-color: transparent;
   transition: background 0.18s ease, color 0.18s ease;
 }
-.msheet-item .nav-icon { width: 18px; height: 18px; opacity: 0.75; flex-shrink: 0; }
-.msheet-item span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.msheet-item:active { background: rgba(252,174,145,0.14); }
-.msheet-item.active { background: rgba(252,174,145,0.15); color: var(--accent2); }
-.msheet-item.active .nav-icon { opacity: 1; }
+.mdrawer-tile .nav-icon { width: 20px; height: 20px; opacity: 0.8; }
+.mdrawer-tile span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mdrawer-tile:active { background: rgba(252,174,145,0.14); }
+.mdrawer-tile.active { background: rgba(252,174,145,0.15); color: var(--accent2); }
+.mdrawer-tile.active .nav-icon { opacity: 1; }
 
-/* Аккаунт внизу шита — та же плитка, что в боковом меню. */
-.msheet-account {
-  margin-top: 12px;
-  padding-top: 12px;
+.mdrawer-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.mdrawer-row {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-height: 48px;
+  padding: 6px 10px;
+  border-radius: 12px;
+  color: var(--text2);
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+.mdrawer-row .nav-icon { width: 18px; height: 18px; opacity: 0.7; flex-shrink: 0; }
+.mdrawer-row-text { display: flex; flex-direction: column; min-width: 0; }
+.mdrawer-row-label {
+  font-size: 13px;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.mdrawer-row-sub {
+  margin-top: 1px;
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--text3);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.mdrawer-row:active { background: rgba(252,174,145,0.14); }
+.mdrawer-row.active { background: rgba(252,174,145,0.15); color: var(--accent2); }
+.mdrawer-row.active .nav-icon { opacity: 1; }
+
+/* Аккаунт — та же плитка, что в боковом меню, но ПРИКЛЕЕН к нижнему краю:
+   лежит рядом с .mdrawer-body, а не внутри него, поэтому не уезжает вместе со
+   списком разделов и не обрезается его скроллом. Список студий и «Выйти»
+   всплывают над плиткой (.user-menu-panel: absolute, bottom: 100%) — кнопка
+   остаётся на месте, меню раскрывается вверх поверх разделов. Своя заливка
+   обязательна: под плиткой проезжает прокручиваемый список. */
+.mdrawer-account {
+  flex-shrink: 0;
+  padding: 10px 12px 12px;
   border-top: 1px solid var(--border);
+  background: var(--bg-card);
 }
 
-/* Список студий и «Выйти» встают в поток шита, а не всплывают над плиткой:
-   всплывающая панель (position: absolute, bottom: 100%) обрезалась бы
-   собственным скроллом шита (overflow-y: auto), и до выхода из аккаунта было
-   не добраться. В потоке шит просто становится выше и доскролливается. */
-.msheet-account .user-menu-panel {
-  position: static;
-  margin-top: 8px;
-  animation: none;
-  box-shadow: none;
-  background: transparent;
+/* Панель открывается только с телефона, но остаться открытой при повороте в
+   планшетную ширину не должна — прячем тем же приёмом, что и саму .mnav. */
+@media (min-width: 768px) {
+  .mdrawer-scrim { display: none; }
 }
-.msheet-account .user-menu-list { max-height: none; }
 
 @media (prefers-reduced-motion: reduce) {
-  .msheet, .msheet-overlay { animation: none; }
+  .mdrawer, .mdrawer-scrim { animation: none; }
   .mnav-icon { transition: none; }
 }
 
@@ -3266,7 +3364,14 @@
     max-width: 100% !important;
     max-height: 92dvh !important;
     border-radius: 22px 22px 0 0 !important;
-    animation: v-sheet-in 0.32s cubic-bezier(0.32, 0.72, 0, 1) both !important;
+    /* backwards, а НЕ both, и это не косметика: анимация с forwards-заливкой
+       продолжает держать свои свойства после окончания и перебивает обычный
+       инлайновый стиль (в каскаде анимации выше «normal author»). Пока здесь
+       стояло both, `transform` карточки был занят навсегда, и смахивание вниз
+       (useSheetDrag) физически не могло её сдвинуть — жест отрабатывал, шит
+       стоял. Кадр `to` и так совпадает с обычным состоянием (opacity: 1,
+       transform: none), поэтому заливка вперёд тут ничего не держала. */
+    animation: v-sheet-in 0.32s cubic-bezier(0.32, 0.72, 0, 1) backwards !important;
   }
   .v-overlay.is-leaving .v-modal { animation: v-sheet-out 0.22s ease both !important; }
 

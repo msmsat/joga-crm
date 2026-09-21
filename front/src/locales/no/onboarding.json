@@ -93,6 +93,7 @@
       "relax": "Spa og avslapning",
       "other": "Annet"
     },
+    "all": "Alle",
     "selectAll": "Velg hele seksjonen"
   },
   "contact": {
@@ -119,7 +120,6 @@
     "currencyNotFound": "Fant ingen valuta",
     "dateFormatLabel": "Datoformat",
     "dateFormatPlaceholder": "Format",
-    "firstDayLabel": "Første dag i uken",
     "currencies": {
       "AED": "Emiratarabiske dirham",
       "ALL": "Albanske lek",

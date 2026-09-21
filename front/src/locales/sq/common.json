@@ -175,7 +175,6 @@
     "serviceAction": "Kodi QR i shërbimit"
   },
   "auth": {
-    "noAccount": "Nuk keni llogari?",
     "haveAccount": "Keni tashmë një llogari?",
     "welcomeBack": "Mirë se u rikthyet",
     "choosePassword": "Krijoni një fjalëkalim të ri",
@@ -185,9 +184,7 @@
     "codeSent": "Kodi u dërgua te {{identifier}}",
     "googleFailed": "Identifikimi me Google dështoi",
     "googleAccountMissing": "Nuk ka ende llogari për këtë adresë Google. Do ta krijojmë pasi të pranoni dokumentet.",
-    "divider": "ose hyni me",
     "codeFromEmail": "Kodi nga emaili",
-    "rememberMe": "Më mbaj të identifikuar",
     "forgotPassword": "Harruat fjalëkalimin?",
     "signInSystem": "Hyni",
     "sendInstructions": "Dërgo udhëzimet",
@@ -197,12 +194,9 @@
     "nameSub": "Emër ose pseudonim — zgjedhja juaj",
     "accountCreated": "Llogaria u krijua. Dërguam një email konfirmimi te {{email}}.",
     "dashboard": "Shko te paneli",
-    "or": "ose",
-    "registerByEmail": "Regjistrohu me email",
     "displayNamePlaceholder": "P.sh.: Ana, Max, Pronari",
     "displayNameHint": "Ky emër shfaqet në ndërfaqe dhe njoftime. Mund ta ndryshoni te cilësimet.",
     "codeSix": "Vendosni kodin me 6 shifra",
-    "users": "biznese përdorin tashmë Velora",
     "strength": {
       "weak": "Dobët",
       "medium": "Mesatar",

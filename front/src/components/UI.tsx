@@ -1,5 +1,5 @@
 // ─── В самом верху UI.tsx ───
-import { GoogleIcon, Droplet, Comb, Dumbbell, Sparkle, Scissors } from "./Icons"; // 🔥 Убрали неиспользуемый IconProps
+import { GoogleIcon } from "./Icons";
 import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import type { ReactNode, FocusEvent } from "react";
 import { createPortal } from "react-dom";
@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import { placePopover } from "./ui/popoverPosition";
 import { LANGUAGES } from "../utils/lang";
 import { CURRENCIES, getCurrencySymbol } from "../utils/currency";
+import { TIMEZONES } from "../utils/timezones";
 
 import PhoneInput, { isSupportedCountry } from 'react-phone-number-input/input';
 import type { Country } from 'react-phone-number-input';
@@ -210,25 +211,6 @@ export function StepDots({ current, total }: { current: number; total: number })
   );
 }
 
-// ─── IDENTIFIER TABS ──────────────────────────────────────────────────────────
-export type IdentifierMode = "email" | "phone";
-export function IdentifierTabs({ active, onChange }: { active: IdentifierMode; onChange: (m: IdentifierMode) => void }) {
-  const { t } = useTranslation();
-  const tabs: { key: IdentifierMode; label: string }[] = [
-    { key: "email", label: "Email" }, 
-    { key: "phone", label: t("fields.phone") }
-  ];
-  return (
-    <div style={{ display: "flex", background: "rgba(var(--ink),0.04)", borderRadius: "10px", padding: "3px", gap: "2px" }}>
-      {tabs.map((t) => (
-        <button key={t.key} onClick={() => onChange(t.key)} style={{ flex: 1, padding: "8px 12px", border: "none", borderRadius: "8px", fontSize: "13px", fontWeight: active === t.key ? 700 : 500, color: active === t.key ? "var(--onyx)" : "var(--muted)", background: active === t.key ? "var(--bg-card)" : "transparent", boxShadow: active === t.key ? "0 1px 6px rgba(26,26,26,0.08)" : "none", cursor: "pointer", transition: "all 0.2s ease" }}>
-          {t.label}
-        </button>
-      ))}
-    </div>
-  );
-}
-
 // ─── BUTTONS & DIVIDERS ───────────────────────────────────────────────────────
 export function GoogleBtn({ onClick }: { onClick: () => void }) {
   const { t } = useTranslation("cookies");
@@ -283,31 +265,7 @@ export function Checkbox({ checked, onChange, label }: {
   );
 }
 
-// ─── EXTRA UI (Social Proof & Password Strength) ──────────────────────────────
-// Общий набор иконок ниш для avatar-рядов лендинга/входа/регистрации —
-// один и тот же ряд использует и SocialProof (тут), и герой лендинга.
-export const CATEGORY_ICONS = [Droplet, Comb, Dumbbell, Sparkle, Scissors];
-
-export function SocialProof() {
-  const { t } = useTranslation();
-  return (
-    <div style={{ display: "flex", alignItems: "center", gap: "12px", justifyContent: "center" }}>
-      <div style={{ display: "flex" }}>
-        {CATEGORY_ICONS.map((IconComp, i) => (
-          <div key={i} style={{ width: "26px", height: "26px", borderRadius: "50%", background: `linear-gradient(135deg, rgba(252,174,145,0.8), rgba(249,160,139,0.8))`, border: "1.5px solid white", marginLeft: i > 0 ? "-6px" : "0", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 6px rgba(0,0,0,0.08)" }}>
-            <IconComp width={12} height={12} style={{ color: "#fff" }} />
-          </div>
-        ))}
-      </div>
-      <p style={{ fontSize: "12px", color: "var(--muted)", margin: 0 }}><strong style={{ color: "var(--onyx)", fontWeight: 700 }}>2 400+</strong> {t("auth.users")}</p>
-      <div style={{ display: "flex", alignItems: "center", gap: "3px", padding: "3px 8px", background: "rgba(163,201,168,0.12)", borderRadius: "100px", border: "1px solid rgba(163,201,168,0.28)" }}>
-        <span style={{ color: "var(--pistachio)", fontSize: "10px" }}>★</span>
-        <span style={{ fontWeight: 700, fontSize: "11px", color: "var(--onyx)" }}>4.9</span>
-      </div>
-    </div>
-  );
-}
-
+// ─── EXTRA UI (Password Strength) ─────────────────────────────────────────────
 export function PasswordStrength({ password }: { password: string }) {
   const { t } = useTranslation();
   if (!password) return null;
@@ -405,6 +363,31 @@ export const IconUser = () => <svg width="16" height="16" viewBox="0 0 16 16" fi
 export const IconLock = () => <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="3" y="7" width="10" height="7.5" rx="2" stroke="currentColor" strokeWidth="1.4" /><path d="M5.5 7V5C5.5 3.61929 6.61929 2.5 8 2.5C9.38071 2.5 10.5 3.61929 10.5 5V7" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" /><circle cx="8" cy="10.5" r="1" fill="currentColor" /></svg>;
 export const IconEyeOpen = () => <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8C2 8 4 3 8 3C12 3 14 8 14 8C14 8 12 13 8 13C4 13 2 8 2 8Z" stroke="currentColor" strokeWidth="1.4" /><circle cx="8" cy="8" r="2" stroke="currentColor" strokeWidth="1.4" /><path d="M2 2L14 14" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" /></svg>;
 export const IconEyeClosed = () => <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8C2 8 4 3 8 3C12 3 14 8 14 8C14 8 12 13 8 13C4 13 2 8 2 8Z" stroke="currentColor" strokeWidth="1.4" /><circle cx="8" cy="8" r="2" stroke="currentColor" strokeWidth="1.4" /></svg>;
+
+/**
+ * «Показать пароль» — глазком, один на все формы (вход, регистрация, join).
+ *
+ * Словом («Показать» / «Скрыть») он не помещался: поле отводит правому слоту
+ * ровно 44px (InputField, paddingRight), а перевод длиннее — по-немецки это
+ * «Anzeigen». Подпись вылезала из слота, и пароль уезжал под неё. Иконка
+ * влезает в слот при любом языке, а слово остаётся там, где оно и нужно, —
+ * в aria-label для тех, кто слушает страницу.
+ */
+export function PasswordEye({ shown, onToggle }: { shown: boolean; onToggle: () => void }) {
+  const { t } = useTranslation();
+  return (
+    <button
+      type="button"
+      className="btn-icon-clear"
+      aria-label={shown ? t("join:fields.hide") : t("join:fields.show")}
+      aria-pressed={shown}
+      onClick={onToggle}
+      style={{ width: "28px", height: "28px", borderRadius: "8px", color: shown ? "var(--peach)" : "var(--muted)" }}
+    >
+      {shown ? <IconEyeOpen /> : <IconEyeClosed />}
+    </button>
+  );
+}
 
 // ─── ERROR ALERT (Красивый блок ошибки) ───────────────────────────────────────
 export function ErrorAlert({ message }: { message?: string }) {
@@ -512,66 +495,11 @@ export const ACTIVITY_TYPES = ACTIVITY_SECTIONS.flatMap(s => s.items);
 export const sectionOfActivity = (id: string) =>
   ACTIVITY_SECTIONS.find(s => s.items.includes(id))?.id;
 
-export const WEEK_START_OPTIONS = [
-  { value: "monday" },
-  { value: "sunday" },
-];
-
-// Все целые офсеты, по порядку и без дыр: начинаем с Праги (UTC+1) и идём на
-// запад — Лондон, Нью-Йорк, Гавайи (-11), за линией перемены дат +14 и обратно
-// домой через +2, соседний с первым. Список значений обязан совпадать с Literal
-// Timezone в back/schemas/settings/general.py. Получасовых поясов (+5:30) нет
-// намеренно: офсет парсится как int часов (services/daily_notify.py:_studio_tz).
-//
-// Города НЕ переводятся и живут здесь, а не в локалях. Это имена собственные:
-// в пикере часовых поясов их держат латиницей все, а двадцать две копии одного
-// списка — ровно то, из-за чего эти подписи годами оставались с набором городов
-// от Калининграда до Камчатки. Один список — одно место, где его чинить.
-//
-// Офсеты стандартные, зимние: Прага — UTC+1, летом фактически +2. Так же было
-// и раньше; пикер выбирает пояс, а не текущее смещение.
-const TIMEZONE_CITIES: [string, string][] = [
-  ["UTC+1", "Prague, Berlin, Paris"],
-  ["UTC+0", "London, Lisbon, Dublin"],
-  ["UTC-1", "Azores, Cape Verde"],
-  ["UTC-2", "Fernando de Noronha"],
-  ["UTC-3", "Buenos Aires, São Paulo"],
-  ["UTC-4", "Halifax, Santiago"],
-  ["UTC-5", "New York, Toronto, Miami"],
-  ["UTC-6", "Chicago, Dallas, Mexico City"],
-  ["UTC-7", "Denver, Phoenix, Calgary"],
-  ["UTC-8", "Los Angeles, Seattle, Vancouver"],
-  ["UTC-9", "Anchorage"],
-  ["UTC-10", "Honolulu"],
-  ["UTC-11", "Pago Pago, Niue"],
-  ["UTC+14", "Kiritimati"],
-  ["UTC+13", "Apia, Nuku'alofa"],
-  ["UTC+12", "Auckland, Suva"],
-  ["UTC+11", "Nouméa, Honiara"],
-  ["UTC+10", "Sydney, Brisbane, Guam"],
-  ["UTC+9", "Tokyo, Seoul"],
-  ["UTC+8", "Singapore, Hong Kong, Beijing"],
-  ["UTC+7", "Bangkok, Jakarta, Hanoi"],
-  ["UTC+6", "Dhaka, Bishkek"],
-  // Казахстан перешёл на UTC+5 в марте 2024 — здесь Алматы стоял в +6.
-  ["UTC+5", "Tashkent, Almaty, Karachi"],
-  ["UTC+4", "Dubai, Baku, Tbilisi"],
-  ["UTC+3", "Istanbul, Nairobi, Riyadh"],
-  ["UTC+2", "Kyiv, Athens, Helsinki"],
-];
-
-export const TIMEZONES = TIMEZONE_CITIES.map(([value, cities]) => ({
-  value,
-  label: `${cities} (${value})`,
-}));
-
-// Стартовый пояс = пояс браузера: человеку остаётся согласиться, а не искать свой.
-// Дробные пояса (+5:30) обрезаем до целого — в списке только целые.
-export const browserTimezone = (): string => {
-  const hours = Math.trunc(-new Date().getTimezoneOffset() / 60);
-  const value = `UTC${hours >= 0 ? "+" : ""}${hours}`;
-  return TIMEZONES.some(tz => tz.value === value) ? value : "UTC+0";
-};
+// Часовые пояса переехали в utils/timezones.ts — по той же причине, что и
+// LANGUAGES с CURRENCIES: таблицу читает самопроверка на голом node, которой
+// нельзя импортировать модуль с JSX. Реэкспорт оставлен, чтобы не менять
+// импорты страниц (StepSettings, GeneralTab, Onboarding).
+export { TIMEZONES, browserTimezone } from "../utils/timezones";
 
 // Все поддерживаемые языки интерфейса находятся в utils/lang.ts — это источник
 // истины для настроек, онбординга и лендинга. Реэкспорт оставлен, чтобы не

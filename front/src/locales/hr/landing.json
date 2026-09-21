@@ -5,9 +5,9 @@
     "pricing": "Cijene",
     "faq": "Česta pitanja",
     "login": "Prijavite se",
-    "startShort": "Počnite",
     "startFull": "Počnite besplatno",
-    "language": "Jezik"
+    "language": "Jezik",
+    "sections": "Odjeljci"
   },
   "hero": {
     "badge": "Novi CRM standard za 2026.",

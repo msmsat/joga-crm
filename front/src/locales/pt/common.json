@@ -175,7 +175,6 @@
     "serviceAction": "Código QR do serviço"
   },
   "auth": {
-    "noAccount": "Não tem uma conta?",
     "haveAccount": "Já tem uma conta?",
     "welcomeBack": "Bem-vindo de volta",
     "choosePassword": "Crie uma nova palavra-passe",
@@ -185,9 +184,7 @@
     "codeSent": "O código foi enviado para {{identifier}}",
     "googleFailed": "Não foi possível iniciar sessão com Google",
     "googleAccountMissing": "Ainda não existe uma conta para este endereço Google. Iremos criá-la depois de aceitar os documentos.",
-    "divider": "ou inicie sessão com",
     "codeFromEmail": "Código do e-mail",
-    "rememberMe": "Lembrar-me",
     "forgotPassword": "Esqueceu-se da palavra-passe?",
     "signInSystem": "Iniciar sessão",
     "sendInstructions": "Enviar instruções",
@@ -197,12 +194,9 @@
     "nameSub": "Nome ou alcunha — a escolha é sua",
     "accountCreated": "A conta foi criada. Enviámos um e-mail de confirmação para {{email}}.",
     "dashboard": "Ir para o painel",
-    "or": "ou",
-    "registerByEmail": "Registar com e-mail",
     "displayNamePlaceholder": "Por exemplo: Ana, Max, DonoDoEstúdio",
     "displayNameHint": "Este nome aparece na interface e nas notificações. Pode alterá-lo nas definições.",
     "codeSix": "Introduza o código de 6 dígitos",
-    "users": "empresas já utilizam o Velora",
     "strength": {
       "weak": "Fraca",
       "medium": "Média",

@@ -5,9 +5,9 @@
     "pricing": "Tarifs",
     "faq": "FAQ",
     "login": "Se connecter",
-    "startShort": "Commencer",
     "startFull": "Essayer gratuitement",
-    "language": "Langue"
+    "language": "Langue",
+    "sections": "Sections"
   },
   "hero": {
     "badge": "La nouvelle référence CRM en 2026",

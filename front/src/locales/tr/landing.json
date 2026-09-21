@@ -5,9 +5,9 @@
     "pricing": "Fiyatlandırma",
     "faq": "Sık sorulan sorular",
     "login": "Giriş yap",
-    "startShort": "Başla",
     "startFull": "Ücretsiz başla",
-    "language": "Dil"
+    "language": "Dil",
+    "sections": "Bölümler"
   },
   "hero": {
     "badge": "2026'nın yeni CRM standardı",

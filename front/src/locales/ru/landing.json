@@ -5,9 +5,9 @@
     "pricing": "Тарифы",
     "faq": "Вопросы",
     "login": "Войти",
-    "startShort": "Начать",
     "startFull": "Начать бесплатно",
-    "language": "Язык"
+    "language": "Язык",
+    "sections": "Разделы"
   },
   "hero": {
     "badge": "Новый стандарт CRM в 2026",

@@ -5,9 +5,9 @@
     "pricing": "Priser",
     "faq": "Vanliga frågor",
     "login": "Logga in",
-    "startShort": "Starta",
     "startFull": "Starta gratis",
-    "language": "Språk"
+    "language": "Språk",
+    "sections": "Avsnitt"
   },
   "hero": {
     "badge": "Den nya CRM-standarden 2026",

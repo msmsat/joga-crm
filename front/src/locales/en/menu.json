@@ -38,6 +38,11 @@
   "badge": {
     "beta": "BETA"
   },
+  "more": {
+    "title": "All sections",
+    "business": "Business",
+    "comms": "Clients and communications"
+  },
   "navbar": {
     "create": "Create"
   },

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { LANGUAGES, rememberLang } from "../../../utils/lang";
+import { Flag } from "./Flag";
 import { EASE } from "./tokens";
 
 /**
@@ -58,16 +59,14 @@ export function LangSwitch() {
             : "border-white/12 text-white/70 hover:border-white/25 hover:text-white"
         }`}
       >
-        {/* Глобус, а не флаг: Windows не рисует региональные индикаторы, и
-            «🇬🇧 EN» превращается в «GB EN» — код языка дважды. Флаги остались
-            в списке ниже, рядом с названием языка, где они не дублируются. */}
-        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden className="shrink-0">
-          <circle cx="8" cy="8" r="6.4" stroke="currentColor" strokeWidth="1.3" />
-          <ellipse cx="8" cy="8" rx="2.7" ry="6.4" stroke="currentColor" strokeWidth="1.3" />
-          <path d="M2.1 6h11.8M2.1 10h11.8" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
-        </svg>
+        {/* Флаг выбранного языка, а не глобус: глобус одинаков для всех 22
+            языков и не говорит, на каком сейчас страница. Рисованный SVG
+            (Flag.tsx), а НЕ эмодзи из LANGUAGES: Windows не держит в шрифте
+            региональных индикаторов, и «🇬🇧 EN» превращается там в «GB EN» —
+            код языка дважды. Ради этого глобус здесь когда-то и появился. */}
+        <Flag code={current.value} />
         {/* На телефоне в шапке помещаются логотип, «Войти» и CTA — код языка
-            и стрелка уходят, глобус остаётся: кнопка сжимается до 34px.
+            и стрелка уходят, флаг остаётся: кнопка сжимается до 34px.
             По-немецки строка «Anmelden» длиннее русской, и без этого CTA
             выезжал за правый край на 375px. */}
         <span className="hidden uppercase tracking-[0.06em] sm:inline">{current.value}</span>
@@ -104,7 +103,7 @@ export function LangSwitch() {
                       active ? "bg-[#F9A08B]/12 text-white" : "text-white/60 hover:bg-white/[0.06] hover:text-white"
                     }`}
                   >
-                    <span className="text-[15px] leading-none">{l.flag}</span>
+                    <Flag code={l.value} />
                     <span className="flex-1">{l.label}</span>
                     {active && (
                       <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden className="text-[#F9A08B]">

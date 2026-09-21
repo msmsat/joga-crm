@@ -18,7 +18,8 @@ import { readFileSync, readdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
 import { CURRENCIES, getCurrencySymbol } from "./currency.ts";
-import { FALLBACK_CURRENCY, MAPPED_CURRENCIES, currencyForCountry } from "./geo.ts";
+import { FALLBACK_CURRENCY, MAPPED_CURRENCIES, MAPPED_TIMEZONES, currencyForCountry, timezoneForCountry } from "./geo.ts";
+import { TIMEZONES, browserTimezone, isOfferedTimezone } from "./timezones.ts";
 
 const offered = new Set(CURRENCIES.map(c => c.value));
 assert.equal(offered.size, CURRENCIES.length, "в CURRENCIES повторяется код валюты");
@@ -81,7 +82,40 @@ for (const lang of langs) {
   assert.equal(extra.length, 0, `${lang}/onboarding.json: названия валют, которых нет в CURRENCIES: ${extra.join(", ")}`);
 }
 
+// ─── ЧАСОВЫЕ ПОЯСА ───────────────────────────────────────────────────────────
+// Та же ловушка, что и с валютой: пояс, которого нет в TIMEZONES, оставит селект
+// на шаге «Регион» пустым, и человек пройдёт мимо, не выбрав ничего. Плюс сервер
+// принимает только значения из своего Literal Timezone — чужое он отвергнет уже
+// на сохранении студии, в конце всего мастера.
+const offeredTz = new Set(TIMEZONES.map(tz => tz.value));
+assert.equal(offeredTz.size, TIMEZONES.length, "в TIMEZONES повторяется пояс");
+
+for (const value of MAPPED_TIMEZONES) {
+  assert.ok(offeredTz.has(value), `страна отдаёт ${value}, которого нет в TIMEZONES`);
+}
+
+// Страны основного рынка обязаны попадать точно — из-за них всё и затевалось.
+assert.equal(timezoneForCountry("CZ"), "UTC+1");
+assert.equal(timezoneForCountry("cz"), "UTC+1", "страну сервер может отдать в любом регистре");
+assert.equal(timezoneForCountry("GB"), "UTC+0");
+assert.equal(timezoneForCountry("UA"), "UTC+2");
+assert.equal(timezoneForCountry("TR"), "UTC+3");
+
+// Широкие страны карта обязана НЕ угадывать: там пояс не один, и ответ по коду
+// страны был бы враньём с уверенным видом. null — сигнал взять пояс устройства.
+for (const code of ["US", "RU", "CA", "AU", "BR", "MX", "KZ", "ID"]) {
+  assert.equal(timezoneForCountry(code), null, `${code}: страна с несколькими поясами не должна отвечать`);
+}
+assert.equal(timezoneForCountry(null), null);
+assert.equal(timezoneForCountry(""), null);
+assert.equal(timezoneForCountry("XX"), null);
+
+// Запасной вариант обязан быть годным при любых часах машины: значение из списка.
+assert.ok(isOfferedTimezone(browserTimezone()), "пояс устройства не попал в TIMEZONES");
+
 console.log(
   `geo self-check ok — валют: ${CURRENCIES.length}, стран в карте: ${MAPPED_CURRENCIES.length}, ` +
-  `локалей с названиями: ${langs.length}, по умолчанию ${FALLBACK_CURRENCY}`,
+  `локалей с названиями: ${langs.length}, по умолчанию ${FALLBACK_CURRENCY}; ` +
+  `поясов: ${TIMEZONES.length}, стран с одним поясом: ${MAPPED_TIMEZONES.length}, ` +
+  `пояс устройства сейчас ${browserTimezone()}`,
 );

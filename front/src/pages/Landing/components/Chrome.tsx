@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { LogoMark } from "../../../components/Icons";
-import { getActiveToken } from "../../../utils/auth";
 import { openCookieSettings } from "../../../utils/cookieConsent";
 import { PRIVACY_URL, TERMS_URL, COOKIES_URL, DPA_URL, LEGAL_ENTITY, LEGAL_LINK_PROPS, SUPPORT_WHATSAPP, SUPPORT_WHATSAPP_URL } from "../../../utils/legal";
 import { LangSwitch } from "./LangSwitch";
+import { SectionMenu } from "./SectionMenu";
+import { useEntry } from "./entry";
 
 const LINKS = [
   { href: "#product", key: "product" },
@@ -65,7 +65,6 @@ function Wordmark({ compact = false }: { compact?: boolean }) {
 }
 
 export function LandingNav() {
-  const navigate = useNavigate();
   const { t } = useTranslation("landing");
   const [scrolled, setScrolled] = useState(false);
 
@@ -75,6 +74,8 @@ export function LandingNav() {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  const { toLogin, toRegister } = useEntry();
 
   return (
     // Фон непрозрачный, БЕЗ backdrop-blur. Блюр на липком элементе заставляет
@@ -103,19 +104,21 @@ export function LandingNav() {
         ))}
       </div>
 
+      {/* В шапке ровно одно действие — «Войти». Персиковая кнопка регистрации
+          отсюда убрана: на странице четыре собственных призыва завести аккаунт
+          («Попробовать 30 дней», тарифы, полосы CTA), а в шапке она отнимала
+          место у навигации и заставляла выбирать между двумя дверями. Кто идёт
+          заводить аккаунт — найдёт её в меню разделов или на форме входа. */}
       <div className="flex items-center gap-2">
         <LangSwitch />
+        {/* Ряд ссылок выше появляется только с 1024px; ниже навигация по
+            странице — здесь, иначе до тарифов на телефоне только прокруткой. */}
+        <SectionMenu onRegister={toRegister} />
         <button
-          onClick={() => navigate(getActiveToken() ? "/dashboard" : "/login")}
-          className="rounded-lg px-2.5 py-2.5 text-[14px] font-semibold text-white/70 transition-colors hover:text-white sm:px-4"
+          onClick={toLogin}
+          className="rounded-lg border border-white/12 px-3 py-2 text-[14px] font-semibold text-white/80 transition-colors duration-300 hover:border-white/25 hover:text-white sm:px-4"
         >
           {t("nav.login")}
-        </button>
-        <button className="btn btn-primary btn-size-normal" onClick={() => navigate("/register")}>
-          {/* Две подписи вместо «Начать» + приклеенного суффикса: по-немецки
-              короткая форма — начало фразы, а не её обрезок. */}
-          <span className="sm:hidden">{t("nav.startShort")}</span>
-          <span className="hidden sm:inline">{t("nav.startFull")}</span>
         </button>
       </div>
     </nav>

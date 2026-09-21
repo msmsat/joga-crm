@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useEntry } from "./entry";
 import { useTranslation } from "react-i18next";
 import { LEGAL_LINK_PROPS, SUPPORT_WHATSAPP_URL } from "../../../utils/legal";
 import { Reveal } from "./primitives";
@@ -6,7 +6,8 @@ import { GHOST_ON_DARK } from "./tokens";
 import { GridBg } from "./Illustrations";
 
 export function Cta() {
-  const navigate = useNavigate();
+  // Вошедшему кнопка «попробовать» даёт кабинет, а не форму регистрации.
+  const { toRegister } = useEntry();
   const { t } = useTranslation("landing");
 
   return (
@@ -24,7 +25,7 @@ export function Cta() {
           {t("cta.lead")}
         </p>
         <div className="mt-11 flex flex-wrap justify-center gap-3">
-          <button className="btn btn-primary btn-size-large" onClick={() => navigate("/register")}>
+          <button className="btn btn-primary btn-size-large" onClick={() => toRegister()}>
             {t("cta.register")}
           </button>
           <a href={SUPPORT_WHATSAPP_URL} {...LEGAL_LINK_PROPS} className={GHOST_ON_DARK}>

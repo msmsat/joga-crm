@@ -93,6 +93,7 @@
       "relax": "SPA і релакс",
       "other": "Інше"
     },
+    "all": "Усі",
     "selectAll": "Обрати весь розділ"
   },
   "contact": {
@@ -119,7 +120,6 @@
     "currencyNotFound": "Валюту не знайдено",
     "dateFormatLabel": "Формат дати",
     "dateFormatPlaceholder": "Формат",
-    "firstDayLabel": "Перший день тижня",
     "currencies": {
       "AED": "Дирхам ОАЕ",
       "ALL": "Албанський лек",

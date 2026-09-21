@@ -93,6 +93,7 @@
       "relax": "Spa e relaxamento",
       "other": "Outro"
     },
+    "all": "Todos",
     "selectAll": "Selecionar toda a secção"
   },
   "contact": {
@@ -119,7 +120,6 @@
     "currencyNotFound": "Nenhuma moeda encontrada",
     "dateFormatLabel": "Formato da data",
     "dateFormatPlaceholder": "Formato",
-    "firstDayLabel": "Primeiro dia da semana",
     "currencies": {
       "AED": "Dirham dos Emirados Árabes Unidos",
       "ALL": "Lek albanês",

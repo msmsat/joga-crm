@@ -93,6 +93,7 @@
       "relax": "Spa i relaks",
       "other": "Inne"
     },
+    "all": "Wszystkie",
     "selectAll": "Zaznacz całą sekcję"
   },
   "contact": {
@@ -119,7 +120,6 @@
     "currencyNotFound": "Nie znaleziono waluty",
     "dateFormatLabel": "Format daty",
     "dateFormatPlaceholder": "Format",
-    "firstDayLabel": "Pierwszy dzień tygodnia",
     "currencies": {
       "AED": "Dirham ZEA",
       "ALL": "Lek albański",

@@ -93,6 +93,7 @@
       "relax": "Spa και χαλάρωση",
       "other": "Άλλο"
     },
+    "all": "Όλα",
     "selectAll": "Επιλογή όλης της ενότητας"
   },
   "contact": {
@@ -119,7 +120,6 @@
     "currencyNotFound": "Δεν βρέθηκε νόμισμα",
     "dateFormatLabel": "Μορφή ημερομηνίας",
     "dateFormatPlaceholder": "Μορφή",
-    "firstDayLabel": "Πρώτη μέρα της εβδομάδας",
     "currencies": {
       "AED": "Ντιράμ Ηνωμένων Αραβικών Εμιράτων",
       "ALL": "Λεκ Αλβανίας",

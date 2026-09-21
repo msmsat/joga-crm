@@ -175,7 +175,6 @@
     "serviceAction": "Palvelun QR-koodi"
   },
   "auth": {
-    "noAccount": "Eikö sinulla ole tiliä?",
     "haveAccount": "Onko sinulla jo tili?",
     "welcomeBack": "Tervetuloa takaisin",
     "choosePassword": "Luo uusi salasana",
@@ -185,9 +184,7 @@
     "codeSent": "Koodi lähetettiin osoitteeseen {{identifier}}",
     "googleFailed": "Google-kirjautuminen epäonnistui",
     "googleAccountMissing": "Tälle Google-osoitteelle ei vielä ole tiliä. Luomme sen, kun hyväksyt asiakirjat.",
-    "divider": "tai kirjaudu palvelulla",
     "codeFromEmail": "Koodi sähköpostista",
-    "rememberMe": "Muista minut",
     "forgotPassword": "Unohditko salasanan?",
     "signInSystem": "Kirjaudu sisään",
     "sendInstructions": "Lähetä ohjeet",
@@ -197,12 +194,9 @@
     "nameSub": "Nimi tai lempinimi — sinä päätät",
     "accountCreated": "Tili on luotu. Lähetimme vahvistusviestin osoitteeseen {{email}}.",
     "dashboard": "Siirry hallintapaneeliin",
-    "or": "tai",
-    "registerByEmail": "Rekisteröidy sähköpostilla",
     "displayNamePlaceholder": "Esimerkiksi: Anna, Max, StudioOmistaja",
     "displayNameHint": "Tämä nimi näkyy käyttöliittymässä ja ilmoituksissa. Voit muuttaa sen asetuksissa.",
     "codeSix": "Anna 6-numeroinen koodi",
-    "users": "yritystä käyttää jo Veloraa",
     "strength": {
       "weak": "Heikko",
       "medium": "Keskitaso",

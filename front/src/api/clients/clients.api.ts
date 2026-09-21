@@ -99,7 +99,7 @@ export const clientsApi = {
 
   // ─── CREATE / DELETE ──────────────────────────────────────────────────────
   create: (payload: ClientCreate) =>
-    client.post<ClientCreatedOut>('/clients', payload),
+    client.post<ClientCreatedOut>('/clients/', payload),
 
   delete: (id: number) =>
     client.delete<OkOut>(`/clients/${id}`),

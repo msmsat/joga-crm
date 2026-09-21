@@ -26,6 +26,8 @@ export { ToastProvider, useToast } from './Toast';
 export { Sidebar } from './Sidebar';
 export { MobileNav } from './MobileNav';
 export { Navbar } from './Navbar';
+export { QuickAdd } from './QuickAdd';
+export type { QuickAddProps } from './QuickAdd';
 export { ErrorBoundary } from './ErrorBoundary';
 export { EmptyState } from './EmptyState';
 export type { EmptyStateProps } from './EmptyState';

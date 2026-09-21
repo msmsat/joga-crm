@@ -5,9 +5,9 @@
     "pricing": "Pricing",
     "faq": "FAQ",
     "login": "Log in",
-    "startShort": "Start",
     "startFull": "Start free",
-    "language": "Language"
+    "language": "Language",
+    "sections": "Sections"
   },
   "hero": {
     "badge": "The new CRM standard in 2026",

@@ -17,7 +17,7 @@ import StepSchedule from "./onboarding/StepSchedule";
 import type { OnboardingData } from "./onboarding/types";
 import { DEFAULT_WORKING_HOURS } from "./onboarding/types";
 import { chosenLang, initialLang, rememberLang } from "../../utils/lang";
-import { FALLBACK_CURRENCY, currencyForCountry } from "../../utils/geo";
+import { FALLBACK_CURRENCY, currencyForCountry, timezoneForCountry } from "../../utils/geo";
 import { setActiveToken } from '../../utils/auth';
 import { submitOnEnter } from "../../lib/submitOnEnter";
 
@@ -68,14 +68,21 @@ export default function OnboardingPage() {
     i18n.changeLanguage(data.language);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Страна визита: из неё берутся валюта студии и код в телефонном поле. Ответ
-  // приходит асинхронно, поэтому подставляем валюту ТОЛЬКО пока человек не
-  // трогал селект сам — иначе поздний ответ затёр бы уже сделанный выбор.
-  // Сбой запроса — не беда: в валюте остаётся евро, в телефоне международный
-  // формат. Часовой пояс здесь не трогаем намеренно: браузер знает его точнее
-  // IP — через VPN меняется страна, а часы на машине нет.
+  // Страна визита: из неё берутся валюта студии, часовой пояс и код в
+  // телефонном поле. Ответ приходит асинхронно, поэтому подставляем ТОЛЬКО
+  // пока человек не трогал селект сам — иначе поздний ответ затёр бы уже
+  // сделанный выбор. Сбой запроса — не беда: в валюте остаётся евро, в
+  // телефоне международный формат, в поясе — пояс устройства.
+  //
+  // Пояс по стране, а не по часам машины: настраивают студию, а не ноутбук, и
+  // хозяин вполне может заводить её из отпуска. По коду страны пояс берётся
+  // только там, где он в стране один (utils/geo.timezoneForCountry); для США,
+  // России и прочих «широких» стран карта молчит, и остаётся пояс устройства.
+  // Обратная сторона: через VPN страна чужая — поэтому пояс всегда виден в
+  // селекте на шаге 4, это предложение, а не решение за человека.
   const [visitorCountry, setVisitorCountry] = useState<string | null>(null);
   const currencyPicked = useRef(false);
+  const timezonePicked = useRef(false);
 
   useEffect(() => {
     // Свой запрос, а не общий с detectLanguage: ответ зависит от текущего IP,
@@ -83,15 +90,19 @@ export default function OnboardingPage() {
     void authApi.getLocale().then(res => {
       if (!res.country) return;
       setVisitorCountry(res.country);
-      if (!currencyPicked.current) {
-        setData(d => ({ ...d, currency: currencyForCountry(res.country) }));
-      }
+      const timezone = timezoneForCountry(res.country);
+      setData(d => ({
+        ...d,
+        ...(currencyPicked.current ? {} : { currency: currencyForCountry(res.country) }),
+        ...(timezone && !timezonePicked.current ? { timezone } : {}),
+      }));
     }).catch(() => {});
   }, []);
 
   function patch(update: Partial<OnboardingData>) {
     setData(d => ({ ...d, ...update }));
     if (update.currency) currencyPicked.current = true;
+    if (update.timezone) timezonePicked.current = true;
     if (update.language) {
       rememberLang(update.language);
       i18n.changeLanguage(update.language);
@@ -233,7 +244,13 @@ export default function OnboardingPage() {
       className="velora-modal ob-modal"
       onKeyDown={submitOnEnter(isSubmitting || !canProceedCurrent ? null : (step === 5 ? handleFinish : goNext))}
       style={{
-        width: "100%", maxWidth: "920px", minHeight: "min(560px, calc(100dvh - 40px))", maxHeight: "calc(100dvh - 40px)",
+        // Высота ЗАДАНА, а не «от 560 до экрана»: с плавающей высотой модалка
+        // подпрыгивала на каждое действие внутри шага — раскрыли раздел видов
+        // деятельности, и окно выросло под курсором. Теперь размер один и тот
+        // же на всех пяти шагах, а лишнее прокручивается внутри
+        // (.ob-right-scroll). На телефоне правило `.ob-modal` в App.css ставит
+        // min-height: 100dvh — оно сильнее height, окно остаётся во весь экран.
+        width: "100%", maxWidth: "920px", height: "min(720px, calc(100dvh - 40px))",
         background: "var(--bg)", borderRadius: "24px",
         boxShadow: "0 48px 120px rgba(26,26,26,0.18), 0 8px 32px rgba(26,26,26,0.08)",
         display: "flex", alignItems: "stretch", overflow: "hidden",

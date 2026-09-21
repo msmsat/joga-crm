@@ -175,7 +175,6 @@
     "serviceAction": "QR-kod för tjänsten"
   },
   "auth": {
-    "noAccount": "Har du inget konto?",
     "haveAccount": "Har du redan ett konto?",
     "welcomeBack": "Välkommen tillbaka",
     "choosePassword": "Skapa ett nytt lösenord",
@@ -185,9 +184,7 @@
     "codeSent": "Koden skickades till {{identifier}}",
     "googleFailed": "Google-inloggningen misslyckades",
     "googleAccountMissing": "Det finns ännu inget konto för den här Google-adressen. Vi skapar ett när du har godkänt dokumenten.",
-    "divider": "eller logga in med",
     "codeFromEmail": "Kod från e-post",
-    "rememberMe": "Kom ihåg mig",
     "forgotPassword": "Glömt lösenordet?",
     "signInSystem": "Logga in",
     "sendInstructions": "Skicka instruktioner",
@@ -197,12 +194,9 @@
     "nameSub": "Namn eller smeknamn — du väljer",
     "accountCreated": "Kontot har skapats. Vi skickade ett bekräftelsemejl till {{email}}.",
     "dashboard": "Gå till översikten",
-    "or": "eller",
-    "registerByEmail": "Registrera med e-post",
     "displayNamePlaceholder": "Till exempel: Anna, Max, StudioÄgare",
     "displayNameHint": "Det här namnet visas i gränssnittet och i notiser. Du kan ändra det i inställningarna.",
     "codeSix": "Ange den sexsiffriga koden",
-    "users": "företag använder redan Velora",
     "strength": {
       "weak": "Svag",
       "medium": "Medel",

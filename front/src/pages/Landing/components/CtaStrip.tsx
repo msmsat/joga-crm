@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useEntry } from "./entry";
 import { useTranslation } from "react-i18next";
 
 /**
@@ -7,7 +7,8 @@ import { useTranslation } from "react-i18next";
  * чем пять разных обещаний.
  */
 export function CtaStrip({ note }: { note?: string }) {
-  const navigate = useNavigate();
+  // Вошедшему кнопка «попробовать» даёт кабинет, а не форму регистрации.
+  const { toRegister } = useEntry();
   const { t } = useTranslation("landing");
 
   return (
@@ -18,7 +19,7 @@ export function CtaStrip({ note }: { note?: string }) {
         </p>
         <div>
           <button
-            onClick={() => navigate("/register")}
+            onClick={() => toRegister()}
             className="rounded-xl bg-[#101010] px-8 py-4 text-[15px] font-bold text-white transition-transform duration-300 hover:-translate-y-0.5"
           >
             {t("ctaStrip.button")}

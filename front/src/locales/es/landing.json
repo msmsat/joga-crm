@@ -5,9 +5,9 @@
     "pricing": "Precios",
     "faq": "Preguntas frecuentes",
     "login": "Iniciar sesión",
-    "startShort": "Empezar",
     "startFull": "Probar gratis",
-    "language": "Idioma"
+    "language": "Idioma",
+    "sections": "Secciones"
   },
   "hero": {
     "badge": "El nuevo estándar de CRM en 2026",

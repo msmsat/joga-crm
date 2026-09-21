@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useAIDrawer } from '../../contexts/AIDrawerContext';
 import { useAssistant } from '../../hooks/useAssistant';
 import { getStudioRole } from '../../utils/auth';
+import { QuickAdd } from './QuickAdd';
 
 export interface NavbarProps {
   title: string;
@@ -24,8 +25,17 @@ export function Navbar({ title, subtitle }: NavbarProps) {
   // «+ Создать» ведёт в Журнал — там и создаётся запись (ТЗ 2.0). Раньше здесь
   // висела заглушка с alert(). Тренеру кнопки нет вовсе: расписание меняют
   // владелец и администратор, вести его к экрану, где он ничего не создаст, незачем.
+  //
+  // На ТЕЛЕФОНЕ та же кнопка открывает быстрое создание (QuickAdd): там кнопки
+  // разделов не на виду, и «+» — единственный понятный ответ на «создать что
+  // угодно». На большом экране поведение прежнее — кнопки создания видны внутри
+  // самих разделов, и лишний выбор между ними ничего не экономит.
   const canCreate = getStudioRole() !== 'trainer';
-  const handlePrimaryBtn = () => navigate('/dashboard/journal');
+  const [quickAdd, setQuickAdd] = useState(false);
+  const handlePrimaryBtn = () => {
+    if (window.matchMedia('(max-width: 767px)').matches) setQuickAdd(true);
+    else navigate('/dashboard/journal');
+  };
 
   const [isAiFocused, setIsAiFocused] = useState(false); // Для Glow-эффекта
   const [aiQuery, setAiQuery] = useState(''); // Для текста в инпуте
@@ -392,6 +402,10 @@ export function Navbar({ title, subtitle }: NavbarProps) {
           <span className="tb-label">{t('menu:navbar.create')}</span>
         </button>}
       </div>
+
+      {/* Свой портал внутри ModalShell — иначе окно осталось бы в слое топбара
+          (z-index: 100) и ушло под нижнюю панель телефона. */}
+      {quickAdd && <QuickAdd onClose={() => setQuickAdd(false)} />}
     </div>
   );
 }

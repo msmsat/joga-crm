@@ -21,10 +21,15 @@ const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
  * Google, после него появляется настоящая кнопка (и One Tap). Цвета — из
  * брендбука Google для кнопок входа, поэтому литералами, а не токенами.
  */
-export function GoogleSignIn({ width, onCredential, onError }: {
+export function GoogleSignIn({ width, onCredential, onError, dark = false }: {
   width: number;
   onCredential: (credential: string) => void;
   onError: () => void;
+  /** Кнопка стоит на тёмной подложке (страница входа). Тема БЕРЁТСЯ У GOOGLE
+   *  (`filled_black`), а не подкрашивается нами: настоящая кнопка живёт в
+   *  iframe, снаружи её не перекрасить, да и брендбук Google разрешает ровно
+   *  два вида — светлый на светлом, тёмный на тёмном. */
+  dark?: boolean;
 }) {
   const { t } = useTranslation('cookies');
   const allowed = useConsentGranted('functional');
@@ -37,6 +42,9 @@ export function GoogleSignIn({ width, onCredential, onError }: {
         <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
           <GoogleLogin
             width={String(width)}
+            theme={dark ? 'filled_black' : 'outline'}
+            shape="pill"
+            text="continue_with"
             onSuccess={(response) => {
               if (response.credential) onCredential(response.credential);
             }}
@@ -48,6 +56,10 @@ export function GoogleSignIn({ width, onCredential, onError }: {
     );
   }
 
+  // Своя кнопка до согласия повторяет вид настоящей — включая тёмный вариант:
+  // иначе после клика на месте белой кнопки появлялась бы чёрная.
+  const bg = dark ? '#131314' : '#FFFFFF';
+  const bgHover = dark ? '#28292B' : '#F8FAFF';
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, width, maxWidth: '100%' }}>
       <button
@@ -55,19 +67,29 @@ export function GoogleSignIn({ width, onCredential, onError }: {
         onClick={() => grantConsent('functional', 'google_button')}
         style={{
           width: '100%', height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
-          background: '#FFFFFF', border: '1px solid #DADCE0', borderRadius: 4,
-          color: '#3C4043', fontSize: 14, fontWeight: 500, fontFamily: 'Roboto, Arial, sans-serif',
+          background: bg, border: `1px solid ${dark ? '#3C4043' : '#DADCE0'}`, borderRadius: 100,
+          color: dark ? '#E3E3E3' : '#3C4043', fontSize: 14, fontWeight: 500, fontFamily: 'Roboto, Arial, sans-serif',
           cursor: 'pointer', transition: 'background 0.2s',
         }}
-        onMouseEnter={(e) => { e.currentTarget.style.background = '#F8FAFF'; }}
-        onMouseLeave={(e) => { e.currentTarget.style.background = '#FFFFFF'; }}
+        onMouseEnter={(e) => { e.currentTarget.style.background = bgHover; }}
+        onMouseLeave={(e) => { e.currentTarget.style.background = bg; }}
       >
         <GoogleIcon />
         {t('google.button')}
       </button>
-      <p style={{ margin: 0, fontSize: 11.5, lineHeight: 1.5, color: 'var(--muted)', textAlign: 'center' }}>
+      <p style={{
+        margin: 0, fontSize: 11.5, lineHeight: 1.5, textAlign: 'center',
+        color: dark ? 'rgba(255,255,255,0.45)' : 'var(--muted)',
+      }}>
         {t('google.notice')}{' '}
-        <a href={COOKIES_URL} {...LEGAL_LINK_PROPS} className="text-link">{t('google.policy')}</a>
+        <a
+          href={COOKIES_URL}
+          {...LEGAL_LINK_PROPS}
+          className={dark ? undefined : 'text-link'}
+          style={dark ? { color: '#FCAE91', fontWeight: 600, textDecoration: 'none' } : undefined}
+        >
+          {t('google.policy')}
+        </a>
       </p>
     </div>
   );

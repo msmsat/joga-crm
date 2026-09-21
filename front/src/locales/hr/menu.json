@@ -38,6 +38,11 @@
   "badge": {
     "beta": "BETA"
   },
+  "more": {
+    "title": "Svi odjeljci",
+    "business": "Poslovanje",
+    "comms": "Klijenti i komunikacija"
+  },
   "navbar": {
     "create": "Kreiraj"
   },

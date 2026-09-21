@@ -93,6 +93,7 @@
       "relax": "Spa a relaxace",
       "other": "Jiné"
     },
+    "all": "Vše",
     "selectAll": "Vybrat celou sekci"
   },
   "contact": {
@@ -119,7 +120,6 @@
     "currencyNotFound": "Žádná měna nenalezena",
     "dateFormatLabel": "Formát data",
     "dateFormatPlaceholder": "Formát",
-    "firstDayLabel": "První den týdne",
     "currencies": {
       "AED": "SAE dirham",
       "ALL": "Albánský lek",

@@ -38,6 +38,11 @@
   "badge": {
     "beta": "BEETA"
   },
+  "more": {
+    "title": "Kaikki osiot",
+    "business": "Liiketoiminta",
+    "comms": "Asiakkaat ja viestintä"
+  },
   "navbar": {
     "create": "Luo"
   },

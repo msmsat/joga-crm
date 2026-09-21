@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { CSSProperties } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEntry } from "./entry";
 import { useTranslation } from "react-i18next";
 import { Reveal } from "./primitives";
 import { ChapterHead } from "./ChapterHead";
@@ -39,7 +39,8 @@ const PERIODS = [
 const round2 = (value: number) => Math.round(value * 100) / 100;
 
 export function Pricing() {
-  const navigate = useNavigate();
+  // Вошедшему кнопка «попробовать» даёт кабинет, а не форму регистрации.
+  const { toRegister } = useEntry();
   const { t, i18n } = useTranslation("landing");
   // Открываем на середине линии: и цена входа, и потолок остаются в двух
   // движениях пальца, а не «ползунок в углу, крутите сами».
@@ -193,7 +194,7 @@ export function Pricing() {
                 </div>
 
                 <button
-                  onClick={() => navigate("/register")}
+                  onClick={() => toRegister()}
                   className="mt-6 w-full rounded-xl bg-[#F9A08B] py-3.5 text-[14px] font-bold text-[#101010] transition-transform duration-300 hover:-translate-y-0.5"
                 >
                   {t("pricing.cta")}

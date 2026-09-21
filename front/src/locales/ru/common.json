@@ -175,7 +175,6 @@
     "serviceAction": "QR-код услуги"
   },
   "auth": {
-    "noAccount": "Нет аккаунта?",
     "haveAccount": "Уже есть аккаунт?",
     "welcomeBack": "С возвращением",
     "choosePassword": "Создайте новый пароль",
@@ -185,9 +184,7 @@
     "codeSent": "Код отправлен на {{identifier}}",
     "googleFailed": "Не удалось войти через Google",
     "googleAccountMissing": "Аккаунта с этим адресом Google ещё нет. Мы создадим его после принятия документов.",
-    "divider": "или войдите через",
     "codeFromEmail": "Код из письма",
-    "rememberMe": "Запомнить меня",
     "forgotPassword": "Забыли пароль?",
     "signInSystem": "Войти в систему",
     "sendInstructions": "Отправить инструкцию",
@@ -197,12 +194,9 @@
     "nameSub": "Имя или никнейм — на ваш выбор",
     "accountCreated": "Аккаунт создан. Мы отправили письмо для подтверждения на {{email}}.",
     "dashboard": "Перейти в панель управления",
-    "or": "или",
-    "registerByEmail": "Зарегистрироваться по email",
     "displayNamePlaceholder": "Например: Катя, Max, ВладелецСтудии",
     "displayNameHint": "Это имя будет отображаться в интерфейсе и уведомлениях. Вы сможете изменить его в настройках.",
     "codeSix": "Введите 6-значный код",
-    "users": "бизнесов уже используют Velora",
     "strength": {
       "weak": "Слабый",
       "medium": "Средний",

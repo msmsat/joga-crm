@@ -175,7 +175,6 @@
     "serviceAction": "QR-kode for tjenesten"
   },
   "auth": {
-    "noAccount": "Har du ikke en konto?",
     "haveAccount": "Har du allerede en konto?",
     "welcomeBack": "Velkommen tilbake",
     "choosePassword": "Opprett et nytt passord",
@@ -185,9 +184,7 @@
     "codeSent": "Koden er sendt til {{identifier}}",
     "googleFailed": "Google-pålogging mislyktes",
     "googleAccountMissing": "Det finnes ennå ingen konto for denne Google-adressen. Vi oppretter en etter at du har godtatt dokumentene.",
-    "divider": "eller logg inn med",
     "codeFromEmail": "Kode fra e-post",
-    "rememberMe": "Husk meg",
     "forgotPassword": "Glemt passord?",
     "signInSystem": "Logg inn",
     "sendInstructions": "Send instruksjoner",
@@ -197,12 +194,9 @@
     "nameSub": "Navn eller kallenavn — ditt valg",
     "accountCreated": "Kontoen er opprettet. Vi sendte en bekreftelses-e-post til {{email}}.",
     "dashboard": "Gå til oversikten",
-    "or": "eller",
-    "registerByEmail": "Registrer med e-post",
     "displayNamePlaceholder": "For eksempel: Anna, Max, StudioEier",
     "displayNameHint": "Dette navnet vises i grensesnittet og varslene. Du kan endre det i innstillingene.",
     "codeSix": "Skriv inn den 6-sifrede koden",
-    "users": "bedrifter bruker allerede Velora",
     "strength": {
       "weak": "Svak",
       "medium": "Middels",

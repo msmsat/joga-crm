@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import "../App.css"; // Обязательный импорт глобальных стилей
-import { Orbs, Logo, InputField, IdentifierTabs, type IdentifierMode, PrimaryBtn,
-   Divider, Checkbox, SocialProof, PasswordStrength, ErrorAlert, PhoneField } from "../components/UI";
-import { isValidPhoneNumber } from "react-phone-number-input";
+import { Orbs, Logo, InputField, PrimaryBtn, Checkbox, PasswordStrength, ErrorAlert,
+  IconEmail, IconLock, PasswordEye } from "../components/UI";
 import { GoogleSignIn } from '../components/cookies/GoogleSignIn';
 import { openCookieSettings } from '../utils/cookieConsent';
 import { authApi, ApiError } from '../api';
@@ -12,20 +11,30 @@ import { legalFooterLinks, LEGAL_LINK_PROPS, PRIVACY_URL, TERMS_URL } from '../u
 import { submitOnEnter } from '../lib/submitOnEnter';
 import { useTranslation } from 'react-i18next';
 
-// ─── MAIN LOGIN PAGE ──────────────────────────────────────────────────────────
+// ─── СТРАНИЦА ВХОДА ──────────────────────────────────────────────────────────
+// Форма намеренно короткая: адрес, пароль, кнопка — и тёмная плашка снизу, где
+// собрано всё остальное (Google, «забыли пароль», регистрация). До этого на
+// одном экране жили вкладки «Email / Телефон», галочка «запомнить меня»,
+// разделитель, аватары «нас уже N», значки SSL/GDPR/2FA и две ссылки в шапке —
+// человек читал страницу вместо того, чтобы войти. Что убрано и почему:
+//   • вкладка «Телефон» — аккаунт заводится ТОЛЬКО на email (authApi.register),
+//     войти по номеру было нечем; вкладка обещала несуществующее;
+//   • «Запомнить меня» — галочка никуда не отправлялась, состояние сгорало при
+//     отправке формы. Контрол, который ничего не делает, хуже отсутствующего;
+//   • аватары и значки — реклама на экране, куда приходят по делу.
+// Режима "register" тут тоже больше нет: он был недостижим (кнопка уводит на
+// /register), но тянул за собой ветки в заголовках, подписях и валидации.
 export default function LoginPage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const footerLinks = legalFooterLinks(t);
-  const [mode, setMode] = useState<"login" | "register" | "forgot" | "login2fa">("login");
+  const [mode, setMode] = useState<"login" | "forgot" | "login2fa">("login");
   // ?email=… — возврат в аккаунт из «Недавних» в профиле: адрес подставляем,
   // пароль спрашиваем как обычно (живого токена у прежнего аккаунта уже нет).
   const [searchParams] = useSearchParams();
-  const [identifierMode, setIdentifierMode] = useState<IdentifierMode>("email");
   const [identifier, setIdentifier] = useState(() => searchParams.get("email") ?? "");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [remember, setRemember] = useState(false);
   const [loading, setLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [errors, setErrors] = useState<{ identifier?: string; password?: string; resetCode?: string; twoFaCode?: string }>({});
@@ -89,11 +98,8 @@ export default function LoginPage() {
     }
     if (!identifier.trim()) {
       newErrors.identifier = t("validation.required");
-    } else if (identifierMode === "email" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(identifier)) {
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(identifier)) {
       newErrors.identifier = t("validation.email");
-    } else if (identifierMode === "phone" && !isValidPhoneNumber(identifier)) {
-      // 🔥 Заменили Regex на умную функцию от библиотеки
-      newErrors.identifier = t("validation.phone");
     }
     if (mode !== "forgot" && !password) {
       newErrors.password = t("join:errors.passwordRequired");
@@ -159,32 +165,14 @@ export default function LoginPage() {
     }
   };
 
-  const icons: Record<IdentifierMode, React.ReactNode> = {
-    email: (
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-        <rect x="1.5" y="3.5" width="13" height="9" rx="2" stroke="currentColor" strokeWidth="1.4" />
-        <path d="M1.5 5.5L8 9.5L14.5 5.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
-      </svg>
-    ),
-    phone: (
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-        <rect x="4" y="1.5" width="8" height="13" rx="2" stroke="currentColor" strokeWidth="1.4" />
-        <circle cx="8" cy="12.5" r="0.75" fill="currentColor" />
-        <path d="M6.5 3.5H9.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
-      </svg>
-    ),
-  };
-
   const titles = {
     login: t("auth.welcomeBack"),
-    register: t("profile:accounts.register"),
     forgot: forgotStep === 1 ? t("join:forgotLink") : t("auth.choosePassword"),
     login2fa: t("auth.confirmationCode"),
   };
 
   const subtitles = {
     login: t("auth.loginSubtitle"),
-    register: t("landing:hero.perks.0"),
     forgot: forgotStep === 1 ? t("auth.resetInstruction") : t("auth.codeSent", { identifier }),
     login2fa: t("auth.codeSent", { identifier }),
   };
@@ -206,36 +194,38 @@ export default function LoginPage() {
           transition: "opacity 0.4s ease",
         }}
       >
+        {/* В шапке логотип и выход обратно на сайт. Ссылка «Нет аккаунта?
+            Зарегистрироваться» уехала вниз, в тёмную плашку: там она стоит
+            рядом с остальными дверями, а не третьим действием в углу, мимо
+            которого смотрят. */}
         <Logo />
-        <div style={{ fontSize: "13px", color: "var(--muted)", display: "flex", alignItems: "center", gap: "6px" }}>
-          {mode === "login" ? (
-            <>
-              {t("auth.noAccount")} {" "}
-              <button
-                onClick={() => navigate("/register")} // 🔥 Просто делаем переход вместо setMode
-                style={{
-                  background: "none", border: "none", color: "var(--peach)",
-                  fontWeight: 700, fontSize: "13px", cursor: "pointer", padding: 0,
-                }}
-              >
-                {t("profile:accounts.register")} →
-              </button>
-            </>
-          ) : (
-            <>
-              {t("auth.haveAccount")} {" "}
-              <button
-                onClick={() => { setMode("login"); setErrors({}); }}
-                style={{
-                  background: "none", border: "none", color: "var(--peach)",
-                  fontWeight: 700, fontSize: "13px", cursor: "pointer", padding: 0,
-                }}
-              >
-                {t("profile:accounts.login")} →
-              </button>
-            </>
-          )}
-        </div>
+
+        {/* «Назад» — на лендинг, а не в историю браузера: на страницу входа
+            приходят и по прямой ссылке (из письма, из закладки), и тогда
+            history.back() уводит куда угодно или никуда.
+            В режимах восстановления и кода кнопки нет: там свой «Назад» в
+            карточке, возвращающий к форме входа, и две одинаковые подписи на
+            одном экране означали бы разное. */}
+        {mode === "login" && (
+          <button
+            onClick={() => navigate("/")}
+            style={{
+              display: "inline-flex", alignItems: "center", gap: "7px",
+              padding: "9px 16px 9px 13px", borderRadius: "10px",
+              background: "transparent", border: "1.5px solid var(--border)",
+              color: "var(--muted)", fontFamily: "var(--font)",
+              fontSize: "13px", fontWeight: 600, cursor: "pointer",
+              transition: "border-color 0.2s, color 0.2s",
+            }}
+            onMouseOver={(e) => { e.currentTarget.style.borderColor = "var(--peach)"; e.currentTarget.style.color = "var(--onyx)"; }}
+            onMouseOut={(e) => { e.currentTarget.style.borderColor = "var(--border)"; e.currentTarget.style.color = "var(--muted)"; }}
+          >
+            <svg width="13" height="13" viewBox="0 0 12 12" fill="none" aria-hidden>
+              <path d="M7.5 2L3.5 6L7.5 10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            {t("buttons.back")}
+          </button>
+        )}
       </nav>
 
       {/* ── MAIN CONTENT ── */}
@@ -285,60 +275,34 @@ export default function LoginPage() {
               </p>
             </div>
 
-            {/* Google Auth (not for forgot/login2fa) */}
-            {mode !== "forgot" && mode !== "login2fa" && (
-              <>
-                <div style={{ display: "flex", justifyContent: "center", width: "100%" }}>  
-                  {/* Скрипт Google грузится только после согласия на его cookie —
-                      до него GoogleSignIn рисует свою кнопку того же размера. */}
-                  <GoogleSignIn
-                      /* Ширина кнопки Google — жёсткий пиксель внутри iframe:
-                         320 не влезает в карточку на 320px-экране и вылезает
-                         за край. Считаем один раз при монтировании — поворот
-                         экрана в форме входа переживём. */
-                      width={Math.min(320, window.innerWidth - 76)}
-                      onCredential={(credential) => handleGoogleSuccess(credential)}
-                      onError={() => setSubmitError(t("auth.googleFailed"))}
-                  />
-                </div>
-
-                {/* Аккаунта под этим Google ещё нет — вход оказался регистрацией,
-                    и без принятых документов её завершать нельзя. */}
-                {pendingGoogle && (
-                  <div style={{ display: "flex", flexDirection: "column", gap: "12px", padding: "14px 16px", background: "rgba(252,174,145,0.07)", border: "1.5px solid rgba(252,174,145,0.26)", borderRadius: "14px" }}>
-                    <p style={{ fontSize: "12.5px", color: "var(--muted)", margin: 0, lineHeight: 1.55 }}>
-                      {t("auth.googleAccountMissing")}
-                    </p>
-                    <Checkbox checked={agree} onChange={setAgree} label={
-                      <span style={{ fontSize: "12.5px" }}>
-                        {t("join:consent.text")} <a href={TERMS_URL} {...LEGAL_LINK_PROPS} className="text-link">{t("join:consent.terms")}</a> {" "}
-                        {t("join:consent.and")} <a href={PRIVACY_URL} {...LEGAL_LINK_PROPS} className="text-link">{t("join:consent.privacy")}</a>
-                      </span>
-                    } />
-                    <PrimaryBtn
-                      onClick={() => handleGoogleSuccess(pendingGoogle, true)}
-                      loading={loading}
-                      disabled={!agree}
-                      fullWidth
-                    >
-                      {t("profile:accounts.register")}
-                    </PrimaryBtn>
-                  </div>
-                )}
-
-                <Divider label={t("auth.divider")} />
-              </>
-            )}
-
-            {/* Identifier Tabs */}
-            {mode !== "forgot" && mode !== "login2fa" && (
-              <IdentifierTabs active={identifierMode} onChange={(m) => { setIdentifierMode(m); setIdentifier(""); setErrors({}); }} />
+            {/* Аккаунта под этим Google ещё нет — вход оказался регистрацией,
+                и без принятых документов её завершать нельзя. Блок остаётся в
+                светлой части карточки: это форма согласия, а не кнопка. */}
+            {mode === "login" && pendingGoogle && (
+              <div style={{ display: "flex", flexDirection: "column", gap: "12px", padding: "14px 16px", background: "rgba(252,174,145,0.07)", border: "1.5px solid rgba(252,174,145,0.26)", borderRadius: "14px" }}>
+                <p style={{ fontSize: "12.5px", color: "var(--muted)", margin: 0, lineHeight: 1.55 }}>
+                  {t("auth.googleAccountMissing")}
+                </p>
+                <Checkbox checked={agree} onChange={setAgree} label={
+                  <span style={{ fontSize: "12.5px" }}>
+                    {t("join:consent.text")} <a href={TERMS_URL} {...LEGAL_LINK_PROPS} className="text-link">{t("join:consent.terms")}</a> {" "}
+                    {t("join:consent.and")} <a href={PRIVACY_URL} {...LEGAL_LINK_PROPS} className="text-link">{t("join:consent.privacy")}</a>
+                  </span>
+                } />
+                <PrimaryBtn
+                  onClick={() => handleGoogleSuccess(pendingGoogle, true)}
+                  loading={loading}
+                  disabled={!agree}
+                  fullWidth
+                >
+                  {t("profile:accounts.register")}
+                </PrimaryBtn>
+              </div>
             )}
 
             {/* Form Fields */}
             <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
 
-              {/* 🔥 ДОБАВИТЬ ЭТОТ БЛОК НИЖЕ */}
               <ErrorAlert message={submitError} />
 
               {successMsg && (
@@ -347,26 +311,17 @@ export default function LoginPage() {
                 </div>
               )}
 
-              {/* Если режим восстановления пароля ИЛИ вкладка email — показываем обычный InputField */}
-              {mode !== "login2fa" && (mode !== "forgot" || (mode === "forgot" && forgotStep === 1)) && (
-                identifierMode === "email" || mode === "forgot" ? (
-                  <InputField
-                    label="Email"
-                    type="email"
-                    placeholder="you@example.com"
-                    value={identifier}
-                    onChange={(v: string) => { setIdentifier(v); setErrors((e) => ({ ...e, identifier: undefined })); }}
-                    icon={icons.email}
-                    error={errors.identifier}
-                  />
-                ) : (
-                  <PhoneField
-                    label={t("fields.phone")}
-                    value={identifier}
-                    onChange={(v) => { setIdentifier(v || ""); setErrors((e) => ({ ...e, identifier: undefined })); }}
-                    error={errors.identifier}
-                  />
-                )
+              {/* Адрес: он же логин, он же куда придёт код восстановления. */}
+              {mode !== "login2fa" && (mode !== "forgot" || forgotStep === 1) && (
+                <InputField
+                  label="Email"
+                  type="email"
+                  placeholder="you@example.com"
+                  value={identifier}
+                  onChange={(v: string) => { setIdentifier(v); setErrors((e) => ({ ...e, identifier: undefined })); }}
+                  icon={<IconEmail />}
+                  error={errors.identifier}
+                />
               )}
 
               {/* Password Field */}
@@ -376,7 +331,7 @@ export default function LoginPage() {
                     label={t("auth.codeFromEmail")} type="text" placeholder="123456" maxLength={6}
                     value={resetCode}
                     onChange={(v: string) => { setResetCode(v.replace(/\D/g, '').slice(0, 6)); setErrors((e) => ({ ...e, resetCode: undefined })); }}
-                    icon={<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="3" y="7" width="10" height="7.5" rx="2" stroke="currentColor" strokeWidth="1.4"/><path d="M5.5 7V5C5.5 3.61929 6.61929 2.5 8 2.5C9.38071 2.5 10.5 3.61929 10.5 5V7" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/><circle cx="8" cy="10.5" r="1" fill="currentColor"/></svg>} 
+                    icon={<IconLock />} 
                     error={errors.resetCode} 
                   />
                   <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
@@ -384,8 +339,8 @@ export default function LoginPage() {
                       label={t("join:fields.newPassword")} type={showPassword ? "text" : "password"} placeholder={t("validation.minLength", { n: 8 })}
                       value={newPassword} 
                       onChange={(v: string) => { setNewPassword(v); setErrors((e) => ({ ...e, password: undefined })); }} 
-                      icon={<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="3" y="7" width="10" height="7.5" rx="2" stroke="currentColor" strokeWidth="1.4"/><path d="M5.5 7V5C5.5 3.61929 6.61929 2.5 8 2.5C9.38071 2.5 10.5 3.61929 10.5 5V7" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/><circle cx="8" cy="10.5" r="1" fill="currentColor"/></svg>} 
-                      rightSlot={<button onClick={() => setShowPassword(!showPassword)} style={{ background: "none", border: "none", cursor: "pointer", color: showPassword ? "var(--peach)" : "var(--muted)", padding: 0, height: "100%", outline: "none" }}>{showPassword ? t("join:fields.hide") : t("join:fields.show")}</button>}
+                      icon={<IconLock />} 
+                      rightSlot={<PasswordEye shown={showPassword} onToggle={() => setShowPassword(v => !v)} />}
                       error={errors.password} 
                     />
                     <PasswordStrength password={newPassword} />
@@ -401,72 +356,102 @@ export default function LoginPage() {
                   maxLength={6}
                   value={twoFaCode}
                   onChange={(v: string) => { setTwoFaCode(v.replace(/\D/g, '').slice(0, 6)); setErrors((e) => ({ ...e, twoFaCode: undefined })); }}
-                  icon={<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="3" y="7" width="10" height="7.5" rx="2" stroke="currentColor" strokeWidth="1.4"/><path d="M5.5 7V5C5.5 3.61929 6.61929 2.5 8 2.5C9.38071 2.5 10.5 3.61929 10.5 5V7" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/><circle cx="8" cy="10.5" r="1" fill="currentColor"/></svg>}
+                  icon={<IconLock />}
                   error={errors.twoFaCode}
                 />
               )}
 
               {mode === "login" && (
-                <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                  <InputField
-                    label={t("join:fields.password")}
-                    type={showPassword ? "text" : "password"}
-                    placeholder={t("join:fields.passwordPlaceholder")}
-                    value={password}
-                    onChange={(v: string) => { setPassword(v); setErrors((e) => ({ ...e, password: undefined })); }}
-                    icon={
-                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                        <rect x="3" y="7" width="10" height="7.5" rx="2" stroke="currentColor" strokeWidth="1.4" />
-                        <path d="M5.5 7V5C5.5 3.61929 6.61929 2.5 8 2.5C9.38071 2.5 10.5 3.61929 10.5 5V7" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
-                        <circle cx="8" cy="10.5" r="1" fill="currentColor" />
-                      </svg>
-                    }
-                    rightSlot={
-                      <button
-                        onClick={() => setShowPassword((v: boolean) => !v)}
-                        style={{
-                          background: "none", border: "none", cursor: "pointer",
-                          color: showPassword ? "var(--peach)" : "var(--muted)",
-                          padding: 0, height: "100%", display: "flex", 
-                          alignItems: "center", justifyContent: "center", 
-                          transition: "color 0.2s", outline: "none"
-                        }}
-                      >
-                        {showPassword ? t("join:fields.hide") : t("join:fields.show")}
-                      </button>
-                    }
-                    error={errors.password}
-                  />
-                </div>
+                <InputField
+                  label={t("join:fields.password")}
+                  type={showPassword ? "text" : "password"}
+                  placeholder={t("join:fields.passwordPlaceholder")}
+                  value={password}
+                  onChange={(v: string) => { setPassword(v); setErrors((e) => ({ ...e, password: undefined })); }}
+                  icon={<IconLock />}
+                  rightSlot={<PasswordEye shown={showPassword} onToggle={() => setShowPassword(v => !v)} />}
+                  error={errors.password}
+                />
               )}
             </div>
-
-            {/* Remember + Forgot */}
-            {mode === "login" && (
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <Checkbox checked={remember} onChange={setRemember} label={t("auth.rememberMe")} />
-                <button
-                  onClick={() => { setMode("forgot"); setErrors({}); }}
-                  style={{
-                    background: "none", border: "none", color: "var(--peach)",
-                    fontSize: "13px", fontWeight: 600, cursor: "pointer", padding: 0, textDecoration: "none",
-                  }}
-                >
-                  {t("auth.forgotPassword")}
-                </button>
-              </div>
-            )}
 
             {/* CTA Button */}
             <PrimaryBtn onClick={handleSubmit} loading={loading} fullWidth>
               {mode === "login"
                 ? t("auth.signInSystem")
-                : mode === "register"
-                ? t("profile:accounts.register")
                 : mode === "login2fa"
                 ? t("buttons.continue")
                 : t("auth.sendInstructions")}
             </PrimaryBtn>
+
+            {/* ── ТЁМНАЯ ПЛАШКА: ВСЕ ОСТАЛЬНЫЕ ДВЕРИ ──────────────────────────
+                Три действия, которые раньше лежали по разным углам экрана
+                (Google — над формой, «забыли пароль» — сбоку от галочки,
+                регистрация — строчкой в шапке), собраны в один чёрный блок под
+                кнопкой входа. Так на экране остаётся ровно два места: светлая
+                форма «я свой» и тёмная плашка «а если нет».
+                Чёрный, а не серый: кнопка Google рисуется В IFRAME и снаружи не
+                перекрашивается — у неё есть только светлая и тёмная тема, и
+                тёмную Google разрешает ставить лишь на тёмный фон. Плашка и
+                есть этот фон, заодно единственное чёрное пятно страницы. */}
+            {mode === "login" && (
+              <div style={{
+                marginTop: "4px", padding: "16px", borderRadius: "18px",
+                background: "var(--onyx, #1A1A1A)",
+                display: "flex", flexDirection: "column", gap: "14px",
+              }}>
+                <div style={{ display: "flex", justifyContent: "center", width: "100%" }}>
+                  {/* Скрипт Google грузится только после согласия на его cookie —
+                      до него GoogleSignIn рисует свою кнопку того же размера.
+                      Ширина — жёсткий пиксель внутри iframe (проценты там не
+                      работают), поэтому считаем сами и один раз: поворот экрана
+                      в форме входа переживём. 132 = поля страницы (24×2), поля
+                      карточки на телефоне (24×2) и поля самой плашки (16×2);
+                      без них кнопка на 375px вылезала за край плашки. */}
+                  <GoogleSignIn
+                    dark
+                    width={Math.min(320, window.innerWidth - 132)}
+                    onCredential={(credential) => handleGoogleSuccess(credential)}
+                    onError={() => setSubmitError(t("auth.googleFailed"))}
+                  />
+                </div>
+
+                {/* Две двери в ряд, разделённые волоском: «забыли пароль» —
+                    для своих, «создать аккаунт» — для новых. Персиковым
+                    подсвечена вторая: с лендинга кнопку регистрации убрали, и
+                    эта страница стала для нового человека первым экраном. */}
+                <div style={{
+                  display: "flex", alignItems: "stretch",
+                  borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: "12px",
+                }}>
+                  <button
+                    onClick={() => { setMode("forgot"); setErrors({}); }}
+                    style={{
+                      flex: 1, background: "none", border: "none", padding: "4px 8px",
+                      color: "rgba(255,255,255,0.6)", fontFamily: "var(--font)",
+                      fontSize: "13px", fontWeight: 600, cursor: "pointer", transition: "color 0.2s",
+                    }}
+                    onMouseOver={(e) => (e.currentTarget.style.color = "#FFFFFF")}
+                    onMouseOut={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.6)")}
+                  >
+                    {t("auth.forgotPassword")}
+                  </button>
+                  <span style={{ width: "1px", background: "rgba(255,255,255,0.1)" }} />
+                  <button
+                    onClick={() => navigate("/register")}
+                    style={{
+                      flex: 1, background: "none", border: "none", padding: "4px 8px",
+                      color: "var(--peach, #FCAE91)", fontFamily: "var(--font)",
+                      fontSize: "13px", fontWeight: 800, cursor: "pointer", transition: "opacity 0.2s",
+                    }}
+                    onMouseOver={(e) => (e.currentTarget.style.opacity = "0.75")}
+                    onMouseOut={(e) => (e.currentTarget.style.opacity = "1")}
+                  >
+                    {t("profile:accounts.register")}
+                  </button>
+                </div>
+              </div>
+            )}
 
             {/* Forgot mode hint */}
             {mode === "forgot" && (
@@ -476,49 +461,6 @@ export default function LoginPage() {
             )}
           </div>
 
-          {/* ── BELOW CARD ── */}
-          <div style={{ marginTop: "28px", display: "flex", flexDirection: "column", gap: "20px", alignItems: "center" }}>
-            {/* Social proof */}
-            <SocialProof />
-
-            {/* Security badge */}
-            <div style={{ display: "flex", alignItems: "center", gap: "20px", justifyContent: "center" }}>
-              {[
-                {
-                  icon: (
-                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
-                      <path d="M6.5 1L1.5 3V6.5C1.5 9.26142 3.73858 11.5 6.5 12C9.26142 11.5 11.5 9.26142 11.5 6.5V3L6.5 1Z" stroke="var(--pistachio)" strokeWidth="1.3" strokeLinejoin="round" />
-                      <path d="M4.5 6.5L5.9 7.9L8.5 5" stroke="var(--pistachio)" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  ),
-                  label: "SSL",
-                },
-                {
-                  icon: (
-                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
-                      <rect x="1.5" y="1.5" width="10" height="10" rx="2" stroke="var(--pistachio)" strokeWidth="1.3" />
-                      <path d="M4 6.5H9M6.5 4V9" stroke="var(--pistachio)" strokeWidth="1.3" strokeLinecap="round" />
-                    </svg>
-                  ),
-                  label: "GDPR",
-                },
-                {
-                  icon: (
-                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
-                      <circle cx="6.5" cy="6.5" r="5" stroke="var(--pistachio)" strokeWidth="1.3" />
-                      <path d="M4 6.5L5.8 8.3L9 5" stroke="var(--pistachio)" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  ),
-                  label: "2FA",
-                },
-              ].map((item, i) => (
-                <div key={i} style={{ display: "flex", alignItems: "center", gap: "5px", fontSize: "11px", fontWeight: 500, color: "rgba(102,102,102,0.7)" }}>
-                  {item.icon}
-                  {item.label}
-                </div>
-              ))}
-            </div>
-          </div>
         </div>
       </div>
 

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import "../App.css";
-import { Orbs, Logo, InputField, PhoneField, PrimaryBtn, ErrorAlert, Checkbox } from "../components/UI";
+import { Orbs, Logo, InputField, PhoneField, PrimaryBtn, ErrorAlert, Checkbox, PasswordEye } from "../components/UI";
 import { authApi, ApiError } from "../api";
 import { resolveImageUrl } from "../api/client";
 import type { InviteInfo, UserMe } from "../api/auth/auth.types";
@@ -237,14 +237,7 @@ export default function JoinPage() {
                     autoComplete="current-password"
                     onChange={(v: string) => { setPassword(v); setFieldError(e => ({ ...e, password: undefined })); }}
                     icon={ICON_LOCK}
-                    rightSlot={
-                      <button
-                        onClick={() => setShowPassword(v => !v)}
-                        style={{ background: "none", border: "none", cursor: "pointer", color: showPassword ? "var(--peach)" : "var(--muted)", padding: 0, height: "100%", display: "flex", alignItems: "center", transition: "color 0.2s", outline: "none" }}
-                      >
-                        {showPassword ? t("join:fields.hide") : t("join:fields.show")}
-                      </button>
-                    }
+                    rightSlot={<PasswordEye shown={showPassword} onToggle={() => setShowPassword(v => !v)} />}
                     error={fieldError.password}
                   />
 

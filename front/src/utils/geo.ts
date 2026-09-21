@@ -194,3 +194,45 @@ export function currencyForCountry(country: string | null | undefined): string {
 
 /** Только для самопроверки (geo.check.ts): все коды, которые карта умеет вернуть. */
 export const MAPPED_CURRENCIES: readonly string[] = Object.values(COUNTRY_CURRENCY);
+
+// ─── СТРАНА → ЧАСОВОЙ ПОЯС ───────────────────────────────────────────────────
+//
+// Только страны с ОДНИМ поясом. США, Россия, Канада, Австралия, Бразилия,
+// Мексика, Казахстан и прочие «широкие» страны сюда не входят намеренно: по
+// коду страны их пояс не определить, и угадывать — значит подставлять человеку
+// чужое время с видом уверенности. Для них (и для неизвестной страны) остаётся
+// пояс устройства — utils/timezones.browserTimezone().
+//
+// Офсеты СТАНДАРТНЫЕ, зимние: пикер перечисляет пояса, а не текущие смещения
+// (см. комментарий в utils/timezones.ts). Испания — материковая (+1), Канары
+// живут в +0; Португалия — материковая (+0), Азоры в −1: берём материк, где
+// подавляющее большинство студий.
+const COUNTRY_TIMEZONE: Record<string, string> = {
+  // ── UTC+0 ──
+  GB: "UTC+0", IE: "UTC+0", PT: "UTC+0", IS: "UTC+0", FO: "UTC+0",
+  // ── UTC+1 ── Центральная Европа, основной рынок продукта
+  CZ: "UTC+1", SK: "UTC+1", PL: "UTC+1", DE: "UTC+1", AT: "UTC+1", CH: "UTC+1",
+  LI: "UTC+1", FR: "UTC+1", MC: "UTC+1", BE: "UTC+1", NL: "UTC+1", LU: "UTC+1",
+  ES: "UTC+1", AD: "UTC+1", IT: "UTC+1", SM: "UTC+1", VA: "UTC+1", MT: "UTC+1",
+  HU: "UTC+1", SI: "UTC+1", HR: "UTC+1", BA: "UTC+1", RS: "UTC+1", ME: "UTC+1",
+  MK: "UTC+1", AL: "UTC+1", XK: "UTC+1", DK: "UTC+1", NO: "UTC+1", SE: "UTC+1",
+  // ── UTC+2 ──
+  FI: "UTC+2", EE: "UTC+2", LV: "UTC+2", LT: "UTC+2", UA: "UTC+2", MD: "UTC+2",
+  RO: "UTC+2", BG: "UTC+2", GR: "UTC+2", CY: "UTC+2", IL: "UTC+2", EG: "UTC+2",
+  ZA: "UTC+2",
+  // ── UTC+3 ──
+  TR: "UTC+3", BY: "UTC+3", SA: "UTC+3", QA: "UTC+3", KW: "UTC+3", BH: "UTC+3",
+  IQ: "UTC+3", KE: "UTC+3",
+  // ── UTC+4 и дальше ──
+  AE: "UTC+4", OM: "UTC+4", GE: "UTC+4", AM: "UTC+4", AZ: "UTC+4",
+  TH: "UTC+7", VN: "UTC+7", SG: "UTC+8", HK: "UTC+8", MY: "UTC+8", PH: "UTC+8",
+  CN: "UTC+8", JP: "UTC+9", KR: "UTC+9", NZ: "UTC+12",
+};
+
+/** Пояс по стране визита или null, если по стране его не определить. */
+export function timezoneForCountry(country: string | null | undefined): string | null {
+  return COUNTRY_TIMEZONE[(country || "").toUpperCase()] ?? null;
+}
+
+/** Только для самопроверки (geo.check.ts): все пояса, которые карта умеет вернуть. */
+export const MAPPED_TIMEZONES: readonly string[] = Object.values(COUNTRY_TIMEZONE);

@@ -1,12 +1,13 @@
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { useEntry } from "./entry";
 import { useTranslation } from "react-i18next";
 import { EASE } from "./tokens";
 import { heroWords } from "./rich";
 import { GridBg, HeroArt } from "./Illustrations";
 
 export function Hero() {
-  const navigate = useNavigate();
+  // Вошедшему кнопка «попробовать» даёт кабинет, а не форму регистрации.
+  const { toRegister } = useEntry();
   const { t } = useTranslation("landing");
 
   // Заголовок приходит строкой («CRM, которой\n*хочется* пользоваться») и
@@ -79,7 +80,7 @@ export function Hero() {
             transition={{ duration: 0.6, delay: 0.72, ease: EASE }}
             className="mt-10 flex flex-wrap gap-3"
           >
-            <button className="btn btn-primary btn-size-large" onClick={() => navigate("/register")}>
+            <button className="btn btn-primary btn-size-large" onClick={() => toRegister()}>
               {t("hero.cta")}
             </button>
           </motion.div>

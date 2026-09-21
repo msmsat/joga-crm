@@ -5,9 +5,9 @@
     "pricing": "Priser",
     "faq": "FAQ",
     "login": "Log ind",
-    "startShort": "Start",
     "startFull": "Start gratis",
-    "language": "Sprog"
+    "language": "Sprog",
+    "sections": "Sektioner"
   },
   "hero": {
     "badge": "Den nye CRM-standard i 2026",

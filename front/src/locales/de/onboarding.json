@@ -93,6 +93,7 @@
       "relax": "Spa & Entspannung",
       "other": "Sonstiges"
     },
+    "all": "Alle",
     "selectAll": "Ganzen Bereich auswählen"
   },
   "contact": {
@@ -119,7 +120,6 @@
     "currencyNotFound": "Keine Währung gefunden",
     "dateFormatLabel": "Datumsformat",
     "dateFormatPlaceholder": "Format",
-    "firstDayLabel": "Erster Wochentag",
     "currencies": {
       "AED": "VAE-Dirham",
       "ALL": "Albanischer Lek",

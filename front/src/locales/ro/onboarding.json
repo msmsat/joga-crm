@@ -93,6 +93,7 @@
       "relax": "Spa și relaxare",
       "other": "Altceva"
     },
+    "all": "Toate",
     "selectAll": "Selectați toată secțiunea"
   },
   "contact": {
@@ -119,7 +120,6 @@
     "currencyNotFound": "Nicio monedă găsită",
     "dateFormatLabel": "Format dată",
     "dateFormatPlaceholder": "Format",
-    "firstDayLabel": "Prima zi a săptămânii",
     "currencies": {
       "AED": "Dirham din Emiratele Arabe Unite",
       "ALL": "Lek",

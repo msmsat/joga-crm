@@ -38,6 +38,11 @@
   "badge": {
     "beta": "BETA"
   },
+  "more": {
+    "title": "Toate secțiunile",
+    "business": "Afacere",
+    "comms": "Clienți și comunicare"
+  },
   "navbar": {
     "create": "Creează"
   },

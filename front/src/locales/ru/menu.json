@@ -38,6 +38,11 @@
   "badge": {
     "beta": "BETA"
   },
+  "more": {
+    "title": "Все разделы",
+    "business": "Бизнес",
+    "comms": "Клиенты и коммуникации"
+  },
   "navbar": {
     "create": "Создать"
   },
