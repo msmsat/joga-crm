@@ -3307,7 +3307,8 @@
      (та же засада, что у шитов модалок, см. .v-modal в телефонном блоке). */
   animation: mdrawer-in 0.3s cubic-bezier(0.32, 0.72, 0, 1) backwards;
   transition: transform 0.24s cubic-bezier(0.32, 0.72, 0, 1);
-  touch-action: auto;
+  /* Vertical scrolling stays native; horizontal movement dismisses the drawer. */
+  touch-action: pan-y pinch-zoom;
 }
 @keyframes mdrawer-in { from { transform: translateX(100%) } to { transform: translateX(0) } }
 
@@ -3319,7 +3320,6 @@
   gap: 8px;
   flex-shrink: 0;
   padding: 15px 14px 9px;
-  touch-action: pan-y;
 }
 .mdrawer-title {
   font-size: 15px;
@@ -3347,7 +3347,7 @@
   overflow-x: hidden;
   overflow-y: scroll;
   overscroll-behavior-y: contain;
-  touch-action: auto;
+  touch-action: pan-y pinch-zoom;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: thin;
   padding: 0 12px 14px;

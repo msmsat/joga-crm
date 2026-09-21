@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { NAV, NAV_BOTTOM, JOURNAL_ENTRY, type NavEntry } from './navItems';
 import { UserMenu } from './UserMenu';
+import { useDrawerSwipe } from './drawerSwipe';
 
 // ─── НИЖНЯЯ ПАНЕЛЬ (телефон, <768px) ─────────────────────────────────────────
 // Колонка меню на экране в 375px съедает половину ширины, поэтому на телефоне
@@ -68,41 +69,7 @@ export function MobileNav({ role, clientsCount }: MobileNavProps) {
     return () => window.removeEventListener('keydown', onKey);
   }, [open]);
 
-  // Закрытие свайпом — только за шапку. Список и меню аккаунта не участвуют
-  // в перетаскивании: их сенсорная прокрутка полностью нативная, в том числе в Safari.
-  const touchStart = useRef<{ x: number; y: number } | null>(null);
-  const touchAxis = useRef<'x' | 'y' | null>(null);
-  const panelRef = useRef<HTMLElement>(null);
-  const onTouchStart = (e: React.TouchEvent) => {
-    touchStart.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
-    touchAxis.current = null;
-  };
-  const onTouchMove = (e: React.TouchEvent) => {
-    if (!touchStart.current || !panelRef.current) return;
-    const dx = e.touches[0].clientX - touchStart.current.x;
-    const dy = e.touches[0].clientY - touchStart.current.y;
-    if (!touchAxis.current && Math.max(Math.abs(dx), Math.abs(dy)) > 8) {
-      touchAxis.current = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y';
-    }
-    // Вертикальное движение целиком принадлежит прокрутке списка.
-    if (touchAxis.current !== 'x') return;
-    panelRef.current.style.transition = 'none';
-    panelRef.current.style.transform = `translateX(${Math.max(0, dx)}px)`;
-  };
-  const resetTouch = () => {
-    if (panelRef.current) {
-      panelRef.current.style.transition = '';
-      panelRef.current.style.transform = '';
-    }
-    touchStart.current = null;
-    touchAxis.current = null;
-  };
-  const onTouchEnd = (e: React.TouchEvent) => {
-    const dismiss = touchAxis.current === 'x' && touchStart.current !== null
-      && e.changedTouches[0].clientX - touchStart.current.x > 70;
-    resetTouch();
-    if (dismiss) close();
-  };
+  const swipe = useDrawerSwipe(close);
 
   const visible = (item: NavEntry) => !item.owner || role === 'owner';
   // «Ещё» — всё, чего нет в нижней панели: разделы владельца, тариф, ассистент.
@@ -195,19 +162,13 @@ export function MobileNav({ role, clientsCount }: MobileNavProps) {
         // тоже «закрыть», а сама навигация остаётся видимой и живой.
         <div className="mdrawer-scrim" onClick={close}>
           <aside
-            ref={panelRef}
+            {...swipe}
             className="mdrawer"
             role="dialog"
             aria-label={t('more.title')}
             onClick={e => e.stopPropagation()}
           >
-            <div
-              className="mdrawer-head"
-              onTouchStart={onTouchStart}
-              onTouchMove={onTouchMove}
-              onTouchEnd={onTouchEnd}
-              onTouchCancel={resetTouch}
-            >
+            <div className="mdrawer-head">
               <span className="mdrawer-title">{t('more.title')}</span>
               <button type="button" className="mdrawer-close" onClick={close} aria-label={t('common:buttons.close')}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
