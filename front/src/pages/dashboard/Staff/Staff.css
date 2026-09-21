@@ -188,10 +188,15 @@
   flex-shrink: 0;
 }
 
+/* Декоративная подложка шапки — сквозная для мыши и пальца. На телефоне
+   .hero-actions и .hero-info становятся статичными (блок «ТЕЛЕФОН» ниже), а
+   позиционированный .hero-bg по правилам порядка отрисовки ложится ПОВЕРХ них
+   и съедал нажатия на «Редактировать» и WhatsApp. */
 .hero-bg {
   position: absolute;
   inset: 0;
   border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  pointer-events: none;
 }
 
 .hero-actions {
