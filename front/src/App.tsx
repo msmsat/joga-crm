@@ -1,8 +1,8 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, useSearchParams } from 'react-router-dom';
-import { useState, useEffect, type ReactNode } from 'react';
+import { type ReactNode } from 'react';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from './api/queryClient';
-import { authApi, type UserMe } from './api';
+import ProtectedRoute from './components/ProtectedRoute';
 import { AIDrawerProvider } from './contexts/AIDrawerContext';
 import { DarkClassGuard } from './contexts/ThemeContext';
 import { ToastProvider } from './components/ui/index';
@@ -13,7 +13,7 @@ import OnboardingPage from './components/modals/Onboarding';
 import SelectCrm from './pages/SelectCrm';
 import JoinPage from './pages/JoinPage';
 import { CookieConsentRoot } from './components/cookies/CookieConsentRoot';
-import { clearActiveToken, getActiveToken, rememberAccountName } from './utils/auth';
+import { getActiveToken } from './utils/auth';
 
 import DashboardLayout from './layouts/DashboardLayout';
 
@@ -34,39 +34,6 @@ import Profile from './pages/dashboard/Profile';
 import AIPage from './pages/dashboard/AI';
 import Catalog from './pages/dashboard/Catalog';
 // import RegisterPage from './pages/RegisterPage'; // Раскомментируешь, когда создашь
-
-// ─── 1. ЗАЩИТА КАБИНЕТА (Пускает только с токеном) ──────────────────────────
-const ProtectedRoute = ({ children, requireOnboarding = true }: { children: ReactNode, requireOnboarding?: boolean }) => {
-  const token = getActiveToken();
-  // Без токена грузить нечего — стартуем сразу в «загрузка окончена», иначе
-  // на первый кадр без нужды мигал бы спиннер.
-  const [loading, setLoading] = useState(!!token);
-  const [user, setUser] = useState<UserMe | null>(null);
-
-  useEffect(() => {
-    if (!token) return;
-
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 5000);
-
-    authApi.getMe(controller.signal)
-      .then(data => {
-        setUser(data);
-        // Связка аккаунтов знает только email из токена — имя приходит вот
-        // отсюда, поэтому дописываем его при каждой загрузке кабинета.
-        if (data.email) rememberAccountName(data.email, data.name);
-      })
-      .catch(() => clearActiveToken())
-      .finally(() => { clearTimeout(timer); setLoading(false); });
-  }, [token]);
-
-  if (loading) return <div style={{ height: '100dvh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg)' }}><span className="spinner" style={{ borderColor: 'var(--peach)' }}/></div>;
-  if (!token || !user) return <Navigate to="/login" replace />;
-  if (requireOnboarding && user.is_onboarded === false) return <Navigate to="/onboarding" replace />;
-  if (!requireOnboarding && user.is_onboarded === true) return <Navigate to="/dashboard" replace />;
-  
-  return children;
-};
 
 // ─── 2. ЗАЩИТА РОУТОВ ПО РОЛИ (Только для Владельца) ────────────────────────
 const OwnerRoute = ({ children }: { children: ReactNode }) => {
