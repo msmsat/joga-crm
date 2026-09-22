@@ -168,6 +168,12 @@
     "confirm": "Avlys økten"
   },
   "resourceBooking": {
+    "searchClient": "Søk etter navn eller telefon / Instagram / email",
+    "chooseClient": "Velg en kunde",
+    "noClients": "Ingen kunder funnet",
+    "noServices": "Ingen individuelle tjenester tilgjengelig",
+    "anyStaff": "Enhver ledig fagperson",
+    "chooseDetails": "Velg tjeneste og avdeling for å se ledige tider",
     "title": "Individuell booking",
     "service": "Tjeneste",
     "branch": "Avdeling",

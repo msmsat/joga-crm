@@ -21,6 +21,9 @@ export interface SelectProps {
    *  прокрутка перестаёт быть способом что-то найти. */
   searchable?: boolean;
   searchPlaceholder?: string;
+  /** Серверный поиск: options уже отфильтрованы по всем контактам клиента. */
+  onSearchChange?: (query: string) => void;
+  loading?: boolean;
   /** Что показать, когда под запрос ничего не подошло. Без него — пустая панель. */
   emptyText?: string;
 }
@@ -37,7 +40,7 @@ const PAD = 8;   // не прижимать панель вплотную к к�
 // родителя (карточка, модалка), как у Tooltip/InfoHint.
 export function Select({
   value, options, onChange, placeholder, disabled,
-  searchable, searchPlaceholder, emptyText,
+  searchable, searchPlaceholder, emptyText, onSearchChange, loading = false,
 }: SelectProps) {
   const [open, setOpen] = useState(false);
   const [highlight, setHighlight] = useState(0);
@@ -55,12 +58,14 @@ export function Select({
 
   const selected = options.find(o => o.value === value) ?? null;
 
+  useEffect(() => { onSearchChange?.(query); }, [query, onSearchChange]);
+
   // Отфильтрованный список — единственный, по которому идут и стрелки, и Enter,
   // и отрисовка: разойдись они, Enter выбирал бы не ту строку, что подсвечена.
   // Поиск по подстроке в любом месте названия, регистр не важен: «корея» должна
   // находить и «Северную», и «Южную». Значение ищется наравне с подписью: коды
   // валют и стран («CZK», «DE») человек набирает чаще, чем слово целиком.
-  const visible = searchable && query.trim()
+  const visible = loading ? [] : searchable && !onSearchChange && query.trim()
     ? options.filter(o => {
         const needle = query.trim().toLowerCase();
         return o.label.toLowerCase().includes(needle) || o.value.toLowerCase().includes(needle);

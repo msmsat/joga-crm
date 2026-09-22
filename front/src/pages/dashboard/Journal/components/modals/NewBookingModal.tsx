@@ -33,7 +33,7 @@ interface NewBookingModalProps {
     notes: string; photos: string[];
   }) => void;
   /** Перевод в форму индивидуальной записи — там, где все услуги такие. */
-  onResourceBooking?: () => void;
+  onResourceBooking?: (serviceId?: number) => void;
   /** Участвует ли место в расписании. `undefined` — термины ещё не пришли. */
   spaceIsAxis?: boolean;
 }
@@ -92,7 +92,7 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({
   const endScrollRef = useRef<HTMLDivElement>(null);
 
   const KP_INTERVALS = useMemo(() => generateTimeIntervals(timeStep), [timeStep]);
-  const { services, options: serviceOptions, onlyResourceServices } = useServiceOptions();
+  const { services, options: serviceOptions } = useServiceOptions(!!onResourceBooking);
 
   const shownTrainers = useMemo(() => {
     const q = trainerQuery.trim().toLowerCase();
@@ -118,6 +118,10 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({
     }
     const service = services.find(s => String(s.id) === value);
     if (!service) return;
+    if (service.booking_mode === 'resource') {
+      onResourceBooking?.(service.id);
+      return;
+    }
     setNewForm(f => ({
       ...f,
       serviceId: service.id,
@@ -236,27 +240,6 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({
                   placeholder={t('newBooking.servicePlaceholder')}
                 />
                 {serviceError && <div style={{ fontSize: 11, color: 'var(--error)', fontWeight: 600, marginTop: 4 }}>{serviceError}</div>}
-                {/* Пустой список здесь — не «услуг нет», а «все услуги
-                    индивидуальные». Без этой строки владелец барбершопа видел
-                    один пункт «создать услугу» и делал вывод, что каталог
-                    пуст. */}
-                {onlyResourceServices && (
-                  <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 6, lineHeight: 1.5 }}>
-                    {t('newBooking.onlyResourceServices')}
-                    {onResourceBooking && (
-                      <button
-                        type="button"
-                        onClick={onResourceBooking}
-                        style={{
-                          display: 'block', marginTop: 4, padding: 0, border: 'none', background: 'none',
-                          color: 'var(--peach)', fontWeight: 700, fontSize: 11, fontFamily: 'inherit', cursor: 'pointer',
-                        }}
-                      >
-                        {t('newBooking.goToResourceBooking')}
-                      </button>
-                    )}
-                  </div>
-                )}
               </div>
 
               {/* Место или филиал — но не оба. Там, где место участвует в

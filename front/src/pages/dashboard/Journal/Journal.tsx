@@ -6,7 +6,7 @@ import type { Booking } from './types';
 import type { LessonCreate } from '../../../api/schedule/schedule.types';
 import { scheduleApi } from '../../../api/schedule';
 import { errorMessage } from '../../../api/errorMessage';
-import { indexToDateTime, toDateStr } from './utils';
+import { indexToDateTime, toDateStr, formatIndexToTimeStr } from './utils';
 import { useDragAndDrop } from './hooks/useDragAndDrop';
 import { useSchedule, useJournalDays } from './hooks/useSchedule';
 import { useJournalMutations } from './hooks/useJournalMutations';
@@ -85,10 +85,12 @@ export default function Journal() {
   // Индивидуальная запись открывается из двух мест, и оба уже знают контекст:
   // с клетки сетки — мастер и день, из тулбара — только день. Форма без этого
   // спрашивала всё заново, хотя человек ровно что кликнул по колонке мастера.
-  const [resourceBooking, setResourceBooking] = useState<{ teacherId: number | null; date: string } | null>(null);
+  const [resourceBooking, setResourceBooking] = useState<{
+    teacherId: number | null; date: string; serviceId?: number; time?: string;
+  } | null>(null);
   // Кнопка индивидуальной записи появляется, только когда такая услуга есть:
   // иначе она вела бы в форму без единого варианта.
-  const { services: journalServices } = useServiceOptions();
+  const { services: journalServices, onlyResourceServices } = useServiceOptions();
   const hasResourceServices = journalServices.some(s => s.booking_mode === 'resource' && s.is_bookable);
   // 🔥 Стейт формы создания живёт здесь — сетка получает живой объект для превью (задача 3 V4-4)
   const [newForm, setNewForm] = useState<NewBookingForm>({ serviceId: null, title: '', hall: '', maxClients: '8', branchId: null });
@@ -249,6 +251,16 @@ export default function Journal() {
   ) => {
     const blockStart = timeIdx;
     const blockEnd   = timeIdx + 1;
+
+    if (onlyResourceServices) {
+      const col = columns[columnIndex];
+      setResourceBooking({
+        teacherId: trainerIdx,
+        date: toDateStr(col instanceof Date ? col : new Date(calYear, calMonth, selectedDay)),
+        time: formatIndexToTimeStr(timeIdx),
+      });
+      return;
+    }
 
     // 🔥 Сохраняем индекс колонки в стейт
     setNewBookingSlot({ trainer: trainerIdx, timeStart: blockStart, timeEnd: blockEnd, columnIndex });
@@ -840,12 +852,15 @@ export default function Journal() {
           onCreate={createLessonFromModal}
           spaceIsAxis={spaceIsAxis}
           // Мастера и день забираем ДО закрытия формы: closeNewForm обнуляет слот.
-          onResourceBooking={hasResourceServices ? () => {
+          onResourceBooking={hasResourceServices ? (serviceId) => {
             const slot = newBookingSlot;
+            const col = slot.columnIndex != null ? columns[slot.columnIndex] : null;
             closeNewForm();
             setResourceBooking({
               teacherId: slot?.trainer ?? null,
-              date: toDateStr(new Date(calYear, calMonth, selectedDay)),
+              date: toDateStr(col instanceof Date ? col : new Date(calYear, calMonth, selectedDay)),
+              serviceId,
+              time: formatIndexToTimeStr(slot.timeStart),
             });
           } : undefined}
         />
@@ -857,6 +872,8 @@ export default function Journal() {
         <ResourceBookingModal
           teacherId={resourceBooking.teacherId}
           defaultDate={resourceBooking.date}
+          defaultServiceId={resourceBooking.serviceId}
+          defaultTime={resourceBooking.time}
           onClose={() => setResourceBooking(null)}
           onCreated={mutations.invalidate}
         />

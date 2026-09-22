@@ -176,6 +176,12 @@
     "confirm": "Odwołaj zajęcia"
   },
   "resourceBooking": {
+    "searchClient": "Szukaj po imieniu lub telefonie / Instagram / email",
+    "chooseClient": "Wybierz klienta",
+    "noClients": "Nie znaleziono klientów",
+    "noServices": "Brak dostępnych usług indywidualnych",
+    "anyStaff": "Dowolny dostępny specjalista",
+    "chooseDetails": "Wybierz usługę i oddział, aby zobaczyć wolne terminy",
     "title": "Rezerwacja indywidualna",
     "service": "Usługa",
     "branch": "Oddział",

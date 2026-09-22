@@ -168,6 +168,12 @@
     "confirm": "Anulo mësimin"
   },
   "resourceBooking": {
+    "searchClient": "Kërko sipas emrit ose telefonit / Instagram / email",
+    "chooseClient": "Zgjidhni një klient",
+    "noClients": "Nuk u gjetën klientë",
+    "noServices": "Nuk ka shërbime individuale të disponueshme",
+    "anyStaff": "Çdo specialist i lirë",
+    "chooseDetails": "Zgjidhni shërbimin dhe degën për të parë oraret e lira",
     "title": "Rezervim individual",
     "service": "Shërbimi",
     "branch": "Dega",

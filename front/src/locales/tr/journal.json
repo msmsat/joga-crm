@@ -168,6 +168,12 @@
     "confirm": "Dersi iptal et"
   },
   "resourceBooking": {
+    "searchClient": "Ad veya telefonla ara / Instagram / email",
+    "chooseClient": "Bir müşteri seçin",
+    "noClients": "Müşteri bulunamadı",
+    "noServices": "Kullanılabilir bireysel hizmet yok",
+    "anyStaff": "Uygun olan herhangi bir uzman",
+    "chooseDetails": "Uygun saatleri görmek için hizmet ve şube seçin",
     "title": "Bireysel randevu",
     "service": "Hizmet",
     "branch": "Şube",

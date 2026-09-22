@@ -168,6 +168,12 @@
     "confirm": "Cancelar aula"
   },
   "resourceBooking": {
+    "searchClient": "Pesquisar por nome ou telefone / Instagram / email",
+    "chooseClient": "Selecione um cliente",
+    "noClients": "Nenhum cliente encontrado",
+    "noServices": "Não há serviços individuais disponíveis",
+    "anyStaff": "Qualquer profissional disponível",
+    "chooseDetails": "Selecione um serviço e uma unidade para ver os horários disponíveis",
     "title": "Marcação individual",
     "service": "Serviço",
     "branch": "Filial",

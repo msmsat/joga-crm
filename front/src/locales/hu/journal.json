@@ -168,6 +168,12 @@
     "confirm": "Óra lemondása"
   },
   "resourceBooking": {
+    "searchClient": "Keresés név vagy telefonszám alapján / Instagram / email",
+    "chooseClient": "Válasszon ügyfelet",
+    "noClients": "Nem található ügyfél",
+    "noServices": "Nincs elérhető egyéni szolgáltatás",
+    "anyStaff": "Bármelyik szabad szakember",
+    "chooseDetails": "Válasszon szolgáltatást és telephelyet a szabad időpontok megtekintéséhez",
     "title": "Egyéni foglalás",
     "service": "Szolgáltatás",
     "branch": "Telephely",

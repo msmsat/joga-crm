@@ -172,6 +172,12 @@
     "confirm": "Otkaži termin"
   },
   "resourceBooking": {
+    "searchClient": "Pretraži po imenu ili telefonu / Instagram / email",
+    "chooseClient": "Odaberite klijenta",
+    "noClients": "Nema pronađenih klijenata",
+    "noServices": "Nema dostupnih individualnih usluga",
+    "anyStaff": "Bilo koji slobodan stručnjak",
+    "chooseDetails": "Odaberite uslugu i poslovnicu za prikaz slobodnih termina",
     "title": "Individualna rezervacija",
     "service": "Usluga",
     "branch": "Poslovnica",

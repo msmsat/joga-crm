@@ -168,6 +168,12 @@
     "confirm": "Annulla la lezione"
   },
   "resourceBooking": {
+    "searchClient": "Cerca per nome o telefono / Instagram / email",
+    "chooseClient": "Seleziona un cliente",
+    "noClients": "Nessun cliente trovato",
+    "noServices": "Nessun servizio individuale disponibile",
+    "anyStaff": "Qualsiasi professionista disponibile",
+    "chooseDetails": "Seleziona un servizio e una sede per vedere gli orari disponibili",
     "title": "Prenotazione individuale",
     "service": "Servizio",
     "branch": "Sede",

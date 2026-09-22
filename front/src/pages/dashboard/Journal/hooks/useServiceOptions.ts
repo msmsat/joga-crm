@@ -11,7 +11,7 @@ export const CREATE_SERVICE_OPTION = '__create_service__';
 // Список услуг студии → готовые опции для Select обеих форм Журнала (создание/
 // редактирование занятия). Кэш общий с Каталогом (queryKeys.services) — услуга,
 // созданная там, появляется в списке сама, без доп. кода здесь.
-export function useServiceOptions() {
+export function useServiceOptions(includeResource = false) {
   const { t } = useTranslation('journal');
   const { data: services = [] } = useQuery({
     queryKey: queryKeys.services,
@@ -22,23 +22,21 @@ export function useServiceOptions() {
   // администратору пункт не показываем, иначе переход упрётся в редирект.
   const canCreateService = getUserRoleFromToken() === 'owner';
 
-  // HB-22: создание СОБЫТИЯ предлагает только event-услуги. Поставить
-  // resource-услугу в расписание вручную нельзя — её интервал появляется
-  // при подтверждении записи, и заранее созданный дубль занял бы мастера.
+  // Редактирование события оставляет только event-услуги. Создание также
+  // предлагает resource: выбор переключает форму на запись клиента через
+  // quote/confirm, без предварительного создания пустого занятия.
   const eventServices = useMemo(() => services.filter(s => s.booking_mode !== 'resource'), [services]);
 
   const options: SelectOption[] = useMemo(() => {
-    const serviceOptions = eventServices.map(s => ({ value: String(s.id), label: s.name }));
+    const serviceOptions = (includeResource ? services : eventServices).map(s => ({ value: String(s.id), label: s.name }));
     if (!canCreateService) return serviceOptions;
     return [...serviceOptions, { value: CREATE_SERVICE_OPTION, label: t('createService') }];
-  }, [eventServices, canCreateService, t]);
+  }, [services, eventServices, includeResource, canCreateService, t]);
 
   return {
     services,
     options,
-    // Услуги у студии есть, но все — индивидуальные, и в этой форме их быть не
-    // может. Барбершоп видел здесь пустой список с одной кнопкой «создать
-    // услугу» и никакого объяснения: отбор молчал о том, что он отобрал.
+    // Студия только с индивидуальными услугами сразу открывает запись клиента.
     onlyResourceServices: eventServices.length === 0 && services.length > 0,
   };
 }

@@ -168,6 +168,12 @@
     "confirm": "Annuler le cours"
   },
   "resourceBooking": {
+    "searchClient": "Rechercher par nom ou téléphone / Instagram / email",
+    "chooseClient": "Choisir un client",
+    "noClients": "Aucun client trouvé",
+    "noServices": "Aucune prestation individuelle disponible",
+    "anyStaff": "Tout professionnel disponible",
+    "chooseDetails": "Choisissez une prestation et un établissement pour voir les créneaux disponibles",
     "title": "Réservation individuelle",
     "service": "Prestation",
     "branch": "Établissement",

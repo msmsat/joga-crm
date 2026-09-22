@@ -172,6 +172,12 @@
     "confirm": "Anulează ședința"
   },
   "resourceBooking": {
+    "searchClient": "Caută după nume sau telefon / Instagram / email",
+    "chooseClient": "Selectează un client",
+    "noClients": "Nu s-au găsit clienți",
+    "noServices": "Nu există servicii individuale disponibile",
+    "anyStaff": "Orice specialist disponibil",
+    "chooseDetails": "Selectează un serviciu și o locație pentru a vedea orele disponibile",
     "title": "Programare individuală",
     "service": "Serviciu",
     "branch": "Filială",

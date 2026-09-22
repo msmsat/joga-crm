@@ -168,6 +168,12 @@
     "confirm": "Aflys holdet"
   },
   "resourceBooking": {
+    "searchClient": "Søg efter navn eller telefon / Instagram / email",
+    "chooseClient": "Vælg en kunde",
+    "noClients": "Ingen kunder fundet",
+    "noServices": "Ingen individuelle ydelser tilgængelige",
+    "anyStaff": "Enhver ledig behandler",
+    "chooseDetails": "Vælg ydelse og afdeling for at se ledige tider",
     "title": "Individuel booking",
     "service": "Ydelse",
     "branch": "Afdeling",

@@ -168,6 +168,12 @@
     "confirm": "Cancel lesson"
   },
   "resourceBooking": {
+    "searchClient": "Name, phone, Instagram or email",
+    "chooseClient": "Choose a client",
+    "noClients": "No clients found",
+    "noServices": "No individual services available",
+    "anyStaff": "Any available specialist",
+    "chooseDetails": "Choose a service and branch to see available times",
     "title": "Individual booking",
     "service": "Service",
     "branch": "Branch",

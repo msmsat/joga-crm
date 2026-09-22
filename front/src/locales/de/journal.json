@@ -168,6 +168,12 @@
     "confirm": "Kurs stornieren"
   },
   "resourceBooking": {
+    "searchClient": "Nach Name oder Telefonnummer suchen / Instagram / email",
+    "chooseClient": "Kunden auswählen",
+    "noClients": "Keine Kunden gefunden",
+    "noServices": "Keine individuellen Leistungen verfügbar",
+    "anyStaff": "Beliebige verfügbare Fachkraft",
+    "chooseDetails": "Leistung und Standort auswählen, um freie Termine zu sehen",
     "title": "Individuelle Buchung",
     "service": "Leistung",
     "branch": "Filiale",

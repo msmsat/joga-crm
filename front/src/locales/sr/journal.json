@@ -172,6 +172,12 @@
     "confirm": "Откажи термин"
   },
   "resourceBooking": {
+    "searchClient": "Претрага по имену или телефону / Instagram / email",
+    "chooseClient": "Изаберите клијента",
+    "noClients": "Нема пронађених клијената",
+    "noServices": "Нема доступних индивидуалних услуга",
+    "anyStaff": "Било који слободан стручњак",
+    "chooseDetails": "Изаберите услугу и пословницу да видите слободне термине",
     "title": "Individualno zakazivanje",
     "service": "Usluga",
     "branch": "Filijala",

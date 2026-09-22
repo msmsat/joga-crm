@@ -172,6 +172,12 @@
     "confirm": "Zrušit lekci"
   },
   "resourceBooking": {
+    "searchClient": "Hledat podle jména nebo telefonu / Instagram / email",
+    "chooseClient": "Vyberte klienta",
+    "noClients": "Žádní klienti nenalezeni",
+    "noServices": "Žádné dostupné individuální služby",
+    "anyStaff": "Libovolný dostupný specialista",
+    "chooseDetails": "Vyberte službu a pobočku pro zobrazení volných termínů",
     "title": "Individuální rezervace",
     "service": "Služba",
     "branch": "Pobočka",

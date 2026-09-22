@@ -168,6 +168,12 @@
     "confirm": "Peru tunti"
   },
   "resourceBooking": {
+    "searchClient": "Hae nimellä tai puhelinnumerolla / Instagram / email",
+    "chooseClient": "Valitse asiakas",
+    "noClients": "Asiakkaita ei löytynyt",
+    "noServices": "Yksilöpalveluja ei ole saatavilla",
+    "anyStaff": "Kuka tahansa vapaa ammattilainen",
+    "chooseDetails": "Valitse palvelu ja toimipiste nähdäksesi vapaat ajat",
     "title": "Yksilövaraus",
     "service": "Palvelu",
     "branch": "Toimipiste",

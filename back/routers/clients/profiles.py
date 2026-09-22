@@ -30,6 +30,7 @@ from services.client_segments import (
     CATEGORY_KEYS, DEFAULT_RULES, SegmentRules, category_condition, get_segment_rules, resolve_status,
 )
 from services.contacts import contact_taken, ensure_client_contacts_free
+from services.client_search import client_search_condition
 from services.referral import fire_referral
 from services.subscription_charge import notify_subscription_remaining
 from schemas import (
@@ -276,21 +277,8 @@ async def list_clients(
     rules = await get_segment_rules(db, studio_id)
     conditions = client_scope(ctx)   # тренеру — только его клиенты
 
-    if search:
-        s = f"%{search}%"
-        conditions.append(or_(
-            Client.name.ilike(s),
-            Client.last_name.ilike(s),
-            Client.phone.ilike(s),
-            Client.email.ilike(s),
-            # «Анна Петрова» целиком не лежит ни в одном поле, и поиск по
-            # полному имени не находил НИЧЕГО: имя в name, фамилия в last_name.
-            # Человек ищет так чаще всего, а ассистент — всегда (прогон набора
-            # 15.08.2026: «заморозь клиента Анну Петрову» → «клиент не найден»).
-            # concat игнорирует NULL, поэтому клиент без фамилии не выпадает.
-            func.concat(Client.name, " ", Client.last_name).ilike(s),
-            func.concat(Client.last_name, " ", Client.name).ilike(s),
-        ))
+    if search and search.strip():
+        conditions.append(client_search_condition(search))
 
     # status и category резолвятся одним и тем же правилом — иначе бейдж клиента
     # и таб-фильтр разошлись бы.

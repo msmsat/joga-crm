@@ -168,6 +168,12 @@
     "confirm": "Ställ in passet"
   },
   "resourceBooking": {
+    "searchClient": "Sök efter namn eller telefon / Instagram / email",
+    "chooseClient": "Välj en kund",
+    "noClients": "Inga kunder hittades",
+    "noServices": "Inga individuella tjänster tillgängliga",
+    "anyStaff": "Valfri tillgänglig specialist",
+    "chooseDetails": "Välj tjänst och filial för att se lediga tider",
     "title": "Individuell bokning",
     "service": "Tjänst",
     "branch": "Filial",

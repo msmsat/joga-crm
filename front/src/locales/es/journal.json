@@ -168,6 +168,12 @@
     "confirm": "Cancelar la clase"
   },
   "resourceBooking": {
+    "searchClient": "Buscar por nombre o teléfono / Instagram / email",
+    "chooseClient": "Selecciona un cliente",
+    "noClients": "No se encontraron clientes",
+    "noServices": "No hay servicios individuales disponibles",
+    "anyStaff": "Cualquier profesional disponible",
+    "chooseDetails": "Selecciona un servicio y una sucursal para ver los horarios disponibles",
     "title": "Reserva individual",
     "service": "Servicio",
     "branch": "Sucursal",
