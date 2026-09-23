@@ -1,4 +1,4 @@
-import { useEffect, useSyncExternalStore } from 'react';
+import { useCallback, useEffect, useSyncExternalStore } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { setSpaceTerms } from '../i18n';
@@ -57,4 +57,27 @@ export function useBusinessTerms(mode: BookingMode = 'resource', override?: Term
       lng: config!.locale, defaultValue: profile.messages[key], staff, offering,
     })) : '…',
   };
+}
+
+/** Подпись роли в КОМАНДЕ СВОЕЙ СТУДИИ: «тренер» у студии и спорта, «мастер» у
+ *  бьюти, «специалист» у остальных — слово приходит с сервера, как и для места
+ *  (services/terminology.py). Владелец и администратор от отрасли не зависят и
+ *  остаются словарными.
+ *
+ *  Списки ЧУЖИХ студий (выбор кабинета, профиль, страница приглашения) зовут
+ *  словарь напрямую и дальше: там роль относится к другой студии, а слово
+ *  отсюда — только текущей.
+ */
+export function useRoleLabel() {
+  const { t, i18n } = useTranslation(['staff']);
+  const { staff } = useBusinessTerms();
+  return useCallback((role?: string | null): string => {
+    if (!role) return '';
+    // Слова словаря хранятся строчными — подпись роли открывает строку, поэтому
+    // тот же formatter, что и у {{space, capitalize}} в локалях.
+    if (role === 'trainer' && staff) {
+      return i18n.services.formatter?.format(staff.singular, 'capitalize', i18n.language) ?? staff.singular;
+    }
+    return t(`staff:roles.${role}`, { defaultValue: role });
+  }, [t, i18n, staff]);
 }

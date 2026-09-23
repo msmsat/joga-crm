@@ -18,6 +18,7 @@ import { getActiveEmail } from '../../../utils/auth';
 import { ApiError, resolveImageUrl } from '../../../api/client';
 import { staffApi } from '../../../api/staff';
 import { useStudioSettings } from '../../../hooks/useStudioCurrency';
+import { useRoleLabel } from '../../../hooks/useBusinessTerms';
 import { QrShareModal } from '../../../components/ui/index';
 import { miniappLink } from '../../../lib/miniapp';
 import { getCurrencySymbol } from '../../../components/UI';
@@ -106,6 +107,8 @@ interface DeleteModal {
 
 export default function Staff() {
   const { t, i18n } = useTranslation(['staff', 'common']);
+  // Роль называется словом отрасли: «тренер», «мастер», «специалист».
+  const roleLabel = useRoleLabel();
 
   // ── API hooks ─────────────────────────────────────────────────────────────
   const { rawStaff, isLoading: listLoading, refetch: refetchStaff, create, update, deleteStaff } = useStaffList();
@@ -138,11 +141,13 @@ export default function Staff() {
     return {
       ...emp,
       // 🔥 Вот твоя идея в действии! Переводим заранее:
-      _translatedRole: t(`staff:roles.${emp.role}`, { defaultValue: emp.role }),
+      _translatedRole: roleLabel(emp.role),
       _resolvedGroupKey: rawGroup, // Оставляем сырой ключ для логики React (key)
-      _translatedGroup: t(`staff:roles.${rawGroup}`, { defaultValue: rawGroup })
+      _translatedGroup: roleLabel(rawGroup)
     };
-  }), [rawStaff, t]); // t в зависимостях: при смене языка массив пересоберется сам!
+    // roleLabel в зависимостях: при смене языка ИЛИ слова отрасли массив
+    // пересоберётся сам (ссылка меняется только вместе с ними).
+  }), [rawStaff, roleLabel]);
 
   const ownerCount = rawStaff.filter(s => s.role === 'owner').length;
 
@@ -525,7 +530,7 @@ export default function Staff() {
                   <div>
                     <div className="hero-name">{profile.name} {profile.last_name}</div>
                     <div className="hero-role">
-                      {t(`staff:roles.${profile.role}`, { defaultValue: profile.role })}{' '}
+                      {roleLabel(profile.role)}{' '}
                       {profile.is_online
                         ? <span style={{ color: '#5BAB72', fontWeight: 700 }}>{t('staff:profile.online')}</span>
                         : t('staff:profile.offline')}
@@ -907,7 +912,7 @@ export default function Staff() {
           title={[profile.name, profile.last_name].filter(Boolean).join(' ')}
           // Должность, если владелец её заполнил, иначе роль: «Тренер» лучше
           // пустой строки, а «Старший барбер» лучше «Тренера».
-          subtitle={profile.department || t(`staff:roles.${profile.role}`, { defaultValue: profile.role })}
+          subtitle={profile.department || roleLabel(profile.role)}
           // Подпись под кодом — общая «Наведите камеру, чтобы записаться».
           // Своей у кода сотрудника нет намеренно: «к мастеру» или «к тренеру»
           // зависит от отрасли студии, а общая строка верна в любой.

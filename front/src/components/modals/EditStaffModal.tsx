@@ -11,6 +11,7 @@ import { settingsApi } from "../../api/settings/settings.api";
 import { resolveImageUrl } from "../../api/client";
 import { getCurrencySymbol } from "../UI";
 import { useContactCheck } from "../../hooks/useContactCheck";
+import { useRoleLabel } from "../../hooks/useBusinessTerms";
 import StaffAvailabilitySection from "./StaffAvailabilitySection";
 import { submitOnEnter } from "../../lib/submitOnEnter";
 
@@ -116,13 +117,12 @@ function IdentityIllus({
   schedule: Record<string, ScheduleDay>; currencySymbol: string;
 }) {
   const { t } = useTranslation(["staff", "common"]);
+  const roleLabel = useRoleLabel();
   const initials = name.trim().length >= 2
     ? name.trim().split(" ").map(w => w[0]).slice(0,2).join("").toUpperCase()
     : "?";
   const enabledDays = Object.values(schedule).filter(d => d.enabled).length;
-  const effectiveRole = role
-    ? t(`staff:roles.${role}`, { defaultValue: role })
-    : t("staff:editModal.positionFallback");
+  const effectiveRole = roleLabel(role) || t("staff:editModal.positionFallback");
   const salaryLabel = salary
     ? `${salary} ${rate_type === "percent" ? "%" : rate_type === "hourly" ? `${currencySymbol}/ч` : currencySymbol}`
     : "—";
@@ -335,6 +335,8 @@ export function FocusInput({
 // ─── MAIN MODAL ───────────────────────────────────────────────────────────────
 export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelete, ownerCount, isSelf }: EditStaffModalProps) {
   const { t } = useTranslation(["staff", "common"]);
+  // Роль называется словом отрасли: «тренер», «мастер», «специалист».
+  const roleLabel = useRoleLabel();
   const navigate = useNavigate();
   const [activeTab, setActiveTab]     = useState<TabId>("profile");
   const [saving, setSaving]           = useState(false);
@@ -777,7 +779,7 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
               {form.name || t("staff:editModal.employeeFallback")}
             </h2>
             <p style={{ fontSize: "11px", color: "#AAAAAA", margin: "3px 0 0" }}>
-              {form.role ? t(`staff:roles.${form.role}`, { defaultValue: form.role }) : t("staff:editModal.positionFallback")}
+              {roleLabel(form.role) || t("staff:editModal.positionFallback")}
             </p>
           </div>
 
@@ -1057,7 +1059,7 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
                               {ROLE_ICONS[r.id]}
                             </span>
                             <span style={{ fontSize: "9.5px", fontWeight: isSelected ? 700 : 500, color: isSelected ? "var(--onyx)" : "var(--text3)", textAlign: "center", lineHeight: 1.2 }}>
-                              {t(`staff:roles.${r.id}`)}
+                              {roleLabel(r.id)}
                             </span>
                           </button>
                         );

@@ -7,6 +7,7 @@ import { servicesApi, type ServiceRead } from "../../../../../api/studio/service
 import { settingsApi } from "../../../../../api/settings/settings.api";
 import { getCurrencySymbol } from "../../../../../components/UI";
 import { useContactCheck } from "../../../../../hooks/useContactCheck";
+import { useRoleLabel } from "../../../../../hooks/useBusinessTerms";
 import { staffApi } from "../../../../../api/staff";
 import type { StaffMutateResponse } from "../../../../../api/staff/staff.types";
 import { submitOnEnter } from "../../../../../lib/submitOnEnter";
@@ -336,6 +337,8 @@ export interface AddEmployeeModalProps {
 
 export function AddEmployeeModal({ isOpen, onClose, onSuccess }: AddEmployeeModalProps) {
   const { t } = useTranslation(["staff", "common"]);
+  // Роль называется словом отрасли: «тренер», «мастер», «специалист».
+  const roleLabel = useRoleLabel();
   const navigate = useNavigate();
   const [step, setStep]       = useState<Step>(1);
   const [animating, setAnimating] = useState(false);
@@ -476,7 +479,7 @@ export function AddEmployeeModal({ isOpen, onClose, onSuccess }: AddEmployeeModa
     ? t("addModal.step1.errors.password") : undefined;
   const checkingHint  = t("common:validation.checkingContact");
 
-  const effectiveRole    = t(`staff:roles.${data.role}`, { defaultValue: data.role });
+  const effectiveRole    = roleLabel(data.role);
   const canStep1         = data.name.trim().length >= 2
     && emailFormatOk
     && (willLinkAccount || passwordStrongOk)
@@ -492,10 +495,7 @@ export function AddEmployeeModal({ isOpen, onClose, onSuccess }: AddEmployeeModa
 
   const DAYS_ORDER = ["mon","tue","wed","thu","fri","sat","sun"];
   const dayAbbrs   = DAYS_ORDER.map(k => t(`common:days.short.${k}`));
-  const roleChips  = [
-    { label: t("staff:roles.trainer") },
-    { label: t("staff:roles.admin") },
-  ];
+  const roleChips  = PRESET_ROLES.map(r => ({ label: roleLabel(r.id) }));
 
   const selectStyle: React.CSSProperties = {
     padding: "7px 10px", 
@@ -621,7 +621,7 @@ export function AddEmployeeModal({ isOpen, onClose, onSuccess }: AddEmployeeModa
             />}
             {step === 2 && <Illus2
               role={data.role}
-              roleLabel={t(`staff:roles.${data.role}`, { defaultValue: t("addModal.illus.roleFallback") })}
+              roleLabel={roleLabel(data.role) || t("addModal.illus.roleFallback")}
               servicesLabel={t("addModal.illus.services")}
               specializationLabel={t("addModal.illus.specialization")}
               roleChips={roleChips}
@@ -791,7 +791,7 @@ export function AddEmployeeModal({ isOpen, onClose, onSuccess }: AddEmployeeModa
                               {ROLE_ICONS[r.id]}
                             </span>
                             <span style={{ fontSize: "10px", fontWeight: isSelected ? 800 : 600, color: isSelected ? "var(--onyx)" : "var(--text3)", textAlign: "center", lineHeight: 1.2 }}>
-                              {t(`staff:roles.${r.id}`)}
+                              {roleLabel(r.id)}
                             </span>
                           </button>
                         );

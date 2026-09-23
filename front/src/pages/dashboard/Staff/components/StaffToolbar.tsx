@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import { useRoleLabel } from '../../../../hooks/useBusinessTerms';
 
 export interface StaffToolbarProps {
   count: number;
@@ -20,7 +21,9 @@ export function StaffToolbar({
   onAddClick,
 }: StaffToolbarProps) {
   const { t } = useTranslation('staff');
-  
+  // Роль называется словом отрасли: «тренер», «мастер», «специалист».
+  const roleLabel = useRoleLabel();
+
   return (
     <>
       <div className="panel-hdr">
@@ -74,7 +77,7 @@ export function StaffToolbar({
               }}
             >
               {/* 🔥 МАГИЯ: Если "ALL", берем спец. слово. Иначе переводим сырой ключ отдела! */}
-              {g === 'ALL' ? t('toolbar.allGroup') : t(`roles.${g}`, { defaultValue: g })}
+              {g === 'ALL' ? t('toolbar.allGroup') : roleLabel(g)}
             </button>
           ))}
         </div>
