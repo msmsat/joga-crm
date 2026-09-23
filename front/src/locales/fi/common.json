@@ -223,5 +223,14 @@
     "connected": "Yhdistetty",
     "disconnected": "Yhteys katkaistu",
     "codeSent": "Koodi lähetetty"
+  },
+  "price": {
+    "range": "{{from}}–{{to}}"
+  },
+  "servicePrice": {
+    "hint": "Napauta summaa asettaaksesi oman hinnan",
+    "custom": "Oma hinta. Tyhjennä kenttä palataksesi Luettelon hintaan",
+    "inherited": "Hinta Luettelosta",
+    "aria": "Palvelun {{service}} hinta"
   }
 }

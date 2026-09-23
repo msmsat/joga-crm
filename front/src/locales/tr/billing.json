@@ -37,6 +37,7 @@
     "unlimited": "Sınırsız"
   },
   "banner": {
+    "staffAccessBlocked": "Bu stüdyoya erişim askıya alındı. Erişimi yeniden sağlamak için stüdyo sahibiyle iletişime geçin. Profilinize erişmeye devam edebilirsiniz.",
     "trialEnds": "Deneme süreniz {{date}} tarihinde bitiyor — bir plan seçin",
     "renews": "{{plan}} aboneliğiniz {{date}} tarihinde yenilenir",
     "expires": "{{plan}} aboneliğiniz {{date}} tarihinde sona erer",

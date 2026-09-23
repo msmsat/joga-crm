@@ -3,6 +3,7 @@ import { useAiEntity } from '../../../../hooks/useAiEntity';
 import { useAiIntent } from '../../../../hooks/useAiIntent';
 import { useTranslation } from 'react-i18next';
 import { useStudioList, useBranchDetail } from '../hooks/useCatalogList';
+import { groupBranches } from '../groupBranches';
 import { useStudioCurrency } from '../../../../hooks/useStudioCurrency';
 import { useToast } from '../../../../components/ui/Toast';
 import { ConfirmModal } from '../../../../components/ui/ConfirmModal';
@@ -60,14 +61,7 @@ export function StudioSection() {
   // null → нет модалки зала; { hall: null } → создание; { hall } → редактирование
   const [hallModal, setHallModal] = useState<{ hall: HallBrief | null } | null>(null);
 
-  const groups = useMemo(() => {
-    const countries = [...new Set(studios.map(s => s.country).filter((c): c is string => Boolean(c)))];
-    if (countries.length > 1) {
-      return countries.map(country => ({ label: country, items: studios.filter(s => s.country === country) }));
-    }
-    const cities = [...new Set(studios.map(s => s.city).filter((c): c is string => Boolean(c)))];
-    return cities.map(city => ({ label: city, items: studios.filter(s => s.city === city) }));
-  }, [studios]);
+  const groups = useMemo(() => groupBranches(studios), [studios]);
 
   const handleSelectStudio = (id: number) => {
     setPickedStudioId(id);
@@ -131,7 +125,7 @@ export function StudioSection() {
         <div className="cat-list">
           {groups.map(group => (
             <div key={group.label}>
-              <div className="cat-sep">{group.label}</div>
+              {group.label && <div className="cat-sep">{group.label}</div>}
               {group.items.map(studio => (
                 <div
                   key={studio.id}
@@ -185,7 +179,7 @@ export function StudioSection() {
                 </div>
                 <div>
                   <div className="cat-hero-name">{activeStudio.name}</div>
-                  <div className="cat-hero-sub">{activeStudio.city} · {activeStudio.address}</div>
+                  <div className="cat-hero-sub">{[activeStudio.city, activeStudio.address].filter(Boolean).join(' · ')}</div>
                 </div>
               </div>
             </div>

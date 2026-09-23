@@ -530,6 +530,7 @@
     "segment": {
       "resource": "Individual",
       "event": "Group schedule"
-    }
+    },
+    "priceRange": "from {{from}} to {{to}}"
   }
 }

@@ -191,7 +191,10 @@
       "transferSearchPlaceholder": "Имя или телефон клиента",
       "transferSelectPlaceholder": "Выберите клиента",
       "transferConfirm": "Передать",
-      "transferSuccess": "Абонемент передан"
+      "transferSuccess": "Абонемент передан",
+      "masterLabel": "Мастер",
+      "masterPlaceholder": "Выберите мастера",
+      "masterRequired": "Выберите мастера — цена зависит от него"
     },
     "offers": {
       "title": "Персональная скидка",

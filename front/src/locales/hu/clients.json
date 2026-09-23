@@ -194,7 +194,10 @@
       "useBonuses_one": "Bónuszok felhasználása ({{count}})",
       "useBonuses_other": "Bónuszok felhasználása ({{count}})",
       "bonusesSpent_one": "Bónuszok ({{count}} p.)",
-      "bonusesSpent_other": "Bónuszok ({{count}} p.)"
+      "bonusesSpent_other": "Bónuszok ({{count}} p.)",
+      "masterLabel": "Szakember",
+      "masterPlaceholder": "Válasszon szakembert",
+      "masterRequired": "Válasszon szakembert — az ár ettől függ"
     },
     "offers": {
       "title": "Személyes kedvezmény",

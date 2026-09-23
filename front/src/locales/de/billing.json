@@ -37,6 +37,7 @@
     "unlimited": "Unbegrenzt"
   },
   "banner": {
+    "staffAccessBlocked": "Der Zugang zu diesem Studio ist gesperrt. Wende dich an den Studioinhaber, um den Zugang wiederherzustellen. Dein Profil bleibt verfügbar.",
     "trialEnds": "Ihre Testphase endet am {{date}} — wählen Sie einen Tarif",
     "renews": "Ihr {{plan}}-Abo verlängert sich am {{date}}",
     "expires": "Ihr {{plan}}-Abo endet am {{date}}",

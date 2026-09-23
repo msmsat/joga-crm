@@ -122,6 +122,8 @@
       "name": "Name der Leistung",
       "namePlaceholder": "Hatha Yoga",
       "category": "Kategorie",
+      "categoryCreate": "Kategorie erstellen",
+      "categoryNewPlaceholder": "z. B. Haarschnitt",
       "type": "Art",
       "typeGroup": "Gruppe",
       "typeIndividual": "Einzel",

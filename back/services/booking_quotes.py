@@ -6,7 +6,7 @@ from types import SimpleNamespace
 from sqlalchemy import select
 
 from models import BookingQuote, Client, Lesson, Studio, StudioBranch, StudioMember
-from services import booking, resource_availability, studio_time
+from services import booking, resource_availability, service_pricing, studio_time
 from services.booking_rules import load_rules
 from services.resource_slots import generate
 
@@ -117,9 +117,14 @@ async def calculate(db, actor: Actor, request, *, now=None, hall_id=None,
     if slot is None:
         reject("CONFIG_INCOMPLETE" if available.reason == "config_incomplete" else "SLOT_UNAVAILABLE")
     teacher = min(slot.teacher_ids)
+    # Цена — этого мастера, а не услуги: у одной услуги у разных мастеров она
+    # своя (services/service_pricing.py). Слот, который могут взять несколько
+    # мастеров, достаётся тому же, кого выбрала строка выше, — цена обязана
+    # ехать за ним, иначе списанное разойдётся с тем, кто работает.
+    price = await service_pricing.price_for(db, data.service, teacher)
     candidate = SimpleNamespace(id=0, start_time=slot.local_start, service_id=data.service.id,
         teacher_id=teacher, branch_id=request.branch_id, hall_id=hall_id,
-        booking_mode="resource", tz_iana=slot.tz_iana, version=1, price=data.service.price,
+        booking_mode="resource", tz_iana=slot.tz_iana, version=1, price=price,
         duration_min=data.service.duration_min, buffer_before_min=data.service.buffer_before_min,
         buffer_after_min=data.service.buffer_after_min)
     funding = preserved_funding
@@ -133,7 +138,7 @@ async def calculate(db, actor: Actor, request, *, now=None, hall_id=None,
     branch = await db.get(StudioBranch, request.branch_id)
     terms = booking.Terms(lesson_id=0, local_start=slot.local_start, service_name=data.service.name,
         trainer_name=" ".join(x for x in (member.name, member.last_name) if x), branch_name=branch.name,
-        funding=funding, approval_required=rules.trainer_confirmation_required, base_price=data.service.price)
+        funding=funding, approval_required=rules.trainer_confirmation_required, base_price=price)
     return _snapshot(candidate, terms, studio, rules, request.payment_method,
                      starts_at=slot.starts_at.isoformat(), spot_number=1)
 

@@ -7,25 +7,18 @@ import { StudioSection } from './components/StudioSection';
 import { ServiceSection } from './components/ServiceSection';
 import { SubscriptionSection } from './components/SubscriptionSection';
 
-const VALID_TABS: CatalogTab[] = ['studios', 'services', 'subscriptions'];
+const VALID_TABS: CatalogTab[] = ['services', 'subscriptions', 'studios'];
 
 export default function Catalog() {
   const { t } = useTranslation(['catalog']);
   const [searchParams] = useSearchParams();
   const initialTab = searchParams.get('tab') as CatalogTab | null;
-  const [tab, setTab] = useState<CatalogTab>(initialTab && VALID_TABS.includes(initialTab) ? initialTab : 'studios');
+  const [tab, setTab] = useState<CatalogTab>(initialTab && VALID_TABS.includes(initialTab) ? initialTab : 'services');
 
   return (
     <div className="cat-page">
       {/* Tab switcher */}
       <div className="cat-tabs">
-        <button className={`cat-tab ${tab === 'studios' ? 'active' : ''}`} onClick={() => setTab('studios')}>
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-            <polyline points="9 22 9 12 15 12 15 22"/>
-          </svg>
-          {t('catalog:tabs.studios')}
-        </button>
         <button className={`cat-tab ${tab === 'services' ? 'active' : ''}`} onClick={() => setTab('services')}>
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M12 2L2 7l10 5 10-5-10-5z"/>
@@ -40,13 +33,20 @@ export default function Catalog() {
           </svg>
           {t('catalog:tabs.subscriptions')}
         </button>
+        <button className={`cat-tab ${tab === 'studios' ? 'active' : ''}`} onClick={() => setTab('studios')}>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+            <polyline points="9 22 9 12 15 12 15 22"/>
+          </svg>
+          {t('catalog:tabs.studios')}
+        </button>
       </div>
 
       {/* Content */}
       <div style={{ flex: 1, minHeight: 0 }}>
-        {tab === 'studios' && <StudioSection />}
         {tab === 'services' && <ServiceSection />}
         {tab === 'subscriptions' && <SubscriptionSection />}
+        {tab === 'studios' && <StudioSection />}
       </div>
     </div>
   );

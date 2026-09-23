@@ -37,6 +37,7 @@
     "unlimited": "Ilimitado"
   },
   "banner": {
+    "staffAccessBlocked": "El acceso a este estudio está suspendido. Contacta con el propietario para restablecer el acceso. Tu perfil sigue disponible.",
     "trialEnds": "Tu prueba termina el {{date}} — elige un plan",
     "renews": "Tu suscripción {{plan}} se renueva el {{date}}",
     "expires": "Tu suscripción {{plan}} vence el {{date}}",

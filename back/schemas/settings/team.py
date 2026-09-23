@@ -6,6 +6,16 @@ from schemas.auth.requests import validate_strong_password
 from schemas.staff.staff import StaffWorkingHoursItem
 
 
+class StaffServicePrice(BaseSchema):
+    """Индивидуальная цена одной услуги у сотрудника.
+
+    `price=None` — «как у услуги»: цена продолжит ездить за правкой Каталога.
+    Ноль — законная цена (бесплатно у стажёра), и путать её со снятием нельзя.
+    """
+    service_id: int
+    price: Optional[int] = Field(default=None, ge=0)
+
+
 class StaffCreate(BaseSchema):
     name: str
     last_name: Optional[str] = None
@@ -32,6 +42,11 @@ class StaffCreate(BaseSchema):
     rate: Optional[float] = None
     rate_type: Optional[str] = None  # "fixed" | "percent" | "hourly"
     service_ids: list[int] = []
+    # Цены только для тех услуг, где они отличаются от базовой. Услуги,
+    # которой нет в `service_ids`, тут быть не может — это ошибка клиента, а не
+    # «назначить заодно»: иначе список услуг получил бы второй источник правды.
+    # Поле не прислали — цены не трогаем; прислали пустым — снимаем все.
+    service_prices: list[StaffServicePrice] = []
     photo_url: Optional[str] = None
     schedule: list[StaffWorkingHoursItem] = []
     # HB-05: филиалы, где сотрудник доступен для Resource-записи.
@@ -51,6 +66,11 @@ class StaffUpdate(BaseSchema):
     rate: Optional[float] = None
     rate_type: Optional[str] = None
     service_ids: list[int] = []
+    # Цены только для тех услуг, где они отличаются от базовой. Услуги,
+    # которой нет в `service_ids`, тут быть не может — это ошибка клиента, а не
+    # «назначить заодно»: иначе список услуг получил бы второй источник правды.
+    # Поле не прислали — цены не трогаем; прислали пустым — снимаем все.
+    service_prices: list[StaffServicePrice] = []
     photo_url: Optional[str] = None
     schedule: list[StaffWorkingHoursItem] = []
     branch_ids: list[int] = []

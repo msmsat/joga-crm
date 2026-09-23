@@ -1,12 +1,28 @@
 import { client } from '../client'
 import type { ServiceBookingMode, TerminologyProfile } from '../booking/hybrid.types'
 
+export interface ServiceMaster {
+  user_id: number
+  name: string
+  price: number
+}
+
 // Зеркало бэкенд-схемы ServiceRead (back/schemas/studio/studio.py).
 export interface ServiceRead {
   id: number
   name: string
   description: string | null
   price: number
+  // Во что услуга обходится клиенту с поправкой на мастера: у разных мастеров
+  // цена своя. Совпали — пишем одну сумму, разошлись — «от price_min до
+  // price_max». Считает сервер (back/services/service_pricing.py); сравнивать
+  // базовую цену с чем-либо на фронте не нужно.
+  price_min: number
+  price_max: number
+  // Кто оказывает услугу и во что она у него обходится. Как только мастер
+  // известен (в Журнале его задаёт колонка сетки), экран обязан писать ЕГО
+  // цену, а не диапазон: диапазон живёт ровно до выбора мастера.
+  masters: ServiceMaster[]
   duration_min: number
   category: string | null
   service_type: string | null

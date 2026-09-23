@@ -85,10 +85,12 @@ export default function DashboardLayout() {
 
   // Пейволл (задача 12b): подписка не активна → пускаем только на «Тариф» и «Профиль».
   // /billing/plan — только для owner; admin/trainer план не тянут (undefined = не блокируем,
-  // их отсекает 402-гейт на данных → редирект из api/client.ts). Возврат с оплаты
+  // 402 на данных ведёт их в доступный профиль с пояснением). Возврат с оплаты
   // (?payment=return) не блокируем — Billing сам перезапросит план после вебхука.
   const currentPath = location.pathname.replace(/\/$/, '');
   const paymentReturn = new URLSearchParams(location.search).get('payment') === 'return';
+  const staffAccessBlocked = role !== 'owner' && currentPath === '/dashboard/profile'
+    && new URLSearchParams(location.search).get('access') === 'subscription-required';
 
   // Общий кэш со страницей оплаты: активация сразу снимает старый пейволл.
   const { data: plan, refetch: refetchPlan } = useQuery({
@@ -152,6 +154,15 @@ export default function DashboardLayout() {
         <Navbar title={t(`nav.${routeKey}`)} subtitle={t(`subtitles.${routeKey}`)} />
 
         <SubscriptionBanner plan={plan} />
+
+        {staffAccessBlocked && (
+          <div role="status" className="sub-banner" style={{
+            padding: '12px var(--content-pad, 24px)', color: 'var(--text)',
+            background: 'rgba(216,140,154,0.12)', fontSize: '13.5px',
+          }}>
+            {t('billing:banner.staffAccessBlocked')}
+          </div>
+        )}
 
         <div className="content" style={{
           flex: 1,

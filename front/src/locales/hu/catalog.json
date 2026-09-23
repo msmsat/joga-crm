@@ -122,6 +122,8 @@
       "name": "Szolgáltatás neve",
       "namePlaceholder": "Hatha jóga",
       "category": "Kategória",
+      "categoryCreate": "Kategória létrehozása",
+      "categoryNewPlaceholder": "Pl. Hajvágás",
       "type": "Típus",
       "typeGroup": "Csoportos",
       "typeIndividual": "Egyéni",

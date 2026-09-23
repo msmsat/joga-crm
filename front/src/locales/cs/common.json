@@ -223,5 +223,14 @@
     "connected": "Připojeno",
     "disconnected": "Odpojeno",
     "codeSent": "Kód byl odeslán"
+  },
+  "price": {
+    "range": "od {{from}} do {{to}}"
+  },
+  "servicePrice": {
+    "hint": "Klepnutím na částku nastavíte vlastní cenu",
+    "custom": "Vlastní cena. Vymažte pole a vrátí se cena z Katalogu",
+    "inherited": "Cena z Katalogu",
+    "aria": "Cena služby {{service}}"
   }
 }

@@ -232,6 +232,15 @@ class ResourceStaffMemberRead(HybridSchema):
     photo_url: Optional[str] = None
     department: Optional[str] = None
     service_ids: list[int]
+    # {service_id: во что услуга обойдётся У ЭТОГО мастера} — ключи те же, что
+    # в `service_ids`. Как только клиент выбрал мастера, экран обязан писать
+    # его цену, а не диапазон услуги: диапазон существует ровно до этого
+    # момента (services/service_pricing.py).
+    #
+    # Пара «число + готовая строка» — как у `price`/`price_str` во всей витрине:
+    # денег мини-приложение не форматирует, знак валюты и разряды ставит сервер.
+    service_prices: dict[int, int] = {}
+    service_price_strs: dict[int, str] = {}
     # Филиалы мастера из запрошенных: время и бронь считаются по одному адресу,
     # и мастеру из нескольких мини-приложение даёт выбрать, куда идти.
     branch_ids: list[int]

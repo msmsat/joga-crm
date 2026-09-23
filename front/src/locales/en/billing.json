@@ -37,6 +37,7 @@
     "unlimited": "Unlimited"
   },
   "banner": {
+    "staffAccessBlocked": "Access to this studio is suspended. Contact the studio owner to restore access. Your profile remains available.",
     "trialEnds": "Your trial ends on {{date}} — pick a plan",
     "renews": "Your {{plan}} subscription renews on {{date}}",
     "expires": "Your {{plan}} subscription ends on {{date}}",

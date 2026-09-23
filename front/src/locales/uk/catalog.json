@@ -122,6 +122,8 @@
       "name": "Назва послуги",
       "namePlaceholder": "Хатха-йога",
       "category": "Категорія",
+      "categoryCreate": "Створити категорію",
+      "categoryNewPlaceholder": "Наприклад, стрижка",
       "type": "Тип",
       "typeGroup": "Групове",
       "typeIndividual": "Індивідуальне",

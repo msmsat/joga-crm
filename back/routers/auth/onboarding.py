@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
 from database import get_db
-from models import Client, User, Studio, StudioWorkingHours, StudioMember
+from models import Client, User, Studio, StudioWorkingHours, StudioMember, StudioBranch, BranchWorkingHours
 from schemas import OnboardingRequest, SelectStudioRequest, StudioListItem, TokenResponse
 from security import create_access_token
 from services import terminology
@@ -65,10 +65,30 @@ async def _create_studio_with_defaults(user: User, data: OnboardingRequest, db: 
     db.add(new_studio)
     await db.flush()
 
+    # Каталог показывает филиалы, а не рабочие пространства Studio.
+    # Первый филиал сохраняется вместе с онбордингом в одной транзакции.
+    branch = StudioBranch(
+        studio_id=new_studio.id,
+        name=new_studio.name,
+        phone=new_studio.phone,
+        email=new_studio.email,
+        address=new_studio.address,
+        photo_url=new_studio.logo_url,
+    )
+    db.add(branch)
+    await db.flush()
+
     if data.workingHours:
         for wh in data.workingHours:
             db.add(StudioWorkingHours(
                 studio_id=new_studio.id,
+                day_of_week=wh.dayOfWeek,
+                is_open=wh.isOpen,
+                open_time=wh.openTime,
+                close_time=wh.closeTime,
+            ))
+            db.add(BranchWorkingHours(
+                branch_id=branch.id,
                 day_of_week=wh.dayOfWeek,
                 is_open=wh.isOpen,
                 open_time=wh.openTime,

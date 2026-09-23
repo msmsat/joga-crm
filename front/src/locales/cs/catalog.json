@@ -122,6 +122,8 @@
       "name": "Název služby",
       "namePlaceholder": "Hatha jóga",
       "category": "Kategorie",
+      "categoryCreate": "Vytvořit kategorii",
+      "categoryNewPlaceholder": "Například Střih",
       "type": "Typ",
       "typeGroup": "Skupinová",
       "typeIndividual": "Individuální",

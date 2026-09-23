@@ -191,7 +191,10 @@
       "transferSearchPlaceholder": "Client name or phone",
       "transferSelectPlaceholder": "Select client",
       "transferConfirm": "Transfer",
-      "transferSuccess": "Subscription transferred"
+      "transferSuccess": "Subscription transferred",
+      "masterLabel": "Specialist",
+      "masterPlaceholder": "Choose a specialist",
+      "masterRequired": "Choose a specialist — the price depends on it"
     },
     "offers": {
       "title": "Personal discount",

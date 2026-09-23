@@ -40,6 +40,14 @@ class StaffBusyIntervalCreate(BaseSchema):
 class StaffServiceItem(BaseSchema):
     id: int
     name: str
+    # Цена услуги В КАТАЛОГЕ — отправная точка, от которой владелец назначает
+    # индивидуальную.
+    base_price: int = 0
+    # Что реально заплатит клиент ЭТОМУ мастеру.
+    price: int = 0
+    # Цену выставили руками. Интерфейс обязан отличать её от унаследованной:
+    # унаследованная поедет за правкой Каталога, своя — нет.
+    price_custom: bool = False
 
 
 class StaffWorkingHoursItem(BaseSchema):

@@ -37,7 +37,8 @@ warnings.filterwarnings("ignore")
 
 DAY = hours.DAY  # среда, 2027-06-16
 
-MEMBER_FIELDS = {"teacher_id", "name", "last_name", "photo_url", "department", "service_ids", "branch_ids"}
+MEMBER_FIELDS = {"teacher_id", "name", "last_name", "photo_url", "department", "service_ids",
+                 "service_prices", "service_price_strs", "branch_ids"}
 
 
 @pytest.fixture(autouse=True)
@@ -235,6 +236,13 @@ def test_without_a_service_every_master_of_the_branch_comes_with_own_services():
         assert linked == {ids["haircut"], ids["beard"], ids["yoga"], ids["hidden"]}
         assert row["service_ids"] == [ids["beard"], ids["haircut"]]
         assert rows[ids["boris"]]["service_ids"] == [ids["beard"]]
+        # Цена приезжает на КАЖДУЮ показанную услугу и ни на одну лишнюю: как
+        # только клиент выберет мастера, экран обязан написать его цену, а не
+        # диапазон услуги, — и спрашивать её вторым запросом ему нечем.
+        assert set(row["service_prices"]) == {str(s) for s in row["service_ids"]}
+        # Готовая строка — на каждую цену: денег мини-приложение не
+        # форматирует, знак валюты и разряды ставит сервер.
+        assert set(row["service_price_strs"]) == set(row["service_prices"])
 
         # Филиал — не фильтр, а принадлежность: Olga есть только в B.
         other = await _staff(http, ids, branch="branch_b")

@@ -21,7 +21,7 @@ from services import gcal
 from services.booking_access import can_book
 from services.members import full_name, is_specialist_clause
 from services.notifier import lesson_context, notify
-from services import booking, schedule_guard
+from services import booking, schedule_guard, service_pricing
 from services.working_hours import assert_within_working_hours
 from services.schedule_guard import lock_studio
 
@@ -534,6 +534,11 @@ async def create_lesson(
         )
 
     tz_snapshot = await _pin_timezone(db, ctx.studio_id, body.start_time)
+    # Присланную цену не перепроверяем и за чужой в базу не ходим: она и есть
+    # ответ. Спрашиваем цену мастера только тогда, когда её не назвали.
+    lesson_price = (
+        body.price if body.price is not None
+        else await service_pricing.price_for(db, service, body.teacher_id))
 
     lesson = Lesson(
         studio_id=ctx.studio_id,
@@ -546,9 +551,12 @@ async def create_lesson(
         start_time=body.start_time,
         duration_min=body.duration_min,
         total_spots=body.total_spots,
-        # Цена денормализуется из услуги ровно как name: квик-форма Журнала её
-        # не собирает, и без этого занятие уходило в мини-приложение с 0.
-        price=service.price if body.price is None else body.price,
+        # Цена денормализуется ровно как name: квик-форма Журнала её не
+        # собирает, и без этого занятие уходило в мини-приложение с 0. Берётся
+        # она у ТРЕНЕРА, а не у услуги: у одной услуги у разных мастеров цена
+        # своя (services/service_pricing.py). Тренера в Журнале задаёт колонка
+        # сетки, так что к этому моменту он известен всегда.
+        price=lesson_price,
         level=body.level,
         equipment=body.equipment,
         service_id=body.service_id,
@@ -649,11 +657,29 @@ async def update_lesson(
         new_teacher_id = fields["teacher_id"]
         lesson.teacher_name = await _teacher_name_in_studio(new_teacher_id, ctx.studio_id, db)
 
+    teacher_changed = "teacher_id" in fields and fields["teacher_id"] != old_teacher_id
+
     if service is not None:
         lesson.name = service.name
-        # Услугу поменяли — цена едет за ней, если её не прислали явно.
+        # Услугу поменяли — цена едет за ней, если её не прислали явно. Теперь
+        # «за ней» означает «за ней У ЭТОГО ТРЕНЕРА»: тренера могли сменить тем
+        # же запросом, и цена обязана считаться по итоговому, а не по прежнему.
         if "price" not in fields:
-            lesson.price = service.price
+            lesson.price = await service_pricing.price_for(
+                db, service, fields.get("teacher_id", lesson.teacher_id))
+    elif teacher_changed and "price" not in fields:
+        # Услуга та же, сменился мастер — а у одной услуги у разных мастеров
+        # цена разная. Перетаскивание занятия в соседнюю колонку Журнала это
+        # тоже смена мастера, и цена должна поехать за ним.
+        #
+        # Но ТОЛЬКО пока на занятие никто не записан. Люди записывались на
+        # названную сумму, и продукт не вправе переписать её задним числом —
+        # такую цену владелец правит руками, видя, что именно он меняет.
+        priced_service = (
+            await db.get(Service, lesson.service_id) if lesson.service_id else None)
+        if priced_service is not None and await _booked_count(lesson_id, db) == 0:
+            lesson.price = await service_pricing.price_for(
+                db, priced_service, fields["teacher_id"])
 
     if "hall_id" in fields or "branch_id" in fields:
         # Зал меняется (или снимается) — branch_id синхронизируется вместе с

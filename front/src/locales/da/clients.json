@@ -194,7 +194,10 @@
       "useBonuses_one": "Brug bonuspoint ({{count}})",
       "useBonuses_other": "Brug bonuspoint ({{count}})",
       "bonusesSpent_one": "Bonuspoint ({{count}} point)",
-      "bonusesSpent_other": "Bonuspoint ({{count}} point)"
+      "bonusesSpent_other": "Bonuspoint ({{count}} point)",
+      "masterLabel": "Behandler",
+      "masterPlaceholder": "Vælg behandler",
+      "masterRequired": "Vælg behandler — prisen afhænger af det"
     },
     "offers": {
       "title": "Personlig rabat",

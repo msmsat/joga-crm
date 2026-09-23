@@ -16,6 +16,7 @@ from schemas import (
     StaffCreate, StaffUpdate,
     StaffListResponse, StaffProfileResponse, StaffMutateResponse,
 )
+from schemas.settings.team import StaffServicePrice
 from schemas.staff.staff import StaffBranchItem, StaffWorkingHoursItem
 from security import get_password_hash
 from services.contacts import (
@@ -25,6 +26,7 @@ from services.invites import send_invite
 from services.members import full_name, is_specialist, is_specialist_clause
 from services.notifier import notify
 from services.plan_limits import check_plan_limit
+from services import service_pricing
 from services import schedule_guard
 from services.schedule_guard import lock_studio
 
@@ -75,6 +77,25 @@ async def _resolve_services(service_ids: list[int], studio_id: int, db: AsyncSes
     if len(services) != len(set(service_ids)):
         raise HTTPException(status_code=404, detail="Услуга не найдена")
     return list(services)
+
+
+def _price_map(
+    service_prices: list[StaffServicePrice], service_ids: list[int],
+) -> dict[int, Optional[int]]:
+    """Список цен из запроса → {service_id: цена} с проверкой по списку услуг.
+
+    Цена на услугу, которую мастеру не назначили, — ошибка клиента, а не повод
+    назначить её заодно: список услуг обязан остаться единственным источником
+    правды о том, что человек делает. Молча проглотить такую цену нельзя —
+    владелец увидел бы в интерфейсе сумму, которой в базе нет.
+    """
+    extra = {p.service_id for p in service_prices} - set(service_ids)
+    if extra:
+        raise HTTPException(
+            status_code=400,
+            detail="Цена задана для услуги, которая сотруднику не назначена",
+        )
+    return {p.service_id: p.price for p in service_prices}
 
 
 def _apply_studio_services(user: User, studio_id: int, services: list[Service]) -> None:
@@ -314,7 +335,20 @@ async def get_staff_profile(
         .join(Service.users)
         .where(User.id == staff_id, Service.studio_id == studio_id)
     )
-    services = [{"id": s.id, "name": s.name} for s in services_result.scalars().all()]
+    own_prices = await service_pricing.prices_of_staff(db, staff_id, studio_id)
+    services = [
+        {
+            "id": s.id,
+            "name": s.name,
+            # base_price — цена услуги в Каталоге, price — что реально заплатит
+            # клиент этому мастеру. Карточка показывает вторую, а первую держит,
+            # чтобы подписать отличие, не ходя за услугой второй раз.
+            "base_price": s.price,
+            "price": own_prices[s.id].price if s.id in own_prices else s.price,
+            "price_custom": s.id in own_prices and own_prices[s.id].custom,
+        }
+        for s in services_result.scalars().all()
+    ]
 
     today = date.today()
     today_start = datetime.combine(today, datetime.min.time())
@@ -553,6 +587,11 @@ async def create_staff(
     db.add(membership)
     await _replace_schedule(user.id, studio_id, data.schedule, db)
     await _replace_branch_assignments(user.id, studio_id, branches, db)
+    # Цена ложится на уже существующую строку `user_services`, своей строки у
+    # неё нет, — поэтому связи сперва обязаны доехать до базы.
+    await db.flush()
+    await service_pricing.apply_staff_prices(
+        db, user.id, studio_id, _price_map(data.service_prices, data.service_ids))
     await db.commit()
     await db.refresh(user)
     await db.refresh(membership)
@@ -663,6 +702,12 @@ async def update_staff(
     # Новые часы/назначения уже видны этой транзакции (flush) — проверяем,
     # что будущие resource-записи специалиста всё ещё попадают в них (§6.2 п.5).
     await db.flush()
+    if "service_prices" in data.model_fields_set:
+        # Поля нет в запросе — цены не трогаем (так правят карточку старые
+        # клиенты и ассистент, когда речь вообще не о деньгах). Пришло пустым —
+        # владелец снял все надбавки, и это осознанное действие.
+        await service_pricing.apply_staff_prices(
+            db, user.id, studio_id, _price_map(data.service_prices, data.service_ids))
     conflicts = await schedule_guard.assert_future_assignments_valid(db, studio, user_id=user.id)
     schedule_guard.raise_if_conflicts(conflicts)
     await db.commit()

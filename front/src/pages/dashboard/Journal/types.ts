@@ -35,6 +35,10 @@ export interface Booking {
   notes: string;
   photos: string[];
   serviceId: number | null;
+  /** Цена ЭТОГО занятия. Денормализована на занятии, а не взята у услуги: её
+   *  считают по тренеру в момент создания (back/services/service_pricing.py) и
+   *  правят под конкретное занятие. Клиент платит ровно её. */
+  price: number;
   /** HB-22: карточка индивидуальной записи не рисует счётчик участников. */
   bookingMode: 'event' | 'resource';
   /** Версия интервала — уходит как expected_version при переносе. */

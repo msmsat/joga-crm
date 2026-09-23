@@ -194,7 +194,10 @@
       "useBonuses_one": "Bonusları kullan ({{count}})",
       "useBonuses_other": "Bonusları kullan ({{count}})",
       "bonusesSpent_one": "Bonuslar ({{count}} p.)",
-      "bonusesSpent_other": "Bonuslar ({{count}} p.)"
+      "bonusesSpent_other": "Bonuslar ({{count}} p.)",
+      "masterLabel": "Uzman",
+      "masterPlaceholder": "Uzman seçin",
+      "masterRequired": "Uzman seçin — fiyat buna bağlı"
     },
     "offers": {
       "title": "Kişisel indirim",

@@ -66,6 +66,14 @@ export interface StudioService {
   name: string;
   price: number;
   price_str: string;
+  /** Во что услуга обойдётся, ПОКА МАСТЕР НЕ ВЫБРАН: у разных мастеров цена
+   *  своя. Совпали — витрина пишет одну сумму, разошлись — «от–до». Слово
+   *  «от…до» собирает локаль, числа и их запись в валюте даёт сервер
+   *  (back/services/service_pricing.py). */
+  price_min: number;
+  price_max: number;
+  price_min_str: string;
+  price_max_str: string;
   duration_min: number;
   color: string | null;
 }

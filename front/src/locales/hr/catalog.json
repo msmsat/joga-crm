@@ -122,6 +122,8 @@
       "name": "Naziv usluge",
       "namePlaceholder": "Hatha yoga",
       "category": "Kategorija",
+      "categoryCreate": "Stvori kategoriju",
+      "categoryNewPlaceholder": "Npr. Šišanje",
       "type": "Vrsta",
       "typeGroup": "Grupna",
       "typeIndividual": "Individualna",

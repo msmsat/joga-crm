@@ -11,8 +11,9 @@ from dependencies import require_role, StudioContext
 from models import Service, Lesson, Reservation, Studio
 from schemas.schedule.hybrid import AVAILABLE_BOOKING_MODES
 from schemas.studio import ServiceRead, ServiceCreate, ServiceUpdate, ServiceWeekSlot
+from schemas.studio.studio import ServiceMasterRead
 from schemas.studio.studio import reject_resource_group_combo
-from services import schedule_guard
+from services import schedule_guard, service_pricing
 
 router = APIRouter()
 
@@ -25,6 +26,30 @@ router = APIRouter()
 # же файл ещё до того, как он доопределится.
 
 
+async def _normalize_category(category: Optional[str], studio_id: int, db: AsyncSession) -> Optional[str]:
+    """Привести категорию к написанию, которое студия уже использует.
+
+    Категории — свободные строки самой студии (справочника нет, набор
+    складывается из услуг), поэтому «Стрижка» и «стрижка» разошлись бы на две
+    группы Каталога и два разреза Отчётов. Форма это уже не даёт сделать —
+    селект подставляет существующую строку, — но ассистент и импорт пишут
+    напрямую, а правило должно быть одно на всех."""
+    if category is None:
+        return None
+    cleaned = category.strip()
+    if not cleaned:
+        return None
+    known = (await db.execute(
+        select(Service.category).where(
+            Service.studio_id == studio_id, Service.category.is_not(None)
+        ).distinct()
+    )).scalars().all()
+    for existing in known:
+        if existing.strip().casefold() == cleaned.casefold():
+            return existing
+    return cleaned
+
+
 async def _get_service_or_404(service_id: int, studio_id: int, db: AsyncSession) -> Service:
     service = (await db.execute(
         select(Service).where(Service.id == service_id, Service.studio_id == studio_id)
@@ -34,12 +59,27 @@ async def _get_service_or_404(service_id: int, studio_id: int, db: AsyncSession)
     return service
 
 
-def _service_read(service: Service, bookings_last_30d: int = 0) -> ServiceRead:
+def _service_read(
+    service: Service,
+    bookings_last_30d: int = 0,
+    price_range: "service_pricing.PriceRange | None" = None,
+    masters: "list[service_pricing.ServiceMaster] | None" = None,
+) -> ServiceRead:
+    # Диапазон не передали (создание и правка услуги — там мастеров ещё не
+    # спрашивали) → одна цена, равная базовой. Отдавать 0 нельзя: фронт покажет
+    # «от 0».
+    span = price_range or service_pricing.PriceRange(min=service.price, max=service.price)
     return ServiceRead(
         id=service.id,
         name=service.name,
         description=service.description,
         price=service.price,
+        price_min=span.min,
+        price_max=span.max,
+        masters=[
+            ServiceMasterRead(user_id=m.user_id, name=m.name, price=m.price)
+            for m in (masters or [])
+        ],
         duration_min=service.duration_min,
         category=service.category,
         service_type=service.service_type,
@@ -114,7 +154,15 @@ async def list_services(
         select(Service).where(Service.studio_id == ctx.studio_id).order_by(Service.name)
     )).scalars().all()
     counts = await _bookings_last_30d_by_service(ctx.studio_id, db)
-    return [_service_read(s, counts.get(s.id, 0)) for s in services]
+    # Один запрос на весь каталог, а не по запросу на услугу: в каталоге их
+    # десятки (CLAUDE.md §5, правило 2).
+    ids = [s.id for s in services]
+    spans = await service_pricing.price_ranges(db, ctx.studio_id, ids)
+    masters = await service_pricing.masters_of_services(db, ctx.studio_id, ids)
+    return [
+        _service_read(s, counts.get(s.id, 0), spans.get(s.id), masters.get(s.id))
+        for s in services
+    ]
 
 
 @router.get("/services/{service_id}", response_model=ServiceRead)
@@ -125,7 +173,11 @@ async def get_service(
 ):
     service = await _get_service_or_404(service_id, ctx.studio_id, db)
     counts = await _bookings_last_30d_by_service(ctx.studio_id, db)
-    return _service_read(service, counts.get(service.id, 0))
+    return _service_read(
+        service, counts.get(service.id, 0),
+        await service_pricing.price_range_for(db, service),
+        (await service_pricing.masters_of_services(
+            db, ctx.studio_id, [service.id])).get(service.id))
 
 
 @router.post("/services", response_model=ServiceRead, status_code=201)
@@ -140,7 +192,9 @@ async def create_service(
     # выполняется под тем же замком, что confirm брони).
     studio = await schedule_guard.lock_studio(db, ctx.studio_id)
     _assert_mode_available(data.booking_mode, studio)
-    service = Service(studio_id=ctx.studio_id, **data.model_dump())
+    fields = data.model_dump()
+    fields["category"] = await _normalize_category(fields.get("category"), ctx.studio_id, db)
+    service = Service(studio_id=ctx.studio_id, **fields)
     db.add(service)
     # Новая услуга сразу меняет каталог, доступный для записи.
     await bump_booking_config_version(db, studio)
@@ -161,6 +215,8 @@ async def update_service(
     studio = await schedule_guard.lock_studio(db, ctx.studio_id)
     service = await _get_service_or_404(service_id, ctx.studio_id, db)
     changes = data.model_dump(exclude_unset=True)
+    if "category" in changes:
+        changes["category"] = await _normalize_category(changes["category"], ctx.studio_id, db)
     _assert_mode_available(changes.get("booking_mode"), studio)
     # Комбинация проверяется по ЭФФЕКТИВНЫМ значениям (патч частичный — новое
     # поле могло не прийти вовсе, а сочетаться с уже сохранённым).

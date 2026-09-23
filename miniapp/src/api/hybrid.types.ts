@@ -45,6 +45,11 @@ export interface ResourceStaffQuery { branch_id?: number[]; service_id?: number 
 export interface ResourceStaffMember {
   teacher_id: number; name: string; last_name: string | null; photo_url: string | null;
   department: string | null; service_ids: number[]; branch_ids: number[];
+  /** {service_id: во что услуга обойдётся У ЭТОГО мастера}. Как только мастер
+   *  выбран, экран обязан писать его цену, а не диапазон услуги: диапазон
+   *  живёт ровно до этого момента. Пара «число + готовая строка» — как у
+   *  price/price_str: денег мини-приложение не форматирует. */
+  service_prices: Record<number, number>; service_price_strs: Record<number, string>;
 }
 export interface ResourceStaffRead { staff: ResourceStaffMember[]; reason: string | null }
 export type BookingStatus = 'active' | 'pending' | 'hold' | 'attended' | 'cancelled';

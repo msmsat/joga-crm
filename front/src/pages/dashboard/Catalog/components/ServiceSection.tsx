@@ -1,8 +1,9 @@
-import { useState, useMemo, useEffect, Fragment } from 'react';
+import { useState, useMemo, useCallback, useEffect, Fragment } from 'react';
 import { useAiIntent } from '../../../../hooks/useAiIntent';
 import { useTranslation } from 'react-i18next';
 import type { Service } from '../types';
-import { SERVICE_CATEGORIES, SCH_TIMES } from '../constants';
+import { SCH_TIMES } from '../constants';
+import { groupServicesByCategory, serviceCategories } from '../serviceCategories';
 import { useServiceList, useServiceWeek } from '../hooks/useCatalogList';
 import { useStudioCurrency, useStudioSettings } from '../../../../hooks/useStudioCurrency';
 import * as Icons from '../../../../components/Icons';
@@ -10,6 +11,7 @@ import { useToast } from '../../../../components/ui/Toast';
 import { ConfirmModal } from '../../../../components/ui/ConfirmModal';
 import { QrShareModal } from '../../../../components/ui/index';
 import { miniappLink } from '../../../../lib/miniapp';
+import { usePriceLabel } from '../../../../hooks/usePriceLabel';
 import { errorMessage } from '../../../../api/errorMessage';
 import { getCurrencySymbol } from '../../../../components/UI';
 import { ServiceModal } from './modals/EditService';
@@ -20,9 +22,17 @@ const DAY_KEYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] as const;
 export function ServiceSection() {
   const { t } = useTranslation(['catalog', 'common']);
   const toast = useToast();
-  const tCat = (cat: string) => t(`catalog:services.categories.${cat}`, { defaultValue: cat });
+  // Старые значения-ключи ('yoga') переводятся по ключу, свои категории студии
+  // («Стрижка») показываются как есть.
+  const tCat = useCallback(
+    (cat: string) => t(`catalog:services.categories.${cat}`, { defaultValue: cat }),
+    [t]
+  );
   const studioCurrency = useStudioCurrency();
   const currency = getCurrencySymbol(studioCurrency);
+  // «от–до», пока услугу ведут мастера с разными ценами. Правило записи одно на
+  // весь кабинет и живёт в хуке — Каталог его не переизобретает.
+  const priceLabel = usePriceLabel();
   const { services, isLoading, error: loadError, refetch, createService, updateService, deleteService } = useServiceList();
   // Что выбрал пользователь; пока не выбрал (или выбранная услуга исчезла) —
   // открыта первая. Считаем при рендере, а не эффектом: иначе первый кадр
@@ -52,16 +62,15 @@ export function ServiceSection() {
   // пустой список.
   const canShareQr = Boolean(studio?.miniapp_url) && Boolean(activeService?.is_bookable);
 
-  // Группы — по фактическим категориям услуг; SERVICE_CATEGORIES задаёт только
-  // порядок. Раньше список строился ПО списку категорий, и услуга с чужой или
-  // пустой категорией не попадала в левую панель вовсе — при этом справа
-  // открывалась именно она (activeService падает на services[0] без фильтра).
-  const groups = useMemo(() => {
-    const cats = [...new Set([...SERVICE_CATEGORIES, ...services.map(s => s.category)])];
-    return cats
-      .filter(cat => services.some(s => s.category === cat))
-      .map(cat => ({ label: cat, items: services.filter(s => s.category === cat) }));
-  }, [services]);
+  // Группы — по фактическим категориям услуг, «Без категории» последней
+  // (порядок и сортировка — serviceCategories.ts, там же тесты). Зашитого
+  // перечня направлений больше нет: услуга с любой категорией попадает в левую
+  // панель, иначе она исчезала из списка, оставаясь выбранной справа
+  // (activeService падает на services[0] без фильтра).
+  const groups = useMemo(() => groupServicesByCategory(services, tCat), [services, tCat]);
+  // Тот же набор — в форму услуги: выбор категории строится по тому, что
+  // студия уже использует.
+  const categories = useMemo(() => serviceCategories(services, tCat), [services, tCat]);
 
   const [confirmDelete, setConfirmDelete] = useState(false);
 
@@ -109,7 +118,7 @@ export function ServiceSection() {
                   <div className="cat-item-dot" style={{ background: svc.color }} />
                   <div className="cat-item-info">
                     <div className="cat-item-name">{svc.name}</div>
-                    <div className="cat-item-sub">{currency}{svc.price.toLocaleString()} · {svc.duration_min} {t('common:units.min')}</div>
+                    <div className="cat-item-sub">{priceLabel(svc.price_min, svc.price_max, true)} · {svc.duration_min} {t('common:units.min')}</div>
                   </div>
                   <span className={`cat-type-badge ${svc.type}`}>
                     {svc.type === 'group' ? t('catalog:services.types.group') : t('catalog:services.types.individual')}
@@ -168,7 +177,7 @@ export function ServiceSection() {
               {/* Stats */}
               <div className="cat-stats-row" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(min(160px, 100%), 1fr))' }}>
                 <div className="cat-stat-card">
-                  <div className="cat-stat-v">{currency}{activeService.price.toLocaleString()}</div>
+                  <div className="cat-stat-v">{priceLabel(activeService.price_min, activeService.price_max, true)}</div>
                   <div className="cat-stat-l">{t('catalog:services.stats.price')}</div>
                 </div>
                 <div className="cat-stat-card">
@@ -268,6 +277,7 @@ export function ServiceSection() {
         <ServiceModal
           key={serviceModal.service?.id ?? 'new'}
           service={serviceModal.service}
+          categories={categories}
           onClose={() => setServiceModal(null)}
           onSubmit={async (data) => {
             try {
@@ -295,7 +305,7 @@ export function ServiceSection() {
               ? t('catalog:services.types.groupFull')
               : t('catalog:services.types.individualFull'),
             `${activeService.duration_min} ${t('common:units.min')}`,
-            `${currency}${activeService.price.toLocaleString()}`,
+            priceLabel(activeService.price_min, activeService.price_max),
           ].join(' · ')}
           caption={t('common:qr.scanHint')}
           fileName={activeService.name}

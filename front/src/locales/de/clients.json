@@ -191,7 +191,10 @@
       "transferSearchPlaceholder": "Name oder Telefon des Kunden",
       "transferSelectPlaceholder": "Kunde auswählen",
       "transferConfirm": "Übertragen",
-      "transferSuccess": "Karte übertragen"
+      "transferSuccess": "Karte übertragen",
+      "masterLabel": "Fachkraft",
+      "masterPlaceholder": "Fachkraft wählen",
+      "masterRequired": "Fachkraft wählen — der Preis hängt davon ab"
     },
     "offers": {
       "title": "Persönlicher Rabatt",

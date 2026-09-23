@@ -15,6 +15,10 @@ class CheckoutCalculateRequest(BaseSchema):
     client_id: int
     product_id: int
     product_type: ProductType
+    # Кто оказывает услугу — от этого зависит её цена. Осмыслен только для
+    # "single": у "lesson" мастер уже стоит в занятии, а у "subscription" его
+    # нет вовсе. Не прислали — берётся базовая цена услуги.
+    teacher_id: int | None = None
     promo_code: str | None = None
     use_bonuses: bool = False
     use_deposit: bool = False
@@ -41,6 +45,9 @@ class CheckoutPayRequest(BaseSchema):
     client_id: int
     product_id: int
     product_type: ProductType
+    # См. CheckoutCalculateRequest.teacher_id. Цену по нему сервер считает
+    # заново и здесь: присланному с фронта итогу касса не доверяет.
+    teacher_id: int | None = None
     account_id: int | None = None
     promo_code: str | None = None
     use_bonuses: bool = False
@@ -83,9 +90,22 @@ class CheckoutConfirmResult(BaseSchema):
     paid: bool
 
 
+class CheckoutServiceMasterOut(BaseSchema):
+    """Мастер, который оказывает услугу, и во что она у него обходится."""
+    user_id: int
+    name: str
+    price: int
+
+
 class CheckoutServiceOut(BaseSchema):
     """Услуга Каталога в кассе клиента — вкладка «Разовые визиты»."""
     id: int
     name: str
     price: int
+    # Пока кассир не выбрал мастера, точной цены у услуги нет: у разных мастеров
+    # она своя (services/service_pricing.py). Касса показывает «от price_min до
+    # price_max», а выбор мастера из `masters` превращает диапазон в сумму.
+    price_min: int = 0
+    price_max: int = 0
+    masters: list[CheckoutServiceMasterOut] = []
     duration_min: int

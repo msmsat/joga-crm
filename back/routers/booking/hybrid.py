@@ -5,13 +5,14 @@ from fastapi import APIRouter, BackgroundTasks, Depends, Query, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_db
-from models import Client
+from models import Client, Studio
 from ratelimit import limiter
 from schemas.schedule.hybrid import (PublicAvailabilityQuery, AvailabilityRead, BookingQuoteRequest,
     BookingRead, ConfirmRequest, PublicResourceStaffQuery, PublicStaffDayQuery, QuoteRead,
     RescheduleConfirmRequest, ResourceQuoteRequest, ResourceStaffMemberRead, ResourceStaffRead,
     StaffDayMemberRead, StaffDayRead)
 from services import booking_quotes as quotes, hybrid_http, resource_availability, resource_booking, resource_reschedule
+from services.notifier import _fmt_amount
 from .miniapp import Viewer, get_current_client, get_viewer
 
 router = APIRouter()
@@ -42,10 +43,16 @@ async def resource_staff(request: Request, query: Annotated[PublicResourceStaffQ
     """
     report = await resource_availability.resource_staff(
         db, studio_id=viewer.studio_id, branch_ids=query.branch_id, service_id=query.service_id)
+    currency = (await db.get(Studio, viewer.studio_id)).currency or "RUB"
     return ResourceStaffRead(reason=report.reason, staff=[
         ResourceStaffMemberRead(
             teacher_id=row.teacher_id, name=row.name, last_name=row.last_name,
             photo_url=row.photo_url, department=row.department, service_ids=row.service_ids,
+            service_prices=row.service_prices,
+            service_price_strs={
+                service_id: _fmt_amount(price, currency)
+                for service_id, price in row.service_prices.items()
+            },
             branch_ids=row.branch_ids)
         for row in report.staff])
 

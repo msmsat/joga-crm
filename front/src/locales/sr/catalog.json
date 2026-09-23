@@ -122,6 +122,8 @@
       "name": "Назив услуге",
       "namePlaceholder": "Хатха јога",
       "category": "Категорија",
+      "categoryCreate": "Направи категорију",
+      "categoryNewPlaceholder": "Нпр. Шишање",
       "type": "Тип",
       "typeGroup": "Групна",
       "typeIndividual": "Индивидуална",

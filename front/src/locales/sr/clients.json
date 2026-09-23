@@ -197,7 +197,10 @@
       "useBonuses_other": "Искористи бонусе ({{count}})",
       "bonusesSpent_one": "Бонуси ({{count}} поен)",
       "bonusesSpent_few": "Бонуси ({{count}} поена)",
-      "bonusesSpent_other": "Бонуси ({{count}} поена)"
+      "bonusesSpent_other": "Бонуси ({{count}} поена)",
+      "masterLabel": "Специјалиста",
+      "masterPlaceholder": "Изаберите специјалисту",
+      "masterRequired": "Изаберите специјалисту — цена зависи од њега"
     },
     "offers": {
       "title": "Лични попуст",

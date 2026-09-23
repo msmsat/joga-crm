@@ -37,6 +37,7 @@
     "unlimited": "Ubegrenset"
   },
   "banner": {
+    "staffAccessBlocked": "Tilgangen til dette studioet er suspendert. Kontakt studioets eier for å gjenopprette tilgangen. Profilen din er fortsatt tilgjengelig.",
     "trialEnds": "Prøveperioden din slutter {{date}} — velg en plan",
     "renews": "{{plan}}-abonnementet ditt fornyes {{date}}",
     "expires": "{{plan}}-abonnementet ditt utløper {{date}}",

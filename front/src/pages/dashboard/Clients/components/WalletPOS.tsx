@@ -7,7 +7,7 @@ import { StripeCheckoutModal } from './modals/StripeCheckoutModal';
 import { financesApi } from '../../../../api/finances/finances.api';
 import { errorMessage } from '../../../../api/errorMessage';
 import { queryKeys } from '../../../../api/queryKeys';
-import { Button, Card, Input, ConfirmModal, InfoHint, Switch, useToast } from '../../../../components/ui/index';
+import { Button, Card, Input, ConfirmModal, InfoHint, Select, Switch, useToast } from '../../../../components/ui/index';
 import { useStudioCurrency } from '../../../../hooks/useStudioCurrency';
 import { getCurrencySymbol } from '../../../../components/UI';
 import s from './WalletTab.module.css';
@@ -37,6 +37,25 @@ export function WalletPOS({ clientId, productId, productType, onBack, onPaid }: 
   const [method, setMethod] = useState<'cash' | 'card'>('cash');
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [session, setSession] = useState<CheckoutSessionResult | null>(null);
+  const [teacherId, setTeacherId] = useState<number | null>(null);
+
+  // Кто оказывает услугу — от этого зависит её цена. Список нужен только
+  // разовому визиту: у абонемента мастера нет вовсе.
+  const { data: services = [] } = useQuery({
+    queryKey: queryKeys.checkoutServices,
+    queryFn: () => checkoutApi.getServices(),
+    enabled: productType === 'single',
+  });
+  const service = productType === 'single'
+    ? services.find(row => row.id === productId)
+    : undefined;
+  const masters = service?.masters ?? [];
+  // Мастера спрашиваем ОБЯЗАТЕЛЬНО только там, где от него зависит сумма.
+  // Услуга с одной ценой на всех однозначна и так, и лишний клик на каждую
+  // продажу был бы платой ни за что. А вот пробить услугу «в среднем», когда
+  // цены разные, нельзя: сервер возьмёт базовую, по которой не работает никто.
+  const priceDependsOnMaster = !!service && service.price_max > service.price_min;
+  const masterMissing = priceDependsOnMaster && teacherId === null;
 
   useEffect(() => {
     const timer = setTimeout(() => setPromoCode(promoInput.trim()), PROMO_DEBOUNCE_MS);
@@ -49,10 +68,10 @@ export function WalletPOS({ clientId, productId, productType, onBack, onPaid }: 
   }, [certInput]);
 
   const { data: quote, isFetching, error: quoteError } = useQuery({
-    queryKey: ['checkout', 'calculate', clientId, productId, productType, promoCode, useBonuses, useDeposit, certCode],
+    queryKey: ['checkout', 'calculate', clientId, productId, productType, teacherId, promoCode, useBonuses, useDeposit, certCode],
     queryFn: () => checkoutApi.calculate({
       client_id: clientId, product_id: productId, product_type: productType,
-      promo_code: promoCode || undefined, use_bonuses: useBonuses,
+      teacher_id: teacherId, promo_code: promoCode || undefined, use_bonuses: useBonuses,
       use_deposit: useDeposit, certificate_code: certCode || undefined,
     }),
   });
@@ -79,6 +98,7 @@ export function WalletPOS({ clientId, productId, productType, onBack, onPaid }: 
 
   const payload = {
     client_id: clientId, product_id: productId, product_type: productType,
+    teacher_id: teacherId,
     account_id: viaStripe ? undefined : cashAccount?.id,
     promo_code: promoCode || undefined,
     use_bonuses: useBonuses, use_deposit: useDeposit, certificate_code: certCode || undefined,
@@ -118,6 +138,24 @@ export function WalletPOS({ clientId, productId, productType, onBack, onPaid }: 
         <Button size="sm" variant="ghost" onClick={onBack}>{t('panel.wallet.back')}</Button>
         <div className={s.sectionLabel}>{t('panel.wallet.posTitle')}</div>
       </div>
+
+      {masters.length > 0 && (
+        <div style={{ marginBottom: '12px' }}>
+          <div className={s.sectionLabel}>{t('panel.wallet.masterLabel')}</div>
+          <Select
+            value={teacherId != null ? String(teacherId) : ''}
+            placeholder={t('panel.wallet.masterPlaceholder')}
+            options={masters.map(m => ({
+              value: String(m.user_id),
+              label: m.name,
+              // Цена рядом с именем: кассир выбирает не только исполнителя, но
+              // и сумму, и узнать её после выбора — поздно.
+              hint: `${currency}${m.price}`,
+            }))}
+            onChange={value => setTeacherId(value ? Number(value) : null)}
+          />
+        </div>
+      )}
 
       <Input label={t('panel.wallet.promoLabel')} value={promoInput} onChange={setPromoInput}
              placeholder={t('panel.wallet.promoPlaceholder')}
@@ -179,12 +217,20 @@ export function WalletPOS({ clientId, productId, productType, onBack, onPaid }: 
       <Button
         variant="primary" fullWidth
         style={{ marginTop: '16px' }}
-        disabled={!quote || isFetching || promoBlocks}
+        disabled={!quote || isFetching || promoBlocks || masterMissing}
         loading={payMut.isPending || stripeMut.isPending}
         onClick={() => setConfirmOpen(true)}
       >
         {totalCovered ? t('panel.wallet.confirmPayCovered') : viaStripe ? t('panel.wallet.payByCard') : t('panel.wallet.confirmPay')}
       </Button>
+
+      {/* Серая кнопка без объяснения — худший вид отказа: кассир не понимает,
+          чего от него хотят, и жмёт ещё раз. */}
+      {masterMissing && (
+        <div className={s.sectionLabel} style={{ marginTop: '8px', textAlign: 'center' }}>
+          {t('panel.wallet.masterRequired')}
+        </div>
+      )}
 
       {confirmOpen && (
         <ConfirmModal

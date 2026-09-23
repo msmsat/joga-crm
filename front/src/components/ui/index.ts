@@ -51,6 +51,11 @@ export { parseChartSpec } from './aiChartSpec';
 export { stableMarkdown } from './stableMarkdown';
 export type { AIChartSpec, AIChartPoint } from './aiChartSpec';
 
+export { ServicePricePicker } from './ServicePricePicker';
+export type {
+  ServicePricePickerProps, ServicePriceSelection, PickableService,
+} from './ServicePricePicker';
+
 // Диалоги: ModalShell — каркас, части собираются как конструктор.
 // Dialog — синоним ModalShell для новых страниц.
 export {

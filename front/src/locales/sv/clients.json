@@ -194,7 +194,10 @@
       "useBonuses_one": "Använd bonus ({{count}})",
       "useBonuses_other": "Använd bonus ({{count}})",
       "bonusesSpent_one": "Bonus ({{count}} p)",
-      "bonusesSpent_other": "Bonus ({{count}} p)"
+      "bonusesSpent_other": "Bonus ({{count}} p)",
+      "masterLabel": "Utförare",
+      "masterPlaceholder": "Välj utförare",
+      "masterRequired": "Välj utförare — priset beror på det"
     },
     "offers": {
       "title": "Personlig rabatt",

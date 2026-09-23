@@ -159,8 +159,8 @@ def test_create_denormalizes_name_from_service():
     # lock_studio, teacher, service, гейт рабочих часов (студия / отметка даты /
     # недельный график тренера — графика нет, не ограничивает), студия для
     # снимка зоны (P1.2: None → зона не подтверждена, снимок не ставится),
-    # a7 conflict → []
-    db = _DB([_Studio(), _teacher_row(), _Service(id=1, name="Хатха-йога"), None, None, None, None, []])
+    # своя цена услуги у тренера (None → берётся цена услуги), a7 conflict → []
+    db = _DB([_Studio(), _teacher_row(), _Service(id=1, name="Хатха-йога"), None, None, None, None, None, []])
     result = asyncio.run(L.create_lesson(body, _ctx(), db))
     assert result.name == "Хатха-йога"
     assert db.committed is True
@@ -172,8 +172,34 @@ def test_create_denormalizes_price_from_service():
     body = LessonCreateRequest(
         service_id=1, teacher_id=1, start_time=datetime.now() + timedelta(hours=4),
     )
-    db = _DB([_Studio(), _teacher_row(), _Service(id=1, name="Хатха-йога", price=1500), None, None, None, None, []])
+    db = _DB([_Studio(), _teacher_row(), _Service(id=1, name="Хатха-йога", price=1500),
+              None, None, None, None, None, []])
     assert asyncio.run(L.create_lesson(body, _ctx(), db)).price == 1500
+
+
+def test_create_takes_trainer_own_price_over_service():
+    """У тренера своя цена этой услуги → в занятие едет ОНА, а не цена Каталога.
+
+    Иначе индивидуальная цена существовала бы только на витрине: занятие,
+    поставленное в Журнале, уходило бы в оплату по общей."""
+    body = LessonCreateRequest(
+        service_id=1, teacher_id=1, start_time=datetime.now() + timedelta(hours=4),
+    )
+    db = _DB([_Studio(), _teacher_row(), _Service(id=1, price=1500),
+              None, None, None, None, 2200, []])
+    assert asyncio.run(L.create_lesson(body, _ctx(), db)).price == 2200
+
+
+def test_create_trainer_own_price_of_zero_is_a_price():
+    """Ноль у тренера — законная цена (бесплатно у стажёра), а не «нет цены».
+
+    Спутать их значит выставить стажёрскую услугу по полному прайсу."""
+    body = LessonCreateRequest(
+        service_id=1, teacher_id=1, start_time=datetime.now() + timedelta(hours=4),
+    )
+    db = _DB([_Studio(), _teacher_row(), _Service(id=1, price=1500),
+              None, None, None, None, 0, []])
+    assert asyncio.run(L.create_lesson(body, _ctx(), db)).price == 0
 
 
 def test_create_explicit_price_wins_over_service():
@@ -205,6 +231,7 @@ def test_update_service_id_recomputes_name():
         _Studio(),                      # lock_studio
         lesson,                        # get_scoped_lesson
         _Service(id=2, name="Стретчинг", price=2000),  # _service_in_studio
+        None,                           # своя цена новой услуги у тренера — нет
         0,                              # финальный _booked_count
     ])
     body = LessonUpdateRequest(service_id=2)

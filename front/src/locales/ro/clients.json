@@ -197,7 +197,10 @@
       "useBonuses_other": "Folosește bonusuri ({{count}})",
       "bonusesSpent_one": "Bonusuri ({{count}} pct.)",
       "bonusesSpent_few": "Bonusuri ({{count}} pct.)",
-      "bonusesSpent_other": "Bonusuri ({{count}} pct.)"
+      "bonusesSpent_other": "Bonusuri ({{count}} pct.)",
+      "masterLabel": "Specialist",
+      "masterPlaceholder": "Alege un specialist",
+      "masterRequired": "Alege un specialist — prețul depinde de el"
     },
     "offers": {
       "title": "Reducere personală",

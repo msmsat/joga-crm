@@ -7,6 +7,7 @@ import { EmptyState } from '../../components/ui/EmptyState';
 import { useBusinessTerms } from '../../hooks/useBusinessTerms';
 import { useResourceStaff } from '../../hooks/useResourceStaff';
 import { useNearestSlots } from '../../hooks/useNearestSlots';
+import { useServicePrice } from '../../hooks/useServicePrice';
 import ServiceFilter from './components/ServiceFilter';
 import BranchFilter from './components/BranchFilter';
 import MasterCard, { AnyMasterCard } from './components/MasterCard';
@@ -64,6 +65,7 @@ const slot = {
  */
 export default function BookingPage({ catalog, resource, focusServiceId, focusStaffId }: Props) {
   const { t, i18n } = useTranslation();
+  const priceOf = useServicePrice();
   const terms = useBusinessTerms('resource');
   const branches = catalog?.branches ?? [];
   const services = catalog?.services ?? [];
@@ -116,7 +118,9 @@ export default function BookingPage({ catalog, resource, focusServiceId, focusSt
     resource.open(
       {
         id: service.id, name: service.name, terminology_profile: service.terminology_profile,
-        duration_min: service.duration_min, price_str: service.price_str,
+        // Цена ЭТОГО мастера, когда он выбран, и диапазон «от–до» у «любого»:
+        // шапка листа не должна обещать сумму, которой не будет.
+        duration_min: service.duration_min, price_str: priceOf(service, member),
       },
       sheet.branchId,
       null,

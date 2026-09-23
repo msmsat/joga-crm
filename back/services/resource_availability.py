@@ -206,6 +206,11 @@ class ResourceStaffMember:
     department: str | None
     service_ids: list[int]
     branch_ids: list[int]
+    # {service_id: во что услуга обойдётся У ЭТОГО мастера}. Ключи — ровно
+    # `service_ids`. Считается здесь же, из той же строки выборки: сходить за
+    # ценой каждого мастера отдельно значило бы вернуть на этот экран тот самый
+    # N+1, от которого он избавлен по построению.
+    service_prices: dict[int, int]
 
 
 @dataclass(frozen=True)
@@ -237,7 +242,8 @@ async def resource_staff(db, *, studio_id: int, branch_ids: list[int] | None = N
     branches = await _require_branches(db, studio_id, branch_ids)
     # Условия «услуга доступна для записи» — те же, что в `_resource_service`,
     # только в SQL: NULL у service_type — не группа.
-    query = _eligible_staff(select(StudioMember, Service.id, StaffBranchAssignment.branch_id).join(user_services,
+    query = _eligible_staff(select(StudioMember, Service.id, StaffBranchAssignment.branch_id,
+        Service.price, user_services.c.price).join(user_services,
         user_services.c.user_id == StudioMember.user_id).join(Service,
         Service.id == user_services.c.service_id).where(
         Service.studio_id == studio_id, Service.booking_mode == "resource", Service.is_bookable.is_(True),
@@ -254,16 +260,20 @@ async def resource_staff(db, *, studio_id: int, branch_ids: list[int] | None = N
     ).execution_options(populate_existing=True))).all()
 
     # Мастер из двух филиалов даёт каждую услугу дважды — в карточке она одна.
-    grouped: dict[int, tuple[object, list[int], list[int]]] = {}
-    for member, own_service, branch in rows:
-        _, own_services, own_branches = grouped.setdefault(member.user_id, (member, [], []))
+    grouped: dict[int, tuple[object, list[int], list[int], dict[int, int]]] = {}
+    for member, own_service, branch, base_price, own_price in rows:
+        _, own_services, own_branches, own_prices = grouped.setdefault(
+            member.user_id, (member, [], [], {}))
         if own_service not in own_services:
             own_services.append(own_service)
+        # NULL в связи значит «как у услуги» — разворачиваем в число прямо
+        # здесь, чтобы клиенту уехала цена, а не правило её вычисления.
+        own_prices[own_service] = base_price if own_price is None else int(own_price)
         if branch not in own_branches:
             own_branches.append(branch)
     staff = [ResourceStaffMember(
         teacher_id=member.user_id, name=member.name, last_name=member.last_name,
         photo_url=member.photo_url, department=member.department, service_ids=own_services,
-        branch_ids=sorted(own_branches))
-        for member, own_services, own_branches in grouped.values()]
+        branch_ids=sorted(own_branches), service_prices=own_prices)
+        for member, own_services, own_branches, own_prices in grouped.values()]
     return ResourceStaff(staff, None if staff else "no_eligible_staff")

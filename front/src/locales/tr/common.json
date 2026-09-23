@@ -223,5 +223,14 @@
     "connected": "Bağlandı",
     "disconnected": "Bağlantı kesildi",
     "codeSent": "Kod gönderildi"
+  },
+  "price": {
+    "range": "{{from}}–{{to}}"
+  },
+  "servicePrice": {
+    "hint": "Kendi fiyatınızı belirlemek için tutara dokunun",
+    "custom": "Özel fiyat. Katalog fiyatına dönmek için alanı temizleyin",
+    "inherited": "Katalog fiyatı",
+    "aria": "{{service}} fiyatı"
   }
 }

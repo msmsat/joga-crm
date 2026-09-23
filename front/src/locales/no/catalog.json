@@ -122,6 +122,8 @@
       "name": "Tjenestenavn",
       "namePlaceholder": "Hatha yoga",
       "category": "Kategori",
+      "categoryCreate": "Opprett kategori",
+      "categoryNewPlaceholder": "F.eks. Hårklipp",
       "type": "Type",
       "typeGroup": "Gruppe",
       "typeIndividual": "Individuell",

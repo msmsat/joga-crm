@@ -26,12 +26,28 @@ export interface SelectProps {
   loading?: boolean;
   /** Что показать, когда под запрос ничего не подошло. Без него — пустая панель. */
   emptyText?: string;
+  /** Строка «+ создать» первой в списке: нажатие превращает САМО поле в ввод
+   *  нового значения (Enter — сохранить, Esc — отказаться). Для наборов,
+   *  которые заводит пользователь, а не диктует продукт: категории услуг
+   *  Каталога. Набранное значение, совпавшее с существующей строкой (регистр
+   *  не важен), выбирает её, а не плодит вторую с тем же именем. */
+  creatable?: boolean;
+  createLabel?: string;
+  createPlaceholder?: string;
 }
 
 interface TriggerRect { top: number; left: number; width: number; up: boolean; offset: number; maxH: number; }
 
 const GAP = 6;   // просвет между триггером и панелью
 const PAD = 8;   // не прижимать панель вплотную к краю экрана
+
+// Геометрия поля: закрытый селект и ввод новой строки обязаны быть одним и тем
+// же квадратом — иначе поле прыгает в момент создания категории.
+const BOX: React.CSSProperties = {
+  width: '100%', padding: '12px 15px', borderRadius: '12px', boxSizing: 'border-box',
+  fontSize: '14px', fontWeight: 500, fontFamily: 'Manrope, sans-serif',
+  textAlign: 'left', outline: 'none',
+};
 
 // Общий выпадающий список: минимализм, glow-фокус, клавиатура (стрелки + Enter),
 // закрытие по Esc и клику мимо. Мультивыбора нет (YAGNI), поиск — по флагу
@@ -41,15 +57,22 @@ const PAD = 8;   // не прижимать панель вплотную к к�
 export function Select({
   value, options, onChange, placeholder, disabled,
   searchable, searchPlaceholder, emptyText, onSearchChange, loading = false,
+  creatable, createLabel, createPlaceholder,
 }: SelectProps) {
   const [open, setOpen] = useState(false);
   const [highlight, setHighlight] = useState(0);
   const [query, setQuery] = useState('');
+  // null — поле в обычном виде; строка (пусть и пустая) — в нём набирают новое
+  // значение. Пустая строка и «не создаём» — разные состояния, поэтому null,
+  // а не ''.
+  const [draft, setDraft] = useState<string | null>(null);
+  const [createHover, setCreateHover] = useState(false);
   const [trigger, setTrigger] = useState<TriggerRect | null>(null);
   const ref = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
+  const draftRef = useRef<HTMLInputElement>(null);
   const highlightRef = useRef<HTMLDivElement>(null);
   const listBoxRef = useRef<HTMLDivElement>(null);
   // Куда поставить прокрутку списка: 'center' — при открытии (выбранное значение
@@ -152,6 +175,11 @@ export function Select({
     searchRef.current?.focus();
   }, [open, searchable, trigger]);
 
+  // Фокус в поле создания сразу: человек нажал «создать» — он собирается
+  // печатать, а не искать курсором, куда попасть.
+  const creating = draft !== null;
+  useEffect(() => { if (creating) draftRef.current?.focus(); }, [creating]);
+
   // Прокрутку ставим сами, через scrollTop контейнера. scrollIntoView здесь не
   // годится: он листает ВСЕ прокручиваемые предки, и вместо списка уезжала вниз
   // сама страница. Через layout-эффект — до кадра, чтобы список появлялся уже на
@@ -174,9 +202,25 @@ export function Select({
 
   const choose = (v: string) => { onChange(v); setOpen(false); };
 
+  const startCreate = () => { setOpen(false); setCreateHover(false); setDraft(''); };
+
+  // Пустой ввод — отказ: пустая категория ничем не отличается от «Без
+  // категории», ради которой в списке уже есть своя строка.
+  const commitDraft = () => {
+    const raw = (draft ?? '').trim();
+    setDraft(null);
+    if (!raw) return;
+    const same = options.find(o =>
+      o.value.trim().toLowerCase() === raw.toLowerCase() ||
+      o.label.trim().toLowerCase() === raw.toLowerCase());
+    onChange(same ? same.value : raw);
+  };
+
   const onKeyDown = (e: React.KeyboardEvent) => {
     if (disabled) return;
-    if (e.key === 'Escape') { setOpen(false); return; }
+    // Esc с открытым списком закрывает список, а не окно вокруг него: его
+    // ждёт ещё и ModalShell на window (см. поле создания ниже).
+    if (e.key === 'Escape') { if (open) e.stopPropagation(); setOpen(false); return; }
     // Пробел открывает список, только пока фокус на кнопке: в поле поиска он —
     // обычный символ, и «Южная Корея» иначе было бы не набрать.
     if (!open && (e.key === 'Enter' || e.key === 'ArrowDown' || (e.key === ' ' && !searchable))) {
@@ -188,6 +232,37 @@ export function Select({
     else if (e.key === 'Enter') { e.preventDefault(); const opt = visible[highlight]; if (opt) choose(opt.value); }
   };
 
+  // Новое значение набирают в том же квадрате, где до этого стоял выбор: поле
+  // не уезжает вниз и не открывает второе окно ради одной строки.
+  if (creating) {
+    return (
+      <div ref={ref} style={{ position: 'relative', width: '100%' }}>
+        <input
+          ref={draftRef}
+          value={draft ?? ''}
+          maxLength={100}
+          placeholder={createPlaceholder}
+          onChange={e => setDraft(e.target.value)}
+          onBlur={commitDraft}
+          onKeyDown={e => {
+            if (e.key === 'Enter') { e.preventDefault(); commitDraft(); }
+            // Esc отменяет ввод — и дальше не идёт: ModalShell слушает его на
+            // window и закрыл бы всю форму, унося вместе с категорией всё
+            // заполненное. Отказ от строки — не отказ от услуги.
+            else if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); setDraft(null); }
+          }}
+          style={{
+            ...BOX, cursor: 'text',
+            background: 'var(--bg-card, #FFFFFF)',
+            border: '1.5px solid var(--peach-light, #FCAE91)',
+            boxShadow: '0 0 0 3px rgba(252,174,145,0.15)',
+            color: 'var(--text, #1A1A1A)',
+          }}
+        />
+      </div>
+    );
+  }
+
   return (
     <div ref={ref} style={{ position: 'relative', width: '100%' }}>
       <button
@@ -197,13 +272,11 @@ export function Select({
         onClick={() => { if (disabled) return; scrollTo.current = 'center'; setOpen(o => !o); }}
         onKeyDown={onKeyDown}
         style={{
-          width: '100%', padding: '12px 15px', textAlign: 'left',
+          ...BOX,
           background: open ? 'var(--bg-card, #FFFFFF)' : 'rgba(var(--ink),0.025)',
           border: `1.5px solid ${open ? 'var(--peach-light, #FCAE91)' : 'rgba(var(--ink),0.09)'}`,
           boxShadow: open ? '0 0 0 3px rgba(252,174,145,0.15)' : 'none',
-          borderRadius: '12px', fontSize: '14px', fontWeight: 500,
           color: selected ? 'var(--text, #1A1A1A)' : '#AAAAAA',
-          outline: 'none', fontFamily: 'Manrope, sans-serif', boxSizing: 'border-box',
           cursor: disabled ? 'not-allowed' : 'pointer', opacity: disabled ? 0.5 : 1,
           display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px',
           transition: 'border-color 0.18s, box-shadow 0.18s',
@@ -255,6 +328,33 @@ export function Select({
                 }}
               />
             </div>
+          )}
+
+          {creatable && (
+            <button
+              type="button"
+              onClick={startCreate}
+              onMouseEnter={() => setCreateHover(true)}
+              onMouseLeave={() => setCreateHover(false)}
+              onFocus={() => setCreateHover(true)}
+              onBlur={() => setCreateHover(false)}
+              style={{
+                display: 'flex', alignItems: 'center', gap: '8px',
+                flexShrink: 0, margin: '6px 6px 0', padding: '10px 12px',
+                border: 'none', borderRadius: '9px', cursor: 'pointer',
+                background: createHover ? 'rgba(252,174,145,0.1)' : 'transparent',
+                fontSize: '14px', fontWeight: 600, fontFamily: 'Manrope, sans-serif',
+                color: 'var(--peach, #F9A08B)', textAlign: 'left',
+              }}
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                   strokeWidth="2.6" style={{ flexShrink: 0 }}>
+                <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+              {/* Своим блоком, как и строки списка: на узкой панели телефона
+                  подпись переносится, и плюс обязан остаться рядом с ней. */}
+              <span style={{ flex: 1, minWidth: 0 }}>{createLabel}</span>
+            </button>
           )}
 
           <div

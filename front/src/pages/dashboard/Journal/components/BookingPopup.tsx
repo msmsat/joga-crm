@@ -564,6 +564,15 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
               <div style={{ fontWeight: 700 }}>{trainers.find(t => t.id === popupBooking.trainer)?.full}</div>
             </div>
 
+            {/* Цена ЭТОГО занятия. Раньше её в журнале не было видно вовсе —
+                владелец узнавал сумму только в кассе. С индивидуальными ценами
+                это стало опаснее: занятие у разных мастеров стоит по-разному, и
+                не показать, сколько стоит именно это, значит прятать главное. */}
+            <div className="bp-row">
+              <div className="bp-icon-box"><Icons.CardIcon /></div>
+              <div style={{ fontWeight: 700 }}>{formatMoney(popupBooking.price, currency)}</div>
+            </div>
+
             {/* HB-22 п.3: у индивидуальной записи один клиент и одна услуга —
                 добавлять сюда некого, и единственное, что с ней делают из
                 журнала, — двигают во времени. Поля переноса живут во

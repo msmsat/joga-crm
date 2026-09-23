@@ -223,5 +223,14 @@
     "connected": "Tilkoblet",
     "disconnected": "Frakoblet",
     "codeSent": "Koden er sendt"
+  },
+  "price": {
+    "range": "fra {{from}} til {{to}}"
+  },
+  "servicePrice": {
+    "hint": "Trykk på beløpet for å angi din egen pris",
+    "custom": "Egen pris. Tøm feltet for å gå tilbake til prisen fra Katalog",
+    "inherited": "Pris fra Katalog",
+    "aria": "Pris for {{service}}"
   }
 }

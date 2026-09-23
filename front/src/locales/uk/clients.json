@@ -191,7 +191,10 @@
       "transferSearchPlaceholder": "Ім'я або телефон клієнта",
       "transferSelectPlaceholder": "Оберіть клієнта",
       "transferConfirm": "Передати",
-      "transferSuccess": "Абонемент передано"
+      "transferSuccess": "Абонемент передано",
+      "masterLabel": "Майстер",
+      "masterPlaceholder": "Виберіть майстра",
+      "masterRequired": "Виберіть майстра — ціна залежить від нього"
     },
     "offers": {
       "title": "Персональна знижка",

@@ -530,6 +530,7 @@
     "segment": {
       "resource": "Індивідуально",
       "event": "Розклад груп"
-    }
+    },
+    "priceRange": "від {{from}} до {{to}}"
   }
 }

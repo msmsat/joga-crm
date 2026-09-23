@@ -530,6 +530,7 @@
     "segment": {
       "resource": "Individuálně",
       "event": "Rozvrh skupin"
-    }
+    },
+    "priceRange": "od {{from}} do {{to}}"
   }
 }

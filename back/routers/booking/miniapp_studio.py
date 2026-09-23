@@ -23,6 +23,7 @@ from schemas.schedule.hybrid import BookingCapabilities
 from services.booking_rules import load_rules
 from services import catalog, terminology
 from services.notifier import _fmt_amount
+from services import service_pricing
 from services.pricing import resolve_price
 from services.studio_link import require_studio_id
 
@@ -83,6 +84,15 @@ class ServiceInfo(BaseSchema):
     name: str
     price: int
     price_str: str
+    # Во что услуга обойдётся, ПОКА МАСТЕР НЕ ВЫБРАН: у разных мастеров цена
+    # своя (services/service_pricing.py). Совпали — витрина пишет одну сумму,
+    # разошлись — «от price_min_str до price_max_str». Слово «от…до» собирает
+    # мини-приложение своей локалью, сервер даёт только числа и их запись в
+    # валюте студии.
+    price_min: int = 0
+    price_max: int = 0
+    price_min_str: str = ""
+    price_max_str: str = ""
     duration_min: int
     color: Optional[str]
     # HB-03/04: механика записи услуги — MA-01 использует её, чтобы в hybrid-
@@ -143,6 +153,41 @@ class StudioCatalog(BaseSchema):
     # один источник формы данных для обеих поверхностей.
     booking_capabilities: BookingCapabilities
     terminology: dict
+
+
+def _span(spans: dict, service) -> "service_pricing.PriceRange":
+    """Диапазон услуги, а если её почему-то нет в выборке — её базовая цена.
+
+    Пустой диапазон отдавать нельзя: витрина написала бы «от 0».
+    """
+    return spans.get(service.id) or service_pricing.PriceRange(
+        min=service.price, max=service.price)
+
+
+def _service_info(service, span: "service_pricing.PriceRange", currency: str) -> "ServiceInfo":
+    """Услуга витрины вместе с её ценой и диапазоном.
+
+    Отдельной функцией, чтобы диапазон считался ОДИН раз на услугу: в
+    выражении внутри списка он собирался бы заново на каждое из четырёх полей.
+    """
+    return ServiceInfo(
+        id=service.id,
+        name=service.name,
+        price=service.price,
+        price_str=_fmt_amount(service.price, currency),
+        price_min=span.min,
+        price_max=span.max,
+        price_min_str=_fmt_amount(span.min, currency),
+        price_max_str=_fmt_amount(span.max, currency),
+        duration_min=service.duration_min,
+        color=service.color,
+        booking_mode=service.booking_mode,
+        service_type=service.service_type,
+        buffer_before_min=service.buffer_before_min,
+        buffer_after_min=service.buffer_after_min,
+        is_bookable=service.is_bookable,
+        terminology_profile=service.terminology_profile,
+    )
 
 
 def _discount_label(base_price: int, final_price: int) -> Optional[str]:
@@ -289,6 +334,10 @@ async def get_studio_catalog(
     currency = studio.currency or "RUB"
     branch_hours = {branch.id: _branch_hours_today(hours_by_branch.get(branch.id, [])) for branch in branches}
 
+    # Один запрос на весь каталог витрины, а не по запросу на услугу
+    # (CLAUDE.md §5, правило 2): это первая ручка, которую зовёт мини-приложение.
+    spans = await service_pricing.price_ranges(db, studio_id, [s.id for s in services])
+
     # Цена со скидками — по каждому пакету, потому что часть скидок зависит от
     # суммы (min_purchase_amount у студийной, фиксированный оффер в деньгах).
     # ponytail: N × resolve_price при N ~ 3-6 пакетах; если каталог разрастётся —
@@ -343,20 +392,7 @@ async def get_studio_catalog(
             for branch in branches
         ],
         services=[
-            ServiceInfo(
-                id=service.id,
-                name=service.name,
-                price=service.price,
-                price_str=_fmt_amount(service.price, currency),
-                duration_min=service.duration_min,
-                color=service.color,
-                booking_mode=service.booking_mode,
-                service_type=service.service_type,
-                buffer_before_min=service.buffer_before_min,
-                buffer_after_min=service.buffer_after_min,
-                is_bookable=service.is_bookable,
-                terminology_profile=service.terminology_profile,
-            )
+            _service_info(service, _span(spans, service), currency)
             for service in services
         ],
         staff=[StaffInfo(id=trainer.id, name=trainer.name) for trainer in trainers],

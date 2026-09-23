@@ -122,6 +122,8 @@
       "name": "Emri i shërbimit",
       "namePlaceholder": "Hatha yoga",
       "category": "Kategoria",
+      "categoryCreate": "Krijo kategori",
+      "categoryNewPlaceholder": "P.sh. Prerje flokësh",
       "type": "Lloji",
       "typeGroup": "Në grup",
       "typeIndividual": "Individual",

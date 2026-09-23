@@ -4,6 +4,9 @@ export interface CheckoutCalculateRequest {
   client_id: number
   product_id: number
   product_type: CheckoutProductType
+  /** Кто оказывает услугу — от этого зависит её цена. Осмыслен только для
+   *  'single'. Не прислали — базовая цена услуги. */
+  teacher_id?: number | null
   promo_code?: string | null
   use_bonuses?: boolean
   use_deposit?: boolean
@@ -31,6 +34,9 @@ export interface CheckoutPayRequest {
   client_id: number
   product_id: number
   product_type: CheckoutProductType
+  /** См. CheckoutCalculateRequest.teacher_id. Цену по нему сервер считает
+   *  заново и здесь: присланному с фронта итогу касса не доверяет. */
+  teacher_id?: number | null
   // Не указан → бэк сам возьмёт/создаст дефолтный счёт «Основная касса» (V5-6, 2.1).
   account_id?: number
   promo_code?: string | null
@@ -63,9 +69,21 @@ export interface CheckoutConfirmResult {
   paid: boolean
 }
 
+export interface CheckoutServiceMaster {
+  user_id: number
+  name: string
+  price: number
+}
+
 export interface CheckoutService {
   id: number
   name: string
   price: number
+  // Пока кассир не выбрал мастера, точной цены у услуги нет: у разных мастеров
+  // она своя. Касса пишет «от price_min до price_max», а выбор мастера из
+  // `masters` превращает диапазон в сумму (back/services/service_pricing.py).
+  price_min: number
+  price_max: number
+  masters: CheckoutServiceMaster[]
   duration_min: number
 }

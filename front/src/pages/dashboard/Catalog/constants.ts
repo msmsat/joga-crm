@@ -1,3 +1,1 @@
-export const SERVICE_CATEGORIES = ['yoga', 'pilates', 'stretching', 'individual'];
-
 export const SCH_TIMES = ['08:00', '09:00', '10:00', '11:00', '12:00', '15:00', '17:00', '19:00', '20:00'];

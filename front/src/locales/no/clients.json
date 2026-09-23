@@ -194,7 +194,10 @@
       "useBonuses_one": "Bruk bonus ({{count}})",
       "useBonuses_other": "Bruk bonus ({{count}})",
       "bonusesSpent_one": "Bonus ({{count}} p.)",
-      "bonusesSpent_other": "Bonus ({{count}} p.)"
+      "bonusesSpent_other": "Bonus ({{count}} p.)",
+      "masterLabel": "Behandler",
+      "masterPlaceholder": "Velg behandler",
+      "masterRequired": "Velg behandler — prisen avhenger av det"
     },
     "offers": {
       "title": "Personlig rabatt",

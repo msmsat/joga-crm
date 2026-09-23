@@ -194,7 +194,10 @@
       "useBonuses_one": "Përdor bonuset ({{count}})",
       "useBonuses_other": "Përdor bonuset ({{count}})",
       "bonusesSpent_one": "Bonuset ({{count}} pikë)",
-      "bonusesSpent_other": "Bonuset ({{count}} pikë)"
+      "bonusesSpent_other": "Bonuset ({{count}} pikë)",
+      "masterLabel": "Specialisti",
+      "masterPlaceholder": "Zgjidhni specialistin",
+      "masterRequired": "Zgjidhni specialistin — çmimi varet prej tij"
     },
     "offers": {
       "title": "Zbritje personale",

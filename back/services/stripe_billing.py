@@ -1118,7 +1118,16 @@ async def cancel_subscription(subscription_id: str) -> None:
     Здесь остаётся два случая, где обрыв и есть цель: уход на тариф «только процент»
     (подписки на нём нет по определению) и возврат денег за неё.
     """
-    await asyncio.to_thread(stripe.Subscription.cancel, subscription_id)
+    stripe_env.guard_write("отмена подписки")
+    try:
+        await asyncio.to_thread(stripe.Subscription.cancel, subscription_id)
+    except stripe.InvalidRequestError as exc:
+        # A deleted object or an id copied from another Stripe mode has nothing
+        # left to cancel under this key. Let the caller clear the stale link.
+        # Network/auth failures and missing unrelated resources must still stop it.
+        if exc.code != "resource_missing" or exc.param not in ("id", "subscription_exposed_id"):
+            raise
+        logger.warning("Отменяемая подписка %s отсутствует в текущем Stripe", subscription_id)
 
 
 async def set_cancel_at_period_end(subscription_id: str, cancel: bool):

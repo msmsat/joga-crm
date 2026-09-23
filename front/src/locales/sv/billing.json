@@ -37,6 +37,7 @@
     "unlimited": "Obegränsat"
   },
   "banner": {
+    "staffAccessBlocked": "Åtkomsten till denna studio är avstängd. Kontakta studions ägare för att återställa åtkomsten. Din profil är fortfarande tillgänglig.",
     "trialEnds": "Din provperiod slutar {{date}} — välj en plan",
     "renews": "Din {{plan}}-prenumeration förnyas {{date}}",
     "expires": "Din {{plan}}-prenumeration löper ut {{date}}",

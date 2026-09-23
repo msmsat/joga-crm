@@ -122,6 +122,8 @@
       "name": "Tjänstens namn",
       "namePlaceholder": "Hathayoga",
       "category": "Kategori",
+      "categoryCreate": "Skapa kategori",
+      "categoryNewPlaceholder": "T.ex. Hårklippning",
       "type": "Typ",
       "typeGroup": "Grupp",
       "typeIndividual": "Individuell",

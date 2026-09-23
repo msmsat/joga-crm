@@ -223,5 +223,14 @@
     "connected": "Csatlakoztatva",
     "disconnected": "Leválasztva",
     "codeSent": "A kód elküldve"
+  },
+  "price": {
+    "range": "{{from}}–{{to}}"
+  },
+  "servicePrice": {
+    "hint": "Koppintson az összegre saját ár megadásához",
+    "custom": "Saját ár. Ürítse a mezőt a Katalógus árának visszaállításához",
+    "inherited": "Ár a Katalógusból",
+    "aria": "{{service}} ára"
   }
 }

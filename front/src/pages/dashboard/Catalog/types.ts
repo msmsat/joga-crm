@@ -41,6 +41,11 @@ export interface Service {
   type: ServiceType;
   duration_min: number;
   price: number;
+  // Во что услуга обходится клиенту с поправкой на мастера: у разных мастеров
+  // она своя. Совпали — Каталог пишет одну сумму, разошлись — «от–до».
+  // Сравнивать их здесь не нужно, это решил сервер (service_pricing.py).
+  price_min: number;
+  price_max: number;
   color: string;
   description: string;
   max_clients?: number;

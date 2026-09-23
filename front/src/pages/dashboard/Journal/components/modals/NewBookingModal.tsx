@@ -13,6 +13,9 @@ import { studioApi } from '../../../../../api/studio/studio.api';
 import { queryKeys } from '../../../../../api/queryKeys';
 import { Select, ConfirmModal, NotePhotos, NoteDropZone } from '../../../../../components/ui/index';
 import { useNotePhotos } from '../../../../../hooks/useNotePhotos';
+import { usePhone } from '../../../../../hooks/usePhone';
+import { useStudioCurrency } from '../../../../../hooks/useStudioCurrency';
+import { formatMoney } from '../../../../../lib/money';
 
 /** С этого числа тренеров список получает поиск: глазами по длинному уже не ищут. */
 const TRAINER_SEARCH_FROM = 8;
@@ -31,6 +34,9 @@ interface NewBookingModalProps {
   onCreate: (form: {
     serviceId: number; title: string; hall: string; maxClients: number; branchId: number | null;
     notes: string; photos: string[];
+    /** Цена у тренера этой колонки — та, что человек видел в форме. Нужна
+     *  только оптимистичной карточке; на сервер её не шлём, он считает сам. */
+    price: number;
   }) => void;
   /** Перевод в форму индивидуальной записи — там, где все услуги такие. */
   onResourceBooking?: (serviceId?: number) => void;
@@ -87,12 +93,18 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({
   const [notes, setNotes] = useState('');
   const notePhotos = useNotePhotos();
   const navigate = useNavigate();
+  // На телефоне поля времени только показывают время и открывают список: набор
+  // с клавиатуры там ничего не даёт (в списке есть каждый шаг сетки), а
+  // экранная клавиатура вылезает ровно поверх этого списка.
+  const isPhone = usePhone();
 
   const startScrollRef = useRef<HTMLDivElement>(null);
   const endScrollRef = useRef<HTMLDivElement>(null);
 
   const KP_INTERVALS = useMemo(() => generateTimeIntervals(timeStep), [timeStep]);
-  const { services, options: serviceOptions } = useServiceOptions(!!onResourceBooking);
+  const { services, options: serviceOptions, priceFor } = useServiceOptions(!!onResourceBooking);
+  const currency = useStudioCurrency();
+  const lessonPrice = priceFor(newForm.serviceId, newBookingSlot?.trainer ?? null);
 
   const shownTrainers = useMemo(() => {
     const q = trainerQuery.trim().toLowerCase();
@@ -151,7 +163,20 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({
 
     if (activeDropdown === 'start') scrollToActiveTime(startScrollRef.current);
     if (activeDropdown === 'end') scrollToActiveTime(endScrollRef.current);
-  }, [activeDropdown]);
+
+    // Список раскрывается ВНИЗ, а подвал формы на телефоне прилипший к её низу:
+    // на коротком экране (360×740) нижние строки уезжали под кнопку «Создать».
+    // Подкручиваем саму форму ровно на величину перекрытия — не больше, иначе
+    // поле времени уехало бы из виду вместе со списком.
+    const dropdown = activeDropdown === 'start' ? startScrollRef.current
+      : activeDropdown === 'end' ? endScrollRef.current : null;
+    const modal = modalRef.current;
+    if (!dropdown || !modal) return;
+    const foot = modal.querySelector('.kp-foot');
+    const limit = foot ? foot.getBoundingClientRect().top : modal.getBoundingClientRect().bottom;
+    const overflow = dropdown.getBoundingClientRect().bottom - limit;
+    if (overflow > 0) modal.scrollTop += overflow + 8;
+  }, [activeDropdown, modalRef]);
 
   // Закрытие дропдаунов при клике вне
   useEffect(() => {
@@ -193,6 +218,7 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({
       maxClients: maxClientsNum,
       notes: notes.trim(),
       photos: notePhotos.photos,
+      price: lessonPrice ?? 0,
     });
     closeNewForm();
   };
@@ -240,6 +266,18 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({
                   placeholder={t('newBooking.servicePlaceholder')}
                 />
                 {serviceError && <div style={{ fontSize: 11, color: 'var(--error)', fontWeight: 600, marginTop: 4 }}>{serviceError}</div>}
+                {/* Цена — рядом с тренером, а не сама по себе: у одной услуги
+                    у разных мастеров она своя, и владелец должен видеть, ЧЬЯ
+                    это сумма. Тренер здесь задан колонкой сетки, поэтому
+                    диапазона «от–до» тут не бывает — цена всегда одна. */}
+                {lessonPrice != null && (
+                  <div className="kp-price-row">
+                    <span className="kp-price-who">
+                      {trainers.find(tr => tr.id === newBookingSlot.trainer)?.full}
+                    </span>
+                    <span className="kp-price-v">{formatMoney(lessonPrice, currency)}</span>
+                  </div>
+                )}
               </div>
 
               {/* Место или филиал — но не оба. Там, где место участвует в
@@ -281,9 +319,10 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({
                     <input
                       type="text"
                       className="modal-input kp-time-input"
-                      style={{ margin: 0, background: 'var(--bg)', border: `1px solid ${timeError ? 'var(--error)' : 'var(--border)'}`, borderRadius: '10px', fontSize: '13px', fontWeight: 700, textAlign: 'center', color: 'var(--onyx)' }}
+                      style={{ margin: 0, background: 'var(--bg)', border: `1px solid ${timeError ? 'var(--error)' : 'var(--border)'}`, borderRadius: '10px', fontWeight: 700, textAlign: 'center', color: 'var(--onyx)' }}
                       value={startInput}
-                      onFocus={(e) => { e.target.select(); setActiveDropdown('start'); }}
+                      readOnly={isPhone}
+                      onFocus={(e) => { if (!isPhone) e.target.select(); setActiveDropdown('start'); }}
                       onChange={e => setStartInput(e.target.value)}
                       onBlur={(e) => commitTime('start', e.target.value)}
                       onKeyDown={e => { if (e.key === 'Enter') commitTime('start', startInput); }}
@@ -310,9 +349,10 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({
                     <input
                       type="text"
                       className="modal-input kp-time-input"
-                      style={{ margin: 0, background: 'var(--bg)', border: `1px solid ${timeError ? 'var(--error)' : 'var(--border)'}`, borderRadius: '10px', fontSize: '13px', fontWeight: 700, textAlign: 'center', color: 'var(--onyx)' }}
+                      style={{ margin: 0, background: 'var(--bg)', border: `1px solid ${timeError ? 'var(--error)' : 'var(--border)'}`, borderRadius: '10px', fontWeight: 700, textAlign: 'center', color: 'var(--onyx)' }}
                       value={endInput}
-                      onFocus={(e) => { e.target.select(); setActiveDropdown('end'); }}
+                      readOnly={isPhone}
+                      onFocus={(e) => { if (!isPhone) e.target.select(); setActiveDropdown('end'); }}
                       onChange={e => setEndInput(e.target.value)}
                       onBlur={(e) => commitTime('end', e.target.value)}
                       onKeyDown={e => { if (e.key === 'Enter') commitTime('end', endInput); }}

@@ -157,7 +157,8 @@ from schemas.schedule.lessons import LessonCreateRequest, LessonUpdateRequest
 from schemas.schedule.reservations import ReservationCreate, ReservationPayRequest
 from schemas.settings.booking import BookingSettingsUpdate
 from schemas.settings.notifications import EventToggle
-from schemas.settings.team import StaffCreate, StaffUpdate
+from schemas.settings.team import StaffCreate, StaffServicePrice, StaffUpdate
+from schemas.staff.staff import StaffProfileResponse
 from schemas.staff.staff import StaffDayOverrideRequest
 from schemas.studio.studio import BranchCreate, ServiceCreate, ServiceRead, ServiceUpdate
 from services import studio_time
@@ -844,6 +845,15 @@ class StaffArgs(BaseModel):
     staff_id: int
 
 
+class StaffServicePriceArg(BaseModel):
+    """Цена ОДНОЙ услуги у этого сотрудника."""
+    service_id: int
+    price: Optional[int] = Field(
+        None, ge=0,
+        description="Сколько стоит эта услуга у сотрудника. null — как в Каталоге. "
+                    "0 — законная цена «бесплатно», а не «убрать цену»")
+
+
 class CreateStaffArgs(BaseModel):
     name: str
     email: str
@@ -871,6 +881,9 @@ class CreateStaffArgs(BaseModel):
         None, description="Что означает rate: hourly — за час, percent — процент с выручки, "
                           "fixed — за занятие. «300 крон в час» -> rate=300, rate_type=hourly")
     service_ids: Optional[list[int]] = None
+    service_prices: Optional[list[StaffServicePriceArg]] = Field(
+        None, description="Индивидуальные цены услуг этого сотрудника. Только для услуг "
+                          "из service_ids. Не указано — все услуги по цене Каталога")
 
 
 class UpdateStaffArgs(BaseModel):
@@ -881,6 +894,10 @@ class UpdateStaffArgs(BaseModel):
     rate: Optional[float] = None
     rate_type: Optional[Literal["fixed", "percent", "hourly"]] = None
     service_ids: Optional[list[int]] = None
+    service_prices: Optional[list[StaffServicePriceArg]] = Field(
+        None, description="Индивидуальные цены услуг сотрудника. Прислать нужно ВЕСЬ набор "
+                          "его особых цен, а не одну изменённую: чего в списке нет, то "
+                          "возвращается к цене Каталога")
 
 
 class WorkDay(BaseModel):
@@ -929,10 +946,13 @@ class StaffDayArgs(BaseModel):
     is_working: bool = True
 
 
-# Ровно те категории, что предлагает селект в Каталоге. Свободной строкой
-# модель писала «Стретчинг» или не писала ничего — услуга попадала в группу
-# «Без категории» вместо своей.
-ServiceCategory = Literal["yoga", "pilates", "stretching", "individual"]
+# Категория — свободная строка самой студии («Стрижка», «Уход за бородой»), а
+# не отрасль: список направлений из формы убран, чем занимается бизнес — уже
+# известно с регистрации. Здесь был Literal из четырёх йога-ключей, и он стал
+# бы отказом на собственной категории студии. Разное написание одной категории
+# больше не плодит групп: POST/PATCH /studio/services подставляют написание,
+# которое студия уже использует (_normalize_category).
+ServiceCategory = str
 
 
 class CreateServiceArgs(BaseModel):
@@ -2643,6 +2663,10 @@ async def create_staff(ctx: StudioContext, db: AsyncSession, args: CreateStaffAr
             password=args.password, role=args.access_role, department=args.department,
             salary=args.salary, rate=args.rate, rate_type=args.rate_type,
             service_ids=args.service_ids or [],
+            service_prices=[
+                StaffServicePrice(service_id=p.service_id, price=p.price)
+                for p in (args.service_prices or [])
+            ],
         ),
         ctx=ctx, db=db,
     )
@@ -2654,8 +2678,15 @@ async def _staff_update_body(staff_id: int, ctx: StudioContext, db: AsyncSession
 
     StaffUpdate требует имя и email целиком, а модель присылает только то, что
     меняют. Читаем существующее тем же роутером, а не своим запросом.
+
+    model_validate обязателен: роутер возвращает СЛОВАРЬ, а в объект его
+    превращает FastAPI по `response_model` — и только когда ответ уходит по
+    HTTP. При прямом вызове сюда приходит dict, и обращение к `profile.name`
+    роняло инструмент с AttributeError: правка сотрудника ассистентом не
+    работала вовсе.
     """
-    profile = await _r_get_staff_profile(staff_id=staff_id, ctx=ctx, db=db)
+    profile = StaffProfileResponse.model_validate(
+        await _r_get_staff_profile(staff_id=staff_id, ctx=ctx, db=db))
     return {
         "name": profile.name,
         "last_name": profile.last_name,
@@ -2666,6 +2697,12 @@ async def _staff_update_body(staff_id: int, ctx: StudioContext, db: AsyncSession
         "rate": profile.rate,
         "rate_type": profile.rate_type,
         "service_ids": [s.id for s in profile.services],
+        # Свои цены несём в теле всегда. Иначе правка одной только ставки
+        # приходила бы без них, роутер прочитал бы это как «снять все» и молча
+        # вернул услуги мастера к прайсу Каталога.
+        "service_prices": [
+            {"service_id": s.id, "price": s.price} for s in profile.services if s.price_custom
+        ],
         "schedule": [h.model_dump() for h in profile.week_working_hours],
     }
 
@@ -2679,7 +2716,12 @@ async def update_staff(ctx: StudioContext, db: AsyncSession, args: UpdateStaffAr
     """Изменить сотрудника: должность (department), роль доступа (access_role:
     admin/trainer), список услуг, ставку и тип оплаты. Указывать нужно только
     то, что меняется, — остальное останется как было. Роль владельца этим
-    инструментом не меняется."""
+    инструментом не меняется.
+
+    service_prices — индивидуальные цены услуг («у Анны стрижка стоит 700»).
+    Цена назначается только услуге из service_ids. Присылать нужно ВЕСЬ набор
+    особых цен сотрудника: услуги, которой в списке нет, вернётся цена Каталога.
+    Чтобы снять надбавку с одной услуги, пришли остальные без неё."""
     body = await _staff_update_body(args.staff_id, ctx, db)
     for field in ("department", "salary", "rate", "rate_type"):
         value = getattr(args, field)
@@ -2687,6 +2729,21 @@ async def update_staff(ctx: StudioContext, db: AsyncSession, args: UpdateStaffAr
             body[field] = value
     if args.service_ids is not None:
         body["service_ids"] = args.service_ids
+    if args.service_prices is not None:
+        # Названное моделью НЕ фильтруем: цена услуги, которой у мастера нет, —
+        # это отказ роутера, и человек его увидит. Отбросить такую цену молча
+        # значило бы ответить «готово» на непрожитое действие.
+        body["service_prices"] = [
+            {"service_id": p.service_id, "price": p.price} for p in args.service_prices
+        ]
+    else:
+        # А вот унаследованные из профиля цены отсечь обязаны: у мастера могли
+        # забрать услугу тем же вызовом, и её прежняя цена превратила бы
+        # «убери стрижку» в отказ «стрижка ему не назначена».
+        allowed = set(body["service_ids"])
+        body["service_prices"] = [
+            p for p in body["service_prices"] if p["service_id"] in allowed
+        ]
     staff = await _r_update_staff(
         staff_id=args.staff_id, data=StaffUpdate(role=args.access_role, **body), ctx=ctx, db=db,
     )
@@ -2786,9 +2843,10 @@ async def create_service(ctx: StudioContext, db: AsyncSession, args: CreateServi
     категория, тип (group/individual), максимум клиентов. Услуга сразу
     появляется в форме создания занятия и в онлайн-записи.
 
-    category заполняй всегда — подбери ближайшую по названию услуги
-    («Стретчинг» → stretching, «Хатха» → yoga). Без неё услуга ложится в
-    Каталоге в группу «Без категории»."""
+    category заполняй всегда и БЕРИ ИЗ УЖЕ СУЩЕСТВУЮЩИХ категорий студии
+    (их видно в get_services), подбирая ближайшую по названию услуги. Новую
+    категорию заводи, только если ни одна не подходит. Без категории услуга
+    ложится в Каталоге в группу «Без категории»."""
     service = await _r_create_service(
         data=ServiceCreate(
             name=args.name, price=args.price, duration_min=args.duration_min,
@@ -2803,7 +2861,8 @@ async def create_service(ctx: StudioContext, db: AsyncSession, args: CreateServi
 @tool(mutating=True, roles=("owner",), summary="Изменить услугу: {service_id}", endpoint="PATCH /studio/services/{service_id}")
 async def update_service(ctx: StudioContext, db: AsyncSession, args: UpdateServiceArgs) -> dict:
     """Изменить услугу: название, цену, длительность, категорию, число мест.
-    Передавать нужно только то, что меняется."""
+    Передавать нужно только то, что меняется. Категория — из уже существующих
+    у студии (get_services), новая — только если ни одна не подходит."""
     service = await _r_update_service(
         service_id=args.service_id,
         data=ServiceUpdate(**args.model_dump(exclude={"service_id"}, exclude_none=True)),

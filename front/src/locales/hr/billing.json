@@ -37,6 +37,7 @@
     "unlimited": "Neograničeno"
   },
   "banner": {
+    "staffAccessBlocked": "Pristup studiju je obustavljen. Obratite se vlasniku studija radi ponovnog pristupa. Vaš profil ostaje dostupan.",
     "trialEnds": "Vaše probno razdoblje završava {{date}} — odaberite plan",
     "renews": "Vaša pretplata {{plan}} obnavlja se {{date}}",
     "expires": "Vaša pretplata {{plan}} završava {{date}}",

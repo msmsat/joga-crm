@@ -37,6 +37,7 @@
     "unlimited": "Rajaton"
   },
   "banner": {
+    "staffAccessBlocked": "Pääsy tähän studioon on keskeytetty. Ota yhteyttä studion omistajaan käyttöoikeuden palauttamiseksi. Profiilisi on edelleen käytettävissä.",
     "trialEnds": "Kokeilusi päättyy {{date}} — valitse paketti",
     "renews": "{{plan}}-tilauksesi uusiutuu {{date}}",
     "expires": "{{plan}}-tilauksesi päättyy {{date}}",

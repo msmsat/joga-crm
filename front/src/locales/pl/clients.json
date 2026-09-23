@@ -197,7 +197,10 @@
       "useBonuses_many": "Wykorzystaj bonusy ({{count}})",
       "bonusesSpent_one": "Bonusy ({{count}} pkt)",
       "bonusesSpent_few": "Bonusy ({{count}} pkt)",
-      "bonusesSpent_many": "Bonusy ({{count}} pkt)"
+      "bonusesSpent_many": "Bonusy ({{count}} pkt)",
+      "masterLabel": "Specjalista",
+      "masterPlaceholder": "Wybierz specjalistę",
+      "masterRequired": "Wybierz specjalistę — cena zależy od niego"
     },
     "offers": {
       "title": "Rabat osobisty",

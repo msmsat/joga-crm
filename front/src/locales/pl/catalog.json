@@ -122,6 +122,8 @@
       "name": "Nazwa usługi",
       "namePlaceholder": "Hatha joga",
       "category": "Kategoria",
+      "categoryCreate": "Utwórz kategorię",
+      "categoryNewPlaceholder": "Np. Strzyżenie",
       "type": "Typ",
       "typeGroup": "Grupowa",
       "typeIndividual": "Indywidualna",

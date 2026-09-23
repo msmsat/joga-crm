@@ -223,5 +223,14 @@
     "connected": "U lidh",
     "disconnected": "U shkëput",
     "codeSent": "Kodi u dërgua"
+  },
+  "price": {
+    "range": "nga {{from}} deri {{to}}"
+  },
+  "servicePrice": {
+    "hint": "Prekni shumën për të vendosur çmimin tuaj",
+    "custom": "Çmim i vetë. Pastroni fushën për t’u kthyer te çmimi i Katalogut",
+    "inherited": "Çmimi i Katalogut",
+    "aria": "Çmimi i shërbimit {{service}}"
   }
 }

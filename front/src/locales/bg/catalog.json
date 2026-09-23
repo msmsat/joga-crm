@@ -122,6 +122,8 @@
       "name": "Име на услугата",
       "namePlaceholder": "Хатха йога",
       "category": "Категория",
+      "categoryCreate": "Създаване на категория",
+      "categoryNewPlaceholder": "Например Подстригване",
       "type": "Тип",
       "typeGroup": "Групова",
       "typeIndividual": "Индивидуална",

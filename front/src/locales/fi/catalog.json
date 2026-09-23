@@ -122,6 +122,8 @@
       "name": "Palvelun nimi",
       "namePlaceholder": "Hatha-jooga",
       "category": "Luokka",
+      "categoryCreate": "Luo luokka",
+      "categoryNewPlaceholder": "Esim. Hiustenleikkaus",
       "type": "Tyyppi",
       "typeGroup": "Ryhmä",
       "typeIndividual": "Yksilö",

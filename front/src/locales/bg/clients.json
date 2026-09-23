@@ -194,7 +194,10 @@
       "useBonuses_one": "Използвай бонуси ({{count}})",
       "useBonuses_other": "Използвай бонуси ({{count}})",
       "bonusesSpent_one": "Бонуси ({{count}} т.)",
-      "bonusesSpent_other": "Бонуси ({{count}} т.)"
+      "bonusesSpent_other": "Бонуси ({{count}} т.)",
+      "masterLabel": "Специалист",
+      "masterPlaceholder": "Изберете специалист",
+      "masterRequired": "Изберете специалист — цената зависи от него"
     },
     "offers": {
       "title": "Лична отстъпка",

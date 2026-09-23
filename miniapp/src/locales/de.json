@@ -530,6 +530,7 @@
     "segment": {
       "resource": "Einzeltermin",
       "event": "Gruppenplan"
-    }
+    },
+    "priceRange": "von {{from}} bis {{to}}"
   }
 }

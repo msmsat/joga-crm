@@ -194,7 +194,10 @@
       "useBonuses_one": "Χρήση μπόνους ({{count}})",
       "useBonuses_other": "Χρήση μπόνους ({{count}})",
       "bonusesSpent_one": "Μπόνους ({{count}} π.)",
-      "bonusesSpent_other": "Μπόνους ({{count}} π.)"
+      "bonusesSpent_other": "Μπόνους ({{count}} π.)",
+      "masterLabel": "Ειδικός",
+      "masterPlaceholder": "Επιλέξτε ειδικό",
+      "masterRequired": "Επιλέξτε ειδικό — η τιμή εξαρτάται από αυτόν"
     },
     "offers": {
       "title": "Προσωπική έκπτωση",

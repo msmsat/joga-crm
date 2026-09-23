@@ -37,6 +37,7 @@
     "unlimited": "Pa kufi"
   },
   "banner": {
+    "staffAccessBlocked": "Qasja në këtë studio është pezulluar. Kontaktoni pronarin e studios për të rikthyer qasjen. Profili juaj mbetet i disponueshëm.",
     "trialEnds": "Prova juaj përfundon më {{date}} — zgjidhni një plan",
     "renews": "Abonimi juaj {{plan}} rinovohet më {{date}}",
     "expires": "Abonimi juaj {{plan}} përfundon më {{date}}",

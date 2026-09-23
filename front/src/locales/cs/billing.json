@@ -37,6 +37,7 @@
     "unlimited": "Bez omezení"
   },
   "banner": {
+    "staffAccessBlocked": "Přístup do studia je pozastaven. Pro obnovení přístupu kontaktujte majitele studia. Váš profil zůstává dostupný.",
     "trialEnds": "Zkušební období končí {{date}} — vyberte si tarif",
     "renews": "Předplatné {{plan}} se obnoví {{date}}",
     "expires": "Předplatné {{plan}} končí {{date}}",

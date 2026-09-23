@@ -9,6 +9,7 @@ import { useStudioCurrency } from '../../../../hooks/useStudioCurrency';
 import { getCurrencySymbol } from '../../../../components/UI';
 import type { CheckoutProductType } from '../../../../api/checkout';
 import type { SubscriptionPackage } from '../../../../api/loyalty/loyalty.types';
+import { usePriceLabel } from '../../../../hooks/usePriceLabel';
 import s from './WalletTab.module.css';
 
 function SubscriptionIcon() {
@@ -51,6 +52,9 @@ export function WalletCatalog({ onBack, onSelect }: {
 }) {
   const { t } = useTranslation('clients');
   const currency = getCurrencySymbol(useStudioCurrency());
+  // Разовый визит без мастера точной цены не имеет: «от–до» до выбора,
+  // сумма после. Абонемент от мастера не зависит и остаётся одной ценой.
+  const priceLabel = usePriceLabel();
 
   const [catalogTab, setCatalogTab] = useState<CatalogTab>('subscriptions');
   const [showAll, setShowAll] = useState(false);
@@ -118,7 +122,8 @@ export function WalletCatalog({ onBack, onSelect }: {
           ) : (
             <div className={s.list}>
               {(visible as typeof services).map(svc => (
-                <ProductCard key={`single-${svc.id}`} name={svc.name} priceLabel={`${currency}${svc.price}`}
+                <ProductCard key={`single-${svc.id}`} name={svc.name}
+                  priceLabel={priceLabel(svc.price_min ?? svc.price, svc.price_max ?? svc.price)}
                   subLabel={t('panel.wallet.perVisit')}
                   icon={<SingleVisitIcon/>}
                   onClick={() => onSelect(svc.id, 'single')}/>

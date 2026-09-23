@@ -37,6 +37,7 @@
     "unlimited": "Korlátlan"
   },
   "banner": {
+    "staffAccessBlocked": "A stúdióhoz való hozzáférés fel van függesztve. A hozzáférés visszaállításához forduljon a stúdió tulajdonosához. A profilja továbbra is elérhető.",
     "trialEnds": "A próbaidőszak {{date}} napján véget ér — válasszon csomagot",
     "renews": "A(z) {{plan}} előfizetése {{date}} napján megújul",
     "expires": "A(z) {{plan}} előfizetése {{date}} napján lejár",

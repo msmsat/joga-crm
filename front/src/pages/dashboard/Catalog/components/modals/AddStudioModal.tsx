@@ -484,7 +484,7 @@ export default function AddStudioModal({ isOpen, onClose, onSuccess }: AddStudio
                       type="email"
                       value={data.email}
                       onChange={(v: string) => set("email", v)}
-                      placeholder="studio@velora.ru"
+                      placeholder="studio@example.com"
                     />
 
                     {!phoneValid && (

@@ -23,12 +23,14 @@ from routers.clients.subscriptions import attach_subscription
 from routers.finances.accounts import get_or_create_default_account
 from routers.loyalty.promocodes import find_valid_promo
 from schemas.checkout import (
-    CheckoutCalculateRequest, CheckoutCalculateResult, CheckoutPayRequest, CheckoutPayResult, CheckoutServiceOut,
+    CheckoutCalculateRequest, CheckoutCalculateResult, CheckoutPayRequest, CheckoutPayResult,
+    CheckoutServiceMasterOut, CheckoutServiceOut,
 )
 from services import platform_fee, stripe_connect
 from services.members import member_name
 from services.notifier import notify_payment
 from services.points import client_point_value, redeem_points
+from services import service_pricing
 from services.pricing import resolve_price
 from services.schedule_guard import lock_studio
 
@@ -45,7 +47,26 @@ async def list_checkout_services(
     services = (await db.execute(
         select(Service).where(Service.studio_id == ctx.studio_id).order_by(Service.name)
     )).scalars().all()
-    return [CheckoutServiceOut(id=s.id, name=s.name, price=s.price, duration_min=s.duration_min) for s in services]
+    ids = [s.id for s in services]
+    # По одному запросу на весь список, а не на услугу: вкладка открывается
+    # целиком (CLAUDE.md §5, правило 2).
+    spans = await service_pricing.price_ranges(db, ctx.studio_id, ids)
+    masters = await service_pricing.masters_of_services(db, ctx.studio_id, ids)
+    return [
+        CheckoutServiceOut(
+            id=s.id,
+            name=s.name,
+            price=s.price,
+            price_min=spans[s.id].min if s.id in spans else s.price,
+            price_max=spans[s.id].max if s.id in spans else s.price,
+            masters=[
+                CheckoutServiceMasterOut(user_id=m.user_id, name=m.name, price=m.price)
+                for m in masters.get(s.id, [])
+            ],
+            duration_min=s.duration_min,
+        )
+        for s in services
+    ]
 
 
 @dataclass
@@ -296,6 +317,7 @@ class ServiceAsProduct:
 
 async def _get_client_package(
     db: AsyncSession, studio_id: int, client_id: int, product_id: int, product_type: str,
+    teacher_id: int | None = None,
 ) -> tuple[Client, "SubscriptionPackage | ServiceAsProduct"]:
     client = (await db.execute(
         select(Client).where(Client.id == client_id, Client.studio_id == studio_id)
@@ -309,9 +331,13 @@ async def _get_client_package(
         )).scalar_one_or_none()
         if service is None:
             raise HTTPException(status_code=404, detail={"code": "checkout.service_not_found", "message": "Услуга не найдена"})
+        # Цена разового визита — у ВЫБРАННОГО мастера: у одной услуги у разных
+        # мастеров она своя (services/service_pricing.py). Мастера не выбрали —
+        # базовая цена услуги, как было до появления индивидуальных.
+        price = await service_pricing.price_for(db, service, teacher_id)
         return client, ServiceAsProduct(
-            id=service.id, name=service.name, price=service.price,
-            per_visit_price=service.price, service_id=service.id,
+            id=service.id, name=service.name, price=price,
+            per_visit_price=price, service_id=service.id,
         )
 
     if product_type == "lesson":
@@ -384,7 +410,8 @@ async def calculate(
 ):
     """Итоговая цена продукта с учётом скидок/промокода/бонусов. Деньги не
     двигает, промокод/оффер не помечает использованными — это делает /pay."""
-    _client, package = await _get_client_package(db, ctx.studio_id, body.client_id, body.product_id, body.product_type)
+    _client, package = await _get_client_package(
+        db, ctx.studio_id, body.client_id, body.product_id, body.product_type, body.teacher_id)
 
     quote = await _quote(
         db, ctx.studio_id, body.client_id, package,
@@ -454,7 +481,8 @@ async def perform_pay(
     рядом с оплатой того же занятия.
     """
     await lock_studio(db, studio_id)
-    client, package = await _get_client_package(db, studio_id, body.client_id, body.product_id, body.product_type)
+    client, package = await _get_client_package(
+        db, studio_id, body.client_id, body.product_id, body.product_type, body.teacher_id)
 
     account = await resolve_account(
         db, studio_id, body.account_id,

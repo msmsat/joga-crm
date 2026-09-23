@@ -223,5 +223,14 @@
     "connected": "Collegato",
     "disconnected": "Scollegato",
     "codeSent": "Codice inviato"
+  },
+  "price": {
+    "range": "da {{from}} a {{to}}"
+  },
+  "servicePrice": {
+    "hint": "Tocca l'importo per impostare un prezzo personalizzato",
+    "custom": "Prezzo personalizzato. Svuota il campo per tornare al prezzo del Catalogo",
+    "inherited": "Prezzo del Catalogo",
+    "aria": "Prezzo di {{service}}"
   }
 }

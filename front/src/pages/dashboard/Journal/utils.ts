@@ -244,6 +244,7 @@ export const lessonToBooking = (l: Lesson, halls: Hall[], colorByTeacher: Map<nu
     notes: l.notes ?? '',
     photos: l.photos ?? [],
     serviceId: l.service_id,
+    price: l.price ?? 0,
     bookingMode: l.booking_mode ?? 'event',
     version: l.version ?? 1,
     branchId: l.branch_id ?? null,

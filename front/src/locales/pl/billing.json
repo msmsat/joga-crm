@@ -37,6 +37,7 @@
     "unlimited": "Bez limitu"
   },
   "banner": {
+    "staffAccessBlocked": "Dostęp do studia został wstrzymany. Skontaktuj się z właścicielem studia, aby przywrócić dostęp. Twój profil pozostaje dostępny.",
     "trialEnds": "Okres próbny kończy się {{date}} — wybierz plan",
     "renews": "Twoja subskrypcja {{plan}} odnowi się {{date}}",
     "expires": "Twoja subskrypcja {{plan}} wygasa {{date}}",

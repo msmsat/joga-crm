@@ -14,6 +14,7 @@ import { useContactCheck } from "../../hooks/useContactCheck";
 import { useRoleLabel } from "../../hooks/useBusinessTerms";
 import StaffAvailabilitySection from "./StaffAvailabilitySection";
 import { submitOnEnter } from "../../lib/submitOnEnter";
+import { ServicePricePicker } from "../ui/index";
 
 // ─── TYPES ────────────────────────────────────────────────────────────────────
 interface ScheduleDay { enabled: boolean; from: string; to: string; }
@@ -32,6 +33,9 @@ export interface StaffMember {
   schedule?: Record<string, ScheduleDay>;
   photo_url?: string;
   service_ids?: number[];
+  /** Только СВОИ цены мастера {service_id: цена}. Услуги тут нет — значит, она
+   *  идёт по цене Каталога и продолжит ехать за её правкой. */
+  service_prices?: Record<number, number>;
   /** HB-18: филиалы, где специалист доступен для индивидуальной записи. */
   branch_ids?: number[];
   /** true — сотрудник принял приглашение и владеет аккаунтом: его email и телефон
@@ -370,11 +374,12 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
     schedule: Record<string, ScheduleDay>;
     photo_url?: string;
     serviceIds: number[];
+    servicePrices: Record<number, number>;
     branchIds: number[];
   }>({
     id: 0, name: "", last_name: "", phone: "", email: "", role: "",
     avatar_gradient: "", is_online: true, salary: "", rate_type: "",
-    schedule: { ...defaultSchedule }, serviceIds: [], branchIds: [],
+    schedule: { ...defaultSchedule }, serviceIds: [], servicePrices: {}, branchIds: [],
   });
   const [availableBranches, setAvailableBranches] = useState<{ id: number; name: string }[]>([]);
 
@@ -409,6 +414,7 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
         schedule:       staff.schedule ?? { ...defaultSchedule },
         photo_url:      staff.photo_url,
         serviceIds:     staff.service_ids ?? [],
+        servicePrices:  staff.service_prices ?? {},
         branchIds:      staff.branch_ids ?? [],
       });
       setPhotoPreview(resolveImageUrl(staff.photo_url));
@@ -457,6 +463,9 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
         ...form,
         rate: form.salary ? parseFloat(form.salary) : undefined,
         service_ids: canHaveServices ? form.serviceIds : [],
+        // Роль без услуг — и цен у неё нет: цена на неназначенную услугу это
+        // 400 с сервера, а не «назначить заодно».
+        service_prices: canHaveServices ? form.servicePrices : {},
         // Назначения филиалов имеют смысл только у того, кто ведёт услуги:
         // администратор в Resource-доступности не участвует.
         branch_ids: canHaveServices ? form.branchIds : [],
@@ -467,12 +476,6 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
     } catch {
       setSaving(false);
     }
-  }
-
-  function toggleService(serviceId: number) {
-    set("serviceIds", form.serviceIds.includes(serviceId)
-      ? form.serviceIds.filter(id => id !== serviceId)
-      : [...form.serviceIds, serviceId]);
   }
 
   function handleDelete() {
@@ -1069,22 +1072,15 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
                   {canHaveServices && (
                     <div>
                       <FieldLabel>{t("common:fields.services")}</FieldLabel>
-                      <div style={{ display: "flex", flexWrap: "wrap", gap: "7px", marginBottom: "10px" }}>
-                        {availableServices.map(service => {
-                          const isSelected = form.serviceIds.includes(service.id);
-                          return (
-                            <button key={service.id} type="button" className="ei-svc-pill"
-                              onClick={() => toggleService(service.id)}
-                              style={{
-                                padding: "7px 12px", borderRadius: "20px", cursor: "pointer",
-                                background: isSelected ? "rgba(252,174,145,0.14)" : "rgba(var(--ink),0.04)",
-                                border: isSelected ? "1.5px solid rgba(252,174,145,0.55)" : "1.5px solid transparent",
-                                color: isSelected ? "#C07060" : "var(--muted)", fontSize: "12px",
-                                fontWeight: isSelected ? 700 : 500, fontFamily: "Manrope, sans-serif",
-                              }}
-                            >{isSelected ? "✓ " : ""}{service.name}</button>
-                          );
-                        })}
+                      <div style={{ marginBottom: "10px" }}>
+                        <ServicePricePicker
+                          services={availableServices}
+                          currency={currency}
+                          value={{ ids: form.serviceIds, prices: form.servicePrices }}
+                          onChange={next => setForm(f => ({
+                            ...f, serviceIds: next.ids, servicePrices: next.prices,
+                          }))}
+                        />
                       </div>
                       <div style={{ width: "100%" }}>
                         {!showCatalogConfirm && (

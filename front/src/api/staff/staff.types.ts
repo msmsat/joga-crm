@@ -15,6 +15,11 @@ export interface StaffCreate {
   rate?: number | null
   rate_type?: 'fixed' | 'percent' | 'hourly' | null
   service_ids?: number[]
+  // Индивидуальные цены — только для услуг из service_ids. Поле НЕОБЯЗАТЕЛЬНОЕ
+  // и отсутствие ≠ пустой список: сервер снимает надбавки, только когда список
+  // прислан явно (routers/staff/profiles.py), — иначе правка одной лишь ставки
+  // молча вернула бы все услуги мастера к прайсу Каталога.
+  service_prices?: StaffServicePricePayload[]
   photo_url?: string | null
   schedule?: StaffWorkingHoursItem[]
   // HB-18: филиалы, в которых специалист доступен для индивидуальной записи.
@@ -57,9 +62,23 @@ export interface StaffBusyInterval {
   tz_iana: string | null
 }
 
+export interface StaffServicePricePayload {
+  service_id: number
+  // null — «как в Каталоге». Ноль — законная цена (бесплатно у стажёра), и
+  // путать её со снятием нельзя.
+  price: number | null
+}
+
 export interface StaffService {
   id: number
   name: string
+  // Цена услуги в Каталоге — от неё отсчитывается индивидуальная.
+  base_price: number
+  // Что реально заплатит клиент ЭТОМУ мастеру.
+  price: number
+  // Цену выставили руками. Унаследованная поедет за правкой Каталога, своя —
+  // нет, и интерфейс обязан их различать.
+  price_custom: boolean
 }
 
 export interface StaffWorkingHoursItem {

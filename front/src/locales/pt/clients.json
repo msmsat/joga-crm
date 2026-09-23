@@ -194,7 +194,10 @@
       "useBonuses_one": "Usar bónus ({{count}})",
       "useBonuses_other": "Usar bónus ({{count}})",
       "bonusesSpent_one": "Bónus ({{count}} pt)",
-      "bonusesSpent_other": "Bónus ({{count}} pts)"
+      "bonusesSpent_other": "Bónus ({{count}} pts)",
+      "masterLabel": "Especialista",
+      "masterPlaceholder": "Escolha um especialista",
+      "masterRequired": "Escolha um especialista: o preço depende disso"
     },
     "offers": {
       "title": "Desconto pessoal",

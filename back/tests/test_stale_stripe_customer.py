@@ -172,6 +172,63 @@ def _plan_row(subscription_id):
     )
 
 
+@pytest.mark.parametrize("param", ["id", "subscription_exposed_id"])
+def test_percent_switch_drops_a_missing_subscription_link(monkeypatch, param):
+    from routers.billing.router import _reconcile_subscription
+    from schemas.settings.billing import ActivateModelRequest
+
+    def cancel(subscription_id):
+        assert subscription_id == "sub_gone"
+        raise stripe.InvalidRequestError(
+            "No such subscription: 'sub_gone'", param=param,
+            code="resource_missing", http_status=404,
+        )
+
+    monkeypatch.setattr(stripe.Subscription, "cancel", cancel)
+    plan = _plan_row("sub_gone")
+    asyncio.run(_reconcile_subscription(
+        plan, ActivateModelRequest(mode="percent", accept_offline_terms=True), None,
+    ))
+    assert plan.stripe_subscription_id is None
+
+
+@pytest.mark.parametrize("error", [
+    stripe.APIConnectionError("Connection interrupted"),
+    stripe.AuthenticationError("Invalid API key"),
+    stripe.APIError("Stripe unavailable", http_status=500),
+    stripe.InvalidRequestError("Invalid request", param="id", code="parameter_invalid_empty"),
+    stripe.InvalidRequestError("Missing another resource", param="customer", code="resource_missing"),
+])
+def test_failed_percent_cancellation_keeps_subscription_link(monkeypatch, error):
+    from routers.billing.router import _reconcile_subscription
+    from schemas.settings.billing import ActivateModelRequest
+
+    def cancel(_subscription_id):
+        raise error
+
+    monkeypatch.setattr(stripe.Subscription, "cancel", cancel)
+    plan = _plan_row("sub_live")
+    with pytest.raises(type(error)) as caught:
+        asyncio.run(_reconcile_subscription(
+            plan, ActivateModelRequest(mode="percent", accept_offline_terms=True), None,
+        ))
+    assert caught.value is error
+    assert plan.stripe_subscription_id == "sub_live"
+
+
+def test_cancellation_with_live_key_in_development_is_blocked(monkeypatch):
+    from services.stripe_env import StripeKeyModeError
+
+    monkeypatch.setenv("APP_ENV", "development")
+    monkeypatch.setenv("STRIPE_SECRET_KEY", "sk_live_test_fixture_not_a_real_key")
+    monkeypatch.setenv("STRIPE_PUBLISHABLE_KEY", "pk_live_test_fixture_not_a_real_key")
+    calls = []
+    monkeypatch.setattr(stripe.Subscription, "cancel", lambda sub_id: calls.append(sub_id))
+    with pytest.raises(StripeKeyModeError):
+        asyncio.run(SB.cancel_subscription("sub_live"))
+    assert calls == []
+
+
 def test_plan_response_reports_whether_the_subscription_is_live():
     """Интерфейс ветвится по ответу сервера, а не по одному `status`.
 

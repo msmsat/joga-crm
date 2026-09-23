@@ -15,21 +15,25 @@ import { useBusinessTerms } from "../../../../../hooks/useBusinessTerms";
 import type { Service } from "../../types";
 import type { ServiceCreate } from "../../../../../api/studio/services.api";
 import type { ServiceBookingMode } from "../../../../../api/booking/hybrid.types";
-import { SERVICE_CATEGORIES } from "../../constants";
+import { categoryOptions, NO_CATEGORY } from "../../serviceCategories";
 
 const PREVIEW_HOURS = ["09:00", "10:00", "11:00"];
 const ROW_H = 58;   // высота часа в превью-журнале (совпадает с .cmod-jrn-row)
 
 interface ServiceModalProps {
   service: Service | null; // null → создание
+  /** Категории, которые студия уже использует: набор свой у каждой студии и
+   *  живёт в самих услугах, справочника категорий нет. */
+  categories: string[];
   onClose: () => void;
   // Форма всегда даёт полный набор с обязательным name/price → ServiceCreate.
   onSubmit: (data: ServiceCreate) => Promise<void>;
 }
 
-export function ServiceModal({ service, onClose, onSubmit }: ServiceModalProps) {
+export function ServiceModal({ service, categories, onClose, onSubmit }: ServiceModalProps) {
   const { t } = useTranslation(["catalog", "common"]);
-  // Перевод значения категории по ключу с fallback (значения-ключи мигрируют в задаче 14).
+  // Старые значения-ключи ('yoga') переводятся по ключу, свои категории студии
+  // («Стрижка») показываются как есть — их печатал сам человек.
   const tCat = (cat: string) => t(`catalog:services.categories.${cat}`, { defaultValue: cat });
   const studioCurrency = useStudioCurrency();
   const currency = getCurrencySymbol(studioCurrency);
@@ -40,11 +44,10 @@ export function ServiceModal({ service, onClose, onSubmit }: ServiceModalProps) 
   // Компонент пересоздаётся по key при открытии (см. родителя),
   // поэтому начальные значения из service корректны без useEffect.
   const [name, setName] = useState(service?.name ?? "");
-  // Категории вне списка (услуга из ассистента/импорта) в селекте нет — иначе
-  // поле открывалось бы пустым и сохранение возвращало ту же чужую категорию.
-  const [category, setCategory] = useState(
-    SERVICE_CATEGORIES.includes(service?.category ?? "") ? service!.category : SERVICE_CATEGORIES[0]
-  );
+  // Категорию не выбирают из отраслей: чем занимается студия, она сказала при
+  // регистрации. Здесь — её собственные направления, и новое заводится тут же,
+  // строкой «Создать категорию» в списке.
+  const [category, setCategory] = useState(service?.category || NO_CATEGORY);
   const [type, setType] = useState<"group" | "individual">(service?.type ?? "group");
   const [price, setPrice] = useState(service != null ? String(service.price) : "");
   const [duration, setDuration] = useState(service != null ? String(service.duration_min) : "60");
@@ -82,7 +85,8 @@ export function ServiceModal({ service, onClose, onSubmit }: ServiceModalProps) 
         name: name.trim(),
         price: Number(price),
         duration_min: Number(duration) || 60,
-        category: category || null,
+        // «Без категории» — это NULL в базе, а не строка 'other'.
+        category: category && category !== NO_CATEGORY ? category : null,
         service_type: bookingMode === "resource" ? "individual" : type,
         color: color || null,
         // У resource вместимость всегда 1 и не редактируется (§4.4).
@@ -159,8 +163,11 @@ export function ServiceModal({ service, onClose, onSubmit }: ServiceModalProps) 
             <label className="vk-label">{t("catalog:modals.service.category")}</label>
             <Select
               value={category}
-              options={SERVICE_CATEGORIES.map(c => ({ value: c, label: tCat(c) }))}
+              options={categoryOptions(categories, category, tCat).map(c => ({ value: c, label: tCat(c) }))}
               onChange={setCategory}
+              creatable
+              createLabel={t("catalog:modals.service.categoryCreate")}
+              createPlaceholder={t("catalog:modals.service.categoryNewPlaceholder")}
             />
           </div>
           <Segmented

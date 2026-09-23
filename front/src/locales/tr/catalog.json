@@ -122,6 +122,8 @@
       "name": "Hizmet adı",
       "namePlaceholder": "Hatha yoga",
       "category": "Kategori",
+      "categoryCreate": "Kategori oluştur",
+      "categoryNewPlaceholder": "Örn. Saç kesimi",
       "type": "Tür",
       "typeGroup": "Grup",
       "typeIndividual": "Bireysel",

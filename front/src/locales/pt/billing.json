@@ -37,6 +37,7 @@
     "unlimited": "Ilimitado"
   },
   "banner": {
+    "staffAccessBlocked": "O acesso a este estúdio está suspenso. Contacte o proprietário do estúdio para restabelecer o acesso. O seu perfil continua disponível.",
     "trialEnds": "O período experimental termina em {{date}} — escolha um plano",
     "renews": "A sua subscrição {{plan}} renova em {{date}}",
     "expires": "A sua subscrição {{plan}} expira em {{date}}",

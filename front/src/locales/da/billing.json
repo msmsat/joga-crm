@@ -37,6 +37,7 @@
     "unlimited": "Ubegrænset"
   },
   "banner": {
+    "staffAccessBlocked": "Adgangen til dette studie er suspenderet. Kontakt studiets ejer for at få adgang igen. Din profil er stadig tilgængelig.",
     "trialEnds": "Din prøveperiode slutter {{date}} — vælg en plan",
     "renews": "Dit abonnement {{plan}} fornyes {{date}}",
     "expires": "Dit abonnement {{plan}} slutter {{date}}",

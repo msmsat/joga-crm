@@ -49,15 +49,19 @@ function glue(symbol: string): string {
   return /[\p{L}.]$/u.test(symbol) ? `${symbol}\u00a0` : symbol;
 }
 
-// amount — в основной единице (уже /100). currency — код валюты студии (useStudioCurrency).
-// Копейки печатаем ТОЛЬКО когда они есть: половинная цена комбо (39/2 = 19.5)
-// иначе выводилась дефолтным форматом как «19,5», а с minimumFractionDigits: 2
-// целые тарифы превратились бы в «39,00». Дробное → две цифры, целое → без хвоста.
-export function formatMoney(amount: number, currency = 'EUR'): string {
+// Число без знака валюты, но с её разделителями. Копейки печатаем ТОЛЬКО когда
+// они есть: половинная цена комбо (39/2 = 19.5) иначе выводилась дефолтным
+// форматом как «19,5», а с minimumFractionDigits: 2 целые тарифы превратились
+// бы в «39,00». Дробное → две цифры, целое → без хвоста.
+export function formatAmount(amount: number, currency = 'EUR'): string {
   const digits = Number.isInteger(amount) ? 0 : 2;
-  const value = amount.toLocaleString(localeForCurrency(currency), {
+  return amount.toLocaleString(localeForCurrency(currency), {
     minimumFractionDigits: digits,
     maximumFractionDigits: digits,
   });
-  return `${glue(getCurrencySymbol(currency))}${value}`;
+}
+
+// amount — в основной единице (уже /100). currency — код валюты студии (useStudioCurrency).
+export function formatMoney(amount: number, currency = 'EUR'): string {
+  return `${glue(getCurrencySymbol(currency))}${formatAmount(amount, currency)}`;
 }

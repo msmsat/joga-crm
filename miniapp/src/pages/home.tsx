@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useServicePrice } from '../hooks/useServicePrice';
 import HomeGreeting, { type Daypart } from '../components/home/HomeGreeting';
 import StudioRail from '../components/home/StudioRail';
 import StudioStrip from '../components/home/StudioStrip';
@@ -90,6 +91,7 @@ export default function Home({
   const { vibrateMedium, vibrateLight } = useTelegram();
   const { t, i18n } = useTranslation();
 
+  const priceOf = useServicePrice();
   // Оба запроса разом и один флаг загрузки на двоих: иначе карточка успевала
   // показать предложение записаться и через мгновение подменялась своей бронью.
   // Ошибка любого из них — не экран ошибки, а просто отсутствие карточки: без
@@ -157,7 +159,11 @@ export default function Home({
   // `booking_mode` с сервера, а не по `service_type` и не по вместимости.
   const openService = (service: StudioService, studio: Studio | null) => {
     if (service.booking_mode === 'resource') {
-      resource.open(service, studio?.id ?? branches[0]?.id ?? null);
+      // Мастера тут ещё не выбирали — в шапке листа стоит диапазон «от–до».
+      // Как только он выберется, сумма станет его (QuoteStep считает её на
+      // сервере, а не здесь).
+      resource.open({ ...service, price_str: priceOf(service, null) },
+                    studio?.id ?? branches[0]?.id ?? null);
     } else {
       setSchedule({ service, studio });
     }

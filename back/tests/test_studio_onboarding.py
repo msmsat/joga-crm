@@ -75,7 +75,9 @@ class _DB:
         self.added.append(x)
 
     async def flush(self):
-        pass
+        for index, row in enumerate(self.added, start=1):
+            if row.id is None:
+                row.id = index
 
     async def commit(self):
         self.committed = True
@@ -138,6 +140,59 @@ def test_create_studio_with_defaults_does_not_touch_is_onboarded_or_commit():
 
 
 # ─── POST /auth/studios ────────────────────────────────────────────────────
+
+def test_onboarding_creates_first_catalog_branch_with_contacts_and_hours():
+    user = _User(is_onboarded=False)
+    db = _DB([None])
+    data = _onboarding_data(
+        studioName="  Manhattan Studio  ", phone="+12125550123",
+        address="12 5th Avenue, New York", email="hello@example.com",
+        logoUrl="/uploads/studio.jpg",
+        workingHours=[
+            dict(dayOfWeek=0, isOpen=True, openTime="08:30", closeTime="20:00"),
+            dict(dayOfWeek=6, isOpen=False, openTime="10:00", closeTime="18:00"),
+        ],
+    )
+    _run(O.complete_onboarding(data, user, db))
+
+    studio = next(x for x in db.added if type(x).__name__ == "Studio")
+    branches = [x for x in db.added if type(x).__name__ == "StudioBranch"]
+    assert len(branches) == 1, "Onboarding must create the first catalog branch"
+    branch = branches[0]
+    assert branch.studio_id == studio.id == user.last_studio_id
+    assert branch.name == "Manhattan Studio"
+    assert branch.phone == "+12125550123"
+    assert branch.email == "hello@example.com"
+    assert branch.address == "12 5th Avenue, New York"
+    assert branch.photo_url == "/uploads/studio.jpg"
+    assert branch.country is None and branch.city is None
+    hours = [x for x in db.added if type(x).__name__ == "BranchWorkingHours"]
+    assert [(h.day_of_week, h.is_open, h.open_time, h.close_time) for h in hours] == [
+        (0, True, "08:30", "20:00"), (6, False, "10:00", "18:00"),
+    ]
+    assert all(h.branch_id == branch.id for h in hours)
+    assert user.is_onboarded and db.committed
+
+    before = len(db.added)
+    try:
+        _run(O.complete_onboarding(data, user, db))
+        assert False, "Completed onboarding must not create a duplicate branch"
+    except HTTPException as err:
+        assert err.status_code == 400
+    assert len(db.added) == before
+
+
+def test_additional_workspace_gets_its_own_first_branch_without_optional_details():
+    db = _DB()
+    user = _User()
+    _run(O.create_studio(_onboarding_data(studioName="Second Studio"), user, db))
+    branches = [x for x in db.added if type(x).__name__ == "StudioBranch"]
+    assert len(branches) == 1
+    assert branches[0].name == "Second Studio"
+    assert branches[0].studio_id == user.last_studio_id
+    assert branches[0].address is None and branches[0].photo_url is None
+    assert db.committed
+
 
 def test_onboarding_saves_phone_for_owner_and_studio():
     user = _User(is_onboarded=False)
@@ -225,6 +280,8 @@ def test_ambiguous_token_raises_400_with_matchable_code():
 
 
 def test_run_studio_onboarding():
+    test_onboarding_creates_first_catalog_branch_with_contacts_and_hours()
+    test_additional_workspace_gets_its_own_first_branch_without_optional_details()
     test_validate_rejects_short_name()
     test_validate_rejects_missing_region_settings()
     test_validate_accepts_well_formed_data()

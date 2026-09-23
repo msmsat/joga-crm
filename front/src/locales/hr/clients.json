@@ -197,7 +197,10 @@
       "useBonuses_other": "Iskoristi bonuse ({{count}})",
       "bonusesSpent_one": "Bonusi ({{count}} bod)",
       "bonusesSpent_few": "Bonusi ({{count}} boda)",
-      "bonusesSpent_other": "Bonusi ({{count}} bodova)"
+      "bonusesSpent_other": "Bonusi ({{count}} bodova)",
+      "masterLabel": "Specijalist",
+      "masterPlaceholder": "Odaberite specijalista",
+      "masterRequired": "Odaberite specijalista — cijena ovisi o njemu"
     },
     "offers": {
       "title": "Osobni popust",

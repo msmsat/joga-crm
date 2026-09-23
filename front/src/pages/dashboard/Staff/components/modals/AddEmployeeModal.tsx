@@ -11,6 +11,7 @@ import { useRoleLabel } from "../../../../../hooks/useBusinessTerms";
 import { staffApi } from "../../../../../api/staff";
 import type { StaffMutateResponse } from "../../../../../api/staff/staff.types";
 import { submitOnEnter } from "../../../../../lib/submitOnEnter";
+import { ServicePricePicker } from "../../../../../components/ui/index";
 
 // ─── TYPES ────────────────────────────────────────────────────────────────────
 type Step = 1 | 2 | 3 | 4;
@@ -23,6 +24,9 @@ interface StaffData {
   name: string; last_name: string; email: string; password: string;
   role: string;
   serviceIds: number[];
+  // Только СВОИ цены мастера. Услуги тут нет — значит, она идёт по цене
+  // Каталога и продолжит ехать за её правкой.
+  servicePrices: Record<number, number>;
   salary: string; rate_type: "fixed" | "percent" | "hourly" | "";
   schedule: Record<string, ScheduleDay>;
 }
@@ -369,7 +373,7 @@ export function AddEmployeeModal({ isOpen, onClose, onSuccess }: AddEmployeeModa
 
   const [data, setData] = useState<StaffData>({
     name: "", last_name: "", email: "", password: "",
-    role: "", serviceIds: [],
+    role: "", serviceIds: [], servicePrices: {},
     salary: "", rate_type: "fixed",
     schedule: { ...defaultSchedule },
   });
@@ -396,7 +400,7 @@ export function AddEmployeeModal({ isOpen, onClose, onSuccess }: AddEmployeeModa
     setCreated(null);
     setCopied(false);
     setResent("idle");
-    setData({ name: "", last_name: "", email: "", password: "", role: "", serviceIds: [], salary: "", rate_type: "fixed", schedule: { ...defaultSchedule } });
+    setData({ name: "", last_name: "", email: "", password: "", role: "", serviceIds: [], servicePrices: {}, salary: "", rate_type: "fixed", schedule: { ...defaultSchedule } });
     onClose();
   }
 
@@ -406,7 +410,14 @@ export function AddEmployeeModal({ isOpen, onClose, onSuccess }: AddEmployeeModa
     if (saving) return;
     setSaving(true);
     try {
-      const result = await onSuccess?.({ ...data, serviceIds: data.role === "trainer" ? data.serviceIds : [] });
+      const trainer = data.role === "trainer";
+      const result = await onSuccess?.({
+        ...data,
+        serviceIds: trainer ? data.serviceIds : [],
+        // Роль сменили на администратора — услуг у него нет, и цен тоже.
+        // Иначе сервер отказал бы: цена на неназначенную услугу — это 400.
+        servicePrices: trainer ? data.servicePrices : {},
+      });
       if (result) setCreated({
         id: result.staff.id,
         email: result.staff.email,
@@ -450,12 +461,6 @@ export function AddEmployeeModal({ isOpen, onClose, onSuccess }: AddEmployeeModa
 
   function updateDayTime(key: string, field: "from" | "to", val: string) {
     set("schedule", { ...data.schedule, [key]: { ...data.schedule[key], [field]: val } });
-  }
-
-  function toggleService(serviceId: number) {
-    set("serviceIds", data.serviceIds.includes(serviceId)
-      ? data.serviceIds.filter(id => id !== serviceId)
-      : [...data.serviceIds, serviceId]);
   }
 
   const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -801,30 +806,15 @@ export function AddEmployeeModal({ isOpen, onClose, onSuccess }: AddEmployeeModa
                     {data.role === "trainer" && (
                       <div style={{ animation: "stepIn 0.25s ease" }}>
                         <FieldLabel>{t("common:fields.services")}</FieldLabel>
-                        <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "12px" }}>
-                          {availableServices.map(service => {
-                            const isSelected = data.serviceIds.includes(service.id);
-                            return (
-                              <button key={service.id} type="button" className="as-svc-pill"
-                                onClick={() => toggleService(service.id)}
-                                style={{
-                                  padding: "8px 14px", borderRadius: "20px", cursor: "pointer",
-                                  background: isSelected ? "var(--onyx)" : "rgba(var(--ink),0.02)",
-                                  border: isSelected ? "1.5px solid var(--onyx)" : "1.5px solid rgba(var(--ink),0.08)",
-                                  color: isSelected ? "var(--bg)" : "var(--muted)", fontSize: "12px",
-                                  fontWeight: isSelected ? 700 : 600, fontFamily: "Manrope, sans-serif",
-                                  display: "flex", alignItems: "center", gap: "6px"
-                                }}
-                              >
-                                {isSelected && (
-                                  <svg width="10" height="10" viewBox="0 0 12 12" fill="none">
-                                    <path d="M2 6L5 9L10 3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                                  </svg>
-                                )}
-                                {service.name}
-                              </button>
-                            );
-                          })}
+                        <div style={{ marginBottom: "12px" }}>
+                          <ServicePricePicker
+                            services={availableServices}
+                            currency={currency}
+                            value={{ ids: data.serviceIds, prices: data.servicePrices }}
+                            onChange={next => setData(d => ({
+                              ...d, serviceIds: next.ids, servicePrices: next.prices,
+                            }))}
+                          />
                         </div>
                         <div style={{ width: "100%" }}>
                           {!showCatalogConfirm && (

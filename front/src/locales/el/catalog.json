@@ -122,6 +122,8 @@
       "name": "Όνομα υπηρεσίας",
       "namePlaceholder": "Hatha yoga",
       "category": "Κατηγορία",
+      "categoryCreate": "Δημιουργία κατηγορίας",
+      "categoryNewPlaceholder": "Π.χ. Κούρεμα",
       "type": "Τύπος",
       "typeGroup": "Ομαδική",
       "typeIndividual": "Ατομική",

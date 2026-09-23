@@ -1067,6 +1067,56 @@
   .stat-card { padding: 11px 12px; }
 }
 
+/* ── Услуги сотрудника с его ценами ─────────────────────────────────────────
+   Строка на услугу: слева название, справа сумма. Своя цена помечена
+   персиковым — тем же акцентом, которым в продукте помечено всё, что человек
+   задал руками; унаследованная из Каталога остаётся приглушённой. Без этой
+   разницы владелец не отличил бы цену, которая поедет за правкой Каталога,
+   от той, которая не поедет. */
+.staff-svc-prices {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 18px;
+}
+
+.staff-svc-price {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  transition: background 0.15s ease;
+}
+
+.staff-svc-price:hover { background: rgba(var(--ink), 0.03); }
+
+.staff-svc-price-name {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text2);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.staff-svc-price-v {
+  flex-shrink: 0;
+  padding: 3px 9px;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text3);
+  background: rgba(var(--ink), 0.04);
+}
+
+.staff-svc-price-v.custom {
+  color: var(--accent2);
+  background: rgba(252, 174, 145, 0.15);
+  border: 1px solid rgba(252, 174, 145, 0.3);
+}
+
 /* ── Очень низкий экран: фильтры ролей листаются вбок ──────────────────────
    Чипы «Все / Владелец / Администратор / Тренер» в колонке 220px не влезают
    в строку и переносятся на два-три этажа. На высоком экране это не мешает

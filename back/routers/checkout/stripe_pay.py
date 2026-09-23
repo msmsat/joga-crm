@@ -188,7 +188,7 @@ async def create_session(
     # уже в вебхуке, когда деньги клиента забраны, а провести их некуда.
     await resolve_account(db, ctx.studio_id, body.account_id)
     client, package = await _get_client_package(
-        db, ctx.studio_id, body.client_id, body.product_id, body.product_type,
+        db, ctx.studio_id, body.client_id, body.product_id, body.product_type, body.teacher_id,
     )
     quote = await _quote(
         db, ctx.studio_id, body.client_id, package,

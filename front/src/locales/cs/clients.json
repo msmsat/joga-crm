@@ -191,7 +191,10 @@
       "transferSearchPlaceholder": "Jméno nebo telefon klienta",
       "transferSelectPlaceholder": "Vyberte klienta",
       "transferConfirm": "Převést",
-      "transferSuccess": "Permanentka převedena"
+      "transferSuccess": "Permanentka převedena",
+      "masterLabel": "Specialista",
+      "masterPlaceholder": "Vyberte specialistu",
+      "masterRequired": "Vyberte specialistu — cena závisí na něm"
     },
     "offers": {
       "title": "Osobní sleva",

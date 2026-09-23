@@ -1,7 +1,8 @@
-import { clearActiveToken, getActiveToken } from '../utils/auth'
+import { clearActiveToken, getActiveToken, getUserRoleFromToken } from '../utils/auth'
 import { reactTo401 } from '../lib/authFailure'
 
 const BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8000'
+let billingRedirectPending = false
 
 // Бэкенд отдаёт загруженные файлы (лого, фото филиала/сотрудника) как относительный
 // путь ("/static/..."). Без префикса браузер запросит его у фронтенд dev-сервера,
@@ -102,13 +103,18 @@ async function request<T>(method: string, path: string, options: RequestOptions 
     throw new ApiError(401, 'Сессия истекла')
   }
 
-  // 402 — глобальный гейт подписки (задача 8b/12b): подписка неактивна. Страховка на
-  // случай, если роутинг-гард в DashboardLayout не сработал (напр. admin/trainer на
-  // разделе данных) — уводим на «Тариф и оплата». Не на самой странице биллинга.
+  // Billing is owner-only: sending staff there loops through OwnerRoute back
+  // to the dashboard. Their profile stays accessible while the studio is blocked.
   if (res.status === 402) {
     const data: unknown = await res.json().catch(() => null)
-    if (!window.location.pathname.startsWith('/dashboard/billing')) {
-      window.location.href = '/dashboard/billing'
+    const onAllowedPage = /^\/dashboard\/(?:billing|profile)(?:\/|$)/.test(window.location.pathname)
+    if (requestToken && requestToken === getToken() && !options.signal?.aborted
+      && !onAllowedPage && !billingRedirectPending) {
+      // Several shell requests can fail together before the browser navigates.
+      billingRedirectPending = true
+      window.location.href = getUserRoleFromToken() === 'owner'
+        ? '/dashboard/billing'
+        : '/dashboard/profile?access=subscription-required'
     }
     throw new ApiError(402, data ? normalizeError(data) : 'Подписка неактивна', detailCode(data))
   }

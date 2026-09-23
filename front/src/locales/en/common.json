@@ -223,5 +223,14 @@
     "connected": "Connected",
     "disconnected": "Disconnected",
     "codeSent": "Code sent"
+  },
+  "price": {
+    "range": "from {{from}} to {{to}}"
+  },
+  "servicePrice": {
+    "hint": "Tap the amount to set your own price",
+    "custom": "Custom price. Clear the field to go back to the Catalog price",
+    "inherited": "Catalog price",
+    "aria": "Price for {{service}}"
   }
 }

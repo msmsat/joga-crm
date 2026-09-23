@@ -22,6 +22,7 @@ import { useRoleLabel } from '../../../hooks/useBusinessTerms';
 import { QrShareModal } from '../../../components/ui/index';
 import { miniappLink } from '../../../lib/miniapp';
 import { getCurrencySymbol } from '../../../components/UI';
+import { formatMoney } from '../../../lib/money';
 import type { StaffListItem, StaffWorkingHoursItem, StaffProfile, StaffMonthScheduleResponse } from '../../../api/staff/staff.types';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -603,6 +604,33 @@ export default function Staff() {
                   </div>
                 )}
 
+                {/* Услуги и цены: что человек делает и почём именно у него.
+                    Владелец видит картину, не заходя в редактирование, — а
+                    заодно видит, какие цены он задал руками, а какие достались
+                    из Каталога и поедут за его правкой. */}
+                {(profile?.services.length ?? 0) > 0 && (
+                  <>
+                    <div className="sec-title">
+                      <span>{t('common:fields.services')}</span>
+                    </div>
+                    <div className="staff-svc-prices">
+                      {profile!.services.map(svc => (
+                        <div key={svc.id} className="staff-svc-price">
+                          <span className="staff-svc-price-name">{svc.name}</span>
+                          <span
+                            className={`staff-svc-price-v ${svc.price_custom ? 'custom' : ''}`}
+                            title={t(svc.price_custom
+                              ? 'common:servicePrice.custom'
+                              : 'common:servicePrice.inherited')}
+                          >
+                            {formatMoney(svc.price, currency)}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
+
                 {/* Schedule grid */}
                 {activeStaffId && schedules[activeStaffId] && (
                   <>
@@ -818,6 +846,8 @@ export default function Staff() {
               salary: data.salary ? Number(data.salary) : undefined,
               rate_type: (data.rate_type as 'fixed' | 'percent' | 'hourly') || undefined,
               service_ids: data.serviceIds,
+              service_prices: Object.entries(data.servicePrices)
+                .map(([id, price]) => ({ service_id: Number(id), price })),
               schedule: scheduleToWorkingHours(data.schedule),
             });
             if (result?.staff?.id) setPickedStaffId(result.staff.id);
@@ -853,6 +883,11 @@ export default function Staff() {
           rate: profile.rate ?? undefined,
           rate_type: profile.rate_type ?? '',
           service_ids: profile.services.map(s => s.id),
+          // Только свои цены: унаследованная от Каталога ценой мастера не
+          // является и в форму как «своя» попасть не должна.
+          service_prices: Object.fromEntries(
+            profile.services.filter(s => s.price_custom).map(s => [s.id, s.price]),
+          ),
           photo_url: profile.photo_url ?? undefined,
           schedule: workingHoursToSchedule(weekHoursOf(profile)),
           branch_ids: profile.branches?.map(b => b.id) ?? [],
@@ -872,6 +907,11 @@ export default function Staff() {
               rate: updated.rate,
               rate_type: (updated.rate_type as 'fixed' | 'percent' | 'hourly') || undefined,
               service_ids: updated.service_ids ?? [],
+              // Всегда явным списком: сервер отличает отсутствие поля от
+              // пустого, и без этого снятая владельцем надбавка пережила бы
+              // сохранение.
+              service_prices: Object.entries(updated.service_prices ?? {})
+                .map(([id, price]) => ({ service_id: Number(id), price })),
               photo_url: updated.photo_url,
               schedule: scheduleToWorkingHours(updated.schedule),
               // Присылаем ТОЛЬКО когда список пришёл из формы: сервер отличает

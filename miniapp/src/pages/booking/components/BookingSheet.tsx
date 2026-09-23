@@ -96,7 +96,7 @@ export default function BookingSheet({
           <p className="pb-4 text-[13px] font-semibold text-muted-foreground">
             {terms.ready ? terms.message('choose_offering') : t('booking.pickService')}
           </p>
-          <ServiceStep options={choiceServices(sheet.master, staff, services)} onPick={onPickService} />
+          <ServiceStep options={choiceServices(sheet.master, staff, services)} master={member} onPick={onPickService} />
         </>
       ) : (
         parts.body

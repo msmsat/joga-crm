@@ -223,5 +223,14 @@
     "connected": "Ansluten",
     "disconnected": "Frånkopplad",
     "codeSent": "Koden har skickats"
+  },
+  "price": {
+    "range": "från {{from}} till {{to}}"
+  },
+  "servicePrice": {
+    "hint": "Tryck på beloppet för att ange ett eget pris",
+    "custom": "Eget pris. Töm fältet för att återgå till priset från Katalog",
+    "inherited": "Pris från Katalog",
+    "aria": "Pris för {{service}}"
   }
 }

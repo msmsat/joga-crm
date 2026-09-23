@@ -33,9 +33,22 @@ export function useServiceOptions(includeResource = false) {
     return [...serviceOptions, { value: CREATE_SERVICE_OPTION, label: t('createService') }];
   }, [services, eventServices, includeResource, canCreateService, t]);
 
+  // Во что услуга обойдётся у ЭТОГО тренера. Тренера в Журнале задаёт колонка
+  // сетки, поэтому диапазону «от–до» тут места нет — цена всегда одна и
+  // конкретная. Мастера без своей цены услуга отдаёт по цене Каталога.
+  const priceFor = useMemo(() => (serviceId: number | null, teacherId: number | null) => {
+    const service = services.find(s => s.id === serviceId);
+    if (!service) return null;
+    const own = teacherId == null
+      ? undefined
+      : service.masters?.find(m => m.user_id === teacherId);
+    return own ? own.price : service.price;
+  }, [services]);
+
   return {
     services,
     options,
+    priceFor,
     // Студия только с индивидуальными услугами сразу открывает запись клиента.
     onlyResourceServices: eventServices.length === 0 && services.length > 0,
   };

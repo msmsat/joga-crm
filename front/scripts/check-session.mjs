@@ -5,10 +5,16 @@ import { test } from 'node:test';
 import vm from 'node:vm';
 import ts from 'typescript';
 
-async function setup() {
+async function setup({ role = 'owner', pathname = '/dashboard' } = {}) {
   let token = 'session-A';
   let reply = async () => new Response('{}', { status: 401 });
-  const location = { href: '', pathname: '/dashboard' };
+  let href = '';
+  let navigations = 0;
+  const location = {
+    pathname,
+    get href() { return href; },
+    set href(value) { href = value; navigations++; },
+  };
   const timers = new Map();
   let nextTimer = 0;
   const context = vm.createContext({
@@ -19,10 +25,11 @@ async function setup() {
   });
   const modules = new Map();
   modules.set('../utils/auth', new vm.SyntheticModule(
-    ['getActiveToken', 'clearActiveToken', 'rememberAccountName'], function () {
+    ['getActiveToken', 'clearActiveToken', 'rememberAccountName', 'getUserRoleFromToken'], function () {
       this.setExport('getActiveToken', () => token);
       this.setExport('clearActiveToken', () => { token = null; });
       this.setExport('rememberAccountName', () => {});
+      this.setExport('getUserRoleFromToken', () => role);
     }, { context }));
   async function load(path) {
     if (modules.has(path)) return modules.get(path);
@@ -44,12 +51,70 @@ async function setup() {
   await clientModule.evaluate();
   return {
     client: clientModule.namespace.client, location, timers,
+    navigations: () => navigations,
     token: () => token, setToken: value => { token = value; },
     respond: fn => { reply = fn; },
     async checker() { const mod = await load('lib/sessionCheck'); await mod.evaluate(); return mod.namespace.startSessionCheck; },
   };
 }
 const flush = async () => { for (let i = 0; i < 30; i++) await Promise.resolve(); };
+
+const paymentRequired = () => new Response(JSON.stringify({
+  detail: { code: 'subscription_expired', message: 'Subscription inactive' },
+}), { status: 402 });
+
+for (const role of ['admin', 'trainer', null]) {
+  test(`402 for ${role} opens the accessible profile instead of owner-only billing`, async () => {
+    const b = await setup({ role });
+    b.respond(async () => paymentRequired());
+    await assert.rejects(b.client.get('/analytics/me'), error => error.status === 402);
+    assert.equal(b.location.href, '/dashboard/profile?access=subscription-required');
+    assert.equal(b.token(), 'session-A');
+  });
+}
+
+test('parallel 402 responses start only one navigation for the owner', async () => {
+  const b = await setup();
+  b.respond(async () => paymentRequired());
+  const results = await Promise.allSettled([
+    b.client.get('/settings/general'), b.client.get('/clients/count'), b.client.get('/ai/sessions'),
+  ]);
+  assert.ok(results.every(result => result.status === 'rejected' && result.reason.status === 402));
+  assert.equal(b.location.href, '/dashboard/billing');
+  assert.equal(b.navigations(), 1);
+});
+
+for (const role of ['owner', 'admin', 'trainer']) {
+  for (const pathname of ['/dashboard/profile', '/dashboard/profile/', '/dashboard/billing', '/dashboard/billing/payments-history']) {
+    test(`shared 402 on ${pathname} does not reload for ${role}`, async () => {
+      const b = await setup({ role, pathname });
+      b.respond(async () => paymentRequired());
+      await assert.rejects(b.client.get('/settings/appearance'), error => error.status === 402);
+      assert.equal(b.navigations(), 0);
+    });
+  }
+}
+
+test('a stale 402 cannot redirect a newly selected account', async () => {
+  const b = await setup();
+  let respond;
+  b.respond(() => new Promise(resolve => { respond = resolve; }));
+  const pending = b.client.get('/settings/general');
+  b.setToken('session-B');
+  respond(paymentRequired());
+  await assert.rejects(pending, error => error.status === 402);
+  assert.equal(b.navigations(), 0);
+});
+
+test('public and aborted 402 responses do not navigate', async () => {
+  const b = await setup();
+  b.respond(async () => paymentRequired());
+  await assert.rejects(b.client.post('/public/payment', {}, { auth: false }));
+  const controller = new AbortController();
+  controller.abort();
+  await assert.rejects(b.client.get('/settings/general', { signal: controller.signal }));
+  assert.equal(b.navigations(), 0);
+});
 
 test('late 401 for an old token does not log out a newly selected account', async () => {
   const b = await setup();

@@ -1,7 +1,9 @@
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { EmptyState } from '../../../components/ui/EmptyState';
+import type { ResourceStaffMember } from '../../../api/hybrid.types';
 import type { StudioService } from '../../../api/studio';
+import { useServicePrice } from '../../../hooks/useServicePrice';
 
 /**
  * Услуги выбранного мастера — первый шаг листа, когда человек начал с мастера.
@@ -9,9 +11,20 @@ import type { StudioService } from '../../../api/studio';
  * Без услуги время не спросить: у неё своя длительность, цена и доступность.
  * Поэтому здесь только его услуги (у «любого» — все услуги филиала), и каждая
  * сразу с длительностью и ценой — выбирать вслепую не приходится.
+ *
+ * Цена — ЭТОГО мастера, когда он известен: у одной услуги у разных мастеров
+ * она своя. У «любого» стоит диапазон «от–до» — обещать одну сумму, не зная,
+ * кто возьмёт слот, продукт не вправе.
  */
-export default function ServiceStep({ options, onPick }: { options: StudioService[]; onPick: (service: StudioService) => void }) {
+export default function ServiceStep({ options, master, onPick }: {
+  options: StudioService[];
+  /** Мастер, чьи услуги показаны. `null` — «любой»: тогда у услуги нет одной
+   *  цены, и рядом стоит диапазон «от–до». */
+  master?: ResourceStaffMember | null;
+  onPick: (service: StudioService) => void;
+}) {
   const { t } = useTranslation();
+  const priceOf = useServicePrice();
 
   if (options.length === 0) {
     return <EmptyState size="sm" title={t('booking.noServicesForMaster')} />;
@@ -35,7 +48,7 @@ export default function ServiceStep({ options, onPick }: { options: StudioServic
               {t(`lesson.name.${service.name}`, { defaultValue: service.name })}
             </span>
             <span className="mt-0.5 block text-[12.5px] font-semibold tabular-nums text-muted-foreground">
-              {t('booking.duration', { min: service.duration_min })} · {service.price_str}
+              {t('booking.duration', { min: service.duration_min })} · {priceOf(service, master)}
             </span>
           </span>
           <svg viewBox="0 0 24 24" fill="none" stroke="var(--v-muted-foreground)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 shrink-0">

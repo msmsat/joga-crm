@@ -122,6 +122,8 @@
       "name": "Numele serviciului",
       "namePlaceholder": "Hatha yoga",
       "category": "Categorie",
+      "categoryCreate": "Creează categorie",
+      "categoryNewPlaceholder": "De exemplu, Tuns",
       "type": "Tip",
       "typeGroup": "Grup",
       "typeIndividual": "Individual",

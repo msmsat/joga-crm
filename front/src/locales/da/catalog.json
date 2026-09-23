@@ -122,6 +122,8 @@
       "name": "Ydelsesnavn",
       "namePlaceholder": "Hatha yoga",
       "category": "Kategori",
+      "categoryCreate": "Opret kategori",
+      "categoryNewPlaceholder": "F.eks. Klipning",
       "type": "Type",
       "typeGroup": "Hold",
       "typeIndividual": "Individuel",

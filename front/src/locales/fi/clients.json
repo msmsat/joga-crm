@@ -194,7 +194,10 @@
       "useBonuses_one": "Käytä bonuksia ({{count}})",
       "useBonuses_other": "Käytä bonuksia ({{count}})",
       "bonusesSpent_one": "Bonukset ({{count}} p.)",
-      "bonusesSpent_other": "Bonukset ({{count}} p.)"
+      "bonusesSpent_other": "Bonukset ({{count}} p.)",
+      "masterLabel": "Tekijä",
+      "masterPlaceholder": "Valitse tekijä",
+      "masterRequired": "Valitse tekijä — hinta riippuu siitä"
     },
     "offers": {
       "title": "Henkilökohtainen alennus",

@@ -122,6 +122,8 @@
       "name": "Nom du service",
       "namePlaceholder": "Hatha yoga",
       "category": "Catégorie",
+      "categoryCreate": "Créer une catégorie",
+      "categoryNewPlaceholder": "Par exemple, Coupe de cheveux",
       "type": "Type",
       "typeGroup": "Groupe",
       "typeIndividual": "Individuel",

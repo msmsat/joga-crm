@@ -194,7 +194,10 @@
       "useBonuses_one": "Utiliser les bonus ({{count}})",
       "useBonuses_other": "Utiliser les bonus ({{count}})",
       "bonusesSpent_one": "Bonus ({{count}} pt)",
-      "bonusesSpent_other": "Bonus ({{count}} pts)"
+      "bonusesSpent_other": "Bonus ({{count}} pts)",
+      "masterLabel": "Spécialiste",
+      "masterPlaceholder": "Choisissez un spécialiste",
+      "masterRequired": "Choisissez un spécialiste : le tarif en dépend"
     },
     "offers": {
       "title": "Réduction personnelle",

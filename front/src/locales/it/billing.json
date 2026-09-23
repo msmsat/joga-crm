@@ -37,6 +37,7 @@
     "unlimited": "Illimitato"
   },
   "banner": {
+    "staffAccessBlocked": "L’accesso a questo studio è sospeso. Contatta il proprietario dello studio per ripristinare l’accesso. Il tuo profilo rimane disponibile.",
     "trialEnds": "La tua prova termina il {{date}} — scegli un piano",
     "renews": "Il tuo abbonamento {{plan}} si rinnova il {{date}}",
     "expires": "Il tuo abbonamento {{plan}} termina il {{date}}",

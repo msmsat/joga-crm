@@ -223,5 +223,14 @@
     "connected": "Povezano",
     "disconnected": "Odspojeno",
     "codeSent": "Kôd je poslan"
+  },
+  "price": {
+    "range": "od {{from}} do {{to}}"
+  },
+  "servicePrice": {
+    "hint": "Dodirnite iznos da postavite vlastitu cijenu",
+    "custom": "Vlastita cijena. Očistite polje za povratak na cijenu iz Kataloga",
+    "inherited": "Cijena iz Kataloga",
+    "aria": "Cijena usluge {{service}}"
   }
 }

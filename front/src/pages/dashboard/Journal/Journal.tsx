@@ -553,7 +553,7 @@ export default function Journal() {
   // ── Создать занятие на сервере (данные формы приходят из модалки) ──
   const createLessonFromModal = (form: {
     serviceId: number; title: string; hall: string; maxClients: number; branchId: number | null;
-    notes: string; photos: string[];
+    notes: string; photos: string[]; price: number;
   }) => {
     if (!newBookingSlot) return;
     const trainer = trainers.find(t => t.id === newBookingSlot.trainer);
@@ -585,6 +585,9 @@ export default function Journal() {
       notes: form.notes,
       photos: form.photos,
       serviceId: form.serviceId,
+      // Ровно та сумма, что человек видел в форме. Сервер посчитает её заново
+      // по тренеру занятия — и обязан сойтись; карточка живёт до ответа.
+      price: form.price,
       // Этот путь создаёт СОБЫТИЕ. Индивидуальная запись идёт через quote и
       // confirm (ResourceBookingModal), а не через создание занятия.
       bookingMode: 'event',

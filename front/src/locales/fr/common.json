@@ -223,5 +223,14 @@
     "connected": "Connecté",
     "disconnected": "Déconnecté",
     "codeSent": "Code envoyé"
+  },
+  "price": {
+    "range": "de {{from}} à {{to}}"
+  },
+  "servicePrice": {
+    "hint": "Touchez le montant pour définir votre propre tarif",
+    "custom": "Tarif personnalisé. Videz le champ pour revenir au tarif du Catalogue",
+    "inherited": "Tarif du Catalogue",
+    "aria": "Tarif de {{service}}"
   }
 }

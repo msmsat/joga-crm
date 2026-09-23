@@ -37,6 +37,7 @@
     "unlimited": "Nelimitat"
   },
   "banner": {
+    "staffAccessBlocked": "Accesul la acest studio este suspendat. Contactați proprietarul studioului pentru a restabili accesul. Profilul dvs. rămâne disponibil.",
     "trialEnds": "Perioada de probă se încheie la {{date}} — alege un plan",
     "renews": "Abonamentul {{plan}} se reînnoiește la {{date}}",
     "expires": "Abonamentul {{plan}} expiră la {{date}}",

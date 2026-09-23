@@ -18,6 +18,10 @@ function toUiService(s: ServiceRead): Service {
     type: s.service_type === 'individual' ? 'individual' : 'group',
     duration_min: s.duration_min,
     price: s.price,
+    // ?? s.price — на случай ответа старого сервера: без этого Каталог
+    // написал бы «0» вместо цены услуги.
+    price_min: s.price_min ?? s.price,
+    price_max: s.price_max ?? s.price,
     color: s.color ?? '#FCAE91',
     description: s.description ?? '',
     max_clients: s.max_clients ?? undefined,

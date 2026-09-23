@@ -194,7 +194,10 @@
       "useBonuses_one": "Canjear bonus ({{count}})",
       "useBonuses_other": "Canjear bonus ({{count}})",
       "bonusesSpent_one": "Bonus ({{count}} pto.)",
-      "bonusesSpent_other": "Bonus ({{count}} ptos.)"
+      "bonusesSpent_other": "Bonus ({{count}} ptos.)",
+      "masterLabel": "Especialista",
+      "masterPlaceholder": "Elige un especialista",
+      "masterRequired": "Elige un especialista: el precio depende de ello"
     },
     "offers": {
       "title": "Descuento personal",

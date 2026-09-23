@@ -202,13 +202,22 @@
   text-overflow: ellipsis;
 }
 
+/* Цена и длительность под названием услуги. Перенос на вторую строку, а не
+   многоточие: у услуги с разными ценами мастеров здесь стоит диапазон
+   («Kč 800–1 400 · 45 мин»), и в одну строку узкой панели он не влезает —
+   обрезалась ровно длительность, причём так, что это читалось как поломка.
+   Лишняя строка появляется только у таких услуг; у остальных ничего не
+   меняется. */
 .cat-item-sub {
   font-size: 11px;
   color: #AAAAAA;
   margin-top: 2px;
-  white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow-wrap: anywhere;
 }
 
 .cat-type-badge {

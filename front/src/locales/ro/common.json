@@ -223,5 +223,14 @@
     "connected": "Conectat",
     "disconnected": "Deconectat",
     "codeSent": "Cod trimis"
+  },
+  "price": {
+    "range": "de la {{from}} la {{to}}"
+  },
+  "servicePrice": {
+    "hint": "Atinge suma pentru a seta propriul preț",
+    "custom": "Preț propriu. Golește câmpul pentru a reveni la prețul din Catalog",
+    "inherited": "Preț din Catalog",
+    "aria": "Prețul serviciului {{service}}"
   }
 }
