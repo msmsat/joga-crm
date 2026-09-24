@@ -1730,22 +1730,31 @@ async def _fill_defaults(args: dict, ctx: StudioContext, db: AsyncSession) -> di
     return {**args, "hall_id": best["id"]}
 
 
-async def _teacher_price(service_id: int, teacher_id: object, db: AsyncSession) -> int | None:
+async def _teacher_price(service: dict, teacher_id: object, db: AsyncSession) -> int | None:
     """Во что услуга обойдётся у названного тренера — тем же правилом, что в роутере.
 
-    Цену Каталога сюда подставлять нельзя: подставленная цена уходит в роутер
-    как НАЗВАННАЯ, и цену мастера он тогда уже не спрашивает — занятие Анны
-    встало бы по прайсу Каталога, хотя её стрижка стоит иначе
+    Цену Каталога тренеру подставлять нельзя: подставленная цена уходит в
+    роутер как НАЗВАННАЯ, и цену мастера он тогда уже не спрашивает — занятие
+    Анны встало бы по прайсу Каталога, хотя её стрижка стоит иначе
     (services/service_pricing.py).
 
+    Тренер не назван — ровно цена Каталога: её же взял бы и роутер, а человек
+    видит сумму в карточке подтверждения, а не пустое место.
+
     Аргументы здесь ещё не провалидированы, и `teacher_id` — то, что прислала
-    модель. Не число — цену не подставляем вовсе: роутер посчитает её сам,
-    когда аргументы пройдут проверку.
+    модель. Строку из цифр проверка аргументов потом прочтёт как число — так
+    читаем её и здесь, иначе цена посчиталась бы не для того тренера, на
+    которого встанет занятие. Прочее не число — цену не подставляем вовсе:
+    роутер посчитает её сам, когда аргументы пройдут проверку.
     """
+    if teacher_id is None:
+        return service.get("price")
+    if isinstance(teacher_id, str) and teacher_id.strip().isdigit():
+        teacher_id = int(teacher_id)
     if not isinstance(teacher_id, int) or isinstance(teacher_id, bool):
         return None
-    service = await db.get(Service, service_id)
-    return None if service is None else await service_pricing.price_for(db, service, teacher_id)
+    row = await db.get(Service, service["id"])
+    return None if row is None else await service_pricing.price_for(db, row, teacher_id)
 
 
 async def _lesson_defaults(args: dict, ctx: StudioContext, db: AsyncSession) -> dict:
@@ -1764,7 +1773,7 @@ async def _lesson_defaults(args: dict, ctx: StudioContext, db: AsyncSession) -> 
     if service:
         from_service = {
             "duration_min": service.get("duration_min"),
-            "price": await _teacher_price(service["id"], args.get("teacher_id"), db),
+            "price": await _teacher_price(service, args.get("teacher_id"), db),
             "total_spots": service.get("max_clients"),
         }
         if args.get("alternate_with"):

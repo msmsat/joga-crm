@@ -182,10 +182,15 @@ def test_assistant_lesson_defaults_take_the_teachers_price():
                 {"service_id": ids["haircut"], "teacher_id": ids["anna"], "price": 999}, ctx, db)
             garbage = await ai_tools._lesson_defaults(
                 {"service_id": ids["haircut"], "teacher_id": "Anna"}, ctx, db)
+            as_text = await ai_tools._lesson_defaults(
+                {"service_id": ids["haircut"], "teacher_id": str(ids["anna"])}, ctx, db)
         assert anna["price"] == 1400
         assert boris["price"] == 800
         # Названное человеком не перебиваем.
         assert named["price"] == 999
+        # id строкой проверка аргументов прочтёт как число — и цена обязана
+        # быть того же тренера, а не Каталога.
+        assert as_text["price"] == 1400
         # Тренер не число — цену не подставляем: роутер спросит её сам после
         # проверки аргументов, а не упадёт тут на сравнении строки с id.
         assert "price" not in garbage
