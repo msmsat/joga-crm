@@ -112,11 +112,16 @@ async def run(args):
         new_branch = None
         if not branches and args.create_branch:
             # Same first branch as onboarding creates (routers/auth/onboarding.py).
-            new_branch = BranchCreate(name=studio.name, phone=studio.phone,
-                                      email=studio.email or owner.email, address=studio.address)
+            # Contacts come from Settings → Company data; the owner's email only when it has
+            # neither phone nor email (a branch requires one of them).
+            new_branch = BranchCreate(
+                name=studio.name, phone=studio.phone, address=studio.address, photo_url=studio.logo_url,
+                email=studio.email or (None if studio.phone else owner.email))
             hours = await _default_branch_hours(studio.id, 0, db)  # built, not added to the session
             days = 'Пн Вт Ср Чт Пт Сб Вс'.split()
-            print(f'  Филиалы: будет создан «{new_branch.name}», часы как у студии: ' + ', '.join(
+            print(f'  Филиалы: будет создан «{new_branch.name}» | адрес: {new_branch.address or "-"} | '
+                  f'тел.: {new_branch.phone or "-"} | email: {new_branch.email or "-"}')
+            print('    часы как у студии: ' + ', '.join(
                 f'{days[h.day_of_week]} {h.open_time}-{h.close_time}' if h.is_open
                 else f'{days[h.day_of_week]} выходной' for h in sorted(hours, key=lambda h: h.day_of_week)))
         else:
