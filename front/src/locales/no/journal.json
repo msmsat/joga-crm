@@ -10,7 +10,8 @@
     "all": "Alle",
     "services": "Tjenester",
     "filters": "Filtre",
-    "resetFilters": "Tilbakestill filtre"
+    "resetFilters": "Tilbakestill filtre",
+    "whoToShow": "Hvem som vises"
   },
   "daySummary": {
     "classesToday": "økter i dag",

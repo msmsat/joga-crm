@@ -10,7 +10,8 @@
     "all": "Όλα",
     "services": "Υπηρεσίες",
     "filters": "Φίλτρα",
-    "resetFilters": "Επαναφορά φίλτρων"
+    "resetFilters": "Επαναφορά φίλτρων",
+    "whoToShow": "Ποιους να εμφανίζει"
   },
   "daySummary": {
     "classesToday": "μαθήματα σήμερα",

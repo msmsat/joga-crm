@@ -10,7 +10,8 @@
     "all": "Wszystkie",
     "services": "Usługi",
     "filters": "Filtry",
-    "resetFilters": "Wyczyść filtry"
+    "resetFilters": "Wyczyść filtry",
+    "whoToShow": "Kogo pokazać"
   },
   "daySummary": {
     "classesToday": "zajęć dziś",

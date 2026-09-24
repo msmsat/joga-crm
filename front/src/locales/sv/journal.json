@@ -10,7 +10,8 @@
     "all": "Alla",
     "services": "Tjänster",
     "filters": "Filter",
-    "resetFilters": "Återställ filter"
+    "resetFilters": "Återställ filter",
+    "whoToShow": "Vilka som visas"
   },
   "daySummary": {
     "classesToday": "pass i dag",

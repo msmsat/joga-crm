@@ -10,7 +10,8 @@
     "all": "Mind",
     "services": "Szolgáltatások",
     "filters": "Szűrők",
-    "resetFilters": "Szűrők törlése"
+    "resetFilters": "Szűrők törlése",
+    "whoToShow": "Kiket mutasson"
   },
   "daySummary": {
     "classesToday": "óra ma",

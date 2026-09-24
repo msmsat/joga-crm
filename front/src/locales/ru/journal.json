@@ -10,7 +10,8 @@
     "all": "Все",
     "services": "Услуги",
     "filters": "Фильтры",
-    "resetFilters": "Сбросить фильтры"
+    "resetFilters": "Сбросить фильтры",
+    "whoToShow": "Кого показывать"
   },
   "daySummary": {
     "classesToday": "занятий сегодня",

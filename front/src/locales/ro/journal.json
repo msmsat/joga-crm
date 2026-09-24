@@ -10,7 +10,8 @@
     "all": "Toate",
     "services": "Servicii",
     "filters": "Filtre",
-    "resetFilters": "Resetează filtrele"
+    "resetFilters": "Resetează filtrele",
+    "whoToShow": "Pe cine să afișeze"
   },
   "daySummary": {
     "classesToday": "ședințe azi",

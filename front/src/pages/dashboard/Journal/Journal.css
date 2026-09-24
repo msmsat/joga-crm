@@ -200,6 +200,9 @@
   border-right: 1px solid var(--border);
 }
 
+/* Короткое имя тренера («Анна С.») — только для узких колонок телефона */
+.j-name-short { display: none; }
+
 /* Шапки колонок (тренеры / залы) */
 .j-col-header {
   position: sticky;
@@ -1561,7 +1564,10 @@
   .j-root { --j-col-min: 158px; }
   .j-right { width: 236px; }
   .j-toolbar { gap: 9px; padding: 0 16px; }
-  .j-grid { min-width: 100%; }
+  /* Не просто 100%: sticky-колонка времени держится только внутри своей
+     сетки, и сетка шириной в экран при вылезающих за неё колонках утаскивала
+     время за левый край при прокрутке вбок. Сетка — во всю сумму колонок. */
+  .j-grid { min-width: max(100%, calc(56px + var(--j-cols, 1) * var(--j-col-min, 158px))); }
   .j-col-header, .j-empty-slot { min-width: var(--j-col-min, 158px); }
 }
 
@@ -1571,7 +1577,7 @@
   .j-toolbar { gap: 8px; padding: 0 14px; }
   /* Вместо max-content: колонки могут ужаться до --j-col-min,
      и 5 тренеров влезают без горизонтального скролла */
-  .j-grid { min-width: 100%; }
+  .j-grid { min-width: max(100%, calc(56px + var(--j-cols, 1) * var(--j-col-min, 150px))); }
   .j-col-header, .j-empty-slot { min-width: var(--j-col-min, 150px); }
 }
 
@@ -1701,6 +1707,20 @@
   from { opacity: 0; transform: translateX(40px); }
   to { opacity: 1; transform: translateX(0); }
 }
+/* Шаг назад (стрелка «‹», свайп вправо по неделе) — зеркально: старое уходит
+   вправо, новое въезжает слева. Меняется только имя кадров, тайминги те же. */
+.j-slide-back .header-content-anim.slide-out-left,
+.j-slide-back .cell-content-anim.slide-out-left { animation-name: slide-out-right !important; }
+.j-slide-back .header-content-anim.slide-in-right,
+.j-slide-back .cell-content-anim.slide-in-right { animation-name: slide-in-left !important; }
+@keyframes slide-out-right {
+  from { opacity: 1; transform: translateX(0); }
+  to { opacity: 0; transform: translateX(40px); }
+}
+@keyframes slide-in-left {
+  from { opacity: 0; transform: translateX(-40px); }
+  to { opacity: 1; transform: translateX(0); }
+}
 
 .header-content-anim, .cell-content-anim {
   width: 100%;
@@ -1795,12 +1815,21 @@
   /* Высота считается флексом, а не арифметикой по вьюпорту: под нижнюю панель
      навигации место уже отнято у всей колонки контента (.main в App.css), и
      повторное вычитание высоты панели оставило бы под сеткой пустую полосу. */
+  /* Колонки не шире экрана: тренеров на экране столько, сколько влезает
+     (useTrainerPages, 3–5), остальные — на следующих страницах, а не за
+     правым краем. Отсюда нулевой минимум колонки. */
   .j-root {
     height: auto;
     flex: 1;
     min-height: 0;
-    --j-col-min: 124px;
+    --j-col-min: 0px;
+    --j-card-gap: 6px;
   }
+  /* Горизонтальный жест на сетке — наш (useGridSwipe листает неделю или
+     страницу тренеров). Без этого Chrome на Android считал свайп вправо
+     жестом «назад» и уводил со страницы: вбок сетке листать нечего, и жест
+     уходил браузеру. Вертикальная прокрутка и зум пальцами остаются. */
+  .j-grid-wrapper { touch-action: pan-y pinch-zoom; overscroll-behavior-x: none; }
 
   /* ── Тулбар: ровно две строки вместо четырёх ────────────────────────────
      Было 177px из 568 — вместе со сводкой дня расписанию оставалось 80px,
@@ -1857,6 +1886,26 @@
   /* Квадратные ячейки на 390px дали бы 330px календаря — половину экрана. */
   .j-cal-panel .mc-day { aspect-ratio: auto; height: 38px; font-size: 14px; border-radius: 10px; }
   .j-cal-panel .mc-day.has-event::after { width: 4px; height: 4px; bottom: 3px; }
+  /* Сегодня — персиковый кружок, как в шапке недели, и выбран ли день, не
+     важно: выбор рисует тёмная плашка под ячейкой (MiniCalendar), кружок
+     лежит поверх неё. Квадрат и кольцо заданы инлайном — отсюда !important. */
+  .j-cal-panel .mc-day.today {
+    background: transparent !important;
+    box-shadow: none !important;
+    color: #fff !important;
+    font-weight: 800;
+  }
+  .j-cal-panel .mc-day.today::before {
+    content: '';
+    position: absolute;
+    left: 50%; top: 50%;
+    width: 34px; height: 34px;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background: var(--peach);
+    box-shadow: 0 4px 10px rgba(249,160,139,0.35);
+    z-index: -1;
+  }
   .j-view-mode,
   .j-filter-pills,
   .j-tb-controls > div[style*="flex: 1"] { display: none !important; }
@@ -1907,7 +1956,7 @@
   /* Высоту шапки Grid.tsx берёт из --j-header-h — задаём переменную, а не
      перебиваем инлайн через !important. */
   .j-root { --j-header-h: 52px; }
-  .j-col-header { padding: 8px !important; }
+  .j-col-header { padding: 8px 6px !important; }
   /* !important — display у аватара и точки задан инлайном */
   .j-hdr-avatar,
   .j-hdr-dot,
@@ -1919,6 +1968,19 @@
     text-overflow: ellipsis;
   }
   .j-hdr-namewrap { min-width: 0; }
+  .j-name-full { display: none; }
+  .j-name-short { display: inline; }
+  /* Точки страниц тренеров — в пустом углу над колонкой времени */
+  .j-page-dots {
+    height: 100%;
+    display: flex; align-items: center; justify-content: center; gap: 4px;
+  }
+  .j-page-dots span {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--border);
+    transition: background 0.2s, width 0.2s;
+  }
+  .j-page-dots span.active { width: 14px; border-radius: 3px; background: var(--peach); }
   .j-hdr-sub { display: none; }
 
   /* Каждый пиксель ширины — сетке: время слева и шапки колонок ужимаются.
@@ -1928,7 +1990,20 @@
   .j-time-col { width: 42px; }
   .j-time-cell { padding: 6px 7px 0 0; font-size: 10px; }
   .j-col-header { padding: 10px 8px; }
-  .j-row-sep { min-width: var(--j-col-min, 124px); }
+  .j-row-sep { min-width: var(--j-col-min, 0px); }
+
+  /* Карточка в колонке 65–110px: название в две строки вместо «Хатх…»,
+     иконка людей уходит — «3/10» читается и без неё. */
+  .booking-card { padding: 6px 7px; }
+  .booking-card .b-title {
+    white-space: normal;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    font-size: 10.5px !important;
+    overflow-wrap: anywhere;
+  }
+  .booking-card .b-meta svg { display: none; }
 
   /* ── Неделя: все семь дней в ширину экрана, без листания вбок ────────────
      Как в календаре телефона: сверху день недели, под ним число, сегодня —
@@ -1957,6 +2032,8 @@
     overflow: hidden;
   }
   .j-grid-week .booking-card .b-title {
+    display: block;
+    -webkit-line-clamp: unset;
     font-size: 9.5px !important;
     line-height: 1.15 !important;
     white-space: normal;
@@ -2087,6 +2164,49 @@
      Панель выпадает из-под тулбара во всю ширину; в каждой группе один выбор —
      «Все» или конкретный вариант. Длинные группы листаются вбок. */
   .j-filter-btn { position: relative; flex-shrink: 0; }
+
+  /* ── Выбор тренеров (TrainerPicker.tsx) ─────────────────────────────── */
+  /* Живёт во втором ряду, рядом с «Индивидуально»: в первом, с датой,
+     «Сегодня» и фильтром, ему не хватало места и фильтр уезжал на свой ряд. */
+  .j-toolbar > .j-tp-btn { order: 3; }
+  .j-tp-btn { position: relative; flex-shrink: 0; width: auto !important; padding: 0 9px; overflow: visible; }
+  .j-tp-btn.active { border-color: var(--peach); }
+  .j-tp-stack { display: inline-flex; }
+  .j-tp-av {
+    width: 20px; height: 20px; border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    font: 800 8px var(--font); color: #fff;
+    box-shadow: 0 0 0 2px var(--bg-card);
+  }
+  /* В кнопке — просто цветные кружки: инициалы в 16px под наложением
+     читались обрывками («АС» наполовину под соседом). */
+  .j-tp-stack .j-tp-av { width: 16px; height: 16px; font-size: 0; }
+  .j-tp-stack .j-tp-av + .j-tp-av { margin-left: -5px; }
+  .j-tp-count {
+    position: absolute; top: -6px; right: -6px; z-index: 1;
+    min-width: 17px; height: 17px; padding: 0 4px; border-radius: 9px;
+    background: var(--peach); color: #fff;
+    font: 800 10px/17px var(--font); text-align: center;
+    box-shadow: 0 0 0 2px var(--bg-card);
+  }
+  .j-tp-list { display: flex; flex-direction: column; gap: 2px; max-height: 50dvh; overflow-y: auto; margin: 0 -6px; }
+  .j-tp-row {
+    display: flex; align-items: center; gap: 12px;
+    height: 48px; padding: 0 6px;
+    border: none; border-radius: 12px; background: transparent;
+    font: 600 14px var(--font); color: var(--onyx); text-align: left;
+    cursor: pointer;
+  }
+  .j-tp-row:active { background: var(--bg2); }
+  .j-tp-av.lg { width: 32px; height: 32px; font-size: 11px; box-shadow: none; flex-shrink: 0; }
+  .j-tp-name { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .j-tp-check {
+    width: 22px; height: 22px; border-radius: 7px; flex-shrink: 0;
+    display: inline-flex; align-items: center; justify-content: center;
+    border: 1.5px solid var(--border); color: transparent;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .j-tp-row.on .j-tp-check { background: var(--peach); border-color: var(--peach); color: #fff; }
   /* Пока панель открыта, тулбар выше шапок сетки (8050) и колонки времени,
      но ниже карточки занятия (10000). */
   .j-toolbar:has(.jf-panel) { z-index: 9500; }
@@ -2144,7 +2264,7 @@
 }
 /* Кнопка и панель фильтров — только телефонные: на десктопе фильтры в ряду чипов. */
 @media (min-width: 768px) {
-  .j-filter-btn, .jf-panel, .jf-backdrop, .j-cal-panel, .j-date-caret { display: none !important; }
+  .j-filter-btn, .j-tp-btn, .jf-panel, .jf-backdrop, .j-cal-panel, .j-date-caret { display: none !important; }
 }
 @keyframes jf-drop {
   from { opacity: 0; transform: translateY(-8px); }

@@ -30,6 +30,8 @@ interface GridProps {
   openBookingPopup: (e: React.MouseEvent, b: Booking) => void;
   showToast: (msg: string) => void;
   editDraft: { bookingId: number; title: string; timeStart: number; timeEnd: number } | null;
+  /** Страницы тренеров на телефоне: точки в пустом углу над колонкой времени. */
+  pages?: { count: number; index: number };
 }
 
 export const Grid: React.FC<GridProps> = ({
@@ -37,7 +39,7 @@ export const Grid: React.FC<GridProps> = ({
   columns, viewMode, filteredBookings, hoveredSlot, setHoveredSlot,
   canEdit, showNewForm, popupBooking, drag, wasDragging,
   openNewSlot, newBookingSlot, newForm, previewRef,
-  initDrag, setPopupBooking, openBookingPopup, showToast, editDraft
+  initDrag, setPopupBooking, openBookingPopup, showToast, editDraft, pages
 }) => {
   const { t, i18n } = useTranslation('journal');
 
@@ -48,9 +50,19 @@ export const Grid: React.FC<GridProps> = ({
   return (
     <div
       className={`j-grid${calendarView === 'week' ? ' j-grid-week' : ''}`}
-      style={{ gridTemplateColumns: `56px repeat(${cols.length}, minmax(var(--j-col-min, 170px), 1fr))` }}
+      // --j-cols нужен CSS: ширина самой сетки обязана вмещать все колонки,
+      // иначе колонка времени (sticky left) уезжает вместе с краем сетки.
+      style={{ gridTemplateColumns: `56px repeat(${cols.length}, minmax(var(--j-col-min, 170px), 1fr))`, '--j-cols': cols.length } as React.CSSProperties}
     >
-      <div className="j-top-left-corner" />
+      <div className="j-top-left-corner">
+        {pages && (
+          <div className="j-page-dots" aria-label={`${pages.index + 1} / ${pages.count}`}>
+            {Array.from({ length: pages.count }, (_, i) => (
+              <span key={i} className={i === pages.index ? 'active' : ''} />
+            ))}
+          </div>
+        )}
+      </div>
 
       {/* Заголовки колонок */}
       {cols.map((col, ci) => {
@@ -182,7 +194,11 @@ export const Grid: React.FC<GridProps> = ({
                           {trainer.initials}
                       </div>
                       <div className="j-hdr-namewrap" style={singleColumn ? { textAlign: 'center' } : undefined}>
-                          <div className="j-hdr-name" style={{ fontSize: 13.5, fontWeight: 800, color: 'var(--onyx)', letterSpacing: '-0.2px' }}>{trainer.full}</div>
+                          <div className="j-hdr-name" style={{ fontSize: 13.5, fontWeight: 800, color: 'var(--onyx)', letterSpacing: '-0.2px' }}>
+                            {/* На телефоне колонка ~65px: там «Анна С.» вместо полного имени */}
+                            <span className="j-name-full">{trainer.full}</span>
+                            <span className="j-name-short">{trainer.name}</span>
+                          </div>
                           <div className="j-hdr-sub" style={{ fontSize: 11, color: 'var(--muted)', fontWeight: 600, marginTop: 1 }}>{trainer.role}</div>
                       </div>
                       </div>

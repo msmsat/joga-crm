@@ -37,6 +37,8 @@ interface ToolbarProps {
   spaceIsAxis?: boolean;
   /** Кнопка фильтров телефона (MobileFilters) — на десктопе её прячет CSS. */
   mobileFilters?: React.ReactNode;
+  /** Выбор тренеров-колонок на телефоне (TrainerPicker). */
+  trainerPicker?: React.ReactNode;
   /** Календарь месяца (MiniCalendar), который на телефоне открывает кнопка даты. */
   mobileCalendar?: React.ReactNode;
 }
@@ -66,6 +68,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   spaceIsAxis,
   mobileFilters,
   mobileCalendar,
+  trainerPicker,
 }) => {
   const { t, i18n } = useTranslation('journal');
   // На телефоне дату не набирают руками, а выбирают в календаре под тулбаром.
@@ -155,6 +158,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
         </button>
       )}
 
+      {trainerPicker}
       {mobileFilters}
 
       {calendarOpen && mobileCalendar && <div className="j-cal-panel">{mobileCalendar}</div>}

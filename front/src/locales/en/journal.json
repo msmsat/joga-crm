@@ -10,7 +10,8 @@
     "all": "All",
     "services": "Services",
     "filters": "Filters",
-    "resetFilters": "Reset filters"
+    "resetFilters": "Reset filters",
+    "whoToShow": "Who to show"
   },
   "daySummary": {
     "classesToday": "classes today",

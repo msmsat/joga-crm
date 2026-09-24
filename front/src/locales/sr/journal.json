@@ -10,7 +10,8 @@
     "all": "Sve",
     "services": "Usluge",
     "filters": "Filteri",
-    "resetFilters": "Poništi filtere"
+    "resetFilters": "Poništi filtere",
+    "whoToShow": "Koga prikazati"
   },
   "daySummary": {
     "classesToday": "термина данас",

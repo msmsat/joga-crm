@@ -12,6 +12,9 @@ import { useSchedule, useJournalDays } from './hooks/useSchedule';
 import { useJournalMutations } from './hooks/useJournalMutations';
 import { useUndoHistory } from './hooks/useUndoHistory';
 import { usePopupPosition } from './hooks/usePopupPosition';
+import { useGridSwipe } from './hooks/useGridSwipe';
+import { useTrainerPages } from './hooks/useTrainerPages';
+import { TrainerPicker } from './components/TrainerPicker';
 import { Toolbar } from './components/Toolbar';
 import { MobileFilters } from './components/MobileFilters';
 import { MiniCalendar } from './components/MiniCalendar';
@@ -108,6 +111,8 @@ export default function Journal() {
 
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [transitionReason, setTransitionReason] = useState<'date' | 'mode' | 'view' | null>(null);
+  // Листаем назад — содержимое въезжает слева, а не справа, как при «вперёд».
+  const [slideBack, setSlideBack] = useState(false);
 
   const [isEditingDate, setIsEditingDate] = useState(false);
   const [dateInputVal, setDateInputVal] = useState("");
@@ -176,6 +181,8 @@ export default function Journal() {
 
   // Видимые колонки: всё, что пользователь не скрыл в тулбаре/правой панели.
   const visibleTrainers = trainers.filter(t => !hiddenTrainers.includes(t.id));
+  // Телефон: колонки тренеров во всю ширину, лишние — на следующих страницах
+  const trainerPages = useTrainerPages(visibleTrainers);
   // HB-22 п.4: колонка «Без зала» появляется, только если такие занятия есть —
   // пустая колонка на каждом экране была бы шумом.
   const visibleHalls = [
@@ -229,7 +236,7 @@ export default function Journal() {
   // ── Колонки по режиму (Если неделя - отдаем даты, иначе тренеров/залы) ──
   const columns = calendarView === 'week' 
     ? getWeekDays()
-    : (viewMode === 'trainers' ? visibleTrainers : visibleHalls);
+    : (viewMode === 'trainers' ? trainerPages.pageTrainers : visibleHalls);
   
   // Живые занятия (без отменённых) — считаются в сводке дня и правой панели;
   // сетка (Grid) рисует всё подряд через filteredBookings, отменённые остаются на месте.
@@ -361,6 +368,26 @@ export default function Journal() {
     setCalMonth(targetDate.getMonth());
     setSelectedDay(targetDate.getDate());
   };
+
+  // Перелистывание стрелками тулбара и свайпом по неделе: одна анимация,
+  // направление которой совпадает с направлением шага.
+  const stepDate = (dir: number) => {
+    setSlideBack(dir < 0);
+    withAnimation('date', () => changeDay(dir));
+  };
+  // Страница тренеров листается той же анимацией, что и дата.
+  const stepTrainerPage = (dir: number) => {
+    const next = trainerPages.page + dir;
+    if (next < 0 || next >= trainerPages.pageCount) return;
+    setSlideBack(dir < 0);
+    withAnimation('date', () => trainerPages.setPage(next));
+  };
+  const pagedTrainers = calendarView === 'day' && viewMode === 'trainers' && trainerPages.pageCount > 1;
+  useGridSwipe(
+    gridWrapperRef,
+    !isTransitioning && (calendarView === 'week' || pagedTrainers),
+    dir => (calendarView === 'week' ? stepDate(dir) : stepTrainerPage(dir)),
+  );
 
   // Diff двух карточек → payload PATCH (общий для forward- и backward-хода правки).
   const diffPayload = React.useCallback((prev: Booking, next: Booking): Partial<LessonCreate> => {
@@ -718,7 +745,7 @@ export default function Journal() {
             calendarView={calendarView}
             isEditingDate={isEditingDate}
             dateInputVal={dateInputVal}
-            changeDay={(dir) => withAnimation('date', () => changeDay(dir))}
+            changeDay={stepDate}
             setViewMode={(m) => withAnimation('mode', () => setViewMode(m))}
             setCalendarView={(v) => withAnimation('view', () => setCalendarView(v))}
             onGoToToday={() => withAnimation('date', () => {
@@ -735,6 +762,13 @@ export default function Journal() {
               ? () => setResourceBooking({ teacherId: null, date: toDateStr(new Date(calYear, calMonth, selectedDay)) })
               : undefined}
             spaceIsAxis={spaceIsAxis}
+            trainerPicker={calendarView === 'day' && viewMode === 'trainers' ? (
+              <TrainerPicker
+                trainers={visibleTrainers}
+                selectedIds={trainerPages.selectedIds}
+                onChange={trainerPages.setSelectedIds}
+              />
+            ) : undefined}
             mobileCalendar={
               <MiniCalendar
                 calMonth={calMonth} calYear={calYear} selectedDay={selectedDay}
@@ -779,9 +813,12 @@ export default function Journal() {
           {/* ── СЕТКА ── */}
           <div className="j-layout">
             <div
-              className={`j-grid-wrapper${compactHeaders ? ' j-hdr-compact' : ''}`}
+              className={`j-grid-wrapper${compactHeaders ? ' j-hdr-compact' : ''}${slideBack ? ' j-slide-back' : ''}`}
               ref={gridWrapperRef}
               onScroll={e => {
+                // На телефоне шапка колонок не сжимается: она и так в одну-две
+                // строки, а перестройка на ходу дёргала сетку под пальцем.
+                if (window.matchMedia('(max-width: 767px)').matches) return;
                 const st = e.currentTarget.scrollTop;
                 setCompactHeaders(prev => (prev ? st > 8 : st > 56));
               }}
@@ -795,6 +832,7 @@ export default function Journal() {
                 <GridSkeleton columns={columns.length || 4} />
               ) : (
                 <Grid
+                  pages={pagedTrainers ? { count: trainerPages.pageCount, index: trainerPages.page } : undefined}
                   isTransitioning={isTransitioning}
                   transitionReason={transitionReason} // 🔥 Передаем причину в Сетку
                   calendarView={calendarView}

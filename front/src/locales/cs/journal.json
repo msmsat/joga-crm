@@ -10,7 +10,8 @@
     "all": "Vše",
     "services": "Služby",
     "filters": "Filtry",
-    "resetFilters": "Zrušit filtry"
+    "resetFilters": "Zrušit filtry",
+    "whoToShow": "Koho zobrazit"
   },
   "daySummary": {
     "classesToday": "lekcí dnes",

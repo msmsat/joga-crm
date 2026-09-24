@@ -10,7 +10,8 @@
     "all": "Tümü",
     "services": "Hizmetler",
     "filters": "Filtreler",
-    "resetFilters": "Filtreleri sıfırla"
+    "resetFilters": "Filtreleri sıfırla",
+    "whoToShow": "Kimler gösterilsin"
   },
   "daySummary": {
     "classesToday": "bugün ders",

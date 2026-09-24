@@ -10,7 +10,8 @@
     "all": "Tous",
     "services": "Services",
     "filters": "Filtres",
-    "resetFilters": "Réinitialiser les filtres"
+    "resetFilters": "Réinitialiser les filtres",
+    "whoToShow": "Qui afficher"
   },
   "daySummary": {
     "classesToday": "cours aujourd'hui",

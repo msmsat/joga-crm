@@ -10,7 +10,8 @@
     "all": "Kaikki",
     "services": "Palvelut",
     "filters": "Suodattimet",
-    "resetFilters": "Nollaa suodattimet"
+    "resetFilters": "Nollaa suodattimet",
+    "whoToShow": "Ketkä näytetään"
   },
   "daySummary": {
     "classesToday": "tuntia tänään",

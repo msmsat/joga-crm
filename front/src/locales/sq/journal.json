@@ -10,7 +10,8 @@
     "all": "Të gjitha",
     "services": "Shërbimet",
     "filters": "Filtrat",
-    "resetFilters": "Rivendos filtrat"
+    "resetFilters": "Rivendos filtrat",
+    "whoToShow": "Kë të shfaqë"
   },
   "daySummary": {
     "classesToday": "mësime sot",

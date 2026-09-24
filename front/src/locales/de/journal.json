@@ -10,7 +10,8 @@
     "all": "Alle",
     "services": "Leistungen",
     "filters": "Filter",
-    "resetFilters": "Filter zurücksetzen"
+    "resetFilters": "Filter zurücksetzen",
+    "whoToShow": "Wen anzeigen"
   },
   "daySummary": {
     "classesToday": "Kurse heute",
