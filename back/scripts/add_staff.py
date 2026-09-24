@@ -42,7 +42,7 @@ async def run(args):
     from sqlalchemy import func, select
     from database import async_session_maker
     from dependencies import StudioContext
-    from models import Service, Studio, StudioBranch, StudioMember, User
+    from models import Service, ServiceBundleItem, Studio, StudioBranch, StudioMember, User
     from routers.staff.profiles import create_staff
     from schemas.settings.team import StaffCreate
     from services.contacts import normalize, normalized_column
@@ -87,8 +87,10 @@ async def run(args):
             ))).scalars().all())
         else:
             # Individual (resource) services only: group classes stay with whoever runs them.
+            # Bundles too are left out: who does a bundle is the owner's call, pass --service-ids.
             services = list((await db.execute(select(Service).where(
                 Service.studio_id == studio.id, Service.booking_mode == 'resource',
+                Service.id.not_in(select(ServiceBundleItem.bundle_id)),
             ).order_by(Service.id))).scalars().all())
             service_ids = [service.id for service in services]
         branches = list((await db.execute(select(StudioBranch).where(
@@ -169,7 +171,7 @@ def main():
     parser.add_argument('--last-name')
     parser.add_argument('--role', choices=('trainer', 'admin'), default='trainer')
     parser.add_argument('--percent', type=float, required=True, help='Доля мастера от выручки его услуг, %%')
-    parser.add_argument('--service-ids', type=int_list, help='По умолчанию — все индивидуальные услуги')
+    parser.add_argument('--service-ids', type=int_list, help='По умолчанию — все индивидуальные услуги, кроме комплексов')
     parser.add_argument('--days', type=int_list, default=[], help='Рабочие дни, 0=Пн … 6=Вс, через запятую')
     parser.add_argument('--hours', default='10:00-19:00', help='Часы работы, ЧЧ:ММ-ЧЧ:ММ')
     parser.add_argument('--apply', action='store_true')

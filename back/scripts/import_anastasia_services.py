@@ -1,4 +1,6 @@
-"""Import Anastasiia's supplied price list. Preview by default; no external calls.
+"""Import Anastasiia's supplied price list with bundles. Preview by default; no external calls.
+
+Bundles are catalog entries only: no master is assigned to them here.
 
 From back/: python -m scripts.import_anastasia_services --owner-email EMAIL
 Apply only after preview: add --studio-id ID --apply.
@@ -17,6 +19,7 @@ class Item:
     name: str
     price: int
     duration_min: int
+    parts: tuple = ()  # bundle composition by part name, in the order it is done
 
     def payload(self):
         return dict(name=self.name, category=self.category, price=self.price,
@@ -37,7 +40,21 @@ ITEMS = (
     Item('ДОДАТКОВІ ЗОНИ', 'Живіт', 600, 20),
     Item('ДОДАТКОВІ ЗОНИ', 'Лінія живота', 200, 10),
     Item('ДОДАТКОВІ ЗОНИ', 'Сідниці', 400, 30),
+    Item('КОМПЛЕКСИ', 'Глибоке бікіні + підмишки', 1700, 50,
+         ('Глибоке бікіні', 'Підмишки')),
+    Item('КОМПЛЕКСИ', 'Глибоке бікіні + підмишки + ніжки з коліном', 2800, 90,
+         ('Глибоке бікіні', 'Підмишки', 'Ніжки з коліном')),
+    Item('КОМПЛЕКСИ', 'Глибоке бікіні + підмишки + ніжки з коліном + руки до ліктя', 3500, 110,
+         ('Глибоке бікіні', 'Підмишки', 'Ніжки з коліном', 'Руки до ліктя')),
+    Item('КОМПЛЕКСИ', 'Глибоке бікіні + підмишки + ніжки повністю', 3100, 110,
+         ('Глибоке бікіні', 'Підмишки', 'Ніжки повністю')),
+    Item('КОМПЛЕКСИ', 'Глибоке бікіні + підмишки + ніжки повністю + руки повністю', 4250, 130,
+         ('Глибоке бікіні', 'Підмишки', 'Ніжки повністю', 'Руки повністю')),
+    Item('КОМПЛЕКСИ', 'Глибоке бікіні + підмишки + ніжки повністю + руки до ліктя', 4000, 120,
+         ('Глибоке бікіні', 'Підмишки', 'Ніжки повністю', 'Руки до ліктя')),
 )
+# Parts must be plain items of this list: a typo would otherwise surface only on --apply.
+assert all(part in {i.name for i in ITEMS if not i.parts} for i in ITEMS for part in i.parts)
 
 
 def normalized_name(name):
@@ -79,7 +96,8 @@ async def run(owner_email, studio_id=None, apply=False):
     from database import async_session_maker
     from models import Service, Studio, StudioMember, User
     from schemas.studio import ServiceCreate
-    from routers.studio.services import _assert_mode_available
+    from routers.studio.services import _assert_mode_available, _normalize_category
+    from services import service_bundles
     from routers.settings.general import bump_booking_config_version
     from services.schedule_guard import lock_studio
 
@@ -117,6 +135,8 @@ async def run(owner_email, studio_id=None, apply=False):
             for action, item, reason in plan:
                 print(f'{action:8} | {item.category} | {item.name} | {item.price} CZK | '
                       f'{item.duration_min} мин' + (f' | {reason}' if reason else ''))
+                if item.parts:
+                    print(f'{"":8} |   состав: {" → ".join(item.parts)}')
             errors = []
             if (studio.currency or '').upper() != 'CZK':
                 errors.append('Валюта студии должна быть CZK. Валюта и цены существующих услуг не изменены.')
@@ -139,15 +159,29 @@ async def run(owner_email, studio_id=None, apply=False):
                 print('docker compose exec api python -m scripts.import_anastasia_services '
                       f'--owner-email {shlex.quote(user.email)} --studio-id {studio.id} --apply')
                 return
-            for action, item, _ in plan:
-                if action == 'ADD':
-                    db.add(Service(studio_id=studio.id, **payloads[item.name].model_dump()))
+            by_name = {normalized_name(service.name): service for service in existing}
+            # Plain services first: bundle parts must exist before the bundle refers to them.
+            for action, item, _ in sorted(plan, key=lambda row: bool(row[1].parts)):
+                if action != 'ADD':
+                    continue
+                fields = payloads[item.name].model_dump()
+                fields.pop('bundle_service_ids', None)  # schema-only field, as in create_service
+                fields['category'] = await _normalize_category(fields['category'], studio.id, db)
+                service = Service(studio_id=studio.id, **fields)
+                db.add(service)
+                await db.flush()
+                by_name[normalized_name(item.name)] = service
+                if item.parts:
+                    # Same composition rules as POST /studio/services; no assign_masters on purpose.
+                    part_ids = await service_bundles.validate_parts(
+                        db, studio.id, [by_name[normalized_name(part)].id for part in item.parts])
+                    await service_bundles.set_parts(db, service.id, part_ids)
             if added:
                 await bump_booking_config_version(db, studio)
                 await db.flush()
         # Print success only after the transaction committed.
         print(f'\nГОТОВО: добавлено {added}, пропущено {skipped}. Студия ID={studio.id}.')
-        print('Каталог заполнен. Назначение услуг мастеру, филиал и рабочие часы здесь не менялись.')
+        print('Каталог заполнен. Назначение услуг и комплексов мастеру, филиал и рабочие часы здесь не менялись.')
 
 
 def main():
