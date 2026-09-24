@@ -14,7 +14,6 @@ The old account itself is never edited: its email may own other studios.
 """
 import argparse
 import asyncio
-import getpass
 import re
 import secrets
 import shlex
@@ -239,15 +238,13 @@ def main():
     parser.add_argument('--replace', metavar='OLD_EMAIL',
                         help='Снять непринятое приглашение с этого адреса и пригласить --email вместо него')
     parser.add_argument('--set-password', action='store_true',
-                        help='С --apply: задать пароль нового аккаунта самому (скрытый ввод, не в историю команд)')
+                        help='С --apply: задать пароль нового аккаунта самому (ввод виден, в историю команд не попадает)')
     parser.add_argument('--apply', action='store_true')
     args = parser.parse_args()
     args.password = None
     if args.set_password and args.apply:
         from schemas.auth.requests import validate_strong_password
-        args.password = getpass.getpass('Пароль для нового аккаунта сотрудника: ')
-        if args.password != getpass.getpass('Повторите: '):
-            parser.error('Пароли не совпали.')
+        args.password = input('Пароль для нового аккаунта сотрудника: ').strip()
         try:
             validate_strong_password(args.password)
         except ValueError as error:
