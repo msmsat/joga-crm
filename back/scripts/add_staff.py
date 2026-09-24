@@ -14,6 +14,7 @@ The old account itself is never edited: its email may own other studios.
 """
 import argparse
 import asyncio
+import getpass
 import re
 import secrets
 import shlex
@@ -159,7 +160,7 @@ async def run(args):
         for warning in warnings:
             print('ВНИМАНИЕ: ' + warning)
         # Same Pydantic validation as POST /staff/, before any writes.
-        password = None if existing else generate_password()
+        password = None if existing else (args.password or generate_password())
         data = StaffCreate(
             name=args.name, last_name=args.last_name, email=args.email, password=password,
             role=args.role, rate=args.percent, rate_type='percent',
@@ -237,8 +238,20 @@ def main():
                         help='Если у студии нет филиалов — создать первый, как при онбординге')
     parser.add_argument('--replace', metavar='OLD_EMAIL',
                         help='Снять непринятое приглашение с этого адреса и пригласить --email вместо него')
+    parser.add_argument('--set-password', action='store_true',
+                        help='С --apply: задать пароль нового аккаунта самому (скрытый ввод, не в историю команд)')
     parser.add_argument('--apply', action='store_true')
     args = parser.parse_args()
+    args.password = None
+    if args.set_password and args.apply:
+        from schemas.auth.requests import validate_strong_password
+        args.password = getpass.getpass('Пароль для нового аккаунта сотрудника: ')
+        if args.password != getpass.getpass('Повторите: '):
+            parser.error('Пароли не совпали.')
+        try:
+            validate_strong_password(args.password)
+        except ValueError as error:
+            parser.error(str(error))
     if '@' not in args.email or '@' not in args.owner_email:
         parser.error('Нужны полные email владельца и сотрудника.')
     if not 0 < args.percent <= 100:
