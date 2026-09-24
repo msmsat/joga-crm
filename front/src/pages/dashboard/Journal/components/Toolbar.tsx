@@ -1,5 +1,5 @@
 // src/components/Toolbar.tsx
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as Icons from '../../../../components/Icons';
 import { monthName } from '../utils';
@@ -35,6 +35,10 @@ interface ToolbarProps {
   onResourceBooking?: () => void;
   /** Участвует ли место в расписании. `undefined` — термины ещё не пришли. */
   spaceIsAxis?: boolean;
+  /** Кнопка фильтров телефона (MobileFilters) — на десктопе её прячет CSS. */
+  mobileFilters?: React.ReactNode;
+  /** Календарь месяца (MiniCalendar), который на телефоне открывает кнопка даты. */
+  mobileCalendar?: React.ReactNode;
 }
 
 export const Toolbar: React.FC<ToolbarProps> = ({
@@ -60,8 +64,14 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   onGoToToday,
   onResourceBooking,
   spaceIsAxis,
+  mobileFilters,
+  mobileCalendar,
 }) => {
   const { t, i18n } = useTranslation('journal');
+  // На телефоне дату не набирают руками, а выбирают в календаре под тулбаром.
+  // Он не закрывается выбором дня: сетка ниже меняется сразу, и можно листать
+  // дни подряд. Закрывает его повторное нажатие на дату.
+  const [calendarOpen, setCalendarOpen] = useState(false);
   return (
     <div className="j-toolbar">
       {/* Дата навигация */}
@@ -100,8 +110,13 @@ export const Toolbar: React.FC<ToolbarProps> = ({
       ) : (
         <button
           type="button"
-          className="btn-ghost-sm"
+          className="btn-ghost-sm j-date-btn"
+          aria-expanded={calendarOpen}
           onClick={() => {
+            if (mobileCalendar && window.matchMedia('(max-width: 767px)').matches) {
+              setCalendarOpen(o => !o);
+              return;
+            }
             const pad = (n: number) => String(n).padStart(2, '0');
             setDateInputVal(`${pad(selectedDay)}.${pad(calMonth + 1)}.${calYear}`);
             setIsEditingDate(true);
@@ -116,6 +131,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
             {selectedDay} {monthName(calMonth, i18n.language)}{' '}
             <span className="j-date-year">{calYear}</span>
           </span>
+          <span className={`j-date-caret${calendarOpen ? ' open' : ''}`}><Icons.ChevronRight /></span>
         </button>
       )}
 
@@ -133,11 +149,15 @@ export const Toolbar: React.FC<ToolbarProps> = ({
       </button>
 
       {onResourceBooking && (
-        <button className="btn-ghost-sm" onClick={onResourceBooking} title={t('toolbar.resourceBooking')}>
+        <button className="btn-ghost-sm j-resource-btn" onClick={onResourceBooking} title={t('toolbar.resourceBooking')}>
           <Icons.Plus />
           <span className="j-today-label">{t('toolbar.resourceBooking')}</span>
         </button>
       )}
+
+      {mobileFilters}
+
+      {calendarOpen && mobileCalendar && <div className="j-cal-panel">{mobileCalendar}</div>}
 
       <div className="j-sep" style={{ width: 1, height: 20, background: 'var(--border)', flexShrink: 0 }} />
 
@@ -152,7 +172,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
           (space_is_axis), посчитанные сервером. Пока термины не пришли,
           значение undefined — вкладку показываем: спрятать её у студии,
           которая ей пользуется, хуже, чем показать на кадр позже. */}
-      <div style={{ display: 'flex', gap: 3, background: 'var(--bg2)', borderRadius: 8, padding: 3 }}>
+      <div className="j-view-mode" style={{ display: 'flex', gap: 3, background: 'var(--bg2)', borderRadius: 8, padding: 3 }}>
         <button className={`pill-tab ${viewMode === 'trainers' ? 'active' : ''}`} onClick={() => setViewMode('trainers')}>
           <Icons.Users /> {t('toolbar.trainers')}
         </button>
@@ -202,7 +222,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
       <div className="view-toggle">
         <div
           className="view-slider"
-          style={{ transform: `translateX(${['day', 'week'].indexOf(calendarView) * 76}px)` }}
+          style={{ transform: `translateX(${['day', 'week'].indexOf(calendarView) * 100}%)` }}
         />
         <button
           className={`view-btn ${calendarView === 'day' ? 'active' : ''}`}

@@ -6,7 +6,11 @@
     "day": "Päivä",
     "week": "Viikko",
     "resourceBooking": "Yksilöllinen",
-    "noHall": "Ei määritetty"
+    "noHall": "Ei määritetty",
+    "all": "Kaikki",
+    "services": "Palvelut",
+    "filters": "Suodattimet",
+    "resetFilters": "Nollaa suodattimet"
   },
   "daySummary": {
     "classesToday": "tuntia tänään",

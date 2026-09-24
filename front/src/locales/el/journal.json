@@ -6,7 +6,11 @@
     "day": "Ημέρα",
     "week": "Εβδομάδα",
     "resourceBooking": "Ατομικά",
-    "noHall": "Χωρίς αντιστοίχιση"
+    "noHall": "Χωρίς αντιστοίχιση",
+    "all": "Όλα",
+    "services": "Υπηρεσίες",
+    "filters": "Φίλτρα",
+    "resetFilters": "Επαναφορά φίλτρων"
   },
   "daySummary": {
     "classesToday": "μαθήματα σήμερα",

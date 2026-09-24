@@ -47,7 +47,7 @@ export const Grid: React.FC<GridProps> = ({
 
   return (
     <div
-      className="j-grid"
+      className={`j-grid${calendarView === 'week' ? ' j-grid-week' : ''}`}
       style={{ gridTemplateColumns: `56px repeat(${cols.length}, minmax(var(--j-col-min, 170px), 1fr))` }}
     >
       <div className="j-top-left-corner" />
@@ -125,7 +125,7 @@ export const Grid: React.FC<GridProps> = ({
                 return (
                   <div className="j-hdr-weekwrap" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '2px 0', width: '100%' }}>
                     {/* Уменьшили день недели */}
-                    <div style={{ fontSize: 10, color: isToday ? 'var(--peach)' : 'var(--muted)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                    <div className="j-hdr-wday" style={{ fontSize: 10, color: isToday ? 'var(--peach)' : 'var(--muted)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                       {weekdayShort(ci, i18n.language)}
                     </div>
 
@@ -187,8 +187,11 @@ export const Grid: React.FC<GridProps> = ({
                       </div>
                       </div>
                       <div className="j-hdr-stats" style={{ fontSize: 10.5, color: 'var(--muted)', fontWeight: 600, marginTop: 4, display: 'flex', alignItems: 'center', justifyContent: singleColumn ? 'center' : 'flex-start', gap: 6, width: '100%' }}>
-                      <span style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: colBookings.length > 0 ? 'var(--peach)' : 'var(--border)' }} />
-                      {colBookings.length} {t('grid.classes')} · {colBookings.reduce((s, b) => s + b.clients, 0)} {t('grid.peopleShort')}
+                      <span className="j-hdr-dot" style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: colBookings.length > 0 ? 'var(--peach)' : 'var(--border)' }} />
+                      <span>
+                        {colBookings.length} {t('grid.classes')}
+                        <span className="j-hdr-people"> · {colBookings.reduce((s, b) => s + b.clients, 0)} {t('grid.peopleShort')}</span>
+                      </span>
                       </div>
                   </>
                       );

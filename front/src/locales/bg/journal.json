@@ -6,7 +6,11 @@
     "day": "Ден",
     "week": "Седмица",
     "resourceBooking": "Индивидуално",
-    "noHall": "Без разпределение"
+    "noHall": "Без разпределение",
+    "all": "Всички",
+    "services": "Услуги",
+    "filters": "Филтри",
+    "resetFilters": "Изчисти филтрите"
   },
   "daySummary": {
     "classesToday": "занятия днес",

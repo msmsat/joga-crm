@@ -6,7 +6,11 @@
     "day": "Dan",
     "week": "Tjedan",
     "resourceBooking": "Individualno",
-    "noHall": "Bez dodjele"
+    "noHall": "Bez dodjele",
+    "all": "Sve",
+    "services": "Usluge",
+    "filters": "Filtri",
+    "resetFilters": "Poništi filtre"
   },
   "daySummary": {
     "classesToday": "termina danas",

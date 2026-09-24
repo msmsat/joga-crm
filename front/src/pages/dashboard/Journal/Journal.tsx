@@ -13,6 +13,8 @@ import { useJournalMutations } from './hooks/useJournalMutations';
 import { useUndoHistory } from './hooks/useUndoHistory';
 import { usePopupPosition } from './hooks/usePopupPosition';
 import { Toolbar } from './components/Toolbar';
+import { MobileFilters } from './components/MobileFilters';
+import { MiniCalendar } from './components/MiniCalendar';
 import { DaySummary } from './components/DaySummary';
 import { RightPanel } from './components/RightPanel';
 import { Grid } from './components/ScheduleGrid/Grid';
@@ -60,6 +62,10 @@ export default function Journal() {
   // (сотрудник, ведущий занятие только в этом дне) появляется сразу видимой.
   const [hiddenTrainers, setHiddenTrainers] = useState<number[]>([]);
   const [hiddenHalls, setHiddenHalls] = useState<string[]>([]);
+  // Фильтры записей по месту и услуге — из панели фильтров телефона. Колонки
+  // они не прячут, только занятия в них; десктоп их не выставляет вовсе.
+  const [hallFilter, setHallFilter] = useState<string | null>(null);
+  const [serviceFilter, setServiceFilter] = useState<number | null>(null);
   const [pickedViewMode, setPickedViewMode] = useState<'trainers' | 'halls'>('trainers');
   // Участвует ли место (зал/кресло/кабинет) в расписании: отрасль студии плюс
   // тумблер владельца, посчитанные сервером. У барбершопа клиент записывается
@@ -231,6 +237,8 @@ export default function Journal() {
 
   // ── Фильтрованные записи (для сетки — включают отменённые) ──
   const filteredBookings = bookings.filter(b => {
+    if (hallFilter !== null && b.hall !== hallFilter) return false;
+    if (serviceFilter !== null && b.serviceId !== serviceFilter) return false;
     if (viewMode === 'trainers') return !hiddenTrainers.includes(b.trainer);
     return !hiddenHalls.includes(b.hall);
   });
@@ -727,6 +735,28 @@ export default function Journal() {
               ? () => setResourceBooking({ teacherId: null, date: toDateStr(new Date(calYear, calMonth, selectedDay)) })
               : undefined}
             spaceIsAxis={spaceIsAxis}
+            mobileCalendar={
+              <MiniCalendar
+                calMonth={calMonth} calYear={calYear} selectedDay={selectedDay}
+                today={today} changeMonth={changeMonth} setSelectedDay={setSelectedDay}
+                calendarView={calendarView} eventDays={journalDays}
+              />
+            }
+            mobileFilters={
+              <MobileFilters
+                trainers={trainers}
+                halls={hallNames}
+                services={journalServices}
+                // Мастер в панели один: выбран, когда видна ровно одна колонка
+                trainer={hiddenTrainers.length > 0 && visibleTrainers.length === 1 ? visibleTrainers[0].id : null}
+                hall={hallFilter}
+                service={serviceFilter}
+                onTrainer={(id) => setHiddenTrainers(id === null ? [] : trainers.filter(tr => tr.id !== id).map(tr => tr.id))}
+                onHall={setHallFilter}
+                onService={setServiceFilter}
+                spaceIsAxis={spaceIsAxis}
+              />
+            }
           />
 
           {/* ── СВОДКА ДНЯ ── */}

@@ -6,7 +6,11 @@
     "day": "День",
     "week": "Неделя",
     "resourceBooking": "Индивидуально",
-    "noHall": "Без привязки"
+    "noHall": "Без привязки",
+    "all": "Все",
+    "services": "Услуги",
+    "filters": "Фильтры",
+    "resetFilters": "Сбросить фильтры"
   },
   "daySummary": {
     "classesToday": "занятий сегодня",

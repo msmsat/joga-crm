@@ -1818,25 +1818,57 @@
   .j-toolbar > .j-sep { flex: 1 0 100%; width: auto !important; height: 0 !important; background: none !important; }
   .j-tb-controls .j-sep { display: none; }
 
+  /* Вторая строка — только «День / Неделя» во всю ширину. Переключатель
+     «Тренеры / Места» и ленту фильтров телефон не показывает: пальцем по
+     чипам с инициалами не попасть, а на узком экране сетка и так видна
+     целиком листанием вбок. Фильтры живут в состоянии страницы, а не в
+     localStorage, поэтому на телефоне журнал всегда открывается без них. */
   .j-tb-controls {
     display: flex;
     align-items: center;
-    gap: 6px;
-    flex: 1 0 100%;
-    overflow-x: auto;
-    scrollbar-width: none;
-    -webkit-overflow-scrolling: touch;
+    flex: 1 1 0;
+    min-width: 0;
   }
-  .j-tb-controls::-webkit-scrollbar { display: none; }
-  .j-tb-controls > * { flex-shrink: 0; }
-  /* Распорка между фильтрами и «День/Неделя» на телефоне только съедала бы
-     ширину листающейся строки. */
-  .j-tb-controls > div[style*="flex: 1"] { display: none; }
+  /* Ряды раскладывает order: дата, «Сегодня» и фильтры — сверху, отбивка
+     переносит строку, ниже «День / Неделя» и «Индивидуально». В DOM кнопка
+     индивидуальной записи стоит до отбивки (так её видит десктоп). */
+  .j-toolbar > .j-sep { order: 1; }
+  .j-tb-controls { order: 2; }
+  .j-toolbar > .j-resource-btn { order: 3; flex-grow: 0 !important; }
+
+  /* ── Календарь под кнопкой даты ─────────────────────────────────────────
+     Отдельная строка тулбара сразу под датой: сдвигает сетку вниз, а не
+     накрывает её — выбранный день виден в расписании, пока календарь открыт.
+     Иконку календаря в кнопке сменяет стрелка открыть/закрыть. */
+  .j-date-btn > svg:first-child { display: none; }
+  .j-date-caret { display: inline-flex; flex-shrink: 0; transition: transform 0.25s ease; transform: rotate(90deg); }
+  .j-date-caret svg { width: 14px; height: 14px; }
+  .j-date-caret.open { transform: rotate(-90deg); }
+  .j-cal-panel {
+    order: 1;
+    flex: 1 0 100%;
+    padding: 4px 2px 6px;
+    animation: jf-drop 0.24s cubic-bezier(0.32, 0.72, 0, 1);
+  }
+  .j-cal-panel .mc-header { margin-bottom: 8px !important; }
+  .j-cal-panel .mc-month { font-size: 15px; }
+  .j-cal-panel .mc-nav { width: 36px; height: 36px; border-radius: 10px; }
+  .j-cal-panel .mc-day-name { font-size: 11px; }
+  /* Квадратные ячейки на 390px дали бы 330px календаря — половину экрана. */
+  .j-cal-panel .mc-day { aspect-ratio: auto; height: 38px; font-size: 14px; border-radius: 10px; }
+  .j-cal-panel .mc-day.has-event::after { width: 4px; height: 4px; bottom: 3px; }
+  .j-view-mode,
+  .j-filter-pills,
+  .j-tb-controls > div[style*="flex: 1"] { display: none !important; }
 
   /* Кнопки тулбара ниже: 36px на четырёх контролах — это лишние 8px строки */
   .j-toolbar .btn-icon,
   .j-toolbar .btn-ghost-sm { height: 32px; }
-  .j-toolbar .view-toggle { height: 32px; }
+  .j-toolbar .view-toggle { height: 36px; width: 100%; }
+  /* Кнопки делят строку пополам; ползунок сдвигается процентами от своей
+     ширины (Toolbar.tsx), поэтому ему хватает той же половины. */
+  .j-toolbar .view-btn { flex: 1; width: auto; height: 28px; font-size: 13px; }
+  .j-toolbar .view-slider { width: calc(50% - 4px); }
 
   /* Дата и «Сегодня» делят первую строку и ужимаются: у кнопки даты ширина
      задана инлайном (clamp(132px…)), и вместе с «Сегодня» строка не сходилась —
@@ -1858,51 +1890,35 @@
      недельного вида и меняется раз в год, а иконка календаря со стрелкой
      читается без слова. Без них строка навигации встаёт в одну. */
   .j-date-year { display: none; }
-  .j-today-btn .j-today-label { display: none; }
-  .j-today-btn { padding: 0 9px !important; }
+  /* «Сегодня» — словом, без иконки: часы рядом с календарём читались как
+     «выбрать время». */
+  .j-today-btn svg { display: none; }
+  .j-today-btn { padding: 0 12px !important; flex-grow: 0 !important; }
 
-  .j-filter-pills { display: flex; gap: 4px; }
+  /* ── Сводка дня на телефоне не нужна ─────────────────────────────────────
+     Число занятий и записей по каждому тренеру уже стоит в шапке его колонки,
+     а общие цифры дня на телефоне смотрят на дашборде. Шаг сетки — инструмент
+     перетаскивания мышью. Полоса целиком отдаётся расписанию. */
+  .day-stats { display: none; }
 
-  /* ── Сводка дня: одна строка вместо трёх этажей ──────────────────────────
-     Столбик «число сверху, подпись снизу» на 320px переносил подпись на две
-     строки и раздувал полосу до 101px. Кладём число и подпись в строку —
-     смысл тот же, высота втрое меньше. */
-  .day-stats { padding: 7px 12px; }
-  /* «Шаг сетки» (1/2/5/15 мин) — инструмент точного перетаскивания мышью:
-     пальцем в минуту всё равно не целятся, а полоса из-за него была 256px
-     шириной и 80px высотой. Отмена/повтор рядом остаются.
-     !important — display: flex у обёртки задан инлайном. */
-  .day-stats > div:has(.premium-step-toggle) { display: none !important; }
-  /* Отмена/повтор — строка, а не столбик: общее телефонное правило переноса
-     в App.css ставит инлайновым flex-рядам flex-wrap: wrap, и две кнопки по
-     36px вставали друг под друга, задавая всей полосе высоту 80px. Здесь
-     перенос не нужен — полоса и так листается вбок.
-     !important обязателен: у общего правила четыре :not([style*=…]), а :not()
-     берёт специфичность своего аргумента — вместе это (0,5,0) против (0,1,1)
-     у селектора ниже. */
-  .day-stats > div { flex-wrap: nowrap !important; }
-  .ds-item {
-    flex-direction: row;
-    align-items: baseline;
-    gap: 4px;
-    padding: 0 10px;
-    white-space: nowrap;
-  }
-  .ds-val { font-size: 13px; }
-  .ds-key { font-size: 10px; margin-top: 0; }
-
-  /* ── Шапка колонки: 94px на аватар с должностью и статистикой ────────────
-     Должность и «2 занятий · 0 чел.» дублируют сводку дня строкой выше, а
-     занимают полсетки. Оставляем аватар и имя. */
+  /* ── Шапка колонки: только имя и число занятий ───────────────────────────
+     Аватар с инициалами повторяет имя рядом и отнимает ширину у узкой
+     колонки, должность одинакова у всех, число клиентов — лишняя цифра. */
   /* Высоту шапки Grid.tsx берёт из --j-header-h — задаём переменную, а не
      перебиваем инлайн через !important. */
   .j-root { --j-header-h: 52px; }
   .j-col-header { padding: 8px !important; }
-  .j-hdr-avatar { width: 28px !important; height: 28px !important; font-size: 10px !important; border-radius: 9px !important; }
-  .j-hdr-name { font-size: 12px !important; }
-  /* Убираем должность («тренер» под именем): она одинакова у всех колонок и
-     ничего не добавляет. Строка «2 занятий · 0 чел.» остаётся — это
-     единственная статистика по конкретному тренеру. */
+  /* !important — display у аватара и точки задан инлайном */
+  .j-hdr-avatar,
+  .j-hdr-dot,
+  .j-hdr-people { display: none !important; }
+  .j-hdr-name {
+    font-size: 12.5px !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .j-hdr-namewrap { min-width: 0; }
   .j-hdr-sub { display: none; }
 
   /* Каждый пиксель ширины — сетке: время слева и шапки колонок ужимаются.
@@ -1913,6 +1929,43 @@
   .j-time-cell { padding: 6px 7px 0 0; font-size: 10px; }
   .j-col-header { padding: 10px 8px; }
   .j-row-sep { min-width: var(--j-col-min, 124px); }
+
+  /* ── Неделя: все семь дней в ширину экрана, без листания вбок ────────────
+     Как в календаре телефона: сверху день недели, под ним число, сегодня —
+     в кружке. Статистика дня в колонку в 48px не помещается и уходит. */
+  .j-grid-week { --j-col-min: 0px; min-width: 100%; }
+  .j-grid-week .j-col-header { padding: 0 !important; }
+  .j-grid-week .j-hdr-stats { display: none !important; }
+  .j-grid-week .j-hdr-wday { font-size: 11px !important; letter-spacing: 0 !important; }
+  .j-grid-week .j-hdr-date {
+    width: 30px !important; height: 30px !important;
+    border-radius: 50% !important;
+    font-size: 15px !important;
+    margin-top: 2px !important;
+  }
+  /* Сжатая при прокрутке шапка складывала день и число в строку — в узкой
+     колонке «Пн 21» не помещается, оставляем столбиком. */
+  .j-hdr-compact .j-grid-week .j-hdr-weekwrap { flex-direction: column !important; gap: 0; }
+  /* Карточка занятия во всю колонку: из подписей помещается только название,
+     и оно переносится по строкам, как в календаре телефона. Заполненность и
+     время — в карточке по тапу. */
+  .j-grid-week { --j-card-gap: 3px; }
+  .j-grid-week .booking-card {
+    padding: 4px 3px;
+    border-radius: 7px;
+    border-width: 1.5px !important;
+    overflow: hidden;
+  }
+  .j-grid-week .booking-card .b-title {
+    font-size: 9.5px !important;
+    line-height: 1.15 !important;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    hyphens: auto;
+    margin-bottom: 0 !important;
+  }
+  .j-grid-week .booking-card .b-meta,
+  .j-grid-week .booking-card .b-progress { display: none; }
 
   /* Попап записи — шит снизу: карточка «рядом со слотом» на телефоне всё
      равно оказывается посреди экрана, а до её кнопок надо тянуться вверх. */
@@ -2029,7 +2082,75 @@
   .kp-trainer { height: 48px; }
   .kp-trainer-av { width: 30px; height: 30px; border-radius: 8px; font-size: 11px; }
   .kp-trainer-name { font-size: 13.5px; }
+
+  /* ── Фильтры (MobileFilters.tsx) ─────────────────────────────────────────
+     Панель выпадает из-под тулбара во всю ширину; в каждой группе один выбор —
+     «Все» или конкретный вариант. Длинные группы листаются вбок. */
+  .j-filter-btn { position: relative; flex-shrink: 0; }
+  /* Пока панель открыта, тулбар выше шапок сетки (8050) и колонки времени,
+     но ниже карточки занятия (10000). */
+  .j-toolbar:has(.jf-panel) { z-index: 9500; }
+  .j-filter-btn.active { color: var(--peach); border-color: var(--peach); }
+  .j-filter-dot {
+    position: absolute; top: 5px; right: 5px;
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--peach);
+    box-shadow: 0 0 0 2px var(--bg-card);
+  }
+  .jf-backdrop {
+    position: fixed; inset: 0;
+    background: rgba(26,26,26,0.25);
+    z-index: 1;
+    animation: jf-fade 0.2s ease;
+  }
+  .jf-panel {
+    position: absolute; top: 100%; left: 0; right: 0;
+    z-index: 2;
+    display: flex; flex-direction: column; gap: 14px;
+    padding: 16px 14px 18px;
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border);
+    border-radius: 0 0 18px 18px;
+    box-shadow: 0 16px 32px -8px rgba(26,26,26,0.16);
+    animation: jf-drop 0.24s cubic-bezier(0.32, 0.72, 0, 1);
+  }
+  .jf-group { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+  .jf-title {
+    font-size: 10.5px; font-weight: 800; letter-spacing: 0.6px;
+    text-transform: uppercase; color: var(--muted);
+  }
+  .jf-chips {
+    display: flex; gap: 6px;
+    overflow-x: auto; scrollbar-width: none;
+    margin: 0 -14px; padding: 0 14px;
+  }
+  .jf-chips::-webkit-scrollbar { display: none; }
+  .jf-chip {
+    flex-shrink: 0;
+    height: 36px; padding: 0 14px;
+    border: 1px solid var(--border); border-radius: 10px;
+    background: transparent;
+    font: 600 13px var(--font); color: var(--onyx);
+    white-space: nowrap; cursor: pointer;
+  }
+  .jf-chip.active {
+    background: var(--peach); border-color: var(--peach); color: #fff;
+  }
+  .jf-reset {
+    align-self: flex-start;
+    border: none; background: none; padding: 2px 0;
+    font: 700 13px var(--font); color: var(--peach); cursor: pointer;
+  }
 }
+/* Кнопка и панель фильтров — только телефонные: на десктопе фильтры в ряду чипов. */
+@media (min-width: 768px) {
+  .j-filter-btn, .jf-panel, .jf-backdrop, .j-cal-panel, .j-date-caret { display: none !important; }
+}
+@keyframes jf-drop {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes jf-fade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes popup-sheet-in {
   from { opacity: 0; transform: translateY(28px); }
   to   { opacity: 1; transform: translateY(0); }

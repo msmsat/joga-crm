@@ -6,7 +6,11 @@
     "day": "Dag",
     "week": "Vecka",
     "resourceBooking": "Individuellt",
-    "noHall": "Ej tilldelat"
+    "noHall": "Ej tilldelat",
+    "all": "Alla",
+    "services": "Tjänster",
+    "filters": "Filter",
+    "resetFilters": "Återställ filter"
   },
   "daySummary": {
     "classesToday": "pass i dag",

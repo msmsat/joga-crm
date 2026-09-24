@@ -6,7 +6,11 @@
     "day": "Giorno",
     "week": "Settimana",
     "resourceBooking": "Individuale",
-    "noHall": "Non assegnato"
+    "noHall": "Non assegnato",
+    "all": "Tutti",
+    "services": "Servizi",
+    "filters": "Filtri",
+    "resetFilters": "Azzera filtri"
   },
   "daySummary": {
     "classesToday": "lezioni oggi",

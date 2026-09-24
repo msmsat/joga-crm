@@ -6,7 +6,11 @@
     "day": "Gün",
     "week": "Hafta",
     "resourceBooking": "Bireysel",
-    "noHall": "Atanmamış"
+    "noHall": "Atanmamış",
+    "all": "Tümü",
+    "services": "Hizmetler",
+    "filters": "Filtreler",
+    "resetFilters": "Filtreleri sıfırla"
   },
   "daySummary": {
     "classesToday": "bugün ders",

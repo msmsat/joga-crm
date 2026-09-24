@@ -6,7 +6,11 @@
     "day": "Ditë",
     "week": "Javë",
     "resourceBooking": "Individuale",
-    "noHall": "Pa caktuar"
+    "noHall": "Pa caktuar",
+    "all": "Të gjitha",
+    "services": "Shërbimet",
+    "filters": "Filtrat",
+    "resetFilters": "Rivendos filtrat"
   },
   "daySummary": {
     "classesToday": "mësime sot",

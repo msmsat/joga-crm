@@ -6,7 +6,11 @@
     "day": "Zi",
     "week": "Săptămână",
     "resourceBooking": "Individual",
-    "noHall": "Neatribuit"
+    "noHall": "Neatribuit",
+    "all": "Toate",
+    "services": "Servicii",
+    "filters": "Filtre",
+    "resetFilters": "Resetează filtrele"
   },
   "daySummary": {
     "classesToday": "ședințe azi",

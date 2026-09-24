@@ -6,7 +6,11 @@
     "day": "Nap",
     "week": "Hét",
     "resourceBooking": "Egyéni",
-    "noHall": "Nincs hozzárendelve"
+    "noHall": "Nincs hozzárendelve",
+    "all": "Mind",
+    "services": "Szolgáltatások",
+    "filters": "Szűrők",
+    "resetFilters": "Szűrők törlése"
   },
   "daySummary": {
     "classesToday": "óra ma",

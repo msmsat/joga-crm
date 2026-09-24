@@ -6,7 +6,11 @@
     "day": "Den",
     "week": "Týden",
     "resourceBooking": "Individuálně",
-    "noHall": "Bez přiřazení"
+    "noHall": "Bez přiřazení",
+    "all": "Vše",
+    "services": "Služby",
+    "filters": "Filtry",
+    "resetFilters": "Zrušit filtry"
   },
   "daySummary": {
     "classesToday": "lekcí dnes",

@@ -6,7 +6,11 @@
     "day": "Day",
     "week": "Week",
     "resourceBooking": "Individual",
-    "noHall": "Unassigned"
+    "noHall": "Unassigned",
+    "all": "All",
+    "services": "Services",
+    "filters": "Filters",
+    "resetFilters": "Reset filters"
   },
   "daySummary": {
     "classesToday": "classes today",

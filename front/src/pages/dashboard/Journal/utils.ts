@@ -28,7 +28,10 @@ export interface BookingLayout {
 
 export function getBookingLayouts(bookings: Booking[]) {
   const layouts = new Map<number, BookingLayout>();
-  const RIGHT_SPACE = 28; // Отступ справа
+  // Отступ справа — место под клик «новое занятие» рядом с карточкой. CSS-
+  // переменная, а не число: в неделе на телефоне колонка шириной ~48px, и 28px
+  // съедали бы половину карточки (там --j-card-gap задаёт Journal.css).
+  const RIGHT_SPACE = 'var(--j-card-gap, 28px)';
 
   if (bookings.length === 0) return layouts;
 
@@ -105,19 +108,19 @@ export function getBookingLayouts(bookings: Booking[]) {
         isCascade = false;
         if (N === 1) {
           left = '0px';
-          width = `calc(100% - ${RIGHT_SPACE}px - ${trackIdx * 20}px)`;
+          width = `calc(100% - ${RIGHT_SPACE} - ${trackIdx * 20}px)`;
         } else {
-          left = `calc(((100% - ${RIGHT_SPACE}px) / ${N}) * ${trackIdx})`;
-          width = `calc((100% - ${RIGHT_SPACE}px) / ${N} - 2px)`;
+          left = `calc(((100% - ${RIGHT_SPACE}) / ${N}) * ${trackIdx})`;
+          width = `calc((100% - ${RIGHT_SPACE}) / ${N} - 2px)`;
         }
       } 
       else {
         isCascade = true;
         const MIN_CARD_WIDTH = 40;
-        const dynamicStep = `min(44px, (100% - ${RIGHT_SPACE + MIN_CARD_WIDTH}px) / ${N - 1})`;
+        const dynamicStep = `min(44px, (100% - ${RIGHT_SPACE} - ${MIN_CARD_WIDTH}px) / ${N - 1})`;
         
         left = `calc(${dynamicStep} * ${trackIdx})`;
-        width = `calc(100% - ${RIGHT_SPACE}px - (${dynamicStep} * ${trackIdx}))`;
+        width = `calc(100% - ${RIGHT_SPACE} - (${dynamicStep} * ${trackIdx}))`;
       }
 
       // База 500: слагаемое -timeStart*10 не должно увести z-index в минус,

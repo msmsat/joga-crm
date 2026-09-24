@@ -6,7 +6,11 @@
     "day": "Dag",
     "week": "Uge",
     "resourceBooking": "Individuelt",
-    "noHall": "Ikke tildelt"
+    "noHall": "Ikke tildelt",
+    "all": "Alle",
+    "services": "Ydelser",
+    "filters": "Filtre",
+    "resetFilters": "Nulstil filtre"
   },
   "daySummary": {
     "classesToday": "hold i dag",
