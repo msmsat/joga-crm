@@ -243,8 +243,18 @@ def main():
     args = parser.parse_args()
     args.password = None
     if args.set_password and args.apply:
-        from schemas.auth.requests import validate_strong_password
         args.password = input('Пароль для нового аккаунта сотрудника: ').strip()
+    # A half-erased Cyrillic letter (wrong layout + Backspace) is invisible on screen but
+    # reaches Python as a lone surrogate; catch it before anything is written.
+    for label, value in (('--name', args.name), ('--last-name', args.last_name), ('--email', args.email),
+                         ('--owner-email', args.owner_email), ('пароль', args.password)):
+        try:
+            (value or '').encode('utf-8')
+        except UnicodeEncodeError:
+            parser.error(f'{label}: в значении невидимые битые символы (переключали раскладку?). '
+                         'Наберите заново. Ничего не записано.')
+    if args.password is not None:
+        from schemas.auth.requests import validate_strong_password
         try:
             validate_strong_password(args.password)
         except ValueError as error:
