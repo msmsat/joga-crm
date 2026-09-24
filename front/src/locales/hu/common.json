@@ -102,6 +102,7 @@
     "500": "Szerverhiba, próbálja később",
     "network": "Nincs kapcsolat a szerverrel",
     "unknown": "Valami hiba történt",
+    "NO_FUNDING": "Az ügyfélnek nincs bérlete vagy fizetése erre a szolgáltatásra",
     "loadFailed": "A betöltés nem sikerült",
     "retry": "Újra",
     "invalid_bot_token": "A Telegram elutasította ezt a tokent — ellenőrizze, hogy létezik-e a bot",
@@ -235,9 +236,12 @@
     "range": "{{from}}–{{to}}"
   },
   "servicePrice": {
-    "hint": "Koppintson az összegre saját ár megadásához",
+    "hint": "Koppintson az összegre vagy az időre a saját érték megadásához",
     "custom": "Saját ár. Ürítse a mezőt a Katalógus árának visszaállításához",
     "inherited": "Ár a Katalógusból",
-    "aria": "{{service}} ára"
+    "aria": "{{service}} ára",
+    "durationCustom": "Saját időtartam. Ürítse ki a mezőt a Katalógus időtartamához",
+    "durationInherited": "Időtartam a Katalógusból",
+    "durationAria": "{{service}} időtartama, perc"
   }
 }

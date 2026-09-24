@@ -102,6 +102,7 @@
     "500": "Eroare de server, încercați mai târziu",
     "network": "Nu există conexiune la server",
     "unknown": "Ceva nu a mers bine",
+    "NO_FUNDING": "Clientul nu are abonament sau plată pentru acest serviciu",
     "loadFailed": "Încărcarea a eșuat",
     "retry": "Reîncearcă",
     "invalid_bot_token": "Telegram a respins acest token — verificați dacă botul există",
@@ -235,9 +236,12 @@
     "range": "de la {{from}} la {{to}}"
   },
   "servicePrice": {
-    "hint": "Atinge suma pentru a seta propriul preț",
+    "hint": "Atingeți suma sau durata pentru a seta propriile valori",
     "custom": "Preț propriu. Golește câmpul pentru a reveni la prețul din Catalog",
     "inherited": "Preț din Catalog",
-    "aria": "Prețul serviciului {{service}}"
+    "aria": "Prețul serviciului {{service}}",
+    "durationCustom": "Durată proprie. Goliți câmpul pentru a reveni la durata din Catalog",
+    "durationInherited": "Durată din Catalog",
+    "durationAria": "Durata {{service}}, minute"
   }
 }

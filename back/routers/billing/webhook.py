@@ -1160,6 +1160,26 @@ async def reconcile_subscriptions(db: AsyncSession) -> int:
         before = (plan.status, plan.expires_at, plan.auto_renewal)
         try:
             subscription = await stripe_billing.fetch_subscription(plan.stripe_subscription_id)
+        except stripe.InvalidRequestError as exc:
+            if exc.code != "resource_missing":
+                logger.exception(
+                    "Автосверка: подписку %s студии %s перечитать не удалось",
+                    plan.stripe_subscription_id, plan.studio_id,
+                )
+                continue
+            # Ссылка в никуда: `sub_…` из другого режима Stripe (смена test↔live)
+            # или удалённый объект. Оставить её — значит повторять ту же ошибку
+            # каждым проходом навсегда. Снимаем тем же правилом, что
+            # checkout._forget_dead_subscription: статус и срок не трогаем, доступ
+            # закрывать из-за пропавшего объекта Stripe мы не вправе — он истечёт
+            # по `expires_at` сам, а следующая оплата оформит подписку заново.
+            logger.warning(
+                "Автосверка: подписки %s студии %s под текущим ключом Stripe нет — ссылку снимаем",
+                plan.stripe_subscription_id, plan.studio_id,
+            )
+            plan.stripe_subscription_id = None
+            fixed += 1
+            continue
         except Exception:
             logger.exception(
                 "Автосверка: подписку %s студии %s перечитать не удалось",

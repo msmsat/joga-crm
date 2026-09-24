@@ -95,6 +95,7 @@ class CheckoutServiceMasterOut(BaseSchema):
     user_id: int
     name: str
     price: int
+    duration_min: int = 0
 
 
 class CheckoutServiceOut(BaseSchema):
@@ -109,3 +110,6 @@ class CheckoutServiceOut(BaseSchema):
     price_max: int = 0
     masters: list[CheckoutServiceMasterOut] = []
     duration_min: int
+    # Длительность «от–до» по мастерам — то же правило, что у цены.
+    duration_from: int = 0
+    duration_to: int = 0

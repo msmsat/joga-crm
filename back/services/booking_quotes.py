@@ -23,6 +23,26 @@ class Actor:
         return booking.Actor.STAFF if self.actor_user_id is not None else booking.Actor.CLIENT
 
 
+def funding_rule(actor: "Actor", payment_method: str, booking_mode: str) -> bool | None:
+    """Чем эта запись считает бронь без абонемента (см. booking._check).
+
+    Одно правило на quote и confirm: разойдись они — условия показали бы
+    «оплата на месте», а подтверждение отказало бы «нет абонемента».
+
+    * карта — покрытие не нужно: платёж и есть покрытие;
+    * индивидуальную услугу записывает СОТРУДНИК — тоже не нужно: «Предоплата
+      при записи» — правило самостоятельной записи клиента, а стойка записывает
+      как веб-виджет, с оплатой на месте (долг клиента, open_debt). Иначе
+      администратор не мог записать ни одного клиента без абонемента;
+    * остальное (клиент в мини-приложении) — по настройке студии.
+    """
+    if payment_method == "card":
+        return False
+    if actor.domain is booking.Actor.STAFF and booking_mode == "resource":
+        return False
+    return None
+
+
 def reject(code: str, status: int = 409, **params):
     from fastapi import HTTPException
     raise HTTPException(status_code=status, detail={
@@ -93,7 +113,7 @@ async def calculate(db, actor: Actor, request, *, now=None, hall_id=None,
             reject("MODE_DISABLED")
         quoted = await booking.quote(db, studio_id=actor.studio_id, client_id=actor.client_id,
             lesson_id=request.lesson_id, actor=actor.domain, now=moment,
-            require_funding=False if request.payment_method == "card" else None)
+            require_funding=funding_rule(actor, request.payment_method, "event"))
         if quoted.outcome is not booking.Outcome.OK:
             reject(quoted.outcome.value.upper(), 402 if quoted.outcome is booking.Outcome.NO_FUNDING else 409)
         lesson = await db.get(Lesson, request.lesson_id, populate_existing=True)
@@ -122,15 +142,19 @@ async def calculate(db, actor: Actor, request, *, now=None, hall_id=None,
     # мастеров, достаётся тому же, кого выбрала строка выше, — цена обязана
     # ехать за ним, иначе списанное разойдётся с тем, кто работает.
     price = await service_pricing.price_for(db, data.service, teacher)
+    # Длительность — тоже этого мастера, и из того же снимка, по которому
+    # найден слот: запись обязана занять ровно то окно, которое было свободно.
+    duration = data.durations.get(teacher, data.service.duration_min)
     candidate = SimpleNamespace(id=0, start_time=slot.local_start, service_id=data.service.id,
         teacher_id=teacher, branch_id=request.branch_id, hall_id=hall_id,
         booking_mode="resource", tz_iana=slot.tz_iana, version=1, price=price,
-        duration_min=data.service.duration_min, buffer_before_min=data.service.buffer_before_min,
+        duration_min=duration, buffer_before_min=data.service.buffer_before_min,
         buffer_after_min=data.service.buffer_after_min)
     funding = preserved_funding
     if funding is None:
         funding, _, _ = await booking.resolve_funding(db, studio=studio, client_id=actor.client_id,
-            lesson=candidate, rules=rules, require_funding=False if request.payment_method == "card" else None)
+            lesson=candidate, rules=rules,
+            require_funding=funding_rule(actor, request.payment_method, "resource"))
     if funding is None:
         reject("NO_FUNDING", 402)
     member = (await db.execute(select(StudioMember).where(StudioMember.studio_id == actor.studio_id,

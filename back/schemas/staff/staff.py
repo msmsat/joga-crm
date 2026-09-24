@@ -48,6 +48,10 @@ class StaffServiceItem(BaseSchema):
     # Цену выставили руками. Интерфейс обязан отличать её от унаследованной:
     # унаследованная поедет за правкой Каталога, своя — нет.
     price_custom: bool = False
+    # Длительность — по тем же трём полям, что и цена.
+    base_duration_min: int = 0
+    duration_min: int = 0
+    duration_custom: bool = False
 
 
 class StaffWorkingHoursItem(BaseSchema):

@@ -11,6 +11,7 @@ from models import (BranchWorkingHours, Hall, Lesson, Service, StaffBranchAssign
 from models.base import user_services
 from schemas.schedule import hybrid
 from services.booking_rules import load_rules
+from services import service_pricing
 from services.members import is_specialist_clause
 from services.resource_slots import Availability, AvailabilityData, by_staff, generate
 
@@ -111,7 +112,8 @@ async def load(db, *, studio_id: int, service_id: int, branch_id: int,
     if teacher_id is not None:
         staff_query = staff_query.where(StudioMember.user_id == teacher_id)
     teachers = list((await db.execute(staff_query.distinct())).scalars().all())
-    data = AvailabilityData(studio, service, await load_rules(db, studio_id), teachers, hall_id=hall_id)
+    data = AvailabilityData(studio, service, await load_rules(db, studio_id), teachers, hall_id=hall_id,
+                            durations=await service_pricing.durations_of_teachers(db, service, teachers))
     # The number of SELECTs is independent of both slot count and staff count.
     queries = {
         "studio_hours": select(StudioWorkingHours).where(StudioWorkingHours.studio_id == studio_id),
@@ -211,6 +213,8 @@ class ResourceStaffMember:
     # ценой каждого мастера отдельно значило бы вернуть на этот экран тот самый
     # N+1, от которого он избавлен по построению.
     service_prices: dict[int, int]
+    # {service_id: сколько минут услуга длится У ЭТОГО мастера} — из той же строки.
+    service_durations: dict[int, int]
 
 
 @dataclass(frozen=True)
@@ -243,7 +247,8 @@ async def resource_staff(db, *, studio_id: int, branch_ids: list[int] | None = N
     # Условия «услуга доступна для записи» — те же, что в `_resource_service`,
     # только в SQL: NULL у service_type — не группа.
     query = _eligible_staff(select(StudioMember, Service.id, StaffBranchAssignment.branch_id,
-        Service.price, user_services.c.price).join(user_services,
+        Service.price, user_services.c.price, Service.duration_min,
+        user_services.c.duration_min).join(user_services,
         user_services.c.user_id == StudioMember.user_id).join(Service,
         Service.id == user_services.c.service_id).where(
         Service.studio_id == studio_id, Service.booking_mode == "resource", Service.is_bookable.is_(True),
@@ -260,20 +265,22 @@ async def resource_staff(db, *, studio_id: int, branch_ids: list[int] | None = N
     ).execution_options(populate_existing=True))).all()
 
     # Мастер из двух филиалов даёт каждую услугу дважды — в карточке она одна.
-    grouped: dict[int, tuple[object, list[int], list[int], dict[int, int]]] = {}
-    for member, own_service, branch, base_price, own_price in rows:
-        _, own_services, own_branches, own_prices = grouped.setdefault(
-            member.user_id, (member, [], [], {}))
+    grouped: dict[int, tuple[object, list[int], list[int], dict[int, int], dict[int, int]]] = {}
+    for member, own_service, branch, base_price, own_price, base_minutes, own_minutes in rows:
+        _, own_services, own_branches, own_prices, own_durations = grouped.setdefault(
+            member.user_id, (member, [], [], {}, {}))
         if own_service not in own_services:
             own_services.append(own_service)
         # NULL в связи значит «как у услуги» — разворачиваем в число прямо
         # здесь, чтобы клиенту уехала цена, а не правило её вычисления.
         own_prices[own_service] = base_price if own_price is None else int(own_price)
+        own_durations[own_service] = base_minutes if own_minutes is None else int(own_minutes)
         if branch not in own_branches:
             own_branches.append(branch)
     staff = [ResourceStaffMember(
         teacher_id=member.user_id, name=member.name, last_name=member.last_name,
         photo_url=member.photo_url, department=member.department, service_ids=own_services,
-        branch_ids=sorted(own_branches), service_prices=own_prices)
-        for member, own_services, own_branches, own_prices in grouped.values()]
+        branch_ids=sorted(own_branches), service_prices=own_prices,
+        service_durations=own_durations)
+        for member, own_services, own_branches, own_prices, own_durations in grouped.values()]
     return ResourceStaff(staff, None if staff else "no_eligible_staff")

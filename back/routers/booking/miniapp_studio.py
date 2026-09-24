@@ -94,6 +94,11 @@ class ServiceInfo(BaseSchema):
     price_min_str: str = ""
     price_max_str: str = ""
     duration_min: int
+    # Сколько услуга длится, ПОКА МАСТЕР НЕ ВЫБРАН: у разных мастеров время
+    # своё (services/service_pricing.duration_ranges). Совпали — витрина пишет
+    # одно число, разошлись — «duration_from–duration_to мин».
+    duration_from: int = 0
+    duration_to: int = 0
     color: Optional[str]
     # HB-03/04: механика записи услуги — MA-01 использует её, чтобы в hybrid-
     # студии разделить предложения на event/resource, а не по service_type
@@ -172,6 +177,7 @@ def _span(spans: dict, service) -> "service_pricing.PriceRange":
 def _service_info(
     service, span: "service_pricing.PriceRange", currency: str,
     parts: list[str] = (), full_price: Optional[int] = None,
+    minutes: "service_pricing.DurationRange | None" = None,
 ) -> "ServiceInfo":
     """Услуга витрины вместе с её ценой и диапазоном.
 
@@ -190,6 +196,8 @@ def _service_info(
         price_min_str=_fmt_amount(span.min, currency),
         price_max_str=_fmt_amount(span.max, currency),
         duration_min=service.duration_min,
+        duration_from=minutes.min if minutes else service.duration_min,
+        duration_to=minutes.max if minutes else service.duration_min,
         color=service.color,
         booking_mode=service.booking_mode,
         service_type=service.service_type,
@@ -347,6 +355,7 @@ async def get_studio_catalog(
     # Один запрос на весь каталог витрины, а не по запросу на услугу
     # (CLAUDE.md §5, правило 2): это первая ручка, которую зовёт мини-приложение.
     spans = await service_pricing.price_ranges(db, studio_id, [s.id for s in services])
+    minutes = await service_pricing.duration_ranges(db, studio_id, [s.id for s in services])
     # Состав комплексов — тоже одним запросом на всю витрину.
     compositions = await service_bundles.compositions(db, studio_id)
     names = {s.id: s.name for s in services}
@@ -412,6 +421,7 @@ async def get_studio_catalog(
                     service_bundles.full_price(compositions[service.id], spans, _span(spans, service))
                     if service.id in compositions else None
                 ),
+                minutes=minutes.get(service.id),
             )
             for service in services
         ],

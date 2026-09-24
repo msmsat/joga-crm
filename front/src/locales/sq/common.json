@@ -102,6 +102,7 @@
     "500": "Gabim serveri, provoni më vonë",
     "network": "Nuk ka lidhje me serverin",
     "unknown": "Diçka shkoi keq",
+    "NO_FUNDING": "Klienti nuk ka abonim ose pagesë për këtë shërbim",
     "loadFailed": "Ngarkimi dështoi",
     "retry": "Provo sërish",
     "invalid_bot_token": "Telegram e refuzoi këtë token — sigurohuni që boti ekziston",
@@ -235,9 +236,12 @@
     "range": "nga {{from}} deri {{to}}"
   },
   "servicePrice": {
-    "hint": "Prekni shumën për të vendosur çmimin tuaj",
+    "hint": "Prekni shumën ose kohën për të vendosur tuajën",
     "custom": "Çmim i vetë. Pastroni fushën për t’u kthyer te çmimi i Katalogut",
     "inherited": "Çmimi i Katalogut",
-    "aria": "Çmimi i shërbimit {{service}}"
+    "aria": "Çmimi i shërbimit {{service}}",
+    "durationCustom": "Kohëzgjatje e vetë. Pastroni fushën për t'u kthyer te kohëzgjatja e Katalogut",
+    "durationInherited": "Kohëzgjatja nga Katalogu",
+    "durationAria": "Kohëzgjatja e {{service}}, minuta"
   }
 }

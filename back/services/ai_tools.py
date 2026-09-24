@@ -850,12 +850,15 @@ class StaffArgs(BaseModel):
 
 
 class StaffServicePriceArg(BaseModel):
-    """Цена ОДНОЙ услуги у этого сотрудника."""
+    """Цена и длительность ОДНОЙ услуги у этого сотрудника."""
     service_id: int
     price: Optional[int] = Field(
         None, ge=0, le=MAX_STAFF_SERVICE_PRICE,
         description="Сколько стоит эта услуга у сотрудника. null — как в Каталоге. "
                     "0 — законная цена «бесплатно», а не «убрать цену»")
+    duration_min: Optional[int] = Field(
+        None, ge=1, le=1440,
+        description="Сколько минут эта услуга длится у сотрудника. null — как в Каталоге")
 
 
 class CreateStaffArgs(BaseModel):
@@ -886,8 +889,8 @@ class CreateStaffArgs(BaseModel):
                           "fixed — за занятие. «300 крон в час» -> rate=300, rate_type=hourly")
     service_ids: Optional[list[int]] = None
     service_prices: Optional[list[StaffServicePriceArg]] = Field(
-        None, description="Индивидуальные цены услуг этого сотрудника. Только для услуг "
-                          "из service_ids. Не указано — все услуги по цене Каталога")
+        None, description="Индивидуальные цены и длительности услуг этого сотрудника. "
+                          "Только для услуг из service_ids. Не указано — всё как в Каталоге")
 
 
 class UpdateStaffArgs(BaseModel):
@@ -899,9 +902,9 @@ class UpdateStaffArgs(BaseModel):
     rate_type: Optional[Literal["fixed", "percent", "hourly"]] = None
     service_ids: Optional[list[int]] = None
     service_prices: Optional[list[StaffServicePriceArg]] = Field(
-        None, description="Индивидуальные цены услуг сотрудника. Прислать нужно ВЕСЬ набор "
-                          "его особых цен, а не одну изменённую: чего в списке нет, то "
-                          "возвращается к цене Каталога")
+        None, description="Индивидуальные цены и длительности услуг сотрудника. Прислать "
+                          "нужно ВЕСЬ набор его особых цен и длительностей, а не одну "
+                          "изменённую: чего в списке нет, то возвращается к Каталогу")
 
 
 class WorkDay(BaseModel):
@@ -1769,14 +1772,40 @@ async def _teacher_price(service: dict, teacher_id: object, db: AsyncSession) ->
     которого встанет занятие. Прочее не число — цену не подставляем вовсе:
     роутер посчитает её сам, когда аргументы пройдут проверку.
     """
-    if teacher_id is None:
+    teacher = _teacher_arg(teacher_id)
+    if teacher is None:
         return service.get("price")
-    if isinstance(teacher_id, str) and teacher_id.strip().isdigit():
-        teacher_id = int(teacher_id)
-    if not isinstance(teacher_id, int) or isinstance(teacher_id, bool):
+    if teacher is False:
         return None
     row = await db.get(Service, service["id"])
-    return None if row is None else await service_pricing.price_for(db, row, teacher_id)
+    return None if row is None else await service_pricing.price_for(db, row, teacher)
+
+
+def _teacher_arg(teacher_id: object) -> int | None | bool:
+    """`teacher_id` из непроверенных аргументов модели → число, None или False (не число)."""
+    if teacher_id is None:
+        return None
+    if isinstance(teacher_id, str) and teacher_id.strip().isdigit():
+        return int(teacher_id)
+    if not isinstance(teacher_id, int) or isinstance(teacher_id, bool):
+        return False
+    return teacher_id
+
+
+async def _teacher_duration(service: dict, teacher_id: object, db: AsyncSession) -> int | None:
+    """Сколько услуга длится у названного тренера — правилом service_pricing.
+
+    По той же причине, что `_teacher_price`: у мастера своё время на услугу,
+    и занятие Анны не должно вставать каталожным часом, если её стрижка — 45
+    минут. Тренер не назван — длительность Каталога; не число — не подставляем.
+    """
+    teacher = _teacher_arg(teacher_id)
+    if teacher is None:
+        return service.get("duration_min")
+    if teacher is False:
+        return None
+    row = await db.get(Service, service["id"])
+    return None if row is None else await service_pricing.duration_for(db, row, teacher)
 
 
 async def _lesson_defaults(args: dict, ctx: StudioContext, db: AsyncSession) -> dict:
@@ -1794,7 +1823,7 @@ async def _lesson_defaults(args: dict, ctx: StudioContext, db: AsyncSession) -> 
     )
     if service:
         from_service = {
-            "duration_min": service.get("duration_min"),
+            "duration_min": await _teacher_duration(service, args.get("teacher_id"), db),
             "price": await _teacher_price(service, args.get("teacher_id"), db),
             "total_spots": service.get("max_clients"),
         }
@@ -2731,7 +2760,8 @@ async def create_staff(ctx: StudioContext, db: AsyncSession, args: CreateStaffAr
             salary=args.salary, rate=args.rate, rate_type=args.rate_type,
             service_ids=args.service_ids or [],
             service_prices=[
-                StaffServicePrice(service_id=p.service_id, price=p.price)
+                StaffServicePrice(service_id=p.service_id, price=p.price,
+                                  duration_min=p.duration_min)
                 for p in (args.service_prices or [])
             ],
         ),
@@ -2767,8 +2797,12 @@ async def _staff_update_body(staff_id: int, ctx: StudioContext, db: AsyncSession
         # Свои цены несём в теле всегда. Иначе правка одной только ставки
         # приходила бы без них, роутер прочитал бы это как «снять все» и молча
         # вернул услуги мастера к прайсу Каталога.
+        # Свои длительности — в той же строке и по той же причине.
         "service_prices": [
-            {"service_id": s.id, "price": s.price} for s in profile.services if s.price_custom
+            {"service_id": s.id,
+             "price": s.price if s.price_custom else None,
+             "duration_min": s.duration_min if s.duration_custom else None}
+            for s in profile.services if s.price_custom or s.duration_custom
         ],
         "schedule": [h.model_dump() for h in profile.week_working_hours],
     }
@@ -2785,9 +2819,10 @@ async def update_staff(ctx: StudioContext, db: AsyncSession, args: UpdateStaffAr
     то, что меняется, — остальное останется как было. Роль владельца этим
     инструментом не меняется.
 
-    service_prices — индивидуальные цены услуг («у Анны стрижка стоит 700»).
-    Цена назначается только услуге из service_ids. Присылать нужно ВЕСЬ набор
-    особых цен сотрудника: услуги, которой в списке нет, вернётся цена Каталога.
+    service_prices — индивидуальные цены и длительности услуг («у Анны стрижка
+    стоит 700 и длится 45 минут»: price и duration_min одной строки). Назначаются
+    только услуге из service_ids. Присылать нужно ВЕСЬ набор особых значений
+    сотрудника: услуге, которой в списке нет, вернутся цена и время Каталога.
     Чтобы снять надбавку с одной услуги, пришли остальные без неё."""
     body = await _staff_update_body(args.staff_id, ctx, db)
     for field in ("department", "salary", "rate", "rate_type"):
@@ -2801,7 +2836,8 @@ async def update_staff(ctx: StudioContext, db: AsyncSession, args: UpdateStaffAr
         # это отказ роутера, и человек его увидит. Отбросить такую цену молча
         # значило бы ответить «готово» на непрожитое действие.
         body["service_prices"] = [
-            {"service_id": p.service_id, "price": p.price} for p in args.service_prices
+            {"service_id": p.service_id, "price": p.price, "duration_min": p.duration_min}
+            for p in args.service_prices
         ]
     else:
         # А вот унаследованные из профиля цены отсечь обязаны: у мастера могли

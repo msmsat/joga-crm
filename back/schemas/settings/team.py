@@ -14,13 +14,18 @@ MAX_STAFF_SERVICE_PRICE = 1_000_000_000
 
 
 class StaffServicePrice(BaseSchema):
-    """Индивидуальная цена одной услуги у сотрудника.
+    """Индивидуальные цена и длительность одной услуги у сотрудника.
 
     `price=None` — «как у услуги»: цена продолжит ездить за правкой Каталога.
     Ноль — законная цена (бесплатно у стажёра), и путать её со снятием нельзя.
+
+    `duration_min=None` — «как у услуги», по тому же правилу. Ноль здесь НЕ
+    законен: услуга без длительности не занимает времени мастера. Потолок —
+    сутки, как у самой услуги.
     """
     service_id: int
     price: Optional[int] = Field(default=None, ge=0, le=MAX_STAFF_SERVICE_PRICE)
+    duration_min: Optional[int] = Field(default=None, ge=1, le=1440)
 
 
 class StaffCreate(BaseSchema):

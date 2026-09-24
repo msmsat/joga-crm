@@ -44,6 +44,9 @@ export interface Service {
   category: string;
   type: ServiceType;
   duration_min: number;
+  // Длительность с поправкой на мастера — «от–до», как у цены (решил сервер).
+  duration_from: number;
+  duration_to: number;
   price: number;
   // Во что услуга обходится клиенту с поправкой на мастера: у разных мастеров
   // она своя. Совпали — Каталог пишет одну сумму, разошлись — «от–до».

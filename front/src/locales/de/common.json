@@ -102,6 +102,7 @@
     "500": "Serverfehler, versuchen Sie es später erneut",
     "network": "Keine Verbindung zum Server",
     "unknown": "Etwas ist schiefgelaufen",
+    "NO_FUNDING": "Der Kunde hat für diese Leistung kein Abo und keine Zahlung",
     "loadFailed": "Laden fehlgeschlagen",
     "retry": "Erneut versuchen",
     "invalid_bot_token": "Telegram hat dieses Token abgelehnt — prüfen Sie, ob der Bot existiert",
@@ -235,9 +236,12 @@
     "range": "von {{from}} bis {{to}}"
   },
   "servicePrice": {
-    "hint": "Auf den Betrag tippen, um einen eigenen Preis zu setzen",
+    "hint": "Auf Betrag oder Zeit tippen, um einen eigenen Wert zu setzen",
     "custom": "Eigener Preis. Feld leeren, um zum Preis aus dem Katalog zurückzukehren",
     "inherited": "Preis aus dem Katalog",
-    "aria": "Preis für {{service}}"
+    "aria": "Preis für {{service}}",
+    "durationCustom": "Eigene Dauer. Feld leeren, um zur Dauer aus dem Katalog zurückzukehren",
+    "durationInherited": "Dauer aus dem Katalog",
+    "durationAria": "Dauer von {{service}}, Minuten"
   }
 }

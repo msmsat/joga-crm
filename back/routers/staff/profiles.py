@@ -98,6 +98,11 @@ def _price_map(
     return {p.service_id: p.price for p in service_prices}
 
 
+def _duration_map(service_prices: list[StaffServicePrice]) -> dict[int, Optional[int]]:
+    """Свои длительности из того же списка. Проверку по услугам уже сделал `_price_map`."""
+    return {p.service_id: p.duration_min for p in service_prices}
+
+
 def _apply_studio_services(user: User, studio_id: int, services: list[Service]) -> None:
     """Услуги ЭТОЙ студии заменяем, чужие оставляем нетронутыми.
 
@@ -336,6 +341,7 @@ async def get_staff_profile(
         .where(User.id == staff_id, Service.studio_id == studio_id)
     )
     own_prices = await service_pricing.prices_of_staff(db, staff_id, studio_id)
+    own_durations = await service_pricing.durations_of_staff(db, staff_id, studio_id)
     services = [
         {
             "id": s.id,
@@ -346,6 +352,12 @@ async def get_staff_profile(
             "base_price": s.price,
             "price": own_prices[s.id].price if s.id in own_prices else s.price,
             "price_custom": s.id in own_prices and own_prices[s.id].custom,
+            # То же для времени: base_duration_min — из Каталога,
+            # duration_min — сколько услуга длится у этого мастера.
+            "base_duration_min": s.duration_min,
+            "duration_min": (own_durations[s.id].duration_min
+                             if s.id in own_durations else s.duration_min),
+            "duration_custom": s.id in own_durations and own_durations[s.id].custom,
         }
         for s in services_result.scalars().all()
     ]
@@ -591,7 +603,8 @@ async def create_staff(
     # неё нет, — поэтому связи сперва обязаны доехать до базы.
     await db.flush()
     await service_pricing.apply_staff_prices(
-        db, user.id, studio_id, _price_map(data.service_prices, data.service_ids))
+        db, user.id, studio_id, _price_map(data.service_prices, data.service_ids),
+        _duration_map(data.service_prices))
     await db.commit()
     await db.refresh(user)
     await db.refresh(membership)
@@ -707,7 +720,8 @@ async def update_staff(
         # клиенты и ассистент, когда речь вообще не о деньгах). Пришло пустым —
         # владелец снял все надбавки, и это осознанное действие.
         await service_pricing.apply_staff_prices(
-            db, user.id, studio_id, _price_map(data.service_prices, data.service_ids))
+            db, user.id, studio_id, _price_map(data.service_prices, data.service_ids),
+            _duration_map(data.service_prices))
     conflicts = await schedule_guard.assert_future_assignments_valid(db, studio, user_id=user.id)
     schedule_guard.raise_if_conflicts(conflicts)
     await db.commit()

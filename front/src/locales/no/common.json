@@ -102,6 +102,7 @@
     "500": "Serverfeil, prøv igjen senere",
     "network": "Ingen forbindelse til serveren",
     "unknown": "Noe gikk galt",
+    "NO_FUNDING": "Kunden har verken klippekort eller betaling for denne tjenesten",
     "loadFailed": "Kunne ikke laste",
     "retry": "Prøv igjen",
     "invalid_bot_token": "Telegram avviste dette tokenet — sjekk at boten finnes",
@@ -235,9 +236,12 @@
     "range": "fra {{from}} til {{to}}"
   },
   "servicePrice": {
-    "hint": "Trykk på beløpet for å angi din egen pris",
+    "hint": "Trykk på beløpet eller tiden for å angi din egen",
     "custom": "Egen pris. Tøm feltet for å gå tilbake til prisen fra Katalog",
     "inherited": "Pris fra Katalog",
-    "aria": "Pris for {{service}}"
+    "aria": "Pris for {{service}}",
+    "durationCustom": "Egen varighet. Tøm feltet for å gå tilbake til Katalogens varighet",
+    "durationInherited": "Varighet fra Katalogen",
+    "durationAria": "Varighet for {{service}}, minutter"
   }
 }

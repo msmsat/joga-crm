@@ -1,5 +1,5 @@
 import { client } from '../client';
-import type { AvailabilityQuery, AvailabilityRead, BookingRead, QuoteRead, QuoteRequest, ResourceQuoteRequest } from './hybrid.types';
+import type { AvailabilityQuery, AvailabilityRead, BookingRead, QuoteRead, QuoteRequest, ResourceQuoteRequest, ResourceStaffRead } from './hybrid.types';
 
 const base = '/schedule';
 export const hybridApi = {
@@ -8,6 +8,7 @@ export const hybridApi = {
     Object.entries(query).forEach(([key, value]) => { if (value != null) params.set(key, String(value)); });
     return client.get(`${base}/availability?${params}`);
   },
+  resourceStaff: () => client.get<ResourceStaffRead>(`${base}/resource-staff`),
   quote: (body: QuoteRequest & { client_id: number; hall_id?: number | null }) => client.post<QuoteRead>(`${base}/booking-quotes`, body),
   readQuote: (id: string) => client.get<QuoteRead | BookingRead>(`${base}/booking-quotes/${encodeURIComponent(id)}`),
   confirm: (quote_id: string) => client.post<BookingRead>(`${base}/bookings`, { quote_id }),

@@ -21,6 +21,8 @@ function toUiService(s: ServiceRead): Service {
     category: s.category ?? 'other',
     type: s.service_type === 'individual' ? 'individual' : 'group',
     duration_min: s.duration_min,
+    duration_from: s.duration_from ?? s.duration_min,
+    duration_to: s.duration_to ?? s.duration_min,
     price: s.price,
     // ?? s.price — на случай ответа старого сервера: без этого Каталог
     // написал бы «0» вместо цены услуги.

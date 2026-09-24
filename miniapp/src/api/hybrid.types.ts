@@ -50,6 +50,9 @@ export interface ResourceStaffMember {
    *  живёт ровно до этого момента. Пара «число + готовая строка» — как у
    *  price/price_str: денег мини-приложение не форматирует. */
   service_prices: Record<number, number>; service_price_strs: Record<number, string>;
+  /** {service_id: сколько минут услуга длится У ЭТОГО мастера} — по тому же
+   *  правилу, что цена: выбран мастер — его время, а не диапазон услуги. */
+  service_durations: Record<number, number>;
 }
 export interface ResourceStaffRead { staff: ResourceStaffMember[]; reason: string | null }
 export type BookingStatus = 'active' | 'pending' | 'hold' | 'attended' | 'cancelled';

@@ -102,6 +102,7 @@
     "500": "Greška poslužitelja, pokušajte kasnije",
     "network": "Nema veze s poslužiteljem",
     "unknown": "Nešto je pošlo po zlu",
+    "NO_FUNDING": "Klijent nema pretplatu ni uplatu za ovu uslugu",
     "loadFailed": "Učitavanje nije uspjelo",
     "retry": "Pokušaj ponovno",
     "invalid_bot_token": "Telegram je odbio ovaj token — provjerite postoji li bot",
@@ -235,9 +236,12 @@
     "range": "od {{from}} do {{to}}"
   },
   "servicePrice": {
-    "hint": "Dodirnite iznos da postavite vlastitu cijenu",
+    "hint": "Dodirnite iznos ili vrijeme za vlastitu vrijednost",
     "custom": "Vlastita cijena. Očistite polje za povratak na cijenu iz Kataloga",
     "inherited": "Cijena iz Kataloga",
-    "aria": "Cijena usluge {{service}}"
+    "aria": "Cijena usluge {{service}}",
+    "durationCustom": "Vlastito trajanje. Ispraznite polje za povratak na trajanje iz Kataloga",
+    "durationInherited": "Trajanje iz Kataloga",
+    "durationAria": "Trajanje usluge {{service}}, minute"
   }
 }

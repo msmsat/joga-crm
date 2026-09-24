@@ -102,6 +102,7 @@
     "500": "Palvelinvirhe, yritä myöhemmin uudelleen",
     "network": "Ei yhteyttä palvelimeen",
     "unknown": "Jokin meni pieleen",
+    "NO_FUNDING": "Asiakkaalla ei ole sarjakorttia eikä maksua tähän palveluun",
     "loadFailed": "Lataaminen epäonnistui",
     "retry": "Yritä uudelleen",
     "invalid_bot_token": "Telegram hylkäsi tämän tunnuksen — varmista, että botti on olemassa",
@@ -235,9 +236,12 @@
     "range": "{{from}}–{{to}}"
   },
   "servicePrice": {
-    "hint": "Napauta summaa asettaaksesi oman hinnan",
+    "hint": "Napauta summaa tai aikaa asettaaksesi oman",
     "custom": "Oma hinta. Tyhjennä kenttä palataksesi Luettelon hintaan",
     "inherited": "Hinta Luettelosta",
-    "aria": "Palvelun {{service}} hinta"
+    "aria": "Palvelun {{service}} hinta",
+    "durationCustom": "Oma kesto. Tyhjennä kenttä palataksesi Luettelon kestoon",
+    "durationInherited": "Kesto Luettelosta",
+    "durationAria": "Palvelun {{service}} kesto, minuuttia"
   }
 }

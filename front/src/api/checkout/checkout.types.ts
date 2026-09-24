@@ -73,6 +73,8 @@ export interface CheckoutServiceMaster {
   user_id: number
   name: string
   price: number
+  // Сколько услуга длится у этого мастера, минуты.
+  duration_min: number
 }
 
 export interface CheckoutService {
@@ -86,4 +88,7 @@ export interface CheckoutService {
   price_max: number
   masters: CheckoutServiceMaster[]
   duration_min: number
+  // Длительность «от–до» по мастерам — то же правило, что у цены.
+  duration_from: number
+  duration_to: number
 }

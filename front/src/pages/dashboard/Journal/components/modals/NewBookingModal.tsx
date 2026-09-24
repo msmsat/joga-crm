@@ -16,6 +16,7 @@ import { useNotePhotos } from '../../../../../hooks/useNotePhotos';
 import { usePhone } from '../../../../../hooks/usePhone';
 import { useStudioCurrency } from '../../../../../hooks/useStudioCurrency';
 import { formatMoney } from '../../../../../lib/money';
+import { useDurationLabel } from '../../../../../hooks/useDurationLabel';
 
 /** С этого числа тренеров список получает поиск: глазами по длинному уже не ищут. */
 const TRAINER_SEARCH_FROM = 8;
@@ -102,9 +103,11 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({
   const endScrollRef = useRef<HTMLDivElement>(null);
 
   const KP_INTERVALS = useMemo(() => generateTimeIntervals(timeStep), [timeStep]);
-  const { services, options: serviceOptions, priceFor } = useServiceOptions(!!onResourceBooking);
+  const { services, options: serviceOptions, priceFor, durationFor } = useServiceOptions(!!onResourceBooking);
   const currency = useStudioCurrency();
+  const durationLabel = useDurationLabel();
   const lessonPrice = priceFor(newForm.serviceId, newBookingSlot?.trainer ?? null);
+  const lessonDuration = durationFor(newForm.serviceId, newBookingSlot?.trainer ?? null);
 
   const shownTrainers = useMemo(() => {
     const q = trainerQuery.trim().toLowerCase();
@@ -275,7 +278,10 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({
                     <span className="kp-price-who">
                       {trainers.find(tr => tr.id === newBookingSlot.trainer)?.full}
                     </span>
-                    <span className="kp-price-v">{formatMoney(lessonPrice, currency)}</span>
+                    <span className="kp-price-v">
+                      {formatMoney(lessonPrice, currency)}
+                      {lessonDuration != null && ` · ${durationLabel(lessonDuration)}`}
+                    </span>
                   </div>
                 )}
               </div>

@@ -29,6 +29,8 @@ import { useServiceOptions } from './hooks/useServiceOptions';
 import { NewBookingModal } from './components/modals/NewBookingModal';
 import type { NewBookingForm } from './components/modals/NewBookingModal';
 import { ResourceBookingModal } from './components/modals/ResourceBookingModal';
+import { ResourceKeypadModal } from './components/modals/ResourceKeypadModal';
+import { usePhone } from '../../../hooks/usePhone';
 import { AddClientModal } from './components/modals/AddClientModal';
 import { useToast, ConfirmModal } from '../../../components/ui/index';
 import { getUserRoleFromToken } from '../../../utils/auth';
@@ -89,7 +91,7 @@ export default function Journal() {
   const [editForm, setEditForm] = useState({ serviceId: null as number | null, title: '', hall: '', maxClients: '8', timeStart: 0, timeEnd: 0 });
   const [showAddModal, setShowAddModal] = useState(false);
   const [addModalBooking] = useState<Booking | null>(null);
-  const [newBookingSlot, setNewBookingSlot] = useState<{ trainer: number; timeStart: number; timeEnd: number; columnIndex?: number } | null>(null);
+  const [newBookingSlot, setNewBookingSlot] = useState<{ trainer: number; timeStart: number; timeEnd: number; columnIndex?: number; bufferAfter?: number } | null>(null);
   const [showNewForm, setShowNewForm] = useState(false);
   // Индивидуальная запись открывается из двух мест, и оба уже знают контекст:
   // с клетки сетки — мастер и день, из тулбара — только день. Форма без этого
@@ -97,6 +99,13 @@ export default function Journal() {
   const [resourceBooking, setResourceBooking] = useState<{
     teacherId: number | null; date: string; serviceId?: number; time?: string;
   } | null>(null);
+  // Та же индивидуальная запись, но у клетки сетки на десктопе — клавиатурным
+  // окном, как новое занятие. На телефоне окно у клетки негде разместить: там
+  // остаётся шит (resourceBooking).
+  const [keypadResource, setKeypadResource] = useState<{
+    teacherId: number; date: string; time: string; serviceId?: number;
+  } | null>(null);
+  const isPhone = usePhone();
   // Кнопка индивидуальной записи появляется, только когда такая услуга есть:
   // иначе она вела бы в форму без единого варианта.
   const { services: journalServices, onlyResourceServices } = useServiceOptions();
@@ -254,9 +263,20 @@ export default function Journal() {
 
   const closeNewForm = () => {
     setShowNewForm(false);
+    setKeypadResource(null);
     setNewBookingSlot(null);
     setNewForm({ serviceId: null, title: '', hall: hallNames[0] ?? '', maxClients: '8', branchId: null });
   };
+
+  // Превью в сетке следует за окном индивидуальной записи: название услуги и
+  // взятое время. Стабильная ссылка — окно зовёт её из эффекта.
+  const previewResource = React.useCallback(({ title, start, end, bufferAfter = 0 }: { title: string; start?: number; end?: number; bufferAfter?: number }) => {
+    setNewForm(f => (f.title === title ? f : { ...f, title }));
+    if (start != null && end != null) {
+      setNewBookingSlot(s => (s && (s.timeStart !== start || s.timeEnd !== end || s.bufferAfter !== bufferAfter)
+        ? { ...s, timeStart: start, timeEnd: end, bufferAfter } : s));
+    }
+  }, []);
 
   // ── Открыть форму нового слота (Всегда 1 час или заполнить остаток) ──
   const openNewSlot = (
@@ -269,12 +289,17 @@ export default function Journal() {
 
     if (onlyResourceServices) {
       const col = columns[columnIndex];
-      setResourceBooking({
+      const scope = {
         teacherId: trainerIdx,
         date: toDateStr(col instanceof Date ? col : new Date(calYear, calMonth, selectedDay)),
         time: formatIndexToTimeStr(timeIdx),
-      });
-      return;
+      };
+      if (isPhone) {
+        setResourceBooking(scope);
+        return;
+      }
+      // Десктоп: окно у клетки. Слот и превью — те же, что у нового занятия.
+      setKeypadResource(scope);
     }
 
     // 🔥 Сохраняем индекс колонки в стейт
@@ -908,7 +933,22 @@ export default function Journal() {
       )}
 
       {/* ── ФОРМА НОВОГО ЗАНЯТИЯ (PREMIUM KEYPAD) ── */}
-      {showNewForm && newBookingSlot && (
+      {showNewForm && newBookingSlot && keypadResource && (
+        <ResourceKeypadModal
+          trainers={trainers}
+          teacherId={keypadResource.teacherId}
+          defaultTime={keypadResource.time}
+          defaultDate={keypadResource.date}
+          defaultServiceId={keypadResource.serviceId}
+          timeStep={timeStep}
+          newFormPos={newFormPos}
+          modalRef={modalRef}
+          onClose={closeNewForm}
+          onCreated={mutations.invalidate}
+          onPreview={previewResource}
+        />
+      )}
+      {showNewForm && newBookingSlot && !keypadResource && (
         <NewBookingModal
           trainers={trainers}
           halls={hallNames}
@@ -926,6 +966,12 @@ export default function Journal() {
           onResourceBooking={hasResourceServices ? (serviceId) => {
             const slot = newBookingSlot;
             const col = slot.columnIndex != null ? columns[slot.columnIndex] : null;
+            const date = toDateStr(col instanceof Date ? col : new Date(calYear, calMonth, selectedDay));
+            // На десктопе окно остаётся на месте и просто становится записью клиента.
+            if (!isPhone) {
+              setKeypadResource({ teacherId: slot.trainer, date, time: formatIndexToTimeStr(slot.timeStart), serviceId });
+              return;
+            }
             closeNewForm();
             setResourceBooking({
               teacherId: slot?.trainer ?? null,

@@ -8,6 +8,7 @@ import { useBusinessTerms } from '../../hooks/useBusinessTerms';
 import { useResourceStaff } from '../../hooks/useResourceStaff';
 import { useNearestSlots } from '../../hooks/useNearestSlots';
 import { useServicePrice } from '../../hooks/useServicePrice';
+import { useServiceDuration } from '../../hooks/useServiceDuration';
 import ServiceFilter from './components/ServiceFilter';
 import BranchFilter from './components/BranchFilter';
 import MasterCard, { AnyMasterCard } from './components/MasterCard';
@@ -66,6 +67,7 @@ const slot = {
 export default function BookingPage({ catalog, resource, focusServiceId, focusStaffId }: Props) {
   const { t, i18n } = useTranslation();
   const priceOf = useServicePrice();
+  const durationOf = useServiceDuration();
   const terms = useBusinessTerms('resource');
   const branches = catalog?.branches ?? [];
   const services = catalog?.services ?? [];
@@ -118,9 +120,10 @@ export default function BookingPage({ catalog, resource, focusServiceId, focusSt
     resource.open(
       {
         id: service.id, name: service.name, terminology_profile: service.terminology_profile,
-        // Цена ЭТОГО мастера, когда он выбран, и диапазон «от–до» у «любого»:
-        // шапка листа не должна обещать сумму, которой не будет.
-        duration_min: service.duration_min, price_str: priceOf(service, member),
+        // Цена и время ЭТОГО мастера, когда он выбран, и диапазон «от–до» у
+        // «любого»: шапка листа не должна обещать то, чего не будет.
+        duration_min: service.duration_min, duration_str: durationOf(service, member),
+        price_str: priceOf(service, member),
       },
       sheet.branchId,
       null,

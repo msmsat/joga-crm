@@ -48,6 +48,9 @@ class PublicService(BaseSchema):
     price_min: int
     price_max: int
     duration_min: int
+    # Длительность «от–до» по мастерам — по тому же правилу, что цена.
+    duration_from: int
+    duration_to: int
     category: Optional[str]
     color: Optional[str]
     # HB-03/04: механика записи услуги — витрина использует её, чтобы
@@ -81,12 +84,16 @@ async def public_services(request: Request, studio_id: int, db: AsyncSession = D
     )).scalars().all()
     # Один запрос на весь список, а не по запросу на услугу (CLAUDE.md §5, п. 2).
     spans = await service_pricing.price_ranges(db, studio_id, [s.id for s in rows])
+    minutes = await service_pricing.duration_ranges(db, studio_id, [s.id for s in rows])
     return [
         PublicService(
             id=s.id, name=s.name, description=s.description, price=s.price,
             price_min=spans[s.id].min if s.id in spans else s.price,
             price_max=spans[s.id].max if s.id in spans else s.price,
-            duration_min=s.duration_min, category=s.category, color=s.color,
+            duration_min=s.duration_min,
+            duration_from=minutes[s.id].min if s.id in minutes else s.duration_min,
+            duration_to=minutes[s.id].max if s.id in minutes else s.duration_min,
+            category=s.category, color=s.color,
             booking_mode=s.booking_mode,
         )
         for s in rows

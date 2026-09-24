@@ -52,6 +52,7 @@ async def list_checkout_services(
     # целиком (CLAUDE.md §5, правило 2).
     spans = await service_pricing.price_ranges(db, ctx.studio_id, ids)
     masters = await service_pricing.masters_of_services(db, ctx.studio_id, ids)
+    minutes = await service_pricing.duration_ranges(db, ctx.studio_id, ids)
     return [
         CheckoutServiceOut(
             id=s.id,
@@ -60,10 +61,13 @@ async def list_checkout_services(
             price_min=spans[s.id].min if s.id in spans else s.price,
             price_max=spans[s.id].max if s.id in spans else s.price,
             masters=[
-                CheckoutServiceMasterOut(user_id=m.user_id, name=m.name, price=m.price)
+                CheckoutServiceMasterOut(user_id=m.user_id, name=m.name, price=m.price,
+                                         duration_min=m.duration_min)
                 for m in masters.get(s.id, [])
             ],
             duration_min=s.duration_min,
+            duration_from=minutes[s.id].min if s.id in minutes else s.duration_min,
+            duration_to=minutes[s.id].max if s.id in minutes else s.duration_min,
         )
         for s in services
     ]

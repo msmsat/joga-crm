@@ -102,6 +102,7 @@
     "500": "Chyba serveru, zkuste to později",
     "network": "Není spojení se serverem",
     "unknown": "Něco se pokazilo",
+    "NO_FUNDING": "Klient nemá permanentku ani platbu pro tuto službu",
     "loadFailed": "Načtení se nezdařilo",
     "retry": "Zkusit znovu",
     "invalid_bot_token": "Telegram tento token odmítl — ověřte, že bot existuje",
@@ -235,9 +236,12 @@
     "range": "od {{from}} do {{to}}"
   },
   "servicePrice": {
-    "hint": "Klepnutím na částku nastavíte vlastní cenu",
+    "hint": "Klepnutím na částku nebo čas nastavíte vlastní hodnotu",
     "custom": "Vlastní cena. Vymažte pole a vrátí se cena z Katalogu",
     "inherited": "Cena z Katalogu",
-    "aria": "Cena služby {{service}}"
+    "aria": "Cena služby {{service}}",
+    "durationCustom": "Vlastní délka. Vymažte pole a vrátí se délka z Katalogu",
+    "durationInherited": "Délka z Katalogu",
+    "durationAria": "Délka služby {{service}}, minuty"
   }
 }

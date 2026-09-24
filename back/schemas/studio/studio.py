@@ -100,6 +100,8 @@ class ServiceMasterRead(BaseSchema):
     user_id: int
     name: str
     price: int
+    # Сколько услуга длится у этого мастера, в минутах.
+    duration_min: int = 0
 
 
 class ServiceBundlePartRead(BaseSchema):
@@ -141,6 +143,10 @@ class ServiceRead(BaseSchema):
     # второй раз на каждое открытие формы дороже, чем привезти её сразу.
     masters: list["ServiceMasterRead"] = []
     duration_min: int
+    # Длительность «от–до» по мастерам услуги — то же правило, что у цены.
+    # Совпали — одно число, разошлись — «duration_from–duration_to мин».
+    duration_from: int = 0
+    duration_to: int = 0
     category: Optional[str] = None
     service_type: Optional[str] = None
     color: Optional[str] = None

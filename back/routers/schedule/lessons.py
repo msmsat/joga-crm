@@ -58,6 +58,10 @@ def _lesson_read(lesson: Lesson, booked_count: int) -> LessonRead:
     # объекта, ещё не долетевшего до базы, атрибут пуст. Отдавать 500 из-за
     # этого нельзя — до первой правки версия и есть первая.
     fields["version"] = fields.get("version") or 1
+    # Буферы — журнал рисует их рядом с карточкой (занятое время мастера). Как
+    # и версия, у объекта до INSERT они пусты: умолчание модели ставит база.
+    fields["buffer_before_min"] = getattr(lesson, "buffer_before_min", None) or 0
+    fields["buffer_after_min"] = getattr(lesson, "buffer_after_min", None) or 0
     return LessonRead.model_validate({**fields, "booked_count": booked_count})
 
 router = APIRouter()
@@ -105,6 +109,7 @@ async def list_lessons(
             # интерфейсе (карточка без счётчика, запрет растягивания, перенос
             # по версии, колонка «Без зала») не срабатывал никогда.
             Lesson.branch_id, Lesson.booking_mode, Lesson.tz_iana, Lesson.version,
+            Lesson.buffer_before_min, Lesson.buffer_after_min,
             Service.color.label("service_color"),
             func.coalesce(booked_sq.c.booked_count, 0).label("booked_count"),
         )

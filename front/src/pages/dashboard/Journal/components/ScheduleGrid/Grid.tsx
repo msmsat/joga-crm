@@ -22,7 +22,7 @@ interface GridProps {
   drag: DragState | null;
   wasDragging: boolean;
   openNewSlot: (trainerIdx: number, timeIdx: number, columnIndex: number) => void; // 🔥 Добавили columnIndex
-  newBookingSlot: { trainer: number; timeStart: number; timeEnd: number; columnIndex?: number } | null; // 🔥 Добавили columnIndex
+  newBookingSlot: { trainer: number; timeStart: number; timeEnd: number; columnIndex?: number; bufferAfter?: number } | null; // 🔥 Добавили columnIndex
   newForm: { title: string; hall: string; maxClients: string };
   previewRef: React.RefObject<HTMLDivElement | null>;
   initDrag: (e: React.PointerEvent, id: number, type: 'move' | 'resize-top' | 'resize-bottom', booking?: Booking) => void;
@@ -312,6 +312,21 @@ export const Grid: React.FC<GridProps> = ({
                     <div className="drag-col-tooltip start">{formatIndexToTimeStr(drag.previewStart)}</div>
                     <div className="drag-col-tooltip end">{formatIndexToTimeStr(drag.previewEnd)}</div>
                   </div>
+                )}
+
+                {/* Буфер после новой записи — тем же тоном, что у карточек
+                    (BookingCard): мастер будет занят и на уборку. */}
+                {newBookingSlot && newBookingSlot.columnIndex === ci && showNewForm
+                  && newBookingSlot.timeStart >= ti && newBookingSlot.timeStart < ti + 1
+                  && (newBookingSlot.bufferAfter ?? 0) * 72 >= 4 && (
+                  <div className="booking-buffer" aria-hidden style={{
+                    position: 'absolute', left: 0, right: 28, zIndex: 9998, pointerEvents: 'none',
+                    top: (newBookingSlot.timeEnd - ti) * 72 + 1,
+                    height: (newBookingSlot.bufferAfter ?? 0) * 72 - 2,
+                    borderRadius: '3px 3px 8px 8px', boxSizing: 'border-box',
+                    border: '1px dashed rgba(249,160,139,0.45)',
+                    background: 'repeating-linear-gradient(135deg, rgba(249,160,139,0.1) 0 6px, transparent 6px 12px)',
+                  }} />
                 )}
 
                 {/* Живое превью новой записи (модалка) */}

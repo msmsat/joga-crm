@@ -27,6 +27,8 @@ interface StaffData {
   // Только СВОИ цены мастера. Услуги тут нет — значит, она идёт по цене
   // Каталога и продолжит ехать за её правкой.
   servicePrices: Record<number, number>;
+  // Только СВОЁ время мастера на услугу, минуты. Правило то же, что у цены.
+  serviceDurations: Record<number, number>;
   salary: string; rate_type: "fixed" | "percent" | "hourly" | "";
   schedule: Record<string, ScheduleDay>;
 }
@@ -373,7 +375,7 @@ export function AddEmployeeModal({ isOpen, onClose, onSuccess }: AddEmployeeModa
 
   const [data, setData] = useState<StaffData>({
     name: "", last_name: "", email: "", password: "",
-    role: "", serviceIds: [], servicePrices: {},
+    role: "", serviceIds: [], servicePrices: {}, serviceDurations: {},
     salary: "", rate_type: "fixed",
     schedule: { ...defaultSchedule },
   });
@@ -400,7 +402,7 @@ export function AddEmployeeModal({ isOpen, onClose, onSuccess }: AddEmployeeModa
     setCreated(null);
     setCopied(false);
     setResent("idle");
-    setData({ name: "", last_name: "", email: "", password: "", role: "", serviceIds: [], servicePrices: {}, salary: "", rate_type: "fixed", schedule: { ...defaultSchedule } });
+    setData({ name: "", last_name: "", email: "", password: "", role: "", serviceIds: [], servicePrices: {}, serviceDurations: {}, salary: "", rate_type: "fixed", schedule: { ...defaultSchedule } });
     onClose();
   }
 
@@ -417,6 +419,7 @@ export function AddEmployeeModal({ isOpen, onClose, onSuccess }: AddEmployeeModa
         // Роль сменили на администратора — услуг у него нет, и цен тоже.
         // Иначе сервер отказал бы: цена на неназначенную услугу — это 400.
         servicePrices: trainer ? data.servicePrices : {},
+        serviceDurations: trainer ? data.serviceDurations : {},
       });
       if (result) setCreated({
         id: result.staff.id,
@@ -810,9 +813,13 @@ export function AddEmployeeModal({ isOpen, onClose, onSuccess }: AddEmployeeModa
                           <ServicePricePicker
                             services={availableServices}
                             currency={currency}
-                            value={{ ids: data.serviceIds, prices: data.servicePrices }}
+                            value={{
+                              ids: data.serviceIds, prices: data.servicePrices,
+                              durations: data.serviceDurations,
+                            }}
                             onChange={next => setData(d => ({
                               ...d, serviceIds: next.ids, servicePrices: next.prices,
+                              serviceDurations: next.durations,
                             }))}
                           />
                         </div>

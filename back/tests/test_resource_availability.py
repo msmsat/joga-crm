@@ -174,3 +174,35 @@ def test_booking_window_limits_the_client_but_not_the_desk():
     # Прошлое закрыто обоим: запись задним числом — испорченные данные.
     past_now = datetime.combine(DAY + timedelta(days=1), datetime.min.time(), timezone.utc)
     assert slots(data, now=past_now, client=False).slots == []
+
+
+def test_desk_books_to_the_minute_one_minute_after_the_buffer():
+    """Стойка ставит запись с точностью до минуты — через минуту после конца
+    предыдущей вместе с её буфером, но не в ту же минуту (решение владельца
+    24.09.2026). Клиент в мини-приложении по-прежнему видит сетку студии."""
+    data = snapshot()
+    data.service = NS(duration_min=30, buffer_before_min=0, buffer_after_min=10)
+    # 10:00–10:30 и буфер до 10:40: занято до 10:40.
+    data.lessons = [NS(teacher_id=1, hall_id=None, start_time=datetime(2027, 6, 15, 10),
+        duration_min=30, buffer_before_min=0, buffer_after_min=10, tz_iana="Europe/Prague")]
+    desk = starts(slots(data, client=False))
+    assert "10:40" not in desk, "начало в ту же минуту, где кончился буфер"
+    assert "10:41" in desk, "стойка обязана видеть начало через минуту после буфера"
+    # Своя запись с буфером (30 + 10) обязана закончиться до 10:00 минимум на минуту.
+    assert "09:19" in desk and "09:20" not in desk
+    client = starts(slots(data))
+    assert "10:41" not in client and "10:45" in client, "клиенту — сетка студии (15 мин)"
+
+
+def test_each_master_occupies_his_own_duration():
+    """Окно под запись — длительность ЭТОГО мастера, а не каталожная.
+
+    Смена до 18:00, услуга 45 минут плюс 15 буфера. У мастера со своим часом
+    последний старт 16:45, у мастера без своего времени — 17:00. Одна сетка
+    на всех дала бы одному запись за краем смены, а другому отняла бы окно.
+    """
+    data = snapshot()
+    data.durations = {1: 60}
+    result = slots(data)
+    assert max(starts(result, 1)) == "16:45"
+    assert max(starts(result, 2)) == "17:00"

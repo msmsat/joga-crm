@@ -102,6 +102,7 @@
     "500": "Erro do servidor, tente mais tarde",
     "network": "Sem ligação ao servidor",
     "unknown": "Algo correu mal",
+    "NO_FUNDING": "O cliente não tem pacote nem pagamento para este serviço",
     "loadFailed": "Não foi possível carregar",
     "retry": "Tentar novamente",
     "invalid_bot_token": "O Telegram rejeitou este token — confirme que o bot existe",
@@ -235,9 +236,12 @@
     "range": "de {{from}} a {{to}}"
   },
   "servicePrice": {
-    "hint": "Toque no valor para definir o seu preço",
+    "hint": "Toque no valor ou na duração para definir os seus",
     "custom": "Preço próprio. Limpe o campo para voltar ao preço do Catálogo",
     "inherited": "Preço do Catálogo",
-    "aria": "Preço de {{service}}"
+    "aria": "Preço de {{service}}",
+    "durationCustom": "Duração própria. Limpe o campo para voltar à duração do Catálogo",
+    "durationInherited": "Duração do Catálogo",
+    "durationAria": "Duração de {{service}}, minutos"
   }
 }

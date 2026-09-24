@@ -65,6 +65,7 @@ def _service_read(
     bookings_last_30d: int = 0,
     price_range: "service_pricing.PriceRange | None" = None,
     masters: "list[service_pricing.ServiceMaster] | None" = None,
+    duration_range: "service_pricing.DurationRange | None" = None,
     bundle_items: "list[ServiceBundlePartRead] | None" = None,
     bundle_full_price: Optional[int] = None,
     in_bundles: "list[ServiceRefRead] | None" = None,
@@ -73,6 +74,8 @@ def _service_read(
     # спрашивали) → одна цена, равная базовой. Отдавать 0 нельзя: фронт покажет
     # «от 0».
     span = price_range or service_pricing.PriceRange(min=service.price, max=service.price)
+    minutes = duration_range or service_pricing.DurationRange(
+        min=service.duration_min, max=service.duration_min)
     return ServiceRead(
         id=service.id,
         name=service.name,
@@ -81,10 +84,13 @@ def _service_read(
         price_min=span.min,
         price_max=span.max,
         masters=[
-            ServiceMasterRead(user_id=m.user_id, name=m.name, price=m.price)
+            ServiceMasterRead(user_id=m.user_id, name=m.name, price=m.price,
+                              duration_min=m.duration_min)
             for m in (masters or [])
         ],
         duration_min=service.duration_min,
+        duration_from=minutes.min,
+        duration_to=minutes.max,
         category=service.category,
         service_type=service.service_type,
         color=service.color,
@@ -119,6 +125,7 @@ async def _read_all(studio_id: int, db: AsyncSession) -> dict[int, ServiceRead]:
     ids = [s.id for s in services]
     spans = await service_pricing.price_ranges(db, studio_id, ids)
     masters = await service_pricing.masters_of_services(db, studio_id, ids)
+    durations = await service_pricing.duration_ranges(db, studio_id, ids)
     compositions = await service_bundles.compositions(db, studio_id)
 
     by_id = {s.id: s for s in services}
@@ -150,6 +157,7 @@ async def _read_all(studio_id: int, db: AsyncSession) -> dict[int, ServiceRead]:
                 if s.id in compositions else None
             ),
             in_bundles=containing.get(s.id),
+            duration_range=durations.get(s.id),
         )
         for s in services
     }

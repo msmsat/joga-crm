@@ -20,6 +20,13 @@
 по 500 и 600 даёт «от 500 до 600»: за 300 не работает никто, и показывать эту
 цифру клиенту — обещать несуществующее. Услуга, которую не ведёт никто, отдаёт
 свою базовую цену — показать больше нечего.
+
+ДЛИТЕЛЬНОСТЬ. У мастера бывает не только своя цена, но и своё время на ту же
+услугу: стрижка у Анны — 45 минут, у стажёра — час. Правило ровно то же и
+живёт здесь же, в колонке `duration_min` той же связи: `duration_for` — одно
+число для известного мастера, `duration_ranges` — «от–до», пока мастер не
+выбран. Разойтись цене и времени одной пары негде: они читаются одним модулем
+из одной строки.
 """
 from collections import defaultdict
 from dataclasses import dataclass
@@ -49,6 +56,11 @@ class PriceRange:
         return self.max > self.min
 
 
+#: Диапазон длительности в минутах — та же пара «от–до», что у цены, и то же
+#: правило «диапазон или одно число» (`is_range`) решает сервер.
+DurationRange = PriceRange
+
+
 @dataclass(frozen=True)
 class StaffPrice:
     """Цена услуги у одного мастера — и откуда она взялась."""
@@ -67,7 +79,7 @@ def _eligible_masters(studio_id: int):
     общее продуктовое (`members.is_specialist_clause`).
     """
     return (
-        select(user_services.c.service_id, user_services.c.price)
+        select(user_services.c.service_id, user_services.c.price, user_services.c.duration_min)
         .join(StudioMember, StudioMember.user_id == user_services.c.user_id)
         .where(
             StudioMember.studio_id == studio_id,
@@ -96,10 +108,41 @@ async def price_for(db: AsyncSession, service: Service, teacher_id: Optional[int
     return service.price if own is None else int(own)
 
 
+async def _ranges(
+    db: AsyncSession, studio_id: int, service_ids: Iterable[int], own: str, base,
+) -> dict[int, PriceRange]:
+    """{service_id: «от–до»} одной колонки связи — ОДНИМ запросом на весь список.
+
+    Общая для цены и длительности: правило одно (действующие мастера, NULL —
+    «как у услуги», нет мастеров — база), и копия его для второго числа
+    разошлась бы с первой на первой же правке.
+    """
+    ids = {int(i) for i in service_ids}
+    if not ids:
+        return {}
+    masters = _eligible_masters(studio_id)
+    column = masters.c[own]
+    # LEFT JOIN + COALESCE: у услуги без мастеров подзапрос не даёт ни строки,
+    # COALESCE подставляет базовое значение, и MIN = MAX = база. Отдельной ветки
+    # «мастеров нет» в коде поэтому не существует — её нечем рассинхронизировать.
+    rows = (await db.execute(
+        select(
+            Service.id,
+            func.min(func.coalesce(column, base)),
+            func.max(func.coalesce(column, base)),
+        )
+        .select_from(Service)
+        .outerjoin(masters, masters.c.service_id == Service.id)
+        .where(Service.studio_id == studio_id, Service.id.in_(ids))
+        .group_by(Service.id, base)
+    )).all()
+    return {sid: PriceRange(min=int(low), max=int(high)) for sid, low, high in rows}
+
+
 async def price_ranges(
     db: AsyncSession, studio_id: int, service_ids: Iterable[int],
 ) -> dict[int, PriceRange]:
-    """{service_id: диапазон} — ОДНИМ запросом на весь список.
+    """{service_id: диапазон цены} — ОДНИМ запросом на весь список.
 
     Поштучный вызов на каждую услугу здесь запрещён осознанно: Каталог и
     витрина показывают десятки услуг разом, и обход по ним превратил бы один
@@ -108,31 +151,66 @@ async def price_ranges(
     Услуги чужой студии и несуществующие id молча отсутствуют в ответе —
     вызывающий и так знает, что он спрашивал.
     """
-    ids = {int(i) for i in service_ids}
-    if not ids:
-        return {}
-    masters = _eligible_masters(studio_id)
-    # LEFT JOIN + COALESCE: у услуги без мастеров подзапрос не даёт ни строки,
-    # COALESCE подставляет базовую цену, и MIN = MAX = база. Отдельной ветки
-    # «мастеров нет» в коде поэтому не существует — её нечем рассинхронизировать.
-    rows = (await db.execute(
-        select(
-            Service.id,
-            func.min(func.coalesce(masters.c.price, Service.price)),
-            func.max(func.coalesce(masters.c.price, Service.price)),
-        )
-        .select_from(Service)
-        .outerjoin(masters, masters.c.service_id == Service.id)
-        .where(Service.studio_id == studio_id, Service.id.in_(ids))
-        .group_by(Service.id, Service.price)
-    )).all()
-    return {sid: PriceRange(min=int(low), max=int(high)) for sid, low, high in rows}
+    return await _ranges(db, studio_id, service_ids, "price", Service.price)
+
+
+async def duration_ranges(
+    db: AsyncSession, studio_id: int, service_ids: Iterable[int],
+) -> dict[int, DurationRange]:
+    """{service_id: диапазон длительности в минутах} — по тому же правилу, что цена.
+
+    База 60 при мастерах на 45 и 50 минут даёт «45–50 мин»: часа эта услуга
+    не длится ни у кого, и обещать его клиенту нельзя.
+    """
+    return await _ranges(db, studio_id, service_ids, "duration_min", Service.duration_min)
 
 
 async def price_range_for(db: AsyncSession, service: Service) -> PriceRange:
     """Диапазон ОДНОЙ услуги — когда её уже держат в руках."""
     found = await price_ranges(db, service.studio_id, [service.id])
     return found.get(service.id, PriceRange(min=service.price, max=service.price))
+
+
+async def duration_for(db: AsyncSession, service: Service, teacher_id: Optional[int]) -> int:
+    """Сколько минут длится `service` у мастера `teacher_id` — одно число.
+
+    Мастер не указан, не ведёт эту услугу или ведёт без своего времени →
+    длительность услуги. Этим числом запись занимает время мастера: по нему
+    ищутся свободные окна и ставится конец занятия в Журнале.
+    """
+    if teacher_id is None:
+        return service.duration_min
+    own = (await db.execute(
+        select(user_services.c.duration_min).where(
+            user_services.c.user_id == teacher_id,
+            user_services.c.service_id == service.id,
+        )
+    )).scalars().first()
+    return service.duration_min if own is None else int(own)
+
+
+async def durations_of_teachers(
+    db: AsyncSession, service: Service, teacher_ids: Iterable[int],
+) -> dict[int, int]:
+    """{teacher_id: минуты} по одной услуге — ОДНИМ запросом на всех мастеров.
+
+    Для расчёта свободного времени: сетка слотов строится сразу по всем
+    мастерам услуги, и поштучный `duration_for` на каждого вернул бы N+1.
+    Мастер без своей длительности получает длительность услуги.
+    """
+    ids = {int(i) for i in teacher_ids}
+    found = {i: service.duration_min for i in ids}
+    if not ids:
+        return found
+    rows = (await db.execute(
+        select(user_services.c.user_id, user_services.c.duration_min).where(
+            user_services.c.service_id == service.id,
+            user_services.c.user_id.in_(ids),
+            user_services.c.duration_min.is_not(None),
+        )
+    )).all()
+    found.update({uid: int(minutes) for uid, minutes in rows})
+    return found
 
 
 async def price_without_master(db: AsyncSession, service: Service) -> Optional[int]:
@@ -157,12 +235,13 @@ class ServiceMaster:
     user_id: int
     name: str
     price: int
+    duration_min: int
 
 
 async def masters_of_services(
     db: AsyncSession, studio_id: int, service_ids: Iterable[int],
 ) -> dict[int, list[ServiceMaster]]:
-    """{service_id: мастера с их ценами} — ОДНИМ запросом на весь список.
+    """{service_id: мастера с их ценами и временем} — ОДНИМ запросом на весь список.
 
     Тот же набор людей, по которому считается диапазон (`_eligible_masters`):
     касса обязана предлагать ровно тех, чьи цены попали в «от–до», иначе
@@ -178,6 +257,7 @@ async def masters_of_services(
             StudioMember.name,
             StudioMember.last_name,
             func.coalesce(user_services.c.price, Service.price),
+            func.coalesce(user_services.c.duration_min, Service.duration_min),
         )
         .select_from(user_services)
         .join(Service, Service.id == user_services.c.service_id)
@@ -192,11 +272,12 @@ async def masters_of_services(
         .order_by(StudioMember.name, StudioMember.last_name, StudioMember.user_id)
     )).all()
     found: dict[int, list[ServiceMaster]] = defaultdict(list)
-    for service_id, user_id, name, last_name, price in rows:
+    for service_id, user_id, name, last_name, price, minutes in rows:
         found[service_id].append(ServiceMaster(
             user_id=user_id,
             name=" ".join(x for x in (name, last_name) if x),
             price=int(price),
+            duration_min=int(minutes),
         ))
     return dict(found)
 
@@ -220,33 +301,49 @@ async def prices_of_staff(
     }
 
 
-async def apply_staff_prices(
-    db: AsyncSession, user_id: int, studio_id: int, prices: dict[int, Optional[int]],
+@dataclass(frozen=True)
+class StaffDuration:
+    """Длительность услуги у одного мастера — и откуда она взялась."""
+    duration_min: int
+    # True — время выставили руками; унаследованное поедет за правкой Каталога.
+    custom: bool
+
+
+async def durations_of_staff(
+    db: AsyncSession, user_id: int, studio_id: int,
+) -> dict[int, StaffDuration]:
+    """{service_id: длительность} по всем услугам этой студии, назначенным мастеру."""
+    rows = (await db.execute(
+        select(Service.id, Service.duration_min, user_services.c.duration_min)
+        .join(user_services, user_services.c.service_id == Service.id)
+        .where(user_services.c.user_id == user_id, Service.studio_id == studio_id)
+    )).all()
+    return {
+        sid: StaffDuration(duration_min=base if own is None else int(own), custom=own is not None)
+        for sid, base, own in rows
+    }
+
+
+async def _apply_own(
+    db: AsyncSession, user_id: int, studio_id: int, column: str, values: dict[int, Optional[int]],
 ) -> None:
-    """Записать индивидуальные цены мастера. Пришедший словарь — это истина.
+    """Записать свои значения мастера в одну колонку связи. Словарь — это истина.
 
-    Зовётся ПОСЛЕ того, как сами связи «мастер ↔ услуга» уже сохранены и
-    сброшены во flush: цена ложится на существующую строку `user_services`,
-    своей строки у неё нет. Услуги, которой у мастера нет, запись цены просто
-    не находит — лишних строк не появляется.
-
-    Скоуп студии обязателен: человек, работающий в двух студиях, держит там
-    независимые цены, и сброс одной студией не смеет обнулить другую.
+    Сначала снимаем все свои значения этой студии, потом проставляем пришедшие:
+    услуга, которой в словаре нет, обязана вернуться к значению услуги, иначе
+    снятая владельцем надбавка тихо пережила бы сохранение.
     """
     studio_services = select(Service.id).where(Service.studio_id == studio_id)
-    # Сначала снимаем все свои цены этой студии, потом проставляем пришедшие:
-    # услуга, которой в словаре нет, обязана вернуться к базовой цене, иначе
-    # снятая владельцем надбавка тихо пережила бы сохранение.
     await db.execute(
         update(user_services)
         .where(
             user_services.c.user_id == user_id,
             user_services.c.service_id.in_(studio_services),
         )
-        .values(price=None)
+        .values({column: None})
     )
     by_value: dict[int, list[int]] = defaultdict(list)
-    for service_id, value in prices.items():
+    for service_id, value in values.items():
         if value is not None:
             by_value[int(value)].append(int(service_id))
     for value, service_ids in by_value.items():
@@ -257,5 +354,27 @@ async def apply_staff_prices(
                 user_services.c.service_id.in_(service_ids),
                 user_services.c.service_id.in_(studio_services),
             )
-            .values(price=value)
+            .values({column: value})
         )
+
+
+async def apply_staff_prices(
+    db: AsyncSession, user_id: int, studio_id: int, prices: dict[int, Optional[int]],
+    durations: Optional[dict[int, Optional[int]]] = None,
+) -> None:
+    """Записать индивидуальные цены (и длительности) мастера. Пришедшее — истина.
+
+    Зовётся ПОСЛЕ того, как сами связи «мастер ↔ услуга» уже сохранены и
+    сброшены во flush: цена ложится на существующую строку `user_services`,
+    своей строки у неё нет. Услуги, которой у мастера нет, запись цены просто
+    не находит — лишних строк не появляется.
+
+    Скоуп студии обязателен: человек, работающий в двух студиях, держит там
+    независимые цены, и сброс одной студией не смеет обнулить другую.
+
+    `durations=None` — длительности не трогаем (вызывающий о них не говорил);
+    словарь, даже пустой, — такая же истина, как `prices`.
+    """
+    await _apply_own(db, user_id, studio_id, "price", prices)
+    if durations is not None:
+        await _apply_own(db, user_id, studio_id, "duration_min", durations)

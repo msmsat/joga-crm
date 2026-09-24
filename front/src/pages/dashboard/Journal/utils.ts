@@ -251,6 +251,8 @@ export const lessonToBooking = (l: Lesson, halls: Hall[], colorByTeacher: Map<nu
     bookingMode: l.booking_mode ?? 'event',
     version: l.version ?? 1,
     branchId: l.branch_id ?? null,
+    bufferBefore: l.buffer_before_min ?? 0,
+    bufferAfter: l.buffer_after_min ?? 0,
   };
 };
 
@@ -274,3 +276,17 @@ if (import.meta.env.DEV) {
   );
   console.assert(indexToDateTime('2026-07-12', 1.5) === '2026-07-12T08:30:00', 'indexToDateTime сломан');
 }
+/**
+ * Какие свободные начала показывать списком. Стойке сервер отдаёт их поминутно
+ * (services/resource_slots, STAFF_STEP_MIN) — в списке их были бы сотни.
+ * Остаются шаг сетки журнала и первое начало каждого свободного окна (15:26
+ * сразу после буфера); остальные минуты набираются руками.
+ */
+export const listedTimes = (free: string[], step: number): string[] => {
+  const toMinutes = (time: string) => Number(time.slice(0, 2)) * 60 + Number(time.slice(3, 5));
+  const all = new Set(free.map(toMinutes));
+  return free.filter(time => {
+    const minute = toMinutes(time);
+    return minute % Math.max(step, 1) === 0 || !all.has(minute - 1);
+  });
+};

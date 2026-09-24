@@ -10,7 +10,8 @@ from dependencies import StudioContext, require_role
 from models import BookingQuote, Lesson, Reservation
 from ratelimit import limiter
 from schemas.schedule.hybrid import (AvailabilityRead, BookingRead, ConfirmRequest,
-    CrmAvailabilityQuery, CrmQuoteRequest, QuoteRead, RescheduleConfirmRequest, ResourceQuoteRequest)
+    CrmAvailabilityQuery, CrmQuoteRequest, QuoteRead, RescheduleConfirmRequest, ResourceQuoteRequest,
+    ResourceStaffMemberRead, ResourceStaffRead)
 from services import booking_quotes as quotes, hybrid_http, resource_availability, resource_booking, resource_reschedule
 
 router = APIRouter()
@@ -43,6 +44,31 @@ async def _reservation_actor(db, ctx, reservation_id):
 async def availability(request: Request, query: Annotated[CrmAvailabilityQuery, Query()],
                        ctx: StudioContext = Depends(staff), db: AsyncSession = Depends(get_db)):
     return await resource_availability.availability(db, studio_id=ctx.studio_id, client=False, **query.model_dump())
+
+
+@router.get("/resource-staff", response_model=ResourceStaffRead)
+@limiter.limit("60/minute")
+async def resource_staff(request: Request, ctx: StudioContext = Depends(staff),
+                         db: AsyncSession = Depends(get_db)):
+    """Кто из мастеров какие индивидуальные услуги ведёт и в каких филиалах.
+
+    Форма записи в журнале собирает услугу, филиал и мастера только из этих
+    связей. Правило то же, что у расчёта времени (`_eligible_staff`): иначе
+    форма давала собрать мастера с филиалом, где он не принимает, и сервер
+    честно отвечал «времени нет» без единого слота.
+
+    Все филиалы и все услуги разом: форма переключает их на месте, и за каждой
+    сменой филиала ходить сюда заново незачем. Цены — числом: кабинет
+    форматирует деньги сам.
+    """
+    report = await resource_availability.resource_staff(db, studio_id=ctx.studio_id)
+    return ResourceStaffRead(reason=report.reason, staff=[
+        ResourceStaffMemberRead(
+            teacher_id=row.teacher_id, name=row.name, last_name=row.last_name,
+            photo_url=row.photo_url, department=row.department, service_ids=row.service_ids,
+            service_prices=row.service_prices, service_durations=row.service_durations,
+            branch_ids=row.branch_ids)
+        for row in report.staff])
 
 
 @router.post("/booking-quotes", response_model=QuoteRead, status_code=201)

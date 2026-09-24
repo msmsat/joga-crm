@@ -45,6 +45,15 @@ function normalizeError(data: unknown): string {
   return 'Неизвестная ошибка'
 }
 
+// Доменный отказ записи (back/services/booking_quotes.reject): {code, message_key: "booking.errors.*"}.
+function isBookingRefusal(data: unknown): boolean {
+  if (!data || typeof data !== 'object' || !('detail' in data)) return false
+  const detail = (data as { detail: unknown }).detail
+  if (!detail || typeof detail !== 'object' || !('message_key' in detail)) return false
+  const key = (detail as { message_key: unknown }).message_key
+  return typeof key === 'string' && key.startsWith('booking.errors.')
+}
+
 // Код из detail-объекта {code, message}, если бэкенд его прислал.
 function detailCode(data: unknown): string | undefined {
   if (data && typeof data === 'object' && 'detail' in data) {
@@ -108,8 +117,13 @@ async function request<T>(method: string, path: string, options: RequestOptions 
   if (res.status === 402) {
     const data: unknown = await res.json().catch(() => null)
     const onAllowedPage = /^\/dashboard\/(?:billing|profile)(?:\/|$)/.test(window.location.pathname)
+    // 402 записи (`NO_FUNDING` — у КЛИЕНТА нет абонемента или оплаты) — отказ
+    // по существу, а не неоплата студии. Их шлёт booking_quotes.reject с
+    // `message_key: booking.errors.*`, и уводить на «Тариф» из-за них значило
+    // выкинуть администратора из журнала посреди записи.
+    const bookingRefusal = isBookingRefusal(data)
     if (requestToken && requestToken === getToken() && !options.signal?.aborted
-      && !onAllowedPage && !billingRedirectPending) {
+      && !onAllowedPage && !bookingRefusal && !billingRedirectPending) {
       // Several shell requests can fail together before the browser navigates.
       billingRedirectPending = true
       window.location.href = getUserRoleFromToken() === 'owner'

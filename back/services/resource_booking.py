@@ -69,7 +69,8 @@ async def confirm(db, quote_id: str, actor: quotes.Actor, *, now=None):
         result = await booking.create(db, studio_id=actor.studio_id, client_id=actor.client_id,
             lesson_id=lesson.id, source=actor.surface, actor=actor.domain, now=moment, shown=terms,
             spot_number=current["spot_number"], allow_payment=not card, hold_for_payment=card,
-            require_funding=False if card else None, _resource=row.booking_mode == "resource")
+            require_funding=quotes.funding_rule(actor, current["payment_method"], row.booking_mode),
+            _resource=row.booking_mode == "resource")
         if result.outcome is not booking.Outcome.OK:
             quotes.reject(result.outcome.value.upper(), 402 if result.outcome is booking.Outcome.NO_FUNDING else 409)
         row.reservation_id, row.consumed_at = result.reservation_id, moment

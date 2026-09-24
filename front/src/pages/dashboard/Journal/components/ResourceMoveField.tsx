@@ -5,7 +5,7 @@ import * as Icons from '../../../../components/Icons';
 import { useToast } from '../../../../components/ui/index';
 import { hybridApi } from '../../../../api/booking/hybrid.api';
 import { errorMessage } from '../../../../api/errorMessage';
-import { formatIndexToTimeStr, parseTimeToIndex } from '../utils';
+import { formatIndexToTimeStr, parseTimeToIndex, listedTimes } from '../utils';
 import type { Booking } from '../types';
 
 /**
@@ -150,7 +150,7 @@ export function ResourceMoveField({ booking, reservationId, onMoved }: Props) {
 
           {isOpen && free.size > 0 && (
             <div className="kp-time-dropdown">
-              {[...free.keys()].map(value => (
+              {listedTimes([...free.keys()], 15).map(value => (
                 <div
                   key={value}
                   className={`kp-time-item ${value === time ? 'active-time-item' : ''}`}

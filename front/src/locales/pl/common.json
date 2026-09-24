@@ -102,6 +102,7 @@
     "500": "Błąd serwera, spróbuj później",
     "network": "Brak połączenia z serwerem",
     "unknown": "Coś poszło nie tak",
+    "NO_FUNDING": "Klient nie ma karnetu ani płatności za tę usługę",
     "loadFailed": "Nie udało się wczytać",
     "retry": "Spróbuj ponownie",
     "invalid_bot_token": "Telegram odrzucił ten token — sprawdź, czy bot istnieje",
@@ -235,9 +236,12 @@
     "range": "od {{from}} do {{to}}"
   },
   "servicePrice": {
-    "hint": "Kliknij kwotę, aby ustawić własną cenę",
+    "hint": "Kliknij kwotę lub czas, aby ustawić własne",
     "custom": "Własna cena. Wyczyść pole, aby wrócić do ceny z Katalogu",
     "inherited": "Cena z Katalogu",
-    "aria": "Cena usługi {{service}}"
+    "aria": "Cena usługi {{service}}",
+    "durationCustom": "Własny czas trwania. Wyczyść pole, aby wrócić do czasu z Katalogu",
+    "durationInherited": "Czas trwania z Katalogu",
+    "durationAria": "Czas trwania {{service}}, minuty"
   }
 }

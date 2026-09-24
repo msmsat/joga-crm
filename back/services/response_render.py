@@ -128,7 +128,10 @@ def fmt_time(when: datetime) -> str:
     return when.strftime("%H:%M")
 
 
-def fmt_duration(minutes: int, lang: str) -> str:
+def fmt_duration(minutes: int, lang: str, upto: int | None = None) -> str:
+    """«45 мин», а у мастеров с разным временем — «45–60 мин»."""
+    if upto is not None and upto > minutes:
+        return f"{minutes}–{upto} {pick(T.MINUTES, lang)}"
     return f"{minutes} {pick(T.MINUTES, lang)}"
 
 
@@ -239,7 +242,7 @@ def fact_lines(facts, lang: str, *, copy: Optional[CopyIntent] = None) -> str:
         return "\n".join(rows)
     if isinstance(facts, I.PriceFacts):
         return "\n".join(
-            f"{i.name} — {_price(i, lang)} · {fmt_duration(i.duration_min, lang)}"
+            f"{i.name} — {_price(i, lang)} · {fmt_duration(i.duration_min, lang, i.duration_max)}"
             for i in facts.items)
     if isinstance(facts, I.OwnerTextFacts):
         # Текст владельца — дословно. Ни сокращений, ни «улучшений»: это его

@@ -102,6 +102,7 @@
     "500": "Sunucu hatası, daha sonra tekrar deneyin",
     "network": "Sunucuyla bağlantı yok",
     "unknown": "Bir şeyler ters gitti",
+    "NO_FUNDING": "Müşterinin bu hizmet için paketi veya ödemesi yok",
     "loadFailed": "Yüklenemedi",
     "retry": "Tekrar dene",
     "invalid_bot_token": "Telegram bu jetonu reddetti — botun var olduğundan emin olun",
@@ -235,9 +236,12 @@
     "range": "{{from}}–{{to}}"
   },
   "servicePrice": {
-    "hint": "Kendi fiyatınızı belirlemek için tutara dokunun",
+    "hint": "Kendi değerinizi belirlemek için tutara veya süreye dokunun",
     "custom": "Özel fiyat. Katalog fiyatına dönmek için alanı temizleyin",
     "inherited": "Katalog fiyatı",
-    "aria": "{{service}} fiyatı"
+    "aria": "{{service}} fiyatı",
+    "durationCustom": "Özel süre. Katalog süresine dönmek için alanı temizleyin",
+    "durationInherited": "Katalogdaki süre",
+    "durationAria": "{{service}} süresi, dakika"
   }
 }

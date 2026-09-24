@@ -135,6 +135,10 @@ def test_crm_books_moves_and_cancels_an_individual_service_over_http(monkeypatch
                 assert card["branch_id"] == lesson.branch_id
                 assert card["tz_iana"] == lesson.tz_iana
                 assert card["total_spots"] == 1
+                # Буферы — чтобы сетка рисовала их рядом с карточкой: без них
+                # администратор видит «свободно» там, где мастер убирает место.
+                assert (card["buffer_before_min"], card["buffer_after_min"]) == (
+                    lesson.buffer_before_min, lesson.buffer_after_min) == (0, 15)
 
                 # 5. Перенос: та же бронь, новое время, версия выросла.
                 later = slots[-1]
@@ -374,5 +378,83 @@ def test_reschedule_preview_does_not_let_the_booking_block_itself(monkeypatch):
                           "branch_id": ids["branch_a"], "starts_at": taken})
                 assert same.status_code == 201, same.text
         finally:
+            await resource.cleanup(ids)
+    asyncio.run(run())
+
+
+def test_crm_resource_staff_links_masters_services_and_branches(monkeypatch):
+    """Форма записи в журнале собирает услугу, филиал и мастера только из того,
+    что реально связано. Связи отдаёт сервер тем же правилом, по которому потом
+    ищется время (`resource_availability._eligible_staff`): иначе форма давала
+    выбрать мастера в филиале, где он не принимает, и молча показывала «нет
+    времени» (живой случай 24.09.2026).
+    """
+    async def run():
+        ids = await resource.seed()
+        try:
+            await _owner(ids)
+            async with _client(_app(ids)) as http:
+                response = await http.get("/schedule/resource-staff")
+                assert response.status_code == 200, response.text
+                staff = response.json()["staff"]
+                assert [row["teacher_id"] for row in staff] == [ids["teacher"]]
+                assert staff[0]["service_ids"] == [ids["service"]]
+                assert staff[0]["branch_ids"] == [ids["branch_a"]], "мастер показан в чужом филиале"
+                assert staff[0]["service_prices"] == {str(ids["service"]): 0}
+            async with _client(_app(ids, role="trainer")) as http:
+                assert (await http.get("/schedule/resource-staff")).status_code == 403
+        finally:
+            await resource.cleanup(ids)
+    asyncio.run(run())
+
+
+def test_crm_books_a_client_without_a_pass_as_pay_at_venue(monkeypatch):
+    """Администратор записывает клиента без абонемента — и без предоплаты.
+
+    «Предоплата при записи» — правило САМОСТОЯТЕЛЬНОЙ записи клиента
+    (мини-приложение). Стойке оно отказывало каждому, у кого нет абонемента:
+    форма журнала писала «нет абонемента или оплаты» всем подряд, и кнопка
+    подтверждения не загоралась никогда (живой случай 24.09.2026). Запись
+    сотрудником оформляется как у веб-виджета: оплата на месте, долг клиента.
+    """
+    from models import ClientPayment, StudioBookingSettings
+    from sqlalchemy import delete, update
+
+    moment = booking_quotes.utcnow
+    monkeypatch.setattr(booking_quotes, "utcnow", lambda now=None: moment(now or resource.NOW))
+
+    async def run():
+        ids = await resource.seed(price=500)
+        try:
+            await _owner(ids)
+            async with async_session_maker() as db:
+                await db.execute(update(StudioBookingSettings).where(
+                    StudioBookingSettings.studio_id == ids["studio"]).values(prefill_on_booking=True))
+                await db.commit()
+            async with _client(_app(ids)) as http:
+                day = str(resource.hours.DAY)
+                free = await http.get("/schedule/availability", params={
+                    "service_id": ids["service"], "branch_id": ids["branch_a"],
+                    "date_from": day, "date_to": day})
+                first = free.json()["slots"][0]
+                quote = await http.post("/schedule/booking-quotes", json={
+                    "booking_mode": "resource", "client_id": ids["client"],
+                    "service_id": ids["service"], "branch_id": ids["branch_a"],
+                    "starts_at": first["starts_at"]})
+                assert quote.status_code == 201, quote.text
+                assert quote.json()["next_action"] == "none"
+                created = await http.post("/schedule/bookings", json={"quote_id": quote.json()["quote_id"]})
+                assert created.status_code == 200, created.text
+                assert created.json()["status"] == "active"
+            async with async_session_maker() as db:
+                debt = (await db.execute(select(ClientPayment).where(
+                    ClientPayment.client_id == ids["client"]))).scalars().all()
+                assert [(row.amount, row.status) for row in debt] == [(500, "pending")], \
+                    "оплата на месте обязана стать долгом клиента, а не бесплатным визитом"
+        finally:
+            async with async_session_maker() as db:
+                await db.execute(update(Reservation).where(Reservation.client_id == ids["client"]).values(debt_payment_id=None))
+                await db.execute(delete(ClientPayment).where(ClientPayment.client_id == ids["client"]))
+                await db.commit()
             await resource.cleanup(ids)
     asyncio.run(run())

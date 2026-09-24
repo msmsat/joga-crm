@@ -19,6 +19,7 @@ import warnings
 
 import pytest
 from fastapi import HTTPException
+from pydantic import ValidationError
 from sqlalchemy import delete, select
 
 from database import async_session_maker
@@ -274,4 +275,46 @@ def test_assistant_naming_an_unassigned_service_gets_a_refusal():
                     ),
                 )
         assert failure.value.status_code == 400
+    _run(scenario)
+
+
+# ─── Длительность мастера — в той же строке, по тем же правилам ───────────────
+
+def test_duration_round_trips_next_to_the_price():
+    """Своё время мастера сохраняется рядом с ценой и различается с Каталогом.
+
+    Строка может нести только время: цена тогда остаётся каталожной, и одно не
+    должно тянуть за собой другое."""
+    async def scenario(ids):
+        await _save(ids, _body(ids, service_prices=[
+            StaffServicePrice(service_id=ids["haircut"], duration_min=45),
+        ]))
+        row = (await _services(ids))[ids["haircut"]]
+        assert (row["duration_min"], row["duration_custom"]) == (45, True)
+        assert row["price_custom"] is False
+        # Пустой список — сброс и времени тоже.
+        await _save(ids, _body(ids, service_prices=[]))
+        row = (await _services(ids))[ids["haircut"]]
+        assert (row["duration_min"], row["duration_custom"]) == (row["base_duration_min"], False)
+    _run(scenario)
+
+
+def test_zero_minutes_is_refused_by_the_schema():
+    """Ноль минут — не «бесплатно», а запись, которая не занимает мастера."""
+    with pytest.raises(ValidationError):
+        StaffServicePrice(service_id=1, duration_min=0)
+
+
+def test_assistant_editing_the_rate_keeps_the_durations():
+    async def scenario(ids):
+        await _save(ids, _body(ids, service_prices=[
+            StaffServicePrice(service_id=ids["haircut"], duration_min=45),
+        ]))
+        async with async_session_maker() as db:
+            await ai_tools.update_staff(
+                await _ctx(ids, db), db,
+                ai_tools.UpdateStaffArgs(staff_id=ids["trainer"], rate=250, rate_type="hourly"),
+            )
+        row = (await _services(ids))[ids["haircut"]]
+        assert (row["duration_min"], row["duration_custom"]) == (45, True)
     _run(scenario)

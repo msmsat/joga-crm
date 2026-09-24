@@ -36,6 +36,8 @@ export interface StaffMember {
   /** Только СВОИ цены мастера {service_id: цена}. Услуги тут нет — значит, она
    *  идёт по цене Каталога и продолжит ехать за её правкой. */
   service_prices?: Record<number, number>;
+  /** Только СВОЁ время мастера {service_id: минуты} — по тому же правилу. */
+  service_durations?: Record<number, number>;
   /** HB-18: филиалы, где специалист доступен для индивидуальной записи. */
   branch_ids?: number[];
   /** true — сотрудник принял приглашение и владеет аккаунтом: его email и телефон
@@ -375,11 +377,12 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
     photo_url?: string;
     serviceIds: number[];
     servicePrices: Record<number, number>;
+    serviceDurations: Record<number, number>;
     branchIds: number[];
   }>({
     id: 0, name: "", last_name: "", phone: "", email: "", role: "",
     avatar_gradient: "", is_online: true, salary: "", rate_type: "",
-    schedule: { ...defaultSchedule }, serviceIds: [], servicePrices: {}, branchIds: [],
+    schedule: { ...defaultSchedule }, serviceIds: [], servicePrices: {}, serviceDurations: {}, branchIds: [],
   });
   const [availableBranches, setAvailableBranches] = useState<{ id: number; name: string }[]>([]);
 
@@ -415,6 +418,7 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
         photo_url:      staff.photo_url,
         serviceIds:     staff.service_ids ?? [],
         servicePrices:  staff.service_prices ?? {},
+        serviceDurations: staff.service_durations ?? {},
         branchIds:      staff.branch_ids ?? [],
       });
       setPhotoPreview(resolveImageUrl(staff.photo_url));
@@ -466,6 +470,7 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
         // Роль без услуг — и цен у неё нет: цена на неназначенную услугу это
         // 400 с сервера, а не «назначить заодно».
         service_prices: canHaveServices ? form.servicePrices : {},
+        service_durations: canHaveServices ? form.serviceDurations : {},
         // Назначения филиалов имеют смысл только у того, кто ведёт услуги:
         // администратор в Resource-доступности не участвует.
         branch_ids: canHaveServices ? form.branchIds : [],
@@ -1076,9 +1081,13 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
                         <ServicePricePicker
                           services={availableServices}
                           currency={currency}
-                          value={{ ids: form.serviceIds, prices: form.servicePrices }}
+                          value={{
+                            ids: form.serviceIds, prices: form.servicePrices,
+                            durations: form.serviceDurations,
+                          }}
                           onChange={next => setForm(f => ({
                             ...f, serviceIds: next.ids, servicePrices: next.prices,
+                            serviceDurations: next.durations,
                           }))}
                         />
                       </div>

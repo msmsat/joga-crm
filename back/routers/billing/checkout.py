@@ -21,6 +21,7 @@ import os
 from datetime import datetime, timedelta, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
+import stripe
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
@@ -378,6 +379,21 @@ async def _live_plan_name(plan: StudioBillingPlan) -> str:
             )
             return plan.plan_name
         return live
+    except stripe.InvalidRequestError as exc:
+        if exc.code != "resource_missing":
+            logger.exception(
+                "Stripe billing: тариф подписки %s не прочитан — берём зеркало",
+                plan.stripe_subscription_id,
+            )
+            return plan.plan_name
+        # Ссылка в никуда (смена test↔live, удалённый объект) — не сбой Stripe, а
+        # наше устаревшее поле. Снимет его оплата (_forget_dead_subscription) или
+        # часовая сверка; алертить об этом на каждом открытии страницы незачем.
+        logger.warning(
+            "Stripe billing: подписки %s под текущим ключом нет — тариф берём из зеркала",
+            plan.stripe_subscription_id,
+        )
+        return plan.plan_name
     except Exception:
         # Сеть/Stripe прилегли: падать некуда — дальше по обработчику есть и
         # превью, и оформление. Зеркало хуже истины, но лучше отказа. Оно же

@@ -26,7 +26,8 @@ export function useResourceSheet(flow: Flow, { onOtherMaster, onDone }: { onOthe
   // переноса «любой» по умолчанию, и это не новость.
   const subtitle = [
     flow.teacherName ?? (flow.move ? null : t('booking.anyMaster')),
-    service?.duration_min ? t('booking.duration', { min: service.duration_min }) : null,
+    service?.duration_str
+      ?? (service?.duration_min ? t('booking.duration', { min: service.duration_min }) : null),
     service?.price_str ?? null,
   ].filter(Boolean).join(' · ');
 

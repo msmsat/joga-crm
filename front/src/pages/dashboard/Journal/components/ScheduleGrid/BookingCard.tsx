@@ -76,7 +76,28 @@ export const BookingCard: React.FC<BookingCardProps> = ({
   const isSelected = popupBooking?.id === b.id;
   const isDragging = drag?.id === b.id && drag.isDragging;
 
+  // Буферы услуги — время подготовки и уборки. Мастер в нём занят, хотя
+  // занятия нет: без полосы администратор видел бы «свободно» там, куда
+  // записать нельзя (services/resource_slots). Рисуются тем же цветом, но
+  // штриховкой и бледнее — чтобы не спорить с самой карточкой.
+  const showBuffers = b.status !== 'cancelled' && !isDragging;
+  const before = showBuffers ? ((b.bufferBefore ?? 0) / 60) * 72 : 0;
+  const after = showBuffers ? ((b.bufferAfter ?? 0) / 60) * 72 : 0;
+  const bufferStyle = (edge: 'before' | 'after'): React.CSSProperties => ({
+    position: 'absolute', left: layout.left, width: layout.width,
+    top: edge === 'before' ? top - before : top + height + 2,
+    height: (edge === 'before' ? before : after) - 2,
+    zIndex: layout.zIndex - 1,
+    borderRadius: edge === 'before' ? '8px 8px 3px 3px' : '3px 3px 8px 8px',
+    border: `1px dashed ${b.color}55`,
+    background: `repeating-linear-gradient(135deg, ${b.color}14 0 6px, transparent 6px 12px)`,
+    pointerEvents: 'none', boxSizing: 'border-box',
+  });
+
   return (
+    <>
+    {before >= 4 && <div className="booking-buffer" aria-hidden style={bufferStyle('before')} />}
+    {after >= 4 && <div className="booking-buffer" aria-hidden style={bufferStyle('after')} />}
     <div
       data-booking-id={b.id}
       className={`booking-card ${b.status} ${layout.isTracked ? 'is-tracked' : ''} ${layout.isCascade ? 'is-cascade' : ''} ${isSelected ? 'is-selected' : ''} ${isDragging ? 'is-dragging' : ''}`}
@@ -168,5 +189,6 @@ export const BookingCard: React.FC<BookingCardProps> = ({
         </>
       )}
     </div>
+    </>
   );
 };

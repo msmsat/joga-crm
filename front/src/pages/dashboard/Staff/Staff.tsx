@@ -23,6 +23,8 @@ import { QrShareModal } from '../../../components/ui/index';
 import { miniappLink } from '../../../lib/miniapp';
 import { getCurrencySymbol } from '../../../components/UI';
 import { formatMoney } from '../../../lib/money';
+import { useDurationLabel } from '../../../hooks/useDurationLabel';
+import { ownServiceTerms, servicePricesPayload } from './serviceTerms';
 import type { StaffListItem, StaffWorkingHoursItem, StaffProfile, StaffMonthScheduleResponse } from '../../../api/staff/staff.types';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -108,6 +110,7 @@ interface DeleteModal {
 
 export default function Staff() {
   const { t, i18n } = useTranslation(['staff', 'common']);
+  const durationLabel = useDurationLabel();
   // Роль называется словом отрасли: «тренер», «мастер», «специалист».
   const roleLabel = useRoleLabel();
 
@@ -625,6 +628,14 @@ export default function Staff() {
                           >
                             {formatMoney(svc.price, currency)}
                           </span>
+                          <span
+                            className={`staff-svc-price-v ${svc.duration_custom ? 'custom' : ''}`}
+                            title={t(svc.duration_custom
+                              ? 'common:servicePrice.durationCustom'
+                              : 'common:servicePrice.durationInherited')}
+                          >
+                            {durationLabel(svc.duration_min)}
+                          </span>
                         </div>
                       ))}
                     </div>
@@ -846,8 +857,7 @@ export default function Staff() {
               salary: data.salary ? Number(data.salary) : undefined,
               rate_type: (data.rate_type as 'fixed' | 'percent' | 'hourly') || undefined,
               service_ids: data.serviceIds,
-              service_prices: Object.entries(data.servicePrices)
-                .map(([id, price]) => ({ service_id: Number(id), price })),
+              service_prices: servicePricesPayload(data.servicePrices, data.serviceDurations),
               schedule: scheduleToWorkingHours(data.schedule),
             });
             if (result?.staff?.id) setPickedStaffId(result.staff.id);
@@ -883,11 +893,9 @@ export default function Staff() {
           rate: profile.rate ?? undefined,
           rate_type: profile.rate_type ?? '',
           service_ids: profile.services.map(s => s.id),
-          // Только свои цены: унаследованная от Каталога ценой мастера не
-          // является и в форму как «своя» попасть не должна.
-          service_prices: Object.fromEntries(
-            profile.services.filter(s => s.price_custom).map(s => [s.id, s.price]),
-          ),
+          // Только свои цены и время: унаследованное от Каталога своим не
+          // является и в форму как «своё» попасть не должно.
+          ...ownServiceTerms(profile),
           photo_url: profile.photo_url ?? undefined,
           schedule: workingHoursToSchedule(weekHoursOf(profile)),
           branch_ids: profile.branches?.map(b => b.id) ?? [],
@@ -910,8 +918,8 @@ export default function Staff() {
               // Всегда явным списком: сервер отличает отсутствие поля от
               // пустого, и без этого снятая владельцем надбавка пережила бы
               // сохранение.
-              service_prices: Object.entries(updated.service_prices ?? {})
-                .map(([id, price]) => ({ service_id: Number(id), price })),
+              service_prices: servicePricesPayload(
+                updated.service_prices ?? {}, updated.service_durations ?? {}),
               photo_url: updated.photo_url,
               schedule: scheduleToWorkingHours(updated.schedule),
               // Присылаем ТОЛЬКО когда список пришёл из формы: сервер отличает

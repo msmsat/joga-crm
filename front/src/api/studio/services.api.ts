@@ -5,6 +5,8 @@ export interface ServiceMaster {
   user_id: number
   name: string
   price: number
+  // Сколько услуга длится у этого мастера, минуты.
+  duration_min: number
 }
 
 // Зеркало бэкенд-схемы ServiceRead (back/schemas/studio/studio.py).
@@ -36,6 +38,10 @@ export interface ServiceRead {
   // цену, а не диапазон: диапазон живёт ровно до выбора мастера.
   masters: ServiceMaster[]
   duration_min: number
+  // Длительность «от–до» по мастерам — то же правило, что у цены: совпали —
+  // одно число, разошлись — «45–60 мин». Считает сервер.
+  duration_from: number
+  duration_to: number
   category: string | null
   service_type: string | null
   color: string | null

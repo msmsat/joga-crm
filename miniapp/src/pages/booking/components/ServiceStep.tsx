@@ -5,6 +5,7 @@ import { EmptyState } from '../../../components/ui/EmptyState';
 import type { ResourceStaffMember } from '../../../api/hybrid.types';
 import type { StudioService } from '../../../api/studio';
 import { useServicePrice } from '../../../hooks/useServicePrice';
+import { useServiceDuration } from '../../../hooks/useServiceDuration';
 
 /**
  * Услуги выбранного мастера — первый шаг листа, когда человек начал с мастера.
@@ -26,6 +27,7 @@ export default function ServiceStep({ options, master, onPick }: {
 }) {
   const { t } = useTranslation();
   const priceOf = useServicePrice();
+  const durationOf = useServiceDuration();
 
   if (options.length === 0) {
     return <EmptyState size="sm" title={t('booking.noServicesForMaster')} />;
@@ -49,7 +51,7 @@ export default function ServiceStep({ options, master, onPick }: {
               {t(`lesson.name.${service.name}`, { defaultValue: service.name })}
             </span>
             <span className="mt-0.5 block text-[12.5px] font-semibold tabular-nums text-muted-foreground">
-              {t('booking.duration', { min: service.duration_min })} · {priceOf(service, master)}
+              {durationOf(service, master)} · {priceOf(service, master)}
             </span>
             <BundleSummary service={service} />
           </span>

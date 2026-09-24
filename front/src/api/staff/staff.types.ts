@@ -67,6 +67,9 @@ export interface StaffServicePricePayload {
   // null — «как в Каталоге». Ноль — законная цена (бесплатно у стажёра), и
   // путать её со снятием нельзя.
   price: number | null
+  // Своё время мастера на услугу, минуты. null — «как в Каталоге». Ноль не
+  // бывает: услуга без длительности не занимает времени мастера.
+  duration_min: number | null
 }
 
 export interface StaffService {
@@ -79,6 +82,10 @@ export interface StaffService {
   // Цену выставили руками. Унаследованная поедет за правкой Каталога, своя —
   // нет, и интерфейс обязан их различать.
   price_custom: boolean
+  // То же для длительности (минуты): из Каталога, у этого мастера, своя ли.
+  base_duration_min: number
+  duration_min: number
+  duration_custom: boolean
 }
 
 export interface StaffWorkingHoursItem {

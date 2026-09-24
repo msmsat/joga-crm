@@ -36,6 +36,9 @@ export interface Lesson {
   booking_mode: 'event' | 'resource'
   tz_iana: string | null
   version?: number
+  // Буферы услуги, снятые в занятие: мастер в это время занят (подготовка/уборка).
+  buffer_before_min?: number
+  buffer_after_min?: number
 }
 
 export interface LessonCreate {

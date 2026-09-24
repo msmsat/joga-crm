@@ -39,6 +39,9 @@ export const queryKeys = {
   subscriptionConfig: ['catalog', 'subscription-config'] as const,
   staff: ['staff'] as const,
   staffProfile: (id: number) => ['staff', id] as const,
+  // Кто какие индивидуальные услуги ведёт и в каких филиалах — форма записи журнала.
+  // Под префиксом staff: правка сотрудника (услуги, филиалы) инвалидирует и его.
+  resourceStaff: ['staff', 'resource-links'] as const,
   halls: ['halls'] as const,
   journalLessons: (from: string, to: string) => ['journal-lessons', from, to] as const,
   journalLessonsAll: ['journal-lessons'] as const, // префикс: инвалидация всех диапазонов разом

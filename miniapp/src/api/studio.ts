@@ -77,6 +77,10 @@ export interface StudioService {
   price_min_str: string;
   price_max_str: string;
   duration_min: number;
+  /** Длительность «от–до» по мастерам — то же правило, что у цены: совпали —
+   *  одно число, разошлись — «45–60 мин» (back/services/service_pricing.py). */
+  duration_from: number;
+  duration_to: number;
   color: string | null;
 }
 

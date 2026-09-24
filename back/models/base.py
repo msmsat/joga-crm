@@ -18,5 +18,14 @@ user_services = Table(
     # («бесплатно у стажёра»), поэтому снятие своей цены пишется именно NULL.
     # Читать и писать — только через services/service_pricing.py.
     Column("price", Integer, nullable=True),
+    # Индивидуальная длительность услуги у мастера, в минутах. Правила те же,
+    # что у цены (NULL — «как у услуги»), кроме нуля: услуга без длительности
+    # не занимает времени мастера, и слот под неё встал бы поверх любой записи.
+    # Читать и писать — только через services/service_pricing.py.
+    Column("duration_min", Integer, nullable=True),
     CheckConstraint("price IS NULL OR price >= 0", name="check_user_services_price_non_negative"),
+    CheckConstraint(
+        "duration_min IS NULL OR (duration_min >= 1 AND duration_min <= 1440)",
+        name="check_user_services_duration_range",
+    ),
 )

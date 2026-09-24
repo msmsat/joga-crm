@@ -44,4 +44,8 @@ export interface Booking {
   /** Версия интервала — уходит как expected_version при переносе. */
   version: number;
   branchId: number | null;
+  /** Буферы в минутах: сетка рисует их рядом с карточкой другим тоном —
+   *  время занято, хотя занятия в нём нет. Нет у оптимистичной карточки. */
+  bufferBefore?: number;
+  bufferAfter?: number;
 }

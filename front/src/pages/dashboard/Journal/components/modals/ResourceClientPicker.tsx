@@ -5,8 +5,10 @@ import { clientsApi } from '../../../../../api/clients/clients.api';
 import { Select, type SelectOption } from '../../../../../components/ui/index';
 import { errorMessage } from '../../../../../api/errorMessage';
 
-export function ResourceClientPicker({ value, onChange, disabled = false }: {
+export function ResourceClientPicker({ value, onChange, disabled = false, labelClass = 'vk-label' }: {
   value: number | null; onChange: (id: number) => void; disabled?: boolean;
+  /** Клавиатурное окно журнала подписывает поля своим классом (kp-section-title). */
+  labelClass?: string;
 }) {
   const { t } = useTranslation(['journal', 'common']);
   const [search, setSearch] = useState('');
@@ -29,7 +31,7 @@ export function ResourceClientPicker({ value, onChange, disabled = false }: {
     options.unshift({ ...selected, hint: selected.hint });
   }
   return <div style={{ display: 'grid', gap: 6 }}>
-    <label className="vk-label">{t('journal:resourceBooking.client')}</label>
+    <label className={labelClass}>{t('journal:resourceBooking.client')}</label>
     <Select value={value == null ? '' : String(value)} options={options}
       placeholder={t('journal:resourceBooking.chooseClient')}
       searchable searchPlaceholder={t('journal:resourceBooking.searchClient')}

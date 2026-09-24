@@ -27,6 +27,7 @@ from datetime import datetime, timedelta
 from types import SimpleNamespace
 
 import pytest
+import stripe
 from fastapi import HTTPException
 
 import routers.billing.webhook as WH
@@ -609,6 +610,53 @@ def test_reconcile_runs_in_the_hourly_pass_under_the_lock():
 
     assert "reconcile_subscriptions" in inspect.getsource(OFB._run_billing_pass)
     assert "pg_try_advisory_lock" in inspect.getsource(OFB.run_offline_fee_billing)
+
+
+def _run_reconcile_raising(plan, error):
+    """Сверка, в которой Stripe отвечает ошибкой `error`. Вернуть (исправлено, db)."""
+    saved = SB.fetch_subscription
+
+    async def _fetch(_sub_id):
+        raise error
+
+    SB.fetch_subscription = _fetch
+    db = _reconcile_db([plan])
+    try:
+        return asyncio.run(WH.reconcile_subscriptions(db)), db
+    finally:
+        SB.fetch_subscription = saved
+
+
+def test_reconcile_forgets_a_subscription_missing_under_the_current_key():
+    """`sub_…` из другого режима Stripe (смена test↔live) или удалённый объект.
+
+    Раньше сверка писала ошибку каждый час и навсегда: ссылка в никуда оставалась
+    в БД, и каждый следующий проход упирался в тот же `No such subscription`
+    (живой случай 23.09.2026 — десятки алертов по одной студии за сутки). Снимаем
+    ссылку тем же правилом, что checkout._forget_dead_subscription: статус и срок
+    не трогаем — закрывать доступ из-за пропавшего объекта Stripe мы не вправе.
+    """
+    plan = _SubPlan(status="active", expires_at=_YESTERDAY)
+    error = stripe.InvalidRequestError(
+        "No such subscription: 'sub_1'", param="id", code="resource_missing", http_status=404,
+    )
+    _, db = _run_reconcile_raising(plan, error)
+    assert plan.stripe_subscription_id is None, "ссылка в никуда осталась — алерт повторится"
+    assert db.committed, "снятие ссылки не закоммичено"
+    assert (plan.status, plan.expires_at) == ("active", _YESTERDAY)
+
+
+@pytest.mark.parametrize("error", [
+    stripe.APIConnectionError("Connection interrupted"),
+    stripe.AuthenticationError("Invalid API key"),
+    stripe.InvalidRequestError("Invalid request", param="id", code="parameter_invalid_empty"),
+])
+def test_reconcile_keeps_the_link_on_other_stripe_errors(error):
+    """Сетевой сбой или протухший ключ — не «подписки нет». Снять ссылку на них
+    значило бы завести студии ВТОРУЮ подписку при следующей оплате."""
+    plan = _SubPlan(status="active", expires_at=_YESTERDAY)
+    _run_reconcile_raising(plan, error)
+    assert plan.stripe_subscription_id == "sub_1"
 
 
 if __name__ == "__main__":

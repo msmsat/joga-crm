@@ -44,6 +44,15 @@ export type QuoteRequest = EventQuoteRequest | ResourceQuoteRequest;
 export interface AvailabilityQuery { service_id: number; branch_id: number; date_from: string; date_to: string; teacher_id?: number; hall_id?: number; exclude_lesson_id?: number }
 export interface AvailabilitySlot { starts_at: string; local_start: string; tz_iana: string; teacher_ids: number[] }
 export interface AvailabilityRead { slots: AvailabilitySlot[]; reason: string | null }
+/** Мастер и то, что с ним реально связано: его индивидуальные услуги (с его ценой) и филиалы,
+ *  где он принимает. Зеркало ResourceStaffMemberRead (back/schemas/schedule/hybrid.py). */
+export interface ResourceStaffMember {
+  teacher_id: number; name: string; last_name: string | null; photo_url: string | null; department: string | null;
+  service_ids: number[]; service_prices: Record<number, number>;
+  /** {service_id: минуты} — сколько услуга длится у ЭТОГО мастера. */
+  service_durations: Record<number, number>; branch_ids: number[];
+}
+export interface ResourceStaffRead { staff: ResourceStaffMember[]; reason: string | null }
 export type BookingStatus = 'active' | 'pending' | 'hold' | 'attended' | 'cancelled';
 export type NextAction = 'none' | 'wait_approval' | 'pay';
 export interface BookingRead { reservation_id: number; lesson_id: number; booking_mode: BookingMode; status: BookingStatus; version: number; next_action: NextAction; payment_url: string | null }

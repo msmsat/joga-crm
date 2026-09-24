@@ -134,6 +134,8 @@ class ServicePrice:
     # Верхняя граница, когда у мастеров услуги цены разные: ответ тогда
     # «от price до price_max», а не одна сумма (services/service_pricing.py).
     price_max: Optional[int] = None
+    # Верхняя граница длительности, когда у мастеров время своё: «45–60 мин».
+    duration_max: Optional[int] = None
 
 
 @dataclass(frozen=True)
@@ -379,13 +381,15 @@ async def _service_fact(db, studio_id: int, kind: InfoKind, intent: UserSearchIn
         currency = ref.currency or "RUB"
         # Один запрос на все названные услуги, а не по запросу на каждую.
         spans = await service_pricing.price_ranges(db, studio_id, [s.id for s in picked])
+        minutes = await service_pricing.duration_ranges(db, studio_id, [s.id for s in picked])
         items = tuple(
             ServicePrice(
                 s.name,
                 spans[s.id].min if s.id in spans else s.price,
                 currency,
-                s.duration_min,
+                minutes[s.id].min if s.id in minutes else s.duration_min,
                 spans[s.id].max if s.id in spans and spans[s.id].is_range else None,
+                minutes[s.id].max if s.id in minutes and minutes[s.id].is_range else None,
             )
             for s in picked
         )

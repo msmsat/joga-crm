@@ -11,6 +11,15 @@ from services.booking_rules import BookingRules, within_widget_hours
 # границы запрос «покажи свободное время» на далёкую дату считался бы всерьёз.
 MAX_STAFF_HORIZON_DAYS = 400
 
+# Стойка (администратор в журнале) ставит запись с точностью до минуты, а не по
+# сетке студии: сетка — удобство клиента в мини-приложении, и администратору
+# она запрещала поставить стрижку вплотную к предыдущей. Вплотную — но не в ту
+# же минуту: между концом занятого (вместе с буфером) и новым началом, как и
+# между новым концом и следующим занятым, минимум минута (решение владельца
+# продукта, 24.09.2026).
+STAFF_STEP_MIN = 1
+STAFF_GAP = timedelta(minutes=1)
+
 
 @dataclass
 class AvailabilityData:
@@ -25,6 +34,10 @@ class AvailabilityData:
     lessons: list = field(default_factory=list)
     busy: list = field(default_factory=list)
     hall_id: int | None = None
+    # {teacher_id: минуты} — сколько услуга длится у КАЖДОГО мастера
+    # (services/service_pricing.durations_of_teachers). Мастера нет в словаре —
+    # длительность услуги: снимки, собранные без этого поля, считаются как раньше.
+    durations: dict[int, int] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)
@@ -142,7 +155,10 @@ def _prepare(data: AvailabilityData, *, date_from: date, date_to: date,
         return None, "config_incomplete"
     step = studio.journal_time_step
     before, after, duration = service.buffer_before_min, service.buffer_after_min, service.duration_min
-    if not step or not 1 <= step <= 60 or not 1 <= duration <= 1440 or before + duration + after > 1440:
+    # Проверяется самая длинная из длительностей запроса: у мастера она своя,
+    # и сутки с буферами обязан уместить каждый, а не только услуга.
+    longest = max([duration, *(data.durations.get(t, duration) for t in data.teacher_ids)])
+    if not step or not 1 <= step <= 60 or not 1 <= duration <= 1440 or before + longest + after > 1440:
         return None, "config_incomplete"
     if client and not rules.booking_active:
         return None, "booking_closed"
@@ -159,7 +175,8 @@ def _prepare(data: AvailabilityData, *, date_from: date, date_to: date,
     horizon = (local_now + timedelta(days=rules.booking_window_days)
                if client else local_now + timedelta(days=MAX_STAFF_HORIZON_DAYS))
     threshold = instant_now + timedelta(minutes=rules.min_booking_advance_min if client else 0)
-    return _Grid(studio=studio, rules=rules, date_from=date_from, date_to=date_to, step=step,
+    return _Grid(studio=studio, rules=rules, date_from=date_from, date_to=date_to,
+                 step=step if client else STAFF_STEP_MIN,
                  before=before, duration=duration, after=after, horizon=horizon,
                  threshold=threshold, client=client), None
 
@@ -173,6 +190,10 @@ def _teacher_starts(data: AvailabilityData, teacher_id: int, grid: _Grid) -> _Te
     """
     windows, incomplete = _windows(data, teacher_id, grid.date_from, grid.date_to)
     occupied, unknown = _occupied(data, teacher_id)
+    gap = timedelta(0) if grid.client else STAFF_GAP
+    # Время мастера занимает ЕГО длительность услуги, а не каталожная: иначе
+    # сетка давала бы стрижке на 45 минут окно под час и наоборот.
+    duration = data.durations.get(teacher_id, grid.duration)
     starts = []
     for day in _days(grid.date_from, grid.date_to):
         midnight = datetime.combine(day, time.min)
@@ -181,7 +202,7 @@ def _teacher_starts(data: AvailabilityData, teacher_id: int, grid: _Grid) -> _Te
             if local > grid.horizon or (grid.client and not within_widget_hours(grid.rules, local)):
                 continue
             start = local - timedelta(minutes=grid.before)
-            end = local + timedelta(minutes=grid.duration + grid.after)
+            end = local + timedelta(minutes=duration + grid.after)
             if not any(a <= start and end <= b for a, b in windows):
                 continue
             full = booking_time.resolve_interval(start, end, grid.studio.tz_iana)
@@ -196,7 +217,7 @@ def _teacher_starts(data: AvailabilityData, teacher_id: int, grid: _Grid) -> _Te
             if any(booking_time.possibly_overlaps(a, b, *full) for a, b in unknown):
                 incomplete = True
                 continue
-            if any(a < full[1] and full[0] < b for a, b in occupied):
+            if any(a - gap < full[1] and full[0] < b + gap for a, b in occupied):
                 continue
             starts.append((actual_start, local))
     return _TeacherDay(starts, windows, incomplete)

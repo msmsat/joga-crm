@@ -102,6 +102,7 @@
     "500": "Serverfel, försök igen senare",
     "network": "Ingen anslutning till servern",
     "unknown": "Något gick fel",
+    "NO_FUNDING": "Kunden har varken klippkort eller betalning för den här tjänsten",
     "loadFailed": "Det gick inte att läsa in",
     "retry": "Försök igen",
     "invalid_bot_token": "Telegram avvisade den här token — kontrollera att boten finns",
@@ -235,9 +236,12 @@
     "range": "från {{from}} till {{to}}"
   },
   "servicePrice": {
-    "hint": "Tryck på beloppet för att ange ett eget pris",
+    "hint": "Tryck på beloppet eller tiden för att ange egen",
     "custom": "Eget pris. Töm fältet för att återgå till priset från Katalog",
     "inherited": "Pris från Katalog",
-    "aria": "Pris för {{service}}"
+    "aria": "Pris för {{service}}",
+    "durationCustom": "Egen längd. Töm fältet för att återgå till Katalogens längd",
+    "durationInherited": "Längd från Katalogen",
+    "durationAria": "Längd för {{service}}, minuter"
   }
 }

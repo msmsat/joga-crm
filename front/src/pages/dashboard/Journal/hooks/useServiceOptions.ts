@@ -45,10 +45,21 @@ export function useServiceOptions(includeResource = false) {
     return own ? own.price : service.price;
   }, [services]);
 
+  // Сколько услуга длится у ЭТОГО тренера — по тому же правилу, что цена.
+  const durationFor = useMemo(() => (serviceId: number | null, teacherId: number | null) => {
+    const service = services.find(s => s.id === serviceId);
+    if (!service) return null;
+    const own = teacherId == null
+      ? undefined
+      : service.masters?.find(m => m.user_id === teacherId);
+    return own?.duration_min ?? service.duration_min;
+  }, [services]);
+
   return {
     services,
     options,
     priceFor,
+    durationFor,
     // Студия только с индивидуальными услугами сразу открывает запись клиента.
     onlyResourceServices: eventServices.length === 0 && services.length > 0,
   };

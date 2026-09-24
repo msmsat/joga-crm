@@ -47,6 +47,9 @@ export type ResourceTarget = {
   name: string;
   terminology_profile?: TerminologyProfile | null;
   duration_min?: number;
+  /** Готовая строка длительности: время выбранного мастера или «от–до».
+   *  Есть — побеждает `duration_min`, который про услугу вообще. */
+  duration_str?: string;
   price_str?: string;
 };
 

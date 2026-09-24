@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
+import { useDurationLabel } from '../../../../hooks/useDurationLabel';
 import { checkoutApi } from '../../../../api/checkout';
 import type { CheckoutProductType, CheckoutSessionResult } from '../../../../api/checkout';
 import { StripeCheckoutModal } from './modals/StripeCheckoutModal';
@@ -24,6 +25,7 @@ export function WalletPOS({ clientId, productId, productType, onBack, onPaid }: 
   onPaid: () => void;
 }) {
   const { t } = useTranslation('clients');
+  const durationLabel = useDurationLabel();
   const toast = useToast();
   const qc = useQueryClient();
   const currency = getCurrencySymbol(useStudioCurrency());
@@ -155,7 +157,7 @@ export function WalletPOS({ clientId, productId, productType, onBack, onPaid }: 
               label: m.name,
               // Цена рядом с именем: кассир выбирает не только исполнителя, но
               // и сумму, и узнать её после выбора — поздно.
-              hint: `${currency}${m.price}`,
+              hint: `${currency}${m.price} · ${durationLabel(m.duration_min)}`,
             }))}
             onChange={value => setTeacherId(value ? Number(value) : null)}
           />

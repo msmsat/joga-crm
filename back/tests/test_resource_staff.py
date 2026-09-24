@@ -38,7 +38,7 @@ warnings.filterwarnings("ignore")
 DAY = hours.DAY  # среда, 2027-06-16
 
 MEMBER_FIELDS = {"teacher_id", "name", "last_name", "photo_url", "department", "service_ids",
-                 "service_prices", "service_price_strs", "branch_ids"}
+                 "service_prices", "service_price_strs", "service_durations", "branch_ids"}
 
 
 @pytest.fixture(autouse=True)

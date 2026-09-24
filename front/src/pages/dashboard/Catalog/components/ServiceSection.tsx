@@ -12,6 +12,7 @@ import { ConfirmModal } from '../../../../components/ui/ConfirmModal';
 import { Button, QrShareModal } from '../../../../components/ui/index';
 import { miniappLink } from '../../../../lib/miniapp';
 import { usePriceLabel } from '../../../../hooks/usePriceLabel';
+import { useDurationLabel } from '../../../../hooks/useDurationLabel';
 import { errorMessage } from '../../../../api/errorMessage';
 import { getCurrencySymbol } from '../../../../components/UI';
 import { ServiceModal } from './modals/EditService';
@@ -35,6 +36,7 @@ export function ServiceSection() {
   // «от–до», пока услугу ведут мастера с разными ценами. Правило записи одно на
   // весь кабинет и живёт в хуке — Каталог его не переизобретает.
   const priceLabel = usePriceLabel();
+  const durationLabel = useDurationLabel();
   const { services, isLoading, error: loadError, refetch, createService, updateService, deleteService } = useServiceList();
   // Что выбрал пользователь; пока не выбрал (или выбранная услуга исчезла) —
   // открыта первая. Считаем при рендере, а не эффектом: иначе первый кадр
@@ -130,7 +132,7 @@ export function ServiceSection() {
                   <div className="cat-item-dot" style={{ background: svc.color }} />
                   <div className="cat-item-info">
                     <div className="cat-item-name">{svc.name}</div>
-                    <div className="cat-item-sub">{priceLabel(svc.price_min, svc.price_max, true)} · {svc.duration_min} {t('common:units.min')}</div>
+                    <div className="cat-item-sub">{priceLabel(svc.price_min, svc.price_max, true)} · {durationLabel(svc.duration_from, svc.duration_to)}</div>
                   </div>
                   <span className={`cat-type-badge ${svc.type}`}>
                     {svc.bundle_items.length ? t('catalog:bundles.badge') : svc.type === 'group' ? t('catalog:services.types.group') : t('catalog:services.types.individual')}
@@ -194,7 +196,7 @@ export function ServiceSection() {
                   <div className="cat-stat-l">{t('catalog:services.stats.price')}</div>
                 </div>
                 <div className="cat-stat-card">
-                  <div className="cat-stat-v">{activeService.duration_min} {t('common:units.min')}</div>
+                  <div className="cat-stat-v">{durationLabel(activeService.duration_from, activeService.duration_to)}</div>
                   <div className="cat-stat-l">{t('catalog:services.stats.duration')}</div>
                 </div>
                 <div className="cat-stat-card">
@@ -223,7 +225,7 @@ export function ServiceSection() {
               </>}
               {activeService.masters.length > 0 && <>
                 <div className="cat-sec-title">{t('catalog:bundles.masters')}</div>
-                <div className="cat-info-row">{activeService.masters.map(master => <div className="cat-chip" key={master.user_id}>{master.name} · {priceLabel(master.price, master.price, true)}</div>)}</div>
+                <div className="cat-info-row">{activeService.masters.map(master => <div className="cat-chip" key={master.user_id}>{master.name} · {priceLabel(master.price, master.price, true)} · {durationLabel(master.duration_min ?? activeService.duration_min)}</div>)}</div>
               </>}
               {activeService.bundle_items.length > 0 && activeService.masters.length === 0 && <p className="cat-bundle-muted">{t('catalog:bundles.noMasters')}</p>}
               {/* Description */}
@@ -235,7 +237,9 @@ export function ServiceSection() {
               <div className="cat-info-row">
                 <div className="cat-chip">
                   <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                  {activeService.duration_min} {t('catalog:services.details.minutes')}
+                  {activeService.duration_to > activeService.duration_from
+                    ? durationLabel(activeService.duration_from, activeService.duration_to)
+                    : `${activeService.duration_min} ${t('catalog:services.details.minutes')}`}
                 </div>
                 {activeService.type === 'group' && activeService.max_clients && (
                   <div className="cat-chip">
@@ -347,7 +351,7 @@ export function ServiceSection() {
             activeService.type === 'group'
               ? t('catalog:services.types.groupFull')
               : t('catalog:services.types.individualFull'),
-            `${activeService.duration_min} ${t('common:units.min')}`,
+            durationLabel(activeService.duration_from, activeService.duration_to),
             priceLabel(activeService.price_min, activeService.price_max),
           ].join(' · ')}
           caption={t('common:qr.scanHint')}

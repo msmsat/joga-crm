@@ -53,6 +53,7 @@ async def resource_staff(request: Request, query: Annotated[PublicResourceStaffQ
                 service_id: _fmt_amount(price, currency)
                 for service_id, price in row.service_prices.items()
             },
+            service_durations=row.service_durations,
             branch_ids=row.branch_ids)
         for row in report.staff])
 

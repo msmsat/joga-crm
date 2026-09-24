@@ -1290,6 +1290,31 @@
   font-weight: 800;
   color: var(--accent2);
 }
+
+/* Индивидуальная запись в клавиатурном окне (ResourceKeypadModal). Карточка
+   мастера там — кнопка, а не div: сбрасываем её системный вид под .kp-trainer. */
+button.kp-trainer {
+  width: 100%; font-family: var(--font); text-align: left;
+}
+button.kp-trainer:disabled { cursor: default; opacity: 0.6; }
+.kp-trainer-price {
+  flex-shrink: 0; font-size: 11.5px; font-weight: 700; color: var(--muted);
+}
+.kp-date-input {
+  margin: 0; height: 40px; box-sizing: border-box; padding: 0 12px;
+  background: var(--bg); border: 1px solid var(--border); border-radius: 10px;
+  font-family: var(--font); font-weight: 700; color: var(--onyx);
+}
+.kp-hint { font-size: 12px; font-weight: 600; color: var(--muted); }
+.kp-error { font-size: 11.5px; font-weight: 600; color: var(--error); }
+.kp-link {
+  border: 0; background: none; padding: 0; cursor: pointer;
+  font: inherit; color: var(--peach); text-decoration: underline;
+}
+.kp-foot-sum {
+  margin-right: auto; align-self: center;
+  font-size: 12.5px; font-weight: 800; color: var(--onyx);
+}
 .kp-chip {
   padding: 10px 0;
   border-radius: 10px;
@@ -1879,6 +1904,12 @@
     padding: 4px 2px 6px;
     animation: jf-drop 0.24s cubic-bezier(0.32, 0.72, 0, 1);
   }
+  /* Пока календарь открыт, второй ряд (День/Неделя, «Индивидуально»,
+     выбор тренеров) прячется: календарь сразу переходит в сетку. */
+  .j-toolbar:has(.j-cal-panel) > .j-sep,
+  .j-toolbar:has(.j-cal-panel) > .j-tb-controls,
+  .j-toolbar:has(.j-cal-panel) > .j-resource-btn,
+  .j-toolbar:has(.j-cal-panel) > .j-tp-btn { display: none !important; }
   .j-cal-panel .mc-header { margin-bottom: 8px !important; }
   .j-cal-panel .mc-month { font-size: 15px; }
   .j-cal-panel .mc-nav { width: 36px; height: 36px; border-radius: 10px; }

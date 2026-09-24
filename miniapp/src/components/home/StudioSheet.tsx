@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { useServicePrice } from '../../hooks/useServicePrice';
+import { useServiceDuration } from '../../hooks/useServiceDuration';
 import { BundleSummary } from '../booking/BundleSummary';
 import { Sheet } from '../ui/Sheet';
 import { studioState, STATE_COLOR } from '../../lib/studio-status';
@@ -36,6 +37,7 @@ export default function StudioSheet({
   const { t } = useTranslation();
 
   const priceOf = useServicePrice();
+  const durationOf = useServiceDuration();
   if (!studio) return null;
 
   const state = studioState(studio.opens, studio.closes);
@@ -116,7 +118,7 @@ export default function StudioSheet({
                 {t(`lesson.name.${service.name}`, { defaultValue: service.name })}
               </span>
               <span className="mt-1 block text-[11.5px] font-medium text-muted-foreground">
-                {service.duration_min} {t('common.minutes')}
+                {durationOf(service, null)}
               </span>
               <BundleSummary service={service} />
             </span>
