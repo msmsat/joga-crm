@@ -145,7 +145,13 @@
       "not_personal": "A személyes beállítások nem módosítják a kötelező értesítéseket"
     },
     "trial_already_used": "Az ingyenes próbaidőszak már nem érhető el ehhez a stúdióhoz.",
-    "saveFailed": "A mentés nem sikerült"
+    "saveFailed": "A mentés nem sikerült",
+    "catalog": {
+      "service_in_bundle": "A szolgáltatás egy csomag része. Először távolítsa el a csomagból.",
+      "not_a_bundle": "Egy önálló szolgáltatás nem alakítható csomaggá. Hozzon létre új csomagot.",
+      "bundle_size": "Válasszon 2–10 különböző egyéni szolgáltatást.",
+      "bundle_part_invalid": "Válasszon 2–10 különböző egyéni szolgáltatást."
+    }
   },
   "units": {
     "min": "perc",

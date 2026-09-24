@@ -109,6 +109,7 @@
       "rate": "Rate",
       "rate_type": "Pay type",
       "service_ids": "Services",
+      "bundle_service_ids": "Included services",
       "schedule": "Schedule"
     },
     "bool": {

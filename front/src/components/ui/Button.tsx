@@ -12,6 +12,8 @@ export interface ButtonProps {
   disabled?: boolean;
   fullWidth?: boolean;
   icon?: React.ReactNode;        // inline-SVG слева от текста
+  /** Имя для кнопки-иконки без текста: без него экранный диктор читает «кнопка». */
+  ariaLabel?: string;
   style?: React.CSSProperties;
 }
 
@@ -51,7 +53,7 @@ const VARIANTS: Record<ButtonVariant, { bg: string; bgHover: string; color: stri
 // Кнопка кита: 4 варианта, hover-подъём, спиннер загрузки, слот под SVG-иконку.
 export function Button({
   children, onClick, variant = 'primary', size = 'md', type = 'button',
-  loading, disabled, fullWidth, icon, style,
+  loading, disabled, fullWidth, icon, ariaLabel, style,
 }: ButtonProps) {
   const [hovered, setHovered] = useState(false);
   const v = VARIANTS[variant];
@@ -65,6 +67,8 @@ export function Button({
     <button
       className="v-btn"
       type={type}
+      aria-label={ariaLabel}
+      title={ariaLabel}
       onClick={onClick}
       disabled={off}
       onMouseEnter={() => setHovered(true)}

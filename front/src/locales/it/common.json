@@ -145,7 +145,13 @@
       "not_personal": "Le impostazioni personali non modificano le notifiche obbligatorie"
     },
     "trial_already_used": "La prova gratuita non è più disponibile per questo studio.",
-    "saveFailed": "Salvataggio non riuscito"
+    "saveFailed": "Salvataggio non riuscito",
+    "catalog": {
+      "service_in_bundle": "Il servizio fa parte di un pacchetto. Rimuovilo prima dal pacchetto.",
+      "not_a_bundle": "Un servizio normale non può diventare un pacchetto. Crea un nuovo pacchetto.",
+      "bundle_size": "Scegli da 2 a 10 servizi individuali diversi.",
+      "bundle_part_invalid": "Scegli da 2 a 10 servizi individuali diversi."
+    }
   },
   "units": {
     "min": "min",

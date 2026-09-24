@@ -145,7 +145,13 @@
       "not_personal": "Osobne postavke ne mijenjaju obavezne obavijesti"
     },
     "trial_already_used": "Besplatno probno razdoblje više nije dostupno za ovaj studio.",
-    "saveFailed": "Spremanje nije uspjelo"
+    "saveFailed": "Spremanje nije uspjelo",
+    "catalog": {
+      "service_in_bundle": "Usluga je dio paketa. Najprije je uklonite iz paketa.",
+      "not_a_bundle": "Običnu uslugu nije moguće pretvoriti u paket. Izradite novi paket.",
+      "bundle_size": "Odaberite od 2 do 10 različitih individualnih usluga.",
+      "bundle_part_invalid": "Odaberite od 2 do 10 različitih individualnih usluga."
+    }
   },
   "units": {
     "min": "min",

@@ -111,6 +111,7 @@
       "rate": "Stawka",
       "rate_type": "Rodzaj wynagrodzenia",
       "service_ids": "Usługi",
+      "bundle_service_ids": "Usługi w pakiecie",
       "schedule": "Harmonogram"
     },
     "bool": {

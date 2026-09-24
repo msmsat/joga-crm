@@ -111,6 +111,7 @@
       "rate": "Tarif",
       "rate_type": "Tip de plată",
       "service_ids": "Servicii",
+      "bundle_service_ids": "Servicii incluse",
       "schedule": "Program"
     },
     "bool": {

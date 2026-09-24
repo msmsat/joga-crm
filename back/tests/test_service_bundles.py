@@ -11,7 +11,7 @@ from uuid import uuid4
 
 import pytest
 from fastapi import HTTPException
-from sqlalchemy import insert
+from sqlalchemy import insert, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import engine
@@ -173,3 +173,87 @@ async def test_a_part_cannot_leave_its_bundle_silently():
         await delete_service(service_id=bundle.id, ctx=ctx, db=db)
         await delete_service(service_id=wash.id, ctx=ctx, db=db)
     await _in_rollback(scenario)
+
+
+async def test_inactive_and_admin_members_are_not_automatically_assigned():
+    async def scenario(db):
+        ctx = await _context(db)
+        a = await _service(ctx, db, "A", 100)
+        b = await _service(ctx, db, "B", 100)
+        inactive = await _master(db, ctx, "Inactive", [a.id, b.id])
+        admin = await _master(db, ctx, "Admin", [a.id, b.id])
+        owner = await _master(db, ctx, "Owner", [a.id, b.id])
+        await db.execute(update(StudioMember).where(StudioMember.user_id == inactive).values(status="inactive"))
+        await db.execute(update(StudioMember).where(StudioMember.user_id == admin).values(role="admin"))
+        await db.execute(update(StudioMember).where(StudioMember.user_id == owner).values(role="owner"))
+        bundle = await _bundle(ctx, db, [a.id, b.id], 150)
+        ids = (await db.execute(select(user_services.c.user_id).where(user_services.c.service_id == bundle.id))).scalars().all()
+        assert ids == [owner]
+        assert bundle.max_clients == 1
+    await _in_rollback(scenario)
+
+
+async def test_parts_change_preserves_custom_prices_and_bumps_booking_version():
+    async def scenario(db):
+        ctx = await _context(db)
+        a = await _service(ctx, db, "A", 100)
+        b = await _service(ctx, db, "B", 200)
+        c = await _service(ctx, db, "C", 300)
+        master = await _master(db, ctx, "Master", [a.id, b.id, c.id])
+        bundle = await _bundle(ctx, db, [a.id, b.id], 250)
+        await db.execute(update(user_services).where(user_services.c.service_id == bundle.id).values(price=240))
+        studio = await db.get(Studio, ctx.studio_id)
+        version = studio.booking_config_version
+        edited = await update_service(bundle.id, ServiceUpdate(bundle_service_ids=[c.id, a.id]), ctx, db)
+        assert [p.service_id for p in edited.bundle_items] == [c.id, a.id]
+        assert edited.price == 250 and edited.duration_min == 75
+        assert [(m.user_id, m.price) for m in edited.masters] == [(master, 240)]
+        assert studio.booking_config_version == version + 1
+        await update_service(bundle.id, ServiceUpdate(bundle_service_ids=[c.id, a.id]), ctx, db)
+        assert studio.booking_config_version == version + 1
+    await _in_rollback(scenario)
+
+
+async def test_changing_part_price_never_reprices_the_bundle():
+    async def scenario(db):
+        ctx = await _context(db)
+        a = await _service(ctx, db, "A", 100)
+        b = await _service(ctx, db, "B", 200)
+        bundle = await _bundle(ctx, db, [a.id, b.id], 250)
+        await update_service(a.id, ServiceUpdate(price=500), ctx, db)
+        catalog = {s.id: s for s in await list_services(ctx, db)}
+        assert catalog[bundle.id].price == 250
+        assert catalog[bundle.id].bundle_full_price == 700
+    await _in_rollback(scenario)
+
+
+async def test_bundle_cannot_be_cleared_nested_or_changed_to_group():
+    async def scenario(db):
+        ctx = await _context(db)
+        a = await _service(ctx, db, "A", 100)
+        b = await _service(ctx, db, "B", 200)
+        bundle = await _bundle(ctx, db, [a.id, b.id], 250)
+        for change in (ServiceUpdate(bundle_service_ids=[]), ServiceUpdate(bundle_service_ids=[bundle.id, a.id]), ServiceUpdate(service_type="group")):
+            with pytest.raises(HTTPException) as exc:
+                await update_service(bundle.id, change, ctx, db)
+            assert exc.value.status_code == 422
+        # Explicit null format cannot erase its identity as an individual visit.
+        changed = await update_service(bundle.id, ServiceUpdate(service_type=None, max_clients=20), ctx, db)
+        assert changed.service_type == "individual" and changed.max_clients == 1
+    await _in_rollback(scenario)
+
+
+def test_no_savings_claim_when_any_bundle_price_is_higher():
+    from services.service_bundles import full_price
+    from services.service_pricing import PriceRange
+    spans = {1: PriceRange(100, 300), 2: PriceRange(200, 400)}
+    assert full_price([1, 2], spans, PriceRange(200, 350)) is None
+    assert full_price([1, 2], spans, PriceRange(200, 300)) is None
+    assert full_price([1, 2], spans, PriceRange(200, 250)) == 300
+
+
+@pytest.mark.parametrize("payload", [{"price": -1}, {"duration_min": 0}, {"price": None}, {"duration_min": None}, {"name": None}])
+def test_invalid_values_are_rejected_before_a_database_write(payload):
+    from pydantic import ValidationError
+    with pytest.raises(ValidationError):
+        ServiceUpdate(**payload)

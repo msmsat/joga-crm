@@ -1,0 +1,12 @@
+import React from 'react';
+import { createRoot } from 'react-dom/client';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { BrowserRouter } from 'react-router-dom';
+import i18n from '../src/i18n';
+import { ToastProvider } from '../src/components/ui/Toast';
+import { ServiceSection } from '../src/pages/dashboard/Catalog/components/ServiceSection';
+import '../src/App.css';
+import '../src/pages/dashboard/Catalog/Catalog.css';
+i18n.changeLanguage('ru');
+const qc = new QueryClient({defaultOptions:{queries:{retry:false}}});
+createRoot(document.getElementById('root')!).render(<React.StrictMode><BrowserRouter><QueryClientProvider client={qc}><ToastProvider><main style={{padding:24,minHeight:'100dvh'}}><h1>Каталог · проверка комплексов</h1><ServiceSection/></main></ToastProvider></QueryClientProvider></BrowserRouter></React.StrictMode>);

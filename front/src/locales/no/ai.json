@@ -110,6 +110,7 @@
       "rate": "Sats",
       "rate_type": "Lønnstype",
       "service_ids": "Tjenester",
+      "bundle_service_ids": "Inkluderte tjenester",
       "schedule": "Timeplan"
     },
     "bool": {

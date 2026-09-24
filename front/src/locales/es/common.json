@@ -145,7 +145,13 @@
       "not_personal": "Los ajustes personales no cambian las notificaciones obligatorias"
     },
     "trial_already_used": "La prueba gratuita ya no está disponible para este estudio.",
-    "saveFailed": "No se pudo guardar"
+    "saveFailed": "No se pudo guardar",
+    "catalog": {
+      "service_in_bundle": "El servicio forma parte de un paquete. Elimínalo primero del paquete.",
+      "not_a_bundle": "Un servicio normal no puede convertirse en paquete. Crea un paquete nuevo.",
+      "bundle_size": "Selecciona de 2 a 10 servicios individuales distintos.",
+      "bundle_part_invalid": "Selecciona de 2 a 10 servicios individuales distintos."
+    }
   },
   "units": {
     "min": "min",

@@ -145,7 +145,13 @@
       "not_personal": "Personlige innstillinger endrer ikke obligatoriske varsler"
     },
     "trial_already_used": "Gratis prøveperiode er ikke lenger tilgjengelig for dette studioet.",
-    "saveFailed": "Kunne ikke lagre"
+    "saveFailed": "Kunne ikke lagre",
+    "catalog": {
+      "service_in_bundle": "Tjenesten er del av en pakke. Fjern den fra pakken først.",
+      "not_a_bundle": "En vanlig tjeneste kan ikke bli en pakke. Opprett en ny pakke.",
+      "bundle_size": "Velg 2–10 forskjellige individuelle tjenester.",
+      "bundle_part_invalid": "Velg 2–10 forskjellige individuelle tjenester."
+    }
   },
   "units": {
     "min": "min",

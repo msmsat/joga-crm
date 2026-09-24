@@ -145,7 +145,13 @@
       "not_personal": "Personliga inställningar ändrar inte obligatoriska aviseringar"
     },
     "trial_already_used": "Den kostnadsfria provperioden är inte längre tillgänglig för den här studion.",
-    "saveFailed": "Det gick inte att spara"
+    "saveFailed": "Det gick inte att spara",
+    "catalog": {
+      "service_in_bundle": "Tjänsten ingår i ett paket. Ta först bort den från paketet.",
+      "not_a_bundle": "En vanlig tjänst kan inte omvandlas till ett paket. Skapa ett nytt paket.",
+      "bundle_size": "Välj 2–10 olika individuella tjänster.",
+      "bundle_part_invalid": "Välj 2–10 olika individuella tjänster."
+    }
   },
   "units": {
     "min": "min",

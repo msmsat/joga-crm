@@ -145,7 +145,13 @@
       "not_personal": "Osobní nastavení nemění povinná oznámení"
     },
     "trial_already_used": "Bezplatná zkušební verze už pro toto studio není k dispozici.",
-    "saveFailed": "Uložení se nezdařilo"
+    "saveFailed": "Uložení se nezdařilo",
+    "catalog": {
+      "service_in_bundle": "Služba je součástí balíčku. Nejprve ji z balíčku odeberte.",
+      "not_a_bundle": "Běžnou službu nelze změnit na balíček. Vytvořte nový balíček.",
+      "bundle_size": "Vyberte 2 až 10 různých individuálních služeb.",
+      "bundle_part_invalid": "Vyberte 2 až 10 různých individuálních služeb."
+    }
   },
   "units": {
     "min": "min",

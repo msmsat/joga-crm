@@ -128,8 +128,10 @@ async def set_parts(db: AsyncSession, bundle_id: int, part_ids: list[int]) -> No
 async def assign_masters(db: AsyncSession, studio_id: int, bundle_id: int, part_ids: list[int]) -> None:
     """Назначить комплекс мастерам студии, которые делают ВСЕ его части.
 
-    Только добавляет: мастера, которому владелец комплекс уже назначил или снял
-    руками, повторная правка состава не трогает. Цену не пишем — NULL значит
+    Добавляет подходящих действующих мастеров при создании и смене состава.
+    Уже назначенных мастеров и их индивидуальные цены сохраняет: назначения
+    комплексной услуги владелец также управляет в карточке сотрудника.
+    Цену не пишем — NULL значит
     «как у комплекса» (services/service_pricing.py).
     """
     already = select(user_services.c.user_id).where(user_services.c.service_id == bundle_id)

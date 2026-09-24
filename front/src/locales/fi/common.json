@@ -145,7 +145,13 @@
       "not_personal": "Henkilökohtaiset asetukset eivät muuta pakollisia ilmoituksia"
     },
     "trial_already_used": "Ilmainen kokeilu ei ole enää käytettävissä tälle studiolle.",
-    "saveFailed": "Tallennus epäonnistui"
+    "saveFailed": "Tallennus epäonnistui",
+    "catalog": {
+      "service_in_bundle": "Palvelu sisältyy pakettiin. Poista se ensin paketista.",
+      "not_a_bundle": "Tavallista palvelua ei voi muuttaa paketiksi. Luo uusi paketti.",
+      "bundle_size": "Valitse 2–10 erilaista yksilöpalvelua.",
+      "bundle_part_invalid": "Valitse 2–10 erilaista yksilöpalvelua."
+    }
   },
   "units": {
     "min": "min",

@@ -109,6 +109,7 @@
       "rate": "Ставка",
       "rate_type": "Тип оплати",
       "service_ids": "Послуги",
+      "bundle_service_ids": "Склад комплексу",
       "schedule": "Розклад"
     },
     "bool": {

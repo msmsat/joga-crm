@@ -110,6 +110,7 @@
       "rate": "Díjazás",
       "rate_type": "Fizetési típus",
       "service_ids": "Szolgáltatások",
+      "bundle_service_ids": "A csomag szolgáltatásai",
       "schedule": "Időbeosztás"
     },
     "bool": {

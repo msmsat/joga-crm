@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { useServicePrice } from '../../hooks/useServicePrice';
+import { BundleSummary } from '../booking/BundleSummary';
 import { Sheet } from '../ui/Sheet';
 import { studioState, STATE_COLOR } from '../../lib/studio-status';
 import type { Studio, StudioService } from '../../api/studio';
@@ -117,6 +118,7 @@ export default function StudioSheet({
               <span className="mt-1 block text-[11.5px] font-medium text-muted-foreground">
                 {service.duration_min} {t('common.minutes')}
               </span>
+              <BundleSummary service={service} />
             </span>
 
             <span className="shrink-0 text-[14px] font-extrabold tabular-nums tracking-[-0.02em] text-foreground">

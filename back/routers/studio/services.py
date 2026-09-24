@@ -284,6 +284,10 @@ async def update_service(
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
 
+    effective_duration = changes.get("duration_min", service.duration_min)
+    if effective_booking_mode == "resource" and (effective_duration is None or not 1 <= effective_duration <= 1440):
+        raise HTTPException(status_code=422, detail="Длительность должна быть от 1 до 1440 минут")
+
     current_parts = await service_bundles.parts_of(db, service.id)
     if new_parts is not None:
         service_bundles.assert_is_bundle(current_parts)

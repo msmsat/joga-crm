@@ -169,9 +169,9 @@ def reject_resource_group_combo(service_type: Optional[str], booking_mode: Optio
 
 
 class ServiceCreate(BaseSchema):
-    name: str
-    price: int
-    duration_min: int = 60
+    name: str = Field(min_length=1, max_length=150)
+    price: int = Field(ge=0)
+    duration_min: int = Field(60, ge=1)
     description: Optional[str] = None
     category: Optional[str] = None
     service_type: Optional[str] = None
@@ -194,9 +194,9 @@ class ServiceCreate(BaseSchema):
 
 
 class ServiceUpdate(BaseSchema):
-    name: Optional[str] = None
-    price: Optional[int] = None
-    duration_min: Optional[int] = None
+    name: Optional[str] = Field(None, min_length=1, max_length=150)
+    price: Optional[int] = Field(None, ge=0)
+    duration_min: Optional[int] = Field(None, ge=1)
     description: Optional[str] = None
     category: Optional[str] = None
     service_type: Optional[str] = None
@@ -207,6 +207,13 @@ class ServiceUpdate(BaseSchema):
     buffer_after_min: Optional[int] = Field(None, ge=0, le=240)
     is_bookable: Optional[bool] = None
     terminology_profile: Optional[TerminologyProfile] = None
+    @model_validator(mode="after")
+    def _required_values_not_null(self) -> "ServiceUpdate":
+        for field in ("name", "price", "duration_min", "booking_mode", "buffer_before_min", "buffer_after_min", "is_bookable"):
+            if field in self.model_fields_set and getattr(self, field) is None:
+                raise ValueError(f"{field} не может быть null")
+        return self
+
     # Новый состав комплекса целиком. Обычную услугу комплексом не делает:
     # её история записей относится к одной процедуре, а не к набору.
     bundle_service_ids: Optional[list[int]] = None

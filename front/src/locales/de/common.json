@@ -145,7 +145,13 @@
       "not_personal": "Persönliche Einstellungen ändern keine Pflichtbenachrichtigungen"
     },
     "trial_already_used": "Die kostenlose Testphase steht für dieses Studio nicht mehr zur Verfügung.",
-    "saveFailed": "Speichern fehlgeschlagen"
+    "saveFailed": "Speichern fehlgeschlagen",
+    "catalog": {
+      "service_in_bundle": "Diese Leistung gehört zu einem Paket. Entfernen Sie sie zuerst aus dem Paket.",
+      "not_a_bundle": "Eine einzelne Leistung kann nicht in ein Paket umgewandelt werden. Erstellen Sie ein neues Paket.",
+      "bundle_size": "Wählen Sie 2–10 verschiedene Einzelleistungen.",
+      "bundle_part_invalid": "Wählen Sie 2–10 verschiedene Einzelleistungen."
+    }
   },
   "units": {
     "min": "Min.",

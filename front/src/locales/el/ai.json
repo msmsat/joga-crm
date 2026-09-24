@@ -110,6 +110,7 @@
       "rate": "Αμοιβή",
       "rate_type": "Τύπος αμοιβής",
       "service_ids": "Υπηρεσίες",
+      "bundle_service_ids": "Υπηρεσίες πακέτου",
       "schedule": "Πρόγραμμα"
     },
     "bool": {

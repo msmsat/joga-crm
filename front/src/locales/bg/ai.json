@@ -110,6 +110,7 @@
       "rate": "Ставка",
       "rate_type": "Вид заплащане",
       "service_ids": "Услуги",
+      "bundle_service_ids": "Включени услуги",
       "schedule": "График"
     },
     "bool": {

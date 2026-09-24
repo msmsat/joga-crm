@@ -110,6 +110,7 @@
       "rate": "Tarifa",
       "rate_type": "Lloji i pagesës",
       "service_ids": "Shërbimet",
+      "bundle_service_ids": "Shërbimet e përfshira",
       "schedule": "Orari"
     },
     "bool": {

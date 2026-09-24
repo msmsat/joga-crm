@@ -145,7 +145,13 @@
       "not_personal": "Ustawienia osobiste nie zmieniają powiadomień obowiązkowych"
     },
     "trial_already_used": "Bezpłatny okres próbny nie jest już dostępny dla tego studia.",
-    "saveFailed": "Nie udało się zapisać"
+    "saveFailed": "Nie udało się zapisać",
+    "catalog": {
+      "service_in_bundle": "Usługa należy do pakietu. Najpierw usuń ją ze składu pakietu.",
+      "not_a_bundle": "Zwykłej usługi nie można zmienić w pakiet. Utwórz nowy pakiet.",
+      "bundle_size": "Wybierz od 2 do 10 różnych usług indywidualnych.",
+      "bundle_part_invalid": "Wybierz od 2 do 10 różnych usług indywidualnych."
+    }
   },
   "units": {
     "min": "min",

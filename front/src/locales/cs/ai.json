@@ -109,6 +109,7 @@
       "rate": "Sazba",
       "rate_type": "Typ odměny",
       "service_ids": "Služby",
+      "bundle_service_ids": "Zahrnuté služby",
       "schedule": "Rozvrh"
     },
     "bool": {

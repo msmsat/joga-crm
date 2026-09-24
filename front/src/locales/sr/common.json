@@ -145,7 +145,13 @@
       "not_personal": "Лична подешавања не мењају обавезна обавештења"
     },
     "trial_already_used": "Бесплатни пробни период више није доступан за овај студио.",
-    "saveFailed": "Чување није успело"
+    "saveFailed": "Чување није успело",
+    "catalog": {
+      "service_in_bundle": "Usluga je deo paketa. Prvo je uklonite iz paketa.",
+      "not_a_bundle": "Obična usluga ne može da postane paket. Kreirajte novi paket.",
+      "bundle_size": "Izaberite od 2 do 10 različitih individualnih usluga.",
+      "bundle_part_invalid": "Izaberite od 2 do 10 različitih individualnih usluga."
+    }
   },
   "units": {
     "min": "мин",

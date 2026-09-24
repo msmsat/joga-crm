@@ -145,7 +145,13 @@
       "not_personal": "Les réglages personnels ne modifient pas les notifications obligatoires"
     },
     "trial_already_used": "L'essai gratuit n'est plus disponible pour ce studio.",
-    "saveFailed": "Échec de l'enregistrement"
+    "saveFailed": "Échec de l'enregistrement",
+    "catalog": {
+      "service_in_bundle": "Cette prestation fait partie d’un forfait. Retirez-la d’abord du forfait.",
+      "not_a_bundle": "Une prestation ordinaire ne peut pas devenir un forfait. Créez un nouveau forfait.",
+      "bundle_size": "Choisissez 2 à 10 prestations individuelles différentes.",
+      "bundle_part_invalid": "Choisissez 2 à 10 prestations individuelles différentes."
+    }
   },
   "units": {
     "min": "min",

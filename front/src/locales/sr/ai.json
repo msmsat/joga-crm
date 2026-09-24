@@ -111,6 +111,7 @@
       "rate": "Стопа",
       "rate_type": "Врста плаћања",
       "service_ids": "Услуге",
+      "bundle_service_ids": "Укључене услуге",
       "schedule": "Распоред"
     },
     "bool": {

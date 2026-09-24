@@ -1464,3 +1464,9 @@
   .cat-bundle-editor-row { flex-wrap: wrap; }
   .cat-bundle-parts > .v-btn { flex-wrap: wrap; justify-content: flex-start !important; }
 }
+
+@media (min-width: 921px) { .cat-bundle-mobile { display: none; } }
+@media (max-width: 900px) {
+  .cat-item:has(.cat-type-badge) { width: 220px; }
+  .cat-item .cat-type-badge { flex-shrink: 0; }
+}

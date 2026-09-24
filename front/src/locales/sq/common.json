@@ -145,7 +145,13 @@
       "not_personal": "Cilësimet personale nuk i ndryshojnë njoftimet e detyrueshme"
     },
     "trial_already_used": "Prova falas nuk është më e disponueshme për këtë studio.",
-    "saveFailed": "Ruajtja dështoi"
+    "saveFailed": "Ruajtja dështoi",
+    "catalog": {
+      "service_in_bundle": "Shërbimi është pjesë e një pakete. Hiqeni fillimisht nga paketa.",
+      "not_a_bundle": "Një shërbim i zakonshëm nuk mund të kthehet në paketë. Krijoni një paketë të re.",
+      "bundle_size": "Zgjidhni 2–10 shërbime individuale të ndryshme.",
+      "bundle_part_invalid": "Zgjidhni 2–10 shërbime individuale të ndryshme."
+    }
   },
   "units": {
     "min": "min",

@@ -145,7 +145,13 @@
       "not_personal": "Personlige indstillinger kan ikke ændre obligatoriske notifikationer"
     },
     "trial_already_used": "Den gratis prøveperiode er ikke længere tilgængelig for dette studie.",
-    "saveFailed": "Kunne ikke gemme"
+    "saveFailed": "Kunne ikke gemme",
+    "catalog": {
+      "service_in_bundle": "Ydelsen er del af en pakke. Fjern den først fra pakken.",
+      "not_a_bundle": "En almindelig ydelse kan ikke blive en pakke. Opret en ny pakke.",
+      "bundle_size": "Vælg 2–10 forskellige individuelle ydelser.",
+      "bundle_part_invalid": "Vælg 2–10 forskellige individuelle ydelser."
+    }
   },
   "units": {
     "min": "min",

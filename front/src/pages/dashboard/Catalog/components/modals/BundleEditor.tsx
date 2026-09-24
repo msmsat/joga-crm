@@ -2,6 +2,11 @@ import { useTranslation } from 'react-i18next';
 import { Button, Select } from '../../../../../components/ui/index';
 import type { Service } from '../../types';
 
+const svg = { width: 14, height: 14, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2.4, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const, 'aria-hidden': true };
+const ICON_UP = <svg {...svg}><path d="M12 19V5" /><path d="m5 12 7-7 7 7" /></svg>;
+const ICON_DOWN = <svg {...svg}><path d="M12 5v14" /><path d="m19 12-7 7-7-7" /></svg>;
+const ICON_REMOVE = <svg {...svg}><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>;
+
 /** Ordered composition. The same controls work with a mouse, keyboard and touch. */
 export function BundleEditor({ services, parts, partIds, onChange, error }: {
   services: Service[];
@@ -24,9 +29,9 @@ export function BundleEditor({ services, parts, partIds, onChange, error }: {
       {parts.map((part, index) => <div className="cat-bundle-editor-row" key={part.id}>
         <div className="cat-bundle-part-name"><strong>{index + 1}. {part.name}</strong><span className="cat-bundle-muted">{part.duration_min} {t('common:units.min')}</span></div>
         <div className="cat-bundle-controls">
-          <Button size="sm" variant="ghost" disabled={index === 0} onClick={() => move(index, -1)}><span aria-label={t('catalog:bundles.up')}>↑</span></Button>
-          <Button size="sm" variant="ghost" disabled={index === parts.length - 1} onClick={() => move(index, 1)}><span aria-label={t('catalog:bundles.down')}>↓</span></Button>
-          <Button size="sm" variant="ghost" onClick={() => onChange(partIds.filter(id => id !== part.id))}><span aria-label={t('common:buttons.delete')}>×</span></Button>
+          <Button size="sm" variant="ghost" ariaLabel={t('catalog:bundles.up')} disabled={index === 0} onClick={() => move(index, -1)}>{ICON_UP}</Button>
+          <Button size="sm" variant="ghost" ariaLabel={t('catalog:bundles.down')} disabled={index === parts.length - 1} onClick={() => move(index, 1)}>{ICON_DOWN}</Button>
+          <Button size="sm" variant="ghost" ariaLabel={t('common:buttons.delete')} onClick={() => onChange(partIds.filter(id => id !== part.id))}>{ICON_REMOVE}</Button>
         </div>
       </div>)}
     </div>

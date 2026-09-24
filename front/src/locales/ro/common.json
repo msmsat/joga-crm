@@ -145,7 +145,13 @@
       "not_personal": "Setările personale nu modifică notificările obligatorii"
     },
     "trial_already_used": "Perioada de probă gratuită nu mai este disponibilă pentru acest studio.",
-    "saveFailed": "Salvarea a eșuat"
+    "saveFailed": "Salvarea a eșuat",
+    "catalog": {
+      "service_in_bundle": "Serviciul face parte dintr-un pachet. Elimină-l mai întâi din pachet.",
+      "not_a_bundle": "Un serviciu obișnuit nu poate deveni pachet. Creează un pachet nou.",
+      "bundle_size": "Alege între 2 și 10 servicii individuale diferite.",
+      "bundle_part_invalid": "Alege între 2 și 10 servicii individuale diferite."
+    }
   },
   "units": {
     "min": "min",

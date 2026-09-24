@@ -110,6 +110,7 @@
       "rate": "Ücret",
       "rate_type": "Ödeme türü",
       "service_ids": "Hizmetler",
+      "bundle_service_ids": "Dahil olan hizmetler",
       "schedule": "Program"
     },
     "bool": {

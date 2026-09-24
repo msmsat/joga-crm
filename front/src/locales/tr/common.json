@@ -145,7 +145,13 @@
       "not_personal": "Kişisel ayarlar zorunlu bildirimleri değiştiremez"
     },
     "trial_already_used": "Ücretsiz deneme bu stüdyo için artık kullanılamıyor.",
-    "saveFailed": "Kaydedilemedi"
+    "saveFailed": "Kaydedilemedi",
+    "catalog": {
+      "service_in_bundle": "Hizmet bir pakete dahil. Önce paketten çıkarın.",
+      "not_a_bundle": "Normal bir hizmet pakete dönüştürülemez. Yeni bir paket oluşturun.",
+      "bundle_size": "2–10 farklı bireysel hizmet seçin.",
+      "bundle_part_invalid": "2–10 farklı bireysel hizmet seçin."
+    }
   },
   "units": {
     "min": "dk",

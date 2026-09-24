@@ -109,6 +109,7 @@
       "rate": "Satz",
       "rate_type": "Vergütungsart",
       "service_ids": "Leistungen",
+      "bundle_service_ids": "Enthaltene Leistungen",
       "schedule": "Zeitplan"
     },
     "bool": {

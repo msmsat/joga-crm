@@ -110,6 +110,7 @@
       "rate": "Ersättning",
       "rate_type": "Ersättningstyp",
       "service_ids": "Tjänster",
+      "bundle_service_ids": "Ingående tjänster",
       "schedule": "Schema"
     },
     "bool": {

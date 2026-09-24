@@ -79,7 +79,7 @@ class ServiceBundleItem(Base):
     Удаление части не каскадное намеренно: услуга, из которой собран комплекс,
     не должна молча выпадать из него. Роутер отвечает внятным 409 раньше, а
     внешний ключ страхует все прочие пути. Удаление студии целиком проходит:
-    части и комплексы уходят одним каскадом, проверка — в конце оператора.
+    части и комплексы уходят одним каскадом, проверка — в конце транзакции.
     """
     __tablename__ = "service_bundle_items"
     __table_args__ = (
@@ -89,7 +89,9 @@ class ServiceBundleItem(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     bundle_id: Mapped[int] = mapped_column(ForeignKey("services.id", ondelete="CASCADE"), index=True)
-    service_id: Mapped[int] = mapped_column(ForeignKey("services.id"), index=True)
+    service_id: Mapped[int] = mapped_column(
+        ForeignKey("services.id", deferrable=True, initially="DEFERRED"), index=True,
+    )
     # Порядок, в котором части делают: 0, 1, 2… Им же состав показывается
     # в Каталоге, в Журнале и клиенту.
     position: Mapped[int] = mapped_column(Integer)

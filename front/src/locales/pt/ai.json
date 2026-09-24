@@ -110,6 +110,7 @@
       "rate": "Tarifa",
       "rate_type": "Tipo de pagamento",
       "service_ids": "Serviços",
+      "bundle_service_ids": "Serviços incluídos",
       "schedule": "Horário"
     },
     "bool": {

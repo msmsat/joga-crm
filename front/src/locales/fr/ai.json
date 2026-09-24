@@ -110,6 +110,7 @@
       "rate": "Tarif",
       "rate_type": "Type de rémunération",
       "service_ids": "Services",
+      "bundle_service_ids": "Prestations incluses",
       "schedule": "Planning"
     },
     "bool": {

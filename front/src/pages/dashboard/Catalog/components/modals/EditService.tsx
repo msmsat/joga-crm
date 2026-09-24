@@ -89,8 +89,8 @@ export function ServiceModal({ service, categories, services, bundle = false, on
     maxClients: type === "group" && maxClients.trim() && Number(maxClients) < 1 ? t("common:validation.min", { n: 1 }) : null,
     // Диапазоны буферов и длительности resource повторяют CHECK базы
     // (0…240 и 1…1440): отказ должен приходить до сохранения, а не 422 после.
-    bufferBefore: Number(bufferBefore) < 0 || Number(bufferBefore) > 240 ? t("common:validation.range", { min: 0, max: 240 }) : null,
-    bufferAfter: Number(bufferAfter) < 0 || Number(bufferAfter) > 240 ? t("common:validation.range", { min: 0, max: 240 }) : null,
+    bufferBefore: !Number.isInteger(Number(bufferBefore)) || Number(bufferBefore) < 0 || Number(bufferBefore) > 240 ? t("common:validation.range", { min: 0, max: 240 }) : null,
+    bufferAfter: !Number.isInteger(Number(bufferAfter)) || Number(bufferAfter) < 0 || Number(bufferAfter) > 240 ? t("common:validation.range", { min: 0, max: 240 }) : null,
     resourceDuration: bookingMode === "resource" && (Number(duration) < 1 || Number(duration) > 1440)
       ? t("common:validation.range", { min: 1, max: 1440 }) : null,
   };
@@ -134,7 +134,7 @@ export function ServiceModal({ service, categories, services, bundle = false, on
   const durMin = Number(duration) > 0 ? Number(duration) : 0;
   const cardH = Math.min(Math.max(Math.round((durMin / 60) * ROW_H), 38), ROW_H * PREVIEW_HOURS.length);
 
-  const left = (
+  const preview = (
     <PreviewPanel eyebrow={t("catalog:modals.service.previewTitle")}>
       <div className="cmod-jrn" style={colorVars(color)}>
         {PREVIEW_HOURS.map(h => (
@@ -147,6 +147,7 @@ export function ServiceModal({ service, categories, services, bundle = false, on
           <div className={`cmod-jcard-name${name.trim() ? "" : " is-empty"}`}>
             {name.trim() || t("catalog:modals.service.namePlaceholder")}
           </div>
+          {isBundle && <div className="cat-bundle-muted">{parts.map(p => p.name).join(' · ')}</div>}
           <div className="cmod-jcard-meta">
             <IconClock size={11} />
             {durMin || "—"} {t("common:units.min")}
@@ -163,14 +164,17 @@ export function ServiceModal({ service, categories, services, bundle = false, on
           type === "group"
             ? { icon: <IconUsers size={13} />, value: maxClients.trim() || "—", label: t("catalog:modals.service.statSeats") }
             : { icon: <IconUser size={13} />, value: t("catalog:services.details.personal"), label: t("catalog:modals.service.type") },
-          { icon: <IconLayers size={13} />, value: tCat(category), label: t("catalog:modals.service.category") },
+          { icon: <IconLayers size={13} />, value: isBundle ? t("catalog:bundles.badge") : tCat(category), label: t("catalog:modals.service.category") },
         ]}
       />
     </PreviewPanel>
   );
 
   return (
-    <ModalShell dismissible={!saving} size="lg" onClose={onClose} left={left} leftWidth="320px" maxWidth="920px" leftStyle={LEFT_PANEL_STYLE}>
+    <ModalShell dismissible={!saving} size="lg" onClose={onClose} left={isBundle ? <>
+      <BundleEditor services={services} parts={parts} partIds={partIds} onChange={changeParts} error={show("parts")} />
+      {preview}
+    </> : preview} leftWidth={isBundle ? "380px" : "320px"} maxWidth="920px" leftStyle={LEFT_PANEL_STYLE}>
       <ModalHeader
         title={isBundle ? t(service ? "catalog:bundles.edit" : "catalog:bundles.create") : service ? t("catalog:modals.service.titleEdit") : t("catalog:modals.service.titleNew")}
         subtitle={t("catalog:modals.service.subtitle")}
@@ -204,7 +208,7 @@ export function ServiceModal({ service, categories, services, bundle = false, on
           />
         </Field>
         }
-        {isBundle && <BundleEditor services={services} parts={parts} partIds={partIds} onChange={changeParts} error={show("parts")} />}
+        {isBundle && <div className="cat-bundle-mobile"><BundleEditor services={services} parts={parts} partIds={partIds} onChange={changeParts} error={show("parts")} /></div>}
         <Field delay={85} className="cmod-row">
           <Segmented
             label={t("catalog:modals.service.bookingMode")}
@@ -237,7 +241,7 @@ export function ServiceModal({ service, categories, services, bundle = false, on
         <SectionLabel icon={<IconTag />} text={t("catalog:modals.service.sectionPricing")} delay={100} />
         <Field delay={130} className="cmod-row">
           <Input label={t("catalog:modals.service.priceShort")} type="number" value={price} onChange={value => { setPriceEdited(true); setPrice(value); }} onBlur={touch("price")} error={show("price")} placeholder={t("catalog:modals.service.pricePlaceholder")} suffix={currency} />
-          <Input label={t("catalog:modals.service.durationShort")} type="number" value={duration} onChange={value => { setDurationEdited(true); setDuration(value); }} onBlur={touch("duration")} error={show("duration")} placeholder={t("catalog:modals.service.durationPlaceholder")} suffix={t("common:units.min")} />
+          <Input label={t("catalog:modals.service.durationShort")} type="number" value={duration} onChange={value => { setDurationEdited(true); setDuration(value); }} onBlur={touch("duration")} error={show("duration") || show("resourceDuration")} placeholder={t("catalog:modals.service.durationPlaceholder")} suffix={t("common:units.min")} />
         </Field>
         {isBundle && <p className="cat-bundle-muted">{t("catalog:bundles.separate")}: {currency}{fullPrice.toLocaleString()} · {fullDuration} {t("common:units.min")}</p>}
         {/* Вместимость только у события: у индивидуальной записи её нет —

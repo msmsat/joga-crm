@@ -121,6 +121,10 @@ export function ServiceSection() {
                 <div
                   key={svc.id}
                   className={`cat-item ${svc.id === activeServiceId ? 'active' : ''}`}
+                  role="button"
+                  tabIndex={0}
+                  aria-pressed={svc.id === activeServiceId}
+                  onKeyDown={event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); setPickedServiceId(svc.id); } }}
                   onClick={() => setPickedServiceId(svc.id)}
                 >
                   <div className="cat-item-dot" style={{ background: svc.color }} />
@@ -172,7 +176,7 @@ export function ServiceSection() {
                 <div>
                   <div className="cat-hero-name">{activeService.name}</div>
                   <div className="cat-hero-sub">
-                    {tCat(activeService.category)}
+                    {activeService.bundle_items.length ? t("catalog:bundles.title") : tCat(activeService.category)}
                     <span className={`cat-hero-type ${activeService.type}`}>
                       {activeService.bundle_items.length ? t('catalog:bundles.badge') : activeService.type === 'group' ? t('catalog:services.types.groupFull') : t('catalog:services.types.individualFull')}
                     </span>
@@ -250,7 +254,7 @@ export function ServiceSection() {
                   {activeService.bookings_last_30d} {t('catalog:services.details.bookingsPerMonth')}
                 </div>
                 <div className="cat-chip" style={{ background: `${activeService.color}10`, borderColor: `${activeService.color}30`, color: activeService.color }}>
-                  {tCat(activeService.category)}
+                  {activeService.bundle_items.length ? t("catalog:bundles.title") : tCat(activeService.category)}
                 </div>
               </div>
 

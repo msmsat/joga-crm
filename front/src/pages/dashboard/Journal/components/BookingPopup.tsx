@@ -339,6 +339,11 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
       </div>
 
       <div className="bp-body" style={{ position: 'relative', zIndex: 10, minHeight: '180px' }}>
+        {!isEditingBooking && !isAddingClient && (services.find(s => s.id === popupBooking.serviceId)?.bundle_items?.length ?? 0) > 0 && (
+          <div style={{ marginBottom: 16, color: 'var(--text2)', fontSize: 13 }}>
+            {services.find(s => s.id === popupBooking.serviceId)?.bundle_items.map(p => p.name).join(' · ')}
+          </div>
+        )}
         
         {/* ОТМЕНЁННОЕ ЗАНЯТИЕ: только зал и тренер, ничего интерактивного */}
         {isCancelled ? (

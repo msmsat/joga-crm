@@ -145,7 +145,13 @@
       "not_personal": "As definições pessoais não alteram as notificações obrigatórias"
     },
     "trial_already_used": "O período experimental gratuito já não está disponível para este estúdio.",
-    "saveFailed": "Não foi possível guardar"
+    "saveFailed": "Não foi possível guardar",
+    "catalog": {
+      "service_in_bundle": "O serviço faz parte de um pacote. Remova-o primeiro do pacote.",
+      "not_a_bundle": "Um serviço normal não pode tornar-se um pacote. Crie um novo pacote.",
+      "bundle_size": "Selecione entre 2 e 10 serviços individuais diferentes.",
+      "bundle_part_invalid": "Selecione entre 2 e 10 serviços individuais diferentes."
+    }
   },
   "units": {
     "min": "min",

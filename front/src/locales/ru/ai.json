@@ -109,6 +109,7 @@
       "rate": "Ставка",
       "rate_type": "Тип оплаты",
       "service_ids": "Услуги",
+      "bundle_service_ids": "Состав комплекса",
       "schedule": "График"
     },
     "bool": {

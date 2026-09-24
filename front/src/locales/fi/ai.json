@@ -110,6 +110,7 @@
       "rate": "Palkkio",
       "rate_type": "Palkkiotapa",
       "service_ids": "Palvelut",
+      "bundle_service_ids": "Paketin palvelut",
       "schedule": "Työvuoro"
     },
     "bool": {
