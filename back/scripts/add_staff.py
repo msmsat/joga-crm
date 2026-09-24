@@ -7,6 +7,10 @@ From back/:
   python -m scripts.add_staff --owner-email OWNER --email STAFF --name NAME --percent 30 \
       --days 0,1,2,3,4 --hours 10:00-19:00
 Apply only after preview: add --studio-id ID --apply.
+
+Invited the wrong address? --replace OLD_EMAIL withdraws that not-yet-accepted invite
+(membership, its services, hours and branches in this studio) and invites --email instead.
+The old account itself is never edited: its email may own other studios.
 """
 import argparse
 import asyncio
@@ -40,10 +44,13 @@ def build_schedule(days, hours):
 async def run(args):
     from fastapi import HTTPException
     from sqlalchemy import func, select
+    from sqlalchemy.orm import selectinload
     from database import async_session_maker
     from dependencies import StudioContext
     from models import Service, ServiceBundleItem, Studio, StudioBranch, StudioMember, User
-    from routers.staff.profiles import create_staff
+    from routers.staff.profiles import (
+        _apply_studio_services, _replace_branch_assignments, _replace_schedule, create_staff, delete_staff,
+    )
     from routers.studio.router import _default_branch_hours, create_branch
     from schemas.settings.team import StaffCreate
     from schemas.studio.studio import BranchCreate
@@ -81,6 +88,18 @@ async def run(args):
         ))).scalars().first()
         if existing is not None and any(user.id == existing.id for _, user in team):
             raise ValueError('Этот человек уже в команде студии. Ничего не записано.')
+        replaced = None
+        if args.replace:
+            replaced = next((user for member, user in team
+                             if normalize('email', user.email) == normalize('email', args.replace)), None)
+            member = next((member for member, user in team if user is replaced), None)
+            if replaced is None:
+                raise ValueError(f'{args.replace} нет в команде этой студии. Ничего не записано.')
+            # Accepted members leave through the owner's "remove staff" action, not a script.
+            if member.status != 'pending' or member.role == 'owner':
+                raise ValueError('Заменить можно только непринятое приглашение сотрудника. Ничего не записано.')
+            print(f'\nСнимем приглашение: {member.name} | {replaced.email} | {member.status} '
+                  '(услуги, график и филиалы в этой студии тоже)')
 
         if args.service_ids:
             service_ids = args.service_ids
@@ -147,7 +166,9 @@ async def run(args):
             service_ids=service_ids, branch_ids=[b.id for b in branches], schedule=schedule,
         )
         try:
-            await check_plan_limit(db, studio.id, 'staff')
+            # With --replace the seat frees up first; create_staff re-checks the limit after that.
+            if not replaced:
+                await check_plan_limit(db, studio.id, 'staff')
         except HTTPException as error:
             raise ValueError(f'Тариф студии не пускает нового сотрудника: {error.detail}')
 
@@ -164,11 +185,22 @@ async def run(args):
                 command += ['--days', ','.join(map(str, args.days)), '--hours', args.hours]
             if new_branch:
                 command += ['--create-branch']
+            if replaced:
+                command += ['--replace', replaced.email]
             print('\nДля сохранения после проверки:')
             print(shlex.join(command + ['--apply']))
             return
 
         ctx = StudioContext(owner, studio.id, 'owner')
+        if replaced:
+            # Studio-scoped cleanup first, then the "remove staff" action commits it all together.
+            replaced = (await db.execute(select(User).options(selectinload(User.services)).where(
+                User.id == replaced.id))).scalar_one()
+            _apply_studio_services(replaced, studio.id, [])
+            await _replace_schedule(replaced.id, studio.id, [], db)
+            await _replace_branch_assignments(replaced.id, studio.id, [], db)
+            await delete_staff(replaced.id, ctx, db)
+            print(f'\nПриглашение {replaced.email} снято.')
         if new_branch:
             # Its own commit, like the Settings button: the branch is useful even if the staff step fails.
             created = await create_branch(new_branch, ctx, db)
@@ -203,6 +235,8 @@ def main():
     parser.add_argument('--hours', default='10:00-19:00', help='Часы работы, ЧЧ:ММ-ЧЧ:ММ')
     parser.add_argument('--create-branch', action='store_true',
                         help='Если у студии нет филиалов — создать первый, как при онбординге')
+    parser.add_argument('--replace', metavar='OLD_EMAIL',
+                        help='Снять непринятое приглашение с этого адреса и пригласить --email вместо него')
     parser.add_argument('--apply', action='store_true')
     args = parser.parse_args()
     if '@' not in args.email or '@' not in args.owner_email:
