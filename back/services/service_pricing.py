@@ -135,6 +135,22 @@ async def price_range_for(db: AsyncSession, service: Service) -> PriceRange:
     return found.get(service.id, PriceRange(min=service.price, max=service.price))
 
 
+async def price_without_master(db: AsyncSession, service: Service) -> Optional[int]:
+    """Сколько стоит услуга, когда мастер НЕ назван. None — ответ зависит от мастера.
+
+    Все мастера услуги берут одинаково — это и есть цена, даже если она не
+    совпадает с базовой: единственный мастер со своей ценой 1000 при базе 800
+    значит, что за 800 эту услугу не делает никто. Взять тут базовую значило
+    бы списать с клиента сумму, которой нет ни у одного мастера, — ровно так
+    касса и продавала разовый визит, пока не спрашивала мастера.
+
+    Цены у мастеров разные — одного ответа нет. Вызывающий обязан спросить
+    мастера, а не подставить цену «в среднем».
+    """
+    span = await price_range_for(db, service)
+    return None if span.is_range else span.min
+
+
 @dataclass(frozen=True)
 class ServiceMaster:
     """Кто оказывает услугу и во что она у него обходится."""

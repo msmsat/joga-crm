@@ -116,7 +116,8 @@
       "card_unavailable": "Kartenzahlung ist noch nicht verfügbar",
       "promo_expired": "Der Aktionscode ist nicht mehr gültig",
       "balance_changed": "Punkte oder Guthaben wurden bereits anderswo ausgegeben — Zahlung neu berechnen",
-      "attempt_in_progress": "Eine Zahlung für diesen Verkauf läuft bereits — Ergebnis abwarten oder Seite neu laden"
+      "attempt_in_progress": "Eine Zahlung für diesen Verkauf läuft bereits — Ergebnis abwarten oder Seite neu laden",
+      "master_required": "Fachkraft wählen — der Preis hängt davon ab"
     },
     "billing": {
       "tax_details_required": "Ergänzen Sie das Land des Studios in den Rechnungsdaten — ohne es kann keine Rechnung ausgestellt werden",

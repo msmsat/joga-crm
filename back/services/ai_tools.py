@@ -34,7 +34,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from dependencies import ALGORITHM, SECRET_KEY, StudioContext
 from models import (
-    Client, Lesson, Reservation, StaffDayOverride, StaffWorkingHours, Studio,
+    Client, Lesson, Reservation, Service, StaffDayOverride, StaffWorkingHours, Studio,
     StudioMember, User,
 )
 from routers.clients._scope import client_scope
@@ -157,11 +157,13 @@ from schemas.schedule.lessons import LessonCreateRequest, LessonUpdateRequest
 from schemas.schedule.reservations import ReservationCreate, ReservationPayRequest
 from schemas.settings.booking import BookingSettingsUpdate
 from schemas.settings.notifications import EventToggle
-from schemas.settings.team import StaffCreate, StaffServicePrice, StaffUpdate
+from schemas.settings.team import (
+    MAX_STAFF_SERVICE_PRICE, StaffCreate, StaffServicePrice, StaffUpdate,
+)
 from schemas.staff.staff import StaffProfileResponse
 from schemas.staff.staff import StaffDayOverrideRequest
 from schemas.studio.studio import BranchCreate, ServiceCreate, ServiceRead, ServiceUpdate
-from services import studio_time
+from services import service_pricing, studio_time
 from services.contacts import normalize, normalized_column
 from services.working_hours import assert_within_working_hours
 from services.llm import TIER_FAST, TIER_SMART
@@ -849,7 +851,7 @@ class StaffServicePriceArg(BaseModel):
     """Цена ОДНОЙ услуги у этого сотрудника."""
     service_id: int
     price: Optional[int] = Field(
-        None, ge=0,
+        None, ge=0, le=MAX_STAFF_SERVICE_PRICE,
         description="Сколько стоит эта услуга у сотрудника. null — как в Каталоге. "
                     "0 — законная цена «бесплатно», а не «убрать цену»")
 
@@ -1585,8 +1587,23 @@ async def get_staff(ctx: StudioContext, db: AsyncSession, args: FindStaffArgs) -
 
 @tool(roles=("owner", "admin"))
 async def get_services(ctx: StudioContext, db: AsyncSession, args: NoArgs) -> dict:
-    """Услуги студии: название, длительность, цена, уровень сложности, оборудование."""
-    return _items(await _r_list_services(ctx=ctx, db=db), currency=await _currency(db, ctx.studio_id))
+    """Услуги студии: название, длительность, цена, уровень сложности, оборудование.
+
+    price — цена в Каталоге. Если у мастеров цены разные, приходят и
+    price_min/price_max — «от–до» по мастерам услуги; сколько она стоит у
+    конкретного человека — в его get_staff_profile."""
+    rows = _dump(await _r_list_services(ctx=ctx, db=db))
+    # Список мастеров с ценами Каталогу и Журналу нужен, а модели — нет: он
+    # раздувал каждую услугу на треть, и в потолок ответа (_MAX_JSON_CHARS)
+    # влезало 5–6 услуг из 30 вместо 8–9 — «какие у нас услуги» отвечалось
+    # урезанным списком. Диапазон остаётся, и то лишь там, где он есть:
+    # «от 800 до 800» ничего не сообщает, а место в ответе занимает.
+    for row in rows:
+        row.pop("masters", None)
+        if row.get("price_min") == row.get("price_max") == row.get("price"):
+            row.pop("price_min", None)
+            row.pop("price_max", None)
+    return _items(rows, currency=await _currency(db, ctx.studio_id))
 
 
 async def _branches_with_halls(ctx: StudioContext, db: AsyncSession) -> list[dict]:
@@ -1713,6 +1730,24 @@ async def _fill_defaults(args: dict, ctx: StudioContext, db: AsyncSession) -> di
     return {**args, "hall_id": best["id"]}
 
 
+async def _teacher_price(service_id: int, teacher_id: object, db: AsyncSession) -> int | None:
+    """Во что услуга обойдётся у названного тренера — тем же правилом, что в роутере.
+
+    Цену Каталога сюда подставлять нельзя: подставленная цена уходит в роутер
+    как НАЗВАННАЯ, и цену мастера он тогда уже не спрашивает — занятие Анны
+    встало бы по прайсу Каталога, хотя её стрижка стоит иначе
+    (services/service_pricing.py).
+
+    Аргументы здесь ещё не провалидированы, и `teacher_id` — то, что прислала
+    модель. Не число — цену не подставляем вовсе: роутер посчитает её сам,
+    когда аргументы пройдут проверку.
+    """
+    if not isinstance(teacher_id, int) or isinstance(teacher_id, bool):
+        return None
+    service = await db.get(Service, service_id)
+    return None if service is None else await service_pricing.price_for(db, service, teacher_id)
+
+
 async def _lesson_defaults(args: dict, ctx: StudioContext, db: AsyncSession) -> dict:
     """Длительность, цена и число мест — из карточки услуги, потом зал.
 
@@ -1729,7 +1764,7 @@ async def _lesson_defaults(args: dict, ctx: StudioContext, db: AsyncSession) -> 
     if service:
         from_service = {
             "duration_min": service.get("duration_min"),
-            "price": service.get("price"),
+            "price": await _teacher_price(service["id"], args.get("teacher_id"), db),
             "total_spots": service.get("max_clients"),
         }
         if args.get("alternate_with"):

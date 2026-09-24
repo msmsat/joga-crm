@@ -187,8 +187,11 @@ async def create_session(
     # Счёт проверяем ДО ухода в Stripe: после списания эта же проверка упала бы
     # уже в вебхуке, когда деньги клиента забраны, а провести их некуда.
     await resolve_account(db, ctx.studio_id, body.account_id)
+    # Мастер — до Stripe, по той же причине, что и счёт: списанные деньги за
+    # визит без мастера провести было бы уже не по какой цене.
     client, package = await _get_client_package(
         db, ctx.studio_id, body.client_id, body.product_id, body.product_type, body.teacher_id,
+        require_master=True,
     )
     quote = await _quote(
         db, ctx.studio_id, body.client_id, package,

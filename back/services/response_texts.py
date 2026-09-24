@@ -341,6 +341,17 @@ INFO_SERVICE_PRICE = {
     "de": "Preise:",
 }
 
+# Цена услуги, пока мастер не назван: у разных мастеров она своя
+# (services/service_pricing.py). Те же слова, что у витрины мини-приложения
+# (booking.priceRange), — в чате и на экране один и тот же ценник.
+PRICE_RANGE = {
+    "ru": "от {low} до {high}",
+    "en": "from {low} to {high}",
+    "uk": "від {low} до {high}",
+    "cs": "od {low} do {high}",
+    "de": "von {low} bis {high}",
+}
+
 # Дальше идёт текст ВЛАДЕЛЬЦА, и человеку об этом честно говорится: ответ
 # написали в студии, а не мы.
 INFO_SERVICE_INFO = {

@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { useTelegram } from '../../../hooks/useTelegram';
+import { useServicePrice } from '../../../hooks/useServicePrice';
 import type { StudioService } from '../../../api/studio';
 
 type Props = {
@@ -29,6 +30,8 @@ const check = (
 export default function ServiceFilter({ services, selected, onSelect, loading }: Props) {
   const { t } = useTranslation();
   const { vibrateLight } = useTelegram();
+  // Мастер здесь ещё не выбран — фильтр стоит НАД ним: цена «от–до».
+  const priceOf = useServicePrice();
 
   if (loading) {
     return (
@@ -71,7 +74,7 @@ export default function ServiceFilter({ services, selected, onSelect, loading }:
                 active ? 'text-brand-foreground/75' : 'text-muted-foreground'
               }`}
             >
-              {t('booking.duration', { min: service.duration_min })} · {service.price_str}
+              {t('booking.duration', { min: service.duration_min })} · {priceOf(service, null)}
             </span>
           </Chip>
         );

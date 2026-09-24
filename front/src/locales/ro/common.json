@@ -116,7 +116,8 @@
       "card_unavailable": "Plata cu cardul nu este încă disponibilă",
       "promo_expired": "Codul promoțional nu mai este valabil",
       "balance_changed": "Punctele sau depozitul au fost deja folosite în altă parte — recalculați plata",
-      "attempt_in_progress": "O plată pentru această vânzare este deja în curs — așteptați rezultatul sau reîmprospătați"
+      "attempt_in_progress": "O plată pentru această vânzare este deja în curs — așteptați rezultatul sau reîmprospătați",
+      "master_required": "Alege un specialist — prețul depinde de el"
     },
     "billing": {
       "tax_details_required": "Adăugați țara studioului în datele de facturare — fără ea factura nu poate fi emisă",

@@ -86,8 +86,13 @@ export function WalletPOS({ clientId, productId, productType, onBack, onPaid }: 
   // Stripe, а наличные пересчитываются в кассе — на одном счёте не сходится ни
   // один из двух остатков. Счёт для карты выбирает бэк (resolve_account →
   // default_type="online"), поэтому здесь его просто не шлём.
+  // Пока мастер не выбран, у услуги нет одной цены: сервер посчитал расчёт
+  // предварительно по Каталогу, а по этой цене, возможно, не работает никто.
+  // Показать её кассиру — назвать клиенту не ту сумму, поэтому разбивку и итог
+  // до выбора мастера не рисуем вовсе.
+  const priced = masterMissing ? undefined : quote;
   // Итог 0 — весь товар погашен депозитом/сертификатом/бонусами, метод оплаты не нужен (V5-7, 1.3).
-  const totalCovered = quote?.total_price === 0;
+  const totalCovered = priced?.total_price === 0;
   // Промокод введён, но не действует: бэк такую оплату отвергает (и наличные, и
   // карту) — не даём кассиру дойти до формы оплаты ради ошибки.
   const promoBlocks = !!promoCode && !!quote && !quote.promo_valid;
@@ -187,19 +192,19 @@ export function WalletPOS({ clientId, productId, productType, onBack, onPaid }: 
       )}
 
       <Card padding={14} style={{ marginTop: '16px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-        <PriceRow label={t('panel.wallet.base')} value={quote ? `${currency}${quote.base_price}` : '—'}/>
-        {!!quote?.discount && <PriceRow label={t('panel.wallet.discount')} value={`−${currency}${quote.discount}`} accent="discount"/>}
-        {!!quote?.certificate_applied && <PriceRow label={t('panel.wallet.certApplied')} value={`−${currency}${quote.certificate_applied}`} accent="discount"/>}
-        {!!quote?.deposit_applied && <PriceRow label={t('panel.wallet.depositApplied')} value={`−${currency}${quote.deposit_applied}`} accent="discount"/>}
-        {!!quote?.bonuses_applied && (
+        <PriceRow label={t('panel.wallet.base')} value={priced ? `${currency}${priced.base_price}` : '—'}/>
+        {!!priced?.discount && <PriceRow label={t('panel.wallet.discount')} value={`−${currency}${priced.discount}`} accent="discount"/>}
+        {!!priced?.certificate_applied && <PriceRow label={t('panel.wallet.certApplied')} value={`−${currency}${priced.certificate_applied}`} accent="discount"/>}
+        {!!priced?.deposit_applied && <PriceRow label={t('panel.wallet.depositApplied')} value={`−${currency}${priced.deposit_applied}`} accent="discount"/>}
+        {!!priced?.bonuses_applied && (
           <PriceRow
-            label={t('panel.wallet.bonusesSpent', { count: quote.bonuses_applied })}
-            value={`−${currency}${quote.bonuses_value}`}
+            label={t('panel.wallet.bonusesSpent', { count: priced.bonuses_applied })}
+            value={`−${currency}${priced.bonuses_value}`}
             accent="discount"
           />
         )}
         <div className={s.divider}/>
-        <PriceRow label={t('panel.wallet.total')} value={quote ? `${currency}${quote.total_price}` : '—'} accent="total"/>
+        <PriceRow label={t('panel.wallet.total')} value={priced ? `${currency}${priced.total_price}` : '—'} accent="total"/>
       </Card>
 
       <div className={s.methodRow}>

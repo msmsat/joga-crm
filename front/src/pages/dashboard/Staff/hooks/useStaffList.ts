@@ -1,11 +1,22 @@
 import { useState, useEffect } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import { staffApi } from '../../../../api/staff'
+import { queryKeys } from '../../../../api/queryKeys'
 import type { StaffListResponse, StaffCreate, StaffUpdate } from '../../../../api/staff/staff.types'
 
 // Как часто перечитывать список, пока кто-то не принял приглашение.
 const PENDING_POLL_MS = 20_000
 
 export function useStaffList() {
+  const qc = useQueryClient()
+  // Сотрудник — это ещё и цены услуг: его своя цена и сам факт, что он ведёт
+  // услугу, двигают «от–до» в Каталоге, цену тренера в Журнале и список
+  // мастеров в кассе. Эти экраны держат услуги в кэше (staleTime 30 с), и без
+  // сброса владелец полминуты видел бы там цену, которую только что поменял.
+  const invalidatePrices = () => {
+    void qc.invalidateQueries({ queryKey: queryKeys.services })
+    void qc.invalidateQueries({ queryKey: queryKeys.checkoutServices })
+  }
   const [data, setData] = useState<StaffListResponse | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
@@ -39,17 +50,20 @@ export function useStaffList() {
 
   const create = async (payload: StaffCreate) => {
     const result = await staffApi.create(payload)
+    invalidatePrices()
     await refetch()
     return result
   }
 
   const update = async (id: number, payload: StaffUpdate) => {
     await staffApi.update(id, payload)
+    invalidatePrices()
     await refetch()
   }
 
   const deleteStaff = async (id: number) => {
     await staffApi.delete(id)
+    invalidatePrices()
     await refetch()
   }
 

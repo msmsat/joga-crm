@@ -116,7 +116,8 @@
       "card_unavailable": "A kártyás fizetés még nem érhető el",
       "promo_expired": "A promóciós kód már nem érvényes",
       "balance_changed": "A pontokat vagy az előleget máshol már felhasználták — számolja újra a fizetést",
-      "attempt_in_progress": "Ehhez az eladáshoz már folyamatban van egy fizetés — várja meg vagy frissítsen"
+      "attempt_in_progress": "Ehhez az eladáshoz már folyamatban van egy fizetés — várja meg vagy frissítsen",
+      "master_required": "Válasszon szakembert — az ár ettől függ"
     },
     "billing": {
       "tax_details_required": "Adja meg a stúdió országát a számlázási adatoknál — enélkül nem állítható ki számla",

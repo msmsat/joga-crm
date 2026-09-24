@@ -116,7 +116,8 @@
       "card_unavailable": "Kartla ödeme henüz kullanılamıyor",
       "promo_expired": "Promosyon kodu artık geçerli değil",
       "balance_changed": "Puanlar veya depozito başka bir yerde harcandı — ödemeyi yeniden hesaplayın",
-      "attempt_in_progress": "Bu satış için bir ödeme zaten sürüyor — sonucu bekleyin veya sayfayı yenileyin"
+      "attempt_in_progress": "Bu satış için bir ödeme zaten sürüyor — sonucu bekleyin veya sayfayı yenileyin",
+      "master_required": "Uzman seçin — fiyat buna bağlı"
     },
     "billing": {
       "tax_details_required": "Fatura bilgilerine stüdyonun ülkesini ekleyin — bu olmadan fatura kesilemez",

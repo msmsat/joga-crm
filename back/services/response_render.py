@@ -142,6 +142,15 @@ def fmt_amount(amount: int, currency: str) -> str:
     return _fmt_amount(amount, currency)
 
 
+def _price(item: "I.ServicePrice", lang: str) -> str:
+    """Одна сумма, а у мастеров с разными ценами — «от … до …»."""
+    if item.price_max is not None and item.price_max > item.price:
+        return pick(T.PRICE_RANGE, lang).format(
+            low=fmt_amount(item.price, item.currency),
+            high=fmt_amount(item.price_max, item.currency))
+    return fmt_amount(item.price, item.currency)
+
+
 def fmt_spots(free: int, lang: str) -> str:
     """«4 места» либо «мест нет». Число — из каталога, слово — из перевода.
 
@@ -230,7 +239,7 @@ def fact_lines(facts, lang: str, *, copy: Optional[CopyIntent] = None) -> str:
         return "\n".join(rows)
     if isinstance(facts, I.PriceFacts):
         return "\n".join(
-            f"{i.name} — {fmt_amount(i.price, i.currency)} · {fmt_duration(i.duration_min, lang)}"
+            f"{i.name} — {_price(i, lang)} · {fmt_duration(i.duration_min, lang)}"
             for i in facts.items)
     if isinstance(facts, I.OwnerTextFacts):
         # Текст владельца — дословно. Ни сокращений, ни «улучшений»: это его

@@ -317,8 +317,15 @@ class ServiceAsProduct:
 
 async def _get_client_package(
     db: AsyncSession, studio_id: int, client_id: int, product_id: int, product_type: str,
-    teacher_id: int | None = None,
+    teacher_id: int | None = None, *, require_master: bool = False,
 ) -> tuple[Client, "SubscriptionPackage | ServiceAsProduct"]:
+    """Клиент и то, что ему продают, — с ценой, посчитанной сервером.
+
+    `require_master` — продажа, а не предварительный расчёт: разовый визит на
+    услугу, у которой цена зависит от мастера, без мастера не проводится.
+    Расчёт (`calculate`) его не требует — касса зовёт его, пока кассир ещё
+    выбирает, и итог до выбора мастера сама не показывает.
+    """
     client = (await db.execute(
         select(Client).where(Client.id == client_id, Client.studio_id == studio_id)
     )).scalar_one_or_none()
@@ -332,9 +339,20 @@ async def _get_client_package(
         if service is None:
             raise HTTPException(status_code=404, detail={"code": "checkout.service_not_found", "message": "Услуга не найдена"})
         # Цена разового визита — у ВЫБРАННОГО мастера: у одной услуги у разных
-        # мастеров она своя (services/service_pricing.py). Мастера не выбрали —
-        # базовая цена услуги, как было до появления индивидуальных.
-        price = await service_pricing.price_for(db, service, teacher_id)
+        # мастеров она своя (services/service_pricing.py).
+        if teacher_id is not None:
+            price = await service_pricing.price_for(db, service, teacher_id)
+        else:
+            price = await service_pricing.price_without_master(db, service)
+            if price is None:
+                if require_master:
+                    raise HTTPException(status_code=400, detail={
+                        "code": "checkout.master_required",
+                        "message": "Выберите мастера: у этой услуги цена зависит от него",
+                    })
+                # Предварительный расчёт до выбора мастера. Касса этот итог не
+                # показывает, а продажа без мастера сюда не доходит (выше).
+                price = service.price
         return client, ServiceAsProduct(
             id=service.id, name=service.name, price=price,
             per_visit_price=price, service_id=service.id,
@@ -482,7 +500,11 @@ async def perform_pay(
     """
     await lock_studio(db, studio_id)
     client, package = await _get_client_package(
-        db, studio_id, body.client_id, body.product_id, body.product_type, body.teacher_id)
+        db, studio_id, body.client_id, body.product_id, body.product_type, body.teacher_id,
+        # Деньги по карте УЖЕ списаны (expected_total): отказ «выберите мастера»
+        # оставил бы их непроведёнными, а сумму и так сверяет expected_total.
+        # Мастера требуем там, где продажа только начинается, — у стойки.
+        require_master=expected_total is None)
 
     account = await resolve_account(
         db, studio_id, body.account_id,

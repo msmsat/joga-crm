@@ -116,7 +116,8 @@
       "card_unavailable": "Pagesa me kartë ende nuk është e disponueshme",
       "promo_expired": "Kodi promocional nuk vlen më",
       "balance_changed": "Pikët ose depozita janë shpenzuar tashmë diku tjetër — rillogaritni pagesën",
-      "attempt_in_progress": "Një pagesë për këtë shitje është tashmë në proces — prisni rezultatin ose rifreskoni"
+      "attempt_in_progress": "Një pagesë për këtë shitje është tashmë në proces — prisni rezultatin ose rifreskoni",
+      "master_required": "Zgjidhni specialistin — çmimi varet prej tij"
     },
     "billing": {
       "tax_details_required": "Shtoni shtetin e studios te të dhënat e faturimit — pa të fatura nuk lëshohet",

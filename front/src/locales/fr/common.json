@@ -116,7 +116,8 @@
       "card_unavailable": "Le paiement par carte n'est pas encore disponible",
       "promo_expired": "Le code promo n'est plus valable",
       "balance_changed": "Les points ou l'acompte ont déjà été utilisés ailleurs — recalculez le paiement",
-      "attempt_in_progress": "Un paiement est déjà en cours pour cette vente — attendez le résultat ou actualisez"
+      "attempt_in_progress": "Un paiement est déjà en cours pour cette vente — attendez le résultat ou actualisez",
+      "master_required": "Choisissez un spécialiste : le tarif en dépend"
     },
     "billing": {
       "tax_details_required": "Ajoutez le pays du studio dans les informations de facturation — sans lui, la facture ne peut pas être émise",

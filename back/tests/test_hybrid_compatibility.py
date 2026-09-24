@@ -390,10 +390,13 @@ def _public_widget_contract_locked():
     ИСЧЕЗНУТЬ или переименоваться. HB-04 осознанно ДОБАВИЛ `booking_mode`
     (PublicService) и `service_id`/`branch_id`/`teacher_id`/`booking_mode`/
     `tz_iana` (PublicSlot) — это ожидаемое расширение контракта (AC-01/AC-29),
-    поэтому здесь фиксируется набор ПОСЛЕ HB-04, а не набор до него."""
+    поэтому здесь фиксируется набор ПОСЛЕ HB-04, а не набор до него.
+    Так же осознанно добавлены `price_min`/`price_max` (PublicService):
+    «от–до» по мастерам услуги, как на витрине мини-приложения. `price`
+    остался на месте и значит то же, что раньше, — цену в Каталоге."""
     assert set(public_router.PublicService.model_fields) == {
-        "id", "name", "description", "price", "duration_min", "category", "color",
-        "booking_mode",
+        "id", "name", "description", "price", "price_min", "price_max",
+        "duration_min", "category", "color", "booking_mode",
     }
     assert set(public_router.PublicSlot.model_fields) == {
         "lesson_id", "name", "start_time", "duration_min", "price", "level", "free_spots",

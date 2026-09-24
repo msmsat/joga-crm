@@ -6,6 +6,13 @@ from schemas.auth.requests import validate_strong_password
 from schemas.staff.staff import StaffWorkingHoursItem
 
 
+# Потолок индивидуальной цены. Колонка `user_services.price` — Integer (до
+# 2 147 483 647), и сумма больше этого доходила до базы и падала там ошибкой
+# 500 вместо внятного отказа. Миллиард не упирается ни в одну валюту: это
+# ~40 000 € даже в индонезийских рупиях.
+MAX_STAFF_SERVICE_PRICE = 1_000_000_000
+
+
 class StaffServicePrice(BaseSchema):
     """Индивидуальная цена одной услуги у сотрудника.
 
@@ -13,7 +20,7 @@ class StaffServicePrice(BaseSchema):
     Ноль — законная цена (бесплатно у стажёра), и путать её со снятием нельзя.
     """
     service_id: int
-    price: Optional[int] = Field(default=None, ge=0)
+    price: Optional[int] = Field(default=None, ge=0, le=MAX_STAFF_SERVICE_PRICE)
 
 
 class StaffCreate(BaseSchema):

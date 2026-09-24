@@ -116,7 +116,8 @@
       "card_unavailable": "Плаћање картицом још није доступно",
       "promo_expired": "Промо код више не важи",
       "balance_changed": "Bodovi ili depozit su već potrošeni drugde — ponovo izračunajte plaćanje",
-      "attempt_in_progress": "Plaćanje za ovu prodaju je već u toku — sačekajte rezultat ili osvežite"
+      "attempt_in_progress": "Plaćanje za ovu prodaju je već u toku — sačekajte rezultat ili osvežite",
+      "master_required": "Изаберите специјалисту — цена зависи од њега"
     },
     "billing": {
       "tax_details_required": "Додајте државу студија у податке за фактуру — без ње се фактура не може издати",

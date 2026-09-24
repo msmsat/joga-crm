@@ -35,7 +35,7 @@ from typing import Optional, Sequence, Union
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from services import catalog, search_resolver, studio_time
+from services import catalog, search_resolver, service_pricing, studio_time
 from services.catalog import DayHours
 from services.search_intent import InfoKind, UserSearchIntent
 # Приватные помощники резолвера — намеренно они, а не своя копия: политика
@@ -127,9 +127,13 @@ class ContactFacts:
 @dataclass(frozen=True)
 class ServicePrice:
     name: str
+    # Нижняя граница цены. Мастера берут одинаково — она же и единственная.
     price: int
     currency: str
     duration_min: int
+    # Верхняя граница, когда у мастеров услуги цены разные: ответ тогда
+    # «от price до price_max», а не одна сумма (services/service_pricing.py).
+    price_max: Optional[int] = None
 
 
 @dataclass(frozen=True)
@@ -337,11 +341,14 @@ async def _service_fact(db, studio_id: int, kind: InfoKind, intent: UserSearchIn
                         ref: catalog.StudioRef, contact: ContactFacts) -> InfoResult:
     """Цена и описание НАЗВАННОГО направления.
 
-    Цена — `Service.price`: ровно то число, что публичная витрина показывает
-    гостю (`routers/booking/public.PublicService`). Персональной цены здесь
-    быть не может: скидки, абонемент и пробное занятие привязаны к карточке
-    клиента, а справку спрашивает кто угодно — считать её значило бы назвать
-    человеку сумму, которая при оплате окажется другой.
+    Цена — та же, что пишет витрина мини-приложения, пока мастер не выбран:
+    «от–до» по мастерам услуги (`services/service_pricing.price_ranges`). Одна
+    базовая `Service.price` здесь была бы неправдой: если все мастера берут
+    1000–1400, «стрижка стоит 800» обещает сумму, по которой не работает никто.
+
+    Персональной цены здесь быть не может: скидки, абонемент и пробное занятие
+    привязаны к карточке клиента, а справку спрашивает кто угодно — считать её
+    значило бы назвать человеку сумму, которая при оплате окажется другой.
     """
     rows = await catalog.services(db, studio_id)
     if not rows:
@@ -370,7 +377,18 @@ async def _service_fact(db, studio_id: int, kind: InfoKind, intent: UserSearchIn
 
     if kind is InfoKind.SERVICE_PRICE:
         currency = ref.currency or "RUB"
-        items = tuple(ServicePrice(s.name, s.price, currency, s.duration_min) for s in picked)
+        # Один запрос на все названные услуги, а не по запросу на каждую.
+        spans = await service_pricing.price_ranges(db, studio_id, [s.id for s in picked])
+        items = tuple(
+            ServicePrice(
+                s.name,
+                spans[s.id].min if s.id in spans else s.price,
+                currency,
+                s.duration_min,
+                spans[s.id].max if s.id in spans and spans[s.id].is_range else None,
+            )
+            for s in picked
+        )
         return InfoResult(kind, InfoOutcome.OK, facts=PriceFacts(items))
 
     texts = tuple(OwnerText(s.name, s.description.strip())

@@ -116,7 +116,8 @@
       "card_unavailable": "Card payment is not available yet",
       "promo_expired": "Promo code is no longer valid",
       "balance_changed": "The points or deposit were already spent elsewhere — recalculate the payment",
-      "attempt_in_progress": "A payment for this sale is already in progress — wait for the result or refresh"
+      "attempt_in_progress": "A payment for this sale is already in progress — wait for the result or refresh",
+      "master_required": "Choose a specialist — the price depends on it"
     },
     "billing": {
       "tax_details_required": "Add the studio country in the invoice details — the invoice can't be issued without it",

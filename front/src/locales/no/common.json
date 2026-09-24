@@ -116,7 +116,8 @@
       "card_unavailable": "Kortbetaling er ikke tilgjengelig ennå",
       "promo_expired": "Kampanjekoden er ikke lenger gyldig",
       "balance_changed": "Poengene eller depositumet er allerede brukt et annet sted — beregn betalingen på nytt",
-      "attempt_in_progress": "En betaling for dette salget pågår allerede — vent på resultatet eller oppdater"
+      "attempt_in_progress": "En betaling for dette salget pågår allerede — vent på resultatet eller oppdater",
+      "master_required": "Velg behandler — prisen avhenger av det"
     },
     "billing": {
       "tax_details_required": "Legg til studioets land i fakturaopplysningene — uten det kan ikke fakturaen utstedes",

@@ -144,6 +144,9 @@ export function ServicePricePicker({
                   className="v-svc-price-input"
                   value={draft}
                   inputMode="numeric"
+                  // Девять цифр — ниже серверного потолка (MAX_STAFF_SERVICE_PRICE,
+                  // миллиард): длиннее сумма ушла бы на сервер ради отказа.
+                  maxLength={9}
                   autoFocus
                   aria-label={t('servicePrice.aria', { service: service.name })}
                   onChange={e => setDraft(e.target.value)}

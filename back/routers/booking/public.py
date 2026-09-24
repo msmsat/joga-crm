@@ -20,6 +20,7 @@ from models import Client, Service, Lesson, Reservation
 from schemas._base import BaseSchema, Phone
 from services import catalog
 from services import booking
+from services import service_pricing
 from services.booking_http import reject
 from services.booking_rules import assert_bookable, booking_window, load_rules, within_widget_hours
 from services.contacts import normalize, normalized_column
@@ -41,6 +42,11 @@ class PublicService(BaseSchema):
     name: str
     description: Optional[str]
     price: int
+    # Во что услуга обойдётся, пока мастер не выбран: у разных мастеров цена
+    # своя (services/service_pricing.py). Совпали — одна сумма, разошлись —
+    # «от price_min до price_max», как на витрине мини-приложения.
+    price_min: int
+    price_max: int
     duration_min: int
     category: Optional[str]
     color: Optional[str]
@@ -73,7 +79,18 @@ async def public_services(request: Request, studio_id: int, db: AsyncSession = D
     rows = (await db.execute(
         select(Service).where(Service.studio_id == studio_id).order_by(Service.name)
     )).scalars().all()
-    return rows
+    # Один запрос на весь список, а не по запросу на услугу (CLAUDE.md §5, п. 2).
+    spans = await service_pricing.price_ranges(db, studio_id, [s.id for s in rows])
+    return [
+        PublicService(
+            id=s.id, name=s.name, description=s.description, price=s.price,
+            price_min=spans[s.id].min if s.id in spans else s.price,
+            price_max=spans[s.id].max if s.id in spans else s.price,
+            duration_min=s.duration_min, category=s.category, color=s.color,
+            booking_mode=s.booking_mode,
+        )
+        for s in rows
+    ]
 
 
 @router.get("/public/{studio_id}/slots", response_model=List[PublicSlot])

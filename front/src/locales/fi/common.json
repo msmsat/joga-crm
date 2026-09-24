@@ -116,7 +116,8 @@
       "card_unavailable": "Korttimaksu ei ole vielä käytettävissä",
       "promo_expired": "Kampanjakoodi ei ole enää voimassa",
       "balance_changed": "Pisteet tai talletus on jo käytetty muualla — laske maksu uudelleen",
-      "attempt_in_progress": "Tämän myynnin maksu on jo käynnissä — odota tulosta tai päivitä sivu"
+      "attempt_in_progress": "Tämän myynnin maksu on jo käynnissä — odota tulosta tai päivitä sivu",
+      "master_required": "Valitse tekijä — hinta riippuu siitä"
     },
     "billing": {
       "tax_details_required": "Lisää studion maa laskutustietoihin — ilman sitä laskua ei voi muodostaa",

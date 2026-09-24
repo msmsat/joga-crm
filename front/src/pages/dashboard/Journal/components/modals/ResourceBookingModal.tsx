@@ -11,6 +11,9 @@ import { ResourceClientPicker } from './ResourceClientPicker';
 import { errorMessage } from '../../../../../api/errorMessage';
 import { queryKeys } from '../../../../../api/queryKeys';
 import { useBusinessTerms } from '../../../../../hooks/useBusinessTerms';
+import { usePriceLabel } from '../../../../../hooks/usePriceLabel';
+import { useStudioCurrency } from '../../../../../hooks/useStudioCurrency';
+import { formatMoney } from '../../../../../lib/money';
 import type { AvailabilitySlot, QuoteRead } from '../../../../../api/booking/hybrid.types';
 
 /**
@@ -75,6 +78,16 @@ export function ResourceBookingModal({ onClose, onCreated, clientId = null, defa
     return services.filter(s => s.booking_mode === 'resource' && s.is_bookable);
   }, [services]);
 
+  // Цена по правилу всего продукта: пока мастер не выбран — «от–до» по
+  // мастерам услуги, у каждого мастера в списке — его сумма. Узнавать её
+  // только после выбора времени, из итоговой карточки, — поздно: человек
+  // выбирает мастера в том числе по цене.
+  const priceLabel = usePriceLabel();
+  const currency = useStudioCurrency();
+  const chosenService = bookable.find(s => s.id === serviceId);
+  const rangeOf = (s: (typeof bookable)[number]) =>
+    priceLabel(s.price_min ?? s.price, s.price_max ?? s.price, true);
+
   // Доступность — обычный запрос react-query: ключ содержит весь выбор, и
   // устаревший ответ прошлой услуги/даты не перезаписывает текущий список.
   const { data: availability, isFetching: slotsLoading, error: slotsError, refetch: refreshSlots } = useQuery({
@@ -138,7 +151,7 @@ export function ResourceBookingModal({ onClose, onCreated, clientId = null, defa
             <Select value={serviceId ? String(serviceId) : ''} onChange={v => { setServiceId(Number(v)); resetQuote(); }}
                     disabled={servicesLoading || saving} searchable placeholder={t('journal:newBooking.servicePlaceholder')}
                     emptyText={t('journal:resourceBooking.noServices')}
-                    options={bookable.map(s => ({ value: String(s.id), label: s.name }))} />
+                    options={bookable.map(s => ({ value: String(s.id), label: s.name, hint: rangeOf(s) }))} />
             {servicesError && <div role="alert">{errorMessage(servicesError, t)}</div>}
           </div>
           <div>
@@ -150,10 +163,20 @@ export function ResourceBookingModal({ onClose, onCreated, clientId = null, defa
             <label className="vk-label">{terms.staff?.singular ?? t('journal:resourceBooking.staff')}</label>
             <Select value={teacherId == null ? '' : String(teacherId)} disabled={saving}
               onChange={value => { setTeacherId(value ? Number(value) : null); resetQuote(); }}
-              options={[{ value: '', label: t('journal:resourceBooking.anyStaff') },
-                ...staff.filter(person => person.is_specialist).map(person => ({
-                  value: String(person.id), label: `${person.name} ${person.last_name ?? ''}`.trim(),
-                }))]} />
+              options={[{
+                  value: '', label: t('journal:resourceBooking.anyStaff'),
+                  // «Любой» — значит цена ещё не известна: диапазон услуги.
+                  hint: chosenService ? rangeOf(chosenService) : undefined,
+                },
+                ...staff.filter(person => person.is_specialist).map(person => {
+                  // Мастера, который эту услугу не ведёт, в `masters` нет —
+                  // и цены у него нет: записать к нему availability не даст.
+                  const own = chosenService?.masters?.find(m => m.user_id === person.id);
+                  return {
+                    value: String(person.id), label: `${person.name} ${person.last_name ?? ''}`.trim(),
+                    hint: own ? formatMoney(own.price, currency) : undefined,
+                  };
+                })]} />
           </div>
           <div>
             <label className="vk-label">{t('journal:resourceBooking.date')}</label>
@@ -167,7 +190,7 @@ export function ResourceBookingModal({ onClose, onCreated, clientId = null, defa
               <Row label={terms.staff?.singular ?? t('journal:resourceBooking.staff')} value={quote.terms.domain.trainer_name} />
               <Row label={t('journal:resourceBooking.duration')} value={`${quote.terms.duration_min}`} />
               <Row label={t('journal:resourceBooking.price')}
-                   value={`${quote.terms.domain.funding.price} ${quote.terms.domain.funding.currency}`} />
+                   value={formatMoney(quote.terms.domain.funding.price, quote.terms.domain.funding.currency)} />
             </div>
           ) : (
             <div>
