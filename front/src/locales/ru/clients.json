@@ -339,10 +339,12 @@
     "submit": "Добавить клиента ✓",
     "stepCounter": "Шаг {{current}} из {{total}}",
     "trustSignal": "Данные защищены и видны только администраторам",
+    "required": "Обязательно",
+    "optional": "Необязательно",
     "steps": {
       "1": {
         "title": "Личные данные",
-        "sub": "Введите контактную информацию клиента"
+        "sub": "Обязательно только имя — остальное по желанию"
       },
       "2": {
         "title": "Детали профиля",
@@ -358,15 +360,13 @@
       }
     },
     "step1": {
-      "previewLabel": "Новый клиент · Предпросмотр",
-      "name": "ФИО *",
+      "name": "Имя",
       "namePlaceholder": "Иван Иванов",
       "phone": "Телефон",
       "phonePlaceholder": "+7 900 000-00-00",
       "email": "Email",
       "emailPlaceholder": "client@example.com",
       "instagram": "Instagram",
-      "instagramOptional": "необязательно",
       "instagramPlaceholder": "username"
     },
     "step2": {
@@ -374,11 +374,11 @@
       "bdayPlaceholder": "12 апреля 1990",
       "city": "Город",
       "cityPlaceholder": "Москва",
+      "cityAuto": "Определили по вашему местоположению — можно изменить",
       "tags": "Теги",
       "tagsPlaceholder": "Пилатес, VIP, Реабилитация... (Enter)",
       "tagsHint": "Нажмите Enter чтобы добавить тег",
       "inviteCode": "Инвайт-код пригласившего",
-      "inviteCodePlaceholder": "Необязательно",
       "inviteCodeHint": "Если есть — оба получат бонус"
     },
     "step3": {
@@ -412,10 +412,9 @@
       "smsSub": "Клиент получит сообщение с приглашением"
     },
     "errors": {
-      "name": "Введите имя (минимум 2 символа)",
+      "name": "Введите имя",
       "phone": "Некорректный номер телефона",
       "email": "Некорректный email",
-      "city": "Укажите город",
       "instagram": "Ник латиницей: буквы, цифры, точка и подчёркивание"
     }
   },

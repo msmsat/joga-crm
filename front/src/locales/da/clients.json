@@ -343,10 +343,12 @@
     "submit": "Tilføj kunde ✓",
     "stepCounter": "Trin {{current}} af {{total}}",
     "trustSignal": "Data er beskyttet og kun synlige for administratorer",
+    "required": "Påkrævet",
+    "optional": "Valgfrit",
     "steps": {
       "1": {
         "title": "Personlige oplysninger",
-        "sub": "Indtast kundens kontaktoplysninger"
+        "sub": "Kun navnet er påkrævet — resten er valgfrit"
       },
       "2": {
         "title": "Profiloplysninger",
@@ -362,15 +364,13 @@
       }
     },
     "step1": {
-      "previewLabel": "Ny kunde · Eksempel",
-      "name": "Fulde navn *",
+      "name": "Navn",
       "namePlaceholder": "Anne Jensen",
       "phone": "Telefon",
       "phonePlaceholder": "+45 20 00 00 00",
       "email": "E-mail",
       "emailPlaceholder": "kunde@eksempel.dk",
       "instagram": "Instagram",
-      "instagramOptional": "valgfrit",
       "instagramPlaceholder": "username"
     },
     "step2": {
@@ -378,11 +378,11 @@
       "bdayPlaceholder": "12. april 1990",
       "city": "By",
       "cityPlaceholder": "København",
+      "cityAuto": "Fundet ud fra din placering — kan ændres",
       "tags": "Mærkater",
       "tagsPlaceholder": "Pilates, VIP, genoptræning… (Enter)",
       "tagsHint": "Tryk Enter for at tilføje et mærkat",
       "inviteCode": "Henviserens invitationskode",
-      "inviteCodePlaceholder": "Valgfrit",
       "inviteCodeHint": "Hvis den er angivet, får I begge en bonus"
     },
     "step3": {
@@ -418,10 +418,9 @@
       "subscriptionValue_other": "{{count}} lektioner"
     },
     "errors": {
-      "name": "Indtast et navn (mindst 2 tegn)",
+      "name": "Indtast et navn",
       "phone": "Ugyldigt telefonnummer",
       "email": "Ugyldig e-mail",
-      "city": "Indtast en by",
       "instagram": "Brugernavn: latinske bogstaver, tal, punktum og understreg"
     }
   },

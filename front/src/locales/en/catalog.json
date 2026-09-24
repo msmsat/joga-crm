@@ -313,5 +313,21 @@
     "restore": "Relist",
     "confirmDeactivateTitle": "Delist this package?",
     "confirmDeactivate": "Already sold subscriptions will keep working."
+  },
+  "bundles": {
+    "title": "Bundles",
+    "badge": "Bundle",
+    "create": "Create bundle",
+    "edit": "Edit bundle",
+    "parts": "Included services",
+    "addPart": "Add a service",
+    "hint": "One visit, one specialist. Price and duration are set for the whole bundle.",
+    "size": "Select 2–10 different individual services.",
+    "separate": "Separately",
+    "inBundles": "Included in bundles",
+    "masters": "Specialists",
+    "noMasters": "No specialists assigned. Assign one in Staff before accepting bookings.",
+    "up": "Move up",
+    "down": "Move down"
   }
 }

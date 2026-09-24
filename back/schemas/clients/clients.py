@@ -1,22 +1,28 @@
 from datetime import date
-from typing import List, Literal, Optional
+from typing import Annotated, List, Literal, Optional
 
-from pydantic import Field
+from pydantic import BeforeValidator, Field, StringConstraints
+from contact_format import normalize_email
 
-from schemas._base import BaseSchema, OptInstagram, OptPhone, Phone
+from schemas._base import BaseSchema, OptInstagram, OptPhone
 
 
 class ClientCreate(BaseSchema):
-    name: str = Field(min_length=1)
-    last_name: Optional[str] = None
-    # E.164 обязателен: по этому номеру уходят платные шаблоны WhatsApp, и
-    # «8 999 …» без кода страны для Meta — другой номер (contact_format.to_e164).
-    phone: Phone
-    email: str = Field(min_length=1)
-    # Необязательный: клиента заводят и без директа.
+    # Обязательно только имя: клиента узнают по его id в студии, а контакты —
+    # что администратор знает. Студия, записывающая «Анну с утренней йоги»,
+    # не должна выдумывать ей почту, чтобы пройти форму.
+    name: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=100)]
+    last_name: Optional[str] = Field(default=None, max_length=100)
+    # Если указан — только E.164: по этому номеру уходят платные шаблоны
+    # WhatsApp, и «8 999 …» без кода страны для Meta — другой номер
+    # (contact_format.to_e164). Пустая строка превращается в None.
+    phone: OptPhone = None
+    email: Annotated[Optional[str], BeforeValidator(normalize_email)] = Field(
+        default=None, max_length=255, pattern=r'^[^\s@]+@[^\s@]+\.[^\s@]+$',
+    )
     instagram: OptInstagram = None
     birth_date: Optional[date] = None
-    city: str = Field(min_length=1)
+    city: Optional[str] = Field(default=None, max_length=100)
     tags: Optional[List[str]] = []
     note: Optional[str] = None
     source: Optional[str] = None

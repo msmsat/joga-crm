@@ -35,6 +35,10 @@ export interface Studio {
 export type ServiceType = 'group' | 'individual';
 
 export interface Service {
+  bundle_items: import('../../../api/studio/services.api').ServiceBundlePart[];
+  bundle_full_price: number | null;
+  in_bundles: { id: number; name: string }[];
+  masters: import('../../../api/studio/services.api').ServiceMaster[];
   id: number;
   name: string;
   category: string;

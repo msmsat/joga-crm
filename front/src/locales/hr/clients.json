@@ -347,10 +347,12 @@
     "submit": "Dodaj klijenta ✓",
     "stepCounter": "Korak {{current}} od {{total}}",
     "trustSignal": "Podaci su zaštićeni i vidljivi samo administratorima",
+    "required": "Obavezno",
+    "optional": "Neobavezno",
     "steps": {
       "1": {
         "title": "Osobni podaci",
-        "sub": "Unesite kontaktne podatke klijenta"
+        "sub": "Obavezno je samo ime — ostalo po želji"
       },
       "2": {
         "title": "Podaci profila",
@@ -366,15 +368,13 @@
       }
     },
     "step1": {
-      "previewLabel": "Novi klijent · Pregled",
-      "name": "Puno ime *",
+      "name": "Ime",
       "namePlaceholder": "Ana Horvat",
       "phone": "Telefon",
       "phonePlaceholder": "+385 91 000 0000",
       "email": "E-pošta",
       "emailPlaceholder": "klijent@primjer.hr",
       "instagram": "Instagram",
-      "instagramOptional": "neobavezno",
       "instagramPlaceholder": "username"
     },
     "step2": {
@@ -382,11 +382,11 @@
       "bdayPlaceholder": "12. travnja 1990.",
       "city": "Grad",
       "cityPlaceholder": "Zagreb",
+      "cityAuto": "Određeno prema vašoj lokaciji — možete promijeniti",
       "tags": "Oznake",
       "tagsPlaceholder": "Pilates, VIP, rehabilitacija… (Enter)",
       "tagsHint": "Pritisnite Enter za dodavanje oznake",
       "inviteCode": "Kod pozivnice preporučitelja",
-      "inviteCodePlaceholder": "Neobavezno",
       "inviteCodeHint": "Ako je unesen, oboje dobivate bonus"
     },
     "step3": {
@@ -424,10 +424,9 @@
       "subscriptionValue_other": "{{count}} termina"
     },
     "errors": {
-      "name": "Unesite ime (najmanje 2 znaka)",
+      "name": "Unesite ime",
       "phone": "Neispravan broj telefona",
       "email": "Neispravna e-pošta",
-      "city": "Unesite grad",
       "instagram": "Korisničko ime: latinična slova, brojke, točka i podvlaka"
     }
   },

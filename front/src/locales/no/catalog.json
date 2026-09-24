@@ -313,5 +313,21 @@
     "restore": "Sett til salg igjen",
     "confirmDeactivateTitle": "Ta denne pakken av salg?",
     "confirmDeactivate": "Allerede solgte medlemskap fortsetter å fungere."
+  },
+  "bundles": {
+    "title": "Pakker",
+    "badge": "Pakke",
+    "create": "Opprett pakke",
+    "edit": "Rediger pakke",
+    "parts": "Inkluderte tjenester",
+    "addPart": "Legg til tjeneste",
+    "hint": "Ett besøk, én spesialist. Pris og varighet gjelder hele pakken.",
+    "size": "Velg 2–10 forskjellige individuelle tjenester.",
+    "separate": "Hver for seg",
+    "inBundles": "Inkludert i pakker",
+    "masters": "Spesialister",
+    "noMasters": "Ingen spesialist tildelt. Tildel en under Ansatte før bestillinger.",
+    "up": "Flytt opp",
+    "down": "Flytt ned"
   }
 }

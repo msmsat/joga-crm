@@ -1,0 +1,447 @@
+/* «Новый клиент». Стили модулем, а не тегом <style> в разметке: вставка тега
+   на каждом открытии пересчитывала стили всего документа ровно в кадр старта
+   анимации (см. комментарий у .ms-scroll в App.css). Анимируются только
+   transform и opacity. */
+
+/* ── Каркас правой колонки ─────────────────────────────────────────────── */
+.column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 18px 26px 16px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.headTitle { font-size: 14px; font-weight: 700; color: var(--text); }
+.headSub { display: none; }
+.grabber { display: none; }
+.close {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text3);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.18s ease, color 0.18s ease;
+}
+.close:hover { background: rgba(var(--ink), 0.05); color: var(--text); }
+
+.body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 22px 26px;
+}
+.stepIn { animation: stepIn 0.28s ease backwards; }
+@keyframes stepIn {
+  from { opacity: 0; transform: translateX(calc(var(--ac-dir, 1) * 20px)); }
+  to   { opacity: 1; transform: none; }
+}
+
+.foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 26px;
+  border-top: 1px solid var(--border);
+  background: rgba(var(--ink), 0.01);
+  flex-shrink: 0;
+}
+.footRight { display: flex; align-items: center; gap: 12px; }
+.counter { font-size: 11px; color: var(--text3); font-variant-numeric: tabular-nums; }
+
+/* ── Кнопки ────────────────────────────────────────────────────────────── */
+.btnGhost,
+.btnPrimary,
+.btnFinish {
+  height: 42px;
+  padding: 0 22px;
+  border-radius: 12px;
+  font-family: 'Manrope', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  transition: transform 0.15s ease, box-shadow 0.18s ease, background-color 0.18s ease, color 0.18s ease;
+}
+.btnGhost {
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text3);
+}
+.btnGhost:hover { border-color: var(--border2); color: var(--text); }
+.btnPrimary,
+.btnFinish {
+  border: none;
+  color: #fff;
+  padding: 0 28px;
+}
+.btnPrimary {
+  color: #472719;
+  background: linear-gradient(135deg, #FCAE91, #F9A08B);
+  box-shadow: 0 6px 16px -4px rgba(249, 160, 139, 0.45);
+}
+.btnFinish {
+  background: linear-gradient(135deg, #5BAB72, #4a9660);
+  box-shadow: 0 6px 16px -4px rgba(91, 171, 114, 0.45);
+}
+.btnPrimary:hover:not(:disabled),
+.btnFinish:hover:not(:disabled) { transform: translateY(-1px); }
+.btnPrimary:active:not(:disabled),
+.btnFinish:active:not(:disabled),
+.btnGhost:active { transform: scale(0.97); }
+.btnPrimary:disabled,
+.btnFinish:disabled {
+  background: rgba(var(--ink), 0.06);
+  color: var(--text3);
+  box-shadow: none;
+  cursor: not-allowed;
+}
+.spinner {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.45);
+  border-top-color: #fff;
+  animation: spin 0.6s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Поле: подпись + метка «Обязательно / Необязательно» ─────────────────── */
+.field { margin-bottom: 16px; }
+.labelRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 7px;
+}
+.label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+/* Метки — видными буквами, без капса: это пояснение, а не заголовок.
+   Обязательное поле в форме одно (имя), поэтому ему можно быть ярким. */
+.badgeRequired,
+.badgeOptional {
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  padding: 4px 9px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+.badgeRequired {
+  color: #472719;
+  background: linear-gradient(135deg, #FCAE91, #F9A08B);
+}
+.badgeOptional {
+  color: var(--text2);
+  background: rgba(var(--ink), 0.06);
+}
+
+.input,
+.affix {
+  width: 100%;
+  min-height: 46px;
+  box-sizing: border-box;
+  border-radius: 12px;
+  border: 1.5px solid rgba(var(--ink), 0.09);
+  background: rgba(var(--ink), 0.025);
+  font-family: 'Manrope', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
+}
+.input { padding: 11px 15px; outline: none; display: block; }
+.input::placeholder,
+.affixInput::placeholder { color: var(--text3); opacity: 0.7; }
+textarea.input { resize: vertical; line-height: 1.55; min-height: 88px; }
+.input:focus,
+.affix:focus-within {
+  border-color: #FCAE91;
+  background: var(--bg-card);
+  box-shadow: 0 0 0 3px rgba(252, 174, 145, 0.16);
+}
+.input[aria-invalid='true'],
+.affix[aria-invalid='true'] {
+  border-color: #D88C9A;
+  box-shadow: 0 0 0 3px rgba(216, 140, 154, 0.12);
+}
+.error { font-size: 12px; color: #D88C9A; font-weight: 600; margin-top: 6px; }
+.hint { font-size: 12px; color: var(--text3); font-weight: 500; margin-top: 6px; line-height: 1.45; }
+
+/* Поле с приставкой (Instagram: иконка и «@») */
+.affix {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 13px;
+}
+.affixIcon { display: flex; color: var(--text3); flex-shrink: 0; }
+.affixAt { font-size: 14px; font-weight: 700; color: var(--text3); transition: color 0.18s ease; }
+.affix:focus-within .affixAt { color: var(--peach); }
+.affixInput {
+  flex: 1;
+  min-width: 0;
+  height: 43px;
+  border: none;
+  outline: none;
+  background: transparent;
+  font: inherit;
+  color: inherit;
+}
+.affixLink { display: flex; color: var(--peach); flex-shrink: 0; animation: pop 0.28s cubic-bezier(0.34, 1.56, 0.64, 1) backwards; }
+@keyframes pop { from { transform: scale(0); } to { transform: scale(1); } }
+
+/* Телефон — общий PhoneField из components/UI (маска и флаги). Его родная
+   высота 52px и подпрыгивание на фокусе сделаны для экранов входа; здесь он
+   обязан выглядеть как соседние поля. */
+.phone :global(.phone-input-wrapper) {
+  height: 46px;
+  border-radius: 12px;
+  border: 1.5px solid rgba(var(--ink), 0.09);
+  background: rgba(var(--ink), 0.025);
+  font-size: 14px;
+  padding: 0 15px;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
+}
+.phone :global(.phone-input-wrapper.focused) {
+  transform: none;
+  border-color: #FCAE91;
+  background: var(--bg-card);
+  box-shadow: 0 0 0 3px rgba(252, 174, 145, 0.16);
+}
+.phone :global(.phone-input-wrapper.has-error) { border-color: #D88C9A; }
+.phone :global(.input-error-msg) { font-size: 12px; }
+
+/* ── Имя: живой аватар рядом с полем ────────────────────────────────────── */
+.nameRow {
+  display: flex;
+  align-items: flex-end;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+.nameRow .field { flex: 1; min-width: 0; margin-bottom: 0; }
+.avatar {
+  width: 46px;
+  height: 46px;
+  flex-shrink: 0;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 800;
+  color: #fff;
+  background: linear-gradient(135deg, #FCAE91, #F9A08B);
+  box-shadow: 0 8px 18px -6px rgba(249, 160, 139, 0.55);
+  transition: opacity 0.2s ease, transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.avatarEmpty {
+  background: rgba(var(--ink), 0.05);
+  color: var(--text3);
+  box-shadow: none;
+}
+
+/* ── Абонемент ─────────────────────────────────────────────────────────── */
+.packages { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.pkg {
+  padding: 14px 10px;
+  border-radius: 14px;
+  border: 2px solid var(--border);
+  background: transparent;
+  font-family: 'Manrope', sans-serif;
+  text-align: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+}
+.pkg:active { transform: scale(0.97); }
+.pkgOn {
+  border-color: var(--peach);
+  background: rgba(249, 160, 139, 0.06);
+  box-shadow: 0 4px 16px -4px rgba(249, 160, 139, 0.3);
+}
+.pkgName { font-size: 13px; font-weight: 800; color: var(--text); letter-spacing: -0.3px; line-height: 1.3; }
+.pkgOn .pkgName { color: var(--peach); }
+.pkgMeta { font-size: 11px; font-weight: 600; color: var(--text3); margin-top: 4px; }
+.noPackages {
+  padding: 16px;
+  border-radius: 12px;
+  background: rgba(var(--ink), 0.02);
+  border: 1px dashed var(--border);
+  text-align: center;
+  font-size: 12px;
+  color: var(--text3);
+}
+.noPackages a { display: inline-block; margin-top: 8px; font-weight: 700; color: var(--peach); }
+.paidBox {
+  margin-top: 14px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: rgba(249, 160, 139, 0.05);
+  border: 1px solid rgba(249, 160, 139, 0.15);
+}
+
+/* ── Сводка (шаг 4, только мастер) ─────────────────────────────────────── */
+.done { text-align: center; margin-bottom: 26px; }
+.doneIcon {
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  margin: 0 auto 16px;
+  background: linear-gradient(135deg, #5BAB72, #4a9660);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+}
+.doneTitle { font-size: 18px; font-weight: 800; color: var(--text); letter-spacing: -0.4px; margin-bottom: 6px; }
+.doneSub { font-size: 13px; color: var(--text3); }
+.summary {
+  padding: 20px;
+  border-radius: 14px;
+  background: rgba(var(--ink), 0.02);
+  border: 1px solid var(--border);
+}
+.summaryHead { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+.summaryName { font-size: 15px; font-weight: 800; color: var(--text); }
+.summarySub { font-size: 11px; color: var(--text3); margin-top: 2px; }
+.summaryGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.summaryCell {
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  min-width: 0;
+}
+.summaryLabel { font-size: 10px; color: var(--text3); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
+.summaryValue { font-size: 12px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* ── Раздел одной формы (телефон) ──────────────────────────────────────── */
+.section + .section { margin-top: 30px; }
+.sectionTitle {
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+  color: var(--text);
+  margin: 0 0 14px;
+}
+
+/* ==========================================================================
+   ТЕЛЕФОН (<768px): одна прокручиваемая форма в шите снизу.
+   Шит, его вход/уход и смахивание даёт .v-modal из App.css; здесь — то, что
+   делает форму своей для пальца: поля 16px (меньше — iOS приближает страницу
+   на фокусе), цели нажатия от 44px, главная кнопка у большого пальца.
+   ========================================================================== */
+@media (max-width: 767px) {
+  .overlay {
+    top: var(--ac-viewport-top, 0px);
+    bottom: auto;
+    height: var(--ac-viewport-height, 100dvh);
+  }
+  .overlay .dialog {
+    height: calc(var(--ac-viewport-height, 100dvh) * 0.92) !important;
+    max-height: calc(var(--ac-viewport-height, 100dvh) * 0.92) !important;
+  }
+  .head {
+    position: relative;
+    align-items: flex-start;
+    padding: 22px 18px 14px;
+    border-bottom: none;
+  }
+  .grabber {
+    display: block;
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    width: 36px;
+    height: 4px;
+    margin-left: -18px;
+    border-radius: 4px;
+    background: rgba(var(--ink), 0.14);
+  }
+  .headTitle { font-size: 21px; font-weight: 800; letter-spacing: -0.5px; line-height: 1.2; }
+  .headSub { display: block; margin-top: 4px; font-size: 13px; line-height: 1.4; color: var(--text3); }
+  .close {
+    width: 44px;
+    height: 44px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(var(--ink), 0.06);
+    color: var(--text2);
+  }
+
+  .body { padding: 8px 18px 28px; }
+
+  .field { margin-bottom: 18px; }
+  .labelRow { justify-content: space-between; }
+  .input,
+  .affix,
+  .phone :global(.phone-input-wrapper) { min-height: 50px; border-radius: 14px; }
+  .affixInput { height: 47px; }
+  /* !important: у ChipsInput кита размер шрифта задан инлайном */
+  .body input,
+  .body textarea { font-size: 16px !important; }
+  .input[type='date'] { -webkit-appearance: none; appearance: none; text-align: left; }
+
+  .nameRow { align-items: center; gap: 12px; margin-bottom: 18px; }
+  .nameRow .labelRow { justify-content: flex-start; }
+  .avatar { width: 56px; height: 56px; border-radius: 18px; font-size: 19px; align-self: flex-end; }
+  .nameInput { font-size: 18px !important; font-weight: 700; }
+
+  .pkg { padding: 16px 10px; min-height: 68px; }
+
+  .foot {
+    padding: 12px 18px calc(12px + env(safe-area-inset-bottom, 0px));
+    background: var(--bg-card);
+    box-shadow: 0 -10px 24px -18px rgba(26, 26, 26, 0.35);
+    border-top: none;
+  }
+  .btnFinish {
+    color: #472719;
+    width: 100%;
+    height: 54px;
+    border-radius: 16px;
+    font-size: 16px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #FCAE91, #F9A08B);
+    box-shadow: 0 10px 22px -8px rgba(249, 160, 139, 0.6);
+  }
+  .btnFinish:hover:not(:disabled) { transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stepIn, .affixLink, .doneIcon { animation: none; }
+  .overlay .dialog { animation: none !important; }
+}
+
+.btnPrimary:not(:disabled), .btnFinish:not(:disabled) { color: #472719; }
+.btnFinish:not(:disabled) { background: linear-gradient(135deg, #FCAE91, #F9A08B); }
+.close:focus-visible, .btnGhost:focus-visible, .btnPrimary:focus-visible,
+.btnFinish:focus-visible, .pkg:focus-visible { outline: 2px solid var(--text); outline-offset: 3px; }

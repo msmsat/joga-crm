@@ -347,10 +347,12 @@
     "submit": "Dodaj klienta ✓",
     "stepCounter": "Krok {{current}} z {{total}}",
     "trustSignal": "Dane są chronione i widoczne tylko dla administratorów",
+    "required": "Wymagane",
+    "optional": "Opcjonalne",
     "steps": {
       "1": {
         "title": "Dane osobowe",
-        "sub": "Wpisz dane kontaktowe klienta"
+        "sub": "Wymagane jest tylko imię — reszta według uznania"
       },
       "2": {
         "title": "Dane profilu",
@@ -366,15 +368,13 @@
       }
     },
     "step1": {
-      "previewLabel": "Nowy klient · Podgląd",
-      "name": "Imię i nazwisko *",
+      "name": "Imię",
       "namePlaceholder": "Jan Kowalski",
       "phone": "Telefon",
       "phonePlaceholder": "+48 500 000 000",
       "email": "E-mail",
       "emailPlaceholder": "klient@przyklad.pl",
       "instagram": "Instagram",
-      "instagramOptional": "opcjonalnie",
       "instagramPlaceholder": "username"
     },
     "step2": {
@@ -382,11 +382,11 @@
       "bdayPlaceholder": "12 kwietnia 1990",
       "city": "Miasto",
       "cityPlaceholder": "Warszawa",
+      "cityAuto": "Ustalone na podstawie Twojej lokalizacji — możesz zmienić",
       "tags": "Tagi",
       "tagsPlaceholder": "Pilates, VIP, rehabilitacja… (Enter)",
       "tagsHint": "Naciśnij Enter, aby dodać tag",
       "inviteCode": "Kod zaproszenia osoby polecającej",
-      "inviteCodePlaceholder": "Opcjonalnie",
       "inviteCodeHint": "Jeśli go podasz, oboje otrzymacie bonus"
     },
     "step3": {
@@ -424,10 +424,9 @@
       "subscriptionValue_many": "{{count}} zajęć"
     },
     "errors": {
-      "name": "Wpisz imię (co najmniej 2 znaki)",
+      "name": "Wpisz imię",
       "phone": "Nieprawidłowy numer telefonu",
       "email": "Nieprawidłowy e-mail",
-      "city": "Wpisz miasto",
       "instagram": "Nazwa użytkownika: litery łacińskie, cyfry, kropka i podkreślenie"
     }
   },

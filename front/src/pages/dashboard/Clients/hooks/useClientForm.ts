@@ -8,7 +8,8 @@ export interface ClientFormState {
   /** Ник без «@» — поле рисует «@» само, сервер хранит голый ник. */
   instagram: string;
   bday:  string;
-  city:  string;
+  /** null — поле не трогали, в нём стоит город по IP; '' — очистили намеренно. */
+  city:  string | null;
   note:  string;
   tags:  string[];
   membershipId: number | null;
@@ -34,7 +35,7 @@ export function instagramNick(value: string): string {
 
 const DEFAULTS: ClientFormState = {
   name: '', phone: '', email: '', instagram: '',
-  bday: '', city: '',  note: '',
+  bday: '', city: null,  note: '',
   tags: [], membershipId: null, isMembershipPaid: false,
   inviteCode: '',
 };
@@ -48,24 +49,18 @@ export function useClientForm() {
     setErrors(e => ({ ...e, [key]: undefined }));
   }, []);
 
-  const validate = useCallback((step: 1 | 2): boolean => {
-    const stepErrors: FormErrors = {};
-    if (step === 1) {
-      stepErrors.name  = (!form.name.trim() || form.name.trim().length < 2)
-        ? i18n.t('clients:addModal.errors.name') : undefined;
-      stepErrors.phone = (!form.phone.trim() || form.phone.replace(/\D/g, '').length < 6)
-        ? i18n.t('clients:addModal.errors.phone') : undefined;
-      stepErrors.email = (!form.email.trim() || !EMAIL_RE.test(form.email.trim()))
-        ? i18n.t('clients:addModal.errors.email') : undefined;
-      // Instagram необязателен, но заполненный мусор ловим здесь, а не 422-м
-      // на четвёртом шаге, когда форму уже не видно.
-      stepErrors.instagram = (form.instagram && !INSTAGRAM_RE.test(form.instagram))
-        ? i18n.t('clients:addModal.errors.instagram') : undefined;
-    } else {
-      stepErrors.city = !form.city.trim() ? i18n.t('clients:addModal.errors.city') : undefined;
-    }
-    setErrors(e => ({ ...e, ...stepErrors }));
-    return Object.values(stepErrors).every(v => !v);
+  /** Обязательно только имя. Остальное проверяется, лишь если его заполнили:
+      мусор ловим здесь, а не 422-м после нажатия «Добавить». */
+  const validate = useCallback((): boolean => {
+    const email = form.email.trim();
+    const next: FormErrors = {
+      name:      form.name.trim() ? undefined : i18n.t('clients:addModal.errors.name'),
+      phone:     form.phone && !/^\+[1-9]\d{7,14}$/.test(form.phone) ? i18n.t('clients:addModal.errors.phone') : undefined,
+      email:     email && !EMAIL_RE.test(email) ? i18n.t('clients:addModal.errors.email') : undefined,
+      instagram: form.instagram && !INSTAGRAM_RE.test(form.instagram) ? i18n.t('clients:addModal.errors.instagram') : undefined,
+    };
+    setErrors(e => ({ ...e, ...next }));
+    return Object.values(next).every(v => !v);
   }, [form]);
 
   const reset = useCallback(() => {

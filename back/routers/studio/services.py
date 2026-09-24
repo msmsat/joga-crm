@@ -1,3 +1,4 @@
+from collections import defaultdict
 from datetime import datetime, timedelta
 from typing import Optional
 
@@ -11,9 +12,9 @@ from dependencies import require_role, StudioContext
 from models import Service, Lesson, Reservation, Studio
 from schemas.schedule.hybrid import AVAILABLE_BOOKING_MODES
 from schemas.studio import ServiceRead, ServiceCreate, ServiceUpdate, ServiceWeekSlot
-from schemas.studio.studio import ServiceMasterRead
+from schemas.studio.studio import ServiceBundlePartRead, ServiceMasterRead, ServiceRefRead
 from schemas.studio.studio import reject_resource_group_combo
-from services import schedule_guard, service_pricing
+from services import schedule_guard, service_bundles, service_pricing
 
 router = APIRouter()
 
@@ -64,6 +65,9 @@ def _service_read(
     bookings_last_30d: int = 0,
     price_range: "service_pricing.PriceRange | None" = None,
     masters: "list[service_pricing.ServiceMaster] | None" = None,
+    bundle_items: "list[ServiceBundlePartRead] | None" = None,
+    bundle_full_price: Optional[int] = None,
+    in_bundles: "list[ServiceRefRead] | None" = None,
 ) -> ServiceRead:
     # Диапазон не передали (создание и правка услуги — там мастеров ещё не
     # спрашивали) → одна цена, равная базовой. Отдавать 0 нельзя: фронт покажет
@@ -93,7 +97,62 @@ def _service_read(
         buffer_after_min=service.buffer_after_min,
         is_bookable=service.is_bookable,
         terminology_profile=service.terminology_profile,
+        bundle_items=bundle_items or [],
+        bundle_full_price=bundle_full_price,
+        in_bundles=in_bundles or [],
     )
+
+
+async def _read_all(studio_id: int, db: AsyncSession) -> dict[int, ServiceRead]:
+    """Каталог услуг студии целиком, по названию — {id: карточка}.
+
+    Одна услуга читается тем же путём, что и весь список: у комплекса в
+    карточке его части, у части — комплексы, куда она входит, и для этого всё
+    равно нужен каталог. Услуг у студии десятки, а два пути сборки одной и той
+    же карточки разошлись бы на первой правке. Запросов фиксированное число,
+    сколько бы услуг ни было (CLAUDE.md §5, правило 2).
+    """
+    services = (await db.execute(
+        select(Service).where(Service.studio_id == studio_id).order_by(Service.name)
+    )).scalars().all()
+    counts = await _bookings_last_30d_by_service(studio_id, db)
+    ids = [s.id for s in services]
+    spans = await service_pricing.price_ranges(db, studio_id, ids)
+    masters = await service_pricing.masters_of_services(db, studio_id, ids)
+    compositions = await service_bundles.compositions(db, studio_id)
+
+    by_id = {s.id: s for s in services}
+
+    def span(sid: int) -> service_pricing.PriceRange:
+        # Без диапазона — базовая цена, не 0: иначе экран напишет «от 0».
+        return spans.get(sid) or service_pricing.PriceRange(min=by_id[sid].price, max=by_id[sid].price)
+
+    containing: dict[int, list[ServiceRefRead]] = defaultdict(list)
+    for bundle_id, part_ids in compositions.items():
+        for part_id in part_ids:
+            containing[part_id].append(ServiceRefRead(id=bundle_id, name=by_id[bundle_id].name))
+
+    def parts(service: Service) -> list[ServiceBundlePartRead]:
+        return [
+            ServiceBundlePartRead(
+                service_id=p, name=by_id[p].name, duration_min=by_id[p].duration_min,
+                price_min=span(p).min, price_max=span(p).max, color=by_id[p].color,
+            )
+            for p in compositions.get(service.id, [])
+        ]
+
+    return {
+        s.id: _service_read(
+            s, counts.get(s.id, 0), span(s.id), masters.get(s.id),
+            bundle_items=parts(s),
+            bundle_full_price=(
+                service_bundles.full_price(compositions[s.id], spans, span(s.id))
+                if s.id in compositions else None
+            ),
+            in_bundles=containing.get(s.id),
+        )
+        for s in services
+    }
 
 
 # Поля услуги, от которых зависят условия записи — как у Studio выше
@@ -150,19 +209,7 @@ async def list_services(
     ctx: StudioContext = Depends(require_role("owner", "admin")),
     db: AsyncSession = Depends(get_db),
 ):
-    services = (await db.execute(
-        select(Service).where(Service.studio_id == ctx.studio_id).order_by(Service.name)
-    )).scalars().all()
-    counts = await _bookings_last_30d_by_service(ctx.studio_id, db)
-    # Один запрос на весь каталог, а не по запросу на услугу: в каталоге их
-    # десятки (CLAUDE.md §5, правило 2).
-    ids = [s.id for s in services]
-    spans = await service_pricing.price_ranges(db, ctx.studio_id, ids)
-    masters = await service_pricing.masters_of_services(db, ctx.studio_id, ids)
-    return [
-        _service_read(s, counts.get(s.id, 0), spans.get(s.id), masters.get(s.id))
-        for s in services
-    ]
+    return list((await _read_all(ctx.studio_id, db)).values())
 
 
 @router.get("/services/{service_id}", response_model=ServiceRead)
@@ -172,12 +219,7 @@ async def get_service(
     db: AsyncSession = Depends(get_db),
 ):
     service = await _get_service_or_404(service_id, ctx.studio_id, db)
-    counts = await _bookings_last_30d_by_service(ctx.studio_id, db)
-    return _service_read(
-        service, counts.get(service.id, 0),
-        await service_pricing.price_range_for(db, service),
-        (await service_pricing.masters_of_services(
-            db, ctx.studio_id, [service.id])).get(service.id))
+    return (await _read_all(ctx.studio_id, db))[service.id]
 
 
 @router.post("/services", response_model=ServiceRead, status_code=201)
@@ -193,14 +235,26 @@ async def create_service(
     studio = await schedule_guard.lock_studio(db, ctx.studio_id)
     _assert_mode_available(data.booking_mode, studio)
     fields = data.model_dump()
+    parts = fields.pop("bundle_service_ids", None)
     fields["category"] = await _normalize_category(fields.get("category"), ctx.studio_id, db)
+    if parts is not None:
+        parts = await service_bundles.validate_parts(db, ctx.studio_id, parts)
+        # Комплекс делают одному клиенту подряд — групповым он не бывает.
+        if fields.get("service_type") == "group":
+            raise HTTPException(status_code=422, detail="Комплекс не может быть групповым")
+        fields["service_type"] = "individual"
+        fields["max_clients"] = 1
     service = Service(studio_id=ctx.studio_id, **fields)
     db.add(service)
+    await db.flush()
+    service_id = service.id
+    if parts is not None:
+        await service_bundles.set_parts(db, service_id, parts)
+        await service_bundles.assign_masters(db, ctx.studio_id, service_id, parts)
     # Новая услуга сразу меняет каталог, доступный для записи.
     await bump_booking_config_version(db, studio)
     await db.commit()
-    await db.refresh(service)
-    return service
+    return (await _read_all(ctx.studio_id, db))[service_id]
 
 
 @router.patch("/services/{service_id}", response_model=ServiceRead)
@@ -215,6 +269,7 @@ async def update_service(
     studio = await schedule_guard.lock_studio(db, ctx.studio_id)
     service = await _get_service_or_404(service_id, ctx.studio_id, db)
     changes = data.model_dump(exclude_unset=True)
+    new_parts = changes.pop("bundle_service_ids", None)
     if "category" in changes:
         changes["category"] = await _normalize_category(changes["category"], ctx.studio_id, db)
     _assert_mode_available(changes.get("booking_mode"), studio)
@@ -229,18 +284,35 @@ async def update_service(
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
 
-    touched_booking_config = any(
+    current_parts = await service_bundles.parts_of(db, service.id)
+    if new_parts is not None:
+        service_bundles.assert_is_bundle(current_parts)
+        new_parts = await service_bundles.validate_parts(db, ctx.studio_id, new_parts, bundle_id=service.id)
+    if current_parts and effective_service_type == "group":
+        raise HTTPException(status_code=422, detail="Комплекс не может быть групповым")
+    if current_parts:
+        changes["service_type"] = "individual"
+        changes["max_clients"] = 1
+    # Часть комплекса обязана остаться индивидуальной — иначе комплекс
+    # собран из того, что одному клиенту подряд не сделать.
+    if not service_bundles.can_be_part(effective_service_type, effective_booking_mode):
+        await service_bundles.assert_not_a_part(db, service.id)
+
+    parts_changed = new_parts is not None and new_parts != current_parts
+    touched_booking_config = parts_changed or any(
         getattr(service, field) != value
         for field, value in changes.items()
         if field in _BOOKING_RELEVANT_SERVICE_FIELDS
     )
     for field, value in changes.items():
         setattr(service, field, value)
+    if parts_changed:
+        await service_bundles.set_parts(db, service.id, new_parts)
+        await service_bundles.assign_masters(db, ctx.studio_id, service.id, new_parts)
     if touched_booking_config:
         await bump_booking_config_version(db, studio)
     await db.commit()
-    await db.refresh(service)
-    return service
+    return (await _read_all(ctx.studio_id, db))[service_id]
 
 
 @router.delete("/services/{service_id}", status_code=204)
@@ -253,6 +325,8 @@ async def delete_service(
 
     studio = await schedule_guard.lock_studio(db, ctx.studio_id)
     service = await _get_service_or_404(service_id, ctx.studio_id, db)
+    # Часть комплекса — 409 с понятной причиной, а не нарушение внешнего ключа.
+    await service_bundles.assert_not_a_part(db, service_id)
     # Resource-история держит услугу обязательной ссылкой (§6.1) — 409 вместо
     # нарушения CHECK при ON DELETE SET NULL.
     await schedule_guard.assert_service_removable(db, studio, service_id)

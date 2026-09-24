@@ -313,5 +313,21 @@
     "restore": "Wieder verkaufen",
     "confirmDeactivateTitle": "Dieses Paket aus dem Verkauf nehmen?",
     "confirmDeactivate": "Bereits verkaufte Abos bleiben gültig."
+  },
+  "bundles": {
+    "title": "Pakete",
+    "badge": "Paket",
+    "create": "Paket erstellen",
+    "edit": "Paket bearbeiten",
+    "parts": "Enthaltene Leistungen",
+    "addPart": "Leistung hinzufügen",
+    "hint": "Ein Besuch, eine Fachkraft. Preis und Dauer gelten für das gesamte Paket.",
+    "size": "Wählen Sie 2–10 verschiedene Einzelleistungen.",
+    "separate": "Einzeln",
+    "inBundles": "Enthalten in Paketen",
+    "masters": "Fachkräfte",
+    "noMasters": "Keine Fachkraft zugewiesen. Weisen Sie vor Buchungen unter Mitarbeitende eine zu.",
+    "up": "Nach oben",
+    "down": "Nach unten"
   }
 }

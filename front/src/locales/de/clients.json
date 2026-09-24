@@ -339,10 +339,12 @@
     "submit": "Kunde hinzufügen ✓",
     "stepCounter": "Schritt {{current}} von {{total}}",
     "trustSignal": "Die Daten sind geschützt und nur für Administratoren sichtbar",
+    "required": "Pflichtfeld",
+    "optional": "Optional",
     "steps": {
       "1": {
         "title": "Persönliche Daten",
-        "sub": "Geben Sie die Kontaktdaten des Kunden ein"
+        "sub": "Nur der Name ist Pflicht — der Rest ist freiwillig"
       },
       "2": {
         "title": "Profildaten",
@@ -358,15 +360,13 @@
       }
     },
     "step1": {
-      "previewLabel": "Neuer Kunde · Vorschau",
-      "name": "Vollständiger Name *",
+      "name": "Name",
       "namePlaceholder": "Anna Müller",
       "phone": "Telefon",
       "phonePlaceholder": "+49 30 0000000",
       "email": "E-Mail",
       "emailPlaceholder": "kunde@example.com",
       "instagram": "Instagram",
-      "instagramOptional": "optional",
       "instagramPlaceholder": "username"
     },
     "step2": {
@@ -374,11 +374,11 @@
       "bdayPlaceholder": "12. April 1990",
       "city": "Stadt",
       "cityPlaceholder": "Berlin",
+      "cityAuto": "Anhand Ihres Standorts ermittelt — kann geändert werden",
       "tags": "Tags",
       "tagsPlaceholder": "Pilates, VIP, Reha... (Enter)",
       "tagsHint": "Mit Enter fügen Sie einen Tag hinzu",
       "inviteCode": "Einladungscode des Werbenden",
-      "inviteCodePlaceholder": "Optional",
       "inviteCodeHint": "Wenn angegeben, bekommen Sie beide einen Bonus"
     },
     "step3": {
@@ -412,10 +412,9 @@
       "smsSub": "Der Kunde erhält eine Einladungsnachricht"
     },
     "errors": {
-      "name": "Geben Sie einen Namen ein (mindestens 2 Zeichen)",
+      "name": "Geben Sie einen Namen ein",
       "phone": "Ungültige Telefonnummer",
       "email": "Ungültige E-Mail",
-      "city": "Geben Sie eine Stadt ein",
       "instagram": "Nutzername: lateinische Buchstaben, Ziffern, Punkt und Unterstrich"
     }
   },

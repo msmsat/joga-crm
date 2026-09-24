@@ -1,5 +1,5 @@
 from typing import List, Optional
-from sqlalchemy import Boolean, CheckConstraint, Integer, String, Float, ForeignKey
+from sqlalchemy import Boolean, CheckConstraint, Integer, String, Float, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base import Base
@@ -65,3 +65,31 @@ class ServiceScheduleSlot(Base):
     end_time: Mapped[str] = mapped_column(String(5))
 
     service: Mapped["Service"] = relationship(back_populates="schedule_slots")
+
+
+class ServiceBundleItem(Base):
+    """Часть комплекса: «Стрижка + борода» = услуга-комплекс и две её части.
+
+    Комплекс — это ОБЫЧНАЯ строка `services` со своей ценой, длительностью и
+    мастерами, поэтому запись, касса, абонементы и отчёты работают с ним как с
+    любой услугой и ничего о составе не знают. Здесь только состав: что входит
+    и в каком порядке это делают. Правила состава (минимум две части, только
+    индивидуальные, без вложенных комплексов) — services/service_bundles.py.
+
+    Удаление части не каскадное намеренно: услуга, из которой собран комплекс,
+    не должна молча выпадать из него. Роутер отвечает внятным 409 раньше, а
+    внешний ключ страхует все прочие пути. Удаление студии целиком проходит:
+    части и комплексы уходят одним каскадом, проверка — в конце оператора.
+    """
+    __tablename__ = "service_bundle_items"
+    __table_args__ = (
+        UniqueConstraint("bundle_id", "service_id", name="uq_service_bundle_item"),
+        CheckConstraint("bundle_id <> service_id", name="check_service_bundle_item_not_self"),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    bundle_id: Mapped[int] = mapped_column(ForeignKey("services.id", ondelete="CASCADE"), index=True)
+    service_id: Mapped[int] = mapped_column(ForeignKey("services.id"), index=True)
+    # Порядок, в котором части делают: 0, 1, 2… Им же состав показывается
+    # в Каталоге, в Журнале и клиенту.
+    position: Mapped[int] = mapped_column(Integer)

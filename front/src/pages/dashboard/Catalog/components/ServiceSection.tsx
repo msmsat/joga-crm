@@ -9,13 +9,15 @@ import { useStudioCurrency, useStudioSettings } from '../../../../hooks/useStudi
 import * as Icons from '../../../../components/Icons';
 import { useToast } from '../../../../components/ui/Toast';
 import { ConfirmModal } from '../../../../components/ui/ConfirmModal';
-import { QrShareModal } from '../../../../components/ui/index';
+import { Button, QrShareModal } from '../../../../components/ui/index';
 import { miniappLink } from '../../../../lib/miniapp';
 import { usePriceLabel } from '../../../../hooks/usePriceLabel';
 import { errorMessage } from '../../../../api/errorMessage';
 import { getCurrencySymbol } from '../../../../components/UI';
 import { ServiceModal } from './modals/EditService';
 import { CatalogListSkeleton, CatalogRightSkeleton, CatalogError } from './CatalogSkeleton';
+
+import { ModalShell, ModalHeader, ModalBody } from '../../../../components/ui/modal';
 
 const DAY_KEYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] as const;
 
@@ -49,7 +51,7 @@ export function ServiceSection() {
   const { slots: weekSlots } = useServiceWeek(activeService?.id ?? null);
 
   // null → нет модалки; { service: null } → создание; { service } → редактирование
-  const [serviceModal, setServiceModal] = useState<{ service: Service | null } | null>(null);
+  const [serviceModal, setServiceModal] = useState<{ service: Service | null; bundle?: boolean } | null>(null);
 
   // QR услуги ведёт в мини-приложение на раздел записи с уже выбранной услугой:
   // групповая — расписание, отфильтрованное по ней; индивидуальная — список
@@ -67,11 +69,17 @@ export function ServiceSection() {
   // перечня направлений больше нет: услуга с любой категорией попадает в левую
   // панель, иначе она исчезала из списка, оставаясь выбранной справа
   // (activeService падает на services[0] без фильтра).
-  const groups = useMemo(() => groupServicesByCategory(services, tCat), [services, tCat]);
+  const groups = useMemo(() => {
+    const bundles = services.filter(s => s.bundle_items.length > 0);
+    const ordinary = groupServicesByCategory(services.filter(s => !s.bundle_items.length), tCat);
+    return [...(bundles.length ? [{ label: 'bundles', items: bundles, bundle: true }] : []),
+      ...ordinary.map(g => ({ ...g, bundle: false }))];
+  }, [services, tCat]);
   // Тот же набор — в форму услуги: выбор категории строится по тому, что
   // студия уже использует.
   const categories = useMemo(() => serviceCategories(services, tCat), [services, tCat]);
 
+  const [chooseKind, setChooseKind] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
 
   // Ассистент: ?tab=services&ai=service.create (эпик AI-6, задача 9).
@@ -100,15 +108,15 @@ export function ServiceSection() {
       <div className="cat-list-panel">
         <div className="cat-panel-hdr">
           <span className="cat-panel-title">{t('catalog:services.title')}</span>
-          <button className="cat-add-btn" title={t('catalog:services.addService')} onClick={() => setServiceModal({ service: null })}>
+          <button className="cat-add-btn" title={t('catalog:services.addService')} aria-label={t('catalog:services.addService')} onClick={() => setChooseKind(true)}>
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           </button>
         </div>
         {isLoading && services.length === 0 ? <CatalogListSkeleton /> : (
         <div className="cat-list">
           {groups.map(group => (
-            <div key={group.label}>
-              <div className="cat-sep">{tCat(group.label)}</div>
+            <div key={`${group.bundle}:${group.label}`}>
+              <div className="cat-sep">{group.bundle ? t("catalog:bundles.title") : tCat(group.label)}</div>
               {group.items.map(svc => (
                 <div
                   key={svc.id}
@@ -121,7 +129,7 @@ export function ServiceSection() {
                     <div className="cat-item-sub">{priceLabel(svc.price_min, svc.price_max, true)} · {svc.duration_min} {t('common:units.min')}</div>
                   </div>
                   <span className={`cat-type-badge ${svc.type}`}>
-                    {svc.type === 'group' ? t('catalog:services.types.group') : t('catalog:services.types.individual')}
+                    {svc.bundle_items.length ? t('catalog:bundles.badge') : svc.type === 'group' ? t('catalog:services.types.group') : t('catalog:services.types.individual')}
                   </span>
                 </div>
               ))}
@@ -166,7 +174,7 @@ export function ServiceSection() {
                   <div className="cat-hero-sub">
                     {tCat(activeService.category)}
                     <span className={`cat-hero-type ${activeService.type}`}>
-                      {activeService.type === 'group' ? t('catalog:services.types.groupFull') : t('catalog:services.types.individualFull')}
+                      {activeService.bundle_items.length ? t('catalog:bundles.badge') : activeService.type === 'group' ? t('catalog:services.types.groupFull') : t('catalog:services.types.individualFull')}
                     </span>
                   </div>
                 </div>
@@ -178,6 +186,7 @@ export function ServiceSection() {
               <div className="cat-stats-row" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(min(160px, 100%), 1fr))' }}>
                 <div className="cat-stat-card">
                   <div className="cat-stat-v">{priceLabel(activeService.price_min, activeService.price_max, true)}</div>
+                  {activeService.bundle_full_price != null && <del className="cat-bundle-muted">{priceLabel(activeService.bundle_full_price, activeService.bundle_full_price, true)}</del>}
                   <div className="cat-stat-l">{t('catalog:services.stats.price')}</div>
                 </div>
                 <div className="cat-stat-card">
@@ -194,6 +203,25 @@ export function ServiceSection() {
                 </div>
               </div>
 
+              {activeService.bundle_items.length > 0 && <>
+                <div className="cat-sec-title">{t('catalog:bundles.parts')}</div>
+                <div className="cat-bundle-parts">
+                  {activeService.bundle_items.map((part, index) => <Button key={part.service_id} variant="ghost" fullWidth onClick={() => setPickedServiceId(part.service_id)}>
+                    <span className="cat-bundle-part-name">{index + 1}. {part.name}</span>
+                    <span className="cat-bundle-muted">{part.duration_min} {t('common:units.min')} · {priceLabel(part.price_min, part.price_max, true)}</span>
+                  </Button>)}
+                </div>
+                <p className="cat-bundle-muted">{t('catalog:bundles.hint')}</p>
+              </>}
+              {activeService.in_bundles.length > 0 && <>
+                <div className="cat-sec-title">{t('catalog:bundles.inBundles')}</div>
+                <div className="cat-info-row">{activeService.in_bundles.map(bundle => <Button key={bundle.id} size="sm" variant="ghost" onClick={() => setPickedServiceId(bundle.id)}>{bundle.name}</Button>)}</div>
+              </>}
+              {activeService.masters.length > 0 && <>
+                <div className="cat-sec-title">{t('catalog:bundles.masters')}</div>
+                <div className="cat-info-row">{activeService.masters.map(master => <div className="cat-chip" key={master.user_id}>{master.name} · {priceLabel(master.price, master.price, true)}</div>)}</div>
+              </>}
+              {activeService.bundle_items.length > 0 && activeService.masters.length === 0 && <p className="cat-bundle-muted">{t('catalog:bundles.noMasters')}</p>}
               {/* Description */}
               <div className="cat-sec-title">{t('catalog:services.details.description')}</div>
               <p className="cat-description">{activeService.description}</p>
@@ -273,18 +301,29 @@ export function ServiceSection() {
         )}
       </div>
 
+      {chooseKind && <ModalShell onClose={() => setChooseKind(false)}>
+        <ModalHeader title={t('catalog:services.addService')} />
+        <ModalBody><div className="cat-bundle-parts">
+          <Button variant="ghost" fullWidth onClick={() => { setChooseKind(false); setServiceModal({ service: null }); }}>{t('catalog:modals.service.titleNew')}</Button>
+          <Button fullWidth onClick={() => { setChooseKind(false); setServiceModal({ service: null, bundle: true }); }}>{t('catalog:bundles.create')}</Button>
+          <p className="cat-bundle-muted">{t('catalog:bundles.hint')}</p>
+        </div></ModalBody>
+      </ModalShell>}
       {serviceModal && (
         <ServiceModal
           key={serviceModal.service?.id ?? 'new'}
           service={serviceModal.service}
           categories={categories}
+          services={services}
+          bundle={serviceModal.bundle}
           onClose={() => setServiceModal(null)}
           onSubmit={async (data) => {
             try {
               if (serviceModal.service) {
                 await updateService(serviceModal.service.id, data);
               } else {
-                await createService(data);
+                const created = await createService(data);
+                setPickedServiceId(created.id);
               }
               toast.success(t('catalog:services.toasts.saved'));
             } catch (error) {

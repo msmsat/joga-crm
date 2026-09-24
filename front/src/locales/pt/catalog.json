@@ -313,5 +313,21 @@
     "restore": "Repor à venda",
     "confirmDeactivateTitle": "Retirar este pacote da venda?",
     "confirmDeactivate": "As assinaturas já vendidas continuarão a funcionar."
+  },
+  "bundles": {
+    "title": "Pacotes",
+    "badge": "Pacote",
+    "create": "Criar pacote",
+    "edit": "Editar pacote",
+    "parts": "Serviços incluídos",
+    "addPart": "Adicionar serviço",
+    "hint": "Uma visita, um especialista. O preço e a duração são do pacote completo.",
+    "size": "Selecione entre 2 e 10 serviços individuais diferentes.",
+    "separate": "Separadamente",
+    "inBundles": "Incluído em pacotes",
+    "masters": "Especialistas",
+    "noMasters": "Nenhum especialista atribuído. Atribua um em Equipa antes de aceitar reservas.",
+    "up": "Mover para cima",
+    "down": "Mover para baixo"
   }
 }

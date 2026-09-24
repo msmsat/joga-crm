@@ -313,5 +313,21 @@
     "restore": "Palauta myyntiin",
     "confirmDeactivateTitle": "Poistetaanko tämä paketti myynnistä?",
     "confirmDeactivate": "Jo myydyt jäsenyydet toimivat edelleen."
+  },
+  "bundles": {
+    "title": "Paketit",
+    "badge": "Paketti",
+    "create": "Luo paketti",
+    "edit": "Muokkaa pakettia",
+    "parts": "Paketin palvelut",
+    "addPart": "Lisää palvelu",
+    "hint": "Yksi käynti, yksi ammattilainen. Hinta ja kesto koskevat koko pakettia.",
+    "size": "Valitse 2–10 erilaista yksilöpalvelua.",
+    "separate": "Erikseen",
+    "inBundles": "Sisältyy paketteihin",
+    "masters": "Ammattilaiset",
+    "noMasters": "Ammattilaista ei ole määritetty. Määritä ammattilainen Henkilöstö-osiossa ennen varauksia.",
+    "up": "Siirrä ylös",
+    "down": "Siirrä alas"
   }
 }

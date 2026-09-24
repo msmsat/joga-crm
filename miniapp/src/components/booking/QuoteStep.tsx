@@ -1,3 +1,4 @@
+import { BundleSummary } from './BundleSummary';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { dayOf, formatDay, relativeDay, timeOf, upperFirst } from '../../lib/slots';
@@ -54,6 +55,7 @@ export function QuoteStep({ flow }: { flow: Flow }) {
         </div>
       </div>
 
+      <BundleSummary service={flow.service} />
       <Row label={terms.staff?.singular ?? t('resource.staff')} value={domain.trainer_name} />
       {domain.branch_name && <Row label={t('resource.branch')} value={domain.branch_name} />}
       <Row label={t('resource.duration')} value={t('booking.duration', { min: quote.terms.duration_min })} />

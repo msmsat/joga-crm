@@ -59,6 +59,9 @@ const DIR_ROUTE = {
 // существуют для пользователя. Описывать их в карте нельзя: карта описывает то,
 // что видно на экране.
 const NOT_A_MODAL = {
+  'Clients/fields': 'поля внутри AddClientModal, отдельного окна нет',
+  'Clients/sections': 'разделы формы AddClientModal',
+  'Clients/WizardAside': 'боковая панель мастера AddClientModal',
   'AI/ChannelPane': 'часть AgentSetupModal, отдельного окна нет',
   'AI/ConnectAreas': 'часть AgentSetupModal',
   'AI/PromptPane': 'часть AgentSetupModal',

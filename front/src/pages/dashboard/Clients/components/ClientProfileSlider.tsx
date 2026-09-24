@@ -491,6 +491,15 @@ function ClientPanel({ client, profile, onClose, onDelete }: {
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                 <div style={{ fontSize: '16px', fontWeight: 800, color: 'var(--text)', letterSpacing: '-0.3px' }}>{client.name}{client.last_name ? ' ' + client.last_name : ''}</div>
+                {/* Номер клиента в студии: главный идентификатор — контакты необязательны. */}
+                <button
+                  type="button"
+                  onClick={() => actions.copyToClipboard(`#${client.id}`)}
+                  title={`#${client.id}${t('panel.contacts.copyHint')}`}
+                  style={{ fontSize: '11px', fontWeight: 700, padding: '2px 8px', borderRadius: '20px', border: 'none', background: 'rgba(var(--ink),0.06)', color: 'var(--text2)', cursor: 'pointer', fontFamily: 'Manrope', fontVariantNumeric: 'tabular-nums' }}
+                >
+                  #{client.id}
+                </button>
                 {frozen && (
                   <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 8px', borderRadius: '20px', background: 'rgba(147,181,216,0.18)', color: '#4a7ca8', border: '1px solid rgba(147,181,216,0.3)', whiteSpace: 'nowrap' }}>
                     ❄ {t('status.frozen')}

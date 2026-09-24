@@ -1,3 +1,4 @@
+import { BundleSummary } from '../../../components/booking/BundleSummary';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { useTelegram } from '../../../hooks/useTelegram';
@@ -76,6 +77,7 @@ export default function ServiceFilter({ services, selected, onSelect, loading }:
             >
               {t('booking.duration', { min: service.duration_min })} · {priceOf(service, null)}
             </span>
+            {active && <BundleSummary service={service} />}
           </Chip>
         );
       })}
@@ -91,7 +93,7 @@ function Chip({ active, onClick, children }: { active: boolean; onClick: () => v
       onClick={onClick}
       whileTap={{ scale: 0.95 }}
       transition={{ type: 'spring', stiffness: 420, damping: 30 }}
-      className={`flex h-[54px] shrink-0 flex-col items-start justify-center gap-0.5 rounded-[18px] px-4 text-left transition-[background-color,box-shadow] duration-200 ${
+      className={`flex min-h-[54px] max-w-[300px] shrink-0 py-3 flex-col items-start justify-center gap-0.5 rounded-[18px] px-4 text-left transition-[background-color,box-shadow] duration-200 ${
         active ? 'bg-brand text-brand-foreground shadow-brand' : 'bg-card text-card-foreground shadow-soft'
       }`}
     >

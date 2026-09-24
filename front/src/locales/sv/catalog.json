@@ -313,5 +313,21 @@
     "restore": "Lägg tillbaka i försäljning",
     "confirmDeactivateTitle": "Ta detta paket ur försäljning?",
     "confirmDeactivate": "Redan sålda medlemskap fortsätter att fungera."
+  },
+  "bundles": {
+    "title": "Paket",
+    "badge": "Paket",
+    "create": "Skapa paket",
+    "edit": "Redigera paket",
+    "parts": "Ingående tjänster",
+    "addPart": "Lägg till tjänst",
+    "hint": "Ett besök, en specialist. Pris och längd gäller hela paketet.",
+    "size": "Välj 2–10 olika individuella tjänster.",
+    "separate": "Separat",
+    "inBundles": "Ingår i paket",
+    "masters": "Specialister",
+    "noMasters": "Ingen specialist tilldelad. Tilldela en under Personal före bokningar.",
+    "up": "Flytta upp",
+    "down": "Flytta ned"
   }
 }

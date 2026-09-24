@@ -65,6 +65,8 @@ export const queryKeys = {
   client: (id: number) => ['clients', 'detail', id] as const,
   clientCategories: ['clients', 'categories'] as const,
   clientSegmentRules: ['clients', 'segment-rules'] as const,
+  // Вне префикса 'clients': создание клиента инвалидирует список, а город по IP от него не меняется.
+  clientDefaultCity: ['client-default-city'] as const,
   clientEvents: (id: number, filter: string) => ['clients', 'detail', id, 'events', filter] as const,
   clientEventsAll: (id: number) => ['clients', 'detail', id, 'events'] as const, // префикс: все фильтры разом
   clientActivity: (id: number) => ['clients', 'detail', id, 'activity'] as const,

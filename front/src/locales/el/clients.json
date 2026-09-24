@@ -343,10 +343,12 @@
     "submit": "Προσθήκη πελάτη ✓",
     "stepCounter": "Βήμα {{current}} από {{total}}",
     "trustSignal": "Τα δεδομένα προστατεύονται και είναι ορατά μόνο στους διαχειριστές",
+    "required": "Υποχρεωτικό",
+    "optional": "Προαιρετικό",
     "steps": {
       "1": {
         "title": "Προσωπικά στοιχεία",
-        "sub": "Εισαγάγετε τα στοιχεία επικοινωνίας του πελάτη"
+        "sub": "Υποχρεωτικό είναι μόνο το όνομα — τα υπόλοιπα προαιρετικά"
       },
       "2": {
         "title": "Στοιχεία προφίλ",
@@ -362,15 +364,13 @@
       }
     },
     "step1": {
-      "previewLabel": "Νέος πελάτης · Προεπισκόπηση",
-      "name": "Ονοματεπώνυμο *",
+      "name": "Όνομα",
       "namePlaceholder": "Μαρία Παπαδοπούλου",
       "phone": "Τηλέφωνο",
       "phonePlaceholder": "+30 690 000 0000",
       "email": "Email",
       "emailPlaceholder": "pelatis@paradeigma.gr",
       "instagram": "Instagram",
-      "instagramOptional": "προαιρετικό",
       "instagramPlaceholder": "username"
     },
     "step2": {
@@ -378,11 +378,11 @@
       "bdayPlaceholder": "12 Απριλίου 1990",
       "city": "Πόλη",
       "cityPlaceholder": "Αθήνα",
+      "cityAuto": "Εντοπίστηκε από την τοποθεσία σας — μπορείτε να το αλλάξετε",
       "tags": "Ετικέτες",
       "tagsPlaceholder": "Pilates, VIP, αποκατάσταση… (Enter)",
       "tagsHint": "Πατήστε Enter για να προσθέσετε ετικέτα",
       "inviteCode": "Κωδικός πρόσκλησης συστήνοντος",
-      "inviteCodePlaceholder": "Προαιρετικό",
       "inviteCodeHint": "Αν δοθεί, θα λάβετε και οι δύο μπόνους"
     },
     "step3": {
@@ -418,10 +418,9 @@
       "subscriptionValue_other": "{{count}} μαθήματα"
     },
     "errors": {
-      "name": "Εισαγάγετε όνομα (τουλάχιστον 2 χαρακτήρες)",
+      "name": "Εισαγάγετε όνομα",
       "phone": "Μη έγκυρος αριθμός τηλεφώνου",
       "email": "Μη έγκυρο email",
-      "city": "Εισαγάγετε πόλη",
       "instagram": "Όνομα χρήστη: λατινικοί χαρακτήρες, αριθμοί, τελεία και κάτω παύλα"
     }
   },

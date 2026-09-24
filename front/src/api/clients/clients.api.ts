@@ -15,6 +15,7 @@ import type {
   ClientsPage,
   ClientUpdate,
   ClientWallet,
+  DefaultCityOut,
   EventRecord,
   InviteCode,
   NoteCreatedOut,
@@ -51,6 +52,10 @@ export const clientsApi = {
       `/clients/check-contact?field=${field}&value=${encodeURIComponent(value)}`
       + (excludeId !== undefined ? `&exclude_id=${excludeId}` : '')
     ),
+
+  // Город и страна по IP открывшего форму — подставляются в нового клиента.
+  getDefaultCity: () =>
+    client.get<DefaultCityOut>('/clients/default-city'),
 
   getCategories: () =>
     client.get<CategoryStat[]>('/clients/categories'),

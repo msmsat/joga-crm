@@ -343,10 +343,12 @@
     "submit": "Müşteri ekle ✓",
     "stepCounter": "{{total}} adımın {{current}}. adımı",
     "trustSignal": "Veriler korunur ve yalnızca yöneticiler tarafından görülebilir",
+    "required": "Zorunlu",
+    "optional": "İsteğe bağlı",
     "steps": {
       "1": {
         "title": "Kişisel bilgiler",
-        "sub": "Müşterinin iletişim bilgilerini girin"
+        "sub": "Yalnızca ad zorunludur — gerisi isteğe bağlı"
       },
       "2": {
         "title": "Profil ayrıntıları",
@@ -362,15 +364,13 @@
       }
     },
     "step1": {
-      "previewLabel": "Yeni müşteri · Önizleme",
-      "name": "Ad soyad *",
+      "name": "Ad",
       "namePlaceholder": "Ayşe Yılmaz",
       "phone": "Telefon",
       "phonePlaceholder": "+90 530 000 0000",
       "email": "E-posta",
       "emailPlaceholder": "musteri@ornek.tr",
       "instagram": "Instagram",
-      "instagramOptional": "isteğe bağlı",
       "instagramPlaceholder": "username"
     },
     "step2": {
@@ -378,11 +378,11 @@
       "bdayPlaceholder": "12 Nisan 1990",
       "city": "Şehir",
       "cityPlaceholder": "İstanbul",
+      "cityAuto": "Konumunuza göre belirlendi — değiştirebilirsiniz",
       "tags": "Etiketler",
       "tagsPlaceholder": "Pilates, VIP, rehabilitasyon… (Enter)",
       "tagsHint": "Etiket eklemek için Enter tuşuna basın",
       "inviteCode": "Yönlendirenin davet kodu",
-      "inviteCodePlaceholder": "İsteğe bağlı",
       "inviteCodeHint": "Belirtilirse ikiniz de bonus alırsınız"
     },
     "step3": {
@@ -418,10 +418,9 @@
       "subscriptionValue_other": "{{count}} ders"
     },
     "errors": {
-      "name": "Bir ad girin (en az 2 karakter)",
+      "name": "Bir ad girin",
       "phone": "Geçersiz telefon numarası",
       "email": "Geçersiz e-posta",
-      "city": "Bir şehir girin",
       "instagram": "Kullanıcı adı: Latin harfleri, rakamlar, nokta ve alt çizgi"
     }
   },

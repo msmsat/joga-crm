@@ -313,5 +313,21 @@
     "restore": "Volver a poner a la venta",
     "confirmDeactivateTitle": "¿Retirar este paquete de la venta?",
     "confirmDeactivate": "Las membresías ya vendidas seguirán funcionando."
+  },
+  "bundles": {
+    "title": "Paquetes",
+    "badge": "Paquete",
+    "create": "Crear paquete",
+    "edit": "Editar paquete",
+    "parts": "Servicios incluidos",
+    "addPart": "Añadir servicio",
+    "hint": "Una visita, un especialista. El precio y la duración corresponden al paquete completo.",
+    "size": "Selecciona de 2 a 10 servicios individuales distintos.",
+    "separate": "Por separado",
+    "inBundles": "Incluido en paquetes",
+    "masters": "Especialistas",
+    "noMasters": "No hay especialistas asignados. Asigna uno en Personal antes de aceptar reservas.",
+    "up": "Subir",
+    "down": "Bajar"
   }
 }

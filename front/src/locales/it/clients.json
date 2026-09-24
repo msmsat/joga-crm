@@ -343,10 +343,12 @@
     "submit": "Aggiungi cliente ✓",
     "stepCounter": "Passaggio {{current}} di {{total}}",
     "trustSignal": "I dati sono protetti e visibili solo agli amministratori",
+    "required": "Obbligatorio",
+    "optional": "Facoltativo",
     "steps": {
       "1": {
         "title": "Dati personali",
-        "sub": "Inserisci i dati di contatto del cliente"
+        "sub": "Solo il nome è obbligatorio — il resto è facoltativo"
       },
       "2": {
         "title": "Dettagli del profilo",
@@ -362,15 +364,13 @@
       }
     },
     "step1": {
-      "previewLabel": "Nuovo cliente · Anteprima",
-      "name": "Nome completo *",
+      "name": "Nome",
       "namePlaceholder": "Giulia Rossi",
       "phone": "Telefono",
       "phonePlaceholder": "+39 333 000 0000",
       "email": "E-mail",
       "emailPlaceholder": "cliente@esempio.it",
       "instagram": "Instagram",
-      "instagramOptional": "facoltativo",
       "instagramPlaceholder": "username"
     },
     "step2": {
@@ -378,11 +378,11 @@
       "bdayPlaceholder": "12 aprile 1990",
       "city": "Città",
       "cityPlaceholder": "Roma",
+      "cityAuto": "Rilevata dalla tua posizione — puoi modificarla",
       "tags": "Etichette",
       "tagsPlaceholder": "Pilates, VIP, riabilitazione… (Invio)",
       "tagsHint": "Premi Invio per aggiungere un'etichetta",
       "inviteCode": "Codice invito del referente",
-      "inviteCodePlaceholder": "Facoltativo",
       "inviteCodeHint": "Se indicato, riceverete entrambi un bonus"
     },
     "step3": {
@@ -418,10 +418,9 @@
       "subscriptionValue_other": "{{count}} lezioni"
     },
     "errors": {
-      "name": "Inserisci un nome (almeno 2 caratteri)",
+      "name": "Inserisci un nome",
       "phone": "Numero di telefono non valido",
       "email": "E-mail non valida",
-      "city": "Inserisci una città",
       "instagram": "Nome utente: lettere latine, cifre, punto e trattino basso"
     }
   },

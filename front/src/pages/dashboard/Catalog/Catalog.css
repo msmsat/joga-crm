@@ -1450,3 +1450,17 @@
   .cat-body { padding: 12px 12px 16px; }
   .cat-hall-tabs { margin-bottom: 12px; }
 }
+
+/* Service bundles share the catalog layout and theme tokens. */
+.cat-bundle-parts { display: grid; gap: 8px; margin-block: 12px; }
+.cat-bundle-muted { color: var(--text2); font-size: 12px; line-height: 1.6; }
+.cat-bundle-part-name { flex: 1; min-width: 0; text-align: left; overflow-wrap: anywhere; }
+.cat-bundle-part-name > span { display: block; }
+.cat-bundle-editor { margin-block: 20px; }
+.cat-bundle-editor-row { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 12px; background: var(--bg); }
+.cat-bundle-controls { display: flex; gap: 4px; }
+.cat-bundle-controls .v-btn { padding: 8px 10px !important; min-width: 36px; }
+@media (max-width: 767px) {
+  .cat-bundle-editor-row { flex-wrap: wrap; }
+  .cat-bundle-parts > .v-btn { flex-wrap: wrap; justify-content: flex-start !important; }
+}

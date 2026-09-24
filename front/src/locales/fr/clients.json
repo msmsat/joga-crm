@@ -343,10 +343,12 @@
     "submit": "Ajouter le client ✓",
     "stepCounter": "Étape {{current}} sur {{total}}",
     "trustSignal": "Les données sont protégées et visibles uniquement par les administrateurs",
+    "required": "Obligatoire",
+    "optional": "Facultatif",
     "steps": {
       "1": {
         "title": "Informations personnelles",
-        "sub": "Saisissez les coordonnées du client"
+        "sub": "Seul le nom est obligatoire — le reste est facultatif"
       },
       "2": {
         "title": "Détails du profil",
@@ -362,15 +364,13 @@
       }
     },
     "step1": {
-      "previewLabel": "Nouveau client · Aperçu",
-      "name": "Nom complet *",
+      "name": "Nom",
       "namePlaceholder": "Jean Dupont",
       "phone": "Téléphone",
       "phonePlaceholder": "+33 6 00 00 00 00",
       "email": "E-mail",
       "emailPlaceholder": "client@exemple.fr",
       "instagram": "Instagram",
-      "instagramOptional": "facultatif",
       "instagramPlaceholder": "username"
     },
     "step2": {
@@ -378,11 +378,11 @@
       "bdayPlaceholder": "12 avril 1990",
       "city": "Ville",
       "cityPlaceholder": "Paris",
+      "cityAuto": "Déterminée d'après votre position — modifiable",
       "tags": "Étiquettes",
       "tagsPlaceholder": "Pilates, VIP, rééducation… (Entrée)",
       "tagsHint": "Appuyez sur Entrée pour ajouter une étiquette",
       "inviteCode": "Code d'invitation du parrain",
-      "inviteCodePlaceholder": "Facultatif",
       "inviteCodeHint": "S'il est renseigné, vous recevez tous les deux un bonus"
     },
     "step3": {
@@ -418,10 +418,9 @@
       "subscriptionValue_other": "{{count}} cours"
     },
     "errors": {
-      "name": "Saisissez un nom (au moins 2 caractères)",
+      "name": "Saisissez un nom",
       "phone": "Numéro de téléphone non valide",
       "email": "Adresse e-mail non valide",
-      "city": "Saisissez une ville",
       "instagram": "Identifiant : lettres latines, chiffres, point et tiret bas"
     }
   },

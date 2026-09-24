@@ -313,5 +313,21 @@
     "restore": "Vissza az értékesítésbe",
     "confirmDeactivateTitle": "Kivonja ezt a csomagot az értékesítésből?",
     "confirmDeactivate": "A már értékesített bérletek továbbra is működnek."
+  },
+  "bundles": {
+    "title": "Csomagok",
+    "badge": "Csomag",
+    "create": "Csomag létrehozása",
+    "edit": "Csomag szerkesztése",
+    "parts": "A csomag szolgáltatásai",
+    "addPart": "Szolgáltatás hozzáadása",
+    "hint": "Egy látogatás, egy szakember. Az ár és az időtartam a teljes csomagra vonatkozik.",
+    "size": "Válasszon 2–10 különböző egyéni szolgáltatást.",
+    "separate": "Külön-külön",
+    "inBundles": "Csomagok része",
+    "masters": "Szakemberek",
+    "noMasters": "Nincs hozzárendelt szakember. Foglalás előtt rendeljen hozzá egyet a Munkatársak részben.",
+    "up": "Mozgatás fel",
+    "down": "Mozgatás le"
   }
 }

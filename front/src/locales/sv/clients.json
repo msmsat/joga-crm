@@ -343,10 +343,12 @@
     "submit": "Lägg till kund ✓",
     "stepCounter": "Steg {{current}} av {{total}}",
     "trustSignal": "Uppgifterna är skyddade och synliga endast för administratörer",
+    "required": "Obligatoriskt",
+    "optional": "Valfritt",
     "steps": {
       "1": {
         "title": "Personuppgifter",
-        "sub": "Ange kundens kontaktuppgifter"
+        "sub": "Endast namnet är obligatoriskt — resten är valfritt"
       },
       "2": {
         "title": "Profiluppgifter",
@@ -362,15 +364,13 @@
       }
     },
     "step1": {
-      "previewLabel": "Ny kund · Förhandsvisning",
-      "name": "Fullständigt namn *",
+      "name": "Namn",
       "namePlaceholder": "Anna Svensson",
       "phone": "Telefon",
       "phonePlaceholder": "+46 70 000 00 00",
       "email": "E-post",
       "emailPlaceholder": "kund@exempel.se",
       "instagram": "Instagram",
-      "instagramOptional": "valfritt",
       "instagramPlaceholder": "username"
     },
     "step2": {
@@ -378,11 +378,11 @@
       "bdayPlaceholder": "12 april 1990",
       "city": "Ort",
       "cityPlaceholder": "Stockholm",
+      "cityAuto": "Hämtat från din plats — kan ändras",
       "tags": "Taggar",
       "tagsPlaceholder": "Pilates, VIP, rehabilitering… (Retur)",
       "tagsHint": "Tryck på Retur för att lägga till en tagg",
       "inviteCode": "Värvarens inbjudningskod",
-      "inviteCodePlaceholder": "Valfritt",
       "inviteCodeHint": "Om den anges får ni båda en bonus"
     },
     "step3": {
@@ -418,10 +418,9 @@
       "subscriptionValue_other": "{{count}} lektioner"
     },
     "errors": {
-      "name": "Ange ett namn (minst 2 tecken)",
+      "name": "Ange ett namn",
       "phone": "Ogiltigt telefonnummer",
       "email": "Ogiltig e-post",
-      "city": "Ange en ort",
       "instagram": "Användarnamn: latinska bokstäver, siffror, punkt och understreck"
     }
   },

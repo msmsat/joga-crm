@@ -10,6 +10,12 @@ export function getInitials(name: string, lastName?: string | null): string {
   return ((name[0] ?? '') + ((lastName ?? '')[0] ?? '')).toUpperCase() || '?'
 }
 
+/** Инициалы из того, что набрано в поле имени: «Анна Смирнова» → «АС», пусто → ''. */
+export function nameInitials(fullName: string): string {
+  const [first = '', ...rest] = fullName.trim().split(/\s+/)
+  return first ? getInitials(first, rest.join(' ')) : ''
+}
+
 export function getFullName(name: string, lastName?: string | null): string {
   return `${name}${lastName ? ' ' + lastName : ''}`
 }

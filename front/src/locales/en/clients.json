@@ -339,10 +339,12 @@
     "submit": "Add client ✓",
     "stepCounter": "Step {{current}} of {{total}}",
     "trustSignal": "Data is protected and visible only to administrators",
+    "required": "Required",
+    "optional": "Optional",
     "steps": {
       "1": {
         "title": "Personal details",
-        "sub": "Enter the client's contact information"
+        "sub": "Only the name is required — the rest is up to you"
       },
       "2": {
         "title": "Profile details",
@@ -358,15 +360,13 @@
       }
     },
     "step1": {
-      "previewLabel": "New client · Preview",
-      "name": "Full name *",
+      "name": "Name",
       "namePlaceholder": "John Smith",
       "phone": "Phone",
       "phonePlaceholder": "+1 555 000-0000",
       "email": "Email",
       "emailPlaceholder": "client@example.com",
       "instagram": "Instagram",
-      "instagramOptional": "optional",
       "instagramPlaceholder": "username"
     },
     "step2": {
@@ -374,11 +374,11 @@
       "bdayPlaceholder": "April 12, 1990",
       "city": "City",
       "cityPlaceholder": "New York",
+      "cityAuto": "Detected from your location — you can change it",
       "tags": "Tags",
       "tagsPlaceholder": "Pilates, VIP, Rehab... (Enter)",
       "tagsHint": "Press Enter to add a tag",
       "inviteCode": "Referrer's invite code",
-      "inviteCodePlaceholder": "Optional",
       "inviteCodeHint": "If provided, both of you get a bonus"
     },
     "step3": {
@@ -412,10 +412,9 @@
       "smsSub": "The client will receive an invitation message"
     },
     "errors": {
-      "name": "Enter a name (at least 2 characters)",
+      "name": "Enter a name",
       "phone": "Invalid phone number",
       "email": "Invalid email",
-      "city": "Enter a city",
       "instagram": "Username: Latin letters, digits, dot and underscore"
     }
   },

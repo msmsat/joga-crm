@@ -8,7 +8,19 @@ export interface ServiceMaster {
 }
 
 // Зеркало бэкенд-схемы ServiceRead (back/schemas/studio/studio.py).
+export interface ServiceBundlePart {
+  service_id: number
+  name: string
+  duration_min: number
+  price_min: number
+  price_max: number
+  color: string | null
+}
+
 export interface ServiceRead {
+  bundle_items: ServiceBundlePart[]
+  bundle_full_price: number | null
+  in_bundles: { id: number; name: string }[]
   id: number
   name: string
   description: string | null
@@ -42,6 +54,7 @@ export interface ServiceRead {
 }
 
 export interface ServiceCreate {
+  bundle_service_ids?: number[]
   name: string
   price: number
   duration_min?: number

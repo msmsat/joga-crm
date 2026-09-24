@@ -347,10 +347,12 @@
     "submit": "Adaugă client ✓",
     "stepCounter": "Pasul {{current}} din {{total}}",
     "trustSignal": "Datele sunt protejate și vizibile numai administratorilor",
+    "required": "Obligatoriu",
+    "optional": "Opțional",
     "steps": {
       "1": {
         "title": "Date personale",
-        "sub": "Introduceți datele de contact ale clientului"
+        "sub": "Doar numele este obligatoriu — restul, după dorință"
       },
       "2": {
         "title": "Detalii de profil",
@@ -366,15 +368,13 @@
       }
     },
     "step1": {
-      "previewLabel": "Client nou · Previzualizare",
-      "name": "Nume complet *",
+      "name": "Nume",
       "namePlaceholder": "Andrei Popescu",
       "phone": "Telefon",
       "phonePlaceholder": "+40 700 000 000",
       "email": "E-mail",
       "emailPlaceholder": "client@exemplu.ro",
       "instagram": "Instagram",
-      "instagramOptional": "opțional",
       "instagramPlaceholder": "username"
     },
     "step2": {
@@ -382,11 +382,11 @@
       "bdayPlaceholder": "12 aprilie 1990",
       "city": "Oraș",
       "cityPlaceholder": "București",
+      "cityAuto": "Stabilit după locația dvs. — îl puteți schimba",
       "tags": "Etichete",
       "tagsPlaceholder": "Pilates, VIP, recuperare… (Enter)",
       "tagsHint": "Apăsați Enter pentru a adăuga o etichetă",
       "inviteCode": "Cod de invitație al recomandatorului",
-      "inviteCodePlaceholder": "Opțional",
       "inviteCodeHint": "Dacă este furnizat, amândoi primiți un bonus"
     },
     "step3": {
@@ -424,10 +424,9 @@
       "subscriptionValue_other": "{{count}} de ședințe"
     },
     "errors": {
-      "name": "Introduceți un nume (cel puțin 2 caractere)",
+      "name": "Introduceți un nume",
       "phone": "Număr de telefon nevalid",
       "email": "E-mail nevalid",
-      "city": "Introduceți un oraș",
       "instagram": "Nume de utilizator: litere latine, cifre, punct și liniuță jos"
     }
   },

@@ -102,6 +102,22 @@ class ServiceMasterRead(BaseSchema):
     price: int
 
 
+class ServiceBundlePartRead(BaseSchema):
+    """Часть комплекса — ровно то, что нужно показать в составе, без второго
+    похода за услугой: название, время, цена «от–до» и цвет точки."""
+    service_id: int
+    name: str
+    duration_min: int
+    price_min: int
+    price_max: int
+    color: Optional[str] = None
+
+
+class ServiceRefRead(BaseSchema):
+    id: int
+    name: str
+
+
 class ServiceRead(BaseSchema):
     id: int
     name: str
@@ -139,6 +155,12 @@ class ServiceRead(BaseSchema):
     buffer_after_min: int = 0
     is_bookable: bool = True
     terminology_profile: Optional[TerminologyProfile] = None
+    # Комплекс (services/service_bundles.py): части по порядку. Пусто — это
+    # обычная услуга. bundle_full_price — «по отдельности», только когда
+    # комплекс действительно выгоднее; in_bundles — куда входит эта услуга.
+    bundle_items: list[ServiceBundlePartRead] = []
+    bundle_full_price: Optional[int] = None
+    in_bundles: list[ServiceRefRead] = []
 
 
 def reject_resource_group_combo(service_type: Optional[str], booking_mode: Optional[str]) -> None:
@@ -160,6 +182,8 @@ class ServiceCreate(BaseSchema):
     buffer_after_min: int = Field(0, ge=0, le=240)
     is_bookable: bool = True
     terminology_profile: Optional[TerminologyProfile] = None
+    # Задан — создаётся комплекс из этих услуг (по порядку выполнения).
+    bundle_service_ids: Optional[list[int]] = None
 
     @model_validator(mode="after")
     def _validate_resource_shape(self) -> "ServiceCreate":
@@ -183,6 +207,9 @@ class ServiceUpdate(BaseSchema):
     buffer_after_min: Optional[int] = Field(None, ge=0, le=240)
     is_bookable: Optional[bool] = None
     terminology_profile: Optional[TerminologyProfile] = None
+    # Новый состав комплекса целиком. Обычную услугу комплексом не делает:
+    # её история записей относится к одной процедуре, а не к набору.
+    bundle_service_ids: Optional[list[int]] = None
 
 
 class ServiceWeekSlot(BaseSchema):

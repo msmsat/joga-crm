@@ -316,5 +316,21 @@
     "restore": "Pune din nou la vânzare",
     "confirmDeactivateTitle": "Scoateți acest pachet de la vânzare?",
     "confirmDeactivate": "Abonamentele deja vândute vor continua să funcționeze."
+  },
+  "bundles": {
+    "title": "Pachete",
+    "badge": "Pachet",
+    "create": "Creează pachet",
+    "edit": "Editează pachetul",
+    "parts": "Servicii incluse",
+    "addPart": "Adaugă serviciu",
+    "hint": "O vizită, un specialist. Prețul și durata se aplică întregului pachet.",
+    "size": "Alege între 2 și 10 servicii individuale diferite.",
+    "separate": "Separat",
+    "inBundles": "Inclus în pachete",
+    "masters": "Specialiști",
+    "noMasters": "Niciun specialist atribuit. Atribuie unul în secțiunea Personal înainte de rezervări.",
+    "up": "Mută în sus",
+    "down": "Mută în jos"
   }
 }

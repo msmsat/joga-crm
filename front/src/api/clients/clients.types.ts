@@ -130,14 +130,15 @@ export interface ClientProfile extends ClientListItem {
 
 // ─── Входящие данные ──────────────────────────────────────────────────────────
 
+// Обязательно только имя — контакты и город по желанию (schemas/clients.ClientCreate).
 export interface ClientCreate {
   name: string
   last_name?: string | null
-  phone: string
-  email: string
+  phone?: string | null
+  email?: string | null
   instagram?: string | null
   birth_date?: string | null
-  city: string
+  city?: string | null
   tags?: string[]
   note?: string | null
   source?: string | null
@@ -199,6 +200,13 @@ export interface TagsOut {
 export interface ClientCreatedOut {
   id: number
   message: string
+}
+
+/** GET /clients/default-city — догадка по IP для формы нового клиента. */
+export interface DefaultCityOut {
+  city: string | null
+  country: string | null
+  source: 'ip' | 'studio' | 'none'
 }
 
 export interface NoteCreatedOut {

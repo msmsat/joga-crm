@@ -17,12 +17,13 @@ def contacts():
         sqlite.create_function('regexp_replace', 4, lambda value, pattern, replacement, flags:
                                re.sub(pattern, replacement, value) if value is not None else None)
         connection.exec_driver_sql('CREATE TABLE clients (id INTEGER, studio_id INTEGER, name TEXT, '
-                                   'last_name TEXT, phone TEXT, email TEXT, instagram TEXT)')
-        connection.exec_driver_sql('INSERT INTO clients VALUES (?, ?, ?, ?, ?, ?, ?)', [
-            (1, 1, 'Anna', 'Smith', '+420 (777) 123-456', 'Anna@Example.com', '@anna.smith'),
-            (2, 1, 'Eva', None, None, None, 'https://www.instagram.com/eva_beauty/'),
-            (3, 1, 'Eve', None, None, None, 'evaxbeauty'),
-            (4, 2, 'Anna', 'Smith', '+420777123456', 'Anna@Example.com', '@anna.smith'),
+                                   'last_name TEXT, phone TEXT, email TEXT, instagram TEXT, city TEXT, tags TEXT)')
+        connection.exec_driver_sql('INSERT INTO clients VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', [
+            (1, 1, 'Anna', 'Smith', '+420 (777) 123-456', 'Anna@Example.com', '@anna.smith', 'Prague', '["Yoga"]'),
+            (2, 1, 'Eva', None, None, None, 'https://www.instagram.com/eva_beauty/', None, '[]'),
+            (3, 1, 'Eve', None, None, None, 'evaxbeauty', None, '[]'),
+            (4, 2, 'Anna', 'Smith', '+420777123456', 'Anna@Example.com', '@anna.smith', 'Prague', '["Yoga"]'),
+            (2147483647, 1, 'Name only', None, None, None, None, None, '[]'),
         ])
         yield connection
     engine.dispose()
@@ -36,6 +37,9 @@ def contacts():
     ('@eva_beauty', [2]), ('eva_beauty', [2]),
     ('777123456', [1]), ('+420 777-123-456', [1]),
     ('not-found', []), ('%', []), ('@', [1]),
+    ('#2', [2]), ('#4', []), ('#2147483647', [2147483647]),
+    ('#2147483648', []), ('#' + '9' * 100, []),
+    ('Name only', [2147483647]), ('prague', [1]), ('yoga', [1]),
 ])
 def test_search_contacts_preserves_studio_scope(contacts, query, expected):
     statement = select(Client.id).where(Client.studio_id == 1, client_search_condition(query)).order_by(Client.id)

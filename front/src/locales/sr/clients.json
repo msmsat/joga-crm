@@ -347,10 +347,12 @@
     "submit": "Додај клијента ✓",
     "stepCounter": "Корак {{current}} од {{total}}",
     "trustSignal": "Подаци су заштићени и видљиви само администраторима",
+    "required": "Обавезно",
+    "optional": "Опционо",
     "steps": {
       "1": {
         "title": "Лични подаци",
-        "sub": "Унесите контакт податке клијента"
+        "sub": "Обавезно је само име — остало по жељи"
       },
       "2": {
         "title": "Подаци профила",
@@ -366,15 +368,13 @@
       }
     },
     "step1": {
-      "previewLabel": "Нови клијент · Преглед",
-      "name": "Име и презиме *",
+      "name": "Име",
       "namePlaceholder": "Милан Јовановић",
       "phone": "Телефон",
       "phonePlaceholder": "+381 60 000 0000",
       "email": "Имејл",
       "emailPlaceholder": "klijent@primer.rs",
       "instagram": "Instagram",
-      "instagramOptional": "опционо",
       "instagramPlaceholder": "username"
     },
     "step2": {
@@ -382,11 +382,11 @@
       "bdayPlaceholder": "12. април 1990.",
       "city": "Град",
       "cityPlaceholder": "Београд",
+      "cityAuto": "Одређено према вашој локацији — можете променити",
       "tags": "Ознаке",
       "tagsPlaceholder": "Пилатес, VIP, рехабилитација… (Enter)",
       "tagsHint": "Притисните Enter да додате ознаку",
       "inviteCode": "Позивни код препоручиоца",
-      "inviteCodePlaceholder": "Опционо",
       "inviteCodeHint": "Ако је унет, обоје добијате бонус"
     },
     "step3": {
@@ -424,10 +424,9 @@
       "subscriptionValue_other": "{{count}} термина"
     },
     "errors": {
-      "name": "Унесите име (најмање 2 знака)",
+      "name": "Унесите име",
       "phone": "Неисправан број телефона",
       "email": "Неисправан имејл",
-      "city": "Унесите град",
       "instagram": "Корисничко име: латинична слова, бројеви, тачка и доња црта"
     }
   },

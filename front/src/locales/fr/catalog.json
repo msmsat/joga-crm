@@ -313,5 +313,21 @@
     "restore": "Remettre en vente",
     "confirmDeactivateTitle": "Retirer ce forfait de la vente ?",
     "confirmDeactivate": "Les abonnements déjà vendus continueront de fonctionner."
+  },
+  "bundles": {
+    "title": "Forfaits",
+    "badge": "Forfait",
+    "create": "Créer un forfait",
+    "edit": "Modifier le forfait",
+    "parts": "Prestations incluses",
+    "addPart": "Ajouter une prestation",
+    "hint": "Une visite, un spécialiste. Le prix et la durée concernent tout le forfait.",
+    "size": "Choisissez 2 à 10 prestations individuelles différentes.",
+    "separate": "Séparément",
+    "inBundles": "Inclus dans les forfaits",
+    "masters": "Spécialistes",
+    "noMasters": "Aucun spécialiste affecté. Affectez-en un dans Équipe avant les réservations.",
+    "up": "Monter",
+    "down": "Descendre"
   }
 }

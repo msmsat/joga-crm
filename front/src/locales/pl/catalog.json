@@ -316,5 +316,21 @@
     "restore": "Przywróć do sprzedaży",
     "confirmDeactivateTitle": "Wycofać ten pakiet ze sprzedaży?",
     "confirmDeactivate": "Już sprzedane karnety będą nadal działać."
+  },
+  "bundles": {
+    "title": "Pakiety",
+    "badge": "Pakiet",
+    "create": "Utwórz pakiet",
+    "edit": "Edytuj pakiet",
+    "parts": "Usługi w pakiecie",
+    "addPart": "Dodaj usługę",
+    "hint": "Jedna wizyta, jeden specjalista. Cena i czas dotyczą całego pakietu.",
+    "size": "Wybierz od 2 do 10 różnych usług indywidualnych.",
+    "separate": "Osobno",
+    "inBundles": "Należy do pakietów",
+    "masters": "Specjaliści",
+    "noMasters": "Nie przypisano specjalistów. Przypisz osobę w sekcji Pracownicy przed przyjmowaniem rezerwacji.",
+    "up": "Przenieś wyżej",
+    "down": "Przenieś niżej"
   }
 }

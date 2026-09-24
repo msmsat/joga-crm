@@ -313,5 +313,21 @@
     "restore": "Yeniden satışa al",
     "confirmDeactivateTitle": "Bu paket satıştan kaldırılsın mı?",
     "confirmDeactivate": "Daha önce satılan üyelikler çalışmaya devam eder."
+  },
+  "bundles": {
+    "title": "Paketler",
+    "badge": "Paket",
+    "create": "Paket oluştur",
+    "edit": "Paketi düzenle",
+    "parts": "Dahil olan hizmetler",
+    "addPart": "Hizmet ekle",
+    "hint": "Tek ziyaret, tek uzman. Fiyat ve süre paketin tamamı içindir.",
+    "size": "2–10 farklı bireysel hizmet seçin.",
+    "separate": "Ayrı ayrı",
+    "inBundles": "Dahil olduğu paketler",
+    "masters": "Uzmanlar",
+    "noMasters": "Uzman atanmamış. Rezervasyon almadan önce Personel bölümünden bir uzman atayın.",
+    "up": "Yukarı taşı",
+    "down": "Aşağı taşı"
   }
 }

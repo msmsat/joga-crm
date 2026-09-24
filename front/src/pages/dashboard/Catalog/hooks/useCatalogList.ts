@@ -9,6 +9,10 @@ import { queryKeys } from '../../../../api/queryKeys'
 // Бэкенд диктует структуру (ServiceRead); UI-поля вычисляем здесь на лету.
 function toUiService(s: ServiceRead): Service {
   return {
+    bundle_items: s.bundle_items ?? [],
+    bundle_full_price: s.bundle_full_price ?? null,
+    in_bundles: s.in_bundles ?? [],
+    masters: s.masters ?? [],
     id: s.id,
     name: s.name,
     // Категории может не быть (услугу завёл ассистент или импорт) — это
@@ -120,7 +124,11 @@ export function useServiceList() {
     select: (rows) => rows.map(toUiService),
   })
 
-  const invalidate = () => qc.invalidateQueries({ queryKey: queryKeys.services })
+  const invalidate = () => Promise.all([
+    qc.invalidateQueries({ queryKey: queryKeys.services }),
+    qc.invalidateQueries({ queryKey: queryKeys.staff }),
+    qc.invalidateQueries({ queryKey: queryKeys.checkoutServices }),
+  ])
 
   const createMut = useMutation({ mutationFn: (data: ServiceCreate) => servicesApi.create(data), onSuccess: invalidate })
   const updateMut = useMutation({

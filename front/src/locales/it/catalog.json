@@ -313,5 +313,21 @@
     "restore": "Rimetti in vendita",
     "confirmDeactivateTitle": "Ritirare questo pacchetto dalla vendita?",
     "confirmDeactivate": "Gli abbonamenti già venduti continueranno a funzionare."
+  },
+  "bundles": {
+    "title": "Pacchetti",
+    "badge": "Pacchetto",
+    "create": "Crea pacchetto",
+    "edit": "Modifica pacchetto",
+    "parts": "Servizi inclusi",
+    "addPart": "Aggiungi servizio",
+    "hint": "Una visita, uno specialista. Prezzo e durata si riferiscono al pacchetto completo.",
+    "size": "Scegli da 2 a 10 servizi individuali diversi.",
+    "separate": "Separatamente",
+    "inBundles": "Incluso nei pacchetti",
+    "masters": "Specialisti",
+    "noMasters": "Nessuno specialista assegnato. Assegnane uno in Personale prima delle prenotazioni.",
+    "up": "Sposta su",
+    "down": "Sposta giù"
   }
 }

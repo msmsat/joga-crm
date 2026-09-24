@@ -313,5 +313,21 @@
     "restore": "Sæt til salg igen",
     "confirmDeactivateTitle": "Tag denne pakke af salg?",
     "confirmDeactivate": "Allerede solgte medlemskaber vil fortsat fungere."
+  },
+  "bundles": {
+    "title": "Pakker",
+    "badge": "Pakke",
+    "create": "Opret pakke",
+    "edit": "Rediger pakke",
+    "parts": "Inkluderede ydelser",
+    "addPart": "Tilføj ydelse",
+    "hint": "Ét besøg, én specialist. Pris og varighed gælder hele pakken.",
+    "size": "Vælg 2–10 forskellige individuelle ydelser.",
+    "separate": "Enkeltvis",
+    "inBundles": "Inkluderet i pakker",
+    "masters": "Specialister",
+    "noMasters": "Ingen specialist tildelt. Tildel en under Medarbejdere før bookinger.",
+    "up": "Flyt op",
+    "down": "Flyt ned"
   }
 }

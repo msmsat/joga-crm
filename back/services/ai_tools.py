@@ -778,9 +778,11 @@ class PayBookingArgs(BaseModel):
 
 class CreateClientArgs(BaseModel):
     name: str
-    phone: str
-    email: str
-    city: str
+    # Обязательно только имя — как в форме «Новый клиент». Контакты, которых
+    # человек не называл, не спрашиваем и не выдумываем.
+    phone: Optional[str] = Field(None, description="С кодом страны, например +420…")
+    email: Optional[str] = None
+    city: Optional[str] = None
     last_name: Optional[str] = None
     instagram: Optional[str] = Field(None, description="Ник в Instagram, можно со ссылкой или «@» — сервер приведёт к нику")
     birth_date: Optional[date] = None
@@ -965,6 +967,9 @@ class CreateServiceArgs(BaseModel):
     category: Optional[ServiceCategory] = None
     service_type: Optional[Literal["group", "individual"]] = None
     max_clients: Optional[int] = None
+    # Комплекс: id частей по порядку выполнения (из get_services). Не задан —
+    # обычная услуга.
+    bundle_service_ids: Optional[list[int]] = None
 
 
 class UpdateServiceArgs(BaseModel):
@@ -974,6 +979,8 @@ class UpdateServiceArgs(BaseModel):
     duration_min: Optional[int] = None
     category: Optional[ServiceCategory] = None
     max_clients: Optional[int] = None
+    # Новый состав комплекса целиком — только у комплекса.
+    bundle_service_ids: Optional[list[int]] = None
 
 
 class CreateHallArgs(BaseModel):
@@ -1591,7 +1598,13 @@ async def get_services(ctx: StudioContext, db: AsyncSession, args: NoArgs) -> di
 
     price — цена в Каталоге. Если у мастеров цены разные, приходят и
     price_min/price_max — «от–до» по мастерам услуги; сколько она стоит у
-    конкретного человека — в его get_staff_profile."""
+    конкретного человека — в его get_staff_profile.
+
+    Комплекс (несколько услуг за один визит) — услуга с bundle_parts: части по
+    порядку выполнения; bundle_full_price — сколько вышло бы по отдельности,
+    приходит, только когда комплекс выгоднее. in_bundles у обычной услуги —
+    комплексы, в которые она входит: такую услугу нельзя удалить, пока она в
+    составе."""
     rows = _dump(await _r_list_services(ctx=ctx, db=db))
     # Список мастеров с ценами Каталогу и Журналу нужен, а модели — нет: он
     # раздувал каждую услугу на треть, и в потолок ответа (_MAX_JSON_CHARS)
@@ -1603,6 +1616,15 @@ async def get_services(ctx: StudioContext, db: AsyncSession, args: NoArgs) -> di
         if row.get("price_min") == row.get("price_max") == row.get("price"):
             row.pop("price_min", None)
             row.pop("price_max", None)
+        # Комплекс — названия частей по порядку, этого модели хватает; у
+        # обычной услуги пустые поля комплекса только съедали бы потолок ответа.
+        parts = row.pop("bundle_items", None) or []
+        if parts:
+            row["bundle_parts"] = [p["name"] for p in parts]
+        else:
+            row.pop("bundle_full_price", None)
+        if not row.get("in_bundles"):
+            row.pop("in_bundles", None)
     return _items(rows, currency=await _currency(db, ctx.studio_id))
 
 
@@ -2452,7 +2474,8 @@ async def pay_booking(ctx: StudioContext, db: AsyncSession, args: PayBookingArgs
     effect="Клиент появится в списке со статусом «Новый».",
 )
 async def create_client(ctx: StudioContext, db: AsyncSession, args: CreateClientArgs) -> dict:
-    """Завести нового клиента студии: имя, телефон в формате +7…, email, город."""
+    """Завести нового клиента студии. Обязательно только имя; телефон (с кодом
+    страны), email, город, Instagram — если человек их назвал."""
     client = await _r_create_client(
         body=ClientCreate(
             name=args.name, last_name=args.last_name, phone=args.phone, email=args.email,
@@ -2890,12 +2913,20 @@ async def create_service(ctx: StudioContext, db: AsyncSession, args: CreateServi
     category заполняй всегда и БЕРИ ИЗ УЖЕ СУЩЕСТВУЮЩИХ категорий студии
     (их видно в get_services), подбирая ближайшую по названию услуги. Новую
     категорию заводи, только если ни одна не подходит. Без категории услуга
-    ложится в Каталоге в группу «Без категории»."""
+    ложится в Каталоге в группу «Без категории».
+
+    Комплекс («стрижка + борода» — несколько услуг за один визит одной
+    записью) — это та же услуга с bundle_service_ids: id частей из
+    get_services в порядке выполнения, от двух до десяти, только
+    индивидуальные и не другие комплексы. Цена и длительность у комплекса
+    свои: не назвал человек — возьми сумму частей. Категорию комплексу не
+    задавай. Комплекс сам назначится сотрудникам, которые делают все части."""
     service = await _r_create_service(
         data=ServiceCreate(
             name=args.name, price=args.price, duration_min=args.duration_min,
             description=args.description, category=args.category,
             service_type=args.service_type, max_clients=args.max_clients,
+            bundle_service_ids=args.bundle_service_ids,
         ),
         ctx=ctx, db=db,
     )
@@ -2906,7 +2937,9 @@ async def create_service(ctx: StudioContext, db: AsyncSession, args: CreateServi
 async def update_service(ctx: StudioContext, db: AsyncSession, args: UpdateServiceArgs) -> dict:
     """Изменить услугу: название, цену, длительность, категорию, число мест.
     Передавать нужно только то, что меняется. Категория — из уже существующих
-    у студии (get_services), новая — только если ни одна не подходит."""
+    у студии (get_services), новая — только если ни одна не подходит.
+    У комплекса bundle_service_ids задаёт новый состав целиком; обычную
+    услугу комплексом не сделать — для этого create_service."""
     service = await _r_update_service(
         service_id=args.service_id,
         data=ServiceUpdate(**args.model_dump(exclude={"service_id"}, exclude_none=True)),
@@ -3715,6 +3748,7 @@ _RESOLVERS = {
 _LIST_RESOLVERS = {
     "alternate_with": ("услугу", _resolve_service),
     "service_ids": ("услугу", _resolve_service),
+    "bundle_service_ids": ("услугу", _resolve_service),
 }
 
 

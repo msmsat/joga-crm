@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import "../../../../../App.css";
 import { ModalShell, ModalHeader, ModalBody, ModalFooter, GhostButton, PrimaryButton, Input, ColorPicker, COLOR_PRESETS, Segmented } from "../../../../../components/ui/modal";
@@ -17,10 +17,14 @@ import type { ServiceCreate } from "../../../../../api/studio/services.api";
 import type { ServiceBookingMode } from "../../../../../api/booking/hybrid.types";
 import { categoryOptions, NO_CATEGORY } from "../../serviceCategories";
 
+import { BundleEditor } from "./BundleEditor";
+
 const PREVIEW_HOURS = ["09:00", "10:00", "11:00"];
 const ROW_H = 58;   // высота часа в превью-журнале (совпадает с .cmod-jrn-row)
 
 interface ServiceModalProps {
+  bundle?: boolean;
+  services: Service[];
   service: Service | null; // null → создание
   /** Категории, которые студия уже использует: набор свой у каждой студии и
    *  живёт в самих услугах, справочника категорий нет. */
@@ -30,7 +34,7 @@ interface ServiceModalProps {
   onSubmit: (data: ServiceCreate) => Promise<void>;
 }
 
-export function ServiceModal({ service, categories, onClose, onSubmit }: ServiceModalProps) {
+export function ServiceModal({ service, categories, services, bundle = false, onClose, onSubmit }: ServiceModalProps) {
   const { t } = useTranslation(["catalog", "common"]);
   // Старые значения-ключи ('yoga') переводятся по ключу, свои категории студии
   // («Стрижка») показываются как есть — их печатал сам человек.
@@ -43,12 +47,17 @@ export function ServiceModal({ service, categories, onClose, onSubmit }: Service
 
   // Компонент пересоздаётся по key при открытии (см. родителя),
   // поэтому начальные значения из service корректны без useEffect.
+  const isBundle = bundle || Boolean(service?.bundle_items.length);
+  const [partIds, setPartIds] = useState(service?.bundle_items.map(p => p.service_id) ?? []);
+  const [priceEdited, setPriceEdited] = useState(Boolean(service));
+  const [durationEdited, setDurationEdited] = useState(Boolean(service));
+  const savingRef = useRef(false);
   const [name, setName] = useState(service?.name ?? "");
   // Категорию не выбирают из отраслей: чем занимается студия, она сказала при
   // регистрации. Здесь — её собственные направления, и новое заводится тут же,
   // строкой «Создать категорию» в списке.
   const [category, setCategory] = useState(service?.category || NO_CATEGORY);
-  const [type, setType] = useState<"group" | "individual">(service?.type ?? "group");
+  const [type, setType] = useState<"group" | "individual">(isBundle ? "individual" : service?.type ?? "group");
   const [price, setPrice] = useState(service != null ? String(service.price) : "");
   const [duration, setDuration] = useState(service != null ? String(service.duration_min) : "60");
   const [maxClients, setMaxClients] = useState(service?.max_clients != null ? String(service.max_clients) : "");
@@ -63,10 +72,20 @@ export function ServiceModal({ service, categories, onClose, onSubmit }: Service
   const [description, setDescription] = useState(service?.description ?? "");
   const [saving, setSaving] = useState(false);
 
+  const parts = partIds.map(id => services.find(s => s.id === id)).filter((s): s is Service => Boolean(s));
+  const fullPrice = parts.reduce((sum, part) => sum + part.price, 0);
+  const fullDuration = parts.reduce((sum, part) => sum + part.duration_min, 0);
+  function changeParts(ids: number[]) {
+    setPartIds(ids);
+    const next = ids.map(id => services.find(s => s.id === id));
+    if (!priceEdited) setPrice(String(next.reduce((sum, part) => sum + (part?.price ?? 0), 0)));
+    if (!durationEdited) setDuration(String(next.reduce((sum, part) => sum + (part?.duration_min ?? 0), 0)));
+  }
   const errors = {
+    parts: isBundle && (parts.length < 2 || parts.length > 10 || parts.length !== partIds.length) ? t("catalog:bundles.size") : null,
     name: name.trim().length < 1 ? t("common:validation.required") : null,
-    price: Number(price) > 0 ? null : t("common:validation.positive"),
-    duration: Number(duration) > 0 ? null : t("common:validation.positive"),
+    price: price.trim() && Number.isInteger(Number(price)) && Number(price) >= 0 ? null : t("common:validation.min", { n: 0 }),
+    duration: Number.isInteger(Number(duration)) && Number(duration) > 0 ? null : t("common:validation.positive"),
     maxClients: type === "group" && maxClients.trim() && Number(maxClients) < 1 ? t("common:validation.min", { n: 1 }) : null,
     // Диапазоны буферов и длительности resource повторяют CHECK базы
     // (0…240 и 1…1440): отказ должен приходить до сохранения, а не 422 после.
@@ -78,15 +97,17 @@ export function ServiceModal({ service, categories, onClose, onSubmit }: Service
   const { touch, show, hasErrors, trySubmit } = useValidation(errors);
 
   async function handleSave() {
-    if (!trySubmit() || saving) return;
+    if (!trySubmit() || savingRef.current) return;
+    savingRef.current = true;
     setSaving(true);
     try {
       await onSubmit({
+        ...(isBundle ? { bundle_service_ids: partIds } : {}),
         name: name.trim(),
         price: Number(price),
         duration_min: Number(duration) || 60,
         // «Без категории» — это NULL в базе, а не строка 'other'.
-        category: category && category !== NO_CATEGORY ? category : null,
+        category: !isBundle && category && category !== NO_CATEGORY ? category : null,
         service_type: bookingMode === "resource" ? "individual" : type,
         color: color || null,
         // У resource вместимость всегда 1 и не редактируется (§4.4).
@@ -103,6 +124,7 @@ export function ServiceModal({ service, categories, onClose, onSubmit }: Service
     } catch {
       // тост показывает родитель
     } finally {
+      savingRef.current = false;
       setSaving(false);
     }
   }
@@ -148,9 +170,9 @@ export function ServiceModal({ service, categories, onClose, onSubmit }: Service
   );
 
   return (
-    <ModalShell size="lg" onClose={onClose} left={left} leftWidth="320px" maxWidth="920px" leftStyle={LEFT_PANEL_STYLE}>
+    <ModalShell dismissible={!saving} size="lg" onClose={onClose} left={left} leftWidth="320px" maxWidth="920px" leftStyle={LEFT_PANEL_STYLE}>
       <ModalHeader
-        title={service ? t("catalog:modals.service.titleEdit") : t("catalog:modals.service.titleNew")}
+        title={isBundle ? t(service ? "catalog:bundles.edit" : "catalog:bundles.create") : service ? t("catalog:modals.service.titleEdit") : t("catalog:modals.service.titleNew")}
         subtitle={t("catalog:modals.service.subtitle")}
       />
       <ModalBody>
@@ -158,7 +180,7 @@ export function ServiceModal({ service, categories, onClose, onSubmit }: Service
         <Field delay={40}>
           <Input label={t("catalog:modals.service.name")} value={name} onChange={setName} onBlur={touch("name")} error={show("name")} placeholder={t("catalog:modals.service.namePlaceholder")} />
         </Field>
-        <Field delay={70} className="cmod-row">
+        {!isBundle && <Field delay={70} className="cmod-row">
           <div>
             <label className="vk-label">{t("catalog:modals.service.category")}</label>
             <Select
@@ -181,6 +203,8 @@ export function ServiceModal({ service, categories, onClose, onSubmit }: Service
             ]}
           />
         </Field>
+        }
+        {isBundle && <BundleEditor services={services} parts={parts} partIds={partIds} onChange={changeParts} error={show("parts")} />}
         <Field delay={85} className="cmod-row">
           <Segmented
             label={t("catalog:modals.service.bookingMode")}
@@ -212,9 +236,10 @@ export function ServiceModal({ service, categories, onClose, onSubmit }: Service
 
         <SectionLabel icon={<IconTag />} text={t("catalog:modals.service.sectionPricing")} delay={100} />
         <Field delay={130} className="cmod-row">
-          <Input label={t("catalog:modals.service.priceShort")} type="number" value={price} onChange={setPrice} onBlur={touch("price")} error={show("price")} placeholder={t("catalog:modals.service.pricePlaceholder")} suffix={currency} />
-          <Input label={t("catalog:modals.service.durationShort")} type="number" value={duration} onChange={setDuration} onBlur={touch("duration")} error={show("duration")} placeholder={t("catalog:modals.service.durationPlaceholder")} suffix={t("common:units.min")} />
+          <Input label={t("catalog:modals.service.priceShort")} type="number" value={price} onChange={value => { setPriceEdited(true); setPrice(value); }} onBlur={touch("price")} error={show("price")} placeholder={t("catalog:modals.service.pricePlaceholder")} suffix={currency} />
+          <Input label={t("catalog:modals.service.durationShort")} type="number" value={duration} onChange={value => { setDurationEdited(true); setDuration(value); }} onBlur={touch("duration")} error={show("duration")} placeholder={t("catalog:modals.service.durationPlaceholder")} suffix={t("common:units.min")} />
         </Field>
+        {isBundle && <p className="cat-bundle-muted">{t("catalog:bundles.separate")}: {currency}{fullPrice.toLocaleString()} · {fullDuration} {t("common:units.min")}</p>}
         {/* Вместимость только у события: у индивидуальной записи её нет —
             занят не коврик, а время специалиста, и сервер всегда пишет 1. */}
         {bookingMode === "event" && type === "group" && (

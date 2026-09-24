@@ -343,10 +343,12 @@
     "submit": "Добави клиент ✓",
     "stepCounter": "Стъпка {{current}} от {{total}}",
     "trustSignal": "Данните са защитени и видими само за администраторите",
+    "required": "Задължително",
+    "optional": "По избор",
     "steps": {
       "1": {
         "title": "Лични данни",
-        "sub": "Въведете данните за контакт на клиента"
+        "sub": "Задължително е само името — останалото по избор"
       },
       "2": {
         "title": "Данни за профила",
@@ -362,15 +364,13 @@
       }
     },
     "step1": {
-      "previewLabel": "Нов клиент · Преглед",
-      "name": "Име и фамилия *",
+      "name": "Име",
       "namePlaceholder": "Иван Петров",
       "phone": "Телефон",
       "phonePlaceholder": "+359 88 000 0000",
       "email": "Имейл",
       "emailPlaceholder": "klient@primer.bg",
       "instagram": "Instagram",
-      "instagramOptional": "по избор",
       "instagramPlaceholder": "username"
     },
     "step2": {
@@ -378,11 +378,11 @@
       "bdayPlaceholder": "12 април 1990 г.",
       "city": "Град",
       "cityPlaceholder": "София",
+      "cityAuto": "Определено по вашето местоположение — можете да го промените",
       "tags": "Етикети",
       "tagsPlaceholder": "Пилатес, VIP, рехабилитация… (Enter)",
       "tagsHint": "Натиснете Enter, за да добавите етикет",
       "inviteCode": "Код за покана на препоръчалия",
-      "inviteCodePlaceholder": "Незадължително",
       "inviteCodeHint": "Ако е посочен, и двамата получавате бонус"
     },
     "step3": {
@@ -418,10 +418,9 @@
       "subscriptionValue_other": "{{count}} занятия"
     },
     "errors": {
-      "name": "Въведете име (поне 2 знака)",
+      "name": "Въведете име",
       "phone": "Невалиден телефонен номер",
       "email": "Невалиден имейл",
-      "city": "Въведете град",
       "instagram": "Име с латиница: букви, цифри, точка и долна черта"
     }
   },

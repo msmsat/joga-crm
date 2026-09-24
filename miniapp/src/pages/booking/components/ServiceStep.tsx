@@ -1,3 +1,4 @@
+import { BundleSummary } from '../../../components/booking/BundleSummary';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { EmptyState } from '../../../components/ui/EmptyState';
@@ -50,6 +51,7 @@ export default function ServiceStep({ options, master, onPick }: {
             <span className="mt-0.5 block text-[12.5px] font-semibold tabular-nums text-muted-foreground">
               {t('booking.duration', { min: service.duration_min })} · {priceOf(service, master)}
             </span>
+            <BundleSummary service={service} />
           </span>
           <svg viewBox="0 0 24 24" fill="none" stroke="var(--v-muted-foreground)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 shrink-0">
             <polyline points="9 18 15 12 9 6" />

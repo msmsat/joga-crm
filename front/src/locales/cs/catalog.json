@@ -316,5 +316,21 @@
     "restore": "Vrátit do prodeje",
     "confirmDeactivateTitle": "Stáhnout tento balíček z prodeje?",
     "confirmDeactivate": "Již prodaná předplatná budou dál fungovat."
+  },
+  "bundles": {
+    "title": "Balíčky",
+    "badge": "Balíček",
+    "create": "Vytvořit balíček",
+    "edit": "Upravit balíček",
+    "parts": "Zahrnuté služby",
+    "addPart": "Přidat službu",
+    "hint": "Jedna návštěva, jeden specialista. Cena a délka platí pro celý balíček.",
+    "size": "Vyberte 2 až 10 různých individuálních služeb.",
+    "separate": "Samostatně",
+    "inBundles": "Součást balíčků",
+    "masters": "Specialisté",
+    "noMasters": "Není přiřazen žádný specialista. Před rezervacemi ho přiřaďte v sekci Zaměstnanci.",
+    "up": "Posunout nahoru",
+    "down": "Posunout dolů"
   }
 }

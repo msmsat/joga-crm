@@ -343,10 +343,12 @@
     "submit": "Ügyfél hozzáadása ✓",
     "stepCounter": "{{current}}. lépés / {{total}}",
     "trustSignal": "Az adatok védettek, és csak rendszergazdák láthatják őket",
+    "required": "Kötelező",
+    "optional": "Nem kötelező",
     "steps": {
       "1": {
         "title": "Személyes adatok",
-        "sub": "Adja meg az ügyfél elérhetőségeit"
+        "sub": "Csak a név kötelező — a többi tetszés szerint"
       },
       "2": {
         "title": "Profiladatok",
@@ -362,15 +364,13 @@
       }
     },
     "step1": {
-      "previewLabel": "Új ügyfél · Előnézet",
-      "name": "Teljes név *",
+      "name": "Név",
       "namePlaceholder": "Kovács Anna",
       "phone": "Telefon",
       "phonePlaceholder": "+36 30 000 0000",
       "email": "E-mail",
       "emailPlaceholder": "ugyfel@pelda.hu",
       "instagram": "Instagram",
-      "instagramOptional": "opcionális",
       "instagramPlaceholder": "username"
     },
     "step2": {
@@ -378,11 +378,11 @@
       "bdayPlaceholder": "1990. április 12.",
       "city": "Város",
       "cityPlaceholder": "Budapest",
+      "cityAuto": "A tartózkodási helye alapján — módosítható",
       "tags": "Címkék",
       "tagsPlaceholder": "Pilates, VIP, rehabilitáció… (Enter)",
       "tagsHint": "Címke hozzáadásához nyomja meg az Entert",
       "inviteCode": "Ajánló meghívókódja",
-      "inviteCodePlaceholder": "Nem kötelező",
       "inviteCodeHint": "Ha megadja, mindketten bónuszt kapnak"
     },
     "step3": {
@@ -418,10 +418,9 @@
       "subscriptionValue_other": "{{count}} alkalom"
     },
     "errors": {
-      "name": "Adjon meg nevet (legalább 2 karakter)",
+      "name": "Adjon meg egy nevet",
       "phone": "Érvénytelen telefonszám",
       "email": "Érvénytelen e-mail",
-      "city": "Adjon meg várost",
       "instagram": "Felhasználónév: latin betűk, számok, pont és alulvonás"
     }
   },

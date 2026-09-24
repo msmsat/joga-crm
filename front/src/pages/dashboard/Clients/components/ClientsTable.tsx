@@ -168,6 +168,7 @@ export function ClientsTable({ clients, activeClientId, isPanelOpen, onSelect, r
           display: flex; align-items: center; gap: 5px;
           font-size: 11px; color: var(--text3); font-weight: 500;
         }
+        .ct2-id { font-weight: 700; color: var(--text2); font-variant-numeric: tabular-nums; }
         .ct2-badge {
           flex-shrink: 0;
           font-size: 10px; font-weight: 700;
@@ -277,6 +278,9 @@ export function ClientsTable({ clients, activeClientId, isPanelOpen, onSelect, r
                   <div className="ct2-info">
                     <div className="ct2-name">{cl.name}{cl.last_name ? ' ' + cl.last_name : ''}</div>
                     <div className="ct2-meta">
+                      {/* Номер клиента в студии — есть у каждого, даже без контактов; по нему ищет поиск. */}
+                      <span className="ct2-id">#{cl.id}</span>
+                      <span style={{ opacity: 0.4 }}>·</span>
                       <span>{cl.visit_count} {t('table.visits')}</span>
                       <span style={{ opacity: 0.4 }}>·</span>
                       <span>{formatDate(cl.last_visit_date)}</span>

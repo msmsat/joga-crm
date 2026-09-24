@@ -2,7 +2,7 @@ from dataclasses import asdict
 from datetime import date, datetime
 from typing import Literal, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from sqlalchemy import and_, cast, extract, func, or_
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -22,7 +22,7 @@ from routers.clients._scope import client_scope
 from routers.clients.loyalty import expire_points
 from routers.clients.subscriptions import attach_subscription
 from routers.finances.accounts import get_or_create_default_account
-from services import booking
+from services import booking, geo_locale
 from services.booking_access import assert_can_book
 from services.booking_http import reject
 from services.booking_rules import assert_staff_bookable, load_rules
@@ -60,7 +60,7 @@ from schemas import (
     SegmentRulesUpdate,
     TagsOut,
 )
-from schemas.clients.responses import ActiveSubscriptionOut, ClientLoyaltyLevelOut, ClientProductOut
+from schemas.clients.responses import ActiveSubscriptionOut, ClientLoyaltyLevelOut, ClientProductOut, DefaultCityOut
 from schemas.common import Page
 from services.plan_limits import check_plan_limit
 from services.notifier import notify
@@ -430,6 +430,42 @@ async def check_client_contact(
             db, Client, field, value, studio_id=ctx.studio_id, exclude_id=exclude_id,
         )
     }
+
+
+# ─── GET /clients/default-city ────────────────────────────────────────────────
+# Объявлен до /{client_id} по той же причине, что и check-contact.
+
+@router.get("/default-city", response_model=DefaultCityOut)
+async def get_default_city(
+    request: Request,
+    ctx: StudioContext = Depends(require_role("owner", "admin")),
+    db: AsyncSession = Depends(get_db),
+):
+    """Город и страна для формы нового клиента — по IP того, кто её открыл.
+
+    Клиенты студии почти всегда живут там же, где сидит администратор, так что
+    догадка по его адресу верна чаще, чем пустое поле. База офлайновая
+    (services/geo_locale): IP никуда не уходит. Её нет или адрес локальный —
+    берём город и страну из профиля студии; нет и там — поле остаётся пустым.
+    """
+    ip = geo_locale.visitor_ip(
+        request.headers.get("CF-Connecting-IP"),
+        request.headers.get("X-Forwarded-For"),
+        request.client.host if request.client else None,
+    )
+    place = geo_locale.locate_ip(ip)
+    if place.city:
+        return DefaultCityOut(
+            city=place.city,
+            country=geo_locale.visitor_country(request.headers.get("CF-IPCountry"), ip),
+            source="ip",
+        )
+    studio = await db.get(Studio, ctx.studio_id)
+    return DefaultCityOut(
+        city=studio.city if studio else None,
+        country=studio.country if studio else None,
+        source="studio" if studio and studio.city else "none",
+    )
 
 
 # ─── GET /clients/{id} ────────────────────────────────────────────────────────

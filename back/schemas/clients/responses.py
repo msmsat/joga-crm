@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Literal, Optional
 
 from schemas._base import BaseSchema
 
@@ -134,6 +134,14 @@ class TagsOut(BaseSchema):
 class ClientCreatedOut(BaseSchema):
     id: int
     message: str
+
+
+class DefaultCityOut(BaseSchema):
+    """GET /clients/default-city — что подставить в форму нового клиента.
+    Оба поля — догадка по IP, и оба могут быть пустыми."""
+    city: Optional[str] = None
+    country: Optional[str] = None
+    source: Literal['ip', 'studio', 'none'] = 'none'
 
 
 class NoteCreatedOut(BaseSchema):

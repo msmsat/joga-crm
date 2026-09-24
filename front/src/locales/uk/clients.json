@@ -339,10 +339,12 @@
     "submit": "Додати клієнта ✓",
     "stepCounter": "Крок {{current}} з {{total}}",
     "trustSignal": "Дані захищені й видимі лише адміністраторам",
+    "required": "Обов'язково",
+    "optional": "Необов'язково",
     "steps": {
       "1": {
         "title": "Особисті дані",
-        "sub": "Введіть контактні дані клієнта"
+        "sub": "Обов'язкове лише ім'я — решта за бажанням"
       },
       "2": {
         "title": "Дані профілю",
@@ -358,15 +360,13 @@
       }
     },
     "step1": {
-      "previewLabel": "Новий клієнт · Попередній перегляд",
-      "name": "Повне ім'я *",
+      "name": "Ім'я",
       "namePlaceholder": "Іван Шевченко",
       "phone": "Телефон",
       "phonePlaceholder": "+380 50 000-00-00",
       "email": "Email",
       "emailPlaceholder": "client@example.com",
       "instagram": "Instagram",
-      "instagramOptional": "необов'язково",
       "instagramPlaceholder": "username"
     },
     "step2": {
@@ -374,11 +374,11 @@
       "bdayPlaceholder": "12 квітня 1990",
       "city": "Місто",
       "cityPlaceholder": "Київ",
+      "cityAuto": "Визначили за вашим місцезнаходженням — можна змінити",
       "tags": "Теги",
       "tagsPlaceholder": "Пілатес, VIP, Реабілітація... (Enter)",
       "tagsHint": "Натисніть Enter, щоб додати тег",
       "inviteCode": "Код запрошення від того, хто привів",
-      "inviteCodePlaceholder": "Необов'язково",
       "inviteCodeHint": "Якщо вказати, бонус отримаєте обидва"
     },
     "step3": {
@@ -412,10 +412,9 @@
       "smsSub": "Клієнт отримає запрошувальне повідомлення"
     },
     "errors": {
-      "name": "Введіть ім'я (щонайменше 2 символи)",
+      "name": "Введіть ім'я",
       "phone": "Некоректний номер телефону",
       "email": "Некоректний email",
-      "city": "Введіть місто",
       "instagram": "Нік латиницею: літери, цифри, крапка та підкреслення"
     }
   },

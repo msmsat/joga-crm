@@ -343,10 +343,12 @@
     "submit": "Legg til kunde ✓",
     "stepCounter": "Trinn {{current}} av {{total}}",
     "trustSignal": "Data er beskyttet og kun synlig for administratorer",
+    "required": "Påkrevd",
+    "optional": "Valgfritt",
     "steps": {
       "1": {
         "title": "Personopplysninger",
-        "sub": "Skriv inn kundens kontaktinformasjon"
+        "sub": "Bare navnet er påkrevd — resten er valgfritt"
       },
       "2": {
         "title": "Profilopplysninger",
@@ -362,15 +364,13 @@
       }
     },
     "step1": {
-      "previewLabel": "Ny kunde · Forhåndsvisning",
-      "name": "Fullt navn *",
+      "name": "Navn",
       "namePlaceholder": "Ola Nordmann",
       "phone": "Telefon",
       "phonePlaceholder": "+47 400 00 000",
       "email": "E-post",
       "emailPlaceholder": "kunde@eksempel.no",
       "instagram": "Instagram",
-      "instagramOptional": "valgfritt",
       "instagramPlaceholder": "username"
     },
     "step2": {
@@ -378,11 +378,11 @@
       "bdayPlaceholder": "12. april 1990",
       "city": "By",
       "cityPlaceholder": "Oslo",
+      "cityAuto": "Funnet ut fra posisjonen din — kan endres",
       "tags": "Etiketter",
       "tagsPlaceholder": "Pilates, VIP, rehabilitering… (Enter)",
       "tagsHint": "Trykk Enter for å legge til en etikett",
       "inviteCode": "Henviserens invitasjonskode",
-      "inviteCodePlaceholder": "Valgfritt",
       "inviteCodeHint": "Hvis den er oppgitt, får dere begge en bonus"
     },
     "step3": {
@@ -418,10 +418,9 @@
       "subscriptionValue_other": "{{count}} timer"
     },
     "errors": {
-      "name": "Skriv inn et navn (minst 2 tegn)",
+      "name": "Skriv inn et navn",
       "phone": "Ugyldig telefonnummer",
       "email": "Ugyldig e-post",
-      "city": "Skriv inn en by",
       "instagram": "Brukernavn: latinske bokstaver, tall, punktum og understrek"
     }
   },

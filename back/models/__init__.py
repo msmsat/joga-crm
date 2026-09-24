@@ -7,7 +7,7 @@ from .client import Client, ClientEmailOtp, ClientSubscription, ClientPayment, C
 from .identity import CustomerIdentity
 from .proposal import ActionProposal
 from .schedule import Hall, Lesson, Reservation
-from .service import Service, ServiceScheduleSlot
+from .service import Service, ServiceBundleItem, ServiceScheduleSlot
 from .booking_notification import BookingNotificationIntent
 from .booking_quote import BookingQuote
 from .settings import (
@@ -90,6 +90,7 @@ __all__ = [
     "Lesson",
     "Reservation",
     "Service",
+    "ServiceBundleItem",
     "ServiceScheduleSlot",
     "BookingNotificationIntent",
     "BookingQuote",

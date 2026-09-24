@@ -55,6 +55,8 @@ export interface Studio {
 }
 
 export interface StudioService {
+  bundle_parts?: string[];
+  bundle_full_price_str?: string | null;
   booking_mode: BookingMode;
   /** null — формат не задан в CRM (наследие): не группа. */
   service_type: 'group' | 'individual' | null;

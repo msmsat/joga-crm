@@ -313,5 +313,21 @@
     "restore": "Rikthe në shitje",
     "confirmDeactivateTitle": "Të hiqet kjo paketë nga shitja?",
     "confirmDeactivate": "Anëtarësimet e shitura tashmë do të vazhdojnë të funksionojnë."
+  },
+  "bundles": {
+    "title": "Paketa",
+    "badge": "Paketë",
+    "create": "Krijo paketë",
+    "edit": "Ndrysho paketën",
+    "parts": "Shërbimet e përfshira",
+    "addPart": "Shto shërbim",
+    "hint": "Një vizitë, një specialist. Çmimi dhe kohëzgjatja vlejnë për të gjithë paketën.",
+    "size": "Zgjidhni 2–10 shërbime individuale të ndryshme.",
+    "separate": "Veçmas",
+    "inBundles": "Përfshihet në paketa",
+    "masters": "Specialistët",
+    "noMasters": "Nuk ka specialist të caktuar. Caktoni një te Stafi para rezervimeve.",
+    "up": "Lëviz lart",
+    "down": "Lëviz poshtë"
   }
 }

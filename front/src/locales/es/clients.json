@@ -343,10 +343,12 @@
     "submit": "Añadir cliente ✓",
     "stepCounter": "Paso {{current}} de {{total}}",
     "trustSignal": "Los datos están protegidos y solo son visibles para administradores",
+    "required": "Obligatorio",
+    "optional": "Opcional",
     "steps": {
       "1": {
         "title": "Datos personales",
-        "sub": "Introduce los datos de contacto del cliente"
+        "sub": "Solo el nombre es obligatorio — el resto es opcional"
       },
       "2": {
         "title": "Datos del perfil",
@@ -362,15 +364,13 @@
       }
     },
     "step1": {
-      "previewLabel": "Nuevo cliente · Vista previa",
-      "name": "Nombre completo *",
+      "name": "Nombre",
       "namePlaceholder": "Juan Pérez",
       "phone": "Teléfono",
       "phonePlaceholder": "+34 600 000 000",
       "email": "Correo electrónico",
       "emailPlaceholder": "cliente@ejemplo.es",
       "instagram": "Instagram",
-      "instagramOptional": "opcional",
       "instagramPlaceholder": "username"
     },
     "step2": {
@@ -378,11 +378,11 @@
       "bdayPlaceholder": "12 de abril de 1990",
       "city": "Ciudad",
       "cityPlaceholder": "Madrid",
+      "cityAuto": "Detectado según tu ubicación — puedes cambiarlo",
       "tags": "Etiquetas",
       "tagsPlaceholder": "Pilates, VIP, rehabilitación… (Intro)",
       "tagsHint": "Pulsa Intro para añadir una etiqueta",
       "inviteCode": "Código de invitación del recomendador",
-      "inviteCodePlaceholder": "Opcional",
       "inviteCodeHint": "Si se indica, ambos recibís un bonus"
     },
     "step3": {
@@ -418,10 +418,9 @@
       "subscriptionValue_other": "{{count}} clases"
     },
     "errors": {
-      "name": "Introduce un nombre (al menos 2 caracteres)",
+      "name": "Introduce un nombre",
       "phone": "Número de teléfono no válido",
       "email": "Correo electrónico no válido",
-      "city": "Introduce una ciudad",
       "instagram": "Usuario: letras latinas, dígitos, punto y guion bajo"
     }
   },

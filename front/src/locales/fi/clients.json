@@ -343,10 +343,12 @@
     "submit": "Lisää asiakas ✓",
     "stepCounter": "Vaihe {{current}} / {{total}}",
     "trustSignal": "Tiedot on suojattu ja vain ylläpitäjät näkevät ne",
+    "required": "Pakollinen",
+    "optional": "Valinnainen",
     "steps": {
       "1": {
         "title": "Henkilötiedot",
-        "sub": "Syötä asiakkaan yhteystiedot"
+        "sub": "Vain nimi on pakollinen — muut tiedot ovat vapaaehtoisia"
       },
       "2": {
         "title": "Profiilitiedot",
@@ -362,15 +364,13 @@
       }
     },
     "step1": {
-      "previewLabel": "Uusi asiakas · Esikatselu",
-      "name": "Koko nimi *",
+      "name": "Nimi",
       "namePlaceholder": "Maija Virtanen",
       "phone": "Puhelin",
       "phonePlaceholder": "+358 40 000 0000",
       "email": "Sähköposti",
       "emailPlaceholder": "asiakas@esimerkki.fi",
       "instagram": "Instagram",
-      "instagramOptional": "valinnainen",
       "instagramPlaceholder": "username"
     },
     "step2": {
@@ -378,11 +378,11 @@
       "bdayPlaceholder": "12. huhtikuuta 1990",
       "city": "Kaupunki",
       "cityPlaceholder": "Helsinki",
+      "cityAuto": "Tunnistettu sijaintisi perusteella — voit muuttaa",
       "tags": "Tunnisteet",
       "tagsPlaceholder": "Pilates, VIP, kuntoutus… (Enter)",
       "tagsHint": "Lisää tunniste painamalla Enter",
       "inviteCode": "Suosittelijan kutsukoodi",
-      "inviteCodePlaceholder": "Valinnainen",
       "inviteCodeHint": "Jos koodi annetaan, molemmat saavat bonuksen"
     },
     "step3": {
@@ -418,10 +418,9 @@
       "subscriptionValue_other": "{{count}} tuntia"
     },
     "errors": {
-      "name": "Syötä nimi (vähintään 2 merkkiä)",
+      "name": "Anna nimi",
       "phone": "Virheellinen puhelinnumero",
       "email": "Virheellinen sähköposti",
-      "city": "Syötä kaupunki",
       "instagram": "Käyttäjänimi: latinalaiset kirjaimet, numerot, piste ja alaviiva"
     }
   },

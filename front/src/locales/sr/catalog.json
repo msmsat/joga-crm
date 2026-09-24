@@ -316,5 +316,21 @@
     "restore": "Врати у продају",
     "confirmDeactivateTitle": "Повући овај пакет из продаје?",
     "confirmDeactivate": "Већ продате чланарине ће наставити да раде."
+  },
+  "bundles": {
+    "title": "Paketi",
+    "badge": "Paket",
+    "create": "Kreiraj paket",
+    "edit": "Izmeni paket",
+    "parts": "Uključene usluge",
+    "addPart": "Dodaj uslugu",
+    "hint": "Jedna poseta, jedan stručnjak. Cena i trajanje važe za ceo paket.",
+    "size": "Izaberite od 2 do 10 različitih individualnih usluga.",
+    "separate": "Odvojeno",
+    "inBundles": "Uključeno u pakete",
+    "masters": "Stručnjaci",
+    "noMasters": "Nema dodeljenih stručnjaka. Dodelite jednog u odeljku Zaposleni pre rezervacija.",
+    "up": "Pomeri nagore",
+    "down": "Pomeri nadole"
   }
 }

@@ -1,22 +1,15 @@
-import { useState } from 'react';
-import { createPortal } from 'react-dom';
+import { useEffect, useRef, useState } from 'react';
 import type { KeyboardEvent } from 'react';
+import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
-import { useQuery } from '@tanstack/react-query';
-import { Link } from 'react-router-dom';
-import { EMAIL_RE, INSTAGRAM_RE, instagramNick, useClientForm } from '../../hooks/useClientForm';
 import type { ClientFormState } from '../../hooks/useClientForm';
-import { useClientMutations } from '../../hooks/useClientsList';
-import { loyaltyApi } from '../../../../../api/loyalty/loyalty.api';
-import { queryKeys } from '../../../../../api/queryKeys';
-import { useStudioCurrency } from '../../../../../hooks/useStudioCurrency';
-import { getCurrencySymbol, PhoneField } from '../../../../../components/UI';
-import { formatMoney } from '../../utils/mapClient';
-import { useToast } from '../../../../../components/ui/Toast';
-import { errorMessage } from '../../../../../api/errorMessage';
-import { ApiError } from '../../../../../api/client';
-import { useContactCheck } from '../../../../../hooks/useContactCheck';
+import { useAddClient } from '../../hooks/useAddClient';
+import { usePhone } from '../../../../../hooks/usePhone';
+import { useSheetDrag } from '../../../../../components/ui/modal/sheetDrag';
 import { submitOnEnter } from '../../../../../lib/submitOnEnter';
+import { StepMembership, StepPersonal, StepProfile, StepSummary } from './addClient/sections';
+import { WizardAside } from './addClient/WizardAside';
+import s from './AddClientModal.module.css';
 
 export interface AddClientModalProps {
   isOpen: boolean;
@@ -24,688 +17,216 @@ export interface AddClientModalProps {
   onSuccess: (form: ClientFormState) => void;
 }
 
-// ─── STEP ILLUSTRATIONS ───────────────────────────────────────────────────────
-function IllusStep1({ name }: { name: string }) {
-  const initials = name.trim()
-    ? name.trim().split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()
-    : '?';
-  return (
-    <svg width="140" height="140" viewBox="0 0 140 140">
-      <circle cx="70" cy="70" r="68" fill="rgba(252,174,145,0.08)" stroke="rgba(252,174,145,0.2)" strokeWidth="1"/>
-      <circle cx="70" cy="54" r="26" fill="rgba(252,174,145,0.18)" stroke="rgba(252,174,145,0.4)" strokeWidth="1.5"/>
-      <text x="70" y="62" textAnchor="middle" fill="#FCAE91" fontSize="18" fontWeight="800" fontFamily="Manrope">{initials}</text>
-      <ellipse cx="70" cy="106" rx="38" ry="16" fill="rgba(252,174,145,0.12)" stroke="rgba(252,174,145,0.25)" strokeWidth="1.2"/>
-      <circle cx="110" cy="34" r="7" fill="rgba(252,174,145,0.2)" stroke="rgba(252,174,145,0.4)" strokeWidth="1"/>
-      <circle cx="30" cy="94" r="5" fill="rgba(249,160,139,0.15)" stroke="rgba(249,160,139,0.3)" strokeWidth="1"/>
-    </svg>
-  );
-}
+const TOTAL = 4;
+const EXIT_MS = 200;
 
-function IllusStep2() {
-  return (
-    <svg width="140" height="140" viewBox="0 0 140 140">
-      <circle cx="70" cy="70" r="68" fill="rgba(163,201,168,0.08)" stroke="rgba(163,201,168,0.2)" strokeWidth="1"/>
-      <rect x="28" y="38" width="84" height="72" rx="10" fill="rgba(163,201,168,0.12)" stroke="rgba(163,201,168,0.35)" strokeWidth="1.5"/>
-      <line x1="28" y1="56" x2="112" y2="56" stroke="rgba(163,201,168,0.4)" strokeWidth="1"/>
-      <rect x="38" y="64" width="20" height="14" rx="3" fill="rgba(163,201,168,0.3)"/>
-      <rect x="64" y="64" width="20" height="14" rx="3" fill="rgba(163,201,168,0.15)"/>
-      <rect x="90" y="64" width="14" height="14" rx="3" fill="rgba(163,201,168,0.15)"/>
-      <rect x="38" y="84" width="44" height="14" rx="3" fill="rgba(163,201,168,0.3)"/>
-      <circle cx="48" cy="46" r="5" fill="rgba(163,201,168,0.25)" stroke="rgba(163,201,168,0.5)" strokeWidth="1"/>
-      <circle cx="92" cy="46" r="5" fill="rgba(163,201,168,0.25)" stroke="rgba(163,201,168,0.5)" strokeWidth="1"/>
-      <line x1="48" y1="28" x2="48" y2="44" stroke="rgba(163,201,168,0.5)" strokeWidth="1.5" strokeLinecap="round"/>
-      <line x1="92" y1="28" x2="92" y2="44" stroke="rgba(163,201,168,0.5)" strokeWidth="1.5" strokeLinecap="round"/>
-    </svg>
-  );
-}
-
-function IllusStep3({ label }: { label: string }) {
-  return (
-    <svg width="140" height="140" viewBox="0 0 140 140">
-      <circle cx="70" cy="70" r="68" fill="rgba(74,128,196,0.07)" stroke="rgba(74,128,196,0.18)" strokeWidth="1"/>
-      <rect x="30" y="50" width="80" height="48" rx="10" fill="rgba(74,128,196,0.1)" stroke="rgba(74,128,196,0.3)" strokeWidth="1.5"/>
-      <rect x="30" y="50" width="80" height="22" rx="10" fill="rgba(74,128,196,0.18)" stroke="none"/>
-      <rect x="30" y="60" width="80" height="10" rx="0" fill="rgba(74,128,196,0.18)" stroke="none"/>
-      <line x1="30" y1="72" x2="110" y2="72" stroke="rgba(74,128,196,0.25)" strokeWidth="0.8"/>
-      {[38,56,74].map((x, i) => (
-        <g key={i}>
-          <rect x={x} y="78" width="16" height="14" rx="4" fill={i === 1 ? "rgba(74,128,196,0.4)" : "rgba(74,128,196,0.12)"} stroke="rgba(74,128,196,0.3)" strokeWidth="0.8"/>
-        </g>
-      ))}
-      <text x="46" y="89" textAnchor="middle" fill="rgba(74,128,196,0.9)" fontSize="7" fontWeight="800" fontFamily="Manrope">8</text>
-      <text x="64" y="89" textAnchor="middle" fill="#4A80C4" fontSize="7" fontWeight="800" fontFamily="Manrope">10</text>
-      <text x="82" y="89" textAnchor="middle" fill="rgba(74,128,196,0.9)" fontSize="7" fontWeight="800" fontFamily="Manrope">12</text>
-      <text x="70" y="64" textAnchor="middle" fill="rgba(74,128,196,0.7)" fontSize="9" fontWeight="700" fontFamily="Manrope">{label}</text>
-    </svg>
-  );
-}
-
-function IllusStep4({ label }: { label: string }) {
-  return (
-    <svg width="140" height="140" viewBox="0 0 140 140">
-      <circle cx="70" cy="70" r="68" fill="rgba(91,171,114,0.08)" stroke="rgba(91,171,114,0.2)" strokeWidth="1"/>
-      <circle cx="70" cy="62" r="30" fill="rgba(91,171,114,0.14)" stroke="rgba(91,171,114,0.35)" strokeWidth="1.5"/>
-      <polyline points="56,62 66,72 84,52" fill="none" stroke="#5BAB72" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
-      <circle cx="35" cy="35" r="8" fill="rgba(91,171,114,0.12)" stroke="rgba(91,171,114,0.25)" strokeWidth="1"/>
-      <circle cx="105" cy="95" r="6" fill="rgba(91,171,114,0.12)" stroke="rgba(91,171,114,0.25)" strokeWidth="1"/>
-      <text x="70" y="108" textAnchor="middle" fill="#5BAB72" fontSize="10" fontWeight="800" fontFamily="Manrope">{label}</text>
-    </svg>
-  );
-}
-
-// ─── FIELD ────────────────────────────────────────────────────────────────────
-function Field({ label, value, onChange, error, hint, placeholder, type = 'text', max }: {
-  label: string; value: string; onChange: (v: string) => void;
-  error?: string; hint?: string; placeholder?: string; type?: string; max?: string;
-}) {
-  const [focused, setFocused] = useState(false);
-  return (
-    <div style={{ marginBottom: '16px' }}>
-      <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '6px' }}>{label}</div>
-      <input
-        type={type}
-        value={value}
-        onChange={e => onChange(e.target.value)}
-        placeholder={placeholder}
-        max={max}
-        onFocus={() => setFocused(true)}
-        onBlur={() => setFocused(false)}
-        style={{
-          width: '100%', padding: '11px 14px', borderRadius: '10px',
-          border: `1.5px solid ${error ? '#D88C9A' : focused ? 'var(--peach)' : 'var(--border)'}`,
-          outline: 'none', fontSize: '13px', fontWeight: 500, color: 'var(--text)',
-          background: focused ? 'rgba(249,160,139,0.02)' : 'rgba(var(--ink),0.015)',
-          fontFamily: "'Manrope',sans-serif", transition: 'border-color 0.2s, box-shadow 0.2s',
-          boxShadow: focused ? '0 0 0 3px rgba(249,160,139,0.12)' : 'none',
-          boxSizing: 'border-box',
-        }}
-      />
-      {error && <div style={{ fontSize: '11px', color: '#D88C9A', fontWeight: 600, marginTop: '4px' }}>{error}</div>}
-      {!error && hint && <div style={{ fontSize: '11px', color: 'var(--text3)', fontWeight: 500, marginTop: '4px' }}>{hint}</div>}
-    </div>
-  );
-}
-
-// ─── INSTAGRAM ────────────────────────────────────────────────────────────────
-// Глиф Instagram: фирменный градиент живёт только в иконке — крупных заливок
-// чужим брендом в кабинете быть не должно (CLAUDE.md §6).
-function IconInstagram({ active }: { active: boolean }) {
-  return (
-    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" strokeWidth="1.9" strokeLinecap="round">
-      <defs>
-        <linearGradient id="acIgGrad" x1="0" y1="24" x2="24" y2="0">
-          <stop offset="0" stopColor="#FEDA75"/><stop offset="0.35" stopColor="#FA7E1E"/>
-          <stop offset="0.7" stopColor="#D62976"/><stop offset="1" stopColor="#962FBF"/>
-        </linearGradient>
-      </defs>
-      <g stroke={active ? 'url(#acIgGrad)' : 'currentColor'} style={{ transition: 'stroke 0.25s' }}>
-        <rect x="2.5" y="2.5" width="19" height="19" rx="5.6"/>
-        <circle cx="12" cy="12" r="4.4"/>
-        <circle cx="17.4" cy="6.6" r="1.1" fill={active ? 'url(#acIgGrad)' : 'currentColor'} stroke="none"/>
-      </g>
-    </svg>
-  );
-}
-
-/** Ник в Instagram. Необязательный: «@» рисует само поле, ссылку на профиль
-    показывает справа, как только ник становится похож на настоящий. */
-function InstagramField({ value, onChange, error }: {
-  value: string; onChange: (v: string) => void; error?: string;
-}) {
-  const { t } = useTranslation('clients');
-  const [focused, setFocused] = useState(false);
-  const valid = INSTAGRAM_RE.test(value);
-  const lit = focused || valid;
-  return (
-    <div style={{ marginBottom: '16px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-        <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.6px' }}>
-          {t('addModal.step1.instagram')}
-        </span>
-        <span style={{ fontSize: '9px', fontWeight: 700, letterSpacing: '0.4px', textTransform: 'uppercase', padding: '2px 7px', borderRadius: '20px', color: 'var(--text3)', background: 'rgba(var(--ink),0.05)' }}>
-          {t('addModal.step1.instagramOptional')}
-        </span>
-      </div>
-      <div style={{
-        display: 'flex', alignItems: 'center', gap: '8px', padding: '0 12px', height: '43px',
-        borderRadius: '10px',
-        border: `1.5px solid ${error ? '#D88C9A' : focused ? 'var(--peach)' : 'var(--border)'}`,
-        background: focused ? 'rgba(249,160,139,0.02)' : 'rgba(var(--ink),0.015)',
-        boxShadow: focused ? '0 0 0 3px rgba(249,160,139,0.12)' : 'none',
-        transition: 'border-color 0.2s, box-shadow 0.2s, background 0.2s',
-        boxSizing: 'border-box',
-      }}>
-        <span style={{ display: 'flex', color: 'var(--text3)', flexShrink: 0 }}><IconInstagram active={lit}/></span>
-        <span style={{ fontSize: '13px', fontWeight: 700, color: lit ? 'var(--peach)' : 'var(--text3)', transition: 'color 0.2s' }}>@</span>
-        <input
-          value={value}
-          onChange={e => onChange(instagramNick(e.target.value))}
-          onFocus={() => setFocused(true)}
-          onBlur={() => setFocused(false)}
-          placeholder={t('addModal.step1.instagramPlaceholder')}
-          autoCapitalize="none"
-          autoCorrect="off"
-          spellCheck={false}
-          style={{
-            flex: 1, minWidth: 0, border: 'none', outline: 'none', background: 'transparent',
-            fontSize: '13px', fontWeight: 500, color: 'var(--text)', fontFamily: "'Manrope',sans-serif",
-          }}
-        />
-        {valid && (
-          <a
-            href={`https://instagram.com/${value}`}
-            target="_blank"
-            rel="noopener"
-            title={`instagram.com/${value}`}
-            style={{ display: 'flex', color: 'var(--peach)', flexShrink: 0, animation: 'acCheckPop 0.28s cubic-bezier(0.34,1.56,0.64,1) both' }}
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-              <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
-            </svg>
-          </a>
-        )}
-      </div>
-      {error && <div style={{ fontSize: '11px', color: '#D88C9A', fontWeight: 600, marginTop: '4px' }}>{error}</div>}
-    </div>
-  );
-}
-
-// ─── TAG INPUT ────────────────────────────────────────────────────────────────
-function TagInput({ tags, onChange }: { tags: string[]; onChange: (tags: string[]) => void }) {
-  const { t } = useTranslation('clients');
-  const [draft, setDraft] = useState('');
-  const commit = () => {
-    const tag = draft.trim();
-    if (tag && !tags.includes(tag)) onChange([...tags, tag]);
-    setDraft('');
-  };
-  const onKey = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') { e.preventDefault(); commit(); }
-    if (e.key === 'Backspace' && !draft && tags.length) onChange(tags.slice(0, -1));
-  };
-  return (
-    <div>
-      <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '6px' }}>{t('addModal.step2.tags')}</div>
-      <div style={{ minHeight: '44px', padding: '6px 10px', borderRadius: '10px', border: '1.5px solid var(--border)', display: 'flex', flexWrap: 'wrap', gap: '5px', alignItems: 'center', cursor: 'text', boxSizing: 'border-box', transition: 'border-color 0.2s', background: 'rgba(var(--ink),0.015)' }}>
-        {tags.map(tag => (
-          <span key={tag} style={{ fontSize: '11px', fontWeight: 600, padding: '3px 8px', borderRadius: '20px', background: 'rgba(249,160,139,0.12)', color: 'var(--peach)', border: '1px solid rgba(249,160,139,0.25)', display: 'flex', alignItems: 'center', gap: '4px', whiteSpace: 'nowrap' }}>
-            {tag}
-            <button onClick={() => onChange(tags.filter(x => x !== tag))} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, color: 'var(--peach)', fontSize: '12px', lineHeight: 1, display: 'flex' }}>×</button>
-          </span>
-        ))}
-        <input
-          value={draft}
-          onChange={e => setDraft(e.target.value)}
-          onKeyDown={onKey}
-          onBlur={commit}
-          placeholder={tags.length === 0 ? t('addModal.step2.tagsPlaceholder') : ''}
-          style={{ border: 'none', outline: 'none', background: 'transparent', fontSize: '13px', fontFamily: "'Manrope',sans-serif", color: 'var(--text)', minWidth: '120px', flex: 1 }}
-        />
-      </div>
-      <div style={{ fontSize: '10px', color: 'var(--text3)', marginTop: '4px' }}>{t('addModal.step2.tagsHint')}</div>
-    </div>
-  );
-}
-
-// ─── MAIN COMPONENT ───────────────────────────────────────────────────────────
+// «Новый клиент». Обязательно только имя — клиента узнают по номеру, который
+// выдаёт студия, всё остальное по желанию.
+//   Большой экран — мастер из четырёх шагов с иллюстрацией слева.
+//   Телефон — ОДНА прокручиваемая форма в шите снизу: четыре экрана подряд с
+//   кнопкой «Продолжить» пальцем проходить долго, а клиента по одному имени
+//   надо заводить в одно касание.
 export function AddClientModal({ isOpen, onClose, onSuccess }: AddClientModalProps) {
-  const { t, i18n } = useTranslation('clients');
-  const { form, errors, set, validate, reset } = useClientForm();
-  const mutations = useClientMutations();
-  const toast = useToast();
+  return isOpen ? <AddClientDialog onClose={onClose} onSuccess={onSuccess}/> : null;
+}
+
+function AddClientDialog({ onClose, onSuccess }: Omit<AddClientModalProps, 'isOpen'>) {
+  const { t } = useTranslation('clients');
+  const isPhone = usePhone();
   const [step, setStep] = useState(1);
-  const [dir,  setDir]  = useState(1);
-  const currency = getCurrencySymbol(useStudioCurrency());
-  const { data: packages = [] } = useQuery({
-    queryKey: queryKeys.packages,
-    queryFn: () => loyaltyApi.getSubscriptionPackages(),
-    enabled: isOpen,
-  });
-  const activePackages = packages.filter(p => p.is_active);
-  const selectedPackage = activePackages.find(p => p.id === form.membershipId) ?? null;
+  const [dir, setDir] = useState(1);
+  const [leaving, setLeaving] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
+  const bodyRef = useRef<HTMLDivElement>(null);
+  const exitTimer = useRef<number | undefined>(undefined);
 
-  // Телефон и email клиента не должны повторяться в студии — спрашиваем сервер на лету,
-  // пока проверка идёт или контакт занят, кнопка «Продолжить» остаётся серой.
-  const phoneCheck = useContactCheck('client', 'phone', form.phone, {
-    enabled: isOpen && form.phone.replace(/\D/g, '').length >= 6,
-  });
-  const emailCheck = useContactCheck('client', 'email', form.email, {
-    enabled: isOpen && EMAIL_RE.test(form.email.trim()),
-  });
-
-  if (!isOpen) return null;
-
-  const TOTAL = 4;
-
-  const stepMeta = [
-    { title: t('addModal.steps.1.title'), sub: t('addModal.steps.1.sub') },
-    { title: t('addModal.steps.2.title'), sub: t('addModal.steps.2.sub') },
-    { title: t('addModal.steps.3.title'), sub: t('addModal.steps.3.sub') },
-    { title: t('addModal.steps.4.title'), sub: t('addModal.steps.4.sub') },
-  ];
-
-  const canGoNext = () => {
-    if (step === 1) {
-      return form.name.trim().length >= 2 && !!form.phone.trim() && !!form.email.trim()
-        && !phoneCheck.taken && !emailCheck.taken
-        && !phoneCheck.checking && !emailCheck.checking;
-    }
-    if (step === 2) return !!form.city.trim();
-    return true;
+  // Уход с анимацией (на телефоне шит уезжает вниз), затем размонтирование.
+  const leaveThen = (after: () => void) => {
+    if (exitTimer.current !== undefined) return;
+    setLeaving(true);
+    exitTimer.current = window.setTimeout(after, EXIT_MS);
   };
 
+  // Форма чистится ПОСЛЕ ухода: иначе поля пустели бы у человека на глазах.
+  const ac = useAddClient(!leaving, form => leaveThen(() => { onSuccess(form); onClose(); }));
+  const requestClose = () => { if (!ac.saving) leaveThen(onClose); };
+
+  useSheetDrag(cardRef, requestClose, !ac.saving && !leaving);
+  useEffect(() => () => window.clearTimeout(exitTimer.current), []);
+  useEffect(() => {
+    const previous = document.activeElement as HTMLElement | null;
+    const overflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    cardRef.current?.focus({ preventScroll: true });
+    return () => {
+      document.body.style.overflow = overflow;
+      previous?.focus({ preventScroll: true });
+    };
+  }, []);
+  useEffect(() => {
+    const viewport = window.visualViewport;
+    if (!isPhone || !viewport) return;
+    const resize = () => {
+      overlayRef.current?.style.setProperty('--ac-viewport-height', `${viewport.height}px`);
+      overlayRef.current?.style.setProperty('--ac-viewport-top', `${viewport.offsetTop}px`);
+    };
+    resize();
+    viewport.addEventListener('resize', resize);
+    viewport.addEventListener('scroll', resize);
+    return () => {
+      viewport.removeEventListener('resize', resize);
+      viewport.removeEventListener('scroll', resize);
+    };
+  }, [isPhone]);
+  useEffect(() => {
+    const onKey = (e: globalThis.KeyboardEvent) => { if (e.key === 'Escape') requestClose(); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  });
+
+  const canGoNext = step !== 1 || (!!ac.form.name.trim() && !ac.contactsBlocked);
+  const validateVisibleFields = () => {
+    const fields = bodyRef.current?.querySelectorAll<HTMLInputElement>('input') ?? [];
+    return Array.from(fields).every(field => field.reportValidity());
+  };
   const goNext = () => {
-    if ((step === 1 || step === 2) && !validate(step)) return;
-    if (step < TOTAL) { setDir(1); setStep(s => s + 1); }
+    if (leaving || ac.saving || !canGoNext || (step === 1 && !ac.validate())) return;
+    if (!validateVisibleFields()) return;
+    setDir(1);
+    setStep(n => Math.min(TOTAL, n + 1));
+  };
+  const goBack = () => { setDir(-1); setStep(n => Math.max(1, n - 1)); };
+
+  // Ошибка может оказаться ниже края шита — показываем её, а не молчим.
+  const submitPhone = () => {
+    if (ac.validate() && validateVisibleFields() && ac.submit()) return;
+    requestAnimationFrame(() => bodyRef.current
+      ?.querySelector('[aria-invalid="true"]')
+      ?.scrollIntoView({ block: 'center', behavior: 'smooth' }));
   };
 
-  const goBack = () => {
-    if (step > 1) { setDir(-1); setStep(s => s - 1); }
+  // Телефон: Enter на клавиатуре ведёт к следующему полю, как «Далее» в
+  // нативных формах; на последнем — добавляет клиента.
+  const onKeyDown = (e: KeyboardEvent) => {
+    if (leaving || ac.saving) return;
+    if (e.key === 'Tab') {
+      const controls = Array.from(e.currentTarget.querySelectorAll<HTMLElement>(
+        'button:not(:disabled), a[href], input:not(:disabled), textarea:not(:disabled), select:not(:disabled)',
+      )).filter(el => el.getClientRects().length > 0);
+      const first = controls[0];
+      const last = controls.at(-1);
+      if (e.shiftKey && (e.target === first || e.target === e.currentTarget)) {
+        e.preventDefault(); last?.focus();
+      } else if (!e.shiftKey && e.target === last) {
+        e.preventDefault(); first?.focus();
+      }
+      return;
+    }
+    submitOnEnter(isPhone ? event => {
+      const fields = Array.from(event.currentTarget.querySelectorAll<HTMLElement>('input:not([type=hidden]):not(:disabled), textarea:not(:disabled)'));
+      const next = fields[fields.indexOf(event.target as HTMLElement) + 1];
+      if (next) next.focus(); else submitPhone();
+    } : step < TOTAL ? (canGoNext ? goNext : null) : ac.submit)(e);
   };
 
-  const handleFinish = () => {
-    const parts = form.name.trim().split(' ');
-    mutations.create({
-      name:               parts[0],
-      last_name:          parts.slice(1).join(' ') || null,
-      phone:              form.phone,
-      email:              form.email,
-      instagram:          form.instagram.trim() || null,
-      city:               form.city,
-      birth_date:         form.bday || null,
-      tags:               form.tags.length ? form.tags : undefined,
-      note:               form.note || null,
-      membership_id:      form.membershipId,
-      is_membership_paid: form.membershipId !== null ? form.isMembershipPaid : false,
-      invite_code:        form.inviteCode.trim() || null,
-    }).then(() => {
-      toast.success(t('toasts.clientAdded'));
-      onSuccess(form);
-      reset();
-      setStep(1);
-      onClose();
-    }).catch((err) => {
-      // Лимит тарифа (403 limit_exceeded) уже показывает глобальная модалка апселла — не дублируем.
-      if (err instanceof ApiError && err.code === 'limit_exceeded') return;
-      // Модалку не закрываем и данные формы не теряем — юзер видит, что пошло не так.
-      toast.error(errorMessage(err, t));
-    });
-  };
-
-  const handleClose = () => {
-    reset();
-    setStep(1);
-    onClose();
-  };
-
-  const initials = form.name.trim()
-    ? form.name.trim().split(' ').map((w: string) => w[0]).join('').slice(0, 2).toUpperCase()
-    : '';
-
-  // Портал на document.body: внутри .content (position:relative + zIndex:1) оверлей
-  // попадает в его stacking context и сайдбар/топбар рисуются поверх затемнения
   return createPortal(
-    <>
-      <style>{`
-        @keyframes acModalIn   { from { opacity: 0 } to { opacity: 1 } }
-        @keyframes acStepIn    { from { opacity: 0; transform: translateX(calc(var(--ac-dir, 1) * 24px)) } to { opacity: 1; transform: translateX(0) } }
-        @keyframes acCheckPop  { 0% { transform: scale(0) } 70% { transform: scale(1.2) } 100% { transform: scale(1) } }
-        @keyframes acPulse     { 0%,100% { box-shadow: 0 0 0 0 rgba(91,171,114,0.4) } 50% { box-shadow: 0 0 0 10px rgba(91,171,114,0) } }
-      `}</style>
+    <div ref={overlayRef} className={`${s.overlay} v-overlay${leaving ? ' is-leaving' : ''}`} onClick={requestClose}>
+      <div
+        ref={cardRef}
+        // .v-modal-steps только у мастера: на телефоне левой панели нет, и
+        // лишняя строка грида оставила бы форму без высоты.
+        className={`${s.dialog} v-modal v-modal-lg v-modal-wizard${isPhone ? '' : ' v-modal-steps'}`}
+        role="dialog"
+        tabIndex={-1}
+        aria-busy={ac.saving}
+        aria-modal="true"
+        aria-label={t('addModal.title')}
+        onClick={e => e.stopPropagation()}
+        onKeyDown={onKeyDown}
+        style={{
+          ['--v-modal-w' as string]: '780px',
+          ['--v-left-w' as string]: '236px',
+          ['--vm-wizard-h' as string]: '576px',
+          background: 'var(--bg-card)', borderRadius: '24px', overflow: 'hidden',
+          boxShadow: '0 40px 100px -20px rgba(26,26,26,0.28)',
+        }}
+      >
+        {!isPhone && <WizardAside step={step} total={TOTAL} name={ac.form.name}/>}
 
-      {/* Overlay */}
-      <div className="v-overlay" onClick={handleClose}>
-        {/* Modal */}
-        <div
-          className="v-modal-lg v-modal-wizard v-modal-steps"
-          onClick={e => e.stopPropagation()}
-          onKeyDown={submitOnEnter(step < TOTAL ? (canGoNext() ? goNext : null) : handleFinish)}
-          style={{
-            ['--v-modal-w' as string]: '780px',
-            ['--v-left-w' as string]: '236px',
-            ['--vm-wizard-h' as string]: '556px',
-            background: 'var(--bg-card)', borderRadius: '24px', overflow: 'hidden',
-            boxShadow: '0 40px 100px -20px rgba(26,26,26,0.28)',
-            animation: 'acModalIn 0.3s ease both',
-          }}
-        >
-          {/* ─ LEFT PANEL ─ */}
-          <div className="v-modal-left" style={{
-            padding: '30px 24px',
-            background: 'linear-gradient(160deg, var(--peach-glow) 0%, transparent 55%), var(--bg-card)',
-            borderRight: '1px solid rgba(252,174,145,0.18)',
-            display: 'flex', flexDirection: 'column',
-          }}>
-            {/* Logo */}
-            <div className="vml-logo" style={{ fontSize: '16px', fontWeight: 900, letterSpacing: '-0.5px', color: 'var(--text)', marginBottom: '32px' }}>
-              velora<span style={{ color: 'var(--peach)' }}>.</span>
+        <div className={s.column}>
+          <div className={s.head}>
+            <span className={s.grabber} aria-hidden/>
+            <div>
+              <div className={s.headTitle}>{t('addModal.title')}</div>
+              <div className={s.headSub}>{t('addModal.steps.1.sub')}</div>
             </div>
-
-            {/* Step label */}
-            <div className="vml-step" style={{ fontSize: '10px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', color: 'rgba(249,160,139,0.8)', marginBottom: '8px' }}>
-              {t('addModal.stepCounter', { current: step, total: TOTAL })}
-            </div>
-
-            {/* Title */}
-            <div className="vml-title" style={{ fontSize: '20px', fontWeight: 800, color: 'var(--text)', letterSpacing: '-0.5px', lineHeight: 1.25, marginBottom: '8px' }}>
-              {stepMeta[step - 1].title}
-            </div>
-            <div className="vml-sub" style={{ fontSize: '12px', color: 'var(--text3)', lineHeight: 1.6, marginBottom: '28px' }}>
-              {stepMeta[step - 1].sub}
-            </div>
-
-            {/* Step dots */}
-            <div className="vml-dots" style={{ display: 'flex', gap: '6px', marginBottom: '28px' }}>
-              {Array.from({ length: TOTAL }).map((_, i) => (
-                <div key={i} style={{
-                  height: '4px', flex: i + 1 <= step ? '2' : '1',
-                  borderRadius: '10px', transition: 'all 0.4s cubic-bezier(0.34,1.56,0.64,1)',
-                  background: i + 1 <= step
-                    ? `linear-gradient(90deg,#FCAE91,#F9A08B)`
-                    : 'rgba(var(--ink),0.1)',
-                }}/>
-              ))}
-            </div>
-
-            {/* Illustration */}
-            <div className="vml-illus" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              {step === 1 && <IllusStep1 name={form.name}/>}
-              {step === 2 && <IllusStep2/>}
-              {step === 3 && <IllusStep3 label={t('panel.abonement.title')}/>}
-              {step === 4 && <IllusStep4 label={t('addModal.steps.4.title')}/>}
-            </div>
-
-            {/* Trust signal */}
-            <div className="vml-aside" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 12px', background: 'rgba(249,160,139,0.06)', borderRadius: '10px', border: '1px solid rgba(249,160,139,0.15)' }}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--peach)" strokeWidth="2">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <button type="button" className={s.close} onClick={requestClose} disabled={ac.saving || leaving} aria-label={t('addModal.cancel')}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
               </svg>
-              <div style={{ fontSize: '10px', color: 'var(--text3)', fontWeight: 600 }}>
-                {t('addModal.trustSignal')}
-              </div>
-            </div>
+            </button>
           </div>
 
-          {/* ─ RIGHT PANEL ─ */}
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
-            {/* Header */}
-            <div style={{ padding: '20px 26px 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border)', paddingBottom: '16px' }}>
-              <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text)' }}>{t('addModal.title')}</div>
-              <button
-                onClick={handleClose}
-                style={{ width: '30px', height: '30px', borderRadius: '8px', border: '1px solid var(--border)', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text3)', transition: 'all 0.2s' }}
-                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(var(--ink),0.05)'; e.currentTarget.style.color = 'var(--text)'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text3)'; }}
-              >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-                </svg>
-              </button>
+          {isPhone ? (
+            <div ref={bodyRef} inert={ac.saving || leaving} className={`${s.body} ms-scroll`}>
+              <section className={s.section}>
+                <StepPersonal ac={ac}/>
+              </section>
+              <section className={s.section}>
+                <h3 className={s.sectionTitle}>{t('addModal.steps.2.title')}</h3>
+                <StepProfile ac={ac}/>
+              </section>
+              <section className={s.section}>
+                <h3 className={s.sectionTitle}>{t('addModal.steps.3.title')}</h3>
+                <StepMembership ac={ac}/>
+              </section>
             </div>
-
-            {/* Form body */}
+          ) : (
             <div
+              ref={bodyRef}
+              inert={ac.saving || leaving}
               key={step}
-              style={{
-                flex: 1, overflowY: 'auto', padding: '22px 26px',
-                animation: 'acStepIn 0.3s ease both',
-                ['--ac-dir' as string]: dir,
-              }}
+              className={`${s.body} ${s.stepIn} ms-scroll`}
+              style={{ ['--ac-dir' as string]: dir }}
             >
-              {/* ── STEP 1 ── */}
-              {step === 1 && (
-                <div>
-                  {initials && (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px', padding: '12px 16px', background: 'rgba(249,160,139,0.05)', borderRadius: '12px', border: '1px solid rgba(249,160,139,0.15)' }}>
-                      <div style={{ width: '40px', height: '40px', borderRadius: '11px', background: 'linear-gradient(135deg,#FCAE91,#F9A08B)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: 800, color: '#fff', flexShrink: 0 }}>
-                        {initials}
-                      </div>
-                      <div>
-                        <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text)' }}>{form.name}</div>
-                        <div style={{ fontSize: '11px', color: 'var(--text3)' }}>{t('addModal.step1.previewLabel')}</div>
-                      </div>
-                    </div>
-                  )}
-                  <Field label={t('addModal.step1.name')} value={form.name} onChange={v => set('name', v)} error={errors.name} placeholder={t('addModal.step1.namePlaceholder')}/>
-                  {/* Не свободный текст: по этому номеру уходят платные шаблоны
-                      WhatsApp, а бэкенд требует E.164 с кодом страны и «999 123-45-67»
-                      теперь отклоняет (schemas/_base.Phone). PhoneField — тот же
-                      компонент, что в онбординге и профиле сотрудника. */}
-                  <PhoneField
-                    label={t('addModal.step1.phone')} value={form.phone} onChange={v => set('phone', v ?? '')}
-                    error={errors.phone ?? (phoneCheck.taken ? t('common:validation.phoneTaken') : undefined)}
-                    hint={phoneCheck.checking ? t('common:validation.checkingContact') : undefined}
-                  />
-                  <Field
-                    label={t('addModal.step1.email')} value={form.email} onChange={v => set('email', v)}
-                    error={errors.email ?? (emailCheck.taken ? t('common:validation.emailTaken') : undefined)}
-                    hint={emailCheck.checking ? t('common:validation.checkingContact') : undefined}
-                    placeholder={t('addModal.step1.emailPlaceholder')} type="email"
-                  />
-                  <InstagramField value={form.instagram} onChange={v => set('instagram', v)} error={errors.instagram}/>
-                </div>
-              )}
-
-              {/* ── STEP 2 ── */}
-              {step === 2 && (
-                <div>
-                  <Field label={t('addModal.step2.bday')} value={form.bday} onChange={v => set('bday', v)} type="date" max={new Date().toISOString().slice(0, 10)}/>
-                  <Field label={t('addModal.step2.city')} value={form.city} onChange={v => set('city', v)} error={errors.city} placeholder={t('addModal.step2.cityPlaceholder')}/>
-                  <TagInput tags={form.tags} onChange={tags => set('tags', tags)}/>
-                  <div style={{ marginTop: '16px' }}>
-                    <Field label={t('addModal.step2.inviteCode')} value={form.inviteCode} onChange={v => set('inviteCode', v.toUpperCase())} placeholder={t('addModal.step2.inviteCodePlaceholder')}/>
-                    <div style={{ fontSize: '10px', color: 'var(--text3)', marginTop: '-10px' }}>{t('addModal.step2.inviteCodeHint')}</div>
-                  </div>
-                </div>
-              )}
-
-              {/* ── STEP 3 ── */}
-              {step === 3 && (
-                <div>
-                  <div style={{ marginBottom: '20px' }}>
-                    <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '6px' }}>{t('addModal.step3.note')}</div>
-                    <textarea
-                      value={form.note}
-                      onChange={e => set('note', e.target.value)}
-                      placeholder={t('addModal.step3.notePlaceholder')}
-                      rows={3}
-                      style={{
-                        width: '100%', padding: '11px 14px', borderRadius: '10px',
-                        border: '1.5px solid var(--border)', outline: 'none',
-                        fontSize: '13px', fontWeight: 500, color: 'var(--text)',
-                        background: 'rgba(var(--ink),0.015)', fontFamily: "'Manrope',sans-serif",
-                        resize: 'vertical', lineHeight: 1.6, transition: 'border-color 0.2s',
-                        boxSizing: 'border-box',
-                      }}
-                      onFocus={e => { e.currentTarget.style.borderColor = 'var(--peach)'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(249,160,139,0.12)'; }}
-                      onBlur={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.boxShadow = 'none'; }}
-                    />
-                  </div>
-
-                  <div style={{ marginBottom: form.membershipId ? '16px' : 0 }}>
-                    <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '10px' }}>{t('addModal.step3.classCount')}</div>
-
-                    {activePackages.length === 0 ? (
-                      <div style={{ padding: '16px', borderRadius: '12px', background: 'rgba(var(--ink),0.02)', border: '1px dashed var(--border)', textAlign: 'center' }}>
-                        <div style={{ fontSize: '12px', color: 'var(--text3)', marginBottom: '8px' }}>{t('addModal.step3.noPackages')}</div>
-                        <Link to="/dashboard/catalog" style={{ fontSize: '12px', fontWeight: 700, color: 'var(--peach)' }}>{t('addModal.step3.noPackagesLink')}</Link>
-                      </div>
-                    ) : (
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-                        <button
-                          onClick={() => { set('membershipId', null); set('isMembershipPaid', false); }}
-                          style={{
-                            padding: '14px 10px', borderRadius: '14px', textAlign: 'center', cursor: 'pointer',
-                            fontFamily: "'Manrope',sans-serif", transition: 'all 0.25s cubic-bezier(0.34,1.56,0.64,1)',
-                            border: form.membershipId === null ? '2px solid var(--peach)' : '2px solid var(--border)',
-                            background: form.membershipId === null ? 'rgba(249,160,139,0.06)' : 'transparent',
-                          }}
-                        >
-                          <div style={{ fontSize: '12px', fontWeight: 700, color: form.membershipId === null ? 'var(--peach)' : 'var(--text)' }}>{t('addModal.step3.noPackage')}</div>
-                        </button>
-                        {activePackages.map(pkg => (
-                          <button
-                            key={pkg.id}
-                            onClick={() => set('membershipId', pkg.id)}
-                            style={{
-                              padding: '14px 10px', borderRadius: '14px', textAlign: 'center', cursor: 'pointer',
-                              fontFamily: "'Manrope',sans-serif", transition: 'all 0.25s cubic-bezier(0.34,1.56,0.64,1)',
-                              border: form.membershipId === pkg.id ? '2px solid var(--peach)' : '2px solid var(--border)',
-                              background: form.membershipId === pkg.id ? 'rgba(249,160,139,0.06)' : 'transparent',
-                              boxShadow: form.membershipId === pkg.id ? '0 4px 16px -4px rgba(249,160,139,0.3)' : 'none',
-                            }}
-                          >
-                            <div style={{ fontSize: '13px', fontWeight: 800, color: form.membershipId === pkg.id ? 'var(--peach)' : 'var(--text)', letterSpacing: '-0.3px', lineHeight: 1.3 }}>{pkg.name}</div>
-                            <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text3)', marginTop: '4px' }}>{t('addModal.step3.classesCount', { count: pkg.class_count })} · {formatMoney(pkg.price, currency)}</div>
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-
-                  {selectedPackage && (
-                    <div style={{ padding: '14px 16px', borderRadius: '12px', background: 'rgba(249,160,139,0.05)', border: '1px solid rgba(249,160,139,0.15)' }}>
-                      <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text)', marginBottom: '10px' }}>{t('addModal.step3.alreadyPaid')}</div>
-                      <div style={{ display: 'flex', gap: '10px' }}>
-                        <button
-                          onClick={() => set('isMembershipPaid', true)}
-                          style={{
-                            flex: 1, padding: '9px', borderRadius: '8px', cursor: 'pointer', fontSize: '12px', fontWeight: 700,
-                            fontFamily: "'Manrope',sans-serif",
-                            border: form.isMembershipPaid ? '2px solid var(--peach)' : '1.5px solid var(--border)',
-                            background: form.isMembershipPaid ? 'rgba(249,160,139,0.1)' : 'transparent',
-                            color: form.isMembershipPaid ? 'var(--peach)' : 'var(--text3)',
-                          }}
-                        >
-                          {t('addModal.step3.yes')}
-                        </button>
-                        <button
-                          onClick={() => set('isMembershipPaid', false)}
-                          style={{
-                            flex: 1, padding: '9px', borderRadius: '8px', cursor: 'pointer', fontSize: '12px', fontWeight: 700,
-                            fontFamily: "'Manrope',sans-serif",
-                            border: !form.isMembershipPaid ? '2px solid var(--peach)' : '1.5px solid var(--border)',
-                            background: !form.isMembershipPaid ? 'rgba(249,160,139,0.1)' : 'transparent',
-                            color: !form.isMembershipPaid ? 'var(--peach)' : 'var(--text3)',
-                          }}
-                        >
-                          {t('addModal.step3.no')}
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* ── STEP 4 ── */}
-              {step === 4 && (
-                <div>
-                  {/* Success icon */}
-                  <div style={{ textAlign: 'center', marginBottom: '28px' }}>
-                    <div style={{
-                      width: '64px', height: '64px', borderRadius: '18px', margin: '0 auto 16px',
-                      background: 'linear-gradient(135deg,#5BAB72,#4a9660)',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      animation: 'acCheckPop 0.5s cubic-bezier(0.34,1.56,0.64,1) both, acPulse 2s ease 0.5s infinite',
-                    }}>
-                      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                        <polyline points="20 6 9 17 4 12"/>
-                      </svg>
-                    </div>
-                    <div style={{ fontSize: '18px', fontWeight: 800, color: 'var(--text)', letterSpacing: '-0.4px', marginBottom: '6px' }}>{t('addModal.step4.readyTitle')}</div>
-                    <div style={{ fontSize: '13px', color: 'var(--text3)' }}>{t('addModal.step4.readySub')}</div>
-                  </div>
-
-                  {/* Summary card */}
-                  <div style={{ padding: '20px', borderRadius: '14px', background: 'rgba(var(--ink),0.02)', border: '1px solid var(--border)', marginBottom: '16px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-                      <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: 'linear-gradient(135deg,#FCAE91,#F9A08B)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', fontWeight: 800, color: '#fff', flexShrink: 0 }}>
-                        {form.name.trim().split(' ').map((w: string) => w[0]).join('').slice(0, 2).toUpperCase() || '?'}
-                      </div>
-                      <div>
-                        <div style={{ fontSize: '15px', fontWeight: 800, color: 'var(--text)' }}>{form.name || '—'}</div>
-                        <div style={{ fontSize: '11px', color: 'var(--text3)', marginTop: '2px' }}>{t('addModal.step4.newClient')}</div>
-                      </div>
-                    </div>
-
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                      {[
-                        { l: t('addModal.step4.fields.phone'),        v: form.phone || '—' },
-                        { l: t('addModal.step4.fields.email'),        v: form.email || '—' },
-                        // Только если заполнен: пустая плитка «Instagram —» в
-                        // сводке ничего не говорит, а место занимает.
-                        ...(form.instagram ? [{ l: t('addModal.step1.instagram'), v: `@${form.instagram}` }] : []),
-                        { l: t('addModal.step4.fields.bday'),         v: form.bday ? new Date(form.bday).toLocaleDateString(i18n.language, { day: 'numeric', month: 'short', year: 'numeric' }) : '—' },
-                        { l: t('addModal.step4.fields.city'),         v: form.city  || '—' },
-                        { l: t('addModal.step4.fields.subscription'), v: selectedPackage ? selectedPackage.name : t('addModal.step3.noPackage') },
-                        { l: t('addModal.step4.fields.tags'),         v: form.tags.length ? form.tags.join(', ') : '—' },
-                      ].map(({ l, v }) => (
-                        <div key={l} style={{ padding: '10px 12px', borderRadius: '8px', background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-                          <div style={{ fontSize: '10px', color: 'var(--text3)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '2px' }}>{l}</div>
-                          <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{v}</div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
+              {step === 1 && <StepPersonal ac={ac}/>}
+              {step === 2 && <StepProfile ac={ac}/>}
+              {step === 3 && <StepMembership ac={ac}/>}
+              {step === 4 && <StepSummary ac={ac}/>}
             </div>
+          )}
 
-            {/* Footer */}
-            <div style={{ padding: '16px 26px', borderTop: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(var(--ink),0.01)' }}>
-              <button
-                onClick={step === 1 ? handleClose : goBack}
-                style={{ padding: '10px 20px', borderRadius: '10px', border: '1px solid var(--border)', background: 'transparent', fontSize: '13px', fontWeight: 700, color: 'var(--text3)', cursor: 'pointer', fontFamily: "'Manrope',sans-serif", transition: 'all 0.2s' }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--text2)'; e.currentTarget.style.color = 'var(--text)'; }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--text3)'; }}
-              >
-                {step === 1 ? t('addModal.cancel') : t('addModal.back')}
+          <div className={s.foot}>
+            {isPhone ? (
+              <button type="button" className={s.btnFinish} onClick={submitPhone} disabled={!ac.canSubmit}>
+                {ac.saving && <span className={s.spinner}/>}
+                {t('addModal.submit')}
               </button>
-
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <div style={{ fontSize: '11px', color: 'var(--text3)' }}>{step} / {TOTAL}</div>
-                {step < TOTAL ? (
-                  <button
-                    onClick={goNext}
-                    disabled={!canGoNext()}
-                    style={{
-                      padding: '10px 28px', borderRadius: '10px', border: 'none',
-                      background: canGoNext() ? 'linear-gradient(135deg,#FCAE91,#F9A08B)' : 'rgba(var(--ink),0.06)',
-                      color: canGoNext() ? '#fff' : 'var(--text3)',
-                      fontSize: '13px', fontWeight: 700, cursor: canGoNext() ? 'pointer' : 'not-allowed',
-                      fontFamily: "'Manrope',sans-serif",
-                      boxShadow: canGoNext() ? '0 4px 14px -2px rgba(249,160,139,0.4)' : 'none',
-                      transition: 'all 0.2s',
-                    }}
-                    onMouseEnter={e => { if (canGoNext()) { e.currentTarget.style.filter = 'brightness(1.06)'; e.currentTarget.style.transform = 'translateY(-1px)'; } }}
-                    onMouseLeave={e => { e.currentTarget.style.filter = ''; e.currentTarget.style.transform = ''; }}
-                  >
-                    {t('addModal.continue')}
-                  </button>
-                ) : (
-                  <button
-                    onClick={handleFinish}
-                    style={{
-                      padding: '10px 28px', borderRadius: '10px', border: 'none',
-                      background: 'linear-gradient(135deg,#5BAB72,#4a9660)',
-                      color: '#fff', fontSize: '13px', fontWeight: 700, cursor: 'pointer',
-                      fontFamily: "'Manrope',sans-serif",
-                      boxShadow: '0 4px 14px -2px rgba(91,171,114,0.4)',
-                      transition: 'all 0.2s',
-                    }}
-                    onMouseEnter={e => { e.currentTarget.style.filter = 'brightness(1.06)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
-                    onMouseLeave={e => { e.currentTarget.style.filter = ''; e.currentTarget.style.transform = ''; }}
-                  >
-                    {t('addModal.submit')}
-                  </button>
-                )}
-              </div>
-            </div>
+            ) : (
+              <>
+                <button type="button" className={s.btnGhost} disabled={ac.saving || leaving} onClick={step === 1 ? requestClose : goBack}>
+                  {step === 1 ? t('addModal.cancel') : t('addModal.back')}
+                </button>
+                <div className={s.footRight}>
+                  <span className={s.counter}>{step} / {TOTAL}</span>
+                  {step < TOTAL ? (
+                    <button type="button" className={s.btnPrimary} onClick={goNext} disabled={!canGoNext}>
+                      {t('addModal.continue')}
+                    </button>
+                  ) : (
+                    <button type="button" className={s.btnFinish} onClick={ac.submit} disabled={!ac.canSubmit}>
+                      {ac.saving && <span className={s.spinner}/>}
+                      {t('addModal.submit')}
+                    </button>
+                  )}
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>
-    </>,
-    document.body
+    </div>,
+    document.body,
   );
 }

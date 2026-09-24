@@ -23,7 +23,7 @@ from schemas.schedule.hybrid import BookingCapabilities
 from services.booking_rules import load_rules
 from services import catalog, terminology
 from services.notifier import _fmt_amount
-from services import service_pricing
+from services import service_bundles, service_pricing
 from services.pricing import resolve_price
 from services.studio_link import require_studio_id
 
@@ -107,6 +107,11 @@ class ServiceInfo(BaseSchema):
     buffer_after_min: int = 0
     is_bookable: bool = True
     terminology_profile: Optional[str] = None
+    # Комплекс (services/service_bundles.py): названия частей по порядку и
+    # зачёркнутая сумма «по отдельности» — только когда комплекс и правда
+    # выгоднее. У обычной услуги — пустой список и None.
+    bundle_parts: list[str] = []
+    bundle_full_price_str: Optional[str] = None
 
 
 class PackageInfo(BaseSchema):
@@ -164,13 +169,18 @@ def _span(spans: dict, service) -> "service_pricing.PriceRange":
         min=service.price, max=service.price)
 
 
-def _service_info(service, span: "service_pricing.PriceRange", currency: str) -> "ServiceInfo":
+def _service_info(
+    service, span: "service_pricing.PriceRange", currency: str,
+    parts: list[str] = (), full_price: Optional[int] = None,
+) -> "ServiceInfo":
     """Услуга витрины вместе с её ценой и диапазоном.
 
     Отдельной функцией, чтобы диапазон считался ОДИН раз на услугу: в
     выражении внутри списка он собирался бы заново на каждое из четырёх полей.
     """
     return ServiceInfo(
+        bundle_parts=list(parts),
+        bundle_full_price_str=_fmt_amount(full_price, currency) if full_price is not None else None,
         id=service.id,
         name=service.name,
         price=service.price,
@@ -337,6 +347,9 @@ async def get_studio_catalog(
     # Один запрос на весь каталог витрины, а не по запросу на услугу
     # (CLAUDE.md §5, правило 2): это первая ручка, которую зовёт мини-приложение.
     spans = await service_pricing.price_ranges(db, studio_id, [s.id for s in services])
+    # Состав комплексов — тоже одним запросом на всю витрину.
+    compositions = await service_bundles.compositions(db, studio_id)
+    names = {s.id: s.name for s in services}
 
     # Цена со скидками — по каждому пакету, потому что часть скидок зависит от
     # суммы (min_purchase_amount у студийной, фиксированный оффер в деньгах).
@@ -392,7 +405,14 @@ async def get_studio_catalog(
             for branch in branches
         ],
         services=[
-            _service_info(service, _span(spans, service), currency)
+            _service_info(
+                service, _span(spans, service), currency,
+                parts=[names[p] for p in compositions.get(service.id, [])],
+                full_price=(
+                    service_bundles.full_price(compositions[service.id], spans, _span(spans, service))
+                    if service.id in compositions else None
+                ),
+            )
             for service in services
         ],
         staff=[StaffInfo(id=trainer.id, name=trainer.name) for trainer in trainers],

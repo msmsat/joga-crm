@@ -41,6 +41,8 @@ export type ResourceStep = 'select_time' | 'quote' | 'confirming' | 'done';
 /** Минимум, который нужен листу. Длительность и цена — для подзаголовка:
  *  «Мои записи» каталог не грузят, и там строка просто короче. */
 export type ResourceTarget = {
+  bundle_parts?: string[];
+  bundle_full_price_str?: string | null;
   id: number;
   name: string;
   terminology_profile?: TerminologyProfile | null;

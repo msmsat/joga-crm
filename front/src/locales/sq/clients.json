@@ -343,10 +343,12 @@
     "submit": "Shto klient ✓",
     "stepCounter": "Hapi {{current}} nga {{total}}",
     "trustSignal": "Të dhënat janë të mbrojtura dhe të dukshme vetëm për administratorët",
+    "required": "E detyrueshme",
+    "optional": "Opsionale",
     "steps": {
       "1": {
         "title": "Të dhënat personale",
-        "sub": "Shkruani të dhënat e kontaktit të klientit"
+        "sub": "E detyrueshme është vetëm emri — pjesa tjetër sipas dëshirës"
       },
       "2": {
         "title": "Të dhënat e profilit",
@@ -362,15 +364,13 @@
       }
     },
     "step1": {
-      "previewLabel": "Klient i ri · Parapamje",
-      "name": "Emri i plotë *",
+      "name": "Emri",
       "namePlaceholder": "Arben Hoxha",
       "phone": "Telefon",
       "phonePlaceholder": "+355 69 000 0000",
       "email": "E-mail",
       "emailPlaceholder": "klient@shembull.al",
       "instagram": "Instagram",
-      "instagramOptional": "opsionale",
       "instagramPlaceholder": "username"
     },
     "step2": {
@@ -378,11 +378,11 @@
       "bdayPlaceholder": "12 prill 1990",
       "city": "Qyteti",
       "cityPlaceholder": "Tiranë",
+      "cityAuto": "U përcaktua nga vendndodhja juaj — mund ta ndryshoni",
       "tags": "Etiketat",
       "tagsPlaceholder": "Pilates, VIP, rehabilitim… (Enter)",
       "tagsHint": "Shtoni etiketë duke shtypur Enter",
       "inviteCode": "Kodi i ftesës së referuesit",
-      "inviteCodePlaceholder": "Opsionale",
       "inviteCodeHint": "Nëse jepet, të dy merrni bonus"
     },
     "step3": {
@@ -418,10 +418,9 @@
       "subscriptionValue_other": "{{count}} seanca"
     },
     "errors": {
-      "name": "Shkruani një emër (të paktën 2 karaktere)",
+      "name": "Shkruani një emër",
       "phone": "Numër telefoni i pavlefshëm",
       "email": "E-mail i pavlefshëm",
-      "city": "Shkruani një qytet",
       "instagram": "Emri i përdoruesit: shkronja latine, shifra, pikë dhe nënvizë"
     }
   },

@@ -339,10 +339,12 @@
     "submit": "Přidat klienta ✓",
     "stepCounter": "Krok {{current}} z {{total}}",
     "trustSignal": "Data jsou chráněna a vidí je jen administrátoři",
+    "required": "Povinné",
+    "optional": "Nepovinné",
     "steps": {
       "1": {
         "title": "Osobní údaje",
-        "sub": "Zadejte kontaktní údaje klienta"
+        "sub": "Povinné je jen jméno — zbytek podle potřeby"
       },
       "2": {
         "title": "Údaje profilu",
@@ -358,15 +360,13 @@
       }
     },
     "step1": {
-      "previewLabel": "Nový klient · Náhled",
-      "name": "Celé jméno *",
+      "name": "Jméno",
       "namePlaceholder": "Jan Novák",
       "phone": "Telefon",
       "phonePlaceholder": "+420 601 000 000",
       "email": "E-mail",
       "emailPlaceholder": "klient@example.com",
       "instagram": "Instagram",
-      "instagramOptional": "nepovinné",
       "instagramPlaceholder": "username"
     },
     "step2": {
@@ -374,11 +374,11 @@
       "bdayPlaceholder": "12. dubna 1990",
       "city": "Město",
       "cityPlaceholder": "Praha",
+      "cityAuto": "Určeno podle vaší polohy — můžete změnit",
       "tags": "Štítky",
       "tagsPlaceholder": "Pilates, VIP, Rehabilitace... (Enter)",
       "tagsHint": "Štítek přidáte stiskem Enter",
       "inviteCode": "Kód pozvánky od doporučitele",
-      "inviteCodePlaceholder": "Nepovinné",
       "inviteCodeHint": "Pokud ho zadáte, bonus dostanete oba"
     },
     "step3": {
@@ -412,10 +412,9 @@
       "smsSub": "Klient dostane uvítací zprávu"
     },
     "errors": {
-      "name": "Zadejte jméno (alespoň 2 znaky)",
+      "name": "Zadejte jméno",
       "phone": "Neplatné telefonní číslo",
       "email": "Neplatný e-mail",
-      "city": "Zadejte město",
       "instagram": "Přezdívka latinkou: písmena, číslice, tečka a podtržítko"
     }
   },
