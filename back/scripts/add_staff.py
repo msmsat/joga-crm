@@ -44,7 +44,9 @@ async def run(args):
     from dependencies import StudioContext
     from models import Service, ServiceBundleItem, Studio, StudioBranch, StudioMember, User
     from routers.staff.profiles import create_staff
+    from routers.studio.router import _default_branch_hours, create_branch
     from schemas.settings.team import StaffCreate
+    from schemas.studio.studio import BranchCreate
     from services.contacts import normalize, normalized_column
     from services.plan_limits import check_plan_limit
 
@@ -107,15 +109,27 @@ async def run(args):
         for service in services:
             print(f'    ID={service.id} | {service.category or "-"} | {service.name} | '
                   f'{service.price} {studio.currency} | {service.duration_min} мин')
-        print('  Филиалы: ' + (', '.join(f'ID={b.id} {b.name}' for b in branches) or 'нет'))
+        new_branch = None
+        if not branches and args.create_branch:
+            # Same first branch as onboarding creates (routers/auth/onboarding.py).
+            new_branch = BranchCreate(name=studio.name, phone=studio.phone,
+                                      email=studio.email or owner.email, address=studio.address)
+            hours = await _default_branch_hours(studio.id, 0, db)  # built, not added to the session
+            days = 'Пн Вт Ср Чт Пт Сб Вс'.split()
+            print(f'  Филиалы: будет создан «{new_branch.name}», часы как у студии: ' + ', '.join(
+                f'{days[h.day_of_week]} {h.open_time}-{h.close_time}' if h.is_open
+                else f'{days[h.day_of_week]} выходной' for h in sorted(hours, key=lambda h: h.day_of_week)))
+        else:
+            print('  Филиалы: ' + (', '.join(f'ID={b.id} {b.name}' for b in branches) or 'нет'))
         print('  График: ' + (f'дни {",".join(map(str, args.days))} (0=Пн), {args.hours}'
                               if schedule else 'не задан'))
 
         warnings = []
         if not services:
             warnings.append('Услуг нет — сначала импорт каталога, иначе записаться к мастеру не на что.')
-        if not branches:
-            warnings.append('У студии нет филиалов — индивидуальная запись к мастеру работать не будет.')
+        if not branches and not new_branch:
+            warnings.append('У студии нет филиалов — индивидуальная запись к мастеру работать не будет. '
+                            'Добавьте --create-branch.')
         if not schedule:
             warnings.append('График не задан — в онлайн-записи у мастера не будет свободного времени.')
         for warning in warnings:
@@ -143,15 +157,23 @@ async def run(args):
                 command += ['--last-name', args.last_name]
             if schedule:
                 command += ['--days', ','.join(map(str, args.days)), '--hours', args.hours]
+            if new_branch:
+                command += ['--create-branch']
             print('\nДля сохранения после проверки:')
             print(shlex.join(command + ['--apply']))
             return
 
+        ctx = StudioContext(owner, studio.id, 'owner')
+        if new_branch:
+            # Its own commit, like the Settings button: the branch is useful even if the staff step fails.
+            created = await create_branch(new_branch, ctx, db)
+            print(f'\nФилиал создан: ID={created.id} «{created.name}».')
+            data = data.model_copy(update={'branch_ids': [created.id]})
         # Same session: create_staff takes the studio lock and commits by itself.
         try:
-            result = await create_staff(data, StudioContext(owner, studio.id, 'owner'), db)
+            result = await create_staff(data, ctx, db)
         except HTTPException as error:
-            raise ValueError(f'Отказ сервера: {error.detail}. Ничего не записано.')
+            raise ValueError(f'Отказ сервера: {error.detail}. Сотрудник не записан.')
         print(f'\nГОТОВО: {args.name} добавлена в студию ID={studio.id} (ждёт принятия приглашения).')
         print(f'Ссылка-приглашение (ушла письмом на {args.email}): {result["invite_url"]}')
         if password:
@@ -174,6 +196,8 @@ def main():
     parser.add_argument('--service-ids', type=int_list, help='По умолчанию — все индивидуальные услуги, кроме комплексов')
     parser.add_argument('--days', type=int_list, default=[], help='Рабочие дни, 0=Пн … 6=Вс, через запятую')
     parser.add_argument('--hours', default='10:00-19:00', help='Часы работы, ЧЧ:ММ-ЧЧ:ММ')
+    parser.add_argument('--create-branch', action='store_true',
+                        help='Если у студии нет филиалов — создать первый, как при онбординге')
     parser.add_argument('--apply', action='store_true')
     args = parser.parse_args()
     if '@' not in args.email or '@' not in args.owner_email:
