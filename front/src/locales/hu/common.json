@@ -97,6 +97,9 @@
     "copyFailed": "A másolás nem sikerült"
   },
   "errors": {
+    "staff": {
+      "duration_too_long": "A munkatárs szolgáltatásának időtartama a pufferekkel együtt meghaladja a 24 órát. Csökkentse az időt"
+    },
     "403": "Hozzáférés megtagadva",
     "404": "Nem található",
     "500": "Szerverhiba, próbálja később",
@@ -242,6 +245,7 @@
     "aria": "{{service}} ára",
     "durationCustom": "Saját időtartam. Ürítse ki a mezőt a Katalógus időtartamához",
     "durationInherited": "Időtartam a Katalógusból",
-    "durationAria": "{{service}} időtartama, perc"
+    "durationAria": "{{service}} időtartama, perc",
+    "durationInvalid": "Az időtartam 1 és {{max}} közötti egész számú perc lehet. Az előző érték megmaradt"
   }
 }

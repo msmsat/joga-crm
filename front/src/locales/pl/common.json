@@ -97,6 +97,9 @@
     "copyFailed": "Nie udało się skopiować"
   },
   "errors": {
+    "staff": {
+      "duration_too_long": "Czas usługi u pracownika wraz z buforami przekracza dobę. Skróć czas"
+    },
     "403": "Brak dostępu",
     "404": "Nie znaleziono",
     "500": "Błąd serwera, spróbuj później",
@@ -242,6 +245,7 @@
     "aria": "Cena usługi {{service}}",
     "durationCustom": "Własny czas trwania. Wyczyść pole, aby wrócić do czasu z Katalogu",
     "durationInherited": "Czas trwania z Katalogu",
-    "durationAria": "Czas trwania {{service}}, minuty"
+    "durationAria": "Czas trwania {{service}}, minuty",
+    "durationInvalid": "Czas trwania musi być liczbą całkowitą minut od 1 do {{max}}. Poprzednia wartość została zachowana"
   }
 }

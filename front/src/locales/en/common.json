@@ -97,6 +97,9 @@
     "copyFailed": "Failed to copy"
   },
   "errors": {
+    "staff": {
+      "duration_too_long": "The employee's service duration plus buffers exceeds 24 hours. Reduce the duration"
+    },
     "403": "Access denied",
     "404": "Not found",
     "500": "Server error, try again later",
@@ -242,6 +245,7 @@
     "aria": "Price for {{service}}",
     "durationCustom": "Custom duration. Clear the field to go back to the Catalog duration",
     "durationInherited": "Catalog duration",
-    "durationAria": "Duration of {{service}}, minutes"
+    "durationAria": "Duration of {{service}}, minutes",
+    "durationInvalid": "Duration must be a whole number of minutes from 1 to {{max}}. The previous value is kept"
   }
 }

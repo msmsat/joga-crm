@@ -97,6 +97,9 @@
     "copyFailed": "Kopiointi epäonnistui"
   },
   "errors": {
+    "staff": {
+      "duration_too_long": "Työntekijän palvelun kesto puskureineen ylittää vuorokauden. Lyhennä kestoa"
+    },
     "403": "Pääsy evätty",
     "404": "Ei löytynyt",
     "500": "Palvelinvirhe, yritä myöhemmin uudelleen",
@@ -242,6 +245,7 @@
     "aria": "Palvelun {{service}} hinta",
     "durationCustom": "Oma kesto. Tyhjennä kenttä palataksesi Luettelon kestoon",
     "durationInherited": "Kesto Luettelosta",
-    "durationAria": "Palvelun {{service}} kesto, minuuttia"
+    "durationAria": "Palvelun {{service}} kesto, minuuttia",
+    "durationInvalid": "Keston on oltava kokonaisluku minuutteina välillä 1–{{max}}. Edellinen arvo säilyy"
   }
 }

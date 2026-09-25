@@ -46,6 +46,15 @@ const isSameDay = (a: Date, b: Date) =>
 const dayCache = new Map<string, LessonResponse[]>();
 let cachedVersion = -1;
 
+// Мутация общего кэша принадлежит модулю; вызывается только из эффекта,
+// никогда при рендере компонента.
+function resetDayCache(version: number) {
+  if (cachedVersion !== version) {
+    dayCache.clear();
+    cachedVersion = version;
+  }
+}
+
 /** Задержка перед скелетом. Ответ приходит быстрее — и он не появится вовсе. */
 const SKELETON_DELAY_MS = 220;
 
@@ -187,10 +196,7 @@ export default function EventSchedule({ catalog, onBuySubscription, onNeedAuth, 
 
     // Первая же бронь обесценивает все дни разом — занятые места есть в каждой
     // карточке. Поэтому кэш сбрасывается целиком, а не по одному дню.
-    if (cachedVersion !== lessonsVersion) {
-      dayCache.clear();
-      cachedVersion = lessonsVersion;
-    }
+    resetDayCache(lessonsVersion);
 
     // Запрос уходит и по известному дню: место могли занять с другого
     // устройства, и список обновится молча, прямо под рукой. Скелет включается

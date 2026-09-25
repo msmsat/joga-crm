@@ -155,10 +155,9 @@ def _prepare(data: AvailabilityData, *, date_from: date, date_to: date,
         return None, "config_incomplete"
     step = studio.journal_time_step
     before, after, duration = service.buffer_before_min, service.buffer_after_min, service.duration_min
-    # Проверяется самая длинная из длительностей запроса: у мастера она своя,
-    # и сутки с буферами обязан уместить каждый, а не только услуга.
-    longest = max([duration, *(data.durations.get(t, duration) for t in data.teacher_ids)])
-    if not step or not 1 <= step <= 60 or not 1 <= duration <= 1440 or before + longest + after > 1440:
+    # Здесь только общие настройки. Длительность с буферами проверяется
+    # отдельно у каждого мастера: неверное время одного не закрывает остальных.
+    if not step or not 1 <= step <= 60 or not 1 <= duration <= 1440:
         return None, "config_incomplete"
     if client and not rules.booking_active:
         return None, "booking_closed"
@@ -194,6 +193,8 @@ def _teacher_starts(data: AvailabilityData, teacher_id: int, grid: _Grid) -> _Te
     # Время мастера занимает ЕГО длительность услуги, а не каталожная: иначе
     # сетка давала бы стрижке на 45 минут окно под час и наоборот.
     duration = data.durations.get(teacher_id, grid.duration)
+    if not 1 <= duration <= 1440 or grid.before + duration + grid.after > 1440:
+        return _TeacherDay([], windows, True)
     starts = []
     for day in _days(grid.date_from, grid.date_to):
         midnight = datetime.combine(day, time.min)
@@ -264,7 +265,7 @@ def by_staff(data: AvailabilityData, *, day: date, now: datetime, client: bool =
         entries.append(StaffDayEntry(
             teacher_id=teacher_id,
             works=any(a < day_end and day_start < b for a, b in found.windows),
-            reason=reason,
+            reason=reason or ("config_incomplete" if found.incomplete and not found.starts else None),
             free=[local for _, local in found.starts],
         ))
     return StaffDay(entries, "config_incomplete" if incomplete and not any(e.free for e in entries) else None)

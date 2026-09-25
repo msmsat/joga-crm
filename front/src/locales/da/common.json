@@ -97,6 +97,9 @@
     "copyFailed": "Kunne ikke kopiere"
   },
   "errors": {
+    "staff": {
+      "duration_too_long": "Medarbejderens varighed for ydelsen inkl. buffere overstiger 24 timer. Gør varigheden kortere"
+    },
     "403": "Adgang nægtet",
     "404": "Ikke fundet",
     "500": "Serverfejl, prøv igen senere",
@@ -242,6 +245,7 @@
     "aria": "Pris for {{service}}",
     "durationCustom": "Egen varighed. Ryd feltet for at gå tilbage til Katalogets varighed",
     "durationInherited": "Varighed fra Kataloget",
-    "durationAria": "Varighed af {{service}}, minutter"
+    "durationAria": "Varighed af {{service}}, minutter",
+    "durationInvalid": "Varigheden skal være et helt antal minutter fra 1 til {{max}}. Den tidligere værdi bevares"
   }
 }

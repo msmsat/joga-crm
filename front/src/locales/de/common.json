@@ -97,6 +97,9 @@
     "copyFailed": "Kopieren fehlgeschlagen"
   },
   "errors": {
+    "staff": {
+      "duration_too_long": "Die Dauer der Leistung beim Mitarbeiter samt Puffern überschreitet 24 Stunden. Verkürzen Sie die Dauer"
+    },
     "403": "Zugriff verweigert",
     "404": "Nicht gefunden",
     "500": "Serverfehler, versuchen Sie es später erneut",
@@ -242,6 +245,7 @@
     "aria": "Preis für {{service}}",
     "durationCustom": "Eigene Dauer. Feld leeren, um zur Dauer aus dem Katalog zurückzukehren",
     "durationInherited": "Dauer aus dem Katalog",
-    "durationAria": "Dauer von {{service}}, Minuten"
+    "durationAria": "Dauer von {{service}}, Minuten",
+    "durationInvalid": "Die Dauer muss eine ganze Zahl von 1 bis {{max}} Minuten sein. Der vorherige Wert bleibt erhalten"
   }
 }

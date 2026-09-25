@@ -103,6 +103,29 @@ def _duration_map(service_prices: list[StaffServicePrice]) -> dict[int, Optional
     return {p.service_id: p.duration_min for p in service_prices}
 
 
+def _check_durations(service_prices: list[StaffServicePrice], services: list[Service]) -> None:
+    """Своё время вместе с буферами услуги обязано уместиться в сутки.
+
+    Схема держит само число в 1…1440, но буферы живут у услуги: 1440 минут у
+    стрижки с уборкой 15 минут сохранились бы, а записаться к мастеру стало бы
+    нельзя вовсе — расчёт времени такой конфигурации окон не даёт
+    (services/resource_slots). Отказ при сохранении владелец видит сразу, а не
+    узнаёт от клиента, что к мастеру «нет времени».
+    """
+    by_id = {s.id: s for s in services}
+    for p in service_prices:
+        service = by_id.get(p.service_id)
+        if p.duration_min is None or service is None:
+            continue
+        buffers = (service.buffer_before_min or 0) + (service.buffer_after_min or 0)
+        if p.duration_min + buffers > 1440:
+            raise HTTPException(status_code=400, detail={
+                "code": "staff.duration_too_long",
+                "message": "Время услуги вместе с буферами не умещается в сутки",
+                "params": {"service": service.name, "max": 1440 - buffers},
+            })
+
+
 def _apply_studio_services(user: User, studio_id: int, services: list[Service]) -> None:
     """Услуги ЭТОЙ студии заменяем, чужие оставляем нетронутыми.
 
@@ -533,6 +556,7 @@ async def create_staff(
     await check_plan_limit(db, studio_id, "staff")
 
     services = await _resolve_services(data.service_ids, studio_id, db)
+    _check_durations(data.service_prices, services)
     branches = await _resolve_branches(data.branch_ids, studio_id, db)
 
     # Аккаунт с таким email уже есть → это ТОТ ЖЕ человек, а не ошибка: имя и
@@ -691,6 +715,7 @@ async def update_staff(
     )
 
     services = await _resolve_services(data.service_ids, studio_id, db)
+    _check_durations(data.service_prices, services)
     branches = await _resolve_branches(data.branch_ids, studio_id, db)
 
     role_changed = data.role is not None and membership.role != data.role

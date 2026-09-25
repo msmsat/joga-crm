@@ -103,11 +103,13 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({
   const endScrollRef = useRef<HTMLDivElement>(null);
 
   const KP_INTERVALS = useMemo(() => generateTimeIntervals(timeStep), [timeStep]);
-  const { services, options: serviceOptions, priceFor, durationFor } = useServiceOptions(!!onResourceBooking);
+  const { services, options: serviceOptions, priceFor } = useServiceOptions(!!onResourceBooking);
   const currency = useStudioCurrency();
   const durationLabel = useDurationLabel();
   const lessonPrice = priceFor(newForm.serviceId, newBookingSlot?.trainer ?? null);
-  const lessonDuration = durationFor(newForm.serviceId, newBookingSlot?.trainer ?? null);
+  // Для группового занятия длительность явно задаётся выделением в сетке.
+  // Показываем именно её: это значение Journal отправит на сервер.
+  const lessonDuration = Math.round((newBookingSlot.timeEnd - newBookingSlot.timeStart) * 60);
 
   const shownTrainers = useMemo(() => {
     const q = trainerQuery.trim().toLowerCase();

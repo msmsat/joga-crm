@@ -1300,6 +1300,7 @@ button.kp-trainer:disabled { cursor: default; opacity: 0.6; }
 .kp-trainer-price {
   flex-shrink: 0; font-size: 11.5px; font-weight: 700; color: var(--muted);
 }
+.kp-when { display: contents; }
 .kp-date-input {
   margin: 0; height: 40px; box-sizing: border-box; padding: 0 12px;
   background: var(--bg); border: 1px solid var(--border); border-radius: 10px;
@@ -1445,17 +1446,6 @@ button.kp-trainer:disabled { cursor: default; opacity: 0.6; }
 /* ════════════════════════════════════════════════════════════
    17. СВОДКА ДНЯ (шапка)
    ════════════════════════════════════════════════════════════ */
-.day-stats {
-  display: flex; gap: 0;
-  padding: 10px 16px;
-  background: var(--bg-card);
-  border-bottom: 1px solid var(--border);
-  overflow-x: auto;
-  flex-shrink: 0;
-}
-/* scrollbar-width — не дубль к ::-webkit-scrollbar: в свежем Chromium
-   стандартное свойство выигрывает у псевдоэлемента, и под сводкой дня
-   оставалась honest-полоса в 16px, съедавшая строку на экране телефона. */
 /* Крестик попапа занятия — та же капсула, что у крестика модалок кита. */
 .bp-close {
   width: 28px;
@@ -1473,19 +1463,6 @@ button.kp-trainer:disabled { cursor: default; opacity: 0.6; }
 }
 .bp-close:hover { background: rgba(var(--ink), 0.1); color: var(--onyx); }
 
-.day-stats { scrollbar-width: none; }
-.day-stats::-webkit-scrollbar { display: none; }
-.ds-item {
-  display: flex; flex-direction: column;
-  padding: 0 16px;
-  border-right: 1px solid var(--border);
-  flex-shrink: 0;
-}
-.ds-item:first-child { padding-left: 0; }
-.ds-item:last-child { border-right: none; }
-.ds-val { font-size: 18px; font-weight: 800; color: var(--onyx); line-height: 1; }
-.ds-key { font-size: 10.5px; font-weight: 600; color: var(--muted); margin-top: 2px; }
-.ds-accent { color: var(--peach); }
 
 /* ════════════════════════════════════════════════════════════
    19. ПЕРЕКЛЮЧАТЕЛИ (ШАГ СЕТКИ / ВИД КАЛЕНДАРЯ)
@@ -1528,6 +1505,59 @@ button.kp-trainer:disabled { cursor: default; opacity: 0.6; }
 }
 .premium-step-btn:hover { color: var(--onyx); }
 .premium-step-btn.active { color: var(--peach); }
+
+/* Шаг сетки и отмена/повтор — в верхнем ряду (DayControls). */
+.j-day-controls { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.j-day-controls .premium-step-toggle { padding: 3px; border-radius: 10px; }
+.j-day-controls .premium-step-slider { top: 3px; bottom: 3px; width: 44px; }
+.j-day-controls .premium-step-btn { width: 44px; height: 26px; font-size: 11.5px; }
+.j-undo { display: flex; gap: 4px; }
+.j-undo .btn-icon:disabled { opacity: 0.35; cursor: default; }
+
+/* Фильтры журнала на компьютере — кнопка и окошко под ней (DesktopFilters). */
+.jdf { position: relative; flex-shrink: 0; }
+.jdf-btn { position: relative; }
+.jdf-btn.active { color: var(--peach); border-color: var(--peach); }
+.jdf-dot {
+  position: absolute; top: 5px; right: 5px; width: 6px; height: 6px;
+  border-radius: 50%; background: var(--peach);
+}
+/* Пока окошко открыто, тулбар выше всей сетки — шапок колонок (8050) и
+   карточек занятий (до 10000): иначе окошко уходило под них. */
+.j-toolbar:has(.jdf-panel) { z-index: 10001; }
+.jdf-panel {
+  position: absolute; top: calc(100% + 8px); left: 0; z-index: 9600;
+  width: 264px; box-sizing: border-box; padding: 14px;
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px;
+  box-shadow: 0 8px 24px -4px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.04);
+  animation: modal-in 0.2s ease;
+}
+.jdf-title {
+  font-size: 11px; font-weight: 800; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 0.6px; margin: 0 2px 10px;
+}
+.jdf-list { display: flex; flex-direction: column; gap: 4px; max-height: 320px; overflow-y: auto; }
+.jdf-item {
+  display: flex; align-items: center; gap: 10px; width: 100%;
+  padding: 6px 8px; border: none; border-radius: 10px; background: transparent;
+  font-family: var(--font); font-size: 13px; font-weight: 600; color: var(--text2);
+  text-align: left; cursor: pointer; transition: background 0.15s ease;
+}
+.jdf-item:hover { background: var(--bg2); }
+.jdf-item.on { color: var(--onyx); }
+.jdf-av {
+  width: 26px; height: 26px; border-radius: 7px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10.5px; font-weight: 800; background: var(--border2); color: var(--muted);
+}
+.jdf-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.jdf-check {
+  width: 18px; height: 18px; border-radius: 6px; flex-shrink: 0; box-sizing: border-box;
+  border: 1.5px solid var(--border); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+}
+.jdf-item.on .jdf-check { background: var(--peach); border-color: var(--peach); }
+.jdf-check svg { width: 11px; height: 11px; }
 
 .view-toggle {
   display: inline-flex;
@@ -1656,6 +1686,30 @@ button.kp-trainer:disabled { cursor: default; opacity: 0.6; }
     font-size: 13px !important;
     margin-top: 0 !important;
   }
+}
+
+/* Маленький экран (ноутбук 1280×720 и ниже): под расписание мало места, и
+   шапка колонок сразу тонкая — только имя: без аватара, должности и счётчиков
+   «занятий · людей». Имени хватает, чтобы понять, чья колонка, а цифры есть
+   в правой панели.
+   «Индивидуально» в тулбаре сжимается до «+». */
+@media (max-width: 1440px), (max-height: 860px) {
+  .j-root { --j-header-h: 46px; }
+  .j-hdr-avatar,
+  .j-hdr-sub,
+  .j-hdr-stats { display: none !important; }
+  /* Неделя: день и число одной строкой — столбиком они в 46px не влезают.
+     Та же раскладка, что давало сжатие при прокрутке, только постоянная:
+     сжатия здесь больше нет, шапка не меняется при скролле (Journal.tsx). */
+  .j-hdr-weekwrap { flex-direction: row !important; justify-content: center; gap: 7px; }
+  .j-hdr-date {
+    width: 26px !important;
+    height: 26px !important;
+    font-size: 13px !important;
+    margin-top: 0 !important;
+  }
+  .j-resource-label { display: none; }
+  .j-resource-btn { padding: 0 10px !important; }
 }
 .ai-send-btn:disabled { opacity: 0.4; cursor: not-allowed; filter: grayscale(100%); }
 
@@ -1979,7 +2033,6 @@ button.kp-trainer:disabled { cursor: default; opacity: 0.6; }
      Число занятий и записей по каждому тренеру уже стоит в шапке его колонки,
      а общие цифры дня на телефоне смотрят на дашборде. Шаг сетки — инструмент
      перетаскивания мышью. Полоса целиком отдаётся расписанию. */
-  .day-stats { display: none; }
 
   /* ── Шапка колонки: только имя и число занятий ───────────────────────────
      Аватар с инициалами повторяет имя рядом и отнимает ширину у узкой
@@ -2305,4 +2358,41 @@ button.kp-trainer:disabled { cursor: default; opacity: 0.6; }
 @keyframes popup-sheet-in {
   from { opacity: 0; transform: translateY(28px); }
   to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Телефон: шаг сетки и отмена были скрыты и раньше (жили в сводке дня), а
+   фильтры там свои — панель MobileFilters. Последним блоком: см. CLAUDE.md. */
+@media (max-width: 767px) {
+  .j-day-controls, .jdf { display: none !important; }
+  /* Неделя на телефоне — день над числом (узкие колонки), а не строкой,
+     как на ноутбуке выше. */
+  .j-hdr-weekwrap { flex-direction: column !important; gap: 0; }
+
+  /* Индивидуальная запись на телефоне — тот же лист, что у нового занятия
+     (правила .keypad-modal выше), но ниже ростом: «Начало» и «Дата» одной
+     строкой, мастера — рядом карточек, который листается вбок. */
+  .kp-when { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-items: start; }
+  .kp-date-input { width: 100%; height: 48px; font-size: 16px; padding: 0 10px; }
+  /* Двойной класс: базовое .kp-trainers (padding/margin под тень) стоит
+     ниже по файлу и иначе перебивало отступ — ряд прилипал к краю экрана. */
+  .kp-trainers.kp-masters {
+    flex-direction: row; overflow-x: auto; overflow-y: visible;
+    margin: -4px -18px; padding: 4px 18px 6px; scroll-padding-left: 18px;
+    scroll-snap-type: x proximity; scrollbar-width: none;
+  }
+  .kp-masters::-webkit-scrollbar { display: none; }
+  /* Карточка мастера: аватар слева, имя и под ним цена — имя не режется
+     ценой в той же строке, а карточка остаётся узкой. */
+  .kp-masters > .kp-trainer {
+    flex: 0 0 auto; width: auto; height: 56px; padding: 0 14px 0 8px;
+    display: grid; grid-template-columns: auto auto; grid-template-rows: auto auto;
+    column-gap: 10px; row-gap: 1px; align-content: center; justify-content: start;
+    scroll-snap-align: start;
+  }
+  .kp-masters .kp-trainer-av { grid-row: 1 / 3; align-self: center; }
+  .kp-masters .kp-trainer-name { max-width: 150px; line-height: 1.2; }
+  .kp-masters .kp-trainer-price { font-size: 11.5px; line-height: 1.2; }
+  /* Выбор и так виден по рамке и заливке — галочка только съедала ширину. */
+  .kp-masters .kp-trainer-check { display: none !important; }
+  .kp-masters .kp-trainer-price { font-size: 12px; }
 }

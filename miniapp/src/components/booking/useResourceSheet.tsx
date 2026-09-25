@@ -21,14 +21,17 @@ export function useResourceSheet(flow: Flow, { onOtherMaster, onDone }: { onOthe
   const terms = useBusinessTerms('resource', flow.service?.terminology_profile ?? null);
   const { service, step } = flow;
 
-  // Кто и сколько — прямо под названием: человек не должен листать вниз, чтобы
-  // убедиться, что открыл того мастера. Перенос мастера не называет — у
-  // переноса «любой» по умолчанию, и это не новость.
+  // После котировки мастер, время и оплата уже определены сервером.
+  // Шапка и строки подтверждения должны показывать одни и те же условия,
+  // включая пересчёт просроченной котировки и итог успешной записи.
+  const quoted = step === 'select_time' ? null : flow.quote?.terms;
+  const funding = quoted?.domain.funding;
   const subtitle = [
-    flow.teacherName ?? (flow.move ? null : t('booking.anyMaster')),
-    service?.duration_str
+    quoted?.domain.trainer_name ?? flow.teacherName ?? (flow.move ? null : t('booking.anyMaster')),
+    quoted ? t('booking.duration', { min: quoted.duration_min }) : service?.duration_str
       ?? (service?.duration_min ? t('booking.duration', { min: service.duration_min }) : null),
-    service?.price_str ?? null,
+    funding ? (funding.kind === 'pay' ? `${funding.price} ${funding.currency}` : t(`resource.funding.${funding.kind}`))
+      : service?.price_str ?? null,
   ].filter(Boolean).join(' · ');
 
   const done = onDone ?? flow.close;

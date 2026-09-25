@@ -97,6 +97,9 @@
     "copyFailed": "Kopyalanamadı"
   },
   "errors": {
+    "staff": {
+      "duration_too_long": "Çalışanın hizmet süresi tamponlarla birlikte 24 saati aşıyor. Süreyi kısaltın"
+    },
     "403": "Erişim reddedildi",
     "404": "Bulunamadı",
     "500": "Sunucu hatası, daha sonra tekrar deneyin",
@@ -242,6 +245,7 @@
     "aria": "{{service}} fiyatı",
     "durationCustom": "Özel süre. Katalog süresine dönmek için alanı temizleyin",
     "durationInherited": "Katalogdaki süre",
-    "durationAria": "{{service}} süresi, dakika"
+    "durationAria": "{{service}} süresi, dakika",
+    "durationInvalid": "Süre 1 ile {{max}} arasında tam sayı dakika olmalıdır. Önceki değer korunur"
   }
 }

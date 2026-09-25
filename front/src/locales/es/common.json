@@ -97,6 +97,9 @@
     "copyFailed": "No se pudo copiar"
   },
   "errors": {
+    "staff": {
+      "duration_too_long": "La duración del servicio del empleado con los márgenes supera 24 horas. Reduce la duración"
+    },
     "403": "Acceso denegado",
     "404": "No encontrado",
     "500": "Error del servidor, inténtalo más tarde",
@@ -242,6 +245,7 @@
     "aria": "Precio de {{service}}",
     "durationCustom": "Duración propia. Vacía el campo para volver a la duración del Catálogo",
     "durationInherited": "Duración del Catálogo",
-    "durationAria": "Duración de {{service}}, minutos"
+    "durationAria": "Duración de {{service}}, minutos",
+    "durationInvalid": "La duración debe ser un número entero de minutos entre 1 y {{max}}. Se mantiene el valor anterior"
   }
 }

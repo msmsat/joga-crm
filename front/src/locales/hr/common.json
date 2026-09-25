@@ -97,6 +97,9 @@
     "copyFailed": "Kopiranje nije uspjelo"
   },
   "errors": {
+    "staff": {
+      "duration_too_long": "Trajanje usluge kod zaposlenika s međuvremenima premašuje 24 sata. Smanjite trajanje"
+    },
     "403": "Pristup odbijen",
     "404": "Nije pronađeno",
     "500": "Greška poslužitelja, pokušajte kasnije",
@@ -242,6 +245,7 @@
     "aria": "Cijena usluge {{service}}",
     "durationCustom": "Vlastito trajanje. Ispraznite polje za povratak na trajanje iz Kataloga",
     "durationInherited": "Trajanje iz Kataloga",
-    "durationAria": "Trajanje usluge {{service}}, minute"
+    "durationAria": "Trajanje usluge {{service}}, minute",
+    "durationInvalid": "Trajanje mora biti cijeli broj minuta od 1 do {{max}}. Prethodna vrijednost je zadržana"
   }
 }

@@ -1,5 +1,5 @@
 import BusinessTermsProvider from './components/BusinessTermsProvider';
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import Home from './pages/home';
@@ -123,7 +123,7 @@ export default function App() {
    * цены пакетов теперь считаются под конкретного клиента (скидка новичка по
    * реферальной ссылке, персональный оффер), а одноразовая скидка гаснет в
    * момент оплаты — устаревший снимок обещал бы её второй раз. */
-  const loadCatalog = async () => {
+  const loadCatalog = useCallback(async () => {
     try {
       const data = await getStudioCatalog();
       // Витрина пришла от студии из ссылки — теперь к ней же приводим сессию:
@@ -160,7 +160,7 @@ export default function App() {
     }
 
     setIsLoading(false);
-  };
+  }, [entry.studioRef]);
 
   // Счётчик «кто сейчас в мини-приложении» для панели платформы.
   useEffect(() => startPresence(), []);
@@ -220,7 +220,7 @@ export default function App() {
     };
 
     boot();
-  }, [tg, entry]);
+  }, [tg, entry, loadCatalog]);
 
   const switchTab = (tab: string) => {
     if (tg) tg.HapticFeedback.impactOccurred('light');

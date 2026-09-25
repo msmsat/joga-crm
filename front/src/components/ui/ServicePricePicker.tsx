@@ -13,6 +13,10 @@ export interface PickableService {
   price: number;
   /** Длительность в Каталоге, минуты. Она же — стартовое время в рамке. */
   duration_min: number;
+  /** Буферы услуги, минуты. Своё время вместе с ними обязано уместиться в
+   *  сутки — иначе сервер отвергнет сохранение (routers/staff/profiles.py). */
+  buffer_before_min?: number;
+  buffer_after_min?: number;
 }
 
 export interface ServicePriceSelection {
@@ -40,6 +44,11 @@ type Field = 'price' | 'duration';
 const MAX_DIGITS: Record<Field, number> = { price: 9, duration: 4 };
 const MAX_DURATION = 1440;
 
+/** Потолок своего времени мастера: сутки за вычетом буферов услуги. */
+function maxDuration(service: PickableService): number {
+  return MAX_DURATION - (service.buffer_before_min ?? 0) - (service.buffer_after_min ?? 0);
+}
+
 const PEACH = 'linear-gradient(135deg, var(--peach-light) 0%, var(--peach) 100%)';
 const FONT = 'Manrope, sans-serif';
 
@@ -54,8 +63,8 @@ const FONT = 'Manrope, sans-serif';
  * выглядит иначе, чем доставшееся.
  *
  * Пустое поле возвращает значение Каталога. Ноль у цены — законная цена
- * («бесплатно у стажёра»); у времени ноля не бывает, он тоже возвращает
- * Каталог: услуга без длительности не занимает времени мастера.
+ * («бесплатно у стажёра»); неверное время показывает ошибку и сохраняет
+ * прежнее значение: опечатка не должна менять настройки сотрудника.
  *
  * Один компонент на создание и на редактирование сотрудника: две копии этого
  * списка разошлись бы на первой правке, и владелец увидел бы разные правила на
@@ -68,6 +77,7 @@ export function ServicePricePicker({
   const durationLabel = useDurationLabel();
   const [editing, setEditing] = useState<{ id: number; field: Field } | null>(null);
   const [draft, setDraft] = useState('');
+  const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   // Esc снимает поле с экрана, и уходящий фокус успевает позвать `commit` —
   // отмена сохраняла бы ровно то, от чего человек отказался. Флаг, а не
@@ -96,6 +106,7 @@ export function ServicePricePicker({
   function startEdit(service: PickableService, field: Field) {
     if (disabled) return;
     cancelled.current = false;
+    setError(null);
     setEditing({ id: service.id, field });
     setDraft(String(field === 'price'
       ? value.prices[service.id] ?? service.price
@@ -104,16 +115,22 @@ export function ServicePricePicker({
 
   function commit(service: PickableService, field: Field) {
     if (cancelled.current) { cancelled.current = false; setEditing(null); return; }
-    const cleaned = draft.replace(/[^\d]/g, '');
+    // Минуты — целое число: «-45» и «1.5» нельзя превращать в 45 и 15.
+    const cleaned = field === 'duration' ? draft.trim() : draft.replace(/[^\d]/g, '');
     const parsed = cleaned === '' ? null : Number(cleaned);
+    if (field === 'duration' && parsed !== null
+      && (!/^\d+$/.test(cleaned) || !Number.isInteger(parsed) || parsed < 1 || parsed > maxDuration(service))) {
+      setError(`${service.name}: ${t('servicePrice.durationInvalid', { max: maxDuration(service) })}`);
+      setEditing(null);
+      return;
+    }
+    setError(null);
     const base = field === 'price' ? service.price : service.duration_min;
     const own = { ...(field === 'price' ? value.prices : value.durations) };
-    // Пусто — вернуть значение Каталога. Ровно то же, что в Каталоге, —
-    // тоже наследование: владелец ничего не менял, и связь рвать не за что.
-    // Время вне 1…1440 минут сервер отвергнет — возвращаем Каталог сразу.
-    const invalid = field === 'duration' && parsed !== null
-      && (parsed < 1 || parsed > MAX_DURATION);
-    if (parsed === null || parsed === base || invalid) delete own[service.id];
+    // Только пустое поле снимает своё значение. Совпадение с Каталогом
+    // не снимает уже заданное своё: Каталог мог измениться после его задания.
+    // Нет своего и ничего не изменили — сохраняем наследование.
+    if (parsed === null || (parsed === base && own[service.id] === undefined)) delete own[service.id];
     else own[service.id] = parsed;
     onChange(field === 'price'
       ? { ...value, prices: own }
@@ -258,6 +275,14 @@ export function ServicePricePicker({
           );
         })}
       </div>
+      {error && (
+        <div role="alert" style={{
+          marginTop: '8px', fontSize: '12px', fontWeight: 600,
+          color: 'var(--error)', fontFamily: FONT,
+        }}>
+          {error}
+        </div>
+      )}
       {value.ids.length > 0 && (
         <div style={{
           marginTop: '8px', fontSize: '11px', fontWeight: 600,

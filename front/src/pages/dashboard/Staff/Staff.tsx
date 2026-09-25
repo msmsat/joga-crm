@@ -16,6 +16,7 @@ import { DeleteConfirmModal } from './components/modals/DeleteConfirmModal';
 import { useToast } from '../../../components/ui/Toast';
 import { getActiveEmail } from '../../../utils/auth';
 import { ApiError, resolveImageUrl } from '../../../api/client';
+import { errorMessage } from '../../../api/errorMessage';
 import { staffApi } from '../../../api/staff';
 import { useStudioSettings } from '../../../hooks/useStudioCurrency';
 import { useRoleLabel } from '../../../hooks/useBusinessTerms';
@@ -871,7 +872,7 @@ export default function Staff() {
               setIsAddModalOpen(false);
               return;
             }
-            toast.error(err instanceof ApiError ? err.message : t('staff:toasts.errorSave'));
+            toast.error(err instanceof ApiError ? errorMessage(err, t) : t('staff:toasts.errorSave'));
             throw err;
           }
         }}
@@ -934,7 +935,7 @@ export default function Staff() {
             setIsEditModalOpen(false);
             showToast(t('staff:toasts.changesSaved'));
           } catch (err) {
-            toast.error(err instanceof ApiError ? err.message : t('staff:toasts.errorSave'));
+            toast.error(err instanceof ApiError ? errorMessage(err, t) : t('staff:toasts.errorSave'));
             throw err;
           }
         }}

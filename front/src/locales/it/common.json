@@ -97,6 +97,9 @@
     "copyFailed": "Copia non riuscita"
   },
   "errors": {
+    "staff": {
+      "duration_too_long": "La durata del servizio del dipendente con i margini supera le 24 ore. Riduci la durata"
+    },
     "403": "Accesso negato",
     "404": "Non trovato",
     "500": "Errore del server, riprova più tardi",
@@ -242,6 +245,7 @@
     "aria": "Prezzo di {{service}}",
     "durationCustom": "Durata personalizzata. Svuota il campo per tornare alla durata del Catalogo",
     "durationInherited": "Durata dal Catalogo",
-    "durationAria": "Durata di {{service}}, minuti"
+    "durationAria": "Durata di {{service}}, minuti",
+    "durationInvalid": "La durata deve essere un numero intero di minuti da 1 a {{max}}. Il valore precedente è mantenuto"
   }
 }

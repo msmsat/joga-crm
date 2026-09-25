@@ -97,6 +97,9 @@
     "copyFailed": "Kopiering mislyktes"
   },
   "errors": {
+    "staff": {
+      "duration_too_long": "Den ansattes varighet for tjenesten inkl. buffere overstiger 24 timer. Reduser varigheten"
+    },
     "403": "Ingen tilgang",
     "404": "Ikke funnet",
     "500": "Serverfeil, prøv igjen senere",
@@ -242,6 +245,7 @@
     "aria": "Pris for {{service}}",
     "durationCustom": "Egen varighet. Tøm feltet for å gå tilbake til Katalogens varighet",
     "durationInherited": "Varighet fra Katalogen",
-    "durationAria": "Varighet for {{service}}, minutter"
+    "durationAria": "Varighet for {{service}}, minutter",
+    "durationInvalid": "Varigheten må være et helt antall minutter fra 1 til {{max}}. Den forrige verdien beholdes"
   }
 }

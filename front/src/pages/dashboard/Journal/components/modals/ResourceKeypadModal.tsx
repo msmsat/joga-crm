@@ -15,9 +15,12 @@ import { useResourceBooking } from '../../hooks/useResourceBooking';
 
 type Props = {
   trainers: Trainer[];
-  /** Мастер колонки, по которой кликнули, и время клетки. */
+  /** Мастер колонки, по которой кликнули, и время клетки. Без времени (кнопка
+   *  тулбара, карточка клиента) форма берёт первое свободное начало дня. */
   teacherId: number | null;
-  defaultTime: string;
+  defaultTime?: string;
+  /** Карточка клиента открывает форму с уже выбранным человеком. */
+  clientId?: number | null;
   defaultDate: string;
   defaultServiceId?: number;
   /** Шаг сетки журнала (мин): по нему строится выпадающий список времени. */
@@ -46,13 +49,13 @@ type Props = {
  * свободно: спрашивать второй раз незачем.
  */
 export function ResourceKeypadModal({
-  trainers, teacherId: initialTeacherId, defaultTime, defaultDate, defaultServiceId, timeStep,
+  trainers, teacherId: initialTeacherId, defaultTime = '', defaultDate, defaultServiceId, timeStep, clientId = null,
   newFormPos, modalRef, onClose, onCreated, onPreview,
 }: Props) {
   const { t } = useTranslation(['journal', 'common']);
   const terms = useBusinessTerms('resource');
   const booking = useResourceBooking({
-    onClose, onCreated, defaultDate, defaultServiceId, teacherId: initialTeacherId,
+    onClose, onCreated, defaultDate, defaultServiceId, teacherId: initialTeacherId, clientId,
   });
   const { choice, serviceId, branchId, teacherId, chosenService, loadingChoice, quote, quoting, saving, slots, reason } = booking;
   const quotedTime = quote?.terms.domain.local_start.slice(11, 16);
@@ -69,7 +72,8 @@ export function ResourceKeypadModal({
   // свободное начало в том же часу: человек показал час, а не минуту.
   // Набранное руками время — буквально то, что набрано.
   const cellHour = defaultTime.slice(0, 2);
-  const fromCell = free.includes(defaultTime) ? defaultTime
+  const fromCell = !defaultTime ? (free[0] ?? '')
+    : free.includes(defaultTime) ? defaultTime
     : free.find(time => time.slice(0, 2) === cellHour && time > defaultTime) ?? defaultTime;
   const wantedTime = typedTime ?? fromCell;
   const wantedFree = free.includes(wantedTime);
@@ -100,7 +104,7 @@ export function ResourceKeypadModal({
     ?? booking.durationAt(teacherId, serviceId) ?? chosenService?.duration_min;
   const bufferAfter = chosenService?.buffer_after_min ?? 0;
   useEffect(() => {
-    if (duration == null || duration <= 0) { onPreview({ title }); return; }
+    if (duration == null || duration <= 0 || !wantedTime) { onPreview({ title }); return; }
     const start = parseTimeToIndex(wantedTime);
     // Буфер после — тоже в превью: запись займёт мастера и на уборку.
     onPreview({ title, start, end: start + duration / 60, bufferAfter: bufferAfter / 60 });
@@ -142,10 +146,12 @@ export function ResourceKeypadModal({
 
           <div className="kp-grid">
             <div className="kp-col">
-              <div className="kp-section">
-                <ResourceClientPicker value={booking.client} disabled={saving}
-                                      onChange={booking.setClient} labelClass="kp-section-title" />
-              </div>
+              {clientId == null && (
+                <div className="kp-section">
+                  <ResourceClientPicker value={booking.client} disabled={saving}
+                                        onChange={booking.setClient} labelClass="kp-section-title" />
+                </div>
+              )}
 
               <div className="kp-section">
                 <div className="kp-section-title">{t('journal:resourceBooking.service')}</div>
@@ -174,6 +180,9 @@ export function ResourceKeypadModal({
                 </div>
               )}
 
+              {/* На компьютере — друг под другом, на телефоне — одной строкой
+                  (Journal.css, .kp-when): два коротких поля не стоят двух этажей. */}
+              <div className="kp-when">
               <div className="kp-section" onClick={e => e.stopPropagation()}>
                 <div className="kp-section-title">{t('journal:newBooking.start')}</div>
                 <ResourceTimeField value={wantedTime} free={listed} disabled={saving} onCommit={setTypedTime} />
@@ -191,12 +200,15 @@ export function ResourceKeypadModal({
                 <input className="modal-input kp-date-input" type="date" value={booking.date} disabled={saving}
                        onChange={e => booking.setDate(e.target.value)} />
               </div>
+              </div>
             </div>
 
             <div className="kp-col">
               <div className="kp-section kp-trainers-sec">
                 <div className="kp-section-title">{terms.staff?.singular ?? t('journal:resourceBooking.staff')}</div>
-                <div className="kp-trainers">
+                {/* На телефоне — ряд, который листается вбок: столбик из девяти
+                    мастеров занимал бы полэкрана. */}
+                <div className="kp-trainers kp-masters">
                   <MasterCard active={teacherId == null} label={t('journal:resourceBooking.anyStaff')}
                               initials="∗" hint={chosenService ? booking.rangeOf(chosenService) : undefined}
                               disabled={busy} onClick={() => booking.setTeacherId(null)} />
@@ -268,7 +280,7 @@ function MasterCard({ active, label, initials, hint, color = 'var(--peach)', bg 
       <span className="kp-trainer-av" style={{ background: active ? color : 'var(--border2)', color: active ? 'white' : 'var(--muted)' }}>{initials}</span>
       <span className="kp-trainer-name" style={{ fontWeight: active ? 800 : 600, color: active ? color : 'var(--onyx)' }}>{label}</span>
       {hint && <span className="kp-trainer-price">{hint}</span>}
-      {active && <span style={{ color, display: 'flex', flexShrink: 0 }}><Icons.Check /></span>}
+      {active && <span className="kp-trainer-check" style={{ color, display: 'flex', flexShrink: 0 }}><Icons.Check /></span>}
     </button>
   );
 }

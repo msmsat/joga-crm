@@ -97,6 +97,9 @@
     "copyFailed": "Kopjimi dështoi"
   },
   "errors": {
+    "staff": {
+      "duration_too_long": "Kohëzgjatja e shërbimit të punonjësit bashkë me pushimet i kalon 24 orët. Zvogëloni kohën"
+    },
     "403": "Akses i ndaluar",
     "404": "Nuk u gjet",
     "500": "Gabim serveri, provoni më vonë",
@@ -242,6 +245,7 @@
     "aria": "Çmimi i shërbimit {{service}}",
     "durationCustom": "Kohëzgjatje e vetë. Pastroni fushën për t'u kthyer te kohëzgjatja e Katalogut",
     "durationInherited": "Kohëzgjatja nga Katalogu",
-    "durationAria": "Kohëzgjatja e {{service}}, minuta"
+    "durationAria": "Kohëzgjatja e {{service}}, minuta",
+    "durationInvalid": "Kohëzgjatja duhet të jetë numër i plotë minutash nga 1 deri në {{max}}. Vlera e mëparshme ruhet"
   }
 }

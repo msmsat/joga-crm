@@ -396,7 +396,7 @@ def _public_widget_contract_locked():
     остался на месте и значит то же, что раньше, — цену в Каталоге."""
     assert set(public_router.PublicService.model_fields) == {
         "id", "name", "description", "price", "price_min", "price_max",
-        "duration_min", "category", "color", "booking_mode",
+        "duration_min", "duration_from", "duration_to", "category", "color", "booking_mode",
     }
     assert set(public_router.PublicSlot.model_fields) == {
         "lesson_id", "name", "start_time", "duration_min", "price", "level", "free_spots",

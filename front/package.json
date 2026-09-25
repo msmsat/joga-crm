@@ -22,6 +22,7 @@
     "check:keys": "python scripts/i18n/check_keys.py",
     "check:billing": "node scripts/check-billing-access.mjs",
     "check:resource-booking": "node --experimental-vm-modules scripts/check-resource-booking.mjs",
+    "check:service-duration": "node --experimental-vm-modules scripts/check-service-duration.mjs",
     "check:scenes": "node scripts/check-scenes.mjs"
   },
   "dependencies": {

@@ -97,6 +97,9 @@
     "copyFailed": "Det gick inte att kopiera"
   },
   "errors": {
+    "staff": {
+      "duration_too_long": "Medarbetarens tid för tjänsten inklusive buffertar överstiger ett dygn. Korta tiden"
+    },
     "403": "Åtkomst nekad",
     "404": "Hittades inte",
     "500": "Serverfel, försök igen senare",
@@ -242,6 +245,7 @@
     "aria": "Pris för {{service}}",
     "durationCustom": "Egen längd. Töm fältet för att återgå till Katalogens längd",
     "durationInherited": "Längd från Katalogen",
-    "durationAria": "Längd för {{service}}, minuter"
+    "durationAria": "Längd för {{service}}, minuter",
+    "durationInvalid": "Längden måste vara ett helt antal minuter från 1 till {{max}}. Det tidigare värdet behålls"
   }
 }

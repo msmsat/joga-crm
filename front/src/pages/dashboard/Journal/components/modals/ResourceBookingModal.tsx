@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ModalShell, ModalHeader, ModalBody, ModalFooter, GhostButton, PrimaryButton } from '../../../../../components/ui/modal';
 import { Select } from '../../../../../components/ui/index';
@@ -8,15 +9,20 @@ import { errorMessage } from '../../../../../api/errorMessage';
 import { useBusinessTerms } from '../../../../../hooks/useBusinessTerms';
 import { formatMoney } from '../../../../../lib/money';
 import { listedTimes } from '../../utils';
+import { usePhone } from '../../../../../hooks/usePhone';
+import type { Trainer } from '../../types';
+import { ResourceKeypadModal } from './ResourceKeypadModal';
 
 /**
  * HB-22: «записать на индивидуальную услугу» — отдельная команда, не создание
  * события. Здесь нет ни вместимости, ни длительности: их называет сервер,
  * а форма отправляет только выбранные ID и момент из ответа availability.
  *
- * Вид шитом — для телефона, карточки клиента и кнопки тулбара. У клетки сетки
- * на десктопе та же запись открывается клавиатурным окном
- * (ResourceKeypadModal); логика у обоих одна — hooks/useResourceBooking.
+ * На компьютере это центрированное окно — для кнопки тулбара и карточки
+ * клиента; у клетки сетки та же запись открывается клавиатурным окном
+ * (ResourceKeypadModal). На телефоне клавиатурная форма везде: она там лист
+ * снизу, как у нового занятия, и два разных вида одной записи на одном экране
+ * только путали. Логика у обоих одна — hooks/useResourceBooking.
  *
  * Переноса здесь нет: индивидуальную запись двигают прямо в её карточке
  * (components/ResourceMoveField.tsx) — там меняются только день и время, а
@@ -24,9 +30,32 @@ import { listedTimes } from '../../utils';
  */
 type Props = ResourceBookingOptions & {
   defaultTime?: string;
+  /** Цвета и инициалы мастеров для карточек формы на телефоне. */
+  trainers?: Trainer[];
 };
 
-export function ResourceBookingModal({ defaultTime, ...options }: Props) {
+const NO_TRAINERS: Trainer[] = [];
+const noPreview = () => {};
+
+export function ResourceBookingModal({ trainers = NO_TRAINERS, ...props }: Props) {
+  const isPhone = usePhone();
+  const modalRef = useRef<HTMLDivElement>(null);
+  if (!isPhone) return <ResourceSheet {...props} />;
+  const { defaultTime, teacherId = null, defaultDate, defaultServiceId, clientId, onClose, onCreated } = props;
+  // Положение листа на телефоне задаёт CSS (.kp-anchor), а превью в сетке у
+  // формы без клетки нет — отсюда нулевая позиция и пустой колбэк.
+  return (
+    <ResourceKeypadModal
+      trainers={trainers} teacherId={teacherId} defaultTime={defaultTime}
+      defaultDate={defaultDate ?? new Date().toLocaleDateString('sv-SE')}
+      defaultServiceId={defaultServiceId} clientId={clientId} timeStep={15}
+      newFormPos={{ x: 0, y: 0 }} modalRef={modalRef}
+      onClose={onClose} onCreated={onCreated} onPreview={noPreview}
+    />
+  );
+}
+
+function ResourceSheet({ defaultTime, ...options }: Omit<Props, 'trainers'>) {
   const { t } = useTranslation(['journal', 'common']);
   const terms = useBusinessTerms('resource');
   const booking = useResourceBooking(options);

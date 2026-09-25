@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import * as Icons from '../../../../components/Icons';
 import { monthName } from '../utils';
 import type { Trainer } from '../types';
+import { DesktopFilters } from './DesktopFilters';
 
 interface ToolbarProps {
   trainers: Trainer[];
@@ -41,6 +42,8 @@ interface ToolbarProps {
   trainerPicker?: React.ReactNode;
   /** Календарь месяца (MiniCalendar), который на телефоне открывает кнопка даты. */
   mobileCalendar?: React.ReactNode;
+  /** Шаг сетки и отмена/повтор (DayControls) — справа, перед «День/Неделя». */
+  controls?: React.ReactNode;
 }
 
 export const Toolbar: React.FC<ToolbarProps> = ({
@@ -69,6 +72,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   mobileFilters,
   mobileCalendar,
   trainerPicker,
+  controls,
 }) => {
   const { t, i18n } = useTranslation('journal');
   // На телефоне дату не набирают руками, а выбирают в календаре под тулбаром.
@@ -147,14 +151,15 @@ export const Toolbar: React.FC<ToolbarProps> = ({
         onClick={onGoToToday}
         title={t('toolbar.today')}
       >
-        <Icons.Today />
-        <span className="j-today-label">{t('toolbar.today')}</span>
+        {/* Только слово: иконка часов рядом с датой ничего не добавляла. */}
+        {t('toolbar.today')}
       </button>
 
       {onResourceBooking && (
         <button className="btn-ghost-sm j-resource-btn" onClick={onResourceBooking} title={t('toolbar.resourceBooking')}>
           <Icons.Plus />
-          <span className="j-today-label">{t('toolbar.resourceBooking')}</span>
+          {/* Когда места мало, подпись уходит — остаётся «+» (Journal.css). */}
+          <span className="j-resource-label">{t('toolbar.resourceBooking')}</span>
         </button>
       )}
 
@@ -189,38 +194,17 @@ export const Toolbar: React.FC<ToolbarProps> = ({
 
       <div className="j-sep" style={{ width: 1, height: 20, background: 'var(--border)', flexShrink: 0 }} />
 
-      {/* Фильтры тренеров */}
-      {viewMode === 'trainers' && (
-        <div className="j-filter-pills">
-          {trainers.map(t => (
-            <button
-              key={t.id}
-              className={`pill-tab ${activeTrainers.includes(t.id) ? 'active' : ''}`}
-              style={activeTrainers.includes(t.id) ? { background: t.color, color: 'white' } : {}}
-              onClick={() => toggleTrainer(t.id)}
-            >
-              {t.initials}
-            </button>
-          ))}
-        </div>
-      )}
-
-      {/* Фильтры залов */}
-      {viewMode === 'halls' && (
-        <div className="j-filter-pills">
-          {halls.map(h => (
-            <button
-              key={h}
-              className={`pill-tab ${activeHalls.includes(h) ? 'active' : ''}`}
-              onClick={() => toggleHall(h)}
-            >
-              {h}
-            </button>
-          ))}
-        </div>
-      )}
+      {/* Фильтры — кнопкой с окошком (десктоп). На телефоне своя панель —
+          MobileFilters выше, эту кнопку там прячет CSS. */}
+      <DesktopFilters
+        viewMode={viewMode} trainers={trainers} halls={halls}
+        activeTrainers={activeTrainers} activeHalls={activeHalls}
+        toggleTrainer={toggleTrainer} toggleHall={toggleHall}
+      />
 
       <div style={{ flex: 1 }} />
+
+      {controls}
 
       {/* Переключатель: День / Неделя */}
       <div className="view-toggle">

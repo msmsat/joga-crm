@@ -97,6 +97,9 @@
     "copyFailed": "Copierea a eșuat"
   },
   "errors": {
+    "staff": {
+      "duration_too_long": "Durata serviciului la angajat împreună cu pauzele depășește 24 de ore. Reduceți durata"
+    },
     "403": "Acces refuzat",
     "404": "Nu a fost găsit",
     "500": "Eroare de server, încercați mai târziu",
@@ -242,6 +245,7 @@
     "aria": "Prețul serviciului {{service}}",
     "durationCustom": "Durată proprie. Goliți câmpul pentru a reveni la durata din Catalog",
     "durationInherited": "Durată din Catalog",
-    "durationAria": "Durata {{service}}, minute"
+    "durationAria": "Durata {{service}}, minute",
+    "durationInvalid": "Durata trebuie să fie un număr întreg de minute între 1 și {{max}}. Valoarea anterioară se păstrează"
   }
 }

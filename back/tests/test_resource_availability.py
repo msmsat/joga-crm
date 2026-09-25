@@ -206,3 +206,29 @@ def test_each_master_occupies_his_own_duration():
     result = slots(data)
     assert max(starts(result, 1)) == "16:45"
     assert max(starts(result, 2)) == "17:00"
+
+
+@pytest.mark.parametrize("client", [True, False])
+@pytest.mark.parametrize("minutes", [0, -1, 1440, 1441])
+def test_invalid_duration_does_not_hide_other_masters(client, minutes):
+    from services.resource_slots import by_staff
+    data = snapshot()
+    data.durations = {1: minutes, 2: 45}
+    result = slots(data, client=client)
+    assert result.reason is None
+    assert starts(result, 2)
+    assert not starts(result, 1)
+    per_staff = by_staff(data, day=DAY, now=NOW, client=client)
+    rows = {row.teacher_id: row for row in per_staff.staff}
+    assert rows[1].reason == "config_incomplete"
+    assert rows[2].reason is None and rows[2].free
+    data.teacher_ids = [1]
+    assert slots(data, client=client).reason == "config_incomplete"
+
+
+def test_custom_duration_can_fit_when_catalog_duration_with_buffers_does_not():
+    data = snapshot()
+    data.service.duration_min = 1440
+    data.durations = {1: 45, 2: 45}
+    result = slots(data)
+    assert result.reason is None and starts(result, 1) and starts(result, 2)

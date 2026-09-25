@@ -19,7 +19,7 @@ async function setup(file, api = {}) {
   const state = [];
   const calls = [];
   const context = vm.createContext({ console });
-  const queryKeys = { services: ['services'], branches: ['branches'], staff: ['staff'] };
+  const queryKeys = { services: ['services'], branches: ['branches'], staff: ['staff'], resourceStaff: ['resource-staff'] };
   const react = {
     useMemo: fn => fn(),
     useState(initial) {
@@ -41,11 +41,19 @@ async function setup(file, api = {}) {
       const key = options.queryKey[0];
       return { data: key === 'services' ? services : key === 'branches' ? [{ id: 5, name: 'Main' }]
         : key === 'staff' ? [{ id: 7, name: 'Alex', is_specialist: true }]
-        : { slots: [slot] }, refetch: async () => { calls.push('refetch'); } };
+        : key === 'resource-staff' ? { staff: [
+          { teacher_id: 7, name: 'Alex', service_ids: [2], branch_ids: [5], service_prices: { 2: 25 }, service_durations: { 2: 45 } },
+          { teacher_id: 8, name: 'Other', service_ids: [3], branch_ids: [5], service_prices: {}, service_durations: {} },
+        ] } : { slots: [slot] }, refetch: async () => { calls.push('refetch'); } };
     } },
   };
   const other = {
     queryKeys,
+    formatMoney: (n, currency) => `${n} ${currency}`,
+    useDurationLabel: () => n => `${n} min`,
+    usePriceLabel: () => n => String(n),
+    useStudioCurrency: () => 'EUR',
+    scheduleApi: {},
     useBusinessTerms: () => ({ ready: false }),
     useToast: () => ({ error: error => calls.push(error) }),
     getUserRoleFromToken: () => 'owner',
@@ -56,19 +64,36 @@ async function setup(file, api = {}) {
       confirm: async id => { calls.push(id); if (api.confirm) await api.confirm(id); },
     },
   };
-  for (const name of ['Select', 'ModalShell', 'ModalHeader', 'ModalBody', 'ModalFooter', 'GhostButton', 'PrimaryButton', 'ResourceClientPicker']) other[name] = name;
-  const code = ts.transpileModule(await readFile(new URL(file, import.meta.url), 'utf8'), {
-    compilerOptions: { jsx: ts.JsxEmit.ReactJSX, target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.ESNext },
-  }).outputText;
-  const mod = new vm.SourceTextModule(code, { context });
-  await mod.link(name => {
-    const exports = deps[name] ?? other;
-    return new vm.SyntheticModule(Object.keys(exports), function () {
-      for (const [key, value] of Object.entries(exports)) this.setExport(key, value);
-    }, { context });
-  });
+  for (const name of ['Select', 'ModalShell', 'ModalHeader', 'ModalBody', 'ModalFooter', 'GhostButton', 'PrimaryButton', 'ResourceClientPicker', 'ResourceKeypadModal']) other[name] = name;
+  other.usePhone = () => false; // desktop: the sheet, not the phone keypad form
+  // Follow the extracted production hooks and pure time utilities as real modules.
+  // Stubbing useResourceBooking here would only test our imitation of the form.
+  async function load(url) {
+    const code = ts.transpileModule(await readFile(url, 'utf8'), {
+      compilerOptions: { jsx: ts.JsxEmit.ReactJSX, target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.ESNext },
+    }).outputText;
+    const mod = new vm.SourceTextModule(code, { context, identifier: url.href, initializeImportMeta(meta) { meta.env = { DEV: false }; } });
+    await mod.link((name, parent) => {
+      if (/\/(useResourceBooking|useResourceBookingChoice|utils|constants)$/.test(name)) {
+        return load(new URL(`${name}.ts`, parent.identifier));
+      }
+      const exports = deps[name] ?? other;
+      return new vm.SyntheticModule(Object.keys(exports), function () {
+        for (const [key, value] of Object.entries(exports)) this.setExport(key, value);
+      }, { context });
+    });
+    return mod;
+  }
+  const mod = await load(new URL(file, import.meta.url));
   await mod.evaluate();
-  return { calls, render(name, props) { cursor = 0; return mod.namespace[name](props); } };
+  return { calls, render(name, props) {
+    cursor = 0;
+    // The exported modal picks a layout (sheet or phone keypad) and returns that
+    // component as an element — unwrap it so the checks see the real form.
+    let tree = mod.namespace[name](props);
+    while (tree && typeof tree.type === 'function') tree = tree.type(tree.props);
+    return tree;
+  } };
 }
 function nodes(tree, type) {
   if (!tree || typeof tree !== 'object') return [];
@@ -88,7 +113,7 @@ test('individual booking carries client, selected service, branch, specialist an
   let tree = app.render('ResourceBookingModal', props);
   assert.equal(nodes(tree, 'PrimaryButton')[0].disabled, true);
   assert.equal(nodes(tree, 'Select')[0].value, '2');
-  assert.equal(nodes(tree, 'Select')[0].options.length, 2);
+  assert.equal(nodes(tree, 'Select')[0].options.length, 1); // selected master's service
   nodes(tree, 'ResourceClientPicker')[0].onChange(901);
   tree = app.render('ResourceBookingModal', props);
   await nodes(tree, 'button').find(button => button.children === '11:00').onClick();

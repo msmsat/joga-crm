@@ -97,6 +97,9 @@
     "copyFailed": "Kopírování se nezdařilo"
   },
   "errors": {
+    "staff": {
+      "duration_too_long": "Délka služby u zaměstnance i s rezervami přesahuje 24 hodin. Zkraťte ji"
+    },
     "403": "Přístup odepřen",
     "404": "Nenalezeno",
     "500": "Chyba serveru, zkuste to později",
@@ -242,6 +245,7 @@
     "aria": "Cena služby {{service}}",
     "durationCustom": "Vlastní délka. Vymažte pole a vrátí se délka z Katalogu",
     "durationInherited": "Délka z Katalogu",
-    "durationAria": "Délka služby {{service}}, minuty"
+    "durationAria": "Délka služby {{service}}, minuty",
+    "durationInvalid": "Délka musí být celé číslo minut od 1 do {{max}}. Předchozí hodnota zůstává"
   }
 }

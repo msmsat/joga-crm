@@ -18,7 +18,7 @@ import { TrainerPicker } from './components/TrainerPicker';
 import { Toolbar } from './components/Toolbar';
 import { MobileFilters } from './components/MobileFilters';
 import { MiniCalendar } from './components/MiniCalendar';
-import { DaySummary } from './components/DaySummary';
+import { DayControls } from './components/DayControls';
 import { RightPanel } from './components/RightPanel';
 import { Grid } from './components/ScheduleGrid/Grid';
 import { GridSkeleton } from './components/ScheduleGrid/GridSkeleton';
@@ -743,13 +743,6 @@ export default function Journal() {
     });
   };
 
-  // ── Статистика дня (отменённые занятия не считаются) ──
-  const totalClasses = liveBookings.length;
-  const totalClients = liveBookings.reduce((s, b) => s + b.clients, 0);
-  const avgLoad = liveBookings.length > 0
-    ? Math.round(liveBookings.reduce((s, b) => s + (b.maxClients > 0 ? b.clients / b.maxClients : 0), 0) / liveBookings.length * 100)
-    : 0;
-
   return (
     <>
 
@@ -816,23 +809,20 @@ export default function Journal() {
                 spaceIsAxis={spaceIsAxis}
               />
             }
-          />
-
-          {/* ── СВОДКА ДНЯ ── */}
-          <DaySummary
-            totalClasses={totalClasses}
-            totalClients={totalClients}
-            avgLoad={avgLoad}
-            activeTrainersCount={visibleTrainers.length}
-            timeStep={timeStep}
-            setTimeStep={setTimeStep}
-            canEdit={canEdit}
-            canUndo={history.canUndo}
-            canRedo={history.canRedo}
-            undoLabel={history.undoLabel}
-            redoLabel={history.redoLabel}
-            onUndo={handleUndo}
-            onRedo={handleRedo}
+            // Сводку дня (занятия, записи, загрузка) владелец убрал: она
+            // отнимала у расписания строку. Шаг и отмена — в верхний ряд.
+            controls={canEdit ? (
+              <DayControls
+                timeStep={timeStep}
+                setTimeStep={setTimeStep}
+                canUndo={history.canUndo}
+                canRedo={history.canRedo}
+                undoLabel={history.undoLabel}
+                redoLabel={history.redoLabel}
+                onUndo={handleUndo}
+                onRedo={handleRedo}
+              />
+            ) : undefined}
           />
 
           {/* ── СЕТКА ── */}
@@ -841,9 +831,10 @@ export default function Journal() {
               className={`j-grid-wrapper${compactHeaders ? ' j-hdr-compact' : ''}${slideBack ? ' j-slide-back' : ''}`}
               ref={gridWrapperRef}
               onScroll={e => {
-                // На телефоне шапка колонок не сжимается: она и так в одну-две
-                // строки, а перестройка на ходу дёргала сетку под пальцем.
-                if (window.matchMedia('(max-width: 767px)').matches) return;
+                // На телефоне и на небольшом экране шапка колонок не сжимается:
+                // она и так тонкая (только имя, Journal.css), а перестройка на
+                // ходу уменьшала имена и двигала их под взглядом.
+                if (window.matchMedia('(max-width: 1440px), (max-height: 860px)').matches) return;
                 const st = e.currentTarget.scrollTop;
                 setCompactHeaders(prev => (prev ? st > 8 : st > 56));
               }}
@@ -987,6 +978,7 @@ export default function Journal() {
           создание события. Проходит теми же quote/confirm, что Mini-app. */}
       {resourceBooking && (
         <ResourceBookingModal
+          trainers={trainers}
           teacherId={resourceBooking.teacherId}
           defaultDate={resourceBooking.date}
           defaultServiceId={resourceBooking.serviceId}

@@ -318,3 +318,27 @@ def test_assistant_editing_the_rate_keeps_the_durations():
         row = (await _services(ids))[ids["haircut"]]
         assert (row["duration_min"], row["duration_custom"]) == (45, True)
     _run(scenario)
+
+
+def test_duration_with_buffers_over_a_day_is_refused():
+    """1440 минут у стрижки с уборкой — отказ при сохранении, а не мастер без окон.
+
+    Схема пропускает само число, буферы живут у услуги. Сохранись такая
+    настройка — записаться к мастеру было бы нельзя, и узнали бы об этом от
+    клиента."""
+    async def scenario(ids):
+        async with async_session_maker() as db:
+            service = await db.get(Service, ids["haircut"])
+            service.buffer_after_min = 15
+            await db.commit()
+        with pytest.raises(HTTPException) as failure:
+            await _save(ids, _body(ids, service_prices=[
+                StaffServicePrice(service_id=ids["haircut"], duration_min=1440),
+            ]))
+        assert failure.value.status_code == 400
+        assert failure.value.detail["code"] == "staff.duration_too_long"
+        await _save(ids, _body(ids, service_prices=[
+            StaffServicePrice(service_id=ids["haircut"], duration_min=1425),
+        ]))
+        assert (await _services(ids))[ids["haircut"]]["duration_min"] == 1425
+    _run(scenario)

@@ -97,6 +97,9 @@
     "copyFailed": "Échec de la copie"
   },
   "errors": {
+    "staff": {
+      "duration_too_long": "La durée du service de l'employé avec les marges dépasse 24 heures. Réduisez la durée"
+    },
     "403": "Accès refusé",
     "404": "Introuvable",
     "500": "Erreur serveur, réessayez plus tard",
@@ -242,6 +245,7 @@
     "aria": "Tarif de {{service}}",
     "durationCustom": "Durée personnalisée. Videz le champ pour revenir à la durée du Catalogue",
     "durationInherited": "Durée du Catalogue",
-    "durationAria": "Durée de {{service}}, minutes"
+    "durationAria": "Durée de {{service}}, minutes",
+    "durationInvalid": "La durée doit être un nombre entier de minutes entre 1 et {{max}}. La valeur précédente est conservée"
   }
 }
