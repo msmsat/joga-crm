@@ -1,11 +1,10 @@
-"""Give a master the studio's laser services at that master's own prices. Preview by default.
+"""Give a master the studio's laser services at that master's own prices and durations.
+Preview by default.
 
 Runs the staff-card save (PUT /staff/{id}): the master gets every service of the price list,
-a personal price where it differs from the catalog, and keeps profile, rate, schedule and
-branches as they are (--days/--hours replace the schedule; no branch yet -> all studio branches).
-
-Durations are per service, not per master: a price-list duration that differs from the
-catalog is reported and the catalog one stays.
+a personal price and duration where they differ from the catalog, and keeps profile, rate,
+schedule and branches as they are (--days/--hours replace the schedule; no branch yet -> all
+studio branches). The card save also clears the master's future date marks (set_staff_month).
 
 From back/:
   python -m scripts.set_master_prices --owner-email OWNER --staff-email MASTER --price-list melita
@@ -56,11 +55,15 @@ async def run(args):
         user_services,
     )
     from routers.staff.profiles import update_staff
-    from schemas.settings.team import StaffUpdate
+    from schemas.settings.team import StaffServicePrice, StaffUpdate
 
     if args.apply and args.studio_id is None:
         raise ValueError('Для записи обязателен --studio-id ID из предпросмотра.')
     price_list = PRICE_LISTS[args.price_list]
+    # An older server build would drop the field silently and save catalog durations instead.
+    if 'duration_min' not in StaffServicePrice.model_fields:
+        raise ValueError('На этом сервере нет своей длительности мастера — сначала обновите сервер. '
+                         'Ничего не записано.')
     async with async_session_maker() as db:
         owner = (await db.execute(select(User).where(
             func.lower(func.trim(User.email)) == args.owner_email.strip().lower(),
@@ -94,24 +97,25 @@ async def run(args):
         if missing:
             raise ValueError('В каталоге нет (или несколько) услуг: ' + '; '.join(missing) + '. Ничего не записано.')
         services = {name: by_name[normalized_name(name)][0] for name in price_list}
-        current = dict((await db.execute(select(user_services.c.service_id, user_services.c.price).where(
-            user_services.c.user_id == master.id,
-            user_services.c.service_id.in_([s.id for s in services.values()]),
-        ))).all())
+        current = {sid: (price, minutes) for sid, price, minutes in (await db.execute(select(
+            user_services.c.service_id, user_services.c.price, user_services.c.duration_min,
+        ).where(user_services.c.user_id == master.id,
+                user_services.c.service_id.in_([s.id for s in services.values()])))).all()}
 
         print(f'\n{"ЗАПИСЬ" if args.apply else "ПРЕДПРОСМОТР — без записи"}: '
               f'{member.name} {member.last_name or ""} ({master.email}, {member.role}) — прайс «{args.price_list}»')
-        duration_notes = 0
         for name, (price, minutes) in price_list.items():
             service = services[name]
-            now = ('не назначена' if service.id not in current
-                   else f'сейчас {current[service.id] if current[service.id] is not None else service.price}')
-            price_note = 'как в каталоге' if price == service.price else f'своя цена (каталог {service.price})'
-            line = f'  {name} | {price} {studio.currency} — {price_note} | {now}'
-            if minutes != service.duration_min:
-                duration_notes += 1
-                line += f' | ДЛИТЕЛЬНОСТЬ: в прайсе {minutes} мин, в системе остаётся {service.duration_min}'
-            print(line)
+            if service.id in current:
+                own_price, own_minutes = current[service.id]
+                now = (f'сейчас {service.price if own_price is None else own_price} {studio.currency}, '
+                       f'{service.duration_min if own_minutes is None else own_minutes} мин')
+            else:
+                now = 'не назначена'
+            price_note = 'как в каталоге' if price == service.price else f'своя (каталог {service.price})'
+            minutes_note = ('как в каталоге' if minutes == service.duration_min
+                            else f'своя (каталог {service.duration_min})')
+            print(f'  {name} | {price} {studio.currency} — {price_note} | {minutes} мин — {minutes_note} | {now}')
 
         hours = (await db.execute(select(StaffWorkingHours).where(
             StaffWorkingHours.user_id == master.id, StaffWorkingHours.studio_id == studio.id,
@@ -127,30 +131,33 @@ async def run(args):
         open_days = [f'{days[d["day_of_week"]]} {d["open_time"]}-{d["close_time"]}' for d in schedule if d['is_open']]
         print(f'  График: {", ".join(open_days) or "не задан"}' + (' (новый)' if args.days else ' (как сейчас)'))
         print(f'  Филиалы: {", ".join(map(str, branch_ids)) or "нет"}')
-        if duration_notes:
-            print(f'ВНИМАНИЕ: у {duration_notes} услуг длительность в прайсе другая. Своя длительность у мастера '
-                  'в системе не хранится — слот займёт длительность из каталога.')
         if not open_days:
             print('ВНИМАНИЕ: графика нет — в онлайн-записи у мастера не будет свободного времени. Задайте --days/--hours.')
         if not branch_ids:
             print('ВНИМАНИЕ: у студии нет филиалов — индивидуальная запись к мастеру работать не будет.')
 
-        # Services outside this price list stay assigned with their own prices: the card save
-        # replaces the whole list and resets every personal price not sent back.
-        others = dict((await db.execute(select(user_services.c.service_id, user_services.c.price).join(
-            Service, Service.id == user_services.c.service_id,
-        ).where(user_services.c.user_id == master.id, Service.studio_id == studio.id,
-                Service.id.not_in([s.id for s in services.values()])))).all())
-        service_ids = sorted({s.id for s in services.values()} | set(others))
+        # Services outside this price list stay assigned with their own price and duration: the
+        # card save replaces the whole list and resets every personal value not sent back.
+        others = (await db.execute(select(
+            user_services.c.service_id, user_services.c.price, user_services.c.duration_min,
+        ).join(Service, Service.id == user_services.c.service_id).where(
+            user_services.c.user_id == master.id, Service.studio_id == studio.id,
+            Service.id.not_in([s.id for s in services.values()])))).all()
+        service_ids = sorted({s.id for s in services.values()} | {sid for sid, _, _ in others})
+        own = [dict(service_id=services[name].id,
+                    price=None if price == services[name].price else price,
+                    duration_min=None if minutes == services[name].duration_min else minutes)
+               for name, (price, minutes) in price_list.items()]
+        own = [o for o in own if o['price'] is not None or o['duration_min'] is not None] + [
+            dict(service_id=sid, price=price, duration_min=minutes)
+            for sid, price, minutes in others if price is not None or minutes is not None]
         # Same Pydantic validation as PUT /staff/{id}, before any writes. Everything not about
         # services is sent back unchanged.
         data = StaffUpdate(
             name=member.name, last_name=member.last_name, email=master.email, phone=master.phone,
             department=member.department, salary=member.salary, rate=member.rate, rate_type=member.rate_type,
             photo_url=member.photo_url, service_ids=service_ids, schedule=schedule, branch_ids=branch_ids,
-            service_prices=[dict(service_id=services[name].id, price=price)
-                            for name, (price, _) in price_list.items() if price != services[name].price]
-            + [dict(service_id=sid, price=price) for sid, price in others.items() if price is not None],
+            service_prices=own,
         )
         if not args.apply:
             command = ['docker', 'compose', 'exec', 'api', 'python', '-m', 'scripts.set_master_prices',
@@ -165,7 +172,9 @@ async def run(args):
             await update_staff(master.id, data, StudioContext(owner, studio.id, 'owner'), db)
         except HTTPException as error:
             raise ValueError(f'Отказ сервера: {error.detail}. Ничего не записано.')
-        print(f'\nГОТОВО: {member.name} — {len(price_list)} услуг из прайса, всего своих цен: {len(data.service_prices)}.')
+        print(f'\nГОТОВО: {member.name} — {len(price_list)} услуг из прайса; своих цен: '
+              f'{sum(o.price is not None for o in data.service_prices)}, своих длительностей: '
+              f'{sum(o.duration_min is not None for o in data.service_prices)}.')
 
 
 def int_list(value):
