@@ -104,6 +104,7 @@
       "confirm": "Przejdź do Katalogu"
     },
     "reschedule": "Przenieś",
+    "changeTime": "Zmień godzinę",
     "loading": "Ładowanie…",
     "openClient": "Otwórz kartę klienta"
   },
@@ -166,7 +167,9 @@
       "bookClient": "zapisanie klienta",
       "bookClients": "zapisanie klientów ({{count}})"
     },
-    "resourceUseReschedule": "Rezerwację indywidualną przenosi się przyciskiem „Przenieś” w karcie"
+    "repriced": "Rezerwacja kosztuje teraz {{price}}",
+    "repricedRefund": "Klient zapłacił {{paid}}, cena wynosi teraz {{price}} — zwróć {{diff}}",
+    "repricedTopUp": "Klient zapłacił {{paid}}, cena wynosi teraz {{price}} — dopłata {{diff}}"
   },
   "loadError": {
     "title": "Nie udało się wczytać",
@@ -200,6 +203,8 @@
     "noSlots": "W tym dniu nie ma wolnych godzin",
     "configIncomplete": "Grafik tej usługi nie jest jeszcze skonfigurowany",
     "moveTitle": "Przeniesienie rezerwacji",
+    "moveNow": "Teraz",
+    "durationLabel": "Czas trwania",
     "moveBusy": "O tej porze specjalista jest zajęty"
   },
   "lessonNotes": {
@@ -224,5 +229,21 @@
     "notes": "Notatki",
     "openFull": "Otwórz kartę",
     "copied": "Skopiowano"
+  },
+  "wizard": {
+    "client": "Wybierz klienta",
+    "service": "Wybierz usługę",
+    "master": "Wybierz specjalistę",
+    "when": "Data i godzina",
+    "step": "Krok {{n}} z {{total}}",
+    "searchService": "Szukaj usługi",
+    "ownTime": "Własna godzina",
+    "existing": "Już w grafiku",
+    "newLesson": "Nowe zajęcia",
+    "noMasters": "Nikt jeszcze nie prowadzi tej usługi",
+    "earlier": "Wcześniej",
+    "check": "Sprawdź zapis",
+    "change": "Zmień",
+    "confirm": "Potwierdź"
   }
 }

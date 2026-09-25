@@ -103,6 +103,7 @@
       "confirm": "Иди у Каталог"
     },
     "reschedule": "Premesti",
+    "changeTime": "Promeni vreme",
     "loading": "Učitavanje…",
     "openClient": "Отвори картицу клијента"
   },
@@ -163,7 +164,9 @@
       "bookClient": "пријава клијента",
       "bookClients": "пријава клијената ({{count}})"
     },
-    "resourceUseReschedule": "Individualno zakazivanje premeštate dugmetom «Premesti» u kartici"
+    "repriced": "Termin sada košta {{price}}",
+    "repricedRefund": "Klijent je platio {{paid}}, cena je sada {{price}} — vratite mu {{diff}}",
+    "repricedTopUp": "Klijent je platio {{paid}}, cena je sada {{price}} — naplatite još {{diff}}"
   },
   "loadError": {
     "title": "Учитавање није успело",
@@ -196,6 +199,8 @@
     "noSlots": "Na ovaj datum nema slobodnog termina",
     "configIncomplete": "Raspored ove usluge još nije postavljen",
     "moveTitle": "Premeštanje zakazivanja",
+    "moveNow": "Sada",
+    "durationLabel": "Trajanje",
     "moveBusy": "U to vreme je stručnjak zauzet"
   },
   "lessonNotes": {
@@ -220,5 +225,21 @@
     "notes": "Белешке",
     "openFull": "Отвори картицу",
     "copied": "Копирано"
+  },
+  "wizard": {
+    "client": "Izaberite klijenta",
+    "service": "Izaberite uslugu",
+    "master": "Izaberite stručnjaka",
+    "when": "Datum i vreme",
+    "step": "Korak {{n}} od {{total}}",
+    "searchService": "Pretraga usluge",
+    "ownTime": "Sopstveno vreme",
+    "existing": "Već u rasporedu",
+    "newLesson": "Novi termin",
+    "noMasters": "Ovu uslugu još niko ne pruža",
+    "earlier": "Ranije",
+    "check": "Proverite zakazivanje",
+    "change": "Promeni",
+    "confirm": "Potvrdi"
   }
 }

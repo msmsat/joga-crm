@@ -6,9 +6,12 @@
 // Каждая мутация возвращает { prev, next } — фундамент для Undo/Redo (V4-3).
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { scheduleApi } from '../../../../api/schedule';
+import { hybridApi } from '../../../../api/booking/hybrid.api';
+import type { BookingRead, CrmRescheduleQuoteRequest } from '../../../../api/booking/hybrid.types';
 import type { LessonCreate } from '../../../../api/schedule/schedule.types';
 import { queryKeys } from '../../../../api/queryKeys';
 import type { Booking } from '../types';
+import { indexToDateTime } from '../utils';
 
 export interface MutationResult {
   prev: Booking | null;
@@ -65,6 +68,35 @@ export function useJournalMutations(lessonsKey: readonly unknown[]) {
     await updateMut.mutateAsync({ prev, next, payload });
     return { prev, next };
   };
+
+  // ── Индивидуальная запись: перенос и растягивание — только переносом
+  // (quote → reschedule с версией), как кнопка «Перенести» в карточке. Прямой
+  // PATCH времени такой записи сервер отклоняет: у него нет ни версии, ни
+  // проверки оплаты, ни уведомления клиенту (services/resource_reschedule).
+  const moveResourceMut = useMutation({
+    mutationFn: async ({ prev, body }: { prev: Booking; next: Booking; body: CrmRescheduleQuoteRequest }) => {
+      const lesson = await scheduleApi.getLesson(prev.id);
+      // Отменённых брони в этом списке нет — у индивидуальной записи он из одной.
+      const booked = lesson.booked_clients[0];
+      if (!booked) throw new Error('reservation not found');
+      // Версию берём свежую, но только если занятие стоит там, откуда его
+      // двигают: так работает отмена (Ctrl+Z), у которой на руках копия
+      // карточки со старой версией. Занятие успели сдвинуть в другом окне —
+      // шлём прежнюю, и сервер честно ответит конфликтом, а не перетрёт чужое.
+      const where = indexToDateTime(prev.date ?? '', prev.timeStart).slice(0, 16);
+      const untouched = lesson.start_time.slice(0, 16) === where
+        && lesson.teacher_id === prev.trainer
+        && lesson.duration_min === Math.round((prev.timeEnd - prev.timeStart) * 60);
+      const quote = await hybridApi.moveQuote(booked.reservation_id, body);
+      return hybridApi.move(booked.reservation_id, quote.quote_id,
+        untouched ? (lesson.version ?? prev.version) : prev.version);
+    },
+    onMutate: ({ prev, next }) => patchCache(list => list.map(b => (b.id === prev.id ? next : b))),
+    onError: (_err, _vars, ctx) => rollback(ctx),
+    onSettled: () => invalidate(),
+  });
+  const moveResource = (prev: Booking, next: Booking, body: CrmRescheduleQuoteRequest): Promise<BookingRead> =>
+    moveResourceMut.mutateAsync({ prev, next, body });
 
   // ── Отменить занятие: статус → cancelled, места обнуляются ──
   const cancelMut = useMutation({
@@ -165,6 +197,7 @@ export function useJournalMutations(lessonsKey: readonly unknown[]) {
     /** HB-22: новые команды (quote/confirm) обновляют журнал так же. */
     invalidate,
     updateLesson,
+    moveResource,
     cancelLesson,
     createLesson,
     addReservation,

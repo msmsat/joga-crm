@@ -102,6 +102,7 @@
       "confirm": "Gå til Katalog"
     },
     "reschedule": "Flyt",
+    "changeTime": "Skift tidspunkt",
     "loading": "Indlæser…",
     "openClient": "Åbn kundekortet"
   },
@@ -160,7 +161,9 @@
       "bookClient": "tilmelding af kunde",
       "bookClients": "tilmelding af kunder ({{count}})"
     },
-    "resourceUseReschedule": "Individuelle bookinger flyttes med «Flyt» i kortet"
+    "repriced": "Bookingen koster nu {{price}}",
+    "repricedRefund": "Kunden har betalt {{paid}}, prisen er nu {{price}} — tilbagebetal {{diff}}",
+    "repricedTopUp": "Kunden har betalt {{paid}}, prisen er nu {{price}} — opkræv {{diff}} mere"
   },
   "loadError": {
     "title": "Kunne ikke indlæses",
@@ -192,6 +195,8 @@
     "noSlots": "Ingen ledig tid på denne dato",
     "configIncomplete": "Skemaet for denne ydelse er endnu ikke sat op",
     "moveTitle": "Flyt booking",
+    "moveNow": "Nu",
+    "durationLabel": "Varighed",
     "moveBusy": "Specialisten er optaget på dette tidspunkt"
   },
   "lessonNotes": {
@@ -216,5 +221,21 @@
     "notes": "Noter",
     "openFull": "Åbn kortet",
     "copied": "Kopieret"
+  },
+  "wizard": {
+    "client": "Vælg kunde",
+    "service": "Vælg ydelse",
+    "master": "Vælg specialist",
+    "when": "Dato og tid",
+    "step": "Trin {{n}} af {{total}}",
+    "searchService": "Søg ydelse",
+    "ownTime": "Eget tidspunkt",
+    "existing": "Allerede planlagt",
+    "newLesson": "Ny session",
+    "noMasters": "Ingen tilbyder denne ydelse endnu",
+    "earlier": "Tidligere",
+    "check": "Tjek bookingen",
+    "change": "Skift",
+    "confirm": "Bekræft"
   }
 }

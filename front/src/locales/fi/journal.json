@@ -102,6 +102,7 @@
       "confirm": "Siirry Luetteloon"
     },
     "reschedule": "Siirrä",
+    "changeTime": "Muuta aikaa",
     "loading": "Ladataan…",
     "openClient": "Avaa asiakaskortti"
   },
@@ -160,7 +161,9 @@
       "bookClient": "asiakkaan ilmoittautuminen",
       "bookClients": "asiakkaiden ilmoittautuminen ({{count}})"
     },
-    "resourceUseReschedule": "Yksilövaraus siirretään kortin «Siirrä»-painikkeella"
+    "repriced": "Varaus maksaa nyt {{price}}",
+    "repricedRefund": "Asiakas maksoi {{paid}}, hinta on nyt {{price}} — palauta {{diff}}",
+    "repricedTopUp": "Asiakas maksoi {{paid}}, hinta on nyt {{price}} — peri lisää {{diff}}"
   },
   "loadError": {
     "title": "Lataaminen epäonnistui",
@@ -192,6 +195,8 @@
     "noSlots": "Tänä päivänä ei ole vapaita aikoja",
     "configIncomplete": "Tämän palvelun aikataulua ei ole vielä määritetty",
     "moveTitle": "Varauksen siirto",
+    "moveNow": "Nyt",
+    "durationLabel": "Kesto",
     "moveBusy": "Asiantuntija on varattu tähän aikaan"
   },
   "lessonNotes": {
@@ -216,5 +221,21 @@
     "notes": "Muistiinpanot",
     "openFull": "Avaa kortti",
     "copied": "Kopioitu"
+  },
+  "wizard": {
+    "client": "Valitse asiakas",
+    "service": "Valitse palvelu",
+    "master": "Valitse asiantuntija",
+    "when": "Päivä ja aika",
+    "step": "Vaihe {{n}}/{{total}}",
+    "searchService": "Hae palvelua",
+    "ownTime": "Oma aika",
+    "existing": "Jo aikataulussa",
+    "newLesson": "Uusi tunti",
+    "noMasters": "Kukaan ei vielä tarjoa tätä palvelua",
+    "earlier": "Aiemmin",
+    "check": "Tarkista varaus",
+    "change": "Muuta",
+    "confirm": "Vahvista"
   }
 }

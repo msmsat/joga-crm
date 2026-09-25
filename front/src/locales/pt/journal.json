@@ -102,6 +102,7 @@
       "confirm": "Ir para o Catálogo"
     },
     "reschedule": "Reagendar",
+    "changeTime": "Alterar horário",
     "loading": "A carregar…",
     "openClient": "Abrir a ficha do cliente"
   },
@@ -160,7 +161,9 @@
       "bookClient": "inscrição de cliente",
       "bookClients": "inscrição de clientes ({{count}})"
     },
-    "resourceUseReschedule": "As marcações individuais movem-se com «Reagendar» na ficha"
+    "repriced": "A marcação agora custa {{price}}",
+    "repricedRefund": "O cliente pagou {{paid}}, o preço agora é {{price}} — devolva {{diff}}",
+    "repricedTopUp": "O cliente pagou {{paid}}, o preço agora é {{price}} — cobre mais {{diff}}"
   },
   "loadError": {
     "title": "Não foi possível carregar",
@@ -192,6 +195,8 @@
     "noSlots": "Não há horário livre nesta data",
     "configIncomplete": "O horário deste serviço ainda não está configurado",
     "moveTitle": "Reagendar marcação",
+    "moveNow": "Agora",
+    "durationLabel": "Duração",
     "moveBusy": "O especialista está ocupado a esta hora"
   },
   "lessonNotes": {
@@ -216,5 +221,21 @@
     "notes": "Notas",
     "openFull": "Abrir a ficha",
     "copied": "Copiado"
+  },
+  "wizard": {
+    "client": "Escolha o cliente",
+    "service": "Escolha o serviço",
+    "master": "Escolha o especialista",
+    "when": "Data e hora",
+    "step": "Passo {{n}} de {{total}}",
+    "searchService": "Pesquisar serviço",
+    "ownTime": "Hora própria",
+    "existing": "Já agendado",
+    "newLesson": "Nova sessão",
+    "noMasters": "Ninguém oferece este serviço ainda",
+    "earlier": "Mais cedo",
+    "check": "Verifique o agendamento",
+    "change": "Alterar",
+    "confirm": "Confirmar"
   }
 }

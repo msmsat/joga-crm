@@ -102,6 +102,7 @@
       "confirm": "Gå till Katalogen"
     },
     "reschedule": "Flytta",
+    "changeTime": "Ändra tid",
     "loading": "Laddar…",
     "openClient": "Öppna kundkortet"
   },
@@ -160,7 +161,9 @@
       "bookClient": "anmälan av kund",
       "bookClients": "anmälan av kunder ({{count}})"
     },
-    "resourceUseReschedule": "Individuella bokningar flyttas med «Flytta» i kortet"
+    "repriced": "Bokningen kostar nu {{price}}",
+    "repricedRefund": "Kunden har betalat {{paid}}, priset är nu {{price}} — återbetala {{diff}}",
+    "repricedTopUp": "Kunden har betalat {{paid}}, priset är nu {{price}} — ta betalt {{diff}} till"
   },
   "loadError": {
     "title": "Kunde inte läsas in",
@@ -192,6 +195,8 @@
     "noSlots": "Ingen ledig tid detta datum",
     "configIncomplete": "Schemat för den här tjänsten är inte uppsatt ännu",
     "moveTitle": "Flytta bokning",
+    "moveNow": "Nu",
+    "durationLabel": "Längd",
     "moveBusy": "Specialisten är upptagen vid den tiden"
   },
   "lessonNotes": {
@@ -216,5 +221,21 @@
     "notes": "Anteckningar",
     "openFull": "Öppna kortet",
     "copied": "Kopierat"
+  },
+  "wizard": {
+    "client": "Välj kund",
+    "service": "Välj tjänst",
+    "master": "Välj specialist",
+    "when": "Datum och tid",
+    "step": "Steg {{n}} av {{total}}",
+    "searchService": "Sök tjänst",
+    "ownTime": "Egen tid",
+    "existing": "Redan schemalagt",
+    "newLesson": "Nytt pass",
+    "noMasters": "Ingen erbjuder den här tjänsten ännu",
+    "earlier": "Tidigare",
+    "check": "Kontrollera bokningen",
+    "change": "Ändra",
+    "confirm": "Bekräfta"
   }
 }

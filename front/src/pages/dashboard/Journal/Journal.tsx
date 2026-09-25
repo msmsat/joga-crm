@@ -10,6 +10,7 @@ import { indexToDateTime, toDateStr, formatIndexToTimeStr } from './utils';
 import { useDragAndDrop } from './hooks/useDragAndDrop';
 import { useSchedule, useJournalDays } from './hooks/useSchedule';
 import { useJournalMutations } from './hooks/useJournalMutations';
+import { useResourceMove } from './hooks/useResourceMove';
 import { useUndoHistory } from './hooks/useUndoHistory';
 import { usePopupPosition } from './hooks/usePopupPosition';
 import { useGridSwipe } from './hooks/useGridSwipe';
@@ -287,6 +288,18 @@ export default function Journal() {
     const blockStart = timeIdx;
     const blockEnd   = timeIdx + 1;
 
+    // Телефон: любая запись — пошаговым мастером (BookingWizard через
+    // ResourceBookingModal). Мастер колонки подставляется, день недели — нет.
+    if (isPhone) {
+      const col = columns[columnIndex];
+      setResourceBooking({
+        teacherId: col && typeof col === 'object' && !(col instanceof Date) ? col.id : null,
+        date: toDateStr(col instanceof Date ? col : new Date(calYear, calMonth, selectedDay)),
+        time: formatIndexToTimeStr(timeIdx),
+      });
+      return;
+    }
+
     if (onlyResourceServices) {
       const col = columns[columnIndex];
       const scope = {
@@ -433,8 +446,15 @@ export default function Journal() {
     return payload;
   }, [halls]);
 
+  // Индивидуальная запись меняет время только переносом — со своей историей,
+  // уведомлением клиента и пересчётом суммы при смене мастера.
+  const commitResourceMove = useResourceMove({
+    halls, mutations, pushHistory: history.push, setPopupBooking, showToast,
+  });
+
   // ── Прямое сохранение переноса/растягивания: diff → PATCH, оптимизм и откат — в useJournalMutations ──
   const commitBookingChange = React.useCallback((prev: Booking, next: Booking) => {
+    if (prev.bookingMode === 'resource') return commitResourceMove(prev, next);
     const payload = diffPayload(prev, next);
     if (Object.keys(payload).length === 0) return;
 
@@ -459,7 +479,7 @@ export default function Journal() {
         setPopupBooking(pb => (pb && pb.id === prev.id ? prev : pb));
         toast.error(errorMessage(e, t));
       });
-  }, [diffPayload, mutations, showToast, toast, history, t]);
+  }, [diffPayload, mutations, showToast, toast, history, t, commitResourceMove]);
 
   const { drag, wasDragging, initDrag } = useDragAndDrop({
     bookings,
@@ -858,6 +878,7 @@ export default function Journal() {
                   hoveredSlot={hoveredSlot}
                   setHoveredSlot={setHoveredSlot}
                   canEdit={canEdit}
+                  gestures={!isPhone}
                   showNewForm={showNewForm}
                   popupBooking={popupBooking}
                   drag={drag}
@@ -978,7 +999,6 @@ export default function Journal() {
           создание события. Проходит теми же quote/confirm, что Mini-app. */}
       {resourceBooking && (
         <ResourceBookingModal
-          trainers={trainers}
           teacherId={resourceBooking.teacherId}
           defaultDate={resourceBooking.date}
           defaultServiceId={resourceBooking.serviceId}

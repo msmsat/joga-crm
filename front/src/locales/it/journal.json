@@ -102,6 +102,7 @@
       "confirm": "Vai al Catalogo"
     },
     "reschedule": "Sposta",
+    "changeTime": "Cambia orario",
     "loading": "Caricamento…",
     "openClient": "Apri la scheda cliente"
   },
@@ -160,7 +161,9 @@
       "bookClient": "iscrizione cliente",
       "bookClients": "iscrizione clienti ({{count}})"
     },
-    "resourceUseReschedule": "Le prenotazioni individuali si spostano con «Sposta» nella scheda"
+    "repriced": "La prenotazione ora costa {{price}}",
+    "repricedRefund": "Il cliente ha pagato {{paid}}, ora il prezzo è {{price}}: rimborsate {{diff}}",
+    "repricedTopUp": "Il cliente ha pagato {{paid}}, ora il prezzo è {{price}}: incassate altri {{diff}}"
   },
   "loadError": {
     "title": "Caricamento non riuscito",
@@ -192,6 +195,8 @@
     "noSlots": "Nessun orario libero in questa data",
     "configIncomplete": "Il calendario di questo servizio non è ancora configurato",
     "moveTitle": "Sposta prenotazione",
+    "moveNow": "Ora",
+    "durationLabel": "Durata",
     "moveBusy": "A quest'ora lo specialista è occupato"
   },
   "lessonNotes": {
@@ -216,5 +221,21 @@
     "notes": "Note",
     "openFull": "Apri la scheda",
     "copied": "Copiato"
+  },
+  "wizard": {
+    "client": "Scegli un cliente",
+    "service": "Scegli un servizio",
+    "master": "Scegli uno specialista",
+    "when": "Data e ora",
+    "step": "Passo {{n}} di {{total}}",
+    "searchService": "Cerca servizio",
+    "ownTime": "Orario personalizzato",
+    "existing": "Già in programma",
+    "newLesson": "Nuova sessione",
+    "noMasters": "Nessuno offre ancora questo servizio",
+    "earlier": "Prima",
+    "check": "Controlla la prenotazione",
+    "change": "Modifica",
+    "confirm": "Conferma"
   }
 }

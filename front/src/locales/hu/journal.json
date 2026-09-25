@@ -102,6 +102,7 @@
       "confirm": "Tovább a Katalógusba"
     },
     "reschedule": "Áthelyezés",
+    "changeTime": "Időpont módosítása",
     "loading": "Betöltés…",
     "openClient": "Ügyfélkarton megnyitása"
   },
@@ -160,7 +161,9 @@
       "bookClient": "ügyfél jelentkeztetése",
       "bookClients": "ügyfelek jelentkeztetése ({{count}})"
     },
-    "resourceUseReschedule": "Az egyéni foglalást a kártya „Áthelyezés” gombjával mozgatod"
+    "repriced": "A foglalás ára most {{price}}",
+    "repricedRefund": "Az ügyfél már fizetett ({{paid}}), az ár most {{price}} — térítsen vissza: {{diff}}",
+    "repricedTopUp": "Az ügyfél már fizetett ({{paid}}), az ár most {{price}} — szedjen be még: {{diff}}"
   },
   "loadError": {
     "title": "A betöltés nem sikerült",
@@ -192,6 +195,8 @@
     "noSlots": "Ezen a napon nincs szabad időpont",
     "configIncomplete": "Ennek a szolgáltatásnak az órarendje még nincs beállítva",
     "moveTitle": "Foglalás áthelyezése",
+    "moveNow": "Most",
+    "durationLabel": "Időtartam",
     "moveBusy": "Ekkor a szakember foglalt"
   },
   "lessonNotes": {
@@ -216,5 +221,21 @@
     "notes": "Jegyzetek",
     "openFull": "Karton megnyitása",
     "copied": "Másolva"
+  },
+  "wizard": {
+    "client": "Válasszon ügyfelet",
+    "service": "Válasszon szolgáltatást",
+    "master": "Válasszon szakembert",
+    "when": "Dátum és idő",
+    "step": "{{n}}. lépés / {{total}}",
+    "searchService": "Szolgáltatás keresése",
+    "ownTime": "Saját időpont",
+    "existing": "Már a naptárban",
+    "newLesson": "Új alkalom",
+    "noMasters": "Ezt a szolgáltatást még senki sem nyújtja",
+    "earlier": "Korábban",
+    "check": "Ellenőrizze a foglalást",
+    "change": "Módosítás",
+    "confirm": "Megerősítés"
   }
 }

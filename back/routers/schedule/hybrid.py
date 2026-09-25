@@ -1,4 +1,5 @@
 """CRM commands use staff roles and current studio, never tenant IDs from the body."""
+from datetime import timezone
 from typing import Annotated
 
 from fastapi import APIRouter, BackgroundTasks, Depends, Query, Request
@@ -7,12 +8,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_db
 from dependencies import StudioContext, require_role
-from models import BookingQuote, Lesson, Reservation
+from models import BookingQuote, Lesson, Reservation, Studio
 from ratelimit import limiter
 from schemas.schedule.hybrid import (AvailabilityRead, BookingRead, ConfirmRequest,
-    CrmAvailabilityQuery, CrmQuoteRequest, QuoteRead, RescheduleConfirmRequest, ResourceQuoteRequest,
-    ResourceStaffMemberRead, ResourceStaffRead)
-from services import booking_quotes as quotes, hybrid_http, resource_availability, resource_booking, resource_reschedule
+    CrmAvailabilityQuery, CrmQuoteRequest, CrmRescheduleQuoteRequest, QuoteRead,
+    RescheduleConfirmRequest, ResourceQuoteRequest, ResourceStaffMemberRead, ResourceStaffRead)
+from services import (booking_quotes as quotes, hybrid_http, resource_availability, resource_booking,
+                      resource_reschedule, studio_time)
 
 router = APIRouter()
 staff = require_role("owner", "admin")
@@ -102,11 +104,32 @@ async def cancel(reservation_id: int, background: BackgroundTasks,
         db, await _reservation_actor(db, ctx, reservation_id), reservation_id, background)
 
 
+async def _moment(db, ctx, body: CrmRescheduleQuoteRequest) -> ResourceQuoteRequest:
+    """Запрос переноса в том виде, в каком его считает сервис: с точным моментом.
+
+    Местное время переводится по зоне студии. Время, которого в этот день нет
+    (перевод часов весной), — отказ INVALID_START, а не молчаливый сдвиг на час.
+    """
+    starts_at = body.starts_at
+    if body.local_start is not None:
+        studio = await db.get(Studio, ctx.studio_id)
+        try:
+            starts_at = studio_time.to_utc(body.local_start.replace(tzinfo=None), studio) \
+                .replace(tzinfo=timezone.utc)
+        except ValueError:
+            quotes.reject("INVALID_START", 422)
+    return ResourceQuoteRequest(
+        booking_mode="resource", service_id=body.service_id, branch_id=body.branch_id,
+        teacher_id=body.teacher_id, starts_at=starts_at, payment_method=body.payment_method)
+
+
 @router.post("/reservations/{reservation_id}/reschedule-quotes", response_model=QuoteRead, status_code=201)
-async def move_quote(reservation_id: int, body: ResourceQuoteRequest,
+async def move_quote(reservation_id: int, body: CrmRescheduleQuoteRequest,
                      ctx: StudioContext = Depends(staff), db: AsyncSession = Depends(get_db)):
     actor = await _reservation_actor(db, ctx, reservation_id)
-    row = await resource_reschedule.create_quote(db, actor, reservation_id, body)
+    row = await resource_reschedule.create_quote(
+        db, actor, reservation_id, await _moment(db, ctx, body),
+        hall_id=body.hall_id, duration_min=body.duration_min)
     await db.commit()
     return hybrid_http.quote_response(row)
 

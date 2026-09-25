@@ -102,6 +102,7 @@
       "confirm": "Shko te Katalogu"
     },
     "reschedule": "Zhvendos",
+    "changeTime": "Ndrysho orarin",
     "loading": "Po ngarkohet…",
     "openClient": "Hap kartelën e klientit"
   },
@@ -160,7 +161,9 @@
       "bookClient": "regjistrim klienti",
       "bookClients": "regjistrim klientësh ({{count}})"
     },
-    "resourceUseReschedule": "Rezervimet individuale zhvendosen me «Zhvendos» në kartelë"
+    "repriced": "Rezervimi tani kushton {{price}}",
+    "repricedRefund": "Klienti ka paguar {{paid}}, çmimi tani është {{price}} — kthejini {{diff}}",
+    "repricedTopUp": "Klienti ka paguar {{paid}}, çmimi tani është {{price}} — merrni edhe {{diff}}"
   },
   "loadError": {
     "title": "Ngarkimi dështoi",
@@ -192,6 +195,8 @@
     "noSlots": "Në këtë datë nuk ka orar të lirë",
     "configIncomplete": "Orari i këtij shërbimi ende nuk është vendosur",
     "moveTitle": "Zhvendosja e rezervimit",
+    "moveNow": "Tani",
+    "durationLabel": "Kohëzgjatja",
     "moveBusy": "Në këtë orë specialisti është i zënë"
   },
   "lessonNotes": {
@@ -216,5 +221,21 @@
     "notes": "Shënime",
     "openFull": "Hap kartelën",
     "copied": "U kopjua"
+  },
+  "wizard": {
+    "client": "Zgjidhni klientin",
+    "service": "Zgjidhni shërbimin",
+    "master": "Zgjidhni specialistin",
+    "when": "Data dhe ora",
+    "step": "Hapi {{n}} nga {{total}}",
+    "searchService": "Kërko shërbim",
+    "ownTime": "Ora e vet",
+    "existing": "Tashmë në orar",
+    "newLesson": "Seancë e re",
+    "noMasters": "Askush nuk e ofron ende këtë shërbim",
+    "earlier": "Më herët",
+    "check": "Kontrolloni rezervimin",
+    "change": "Ndrysho",
+    "confirm": "Konfirmo"
   }
 }

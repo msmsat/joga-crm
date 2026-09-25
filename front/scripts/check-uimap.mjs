@@ -72,6 +72,10 @@ const NOT_A_MODAL = {
   'Settings/ResendLink': 'ссылка «отправить ещё раз» внутри окон',
   'Finances/ConfirmModal': 'локальная обёртка подтверждения, своего содержания нет',
   'Journal/ResourceClientPicker': 'поле выбора клиента внутри ResourceBookingModal, своего окна нет',
+  'Journal/WizardSteps': 'шаги клиент/услуга/мастер внутри BookingWizard',
+  'Journal/WhenStep': 'шаг «Дата и время» внутри BookingWizard',
+  'Journal/WizardParts': 'поиск, чипы и строки списка внутри BookingWizard',
+  'Journal/SummaryStep': 'шаг «Проверьте запись» внутри BookingWizard',
   // Мёртвый код: файлы есть, но их никто не импортирует (проверено 15.08.2026).
   'Booking/InstaModal': 'мёртвый файл — не импортируется ниоткуда',
   'Booking/WebModal': 'мёртвый файл — не импортируется ниоткуда',

@@ -103,6 +103,7 @@
       "confirm": "Přejít do Katalogu"
     },
     "reschedule": "Přesunout",
+    "changeTime": "Změnit čas",
     "loading": "Načítání…",
     "openClient": "Otevřít kartu klienta"
   },
@@ -163,7 +164,9 @@
       "bookClient": "přihlášení klienta",
       "bookClients": "přihlášení klientů ({{count}})"
     },
-    "resourceUseReschedule": "Individuální rezervaci přesunete tlačítkem „Přesunout“ v kartě"
+    "repriced": "Rezervace teď stojí {{price}}",
+    "repricedRefund": "Klient zaplatil {{paid}}, cena je teď {{price}} — vraťte mu {{diff}}",
+    "repricedTopUp": "Klient zaplatil {{paid}}, cena je teď {{price}} — doplatek {{diff}}"
   },
   "loadError": {
     "title": "Načtení se nezdařilo",
@@ -196,6 +199,8 @@
     "noSlots": "V tento den není volný čas",
     "configIncomplete": "Rozvrh této služby zatím není nastaven",
     "moveTitle": "Přesun rezervace",
+    "moveNow": "Nyní",
+    "durationLabel": "Délka",
     "moveBusy": "V tento čas má specialista obsazeno"
   },
   "lessonNotes": {
@@ -220,5 +225,21 @@
     "notes": "Poznámky",
     "openFull": "Otevřít kartu",
     "copied": "Zkopírováno"
+  },
+  "wizard": {
+    "client": "Vyberte klienta",
+    "service": "Vyberte službu",
+    "master": "Vyberte specialistu",
+    "when": "Datum a čas",
+    "step": "Krok {{n}} z {{total}}",
+    "searchService": "Hledat službu",
+    "ownTime": "Vlastní čas",
+    "existing": "Už v rozvrhu",
+    "newLesson": "Nová lekce",
+    "noMasters": "Tuto službu zatím nikdo neposkytuje",
+    "earlier": "Dříve",
+    "check": "Zkontrolujte rezervaci",
+    "change": "Změnit",
+    "confirm": "Potvrdit"
   }
 }

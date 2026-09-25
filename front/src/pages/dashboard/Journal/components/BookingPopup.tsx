@@ -40,7 +40,9 @@ interface BookingPopupProps {
   editForm: EditForm;
   setEditForm: React.Dispatch<React.SetStateAction<EditForm>>;
   mutations: ReturnType<typeof useJournalMutations>;
-  onSave: (prev: Booking, next: Booking) => void;
+  /** Сохранить правку. Индивидуальная запись отвечает, удался ли перенос:
+   *  окно «Изменить время» по нему решает, закрываться ли. */
+  onSave: (prev: Booking, next: Booking) => Promise<boolean> | void;
   deleteBooking: (id: number) => void;
   onAddClients: (clientIds: number[]) => void | Promise<void>;
   showToast: (msg: string) => void;
@@ -578,21 +580,6 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
               <div style={{ fontWeight: 700 }}>{formatMoney(popupBooking.price, currency)}</div>
             </div>
 
-            {/* HB-22 п.3: у индивидуальной записи один клиент и одна услуга —
-                добавлять сюда некого, и единственное, что с ней делают из
-                журнала, — двигают во времени. Поля переноса живут во
-                всплывающем окне: в карточке они занимали её треть всегда,
-                даже когда её открыли просто посмотреть. */}
-            {canEdit && isResource && (
-              <button
-                className="bp-btn ghost text-btn"
-                style={{ width: '100%', marginTop: 8, justifyContent: 'center' }}
-                onClick={e => { e.stopPropagation(); setShowMove(true); }}
-              >
-                <Icons.Clock /> {t('bookingPopup.reschedule')}
-              </button>
-            )}
-
             {/* Заметка занятия — под составом, но ДО списка записанных: это
                 про само занятие, а не про конкретного человека. */}
             <LessonNotes
@@ -838,6 +825,17 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
               </>
             )}
 
+            {/* У индивидуальной записи один клиент и одна услуга — добавлять
+                сюда некого, и главное, что с ней делают из карточки, — меняют
+                время. Поэтому это главная кнопка подвала, на месте «Добавить»
+                у группового. На телефоне она — единственный способ сдвинуть
+                или растянуть запись: жестов там нет. */}
+            {canEdit && isResource && (
+              <button className="bp-btn primary text-btn" onClick={e => { e.stopPropagation(); setShowMove(true); }}>
+                <Icons.Clock /> {t('bookingPopup.changeTime')}
+              </button>
+            )}
+
             {canShareQr && (
               <button
                 className="bp-btn ghost icon-only"
@@ -875,8 +873,12 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
     {showMove && (
       <MoveBookingModal
         booking={popupBooking}
-        reservationId={bookedClients?.[0]?.reservation_id ?? null}
-        onMoved={() => { setPopupBooking(null); mutations.invalidate(); }}
+        trainerName={trainers.find(tr => tr.id === popupBooking.trainer)?.full}
+        onSave={async next => {
+          const saved = await onSave(popupBooking, next);
+          if (saved) setPopupBooking(null);
+          return saved === true;
+        }}
         onClose={() => setShowMove(false)}
       />
     )}

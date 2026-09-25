@@ -102,6 +102,7 @@
       "confirm": "Katalog'a git"
     },
     "reschedule": "Ertele",
+    "changeTime": "Saati değiştir",
     "loading": "Yükleniyor…",
     "openClient": "Müşteri kartını aç"
   },
@@ -160,7 +161,9 @@
       "bookClient": "müşteri kaydı",
       "bookClients": "müşteri kaydı ({{count}})"
     },
-    "resourceUseReschedule": "Bireysel randevu karttaki «Ertele» düğmesiyle taşınır"
+    "repriced": "Randevunun fiyatı artık {{price}}",
+    "repricedRefund": "Müşteri {{paid}} ödedi, fiyat artık {{price}} — {{diff}} iade edin",
+    "repricedTopUp": "Müşteri {{paid}} ödedi, fiyat artık {{price}} — {{diff}} ek ödeme alın"
   },
   "loadError": {
     "title": "Yüklenemedi",
@@ -192,6 +195,8 @@
     "noSlots": "Bu tarihte boş saat yok",
     "configIncomplete": "Bu hizmetin takvimi henüz ayarlanmadı",
     "moveTitle": "Randevuyu erteleme",
+    "moveNow": "Şu an",
+    "durationLabel": "Süre",
     "moveBusy": "Bu saatte uzman dolu"
   },
   "lessonNotes": {
@@ -216,5 +221,21 @@
     "notes": "Notlar",
     "openFull": "Kartı aç",
     "copied": "Kopyalandı"
+  },
+  "wizard": {
+    "client": "Müşteri seçin",
+    "service": "Hizmet seçin",
+    "master": "Uzman seçin",
+    "when": "Tarih ve saat",
+    "step": "Adım {{n}} / {{total}}",
+    "searchService": "Hizmet ara",
+    "ownTime": "Özel saat",
+    "existing": "Zaten programda",
+    "newLesson": "Yeni seans",
+    "noMasters": "Bu hizmeti henüz kimse vermiyor",
+    "earlier": "Daha erken",
+    "check": "Kaydı kontrol edin",
+    "change": "Değiştir",
+    "confirm": "Onayla"
   }
 }

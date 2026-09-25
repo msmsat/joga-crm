@@ -17,6 +17,9 @@ interface GridProps {
   hoveredSlot: string | null;
   setHoveredSlot: (slot: string | null) => void;
   canEdit: boolean;
+  /** Тащить и растягивать занятия пальцем или мышью. На телефоне — нет:
+   *  палец там листает расписание, а время меняется в карточке занятия. */
+  gestures: boolean;
   showNewForm: boolean;
   popupBooking: Booking | null;
   drag: DragState | null;
@@ -37,7 +40,7 @@ interface GridProps {
 export const Grid: React.FC<GridProps> = ({
   isTransitioning, transitionReason, calendarView,
   columns, viewMode, filteredBookings, hoveredSlot, setHoveredSlot,
-  canEdit, showNewForm, popupBooking, drag, wasDragging,
+  canEdit, gestures, showNewForm, popupBooking, drag, wasDragging,
   openNewSlot, newBookingSlot, newForm, previewRef,
   initDrag, setPopupBooking, openBookingPopup, showToast, editDraft, pages
 }) => {
@@ -294,6 +297,7 @@ export const Grid: React.FC<GridProps> = ({
                         layout={layouts.get(booking.id)!}
                         drag={drag}
                         canEdit={canEdit}
+                        gestures={gestures}
                         popupBooking={popupBooking}
                         wasDragging={wasDragging}
                         initDrag={initDrag}

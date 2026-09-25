@@ -102,6 +102,7 @@
       "confirm": "Aller au Catalogue"
     },
     "reschedule": "Reporter",
+    "changeTime": "Modifier l’horaire",
     "loading": "Chargement…",
     "openClient": "Ouvrir la fiche client"
   },
@@ -160,7 +161,9 @@
       "bookClient": "inscription d'un client",
       "bookClients": "inscription de clients ({{count}})"
     },
-    "resourceUseReschedule": "Les réservations individuelles se déplacent via « Reporter » dans la fiche"
+    "repriced": "La réservation coûte désormais {{price}}",
+    "repricedRefund": "Le client a payé {{paid}}, le prix est désormais de {{price}} : remboursez {{diff}}",
+    "repricedTopUp": "Le client a payé {{paid}}, le prix est désormais de {{price}} : encaissez {{diff}} de plus"
   },
   "loadError": {
     "title": "Échec du chargement",
@@ -192,6 +195,8 @@
     "noSlots": "Aucun créneau libre à cette date",
     "configIncomplete": "Le planning de cette prestation n’est pas encore configuré",
     "moveTitle": "Reporter la réservation",
+    "moveNow": "Actuellement",
+    "durationLabel": "Durée",
     "moveBusy": "Le spécialiste est occupé à cette heure"
   },
   "lessonNotes": {
@@ -216,5 +221,21 @@
     "notes": "Notes",
     "openFull": "Ouvrir la fiche",
     "copied": "Copié"
+  },
+  "wizard": {
+    "client": "Choisir un client",
+    "service": "Choisir un service",
+    "master": "Choisir un spécialiste",
+    "when": "Date et heure",
+    "step": "Étape {{n}} sur {{total}}",
+    "searchService": "Rechercher un service",
+    "ownTime": "Heure personnalisée",
+    "existing": "Déjà planifié",
+    "newLesson": "Nouvelle séance",
+    "noMasters": "Personne ne propose encore ce service",
+    "earlier": "Plus tôt",
+    "check": "Vérifiez la réservation",
+    "change": "Modifier",
+    "confirm": "Confirmer"
   }
 }

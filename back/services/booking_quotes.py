@@ -1,5 +1,5 @@
 """Canonical five-minute offers; no reservation or financial writes while quoting."""
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import datetime, timedelta, timezone
 from types import SimpleNamespace
 
@@ -102,7 +102,14 @@ def _snapshot(lesson, terms, studio, rules, payment_method, *, starts_at=None, s
 
 
 async def calculate(db, actor: Actor, request, *, now=None, hall_id=None,
-                    exclude_lesson_id=None, preserved_funding=None):
+                    exclude_lesson_id=None, preserved_funding=None, duration_min=None):
+    """Условия записи на момент `request.starts_at`.
+
+    `duration_min` — длительность САМОЙ записи при переносе
+    (services/resource_reschedule): растянутая в Журнале запись занимает своё
+    время, а не каталожное, и свободным окно обязано быть именно под неё. Не
+    задана — длительность мастера по услуге, как при новой записи.
+    """
     await authorize(db, actor)
     moment = utcnow(now)
     studio = (await db.execute(select(Studio).where(Studio.id == actor.studio_id)
@@ -131,6 +138,10 @@ async def calculate(db, actor: Actor, request, *, now=None, hall_id=None,
     data = await resource_availability.load(db, studio_id=actor.studio_id, service_id=request.service_id,
         branch_id=request.branch_id, teacher_id=request.teacher_id, hall_id=hall_id,
         date_from=local.date(), date_to=local.date(), exclude_lesson_id=exclude_lesson_id)
+    if duration_min is not None:
+        # Копией снимка, а не правкой: `data.service` — живая строка ORM, и
+        # поменянная в ней длительность ушла бы в базу первым же flush.
+        data = replace(data, durations={teacher: duration_min for teacher in data.teacher_ids})
     available = generate(data, date_from=local.date(), date_to=local.date(), now=moment,
                          client=actor.domain is booking.Actor.CLIENT)
     slot = next((s for s in available.slots if s.starts_at == request.starts_at), None)

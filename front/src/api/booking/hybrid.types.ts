@@ -38,6 +38,15 @@ export interface Terminology {
 export interface EventQuoteRequest { booking_mode: 'event'; lesson_id: number; spot_number?: number | null; payment_method?: 'venue' | 'card' }
 export interface ResourceQuoteRequest { booking_mode: 'resource'; service_id: number; branch_id: number; teacher_id?: number | null; starts_at: string; payment_method?: 'venue' | 'card' }
 export type QuoteRequest = EventQuoteRequest | ResourceQuoteRequest;
+/** Перенос индивидуальной записи из Журнала (CrmRescheduleQuoteRequest): перетаскивание,
+ *  растягивание, поля карточки. Время — МЕСТНОЕ время студии (`local_start`, «2026-09-26T10:30:00»)
+ *  либо точный момент из availability (`starts_at`), ровно одно: перевести местное в UTC браузеру
+ *  нечем, это делает сервер по зоне студии. `duration_min` — растягивание, `hall_id` — другой зал.
+ *  Способ оплаты при переносе стойка не выбирает — сервер берёт его у самой записи. */
+export interface CrmRescheduleQuoteRequest {
+  booking_mode: 'resource'; service_id: number; branch_id: number; teacher_id?: number | null;
+  starts_at?: string; local_start?: string; duration_min?: number; hall_id?: number;
+}
 /** `hall_id` и `exclude_lesson_id` принимает только CRM-ручка (`/schedule/availability`):
  *  первое — выбор зала, второе — перенос, при котором занятие не должно
  *  занимать само себя (иначе предпросмотр прячет время, которое сервер примет). */
@@ -55,7 +64,11 @@ export interface ResourceStaffMember {
 export interface ResourceStaffRead { staff: ResourceStaffMember[]; reason: string | null }
 export type BookingStatus = 'active' | 'pending' | 'hold' | 'attended' | 'cancelled';
 export type NextAction = 'none' | 'wait_approval' | 'pay';
-export interface BookingRead { reservation_id: number; lesson_id: number; booking_mode: BookingMode; status: BookingStatus; version: number; next_action: NextAction; payment_url: string | null }
+/** Сумма клиента поменялась при переносе к мастеру с другой ценой. `paid` — сколько уже
+ *  заплачено (картой или у стойки); null — не платил, долг уже получил новую сумму сам.
+ *  Заплаченные деньги система не двигает: разницу возвращает или берёт человек. */
+export interface BookingRepricing { previous: number; current: number; paid: number | null }
+export interface BookingRead { reservation_id: number; lesson_id: number; booking_mode: BookingMode; status: BookingStatus; version: number; next_action: NextAction; payment_url: string | null; repricing?: BookingRepricing | null }
 export interface BookingTerms {
   domain: {
     base_price: number; lesson_id: number; local_start: string; service_name: string;

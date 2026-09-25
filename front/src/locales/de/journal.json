@@ -102,6 +102,7 @@
       "confirm": "Zum Katalog"
     },
     "reschedule": "Verschieben",
+    "changeTime": "Zeit ändern",
     "loading": "Wird geladen…",
     "openClient": "Kundenkarte öffnen"
   },
@@ -160,7 +161,9 @@
       "bookClient": "Kunde anmelden",
       "bookClients": "Kunden anmelden ({{count}})"
     },
-    "resourceUseReschedule": "Individuelle Buchungen verschiebt man über «Verschieben» in der Karte"
+    "repriced": "Die Buchung kostet jetzt {{price}}",
+    "repricedRefund": "Der Kunde hat {{paid}} bezahlt, der Preis ist jetzt {{price}} — erstatten Sie {{diff}}",
+    "repricedTopUp": "Der Kunde hat {{paid}} bezahlt, der Preis ist jetzt {{price}} — {{diff}} nachkassieren"
   },
   "loadError": {
     "title": "Laden fehlgeschlagen",
@@ -192,6 +195,8 @@
     "noSlots": "An diesem Tag ist keine Zeit frei",
     "configIncomplete": "Der Zeitplan dieser Leistung ist noch nicht eingerichtet",
     "moveTitle": "Buchung verschieben",
+    "moveNow": "Aktuell",
+    "durationLabel": "Dauer",
     "moveBusy": "Zu dieser Zeit ist die Fachkraft belegt"
   },
   "lessonNotes": {
@@ -216,5 +221,21 @@
     "notes": "Notizen",
     "openFull": "Karte öffnen",
     "copied": "Kopiert"
+  },
+  "wizard": {
+    "client": "Kunden wählen",
+    "service": "Leistung wählen",
+    "master": "Fachkraft wählen",
+    "when": "Datum und Uhrzeit",
+    "step": "Schritt {{n}} von {{total}}",
+    "searchService": "Leistung suchen",
+    "ownTime": "Eigene Uhrzeit",
+    "existing": "Bereits im Plan",
+    "newLesson": "Neuer Termin",
+    "noMasters": "Diese Leistung bietet noch niemand an",
+    "earlier": "Früher",
+    "check": "Buchung prüfen",
+    "change": "Ändern",
+    "confirm": "Bestätigen"
   }
 }

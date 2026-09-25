@@ -102,6 +102,7 @@
       "confirm": "Gå til Katalogen"
     },
     "reschedule": "Flytt",
+    "changeTime": "Endre tidspunkt",
     "loading": "Laster…",
     "openClient": "Åpne kundekortet"
   },
@@ -160,7 +161,9 @@
       "bookClient": "påmelding av kunde",
       "bookClients": "påmelding av kunder ({{count}})"
     },
-    "resourceUseReschedule": "Individuelle bookinger flyttes med «Flytt» i kortet"
+    "repriced": "Bookingen koster nå {{price}}",
+    "repricedRefund": "Kunden har betalt {{paid}}, prisen er nå {{price}} — betal tilbake {{diff}}",
+    "repricedTopUp": "Kunden har betalt {{paid}}, prisen er nå {{price}} — krev inn {{diff}} til"
   },
   "loadError": {
     "title": "Kunne ikke laste",
@@ -192,6 +195,8 @@
     "noSlots": "Ingen ledig tid denne datoen",
     "configIncomplete": "Timeplanen for denne tjenesten er ikke satt opp ennå",
     "moveTitle": "Flytt booking",
+    "moveNow": "Nå",
+    "durationLabel": "Varighet",
     "moveBusy": "Spesialisten er opptatt på dette tidspunktet"
   },
   "lessonNotes": {
@@ -216,5 +221,21 @@
     "notes": "Notater",
     "openFull": "Åpne kortet",
     "copied": "Kopiert"
+  },
+  "wizard": {
+    "client": "Velg kunde",
+    "service": "Velg tjeneste",
+    "master": "Velg spesialist",
+    "when": "Dato og tid",
+    "step": "Steg {{n}} av {{total}}",
+    "searchService": "Søk tjeneste",
+    "ownTime": "Eget tidspunkt",
+    "existing": "Allerede planlagt",
+    "newLesson": "Ny time",
+    "noMasters": "Ingen tilbyr denne tjenesten ennå",
+    "earlier": "Tidligere",
+    "check": "Sjekk bestillingen",
+    "change": "Endre",
+    "confirm": "Bekreft"
   }
 }

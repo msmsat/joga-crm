@@ -102,6 +102,7 @@
       "confirm": "Go to Catalog"
     },
     "reschedule": "Reschedule",
+    "changeTime": "Change time",
     "loading": "Loading…",
     "openClient": "Open client card"
   },
@@ -160,7 +161,9 @@
       "bookClient": "book client",
       "bookClients": "book clients ({{count}})"
     },
-    "resourceUseReschedule": "Individual bookings are moved via «Reschedule» in the booking card"
+    "repriced": "The booking now costs {{price}}",
+    "repricedRefund": "The client paid {{paid}}, the price is now {{price}} — refund {{diff}}",
+    "repricedTopUp": "The client paid {{paid}}, the price is now {{price}} — collect {{diff}} more"
   },
   "loadError": {
     "title": "Failed to load",
@@ -192,6 +195,8 @@
     "noSlots": "No free time on this date",
     "configIncomplete": "The schedule for this service is not set up yet",
     "moveTitle": "Reschedule booking",
+    "moveNow": "Now",
+    "durationLabel": "Duration",
     "moveBusy": "The specialist is busy at this time"
   },
   "lessonNotes": {
@@ -216,5 +221,21 @@
     "notes": "Notes",
     "openFull": "Open full card",
     "copied": "Copied"
+  },
+  "wizard": {
+    "client": "Choose a client",
+    "service": "Choose a service",
+    "master": "Choose a specialist",
+    "when": "Date and time",
+    "step": "Step {{n}} of {{total}}",
+    "searchService": "Search services",
+    "ownTime": "Custom time",
+    "existing": "Already scheduled",
+    "newLesson": "New session",
+    "noMasters": "No one provides this service yet",
+    "earlier": "Earlier",
+    "check": "Check the booking",
+    "change": "Change",
+    "confirm": "Confirm"
   }
 }

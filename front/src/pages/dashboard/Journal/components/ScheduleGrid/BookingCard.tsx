@@ -16,6 +16,8 @@ interface BookingCardProps {
   layout: BookingLayout;
   drag: DragState | null;
   canEdit: boolean;
+  /** Тащить и растягивать можно (ноутбук, планшет). На телефоне — нет. */
+  gestures: boolean;
   popupBooking: Booking | null;
   wasDragging: boolean;
   initDrag: (e: React.PointerEvent, id: number, type: 'move' | 'resize-top' | 'resize-bottom', booking?: Booking) => void;
@@ -26,7 +28,7 @@ interface BookingCardProps {
 }
 
 export const BookingCard: React.FC<BookingCardProps> = ({
-  booking: b, layout, drag, canEdit, popupBooking, wasDragging,
+  booking: b, layout, drag, canEdit, gestures, popupBooking, wasDragging,
   initDrag, setPopupBooking, openBookingPopup, showToast, editDraft
 }) => {
   const { t } = useTranslation('journal');
@@ -102,19 +104,17 @@ export const BookingCard: React.FC<BookingCardProps> = ({
       data-booking-id={b.id}
       className={`booking-card ${b.status} ${layout.isTracked ? 'is-tracked' : ''} ${layout.isCascade ? 'is-cascade' : ''} ${isSelected ? 'is-selected' : ''} ${isDragging ? 'is-dragging' : ''}`}
       onPointerDown={e => {
-        if (b.status === 'cancelled') return;
+        // Телефон: палец только листает расписание. Ни переноса, ни
+        // предупреждений на «попытку» — движение пальца по карточке там почти
+        // всегда прокрутка, и сообщение «так нельзя» читалось как «листать
+        // нельзя». Время на телефоне меняют в карточке занятия, по тапу.
+        if (!gestures || b.status === 'cancelled') return;
         if (!canEdit) {
           warnOnDragAttempt(e, t('toasts.noPermission'));
           return;
         }
-        // HB-22 п.3: индивидуальную запись перетаскиванием не двигают — сервер
-        // отклоняет такой PATCH (RESOURCE_MOVE_REQUIRES_QUOTE), потому что у
-        // перетаскивания нет ни версии, ни проверки оплаты. Говорим об этом
-        // на попытке сдвига, а не молча возвращаем карточку на место.
-        if (isResource) {
-          warnOnDragAttempt(e, t('toasts.resourceUseReschedule'));
-          return;
-        }
+        // Индивидуальная запись тащится так же, как групповое занятие:
+        // сохраняется она переносом, а не PATCH (hooks/useResourceMove).
         initDrag(e, b.id, 'move');
       }}
       onClick={e => {
@@ -129,7 +129,7 @@ export const BookingCard: React.FC<BookingCardProps> = ({
         background: layout.isCascade ? 'var(--bg-card)' : `${b.color}12`,
         border: editDraft ? '2px dashed var(--peach)' : `2px solid ${b.color}`,
         color: b.color,
-        cursor: b.status === 'cancelled' ? 'pointer' : (canEdit ? 'grab' : 'pointer'),
+        cursor: b.status === 'cancelled' || !gestures ? 'pointer' : (canEdit ? 'grab' : 'pointer'),
         ...(isDragging && drag.type === 'move' ? {
            transform: `translate(${drag.deltaX}px, ${drag.deltaY}px) scale(1.02)`,
         } : {})
@@ -174,9 +174,9 @@ export const BookingCard: React.FC<BookingCardProps> = ({
         </div>
       )}
 
-      {/* Ручки растягивания — только у события: длительность индивидуальной
-          услуги задана каталогом, а не мышью (HB-22 п.3). */}
-      {isSelected && !isDragging && canEdit && !isResource && b.status !== 'cancelled' && (
+      {/* Ручки растягивания — у группового и индивидуального одинаково. На
+          телефоне их нет: длительность меняют в карточке занятия. */}
+      {isSelected && !isDragging && canEdit && gestures && b.status !== 'cancelled' && (
         <>
           <div 
             style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 24, cursor: 'ns-resize', zIndex: 1000 }} 

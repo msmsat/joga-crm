@@ -103,6 +103,7 @@
       "confirm": "Mergi la Catalog"
     },
     "reschedule": "Reprogramează",
+    "changeTime": "Schimbă ora",
     "loading": "Se încarcă…",
     "openClient": "Deschide fișa clientului"
   },
@@ -163,7 +164,9 @@
       "bookClient": "înscrierea unui client",
       "bookClients": "înscrierea clienților ({{count}})"
     },
-    "resourceUseReschedule": "Programările individuale se mută cu «Reprogramează» din fișă"
+    "repriced": "Programarea costă acum {{price}}",
+    "repricedRefund": "Clientul a plătit {{paid}}, prețul este acum {{price}} — returnați {{diff}}",
+    "repricedTopUp": "Clientul a plătit {{paid}}, prețul este acum {{price}} — încasați încă {{diff}}"
   },
   "loadError": {
     "title": "Încărcarea a eșuat",
@@ -196,6 +199,8 @@
     "noSlots": "În această zi nu există interval liber",
     "configIncomplete": "Orarul acestui serviciu nu este încă configurat",
     "moveTitle": "Reprogramarea programării",
+    "moveNow": "Acum",
+    "durationLabel": "Durată",
     "moveBusy": "La această oră specialistul este ocupat"
   },
   "lessonNotes": {
@@ -220,5 +225,21 @@
     "notes": "Note",
     "openFull": "Deschide fișa",
     "copied": "Copiat"
+  },
+  "wizard": {
+    "client": "Alegeți clientul",
+    "service": "Alegeți serviciul",
+    "master": "Alegeți specialistul",
+    "when": "Data și ora",
+    "step": "Pasul {{n}} din {{total}}",
+    "searchService": "Căutați serviciul",
+    "ownTime": "Ora proprie",
+    "existing": "Deja în program",
+    "newLesson": "Sesiune nouă",
+    "noMasters": "Nimeni nu oferă încă acest serviciu",
+    "earlier": "Mai devreme",
+    "check": "Verificați programarea",
+    "change": "Schimbă",
+    "confirm": "Confirmă"
   }
 }

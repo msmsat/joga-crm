@@ -15,7 +15,7 @@
 from datetime import date, datetime
 from typing import Annotated, Literal, Optional, Union
 
-from pydantic import ConfigDict, Field
+from pydantic import ConfigDict, Field, model_validator
 
 from schemas._base import BaseSchema
 
@@ -108,6 +108,32 @@ class CrmResourceQuoteRequest(ResourceQuoteRequest):
 
 
 CrmQuoteRequest = Annotated[Union[CrmEventQuoteRequest, CrmResourceQuoteRequest], Field(discriminator="booking_mode")]
+
+
+class CrmRescheduleQuoteRequest(ResourceQuoteRequest):
+    """Перенос индивидуальной записи из Журнала: перетаскивание, растягивание и
+    поля в карточке занятия (services/resource_reschedule).
+
+    Журнал живёт в местном времени студии, а перевести его в точный момент
+    браузеру нечем — нужна IANA-зона студии. Поэтому `local_start` сервер
+    переводит сам; `starts_at` остаётся для тех, у кого момент уже есть (время
+    из списка свободных окон). Ровно одно из двух.
+
+    Клиентская схема (`ResourceQuoteRequest`, extra='forbid') длительности и
+    зала не знает: менять их клиенту в мини-приложении нечем.
+    """
+    starts_at: Optional[datetime] = None
+    local_start: Optional[datetime] = None
+    # Растягивание: новая длительность самой записи. Не задана — прежняя.
+    duration_min: Optional[int] = Field(default=None, ge=1, le=1440)
+    # Перенос в другой зал (режим «Залы» Журнала). Не задан — зал записи.
+    hall_id: Optional[int] = Field(default=None, gt=0)
+
+    @model_validator(mode="after")
+    def _one_moment(self):
+        if (self.starts_at is None) == (self.local_start is None):
+            raise ValueError("Нужно ровно одно из starts_at и local_start")
+        return self
 
 
 class ConfirmRequest(HybridSchema):
@@ -263,6 +289,15 @@ class QuoteRead(HybridSchema):
     reservation_id: Optional[int] = None
 
 
+class BookingRepricing(HybridSchema):
+    """Сумма клиента изменилась при переносе к мастеру с другой ценой."""
+    previous: int
+    current: int
+    # Сколько клиент уже заплатил (картой или погашенным долгом). None — не
+    # платил: долг «оплата на месте» уже получил новую сумму сам.
+    paid: Optional[int] = None
+
+
 class BookingRead(HybridSchema):
     reservation_id: int
     lesson_id: int
@@ -271,3 +306,6 @@ class BookingRead(HybridSchema):
     version: int
     next_action: Literal["none", "wait_approval", "pay"]
     payment_url: Optional[str] = None
+    # Только у переноса, и только когда сумма клиента поменялась: деньги,
+    # которые уже заплачены, система не двигает — это решает человек у стойки.
+    repricing: Optional[BookingRepricing] = None
