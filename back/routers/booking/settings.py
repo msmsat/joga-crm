@@ -25,6 +25,7 @@ from services.telegram_bot import connect_telegram_bot, disconnect_telegram_bot,
 # /start, а не второй getenv: разъехавшись, они дадут владельцу ссылку, ведущую
 # не туда, куда ведёт кнопка в Telegram.
 from .telegram_webhook import MINIAPP_URL
+from services.booking_rules import save_settings
 from services.schedule_guard import lock_studio
 
 router = APIRouter()
@@ -78,21 +79,9 @@ async def update_booking_settings(
     ctx: StudioContext = Depends(require_role("owner")),
     db: AsyncSession = Depends(get_db),
 ):
-    studio = await lock_studio(db, ctx.studio_id)
-    row = (await db.execute(
-        select(StudioBookingSettings).where(StudioBookingSettings.studio_id == ctx.studio_id)
-    )).scalar_one_or_none()
-    if row is None:
-        row = StudioBookingSettings(studio_id=ctx.studio_id)
-        db.add(row)
-    changes = body.model_dump(exclude_unset=True)
-    changed = any(getattr(row, field) != value for field, value in changes.items())
-    for field, value in changes.items():
-        setattr(row, field, value)
-    if changed:
-        studio.booking_config_version += 1
-    await db.commit()
-    await db.refresh(row)
+    # Писатель общий с Лояльностью (скидка на первое занятие живёт в этой же
+    # строке): замок студии и рост версии правил — там, а не в двух копиях.
+    row = await save_settings(db, ctx.studio_id, body.model_dump(exclude_unset=True))
     return _read(row, await public_ref(db, row.studio_id))
 
 

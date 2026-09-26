@@ -109,6 +109,7 @@
     "SLOT_UNAVAILABLE": "Bu saat dolu ya da uzmanın çalışma saatleri dışında",
     "VERSION_CONFLICT": "Randevu başka bir pencerede değiştirildi — takvimi yenileyin",
     "TERMS_CHANGED": "Randevu koşulları değişti — yeniden açın",
+    "AMOUNT_CHANGED": "Tutar değişti — toplamı kontrol edip yeniden onaylayın",
     "INVALID_START": "Saat değişikliği nedeniyle o gün bu saat yok",
     "WINDOW_CLOSED": "Randevu başladı ya da geçti — değiştirilemez",
     "PAYMENT_IN_PROGRESS": "Bu randevu için ödeme sürüyor — tamamlanmasını bekleyin",

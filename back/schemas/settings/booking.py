@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import Optional
 from urllib.parse import urlparse
 
-from pydantic import field_validator
+from pydantic import Field, field_validator
 
 from schemas._base import BaseSchema
 
@@ -61,6 +61,9 @@ class BookingSettingsRead(BaseSchema):
     widget_work_start: str
     widget_work_end: str
     trial_lesson_free: bool = False
+    # Процент скидки первого занятия; 100 — бесплатно. Меняется в Лояльности,
+    # «Онлайн-запись» его только называет рядом с тумблером.
+    trial_discount_percent: int = 100
     coffee_enabled: bool = True
     coffee_spots: list[CoffeeSpotInput] = []
     # Публичная ссылка на мини-приложение студии. Не колонка — считается из
@@ -100,6 +103,7 @@ class BookingSettingsUpdate(BaseSchema):
     widget_work_start: Optional[str] = None
     widget_work_end: Optional[str] = None
     trial_lesson_free: Optional[bool] = None
+    trial_discount_percent: Optional[int] = Field(default=None, ge=1, le=100)
     coffee_enabled: Optional[bool] = None
     coffee_spots: Optional[list[CoffeeSpotInput]] = None
 

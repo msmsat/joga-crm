@@ -32,8 +32,10 @@
         "sub": "Krev betaling før bekreftelse"
       },
       "trialLesson": {
-        "label": "Første økt gratis",
-        "sub": "Den første bookingen til en ny kunde spanderer studioet"
+        "label": "Rabatt på første økt",
+        "free": "En ny kundes første økt er gratis.",
+        "percent": "En ny kundes første økt får {{percent}} % rabatt.",
+        "change": "Prosentsatsen stilles inn under «Lojalitet»"
       },
       "trainerConfirm": {
         "label": "Bekreftelse fra instruktør",

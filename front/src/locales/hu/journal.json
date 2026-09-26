@@ -66,6 +66,7 @@
     "markAttended": "Jelenlét rögzítése",
     "awaitingConfirmation": "Megerősítésre vár",
     "trialLesson": "Próba",
+    "trialDiscount": "Próba · −{{percent}}%",
     "unpaid": "Fizetetlen · {{amount}}",
     "acceptPayment": "Fizetés rögzítése",
     "payCash": "Készpénz",
@@ -236,6 +237,37 @@
     "earlier": "Korábban",
     "check": "Ellenőrizze a foglalást",
     "change": "Módosítás",
-    "confirm": "Megerősítés"
+    "confirm": "Megerősítés",
+    "busyAt": "Foglalt: {{time}}",
+    "allBusy": "{{time}}-kor mindenki foglalt — válassza egy szakember legközelebbi szabad időpontját"
+  },
+  "payment": {
+    "title": "Fizetés",
+    "price": "Ár",
+    "firstLesson": "Első óra",
+    "free": "ingyenes",
+    "firstLessonOutweighed": "Egy másik kedvezmény kedvezőbb — a kedvezmények nem vonhatók össze",
+    "discount": {
+      "studio": "Stúdiókedvezmény",
+      "offer": "Személyes kedvezmény",
+      "referral": "Ajánlási kedvezmény"
+    },
+    "promo": "Promóciós kód",
+    "voucher": "Utalvány",
+    "promoPlaceholder": "Promóciós kód",
+    "voucherPlaceholder": "Utalvány kódja",
+    "apply": "Alkalmaz",
+    "remove": "Eltávolítás",
+    "promoInvalid": "Ez a promóciós kód nem érvényes",
+    "promoOutweighed": "Nem vonható össze — már egy kedvezőbb kedvezmény érvényes",
+    "voucherRemainder": "Névérték {{amount}} — a maradék elvész",
+    "total": "Készpénzben fizetendő",
+    "coveredBy": {
+      "subscription": "Bérletből",
+      "trial": "Az első óra ingyenes",
+      "free": "Ingyenes"
+    },
+    "confirmAndPay": "Foglalás és {{amount}} átvétele",
+    "loadFailed": "Nem sikerült kiszámolni a fizetést."
   }
 }

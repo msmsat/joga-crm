@@ -109,6 +109,7 @@
     "SLOT_UNAVAILABLE": "Este horário está ocupado ou fora do horário do profissional",
     "VERSION_CONFLICT": "A marcação foi alterada noutra janela — atualize a agenda",
     "TERMS_CHANGED": "As condições da marcação mudaram — abra-a novamente",
+    "AMOUNT_CHANGED": "O valor mudou — verifique o total e confirme novamente",
     "INVALID_START": "Esta hora não existe nesse dia por causa da mudança de hora",
     "WINDOW_CLOSED": "A marcação já começou ou já passou — não pode ser alterada",
     "PAYMENT_IN_PROGRESS": "Há um pagamento em curso para esta marcação — aguarde que termine",

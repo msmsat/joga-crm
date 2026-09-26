@@ -31,11 +31,15 @@ export function WizardChips<V extends string | number>({ value, options, onPick 
   );
 }
 
-export function WizardRow({ active, avatar, color, title, hint, onClick }: {
+/** aside — то, что стоит справа вместо стрелки (ближайшее время занятого
+    мастера). muted — строка, которую сейчас выбрать нельзя как есть. */
+export function WizardRow({ active, avatar, color, title, hint, onClick, aside, muted, disabled }: {
   active?: boolean; avatar?: string; color?: string; title: string; hint?: string; onClick: () => void;
+  aside?: React.ReactNode; muted?: boolean; disabled?: boolean;
 }) {
   return (
-    <button type="button" className={`bw-row${active ? ' active' : ''}`} onClick={onClick}>
+    <button type="button" className={`bw-row${active ? ' active' : ''}${muted ? ' muted' : ''}`}
+            onClick={onClick} disabled={disabled}>
       {avatar !== undefined && (
         <span className="bw-av" style={{ background: color ?? 'var(--border2)' }}>{avatar}</span>
       )}
@@ -43,7 +47,7 @@ export function WizardRow({ active, avatar, color, title, hint, onClick }: {
         <span className="bw-row-title">{title}</span>
         {hint && <span className="bw-row-hint">{hint}</span>}
       </span>
-      {active ? <span className="bw-row-check"><Icons.Check /></span> : <Icons.ChevronRight />}
+      {aside ?? (active ? <span className="bw-row-check"><Icons.Check /></span> : !disabled && <Icons.ChevronRight />)}
     </button>
   );
 }

@@ -109,6 +109,7 @@
     "SLOT_UNAVAILABLE": "Esta hora está ocupada o fuera del horario del especialista",
     "VERSION_CONFLICT": "La reserva se cambió en otra ventana: actualice la agenda",
     "TERMS_CHANGED": "Las condiciones de la reserva han cambiado: ábrala de nuevo",
+    "AMOUNT_CHANGED": "El importe ha cambiado: revise el total y vuelva a confirmar",
     "INVALID_START": "Esa hora no existe ese día por el cambio de horario",
     "WINDOW_CLOSED": "La reserva ya empezó o pasó: no se puede cambiar",
     "PAYMENT_IN_PROGRESS": "Hay un pago en curso para esta reserva: espere a que termine",

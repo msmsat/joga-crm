@@ -109,6 +109,7 @@
     "SLOT_UNAVAILABLE": "Aika on varattu tai ammattilaisen työajan ulkopuolella",
     "VERSION_CONFLICT": "Varausta on muutettu toisessa ikkunassa — päivitä aikataulu",
     "TERMS_CHANGED": "Varauksen ehdot ovat muuttuneet — avaa se uudelleen",
+    "AMOUNT_CHANGED": "Summa muuttui — tarkista loppusumma ja vahvista uudelleen",
     "INVALID_START": "Tätä kellonaikaa ei ole sinä päivänä kellojen siirron vuoksi",
     "WINDOW_CLOSED": "Varaus on jo alkanut tai mennyt — sitä ei voi muuttaa",
     "PAYMENT_IN_PROGRESS": "Varauksen maksu on kesken — odota, että se valmistuu",

@@ -289,23 +289,12 @@
       "deleteTitle": "Ta bort anteckning?",
       "deleteMessage": "Den här anteckningen kan inte återställas."
     },
-    "bookingPanel": {
-      "title": "Snabb bokning",
-      "today": "I dag",
-      "noLessons": "Inga lektioner denna dag",
-      "full": "Inga platser kvar",
-      "confirm": "Boka →",
-      "noSubscription": "Kunden har inget abonnemang tillgängligt för bokning",
-      "individual": "Individuell tjänst"
-    },
     "bonusPanel": {
       "title": "Ge bonus"
     },
     "toasts": {
       "noPhone": "Kunden har inget telefonnummer",
       "copied": "Kopierat",
-      "bookingCreated": "Bokning skapad",
-      "bookingFailed": "Kunde inte boka",
       "bonusFailed": "Kunde inte ge poäng",
       "bonusApplied": "Bonus given: {{label}}",
       "clientAdded": "Kund tillagd"

@@ -196,6 +196,7 @@
     "book_more": "Book another mat",
     "book_trial": "Book for free",
     "free": "Free",
+    "first_lesson_price": "{{price}} · first class −{{percent}}%",
     "not_bookable": "This class cannot be booked online",
     "not_bookable_hint": "Booking is open only during studio hours and within the published schedule.",
     "awaiting_confirmation": "Request sent — waiting for the studio to confirm"

@@ -252,11 +252,6 @@ export function useClientMutations() {
     onSuccess: (_r, { id }) => { invalidateDetail(id); qc.invalidateQueries({ queryKey: queryKeys.clientNotes(id) }); },
   });
 
-  const bookMut = useMutation({
-    mutationFn: ({ id, lessonId }: { id: number; lessonId: number }) => clientsApi.book(id, lessonId),
-    onSuccess: (_r, { id }) => { invalidateDetail(id); qc.invalidateQueries({ queryKey: queryKeys.clientEventsAll(id) }); },
-  });
-
   const addBonusMut = useMutation({
     mutationFn: ({ id, amount, description }: { id: number; amount: number; description?: string }) =>
       clientsApi.addBonus(id, amount, description),
@@ -276,7 +271,6 @@ export function useClientMutations() {
     updateNote: (id: number, noteId: number, text: string, photos: string[] = []) =>
       updateNoteMut.mutateAsync({ id, noteId, text, photos }),
     deleteNote: (id: number, noteId: number) => deleteNoteMut.mutateAsync({ id, noteId }),
-    book: (id: number, lessonId: number) => bookMut.mutateAsync({ id, lessonId }),
     addBonus: (id: number, amount: number, description?: string) => addBonusMut.mutateAsync({ id, amount, description }),
   };
 }

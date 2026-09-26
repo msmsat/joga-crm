@@ -15,6 +15,7 @@ import { formatMoney } from '../../../../lib/money';
 import type { AvailabilitySlot, QuoteRead } from '../../../../api/booking/hybrid.types';
 import type { ServiceRead } from '../../../../api/studio/services.api';
 import { useResourceBookingChoice } from './useResourceBookingChoice';
+import { useBookingPayment } from './useBookingPayment';
 
 export type ResourceBookingOptions = {
   onClose: () => void;
@@ -40,6 +41,9 @@ const iso = (date: Date) =>
  * Запись идёт теми же quote/confirm, что и в Mini-app (§6.3). Прямого INSERT
  * из журнала нет и не будет: иначе правила покрытия, буферов и занятости
  * пришлось бы держать во второй реализации.
+ *
+ * Последний шаг — оплата (useBookingPayment): чек приходит вслед за условиями,
+ * подтверждение принимает названную сумму наличными в той же транзакции.
  */
 export function useResourceBooking({
   onClose, onCreated, clientId = null, defaultDate, defaultServiceId, teacherId: initialTeacherId = null,
@@ -55,8 +59,18 @@ export function useResourceBooking({
   const [quote, setQuote] = useState<QuoteRead | null>(null);
   const [saving, setSaving] = useState(false);
   const [quoting, setQuoting] = useState(false);
+  // Скидка на первое занятие для ЭТОЙ записи: ставится сама, если положена;
+  // выключатель на шаге оплаты её снимает. Новый клиент — снова включена.
+  const [firstLesson, setFirstLessonState] = useState(true);
+  const payment = useBookingPayment();
   const quoteVersion = useRef(0);
-  const resetQuote = () => { quoteVersion.current += 1; setQuote(null); setQuoting(false); };
+  // Время, под которое взяты условия: выключатель первого занятия берёт их
+  // заново на то же время, а не сбрасывает выбор.
+  const lastSlot = useRef<AvailabilitySlot | null>(null);
+  const resetQuote = () => {
+    quoteVersion.current += 1; lastSlot.current = null;
+    setQuote(null); setQuoting(false); payment.reset();
+  };
 
   const { data: services = [], error: servicesError, isPending: servicesLoading } = useQuery({ queryKey: queryKeys.services, queryFn: () => servicesApi.list() });
   const { data: branches = [] } = useQuery({ queryKey: queryKeys.branches, queryFn: () => studioApi.getBranches() });
@@ -117,17 +131,22 @@ export function useResourceBooking({
   const slots: AvailabilitySlot[] = availability?.slots ?? [];
   const reason = availability && availability.slots.length === 0 ? availability.reason ?? 'empty' : null;
 
-  const pick = async (slot: AvailabilitySlot) => {
+  const pick = async (slot: AvailabilitySlot, withFirstLesson = firstLesson) => {
     if (serviceId == null || branchId == null || client == null || saving) return;
     const version = ++quoteVersion.current;
+    lastSlot.current = slot;
     setQuoting(true);
     try {
       const request = {
         booking_mode: 'resource' as const, client_id: client, service_id: serviceId,
         branch_id: branchId, teacher_id: slot.teacher_ids[0] ?? null, starts_at: slot.starts_at,
+        first_lesson: withFirstLesson,
       };
       const result = await hybridApi.quote(request);
-      if (version === quoteVersion.current) setQuote(result);
+      if (version === quoteVersion.current) {
+        setQuote(result);
+        payment.load(result.quote_id);
+      }
     } catch (err) {
       if (version === quoteVersion.current) toast.error(errorMessage(err, t));
     } finally {
@@ -135,14 +154,24 @@ export function useResourceBooking({
     }
   };
 
-  /** Подтвердить запись. Заметка (если есть) ложится в занятие, которое
-   *  создала запись: отдельного поля у quote/confirm нет, а заметка — свойство
-   *  занятия, как и у события (PATCH её пускает всегда, даже у прошедшего). */
+  /** Выключатель первого занятия на шаге оплаты: условия берутся заново на то
+   *  же время — скидка меняет сумму, а время и мастер остаются выбранными. */
+  const setFirstLesson = (value: boolean) => {
+    setFirstLessonState(value);
+    if (lastSlot.current) void pick(lastSlot.current, value);
+  };
+
+  /** Подтвердить запись и принять оплату наличными (сумма — из чека шага
+   *  оплаты; сервер пересчитает её и при расхождении не запишет ничего).
+   *  Заметка (если есть) ложится в занятие, которое создала запись: отдельного
+   *  поля у quote/confirm нет, а заметка — свойство занятия, как и у события
+   *  (PATCH её пускает всегда, даже у прошедшего). */
   const confirm = async (note?: { notes: string; photos: string[] }) => {
-    if (!quote || saving) return;
+    const paid = payment.request();
+    if (!quote || saving || !paid) return;
     setSaving(true);
     try {
-      const booked = await hybridApi.confirm(quote.quote_id);
+      const booked = await hybridApi.confirm(quote.quote_id, paid);
       if (note && (note.notes || note.photos.length > 0)) {
         try {
           await scheduleApi.updateLesson(booked.lesson_id, { notes: note.notes, photos: note.photos });
@@ -155,9 +184,10 @@ export function useResourceBooking({
       onCreated();
       onClose();
     } catch (err) {
-      // Слот мог уйти между показом и подтверждением — форма остаётся
-      // открытой, время перечитывается.
-      setQuote(null);
+      // Слот мог уйти, ваучер — погаситься, сумма — измениться между показом и
+      // подтверждением. Сервер в этом случае не записал ничего (ни брони, ни
+      // денег): форма остаётся открытой, время и чек перечитываются.
+      resetQuote();
       void refreshSlots();
       toast.error(errorMessage(err, t));
     } finally {
@@ -167,7 +197,8 @@ export function useResourceBooking({
 
   // Любая смена выбора обнуляет уже взятые условия: они были посчитаны под прошлый.
   return {
-    client, setClient: (id: number) => { setClient(id); resetQuote(); },
+    client,
+    setClient: (id: number) => { setClient(id); setFirstLessonState(true); resetQuote(); payment.clear(); },
     setServiceId: (id: number) => { setServiceId(id); resetQuote(); },
     setBranchId: (id: number) => { setBranchId(id); resetQuote(); },
     setTeacherId: (id: number | null) => { setTeacherId(id); resetQuote(); },
@@ -177,6 +208,7 @@ export function useResourceBooking({
     rangeOf, priceAt, durationAt, serviceHint,
     slots, reason, slotsLoading, slotsError, refreshSlots,
     quote, quoting, saving, pick, confirm,
+    firstLesson, setFirstLesson, payment,
   };
 }
 

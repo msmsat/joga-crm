@@ -16,6 +16,8 @@ export interface InputProps {
   icon?: React.ReactNode;        // иконка слева (например, поиск)
   rows?: number;                 // >0 → многострочное поле (описание) вместо input
   suffix?: string;               // единица измерения справа в поле (мин, м², ₽)
+  onEnter?: () => void;          // Enter в однострочном поле — «Применить» рядом (промокод, ваучер)
+  autoFocus?: boolean;           // поле, которое раскрыли кнопкой: печатать сразу, без второго клика
 }
 
 const labelStyle: React.CSSProperties = {
@@ -24,7 +26,7 @@ const labelStyle: React.CSSProperties = {
 };
 
 // Поле ввода кита: label + glow-фокус (эталон FocusInput) + состояние ошибки.
-export function Input({ label, value, onChange, onBlur, placeholder, type = 'text', error, disabled, monospace, min, max, step, icon, rows, suffix }: InputProps) {
+export function Input({ label, value, onChange, onBlur, placeholder, type = 'text', error, disabled, monospace, min, max, step, icon, rows, suffix, onEnter, autoFocus }: InputProps) {
   const [focused, setFocused] = useState(false);
   const borderColor = error ? '#D88C9A' : focused ? '#FCAE91' : 'rgba(var(--ink),0.09)';
 
@@ -64,7 +66,12 @@ export function Input({ label, value, onChange, onBlur, placeholder, type = 'tex
         {rows ? (
           <textarea {...shared} rows={rows} style={{ ...fieldStyle, resize: 'none', lineHeight: 1.5, display: 'block' }} />
         ) : (
-          <input {...shared} type={type} min={min} max={max} step={step} style={fieldStyle} />
+          <input {...shared} type={type} min={min} max={max} step={step} style={fieldStyle} autoFocus={autoFocus}
+                 onKeyDown={onEnter ? e => {
+                   // Enter не должен отправить окружающую форму и закрыть окно:
+                   // здесь он значит «применить это поле», а не «сохранить всё».
+                   if (e.key === 'Enter') { e.preventDefault(); onEnter(); }
+                 } : undefined} />
         )}
         {suffix && (
           <span style={{

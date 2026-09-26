@@ -32,8 +32,10 @@
         "sub": "Richiedi il pagamento prima della conferma"
       },
       "trialLesson": {
-        "label": "Prima lezione gratuita",
-        "sub": "La prima prenotazione di un nuovo cliente la offre lo studio"
+        "label": "Sconto sulla prima lezione",
+        "free": "La prima lezione di un nuovo cliente è gratuita.",
+        "percent": "La prima lezione di un nuovo cliente è scontata del {{percent}}%.",
+        "change": "La percentuale si imposta in «Fidelizzazione»"
       },
       "trainerConfirm": {
         "label": "Conferma dell'istruttore",

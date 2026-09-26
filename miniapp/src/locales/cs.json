@@ -196,6 +196,7 @@
     "book_more": "Rezervovat další podložku",
     "book_trial": "Rezervovat zdarma",
     "free": "Zdarma",
+    "first_lesson_price": "{{price}} · první lekce −{{percent}} %",
     "not_bookable": "Tuto lekci nelze rezervovat online",
     "not_bookable_hint": "Rezervovat lze jen v provozních hodinách studia a v rámci otevřeného rozvrhu.",
     "awaiting_confirmation": "Žádost odeslána — čeká na potvrzení studia"

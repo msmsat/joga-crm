@@ -32,8 +32,10 @@
         "sub": "Exigir pagamento antes da confirmação"
       },
       "trialLesson": {
-        "label": "Primeira aula grátis",
-        "sub": "A primeira marcação de um cliente novo é por conta do estúdio"
+        "label": "Desconto na primeira aula",
+        "free": "A primeira aula de um novo cliente é grátis.",
+        "percent": "A primeira aula de um novo cliente tem {{percent}}% de desconto.",
+        "change": "A percentagem define-se em «Fidelização»"
       },
       "trainerConfirm": {
         "label": "Confirmação do instrutor",

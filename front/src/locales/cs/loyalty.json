@@ -27,6 +27,11 @@
       "desc": "Program „Přiveď kamaráda“",
       "statLabel": "doporučení"
     },
+    "first_lesson": {
+      "title": "První lekce",
+      "desc": "První rezervace nového klienta zdarma nebo se slevou",
+      "statLabel": "prvních lekcí"
+    },
     "promocodes": {
       "title": "Promo kódy",
       "desc": "Slevové kódy s limitem použití",
@@ -154,14 +159,29 @@
     "depositTotalSub": "na depozitech klientů",
     "depositTopClients": "Top klienti podle zůstatku",
     "depositEmpty": "Depozit zatím nikdo nemá",
-    "depositHint": "Vklady a výběry se dělají v profilu klienta. Program doporučení může vyplácet bonusy na depozit místo bodů."
+    "depositHint": "Vklady a výběry se dělají v profilu klienta. Program doporučení může vyplácet bonusy na depozit místo bodů.",
+    "firstLesson": {
+      "sizeTitle": "Výše slevy",
+      "free": "Zdarma",
+      "percent": "Sleva, %",
+      "freeHint": "První lekce je dárek — klient nic neplatí.",
+      "payHint": "Klient zaplatí {{rest}} % ceny první lekce.",
+      "howTitle": "Jak to funguje",
+      "how": {
+        "who": "Sleva se sama použije na první rezervaci nového klienta — v Deníku, mini aplikaci i rezervačním widgetu.",
+        "stacking": "S jinými slevami se nesčítá: platí ta nejvýhodnější pro klienta.",
+        "journal": "V Deníku ji lze pro konkrétní rezervaci vypnout v kroku platby.",
+        "booking": "Stejný přepínač je v sekci „Online rezervace → Obecná nastavení“."
+      }
+    }
   },
   "validation": {
     "required": "Toto pole je povinné",
     "minOne": "Musí být alespoň 1",
     "minZero": "Nemůže být záporné",
     "positive": "Musí být větší než 0",
-    "range0to100": "0 až 100"
+    "range0to100": "0 až 100",
+    "range1to100": "Od 1 do 100"
   },
   "toasts": {
     "saved": "Program aktivován",

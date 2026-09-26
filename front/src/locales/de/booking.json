@@ -32,8 +32,10 @@
         "sub": "Zahlung vor der Bestätigung verlangen"
       },
       "trialLesson": {
-        "label": "Erster Kurs gratis",
-        "sub": "Die erste Buchung eines neuen Kunden geht aufs Studio"
+        "label": "Rabatt auf den ersten Kurs",
+        "free": "Der erste Kurs neuer Kunden ist gratis.",
+        "percent": "Der erste Kurs neuer Kunden ist {{percent}} % günstiger.",
+        "change": "Prozentsatz im „Treueprogramm“ festlegen"
       },
       "trainerConfirm": {
         "label": "Bestätigung durch Trainer",

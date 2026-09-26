@@ -27,6 +27,11 @@
       "desc": "Program „Przyprowadź znajomego”",
       "statLabel": "poleceń"
     },
+    "first_lesson": {
+      "title": "Pierwsze zajęcia",
+      "desc": "Pierwsza rezerwacja nowego klienta za darmo lub z rabatem",
+      "statLabel": "pierwszych zajęć"
+    },
     "promocodes": {
       "title": "Kody promocyjne",
       "desc": "Kody rabatowe z limitem użyć",
@@ -154,14 +159,29 @@
     "depositTotalSub": "na wszystkich depozytach klientów",
     "depositTopClients": "Najlepsi klienci według salda",
     "depositEmpty": "Nikt nie ma jeszcze depozytu",
-    "depositHint": "Doładowania i wypłaty odbywają się w profilu klienta. Program poleceń może wypłacać bonusy na depozyt zamiast w punktach."
+    "depositHint": "Doładowania i wypłaty odbywają się w profilu klienta. Program poleceń może wypłacać bonusy na depozyt zamiast w punktach.",
+    "firstLesson": {
+      "sizeTitle": "Wysokość rabatu",
+      "free": "Za darmo",
+      "percent": "Rabat, %",
+      "freeHint": "Pierwsze zajęcia są w prezencie — klient nic nie płaci.",
+      "payHint": "Klient płaci {{rest}}% ceny pierwszych zajęć.",
+      "howTitle": "Jak to działa",
+      "how": {
+        "who": "Rabat nalicza się sam przy pierwszej rezerwacji nowego klienta — w Grafiku, mini aplikacji i widżecie rezerwacji.",
+        "stacking": "Nie sumuje się z innymi rabatami: obowiązuje najkorzystniejszy dla klienta.",
+        "journal": "W Grafiku można go wyłączyć dla konkretnej rezerwacji na etapie płatności.",
+        "booking": "Ten sam przełącznik jest w sekcji „Rezerwacja online → Ustawienia ogólne”."
+      }
+    }
   },
   "validation": {
     "required": "To pole jest wymagane",
     "minOne": "Musi wynosić co najmniej 1",
     "minZero": "Nie może być ujemne",
     "positive": "Musi być większe od 0",
-    "range0to100": "Od 0 do 100"
+    "range0to100": "Od 0 do 100",
+    "range1to100": "Od 1 do 100"
   },
   "toasts": {
     "saved": "Program aktywowany",

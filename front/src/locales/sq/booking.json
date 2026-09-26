@@ -32,8 +32,10 @@
         "sub": "Kërko pagesë para konfirmimit"
       },
       "trialLesson": {
-        "label": "Mësimi i parë falas",
-        "sub": "Rezervimin e parë të klientit të ri e paguan studioja"
+        "label": "Zbritje për mësimin e parë",
+        "free": "Mësimi i parë i një klienti të ri është falas.",
+        "percent": "Mësimi i parë i një klienti të ri ka {{percent}}% zbritje.",
+        "change": "Përqindja caktohet te «Besnikëria»"
       },
       "trainerConfirm": {
         "label": "Konfirmim nga trajneri",

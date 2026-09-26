@@ -27,6 +27,11 @@
       "desc": "Programmet „Tag en ven med”",
       "statLabel": "henvisninger"
     },
+    "first_lesson": {
+      "title": "Første hold",
+      "desc": "Gratis eller rabatteret første booking for nye kunder",
+      "statLabel": "første hold"
+    },
     "promocodes": {
       "title": "Rabatkoder",
       "desc": "Rabatkoder med en brugsgrænse",
@@ -154,14 +159,29 @@
     "depositTotalSub": "på tværs af kunders indeståender",
     "depositTopClients": "Topkunder efter saldo",
     "depositEmpty": "Ingen har et indestående endnu",
-    "depositHint": "Indbetalinger og udbetalinger sker på kundens profil. Henvisningsprogrammet kan udbetale bonusser til indeståendet i stedet for som point."
+    "depositHint": "Indbetalinger og udbetalinger sker på kundens profil. Henvisningsprogrammet kan udbetale bonusser til indeståendet i stedet for som point.",
+    "firstLesson": {
+      "sizeTitle": "Rabattens størrelse",
+      "free": "Gratis",
+      "percent": "Rabat, %",
+      "freeHint": "Første hold er en gave — kunden betaler intet.",
+      "payHint": "Kunden betaler {{rest}} % af prisen for første hold.",
+      "howTitle": "Sådan virker det",
+      "how": {
+        "who": "Rabatten gælder automatisk for en ny kundes første booking — i Kalender, mini-appen og bookingwidgetten.",
+        "stacking": "Kan ikke kombineres med andre rabatter: den bedste for kunden gælder.",
+        "journal": "I Kalender kan du slå den fra for en bestemt booking ved betalingstrinnet.",
+        "booking": "Den samme kontakt findes under »Onlinebooking → Generelle indstillinger«."
+      }
+    }
   },
   "validation": {
     "required": "Dette felt er påkrævet",
     "minOne": "Skal være mindst 1",
     "minZero": "Må ikke være negativt",
     "positive": "Skal være større end 0",
-    "range0to100": "0 til 100"
+    "range0to100": "0 til 100",
+    "range1to100": "Fra 1 til 100"
   },
   "toasts": {
     "saved": "Programmet er aktiveret",

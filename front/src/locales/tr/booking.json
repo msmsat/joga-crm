@@ -32,8 +32,10 @@
         "sub": "Onaydan önce ödeme iste"
       },
       "trialLesson": {
-        "label": "İlk ders ücretsiz",
-        "sub": "Yeni müşterinin ilk randevusu stüdyodan"
+        "label": "İlk ders indirimi",
+        "free": "Yeni müşterinin ilk dersi ücretsizdir.",
+        "percent": "Yeni müşterinin ilk dersi %{{percent}} indirimlidir.",
+        "change": "Oran “Sadakat” bölümünden ayarlanır"
       },
       "trainerConfirm": {
         "label": "Eğitmen onayı",

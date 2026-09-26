@@ -15,7 +15,7 @@ import { useStudioCurrency } from '../../../../hooks/useStudioCurrency';
 import { getStudioRole } from '../../../../utils/auth';
 import { getCurrencySymbol } from '../../../../components/UI';
 import { ConfirmModal, NotePhotos, NoteEditorModal } from '../../../../components/ui/index';
-import { ResourceBookingModal } from '../../Journal/components/modals/ResourceBookingModal';
+import { BookingWizard } from '../../Journal/components/modals/booking-wizard/BookingWizard';
 
 // ─── SVG ICONS ────────────────────────────────────────────────────────────────
 const IconPhone = () => (
@@ -414,7 +414,7 @@ function ClientPanel({ client, profile, onClose, onDelete }: {
   const isOwner = role === 'owner';
   const currency = getCurrencySymbol(useStudioCurrency());
   const [activeTab,    setActiveTab]    = useState<'info' | 'events' | 'notes' | 'wallet'>('info');
-  const [resourceBookingOpen, setResourceBookingOpen] = useState(false);
+  const [bookingOpen,  setBookingOpen]  = useState(false);
   const [tagInput,     setTagInput]     = useState('');
   const [regValue,     setRegValue]     = useState(client.registration_date ?? '');
   const [editingReg,   setEditingReg]   = useState(false);
@@ -449,24 +449,11 @@ function ClientPanel({ client, profile, onClose, onDelete }: {
     setTagInput('');
     setRegValue(client.registration_date ?? '');
     setEditingReg(false);
+    setBookingOpen(false);
   }
 
   const apiEvents = useClientEvents(client.id, actions.eventFilter, activeTab === 'events');
 
-  const bookingWindowStart = actions.bookingWindowStart;
-  const next7Days = (() => {
-    const now = new Date();
-    return Array.from({ length: 7 }, (_, i) => {
-      const offset = bookingWindowStart + i;
-      const d = new Date(now);
-      d.setDate(now.getDate() + offset);
-      return {
-        offset,
-        dayName: offset === 0 ? t('panel.bookingPanel.today') : d.toLocaleDateString(i18nInstance.language, { weekday: 'short' }),
-        dayNum: d.getDate(),
-      };
-    });
-  })();
 
   return (
     <div style={{ flex: 1, background: 'var(--bg-card)', height: '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
@@ -556,13 +543,14 @@ function ClientPanel({ client, profile, onClose, onDelete }: {
           >
             <IconWhatsApp/>WhatsApp
           </button>
-          {/* П.13 — Записать */}
+          {/* П.13 — Записать: сразу мастер записи с этим клиентом — тот же, что на
+              телефоне открывается из журнала, только шаг выбора клиента пропущен. */}
           {canEdit && <button
             className="cl-action-btn"
-            onClick={actions.toggleBooking}
-            style={{ flex: 1, padding: '8px 4px', borderRadius: '10px', fontSize: '10px', fontWeight: 700, border: `1px solid ${actions.showBooking ? 'var(--peach)' : 'rgba(249,160,139,0.4)'}`, background: actions.showBooking ? 'rgba(249,160,139,0.12)' : 'rgba(249,160,139,0.06)', color: 'var(--peach)', cursor: 'pointer', fontFamily: 'Manrope', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', transition: 'all 0.22s cubic-bezier(0.34,1.56,0.64,1)' }}
+            onClick={() => setBookingOpen(true)}
+            style={{ flex: 1, padding: '8px 4px', borderRadius: '10px', fontSize: '10px', fontWeight: 700, border: `1px solid ${bookingOpen ? 'var(--peach)' : 'rgba(249,160,139,0.4)'}`, background: bookingOpen ? 'rgba(249,160,139,0.12)' : 'rgba(249,160,139,0.06)', color: 'var(--peach)', cursor: 'pointer', fontFamily: 'Manrope', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', transition: 'all 0.22s cubic-bezier(0.34,1.56,0.64,1)' }}
             onMouseEnter={e => { e.currentTarget.style.background='rgba(249,160,139,0.14)'; e.currentTarget.style.borderColor='var(--peach)'; }}
-            onMouseLeave={e => { if (!actions.showBooking) { e.currentTarget.style.background='rgba(249,160,139,0.06)'; e.currentTarget.style.borderColor='rgba(249,160,139,0.4)'; } }}
+            onMouseLeave={e => { if (!bookingOpen) { e.currentTarget.style.background='rgba(249,160,139,0.06)'; e.currentTarget.style.borderColor='rgba(249,160,139,0.4)'; } }}
           >
             <IconCalendar/>{t('panel.actions.book')}
           </button>}
@@ -850,100 +838,16 @@ function ClientPanel({ client, profile, onClose, onDelete }: {
         )}
       </div>
 
-      {/* П.13 — BOOKING PANEL */}
-      {actions.showBooking && (
-        <div style={{ padding: '16px 20px', borderTop: '1px solid var(--border)', background: 'var(--bg-card)', animation: 'panelSlideIn 0.3s ease both', flexShrink: 0, maxHeight: '280px', overflowY: 'auto' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-            <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text)' }}>{t('panel.bookingPanel.title')}</span>
-            <button onClick={actions.toggleBooking} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text3)', display: 'flex' }}><IconClose/></button>
-          </div>
-
-          {!client.active_subscription && (
-            <div style={{ padding: '9px 12px', borderRadius: '10px', background: 'rgba(216,140,154,0.08)', border: '1px solid rgba(216,140,154,0.25)', color: '#B5677A', fontSize: '11px', fontWeight: 600, marginBottom: '12px' }}>
-              {t('panel.bookingPanel.noSubscription')}
-            </div>
-          )}
-
-          {/* Date carousel — 7 колонок CSS Grid, всегда влезают в ширину панели без скролла */}
-          <div style={{ display: 'flex', gap: '6px', marginBottom: '12px', alignItems: 'center', minWidth: 0 }}>
-            <button
-              onClick={() => actions.shiftBookingWindow(-7)}
-              disabled={bookingWindowStart === 0}
-              style={{ flexShrink: 0, width: '28px', height: '28px', borderRadius: '8px', border: '1px solid var(--border)', background: 'transparent', cursor: bookingWindowStart === 0 ? 'default' : 'pointer', opacity: bookingWindowStart === 0 ? 0.35 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text3)' }}
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6"/></svg>
-            </button>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px', flex: 1, minWidth: 0 }}>
-              {next7Days.map(day => (
-                <button
-                  key={day.offset}
-                  onClick={() => actions.setBookingDate(day.offset)}
-                  style={{ minWidth: 0, padding: '8px 2px', borderRadius: '10px', border: `1px solid ${actions.bookingDate === day.offset ? 'var(--peach)' : 'var(--border)'}`, background: actions.bookingDate === day.offset ? 'rgba(249,160,139,0.12)' : 'transparent', cursor: 'pointer', fontFamily: 'Manrope', transition: 'all 0.2s', textAlign: 'center' }}
-                >
-                  <div style={{ fontSize: '9px', fontWeight: 700, color: actions.bookingDate === day.offset ? 'var(--peach)' : 'var(--text3)', textTransform: 'uppercase', marginBottom: '3px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{day.dayName}</div>
-                  <div style={{ fontSize: '14px', fontWeight: 800, color: actions.bookingDate === day.offset ? 'var(--peach)' : 'var(--text)' }}>{day.dayNum}</div>
-                </button>
-              ))}
-            </div>
-            <button
-              onClick={() => actions.shiftBookingWindow(7)}
-              style={{ flexShrink: 0, width: '28px', height: '28px', borderRadius: '8px', border: '1px solid var(--border)', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text3)' }}
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6"/></svg>
-            </button>
-          </div>
-
-          {/* Занятия на выбранный день (реальное расписание) */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', marginBottom: '12px' }}>
-            {actions.bookingLessons.length === 0 && (
-              <div style={{ fontSize: '12px', color: 'var(--text3)', textAlign: 'center', padding: '12px 0' }}>
-                {t('panel.bookingPanel.noLessons')}
-              </div>
-            )}
-            {actions.bookingLessons.map(l => {
-              const full = l.booked_count >= l.total_spots;
-              const disabled = full || l.status === 'cancelled';
-              const active = actions.bookingLessonId === l.id;
-              return (
-                <button
-                  key={l.id}
-                  disabled={disabled}
-                  onClick={() => actions.setBookingLessonId(l.id)}
-                  style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '9px 12px', borderRadius: '10px', border: `1px solid ${active ? 'var(--peach)' : 'var(--border)'}`, background: active ? 'rgba(249,160,139,0.12)' : 'transparent', cursor: disabled ? 'default' : 'pointer', opacity: disabled ? 0.45 : 1, fontFamily: 'Manrope', transition: 'all 0.2s', textAlign: 'left' }}
-                >
-                  <span style={{ fontSize: '12px', fontWeight: 800, color: active ? 'var(--peach)' : 'var(--text)' }}>{l.start_time.slice(11, 16)}</span>
-                  <span style={{ flex: 1, fontSize: '12px', fontWeight: 600, color: 'var(--text2)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{l.name}</span>
-                  <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text3)' }}>{full ? t('panel.bookingPanel.full') : `${l.booked_count}/${l.total_spots}`}</span>
-                </button>
-              );
-            })}
-          </div>
-
-          {/* HB-22 п.5: индивидуальная запись из карточки идёт теми же
-              quote/confirm, что и везде, с предвыбранным клиентом. Отдельного
-              маршрута с прямым INSERT здесь нет. */}
-          <button
-            onClick={() => setResourceBookingOpen(true)}
-            style={{ width: '100%', padding: '10px', borderRadius: '10px', border: '1px solid var(--border)', background: 'transparent', color: 'var(--text2)', fontSize: '12px', fontWeight: 700, cursor: 'pointer', fontFamily: 'Manrope', marginBottom: '8px' }}
-          >{t('panel.bookingPanel.individual')}</button>
-
-          <button
-            onClick={actions.confirmBooking}
-            disabled={actions.bookingLessonId == null}
-            style={{ width: '100%', padding: '11px', borderRadius: '10px', border: 'none', background: 'linear-gradient(135deg,var(--peach),#F5866E)', color: '#fff', fontSize: '13px', fontWeight: 700, cursor: actions.bookingLessonId == null ? 'default' : 'pointer', opacity: actions.bookingLessonId == null ? 0.5 : 1, fontFamily: 'Manrope', boxShadow: '0 4px 14px -2px rgba(249,160,139,0.4)', transition: 'all 0.2s' }}
-          >{t('panel.bookingPanel.confirm')}</button>
-        </div>
-      )}
-
-      {/* П.14 — BONUS PANEL */}
-      {resourceBookingOpen && (
-        <ResourceBookingModal
-          clientId={client.id}
-          onClose={() => setResourceBookingOpen(false)}
-          onCreated={() => actions.toggleBooking()}
+      {bookingOpen && (
+        <BookingWizard
+          clientId={client.id} defaultTeacherId={null}
+          defaultDate={new Date().toLocaleDateString('sv-SE')}
+          onClose={() => setBookingOpen(false)}
+          onCreated={actions.refreshAfterBooking}
         />
       )}
 
+      {/* П.14 — BONUS PANEL */}
       {actions.showBonus && (
         <div style={{ padding: '14px 20px', borderTop: '1px solid var(--border)', background: 'var(--bg-card)', animation: 'panelSlideIn 0.3s ease both', flexShrink: 0 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>

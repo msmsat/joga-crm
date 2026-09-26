@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import List, Optional
-from sqlalchemy import Integer, String, Text, Boolean, DateTime, Float, JSON, ForeignKey, CheckConstraint, Index, func, text
+from sqlalchemy import Integer, SmallInteger, String, Text, Boolean, DateTime, Float, JSON, ForeignKey, CheckConstraint, Index, func, text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base import Base
@@ -127,6 +127,9 @@ class Reservation(Base):
         CheckConstraint(
             "status IN ('active', 'pending', 'hold', 'cancelled', 'attended')",
             name="check_reservation_status"),
+        CheckConstraint(
+            "trial_discount_percent IS NULL OR (trial_discount_percent >= 1 AND trial_discount_percent <= 100)",
+            name="check_reservation_trial_percent"),
         # Один коврик — один человек. Частичный: отменённые брони копятся на том
         # же месте, и без условия вторая запись на освободившийся коврик была бы
         # невозможна. Проверка «место свободно» в роутерах остаётся ради внятной
@@ -159,11 +162,18 @@ class Reservation(Base):
     # вместе с бронью, и отмена записи (status != 'active') убирает человека из
     # списка сама, без второго кода отмены.
     coffee: Mapped[bool] = mapped_column(Boolean, default=False, server_default="false", nullable=False)
-    # Подаренное первое занятие («Первое занятие бесплатно» в правилах записи).
-    # Флаг нужен именно на брони, а не выводится из «это первая бронь клиента»:
-    # ко второй записи первая уже существует, и задним числом отличить подарок от
-    # обычного визита было бы нечем — ни в Журнале, ни в отчётах.
+    # Первое занятие клиента со скидкой первого занятия («Скидка на первое
+    # занятие» в правилах записи и в Лояльности). Флаг нужен именно на брони, а
+    # не выводится из «это первая бронь клиента»: ко второй записи первая уже
+    # существует, и задним числом отличить её от обычного визита было бы нечем —
+    # ни в Журнале, ни в отчётах.
     is_trial: Mapped[bool] = mapped_column(Boolean, default=False, server_default="false", nullable=False)
+    # Процент скидки, ОБЕЩАННЫЙ при записи; заполнен ровно тогда, когда is_trial.
+    # 100 — подарок: платить нечего, долга нет. Меньше — клиент платит остаток,
+    # и касса считает его по этому снимку (services/booking_access.trial_percent),
+    # а не по нынешней настройке студии: владелец мог поменять процент или
+    # выключить программу после записи, а договор с клиентом уже заключён.
+    trial_discount_percent: Mapped[Optional[int]] = mapped_column(SmallInteger, nullable=True)
     # Долг за эту бронь: ClientPayment в статусе pending (оплата на месте).
     # Ссылка на брони, а не reservation_id на платеже: при включённой «Повторной
     # записи» у клиента бывает две брони на одно занятие, и по паре

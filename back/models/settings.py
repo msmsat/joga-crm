@@ -1,8 +1,8 @@
 from datetime import datetime
 from typing import List, Optional
 from sqlalchemy import (
-    BigInteger, Integer, String, Float, Boolean, DateTime, ForeignKey, Index, JSON, Text,
-    UniqueConstraint, func, text,
+    BigInteger, CheckConstraint, Integer, SmallInteger, String, Float, Boolean, DateTime, ForeignKey,
+    Index, JSON, Text, UniqueConstraint, func, text,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -416,6 +416,10 @@ class ThreadOption(Base):
 
 class StudioBookingSettings(Base):
     __tablename__ = "studio_booking_settings"
+    __table_args__ = (
+        CheckConstraint("trial_discount_percent >= 1 AND trial_discount_percent <= 100",
+                        name="check_booking_settings_trial_percent"),
+    )
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     studio_id: Mapped[int] = mapped_column(ForeignKey("studios.id", ondelete="CASCADE"), unique=True, index=True)
@@ -451,12 +455,17 @@ class StudioBookingSettings(Base):
     # умолчанию (решение владельца продукта, 11.08.2026): смысл механики в том,
     # чтобы люди знакомились, а выключенная по умолчанию она бы просто не
     # завелась — владелец не ищет тумблер, о котором не знает.
-    # «Первое занятие бесплатно»: студия дарит новому клиенту пробный визит.
-    # Живёт здесь, а не в Лояльности, потому что это правило ЗАПИСИ — оно
-    # отменяет соседнюю «Предоплату при записи» (prefill_on_booking), а не
-    # продаёт продукт. Выключено по умолчанию: подарок за счёт студии не
-    # включают за неё.
+    # «Скидка на первое занятие» (раньше — «Первое занятие бесплатно»): студия
+    # дарит новому клиенту пробный визит целиком или со скидкой. Хранится здесь,
+    # потому что это правило ЗАПИСИ — бесплатное первое занятие отменяет
+    # соседнюю «Предоплату при записи» (prefill_on_booking). Показывают его два
+    # раздела: «Онлайн-запись» (вкл/выкл) и «Лояльность» (вкл/выкл и процент) —
+    # оба пишут эти же колонки, второй копии настройки нет. Выключено по
+    # умолчанию: подарок за счёт студии не включают за неё.
     trial_lesson_free: Mapped[bool] = mapped_column(Boolean, default=False, server_default="false")
+    # Сколько процентов снимает первое занятие. 100 — бесплатно (прежний подарок,
+    # и умолчание: после наката у всех студий ничего не поменялось).
+    trial_discount_percent: Mapped[int] = mapped_column(SmallInteger, default=100, server_default="100")
     coffee_enabled: Mapped[bool] = mapped_column(Boolean, default=True, server_default="true")
     # До 3 мест рядом со студией: [{"name": ..., "address": ..., "url": ...}].
     # Владелец выбирает их сам — внешнего справочника мест в продукте нет.

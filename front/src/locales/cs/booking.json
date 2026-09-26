@@ -32,8 +32,10 @@
         "sub": "Vyžadovat platbu před potvrzením"
       },
       "trialLesson": {
-        "label": "První lekce zdarma",
-        "sub": "První rezervaci nového klienta hradí studio"
+        "label": "Sleva na první lekci",
+        "free": "První lekce nového klienta je zdarma.",
+        "percent": "První lekce nového klienta je se slevou {{percent}} %.",
+        "change": "Procento se nastavuje v sekci „Věrnost“"
       },
       "trainerConfirm": {
         "label": "Potvrzení trenérem",

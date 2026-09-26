@@ -109,6 +109,7 @@
     "SLOT_UNAVAILABLE": "Tiden är upptagen eller utanför behandlarens arbetstid",
     "VERSION_CONFLICT": "Bokningen har ändrats i ett annat fönster — uppdatera schemat",
     "TERMS_CHANGED": "Villkoren för bokningen har ändrats — öppna den igen",
+    "AMOUNT_CHANGED": "Beloppet har ändrats — kontrollera summan och bekräfta igen",
     "INVALID_START": "Den tiden finns inte den dagen på grund av tidsomställningen",
     "WINDOW_CLOSED": "Bokningen har redan börjat eller passerat — den kan inte ändras",
     "PAYMENT_IN_PROGRESS": "En betalning pågår för bokningen — vänta tills den är klar",

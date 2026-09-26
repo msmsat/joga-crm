@@ -109,6 +109,7 @@
     "SLOT_UNAVAILABLE": "Această oră este ocupată sau în afara programului specialistului",
     "VERSION_CONFLICT": "Programarea a fost modificată în altă fereastră — reîmprospătați programul",
     "TERMS_CHANGED": "Condițiile programării s-au schimbat — deschideți-o din nou",
+    "AMOUNT_CHANGED": "Suma s-a schimbat — verificați totalul și confirmați din nou",
     "INVALID_START": "Această oră nu există în acea zi din cauza schimbării orei",
     "WINDOW_CLOSED": "Programarea a început deja sau a trecut — nu mai poate fi modificată",
     "PAYMENT_IN_PROGRESS": "Pentru această programare este în curs o plată — așteptați să se încheie",

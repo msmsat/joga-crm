@@ -1070,6 +1070,8 @@ async def book_lesson(
     result = await booking.create(
         db, studio_id=studio_id, client_id=client_id, lesson_id=body.lesson_id,
         source="manual", actor=booking.Actor.STAFF, require_funding=True,
+        # Как в Журнале: первое занятие со скидкой — долг на остаток, не отказ.
+        allow_payment=True,
     )
     if result.outcome is booking.Outcome.NO_FUNDING:
         await assert_can_book(db, client_id, lesson)  # здесь всегда бросает — ради точной причины

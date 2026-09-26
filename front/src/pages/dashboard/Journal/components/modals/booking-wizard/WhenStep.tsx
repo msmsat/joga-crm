@@ -1,61 +1,71 @@
-// Шаг 4 мастера записи: дата и время. Время — сетка только СВОБОДНЫХ начал,
-// идёт вниз вместе со списком, без прокрутки вбок. Начинается она с того
-// времени, что человек показал (или ближайшего свободного после него); более
-// раннее — по кнопке «Раньше». Первая клетка — «Своё время»: цифрами с
-// клавиатуры, и тоже только свободное.
-import { useState } from 'react';
+// Шаг 1 мастера записи: дата и время. Первым — потому что человек звонит и
+// называет, когда ему удобно; услуга и мастер подбираются уже под это время.
+// Время, с которым мастер открыли (клетка сетки, «сейчас»), уже выбрано —
+// его остаётся подтвердить «Продолжить» (подвал в BookingWizard) или сменить.
+// Свободно ли оно у мастера, скажет шаг мастера: сейчас ни услуга, ни мастер
+// ещё не названы. Выше сетки — занятия дня, где есть места: тап по такому
+// ставит время, услугу и мастера разом.
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { errorMessage } from '../../../../../../api/errorMessage';
 import { formatIndexToTimeStr, parseTimeToIndex } from '../../../utils';
 import type { BookingWizardState } from './useBookingWizard';
-import { WizardChips } from './WizardParts';
+import { toHHMM, toMin } from './freeTimes';
+
+/** Сетка первого шага — четверти часа рабочего дня журнала (07:00–22:00). */
+const GRID = Array.from({ length: (22 - 7) * 4 }, (_, i) => toHHMM(7 * 60 + i * 15));
 
 export function WhenStep({ w }: { w: BookingWizardState }) {
   const { t } = useTranslation(['journal', 'common']);
   const [typing, setTyping] = useState(false);
   const [draft, setDraft] = useState('');
-  const [typedBusy, setTypedBusy] = useState(false);
-  const [showEarlier, setShowEarlier] = useState(false);
-  const { resource } = w;
+  const selectedRef = useRef<HTMLButtonElement>(null);
 
-  const earlier = w.listFrom ? w.times.filter(tm => tm < w.listFrom!) : [];
-  const shown = showEarlier || !w.listFrom ? w.times : w.times.filter(tm => tm >= w.listFrom!);
+  // Прошедшее время сегодня не предлагается; выбранное — всегда в сетке,
+  // даже если оно не кратно пятнадцати (клетка 12:10).
+  const times = [...new Set([...GRID, ...(w.time ? [w.time] : [])])]
+    .filter(tm => !w.isToday || toMin(tm) >= w.nowMin || tm === w.time)
+    .sort();
+  const lessons = w.dayLessons
+    .filter(l => l.booking_mode !== 'resource' && l.status !== 'cancelled' && l.booked_count < l.total_spots
+      && (!w.isToday || toMin(l.start_time.slice(11, 16)) >= w.nowMin))
+    .sort((a, b) => a.start_time.localeCompare(b.start_time));
+
+  // Выбранное время — в поле зрения, а не где-то внизу сетки из шестидесяти клеток.
+  // Листаем только список шага: scrollIntoView сдвинул бы и саму страницу под листом.
+  useEffect(() => {
+    const el = selectedRef.current;
+    const list = el?.closest<HTMLElement>('.bw-list');
+    if (!el || !list) return;
+    const box = el.getBoundingClientRect();
+    const view = list.getBoundingClientRect();
+    list.scrollTop += box.top - view.top - (list.clientHeight - box.height) / 2;
+  }, []);
 
   const commitTyped = () => {
     setTyping(false);
-    if (!draft.trim()) return;
-    const time = formatIndexToTimeStr(parseTimeToIndex(draft));
-    // Занятое время форма не берёт — говорит об этом и оставляет прежнее.
-    if (!w.isFree(time)) { setTypedBusy(true); return; }
-    setTypedBusy(false);
-    w.setTime(time);
+    if (draft.trim()) w.setTime(formatIndexToTimeStr(parseTimeToIndex(draft)));
   };
-
-  const loading = w.isResource ? resource.slotsLoading : w.lessonsLoading;
-  const note = w.isResource && resource.slotsError ? errorMessage(resource.slotsError, t)
-    : loading && w.times.length === 0 ? t('common:loading')
-    : w.times.length === 0 ? t('journal:resourceBooking.noSlots')
-    : typedBusy ? t('journal:resourceBooking.moveBusy')
-    : null;
+  const lessonActive = (serviceId: number | null, teacherId: number | null, at: string) =>
+    w.masterChosen && w.service?.id === serviceId && w.teacherId === teacherId && w.time === at;
 
   return (
     <div className="bw-list bw-when">
       <div className="bw-field">
         <div className="jf-title">{t('journal:resourceBooking.date')}</div>
         <input className="modal-input bw-date" type="date" value={w.date}
-               onChange={e => { setShowEarlier(false); w.setDate(e.target.value); }} />
+               onChange={e => { if (e.target.value) w.setDate(e.target.value); }} />
       </div>
 
-      {!w.isResource && w.existing.length > 0 && (
+      {lessons.length > 0 && (
         <div className="bw-field">
           <div className="jf-title">{t('journal:wizard.existing')}</div>
-          <div className="bw-time-grid">
-            {w.existing.map(l => {
-              const hhmm = l.start_time.slice(11, 16);
+          <div className="jf-chips bw-lessons">
+            {lessons.map(l => {
+              const at = l.start_time.slice(11, 16);
               return (
-                <button key={l.id} type="button" className={`jf-chip bw-wide${w.lessonId === l.id ? ' active' : ''}`}
-                        onClick={() => w.setTime(hhmm, l.id)}>
-                  {hhmm} · {l.booked_count}/{l.total_spots}
+                <button key={l.id} type="button" onClick={() => w.pickLesson(l)}
+                        className={`jf-chip${lessonActive(l.service_id, l.teacher_id, at) ? ' active' : ''}`}>
+                  <b>{at}</b> {l.name} · {l.booked_count}/{l.total_spots}
                 </button>
               );
             })}
@@ -63,54 +73,26 @@ export function WhenStep({ w }: { w: BookingWizardState }) {
         </div>
       )}
 
-      {w.isResource && resource.choice.branchOptions.length > 1 && (
-        <div className="bw-field">
-          <div className="jf-title">{t('journal:resourceBooking.branch')}</div>
-          <WizardChips value={resource.branchId ?? 0} onPick={id => resource.setBranchId(id)}
-                       options={resource.choice.branchOptions.map(b => ({ value: b.id, label: b.name }))} />
-        </div>
-      )}
-      {!w.isResource && w.lessonId == null && !w.noHall && (
-        <div className="bw-field">
-          <div className="jf-title">{t('journal:newBooking.location')}</div>
-          <WizardChips value={w.hallId ?? 0} onPick={w.setHallId}
-                       options={w.halls.map(h => ({ value: h.id, label: h.name }))} />
-        </div>
-      )}
-      {!w.isResource && w.lessonId == null && w.noHall && (
-        <div className="bw-field">
-          <WizardChips value={w.branch ?? 0} onPick={w.setBranchId}
-                       options={w.branches.map(b => ({ value: b.id, label: b.name }))} />
-        </div>
-      )}
-
       <div className="bw-field">
-        <div className="jf-title">{w.isResource ? t('journal:resourceBooking.time') : t('journal:wizard.newLesson')}</div>
+        <div className="jf-title">{t('journal:resourceBooking.time')}</div>
         <div className="bw-time-grid">
           {typing ? (
             <input className="bw-time-input bw-wide" autoFocus inputMode="numeric" placeholder="10:30" value={draft}
                    onChange={e => setDraft(e.target.value.replace(/[^\d:]/g, '').slice(0, 5))}
                    onBlur={commitTyped} onKeyDown={e => { if (e.key === 'Enter') commitTyped(); }} />
           ) : (
-            <button type="button" className={`jf-chip bw-own bw-wide${w.time && w.lessonId == null && !shown.includes(w.time) ? ' active' : ''}`}
-                    onClick={() => { setDraft(''); setTyping(true); }}>
-              {w.time && w.lessonId == null && !shown.includes(w.time) ? w.time : t('journal:wizard.ownTime')}
+            <button type="button" className="jf-chip bw-own bw-wide" onClick={() => { setDraft(''); setTyping(true); }}>
+              {t('journal:wizard.ownTime')}
             </button>
           )}
-          {earlier.length > 0 && !showEarlier && (
-            <button type="button" className="jf-chip bw-earlier bw-wide" onClick={() => setShowEarlier(true)}>
-              {t('journal:wizard.earlier')}
-            </button>
-          )}
-          {shown.map(tm => (
-            <button key={tm} type="button"
-                    className={`jf-chip${w.time === tm && w.lessonId == null ? ' active' : ''}`}
-                    onClick={() => { setTypedBusy(false); w.setTime(tm); }}>
+          {times.map(tm => (
+            <button key={tm} type="button" ref={w.time === tm ? selectedRef : undefined}
+                    className={`jf-chip${w.time === tm ? ' active' : ''}`}
+                    onClick={() => w.setTime(tm)}>
               {tm}
             </button>
           ))}
         </div>
-        {note && <div className={typedBusy ? 'kp-error' : 'kp-hint'}>{note}</div>}
       </div>
     </div>
   );

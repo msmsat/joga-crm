@@ -35,6 +35,14 @@ export interface ReferralConfig {
   bonus_type: string
 }
 
+/** Скидка на первое занятие (GET/PATCH /loyalty/first-lesson). Своей таблицы у
+ *  программы нет: это правило записи, тумблер которого показывает и «Онлайн-запись». */
+export interface FirstLessonConfig {
+  is_enabled: boolean
+  /** 1–100; 100 — первое занятие бесплатно. */
+  discount_percent: number
+}
+
 export interface LoyaltyLevel {
   id: number
   name: string

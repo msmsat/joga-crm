@@ -285,23 +285,12 @@
       "deleteTitle": "Удалить заметку?",
       "deleteMessage": "Заметку нельзя будет восстановить."
     },
-    "bookingPanel": {
-      "title": "Быстрая запись",
-      "today": "Сег",
-      "noLessons": "Нет занятий в этот день",
-      "full": "Мест нет",
-      "confirm": "Записать →",
-      "noSubscription": "У клиента нет доступного абонемента для записи",
-      "individual": "Индивидуальная услуга"
-    },
     "bonusPanel": {
       "title": "Начислить бонус"
     },
     "toasts": {
       "noPhone": "У клиента не указан телефон",
       "copied": "Успешно скопировано",
-      "bookingCreated": "Запись создана",
-      "bookingFailed": "Не удалось записать",
       "bonusFailed": "Не удалось начислить баллы",
       "bonusApplied": "Бонус начислен: {{label}}",
       "clientAdded": "Клиент добавлен"

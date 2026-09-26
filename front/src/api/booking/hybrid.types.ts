@@ -36,7 +36,9 @@ export interface Terminology {
   space_is_axis: boolean;
 }
 export interface EventQuoteRequest { booking_mode: 'event'; lesson_id: number; spot_number?: number | null; payment_method?: 'venue' | 'card' }
-export interface ResourceQuoteRequest { booking_mode: 'resource'; service_id: number; branch_id: number; teacher_id?: number | null; starts_at: string; payment_method?: 'venue' | 'card' }
+/** `first_lesson` — только CRM: false выключает скидку на первое занятие для этой записи
+ *  (выключатель шага оплаты). Не прислано — скидка ставится сама, если положена. */
+export interface ResourceQuoteRequest { booking_mode: 'resource'; service_id: number; branch_id: number; teacher_id?: number | null; starts_at: string; payment_method?: 'venue' | 'card'; first_lesson?: boolean }
 export type QuoteRequest = EventQuoteRequest | ResourceQuoteRequest;
 /** Перенос индивидуальной записи из Журнала (CrmRescheduleQuoteRequest): перетаскивание,
  *  растягивание, поля карточки. Время — МЕСТНОЕ время студии (`local_start`, «2026-09-26T10:30:00»)
@@ -79,5 +81,34 @@ export interface BookingTerms {
   hall_id: number | null; tz_iana: string | null; starts_at: string | null; duration_min: number;
   buffer_before_min: number; buffer_after_min: number; lesson_version: number;
   booking_config_version: number; cancellation_deadline_min: number; payment_method: 'venue' | 'card'; spot_number: number | null;
+  /** Скидка на первое занятие: просили ли её (эхо выключателя), положена ли она клиенту
+   *  и сколько процентов даёт (100 — бесплатно). Применена = положена и не выключена. */
+  first_lesson: boolean; first_lesson_offered: boolean; first_lesson_percent: number | null;
 }
 export interface QuoteRead { quote_id: string; expires_at: string; booking_mode: BookingMode; terms: BookingTerms; next_action: NextAction; reservation_id: number | null }
+/** Промокод и ваучер (подарочный сертификат) шага оплаты. */
+export interface PaymentCodes { promo_code?: string | null; certificate_code?: string | null }
+/** Оплата наличными при подтверждении записи. `expected_total` — итог, который видел
+ *  администратор: сервер считает заново и при расхождении не записывает ничего. */
+export interface ConfirmPayment extends PaymentCodes { expected_total: number }
+export type PaymentDiscountKind = 'studio' | 'offer' | 'promo' | 'referral' | 'first_lesson';
+/** Чек шага оплаты — зеркало PaymentPreviewRead (back/schemas/schedule/hybrid.py). */
+export interface PaymentPreview {
+  currency: string;
+  base_price: number;
+  /** Чем покрыта запись, когда платить нечего. */
+  covered_by: 'subscription' | 'trial' | 'free' | null;
+  discounts: { kind: PaymentDiscountKind; amount: number }[];
+  first_lesson_offered: boolean;
+  first_lesson_applied: boolean;
+  first_lesson_percent: number | null;
+  /** null — промокод не вводили. */
+  promo_valid: boolean | null;
+  /** Промокод действует, но выгоднее другая скидка: скидки не суммируются. */
+  promo_outweighed: boolean;
+  /** Код ошибки ваучера (`loyalty.cert_used` …) — переводится через common:errors. */
+  certificate_error: string | null;
+  certificate_amount: number;
+  certificate_applied: number;
+  total: number;
+}

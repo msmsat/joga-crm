@@ -289,23 +289,12 @@
       "deleteTitle": "Të fshihet shënimi?",
       "deleteMessage": "Ky shënim nuk mund të rikthehet."
     },
-    "bookingPanel": {
-      "title": "Rezervim i shpejtë",
-      "today": "Sot",
-      "noLessons": "Nuk ka seanca këtë ditë",
-      "full": "Nuk ka vende",
-      "confirm": "Rezervo →",
-      "noSubscription": "Klienti nuk ka abonim të disponueshëm për rezervim",
-      "individual": "Shërbim individual"
-    },
     "bonusPanel": {
       "title": "Jep bonus"
     },
     "toasts": {
       "noPhone": "Klienti nuk ka numër telefoni",
       "copied": "U kopjua me sukses",
-      "bookingCreated": "Rezervimi u krijua",
-      "bookingFailed": "Rezervimi dështoi",
       "bonusFailed": "Dhënia e pikëve dështoi",
       "bonusApplied": "Bonusi u dha: {{label}}",
       "clientAdded": "Klienti u shtua"

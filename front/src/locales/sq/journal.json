@@ -66,6 +66,7 @@
     "markAttended": "Shëno pjesëmarrjen",
     "awaitingConfirmation": "Në pritje të konfirmimit",
     "trialLesson": "Provë",
+    "trialDiscount": "Provë · −{{percent}}%",
     "unpaid": "E papaguar · {{amount}}",
     "acceptPayment": "Prano pagesën",
     "payCash": "Kesh",
@@ -236,6 +237,37 @@
     "earlier": "Më herët",
     "check": "Kontrolloni rezervimin",
     "change": "Ndrysho",
-    "confirm": "Konfirmo"
+    "confirm": "Konfirmo",
+    "busyAt": "I zënë në {{time}}",
+    "allBusy": "Në {{time}} të gjithë janë të zënë — zgjidhni orën e lirë më të afërt të një specialisti"
+  },
+  "payment": {
+    "title": "Pagesa",
+    "price": "Çmimi",
+    "firstLesson": "Mësimi i parë",
+    "free": "falas",
+    "firstLessonOutweighed": "Një zbritje tjetër është më e favorshme — zbritjet nuk mblidhen",
+    "discount": {
+      "studio": "Zbritja e studios",
+      "offer": "Zbritje personale",
+      "referral": "Zbritje për ftesë"
+    },
+    "promo": "Kod promocional",
+    "voucher": "Kupon",
+    "promoPlaceholder": "Kod promocional",
+    "voucherPlaceholder": "Kodi i kuponit ose i certifikatës",
+    "apply": "Apliko",
+    "remove": "Hiq",
+    "promoInvalid": "Ky kod promocional nuk është i vlefshëm",
+    "promoOutweighed": "Nuk mblidhet — po zbatohet tashmë një zbritje më e mirë",
+    "voucherRemainder": "Vlera {{amount}} — pjesa e mbetur nuk ruhet",
+    "total": "Për t'u paguar në para në dorë",
+    "coveredBy": {
+      "subscription": "Me abonim",
+      "trial": "Mësimi i parë falas",
+      "free": "Falas"
+    },
+    "confirmAndPay": "Rezervo dhe merr {{amount}}",
+    "loadFailed": "Pagesa nuk u llogarit dot."
   }
 }

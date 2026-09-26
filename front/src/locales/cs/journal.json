@@ -66,6 +66,7 @@
     "markAttended": "Označit docházku",
     "awaitingConfirmation": "Čeká na potvrzení",
     "trialLesson": "Zkušební",
+    "trialDiscount": "Zkušební · −{{percent}}%",
     "unpaid": "Nezaplaceno · {{amount}}",
     "acceptPayment": "Přijmout platbu",
     "payCash": "Hotově",
@@ -240,6 +241,37 @@
     "earlier": "Dříve",
     "check": "Zkontrolujte rezervaci",
     "change": "Změnit",
-    "confirm": "Potvrdit"
+    "confirm": "Potvrdit",
+    "busyAt": "Obsazeno v {{time}}",
+    "allBusy": "V {{time}} jsou všichni obsazení — vyberte nejbližší volný čas u specialisty"
+  },
+  "payment": {
+    "title": "Platba",
+    "price": "Cena",
+    "firstLesson": "První lekce",
+    "free": "zdarma",
+    "firstLessonOutweighed": "Výhodnější je jiná sleva — slevy se nesčítají",
+    "discount": {
+      "studio": "Sleva studia",
+      "offer": "Osobní sleva",
+      "referral": "Sleva za doporučení"
+    },
+    "promo": "Promo kód",
+    "voucher": "Poukaz",
+    "promoPlaceholder": "Promo kód",
+    "voucherPlaceholder": "Kód poukazu nebo certifikátu",
+    "apply": "Použít",
+    "remove": "Odebrat",
+    "promoInvalid": "Tento promo kód neplatí",
+    "promoOutweighed": "Nesčítá se — už platí výhodnější sleva",
+    "voucherRemainder": "Hodnota {{amount}} — zbytek propadne",
+    "total": "K úhradě v hotovosti",
+    "coveredBy": {
+      "subscription": "Na permanentku",
+      "trial": "První lekce zdarma",
+      "free": "Zdarma"
+    },
+    "confirmAndPay": "Zapsat a přijmout {{amount}}",
+    "loadFailed": "Platbu se nepodařilo spočítat."
   }
 }

@@ -289,23 +289,12 @@
       "deleteTitle": "Slette notat?",
       "deleteMessage": "Dette notatet kan ikke gjenopprettes."
     },
-    "bookingPanel": {
-      "title": "Rask bestilling",
-      "today": "I dag",
-      "noLessons": "Ingen timer denne dagen",
-      "full": "Ingen ledige plasser",
-      "confirm": "Bestill →",
-      "noSubscription": "Kunden har ikke et abonnement som kan brukes til bestilling",
-      "individual": "Individuell tjeneste"
-    },
     "bonusPanel": {
       "title": "Gi bonus"
     },
     "toasts": {
       "noPhone": "Kunden har ikke telefonnummer",
       "copied": "Kopiert",
-      "bookingCreated": "Bestilling opprettet",
-      "bookingFailed": "Kunne ikke bestille",
       "bonusFailed": "Kunne ikke gi poeng",
       "bonusApplied": "Bonus gitt: {{label}}",
       "clientAdded": "Kunde lagt til"

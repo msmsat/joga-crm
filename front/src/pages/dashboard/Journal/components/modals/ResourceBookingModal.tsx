@@ -6,22 +6,24 @@ import { useResourceBooking } from '../../hooks/useResourceBooking';
 import type { ResourceBookingOptions } from '../../hooks/useResourceBooking';
 import { errorMessage } from '../../../../../api/errorMessage';
 import { useBusinessTerms } from '../../../../../hooks/useBusinessTerms';
-import { formatMoney } from '../../../../../lib/money';
 import { listedTimes } from '../../utils';
 import { usePhone } from '../../../../../hooks/usePhone';
 import { BookingWizard } from './booking-wizard/BookingWizard';
+import { BookingPayment } from '../BookingPayment';
+import { confirmLabel } from '../../hooks/useBookingPayment';
 
 /**
  * HB-22: «записать на индивидуальную услугу» — отдельная команда, не создание
  * события. Здесь нет ни вместимости, ни длительности: их называет сервер,
  * а форма отправляет только выбранные ID и момент из ответа availability.
  *
- * На компьютере это центрированное окно — для кнопки тулбара и карточки
- * клиента; у клетки сетки та же запись открывается клавиатурным окном
- * (ResourceKeypadModal). Логика у обоих одна — hooks/useResourceBooking.
+ * На компьютере это центрированное окно — для кнопки тулбара; у клетки
+ * сетки та же запись открывается клавиатурным окном (ResourceKeypadModal).
+ * Логика у обоих одна — hooks/useResourceBooking.
  *
  * На телефоне вместо него — пошаговый мастер записи (booking-wizard): туда
- * ведут и кнопка, и тап по клетке, и карточка клиента, для любой услуги.
+ * ведут и кнопка, и тап по клетке, для любой услуги. Карточка клиента
+ * открывает мастер напрямую, на любом устройстве.
  *
  * Переноса здесь нет: индивидуальную запись двигают перетаскиванием в сетке
  * или кнопкой «Изменить время» в её карточке (modals/MoveBookingModal) — там
@@ -105,8 +107,7 @@ function ResourceSheet({ defaultTime, ...options }: Props) {
               <Row label={t('journal:resourceBooking.time')} value={quote.terms.domain.local_start.slice(0, 16).replace('T', ' ')} />
               <Row label={terms.staff?.singular ?? t('journal:resourceBooking.staff')} value={quote.terms.domain.trainer_name} />
               <Row label={t('journal:resourceBooking.duration')} value={`${quote.terms.duration_min}`} />
-              <Row label={t('journal:resourceBooking.price')}
-                   value={formatMoney(quote.terms.domain.funding.price, quote.terms.domain.funding.currency)} />
+              {/* Цены здесь нет: её со скидками и итогом называет блок оплаты ниже. */}
             </div>
           ) : (
             <div>
@@ -140,12 +141,20 @@ function ResourceSheet({ defaultTime, ...options }: Props) {
             </div>
           )}
           {quoting && <div role="status">{t('common:loading')}</div>}
+          {/* Последний шаг — оплата: сколько платить, первое занятие, промокод,
+              ваучер. Появляется вместе с условиями — считать без них нечего. */}
+          {quote && (
+            <BookingPayment payment={booking.payment} firstLesson={booking.firstLesson}
+                            onFirstLesson={booking.setFirstLesson} busy={saving || quoting} />
+          )}
         </fieldset>
       </ModalBody>
       <ModalFooter>
         <GhostButton>{t('common:buttons.cancel')}</GhostButton>
-        <PrimaryButton onClick={() => void booking.confirm()} disabled={!quote} loading={saving}>
-          {terms.ready ? terms.message('confirm_booking') : t('common:buttons.create')}
+        <PrimaryButton onClick={() => void booking.confirm()} disabled={!quote || quoting || !booking.payment.ready}
+                       loading={saving}>
+          {confirmLabel(booking.payment, t,
+            terms.ready ? terms.message('confirm_booking') : t('common:buttons.create'))}
         </PrimaryButton>
       </ModalFooter>
     </ModalShell>

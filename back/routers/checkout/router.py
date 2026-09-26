@@ -15,8 +15,8 @@ from database import get_db
 from ratelimit import limiter
 from dependencies import get_current_user, require_role, StudioContext
 from models import (
-    Account, Client, ClientLoyaltyCard, ClientPayment, GiftCertificate, Lesson, Operation, Service,
-    Studio, SubscriptionPackage, User,
+    Account, Client, ClientLoyaltyCard, ClientPayment, GiftCertificate, Lesson, Operation, Reservation,
+    Service, Studio, SubscriptionPackage, User,
 )
 from routers.clients.loyalty import accrue_points, apply_deposit_change, apply_points_change, expire_points, register_purchase
 from routers.clients.subscriptions import attach_subscription
@@ -27,6 +27,7 @@ from schemas.checkout import (
     CheckoutServiceMasterOut, CheckoutServiceOut,
 )
 from services import platform_fee, stripe_connect
+from services.booking_access import trial_percent
 from services.members import member_name
 from services.notifier import notify_payment
 from services.points import client_point_value, redeem_points
@@ -117,7 +118,12 @@ async def _quote(
         except HTTPException:
             promo_valid = False
 
-    resolved = await resolve_price(db, studio_id, client_id, base_price, promo)
+    # Скидка первого занятия приезжает на самом товаре: её знает только
+    # занятие, у абонемента такого поля нет вовсе.
+    resolved = await resolve_price(
+        db, studio_id, client_id, base_price, promo,
+        first_lesson_percent=getattr(package, "first_lesson_percent", None),
+    )
     discount = base_price - resolved.final_price
 
     remaining = resolved.final_price
@@ -317,11 +323,17 @@ class ServiceAsProduct:
     per_visit_price: int
     service_id: Optional[int] = None
     is_active: bool = True
+    # Скидка первого занятия, обещанная при записи на ЭТО занятие (снимок на
+    # брони, services/booking_access.trial_percent). Только у "lesson": цену
+    # занятия касса пересчитывает при оплате, и без снимка клиент, записанный
+    # со скидкой, заплатил бы полную цену.
+    first_lesson_percent: Optional[int] = None
 
 
 async def _get_client_package(
     db: AsyncSession, studio_id: int, client_id: int, product_id: int, product_type: str,
     teacher_id: int | None = None, *, require_master: bool = False,
+    reservation_id: int | None = None,
 ) -> tuple[Client, "SubscriptionPackage | ServiceAsProduct"]:
     """Клиент и то, что ему продают, — с ценой, посчитанной сервером.
 
@@ -329,6 +341,12 @@ async def _get_client_package(
     услугу, у которой цена зависит от мастера, без мастера не проводится.
     Расчёт (`calculate`) его не требует — касса зовёт его, пока кассир ещё
     выбирает, и итог до выбора мастера сама не показывает.
+
+    `reservation_id` — за какую именно бронь платят (долг, оплата картой,
+    запись с оплатой). Нужна ради скидки первого занятия: при «Повторной
+    записи» у клиента бывает две брони на одно занятие, и первым занятием
+    считается только одна из них. Не названа — берётся первая бронь клиента
+    на этом занятии, у которой скидка есть.
     """
     client = (await db.execute(
         select(Client).where(Client.id == client_id, Client.studio_id == studio_id)
@@ -370,9 +388,17 @@ async def _get_client_package(
         )).scalar_one_or_none()
         if lesson is None:
             raise HTTPException(status_code=404, detail={"code": "checkout.lesson_not_found", "message": "Занятие не найдено"})
+        booked = select(Reservation).where(
+            Reservation.client_id == client_id, Reservation.lesson_id == lesson.id,
+            Reservation.status != "cancelled",
+        )
+        booked = (booked.where(Reservation.id == reservation_id) if reservation_id is not None
+                  else booked.where(Reservation.is_trial.is_(True)).order_by(Reservation.id))
+        reservation = (await db.execute(booked.limit(1))).scalar_one_or_none()
         return client, ServiceAsProduct(
             id=lesson.id, name=lesson.name, price=lesson.price,
             per_visit_price=lesson.price, service_id=lesson.service_id,
+            first_lesson_percent=trial_percent(reservation) if reservation is not None else None,
         )
 
     package = (await db.execute(
@@ -478,6 +504,7 @@ async def pay(
 async def perform_pay(
     db: AsyncSession, studio_id: int, user_id: int, body: CheckoutPayRequest, *,
     method: str, expected_total: int | None = None, debt: "ClientPayment | None" = None,
+    reservation_id: int | None = None,
 ) -> CheckoutPayResult:
     """Проведение оплаты. Одна транзакция: доход в Финансы, списание бонусов,
     начисление продукта, лог в События. Сбой на любом шаге откатывает всё —
@@ -501,6 +528,9 @@ async def perform_pay(
     (services/subscription_charge.open_debt): её ПЕРЕВОДИМ в success вместо того,
     чтобы завести вторую. Иначе в истории клиента остались бы обе — вечный долг
     рядом с оплатой того же занятия.
+
+    `reservation_id` — бронь, за которую платят (только "lesson"): по её
+    снимку считается скидка первого занятия (`_get_client_package`).
     """
     await lock_studio(db, studio_id)
     client, package = await _get_client_package(
@@ -508,7 +538,7 @@ async def perform_pay(
         # Деньги по карте УЖЕ списаны (expected_total): отказ «выберите мастера»
         # оставил бы их непроведёнными, а сумму и так сверяет expected_total.
         # Мастера требуем там, где продажа только начинается, — у стойки.
-        require_master=expected_total is None)
+        require_master=expected_total is None, reservation_id=reservation_id)
 
     account = await resolve_account(
         db, studio_id, body.account_id,

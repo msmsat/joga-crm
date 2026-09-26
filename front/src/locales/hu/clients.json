@@ -289,23 +289,12 @@
       "deleteTitle": "Törli a jegyzetet?",
       "deleteMessage": "Ez a jegyzet nem állítható vissza."
     },
-    "bookingPanel": {
-      "title": "Gyors foglalás",
-      "today": "Ma",
-      "noLessons": "Nincs foglalkozás ezen a napon",
-      "full": "Nincs szabad hely",
-      "confirm": "Foglalás →",
-      "noSubscription": "Az ügyfélnek nincs foglalásra használható bérlete",
-      "individual": "Egyéni szolgáltatás"
-    },
     "bonusPanel": {
       "title": "Bónusz adása"
     },
     "toasts": {
       "noPhone": "Az ügyfélnek nincs telefonszáma",
       "copied": "Sikeresen másolva",
-      "bookingCreated": "Foglalás létrehozva",
-      "bookingFailed": "A foglalás nem sikerült",
       "bonusFailed": "A pontok megadása nem sikerült",
       "bonusApplied": "Bónusz megadva: {{label}}",
       "clientAdded": "Ügyfél hozzáadva"

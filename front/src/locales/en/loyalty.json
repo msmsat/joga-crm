@@ -27,6 +27,11 @@
       "desc": "\"Bring a friend\" program",
       "statLabel": "referrals"
     },
+    "first_lesson": {
+      "title": "First class",
+      "desc": "A free or discounted first booking for new clients",
+      "statLabel": "first classes"
+    },
     "promocodes": {
       "title": "Promo codes",
       "desc": "Discount codes with a usage limit",
@@ -154,14 +159,29 @@
     "depositTotalSub": "across client deposits",
     "depositTopClients": "Top clients by balance",
     "depositEmpty": "No one has a deposit yet",
-    "depositHint": "Top-ups and withdrawals happen on the client's profile. The referral program can pay bonuses to the deposit instead of points."
+    "depositHint": "Top-ups and withdrawals happen on the client's profile. The referral program can pay bonuses to the deposit instead of points.",
+    "firstLesson": {
+      "sizeTitle": "Discount size",
+      "free": "Free",
+      "percent": "Discount, %",
+      "freeHint": "The first class is on the house — the client pays nothing.",
+      "payHint": "The client pays {{rest}}% of the first class price.",
+      "howTitle": "How it works",
+      "how": {
+        "who": "Applies automatically to a new client's first booking — in the Journal, the mini app and the booking widget.",
+        "stacking": "Doesn't stack with other discounts: the one that's best for the client applies.",
+        "journal": "In the Journal, you can switch it off for a specific booking at the payment step.",
+        "booking": "The same switch is in Online booking → General settings."
+      }
+    }
   },
   "validation": {
     "required": "This field is required",
     "minOne": "Must be at least 1",
     "minZero": "Cannot be negative",
     "positive": "Must be greater than 0",
-    "range0to100": "0 to 100"
+    "range0to100": "0 to 100",
+    "range1to100": "1 to 100"
   },
   "toasts": {
     "saved": "Program activated",

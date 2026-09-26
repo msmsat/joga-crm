@@ -66,6 +66,7 @@
     "markAttended": "Registrer oppmøte",
     "awaitingConfirmation": "Venter på bekreftelse",
     "trialLesson": "Prøve",
+    "trialDiscount": "Prøve · −{{percent}}%",
     "unpaid": "Ubetalt · {{amount}}",
     "acceptPayment": "Ta imot betaling",
     "payCash": "Kontant",
@@ -236,6 +237,37 @@
     "earlier": "Tidligere",
     "check": "Sjekk bestillingen",
     "change": "Endre",
-    "confirm": "Bekreft"
+    "confirm": "Bekreft",
+    "busyAt": "Opptatt kl. {{time}}",
+    "allBusy": "Kl. {{time}} er alle opptatt — velg nærmeste ledige tid hos en ansatt"
+  },
+  "payment": {
+    "title": "Betaling",
+    "price": "Pris",
+    "firstLesson": "Første økt",
+    "free": "gratis",
+    "firstLessonOutweighed": "En annen rabatt er bedre — rabatter kan ikke kombineres",
+    "discount": {
+      "studio": "Studiorabatt",
+      "offer": "Personlig rabatt",
+      "referral": "Vervingsrabatt"
+    },
+    "promo": "Kampanjekode",
+    "voucher": "Gavekort",
+    "promoPlaceholder": "Kampanjekode",
+    "voucherPlaceholder": "Kode for gavekort eller verdikupong",
+    "apply": "Bruk",
+    "remove": "Fjern",
+    "promoInvalid": "Kampanjekoden er ikke gyldig",
+    "promoOutweighed": "Kan ikke kombineres — en bedre rabatt gjelder allerede",
+    "voucherRemainder": "Verdi {{amount}} — restbeløpet tas ikke vare på",
+    "total": "Skal betales kontant",
+    "coveredBy": {
+      "subscription": "Dekket av abonnement",
+      "trial": "Første økt gratis",
+      "free": "Gratis"
+    },
+    "confirmAndPay": "Book og ta imot {{amount}}",
+    "loadFailed": "Kunne ikke beregne betalingen."
   }
 }

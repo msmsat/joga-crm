@@ -32,8 +32,10 @@
         "sub": "Vaadi maksu ennen vahvistusta"
       },
       "trialLesson": {
-        "label": "Ensimmäinen tunti ilmaiseksi",
-        "sub": "Uuden asiakkaan ensimmäinen varaus on studion piikkiin"
+        "label": "Alennus ensimmäisestä tunnista",
+        "free": "Uuden asiakkaan ensimmäinen tunti on ilmainen.",
+        "percent": "Uuden asiakkaan ensimmäinen tunti on {{percent}} % halvempi.",
+        "change": "Prosentti asetetaan kohdassa ”Kanta-asiakkuus”"
       },
       "trainerConfirm": {
         "label": "Ohjaajan vahvistus",

@@ -289,23 +289,12 @@
       "deleteTitle": "Not silinsin mi?",
       "deleteMessage": "Bu not geri alınamaz."
     },
-    "bookingPanel": {
-      "title": "Hızlı rezervasyon",
-      "today": "Bugün",
-      "noLessons": "Bu gün ders yok",
-      "full": "Yer yok",
-      "confirm": "Rezervasyon yap →",
-      "noSubscription": "Müşterinin rezervasyon için kullanılabilir aboneliği yok",
-      "individual": "Bireysel hizmet"
-    },
     "bonusPanel": {
       "title": "Bonus ver"
     },
     "toasts": {
       "noPhone": "Müşterinin telefon numarası yok",
       "copied": "Başarıyla kopyalandı",
-      "bookingCreated": "Rezervasyon oluşturuldu",
-      "bookingFailed": "Rezervasyon yapılamadı",
       "bonusFailed": "Puanlar verilemedi",
       "bonusApplied": "Bonus verildi: {{label}}",
       "clientAdded": "Müşteri eklendi"

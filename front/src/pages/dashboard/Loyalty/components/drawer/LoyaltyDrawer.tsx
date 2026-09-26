@@ -9,6 +9,7 @@ import LoyaltyConfig from './configs/LoyaltyConfig';
 import DiscountsConfig from './configs/DiscountsConfig';
 import CertificatesConfig from './configs/CertificatesConfig';
 import ReferralConfig from './configs/ReferralConfig';
+import FirstLessonConfig from './configs/FirstLessonConfig';
 import PromoCodesConfig from './configs/PromoCodesConfig';
 import DepositConfig from './configs/DepositConfig';
 
@@ -50,6 +51,8 @@ function DrawerBody({ drawer, configs, patchConfig, errors, levelsDraft, onUpdat
       return <CertificatesConfig value={configs.certificates} onChange={p => patchConfig('certificates', p)} errors={errors} />;
     case 'referral':
       return <ReferralConfig value={configs.referral} onChange={p => patchConfig('referral', p)} errors={errors} />;
+    case 'first_lesson':
+      return <FirstLessonConfig value={configs.first_lesson} onChange={p => patchConfig('first_lesson', p)} errors={errors} />;
     case 'promocodes':
       return <PromoCodesConfig />;
     case 'deposit':

@@ -105,6 +105,10 @@ class CrmEventQuoteRequest(EventQuoteRequest):
 class CrmResourceQuoteRequest(ResourceQuoteRequest):
     client_id: int = Field(gt=0)
     hall_id: Optional[int] = Field(default=None, gt=0)
+    # Скидка первого занятия для ЭТОЙ записи. Ставится сама, если клиенту она
+    # положена; False — администратор на шаге оплаты её выключил, и бронь
+    # становится обычной. У клиента в мини-приложении такого рычага нет.
+    first_lesson: bool = True
 
 
 CrmQuoteRequest = Annotated[Union[CrmEventQuoteRequest, CrmResourceQuoteRequest], Field(discriminator="booking_mode")]
@@ -138,6 +142,58 @@ class CrmRescheduleQuoteRequest(ResourceQuoteRequest):
 
 class ConfirmRequest(HybridSchema):
     quote_id: str = Field(min_length=36, max_length=36)
+
+
+class PaymentCodes(HybridSchema):
+    """Промокод и ваучер (подарочный сертификат) шага оплаты. Пустая строка —
+    то же, что отсутствие: поле ввода на экране бывает пустым, а не null."""
+    promo_code: Optional[str] = Field(default=None, max_length=64)
+    certificate_code: Optional[str] = Field(default=None, max_length=64)
+
+
+class PaymentPreviewRequest(PaymentCodes):
+    pass
+
+
+class ConfirmPayment(PaymentCodes):
+    # Итог, который видел администратор. Сервер считает заново и при
+    # расхождении не записывает ни брони, ни денег: принять наличными не ту
+    # сумму, что названа клиенту, хуже, чем попросить нажать ещё раз.
+    expected_total: int = Field(ge=0)
+
+
+class CrmConfirmRequest(ConfirmRequest):
+    """Подтверждение из Журнала. `payment` — принять оплату наличными в той же
+    транзакции, что и запись; без него остаётся долг «оплата на месте»."""
+    payment: Optional[ConfirmPayment] = None
+
+
+class PaymentDiscount(HybridSchema):
+    kind: Literal["studio", "offer", "promo", "referral", "first_lesson"]
+    amount: int
+
+
+class PaymentPreviewRead(HybridSchema):
+    """Что и почему платит клиент — строками, как на чеке.
+
+    `covered_by` — чем покрыта запись, когда платить нечего (абонемент или
+    бесплатное первое занятие); тогда ни промокод, ни ваучер не нужны.
+    """
+    currency: str
+    base_price: int
+    covered_by: Optional[Literal["subscription", "trial", "free"]] = None
+    discounts: list[PaymentDiscount] = []
+    first_lesson_offered: bool = False
+    first_lesson_applied: bool = False
+    first_lesson_percent: Optional[int] = None
+    promo_valid: Optional[bool] = None
+    # Промокод действует, но выгоднее оказалась другая скидка: скидки не
+    # суммируются, и молчать об этом значит оставить кассира гадать.
+    promo_outweighed: bool = False
+    certificate_error: Optional[str] = None
+    certificate_amount: int = 0
+    certificate_applied: int = 0
+    total: int
 
 
 class RescheduleConfirmRequest(ConfirmRequest):

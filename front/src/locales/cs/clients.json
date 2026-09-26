@@ -285,23 +285,12 @@
       "deleteTitle": "Smazat poznámku?",
       "deleteMessage": "Tuto poznámku nelze obnovit."
     },
-    "bookingPanel": {
-      "title": "Rychlá rezervace",
-      "today": "Dnes",
-      "noLessons": "Tento den nejsou žádné lekce",
-      "full": "Žádná místa",
-      "confirm": "Rezervovat →",
-      "noSubscription": "Klient nemá dostupnou permanentku pro rezervaci",
-      "individual": "Individuální služba"
-    },
     "bonusPanel": {
       "title": "Udělit bonus"
     },
     "toasts": {
       "noPhone": "Klient nemá telefonní číslo",
       "copied": "Úspěšně zkopírováno",
-      "bookingCreated": "Rezervace vytvořena",
-      "bookingFailed": "Rezervace se nezdařila",
       "bonusFailed": "Body se nepodařilo udělit",
       "bonusApplied": "Bonus udělen: {{label}}",
       "clientAdded": "Klient přidán"

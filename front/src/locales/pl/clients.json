@@ -293,23 +293,12 @@
       "deleteTitle": "Usunąć notatkę?",
       "deleteMessage": "Tej notatki nie można odzyskać."
     },
-    "bookingPanel": {
-      "title": "Szybka rezerwacja",
-      "today": "Dzisiaj",
-      "noLessons": "Brak zajęć tego dnia",
-      "full": "Brak miejsc",
-      "confirm": "Zarezerwuj →",
-      "noSubscription": "Klient nie ma abonamentu dostępnego do rezerwacji",
-      "individual": "Usługa indywidualna"
-    },
     "bonusPanel": {
       "title": "Przyznaj bonus"
     },
     "toasts": {
       "noPhone": "Klient nie ma numeru telefonu",
       "copied": "Skopiowano",
-      "bookingCreated": "Rezerwacja utworzona",
-      "bookingFailed": "Nie udało się zarezerwować",
       "bonusFailed": "Nie udało się przyznać punktów",
       "bonusApplied": "Bonus przyznany: {{label}}",
       "clientAdded": "Klient dodany"

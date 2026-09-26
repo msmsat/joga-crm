@@ -109,6 +109,7 @@
     "SLOT_UNAVAILABLE": "Tidspunktet er opptatt eller utenfor behandlerens arbeidstid",
     "VERSION_CONFLICT": "Bookingen er endret i et annet vindu — oppdater timeplanen",
     "TERMS_CHANGED": "Vilkårene for bookingen er endret — åpne den på nytt",
+    "AMOUNT_CHANGED": "Beløpet er endret — sjekk totalen og bekreft på nytt",
     "INVALID_START": "Dette klokkeslettet finnes ikke den dagen på grunn av tidsomleggingen",
     "WINDOW_CLOSED": "Bookingen har allerede startet eller er over — den kan ikke endres",
     "PAYMENT_IN_PROGRESS": "Det pågår en betaling for bookingen — vent til den er ferdig",

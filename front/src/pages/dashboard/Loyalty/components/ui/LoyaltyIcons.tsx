@@ -83,11 +83,21 @@ export const IconWallet = () => (
   </svg>
 );
 
+// Первое занятие: календарный лист с единицей — «самый первый визит».
+export const IconFirstVisit = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="3" y="4.5" width="18" height="16.5" rx="2.5" /><path d="M3 9.5h18" />
+    <path d="M8 2.5v4" /><path d="M16 2.5v4" />
+    <path d="M10.5 14l1.8-1.3V18" />
+  </svg>
+);
+
 export const PROGRAM_ICONS: Record<ProgramKey, JSX.Element> = {
   loyalty:       <IconTrophy />,
   discounts:     <IconPercent />,
   certificates:  <IconGift />,
   referral:      <IconShare />,
+  first_lesson:  <IconFirstVisit />,
   promocodes:    <IconTag />,
   deposit:       <IconWallet />,
 };

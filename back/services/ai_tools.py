@@ -82,6 +82,7 @@ from routers.loyalty.certificates import create_certificate as _r_create_certifi
 from routers.loyalty.configs import (
     get_certificate_config as _r_certificate_config,
     get_discount_config as _r_discount_config,
+    get_first_lesson_config as _r_first_lesson_config,
     get_loyalty_config as _r_loyalty_config,
     get_referral_config as _r_referral_config,
 )
@@ -3167,12 +3168,15 @@ async def get_finance_goals(ctx: StudioContext, db: AsyncSession, args: NoArgs) 
 async def get_loyalty_programs(ctx: StudioContext, db: AsyncSession, args: NoArgs) -> dict:
     """Какие программы лояльности включены у студии и как настроены: карты
     (баллы и курс обмена), скидки, подарочные сертификаты, реферальная
-    программа. Абонементы — отдельно, их отдаёт get_catalog_settings."""
+    программа, скидка на первое занятие (процент; 100 — бесплатно; настраивается
+    в Лояльности, тумблер есть и в Онлайн-записи). Абонементы — отдельно, их
+    отдаёт get_catalog_settings."""
     return {
         "cards": _dump(await _r_loyalty_config(ctx=ctx, db=db)),
         "discounts": _dump(await _r_discount_config(ctx=ctx, db=db)),
         "certificates": _dump(await _r_certificate_config(ctx=ctx, db=db)),
         "referral": _dump(await _r_referral_config(ctx=ctx, db=db)),
+        "first_lesson": _dump(await _r_first_lesson_config(ctx=ctx, db=db)),
     }
 
 

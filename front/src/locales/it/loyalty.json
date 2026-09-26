@@ -27,6 +27,11 @@
       "desc": "Programma «Porta un amico»",
       "statLabel": "segnalazioni"
     },
+    "first_lesson": {
+      "title": "Prima lezione",
+      "desc": "Prima prenotazione gratuita o scontata per i nuovi clienti",
+      "statLabel": "prime lezioni"
+    },
     "promocodes": {
       "title": "Codici promozionali",
       "desc": "Codici sconto con limite di utilizzo",
@@ -154,14 +159,29 @@
     "depositTotalSub": "su tutti i depositi dei clienti",
     "depositTopClients": "Migliori clienti per saldo",
     "depositEmpty": "Nessuno ha ancora un deposito",
-    "depositHint": "Ricariche e prelievi avvengono nel profilo del cliente. Il programma di segnalazione può versare i bonus sul deposito invece che in punti."
+    "depositHint": "Ricariche e prelievi avvengono nel profilo del cliente. Il programma di segnalazione può versare i bonus sul deposito invece che in punti.",
+    "firstLesson": {
+      "sizeTitle": "Entità dello sconto",
+      "free": "Gratuita",
+      "percent": "Sconto, %",
+      "freeHint": "La prima lezione è in regalo: il cliente non paga nulla.",
+      "payHint": "Il cliente paga il {{rest}}% del prezzo della prima lezione.",
+      "howTitle": "Come funziona",
+      "how": {
+        "who": "Lo sconto si applica da solo alla prima prenotazione di un nuovo cliente: nell'Agenda, nella mini-app e nel widget di prenotazione.",
+        "stacking": "Non si somma ad altri sconti: vale quello più conveniente per il cliente.",
+        "journal": "Nell'Agenda potete disattivarlo per una singola prenotazione al passaggio del pagamento.",
+        "booking": "Lo stesso interruttore si trova in «Prenotazione online → Impostazioni generali»."
+      }
+    }
   },
   "validation": {
     "required": "Questo campo è obbligatorio",
     "minOne": "Deve essere almeno 1",
     "minZero": "Non può essere negativo",
     "positive": "Deve essere maggiore di 0",
-    "range0to100": "Da 0 a 100"
+    "range0to100": "Da 0 a 100",
+    "range1to100": "Da 1 a 100"
   },
   "toasts": {
     "saved": "Programma attivato",

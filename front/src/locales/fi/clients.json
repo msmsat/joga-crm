@@ -289,23 +289,12 @@
       "deleteTitle": "Poistetaanko muistiinpano?",
       "deleteMessage": "Tätä muistiinpanoa ei voi palauttaa."
     },
-    "bookingPanel": {
-      "title": "Pikavaraus",
-      "today": "Tänään",
-      "noLessons": "Ei tunteja tänä päivänä",
-      "full": "Ei paikkoja",
-      "confirm": "Varaa →",
-      "noSubscription": "Asiakkaalla ei ole varaamiseen sopivaa jäsenyyttä",
-      "individual": "Yksilöllinen palvelu"
-    },
     "bonusPanel": {
       "title": "Myönnä bonus"
     },
     "toasts": {
       "noPhone": "Asiakkaalla ei ole puhelinnumeroa",
       "copied": "Kopioitu",
-      "bookingCreated": "Varaus luotu",
-      "bookingFailed": "Varaus epäonnistui",
       "bonusFailed": "Pisteiden myöntäminen epäonnistui",
       "bonusApplied": "Bonus myönnetty: {{label}}",
       "clientAdded": "Asiakas lisätty"

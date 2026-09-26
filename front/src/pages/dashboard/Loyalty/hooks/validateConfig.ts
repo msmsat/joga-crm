@@ -48,5 +48,13 @@ export function validateConfig(
     if (!c || c.new_client_discount < 0 || c.new_client_discount > 100) errors.new_client_discount = t('validation.range0to100');
   }
 
+  if (key === 'first_lesson') {
+    // Скидка 0 % — это выключенная программа, а не настройка: для неё есть
+    // «Отключить» на карточке. Тот же предел, что на сервере (1–100).
+    const c = configs.first_lesson;
+    const value = c?.discount_percent ?? 100;
+    if (!Number.isInteger(value) || value < 1 || value > 100) errors.discount_percent = t('validation.range1to100');
+  }
+
   return errors;
 }

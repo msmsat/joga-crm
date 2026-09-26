@@ -66,6 +66,7 @@
     "markAttended": "Позначити відвідування",
     "awaitingConfirmation": "Очікує підтвердження",
     "trialLesson": "Пробне",
+    "trialDiscount": "Пробне · −{{percent}}%",
     "unpaid": "Не оплачено · {{amount}}",
     "acceptPayment": "Прийняти оплату",
     "payCash": "Готівка",
@@ -244,6 +245,37 @@
     "earlier": "Раніше",
     "check": "Перевірте запис",
     "change": "Змінити",
-    "confirm": "Підтвердити"
+    "confirm": "Підтвердити",
+    "busyAt": "Зайнятий о {{time}}",
+    "allBusy": "О {{time}} усі зайняті — оберіть найближчий вільний час у спеціаліста"
+  },
+  "payment": {
+    "title": "Оплата",
+    "price": "Вартість",
+    "firstLesson": "Перше заняття",
+    "free": "безкоштовно",
+    "firstLessonOutweighed": "Вигідніша інша знижка — знижки не сумуються",
+    "discount": {
+      "studio": "Знижка студії",
+      "offer": "Персональна знижка",
+      "referral": "Знижка за запрошенням"
+    },
+    "promo": "Промокод",
+    "voucher": "Ваучер",
+    "promoPlaceholder": "Промокод",
+    "voucherPlaceholder": "Код ваучера або сертифіката",
+    "apply": "Застосувати",
+    "remove": "Прибрати",
+    "promoInvalid": "Промокод не діє",
+    "promoOutweighed": "Не сумується — вже діє вигідніша знижка",
+    "voucherRemainder": "Номінал {{amount}} — залишок не збережеться",
+    "total": "До оплати готівкою",
+    "coveredBy": {
+      "subscription": "За абонементом",
+      "trial": "Перше заняття — безкоштовно",
+      "free": "Безкоштовно"
+    },
+    "confirmAndPay": "Записати й прийняти {{amount}}",
+    "loadFailed": "Не вдалося порахувати оплату."
   }
 }

@@ -67,8 +67,15 @@ export default function BookingModal({
     {
       label: t('bookingModal.price'),
       // Подарок студии виден там же, где обычно стоит цена: иначе человек
-      // выбирает коврик, глядя на сумму, которую с него не возьмут.
-      value: lesson?.trial_available ? t('bookingModal.free') : lesson?.price_str ?? '—',
+      // выбирает коврик, глядя на сумму, которую с него не возьмут. Скидка на
+      // первое занятие — так же: цена уже с ней и сколько процентов снято.
+      value: lesson?.trial_available
+        ? t('bookingModal.free')
+        : lesson?.first_lesson_discount && lesson.first_lesson_price_str
+          ? t('bookingModal.first_lesson_price', {
+              price: lesson.first_lesson_price_str, percent: lesson.first_lesson_discount,
+            })
+          : lesson?.price_str ?? '—',
     },
   ];
 

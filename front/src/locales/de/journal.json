@@ -66,6 +66,7 @@
     "markAttended": "Anwesenheit erfassen",
     "awaitingConfirmation": "Wartet auf Bestätigung",
     "trialLesson": "Probe",
+    "trialDiscount": "Probe · −{{percent}}%",
     "unpaid": "Unbezahlt · {{amount}}",
     "acceptPayment": "Zahlung annehmen",
     "payCash": "Bar",
@@ -236,6 +237,37 @@
     "earlier": "Früher",
     "check": "Buchung prüfen",
     "change": "Ändern",
-    "confirm": "Bestätigen"
+    "confirm": "Bestätigen",
+    "busyAt": "Belegt um {{time}}",
+    "allBusy": "Um {{time}} sind alle belegt — wählen Sie die nächste freie Zeit eines Mitarbeiters"
+  },
+  "payment": {
+    "title": "Zahlung",
+    "price": "Preis",
+    "firstLesson": "Erster Kurs",
+    "free": "gratis",
+    "firstLessonOutweighed": "Ein anderer Rabatt ist günstiger — Rabatte werden nicht kombiniert",
+    "discount": {
+      "studio": "Studiorabatt",
+      "offer": "Persönlicher Rabatt",
+      "referral": "Empfehlungsrabatt"
+    },
+    "promo": "Aktionscode",
+    "voucher": "Gutschein",
+    "promoPlaceholder": "Aktionscode",
+    "voucherPlaceholder": "Gutschein- oder Zertifikatscode",
+    "apply": "Anwenden",
+    "remove": "Entfernen",
+    "promoInvalid": "Dieser Aktionscode ist ungültig",
+    "promoOutweighed": "Nicht kombinierbar — ein günstigerer Rabatt gilt bereits",
+    "voucherRemainder": "Wert {{amount}} — ein Restbetrag verfällt",
+    "total": "Bar zu kassieren",
+    "coveredBy": {
+      "subscription": "Durch Abo-Karte abgedeckt",
+      "trial": "Erster Kurs gratis",
+      "free": "Kostenlos"
+    },
+    "confirmAndPay": "Buchen und {{amount}} kassieren",
+    "loadFailed": "Die Zahlung konnte nicht berechnet werden."
   }
 }

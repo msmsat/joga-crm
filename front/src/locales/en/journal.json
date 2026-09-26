@@ -66,6 +66,7 @@
     "markAttended": "Mark attendance",
     "awaitingConfirmation": "Awaiting confirmation",
     "trialLesson": "Trial",
+    "trialDiscount": "Trial · −{{percent}}%",
     "unpaid": "Unpaid · {{amount}}",
     "acceptPayment": "Accept payment",
     "payCash": "Cash",
@@ -236,6 +237,37 @@
     "earlier": "Earlier",
     "check": "Check the booking",
     "change": "Change",
-    "confirm": "Confirm"
+    "confirm": "Confirm",
+    "busyAt": "Busy at {{time}}",
+    "allBusy": "Everyone is busy at {{time}} — pick a specialist's nearest free time"
+  },
+  "payment": {
+    "title": "Payment",
+    "price": "Price",
+    "firstLesson": "First class",
+    "free": "free",
+    "firstLessonOutweighed": "Another discount is better — discounts don't stack",
+    "discount": {
+      "studio": "Studio discount",
+      "offer": "Personal discount",
+      "referral": "Referral discount"
+    },
+    "promo": "Promo code",
+    "voucher": "Voucher",
+    "promoPlaceholder": "Promo code",
+    "voucherPlaceholder": "Voucher or gift certificate code",
+    "apply": "Apply",
+    "remove": "Remove",
+    "promoInvalid": "This promo code isn't valid",
+    "promoOutweighed": "Doesn't stack — a better discount already applies",
+    "voucherRemainder": "Face value {{amount}} — any remainder is not kept",
+    "total": "Cash to collect",
+    "coveredBy": {
+      "subscription": "Covered by subscription",
+      "trial": "First class is free",
+      "free": "Free"
+    },
+    "confirmAndPay": "Book and collect {{amount}}",
+    "loadFailed": "Couldn't calculate the payment."
   }
 }

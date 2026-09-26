@@ -15,7 +15,7 @@ import { phoneCountry } from '../../../../components/UI';
 
 /** Всё, что знает форма «Новый клиент», — общее для мастера на большом экране
     и одной прокручиваемой формы на телефоне. */
-export function useAddClient(isOpen: boolean, onDone: (form: ClientFormState) => void) {
+export function useAddClient(isOpen: boolean, onDone: (form: ClientFormState, id: number) => void) {
   const { t } = useTranslation('clients');
   const toast = useToast();
   const mutations = useClientMutations();
@@ -73,7 +73,7 @@ export function useAddClient(isOpen: boolean, onDone: (form: ClientFormState) =>
     }).then(({ id }) => {
       // Номер — то, по чему клиента теперь найдут всегда, даже без контактов.
       toast.success(`${t('toasts.clientAdded')} · #${id}`);
-      onDone(form);
+      onDone(form, id);
     }).catch((err) => {
       submitting.current = false;
       setSaving(false);

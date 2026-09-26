@@ -27,6 +27,11 @@
       "desc": "„Bir arkadaşını getir” programı",
       "statLabel": "tavsiye"
     },
+    "first_lesson": {
+      "title": "İlk ders",
+      "desc": "Yeni müşterilere ücretsiz ya da indirimli ilk rezervasyon",
+      "statLabel": "ilk ders"
+    },
     "promocodes": {
       "title": "Promosyon kodları",
       "desc": "Kullanım sınırı olan indirim kodları",
@@ -154,14 +159,29 @@
     "depositTotalSub": "tüm müşteri mevduatlarında",
     "depositTopClients": "Bakiyeye göre en iyi müşteriler",
     "depositEmpty": "Henüz kimsenin depozitosu yok",
-    "depositHint": "Yüklemeler ve çekimler müşteri profilinden yapılır. Tavsiye programı bonusları puan yerine depozitoya ödeyebilir."
+    "depositHint": "Yüklemeler ve çekimler müşteri profilinden yapılır. Tavsiye programı bonusları puan yerine depozitoya ödeyebilir.",
+    "firstLesson": {
+      "sizeTitle": "İndirim oranı",
+      "free": "Ücretsiz",
+      "percent": "İndirim, %",
+      "freeHint": "İlk ders hediye — müşteri hiçbir şey ödemez.",
+      "payHint": "Müşteri ilk ders fiyatının %{{rest}} kadarını öder.",
+      "howTitle": "Nasıl çalışır",
+      "how": {
+        "who": "İndirim, yeni müşterinin ilk rezervasyonuna kendiliğinden uygulanır — Takvim'de, mini uygulamada ve rezervasyon widget'ında.",
+        "stacking": "Diğer indirimlerle birleştirilmez: müşteri için en avantajlı olan geçerlidir.",
+        "journal": "Takvim'de, ödeme adımında belirli bir rezervasyon için kapatılabilir.",
+        "booking": "Aynı anahtar “Online randevu → Genel ayarlar” bölümünde de var."
+      }
+    }
   },
   "validation": {
     "required": "Bu alan zorunludur",
     "minOne": "En az 1 olmalıdır",
     "minZero": "Negatif olamaz",
     "positive": "0'dan büyük olmalıdır",
-    "range0to100": "0 ile 100 arası"
+    "range0to100": "0 ile 100 arası",
+    "range1to100": "1 ile 100 arası"
   },
   "toasts": {
     "saved": "Program etkinleştirildi",

@@ -178,10 +178,25 @@ async def assert_can_book(
     )
 
 
+def trial_percent(reservation: Reservation) -> Optional[int]:
+    """Процент скидки первого занятия, обещанный ЭТОЙ броне, или None.
+
+    Одно чтение снимка на все пути, где цену занятия считают повторно: касса
+    при погашении долга, оплата картой по ссылке, перенос к мастеру с другой
+    ценой. Разъехавшись, они взяли бы с клиента то полную цену, то сниженную.
+
+    Бронь, записанная до появления процента, снимка не имеет: у неё был только
+    подарок, то есть 100 %.
+    """
+    if not reservation.is_trial:
+        return None
+    return reservation.trial_discount_percent or 100
+
+
 async def trial_applies(
     db: AsyncSession, client_id: int, rules: BookingRules
 ) -> bool:
-    """Клиенту положено подаренное первое занятие («Первое занятие бесплатно»).
+    """Клиенту положено первое занятие со скидкой («Скидка на первое занятие»).
 
     Условие одно: студия включила тумблер, и у клиента нет НИ ОДНОЙ неотменённой
     брони. Считаем брони, а не визиты: иначе записавшийся на три занятия вперёд
@@ -230,7 +245,7 @@ async def lock_client(db: AsyncSession, client_id: int) -> bool:
 
 async def resolve_coverage(
     db: AsyncSession, client_id: int, lesson: Lesson, rules: BookingRules,
-    *, lock: bool = True,
+    *, lock: bool = True, allow_trial: bool = True,
 ) -> tuple[Optional[ClientSubscription], bool]:
     """Чем покрыта новая бронь: `(абонемент, пробное)`.
 
@@ -250,13 +265,17 @@ async def resolve_coverage(
 
     Абонемент важнее подарка: купивший уже не пробует, и списывать с него
     занятие правильнее, чем дарить визит поверх оплаченного пакета.
+
+    `allow_trial=False` — администратор на шаге оплаты выключил скидку первого
+    занятия для этой записи: бронь становится обычной. Право на первое
+    занятие этим сгорает — у клиента появляется бронь.
     """
     if lock:
         await lock_client(db, client_id)
     sub = await find_eligible_subscription(db, client_id, lesson)
     if sub is not None:
         return sub, False
-    return None, await trial_applies(db, client_id, rules)
+    return None, allow_trial and await trial_applies(db, client_id, rules)
 
 
 async def can_book(db: AsyncSession, client_id: int, lesson: Lesson) -> bool:

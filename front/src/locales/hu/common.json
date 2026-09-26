@@ -109,6 +109,7 @@
     "SLOT_UNAVAILABLE": "Ez az időpont foglalt, vagy kívül esik a szakember munkaidején",
     "VERSION_CONFLICT": "A foglalást egy másik ablakban már módosították — frissítse a naptárt",
     "TERMS_CHANGED": "A foglalás feltételei megváltoztak — nyissa meg újra",
+    "AMOUNT_CHANGED": "Az összeg megváltozott — ellenőrizze a végösszeget, és erősítse meg újra",
     "INVALID_START": "Ez az időpont az óraátállítás miatt aznap nem létezik",
     "WINDOW_CLOSED": "A foglalás már elkezdődött vagy elmúlt — nem módosítható",
     "PAYMENT_IN_PROGRESS": "A foglalás fizetése folyamatban van — várja meg a végét",

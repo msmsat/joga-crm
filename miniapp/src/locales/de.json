@@ -196,6 +196,7 @@
     "book_more": "Weitere Matte buchen",
     "book_trial": "Kostenlos buchen",
     "free": "Kostenlos",
+    "first_lesson_price": "{{price}} · erster Kurs −{{percent}} %",
     "not_bookable": "Dieser Kurs ist online nicht buchbar",
     "not_bookable_hint": "Gebucht werden kann nur während der Öffnungszeiten und innerhalb des veröffentlichten Stundenplans.",
     "awaiting_confirmation": "Anfrage gesendet — das Studio bestätigt sie in Kürze"

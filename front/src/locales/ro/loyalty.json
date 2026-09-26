@@ -27,6 +27,11 @@
       "desc": "Programul „Adu un prieten”",
       "statLabel": "recomandări"
     },
+    "first_lesson": {
+      "title": "Prima ședință",
+      "desc": "Prima rezervare a clienților noi gratuită sau cu reducere",
+      "statLabel": "prime ședințe"
+    },
     "promocodes": {
       "title": "Coduri promoționale",
       "desc": "Coduri de reducere cu limită de utilizare",
@@ -154,14 +159,29 @@
     "depositTotalSub": "în toate depozitele clienților",
     "depositTopClients": "Cei mai buni clienți după sold",
     "depositEmpty": "Nimeni nu are încă depozit",
-    "depositHint": "Alimentările și retragerile se fac din profilul clientului. Programul de recomandări poate plăti bonusuri în depozit în loc de puncte."
+    "depositHint": "Alimentările și retragerile se fac din profilul clientului. Programul de recomandări poate plăti bonusuri în depozit în loc de puncte.",
+    "firstLesson": {
+      "sizeTitle": "Valoarea reducerii",
+      "free": "Gratuit",
+      "percent": "Reducere, %",
+      "freeHint": "Prima ședință e cadou — clientul nu plătește nimic.",
+      "payHint": "Clientul plătește {{rest}}% din prețul primei ședințe.",
+      "howTitle": "Cum funcționează",
+      "how": {
+        "who": "Reducerea se aplică automat la prima rezervare a unui client nou — în Jurnal, în mini-aplicație și în widgetul de rezervare.",
+        "stacking": "Nu se cumulează cu alte reduceri: se aplică cea mai avantajoasă pentru client.",
+        "journal": "În Jurnal o puteți dezactiva pentru o anumită rezervare la pasul de plată.",
+        "booking": "Același comutator se află în „Rezervare online → Setări generale”."
+      }
+    }
   },
   "validation": {
     "required": "Acest câmp este obligatoriu",
     "minOne": "Trebuie să fie cel puțin 1",
     "minZero": "Nu poate fi negativ",
     "positive": "Trebuie să fie mai mare decât 0",
-    "range0to100": "De la 0 la 100"
+    "range0to100": "De la 0 la 100",
+    "range1to100": "Între 1 și 100"
   },
   "toasts": {
     "saved": "Program activat",

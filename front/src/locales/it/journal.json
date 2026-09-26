@@ -66,6 +66,7 @@
     "markAttended": "Registra la presenza",
     "awaitingConfirmation": "In attesa di conferma",
     "trialLesson": "Prova",
+    "trialDiscount": "Prova · −{{percent}}%",
     "unpaid": "Non pagata · {{amount}}",
     "acceptPayment": "Registra il pagamento",
     "payCash": "Contanti",
@@ -236,6 +237,37 @@
     "earlier": "Prima",
     "check": "Controlla la prenotazione",
     "change": "Modifica",
-    "confirm": "Conferma"
+    "confirm": "Conferma",
+    "busyAt": "Occupato alle {{time}}",
+    "allBusy": "Alle {{time}} sono tutti occupati: scegli l’orario libero più vicino di uno specialista"
+  },
+  "payment": {
+    "title": "Pagamento",
+    "price": "Prezzo",
+    "firstLesson": "Prima lezione",
+    "free": "gratuita",
+    "firstLessonOutweighed": "Un altro sconto è più conveniente: gli sconti non si sommano",
+    "discount": {
+      "studio": "Sconto dello studio",
+      "offer": "Sconto personale",
+      "referral": "Sconto invito"
+    },
+    "promo": "Codice promozionale",
+    "voucher": "Buono",
+    "promoPlaceholder": "Codice promozionale",
+    "voucherPlaceholder": "Codice del buono o del certificato",
+    "apply": "Applica",
+    "remove": "Rimuovi",
+    "promoInvalid": "Questo codice promozionale non è valido",
+    "promoOutweighed": "Non cumulabile: è già attivo uno sconto migliore",
+    "voucherRemainder": "Valore {{amount}}: il resto non viene conservato",
+    "total": "Da incassare in contanti",
+    "coveredBy": {
+      "subscription": "Coperto dall'abbonamento",
+      "trial": "Prima lezione gratuita",
+      "free": "Gratuito"
+    },
+    "confirmAndPay": "Prenota e incassa {{amount}}",
+    "loadFailed": "Impossibile calcolare il pagamento."
   }
 }

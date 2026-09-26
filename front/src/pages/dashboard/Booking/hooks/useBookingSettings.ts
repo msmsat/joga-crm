@@ -32,7 +32,12 @@ export function useBookingSettings() {
       toast.error(errorMessage(err, t))
     },
     onSuccess: () => toast.success(t('common:buttons.saved')),
-    onSettled: () => qc.invalidateQueries({ queryKey: queryKeys.bookingSettings }),
+    onSettled: () => {
+      // Скидку на первое занятие показывает и Лояльность (тот же тумблер в
+      // правилах записи) — её карточка не должна остаться со старым видом.
+      void qc.invalidateQueries({ queryKey: queryKeys.loyaltyConfigs })
+      return qc.invalidateQueries({ queryKey: queryKeys.bookingSettings })
+    },
   })
 
   // Оптимистично: применяем локально, PATCH-им; при ошибке откатываем (в onError мутации).

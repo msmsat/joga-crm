@@ -66,6 +66,7 @@
     "markAttended": "Marquer la présence",
     "awaitingConfirmation": "En attente de confirmation",
     "trialLesson": "Essai",
+    "trialDiscount": "Essai · −{{percent}}%",
     "unpaid": "Impayé · {{amount}}",
     "acceptPayment": "Encaisser",
     "payCash": "Espèces",
@@ -236,6 +237,37 @@
     "earlier": "Plus tôt",
     "check": "Vérifiez la réservation",
     "change": "Modifier",
-    "confirm": "Confirmer"
+    "confirm": "Confirmer",
+    "busyAt": "Occupé à {{time}}",
+    "allBusy": "À {{time}}, tout le monde est occupé — choisissez le créneau libre le plus proche d’un spécialiste"
+  },
+  "payment": {
+    "title": "Paiement",
+    "price": "Prix",
+    "firstLesson": "Premier cours",
+    "free": "offert",
+    "firstLessonOutweighed": "Une autre remise est plus avantageuse : les remises ne se cumulent pas",
+    "discount": {
+      "studio": "Remise du studio",
+      "offer": "Remise personnelle",
+      "referral": "Remise de parrainage"
+    },
+    "promo": "Code promo",
+    "voucher": "Bon cadeau",
+    "promoPlaceholder": "Code promo",
+    "voucherPlaceholder": "Code du bon ou du chèque-cadeau",
+    "apply": "Appliquer",
+    "remove": "Retirer",
+    "promoInvalid": "Ce code promo n'est pas valide",
+    "promoOutweighed": "Non cumulable : une remise plus avantageuse s'applique déjà",
+    "voucherRemainder": "Valeur {{amount}} : le reste n'est pas conservé",
+    "total": "À encaisser en espèces",
+    "coveredBy": {
+      "subscription": "Couvert par l'abonnement",
+      "trial": "Premier cours offert",
+      "free": "Gratuit"
+    },
+    "confirmAndPay": "Réserver et encaisser {{amount}}",
+    "loadFailed": "Impossible de calculer le paiement."
   }
 }

@@ -1,10 +1,11 @@
 """Единая точка расчёта цены продажи (V5-5, задача 4).
 
 Берёт базовую цену и применяет студийную скидку (StudioDiscountConfig),
-персональный оффер клиента (ClientOffer) и промокод — по правилу «самая
-выгодная клиенту, без стека» (если явно не включён stackable на студийной
-скидке). Реальные деньги не двигает: возвращает только итоговую цену:
-списание/эквайринг — забота кассы/мини-приложения (см. CLAUDE.md §2.16).
+персональный оффер клиента (ClientOffer), промокод, скидку новичка по
+рефералке и скидку первого занятия — по правилу «самая выгодная клиенту, без
+стека» (если явно не включён stackable на студийной скидке). Реальные деньги не
+двигает: возвращает только итоговую цену: списание/эквайринг — забота
+кассы/мини-приложения (см. CLAUDE.md §2.16).
 """
 from dataclasses import dataclass
 from datetime import datetime
@@ -40,6 +41,9 @@ class ResolvedPrice:
     # при фиксации продажи, иначе скидка новичка применится и на следующей.
     referral: Optional[ReferralRecord] = None
     referral_discount_applied: int = 0
+    # Скидка первого занятия. Гасить её нечего: право на первое занятие гасит
+    # сама бронь (services/booking_access.trial_applies смотрит на брони).
+    first_lesson_discount_applied: int = 0
 
     def mark_used(self) -> None:
         """Зафиксировать одноразовые скидки как потраченные.
@@ -63,9 +67,18 @@ async def resolve_price(
     client_id: int,
     base_price: int,
     promo: Optional[StudioPromoCode] = None,
+    *,
+    first_lesson_percent: Optional[int] = None,
 ) -> ResolvedPrice:
     """`promo` — уже найденный и провалидированный промокод (find_valid_promo),
-    поиск по коду сюда не входит — вызывающий решает, что делать с 404/400."""
+    поиск по коду сюда не входит — вызывающий решает, что делать с 404/400.
+
+    `first_lesson_percent` — скидка первого занятия, если она положена ЭТОЙ
+    продаже. Решает вызывающий, а не движок: при записи — по правилам студии
+    (`booking.resolve_funding`), при оплате уже записанного занятия — по снимку
+    на брони (`booking_access.trial_percent`). Сам движок не знает, что продаёт
+    — занятие или абонемент, — и угадывать это по цене нельзя.
+    """
     from routers.loyalty.offers import find_active_offer  # ponytail: локальный импорт разрывает цикл
     # services.pricing -> routers.loyalty (__init__) -> ... -> routers.clients.subscriptions -> services.pricing
 
@@ -115,6 +128,11 @@ async def resolve_price(
             if amount > 0:
                 candidates.append(("referral", amount, referral))
 
+    if first_lesson_percent:
+        amount = apply_discount(_AsDiscount("percent", first_lesson_percent), base_price)
+        if amount > 0:
+            candidates.append(("first_lesson", amount, None))
+
     if not candidates:
         return ResolvedPrice(final_price=base_price)
 
@@ -136,6 +154,8 @@ async def resolve_price(
         elif kind == "referral":
             result.referral = obj
             result.referral_discount_applied = amount
+        elif kind == "first_lesson":
+            result.first_lesson_discount_applied = amount
 
     result.final_price = max(0, base_price - total_discount)
     return result

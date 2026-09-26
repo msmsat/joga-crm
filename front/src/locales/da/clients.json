@@ -289,23 +289,12 @@
       "deleteTitle": "Slet note?",
       "deleteMessage": "Denne note kan ikke gendannes."
     },
-    "bookingPanel": {
-      "title": "Hurtig booking",
-      "today": "I dag",
-      "noLessons": "Ingen lektioner denne dag",
-      "full": "Ingen ledige pladser",
-      "confirm": "Book →",
-      "noSubscription": "Kunden har intet abonnement, der kan bruges til booking",
-      "individual": "Individuel ydelse"
-    },
     "bonusPanel": {
       "title": "Giv bonus"
     },
     "toasts": {
       "noPhone": "Kunden har intet telefonnummer",
       "copied": "Kopieret",
-      "bookingCreated": "Booking oprettet",
-      "bookingFailed": "Kunne ikke booke",
       "bonusFailed": "Kunne ikke give point",
       "bonusApplied": "Bonus givet: {{label}}",
       "clientAdded": "Kunde tilføjet"

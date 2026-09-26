@@ -109,6 +109,7 @@
     "SLOT_UNAVAILABLE": "Tento čas je obsazený nebo mimo pracovní dobu specialisty",
     "VERSION_CONFLICT": "Rezervaci už někdo změnil v jiném okně — obnovte rozvrh",
     "TERMS_CHANGED": "Podmínky rezervace se změnily — otevřete ji znovu",
+    "AMOUNT_CHANGED": "Částka se změnila — zkontrolujte součet a potvrďte znovu",
     "INVALID_START": "Tento čas v ten den kvůli změně času neexistuje",
     "WINDOW_CLOSED": "Rezervace už začala nebo proběhla — nelze ji změnit",
     "PAYMENT_IN_PROGRESS": "U rezervace probíhá platba — počkejte na její dokončení",

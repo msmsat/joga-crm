@@ -109,6 +109,7 @@
     "SLOT_UNAVAILABLE": "Questo orario è occupato o fuori dall'orario dello specialista",
     "VERSION_CONFLICT": "La prenotazione è stata modificata in un'altra finestra: aggiornate l'agenda",
     "TERMS_CHANGED": "Le condizioni della prenotazione sono cambiate: riapritela",
+    "AMOUNT_CHANGED": "L'importo è cambiato: controllate il totale e confermate di nuovo",
     "INVALID_START": "Quest'ora non esiste in quel giorno a causa del cambio dell'ora",
     "WINDOW_CLOSED": "La prenotazione è già iniziata o passata: non si può modificare",
     "PAYMENT_IN_PROGRESS": "È in corso un pagamento per questa prenotazione: attendete che finisca",

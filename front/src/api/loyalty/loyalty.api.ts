@@ -6,6 +6,7 @@ import type {
   ClientOfferCreate,
   DepositStats,
   DiscountConfig,
+  FirstLessonConfig,
   GiftCertificate,
   LoyaltyCard,
   LoyaltyConfig,
@@ -76,6 +77,12 @@ export const loyaltyApi = {
 
   updateReferralConfig: (payload: Partial<ReferralConfig>) =>
     client.patch<ReferralConfig>('/loyalty/referral', payload),
+
+  getFirstLessonConfig: () =>
+    client.get<FirstLessonConfig>('/loyalty/first-lesson'),
+
+  updateFirstLessonConfig: (payload: Partial<FirstLessonConfig>) =>
+    client.patch<FirstLessonConfig>('/loyalty/first-lesson', payload),
 
   getLevels: () =>
     client.get<LoyaltyLevel[]>('/loyalty/levels'),

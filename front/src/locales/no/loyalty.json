@@ -27,6 +27,11 @@
       "desc": "Programmet «Ta med en venn»",
       "statLabel": "henvisninger"
     },
+    "first_lesson": {
+      "title": "Første økt",
+      "desc": "Gratis eller rabattert første booking for nye kunder",
+      "statLabel": "første økter"
+    },
     "promocodes": {
       "title": "Kampanjekoder",
       "desc": "Rabattkoder med bruksgrense",
@@ -154,14 +159,29 @@
     "depositTotalSub": "på tvers av kundenes innskudd",
     "depositTopClients": "Toppkunder etter saldo",
     "depositEmpty": "Ingen har et innskudd ennå",
-    "depositHint": "Påfyll og uttak gjøres på kundens profil. Henvisningsprogrammet kan betale bonuser til innskuddet i stedet for som poeng."
+    "depositHint": "Påfyll og uttak gjøres på kundens profil. Henvisningsprogrammet kan betale bonuser til innskuddet i stedet for som poeng.",
+    "firstLesson": {
+      "sizeTitle": "Rabattens størrelse",
+      "free": "Gratis",
+      "percent": "Rabatt, %",
+      "freeHint": "Første økt er en gave — kunden betaler ingenting.",
+      "payHint": "Kunden betaler {{rest}} % av prisen for første økt.",
+      "howTitle": "Slik fungerer det",
+      "how": {
+        "who": "Rabatten gjelder automatisk for en ny kundes første booking — i Timeplan, miniappen og bookingwidgeten.",
+        "stacking": "Kan ikke kombineres med andre rabatter: den beste for kunden gjelder.",
+        "journal": "I Timeplan kan du slå den av for en bestemt booking i betalingstrinnet.",
+        "booking": "Den samme bryteren finnes under «Nettbooking → Generelle innstillinger»."
+      }
+    }
   },
   "validation": {
     "required": "Dette feltet er påkrevd",
     "minOne": "Må være minst 1",
     "minZero": "Kan ikke være negativt",
     "positive": "Må være større enn 0",
-    "range0to100": "0 til 100"
+    "range0to100": "0 til 100",
+    "range1to100": "Fra 1 til 100"
   },
   "toasts": {
     "saved": "Programmet er aktivert",

@@ -62,6 +62,7 @@ const NOT_A_MODAL = {
   'Clients/fields': 'поля внутри AddClientModal, отдельного окна нет',
   'Clients/sections': 'разделы формы AddClientModal',
   'Clients/WizardAside': 'боковая панель мастера AddClientModal',
+  'Clients/AddClientFields': 'поля AddClientModal одной формой — на телефоне и в мастере записи',
   'AI/ChannelPane': 'часть AgentSetupModal, отдельного окна нет',
   'AI/ConnectAreas': 'часть AgentSetupModal',
   'AI/PromptPane': 'часть AgentSetupModal',
@@ -76,6 +77,7 @@ const NOT_A_MODAL = {
   'Journal/WhenStep': 'шаг «Дата и время» внутри BookingWizard',
   'Journal/WizardParts': 'поиск, чипы и строки списка внутри BookingWizard',
   'Journal/SummaryStep': 'шаг «Проверьте запись» внутри BookingWizard',
+  'Journal/NewClientStep': 'форма нового клиента внутри листа BookingWizard, своего окна нет',
   // Мёртвый код: файлы есть, но их никто не импортирует (проверено 15.08.2026).
   'Booking/InstaModal': 'мёртвый файл — не импортируется ниоткуда',
   'Booking/WebModal': 'мёртвый файл — не импортируется ниоткуда',

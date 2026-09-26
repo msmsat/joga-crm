@@ -285,23 +285,12 @@
       "deleteTitle": "Notiz löschen?",
       "deleteMessage": "Diese Notiz lässt sich nicht wiederherstellen."
     },
-    "bookingPanel": {
-      "title": "Schnellbuchung",
-      "today": "Heute",
-      "noLessons": "An diesem Tag gibt es keine Kurse",
-      "full": "Keine Plätze",
-      "confirm": "Buchen →",
-      "noSubscription": "Der Kunde hat keine verfügbare Karte für die Buchung",
-      "individual": "Individuelle Leistung"
-    },
     "bonusPanel": {
       "title": "Bonus gewähren"
     },
     "toasts": {
       "noPhone": "Der Kunde hat keine Telefonnummer",
       "copied": "Erfolgreich kopiert",
-      "bookingCreated": "Buchung erstellt",
-      "bookingFailed": "Buchung fehlgeschlagen",
       "bonusFailed": "Punkte konnten nicht gutgeschrieben werden",
       "bonusApplied": "Bonus gewährt: {{label}}",
       "clientAdded": "Kunde hinzugefügt"

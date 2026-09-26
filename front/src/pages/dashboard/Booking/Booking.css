@@ -966,6 +966,13 @@
 .sg-later:hover { color: var(--text2); }
 .sg-note { margin-top: 4px; font-size: 11px; color: var(--text3); line-height: 1.5; }
 
+/* Ссылка в подписи настройки — «Процент — в разделе Лояльность» у скидки на
+   первое занятие: процент живёт там, здесь только вкл/выкл. */
+.settings-row .settings-link {
+  color: var(--peach); font-weight: 700; text-decoration: none; white-space: nowrap;
+}
+.settings-row .settings-link:hover { text-decoration: underline; }
+
 /* ── ТЕЛЕФОН ──────────────────────────────────────────────────────────────────
    Страница — каналы и три карточки настроек подряд. На 320px каналы шли по
    одному в ряд карточками в 150px высотой (600px только на выбор канала), а

@@ -66,6 +66,7 @@
     "markAttended": "Отбележи присъствие",
     "awaitingConfirmation": "Чака потвърждение",
     "trialLesson": "Пробно",
+    "trialDiscount": "Пробно · −{{percent}}%",
     "unpaid": "Неплатено · {{amount}}",
     "acceptPayment": "Приеми плащане",
     "payCash": "В брой",
@@ -236,6 +237,37 @@
     "earlier": "По-рано",
     "check": "Проверете записа",
     "change": "Промени",
-    "confirm": "Потвърди"
+    "confirm": "Потвърди",
+    "busyAt": "Зает в {{time}}",
+    "allBusy": "В {{time}} всички са заети — изберете най-близкия свободен час при специалист"
+  },
+  "payment": {
+    "title": "Плащане",
+    "price": "Цена",
+    "firstLesson": "Първо занятие",
+    "free": "безплатно",
+    "firstLessonOutweighed": "Друга отстъпка е по-изгодна — отстъпките не се сумират",
+    "discount": {
+      "studio": "Отстъпка на студиото",
+      "offer": "Лична отстъпка",
+      "referral": "Отстъпка за покана"
+    },
+    "promo": "Промокод",
+    "voucher": "Ваучер",
+    "promoPlaceholder": "Промокод",
+    "voucherPlaceholder": "Код на ваучер или сертификат",
+    "apply": "Приложи",
+    "remove": "Премахни",
+    "promoInvalid": "Промокодът не е валиден",
+    "promoOutweighed": "Не се сумира — вече важи по-изгодна отстъпка",
+    "voucherRemainder": "Номинал {{amount}} — остатъкът не се запазва",
+    "total": "За плащане в брой",
+    "coveredBy": {
+      "subscription": "С абонамент",
+      "trial": "Първо занятие безплатно",
+      "free": "Безплатно"
+    },
+    "confirmAndPay": "Запиши и приеми {{amount}}",
+    "loadFailed": "Плащането не можа да се изчисли."
   }
 }

@@ -47,10 +47,11 @@ class BookingRules:
     widget_logo_url: str | None = None
     widget_dark_mode: bool = False
     widget_language: str = "ru"
-    # «Первое занятие бесплатно». Живёт здесь, потому что решение о подарке
+    # «Скидка на первое занятие». Живёт здесь, потому что решение о ней
     # принимают все четыре точки записи (services/booking_access.trial_applies),
-    # а не только мини-приложение.
+    # а не только мини-приложение. Процент 100 — бесплатно (прежний подарок).
     trial_lesson_free: bool = False
+    trial_discount_percent: int = 100
     # «Кофе после занятия» (см. models/settings.py). Читают мини-приложение и
     # рассыльщик — поэтому живут здесь, рядом с остальными правилами записи.
     coffee_enabled: bool = True
@@ -94,6 +95,37 @@ async def load_rules(db: AsyncSession, studio_id: int) -> BookingRules:
     # проверяет каждый раз на None.
     values["coffee_spots"] = tuple(values["coffee_spots"] or ())
     return BookingRules(**values)
+
+
+async def save_settings(db: AsyncSession, studio_id: int, changes: dict) -> StudioBookingSettings:
+    """Единственный писатель настроек записи. Коммитит.
+
+    Пишут их два раздела — «Онлайн-запись» (`PATCH /booking/settings`) и
+    «Лояльность» (скидка на первое занятие, `PATCH /loyalty/first-lesson`), и
+    оба обязаны делать это одинаково: под замком студии и с ростом
+    `booking_config_version`, если что-то поменялось. Без роста уже выданные
+    условия записи (quote, пять минут) подтвердились бы по старым правилам —
+    клиент получил бы скидку, которую владелец только что выключил.
+
+    Строки ещё нет — создаётся с умолчаниями модели.
+    """
+    from services.schedule_guard import lock_studio
+
+    studio = await lock_studio(db, studio_id)
+    row = (await db.execute(
+        select(StudioBookingSettings).where(StudioBookingSettings.studio_id == studio_id)
+    )).scalar_one_or_none()
+    if row is None:
+        row = StudioBookingSettings(studio_id=studio_id)
+        db.add(row)
+    changed = any(getattr(row, field) != value for field, value in changes.items())
+    for field, value in changes.items():
+        setattr(row, field, value)
+    if changed:
+        studio.booking_config_version += 1
+    await db.commit()
+    await db.refresh(row)
+    return row
 
 
 def _minutes(hhmm: str) -> int:

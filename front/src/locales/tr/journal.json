@@ -66,6 +66,7 @@
     "markAttended": "Katılımı işaretle",
     "awaitingConfirmation": "Onay bekliyor",
     "trialLesson": "Deneme",
+    "trialDiscount": "Deneme · −%{{percent}}",
     "unpaid": "Ödenmedi · {{amount}}",
     "acceptPayment": "Ödemeyi al",
     "payCash": "Nakit",
@@ -236,6 +237,37 @@
     "earlier": "Daha erken",
     "check": "Kaydı kontrol edin",
     "change": "Değiştir",
-    "confirm": "Onayla"
+    "confirm": "Onayla",
+    "busyAt": "{{time}} saatinde dolu",
+    "allBusy": "{{time}} saatinde herkes dolu — bir uzmanın en yakın boş saatini seçin"
+  },
+  "payment": {
+    "title": "Ödeme",
+    "price": "Fiyat",
+    "firstLesson": "İlk ders",
+    "free": "ücretsiz",
+    "firstLessonOutweighed": "Başka bir indirim daha avantajlı — indirimler birleştirilmez",
+    "discount": {
+      "studio": "Stüdyo indirimi",
+      "offer": "Kişisel indirim",
+      "referral": "Davet indirimi"
+    },
+    "promo": "Promosyon kodu",
+    "voucher": "Kupon",
+    "promoPlaceholder": "Promosyon kodu",
+    "voucherPlaceholder": "Kupon veya hediye sertifikası kodu",
+    "apply": "Uygula",
+    "remove": "Kaldır",
+    "promoInvalid": "Bu promosyon kodu geçerli değil",
+    "promoOutweighed": "Birleştirilmez — daha avantajlı bir indirim zaten uygulanıyor",
+    "voucherRemainder": "Değer {{amount}} — kalan tutar saklanmaz",
+    "total": "Nakit tahsil edilecek",
+    "coveredBy": {
+      "subscription": "Abonelikten karşılanır",
+      "trial": "İlk ders ücretsiz",
+      "free": "Ücretsiz"
+    },
+    "confirmAndPay": "Kaydet ve {{amount}} tahsil et",
+    "loadFailed": "Ödeme hesaplanamadı."
   }
 }

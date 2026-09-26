@@ -223,3 +223,20 @@ class ReferralConfigUpdate(BaseSchema):
     new_client_discount: Optional[int] = None
     trigger_condition: Optional[str] = None
     bonus_type: Optional[str] = None
+
+
+# --- First lesson discount ---
+# Отдельной таблицы нет: это те же колонки правил записи (trial_lesson_free,
+# trial_discount_percent), что показывает «Онлайн-запись». Здесь — в словах
+# программы лояльности: «включена» и «сколько процентов».
+
+
+class FirstLessonConfigRead(BaseSchema):
+    is_enabled: bool
+    # 100 — занятие бесплатно.
+    discount_percent: int
+
+
+class FirstLessonConfigUpdate(BaseSchema):
+    is_enabled: Optional[bool] = None
+    discount_percent: Optional[int] = Field(default=None, ge=1, le=100)

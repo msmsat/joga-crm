@@ -66,6 +66,7 @@
     "markAttended": "Означи долазак",
     "awaitingConfirmation": "Чека потврду",
     "trialLesson": "Пробни",
+    "trialDiscount": "Пробни · −{{percent}}%",
     "unpaid": "Неплаћено · {{amount}}",
     "acceptPayment": "Прими уплату",
     "payCash": "Готовина",
@@ -240,6 +241,37 @@
     "earlier": "Ranije",
     "check": "Proverite zakazivanje",
     "change": "Promeni",
-    "confirm": "Potvrdi"
+    "confirm": "Potvrdi",
+    "busyAt": "Zauzet u {{time}}",
+    "allBusy": "U {{time}} su svi zauzeti — izaberite najbliže slobodno vreme kod stručnjaka"
+  },
+  "payment": {
+    "title": "Плаћање",
+    "price": "Цена",
+    "firstLesson": "Први термин",
+    "free": "бесплатно",
+    "firstLessonOutweighed": "Други попуст је повољнији — попусти се не сабирају",
+    "discount": {
+      "studio": "Попуст студија",
+      "offer": "Лични попуст",
+      "referral": "Попуст за препоруку"
+    },
+    "promo": "Промокод",
+    "voucher": "Ваучер",
+    "promoPlaceholder": "Промокод",
+    "voucherPlaceholder": "Код ваучера или сертификата",
+    "apply": "Примени",
+    "remove": "Уклони",
+    "promoInvalid": "Овај промокод не важи",
+    "promoOutweighed": "Не сабира се — већ важи повољнији попуст",
+    "voucherRemainder": "Вредност {{amount}} — остатак се не чува",
+    "total": "За наплату у готовини",
+    "coveredBy": {
+      "subscription": "Из претплате",
+      "trial": "Први термин бесплатно",
+      "free": "Бесплатно"
+    },
+    "confirmAndPay": "Упиши и наплати {{amount}}",
+    "loadFailed": "Плаћање није могуће израчунати."
   }
 }

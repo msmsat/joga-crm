@@ -65,11 +65,14 @@ async def create_reservation(
     #
     # actor=STAFF: окно самостоятельной записи к стойке не относится — его
     # заменяет `assert_staff_bookable` выше. require_funding=True: Журнал
-    # записывает по абонементу либо по подарку, разовую продажу проводит касса.
+    # записывает по абонементу либо по первому занятию, разовую продажу
+    # проводит касса. allow_payment=True — ради первого занятия СО СКИДКОЙ:
+    # остаток клиент платит на месте, это долг (`open_debt`), а не отказ. Без
+    # первого занятия платного исхода здесь нет — его раньше отсекает покрытие.
     result = await booking.create(
         db, studio_id=ctx.studio_id, client_id=body.client_id,
         lesson_id=body.lesson_id, source="manual",
-        actor=booking.Actor.STAFF, require_funding=True,
+        actor=booking.Actor.STAFF, require_funding=True, allow_payment=True,
     )
     if result.outcome is booking.Outcome.NO_FUNDING:
         # Причину отказа называем прежними словами: «истекает раньше занятия» /
@@ -344,6 +347,7 @@ async def pay_reservation(
         ),
         method=body.payment_method,
         debt=debt,
+        reservation_id=reservation.id,
     )
     await db.refresh(reservation)
     return ReservationRead.model_validate(reservation)

@@ -109,6 +109,7 @@
     "SLOT_UNAVAILABLE": "Diese Zeit ist belegt oder außerhalb der Arbeitszeit der Fachkraft",
     "VERSION_CONFLICT": "Die Buchung wurde in einem anderen Fenster geändert — aktualisieren Sie den Kalender",
     "TERMS_CHANGED": "Die Buchungsbedingungen haben sich geändert — öffnen Sie sie erneut",
+    "AMOUNT_CHANGED": "Der Betrag hat sich geändert — prüfen Sie die Summe und bestätigen Sie erneut",
     "INVALID_START": "Diese Uhrzeit gibt es an diesem Tag wegen der Zeitumstellung nicht",
     "WINDOW_CLOSED": "Die Buchung hat bereits begonnen oder ist vorbei — sie kann nicht geändert werden",
     "PAYMENT_IN_PROGRESS": "Für die Buchung läuft eine Zahlung — warten Sie, bis sie abgeschlossen ist",

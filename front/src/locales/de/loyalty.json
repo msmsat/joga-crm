@@ -27,6 +27,11 @@
       "desc": "Programm „Freunde werben“",
       "statLabel": "Empfehlungen"
     },
+    "first_lesson": {
+      "title": "Erster Kurs",
+      "desc": "Erste Buchung neuer Kunden gratis oder mit Rabatt",
+      "statLabel": "erste Kurse"
+    },
     "promocodes": {
       "title": "Aktionscodes",
       "desc": "Rabattcodes mit Nutzungslimit",
@@ -154,14 +159,29 @@
     "depositTotalSub": "über alle Kundenguthaben",
     "depositTopClients": "Top-Kunden nach Guthaben",
     "depositEmpty": "Noch niemand hat Guthaben",
-    "depositHint": "Aufladungen und Auszahlungen erfolgen im Kundenprofil. Das Empfehlungsprogramm kann Boni statt in Punkten aufs Guthaben zahlen."
+    "depositHint": "Aufladungen und Auszahlungen erfolgen im Kundenprofil. Das Empfehlungsprogramm kann Boni statt in Punkten aufs Guthaben zahlen.",
+    "firstLesson": {
+      "sizeTitle": "Rabatthöhe",
+      "free": "Gratis",
+      "percent": "Rabatt, %",
+      "freeHint": "Der erste Kurs ist ein Geschenk — der Kunde zahlt nichts.",
+      "payHint": "Der Kunde zahlt {{rest}} % des Preises für den ersten Kurs.",
+      "howTitle": "So funktioniert es",
+      "how": {
+        "who": "Der Rabatt gilt automatisch für die erste Buchung neuer Kunden — im Journal, in der Mini-App und im Buchungs-Widget.",
+        "stacking": "Nicht mit anderen Rabatten kombinierbar: Es gilt der günstigste für den Kunden.",
+        "journal": "Im Journal lässt er sich im Zahlungsschritt für eine einzelne Buchung abschalten.",
+        "booking": "Derselbe Schalter befindet sich unter „Online-Buchung → Allgemeine Einstellungen“."
+      }
+    }
   },
   "validation": {
     "required": "Dieses Feld ist erforderlich",
     "minOne": "Muss mindestens 1 sein",
     "minZero": "Darf nicht negativ sein",
     "positive": "Muss größer als 0 sein",
-    "range0to100": "0 bis 100"
+    "range0to100": "0 bis 100",
+    "range1to100": "1 bis 100"
   },
   "toasts": {
     "saved": "Programm aktiviert",

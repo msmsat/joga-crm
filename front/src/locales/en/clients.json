@@ -285,23 +285,12 @@
       "deleteTitle": "Delete note?",
       "deleteMessage": "This note cannot be recovered."
     },
-    "bookingPanel": {
-      "title": "Quick booking",
-      "today": "Today",
-      "noLessons": "No lessons on this day",
-      "full": "No spots",
-      "confirm": "Book →",
-      "noSubscription": "Client has no available subscription for booking",
-      "individual": "Individual service"
-    },
     "bonusPanel": {
       "title": "Grant bonus"
     },
     "toasts": {
       "noPhone": "Client has no phone number",
       "copied": "Copied successfully",
-      "bookingCreated": "Booking created",
-      "bookingFailed": "Failed to book",
       "bonusFailed": "Failed to grant points",
       "bonusApplied": "Bonus granted: {{label}}",
       "clientAdded": "Client added"

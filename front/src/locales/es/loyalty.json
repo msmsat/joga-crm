@@ -27,6 +27,11 @@
       "desc": "Programa «Trae a un amigo»",
       "statLabel": "referidos"
     },
+    "first_lesson": {
+      "title": "Primera clase",
+      "desc": "Primera reserva gratis o con descuento para clientes nuevos",
+      "statLabel": "primeras clases"
+    },
     "promocodes": {
       "title": "Códigos promocionales",
       "desc": "Códigos de descuento con límite de uso",
@@ -154,14 +159,29 @@
     "depositTotalSub": "en todos los depósitos de clientes",
     "depositTopClients": "Mejores clientes por saldo",
     "depositEmpty": "Nadie tiene aún un depósito",
-    "depositHint": "Las recargas y retiradas se realizan desde el perfil del cliente. El programa de referidos puede abonar bonificaciones en el depósito en lugar de puntos."
+    "depositHint": "Las recargas y retiradas se realizan desde el perfil del cliente. El programa de referidos puede abonar bonificaciones en el depósito en lugar de puntos.",
+    "firstLesson": {
+      "sizeTitle": "Importe del descuento",
+      "free": "Gratis",
+      "percent": "Descuento, %",
+      "freeHint": "La primera clase es un regalo: el cliente no paga nada.",
+      "payHint": "El cliente paga el {{rest}} % del precio de la primera clase.",
+      "howTitle": "Cómo funciona",
+      "how": {
+        "who": "El descuento se aplica solo a la primera reserva de un cliente nuevo: en la Agenda, la miniapp y el widget de reservas.",
+        "stacking": "No se acumula con otros descuentos: se aplica el más ventajoso para el cliente.",
+        "journal": "En la Agenda puede desactivarlo para una reserva concreta en el paso de pago.",
+        "booking": "El mismo interruptor está en «Reserva online → Ajustes generales»."
+      }
+    }
   },
   "validation": {
     "required": "Este campo es obligatorio",
     "minOne": "Debe ser al menos 1",
     "minZero": "No puede ser negativo",
     "positive": "Debe ser mayor que 0",
-    "range0to100": "De 0 a 100"
+    "range0to100": "De 0 a 100",
+    "range1to100": "De 1 a 100"
   },
   "toasts": {
     "saved": "Programa activado",

@@ -20,6 +20,7 @@ from models import (
     Client, ClientLoyaltyCard, ClientPayment, ClientSubscription, Lesson, Reservation,
     StudioSubscriptionProgramConfig, SubscriptionPackage,
 )
+from services.booking_access import trial_percent
 from services.notifier import notify
 from services.pricing import resolve_price
 
@@ -116,10 +117,12 @@ async def open_debt(
     баллы и комиссию платформы здесь не нужно.
 
     Молчит, когда платить не за что: занятие покрыто абонементом, подарено как
-    пробное, бесплатное по прайсу или долг уже открыт (идемпотентность).
+    бесплатное первое занятие, бесплатное по прайсу или долг уже открыт
+    (идемпотентность). Первое занятие СО СКИДКОЙ — не подарок: остаток клиент
+    платит на месте, и долг заводится на сумму со скидкой (`amount`).
     Не коммитит.
     """
-    if reservation.subscription_id is not None or reservation.is_trial:
+    if reservation.subscription_id is not None or (trial_percent(reservation) or 0) >= 100:
         return None
     # `amount` — цена ЭТОГО КЛИЕНТА (services/booking.client_price). Без неё
     # берётся прайс, как было до появления скидок на этом пути. Ноль означает

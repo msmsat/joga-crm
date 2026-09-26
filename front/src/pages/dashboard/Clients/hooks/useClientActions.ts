@@ -1,9 +1,9 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import type { EventFilterTab } from '../types';
 import type { ClientUpdate } from '../../../../api/clients/clients.types';
-import { scheduleApi } from '../../../../api/schedule';
-import type { Lesson } from '../../../../api/schedule/schedule.types';
+import { queryKeys } from '../../../../api/queryKeys';
 import { useToast } from '../../../../components/ui/Toast';
 import { errorMessage } from '../../../../api/errorMessage';
 import { useClientMutations } from './useClientsList';
@@ -20,6 +20,7 @@ export function useClientActions(clientId: number) {
   const { t } = useTranslation('clients');
   const toast = useToast();
   const mutations = useClientMutations();
+  const qc = useQueryClient();
 
   const [showTagPanel, setShowTagPanel]   = useState(false);
   const [editingNoteId, setEditingNoteId] = useState<number | null>(null);
@@ -29,14 +30,9 @@ export function useClientActions(clientId: number) {
   // Черновик заметки живёт в окне правки (NoteEditorModal), здесь — только
   // то, С ЧЕМ его открыли: текст и снимки существующей заметки.
   const [notePhotos, setNotePhotos]       = useState<string[]>([]);
-  const [showBooking, setShowBooking]     = useState(false);
   const [showBonus, setShowBonus]         = useState(false);
   const [selectedBonus, setSelectedBonus] = useState<string | null>(null);
   const [eventFilter, setEventFilter]     = useState<EventFilterTab>('all');
-  const [bookingDate, setBookingDate]     = useState(0); // смещение в днях от сегодня (абсолютное, не индекс окна)
-  const [bookingWindowStart, setBookingWindowStart] = useState(0); // начало видимого окна из 7 дней
-  const [bookingLessons, setBookingLessons] = useState<Lesson[]>([]);
-  const [bookingLessonId, setBookingLessonId] = useState<number | null>(null);
 
   // Панель больше не перемонтируется при смене клиента (без миганий/скачков) —
   // закрываем открытые подпанели вручную вместо остатка со старого клиента.
@@ -50,12 +46,9 @@ export function useClientActions(clientId: number) {
     setIsAddingNote(false);
     setDeletingNoteId(null);
     setNotePhotos([]);
-    setShowBooking(false);
     setShowBonus(false);
     setSelectedBonus(null);
     setEventFilter('all');
-    setBookingDate(0);
-    setBookingWindowStart(0);
   }
 
   const toggleFreeze = useCallback((frozen: boolean) => {
@@ -136,49 +129,15 @@ export function useClientActions(clientId: number) {
     window.open(`https://wa.me/${digits}`, '_blank', 'noopener');
   }, [toast, t]);
 
-  const toggleBooking = useCallback(() => {
-    setShowBooking(prev => !prev);
-    setShowBonus(false);
-  }, []);
-
-  // Листание окна дат на 7 дней; назад раньше сегодня не уходим.
-  const shiftBookingWindow = useCallback((deltaDays: number) => {
-    setBookingWindowStart(prev => Math.max(0, prev + deltaDays));
-  }, []);
-
-  // Открыли панель или сменили день — выбранное занятие сбрасываем сразу, ещё до
-  // ответа сервера, поэтому в рендере, а не в эффекте ниже.
-  const bookingDayKey = `${showBooking}|${bookingDate}`;
-  const [syncedBookingDay, setSyncedBookingDay] = useState<string | null>(null);
-  if (syncedBookingDay !== bookingDayKey) {
-    setSyncedBookingDay(bookingDayKey);
-    if (showBooking) setBookingLessonId(null);
-  }
-
-  // Занятия на выбранный день панели записи (bookingDate — смещение от сегодня)
-  useEffect(() => {
-    if (!showBooking) return;
-    const d = new Date();
-    d.setDate(d.getDate() + bookingDate);
-    const day = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-    scheduleApi.getLessons({ date_from: day, date_to: day })
-      .then(setBookingLessons)
-      .catch(() => setBookingLessons([]));
-  }, [showBooking, bookingDate]);
-
-  const confirmBooking = useCallback(() => {
-    if (bookingLessonId == null) return;
-    mutations.book(clientId, bookingLessonId)
-      .then(() => {
-        setShowBooking(false);
-        toast.success(t('panel.toasts.bookingCreated'));
-      })
-      .catch((e: Error) => toast.error(errorMessage(e, t) || t('panel.toasts.bookingFailed')));
-  }, [clientId, bookingLessonId, mutations, toast, t]);
+  // Запись идёт мастером записи (журнал) — карточке остаётся подтянуть
+  // свежие абонемент, визиты и ленту событий этого клиента.
+  const refreshAfterBooking = useCallback(() => {
+    // Префикс карточки: профиль и лента событий со всеми фильтрами разом.
+    qc.invalidateQueries({ queryKey: queryKeys.client(clientId) });
+  }, [qc, clientId]);
 
   const toggleBonus = useCallback(() => {
     setShowBonus(prev => !prev);
-    setShowBooking(false);
     setSelectedBonus(null);
   }, []);
 
@@ -215,10 +174,7 @@ export function useClientActions(clientId: number) {
     startEditNote, saveNote, cancelEditNote,
     deletingNoteId, requestDeleteNote, cancelDeleteNote, confirmDeleteNote,
     isAddingNote, startAddNote, saveNewNote, cancelAddNote, notePhotos,
-    showBooking, toggleBooking, confirmBooking,
-    bookingDate, setBookingDate,
-    bookingWindowStart, shiftBookingWindow,
-    bookingLessons, bookingLessonId, setBookingLessonId,
+    refreshAfterBooking,
     showBonus, selectedBonus, toggleBonus, selectBonus,
     eventFilter, setEventFilter,
     copyToClipboard, openWhatsApp,

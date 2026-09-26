@@ -66,6 +66,7 @@
     "markAttended": "Отметить посещение",
     "awaitingConfirmation": "Ждёт подтверждения",
     "trialLesson": "Пробное",
+    "trialDiscount": "Пробное · −{{percent}}%",
     "unpaid": "Не оплачено · {{amount}}",
     "acceptPayment": "Принять оплату",
     "payCash": "Наличными",
@@ -244,6 +245,37 @@
     "earlier": "Раньше",
     "check": "Проверьте запись",
     "change": "Изменить",
-    "confirm": "Подтвердить"
+    "confirm": "Подтвердить",
+    "busyAt": "Занят в {{time}}",
+    "allBusy": "В {{time}} все заняты — выберите ближайшее свободное время у специалиста"
+  },
+  "payment": {
+    "title": "Оплата",
+    "price": "Стоимость",
+    "firstLesson": "Первое занятие",
+    "free": "бесплатно",
+    "firstLessonOutweighed": "Выгоднее другая скидка — скидки не суммируются",
+    "discount": {
+      "studio": "Скидка студии",
+      "offer": "Персональная скидка",
+      "referral": "Скидка по приглашению"
+    },
+    "promo": "Промокод",
+    "voucher": "Ваучер",
+    "promoPlaceholder": "Промокод",
+    "voucherPlaceholder": "Код ваучера или сертификата",
+    "apply": "Применить",
+    "remove": "Убрать",
+    "promoInvalid": "Промокод не действует",
+    "promoOutweighed": "Не суммируется — уже действует скидка выгоднее",
+    "voucherRemainder": "Номинал {{amount}} — остаток не сохранится",
+    "total": "К оплате наличными",
+    "coveredBy": {
+      "subscription": "По абонементу",
+      "trial": "Первое занятие — бесплатно",
+      "free": "Бесплатно"
+    },
+    "confirmAndPay": "Записать и принять {{amount}}",
+    "loadFailed": "Не удалось посчитать оплату."
   }
 }

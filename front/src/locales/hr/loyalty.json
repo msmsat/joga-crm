@@ -27,6 +27,11 @@
       "desc": "Program „Dovedite prijatelja”",
       "statLabel": "preporuka"
     },
+    "first_lesson": {
+      "title": "Prvi termin",
+      "desc": "Besplatan ili sniženi prvi termin za nove klijente",
+      "statLabel": "prvih termina"
+    },
     "promocodes": {
       "title": "Promokodovi",
       "desc": "Kodovi za popust s ograničenjem upotrebe",
@@ -154,14 +159,29 @@
     "depositTotalSub": "na svim depozitima klijenata",
     "depositTopClients": "Najbolji klijenti prema saldu",
     "depositEmpty": "Još nitko nema depozit",
-    "depositHint": "Uplate i isplate obavljaju se na profilu klijenta. Program preporuka može uplaćivati bonuse na depozit umjesto u bodovima."
+    "depositHint": "Uplate i isplate obavljaju se na profilu klijenta. Program preporuka može uplaćivati bonuse na depozit umjesto u bodovima.",
+    "firstLesson": {
+      "sizeTitle": "Visina popusta",
+      "free": "Besplatno",
+      "percent": "Popust, %",
+      "freeHint": "Prvi termin je poklon — klijent ne plaća ništa.",
+      "payHint": "Klijent plaća {{rest}} % cijene prvog termina.",
+      "howTitle": "Kako funkcionira",
+      "how": {
+        "who": "Popust se sam primjenjuje na prvu rezervaciju novog klijenta — u Dnevniku, mini aplikaciji i widgetu za rezervacije.",
+        "stacking": "Ne zbraja se s drugim popustima: vrijedi onaj najpovoljniji za klijenta.",
+        "journal": "U Dnevniku ga možete isključiti za pojedinu rezervaciju u koraku plaćanja.",
+        "booking": "Isti prekidač nalazi se u „Online rezervacije → Opće postavke”."
+      }
+    }
   },
   "validation": {
     "required": "Ovo polje je obavezno",
     "minOne": "Mora biti najmanje 1",
     "minZero": "Ne može biti negativno",
     "positive": "Mora biti veće od 0",
-    "range0to100": "Od 0 do 100"
+    "range0to100": "Od 0 do 100",
+    "range1to100": "Od 1 do 100"
   },
   "toasts": {
     "saved": "Program je aktiviran",

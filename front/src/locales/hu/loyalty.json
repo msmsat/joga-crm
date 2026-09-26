@@ -27,6 +27,11 @@
       "desc": "„Hozz egy barátot” program",
       "statLabel": "ajánlás"
     },
+    "first_lesson": {
+      "title": "Első óra",
+      "desc": "Ingyenes vagy kedvezményes első foglalás új ügyfeleknek",
+      "statLabel": "első óra"
+    },
     "promocodes": {
       "title": "Promóciós kódok",
       "desc": "Használati korláttal rendelkező kedvezménykódok",
@@ -154,14 +159,29 @@
     "depositTotalSub": "az összes ügyfélletéten",
     "depositTopClients": "Legjobb ügyfelek egyenleg szerint",
     "depositEmpty": "Még senkinek sincs letétje",
-    "depositHint": "A feltöltések és kifizetések az ügyfél profilján történnek. Az ajánlási program pontok helyett a letétre is fizethet bónuszt."
+    "depositHint": "A feltöltések és kifizetések az ügyfél profilján történnek. Az ajánlási program pontok helyett a letétre is fizethet bónuszt.",
+    "firstLesson": {
+      "sizeTitle": "Kedvezmény mértéke",
+      "free": "Ingyenes",
+      "percent": "Kedvezmény, %",
+      "freeHint": "Az első óra ajándék — az ügyfél nem fizet semmit.",
+      "payHint": "Az ügyfél az első óra árának {{rest}}%-át fizeti.",
+      "howTitle": "Hogyan működik",
+      "how": {
+        "who": "A kedvezmény magától érvényesül az új ügyfél első foglalásánál — a Naplóban, a miniappban és a foglalási widgetben.",
+        "stacking": "Más kedvezményekkel nem vonható össze: az ügyfél számára legkedvezőbb érvényes.",
+        "journal": "A Naplóban a fizetési lépésnél egy adott foglalásnál kikapcsolható.",
+        "booking": "Ugyanez a kapcsoló itt is megtalálható: „Online foglalás → Általános beállítások”."
+      }
+    }
   },
   "validation": {
     "required": "Ez a mező kötelező",
     "minOne": "Legalább 1-nek kell lennie",
     "minZero": "Nem lehet negatív",
     "positive": "0-nál nagyobbnak kell lennie",
-    "range0to100": "0–100"
+    "range0to100": "0–100",
+    "range1to100": "1 és 100 között"
   },
   "toasts": {
     "saved": "Program aktiválva",

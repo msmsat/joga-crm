@@ -109,6 +109,7 @@
     "SLOT_UNAVAILABLE": "Ce créneau est pris ou en dehors des horaires du spécialiste",
     "VERSION_CONFLICT": "La réservation a été modifiée dans une autre fenêtre : actualisez le planning",
     "TERMS_CHANGED": "Les conditions de la réservation ont changé : rouvrez-la",
+    "AMOUNT_CHANGED": "Le montant a changé : vérifiez le total et confirmez à nouveau",
     "INVALID_START": "Cette heure n'existe pas ce jour-là à cause du changement d'heure",
     "WINDOW_CLOSED": "La réservation a déjà commencé ou est passée : impossible de la modifier",
     "PAYMENT_IN_PROGRESS": "Un paiement est en cours pour cette réservation : attendez qu'il se termine",

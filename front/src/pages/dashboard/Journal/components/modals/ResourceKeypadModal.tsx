@@ -6,12 +6,13 @@ import { Select, NotePhotos, NoteDropZone } from '../../../../../components/ui/i
 import { errorMessage } from '../../../../../api/errorMessage';
 import { useBusinessTerms } from '../../../../../hooks/useBusinessTerms';
 import { useNotePhotos } from '../../../../../hooks/useNotePhotos';
-import { formatMoney } from '../../../../../lib/money';
 import { parseTimeToIndex, listedTimes } from '../../utils';
 import type { Trainer } from '../../types';
 import { ResourceClientPicker } from './ResourceClientPicker';
 import { ResourceTimeField } from '../ResourceTimeField';
+import { BookingPayment } from '../BookingPayment';
 import { useResourceBooking } from '../../hooks/useResourceBooking';
+import { confirmLabel } from '../../hooks/useBookingPayment';
 
 type Props = {
   trainers: Trainer[];
@@ -112,6 +113,9 @@ export function ResourceKeypadModal({
 
   const dayLabel = booking.date.split('-').reverse().join('.');
   const ready = !!quote && quotedTime === wantedTime && !quoting;
+  // Записать можно, когда есть и условия, и чек под них: сумму, которую
+  // примут наличными, сервер сверяет с показанной.
+  const payable = ready && booking.payment.ready;
 
   // Строка под полем времени: почему записать пока нельзя.
   const timeNote = booking.slotsError ? null
@@ -242,19 +246,32 @@ export function ResourceKeypadModal({
             </div>
           </div>
 
+          {/* Последний шаг — оплата, во всю ширину под формой: считать её без
+              взятых условий нечего, поэтому и появляется она вместе с ними. */}
+          {/* Условия под другое время (набрали новое, а оно занято) — чек не
+              про эту запись, и показывать его нельзя. */}
+          {quote && quotedTime === wantedTime && (
+            <div className="kp-pay">
+              <BookingPayment payment={booking.payment} firstLesson={booking.firstLesson}
+                              onFirstLesson={booking.setFirstLesson} busy={saving || quoting} />
+            </div>
+          )}
+
           <div className="kp-foot">
             {ready && quote && (
               <span className="kp-foot-sum">
-                {quote.terms.duration_min} {t('common:units.min')} · {formatMoney(quote.terms.domain.funding.price, quote.terms.domain.funding.currency)}
+                {quote.terms.duration_min} {t('common:units.min')}
               </span>
             )}
             <button type="button" className="btn-ghost-sm" disabled={saving} onClick={onClose}>
               {t('common:buttons.cancel')}
             </button>
-            <button type="button" className="btn-primary-sm" disabled={!ready || saving || notePhotos.pending.length > 0}
-                    style={{ opacity: !ready || saving ? 0.5 : 1, cursor: !ready || saving ? 'not-allowed' : 'pointer' }}
+            <button type="button" className="btn-primary-sm"
+                    disabled={!payable || saving || notePhotos.pending.length > 0}
+                    style={{ opacity: !payable || saving ? 0.5 : 1, cursor: !payable || saving ? 'not-allowed' : 'pointer' }}
                     onClick={() => void booking.confirm({ notes: notes.trim(), photos: notePhotos.photos })}>
-              {terms.ready ? terms.message('confirm_booking') : t('common:buttons.create')}
+              {confirmLabel(booking.payment, t,
+                terms.ready ? terms.message('confirm_booking') : t('common:buttons.create'))}
             </button>
           </div>
         </div>

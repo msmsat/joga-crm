@@ -214,7 +214,8 @@ class Result:
 
 async def quote(db: AsyncSession, *, studio_id: int, client_id: int, lesson_id: int,
                 now: Optional[datetime] = None, actor: Actor = Actor.CLIENT,
-                require_funding: Optional[bool] = None) -> Quote:
+                require_funding: Optional[bool] = None,
+                allow_trial: bool = True) -> Quote:
     """Условия записи на СЕЙЧАС — для предложения человеку. Только чтение.
 
     Отдельная функция, а не «create с флагом»: предложение показывают до
@@ -225,7 +226,8 @@ async def quote(db: AsyncSession, *, studio_id: int, client_id: int, lesson_id: 
     # нашего «а что если».
     checked = await _check(db, studio_id=studio_id, client_id=client_id,
                            lesson_id=lesson_id, now=now, spot_number=None, lock=False,
-                           actor=actor, require_funding=require_funding)
+                           actor=actor, require_funding=require_funding,
+                           allow_trial=allow_trial)
     if checked.outcome is not Outcome.OK:
         return Quote(checked.outcome)
     return Quote(Outcome.OK, checked.terms, checked.spot,
@@ -241,13 +243,15 @@ class _Checked:
     terms: Optional[Terms] = None
     spot: Optional[int] = None
     subscription = None
-    is_trial: bool = False
+    # Процент скидки первого занятия, положенной этой брони; None — не положена.
+    trial_percent: Optional[int] = None
 
 
 async def _check(db: AsyncSession, *, studio_id: int, client_id: int, lesson_id: int,
                  now: Optional[datetime], spot_number: Optional[int],
                  lock: bool = True, actor: Actor = Actor.CLIENT,
-                 require_funding: Optional[bool] = None, _resource: bool = False) -> _Checked:
+                 require_funding: Optional[bool] = None, _resource: bool = False,
+                 allow_trial: bool = True) -> _Checked:
     """ПОЛНАЯ проверка всего, что могло измениться. Читает; не пишет.
 
     Порядок не случаен: сначала то, что не зависит от человека (занятие, окно
@@ -318,9 +322,9 @@ async def _check(db: AsyncSession, *, studio_id: int, client_id: int, lesson_id:
             return _Checked(Outcome.SPOT_TAKEN)
         spot = spot_number
 
-    funding, subscription, is_trial = await resolve_funding(
+    funding, subscription, trial = await resolve_funding(
         db, studio=studio, client_id=client_id, lesson=lesson, rules=rules,
-        lock=lock, require_funding=require_funding)
+        lock=lock, require_funding=require_funding, allow_trial=allow_trial)
     if funding is None:
         return _Checked(Outcome.NO_FUNDING, lesson, rules)
 
@@ -339,38 +343,52 @@ async def _check(db: AsyncSession, *, studio_id: int, client_id: int, lesson_id:
     )
     checked = _Checked(Outcome.OK, lesson, rules, terms, spot)
     checked.subscription = subscription
-    checked.is_trial = is_trial
+    checked.trial_percent = trial
     return checked
 
 
 async def resolve_funding(db: AsyncSession, *, studio, client_id: int, lesson,
                           rules: BookingRules, lock: bool = False,
-                          require_funding: Optional[bool] = None):
+                          require_funding: Optional[bool] = None,
+                          allow_trial: bool = True):
     """Shared funding resolver for persisted events and unsaved resource candidates.
 
     The candidate needs service_id/start_time/price, not a database Lesson ID.
     Does not debit subscriptions or create a reservation.
+
+    Третий элемент — процент скидки первого занятия, положенной этой брони
+    (None — не положена): его бронь запоминает как обещание (`trial_discount_percent`).
+    `allow_trial=False` — администратор выключил скидку первого занятия для
+    этой записи (шаг оплаты индивидуальной записи в Журнале).
     """
     studio_id = studio.id
     subscription, is_trial = await resolve_coverage(db, client_id, lesson, rules,
-                                                    lock=lock)
+                                                    lock=lock, allow_trial=allow_trial)
+    trial = (rules.trial_discount_percent or 100) if is_trial else None
     currency = studio.currency or "RUB"
     if subscription is not None:
         funding = Funding(FundingKind.SUBSCRIPTION, subscription.id, 0, currency)
-    elif is_trial:
+    elif trial is not None and trial >= 100:
         funding = Funding(FundingKind.TRIAL, None, 0, currency)
     elif lesson.price <= 0:
         funding = Funding(FundingKind.FREE, None, 0, currency)
     else:
         needs = rules.prefill_on_booking if require_funding is None else require_funding
-        if needs:
+        # Первое занятие — приглашение студии новому человеку, и покрытия оно
+        # не требует ни целиком, ни со скидкой: абонемент у новичка взяться
+        # неоткуда. Иначе частичная скидка ломала бы то, что работало с
+        # подарком: Журнал отказывал бы в записи новичка на групповое занятие,
+        # а мини-приложение при «Предоплате при записи» — в самом первом
+        # занятии. Остаток клиент платит на месте — это долг, как у любой
+        # оплаты на месте.
+        if needs and trial is None:
             # Покрытие обязательно, а его нет.
-            return None, None, False
-        # ЦЕНА КЛИЕНТА, А НЕ ПРАЙС. Скидка студии, персональный оффер и скидка
-        # новичка — часть договора; взять с человека полную цену, когда у него
-        # есть скидка, значит взять лишнее.
+            return None, None, None
+        # ЦЕНА КЛИЕНТА, А НЕ ПРАЙС. Скидка студии, персональный оффер, скидка
+        # новичка и скидка первого занятия — часть договора; взять с человека
+        # полную цену, когда у него есть скидка, значит взять лишнее.
         payable = await client_price(db, studio_id=studio_id, client_id=client_id,
-                                     base_price=lesson.price)
+                                     base_price=lesson.price, first_lesson_percent=trial)
         if payable <= 0:
             # Скидка покрыла занятие целиком. Платить нечего — значит и
             # платёжного пути нет: ни формы, ни долга.
@@ -378,11 +396,11 @@ async def resolve_funding(db: AsyncSession, *, studio, client_id: int, lesson,
         else:
             funding = Funding(FundingKind.PAY, None, payable, currency)
 
-    return funding, subscription, is_trial
+    return funding, subscription, trial
 
 
 async def client_price(db: AsyncSession, *, studio_id: int, client_id: int,
-                       base_price: int) -> int:
+                       base_price: int, first_lesson_percent: Optional[int] = None) -> int:
     """Сколько это занятие стоит ИМЕННО ЭТОМУ клиенту. Только чтение.
 
     ЕДИНСТВЕННЫЙ ОТВЕТ НА ВОПРОС «сколько человек согласился заплатить».
@@ -399,8 +417,13 @@ async def client_price(db: AsyncSession, *, studio_id: int, client_id: int,
 
     Ничего не помечает использованным: одноразовые скидки гасит `consume_quote`
     в момент состоявшейся продажи. Предложение — ещё не продажа.
+
+    `first_lesson_percent` — скидка первого занятия, положенная этой брони:
+    при записи — по правилам студии, у уже записанной — снимок на брони
+    (`booking_access.trial_percent`).
     """
-    resolved = await pricing.resolve_price(db, studio_id, client_id, base_price)
+    resolved = await pricing.resolve_price(db, studio_id, client_id, base_price,
+                                           first_lesson_percent=first_lesson_percent)
     return resolved.final_price
 
 
@@ -460,7 +483,8 @@ async def create(db: AsyncSession, *, studio_id: int, client_id: int, lesson_id:
                  allow_payment: bool = False,
                  hold_for_payment: bool = False,
                  actor: Actor = Actor.CLIENT,
-                 require_funding: Optional[bool] = None, _resource: bool = False) -> Result:
+                 require_funding: Optional[bool] = None, _resource: bool = False,
+                 allow_trial: bool = True) -> Result:
     """Записать клиента на занятие. ЕДИНСТВЕННЫЙ переход «брони не было → есть».
 
     НЕ КОММИТИТ: вызывающий закрывает транзакцию сам — вместе со своим
@@ -478,7 +502,8 @@ async def create(db: AsyncSession, *, studio_id: int, client_id: int, lesson_id:
     await schedule_guard.lock_studio(db, studio_id)
     checked = await _check(db, studio_id=studio_id, client_id=client_id,
                            lesson_id=lesson_id, now=now, spot_number=spot_number,
-                           actor=actor, require_funding=require_funding, _resource=_resource)
+                           actor=actor, require_funding=require_funding, _resource=_resource,
+                           allow_trial=allow_trial)
     if checked.outcome is not Outcome.OK:
         logger.info("booking_rejected studio_id=%s lesson_id=%s outcome=%s source=%s",
                     studio_id, lesson_id, checked.outcome.value, source)
@@ -516,7 +541,8 @@ async def create(db: AsyncSession, *, studio_id: int, client_id: int, lesson_id:
         spot_number=checked.spot,
         status=status,
         booking_channel=source,
-        is_trial=checked.is_trial,
+        is_trial=checked.trial_percent is not None,
+        trial_discount_percent=checked.trial_percent,
     )
     db.add(reservation)
     remaining = await charge_reservation(db, studio_id, reservation, checked.subscription)

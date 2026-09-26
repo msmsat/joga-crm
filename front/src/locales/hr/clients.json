@@ -293,23 +293,12 @@
       "deleteTitle": "Izbrisati bilješku?",
       "deleteMessage": "Ova se bilješka ne može vratiti."
     },
-    "bookingPanel": {
-      "title": "Brza rezervacija",
-      "today": "Danas",
-      "noLessons": "Nema termina ovog dana",
-      "full": "Nema slobodnih mjesta",
-      "confirm": "Rezerviraj →",
-      "noSubscription": "Klijent nema pretplatu dostupnu za rezervaciju",
-      "individual": "Individualna usluga"
-    },
     "bonusPanel": {
       "title": "Dodijeli bonus"
     },
     "toasts": {
       "noPhone": "Klijent nema broj telefona",
       "copied": "Uspješno kopirano",
-      "bookingCreated": "Rezervacija je stvorena",
-      "bookingFailed": "Rezervacija nije uspjela",
       "bonusFailed": "Dodjela bodova nije uspjela",
       "bonusApplied": "Bonus je dodijeljen: {{label}}",
       "clientAdded": "Klijent je dodan"

@@ -10,6 +10,7 @@ import { validateConfig, type ConfigErrors } from './validateConfig';
 import type {
   CertificateConfig,
   DiscountConfig,
+  FirstLessonConfig,
   LoyaltyConfig,
   LoyaltyLevel,
   ReferralConfig,
@@ -20,28 +21,31 @@ export interface ProgramConfigs {
   discounts: DiscountConfig | null;
   certificates: CertificateConfig | null;
   referral: ReferralConfig | null;
+  first_lesson: FirstLessonConfig | null;
 }
 
 const EMPTY_CONFIGS: ProgramConfigs = {
-  loyalty: null, discounts: null, certificates: null, referral: null,
+  loyalty: null, discounts: null, certificates: null, referral: null, first_lesson: null,
 };
 
-// Каждый ключ знает свой get/patch — один диспетчер вместо четырёх веток.
+// Каждый ключ знает свой get/patch — один диспетчер вместо пяти веток.
 const API = {
   loyalty:       { get: loyaltyApi.getConfig,             patch: loyaltyApi.updateConfig },
   discounts:     { get: loyaltyApi.getDiscountConfig,     patch: loyaltyApi.updateDiscountConfig },
   certificates:  { get: loyaltyApi.getCertificateConfig,  patch: loyaltyApi.updateCertificateConfig },
   referral:      { get: loyaltyApi.getReferralConfig,     patch: loyaltyApi.updateReferralConfig },
+  first_lesson:  { get: loyaltyApi.getFirstLessonConfig,  patch: loyaltyApi.updateFirstLessonConfig },
 } as const;
 
 async function fetchAllConfigs(): Promise<ProgramConfigs> {
-  const [loyalty, discounts, certificates, referral] = await Promise.all([
+  const [loyalty, discounts, certificates, referral, first_lesson] = await Promise.all([
     loyaltyApi.getConfig(),
     loyaltyApi.getDiscountConfig(),
     loyaltyApi.getCertificateConfig(),
     loyaltyApi.getReferralConfig(),
+    loyaltyApi.getFirstLessonConfig(),
   ]);
-  return { loyalty, discounts, certificates, referral };
+  return { loyalty, discounts, certificates, referral, first_lesson };
 }
 
 export function useLoyalty() {
@@ -68,6 +72,7 @@ export function useLoyalty() {
     discounts: draft.discounts !== undefined ? draft.discounts : serverConfigs.discounts,
     certificates: draft.certificates !== undefined ? draft.certificates : serverConfigs.certificates,
     referral: draft.referral !== undefined ? draft.referral : serverConfigs.referral,
+    first_lesson: draft.first_lesson !== undefined ? draft.first_lesson : serverConfigs.first_lesson,
   };
 
   // Уровни (задача 7): черновик — локальный редактируемый список, seed из
@@ -96,6 +101,7 @@ export function useLoyalty() {
     discounts: configs.discounts?.is_enabled ?? false,
     certificates: configs.certificates?.is_enabled ?? false,
     referral: configs.referral?.is_enabled ?? false,
+    first_lesson: configs.first_lesson?.is_enabled ?? false,
   };
 
   useEffect(() => {
@@ -181,7 +187,12 @@ export function useLoyalty() {
     }
   };
 
-  const invalidateConfigs = () => qc.invalidateQueries({ queryKey: queryKeys.loyaltyConfigs });
+  // Скидку на первое занятие показывает и «Онлайн-запись» (тот же тумблер в
+  // правилах записи): её кэш устаревает вместе с конфигами Лояльности.
+  const invalidateConfigs = () => {
+    void qc.invalidateQueries({ queryKey: queryKeys.bookingSettings });
+    return qc.invalidateQueries({ queryKey: queryKeys.loyaltyConfigs });
+  };
   const invalidateStats = () => qc.invalidateQueries({ queryKey: queryKeys.loyaltyStats });
   const invalidateLevels = () => qc.invalidateQueries({ queryKey: queryKeys.loyaltyLevels });
 

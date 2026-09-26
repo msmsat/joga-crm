@@ -27,6 +27,11 @@
       "desc": "”Tuo ystävä” -ohjelma",
       "statLabel": "suosittelua"
     },
+    "first_lesson": {
+      "title": "Ensimmäinen tunti",
+      "desc": "Uuden asiakkaan ensimmäinen varaus ilmaiseksi tai alennuksella",
+      "statLabel": "ensimmäistä tuntia"
+    },
     "promocodes": {
       "title": "Alennuskoodit",
       "desc": "Alennuskoodeja käyttörajalla",
@@ -154,14 +159,29 @@
     "depositTotalSub": "kaikissa asiakastalletuksissa",
     "depositTopClients": "Parhaat asiakkaat saldon mukaan",
     "depositEmpty": "Kenelläkään ei ole vielä talletusta",
-    "depositHint": "Lisäykset ja nostot tehdään asiakkaan profiilissa. Suositteluohjelma voi maksaa bonuksia talletukseen pisteiden sijaan."
+    "depositHint": "Lisäykset ja nostot tehdään asiakkaan profiilissa. Suositteluohjelma voi maksaa bonuksia talletukseen pisteiden sijaan.",
+    "firstLesson": {
+      "sizeTitle": "Alennuksen suuruus",
+      "free": "Ilmainen",
+      "percent": "Alennus, %",
+      "freeHint": "Ensimmäinen tunti on lahja — asiakas ei maksa mitään.",
+      "payHint": "Asiakas maksaa {{rest}} % ensimmäisen tunnin hinnasta.",
+      "howTitle": "Näin se toimii",
+      "how": {
+        "who": "Alennus tulee automaattisesti uuden asiakkaan ensimmäiseen varaukseen — Päiväkirjassa, minisovelluksessa ja varauswidgetissä.",
+        "stacking": "Ei yhdisty muihin alennuksiin: asiakkaalle edullisin on voimassa.",
+        "journal": "Päiväkirjassa sen voi kytkeä pois yksittäiseltä varaukselta maksuvaiheessa.",
+        "booking": "Sama kytkin löytyy kohdasta ”Verkkovaraus → Yleiset asetukset”."
+      }
+    }
   },
   "validation": {
     "required": "Tämä kenttä on pakollinen",
     "minOne": "Arvon on oltava vähintään 1",
     "minZero": "Arvo ei voi olla negatiivinen",
     "positive": "Arvon on oltava suurempi kuin 0",
-    "range0to100": "0–100"
+    "range0to100": "0–100",
+    "range1to100": "1–100"
   },
   "toasts": {
     "saved": "Ohjelma aktivoitu",

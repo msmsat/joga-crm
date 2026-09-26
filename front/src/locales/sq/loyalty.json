@@ -27,6 +27,11 @@
       "desc": "Programi „Sill një mik”",
       "statLabel": "rekomandime"
     },
+    "first_lesson": {
+      "title": "Mësimi i parë",
+      "desc": "Rezervimi i parë falas ose me zbritje për klientët e rinj",
+      "statLabel": "mësime të para"
+    },
     "promocodes": {
       "title": "Kode promocionale",
       "desc": "Kode zbritjeje me kufi përdorimi",
@@ -154,14 +159,29 @@
     "depositTotalSub": "në të gjitha depozitat e klientëve",
     "depositTopClients": "Klientët kryesorë sipas bilancit",
     "depositEmpty": "Askush nuk ka ende depozitë",
-    "depositHint": "Mbushjet dhe tërheqjet kryhen te profili i klientit. Programi i rekomandimeve mund të japë bonuse në depozitë në vend të pikëve."
+    "depositHint": "Mbushjet dhe tërheqjet kryhen te profili i klientit. Programi i rekomandimeve mund të japë bonuse në depozitë në vend të pikëve.",
+    "firstLesson": {
+      "sizeTitle": "Madhësia e zbritjes",
+      "free": "Falas",
+      "percent": "Zbritje, %",
+      "freeHint": "Mësimi i parë është dhuratë — klienti nuk paguan asgjë.",
+      "payHint": "Klienti paguan {{rest}}% të çmimit të mësimit të parë.",
+      "howTitle": "Si funksionon",
+      "how": {
+        "who": "Zbritja zbatohet vetë në rezervimin e parë të një klienti të ri — në Ditar, në mini-aplikacion dhe në widget-in e rezervimit.",
+        "stacking": "Nuk mblidhet me zbritje të tjera: zbatohet ajo më e favorshme për klientin.",
+        "journal": "Në Ditar mund ta çaktivizoni për një rezervim të caktuar në hapin e pagesës.",
+        "booking": "I njëjti çelës ndodhet te «Rezervimi online → Cilësime të përgjithshme»."
+      }
+    }
   },
   "validation": {
     "required": "Kjo fushë është e detyrueshme",
     "minOne": "Duhet të jetë së paku 1",
     "minZero": "Nuk mund të jetë negativ",
     "positive": "Duhet të jetë më i madh se 0",
-    "range0to100": "0 deri në 100"
+    "range0to100": "0 deri në 100",
+    "range1to100": "Nga 1 deri në 100"
   },
   "toasts": {
     "saved": "Programi u aktivizua",

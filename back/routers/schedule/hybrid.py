@@ -10,11 +10,12 @@ from database import get_db
 from dependencies import StudioContext, require_role
 from models import BookingQuote, Lesson, Reservation, Studio
 from ratelimit import limiter
-from schemas.schedule.hybrid import (AvailabilityRead, BookingRead, ConfirmRequest,
-    CrmAvailabilityQuery, CrmQuoteRequest, CrmRescheduleQuoteRequest, QuoteRead,
-    RescheduleConfirmRequest, ResourceQuoteRequest, ResourceStaffMemberRead, ResourceStaffRead)
-from services import (booking_quotes as quotes, hybrid_http, resource_availability, resource_booking,
-                      resource_reschedule, studio_time)
+from schemas.schedule.hybrid import (AvailabilityRead, BookingRead, CrmAvailabilityQuery,
+    CrmConfirmRequest, CrmQuoteRequest, CrmRescheduleQuoteRequest, PaymentPreviewRead,
+    PaymentPreviewRequest, QuoteRead, RescheduleConfirmRequest, ResourceQuoteRequest,
+    ResourceStaffMemberRead, ResourceStaffRead)
+from services import (booking_checkout, booking_quotes as quotes, hybrid_http, resource_availability,
+                      resource_booking, resource_reschedule, studio_time)
 
 router = APIRouter()
 staff = require_role("owner", "admin")
@@ -89,12 +90,39 @@ async def get_quote(quote_id: str, ctx: StudioContext = Depends(staff), db: Asyn
     return await resource_booking.existing(db, row) if row.consumed_at else hybrid_http.quote_response(row)
 
 
+@router.post("/booking-quotes/{quote_id}/payment-preview", response_model=PaymentPreviewRead)
+@limiter.limit("60/minute")
+async def payment_preview(request: Request, quote_id: str, body: PaymentPreviewRequest,
+                          ctx: StudioContext = Depends(staff), db: AsyncSession = Depends(get_db)):
+    """Чек шага оплаты: сколько заплатит клиент с промокодом и ваучером.
+
+    Только чтение — ни промокод, ни ваучер не гасятся, пока запись не
+    подтверждена. Лимит выше, чем у расчёта условий: чек пересчитывается на
+    каждый применённый код.
+    """
+    actor = await _quote_actor(db, ctx, quote_id)
+    return await booking_checkout.preview(db, actor, quote_id, body)
+
+
 @router.post("/bookings", response_model=BookingRead)
-async def confirm(body: ConfirmRequest, background: BackgroundTasks,
+async def confirm(body: CrmConfirmRequest, background: BackgroundTasks,
                   ctx: StudioContext = Depends(staff), db: AsyncSession = Depends(get_db)):
+    """Подтвердить запись; с `payment` — и принять оплату наличными.
+
+    Одной транзакцией: оплата, которая не прошла (ваучер уже погашен, сумма
+    не та, что видел кассир), откатывает и саму запись — полусостояния «записан,
+    но деньги не проведены» кассир не получает. Без `payment` — прежнее
+    поведение: остаток становится долгом «оплата на месте».
+    """
     actor = await _quote_actor(db, ctx, body.quote_id)
-    return await hybrid_http.after_commit(
-        db, actor, await resource_booking.confirm(db, body.quote_id, actor), background)
+    booked = await resource_booking.confirm(db, body.quote_id, actor)
+    if body.payment is not None:
+        try:
+            await booking_checkout.pay_cash(db, actor, booked, body.payment)
+        except Exception:
+            await db.rollback()
+            raise
+    return await hybrid_http.after_commit(db, actor, booked, background)
 
 
 @router.post("/reservations/{reservation_id}/cancel", response_model=BookingRead)

@@ -109,6 +109,7 @@
     "SLOT_UNAVAILABLE": "Ovo je vrijeme zauzeto ili izvan radnog vremena stručnjaka",
     "VERSION_CONFLICT": "Termin je već promijenjen u drugom prozoru — osvježite raspored",
     "TERMS_CHANGED": "Uvjeti termina su se promijenili — otvorite ga ponovno",
+    "AMOUNT_CHANGED": "Iznos se promijenio — provjerite ukupno i potvrdite ponovno",
     "INVALID_START": "Tog vremena taj dan nema zbog pomicanja sata",
     "WINDOW_CLOSED": "Termin je već počeo ili prošao — ne može se promijeniti",
     "PAYMENT_IN_PROGRESS": "Za termin je u tijeku plaćanje — pričekajte da završi",

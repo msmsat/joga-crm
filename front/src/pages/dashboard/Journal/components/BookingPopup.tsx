@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import * as Icons from '../../../../components/Icons';
 import type { Booking, Trainer } from '../types';
 import type { BookedClient, EligibleClient } from '../../../../api/schedule/schedule.types';
+import { AddClientModal as NewClientModal } from '../../Clients/components/modals/AddClientModal';
 import { scheduleApi } from '../../../../api/schedule';
 import { errorMessage } from '../../../../api/errorMessage';
 import { formatIndexToTimeStr, parseTimeToIndex, generateTimeIntervals, MIN_TIME_INDEX, MAX_TIME_INDEX } from '../utils';
@@ -71,7 +72,7 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
 }) => {
   const toast = useToast();
   const navigate = useNavigate();
-  const { t, i18n } = useTranslation('journal');
+  const { t, i18n } = useTranslation(['journal', 'clients']);
   const isCancelled = popupBooking.status === 'cancelled';
   const isResource = popupBooking.bookingMode === 'resource';
 
@@ -94,6 +95,11 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedClients, setSelectedClients] = useState<number[]>([]);
   const [eligible, setEligible] = useState<{ lessonId: number; clients: EligibleClient[] } | null>(null);
+  // «+ Новый клиент» в режиме добавления: форма Клиентов поверх попапа.
+  // Заведённый встаёт первым и сразу отмечен — остаётся нажать «Добавить».
+  const [creatingClient, setCreatingClient] = useState(false);
+  const [freshClient, setFreshClient] = useState<{ lessonId: number; client: EligibleClient } | null>(null);
+  const fresh = freshClient?.lessonId === popupBooking.id ? freshClient.client : null;
 
   const startScrollRef = useRef<HTMLDivElement>(null);
   const endScrollRef = useRef<HTMLDivElement>(null);
@@ -255,11 +261,12 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
   // и по «не записан на это занятие» (getEligibleClients) — тут только поиск.
   const filteredClients = useMemo(() => {
     const q = searchQuery.toLowerCase();
-    return clientsList.filter(c =>
+    const found = clientsList.filter(c => c.id !== fresh?.id && (
       `${c.name} ${c.last_name ?? ''}`.toLowerCase().includes(q) ||
       (c.phone ?? '').includes(searchQuery)
-    );
-  }, [clientsList, searchQuery]);
+    ));
+    return fresh ? [fresh, ...found] : found;
+  }, [clientsList, searchQuery, fresh]);
 
   // Текстовые поля времени — зеркало числовых индексов. Синхронизируем прямо в
   // рендере (документированный React-паттерн): эффект давал кадр со старым текстом.
@@ -366,7 +373,8 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
         /* РЕЖИМ ДОБАВЛЕНИЯ КЛИЕНТА */
         ) : isAddingClient ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', animation: 'fade-in 0.2s ease' }}>
-            <div style={{ position: 'relative', marginBottom: 4 }}>
+            <div style={{ display: 'flex', gap: 8, marginBottom: 4 }}>
+            <div style={{ position: 'relative', flex: 1, minWidth: 0 }}>
               <div style={{ position: 'absolute', left: 11, top: '50%', transform: 'translateY(-50%)', color: 'var(--muted)' }}>
                 <Icons.Search />
               </div>
@@ -378,6 +386,12 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
                 onChange={e => setSearchQuery(e.target.value)}
                 autoFocus
               />
+            </div>
+            <button type="button" className="btn-ghost-sm bp-new-client" title={t('clients:addModal.title')}
+                    aria-label={t('clients:addModal.title')}
+                    onClick={e => { e.stopPropagation(); setCreatingClient(true); }}>
+              <Icons.Plus /> <span className="bp-new-client-label">{t('clients:addModal.title')}</span>
+            </button>
             </div>
             <div style={{ maxHeight: 220, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 4, paddingRight: 4 }}>
               {filteredClients.length === 0 ? (
@@ -651,10 +665,13 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
                             {t('bookingPopup.awaitingConfirmation')}
                           </div>
                         )}
-                        {/* Подарок студии — деньги за это занятие никто не ждёт. */}
+                        {/* Первое занятие: подарок студии — денег никто не ждёт;
+                            со скидкой — процент рядом, остаток ниже долгом. */}
                         {c.is_trial && (
                           <div style={{ fontSize: 10, fontWeight: 800, color: 'var(--peach)', textTransform: 'uppercase', letterSpacing: '0.4px' }}>
-                            {t('bookingPopup.trialLesson')}
+                            {(c.trial_discount_percent ?? 100) < 100
+                              ? t('bookingPopup.trialDiscount', { percent: c.trial_discount_percent })
+                              : t('bookingPopup.trialLesson')}
                           </div>
                         )}
                         {/* Долг висит, пока его не погасят: это и есть «спрашиваем,
@@ -896,6 +913,18 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
         onClose={() => setShowCatalogConfirm(false)}
       />
     )}
+    {/* Слой выше попапа (9000–10000). Обёртка гасит всплытие React-событий из
+        портала формы — иначе клики в ней дошли бы до сетки под попапом. */}
+    <div onMouseDown={e => e.stopPropagation()} onClick={e => e.stopPropagation()} onPointerDown={e => e.stopPropagation()}>
+      <NewClientModal isOpen={creatingClient} layer={10050} onClose={() => setCreatingClient(false)}
+        onSuccess={(form, id) => {
+          setFreshClient({ lessonId: popupBooking.id, client: {
+            id, name: form.name.trim(), last_name: null, phone: form.phone || null,
+            avatar_color: null, subscription_hint: null,
+          } });
+          setSelectedClients(prev => [id, ...prev.filter(x => x !== id)]);
+        }} />
+    </div>
     </>,
     document.body
   );

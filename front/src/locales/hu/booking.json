@@ -32,8 +32,10 @@
         "sub": "Fizetés kérése a megerősítés előtt"
       },
       "trialLesson": {
-        "label": "Első óra ingyenes",
-        "sub": "Az új ügyfél első foglalását a stúdió állja"
+        "label": "Kedvezmény az első órára",
+        "free": "Az új ügyfél első órája ingyenes.",
+        "percent": "Az új ügyfél első órája {{percent}}% kedvezménnyel jár.",
+        "change": "A százalék a „Hűségprogram” menüben állítható"
       },
       "trainerConfirm": {
         "label": "Oktatói megerősítés",

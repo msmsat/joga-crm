@@ -66,6 +66,7 @@
     "markAttended": "Registrer fremmøde",
     "awaitingConfirmation": "Afventer bekræftelse",
     "trialLesson": "Prøve",
+    "trialDiscount": "Prøve · −{{percent}}%",
     "unpaid": "Ubetalt · {{amount}}",
     "acceptPayment": "Modtag betaling",
     "payCash": "Kontant",
@@ -236,6 +237,37 @@
     "earlier": "Tidligere",
     "check": "Tjek bookingen",
     "change": "Skift",
-    "confirm": "Bekræft"
+    "confirm": "Bekræft",
+    "busyAt": "Optaget kl. {{time}}",
+    "allBusy": "Kl. {{time}} er alle optaget — vælg det nærmeste ledige tidspunkt hos en medarbejder"
+  },
+  "payment": {
+    "title": "Betaling",
+    "price": "Pris",
+    "firstLesson": "Første hold",
+    "free": "gratis",
+    "firstLessonOutweighed": "En anden rabat er bedre — rabatter kan ikke kombineres",
+    "discount": {
+      "studio": "Studierabat",
+      "offer": "Personlig rabat",
+      "referral": "Henvisningsrabat"
+    },
+    "promo": "Rabatkode",
+    "voucher": "Gavekort",
+    "promoPlaceholder": "Rabatkode",
+    "voucherPlaceholder": "Kode til gavekort eller værdibevis",
+    "apply": "Anvend",
+    "remove": "Fjern",
+    "promoInvalid": "Rabatkoden er ikke gyldig",
+    "promoOutweighed": "Kan ikke kombineres — en bedre rabat gælder allerede",
+    "voucherRemainder": "Værdi {{amount}} — restbeløbet gemmes ikke",
+    "total": "Skal betales kontant",
+    "coveredBy": {
+      "subscription": "Dækket af abonnement",
+      "trial": "Første hold gratis",
+      "free": "Gratis"
+    },
+    "confirmAndPay": "Book og modtag {{amount}}",
+    "loadFailed": "Betalingen kunne ikke beregnes."
   }
 }

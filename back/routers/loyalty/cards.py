@@ -232,6 +232,19 @@ async def get_stats(
         .where(ClientLoyaltyCard.studio_id == ctx.studio_id, ClientLoyaltyCard.deposit_balance > 0)
     )).scalar_one()
 
+    # Первые занятия, которые студия дала (бесплатно или со скидкой): брони с
+    # пометкой первого занятия, кроме отменённых — отменённая до визита
+    # возвращает право на первое занятие, и считать её выданной нельзя.
+    first_lessons = (await db.execute(
+        select(func.count(Reservation.id))
+        .join(Lesson, Lesson.id == Reservation.lesson_id)
+        .where(
+            Lesson.studio_id == ctx.studio_id,
+            Reservation.is_trial.is_(True),
+            Reservation.status != "cancelled",
+        )
+    )).scalar_one()
+
     # Активные персональные скидки (V5-5, задача 7) — та же граница, что и
     # find_active_offer: не использован, не просрочен.
     active_offers = (await db.execute(
@@ -284,6 +297,7 @@ async def get_stats(
             "referral": referrals_completed,
             "promocodes": active_promocodes,
             "deposit": deposit_clients,
+            "first_lesson": first_lessons,
         },
         returned_clients=returned_clients,
         bonus_cost=bonus_cost,

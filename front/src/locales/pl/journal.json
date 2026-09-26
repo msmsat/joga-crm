@@ -66,6 +66,7 @@
     "markAttended": "Odnotuj obecność",
     "awaitingConfirmation": "Czeka na potwierdzenie",
     "trialLesson": "Próbne",
+    "trialDiscount": "Próbne · −{{percent}}%",
     "unpaid": "Nieopłacone · {{amount}}",
     "acceptPayment": "Przyjmij płatność",
     "payCash": "Gotówka",
@@ -244,6 +245,37 @@
     "earlier": "Wcześniej",
     "check": "Sprawdź zapis",
     "change": "Zmień",
-    "confirm": "Potwierdź"
+    "confirm": "Potwierdź",
+    "busyAt": "Zajęty o {{time}}",
+    "allBusy": "O {{time}} wszyscy są zajęci — wybierz najbliższy wolny termin u specjalisty"
+  },
+  "payment": {
+    "title": "Płatność",
+    "price": "Cena",
+    "firstLesson": "Pierwsze zajęcia",
+    "free": "za darmo",
+    "firstLessonOutweighed": "Inny rabat jest korzystniejszy — rabaty się nie sumują",
+    "discount": {
+      "studio": "Rabat studia",
+      "offer": "Rabat osobisty",
+      "referral": "Rabat z polecenia"
+    },
+    "promo": "Kod promocyjny",
+    "voucher": "Bon",
+    "promoPlaceholder": "Kod promocyjny",
+    "voucherPlaceholder": "Kod bonu lub certyfikatu",
+    "apply": "Zastosuj",
+    "remove": "Usuń",
+    "promoInvalid": "Ten kod promocyjny jest nieważny",
+    "promoOutweighed": "Nie sumuje się — działa już korzystniejszy rabat",
+    "voucherRemainder": "Wartość {{amount}} — reszta przepada",
+    "total": "Do zapłaty gotówką",
+    "coveredBy": {
+      "subscription": "Z abonamentu",
+      "trial": "Pierwsze zajęcia za darmo",
+      "free": "Za darmo"
+    },
+    "confirmAndPay": "Zapisz i przyjmij {{amount}}",
+    "loadFailed": "Nie udało się obliczyć płatności."
   }
 }

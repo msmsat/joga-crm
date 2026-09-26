@@ -27,6 +27,11 @@
       "desc": "Programmet ”Ta med en vän”",
       "statLabel": "rekommendationer"
     },
+    "first_lesson": {
+      "title": "Första passet",
+      "desc": "Gratis eller rabatterad första bokning för nya kunder",
+      "statLabel": "första pass"
+    },
     "promocodes": {
       "title": "Kampanjkoder",
       "desc": "Rabattkoder med användningsgräns",
@@ -154,14 +159,29 @@
     "depositTotalSub": "i alla kundinsättningar",
     "depositTopClients": "Främsta kunder efter saldo",
     "depositEmpty": "Ingen har en insättning ännu",
-    "depositHint": "Påfyllningar och uttag görs på kundens profil. Rekommendationsprogrammet kan betala bonusar till insättningen i stället för som poäng."
+    "depositHint": "Påfyllningar och uttag görs på kundens profil. Rekommendationsprogrammet kan betala bonusar till insättningen i stället för som poäng.",
+    "firstLesson": {
+      "sizeTitle": "Rabattens storlek",
+      "free": "Gratis",
+      "percent": "Rabatt, %",
+      "freeHint": "Första passet är en gåva — kunden betalar ingenting.",
+      "payHint": "Kunden betalar {{rest}} % av priset för första passet.",
+      "howTitle": "Så fungerar det",
+      "how": {
+        "who": "Rabatten gäller automatiskt för en ny kunds första bokning — i Schema, miniappen och bokningswidgeten.",
+        "stacking": "Kan inte kombineras med andra rabatter: den som är bäst för kunden gäller.",
+        "journal": "I Schema kan du stänga av den för en viss bokning i betalningssteget.",
+        "booking": "Samma reglage finns under ”Onlinebokning → Allmänna inställningar”."
+      }
+    }
   },
   "validation": {
     "required": "Det här fältet måste fyllas i",
     "minOne": "Måste vara minst 1",
     "minZero": "Får inte vara negativt",
     "positive": "Måste vara större än 0",
-    "range0to100": "0 till 100"
+    "range0to100": "0 till 100",
+    "range1to100": "Från 1 till 100"
   },
   "toasts": {
     "saved": "Programmet har aktiverats",

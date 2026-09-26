@@ -32,8 +32,10 @@
         "sub": "Wymagaj płatności przed potwierdzeniem"
       },
       "trialLesson": {
-        "label": "Pierwsze zajęcia za darmo",
-        "sub": "Pierwszą rezerwację nowego klienta pokrywa studio"
+        "label": "Rabat na pierwsze zajęcia",
+        "free": "Pierwsze zajęcia nowego klienta są za darmo.",
+        "percent": "Pierwsze zajęcia nowego klienta są tańsze o {{percent}}%.",
+        "change": "Procent ustawia się w sekcji „Lojalność”"
       },
       "trainerConfirm": {
         "label": "Potwierdzenie trenera",

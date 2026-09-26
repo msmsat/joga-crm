@@ -7,6 +7,7 @@ from sqlalchemy import select
 
 from models import BookingQuote, Client, Lesson, Studio, StudioBranch, StudioMember
 from services import booking, resource_availability, service_pricing, studio_time
+from services.booking_access import trial_applies
 from services.booking_rules import load_rules
 from services.resource_slots import generate
 
@@ -87,7 +88,9 @@ async def read(db, quote_id: str, actor: Actor, *, lock=False):
     return row
 
 
-def _snapshot(lesson, terms, studio, rules, payment_method, *, starts_at=None, spot_number=None):
+def _snapshot(lesson, terms, studio, rules, payment_method, *, starts_at=None, spot_number=None,
+              first_lesson=None):
+    first_lesson = first_lesson or {}
     return {
         "domain": terms.to_json(), "booking_mode": lesson.booking_mode,
         "service_id": lesson.service_id, "teacher_id": lesson.teacher_id,
@@ -98,7 +101,28 @@ def _snapshot(lesson, terms, studio, rules, payment_method, *, starts_at=None, s
         "booking_config_version": studio.booking_config_version,
         "cancellation_deadline_min": rules.cancellation_deadline_min,
         "payment_method": payment_method, "spot_number": spot_number,
+        # Скидка первого занятия: просил ли её администратор (эхо запроса —
+        # по нему подтверждение пересчитывает то же самое), положена ли она
+        # клиенту вообще и сколько процентов даёт. Процент — и при выключенном
+        # выключателе: окно подписывает им выключатель («−50 %»), чтобы было
+        # видно, от чего отказываются. Применена = положена И не выключена.
+        "first_lesson": first_lesson.get("requested", True),
+        "first_lesson_offered": first_lesson.get("offered", False),
+        "first_lesson_percent": first_lesson.get("percent"),
     }
+
+
+async def _first_lesson(db, actor, rules, *, requested, covered_by_subscription):
+    """Скидка первого занятия в снимке условий.
+
+    «Положена» не зависит от выключателя: окно рисует его и выключенным, и
+    чтобы включить обратно, надо знать, что включать есть что. Абонемент
+    перекрывает первое занятие (booking_access.resolve_coverage) — тогда её
+    не предлагаем вовсе.
+    """
+    offered = not covered_by_subscription and await trial_applies(db, actor.client_id, rules)
+    return {"requested": requested, "offered": offered,
+            "percent": (rules.trial_discount_percent or 100) if offered else None}
 
 
 async def calculate(db, actor: Actor, request, *, now=None, hall_id=None,
@@ -115,12 +139,16 @@ async def calculate(db, actor: Actor, request, *, now=None, hall_id=None,
     studio = (await db.execute(select(Studio).where(Studio.id == actor.studio_id)
         .execution_options(populate_existing=True))).scalar_one()
     rules = await load_rules(db, actor.studio_id)
+    # Выключатель первого занятия есть только у CRM-запроса; клиентский его не
+    # знает, и скидка, если положена, ставится сама.
+    allow_trial = getattr(request, "first_lesson", True)
     if request.booking_mode == "event":
         if studio.booking_mode not in {"event", "hybrid"}:
             reject("MODE_DISABLED")
         quoted = await booking.quote(db, studio_id=actor.studio_id, client_id=actor.client_id,
             lesson_id=request.lesson_id, actor=actor.domain, now=moment,
-            require_funding=funding_rule(actor, request.payment_method, "event"))
+            require_funding=funding_rule(actor, request.payment_method, "event"),
+            allow_trial=allow_trial)
         if quoted.outcome is not booking.Outcome.OK:
             reject(quoted.outcome.value.upper(), 402 if quoted.outcome is booking.Outcome.NO_FUNDING else 409)
         lesson = await db.get(Lesson, request.lesson_id, populate_existing=True)
@@ -130,8 +158,11 @@ async def calculate(db, actor: Actor, request, *, now=None, hall_id=None,
                 exact = studio_time.to_utc(lesson.start_time, SimpleNamespace(tz_iana=lesson.tz_iana)).replace(tzinfo=timezone.utc).isoformat()
             except ValueError:
                 pass  # Legacy events retain their existing uncertain-time behavior.
+        first = await _first_lesson(
+            db, actor, rules, requested=allow_trial,
+            covered_by_subscription=quoted.terms.funding.kind is booking.FundingKind.SUBSCRIPTION)
         return _snapshot(lesson, quoted.terms, studio, rules, request.payment_method,
-                         starts_at=exact, spot_number=request.spot_number)
+                         starts_at=exact, spot_number=request.spot_number, first_lesson=first)
     if request.starts_at.tzinfo is None:
         reject("INVALID_START", 422)
     local = studio_time.to_local(request.starts_at, studio).replace(tzinfo=None)
@@ -162,10 +193,15 @@ async def calculate(db, actor: Actor, request, *, now=None, hall_id=None,
         duration_min=duration, buffer_before_min=data.service.buffer_before_min,
         buffer_after_min=data.service.buffer_after_min)
     funding = preserved_funding
+    first = None
     if funding is None:
-        funding, _, _ = await booking.resolve_funding(db, studio=studio, client_id=actor.client_id,
-            lesson=candidate, rules=rules,
-            require_funding=funding_rule(actor, request.payment_method, "resource"))
+        funding, subscription, _ = await booking.resolve_funding(
+            db, studio=studio, client_id=actor.client_id, lesson=candidate, rules=rules,
+            require_funding=funding_rule(actor, request.payment_method, "resource"),
+            allow_trial=allow_trial)
+        if funding is not None:
+            first = await _first_lesson(db, actor, rules, requested=allow_trial,
+                                        covered_by_subscription=subscription is not None)
     if funding is None:
         reject("NO_FUNDING", 402)
     member = (await db.execute(select(StudioMember).where(StudioMember.studio_id == actor.studio_id,
@@ -175,7 +211,7 @@ async def calculate(db, actor: Actor, request, *, now=None, hall_id=None,
         trainer_name=" ".join(x for x in (member.name, member.last_name) if x), branch_name=branch.name,
         funding=funding, approval_required=rules.trainer_confirmation_required, base_price=price)
     return _snapshot(candidate, terms, studio, rules, request.payment_method,
-                     starts_at=slot.starts_at.isoformat(), spot_number=1)
+                     starts_at=slot.starts_at.isoformat(), spot_number=1, first_lesson=first)
 
 
 async def create(db, actor: Actor, request, *, now=None, hall_id=None):
@@ -190,11 +226,17 @@ async def create(db, actor: Actor, request, *, now=None, hall_id=None):
 
 
 def request_for(row):
-    from schemas.schedule.hybrid import EventQuoteRequest, ResourceQuoteRequest
+    from schemas.schedule.hybrid import CrmResourceQuoteRequest, EventQuoteRequest, ResourceQuoteRequest
     terms = row.terms
     if row.booking_mode == "event":
         return EventQuoteRequest(booking_mode="event", lesson_id=terms["domain"]["lesson_id"],
             spot_number=terms["spot_number"], payment_method=terms["payment_method"])
-    return ResourceQuoteRequest(booking_mode="resource", service_id=terms["service_id"],
+    fields = dict(booking_mode="resource", service_id=terms["service_id"],
         branch_id=terms["branch_id"], teacher_id=terms["teacher_id"],
         starts_at=datetime.fromisoformat(terms["starts_at"]), payment_method=terms["payment_method"])
+    if row.actor_user_id is not None and not terms.get("first_lesson", True):
+        # Администратор выключил скидку первого занятия — подтверждение
+        # обязано пересчитать ровно то, что он видел, а не вернуть её.
+        return CrmResourceQuoteRequest(**fields, client_id=row.client_id,
+                                       hall_id=terms["hall_id"], first_lesson=False)
+    return ResourceQuoteRequest(**fields)

@@ -55,6 +55,7 @@ from models import (
 )
 from services import booking
 from services.booking import Terms
+from services.booking_access import trial_percent
 
 logger = logging.getLogger(__name__)
 
@@ -452,6 +453,9 @@ async def record_income(db: AsyncSession, checkout: StripeCheckout) -> None:
         ),
         method="stripe",
         expected_total=int(checkout.amount),
+        # Цену занятия касса считает заново — по снимку скидки первого занятия
+        # ЭТОЙ брони, иначе пересчёт разойдётся со списанной суммой.
+        reservation_id=payload.get("reservation_id"),
     )
 
 
@@ -694,7 +698,8 @@ async def pay_link(db: AsyncSession, *, studio_id: int, reservation_id: int,
     # годится: у человека может быть скидка, и взять с него полную цену значит
     # взять лишнее. Считает `booking.client_price` — тот же расчёт, что у кассы.
     amount = await booking.client_price(
-        db, studio_id=studio_id, client_id=client_id, base_price=int(lesson.price or 0))
+        db, studio_id=studio_id, client_id=client_id, base_price=int(lesson.price or 0),
+        first_lesson_percent=trial_percent(reservation))
     if amount <= 0:
         return Payable(PayOutcome.STALE)
 

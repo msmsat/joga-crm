@@ -66,6 +66,7 @@
     "markAttended": "Marchează prezența",
     "awaitingConfirmation": "Așteaptă confirmarea",
     "trialLesson": "De probă",
+    "trialDiscount": "De probă · −{{percent}}%",
     "unpaid": "Neplătită · {{amount}}",
     "acceptPayment": "Încasează plata",
     "payCash": "Numerar",
@@ -240,6 +241,37 @@
     "earlier": "Mai devreme",
     "check": "Verificați programarea",
     "change": "Schimbă",
-    "confirm": "Confirmă"
+    "confirm": "Confirmă",
+    "busyAt": "Ocupat la {{time}}",
+    "allBusy": "La {{time}} toți sunt ocupați — alegeți cea mai apropiată oră liberă a unui specialist"
+  },
+  "payment": {
+    "title": "Plată",
+    "price": "Preț",
+    "firstLesson": "Prima ședință",
+    "free": "gratuită",
+    "firstLessonOutweighed": "O altă reducere e mai avantajoasă — reducerile nu se cumulează",
+    "discount": {
+      "studio": "Reducerea studioului",
+      "offer": "Reducere personală",
+      "referral": "Reducere pentru recomandare"
+    },
+    "promo": "Cod promoțional",
+    "voucher": "Voucher",
+    "promoPlaceholder": "Cod promoțional",
+    "voucherPlaceholder": "Codul voucherului sau al certificatului",
+    "apply": "Aplică",
+    "remove": "Elimină",
+    "promoInvalid": "Acest cod promoțional nu este valabil",
+    "promoOutweighed": "Nu se cumulează — se aplică deja o reducere mai bună",
+    "voucherRemainder": "Valoare {{amount}} — restul nu se păstrează",
+    "total": "De încasat numerar",
+    "coveredBy": {
+      "subscription": "Acoperit de abonament",
+      "trial": "Prima ședință gratuită",
+      "free": "Gratuit"
+    },
+    "confirmAndPay": "Programează și încasează {{amount}}",
+    "loadFailed": "Plata nu a putut fi calculată."
   }
 }

@@ -70,7 +70,11 @@ async def confirm(db, quote_id: str, actor: quotes.Actor, *, now=None):
             lesson_id=lesson.id, source=actor.surface, actor=actor.domain, now=moment, shown=terms,
             spot_number=current["spot_number"], allow_payment=not card, hold_for_payment=card,
             require_funding=quotes.funding_rule(actor, current["payment_method"], row.booking_mode),
-            _resource=row.booking_mode == "resource")
+            _resource=row.booking_mode == "resource",
+            # Выключенная на шаге оплаты скидка первого занятия остаётся
+            # выключенной и в самой записи — иначе бронь получила бы то, от
+            # чего администратор отказался.
+            allow_trial=current.get("first_lesson", True))
         if result.outcome is not booking.Outcome.OK:
             quotes.reject(result.outcome.value.upper(), 402 if result.outcome is booking.Outcome.NO_FUNDING else 409)
         row.reservation_id, row.consumed_at = result.reservation_id, moment

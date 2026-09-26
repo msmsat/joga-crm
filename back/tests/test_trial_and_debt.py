@@ -23,11 +23,13 @@ class _Lesson:
 
 
 class _Res:
-    def __init__(self, subscription_id=None, is_trial=False, debt_payment_id=None):
+    def __init__(self, subscription_id=None, is_trial=False, debt_payment_id=None,
+                 trial_discount_percent=None):
         self.client_id = 1
         self.subscription_id = subscription_id
         self.is_trial = is_trial
         self.debt_payment_id = debt_payment_id
+        self.trial_discount_percent = trial_discount_percent
 
 
 class _R:
@@ -93,8 +95,17 @@ assert res.debt_payment_id == debt.id, "бронь обязана ссылать
 
 # ─── …и не заводится, когда платить не за что ────────────────────────────────
 assert _run(open_debt(_DB(), _Res(subscription_id=7), _Lesson())) is None, "покрыто абонементом"
-assert _run(open_debt(_DB(), _Res(is_trial=True), _Lesson())) is None, "подарено как пробное"
+assert _run(open_debt(_DB(), _Res(is_trial=True), _Lesson())) is None, "подарено как пробное (старая бронь без снимка)"
+assert _run(open_debt(_DB(), _Res(is_trial=True, trial_discount_percent=100), _Lesson())) is None, \
+    "первое занятие бесплатно — платить нечего"
 assert _run(open_debt(_DB(), _Res(), _Lesson(price=0))) is None, "занятие бесплатное по прайсу"
+
+# ─── Первое занятие СО СКИДКОЙ — не подарок: остаток клиент платит на месте ──
+db_half = _DB()
+res_half = _Res(is_trial=True, trial_discount_percent=50)
+half = _run(open_debt(db_half, res_half, _Lesson(price=500), amount=250))
+assert half is not None and half.amount == 250, "долг — на сумму со скидкой, а не на прайс"
+assert res_half.debt_payment_id == half.id
 
 # ─── Повторный вызов не плодит второй долг (идемпотентность) ─────────────────
 db_twice = _DB()

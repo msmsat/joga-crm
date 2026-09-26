@@ -13,6 +13,13 @@ const services = [
 const slot = { starts_at: '2026-10-01T09:00:00Z', local_start: '2026-10-01T11:00:00', teacher_ids: [7] };
 const quoted = { quote_id: 'quote-1', terms: { domain: { local_start: slot.local_start,
   trainer_name: 'Alex', funding: { price: 25, currency: 'EUR' } }, duration_min: 60 } };
+// Чек шага оплаты (payment-preview): 25 € наличными, скидок нет.
+const receipt = { currency: 'EUR', base_price: 25, covered_by: null, discounts: [],
+  first_lesson_offered: false, first_lesson_applied: false, first_lesson_percent: null,
+  promo_valid: null, promo_outweighed: false, certificate_error: null,
+  certificate_amount: 0, certificate_applied: 0, total: 25 };
+// Ответы приходят через несколько микрозадач (условия → чек) — ждём макрозадачу.
+const settle = () => new Promise(done => setTimeout(done, 0));
 
 async function setup(file, api = {}) {
   let cursor = 0;
@@ -61,10 +68,11 @@ async function setup(file, api = {}) {
     servicesApi: {}, studioApi: {}, staffApi: {},
     hybridApi: {
       quote: async request => { calls.push(request); return api.quote ? api.quote(request) : quoted; },
-      confirm: async id => { calls.push(id); if (api.confirm) await api.confirm(id); },
+      paymentPreview: async (id, codes) => (api.paymentPreview ? api.paymentPreview(id, codes) : receipt),
+      confirm: async (id, payment) => { calls.push(id); api.paid = payment; if (api.confirm) await api.confirm(id); },
     },
   };
-  for (const name of ['Select', 'ModalShell', 'ModalHeader', 'ModalBody', 'ModalFooter', 'GhostButton', 'PrimaryButton', 'ResourceClientPicker', 'ResourceKeypadModal']) other[name] = name;
+  for (const name of ['Select', 'ModalShell', 'ModalHeader', 'ModalBody', 'ModalFooter', 'GhostButton', 'PrimaryButton', 'ResourceClientPicker', 'ResourceKeypadModal', 'BookingPayment', 'BookingWizard']) other[name] = name;
   other.usePhone = () => false; // desktop: the sheet, not the phone keypad form
   // Follow the extracted production hooks and pure time utilities as real modules.
   // Stubbing useResourceBooking here would only test our imitation of the form.
@@ -74,7 +82,7 @@ async function setup(file, api = {}) {
     }).outputText;
     const mod = new vm.SourceTextModule(code, { context, identifier: url.href, initializeImportMeta(meta) { meta.env = { DEV: false }; } });
     await mod.link((name, parent) => {
-      if (/\/(useResourceBooking|useResourceBookingChoice|utils|constants)$/.test(name)) {
+      if (/\/(useResourceBooking|useResourceBookingChoice|useBookingPayment|utils|constants)$/.test(name)) {
         return load(new URL(`${name}.ts`, parent.identifier));
       }
       const exports = deps[name] ?? other;
@@ -117,16 +125,36 @@ test('individual booking carries client, selected service, branch, specialist an
   nodes(tree, 'ResourceClientPicker')[0].onChange(901);
   tree = app.render('ResourceBookingModal', props);
   await nodes(tree, 'button').find(button => button.children === '11:00').onClick();
-  for (let i = 0; i < 5; i++) await Promise.resolve();
+  await settle();
   assert.equal(app.calls[0].client_id, 901);
   assert.equal(app.calls[0].service_id, 2);
   assert.equal(app.calls[0].branch_id, 5);
   assert.equal(app.calls[0].teacher_id, 7);
   assert.equal(app.calls[0].starts_at, slot.starts_at);
+  assert.equal(app.calls[0].first_lesson, true); // скидка первого занятия — сама, если положена
   tree = app.render('ResourceBookingModal', props);
   assert.equal(nodes(tree, 'PrimaryButton')[0].disabled, false);
   await nodes(tree, 'PrimaryButton')[0].onClick();
   assert.equal(app.calls[1], 'quote-1');
+});
+test('confirmation waits for the payment receipt and takes exactly its total in cash', async () => {
+  let release;
+  const api = { paymentPreview: () => new Promise(done => { release = done; }) };
+  const app = await setup(formPath, api);
+  let tree = app.render('ResourceBookingModal', props);
+  nodes(tree, 'ResourceClientPicker')[0].onChange(901);
+  tree = app.render('ResourceBookingModal', props);
+  await nodes(tree, 'button').find(button => button.children === '11:00').onClick();
+  await settle();
+  // Условия есть, чека ещё нет: сумму, которую примут наличными, назвать нечем.
+  tree = app.render('ResourceBookingModal', props);
+  assert.equal(nodes(tree, 'PrimaryButton')[0].disabled, true);
+  release({ ...receipt, total: 20, discounts: [{ kind: 'studio', amount: 5 }] });
+  await settle();
+  tree = app.render('ResourceBookingModal', props);
+  assert.equal(nodes(tree, 'PrimaryButton')[0].disabled, false);
+  await nodes(tree, 'PrimaryButton')[0].onClick();
+  assert.deepEqual({ ...api.paid }, { promo_code: null, certificate_code: null, expected_total: 20 });
 });
 test('late quote for the previous client cannot enable confirmation', async () => {
   let resolve;
@@ -137,7 +165,7 @@ test('late quote for the previous client cannot enable confirmation', async () =
   nodes(tree, 'button').find(button => button.children === '11:00').onClick();
   nodes(tree, 'ResourceClientPicker')[0].onChange(2);
   resolve(quoted);
-  for (let i = 0; i < 5; i++) await Promise.resolve();
+  await settle();
   tree = app.render('ResourceBookingModal', props);
   assert.equal(nodes(tree, 'PrimaryButton')[0].disabled, true);
 });

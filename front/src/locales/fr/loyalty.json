@@ -27,6 +27,11 @@
       "desc": "Programme « Invitez un ami »",
       "statLabel": "parrainages"
     },
+    "first_lesson": {
+      "title": "Premier cours",
+      "desc": "Première réservation offerte ou à prix réduit pour les nouveaux clients",
+      "statLabel": "premiers cours"
+    },
     "promocodes": {
       "title": "Codes promo",
       "desc": "Codes de réduction avec limite d'utilisation",
@@ -154,14 +159,29 @@
     "depositTotalSub": "sur l'ensemble des dépôts clients",
     "depositTopClients": "Meilleurs clients par solde",
     "depositEmpty": "Personne n'a encore de dépôt",
-    "depositHint": "Les rechargements et retraits se font dans le profil du client. Le programme de parrainage peut verser les bonus au dépôt plutôt qu'en points."
+    "depositHint": "Les rechargements et retraits se font dans le profil du client. Le programme de parrainage peut verser les bonus au dépôt plutôt qu'en points.",
+    "firstLesson": {
+      "sizeTitle": "Montant de la remise",
+      "free": "Offert",
+      "percent": "Remise, %",
+      "freeHint": "Le premier cours est offert : le client ne paie rien.",
+      "payHint": "Le client paie {{rest}} % du prix du premier cours.",
+      "howTitle": "Comment ça marche",
+      "how": {
+        "who": "La remise s'applique automatiquement à la première réservation d'un nouveau client, dans le Journal, la mini-app et le widget de réservation.",
+        "stacking": "Non cumulable avec d'autres remises : la plus avantageuse pour le client s'applique.",
+        "journal": "Dans le Journal, vous pouvez la désactiver pour une réservation donnée à l'étape du paiement.",
+        "booking": "Le même interrupteur se trouve dans « Réservation en ligne → Paramètres généraux »."
+      }
+    }
   },
   "validation": {
     "required": "Ce champ est obligatoire",
     "minOne": "Doit être au moins égal à 1",
     "minZero": "Ne peut pas être négatif",
     "positive": "Doit être supérieur à 0",
-    "range0to100": "De 0 à 100"
+    "range0to100": "De 0 à 100",
+    "range1to100": "De 1 à 100"
   },
   "toasts": {
     "saved": "Programme activé",

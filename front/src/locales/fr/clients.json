@@ -289,23 +289,12 @@
       "deleteTitle": "Supprimer la note ?",
       "deleteMessage": "Cette note ne peut pas être récupérée."
     },
-    "bookingPanel": {
-      "title": "Réservation rapide",
-      "today": "Aujourd'hui",
-      "noLessons": "Aucun cours ce jour-là",
-      "full": "Aucune place",
-      "confirm": "Réserver →",
-      "noSubscription": "Le client n'a pas d'abonnement disponible pour réserver",
-      "individual": "Service individuel"
-    },
     "bonusPanel": {
       "title": "Accorder un bonus"
     },
     "toasts": {
       "noPhone": "Le client n'a pas de numéro de téléphone",
       "copied": "Copié avec succès",
-      "bookingCreated": "Réservation créée",
-      "bookingFailed": "Impossible de réserver",
       "bonusFailed": "Impossible d'accorder les points",
       "bonusApplied": "Bonus accordé : {{label}}",
       "clientAdded": "Client ajouté"

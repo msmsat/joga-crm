@@ -66,6 +66,7 @@
     "markAttended": "Marcar asistencia",
     "awaitingConfirmation": "Esperando confirmación",
     "trialLesson": "Prueba",
+    "trialDiscount": "Prueba · −{{percent}}%",
     "unpaid": "Sin pagar · {{amount}}",
     "acceptPayment": "Registrar el pago",
     "payCash": "Efectivo",
@@ -236,6 +237,37 @@
     "earlier": "Antes",
     "check": "Revisa la reserva",
     "change": "Cambiar",
-    "confirm": "Confirmar"
+    "confirm": "Confirmar",
+    "busyAt": "Ocupado a las {{time}}",
+    "allBusy": "A las {{time}} todos están ocupados: elige la hora libre más cercana de un especialista"
+  },
+  "payment": {
+    "title": "Pago",
+    "price": "Precio",
+    "firstLesson": "Primera clase",
+    "free": "gratis",
+    "firstLessonOutweighed": "Otro descuento es mejor: los descuentos no se acumulan",
+    "discount": {
+      "studio": "Descuento del estudio",
+      "offer": "Descuento personal",
+      "referral": "Descuento por invitación"
+    },
+    "promo": "Código promocional",
+    "voucher": "Vale",
+    "promoPlaceholder": "Código promocional",
+    "voucherPlaceholder": "Código del vale o certificado",
+    "apply": "Aplicar",
+    "remove": "Quitar",
+    "promoInvalid": "Este código promocional no es válido",
+    "promoOutweighed": "No acumulable: ya se aplica un descuento mejor",
+    "voucherRemainder": "Valor {{amount}}: el resto no se conserva",
+    "total": "A cobrar en efectivo",
+    "coveredBy": {
+      "subscription": "Cubierto por la suscripción",
+      "trial": "Primera clase gratis",
+      "free": "Gratis"
+    },
+    "confirmAndPay": "Reservar y cobrar {{amount}}",
+    "loadFailed": "No se pudo calcular el pago."
   }
 }

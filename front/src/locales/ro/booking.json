@@ -32,8 +32,10 @@
         "sub": "Cere plata înainte de confirmare"
       },
       "trialLesson": {
-        "label": "Prima ședință gratuită",
-        "sub": "Prima rezervare a unui client nou o suportă studioul"
+        "label": "Reducere la prima ședință",
+        "free": "Prima ședință a unui client nou este gratuită.",
+        "percent": "Prima ședință a unui client nou are o reducere de {{percent}}%.",
+        "change": "Procentul se setează în „Fidelizare”"
       },
       "trainerConfirm": {
         "label": "Confirmare de la antrenor",

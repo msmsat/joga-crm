@@ -51,6 +51,17 @@ export const PROGRAM_METADATA: ProgramMeta[] = [
     stats: { labelKey: 'programs.referral.statLabel' },
   },
   {
+    // Скидка на первое занятие: подарок новичку целиком (100 %) или частью.
+    // Счётчик — сколько первых занятий студия уже дала.
+    key: 'first_lesson',
+    titleKey: 'programs.first_lesson.title',
+    descKey: 'programs.first_lesson.desc',
+    accentColor: '#F9A08B',
+    accentBg: 'rgba(249,160,139,0.08)',
+    accentBorder: 'rgba(249,160,139,0.25)',
+    stats: { labelKey: 'programs.first_lesson.statLabel' },
+  },
+  {
     key: 'promocodes',
     titleKey: 'programs.promocodes.title',
     descKey: 'programs.promocodes.desc',

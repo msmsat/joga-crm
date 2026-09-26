@@ -1,8 +1,11 @@
-"""Конфиги 5 программ лояльности: карты, скидки, сертификаты, абонементы, рефералка.
+"""Конфиги программ лояльности: карты, скидки, сертификаты, рефералка, первое занятие.
 
 Каждая программа — одна строка на студию (unique studio_id). При первом GET
 строка создаётся с дефолтами модели (get-or-create). PATCH включает/настраивает.
 Всё — только owner; чужая студия недоступна (скоуп по ctx.studio_id).
+
+Первое занятие — исключение: своей строки у него нет, это правило записи
+(см. раздел «Первое занятие» ниже).
 """
 from typing import Type, TypeVar
 
@@ -23,8 +26,10 @@ from schemas.loyalty import (
     LoyaltyConfigRead, LoyaltyConfigUpdate,
     DiscountConfigRead, DiscountConfigUpdate,
     CertificateConfigRead, CertificateConfigUpdate,
+    FirstLessonConfigRead, FirstLessonConfigUpdate,
     ReferralConfigRead, ReferralConfigUpdate,
 )
+from services.booking_rules import load_rules, save_settings
 
 router = APIRouter()
 
@@ -127,3 +132,35 @@ async def update_referral_config(
     db: AsyncSession = Depends(get_db),
 ):
     return await _patch(StudioReferralConfig, body, ctx.studio_id, db)
+
+
+# ─── Первое занятие ─────────────────────────────────────────────────────────────
+# Своей таблицы у программы нет: это правило записи (trial_lesson_free и
+# trial_discount_percent в studio_booking_settings), и тумблер его показывает
+# ещё «Онлайн-запись». Пишет обе стороны один писатель — booking_rules.save_settings:
+# с замком студии и ростом версии правил, иначе выданные пять минут назад
+# условия записи подтвердились бы со скидкой, которую владелец уже выключил.
+@router.get("/first-lesson", response_model=FirstLessonConfigRead)
+async def get_first_lesson_config(
+    ctx: StudioContext = Depends(require_role("owner")),
+    db: AsyncSession = Depends(get_db),
+):
+    rules = await load_rules(db, ctx.studio_id)
+    return FirstLessonConfigRead(is_enabled=rules.trial_lesson_free,
+                                 discount_percent=rules.trial_discount_percent)
+
+
+@router.patch("/first-lesson", response_model=FirstLessonConfigRead)
+async def update_first_lesson_config(
+    body: FirstLessonConfigUpdate,
+    ctx: StudioContext = Depends(require_role("owner")),
+    db: AsyncSession = Depends(get_db),
+):
+    changes = {}
+    if body.is_enabled is not None:
+        changes["trial_lesson_free"] = body.is_enabled
+    if body.discount_percent is not None:
+        changes["trial_discount_percent"] = body.discount_percent
+    row = await save_settings(db, ctx.studio_id, changes)
+    return FirstLessonConfigRead(is_enabled=row.trial_lesson_free,
+                                 discount_percent=row.trial_discount_percent)

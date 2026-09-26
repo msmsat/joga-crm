@@ -8,13 +8,19 @@ import { usePhone } from '../../../../../hooks/usePhone';
 import { useSheetDrag } from '../../../../../components/ui/modal/sheetDrag';
 import { submitOnEnter } from '../../../../../lib/submitOnEnter';
 import { StepMembership, StepPersonal, StepProfile, StepSummary } from './addClient/sections';
+import { AddClientFields } from './addClient/AddClientFields';
 import { WizardAside } from './addClient/WizardAside';
 import s from './AddClientModal.module.css';
 
 export interface AddClientModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSuccess: (form: ClientFormState) => void;
+  /** id — номер, который сервер выдал новому клиенту: окна записи сразу
+      ставят его выбранным. */
+  onSuccess: (form: ClientFormState, id: number) => void;
+  /** Слой поверх вызвавшего окна: окно «Добавить клиента» журнала стоит
+      выше шапок сетки (10000), и форма под ним была бы не видна. */
+  layer?: number;
 }
 
 const TOTAL = 4;
@@ -26,11 +32,11 @@ const EXIT_MS = 200;
 //   Телефон — ОДНА прокручиваемая форма в шите снизу: четыре экрана подряд с
 //   кнопкой «Продолжить» пальцем проходить долго, а клиента по одному имени
 //   надо заводить в одно касание.
-export function AddClientModal({ isOpen, onClose, onSuccess }: AddClientModalProps) {
-  return isOpen ? <AddClientDialog onClose={onClose} onSuccess={onSuccess}/> : null;
+export function AddClientModal({ isOpen, onClose, onSuccess, layer }: AddClientModalProps) {
+  return isOpen ? <AddClientDialog onClose={onClose} onSuccess={onSuccess} layer={layer}/> : null;
 }
 
-function AddClientDialog({ onClose, onSuccess }: Omit<AddClientModalProps, 'isOpen'>) {
+function AddClientDialog({ onClose, onSuccess, layer }: Omit<AddClientModalProps, 'isOpen'>) {
   const { t } = useTranslation('clients');
   const isPhone = usePhone();
   const [step, setStep] = useState(1);
@@ -49,7 +55,7 @@ function AddClientDialog({ onClose, onSuccess }: Omit<AddClientModalProps, 'isOp
   };
 
   // Форма чистится ПОСЛЕ ухода: иначе поля пустели бы у человека на глазах.
-  const ac = useAddClient(!leaving, form => leaveThen(() => { onSuccess(form); onClose(); }));
+  const ac = useAddClient(!leaving, (form, id) => leaveThen(() => { onSuccess(form, id); onClose(); }));
   const requestClose = () => { if (!ac.saving) leaveThen(onClose); };
 
   useSheetDrag(cardRef, requestClose, !ac.saving && !leaving);
@@ -131,7 +137,8 @@ function AddClientDialog({ onClose, onSuccess }: Omit<AddClientModalProps, 'isOp
   };
 
   return createPortal(
-    <div ref={overlayRef} className={`${s.overlay} v-overlay${leaving ? ' is-leaving' : ''}`} onClick={requestClose}>
+    <div ref={overlayRef} className={`${s.overlay} v-overlay${leaving ? ' is-leaving' : ''}`} onClick={requestClose}
+         style={layer != null ? { zIndex: layer } : undefined}>
       <div
         ref={cardRef}
         // .v-modal-steps только у мастера: на телефоне левой панели нет, и
@@ -169,19 +176,7 @@ function AddClientDialog({ onClose, onSuccess }: Omit<AddClientModalProps, 'isOp
           </div>
 
           {isPhone ? (
-            <div ref={bodyRef} inert={ac.saving || leaving} className={`${s.body} ms-scroll`}>
-              <section className={s.section}>
-                <StepPersonal ac={ac}/>
-              </section>
-              <section className={s.section}>
-                <h3 className={s.sectionTitle}>{t('addModal.steps.2.title')}</h3>
-                <StepProfile ac={ac}/>
-              </section>
-              <section className={s.section}>
-                <h3 className={s.sectionTitle}>{t('addModal.steps.3.title')}</h3>
-                <StepMembership ac={ac}/>
-              </section>
-            </div>
+            <AddClientFields ac={ac} bodyRef={bodyRef} inert={ac.saving || leaving}/>
           ) : (
             <div
               ref={bodyRef}

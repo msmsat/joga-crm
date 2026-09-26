@@ -2892,7 +2892,14 @@
     /* Высота нижней панели без «безопасной зоны» — её прибавляют там, где
        нужно (padding контента, отступ плавающих кнопок). */
     --mnav-h: 60px;
-    --mnav-safe: calc(60px + env(safe-area-inset-bottom, 0px));
+    /* Отступ под системной полосой жестов. НЕ голый env(): на Android
+       (Chrome edge-to-edge, Samsung Internet, встроенные браузеры Telegram/
+       Instagram) он приходит нулём, а полоса жестов всё равно лежит поверх
+       иконок. Нижняя граница 14px держит панель над ней на любом устройстве;
+       на iPhone с «чёлкой» env даёт 34px и сам берёт верх. Отступ — внутри
+       панели (её фон тянется до края), поэтому она не «висит в воздухе». */
+    --mnav-inset: max(env(safe-area-inset-bottom, 0px), 14px);
+    --mnav-safe: calc(var(--mnav-h) + var(--mnav-inset));
   }
 
   /* ── Каркас ────────────────────────────────────────────────────────────
@@ -3232,8 +3239,8 @@
   left: 0; right: 0; bottom: 0;
   z-index: 150;
   align-items: stretch;
-  height: calc(var(--mnav-h, 60px) + env(safe-area-inset-bottom, 0px));
-  padding-bottom: env(safe-area-inset-bottom, 0px);
+  height: var(--mnav-safe, 74px);
+  padding-bottom: var(--mnav-inset, 14px);
   background: var(--bg-card);
   border-top: 1px solid var(--border);
   /* Без backdrop-filter — по той же причине, что и у оверлеев модалок

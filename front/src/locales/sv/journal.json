@@ -66,6 +66,7 @@
     "markAttended": "Registrera närvaro",
     "awaitingConfirmation": "Väntar på bekräftelse",
     "trialLesson": "Prova på",
+    "trialDiscount": "Prova på · −{{percent}}%",
     "unpaid": "Obetalt · {{amount}}",
     "acceptPayment": "Ta emot betalning",
     "payCash": "Kontant",
@@ -236,6 +237,37 @@
     "earlier": "Tidigare",
     "check": "Kontrollera bokningen",
     "change": "Ändra",
-    "confirm": "Bekräfta"
+    "confirm": "Bekräfta",
+    "busyAt": "Upptagen kl. {{time}}",
+    "allBusy": "Kl. {{time}} är alla upptagna — välj närmaste lediga tid hos en specialist"
+  },
+  "payment": {
+    "title": "Betalning",
+    "price": "Pris",
+    "firstLesson": "Första passet",
+    "free": "gratis",
+    "firstLessonOutweighed": "En annan rabatt är bättre — rabatter kan inte kombineras",
+    "discount": {
+      "studio": "Studiorabatt",
+      "offer": "Personlig rabatt",
+      "referral": "Värvningsrabatt"
+    },
+    "promo": "Kampanjkod",
+    "voucher": "Presentkort",
+    "promoPlaceholder": "Kampanjkod",
+    "voucherPlaceholder": "Kod för presentkort eller värdebevis",
+    "apply": "Använd",
+    "remove": "Ta bort",
+    "promoInvalid": "Kampanjkoden är inte giltig",
+    "promoOutweighed": "Kan inte kombineras — en bättre rabatt gäller redan",
+    "voucherRemainder": "Värde {{amount}} — resten sparas inte",
+    "total": "Att ta emot kontant",
+    "coveredBy": {
+      "subscription": "Täcks av abonnemang",
+      "trial": "Första passet gratis",
+      "free": "Gratis"
+    },
+    "confirmAndPay": "Boka och ta emot {{amount}}",
+    "loadFailed": "Betalningen kunde inte beräknas."
   }
 }

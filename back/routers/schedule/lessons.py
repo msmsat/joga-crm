@@ -212,6 +212,7 @@ async def get_lesson(
             Reservation.spot_number,
             Reservation.status,
             Reservation.is_trial,
+            Reservation.trial_discount_percent,
             # Долг показываем только непогашенный: после оплаты строка платежа
             # остаётся в истории клиента, но плашке «Не оплачено» в Журнале там
             # уже не место. Внешним соединением, потому что у большинства броней

@@ -588,6 +588,9 @@ async def seed() -> dict[str, int]:
                             coffee=status == "active" and is_past is False and RNG.random() < 0.22,
                             is_trial=client.status == "new" and RNG.random() < 0.18,
                         )
+                        # Снимок процента заполнен ровно у пробных броней: демо
+                        # дарит первое занятие целиком, как настроено выше.
+                        reservation.trial_discount_percent = 100 if reservation.is_trial else None
                         session.add(reservation)
                         reservation_count += 1
                         if can_charge and status != "cancelled":

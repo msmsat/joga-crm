@@ -32,8 +32,10 @@
         "sub": "Exiger le paiement avant confirmation"
       },
       "trialLesson": {
-        "label": "Premier cours offert",
-        "sub": "La première réservation d'un nouveau client est offerte par le studio"
+        "label": "Remise sur le premier cours",
+        "free": "Le premier cours d'un nouveau client est offert.",
+        "percent": "Le premier cours d'un nouveau client bénéficie de {{percent}} % de remise.",
+        "change": "Le pourcentage se règle dans « Fidélité »"
       },
       "trainerConfirm": {
         "label": "Confirmation du coach",

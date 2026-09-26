@@ -15,6 +15,7 @@
 ними и мини-приложением означает разъехавшиеся остатки абонементов.
 """
 from datetime import date, datetime, timedelta, timezone
+from types import SimpleNamespace
 from typing import Annotated, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response
@@ -29,6 +30,7 @@ from schemas._base import BaseSchema
 from services import booking
 from services.booking_access import coverage_gap, trial_applies
 from services.booking_http import reject
+from services.discounts import apply_discount
 from services import catalog, lesson_time
 from services.booking_rules import (
     BookingRules, assert_bookable, booking_window, is_bookable, load_rules,
@@ -112,10 +114,17 @@ class MiniappLesson(BaseSchema):
     # расписании видна, но кнопка записи не работает: убирать занятие из списка
     # нельзя, клиент должен видеть, что оно вообще есть.
     bookable: bool
-    # Запись на это занятие будет подарком студии («Первое занятие бесплатно»).
+    # Запись на это занятие будет подарком студии (первое занятие бесплатно).
     # Признак клиентский, а не занятийный — у всех карточек списка он одинаковый,
     # но живёт на карточке: именно она рисует кнопку записи с ценой.
+    # Только БЕСПЛАТНОЕ первое занятие: сборки мини-приложения, которые не знают
+    # полей ниже, по этому флагу пишут «Бесплатно», и скидку −50 % им отдавать
+    # под ним нельзя.
     trial_available: bool = False
+    # Первое занятие СО СКИДКОЙ: процент (1–99) и цена после него. 0 и пустая
+    # строка — скидки нет (или занятие бесплатно — тогда см. trial_available).
+    first_lesson_discount: int = 0
+    first_lesson_price_str: str = ""
     coffee: CoffeeState = CoffeeState()
 
 
@@ -164,6 +173,18 @@ def _badge(total_spots: int, taken: int) -> str:
     return "open"
 
 
+async def _first_lesson(db: AsyncSession, client_id: Optional[int], rules: BookingRules) -> Optional[int]:
+    """Процент скидки первого занятия, если она положена клиенту; иначе None.
+
+    Одним запросом на весь список, а не на карточку: признак клиентский, у всех
+    занятий списка он одинаковый. Абонемент её перекроет — это решится при
+    самой записи (условия покажут «по абонементу»), карточке хватает правила.
+    """
+    if client_id is None or not await trial_applies(db, client_id, rules):
+        return None
+    return rules.trial_discount_percent or 100
+
+
 def _lesson_fields(
     lesson: Lesson,
     taken_spots: list[int],
@@ -172,11 +193,15 @@ def _lesson_fields(
     hall_colors: dict[int, str],
     rules: BookingRules,
     coffee: Optional[dict] = None,
-    trial_available: bool = False,
+    first_lesson: Optional[int] = None,
 ) -> dict:
+    """`first_lesson` — процент скидки первого занятия, положенной клиенту
+    (`_first_lesson`); None — не положена."""
     color = DEFAULT_HALL_COLOR
     if lesson.hall_id is not None:
         color = hall_colors.get(lesson.hall_id) or DEFAULT_HALL_COLOR
+    free = first_lesson is not None and first_lesson >= 100
+    partial = first_lesson if first_lesson is not None and not free and lesson.price > 0 else 0
     return dict(
         id=lesson.id,
         name=lesson.name,
@@ -199,7 +224,14 @@ def _lesson_fields(
         # остаток P1.2, и чинить его вместе с поиском значит смешивать
         # два изменения в одном релизе.
         bookable=is_bookable(rules, lesson, datetime.now()),
-        trial_available=trial_available,
+        trial_available=free,
+        first_lesson_discount=partial,
+        # Та же формула, что у движка цены (services/discounts.apply_discount):
+        # показанная на карточке сумма обязана совпасть с той, что запишут.
+        first_lesson_price_str=_fmt_amount(
+            lesson.price - apply_discount(SimpleNamespace(discount_type="percent", value=partial),
+                                          lesson.price),
+            currency) if partial else "",
         # Пустой словарь схема развернёт в CoffeeState() с enabled=False —
         # ровно то, что нужно студии с выключенной механикой.
         #
@@ -368,9 +400,7 @@ async def lessons_by_date(
         {lid for lid, clients in booked_by_client.items() if client_id in clients},
     ) if client_id is not None else {}
     # Признак клиентский — один запрос на весь список, а не на каждую карточку.
-    trial_available = (
-        await trial_applies(db, client_id, rules) if client_id is not None else False
-    )
+    first_lesson = await _first_lesson(db, client_id, rules)
 
     return [
         MiniappLesson(**_lesson_fields(
@@ -381,7 +411,7 @@ async def lessons_by_date(
             hall_colors,
             rules,
             coffee.get(lesson.id),
-            trial_available,
+            first_lesson,
         ))
         for lesson in lessons
     ]
@@ -441,7 +471,7 @@ async def next_lesson(
         hall_colors,
         rules,
         coffee.get(lesson.id),
-        await trial_applies(db, client_id, rules) if client_id is not None else False,
+        await _first_lesson(db, client_id, rules),
     ))
 
 

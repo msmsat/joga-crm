@@ -27,6 +27,11 @@
       "desc": "Programa «Traga um amigo»",
       "statLabel": "recomendações"
     },
+    "first_lesson": {
+      "title": "Primeira aula",
+      "desc": "Primeira marcação grátis ou com desconto para novos clientes",
+      "statLabel": "primeiras aulas"
+    },
     "promocodes": {
       "title": "Códigos promocionais",
       "desc": "Códigos de desconto com limite de utilização",
@@ -154,14 +159,29 @@
     "depositTotalSub": "em todos os depósitos de clientes",
     "depositTopClients": "Melhores clientes por saldo",
     "depositEmpty": "Ninguém tem ainda um depósito",
-    "depositHint": "Os carregamentos e levantamentos são feitos no perfil do cliente. O programa de recomendações pode pagar bónus no depósito em vez de pontos."
+    "depositHint": "Os carregamentos e levantamentos são feitos no perfil do cliente. O programa de recomendações pode pagar bónus no depósito em vez de pontos.",
+    "firstLesson": {
+      "sizeTitle": "Valor do desconto",
+      "free": "Grátis",
+      "percent": "Desconto, %",
+      "freeHint": "A primeira aula é oferta: o cliente não paga nada.",
+      "payHint": "O cliente paga {{rest}}% do preço da primeira aula.",
+      "howTitle": "Como funciona",
+      "how": {
+        "who": "O desconto aplica-se automaticamente à primeira marcação de um novo cliente — na Agenda, na mini-app e no widget de marcação.",
+        "stacking": "Não se acumula com outros descontos: aplica-se o mais vantajoso para o cliente.",
+        "journal": "Na Agenda, pode desativá-lo para uma marcação específica no passo de pagamento.",
+        "booking": "O mesmo interruptor está em «Marcação online → Definições gerais»."
+      }
+    }
   },
   "validation": {
     "required": "Este campo é obrigatório",
     "minOne": "Tem de ser pelo menos 1",
     "minZero": "Não pode ser negativo",
     "positive": "Tem de ser maior do que 0",
-    "range0to100": "De 0 a 100"
+    "range0to100": "De 0 a 100",
+    "range1to100": "De 1 a 100"
   },
   "toasts": {
     "saved": "Programa ativado",

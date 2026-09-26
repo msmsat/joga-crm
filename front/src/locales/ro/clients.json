@@ -293,23 +293,12 @@
       "deleteTitle": "Ștergeți nota?",
       "deleteMessage": "Această notă nu poate fi recuperată."
     },
-    "bookingPanel": {
-      "title": "Rezervare rapidă",
-      "today": "Astăzi",
-      "noLessons": "Nu există ședințe în această zi",
-      "full": "Nu mai sunt locuri",
-      "confirm": "Rezervă →",
-      "noSubscription": "Clientul nu are abonament disponibil pentru rezervare",
-      "individual": "Serviciu individual"
-    },
     "bonusPanel": {
       "title": "Acordă bonus"
     },
     "toasts": {
       "noPhone": "Clientul nu are număr de telefon",
       "copied": "Copiat cu succes",
-      "bookingCreated": "Rezervare creată",
-      "bookingFailed": "Rezervarea a eșuat",
       "bonusFailed": "Nu s-au putut acorda punctele",
       "bonusApplied": "Bonus acordat: {{label}}",
       "clientAdded": "Client adăugat"

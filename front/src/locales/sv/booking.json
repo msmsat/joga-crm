@@ -32,8 +32,10 @@
         "sub": "Kräv betalning före bekräftelse"
       },
       "trialLesson": {
-        "label": "Första passet gratis",
-        "sub": "En ny kunds första bokning bjuder studion på"
+        "label": "Rabatt på första passet",
+        "free": "En ny kunds första pass är gratis.",
+        "percent": "En ny kunds första pass får {{percent}} % rabatt.",
+        "change": "Procentsatsen ställs in under ”Lojalitet”"
       },
       "trainerConfirm": {
         "label": "Bekräftelse av instruktör",

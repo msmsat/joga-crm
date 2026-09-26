@@ -32,8 +32,10 @@
         "sub": "Require payment before confirmation"
       },
       "trialLesson": {
-        "label": "First class free",
-        "sub": "A new client's first booking is on the studio"
+        "label": "First class discount",
+        "free": "A new client's first class is free.",
+        "percent": "A new client's first class is {{percent}}% off.",
+        "change": "Set the percentage in Loyalty"
       },
       "trainerConfirm": {
         "label": "Trainer confirmation",

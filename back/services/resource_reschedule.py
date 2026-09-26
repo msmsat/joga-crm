@@ -24,6 +24,7 @@ from models import (BookingQuote, ClientPayment, ClientSubscription, Lesson, Res
                     StripeCheckout, Studio, SubscriptionPackage)
 from services import (booking, booking_notifications, booking_quotes as quotes,
                       resource_booking, schedule_guard, studio_time, subscription_charge)
+from services.booking_access import trial_percent
 from services.booking_rules import load_rules
 
 
@@ -68,17 +69,20 @@ async def _source(db, actor, reservation_id, *, now):
     return reservation, lesson, originals[-1]
 
 
-async def _repriced(db, actor, funding, base_price):
+async def _repriced(db, actor, funding, base_price, first_lesson_percent=None):
     """Сумма клиента за запись у нового мастера — тем же правилом, что при записи.
 
     Скидки клиента те же (`booking.client_price` — единственный ответ на
     «сколько он платит»), ноль — «бесплатно», как в `booking.resolve_funding`.
-    Абонемент и пробное занятие цена мастера не касается: платит не клиент.
+    Абонемент и бесплатное первое занятие цена мастера не касается: платит не
+    клиент. Первое занятие со скидкой — касается: процент обещан при записи
+    (`first_lesson_percent`, снимок на брони) и едет за записью к новому мастеру.
     """
     if funding.kind not in (booking.FundingKind.PAY, booking.FundingKind.FREE):
         return funding
     owed = 0 if base_price <= 0 else await booking.client_price(
-        db, studio_id=actor.studio_id, client_id=actor.client_id, base_price=base_price)
+        db, studio_id=actor.studio_id, client_id=actor.client_id, base_price=base_price,
+        first_lesson_percent=first_lesson_percent)
     kind = booking.FundingKind.PAY if owed > 0 else booking.FundingKind.FREE
     return replace(funding, kind=kind, price=owed)
 
@@ -126,7 +130,7 @@ async def _calculate(db, actor, reservation_id, request, *, now, hall_id=None, d
         price, funding = lesson.price, terms.funding
     elif staff:
         price = quoted.base_price
-        funding = await _repriced(db, actor, terms.funding, price)
+        funding = await _repriced(db, actor, terms.funding, price, trial_percent(reservation))
     elif quoted.base_price != lesson.price:
         quotes.reject("TERMS_CHANGED")
     else:

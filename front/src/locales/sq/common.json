@@ -109,6 +109,7 @@
     "SLOT_UNAVAILABLE": "Kjo orë është e zënë ose jashtë orarit të specialistit",
     "VERSION_CONFLICT": "Rezervimi u ndryshua në një dritare tjetër — rifreskoni orarin",
     "TERMS_CHANGED": "Kushtet e rezervimit ndryshuan — hapeni përsëri",
+    "AMOUNT_CHANGED": "Shuma ndryshoi — kontrolloni totalin dhe konfirmoni sërish",
     "INVALID_START": "Kjo orë nuk ekziston atë ditë për shkak të ndryshimit të orës",
     "WINDOW_CLOSED": "Rezervimi ka filluar ose ka kaluar — nuk mund të ndryshohet",
     "PAYMENT_IN_PROGRESS": "Për këtë rezervim po kryhet një pagesë — prisni të përfundojë",

@@ -66,6 +66,7 @@
     "markAttended": "Merkitse läsnäolo",
     "awaitingConfirmation": "Odottaa vahvistusta",
     "trialLesson": "Kokeilu",
+    "trialDiscount": "Kokeilu · −{{percent}}%",
     "unpaid": "Maksamatta · {{amount}}",
     "acceptPayment": "Ota maksu vastaan",
     "payCash": "Käteinen",
@@ -236,6 +237,37 @@
     "earlier": "Aiemmin",
     "check": "Tarkista varaus",
     "change": "Muuta",
-    "confirm": "Vahvista"
+    "confirm": "Vahvista",
+    "busyAt": "Varattu klo {{time}}",
+    "allBusy": "Klo {{time}} kaikki ovat varattuja — valitse asiantuntijan lähin vapaa aika"
+  },
+  "payment": {
+    "title": "Maksu",
+    "price": "Hinta",
+    "firstLesson": "Ensimmäinen tunti",
+    "free": "ilmainen",
+    "firstLessonOutweighed": "Toinen alennus on edullisempi — alennuksia ei yhdistetä",
+    "discount": {
+      "studio": "Studion alennus",
+      "offer": "Henkilökohtainen alennus",
+      "referral": "Suositteluetu"
+    },
+    "promo": "Alennuskoodi",
+    "voucher": "Lahjakortti",
+    "promoPlaceholder": "Alennuskoodi",
+    "voucherPlaceholder": "Lahjakortin tai arvosetelin koodi",
+    "apply": "Käytä",
+    "remove": "Poista",
+    "promoInvalid": "Alennuskoodi ei ole voimassa",
+    "promoOutweighed": "Ei yhdisty — edullisempi alennus on jo käytössä",
+    "voucherRemainder": "Arvo {{amount}} — jäljelle jäävä osa ei säily",
+    "total": "Maksetaan käteisellä",
+    "coveredBy": {
+      "subscription": "Jäsenyydellä",
+      "trial": "Ensimmäinen tunti ilmaiseksi",
+      "free": "Ilmainen"
+    },
+    "confirmAndPay": "Varaa ja ota vastaan {{amount}}",
+    "loadFailed": "Maksua ei voitu laskea."
   }
 }

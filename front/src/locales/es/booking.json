@@ -32,8 +32,10 @@
         "sub": "Exigir el pago antes de confirmar"
       },
       "trialLesson": {
-        "label": "Primera clase gratis",
-        "sub": "La primera reserva de un cliente nuevo corre a cargo del estudio"
+        "label": "Descuento en la primera clase",
+        "free": "La primera clase de un cliente nuevo es gratis.",
+        "percent": "La primera clase de un cliente nuevo tiene un {{percent}} % de descuento.",
+        "change": "El porcentaje se ajusta en «Fidelización»"
       },
       "trainerConfirm": {
         "label": "Confirmación del monitor",

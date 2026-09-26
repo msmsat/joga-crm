@@ -67,6 +67,12 @@ export interface LessonResponse {
    * без абонемента. Признак клиентский — у всех карточек списка одинаковый.
    */
   trial_available: boolean;
+  /**
+   * Первое занятие СО СКИДКОЙ (не подарок): процент 1–99 и цена после неё.
+   * 0 / пустая строка — скидки нет. Остаток клиент платит на месте.
+   */
+  first_lesson_discount?: number;
+  first_lesson_price_str?: string;
   coffee: CoffeeState;
 }
 

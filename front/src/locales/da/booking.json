@@ -32,8 +32,10 @@
         "sub": "Kræv betaling før bekræftelse"
       },
       "trialLesson": {
-        "label": "Første hold gratis",
-        "sub": "En ny kundes første booking er på studiets regning"
+        "label": "Rabat på første hold",
+        "free": "En ny kundes første hold er gratis.",
+        "percent": "En ny kundes første hold får {{percent}} % rabat.",
+        "change": "Procentsatsen indstilles under »Loyalitet«"
       },
       "trainerConfirm": {
         "label": "Bekræftelse fra underviser",

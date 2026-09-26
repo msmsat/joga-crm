@@ -109,6 +109,7 @@
     "SLOT_UNAVAILABLE": "This time is taken or outside the specialist's working hours",
     "VERSION_CONFLICT": "The booking was changed in another window — refresh the schedule",
     "TERMS_CHANGED": "The booking terms have changed — open it again",
+    "AMOUNT_CHANGED": "The amount has changed — check the total and confirm again",
     "INVALID_START": "This time doesn't exist on that day because of the clock change",
     "WINDOW_CLOSED": "The booking has already started or passed — it can't be changed",
     "PAYMENT_IN_PROGRESS": "A payment for this booking is in progress — wait for it to finish",
