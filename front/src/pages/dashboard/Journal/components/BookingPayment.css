@@ -31,7 +31,11 @@
   font: 700 12px 'SF Mono', Consolas, monospace; color: var(--onyx);
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 160px;
 }
-.bpay-codes { display: flex; flex-direction: column; gap: 8px; }
+/* «+ Промокод» и «+ Ваучер» — одной строкой: две ссылки друг под другом
+   раздували чек вдвое против ритма строк выше. Раскрытое поле, принятый код и
+   подпись под ним занимают строку целиком. */
+.bpay-codes { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px; }
+.bpay-codes > :not(.bpay-add) { flex: 1 0 100%; }
 .bpay-add {
   align-self: flex-start; display: inline-flex; align-items: center; gap: 6px;
   height: 30px; padding: 0 10px; margin-left: -10px;
@@ -57,7 +61,7 @@
 }
 .bpay-total {
   display: flex; align-items: baseline; justify-content: space-between; gap: 12px;
-  margin-top: 6px; padding-top: 10px;
+  margin-top: 2px; padding-top: 8px;
   font: 700 13px var(--font); color: var(--muted);
 }
 .bpay-total strong { font: 800 22px var(--font); color: var(--onyx); letter-spacing: -0.3px; }
