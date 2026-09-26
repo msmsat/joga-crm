@@ -95,6 +95,16 @@ _ALLOWED_ORIGINS = [
         "CORS_ORIGINS", os.getenv("WEB_APP_URL", "http://localhost:5173"),
     ).split(",") if o.strip()
 ]
+# Локальная проверка боевой сборки (`npm run preview`) идёт с порта 4173.
+# Без него вход там падал «Нет связи с сервером», хотя бэкенд жив. Добавляем
+# только когда фронт сам локальный — на проде список не меняется.
+_PREVIEW_ORIGIN = "http://localhost:4173"
+if (
+    "CORS_ORIGINS" not in os.environ
+    and any(o.startswith(("http://localhost:", "http://127.0.0.1:")) for o in _ALLOWED_ORIGINS)
+    and _PREVIEW_ORIGIN not in _ALLOWED_ORIGINS
+):
+    _ALLOWED_ORIGINS.append(_PREVIEW_ORIGIN)
 
 app.add_middleware(
     CORSMiddleware,
