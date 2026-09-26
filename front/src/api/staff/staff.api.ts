@@ -16,6 +16,7 @@ import type {
   StaffMessageResponse,
   StaffCallResponse,
   StaffBusyInterval,
+  StaffServiceTermsPayload,
 } from './staff.types'
 
 export const staffApi = {
@@ -41,6 +42,11 @@ export const staffApi = {
 
   update: (id: number, payload: StaffUpdate) =>
     client.put<StaffMutateResponse>(`/staff/${id}`, payload),
+
+  // Своя цена и время мастера на одну услугу — правка прямо из карточки.
+  // null — «как в Каталоге». Остальные услуги мастера не трогаются.
+  setServiceTerms: (id: number, serviceId: number, terms: StaffServiceTermsPayload) =>
+    client.put<{ ok: boolean }>(`/staff/${id}/services/${serviceId}`, terms),
 
   delete: (id: number) =>
     client.delete<{ ok: boolean }>(`/staff/${id}`),

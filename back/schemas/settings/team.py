@@ -28,6 +28,15 @@ class StaffServicePrice(BaseSchema):
     duration_min: Optional[int] = Field(default=None, ge=1, le=1440)
 
 
+class StaffServiceTermsUpdate(BaseSchema):
+    """Свои цена и время мастера на одну услугу — правка прямо из карточки.
+
+    Правила значений — как у `StaffServicePrice`; услуга берётся из пути.
+    """
+    price: Optional[int] = Field(default=None, ge=0, le=MAX_STAFF_SERVICE_PRICE)
+    duration_min: Optional[int] = Field(default=None, ge=1, le=1440)
+
+
 class StaffCreate(BaseSchema):
     name: str
     last_name: Optional[str] = None

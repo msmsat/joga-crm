@@ -72,6 +72,13 @@ export interface StaffServicePricePayload {
   duration_min: number | null
 }
 
+// PUT /staff/{id}/services/{service_id}: оба значения шлются всегда — ручка
+// записывает строку целиком, и не присланное своё время снялось бы.
+export interface StaffServiceTermsPayload {
+  price: number | null
+  duration_min: number | null
+}
+
 export interface StaffService {
   id: number
   name: string

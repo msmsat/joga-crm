@@ -16,7 +16,7 @@ from schemas import (
     StaffCreate, StaffUpdate,
     StaffListResponse, StaffProfileResponse, StaffMutateResponse,
 )
-from schemas.settings.team import StaffServicePrice
+from schemas.settings.team import StaffServicePrice, StaffServiceTermsUpdate
 from schemas.staff.staff import StaffBranchItem, StaffWorkingHoursItem
 from security import get_password_hash
 from services.contacts import (
@@ -759,6 +759,44 @@ async def update_staff(
         })
 
     return {"ok": True, "staff": _staff_list_item(user, membership, await is_specialist(db, studio_id, user.id))}
+
+
+# ─── PUT /staff/{staff_id}/services/{service_id} ─────────────────────────────
+
+@router.put("/{staff_id}/services/{service_id}", response_model=dict)
+async def update_staff_service_terms(
+    staff_id: int,
+    service_id: int,
+    data: StaffServiceTermsUpdate,
+    ctx: StudioContext = Depends(require_role("owner")),
+    db: AsyncSession = Depends(get_db),
+):
+    """Своя цена и своё время мастера на одну услугу — не открывая редактирование.
+
+    Узкая ручка вместо `PUT /staff/{id}`: тот принимает карточку целиком (график,
+    контакты, услуги), и правка одной цены через него переписывала бы всё
+    остальное тем, что успел прочитать экран.
+    """
+    studio_id = ctx.studio_id
+    await _get_staff_member(staff_id, studio_id, db)
+    service = (await db.execute(
+        select(Service).where(Service.id == service_id, Service.studio_id == studio_id)
+    )).scalar_one_or_none()
+    if service is None:
+        raise HTTPException(status_code=404, detail="Услуга не найдена")
+    _check_durations(
+        [StaffServicePrice(service_id=service_id, price=data.price, duration_min=data.duration_min)],
+        [service],
+    )
+    ok = await service_pricing.set_staff_service_terms(
+        db, staff_id, studio_id, service_id, data.price, data.duration_min)
+    if not ok:
+        raise HTTPException(
+            status_code=400,
+            detail="Цена задана для услуги, которая сотруднику не назначена",
+        )
+    await db.commit()
+    return {"ok": True}
 
 
 # ─── DELETE /staff/{staff_id} ─────────────────────────────────────────────────

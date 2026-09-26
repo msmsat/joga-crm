@@ -26,9 +26,9 @@ from database import async_session_maker
 from dependencies import StudioContext
 from models import Service, Studio, StudioMember, User
 from models.base import user_services
-from routers.staff.profiles import get_staff_profile, update_staff
+from routers.staff.profiles import get_staff_profile, update_staff, update_staff_service_terms
 from services import ai_tools
-from schemas.settings.team import StaffServicePrice, StaffUpdate
+from schemas.settings.team import StaffServicePrice, StaffServiceTermsUpdate, StaffUpdate
 
 warnings.filterwarnings("ignore")
 
@@ -341,4 +341,47 @@ def test_duration_with_buffers_over_a_day_is_refused():
             StaffServicePrice(service_id=ids["haircut"], duration_min=1425),
         ]))
         assert (await _services(ids))[ids["haircut"]]["duration_min"] == 1425
+    _run(scenario)
+
+
+# ─── Правка одной строки прямо из карточки ────────────────────────────────────
+
+async def _set_terms(ids: dict, service_id: int, **terms) -> None:
+    async with async_session_maker() as db:
+        await update_staff_service_terms(
+            ids["trainer"], service_id, StaffServiceTermsUpdate(**terms),
+            ctx=await _ctx(ids, db), db=db)
+
+
+def test_inline_terms_touch_only_their_own_service():
+    """Цена одной строки не снимает своё значение соседней."""
+    async def scenario(ids):
+        await _save(ids, _body(ids, service_prices=[
+            StaffServicePrice(service_id=ids["beard"], price=250, duration_min=25),
+        ]))
+        await _set_terms(ids, ids["haircut"], price=450, duration_min=40)
+        rows = await _services(ids)
+        assert (rows[ids["haircut"]]["price"], rows[ids["haircut"]]["price_custom"]) == (450, True)
+        assert (rows[ids["haircut"]]["duration_min"], rows[ids["haircut"]]["duration_custom"]) == (40, True)
+        assert (rows[ids["beard"]]["price"], rows[ids["beard"]]["duration_min"]) == (250, 25)
+    _run(scenario)
+
+
+def test_inline_terms_null_returns_to_catalogue():
+    async def scenario(ids):
+        await _set_terms(ids, ids["haircut"], price=450, duration_min=40)
+        await _set_terms(ids, ids["haircut"], price=None, duration_min=None)
+        row = (await _services(ids))[ids["haircut"]]
+        assert (row["price"], row["price_custom"]) == (300, False)
+        assert (row["duration_min"], row["duration_custom"]) == (30, False)
+    _run(scenario)
+
+
+def test_inline_terms_refuse_unassigned_service():
+    """Строки «мастер ↔ услуга» нет — отказ, а не молча проглоченная цена."""
+    async def scenario(ids):
+        await _save(ids, _body(ids))
+        with pytest.raises(HTTPException) as exc:
+            await _set_terms(ids, ids["spare"], price=900)
+        assert exc.value.status_code == 400
     _run(scenario)

@@ -147,6 +147,7 @@ UI_ONLY: dict[str, str] = {
     "POST /staff/{staff_id}/call": "звонок сотруднику — действие человека",
     "POST /staff/{staff_id}/message": "сообщение сотруднику пишет человек",
     "POST /staff/{staff_id}/invite": "повторное приглашение отправляет владелец",
+    "PUT /staff/{staff_id}/services/{service_id}": "правка цены/времени в строке карточки; ассистент делает то же через update_staff(service_prices)",
     "POST /staff/{staff_id}/schedule/{lesson_id}/cancel": "снятие тренера с занятия задевает записанных — руками",
 
     # ── HB-05 (Hybrid Booking): CRUD перерывов/отсутствий специалиста
