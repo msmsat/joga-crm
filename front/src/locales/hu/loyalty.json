@@ -144,6 +144,11 @@
     "promoCreate": "Promóciós kód létrehozása",
     "promoCodePlaceholder": "NYÁR25",
     "promoValidUntil": "Érvényes eddig",
+    "promoClient": "Ügyfél",
+    "promoAllClients": "Minden ügyfél",
+    "promoValidFrom": "Érvényes ettől",
+    "promoFrom": "ettől",
+    "promoPeriodInvalid": "A kezdő dátum későbbi a záró dátumnál",
     "promoUsageLimit": "Használati korlát",
     "promoAdd": "+ Promóciós kód hozzáadása",
     "promoList": "Promóciós kódok",
@@ -151,6 +156,7 @@
     "promoUntil": "eddig",
     "promoStatus": {
       "active": "Aktív",
+      "scheduled": "Még nem kezdődött el",
       "expired": "Lejárt",
       "exhausted": "A korlát elérve",
       "disabled": "Letiltva"

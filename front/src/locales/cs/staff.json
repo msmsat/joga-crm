@@ -214,7 +214,10 @@
         "name": "Jméno je povinné",
         "email": "Neplatný e-mail"
       },
-      "contactsOwnedByEmployee": "E-mail a telefon patří k účtu zaměstnance — mění si je ve vlastním profilu."
+      "contactsOwnedByEmployee": "E-mail a telefon patří k účtu zaměstnance — mění si je ve vlastním profilu.",
+      "color": "Barva v deníku",
+      "colorHint": "Touto barvou je v deníku označen sloupec a lekce pracovníka. Tečkou jsou označeny barvy, které už mají jiní.",
+      "colorTakenBy": "Už má: {{names}}"
     },
     "role": {
       "heading": "Role a specializace",

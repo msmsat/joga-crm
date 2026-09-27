@@ -214,7 +214,10 @@
         "name": "O nome é obrigatório",
         "email": "Email inválido"
       },
-      "contactsOwnedByEmployee": "O email e o telefone pertencem à conta do funcionário — ele altera-os no seu próprio perfil."
+      "contactsOwnedByEmployee": "O email e o telefone pertencem à conta do funcionário — ele altera-os no seu próprio perfil.",
+      "color": "Cor na agenda",
+      "colorHint": "Com esta cor aparecem na agenda a coluna e as aulas do colaborador. Um ponto marca as cores que outros já usam.",
+      "colorTakenBy": "Já usada por: {{names}}"
     },
     "role": {
       "heading": "Função e especialização",

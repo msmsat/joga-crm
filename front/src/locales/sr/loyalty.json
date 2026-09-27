@@ -144,6 +144,11 @@
     "promoCreate": "Креирај промокод",
     "promoCodePlaceholder": "ЛЕТО25",
     "promoValidUntil": "Важи до",
+    "promoClient": "Клијент",
+    "promoAllClients": "Сви клијенти",
+    "promoValidFrom": "Важи од",
+    "promoFrom": "од",
+    "promoPeriodInvalid": "Датум почетка је после датума завршетка",
     "promoUsageLimit": "Ограничење коришћења",
     "promoAdd": "+ Додај промокод",
     "promoList": "Промокодови",
@@ -151,6 +156,7 @@
     "promoUntil": "до",
     "promoStatus": {
       "active": "Активан",
+      "scheduled": "Још није почео",
       "expired": "Истакао",
       "exhausted": "Ограничење је достигнуто",
       "disabled": "Онемогућен"

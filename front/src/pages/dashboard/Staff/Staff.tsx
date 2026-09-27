@@ -23,6 +23,7 @@ import { useRoleLabel } from '../../../hooks/useBusinessTerms';
 import { QrShareModal } from '../../../components/ui/index';
 import { miniappLink } from '../../../lib/miniapp';
 import { getCurrencySymbol } from '../../../components/UI';
+import { staffColor } from '../../../lib/staffColors';
 import { formatMoney } from '../../../lib/money';
 import { useDurationLabel } from '../../../hooks/useDurationLabel';
 import { ownServiceTerms, servicePricesPayload } from './serviceTerms';
@@ -155,6 +156,10 @@ export default function Staff() {
   }), [rawStaff, roleLabel]);
 
   const ownerCount = rawStaff.filter(s => s.role === 'owner').length;
+  // Кто каким цветом ходит в журнале — карточка помечает занятые цвета.
+  const teamColors = useMemo(() => rawStaff.map(s => ({
+    id: s.id, color: staffColor(s), name: [s.name, s.last_name].filter(Boolean).join(' '),
+  })), [rawStaff]);
 
   const selectStaff = (id: number | null) => {
     // Пока приглашение не принято, показывать в профиле нечего — карточка в
@@ -889,6 +894,7 @@ export default function Staff() {
           email: profile.email,
           role: profile.role,
           avatar_gradient: profile.avatar_gradient ?? undefined,
+          color: staffColor(profile),
           is_online: profile.is_online,
           is_active: profile.is_active,
           rate: profile.rate ?? undefined,
@@ -922,6 +928,7 @@ export default function Staff() {
               service_prices: servicePricesPayload(
                 updated.service_prices ?? {}, updated.service_durations ?? {}),
               photo_url: updated.photo_url,
+              color: updated.color || undefined,
               schedule: scheduleToWorkingHours(updated.schedule),
               // Присылаем ТОЛЬКО когда список пришёл из формы: сервер отличает
               // отсутствие поля от явно пустого списка и без этого стёр бы
@@ -940,6 +947,7 @@ export default function Staff() {
           }
         }}
         ownerCount={ownerCount}
+        teamColors={teamColors}
         // Свои контакты владелец правит здесь же — сервер разрешает менять их
         // хозяину аккаунта (routers/staff/profiles.update_staff).
         isSelf={profile?.email === getActiveEmail()}

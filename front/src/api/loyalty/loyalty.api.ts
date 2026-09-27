@@ -43,8 +43,10 @@ export interface PromoCodeCreate {
   code: string
   discount_type: 'percent' | 'amount'
   value: number
+  valid_from?: string | null
   valid_until?: string | null
   usage_limit?: number | null
+  client_id?: number | null
 }
 
 export const loyaltyApi = {

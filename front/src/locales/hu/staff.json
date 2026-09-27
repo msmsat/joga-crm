@@ -214,7 +214,10 @@
         "name": "A név kötelező",
         "email": "Érvénytelen e-mail"
       },
-      "contactsOwnedByEmployee": "Az e-mail és a telefon a munkatárs fiókjához tartozik — a saját profiljában módosítja őket."
+      "contactsOwnedByEmployee": "Az e-mail és a telefon a munkatárs fiókjához tartozik — a saját profiljában módosítja őket.",
+      "color": "Szín a naplóban",
+      "colorHint": "Ezzel a színnel jelenik meg a munkatárs oszlopa és órái a naplóban. Ponttal jelöljük a mások által már használt színeket.",
+      "colorTakenBy": "Már használja: {{names}}"
     },
     "role": {
       "heading": "Szerepkör és szakterület",

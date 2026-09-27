@@ -214,7 +214,10 @@
         "name": "Namn krävs",
         "email": "Ogiltig e-post"
       },
-      "contactsOwnedByEmployee": "E-post och telefon tillhör den anställdes konto — de ändras i personens egen profil."
+      "contactsOwnedByEmployee": "E-post och telefon tillhör den anställdes konto — de ändras i personens egen profil.",
+      "color": "Färg i schemat",
+      "colorHint": "Med den här färgen visas personens kolumn och pass i schemat. En prick markerar färger som andra redan har.",
+      "colorTakenBy": "Används redan av: {{names}}"
     },
     "role": {
       "heading": "Roll och specialisering",

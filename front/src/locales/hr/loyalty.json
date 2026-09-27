@@ -144,6 +144,11 @@
     "promoCreate": "Stvori promokod",
     "promoCodePlaceholder": "LJETO25",
     "promoValidUntil": "Vrijedi do",
+    "promoClient": "Klijent",
+    "promoAllClients": "Svi klijenti",
+    "promoValidFrom": "Vrijedi od",
+    "promoFrom": "od",
+    "promoPeriodInvalid": "Datum početka je nakon datuma završetka",
     "promoUsageLimit": "Ograničenje korištenja",
     "promoAdd": "+ Dodaj promokod",
     "promoList": "Promokodovi",
@@ -151,6 +156,7 @@
     "promoUntil": "do",
     "promoStatus": {
       "active": "Aktivan",
+      "scheduled": "Još nije počeo",
       "expired": "Istekao",
       "exhausted": "Ograničenje je dosegnuto",
       "disabled": "Onemogućen"

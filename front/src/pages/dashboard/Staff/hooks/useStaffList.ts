@@ -58,6 +58,9 @@ export function useStaffList() {
   const update = async (id: number, payload: StaffUpdate) => {
     await staffApi.update(id, payload)
     invalidatePrices()
+    // Журнал берёт колонки (имя, цвет мастера) из кэша сотрудников: без
+    // сброса новый цвет доехал бы до сетки только через полминуты.
+    void qc.invalidateQueries({ queryKey: queryKeys.staff })
     await refetch()
   }
 

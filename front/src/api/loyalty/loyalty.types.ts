@@ -102,11 +102,16 @@ export interface PromoCode {
   code: string
   discount_type: 'percent' | 'amount'
   value: number
+  /** Период действия «с … по …», обе даты включительно; null — без границы. */
+  valid_from: string | null
   valid_until: string | null
   usage_limit: number | null
   used_count: number
   is_active: boolean
   created_at: string
+  /** Промокод выписан одному клиенту; null — общий. */
+  client_id: number | null
+  client_name: string | null
 }
 
 export interface DepositTransaction {

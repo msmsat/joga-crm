@@ -144,6 +144,11 @@
     "promoCreate": "Създай промокод",
     "promoCodePlaceholder": "LQTO25",
     "promoValidUntil": "Валиден до",
+    "promoClient": "Клиент",
+    "promoAllClients": "Всички клиенти",
+    "promoValidFrom": "Валиден от",
+    "promoFrom": "от",
+    "promoPeriodInvalid": "Началната дата е след крайната",
     "promoUsageLimit": "Лимит на ползване",
     "promoAdd": "+ Добави промокод",
     "promoList": "Промокодове",
@@ -151,6 +156,7 @@
     "promoUntil": "до",
     "promoStatus": {
       "active": "Активен",
+      "scheduled": "Още не е започнал",
       "expired": "Изтекъл",
       "exhausted": "Лимитът е достигнат",
       "disabled": "Деактивиран"

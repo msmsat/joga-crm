@@ -2,7 +2,8 @@
 
 Две операции над уже выданными условиями записи (`services/booking_quotes`):
 
-  * `preview`  — сколько заплатит клиент с промокодом и ваучером. Только чтение;
+  * `preview`  — сколько заплатит клиент с промокодом, ваучером и ручной
+                 скидкой администратора. Только чтение;
   * `pay_cash` — принять эту сумму наличными в ТОЙ ЖЕ транзакции, что и запись.
 
 Считает не этот модуль, а касса: `routers/checkout/router._quote` (скидки →
@@ -25,6 +26,7 @@ _DISCOUNTS = (
     ("offer", "offer_discount_applied"),
     ("referral", "referral_discount_applied"),
     ("promo", "promo_discount_applied"),
+    ("manual", "manual_discount_applied"),
 )
 
 
@@ -34,9 +36,10 @@ def _code(value):
     return value or None
 
 
-async def _quote(db, actor, terms, domain, promo_code, certificate_code):
+async def _quote(db, actor, terms, domain, promo_code, certificate_code, manual_percent):
     """Касса над записью, которой ещё нет: товар — занятие по цене этого
-    мастера со скидкой первого занятия, если администратор её не выключил."""
+    мастера со скидкой первого занятия, если администратор её не выключил,
+    и с его ручной скидкой, если он её дал."""
     from routers.checkout.router import ServiceAsProduct, _quote as price
 
     applied = terms.get("first_lesson_offered") and terms.get("first_lesson", True)
@@ -46,7 +49,7 @@ async def _quote(db, actor, terms, domain, promo_code, certificate_code):
         first_lesson_percent=terms.get("first_lesson_percent") if applied else None,
     )
     return await price(db, actor.studio_id, actor.client_id, package, "lesson",
-                       promo_code, False, False, certificate_code)
+                       promo_code, False, False, certificate_code, manual_percent=manual_percent)
 
 
 async def preview(db, actor: quotes.Actor, quote_id: str, codes) -> dict:
@@ -78,15 +81,16 @@ async def preview(db, actor: quotes.Actor, quote_id: str, codes) -> dict:
         return {**result, "covered_by": funding.kind.value, "total": 0}
 
     promo_code, certificate_code = _code(codes.promo_code), _code(codes.certificate_code)
+    manual = codes.manual_discount_percent
     certificate_error = None
     try:
-        quote = await _quote(db, actor, terms, domain, promo_code, certificate_code)
+        quote = await _quote(db, actor, terms, domain, promo_code, certificate_code, manual)
     except HTTPException as exc:
         code = exc.detail.get("code") if isinstance(exc.detail, dict) else None
         if certificate_code is None or not (code or "").startswith("loyalty.cert_"):
             raise
         certificate_error = code
-        quote = await _quote(db, actor, terms, domain, promo_code, None)
+        quote = await _quote(db, actor, terms, domain, promo_code, None, manual)
     resolved = quote.resolved
     return {
         **result,
@@ -139,7 +143,7 @@ async def pay_cash(db, actor: quotes.Actor, booked: dict, payment) -> None:
                 payment_method="cash",
             ),
             method="cash", debt=debt, reservation_id=reservation.id,
-            expected_total=payment.expected_total,
+            expected_total=payment.expected_total, manual_percent=payment.manual_discount_percent,
         )
     except HTTPException as exc:
         if isinstance(exc.detail, dict) and exc.detail.get("code") == "checkout.amount_changed":

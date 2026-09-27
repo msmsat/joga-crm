@@ -214,7 +214,10 @@
         "name": "Navn er påkrevd",
         "email": "Ugyldig e-post"
       },
-      "contactsOwnedByEmployee": "E-post og telefon tilhører den ansattes konto — de endres i personens egen profil."
+      "contactsOwnedByEmployee": "E-post og telefon tilhører den ansattes konto — de endres i personens egen profil.",
+      "color": "Farge i timeplanen",
+      "colorHint": "Med denne fargen vises kolonnen og øktene til den ansatte i timeplanen. En prikk markerer farger som andre allerede har.",
+      "colorTakenBy": "Brukes allerede av: {{names}}"
     },
     "role": {
       "heading": "Rolle og spesialisering",

@@ -144,6 +144,11 @@
     "promoCreate": "Створити промокод",
     "promoCodePlaceholder": "SUMMER25",
     "promoValidUntil": "Діє до",
+    "promoClient": "Клієнт",
+    "promoAllClients": "Усі клієнти",
+    "promoValidFrom": "Діє з",
+    "promoFrom": "з",
+    "promoPeriodInvalid": "Дата початку пізніша за дату закінчення",
     "promoUsageLimit": "Ліміт використань",
     "promoAdd": "+ Додати промокод",
     "promoList": "Промокоди",
@@ -151,6 +156,7 @@
     "promoUntil": "до",
     "promoStatus": {
       "active": "Активний",
+      "scheduled": "Ще не почався",
       "expired": "Прострочений",
       "exhausted": "Ліміт вичерпано",
       "disabled": "Вимкнений"

@@ -215,6 +215,18 @@
   min-width: 170px;
 }
 
+/* Цвет мастера полоской по верху его колонки. Видна на любой ширине: аватар
+   с инициалами на ноутбуке и телефоне скрыт, а по одному имени не сопоставить
+   колонку с цветом её занятий. Шапка sticky — она и держит полоску. */
+.j-hdr-stripe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  pointer-events: none;
+}
+
 .j-time-col {
   width: 52px;
   position: sticky;
@@ -1308,21 +1320,16 @@ button.kp-trainer:disabled { cursor: default; opacity: 0.6; }
 }
 .kp-hint { font-size: 12px; font-weight: 600; color: var(--muted); }
 .kp-error { font-size: 11.5px; font-weight: 600; color: var(--error); }
-/* «+ Новый клиент» у подписи поля клиента (ResourceClientPicker) и рядом с
-   поиском в окне «Добавить клиента»: клиента заводят, не уходя из записи. */
-.rcp-new {
-  display: inline-flex; align-items: center; gap: 4px;
-  border: 0; background: none; padding: 2px 0; cursor: pointer;
-  font: 700 12px var(--font); color: var(--peach);
-}
-.rcp-new svg, .bp-new-client svg { width: 14px; height: 14px; }
+/* «+ Новый клиент» рядом с поиском в окне «Добавить клиента»: клиента заводят,
+   не уходя из записи. Та же кнопка у поля клиента (.rcp-new) — в App.css:
+   поле живёт и в Лояльности. */
+.bp-new-client svg { width: 14px; height: 14px; }
 .bp-new-client { height: 40px; padding: 0 12px; gap: 6px; color: var(--peach); }
 /* В узком попапе телефона — только «+»: подпись съела бы поле поиска. */
 @media (max-width: 767px) {
   .bp-new-client { width: 40px; padding: 0; justify-content: center; }
   .bp-new-client-label { display: none; }
 }
-.rcp-new:disabled { opacity: 0.5; cursor: default; }
 .kp-link {
   border: 0; background: none; padding: 0; cursor: pointer;
   font: inherit; color: var(--peach); text-decoration: underline;
@@ -1946,22 +1953,43 @@ button.kp-trainer:disabled { cursor: default; opacity: 0.6; }
 .bw-body { flex: 1; min-height: 0; display: flex; flex-direction: column; }
 .bw-picked { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .bw-step { color: var(--peach); font-weight: 800; }
-.bw-progress { display: flex; gap: 4px; padding: 0 18px 4px; }
-/* Полоска — кнопка перехода на свой шаг: видимая линия 4px, а попасть по
-   ней можно в полосу 18px — и пальцем, и мышью. */
-.bw-progress button {
-  flex: 1; min-width: 0; height: 18px; padding: 7px 0;
-  border: 0; background: none; cursor: pointer;
+/* Кнопки шагов (WizardTabs): иконка и подпись. Сделанное светится зелёным и
+   получает галочку, текущий шаг обведён персиком; сделанный текущий — зелёный
+   в персиковой рамке. Недоступный пока шаг просто приглушён — без hover. */
+.bw-tabs { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; padding: 8px 18px 10px; }
+.bw-tab {
+  min-width: 0; height: 58px; padding: 6px 4px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px;
+  border: 1px solid var(--border); border-radius: 12px; background: var(--bg);
+  color: var(--muted); cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, color 0.2s, box-shadow 0.2s;
 }
-.bw-progress button:disabled { cursor: default; }
-.bw-progress button span {
-  display: block; height: 4px; border-radius: 2px;
-  background: var(--border); transition: background 0.25s, box-shadow 0.25s;
+.bw-tab:disabled { cursor: default; }
+.bw-tab:disabled:not(.done):not(.current) { opacity: 0.55; }
+.bw-tab-icon { position: relative; display: flex; }
+.bw-tab-icon > svg { width: 20px; height: 20px; }
+.bw-tab-label {
+  max-width: 100%; font: 700 11.5px var(--font);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
-.bw-progress button.on span { background: var(--peach); }
-.bw-progress button.current span { box-shadow: 0 0 0 2px var(--peach-glow); }
-/* Шапка мастера ужата: заголовок, строка выбранного и полоски — вот и всё,
-   что стоит над списком; место отдаётся самому шагу. */
+.bw-tab-badge {
+  position: absolute; top: -5px; right: -9px;
+  width: 15px; height: 15px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: #5BAB72; color: #fff; border: 2px solid var(--bg-card);
+  animation: bw-tab-pop 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.bw-tab-badge svg { width: 8px; height: 8px; stroke-width: 4; }
+.bw-tab.done {
+  background: rgba(91,171,114,0.10); border-color: rgba(91,171,114,0.45); color: #5BAB72;
+  box-shadow: 0 6px 18px -8px rgba(91,171,114,0.55);
+}
+.bw-tab.current { border-color: var(--peach); color: var(--onyx); box-shadow: 0 0 0 3px var(--peach-glow); }
+.bw-tab.current .bw-tab-icon { color: var(--peach); }
+.bw-tab.done.current .bw-tab-icon { color: #5BAB72; }
+@keyframes bw-tab-pop { from { transform: scale(0); } to { transform: scale(1); } }
+/* Шапка мастера ужата: заголовок, строка выбранного и кнопки шагов — вот и
+   всё, что стоит над списком; место отдаётся самому шагу. */
 .bw-sheet .kp-head { padding: 12px 16px 2px; border-bottom: 0; }
 .bw-sheet .kp-head .btn-icon { width: 38px; height: 38px; }
 .bw-sheet .kp-head-icon { width: 34px; height: 34px; }
@@ -2033,31 +2061,62 @@ button.kp-trainer:disabled { cursor: default; opacity: 0.6; }
 .bw-when-chip b { font-weight: 800; color: var(--peach); }
 .bw-when-chip-day { color: var(--muted); font-weight: 600; }
 .bw-when-chip.empty { border-style: dashed; color: var(--peach); font-weight: 700; }
-/* Мини-окно даты и времени — поверх листа со своим затемнением: шаг под ним
-   остаётся на месте. Прижато к верху: снизу поднимается клавиатура. */
 .bw-sheet { position: relative; }
-.bw-when-scrim {
-  position: absolute; inset: 0; z-index: 6;
-  display: flex; align-items: flex-start; justify-content: center;
-  padding: 96px 16px 16px; background: rgba(26,26,26,0.35);
-  animation: jf-fade 0.18s ease;
+/* Раздел «Время» (TimeStep): лента дней, своё время, сетка свободного. */
+.bw-days {
+  position: relative; display: flex; gap: 6px;
+  overflow-x: auto; scrollbar-width: none;
+  margin: 0 -18px; padding: 2px 18px 4px;
 }
-.bw-when-pop {
-  width: min(340px, 100%); padding: 18px; border-radius: 16px;
-  background: var(--bg-card); box-shadow: 0 24px 60px -12px rgba(0,0,0,0.35);
-  display: flex; flex-direction: column; gap: 14px;
+.bw-days::-webkit-scrollbar { display: none; }
+.bw-day {
+  flex: 0 0 52px; height: 66px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px;
+  border: 1px solid var(--border); border-radius: 12px; background: var(--bg);
+  color: var(--onyx); cursor: pointer; transition: background 0.2s, border-color 0.2s, color 0.2s;
 }
-.bw-when-pop-title { font: 800 16px var(--font); color: var(--onyx); }
-.bw-when-fields { display: grid; grid-template-columns: 1.4fr 1fr; gap: 10px; }
-/* 18px — крупные цифры и заодно выше порога 16px, ниже которого Safari зумит страницу */
-.bw-when-input { height: 48px; margin: 0; text-align: center; font-size: 18px; font-weight: 700; letter-spacing: 0.5px; }
-.bw-when-input[aria-invalid="true"] { border-color: var(--error); }
-.bw-when-actions { display: flex; justify-content: flex-end; gap: 8px; }
-.bw-when-actions > button { height: 40px; }
+.bw-day-wd { font: 700 10.5px var(--font); text-transform: uppercase; letter-spacing: 0.4px; color: var(--muted); }
+.bw-day-num { font: 800 17px/1.15 var(--font); font-variant-numeric: tabular-nums; }
+.bw-day-mon { font: 600 10.5px var(--font); color: var(--muted); }
+.bw-day.today .bw-day-num { color: var(--peach); }
+.bw-day.active { background: var(--peach); border-color: var(--peach); color: #fff; box-shadow: 0 6px 16px -6px rgba(249,160,139,0.7); }
+.bw-day.active .bw-day-wd, .bw-day.active .bw-day-mon, .bw-day.active .bw-day-num { color: #fff; }
+.bw-own-time { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-width: 0; }
+.bw-own-time-day {
+  display: block; min-width: 0; font: 700 14px var(--font); color: var(--onyx);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.bw-own-time-day::first-letter { text-transform: uppercase; }
+.bw-own-time-field { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+/* 16px — порог, ниже которого Safari зумит страницу на фокусе */
+.bw-own-time-input {
+  width: 88px; height: 44px; margin: 0; text-align: center;
+  font-size: 16px; font-weight: 700; font-variant-numeric: tabular-nums;
+}
+.bw-own-time-input[aria-invalid="true"] { border-color: var(--error); }
+.bw-times { display: flex; flex-direction: column; gap: 14px; padding: 4px 18px 18px; }
+.bw-times-for { font: 600 12.5px var(--font); color: var(--muted); }
+.bw-times-part { display: flex; flex-direction: column; gap: 8px; }
+.bw-times-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); gap: 6px; }
+.bw-time {
+  height: 38px; border: 1px solid var(--border); border-radius: 10px; background: var(--bg);
+  font: 600 13.5px var(--font); font-variant-numeric: tabular-nums; color: var(--onyx); cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.bw-time.active { background: var(--peach); border-color: var(--peach); color: #fff; }
+/* Пустой раздел с подсказкой, куда идти (мастер без услуги) */
+.bw-empty-text { max-width: 320px; margin: 0 auto; }
+.bw-empty .bw-sum-change { margin-top: 14px; }
+/* Раздел въезжает с той стороны, куда листнули: свайпом или кнопкой в шапке. */
+.bw-in-next { animation: bw-in-next 0.26s cubic-bezier(0.22, 1, 0.36, 1); }
+.bw-in-prev { animation: bw-in-prev 0.26s cubic-bezier(0.22, 1, 0.36, 1); }
+@keyframes bw-in-next { from { opacity: 0; transform: translateX(28px); } to { opacity: 1; transform: none; } }
+@keyframes bw-in-prev { from { opacity: 0; transform: translateX(-28px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .bw-in-next, .bw-in-prev { animation: none; } }
 /* Услуга без аватарки — цветная точка её цвета, а не пустой круг */
 .bw-av:empty { width: 12px; height: 12px; margin: 0 13px; }
 .bw-sheet .kp-foot > .btn-primary-sm { justify-content: center; }
-/* Проверка записи: строка «что выбрано» и «Изменить» справа */
+/* Итог записи: строка «что выбрано» и «Изменить» справа; не выбранное — пунктиром */
 .bw-summary { display: flex; flex-direction: column; gap: 6px; padding: 6px 18px 18px; }
 .bw-sum-row {
   display: flex; align-items: center; gap: 12px;
@@ -2066,6 +2125,8 @@ button.kp-trainer:disabled { cursor: default; opacity: 0.6; }
 }
 .bw-sum-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
 .bw-sum-value { font: 700 15px var(--font); color: var(--onyx); overflow-wrap: anywhere; }
+.bw-sum-row.empty { border-style: dashed; }
+.bw-sum-row.empty .bw-sum-value { color: var(--muted); font-weight: 600; }
 .bw-sum-change {
   flex-shrink: 0; height: 34px; padding: 0 12px;
   border: 1px solid var(--border); border-radius: 10px; background: var(--bg-card);
@@ -2091,7 +2152,7 @@ button.kp-trainer:disabled { cursor: default; opacity: 0.6; }
 @media (min-width: 768px) {
   .bw-backdrop { background: rgba(26,26,26,0.32); }
   .bw-sheet .kp-head { padding: 14px 20px 2px; }
-  .bw-progress { padding: 0 20px 6px; }
+  .bw-tabs { gap: 8px; padding: 10px 24px 12px; }
   .bw-tools { padding: 2px 24px 12px; }
   .bw-chips { margin: 0 -24px; padding: 0 24px; }
   .bw-list { padding: 2px 16px 16px; }
@@ -2100,17 +2161,20 @@ button.kp-trainer:disabled { cursor: default; opacity: 0.6; }
   .bw-search { height: 40px; }
   .bw-search input { font-size: 14px; }
   .bw-when-chip { height: 40px; }
-  .bw-when-scrim { padding-top: 110px; }
+  .bw-days { margin: 0 -24px; padding: 2px 24px 4px; }
+  .bw-times { padding: 4px 24px 20px; }
+  .bw-own-time-input { height: 40px; font-size: 15px; }
   .bw-row { min-height: 54px; }
   .bw-sheet .kp-foot > .btn-primary-sm { min-width: 180px; }
 }
 @media (hover: hover) {
   .bw-row:not(:disabled):hover { background: var(--bg2); }
-  .bw-progress button:not(:disabled):hover span { background: rgba(249,160,139,0.55); }
-  .bw-progress button.on:not(:disabled):hover span { background: #F5866E; }
+  .bw-tab:not(:disabled):hover { border-color: rgba(249,160,139,0.6); color: var(--peach); }
+  .bw-tab.done:not(:disabled):hover { background: rgba(91,171,114,0.16); border-color: rgba(91,171,114,0.7); color: #5BAB72; }
   .bw-row.active:hover { background: rgba(249,160,139,0.16); }
   .jf-chip:not(.active):hover { border-color: rgba(249,160,139,0.5); color: var(--peach); }
   .bw-sum-change:hover { border-color: var(--peach); }
+  .bw-day:not(.active):hover, .bw-time:not(.active):hover { border-color: rgba(249,160,139,0.6); }
 }
 
 /* ════════════════════════════════════════════════════════════
@@ -2610,3 +2674,76 @@ button.kp-trainer:disabled { cursor: default; opacity: 0.6; }
   .kp-masters .kp-trainer-check { display: none !important; }
   .kp-masters .kp-trainer-price { font-size: 12px; }
 }
+
+/* Booking selection: conflicts remain editable via the persistent tabs. */
+.bw-tab.conflict, .bw-tab.conflict.current, .bw-tab.conflict:not(:disabled):hover {
+  color: var(--error); border-color: var(--error); background: color-mix(in srgb, var(--error) 10%, transparent);
+  box-shadow: none;
+}
+.bw-tab.conflict .bw-tab-icon { color: var(--error); }
+.bw-when-chip { cursor: default; }
+.bw-day.active { background: transparent; color: var(--onyx); border-color: transparent; box-shadow: none; }
+.bw-day-num { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; }
+.bw-day.today .bw-day-num { outline: 2px solid var(--error); color: var(--error); }
+.bw-day.active .bw-day-num { background: var(--error); color: white; }
+.bw-day.active .bw-day-wd, .bw-day.active .bw-day-mon { color: var(--onyx); }
+.bw-own-time { flex-wrap: wrap; justify-content: flex-start; }
+.bw-own-time-day { flex: 1 0 100%; }
+.bw-filter-toggle { align-self: flex-start; background: none; border: 0; padding: 6px 0;
+  color: var(--onyx); font: 600 12px var(--font); text-decoration: underline; cursor: pointer; }
+.bw-unavailable { color: var(--error); font-size: 11px; max-width: 110px; }
+
+/* Раздел «Время»: шаг сетки — капсула справа от своего времени; смена дня —
+   сетка въезжает со стороны шага по ленте, плитки проявляются волной, число
+   выбранного дня «прыгает» в кружок; пока день грузится — мерцают заглушки. */
+.bw-own-time > .vk-pill { margin-left: auto; }
+.bw-times { overflow-x: hidden; }
+.bw-times-day { display: flex; flex-direction: column; gap: 14px; }
+.bw-slide-next { animation: bw-slide-next 0.38s cubic-bezier(0.22, 1, 0.36, 1); }
+.bw-slide-prev { animation: bw-slide-prev 0.38s cubic-bezier(0.22, 1, 0.36, 1); }
+@keyframes bw-slide-next { from { opacity: 0; transform: translateX(32px); } to { opacity: 1; transform: none; } }
+@keyframes bw-slide-prev { from { opacity: 0; transform: translateX(-32px); } to { opacity: 1; transform: none; } }
+.bw-time {
+  animation: bw-time-in 0.42s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+  animation-delay: calc(var(--i, 0) * 16ms);
+}
+@keyframes bw-time-in { from { opacity: 0; transform: translateY(8px) scale(0.86); } to { opacity: 1; transform: none; } }
+.bw-time:active { transform: scale(0.94); }
+.bw-time.active { box-shadow: 0 6px 16px -8px rgba(249,160,139,0.9); }
+.bw-time-skel {
+  height: 38px; border-radius: 10px;
+  background: linear-gradient(90deg, rgba(var(--ink),0.04) 0%, rgba(var(--ink),0.09) 50%, rgba(var(--ink),0.04) 100%);
+  background-size: 200% 100%;
+  animation: bw-skel 1.2s ease-in-out infinite; animation-delay: calc(var(--i, 0) * 60ms);
+}
+@keyframes bw-skel { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+.bw-day { transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.2s cubic-bezier(0.22, 1, 0.36, 1); }
+.bw-day:active { transform: scale(0.94); }
+.bw-day-num { transition: background 0.25s, color 0.25s; }
+.bw-day.active .bw-day-num { animation: bw-day-pop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1); box-shadow: 0 6px 14px -6px color-mix(in srgb, var(--error) 80%, transparent); }
+@keyframes bw-day-pop { 0% { transform: scale(0.55); } 60% { transform: scale(1.12); } 100% { transform: scale(1); } }
+@media (prefers-reduced-motion: reduce) {
+  .bw-slide-next, .bw-slide-prev, .bw-time, .bw-time-skel, .bw-day.active .bw-day-num { animation: none; }
+}
+.bw-foot-time {
+  margin-left: 2px; padding: 2px 8px; border-radius: 999px;
+  background: rgba(255,255,255,0.28); font-weight: 800; font-variant-numeric: tabular-nums;
+}
+/* Итог записи: заметка — одна рамка, как поле ввода: текст сверху, под ним
+   маленькая капсула «Фото» и миниатюры. Фокус — персиковое свечение рамки. */
+.bw-sum-note { padding-top: 10px; }
+.bw-note-box {
+  display: flex; flex-direction: column; gap: 8px; padding: 10px 12px;
+  border: 1px solid var(--border); border-radius: 12px; background: var(--bg);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.bw-note-box:focus-within { border-color: var(--peach); box-shadow: 0 0 0 3px var(--peach-glow); }
+/* 16px — ниже Safari зумит страницу на фокусе */
+.bw-note-input {
+  width: 100%; min-height: 44px; max-height: 160px; padding: 0; resize: vertical;
+  border: none; outline: none; background: transparent;
+  font: 500 16px/1.4 var(--font); color: var(--onyx);
+  field-sizing: content;
+}
+.bw-note-input::placeholder { color: var(--muted); opacity: 0.8; }
+@media (min-width: 768px) { .bw-note-input { font-size: 14px; } }

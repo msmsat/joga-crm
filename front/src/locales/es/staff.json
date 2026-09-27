@@ -214,7 +214,10 @@
         "name": "El nombre es obligatorio",
         "email": "Email no válido"
       },
-      "contactsOwnedByEmployee": "El email y el teléfono pertenecen a la cuenta del empleado — los cambia en su propio perfil."
+      "contactsOwnedByEmployee": "El email y el teléfono pertenecen a la cuenta del empleado — los cambia en su propio perfil.",
+      "color": "Color en la agenda",
+      "colorHint": "Con este color se muestran la columna y las clases del empleado en la agenda. Un punto marca los colores que ya usan otros.",
+      "colorTakenBy": "Ya lo usa: {{names}}"
     },
     "role": {
       "heading": "Rol y especialización",

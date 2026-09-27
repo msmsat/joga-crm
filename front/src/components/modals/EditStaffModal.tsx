@@ -13,6 +13,7 @@ import { getCurrencySymbol } from "../UI";
 import { useContactCheck } from "../../hooks/useContactCheck";
 import { useRoleLabel } from "../../hooks/useBusinessTerms";
 import StaffAvailabilitySection from "./StaffAvailabilitySection";
+import StaffColorPicker from "./StaffColorPicker";
 import { submitOnEnter } from "../../lib/submitOnEnter";
 import { ServicePricePicker } from "../ui/index";
 
@@ -27,6 +28,8 @@ export interface StaffMember {
   email: string;
   role: string;
   avatar_gradient?: string;
+  /** Цвет в журнале (#RRGGBB) — колонка и занятия мастера. */
+  color?: string;
   is_online: boolean;
   rate?: number;
   rate_type?: "fixed" | "percent" | "hourly" | "";
@@ -55,6 +58,8 @@ interface EditStaffModalProps {
   /** Владелец правит САМ СЕБЯ: контакты — его собственные, их менять можно
       (сервер разрешает ровно этот случай, PUT /staff/{id}). */
   isSelf?: boolean;
+  /** Вся команда с цветами — выбор цвета помечает занятые другими. */
+  teamColors?: { id: number; color: string; name: string }[];
 }
 
 const ROLE_ICONS: Record<string, React.ReactNode> = {
@@ -339,7 +344,7 @@ export function FocusInput({
 }
 
 // ─── MAIN MODAL ───────────────────────────────────────────────────────────────
-export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelete, ownerCount, isSelf }: EditStaffModalProps) {
+export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelete, ownerCount, isSelf, teamColors }: EditStaffModalProps) {
   const { t } = useTranslation(["staff", "common"]);
   // Роль называется словом отрасли: «тренер», «мастер», «специалист».
   const roleLabel = useRoleLabel();
@@ -370,6 +375,7 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
     email: string;
     role: string;
     avatar_gradient: string;
+    color: string;
     is_online: boolean;
     salary: string;
     rate_type: "fixed" | "percent" | "hourly" | "";
@@ -381,7 +387,7 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
     branchIds: number[];
   }>({
     id: 0, name: "", last_name: "", phone: "", email: "", role: "",
-    avatar_gradient: "", is_online: true, salary: "", rate_type: "",
+    avatar_gradient: "", color: "", is_online: true, salary: "", rate_type: "",
     schedule: { ...defaultSchedule }, serviceIds: [], servicePrices: {}, serviceDurations: {}, branchIds: [],
   });
   const [availableBranches, setAvailableBranches] = useState<{ id: number; name: string }[]>([]);
@@ -411,6 +417,7 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
         email:          staff.email,
         role:           staff.role,
         avatar_gradient: staff.avatar_gradient ?? "",
+        color:          staff.color ?? "",
         is_online:      staff.is_online,
         salary:         staff.rate != null ? String(staff.rate) : "",
         rate_type:      staff.rate_type ?? "",
@@ -939,6 +946,21 @@ export default function EditStaffModal({ isOpen, staff, onClose, onSave, onDelet
                       </div>
                     </div>
                   </div>
+
+                  {/* Цвет в журнале — только тем, у кого там есть колонка. */}
+                  {canHaveServices && (
+                    <div>
+                      <FieldLabel>{t("staff:editModal.profile.color")}</FieldLabel>
+                      <StaffColorPicker
+                        value={form.color}
+                        onChange={v => set("color", v)}
+                        taken={(teamColors ?? []).filter(m => m.id !== form.id)}
+                      />
+                      <p style={{ fontSize: "11px", color: "#AAAAAA", margin: "8px 0 0", fontWeight: 500, lineHeight: 1.5 }}>
+                        {t("staff:editModal.profile.colorHint")}
+                      </p>
+                    </div>
+                  )}
 
                   {/* Name */}
                   <div>

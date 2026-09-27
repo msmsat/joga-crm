@@ -3,12 +3,14 @@
 // клетки сетки. Считает сервер (payment-preview — тот же расчёт, что у кассы),
 // логика полей — hooks/useBookingPayment. Оплата только наличными: способ не
 // спрашиваем, итог уходит в Финансы при подтверждении записи.
+// «+ Скидка» — процент, который администратор даёт от себя; считает его тот же
+// сервер, в том же ряду скидок (не суммируется с более выгодной).
 import { useTranslation } from 'react-i18next';
 import { Button, Input, Switch } from '../../../../components/ui/index';
 import * as Icons from '../../../../components/Icons';
 import { formatMoney } from '../../../../lib/money';
 import type { PaymentDiscountKind, PaymentPreview } from '../../../../api/booking/hybrid.types';
-import type { BookingPayment as Payment, PaymentCode } from '../hooks/useBookingPayment';
+import type { BookingPayment as Payment, PaymentCode, PaymentCodeKind } from '../hooks/useBookingPayment';
 import './BookingPayment.css';
 
 type Props = {
@@ -60,7 +62,8 @@ export function BookingPayment({ payment, firstLesson, onFirstLesson, busy = fal
   // Первое занятие включено, но выгоднее оказалась другая скидка: они не
   // суммируются — объясняем, почему строка без суммы.
   const firstOutweighed = preview.first_lesson_applied && !covered && firstAmount === 0;
-  const others = preview.discounts.filter(d => d.kind !== 'first_lesson' && d.kind !== 'promo');
+  // У первого занятия, промокода и ручной скидки — свои строки с управлением.
+  const others = preview.discounts.filter(d => d.kind !== 'first_lesson' && d.kind !== 'promo' && d.kind !== 'manual');
 
   return (
     <section className="bpay" aria-busy={payment.loading} data-stale={payment.failed || undefined}>
@@ -98,10 +101,12 @@ export function BookingPayment({ payment, firstLesson, onFirstLesson, busy = fal
         </div>
       ))}
 
-      {/* Промокод и ваучер нужны только там, где есть что платить: у записи
-          по абонементу или бесплатного первого занятия они ничего не изменят. */}
+      {/* Скидка, промокод и ваучер нужны только там, где есть что платить: у
+          записи по абонементу или бесплатного первого занятия они ничего не изменят. */}
       {!covered && (
         <div className="bpay-codes">
+          <CodeRow kind="manual" code={payment.manual} payment={payment} busy={busy}
+                   amount={amountOf(preview, 'manual')} money={money} />
           <CodeRow kind="promo" code={payment.promo} payment={payment} busy={busy}
                    amount={amountOf(preview, 'promo')} money={money} />
           <CodeRow kind="voucher" code={payment.voucher} payment={payment} busy={busy}
@@ -122,18 +127,22 @@ export function BookingPayment({ payment, firstLesson, onFirstLesson, busy = fal
 }
 
 function CodeRow({ kind, code, payment, busy, amount, nominal = 0, money }: {
-  kind: 'promo' | 'voucher'; code: PaymentCode; payment: Payment; busy: boolean;
+  kind: PaymentCodeKind; code: PaymentCode; payment: Payment; busy: boolean;
   amount: number; nominal?: number; money: (value: number) => string;
 }) {
   const { t } = useTranslation(['journal', 'common']);
   const label = t(`journal:payment.${kind}`);
+  const percent = kind === 'manual';
 
   if (code.applied) {
     return (
       <>
         <div className="bpay-row">
           <span className="bpay-label">
-            {label} <span className="bpay-code">{code.applied}</span>
+            {label}{' '}
+            {percent
+              ? <span className="bpay-tag">−{code.applied}%</span>
+              : <span className="bpay-code">{code.applied}</span>}
           </span>
           <span className="bpay-end">
             {amount > 0 && <span className="bpay-value">−{money(amount)}</span>}
@@ -167,7 +176,8 @@ function CodeRow({ kind, code, payment, busy, amount, nominal = 0, money }: {
     <div className="bpay-field">
       <div className="bpay-field-input">
         <Input value={code.draft} onChange={value => payment.edit(kind, value)} onEnter={apply}
-               placeholder={t(`journal:payment.${kind}Placeholder`)} monospace autoFocus
+               placeholder={t(`journal:payment.${kind}Placeholder`)} monospace={!percent} autoFocus
+               inputMode={percent ? 'numeric' : undefined} suffix={percent ? '%' : undefined}
                disabled={busy} error={code.error ? t(code.error) : undefined} />
       </div>
       <Button size="sm" variant="ghost" onClick={apply} disabled={busy || !code.draft.trim()}

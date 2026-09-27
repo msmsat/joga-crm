@@ -214,7 +214,10 @@
         "name": "Name ist erforderlich",
         "email": "Ungültige E-Mail"
       },
-      "contactsOwnedByEmployee": "E-Mail und Telefon gehören zum Konto der Mitarbeitenden — sie ändern das im eigenen Profil."
+      "contactsOwnedByEmployee": "E-Mail und Telefon gehören zum Konto der Mitarbeitenden — sie ändern das im eigenen Profil.",
+      "color": "Farbe im Journal",
+      "colorHint": "In dieser Farbe erscheinen Spalte und Termine der Person im Journal. Ein Punkt markiert Farben, die schon vergeben sind.",
+      "colorTakenBy": "Bereits vergeben an: {{names}}"
     },
     "role": {
       "heading": "Rolle und Spezialisierung",

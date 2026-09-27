@@ -214,7 +214,10 @@
         "name": "Ime je obavezno",
         "email": "Neispravna e-pošta"
       },
-      "contactsOwnedByEmployee": "E-pošta i telefon pripadaju računu zaposlenika — mijenja ih u vlastitom profilu."
+      "contactsOwnedByEmployee": "E-pošta i telefon pripadaju računu zaposlenika — mijenja ih u vlastitom profilu.",
+      "color": "Boja u dnevniku",
+      "colorHint": "Ovom bojom u dnevniku su označeni stupac i termini zaposlenika. Točkom su označene boje koje već imaju drugi.",
+      "colorTakenBy": "Već koristi: {{names}}"
     },
     "role": {
       "heading": "Uloga i specijalizacija",

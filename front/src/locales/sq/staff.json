@@ -214,7 +214,10 @@
         "name": "Emri është i detyrueshëm",
         "email": "Email i pavlefshëm"
       },
-      "contactsOwnedByEmployee": "Email-i dhe telefoni i përkasin llogarisë së punonjësit — i ndryshon vetë te profili i tij."
+      "contactsOwnedByEmployee": "Email-i dhe telefoni i përkasin llogarisë së punonjësit — i ndryshon vetë te profili i tij.",
+      "color": "Ngjyra në ditar",
+      "colorHint": "Me këtë ngjyrë shfaqen në ditar kolona dhe seancat e punonjësit. Pika shënon ngjyrat që i kanë tashmë të tjerët.",
+      "colorTakenBy": "E përdor tashmë: {{names}}"
     },
     "role": {
       "heading": "Roli dhe specializimi",

@@ -1,7 +1,7 @@
-// Шаги мастера записи: клиент, услуга, мастер. Выбор строки сразу ведёт
-// на следующий незаполненный шаг; «Продолжить» в подвале — для того, что уже
-// выбрано (заведённый здесь же клиент, возврат на шаг полоской).
-// Справа от поиска на каждом шаге — кнопка даты и времени (when, WhenPicker):
+// Разделы мастера записи: клиент, услуга, мастер. Выбор строки сразу ведёт
+// в следующий незаполненный раздел; «Продолжить» в подвале — для того, что уже
+// выбрано (заведённый здесь же клиент, возврат кнопкой в шапке).
+// Справа от поиска в каждом разделе — кнопка даты и времени (when, WhenPicker):
 // она стоит над списком и не уезжает при прокрутке.
 import { useMemo, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -71,19 +71,20 @@ export function ServiceStep({ w, when }: StepProps) {
   const durationLabel = useDurationLabel();
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('');
+  const [showAll, setShowAll] = useState(false);
   // Только услуги, на которые в названное время можно записать. Пока время
   // не названо — все. Пока расписание грузится — ждём, а не мигаем списком.
   const timed = isTime(w.time);
-  const loading = timed && w.serviceList.some(s => w.serviceStates.get(s.id)?.kind === 'unknown');
+  const loading = w.availability.loading;
   const free = useMemo(
-    () => w.serviceList.filter(s => w.serviceStates.get(s.id)?.kind !== 'busy'),
-    [w.serviceList, w.serviceStates]);
+    () => w.serviceList.filter(s => showAll || s.id === w.service?.id || w.serviceStates.get(s.id)?.kind !== 'busy'),
+    [w.serviceList, w.serviceStates, w.service, showAll]);
   // Направления — категории услуг из Каталога, в порядке появления.
   const categories = useMemo(
     () => [...new Set(free.map(s => s.category).filter((c): c is string => !!c))],
     [free]);
   const q = search.trim().toLowerCase();
-  const shown = loading ? [] : free.filter(s =>
+  const shown = loading && !showAll ? [] : free.filter(s =>
     (!category || s.category === category) && (!q || s.name.toLowerCase().includes(q)));
   return (
     <>
@@ -92,12 +93,16 @@ export function ServiceStep({ w, when }: StepProps) {
           <WizardSearch value={search} onChange={setSearch} placeholder={t('journal:wizard.searchService')} />
           {when}
         </div>
+        <button type="button" className="bw-filter-toggle" aria-pressed={showAll} onClick={() => setShowAll(v => !v)}>
+          {t(showAll ? 'journal:wizard.onlyAvailable' : 'journal:wizard.showAll')}
+        </button>
         <WizardChips value={category} onPick={setCategory}
                      options={[{ value: '', label: t('journal:toolbar.all') }, ...categories.map(c => ({ value: c, label: c }))]} />
       </div>
       <div className="bw-list">
         {shown.map(s => (
-          <WizardRow key={s.id} active={w.service?.id === s.id}
+          <WizardRow key={s.id} active={w.service?.id === s.id} muted={w.serviceStates.get(s.id)?.kind === 'busy'}
+                     aside={w.serviceStates.get(s.id)?.kind === 'busy' ? <span className="bw-unavailable">{t('journal:wizard.unavailable')}</span> : undefined}
                      avatar="" color={s.color ?? 'var(--peach)'} title={s.name}
                      hint={`${priceLabel(s.price_min ?? s.price, s.price_max ?? s.price, true)} · ${
                        durationLabel(s.duration_from ?? s.duration_min, s.duration_to ?? s.duration_min)}`}
@@ -116,50 +121,32 @@ export function ServiceStep({ w, when }: StepProps) {
 }
 
 export function MasterStep({ w, when }: StepProps) {
-  const { t } = useTranslation('journal');
-  const { trainers } = w;
-  const states = w.masters.map(m => w.masterStates.get(m.id));
-  const allBusy = states.length > 0 && states.every(st => st?.kind === 'busy');
+  const { t } = useTranslation(['journal', 'common']);
+  const [showAll, setShowAll] = useState(false);
+  const stateOf = (id: number | null) => w.masterStates.get(id)?.kind ?? (w.availability.loading ? 'unknown' : 'busy');
+  const shown = w.masters.filter(m => showAll || (w.masterChosen && m.id === w.teacherId) || stateOf(m.id) === 'free');
   return (
     <>
-    <div className="bw-tools">
-      <div className="bw-tools-row bw-tools-end">
-        {w.service && <span className="bw-tools-label">{w.service.name}</span>}
-        {when}
+      <div className="bw-tools">
+        <div className="bw-tools-row bw-tools-end">
+          {w.service && <span className="bw-tools-label">{w.service.name}</span>}
+          {when}
+        </div>
+        <button type="button" className="bw-filter-toggle" aria-pressed={showAll} onClick={() => setShowAll(v => !v)}>
+          {t(showAll ? 'journal:wizard.onlyAvailable' : 'journal:wizard.showAll')}
+        </button>
       </div>
-    </div>
-    <div className="bw-list">
-      {/* Время названо заранее — сразу видно, кто в него свободен. */}
-      {allBusy && <div className="bw-note">{t('wizard.allBusy', { time: w.time })}</div>}
-      {w.masters.map((m, i) => {
-        const look = trainers.find(tr => tr.id === m.id);
-        const st = states[i];
-        const price = w.isResource ? w.resource.priceAt(m.id, w.service?.id ?? null) : undefined;
-        if (st?.kind === 'busy') {
-          // Занят — строка приглушена; ближайшее свободное время справа, тап
-          // берёт мастера вместе с ним. Свободного до конца дня нет — не выбрать.
-          return (
-            <WizardRow key={m.id ?? 'any'} muted disabled={st.nearest == null}
-                       avatar={look?.initials ?? '∗'} color={look?.color ?? 'var(--peach)'} title={m.name}
-                       hint={st.nearest ? t('wizard.busyAt', { time: w.time }) : t('resourceBooking.noSlots')}
-                       aside={st.nearest ? <span className="jf-chip bw-nearest">{st.nearest}</span> : undefined}
-                       onClick={() => { if (st.nearest) w.pickMaster(m.id, st.nearest); }} />
-          );
-        }
-        const hint = st?.kind === 'join'
-          ? `${t('wizard.existing')} · ${st.lesson.booked_count}/${st.lesson.total_spots}`
-          : price;
-        return (
-          // Подсвечен выбранный — или мастер колонки, по которой тапнули;
-          // «любой» до выбора не отмечен: это не выбор, а пустое значение.
-          <WizardRow key={m.id ?? 'any'} active={w.teacherId === m.id && (w.masterChosen || m.id != null)}
-                     avatar={look?.initials ?? '∗'} color={look?.color ?? 'var(--peach)'}
-                     title={m.name} hint={hint}
-                     onClick={() => w.pickMaster(m.id)} />
-        );
-      })}
-      {w.masters.length === 0 && <WizardEmpty>{t('wizard.noMasters')}</WizardEmpty>}
-    </div>
+      <div className="bw-list">
+        {shown.map(m => {
+          const look = w.trainers.find(tr => tr.id === m.id);
+          const busy = stateOf(m.id) === 'busy';
+          return <WizardRow key={m.id ?? 'any'} active={w.masterChosen && w.teacherId === m.id} muted={busy}
+            avatar={look?.initials ?? '∗'} color={look?.color ?? 'var(--peach)'} title={m.name}
+            hint={busy ? t('journal:wizard.unavailable') : w.isResource ? w.resource.priceAt(m.id, w.service?.id ?? null) : undefined}
+            onClick={() => w.pickMaster(m.id)} />;
+        })}
+        {shown.length === 0 && <WizardEmpty>{w.availability.loading ? t('common:loading') : t('journal:wizard.noMasters')}</WizardEmpty>}
+      </div>
     </>
   );
 }

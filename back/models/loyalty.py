@@ -86,18 +86,28 @@ class DepositTransaction(Base):
 
 class StudioPromoCode(Base):
     """Промокод и акция (V5-3, задача 3). Конфиг-программы нет: карточка
-    «включена», если у студии есть хотя бы один активный код."""
+    «включена», если у студии есть хотя бы один активный код.
+
+    `client_id` — промокод выписан одному клиенту: другой его применить не
+    может. Удалили клиента — уходит и его код (CASCADE, а не SET NULL: иначе
+    личный код молча стал бы общим). `valid_from`/`valid_until` — период
+    действия, обе границы включительно."""
     __tablename__ = "studio_promo_codes"
     __table_args__ = (
         CheckConstraint("discount_type IN ('percent', 'amount')", name="check_promo_discount_type"),
+        CheckConstraint("valid_from IS NULL OR valid_until IS NULL OR valid_from <= valid_until",
+                        name="check_promo_period"),
         UniqueConstraint("studio_id", "code", name="uq_promo_code_per_studio"),
     )
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     studio_id: Mapped[int] = mapped_column(ForeignKey("studios.id", ondelete="CASCADE"), index=True)
+    client_id: Mapped[Optional[int]] = mapped_column(
+        ForeignKey("clients.id", ondelete="CASCADE"), nullable=True, index=True)
     code: Mapped[str] = mapped_column(String(30))
     discount_type: Mapped[str] = mapped_column(String(10), default="percent")
     value: Mapped[int] = mapped_column(Integer)
+    valid_from: Mapped[Optional[date]] = mapped_column(Date, nullable=True)
     valid_until: Mapped[Optional[date]] = mapped_column(Date, nullable=True)
     usage_limit: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
     used_count: Mapped[int] = mapped_column(Integer, default=0)

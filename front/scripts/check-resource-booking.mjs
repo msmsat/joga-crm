@@ -84,7 +84,8 @@ async function setup(file, api = {}) {
     }).outputText;
     const mod = new vm.SourceTextModule(code, { context, identifier: url.href, initializeImportMeta(meta) { meta.env = { DEV: false }; } });
     await mod.link((name, parent) => {
-      if (/\/(useResourceBooking|useResourceBookingChoice|useBookingPayment|utils|constants)$/.test(name)) {
+      // staffColors — настоящий модуль: из него utils журнала берёт палитру мастеров.
+      if (/\/(useResourceBooking|useResourceBookingChoice|useBookingPayment|utils|constants|staffColors)$/.test(name)) {
         return load(new URL(`${name}.ts`, parent.identifier));
       }
       const exports = deps[name] ?? other;
@@ -165,7 +166,10 @@ test('confirmation waits for the payment receipt and takes exactly its total in 
   tree = app.render('ResourceBookingModal', props);
   assert.equal(nodes(tree, 'PrimaryButton')[0].disabled, false);
   await nodes(tree, 'PrimaryButton')[0].onClick();
-  assert.deepEqual({ ...api.paid }, { promo_code: null, certificate_code: null, expected_total: 20 });
+  // Ручной скидки администратора не давали — поле уходит пустым, а не пропадает.
+  assert.deepEqual({ ...api.paid }, {
+    promo_code: null, certificate_code: null, manual_discount_percent: null, expected_total: 20,
+  });
 });
 // Шаг оплаты глазами кассира: то, что рисует блок оплаты (его пропсы).
 async function paymentStep(api) {

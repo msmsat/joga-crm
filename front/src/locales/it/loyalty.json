@@ -144,6 +144,11 @@
     "promoCreate": "Crea codice promozionale",
     "promoCodePlaceholder": "ESTATE25",
     "promoValidUntil": "Valido fino al",
+    "promoClient": "Cliente",
+    "promoAllClients": "Tutti i clienti",
+    "promoValidFrom": "Valido dal",
+    "promoFrom": "dal",
+    "promoPeriodInvalid": "La data di inizio è successiva a quella di fine",
     "promoUsageLimit": "Limite di utilizzo",
     "promoAdd": "+ Aggiungi codice promozionale",
     "promoList": "Codici promozionali",
@@ -151,6 +156,7 @@
     "promoUntil": "fino al",
     "promoStatus": {
       "active": "Attivo",
+      "scheduled": "Non ancora iniziato",
       "expired": "Scaduto",
       "exhausted": "Limite raggiunto",
       "disabled": "Disattivato"

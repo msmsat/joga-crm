@@ -11,6 +11,12 @@ const IconPlus = () => (
   </svg>
 );
 
+const IconCamera = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>
+  </svg>
+);
+
 const IconExpand = () => (
   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/>
@@ -33,13 +39,14 @@ const VISIBLE = 5;   // дальше последняя плитка берёт 
 
 /**
  * Снимки заметки о клиенте. Без `onAdd`/`onRemove` — сохранённая заметка,
- * с ними — черновик.
+ * с ними — черновик. `compact` — для заметки, которая не главное на экране
+ * (итог записи): миниатюры меньше, а «Фото» — капсула, а не плитка.
  *
  * Клик разворачивает кадр во весь экран: миниатюра и кадр просмотра носят один
  * `layoutId`, поэтому видно, ЧТО открылось, а не просто «появилось окно».
  */
 export function NotePhotos({
-  photos, pending = [], onAdd, onRemove, zIndex,
+  photos, pending = [], onAdd, onRemove, zIndex, compact = false,
 }: {
   photos: string[];
   pending?: string[];          // локальные превью, пока файл летит на сервер
@@ -48,6 +55,7 @@ export function NotePhotos({
   /** Этаж просмотра. Нужен там, где заметка живёт на своём слое: попап
    *  журнала стоит на 9000 и накрыл бы кадр собой. */
   zIndex?: number;
+  compact?: boolean;
 }) {
   const { t } = useTranslation('common');
   const inputRef = useRef<HTMLInputElement>(null);
@@ -56,7 +64,7 @@ export function NotePhotos({
 
   const safe = photos.filter(own);
   const editing = Boolean(onRemove);
-  const size = editing ? 62 : 72;
+  const size = compact ? 44 : editing ? 62 : 72;
 
   if (!safe.length && !pending.length && !onAdd) return null;
 
@@ -64,7 +72,7 @@ export function NotePhotos({
   const hidden = safe.length - shown.length;
 
   return (
-    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '10px' }}>
+    <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: compact ? '6px' : '8px', marginTop: compact ? 0 : '10px' }}>
       {shown.map((url, i) => {
         const src = resolveImageUrl(url);
         const isLast = i === shown.length - 1;
@@ -110,10 +118,12 @@ export function NotePhotos({
                 aria-label={t('notePhotos.remove')}
                 onClick={e => { e.stopPropagation(); onRemove(url); }}
                 style={{
-                  position: 'absolute', top: '4px', right: '4px', width: '18px', height: '18px',
+                  position: 'absolute', top: compact ? '2px' : '4px', right: compact ? '2px' : '4px',
+                  width: compact ? '15px' : '18px', height: compact ? '15px' : '18px',
                   borderRadius: '50%', background: '#D88C9A', color: '#fff',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  opacity: hover === url ? 1 : 0, transition: 'opacity 0.18s ease',
+                  // Компактная — и на телефоне, где наведения нет: крестик виден всегда.
+                  opacity: compact || hover === url ? 1 : 0, transition: 'opacity 0.18s ease',
                   boxShadow: '0 2px 8px rgba(0,0,0,0.25)',
                 }}
               ><IconX/></span>
@@ -155,7 +165,15 @@ export function NotePhotos({
             transition={{ type: 'spring', stiffness: 320, damping: 34 }}
             onMouseEnter={() => setHover('--add')}
             onMouseLeave={() => setHover(null)}
-            style={{
+            style={compact ? {
+              height: '30px', padding: '0 11px 0 9px', borderRadius: '999px',
+              border: `1px solid ${hover === '--add' ? 'var(--peach)' : 'var(--border2)'}`,
+              background: hover === '--add' ? 'rgba(249,160,139,0.07)' : 'transparent',
+              color: hover === '--add' ? 'var(--peach)' : 'var(--muted)',
+              cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px',
+              fontSize: '12px', fontWeight: 700, fontFamily: 'Manrope',
+              transitionProperty: 'background, border-color, color', transitionDuration: '0.18s',
+            } : {
               width: size, height: size, borderRadius: '12px',
               border: `1px dashed ${hover === '--add' ? 'var(--peach)' : 'var(--border2)'}`,
               background: hover === '--add' ? 'rgba(249,160,139,0.07)' : 'transparent',
@@ -165,7 +183,7 @@ export function NotePhotos({
               transitionProperty: 'background, border-color, color', transitionDuration: '0.18s',
             }}
           >
-            <IconPlus/>{t('notePhotos.add')}
+            {compact ? <IconCamera/> : <IconPlus/>}{t('notePhotos.add')}
           </motion.button>
         </>
       )}

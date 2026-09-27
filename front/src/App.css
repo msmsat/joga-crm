@@ -2459,6 +2459,19 @@
   letter-spacing: 0.6px; text-transform: uppercase; margin-bottom: 7px;
 }
 
+/* Поле выбора клиента (Journal/…/ResourceClientPicker): «+ Новый клиент» у
+   подписи — клиента заводят, не уходя из формы; «Все клиенты» снимает выбор
+   (промокод в Лояльности) и потому приглушена, а не персиковая. */
+.rcp-new {
+  display: inline-flex; align-items: center; gap: 4px;
+  border: 0; background: none; padding: 2px 0; cursor: pointer;
+  font: 700 12px var(--font); color: var(--peach);
+}
+.rcp-new svg { width: 14px; height: 14px; }
+.rcp-new:disabled { opacity: 0.5; cursor: default; }
+.rcp-clear { color: var(--muted); }
+.rcp-clear:hover:not(:disabled) { color: var(--onyx); }
+
 .vk-swatches { display: flex; flex-wrap: wrap; gap: 8px; }
 .vk-swatch {
   position: relative; width: 30px; height: 30px; border-radius: 9px;
@@ -2505,6 +2518,58 @@
 .vk-seg-btn:hover { color: #777; }
 .vk-seg-btn.is-on { color: var(--onyx); }
 .vk-seg-btn.is-on svg { color: #F07B60; }
+
+/* PillSelect: капсула-настройка и поповер с плитками. */
+.vk-pill {
+  display: inline-flex; align-items: center; gap: 8px; flex-shrink: 0;
+  height: 40px; padding: 0 12px 0 5px; border-radius: 999px;
+  border: 1px solid rgba(var(--ink),0.08); background: var(--bg-card);
+  box-shadow: 0 4px 14px -6px rgba(26,26,26,0.12);
+  font: 600 13px var(--font); color: var(--muted); cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s cubic-bezier(0.22,1,0.36,1);
+}
+.vk-pill:disabled { opacity: 0.5; cursor: not-allowed; }
+.vk-pill:active:not(:disabled) { transform: scale(0.97); }
+.vk-pill:focus-visible { outline: none; border-color: var(--peach); box-shadow: 0 0 0 3px var(--peach-glow); }
+.vk-pill.is-open { border-color: var(--peach); box-shadow: 0 0 0 3px var(--peach-glow), 0 6px 18px -8px rgba(249,160,139,0.55); }
+.vk-pill-icon {
+  display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%;
+  background: linear-gradient(135deg, rgba(252,174,145,0.22), rgba(249,160,139,0.12)); color: var(--peach);
+}
+.vk-pill-icon svg { width: 15px; height: 15px; }
+.vk-pill-value { display: inline-flex; overflow: hidden; font-weight: 800; color: var(--onyx); font-variant-numeric: tabular-nums; }
+.vk-pill-value-in { display: inline-block; animation: vk-pill-value 0.32s cubic-bezier(0.22,1,0.36,1); }
+@keyframes vk-pill-value { from { opacity: 0; transform: translateY(70%); } to { opacity: 1; transform: none; } }
+.vk-pill-caret { width: 13px; height: 13px; color: var(--muted); transition: transform 0.25s cubic-bezier(0.22,1,0.36,1); }
+.vk-pill.is-open .vk-pill-caret { transform: rotate(180deg); color: var(--peach); }
+@media (hover: hover) {
+  .vk-pill:not(:disabled):not(.is-open):hover { border-color: rgba(249,160,139,0.55); }
+  .vk-pill-tile:not(.is-on):hover { background: rgba(249,160,139,0.1); color: var(--peach); }
+}
+.vk-pill-panel {
+  position: fixed; z-index: 1200; padding: 12px; border-radius: 18px;
+  background: var(--bg-card); border: 1px solid rgba(var(--ink),0.07);
+  box-shadow: 0 18px 44px -12px rgba(26,26,26,0.24), 0 4px 12px -4px rgba(26,26,26,0.08);
+}
+.vk-pill-title {
+  padding: 0 4px 10px; font: 700 10.5px var(--font); letter-spacing: 0.6px; text-transform: uppercase; color: var(--muted);
+}
+.vk-pill-tiles { display: grid; gap: 6px; }
+.vk-pill-tile {
+  position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px;
+  width: 60px; height: 60px; border: none; border-radius: 14px; background: rgba(var(--ink),0.035);
+  color: var(--onyx); cursor: pointer; transition: background 0.18s, color 0.18s;
+}
+.vk-pill-tile:focus-visible { outline: 2px solid var(--peach); outline-offset: 2px; }
+.vk-pill-tile-bg {
+  position: absolute; inset: 0; border-radius: inherit;
+  background: linear-gradient(135deg, #FCAE91, #F9A08B); box-shadow: 0 8px 18px -8px rgba(249,160,139,0.9);
+}
+.vk-pill-tile-num { position: relative; font: 800 20px/1 var(--font); font-variant-numeric: tabular-nums; }
+.vk-pill-tile-hint { position: relative; font: 600 10.5px var(--font); color: var(--muted); }
+.vk-pill-tile.is-on { color: #fff; }
+.vk-pill-tile.is-on .vk-pill-tile-hint { color: rgba(255,255,255,0.85); }
+@media (prefers-reduced-motion: reduce) { .vk-pill-value-in { animation: none; } }
 
 .modal-overlay { position: fixed; inset: 0; z-index: 500; display: flex; align-items: center; justify-content: center; pointer-events: none; visibility: hidden; transition: visibility 0s linear 0.2s; }
 .modal-overlay::before { content: ''; position: absolute; inset: 0; z-index: -1; background: rgba(0,0,0,0.45); opacity: 0; transition: opacity 0.2s; }

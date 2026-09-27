@@ -214,7 +214,10 @@
         "name": "Nimi on pakollinen",
         "email": "Virheellinen sähköposti"
       },
-      "contactsOwnedByEmployee": "Sähköposti ja puhelin kuuluvat työntekijän tiliin — hän vaihtaa ne omassa profiilissaan."
+      "contactsOwnedByEmployee": "Sähköposti ja puhelin kuuluvat työntekijän tiliin — hän vaihtaa ne omassa profiilissaan.",
+      "color": "Väri päiväkirjassa",
+      "colorHint": "Tällä värillä näkyvät työntekijän sarake ja tunnit päiväkirjassa. Piste merkitsee värit, jotka ovat jo muilla.",
+      "colorTakenBy": "Jo käytössä: {{names}}"
     },
     "role": {
       "heading": "Rooli ja erikoisala",

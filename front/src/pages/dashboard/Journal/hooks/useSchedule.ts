@@ -3,7 +3,8 @@ import { useQuery, useQueryClient, keepPreviousData } from '@tanstack/react-quer
 import { scheduleApi } from '../../../../api/schedule';
 import { staffApi } from '../../../../api/staff';
 import { queryKeys } from '../../../../api/queryKeys';
-import { colorForStaffId, lessonToBooking, staffToTrainer, toDateStr } from '../utils';
+import { lessonToBooking, staffToTrainer, toDateStr } from '../utils';
+import { staffColor } from '../../../../lib/staffColors';
 import type { StaffListItem } from '../../../../api/staff/staff.types';
 import type { Booking, Hall } from '../types';
 
@@ -57,7 +58,7 @@ export async function fetchBookings(
   halls: Hall[],
 ) {
   const lessons = await scheduleApi.getLessons({ date_from: dateFrom, date_to: dateTo });
-  const colorByTeacher = new Map(staff.map(s => [s.id, colorForStaffId(s.id)]));
+  const colorByTeacher = new Map(staff.map(s => [s.id, staffColor(s)]));
   return lessons.map(l => lessonToBooking(l, halls, colorByTeacher));
 }
 
@@ -96,7 +97,7 @@ export function useSchedule(
   // Booking[], потому что мутации (useJournalMutations) пишут в этот же кэш
   // напрямую через setQueryData и должны видеть тот же тип.
   const {
-    data: bookings = EMPTY_BOOKINGS,
+    data: cachedBookings = EMPTY_BOOKINGS,
     isPending: bookingsPending,
     error: bookingsError,
     refetch: refetchBookings,
@@ -111,6 +112,22 @@ export function useSchedule(
     // без действий пользователя — раз в минуту; вебсокет не заводим (YAGNI).
     refetchInterval: 60_000,
   });
+
+  // Цвет мастера накладываем ещё и при чтении, а не только в fetchBookings:
+  // кэш занятий живёт своей жизнью, и цвет, сменённый в карточке сотрудника,
+  // иначе доехал бы до сетки лишь со следующей перезагрузкой занятий. Ничего
+  // не поменялось — отдаём тот же массив, ссылка для мемо потребителей не дёргается.
+  const bookings = useMemo(() => {
+    const colorOf = new Map(staff.map(s => [s.id, staffColor(s)]));
+    let changed = false;
+    const recolored = cachedBookings.map(b => {
+      const color = colorOf.get(b.trainer);
+      if (!color || color === b.color) return b;
+      changed = true;
+      return { ...b, color };
+    });
+    return changed ? recolored : cachedBookings;
+  }, [cachedBookings, staff]);
 
   // Первая загрузка «с нуля»: кэш этого ключа пуст, данных ни своих, ни
   // предыдущих ещё нет — именно в этот момент показываем скелетон.

@@ -88,6 +88,43 @@ async def member_names(
     return {uid: " ".join(filter(None, (name, last_name))) for uid, name, last_name in rows}
 
 
+# Палитра цветов сотрудников. Порядок значим: первые цвета достаются первым
+# сотрудникам, поэтому соседние в списке — самые непохожие друг на друга. Тон
+# средний: цвет служит и заливкой, и текстом карточки занятия, на светлой и на
+# тёмной теме. Копия для выбора в карточке — front/src/lib/staffColors.ts.
+STAFF_PALETTE = (
+    "#F9A08B",  # персик
+    "#4A80C4",  # синий
+    "#5BAB72",  # зелёный
+    "#7B6CD4",  # фиолетовый
+    "#E0A030",  # янтарь
+    "#3AA39B",  # бирюза
+    "#D0678F",  # малина
+    "#8B6F5A",  # какао
+    "#B062C0",  # орхидея
+    "#8FA53A",  # олива
+    "#C4553D",  # кирпич
+    "#5E7389",  # сланец
+)
+
+
+async def pick_member_color(db: AsyncSession, studio_id: int) -> str:
+    """Цвет для нового участника студии: первый из палитры, которого ни у кого нет.
+
+    Палитра кончилась — самый редкий, при равенстве тот, что раньше в палитре:
+    повторы тогда расходятся по всей палитре, а не копятся на первом цвете.
+    """
+    used = (await db.execute(
+        select(StudioMember.color).where(
+            StudioMember.studio_id == studio_id, StudioMember.color.is_not(None))
+    )).scalars().all()
+    counts = {c.upper(): 0 for c in STAFF_PALETTE}
+    for color in used:
+        if color.upper() in counts:
+            counts[color.upper()] += 1
+    return min(STAFF_PALETTE, key=lambda c: counts[c.upper()])
+
+
 async def user_lang(db: AsyncSession, user) -> str:
     """Язык, на котором писать этому человеку: личный, а если не выбран — язык
     его студии (`User.language` = NULL значит «как в студии», см. models/user.py).

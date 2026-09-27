@@ -106,6 +106,9 @@ class StaffListItem(BaseSchema):
     is_specialist: bool = False
     photo_url: Optional[str] = None
     avatar_gradient: Optional[str] = None
+    # Цвет в журнале (StudioMember.color). NULL — у строк из сидов; интерфейс
+    # тогда берёт цвет палитры по id.
+    color: Optional[str] = None
 
 
 class StaffSummary(BaseSchema):
@@ -135,6 +138,7 @@ class StaffProfileResponse(BaseSchema):
     is_specialist: bool = False
     photo_url: Optional[str] = None
     avatar_gradient: Optional[str] = None
+    color: Optional[str] = None
     salary: Optional[float] = None
     rate: Optional[float] = None
     rate_type: Optional[str] = None

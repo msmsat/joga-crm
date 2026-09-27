@@ -113,6 +113,11 @@ export const Grid: React.FC<GridProps> = ({
               boxSizing: 'border-box'
             }}
           >
+            {/* Цвет мастера — полоской по верху колонки (Journal.css, .j-hdr-stripe).
+                span, а не div: прямые div-потомки шапки уезжают анимацией свайпа. */}
+            {trainer && calendarView !== 'week' && (
+              <span className="j-hdr-stripe" aria-hidden style={{ background: trainer.color }} />
+            )}
             {/* Обертка с анимацией для шапки */}
             <div 
               className={`header-content-anim ${animClass}`}
@@ -188,11 +193,11 @@ export const Grid: React.FC<GridProps> = ({
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: singleColumn ? 'center' : 'flex-start', gap: 12, width: '100%' }}>
                       <div className="j-hdr-avatar" style={{
                           width: 38, height: 38, borderRadius: '12px',
-                          background: `linear-gradient(135deg, ${trainer.color}15, ${trainer.color}05)`,
-                          border: `1.5px solid ${trainer.color}30`,
+                          // Сплошной цвет мастера — тот же, что у его занятий в сетке.
+                          background: trainer.color,
                           display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          fontSize: 13, fontWeight: 800, color: trainer.color, flexShrink: 0,
-                          boxShadow: `0 4px 12px ${trainer.color}15`
+                          fontSize: 13, fontWeight: 800, color: '#fff', flexShrink: 0,
+                          boxShadow: `0 4px 12px ${trainer.color}40`
                       }}>
                           {trainer.initials}
                       </div>

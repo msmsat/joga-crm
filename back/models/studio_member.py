@@ -47,6 +47,13 @@ class StudioMember(Base):
     rate: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
     rate_type: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
 
+    # Цвет человека в этой студии: им окрашены его колонка и занятия в журнале.
+    # Выдаётся при заведении — первый свободный из палитры (members.pick_member_color),
+    # чтобы два мастера не совпали; владелец может сменить его в карточке.
+    # NULL бывает только у строк, заведённых в обход роутеров (сиды), —
+    # интерфейс тогда берёт цвет из той же палитры по id.
+    color: Mapped[Optional[str]] = mapped_column(String(7), nullable=True)
+
     user: Mapped["User"] = relationship(back_populates="studio_memberships")
     studio: Mapped["Studio"] = relationship(back_populates="members")
 

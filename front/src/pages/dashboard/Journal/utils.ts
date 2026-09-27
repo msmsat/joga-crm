@@ -2,6 +2,7 @@
 import type { Booking, Trainer, Lesson, Hall } from './types';
 import type { StaffListItem } from '../../../api/staff/staff.types';
 import { TIMES } from './constants';
+import { STAFF_PALETTE, staffColor } from '../../../lib/staffColors';
 
 // Название месяца/дня недели на выбранном языке — нативный Intl вместо
 // захардкоженных русских массивов (месяцы i18next переводить не надо).
@@ -196,19 +197,15 @@ export const generateTimeIntervals = (stepMinutes: number = 15): string[] => {
 // ─── ПЕРЕХОДНИК API ↔ СЕТКА ЖУРНАЛА ──────────────────────────────────────
 // Сетка живёт на индексах времени: 0 = 07:00, 1 единица = 1 час.
 
-export const TRAINER_COLORS = ['#F9A08B', '#5BAB72', '#40a8a0', '#4A80C4', '#7B6CD4'];
-
 const hexToBg = (hex: string) => {
   const n = parseInt(hex.slice(1), 16);
   return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},0.12)`;
 };
 
-// Цвет по id — стабилен между заходами, не съезжает при фильтрации/увольнении других сотрудников.
-export const colorForStaffId = (id: number) => TRAINER_COLORS[id % TRAINER_COLORS.length];
-
 // Сотрудник из API → колонка журнала.
 export const staffToTrainer = (s: StaffListItem): Trainer => {
-  const color = colorForStaffId(s.id);
+  // Свой цвет мастера — выдан сервером без повторов в студии (lib/staffColors).
+  const color = staffColor(s);
   const first = s.name || '';
   const last = s.last_name || '';
   return {
@@ -239,7 +236,7 @@ export const lessonToBooking = (l: Lesson, halls: Hall[], colorByTeacher: Map<nu
     hall: halls.find(h => h.id === l.hall_id)?.name ?? '',
     clients: l.booked_count ?? 0,
     maxClients: l.total_spots,
-    color: (l.teacher_id != null ? colorByTeacher.get(l.teacher_id) : undefined) ?? TRAINER_COLORS[0],
+    color: (l.teacher_id != null ? colorByTeacher.get(l.teacher_id) : undefined) ?? STAFF_PALETTE[0],
     status: l.status,
     date: toDateStr(start),
     cancelReason: l.cancel_reason,

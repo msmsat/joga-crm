@@ -146,9 +146,13 @@ class ConfirmRequest(HybridSchema):
 
 class PaymentCodes(HybridSchema):
     """Промокод и ваучер (подарочный сертификат) шага оплаты. Пустая строка —
-    то же, что отсутствие: поле ввода на экране бывает пустым, а не null."""
+    то же, что отсутствие: поле ввода на экране бывает пустым, а не null.
+
+    `manual_discount_percent` — скидка, которую администратор дал от себя.
+    Идёт в общий ряд скидок: действует самая выгодная клиенту, без стека."""
     promo_code: Optional[str] = Field(default=None, max_length=64)
     certificate_code: Optional[str] = Field(default=None, max_length=64)
+    manual_discount_percent: Optional[int] = Field(default=None, ge=1, le=100)
 
 
 class PaymentPreviewRequest(PaymentCodes):
@@ -169,7 +173,7 @@ class CrmConfirmRequest(ConfirmRequest):
 
 
 class PaymentDiscount(HybridSchema):
-    kind: Literal["studio", "offer", "promo", "referral", "first_lesson"]
+    kind: Literal["studio", "offer", "promo", "referral", "first_lesson", "manual"]
     amount: int
 
 
@@ -237,6 +241,7 @@ class ServiceDayRead(HybridSchema):
     service_id: int
     branch_id: int
     free: list[int]
+    free_by_teacher: dict[int, list[int]] = Field(default_factory=dict)
     reason: Optional[str] = None
 
 

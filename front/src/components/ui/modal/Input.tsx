@@ -18,6 +18,7 @@ export interface InputProps {
   suffix?: string;               // единица измерения справа в поле (мин, м², ₽)
   onEnter?: () => void;          // Enter в однострочном поле — «Применить» рядом (промокод, ваучер)
   autoFocus?: boolean;           // поле, которое раскрыли кнопкой: печатать сразу, без второго клика
+  inputMode?: React.HTMLAttributes<HTMLInputElement>['inputMode']; // 'numeric' — цифровая клавиатура телефона без type="number"
 }
 
 const labelStyle: React.CSSProperties = {
@@ -26,7 +27,7 @@ const labelStyle: React.CSSProperties = {
 };
 
 // Поле ввода кита: label + glow-фокус (эталон FocusInput) + состояние ошибки.
-export function Input({ label, value, onChange, onBlur, placeholder, type = 'text', error, disabled, monospace, min, max, step, icon, rows, suffix, onEnter, autoFocus }: InputProps) {
+export function Input({ label, value, onChange, onBlur, placeholder, type = 'text', error, disabled, monospace, min, max, step, icon, rows, suffix, onEnter, autoFocus, inputMode }: InputProps) {
   const [focused, setFocused] = useState(false);
   const borderColor = error ? '#D88C9A' : focused ? '#FCAE91' : 'rgba(var(--ink),0.09)';
 
@@ -67,6 +68,7 @@ export function Input({ label, value, onChange, onBlur, placeholder, type = 'tex
           <textarea {...shared} rows={rows} style={{ ...fieldStyle, resize: 'none', lineHeight: 1.5, display: 'block' }} />
         ) : (
           <input {...shared} type={type} min={min} max={max} step={step} style={fieldStyle} autoFocus={autoFocus}
+                 inputMode={inputMode}
                  onKeyDown={onEnter ? e => {
                    // Enter не должен отправить окружающую форму и закрыть окно:
                    // здесь он значит «применить это поле», а не «сохранить всё».

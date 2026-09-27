@@ -38,6 +38,7 @@ type Input = {
 };
 
 const hhmm = (iso: string) => iso.slice(11, 16);
+const isTime = (v: string) => /^\d\d:\d\d$/.test(v);
 
 /** Групповое занятие этой услуги у мастера ровно в это время, куда ещё есть места. */
 export function lessonToJoin(lessons: Lesson[], serviceId: number, teacherId: number | null, time: string) {
@@ -46,8 +47,8 @@ export function lessonToJoin(lessons: Lesson[], serviceId: number, teacherId: nu
 }
 
 /**
- * Время в мастере записи выбирают ПЕРВЫМ, поэтому к шагу мастера оно уже
- * названо — и список мастеров отвечает, кто в это время свободен.
+ * Названо время — список мастеров отвечает, кто в это время свободен; не
+ * названо — занят только тот, у кого за весь день свободного нет.
  * Индивидуальная услуга — по свободным началам сервера у всех мастеров разом
  * (один запрос, у каждого начала — список свободных); групповая — по занятиям
  * дня с буферами (freeTimes.ts), как и раньше.
@@ -73,6 +74,8 @@ export function useMasterAvailability(o: Input) {
         if (!data || isFetching) { states.set(m.id, { kind: 'unknown' }); continue; }
         const own = m.id == null ? slots : slots.filter(s => s.teacher_ids.includes(m.id!));
         const times = own.map(s => hhmm(s.local_start));
+        // Время ещё не названо — занят только тот, у кого за день нет ни минуты.
+        if (!isTime(time)) { states.set(m.id, times.length ? { kind: 'free' } : { kind: 'busy', nearest: null }); continue; }
         states.set(m.id, times.includes(time)
           ? { kind: 'free' }
           : { kind: 'busy', nearest: times.find(tm => tm > time) ?? null });
@@ -90,6 +93,7 @@ export function useMasterAvailability(o: Input) {
         bufferBefore: service.buffer_before_min, bufferAfter: service.buffer_after_min,
         notBefore,
       });
+      if (!isTime(time)) { states.set(m.id, free.times.length ? { kind: 'free' } : { kind: 'busy', nearest: null }); continue; }
       states.set(m.id, free.isFree(time)
         ? { kind: 'free' }
         : { kind: 'busy', nearest: free.times.find(tm => tm > time) ?? null });

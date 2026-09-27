@@ -17,9 +17,11 @@ import { useStudioCurrency } from '../../../../../../hooks/useStudioCurrency';
 import { staffToTrainer } from '../../../utils';
 import type { Hall, Trainer } from '../../../types';
 import { toDateStr } from '../../../utils';
-import { eventFreeTimes, toHHMM } from './freeTimes';
-import { lessonToJoin, useMasterAvailability, type WizardMaster } from './masterAvailability';
-import { useServiceAvailability } from './serviceAvailability';
+import { eventFreeTimes } from './freeTimes';
+import { lessonToJoin, type WizardMaster } from './masterAvailability';
+import { useWizardAvailability } from './useWizardAvailability';
+import { hybridApi } from '../../../../../../api/booking/hybrid.api';
+import { useNotePhotos } from '../../../../../../hooks/useNotePhotos';
 
 export type { WizardMaster } from './masterAvailability';
 
@@ -31,37 +33,46 @@ export type WizardOptions = {
   defaultTeacherId: number | null;
   defaultDate: string;
   defaultTime?: string;
-  /** Карточка клиента открывает запись с уже выбранным человеком — шаг клиента пропускается. */
+  /** Карточка клиента открывает запись с уже выбранным человеком — его можно сменить. */
   clientId?: number | null;
   onClose: () => void;
   onCreated: () => void;
 };
 
-/** Шаги по порядку. Дата и время — не шаг, а кнопка рядом с поиском на каждом
-    шаге: время названо с самого начала (клетка сетки, «сейчас»), и под него
-    подбираются услуги и свободные мастера. */
-export const CLIENT_STEP = 0;
-export const SERVICE_STEP = 1;
-export const MASTER_STEP = 2;
-/** Последний шаг — проверка всего выбранного перед записью. */
-export const SUMMARY_STEP = 3;
+/** Разделы по порядку — в этом же порядке их листает свайп. Порядок только
+    подсказка: открыть можно любой раздел в любой момент (кнопки в шапке). */
+export const TIME_STEP = 0;
+export const CLIENT_STEP = 1;
+export const SERVICE_STEP = 2;
+export const MASTER_STEP = 3;
+/** Итог — всё выбранное перед записью. */
+export const SUMMARY_STEP = 4;
+
+/** Шаг сетки свободного времени запоминается — удобство одного устройства,
+    как выбранные мастера журнала. Первый раз — 15 минут. */
+const TIME_STEP_KEY = 'journal:wizardTimeStep';
+export const TIME_STEPS = [1, 2, 5, 15];
+function readTimeStep() {
+  try {
+    const saved = Number(localStorage.getItem(TIME_STEP_KEY));
+    return TIME_STEPS.includes(saved) ? saved : 15;
+  } catch {
+    return 15;
+  }
+}
 
 export const isTime = (v: string) => /^([01]\d|2[0-3]):[0-5]\d$/.test(v);
-/** Ближайшая четверть часа после «сейчас» — время по умолчанию для кнопки.
-    За полночь не переходит: в 23:50 времени по умолчанию нет, и мастер
-    сам открывает окно даты и времени. */
-const nextQuarter = (now: Date) => {
-  const minute = Math.ceil((now.getHours() * 60 + now.getMinutes() + 1) / 15) * 15;
-  return minute < 24 * 60 ? toHHMM(minute) : '';
-};
 
 /**
- * Запись по шагам: клиент → услуга → мастер → проверка; дата и время — кнопкой
- * над списком на каждом шаге.
- * «Продолжить» и выбор строки ведут на ПЕРВЫЙ незаполненный шаг после
- * текущего, а когда всё выбрано — на проверку: поменяли клиента на проверке —
- * вернулись к проверке, поменяли услугу — мастера придётся выбрать заново.
- * По заполненным шагам можно прыгать полосками прогресса в шапке.
+ * Запись по разделам: время, клиент, услуга, мастер, итог — в любом порядке.
+ * Мастер всегда открывается на итоге — откуда бы его ни открыли (ячейка
+ * журнала, «+» в каркасе, карточка клиента). Подставлено только то, что
+ * человек уже назвал: тап по ячейке — её время и мастера колонки, карточка
+ * клиента — клиента. Всё подставленное меняется так же, как выбранное руками.
+ * Пока время не названо, услуги и мастера не фильтруются.
+ * «Продолжить» и выбор строки ведут на ПЕРВЫЙ незаполненный раздел после
+ * текущего (по кругу), а когда всё выбрано — на итог: поменяли клиента на
+ * итоге — вернулись к итогу, поменяли услугу — мастера придётся выбрать заново.
  *
  * Два пути под одной формой. Индивидуальная услуга идёт теми же quote/confirm,
  * что и остальной продукт (useResourceBooking), и только в свободное начало
@@ -73,6 +84,7 @@ export function useBookingWizard(o: WizardOptions) {
   const toast = useToast();
   const resource = useResourceBooking({
     onClose: o.onClose, onCreated: o.onCreated, clientId: o.clientId ?? null, defaultDate: o.defaultDate,
+    teacherId: o.defaultTeacherId,
   });
   const { data: services = [] } = useQuery({ queryKey: queryKeys.services, queryFn: () => servicesApi.list() });
   const { data: branches = [] } = useQuery({ queryKey: queryKeys.branches, queryFn: () => studioApi.getBranches() });
@@ -87,25 +99,35 @@ export function useBookingWizard(o: WizardOptions) {
 
   const { spaceIsAxis } = useBusinessTerms();
   const now = new Date();
-  const steps = o.clientId != null
-    ? [SERVICE_STEP, MASTER_STEP, SUMMARY_STEP]
-    : [CLIENT_STEP, SERVICE_STEP, MASTER_STEP, SUMMARY_STEP];
-  const [step, setStep] = useState(steps[0]);
+  const steps = [TIME_STEP, CLIENT_STEP, SERVICE_STEP, MASTER_STEP, SUMMARY_STEP];
+  // Всегда с итога: подставленное видно сразу, пустое — «Выбрать».
+  const [step, setStep] = useState(SUMMARY_STEP);
+  /** Куда листнули: 1 — вперёд, -1 — назад (от этого зависит, откуда въезжает раздел). */
+  const [dir, setDir] = useState<1 | -1>(1);
   const [client, setClientState] = useState<{ id: number; name: string } | null>(
     o.clientId != null ? { id: o.clientId, name: '' } : null);
   /** Клиент, заведённый прямо в мастере: стоит первым в списке, пока открыт мастер. */
   const [fresh, setFresh] = useState<{ id: number; name: string; hint?: string } | null>(null);
   const [service, setServiceState] = useState<ServiceRead | null>(null);
   const [teacherId, setTeacherState] = useState<number | null>(o.defaultTeacherId);
-  /** Мастер выбран на своём шаге (у индивидуальной «любой» — тоже выбор, id null). */
-  const [masterChosen, setMasterChosen] = useState(false);
+  /** Мастер выбран на своём шаге (у индивидуальной «любой» — тоже выбор, id null)
+      или пришёл с колонки журнала, по которой тапнули. */
+  const [masterChosen, setMasterChosen] = useState(o.defaultTeacherId != null);
   const [date, setDateState] = useState(o.defaultDate);
-  const [time, setTimeState] = useState(() => o.defaultTime
-    ?? (o.defaultDate === toDateStr(now) ? nextQuarter(now) : ''));
+  const [time, setTimeState] = useState(o.defaultTime ?? '');
+  const [timeStep, setTimeStepState] = useState(readTimeStep);
+  const setTimeStep = (value: number) => {
+    setTimeStepState(value);
+    try { localStorage.setItem(TIME_STEP_KEY, String(value)); } catch { /* приватный режим — просто не запомнится */ }
+  };
   const [pickedHall, setHallId] = useState<number | null>(null);
   const hallId = pickedHall ?? halls[0]?.id ?? null;
   const [branchId, setBranchId] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
+  /** Заметка к записи (итог): текст и снимки. Ложится в занятие записи. */
+  const [notes, setNotes] = useState('');
+  const notePhotos = useNotePhotos();
+  const autoPicked = useRef<string | null>(null);
   const currency = useStudioCurrency();
   // Из карточки клиента приходит только id — имя для проверки берём из профиля.
   const { data: profile } = useQuery({
@@ -117,21 +139,21 @@ export function useBookingWizard(o: WizardOptions) {
 
   // Индивидуальные — только те, у кого есть мастер и филиал (иначе записать
   // некуда); групповые — все: занятие под них создаётся здесь же.
+  const { data: resourceStaff } = useQuery({ queryKey: queryKeys.resourceStaff, queryFn: hybridApi.resourceStaff });
   const serviceList = useMemo(() => services.filter(s => s.booking_mode === 'resource'
-    ? resource.choice.serviceOptions.some(r => r.id === s.id)
-    : true), [services, resource.choice.serviceOptions]);
+    ? resourceStaff?.staff.some(m => m.service_ids.includes(s.id)) : true), [services, resourceStaff]);
 
   const masters: WizardMaster[] = useMemo(() => {
-    if (!service) return [];
+    if (!service) return trainers.map(tr => ({ id: tr.id, name: tr.full }));
     if (isResource) {
       return [
         { id: null, name: t('journal:resourceBooking.anyStaff') },
-        ...resource.choice.masterOptions.map(m => ({ id: m.teacher_id, name: `${m.name} ${m.last_name ?? ''}`.trim() })),
+        ...(resourceStaff?.staff.filter(m => m.service_ids.includes(service.id)) ?? []).map(m => ({ id: m.teacher_id, name: `${m.name} ${m.last_name ?? ''}`.trim() })),
       ];
     }
     const own = service.masters.map(m => m.user_id);
     return trainers.filter(tr => own.length === 0 || own.includes(tr.id)).map(tr => ({ id: tr.id, name: tr.full }));
-  }, [service, isResource, resource.choice.masterOptions, trainers, t]);
+  }, [service, isResource, resourceStaff, trainers, t]);
 
   // Занятия дня: по ним считается, свободны ли групповая услуга и её мастер
   // в названное время, и есть ли занятие, куда можно просто записать.
@@ -143,78 +165,103 @@ export function useBookingWizard(o: WizardOptions) {
 
   const isToday = date === toDateStr(now);
   const nowMin = now.getHours() * 60 + now.getMinutes();
-  const serviceStates = useServiceAvailability({
-    services: serviceList, trainers, date, time, dayLessons, lessonsReady: lessonsReady && !lessonsLoading,
-    notBefore: isToday ? nowMin : null,
+  const availability = useWizardAvailability({
+    services: serviceList, trainers, date, time, lessons: dayLessons, lessonsReady: lessonsReady && !lessonsLoading,
+    notBefore: date < toDateStr(now) ? 1440 : isToday ? nowMin : null,
+    serviceId: service?.id ?? null, teacherId: masterChosen ? teacherId : null, step: timeStep,
   });
-  const masterStates = useMasterAvailability({
-    service, isResource, masters, services, dayLessons, lessonsReady: lessonsReady && !lessonsLoading,
-    date, time, notBefore: isToday ? nowMin : null,
-    resourceServiceId: isResource ? resource.serviceId : null, resourceBranchId: resource.branchId,
-  });
+  const { serviceStates, masterStates } = availability;
+  const conflict = isTime(time) && availability.conflict;
 
   // ── Переходы ───────────────────────────────────────────────────────────────
-  type Snapshot = { client: unknown; service: unknown; masterChosen: boolean };
-  const current: Snapshot = { client, service, masterChosen };
+  type Snapshot = { time: string; client: unknown; service: unknown; masterChosen: boolean };
+  const current: Snapshot = { time, client, service, masterChosen };
   const done = (s: number, v: Snapshot = current) =>
-    s === CLIENT_STEP ? v.client != null
+    s === TIME_STEP ? isTime(v.time)
+    : s === CLIENT_STEP ? v.client != null
     : s === SERVICE_STEP ? v.service != null
-    : s === MASTER_STEP ? v.service != null && v.masterChosen
+    : s === MASTER_STEP ? v.masterChosen
     : false;
-  /** Первый незаполненный шаг после from; всё заполнено — проверка. */
-  const nextAfter = (from: number, v: Snapshot = current) =>
-    steps.find(s => s > from && s !== SUMMARY_STEP && !done(s, v)) ?? SUMMARY_STEP;
-  /** Полоской можно уйти на шаг, если заполнено всё, что перед ним (к проверке — и время). */
-  const canJump = (target: number) => steps.filter(s => s < target).every(s => done(s))
-    && (target !== SUMMARY_STEP || isTime(time));
+  /** Первый незаполненный раздел после from — по кругу; всё заполнено — итог. */
+  const nextAfter = (from: number, v: Snapshot = current) => {
+    const at = steps.indexOf(from);
+    const order = [...steps.slice(at + 1), ...steps.slice(0, at)];
+    return order.find(s => s !== SUMMARY_STEP && !done(s, v)) ?? SUMMARY_STEP;
+  };
 
   const goTo = (next: number) => {
-    // К выбору услуги — снова все услуги: выбранный мастер их сужал бы.
-    // Ушли со списка услуг, не сменив её, — мастер записи возвращается.
-    if (next === SERVICE_STEP) resource.setTeacherId(null);
-    else if (step === SERVICE_STEP && masterChosen && isResource) resource.setTeacherId(teacherId);
+    if (next === step) return;
+    setDir(steps.indexOf(next) > steps.indexOf(step) ? 1 : -1);
     setStep(next);
   };
   const advance = () => goTo(nextAfter(step));
+  /** Свайп: соседний раздел; с крайнего дальше не листается. */
+  const swipe = (d: 1 | -1) => {
+    const next = steps[steps.indexOf(step) + d];
+    if (next != null) goTo(next);
+  };
 
-  /** Кнопка времени: день и час меняются вместе, одним «Готово». */
+  /** Раздел «Время»: день и час; at пустой — час ещё не назван. */
+  const syncBranch = (at: string, id = teacherId) => {
+    if (!isResource || !service) return;
+    const branch = availability.branchFor(service.id, masterChosen ? id : null, at);
+    if (branch != null && branch !== resource.branchId) resource.setBranchId(branch);
+  };
   const setWhen = (day: string, at: string) => {
+    autoPicked.current = null;
     if (day !== date) { setDateState(day); resource.setDate(day); }
     setTimeState(at);
+    if (day === date) syncBranch(at);
+  };
+  /** Время из списка свободного — как выбор строки: сразу к следующему разделу. */
+  const pickTime = (at: string) => {
+    autoPicked.current = null;
+    setTimeState(at);
+    syncBranch(at);
+    goTo(nextAfter(TIME_STEP, { ...current, time: at }));
   };
   const pickClient = (id: number, name: string) => {
+    autoPicked.current = null;
     setClientState({ id, name });
     resource.setClient(id);
     goTo(nextAfter(CLIENT_STEP, { ...current, client: id }));
   };
   /** Клиент заведён в мастере: встаёт первым и выбранным, дальше — «Продолжить». */
   const addFreshClient = (id: number, name: string, hint?: string) => {
+    autoPicked.current = null;
     setFresh({ id, name, hint });
     setClientState({ id, name });
     resource.setClient(id);
   };
   const pickService = (s: ServiceRead) => {
-    const changed = s.id !== service?.id;
-    if (changed) {
-      setServiceState(s);
-      if (s.booking_mode === 'resource') {
-        resource.setServiceId(s.id);
-        // Филиал — тот, где в названное время свободно: иначе шаг мастера
-        // считал бы время по первому филиалу услуги, а там все заняты.
-        const st = serviceStates.get(s.id);
-        if (st?.kind === 'free' && st.branchId != null) resource.setBranchId(st.branchId);
-      }
-      setMasterChosen(false);
+    autoPicked.current = null;
+    const compatible = teacherId == null || (s.booking_mode === 'resource'
+      ? resourceStaff?.staff.some(m => m.teacher_id === teacherId && m.service_ids.includes(s.id))
+      : s.masters.length === 0 || s.masters.some(m => m.user_id === teacherId));
+    const keepMaster = masterChosen && !!compatible;
+    setServiceState(s);
+    setMasterChosen(keepMaster);
+    if (!keepMaster) setTeacherState(null);
+    resource.setTeacherId(keepMaster ? teacherId : null);
+    if (s.booking_mode === 'resource') {
+      resource.setServiceId(s.id);
+      const branch = availability.branchFor(s.id, keepMaster ? teacherId : null, time);
+      if (branch != null) resource.setBranchId(branch);
     }
-    goTo(nextAfter(SERVICE_STEP, { ...current, service: s, masterChosen: changed ? false : masterChosen }));
+    goTo(nextAfter(SERVICE_STEP, { ...current, service: s, masterChosen: keepMaster }));
   };
   /** at — ближайшее свободное время, которое предложили у занятого мастера. */
   const pickMaster = (id: number | null, at?: string) => {
+    autoPicked.current = null;
     setTeacherState(id);
-    if (isResource) resource.setTeacherId(id);
+    resource.setTeacherId(id);
+    if (isResource && service) {
+      const branch = availability.branchFor(service.id, id, at ?? time);
+      if (branch != null) resource.setBranchId(branch);
+    }
     if (at) setTimeState(at);
     setMasterChosen(true);
-    goTo(nextAfter(MASTER_STEP, { ...current, masterChosen: true }));
+    goTo(nextAfter(MASTER_STEP, { ...current, time: at ?? time, masterChosen: true }));
   };
 
   // ── Выбранный мастер в названное время ────────────────────────────────────
@@ -227,34 +274,39 @@ export function useBookingWizard(o: WizardOptions) {
   }), [service, isResource, teacherId, dayLessons, services, own, isToday, nowMin]);
   const joined = service && !isResource ? lessonToJoin(dayLessons, service.id, teacherId, time) : undefined;
   const slotAtTime = resource.slots.find(s => s.local_start.slice(11, 16) === time);
-  /** Выбранный мастер в это время занят — проверка это показывает и не записывает. */
-  const busy = masterChosen && !!service && (isResource
+  /** Выбранный мастер в это время занят — итог это показывает и не записывает. */
+  const busy = isTime(time) && masterChosen && !!service && (isResource
     ? !resource.slotsLoading && !slotAtTime
     : lessonsReady && !joined && !eventFree?.isFree(time));
 
   // Индивидуальная: всё выбрано и время свободно — условия берутся сами,
   // один раз на набор выбора (отказ сервера не должен повторяться на каждый рендер).
   const autoKey = `${client?.id}|${resource.serviceId}|${resource.branchId}|${resource.teacherId}|${date}|${time}`;
-  const autoPicked = useRef<string | null>(null);
+
   const quotedTime = resource.quote?.terms.domain.local_start.slice(11, 16);
   const { pick, quoting } = resource;
   useEffect(() => {
-    if (!isResource || step !== SUMMARY_STEP || client == null || quoting || quotedTime === time
+    if (!isResource || !masterChosen || conflict || availability.loading || step !== SUMMARY_STEP || client == null || quoting || quotedTime === time
       || autoPicked.current === autoKey || !slotAtTime) return;
     autoPicked.current = autoKey;
     void pick(slotAtTime);
-  }, [isResource, step, client, quoting, quotedTime, time, autoKey, slotAtTime, pick]);
+  }, [isResource, masterChosen, conflict, availability.loading, step, client, quoting, quotedTime, time, autoKey, slotAtTime, pick]);
 
   // Место не участвует в расписании (барбершоп) — зал не выбирается.
   const noHall = spaceIsAxis === false || halls.length === 0;
   const branch = branchId ?? branches[0]?.id ?? null;
-  const ready = isResource
+  const ready = !conflict && !busy && !availability.loading && isTime(time) && masterChosen && (isResource
     ? !!resource.quote && quotedTime === time && !quoting
-    : client != null && service != null && masterChosen && teacherId != null && isTime(time) && !busy;
+    : client != null && service != null && masterChosen && teacherId != null && isTime(time) && !busy);
+
+  const note = { notes: notes.trim(), photos: notePhotos.photos };
+  const hasNote = note.notes !== '' || note.photos.length > 0;
+  /** Снимок ещё летит на сервер — записывать рано: он бы потерялся. */
+  const notePending = notePhotos.pending.length > 0;
 
   const submit = async () => {
-    if (!ready || saving) return;
-    if (isResource) { await resource.confirm(); return; }
+    if (!ready || saving || notePending) return;
+    if (isResource) { await resource.confirm(note); return; }
     setSaving(true);
     try {
       let target = joined?.id ?? null;
@@ -267,10 +319,25 @@ export function useBookingWizard(o: WizardOptions) {
           start_time: `${date}T${time}:00`,
           duration_min: own ?? service!.duration_min,
           total_spots: service!.max_clients ?? undefined,
+          ...(hasNote ? note : {}),
         });
         target = lesson.id;
       }
       await scheduleApi.createReservation(client!.id, target);
+      // Запись в уже стоящее занятие: у него своя заметка, общая на всех, —
+      // дописываем к ней с именем клиента, а не затираем.
+      if (joined && hasNote) {
+        const line = note.notes && `${clientName}: ${note.notes}`;
+        try {
+          await scheduleApi.updateLesson(joined.id, {
+            notes: [joined.notes, line].filter(Boolean).join('\n\n'),
+            photos: [...(joined.photos ?? []), ...note.photos],
+          });
+        } catch (err) {
+          // Запись уже состоялась — из-за заметки её не откатываем.
+          toast.error(errorMessage(err, t));
+        }
+      }
       toast.info(t('journal:toasts.clientsBooked', { count: 1 }));
       o.onCreated();
       o.onClose();
@@ -290,11 +357,13 @@ export function useBookingWizard(o: WizardOptions) {
   const durationMin = isResource ? resource.quote?.terms.duration_min : (joined?.duration_min ?? own ?? service?.duration_min);
 
   return {
-    steps, step, goTo, advance, done, canJump,
+    steps, step, dir, goTo, advance, swipe, done, conflict, availability, timeStep, setTimeStep,
     clientName, priceText, durationMin, joined, busy, client, fresh, service, teacherId, masterChosen, date, time,
-    hallId, setHallId, branches, branch, setBranchId, noHall, isResource, serviceList, masters,
+    hallId, setHallId, branches, branch, setBranchId, noHall, isResource, serviceList, services, masters,
     serviceStates, masterStates, trainers, halls, resource, ready, saving: saving || resource.saving,
-    pickClient, addFreshClient, pickService, pickMaster, setWhen, submit,
+    dayLessons, lessonsReady: lessonsReady && !lessonsLoading, notBefore: isToday ? nowMin : null,
+    pickClient, addFreshClient, pickService, pickMaster, setWhen, pickTime, submit,
+    notes, setNotes, notePhotos, notePending,
   };
 }
 

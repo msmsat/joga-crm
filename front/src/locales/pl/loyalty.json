@@ -144,6 +144,11 @@
     "promoCreate": "Utwórz kod promocyjny",
     "promoCodePlaceholder": "LATO25",
     "promoValidUntil": "Ważny do",
+    "promoClient": "Klient",
+    "promoAllClients": "Wszyscy klienci",
+    "promoValidFrom": "Ważny od",
+    "promoFrom": "od",
+    "promoPeriodInvalid": "Data początkowa jest późniejsza niż końcowa",
     "promoUsageLimit": "Limit użyć",
     "promoAdd": "+ Dodaj kod promocyjny",
     "promoList": "Kody promocyjne",
@@ -151,6 +156,7 @@
     "promoUntil": "do",
     "promoStatus": {
       "active": "Aktywny",
+      "scheduled": "Jeszcze nie działa",
       "expired": "Wygasł",
       "exhausted": "Limit osiągnięty",
       "disabled": "Wyłączony"

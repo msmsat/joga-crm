@@ -1,54 +1,59 @@
-// Запись по шагам — те же стили, что у формы нового занятия (.keypad-modal).
-// На телефоне — лист снизу почти во весь экран: каждый шаг — это список, и
+// Запись по разделам — те же стили, что у формы нового занятия (.keypad-modal).
+// На телефоне — лист снизу почти во весь экран: каждый раздел — это список, и
 // ему нужно место. На компьютере — окно по центру (карточка клиента): та же
 // последовательность, подогнанная под курсор (Journal.css, раздел 14b).
-// Дата и время — кнопка над списком каждого шага (WhenPicker), не шаг.
-// Логика — useBookingWizard.
-import { useEffect, useState } from 'react';
+// Разделы открываются кнопками в шапке (WizardTabs) в любом порядке, а свайп
+// по листу листает их по очереди. Логика — useBookingWizard.
+import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import * as Icons from '../../../../../../components/Icons';
 import {
-  useBookingWizard, isTime, CLIENT_STEP, MASTER_STEP, SERVICE_STEP, SUMMARY_STEP, type WizardOptions,
+  useBookingWizard, CLIENT_STEP, MASTER_STEP, SERVICE_STEP, SUMMARY_STEP, TIME_STEP, type WizardOptions,
 } from './useBookingWizard';
 import { ClientStep, MasterStep, ServiceStep } from './WizardSteps';
-import { WhenChip, WhenPopover } from './WhenPicker';
+import { TimeStep } from './TimeStep';
+import { WhenChip } from './WhenPicker';
+import { useGridSwipe } from '../../../hooks/useGridSwipe';
 import { SummaryStep } from './SummaryStep';
 import { confirmLabel } from '../../../hooks/useBookingPayment';
 import { NewClientStep } from './NewClientStep';
+import { WizardTabs } from './WizardTabs';
 
-const TITLES = ['wizard.client', 'wizard.service', 'wizard.master', 'wizard.check'] as const;
+const TITLES = ['wizard.when', 'wizard.client', 'wizard.service', 'wizard.master', 'wizard.summary'] as const;
+/** Касания, которые не листают разделы: ряды, что сами едут вбок, и поля ввода. */
+const NO_SWIPE = '.jf-chips, .bw-days, input, textarea, select';
 
 export function BookingWizard(props: WizardOptions) {
   const { t } = useTranslation(['journal', 'common', 'clients']);
   const w = useBookingWizard(props);
   // «+ Новый клиент»: лист показывает форму клиента вместо списка.
   const [creating, setCreating] = useState(false);
-  // Мини-окно даты и времени. Открыли мастер без времени (кнопка на другой
-  // день) — оно открыто сразу: без часа нечего подбирать.
-  const [whenOpen, setWhenOpen] = useState(() => !isTime(w.time));
   const { onClose } = props;
   const { saving } = w;
-  // Escape — как у остальных окон: сначала закрывает мини-окно времени, из
-  // формы клиента — назад к списку; пока запись уходит, окно не закрывается.
+  // Escape — как у остальных окон: из формы клиента — назад к списку; пока
+  // запись уходит, окно не закрывается.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== 'Escape' || saving) return;
-      if (whenOpen) setWhenOpen(false);
-      else if (creating) setCreating(false);
+      if (creating) setCreating(false);
       else onClose();
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [onClose, saving, creating, whenOpen]);
-  const when = <WhenChip w={w} onOpen={() => setWhenOpen(true)} />;
+  }, [onClose, saving, creating]);
+  // Свайп влево — следующий раздел, вправо — предыдущий.
+  const sheetRef = useRef<HTMLDivElement>(null);
+  useGridSwipe(sheetRef, !creating && !saving, w.swipe, { ignore: NO_SWIPE, phoneOnly: false });
+  const when = <WhenChip w={w} />;
 
+  // Итог — дом мастера: из любого раздела «назад» ведёт на него.
   const index = w.steps.indexOf(w.step);
   const back = creating ? () => setCreating(false)
-    : index > 0 ? () => w.goTo(w.steps[index - 1]) : null;
+    : w.step !== SUMMARY_STEP ? () => w.goTo(SUMMARY_STEP) : null;
 
   // Что уже выбрано — строкой под заголовком. День и время тут не повторяются:
-  // они на кнопке над списком. На проверке всё и так перечислено.
+  // они на кнопке над списком. На итоге всё и так перечислено.
   const master = w.masterChosen ? w.masters.find(m => m.id === w.teacherId)?.name : undefined;
   const picked = w.step === SUMMARY_STEP || creating ? '' : [
     w.step !== CLIENT_STEP ? w.clientName : null,
@@ -57,17 +62,19 @@ export function BookingWizard(props: WizardOptions) {
   ].filter(Boolean).join(' · ');
 
   // Подвал: выбор строки и так ведёт дальше, а «Продолжить» — для того, что
-  // уже выбрано (заведённый здесь клиент, возврат на шаг полоской).
+  // уже выбрано (заведённый здесь клиент, возврат на шаг кнопкой в шапке).
   const canContinue = w.done(w.step);
   const showFoot = w.step === SUMMARY_STEP || canContinue;
   const payable = w.ready && (!w.isResource || w.resource.payment.ready);
+  // Снимок заметки ещё грузится — подтверждать рано, он бы не попал в запись.
+  const confirmable = payable && !w.notePending;
 
   return createPortal(
     <>
       <div className="kp-backdrop bw-backdrop" style={{ position: 'fixed', inset: 0, zIndex: 200 }}
            onMouseDown={() => { if (!w.saving) props.onClose(); }} />
       <div className="kp-anchor bw-anchor" style={{ position: 'fixed', zIndex: 210 }} onMouseDown={e => e.stopPropagation()}>
-        <div className="keypad-modal bw-sheet">
+        <div className="keypad-modal bw-sheet" ref={sheetRef}>
           <div className="kp-head bw-head">
             <div className="kp-head-l">
               {back ? (
@@ -94,33 +101,20 @@ export function BookingWizard(props: WizardOptions) {
                     aria-label={t('common:buttons.close')}><Icons.X /></button>
           </div>
 
-          {/* Полоски — это и прогресс, и переход: тап по полоске ведёт на её шаг,
-              если всё, что перед ним, уже выбрано. */}
-          {!creating && (
-            <nav className="bw-progress" aria-label={t('journal:wizard.step', { n: index + 1, total: w.steps.length })}>
-              {w.steps.map((s, i) => (
-                <button key={s} type="button" disabled={s === w.step || !w.canJump(s) || w.saving}
-                        className={`${i <= index ? 'on' : ''}${s === w.step ? ' current' : ''}`}
-                        title={t(`journal:${TITLES[s]}`)} aria-label={t(`journal:${TITLES[s]}`)}
-                        aria-current={s === w.step ? 'step' : undefined}
-                        onClick={() => w.goTo(s)}>
-                  <span />
-                </button>
-              ))}
-            </nav>
-          )}
+          {/* Кнопки шагов — и прогресс, и переход: сделанное светится зелёным. */}
+          {!creating && <WizardTabs w={w} payable={payable} />}
 
           {creating ? (
             <NewClientStep onCreated={(id, name, hint) => { w.addFreshClient(id, name, hint); setCreating(false); }} />
           ) : (
             <>
-              <div className="bw-body">
+              {/* key — раздел заново въезжает с той стороны, куда листнули. */}
+              <div key={w.step} className={`bw-body ${w.dir > 0 ? 'bw-in-next' : 'bw-in-prev'}`}>
+                {w.step === TIME_STEP && <TimeStep w={w} />}
                 {w.step === CLIENT_STEP && <ClientStep w={w} when={when} onCreate={() => setCreating(true)} />}
                 {w.step === SERVICE_STEP && <ServiceStep w={w} when={when} />}
                 {w.step === MASTER_STEP && <MasterStep w={w} when={when} />}
-                {w.step === SUMMARY_STEP && (
-                  <SummaryStep w={w} canChangeClient={props.clientId == null} onWhen={() => setWhenOpen(true)} />
-                )}
+                {w.step === SUMMARY_STEP && <SummaryStep w={w} />}
               </div>
 
               {showFoot && (
@@ -129,8 +123,8 @@ export function BookingWizard(props: WizardOptions) {
                     // Индивидуальная запись подтверждается вместе с оплатой:
                     // нужен чек под нынешние условия — сумму, которую примут
                     // наличными, сервер сверяет с ним. Кнопка её и называет.
-                    <button type="button" className="btn-primary-sm" disabled={!payable || w.saving}
-                            style={{ opacity: !payable || w.saving ? 0.5 : 1 }} onClick={() => void w.submit()}>
+                    <button type="button" className="btn-primary-sm" disabled={!confirmable || w.saving}
+                            style={{ opacity: !confirmable || w.saving ? 0.5 : 1 }} onClick={() => void w.submit()}>
                       {w.isResource ? confirmLabel(w.resource.payment, t, t('journal:wizard.confirm'))
                         : t('journal:wizard.confirm')}
                     </button>
@@ -138,13 +132,14 @@ export function BookingWizard(props: WizardOptions) {
                     <button type="button" className="btn-primary-sm" disabled={!canContinue}
                             style={{ opacity: canContinue ? 1 : 0.5 }} onClick={w.advance}>
                       {t('common:buttons.continue')}
+                      {/* На «Времени» кнопка называет время — это и есть «подтвердить» выбранное тапом. */}
+                      {w.step === TIME_STEP && <span className="bw-foot-time">{w.time}</span>}
                     </button>
                   )}
                 </div>
               )}
             </>
           )}
-          {whenOpen && !creating && <WhenPopover w={w} onClose={() => setWhenOpen(false)} />}
         </div>
       </div>
     </>,

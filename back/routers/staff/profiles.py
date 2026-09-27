@@ -23,7 +23,7 @@ from services.contacts import (
     ensure_user_contacts_free, normalize, normalized_column,
 )
 from services.invites import send_invite
-from services.members import full_name, is_specialist, is_specialist_clause
+from services.members import full_name, is_specialist, is_specialist_clause, pick_member_color
 from services.notifier import notify
 from services.plan_limits import check_plan_limit
 from services import service_pricing
@@ -252,6 +252,7 @@ def _staff_list_item(user: User, membership: StudioMember, specialist: bool) -> 
         "is_active": membership.status == "active",
         "photo_url": membership.photo_url,
         "avatar_gradient": user.avatar_gradient,
+        "color": membership.color,
         # Кому можно поставить занятие и за кем закрепить колонку в журнале.
         "is_specialist": specialist,
     }
@@ -524,6 +525,7 @@ async def get_staff_profile(
         "is_specialist": await is_specialist(db, studio_id, staff_id),
         "photo_url": membership.photo_url,
         "avatar_gradient": user.avatar_gradient,
+        "color": membership.color,
         "salary": membership.salary,
         "rate": membership.rate,
         "rate_type": membership.rate_type,
@@ -619,6 +621,9 @@ async def create_staff(
         salary=data.salary,
         rate=data.rate,
         rate_type=data.rate_type,
+        # Свой цвет сразу, а не «когда-нибудь»: в журнале новый мастер не
+        # должен совпасть по цвету ни с кем из команды.
+        color=await pick_member_color(db, studio_id),
     )
     db.add(membership)
     await _replace_schedule(user.id, studio_id, data.schedule, db)
@@ -732,6 +737,10 @@ async def update_staff(
     membership.salary = data.salary
     membership.rate = data.rate
     membership.rate_type = data.rate_type
+    # Цвет меняют только явно: старые клиенты и ассистент его не присылают, и
+    # «не прислали» не должно стирать выданный цвет.
+    if data.color is not None:
+        membership.color = data.color
     if data.role is not None:
         membership.role = data.role
     await _replace_schedule(user.id, studio_id, data.schedule, db)

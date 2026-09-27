@@ -144,6 +144,11 @@
     "promoCreate": "Create promo code",
     "promoCodePlaceholder": "SUMMER25",
     "promoValidUntil": "Valid until",
+    "promoClient": "Client",
+    "promoAllClients": "All clients",
+    "promoValidFrom": "Valid from",
+    "promoFrom": "from",
+    "promoPeriodInvalid": "Start date is after the end date",
     "promoUsageLimit": "Usage limit",
     "promoAdd": "+ Add promo code",
     "promoList": "Promo codes",
@@ -151,6 +156,7 @@
     "promoUntil": "until",
     "promoStatus": {
       "active": "Active",
+      "scheduled": "Not started",
       "expired": "Expired",
       "exhausted": "Limit reached",
       "disabled": "Disabled"

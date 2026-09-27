@@ -313,6 +313,20 @@
 .btnOption:hover  { transform: scale(0.98); }
 .btnOption:active { transform: scale(0.95); }
 
+/* Подпись поля в панели настройки — та же, что у инлайновых подписей рядом
+   («Размер скидки»), но классом: её принимает поле выбора клиента. */
+.fieldLabel {
+  display: block; font-size: 11px; font-weight: 600; color: var(--text3);
+}
+
+/* Промокод, выписанный клиенту: его имя — плашкой рядом с кодом. */
+.promoClient {
+  max-width: 180px; padding: 2px 8px; border-radius: 999px;
+  background: rgba(252, 174, 145, 0.14); color: var(--text2);
+  font-size: 11px; font-weight: 700; letter-spacing: 0;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
 /* ─── Уровни карт лояльности ───────────────────────────────────────────────
    Карточка уровня в два этажа: «кто это» (цвет + название + удаление) и
    «его условия» (порог и цена балла). В одну строку всё это влезало только

@@ -214,7 +214,10 @@
         "name": "Name is required",
         "email": "Invalid email"
       },
-      "contactsOwnedByEmployee": "Email and phone belong to the employee's account — they change them in their own profile."
+      "contactsOwnedByEmployee": "Email and phone belong to the employee's account — they change them in their own profile.",
+      "color": "Color in the Journal",
+      "colorHint": "Colors this person's column and classes in the Journal. A dot marks colors someone else already has.",
+      "colorTakenBy": "Already used by: {{names}}"
     },
     "role": {
       "heading": "Role & specialization",

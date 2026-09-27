@@ -144,6 +144,11 @@
     "promoCreate": "Создать промокод",
     "promoCodePlaceholder": "ЛЕТО25",
     "promoValidUntil": "Действует до",
+    "promoClient": "Клиент",
+    "promoAllClients": "Все клиенты",
+    "promoValidFrom": "Действует с",
+    "promoFrom": "с",
+    "promoPeriodInvalid": "Дата начала позже даты окончания",
     "promoUsageLimit": "Лимит использований",
     "promoAdd": "+ Добавить промокод",
     "promoList": "Промокоды",
@@ -151,6 +156,7 @@
     "promoUntil": "до",
     "promoStatus": {
       "active": "Активен",
+      "scheduled": "Ещё не начался",
       "expired": "Истёк",
       "exhausted": "Лимит исчерпан",
       "disabled": "Выключен"

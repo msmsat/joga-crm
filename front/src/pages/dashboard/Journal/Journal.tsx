@@ -328,7 +328,13 @@ export default function Journal() {
   // Ассистент: /dashboard/journal?ai=lesson.create (эпик AI-6, задача 9).
   // Слот тот же, что при клике по пустой ячейке: первая колонка и ближайший
   // целый час сетки — время и тренера человек всё равно правит в самой форме.
+  // На телефоне («+» каркаса ведёт сюда же) — мастер записи без подстановок:
+  // ни времени, ни мастера человек не называл, подставлять их нечем.
   useAiIntent('lesson.create', () => {
+    if (isPhone) {
+      setResourceBooking({ teacherId: null, date: toDateStr(new Date(calYear, calMonth, selectedDay)) });
+      return;
+    }
     const hour = new Date().getHours();
     const timeIdx = Math.min(Math.max(hour - 7, 0), 13);
     openNewSlot(0, timeIdx, 0);

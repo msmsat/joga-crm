@@ -144,6 +144,11 @@
     "promoCreate": "Skapa kampanjkod",
     "promoCodePlaceholder": "SOMMAR25",
     "promoValidUntil": "Giltig till",
+    "promoClient": "Kund",
+    "promoAllClients": "Alla kunder",
+    "promoValidFrom": "Giltig från",
+    "promoFrom": "från",
+    "promoPeriodInvalid": "Startdatumet är efter slutdatumet",
     "promoUsageLimit": "Användningsgräns",
     "promoAdd": "+ Lägg till kampanjkod",
     "promoList": "Kampanjkoder",
@@ -151,6 +156,7 @@
     "promoUntil": "till",
     "promoStatus": {
       "active": "Aktiv",
+      "scheduled": "Inte startat",
       "expired": "Utgånget",
       "exhausted": "Gränsen är nådd",
       "disabled": "Inaktiverad"

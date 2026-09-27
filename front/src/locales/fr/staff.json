@@ -214,7 +214,10 @@
         "name": "Le nom est obligatoire",
         "email": "E-mail invalide"
       },
-      "contactsOwnedByEmployee": "L'e-mail et le téléphone appartiennent au compte de l'employé — il les modifie dans son propre profil."
+      "contactsOwnedByEmployee": "L'e-mail et le téléphone appartiennent au compte de l'employé — il les modifie dans son propre profil.",
+      "color": "Couleur dans le journal",
+      "colorHint": "Cette couleur marque la colonne et les cours de la personne dans le journal. Un point signale les couleurs déjà prises.",
+      "colorTakenBy": "Déjà utilisée par : {{names}}"
     },
     "role": {
       "heading": "Rôle et spécialisation",

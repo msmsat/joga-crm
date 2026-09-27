@@ -144,6 +144,11 @@
     "promoCreate": "Krijo kod promocional",
     "promoCodePlaceholder": "VERË25",
     "promoValidUntil": "I vlefshëm deri më",
+    "promoClient": "Klienti",
+    "promoAllClients": "Të gjithë klientët",
+    "promoValidFrom": "I vlefshëm nga",
+    "promoFrom": "nga",
+    "promoPeriodInvalid": "Data e fillimit është pas datës së mbarimit",
     "promoUsageLimit": "Kufiri i përdorimit",
     "promoAdd": "+ Shto kod promocional",
     "promoList": "Kode promocionale",
@@ -151,6 +156,7 @@
     "promoUntil": "deri",
     "promoStatus": {
       "active": "Aktiv",
+      "scheduled": "Ende nuk ka filluar",
       "expired": "I skaduar",
       "exhausted": "Kufiri u arrit",
       "disabled": "I çaktivizuar"

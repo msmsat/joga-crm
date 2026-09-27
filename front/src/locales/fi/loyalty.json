@@ -144,6 +144,11 @@
     "promoCreate": "Luo alennuskoodi",
     "promoCodePlaceholder": "KESÄ25",
     "promoValidUntil": "Voimassa asti",
+    "promoClient": "Asiakas",
+    "promoAllClients": "Kaikki asiakkaat",
+    "promoValidFrom": "Voimassa alkaen",
+    "promoFrom": "alkaen",
+    "promoPeriodInvalid": "Alkupäivä on loppupäivän jälkeen",
     "promoUsageLimit": "Käyttöraja",
     "promoAdd": "+ Lisää alennuskoodi",
     "promoList": "Alennuskoodit",
@@ -151,6 +156,7 @@
     "promoUntil": "asti",
     "promoStatus": {
       "active": "Aktiivinen",
+      "scheduled": "Ei alkanut",
       "expired": "Vanhentunut",
       "exhausted": "Käyttöraja saavutettu",
       "disabled": "Poistettu käytöstä"

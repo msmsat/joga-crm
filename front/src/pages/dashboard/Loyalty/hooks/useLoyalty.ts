@@ -106,7 +106,9 @@ export function useLoyalty() {
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
+      // Поверх панели открыто окно кита («Новый клиент» у промокода): Escape
+      // закрывает его, а не заодно и панель с недозаполненной формой.
+      if (e.key === 'Escape' && !document.querySelector('.v-overlay')) {
         setDrawerVisible(false);
         setTimeout(() => setDrawer(null), 300);
       }

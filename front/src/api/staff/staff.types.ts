@@ -29,7 +29,8 @@ export interface StaffCreate {
 }
 
 // role необязателен: у владельца роль не меняется — поле просто не отправляем.
-export type StaffUpdate = Omit<StaffCreate, 'password' | 'role'> & { role?: string }
+// color — цвет в журнале (#RRGGBB). Не прислали — сервер его не трогает.
+export type StaffUpdate = Omit<StaffCreate, 'password' | 'role'> & { role?: string; color?: string }
 
 export interface StaffMessagePayload {
   text: string
@@ -142,6 +143,9 @@ export interface StaffListItem {
   is_specialist: boolean
   photo_url: string | null
   avatar_gradient: string | null
+  // Цвет в журнале (StudioMember.color). null — строка заведена в обход
+  // роутеров (сиды); тогда цвет берёт staffColor() из той же палитры.
+  color: string | null
 }
 
 export interface StaffSummary {

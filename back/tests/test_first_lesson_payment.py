@@ -9,6 +9,8 @@ docs/superpowers/specs/2026-09-26-first-lesson-discount-and-booking-payment-desi
   * выключатель администратора делает запись обычной;
   * чек шага оплаты (промокод, ваучер) и запись с наличными — одной
     транзакцией: не прошла оплата — нет и брони;
+  * ручная скидка администратора в процентах — в том же ряду скидок (без
+    стека), и в оплату уходит ровно она;
   * 100 % — прежний подарок (бесплатно, без долга);
   * первое занятие со скидкой не требует абонемента в групповом Журнале и в
     мини-приложении при «Предоплате при записи».
@@ -220,6 +222,51 @@ def test_preview_lists_first_lesson_promo_and_voucher():
                 assert used["certificate_error"] == "loyalty.cert_used" and used["total"] == 500
                 missing = await _preview(http, key, certificate_code="NO-SUCH")
                 assert missing["certificate_error"] == "loyalty.cert_not_found"
+        finally:
+            await _cleanup(ids)
+    asyncio.run(run())
+
+
+def test_manual_discount_competes_with_the_others_and_is_what_gets_paid():
+    """Скидка администратора — в общем ряду, а не поверх: 10 % против первого
+    занятия 50 % проигрывает (скидки не суммируются), 70 % — выигрывает, и
+    наличными принимается ровно её итог. Сервер пересчитывает сам: итог со
+    скидкой без самой скидки в оплате не пройдёт."""
+    async def run():
+        ids = await _seed(percent=50)
+        try:
+            async with crm._client(_app(ids)) as http:
+                key = (await _quote(http, ids))["quote_id"]
+
+                weak = await _preview(http, key, manual_discount_percent=10)
+                assert weak["total"] == 500
+                assert weak["discounts"] == [{"kind": "first_lesson", "amount": 500}]
+
+                strong = await _preview(http, key, manual_discount_percent=70)
+                assert strong["total"] == 300
+                assert strong["discounts"] == [{"kind": "manual", "amount": 700}]
+
+                for wrong in (0, 101):
+                    refused = await http.post(f"/schedule/booking-quotes/{key}/payment-preview",
+                                              json={"manual_discount_percent": wrong})
+                    assert refused.status_code == 422, refused.text
+
+                stale = await http.post("/schedule/bookings", json={
+                    "quote_id": key, "payment": {"expected_total": 300}})
+                assert stale.status_code == 409, stale.text
+                assert await _reservation(ids) is None
+
+                created = await http.post("/schedule/bookings", json={
+                    "quote_id": key, "payment": {"manual_discount_percent": 70, "expected_total": 300}})
+                assert created.status_code == 200, created.text
+
+            reservation = await _reservation(ids)
+            async with async_session_maker() as db:
+                debt = await db.get(ClientPayment, reservation.debt_payment_id)
+                assert (debt.status, debt.amount) == ("success", 300), (debt.status, debt.amount)
+                income = (await db.execute(select(Operation).where(
+                    Operation.studio_id == ids["studio"], Operation.type == "in"))).scalars().all()
+                assert [(op.amount, op.method) for op in income] == [(300, "cash")], income
         finally:
             await _cleanup(ids)
     asyncio.run(run())

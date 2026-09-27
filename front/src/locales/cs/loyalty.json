@@ -144,6 +144,11 @@
     "promoCreate": "Vytvořit promo kód",
     "promoCodePlaceholder": "LETO25",
     "promoValidUntil": "Platí do",
+    "promoClient": "Klient",
+    "promoAllClients": "Všichni klienti",
+    "promoValidFrom": "Platí od",
+    "promoFrom": "od",
+    "promoPeriodInvalid": "Datum začátku je po datu konce",
     "promoUsageLimit": "Limit použití",
     "promoAdd": "+ Přidat promo kód",
     "promoList": "Promo kódy",
@@ -151,6 +156,7 @@
     "promoUntil": "do",
     "promoStatus": {
       "active": "Aktivní",
+      "scheduled": "Ještě nezačal",
       "expired": "Propadlý",
       "exhausted": "Limit vyčerpán",
       "disabled": "Vypnutý"

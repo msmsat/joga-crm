@@ -144,6 +144,11 @@
     "promoCreate": "Opret rabatkode",
     "promoCodePlaceholder": "SOMMER25",
     "promoValidUntil": "Gyldig til",
+    "promoClient": "Kunde",
+    "promoAllClients": "Alle kunder",
+    "promoValidFrom": "Gyldig fra",
+    "promoFrom": "fra",
+    "promoPeriodInvalid": "Startdatoen ligger efter slutdatoen",
     "promoUsageLimit": "Brugsgrænse",
     "promoAdd": "+ Tilføj rabatkode",
     "promoList": "Rabatkoder",
@@ -151,6 +156,7 @@
     "promoUntil": "til",
     "promoStatus": {
       "active": "Aktiv",
+      "scheduled": "Ikke startet",
       "expired": "Udløbet",
       "exhausted": "Grænsen er nået",
       "disabled": "Deaktiveret"

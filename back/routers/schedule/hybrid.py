@@ -63,6 +63,9 @@ async def services_availability(request: Request, query: Annotated[ServicesDayQu
     days = await resource_availability.services_day(db, studio_id=ctx.studio_id, day=query.day, client=False)
     return ServicesDayRead(services=[
         ServiceDayRead(service_id=row.service_id, branch_id=row.branch_id, reason=row.availability.reason,
+                       free_by_teacher={teacher_id: [slot.local_start.hour * 60 + slot.local_start.minute
+                           for slot in row.availability.slots if teacher_id in slot.teacher_ids]
+                           for teacher_id in {tid for slot in row.availability.slots for tid in slot.teacher_ids}},
                        free=[slot.local_start.hour * 60 + slot.local_start.minute
                              for slot in row.availability.slots])
         for row in days])

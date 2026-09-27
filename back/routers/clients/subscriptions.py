@@ -228,7 +228,7 @@ async def sell_subscription(
     # самая выгодная клиенту (resolve_price) — не стек, если явно не включён.
     promo = None
     if body.promo_code:
-        promo = await find_valid_promo(ctx.studio_id, body.promo_code, db)
+        promo = await find_valid_promo(ctx.studio_id, body.promo_code, db, client_id)
     resolved = await resolve_price(db, ctx.studio_id, client_id, package.price, promo)
 
     sub = await attach_subscription(

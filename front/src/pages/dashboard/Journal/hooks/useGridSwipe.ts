@@ -13,11 +13,16 @@ const MAX_MS = 700;
  * в экран), так что жест не спорит с прокруткой; вертикальную прокрутку он не
  * трогает — горизонтальный сдвиг обязан заметно преобладать.
  * Касание, начатое на карточке занятия, не считается: карточку тянут.
+ *
+ * Тот же жест листает разделы мастера записи (booking-wizard): там свой
+ * список исключений — ряды, которые сами листаются вбок, и поля ввода, — и
+ * работает он на любой ширине: мастер открывается и на планшете.
  */
 export function useGridSwipe(
   ref: React.RefObject<HTMLElement | null>,
   enabled: boolean,
   onSwipe: (dir: 1 | -1) => void,
+  { ignore = '.booking-card', phoneOnly = true }: { ignore?: string; phoneOnly?: boolean } = {},
 ) {
   // Колбэк в ref: иначе слушатели переподписывались бы на каждый рендер.
   const cb = useRef(onSwipe);
@@ -30,7 +35,7 @@ export function useGridSwipe(
 
     const onStart = (e: TouchEvent) => {
       const target = e.target as HTMLElement;
-      if (e.touches.length !== 1 || target.closest('.booking-card') || !window.matchMedia(PHONE).matches) {
+      if (e.touches.length !== 1 || target.closest(ignore) || (phoneOnly && !window.matchMedia(PHONE).matches)) {
         start = null;
         return;
       }
@@ -55,5 +60,5 @@ export function useGridSwipe(
       el.removeEventListener('touchstart', onStart);
       el.removeEventListener('touchend', onEnd);
     };
-  }, [ref, enabled]);
+  }, [ref, enabled, ignore, phoneOnly]);
 }

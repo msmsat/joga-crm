@@ -86,6 +86,9 @@ class StaffUpdate(BaseSchema):
     photo_url: Optional[str] = None
     schedule: list[StaffWorkingHoursItem] = []
     branch_ids: list[int] = []
+    # Цвет в журнале. None — не менять: так карточку правят старые клиенты и
+    # ассистент. Снять цвет нельзя — у каждого мастера он должен быть.
+    color: Optional[str] = Field(None, pattern=r"^#[0-9A-Fa-f]{6}$")
 
 
 class StaffMessageRequest(BaseSchema):

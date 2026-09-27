@@ -144,6 +144,11 @@
     "promoCreate": "Crear código promocional",
     "promoCodePlaceholder": "VERANO25",
     "promoValidUntil": "Válido hasta",
+    "promoClient": "Cliente",
+    "promoAllClients": "Todos los clientes",
+    "promoValidFrom": "Válido desde",
+    "promoFrom": "desde",
+    "promoPeriodInvalid": "La fecha de inicio es posterior a la de fin",
     "promoUsageLimit": "Límite de uso",
     "promoAdd": "+ Añadir código promocional",
     "promoList": "Códigos promocionales",
@@ -151,6 +156,7 @@
     "promoUntil": "hasta",
     "promoStatus": {
       "active": "Activo",
+      "scheduled": "Aún no empieza",
       "expired": "Caducado",
       "exhausted": "Límite alcanzado",
       "disabled": "Desactivado"

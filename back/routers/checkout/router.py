@@ -101,12 +101,16 @@ async def _quote(
     db: AsyncSession, studio_id: int, client_id: int, package: "SubscriptionPackage | ServiceAsProduct",
     product_type: str, promo_code: str | None, use_bonuses: bool,
     use_deposit: bool = False, certificate_code: str | None = None,
+    *, manual_percent: int | None = None,
 ) -> PriceQuote:
     """Общее ядро calculate (6.7) и pay (6.9) — обе должны считать одинаково,
     иначе pay пересчитает другую сумму, чем показал calculate.
 
     Порядок списаний детерминированный (V5-6, 1.1): скидки → сертификат
     (номинал) → депозит → бонусы → остаток к оплате методом.
+
+    `manual_percent` — ручная скидка администратора с шага оплаты записи
+    (services/booking_checkout); у кассы и Stripe её нет.
     """
     base_price = package.price if product_type == "subscription" else package.per_visit_price
 
@@ -114,7 +118,7 @@ async def _quote(
     promo_valid = True
     if promo_code:
         try:
-            promo = await find_valid_promo(studio_id, promo_code, db)
+            promo = await find_valid_promo(studio_id, promo_code, db, client_id)
         except HTTPException:
             promo_valid = False
 
@@ -123,6 +127,7 @@ async def _quote(
     resolved = await resolve_price(
         db, studio_id, client_id, base_price, promo,
         first_lesson_percent=getattr(package, "first_lesson_percent", None),
+        manual_percent=manual_percent,
     )
     discount = base_price - resolved.final_price
 
@@ -504,7 +509,7 @@ async def pay(
 async def perform_pay(
     db: AsyncSession, studio_id: int, user_id: int, body: CheckoutPayRequest, *,
     method: str, expected_total: int | None = None, debt: "ClientPayment | None" = None,
-    reservation_id: int | None = None,
+    reservation_id: int | None = None, manual_percent: int | None = None,
 ) -> CheckoutPayResult:
     """Проведение оплаты. Одна транзакция: доход в Финансы, списание бонусов,
     начисление продукта, лог в События. Сбой на любом шаге откатывает всё —
@@ -531,6 +536,9 @@ async def perform_pay(
 
     `reservation_id` — бронь, за которую платят (только "lesson"): по её
     снимку считается скидка первого занятия (`_get_client_package`).
+
+    `manual_percent` — ручная скидка администратора с шага оплаты записи.
+    Не поле `body`: снаружи, через /checkout/pay, её не передать.
     """
     await lock_studio(db, studio_id)
     client, package = await _get_client_package(
@@ -549,7 +557,7 @@ async def perform_pay(
     quote = await _quote(
         db, studio_id, body.client_id, package,
         body.product_type, body.promo_code, body.use_bonuses,
-        body.use_deposit, body.certificate_code,
+        body.use_deposit, body.certificate_code, manual_percent=manual_percent,
     )
     # Ничего ещё не добавлено в сессию — обе проверки ниже падают без отката.
     reject_dead_promo(body.promo_code, quote)

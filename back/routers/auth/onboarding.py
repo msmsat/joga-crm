@@ -9,6 +9,7 @@ from schemas import OnboardingRequest, SelectStudioRequest, StudioListItem, Toke
 from security import create_access_token
 from services import terminology
 from services.contacts import ensure_user_contacts_free
+from services.members import STAFF_PALETTE
 from dependencies import ALGORITHM, SECRET_KEY, get_current_user, oauth2_scheme
 from jose import jwt
 
@@ -107,6 +108,8 @@ async def _create_studio_with_defaults(user: User, data: OnboardingRequest, db: 
         name=user.name,
         last_name=user.last_name,
         photo_url=user.photo_url,
+        # Студия новая, участников в ней нет — первый цвет палитры.
+        color=STAFF_PALETTE[0],
     ))
 
     return new_studio

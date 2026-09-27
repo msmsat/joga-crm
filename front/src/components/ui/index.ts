@@ -16,6 +16,8 @@ export { usePopoverPosition, placePopover } from './popoverPosition';
 export type { Placement, Side } from './popoverPosition';
 export { Select } from './Select';
 export type { SelectOption, SelectProps } from './Select';
+export { PillSelect } from './PillSelect';
+export type { PillSelectOption, PillSelectProps } from './PillSelect';
 export { Switch } from './Switch';
 export type { SwitchProps } from './Switch';
 export { ConfirmModal } from './ConfirmModal';

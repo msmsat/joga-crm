@@ -214,7 +214,10 @@
         "name": "Ad zorunludur",
         "email": "Geçersiz e-posta"
       },
-      "contactsOwnedByEmployee": "E-posta ve telefon çalışanın hesabına aittir — bunları kendi profilinden değiştirir."
+      "contactsOwnedByEmployee": "E-posta ve telefon çalışanın hesabına aittir — bunları kendi profilinden değiştirir.",
+      "color": "Takvimdeki renk",
+      "colorHint": "Çalışanın takvimdeki sütunu ve dersleri bu renkle gösterilir. Nokta, başkalarının zaten kullandığı renkleri işaretler.",
+      "colorTakenBy": "Zaten kullanan: {{names}}"
     },
     "role": {
       "heading": "Rol ve uzmanlık",

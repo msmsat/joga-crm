@@ -214,7 +214,10 @@
         "name": "Navn er påkrævet",
         "email": "Ugyldig e-mail"
       },
-      "contactsOwnedByEmployee": "E-mail og telefon hører til medarbejderens konto — de ændrer dem i deres egen profil."
+      "contactsOwnedByEmployee": "E-mail og telefon hører til medarbejderens konto — de ændrer dem i deres egen profil.",
+      "color": "Farve i kalenderen",
+      "colorHint": "Medarbejderens kolonne og hold vises i denne farve i kalenderen. En prik markerer farver, som andre allerede har.",
+      "colorTakenBy": "Bruges allerede af: {{names}}"
     },
     "role": {
       "heading": "Rolle og specialisering",

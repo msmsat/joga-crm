@@ -214,7 +214,10 @@
         "name": "Imię jest wymagane",
         "email": "Nieprawidłowy email"
       },
-      "contactsOwnedByEmployee": "Email i telefon należą do konta pracownika — zmienia je we własnym profilu."
+      "contactsOwnedByEmployee": "Email i telefon należą do konta pracownika — zmienia je we własnym profilu.",
+      "color": "Kolor w grafiku",
+      "colorHint": "Tym kolorem w grafiku oznaczona jest kolumna i zajęcia pracownika. Kropką oznaczono kolory, które mają już inni.",
+      "colorTakenBy": "Już używa: {{names}}"
     },
     "role": {
       "heading": "Rola i specjalizacja",

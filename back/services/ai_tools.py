@@ -165,6 +165,7 @@ from schemas.staff.staff import StaffProfileResponse
 from schemas.staff.staff import StaffDayOverrideRequest
 from schemas.studio.studio import BranchCreate, ServiceCreate, ServiceRead, ServiceUpdate
 from services import service_pricing, studio_time
+from services.members import STAFF_PALETTE
 from services.contacts import normalize, normalized_column
 from services.working_hours import assert_within_working_hours
 from services.llm import TIER_FAST, TIER_SMART
@@ -906,6 +907,9 @@ class UpdateStaffArgs(BaseModel):
         None, description="Индивидуальные цены и длительности услуг сотрудника. Прислать "
                           "нужно ВЕСЬ набор его особых цен и длительностей, а не одну "
                           "изменённую: чего в списке нет, то возвращается к Каталогу")
+    color: Optional[str] = Field(
+        None, pattern=r"^#[0-9A-Fa-f]{6}$",
+        description="Цвет сотрудника в журнале, #RRGGBB. Палитра студии: " + ", ".join(STAFF_PALETTE))
 
 
 class WorkDay(BaseModel):
@@ -1082,8 +1086,12 @@ class CreatePromoArgs(BaseModel):
     code: str
     value: int = Field(..., ge=1)
     discount_type: Literal["percent", "amount"] = "percent"
+    # Период действия «с … по …», обе даты включительно; пусто — без границы.
+    valid_from: Optional[date] = None
     valid_until: Optional[date] = None
     usage_limit: Optional[int] = None
+    # Промокод лично для одного клиента: другой его применить не сможет.
+    client_id: Optional[int] = None
 
 
 class NotificationToggleArgs(BaseModel):
@@ -2818,7 +2826,7 @@ async def update_staff(ctx: StudioContext, db: AsyncSession, args: UpdateStaffAr
     """Изменить сотрудника: должность (department), роль доступа (access_role:
     admin/trainer), список услуг, ставку и тип оплаты. Указывать нужно только
     то, что меняется, — остальное останется как было. Роль владельца этим
-    инструментом не меняется.
+    инструментом не меняется. color — цвет его колонки и занятий в журнале.
 
     service_prices — индивидуальные цены и длительности услуг («у Анны стрижка
     стоит 700 и длится 45 минут»: price и duration_min одной строки). Назначаются
@@ -2826,7 +2834,7 @@ async def update_staff(ctx: StudioContext, db: AsyncSession, args: UpdateStaffAr
     сотрудника: услуге, которой в списке нет, вернутся цена и время Каталога.
     Чтобы снять надбавку с одной услуги, пришли остальные без неё."""
     body = await _staff_update_body(args.staff_id, ctx, db)
-    for field in ("department", "salary", "rate", "rate_type"):
+    for field in ("department", "salary", "rate", "rate_type", "color"):
         value = getattr(args, field)
         if value is not None:
             body[field] = value
@@ -3210,12 +3218,15 @@ async def issue_certificate(ctx: StudioContext, db: AsyncSession, args: IssueCer
     effect="Промокод сразу начнёт приниматься в кассе при покупке абонемента.",
 )
 async def create_promo(ctx: StudioContext, db: AsyncSession, args: CreatePromoArgs) -> dict:
-    """Создать промокод на скидку: код, процент или сумма, срок действия,
-    лимит применений. Клиент вводит его в кассе при покупке абонемента."""
+    """Создать промокод на скидку: код, процент или сумма, период действия
+    (с valid_from по valid_until), лимит применений. С client_id промокод
+    выписан лично этому клиенту — у других он не примется. Клиент вводит его в
+    кассе при покупке абонемента."""
     promo = await _r_create_promocode(
         body=PromoCodeCreate(
             code=args.code, discount_type=args.discount_type, value=args.value,
-            valid_until=args.valid_until, usage_limit=args.usage_limit,
+            valid_from=args.valid_from, valid_until=args.valid_until,
+            usage_limit=args.usage_limit, client_id=args.client_id,
         ),
         ctx=ctx, db=db,
     )

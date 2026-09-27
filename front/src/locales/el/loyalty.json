@@ -144,6 +144,11 @@
     "promoCreate": "Δημιουργία κωδικού προσφοράς",
     "promoCodePlaceholder": "ΚΑΛΟΚΑΙΡΙ25",
     "promoValidUntil": "Ισχύει έως",
+    "promoClient": "Πελάτης",
+    "promoAllClients": "Όλοι οι πελάτες",
+    "promoValidFrom": "Ισχύει από",
+    "promoFrom": "από",
+    "promoPeriodInvalid": "Η ημερομηνία έναρξης είναι μετά τη λήξη",
     "promoUsageLimit": "Όριο χρήσης",
     "promoAdd": "+ Προσθήκη κωδικού",
     "promoList": "Κωδικοί προσφοράς",
@@ -151,6 +156,7 @@
     "promoUntil": "έως",
     "promoStatus": {
       "active": "Ενεργός",
+      "scheduled": "Δεν έχει ξεκινήσει",
       "expired": "Έληξε",
       "exhausted": "Το όριο εξαντλήθηκε",
       "disabled": "Απενεργοποιημένος"

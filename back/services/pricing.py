@@ -2,8 +2,9 @@
 
 Берёт базовую цену и применяет студийную скидку (StudioDiscountConfig),
 персональный оффер клиента (ClientOffer), промокод, скидку новичка по
-рефералке и скидку первого занятия — по правилу «самая выгодная клиенту, без
-стека» (если явно не включён stackable на студийной скидке). Реальные деньги не
+рефералке, скидку первого занятия и ручную скидку администратора — по правилу
+«самая выгодная клиенту, без стека» (если явно не включён stackable на
+студийной скидке). Реальные деньги не
 двигает: возвращает только итоговую цену: списание/эквайринг — забота
 кассы/мини-приложения (см. CLAUDE.md §2.16).
 """
@@ -44,6 +45,9 @@ class ResolvedPrice:
     # Скидка первого занятия. Гасить её нечего: право на первое занятие гасит
     # сама бронь (services/booking_access.trial_applies смотрит на брони).
     first_lesson_discount_applied: int = 0
+    # Ручная скидка администратора на шаге оплаты записи. Разовая по природе:
+    # живёт в одном чеке, гасить после продажи нечего.
+    manual_discount_applied: int = 0
 
     def mark_used(self) -> None:
         """Зафиксировать одноразовые скидки как потраченные.
@@ -69,9 +73,15 @@ async def resolve_price(
     promo: Optional[StudioPromoCode] = None,
     *,
     first_lesson_percent: Optional[int] = None,
+    manual_percent: Optional[int] = None,
 ) -> ResolvedPrice:
     """`promo` — уже найденный и провалидированный промокод (find_valid_promo),
     поиск по коду сюда не входит — вызывающий решает, что делать с 404/400.
+
+    `manual_percent` — скидка, которую администратор дал от себя на шаге
+    оплаты записи. Идёт в общий ряд, как промокод, а не поверх всех: иначе
+    «10 %» от администратора складывалось бы с «50 %» первого занятия, хотя
+    скидки в продукте не суммируются.
 
     `first_lesson_percent` — скидка первого занятия, если она положена ЭТОЙ
     продаже. Решает вызывающий, а не движок: при записи — по правилам студии
@@ -133,6 +143,11 @@ async def resolve_price(
         if amount > 0:
             candidates.append(("first_lesson", amount, None))
 
+    if manual_percent:
+        amount = apply_discount(_AsDiscount("percent", manual_percent), base_price)
+        if amount > 0:
+            candidates.append(("manual", amount, None))
+
     if not candidates:
         return ResolvedPrice(final_price=base_price)
 
@@ -156,6 +171,8 @@ async def resolve_price(
             result.referral_discount_applied = amount
         elif kind == "first_lesson":
             result.first_lesson_discount_applied = amount
+        elif kind == "manual":
+            result.manual_discount_applied = amount
 
     result.final_price = max(0, base_price - total_discount)
     return result

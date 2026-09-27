@@ -58,7 +58,7 @@ export interface AvailabilityRead { slots: AvailabilitySlot[]; reason: string | 
 /** Свободные начала одной индивидуальной услуги в одном филиале за день —
  *  минутами от местной полуночи (12:00 → 720). Зеркало ServiceDayRead
  *  (back/schemas/schedule/hybrid.py). */
-export interface ServiceDayRead { service_id: number; branch_id: number; free: number[]; reason: string | null }
+export interface ServiceDayRead { service_id: number; branch_id: number; free: number[]; free_by_teacher: Record<number, number[]>; reason: string | null }
 export interface ServicesDayRead { services: ServiceDayRead[] }
 /** Мастер и то, что с ним реально связано: его индивидуальные услуги (с его ценой) и филиалы,
  *  где он принимает. Зеркало ResourceStaffMemberRead (back/schemas/schedule/hybrid.py). */
@@ -91,12 +91,15 @@ export interface BookingTerms {
   first_lesson: boolean; first_lesson_offered: boolean; first_lesson_percent: number | null;
 }
 export interface QuoteRead { quote_id: string; expires_at: string; booking_mode: BookingMode; terms: BookingTerms; next_action: NextAction; reservation_id: number | null }
-/** Промокод и ваучер (подарочный сертификат) шага оплаты. */
-export interface PaymentCodes { promo_code?: string | null; certificate_code?: string | null }
+/** Промокод, ваучер (подарочный сертификат) и ручная скидка администратора
+ *  в процентах (1…100) — шаг оплаты. */
+export interface PaymentCodes {
+  promo_code?: string | null; certificate_code?: string | null; manual_discount_percent?: number | null;
+}
 /** Оплата наличными при подтверждении записи. `expected_total` — итог, который видел
  *  администратор: сервер считает заново и при расхождении не записывает ничего. */
 export interface ConfirmPayment extends PaymentCodes { expected_total: number }
-export type PaymentDiscountKind = 'studio' | 'offer' | 'promo' | 'referral' | 'first_lesson';
+export type PaymentDiscountKind = 'studio' | 'offer' | 'promo' | 'referral' | 'first_lesson' | 'manual';
 /** Чек шага оплаты — зеркало PaymentPreviewRead (back/schemas/schedule/hybrid.py). */
 export interface PaymentPreview {
   currency: string;

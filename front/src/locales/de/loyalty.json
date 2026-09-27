@@ -144,6 +144,11 @@
     "promoCreate": "Aktionscode erstellen",
     "promoCodePlaceholder": "SOMMER25",
     "promoValidUntil": "Gültig bis",
+    "promoClient": "Kunde",
+    "promoAllClients": "Alle Kunden",
+    "promoValidFrom": "Gültig ab",
+    "promoFrom": "ab",
+    "promoPeriodInvalid": "Das Startdatum liegt nach dem Enddatum",
     "promoUsageLimit": "Nutzungslimit",
     "promoAdd": "+ Aktionscode hinzufügen",
     "promoList": "Aktionscodes",
@@ -151,6 +156,7 @@
     "promoUntil": "bis",
     "promoStatus": {
       "active": "Aktiv",
+      "scheduled": "Noch nicht gestartet",
       "expired": "Abgelaufen",
       "exhausted": "Limit erreicht",
       "disabled": "Deaktiviert"

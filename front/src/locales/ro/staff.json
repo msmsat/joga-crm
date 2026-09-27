@@ -214,7 +214,10 @@
         "name": "Numele este obligatoriu",
         "email": "Email invalid"
       },
-      "contactsOwnedByEmployee": "Emailul și telefonul aparțin contului angajatului — el le schimbă în propriul profil."
+      "contactsOwnedByEmployee": "Emailul și telefonul aparțin contului angajatului — el le schimbă în propriul profil.",
+      "color": "Culoare în jurnal",
+      "colorHint": "Cu această culoare apar în jurnal coloana și ședințele angajatului. Un punct marchează culorile folosite deja de alții.",
+      "colorTakenBy": "Folosită deja de: {{names}}"
     },
     "role": {
       "heading": "Rol și specializare",

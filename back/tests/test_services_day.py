@@ -142,6 +142,11 @@ async def _http_answers_in_minutes(ids):
     # CRM считает поминутно (client=False) — эталон в том же режиме.
     single = await _single(ids, ids["service"], ids["branch_a"], client=False)
     assert rows[0]["free"] == [slot.local_start.hour * 60 + slot.local_start.minute for slot in single.slots]
+    assert rows[0]["free_by_teacher"] == {
+        str(teacher_id): [slot.local_start.hour * 60 + slot.local_start.minute
+                         for slot in single.slots if teacher_id in slot.teacher_ids]
+        for teacher_id in {tid for slot in single.slots for tid in slot.teacher_ids}
+    }
 
 
 def test_services_day_against_the_database(monkeypatch):

@@ -144,6 +144,11 @@
     "promoCreate": "Creează cod promoțional",
     "promoCodePlaceholder": "VARĂ25",
     "promoValidUntil": "Valabil până la",
+    "promoClient": "Client",
+    "promoAllClients": "Toți clienții",
+    "promoValidFrom": "Valabil de la",
+    "promoFrom": "de la",
+    "promoPeriodInvalid": "Data de început este după data de sfârșit",
     "promoUsageLimit": "Limita de utilizare",
     "promoAdd": "+ Adaugă cod promoțional",
     "promoList": "Coduri promoționale",
@@ -151,6 +156,7 @@
     "promoUntil": "până la",
     "promoStatus": {
       "active": "Activ",
+      "scheduled": "Nu a început încă",
       "expired": "Expirat",
       "exhausted": "Limita a fost atinsă",
       "disabled": "Dezactivat"
