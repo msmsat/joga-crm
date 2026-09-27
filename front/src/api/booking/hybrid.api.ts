@@ -1,5 +1,5 @@
 import { client } from '../client';
-import type { AvailabilityQuery, AvailabilityRead, BookingRead, ConfirmPayment, CrmRescheduleQuoteRequest, PaymentCodes, PaymentPreview, QuoteRead, QuoteRequest, ResourceStaffRead } from './hybrid.types';
+import type { AvailabilityQuery, AvailabilityRead, BookingRead, ConfirmPayment, CrmRescheduleQuoteRequest, PaymentCodes, PaymentPreview, QuoteRead, QuoteRequest, ResourceStaffRead, ServicesDayRead } from './hybrid.types';
 
 const base = '/schedule';
 export const hybridApi = {
@@ -9,6 +9,9 @@ export const hybridApi = {
     return client.get(`${base}/availability?${params}`);
   },
   resourceStaff: () => client.get<ResourceStaffRead>(`${base}/resource-staff`),
+  /** Свободное время всех индивидуальных услуг на день одним запросом: мастер
+   *  записи показывает только услуги, свободные в названное время. */
+  servicesDay: (day: string) => client.get<ServicesDayRead>(`${base}/availability/services?day=${day}`),
   quote: (body: QuoteRequest & { client_id: number; hall_id?: number | null }) => client.post<QuoteRead>(`${base}/booking-quotes`, body),
   readQuote: (id: string) => client.get<QuoteRead | BookingRead>(`${base}/booking-quotes/${encodeURIComponent(id)}`),
   /** Чек шага оплаты: сколько заплатит клиент с этими кодами. Ничего не гасит. */

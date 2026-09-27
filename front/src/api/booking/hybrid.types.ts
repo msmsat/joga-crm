@@ -55,6 +55,11 @@ export interface CrmRescheduleQuoteRequest {
 export interface AvailabilityQuery { service_id: number; branch_id: number; date_from: string; date_to: string; teacher_id?: number; hall_id?: number; exclude_lesson_id?: number }
 export interface AvailabilitySlot { starts_at: string; local_start: string; tz_iana: string; teacher_ids: number[] }
 export interface AvailabilityRead { slots: AvailabilitySlot[]; reason: string | null }
+/** Свободные начала одной индивидуальной услуги в одном филиале за день —
+ *  минутами от местной полуночи (12:00 → 720). Зеркало ServiceDayRead
+ *  (back/schemas/schedule/hybrid.py). */
+export interface ServiceDayRead { service_id: number; branch_id: number; free: number[]; reason: string | null }
+export interface ServicesDayRead { services: ServiceDayRead[] }
 /** Мастер и то, что с ним реально связано: его индивидуальные услуги (с его ценой) и филиалы,
  *  где он принимает. Зеркало ResourceStaffMemberRead (back/schemas/schedule/hybrid.py). */
 export interface ResourceStaffMember {

@@ -50,17 +50,29 @@ export function ResourceBookingModal(props: Props) {
 }
 
 function ResourceSheet({ defaultTime, ...options }: Props) {
-  const { t } = useTranslation(['journal', 'common']);
+  const { t, i18n } = useTranslation(['journal', 'common']);
   const terms = useBusinessTerms('resource');
   const booking = useResourceBooking(options);
   const { choice, serviceId, branchId, teacherId, chosenService, loadingChoice, quote, quoting, saving, slots, reason } = booking;
   const shown = new Set(listedTimes(slots.map(slot => slot.local_start.slice(11, 16)), 15));
+  // Время записи — днём недели и числом, как на проверке мастера записи и в
+  // переносе («пн, 28 сентября, 09:00»), а не строкой ISO. Полдень — чтобы
+  // перевод часов не сдвинул день.
+  const when = (local: string) => `${new Date(`${local.slice(0, 10)}T12:00:00`).toLocaleDateString(
+    i18n.language, { weekday: 'short', day: 'numeric', month: 'long' })}, ${local.slice(11, 16)}`;
+  // Слово студии хранится строчным («специалист») — подпись строки открывает
+  // его, поэтому тот же форматтер, что у {{space, capitalize}} в локалях.
+  const staffLabel = terms.staff
+    ? i18n.services.formatter?.format(terms.staff.singular, 'capitalize', i18n.language) ?? terms.staff.singular
+    : t('journal:resourceBooking.staff');
 
   return (
     <ModalShell size="sm" onClose={options.onClose} maxWidth="640px" dismissible={!saving}>
+      {/* «Выберите услугу» — подсказка к первому шагу: услуга выбрана — и
+          подсказывать нечего, иначе шапка просит то, что уже сделано. */}
       <ModalHeader
         title={t('journal:resourceBooking.title')}
-        subtitle={terms.ready ? terms.message('choose_offering') : undefined}
+        subtitle={terms.ready && serviceId == null ? terms.message('choose_offering') : undefined}
       />
       <ModalBody>
         <fieldset disabled={saving} style={{ display: 'grid', gap: '12px', border: 0, padding: 0, margin: 0, minWidth: 0 }}>
@@ -104,8 +116,8 @@ function ResourceSheet({ defaultTime, ...options }: Props) {
 
           {quote ? (
             <div style={{ border: '1px solid rgba(var(--ink),0.08)', borderRadius: '12px', padding: '14px', display: 'grid', gap: '6px' }}>
-              <Row label={t('journal:resourceBooking.time')} value={quote.terms.domain.local_start.slice(0, 16).replace('T', ' ')} />
-              <Row label={terms.staff?.singular ?? t('journal:resourceBooking.staff')} value={quote.terms.domain.trainer_name} />
+              <Row label={t('journal:resourceBooking.time')} value={when(quote.terms.domain.local_start)} />
+              <Row label={staffLabel} value={quote.terms.domain.trainer_name} />
               <Row label={t('journal:resourceBooking.duration')} value={`${quote.terms.duration_min}`} />
               {/* Цены здесь нет: её со скидками и итогом называет блок оплаты ниже. */}
             </div>

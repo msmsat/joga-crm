@@ -207,9 +207,12 @@ async def calculate(db, actor: Actor, request, *, now=None, hall_id=None,
     member = (await db.execute(select(StudioMember).where(StudioMember.studio_id == actor.studio_id,
         StudioMember.user_id == teacher))).scalar_one()
     branch = await db.get(StudioBranch, request.branch_id)
+    # Подтверждение студией — только у записи самого клиента: запись из
+    # Журнала уже решение студии (то же правило, что в booking._check).
     terms = booking.Terms(lesson_id=0, local_start=slot.local_start, service_name=data.service.name,
         trainer_name=" ".join(x for x in (member.name, member.last_name) if x), branch_name=branch.name,
-        funding=funding, approval_required=rules.trainer_confirmation_required, base_price=price)
+        funding=funding, base_price=price,
+        approval_required=rules.trainer_confirmation_required and actor.domain is booking.Actor.CLIENT)
     return _snapshot(candidate, terms, studio, rules, request.payment_method,
                      starts_at=slot.starts_at.isoformat(), spot_number=1, first_lesson=first)
 

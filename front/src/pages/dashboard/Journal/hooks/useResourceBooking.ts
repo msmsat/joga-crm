@@ -131,10 +131,11 @@ export function useResourceBooking({
   const slots: AvailabilitySlot[] = availability?.slots ?? [];
   const reason = availability && availability.slots.length === 0 ? availability.reason ?? 'empty' : null;
 
-  const pick = async (slot: AvailabilitySlot, withFirstLesson = firstLesson) => {
-    if (serviceId == null || branchId == null || client == null || saving) return;
+  /** Условия записи на это время. `failed` — сервер отказал (об этом тост);
+   *  `stale` — ответ обогнал более новый выбор, и решать по нему нечего. */
+  const pick = async (slot: AvailabilitySlot, withFirstLesson = firstLesson): Promise<'ok' | 'failed' | 'stale'> => {
+    if (serviceId == null || branchId == null || client == null || saving) return 'stale';
     const version = ++quoteVersion.current;
-    lastSlot.current = slot;
     setQuoting(true);
     try {
       const request = {
@@ -143,22 +144,32 @@ export function useResourceBooking({
         first_lesson: withFirstLesson,
       };
       const result = await hybridApi.quote(request);
-      if (version === quoteVersion.current) {
-        setQuote(result);
-        payment.load(result.quote_id);
-      }
+      if (version !== quoteVersion.current) return 'stale';
+      // Время запоминается вместе с условиями, а не до ответа: не взялись —
+      // на экране прежние, и выключатель пересчитает именно их время.
+      lastSlot.current = slot;
+      setQuote(result);
+      payment.load(result.quote_id);
+      return 'ok';
     } catch (err) {
-      if (version === quoteVersion.current) toast.error(errorMessage(err, t));
+      if (version !== quoteVersion.current) return 'stale';
+      toast.error(errorMessage(err, t));
+      return 'failed';
     } finally {
       if (version === quoteVersion.current) setQuoting(false);
     }
   };
 
   /** Выключатель первого занятия на шаге оплаты: условия берутся заново на то
-   *  же время — скидка меняет сумму, а время и мастер остаются выбранными. */
+   *  же время — скидка меняет сумму, а время и мастер остаются выбранными.
+   *  Новых условий не дали — на экране прежние, и выключатель возвращается к
+   *  ним: иначе подтвердили бы скидку, которую на экране «сняли». */
   const setFirstLesson = (value: boolean) => {
     setFirstLessonState(value);
-    if (lastSlot.current) void pick(lastSlot.current, value);
+    if (!lastSlot.current) return;
+    void pick(lastSlot.current, value).then(outcome => {
+      if (outcome === 'failed') setFirstLessonState(!value);
+    });
   };
 
   /** Подтвердить запись и принять оплату наличными (сумма — из чека шага

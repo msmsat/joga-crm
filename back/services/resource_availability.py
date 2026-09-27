@@ -151,6 +151,87 @@ async def availability(db, *, now: datetime | None = None, client: bool = True, 
 
 
 @dataclass(frozen=True)
+class ServiceDay:
+    service_id: int
+    branch_id: int
+    availability: Availability
+
+
+async def services_day(db, *, studio_id: int, day: date, now: datetime | None = None,
+                       client: bool = True) -> list[ServiceDay]:
+    """Свободные начала ВСЕХ индивидуальных услуг студии на один день — по каждой
+    паре «услуга × филиал», где её кто-то ведёт.
+
+    Мастер записи в журнале сначала называет время, а услуги показывает только
+    те, на которые в это время можно записать. Поштучный `availability` на
+    каждую услугу — N запросов с одного экрана (и лимит 60 в минуту на всё).
+    Здесь снимок ОДИН: те же выборки, что делает `load`, только сразу по всем
+    мастерам и филиалам, а по парам он раскладывается в памяти теми же
+    условиями, что `load` ставит в SQL. Число SELECT не зависит ни от числа
+    услуг, ни от числа филиалов и мастеров.
+
+    Кто что ведёт и где — из `resource_staff`: правило допуска мастера у них
+    с `load` одно (`_eligible_staff`), и длительность услуги у мастера оттуда же.
+    """
+    if not date.min + SNAPSHOT_MARGIN <= day <= date.max - SNAPSHOT_MARGIN:
+        reject("INVALID_DATE_RANGE", 422)
+    report = await resource_staff(db, studio_id=studio_id)
+    pairs: dict[tuple[int, int], list[int]] = {}
+    durations: dict[int, dict[int, int]] = {}
+    for member in report.staff:
+        for service_id in member.service_ids:
+            durations.setdefault(service_id, {})[member.teacher_id] = member.service_durations[service_id]
+            for branch_id in member.branch_ids:
+                pairs.setdefault((service_id, branch_id), []).append(member.teacher_id)
+    if not pairs:
+        return []
+
+    studio = await _resource_studio(db, studio_id)
+    services = {row.id: row for row in (await db.execute(select(Service).where(
+        Service.studio_id == studio_id, Service.id.in_({service for service, _ in pairs}))
+        .execution_options(populate_existing=True))).scalars().all()}
+    rules = await load_rules(db, studio_id)
+    teachers = sorted({teacher for own in pairs.values() for teacher in own})
+    branches = sorted({branch for _, branch in pairs})
+    lower = datetime.combine(day - timedelta(days=3), time.min)
+    upper = datetime.combine(day + timedelta(days=4), time.min)
+    queries = {
+        "studio_hours": select(StudioWorkingHours).where(StudioWorkingHours.studio_id == studio_id),
+        "branch_hours": select(BranchWorkingHours).where(BranchWorkingHours.branch_id.in_(branches)),
+        "staff_hours": select(StaffWorkingHours).where(StaffWorkingHours.studio_id == studio_id,
+                                                    StaffWorkingHours.user_id.in_(teachers)),
+        "overrides": select(StaffDayOverride).where(StaffDayOverride.studio_id == studio_id,
+            StaffDayOverride.user_id.in_(teachers), StaffDayOverride.day >= day - timedelta(days=2),
+            StaffDayOverride.day <= day + timedelta(days=1)),
+        "lessons": select(Lesson).where(Lesson.studio_id == studio_id, Lesson.status != "cancelled",
+            Lesson.teacher_id.in_(teachers),
+            Lesson.start_time - Lesson.buffer_before_min * text("INTERVAL '1 minute'") < upper,
+            Lesson.start_time + (Lesson.duration_min + Lesson.buffer_after_min) * text("INTERVAL '1 minute'") > lower),
+        "busy": select(StaffBusyInterval).where(StaffBusyInterval.studio_id == studio_id,
+            StaffBusyInterval.user_id.in_(teachers), StaffBusyInterval.start_time < upper,
+            StaffBusyInterval.end_time > lower),
+    }
+    rows = {name: list((await db.execute(query.execution_options(populate_existing=True))).scalars().all())
+            for name, query in queries.items()}
+
+    moment = now or datetime.now(timezone.utc)
+    result = []
+    for (service_id, branch_id), own in sorted(pairs.items()):
+        mine = set(own)
+        data = AvailabilityData(studio, services[service_id], rules, own,
+                                durations={teacher: durations[service_id][teacher] for teacher in own})
+        data.studio_hours = rows["studio_hours"]
+        data.branch_hours = [row for row in rows["branch_hours"] if row.branch_id == branch_id]
+        data.staff_hours = [row for row in rows["staff_hours"] if row.user_id in mine]
+        data.overrides = [row for row in rows["overrides"] if row.user_id in mine]
+        data.lessons = [row for row in rows["lessons"] if row.teacher_id in mine]
+        data.busy = [row for row in rows["busy"] if row.user_id in mine]
+        result.append(ServiceDay(service_id, branch_id,
+                                 generate(data, date_from=day, date_to=day, now=moment, client=client)))
+    return result
+
+
+@dataclass(frozen=True)
 class StaffDayMember:
     teacher_id: int
     name: str

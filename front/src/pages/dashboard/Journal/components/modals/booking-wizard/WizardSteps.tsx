@@ -1,18 +1,22 @@
 // Шаги мастера записи: клиент, услуга, мастер. Выбор строки сразу ведёт
 // на следующий незаполненный шаг; «Продолжить» в подвале — для того, что уже
 // выбрано (заведённый здесь же клиент, возврат на шаг полоской).
-import { useMemo, useState } from 'react';
+// Справа от поиска на каждом шаге — кнопка даты и времени (when, WhenPicker):
+// она стоит над списком и не уезжает при прокрутке.
+import { useMemo, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useClientsList, useClientCategories } from '../../../../Clients/hooks/useClientsList';
 import { getAvatarColor, getInitials, nameInitials } from '../../../../Clients/utils/mapClient';
 import { usePriceLabel } from '../../../../../../hooks/usePriceLabel';
 import { useDurationLabel } from '../../../../../../hooks/useDurationLabel';
-import type { BookingWizardState } from './useBookingWizard';
+import { isTime, type BookingWizardState } from './useBookingWizard';
 import { WizardChips, WizardEmpty, WizardRow, WizardSearch } from './WizardParts';
 import * as Icons from '../../../../../../components/Icons';
 
+type StepProps = { w: BookingWizardState; when: ReactNode };
+
 /** onCreate — «+ Новый клиент»: лист меняется на форму клиента (NewClientStep). */
-export function ClientStep({ w, onCreate }: { w: BookingWizardState; onCreate: () => void }) {
+export function ClientStep({ w, when, onCreate }: StepProps & { onCreate: () => void }) {
   const { t } = useTranslation(['journal', 'clients', 'common']);
   const list = useClientsList();
   const categories = useClientCategories();
@@ -24,8 +28,11 @@ export function ClientStep({ w, onCreate }: { w: BookingWizardState; onCreate: (
   return (
     <>
       <div className="bw-tools">
-        <WizardSearch value={list.rawSearch} onChange={list.setRawSearch}
-                      placeholder={t('journal:resourceBooking.searchClient')} />
+        <div className="bw-tools-row">
+          <WizardSearch value={list.rawSearch} onChange={list.setRawSearch}
+                        placeholder={t('journal:resourceBooking.searchClient')} />
+          {when}
+        </div>
         <WizardChips value={list.category || 'all'} onPick={list.setCategory}
                      options={categories.map(c => ({
                        value: c.key,
@@ -58,23 +65,33 @@ export function ClientStep({ w, onCreate }: { w: BookingWizardState; onCreate: (
   );
 }
 
-export function ServiceStep({ w }: { w: BookingWizardState }) {
+export function ServiceStep({ w, when }: StepProps) {
   const { t } = useTranslation(['journal', 'common']);
   const priceLabel = usePriceLabel();
   const durationLabel = useDurationLabel();
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('');
+  // Только услуги, на которые в названное время можно записать. Пока время
+  // не названо — все. Пока расписание грузится — ждём, а не мигаем списком.
+  const timed = isTime(w.time);
+  const loading = timed && w.serviceList.some(s => w.serviceStates.get(s.id)?.kind === 'unknown');
+  const free = useMemo(
+    () => w.serviceList.filter(s => w.serviceStates.get(s.id)?.kind !== 'busy'),
+    [w.serviceList, w.serviceStates]);
   // Направления — категории услуг из Каталога, в порядке появления.
   const categories = useMemo(
-    () => [...new Set(w.serviceList.map(s => s.category).filter((c): c is string => !!c))],
-    [w.serviceList]);
+    () => [...new Set(free.map(s => s.category).filter((c): c is string => !!c))],
+    [free]);
   const q = search.trim().toLowerCase();
-  const shown = w.serviceList.filter(s =>
+  const shown = loading ? [] : free.filter(s =>
     (!category || s.category === category) && (!q || s.name.toLowerCase().includes(q)));
   return (
     <>
       <div className="bw-tools">
-        <WizardSearch value={search} onChange={setSearch} placeholder={t('journal:wizard.searchService')} />
+        <div className="bw-tools-row">
+          <WizardSearch value={search} onChange={setSearch} placeholder={t('journal:wizard.searchService')} />
+          {when}
+        </div>
         <WizardChips value={category} onPick={setCategory}
                      options={[{ value: '', label: t('journal:toolbar.all') }, ...categories.map(c => ({ value: c, label: c }))]} />
       </div>
@@ -86,20 +103,33 @@ export function ServiceStep({ w }: { w: BookingWizardState }) {
                        durationLabel(s.duration_from ?? s.duration_min, s.duration_to ?? s.duration_min)}`}
                      onClick={() => w.pickService(s)} />
         ))}
-        {shown.length === 0 && <WizardEmpty>{t('journal:resourceBooking.noServices')}</WizardEmpty>}
+        {shown.length === 0 && (
+          <WizardEmpty>
+            {loading ? t('common:loading')
+              : timed && free.length === 0 ? t('journal:wizard.noServicesAt', { time: w.time })
+              : t('journal:resourceBooking.noServices')}
+          </WizardEmpty>
+        )}
       </div>
     </>
   );
 }
 
-export function MasterStep({ w }: { w: BookingWizardState }) {
+export function MasterStep({ w, when }: StepProps) {
   const { t } = useTranslation('journal');
   const { trainers } = w;
   const states = w.masters.map(m => w.masterStates.get(m.id));
   const allBusy = states.length > 0 && states.every(st => st?.kind === 'busy');
   return (
+    <>
+    <div className="bw-tools">
+      <div className="bw-tools-row bw-tools-end">
+        {w.service && <span className="bw-tools-label">{w.service.name}</span>}
+        {when}
+      </div>
+    </div>
     <div className="bw-list">
-      {/* Время названо первым шагом — сразу видно, кто в него свободен. */}
+      {/* Время названо заранее — сразу видно, кто в него свободен. */}
       {allBusy && <div className="bw-note">{t('wizard.allBusy', { time: w.time })}</div>}
       {w.masters.map((m, i) => {
         const look = trainers.find(tr => tr.id === m.id);
@@ -130,5 +160,6 @@ export function MasterStep({ w }: { w: BookingWizardState }) {
       })}
       {w.masters.length === 0 && <WizardEmpty>{t('wizard.noMasters')}</WizardEmpty>}
     </div>
+    </>
   );
 }

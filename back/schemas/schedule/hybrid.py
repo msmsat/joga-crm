@@ -220,6 +220,30 @@ class AvailabilityRead(HybridSchema):
     reason: Optional[str] = None
 
 
+class ServicesDayQuery(HybridSchema):
+    """День, на который журнал спрашивает свободное время всех услуг разом."""
+    day: date
+
+
+class ServiceDayRead(HybridSchema):
+    """Свободные начала одной индивидуальной услуги в одном филиале за день.
+
+    Минутами от местной полуночи, а не слотами: начала идут поминутно, и
+    полный `AvailabilitySlot` на каждое — это ~600 объектов на услугу и
+    мегабайты на день по всем услугам. Экрану нужен ответ «свободно ли в
+    12:00»; конкретное начало и мастера потом всё равно берёт `availability`
+    выбранной услуги и quote.
+    """
+    service_id: int
+    branch_id: int
+    free: list[int]
+    reason: Optional[str] = None
+
+
+class ServicesDayRead(HybridSchema):
+    services: list[ServiceDayRead]
+
+
 class CrmAvailabilityQuery(AvailabilityQuery):
     # Зал выбирает только CRM (§HB-13 п.5): в Mini-app ресурсом по умолчанию
     # является мастер, и предлагать клиенту выбор зала первая версия не должна.

@@ -74,7 +74,7 @@ const NOT_A_MODAL = {
   'Finances/ConfirmModal': 'локальная обёртка подтверждения, своего содержания нет',
   'Journal/ResourceClientPicker': 'поле выбора клиента внутри ResourceBookingModal, своего окна нет',
   'Journal/WizardSteps': 'шаги клиент/услуга/мастер внутри BookingWizard',
-  'Journal/WhenStep': 'шаг «Дата и время» внутри BookingWizard',
+  'Journal/WhenPicker': 'кнопка и мини-окно даты и времени внутри листа BookingWizard',
   'Journal/WizardParts': 'поиск, чипы и строки списка внутри BookingWizard',
   'Journal/SummaryStep': 'шаг «Проверьте запись» внутри BookingWizard',
   'Journal/NewClientStep': 'форма нового клиента внутри листа BookingWizard, своего окна нет',

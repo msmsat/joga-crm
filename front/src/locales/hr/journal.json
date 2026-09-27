@@ -234,16 +234,19 @@
     "when": "Datum i vrijeme",
     "step": "Korak {{n}} od {{total}}",
     "searchService": "Traži uslugu",
-    "ownTime": "Vlastito vrijeme",
     "existing": "Već u rasporedu",
-    "newLesson": "Novi termin",
     "noMasters": "Ovu uslugu još nitko ne pruža",
-    "earlier": "Ranije",
     "check": "Provjerite rezervaciju",
     "change": "Promijeni",
     "confirm": "Potvrdi",
     "busyAt": "Zauzet u {{time}}",
-    "allBusy": "U {{time}} svi su zauzeti — odaberite najbliže slobodno vrijeme kod stručnjaka"
+    "allBusy": "U {{time}} svi su zauzeti — odaberite najbliže slobodno vrijeme kod stručnjaka",
+    "pickTime": "Odaberi vrijeme",
+    "apply": "Gotovo",
+    "datePlaceholder": "DD.MM.GGGG",
+    "badDate": "Unesite datum u obliku {{format}}",
+    "badTime": "Unesite vrijeme u obliku SS:MM",
+    "noServicesAt": "U {{time}} nema slobodnih usluga — odaberite drugo vrijeme"
   },
   "payment": {
     "title": "Plaćanje",

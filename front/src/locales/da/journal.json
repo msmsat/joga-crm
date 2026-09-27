@@ -230,16 +230,19 @@
     "when": "Dato og tid",
     "step": "Trin {{n}} af {{total}}",
     "searchService": "Søg ydelse",
-    "ownTime": "Eget tidspunkt",
     "existing": "Allerede planlagt",
-    "newLesson": "Ny session",
     "noMasters": "Ingen tilbyder denne ydelse endnu",
-    "earlier": "Tidligere",
     "check": "Tjek bookingen",
     "change": "Skift",
     "confirm": "Bekræft",
     "busyAt": "Optaget kl. {{time}}",
-    "allBusy": "Kl. {{time}} er alle optaget — vælg det nærmeste ledige tidspunkt hos en medarbejder"
+    "allBusy": "Kl. {{time}} er alle optaget — vælg det nærmeste ledige tidspunkt hos en medarbejder",
+    "pickTime": "Vælg tid",
+    "apply": "Færdig",
+    "datePlaceholder": "DD.MM.ÅÅÅÅ",
+    "badDate": "Indtast datoen som {{format}}",
+    "badTime": "Indtast tiden som TT:MM",
+    "noServicesAt": "Kl. {{time}} er ingen ydelser ledige — vælg et andet tidspunkt"
   },
   "payment": {
     "title": "Betaling",

@@ -265,6 +265,41 @@ def test_confirm_with_cash_books_and_pays_in_one_transaction():
     asyncio.run(run())
 
 
+def test_trainer_confirmation_does_not_hold_a_booking_the_studio_made_itself():
+    """«Подтверждение тренером» — правило записи клиента, не стойки.
+
+    Заявки одобряют владелец и администратор — те же, кто записывает в
+    Журнале. Раньше запись сотрудника становилась «ожидающей», и шаг оплаты
+    принимал наличные за бронь, которую ещё «могли отклонить».
+    """
+    async def run():
+        ids = await _seed(percent=50)
+        try:
+            async with async_session_maker() as db:
+                await db.execute(update(StudioBookingSettings)
+                                 .where(StudioBookingSettings.studio_id == ids["studio"])
+                                 .values(trainer_confirmation_required=True))
+                await db.commit()
+            async with crm._client(_app(ids)) as http:
+                quoted = await _quote(http, ids)
+                assert quoted["terms"]["domain"]["approval_required"] is False
+                assert quoted["next_action"] == "none", quoted["next_action"]
+                total = (await _preview(http, quoted["quote_id"]))["total"]
+                created = await http.post("/schedule/bookings", json={
+                    "quote_id": quoted["quote_id"], "payment": {"expected_total": total}})
+                assert created.status_code == 200, created.text
+                assert created.json()["status"] == "active", created.json()
+                assert created.json()["next_action"] == "none"
+            reservation = await _reservation(ids)
+            assert reservation.status == "active"
+            async with async_session_maker() as db:
+                debt = await db.get(ClientPayment, reservation.debt_payment_id)
+                assert (debt.status, debt.amount) == ("success", 500)
+        finally:
+            await _cleanup(ids)
+    asyncio.run(run())
+
+
 def test_confirm_with_a_stale_total_leaves_neither_booking_nor_money():
     async def run():
         ids = await _seed(percent=50)

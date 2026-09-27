@@ -230,16 +230,19 @@
     "when": "Datum und Uhrzeit",
     "step": "Schritt {{n}} von {{total}}",
     "searchService": "Leistung suchen",
-    "ownTime": "Eigene Uhrzeit",
     "existing": "Bereits im Plan",
-    "newLesson": "Neuer Termin",
     "noMasters": "Diese Leistung bietet noch niemand an",
-    "earlier": "Früher",
     "check": "Buchung prüfen",
     "change": "Ändern",
     "confirm": "Bestätigen",
     "busyAt": "Belegt um {{time}}",
-    "allBusy": "Um {{time}} sind alle belegt — wählen Sie die nächste freie Zeit eines Mitarbeiters"
+    "allBusy": "Um {{time}} sind alle belegt — wählen Sie die nächste freie Zeit eines Mitarbeiters",
+    "pickTime": "Zeit wählen",
+    "apply": "Fertig",
+    "datePlaceholder": "TT.MM.JJJJ",
+    "badDate": "Datum im Format {{format}} eingeben",
+    "badTime": "Uhrzeit im Format HH:MM eingeben",
+    "noServicesAt": "Um {{time}} ist keine Leistung frei — wählen Sie eine andere Zeit"
   },
   "payment": {
     "title": "Zahlung",

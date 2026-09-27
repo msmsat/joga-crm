@@ -230,16 +230,19 @@
     "when": "Dátum és idő",
     "step": "{{n}}. lépés / {{total}}",
     "searchService": "Szolgáltatás keresése",
-    "ownTime": "Saját időpont",
     "existing": "Már a naptárban",
-    "newLesson": "Új alkalom",
     "noMasters": "Ezt a szolgáltatást még senki sem nyújtja",
-    "earlier": "Korábban",
     "check": "Ellenőrizze a foglalást",
     "change": "Módosítás",
     "confirm": "Megerősítés",
     "busyAt": "Foglalt: {{time}}",
-    "allBusy": "{{time}}-kor mindenki foglalt — válassza egy szakember legközelebbi szabad időpontját"
+    "allBusy": "{{time}}-kor mindenki foglalt — válassza egy szakember legközelebbi szabad időpontját",
+    "pickTime": "Időpont választása",
+    "apply": "Kész",
+    "datePlaceholder": "NN.HH.ÉÉÉÉ",
+    "badDate": "Adja meg a dátumot így: {{format}}",
+    "badTime": "Adja meg az időt így: ÓÓ:PP",
+    "noServicesAt": "{{time}}-kor nincs szabad szolgáltatás — válasszon másik időpontot"
   },
   "payment": {
     "title": "Fizetés",

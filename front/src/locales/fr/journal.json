@@ -230,16 +230,19 @@
     "when": "Date et heure",
     "step": "Étape {{n}} sur {{total}}",
     "searchService": "Rechercher un service",
-    "ownTime": "Heure personnalisée",
     "existing": "Déjà planifié",
-    "newLesson": "Nouvelle séance",
     "noMasters": "Personne ne propose encore ce service",
-    "earlier": "Plus tôt",
     "check": "Vérifiez la réservation",
     "change": "Modifier",
     "confirm": "Confirmer",
     "busyAt": "Occupé à {{time}}",
-    "allBusy": "À {{time}}, tout le monde est occupé — choisissez le créneau libre le plus proche d’un spécialiste"
+    "allBusy": "À {{time}}, tout le monde est occupé — choisissez le créneau libre le plus proche d’un spécialiste",
+    "pickTime": "Choisir l’heure",
+    "apply": "OK",
+    "datePlaceholder": "JJ.MM.AAAA",
+    "badDate": "Saisissez la date au format {{format}}",
+    "badTime": "Saisissez l’heure au format HH:MM",
+    "noServicesAt": "Aucun service libre à {{time}} — choisissez une autre heure"
   },
   "payment": {
     "title": "Paiement",

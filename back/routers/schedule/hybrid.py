@@ -13,7 +13,7 @@ from ratelimit import limiter
 from schemas.schedule.hybrid import (AvailabilityRead, BookingRead, CrmAvailabilityQuery,
     CrmConfirmRequest, CrmQuoteRequest, CrmRescheduleQuoteRequest, PaymentPreviewRead,
     PaymentPreviewRequest, QuoteRead, RescheduleConfirmRequest, ResourceQuoteRequest,
-    ResourceStaffMemberRead, ResourceStaffRead)
+    ResourceStaffMemberRead, ResourceStaffRead, ServiceDayRead, ServicesDayQuery, ServicesDayRead)
 from services import (booking_checkout, booking_quotes as quotes, hybrid_http, resource_availability,
                       resource_booking, resource_reschedule, studio_time)
 
@@ -47,6 +47,25 @@ async def _reservation_actor(db, ctx, reservation_id):
 async def availability(request: Request, query: Annotated[CrmAvailabilityQuery, Query()],
                        ctx: StudioContext = Depends(staff), db: AsyncSession = Depends(get_db)):
     return await resource_availability.availability(db, studio_id=ctx.studio_id, client=False, **query.model_dump())
+
+
+@router.get("/availability/services", response_model=ServicesDayRead)
+@limiter.limit("60/minute")
+async def services_availability(request: Request, query: Annotated[ServicesDayQuery, Query()],
+                                ctx: StudioContext = Depends(staff), db: AsyncSession = Depends(get_db)):
+    """Свободное время всех индивидуальных услуг на день — одним запросом.
+
+    Мастер записи журнала сначала называет время и показывает только услуги,
+    на которые в это время можно записать; ходить за этим по услуге значило бы
+    N запросов с экрана. Час сверяет кабинет: ответ — начала по каждой паре
+    «услуга × филиал», минутами от местной полуночи.
+    """
+    days = await resource_availability.services_day(db, studio_id=ctx.studio_id, day=query.day, client=False)
+    return ServicesDayRead(services=[
+        ServiceDayRead(service_id=row.service_id, branch_id=row.branch_id, reason=row.availability.reason,
+                       free=[slot.local_start.hour * 60 + slot.local_start.minute
+                             for slot in row.availability.slots])
+        for row in days])
 
 
 @router.get("/resource-staff", response_model=ResourceStaffRead)

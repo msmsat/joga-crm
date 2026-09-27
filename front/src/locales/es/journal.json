@@ -230,16 +230,19 @@
     "when": "Fecha y hora",
     "step": "Paso {{n}} de {{total}}",
     "searchService": "Buscar servicio",
-    "ownTime": "Hora propia",
     "existing": "Ya programado",
-    "newLesson": "Nueva sesión",
     "noMasters": "Nadie ofrece este servicio todavía",
-    "earlier": "Antes",
     "check": "Revisa la reserva",
     "change": "Cambiar",
     "confirm": "Confirmar",
     "busyAt": "Ocupado a las {{time}}",
-    "allBusy": "A las {{time}} todos están ocupados: elige la hora libre más cercana de un especialista"
+    "allBusy": "A las {{time}} todos están ocupados: elige la hora libre más cercana de un especialista",
+    "pickTime": "Elegir hora",
+    "apply": "Listo",
+    "datePlaceholder": "DD.MM.AAAA",
+    "badDate": "Introduce la fecha como {{format}}",
+    "badTime": "Introduce la hora como HH:MM",
+    "noServicesAt": "A las {{time}} no hay servicios libres: elige otra hora"
   },
   "payment": {
     "title": "Pago",

@@ -230,16 +230,19 @@
     "when": "Tarih ve saat",
     "step": "Adım {{n}} / {{total}}",
     "searchService": "Hizmet ara",
-    "ownTime": "Özel saat",
     "existing": "Zaten programda",
-    "newLesson": "Yeni seans",
     "noMasters": "Bu hizmeti henüz kimse vermiyor",
-    "earlier": "Daha erken",
     "check": "Kaydı kontrol edin",
     "change": "Değiştir",
     "confirm": "Onayla",
     "busyAt": "{{time}} saatinde dolu",
-    "allBusy": "{{time}} saatinde herkes dolu — bir uzmanın en yakın boş saatini seçin"
+    "allBusy": "{{time}} saatinde herkes dolu — bir uzmanın en yakın boş saatini seçin",
+    "pickTime": "Saat seç",
+    "apply": "Tamam",
+    "datePlaceholder": "GG.AA.YYYY",
+    "badDate": "Tarihi {{format}} biçiminde girin",
+    "badTime": "Saati SS:DD biçiminde girin",
+    "noServicesAt": "{{time}} saatinde boş hizmet yok — başka bir saat seçin"
   },
   "payment": {
     "title": "Ödeme",

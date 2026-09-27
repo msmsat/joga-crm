@@ -30,13 +30,17 @@ type Kind = 'promo' | 'voucher';
  * применили или убрали код. Так он не уходит повторно на каждый рендер, а
  * устаревший ответ (условия успели смениться) отбрасывает счётчик версий.
  *
- * Код, который сервер не принял (промокод умер, ваучер погашен), в оплату не
- * попадает: он снимается с «применённых», а причина остаётся под полем.
+ * Судьбу кодов решает КАЖДЫЙ чек, а не только нажатие «Применить»: условия
+ * меняются и после (выключатель первого занятия), а с ними и то, какая скидка
+ * выгоднее. Код, который сервер не принял (промокод умер, ваучер погашен), в
+ * оплату не попадает: он снимается с «применённых», а причина остаётся под полем.
  */
 export function useBookingPayment() {
   const [preview, setPreview] = useState<PaymentPreview | null>(null);
   const [loading, setLoading] = useState(false);
   const [failed, setFailed] = useState(false);
+  // Какой код сейчас применяется: крутится только его «Применить», а не оба.
+  const [applying, setApplying] = useState<Kind | null>(null);
   const [promo, setPromo] = useState<PaymentCode>(EMPTY);
   const [voucher, setVoucher] = useState<PaymentCode>(EMPTY);
   const quoteId = useRef<string | null>(null);
@@ -46,25 +50,36 @@ export function useBookingPayment() {
   const setCode = (kind: Kind, patch: Partial<PaymentCode>) =>
     (kind === 'promo' ? setPromo : setVoucher)(code => ({ ...code, ...patch }));
 
-  /** Чек под нынешние условия и принятые коды. Непринятые коды снимает сам. */
+  /** Чек под нынешние условия и принятые коды. */
   const refresh = async (): Promise<PaymentPreview | null> => {
     const id = quoteId.current;
     if (!id) return null;
     const current = ++version.current;
+    // Коды, под которые считается ЭТОТ чек. Пока он последний, они совпадают с
+    // применёнными: применить или убрать код — значит запросить чек заново.
+    const sent = { ...applied.current };
     setLoading(true);
     setFailed(false);
     try {
       const result = await hybridApi.paymentPreview(id, {
-        promo_code: applied.current.promo, certificate_code: applied.current.voucher,
+        promo_code: sent.promo, certificate_code: sent.voucher,
       });
       if (current !== version.current) return null;
-      if (applied.current.promo && result.promo_valid === false) {
-        applied.current.promo = null;
-        setCode('promo', { applied: null, error: 'journal:payment.promoInvalid', open: true });
+      if (sent.promo) {
+        const valid = result.promo_valid !== false;
+        if (!valid) applied.current.promo = null;
+        setCode('promo', valid
+          // Принят, но мог проиграть более выгодной скидке — не суммируются.
+          ? { applied: sent.promo, open: false,
+              error: result.promo_outweighed ? 'journal:payment.promoOutweighed' : null }
+          : { applied: null, open: true, error: 'journal:payment.promoInvalid' });
       }
-      if (applied.current.voucher && result.certificate_error) {
-        applied.current.voucher = null;
-        setCode('voucher', { applied: null, error: `common:errors.${result.certificate_error}`, open: true });
+      if (sent.voucher) {
+        const error = result.certificate_error;
+        if (error) applied.current.voucher = null;
+        setCode('voucher', error
+          ? { applied: null, open: true, error: `common:errors.${error}` }
+          : { applied: sent.voucher, open: false, error: null });
       }
       setPreview(result);
       return result;
@@ -72,7 +87,10 @@ export function useBookingPayment() {
       if (current === version.current) setFailed(true);
       return null;
     } finally {
-      if (current === version.current) setLoading(false);
+      if (current === version.current) {
+        setLoading(false);
+        setApplying(null);
+      }
     }
   };
 
@@ -90,6 +108,7 @@ export function useBookingPayment() {
     setPreview(null);
     setLoading(false);
     setFailed(false);
+    setApplying(null);
   };
 
   /** Сменили клиента — коды набирали под другого человека. */
@@ -100,19 +119,14 @@ export function useBookingPayment() {
     setVoucher(EMPTY);
   };
 
+  /** Принят код или нет — решит чек, который он запросит (см. refresh). */
   const apply = async (kind: Kind) => {
     const code = (kind === 'promo' ? promo : voucher).draft.trim();
-    if (!code) return;
+    if (!code || !quoteId.current) return;
     applied.current = { ...applied.current, [kind]: code };
+    setApplying(kind);
     setCode(kind, { error: null });
-    const result = await refresh();
-    if (result && applied.current[kind] === code) {
-      setCode(kind, {
-        applied: code, open: false,
-        // Промокод принят, но проиграл более выгодной скидке — не суммируются.
-        error: kind === 'promo' && result.promo_outweighed ? 'journal:payment.promoOutweighed' : null,
-      });
-    }
+    await refresh();
   };
 
   const remove = (kind: Kind) => {
@@ -122,7 +136,7 @@ export function useBookingPayment() {
   };
 
   return {
-    preview, loading, failed, promo, voucher,
+    preview, loading, failed, applying, promo, voucher,
     /** Чек есть и он про нынешние условия — можно подтверждать. */
     ready: preview != null && !loading && !failed,
     load, reset, clear, refresh, apply, remove,

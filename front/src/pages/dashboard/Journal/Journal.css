@@ -2012,26 +2012,48 @@ button.kp-trainer:disabled { cursor: default; opacity: 0.6; }
   background: rgba(216,140,154,0.1); color: var(--onyx);
   font: 600 13px var(--font);
 }
-.bw-lessons .jf-chip b { font-weight: 800; margin-right: 2px; }
 .bw-empty { padding: 36px 16px; text-align: center; color: var(--muted); font: 500 14px var(--font); }
-.bw-when { display: flex; flex-direction: column; gap: 20px; padding: 6px 18px 18px; }
 .bw-field { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
-.bw-when .jf-chips { margin: 0 -18px; padding: 0 18px; }
-.bw-date { height: 48px; font-size: 16px; }
-/* Время — сеткой вниз, без прокрутки вбок: листается весь шаг целиком */
-.bw-time-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(76px, 1fr)); gap: 8px; }
-.bw-time-grid .jf-chip { padding: 0; }
-.bw-wide { grid-column: span 2; }
-.bw-own { border-style: dashed; color: var(--peach); font-weight: 700; }
-.bw-own.active { border-style: solid; }
-.bw-earlier { color: var(--muted); font-weight: 700; }
-.bw-time-input {
-  height: 36px; min-width: 0;
-  border: 1.5px solid var(--peach); border-radius: 10px; outline: none;
-  box-shadow: 0 0 0 3px var(--peach-glow);
-  background: var(--bg-card); text-align: center;
-  font: 700 16px var(--font); color: var(--onyx);
+/* Поиск и кнопка даты и времени — одной строкой над списком: поиск уступает
+   кнопке место, а сама кнопка не уезжает при прокрутке списка. */
+.bw-tools-row { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.bw-tools-row > .bw-search { flex: 1; min-width: 0; }
+.bw-tools-end { justify-content: space-between; }
+.bw-tools-label {
+  min-width: 0; font: 700 14px var(--font); color: var(--onyx);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
+.bw-when-chip {
+  flex-shrink: 0; display: inline-flex; align-items: center; gap: 6px;
+  height: 44px; padding: 0 12px; border-radius: 12px;
+  border: 1.5px solid rgba(249,160,139,0.55); background: rgba(249,160,139,0.1);
+  font: 600 13px var(--font); color: var(--onyx); white-space: nowrap; cursor: pointer;
+}
+.bw-when-chip svg { width: 15px; height: 15px; color: var(--peach); flex-shrink: 0; }
+.bw-when-chip b { font-weight: 800; color: var(--peach); }
+.bw-when-chip-day { color: var(--muted); font-weight: 600; }
+.bw-when-chip.empty { border-style: dashed; color: var(--peach); font-weight: 700; }
+/* Мини-окно даты и времени — поверх листа со своим затемнением: шаг под ним
+   остаётся на месте. Прижато к верху: снизу поднимается клавиатура. */
+.bw-sheet { position: relative; }
+.bw-when-scrim {
+  position: absolute; inset: 0; z-index: 6;
+  display: flex; align-items: flex-start; justify-content: center;
+  padding: 96px 16px 16px; background: rgba(26,26,26,0.35);
+  animation: jf-fade 0.18s ease;
+}
+.bw-when-pop {
+  width: min(340px, 100%); padding: 18px; border-radius: 16px;
+  background: var(--bg-card); box-shadow: 0 24px 60px -12px rgba(0,0,0,0.35);
+  display: flex; flex-direction: column; gap: 14px;
+}
+.bw-when-pop-title { font: 800 16px var(--font); color: var(--onyx); }
+.bw-when-fields { display: grid; grid-template-columns: 1.4fr 1fr; gap: 10px; }
+/* 18px — крупные цифры и заодно выше порога 16px, ниже которого Safari зумит страницу */
+.bw-when-input { height: 48px; margin: 0; text-align: center; font-size: 18px; font-weight: 700; letter-spacing: 0.5px; }
+.bw-when-input[aria-invalid="true"] { border-color: var(--error); }
+.bw-when-actions { display: flex; justify-content: flex-end; gap: 8px; }
+.bw-when-actions > button { height: 40px; }
 /* Услуга без аватарки — цветная точка её цвета, а не пустой круг */
 .bw-av:empty { width: 12px; height: 12px; margin: 0 13px; }
 .bw-sheet .kp-foot > .btn-primary-sm { justify-content: center; }
@@ -2071,14 +2093,14 @@ button.kp-trainer:disabled { cursor: default; opacity: 0.6; }
   .bw-sheet .kp-head { padding: 14px 20px 2px; }
   .bw-progress { padding: 0 20px 6px; }
   .bw-tools { padding: 2px 24px 12px; }
-  .bw-chips, .bw-when .jf-chips { margin: 0 -24px; padding: 0 24px; }
+  .bw-chips { margin: 0 -24px; padding: 0 24px; }
   .bw-list { padding: 2px 16px 16px; }
-  .bw-when, .bw-summary { padding: 6px 24px 20px; }
+  .bw-summary { padding: 6px 24px 20px; }
   /* 16px у полей нужен только Safari на телефоне — под курсор мельче */
   .bw-search { height: 40px; }
   .bw-search input { font-size: 14px; }
-  .bw-date { height: 42px; font-size: 14px; }
-  .bw-time-input { font-size: 14px; }
+  .bw-when-chip { height: 40px; }
+  .bw-when-scrim { padding-top: 110px; }
   .bw-row { min-height: 54px; }
   .bw-sheet .kp-foot > .btn-primary-sm { min-width: 180px; }
 }

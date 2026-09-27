@@ -230,16 +230,19 @@
     "when": "Data dhe ora",
     "step": "Hapi {{n}} nga {{total}}",
     "searchService": "Kërko shërbim",
-    "ownTime": "Ora e vet",
     "existing": "Tashmë në orar",
-    "newLesson": "Seancë e re",
     "noMasters": "Askush nuk e ofron ende këtë shërbim",
-    "earlier": "Më herët",
     "check": "Kontrolloni rezervimin",
     "change": "Ndrysho",
     "confirm": "Konfirmo",
     "busyAt": "I zënë në {{time}}",
-    "allBusy": "Në {{time}} të gjithë janë të zënë — zgjidhni orën e lirë më të afërt të një specialisti"
+    "allBusy": "Në {{time}} të gjithë janë të zënë — zgjidhni orën e lirë më të afërt të një specialisti",
+    "pickTime": "Zgjidh orën",
+    "apply": "U krye",
+    "datePlaceholder": "DD.MM.VVVV",
+    "badDate": "Shkruani datën si {{format}}",
+    "badTime": "Shkruani orën si OO:MM",
+    "noServicesAt": "Në {{time}} nuk ka shërbime të lira — zgjidhni një orë tjetër"
   },
   "payment": {
     "title": "Pagesa",

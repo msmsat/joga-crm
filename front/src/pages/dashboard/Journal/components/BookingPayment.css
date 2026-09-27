@@ -65,7 +65,10 @@
   font: 700 13px var(--font); color: var(--muted);
 }
 .bpay-total strong { font: 800 22px var(--font); color: var(--onyx); letter-spacing: -0.3px; }
-.bpay[aria-busy='true'] .bpay-total strong { opacity: 0.45; transition: opacity 0.2s; }
+/* Итог приглушён, пока чек считается и когда он устарел (не пересчитался):
+   называть клиенту эту сумму нельзя. */
+.bpay[aria-busy='true'] .bpay-total strong,
+.bpay[data-stale] .bpay-total strong { opacity: 0.45; transition: opacity 0.2s; }
 
 /* Окно у клетки сетки: блок во всю ширину под двумя колонками формы. */
 .kp-pay { padding: 0 var(--card-pad) var(--card-pad); }

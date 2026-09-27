@@ -230,16 +230,19 @@
     "when": "Päivä ja aika",
     "step": "Vaihe {{n}}/{{total}}",
     "searchService": "Hae palvelua",
-    "ownTime": "Oma aika",
     "existing": "Jo aikataulussa",
-    "newLesson": "Uusi tunti",
     "noMasters": "Kukaan ei vielä tarjoa tätä palvelua",
-    "earlier": "Aiemmin",
     "check": "Tarkista varaus",
     "change": "Muuta",
     "confirm": "Vahvista",
     "busyAt": "Varattu klo {{time}}",
-    "allBusy": "Klo {{time}} kaikki ovat varattuja — valitse asiantuntijan lähin vapaa aika"
+    "allBusy": "Klo {{time}} kaikki ovat varattuja — valitse asiantuntijan lähin vapaa aika",
+    "pickTime": "Valitse aika",
+    "apply": "Valmis",
+    "datePlaceholder": "PP.KK.VVVV",
+    "badDate": "Anna päivämäärä muodossa {{format}}",
+    "badTime": "Anna aika muodossa TT:MM",
+    "noServicesAt": "Klo {{time}} ei ole vapaita palveluja — valitse toinen aika"
   },
   "payment": {
     "title": "Maksu",

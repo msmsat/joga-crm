@@ -234,16 +234,19 @@
     "when": "Datum a čas",
     "step": "Krok {{n}} z {{total}}",
     "searchService": "Hledat službu",
-    "ownTime": "Vlastní čas",
     "existing": "Už v rozvrhu",
-    "newLesson": "Nová lekce",
     "noMasters": "Tuto službu zatím nikdo neposkytuje",
-    "earlier": "Dříve",
     "check": "Zkontrolujte rezervaci",
     "change": "Změnit",
     "confirm": "Potvrdit",
     "busyAt": "Obsazeno v {{time}}",
-    "allBusy": "V {{time}} jsou všichni obsazení — vyberte nejbližší volný čas u specialisty"
+    "allBusy": "V {{time}} jsou všichni obsazení — vyberte nejbližší volný čas u specialisty",
+    "pickTime": "Vybrat čas",
+    "apply": "Hotovo",
+    "datePlaceholder": "DD.MM.RRRR",
+    "badDate": "Zadejte datum ve formátu {{format}}",
+    "badTime": "Zadejte čas ve formátu HH:MM",
+    "noServicesAt": "V {{time}} není volná žádná služba — vyberte jiný čas"
   },
   "payment": {
     "title": "Platba",

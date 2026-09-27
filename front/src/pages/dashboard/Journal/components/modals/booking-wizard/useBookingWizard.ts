@@ -19,6 +19,7 @@ import type { Hall, Trainer } from '../../../types';
 import { toDateStr } from '../../../utils';
 import { eventFreeTimes, toHHMM } from './freeTimes';
 import { lessonToJoin, useMasterAvailability, type WizardMaster } from './masterAvailability';
+import { useServiceAvailability } from './serviceAvailability';
 
 export type { WizardMaster } from './masterAvailability';
 
@@ -36,22 +37,27 @@ export type WizardOptions = {
   onCreated: () => void;
 };
 
-/** Шаги по порядку. Время — первым: человек звонит и называет, КОГДА ему
-    удобно, и уже под это время подбираются услуга и свободный мастер. */
-export const WHEN_STEP = 0;
-export const CLIENT_STEP = 1;
-export const SERVICE_STEP = 2;
-export const MASTER_STEP = 3;
+/** Шаги по порядку. Дата и время — не шаг, а кнопка рядом с поиском на каждом
+    шаге: время названо с самого начала (клетка сетки, «сейчас»), и под него
+    подбираются услуги и свободные мастера. */
+export const CLIENT_STEP = 0;
+export const SERVICE_STEP = 1;
+export const MASTER_STEP = 2;
 /** Последний шаг — проверка всего выбранного перед записью. */
-export const SUMMARY_STEP = 4;
-export const WIZARD_STEPS = 5;
+export const SUMMARY_STEP = 3;
 
-const isTime = (v: string) => /^\d\d:\d\d$/.test(v);
-/** Ближайшая четверть часа после «сейчас» — время по умолчанию для кнопки. */
-const nextQuarter = (now: Date) => toHHMM(Math.ceil((now.getHours() * 60 + now.getMinutes() + 1) / 15) * 15);
+export const isTime = (v: string) => /^([01]\d|2[0-3]):[0-5]\d$/.test(v);
+/** Ближайшая четверть часа после «сейчас» — время по умолчанию для кнопки.
+    За полночь не переходит: в 23:50 времени по умолчанию нет, и мастер
+    сам открывает окно даты и времени. */
+const nextQuarter = (now: Date) => {
+  const minute = Math.ceil((now.getHours() * 60 + now.getMinutes() + 1) / 15) * 15;
+  return minute < 24 * 60 ? toHHMM(minute) : '';
+};
 
 /**
- * Запись по шагам: дата и время → клиент → услуга → мастер → проверка.
+ * Запись по шагам: клиент → услуга → мастер → проверка; дата и время — кнопкой
+ * над списком на каждом шаге.
  * «Продолжить» и выбор строки ведут на ПЕРВЫЙ незаполненный шаг после
  * текущего, а когда всё выбрано — на проверку: поменяли клиента на проверке —
  * вернулись к проверке, поменяли услугу — мастера придётся выбрать заново.
@@ -82,9 +88,9 @@ export function useBookingWizard(o: WizardOptions) {
   const { spaceIsAxis } = useBusinessTerms();
   const now = new Date();
   const steps = o.clientId != null
-    ? [WHEN_STEP, SERVICE_STEP, MASTER_STEP, SUMMARY_STEP]
-    : [WHEN_STEP, CLIENT_STEP, SERVICE_STEP, MASTER_STEP, SUMMARY_STEP];
-  const [step, setStep] = useState(WHEN_STEP);
+    ? [SERVICE_STEP, MASTER_STEP, SUMMARY_STEP]
+    : [CLIENT_STEP, SERVICE_STEP, MASTER_STEP, SUMMARY_STEP];
+  const [step, setStep] = useState(steps[0]);
   const [client, setClientState] = useState<{ id: number; name: string } | null>(
     o.clientId != null ? { id: o.clientId, name: '' } : null);
   /** Клиент, заведённый прямо в мастере: стоит первым в списке, пока открыт мастер. */
@@ -127,8 +133,8 @@ export function useBookingWizard(o: WizardOptions) {
     return trainers.filter(tr => own.length === 0 || own.includes(tr.id)).map(tr => ({ id: tr.id, name: tr.full }));
   }, [service, isResource, resource.choice.masterOptions, trainers, t]);
 
-  // Занятия дня: в них можно записать сразу с первого шага, по ним же
-  // считается, свободен ли мастер группового занятия.
+  // Занятия дня: по ним считается, свободны ли групповая услуга и её мастер
+  // в названное время, и есть ли занятие, куда можно просто записать.
   const { data: dayLessons = NO_LESSONS, isFetched: lessonsReady, isFetching: lessonsLoading } = useQuery({
     queryKey: ['booking-wizard-lessons', date],
     queryFn: () => scheduleApi.getLessons({ date_from: date, date_to: date }),
@@ -137,6 +143,10 @@ export function useBookingWizard(o: WizardOptions) {
 
   const isToday = date === toDateStr(now);
   const nowMin = now.getHours() * 60 + now.getMinutes();
+  const serviceStates = useServiceAvailability({
+    services: serviceList, trainers, date, time, dayLessons, lessonsReady: lessonsReady && !lessonsLoading,
+    notBefore: isToday ? nowMin : null,
+  });
   const masterStates = useMasterAvailability({
     service, isResource, masters, services, dayLessons, lessonsReady: lessonsReady && !lessonsLoading,
     date, time, notBefore: isToday ? nowMin : null,
@@ -144,19 +154,19 @@ export function useBookingWizard(o: WizardOptions) {
   });
 
   // ── Переходы ───────────────────────────────────────────────────────────────
-  type Snapshot = { time: string; client: unknown; service: unknown; masterChosen: boolean };
-  const current: Snapshot = { time, client, service, masterChosen };
+  type Snapshot = { client: unknown; service: unknown; masterChosen: boolean };
+  const current: Snapshot = { client, service, masterChosen };
   const done = (s: number, v: Snapshot = current) =>
-    s === WHEN_STEP ? isTime(v.time)
-    : s === CLIENT_STEP ? v.client != null
+    s === CLIENT_STEP ? v.client != null
     : s === SERVICE_STEP ? v.service != null
     : s === MASTER_STEP ? v.service != null && v.masterChosen
     : false;
   /** Первый незаполненный шаг после from; всё заполнено — проверка. */
   const nextAfter = (from: number, v: Snapshot = current) =>
     steps.find(s => s > from && s !== SUMMARY_STEP && !done(s, v)) ?? SUMMARY_STEP;
-  /** Полоской можно уйти на шаг, если заполнено всё, что перед ним. */
-  const canJump = (target: number) => steps.filter(s => s < target).every(s => done(s));
+  /** Полоской можно уйти на шаг, если заполнено всё, что перед ним (к проверке — и время). */
+  const canJump = (target: number) => steps.filter(s => s < target).every(s => done(s))
+    && (target !== SUMMARY_STEP || isTime(time));
 
   const goTo = (next: number) => {
     // К выбору услуги — снова все услуги: выбранный мастер их сужал бы.
@@ -167,10 +177,10 @@ export function useBookingWizard(o: WizardOptions) {
   };
   const advance = () => goTo(nextAfter(step));
 
-  const setTime = (value: string) => setTimeState(value);
-  const setDate = (value: string) => {
-    setDateState(value);
-    resource.setDate(value);
+  /** Кнопка времени: день и час меняются вместе, одним «Готово». */
+  const setWhen = (day: string, at: string) => {
+    if (day !== date) { setDateState(day); resource.setDate(day); }
+    setTimeState(at);
   };
   const pickClient = (id: number, name: string) => {
     setClientState({ id, name });
@@ -187,7 +197,13 @@ export function useBookingWizard(o: WizardOptions) {
     const changed = s.id !== service?.id;
     if (changed) {
       setServiceState(s);
-      if (s.booking_mode === 'resource') resource.setServiceId(s.id);
+      if (s.booking_mode === 'resource') {
+        resource.setServiceId(s.id);
+        // Филиал — тот, где в названное время свободно: иначе шаг мастера
+        // считал бы время по первому филиалу услуги, а там все заняты.
+        const st = serviceStates.get(s.id);
+        if (st?.kind === 'free' && st.branchId != null) resource.setBranchId(st.branchId);
+      }
       setMasterChosen(false);
     }
     goTo(nextAfter(SERVICE_STEP, { ...current, service: s, masterChosen: changed ? false : masterChosen }));
@@ -198,18 +214,7 @@ export function useBookingWizard(o: WizardOptions) {
     if (isResource) resource.setTeacherId(id);
     if (at) setTimeState(at);
     setMasterChosen(true);
-    goTo(nextAfter(MASTER_STEP, { ...current, masterChosen: true, time: at ?? time }));
-  };
-  /** Первый шаг: запись в уже стоящее занятие — время, услуга и мастер разом. */
-  const pickLesson = (lesson: Lesson) => {
-    const s = services.find(x => x.id === lesson.service_id);
-    if (!s) return;
-    const at = lesson.start_time.slice(11, 16);
-    setServiceState(s);
-    setTeacherState(lesson.teacher_id);
-    setMasterChosen(true);
-    setTimeState(at);
-    goTo(nextAfter(WHEN_STEP, { time: at, client, service: s, masterChosen: true }));
+    goTo(nextAfter(MASTER_STEP, { ...current, masterChosen: true }));
   };
 
   // ── Выбранный мастер в названное время ────────────────────────────────────
@@ -245,7 +250,7 @@ export function useBookingWizard(o: WizardOptions) {
   const branch = branchId ?? branches[0]?.id ?? null;
   const ready = isResource
     ? !!resource.quote && quotedTime === time && !quoting
-    : client != null && service != null && masterChosen && teacherId != null && !busy;
+    : client != null && service != null && masterChosen && teacherId != null && isTime(time) && !busy;
 
   const submit = async () => {
     if (!ready || saving) return;
@@ -287,9 +292,9 @@ export function useBookingWizard(o: WizardOptions) {
   return {
     steps, step, goTo, advance, done, canJump,
     clientName, priceText, durationMin, joined, busy, client, fresh, service, teacherId, masterChosen, date, time,
-    isToday, nowMin, hallId, setHallId, branches, branch, setBranchId, noHall, isResource, serviceList, masters,
-    masterStates, trainers, halls, services, dayLessons, lessonsLoading, resource, ready, saving: saving || resource.saving,
-    pickClient, addFreshClient, pickService, pickMaster, pickLesson, setDate, setTime, submit,
+    hallId, setHallId, branches, branch, setBranchId, noHall, isResource, serviceList, masters,
+    serviceStates, masterStates, trainers, halls, resource, ready, saving: saving || resource.saving,
+    pickClient, addFreshClient, pickService, pickMaster, setWhen, submit,
   };
 }
 

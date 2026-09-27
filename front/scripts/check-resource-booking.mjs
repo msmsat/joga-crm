@@ -43,7 +43,9 @@ async function setup(file, api = {}) {
   const deps = {
     react,
     'react/jsx-runtime': { jsx, jsxs: jsx },
-    'react-i18next': { useTranslation: () => ({ t: key => key }) },
+    // i18n — как у настоящего хука: окно форматирует дату по языку. Без
+    // services.formatter термин студии остаётся как есть.
+    'react-i18next': { useTranslation: () => ({ t: key => key, i18n: { language: 'en', services: {} } }) },
     '@tanstack/react-query': { useQuery: options => {
       const key = options.queryKey[0];
       return { data: key === 'services' ? services : key === 'branches' ? [{ id: 5, name: 'Main' }]
@@ -108,6 +110,12 @@ function nodes(tree, type) {
   if (Array.isArray(tree)) return tree.flatMap(node => nodes(node, type));
   return [...(tree.type === type ? [tree.props] : []), ...nodes(tree.props?.children, type)];
 }
+// Элементы локальных компонентов модуля (Row) ищутся по пропсам, а не по типу.
+function propsWhere(tree, test) {
+  if (!tree || typeof tree !== 'object') return [];
+  if (Array.isArray(tree)) return tree.flatMap(node => propsWhere(node, test));
+  return [...(tree.props && test(tree.props) ? [tree.props] : []), ...propsWhere(tree.props?.children, test)];
+}
 const formPath = '../src/pages/dashboard/Journal/components/modals/ResourceBookingModal.tsx';
 const props = { defaultDate: '2026-10-01', defaultServiceId: 2, teacherId: 7, onClose() {}, onCreated() {} };
 
@@ -133,6 +141,9 @@ test('individual booking carries client, selected service, branch, specialist an
   assert.equal(app.calls[0].starts_at, slot.starts_at);
   assert.equal(app.calls[0].first_lesson, true); // скидка первого занятия — сама, если положена
   tree = app.render('ResourceBookingModal', props);
+  // Время записи — днём и числом, а не строкой ISO «2026-10-01 11:00».
+  const time = propsWhere(tree, p => p.label === 'journal:resourceBooking.time')[0].value;
+  assert.ok(!time.includes('2026') && time.includes('October') && time.endsWith(', 11:00'), time);
   assert.equal(nodes(tree, 'PrimaryButton')[0].disabled, false);
   await nodes(tree, 'PrimaryButton')[0].onClick();
   assert.equal(app.calls[1], 'quote-1');
@@ -155,6 +166,68 @@ test('confirmation waits for the payment receipt and takes exactly its total in 
   assert.equal(nodes(tree, 'PrimaryButton')[0].disabled, false);
   await nodes(tree, 'PrimaryButton')[0].onClick();
   assert.deepEqual({ ...api.paid }, { promo_code: null, certificate_code: null, expected_total: 20 });
+});
+// Шаг оплаты глазами кассира: то, что рисует блок оплаты (его пропсы).
+async function paymentStep(api) {
+  const app = await setup(formPath, api);
+  const step = () => nodes(app.render('ResourceBookingModal', props), 'BookingPayment')[0];
+  nodes(app.render('ResourceBookingModal', props), 'ResourceClientPicker')[0].onChange(901);
+  await nodes(app.render('ResourceBookingModal', props), 'button').find(button => button.children === '11:00').onClick();
+  await settle();
+  return { app, step };
+}
+test('an applied promo is re-judged on every receipt, not only when it was applied', async () => {
+  // Первое занятие −50 % выгоднее промокода: скидки не суммируются. Сняли
+  // первое занятие выключателем — промокод снова действует, и пометка
+  // «проиграл более выгодной скидке» обязана уйти вместе с причиной.
+  const { step } = await paymentStep({
+    quote: request => ({ ...quoted, quote_id: request.first_lesson ? 'with-first' : 'without-first' }),
+    paymentPreview: (id, codes) => ({ ...receipt, first_lesson_offered: true,
+      first_lesson_applied: id === 'with-first', promo_valid: codes.promo_code ? true : null,
+      promo_outweighed: Boolean(codes.promo_code) && id === 'with-first' }),
+  });
+  step().payment.edit('promo', 'SPRING');
+  await step().payment.apply('promo');
+  assert.equal(step().payment.promo.applied, 'SPRING');
+  assert.equal(step().payment.promo.error, 'journal:payment.promoOutweighed');
+  step().onFirstLesson(false);
+  await settle();
+  assert.equal(step().firstLesson, false);
+  assert.equal(step().payment.promo.applied, 'SPRING');
+  assert.equal(step().payment.promo.error, null);
+});
+test('two codes applied back to back both land on the receipt', async () => {
+  // Второй код применили, пока чек под первый ещё считался: первый ответ
+  // устарел, но код из него не теряется — он есть в чеке под оба кода.
+  const answers = [];
+  const { step } = await paymentStep({
+    paymentPreview: (id, codes) => answers.length === 0 && !codes.promo_code
+      ? receipt
+      : new Promise(done => answers.push(() => done({ ...receipt, promo_valid: codes.promo_code ? true : null }))),
+  });
+  step().payment.edit('promo', 'SPRING');
+  const promo = step().payment.apply('promo');
+  step().payment.edit('voucher', 'GIFT-1');
+  const voucher = step().payment.apply('voucher');
+  for (const answer of answers) answer();
+  await Promise.all([promo, voucher]);
+  await settle();
+  assert.equal(step().payment.promo.applied, 'SPRING');
+  assert.equal(step().payment.voucher.applied, 'GIFT-1');
+  assert.equal(step().payment.ready, true);
+});
+test('a failed re-quote puts the first-lesson switch back to the terms on screen', async () => {
+  // Выключатель — это условия записи. Не удалось взять новые (время заняли,
+  // сеть) — на экране остаются прежние, и выключатель обязан показывать их, а
+  // не то, что не случилось: иначе подтвердили бы скидку, которую «сняли».
+  const { app, step } = await paymentStep({
+    quote: request => { if (!request.first_lesson) throw new Error('SLOT_TAKEN'); return quoted; },
+    paymentPreview: () => ({ ...receipt, first_lesson_offered: true, first_lesson_applied: true }),
+  });
+  step().onFirstLesson(false);
+  await settle();
+  assert.equal(step().firstLesson, true);
+  assert.ok(app.calls.includes('Error: SLOT_TAKEN'));
 });
 test('late quote for the previous client cannot enable confirmation', async () => {
   let resolve;

@@ -4,9 +4,7 @@
 // выбирается прямо здесь: к нему нет своего шага. Записывает кнопка
 // «Подтвердить» в подвале (BookingWizard).
 import { useTranslation } from 'react-i18next';
-import {
-  CLIENT_STEP, MASTER_STEP, SERVICE_STEP, WHEN_STEP, type BookingWizardState,
-} from './useBookingWizard';
+import { CLIENT_STEP, MASTER_STEP, SERVICE_STEP, type BookingWizardState } from './useBookingWizard';
 import { WizardChips } from './WizardParts';
 import { BookingPayment } from '../../BookingPayment';
 
@@ -28,7 +26,10 @@ function Row({ label, value, hint, onChange }: {
   );
 }
 
-export function SummaryStep({ w, canChangeClient }: { w: BookingWizardState; canChangeClient: boolean }) {
+/** onWhen — «Изменить» у даты и времени открывает то же мини-окно, что кнопка времени. */
+export function SummaryStep({ w, canChangeClient, onWhen }: {
+  w: BookingWizardState; canChangeClient: boolean; onWhen: () => void;
+}) {
   const { t, i18n } = useTranslation(['journal', 'common']);
   // «Любой свободный» на проверке — уже конкретный человек: его назначил сервер.
   const master = w.teacherId == null && w.resource.quote
@@ -54,7 +55,7 @@ export function SummaryStep({ w, canChangeClient }: { w: BookingWizardState; can
   return (
     <div className="bw-list bw-summary">
       <Row label={t('journal:wizard.when')} value={`${day}, ${w.time}`}
-           hint={w.joined ? t('journal:wizard.existing') : undefined} onChange={() => w.goTo(WHEN_STEP)} />
+           hint={w.joined ? t('journal:wizard.existing') : undefined} onChange={onWhen} />
       <Row label={t('journal:resourceBooking.client')} value={w.clientName}
            onChange={canChangeClient ? () => w.goTo(CLIENT_STEP) : undefined} />
       <Row label={t('journal:resourceBooking.service')} value={w.service?.name ?? ''} onChange={() => w.goTo(SERVICE_STEP)} />

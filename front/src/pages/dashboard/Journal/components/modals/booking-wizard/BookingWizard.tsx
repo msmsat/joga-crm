@@ -2,61 +2,64 @@
 // На телефоне — лист снизу почти во весь экран: каждый шаг — это список, и
 // ему нужно место. На компьютере — окно по центру (карточка клиента): та же
 // последовательность, подогнанная под курсор (Journal.css, раздел 14b).
+// Дата и время — кнопка над списком каждого шага (WhenPicker), не шаг.
 // Логика — useBookingWizard.
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import * as Icons from '../../../../../../components/Icons';
 import {
-  useBookingWizard, CLIENT_STEP, MASTER_STEP, SERVICE_STEP, SUMMARY_STEP, WHEN_STEP, type WizardOptions,
+  useBookingWizard, isTime, CLIENT_STEP, MASTER_STEP, SERVICE_STEP, SUMMARY_STEP, type WizardOptions,
 } from './useBookingWizard';
 import { ClientStep, MasterStep, ServiceStep } from './WizardSteps';
-import { WhenStep } from './WhenStep';
+import { WhenChip, WhenPopover } from './WhenPicker';
 import { SummaryStep } from './SummaryStep';
 import { confirmLabel } from '../../../hooks/useBookingPayment';
 import { NewClientStep } from './NewClientStep';
 
-const TITLES = ['wizard.when', 'wizard.client', 'wizard.service', 'wizard.master', 'wizard.check'] as const;
+const TITLES = ['wizard.client', 'wizard.service', 'wizard.master', 'wizard.check'] as const;
 
 export function BookingWizard(props: WizardOptions) {
-  const { t, i18n } = useTranslation(['journal', 'common', 'clients']);
+  const { t } = useTranslation(['journal', 'common', 'clients']);
   const w = useBookingWizard(props);
   // «+ Новый клиент»: лист показывает форму клиента вместо списка.
   const [creating, setCreating] = useState(false);
+  // Мини-окно даты и времени. Открыли мастер без времени (кнопка на другой
+  // день) — оно открыто сразу: без часа нечего подбирать.
+  const [whenOpen, setWhenOpen] = useState(() => !isTime(w.time));
   const { onClose } = props;
   const { saving } = w;
-  // Escape — как у остальных окон: из формы клиента — назад к списку;
-  // пока запись уходит, окно не закрывается.
+  // Escape — как у остальных окон: сначала закрывает мини-окно времени, из
+  // формы клиента — назад к списку; пока запись уходит, окно не закрывается.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== 'Escape' || saving) return;
-      if (creating) setCreating(false); else onClose();
+      if (whenOpen) setWhenOpen(false);
+      else if (creating) setCreating(false);
+      else onClose();
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [onClose, saving, creating]);
+  }, [onClose, saving, creating, whenOpen]);
+  const when = <WhenChip w={w} onOpen={() => setWhenOpen(true)} />;
 
   const index = w.steps.indexOf(w.step);
   const back = creating ? () => setCreating(false)
     : index > 0 ? () => w.goTo(w.steps[index - 1]) : null;
 
-  // Что уже выбрано — строкой под заголовком: день и время первыми, как их
-  // назвал человек. На проверке всё и так перечислено — строку не дублируем.
-  const day = w.date
-    ? new Date(`${w.date}T12:00:00`).toLocaleDateString(i18n.language, { weekday: 'short', day: 'numeric', month: 'short' })
-    : '';
+  // Что уже выбрано — строкой под заголовком. День и время тут не повторяются:
+  // они на кнопке над списком. На проверке всё и так перечислено.
   const master = w.masterChosen ? w.masters.find(m => m.id === w.teacherId)?.name : undefined;
   const picked = w.step === SUMMARY_STEP || creating ? '' : [
-    w.time ? `${day}, ${w.time}` : day,
     w.step !== CLIENT_STEP ? w.clientName : null,
     w.step !== SERVICE_STEP ? w.service?.name : null,
     w.step !== MASTER_STEP ? master : null,
   ].filter(Boolean).join(' · ');
 
-  // Подвал: время подтверждают «Продолжить»; на остальных шагах выбор строки
-  // и так ведёт дальше, а «Продолжить» — для того, что уже выбрано.
+  // Подвал: выбор строки и так ведёт дальше, а «Продолжить» — для того, что
+  // уже выбрано (заведённый здесь клиент, возврат на шаг полоской).
   const canContinue = w.done(w.step);
-  const showFoot = w.step === SUMMARY_STEP || w.step === WHEN_STEP || canContinue;
+  const showFoot = w.step === SUMMARY_STEP || canContinue;
   const payable = w.ready && (!w.isResource || w.resource.payment.ready);
 
   return createPortal(
@@ -112,11 +115,12 @@ export function BookingWizard(props: WizardOptions) {
           ) : (
             <>
               <div className="bw-body">
-                {w.step === WHEN_STEP && <WhenStep w={w} />}
-                {w.step === CLIENT_STEP && <ClientStep w={w} onCreate={() => setCreating(true)} />}
-                {w.step === SERVICE_STEP && <ServiceStep w={w} />}
-                {w.step === MASTER_STEP && <MasterStep w={w} />}
-                {w.step === SUMMARY_STEP && <SummaryStep w={w} canChangeClient={props.clientId == null} />}
+                {w.step === CLIENT_STEP && <ClientStep w={w} when={when} onCreate={() => setCreating(true)} />}
+                {w.step === SERVICE_STEP && <ServiceStep w={w} when={when} />}
+                {w.step === MASTER_STEP && <MasterStep w={w} when={when} />}
+                {w.step === SUMMARY_STEP && (
+                  <SummaryStep w={w} canChangeClient={props.clientId == null} onWhen={() => setWhenOpen(true)} />
+                )}
               </div>
 
               {showFoot && (
@@ -140,6 +144,7 @@ export function BookingWizard(props: WizardOptions) {
               )}
             </>
           )}
+          {whenOpen && !creating && <WhenPopover w={w} onClose={() => setWhenOpen(false)} />}
         </div>
       </div>
     </>,

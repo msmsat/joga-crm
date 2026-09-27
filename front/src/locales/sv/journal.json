@@ -230,16 +230,19 @@
     "when": "Datum och tid",
     "step": "Steg {{n}} av {{total}}",
     "searchService": "Sök tjänst",
-    "ownTime": "Egen tid",
     "existing": "Redan schemalagt",
-    "newLesson": "Nytt pass",
     "noMasters": "Ingen erbjuder den här tjänsten ännu",
-    "earlier": "Tidigare",
     "check": "Kontrollera bokningen",
     "change": "Ändra",
     "confirm": "Bekräfta",
     "busyAt": "Upptagen kl. {{time}}",
-    "allBusy": "Kl. {{time}} är alla upptagna — välj närmaste lediga tid hos en specialist"
+    "allBusy": "Kl. {{time}} är alla upptagna — välj närmaste lediga tid hos en specialist",
+    "pickTime": "Välj tid",
+    "apply": "Klar",
+    "datePlaceholder": "DD.MM.ÅÅÅÅ",
+    "badDate": "Ange datumet som {{format}}",
+    "badTime": "Ange tiden som TT:MM",
+    "noServicesAt": "Kl. {{time}} finns inga lediga tjänster — välj en annan tid"
   },
   "payment": {
     "title": "Betalning",

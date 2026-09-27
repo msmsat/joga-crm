@@ -230,16 +230,19 @@
     "when": "Date and time",
     "step": "Step {{n}} of {{total}}",
     "searchService": "Search services",
-    "ownTime": "Custom time",
     "existing": "Already scheduled",
-    "newLesson": "New session",
     "noMasters": "No one provides this service yet",
-    "earlier": "Earlier",
     "check": "Check the booking",
     "change": "Change",
     "confirm": "Confirm",
     "busyAt": "Busy at {{time}}",
-    "allBusy": "Everyone is busy at {{time}} — pick a specialist's nearest free time"
+    "allBusy": "Everyone is busy at {{time}} — pick a specialist's nearest free time",
+    "pickTime": "Pick a time",
+    "apply": "Done",
+    "datePlaceholder": "DD.MM.YYYY",
+    "badDate": "Enter the date as {{format}}",
+    "badTime": "Enter the time as HH:MM",
+    "noServicesAt": "No services are free at {{time}} — pick another time"
   },
   "payment": {
     "title": "Payment",

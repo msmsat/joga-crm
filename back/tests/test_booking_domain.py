@@ -334,6 +334,34 @@ async def _approval(ids):
         await db.commit()
 
 
+async def _staff_needs_no_approval(ids):
+    """«Подтверждение тренером» — правило самостоятельной записи клиента.
+
+    Заявку одобряют владелец и администратор — те же, кто записывает за
+    стойкой: запись сотрудника уже решение студии, ждать ей некого. Раньше
+    она становилась «ожидающей», хотя Журнал тут же слал клиенту «Запись
+    подтверждена», а шаг оплаты принимал наличные за неодобренную бронь.
+    """
+    async with async_session_maker() as db:
+        row = (await db.execute(select(StudioBookingSettings).where(
+            StudioBookingSettings.studio_id == ids["studio"]))).scalar_one()
+        row.trainer_confirmation_required = True
+        await db.commit()
+    try:
+        staff = await _book(ids, "oleg", "big", actor=booking.Actor.STAFF)
+        assert staff.outcome is Outcome.OK and staff.status == "active", staff
+        assert staff.terms.approval_required is False
+        # Клиент сам — по-прежнему заявка.
+        client = await _book(ids, "katya", "big")
+        assert client.outcome is Outcome.OK and client.status == "pending", client
+    finally:
+        async with async_session_maker() as db:
+            row = (await db.execute(select(StudioBookingSettings).where(
+                StudioBookingSettings.studio_id == ids["studio"]))).scalar_one()
+            row.trainer_confirmation_required = False
+            await db.commit()
+
+
 # ─── Перенос ─────────────────────────────────────────────────────────────────
 
 async def _rescheduling(ids):
@@ -459,6 +487,8 @@ def test_booking_domain_against_the_database():
             await _cancelling(ids)
             await _wipe(ids)
             await _approval(ids)
+            await _wipe(ids)
+            await _staff_needs_no_approval(ids)
             await _wipe(ids)
             await _rescheduling(ids)
             await _wipe(ids)

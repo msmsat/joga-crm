@@ -90,7 +90,7 @@ class FundingKind(str, Enum):
 
 
 class Actor(str, Enum):
-    """КТО записывает. От этого зависит окно записи, и только оно.
+    """КТО записывает. От этого зависят окно записи и подтверждение студией.
 
     Правила «не позднее чем за два часа», «не дальше чем на неделю вперёд» и
     «только в часы виджета» — это правила САМОСТОЯТЕЛЬНОЙ записи клиента.
@@ -98,6 +98,10 @@ class Actor(str, Enum):
     до начала, они отношения не имеют: студия распоряжается своим залом сама
     (см. `booking_rules.assert_staff_bookable`). Единственный запрет за стойкой
     — занятие уже прошло: посадить человека в зал задним числом нельзя.
+
+    Так же и «Подтверждение тренером»: заявку одобряют владелец и
+    администратор, а запись сотрудника — уже их решение, и «ожидающей» она не
+    бывает (`_check`, `booking_quotes.calculate`).
     """
     CLIENT = "client"
     STAFF = "staff"
@@ -338,7 +342,10 @@ async def _check(db: AsyncSession, *, studio_id: int, client_id: int, lesson_id:
         trainer_name=facts.trainer_name,
         branch_name=facts.branch_name,
         funding=funding,
-        approval_required=bool(rules.trainer_confirmation_required),
+        # «Подтверждение тренером» — правило самостоятельной записи клиента.
+        # Одобряют заявки владелец и администратор — те же, кто записывает за
+        # стойкой: запись сотрудника уже решение студии, и ждать ей некого.
+        approval_required=bool(rules.trainer_confirmation_required) and actor is Actor.CLIENT,
         base_price=int(lesson.price or 0),
     )
     checked = _Checked(Outcome.OK, lesson, rules, terms, spot)

@@ -230,16 +230,19 @@
     "when": "Data e ora",
     "step": "Passo {{n}} di {{total}}",
     "searchService": "Cerca servizio",
-    "ownTime": "Orario personalizzato",
     "existing": "Già in programma",
-    "newLesson": "Nuova sessione",
     "noMasters": "Nessuno offre ancora questo servizio",
-    "earlier": "Prima",
     "check": "Controlla la prenotazione",
     "change": "Modifica",
     "confirm": "Conferma",
     "busyAt": "Occupato alle {{time}}",
-    "allBusy": "Alle {{time}} sono tutti occupati: scegli l’orario libero più vicino di uno specialista"
+    "allBusy": "Alle {{time}} sono tutti occupati: scegli l’orario libero più vicino di uno specialista",
+    "pickTime": "Scegli l’orario",
+    "apply": "Fatto",
+    "datePlaceholder": "GG.MM.AAAA",
+    "badDate": "Inserisci la data come {{format}}",
+    "badTime": "Inserisci l’orario come HH:MM",
+    "noServicesAt": "Alle {{time}} non ci sono servizi liberi: scegli un altro orario"
   },
   "payment": {
     "title": "Pagamento",

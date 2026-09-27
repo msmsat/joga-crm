@@ -23,6 +23,19 @@ type Props = {
 const amountOf = (preview: PaymentPreview, kind: PaymentDiscountKind) =>
   preview.discounts.find(d => d.kind === kind)?.amount ?? 0;
 
+/** Чек не пересчитался — подтверждать нечем, и кассир должен видеть почему. */
+function LoadFailed({ payment }: { payment: Payment }) {
+  const { t } = useTranslation(['journal', 'common']);
+  return (
+    <div className="bpay-note bpay-note-error" role="alert">
+      {t('journal:payment.loadFailed')}{' '}
+      <button type="button" className="bpay-link" onClick={() => void payment.refresh()}>
+        {t('common:errors.retry')}
+      </button>
+    </div>
+  );
+}
+
 export function BookingPayment({ payment, firstLesson, onFirstLesson, busy = false }: Props) {
   const { t } = useTranslation(['journal', 'common']);
   const { preview } = payment;
@@ -31,16 +44,9 @@ export function BookingPayment({ payment, firstLesson, onFirstLesson, busy = fal
     return (
       <section className="bpay" aria-busy={payment.loading}>
         <div className="bpay-title">{t('journal:payment.title')}</div>
-        {payment.failed ? (
-          <div className="bpay-note bpay-note-error" role="alert">
-            {t('journal:payment.loadFailed')}{' '}
-            <button type="button" className="bpay-link" onClick={() => void payment.refresh()}>
-              {t('common:errors.retry')}
-            </button>
-          </div>
-        ) : (
-          <div className="bpay-note">{t('common:loading')}</div>
-        )}
+        {payment.failed
+          ? <LoadFailed payment={payment} />
+          : <div className="bpay-note">{t('common:loading')}</div>}
       </section>
     );
   }
@@ -57,7 +63,7 @@ export function BookingPayment({ payment, firstLesson, onFirstLesson, busy = fal
   const others = preview.discounts.filter(d => d.kind !== 'first_lesson' && d.kind !== 'promo');
 
   return (
-    <section className="bpay" aria-busy={payment.loading}>
+    <section className="bpay" aria-busy={payment.loading} data-stale={payment.failed || undefined}>
       <div className="bpay-title">{t('journal:payment.title')}</div>
 
       <div className="bpay-row">
@@ -102,6 +108,10 @@ export function BookingPayment({ payment, firstLesson, onFirstLesson, busy = fal
                    amount={preview.certificate_applied} nominal={preview.certificate_amount} money={money} />
         </div>
       )}
+
+      {/* Прежний чек остаётся на экране, но подтвердить по нему нельзя: он
+          посчитан не под то, что сейчас выбрано. */}
+      {payment.failed && <LoadFailed payment={payment} />}
 
       <div className="bpay-total">
         <span>{covered ? t(`journal:payment.coveredBy.${covered}`) : t('journal:payment.total')}</span>
@@ -161,7 +171,7 @@ function CodeRow({ kind, code, payment, busy, amount, nominal = 0, money }: {
                disabled={busy} error={code.error ? t(code.error) : undefined} />
       </div>
       <Button size="sm" variant="ghost" onClick={apply} disabled={busy || !code.draft.trim()}
-              loading={payment.loading} style={{ height: 44, flexShrink: 0 }}>
+              loading={payment.loading && payment.applying === kind} style={{ height: 44, flexShrink: 0 }}>
         {t('journal:payment.apply')}
       </Button>
     </div>

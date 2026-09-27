@@ -238,16 +238,19 @@
     "when": "Data i godzina",
     "step": "Krok {{n}} z {{total}}",
     "searchService": "Szukaj usługi",
-    "ownTime": "Własna godzina",
     "existing": "Już w grafiku",
-    "newLesson": "Nowe zajęcia",
     "noMasters": "Nikt jeszcze nie prowadzi tej usługi",
-    "earlier": "Wcześniej",
     "check": "Sprawdź zapis",
     "change": "Zmień",
     "confirm": "Potwierdź",
     "busyAt": "Zajęty o {{time}}",
-    "allBusy": "O {{time}} wszyscy są zajęci — wybierz najbliższy wolny termin u specjalisty"
+    "allBusy": "O {{time}} wszyscy są zajęci — wybierz najbliższy wolny termin u specjalisty",
+    "pickTime": "Wybierz godzinę",
+    "apply": "Gotowe",
+    "datePlaceholder": "DD.MM.RRRR",
+    "badDate": "Wpisz datę w formacie {{format}}",
+    "badTime": "Wpisz godzinę w formacie GG:MM",
+    "noServicesAt": "O {{time}} nie ma wolnych usług — wybierz inną godzinę"
   },
   "payment": {
     "title": "Płatność",
