@@ -30,6 +30,7 @@ import { useServiceOptions } from './hooks/useServiceOptions';
 import { NewBookingModal } from './components/modals/NewBookingModal';
 import type { NewBookingForm } from './components/modals/NewBookingModal';
 import { ResourceBookingModal } from './components/modals/ResourceBookingModal';
+import { isPastSlot } from './components/modals/booking-wizard/pastSlot';
 import { ResourceKeypadModal } from './components/modals/ResourceKeypadModal';
 import { usePhone } from '../../../hooks/usePhone';
 import { AddClientModal } from './components/modals/AddClientModal';
@@ -99,6 +100,8 @@ export default function Journal() {
   // спрашивала всё заново, хотя человек ровно что кликнул по колонке мастера.
   const [resourceBooking, setResourceBooking] = useState<{
     teacherId: number | null; date: string; serviceId?: number; time?: string;
+    /** Мастер записи и на компьютере: клетка в прошлом — он спросит про час впереди. */
+    wizard?: boolean;
   } | null>(null);
   // Та же индивидуальная запись, но у клетки сетки на десктопе — клавиатурным
   // окном, как новое занятие. На телефоне окно у клетки негде разместить: там
@@ -290,12 +293,17 @@ export default function Journal() {
 
     // Телефон: любая запись — пошаговым мастером (BookingWizard через
     // ResourceBookingModal). Мастер колонки подставляется, день недели — нет.
-    if (isPhone) {
-      const col = columns[columnIndex];
+    // Клетка в прошлом — тоже мастером, на любом экране: задним числом не
+    // записываем, он спросит про тот же час впереди (pastSlot.ts).
+    const slotCol = columns[columnIndex];
+    const slotDate = toDateStr(slotCol instanceof Date ? slotCol : new Date(calYear, calMonth, selectedDay));
+    const inPast = isPastSlot(slotDate, formatIndexToTimeStr(timeIdx));
+    if (isPhone || inPast) {
       setResourceBooking({
-        teacherId: col && typeof col === 'object' && !(col instanceof Date) ? col.id : null,
-        date: toDateStr(col instanceof Date ? col : new Date(calYear, calMonth, selectedDay)),
+        teacherId: slotCol && typeof slotCol === 'object' && !(slotCol instanceof Date) ? slotCol.id : null,
+        date: slotDate,
         time: formatIndexToTimeStr(timeIdx),
+        wizard: inPast,
       });
       return;
     }
@@ -323,6 +331,17 @@ export default function Journal() {
     const col = columns[columnIndex];
     setNewForm({ serviceId: null, title: '', hall: typeof col === 'string' ? col : (hallNames[0] ?? ''), maxClients: '8', branchId: null });
     setShowNewForm(true);
+  };
+
+  /** «Сейчас» в шкале сетки, если клетка сегодня (0 — 07:00); день впереди — null.
+      Форма нового занятия не даёт поставить начало раньше. */
+  const slotNotBefore = (columnIndex?: number) => {
+    const col = columnIndex != null ? columns[columnIndex] : null;
+    const day = toDateStr(col instanceof Date ? col : new Date(calYear, calMonth, selectedDay));
+    const now = new Date();
+    const today = toDateStr(now);
+    if (day > today) return null;
+    return day < today ? Infinity : now.getHours() - 7 + now.getMinutes() / 60;
   };
 
   // Ассистент: /dashboard/journal?ai=lesson.create (эпик AI-6, задача 9).
@@ -980,6 +999,7 @@ export default function Journal() {
           closeNewForm={closeNewForm}
           onCreate={createLessonFromModal}
           spaceIsAxis={spaceIsAxis}
+          notBefore={slotNotBefore(newBookingSlot.columnIndex)}
           // Мастера и день забираем ДО закрытия формы: closeNewForm обнуляет слот.
           onResourceBooking={hasResourceServices ? (serviceId) => {
             const slot = newBookingSlot;
@@ -1009,6 +1029,7 @@ export default function Journal() {
           defaultDate={resourceBooking.date}
           defaultServiceId={resourceBooking.serviceId}
           defaultTime={resourceBooking.time}
+          wizard={resourceBooking.wizard}
           onClose={() => setResourceBooking(null)}
           onCreated={mutations.invalidate}
         />

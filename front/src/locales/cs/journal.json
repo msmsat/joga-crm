@@ -225,7 +225,39 @@
     "debt": "Dluh",
     "notes": "Poznámky",
     "openFull": "Otevřít kartu",
-    "copied": "Zkopírováno"
+    "copied": "Zkopírováno",
+    "since": "klientem od {{date}}",
+    "owes": "Dluží {{amount}}",
+    "attendance": "Docházka",
+    "missed": "Absence",
+    "points": "Body",
+    "rating": "Prům. hodnocení",
+    "contacts": "Kontakty",
+    "copy": "Kopírovat",
+    "age": "{{value}} let",
+    "subscription": "Permanentka",
+    "left": "Zbývá {{left}} z {{total}}",
+    "frozen": "Zmrazeno",
+    "until": "Platí do {{date}}",
+    "nextVisit": "Nejbližší rezervace",
+    "about": "Ve zkratce",
+    "firstVisit": "První návštěva",
+    "lastVisit": "Poslední návštěva",
+    "favoriteTrainer": "Oblíbený trenér",
+    "favoriteLesson": "Oblíbená lekce",
+    "cancellations": "Zrušení",
+    "source": "Zdroj",
+    "noNotes": "Zatím žádné poznámky",
+    "history": "Historie návštěv",
+    "noHistory": "Zatím žádné návštěvy",
+    "status": {
+      "missed": "Nepřišel",
+      "cancelled": "Zrušeno",
+      "attended": "Přišel",
+      "upcoming": "Nadcházející"
+    },
+    "reviews": "Recenze",
+    "bookedOn": "rezervováno {{date}}"
   },
   "wizard": {
     "client": "Vyberte klienta",
@@ -266,7 +298,13 @@
     "onlyAvailable": "Available only",
     "unavailable": "Unavailable for this selection",
     "selectionConflict": "The selection does not match. Choose an available time or change the service or specialist.",
-    "availabilityError": "Could not load availability. Please try again."
+    "availabilityError": "Could not load availability. Please try again.",
+    "past": {
+      "title": "Tento čas už uplynul",
+      "message": "Objednat na {{date}} v {{time}}?",
+      "own": "Vybrat jiný čas"
+    },
+    "lessonDiscount": "Sleva na tuto lekci"
   },
   "payment": {
     "title": "Platba",
@@ -277,7 +315,10 @@
     "discount": {
       "studio": "Sleva studia",
       "offer": "Osobní sleva",
-      "referral": "Sleva za doporučení"
+      "referral": "Sleva za doporučení",
+      "first_lesson": "První lekce",
+      "manual": "Sleva administrátora",
+      "promo": "Promo kód"
     },
     "promo": "Promo kód",
     "voucher": "Poukaz",
@@ -299,5 +340,96 @@
     },
     "confirmAndPay": "Zapsat a přijmout {{amount}}",
     "loadFailed": "Platbu se nepodařilo spočítat."
+  },
+  "lessonCard": {
+    "today": "Dnes",
+    "minutes": "{{value}} min",
+    "route": "Trasa",
+    "noAddress": "Adresa není uvedena",
+    "trainer": "Trenér",
+    "price": "Cena",
+    "spots": "Místa",
+    "format": "Formát",
+    "group": "Skupinová",
+    "individual": "Individuální",
+    "level": "Úroveň",
+    "equipment": "Vybavení",
+    "buffers": "Příprava / úklid",
+    "buffersValue": "{{before}} + {{after}} min",
+    "cameIn": "Přišli",
+    "paid": "Zaplaceno",
+    "owed": "Dluh",
+    "cancelReason": "Důvod zrušení",
+    "pay": "Zaplatit",
+    "paidAmount": "Zaplaceno · {{amount}}",
+    "bySubscription": "Permanentka",
+    "coffee": "Káva po lekci",
+    "channel": {
+      "online": "Online rezervace",
+      "telegram": "Telegram",
+      "web": "Web",
+      "miniapp": "Mini aplikace"
+    },
+    "fund": {
+      "subscription": "Permanentka «{{name}}»",
+      "discount": "{{label}} −{{percent}} % · −{{amount}}",
+      "points": "Body −{{points}} · −{{amount}}",
+      "deposit": "Záloha −{{amount}}",
+      "certificate": "Poukaz {{code}} −{{amount}}",
+      "paidBy": "Zaplaceno {{amount}} · {{method}}",
+      "free": "První lekce — zdarma",
+      "price": "Cena {{amount}}"
+    },
+    "method": {
+      "cash": "hotově",
+      "transfer": "převodem",
+      "stripe": "kartou online"
+    }
+  },
+  "lessonPay": {
+    "countFirstLesson": "Uplatnit slevu",
+    "title": "Platba za lekci",
+    "benefits": "Výhody klienta",
+    "receipt": "Účtenka",
+    "toNext": "Ještě {{amount}} do úrovně {{level}}",
+    "points": "Body",
+    "pointsValue": "{{points}} ≈ {{amount}}",
+    "usePoints": "Zaplatit body",
+    "deposit": "Záloha",
+    "useDeposit": "Zaplatit ze zálohy",
+    "cashbackRule": "Cashback studia: {{percent}} % z každé platby se vrací v bodech",
+    "manual": "Extra sleva",
+    "manualPlaceholder": "Vlastní",
+    "price": "Cena lekce",
+    "pointsLine": "Body ({{points}})",
+    "total": "K úhradě",
+    "willEarn": "+{{points}} bodů klientovi",
+    "method": "Způsob platby",
+    "accept": "Přijmout {{amount}}",
+    "acceptAndAttend": "Přijmout {{amount}} a označit účast",
+    "close": "Vyrovnat",
+    "closeAndAttend": "Vyrovnat a označit účast",
+    "byCash": "Hotově · {{amount}}",
+    "byCard": "Kartou · {{amount}}",
+    "deferred": "Peníze se přijmou při potvrzení rezervace",
+    "notNow": "Teď neplatit",
+    "referral": "Doporučení",
+    "invitedBy": "Přišel na doporučení: {{name}}",
+    "referralDiscount": "Uvítací sleva za doporučení −{{percent}} % — uplatní se sama",
+    "invitedCount": "Pozval přátel: {{count}}",
+    "inviteBonus": {
+      "points": "Za přítele: +{{value}} bodů",
+      "deposit": "Za přítele: +{{amount}} na zálohu",
+      "discount": "Za přítele: sleva {{amount}}"
+    }
+  },
+  "mark": {
+    "pay": "Platba",
+    "unpaid": "Nezaplaceno",
+    "cash": "Hotově",
+    "card": "Kartou",
+    "paid": "Zaplaceno",
+    "attend": "Docházka",
+    "notMarked": "Neoznačeno"
   }
 }

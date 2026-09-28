@@ -73,6 +73,9 @@ export const queryKeys = {
   clientEvents: (id: number, filter: string) => ['clients', 'detail', id, 'events', filter] as const,
   clientEventsAll: (id: number) => ['clients', 'detail', id, 'events'] as const, // префикс: все фильтры разом
   clientActivity: (id: number) => ['clients', 'detail', id, 'activity'] as const,
+  // Сводка для карточки в Журнале: визиты, неявки, отзывы — под префиксом клиента,
+  // чтобы оплата и отметка посещения её освежали.
+  clientDigest: (id: number) => ['clients', 'detail', id, 'digest'] as const,
   clientNotes: (id: number) => ['clients', 'detail', id, 'notes'] as const,
   clientInviteCode: (id: number) => ['clients', 'detail', id, 'invite-code'] as const,
   wallet: (clientId: number) => ['clients', 'detail', clientId, 'wallet'] as const,

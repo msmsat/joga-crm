@@ -10,7 +10,7 @@ from database import async_session_maker, get_db
 from dependencies import get_scoped_lesson, get_studio_context, StudioContext
 from services import lesson_time, studio_time
 from models import (
-    Client, ClientPayment, Hall, Lesson, Reservation, Service, Studio, StudioBranch,
+    Client, ClientPayment, ClientSubscription, Hall, Lesson, Reservation, Service, Studio, StudioBranch,
     StudioMember, User,
 )
 from schemas.schedule.lessons import (
@@ -88,6 +88,9 @@ async def list_lessons(
         select(
             Reservation.lesson_id.label("lesson_id"),
             func.count(Reservation.id).label("booked_count"),
+            # Отмеченные «пришёл»: прошедшая индивидуальная запись без отметки
+            # рисуется в сетке неявкой (красной, с крестиком).
+            func.count(case((Reservation.status == "attended", 1))).label("attended_count"),
         )
         .where(Reservation.status != "cancelled")
         .group_by(Reservation.lesson_id)
@@ -112,6 +115,7 @@ async def list_lessons(
             Lesson.buffer_before_min, Lesson.buffer_after_min,
             Service.color.label("service_color"),
             func.coalesce(booked_sq.c.booked_count, 0).label("booked_count"),
+            func.coalesce(booked_sq.c.attended_count, 0).label("attended_count"),
         )
         .outerjoin(booked_sq, booked_sq.c.lesson_id == Lesson.id)
         .outerjoin(Service, Service.id == Lesson.service_id)
@@ -220,6 +224,19 @@ async def get_lesson(
             func.coalesce(
                 case((ClientPayment.status == "pending", ClientPayment.amount), else_=0), 0,
             ).label("debt"),
+            # Погашенный долг: по нему Журнал пишет «Оплачено», а не молчит.
+            func.coalesce(
+                case((ClientPayment.status == "success", ClientPayment.amount), else_=0), 0,
+            ).label("paid_amount"),
+            Reservation.subscription_id.is_not(None).label("by_subscription"),
+            Reservation.booking_channel,
+            Reservation.created_at.label("booked_at"),
+            Reservation.rating,
+            Reservation.review_text,
+            Reservation.coffee,
+            ClientSubscription.type.label("subscription_name"),
+            Reservation.payment_breakdown.label("payment"),
+            Reservation.manual_discount_percent,
             Client.name,
             Client.last_name,
             Client.phone,
@@ -227,13 +244,36 @@ async def get_lesson(
         )
         .join(Client, Client.id == Reservation.client_id)
         .outerjoin(ClientPayment, ClientPayment.id == Reservation.debt_payment_id)
+        .outerjoin(ClientSubscription, ClientSubscription.id == Reservation.subscription_id)
         .where(Reservation.lesson_id == lesson_id, Reservation.status != "cancelled")
         .order_by(Reservation.spot_number)
     )).mappings().all()
 
-    return LessonDetail.model_validate(
-        {**lesson_data, "booked_count": booked_count, "booked_clients": list(clients)}
-    )
+    return LessonDetail.model_validate({
+        **lesson_data, "booked_count": booked_count, "booked_clients": list(clients),
+        "location": await _lesson_location(db, lesson),
+    })
+
+
+async def _lesson_location(db: AsyncSession, lesson: Lesson) -> dict:
+    """Зал, филиал и адрес занятия. Филиал — снимок на занятии, иначе филиал
+    зала; адреса нет у филиала — берётся адрес студии (у студии с одним местом
+    филиалы часто не заведены вовсе)."""
+    hall = await db.get(Hall, lesson.hall_id) if lesson.hall_id is not None else None
+    branch_id = lesson.branch_id or (hall.branch_id if hall is not None else None)
+    branch = await db.get(StudioBranch, branch_id) if branch_id is not None else None
+    address = branch.address if branch is not None else None
+    city = branch.city if branch is not None else None
+    if not address:
+        studio = await db.get(Studio, lesson.studio_id)
+        if studio is not None:
+            address, city = studio.address, city or studio.city
+    return {
+        "hall_name": hall.name if hall is not None else None,
+        "branch_name": branch.name if branch is not None else None,
+        "address": address or None,
+        "city": city or None,
+    }
 
 
 @router.get("/lessons/{lesson_id}/eligible-clients", response_model=List[EligibleClient])

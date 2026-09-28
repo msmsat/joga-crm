@@ -2,6 +2,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { BookingCard } from './BookingCard';
+import { bufferStyle, CARD_RADIUS } from './bufferStyle';
 import type { Booking, JournalColumn, Trainer } from '../../types';
 import { NO_HALL_COLUMN, TIMES } from '../../constants';
 import { getBookingLayouts, formatIndexToTimeStr, weekdayShort } from '../../utils';
@@ -329,12 +330,9 @@ export const Grid: React.FC<GridProps> = ({
                   && newBookingSlot.timeStart >= ti && newBookingSlot.timeStart < ti + 1
                   && (newBookingSlot.bufferAfter ?? 0) * 72 >= 4 && (
                   <div className="booking-buffer" aria-hidden style={{
-                    position: 'absolute', left: 0, right: 28, zIndex: 9998, pointerEvents: 'none',
-                    top: (newBookingSlot.timeEnd - ti) * 72 + 1,
-                    height: (newBookingSlot.bufferAfter ?? 0) * 72 - 2,
-                    borderRadius: '3px 3px 8px 8px', boxSizing: 'border-box',
-                    border: '1px dashed rgba(249,160,139,0.45)',
-                    background: 'repeating-linear-gradient(135deg, rgba(249,160,139,0.1) 0 6px, transparent 6px 12px)',
+                    ...bufferStyle('#F9A08B', 'after', (newBookingSlot.bufferAfter ?? 0) * 72),
+                    left: 0, right: 28, zIndex: 9998,
+                    top: (newBookingSlot.timeEnd - ti) * 72 - 1 - CARD_RADIUS,
                   }} />
                 )}
 

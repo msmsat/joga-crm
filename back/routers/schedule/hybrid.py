@@ -129,21 +129,24 @@ async def payment_preview(request: Request, quote_id: str, body: PaymentPreviewR
 @router.post("/bookings", response_model=BookingRead)
 async def confirm(body: CrmConfirmRequest, background: BackgroundTasks,
                   ctx: StudioContext = Depends(staff), db: AsyncSession = Depends(get_db)):
-    """Подтвердить запись; с `payment` — и принять оплату наличными.
+    """Подтвердить запись; с `payment` — и принять оплату (наличные или перевод).
 
     Одной транзакцией: оплата, которая не прошла (ваучер уже погашен, сумма
     не та, что видел кассир), откатывает и саму запись — полусостояния «записан,
-    но деньги не проведены» кассир не получает. Без `payment` — прежнее
-    поведение: остаток становится долгом «оплата на месте».
+    но деньги не проведены» кассир не получает. Без `payment` остаток
+    становится долгом «оплата на месте» — со скидкой администратора, если её
+    назвали (`manual_discount_percent`).
     """
     actor = await _quote_actor(db, ctx, body.quote_id)
     booked = await resource_booking.confirm(db, body.quote_id, actor)
-    if body.payment is not None:
-        try:
+    try:
+        if body.payment is not None:
             await booking_checkout.pay_cash(db, actor, booked, body.payment)
-        except Exception:
-            await db.rollback()
-            raise
+        elif body.manual_discount_percent is not None:
+            await booking_checkout.discount(db, actor, booked, body.manual_discount_percent)
+    except Exception:
+        await db.rollback()
+        raise
     return await hybrid_http.after_commit(db, actor, booked, background)
 
 

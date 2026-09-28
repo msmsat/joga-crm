@@ -5,20 +5,21 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import * as Icons from '../../../../components/Icons';
 import type { Booking, Trainer } from '../types';
-import type { BookedClient, EligibleClient } from '../../../../api/schedule/schedule.types';
+import type { BookedClient, EligibleClient, LessonDetail } from '../../../../api/schedule/schedule.types';
 import { AddClientModal as NewClientModal } from '../../Clients/components/modals/AddClientModal';
 import { scheduleApi } from '../../../../api/schedule';
 import { errorMessage } from '../../../../api/errorMessage';
-import { formatIndexToTimeStr, parseTimeToIndex, generateTimeIntervals, MIN_TIME_INDEX, MAX_TIME_INDEX } from '../utils';
+import { formatIndexToTimeStr, parseTimeToIndex, generateTimeIntervals, isLessonOver, MIN_TIME_INDEX, MAX_TIME_INDEX } from '../utils';
 import { useServiceOptions, CREATE_SERVICE_OPTION } from '../hooks/useServiceOptions';
 import { MoveBookingModal } from './modals/MoveBookingModal';
 import { ClientQuickCard } from './ClientQuickCard';
 import { LessonNotes } from './LessonNotes';
+import { LessonFacts } from './lesson/LessonFacts';
+import { BookedClients } from './lesson/BookedClients';
 import type { useJournalMutations } from '../hooks/useJournalMutations';
 import type { HistoryEntry } from '../hooks/useUndoHistory';
 import { useToast, Select, ConfirmModal, QrShareModal } from '../../../../components/ui/index';
 import { miniappLink } from '../../../../lib/miniapp';
-import { formatMoney } from '../../../../lib/money';
 import { useStudioCurrency, useStudioSettings } from '../../../../hooks/useStudioCurrency';
 
 const MIN_TIME_IDX = MIN_TIME_INDEX;
@@ -87,9 +88,6 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
   const [peekClientId, setPeekClientId] = useState<number | null>(null);
 
   // Стейты добавления клиента
-  // Бронь, по которой сейчас спрашиваем способ оплаты (id записи) — строка
-  // клиента на это время превращается в выбор «Наличными / Переводом / Без оплаты».
-  const [payingFor, setPayingFor] = useState<number | null>(null);
   const currency = useStudioCurrency();
   const [isAddingClient, setIsAddingClient] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -126,6 +124,10 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
     trainers.find(tr => tr.id === popupBooking.trainer)?.full || null,
   ].filter(Boolean).join(' · ');
 
+  const trainerName = trainers.find(tr => tr.id === popupBooking.trainer)?.full;
+  // Подпись занятия в окне оплаты: «Хатха · 10:00».
+  const lessonLabel = `${popupBooking.title} · ${formatIndexToTimeStr(popupBooking.timeStart)}`;
+
   const KP_INTERVALS = useMemo(() => generateTimeIntervals(timeStep), [timeStep]);
   const { services, options: serviceOptions } = useServiceOptions();
 
@@ -150,17 +152,24 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
   const editTimeError = editForm.timeEnd <= editForm.timeStart ? t('bookingPopup.errors.endAfterStart') : null;
   const hasEditErrors = !!(editServiceError || editMaxClientsError || editTimeError);
 
-  const [booked, setBooked] = useState<{ lessonId: number; clients: BookedClient[] } | null>(null);
-  const bookedClients = booked?.lessonId === popupBooking.id ? booked.clients : null;
+  // Полные данные занятия: записанные (с оплатой и отзывами), адрес, уровень,
+  // инвентарь. lessonId в состоянии переживает смену занятия без reset-эффекта.
+  const [loaded, setLoaded] = useState<{ lessonId: number; detail: LessonDetail | null; clients: BookedClient[] } | null>(null);
+  const current = loaded?.lessonId === popupBooking.id ? loaded : null;
+  const bookedClients = current?.clients ?? null;
+  const detail = current?.detail ?? null;
+
+  const loadLesson = (stale: () => boolean = () => false) =>
+    scheduleApi.getLesson(popupBooking.id)
+      .then(d => { if (!stale()) setLoaded({ lessonId: popupBooking.id, detail: d, clients: d.booked_clients }); })
+      .catch(() => { if (!stale()) setLoaded({ lessonId: popupBooking.id, detail: null, clients: [] }); });
 
   useEffect(() => {
-    if (isCancelled) return;
     let stale = false;
-    scheduleApi.getLesson(popupBooking.id)
-      .then(d => { if (!stale) setBooked({ lessonId: popupBooking.id, clients: d.booked_clients }); })
-      .catch(() => { if (!stale) setBooked({ lessonId: popupBooking.id, clients: [] }); });
+    loadLesson(() => stale);
     return () => { stale = true; };
-  }, [popupBooking.id, isCancelled]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [popupBooking.id]);
 
   const clientsLoaded = eligible?.lessonId === popupBooking.id;
   const clientsList = clientsLoaded ? eligible!.clients : EMPTY_CLIENTS;
@@ -179,62 +188,7 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
   }, [isAddingClient, clientsLoaded, popupBooking.id]);
 
   const patchBooked = (fn: (list: BookedClient[]) => BookedClient[]) =>
-    setBooked(b => b && { ...b, clients: fn(b.clients) });
-
-  // Бронь из онлайн-записи, которую студия ещё не одобрила («Подтверждение
-  // тренером» в Онлайн-записи). Отклонение — тот же крестик, что и снятие.
-  const confirmBooking = (c: BookedClient) => {
-    mutations.confirmReservation(c.reservation_id)
-      .then(() => {
-        patchBooked(list => list.map(x =>
-          x.reservation_id === c.reservation_id ? { ...x, status: 'active' as const } : x
-        ));
-        showToast(t('toasts.bookingConfirmed'));
-      })
-      .catch((e: unknown) => toast.error(errorMessage(e, t)));
-  };
-
-  // Отметка посещения у брони с долгом сначала спрашивает про деньги: именно в
-  // этот момент клиент стоит у стойки, и другого шанса взять наличные не будет.
-  // Отказаться можно («Без оплаты») — долг остаётся висеть на записи.
-  const markAttended = (c: BookedClient) => {
-    if (c.status === 'attended' && c.debt <= 0) return;
-    if (c.debt > 0 && canEdit) {
-      setPayingFor(c.reservation_id);
-      return;
-    }
-    attendOnly(c);
-  };
-
-  const attendOnly = (c: BookedClient) => {
-    setPayingFor(null);
-    if (c.status === 'attended') return;
-    mutations.attendReservation(c.reservation_id)
-      .then(() => {
-        patchBooked(list => list.map(x =>
-          x.reservation_id === c.reservation_id ? { ...x, status: 'attended' as const } : x
-        ));
-        showToast(t('toasts.attendanceMarked'));
-      })
-      .catch((e: unknown) => toast.error(errorMessage(e, t)));
-  };
-
-  // Оплата и отметка посещения — два запроса, а не один: платёж проводит касса
-  // (доход, баллы, комиссия), посещение — Журнал. Порядок важен, посещение
-  // отмечаем только после успешной оплаты, иначе при сбое кассы визит уже
-  // отмечен, а денег нет.
-  const payAndAttend = (c: BookedClient, method: 'cash' | 'transfer') => {
-    setPayingFor(null);
-    mutations.payReservation(c.reservation_id, method)
-      .then(() => {
-        patchBooked(list => list.map(x =>
-          x.reservation_id === c.reservation_id ? { ...x, debt: 0 } : x
-        ));
-        showToast(t('toasts.paymentAccepted'));
-        if (c.status !== 'attended') attendOnly({ ...c, debt: 0 });
-      })
-      .catch((e: unknown) => toast.error(errorMessage(e, t)));
-  };
+    setLoaded(b => b && { ...b, clients: fn(b.clients) });
 
   const removeClient = (c: BookedClient) => {
     mutations.cancelReservation(c.reservation_id, popupBooking)
@@ -354,20 +308,16 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
           </div>
         )}
         
-        {/* ОТМЕНЁННОЕ ЗАНЯТИЕ: только зал и тренер, ничего интерактивного */}
+        {/* ОТМЕНЁННОЕ ЗАНЯТИЕ: сведения и причина, ничего интерактивного */}
         {isCancelled ? (
           <>
-            <div className="bp-row">
-              <div className="bp-icon-box"><Icons.MapPin /></div>
-              <div style={{ fontWeight: 700 }}>{popupBooking.hall}</div>
-            </div>
-
-            <div className="bp-row">
-              <div className="bp-icon-box" style={{ background: `${popupBooking.color}15` }}>
-                <span style={{ width: 10, height: 10, borderRadius: '50%', background: popupBooking.color }} />
+            <LessonFacts booking={popupBooking} detail={detail} booked={null} trainerName={trainerName} currency={currency} />
+            {detail?.cancel_reason && (
+              <div className="lc-tile">
+                <span className="lc-tile-label">{t('lessonCard.cancelReason')}</span>
+                <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--onyx)', lineHeight: 1.5 }}>{detail.cancel_reason}</span>
               </div>
-              <div style={{ fontWeight: 700 }}>{trainers.find(t => t.id === popupBooking.trainer)?.full}</div>
-            </div>
+            )}
           </>
 
         /* РЕЖИМ ДОБАВЛЕНИЯ КЛИЕНТА */
@@ -562,40 +512,13 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
             {editMaxClientsError && <div style={{ fontSize: 11, color: 'var(--error)', fontWeight: 600, textAlign: 'right' }}>{editMaxClientsError}</div>}
           </div>
           
-        /* ОБЫЧНЫЙ РЕЖИМ ПРОСМОТРА */
+        /* ОБЫЧНЫЙ РЕЖИМ ПРОСМОТРА: всё о занятии, заметка, записанные */
         ) : (
           <>
-            <div className="bp-row">
-              <div className="bp-icon-box"><Icons.Users /></div>
-              <div style={{ flex: 1, display: 'flex', alignItems: 'center' }}>
-                <span style={{ fontSize: 16, fontWeight: 900, lineHeight: 1 }}>{popupBooking.clients} / {popupBooking.maxClients}</span>
-                <span style={{ color: 'var(--muted)', marginLeft: 8, fontWeight: 600, fontSize: 13, lineHeight: 1 }}>{t('bookingPopup.spotsTaken')}</span>
-              </div>
-            </div>
-            
-            <div className="bp-row">
-              <div className="bp-icon-box"><Icons.MapPin /></div>
-              <div style={{ fontWeight: 700 }}>{popupBooking.hall}</div>
-            </div>
-            
-            <div className="bp-row">
-              <div className="bp-icon-box" style={{ background: `${popupBooking.color}15` }}>
-                <span style={{ width: 10, height: 10, borderRadius: '50%', background: popupBooking.color }} />
-              </div>
-              <div style={{ fontWeight: 700 }}>{trainers.find(t => t.id === popupBooking.trainer)?.full}</div>
-            </div>
+            <LessonFacts booking={popupBooking} detail={detail} booked={bookedClients} trainerName={trainerName} currency={currency} />
 
-            {/* Цена ЭТОГО занятия. Раньше её в журнале не было видно вовсе —
-                владелец узнавал сумму только в кассе. С индивидуальными ценами
-                это стало опаснее: занятие у разных мастеров стоит по-разному, и
-                не показать, сколько стоит именно это, значит прятать главное. */}
-            <div className="bp-row">
-              <div className="bp-icon-box"><Icons.CardIcon /></div>
-              <div style={{ fontWeight: 700 }}>{formatMoney(popupBooking.price, currency)}</div>
-            </div>
-
-            {/* Заметка занятия — под составом, но ДО списка записанных: это
-                про само занятие, а не про конкретного человека. */}
+            {/* Заметка занятия — ДО списка записанных: это про само занятие,
+                а не про конкретного человека. */}
             <LessonNotes
               booking={popupBooking}
               canEdit={canEdit}
@@ -603,143 +526,22 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
               onSaved={setPopupBooking}
             />
 
-            {!isResource && popupBooking.maxClients > 0 && (
-              <div style={{ marginTop: 8, background: 'rgba(var(--ink),0.02)', padding: '14px 16px', borderRadius: '16px', border: '1px solid rgba(var(--ink),0.03)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                  <span style={{ fontSize: 11, fontWeight: 800, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                    {t('bookingPopup.fillRate')}
-                  </span>
-                  <span style={{ fontSize: 13, fontWeight: 900, color: 'var(--onyx)' }}>
-                    {Math.round(popupBooking.clients / popupBooking.maxClients * 100)}%
-                  </span>
-                </div>
-                <div style={{ height: 6, background: 'rgba(var(--ink),0.06)', borderRadius: 100, overflow: 'hidden' }}>
-                  <div style={{
-                    height: '100%', width: `${popupBooking.clients / popupBooking.maxClients * 100}%`,
-                    background: popupBooking.color, borderRadius: 100,
-                    transition: 'width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)'
-                  }} />
-                </div>
-              </div>
-            )}
-
             {bookedClients && bookedClients.length > 0 && (
-              <div style={{ marginTop: 8 }}>
-                <div style={{ fontSize: 11, fontWeight: 800, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 8 }}>
-                  {t('bookingPopup.booked')}
-                </div>
-                <div style={{ maxHeight: 168, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 4 }}>
-                  {bookedClients.map(c => (
-                    <div
-                      key={c.reservation_id}
-                      // Мимо кнопок «пришёл» и «убрать» строка открывает карточку
-                      // клиента: перед занятием чаще нужно вспомнить, кто это и
-                      // что о нём записано, чем отметить приход.
-                      onClick={e => { e.stopPropagation(); setPeekClientId(c.client_id); }}
-                      onKeyDown={e => {
-                        if (e.key !== 'Enter' && e.key !== ' ') return;
-                        e.preventDefault(); e.stopPropagation();
-                        setPeekClientId(c.client_id);
-                      }}
-                      role="button"
-                      tabIndex={0}
-                      title={t('bookingPopup.openClient')}
-                      style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '6px 8px', borderRadius: 12, background: 'rgba(var(--ink),0.02)', cursor: 'pointer', transition: 'background 0.15s' }}
-                      onMouseEnter={e => { e.currentTarget.style.background = 'rgba(var(--ink),0.05)'; }}
-                      onMouseLeave={e => { e.currentTarget.style.background = 'rgba(var(--ink),0.02)'; }}
-                    >
-                      <div style={{
-                        width: 26, height: 26, borderRadius: '50%', flexShrink: 0,
-                        background: c.avatar_color ?? 'var(--peach)', color: 'white',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        fontSize: 10, fontWeight: 800
-                      }}>
-                        {[c.name, c.last_name].filter(Boolean).map(n => n![0]).join('').toUpperCase()}
-                      </div>
-                      <div style={{ flex: 1, minWidth: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                        <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--onyx)', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                          {c.name} {c.last_name ?? ''}
-                        </div>
-                        {c.status === 'pending' && (
-                          <div style={{ fontSize: 10, fontWeight: 800, color: 'var(--peach)', textTransform: 'uppercase', letterSpacing: '0.4px' }}>
-                            {t('bookingPopup.awaitingConfirmation')}
-                          </div>
-                        )}
-                        {/* Первое занятие: подарок студии — денег никто не ждёт;
-                            со скидкой — процент рядом, остаток ниже долгом. */}
-                        {c.is_trial && (
-                          <div style={{ fontSize: 10, fontWeight: 800, color: 'var(--peach)', textTransform: 'uppercase', letterSpacing: '0.4px' }}>
-                            {(c.trial_discount_percent ?? 100) < 100
-                              ? t('bookingPopup.trialDiscount', { percent: c.trial_discount_percent })
-                              : t('bookingPopup.trialLesson')}
-                          </div>
-                        )}
-                        {/* Долг висит, пока его не погасят: это и есть «спрашиваем,
-                            пока не нажмёт да» — плашка не исчезает сама. */}
-                        {c.debt > 0 && (
-                          <div style={{ fontSize: 10, fontWeight: 800, color: 'var(--rose)', textTransform: 'uppercase', letterSpacing: '0.4px' }}>
-                            {t('bookingPopup.unpaid', { amount: formatMoney(c.debt, currency) })}
-                          </div>
-                        )}
-                      </div>
-                      {/* Спросили про деньги — на месте кнопок строки стоит выбор
-                          способа оплаты, пока кассир не ответит. */}
-                      {payingFor === c.reservation_id ? (
-                        <div style={{ display: 'flex', gap: 4, flexShrink: 0 }}>
-                          <button className="bp-btn ghost text-btn" style={{ fontSize: 11, padding: '4px 8px' }}
-                            onClick={(e) => { e.stopPropagation(); payAndAttend(c, 'cash'); }}>
-                            {t('bookingPopup.payCash')}
-                          </button>
-                          <button className="bp-btn ghost text-btn" style={{ fontSize: 11, padding: '4px 8px' }}
-                            onClick={(e) => { e.stopPropagation(); payAndAttend(c, 'transfer'); }}>
-                            {t('bookingPopup.payTransfer')}
-                          </button>
-                          <button className="bp-btn ghost text-btn" style={{ fontSize: 11, padding: '4px 8px', color: 'var(--muted)' }}
-                            onClick={(e) => { e.stopPropagation(); attendOnly(c); }}>
-                            {t('bookingPopup.payLater')}
-                          </button>
-                        </div>
-                      ) : c.status === 'pending' ? (
-                        canEdit && (
-                          <button
-                            className="btn-icon"
-                            title={t('bookingPopup.confirmBooking')}
-                            style={{ color: 'var(--peach)' }}
-                            onClick={(e) => { e.stopPropagation(); confirmBooking(c); }}
-                          >
-                            <Icons.Check />
-                          </button>
-                        )
-                      ) : (
-                        <button
-                          className="btn-icon"
-                          // Отмеченный визит с непогашенным долгом остаётся
-                          // кликабельным: галочка ведёт к оплате, а не молчит.
-                          title={c.debt > 0 ? t('bookingPopup.acceptPayment')
-                            : c.status === 'attended' ? t('bookingPopup.attended') : t('bookingPopup.markAttended')}
-                          style={{
-                            color: c.debt > 0 ? 'var(--rose)' : c.status === 'attended' ? '#86b08c' : 'var(--border)',
-                            cursor: c.status === 'attended' && c.debt <= 0 ? 'default' : 'pointer',
-                          }}
-                          onClick={(e) => { e.stopPropagation(); markAttended(c); }}
-                        >
-                          <Icons.Check />
-                        </button>
-                      )}
-                      {canEdit && payingFor !== c.reservation_id && (
-                        <button
-                          className="btn-icon"
-                          title={c.status === 'pending' ? t('bookingPopup.rejectBooking') : t('bookingPopup.removeFromLesson')}
-                          style={{ color: 'var(--muted)' }}
-                          onClick={(e) => { e.stopPropagation(); removeClient(c); }}
-                        >
-                          <Icons.X />
-                        </button>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
+              <BookedClients
+                clients={bookedClients}
+                canEdit={canEdit}
+                removable={!isResource}
+                over={isLessonOver(popupBooking)}
+                currency={currency}
+                price={popupBooking.price}
+                lessonLabel={lessonLabel}
+                mutations={mutations}
+                patch={patchBooked}
+                reload={() => { void loadLesson(); }}
+                showToast={showToast}
+                onPeek={setPeekClientId}
+                onRemove={removeClient}
+              />
             )}
           </>
         )}
@@ -767,9 +569,7 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
                 setEligible(null); // подходящие пересчитаются заново — записанные уйдут из списка
                 await onAddClients(ids);
                 // Обновляем список записанных прямо в попапе — новые клиенты видны без перезагрузки модалки
-                scheduleApi.getLesson(popupBooking.id)
-                  .then(d => setBooked({ lessonId: popupBooking.id, clients: d.booked_clients }))
-                  .catch(() => {});
+                void loadLesson();
               }}
             >
               <Icons.UserPlus /> {t('bookingPopup.add')} {selectedClients.length > 0 ? `(${selectedClients.length})` : ''}

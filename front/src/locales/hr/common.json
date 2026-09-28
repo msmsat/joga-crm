@@ -130,7 +130,8 @@
       "promo_expired": "Promo kod više ne vrijedi",
       "balance_changed": "Bodovi ili polog već su potrošeni drugdje — ponovno izračunajte plaćanje",
       "attempt_in_progress": "Plaćanje za ovu prodaju već je u tijeku — pričekajte rezultat ili osvježite",
-      "master_required": "Odaberite specijalista — cijena ovisi o njemu"
+      "master_required": "Odaberite specijalista — cijena ovisi o njemu",
+      "amount_changed": "Iznos se promijenio — provjerite ukupno i potvrdite ponovno"
     },
     "billing": {
       "tax_details_required": "Dodajte državu studija u podatke za račun — bez nje se račun ne može izdati",

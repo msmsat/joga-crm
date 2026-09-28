@@ -37,6 +37,8 @@ UI_ONLY: dict[str, str] = {
     "POST /schedule/booking-quotes": "персональный quote привязан к сотруднику, открывшему форму записи",
     "POST /schedule/booking-quotes/{quote_id}/payment-preview": "чек шага оплаты в форме записи — чтение, а не действие",
     "POST /schedule/bookings": "подтверждение сотрудником показанных в форме условий и оплаты",
+    "POST /schedule/reservations/{reservation_id}/payment-preview": "чек оплаты брони в журнале — чтение, "
+                                                                    "оплату проводит pay_booking",
     "POST /schedule/reservations/{reservation_id}/cancel": "конкретная бронь отменяется из карточки журнала",
     "POST /schedule/reservations/{reservation_id}/reschedule-quotes": "предпросмотр переноса при выборе слота в журнале",
     "POST /schedule/reservations/{reservation_id}/reschedule": "подтверждение переноса с версией из открытой карточки",

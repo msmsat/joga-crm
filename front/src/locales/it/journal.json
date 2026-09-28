@@ -221,7 +221,39 @@
     "debt": "Debito",
     "notes": "Note",
     "openFull": "Apri la scheda",
-    "copied": "Copiato"
+    "copied": "Copiato",
+    "since": "cliente dal {{date}}",
+    "owes": "Deve {{amount}}",
+    "attendance": "Frequenza",
+    "missed": "Assenze",
+    "points": "Punti",
+    "rating": "Voto medio",
+    "contacts": "Contatti",
+    "copy": "Copia",
+    "age": "{{value}} anni",
+    "subscription": "Abbonamento",
+    "left": "Restano {{left}} su {{total}}",
+    "frozen": "Congelato",
+    "until": "Valido fino al {{date}}",
+    "nextVisit": "Prossima prenotazione",
+    "about": "In breve",
+    "firstVisit": "Prima visita",
+    "lastVisit": "Ultima visita",
+    "favoriteTrainer": "Istruttore preferito",
+    "favoriteLesson": "Lezione preferita",
+    "cancellations": "Cancellazioni",
+    "source": "Provenienza",
+    "noNotes": "Ancora nessuna nota",
+    "history": "Storico visite",
+    "noHistory": "Ancora nessuna visita",
+    "status": {
+      "missed": "Assente",
+      "cancelled": "Annullato",
+      "attended": "Presente",
+      "upcoming": "In arrivo"
+    },
+    "reviews": "Recensioni",
+    "bookedOn": "prenotato il {{date}}"
   },
   "wizard": {
     "client": "Scegli un cliente",
@@ -262,7 +294,13 @@
     "onlyAvailable": "Available only",
     "unavailable": "Unavailable for this selection",
     "selectionConflict": "The selection does not match. Choose an available time or change the service or specialist.",
-    "availabilityError": "Could not load availability. Please try again."
+    "availabilityError": "Could not load availability. Please try again.",
+    "past": {
+      "title": "Questo orario è già passato",
+      "message": "Prenotare per il {{date}} alle {{time}}?",
+      "own": "Scegli un altro orario"
+    },
+    "lessonDiscount": "Sconto su questa lezione"
   },
   "payment": {
     "title": "Pagamento",
@@ -273,7 +311,10 @@
     "discount": {
       "studio": "Sconto dello studio",
       "offer": "Sconto personale",
-      "referral": "Sconto invito"
+      "referral": "Sconto invito",
+      "first_lesson": "Prima lezione",
+      "manual": "Sconto dell'amministratore",
+      "promo": "Codice promo"
     },
     "promo": "Codice promozionale",
     "voucher": "Buono",
@@ -295,5 +336,96 @@
     },
     "confirmAndPay": "Prenota e incassa {{amount}}",
     "loadFailed": "Impossibile calcolare il pagamento."
+  },
+  "lessonCard": {
+    "today": "Oggi",
+    "minutes": "{{value}} min",
+    "route": "Percorso",
+    "noAddress": "Indirizzo non indicato",
+    "trainer": "Istruttore",
+    "price": "Prezzo",
+    "spots": "Posti",
+    "format": "Formato",
+    "group": "Di gruppo",
+    "individual": "Individuale",
+    "level": "Livello",
+    "equipment": "Attrezzatura",
+    "buffers": "Preparazione / riordino",
+    "buffersValue": "{{before}} + {{after}} min",
+    "cameIn": "Presenti",
+    "paid": "Pagato",
+    "owed": "Dovuto",
+    "cancelReason": "Motivo della cancellazione",
+    "pay": "Incassa",
+    "paidAmount": "Pagato · {{amount}}",
+    "bySubscription": "Abbonamento",
+    "coffee": "Caffè dopo la lezione",
+    "channel": {
+      "online": "Prenotazione online",
+      "telegram": "Telegram",
+      "web": "Sito web",
+      "miniapp": "Mini app"
+    },
+    "fund": {
+      "subscription": "Abbonamento «{{name}}»",
+      "discount": "{{label}} −{{percent}}% · −{{amount}}",
+      "points": "Punti −{{points}} · −{{amount}}",
+      "deposit": "Deposito −{{amount}}",
+      "certificate": "Buono regalo {{code}} −{{amount}}",
+      "paidBy": "Pagato {{amount}} · {{method}}",
+      "free": "Prima lezione — gratis",
+      "price": "Prezzo {{amount}}"
+    },
+    "method": {
+      "cash": "in contanti",
+      "transfer": "con bonifico",
+      "stripe": "con carta online"
+    }
+  },
+  "lessonPay": {
+    "countFirstLesson": "Applica lo sconto",
+    "title": "Pagamento della lezione",
+    "benefits": "Vantaggi del cliente",
+    "receipt": "Ricevuta",
+    "toNext": "Ancora {{amount}} per {{level}}",
+    "points": "Punti",
+    "pointsValue": "{{points}} ≈ {{amount}}",
+    "usePoints": "Paga con i punti",
+    "deposit": "Deposito",
+    "useDeposit": "Paga dal deposito",
+    "cashbackRule": "Cashback dello studio: il {{percent}}% di ogni pagamento torna in punti",
+    "manual": "Sconto extra",
+    "manualPlaceholder": "Altro",
+    "price": "Prezzo della lezione",
+    "pointsLine": "Punti ({{points}})",
+    "total": "Da pagare",
+    "willEarn": "+{{points}} punti al cliente",
+    "method": "Metodo di pagamento",
+    "accept": "Incassa {{amount}}",
+    "acceptAndAttend": "Incassa {{amount}} e segna presenza",
+    "close": "Salda",
+    "closeAndAttend": "Salda e segna presenza",
+    "byCash": "Contanti · {{amount}}",
+    "byCard": "Carta · {{amount}}",
+    "deferred": "Il denaro si incassa alla conferma della prenotazione",
+    "notNow": "Non pagare ora",
+    "referral": "Inviti",
+    "invitedBy": "Invitato da {{name}}",
+    "referralDiscount": "Sconto di benvenuto da invito −{{percent}}% — si applica da solo",
+    "invitedCount": "Amici invitati: {{count}}",
+    "inviteBonus": {
+      "points": "Per amico: +{{value}} punti",
+      "deposit": "Per amico: +{{amount}} sul deposito",
+      "discount": "Per amico: {{amount}} di sconto"
+    }
+  },
+  "mark": {
+    "pay": "Pagamento",
+    "unpaid": "Non pagato",
+    "cash": "Contanti",
+    "card": "Carta",
+    "paid": "Pagato",
+    "attend": "Presenza",
+    "notMarked": "Non segnato"
   }
 }

@@ -221,7 +221,39 @@
     "debt": "Borç",
     "notes": "Notlar",
     "openFull": "Kartı aç",
-    "copied": "Kopyalandı"
+    "copied": "Kopyalandı",
+    "since": "{{date}} tarihinden beri müşteri",
+    "owes": "Borcu {{amount}}",
+    "attendance": "Katılım",
+    "missed": "Gelmedi",
+    "points": "Puan",
+    "rating": "Ort. puan",
+    "contacts": "İletişim",
+    "copy": "Kopyala",
+    "age": "{{value}} yaş",
+    "subscription": "Üyelik",
+    "left": "{{total}} dersten {{left}} kaldı",
+    "frozen": "Donduruldu",
+    "until": "{{date}} tarihine kadar geçerli",
+    "nextVisit": "Sıradaki rezervasyon",
+    "about": "Kısaca",
+    "firstVisit": "İlk ziyaret",
+    "lastVisit": "Son ziyaret",
+    "favoriteTrainer": "Favori eğitmen",
+    "favoriteLesson": "Favori ders",
+    "cancellations": "İptaller",
+    "source": "Kaynak",
+    "noNotes": "Henüz not yok",
+    "history": "Ziyaret geçmişi",
+    "noHistory": "Henüz ziyaret yok",
+    "status": {
+      "missed": "Gelmedi",
+      "cancelled": "İptal edildi",
+      "attended": "Geldi",
+      "upcoming": "Yaklaşan"
+    },
+    "reviews": "Yorumlar",
+    "bookedOn": "rezervasyon {{date}}"
   },
   "wizard": {
     "client": "Müşteri seçin",
@@ -262,7 +294,13 @@
     "onlyAvailable": "Available only",
     "unavailable": "Unavailable for this selection",
     "selectionConflict": "The selection does not match. Choose an available time or change the service or specialist.",
-    "availabilityError": "Could not load availability. Please try again."
+    "availabilityError": "Could not load availability. Please try again.",
+    "past": {
+      "title": "Bu saat zaten geçti",
+      "message": "{{date}} saat {{time}} için kayıt yapılsın mı?",
+      "own": "Başka bir saat seç"
+    },
+    "lessonDiscount": "Bu seansa indirim"
   },
   "payment": {
     "title": "Ödeme",
@@ -273,7 +311,10 @@
     "discount": {
       "studio": "Stüdyo indirimi",
       "offer": "Kişisel indirim",
-      "referral": "Davet indirimi"
+      "referral": "Davet indirimi",
+      "first_lesson": "İlk ders",
+      "manual": "Yönetici indirimi",
+      "promo": "Promosyon kodu"
     },
     "promo": "Promosyon kodu",
     "voucher": "Kupon",
@@ -295,5 +336,96 @@
     },
     "confirmAndPay": "Kaydet ve {{amount}} tahsil et",
     "loadFailed": "Ödeme hesaplanamadı."
+  },
+  "lessonCard": {
+    "today": "Bugün",
+    "minutes": "{{value}} dk",
+    "route": "Yol tarifi",
+    "noAddress": "Adres belirtilmemiş",
+    "trainer": "Eğitmen",
+    "price": "Fiyat",
+    "spots": "Yer",
+    "format": "Biçim",
+    "group": "Grup",
+    "individual": "Bireysel",
+    "level": "Seviye",
+    "equipment": "Ekipman",
+    "buffers": "Hazırlık / temizlik",
+    "buffersValue": "{{before}} + {{after}} dk",
+    "cameIn": "Gelenler",
+    "paid": "Ödendi",
+    "owed": "Borç",
+    "cancelReason": "İptal nedeni",
+    "pay": "Öde",
+    "paidAmount": "Ödendi · {{amount}}",
+    "bySubscription": "Üyelik",
+    "coffee": "Dersten sonra kahve",
+    "channel": {
+      "online": "Online rezervasyon",
+      "telegram": "Telegram",
+      "web": "Web sitesi",
+      "miniapp": "Mini uygulama"
+    },
+    "fund": {
+      "subscription": "Üyelik «{{name}}»",
+      "discount": "{{label}} −%{{percent}} · −{{amount}}",
+      "points": "Puan −{{points}} · −{{amount}}",
+      "deposit": "Depozito −{{amount}}",
+      "certificate": "Hediye kartı {{code}} −{{amount}}",
+      "paidBy": "Ödendi {{amount}} · {{method}}",
+      "free": "İlk ders — ücretsiz",
+      "price": "Fiyat {{amount}}"
+    },
+    "method": {
+      "cash": "nakit",
+      "transfer": "havale",
+      "stripe": "online kart"
+    }
+  },
+  "lessonPay": {
+    "countFirstLesson": "İndirimi uygula",
+    "title": "Ders ödemesi",
+    "benefits": "Müşteri avantajları",
+    "receipt": "Fiş",
+    "toNext": "{{level}} için {{amount}} daha",
+    "points": "Puan",
+    "pointsValue": "{{points}} ≈ {{amount}}",
+    "usePoints": "Puanla öde",
+    "deposit": "Depozito",
+    "useDeposit": "Depozitodan öde",
+    "cashbackRule": "Stüdyo nakit iadesi: her ödemenin %{{percent}} kadarı puan olarak geri döner",
+    "manual": "Ek indirim",
+    "manualPlaceholder": "Özel",
+    "price": "Ders fiyatı",
+    "pointsLine": "Puan ({{points}})",
+    "total": "Ödenecek",
+    "willEarn": "Müşteriye +{{points}} puan",
+    "method": "Ödeme yöntemi",
+    "accept": "{{amount}} tahsil et",
+    "acceptAndAttend": "{{amount}} tahsil et ve katılımı işaretle",
+    "close": "Kapat",
+    "closeAndAttend": "Kapat ve katılımı işaretle",
+    "byCash": "Nakit · {{amount}}",
+    "byCard": "Kart · {{amount}}",
+    "deferred": "Ödeme, randevu onaylandığında alınır",
+    "notNow": "Şimdi ödeme",
+    "referral": "Davetler",
+    "invitedBy": "Davet eden: {{name}}",
+    "referralDiscount": "Davetle gelen hoş geldin indirimi −%{{percent}} — kendiliğinden uygulanır",
+    "invitedCount": "Davet ettiği arkadaşlar: {{count}}",
+    "inviteBonus": {
+      "points": "Arkadaş başına: +{{value}} puan",
+      "deposit": "Arkadaş başına: depozitoya +{{amount}}",
+      "discount": "Arkadaş başına: {{amount}} indirim"
+    }
+  },
+  "mark": {
+    "pay": "Ödeme",
+    "unpaid": "Ödenmedi",
+    "cash": "Nakit",
+    "card": "Kart",
+    "paid": "Ödendi",
+    "attend": "Katılım",
+    "notMarked": "İşaretlenmedi"
   }
 }

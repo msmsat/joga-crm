@@ -1,5 +1,8 @@
 import { client } from '../client'
-import type { EligibleClient, Hall, Lesson, LessonCreate, LessonDaysResponse, LessonDetail, Reservation } from './schedule.types'
+import type {
+  EligibleClient, Hall, Lesson, LessonCreate, LessonDaysResponse, LessonDetail, Reservation,
+  ReservationPaymentOptions, ReservationPaymentPreview,
+} from './schedule.types'
 
 export const scheduleApi = {
   getLessons: (params: { date_from: string; date_to: string; hall_id?: number }) => {
@@ -55,6 +58,13 @@ export const scheduleApi = {
   // Клиент заплатил за занятие на месте: гасит долг и проводит доход через
   // кассовый движок. Карты здесь нет — эквайринг идёт через Stripe (бэк её и
   // не примет).
-  payReservation: (id: number, paymentMethod: 'cash' | 'transfer') =>
-    client.post<Reservation>(`/schedule/reservations/${id}/pay`, { payment_method: paymentMethod }),
+  // Скидка администратора, баллы и депозит считает сервер; `expected_total` —
+  // итог, названный клиенту: разошёлся с пересчётом — 409, денег не приняли.
+  payReservation: (id: number, paymentMethod: 'cash' | 'transfer',
+                   options: ReservationPaymentOptions & { expected_total?: number } = {}) =>
+    client.post<Reservation>(`/schedule/reservations/${id}/pay`, { payment_method: paymentMethod, ...options }),
+
+  // Чек погашения долга — только чтение, ничего не списывает.
+  reservationPaymentPreview: (id: number, options: ReservationPaymentOptions) =>
+    client.post<ReservationPaymentPreview>(`/schedule/reservations/${id}/payment-preview`, options),
 }

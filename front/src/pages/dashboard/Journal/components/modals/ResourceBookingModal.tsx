@@ -32,11 +32,13 @@ import { confirmLabel } from '../../hooks/useBookingPayment';
  */
 type Props = ResourceBookingOptions & {
   defaultTime?: string;
+  /** Мастер записи и на компьютере — клетка журнала в прошлом. */
+  wizard?: boolean;
 };
 
 export function ResourceBookingModal(props: Props) {
   const isPhone = usePhone();
-  if (!isPhone) return <ResourceSheet {...props} />;
+  if (!isPhone && !props.wizard) return <ResourceSheet {...props} />;
   const { defaultTime, teacherId = null, defaultDate, clientId, onClose, onCreated } = props;
   // Телефон: любая запись — пошаговый мастер «клиент → услуга → мастер →
   // время», и для индивидуальных услуг, и для групповых занятий.

@@ -18,6 +18,7 @@ from typing import Annotated, Literal, Optional, Union
 from pydantic import ConfigDict, Field, model_validator
 
 from schemas._base import BaseSchema
+from schemas.schedule.reservations import ReferralSummary
 
 # Studio.booking_mode — управляет каталогом целиком.
 BookingMode = Literal["event", "resource", "hybrid"]
@@ -149,10 +150,13 @@ class PaymentCodes(HybridSchema):
     то же, что отсутствие: поле ввода на экране бывает пустым, а не null.
 
     `manual_discount_percent` — скидка, которую администратор дал от себя.
-    Идёт в общий ряд скидок: действует самая выгодная клиенту, без стека."""
+    Идёт в общий ряд скидок: действует самая выгодная клиенту, без стека.
+    Баллы и депозит списываются после скидок — тот же порядок, что у кассы."""
     promo_code: Optional[str] = Field(default=None, max_length=64)
     certificate_code: Optional[str] = Field(default=None, max_length=64)
     manual_discount_percent: Optional[int] = Field(default=None, ge=1, le=100)
+    use_bonuses: bool = False
+    use_deposit: bool = False
 
 
 class PaymentPreviewRequest(PaymentCodes):
@@ -164,12 +168,21 @@ class ConfirmPayment(PaymentCodes):
     # расхождении не записывает ни брони, ни денег: принять наличными не ту
     # сумму, что названа клиенту, хуже, чем попросить нажать ещё раз.
     expected_total: int = Field(ge=0)
+    # Чем заплатили у стойки. Карты-эквайринга здесь нет по той же причине, что
+    # у оплаты долга (schemas/schedule/reservations.ReservationPayRequest):
+    # терминал и перевод на счёт — «transfer», Stripe проводит только вебхук.
+    method: Literal["cash", "transfer"] = "cash"
 
 
 class CrmConfirmRequest(ConfirmRequest):
-    """Подтверждение из Журнала. `payment` — принять оплату наличными в той же
-    транзакции, что и запись; без него остаётся долг «оплата на месте»."""
+    """Подтверждение из Журнала. `payment` — принять оплату в той же
+    транзакции, что и запись; без него остаётся долг «оплата на месте».
+
+    `manual_discount_percent` — скидка администратора записи БЕЗ оплаты: долг
+    заводится уже с ней, и оплата позже берёт её сама. С `payment` скидка
+    едет в нём."""
     payment: Optional[ConfirmPayment] = None
+    manual_discount_percent: Optional[int] = Field(default=None, ge=1, le=100)
 
 
 class PaymentDiscount(HybridSchema):
@@ -197,6 +210,19 @@ class PaymentPreviewRead(HybridSchema):
     certificate_error: Optional[str] = None
     certificate_amount: int = 0
     certificate_applied: int = 0
+    # Ручная скидка введена, но выгоднее оказалась другая: не суммируются.
+    manual_outweighed: bool = False
+    # Баллы и депозит клиента — те же поля, что у чека оплаты долга
+    # (schemas/schedule/reservations.ReservationPaymentPreview): окно оплаты одно.
+    bonuses_available: int = 0
+    bonuses_applied: int = 0
+    bonuses_value: int = 0
+    point_value: int = 1
+    deposit_available: int = 0
+    deposit_applied: int = 0
+    cashback_percent: Optional[int] = None
+    points_to_earn: int = 0
+    referral: Optional[ReferralSummary] = None
     total: int
 
 

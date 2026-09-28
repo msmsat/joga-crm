@@ -1,4 +1,6 @@
 /** Matches schemas/schedule/hybrid.py and services/terminology.py. */
+import type { PaymentCheckPreview } from '../schedule/schedule.types';
+
 export type BookingMode = 'event' | 'resource';
 /** Услуга — одна механика: resource+group запрещена сервером (§6.1). */
 export type ServiceBookingMode = BookingMode;
@@ -95,28 +97,17 @@ export interface QuoteRead { quote_id: string; expires_at: string; booking_mode:
  *  в процентах (1…100) — шаг оплаты. */
 export interface PaymentCodes {
   promo_code?: string | null; certificate_code?: string | null; manual_discount_percent?: number | null;
+  /** Списать баллы и депозит клиента — после скидок, как у кассы. */
+  use_bonuses?: boolean; use_deposit?: boolean;
 }
-/** Оплата наличными при подтверждении записи. `expected_total` — итог, который видел
- *  администратор: сервер считает заново и при расхождении не записывает ничего. */
-export interface ConfirmPayment extends PaymentCodes { expected_total: number }
+/** Оплата при подтверждении записи. `expected_total` — итог, который видел
+ *  администратор: сервер считает заново и при расхождении не записывает ничего.
+ *  `method` — наличные или перевод (терминал, перевод на счёт). */
+export interface ConfirmPayment extends PaymentCodes { expected_total: number; method?: 'cash' | 'transfer' }
 export type PaymentDiscountKind = 'studio' | 'offer' | 'promo' | 'referral' | 'first_lesson' | 'manual';
-/** Чек шага оплаты — зеркало PaymentPreviewRead (back/schemas/schedule/hybrid.py). */
-export interface PaymentPreview {
-  currency: string;
-  base_price: number;
+/** Чек шага оплаты — зеркало PaymentPreviewRead (back/schemas/schedule/hybrid.py).
+ *  Строки чека — те же, что у оплаты долга: окно оплаты одно. */
+export interface PaymentPreview extends PaymentCheckPreview {
   /** Чем покрыта запись, когда платить нечего. */
   covered_by: 'subscription' | 'trial' | 'free' | null;
-  discounts: { kind: PaymentDiscountKind; amount: number }[];
-  first_lesson_offered: boolean;
-  first_lesson_applied: boolean;
-  first_lesson_percent: number | null;
-  /** null — промокод не вводили. */
-  promo_valid: boolean | null;
-  /** Промокод действует, но выгоднее другая скидка: скидки не суммируются. */
-  promo_outweighed: boolean;
-  /** Код ошибки ваучера (`loyalty.cert_used` …) — переводится через common:errors. */
-  certificate_error: string | null;
-  certificate_amount: number;
-  certificate_applied: number;
-  total: number;
 }

@@ -7,6 +7,7 @@ import type {
   CategoryStat,
   ClientCreate,
   ClientCreatedOut,
+  ClientDigest,
   ClientListItem,
   ClientNote,
   ClientProfile,
@@ -88,6 +89,10 @@ export const clientsApi = {
 
   getActivity: (id: number) =>
     client.get<ActivityPoint[]>(`/clients/${id}/activity`),
+
+  // Визиты, неявки, отзывы и привычки одним ответом — для карточки в Журнале.
+  getDigest: (id: number) =>
+    client.get<ClientDigest>(`/clients/${id}/digest`),
 
   // ─── NOTES ────────────────────────────────────────────────────────────────
   getNotes: (id: number) =>

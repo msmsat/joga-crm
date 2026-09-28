@@ -17,17 +17,7 @@
 from fastapi import HTTPException
 
 from models import ClientPayment, Reservation
-from services import booking, booking_quotes as quotes
-
-# Строки скидок в порядке чека — поля ResolvedPrice, где лежит, сколько сняла каждая.
-_DISCOUNTS = (
-    ("first_lesson", "first_lesson_discount_applied"),
-    ("studio", "studio_discount_applied"),
-    ("offer", "offer_discount_applied"),
-    ("referral", "referral_discount_applied"),
-    ("promo", "promo_discount_applied"),
-    ("manual", "manual_discount_applied"),
-)
+from services import booking, booking_quotes as quotes, reservation_payment
 
 
 def _code(value):
@@ -36,10 +26,11 @@ def _code(value):
     return value or None
 
 
-async def _quote(db, actor, terms, domain, promo_code, certificate_code, manual_percent):
+async def _quote(db, actor, terms, domain, codes, certificate_code):
     """Касса над записью, которой ещё нет: товар — занятие по цене этого
     мастера со скидкой первого занятия, если администратор её не выключил,
-    и с его ручной скидкой, если он её дал."""
+    с его ручной скидкой, если он её дал, и с баллами и депозитом клиента,
+    если их решили списать."""
     from routers.checkout.router import ServiceAsProduct, _quote as price
 
     applied = terms.get("first_lesson_offered") and terms.get("first_lesson", True)
@@ -49,7 +40,8 @@ async def _quote(db, actor, terms, domain, promo_code, certificate_code, manual_
         first_lesson_percent=terms.get("first_lesson_percent") if applied else None,
     )
     return await price(db, actor.studio_id, actor.client_id, package, "lesson",
-                       promo_code, False, False, certificate_code, manual_percent=manual_percent)
+                       _code(codes.promo_code), codes.use_bonuses, codes.use_deposit, certificate_code,
+                       manual_percent=codes.manual_discount_percent)
 
 
 async def preview(db, actor: quotes.Actor, quote_id: str, codes) -> dict:
@@ -80,33 +72,40 @@ async def preview(db, actor: quotes.Actor, quote_id: str, codes) -> dict:
         # нечего, и ни промокод, ни ваучер здесь ничего не изменят.
         return {**result, "covered_by": funding.kind.value, "total": 0}
 
-    promo_code, certificate_code = _code(codes.promo_code), _code(codes.certificate_code)
-    manual = codes.manual_discount_percent
+    certificate_code = _code(codes.certificate_code)
     certificate_error = None
     try:
-        quote = await _quote(db, actor, terms, domain, promo_code, certificate_code, manual)
+        quote = await _quote(db, actor, terms, domain, codes, certificate_code)
     except HTTPException as exc:
         code = exc.detail.get("code") if isinstance(exc.detail, dict) else None
         if certificate_code is None or not (code or "").startswith("loyalty.cert_"):
             raise
         certificate_error = code
-        quote = await _quote(db, actor, terms, domain, promo_code, None, manual)
-    resolved = quote.resolved
+        quote = await _quote(db, actor, terms, domain, codes, None)
     return {
         **result,
-        "discounts": [{"kind": kind, "amount": getattr(resolved, field)}
-                      for kind, field in _DISCOUNTS if getattr(resolved, field)],
-        "promo_valid": quote.promo_valid if promo_code else None,
-        "promo_outweighed": bool(promo_code and quote.promo_valid and resolved.promo is None),
-        "certificate_error": certificate_error,
-        "certificate_amount": quote.certificate.amount if quote.certificate is not None else 0,
-        "certificate_applied": quote.certificate_applied,
-        "total": quote.total_price,
+        **await reservation_payment.check_lines(
+            db, actor.studio_id, actor.client_id, quote, manual_percent=codes.manual_discount_percent,
+            promo_code=_code(codes.promo_code), certificate_error=certificate_error),
     }
 
 
+async def discount(db, actor: quotes.Actor, booked: dict, percent: int) -> None:
+    """Запись без оплаты со скидкой администратора: долг — уже со скидкой, и
+    оплата позже возьмёт её сама (services/reservation_payment.discount_debt).
+    Не коммитит — бронь и скидка попадают в базу одной транзакцией."""
+    reservation = await db.get(Reservation, booked["reservation_id"])
+    if reservation.payment_breakdown is not None:
+        # Повтор подтверждения уже оплаченной записи: деньги взяты, скидку
+        # поверх проведённой оплаты не кладём.
+        return
+    await reservation_payment.discount_debt(db, actor.studio_id, reservation, percent)
+
+
 async def pay_cash(db, actor: quotes.Actor, booked: dict, payment) -> None:
-    """Принять наличными за только что созданную бронь — её же транзакцией.
+    """Принять оплату за только что созданную бронь — её же транзакцией.
+    Способ — наличные или перевод (`payment.method`), баллы и депозит — если
+    их решили списать.
 
     Бронь к этому моменту создана (`resource_booking.confirm`) и сброшена в
     базу, но не закоммичена. `perform_pay` проводит долг брони и КОММИТИТ всё
@@ -140,9 +139,10 @@ async def pay_cash(db, actor: quotes.Actor, booked: dict, payment) -> None:
             CheckoutPayRequest(
                 client_id=actor.client_id, product_id=booked["lesson_id"], product_type="lesson",
                 promo_code=_code(payment.promo_code), certificate_code=_code(payment.certificate_code),
-                payment_method="cash",
+                payment_method=payment.method, use_bonuses=payment.use_bonuses,
+                use_deposit=payment.use_deposit,
             ),
-            method="cash", debt=debt, reservation_id=reservation.id,
+            method=payment.method, debt=debt, reservation_id=reservation.id,
             expected_total=payment.expected_total, manual_percent=payment.manual_discount_percent,
         )
     except HTTPException as exc:

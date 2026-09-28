@@ -130,6 +130,9 @@ class Reservation(Base):
         CheckConstraint(
             "trial_discount_percent IS NULL OR (trial_discount_percent >= 1 AND trial_discount_percent <= 100)",
             name="check_reservation_trial_percent"),
+        CheckConstraint(
+            "manual_discount_percent IS NULL OR (manual_discount_percent >= 1 AND manual_discount_percent <= 100)",
+            name="check_reservation_manual_percent"),
         # Один коврик — один человек. Частичный: отменённые брони копятся на том
         # же месте, и без условия вторая запись на освободившийся коврик была бы
         # невозможна. Проверка «место свободно» в роутерах остаётся ради внятной
@@ -182,6 +185,19 @@ class Reservation(Base):
     debt_payment_id: Mapped[Optional[int]] = mapped_column(
         ForeignKey("client_payments.id", ondelete="SET NULL"), nullable=True, index=True
     )
+    # Чем оплачено занятие — снимок в момент, когда прошли деньги
+    # (routers/checkout/router.perform_pay → services/reservation_payment.snapshot):
+    # цена, скидки строками, промокод, баллы, депозит, сертификат, итог, способ.
+    # Снимок, а не пересчёт: скидки, курс баллов и сертификат к следующему
+    # чтению уже другие, а в истории должно стоять то, что было на кассе.
+    # NULL — денег за бронь не брали (абонемент, подарок, ещё долг) или она
+    # оплачена до появления снимка.
+    payment_breakdown: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
+    # Скидка администратора в процентах, данная ЭТОЙ брони при записи без оплаты
+    # (итог мастера записи: «своя скидка на это занятие»). Долг заводится уже со
+    # скидкой, а оплата позже берёт её сама, если кассир не назвал другую
+    # (services/reservation_payment.manual_of). NULL — скидки не давали.
+    manual_discount_percent: Mapped[Optional[int]] = mapped_column(SmallInteger, nullable=True)
 
     client: Mapped["Client"] = relationship(back_populates="reservations")
     lesson: Mapped["Lesson"] = relationship(back_populates="reservations")

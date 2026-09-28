@@ -16,32 +16,36 @@ import { TimeStep } from './TimeStep';
 import { WhenChip } from './WhenPicker';
 import { useGridSwipe } from '../../../hooks/useGridSwipe';
 import { SummaryStep } from './SummaryStep';
-import { confirmLabel } from '../../../hooks/useBookingPayment';
+import { formatMoney } from '../../../../../../lib/money';
 import { NewClientStep } from './NewClientStep';
 import { WizardTabs } from './WizardTabs';
+import { ConfirmModal } from '../../../../../../components/ui/index';
 
 const TITLES = ['wizard.when', 'wizard.client', 'wizard.service', 'wizard.master', 'wizard.summary'] as const;
 /** Касания, которые не листают разделы: ряды, что сами едут вбок, и поля ввода. */
 const NO_SWIPE = '.jf-chips, .bw-days, input, textarea, select';
 
 export function BookingWizard(props: WizardOptions) {
-  const { t } = useTranslation(['journal', 'common', 'clients']);
+  const { t, i18n } = useTranslation(['journal', 'common', 'clients']);
   const w = useBookingWizard(props);
   // «+ Новый клиент»: лист показывает форму клиента вместо списка.
   const [creating, setCreating] = useState(false);
   const { onClose } = props;
   const { saving } = w;
+  // Поверх записи открыт вопрос про прошедшее время или окно оплаты — Escape их.
+  const asking = w.pastAsk != null || w.settle.open;
   // Escape — как у остальных окон: из формы клиента — назад к списку; пока
-  // запись уходит, окно не закрывается.
+  // запись уходит, окно не закрывается. Пока открыт вопрос про прошедшее
+  // время, Escape — его ответ «Выбрать своё», а не закрытие записи.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key !== 'Escape' || saving) return;
+      if (e.key !== 'Escape' || saving || asking) return;
       if (creating) setCreating(false);
       else onClose();
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [onClose, saving, creating]);
+  }, [onClose, saving, creating, asking]);
   // Свайп влево — следующий раздел, вправо — предыдущий.
   const sheetRef = useRef<HTMLDivElement>(null);
   useGridSwipe(sheetRef, !creating && !saving, w.swipe, { ignore: NO_SWIPE, phoneOnly: false });
@@ -56,7 +60,7 @@ export function BookingWizard(props: WizardOptions) {
   // они на кнопке над списком. На итоге всё и так перечислено.
   const master = w.masterChosen ? w.masters.find(m => m.id === w.teacherId)?.name : undefined;
   const picked = w.step === SUMMARY_STEP || creating ? '' : [
-    w.step !== CLIENT_STEP ? w.clientName : null,
+    w.step !== CLIENT_STEP && w.needsClient ? w.clientName : null,
     w.step !== SERVICE_STEP ? w.service?.name : null,
     w.step !== MASTER_STEP ? master : null,
   ].filter(Boolean).join(' · ');
@@ -65,9 +69,14 @@ export function BookingWizard(props: WizardOptions) {
   // уже выбрано (заведённый здесь клиент, возврат на шаг кнопкой в шапке).
   const canContinue = w.done(w.step);
   const showFoot = w.step === SUMMARY_STEP || canContinue;
-  const payable = w.ready && (!w.isResource || w.resource.payment.ready);
+  const payable = w.ready && (!w.isResource || w.settle.ready);
   // Снимок заметки ещё грузится — подтверждать рано, он бы не попал в запись.
   const confirmable = payable && !w.notePending;
+  // ConfirmModal после «Продолжить» зовёт и onClose — отличаем его от
+  // «Выбрать своё», иначе принятый час тут же сменился бы разделом «Время».
+  const pastAccepted = useRef(false);
+  const pastDay = w.pastAsk && new Date(`${w.pastAsk.date}T12:00:00`)
+    .toLocaleDateString(i18n.language, { day: 'numeric', month: 'long' });
 
   return createPortal(
     <>
@@ -120,12 +129,13 @@ export function BookingWizard(props: WizardOptions) {
               {showFoot && (
                 <div className="kp-foot">
                   {w.step === SUMMARY_STEP ? (
-                    // Индивидуальная запись подтверждается вместе с оплатой:
-                    // нужен чек под нынешние условия — сумму, которую примут
-                    // наличными, сервер сверяет с ним. Кнопка её и называет.
+                    // Выбрали на итоге «Оплату» — деньги принимаются вместе с
+                    // записью: сумму, которую примут, сервер сверяет с чеком.
+                    // Кнопка её и называет. Без оплаты — просто «Подтвердить».
                     <button type="button" className="btn-primary-sm" disabled={!confirmable || w.saving}
                             style={{ opacity: !confirmable || w.saving ? 0.5 : 1 }} onClick={() => void w.submit()}>
-                      {w.isResource ? confirmLabel(w.resource.payment, t, t('journal:wizard.confirm'))
+                      {w.isResource && w.settle.amount
+                        ? t('journal:payment.confirmAndPay', { amount: formatMoney(w.settle.amount, w.settle.check.preview?.currency ?? '') })
                         : t('journal:wizard.confirm')}
                     </button>
                   ) : (
@@ -142,6 +152,16 @@ export function BookingWizard(props: WizardOptions) {
           )}
         </div>
       </div>
+      {w.pastAsk && (
+        <ConfirmModal
+          title={t('journal:wizard.past.title')}
+          message={t('journal:wizard.past.message', { date: pastDay, time: w.pastAsk.time })}
+          confirmText={t('common:buttons.continue')}
+          cancelText={t('journal:wizard.past.own')}
+          onConfirm={() => { pastAccepted.current = true; w.acceptPast(); }}
+          onClose={() => { if (!pastAccepted.current) w.choosePastOwn(); }}
+        />
+      )}
     </>,
     document.body,
   );

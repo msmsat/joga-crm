@@ -229,7 +229,39 @@
     "debt": "Борг",
     "notes": "Нотатки",
     "openFull": "Відкрити картку",
-    "copied": "Скопійовано"
+    "copied": "Скопійовано",
+    "since": "клієнт з {{date}}",
+    "owes": "Борг {{amount}}",
+    "attendance": "Відвідуваність",
+    "missed": "Неявки",
+    "points": "Бали",
+    "rating": "Сер. оцінка",
+    "contacts": "Контакти",
+    "copy": "Скопіювати",
+    "age": "{{value}} р.",
+    "subscription": "Абонемент",
+    "left": "Залишилось {{left}} з {{total}}",
+    "frozen": "Заморожено",
+    "until": "До {{date}}",
+    "nextVisit": "Найближчий запис",
+    "about": "Коротко",
+    "firstVisit": "Перший візит",
+    "lastVisit": "Останній візит",
+    "favoriteTrainer": "Улюблений тренер",
+    "favoriteLesson": "Улюблене заняття",
+    "cancellations": "Скасування",
+    "source": "Звідки прийшов",
+    "noNotes": "Нотаток поки немає",
+    "history": "Історія відвідувань",
+    "noHistory": "Відвідувань поки немає",
+    "status": {
+      "missed": "Не прийшов",
+      "cancelled": "Скасував",
+      "attended": "Прийшов",
+      "upcoming": "Попереду"
+    },
+    "reviews": "Відгуки",
+    "bookedOn": "записаний {{date}}"
   },
   "wizard": {
     "client": "Оберіть клієнта",
@@ -270,7 +302,13 @@
     "onlyAvailable": "Available only",
     "unavailable": "Unavailable for this selection",
     "selectionConflict": "The selection does not match. Choose an available time or change the service or specialist.",
-    "availabilityError": "Could not load availability. Please try again."
+    "availabilityError": "Could not load availability. Please try again.",
+    "past": {
+      "title": "Цей час уже минув",
+      "message": "Записати на {{date}} о {{time}}?",
+      "own": "Вибрати свій час"
+    },
+    "lessonDiscount": "Знижка на це заняття"
   },
   "payment": {
     "title": "Оплата",
@@ -281,7 +319,10 @@
     "discount": {
       "studio": "Знижка студії",
       "offer": "Персональна знижка",
-      "referral": "Знижка за запрошенням"
+      "referral": "Знижка за запрошенням",
+      "first_lesson": "Перше заняття",
+      "manual": "Знижка адміністратора",
+      "promo": "Промокод"
     },
     "promo": "Промокод",
     "voucher": "Ваучер",
@@ -303,5 +344,96 @@
     },
     "confirmAndPay": "Записати й прийняти {{amount}}",
     "loadFailed": "Не вдалося порахувати оплату."
+  },
+  "lessonCard": {
+    "today": "Сьогодні",
+    "minutes": "{{value}} хв",
+    "route": "Маршрут",
+    "noAddress": "Адресу не вказано",
+    "trainer": "Тренер",
+    "price": "Ціна",
+    "spots": "Місця",
+    "format": "Формат",
+    "group": "Групове",
+    "individual": "Індивідуальне",
+    "level": "Рівень",
+    "equipment": "Інвентар",
+    "buffers": "Підготовка / прибирання",
+    "buffersValue": "{{before}} + {{after}} хв",
+    "cameIn": "Прийшли",
+    "paid": "Сплачено",
+    "owed": "Борг",
+    "cancelReason": "Причина скасування",
+    "pay": "Оплатити",
+    "paidAmount": "Сплачено · {{amount}}",
+    "bySubscription": "Абонемент",
+    "coffee": "Кава після заняття",
+    "channel": {
+      "online": "Онлайн-запис",
+      "telegram": "Telegram",
+      "web": "Сайт",
+      "miniapp": "Міні-застосунок"
+    },
+    "fund": {
+      "subscription": "Абонемент «{{name}}»",
+      "discount": "{{label}} −{{percent}}% · −{{amount}}",
+      "points": "Бали −{{points}} · −{{amount}}",
+      "deposit": "Депозит −{{amount}}",
+      "certificate": "Сертифікат {{code}} −{{amount}}",
+      "paidBy": "Сплачено {{amount}} · {{method}}",
+      "free": "Перше заняття — безкоштовно",
+      "price": "Ціна {{amount}}"
+    },
+    "method": {
+      "cash": "готівкою",
+      "transfer": "переказом",
+      "stripe": "карткою онлайн"
+    }
+  },
+  "lessonPay": {
+    "countFirstLesson": "Зарахувати знижку",
+    "title": "Оплата заняття",
+    "benefits": "Вигода клієнта",
+    "receipt": "Чек",
+    "toNext": "Ще {{amount}} до рівня {{level}}",
+    "points": "Бали",
+    "pointsValue": "{{points}} ≈ {{amount}}",
+    "usePoints": "Списати бали",
+    "deposit": "Депозит",
+    "useDeposit": "Оплатити з депозиту",
+    "cashbackRule": "Кешбек студії: {{percent}}% з кожної оплати повертається балами",
+    "manual": "Дод. знижка",
+    "manualPlaceholder": "Своя",
+    "price": "Вартість заняття",
+    "pointsLine": "Бали ({{points}})",
+    "total": "До сплати",
+    "willEarn": "+{{points}} балів клієнту",
+    "method": "Спосіб оплати",
+    "accept": "Прийняти {{amount}}",
+    "acceptAndAttend": "Прийняти {{amount}} і відмітити",
+    "close": "Закрити борг",
+    "closeAndAttend": "Закрити й відмітити",
+    "byCash": "Готівкою · {{amount}}",
+    "byCard": "Карткою · {{amount}}",
+    "deferred": "Гроші приймуться під час підтвердження запису",
+    "notNow": "Не оплачувати зараз",
+    "referral": "Запрошення",
+    "invitedBy": "Прийшов за запрошенням: {{name}}",
+    "referralDiscount": "Знижка новачка за запрошенням −{{percent}}% — спрацює сама",
+    "invitedCount": "Привів друзів: {{count}}",
+    "inviteBonus": {
+      "points": "За друга: +{{value}} балів",
+      "deposit": "За друга: +{{amount}} на депозит",
+      "discount": "За друга: знижка {{amount}}"
+    }
+  },
+  "mark": {
+    "pay": "Оплата",
+    "unpaid": "Не оплачено",
+    "cash": "Готівкою",
+    "card": "Карткою",
+    "paid": "Оплачено",
+    "attend": "Відвідування",
+    "notMarked": "Не відмічено"
   }
 }

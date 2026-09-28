@@ -3,7 +3,9 @@
 // после правки выбирать больше нечего. Итог открывается в любой момент, так что
 // пустое здесь — «Не выбрано» с кнопкой «Выбрать». Место (зал нового занятия,
 // филиал) выбирается прямо здесь: своего раздела у него нет. Записывает кнопка
-// «Подтвердить» в подвале (BookingWizard). Последним — заметка к записи: текст
+// «Подтвердить» в подвале (BookingWizard). У индивидуальной записи перед
+// заметкой — цена, своя скидка и отметки «Оплата» / «Посещение» (SettleBlock).
+// Последним — заметка к записи: текст
 // и снимки (кнопкой «Фото», перетаскиванием, Ctrl+V); ложится в занятие записи.
 import { useTranslation } from 'react-i18next';
 import {
@@ -11,7 +13,7 @@ import {
 } from './useBookingWizard';
 import { NotePhotos, NoteDropZone } from '../../../../../../components/ui/index';
 import { WizardChips } from './WizardParts';
-import { BookingPayment } from '../../BookingPayment';
+import { SettleBlock } from './SettleBlock';
 
 function Row({ label, value, hint, onChange }: {
   label: string; value: string; hint?: string; onChange?: () => void;
@@ -60,7 +62,9 @@ export function SummaryStep({ w }: { w: BookingWizardState }) {
     <div className="bw-list bw-summary">
       <Row label={t('journal:wizard.when')} value={isTime(w.time) ? `${day}, ${w.time}` : ''}
            hint={w.joined ? t('journal:wizard.existing') : undefined} onChange={() => w.goTo(TIME_STEP)} />
-      <Row label={t('journal:resourceBooking.client')} value={w.clientName} onChange={() => w.goTo(CLIENT_STEP)} />
+      {w.needsClient && (
+        <Row label={t('journal:resourceBooking.client')} value={w.clientName} onChange={() => w.goTo(CLIENT_STEP)} />
+      )}
       <Row label={t('journal:resourceBooking.service')} value={w.service?.name ?? ''} onChange={() => w.goTo(SERVICE_STEP)} />
       <Row label={t('journal:resourceBooking.staff')} value={master ?? ''} onChange={() => w.goTo(MASTER_STEP)} />
       {/* Время сменили после выбора мастера — и он в него оказался занят. */}
@@ -71,16 +75,16 @@ export function SummaryStep({ w }: { w: BookingWizardState }) {
           {place}
         </div>
       )}
-      {/* Индивидуальная запись заканчивается оплатой: чек с первым занятием,
-          промокодом и ваучером — наличные принимаются при подтверждении.
-          Групповая — прежний итог: её оплату по-прежнему ведёт касса. */}
+      {/* Индивидуальная запись: цена, своя скидка на это занятие и отметки
+          «Оплата» и «Посещение» (SettleBlock). Запись создаётся неоплаченной;
+          что отмечено, проводится вместе с подтверждением. Групповая — прежний
+          итог: её оплату по-прежнему ведёт касса. */}
       {!w.service ? null : w.isResource && w.resource.quote ? (
         <>
           {w.durationMin ? (
             <div className="bw-sum-total"><span>{`${w.durationMin} ${t('common:units.min')}`}</span></div>
           ) : null}
-          <BookingPayment payment={w.resource.payment} firstLesson={w.resource.firstLesson}
-                          onFirstLesson={w.resource.setFirstLesson} busy={w.saving || w.resource.quoting} />
+          <SettleBlock w={w} />
         </>
       ) : (
         <div className="bw-sum-total">

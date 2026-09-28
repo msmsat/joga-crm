@@ -9,9 +9,9 @@ export function useWizardAvailability(o: Omit<Parameters<typeof buildAvailabilit
   const hasResource = o.services.some(s => s.booking_mode === 'resource');
   const day = useQuery({ queryKey: ['resource-services-day', o.date],
     queryFn: () => hybridApi.servicesDay(o.date), enabled: hasResource && !!o.date });
-  const { services, trainers, lessons, lessonsReady, notBefore } = o;
-  const matrix = useMemo(() => buildAvailability({ services, trainers, lessons, lessonsReady, notBefore,
+  const { services, trainers, lessons, lessonsReady, notBefore, joinable } = o;
+  const matrix = useMemo(() => buildAvailability({ services, trainers, lessons, lessonsReady, notBefore, joinable,
     rows: day.data?.services ?? [], resourceReady: !hasResource || (!!day.data && !day.isFetching && !day.isError),
-  }), [services, trainers, lessons, lessonsReady, notBefore, day.data, day.isFetching, day.isError, hasResource]);
+  }), [services, trainers, lessons, lessonsReady, notBefore, joinable, day.data, day.isFetching, day.isError, hasResource]);
   return { ...selectAvailability(matrix, o), error: day.isError };
 }

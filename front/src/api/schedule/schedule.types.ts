@@ -21,6 +21,9 @@ export interface Lesson {
   price: number
   total_spots: number
   booked_count: number
+  /** Сколько записанных отмечены «пришёл» — только в списке занятий. Прошедшая
+   *  индивидуальная запись без отметки рисуется в сетке неявкой. */
+  attended_count?: number
   status: 'confirmed' | 'pending' | 'cancelled'
   level: string | null
   cancel_reason: string | null
@@ -80,10 +83,119 @@ export interface BookedClient {
   // Долг за занятие (оплата на месте). 0 — покрыто абонементом, подарено или
   // уже оплачено.
   debt: number
+  // Сколько уже заплачено за занятие на месте (погашенный долг).
+  paid_amount: number
+  // Занятие списано с абонемента.
+  by_subscription: boolean
+  // Откуда пришла запись (crm, miniapp, ai…) и когда.
+  booking_channel: string | null
+  booked_at: string | null
+  // Оценка и отзыв клиента об этом занятии.
+  rating: number | null
+  review_text: string | null
+  // «Кофе после занятия».
+  coffee: boolean
+  // Абонемент, с которого списано занятие.
+  subscription_name: string | null
+  // Чем оплачено (снимок кассы). null — денег не брали или оплачено до снимков.
+  payment: PaymentBreakdown | null
+  // Скидка администратора, данная при записи без оплаты: долг уже с ней, окно
+  // оплаты открывается с ней же.
+  manual_discount_percent?: number | null
+}
+
+/** Чем оплачено занятие — снимок кассы в момент оплаты. */
+export interface PaymentBreakdown {
+  base_price: number
+  discounts: { kind: ReservationDiscountKind; amount: number }[]
+  promo_code: string | null
+  bonuses_applied: number
+  bonuses_value: number
+  deposit_applied: number
+  certificate_applied: number
+  certificate_code: string | null
+  total: number
+  /** cash / transfer / stripe (карта онлайн). */
+  method: string | null
+  paid_at: string | null
+}
+
+/** Где проходит занятие. Без филиала адрес — из карточки студии. */
+export interface LessonLocation {
+  hall_name: string | null
+  branch_name: string | null
+  address: string | null
+  city: string | null
 }
 
 export interface LessonDetail extends Lesson {
+  equipment: string | null
   booked_clients: BookedClient[]
+  location: LessonLocation | null
+}
+
+/** Чем, кроме денег, закрывается долг за занятие у стойки. */
+export interface ReservationPaymentOptions {
+  /** null — скидка, данная брони при записи; 0 — без скидки администратора. */
+  manual_discount_percent?: number | null
+  use_bonuses?: boolean
+  use_deposit?: boolean
+  /** false — скидку первого занятия не засчитывать: бронь перестаёт быть пробной. */
+  first_lesson?: boolean
+  promo_code?: string | null
+  certificate_code?: string | null
+}
+
+export type ReservationDiscountKind = 'studio' | 'offer' | 'promo' | 'referral' | 'first_lesson' | 'manual'
+
+/** Приглашения клиента — строкой в окне оплаты (back/services/referral.summary). */
+export interface ReferralSummary {
+  /** Кто привёл клиента; null — пришёл сам. */
+  invited_by: string | null
+  /** Скидка новичка по приглашению ещё ждёт — её снимет расчёт цены. */
+  discount_percent: number | null
+  /** Скольких друзей привёл сам клиент. */
+  invited_count: number
+  /** Что студия дарит пригласившему за друга. */
+  invite_bonus: number | null
+  invite_bonus_type: 'points' | 'deposit' | 'discount' | null
+}
+
+/** Строки чека оплаты занятия — общие для оплаты при записи и оплаты долга:
+ *  окно оплаты у них одно (components/lesson/PaySheet). */
+export interface PaymentCheckPreview {
+  currency: string
+  base_price: number
+  discounts: { kind: ReservationDiscountKind; amount: number }[]
+  manual_outweighed: boolean
+  /** Бронь пробная — у чека есть выключатель «Первое занятие». */
+  first_lesson_offered: boolean
+  first_lesson_applied: boolean
+  first_lesson_percent: number | null
+  /** null — промокод не вводили, false — не принят. */
+  promo_valid: boolean | null
+  promo_outweighed: boolean
+  /** Код ошибки сертификата (loyalty.cert_*) — чек посчитан без него. */
+  certificate_error: string | null
+  certificate_amount: number
+  certificate_applied: number
+  bonuses_available: number
+  bonuses_applied: number
+  bonuses_value: number
+  point_value: number
+  deposit_available: number
+  deposit_applied: number
+  cashback_percent: number | null
+  points_to_earn: number
+  referral: ReferralSummary | null
+  total: number
+}
+
+/** POST /schedule/reservations/{id}/payment-preview — чек тем же ядром, что оплата. */
+export interface ReservationPaymentPreview extends PaymentCheckPreview {
+  debt: number
+  /** Скидка администратора, по которой посчитан чек. */
+  manual_discount_percent: number | null
 }
 
 // Клиент, которого можно записать на занятие (CL-6.4) — уже прошёл проверку

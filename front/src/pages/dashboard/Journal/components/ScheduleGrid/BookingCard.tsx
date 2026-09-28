@@ -3,13 +3,16 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import * as Icons from '../../../../../components/Icons';
 import type { Booking } from '../../types';
-import { formatIndexToTimeStr, type BookingLayout } from '../../utils';
+import { formatIndexToTimeStr, isNoShow, type BookingLayout } from '../../utils';
 import type { DragState } from '../../hooks/useDragAndDrop';
+import { bufferStyle, CARD_RADIUS } from './bufferStyle';
 
 // Порог, после которого нажатие считается попыткой перетащить, а не кликом.
 // Столько же «люфта» даёт клику браузер на тач-экране — палец никогда не стоит
 // ровно на месте.
 const DRAG_SLOP_PX = 6;
+/** Статус «ошибка» дизайн-системы (пыльная роза) — цвет неявки. */
+const NO_SHOW = '#D88C9A';
 
 interface BookingCardProps {
   booking: Booking;
@@ -77,32 +80,30 @@ export const BookingCard: React.FC<BookingCardProps> = ({
 
   const isSelected = popupBooking?.id === b.id;
   const isDragging = drag?.id === b.id && drag.isDragging;
+  // Индивидуальная запись прошла, а «пришёл» не отметили — неявка: карточка
+  // пыльно-розовая с крестиком. Отмеченная — с галочкой.
+  const missed = isNoShow(b);
+  const came = isResource && (b.attended ?? 0) > 0;
+  const tone = missed ? NO_SHOW : b.color;
 
   // Буферы услуги — время подготовки и уборки. Мастер в нём занят, хотя
   // занятия нет: без полосы администратор видел бы «свободно» там, куда
   // записать нельзя (services/resource_slots). Рисуются тем же цветом, но
-  // штриховкой и бледнее — чтобы не спорить с самой карточкой.
+  // штриховкой — чтобы не спорить с самой карточкой. Полоса — ребёнок
+  // карточки: встаёт поверх её кольца-обводки вплотную к краю и едет вместе
+  // с ней на hover.
   const showBuffers = b.status !== 'cancelled' && !isDragging;
   const before = showBuffers ? ((b.bufferBefore ?? 0) / 60) * 72 : 0;
   const after = showBuffers ? ((b.bufferAfter ?? 0) / 60) * 72 : 0;
-  const bufferStyle = (edge: 'before' | 'after'): React.CSSProperties => ({
-    position: 'absolute', left: layout.left, width: layout.width,
-    top: edge === 'before' ? top - before : top + height + 2,
-    height: (edge === 'before' ? before : after) - 2,
-    zIndex: layout.zIndex - 1,
-    borderRadius: edge === 'before' ? '8px 8px 3px 3px' : '3px 3px 8px 8px',
-    border: `1px dashed ${b.color}55`,
-    background: `repeating-linear-gradient(135deg, ${b.color}14 0 6px, transparent 6px 12px)`,
-    pointerEvents: 'none', boxSizing: 'border-box',
-  });
+  // Абсолютный ребёнок отсчитывается от внутреннего края рамки, полоса же
+  // ровняется по внешнему и заходит под карточку на её радиус.
+  const tuck = `calc(100% + var(--card-bw, 2px) - var(--card-r, ${CARD_RADIUS}px))`;
+  const side = 'calc(-1 * var(--card-bw, 2px))';
 
   return (
-    <>
-    {before >= 4 && <div className="booking-buffer" aria-hidden style={bufferStyle('before')} />}
-    {after >= 4 && <div className="booking-buffer" aria-hidden style={bufferStyle('after')} />}
     <div
       data-booking-id={b.id}
-      className={`booking-card ${b.status} ${layout.isTracked ? 'is-tracked' : ''} ${layout.isCascade ? 'is-cascade' : ''} ${isSelected ? 'is-selected' : ''} ${isDragging ? 'is-dragging' : ''}`}
+      className={`booking-card ${b.status} ${layout.isTracked ? 'is-tracked' : ''} ${layout.isCascade ? 'is-cascade' : ''} ${isSelected ? 'is-selected' : ''} ${isDragging ? 'is-dragging' : ''} ${missed ? 'is-missed' : ''}`}
       onPointerDown={e => {
         // Телефон: палец только листает расписание. Ни переноса, ни
         // предупреждений на «попытку» — движение пальца по карточке там почти
@@ -126,15 +127,30 @@ export const BookingCard: React.FC<BookingCardProps> = ({
       style={{
         top, height, left: layout.left, width: layout.width,
         zIndex: isDragging ? 99999 : (isSelected ? 9999 : layout.zIndex),
-        background: layout.isCascade ? 'var(--bg-card)' : `${b.color}12`,
-        border: editDraft ? '2px dashed var(--peach)' : `2px solid ${b.color}`,
-        color: b.color,
+        background: layout.isCascade ? 'var(--bg-card)' : `${tone}${missed ? '24' : '12'}`,
+        border: editDraft ? '2px dashed var(--peach)' : `2px solid ${tone}`,
+        color: tone,
         cursor: b.status === 'cancelled' || !gestures ? 'pointer' : (canEdit ? 'grab' : 'pointer'),
         ...(isDragging && drag.type === 'move' ? {
            transform: `translate(${drag.deltaX}px, ${drag.deltaY}px) scale(1.02)`,
         } : {})
       } as React.CSSProperties}
     >
+      {before >= 4 && (
+        <div className="booking-buffer" aria-hidden
+          style={{ ...bufferStyle(b.color, 'before', before), left: side, right: side, bottom: tuck }} />
+      )}
+      {after >= 4 && (
+        <div className="booking-buffer" aria-hidden
+          style={{ ...bufferStyle(b.color, 'after', after), left: side, right: side, top: tuck }} />
+      )}
+      {(missed || came) && (
+        <span className={`b-visit ${missed ? 'is-missed' : 'is-came'}`}
+              title={missed ? t('clientCard.status.missed') : t('clientCard.status.attended')}
+              aria-label={missed ? t('clientCard.status.missed') : t('clientCard.status.attended')}>
+          {missed ? <Icons.X /> : <Icons.Check />}
+        </span>
+      )}
       <div className="b-title" style={{ fontSize: '11px', fontWeight: 800, lineHeight: 1.2, marginBottom: 3 }}>
         {editDraft?.title || b.title}
       </div>
@@ -189,6 +205,5 @@ export const BookingCard: React.FC<BookingCardProps> = ({
         </>
       )}
     </div>
-    </>
   );
 };

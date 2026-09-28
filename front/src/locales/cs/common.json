@@ -130,7 +130,8 @@
       "promo_expired": "Promo kód už neplatí",
       "balance_changed": "Body nebo depozit už byly utraceny jinde — přepočítejte platbu",
       "attempt_in_progress": "Platba za tento prodej už probíhá — počkejte na výsledek nebo obnovte stránku",
-      "master_required": "Vyberte specialistu — cena závisí na něm"
+      "master_required": "Vyberte specialistu — cena závisí na něm",
+      "amount_changed": "Částka se změnila — zkontrolujte součet a potvrďte znovu"
     },
     "billing": {
       "tax_details_required": "Doplňte zemi studia do fakturačních údajů — bez ní nelze fakturu vystavit",

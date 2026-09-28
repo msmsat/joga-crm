@@ -221,7 +221,39 @@
     "debt": "Borxh",
     "notes": "Shënime",
     "openFull": "Hap kartelën",
-    "copied": "U kopjua"
+    "copied": "U kopjua",
+    "since": "klient që nga {{date}}",
+    "owes": "Detyrim {{amount}}",
+    "attendance": "Frekuentimi",
+    "missed": "Mungesa",
+    "points": "Pikë",
+    "rating": "Vlerësimi mesatar",
+    "contacts": "Kontaktet",
+    "copy": "Kopjo",
+    "age": "{{value}} vjeç",
+    "subscription": "Abonim",
+    "left": "Mbeten {{left}} nga {{total}}",
+    "frozen": "I ngrirë",
+    "until": "Deri më {{date}}",
+    "nextVisit": "Rezervimi i radhës",
+    "about": "Shkurtimisht",
+    "firstVisit": "Vizita e parë",
+    "lastVisit": "Vizita e fundit",
+    "favoriteTrainer": "Trajneri i preferuar",
+    "favoriteLesson": "Ora e preferuar",
+    "cancellations": "Anulime",
+    "source": "Burimi",
+    "noNotes": "Ende pa shënime",
+    "history": "Historiku i vizitave",
+    "noHistory": "Ende pa vizita",
+    "status": {
+      "missed": "Nuk erdhi",
+      "cancelled": "Anuloi",
+      "attended": "Erdhi",
+      "upcoming": "Në vijim"
+    },
+    "reviews": "Vlerësime",
+    "bookedOn": "rezervuar {{date}}"
   },
   "wizard": {
     "client": "Zgjidhni klientin",
@@ -262,7 +294,13 @@
     "onlyAvailable": "Available only",
     "unavailable": "Unavailable for this selection",
     "selectionConflict": "The selection does not match. Choose an available time or change the service or specialist.",
-    "availabilityError": "Could not load availability. Please try again."
+    "availabilityError": "Could not load availability. Please try again.",
+    "past": {
+      "title": "Kjo orë ka kaluar tashmë",
+      "message": "Të rezervohet për {{date}} në {{time}}?",
+      "own": "Zgjidh një orë tjetër"
+    },
+    "lessonDiscount": "Zbritje për këtë seancë"
   },
   "payment": {
     "title": "Pagesa",
@@ -273,7 +311,10 @@
     "discount": {
       "studio": "Zbritja e studios",
       "offer": "Zbritje personale",
-      "referral": "Zbritje për ftesë"
+      "referral": "Zbritje për ftesë",
+      "first_lesson": "Ora e parë",
+      "manual": "Zbritje e administratorit",
+      "promo": "Kod promocional"
     },
     "promo": "Kod promocional",
     "voucher": "Kupon",
@@ -295,5 +336,96 @@
     },
     "confirmAndPay": "Rezervo dhe merr {{amount}}",
     "loadFailed": "Pagesa nuk u llogarit dot."
+  },
+  "lessonCard": {
+    "today": "Sot",
+    "minutes": "{{value}} min",
+    "route": "Itinerari",
+    "noAddress": "Adresa nuk është vendosur",
+    "trainer": "Trajneri",
+    "price": "Çmimi",
+    "spots": "Vende",
+    "format": "Formati",
+    "group": "Grup",
+    "individual": "Individual",
+    "level": "Niveli",
+    "equipment": "Pajisjet",
+    "buffers": "Përgatitja / pastrimi",
+    "buffersValue": "{{before}} + {{after}} min",
+    "cameIn": "Erdhën",
+    "paid": "Paguar",
+    "owed": "Borxh",
+    "cancelReason": "Arsyeja e anulimit",
+    "pay": "Paguaj",
+    "paidAmount": "Paguar · {{amount}}",
+    "bySubscription": "Abonim",
+    "coffee": "Kafe pas orës",
+    "channel": {
+      "online": "Rezervim online",
+      "telegram": "Telegram",
+      "web": "Faqja web",
+      "miniapp": "Mini aplikacioni"
+    },
+    "fund": {
+      "subscription": "Abonim «{{name}}»",
+      "discount": "{{label}} −{{percent}}% · −{{amount}}",
+      "points": "Pikë −{{points}} · −{{amount}}",
+      "deposit": "Depozita −{{amount}}",
+      "certificate": "Kartë dhuratë {{code}} −{{amount}}",
+      "paidBy": "Paguar {{amount}} · {{method}}",
+      "free": "Ora e parë — falas",
+      "price": "Çmimi {{amount}}"
+    },
+    "method": {
+      "cash": "me para në dorë",
+      "transfer": "me transfertë",
+      "stripe": "me kartë online"
+    }
+  },
+  "lessonPay": {
+    "countFirstLesson": "Zbato zbritjen",
+    "title": "Pagesa për orën",
+    "benefits": "Përfitimet e klientit",
+    "receipt": "Fatura",
+    "toNext": "Edhe {{amount}} deri te {{level}}",
+    "points": "Pikë",
+    "pointsValue": "{{points}} ≈ {{amount}}",
+    "usePoints": "Paguaj me pikë",
+    "deposit": "Depozita",
+    "useDeposit": "Paguaj nga depozita",
+    "cashbackRule": "Cashback i studios: {{percent}}% e çdo pagese kthehet në pikë",
+    "manual": "Zbritje shtesë",
+    "manualPlaceholder": "Tjetër",
+    "price": "Çmimi i orës",
+    "pointsLine": "Pikë ({{points}})",
+    "total": "Për të paguar",
+    "willEarn": "+{{points}} pikë për klientin",
+    "method": "Mënyra e pagesës",
+    "accept": "Prano {{amount}}",
+    "acceptAndAttend": "Prano {{amount}} dhe shëno vizitën",
+    "close": "Shlyej",
+    "closeAndAttend": "Shlyej dhe shëno vizitën",
+    "byCash": "Me para në dorë · {{amount}}",
+    "byCard": "Me kartë · {{amount}}",
+    "deferred": "Paratë merren kur konfirmohet rezervimi",
+    "notNow": "Mos paguaj tani",
+    "referral": "Rekomandime",
+    "invitedBy": "Erdhi me ftesë nga: {{name}}",
+    "referralDiscount": "Zbritje mirëseardhjeje nga ftesa −{{percent}}% — aplikohet vetë",
+    "invitedCount": "Miq të ftuar: {{count}}",
+    "inviteBonus": {
+      "points": "Për mik: +{{value}} pikë",
+      "deposit": "Për mik: +{{amount}} në depozitë",
+      "discount": "Për mik: zbritje {{amount}}"
+    }
+  },
+  "mark": {
+    "pay": "Pagesa",
+    "unpaid": "E papaguar",
+    "cash": "Me para në dorë",
+    "card": "Me kartë",
+    "paid": "E paguar",
+    "attend": "Prania",
+    "notMarked": "Pa shënuar"
   }
 }

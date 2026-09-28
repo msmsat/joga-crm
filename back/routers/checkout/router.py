@@ -33,6 +33,7 @@ from services.notifier import notify_payment
 from services.points import client_point_value, redeem_points
 from services import service_pricing
 from services.pricing import resolve_price
+from services import reservation_payment
 from services.schedule_guard import lock_studio
 
 router = APIRouter(prefix="/checkout")
@@ -654,6 +655,15 @@ async def perform_pay(
         entity_type, entity_id = ("operation", op.id) if op is not None else ("client_payment", payment.id)
 
     await consume_quote(db, studio_id, body.client_id, quote)
+
+    if reservation_id is not None and body.product_type == "lesson":
+        # Снимок «чем оплачено» — на ту же бронь и той же транзакцией, что и
+        # деньги: Журнал и история клиента покажут скидки, баллы и сертификат
+        # такими, какими они были на кассе, а не пересчитанными потом.
+        reservation = await db.get(Reservation, reservation_id)
+        if reservation is not None:
+            reservation.payment_breakdown = reservation_payment.snapshot(
+                quote, method, body.certificate_code)
 
     log_activity(
         db, studio_id, "payment",

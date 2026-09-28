@@ -221,7 +221,39 @@
     "debt": "Velka",
     "notes": "Muistiinpanot",
     "openFull": "Avaa kortti",
-    "copied": "Kopioitu"
+    "copied": "Kopioitu",
+    "since": "asiakas {{date}} alkaen",
+    "owes": "Velkaa {{amount}}",
+    "attendance": "Läsnäolo",
+    "missed": "Poissaolot",
+    "points": "Pisteet",
+    "rating": "Keskiarvo",
+    "contacts": "Yhteystiedot",
+    "copy": "Kopioi",
+    "age": "{{value}} v",
+    "subscription": "Sarjakortti",
+    "left": "Jäljellä {{left}}/{{total}}",
+    "frozen": "Jäädytetty",
+    "until": "Voimassa {{date}} asti",
+    "nextVisit": "Seuraava varaus",
+    "about": "Lyhyesti",
+    "firstVisit": "Ensikäynti",
+    "lastVisit": "Viimeisin käynti",
+    "favoriteTrainer": "Suosikkiohjaaja",
+    "favoriteLesson": "Suosikkitunti",
+    "cancellations": "Peruutukset",
+    "source": "Lähde",
+    "noNotes": "Ei vielä muistiinpanoja",
+    "history": "Käyntihistoria",
+    "noHistory": "Ei vielä käyntejä",
+    "status": {
+      "missed": "Ei saapunut",
+      "cancelled": "Peruttu",
+      "attended": "Saapui",
+      "upcoming": "Tulossa"
+    },
+    "reviews": "Arviot",
+    "bookedOn": "varattu {{date}}"
   },
   "wizard": {
     "client": "Valitse asiakas",
@@ -262,7 +294,13 @@
     "onlyAvailable": "Available only",
     "unavailable": "Unavailable for this selection",
     "selectionConflict": "The selection does not match. Choose an available time or change the service or specialist.",
-    "availabilityError": "Could not load availability. Please try again."
+    "availabilityError": "Could not load availability. Please try again.",
+    "past": {
+      "title": "Tämä aika on jo mennyt",
+      "message": "Varataanko {{date}} klo {{time}}?",
+      "own": "Valitse toinen aika"
+    },
+    "lessonDiscount": "Alennus tälle tunnille"
   },
   "payment": {
     "title": "Maksu",
@@ -273,7 +311,10 @@
     "discount": {
       "studio": "Studion alennus",
       "offer": "Henkilökohtainen alennus",
-      "referral": "Suositteluetu"
+      "referral": "Suositteluetu",
+      "first_lesson": "Ensimmäinen tunti",
+      "manual": "Ylläpitäjän alennus",
+      "promo": "Tarjouskoodi"
     },
     "promo": "Alennuskoodi",
     "voucher": "Lahjakortti",
@@ -295,5 +336,96 @@
     },
     "confirmAndPay": "Varaa ja ota vastaan {{amount}}",
     "loadFailed": "Maksua ei voitu laskea."
+  },
+  "lessonCard": {
+    "today": "Tänään",
+    "minutes": "{{value}} min",
+    "route": "Reitti",
+    "noAddress": "Osoitetta ei ole annettu",
+    "trainer": "Ohjaaja",
+    "price": "Hinta",
+    "spots": "Paikat",
+    "format": "Muoto",
+    "group": "Ryhmä",
+    "individual": "Yksilö",
+    "level": "Taso",
+    "equipment": "Välineet",
+    "buffers": "Valmistelu / siivous",
+    "buffersValue": "{{before}} + {{after}} min",
+    "cameIn": "Saapui",
+    "paid": "Maksettu",
+    "owed": "Velka",
+    "cancelReason": "Peruutuksen syy",
+    "pay": "Maksa",
+    "paidAmount": "Maksettu · {{amount}}",
+    "bySubscription": "Sarjakortti",
+    "coffee": "Kahvit tunnin jälkeen",
+    "channel": {
+      "online": "Verkkovaraus",
+      "telegram": "Telegram",
+      "web": "Verkkosivu",
+      "miniapp": "Minisovellus"
+    },
+    "fund": {
+      "subscription": "Sarjakortti «{{name}}»",
+      "discount": "{{label}} −{{percent}} % · −{{amount}}",
+      "points": "Pisteet −{{points}} · −{{amount}}",
+      "deposit": "Talletus −{{amount}}",
+      "certificate": "Lahjakortti {{code}} −{{amount}}",
+      "paidBy": "Maksettu {{amount}} · {{method}}",
+      "free": "Ensimmäinen tunti — ilmainen",
+      "price": "Hinta {{amount}}"
+    },
+    "method": {
+      "cash": "käteisellä",
+      "transfer": "tilisiirrolla",
+      "stripe": "kortilla verkossa"
+    }
+  },
+  "lessonPay": {
+    "countFirstLesson": "Käytä alennus",
+    "title": "Tunnin maksu",
+    "benefits": "Asiakkaan edut",
+    "receipt": "Kuitti",
+    "toNext": "Vielä {{amount}} tasoon {{level}}",
+    "points": "Pisteet",
+    "pointsValue": "{{points}} ≈ {{amount}}",
+    "usePoints": "Maksa pisteillä",
+    "deposit": "Talletus",
+    "useDeposit": "Maksa talletuksesta",
+    "cashbackRule": "Studion cashback: {{percent}} % jokaisesta maksusta palautuu pisteinä",
+    "manual": "Lisäalennus",
+    "manualPlaceholder": "Oma",
+    "price": "Tunnin hinta",
+    "pointsLine": "Pisteet ({{points}})",
+    "total": "Maksettavaa",
+    "willEarn": "+{{points}} pistettä asiakkaalle",
+    "method": "Maksutapa",
+    "accept": "Vastaanota {{amount}}",
+    "acceptAndAttend": "Vastaanota {{amount}} ja merkitse käynti",
+    "close": "Kuittaa",
+    "closeAndAttend": "Kuittaa ja merkitse käynti",
+    "byCash": "Käteisellä · {{amount}}",
+    "byCard": "Kortilla · {{amount}}",
+    "deferred": "Rahat otetaan vastaan, kun varaus vahvistetaan",
+    "notNow": "Älä maksa nyt",
+    "referral": "Suositukset",
+    "invitedBy": "Tuli suosituksesta: {{name}}",
+    "referralDiscount": "Suosituksen tervetuloalennus −{{percent}} % — toimii itsestään",
+    "invitedCount": "Kutsuttuja ystäviä: {{count}}",
+    "inviteBonus": {
+      "points": "Ystävästä: +{{value}} pistettä",
+      "deposit": "Ystävästä: +{{amount}} talletukselle",
+      "discount": "Ystävästä: {{amount}} alennusta"
+    }
+  },
+  "mark": {
+    "pay": "Maksu",
+    "unpaid": "Maksamatta",
+    "cash": "Käteisellä",
+    "card": "Kortilla",
+    "paid": "Maksettu",
+    "attend": "Läsnäolo",
+    "notMarked": "Ei merkitty"
   }
 }

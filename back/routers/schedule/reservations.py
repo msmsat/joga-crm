@@ -10,8 +10,11 @@ from models import Client, ClientPayment, Reservation, Studio, User
 # Долг за занятие гасит тот же движок, что и касса: см. pay_reservation ниже.
 from routers.checkout.router import perform_pay
 from schemas.checkout import CheckoutPayRequest
-from schemas.schedule.reservations import ReservationCreate, ReservationPayRequest, ReservationRead
-from services import booking
+from schemas.schedule.reservations import (
+    ReservationCreate, ReservationPaymentOptions, ReservationPaymentPreview, ReservationPayRequest,
+    ReservationRead,
+)
+from services import booking, reservation_payment
 from services.booking_access import assert_can_book
 from services.booking_http import reject
 from services.booking_rules import assert_staff_bookable, load_rules
@@ -295,6 +298,38 @@ async def _open_debt_of(db: AsyncSession, reservation: Reservation) -> ClientPay
     return debt if debt is not None and debt.status == "pending" else None
 
 
+@router.post("/reservations/{reservation_id}/payment-preview", response_model=ReservationPaymentPreview)
+async def reservation_payment_preview(
+    reservation_id: int,
+    body: ReservationPaymentOptions,
+    ctx: StudioContext = Depends(get_studio_context),
+    db: AsyncSession = Depends(get_db),
+):
+    """Чек погашения долга за занятие: скидки строками, баллы, депозит, итог.
+
+    Только чтение — ничего не списывает; проводит `POST …/pay` с теми же
+    параметрами. POST, а не GET: параметры — те же поля, что у оплаты.
+    """
+    if ctx.role == "trainer":
+        raise HTTPException(status_code=403, detail="Принимать оплату могут владелец и администратор")
+    reservation = (await db.execute(
+        select(Reservation).where(Reservation.id == reservation_id)
+    )).scalar_one_or_none()
+    if reservation is None:
+        raise HTTPException(status_code=404, detail="Запись не найдена")
+    lesson = await get_scoped_lesson(reservation.lesson_id, ctx, db)  # 404 чужая студия
+    debt = await _open_debt_of(db, reservation)
+    if debt is None:
+        raise HTTPException(status_code=409, detail="За эту запись платить нечего")
+    return await reservation_payment.preview(
+        db, ctx.studio_id, reservation, lesson, debt,
+        manual_percent=reservation_payment.manual_of(reservation, body.manual_discount_percent),
+        use_bonuses=body.use_bonuses, use_deposit=body.use_deposit,
+        first_lesson=body.first_lesson, promo_code=body.promo_code,
+        certificate_code=body.certificate_code,
+    )
+
+
 @router.post("/reservations/{reservation_id}/pay", response_model=ReservationRead)
 async def pay_reservation(
     reservation_id: int,
@@ -336,6 +371,13 @@ async def pay_reservation(
     # perform_pay держит свою транзакцию и коммитит сама — после неё бронь уже
     # с погашенным долгом. Ссылку на платёж НЕ снимаем: по ней Журнал отличает
     # «оплачено» от «долга не было вовсе».
+    # Скидка администратора, баллы и депозит считаются тем же ядром кассы, что
+    # и чек `payment-preview`; `expected_total` не даёт принять не ту сумму,
+    # что была названа клиенту (409 checkout.amount_changed).
+    # Первое занятие не засчитали — снимок скидки снимается ДО кассы: она
+    # читает его с брони и коммитит вместе с деньгами; откажет — не снимется.
+    if not body.first_lesson:
+        reservation_payment.forget_first_lesson(reservation)
     await perform_pay(
         db, ctx.studio_id, current_user.id,
         CheckoutPayRequest(
@@ -344,10 +386,16 @@ async def pay_reservation(
             product_type="lesson",
             account_id=body.account_id,
             payment_method=body.payment_method,
+            use_bonuses=body.use_bonuses,
+            use_deposit=body.use_deposit,
+            promo_code=reservation_payment.code_of(body.promo_code),
+            certificate_code=reservation_payment.code_of(body.certificate_code),
         ),
         method=body.payment_method,
         debt=debt,
         reservation_id=reservation.id,
+        manual_percent=reservation_payment.manual_of(reservation, body.manual_discount_percent),
+        expected_total=body.expected_total,
     )
     await db.refresh(reservation)
     return ReservationRead.model_validate(reservation)

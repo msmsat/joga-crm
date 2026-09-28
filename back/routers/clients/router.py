@@ -3,9 +3,11 @@ from .profiles import router as profiles_router
 from .subscriptions import router as subscriptions_router
 from .loyalty import router as loyalty_router
 from .referrals import router as referrals_router
+from .digest import router as digest_router
 
 router = APIRouter()
 router.include_router(profiles_router)
 router.include_router(subscriptions_router)
 router.include_router(loyalty_router)
 router.include_router(referrals_router)
+router.include_router(digest_router)

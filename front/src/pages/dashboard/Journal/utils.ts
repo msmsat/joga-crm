@@ -235,6 +235,7 @@ export const lessonToBooking = (l: Lesson, halls: Hall[], colorByTeacher: Map<nu
     title: l.name,
     hall: halls.find(h => h.id === l.hall_id)?.name ?? '',
     clients: l.booked_count ?? 0,
+    attended: l.attended_count ?? 0,
     maxClients: l.total_spots,
     color: (l.teacher_id != null ? colorByTeacher.get(l.teacher_id) : undefined) ?? STAFF_PALETTE[0],
     status: l.status,
@@ -252,6 +253,22 @@ export const lessonToBooking = (l: Lesson, halls: Hall[], colorByTeacher: Map<nu
     bufferAfter: l.buffer_after_min ?? 0,
   };
 };
+
+/** Занятие закончилось. Время занятия — местное студии, сверяется с часами
+ *  устройства: у стойки они совпадают. */
+export const isLessonOver = (b: Pick<Booking, 'date' | 'timeEnd'>, now = new Date()) => {
+  if (!b.date) return false;
+  const end = new Date(`${b.date}T00:00:00`);
+  end.setMinutes(Math.round((b.timeEnd + 7) * 60));
+  return end <= now;
+};
+
+/** Неявка: индивидуальная запись закончилась, а «пришёл» так и не отметили.
+ *  Сетка рисует её красной с крестиком. Групповое занятие неявкой не
+ *  становится: там приходят не все, и это норма. */
+export const isNoShow = (b: Booking, now = new Date()) =>
+  b.bookingMode === 'resource' && b.status !== 'cancelled' && b.clients > 0
+  && (b.attended ?? 0) === 0 && isLessonOver(b, now);
 
 // Обратный переходник: дата + индекс сетки → naive ISO (для create/update занятия)
 export const indexToDateTime = (dateStr: string, idx: number) => {

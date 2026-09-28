@@ -9,6 +9,9 @@ export type AvailabilityState = { kind: 'free' | 'busy' | 'unknown'; branchId?: 
 export function buildAvailability(o: {
   services: ServiceRead[]; trainers: { id: number }[]; rows: ServiceDayRead[];
   lessons: Lesson[]; lessonsReady: boolean; resourceReady: boolean; notBefore: number | null;
+  /** Время стоящего группового занятия с местами — свободно: в него запишут
+      клиента. Без клиента (групповое из журнала) это занятое время. */
+  joinable?: boolean;
 }) {
   const matrix = new Map<number, Entry>();
   for (const service of o.services) {
@@ -29,7 +32,7 @@ export function buildAvailability(o: {
           bufferBefore: service.buffer_before_min, bufferAfter: service.buffer_after_min, notBefore: o.notBefore });
         const minutes = new Set<number>();
         for (let m = 0; m < 1440; m++) if (free.isFree(toHHMM(m))) minutes.add(m);
-        for (const lesson of o.lessons) {
+        if (o.joinable !== false) for (const lesson of o.lessons) {
           const m = toMin(lesson.start_time.slice(11, 16));
           if (lesson.service_id === service.id && lesson.teacher_id === teacherId && lesson.status !== 'cancelled'
             && lesson.booked_count < lesson.total_spots && (o.notBefore == null || m >= o.notBefore)) minutes.add(m);

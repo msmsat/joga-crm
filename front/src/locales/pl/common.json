@@ -130,7 +130,8 @@
       "promo_expired": "Kod promocyjny stracił ważność",
       "balance_changed": "Punkty lub depozyt zostały już wykorzystane gdzie indziej — przelicz płatność ponownie",
       "attempt_in_progress": "Płatność za tę sprzedaż już trwa — poczekaj na wynik lub odśwież stronę",
-      "master_required": "Wybierz specjalistę — cena zależy od niego"
+      "master_required": "Wybierz specjalistę — cena zależy od niego",
+      "amount_changed": "Kwota się zmieniła — sprawdź sumę i potwierdź ponownie"
     },
     "billing": {
       "tax_details_required": "Dodaj kraj studia w danych do faktury — bez niego faktury nie da się wystawić",

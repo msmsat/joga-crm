@@ -776,6 +776,12 @@ class CancelBookingArgs(BaseModel):
 class PayBookingArgs(BaseModel):
     reservation_id: int
     payment_method: Literal["cash", "transfer"] = "cash"
+    # Скидка от администратора в процентах — только если человек её назвал.
+    # Идёт в общий ряд скидок: действует самая выгодная клиенту, без стека.
+    discount_percent: Optional[int] = Field(None, ge=1, le=100)
+    # Списать баллы (кешбэк) клиента / оплатить с его депозита — только по просьбе.
+    use_bonuses: bool = False
+    use_deposit: bool = False
 
 
 class CreateClientArgs(BaseModel):
@@ -2497,10 +2503,15 @@ async def cancel_booking(ctx: StudioContext, db: AsyncSession, args: CancelBooki
 )
 async def pay_booking(ctx: StudioContext, db: AsyncSession, args: PayBookingArgs) -> dict:
     """Отметить, что клиент заплатил за занятие на месте (наличными или
-    переводом) — гасит долг «оплата на месте» и проводит доход."""
+    переводом) — гасит долг «оплата на месте» и проводит доход. По просьбе —
+    со скидкой в процентах, списанием баллов или оплатой с депозита."""
     reservation = await _r_pay_reservation(
         reservation_id=args.reservation_id,
-        body=ReservationPayRequest(payment_method=args.payment_method),
+        body=ReservationPayRequest(
+            payment_method=args.payment_method,
+            manual_discount_percent=args.discount_percent,
+            use_bonuses=args.use_bonuses, use_deposit=args.use_deposit,
+        ),
         ctx=ctx, current_user=ctx.user, db=db,
     )
     return {"reservation": _dump(reservation)}

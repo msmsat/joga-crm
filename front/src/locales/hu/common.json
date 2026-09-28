@@ -130,7 +130,8 @@
       "promo_expired": "A promóciós kód már nem érvényes",
       "balance_changed": "A pontokat vagy az előleget máshol már felhasználták — számolja újra a fizetést",
       "attempt_in_progress": "Ehhez az eladáshoz már folyamatban van egy fizetés — várja meg vagy frissítsen",
-      "master_required": "Válasszon szakembert — az ár ettől függ"
+      "master_required": "Válasszon szakembert — az ár ettől függ",
+      "amount_changed": "Az összeg megváltozott — ellenőrizze a végösszeget, és erősítse meg újra"
     },
     "billing": {
       "tax_details_required": "Adja meg a stúdió országát a számlázási adatoknál — enélkül nem állítható ki számla",

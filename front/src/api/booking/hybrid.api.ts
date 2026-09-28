@@ -17,10 +17,11 @@ export const hybridApi = {
   /** Чек шага оплаты: сколько заплатит клиент с этими кодами. Ничего не гасит. */
   paymentPreview: (id: string, codes: PaymentCodes) =>
     client.post<PaymentPreview>(`${base}/booking-quotes/${encodeURIComponent(id)}/payment-preview`, codes),
-  /** С `payment` сервер в той же транзакции принимает оплату наличными; без него —
-   *  остаток становится долгом «оплата на месте». */
-  confirm: (quote_id: string, payment?: ConfirmPayment) =>
-    client.post<BookingRead>(`${base}/bookings`, payment ? { quote_id, payment } : { quote_id }),
+  /** С `payment` сервер в той же транзакции принимает оплату; без него остаток
+   *  становится долгом «оплата на месте» — со скидкой `manualPercent`, если названа. */
+  confirm: (quote_id: string, payment?: ConfirmPayment | null, manualPercent?: number | null) =>
+    client.post<BookingRead>(`${base}/bookings`, payment ? { quote_id, payment }
+      : manualPercent ? { quote_id, manual_discount_percent: manualPercent } : { quote_id }),
   cancel: (id: number) => client.post<BookingRead>(`/schedule/reservations/${id}/cancel`, {}),
   moveQuote: (id: number, body: CrmRescheduleQuoteRequest) => client.post<QuoteRead>(`${base}/reservations/${id}/reschedule-quotes`, body),
   move: (id: number, quote_id: string, expected_version: number) => client.post<BookingRead>(`${base}/reservations/${id}/reschedule`, { quote_id, expected_version }),

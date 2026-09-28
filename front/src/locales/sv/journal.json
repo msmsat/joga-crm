@@ -221,7 +221,39 @@
     "debt": "Skuld",
     "notes": "Anteckningar",
     "openFull": "Öppna kortet",
-    "copied": "Kopierat"
+    "copied": "Kopierat",
+    "since": "kund sedan {{date}}",
+    "owes": "Skyldig {{amount}}",
+    "attendance": "Närvaro",
+    "missed": "Uteblivanden",
+    "points": "Poäng",
+    "rating": "Snittbetyg",
+    "contacts": "Kontakter",
+    "copy": "Kopiera",
+    "age": "{{value}} år",
+    "subscription": "Klippkort",
+    "left": "{{left}} av {{total}} kvar",
+    "frozen": "Pausat",
+    "until": "Giltigt till {{date}}",
+    "nextVisit": "Nästa bokning",
+    "about": "I korthet",
+    "firstVisit": "Första besöket",
+    "lastVisit": "Senaste besöket",
+    "favoriteTrainer": "Favoritinstruktör",
+    "favoriteLesson": "Favoritpass",
+    "cancellations": "Avbokningar",
+    "source": "Källa",
+    "noNotes": "Inga anteckningar än",
+    "history": "Besökshistorik",
+    "noHistory": "Inga besök än",
+    "status": {
+      "missed": "Kom inte",
+      "cancelled": "Inställt",
+      "attended": "Kom",
+      "upcoming": "Kommande"
+    },
+    "reviews": "Recensioner",
+    "bookedOn": "bokat {{date}}"
   },
   "wizard": {
     "client": "Välj kund",
@@ -262,7 +294,13 @@
     "onlyAvailable": "Available only",
     "unavailable": "Unavailable for this selection",
     "selectionConflict": "The selection does not match. Choose an available time or change the service or specialist.",
-    "availabilityError": "Could not load availability. Please try again."
+    "availabilityError": "Could not load availability. Please try again.",
+    "past": {
+      "title": "Den här tiden har redan passerat",
+      "message": "Boka {{date}} kl. {{time}}?",
+      "own": "Välj en annan tid"
+    },
+    "lessonDiscount": "Rabatt på det här passet"
   },
   "payment": {
     "title": "Betalning",
@@ -273,7 +311,10 @@
     "discount": {
       "studio": "Studiorabatt",
       "offer": "Personlig rabatt",
-      "referral": "Värvningsrabatt"
+      "referral": "Värvningsrabatt",
+      "first_lesson": "Första passet",
+      "manual": "Administratörsrabatt",
+      "promo": "Rabattkod"
     },
     "promo": "Kampanjkod",
     "voucher": "Presentkort",
@@ -295,5 +336,96 @@
     },
     "confirmAndPay": "Boka och ta emot {{amount}}",
     "loadFailed": "Betalningen kunde inte beräknas."
+  },
+  "lessonCard": {
+    "today": "I dag",
+    "minutes": "{{value}} min",
+    "route": "Vägbeskrivning",
+    "noAddress": "Ingen adress angiven",
+    "trainer": "Instruktör",
+    "price": "Pris",
+    "spots": "Platser",
+    "format": "Format",
+    "group": "Grupp",
+    "individual": "Individuell",
+    "level": "Nivå",
+    "equipment": "Utrustning",
+    "buffers": "Förberedelse / städning",
+    "buffersValue": "{{before}} + {{after}} min",
+    "cameIn": "Kom",
+    "paid": "Betalt",
+    "owed": "Skuld",
+    "cancelReason": "Orsak till inställning",
+    "pay": "Betala",
+    "paidAmount": "Betalt · {{amount}}",
+    "bySubscription": "Klippkort",
+    "coffee": "Fika efter passet",
+    "channel": {
+      "online": "Onlinebokning",
+      "telegram": "Telegram",
+      "web": "Webbplats",
+      "miniapp": "Miniapp"
+    },
+    "fund": {
+      "subscription": "Klippkort «{{name}}»",
+      "discount": "{{label}} −{{percent}} % · −{{amount}}",
+      "points": "Poäng −{{points}} · −{{amount}}",
+      "deposit": "Insättning −{{amount}}",
+      "certificate": "Presentkort {{code}} −{{amount}}",
+      "paidBy": "Betalt {{amount}} · {{method}}",
+      "free": "Första passet — gratis",
+      "price": "Pris {{amount}}"
+    },
+    "method": {
+      "cash": "kontant",
+      "transfer": "banköverföring",
+      "stripe": "kort online"
+    }
+  },
+  "lessonPay": {
+    "countFirstLesson": "Ge rabatten",
+    "title": "Betalning för passet",
+    "benefits": "Kundens förmåner",
+    "receipt": "Kvitto",
+    "toNext": "{{amount}} kvar till {{level}}",
+    "points": "Poäng",
+    "pointsValue": "{{points}} ≈ {{amount}}",
+    "usePoints": "Betala med poäng",
+    "deposit": "Insättning",
+    "useDeposit": "Betala från insättning",
+    "cashbackRule": "Studions cashback: {{percent}} % av varje betalning kommer tillbaka som poäng",
+    "manual": "Extra rabatt",
+    "manualPlaceholder": "Egen",
+    "price": "Pris för passet",
+    "pointsLine": "Poäng ({{points}})",
+    "total": "Att betala",
+    "willEarn": "+{{points}} poäng till kunden",
+    "method": "Betalningssätt",
+    "accept": "Ta emot {{amount}}",
+    "acceptAndAttend": "Ta emot {{amount}} och markera närvaro",
+    "close": "Reglera",
+    "closeAndAttend": "Reglera och markera närvaro",
+    "byCash": "Kontant · {{amount}}",
+    "byCard": "Kort · {{amount}}",
+    "deferred": "Pengarna tas emot när bokningen bekräftas",
+    "notNow": "Betala inte nu",
+    "referral": "Värvningar",
+    "invitedBy": "Inbjuden av {{name}}",
+    "referralDiscount": "Välkomstrabatt via värvning −{{percent}} % — gäller automatiskt",
+    "invitedCount": "Inbjudna vänner: {{count}}",
+    "inviteBonus": {
+      "points": "Per vän: +{{value}} poäng",
+      "deposit": "Per vän: +{{amount}} på depositionen",
+      "discount": "Per vän: {{amount}} i rabatt"
+    }
+  },
+  "mark": {
+    "pay": "Betalning",
+    "unpaid": "Obetald",
+    "cash": "Kontant",
+    "card": "Kort",
+    "paid": "Betald",
+    "attend": "Närvaro",
+    "notMarked": "Ej markerad"
   }
 }

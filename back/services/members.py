@@ -9,6 +9,7 @@
 профиле и в переключателе аккаунтов.
 """
 from collections.abc import Iterable
+from typing import Optional
 
 from sqlalchemy import and_, or_
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -108,21 +109,54 @@ STAFF_PALETTE = (
 )
 
 
-async def pick_member_color(db: AsyncSession, studio_id: int) -> str:
-    """Цвет для нового участника студии: первый из палитры, которого ни у кого нет.
+# Кто получает свободный цвет первым, когда раздаём сразу нескольким: мастерам
+# различаться в журнале важнее всего, администратор там колонки не имеет.
+_COLOR_ROLE_ORDER = {"trainer": 0, "owner": 1}
 
-    Палитра кончилась — самый редкий, при равенстве тот, что раньше в палитре:
-    повторы тогда расходятся по всей палитре, а не копятся на первом цвете.
-    """
+
+def _color_counts(colors: Iterable[Optional[str]]) -> dict[str, int]:
+    counts = {c.upper(): 0 for c in STAFF_PALETTE}
+    for color in colors:
+        if color and color.upper() in counts:
+            counts[color.upper()] += 1
+    return counts
+
+
+def _rarest(counts: dict[str, int]) -> str:
+    """Первый цвет палитры, которого ни у кого нет. Палитра кончилась — самый
+    редкий, при равенстве тот, что раньше в палитре: повторы тогда расходятся
+    по всей палитре, а не копятся на первом цвете."""
+    return min(STAFF_PALETTE, key=lambda c: counts[c.upper()])
+
+
+async def pick_member_color(db: AsyncSession, studio_id: int) -> str:
+    """Цвет для нового участника студии — свободный из палитры (см. _rarest)."""
     used = (await db.execute(
         select(StudioMember.color).where(
             StudioMember.studio_id == studio_id, StudioMember.color.is_not(None))
     )).scalars().all()
-    counts = {c.upper(): 0 for c in STAFF_PALETTE}
-    for color in used:
-        if color.upper() in counts:
-            counts[color.upper()] += 1
-    return min(STAFF_PALETTE, key=lambda c: counts[c.upper()])
+    return _rarest(_color_counts(used))
+
+
+def fill_missing_colors(members: Iterable[StudioMember]) -> bool:
+    """Выдать цвет тем участникам студии, у кого его нет. True — кому-то выдали.
+
+    Передавать нужно ВСЮ команду студии: занятые цвета считаются по ней, и
+    иначе новый цвет совпал бы с чужим. Раздаются по одному, с учётом только что
+    выданных, — поэтому несколько «бесцветных» разом тоже получают разные цвета.
+    Пустым цвет остаётся у строк, заведённых в обход роутеров (сиды, ручные
+    вставки в базу), — чинится при первом же чтении команды, без миграции.
+    """
+    members = list(members)
+    counts = _color_counts(m.color for m in members)
+    missing = sorted(
+        (m for m in members if not m.color),
+        key=lambda m: (_COLOR_ROLE_ORDER.get(m.role, 2), m.id),
+    )
+    for member in missing:
+        member.color = _rarest(counts)
+        counts[member.color.upper()] += 1
+    return bool(missing)
 
 
 async def user_lang(db: AsyncSession, user) -> str:

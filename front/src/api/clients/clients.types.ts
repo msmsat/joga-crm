@@ -1,3 +1,5 @@
+import type { PaymentBreakdown } from '../schedule/schedule.types'
+
 // ─── Вложенные ────────────────────────────────────────────────────────────────
 
 export interface ActiveSubscription {
@@ -67,6 +69,51 @@ export interface EventRecord {
   trainer: string | null
   paid: string | null
   amount: string | null
+}
+
+/** Запись клиента в сводке: attended — пришёл, missed — неявка, upcoming — впереди. */
+export interface DigestVisit {
+  reservation_id: number
+  lesson_id: number
+  name: string
+  start_time: string
+  teacher_name: string | null
+  status: 'attended' | 'missed' | 'cancelled' | 'upcoming'
+  rating: number | null
+  review_text: string | null
+  is_trial: boolean
+  /** Как записан и чем закрыт — то же, что у строки записанного в Журнале. */
+  booked_at: string | null
+  price: number
+  trial_discount_percent: number | null
+  subscription_name: string | null
+  debt: number
+  paid_amount: number
+  payment: PaymentBreakdown | null
+}
+
+export interface DigestReview {
+  rating: number
+  text: string | null
+  created_at: string
+}
+
+/** GET /clients/{id}/digest — всё, что стоит вспомнить о клиенте перед занятием. */
+export interface ClientDigest {
+  attended: number
+  missed: number
+  cancelled: number
+  upcoming: number
+  /** Доля пришедших среди состоявшихся записей, 0…100; null — их ещё не было. */
+  attendance_rate: number | null
+  avg_rating: number | null
+  first_visit: string | null
+  last_visit: string | null
+  favorite_trainer: string | null
+  favorite_lesson: string | null
+  next_visit: DigestVisit | null
+  history: DigestVisit[]
+  reviews: DigestReview[]
 }
 
 export interface ActivityPoint {

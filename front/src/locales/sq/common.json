@@ -130,7 +130,8 @@
       "promo_expired": "Kodi promocional nuk vlen më",
       "balance_changed": "Pikët ose depozita janë shpenzuar tashmë diku tjetër — rillogaritni pagesën",
       "attempt_in_progress": "Një pagesë për këtë shitje është tashmë në proces — prisni rezultatin ose rifreskoni",
-      "master_required": "Zgjidhni specialistin — çmimi varet prej tij"
+      "master_required": "Zgjidhni specialistin — çmimi varet prej tij",
+      "amount_changed": "Shuma ndryshoi — kontrolloni totalin dhe konfirmoni sërish"
     },
     "billing": {
       "tax_details_required": "Shtoni shtetin e studios te të dhënat e faturimit — pa të fatura nuk lëshohet",

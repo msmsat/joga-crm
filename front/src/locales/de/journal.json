@@ -221,7 +221,39 @@
     "debt": "Schuld",
     "notes": "Notizen",
     "openFull": "Karte öffnen",
-    "copied": "Kopiert"
+    "copied": "Kopiert",
+    "since": "Kunde seit {{date}}",
+    "owes": "Schuldet {{amount}}",
+    "attendance": "Anwesenheit",
+    "missed": "Nichterscheinen",
+    "points": "Punkte",
+    "rating": "Ø Bewertung",
+    "contacts": "Kontakte",
+    "copy": "Kopieren",
+    "age": "{{value}} J.",
+    "subscription": "Abo",
+    "left": "Noch {{left}} von {{total}}",
+    "frozen": "Pausiert",
+    "until": "Gültig bis {{date}}",
+    "nextVisit": "Nächster Termin",
+    "about": "Auf einen Blick",
+    "firstVisit": "Erster Besuch",
+    "lastVisit": "Letzter Besuch",
+    "favoriteTrainer": "Lieblingstrainer",
+    "favoriteLesson": "Lieblingskurs",
+    "cancellations": "Absagen",
+    "source": "Herkunft",
+    "noNotes": "Noch keine Notizen",
+    "history": "Besuchsverlauf",
+    "noHistory": "Noch keine Besuche",
+    "status": {
+      "missed": "Nicht erschienen",
+      "cancelled": "Abgesagt",
+      "attended": "Gekommen",
+      "upcoming": "Bevorstehend"
+    },
+    "reviews": "Bewertungen",
+    "bookedOn": "gebucht {{date}}"
   },
   "wizard": {
     "client": "Kunden wählen",
@@ -262,7 +294,13 @@
     "onlyAvailable": "Available only",
     "unavailable": "Unavailable for this selection",
     "selectionConflict": "The selection does not match. Choose an available time or change the service or specialist.",
-    "availabilityError": "Could not load availability. Please try again."
+    "availabilityError": "Could not load availability. Please try again.",
+    "past": {
+      "title": "Diese Zeit ist bereits vorbei",
+      "message": "Für {{date}} um {{time}} buchen?",
+      "own": "Andere Zeit wählen"
+    },
+    "lessonDiscount": "Rabatt für diese Stunde"
   },
   "payment": {
     "title": "Zahlung",
@@ -273,7 +311,10 @@
     "discount": {
       "studio": "Studiorabatt",
       "offer": "Persönlicher Rabatt",
-      "referral": "Empfehlungsrabatt"
+      "referral": "Empfehlungsrabatt",
+      "first_lesson": "Erste Stunde",
+      "manual": "Admin-Rabatt",
+      "promo": "Promo-Code"
     },
     "promo": "Aktionscode",
     "voucher": "Gutschein",
@@ -295,5 +336,96 @@
     },
     "confirmAndPay": "Buchen und {{amount}} kassieren",
     "loadFailed": "Die Zahlung konnte nicht berechnet werden."
+  },
+  "lessonCard": {
+    "today": "Heute",
+    "minutes": "{{value}} Min.",
+    "route": "Route",
+    "noAddress": "Keine Adresse hinterlegt",
+    "trainer": "Trainer",
+    "price": "Preis",
+    "spots": "Plätze",
+    "format": "Format",
+    "group": "Gruppe",
+    "individual": "Einzeln",
+    "level": "Niveau",
+    "equipment": "Ausstattung",
+    "buffers": "Vorbereitung / Aufräumen",
+    "buffersValue": "{{before}} + {{after}} Min.",
+    "cameIn": "Gekommen",
+    "paid": "Bezahlt",
+    "owed": "Offen",
+    "cancelReason": "Absagegrund",
+    "pay": "Bezahlen",
+    "paidAmount": "Bezahlt · {{amount}}",
+    "bySubscription": "Abo",
+    "coffee": "Kaffee nach der Stunde",
+    "channel": {
+      "online": "Online-Buchung",
+      "telegram": "Telegram",
+      "web": "Website",
+      "miniapp": "Mini-App"
+    },
+    "fund": {
+      "subscription": "Abo «{{name}}»",
+      "discount": "{{label}} −{{percent}} % · −{{amount}}",
+      "points": "Punkte −{{points}} · −{{amount}}",
+      "deposit": "Guthaben −{{amount}}",
+      "certificate": "Gutschein {{code}} −{{amount}}",
+      "paidBy": "Bezahlt {{amount}} · {{method}}",
+      "free": "Erste Stunde — kostenlos",
+      "price": "Preis {{amount}}"
+    },
+    "method": {
+      "cash": "bar",
+      "transfer": "Überweisung",
+      "stripe": "Karte online"
+    }
+  },
+  "lessonPay": {
+    "countFirstLesson": "Rabatt anrechnen",
+    "title": "Zahlung für die Stunde",
+    "benefits": "Vorteile des Kunden",
+    "receipt": "Beleg",
+    "toNext": "Noch {{amount}} bis {{level}}",
+    "points": "Punkte",
+    "pointsValue": "{{points}} ≈ {{amount}}",
+    "usePoints": "Mit Punkten zahlen",
+    "deposit": "Guthaben",
+    "useDeposit": "Aus Guthaben zahlen",
+    "cashbackRule": "Studio-Cashback: {{percent}} % jeder Zahlung kommen als Punkte zurück",
+    "manual": "Extra-Rabatt",
+    "manualPlaceholder": "Eigener",
+    "price": "Preis der Stunde",
+    "pointsLine": "Punkte ({{points}})",
+    "total": "Zu zahlen",
+    "willEarn": "+{{points}} Punkte für den Kunden",
+    "method": "Zahlungsart",
+    "accept": "{{amount}} annehmen",
+    "acceptAndAttend": "{{amount}} annehmen und Besuch markieren",
+    "close": "Ausgleichen",
+    "closeAndAttend": "Ausgleichen und Besuch markieren",
+    "byCash": "Bar · {{amount}}",
+    "byCard": "Karte · {{amount}}",
+    "deferred": "Das Geld wird bei der Bestätigung der Buchung angenommen",
+    "notNow": "Jetzt nicht bezahlen",
+    "referral": "Empfehlungen",
+    "invitedBy": "Empfohlen von {{name}}",
+    "referralDiscount": "Willkommensrabatt per Empfehlung −{{percent}} % — greift automatisch",
+    "invitedCount": "Eingeladene Freunde: {{count}}",
+    "inviteBonus": {
+      "points": "Pro Freund: +{{value}} Punkte",
+      "deposit": "Pro Freund: +{{amount}} aufs Guthaben",
+      "discount": "Pro Freund: {{amount}} Rabatt"
+    }
+  },
+  "mark": {
+    "pay": "Zahlung",
+    "unpaid": "Unbezahlt",
+    "cash": "Bar",
+    "card": "Karte",
+    "paid": "Bezahlt",
+    "attend": "Anwesenheit",
+    "notMarked": "Nicht markiert"
   }
 }

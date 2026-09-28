@@ -39,7 +39,7 @@ async function harness(file, extra = {}) {
     }).outputText;
     const mod = new vm.SourceTextModule(code, { context, identifier: path.href });
     await mod.link((name, parent) => {
-      if (name === './whenInput') return load(new URL(`${name}.ts`, parent.identifier));
+      if (name === './whenInput' || name === './pastSlot') return load(new URL(`${name}.ts`, parent.identifier));
       const exports = deps[name] ?? deps[name.split('/').at(-1)];
       if (!exports) throw new Error(`Missing dependency: ${name}`);
       return new vm.SyntheticModule(Object.keys(exports), function () {
@@ -50,7 +50,10 @@ async function harness(file, extra = {}) {
   }
   const mod = await load(pathToFileURL(`${root}/${file}`));
   await mod.evaluate();
-  return { render(name, props) { cursor = 0; return mod.namespace[name](props); } };
+  return {
+    render(name, props) { cursor = 0; return mod.namespace[name](props); },
+    call(name, args) { return mod.namespace[name](...args); },
+  };
 }
 function nodes(tree, type) {
   if (!tree || typeof tree !== 'object') return [];
@@ -81,16 +84,20 @@ test('complete manual time applies immediately and Enter advances', async () => 
   assert.equal(w.advanced, true);
 });
 
-async function navigation(overrides = {}) {
+// Каталог по умолчанию смешанный: есть индивидуальная услуга с мастером —
+// значит, пока услуга не выбрана, раздел «Клиент» нужен.
+const MIXED = { services: [{ id: 2, booking_mode: 'resource', masters: [] }],
+  resourceStaff: { staff: [{ teacher_id: 7, service_ids: [2] }] } };
+async function navigation(overrides = {}, catalog = MIXED) {
   const noop = () => {};
   const resource = { choice: { serviceOptions: [], masterOptions: [] }, slots: [],
     setDate: noop, setClient: noop, setTeacherId: noop };
   const app = await harness(`${base}useBookingWizard.ts`, {
-    '@tanstack/react-query': { useQuery: () => ({ data: undefined, isFetched: true, isFetching: false }) },
+    '@tanstack/react-query': { useQuery: ({ queryKey }) => ({ data: catalog[queryKey?.[0]], isFetched: true, isFetching: false }) },
     index: { useToast: () => ({ info: noop, error: noop }) },
     schedule: { scheduleApi: {} }, 'services.api': { servicesApi: {} }, 'studio.api': { studioApi: {} },
     errorMessage: { errorMessage: noop },
-    queryKeys: { queryKeys: { client: id => ['client', id] } },
+    queryKeys: { queryKeys: { client: id => ['client', id], services: ['services'], resourceStaff: ['resourceStaff'] } },
     useResourceBooking: { useResourceBooking: () => resource },
     useBusinessTerms: { useBusinessTerms: () => ({ spaceIsAxis: false }) },
     staff: { staffApi: {} }, 'clients.api': { clientsApi: {} }, money: { formatMoney: () => '' },
@@ -102,6 +109,7 @@ async function navigation(overrides = {}) {
       times: [], loading: false, conflict: false, branchFor: () => undefined }) },
     'hybrid.api': { hybridApi: {} },
     useNotePhotos: { useNotePhotos: () => ({ photos: [], pending: [], add: noop, remove: noop }) },
+    useWizardSettle: { useWizardSettle: () => ({ ready: true, settle: () => ({ payment: null }) }) },
     ...overrides,
   });
   return (extra = {}) => {
@@ -122,8 +130,9 @@ test('sections and swipes work before selecting a client; time is not automatica
   assert.equal(w.client, null);
   w.goTo(0);
   w = render();
+  // У группового занятия раздела «Клиент» нет — свайп с времени ведёт к услуге.
   w.swipe(1);
-  assert.equal(render().step, 1);
+  assert.equal(render().step, 2);
   render().swipe(-1);
   assert.equal(render().step, 0);
   render().swipe(-1);
@@ -179,7 +188,7 @@ test('from the client card the client is chosen but still changeable', async () 
   render().pickClient(9, 'Other');
   assert.equal(render().client.id, 9);
 });
-async function groupBooking(joined) {
+async function groupBooking(joined, extra = {}) {
   const calls = [];
   const scheduleApi = {
     createLesson: async body => { calls.push(['create', body]); return { id: 50 }; },
@@ -191,22 +200,57 @@ async function groupBooking(joined) {
     schedule: { scheduleApi },
     './masterAvailability': { lessonToJoin: () => joined },
     useNotePhotos: { useNotePhotos: () => ({ photos: ['/static/notes/a.jpg'], pending: [], add: noop, remove: noop }) },
-  }))({ defaultTime: '10:00', defaultTeacherId: 7 });
-  render().pickClient(3, 'Anna');
+  }))({ defaultTime: '10:00', defaultTeacherId: 7, ...extra });
+  if (extra.clientId != null) render().pickClient(extra.clientId, 'Anna');
   render().pickService({ id: 1, booking_mode: 'event', masters: [], duration_min: 60 });
   render().setNotes('  Bring a mat  ');
-  await render().submit();
-  return calls;
+  const w = render();
+  await w.submit();
+  return { calls, w };
 }
-test('note goes into a new group lesson', async () => {
-  const calls = await groupBooking(undefined);
+test('group lesson from the journal has no client section and books nobody', async () => {
+  const { calls, w } = await groupBooking(undefined);
+  assert.equal(w.needsClient, false);
+  assert.equal(w.steps.includes(1), false);
+  assert.equal(w.ready, true);
   const [, body] = calls.find(c => c[0] === 'create');
   assert.equal(body.notes, 'Bring a mat');
   assert.deepEqual(Array.from(body.photos), ['/static/notes/a.jpg']);
+  assert.equal(calls.some(c => c[0] === 'reserve'), false);
   assert.equal(calls.some(c => c[0] === 'update'), false);
 });
+test('without a client an existing lesson at that time is busy, not joined', async () => {
+  const { calls, w } = await groupBooking({ id: 9, notes: '', photos: [] });
+  assert.equal(w.joined, undefined);
+  assert.equal(calls.some(c => c[0] === 'update' || c[0] === 'reserve'), false);
+});
+test('choosing a group service skips the client section', async () => {
+  const render = (await navigation())({ defaultTime: '10:00' });
+  render().goTo(2);
+  render().pickService({ id: 1, booking_mode: 'event', masters: [], duration_min: 60 });
+  assert.equal(render().step, 3);
+  render().pickMaster(7);
+  assert.equal(render().step, 4);
+});
+test('studio with only group services has no client section from the start', async () => {
+  const groupOnly = { services: [{ id: 1, booking_mode: 'event', masters: [] }], resourceStaff: { staff: [] } };
+  const render = (await navigation({}, groupOnly))({ defaultTime: '10:00', defaultTeacherId: 7 });
+  const w = render();
+  assert.equal(w.needsClient, false);
+  assert.deepEqual(Array.from(w.steps), [0, 2, 3, 4]);
+  w.goTo(0);
+  render().pickTime('11:00');
+  assert.equal(render().step, 2);
+  // Из карточки клиента клиент остаётся и в такой студии.
+  const card = (await navigation({}, groupOnly))({ clientId: 5 })();
+  assert.equal(card.steps.includes(1), true);
+});
+test('from the client card a group booking still books the client', async () => {
+  const { calls } = await groupBooking(undefined, { clientId: 3 });
+  assert.deepEqual(calls.find(c => c[0] === 'reserve'), ['reserve', 3, 50]);
+});
 test('joining an existing lesson appends the note with the client name', async () => {
-  const calls = await groupBooking({ id: 9, notes: 'Hall B', photos: ['/static/notes/old.jpg'] });
+  const { calls } = await groupBooking({ id: 9, notes: 'Hall B', photos: ['/static/notes/old.jpg'] }, { clientId: 3 });
   assert.equal(calls.some(c => c[0] === 'create'), false);
   const [, id, body] = calls.find(c => c[0] === 'update');
   assert.equal(id, 9);
@@ -270,4 +314,45 @@ test('conflicting time and service tabs are red, editable and have no completion
   }
   buttons[0].onClick();
   assert.equal(destination, 0);
+});
+
+test('past slot is detected and the same hour ahead is offered', async () => {
+  const app = await harness(`${base}pastSlot.ts`);
+  const mod = { isPastSlot: (...a) => app.call('isPastSlot', a), nextSameTime: (...a) => app.call('nextSameTime', a) };
+  const noon = new Date(2026, 4, 20, 12, 0);
+  assert.equal(mod.isPastSlot('2026-05-12', '18:00', noon), true);
+  assert.equal(mod.isPastSlot('2026-05-20', '11:59', noon), true);
+  assert.equal(mod.isPastSlot('2026-05-20', '12:00', noon), false);
+  assert.equal(mod.isPastSlot('2026-05-21', '08:00', noon), false);
+  // Сегодня 18:00 — до него 6 часов, успеваем; 14:00 — меньше трёх, завтра.
+  assert.equal(mod.nextSameTime('18:00', noon).time, '18:00');
+  assert.equal(mod.nextSameTime('18:00', noon).date, '2026-05-20');
+  assert.equal(mod.nextSameTime('14:00', noon).date, '2026-05-21');
+});
+test('wizard opened on a past slot asks; continue takes the offered time, own time opens the time section', async () => {
+  const render = (await navigation())({ defaultDate: '2020-05-12', defaultTime: '18:00', defaultTeacherId: 7 });
+  let w = render();
+  assert.equal(w.pastAsk.time, '18:00');
+  assert.ok(w.pastAsk.date > '2020-05-12');
+  assert.equal(w.ready, false);
+  const offered = w.pastAsk;
+  w.acceptPast();
+  w = render();
+  assert.equal(w.pastAsk, null);
+  assert.equal(w.date, offered.date);
+  assert.equal(w.time, '18:00');
+
+  const own = (await navigation())({ defaultDate: '2020-05-12', defaultTime: '18:00' });
+  own().choosePastOwn();
+  w = own();
+  assert.equal(w.pastAsk, null);
+  assert.equal(w.step, 0);
+  assert.equal(w.time, '');
+  assert.ok(w.date > '2020-05-12');
+});
+test('future slot and past day without time do not ask', async () => {
+  assert.equal((await navigation())({ defaultDate: '2099-05-12', defaultTime: '18:00' })().pastAsk, null);
+  const w = (await navigation())({ defaultDate: '2020-05-12' })();
+  assert.equal(w.pastAsk, null);
+  assert.ok(w.date > '2020-05-12');
 });

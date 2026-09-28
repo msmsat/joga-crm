@@ -130,7 +130,8 @@
       "promo_expired": "Rabattkoden gäller inte längre",
       "balance_changed": "Poängen eller depositionen har redan använts någon annanstans — räkna om betalningen",
       "attempt_in_progress": "En betalning för denna försäljning pågår redan — vänta på resultatet eller uppdatera",
-      "master_required": "Välj utförare — priset beror på det"
+      "master_required": "Välj utförare — priset beror på det",
+      "amount_changed": "Beloppet har ändrats — kontrollera summan och bekräfta igen"
     },
     "billing": {
       "tax_details_required": "Lägg till studions land i faktureringsuppgifterna — utan det går fakturan inte att utfärda",

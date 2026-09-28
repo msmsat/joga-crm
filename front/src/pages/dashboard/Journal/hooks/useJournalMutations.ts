@@ -8,7 +8,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { scheduleApi } from '../../../../api/schedule';
 import { hybridApi } from '../../../../api/booking/hybrid.api';
 import type { BookingRead, CrmRescheduleQuoteRequest } from '../../../../api/booking/hybrid.types';
-import type { LessonCreate } from '../../../../api/schedule/schedule.types';
+import type { LessonCreate, ReservationPaymentOptions } from '../../../../api/schedule/schedule.types';
 import { queryKeys } from '../../../../api/queryKeys';
 import type { Booking } from '../types';
 import { indexToDateTime } from '../utils';
@@ -163,10 +163,12 @@ export function useJournalMutations(lessonsKey: readonly unknown[]) {
   };
 
   // ── Отметить посещение: не меняет счётчик мест сетки — список записанных
-  // клиентов живёт отдельным локальным стейтом попапа (BookingPopup), кэш
-  // занятий здесь не трогаем, только сам запрос.
+  // клиентов живёт отдельным локальным стейтом попапа (BookingPopup). Но
+  // сетка рисует неявку прошедшей индивидуальной записи (utils.isNoShow) по
+  // числу отмеченных — после отметки занятия перечитываются.
   const attendMut = useMutation({
     mutationFn: (reservationId: number) => scheduleApi.attendReservation(reservationId),
+    onSettled: () => { qc.invalidateQueries({ queryKey: queryKeys.journalLessonsAll }); },
   });
   const attendReservation = (reservationId: number) => attendMut.mutateAsync(reservationId);
 
@@ -180,8 +182,10 @@ export function useJournalMutations(lessonsKey: readonly unknown[]) {
   // ── Принять оплату на месте: мест не касается, но двигает деньги — поэтому
   // инвалидируем всё, что показывает выручку и баланс клиента.
   const payMut = useMutation({
-    mutationFn: ({ reservationId, method }: { reservationId: number; method: 'cash' | 'transfer' }) =>
-      scheduleApi.payReservation(reservationId, method),
+    mutationFn: ({ reservationId, method, options }: {
+      reservationId: number; method: 'cash' | 'transfer';
+      options?: ReservationPaymentOptions & { expected_total?: number };
+    }) => scheduleApi.payReservation(reservationId, method, options),
     // Префиксы, а не точные ключи: долг виден в карточке клиента, а доход — во
     // всех срезах Финансов, и перечислять их фильтры отсюда значило бы дублировать
     // их список в Журнале.
@@ -190,8 +194,9 @@ export function useJournalMutations(lessonsKey: readonly unknown[]) {
       qc.invalidateQueries({ queryKey: ['finances'] });
     },
   });
-  const payReservation = (reservationId: number, method: 'cash' | 'transfer') =>
-    payMut.mutateAsync({ reservationId, method });
+  const payReservation = (reservationId: number, method: 'cash' | 'transfer',
+                          options?: ReservationPaymentOptions & { expected_total?: number }) =>
+    payMut.mutateAsync({ reservationId, method, options });
 
   return {
     /** HB-22: новые команды (quote/confirm) обновляют журнал так же. */

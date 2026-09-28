@@ -1,0 +1,50 @@
+- generic [ref=e2]:
+  - region [ref=e3]:
+    - generic [ref=e11]:
+      - heading "Your privacy, your choice" [level=2] [ref=e12]
+      - paragraph [ref=e13]:
+        - text: "Velora keeps only what it needs to work in your browser: your sign-in, language and interface settings. With your permission we'll also turn on Google Sign-In — Google then sets its own cookies. We use no analytics and no advertising."
+        - link "Cookie policy" [ref=e14] [cursor=pointer]:
+          - /url: http://localhost:8000/static/cookies.html
+    - generic [ref=e15]:
+      - button "Reject all" [ref=e16] [cursor=pointer]
+      - button "Accept all" [ref=e17] [cursor=pointer]
+    - button "Settings" [ref=e18] [cursor=pointer]
+  - generic [ref=e19]:
+    - navigation [ref=e20]:
+      - generic [ref=e21]: Velora.
+      - button "Back" [ref=e29] [cursor=pointer]
+    - generic [ref=e34]:
+      - generic [ref=e35]:
+        - heading "Welcome back" [level=1] [ref=e36]
+        - paragraph [ref=e37]: Sign in to continue to Velora
+      - generic [ref=e38]:
+        - generic [ref=e39]:
+          - generic [ref=e40]: Email
+          - textbox "you@example.com" [ref=e42]
+        - generic [ref=e43]:
+          - generic [ref=e44]: Password
+          - generic [ref=e45]:
+            - textbox "Your Velora password" [ref=e46]
+            - button "Show" [ref=e48] [cursor=pointer]
+      - button "Sign in" [ref=e52] [cursor=pointer]
+      - generic [ref=e53]:
+        - generic [ref=e55]:
+          - button "Continue with Google" [ref=e56] [cursor=pointer]
+          - paragraph [ref=e62]:
+            - text: "Clicking turns on Google Sign-In: Google's service loads and can set its own cookies."
+            - link "Details" [ref=e63] [cursor=pointer]:
+              - /url: http://localhost:8000/static/cookies.html
+        - generic [ref=e64]:
+          - button "Forgot password?" [ref=e65] [cursor=pointer]
+          - button "Sign up" [ref=e67] [cursor=pointer]
+    - contentinfo [ref=e68]:
+      - generic [ref=e69]: © 2026 Velora. All rights reserved.
+      - generic [ref=e70]:
+        - link "Privacy policy" [ref=e71] [cursor=pointer]:
+          - /url: http://localhost:8000/static/privacy.html
+        - link "Terms of use" [ref=e72] [cursor=pointer]:
+          - /url: http://localhost:8000/static/terms.html
+        - link "Support" [ref=e73] [cursor=pointer]:
+          - /url: https://wa.me/420722274622
+        - button "Cookie settings" [ref=e74] [cursor=pointer]

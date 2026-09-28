@@ -1,0 +1,13 @@
+- generic [ref=f1e2]:
+  - region [ref=f1e3]:
+    - generic [ref=f1e11]:
+      - heading "Vaše soukromí, vaše volba" [level=2] [ref=f1e12]
+      - paragraph [ref=f1e13]:
+        - text: "Velora ve vašem prohlížeči ukládá jen to, bez čeho nefunguje: přihlášení, jazyk a nastavení rozhraní. S vaším svolením zapneme také přihlášení přes Google — Google pak uloží vlastní cookies. Analytiku ani reklamu nepoužíváme."
+        - link "Zásady cookies" [ref=f1e14] [cursor=pointer]:
+          - /url: http://localhost:8000/static/cookies.html
+    - generic [ref=f1e15]:
+      - button "Odmítnout vše" [ref=f1e16] [cursor=pointer]
+      - button "Přijmout vše" [ref=f1e17] [cursor=pointer]
+    - button "Nastavit" [ref=f1e18] [cursor=pointer]
+  - status "Načítání..." [ref=f1e20]

@@ -23,7 +23,9 @@ from services.contacts import (
     ensure_user_contacts_free, normalize, normalized_column,
 )
 from services.invites import send_invite
-from services.members import full_name, is_specialist, is_specialist_clause, pick_member_color
+from services.members import (
+    fill_missing_colors, full_name, is_specialist, is_specialist_clause, pick_member_color,
+)
 from services.notifier import notify
 from services.plan_limits import check_plan_limit
 from services import service_pricing
@@ -278,11 +280,18 @@ async def list_staff(
         .where(StudioMember.studio_id == studio_id)
         .order_by(StudioMember.name)
     )
-    if ctx.role == "trainer":
-        stmt = stmt.where(StudioMember.user_id == ctx.user.id)
+    rows = (await db.execute(stmt)).all()
 
-    result = await db.execute(stmt)
-    rows = result.all()
+    # Цвет в журнале есть у каждого: у кого его нет (заведён в обход роутеров),
+    # тому выдаём здесь — по всей команде, чтобы не совпасть с чужим. Запросов
+    # не добавляет: команда уже загружена; пишем, только если кому-то выдали.
+    if fill_missing_colors(sm for _, sm, _ in rows):
+        await db.commit()
+
+    # Тренеру — только он сам. Фильтр после раздачи цветов: занятые цвета
+    # считаются по всей команде, а не по одной его строке.
+    if ctx.role == "trainer":
+        rows = [row for row in rows if row[1].user_id == ctx.user.id]
 
     # summary считаем по всей студии, страницу вырезаем из уже загруженных строк.
     # ponytail: срез в Python ок на десятках сотрудников; тысячи — тогда offset/limit в SQL.

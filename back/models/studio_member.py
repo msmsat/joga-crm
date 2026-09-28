@@ -50,8 +50,8 @@ class StudioMember(Base):
     # Цвет человека в этой студии: им окрашены его колонка и занятия в журнале.
     # Выдаётся при заведении — первый свободный из палитры (members.pick_member_color),
     # чтобы два мастера не совпали; владелец может сменить его в карточке.
-    # NULL бывает только у строк, заведённых в обход роутеров (сиды), —
-    # интерфейс тогда берёт цвет из той же палитры по id.
+    # NULL — у строк до появления колонки и заведённых в обход роутеров (сиды):
+    # им цвет выдаёт первое же чтение команды (members.fill_missing_colors).
     color: Mapped[Optional[str]] = mapped_column(String(7), nullable=True)
 
     user: Mapped["User"] = relationship(back_populates="studio_memberships")

@@ -221,7 +221,39 @@
     "debt": "Οφειλή",
     "notes": "Σημειώσεις",
     "openFull": "Άνοιγμα καρτέλας",
-    "copied": "Αντιγράφηκε"
+    "copied": "Αντιγράφηκε",
+    "since": "πελάτης από {{date}}",
+    "owes": "Οφείλει {{amount}}",
+    "attendance": "Συμμετοχή",
+    "missed": "Απουσίες",
+    "points": "Πόντοι",
+    "rating": "Μέση βαθμ.",
+    "contacts": "Επαφές",
+    "copy": "Αντιγραφή",
+    "age": "{{value}} ετών",
+    "subscription": "Συνδρομή",
+    "left": "Απομένουν {{left}} από {{total}}",
+    "frozen": "Σε παύση",
+    "until": "Ισχύει έως {{date}}",
+    "nextVisit": "Επόμενη κράτηση",
+    "about": "Με μια ματιά",
+    "firstVisit": "Πρώτη επίσκεψη",
+    "lastVisit": "Τελευταία επίσκεψη",
+    "favoriteTrainer": "Αγαπημένος προπονητής",
+    "favoriteLesson": "Αγαπημένο μάθημα",
+    "cancellations": "Ακυρώσεις",
+    "source": "Προέλευση",
+    "noNotes": "Δεν υπάρχουν ακόμη σημειώσεις",
+    "history": "Ιστορικό επισκέψεων",
+    "noHistory": "Δεν υπάρχουν ακόμη επισκέψεις",
+    "status": {
+      "missed": "Δεν ήρθε",
+      "cancelled": "Ακυρώθηκε",
+      "attended": "Ήρθε",
+      "upcoming": "Επερχόμενο"
+    },
+    "reviews": "Κριτικές",
+    "bookedOn": "κράτηση {{date}}"
   },
   "wizard": {
     "client": "Επιλέξτε πελάτη",
@@ -262,7 +294,13 @@
     "onlyAvailable": "Available only",
     "unavailable": "Unavailable for this selection",
     "selectionConflict": "The selection does not match. Choose an available time or change the service or specialist.",
-    "availabilityError": "Could not load availability. Please try again."
+    "availabilityError": "Could not load availability. Please try again.",
+    "past": {
+      "title": "Αυτή η ώρα έχει ήδη περάσει",
+      "message": "Κράτηση για {{date}} στις {{time}};",
+      "own": "Επιλογή άλλης ώρας"
+    },
+    "lessonDiscount": "Έκπτωση για αυτό το μάθημα"
   },
   "payment": {
     "title": "Πληρωμή",
@@ -273,7 +311,10 @@
     "discount": {
       "studio": "Έκπτωση στούντιο",
       "offer": "Προσωπική έκπτωση",
-      "referral": "Έκπτωση σύστασης"
+      "referral": "Έκπτωση σύστασης",
+      "first_lesson": "Πρώτο μάθημα",
+      "manual": "Έκπτωση διαχειριστή",
+      "promo": "Κωδικός προσφοράς"
     },
     "promo": "Κωδικός προσφοράς",
     "voucher": "Κουπόνι",
@@ -295,5 +336,96 @@
     },
     "confirmAndPay": "Κράτηση και είσπραξη {{amount}}",
     "loadFailed": "Δεν ήταν δυνατός ο υπολογισμός της πληρωμής."
+  },
+  "lessonCard": {
+    "today": "Σήμερα",
+    "minutes": "{{value}} λεπ.",
+    "route": "Διαδρομή",
+    "noAddress": "Δεν έχει οριστεί διεύθυνση",
+    "trainer": "Προπονητής",
+    "price": "Τιμή",
+    "spots": "Θέσεις",
+    "format": "Μορφή",
+    "group": "Ομαδικό",
+    "individual": "Ατομικό",
+    "level": "Επίπεδο",
+    "equipment": "Εξοπλισμός",
+    "buffers": "Προετοιμασία / καθαρισμός",
+    "buffersValue": "{{before}} + {{after}} λεπ.",
+    "cameIn": "Ήρθαν",
+    "paid": "Πληρώθηκε",
+    "owed": "Οφειλή",
+    "cancelReason": "Λόγος ακύρωσης",
+    "pay": "Πληρωμή",
+    "paidAmount": "Πληρώθηκε · {{amount}}",
+    "bySubscription": "Συνδρομή",
+    "coffee": "Καφές μετά το μάθημα",
+    "channel": {
+      "online": "Online κράτηση",
+      "telegram": "Telegram",
+      "web": "Ιστότοπος",
+      "miniapp": "Mini app"
+    },
+    "fund": {
+      "subscription": "Συνδρομή «{{name}}»",
+      "discount": "{{label}} −{{percent}}% · −{{amount}}",
+      "points": "Πόντοι −{{points}} · −{{amount}}",
+      "deposit": "Προκαταβολή −{{amount}}",
+      "certificate": "Δωροκάρτα {{code}} −{{amount}}",
+      "paidBy": "Πληρώθηκε {{amount}} · {{method}}",
+      "free": "Πρώτο μάθημα — δωρεάν",
+      "price": "Τιμή {{amount}}"
+    },
+    "method": {
+      "cash": "μετρητά",
+      "transfer": "με μεταφορά",
+      "stripe": "με κάρτα online"
+    }
+  },
+  "lessonPay": {
+    "countFirstLesson": "Εφαρμογή της έκπτωσης",
+    "title": "Πληρωμή μαθήματος",
+    "benefits": "Οφέλη πελάτη",
+    "receipt": "Απόδειξη",
+    "toNext": "Ακόμη {{amount}} έως {{level}}",
+    "points": "Πόντοι",
+    "pointsValue": "{{points}} ≈ {{amount}}",
+    "usePoints": "Πληρωμή με πόντους",
+    "deposit": "Προκαταβολή",
+    "useDeposit": "Πληρωμή από προκαταβολή",
+    "cashbackRule": "Cashback στούντιο: το {{percent}}% κάθε πληρωμής επιστρέφει σε πόντους",
+    "manual": "Επιπλέον έκπτωση",
+    "manualPlaceholder": "Άλλη",
+    "price": "Τιμή μαθήματος",
+    "pointsLine": "Πόντοι ({{points}})",
+    "total": "Προς πληρωμή",
+    "willEarn": "+{{points}} πόντοι στον πελάτη",
+    "method": "Τρόπος πληρωμής",
+    "accept": "Είσπραξη {{amount}}",
+    "acceptAndAttend": "Είσπραξη {{amount}} και σήμανση",
+    "close": "Εξόφληση",
+    "closeAndAttend": "Εξόφληση και σήμανση",
+    "byCash": "Μετρητά · {{amount}}",
+    "byCard": "Κάρτα · {{amount}}",
+    "deferred": "Τα χρήματα εισπράττονται με την επιβεβαίωση της κράτησης",
+    "notNow": "Όχι πληρωμή τώρα",
+    "referral": "Συστάσεις",
+    "invitedBy": "Ήρθε με σύσταση από: {{name}}",
+    "referralDiscount": "Έκπτωση καλωσορίσματος από σύσταση −{{percent}}% — εφαρμόζεται αυτόματα",
+    "invitedCount": "Φίλοι που προσκάλεσε: {{count}}",
+    "inviteBonus": {
+      "points": "Ανά φίλο: +{{value}} πόντοι",
+      "deposit": "Ανά φίλο: +{{amount}} στην προκαταβολή",
+      "discount": "Ανά φίλο: έκπτωση {{amount}}"
+    }
+  },
+  "mark": {
+    "pay": "Πληρωμή",
+    "unpaid": "Απλήρωτο",
+    "cash": "Μετρητά",
+    "card": "Κάρτα",
+    "paid": "Πληρώθηκε",
+    "attend": "Παρουσία",
+    "notMarked": "Χωρίς σήμανση"
   }
 }

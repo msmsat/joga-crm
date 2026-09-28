@@ -43,6 +43,9 @@ interface NewBookingModalProps {
   onResourceBooking?: (serviceId?: number) => void;
   /** Участвует ли место в расписании. `undefined` — термины ещё не пришли. */
   spaceIsAxis?: boolean;
+  /** Раньше этого индекса сетки начало не ставится — «сейчас», если занятие
+   *  сегодня; null — день впереди. Задним числом не записываем. */
+  notBefore?: number | null;
 }
 
 export interface NewBookingForm {
@@ -69,6 +72,7 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({
   onCreate,
   spaceIsAxis,
   onResourceBooking,
+  notBefore = null,
 }) => {
   const { t } = useTranslation('journal');
   // Филиалы нужны только форме без мест — там они единственный источник
@@ -125,7 +129,9 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({
     : null;
   const timeError = newBookingSlot.timeEnd <= newBookingSlot.timeStart
     ? t('newBooking.errors.endAfterStart')
-    : null;
+    : notBefore != null && newBookingSlot.timeStart < notBefore
+      ? t('wizard.past.title')
+      : null;
   const hasErrors = !!(serviceError || maxClientsError || timeError);
 
   const handleServiceChange = (value: string) => {

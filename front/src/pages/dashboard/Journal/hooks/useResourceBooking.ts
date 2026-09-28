@@ -12,7 +12,7 @@ import { usePriceLabel } from '../../../../hooks/usePriceLabel';
 import { useDurationLabel } from '../../../../hooks/useDurationLabel';
 import { useStudioCurrency } from '../../../../hooks/useStudioCurrency';
 import { formatMoney } from '../../../../lib/money';
-import type { AvailabilitySlot, QuoteRead } from '../../../../api/booking/hybrid.types';
+import type { AvailabilitySlot, ConfirmPayment, QuoteRead } from '../../../../api/booking/hybrid.types';
 import type { ServiceRead } from '../../../../api/studio/services.api';
 import { useResourceBookingChoice } from './useResourceBookingChoice';
 import { useBookingPayment } from './useBookingPayment';
@@ -24,6 +24,17 @@ export type ResourceBookingOptions = {
   defaultDate?: string;
   defaultServiceId?: number;
   teacherId?: number | null;
+  /** Шаг оплаты этого хука (useBookingPayment). Мастер записи ведёт оплату
+   *  сам (useWizardSettle) — ему чек здесь не нужен. */
+  checkout?: boolean;
+};
+
+/** Как закрыть запись на итоге мастера: оплатить выбранным способом (или
+ *  оставить долгом со своей скидкой) и отметить ли, что клиент пришёл. */
+export type BookingSettle = {
+  payment: ConfirmPayment | null;
+  manualPercent?: number | null;
+  attend?: boolean;
 };
 
 const EMPTY_LINKS: never[] = [];
@@ -47,6 +58,7 @@ const iso = (date: Date) =>
  */
 export function useResourceBooking({
   onClose, onCreated, clientId = null, defaultDate, defaultServiceId, teacherId: initialTeacherId = null,
+  checkout = true,
 }: ResourceBookingOptions) {
   const { t } = useTranslation(['journal', 'common']);
   const toast = useToast();
@@ -149,7 +161,7 @@ export function useResourceBooking({
       // на экране прежние, и выключатель пересчитает именно их время.
       lastSlot.current = slot;
       setQuote(result);
-      payment.load(result.quote_id);
+      if (checkout) payment.load(result.quote_id);
       return 'ok';
     } catch (err) {
       if (version !== quoteVersion.current) return 'stale';
@@ -174,21 +186,31 @@ export function useResourceBooking({
 
   /** Подтвердить запись и принять оплату наличными (сумма — из чека шага
    *  оплаты; сервер пересчитает её и при расхождении не запишет ничего).
+   *  Мастер записи передаёт `settle`: оплату выбранным способом либо долг со
+   *  своей скидкой, и отметку «пришёл».
    *  Заметка (если есть) ложится в занятие, которое создала запись: отдельного
    *  поля у quote/confirm нет, а заметка — свойство занятия, как и у события
    *  (PATCH её пускает всегда, даже у прошедшего). */
-  const confirm = async (note?: { notes: string; photos: string[] }) => {
-    const paid = payment.request();
-    if (!quote || saving || !paid) return;
+  const confirm = async (note?: { notes: string; photos: string[] }, settle?: BookingSettle) => {
+    const paid = settle ? settle.payment : payment.request();
+    if (!quote || saving || (!settle && !paid)) return;
     setSaving(true);
     try {
-      const booked = await hybridApi.confirm(quote.quote_id, paid);
+      const booked = await hybridApi.confirm(quote.quote_id, paid, settle?.manualPercent);
       if (note && (note.notes || note.photos.length > 0)) {
         try {
           await scheduleApi.updateLesson(booked.lesson_id, { notes: note.notes, photos: note.photos });
         } catch (err) {
           // Запись уже состоялась — откатывать её из-за заметки нельзя.
           // Говорим, что заметка не сохранилась: её можно дописать в карточке.
+          toast.error(errorMessage(err, t));
+        }
+      }
+      if (settle?.attend) {
+        try {
+          await scheduleApi.attendReservation(booked.reservation_id);
+        } catch (err) {
+          // Как и с заметкой: запись есть, приход отметят в карточке занятия.
           toast.error(errorMessage(err, t));
         }
       }

@@ -221,7 +221,39 @@
     "debt": "Tartozás",
     "notes": "Jegyzetek",
     "openFull": "Karton megnyitása",
-    "copied": "Másolva"
+    "copied": "Másolva",
+    "since": "ügyfél {{date}} óta",
+    "owes": "Tartozik {{amount}}",
+    "attendance": "Jelenlét",
+    "missed": "Távolmaradások",
+    "points": "Pontok",
+    "rating": "Átl. értékelés",
+    "contacts": "Elérhetőségek",
+    "copy": "Másolás",
+    "age": "{{value}} éves",
+    "subscription": "Bérlet",
+    "left": "Maradt {{left}} / {{total}}",
+    "frozen": "Szüneteltetve",
+    "until": "Érvényes: {{date}}",
+    "nextVisit": "Következő foglalás",
+    "about": "Röviden",
+    "firstVisit": "Első látogatás",
+    "lastVisit": "Utolsó látogatás",
+    "favoriteTrainer": "Kedvenc edző",
+    "favoriteLesson": "Kedvenc óra",
+    "cancellations": "Lemondások",
+    "source": "Forrás",
+    "noNotes": "Még nincs jegyzet",
+    "history": "Látogatási előzmények",
+    "noHistory": "Még nincs látogatás",
+    "status": {
+      "missed": "Nem jött el",
+      "cancelled": "Lemondva",
+      "attended": "Eljött",
+      "upcoming": "Közelgő"
+    },
+    "reviews": "Értékelések",
+    "bookedOn": "foglalva: {{date}}"
   },
   "wizard": {
     "client": "Válasszon ügyfelet",
@@ -262,7 +294,13 @@
     "onlyAvailable": "Available only",
     "unavailable": "Unavailable for this selection",
     "selectionConflict": "The selection does not match. Choose an available time or change the service or specialist.",
-    "availabilityError": "Could not load availability. Please try again."
+    "availabilityError": "Could not load availability. Please try again.",
+    "past": {
+      "title": "Ez az időpont már elmúlt",
+      "message": "Foglalás erre: {{date}}, {{time}}?",
+      "own": "Másik időpont választása"
+    },
+    "lessonDiscount": "Kedvezmény erre az alkalomra"
   },
   "payment": {
     "title": "Fizetés",
@@ -273,7 +311,10 @@
     "discount": {
       "studio": "Stúdiókedvezmény",
       "offer": "Személyes kedvezmény",
-      "referral": "Ajánlási kedvezmény"
+      "referral": "Ajánlási kedvezmény",
+      "first_lesson": "Első óra",
+      "manual": "Adminisztrátori kedvezmény",
+      "promo": "Promóciós kód"
     },
     "promo": "Promóciós kód",
     "voucher": "Utalvány",
@@ -295,5 +336,96 @@
     },
     "confirmAndPay": "Foglalás és {{amount}} átvétele",
     "loadFailed": "Nem sikerült kiszámolni a fizetést."
+  },
+  "lessonCard": {
+    "today": "Ma",
+    "minutes": "{{value}} perc",
+    "route": "Útvonal",
+    "noAddress": "Nincs megadva cím",
+    "trainer": "Edző",
+    "price": "Ár",
+    "spots": "Helyek",
+    "format": "Forma",
+    "group": "Csoportos",
+    "individual": "Egyéni",
+    "level": "Szint",
+    "equipment": "Felszerelés",
+    "buffers": "Előkészítés / takarítás",
+    "buffersValue": "{{before}} + {{after}} perc",
+    "cameIn": "Eljöttek",
+    "paid": "Fizetve",
+    "owed": "Tartozás",
+    "cancelReason": "Lemondás oka",
+    "pay": "Fizetés",
+    "paidAmount": "Fizetve · {{amount}}",
+    "bySubscription": "Bérlet",
+    "coffee": "Kávé óra után",
+    "channel": {
+      "online": "Online foglalás",
+      "telegram": "Telegram",
+      "web": "Weboldal",
+      "miniapp": "Mini app"
+    },
+    "fund": {
+      "subscription": "Bérlet «{{name}}»",
+      "discount": "{{label}} −{{percent}}% · −{{amount}}",
+      "points": "Pontok −{{points}} · −{{amount}}",
+      "deposit": "Letét −{{amount}}",
+      "certificate": "Ajándékkártya {{code}} −{{amount}}",
+      "paidBy": "Fizetve {{amount}} · {{method}}",
+      "free": "Első óra — ingyenes",
+      "price": "Ár {{amount}}"
+    },
+    "method": {
+      "cash": "készpénzzel",
+      "transfer": "átutalással",
+      "stripe": "kártyával online"
+    }
+  },
+  "lessonPay": {
+    "countFirstLesson": "Kedvezmény érvényesítése",
+    "title": "Óra kifizetése",
+    "benefits": "Ügyfél kedvezményei",
+    "receipt": "Nyugta",
+    "toNext": "Még {{amount}} a(z) {{level}} szintig",
+    "points": "Pontok",
+    "pointsValue": "{{points}} ≈ {{amount}}",
+    "usePoints": "Fizetés pontokkal",
+    "deposit": "Letét",
+    "useDeposit": "Fizetés letétből",
+    "cashbackRule": "Stúdió cashback: minden fizetés {{percent}}%-a pontként visszajár",
+    "manual": "Extra kedvezmény",
+    "manualPlaceholder": "Egyéni",
+    "price": "Óra ára",
+    "pointsLine": "Pontok ({{points}})",
+    "total": "Fizetendő",
+    "willEarn": "+{{points}} pont az ügyfélnek",
+    "method": "Fizetési mód",
+    "accept": "{{amount}} átvétele",
+    "acceptAndAttend": "{{amount}} átvétele és jelenlét",
+    "close": "Rendezés",
+    "closeAndAttend": "Rendezés és jelenlét",
+    "byCash": "Készpénz · {{amount}}",
+    "byCard": "Kártya · {{amount}}",
+    "deferred": "A pénzt a foglalás megerősítésekor vesszük át",
+    "notNow": "Most nem fizet",
+    "referral": "Ajánlások",
+    "invitedBy": "Ajánlotta: {{name}}",
+    "referralDiscount": "Ajánlási üdvözlő kedvezmény −{{percent}}% — magától érvényesül",
+    "invitedCount": "Meghívott barátok: {{count}}",
+    "inviteBonus": {
+      "points": "Barátonként: +{{value}} pont",
+      "deposit": "Barátonként: +{{amount}} a letétre",
+      "discount": "Barátonként: {{amount}} kedvezmény"
+    }
+  },
+  "mark": {
+    "pay": "Fizetés",
+    "unpaid": "Nincs fizetve",
+    "cash": "Készpénz",
+    "card": "Kártya",
+    "paid": "Fizetve",
+    "attend": "Jelenlét",
+    "notMarked": "Nincs jelölve"
   }
 }

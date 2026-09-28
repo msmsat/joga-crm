@@ -130,7 +130,8 @@
       "promo_expired": "Rabatkoden er ikke længere gyldig",
       "balance_changed": "Point eller depositum er allerede brugt et andet sted — genberegn betalingen",
       "attempt_in_progress": "En betaling for dette salg er allerede i gang — vent på resultatet eller opdater",
-      "master_required": "Vælg behandler — prisen afhænger af det"
+      "master_required": "Vælg behandler — prisen afhænger af det",
+      "amount_changed": "Beløbet er ændret — tjek totalen, og bekræft igen"
     },
     "billing": {
       "tax_details_required": "Tilføj studiets land i faktureringsoplysningerne — uden det kan fakturaen ikke udstedes",

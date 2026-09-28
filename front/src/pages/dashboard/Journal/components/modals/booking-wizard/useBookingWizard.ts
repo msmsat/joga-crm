@@ -22,6 +22,8 @@ import { lessonToJoin, type WizardMaster } from './masterAvailability';
 import { useWizardAvailability } from './useWizardAvailability';
 import { hybridApi } from '../../../../../../api/booking/hybrid.api';
 import { useNotePhotos } from '../../../../../../hooks/useNotePhotos';
+import { isPastSlot, nextSameTime } from './pastSlot';
+import { useWizardSettle } from './useWizardSettle';
 
 export type { WizardMaster } from './masterAvailability';
 
@@ -47,6 +49,7 @@ export const SERVICE_STEP = 2;
 export const MASTER_STEP = 3;
 /** Итог — всё выбранное перед записью. */
 export const SUMMARY_STEP = 4;
+const ALL_STEPS = [TIME_STEP, CLIENT_STEP, SERVICE_STEP, MASTER_STEP, SUMMARY_STEP];
 
 /** Шаг сетки свободного времени запоминается — удобство одного устройства,
     как выбранные мастера журнала. Первый раз — 15 минут. */
@@ -76,17 +79,23 @@ export const isTime = (v: string) => /^([01]\d|2[0-3]):[0-5]\d$/.test(v);
  *
  * Два пути под одной формой. Индивидуальная услуга идёт теми же quote/confirm,
  * что и остальной продукт (useResourceBooking), и только в свободное начало
- * сервера. Групповая — запись в уже стоящее в это время занятие этой услуги
- * у этого мастера либо новое занятие в названное время и сразу запись в него.
+ * сервера. Групповая ставит новое занятие в названное время — без клиента:
+ * людей в группу записывают потом, раздела «Клиент» у неё нет. Исключение —
+ * запись из карточки клиента: её затеяли ради этого человека, и он
+ * записывается в уже стоящее занятие этой услуги у мастера либо в новое.
  */
 export function useBookingWizard(o: WizardOptions) {
   const { t } = useTranslation(['journal', 'common']);
   const toast = useToast();
+  const now = new Date();
+  const today = toDateStr(now);
+  // Прошедший день без названного часа — просто сегодня: спрашивать не о чем.
+  const startDate = o.defaultDate < today && !o.defaultTime ? today : o.defaultDate;
   const resource = useResourceBooking({
-    onClose: o.onClose, onCreated: o.onCreated, clientId: o.clientId ?? null, defaultDate: o.defaultDate,
-    teacherId: o.defaultTeacherId,
+    onClose: o.onClose, onCreated: o.onCreated, clientId: o.clientId ?? null, defaultDate: startDate,
+    teacherId: o.defaultTeacherId, checkout: false,
   });
-  const { data: services = [] } = useQuery({ queryKey: queryKeys.services, queryFn: () => servicesApi.list() });
+  const { data: services = [], isFetched: servicesReady } = useQuery({ queryKey: queryKeys.services, queryFn: () => servicesApi.list() });
   const { data: branches = [] } = useQuery({ queryKey: queryKeys.branches, queryFn: () => studioApi.getBranches() });
   // Залы и мастера — из тех же кэшей, что у сетки журнала: мастер записи
   // открывается и из карточки клиента, где сетки нет.
@@ -98,14 +107,14 @@ export function useBookingWizard(o: WizardOptions) {
     () => (staff ?? []).filter(s => s.is_specialist).map(staffToTrainer), [staff]);
 
   const { spaceIsAxis } = useBusinessTerms();
-  const now = new Date();
-  const steps = [TIME_STEP, CLIENT_STEP, SERVICE_STEP, MASTER_STEP, SUMMARY_STEP];
   // Всегда с итога: подставленное видно сразу, пустое — «Выбрать».
   const [step, setStep] = useState(SUMMARY_STEP);
   /** Куда листнули: 1 — вперёд, -1 — назад (от этого зависит, откуда въезжает раздел). */
   const [dir, setDir] = useState<1 | -1>(1);
   const [client, setClientState] = useState<{ id: number; name: string } | null>(
     o.clientId != null ? { id: o.clientId, name: '' } : null);
+  // Итог индивидуальной записи: своя скидка, «Оплата» и «Посещение».
+  const settle = useWizardSettle(resource, client?.id ?? null);
   /** Клиент, заведённый прямо в мастере: стоит первым в списке, пока открыт мастер. */
   const [fresh, setFresh] = useState<{ id: number; name: string; hint?: string } | null>(null);
   const [service, setServiceState] = useState<ServiceRead | null>(null);
@@ -113,8 +122,12 @@ export function useBookingWizard(o: WizardOptions) {
   /** Мастер выбран на своём шаге (у индивидуальной «любой» — тоже выбор, id null)
       или пришёл с колонки журнала, по которой тапнули. */
   const [masterChosen, setMasterChosen] = useState(o.defaultTeacherId != null);
-  const [date, setDateState] = useState(o.defaultDate);
+  const [date, setDateState] = useState(startDate);
   const [time, setTimeState] = useState(o.defaultTime ?? '');
+  /** Тапнули по прошедшей клетке: задним числом не записываем — предлагаем
+      тот же час впереди (pastSlot.ts). null — спрашивать не о чем. */
+  const [pastAsk, setPastAsk] = useState(() => o.defaultTime && isTime(o.defaultTime)
+    && isPastSlot(o.defaultDate, o.defaultTime, now) ? nextSameTime(o.defaultTime, now) : null);
   const [timeStep, setTimeStepState] = useState(readTimeStep);
   const setTimeStep = (value: number) => {
     setTimeStepState(value);
@@ -139,7 +152,7 @@ export function useBookingWizard(o: WizardOptions) {
 
   // Индивидуальные — только те, у кого есть мастер и филиал (иначе записать
   // некуда); групповые — все: занятие под них создаётся здесь же.
-  const { data: resourceStaff } = useQuery({ queryKey: queryKeys.resourceStaff, queryFn: hybridApi.resourceStaff });
+  const { data: resourceStaff, isFetched: staffReady } = useQuery({ queryKey: queryKeys.resourceStaff, queryFn: hybridApi.resourceStaff });
   const serviceList = useMemo(() => services.filter(s => s.booking_mode === 'resource'
     ? resourceStaff?.staff.some(m => m.service_ids.includes(s.id)) : true), [services, resourceStaff]);
 
@@ -167,6 +180,7 @@ export function useBookingWizard(o: WizardOptions) {
   const nowMin = now.getHours() * 60 + now.getMinutes();
   const availability = useWizardAvailability({
     services: serviceList, trainers, date, time, lessons: dayLessons, lessonsReady: lessonsReady && !lessonsLoading,
+    joinable: o.clientId != null,
     notBefore: date < toDateStr(now) ? 1440 : isToday ? nowMin : null,
     serviceId: service?.id ?? null, teacherId: masterChosen ? teacherId : null, step: timeStep,
   });
@@ -174,8 +188,18 @@ export function useBookingWizard(o: WizardOptions) {
   const conflict = isTime(time) && availability.conflict;
 
   // ── Переходы ───────────────────────────────────────────────────────────────
-  type Snapshot = { time: string; client: unknown; service: unknown; masterChosen: boolean };
+  type Snapshot = { time: string; client: unknown; service: ServiceRead | null; masterChosen: boolean };
   const current: Snapshot = { time, client, service, masterChosen };
+  /** Групповому занятию из журнала клиент не нужен — раздел пропадает, как
+      только выбрана такая услуга. Пока услуги нет, решает каталог: где
+      индивидуальных нет вовсе (студия пилатеса), клиента нет с самого начала;
+      пока каталог грузится — раздел на месте, чтобы не мигал. */
+  const noResource = servicesReady && staffReady && !serviceList.some(s => s.booking_mode === 'resource');
+  const needsClientFor = (s: ServiceRead | null) =>
+    o.clientId != null || (s ? s.booking_mode === 'resource' : !noResource);
+  const stepsFor = (v: Snapshot) => needsClientFor(v.service) ? ALL_STEPS : ALL_STEPS.filter(s => s !== CLIENT_STEP);
+  const needsClient = needsClientFor(service);
+  const steps = stepsFor(current);
   const done = (s: number, v: Snapshot = current) =>
     s === TIME_STEP ? isTime(v.time)
     : s === CLIENT_STEP ? v.client != null
@@ -184,8 +208,9 @@ export function useBookingWizard(o: WizardOptions) {
     : false;
   /** Первый незаполненный раздел после from — по кругу; всё заполнено — итог. */
   const nextAfter = (from: number, v: Snapshot = current) => {
-    const at = steps.indexOf(from);
-    const order = [...steps.slice(at + 1), ...steps.slice(0, at)];
+    const list = stepsFor(v);
+    const at = list.indexOf(from);
+    const order = [...list.slice(at + 1), ...list.slice(0, at)];
     return order.find(s => s !== SUMMARY_STEP && !done(s, v)) ?? SUMMARY_STEP;
   };
 
@@ -212,6 +237,17 @@ export function useBookingWizard(o: WizardOptions) {
     if (day !== date) { setDateState(day); resource.setDate(day); }
     setTimeState(at);
     if (day === date) syncBranch(at);
+  };
+  /** Ответ на «Это время уже прошло»: взять предложенный час или выбрать свой. */
+  const acceptPast = () => {
+    if (!pastAsk) return;
+    setPastAsk(null);
+    setWhen(pastAsk.date, pastAsk.time);
+  };
+  const choosePastOwn = () => {
+    setPastAsk(null);
+    setWhen(today, '');
+    goTo(TIME_STEP);
   };
   /** Время из списка свободного — как выбор строки: сразу к следующему разделу. */
   const pickTime = (at: string) => {
@@ -272,7 +308,9 @@ export function useBookingWizard(o: WizardOptions) {
     bufferBefore: service.buffer_before_min, bufferAfter: service.buffer_after_min,
     notBefore: isToday ? nowMin : null,
   }), [service, isResource, teacherId, dayLessons, services, own, isToday, nowMin]);
-  const joined = service && !isResource ? lessonToJoin(dayLessons, service.id, teacherId, time) : undefined;
+  // Записаться в стоящее занятие можно только клиентом. Без клиента занятие в
+  // это время у мастера — просто занятое время: второе поверх не ставится.
+  const joined = service && !isResource && needsClient ? lessonToJoin(dayLessons, service.id, teacherId, time) : undefined;
   const slotAtTime = resource.slots.find(s => s.local_start.slice(11, 16) === time);
   /** Выбранный мастер в это время занят — итог это показывает и не записывает. */
   const busy = isTime(time) && masterChosen && !!service && (isResource
@@ -295,9 +333,10 @@ export function useBookingWizard(o: WizardOptions) {
   // Место не участвует в расписании (барбершоп) — зал не выбирается.
   const noHall = spaceIsAxis === false || halls.length === 0;
   const branch = branchId ?? branches[0]?.id ?? null;
-  const ready = !conflict && !busy && !availability.loading && isTime(time) && masterChosen && (isResource
+  const ready = !conflict && !busy && !availability.loading && isTime(time) && !isPastSlot(date, time, now)
+    && masterChosen && (isResource
     ? !!resource.quote && quotedTime === time && !quoting
-    : client != null && service != null && masterChosen && teacherId != null && isTime(time) && !busy);
+    : (!needsClient || client != null) && service != null && masterChosen && teacherId != null && isTime(time) && !busy);
 
   const note = { notes: notes.trim(), photos: notePhotos.photos };
   const hasNote = note.notes !== '' || note.photos.length > 0;
@@ -306,7 +345,7 @@ export function useBookingWizard(o: WizardOptions) {
 
   const submit = async () => {
     if (!ready || saving || notePending) return;
-    if (isResource) { await resource.confirm(note); return; }
+    if (isResource) { await resource.confirm(note, settle.settle()); return; }
     setSaving(true);
     try {
       let target = joined?.id ?? null;
@@ -322,6 +361,12 @@ export function useBookingWizard(o: WizardOptions) {
           ...(hasNote ? note : {}),
         });
         target = lesson.id;
+      }
+      if (!needsClient) {
+        toast.info(t('journal:toasts.lessonAdded'));
+        o.onCreated();
+        o.onClose();
+        return;
       }
       await scheduleApi.createReservation(client!.id, target);
       // Запись в уже стоящее занятие: у него своя заметка, общая на всех, —
@@ -358,12 +403,12 @@ export function useBookingWizard(o: WizardOptions) {
 
   return {
     steps, step, dir, goTo, advance, swipe, done, conflict, availability, timeStep, setTimeStep,
-    clientName, priceText, durationMin, joined, busy, client, fresh, service, teacherId, masterChosen, date, time,
+    clientName, priceText, durationMin, joined, busy, needsClient, client, fresh, service, teacherId, masterChosen, date, time,
     hallId, setHallId, branches, branch, setBranchId, noHall, isResource, serviceList, services, masters,
     serviceStates, masterStates, trainers, halls, resource, ready, saving: saving || resource.saving,
     dayLessons, lessonsReady: lessonsReady && !lessonsLoading, notBefore: isToday ? nowMin : null,
-    pickClient, addFreshClient, pickService, pickMaster, setWhen, pickTime, submit,
-    notes, setNotes, notePhotos, notePending,
+    pickClient, addFreshClient, pickService, pickMaster, setWhen, pickTime, submit, pastAsk, acceptPast, choosePastOwn,
+    notes, setNotes, notePhotos, notePending, settle,
   };
 }
 

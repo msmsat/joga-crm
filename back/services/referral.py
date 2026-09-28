@@ -12,10 +12,11 @@
 
 Не коммитит — вызывающий отвечает за транзакцию.
 """
+from sqlalchemy import func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
-from models import ClientOffer, ReferralRecord, StudioReferralConfig
+from models import Client, ClientOffer, ReferralRecord, StudioReferralConfig
 
 # Триггеры ровно те, что показывает CRM (Loyalty/.../ReferralConfig.tsx:14).
 # Расхождение этого набора с фронтом = мёртвая опция в интерфейсе владельца.
@@ -90,3 +91,41 @@ async def fire_referral(
     referral.status = "completed"
     referral.bonus_paid = True
     return True
+
+
+async def summary(db: AsyncSession, studio_id: int, client_id: int) -> dict | None:
+    """Приглашения клиента — строкой для окна оплаты у стойки.
+
+    Кто его привёл, ждёт ли его ещё скидка новичка (её применит сам расчёт цены,
+    здесь — только чтобы кассир мог о ней сказать), скольких друзей привёл он
+    сам и что студия дарит за каждого. None — программы нет и приглашений не было:
+    показывать нечего.
+    """
+    cfg = (await db.execute(
+        select(StudioReferralConfig).where(StudioReferralConfig.studio_id == studio_id)
+    )).scalar_one_or_none()
+    enabled = cfg is not None and cfg.is_enabled
+    incoming = (await db.execute(
+        select(ReferralRecord.discount_used, Client.name, Client.last_name)
+        .outerjoin(Client, Client.id == ReferralRecord.referrer_client_id)
+        .where(ReferralRecord.studio_id == studio_id, ReferralRecord.referred_client_id == client_id,
+               ReferralRecord.status != "cancelled")
+    )).first()
+    invited = (await db.execute(
+        select(func.count(ReferralRecord.id)).where(
+            ReferralRecord.studio_id == studio_id, ReferralRecord.referrer_client_id == client_id,
+            ReferralRecord.status != "cancelled")
+    )).scalar() or 0
+    if not enabled and incoming is None and not invited:
+        return None
+    waiting = (enabled and incoming is not None and not incoming.discount_used
+               and cfg.new_client_discount > 0)
+    referrer = (" ".join(filter(None, (incoming.name, incoming.last_name))) or None
+                if incoming is not None else None)
+    return {
+        "invited_by": referrer,
+        "discount_percent": cfg.new_client_discount if waiting else None,
+        "invited_count": invited,
+        "invite_bonus": cfg.referrer_bonus if enabled and cfg.referrer_bonus > 0 else None,
+        "invite_bonus_type": cfg.bonus_type if enabled and cfg.referrer_bonus > 0 else None,
+    }

@@ -225,7 +225,39 @@
     "debt": "Dug",
     "notes": "Bilješke",
     "openFull": "Otvori karticu",
-    "copied": "Kopirano"
+    "copied": "Kopirano",
+    "since": "klijent od {{date}}",
+    "owes": "Duguje {{amount}}",
+    "attendance": "Dolaznost",
+    "missed": "Nedolasci",
+    "points": "Bodovi",
+    "rating": "Prosj. ocjena",
+    "contacts": "Kontakti",
+    "copy": "Kopiraj",
+    "age": "{{value}} god.",
+    "subscription": "Članarina",
+    "left": "Preostalo {{left}} od {{total}}",
+    "frozen": "Zamrznuto",
+    "until": "Vrijedi do {{date}}",
+    "nextVisit": "Sljedeća rezervacija",
+    "about": "Ukratko",
+    "firstVisit": "Prvi posjet",
+    "lastVisit": "Zadnji posjet",
+    "favoriteTrainer": "Omiljeni trener",
+    "favoriteLesson": "Omiljeni sat",
+    "cancellations": "Otkazivanja",
+    "source": "Izvor",
+    "noNotes": "Još nema bilješki",
+    "history": "Povijest posjeta",
+    "noHistory": "Još nema posjeta",
+    "status": {
+      "missed": "Nije došao",
+      "cancelled": "Otkazano",
+      "attended": "Došao",
+      "upcoming": "Predstoji"
+    },
+    "reviews": "Recenzije",
+    "bookedOn": "rezervirano {{date}}"
   },
   "wizard": {
     "client": "Odaberite klijenta",
@@ -266,7 +298,13 @@
     "onlyAvailable": "Available only",
     "unavailable": "Unavailable for this selection",
     "selectionConflict": "The selection does not match. Choose an available time or change the service or specialist.",
-    "availabilityError": "Could not load availability. Please try again."
+    "availabilityError": "Could not load availability. Please try again.",
+    "past": {
+      "title": "Ovo je vrijeme već prošlo",
+      "message": "Rezervirati za {{date}} u {{time}}?",
+      "own": "Odaberi drugo vrijeme"
+    },
+    "lessonDiscount": "Popust za ovaj termin"
   },
   "payment": {
     "title": "Plaćanje",
@@ -277,7 +315,10 @@
     "discount": {
       "studio": "Popust studija",
       "offer": "Osobni popust",
-      "referral": "Popust za preporuku"
+      "referral": "Popust za preporuku",
+      "first_lesson": "Prvi sat",
+      "manual": "Popust administratora",
+      "promo": "Promo kod"
     },
     "promo": "Promokod",
     "voucher": "Bon",
@@ -299,5 +340,96 @@
     },
     "confirmAndPay": "Upiši i naplati {{amount}}",
     "loadFailed": "Plaćanje nije moguće izračunati."
+  },
+  "lessonCard": {
+    "today": "Danas",
+    "minutes": "{{value}} min",
+    "route": "Ruta",
+    "noAddress": "Adresa nije navedena",
+    "trainer": "Trener",
+    "price": "Cijena",
+    "spots": "Mjesta",
+    "format": "Format",
+    "group": "Grupni",
+    "individual": "Individualni",
+    "level": "Razina",
+    "equipment": "Oprema",
+    "buffers": "Priprema / čišćenje",
+    "buffersValue": "{{before}} + {{after}} min",
+    "cameIn": "Došli",
+    "paid": "Plaćeno",
+    "owed": "Dug",
+    "cancelReason": "Razlog otkazivanja",
+    "pay": "Plati",
+    "paidAmount": "Plaćeno · {{amount}}",
+    "bySubscription": "Članarina",
+    "coffee": "Kava nakon sata",
+    "channel": {
+      "online": "Online rezervacija",
+      "telegram": "Telegram",
+      "web": "Web stranica",
+      "miniapp": "Mini aplikacija"
+    },
+    "fund": {
+      "subscription": "Članarina «{{name}}»",
+      "discount": "{{label}} −{{percent}} % · −{{amount}}",
+      "points": "Bodovi −{{points}} · −{{amount}}",
+      "deposit": "Polog −{{amount}}",
+      "certificate": "Poklon bon {{code}} −{{amount}}",
+      "paidBy": "Plaćeno {{amount}} · {{method}}",
+      "free": "Prvi sat — besplatno",
+      "price": "Cijena {{amount}}"
+    },
+    "method": {
+      "cash": "gotovinom",
+      "transfer": "uplatom",
+      "stripe": "karticom online"
+    }
+  },
+  "lessonPay": {
+    "countFirstLesson": "Primijeni popust",
+    "title": "Plaćanje sata",
+    "benefits": "Pogodnosti klijenta",
+    "receipt": "Račun",
+    "toNext": "Još {{amount}} do razine {{level}}",
+    "points": "Bodovi",
+    "pointsValue": "{{points}} ≈ {{amount}}",
+    "usePoints": "Plati bodovima",
+    "deposit": "Polog",
+    "useDeposit": "Plati iz pologa",
+    "cashbackRule": "Cashback studija: {{percent}} % svake uplate vraća se u bodovima",
+    "manual": "Dodatni popust",
+    "manualPlaceholder": "Vlastiti",
+    "price": "Cijena sata",
+    "pointsLine": "Bodovi ({{points}})",
+    "total": "Za platiti",
+    "willEarn": "+{{points}} bodova klijentu",
+    "method": "Način plaćanja",
+    "accept": "Primi {{amount}}",
+    "acceptAndAttend": "Primi {{amount}} i označi dolazak",
+    "close": "Podmiri",
+    "closeAndAttend": "Podmiri i označi dolazak",
+    "byCash": "Gotovinom · {{amount}}",
+    "byCard": "Karticom · {{amount}}",
+    "deferred": "Novac se naplaćuje pri potvrdi rezervacije",
+    "notNow": "Ne plaćati sada",
+    "referral": "Preporuke",
+    "invitedBy": "Došao na preporuku: {{name}}",
+    "referralDiscount": "Popust dobrodošlice po preporuci −{{percent}} % — primjenjuje se sam",
+    "invitedCount": "Pozvanih prijatelja: {{count}}",
+    "inviteBonus": {
+      "points": "Po prijatelju: +{{value}} bodova",
+      "deposit": "Po prijatelju: +{{amount}} na polog",
+      "discount": "Po prijatelju: popust {{amount}}"
+    }
+  },
+  "mark": {
+    "pay": "Plaćanje",
+    "unpaid": "Nije plaćeno",
+    "cash": "Gotovinom",
+    "card": "Karticom",
+    "paid": "Plaćeno",
+    "attend": "Dolazak",
+    "notMarked": "Nije označeno"
   }
 }

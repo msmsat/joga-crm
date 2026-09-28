@@ -159,6 +159,49 @@ def test_assistant_changes_colour_and_leaves_it_alone_otherwise():
     _run(scenario)
 
 
+def test_reading_the_team_gives_colourless_members_distinct_colours():
+    """Строки без цвета (старые, сиды) чинятся первым же GET /staff/ — без
+    миграции. Несколько «бесцветных» разом получают РАЗНЫЕ цвета, не совпадая
+    и с уже выданными; тренер, который видит в списке только себя, тоже
+    получает цвет с учётом всей команды."""
+    async def scenario(ids):
+        async with async_session_maker() as db:
+            fresh = []
+            for i in range(3):
+                user = User(email=f"staff-color-bare-{i}@velora-test.com", hashed_password="x", name="B")
+                db.add(user)
+                await db.flush()
+                db.add(StudioMember(user_id=user.id, studio_id=ids["sid"], role="trainer",
+                                    status="active", name=f"B{i}"))
+                fresh.append(user.id)
+            await db.commit()
+        try:
+            # Первым команду читает тренер — видит только себя, но цвета
+            # раздаются по всей студии.
+            async with async_session_maker() as db:
+                me = (await db.execute(select(User).where(User.id == fresh[0]))).scalar_one()
+                result = await profiles.list_staff(
+                    ctx=StudioContext(user=me, studio_id=ids["sid"], role="trainer"),
+                    db=db, offset=0, limit=40)
+            assert [s["id"] for s in result["staff"]["items"]] == [fresh[0]]
+
+            colors = [await _color(ids, uid) for uid in [ids["owner"], ids["trainer"], *fresh]]
+            assert None not in colors, colors
+            assert len(set(colors)) == len(colors), colors
+            assert colors[2:] == list(STAFF_PALETTE[2:5]), colors
+
+            # Второе чтение ничего не переписывает.
+            async with async_session_maker() as db:
+                await profiles.list_staff(ctx=await _ctx(ids, db), db=db, offset=0, limit=40)
+            assert [await _color(ids, uid) for uid in [ids["owner"], ids["trainer"], *fresh]] == colors
+        finally:
+            async with async_session_maker() as db:
+                await db.execute(delete(StudioMember).where(StudioMember.user_id.in_(fresh)))
+                await db.execute(delete(User).where(User.id.in_(fresh)))
+                await db.commit()
+    _run(scenario)
+
+
 @pytest.mark.parametrize("bad", ["red", "8FA53A", "#8FA53", "#8FA53AZ", ""])
 def test_malformed_colour_is_rejected(bad):
     with pytest.raises(ValidationError):

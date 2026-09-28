@@ -225,7 +225,39 @@
     "debt": "Datorie",
     "notes": "Note",
     "openFull": "Deschide fișa",
-    "copied": "Copiat"
+    "copied": "Copiat",
+    "since": "client din {{date}}",
+    "owes": "Datorează {{amount}}",
+    "attendance": "Prezență",
+    "missed": "Absențe",
+    "points": "Puncte",
+    "rating": "Nota medie",
+    "contacts": "Contacte",
+    "copy": "Copiază",
+    "age": "{{value}} ani",
+    "subscription": "Abonament",
+    "left": "Au rămas {{left}} din {{total}}",
+    "frozen": "Înghețat",
+    "until": "Valabil până la {{date}}",
+    "nextVisit": "Următoarea rezervare",
+    "about": "Pe scurt",
+    "firstVisit": "Prima vizită",
+    "lastVisit": "Ultima vizită",
+    "favoriteTrainer": "Antrenor preferat",
+    "favoriteLesson": "Oră preferată",
+    "cancellations": "Anulări",
+    "source": "Sursă",
+    "noNotes": "Încă nu există notițe",
+    "history": "Istoricul vizitelor",
+    "noHistory": "Încă nu există vizite",
+    "status": {
+      "missed": "Nu a venit",
+      "cancelled": "Anulat",
+      "attended": "A venit",
+      "upcoming": "Urmează"
+    },
+    "reviews": "Recenzii",
+    "bookedOn": "rezervat pe {{date}}"
   },
   "wizard": {
     "client": "Alegeți clientul",
@@ -266,7 +298,13 @@
     "onlyAvailable": "Available only",
     "unavailable": "Unavailable for this selection",
     "selectionConflict": "The selection does not match. Choose an available time or change the service or specialist.",
-    "availabilityError": "Could not load availability. Please try again."
+    "availabilityError": "Could not load availability. Please try again.",
+    "past": {
+      "title": "Această oră a trecut deja",
+      "message": "Programați pentru {{date}} la {{time}}?",
+      "own": "Alegeți altă oră"
+    },
+    "lessonDiscount": "Reducere pentru această ședință"
   },
   "payment": {
     "title": "Plată",
@@ -277,7 +315,10 @@
     "discount": {
       "studio": "Reducerea studioului",
       "offer": "Reducere personală",
-      "referral": "Reducere pentru recomandare"
+      "referral": "Reducere pentru recomandare",
+      "first_lesson": "Prima oră",
+      "manual": "Reducere de la administrator",
+      "promo": "Cod promoțional"
     },
     "promo": "Cod promoțional",
     "voucher": "Voucher",
@@ -299,5 +340,96 @@
     },
     "confirmAndPay": "Programează și încasează {{amount}}",
     "loadFailed": "Plata nu a putut fi calculată."
+  },
+  "lessonCard": {
+    "today": "Azi",
+    "minutes": "{{value}} min",
+    "route": "Traseu",
+    "noAddress": "Adresa nu este setată",
+    "trainer": "Antrenor",
+    "price": "Preț",
+    "spots": "Locuri",
+    "format": "Format",
+    "group": "De grup",
+    "individual": "Individual",
+    "level": "Nivel",
+    "equipment": "Echipament",
+    "buffers": "Pregătire / curățenie",
+    "buffersValue": "{{before}} + {{after}} min",
+    "cameIn": "Au venit",
+    "paid": "Plătit",
+    "owed": "Datorie",
+    "cancelReason": "Motivul anulării",
+    "pay": "Încasează",
+    "paidAmount": "Plătit · {{amount}}",
+    "bySubscription": "Abonament",
+    "coffee": "Cafea după oră",
+    "channel": {
+      "online": "Rezervare online",
+      "telegram": "Telegram",
+      "web": "Site",
+      "miniapp": "Mini aplicație"
+    },
+    "fund": {
+      "subscription": "Abonament «{{name}}»",
+      "discount": "{{label}} −{{percent}}% · −{{amount}}",
+      "points": "Puncte −{{points}} · −{{amount}}",
+      "deposit": "Depozit −{{amount}}",
+      "certificate": "Card cadou {{code}} −{{amount}}",
+      "paidBy": "Plătit {{amount}} · {{method}}",
+      "free": "Prima oră — gratuit",
+      "price": "Preț {{amount}}"
+    },
+    "method": {
+      "cash": "numerar",
+      "transfer": "prin transfer",
+      "stripe": "cu cardul online"
+    }
+  },
+  "lessonPay": {
+    "countFirstLesson": "Aplicați reducerea",
+    "title": "Plata orei",
+    "benefits": "Beneficiile clientului",
+    "receipt": "Bon",
+    "toNext": "Încă {{amount}} până la {{level}}",
+    "points": "Puncte",
+    "pointsValue": "{{points}} ≈ {{amount}}",
+    "usePoints": "Plătește cu puncte",
+    "deposit": "Depozit",
+    "useDeposit": "Plătește din depozit",
+    "cashbackRule": "Cashback-ul studioului: {{percent}}% din fiecare plată revine în puncte",
+    "manual": "Reducere suplimentară",
+    "manualPlaceholder": "Alta",
+    "price": "Prețul orei",
+    "pointsLine": "Puncte ({{points}})",
+    "total": "De plată",
+    "willEarn": "+{{points}} puncte pentru client",
+    "method": "Metoda de plată",
+    "accept": "Încasează {{amount}}",
+    "acceptAndAttend": "Încasează {{amount}} și marchează prezența",
+    "close": "Achită",
+    "closeAndAttend": "Achită și marchează prezența",
+    "byCash": "Numerar · {{amount}}",
+    "byCard": "Card · {{amount}}",
+    "deferred": "Banii se încasează la confirmarea programării",
+    "notNow": "Nu plăti acum",
+    "referral": "Recomandări",
+    "invitedBy": "Venit la recomandarea: {{name}}",
+    "referralDiscount": "Reducere de bun venit prin recomandare −{{percent}}% — se aplică singură",
+    "invitedCount": "Prieteni invitați: {{count}}",
+    "inviteBonus": {
+      "points": "Per prieten: +{{value}} puncte",
+      "deposit": "Per prieten: +{{amount}} în depozit",
+      "discount": "Per prieten: reducere {{amount}}"
+    }
+  },
+  "mark": {
+    "pay": "Plată",
+    "unpaid": "Neplătit",
+    "cash": "Numerar",
+    "card": "Card",
+    "paid": "Plătit",
+    "attend": "Prezență",
+    "notMarked": "Nemarcat"
   }
 }

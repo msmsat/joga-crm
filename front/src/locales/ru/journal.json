@@ -229,7 +229,39 @@
     "debt": "Долг",
     "notes": "Заметки",
     "openFull": "Открыть карточку",
-    "copied": "Скопировано"
+    "copied": "Скопировано",
+    "since": "клиент с {{date}}",
+    "owes": "Долг {{amount}}",
+    "attendance": "Посещаемость",
+    "missed": "Неявки",
+    "points": "Баллы",
+    "rating": "Ср. оценка",
+    "contacts": "Контакты",
+    "copy": "Скопировать",
+    "age": "{{value}} лет",
+    "subscription": "Абонемент",
+    "left": "Осталось {{left}} из {{total}}",
+    "frozen": "Заморожен",
+    "until": "До {{date}}",
+    "nextVisit": "Ближайшая запись",
+    "about": "Коротко",
+    "firstVisit": "Первый визит",
+    "lastVisit": "Последний визит",
+    "favoriteTrainer": "Любимый тренер",
+    "favoriteLesson": "Любимое занятие",
+    "cancellations": "Отмены",
+    "source": "Откуда пришёл",
+    "noNotes": "Заметок пока нет",
+    "history": "История посещений",
+    "noHistory": "Посещений пока нет",
+    "status": {
+      "missed": "Не пришёл",
+      "cancelled": "Отменил",
+      "attended": "Пришёл",
+      "upcoming": "Впереди"
+    },
+    "reviews": "Отзывы",
+    "bookedOn": "записан {{date}}"
   },
   "wizard": {
     "client": "Выберите клиента",
@@ -270,7 +302,13 @@
     "onlyAvailable": "Только доступные",
     "unavailable": "Недоступно при этом выборе",
     "selectionConflict": "Выбранные параметры несовместимы. Выберите доступное время или измените услугу либо мастера.",
-    "availabilityError": "Не удалось загрузить доступное время. Попробуйте ещё раз."
+    "availabilityError": "Не удалось загрузить доступное время. Попробуйте ещё раз.",
+    "past": {
+      "title": "Это время уже прошло",
+      "message": "Записать на {{date}} в {{time}}?",
+      "own": "Выбрать своё время"
+    },
+    "lessonDiscount": "Скидка на это занятие"
   },
   "payment": {
     "title": "Оплата",
@@ -281,7 +319,10 @@
     "discount": {
       "studio": "Скидка студии",
       "offer": "Персональная скидка",
-      "referral": "Скидка по приглашению"
+      "referral": "Скидка по приглашению",
+      "first_lesson": "Первое занятие",
+      "manual": "Скидка администратора",
+      "promo": "Промокод"
     },
     "promo": "Промокод",
     "voucher": "Ваучер",
@@ -303,5 +344,96 @@
     },
     "confirmAndPay": "Записать и принять {{amount}}",
     "loadFailed": "Не удалось посчитать оплату."
+  },
+  "lessonCard": {
+    "today": "Сегодня",
+    "minutes": "{{value}} мин",
+    "route": "Маршрут",
+    "noAddress": "Адрес не указан",
+    "trainer": "Тренер",
+    "price": "Цена",
+    "spots": "Места",
+    "format": "Формат",
+    "group": "Групповое",
+    "individual": "Индивидуальное",
+    "level": "Уровень",
+    "equipment": "Инвентарь",
+    "buffers": "Подготовка / уборка",
+    "buffersValue": "{{before}} + {{after}} мин",
+    "cameIn": "Пришли",
+    "paid": "Оплачено",
+    "owed": "Долг",
+    "cancelReason": "Причина отмены",
+    "pay": "Оплатить",
+    "paidAmount": "Оплачено · {{amount}}",
+    "bySubscription": "Абонемент",
+    "coffee": "Кофе после занятия",
+    "channel": {
+      "online": "Онлайн-запись",
+      "telegram": "Telegram",
+      "web": "Сайт",
+      "miniapp": "Мини-приложение"
+    },
+    "fund": {
+      "subscription": "Абонемент «{{name}}»",
+      "discount": "{{label}} −{{percent}}% · −{{amount}}",
+      "points": "Баллы −{{points}} · −{{amount}}",
+      "deposit": "Депозит −{{amount}}",
+      "certificate": "Сертификат {{code}} −{{amount}}",
+      "paidBy": "Оплачено {{amount}} · {{method}}",
+      "free": "Первое занятие — бесплатно",
+      "price": "Цена {{amount}}"
+    },
+    "method": {
+      "cash": "наличными",
+      "transfer": "переводом",
+      "stripe": "картой онлайн"
+    }
+  },
+  "lessonPay": {
+    "countFirstLesson": "Засчитать скидку",
+    "title": "Оплата занятия",
+    "benefits": "Выгода клиента",
+    "receipt": "Чек",
+    "toNext": "Ещё {{amount}} до уровня {{level}}",
+    "points": "Баллы",
+    "pointsValue": "{{points}} ≈ {{amount}}",
+    "usePoints": "Списать баллы",
+    "deposit": "Депозит",
+    "useDeposit": "Оплатить с депозита",
+    "cashbackRule": "Кешбэк студии: {{percent}}% с каждой оплаты возвращается баллами",
+    "manual": "Доп. скидка",
+    "manualPlaceholder": "Своя",
+    "price": "Стоимость занятия",
+    "pointsLine": "Баллы ({{points}})",
+    "total": "К оплате",
+    "willEarn": "+{{points}} баллов клиенту",
+    "method": "Способ оплаты",
+    "accept": "Принять {{amount}}",
+    "acceptAndAttend": "Принять {{amount}} и отметить",
+    "close": "Закрыть долг",
+    "closeAndAttend": "Закрыть и отметить",
+    "byCash": "Наличными · {{amount}}",
+    "byCard": "Картой · {{amount}}",
+    "deferred": "Деньги примутся при подтверждении записи",
+    "notNow": "Не оплачивать сейчас",
+    "referral": "Приглашения",
+    "invitedBy": "Пришёл по приглашению: {{name}}",
+    "referralDiscount": "Скидка новичка по приглашению −{{percent}}% — сработает сама",
+    "invitedCount": "Привёл друзей: {{count}}",
+    "inviteBonus": {
+      "points": "За друга: +{{value}} баллов",
+      "deposit": "За друга: +{{amount}} на депозит",
+      "discount": "За друга: скидка {{amount}}"
+    }
+  },
+  "mark": {
+    "pay": "Оплата",
+    "unpaid": "Не оплачено",
+    "cash": "Наличными",
+    "card": "Картой",
+    "paid": "Оплачено",
+    "attend": "Посещение",
+    "notMarked": "Не отмечено"
   }
 }

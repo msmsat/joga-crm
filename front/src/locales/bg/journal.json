@@ -221,7 +221,39 @@
     "debt": "Дълг",
     "notes": "Бележки",
     "openFull": "Отваряне на картона",
-    "copied": "Копирано"
+    "copied": "Копирано",
+    "since": "клиент от {{date}}",
+    "owes": "Дължи {{amount}}",
+    "attendance": "Посещаемост",
+    "missed": "Неявявания",
+    "points": "Точки",
+    "rating": "Ср. оценка",
+    "contacts": "Контакти",
+    "copy": "Копирай",
+    "age": "{{value}} г.",
+    "subscription": "Карта",
+    "left": "Остават {{left}} от {{total}}",
+    "frozen": "Замразена",
+    "until": "До {{date}}",
+    "nextVisit": "Следващо записване",
+    "about": "Накратко",
+    "firstVisit": "Първо посещение",
+    "lastVisit": "Последно посещение",
+    "favoriteTrainer": "Любим треньор",
+    "favoriteLesson": "Любимо занятие",
+    "cancellations": "Отмени",
+    "source": "Източник",
+    "noNotes": "Още няма бележки",
+    "history": "История на посещенията",
+    "noHistory": "Още няма посещения",
+    "status": {
+      "missed": "Не дойде",
+      "cancelled": "Отменено",
+      "attended": "Дойде",
+      "upcoming": "Предстои"
+    },
+    "reviews": "Отзиви",
+    "bookedOn": "записан {{date}}"
   },
   "wizard": {
     "client": "Изберете клиент",
@@ -262,7 +294,13 @@
     "onlyAvailable": "Available only",
     "unavailable": "Unavailable for this selection",
     "selectionConflict": "The selection does not match. Choose an available time or change the service or specialist.",
-    "availabilityError": "Could not load availability. Please try again."
+    "availabilityError": "Could not load availability. Please try again.",
+    "past": {
+      "title": "Този час вече е минал",
+      "message": "Записване за {{date}} в {{time}}?",
+      "own": "Избор на друг час"
+    },
+    "lessonDiscount": "Отстъпка за това занятие"
   },
   "payment": {
     "title": "Плащане",
@@ -273,7 +311,10 @@
     "discount": {
       "studio": "Отстъпка на студиото",
       "offer": "Лична отстъпка",
-      "referral": "Отстъпка за покана"
+      "referral": "Отстъпка за покана",
+      "first_lesson": "Първо занятие",
+      "manual": "Отстъпка от администратор",
+      "promo": "Промокод"
     },
     "promo": "Промокод",
     "voucher": "Ваучер",
@@ -295,5 +336,96 @@
     },
     "confirmAndPay": "Запиши и приеми {{amount}}",
     "loadFailed": "Плащането не можа да се изчисли."
+  },
+  "lessonCard": {
+    "today": "Днес",
+    "minutes": "{{value}} мин",
+    "route": "Маршрут",
+    "noAddress": "Няма посочен адрес",
+    "trainer": "Треньор",
+    "price": "Цена",
+    "spots": "Места",
+    "format": "Формат",
+    "group": "Групово",
+    "individual": "Индивидуално",
+    "level": "Ниво",
+    "equipment": "Оборудване",
+    "buffers": "Подготовка / почистване",
+    "buffersValue": "{{before}} + {{after}} мин",
+    "cameIn": "Дошли",
+    "paid": "Платено",
+    "owed": "Дълг",
+    "cancelReason": "Причина за отмяна",
+    "pay": "Плати",
+    "paidAmount": "Платено · {{amount}}",
+    "bySubscription": "Карта",
+    "coffee": "Кафе след занятието",
+    "channel": {
+      "online": "Онлайн записване",
+      "telegram": "Telegram",
+      "web": "Сайт",
+      "miniapp": "Мини приложение"
+    },
+    "fund": {
+      "subscription": "Карта «{{name}}»",
+      "discount": "{{label}} −{{percent}}% · −{{amount}}",
+      "points": "Точки −{{points}} · −{{amount}}",
+      "deposit": "Депозит −{{amount}}",
+      "certificate": "Ваучер {{code}} −{{amount}}",
+      "paidBy": "Платено {{amount}} · {{method}}",
+      "free": "Първо занятие — безплатно",
+      "price": "Цена {{amount}}"
+    },
+    "method": {
+      "cash": "в брой",
+      "transfer": "с превод",
+      "stripe": "с карта онлайн"
+    }
+  },
+  "lessonPay": {
+    "countFirstLesson": "Прилагане на отстъпката",
+    "title": "Плащане за занятието",
+    "benefits": "Ползи за клиента",
+    "receipt": "Бележка",
+    "toNext": "Още {{amount}} до ниво {{level}}",
+    "points": "Точки",
+    "pointsValue": "{{points}} ≈ {{amount}}",
+    "usePoints": "Плати с точки",
+    "deposit": "Депозит",
+    "useDeposit": "Плати от депозита",
+    "cashbackRule": "Кешбек на студиото: {{percent}}% от всяко плащане се връща в точки",
+    "manual": "Доп. отстъпка",
+    "manualPlaceholder": "Друга",
+    "price": "Цена на занятието",
+    "pointsLine": "Точки ({{points}})",
+    "total": "За плащане",
+    "willEarn": "+{{points}} точки за клиента",
+    "method": "Начин на плащане",
+    "accept": "Приеми {{amount}}",
+    "acceptAndAttend": "Приеми {{amount}} и отбележи",
+    "close": "Погаси",
+    "closeAndAttend": "Погаси и отбележи",
+    "byCash": "В брой · {{amount}}",
+    "byCard": "С карта · {{amount}}",
+    "deferred": "Парите се приемат при потвърждаване на записа",
+    "notNow": "Да не се плаща сега",
+    "referral": "Покани",
+    "invitedBy": "Дошъл по покана на: {{name}}",
+    "referralDiscount": "Отстъпка за нов клиент по покана −{{percent}}% — прилага се сама",
+    "invitedCount": "Поканени приятели: {{count}}",
+    "inviteBonus": {
+      "points": "За приятел: +{{value}} точки",
+      "deposit": "За приятел: +{{amount}} в депозита",
+      "discount": "За приятел: отстъпка {{amount}}"
+    }
+  },
+  "mark": {
+    "pay": "Плащане",
+    "unpaid": "Неплатено",
+    "cash": "В брой",
+    "card": "С карта",
+    "paid": "Платено",
+    "attend": "Посещение",
+    "notMarked": "Не е отбелязано"
   }
 }

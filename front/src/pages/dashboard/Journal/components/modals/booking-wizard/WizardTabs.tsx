@@ -1,7 +1,8 @@
-// Шапка мастера записи — пять кнопок с иконками: время, клиент, услуга,
-// мастер, итог. Кнопка — и прогресс, и переход: сделанное светится зелёным,
-// текущий раздел обведён персиком, тап открывает раздел в любой момент —
-// порядок не обязателен (свайп по листу листает их по очереди).
+// Шапка мастера записи — кнопки с иконками: время, клиент, услуга, мастер,
+// итог (у группового занятия из журнала клиента нет — кнопок четыре).
+// Кнопка — и прогресс, и переход: сделанное светится зелёным, текущий раздел
+// обведён персиком, тап открывает раздел в любой момент — порядок
+// не обязателен (свайп по листу листает их по очереди).
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as Icons from '../../../../../../components/Icons';
@@ -57,7 +58,8 @@ export function WizardTabs({ w, payable }: { w: BookingWizardState; payable: boo
     step(SERVICE_STEP, 'service', w.done(SERVICE_STEP)),
     step(MASTER_STEP, 'master', w.done(MASTER_STEP)),
     step(SUMMARY_STEP, 'summary', payable),
-  ];
+  // Групповому занятию клиент не нужен — его кнопки нет вовсе.
+  ].filter(tab => tab.key !== 'client' || w.steps.includes(CLIENT_STEP));
   return (
     <nav className="bw-tabs" aria-label={t('wizard.step', { n: w.steps.indexOf(w.step) + 1, total: w.steps.length })}>
       {tabs.map(tab => (

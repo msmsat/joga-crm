@@ -221,7 +221,39 @@
     "debt": "Gæld",
     "notes": "Noter",
     "openFull": "Åbn kortet",
-    "copied": "Kopieret"
+    "copied": "Kopieret",
+    "since": "kunde siden {{date}}",
+    "owes": "Skylder {{amount}}",
+    "attendance": "Fremmøde",
+    "missed": "Udeblivelser",
+    "points": "Point",
+    "rating": "Gns. vurdering",
+    "contacts": "Kontakter",
+    "copy": "Kopiér",
+    "age": "{{value}} år",
+    "subscription": "Klippekort",
+    "left": "{{left}} af {{total}} tilbage",
+    "frozen": "Sat på pause",
+    "until": "Gyldigt til {{date}}",
+    "nextVisit": "Næste booking",
+    "about": "Kort fortalt",
+    "firstVisit": "Første besøg",
+    "lastVisit": "Seneste besøg",
+    "favoriteTrainer": "Yndlingstræner",
+    "favoriteLesson": "Yndlingstime",
+    "cancellations": "Aflysninger",
+    "source": "Kilde",
+    "noNotes": "Ingen noter endnu",
+    "history": "Besøgshistorik",
+    "noHistory": "Ingen besøg endnu",
+    "status": {
+      "missed": "Udeblev",
+      "cancelled": "Aflyst",
+      "attended": "Mødt",
+      "upcoming": "Kommende"
+    },
+    "reviews": "Anmeldelser",
+    "bookedOn": "booket {{date}}"
   },
   "wizard": {
     "client": "Vælg kunde",
@@ -262,7 +294,13 @@
     "onlyAvailable": "Available only",
     "unavailable": "Unavailable for this selection",
     "selectionConflict": "The selection does not match. Choose an available time or change the service or specialist.",
-    "availabilityError": "Could not load availability. Please try again."
+    "availabilityError": "Could not load availability. Please try again.",
+    "past": {
+      "title": "Dette tidspunkt er allerede passeret",
+      "message": "Book {{date}} kl. {{time}}?",
+      "own": "Vælg et andet tidspunkt"
+    },
+    "lessonDiscount": "Rabat på denne time"
   },
   "payment": {
     "title": "Betaling",
@@ -273,7 +311,10 @@
     "discount": {
       "studio": "Studierabat",
       "offer": "Personlig rabat",
-      "referral": "Henvisningsrabat"
+      "referral": "Henvisningsrabat",
+      "first_lesson": "Første time",
+      "manual": "Administratorrabat",
+      "promo": "Rabatkode"
     },
     "promo": "Rabatkode",
     "voucher": "Gavekort",
@@ -295,5 +336,96 @@
     },
     "confirmAndPay": "Book og modtag {{amount}}",
     "loadFailed": "Betalingen kunne ikke beregnes."
+  },
+  "lessonCard": {
+    "today": "I dag",
+    "minutes": "{{value}} min",
+    "route": "Rute",
+    "noAddress": "Ingen adresse angivet",
+    "trainer": "Træner",
+    "price": "Pris",
+    "spots": "Pladser",
+    "format": "Format",
+    "group": "Hold",
+    "individual": "Individuel",
+    "level": "Niveau",
+    "equipment": "Udstyr",
+    "buffers": "Forberedelse / oprydning",
+    "buffersValue": "{{before}} + {{after}} min",
+    "cameIn": "Mødt",
+    "paid": "Betalt",
+    "owed": "Skyldig",
+    "cancelReason": "Årsag til aflysning",
+    "pay": "Betal",
+    "paidAmount": "Betalt · {{amount}}",
+    "bySubscription": "Klippekort",
+    "coffee": "Kaffe efter timen",
+    "channel": {
+      "online": "Onlinebooking",
+      "telegram": "Telegram",
+      "web": "Hjemmeside",
+      "miniapp": "Mini-app"
+    },
+    "fund": {
+      "subscription": "Klippekort «{{name}}»",
+      "discount": "{{label}} −{{percent}} % · −{{amount}}",
+      "points": "Point −{{points}} · −{{amount}}",
+      "deposit": "Depositum −{{amount}}",
+      "certificate": "Gavekort {{code}} −{{amount}}",
+      "paidBy": "Betalt {{amount}} · {{method}}",
+      "free": "Første time — gratis",
+      "price": "Pris {{amount}}"
+    },
+    "method": {
+      "cash": "kontant",
+      "transfer": "bankoverførsel",
+      "stripe": "kort online"
+    }
+  },
+  "lessonPay": {
+    "countFirstLesson": "Giv rabatten",
+    "title": "Betaling for timen",
+    "benefits": "Kundens fordele",
+    "receipt": "Kvittering",
+    "toNext": "{{amount}} mere til {{level}}",
+    "points": "Point",
+    "pointsValue": "{{points}} ≈ {{amount}}",
+    "usePoints": "Betal med point",
+    "deposit": "Depositum",
+    "useDeposit": "Betal fra depositum",
+    "cashbackRule": "Studiets cashback: {{percent}} % af hver betaling kommer tilbage som point",
+    "manual": "Ekstra rabat",
+    "manualPlaceholder": "Egen",
+    "price": "Pris for timen",
+    "pointsLine": "Point ({{points}})",
+    "total": "At betale",
+    "willEarn": "+{{points}} point til kunden",
+    "method": "Betalingsmetode",
+    "accept": "Modtag {{amount}}",
+    "acceptAndAttend": "Modtag {{amount}} og markér fremmøde",
+    "close": "Udlign",
+    "closeAndAttend": "Udlign og markér fremmøde",
+    "byCash": "Kontant · {{amount}}",
+    "byCard": "Kort · {{amount}}",
+    "deferred": "Pengene modtages, når bookingen bekræftes",
+    "notNow": "Betal ikke nu",
+    "referral": "Henvisninger",
+    "invitedBy": "Inviteret af {{name}}",
+    "referralDiscount": "Velkomstrabat via henvisning −{{percent}} % — gælder automatisk",
+    "invitedCount": "Inviterede venner: {{count}}",
+    "inviteBonus": {
+      "points": "Pr. ven: +{{value}} point",
+      "deposit": "Pr. ven: +{{amount}} på depositum",
+      "discount": "Pr. ven: {{amount}} i rabat"
+    }
+  },
+  "mark": {
+    "pay": "Betaling",
+    "unpaid": "Ikke betalt",
+    "cash": "Kontant",
+    "card": "Kort",
+    "paid": "Betalt",
+    "attend": "Fremmøde",
+    "notMarked": "Ikke markeret"
   }
 }

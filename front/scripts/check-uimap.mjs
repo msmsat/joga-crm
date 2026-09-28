@@ -80,6 +80,7 @@ const NOT_A_MODAL = {
   'Journal/SummaryStep': 'шаг «Итог записи» внутри BookingWizard',
   'Journal/WizardTabs': 'кнопки разделов в шапке листа BookingWizard, своего окна нет',
   'Journal/NewClientStep': 'форма нового клиента внутри листа BookingWizard, своего окна нет',
+  'Journal/SettleBlock': 'цена, скидка и плитки «Оплата»/«Посещение» на итоге BookingWizard; окно оплаты — PaySheet, как у ReservationPayModal',
   // Мёртвый код: файлы есть, но их никто не импортирует (проверено 15.08.2026).
   'Booking/InstaModal': 'мёртвый файл — не импортируется ниоткуда',
   'Booking/WebModal': 'мёртвый файл — не импортируется ниоткуда',

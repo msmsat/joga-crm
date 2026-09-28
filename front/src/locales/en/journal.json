@@ -221,7 +221,39 @@
     "debt": "Debt",
     "notes": "Notes",
     "openFull": "Open full card",
-    "copied": "Copied"
+    "copied": "Copied",
+    "since": "client since {{date}}",
+    "owes": "Owes {{amount}}",
+    "attendance": "Attendance",
+    "missed": "No-shows",
+    "points": "Points",
+    "rating": "Avg. rating",
+    "contacts": "Contacts",
+    "copy": "Copy",
+    "age": "{{value}} y.o.",
+    "subscription": "Membership",
+    "left": "{{left}} of {{total}} left",
+    "frozen": "Frozen",
+    "until": "Valid until {{date}}",
+    "nextVisit": "Next visit",
+    "about": "At a glance",
+    "firstVisit": "First visit",
+    "lastVisit": "Last visit",
+    "favoriteTrainer": "Favourite trainer",
+    "favoriteLesson": "Favourite class",
+    "cancellations": "Cancellations",
+    "source": "Source",
+    "noNotes": "No notes yet",
+    "history": "Visit history",
+    "noHistory": "No visits yet",
+    "status": {
+      "missed": "No-show",
+      "cancelled": "Cancelled",
+      "attended": "Came",
+      "upcoming": "Upcoming"
+    },
+    "reviews": "Reviews",
+    "bookedOn": "booked {{date}}"
   },
   "wizard": {
     "client": "Choose a client",
@@ -262,7 +294,13 @@
     "onlyAvailable": "Available only",
     "unavailable": "Unavailable for this selection",
     "selectionConflict": "The selection does not match. Choose an available time or change the service or specialist.",
-    "availabilityError": "Could not load availability. Please try again."
+    "availabilityError": "Could not load availability. Please try again.",
+    "past": {
+      "title": "This time has already passed",
+      "message": "Book for {{date}} at {{time}}?",
+      "own": "Choose another time"
+    },
+    "lessonDiscount": "Discount for this session"
   },
   "payment": {
     "title": "Payment",
@@ -273,7 +311,10 @@
     "discount": {
       "studio": "Studio discount",
       "offer": "Personal discount",
-      "referral": "Referral discount"
+      "referral": "Referral discount",
+      "first_lesson": "First class",
+      "manual": "Admin discount",
+      "promo": "Promo code"
     },
     "promo": "Promo code",
     "voucher": "Voucher",
@@ -295,5 +336,96 @@
     },
     "confirmAndPay": "Book and collect {{amount}}",
     "loadFailed": "Couldn't calculate the payment."
+  },
+  "lessonCard": {
+    "today": "Today",
+    "minutes": "{{value}} min",
+    "route": "Directions",
+    "noAddress": "Address not set",
+    "trainer": "Trainer",
+    "price": "Price",
+    "spots": "Spots",
+    "format": "Format",
+    "group": "Group",
+    "individual": "Individual",
+    "level": "Level",
+    "equipment": "Equipment",
+    "buffers": "Prep / cleanup",
+    "buffersValue": "{{before}} + {{after}} min",
+    "cameIn": "Came",
+    "paid": "Paid",
+    "owed": "Owed",
+    "cancelReason": "Cancellation reason",
+    "pay": "Pay",
+    "paidAmount": "Paid · {{amount}}",
+    "bySubscription": "Membership",
+    "coffee": "Coffee after class",
+    "channel": {
+      "online": "Online booking",
+      "telegram": "Telegram",
+      "web": "Website",
+      "miniapp": "Mini app"
+    },
+    "fund": {
+      "subscription": "Membership «{{name}}»",
+      "discount": "{{label}} −{{percent}}% · −{{amount}}",
+      "points": "Points −{{points}} · −{{amount}}",
+      "deposit": "Deposit −{{amount}}",
+      "certificate": "Gift card {{code}} −{{amount}}",
+      "paidBy": "Paid {{amount}} · {{method}}",
+      "free": "First class — free",
+      "price": "Price {{amount}}"
+    },
+    "method": {
+      "cash": "cash",
+      "transfer": "bank transfer",
+      "stripe": "card online"
+    }
+  },
+  "lessonPay": {
+    "countFirstLesson": "Apply the discount",
+    "title": "Payment for the class",
+    "benefits": "Client benefits",
+    "receipt": "Receipt",
+    "toNext": "{{amount}} more to {{level}}",
+    "points": "Points",
+    "pointsValue": "{{points}} ≈ {{amount}}",
+    "usePoints": "Pay with points",
+    "deposit": "Deposit",
+    "useDeposit": "Pay from deposit",
+    "cashbackRule": "Studio cashback: {{percent}}% of every payment comes back as points",
+    "manual": "Extra discount",
+    "manualPlaceholder": "Own",
+    "price": "Class price",
+    "pointsLine": "Points ({{points}})",
+    "total": "To pay",
+    "willEarn": "+{{points}} points to the client",
+    "method": "Payment method",
+    "accept": "Accept {{amount}}",
+    "acceptAndAttend": "Accept {{amount}} and mark visit",
+    "close": "Settle",
+    "closeAndAttend": "Settle and mark visit",
+    "byCash": "Cash · {{amount}}",
+    "byCard": "Card · {{amount}}",
+    "deferred": "The money is taken when the booking is confirmed",
+    "notNow": "Don’t pay now",
+    "referral": "Referrals",
+    "invitedBy": "Invited by {{name}}",
+    "referralDiscount": "Referral welcome discount −{{percent}}% — applies automatically",
+    "invitedCount": "Friends invited: {{count}}",
+    "inviteBonus": {
+      "points": "Per friend: +{{value}} points",
+      "deposit": "Per friend: +{{amount}} to deposit",
+      "discount": "Per friend: {{amount}} off"
+    }
+  },
+  "mark": {
+    "pay": "Payment",
+    "unpaid": "Unpaid",
+    "cash": "Cash",
+    "card": "Card",
+    "paid": "Paid",
+    "attend": "Attendance",
+    "notMarked": "Not marked"
   }
 }

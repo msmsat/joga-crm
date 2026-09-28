@@ -23,6 +23,9 @@ class LessonRead(BaseSchema):
     service_color: Optional[str] = None
     status: str
     booked_count: int = 0
+    # Сколько записанных отмечены «пришёл» (только в списке занятий журнала):
+    # прошедшая индивидуальная запись без отметки рисуется неявкой.
+    attended_count: int = 0
     cancel_reason: Optional[str] = None
     # Внутренняя заметка студии о занятии и снимки к ней. Клиенту не уходят
     # ни одним каналом — ни в мини-приложение, ни в напоминания.
@@ -64,6 +67,28 @@ class LessonDaysResponse(BaseSchema):
     days: List[str]
 
 
+class PaymentBreakdownLine(BaseSchema):
+    kind: str
+    amount: int
+
+
+class PaymentBreakdown(BaseSchema):
+    """Чем оплачено занятие — снимок кассы в момент оплаты
+    (services/reservation_payment.snapshot). Суммы — в валюте студии."""
+    base_price: int = 0
+    discounts: List[PaymentBreakdownLine] = []
+    promo_code: Optional[str] = None
+    bonuses_applied: int = 0
+    bonuses_value: int = 0
+    deposit_applied: int = 0
+    certificate_applied: int = 0
+    certificate_code: Optional[str] = None
+    total: int = 0
+    # cash / transfer / stripe (карта онлайн).
+    method: Optional[str] = None
+    paid_at: Optional[datetime] = None
+
+
 class BookedClient(BaseSchema):
     reservation_id: int
     client_id: int
@@ -82,10 +107,41 @@ class BookedClient(BaseSchema):
     # Сколько клиент должен за это занятие («оплата на месте»). 0 — покрыто
     # абонементом, подарено или уже оплачено.
     debt: int = 0
+    # Сколько уже заплачено за это занятие на месте (погашенный долг). Вместе с
+    # `debt` и `by_subscription` отличает «оплачено» от «платить было нечего».
+    paid_amount: int = 0
+    # Занятие списано с абонемента клиента.
+    by_subscription: bool = False
+    # Откуда пришла запись (crm, miniapp, ai…) и когда.
+    booking_channel: Optional[str] = None
+    booked_at: Optional[datetime] = None
+    # Оценка и отзыв клиента об ЭТОМ занятии (мини-приложение после визита).
+    rating: Optional[int] = None
+    review_text: Optional[str] = None
+    # «Кофе после занятия»: клиент согласился остаться с группой.
+    coffee: bool = False
+    # Название абонемента, с которого списано занятие.
+    subscription_name: Optional[str] = None
+    # Чем оплачено: скидки, баллы, депозит, сертификат, способ. None — денег не
+    # брали или оплачено до появления снимка (тогда есть только paid_amount).
+    payment: Optional[PaymentBreakdown] = None
+    # Скидка администратора, данная брони при записи без оплаты: окно оплаты
+    # открывается уже с ней, долг посчитан с ней же.
+    manual_discount_percent: Optional[int] = None
+
+
+class LessonLocation(BaseSchema):
+    """Где проходит занятие: зал, филиал и его адрес. Без филиала адрес берётся
+    из карточки студии — у студии с одним местом филиалов часто нет вовсе."""
+    hall_name: Optional[str] = None
+    branch_name: Optional[str] = None
+    address: Optional[str] = None
+    city: Optional[str] = None
 
 
 class LessonDetail(LessonRead):
     booked_clients: List[BookedClient] = Field(default_factory=list)
+    location: Optional[LessonLocation] = None
 
 
 class EligibleClient(BaseSchema):
