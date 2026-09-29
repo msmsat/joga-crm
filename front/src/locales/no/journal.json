@@ -338,6 +338,15 @@
     "loadFailed": "Kunne ikke beregne betalingen."
   },
   "lessonCard": {
+    "compensation": {
+      "owner": "Til eieren",
+      "master": "Anslått godtgjørelse",
+      "salary": "Betaling: fastlønn",
+      "unconfigured": "Lønn ikke konfigurert",
+      "unavailable": "Inntekt ukjent",
+      "hourly": "{{rate}}/t",
+      "estimate": "Beregnet etter gjeldende vilkår. Bekrefter ikke utbetaling."
+    },
     "today": "I dag",
     "minutes": "{{value}} min",
     "route": "Rute",

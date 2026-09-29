@@ -338,6 +338,15 @@
     "loadFailed": "Maksua ei voitu laskea."
   },
   "lessonCard": {
+    "compensation": {
+      "owner": "Omistajalle",
+      "master": "Arvioitu palkkio",
+      "salary": "Palkka: kiinteä",
+      "unconfigured": "Palkkaa ei ole määritetty",
+      "unavailable": "Tuloista ei ole tietoa",
+      "hourly": "{{rate}}/h",
+      "estimate": "Arvio nykyisten ehtojen mukaan. Ei vahvista maksua."
+    },
     "today": "Tänään",
     "minutes": "{{value}} min",
     "route": "Reitti",

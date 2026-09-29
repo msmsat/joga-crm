@@ -338,6 +338,15 @@
     "loadFailed": "Couldn't calculate the payment."
   },
   "lessonCard": {
+    "compensation": {
+      "owner": "Owner share",
+      "master": "Staff earnings estimate",
+      "salary": "Pay: salary",
+      "unconfigured": "Pay not configured",
+      "unavailable": "Earnings unavailable",
+      "hourly": "{{rate}}/h",
+      "estimate": "Estimate at current rates. Not a payment confirmation."
+    },
     "today": "Today",
     "minutes": "{{value}} min",
     "route": "Directions",

@@ -346,6 +346,15 @@
     "loadFailed": "Nie udało się obliczyć płatności."
   },
   "lessonCard": {
+    "compensation": {
+      "owner": "Dla właściciela",
+      "master": "Szacowane wynagrodzenie",
+      "salary": "Płaca: stała pensja",
+      "unconfigured": "Płaca nieustawiona",
+      "unavailable": "Brak danych o przychodzie",
+      "hourly": "{{rate}}/godz.",
+      "estimate": "Szacunek według aktualnych warunków. Nie potwierdza wypłaty."
+    },
     "today": "Dziś",
     "minutes": "{{value}} min",
     "route": "Trasa",

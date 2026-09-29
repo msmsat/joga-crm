@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Any, List, Optional
+from typing import Any, List, Optional, Literal
 
 from pydantic import Field, model_validator
 
@@ -139,7 +139,16 @@ class LessonLocation(BaseSchema):
     city: Optional[str] = None
 
 
+class LessonCompensation(BaseSchema):
+    kind: Literal["owner", "percent", "hourly", "salary", "unconfigured"]
+    amount: Optional[float] = None
+    base_amount: Optional[float] = None
+    rate: Optional[float] = None
+    duration_min: int
+
+
 class LessonDetail(LessonRead):
+    compensation: Optional[LessonCompensation] = None
     booked_clients: List[BookedClient] = Field(default_factory=list)
     location: Optional[LessonLocation] = None
 

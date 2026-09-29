@@ -11,6 +11,7 @@ import './lessonCard.css';
 export interface Funding {
   price: number;
   trialPercent: number | null;
+  manualPercent?: number | null;
   isTrial: boolean;
   subscriptionName: string | null;
   bySubscription: boolean;
@@ -25,6 +26,7 @@ export function FundingChips({ funding, currency }: { funding: Funding; currency
   const { t } = useTranslation('journal');
   const money = (value: number) => formatMoney(value, currency);
   const { payment } = funding;
+  const bySubscription = funding.bySubscription || !!funding.subscriptionName;
   const chips: { key: string; text: string; tone?: string }[] = [];
 
   if (funding.bySubscription || funding.subscriptionName) {
@@ -38,7 +40,7 @@ export function FundingChips({ funding, currency }: { funding: Funding; currency
 
   if (payment) {
     // Снимок кассы: всё, что сняло деньги с цены, — строками, как на чеке.
-    const base = payment.base_price || funding.price;
+    const base = payment.base_price ?? funding.price;
     for (const d of payment.discounts) {
       const label = d.kind === 'promo' && payment.promo_code
         ? `${t('payment.discount.promo')} ${payment.promo_code}`
@@ -66,31 +68,44 @@ export function FundingChips({ funding, currency }: { funding: Funding; currency
         : t('lessonCard.paidAmount', { amount: money(payment.total) }),
     });
   } else {
-    // Снимка нет: оплачено до его появления или ещё долг. Скидку первого
-    // занятия знает сама бронь.
-    if (funding.isTrial) {
-      chips.push({
-        key: 'trial', tone: 'is-peach',
-        text: (funding.trialPercent ?? 100) >= 100
-          ? t('lessonCard.fund.free')
-          : t('bookingPopup.trialDiscount', { percent: funding.trialPercent }),
-      });
+    // До оплаты источник скидки хранится на брони. Показываем только те
+    // сохранённые скидки, которые объясняют фактическую сумму: программы
+    // могут выбирать лучшую скидку или складывать их. Чек выше приоритетнее.
+    if (!bySubscription) {
+      const candidates = [
+        { kind: 'first_lesson', percent: funding.isTrial ? funding.trialPercent ?? 100 : 0 },
+        { kind: 'manual', percent: funding.manualPercent ?? 0 },
+      ].filter(d => d.percent > 0).map(d => ({
+        ...d, amount: Math.floor(funding.price * d.percent / 100),
+      }));
+      const reduction = funding.price - funding.debt - funding.paidAmount;
+      const single = candidates.find(d => d.amount === reduction);
+      const discounts = single ? [single]
+        : candidates.reduce((sum, d) => sum + d.amount, 0) === reduction ? candidates : [];
+      for (const d of discounts) {
+        chips.push({
+          key: `d-${d.kind}`, tone: 'is-gain',
+          text: t('lessonCard.fund.discount', {
+            label: t(`payment.discount.${d.kind}`), percent: d.percent, amount: money(d.amount),
+          }),
+        });
+      }
     }
     if (funding.debt > 0) {
       chips.push({ key: 'debt', tone: 'is-debt', text: t('bookingPopup.unpaid', { amount: money(funding.debt) }) });
-    } else if (funding.paidAmount > 0) {
+    }
+    if (funding.paidAmount > 0) {
       chips.push({ key: 'paid', tone: 'is-paid', text: t('lessonCard.paidAmount', { amount: money(funding.paidAmount) }) });
     }
   }
 
   // Цена занятия — точка отсчёта, от которой считаются скидки. Нужна только
   // там, где что-то с неё снимали или платить ещё предстоит.
-  const showPrice = funding.price > 0 && !funding.bySubscription && !funding.subscriptionName
-    && (payment != null || funding.debt > 0 || funding.isTrial);
+  const showPrice = !bySubscription && (payment?.base_price ?? funding.price) > 0;
   if (chips.length === 0) return null;
   return (
     <div className="lc-badges lc-fund">
-      {showPrice && <span className="lc-badge is-quiet">{t('lessonCard.fund.price', { amount: money(payment?.base_price || funding.price) })}</span>}
+      {showPrice && <span className="lc-badge is-quiet">{t('lessonCard.fund.price', { amount: money(payment?.base_price ?? funding.price) })}</span>}
       {chips.map(c => <span key={c.key} className={`lc-badge ${c.tone ?? ''}`}>{c.text}</span>)}
     </div>
   );

@@ -338,6 +338,15 @@
     "loadFailed": "Impossibile calcolare il pagamento."
   },
   "lessonCard": {
+    "compensation": {
+      "owner": "Al titolare",
+      "master": "Compenso stimato",
+      "salary": "Pagamento: stipendio",
+      "unconfigured": "Compenso non impostato",
+      "unavailable": "Ricavo non disponibile",
+      "hourly": "{{rate}}/h",
+      "estimate": "Stima alle condizioni attuali. Non conferma il pagamento."
+    },
     "today": "Oggi",
     "minutes": "{{value}} min",
     "route": "Percorso",

@@ -22,6 +22,8 @@
     "check:keys": "python scripts/i18n/check_keys.py",
     "check:billing": "node scripts/check-billing-access.mjs",
     "check:resource-booking": "node --experimental-vm-modules scripts/check-resource-booking.mjs",
+    "check:lesson-compensation": "node --experimental-vm-modules scripts/check-lesson-compensation.mjs",
+    "check:lesson-funding": "node --experimental-vm-modules scripts/check-lesson-funding.mjs",
     "check:service-duration": "node --experimental-vm-modules scripts/check-service-duration.mjs",
     "check:scenes": "node scripts/check-scenes.mjs"
   },

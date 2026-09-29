@@ -338,6 +338,15 @@
     "loadFailed": "Pagesa nuk u llogarit dot."
   },
   "lessonCard": {
+    "compensation": {
+      "owner": "Për pronarin",
+      "master": "Pagesa e përllogaritur",
+      "salary": "Pagesa: pagë fikse",
+      "unconfigured": "Pagesa nuk është caktuar",
+      "unavailable": "Të ardhurat nuk dihen",
+      "hourly": "{{rate}}/orë",
+      "estimate": "Llogaritje sipas kushteve aktuale. Nuk konfirmon pagesën."
+    },
     "today": "Sot",
     "minutes": "{{value}} min",
     "route": "Itinerari",

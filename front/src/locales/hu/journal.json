@@ -338,6 +338,15 @@
     "loadFailed": "Nem sikerült kiszámolni a fizetést."
   },
   "lessonCard": {
+    "compensation": {
+      "owner": "Tulajdonosi rész",
+      "master": "Becsült díjazás",
+      "salary": "Díjazás: fix fizetés",
+      "unconfigured": "Díjazás nincs beállítva",
+      "unavailable": "Bevételi adat nincs",
+      "hourly": "{{rate}}/óra",
+      "estimate": "Becslés a jelenlegi feltételekkel. Nem igazolja a kifizetést."
+    },
     "today": "Ma",
     "minutes": "{{value}} perc",
     "route": "Útvonal",

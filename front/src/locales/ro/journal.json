@@ -342,6 +342,15 @@
     "loadFailed": "Plata nu a putut fi calculată."
   },
   "lessonCard": {
+    "compensation": {
+      "owner": "Proprietarului",
+      "master": "Remunerație estimată",
+      "salary": "Plată: salariu fix",
+      "unconfigured": "Plata nu este configurată",
+      "unavailable": "Venit necunoscut",
+      "hourly": "{{rate}}/oră",
+      "estimate": "Calcul conform condițiilor actuale. Nu confirmă plata."
+    },
     "today": "Azi",
     "minutes": "{{value}} min",
     "route": "Traseu",

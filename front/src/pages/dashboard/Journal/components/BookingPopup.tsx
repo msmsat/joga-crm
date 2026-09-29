@@ -169,7 +169,7 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
     loadLesson(() => stale);
     return () => { stale = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [popupBooking.id]);
+  }, [popupBooking.id, popupBooking.price, popupBooking.timeStart, popupBooking.timeEnd, popupBooking.trainer, popupBooking.clients, popupBooking.status]);
 
   const clientsLoaded = eligible?.lessonId === popupBooking.id;
   const clientsList = clientsLoaded ? eligible!.clients : EMPTY_CLIENTS;

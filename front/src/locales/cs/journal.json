@@ -342,6 +342,15 @@
     "loadFailed": "Platbu se nepodařilo spočítat."
   },
   "lessonCard": {
+    "compensation": {
+      "owner": "Majiteli",
+      "master": "Odhad odměny",
+      "salary": "Odměna: mzda",
+      "unconfigured": "Odměna nenastavena",
+      "unavailable": "Příjem není znám",
+      "hourly": "{{rate}}/h",
+      "estimate": "Odhad podle aktuálních podmínek. Nepotvrzuje výplatu."
+    },
     "today": "Dnes",
     "minutes": "{{value}} min",
     "route": "Trasa",

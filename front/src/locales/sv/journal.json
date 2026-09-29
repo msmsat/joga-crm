@@ -338,6 +338,15 @@
     "loadFailed": "Betalningen kunde inte beräknas."
   },
   "lessonCard": {
+    "compensation": {
+      "owner": "Till ägaren",
+      "master": "Beräknad ersättning",
+      "salary": "Betalning: fast lön",
+      "unconfigured": "Lön inte inställd",
+      "unavailable": "Intäkt okänd",
+      "hourly": "{{rate}}/tim",
+      "estimate": "Beräknat enligt aktuella villkor. Bekräftar inte utbetalning."
+    },
     "today": "I dag",
     "minutes": "{{value}} min",
     "route": "Vägbeskrivning",

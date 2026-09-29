@@ -338,6 +338,15 @@
     "loadFailed": "Não foi possível calcular o pagamento."
   },
   "lessonCard": {
+    "compensation": {
+      "owner": "Para o proprietário",
+      "master": "Remuneração estimada",
+      "salary": "Pagamento: salário fixo",
+      "unconfigured": "Remuneração não definida",
+      "unavailable": "Receita indisponível",
+      "hourly": "{{rate}}/h",
+      "estimate": "Estimativa nas condições atuais. Não confirma o pagamento."
+    },
     "today": "Hoje",
     "minutes": "{{value}} min",
     "route": "Rota",

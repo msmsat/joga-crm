@@ -338,6 +338,15 @@
     "loadFailed": "Ödeme hesaplanamadı."
   },
   "lessonCard": {
+    "compensation": {
+      "owner": "İşletme sahibine",
+      "master": "Tahmini çalışan kazancı",
+      "salary": "Ödeme: sabit maaş",
+      "unconfigured": "Ücret ayarlanmamış",
+      "unavailable": "Kazanç bilgisi yok",
+      "hourly": "{{rate}}/sa",
+      "estimate": "Mevcut koşullara göre tahmin. Ödeme onayı değildir."
+    },
     "today": "Bugün",
     "minutes": "{{value}} dk",
     "route": "Yol tarifi",

@@ -338,6 +338,15 @@
     "loadFailed": "Die Zahlung konnte nicht berechnet werden."
   },
   "lessonCard": {
+    "compensation": {
+      "owner": "Inhaberanteil",
+      "master": "Geschätzte Vergütung",
+      "salary": "Vergütung: Festgehalt",
+      "unconfigured": "Vergütung nicht festgelegt",
+      "unavailable": "Ertrag unbekannt",
+      "hourly": "{{rate}}/Std.",
+      "estimate": "Berechnung zu aktuellen Konditionen. Keine Zahlungsbestätigung."
+    },
     "today": "Heute",
     "minutes": "{{value}} Min.",
     "route": "Route",

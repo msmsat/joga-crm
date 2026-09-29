@@ -8,6 +8,7 @@ import type { BookedClient, LessonDetail } from '../../../../../api/schedule/sch
 import { formatMoney } from '../../../../../lib/money';
 import type { Booking } from '../../types';
 import './lessonCard.css';
+import { MasterCompensation } from './MasterCompensation';
 
 interface Props {
   booking: Booking;
@@ -56,7 +57,7 @@ export function LessonFacts({ booking, detail, booked, trainerName, currency }: 
       </a>
 
       <div className="lc-tiles">
-        <Tile label={t('lessonCard.trainer')}>
+        <Tile label={t('lessonCard.trainer')} caption={<MasterCompensation value={detail?.compensation} currency={currency} />}>
           <span className="lc-dot" style={{ background: booking.color }} />
           {trainerName ?? '—'}
         </Tile>
@@ -114,11 +115,12 @@ function MoneyStrip({ booked, currency }: { booked: BookedClient[]; currency?: s
   );
 }
 
-function Tile({ label, children }: { label: string; children: React.ReactNode }) {
+function Tile({ label, children, caption }: { label: string; children: React.ReactNode; caption?: React.ReactNode }) {
   return (
     <div className="lc-tile">
       <span className="lc-tile-label">{label}</span>
       <span className="lc-tile-value">{children}</span>
+      {caption}
     </div>
   );
 }

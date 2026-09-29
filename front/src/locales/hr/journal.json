@@ -342,6 +342,15 @@
     "loadFailed": "Plaćanje nije moguće izračunati."
   },
   "lessonCard": {
+    "compensation": {
+      "owner": "Vlasniku",
+      "master": "Procijenjena naknada",
+      "salary": "Naknada: plaća",
+      "unconfigured": "Naknada nije postavljena",
+      "unavailable": "Prihod nije poznat",
+      "hourly": "{{rate}}/h",
+      "estimate": "Izračun prema trenutačnim uvjetima. Ne potvrđuje isplatu."
+    },
     "today": "Danas",
     "minutes": "{{value}} min",
     "route": "Ruta",

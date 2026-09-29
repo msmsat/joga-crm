@@ -9,6 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from database import async_session_maker, get_db
 from dependencies import get_scoped_lesson, get_studio_context, StudioContext
 from services import lesson_time, studio_time
+from services.lesson_compensation import calculate_compensation
 from models import (
     Client, ClientPayment, ClientSubscription, Hall, Lesson, Reservation, Service, Studio, StudioBranch,
     StudioMember, User,
@@ -249,8 +250,18 @@ async def get_lesson(
         .order_by(Reservation.spot_number)
     )).mappings().all()
 
+    # Salary terms retain the same owner-only access as the Finance payroll.
+    compensation = None
+    if ctx.role == "owner":
+        member = (await db.execute(select(StudioMember).where(
+            StudioMember.studio_id == ctx.studio_id,
+            StudioMember.user_id == lesson.teacher_id,
+        ))).scalar_one_or_none()
+        compensation = calculate_compensation(member, lesson, clients)
+
     return LessonDetail.model_validate({
         **lesson_data, "booked_count": booked_count, "booked_clients": list(clients),
+        "compensation": compensation,
         "location": await _lesson_location(db, lesson),
     })
 

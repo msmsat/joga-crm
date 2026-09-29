@@ -128,7 +128,16 @@ export interface LessonLocation {
   city: string | null
 }
 
+export interface LessonCompensation {
+  kind: 'owner' | 'percent' | 'hourly' | 'salary' | 'unconfigured'
+  amount: number | null
+  base_amount: number | null
+  rate: number | null
+  duration_min: number
+}
+
 export interface LessonDetail extends Lesson {
+  compensation: LessonCompensation | null
   equipment: string | null
   booked_clients: BookedClient[]
   location: LessonLocation | null
