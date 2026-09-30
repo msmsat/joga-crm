@@ -436,5 +436,13 @@
     "paid": "Pago",
     "attend": "Presença",
     "notMarked": "Não marcado"
+  },
+  "scheduleBlocks": {
+    "day_off": "Folga",
+    "break": "Pausa",
+    "off_hours": "Não trabalha",
+    "busy": "Não trabalha",
+    "allDay": "Todo o dia",
+    "unavailable": "O funcionário não trabalha nesta hora"
   }
 }

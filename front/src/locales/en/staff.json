@@ -7,6 +7,9 @@
     "onlineNow": "{{count}} online now"
   },
   "toolbar": {
+    "employeePlaceholder": "Employee",
+    "chooseStaff": "Choose an employee",
+    "mobileHint": "Tap to choose an employee",
     "teamTitle": "Team · {{count}}",
     "addEmployee": "Add employee",
     "searchPlaceholder": "Search...",
@@ -68,7 +71,21 @@
     "prevMonth": "Previous month",
     "nextMonth": "Next month",
     "dayHasBookings": "This day already has bookings — it can’t be a day off",
-    "pastDayLocked": "Past days can’t be changed"
+    "pastDayLocked": "Past days can’t be changed",
+    "editorTitle": "Daily hours",
+    "scope": "Apply",
+    "scopeWeek": "This week only",
+    "scopeWeekly": "Every week",
+    "editHint": "Select a day to edit working hours, breaks or a day off.",
+    "break": "Break",
+    "addBreak": "Add break",
+    "removeBreak": "Remove break",
+    "label": "Journal label",
+    "invalidBreaks": "Breaks must be within the shift, must not overlap and must leave working time.",
+    "prevWeek": "Previous week",
+    "nextWeek": "Next week",
+    "repeatHint": "Repeat this weekday. Exceptions on other dates are kept.",
+    "onceHint": "Change only the selected date. Other weeks stay the same."
   },
   "permissions": {
     "finance": "Finance",

@@ -7,6 +7,9 @@
     "onlineNow": "{{count}} kişi şu anda çevrimiçi"
   },
   "toolbar": {
+    "employeePlaceholder": "Çalışan",
+    "chooseStaff": "Bir çalışan seçin",
+    "mobileHint": "Çalışan seçmek için dokunun",
     "teamTitle": "Ekip · {{count}}",
     "addEmployee": "Çalışan ekle",
     "searchPlaceholder": "Ara...",
@@ -68,7 +71,21 @@
     "prevMonth": "Önceki ay",
     "nextMonth": "Sonraki ay",
     "dayHasBookings": "Bu günde zaten rezervasyon var — izin günü olamaz",
-    "pastDayLocked": "Geçmiş günler değiştirilemez"
+    "pastDayLocked": "Geçmiş günler değiştirilemez",
+    "editorTitle": "Günlük çalışma saatleri",
+    "scope": "Uygula",
+    "scopeWeek": "Yalnız bu hafta",
+    "scopeWeekly": "Her hafta",
+    "editHint": "Çalışma saatlerini, molaları veya izin gününü ayarlamak için bir gün seçin.",
+    "break": "Mola",
+    "addBreak": "Mola ekle",
+    "removeBreak": "Molayı kaldır",
+    "label": "Takvimdeki ad",
+    "invalidBreaks": "Molalar vardiya içinde olmalı, çakışmamalı ve çalışma süresi bırakmalıdır.",
+    "prevWeek": "Önceki hafta",
+    "nextWeek": "Sonraki hafta",
+    "repeatHint": "Bu haftanın gününü tekrarla. Diğer tarihlerdeki istisnalar korunur.",
+    "onceHint": "Yalnızca seçilen tarihi değiştir. Diğer haftalar aynı kalır."
   },
   "permissions": {
     "finance": "Finans",

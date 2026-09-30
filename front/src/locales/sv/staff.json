@@ -7,6 +7,9 @@
     "onlineNow": "{{count}} online nu"
   },
   "toolbar": {
+    "employeePlaceholder": "Anställd",
+    "chooseStaff": "Välj en medarbetare",
+    "mobileHint": "Tryck för att välja en medarbetare",
     "teamTitle": "Team · {{count}}",
     "addEmployee": "Lägg till anställd",
     "searchPlaceholder": "Sök...",
@@ -68,7 +71,21 @@
     "prevMonth": "Föregående månad",
     "nextMonth": "Nästa månad",
     "dayHasBookings": "Den här dagen har redan bokningar — den kan inte vara ledig",
-    "pastDayLocked": "Tidigare dagar kan inte ändras"
+    "pastDayLocked": "Tidigare dagar kan inte ändras",
+    "editorTitle": "Dagens schema",
+    "scope": "Tillämpa",
+    "scopeWeek": "Bara denna vecka",
+    "scopeWeekly": "Varje vecka",
+    "editHint": "Välj en dag för att ändra arbetstider, raster eller en ledig dag.",
+    "break": "Rast",
+    "addBreak": "Lägg till rast",
+    "removeBreak": "Ta bort rast",
+    "label": "Namn i kalendern",
+    "invalidBreaks": "Raster måste ligga inom passet, får inte överlappa och måste lämna arbetstid.",
+    "prevWeek": "Föregående vecka",
+    "nextWeek": "Nästa vecka",
+    "repeatHint": "Upprepa denna veckodag. Undantag på andra datum behålls.",
+    "onceHint": "Ändra bara valt datum. Andra veckor förblir oförändrade."
   },
   "permissions": {
     "finance": "Ekonomi",

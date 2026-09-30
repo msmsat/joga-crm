@@ -7,6 +7,9 @@
     "onlineNow": "{{count}} jetzt online"
   },
   "toolbar": {
+    "employeePlaceholder": "Mitarbeitende:r",
+    "chooseStaff": "Mitarbeiter auswählen",
+    "mobileHint": "Tippen Sie, um einen Mitarbeiter auszuwählen",
     "teamTitle": "Team · {{count}}",
     "addEmployee": "Mitarbeitende hinzufügen",
     "searchPlaceholder": "Suchen...",
@@ -68,7 +71,21 @@
     "prevMonth": "Vorheriger Monat",
     "nextMonth": "Nächster Monat",
     "dayHasBookings": "An diesem Tag gibt es bereits Buchungen — er kann kein freier Tag sein",
-    "pastDayLocked": "Vergangene Tage lassen sich nicht ändern"
+    "pastDayLocked": "Vergangene Tage lassen sich nicht ändern",
+    "editorTitle": "Tagesplan",
+    "scope": "Anwenden",
+    "scopeWeek": "Nur diese Woche",
+    "scopeWeekly": "Jede Woche",
+    "editHint": "Tag auswählen, um Arbeitszeiten, Pausen oder einen freien Tag festzulegen.",
+    "break": "Pause",
+    "addBreak": "Pause hinzufügen",
+    "removeBreak": "Pause entfernen",
+    "label": "Bezeichnung im Kalender",
+    "invalidBreaks": "Pausen müssen innerhalb der Schicht liegen, dürfen sich nicht überschneiden und müssen Arbeitszeit übrig lassen.",
+    "prevWeek": "Vorherige Woche",
+    "nextWeek": "Nächste Woche",
+    "repeatHint": "Diesen Wochentag wiederholen. Ausnahmen für andere Daten bleiben bestehen.",
+    "onceHint": "Nur das ausgewählte Datum ändern. Andere Wochen bleiben gleich."
   },
   "permissions": {
     "finance": "Finanzen",

@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import Optional, List, Dict
-from pydantic import model_validator
+from pydantic import Field, model_validator
 from schemas._base import BaseSchema
 from schemas.common import Page
 
@@ -54,11 +54,42 @@ class StaffServiceItem(BaseSchema):
     duration_custom: bool = False
 
 
+class StaffBreakItem(BaseSchema):
+    open_time: str = Field(pattern=r"^(?:[01]\d|2[0-3]):[0-5]\d$")
+    close_time: str = Field(pattern=r"^(?:[01]\d|2[0-3]):[0-5]\d$")
+    label: Optional[str] = Field(default=None, max_length=200)
+
+
 class StaffWorkingHoursItem(BaseSchema):
     day_of_week: int   # 0=Пн … 6=Вс
     is_open: bool
     open_time: str     # "HH:MM"
     close_time: str    # "HH:MM"
+    breaks: List[StaffBreakItem] = Field(default_factory=list)
+    off_label: Optional[str] = Field(default=None, max_length=200)
+
+    @model_validator(mode="after")
+    def valid_shift(self):
+        import re
+        from services.staff_hours import break_bounds, shift_bounds
+        from datetime import date
+        if not 0 <= self.day_of_week <= 6:
+            raise ValueError("Некорректный день недели")
+        if any(not re.fullmatch(r"(?:[01]\d|2[0-3]):[0-5]\d", value) for value in (self.open_time,self.close_time)):
+            raise ValueError("Время должно быть в формате ЧЧ:ММ")
+        if not self.is_open:
+            self.breaks = []
+            return self
+        anchor = date(2026,1,5)
+        start,end = shift_bounds(self,anchor)
+        cursor=start
+        for bs,be,_ in break_bounds(self,anchor):
+            if bs < cursor or bs < start or be > end or bs == be:
+                raise ValueError("Перерывы должны быть внутри смены и не пересекаться")
+            cursor=be
+        if sum(int((be-bs).total_seconds()) for bs,be,_ in break_bounds(self,anchor)) >= int((end-start).total_seconds()):
+            raise ValueError("Укажите хотя бы один рабочий период")
+        return self
 
 
 class StaffTodayLesson(BaseSchema):
@@ -208,3 +239,15 @@ class StaffCallResponse(BaseSchema):
     channel: str
     phone: str
     staff_id: int
+
+
+class StaffScheduleEditorRequest(BaseSchema):
+    week_start: str
+    repeat_weekly: bool = False
+    days: List[StaffWorkingHoursItem] = Field(min_length=1,max_length=7)
+
+    @model_validator(mode="after")
+    def unique_days(self):
+        if len({d.day_of_week for d in self.days}) != len(self.days):
+            raise ValueError("Дни недели не должны повторяться")
+        return self

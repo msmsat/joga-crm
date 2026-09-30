@@ -7,6 +7,9 @@
     "onlineNow": "{{count}} most online"
   },
   "toolbar": {
+    "employeePlaceholder": "Munkatárs",
+    "chooseStaff": "Munkatárs kiválasztása",
+    "mobileHint": "Koppintson egy munkatárs kiválasztásához",
     "teamTitle": "Csapat · {{count}}",
     "addEmployee": "Munkatárs hozzáadása",
     "searchPlaceholder": "Keresés...",
@@ -68,7 +71,21 @@
     "prevMonth": "Előző hónap",
     "nextMonth": "Következő hónap",
     "dayHasBookings": "Erre a napra már vannak foglalások — nem lehet szabadnap",
-    "pastDayLocked": "A múltbeli napok nem módosíthatók"
+    "pastDayLocked": "A múltbeli napok nem módosíthatók",
+    "editorTitle": "Napi beosztás",
+    "scope": "Alkalmazás",
+    "scopeWeek": "Csak ezen a héten",
+    "scopeWeekly": "Minden héten",
+    "editHint": "Válasszon napot a munkaidő, szünetek vagy szabadnap beállításához.",
+    "break": "Szünet",
+    "addBreak": "Szünet hozzáadása",
+    "removeBreak": "Szünet törlése",
+    "label": "Naptári megnevezés",
+    "invalidBreaks": "A szüneteknek a műszakon belül kell lenniük, nem fedhetik egymást, és munkaidőt kell hagyniuk.",
+    "prevWeek": "Előző hét",
+    "nextWeek": "Következő hét",
+    "repeatHint": "Ismétlés ezen a hétköznapon. Más dátumok kivételei megmaradnak.",
+    "onceHint": "Csak a kiválasztott dátum változik. Más hetek változatlanok."
   },
   "permissions": {
     "finance": "Pénzügyek",

@@ -436,5 +436,13 @@
     "paid": "Maksettu",
     "attend": "Läsnäolo",
     "notMarked": "Ei merkitty"
+  },
+  "scheduleBlocks": {
+    "day_off": "Vapaapäivä",
+    "break": "Tauko",
+    "off_hours": "Ei töissä",
+    "busy": "Ei töissä",
+    "allDay": "Koko päivä",
+    "unavailable": "Työntekijä ei työskentele tähän aikaan"
   }
 }

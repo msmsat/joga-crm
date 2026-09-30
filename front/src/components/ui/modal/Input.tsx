@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useId, useState } from 'react';
 
 export interface InputProps {
   label?: string;
@@ -28,6 +28,7 @@ const labelStyle: React.CSSProperties = {
 
 // Поле ввода кита: label + glow-фокус (эталон FocusInput) + состояние ошибки.
 export function Input({ label, value, onChange, onBlur, placeholder, type = 'text', error, disabled, monospace, min, max, step, icon, rows, suffix, onEnter, autoFocus, inputMode }: InputProps) {
+  const fieldId = useId();
   const [focused, setFocused] = useState(false);
   const borderColor = error ? '#D88C9A' : focused ? '#FCAE91' : 'rgba(var(--ink),0.09)';
 
@@ -44,6 +45,7 @@ export function Input({ label, value, onChange, onBlur, placeholder, type = 'tex
   };
 
   const shared = {
+    id: fieldId,
     value,
     placeholder,
     disabled,
@@ -54,7 +56,7 @@ export function Input({ label, value, onChange, onBlur, placeholder, type = 'tex
 
   return (
     <div>
-      {label && <label style={labelStyle}>{label}</label>}
+      {label && <label htmlFor={fieldId} style={labelStyle}>{label}</label>}
       <div style={{ position: 'relative' }}>
         {icon && (
           <span style={{

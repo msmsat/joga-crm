@@ -89,11 +89,17 @@ export interface StaffService {
   duration_custom: boolean
 }
 
+export interface StaffBreak { open_time: string; close_time: string; label?: string | null }
+export interface StaffEditorDay extends StaffWorkingHoursItem { date: string; is_override: boolean }
+export interface StaffScheduleEditor { staff_id: number; week_start: string; days: StaffEditorDay[] }
+export interface StaffScheduleChange { week_start: string; repeat_weekly: boolean; days: StaffWorkingHoursItem[] }
 export interface StaffWorkingHoursItem {
   day_of_week: number  // 0=Пн … 6=Вс
   is_open: boolean
   open_time: string    // "HH:MM"
   close_time: string   // "HH:MM"
+  breaks?: StaffBreak[]
+  off_label?: string | null
 }
 
 export interface StaffTodayLesson {

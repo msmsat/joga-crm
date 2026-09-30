@@ -444,5 +444,13 @@
     "paid": "Opłacone",
     "attend": "Obecność",
     "notMarked": "Nie oznaczono"
+  },
+  "scheduleBlocks": {
+    "day_off": "Dzień wolny",
+    "break": "Przerwa",
+    "off_hours": "Nie pracuje",
+    "busy": "Nie pracuje",
+    "allDay": "Cały dzień",
+    "unavailable": "Pracownik nie pracuje w tych godzinach"
   }
 }

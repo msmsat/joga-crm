@@ -9,3 +9,6 @@ router.include_router(lessons_router)
 router.include_router(halls_router)
 router.include_router(reservations_router)
 router.include_router(hybrid_router)
+
+from .staff_blocks import router as staff_blocks_router
+router.include_router(staff_blocks_router)

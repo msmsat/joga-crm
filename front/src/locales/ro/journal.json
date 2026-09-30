@@ -440,5 +440,13 @@
     "paid": "Plătit",
     "attend": "Prezență",
     "notMarked": "Nemarcat"
+  },
+  "scheduleBlocks": {
+    "day_off": "Zi liberă",
+    "break": "Pauză",
+    "off_hours": "Nu lucrează",
+    "busy": "Nu lucrează",
+    "allDay": "Toată ziua",
+    "unavailable": "Angajatul nu lucrează la această oră"
   }
 }

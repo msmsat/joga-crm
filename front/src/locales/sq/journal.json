@@ -436,5 +436,13 @@
     "paid": "E paguar",
     "attend": "Prania",
     "notMarked": "Pa shënuar"
+  },
+  "scheduleBlocks": {
+    "day_off": "Ditë pushimi",
+    "break": "Pushim",
+    "off_hours": "Nuk punon",
+    "busy": "Nuk punon",
+    "allDay": "Gjithë ditën",
+    "unavailable": "Punonjësi nuk punon në këtë orar"
   }
 }

@@ -161,6 +161,8 @@ async def _replace_schedule(
             is_open=item.is_open,
             open_time=item.open_time,
             close_time=item.close_time,
+            breaks=[b.model_dump() for b in item.breaks],
+            off_label=item.off_label,
         ))
 
     await _resync_future_day_marks(user_id, studio_id, db)
@@ -222,6 +224,7 @@ async def _resync_future_day_marks(user_id: int, studio_id: int, db: AsyncSessio
             StaffDayOverride.studio_id == studio_id,
             StaffDayOverride.day >= date.today(),
             StaffDayOverride.day.not_in(booked_days),
+            StaffDayOverride.hours.is_(None),
         )
     )
 
@@ -506,6 +509,8 @@ async def get_staff_profile(
             "is_open": wh.is_open,
             "open_time": wh.open_time,
             "close_time": wh.close_time,
+            "breaks": wh.breaks or [],
+            "off_label": wh.off_label,
         }
         for wh in wh_result.scalars().all()
     ]
@@ -765,6 +770,10 @@ async def update_staff(
         await service_pricing.apply_staff_prices(
             db, user.id, studio_id, _price_map(data.service_prices, data.service_ids),
             _duration_map(data.service_prices))
+    if data.schedule is not None:
+        await db.flush()
+        from services.staff_schedule_editor import assert_future_fits
+        await assert_future_fits(db, studio, user.id, changed_weekdays={d.day_of_week for d in data.schedule})
     conflicts = await schedule_guard.assert_future_assignments_valid(db, studio, user_id=user.id)
     schedule_guard.raise_if_conflicts(conflicts)
     await db.commit()

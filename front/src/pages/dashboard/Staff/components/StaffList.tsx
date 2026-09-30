@@ -3,10 +3,14 @@ import { useTranslation } from 'react-i18next';
 import type { Employee } from '../types';
 import { EmployeeCard } from './EmployeeCard';
 import { StaffToolbar } from './StaffToolbar';
+import { usePhone } from '../../../../hooks/usePhone';
+import { MobileStaffPicker } from './MobileStaffPicker';
 
 export interface StaffListProps {
   // 🔥 Обновили интерфейс под нашу ViewModel
   staffList: (Employee & { _resolvedGroupKey: string; _translatedGroup: string; _translatedRole: string; })[];
+  allStaff: StaffListProps['staffList'];
+  isLoading?: boolean;
   activeStaffId: number | null;
   onSelect: (id: number) => void;
   searchQuery: string;
@@ -22,6 +26,8 @@ export interface StaffListProps {
 
 export function StaffList({
   staffList,
+  allStaff,
+  isLoading,
   activeStaffId,
   onSelect,
   searchQuery,
@@ -35,6 +41,8 @@ export function StaffList({
   resendingId,
 }: StaffListProps) {
   const { t } = useTranslation('common');
+  const isPhone = usePhone();
+  if (isPhone) return <MobileStaffPicker {...{ staffList, allStaff, isLoading, activeStaffId, onSelect, searchQuery, onSearch, activeGroup, onGroupChange, availableGroups, onAddClick, onResendInvite, onCancelInvite, resendingId }}/>;
   return (
     <div className="staff-list-panel">
       <StaffToolbar

@@ -436,5 +436,13 @@
     "paid": "Pagato",
     "attend": "Presenza",
     "notMarked": "Non segnato"
+  },
+  "scheduleBlocks": {
+    "day_off": "Giorno di riposo",
+    "break": "Pausa",
+    "off_hours": "Non lavora",
+    "busy": "Non lavora",
+    "allDay": "Tutto il giorno",
+    "unavailable": "Il dipendente non lavora a quest’ora"
   }
 }

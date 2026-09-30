@@ -1222,3 +1222,51 @@
      оставляли каждому дню по 44px — столбики склеивались. */
   .sch-grid { grid-template-columns: 26px repeat(7, 1fr); padding: 6px; }
 }
+
+/* Mobile employee selection leaves the profile the main part of the page. */
+.staff-picker-mobile { min-width: 0; padding: 4px 0; }
+.staff-picker-launcher { display: flex; gap: 8px; margin-bottom: 7px; }
+.staff-picker-add, .staff-picker-close, .staff-picker-role {
+  font-family: inherit; cursor: pointer; color: var(--text); display: inline-flex;
+  align-items: center; justify-content: center; border: 1px solid var(--border);
+}
+.staff-picker-search-field { position: relative; flex: 1; min-width: 0; }
+.staff-picker-search-field > svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+  color: var(--text2); pointer-events: none; }
+.staff-picker-main-search { width: 100%; min-height: 44px; box-sizing: border-box; padding: 10px 12px 10px 38px;
+  border: 1px solid var(--border); border-radius: 12px; background: var(--bg-card); color: var(--text);
+  font-family: inherit; font-size: 16px; }
+.staff-picker-main-search::placeholder { color: var(--text2); }
+.staff-picker-main-search:focus-visible { outline: 2px solid var(--accent, #FCAE91); outline-offset: 2px; }
+.staff-picker-add { width: 44px; min-height: 44px; border-radius: 12px; background: rgba(252,174,145,0.15); font-size: 24px; }
+.staff-picker-roles { display: flex; flex-wrap: wrap; gap: 4px; }
+.staff-picker-role { gap: 5px; padding: 7px 8px; min-height: 36px; border-radius: 10px;
+  font-size: 11px; font-weight: 600; background: var(--bg-card); }
+.staff-picker-role[aria-pressed="true"] { color: var(--text); background: rgba(252,174,145,0.15); border-color: var(--accent, #FCAE91); }
+.staff-picker-count { font-size: 10px; color: var(--text2); font-variant-numeric: tabular-nums; }
+.staff-picker-hint { margin: 5px 2px 0; font-size: 11px; line-height: 1.4; color: var(--text2); }
+.staff-picker-popover { position: fixed; z-index: 1100; box-sizing: border-box;
+  width: min(300px, calc(100vw - 20px)); max-height: min(360px, calc(100dvh - 140px));
+  display: flex; flex-direction: column; gap: 8px; padding: 10px;
+  border: 1px solid var(--border); border-radius: 14px; background: var(--bg-card, #fff);
+  box-shadow: 0 12px 36px rgba(0,0,0,.22); }
+.staff-picker-popover::before { content: ''; position: absolute; left: var(--staff-picker-arrow);
+  width: 10px; height: 10px; background: var(--bg-card, #fff); transform: translateX(-50%) rotate(45deg); }
+.staff-picker-popover[data-side="bottom"]::before { top: -6px; border-top: 1px solid var(--border); border-left: 1px solid var(--border); }
+.staff-picker-popover[data-side="top"]::before { bottom: -6px; border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); }
+.staff-picker-heading { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.staff-picker-heading h2 { margin: 0; font-size: 14px; font-weight: 800; color: var(--text); }
+.staff-picker-heading p { margin: 4px 0 0; font-size: 12px; color: var(--text2); }
+.staff-picker-close { width: 32px; height: 32px; flex-shrink: 0; border-radius: 9px; background: var(--bg); }
+.staff-picker-search { width: 100%; box-sizing: border-box; padding: 11px 12px; border: 1px solid var(--border);
+  border-radius: 12px; background: var(--bg); color: var(--text); font: inherit; font-size: 16px; }
+.staff-picker-list { max-height: 240px; min-height: 0; flex: 1 1 auto; overflow-y: auto; overscroll-behavior: contain; }
+.staff-picker-popover .s-item { width: 100%; box-sizing: border-box; margin-bottom: 5px; padding: 12px;
+  min-height: 56px; transform: none; gap: 10px; border-radius: 12px; }
+.staff-picker-popover .s-item.active::before { left: 0; right: auto; top: 12px; bottom: 12px;
+  width: 3px; height: auto; transform: none; border-radius: 0 3px 3px 0; }
+.staff-picker-popover .s-name { white-space: normal; }
+.staff-picker-popover .s-role { max-width: none; }
+.staff-picker-empty { padding: 24px 12px; text-align: center; color: var(--text2); font-size: 13px; }
+.staff-picker-mobile button:focus-visible, .staff-picker-popover button:focus-visible,
+.staff-picker-popover input:focus-visible, .s-item:focus-visible { outline: 2px solid var(--accent, #FCAE91); outline-offset: 2px; }

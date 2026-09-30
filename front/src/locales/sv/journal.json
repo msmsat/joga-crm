@@ -436,5 +436,13 @@
     "paid": "Betald",
     "attend": "Närvaro",
     "notMarked": "Ej markerad"
+  },
+  "scheduleBlocks": {
+    "day_off": "Ledig dag",
+    "break": "Rast",
+    "off_hours": "Arbetar inte",
+    "busy": "Arbetar inte",
+    "allDay": "Hela dagen",
+    "unavailable": "Medarbetaren arbetar inte vid denna tid"
   }
 }

@@ -224,7 +224,7 @@ async def assert_future_assignments_valid(
         start, end = (studio_time.to_local(t, studio).replace(tzinfo=None) for t in interval)
         if end <= lesson_time.local_now(studio):
             continue
-        if member is None or member.status != "active" or member.role != "trainer":
+        if member is None or member.status != "active" or (member.role != "trainer" and not (member.role == "owner" and service_ids)):
             conflicts.append(AssignmentConflict(row.id, row.start_time))
             continue
         if row.booking_mode == "event":

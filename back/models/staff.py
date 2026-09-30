@@ -2,7 +2,7 @@ from datetime import date as date_type, datetime
 from typing import Optional
 
 from sqlalchemy import (
-    CheckConstraint, DateTime, Index, Integer, String, Boolean, Date, ForeignKey,
+    CheckConstraint, DateTime, Index, Integer, String, Boolean, Date, ForeignKey, JSON,
     UniqueConstraint,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -31,6 +31,9 @@ class StaffWorkingHours(Base):
     open_time: Mapped[str] = mapped_column(String(5))
     close_time: Mapped[str] = mapped_column(String(5))
 
+    breaks: Mapped[list] = mapped_column(JSON, default=list, server_default="[]")
+    off_label: Mapped[Optional[str]] = mapped_column(String(200), nullable=True)
+
     user: Mapped["User"] = relationship(back_populates="staff_working_hours")
 
 
@@ -51,6 +54,7 @@ class StaffDayOverride(Base):
     studio_id: Mapped[int] = mapped_column(ForeignKey("studios.id", ondelete="CASCADE"), index=True)
     day: Mapped[date_type] = mapped_column(Date)
     is_working: Mapped[bool] = mapped_column(Boolean, default=True)
+    hours: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
 
 
 class StaffBranchAssignment(Base):

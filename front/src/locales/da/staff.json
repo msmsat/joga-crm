@@ -7,6 +7,9 @@
     "onlineNow": "{{count}} online nu"
   },
   "toolbar": {
+    "employeePlaceholder": "Medarbejder",
+    "chooseStaff": "Vælg en medarbejder",
+    "mobileHint": "Tryk for at vælge en medarbejder",
     "teamTitle": "Team · {{count}}",
     "addEmployee": "Tilføj medarbejder",
     "searchPlaceholder": "Søg...",
@@ -68,7 +71,21 @@
     "prevMonth": "Forrige måned",
     "nextMonth": "Næste måned",
     "dayHasBookings": "Denne dag har allerede bookinger — den kan ikke være fridag",
-    "pastDayLocked": "Tidligere dage kan ikke ændres"
+    "pastDayLocked": "Tidligere dage kan ikke ændres",
+    "editorTitle": "Dagsplan",
+    "scope": "Anvend",
+    "scopeWeek": "Kun denne uge",
+    "scopeWeekly": "Hver uge",
+    "editHint": "Vælg en dag for at ændre arbejdstid, pauser eller fridag.",
+    "break": "Pause",
+    "addBreak": "Tilføj pause",
+    "removeBreak": "Fjern pause",
+    "label": "Navn i kalenderen",
+    "invalidBreaks": "Pauser skal være inden for vagten, må ikke overlappe og skal efterlade arbejdstid.",
+    "prevWeek": "Forrige uge",
+    "nextWeek": "Næste uge",
+    "repeatHint": "Gentag denne ugedag. Undtagelser på andre datoer bevares.",
+    "onceHint": "Ændr kun den valgte dato. Andre uger forbliver de samme."
   },
   "permissions": {
     "finance": "Økonomi",

@@ -436,5 +436,13 @@
     "paid": "Paid",
     "attend": "Attendance",
     "notMarked": "Not marked"
+  },
+  "scheduleBlocks": {
+    "day_off": "Day off",
+    "break": "Break",
+    "off_hours": "Not working",
+    "busy": "Not working",
+    "allDay": "All day",
+    "unavailable": "The employee is not working at this time"
   }
 }

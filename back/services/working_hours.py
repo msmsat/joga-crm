@@ -93,13 +93,14 @@ async def assert_within_working_hours(
     # Отметка на конкретную дату сильнее недельного графика: «выходной» — отказ
     # сразу, «работает» — день открыт, даже если по неделе он нерабочий.
     override = (await db.execute(
-        select(StaffDayOverride.is_working).where(
+        select(StaffDayOverride).where(
             StaffDayOverride.user_id == teacher_id,
             StaffDayOverride.studio_id == studio_id,
             StaffDayOverride.day == start_time.date(),
         )
     )).scalar_one_or_none()
-    if override is False:
+    override_value = override if isinstance(override,bool) or override is None else override.is_working
+    if override_value is False:
         raise HTTPException(status_code=400, detail="У сотрудника в этот день выходной")
 
     hours = (await db.execute(
@@ -113,7 +114,15 @@ async def assert_within_working_hours(
     # Отметка «работает» открывает день, но не сутки: часы берём из недельной
     # строки. Отметки на рабочие дни проставляются автоматом (staff/schedule.py),
     # так что «есть отметка» само по себе часы тренера не отменяет.
-    if override and hours is not None and not hours.is_open:
+    if override_value and hours is not None and not hours.is_open and not getattr(override,"hours",None):
         return
 
+    if getattr(override,"hours",None):
+        from services.staff_hours import as_hours
+        hours=as_hours(override.hours)
     _assert_window(hours, start_time, duration_min, _STAFF)
+    if hours is not None and getattr(hours,"breaks",None):
+        from services.staff_hours import schedule_contains
+        from datetime import timedelta
+        if not schedule_contains(hours,start_time,start_time+timedelta(minutes=duration_min)):
+            raise HTTPException(status_code=400,detail="Занятие попадает на перерыв сотрудника")

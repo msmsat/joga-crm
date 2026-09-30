@@ -436,5 +436,13 @@
     "paid": "Fizetve",
     "attend": "Jelenlét",
     "notMarked": "Nincs jelölve"
+  },
+  "scheduleBlocks": {
+    "day_off": "Szabadnap",
+    "break": "Szünet",
+    "off_hours": "Nem dolgozik",
+    "busy": "Nem dolgozik",
+    "allDay": "Egész nap",
+    "unavailable": "Az alkalmazott ekkor nem dolgozik"
   }
 }

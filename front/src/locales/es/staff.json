@@ -7,6 +7,9 @@
     "onlineNow": "{{count}} en línea ahora"
   },
   "toolbar": {
+    "employeePlaceholder": "Empleado",
+    "chooseStaff": "Elige un empleado",
+    "mobileHint": "Pulsa para elegir un empleado",
     "teamTitle": "Equipo · {{count}}",
     "addEmployee": "Añadir empleado",
     "searchPlaceholder": "Buscar...",
@@ -68,7 +71,21 @@
     "prevMonth": "Mes anterior",
     "nextMonth": "Mes siguiente",
     "dayHasBookings": "Este día ya tiene reservas — no puede ser día libre",
-    "pastDayLocked": "Los días pasados no se pueden cambiar"
+    "pastDayLocked": "Los días pasados no se pueden cambiar",
+    "editorTitle": "Horario diario",
+    "scope": "Aplicar",
+    "scopeWeek": "Solo esta semana",
+    "scopeWeekly": "Cada semana",
+    "editHint": "Elige un día para ajustar horas, descansos o un día libre.",
+    "break": "Descanso",
+    "addBreak": "Añadir descanso",
+    "removeBreak": "Eliminar descanso",
+    "label": "Nombre en el calendario",
+    "invalidBreaks": "Los descansos deben estar dentro del turno, no solaparse y dejar tiempo de trabajo.",
+    "prevWeek": "Semana anterior",
+    "nextWeek": "Semana siguiente",
+    "repeatHint": "Repetir este día de la semana. Se conservan las excepciones de otras fechas.",
+    "onceHint": "Cambiar solo la fecha elegida. Las demás semanas no cambian."
   },
   "permissions": {
     "finance": "Finanzas",

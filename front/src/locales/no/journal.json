@@ -436,5 +436,13 @@
     "paid": "Betalt",
     "attend": "Oppmøte",
     "notMarked": "Ikke merket"
+  },
+  "scheduleBlocks": {
+    "day_off": "Fridag",
+    "break": "Pause",
+    "off_hours": "Arbeider ikke",
+    "busy": "Arbeider ikke",
+    "allDay": "Hele dagen",
+    "unavailable": "Medarbeideren arbeider ikke på dette tidspunktet"
   }
 }

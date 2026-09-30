@@ -1,0 +1,22 @@
+.staff-week { padding-top: 4px; }
+.staff-week-nav { display:flex; align-items:center; justify-content:space-between; gap:8px; font-size:12px; font-weight:800; margin-bottom:10px; }
+.staff-week-hint { font-size:11px; line-height:1.5; color:var(--text3); margin:0 0 12px; }
+.staff-week-day { display:flex; width:100%; align-items:center; gap:14px; border:1px solid var(--border2); border-radius:13px; padding:12px; margin:7px 0; background:var(--bg-card); text-align:left; color:var(--text); cursor:pointer; font-family:inherit; transition:background .15s,border-color .15s; }
+.staff-week-day:hover,.staff-week-day:focus-visible { border-color:var(--peach); background:rgba(249,160,139,.05); outline:2px solid transparent; }
+.staff-week-date { display:flex; flex-direction:column; gap:3px; width:62px; flex-shrink:0; }
+.staff-week-date b { font-size:12px; text-transform:uppercase; }
+.staff-week-date small,.staff-week-detail small { font-size:10px; color:var(--text3); }
+.staff-week-detail { flex:1; min-width:0; display:flex; flex-direction:column; gap:4px; }
+.staff-week-detail strong { font-size:12px; line-height:1.5; }
+.staff-week-edit { color:var(--peach); font-size:19px; }
+.staff-week-track { display:block; position:relative; height:5px; border-radius:4px; background:rgba(var(--ink),.045); overflow:hidden; margin-top:3px; }
+.staff-week-track i { position:absolute; top:0; height:100%; background:var(--peach); border-radius:4px; }
+.staff-week-day.is-off { background:rgba(var(--ink),.02); }
+.staff-week-day.is-off strong { color:var(--text3); }
+.staff-week-toggle,.staff-week-break-head { display:flex; justify-content:space-between; align-items:center; font-size:13px; }
+.staff-week-time-fields { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.staff-week-break { display:flex; flex-direction:column; gap:10px; padding:14px; background:rgba(var(--ink),.025); border:1px solid var(--border2); border-radius:14px; }
+.staff-week-scope { display:flex; gap:6px; }
+.staff-week-scope > button { flex:1; }
+.staff-week-error { margin:0; color:#b95770; font-size:12px; line-height:1.6; }
+@media(max-width:600px) { .staff-week-day { gap:9px; padding:10px; } .staff-week-date { width:53px; } }

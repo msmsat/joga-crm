@@ -440,5 +440,13 @@
     "paid": "Plaćeno",
     "attend": "Dolazak",
     "notMarked": "Nije označeno"
+  },
+  "scheduleBlocks": {
+    "day_off": "Слободан дан",
+    "break": "Пауза",
+    "off_hours": "Не ради",
+    "busy": "Не ради",
+    "allDay": "Цео дан",
+    "unavailable": "Запослени не ради у ово време"
   }
 }

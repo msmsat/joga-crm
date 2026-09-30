@@ -436,5 +436,13 @@
     "paid": "Pagado",
     "attend": "Asistencia",
     "notMarked": "Sin marcar"
+  },
+  "scheduleBlocks": {
+    "day_off": "Día libre",
+    "break": "Descanso",
+    "off_hours": "No trabaja",
+    "busy": "No trabaja",
+    "allDay": "Todo el día",
+    "unavailable": "El empleado no trabaja a esta hora"
   }
 }

@@ -2,12 +2,13 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useAiEntity } from '../../../hooks/useAiEntity';
 import { useTranslation } from 'react-i18next';
 import './Staff.css';
-import type { Employee, ScheduleMatrix, SchedulesMap, RoleCard } from './types';
-import { TIME_OPTIONS, DAYS_KEYS, ROLE_CARDS, DEFAULT_WEEK_HOURS } from './constants';
+import type { Employee, RoleCard } from './types';
+import { DAYS_KEYS, ROLE_CARDS, DEFAULT_WEEK_HOURS } from './constants';
 import { useAiIntent } from '../../../hooks/useAiIntent';
 import { useStaffList } from './hooks/useStaffList';
 import { useStaffProfile } from './hooks/useStaffProfile';
 import { useStaffFilters } from './hooks/useStaffFilters';
+import { StaffWeekSchedule } from './components/StaffWeekSchedule';
 import { StaffList }  from './components/StaffList';
 import { StaffStats } from './components/StaffStats';
 import { AddEmployeeModal }  from './components/modals/AddEmployeeModal';
@@ -51,7 +52,8 @@ function toEmployee(item: StaffListItem): Employee {
 }
 
 function scheduleToWorkingHours(
-  schedule: Record<string, { enabled: boolean; from: string; to: string }> | undefined
+  schedule: Record<string, { enabled: boolean; from: string; to: string }> | undefined,
+  prior: StaffWorkingHoursItem[] = []
 ): StaffWorkingHoursItem[] {
   if (!schedule) return [];
   return DAYS_KEYS.map((key, dayOfWeek) => ({
@@ -59,6 +61,8 @@ function scheduleToWorkingHours(
     is_open: schedule[key]?.enabled ?? false,
     open_time: schedule[key]?.from ?? '09:00',
     close_time: schedule[key]?.to ?? '18:00',
+    breaks: prior.find(d => d.day_of_week === dayOfWeek)?.breaks ?? [],
+    off_label: prior.find(d => d.day_of_week === dayOfWeek)?.off_label ?? null,
   }));
 }
 
@@ -82,19 +86,6 @@ function workingHoursToSchedule(
 // недельная сетка, и календарь месяца показывают график по умолчанию, а не пустоту.
 function weekHoursOf(profile: StaffProfile): StaffWorkingHoursItem[] {
   return profile.week_working_hours.length ? profile.week_working_hours : DEFAULT_WEEK_HOURS;
-}
-
-function hoursToMatrix(hours: StaffWorkingHoursItem[]): ScheduleMatrix {
-  const matrix: ScheduleMatrix = Array.from({ length: TIME_OPTIONS.length }, () => Array(7).fill(0));
-  for (const wh of hours) {
-    if (!wh.is_open) continue;
-    for (let ti = 0; ti < TIME_OPTIONS.length; ti++) {
-      if (TIME_OPTIONS[ti] >= wh.open_time && TIME_OPTIONS[ti] < wh.close_time) {
-        matrix[ti][wh.day_of_week] = 1;
-      }
-    }
-  }
-  return matrix;
 }
 
 // ─── Local state types ────────────────────────────────────────────────────────
@@ -205,20 +196,6 @@ export default function Staff() {
   });
   const closeDeleteModal = () => setDeleteModal(m => ({ ...m, isOpen: false }));
 
-  // ── Schedule local state (initialized from profile) ───────────────────────
-  const [schedules, setSchedules] = useState<SchedulesMap>({});
-
-  // Матрица часов — локально редактируемая, поэтому засеваем её из профиля один
-  // раз на сотрудника. Прямо в рендере: эффект давал лишний кадр со старой сеткой.
-  const [seededProfileId, setSeededProfileId] = useState<number | null>(null);
-  if (profile && activeStaffId && seededProfileId !== profile.id) {
-    setSeededProfileId(profile.id);
-    setSchedules(prev => ({
-      ...prev,
-      [activeStaffId]: hoursToMatrix(weekHoursOf(profile)),
-    }));
-  }
-
   // ── Month calendar: курсор месяца + отметки «работает / выходной» ─────────
   const [monthCursor, setMonthCursor] = useState(() => {
     const now = new Date();
@@ -233,8 +210,9 @@ export default function Staff() {
   // этого хватает и для «сегодня», и для проверки «дата в прошлом».
   const todayStr = useMemo(() => {
     const n = new Date();
+    if (studio?.tz_iana) return new Intl.DateTimeFormat('en-CA', { timeZone: studio.tz_iana, year: 'numeric', month: '2-digit', day: '2-digit' }).format(n);
     return `${n.getFullYear()}-${String(n.getMonth() + 1).padStart(2, '0')}-${String(n.getDate()).padStart(2, '0')}`;
-  }, []);
+  }, [studio]);
 
   // Инструмент, которым красим дни: что выбрано сверху, то и ставится по клику.
   const [markTool, setMarkTool] = useState<'work' | 'off'>('work');
@@ -267,7 +245,7 @@ export default function Staff() {
   const bookedDays = useMemo(
     () => new Set(
       (monthData?.lessons ?? [])
-        .filter(l => l.status !== 'cancelled' && l.booked_count > 0)
+        .filter(l => l.status !== 'cancelled')
         .map(l => l.start_time.slice(0, 10))
     ),
     [monthData]
@@ -340,21 +318,6 @@ export default function Staff() {
   }
 
   // ─── Schedule period labels ───────────────────────────────────────────────
-  const weekLabel = useMemo(() => {
-    const locale = i18n.language;
-    const now = new Date();
-    const day = now.getDay();
-    const diffToMon = day === 0 ? -6 : 1 - day;
-    const mon = new Date(now); mon.setDate(now.getDate() + diffToMon);
-    const sun = new Date(mon); sun.setDate(mon.getDate() + 6);
-    const fmt = new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'long' });
-    const fmtYear = new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'long', year: 'numeric' });
-    if (mon.getMonth() === sun.getMonth()) {
-      return `${mon.getDate()}–${fmtYear.format(sun)}`;
-    }
-    return `${fmt.format(mon)} – ${fmtYear.format(sun)}`;
-  }, [i18n.language]);
-
   const monthLabel = useMemo(() => {
     return new Intl.DateTimeFormat(i18n.language, { month: 'long', year: 'numeric' })
       .format(new Date(monthCursor.year, monthCursor.month - 1, 1));
@@ -444,6 +407,8 @@ export default function Staff() {
         {/* LEFT PANEL */}
         <StaffList
           staffList={staffList}
+          allStaff={adaptedStaff}
+          isLoading={listLoading}
           activeStaffId={activeStaffId}
           onSelect={selectStaff}
           searchQuery={searchQuery}
@@ -649,7 +614,7 @@ export default function Staff() {
                 )}
 
                 {/* Schedule grid */}
-                {activeStaffId && schedules[activeStaffId] && (
+                {activeStaffId && profile && (
                   <>
                     <div className="sec-title">
                       <span>{t('staff:profile.weekSchedule')}</span>
@@ -661,9 +626,7 @@ export default function Staff() {
                           <button className={`day-tab ${scheduleView === 'week' ? 'active' : ''}`} onClick={() => setScheduleView('week')}>{t('staff:schedule.week')}</button>
                           <button className={`day-tab ${scheduleView === 'month' ? 'active' : ''}`} onClick={() => setScheduleView('month')}>{t('staff:schedule.month')}</button>
                         </div>
-                        {scheduleView === 'week' ? (
-                          <span className="week-label">{weekLabel}</span>
-                        ) : (
+                        {scheduleView === 'month' && (
                           <div className="month-nav">
                             <button className="month-nav-btn" onClick={() => shiftMonth(-1)} aria-label={t('staff:schedule.prevMonth')}>
                               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
@@ -677,51 +640,7 @@ export default function Staff() {
                       </div>
 
                       {scheduleView === 'week' ? (
-                        <>
-                          <div className="sch-grid">
-                            <div className="sch-head" />
-                            {DAYS_KEYS.map((dayKey, i) => <div key={i} className="sch-head">{t(`common:days.short.${dayKey}`)}</div>)}
-                            {TIME_OPTIONS.map((timeString, ti) => (
-                              <React.Fragment key={ti}>
-                                <div className="sch-time">{timeString}</div>
-                                {[0,1,2,3,4,5,6].map(di => {
-                                  const booked = activeStaffId ? schedules[activeStaffId]?.[ti]?.[di] : 0;
-                                  return (
-                                    <div
-                                      key={di}
-                                      className={`sch-cell ${booked ? 'booked' : ''}`}
-                                    />
-                                  );
-                                })}
-                              </React.Fragment>
-                            ))}
-                          </div>
-
-                          <div className="sch-legend">
-                            <div className="leg">
-                              <div className="leg-dot" style={{ background: 'var(--accent)' }} />
-                              {t('staff:schedule.working')}
-                            </div>
-                            <div className="leg">
-                              <div className="leg-dot" style={{ background: 'rgba(252,174,145,.12)', border: '1px solid var(--border2)' }} />
-                              {t('staff:schedule.free')}
-                            </div>
-                          </div>
-
-                          {(profile?.halls.length ?? 0) > 0 && (
-                            <div className="sch-legend" style={{ marginTop: '8px' }}>
-                              <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text3)' }}>
-                                {t('staff:profile.staffHalls')}
-                              </span>
-                              {profile!.halls.map(h => (
-                                <div key={h.id} className="leg">
-                                  <div className="leg-dot" style={{ background: h.color ?? '#F9A08B' }} />
-                                  {h.name}
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        </>
+                        <StaffWeekSchedule key={activeStaffId} staffId={activeStaffId} today={todayStr} onSaved={refetchProfile} />
                       ) : (
                         <div className="mcal">
                           {/* Инструменты сверху: выбираешь отметку, потом красишь дни */}
@@ -929,7 +848,7 @@ export default function Staff() {
                 updated.service_prices ?? {}, updated.service_durations ?? {}),
               photo_url: updated.photo_url,
               color: updated.color || undefined,
-              schedule: scheduleToWorkingHours(updated.schedule),
+              schedule: scheduleToWorkingHours(updated.schedule, profile?.week_working_hours),
               // Присылаем ТОЛЬКО когда список пришёл из формы: сервер отличает
               // отсутствие поля от явно пустого списка и без этого стёр бы
               // назначения при сохранении из старого экрана.

@@ -7,6 +7,9 @@
     "onlineNow": "{{count}} nyní online"
   },
   "toolbar": {
+    "employeePlaceholder": "Zaměstnanec",
+    "chooseStaff": "Vyberte zaměstnance",
+    "mobileHint": "Klepnutím vyberete zaměstnance",
     "teamTitle": "Tým · {{count}}",
     "addEmployee": "Přidat zaměstnance",
     "searchPlaceholder": "Hledat...",
@@ -68,7 +71,21 @@
     "prevMonth": "Předchozí měsíc",
     "nextMonth": "Následující měsíc",
     "dayHasBookings": "Na tento den už jsou rezervace — nemůže být volný",
-    "pastDayLocked": "Minulé dny nelze měnit"
+    "pastDayLocked": "Minulé dny nelze měnit",
+    "editorTitle": "Denní rozvrh",
+    "scope": "Použít",
+    "scopeWeek": "Jen tento týden",
+    "scopeWeekly": "Každý týden",
+    "editHint": "Vyberte den pro úpravu pracovní doby, přestávek nebo volna.",
+    "break": "Přestávka",
+    "addBreak": "Přidat přestávku",
+    "removeBreak": "Odstranit přestávku",
+    "label": "Název v kalendáři",
+    "invalidBreaks": "Přestávky musí být v rámci směny, nesmí se překrývat a musí zbýt pracovní doba.",
+    "prevWeek": "Předchozí týden",
+    "nextWeek": "Další týden",
+    "repeatHint": "Opakovat tento den v týdnu. Výjimky pro jiné termíny zůstávají.",
+    "onceHint": "Změnit pouze vybrané datum. Ostatní týdny zůstávají stejné."
   },
   "permissions": {
     "finance": "Finance",

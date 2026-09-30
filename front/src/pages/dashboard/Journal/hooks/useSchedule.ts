@@ -6,12 +6,14 @@ import { queryKeys } from '../../../../api/queryKeys';
 import { lessonToBooking, staffToTrainer, toDateStr } from '../utils';
 import { staffColor } from '../../../../lib/staffColors';
 import type { StaffListItem } from '../../../../api/staff/staff.types';
+import type { StaffScheduleBlock } from '../../../../api/schedule';
 import type { Booking, Hall } from '../types';
 
 // Стабильные «пусто»: `const { data: x = [] }` создаёт НОВЫЙ массив на каждый
 // рендер, пока запрос в пути. Такая ссылка течёт в мемо/эффекты потребителей
 // (мемо колонок здесь, эффект префетча ниже) и зацикливает их до «Too many re-renders»
 // ровно на время первой загрузки. Один общий литерал — ссылка не меняется.
+const EMPTY_BLOCKS: StaffScheduleBlock[] = [];
 const EMPTY_STAFF: StaffListItem[] = [];
 const EMPTY_HALLS: Hall[] = [];
 const EMPTY_BOOKINGS: Booking[] = [];
@@ -91,6 +93,11 @@ export function useSchedule(
   });
 
   const [dateFrom, dateTo] = visibleRange(calendarView, calYear, calMonth, selectedDay);
+  const { data: staffBlocks = EMPTY_BLOCKS, isPending: blocksPending, error: blocksError, refetch: refetchBlocks } = useQuery({
+    queryKey: queryKeys.journalStaffBlocks(dateFrom, dateTo),
+    queryFn: () => scheduleApi.getStaffBlocks(dateFrom, dateTo),
+    refetchInterval: 60_000,
+  });
   const lessonsKey = queryKeys.journalLessons(dateFrom, dateTo);
 
   // Маппинг — в queryFn, а не в select: кэш этого ключа хранит уже готовые
@@ -133,13 +140,13 @@ export function useSchedule(
   // предыдущих ещё нет — именно в этот момент показываем скелетон.
   // keepPreviousData гарантирует, что при листании (ключ уже видел данные
   // раньше) isPending не взводится повторно.
-  const isFirstLoad = !staffLoaded || !hallsLoaded || bookingsPending;
+  const isFirstLoad = !staffLoaded || !hallsLoaded || bookingsPending || blocksPending;
 
   // Ошибка первой загрузки (сетки ещё нет — показываем плашку вместо неё) vs
   // фоновая (данные в кэше уже есть, просто не удалось обновить — только тост).
-  const loadError = staffError ?? hallsError ?? bookingsError ?? null;
+  const loadError = staffError ?? hallsError ?? bookingsError ?? blocksError ?? null;
   const isFirstLoadError = isFirstLoad && loadError != null;
-  const refetchAll = () => { refetchStaff(); refetchHalls(); refetchBookings(); };
+  const refetchAll = () => { refetchStaff(); refetchHalls(); refetchBookings(); refetchBlocks(); };
 
   // Префетч соседних дней/недель: после успешной загрузки текущего диапазона
   // тянем −1 и +1 заранее — листание вперёд-назад почти всегда без сети.
@@ -166,6 +173,8 @@ export function useSchedule(
 
   return {
     trainers,
+    staffBlocks,
+    dateFrom,
     halls,
     bookings,
     isFirstLoad,

@@ -1,6 +1,9 @@
 // src/components/ScheduleGrid/Grid.tsx
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { StaffBlockCard } from './StaffBlockCard';
+import type { StaffScheduleBlock } from '../../../../../api/schedule';
+import { toDateStr } from '../../utils';
 import { BookingCard } from './BookingCard';
 import { bufferStyle, CARD_RADIUS } from './bufferStyle';
 import type { Booking, JournalColumn, Trainer } from '../../types';
@@ -15,6 +18,9 @@ interface GridProps {
   columns: JournalColumn[];
   viewMode: 'trainers' | 'halls';
   filteredBookings: Booking[];
+  staffBlocks: StaffScheduleBlock[];
+  dayDate: string;
+  visibleTrainers: Trainer[];
   hoveredSlot: string | null;
   setHoveredSlot: (slot: string | null) => void;
   canEdit: boolean;
@@ -40,7 +46,7 @@ interface GridProps {
 
 export const Grid: React.FC<GridProps> = ({
   isTransitioning, transitionReason, calendarView,
-  columns, viewMode, filteredBookings, hoveredSlot, setHoveredSlot,
+  columns, viewMode, filteredBookings, staffBlocks, dayDate, visibleTrainers, hoveredSlot, setHoveredSlot,
   canEdit, gestures, showNewForm, popupBooking, drag, wasDragging,
   openNewSlot, newBookingSlot, newForm, previewRef,
   initDrag, setPopupBooking, openBookingPopup, showToast, editDraft, pages
@@ -51,9 +57,17 @@ export const Grid: React.FC<GridProps> = ({
   // null — колонка-заглушка: день рисуется как обычное, просто пустое расписание.
   const cols: (JournalColumn | null)[] = columns.length ? columns : [null];
 
+  const gridStart = Number(TIMES[0].slice(0, 2)) * 60;
+  const gridEnd = gridStart + TIMES.length * 60;
+  const columnBlocks = (col: JournalColumn) => {
+    if (viewMode !== 'trainers') return [];
+    if (calendarView === 'week') return staffBlocks.filter(b => b.date === toDateStr(col as Date) && visibleTrainers.some(s => s.id === b.staff_id));
+    return staffBlocks.filter(b => b.date === dayDate && b.staff_id === (col as Trainer).id);
+  };
+
   return (
     <div
-      className={`j-grid${calendarView === 'week' ? ' j-grid-week' : ''}`}
+      className={`j-grid${cols.length === 1 ? ' j-single-column' : ''}${calendarView === 'week' ? ' j-grid-week' : ''}`}
       // --j-cols нужен CSS: ширина самой сетки обязана вмещать все колонки,
       // иначе колонка времени (sticky left) уезжает вместе с краем сетки.
       style={{ gridTemplateColumns: `56px repeat(${cols.length}, minmax(var(--j-col-min, 170px), 1fr))`, '--j-cols': cols.length } as React.CSSProperties}
@@ -85,6 +99,7 @@ export const Grid: React.FC<GridProps> = ({
         const isTrainerMode = viewMode === 'trainers';
         const trainer = isTrainerMode ? (col as Trainer) : null;
         const hallName = !isTrainerMode ? (col as string) : null;
+        const dayOff = isTrainerMode && calendarView === 'day' ? columnBlocks(col).find(b => b.kind === 'day_off') : undefined;
         
         const colBookings = filteredBookings.filter(b => {
             if (calendarView === 'week') {
@@ -208,7 +223,8 @@ export const Grid: React.FC<GridProps> = ({
                             <span className="j-name-full">{trainer.full}</span>
                             <span className="j-name-short">{trainer.name}</span>
                           </div>
-                          <div className="j-hdr-sub" style={{ fontSize: 11, color: 'var(--muted)', fontWeight: 600, marginTop: 1 }}>{trainer.role}</div>
+                          {dayOff ? <div className="j-hdr-off-tag" title={dayOff.label || t('scheduleBlocks.day_off')}>{dayOff.label || t('scheduleBlocks.day_off')}</div>
+                            : <div className="j-hdr-sub" style={{ fontSize: 11, color: 'var(--muted)', fontWeight: 600, marginTop: 1 }}>{trainer.role}</div>}
                       </div>
                       </div>
                       <div className="j-hdr-stats" style={{ fontSize: 10.5, color: 'var(--muted)', fontWeight: 600, marginTop: 4, display: 'flex', alignItems: 'center', justifyContent: singleColumn ? 'center' : 'flex-start', gap: 6, width: '100%' }}>
@@ -258,14 +274,19 @@ export const Grid: React.FC<GridProps> = ({
 
             const layouts = getBookingLayouts(colBookings);
             const hourBookings = colBookings.filter(b => b.timeStart >= ti && b.timeStart < ti + 1);
-            const canBook = !colBookings.some(b => b.timeStart < ti + 1 && b.timeEnd > ti);
+            const blocks = columnBlocks(col);
+            const unavailableHere = blocks.filter(b => b.start_minute < gridStart + (ti + 1) * 60 && b.end_minute > gridStart + ti * 60);
+            const blocked = calendarView === 'week'
+              ? visibleTrainers.length > 0 && visibleTrainers.every(s => unavailableHere.some(b => b.staff_id === s.id))
+              : unavailableHere.length > 0;
+            const canBook = !blocked && !colBookings.some(b => b.timeStart < ti + 1 && b.timeEnd > ti);
 
             return (
               <div
                 key={ci}
                 data-ti={ti}
                 data-ci={ci}
-                className={`j-empty-slot ${hoveredSlot === `${ti}-${ci}` && canBook && canEdit ? 'is-targeted' : ''}`}
+                className={`j-empty-slot ${blocked ? 'j-slot-unavailable' : ''} ${hoveredSlot === `${ti}-${ci}` && canBook && canEdit ? 'is-targeted' : ''}`}
                 onMouseEnter={() => {
                   if (canBook && !showNewForm && !popupBooking && canEdit) setHoveredSlot(`${ti}-${ci}`);
                 }}
@@ -285,10 +306,21 @@ export const Grid: React.FC<GridProps> = ({
                   // видно: там pointerdown идёт до mousedown и drag уже выставлен.
                   if ((e.target as HTMLElement).closest('.booking-card')) return;
                   e.stopPropagation();
+                  if (blocked) { showToast(t('scheduleBlocks.unavailable')); return; }
                   const trainerIdx = isTrainerMode ? trainer!.id : 0;
                   openNewSlot(trainerIdx, ti, ci);
                 }}
               >
+                {blocks.filter(b => Math.max(b.start_minute, gridStart) < Math.min(b.end_minute, gridEnd)
+                  && Math.floor((Math.max(b.start_minute, gridStart) - gridStart) / 60) === ti).map((block, i) => {
+                  const start = Math.max(block.start_minute, gridStart), end = Math.min(block.end_minute, gridEnd);
+                  const lanes = calendarView === 'week' ? visibleTrainers.length : 1;
+                  const lane = visibleTrainers.findIndex(s => s.id === block.staff_id);
+                  return <StaffBlockCard key={`${block.staff_id}-${i}`} block={block}
+                    top={(start - gridStart - ti * 60) / 60 * 72 + 2} height={(end - start) / 60 * 72 - 4}
+                    name={calendarView === 'week' ? visibleTrainers.find(s => s.id === block.staff_id)?.name : undefined}
+                    style={lanes > 1 ? { left: `calc(${lane / lanes * 100}% + 2px)`, right: `calc(${(lanes - lane - 1) / lanes * 100}% + 2px)` } : undefined} />;
+                })}
                 {/* Обертка для карточек с анимацией */}
                 {/* Без z-index/transform на обертке: иначе stacking context запирает
                     карточку в её часовой строке и клики по нижней части перехватывают

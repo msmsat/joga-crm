@@ -436,5 +436,13 @@
     "paid": "Ödendi",
     "attend": "Katılım",
     "notMarked": "İşaretlenmedi"
+  },
+  "scheduleBlocks": {
+    "day_off": "İzin günü",
+    "break": "Mola",
+    "off_hours": "Çalışmıyor",
+    "busy": "Çalışmıyor",
+    "allDay": "Tüm gün",
+    "unavailable": "Çalışan bu saatte çalışmıyor"
   }
 }

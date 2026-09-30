@@ -204,7 +204,7 @@ async def _staff_intervals(
 def staff_intervals(hours_rows, override_rows, day: date) -> tuple[list[Interval], Optional[str]]:
     """Pure staff hours/overrides calculation; no per-slot database reads."""
     yesterday = day - timedelta(days=1)
-    hours_by_dow = {row.day_of_week: row for row in hours_rows}
+    from services.staff_hours import effective_hours, shift_intervals
     override_by_day = {row.day: row.is_working for row in override_rows}
 
     if override_by_day.get(day) is False:
@@ -214,9 +214,9 @@ def staff_intervals(hours_rows, override_rows, day: date) -> tuple[list[Interval
     candidates: list[Interval] = []
     known = False
 
-    for anchor, weekday in ((day, day.weekday()), (yesterday, yesterday.weekday())):
+    for anchor in (day, yesterday):
         override = override_by_day.get(anchor)
-        row = hours_by_dow.get(weekday)
+        row = effective_hours(hours_rows, override_rows, anchor)
         if override is False:
             # Явный выходной этого (или вчерашнего) дня — его смена в счёт не
             # идёт, включая её ночной хвост.
@@ -224,9 +224,7 @@ def staff_intervals(hours_rows, override_rows, day: date) -> tuple[list[Interval
         if row is not None:
             known = True
             if override is True or row.is_open:
-                interval = _to_interval(row.open_time, row.close_time, anchor)
-                if interval is not None:
-                    candidates.append(interval)
+                candidates.extend(shift_intervals(row, anchor))
         elif override is True:
             # «Работает» без недельной строки — открывает день, но часов не
             # даёт: без них резервировать нечего (см. докстринг функции).

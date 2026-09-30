@@ -1,0 +1,18 @@
+import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+import ts from 'typescript';
+const source = await readFile(new URL('../src/pages/dashboard/Staff/scheduleModel.ts', import.meta.url), 'utf8');
+const js = ts.transpileModule(source, { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.ESNext } }).outputText;
+const { shiftParts, validShift } = await import('data:text/javascript;base64,' + Buffer.from(js).toString('base64'));
+const day = { day_of_week: 0, is_open: true, open_time: '11:00', close_time: '22:00', breaks: [{ open_time: '15:00', close_time: '17:00', label: 'Обед' }] };
+assert.equal(validShift(day), true);
+assert.deepEqual(shiftParts(day), [[660, 900], [1020, 1320]]);
+assert.equal(validShift({ ...day, breaks: [{ open_time: '10:00', close_time: '12:00' }] }), false);
+assert.equal(validShift({ ...day, breaks: [...day.breaks, { open_time: '16:00', close_time: '18:00' }] }), false);
+assert.equal(validShift({ ...day, breaks: [{ open_time: '11:00', close_time: '22:00' }] }), false);
+const night = { ...day, open_time: '22:00', close_time: '06:00', breaks: [{ open_time: '01:00', close_time: '02:00' }] };
+assert.equal(validShift(night), true);
+assert.deepEqual(shiftParts(night), [[1320, 1500], [1560, 1800]]);
+assert.deepEqual(shiftParts({ ...day, is_open: false }), []);
+assert.equal(validShift({ ...day, open_time: '25:00' }), false);
+console.log('Staff hours: 9 checks passed');

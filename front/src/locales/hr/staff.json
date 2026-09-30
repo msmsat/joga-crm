@@ -7,6 +7,9 @@
     "onlineNow": "{{count}} sada online"
   },
   "toolbar": {
+    "employeePlaceholder": "Zaposlenik",
+    "chooseStaff": "Odaberite zaposlenika",
+    "mobileHint": "Dodirnite za odabir zaposlenika",
     "teamTitle": "Tim · {{count}}",
     "addEmployee": "Dodaj zaposlenika",
     "searchPlaceholder": "Traži...",
@@ -68,7 +71,21 @@
     "prevMonth": "Prethodni mjesec",
     "nextMonth": "Sljedeći mjesec",
     "dayHasBookings": "Za ovaj dan već postoje rezervacije — ne može biti neradni",
-    "pastDayLocked": "Prošli se dani ne mogu mijenjati"
+    "pastDayLocked": "Prošli se dani ne mogu mijenjati",
+    "editorTitle": "Dnevni raspored",
+    "scope": "Primijeni",
+    "scopeWeek": "Samo ovaj tjedan",
+    "scopeWeekly": "Svaki tjedan",
+    "editHint": "Odaberite dan za uređivanje radnog vremena, stanki ili slobodnog dana.",
+    "break": "Stanka",
+    "addBreak": "Dodaj stanku",
+    "removeBreak": "Ukloni stanku",
+    "label": "Naziv u kalendaru",
+    "invalidBreaks": "Stanke moraju biti unutar smjene, ne smiju se preklapati i moraju ostaviti radno vrijeme.",
+    "prevWeek": "Prethodni tjedan",
+    "nextWeek": "Sljedeći tjedan",
+    "repeatHint": "Ponavljaj ovaj dan u tjednu. Iznimke na druge datume ostaju.",
+    "onceHint": "Promijeni samo odabrani datum. Ostali tjedni ostaju isti."
   },
   "permissions": {
     "finance": "Financije",

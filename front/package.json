@@ -24,11 +24,14 @@
     "check:resource-booking": "node --experimental-vm-modules scripts/check-resource-booking.mjs",
     "check:booking-wizard": "node --experimental-vm-modules scripts/check-booking-wizard.mjs",
     "check:journal-creation": "node --experimental-vm-modules scripts/check-journal-creation.mjs",
+    "check:staff-picker": "node --experimental-vm-modules scripts/check-staff-picker.mjs",
     "check:client-event-dates": "node --experimental-vm-modules scripts/check-client-event-dates.mjs",
     "check:lesson-compensation": "node --experimental-vm-modules scripts/check-lesson-compensation.mjs",
     "check:lesson-funding": "node --experimental-vm-modules scripts/check-lesson-funding.mjs",
     "check:service-duration": "node --experimental-vm-modules scripts/check-service-duration.mjs",
-    "check:scenes": "node scripts/check-scenes.mjs"
+    "check:scenes": "node scripts/check-scenes.mjs",
+    "check:staff-hours": "node scripts/check-staff-hours.mjs",
+    "check:staff-schedule-sync": "node --experimental-vm-modules scripts/check-staff-schedule-sync.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",

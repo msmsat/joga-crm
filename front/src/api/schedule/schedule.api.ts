@@ -1,10 +1,13 @@
 import { client } from '../client'
 import type {
-  EligibleClient, Hall, Lesson, LessonCreate, LessonDaysResponse, LessonDetail, Reservation,
+  StaffScheduleBlock, EligibleClient, Hall, Lesson, LessonCreate, LessonDaysResponse, LessonDetail, Reservation,
   ReservationPaymentOptions, ReservationPaymentPreview,
 } from './schedule.types'
 
 export const scheduleApi = {
+  getStaffBlocks: (dateFrom: string, dateTo: string) =>
+    client.get<StaffScheduleBlock[]>(`/schedule/staff-blocks?date_from=${dateFrom}&date_to=${dateTo}`),
+
   getLessons: (params: { date_from: string; date_to: string; hall_id?: number }) => {
     const q = new URLSearchParams(
       Object.entries(params).filter(([, v]) => v !== undefined).map(([k, v]) => [k, String(v)])

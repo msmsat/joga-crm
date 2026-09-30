@@ -7,6 +7,9 @@
     "onlineNow": "{{count}} online tani"
   },
   "toolbar": {
+    "employeePlaceholder": "Punonjës",
+    "chooseStaff": "Zgjidhni një punonjës",
+    "mobileHint": "Prekni për të zgjedhur një punonjës",
     "teamTitle": "Ekipi · {{count}}",
     "addEmployee": "Shto punonjës",
     "searchPlaceholder": "Kërko...",
@@ -68,7 +71,21 @@
     "prevMonth": "Muaji i mëparshëm",
     "nextMonth": "Muaji i ardhshëm",
     "dayHasBookings": "Kjo ditë ka tashmë rezervime — nuk mund të jetë e lirë",
-    "pastDayLocked": "Ditët e shkuara nuk ndryshohen"
+    "pastDayLocked": "Ditët e shkuara nuk ndryshohen",
+    "editorTitle": "Orari ditor",
+    "scope": "Zbato",
+    "scopeWeek": "Vetëm këtë javë",
+    "scopeWeekly": "Çdo javë",
+    "editHint": "Zgjidhni një ditë për të ndryshuar orarin, pushimet ose një ditë të lirë.",
+    "break": "Pushim",
+    "addBreak": "Shto pushim",
+    "removeBreak": "Hiq pushimin",
+    "label": "Emri në kalendar",
+    "invalidBreaks": "Pushimet duhet të jenë brenda turnit, të mos mbivendosen dhe të lënë kohë pune.",
+    "prevWeek": "Java e kaluar",
+    "nextWeek": "Java e ardhshme",
+    "repeatHint": "Përsëriteni këtë ditë të javës. Përjashtimet në datat e tjera ruhen.",
+    "onceHint": "Ndryshoni vetëm datën e zgjedhur. Javët e tjera mbeten njësoj."
   },
   "permissions": {
     "finance": "Financat",

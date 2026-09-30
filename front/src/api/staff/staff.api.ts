@@ -1,4 +1,5 @@
 import { client } from '../client'
+import { syncStaffSchedule } from '../staffScheduleCache'
 import type { ContactCheckResponse, ContactField } from '../auth/auth.types'
 import type {
   StaffCreate,
@@ -15,7 +16,7 @@ import type {
   StaffCancelLessonResponse,
   StaffMessageResponse,
   StaffCallResponse,
-  StaffBusyInterval,
+  StaffBusyInterval, StaffScheduleEditor, StaffScheduleChange,
 } from './staff.types'
 
 export const staffApi = {
@@ -40,7 +41,9 @@ export const staffApi = {
     client.post<StaffMutateResponse>('/staff/', payload),
 
   update: (id: number, payload: StaffUpdate) =>
-    client.put<StaffMutateResponse>(`/staff/${id}`, payload),
+    payload.schedule !== undefined
+      ? syncStaffSchedule(client.put<StaffMutateResponse>(`/staff/${id}`, payload))
+      : client.put<StaffMutateResponse>(`/staff/${id}`, payload),
 
   delete: (id: number) =>
     client.delete<{ ok: boolean }>(`/staff/${id}`),
@@ -50,6 +53,11 @@ export const staffApi = {
     client.post<StaffMutateResponse>(`/staff/${id}/invite`, {}),
 
   // ─── Schedule ────────────────────────────────────────────────────────────────
+
+  getScheduleEditor: (id: number, weekStart: string) =>
+    client.get<StaffScheduleEditor>(`/staff/${id}/schedule/editor?week_start=${weekStart}`),
+  saveScheduleEditor: (id: number, payload: StaffScheduleChange) =>
+    syncStaffSchedule(client.put<{ ok: boolean }>(`/staff/${id}/schedule/editor`, payload)),
 
   getWeekSchedule: (id: number) =>
     client.get<StaffWeekScheduleResponse>(`/staff/${id}/schedule/week`),
@@ -66,7 +74,7 @@ export const staffApi = {
 
   // is_working = null снимает отметку: день снова считается по недельному графику.
   setDayOverride: (id: number, date: string, is_working: boolean | null) =>
-    client.put<StaffDayOverrideItem>(`/staff/${id}/schedule/day`, { date, is_working }),
+    syncStaffSchedule(client.put<StaffDayOverrideItem>(`/staff/${id}/schedule/day`, { date, is_working })),
 
   // ─── Перерывы и отсутствия (HB-05/HB-18) ────────────────────────────────────
   // Отдельный CRUD, а не поле карточки: интервалов много и они про расписание,
@@ -80,10 +88,10 @@ export const staffApi = {
   },
 
   createBusy: (id: number, payload: { start_time: string; end_time: string; reason?: string | null }) =>
-    client.post<StaffBusyInterval>(`/staff/${id}/schedule/busy`, payload),
+    syncStaffSchedule(client.post<StaffBusyInterval>(`/staff/${id}/schedule/busy`, payload)),
 
   deleteBusy: (id: number, intervalId: number) =>
-    client.delete<{ ok: boolean }>(`/staff/${id}/schedule/busy/${intervalId}`),
+    syncStaffSchedule(client.delete<{ ok: boolean }>(`/staff/${id}/schedule/busy/${intervalId}`)),
 
   getTodaySchedule: (id: number) =>
     client.get<StaffTodayScheduleResponse>(`/staff/${id}/schedule/today`),

@@ -436,5 +436,13 @@
     "paid": "Bezahlt",
     "attend": "Anwesenheit",
     "notMarked": "Nicht markiert"
+  },
+  "scheduleBlocks": {
+    "day_off": "Freier Tag",
+    "break": "Pause",
+    "off_hours": "Arbeitet nicht",
+    "busy": "Arbeitet nicht",
+    "allDay": "Ganztägig",
+    "unavailable": "Der Mitarbeiter arbeitet zu dieser Zeit nicht"
   }
 }

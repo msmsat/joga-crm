@@ -8,7 +8,7 @@
 Запуск из back/:  python -m tests.test_staff_day_override
 """
 import asyncio
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from types import SimpleNamespace
 
 import pytest
@@ -30,6 +30,12 @@ class _R:
     def first(self):
         return self._v
 
+    def scalars(self):
+        return self
+
+    def all(self):
+        return [] if self._v is None else [self._v]
+
 
 class _DB:
     """Отдаёт заготовленные ответы по порядку вызовов execute."""
@@ -39,7 +45,7 @@ class _DB:
         self.added, self.deleted, self.commits = [], [], 0
 
     async def execute(self, _q):
-        return _R(self._results.pop(0))
+        return _R(self._results.pop(0) if self._results else None)
 
     async def flush(self):
         pass
@@ -58,7 +64,7 @@ CTX = SimpleNamespace(user=None, studio_id=1, role="owner")
 FUTURE = date.today() + timedelta(days=4)
 PAST = date.today() - timedelta(days=1)
 MEMBER = object()      # членство сотрудника в студии найдено
-BOOKING = (17,)        # строка активной записи на этот день
+BOOKING = SimpleNamespace(start_time=datetime.combine(FUTURE, datetime.min.time()), duration_min=60, buffer_after_min=0)        # строка активной записи на этот день
 NOTHING = None
 # HB-06: `schedule_guard.lock_studio` — первый SELECT в set_day_override.
 # strict_schedule_enabled=False — assert_future_assignments_valid не делает

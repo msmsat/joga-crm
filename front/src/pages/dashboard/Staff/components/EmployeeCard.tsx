@@ -41,6 +41,14 @@ export function EmployeeCard({
     <div
       className={`s-item ${isActive ? 'active' : ''}`}
       onClick={isPending ? undefined : onSelect}
+      role={isPending ? undefined : 'button'}
+      tabIndex={isPending ? undefined : 0}
+      aria-pressed={isPending ? undefined : isActive}
+      onKeyDown={isPending ? undefined : e => {
+        if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) {
+          e.preventDefault(); onSelect();
+        }
+      }}
       title={isPending ? t('list.pendingHint') : undefined}
       style={isPending ? { cursor: 'default', opacity: 0.72 } : undefined}
     >

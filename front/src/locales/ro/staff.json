@@ -7,6 +7,9 @@
     "onlineNow": "{{count}} online acum"
   },
   "toolbar": {
+    "employeePlaceholder": "Angajat",
+    "chooseStaff": "Alege un angajat",
+    "mobileHint": "Apasă pentru a alege un angajat",
     "teamTitle": "Echipă · {{count}}",
     "addEmployee": "Adaugă angajat",
     "searchPlaceholder": "Caută...",
@@ -68,7 +71,21 @@
     "prevMonth": "Luna precedentă",
     "nextMonth": "Luna următoare",
     "dayHasBookings": "Această zi are deja rezervări — nu poate fi zi liberă",
-    "pastDayLocked": "Zilele trecute nu pot fi modificate"
+    "pastDayLocked": "Zilele trecute nu pot fi modificate",
+    "editorTitle": "Program zilnic",
+    "scope": "Aplică",
+    "scopeWeek": "Doar săptămâna aceasta",
+    "scopeWeekly": "În fiecare săptămână",
+    "editHint": "Selectați o zi pentru a modifica orele, pauzele sau o zi liberă.",
+    "break": "Pauză",
+    "addBreak": "Adaugă pauză",
+    "removeBreak": "Elimină pauza",
+    "label": "Nume în calendar",
+    "invalidBreaks": "Pauzele trebuie să fie în tură, să nu se suprapună și să lase timp de lucru.",
+    "prevWeek": "Săptămâna anterioară",
+    "nextWeek": "Săptămâna următoare",
+    "repeatHint": "Repetați această zi a săptămânii. Excepțiile pentru alte date se păstrează.",
+    "onceHint": "Modificați doar data aleasă. Celelalte săptămâni rămân la fel."
   },
   "permissions": {
     "finance": "Finanțe",

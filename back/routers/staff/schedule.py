@@ -3,7 +3,7 @@ from datetime import date, datetime, timedelta
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy import select
+from sqlalchemy import select, delete, extract
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
@@ -19,8 +19,8 @@ from schemas import (
     StaffTodayScheduleResponse, StaffCancelLessonResponse,
     StaffDayOverrideItem, StaffDayOverrideRequest,
 )
-from schemas.staff.staff import StaffBusyIntervalCreate, StaffBusyIntervalItem
-from services import booking, schedule_guard, booking_time
+from schemas.staff.staff import StaffBusyIntervalCreate, StaffBusyIntervalItem, StaffScheduleEditorRequest, StaffWorkingHoursItem
+from services import booking, schedule_guard, booking_time, lesson_time
 from services.schedule_guard import lock_studio
 
 router = APIRouter()
@@ -66,6 +66,8 @@ async def get_week_schedule(
                 "is_open": wh.is_open,
                 "open_time": wh.open_time,
                 "close_time": wh.close_time,
+                "breaks": wh.breaks or [],
+                "off_label": wh.off_label,
             }
             for wh in working_hours
         ],
@@ -204,22 +206,11 @@ async def get_month_schedule(
 
 
 async def _has_bookings(staff_id: int, studio_id: int, day: date, db: AsyncSession) -> bool:
-    """Есть ли в этот день у тренера занятие хотя бы с одной активной записью."""
-    day_start = datetime.combine(day, datetime.min.time())
-    result = await db.execute(
-        select(Reservation.id)
-        .join(Lesson, Lesson.id == Reservation.lesson_id)
-        .where(
-            Lesson.teacher_id == staff_id,
-            Lesson.studio_id == studio_id,
-            Lesson.start_time >= day_start,
-            Lesson.start_time < day_start + timedelta(days=1),
-            Lesson.status != "cancelled",
-            Reservation.status != "cancelled",
-        )
-        .limit(1)
-    )
-    return result.first() is not None
+    day_start=datetime.combine(day,datetime.min.time())
+    rows=(await db.execute(select(Lesson).where(Lesson.teacher_id==staff_id,Lesson.studio_id==studio_id,
+        Lesson.status!="cancelled",Lesson.start_time<day_start+timedelta(days=1),
+        Lesson.start_time>=day_start-timedelta(days=2)))).scalars().all()
+    return any(l.start_time+timedelta(minutes=l.duration_min+(l.buffer_after_min or 0))>day_start for l in rows)
 
 
 # ─── PUT /staff/{staff_id}/schedule/day ───────────────────────────────────────
@@ -244,7 +235,7 @@ async def set_day_override(
 
     # Прошлое не редактируется: график задним числом расходится с тем, что
     # реально было проведено и оплачено.
-    if day < date.today():
+    if day < lesson_time.local_now(studio).date():
         raise HTTPException(status_code=409, detail="Прошедшие дни менять нельзя")
 
     # День с живыми записями выходным быть не может: клиенты уже пришли бы на
@@ -284,6 +275,10 @@ async def set_day_override(
             db, studio, user_id=staff_id)
         schedule_guard.raise_if_conflicts(conflicts)
 
+    from services.staff_schedule_editor import assert_future_fits
+    if payload.is_working is not True:
+        await db.flush()
+        await assert_future_fits(db,studio,staff_id,changed_dates={day,day+timedelta(days=1)})
     await db.commit()
 
     # is_working в ответе — то, что отметил владелец; null означает «по графику».
@@ -344,6 +339,8 @@ async def create_busy_interval(
     )
     db.add(row)
     await db.flush()
+    from services.staff_schedule_editor import assert_future_fits
+    await assert_future_fits(db,studio,staff_id,changed_dates={payload.start_time.date()+timedelta(days=n) for n in range((payload.end_time.date()-payload.start_time.date()).days+1)})
     conflicts = await schedule_guard.assert_future_assignments_valid(db, studio, user_id=staff_id)
     schedule_guard.raise_if_conflicts(conflicts)
     await db.commit()
@@ -467,3 +464,75 @@ async def cancel_lesson(
     await db.commit()
 
     return {"ok": True, "lesson_id": lesson_id, "cancelled_reservations": len(lesson.reservations)}
+
+
+@router.get("/{staff_id}/schedule/editor")
+async def get_schedule_editor(staff_id:int,week_start:date,ctx:StudioContext=Depends(require_role("owner")),db:AsyncSession=Depends(get_db)):
+    await _assert_staff_in_studio(staff_id,ctx.studio_id,db)
+    if week_start.weekday()!=0:
+        raise HTTPException(422,detail="Неделя должна начинаться с понедельника")
+    from services.staff_hours import effective_hours
+    from services.staff_schedule_editor import load_hours
+    from types import SimpleNamespace
+    hours,overrides,_=await load_hours(db,staff_id,ctx.studio_id)
+    days=[]
+    for n in range(7):
+        day=week_start+timedelta(days=n)
+        row=effective_hours(hours,overrides,day)
+        if row is None:
+            row=SimpleNamespace(is_open=n<5,open_time="09:00",close_time="18:00",breaks=[],off_label=None)
+        days.append({"date":day.isoformat(),"day_of_week":n,"is_open":row.is_open,"open_time":row.open_time,
+            "close_time":row.close_time,"breaks":getattr(row,"breaks",None) or [],"off_label":getattr(row,"off_label",None),
+            "is_override":any(o.day==day for o in overrides)})
+    return {"staff_id":staff_id,"week_start":week_start.isoformat(),"days":days}
+
+
+@router.put("/{staff_id}/schedule/editor")
+async def save_schedule_editor(staff_id:int,payload:StaffScheduleEditorRequest,ctx:StudioContext=Depends(require_role("owner")),db:AsyncSession=Depends(get_db)):
+    studio=await lock_studio(db,ctx.studio_id)
+    await _assert_staff_in_studio(staff_id,ctx.studio_id,db)
+    try:
+        monday=date.fromisoformat(payload.week_start)
+        if monday.weekday()!=0:
+            raise ValueError()
+    except ValueError:
+        raise HTTPException(422,detail="Некорректное начало недели")
+    from services.staff_schedule_editor import assert_future_fits
+    affected=set()
+    for item in payload.days:
+        day=monday+timedelta(days=item.day_of_week)
+        affected.update((day,day+timedelta(days=1)))
+        if payload.repeat_weekly:
+            row=(await db.execute(select(StaffWorkingHours).where(StaffWorkingHours.user_id==staff_id,StaffWorkingHours.studio_id==ctx.studio_id,StaffWorkingHours.day_of_week==item.day_of_week))).scalar_one_or_none()
+            if row is None:
+                row=StaffWorkingHours(user_id=staff_id,studio_id=ctx.studio_id,day_of_week=item.day_of_week)
+                db.add(row)
+            for key,value in item.model_dump().items():
+                setattr(row,key,value)
+            # The selected date now follows the template. Keep exceptions on
+            # other dates, and never rewrite historical dated schedules.
+            if day >= lesson_time.local_now(studio).date():
+                await db.execute(delete(StaffDayOverride).where(
+                    StaffDayOverride.user_id == staff_id,
+                    StaffDayOverride.studio_id == ctx.studio_id,
+                    StaffDayOverride.day == day))
+            # Old generated working-day marks must follow the updated template.
+            # Dated exceptions carrying their own hours and explicit days off survive.
+            await db.execute(delete(StaffDayOverride).where(StaffDayOverride.user_id==staff_id,StaffDayOverride.studio_id==ctx.studio_id,
+                StaffDayOverride.day>=lesson_time.local_now(studio).date(),StaffDayOverride.is_working.is_(True),
+                StaffDayOverride.hours.is_(None),extract("isodow",StaffDayOverride.day)==item.day_of_week+1))
+        else:
+            if day<lesson_time.local_now(studio).date():
+                raise HTTPException(409,detail="Прошедшие дни менять нельзя")
+            row=(await db.execute(select(StaffDayOverride).where(StaffDayOverride.user_id==staff_id,StaffDayOverride.studio_id==ctx.studio_id,StaffDayOverride.day==day))).scalar_one_or_none()
+            if row is None:
+                row=StaffDayOverride(user_id=staff_id,studio_id=ctx.studio_id,day=day)
+                db.add(row)
+            row.is_working=item.is_open
+            row.hours=item.model_dump()
+    await db.flush()
+    await assert_future_fits(db,studio,staff_id,changed_dates=None if payload.repeat_weekly else affected,
+        changed_weekdays={d.day_of_week for d in payload.days} if payload.repeat_weekly else None)
+    schedule_guard.raise_if_conflicts(await schedule_guard.assert_future_assignments_valid(db,studio,user_id=staff_id))
+    await db.commit()
+    return {"ok":True}

@@ -38,6 +38,10 @@ export const queryKeys = {
   checkoutServices: ['checkout', 'services'] as const,
   subscriptionConfig: ['catalog', 'subscription-config'] as const,
   staff: ['staff'] as const,
+  staffScheduleEditor: (id: number, week: string) => ['staff-schedule-editor', id, week] as const,
+  staffScheduleEditorAll: ['staff-schedule-editor'] as const,
+  journalStaffBlocks: (from: string, to: string) => ['journal-staff-blocks', from, to] as const,
+  journalStaffBlocksAll: ['journal-staff-blocks'] as const,
   staffProfile: (id: number) => ['staff', id] as const,
   // Кто какие индивидуальные услуги ведёт и в каких филиалах — форма записи журнала.
   // Под префиксом staff: правка сотрудника (услуги, филиалы) инвалидирует и его.

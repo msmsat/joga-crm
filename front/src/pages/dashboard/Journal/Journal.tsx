@@ -150,7 +150,7 @@ export default function Journal() {
   const showToast = React.useCallback((msg: string) => toast.info(msg), [toast]);
 
   // Реальные данные: тренеры (Сотрудники), залы, занятия за видимый диапазон
-  const { trainers, halls, bookings, isFirstLoad, lessonsKey, loadError, isFirstLoadError, refetchAll } =
+  const { trainers, staffBlocks, dateFrom, halls, bookings, isFirstLoad, lessonsKey, loadError, isFirstLoadError, refetchAll } =
     useSchedule(calYear, calMonth, selectedDay, calendarView);
   // Точки мини-календаря считаем с учётом фильтра тренеров — в режиме «Залы»
   // сетка тренеров не фильтрует, значит и точки гасить нечем.
@@ -917,6 +917,9 @@ export default function Journal() {
                   columns={columns}
                   viewMode={viewMode}
                   filteredBookings={filteredBookings}
+                  staffBlocks={staffBlocks}
+                  dayDate={dateFrom}
+                  visibleTrainers={visibleTrainers}
                   hoveredSlot={hoveredSlot}
                   setHoveredSlot={setHoveredSlot}
                   canEdit={canEdit}

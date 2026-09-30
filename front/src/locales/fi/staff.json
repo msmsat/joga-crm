@@ -7,6 +7,9 @@
     "onlineNow": "{{count}} nyt verkossa"
   },
   "toolbar": {
+    "employeePlaceholder": "Työntekijä",
+    "chooseStaff": "Valitse työntekijä",
+    "mobileHint": "Valitse työntekijä napauttamalla",
     "teamTitle": "Tiimi · {{count}}",
     "addEmployee": "Lisää työntekijä",
     "searchPlaceholder": "Hae...",
@@ -68,7 +71,21 @@
     "prevMonth": "Edellinen kuukausi",
     "nextMonth": "Seuraava kuukausi",
     "dayHasBookings": "Tälle päivälle on jo varauksia — se ei voi olla vapaapäivä",
-    "pastDayLocked": "Menneitä päiviä ei voi muuttaa"
+    "pastDayLocked": "Menneitä päiviä ei voi muuttaa",
+    "editorTitle": "Päivän työajat",
+    "scope": "Käytä",
+    "scopeWeek": "Vain tämä viikko",
+    "scopeWeekly": "Joka viikko",
+    "editHint": "Valitse päivä muokataksesi työaikoja, taukoja tai vapaapäivää.",
+    "break": "Tauko",
+    "addBreak": "Lisää tauko",
+    "removeBreak": "Poista tauko",
+    "label": "Nimi kalenterissa",
+    "invalidBreaks": "Taukojen on oltava työvuoron sisällä, ne eivät saa mennä päällekkäin ja työaikaa on jäätävä.",
+    "prevWeek": "Edellinen viikko",
+    "nextWeek": "Seuraava viikko",
+    "repeatHint": "Toista tämä viikonpäivä. Muiden päivien poikkeukset säilyvät.",
+    "onceHint": "Muuta vain valittu päivä. Muut viikot pysyvät ennallaan."
   },
   "permissions": {
     "finance": "Talous",

@@ -233,3 +233,12 @@ export interface Reservation {
   booking_channel: string | null
   created_at: string
 }
+
+export interface StaffScheduleBlock {
+  staff_id: number;
+  date: string;
+  start_minute: number;
+  end_minute: number;
+  kind: 'day_off' | 'off_hours' | 'break' | 'busy';
+  label: string | null;
+}

@@ -440,5 +440,13 @@
     "paid": "Zaplaceno",
     "attend": "Docházka",
     "notMarked": "Neoznačeno"
+  },
+  "scheduleBlocks": {
+    "day_off": "Volný den",
+    "break": "Přestávka",
+    "off_hours": "Nepracuje",
+    "busy": "Nepracuje",
+    "allDay": "Celý den",
+    "unavailable": "Zaměstnanec v tuto dobu nepracuje"
   }
 }
