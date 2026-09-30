@@ -61,7 +61,7 @@ export function PayMark({ client: c, canPay, onPay, tile }: {
 /** Пришёл ли клиент. Не отметили, а занятие закончилось, — неявка: крестик,
  *  но отметить приход задним числом по-прежнему можно. */
 export function AttendMark({ attended, missed, onAttend, tile }: {
-  attended: boolean; missed: boolean; onAttend: () => void; tile?: boolean;
+  attended: boolean; missed: boolean; onAttend?: () => void; tile?: boolean;
 }) {
   const { t } = useTranslation('journal');
   const state: MarkState = attended ? 'done' : missed ? 'missed' : 'idle';

@@ -121,7 +121,7 @@ export function BookedClients({ clients, canEdit, removable, over, currency, pri
               ) : (
                 <>
                   <PayMark client={c} canPay={canEdit} onPay={() => setPaying(c)} />
-                  <AttendMark attended={c.status === 'attended'} missed={over} onAttend={() => attend(c)} />
+                  <AttendMark attended={c.status === 'attended'} missed={over} onAttend={canEdit ? () => attend(c) : undefined} />
                 </>
               )}
               {canEdit && (removable || c.status === 'pending') && (

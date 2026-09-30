@@ -18,8 +18,6 @@ def validate_strong_password(value: str) -> str:
         raise ValueError("Пароль должен содержать хотя бы одну цифру")
     if re.search(r"(.)\1{2,}", value):
         raise ValueError("Пароль содержит слишком много одинаковых символов подряд (например, 111)")
-    if re.search(r"(123|234|345|456|567|678|789|890|qwe|wer|ert|asd|sdf|zxc)", value.lower()):
-        raise ValueError("Пароль слишком простой (содержит популярные последовательности)")
     return value
 
 

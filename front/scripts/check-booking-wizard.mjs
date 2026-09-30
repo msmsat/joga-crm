@@ -51,7 +51,12 @@ async function harness(file, extra = {}) {
   const mod = await load(pathToFileURL(`${root}/${file}`));
   await mod.evaluate();
   return {
-    render(name, props) { cursor = 0; return mod.namespace[name](props); },
+    render(name, props) {
+      cursor = 0;
+      let tree = mod.namespace[name](props);
+      while (tree && typeof tree.type === 'function') tree = tree.type(tree.props);
+      return tree;
+    },
     call(name, args) { return mod.namespace[name](...args); },
   };
 }
@@ -196,20 +201,22 @@ async function groupBooking(joined, extra = {}) {
     updateLesson: async (id, body) => { calls.push(['update', id, body]); },
   };
   const noop = () => {};
+  const created = [];
   const render = (await navigation({
     schedule: { scheduleApi },
     './masterAvailability': { lessonToJoin: () => joined },
     useNotePhotos: { useNotePhotos: () => ({ photos: ['/static/notes/a.jpg'], pending: [], add: noop, remove: noop }) },
-  }))({ defaultTime: '10:00', defaultTeacherId: 7, ...extra });
+  }))({ defaultTime: '10:00', defaultTeacherId: 7, onCreated: date => created.push(date),
+    onClose: () => created.push('closed'), ...extra });
   if (extra.clientId != null) render().pickClient(extra.clientId, 'Anna');
   render().pickService({ id: 1, booking_mode: 'event', masters: [], duration_min: 60 });
   render().setNotes('  Bring a mat  ');
   const w = render();
   await w.submit();
-  return { calls, w };
+  return { calls, w, created };
 }
-test('group lesson from the journal has no client section and books nobody', async () => {
-  const { calls, w } = await groupBooking(undefined);
+test('group lesson from the journal has no client section and reports the created date', async () => {
+  const { calls, w, created } = await groupBooking(undefined);
   assert.equal(w.needsClient, false);
   assert.equal(w.steps.includes(1), false);
   assert.equal(w.ready, true);
@@ -218,6 +225,7 @@ test('group lesson from the journal has no client section and books nobody', asy
   assert.deepEqual(Array.from(body.photos), ['/static/notes/a.jpg']);
   assert.equal(calls.some(c => c[0] === 'reserve'), false);
   assert.equal(calls.some(c => c[0] === 'update'), false);
+  assert.deepEqual(created, [w.date, 'closed']);
 });
 test('without a client an existing lesson at that time is busy, not joined', async () => {
   const { calls, w } = await groupBooking({ id: 9, notes: '', photos: [] });
@@ -245,17 +253,52 @@ test('studio with only group services has no client section from the start', asy
   const card = (await navigation({}, groupOnly))({ clientId: 5 })();
   assert.equal(card.steps.includes(1), true);
 });
-test('from the client card a group booking still books the client', async () => {
-  const { calls } = await groupBooking(undefined, { clientId: 3 });
+test('from the client card a group booking still books the client and reports the created date', async () => {
+  const { calls, w, created } = await groupBooking(undefined, { clientId: 3 });
   assert.deepEqual(calls.find(c => c[0] === 'reserve'), ['reserve', 3, 50]);
+  assert.deepEqual(created, [w.date, 'closed']);
 });
-test('joining an existing lesson appends the note with the client name', async () => {
-  const { calls } = await groupBooking({ id: 9, notes: 'Hall B', photos: ['/static/notes/old.jpg'] }, { clientId: 3 });
+test('joining an existing lesson appends the note and reports the date of the selected lesson', async () => {
+  const { calls, w, created } = await groupBooking({ id: 9, notes: 'Hall B', photos: ['/static/notes/old.jpg'] }, { clientId: 3 });
   assert.equal(calls.some(c => c[0] === 'create'), false);
   const [, id, body] = calls.find(c => c[0] === 'update');
   assert.equal(id, 9);
   assert.equal(body.notes, 'Hall B\n\nAnna: Bring a mat');
   assert.deepEqual(Array.from(body.photos), ['/static/notes/old.jpg', '/static/notes/a.jpg']);
+  assert.deepEqual(created, [w.date, 'closed']);
+});
+
+test('manual date and time, available time, and a master time notify the journal of the selected day', async () => {
+  const days = [];
+  const render = (await navigation())({ defaultDate: '2099-05-12', onDateChange: date => days.push(date) });
+  render().setWhen('2099-05-20', '12:35');
+  assert.equal(render().date, '2099-05-20');
+  assert.equal(render().time, '12:35');
+  assert.equal(days.at(-1), '2099-05-20');
+  const afterManual = days.length;
+  render().pickTime('13:00');
+  assert.equal(render().time, '13:00');
+  assert.equal(days.at(-1), '2099-05-20');
+  assert.equal(days.length, afterManual + 1);
+  render().pickMaster(7, '13:30');
+  assert.equal(render().time, '13:30');
+  assert.equal(days.at(-1), '2099-05-20');
+  assert.equal(days.length, afterManual + 2);
+});
+
+test('creating a group lesson after changing the date reports the selected day before closing', async () => {
+  const events = [];
+  let createdBody;
+  const render = (await navigation({ schedule: { scheduleApi: { createLesson: async body => {
+    createdBody = body;
+    return { id: 50 };
+  } } } }))({ defaultDate: '2099-05-12', defaultTime: '10:00', defaultTeacherId: 7,
+    onCreated: date => events.push(date), onClose: () => events.push('closed') });
+  render().pickService({ id: 1, booking_mode: 'event', masters: [], duration_min: 60 });
+  render().setWhen('2099-05-20', '14:30');
+  await render().submit();
+  assert.equal(createdBody.start_time, '2099-05-20T14:30:00');
+  assert.deepEqual(events, ['2099-05-20', 'closed']);
 });
 test('choosing a master with an offered time skips the now completed time section', async () => {
   const render = (await navigation())();
@@ -330,7 +373,9 @@ test('past slot is detected and the same hour ahead is offered', async () => {
   assert.equal(mod.nextSameTime('14:00', noon).date, '2026-05-21');
 });
 test('wizard opened on a past slot asks; continue takes the offered time, own time opens the time section', async () => {
-  const render = (await navigation())({ defaultDate: '2020-05-12', defaultTime: '18:00', defaultTeacherId: 7 });
+  const acceptedDays = [];
+  const render = (await navigation())({ defaultDate: '2020-05-12', defaultTime: '18:00', defaultTeacherId: 7,
+    onDateChange: date => acceptedDays.push(date) });
   let w = render();
   assert.equal(w.pastAsk.time, '18:00');
   assert.ok(w.pastAsk.date > '2020-05-12');
@@ -341,14 +386,18 @@ test('wizard opened on a past slot asks; continue takes the offered time, own ti
   assert.equal(w.pastAsk, null);
   assert.equal(w.date, offered.date);
   assert.equal(w.time, '18:00');
+  assert.equal(acceptedDays.at(-1), offered.date);
 
-  const own = (await navigation())({ defaultDate: '2020-05-12', defaultTime: '18:00' });
+  const ownDays = [];
+  const own = (await navigation())({ defaultDate: '2020-05-12', defaultTime: '18:00',
+    onDateChange: date => ownDays.push(date) });
   own().choosePastOwn();
   w = own();
   assert.equal(w.pastAsk, null);
   assert.equal(w.step, 0);
   assert.equal(w.time, '');
   assert.ok(w.date > '2020-05-12');
+  assert.equal(ownDays.at(-1), w.date);
 });
 test('future slot and past day without time do not ask', async () => {
   assert.equal((await navigation())({ defaultDate: '2099-05-12', defaultTime: '18:00' })().pastAsk, null);

@@ -1,0 +1,263 @@
+// Real desktop form handlers and creation mutations; API/DOM boundaries stay deterministic.
+import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+import { test } from 'node:test';
+import vm from 'node:vm';
+import ts from 'typescript';
+
+const settle = () => new Promise(done => setTimeout(done, 0));
+const event = () => ({ preventDefault() {}, stopPropagation() {} });
+const plain = value => JSON.parse(JSON.stringify(value));
+
+function nodes(tree, type) {
+  if (!tree || typeof tree !== 'object') return [];
+  if (Array.isArray(tree)) return tree.flatMap(item => nodes(item, type));
+  return [...(tree.type === type ? [tree.props] : []), ...nodes(tree.props?.children, type)];
+}
+
+async function loadModule(file, dependencies, context) {
+  const url = new URL(file, import.meta.url);
+  const output = ts.transpileModule(await readFile(url, 'utf8'), {
+    compilerOptions: { jsx: ts.JsxEmit.ReactJSX, target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.ESNext },
+  }).outputText;
+  const mod = new vm.SourceTextModule(output, {
+    context, identifier: url.href, initializeImportMeta(meta) { meta.env = { DEV: false }; },
+  });
+  await mod.link((name, parent) => {
+    if (/\/(utils|constants|staffColors)$/.test(name)) {
+      return loadModule(new URL(`${name}.ts`, parent.identifier).href, dependencies, context);
+    }
+    const exports = dependencies[name] ?? dependencies[name.split('/').at(-1)];
+    if (!exports) throw new Error(`Missing test dependency: ${name}`);
+    return new vm.SyntheticModule(Object.keys(exports), function () {
+      for (const [key, value] of Object.entries(exports)) this.setExport(key, value);
+    }, { context });
+  });
+  return mod;
+}
+
+async function desktopForm(onCreate, photoState = { photos: [], pending: [], add() {}, remove() {} }) {
+  let cursor = 0;
+  const state = [];
+  const react = {
+    useState(initial) {
+      const index = cursor++;
+      if (!(index in state)) state[index] = typeof initial === 'function' ? initial() : initial;
+      return [state[index], value => { state[index] = typeof value === 'function' ? value(state[index]) : value; }];
+    },
+    useRef(initial) { const index = cursor++; return state[index] ??= { current: initial }; },
+    useMemo: fn => fn(), useEffect() {},
+  };
+  const jsx = (type, props) => ({ type, props });
+  const context = vm.createContext({ console, document: { body: {} } });
+  const dependencies = {
+    react: { ...react, default: react },
+    'react/jsx-runtime': { jsx, jsxs: jsx, Fragment: 'fragment' },
+    'react-dom': { createPortal: tree => tree },
+    'react-router-dom': { useNavigate: () => () => {} },
+    'react-i18next': { useTranslation: () => ({ t: key => key }) },
+    '@tanstack/react-query': { useQuery: () => ({ data: [] }) },
+    Icons: { Plus: 'Plus', X: 'X', Check: 'Check' },
+    studio: { studioApi: {} },
+    'studio.api': { studioApi: {} },
+    queryKeys: { queryKeys: { branches: ['branches'] } },
+    useServiceOptions: { CREATE_SERVICE_OPTION: '__create_service__', useServiceOptions: () => ({
+      services: [{ id: 3, name: 'Pilates', booking_mode: 'event' }],
+      options: [{ value: '3', label: 'Pilates' }], priceFor: () => 75,
+    }) },
+    index: { Select: 'Select', ConfirmModal: 'ConfirmModal', NotePhotos: 'NotePhotos', NoteDropZone: 'NoteDropZone' },
+    useNotePhotos: { useNotePhotos: () => photoState },
+    usePhone: { usePhone: () => false },
+    useStudioCurrency: { useStudioCurrency: () => 'EUR' },
+    money: { formatMoney: (amount, currency) => `${amount} ${currency}` },
+    useDurationLabel: { useDurationLabel: () => duration => `${duration} min` },
+  };
+  const mod = await loadModule('../src/pages/dashboard/Journal/components/modals/NewBookingModal.tsx', dependencies, context);
+  await mod.evaluate();
+  const closed = [];
+  const dates = [];
+  const props = {
+    trainers: [{ id: 7, name: 'Alex', full: 'Alex Brown', initials: 'AB', color: '#123456', bg: '#eee' }],
+    halls: ['Main'], newBookingSlot: { trainer: 7, timeStart: 4.5, timeEnd: 5.5 },
+    newForm: { serviceId: 3, title: 'Pilates', hall: 'Main', maxClients: '8', branchId: null },
+    setNewBookingSlot(value) { props.newBookingSlot = typeof value === 'function' ? value(props.newBookingSlot) : value; },
+    setNewForm(value) { props.newForm = typeof value === 'function' ? value(props.newForm) : value; },
+    newFormPos: { x: 0, y: 0 }, modalRef: { current: null }, timeStep: 15,
+    closeNewForm: () => closed.push('closed'), onCreate, spaceIsAxis: true,
+    date: '2026-10-03', onDateChange: date => dates.push(date),
+  };
+  function render() { cursor = 0; return mod.namespace.NewBookingModal(props); }
+  render(); // The form synchronizes its controlled time inputs during its first render.
+  const create = tree => nodes(tree, 'button').find(button => button.children === 'newBooking.create');
+  return { render, props, closed, dates, create, photoState };
+}
+
+test('desktop creation stays open during saving, submits the draft once, and closes after success', async () => {
+  let release;
+  const submitted = [];
+  const app = await desktopForm(form => { submitted.push(plain(form)); return new Promise(done => { release = done; }); });
+  let tree = app.render();
+  nodes(tree, 'textarea')[0].onChange({ target: { value: '  Bring mat  ' } });
+  tree = app.render();
+  const create = app.create(tree);
+  create.onMouseDown(event());
+  create.onMouseDown(event()); // A second click before React rerenders must not create a duplicate.
+  assert.equal(submitted.length, 1);
+  assert.deepEqual(submitted[0], {
+    serviceId: 3, title: 'Pilates', hall: 'Main', branchId: null, maxClients: 8,
+    notes: 'Bring mat', photos: [], price: 75,
+  });
+  assert.deepEqual(app.closed, []);
+  tree = app.render();
+  assert.equal(app.create(tree).disabled, true);
+  nodes(tree, 'button').find(button => button.children === 'newBooking.cancel').onMouseDown(event());
+  nodes(tree, 'div').find(div => div.className === 'kp-backdrop').onMouseDown();
+  assert.deepEqual(app.closed, []);
+  release(true);
+  await settle();
+  assert.deepEqual(app.closed, ['closed']);
+});
+
+test('a failed creation preserves entered notes, date and service and allows a retry', async () => {
+  let attempt = 0;
+  const submitted = [];
+  const app = await desktopForm(async form => { submitted.push(plain(form)); return ++attempt === 2; });
+  nodes(app.render(), 'textarea')[0].onChange({ target: { value: 'Keep this draft' } });
+  app.create(app.render()).onMouseDown(event());
+  await settle();
+  assert.deepEqual(app.closed, []);
+  const tree = app.render();
+  assert.equal(nodes(tree, 'textarea')[0].value, 'Keep this draft');
+  assert.equal(nodes(tree, 'input').find(input => input.type === 'date').value, '2026-10-03');
+  assert.equal(nodes(tree, 'Select')[0].value, '3');
+  assert.equal(app.create(tree).disabled, false);
+  app.create(tree).onMouseDown(event());
+  await settle();
+  assert.equal(submitted.length, 2);
+  assert.deepEqual(submitted[1], submitted[0]);
+  assert.deepEqual(app.closed, ['closed']);
+});
+
+test('creation waits for attached photos and includes the finished upload', async () => {
+  const submitted = [];
+  const photoState = { pending: [{ id: 'upload-1' }], photos: [], add() {}, remove() {} };
+  const app = await desktopForm(async form => { submitted.push(plain(form)); return true; }, photoState);
+  const button = app.create(app.render());
+  assert.equal(button.disabled, true);
+  button.onMouseDown(event());
+  await settle();
+  assert.equal(submitted.length, 0);
+  assert.deepEqual(app.closed, []);
+  photoState.pending = [];
+  photoState.photos = ['https://cdn.example/photo.jpg'];
+  const ready = app.create(app.render());
+  assert.equal(ready.disabled, false);
+  ready.onMouseDown(event());
+  await settle();
+  assert.deepEqual(submitted[0].photos, photoState.photos);
+  assert.deepEqual(app.closed, ['closed']);
+});
+
+test('the desktop date input reports the selected day and fractional hours render correctly', async () => {
+  const app = await desktopForm(async () => true);
+  const tree = app.render();
+  nodes(tree, 'input').find(input => input.type === 'date').onChange({ target: { value: '2026-11-04' } });
+  assert.deepEqual(app.dates, ['2026-11-04']);
+  const header = nodes(tree, 'div').find(div => div.className === 'kp-head-sub');
+  assert.ok(JSON.stringify(header).includes('11:30'));
+  assert.ok(JSON.stringify(header).includes('12:30'));
+});
+
+test('a time waiting for past-date confirmation cannot replace the displayed committed draft', async () => {
+  const app = await desktopForm(async () => true);
+  const asked = [];
+  // Journal opens the past-time question before changing its selected slot.
+  app.props.onTimeChange = time => asked.push(time);
+  let tree = app.render();
+  const start = nodes(tree, 'input').find(input => input.className?.includes('kp-time-input'));
+  start.onChange({ target: { value: '07:00' } });
+  tree = app.render();
+  nodes(tree, 'input').find(input => input.className?.includes('kp-time-input'))
+    .onBlur({ target: { value: '07:00' } });
+  assert.deepEqual(asked, ['07:00']);
+  assert.equal(app.props.newBookingSlot.timeStart, 4.5);
+  const after = nodes(app.render(), 'input').find(input => input.className?.includes('kp-time-input'));
+  assert.equal(after.value, '11:30');
+});
+
+test('an end time clamped to its unchanged minimum still displays the actual draft time', async () => {
+  const app = await desktopForm(async () => true);
+  app.props.newBookingSlot.timeEnd = 4.75;
+  app.render();
+  let tree = app.render();
+  nodes(tree, 'input').filter(input => input.className?.includes('kp-time-input'))[1]
+    .onChange({ target: { value: '07:00' } });
+  tree = app.render();
+  nodes(tree, 'input').filter(input => input.className?.includes('kp-time-input'))[1]
+    .onBlur({ target: { value: '07:00' } });
+  assert.equal(app.props.newBookingSlot.timeEnd, 4.75);
+  const end = nodes(app.render(), 'input').filter(input => input.className?.includes('kp-time-input'))[1];
+  assert.equal(end.value, '11:45');
+});
+
+async function mutationHarness(createApi) {
+  const initial = [{ id: 11, title: 'Existing' }];
+  let cache = initial;
+  const invalidated = [];
+  const context = vm.createContext({ console });
+  const queryKeys = { journalLessonsAll: ['journal-lessons'], journalDaysAll: ['journal-days'] };
+  const qc = {
+    cancelQueries: async () => {}, getQueryData: () => cache,
+    setQueryData(_key, data) { cache = data; },
+    invalidateQueries({ queryKey }) { invalidated.push(queryKey); },
+  };
+  const dependencies = {
+    '@tanstack/react-query': {
+      useQueryClient: () => qc,
+      useMutation: options => ({ mutateAsync: async variables => {
+        let snapshot;
+        try {
+          snapshot = await options.onMutate?.(variables);
+          return await options.mutationFn(variables);
+        } catch (error) {
+          await options.onError?.(error, variables, snapshot);
+          throw error;
+        } finally { await options.onSettled?.(); }
+      } }),
+    },
+    schedule: { scheduleApi: { createLesson: createApi } },
+    'hybrid.api': { hybridApi: {} }, queryKeys: { queryKeys },
+  };
+  const mod = await loadModule('../src/pages/dashboard/Journal/hooks/useJournalMutations.ts', dependencies, context);
+  await mod.evaluate();
+  const mutations = mod.namespace.useJournalMutations(['journal-lessons', '2026-10-03']);
+  return { mutations, cache: () => cache, initial, invalidated };
+}
+
+test('creation returns the server lesson id and version used by undo and subsequent edits', async () => {
+  let release;
+  const payload = { service_id: 3, teacher_id: 7, start_time: '2026-10-03T11:30:00' };
+  const optimistic = { id: -123, version: 1, title: 'Pilates', date: '2026-10-03' };
+  const app = await mutationHarness(body => {
+    assert.deepEqual(plain(body), payload);
+    return new Promise(done => { release = done; });
+  });
+  const saving = app.mutations.createLesson(payload, optimistic);
+  await settle();
+  assert.equal(app.cache().at(-1).id, -123);
+  release({ id: 71, version: 6 });
+  const result = await saving;
+  assert.equal(result.prev, null);
+  assert.equal(result.next.id, 71);
+  assert.equal(result.next.version, 6);
+  assert.equal(result.next.date, '2026-10-03');
+  assert.equal(optimistic.id, -123);
+  assert.deepEqual(plain(app.invalidated), [['journal-lessons'], ['journal-days']]);
+});
+
+test('a server rejection removes the optimistic lesson and propagates failure to the open form', async () => {
+  const app = await mutationHarness(async () => { throw new Error('TIME_SLOT_OCCUPIED'); });
+  await assert.rejects(app.mutations.createLesson({}, { id: -123 }), /TIME_SLOT_OCCUPIED/);
+  assert.deepEqual(app.cache(), app.initial);
+  assert.deepEqual(plain(app.invalidated), [['journal-lessons'], ['journal-days']]);
+});

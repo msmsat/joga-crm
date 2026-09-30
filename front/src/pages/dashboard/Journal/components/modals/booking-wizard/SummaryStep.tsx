@@ -15,7 +15,7 @@ import { NotePhotos, NoteDropZone } from '../../../../../../components/ui/index'
 import { WizardChips } from './WizardParts';
 import { SettleBlock } from './SettleBlock';
 
-function Row({ label, value, hint, onChange }: {
+export function SummaryRow({ label, value, hint, onChange }: {
   label: string; value: string; hint?: string; onChange?: () => void;
 }) {
   const { t } = useTranslation('journal');
@@ -60,13 +60,13 @@ export function SummaryStep({ w }: { w: BookingWizardState }) {
 
   return (
     <div className="bw-list bw-summary">
-      <Row label={t('journal:wizard.when')} value={isTime(w.time) ? `${day}, ${w.time}` : ''}
+      <SummaryRow label={t('journal:wizard.when')} value={isTime(w.time) ? `${day}, ${w.time}` : ''}
            hint={w.joined ? t('journal:wizard.existing') : undefined} onChange={() => w.goTo(TIME_STEP)} />
       {w.needsClient && (
-        <Row label={t('journal:resourceBooking.client')} value={w.clientName} onChange={() => w.goTo(CLIENT_STEP)} />
+        <SummaryRow label={t('journal:resourceBooking.client')} value={w.clientName} onChange={() => w.goTo(CLIENT_STEP)} />
       )}
-      <Row label={t('journal:resourceBooking.service')} value={w.service?.name ?? ''} onChange={() => w.goTo(SERVICE_STEP)} />
-      <Row label={t('journal:resourceBooking.staff')} value={master ?? ''} onChange={() => w.goTo(MASTER_STEP)} />
+      <SummaryRow label={t('journal:resourceBooking.service')} value={w.service?.name ?? ''} onChange={() => w.goTo(SERVICE_STEP)} />
+      <SummaryRow label={t('journal:resourceBooking.staff')} value={master ?? ''} onChange={() => w.goTo(MASTER_STEP)} />
       {/* Время сменили после выбора мастера — и он в него оказался занят. */}
       {w.conflict && <div className="kp-error bw-sum-error" role="alert">{t('journal:wizard.selectionConflict')}</div>}
       {place && (

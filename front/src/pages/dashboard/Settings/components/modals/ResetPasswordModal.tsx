@@ -24,7 +24,7 @@ function passwordRules(value: string) {
     { key: "len", ok: value.length >= 8 },
     { key: "letter", ok: /[A-Za-zА-Яа-я]/.test(value) },
     { key: "digit", ok: /[0-9]/.test(value) },
-    { key: "simple", ok: value.length > 0 && !/(.)\1{2,}/.test(value) && !/(123|234|345|456|567|678|789|890|qwe|wer|ert|asd|sdf|zxc)/.test(value.toLowerCase()) },
+    { key: "simple", ok: value.length > 0 && !/(.)\1{2,}/.test(value) },
   ];
 }
 

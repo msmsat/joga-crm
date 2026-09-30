@@ -38,7 +38,8 @@ export type WizardOptions = {
   /** Карточка клиента открывает запись с уже выбранным человеком — его можно сменить. */
   clientId?: number | null;
   onClose: () => void;
-  onCreated: () => void;
+  onCreated: (date?: string) => void;
+  onDateChange?: (date: string) => void;
 };
 
 /** Разделы по порядку — в этом же порядке их листает свайп. Порядок только
@@ -233,9 +234,14 @@ export function useBookingWizard(o: WizardOptions) {
     if (branch != null && branch !== resource.branchId) resource.setBranchId(branch);
   };
   const setWhen = (day: string, at: string) => {
+    if (at && isTime(at) && isPastSlot(day, at)) {
+      setPastAsk(nextSameTime(at));
+      return;
+    }
     autoPicked.current = null;
     if (day !== date) { setDateState(day); resource.setDate(day); }
     setTimeState(at);
+    o.onDateChange?.(day);
     if (day === date) syncBranch(at);
   };
   /** Ответ на «Это время уже прошло»: взять предложенный час или выбрать свой. */
@@ -251,8 +257,13 @@ export function useBookingWizard(o: WizardOptions) {
   };
   /** Время из списка свободного — как выбор строки: сразу к следующему разделу. */
   const pickTime = (at: string) => {
+    if (isPastSlot(date, at)) {
+      setPastAsk(nextSameTime(at));
+      return;
+    }
     autoPicked.current = null;
     setTimeState(at);
+    o.onDateChange?.(date);
     syncBranch(at);
     goTo(nextAfter(TIME_STEP, { ...current, time: at }));
   };
@@ -295,7 +306,7 @@ export function useBookingWizard(o: WizardOptions) {
       const branch = availability.branchFor(service.id, id, at ?? time);
       if (branch != null) resource.setBranchId(branch);
     }
-    if (at) setTimeState(at);
+    if (at) { setTimeState(at); o.onDateChange?.(date); }
     setMasterChosen(true);
     goTo(nextAfter(MASTER_STEP, { ...current, time: at ?? time, masterChosen: true }));
   };
@@ -364,7 +375,7 @@ export function useBookingWizard(o: WizardOptions) {
       }
       if (!needsClient) {
         toast.info(t('journal:toasts.lessonAdded'));
-        o.onCreated();
+        o.onCreated(date);
         o.onClose();
         return;
       }
@@ -384,12 +395,12 @@ export function useBookingWizard(o: WizardOptions) {
         }
       }
       toast.info(t('journal:toasts.clientsBooked', { count: 1 }));
-      o.onCreated();
+      o.onCreated(date);
       o.onClose();
     } catch (err) {
       toast.error(errorMessage(err, t));
       // Занятие могло создаться, а запись — нет: сетка должна его показать.
-      o.onCreated();
+      o.onCreated(date);
     } finally {
       setSaving(false);
     }

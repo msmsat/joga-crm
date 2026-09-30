@@ -19,7 +19,8 @@ import { useBookingPayment } from './useBookingPayment';
 
 export type ResourceBookingOptions = {
   onClose: () => void;
-  onCreated: () => void;
+  onCreated: (date?: string) => void;
+  onDateChange?: (date: string) => void;
   clientId?: number | null;
   defaultDate?: string;
   defaultServiceId?: number;
@@ -57,7 +58,7 @@ const iso = (date: Date) =>
  * подтверждение принимает названную сумму наличными в той же транзакции.
  */
 export function useResourceBooking({
-  onClose, onCreated, clientId = null, defaultDate, defaultServiceId, teacherId: initialTeacherId = null,
+  onClose, onCreated, onDateChange, clientId = null, defaultDate, defaultServiceId, teacherId: initialTeacherId = null,
   checkout = true,
 }: ResourceBookingOptions) {
   const { t } = useTranslation(['journal', 'common']);
@@ -214,7 +215,7 @@ export function useResourceBooking({
           toast.error(errorMessage(err, t));
         }
       }
-      onCreated();
+      onCreated(quote.terms.domain.local_start.slice(0, 10));
       onClose();
     } catch (err) {
       // Слот мог уйти, ваучер — погаситься, сумма — измениться между показом и
@@ -235,7 +236,7 @@ export function useResourceBooking({
     setServiceId: (id: number) => { setServiceId(id); resetQuote(); },
     setBranchId: (id: number) => { setBranchId(id); resetQuote(); },
     setTeacherId: (id: number | null) => { setTeacherId(id); resetQuote(); },
-    date, setDate: (value: string) => { setDate(value); resetQuote(); },
+    date, setDate: (value: string) => { setDate(value); resetQuote(); onDateChange?.(value); },
     choice, serviceId, branchId, teacherId, chosenService, loadingChoice,
     loadError: servicesError ?? linksError,
     rangeOf, priceAt, durationAt, serviceHint,

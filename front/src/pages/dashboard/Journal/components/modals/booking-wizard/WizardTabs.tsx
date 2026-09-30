@@ -37,13 +37,12 @@ const ICONS: Record<'time' | 'client' | 'service' | 'master' | 'summary', ReactN
   ),
 };
 
-type Tab = { key: keyof typeof ICONS; done: boolean; conflict: boolean; current: boolean; disabled: boolean; onClick: () => void };
+export type BookingTab = { key: keyof typeof ICONS; done: boolean; conflict: boolean; current: boolean; disabled: boolean; onClick: () => void };
 
 /** payable — запись можно подтверждать (итог светится, когда кнопка
     «Подтвердить» в подвале станет активной). */
 export function WizardTabs({ w, payable }: { w: BookingWizardState; payable: boolean }) {
-  const { t } = useTranslation('journal');
-  const step = (s: number, key: Tab['key'], done: boolean): Tab => ({
+  const step = (s: number, key: BookingTab['key'], done: boolean): BookingTab => ({
     key, done: done && !(w.conflict && [TIME_STEP, SERVICE_STEP, MASTER_STEP].includes(s)),
     conflict: w.conflict && (s === TIME_STEP || (s === SERVICE_STEP && w.service != null)
       || (s === MASTER_STEP && w.masterChosen)), current: w.step === s,
@@ -52,7 +51,7 @@ export function WizardTabs({ w, payable }: { w: BookingWizardState; payable: boo
     disabled: w.saving || w.step === s || !w.steps.includes(s),
     onClick: () => w.goTo(s),
   });
-  const tabs: Tab[] = [
+  const tabs: BookingTab[] = [
     step(TIME_STEP, 'time', w.done(TIME_STEP)),
     step(CLIENT_STEP, 'client', w.done(CLIENT_STEP)),
     step(SERVICE_STEP, 'service', w.done(SERVICE_STEP)),
@@ -60,8 +59,14 @@ export function WizardTabs({ w, payable }: { w: BookingWizardState; payable: boo
     step(SUMMARY_STEP, 'summary', payable),
   // Групповому занятию клиент не нужен — его кнопки нет вовсе.
   ].filter(tab => tab.key !== 'client' || w.steps.includes(CLIENT_STEP));
+  return <BookingTabs tabs={tabs} />;
+}
+
+/** Навигация между разделами создания записи. */
+export function BookingTabs({ tabs }: { tabs: BookingTab[] }) {
+  const { t } = useTranslation('journal');
   return (
-    <nav className="bw-tabs" aria-label={t('wizard.step', { n: w.steps.indexOf(w.step) + 1, total: w.steps.length })}>
+    <nav className="bw-tabs" aria-label={t('wizard.step', { n: tabs.findIndex(tab => tab.current) + 1, total: tabs.length })}>
       {tabs.map(tab => (
         <button key={tab.key} type="button" disabled={tab.disabled}
                 className={`bw-tab${tab.done ? ' done' : ''}${tab.current ? ' current' : ''}${tab.conflict ? ' conflict' : ''}`}

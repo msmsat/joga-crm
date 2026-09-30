@@ -176,10 +176,8 @@ export function getStrength(pw: string): { score: number; label: string; color: 
   if (variety === 3) score += 1;
   if (variety === 4) score += 2;
   
-  // 3. ШТРАФЫ за популярные глупости
+  // 3. Корректируем оценку для повторов и однотипных символов
   if (/(.)\1{2,}/.test(pw)) score -= 1; // Штраф за "aaa", "111"
-  if (/(123|234|345|456|567|678|789|890|098|987|876|765|654|543|432|321)/.test(pw)) score -= 2; // Штраф за цифры по порядку
-  if (/(qwe|wer|ert|asd|sdf|zxc)/i.test(pw)) score -= 1; // Штраф за "йцукен/qwerty"
   if (/^[0-9]+$/.test(pw)) score = 1; // Если только цифры — строго слабый
   if (/^[a-zA-Z]+$/.test(pw)) Math.min(score, 2); // Если только буквы — не выше среднего
 

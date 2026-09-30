@@ -13,6 +13,8 @@ import { ResourceTimeField } from '../ResourceTimeField';
 import { BookingPayment } from '../BookingPayment';
 import { useResourceBooking } from '../../hooks/useResourceBooking';
 import { confirmLabel } from '../../hooks/useBookingPayment';
+import { PastBookingPrompt } from './PastBookingPrompt';
+import { usePastBooking } from './usePastBooking';
 
 type Props = {
   trainers: Trainer[];
@@ -29,7 +31,8 @@ type Props = {
   newFormPos: { x: number; y: number };
   modalRef: React.RefObject<HTMLDivElement | null>;
   onClose: () => void;
-  onCreated: () => void;
+  onCreated: (date?: string) => void;
+  onDateChange?: (date: string) => void;
   /** Превью в сетке следует за выбором: название услуги и взятое время. */
   onPreview: (preview: { title: string; start?: number; end?: number; bufferAfter?: number }) => void;
 };
@@ -51,12 +54,12 @@ type Props = {
  */
 export function ResourceKeypadModal({
   trainers, teacherId: initialTeacherId, defaultTime = '', defaultDate, defaultServiceId, timeStep, clientId = null,
-  newFormPos, modalRef, onClose, onCreated, onPreview,
+  newFormPos, modalRef, onClose, onCreated, onDateChange, onPreview,
 }: Props) {
   const { t } = useTranslation(['journal', 'common']);
   const terms = useBusinessTerms('resource');
   const booking = useResourceBooking({
-    onClose, onCreated, defaultDate, defaultServiceId, teacherId: initialTeacherId, clientId,
+    onClose, onCreated, onDateChange, defaultDate, defaultServiceId, teacherId: initialTeacherId, clientId,
   });
   const { choice, serviceId, branchId, teacherId, chosenService, loadingChoice, quote, quoting, saving, slots, reason } = booking;
   const quotedTime = quote?.terms.domain.local_start.slice(11, 16);
@@ -64,6 +67,10 @@ export function ResourceKeypadModal({
   const busy = loadingChoice || saving;
 
   const [typedTime, setTypedTime] = useState<string | null>(null);
+  const past = usePastBooking((date, time) => {
+    setTypedTime(time ?? '');
+    booking.setDate(date);
+  }, defaultDate, defaultTime);
   const [notes, setNotes] = useState('');
   const notePhotos = useNotePhotos();
   // Свободные начала сервер считает по длительности услуги и её буферам:
@@ -90,12 +97,12 @@ export function ResourceKeypadModal({
   const autoKey = `${booking.client}|${serviceId}|${branchId}|${teacherId}|${booking.date}|${wantedTime}`;
   const { pick } = booking;
   useEffect(() => {
-    if (booking.client == null || quoting || quotedTime === wantedTime || autoPicked.current === autoKey) return;
+    if (past.offered || booking.client == null || quoting || quotedTime === wantedTime || autoPicked.current === autoKey) return;
     const slot = slots.find(s => s.local_start.slice(11, 16) === wantedTime);
     if (!slot) return;
     autoPicked.current = autoKey;
     void pick(slot);
-  }, [booking.client, quoting, quotedTime, wantedTime, autoKey, slots, pick]);
+  }, [past.offered, booking.client, quoting, quotedTime, wantedTime, autoKey, slots, pick]);
 
   // Превью в сетке — сразу длиной с услугу: детская стрижка занимает 30
   // минут, а не час клетки. Мастер выбран — его время (у него оно своё),
@@ -112,7 +119,7 @@ export function ResourceKeypadModal({
   }, [title, wantedTime, duration, bufferAfter, onPreview]);
 
   const dayLabel = booking.date.split('-').reverse().join('.');
-  const ready = !!quote && quotedTime === wantedTime && !quoting;
+  const ready = !past.offered && !!quote && quotedTime === wantedTime && !quoting;
   // Записать можно, когда есть и условия, и чек под них: сумму, которую
   // примут наличными, сервер сверяет с показанной.
   const payable = ready && booking.payment.ready;
@@ -131,7 +138,7 @@ export function ResourceKeypadModal({
   return createPortal(
     <>
       <div className="kp-backdrop" style={{ position: 'fixed', inset: 0, zIndex: 200 }}
-           onMouseDown={() => { if (!saving) onClose(); }} />
+           onMouseDown={() => { if (!saving && !past.offered) onClose(); }} />
       <div className="kp-anchor" style={{ position: 'fixed', left: newFormPos.x, top: newFormPos.y, zIndex: 210 }}
            onMouseDown={e => e.stopPropagation()}>
         <div className="keypad-modal" ref={modalRef}>
@@ -189,7 +196,8 @@ export function ResourceKeypadModal({
               <div className="kp-when">
               <div className="kp-section" onClick={e => e.stopPropagation()}>
                 <div className="kp-section-title">{t('journal:newBooking.start')}</div>
-                <ResourceTimeField value={wantedTime} free={listed} disabled={saving} onCommit={setTypedTime} />
+                <ResourceTimeField value={wantedTime} free={listed} disabled={saving || !!past.offered}
+                  onCommit={time => { if (!past.ask(booking.date, time)) setTypedTime(time); }} />
                 {booking.slotsError ? (
                   <div className="kp-error" role="alert">{errorMessage(booking.slotsError, t)}{' '}
                     <button type="button" className="kp-link" onClick={() => void booking.refreshSlots()}>{t('common:errors.retry')}</button>
@@ -202,7 +210,10 @@ export function ResourceKeypadModal({
               <div className="kp-section">
                 <div className="kp-section-title">{t('journal:resourceBooking.date')}</div>
                 <input className="modal-input kp-date-input" type="date" value={booking.date} disabled={saving}
-                       onChange={e => booking.setDate(e.target.value)} />
+                       onChange={e => {
+                         const date = e.target.value;
+                         if (!past.ask(date, wantedTime)) booking.setDate(date);
+                       }} />
               </div>
               </div>
             </div>
@@ -276,6 +287,7 @@ export function ResourceKeypadModal({
           </div>
         </div>
       </div>
+      <PastBookingPrompt past={past} />
     </>,
     document.body,
   );

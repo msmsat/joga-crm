@@ -5,7 +5,6 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import * as Icons from '../../../../../components/Icons';
 import type { Trainer } from '../../types';
-import { TIMES } from '../../constants';
 import { formatIndexToTimeStr, parseTimeToIndex, generateTimeIntervals } from '../../utils';
 import { useQuery } from '@tanstack/react-query';
 import { useServiceOptions, CREATE_SERVICE_OPTION } from '../../hooks/useServiceOptions';
@@ -38,7 +37,7 @@ interface NewBookingModalProps {
     /** Цена у тренера этой колонки — та, что человек видел в форме. Нужна
      *  только оптимистичной карточке; на сервер её не шлём, он считает сам. */
     price: number;
-  }) => void;
+  }) => Promise<boolean>;
   /** Перевод в форму индивидуальной записи — там, где все услуги такие. */
   onResourceBooking?: (serviceId?: number) => void;
   /** Участвует ли место в расписании. `undefined` — термины ещё не пришли. */
@@ -46,6 +45,9 @@ interface NewBookingModalProps {
   /** Раньше этого индекса сетки начало не ставится — «сейчас», если занятие
    *  сегодня; null — день впереди. Задним числом не записываем. */
   notBefore?: number | null;
+  date?: string;
+  onDateChange?: (date: string) => void;
+  onTimeChange?: (time: string) => void;
 }
 
 export interface NewBookingForm {
@@ -73,6 +75,9 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({
   spaceIsAxis,
   onResourceBooking,
   notBefore = null,
+  date,
+  onDateChange,
+  onTimeChange,
 }) => {
   const { t } = useTranslation('journal');
   // Филиалы нужны только форме без мест — там они единственный источник
@@ -96,6 +101,9 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({
   // Заметка пишется прямо здесь, своим рядом: она про занятие, которое ещё не
   // существует, и отдельное окно ради двух строк текста гоняли бы зря.
   const [notes, setNotes] = useState('');
+  const [saving, setSaving] = useState(false);
+  const savingRef = useRef(false);
+  const dismiss = () => { if (!savingRef.current) closeNewForm(); };
   const notePhotos = useNotePhotos();
   const navigate = useNavigate();
   // На телефоне поля времени только показывают время и открывают список: набор
@@ -204,8 +212,13 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({
     const idx = parseTimeToIndex(val);
 
     if (type === 'start') {
-      setNewBookingSlot(prev => prev ? { ...prev, timeStart: idx, timeEnd: Math.max(prev.timeEnd, idx + 0.25) } : null);
+      if (onTimeChange) {
+        setStartInput(formatIndexToTimeStr(newBookingSlot.timeStart));
+        onTimeChange(formatIndexToTimeStr(idx));
+      }
+      else setNewBookingSlot(prev => prev ? { ...prev, timeStart: idx, timeEnd: Math.max(prev.timeEnd, idx + 0.25) } : null);
     } else {
+      setEndInput(formatIndexToTimeStr(Math.max(idx, newBookingSlot.timeStart + 0.25)));
       setNewBookingSlot(prev => {
         if (!prev) return null;
         let newIdx = idx;
@@ -217,21 +230,28 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({
   };
 
   // СОЗДАНИЕ: форма уходит наверх, Journal шлёт её на сервер
-  const createBooking = () => {
-    if (hasErrors || !newForm.serviceId) return;
-    onCreate({
-      serviceId: newForm.serviceId,
-      title: newForm.title,
-      // Место и филиал взаимоисключающи: там, где место — ось, филиал приходит
-      // вместе с ним, и слать оба значит спорить с сервером на ровном месте.
-      hall: spaceIsAxis === false ? '' : newForm.hall,
-      branchId: spaceIsAxis === false ? newForm.branchId : null,
-      maxClients: maxClientsNum,
-      notes: notes.trim(),
-      photos: notePhotos.photos,
-      price: lessonPrice ?? 0,
-    });
-    closeNewForm();
+  const createBooking = async () => {
+    if (hasErrors || !newForm.serviceId || savingRef.current || notePhotos.pending.length > 0) return;
+    savingRef.current = true;
+    setSaving(true);
+    try {
+      const created = await onCreate({
+        serviceId: newForm.serviceId,
+        title: newForm.title,
+        // Место и филиал взаимоисключающи: там, где место — ось, филиал приходит
+        // вместе с ним, и слать оба значит спорить с сервером на ровном месте.
+        hall: spaceIsAxis === false ? '' : newForm.hall,
+        branchId: spaceIsAxis === false ? newForm.branchId : null,
+        maxClients: maxClientsNum,
+        notes: notes.trim(),
+        photos: notePhotos.photos,
+        price: lessonPrice ?? 0,
+      });
+      if (created) closeNewForm();
+    } finally {
+      savingRef.current = false;
+      setSaving(false);
+    }
   };
 
   return createPortal(
@@ -239,7 +259,7 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({
       <div
         className="kp-backdrop"
         style={{ position: 'fixed', inset: 0, zIndex: 200 }}
-        onMouseDown={closeNewForm}
+        onMouseDown={dismiss}
       />
       <div
         className="kp-anchor"
@@ -257,16 +277,21 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({
                 <div className="kp-head-title">{t('newBooking.title')}</div>
                 <div className="kp-head-sub">
                   {t('newBooking.slotTime')}: <span style={{ color: 'var(--peach)', fontWeight: 800 }}>
-                    {[...TIMES, '22:00', '23:00'][newBookingSlot.timeStart] || '00:00'} – {[...TIMES, '22:00', '23:00'][newBookingSlot.timeEnd] || '00:00'}
+                    {formatIndexToTimeStr(newBookingSlot.timeStart)} – {formatIndexToTimeStr(newBookingSlot.timeEnd)}
                   </span>
                 </div>
               </div>
             </div>
-            <button type="button" className="btn-icon" onClick={closeNewForm}><Icons.X /></button>
+            <button type="button" className="btn-icon" disabled={saving} onClick={dismiss}><Icons.X /></button>
           </div>
 
-          <div className="kp-grid">
+          <fieldset className="kp-grid" disabled={saving} style={{ border: 0, margin: 0, minWidth: 0, pointerEvents: saving ? 'none' : undefined }}>
             <div className="kp-col">
+              {date && onDateChange && <div className="kp-section">
+                <div className="kp-section-title">{t('resourceBooking.date')}</div>
+                <input className="modal-input kp-date-input" type="date" value={date}
+                       onChange={e => onDateChange(e.target.value)} />
+              </div>}
 
               <div className="kp-section">
                 <div className="kp-section-title">{t('newBooking.service')}</div>
@@ -474,22 +499,23 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({
                 />
               </div>
             </div>
-          </div>
+          </fieldset>
 
           <div className="kp-foot">
             <button
               type="button"
               className="btn-ghost-sm"
-              onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); closeNewForm(); }}
+              disabled={saving}
+              onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); dismiss(); }}
             >
               {t('newBooking.cancel')}
             </button>
             <button
               type="button"
               className="btn-primary-sm"
-              disabled={hasErrors}
-              style={{ opacity: hasErrors ? 0.5 : 1, cursor: hasErrors ? 'not-allowed' : 'pointer' }}
-              onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); createBooking(); }}
+              disabled={hasErrors || saving || notePhotos.pending.length > 0}
+              style={{ opacity: hasErrors || saving || notePhotos.pending.length > 0 ? 0.5 : 1, cursor: hasErrors || saving || notePhotos.pending.length > 0 ? 'not-allowed' : 'pointer' }}
+              onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); void createBooking(); }}
             >
               {t('newBooking.create')}
             </button>

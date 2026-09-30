@@ -1,5 +1,6 @@
 // Плитки окна оплаты (PaySheet): баллы и депозит с выключателем, приглашения,
 // своя скидка администратора, строки чека.
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Switch } from '../../../../../components/ui/index';
 import type { ReferralSummary } from '../../../../../api/schedule/schedule.types';
@@ -52,22 +53,30 @@ export function ReferralTile({ referral, money }: { referral: ReferralSummary; m
 
 export function ManualDiscount({ payment, disabled }: { payment: PaymentCheck; disabled: boolean }) {
   const { t } = useTranslation('journal');
+  const [inputMode, setInputMode] = useState<'custom' | 'preset'>('custom');
   return (
     <div className="rp-manual">
       <div className="rp-tile-title">{t('lessonPay.manual')}</div>
       <div className="rp-chips">
         {QUICK_PERCENTS.map(p => (
           <button key={p} type="button" disabled={disabled}
-                  className={`rp-chip${payment.manualPercent === p ? ' is-on' : ''}`}
-                  onClick={() => payment.setManual(payment.manualPercent === p ? '' : String(p))}>
+                  className={`rp-chip${inputMode === 'preset' && payment.manualPercent === p ? ' is-on' : ''}`}
+                  aria-pressed={inputMode === 'preset' && payment.manualPercent === p}
+                  onClick={() => {
+                    payment.setManual(inputMode === 'preset' && payment.manualPercent === p ? '' : String(p));
+                    setInputMode('preset');
+                  }}>
             −{p}%
           </button>
         ))}
         <label className={`rp-chip rp-chip-input${payment.manualInvalid ? ' is-error' : ''}`}>
           <input
             inputMode="numeric"
-            value={QUICK_PERCENTS.includes(payment.manualPercent ?? -1) ? '' : payment.manual}
-            onChange={e => payment.setManual(e.target.value)}
+            value={inputMode === 'preset' ? '' : payment.manual}
+            onChange={e => {
+              setInputMode('custom');
+              payment.setManual(e.target.value);
+            }}
             placeholder={t('lessonPay.manualPlaceholder')}
             aria-label={t('lessonPay.manual')}
             disabled={disabled}

@@ -6,7 +6,7 @@ import type { Booking } from './types';
 import type { LessonCreate } from '../../../api/schedule/schedule.types';
 import { scheduleApi } from '../../../api/schedule';
 import { errorMessage } from '../../../api/errorMessage';
-import { indexToDateTime, toDateStr, formatIndexToTimeStr } from './utils';
+import { indexToDateTime, toDateStr, formatIndexToTimeStr, parseTimeToIndex } from './utils';
 import { useDragAndDrop } from './hooks/useDragAndDrop';
 import { useSchedule, useJournalDays } from './hooks/useSchedule';
 import { useJournalMutations } from './hooks/useJournalMutations';
@@ -30,7 +30,7 @@ import { useServiceOptions } from './hooks/useServiceOptions';
 import { NewBookingModal } from './components/modals/NewBookingModal';
 import type { NewBookingForm } from './components/modals/NewBookingModal';
 import { ResourceBookingModal } from './components/modals/ResourceBookingModal';
-import { isPastSlot } from './components/modals/booking-wizard/pastSlot';
+import { isPastSlot, nextSameTime } from './components/modals/booking-wizard/pastSlot';
 import { ResourceKeypadModal } from './components/modals/ResourceKeypadModal';
 import { usePhone } from '../../../hooks/usePhone';
 import { AddClientModal } from './components/modals/AddClientModal';
@@ -44,7 +44,7 @@ const JOURNAL_DATE_KEY = 'journal:selectedDate';
 
   // ─── ГЛАВНЫЙ КОМПОНЕНТ ────────────────────────────────────────────────────────
 export default function Journal() {
-  const { t } = useTranslation('journal');
+  const { t, i18n } = useTranslation('journal');
   const [hoveredSlot, setHoveredSlot] = useState<string | null>(null);
   const today = new Date();
 
@@ -95,19 +95,24 @@ export default function Journal() {
   const [addModalBooking] = useState<Booking | null>(null);
   const [newBookingSlot, setNewBookingSlot] = useState<{ trainer: number; timeStart: number; timeEnd: number; columnIndex?: number; bufferAfter?: number } | null>(null);
   const [showNewForm, setShowNewForm] = useState(false);
+  const [newBookingDate, setNewBookingDate] = useState('');
+  const [pastChoice, setPastChoice] = useState<{
+    suggested: { date: string; time: string };
+    apply: (when: { date: string; time: string }) => void;
+    own: () => void;
+  } | null>(null);
+  const pastAccepted = useRef(false);
   // Индивидуальная запись открывается из двух мест, и оба уже знают контекст:
   // с клетки сетки — мастер и день, из тулбара — только день. Форма без этого
   // спрашивала всё заново, хотя человек ровно что кликнул по колонке мастера.
   const [resourceBooking, setResourceBooking] = useState<{
     teacherId: number | null; date: string; serviceId?: number; time?: string;
-    /** Мастер записи и на компьютере: клетка в прошлом — он спросит про час впереди. */
-    wizard?: boolean;
   } | null>(null);
   // Та же индивидуальная запись, но у клетки сетки на десктопе — клавиатурным
   // окном, как новое занятие. На телефоне окно у клетки негде разместить: там
   // остаётся шит (resourceBooking).
   const [keypadResource, setKeypadResource] = useState<{
-    teacherId: number; date: string; time: string; serviceId?: number;
+    teacherId: number | null; date: string; time: string; serviceId?: number;
   } | null>(null);
   const isPhone = usePhone();
   // Кнопка индивидуальной записи появляется, только когда такая услуга есть:
@@ -282,66 +287,74 @@ export default function Journal() {
     }
   }, []);
 
-  // ── Открыть форму нового слота (Всегда 1 час или заполнить остаток) ──
-  const openNewSlot = (
-    trainerIdx: number,
-    timeIdx: number,
-    columnIndex: number // 🔥 ДОБАВИЛИ ЭТОТ ПАРАМЕТР
-  ) => {
-    const blockStart = timeIdx;
-    const blockEnd   = timeIdx + 1;
-
-    // Телефон: любая запись — пошаговым мастером (BookingWizard через
-    // ResourceBookingModal). Мастер колонки подставляется, день недели — нет.
-    // Клетка в прошлом — тоже мастером, на любом экране: задним числом не
-    // записываем, он спросит про тот же час впереди (pastSlot.ts).
-    const slotCol = columns[columnIndex];
-    const slotDate = toDateStr(slotCol instanceof Date ? slotCol : new Date(calYear, calMonth, selectedDay));
-    const inPast = isPastSlot(slotDate, formatIndexToTimeStr(timeIdx));
-    if (isPhone || inPast) {
-      setResourceBooking({
-        teacherId: slotCol && typeof slotCol === 'object' && !(slotCol instanceof Date) ? slotCol.id : null,
-        date: slotDate,
-        time: formatIndexToTimeStr(timeIdx),
-        wizard: inPast,
-      });
+  // Дата формы и день журнала идут вместе; после создания показываем день целиком.
+  const showBookingDate = React.useCallback((date: string, showDay = true) => {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return;
+    const [year, month, day] = date.split('-').map(Number);
+    setCalYear(year); setCalMonth(month - 1); setSelectedDay(day);
+    if (showDay) setCalendarView('day');
+  }, []);
+  const bookingCreated = (date?: string) => {
+    if (date) showBookingDate(date);
+    mutations.invalidate();
+  };
+  const requestWhen = (date: string, time: string,
+    apply: (when: { date: string; time: string }) => void, own: () => void) => {
+    if (!isPastSlot(date, time)) { apply({ date, time }); return; }
+    pastAccepted.current = false;
+    setPastChoice({ suggested: nextSameTime(time), apply, own });
+  };
+  const openCreation = (scope: { trainer: number; columnIndex: number; hall: string; date: string; time: string }, own = false) => {
+    setPopupBooking(null);
+    showBookingDate(scope.date);
+    if (isPhone) {
+      setResourceBooking({ teacherId: scope.trainer || null, date: scope.date, time: own ? undefined : scope.time });
       return;
     }
-
-    if (onlyResourceServices) {
-      const col = columns[columnIndex];
-      const scope = {
-        teacherId: trainerIdx,
-        date: toDateStr(col instanceof Date ? col : new Date(calYear, calMonth, selectedDay)),
-        time: formatIndexToTimeStr(timeIdx),
-      };
-      if (isPhone) {
-        setResourceBooking(scope);
-        return;
-      }
-      // Десктоп: окно у клетки. Слот и превью — те же, что у нового занятия.
-      setKeypadResource(scope);
-    }
-
-    // 🔥 Сохраняем индекс колонки в стейт
-    setNewBookingSlot({ trainer: trainerIdx, timeStart: blockStart, timeEnd: blockEnd, columnIndex });
-    // В режиме «Залы» колонка и есть зал — берём её, иначе превью (оно считает
-    // колонку из newForm.hall) утащит новое занятие в первый зал.
-    // В недельном виде колонки — даты, зал оттуда не достать → первый.
-    const col = columns[columnIndex];
-    setNewForm({ serviceId: null, title: '', hall: typeof col === 'string' ? col : (hallNames[0] ?? ''), maxClients: '8', branchId: null });
+    const trainer = scope.trainer || trainerPages.pageTrainers[0]?.id || visibleTrainers[0]?.id || 0;
+    const columnIndex = viewMode === 'trainers'
+      ? Math.max(0, trainerPages.pageTrainers.findIndex(item => item.id === trainer))
+      : Math.max(0, visibleHalls.indexOf(scope.hall));
+    const start = parseTimeToIndex(scope.time);
+    if (onlyResourceServices) setKeypadResource({ teacherId: trainer || null, date: scope.date, time: own ? '' : scope.time });
+    setNewBookingDate(scope.date);
+    setNewBookingSlot({ trainer, timeStart: start, timeEnd: Math.min(start + 1, 16), columnIndex });
+    setNewForm({ serviceId: null, title: '', hall: scope.hall, maxClients: '8', branchId: null });
     setShowNewForm(true);
   };
-
-  /** «Сейчас» в шкале сетки, если клетка сегодня (0 — 07:00); день впереди — null.
-      Форма нового занятия не даёт поставить начало раньше. */
-  const slotNotBefore = (columnIndex?: number) => {
-    const col = columnIndex != null ? columns[columnIndex] : null;
-    const day = toDateStr(col instanceof Date ? col : new Date(calYear, calMonth, selectedDay));
+  const openNewSlot = (trainerIdx: number, timeIdx: number, columnIndex: number) => {
+    const column = columns[columnIndex];
+    const scope = {
+      trainer: column && typeof column === 'object' && !(column instanceof Date) ? column.id : (trainerIdx || 0),
+      columnIndex, hall: typeof column === 'string' ? column : (visibleHalls[0] ?? hallNames[0] ?? ''),
+      date: toDateStr(column instanceof Date ? column : new Date(calYear, calMonth, selectedDay)),
+      time: formatIndexToTimeStr(timeIdx),
+    };
+    requestWhen(scope.date, scope.time,
+      when => openCreation({ ...scope, ...when }),
+      () => openCreation({ ...scope, date: toDateStr(new Date()) }, true));
+  };
+  const changeNewDate = (date: string) => {
+    if (!newBookingSlot || !date) return;
+    const time = formatIndexToTimeStr(newBookingSlot.timeStart);
+    requestWhen(date, time, when => {
+      setNewBookingDate(when.date); showBookingDate(when.date);
+      const start = parseTimeToIndex(when.time);
+      setNewBookingSlot(slot => slot && { ...slot, timeStart: start, timeEnd: start + slot.timeEnd - slot.timeStart });
+    }, () => { const today = toDateStr(new Date()); setNewBookingDate(today); showBookingDate(today); });
+  };
+  const slotNotBefore = () => {
+    const today = toDateStr(new Date());
+    if (newBookingDate > today) return null;
     const now = new Date();
-    const today = toDateStr(now);
-    if (day > today) return null;
-    return day < today ? Infinity : now.getHours() - 7 + now.getMinutes() / 60;
+    return newBookingDate < today ? Infinity : now.getHours() - 7 + now.getMinutes() / 60;
+  };
+  const changeNewTime = (time: string) => {
+    requestWhen(newBookingDate, time, when => {
+      setNewBookingDate(when.date); showBookingDate(when.date);
+      const start = parseTimeToIndex(when.time);
+      setNewBookingSlot(slot => slot && { ...slot, timeStart: start, timeEnd: Math.max(slot.timeEnd, start + 0.25) });
+    }, () => { const today = toDateStr(new Date()); setNewBookingDate(today); showBookingDate(today); });
   };
 
   // Ассистент: /dashboard/journal?ai=lesson.create (эпик AI-6, задача 9).
@@ -478,12 +491,12 @@ export default function Journal() {
   });
 
   // ── Прямое сохранение переноса/растягивания: diff → PATCH, оптимизм и откат — в useJournalMutations ──
-  const commitBookingChange = React.useCallback((prev: Booking, next: Booking) => {
+  const commitBookingChange = React.useCallback(async (prev: Booking, next: Booking): Promise<boolean> => {
     if (prev.bookingMode === 'resource') return commitResourceMove(prev, next);
     const payload = diffPayload(prev, next);
-    if (Object.keys(payload).length === 0) return;
+    if (Object.keys(payload).length === 0) return true;
 
-    mutations.updateLesson(prev, next, payload)
+    return mutations.updateLesson(prev, next, payload)
       .then(() => {
         showToast(t('toasts.lessonUpdated'));
         history.push({
@@ -499,10 +512,12 @@ export default function Journal() {
             setPopupBooking(pb => (pb && pb.id === next.id ? next : pb));
           },
         });
+        return true;
       })
       .catch((e: unknown) => {
         setPopupBooking(pb => (pb && pb.id === prev.id ? prev : pb));
         toast.error(errorMessage(e, t));
+        return false;
       });
   }, [diffPayload, mutations, showToast, toast, history, t, commitResourceMove]);
 
@@ -656,19 +671,18 @@ export default function Journal() {
   };
 
   // ── Создать занятие на сервере (данные формы приходят из модалки) ──
-  const createLessonFromModal = (form: {
+  const createLessonFromModal = async (form: {
     serviceId: number; title: string; hall: string; maxClients: number; branchId: number | null;
     notes: string; photos: string[]; price: number;
-  }) => {
-    if (!newBookingSlot) return;
+  }): Promise<boolean> => {
+    if (!newBookingSlot) return false;
     const trainer = trainers.find(t => t.id === newBookingSlot.trainer);
     if (!trainer) {
       toast.error(t('toasts.selectTrainer'));
-      return;
+      return false;
     }
     // В недельном виде колонка слота — дата, в дневном — выбранный день
-    const col = newBookingSlot.columnIndex != null ? columns[newBookingSlot.columnIndex] : null;
-    const dateStr = col instanceof Date ? toDateStr(col) : toDateStr(new Date(calYear, calMonth, selectedDay));
+    const dateStr = newBookingDate;
     const hall = halls.find(h => h.name === form.hall);
 
     // Временная карточка для оптимистичного рендера — invalidate после успеха
@@ -714,9 +728,10 @@ export default function Journal() {
       photos: form.photos,
     };
 
-    mutations.createLesson(createPayload, optimisticBooking)
+    return mutations.createLesson(createPayload, optimisticBooking)
       .then(({ next }) => {
         showToast(t('toasts.lessonAdded'));
+        showBookingDate(dateStr);
         // redo создаёт НОВЫЙ id — entry замыкает его в изменяемой ref-переменной,
         // чтобы последующий undo удалял актуальное занятие, а не первое созданное.
         let liveId = next!.id;
@@ -728,8 +743,9 @@ export default function Journal() {
             liveId = recreated!.id;
           },
         });
+        return true;
       })
-      .catch((e: unknown) => toast.error(errorMessage(e, t)));
+      .catch((e: unknown) => { toast.error(errorMessage(e, t)); return false; });
   };
 
   // Оптимизм — по одному клиенту, последовательно (не пачкой параллельно):
@@ -766,6 +782,7 @@ export default function Journal() {
     }
 
     if (succeeded.length === 0) return;
+    setPopupBooking(booking => booking?.id === lessonId ? { ...booking, clients: current.clients } : booking);
 
     let liveReservations = succeeded;
     history.push({
@@ -948,6 +965,7 @@ export default function Journal() {
       {/* ── ПРЕМИАЛЬНЫЙ POPUP КАРТОЧКИ ЗАПИСИ ── */}
       {popupBooking && (
         <BookingPopup
+          key={popupBooking.id}
           trainers={trainers}
           halls={hallNames}
           popupBooking={popupBooking}
@@ -981,7 +999,8 @@ export default function Journal() {
           newFormPos={newFormPos}
           modalRef={modalRef}
           onClose={closeNewForm}
-          onCreated={mutations.invalidate}
+          onCreated={bookingCreated}
+          onDateChange={showBookingDate}
           onPreview={previewResource}
         />
       )}
@@ -999,12 +1018,14 @@ export default function Journal() {
           closeNewForm={closeNewForm}
           onCreate={createLessonFromModal}
           spaceIsAxis={spaceIsAxis}
-          notBefore={slotNotBefore(newBookingSlot.columnIndex)}
+          notBefore={slotNotBefore()}
+          date={newBookingDate}
+          onDateChange={changeNewDate}
+          onTimeChange={changeNewTime}
           // Мастера и день забираем ДО закрытия формы: closeNewForm обнуляет слот.
           onResourceBooking={hasResourceServices ? (serviceId) => {
             const slot = newBookingSlot;
-            const col = slot.columnIndex != null ? columns[slot.columnIndex] : null;
-            const date = toDateStr(col instanceof Date ? col : new Date(calYear, calMonth, selectedDay));
+            const date = newBookingDate;
             // На десктопе окно остаётся на месте и просто становится записью клиента.
             if (!isPhone) {
               setKeypadResource({ teacherId: slot.trainer, date, time: formatIndexToTimeStr(slot.timeStart), serviceId });
@@ -1013,7 +1034,7 @@ export default function Journal() {
             closeNewForm();
             setResourceBooking({
               teacherId: slot?.trainer ?? null,
-              date: toDateStr(col instanceof Date ? col : new Date(calYear, calMonth, selectedDay)),
+              date: newBookingDate,
               serviceId,
               time: formatIndexToTimeStr(slot.timeStart),
             });
@@ -1029,11 +1050,23 @@ export default function Journal() {
           defaultDate={resourceBooking.date}
           defaultServiceId={resourceBooking.serviceId}
           defaultTime={resourceBooking.time}
-          wizard={resourceBooking.wizard}
           onClose={() => setResourceBooking(null)}
-          onCreated={mutations.invalidate}
+          onCreated={bookingCreated}
+          onDateChange={showBookingDate}
         />
       )}
+
+      {pastChoice && <ConfirmModal
+        title={t('wizard.past.title')}
+        message={t('wizard.past.message', {
+          date: new Date(`${pastChoice.suggested.date}T12:00:00`).toLocaleDateString(i18n.language, { day: 'numeric', month: 'long' }),
+          time: pastChoice.suggested.time,
+        })}
+        confirmText={t('common:buttons.continue')}
+        cancelText={t('wizard.past.own')}
+        onConfirm={() => { pastAccepted.current = true; const choice = pastChoice; setPastChoice(null); choice.apply(choice.suggested); }}
+        onClose={() => { if (!pastAccepted.current) { const choice = pastChoice; setPastChoice(null); choice.own(); } }}
+      />}
 
       {showAddModal && addModalBooking && (
         <AddClientModal

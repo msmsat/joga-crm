@@ -129,8 +129,8 @@ export function useJournalMutations(lessonsKey: readonly unknown[]) {
     onSettled: () => invalidate(),
   });
   const createLesson = async (payload: LessonCreate, optimisticBooking: Booking): Promise<MutationResult> => {
-    await createMut.mutateAsync({ payload, optimisticBooking });
-    return { prev: null, next: optimisticBooking };
+    const created = await createMut.mutateAsync({ payload, optimisticBooking });
+    return { prev: null, next: { ...optimisticBooking, id: created.id, version: created.version ?? optimisticBooking.version } };
   };
 
   // ── Записать одного клиента: +1 к счётчику мест (пачка — по одному вызову на клиента) ──

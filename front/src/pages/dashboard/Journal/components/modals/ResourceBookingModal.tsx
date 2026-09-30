@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ModalShell, ModalHeader, ModalBody, ModalFooter, GhostButton, PrimaryButton } from '../../../../../components/ui/modal';
 import { Select } from '../../../../../components/ui/index';
@@ -11,6 +12,8 @@ import { usePhone } from '../../../../../hooks/usePhone';
 import { BookingWizard } from './booking-wizard/BookingWizard';
 import { BookingPayment } from '../BookingPayment';
 import { confirmLabel } from '../../hooks/useBookingPayment';
+import { PastBookingPrompt } from './PastBookingPrompt';
+import { usePastBooking } from './usePastBooking';
 
 /**
  * HB-22: «записать на индивидуальную услугу» — отдельная команда, не создание
@@ -32,21 +35,19 @@ import { confirmLabel } from '../../hooks/useBookingPayment';
  */
 type Props = ResourceBookingOptions & {
   defaultTime?: string;
-  /** Мастер записи и на компьютере — клетка журнала в прошлом. */
-  wizard?: boolean;
 };
 
 export function ResourceBookingModal(props: Props) {
   const isPhone = usePhone();
-  if (!isPhone && !props.wizard) return <ResourceSheet {...props} />;
-  const { defaultTime, teacherId = null, defaultDate, clientId, onClose, onCreated } = props;
+  if (!isPhone) return <ResourceSheet {...props} />;
+  const { defaultTime, teacherId = null, defaultDate, clientId, onClose, onCreated, onDateChange } = props;
   // Телефон: любая запись — пошаговый мастер «клиент → услуга → мастер →
   // время», и для индивидуальных услуг, и для групповых занятий.
   return (
     <BookingWizard
       defaultTeacherId={teacherId} defaultTime={defaultTime} clientId={clientId}
       defaultDate={defaultDate ?? new Date().toLocaleDateString('sv-SE')}
-      onClose={onClose} onCreated={onCreated}
+      onClose={onClose} onCreated={onCreated} onDateChange={onDateChange}
     />
   );
 }
@@ -55,6 +56,11 @@ function ResourceSheet({ defaultTime, ...options }: Props) {
   const { t, i18n } = useTranslation(['journal', 'common']);
   const terms = useBusinessTerms('resource');
   const booking = useResourceBooking(options);
+  const [wantedTime, setWantedTime] = useState(defaultTime ?? '');
+  const past = usePastBooking((date, time) => {
+    setWantedTime(time ?? '');
+    booking.setDate(date);
+  }, options.defaultDate, defaultTime);
   const { choice, serviceId, branchId, teacherId, chosenService, loadingChoice, quote, quoting, saving, slots, reason } = booking;
   const shown = new Set(listedTimes(slots.map(slot => slot.local_start.slice(11, 16)), 15));
   // Время записи — днём недели и числом, как на проверке мастера записи и в
@@ -69,7 +75,8 @@ function ResourceSheet({ defaultTime, ...options }: Props) {
     : t('journal:resourceBooking.staff');
 
   return (
-    <ModalShell size="sm" onClose={options.onClose} maxWidth="640px" dismissible={!saving}>
+    <>
+    <ModalShell size="sm" onClose={options.onClose} maxWidth="640px" dismissible={!saving && !past.offered}>
       {/* «Выберите услугу» — подсказка к первому шагу: услуга выбрана — и
           подсказывать нечего, иначе шапка просит то, что уже сделано. */}
       <ModalHeader
@@ -77,7 +84,7 @@ function ResourceSheet({ defaultTime, ...options }: Props) {
         subtitle={terms.ready && serviceId == null ? terms.message('choose_offering') : undefined}
       />
       <ModalBody>
-        <fieldset disabled={saving} style={{ display: 'grid', gap: '12px', border: 0, padding: 0, margin: 0, minWidth: 0 }}>
+        <fieldset disabled={saving || !!past.offered} style={{ display: 'grid', gap: '12px', border: 0, padding: 0, margin: 0, minWidth: 0 }}>
           {options.clientId == null && <ResourceClientPicker value={booking.client} disabled={saving} onChange={booking.setClient} />}
           <div>
             <label className="vk-label">{t('journal:resourceBooking.service')}</label>
@@ -113,7 +120,11 @@ function ResourceSheet({ defaultTime, ...options }: Props) {
           <div>
             <label className="vk-label">{t('journal:resourceBooking.date')}</label>
             <input className="vk-input" type="date" value={booking.date}
-                   onChange={e => booking.setDate(e.target.value)} />
+                   onChange={e => {
+                     const date = e.target.value;
+                     const time = quote?.terms.domain.local_start.slice(11, 16) || wantedTime;
+                     if (!past.ask(date, time)) booking.setDate(date);
+                   }} />
           </div>
 
           {quote ? (
@@ -140,11 +151,17 @@ function ResourceSheet({ defaultTime, ...options }: Props) {
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                   {/* Поминутные начала стойки — по сетке 15 минут и началам окон. */}
                   {slots.filter(slot => shown.has(slot.local_start.slice(11, 16))).map(slot => (
-                    <button key={slot.starts_at} type="button" onClick={() => void booking.pick(slot)}
+                    <button key={slot.starts_at} type="button" onClick={() => {
+                      const time = slot.local_start.slice(11, 16);
+                      if (!past.ask(booking.date, time)) {
+                        setWantedTime(time);
+                        void booking.pick(slot);
+                      }
+                    }}
                             disabled={booking.client == null || quoting || saving}
                             style={{
                               padding: '8px 14px', borderRadius: '10px', border: '1px solid rgba(var(--ink),0.12)',
-                              background: slot.local_start.slice(11, 16) === defaultTime ? 'rgba(252,174,145,0.2)' : 'var(--bg-card)', fontWeight: 700, fontSize: '13px',
+                              background: slot.local_start.slice(11, 16) === wantedTime ? 'rgba(252,174,145,0.2)' : 'var(--bg-card)', fontWeight: 700, fontSize: '13px',
                               cursor: booking.client == null ? 'not-allowed' : 'pointer',
                             }}>
                       {slot.local_start.slice(11, 16)}
@@ -165,13 +182,15 @@ function ResourceSheet({ defaultTime, ...options }: Props) {
       </ModalBody>
       <ModalFooter>
         <GhostButton>{t('common:buttons.cancel')}</GhostButton>
-        <PrimaryButton onClick={() => void booking.confirm()} disabled={!quote || quoting || !booking.payment.ready}
+        <PrimaryButton onClick={() => void booking.confirm()} disabled={!quote || quoting || !booking.payment.ready || !!past.offered}
                        loading={saving}>
           {confirmLabel(booking.payment, t,
             terms.ready ? terms.message('confirm_booking') : t('common:buttons.create'))}
         </PrimaryButton>
       </ModalFooter>
     </ModalShell>
+    <PastBookingPrompt past={past} />
+    </>
   );
 }
 
