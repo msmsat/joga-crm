@@ -9,6 +9,7 @@ import { InlineEdit } from './InlineEdit';
 import ClientOffersPanel from './ClientOffersPanel';
 import { ClientProducts } from './ClientProducts';
 import { WalletTab } from './WalletTab';
+import { ClientEventDates } from './ClientEventDates';
 import { useClientEvents, useClientNotes, useClientActivity, useClientInviteCode, useReferralEnabled, useFreezeEnabled } from '../hooks/useClientsList';
 import { formatDate, formatMoney, getAvatarColor, getInitials } from '../utils/mapClient';
 import { useStudioCurrency } from '../../../../hooks/useStudioCurrency';
@@ -769,9 +770,8 @@ function ClientPanel({ client, profile, onClose, onDelete }: {
                 <EventIcon type={ev.type} c={color}/>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{ev.title}</div>
-                  <div style={{ fontSize: '10px', color: 'var(--text3)', marginTop: '1px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {ev.trainer ? `${ev.trainer} · ` : ''}{ev.date}
-                  </div>
+                  {ev.trainer && <div style={{ fontSize: '11px', color: 'var(--text3)', marginTop: '2px' }}>{ev.trainer}</div>}
+                  <ClientEventDates event={ev}/>
                 </div>
                 <div style={{ fontSize: '12px', fontWeight: 700, color: ev.type === 'payment' ? '#5BAB72' : ev.type === 'freeze' ? '#4a7ca8' : ev.type === 'bonus' ? '#F9A08B' : 'var(--text3)', flexShrink: 0, whiteSpace: 'nowrap' }}>
                   {ev.paid ?? ev.amount}

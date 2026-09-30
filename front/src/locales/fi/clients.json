@@ -267,6 +267,17 @@
       "delete": "Poista"
     },
     "events": {
+      "dates": {
+        "lesson": "Ajanvaraus",
+        "bookingCreated": "Varaus luotu",
+        "visit": "Käynti",
+        "cancel": "Peruttu",
+        "payment": "Maksettu",
+        "event": "Tapahtuman päivämäärä",
+        "recorded": "Maksu luotu",
+        "paymentUnknown": "Maksupäivää ei tallennettu",
+        "unknown": "Päivämäärää ei tallennettu"
+      },
       "filterTabs": {
         "all": "Kaikki",
         "payment": "Maksut",

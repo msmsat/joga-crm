@@ -263,6 +263,17 @@
       "delete": "Smazat"
     },
     "events": {
+      "dates": {
+        "lesson": "Lekce",
+        "bookingCreated": "Rezervace vytvořena",
+        "visit": "Návštěva",
+        "cancel": "Zrušeno",
+        "payment": "Zaplaceno",
+        "event": "Datum události",
+        "recorded": "Platba vytvořena",
+        "paymentUnknown": "Datum platby nebylo zaznamenáno",
+        "unknown": "Datum nebylo zaznamenáno"
+      },
       "filterTabs": {
         "all": "Vše",
         "payment": "Platby",

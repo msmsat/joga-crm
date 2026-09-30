@@ -3,7 +3,7 @@ from datetime import date, datetime
 from typing import Literal, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
-from sqlalchemy import and_, cast, extract, func, or_
+from sqlalchemy import and_, cast, extract, func, or_, String
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
@@ -23,6 +23,7 @@ from routers.clients.loyalty import expire_points
 from routers.clients.subscriptions import attach_subscription
 from routers.finances.accounts import get_or_create_default_account
 from services import booking, geo_locale
+from services.client_event_dates import action_stamp, event_order, payment_event, reservation_event
 from services.booking_access import assert_can_book
 from services.booking_http import reject
 from services.booking_rules import assert_staff_bookable, load_rules
@@ -535,113 +536,59 @@ async def get_client_events(
     studio_id = ctx.studio_id
     await _get_client_or_404(client_id, ctx, db)
 
+    studio = await db.get(Studio, studio_id)
     events: list[EventRecordOut] = []
-
-    if not event_type or event_type in ("all", "visit"):
-        rows = (await db.execute(
-            select(Reservation)
-            .where(Reservation.client_id == client_id, Reservation.status == "attended")
-            .options(selectinload(Reservation.lesson))
-        )).scalars().all()
-        for r in rows:
-            lesson = r.lesson
-            events.append(EventRecordOut(
-                date=lesson.start_time.date().isoformat() if lesson else None,
-                type="visit",
-                title=lesson.name if lesson else "Занятие",
-                trainer=lesson.teacher_name if lesson else None,
-            ))
-
-    if not event_type or event_type in ("all", "booking"):
-        rows = (await db.execute(
-            select(Reservation)
-            .where(Reservation.client_id == client_id)
-            .options(selectinload(Reservation.lesson))
-        )).scalars().all()
-        for r in rows:
-            lesson = r.lesson
-            events.append(EventRecordOut(
-                date=r.created_at.date().isoformat(),
-                type="booking",
-                title=f"Запись: {lesson.name}" if lesson else "Запись на занятие",
-                trainer=lesson.teacher_name if lesson else None,
-            ))
-
-    if not event_type or event_type in ("all", "cancel"):
-        rows = (await db.execute(
-            select(Reservation)
-            .where(Reservation.client_id == client_id, Reservation.status == "cancelled")
-            .options(selectinload(Reservation.lesson))
-        )).scalars().all()
-        for r in rows:
-            lesson = r.lesson
-            events.append(EventRecordOut(
-                date=r.cancelled_at.date().isoformat() if r.cancelled_at else None,
-                type="cancel",
-                title=f"Отмена: {lesson.name}" if lesson else "Отмена записи",
-                trainer=lesson.teacher_name if lesson else None,
-            ))
+    for kind, state in (("visit", "attended"), ("booking", None), ("cancel", "cancelled")):
+        if event_type and event_type not in ("all", kind):
+            continue
+        stmt = (select(Reservation).join(Lesson, Lesson.id == Reservation.lesson_id)
+                .where(Reservation.client_id == client_id, Lesson.studio_id == studio_id,
+                       Reservation.status != "hold")
+                .options(selectinload(Reservation.lesson)))
+        if state:
+            stmt = stmt.where(Reservation.status == state)
+        rows = (await db.execute(stmt)).scalars().all()
+        events.extend(reservation_event(r, kind, studio) for r in rows)
 
     if not event_type or event_type in ("all", "payment"):
         rows = (await db.execute(
-            select(ClientPayment)
+            select(ClientPayment, Reservation, Lesson).select_from(ClientPayment)
+            .outerjoin(Reservation, Reservation.debt_payment_id == ClientPayment.id)
+            .outerjoin(Lesson, and_(Lesson.studio_id == studio_id, or_(
+                Lesson.id == Reservation.lesson_id,
+                and_(Reservation.id.is_(None), ClientPayment.action_type == "lesson",
+                     cast(Lesson.id, String) == ClientPayment.item_key),
+            )))
             .where(ClientPayment.client_id == client_id, ClientPayment.status == "success")
-            .order_by(ClientPayment.created_at.desc())
-        )).scalars().all()
-        for p in rows:
-            events.append(EventRecordOut(
-                date=p.created_at.date().isoformat(),
-                type="payment",
-                title=p.description,
-                amount=str(p.amount),
-            ))
+        )).all()
+        events.extend(payment_event(p, r, lesson, studio) for p, r, lesson in rows)
 
     if not event_type or event_type in ("all", "bonus"):
         rows = (await db.execute(
-            select(LoyaltyPointTransaction)
-            .where(LoyaltyPointTransaction.client_id == client_id)
-            .order_by(LoyaltyPointTransaction.created_at.desc())
+            select(LoyaltyPointTransaction).where(LoyaltyPointTransaction.client_id == client_id)
         )).scalars().all()
         for tr in rows:
-            events.append(EventRecordOut(
-                date=tr.created_at.date().isoformat(),
-                type="bonus",
-                title=tr.description,
-                amount=f"{'+' if tr.points >= 0 else ''}{tr.points}",
-            ))
+            occurred = action_stamp(tr.created_at, studio)
+            events.append(EventRecordOut(date=occurred, occurred_at=occurred, type="bonus",
+                title=tr.description, amount=f"{'+' if tr.points >= 0 else ''}{tr.points}"))
 
     if not event_type or event_type in ("all", "freeze"):
-        rows = (await db.execute(
-            select(ClientSubscription)
-            .where(
-                ClientSubscription.client_id == client_id,
-                ClientSubscription.is_frozen == True,
-            )
-        )).scalars().all()
-        for s in rows:
-            events.append(EventRecordOut(
-                date=s.frozen_at.date().isoformat() if s.frozen_at else None,
-                type="freeze",
-                title=f"Заморозка: {s.type}",
-            ))
+        rows = (await db.execute(select(ClientSubscription).where(
+            ClientSubscription.client_id == client_id, ClientSubscription.is_frozen == True,
+        ))).scalars().all()
+        for sub in rows:
+            occurred = action_stamp(sub.frozen_at, studio)
+            events.append(EventRecordOut(date=occurred, occurred_at=occurred,
+                type="freeze", title=f"Заморозка: {sub.type}"))
+        logs = (await db.execute(select(ActivityLog).where(
+            ActivityLog.studio_id == studio_id, ActivityLog.entity_type == "client",
+            ActivityLog.entity_id == client_id, ActivityLog.event_type.in_(("freeze", "unfreeze")),
+        ))).scalars().all()
+        for log in logs:
+            occurred = action_stamp(log.created_at, studio)
+            events.append(EventRecordOut(date=occurred, occurred_at=occurred, type="freeze", title=log.title))
 
-        log_rows = (await db.execute(
-            select(ActivityLog)
-            .where(
-                ActivityLog.studio_id == studio_id,
-                ActivityLog.entity_type == "client",
-                ActivityLog.entity_id == client_id,
-                ActivityLog.event_type == "freeze",
-            )
-        )).scalars().all()
-        for log in log_rows:
-            events.append(EventRecordOut(
-                date=log.created_at.date().isoformat(),
-                type="freeze",
-                title=log.title,
-            ))
-
-    events.sort(key=lambda e: e.date or "0000-00-00", reverse=True)
+    events.sort(key=lambda event: event_order(event, studio), reverse=True)
     return events
 
 
@@ -890,12 +837,14 @@ async def freeze_client(
                 "message": "Заморозка клиентов выключена в настройках Каталога → Абонементы",
             })
 
+    was_frozen = client.status == "frozen"
     client.status = "frozen" if body.frozen else "active"
     client.is_active = not body.frozen
-    if body.frozen:
+    if was_frozen != body.frozen:
+        label = "Заморозка" if body.frozen else "Разморозка"
         log_activity(
-            db, studio_id, "freeze",
-            title=f"Заморозка клиента: {client.name} {client.last_name or ''}".strip(),
+            db, studio_id, "freeze" if body.frozen else "unfreeze",
+            title=f"{label} клиента: {client.name} {client.last_name or ''}".strip(),
             actor_name=f"{current_user.name} {current_user.last_name or ''}".strip(),
             entity_type="client", entity_id=client.id,
         )

@@ -267,6 +267,17 @@
       "delete": "Slet"
     },
     "events": {
+      "dates": {
+        "lesson": "Aftale",
+        "bookingCreated": "Reservation oprettet",
+        "visit": "Besøg",
+        "cancel": "Annulleret",
+        "payment": "Betalt",
+        "event": "Hændelsesdato",
+        "recorded": "Betaling oprettet",
+        "paymentUnknown": "Betalingsdato ikke registreret",
+        "unknown": "Dato ikke registreret"
+      },
       "filterTabs": {
         "all": "Alle",
         "payment": "Betalinger",

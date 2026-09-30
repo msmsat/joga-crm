@@ -267,6 +267,17 @@
       "delete": "Ta bort"
     },
     "events": {
+      "dates": {
+        "lesson": "Bokning",
+        "bookingCreated": "Bokning skapad",
+        "visit": "Besök",
+        "cancel": "Avbokat",
+        "payment": "Betalt",
+        "event": "Händelsedatum",
+        "recorded": "Betalning skapad",
+        "paymentUnknown": "Betalningsdatum inte registrerat",
+        "unknown": "Datum inte registrerat"
+      },
       "filterTabs": {
         "all": "Alla",
         "payment": "Betalningar",

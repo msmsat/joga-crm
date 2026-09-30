@@ -271,6 +271,17 @@
       "delete": "Обриши"
     },
     "events": {
+      "dates": {
+        "lesson": "Термин",
+        "bookingCreated": "Резервација креирана",
+        "visit": "Посета",
+        "cancel": "Отказано",
+        "payment": "Плаћено",
+        "event": "Датум догађаја",
+        "recorded": "Плаћање креирано",
+        "paymentUnknown": "Датум плаћања није забележен",
+        "unknown": "Датум није забележен"
+      },
       "filterTabs": {
         "all": "Сви",
         "payment": "Плаћања",

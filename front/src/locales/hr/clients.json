@@ -271,6 +271,17 @@
       "delete": "Izbriši"
     },
     "events": {
+      "dates": {
+        "lesson": "Termin",
+        "bookingCreated": "Rezervacija kreirana",
+        "visit": "Posjet",
+        "cancel": "Otkazano",
+        "payment": "Plaćeno",
+        "event": "Datum događaja",
+        "recorded": "Plaćanje kreirano",
+        "paymentUnknown": "Datum plaćanja nije zabilježen",
+        "unknown": "Datum nije zabilježen"
+      },
       "filterTabs": {
         "all": "Svi",
         "payment": "Plaćanja",

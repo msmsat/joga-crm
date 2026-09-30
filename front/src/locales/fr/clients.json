@@ -267,6 +267,17 @@
       "delete": "Supprimer"
     },
     "events": {
+      "dates": {
+        "lesson": "Rendez-vous",
+        "bookingCreated": "Réservation créée",
+        "visit": "Visite",
+        "cancel": "Annulé",
+        "payment": "Payé",
+        "event": "Date de l’événement",
+        "recorded": "Paiement créé",
+        "paymentUnknown": "Date du paiement non enregistrée",
+        "unknown": "Date non enregistrée"
+      },
       "filterTabs": {
         "all": "Tous",
         "payment": "Paiements",

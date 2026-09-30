@@ -271,6 +271,17 @@
       "delete": "Șterge"
     },
     "events": {
+      "dates": {
+        "lesson": "Programare",
+        "bookingCreated": "Rezervare creată",
+        "visit": "Vizită",
+        "cancel": "Anulat",
+        "payment": "Plătit",
+        "event": "Data evenimentului",
+        "recorded": "Plată creată",
+        "paymentUnknown": "Data plății nu a fost înregistrată",
+        "unknown": "Data nu a fost înregistrată"
+      },
       "filterTabs": {
         "all": "Toate",
         "payment": "Plăți",

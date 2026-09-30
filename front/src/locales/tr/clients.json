@@ -267,6 +267,17 @@
       "delete": "Sil"
     },
     "events": {
+      "dates": {
+        "lesson": "Randevu",
+        "bookingCreated": "Rezervasyon oluşturuldu",
+        "visit": "Ziyaret",
+        "cancel": "İptal edildi",
+        "payment": "Ödendi",
+        "event": "Etkinlik tarihi",
+        "recorded": "Ödeme oluşturuldu",
+        "paymentUnknown": "Ödeme tarihi kaydedilmedi",
+        "unknown": "Tarih kaydedilmedi"
+      },
       "filterTabs": {
         "all": "Tümü",
         "payment": "Ödemeler",

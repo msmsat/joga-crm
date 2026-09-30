@@ -94,7 +94,12 @@ class ClientProfileOut(ClientListItemOut):
 
 
 class EventRecordOut(BaseSchema):
+    # Main display date. Booking/visit use the lesson's studio wall clock.
     date: Optional[str] = None
+    occurred_at: Optional[str] = None
+    scheduled_at: Optional[str] = None
+    # Historical debt with no saved settlement time: date of the record only.
+    recorded_at: Optional[str] = None
     type: str
     title: str
     trainer: Optional[str] = None

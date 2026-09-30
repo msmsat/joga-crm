@@ -263,6 +263,17 @@
       "delete": "Видалити"
     },
     "events": {
+      "dates": {
+        "lesson": "Заняття",
+        "bookingCreated": "Запис створено",
+        "visit": "Візит",
+        "cancel": "Скасовано",
+        "payment": "Оплачено",
+        "event": "Дата події",
+        "recorded": "Платіж створено",
+        "paymentUnknown": "Дату оплати не збережено",
+        "unknown": "Дату не збережено"
+      },
       "filterTabs": {
         "all": "Усі",
         "payment": "Оплати",

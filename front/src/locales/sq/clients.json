@@ -267,6 +267,17 @@
       "delete": "Fshi"
     },
     "events": {
+      "dates": {
+        "lesson": "Takimi",
+        "bookingCreated": "Rezervimi u krijua",
+        "visit": "Vizita",
+        "cancel": "Anuluar",
+        "payment": "Paguar",
+        "event": "Data e ngjarjes",
+        "recorded": "Pagesa u krijua",
+        "paymentUnknown": "Data e pagesës nuk është ruajtur",
+        "unknown": "Data nuk është ruajtur"
+      },
       "filterTabs": {
         "all": "Të gjitha",
         "payment": "Pagesat",

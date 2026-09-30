@@ -36,13 +36,6 @@ export interface ClientData {
   frozen?: boolean;
 }
 
-export interface EventRecord {
-  date?: string;
-  type: 'payment' | 'visit' | 'booking' | 'cancel' | 'bonus' | 'freeze';
-  title: string;
-  trainer?: string;
-  paid?: string;
-  amount?: string;
-}
+export type { EventRecord } from '../../../api/clients/clients.types';
 
 export type EventFilterTab = 'all' | 'payment' | 'visit' | 'booking' | 'cancel' | 'bonus' | 'freeze';

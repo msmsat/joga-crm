@@ -267,6 +267,17 @@
       "delete": "Eliminar"
     },
     "events": {
+      "dates": {
+        "lesson": "Agendamento",
+        "bookingCreated": "Reserva criada",
+        "visit": "Visita",
+        "cancel": "Cancelado",
+        "payment": "Pago",
+        "event": "Data do evento",
+        "recorded": "Pagamento criado",
+        "paymentUnknown": "Data do pagamento não registada",
+        "unknown": "Data não registada"
+      },
       "filterTabs": {
         "all": "Todos",
         "payment": "Pagamentos",

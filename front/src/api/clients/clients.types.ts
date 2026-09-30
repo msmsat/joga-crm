@@ -64,6 +64,9 @@ export interface SegmentRules {
 
 export interface EventRecord {
   date: string | null
+  occurred_at?: string | null
+  scheduled_at?: string | null
+  recorded_at?: string | null
   type: 'payment' | 'visit' | 'booking' | 'cancel' | 'bonus' | 'freeze'
   title: string
   trainer: string | null

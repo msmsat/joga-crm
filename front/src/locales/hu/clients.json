@@ -267,6 +267,17 @@
       "delete": "Törlés"
     },
     "events": {
+      "dates": {
+        "lesson": "Időpont",
+        "bookingCreated": "Foglalás létrehozva",
+        "visit": "Látogatás",
+        "cancel": "Lemondva",
+        "payment": "Kifizetve",
+        "event": "Esemény dátuma",
+        "recorded": "Fizetés létrehozva",
+        "paymentUnknown": "A fizetés dátuma nincs rögzítve",
+        "unknown": "A dátum nincs rögzítve"
+      },
       "filterTabs": {
         "all": "Összes",
         "payment": "Fizetések",
