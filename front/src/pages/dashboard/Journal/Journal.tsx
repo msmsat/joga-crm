@@ -16,6 +16,8 @@ import { usePopupPosition } from './hooks/usePopupPosition';
 import { useGridSwipe } from './hooks/useGridSwipe';
 import { useTrainerPages } from './hooks/useTrainerPages';
 import { TrainerPicker } from './components/TrainerPicker';
+import { WeekTrainerPicker } from './components/WeekTrainerPicker';
+import { useJournalView, selectWeekSchedule } from './hooks/useJournalView';
 import { Toolbar } from './components/Toolbar';
 import { MobileFilters } from './components/MobileFilters';
 import { MiniCalendar } from './components/MiniCalendar';
@@ -45,6 +47,7 @@ const JOURNAL_DATE_KEY = 'journal:selectedDate';
   // ─── ГЛАВНЫЙ КОМПОНЕНТ ────────────────────────────────────────────────────────
 export default function Journal() {
   const { t, i18n } = useTranslation('journal');
+  const { calendarView, setCalendarView, weekTrainerId, setWeekTrainerId } = useJournalView();
   const [hoveredSlot, setHoveredSlot] = useState<string | null>(null);
   const today = new Date();
 
@@ -82,7 +85,7 @@ export default function Journal() {
   // Режим «Залы» запираем, а не просто прячем вкладку: иначе владелец,
   // оставивший его включённым до выключения оси, вернулся бы в журнал с
   // колонками, которых уже не выбрать обратно.
-  const viewMode = spaceIsAxis === false ? 'trainers' : pickedViewMode;
+  const viewMode = calendarView === 'week' || spaceIsAxis === false ? 'trainers' : pickedViewMode;
   const setViewMode = setPickedViewMode;
   const [popupBooking, setPopupBooking] = useState<Booking | null>(null);
   // Ассистенту: какое занятие открыто — «сколько здесь мест» в журнале
@@ -123,7 +126,6 @@ export default function Journal() {
   const [newForm, setNewForm] = useState<NewBookingForm>({ serviceId: null, title: '', hall: '', maxClients: '8', branchId: null });
   const [timeStep, setTimeStep] = useState<number>(15); // 🔥 Шаг времени в минутах (по умолчанию 15)
   // 🔥 СТЕЙТЫ ДЛЯ УМНОГО ВВОДА ВРЕМЕНИ
-  const [calendarView, setCalendarView] = useState<'day' | 'week'>('day');
   // Владелец и администратор редактируют журнал напрямую; тренер — только просмотр (ТЗ 2.3).
   const canEdit = getUserRoleFromToken() !== 'trainer';
 
@@ -152,9 +154,21 @@ export default function Journal() {
   // Реальные данные: тренеры (Сотрудники), залы, занятия за видимый диапазон
   const { trainers, staffBlocks, dateFrom, halls, bookings, isFirstLoad, lessonsKey, loadError, isFirstLoadError, refetchAll } =
     useSchedule(calYear, calMonth, selectedDay, calendarView);
+  const weekSchedule = React.useMemo(
+    () => selectWeekSchedule(trainers, bookings, staffBlocks, weekTrainerId),
+    [trainers, bookings, staffBlocks, weekTrainerId],
+  );
+  useEffect(() => {
+    // Do not replace a remembered choice while the team is still loading.
+    if (calendarView === 'week' && !isFirstLoad && weekSchedule.trainer && weekSchedule.trainer.id !== weekTrainerId) {
+      setWeekTrainerId(weekSchedule.trainer.id);
+    }
+  }, [calendarView, isFirstLoad, weekSchedule.trainer, weekTrainerId, setWeekTrainerId]);
   // Точки мини-календаря считаем с учётом фильтра тренеров — в режиме «Залы»
   // сетка тренеров не фильтрует, значит и точки гасить нечем.
-  const journalDays = useJournalDays(calYear, calMonth, viewMode === 'trainers' ? hiddenTrainers : []);
+  const journalDays = useJournalDays(calYear, calMonth, calendarView === 'week'
+    ? trainers.filter(trainer => trainer.id !== weekSchedule.trainer?.id).map(trainer => trainer.id)
+    : viewMode === 'trainers' ? hiddenTrainers : []);
   const hallNames = halls.map(h => h.name);
   const mutations = useJournalMutations(lessonsKey);
   const history = useUndoHistory();
@@ -198,7 +212,9 @@ export default function Journal() {
   }, [calYear, calMonth, selectedDay]);
 
   // Видимые колонки: всё, что пользователь не скрыл в тулбаре/правой панели.
-  const visibleTrainers = trainers.filter(t => !hiddenTrainers.includes(t.id));
+  const visibleTrainers = calendarView === 'week'
+    ? (weekSchedule.trainer ? [weekSchedule.trainer] : [])
+    : trainers.filter(t => !hiddenTrainers.includes(t.id));
   // Телефон: колонки тренеров во всю ширину, лишние — на следующих страницах
   const trainerPages = useTrainerPages(visibleTrainers);
   // HB-22 п.4: колонка «Без зала» появляется, только если такие занятия есть —
@@ -258,10 +274,10 @@ export default function Journal() {
   
   // Живые занятия (без отменённых) — считаются в сводке дня и правой панели;
   // сетка (Grid) рисует всё подряд через filteredBookings, отменённые остаются на месте.
-  const activeBookings = bookings.filter(b => b.status !== 'cancelled');
+  const activeBookings = (calendarView === 'week' ? weekSchedule.bookings : bookings).filter(b => b.status !== 'cancelled');
 
   // ── Фильтрованные записи (для сетки — включают отменённые) ──
-  const filteredBookings = bookings.filter(b => {
+  const filteredBookings = calendarView === 'week' ? weekSchedule.bookings : bookings.filter(b => {
     if (hallFilter !== null && b.hall !== hallFilter) return false;
     if (serviceFilter !== null && b.serviceId !== serviceFilter) return false;
     if (viewMode === 'trainers') return !hiddenTrainers.includes(b.trainer);
@@ -293,7 +309,7 @@ export default function Journal() {
     const [year, month, day] = date.split('-').map(Number);
     setCalYear(year); setCalMonth(month - 1); setSelectedDay(day);
     if (showDay) setCalendarView('day');
-  }, []);
+  }, [setCalendarView]);
   const bookingCreated = (date?: string) => {
     if (date) showBookingDate(date);
     mutations.invalidate();
@@ -323,9 +339,11 @@ export default function Journal() {
     setShowNewForm(true);
   };
   const openNewSlot = (trainerIdx: number, timeIdx: number, columnIndex: number) => {
+    if (calendarView === 'week' && !weekSchedule.trainer) return;
     const column = columns[columnIndex];
     const scope = {
-      trainer: column && typeof column === 'object' && !(column instanceof Date) ? column.id : (trainerIdx || 0),
+      trainer: calendarView === 'week' ? weekSchedule.trainer!.id
+        : column && typeof column === 'object' && !(column instanceof Date) ? column.id : (trainerIdx || 0),
       columnIndex, hall: typeof column === 'string' ? column : (visibleHalls[0] ?? hallNames[0] ?? ''),
       date: toDateStr(column instanceof Date ? column : new Date(calYear, calMonth, selectedDay)),
       time: formatIndexToTimeStr(timeIdx),
@@ -839,9 +857,13 @@ export default function Journal() {
             setIsEditingDate={setIsEditingDate}
             setDateInputVal={setDateInputVal}
             onResourceBooking={hasResourceServices
-              ? () => setResourceBooking({ teacherId: null, date: toDateStr(new Date(calYear, calMonth, selectedDay)) })
+              ? () => setResourceBooking({ teacherId: calendarView === 'week' ? weekSchedule.trainer?.id ?? null : null, date: toDateStr(new Date(calYear, calMonth, selectedDay)) })
               : undefined}
             spaceIsAxis={spaceIsAxis}
+            weekTrainerPicker={
+              <WeekTrainerPicker trainers={trainers} selected={weekSchedule.trainer}
+                onSelect={id => { setWeekTrainerId(id); setPopupBooking(null); setHoveredSlot(null); }} />
+            }
             trainerPicker={calendarView === 'day' && viewMode === 'trainers' ? (
               <TrainerPicker
                 trainers={visibleTrainers}
@@ -856,7 +878,7 @@ export default function Journal() {
                 calendarView={calendarView} eventDays={journalDays}
               />
             }
-            mobileFilters={
+            mobileFilters={calendarView === 'day' ? (
               <MobileFilters
                 trainers={trainers}
                 halls={hallNames}
@@ -865,12 +887,15 @@ export default function Journal() {
                 trainer={hiddenTrainers.length > 0 && visibleTrainers.length === 1 ? visibleTrainers[0].id : null}
                 hall={hallFilter}
                 service={serviceFilter}
-                onTrainer={(id) => setHiddenTrainers(id === null ? [] : trainers.filter(tr => tr.id !== id).map(tr => tr.id))}
+                onTrainer={(id) => {
+                  setHiddenTrainers(id === null ? [] : trainers.filter(tr => tr.id !== id).map(tr => tr.id));
+                  if (id !== null) setWeekTrainerId(id);
+                }}
                 onHall={setHallFilter}
                 onService={setServiceFilter}
                 spaceIsAxis={spaceIsAxis}
               />
-            }
+            ) : undefined}
             // Сводку дня (занятия, записи, загрузка) владелец убрал: она
             // отнимала у расписания строку. Шаг и отмена — в верхний ряд.
             controls={canEdit ? (
@@ -917,7 +942,7 @@ export default function Journal() {
                   columns={columns}
                   viewMode={viewMode}
                   filteredBookings={filteredBookings}
-                  staffBlocks={staffBlocks}
+                  staffBlocks={calendarView === 'week' ? weekSchedule.staffBlocks : staffBlocks}
                   dayDate={dateFrom}
                   visibleTrainers={visibleTrainers}
                   hoveredSlot={hoveredSlot}
@@ -944,7 +969,7 @@ export default function Journal() {
             {/* ── ПРАВАЯ ПАНЕЛЬ ── */}
             <div className="j-right">
               <RightPanel
-                trainers={trainers}
+                trainers={calendarView === 'week' ? visibleTrainers : trainers}
                 halls={halls}
                 calMonth={calMonth}
                 calYear={calYear}

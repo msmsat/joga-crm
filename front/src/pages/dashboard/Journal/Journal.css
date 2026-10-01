@@ -188,6 +188,16 @@
   position: relative;
 }
 
+/* One specialist's week always fits all seven days in the available width. */
+.j-grid.j-grid-week {
+  --j-col-min: 0px;
+  width: 100%;
+  min-width: 100%;
+}
+.j-grid-week .j-col-header,
+.j-grid-week .j-empty-slot,
+.j-grid-week .j-row-sep { min-width: 0; }
+
 .j-header-row { display: contents; }
 
 /* Верхний левый угол шапки, над колонкой времени */
@@ -199,6 +209,8 @@
   border-bottom: 1px solid var(--border);
   border-right: 1px solid var(--border);
 }
+
+.j-week-corner-name { display: none; }
 
 /* Короткое имя тренера («Анна С.») — только для узких колонок телефона */
 .j-name-short { display: none; }
@@ -2281,6 +2293,7 @@ button.kp-trainer:disabled { cursor: default; opacity: 0.6; }
   .j-toolbar:has(.j-cal-panel) > .j-sep,
   .j-toolbar:has(.j-cal-panel) > .j-tb-controls,
   .j-toolbar:has(.j-cal-panel) > .j-resource-btn,
+  .j-toolbar:has(.j-cal-panel) > .j-week-picker,
   .j-toolbar:has(.j-cal-panel) > .j-tp-btn { display: none !important; }
   .j-cal-panel .mc-header { margin-bottom: 8px !important; }
   .j-cal-panel .mc-month { font-size: 15px; }
@@ -2412,6 +2425,13 @@ button.kp-trainer:disabled { cursor: default; opacity: 0.6; }
      в кружке. Статистика дня в колонку в 48px не помещается и уходит. */
   .j-grid-week { --j-col-min: 0px; min-width: 100%; }
   .j-grid-week .j-col-header { padding: 0 !important; }
+  .j-grid-week .j-week-corner-name {
+    position: absolute; inset: 3px 2px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--onyx); font-size: 9.5px; font-weight: 700; line-height: 12px;
+    text-align: center;
+  }
+  .j-week-corner-name span { min-width: 0; max-width: 100%; overflow-wrap: anywhere; }
   .j-grid-week .j-hdr-stats { display: none !important; }
   .j-grid-week .j-hdr-wday { font-size: 11px !important; letter-spacing: 0 !important; }
   .j-grid-week .j-hdr-date {
@@ -2575,7 +2595,7 @@ button.kp-trainer:disabled { cursor: default; opacity: 0.6; }
   /* Живёт во втором ряду, рядом с «Индивидуально»: в первом, с датой,
      «Сегодня» и фильтром, ему не хватало места и фильтр уезжал на свой ряд. */
   .j-toolbar > .j-tp-btn { order: 3; }
-  .j-tp-btn { position: relative; flex-shrink: 0; width: auto !important; padding: 0 9px; overflow: visible; }
+  .j-tp-btn { position: relative; flex-shrink: 0; width: 56px !important; padding: 0 6px; overflow: visible; }
   .j-tp-btn.active { border-color: var(--peach); }
   .j-tp-stack { display: inline-flex; }
   .j-tp-av {

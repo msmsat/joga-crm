@@ -52,6 +52,7 @@ export const Grid: React.FC<GridProps> = ({
   initDrag, setPopupBooking, openBookingPopup, showToast, editDraft, pages
 }) => {
   const { t, i18n } = useTranslation('journal');
+  const weekTrainer = calendarView === 'week' ? visibleTrainers[0] : undefined;
 
   // Ни одного тренера/зала: от сетки оставался голый столбик часов без строк.
   // null — колонка-заглушка: день рисуется как обычное, просто пустое расписание.
@@ -73,6 +74,11 @@ export const Grid: React.FC<GridProps> = ({
       style={{ gridTemplateColumns: `56px repeat(${cols.length}, minmax(var(--j-col-min, 170px), 1fr))`, '--j-cols': cols.length } as React.CSSProperties}
     >
       <div className="j-top-left-corner">
+        {weekTrainer && (
+          <div className="j-week-corner-name" title={weekTrainer.full}>
+            <span>{weekTrainer.full}</span>
+          </div>
+        )}
         {pages && (
           <div className="j-page-dots" aria-label={`${pages.index + 1} / ${pages.count}`}>
             {Array.from({ length: pages.count }, (_, i) => (
@@ -319,7 +325,7 @@ export const Grid: React.FC<GridProps> = ({
                   return <StaffBlockCard key={`${block.staff_id}-${i}`} block={block}
                     top={(start - gridStart - ti * 60) / 60 * 72 + 2} height={(end - start) / 60 * 72 - 4}
                     name={calendarView === 'week' ? visibleTrainers.find(s => s.id === block.staff_id)?.name : undefined}
-                    style={lanes > 1 ? { left: `calc(${lane / lanes * 100}% + 2px)`, right: `calc(${(lanes - lane - 1) / lanes * 100}% + 2px)` } : undefined} />;
+                    style={lanes > 1 ? { left: `${lane / lanes * 100}%`, right: `${(lanes - lane - 1) / lanes * 100}%` } : undefined} />;
                 })}
                 {/* Обертка для карточек с анимацией */}
                 {/* Без z-index/transform на обертке: иначе stacking context запирает

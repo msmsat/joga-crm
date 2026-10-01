@@ -1,5 +1,14 @@
 /* Quiet periods have their own visual language, separate from appointments.
    Container queries follow the actual card width (one master / seven days). */
+/* The full period masks the hourly grid, including card insets and corners. */
+.j-staff-block-period {
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: var(--bg);
+}
 .j-staff-block {
   --sb-surface: #F4F3F1;
   --sb-accent: #79746D;
@@ -7,6 +16,8 @@
   --sb-edge: #E1DDD7;
   --sb-detail: rgba(121, 116, 109, .1);
   position: absolute;
+  top: 2px;
+  bottom: 2px;
   left: 5px;
   right: 5px;
   box-sizing: border-box;
@@ -30,9 +41,6 @@
   border-radius: 0 3px 3px 0;
   background: var(--sb-accent);
   opacity: .55;
-}
-.j-staff-block-off_hours {
-  background-image: repeating-linear-gradient(135deg, transparent 0 18px, var(--sb-detail) 18px 19px);
 }
 .j-staff-block-break {
   --sb-surface: #FCEAE3;

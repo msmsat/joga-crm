@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import * as Icons from '../../../../../components/Icons';
 import type { BookedClient, LessonDetail } from '../../../../../api/schedule/schedule.types';
 import { formatMoney } from '../../../../../lib/money';
+import { useRoleLabel } from '../../../../../hooks/useBusinessTerms';
 import type { Booking } from '../../types';
 import './lessonCard.css';
 import { MasterCompensation } from './MasterCompensation';
@@ -22,6 +23,7 @@ const durationOf = (b: Booking) => Math.round((b.timeEnd - b.timeStart) * 60);
 
 export function LessonFacts({ booking, detail, booked, trainerName, currency }: Props) {
   const { t, i18n } = useTranslation('journal');
+  const roleLabel = useRoleLabel();
   const location = detail?.location ?? null;
   // Город — только когда улицы нет: в адресе студии он обычно уже есть
   // («Vinohradská 42, Praha 2»), и приписка «Prague» читалась бы повтором.
@@ -57,7 +59,7 @@ export function LessonFacts({ booking, detail, booked, trainerName, currency }: 
       </a>
 
       <div className="lc-tiles">
-        <Tile label={t('lessonCard.trainer')} caption={<MasterCompensation value={detail?.compensation} currency={currency} />}>
+        <Tile label={roleLabel('trainer')} caption={<MasterCompensation value={detail?.compensation} currency={currency} />}>
           <span className="lc-dot" style={{ background: booking.color }} />
           {trainerName ?? '—'}
         </Tile>

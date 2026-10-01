@@ -40,6 +40,8 @@ interface ToolbarProps {
   mobileFilters?: React.ReactNode;
   /** Выбор тренеров-колонок на телефоне (TrainerPicker). */
   trainerPicker?: React.ReactNode;
+  /** In week view this single-master picker replaces the day filters. */
+  weekTrainerPicker?: React.ReactNode;
   /** Календарь месяца (MiniCalendar), который на телефоне открывает кнопка даты. */
   mobileCalendar?: React.ReactNode;
   /** Шаг сетки и отмена/повтор (DayControls) — справа, перед «День/Неделя». */
@@ -72,6 +74,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   mobileFilters,
   mobileCalendar,
   trainerPicker,
+  weekTrainerPicker,
   controls,
 }) => {
   const { t, i18n } = useTranslation('journal');
@@ -163,6 +166,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
         </button>
       )}
 
+      {calendarView === 'week' && weekTrainerPicker}
       {trainerPicker}
       {mobileFilters}
 
@@ -181,26 +185,31 @@ export const Toolbar: React.FC<ToolbarProps> = ({
           (space_is_axis), посчитанные сервером. Пока термины не пришли,
           значение undefined — вкладку показываем: спрятать её у студии,
           которая ей пользуется, хуже, чем показать на кадр позже. */}
-      <div className="j-view-mode" style={{ display: 'flex', gap: 3, background: 'var(--bg2)', borderRadius: 8, padding: 3 }}>
-        <button className={`pill-tab ${viewMode === 'trainers' ? 'active' : ''}`} onClick={() => setViewMode('trainers')}>
-          <Icons.Users /> {t('toolbar.trainers')}
-        </button>
-        {spaceIsAxis !== false && (
-          <button className={`pill-tab ${viewMode === 'halls' ? 'active' : ''}`} onClick={() => setViewMode('halls')}>
-            <Icons.Grid /> {t('toolbar.halls')}
+      {calendarView === 'day' && <>
+        <div className="j-view-mode" style={{ display: 'flex', gap: 3, background: 'var(--bg2)', borderRadius: 8, padding: 3 }}>
+          <button className={`pill-tab ${viewMode === 'trainers' ? 'active' : ''}`} onClick={() => setViewMode('trainers')}>
+            <Icons.Users /> {t('toolbar.trainers')}
           </button>
-        )}
-      </div>
+          {spaceIsAxis !== false && (
+            <button className={`pill-tab ${viewMode === 'halls' ? 'active' : ''}`} onClick={() => setViewMode('halls')}>
+              <Icons.Grid /> {t('toolbar.halls')}
+            </button>
+          )}
+        </div>
 
-      <div className="j-sep" style={{ width: 1, height: 20, background: 'var(--border)', flexShrink: 0 }} />
+        <div className="j-sep" style={{ width: 1, height: 20, background: 'var(--border)', flexShrink: 0 }} />
+
+      </>}
 
       {/* Фильтры — кнопкой с окошком (десктоп). На телефоне своя панель —
           MobileFilters выше, эту кнопку там прячет CSS. */}
-      <DesktopFilters
-        viewMode={viewMode} trainers={trainers} halls={halls}
-        activeTrainers={activeTrainers} activeHalls={activeHalls}
-        toggleTrainer={toggleTrainer} toggleHall={toggleHall}
-      />
+      {calendarView === 'day' && (
+        <DesktopFilters
+          viewMode={viewMode} trainers={trainers} halls={halls}
+          activeTrainers={activeTrainers} activeHalls={activeHalls}
+          toggleTrainer={toggleTrainer} toggleHall={toggleHall}
+        />
+      )}
 
       <div style={{ flex: 1 }} />
 
