@@ -108,6 +108,43 @@ def test_profile_for_activities(subtype, expected):
     assert terms.profile_for_activities(subtype) == expected
 
 
+@pytest.mark.parametrize("subtype,expected", [
+    ("barbershop,hair_salon", "resource"),
+    ("hair_removal", "resource"),
+    ("massage,osteopathy", "resource"),
+    ("spa,sauna", "resource"),
+    ("personal_training", "resource"),
+    ("yoga,pilates", "event"),
+    ("gym,crossfit", "event"),
+    # Зал с персональными тренировками — обе механики сразу.
+    ("gym,personal_training", "hybrid"),
+    ("other", "event"),
+    ("", "event"),
+    (None, "event"),
+    # Неизвестное направление не голосует.
+    ("zzz,barbershop", "resource"),
+])
+def test_booking_mode_for_activities(subtype, expected):
+    assert terms.booking_mode_for_activities(subtype) == expected
+
+
+def test_resource_activities_are_real_onboarding_items():
+    """Опечатка в RESOURCE_ACTIVITIES молча оставила бы направление event."""
+    known = {a for items in terms.PROFILE_ACTIVITIES.values() for a in items}
+    assert terms.RESOURCE_ACTIVITIES <= known
+
+
+@pytest.mark.parametrize("studio_mode,service_type,expected", [
+    ("event", "individual", "event"),
+    ("resource", None, "resource"),
+    ("hybrid", "individual", "resource"),
+    ("hybrid", "group", "event"),
+    ("hybrid", None, "event"),
+])
+def test_default_service_mode(studio_mode, service_type, expected):
+    assert terms.default_service_mode(studio_mode, service_type) == expected
+
+
 def test_activity_table_matches_the_onboarding_screen():
     """PROFILE_ACTIVITIES — копия ACTIVITY_SECTIONS с фронта. Копия осознанная,
     но молча разъехаться она не должна: новое направление в онбординге без

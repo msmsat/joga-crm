@@ -57,9 +57,11 @@ async def _seed() -> tuple[int, int, int]:
         db.add_all([
             Reservation(client_id=cid, lesson_id=lesson_ok.id, spot_number=1, status="attended", rating=5),
             Reservation(client_id=cid, lesson_id=lesson_ok.id, spot_number=2, status="attended", rating=3),
-            Reservation(client_id=cid, lesson_id=lesson_ok.id, spot_number=3, status="active"),
+            # Неявка — явная отметка (services/attendance): неотмеченная бронь
+            # прошедшего занятия считается визитом.
+            Reservation(client_id=cid, lesson_id=lesson_ok.id, spot_number=3, status="active", no_show=True),
             Reservation(client_id=cid, lesson_id=lesson_cancelled.id, spot_number=1, status="cancelled"),
-            Reservation(client_id=cid, lesson_id=lesson_noshow.id, spot_number=1, status="active"),
+            Reservation(client_id=cid, lesson_id=lesson_noshow.id, spot_number=1, status="active", no_show=True),
         ])
 
         db.add(Operation(
@@ -105,8 +107,8 @@ async def _run():
         assert row.lessons == 2, row.lessons  # cancelled excluded, tracked separately via row.cancels
         assert row.cancels == 1, row.cancels
         # noshow_cond has no lesson-status filter beyond "ended" — both lesson_ok's
-        # spot_number=3 active reservation and lesson_noshow's active reservation
-        # qualify (each is an active reservation on an already-ended lesson).
+        # spot_number=3 reservation and lesson_noshow's reservation qualify (each
+        # is marked no_show on an already-ended lesson).
         assert row.noshows == 2, row.noshows
         # fill_pct: active lessons only (lesson_ok 3/8 + lesson_noshow 1/8) = 4/16 = 25%
         assert row.fill_pct == 25.0, row.fill_pct

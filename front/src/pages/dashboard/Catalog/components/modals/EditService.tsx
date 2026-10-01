@@ -43,7 +43,12 @@ export function ServiceModal({ service, categories, services, bundle = false, on
   const currency = getCurrencySymbol(studioCurrency);
   // Слово для индивидуальной услуги берётся с сервера (HB-14): в подсказке
   // формы должно стоять слово отрасли студии, а не зашитая «услуга».
-  const { offering } = useBusinessTerms("resource");
+  const { offering, capabilities } = useBusinessTerms("resource");
+  // Механику записи решает студия: онбординг выставил её по направлению
+  // (барбершоп — выбор времени, йога — запись на занятие). Спрашиваем только
+  // смешанную студию — там у каждой услуги своя.
+  const studioMode = capabilities?.booking_mode;
+  const askMode = studioMode === "hybrid";
 
   // Компонент пересоздаётся по key при открытии (см. родителя),
   // поэтому начальные значения из service корректны без useEffect.
@@ -57,18 +62,25 @@ export function ServiceModal({ service, categories, services, bundle = false, on
   // регистрации. Здесь — её собственные направления, и новое заводится тут же,
   // строкой «Создать категорию» в списке.
   const [category, setCategory] = useState(service?.category || NO_CATEGORY);
-  const [type, setType] = useState<"group" | "individual">(isBundle ? "individual" : service?.type ?? "group");
   const [price, setPrice] = useState(service != null ? String(service.price) : "");
   const [duration, setDuration] = useState(service != null ? String(service.duration_min) : "60");
-  const [maxClients, setMaxClients] = useState(service?.max_clients != null ? String(service.max_clients) : "");
+  // Индивидуальное занятие из расписания — это одно место, а не отдельный
+  // переключатель «Тип». Старая индивидуальная услуга без числа мест
+  // открывается с единицей, иначе при сохранении стала бы групповой.
+  const [maxClients, setMaxClients] = useState(
+    service?.max_clients != null ? String(service.max_clients) : service?.type === "individual" ? "1" : "");
   const [color, setColor] = useState(service?.color ?? "#FCAE91");
-  // HB-17: механика записи — своё поле. Групповая resource-услуга запрещена
-  // сервером (§6.1), поэтому выбор resource переводит формат в индивидуальный,
-  // а не оставляет сочетание, которое всё равно откажут при сохранении.
-  const [bookingMode, setBookingMode] = useState<ServiceBookingMode>(service?.booking_mode ?? "event");
+  const [pickedMode, setPickedMode] = useState<ServiceBookingMode>(service?.booking_mode ?? "event");
+  // У существующей услуги механика своя; новая берёт студийную. Пока
+  // настройки не пришли, форма рисует занятие — сервер всё равно выведет
+  // механику сам, раз форма её не прислала.
+  const bookingMode: ServiceBookingMode = askMode || service ? pickedMode
+    : studioMode === "resource" ? "resource" : "event";
+  // Формат выводится из механики и мест — групповой resource не бывает (§6.1).
+  const type: "group" | "individual" =
+    isBundle || bookingMode === "resource" || maxClients.trim() === "1" ? "individual" : "group";
   const [bufferBefore, setBufferBefore] = useState(String(service?.buffer_before_min ?? 0));
   const [bufferAfter, setBufferAfter] = useState(String(service?.buffer_after_min ?? 0));
-  const [isBookable, setIsBookable] = useState(service?.is_bookable ?? true);
   const [description, setDescription] = useState(service?.description ?? "");
   const [saving, setSaving] = useState(false);
 
@@ -86,7 +98,7 @@ export function ServiceModal({ service, categories, services, bundle = false, on
     name: name.trim().length < 1 ? t("common:validation.required") : null,
     price: price.trim() && Number.isInteger(Number(price)) && Number(price) >= 0 ? null : t("common:validation.min", { n: 0 }),
     duration: Number.isInteger(Number(duration)) && Number(duration) > 0 ? null : t("common:validation.positive"),
-    maxClients: type === "group" && maxClients.trim() && Number(maxClients) < 1 ? t("common:validation.min", { n: 1 }) : null,
+    maxClients: bookingMode === "event" && maxClients.trim() && Number(maxClients) < 1 ? t("common:validation.min", { n: 1 }) : null,
     // Диапазоны буферов и длительности resource повторяют CHECK базы
     // (0…240 и 1…1440): отказ должен приходить до сохранения, а не 422 после.
     bufferBefore: !Number.isInteger(Number(bufferBefore)) || Number(bufferBefore) < 0 || Number(bufferBefore) > 240 ? t("common:validation.range", { min: 0, max: 240 }) : null,
@@ -108,17 +120,18 @@ export function ServiceModal({ service, categories, services, bundle = false, on
         duration_min: Number(duration) || 60,
         // «Без категории» — это NULL в базе, а не строка 'other'.
         category: !isBundle && category && category !== NO_CATEGORY ? category : null,
-        service_type: bookingMode === "resource" ? "individual" : type,
+        service_type: type,
         color: color || null,
         // У resource вместимость всегда 1 и не редактируется (§4.4).
         max_clients: bookingMode === "resource"
           ? 1
-          : type === "group" && maxClients.trim() ? Number(maxClients) : null,
+          : maxClients.trim() ? Number(maxClients) : null,
         description: description.trim() || null,
-        booking_mode: bookingMode,
+        // Механику шлём, только когда её выбирали: иначе её решает студия, а
+        // у существующей услуги она остаётся прежней.
+        ...(askMode ? { booking_mode: bookingMode } : {}),
         buffer_before_min: Number(bufferBefore) || 0,
         buffer_after_min: Number(bufferAfter) || 0,
-        is_bookable: isBookable,
       });
       onClose();
     } catch {
@@ -184,54 +197,32 @@ export function ServiceModal({ service, categories, services, bundle = false, on
         <Field delay={40}>
           <Input label={t("catalog:modals.service.name")} value={name} onChange={setName} onBlur={touch("name")} error={show("name")} placeholder={t("catalog:modals.service.namePlaceholder")} />
         </Field>
-        {!isBundle && <Field delay={70} className="cmod-row">
-          <div>
-            <label className="vk-label">{t("catalog:modals.service.category")}</label>
-            <Select
-              value={category}
-              options={categoryOptions(categories, category, tCat).map(c => ({ value: c, label: tCat(c) }))}
-              onChange={setCategory}
-              creatable
-              createLabel={t("catalog:modals.service.categoryCreate")}
-              createPlaceholder={t("catalog:modals.service.categoryNewPlaceholder")}
-            />
-          </div>
-          <Segmented
-            label={t("catalog:modals.service.type")}
-            value={bookingMode === "resource" ? "individual" : type}
-            onChange={setType}
-            disabled={bookingMode === "resource"}
-            options={[
-              { value: "group", label: t("catalog:modals.service.typeGroup"), icon: <IconUsers size={13} /> },
-              { value: "individual", label: t("catalog:modals.service.typeIndividual"), icon: <IconUser size={13} /> },
-            ]}
+        {!isBundle && <Field delay={70}>
+          <label className="vk-label">{t("catalog:modals.service.category")}</label>
+          <Select
+            value={category}
+            options={categoryOptions(categories, category, tCat).map(c => ({ value: c, label: tCat(c) }))}
+            onChange={setCategory}
+            creatable
+            createLabel={t("catalog:modals.service.categoryCreate")}
+            createPlaceholder={t("catalog:modals.service.categoryNewPlaceholder")}
           />
         </Field>
         }
         {isBundle && <div className="cat-bundle-mobile"><BundleEditor services={services} parts={parts} partIds={partIds} onChange={changeParts} error={show("parts")} /></div>}
-        <Field delay={85} className="cmod-row">
-          <Segmented
-            label={t("catalog:modals.service.bookingMode")}
-            value={bookingMode}
-            onChange={(value: ServiceBookingMode) => {
-              setBookingMode(value);
-              if (value === "resource") setType("individual");
-            }}
-            options={[
-              { value: "event", label: t("catalog:modals.service.bookingModeEvent"), icon: <IconUsers size={13} /> },
-              { value: "resource", label: t("catalog:modals.service.bookingModeResource"), icon: <IconUser size={13} /> },
-            ]}
-          />
-          <Segmented
-            label={t("catalog:modals.service.bookable")}
-            value={isBookable ? "on" : "off"}
-            onChange={(value: string) => setIsBookable(value === "on")}
-            options={[
-              { value: "on", label: t("catalog:modals.service.bookableOn") },
-              { value: "off", label: t("catalog:modals.service.bookableOff") },
-            ]}
-          />
-        </Field>
+        {askMode && (
+          <Field delay={85}>
+            <Segmented
+              label={t("catalog:modals.service.bookingMode")}
+              value={bookingMode}
+              onChange={setPickedMode}
+              options={[
+                { value: "event", label: t("catalog:modals.service.bookingModeEvent"), icon: <IconUsers size={13} /> },
+                { value: "resource", label: t("catalog:modals.service.bookingModeResource"), icon: <IconUser size={13} /> },
+              ]}
+            />
+          </Field>
+        )}
         <Field delay={95}>
           <Hint text={bookingMode === "resource"
             ? t("catalog:modals.service.bookingModeResourceHint", { offering: offering?.singular ?? "" })
@@ -244,9 +235,10 @@ export function ServiceModal({ service, categories, services, bundle = false, on
           <Input label={t("catalog:modals.service.durationShort")} type="number" value={duration} onChange={value => { setDurationEdited(true); setDuration(value); }} onBlur={touch("duration")} error={show("duration") || show("resourceDuration")} placeholder={t("catalog:modals.service.durationPlaceholder")} suffix={t("common:units.min")} />
         </Field>
         {isBundle && <p className="cat-bundle-muted">{t("catalog:bundles.separate")}: {currency}{fullPrice.toLocaleString()} · {fullDuration} {t("common:units.min")}</p>}
-        {/* Вместимость только у события: у индивидуальной записи её нет —
-            занят не коврик, а время специалиста, и сервер всегда пишет 1. */}
-        {bookingMode === "event" && type === "group" && (
+        {/* Вместимость только у события: у записи на время её нет — занят не
+            коврик, а время специалиста, и сервер всегда пишет 1. Одно место —
+            это и есть индивидуальное занятие. */}
+        {bookingMode === "event" && !isBundle && (
           <Field delay={160}>
             <Input label={t("catalog:modals.service.maxClients")} type="number" value={maxClients} onChange={setMaxClients} onBlur={touch("maxClients")} error={show("maxClients")} placeholder={t("catalog:modals.service.maxClientsPlaceholder")} />
           </Field>

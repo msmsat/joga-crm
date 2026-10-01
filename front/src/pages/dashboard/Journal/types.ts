@@ -25,9 +25,10 @@ export interface Booking {
   title: string;
   hall: string;
   clients: number;
-  /** Сколько записанных отмечены «пришёл»: прошедшая индивидуальная запись без
-   *  отметки рисуется неявкой (utils.isNoShow). Нет у оптимистичной карточки. */
+  /** Сколько записанных отмечены «пришёл». Нет у оптимистичной карточки. */
   attended?: number;
+  /** Сколько отмечены «не пришёл» — по ним сетка рисует неявку (utils.isNoShow). */
+  noShows?: number;
   maxClients: number;
   color: string;
   status: 'confirmed' | 'pending' | 'cancelled';

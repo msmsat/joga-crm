@@ -125,8 +125,6 @@
       "categoryCreate": "Kategori oluştur",
       "categoryNewPlaceholder": "Örn. Saç kesimi",
       "type": "Tür",
-      "typeGroup": "Grup",
-      "typeIndividual": "Bireysel",
       "price": "Fiyat, {{currency}}",
       "pricePlaceholder": "1200",
       "duration": "Süre, dk",
@@ -150,9 +148,6 @@
       "bookingModeResource": "Saat seç",
       "bookingModeEventHint": "Müşteriler, önceden planladığınız bir derse kaydolur.",
       "bookingModeResourceHint": "Müşteri bir uzman ve boş zaman seçer; {{offering}} aralığı onayda oluşturulur.",
-      "bookable": "Rezervasyona açık",
-      "bookableOn": "Evet",
-      "bookableOff": "Hayır",
       "bufferBefore": "Önceki tampon",
       "bufferAfter": "Sonraki tampon"
     },

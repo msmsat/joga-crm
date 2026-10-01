@@ -8,10 +8,12 @@ from database import get_db
 from models import Client, Studio
 from ratelimit import limiter
 from schemas.schedule.hybrid import (PublicAvailabilityQuery, AvailabilityRead, BookingQuoteRequest,
-    BookingRead, ConfirmRequest, PublicResourceStaffQuery, PublicStaffDayQuery, QuoteRead,
-    RescheduleConfirmRequest, ResourceQuoteRequest, ResourceStaffMemberRead, ResourceStaffRead,
-    StaffDayMemberRead, StaffDayRead)
-from services import booking_quotes as quotes, hybrid_http, resource_availability, resource_booking, resource_reschedule
+    BookingRead, ClientConfirmRequest, ClientPaymentCodes, PaymentPreviewRead, PublicResourceStaffQuery,
+    PublicServicesDayQuery, PublicStaffDayQuery, QuoteRead, RescheduleConfirmRequest, ResourceQuoteRequest,
+    ResourceStaffMemberRead, ResourceStaffRead, ServiceDayRead, ServicesDayRead, StaffDayMemberRead,
+    StaffDayRead)
+from services import (booking_checkout, booking_quotes as quotes, hybrid_http, resource_availability,
+                      resource_booking, resource_reschedule)
 from services.notifier import _fmt_amount
 from .miniapp import Viewer, get_current_client, get_viewer
 
@@ -28,6 +30,28 @@ async def availability(request: Request, query: Annotated[PublicAvailabilityQuer
                        viewer: Viewer = Depends(get_viewer), db: AsyncSession = Depends(get_db)):
     return await resource_availability.availability(db, studio_id=viewer.studio_id,
                                                   **query.model_dump(exclude={"studio_id"}))
+
+
+@router.get("/availability/services", response_model=ServicesDayRead)
+@limiter.limit("60/minute")
+async def services_availability(request: Request, query: Annotated[PublicServicesDayQuery, Query()],
+                                viewer: Viewer = Depends(get_viewer), db: AsyncSession = Depends(get_db)):
+    """Свободное время всех индивидуальных услуг на день — одним запросом.
+
+    Мастер записи мини-приложения умеет начинать со времени: сначала час, потом
+    услуги и мастера, свободные в этот час. Поштучный `availability` по каждой
+    услуге — N запросов с одного экрана. Тот же снимок, что у Журнала, но по
+    правилам клиентской записи (горизонт, минимальный запас до начала).
+    """
+    days = await resource_availability.services_day(db, studio_id=viewer.studio_id, day=query.day)
+    return ServicesDayRead(services=[
+        ServiceDayRead(service_id=row.service_id, branch_id=row.branch_id, reason=row.availability.reason,
+                       free_by_teacher={teacher_id: [slot.local_start.hour * 60 + slot.local_start.minute
+                           for slot in row.availability.slots if teacher_id in slot.teacher_ids]
+                           for teacher_id in {tid for slot in row.availability.slots for tid in slot.teacher_ids}},
+                       free=[slot.local_start.hour * 60 + slot.local_start.minute
+                             for slot in row.availability.slots])
+        for row in days])
 
 
 @router.get("/resource-staff", response_model=ResourceStaffRead)
@@ -96,13 +120,36 @@ async def get_quote(quote_id: str, client: Client = Depends(get_current_client),
     return hybrid_http.quote_response(row)
 
 
+@router.post("/booking-quotes/{quote_id}/payment-preview", response_model=PaymentPreviewRead)
+@limiter.limit("60/minute")
+async def payment_preview(request: Request, quote_id: str, body: ClientPaymentCodes,
+                          client: Client = Depends(get_current_client), db: AsyncSession = Depends(get_db)):
+    """Чек записи с промокодом, ваучером, баллами и депозитом — до подтверждения.
+
+    Тот же расчёт, что у шага оплаты Журнала (`booking_checkout.preview`).
+    Только чтение: коды начнут держаться на брони с её подтверждением.
+    """
+    return await booking_checkout.preview(db, _actor(client), quote_id, body)
+
+
 @router.post("/bookings", response_model=BookingRead)
 @limiter.limit("20/minute")
-async def confirm(request: Request, body: ConfirmRequest, background: BackgroundTasks,
+async def confirm(request: Request, body: ClientConfirmRequest, background: BackgroundTasks,
                   client: Client = Depends(get_current_client), db: AsyncSession = Depends(get_db)):
+    """Подтвердить запись; с `payment` — и удержать на ней коды клиента.
+
+    Одной транзакцией: не сошлась сумма или ваучер уже занят — откатывается и
+    сама бронь. Без `payment` — прежняя запись без кодов.
+    """
     actor = _actor(client)
-    return await hybrid_http.after_commit(
-        db, actor, await resource_booking.confirm(db, body.quote_id, actor), background)
+    booked = await resource_booking.confirm(db, body.quote_id, actor)
+    try:
+        if body.payment is not None:
+            await booking_checkout.hold(db, actor, booked, body.payment)
+    except Exception:
+        await db.rollback()
+        raise
+    return await hybrid_http.after_commit(db, actor, booked, background)
 
 
 @router.post("/bookings/{reservation_id}/cancel", response_model=BookingRead)

@@ -125,8 +125,6 @@
       "categoryCreate": "Создать категорию",
       "categoryNewPlaceholder": "Например, стрижка",
       "type": "Тип",
-      "typeGroup": "Групповая",
-      "typeIndividual": "Индивидуальная",
       "price": "Цена, {{currency}}",
       "pricePlaceholder": "1200",
       "duration": "Длительность, мин",
@@ -150,9 +148,6 @@
       "bookingModeResource": "Выбор времени",
       "bookingModeEventHint": "Клиент записывается на занятие, которое вы уже поставили в расписание.",
       "bookingModeResourceHint": "Клиент выбирает специалиста и свободное время; интервал ({{offering}}) создаётся при подтверждении.",
-      "bookable": "Доступна для записи",
-      "bookableOn": "Да",
-      "bookableOff": "Нет",
       "bufferBefore": "Буфер до",
       "bufferAfter": "Буфер после"
     },

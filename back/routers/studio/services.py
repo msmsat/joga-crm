@@ -14,7 +14,7 @@ from schemas.schedule.hybrid import AVAILABLE_BOOKING_MODES
 from schemas.studio import ServiceRead, ServiceCreate, ServiceUpdate, ServiceWeekSlot
 from schemas.studio.studio import ServiceBundlePartRead, ServiceMasterRead, ServiceRefRead
 from schemas.studio.studio import reject_resource_group_combo
-from services import schedule_guard, service_bundles, service_pricing
+from services import schedule_guard, service_bundles, service_pricing, terminology
 
 router = APIRouter()
 
@@ -241,7 +241,6 @@ async def create_service(
     # HB-06: замок студии — до правки каталога (§6.2 п.4: изменение услуги
     # выполняется под тем же замком, что confirm брони).
     studio = await schedule_guard.lock_studio(db, ctx.studio_id)
-    _assert_mode_available(data.booking_mode, studio)
     fields = data.model_dump()
     parts = fields.pop("bundle_service_ids", None)
     fields["category"] = await _normalize_category(fields.get("category"), ctx.studio_id, db)
@@ -252,6 +251,20 @@ async def create_service(
             raise HTTPException(status_code=422, detail="Комплекс не может быть групповым")
         fields["service_type"] = "individual"
         fields["max_clients"] = 1
+    if fields["booking_mode"] is None:
+        # Механику не назвали — она у студии (онбординг выставил её по
+        # направлению). Явное значение схема уже проверила целиком.
+        fields["booking_mode"] = terminology.default_service_mode(
+            studio.booking_mode, fields.get("service_type"))
+        if fields["booking_mode"] == "resource":
+            if fields.get("service_type") == "group":
+                raise HTTPException(status_code=422, detail="В студии с записью на время услуга не бывает групповой")
+            if not 1 <= fields["duration_min"] <= 1440:
+                raise HTTPException(status_code=422, detail="Длительность должна быть от 1 до 1440 минут")
+            # У resource вместимость всегда 1: занято время мастера (§4.4).
+            fields["service_type"] = "individual"
+            fields["max_clients"] = 1
+    _assert_mode_available(fields["booking_mode"], studio)
     service = Service(studio_id=ctx.studio_id, **fields)
     db.add(service)
     await db.flush()

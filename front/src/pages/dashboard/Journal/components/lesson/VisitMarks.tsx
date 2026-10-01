@@ -1,16 +1,21 @@
 // Две отметки записи иконками — «Оплата» и «Посещение». Одни и те же в строке
 // записанного (просмотр занятия, компактно) и на итоге мастера записи
 // (плиткой с подписью). Сделанное — галочка в уголке, неявка — крестик.
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as Icons from '../../../../../components/Icons';
 import type { BookedClient } from '../../../../../api/schedule/schedule.types';
+import type { Attendance } from '../../utils';
+import { AttendChoice } from './AttendChoice';
 import './lessonCard.css';
 
 export type MarkState = 'idle' | 'due' | 'done' | 'missed';
 
-export function VisitMark({ icon, state, label, hint, onClick, disabled, tile }: {
+export function VisitMark({ icon, state, label, hint, onClick, disabled, tile, expanded }: {
   icon: React.ReactNode; state: MarkState; label: string; hint: string;
-  onClick?: () => void; disabled?: boolean; tile?: boolean;
+  onClick?: (el: HTMLButtonElement) => void; disabled?: boolean; tile?: boolean;
+  /** Кнопка раскрывает выбор: скринридер должен знать, что он есть и открыт ли. */
+  expanded?: boolean;
 }) {
   const inert = disabled || !onClick;
   return (
@@ -19,14 +24,16 @@ export function VisitMark({ icon, state, label, hint, onClick, disabled, tile }:
       className={`lc-mark is-${state}${tile ? ' is-tile' : ''}`}
       title={`${label} · ${hint}`}
       aria-label={`${label} · ${hint}`}
-      aria-pressed={state === 'done'}
+      aria-pressed={expanded === undefined ? state === 'done' : undefined}
+      aria-haspopup={expanded === undefined ? undefined : 'menu'}
+      aria-expanded={expanded}
       aria-disabled={inert || undefined}
-      onClick={e => { e.stopPropagation(); if (!inert) onClick?.(); }}
+      onClick={e => { e.stopPropagation(); if (!inert) onClick?.(e.currentTarget); }}
     >
       <span className="lc-mark-icon">
         {icon}
         {(state === 'done' || state === 'missed') && (
-          <span className="lc-mark-badge" aria-hidden>{state === 'done' ? <Icons.Check /> : <Icons.X />}</span>
+          <span key={state} className="lc-mark-badge" aria-hidden>{state === 'done' ? <Icons.Check /> : <Icons.X />}</span>
         )}
       </span>
       {tile && (
@@ -58,14 +65,38 @@ export function PayMark({ client: c, canPay, onPay, tile }: {
                     label={label} hint={hint} tile={tile} />;
 }
 
-/** Пришёл ли клиент. Не отметили, а занятие закончилось, — неявка: крестик,
- *  но отметить приход задним числом по-прежнему можно. */
-export function AttendMark({ attended, missed, onAttend, tile }: {
-  attended: boolean; missed: boolean; onAttend?: () => void; tile?: boolean;
+/** Пришёл ли клиент (utils.attendanceOf). По умолчанию — пришёл: до начала
+ *  занятия запись ждёт, и нажатие открывает над кнопкой выбор «Пришёл / Не
+ *  пришёл» (предупредил, что не придёт, или явился раньше). С начала занятия
+ *  выбирать незачем — нажатие переключает отметку. */
+export function AttendMark({ state, started, onSet, tile }: {
+  state: Attendance; started: boolean; onSet?: (attended: boolean) => void; tile?: boolean;
 }) {
   const { t } = useTranslation('journal');
-  const state: MarkState = attended ? 'done' : missed ? 'missed' : 'idle';
-  const hint = attended ? t('bookingPopup.attended') : missed ? t('clientCard.status.missed') : t('mark.notMarked');
-  return <VisitMark icon={<Icons.UserCheck />} state={state} label={t('mark.attend')} hint={hint}
-                    onClick={attended ? undefined : onAttend} tile={tile} />;
+  const [anchor, setAnchor] = useState<HTMLElement | null>(null);
+  const mark: MarkState = state === 'came' ? 'done' : state === 'missed' ? 'missed' : 'idle';
+  const hint = state === 'came' ? t('clientCard.status.attended')
+    : state === 'missed' ? t('clientCard.status.missed') : t('mark.waiting');
+
+  const press = (el: HTMLButtonElement) => {
+    if (!onSet) return;
+    if (started) onSet(state !== 'came');
+    else setAnchor(current => (current ? null : el));
+  };
+
+  return (
+    <>
+      <VisitMark icon={<Icons.UserCheck />} state={mark} label={t('mark.attend')} hint={hint}
+                 onClick={onSet ? press : undefined} tile={tile}
+                 expanded={started || !onSet ? undefined : anchor !== null} />
+      {anchor && (
+        <AttendChoice
+          anchor={anchor}
+          current={state}
+          onPick={attended => { setAnchor(null); if ((state === 'came') !== attended || state === 'waiting') onSet?.(attended); }}
+          onClose={() => setAnchor(null)}
+        />
+      )}
+    </>
+  );
 }

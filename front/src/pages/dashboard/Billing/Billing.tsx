@@ -6,8 +6,6 @@ import TrialOfferCard from './components/sections/TrialOfferCard';
 import PlansTab from './components/tabs/PlansTab';
 import InvoicesTab from './components/tabs/InvoicesTab';
 import PaymentMethodTab from './components/tabs/PaymentMethodTab';
-import PayModal from './components/modals/PayModal';
-import BillingProfileModal from './components/modals/BillingProfileModal';
 import styles from './Billing.module.css';
 import { LEGAL_LINK_PROPS, PRIVACY_URL, TERMS_URL } from '../../../utils/legal';
 import { useAiIntent } from '../../../hooks/useAiIntent';
@@ -65,6 +63,9 @@ export default function Billing() {
           totalToPay={h.totalToPay}
           savedTotal={h.savedTotal}
           startCheckout={h.startCheckout}
+          payBusy={h.payBusy}
+          preview={h.preview}
+          previewBusy={h.previewBusy}
           activateModel={h.activateModel}
           modelBusy={h.modelBusy}
           plan={h.plan}
@@ -90,9 +91,6 @@ export default function Billing() {
           setAutopay={h.setAutopay}
           openPortal={h.openPortal}
           portalBusy={h.portalBusy}
-          profile={h.profile}
-          profileSaving={h.profileSaving}
-          saveProfile={h.saveProfile}
         />
       )}
 
@@ -104,37 +102,7 @@ export default function Billing() {
         <a href={PRIVACY_URL} {...LEGAL_LINK_PROPS} style={{ color: 'var(--muted)' }}>{t('legal.privacy')}</a>
       </p>
 
-      {h.showPayModal && (
-        <PayModal
-          currency={h.currency}
-          selectedPlan={h.selectedPlan}
-          selectedPeriod={h.selectedPeriod}
-          periodDiscounts={h.periodDiscounts}
-          monthlyPrice={h.discountedPrice}
-          savedTotal={h.savedTotal}
-          totalToPay={h.totalToPay}
-          preview={h.preview}
-          previewBusy={h.previewBusy}
-          payBusy={h.payBusy}
-          onClose={h.closePayModal}
-          onPay={h.payWithCard}
-          profile={h.profile}
-          onEditProfile={h.editProfileFromPay}
-        />
-      )}
 
-      {/* Реквизиты плательщика перед первой оплатой. Показывается вместо модалки
-          расчёта, когда адреса на аккаунте ещё нет; после сохранения сама ведёт
-          к расчёту (saveProfileAndPay). */}
-      {h.showProfileGate && (
-        <BillingProfileModal
-          profile={h.profile}
-          saving={h.profileSaving}
-          beforePayment
-          onClose={h.closeProfileGate}
-          onSave={h.saveProfileAndPay}
-        />
-      )}
     </div>
   );
 }

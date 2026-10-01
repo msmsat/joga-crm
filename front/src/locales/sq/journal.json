@@ -164,7 +164,9 @@
     },
     "repriced": "Rezervimi tani kushton {{price}}",
     "repricedRefund": "Klienti ka paguar {{paid}}, çmimi tani është {{price}} — kthejini {{diff}}",
-    "repricedTopUp": "Klienti ka paguar {{paid}}, çmimi tani është {{price}} — merrni edhe {{diff}}"
+    "repricedTopUp": "Klienti ka paguar {{paid}}, çmimi tani është {{price}} — merrni edhe {{diff}}",
+    "noShowMarked": "U shënua: nuk erdhi",
+    "autoPaidReversed": "Nuk erdhi — pagesa automatike u anulua, borxhi është sërish i hapur"
   },
   "loadError": {
     "title": "Ngarkimi dështoi",
@@ -435,7 +437,9 @@
     "card": "Me kartë",
     "paid": "E paguar",
     "attend": "Prania",
-    "notMarked": "Pa shënuar"
+    "notMarked": "Pa shënuar",
+    "waiting": "Në pritje",
+    "choose": "Shëno pjesëmarrjen"
   },
   "scheduleBlocks": {
     "day_off": "Ditë pushimi",

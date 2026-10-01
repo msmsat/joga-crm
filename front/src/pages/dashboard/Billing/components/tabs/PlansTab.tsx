@@ -3,7 +3,7 @@ import type { Dispatch, SetStateAction } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { BillingMode, PlanType, PlanPeriod, BillingPlan } from '../../types';
 import type { PlanInfo } from '../../hooks/useBillingCalculator';
-import type { ActivateModelRequest } from '../../../../../api/billing/billing.types';
+import type { CheckoutPreview, ActivateModelRequest } from '../../../../../api/billing/billing.types';
 import { formatMoney } from '../../../../../lib/money';
 import { planLabel } from '../../../../../lib/plan';
 import { usePhone } from '../../../../../hooks/usePhone';
@@ -12,9 +12,13 @@ import {
   CheckIcon, StarIcon, ZapIcon, ShieldIcon, CreditCardIcon, PercentIcon,
 } from '../ui/BillingIcons';
 import PlanCalculator from '../ui/PlanCalculator';
+import checkoutStyles from '../ui/CheckoutDetails.module.css';
 
 interface Props {
   currency?: string;
+  payBusy: boolean;
+  preview: CheckoutPreview | null;
+  previewBusy: boolean;
   billingMode: BillingMode;
   setBillingMode: Dispatch<SetStateAction<BillingMode>>;
   // Сеттеры пишут в выбор ТЕКУЩЕЙ модели (useBillingCalculator), поэтому обычные
@@ -32,7 +36,7 @@ interface Props {
   totalToPay: number;
   /** Выгода предоплаты за весь период — считает хук, второй формулы тут нет. */
   savedTotal: number;
-  /** Открывает модалку оплаты — единственный экран перед страницей Stripe. */
+  /** Переходит на страницу Stripe по ссылке от сервера. */
   startCheckout: () => void;
   activateModel: (body: ActivateModelRequest, onDone?: () => void) => void;
   modelBusy: boolean;
@@ -46,7 +50,7 @@ interface Props {
 }
 
 export default function PlansTab({
-  currency,
+  currency, payBusy, preview, previewBusy,
   billingMode, setBillingMode,
   selectedPlan, setSelectedPlan,
   selectedPeriod, setSelectedPeriod,
@@ -78,10 +82,10 @@ export default function PlansTab({
   // выставляется счётом постфактум, и за неоплату доступ блокируется. Бэк без
   // accept_offline_terms отвечает 422 — модалку нельзя обойти, это не только UI.
   const [pendingTerms, setPendingTerms] = useState<ActivateModelRequest | null>(null);
-  // «Активировать» и «Активировать и сразу оплатить» — один путь через модалку
-  // условий, отличаются только тем, открывать ли следом окно оплаты.
-  const [payAfterActivate, setPayAfterActivate] = useState(false);
-  const requestActivate = (body: ActivateModelRequest, thenPay = false) => {
+  const [acceptedComboRate, setAcceptedComboRate] = useState<number | null>(null);
+  const comboNeedsConsent = billingMode === 'fixed' && plan?.billing_mode !== 'combo';
+  const comboAccepted = acceptedComboRate === terms.combo_rate;
+  const requestActivate = (body: ActivateModelRequest) => {
     // Модель УЖЕ работает — менять нечего. Раньше запрос уходил на сервер, тот
     // честно отвечал 200, и владелец получал «Модель оплаты обновлена» на кнопку,
     // которая ничего не обновила. Здесь же отсекаем и модалку условий: заново
@@ -92,18 +96,18 @@ export default function PlansTab({
       toast.info(t('mode.alreadyActive'));
       return;
     }
-    setPayAfterActivate(thenPay);
     if (body.mode === 'percent' || body.mode === 'combo') setPendingTerms(body);
     else if (plan?.status === 'active') setPendingActivation(body);
-    else activateModel(body, thenPay ? startCheckout : undefined);
+    else activateModel(body);
   };
 
-  // Оплата фикс-части. На комбо сумму подписки определяет billing_mode в БД
-  // (checkout._is_combo), поэтому платить можно только после того, как режим там
-  // реально переключён — а переключение требует согласия с условиями постоплаты.
+  // Combo consent is accepted inline. Activation records the agreement;
+  // the paid model and its limits are still applied only after Stripe payment.
   const payFixed = () => {
-    if (billingMode === 'fixed' && plan?.billing_mode !== 'combo') {
-      requestActivate({ mode: 'combo', plan: selectedPlan, period_months: selectedPeriod }, true);
+    if (modelBusy || payBusy) return;
+    if (comboNeedsConsent) {
+      if (!comboAccepted) return;
+      activateModel({ mode: 'combo', accept_offline_terms: true }, startCheckout);
       return;
     }
     startCheckout();
@@ -147,7 +151,7 @@ export default function PlansTab({
 
         <div className="bl-modes" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(200px, 100%), 1fr))', gap: '12px' }}>
           {MODES.map(mode => (
-            <button key={mode.id} onClick={() => setBillingMode(mode.id)} style={{ padding: '20px', borderRadius: '14px', border: `1.5px solid ${billingMode === mode.id ? 'var(--peach)' : 'var(--border)'}`, cursor: 'pointer', textAlign: 'left', background: billingMode === mode.id ? 'linear-gradient(135deg, rgba(252,174,145,0.1) 0%, rgba(249,160,139,0.04) 100%)' : 'transparent', transition: 'all 0.25s ease', fontFamily: 'inherit', position: 'relative', boxShadow: billingMode === mode.id ? '0 4px 20px rgba(252,174,145,0.15)' : 'none' }}>
+            <button key={mode.id} disabled={payBusy || modelBusy} onClick={() => setBillingMode(mode.id)} style={{ padding: '20px', borderRadius: '14px', border: `1.5px solid ${billingMode === mode.id ? 'var(--peach)' : 'var(--border)'}`, cursor: 'pointer', textAlign: 'left', background: billingMode === mode.id ? 'linear-gradient(135deg, rgba(252,174,145,0.1) 0%, rgba(249,160,139,0.04) 100%)' : 'transparent', transition: 'all 0.25s ease', fontFamily: 'inherit', position: 'relative', boxShadow: billingMode === mode.id ? '0 4px 20px rgba(252,174,145,0.15)' : 'none' }}>
               {mode.badge && <div style={{ position: 'absolute', top: '-8px', right: '12px', padding: '2px 10px', background: 'var(--peach)', color: 'white', fontSize: '10px', fontWeight: 700, borderRadius: '100px', letterSpacing: '0.5px' }}>{mode.badge}</div>}
               <div className="bl-mode-ico" style={{ marginBottom: '10px' }}>{mode.icon}</div>
               <div className="bl-mode-title" style={{ fontSize: '13px', fontWeight: 700, color: 'var(--onyx)', marginBottom: '6px' }}>{mode.title}</div>
@@ -211,6 +215,25 @@ export default function PlansTab({
           selected={selectedPlan}
           onSelect={setSelectedPlan}
           currency={currency}
+          payBusy={payBusy || modelBusy}
+          preview={preview}
+          previewBusy={previewBusy}
+          payDisabled={comboNeedsConsent && !comboAccepted}
+          checkoutTerms={comboNeedsConsent ? (
+            <div className={checkoutStyles.terms}>
+              <details>
+                <summary>{t('mode.termsTitle')}</summary>
+                <p className={checkoutStyles.termsText}>{t('mode.termsMessage', {
+                  rate: rate(terms.combo_rate), days: terms.grace_days,
+                })}</p>
+              </details>
+              <label className={checkoutStyles.accept}>
+                <input type="checkbox" checked={comboAccepted} disabled={payBusy || modelBusy}
+                  onChange={event => setAcceptedComboRate(event.target.checked ? terms.combo_rate : null)} />
+                {t('mode.termsConfirm')}
+              </label>
+            </div>
+          ) : undefined}
           selectedPeriod={selectedPeriod}
           setSelectedPeriod={setSelectedPeriod}
           periodDiscounts={periodDiscounts}
@@ -231,21 +254,7 @@ export default function PlansTab({
                 здесь второй формулой значит завести второй источник истины. */}
             {t('combo.summary', { fixed: formatMoney(discountedPrice, currency), rate: rate(terms.combo_rate) })}
           </span>
-          {/* Кнопка нужна только пока комбо НЕ активировано: дальше оплата идёт
-              через график платежей ниже, где видна итоговая сумма за период. */}
-          {plan?.billing_mode !== 'combo' && (
-            <Button
-              variant="primary"
-              loading={modelBusy}
-              // Согласие → сразу модалка расчёта: комбо покупается, а не
-              // включается кнопкой, и владелец обязан увидеть сумму до списания.
-              onClick={() => requestActivate(
-                { mode: 'combo', plan: selectedPlan, period_months: selectedPeriod }, true,
-              )}
-            >
-              {t(isPhone ? 'combo.ctaShort' : 'combo.cta')}
-            </Button>
-          )}
+
         </div>
       )}
 
@@ -300,7 +309,6 @@ export default function PlansTab({
           confirmText={t('mode.termsConfirm')}
           onConfirm={() => activateModel(
             { ...pendingTerms, accept_offline_terms: true },
-            payAfterActivate ? startCheckout : undefined,
           )}
           onClose={() => setPendingTerms(null)}
         />

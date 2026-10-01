@@ -21,9 +21,11 @@ export interface Lesson {
   price: number
   total_spots: number
   booked_count: number
-  /** Сколько записанных отмечены «пришёл» — только в списке занятий. Прошедшая
-   *  индивидуальная запись без отметки рисуется в сетке неявкой. */
+  /** Сколько записанных отмечены «пришёл» — только в списке занятий. */
   attended_count?: number
+  /** Сколько отмечены «не пришёл» — только по ним сетка рисует неявку:
+   *  посещение по умолчанию «пришёл» (back/services/attendance.py). */
+  no_show_count?: number
   status: 'confirmed' | 'pending' | 'cancelled'
   level: string | null
   cancel_reason: string | null
@@ -102,6 +104,11 @@ export interface BookedClient {
   // Скидка администратора, данная при записи без оплаты: долг уже с ней, окно
   // оплаты открывается с ней же.
   manual_discount_percent?: number | null
+  // Явная отметка «не пришёл» (статус при ней остаётся active). Посещение по
+  // умолчанию «пришёл»: до начала занятия запись ждёт, с начала — пришёл.
+  no_show?: boolean
+  // Долг погашен системой по окончании занятия — «не пришёл» откатит его сам.
+  auto_paid?: boolean
 }
 
 /** Чем оплачено занятие — снимок кассы в момент оплаты. */
@@ -232,6 +239,8 @@ export interface Reservation {
   status: 'active' | 'cancelled' | 'attended' | 'pending'
   booking_channel: string | null
   created_at: string
+  no_show?: boolean
+  auto_paid?: boolean
 }
 
 export interface StaffScheduleBlock {

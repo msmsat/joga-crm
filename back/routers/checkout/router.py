@@ -33,7 +33,7 @@ from services.notifier import notify_payment
 from services.points import client_point_value, redeem_points
 from services import service_pricing
 from services.pricing import resolve_price
-from services import reservation_payment
+from services import held_codes, reservation_payment
 from services.schedule_guard import lock_studio
 
 router = APIRouter(prefix="/checkout")
@@ -102,7 +102,7 @@ async def _quote(
     db: AsyncSession, studio_id: int, client_id: int, package: "SubscriptionPackage | ServiceAsProduct",
     product_type: str, promo_code: str | None, use_bonuses: bool,
     use_deposit: bool = False, certificate_code: str | None = None,
-    *, manual_percent: int | None = None,
+    *, manual_percent: int | None = None, hold_owner: int | None = None,
 ) -> PriceQuote:
     """Общее ядро calculate (6.7) и pay (6.9) — обе должны считать одинаково,
     иначе pay пересчитает другую сумму, чем показал calculate.
@@ -112,7 +112,13 @@ async def _quote(
 
     `manual_percent` — ручная скидка администратора с шага оплаты записи
     (services/booking_checkout); у кассы и Stripe её нет.
+
+    Коды, которые держат неоплаченные брони (services/held_codes), здесь уже
+    заняты: ваучер — недействителен, баллы и депозит — меньше на удержанное,
+    промокод с лимитом — на одно использование ближе к лимиту. `hold_owner` —
+    бронь, за которую платят сейчас: её удержание и есть то, чем она платит.
     """
+    held = await held_codes.held_by_others(db, studio_id, client_id, hold_owner)
     base_price = package.price if product_type == "subscription" else package.per_visit_price
 
     promo = None
@@ -122,6 +128,12 @@ async def _quote(
             promo = await find_valid_promo(studio_id, promo_code, db, client_id)
         except HTTPException:
             promo_valid = False
+        if promo is not None and promo.usage_limit is not None and (
+            promo.used_count + await held_codes.promo_holds(db, studio_id, promo.code, hold_owner)
+            >= promo.usage_limit
+        ):
+            # Последнее использование уже держит чужая неоплаченная бронь.
+            promo, promo_valid = None, False
 
     # Скидка первого занятия приезжает на самом товаре: её знает только
     # занятие, у абонемента такого поля нет вовсе.
@@ -144,7 +156,7 @@ async def _quote(
         )).scalar_one_or_none()
         if certificate is None:
             raise HTTPException(status_code=404, detail={"code": "loyalty.cert_not_found", "message": "Сертификат не найден"})
-        if certificate.status != "active":
+        if certificate.status != "active" or certificate.code in held.certificates:
             raise HTTPException(status_code=400, detail={"code": "loyalty.cert_used", "message": "Сертификат уже погашен или недействителен"})
         if certificate.expires_at and certificate.expires_at < date.today():
             # ponytail: ленивый expire при обращении, без крон-джобы
@@ -162,13 +174,13 @@ async def _quote(
         select(ClientLoyaltyCard).where(ClientLoyaltyCard.client_id == client_id)
     )).scalar_one_or_none()
 
-    deposit_available = card.deposit_balance if card is not None else 0
+    deposit_available = max(0, (card.deposit_balance if card is not None else 0) - held.deposit)
     deposit_applied = 0
     if use_deposit:
         deposit_applied = min(deposit_available, remaining)
         remaining -= deposit_applied
 
-    bonuses_available = card.points_balance if card is not None else 0
+    bonuses_available = max(0, (card.points_balance if card is not None else 0) - held.points)
     # Цена балла нужна и когда баллы не списывают: по ней предпросмотр
     # подписывает тумблер («250 баллов — это 500 ₴»), иначе клиент не поймёт,
     # что ему предлагают включить.
@@ -508,9 +520,10 @@ async def pay(
 
 
 async def perform_pay(
-    db: AsyncSession, studio_id: int, user_id: int, body: CheckoutPayRequest, *,
+    db: AsyncSession, studio_id: int, user_id: int | None, body: CheckoutPayRequest, *,
     method: str, expected_total: int | None = None, debt: "ClientPayment | None" = None,
     reservation_id: int | None = None, manual_percent: int | None = None,
+    notify: bool = True, actor_name: str | None = None,
 ) -> CheckoutPayResult:
     """Проведение оплаты. Одна транзакция: доход в Финансы, списание бонусов,
     начисление продукта, лог в События. Сбой на любом шаге откатывает всё —
@@ -540,8 +553,25 @@ async def perform_pay(
 
     `manual_percent` — ручная скидка администратора с шага оплаты записи.
     Не поле `body`: снаружи, через /checkout/pay, её не передать.
+
+    `notify=False` и `actor_name` — для проводки, которую делает СИСТЕМА, а не
+    кассир (автозачисление долга по окончании занятия, services/attendance):
+    чек «оплата получена» за деньги, которых никто не видел, клиенту не
+    уходит, а в Ленте событий подписью стоит система (`user_id=None`).
     """
     await lock_studio(db, studio_id)
+    # Бронь, за которую платят, могла держать коды с записи из мини-приложения
+    # (services/held_codes): кассир их не вводит заново, касса берёт их сама.
+    holder = (await db.get(Reservation, reservation_id)
+              if reservation_id is not None and body.product_type == "lesson" else None)
+    if holder is not None and holder.held_codes:
+        codes = held_codes.merged(
+            holder, promo_code=body.promo_code, certificate_code=body.certificate_code,
+            use_bonuses=body.use_bonuses, use_deposit=body.use_deposit)
+        body = body.model_copy(update={
+            "promo_code": codes.promo_code, "certificate_code": codes.certificate_code,
+            "use_bonuses": codes.use_bonuses, "use_deposit": codes.use_deposit,
+        })
     client, package = await _get_client_package(
         db, studio_id, body.client_id, body.product_id, body.product_type, body.teacher_id,
         # Деньги по карте УЖЕ списаны (expected_total): отказ «выберите мастера»
@@ -559,6 +589,7 @@ async def perform_pay(
         db, studio_id, body.client_id, package,
         body.product_type, body.promo_code, body.use_bonuses,
         body.use_deposit, body.certificate_code, manual_percent=manual_percent,
+        hold_owner=holder.id if holder is not None else None,
     )
     # Ничего ещё не добавлено в сессию — обе проверки ниже падают без отката.
     reject_dead_promo(body.promo_code, quote)
@@ -664,11 +695,13 @@ async def perform_pay(
         if reservation is not None:
             reservation.payment_breakdown = reservation_payment.snapshot(
                 quote, method, body.certificate_code)
+            # Коды погашены `consume_quote` выше — держать больше нечего.
+            held_codes.release(reservation)
 
     log_activity(
         db, studio_id, "payment",
         title=f"Оплата «{package.name}» — {client.name}",
-        actor_name=await member_name(db, studio_id, user_id),
+        actor_name=actor_name if actor_name is not None else await member_name(db, studio_id, user_id),
         entity_type=entity_type, entity_id=entity_id,
     )
 
@@ -676,7 +709,8 @@ async def perform_pay(
 
     # Успешная оплата (c4 клиенту, a4 админу) — покрывает и абонемент, и разовое;
     # оплата 0 ₽ (всё погашено депозитом/сертификатом) внутри тихо пропускается.
-    await notify_payment(db, studio_id, body.client_id, quote.total_price)
+    if notify:
+        await notify_payment(db, studio_id, body.client_id, quote.total_price)
 
     return CheckoutPayResult(
         total_price=quote.total_price,

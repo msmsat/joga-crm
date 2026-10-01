@@ -125,8 +125,6 @@
       "categoryCreate": "Créer une catégorie",
       "categoryNewPlaceholder": "Par exemple, Coupe de cheveux",
       "type": "Type",
-      "typeGroup": "Groupe",
-      "typeIndividual": "Individuel",
       "price": "Prix, {{currency}}",
       "pricePlaceholder": "1200",
       "duration": "Durée, min",
@@ -150,9 +148,6 @@
       "bookingModeResource": "Choisir un horaire",
       "bookingModeEventHint": "Les clients s'inscrivent à un cours déjà planifié.",
       "bookingModeResourceHint": "Le client choisit un spécialiste et un créneau libre ; l'intervalle {{offering}} est créé à la confirmation.",
-      "bookable": "Disponible à la réservation",
-      "bookableOn": "Oui",
-      "bookableOff": "Non",
       "bufferBefore": "Temps tampon avant",
       "bufferAfter": "Temps tampon après"
     },

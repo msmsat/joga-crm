@@ -1,0 +1,150 @@
+import { useState } from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
+import type { StudioCatalog } from '../../api/studio';
+import { STEP_ICONS } from '../wizard/stepIcons';
+import LanguagePopover from '../profile/LanguagePopover';
+
+/** С чего человек начинает запись. */
+export type BookingStart = 'time' | 'master' | 'service';
+const STARTS: BookingStart[] = ['time', 'master', 'service'];
+
+type Props = {
+  catalog: StudioCatalog | null;
+  /** Имя клиента; гость — пусто. */
+  name: string;
+  onStart: (start: BookingStart) => void;
+};
+
+const ease = [0.16, 1, 0.3, 1] as const;
+
+/**
+ * Главная — одна сцена: название студии и три входа в запись.
+ *
+ * Человек открыл мини-приложение ради одного — записаться, и первым экраном он
+ * видит студию, в которую пришёл, и три способа начать: со времени, с мастера,
+ * с услуги. Всё остальное (свои записи, клуб, профиль) — в нижнем меню.
+ *
+ * Название набрано крупно и ломается по словам: это вывеска, а не заголовок
+ * раздела. Свет за ним — фирменный цвет студии (как и у всего приложения),
+ * кольца — тонкие, чтобы сцена не превращалась в баннер.
+ */
+export default function HomeHero({ catalog, name, onStart }: Props) {
+  const { t } = useTranslation();
+  const reduce = useReducedMotion();
+  const [brokenLogo, setBrokenLogo] = useState(false);
+  const studio = catalog?.studio;
+  const branches = catalog?.branches ?? [];
+  const words = (studio?.name ?? '').split(/\s+/).filter(Boolean);
+  const place = branches.length > 1
+    ? t('hero.branches', { count: branches.length })
+    : [branches[0]?.city, branches[0]?.address].filter(Boolean).join(', ');
+  const logo = !brokenLogo ? studio?.logo_url : null;
+  const monogram = words.map((word) => word[0]).join('').slice(0, 2).toUpperCase();
+
+  const rise = (delay: number) => (reduce ? {} : {
+    initial: { opacity: 0, y: 18 },
+    animate: { opacity: 1, y: 0 },
+    transition: { duration: 0.7, delay, ease },
+  });
+
+  return (
+    <section className="relative flex min-h-[calc(var(--app-h,100dvh)-var(--nav-clearance))] flex-col overflow-hidden px-5 pt-[calc(1rem+env(safe-area-inset-top,0px))] dt:min-h-[calc(100dvh-5rem)] dt:px-0 dt:pt-10">
+      {/* Кольца за названием — свет студии, а не картинка. */}
+      <div aria-hidden="true" className="pointer-events-none absolute -right-28 top-10 h-[360px] w-[360px] dt:-right-10 dt:h-[520px] dt:w-[520px]">
+        {[0, 1, 2].map((ring) => (
+          <motion.span
+            key={ring}
+            className="absolute rounded-full border border-brand/25"
+            style={{ inset: ring * 46 }}
+            initial={reduce ? false : { opacity: 0, scale: 0.85 }}
+            animate={{ opacity: 1 - ring * 0.25, scale: 1 }}
+            transition={{ duration: 1.1, delay: 0.1 + ring * 0.12, ease }}
+          />
+        ))}
+        <span className="absolute inset-[138px] rounded-full bg-brand/30 blur-2xl dt:inset-[180px]" />
+      </div>
+
+      <div className="relative flex items-center justify-between gap-3">
+        <motion.div {...rise(0)} className="flex min-w-0 items-center gap-2.5">
+          {logo ? (
+            <img src={logo} alt="" onError={() => setBrokenLogo(true)} className="h-10 w-10 shrink-0 rounded-full object-cover shadow-soft" />
+          ) : (
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-foreground text-[13px] font-extrabold tracking-[-0.02em] text-background">
+              {monogram || '•'}
+            </span>
+          )}
+          <span className="truncate text-[10.5px] font-extrabold uppercase tracking-[0.22em] text-muted-foreground">
+            {t('hero.kicker')}
+          </span>
+        </motion.div>
+        <motion.div {...rise(0.05)} className="shrink-0">
+          <LanguagePopover variant="chip" />
+        </motion.div>
+      </div>
+
+      <div className="relative flex flex-1 flex-col justify-center py-10">
+        <motion.div {...rise(0.08)} className="text-[12px] font-extrabold uppercase tracking-[0.24em] text-brand">
+          {name ? t('hero.welcomeBack', { name }) : t('hero.welcome')}
+        </motion.div>
+        <h1 className="mt-4 text-[46px] font-extrabold leading-[0.95] tracking-[-0.05em] text-foreground dt:text-[72px]">
+          {words.map((word, index) => (
+            <motion.span
+              key={`${word}-${index}`}
+              className="mr-[0.22em] inline-block"
+              initial={reduce ? false : { opacity: 0, y: 24, filter: 'blur(6px)' }}
+              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+              transition={{ duration: 0.8, delay: 0.14 + index * 0.08, ease }}
+            >
+              {word}
+            </motion.span>
+          ))}
+        </h1>
+        {place && (
+          <motion.div {...rise(0.3)} className="mt-4 flex items-center gap-1.5 text-[13.5px] font-semibold text-muted-foreground">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5 shrink-0">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" /><circle cx="12" cy="10" r="3" />
+            </svg>
+            <span className="truncate">{place}</span>
+          </motion.div>
+        )}
+      </div>
+
+      <div className="relative pb-4">
+        <motion.div {...rise(0.34)} className="pb-3 text-[11px] font-extrabold uppercase tracking-[0.2em] text-muted-foreground">
+          {t('hero.chooseHow')}
+        </motion.div>
+        <div className="flex flex-col gap-2.5 dt:grid dt:grid-cols-3 dt:gap-4">
+          {STARTS.map((start, index) => (
+            <motion.button
+              key={start}
+              type="button"
+              onClick={() => onStart(start)}
+              initial={reduce ? false : { opacity: 0, y: 22 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 + index * 0.08, ease }}
+              whileTap={{ scale: 0.975 }}
+              whileHover={{ y: -2 }}
+              className="group flex items-center gap-4 rounded-[24px] bg-card p-4 text-left shadow-soft ring-1 ring-inset ring-border/60 transition-shadow duration-300 dt:flex-col dt:items-start dt:p-6 dt:hover:shadow-lift"
+            >
+              <span className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-[16px] p-3 ${
+                index === 0 ? 'bg-brand text-brand-foreground shadow-brand' : 'bg-brand/12 text-brand'
+              }`}>
+                {STEP_ICONS[start]}
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block text-[17px] font-extrabold tracking-[-0.02em] text-card-foreground">{t(`hero.start.${start}`)}</span>
+                <span className="mt-0.5 block text-[12.5px] font-semibold leading-snug text-muted-foreground">{t(`hero.startHint.${start}`)}</span>
+              </span>
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-background text-foreground transition-transform duration-300 group-hover:translate-x-0.5 dt:hidden">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
+                  <polyline points="9 18 15 12 9 6" />
+                </svg>
+              </span>
+            </motion.button>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}

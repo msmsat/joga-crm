@@ -125,8 +125,6 @@
       "categoryCreate": "Vytvořit kategorii",
       "categoryNewPlaceholder": "Například Střih",
       "type": "Typ",
-      "typeGroup": "Skupinová",
-      "typeIndividual": "Individuální",
       "price": "Cena, {{currency}}",
       "pricePlaceholder": "1200",
       "duration": "Délka, min",
@@ -150,9 +148,6 @@
       "bookingModeResource": "Výběr času",
       "bookingModeEventHint": "Klient se přihlásí na lekci, kterou už máte v rozvrhu.",
       "bookingModeResourceHint": "Klient si vybere specialistu a volný čas; interval ({{offering}}) vznikne při potvrzení.",
-      "bookable": "Lze rezervovat",
-      "bookableOn": "Ano",
-      "bookableOff": "Ne",
       "bufferBefore": "Rezerva před",
       "bufferAfter": "Rezerva po"
     },

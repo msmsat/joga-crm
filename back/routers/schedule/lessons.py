@@ -89,9 +89,12 @@ async def list_lessons(
         select(
             Reservation.lesson_id.label("lesson_id"),
             func.count(Reservation.id).label("booked_count"),
-            # Отмеченные «пришёл»: прошедшая индивидуальная запись без отметки
-            # рисуется в сетке неявкой (красной, с крестиком).
+            # Отмеченные «пришёл».
             func.count(case((Reservation.status == "attended", 1))).label("attended_count"),
+            # Отмеченные «не пришёл» (services/attendance): только по ним сетка
+            # рисует неявку. Неотмеченный с начала занятия считается пришедшим,
+            # и «кончилось, а отметки нет» неявкой больше не является.
+            func.count(case((Reservation.no_show.is_(True), 1))).label("no_show_count"),
         )
         .where(Reservation.status != "cancelled")
         .group_by(Reservation.lesson_id)
@@ -117,6 +120,7 @@ async def list_lessons(
             Service.color.label("service_color"),
             func.coalesce(booked_sq.c.booked_count, 0).label("booked_count"),
             func.coalesce(booked_sq.c.attended_count, 0).label("attended_count"),
+            func.coalesce(booked_sq.c.no_show_count, 0).label("no_show_count"),
         )
         .outerjoin(booked_sq, booked_sq.c.lesson_id == Lesson.id)
         .outerjoin(Service, Service.id == Lesson.service_id)
@@ -238,6 +242,8 @@ async def get_lesson(
             ClientSubscription.type.label("subscription_name"),
             Reservation.payment_breakdown.label("payment"),
             Reservation.manual_discount_percent,
+            Reservation.no_show,
+            Reservation.auto_paid,
             Client.name,
             Client.last_name,
             Client.phone,

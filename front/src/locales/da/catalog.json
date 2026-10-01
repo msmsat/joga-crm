@@ -125,8 +125,6 @@
       "categoryCreate": "Opret kategori",
       "categoryNewPlaceholder": "F.eks. Klipning",
       "type": "Type",
-      "typeGroup": "Hold",
-      "typeIndividual": "Individuel",
       "price": "Pris, {{currency}}",
       "pricePlaceholder": "1200",
       "duration": "Varighed, min.",
@@ -150,9 +148,6 @@
       "bookingModeResource": "Vælg tidspunkt",
       "bookingModeEventHint": "Klienter tilmelder sig et hold, du allerede har planlagt.",
       "bookingModeResourceHint": "Klienten vælger en specialist og et ledigt tidspunkt; intervallet {{offering}} oprettes ved bekræftelse.",
-      "bookable": "Kan bookes",
-      "bookableOn": "Ja",
-      "bookableOff": "Nej",
       "bufferBefore": "Buffer før",
       "bufferAfter": "Buffer efter"
     },

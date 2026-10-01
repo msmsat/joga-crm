@@ -68,6 +68,7 @@ test('the lesson roster passes the saved manual discount to the displayed receip
       : name === 'react-i18next' ? { useTranslation: () => ({ t: i18n.t.bind(i18n) }) }
       : name.endsWith('/FundingChips') ? { FundingChips: mod.namespace.FundingChips }
       : name.endsWith('/VisitMarks') ? { AttendMark: () => null, PayMark: () => null }
+      : name.endsWith('/utils') ? { attendanceOf: () => 'waiting' }
       : name.endsWith('/ReservationPayModal') ? { ReservationPayModal: () => null }
       : name.endsWith('/errorMessage') ? { errorMessage: () => '' }
       : name.endsWith('/ui/index') ? { useToast: () => ({}) } : {};
@@ -76,7 +77,7 @@ test('the lesson roster passes the saved manual discount to the displayed receip
   await roster.evaluate();
   const html = renderToStaticMarkup(React.createElement(roster.namespace.BookedClients, {
     clients: [{ reservation_id: 1, client_id: 1, name: 'Anna', status: 'active', is_trial: false, manual_discount_percent: 50, debt: 125, paid_amount: 0, payment: null }],
-    price: 250, canEdit: false, removable: false, over: false,
+    price: 250, canEdit: false, removable: false, started: false,
   }));
   assert.match(html, /Скидка администратора −50% · −125 EUR/);
 });

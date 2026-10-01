@@ -195,6 +195,53 @@
 .lc-mark-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .lc-mark-label { font-size: 13px; font-weight: 800; color: var(--onyx); }
 .lc-mark-hint { font-size: 11.5px; font-weight: 700; color: var(--mk); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lc-mark[aria-expanded="true"] .lc-mark-icon { box-shadow: 0 0 0 3px rgba(252,174,145,0.35); }
+
+/* ── Выбор посещения до начала занятия (AttendChoice) ─────────────
+   Портал на <body>: позицию и хвостик (--arrow-x) ставит компонент. Над
+   кнопкой; сверху места нет — под ней (.is-below), хвостик вверх. */
+.lc-attend-pop {
+  /* Выше попапа занятия (Journal.css, 9000), ниже тостов (9999). */
+  position: fixed; left: -9999px; top: -9999px; z-index: 9500;
+  display: flex; gap: 4px; padding: 5px; border-radius: 14px;
+  background: var(--bg-card, #fff);
+  box-shadow: 0 0 0 1px rgba(var(--ink), 0.07), 0 16px 34px -12px rgba(0, 0, 0, 0.24);
+  transform-origin: var(--arrow-x, 50%) 100%;
+  animation: lc-attend-in 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.lc-attend-pop::after {
+  content: ''; position: absolute; bottom: -5px; left: calc(var(--arrow-x, 50%) - 6px);
+  width: 12px; height: 12px; background: inherit; border-radius: 0 0 3px 0;
+  transform: rotate(45deg); box-shadow: 1px 1px 0 0 rgba(var(--ink), 0.07);
+}
+.lc-attend-pop.is-below { transform-origin: var(--arrow-x, 50%) 0; animation-name: lc-attend-in-below; }
+.lc-attend-pop.is-below::after { bottom: auto; top: -5px; border-radius: 3px 0 0 0; box-shadow: -1px -1px 0 0 rgba(var(--ink), 0.07); }
+@keyframes lc-attend-in { from { opacity: 0; transform: translateY(5px) scale(0.95); } }
+@keyframes lc-attend-in-below { from { opacity: 0; transform: translateY(-5px) scale(0.95); } }
+.lc-attend-opt {
+  position: relative; z-index: 1;
+  display: inline-flex; align-items: center; gap: 8px; height: 38px; padding: 0 13px 0 7px;
+  border: none; border-radius: 10px; background: transparent; cursor: pointer;
+  font: inherit; font-size: 12.5px; font-weight: 800; color: var(--onyx); white-space: nowrap;
+  transition: background 0.15s;
+}
+.lc-attend-opt.is-came { --dot: #4F7F57; --dot-bg: rgba(163,201,168,0.3); --on-bg: rgba(163,201,168,0.18); }
+.lc-attend-opt.is-missed { --dot: #B96A7A; --dot-bg: rgba(216,140,154,0.2); --on-bg: rgba(216,140,154,0.13); }
+.lc-attend-dot {
+  width: 24px; height: 24px; border-radius: 8px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--dot-bg); color: var(--dot);
+  transition: background 0.15s, color 0.15s, transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.lc-attend-dot svg { width: 13px; height: 13px; stroke-width: 2.8; }
+.lc-attend-opt:hover { background: rgba(var(--ink), 0.05); }
+.lc-attend-opt:hover .lc-attend-dot { transform: scale(1.08); }
+.lc-attend-opt:active .lc-attend-dot { transform: scale(0.92); }
+.lc-attend-opt:focus-visible { outline: none; box-shadow: 0 0 0 2px rgba(252,174,145,0.6); }
+.lc-attend-opt.is-on { background: var(--on-bg); }
+.lc-attend-opt.is-on .lc-attend-dot { background: var(--dot); color: #fff; }
+.dark .lc-attend-opt.is-came { --dot: #8FBF97; }
+.dark .lc-attend-opt.is-missed { --dot: #D88C9A; }
 
 /* ── Приём оплаты ────────────────────────────────────────────── */
 .rp-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; }

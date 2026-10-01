@@ -125,8 +125,6 @@
       "categoryCreate": "Opprett kategori",
       "categoryNewPlaceholder": "F.eks. Hårklipp",
       "type": "Type",
-      "typeGroup": "Gruppe",
-      "typeIndividual": "Individuell",
       "price": "Pris, {{currency}}",
       "pricePlaceholder": "1200",
       "duration": "Varighet, min",
@@ -150,9 +148,6 @@
       "bookingModeResource": "Velg tidspunkt",
       "bookingModeEventHint": "Kunder melder seg på en klasse du allerede har planlagt.",
       "bookingModeResourceHint": "Kunden velger en spesialist og et ledig tidspunkt; intervallet {{offering}} opprettes ved bekreftelse.",
-      "bookable": "Tilgjengelig for booking",
-      "bookableOn": "Ja",
-      "bookableOff": "Nei",
       "bufferBefore": "Buffer før",
       "bufferAfter": "Buffer etter"
     },

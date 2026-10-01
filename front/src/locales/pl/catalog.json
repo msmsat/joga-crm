@@ -125,8 +125,6 @@
       "categoryCreate": "Utwórz kategorię",
       "categoryNewPlaceholder": "Np. Strzyżenie",
       "type": "Typ",
-      "typeGroup": "Grupowa",
-      "typeIndividual": "Indywidualna",
       "price": "Cena, {{currency}}",
       "pricePlaceholder": "1200",
       "duration": "Czas trwania, min",
@@ -150,9 +148,6 @@
       "bookingModeResource": "Wybierz godzinę",
       "bookingModeEventHint": "Klienci zapisują się na zajęcia, które zostały już zaplanowane.",
       "bookingModeResourceHint": "Klient wybiera specjalistę i wolny termin; przedział {{offering}} jest tworzony przy potwierdzeniu.",
-      "bookable": "Dostępna do rezerwacji",
-      "bookableOn": "Tak",
-      "bookableOff": "Nie",
       "bufferBefore": "Bufor przed",
       "bufferAfter": "Bufor po"
     },

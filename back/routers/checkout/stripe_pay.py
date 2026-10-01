@@ -33,7 +33,7 @@ from ratelimit import limiter
 from dependencies import get_current_user, require_role, StudioContext
 from models import (
     ClientSubscription, GiftCertificate, Operation, OnlineChannel, StripeCheckout,
-    Studio, StudioDiscountConfig, StudioLoyaltyConfig, SubscriptionPackage, User,
+    Studio, SubscriptionPackage, User,
 )
 from schemas.checkout import (
     CheckoutConfirmRequest, CheckoutConfirmResult, CheckoutPayRequest, CheckoutSessionResult,
@@ -1066,43 +1066,13 @@ async def _revert_loyalty(
 ) -> None:
     """Снять баллы и сумму покупок, начисленные возвращённой оплатой. Не коммитит.
 
-    Баллы считаем той же формулой, что и начисление (loyalty.accrue_points +
-    кэшбек из register_purchase), и ОБРЕЗАЕМ по остатку: клиент мог их уже
-    потратить, а уводить баланс в минус нельзя — apply_points_change на это
-    отвечает 400 и уронил бы весь откат.
-
-    Снимаем через apply_points_change, а не правкой баланса: сгорание баллов
-    (expire_points) считает по журналу транзакций, и молчаливая правка остатка
-    развалила бы его арифметику.
-
-    ponytail: если ставку начисления или кэшбек поменяли между покупкой и
-    возвратом, снимется по новой ставке. Точный откат требует ссылки на
-    начисляющие транзакции — заводить её ради редкого случая не стали.
+    Сам откат — общий (`loyalty.revert_purchase`): его же зовёт отмена
+    автозачисления за неявку (services/attendance), и две копии формулы
+    разъехались бы на первой правке начисления.
     """
-    from routers.clients.loyalty import _get_or_create_card, apply_points_change
-    from routers.loyalty.cards import _get_or_create_levels, _level_for
+    from routers.clients.loyalty import revert_purchase
 
-    card = await _get_or_create_card(client_id, studio_id, db)
-
-    points = 0
-    loyalty_cfg = (await db.execute(
-        select(StudioLoyaltyConfig).where(StudioLoyaltyConfig.studio_id == studio_id)
-    )).scalar_one_or_none()
-    if loyalty_cfg is not None and loyalty_cfg.is_enabled and loyalty_cfg.points_exchange_rate > 0:
-        points += amount // loyalty_cfg.points_exchange_rate
-
-    discount_cfg = (await db.execute(
-        select(StudioDiscountConfig).where(StudioDiscountConfig.studio_id == studio_id)
-    )).scalar_one_or_none()
-    if discount_cfg is not None and discount_cfg.is_enabled and discount_cfg.discount_type == "cashback":
-        points += amount * discount_cfg.discount_value // 100
-
-    points = min(points, card.points_balance)
-    if points > 0:
-        await apply_points_change(client_id, studio_id, -points, "Возврат оплаты", db)
-
-    card.total_spent = max(0, card.total_spent - amount)
-    card.level_id = _level_for(card.total_spent, await _get_or_create_levels(studio_id, db))
+    await revert_purchase(db, studio_id, client_id, amount, "Возврат оплаты")
 
 
 async def _restore_consumed(db: AsyncSession, checkout: StripeCheckout) -> None:

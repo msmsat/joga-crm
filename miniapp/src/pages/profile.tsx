@@ -8,7 +8,10 @@ import LanguagePopover from '../components/profile/LanguagePopover';
 import Auth from './auth';
 import SubscriptionCard from '../components/profile/SubscriptionCard';
 import SettingRow from '../components/profile/SettingRow';
+import LogoutButton from '../components/profile/LogoutButton';
 import { SectionLabel } from '../components/ui/SectionLabel';
+import { Sheet, SheetAction } from '../components/ui/Sheet';
+import { signOut } from '../lib/session';
 import { EmptyState } from '../components/ui/EmptyState';
 import { useTelegram } from '../hooks/useTelegram';
 import {
@@ -67,6 +70,15 @@ export default function Profile({
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [isBuyOpen, setIsBuyOpen] = useState(false);
   const [isLinkEmailOpen, setIsLinkEmailOpen] = useState(false);
+  const [isLogoutOpen, setIsLogoutOpen] = useState(false);
+
+  /** Выход: аккаунт уходит с устройства, кабинет перечитывается заново. Второй
+   *  аккаунт этой студии на устройстве — кабинет продолжится под ним. */
+  const logout = () => {
+    tg?.HapticFeedback.notificationOccurred('warning');
+    signOut(catalog?.studio.id);
+    window.location.reload();
+  };
 
   useEffect(() => {
     const fetchProfileData = async () => {
@@ -404,8 +416,34 @@ export default function Profile({
               icon={<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />}
             />
           </div>
+
+          {/* Выход — последним и отдельно от настроек: действие, а не строка
+              настроек. Пыльная роза (`--v-danger`) — ею помечено то, что
+              обратно одним касанием не вернуть. Цвета и анимации — LogoutButton. */}
+          <motion.div
+            className="px-5 pt-8"
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.6 }}
+            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <LogoutButton label={t('account.logout')} onClick={() => { vibrateLight(); setIsLogoutOpen(true); }} />
+          </motion.div>
         </div>
       </>
+
+      <Sheet
+        isOpen={isLogoutOpen}
+        onClose={() => setIsLogoutOpen(false)}
+        title={t('profile.logout_title')}
+        subtitle={t('profile.logout_hint')}
+        footer={
+          <div className="flex flex-col gap-2.5">
+            <LogoutButton variant="solid" label={t('account.logout')} onClick={logout} />
+            <SheetAction tone="ghost" onClick={() => setIsLogoutOpen(false)}>{t('auth.cancel')}</SheetAction>
+          </div>
+        }
+      />
 
       <SupportModal
         isOpen={isSupportOpen}

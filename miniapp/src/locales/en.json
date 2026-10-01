@@ -14,7 +14,9 @@
     "change_email": "Change email",
     "cancel": "Cancel",
     "code_send_error": "Couldn't send the code",
-    "code_invalid": "Wrong code"
+    "code_invalid": "Wrong code",
+    "telegram": "Sign in with Telegram",
+    "or_email": "or by email"
   },
   "studio": {
     "open": "Open",
@@ -109,7 +111,9 @@
     "used_classes": "Used {{used}} of {{total}}",
     "left_classes": "{{left}} of {{total}} left",
     "expires": "expires {{date}}",
-    "frozen": "Frozen · until {{date}}"
+    "frozen": "Frozen · until {{date}}",
+    "logout_title": "Sign out?",
+    "logout_hint": "Your bookings and pass stay with the studio — you can sign back in any time."
   },
   "mylessons": {
     "title": "My Lessons",
@@ -489,7 +493,10 @@
       "VERSION_CONFLICT": "This booking was just changed. Please open it again.",
       "NOT_FOUND": "Could not find this service or booking. Please refresh the page.",
       "BOOKING_CLOSED": "Online booking is closed right now.",
-      "UNKNOWN": "Could not create the booking. Please try again."
+      "UNKNOWN": "Could not create the booking. Please try again.",
+      "AMOUNT_CHANGED": "The amount has changed — check the receipt and confirm again.",
+      "NOTHING_TO_PAY": "Nothing to pay online — book and pay at the studio.",
+      "PHONE_REQUIRED": "Add your phone number to book."
     }
   },
   "units": {
@@ -533,5 +540,99 @@
       "event": "Group schedule"
     },
     "priceRange": "from {{from}} to {{to}}"
+  },
+  "wizard": {
+    "title": "Booking",
+    "hint": "Pick a time, service and specialist — in any order",
+    "tabs": {
+      "time": "Time",
+      "service": "Service",
+      "master": "Specialist",
+      "summary": "Summary"
+    },
+    "titles": {
+      "time": "When suits you?",
+      "service": "Which service?",
+      "master": "With whom?",
+      "summary": "Check your booking"
+    },
+    "loadError": "Could not load data",
+    "nextDay": "Next day",
+    "freeAt": "Free at {{time}}",
+    "noServicesAt": "No services free at {{time}}",
+    "otherTime": "Pick another time",
+    "noMasters": "No specialists available",
+    "anyMaster": "Any specialist",
+    "anyMasterHint": "We will pick the first one free",
+    "notChosen": "Not chosen",
+    "change": "Change",
+    "choose": "Choose",
+    "chooseAll": "Pick a time, service and specialist",
+    "book": "Book",
+    "doneTitle": "Done",
+    "toMyLessons": "My bookings",
+    "chooseBranch": "Choose a location",
+    "available": "available: {{count}}",
+    "remaining": "left to choose: {{count}}",
+    "ready": "All set",
+    "until": "until {{time}}",
+    "earlier": "Earlier",
+    "later": "Later"
+  },
+  "hero": {
+    "kicker": "Online booking",
+    "welcome": "Welcome",
+    "welcomeBack": "Welcome back, {{name}}",
+    "branches": "Studios: {{count}}",
+    "chooseHow": "How would you like to book?",
+    "start": {
+      "time": "Time",
+      "master": "Specialist",
+      "service": "Service"
+    },
+    "startHint": {
+      "time": "Find a day and hour that suit you",
+      "master": "Book with your specialist",
+      "service": "Choose what you feel like doing"
+    },
+    "mode": {
+      "title": "How would you like to train?",
+      "resource": "One-to-one",
+      "resourceHint": "Just you and the specialist",
+      "event": "In a group",
+      "eventHint": "Classes on the schedule"
+    },
+    "pickMaster": "Choose a specialist",
+    "pickService": "Choose a class"
+  },
+  "pay": {
+    "kicker": "Payment",
+    "title": "How would you like to pay?",
+    "payAmount": "Pay",
+    "venue": "At the studio",
+    "venueHint": "Cash or card on site",
+    "online": "Online",
+    "onlineHint": "By card now, via Stripe",
+    "onlineUnavailable": "The studio does not accept online payments yet",
+    "nothingOnline": "Nothing to pay — fully covered",
+    "codes": "Discounts and rewards",
+    "voucherPlaceholder": "Voucher or gift card",
+    "promoOutweighed": "The promo code is valid, but you already have a better discount — discounts do not stack",
+    "useBonuses": "Use points · {{value}}",
+    "useDeposit": "Use deposit: {{value}}",
+    "pointsToEarn": "Points you will earn: {{count}}",
+    "venueNote": "Discounts stay with the booking — at the studio you only pay the total.",
+    "confirm": "Book",
+    "confirmVenue": "Book · {{amount}} at the studio",
+    "goToPayment": "Go to payment · {{amount}}",
+    "discount": {
+      "studio": "Studio discount",
+      "offer": "Personal offer",
+      "promo": "Promo code",
+      "referral": "Referral discount",
+      "first_lesson": "First class",
+      "manual": "Discount"
+    },
+    "prepayOnly": "The studio asks to pay in advance"
   }
 }

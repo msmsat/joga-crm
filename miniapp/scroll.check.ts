@@ -66,10 +66,28 @@ assert.doesNotMatch(
   'рост области прокрутки — процент от рамы: второй раз спрашивать браузер про низ экрана незачем',
 );
 
+// Запирание разведено по ширине: на телефоне — область прокрутки, на десктопе —
+// документ. `.app-scroll` вне телефонного блока запирать нельзя: там она не
+// область прокрутки, и `overflow: hidden` сделал бы её таковой — sticky
+// бокового меню прилип бы к ней и уехал за край окна (см. index.css).
+// `phone` обрезан на первом `.is-locked`, поэтому хвост блока смотрим отдельно.
+const lockTail = css.slice(css.indexOf('.is-locked', start));
 assert.match(
-  css,
-  /\.is-locked,\s*\.is-locked \.app-scroll\s*\{[^}]*overflow:\s*hidden/,
-  'открытый лист запирает и документ (десктоп), и область прокрутки (телефон)',
+  lockTail,
+  /^\.is-locked \.app-scroll\s*\{[^}]*overflow:\s*hidden/,
+  'открытый лист на телефоне запирает область прокрутки',
+);
+// Всё после закрытия телефонного блока — правила для любой ширины.
+const anyWidth = lockTail.slice(lockTail.indexOf('\n}'));
+assert.match(
+  anyWidth,
+  /\n\.is-locked\s*\{[^}]*overflow:\s*hidden/,
+  'открытый лист запирает документ',
+);
+assert.doesNotMatch(
+  anyWidth,
+  /\.is-locked\s+\.app-scroll\s*\{/,
+  'вне телефонного блока .app-scroll не запирается — иначе липкое меню десктопа уезжает за край',
 );
 
 // ─── 3. Меню и лист висят на раме, а не на окне ────────────────────────────────
@@ -94,8 +112,20 @@ assert.match(
   'меню на absolute: fixed приклеил бы его к окну браузера и оно снова поехало бы за панелью',
 );
 
+// Низ капсулы — от общей нижней зоны, а не от голого env(): в вебвью Telegram
+// тот ноль, и капсула ложилась на полоску жестов iPhone.
+assert.match(nav, /pb-\[var\(--nav-offset\)\]/, 'подъём капсулы — --nav-offset из index.css');
+assert.match(
+  css,
+  /--safe-bottom:[^;]*env\(safe-area-inset-bottom[^;]*--tg-safe-area-inset-bottom[^;]*--tg-content-safe-area-inset-bottom/,
+  '--safe-bottom обязан учитывать и env(), и зоны, которые сообщает Telegram',
+);
+assert.match(app, /pb-\[var\(--nav-clearance\)\]/, 'экран заканчивается отступом под капсулу, посчитанным от её подъёма');
+
 const sheet = read('./src/components/ui/Sheet.tsx');
-assert.match(sheet, /className="app-sheet fixed inset-0/, 'подложка листа берёт высоту рамы');
+// Кавычка или шаблонная строка — без разницы: у широкого листа отступы свои.
+assert.match(sheet, /className=(?:"|\{`)app-sheet fixed inset-0/, 'подложка листа берёт высоту рамы');
+assert.doesNotMatch(sheet, /env\(safe-area-inset-bottom/, 'низ листа — через --safe-bottom: голый env() в Telegram ноль');
 assert.doesNotMatch(
   sheet,
   /'h-\[92dvh\]|max-h-\[88dvh\]/,

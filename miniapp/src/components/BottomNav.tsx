@@ -38,8 +38,11 @@ export default function BottomNav({ active, onSelect, items }: Props) {
        сколько угодно, капсула стоит. Рама лежит СНАРУЖИ прокрутки, поэтому
        вверх вместе с содержимым капсула тоже не уедет. */
     /* Отступ снизу одним объявлением: `pb-safe` рядом с `pb-4` перебивал его
-       и капсула ложилась на самую кромку экрана. */
-    <div className="pointer-events-none absolute inset-x-0 bottom-0 z-30 px-4 pb-[calc(1rem_+_env(safe-area-inset-bottom,0px))]">
+       и капсула ложилась на самую кромку экрана. Сам расчёт — `--nav-offset`
+       в index.css: зазор плюс безопасная зона, в том числе та, что сообщает
+       Telegram (в его вебвью голый env() — ноль). Там же `--nav-h` — держать
+       в паре с высотой кнопок ниже. */
+    <div className="pointer-events-none absolute inset-x-0 bottom-0 z-30 px-4 pb-[var(--nav-offset)]">
       <nav className="pointer-events-auto flex items-stretch gap-1 rounded-full bg-card p-1.5 shadow-lift ring-1 ring-inset ring-border">
         {items.map((item) => {
           const isActive = active === item.id;

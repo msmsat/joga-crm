@@ -4,9 +4,10 @@ import { useTranslation } from 'react-i18next';
 import AmbientBackdrop from '../components/home/AmbientBackdrop';
 import { Press } from '../components/ui/Press';
 import {
-  getStudioBrand, requestEmailCode, verifyEmailCode,
+  authTelegram, getStudioBrand, requestEmailCode, verifyEmailCode,
   type StudioBrand, type UserResponse,
 } from '../api/auth';
+import { useTelegram } from '../hooks/useTelegram';
 import { applyBranding, applyDefaultLanguage } from '../lib/branding';
 
 /**
@@ -53,6 +54,26 @@ export default function Auth({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const codeInput = useRef<HTMLInputElement>(null);
+  const { tg } = useTelegram();
+  // Внутри Telegram вход — одной кнопкой: подпись initData уже доказывает
+  // личность. Сюда человек попадает после «Выйти» (молчаливый вход тогда
+  // выключен) — почта остаётся вторым способом, а не единственным.
+  const canTelegram = Boolean(tg?.initData) && !linkMode && !anonymous;
+
+  const signInTelegram = async () => {
+    if (!tg?.initData) return;
+    setBusy(true);
+    setError(null);
+    try {
+      const { token, user } = await authTelegram({
+        init_data: tg.initData, studio_id: studioRef, referral_code: referralCode,
+      });
+      onDone(user, token);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : t('auth.code_invalid'));
+      setBusy(false);
+    }
+  };
 
   useEffect(() => {
     // Витрина студии — единственное, что можно показать до входа. Провал не
@@ -163,12 +184,32 @@ export default function Auth({
         </p>
 
         <div className="mt-7 space-y-3">
+          {canTelegram && step === 'email' && (
+            <>
+              <Press>
+                <button
+                  type="button"
+                  disabled={busy}
+                  onClick={signInTelegram}
+                  className="flex w-full items-center justify-center gap-2.5 rounded-2xl bg-[#2AABEE] py-3.5 text-[15px] font-extrabold text-white shadow-soft transition-opacity disabled:opacity-40"
+                >
+                  <svg viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5" aria-hidden="true">
+                    <path d="M21.9 4.3 18.6 20c-.2 1.1-.9 1.4-1.8.9l-5-3.7-2.4 2.3c-.3.3-.5.5-1 .5l.4-5.1 9.3-8.4c.4-.4-.1-.6-.6-.2L5.9 13.5l-4.9-1.5c-1.1-.3-1.1-1.1.2-1.6L20.4 3c.9-.3 1.7.2 1.5 1.3z" />
+                  </svg>
+                  {t('auth.telegram')}
+                </button>
+              </Press>
+              <div className="py-1 text-center text-[11px] font-extrabold uppercase tracking-[0.18em] text-muted-foreground">
+                {t('auth.or_email')}
+              </div>
+            </>
+          )}
           {step === 'email' ? (
             <input
               type="email"
               inputMode="email"
               autoComplete="email"
-              autoFocus
+              autoFocus={!canTelegram}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && emailValid && !busy && submitEmail()}

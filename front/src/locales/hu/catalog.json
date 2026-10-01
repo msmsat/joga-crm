@@ -125,8 +125,6 @@
       "categoryCreate": "Kategória létrehozása",
       "categoryNewPlaceholder": "Pl. Hajvágás",
       "type": "Típus",
-      "typeGroup": "Csoportos",
-      "typeIndividual": "Egyéni",
       "price": "Ár, {{currency}}",
       "pricePlaceholder": "1200",
       "duration": "Időtartam, perc",
@@ -150,9 +148,6 @@
       "bookingModeResource": "Időpont választása",
       "bookingModeEventHint": "Az ügyfelek egy már beütemezett órára jelentkeznek.",
       "bookingModeResourceHint": "Az ügyfél szakembert és szabad időpontot választ; a {{offering}} időköz a megerősítéskor jön létre.",
-      "bookable": "Foglalható",
-      "bookableOn": "Igen",
-      "bookableOff": "Nem",
       "bufferBefore": "Puffer előtte",
       "bufferAfter": "Puffer utána"
     },

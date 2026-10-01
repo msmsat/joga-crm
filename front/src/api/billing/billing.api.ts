@@ -87,7 +87,8 @@ export const billingApi = {
     plan: CheckoutRequest['plan'],
     period_months: CheckoutRequest['period_months'],
     combo = false,
-  ) => client.post<CheckoutResponse>('/billing/checkout', { plan, period_months, combo }),
+    ui_mode: 'hosted' | 'elements' = 'hosted',
+  ) => client.post<CheckoutResponse>('/billing/checkout', { plan, period_months, combo, ui_mode }),
 
   // Клиентский портал Stripe: единственное место, где студия может ввести VAT ID
   // после первой покупки (у страницы счёта и у смены тарифа таких полей нет).

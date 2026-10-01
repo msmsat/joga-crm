@@ -125,8 +125,6 @@
       "categoryCreate": "Направи категорију",
       "categoryNewPlaceholder": "Нпр. Шишање",
       "type": "Тип",
-      "typeGroup": "Групна",
-      "typeIndividual": "Индивидуална",
       "price": "Цена, {{currency}}",
       "pricePlaceholder": "1200",
       "duration": "Трајање, мин",
@@ -150,9 +148,6 @@
       "bookingModeResource": "Изаберите време",
       "bookingModeEventHint": "Клијенти се пријављују за час који сте већ заказали.",
       "bookingModeResourceHint": "Клијент бира стручњака и слободно време; интервал {{offering}} настаје при потврди.",
-      "bookable": "Доступно за резервацију",
-      "bookableOn": "Да",
-      "bookableOff": "Не",
       "bufferBefore": "Бафер пре",
       "bufferAfter": "Бафер после"
     },

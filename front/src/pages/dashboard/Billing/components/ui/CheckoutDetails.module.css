@@ -1,0 +1,11 @@
+.details { margin-top: 16px; font-size: 11px; line-height: 1.6; }
+.tax { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; color: rgb(255 255 255 / 65%); }
+.tax strong { color: #fff; font-variant-numeric: tabular-nums; }
+.note { margin: 10px 0; color: rgb(255 255 255 / 65%); }
+.notice { margin: 10px 0; padding: 10px 12px; border: 1px solid rgb(252 174 145 / 25%); border-radius: 10px; background: rgb(252 174 145 / 8%); color: #ffd2b8; }
+.secure { display: flex; align-items: center; gap: 6px; margin: 12px 0 0; color: rgb(255 255 255 / 45%); }
+.terms { margin-top: 16px; padding: 12px; border-radius: 12px; border: 1px solid rgb(255 255 255 / 12%); color: rgb(255 255 255 / 70%); font-size: 11px; line-height: 1.6; }
+.terms summary { cursor: pointer; font-weight: 600; }
+.termsText { white-space: pre-line; margin: 10px 0; }
+.accept { display: flex; align-items: center; gap: 9px; margin-top: 10px; cursor: pointer; font-weight: 600; color: #ffd2b8; }
+.accept input { width: 18px; height: 18px; margin: 0; accent-color: #fcae91; flex-shrink: 0; }

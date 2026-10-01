@@ -503,8 +503,8 @@ async def _renewal_invoice(
 
 async def _switch_now(
     db: AsyncSession, plan: StudioBillingPlan, customer_id: str, price_id: str,
-    metadata: dict, tax=None,
-) -> str | None:
+    metadata: dict, tax=None, *, return_invoice: bool = False,
+):
     """Немедленный переход на другой тариф → ссылка на выставленный счёт.
 
     Один-единственный сценарий смены тарифа, других больше нет, и правило у него
@@ -571,7 +571,18 @@ async def _switch_now(
     if getattr(invoice, "status", None) == "paid" and row.plan_name == metadata.get("plan"):
         await apply_status(db, row, "paid")
     await db.commit()
-    return getattr(invoice, "hosted_invoice_url", None)
+    return invoice if return_invoice else getattr(invoice, "hosted_invoice_url", None)
+
+
+async def _elements_invoice_response(invoice, customer_id: str, public_key: str):
+    if invoice is None:
+        return CheckoutResponse()
+    secret, amount, currency = await stripe_billing.invoice_elements_data(invoice.id, customer_id)
+    return CheckoutResponse(
+        client_secret=secret, publishable_key=public_key, payment_kind="invoice",
+        amount_due=amount, currency=currency,
+        tax_amount=sum(getattr(t, "amount", 0) for t in getattr(invoice, "total_taxes", [])),
+    )
 
 
 @router.post("/checkout", response_model=CheckoutResponse)
@@ -596,6 +607,18 @@ async def create_checkout(
     if not stripe_billing.configured():
         raise HTTPException(status_code=503, detail=_NOT_CONFIGURED)
     _validate(body.plan, body.period_months)
+    public_key = None
+    if body.ui_mode == "elements":
+        # Validate before any invoice/subscription mutation.
+        try:
+            public_key = stripe_billing.elements_publishable_key()
+        except ValueError as exc:
+            raise HTTPException(status_code=503, detail=_NOT_CONFIGURED) from exc
+        if not billing_profile(ctx.user).filled:
+            raise HTTPException(status_code=422, detail={
+                "code": "billing.billing_profile_required",
+                "message": "Заполните реквизиты плательщика",
+            })
 
     plan = await _get_or_create_plan(db, ctx.studio_id)
     combo = _is_combo(plan, body.combo)
@@ -648,6 +671,8 @@ async def create_checkout(
 
             await mirror_invoice(db, plan, stripe_invoice)
             await db.commit()
+            if body.ui_mode == "elements":
+                return await _elements_invoice_response(stripe_invoice, customer_id, public_key)
             # Ссылка на счёт, а не на Checkout Session: платить нужно именно его, а
             # у автосписания страница ещё и покажет результат списания.
             return CheckoutResponse(
@@ -660,6 +685,11 @@ async def create_checkout(
             # для оплаты нет. Подставлять сюда адрес своей же страницы нельзя —
             # это была бы перезагрузка вместо результата (и уход на боевой домен,
             # когда WEB_APP_URL смотрит на прод).
+            if body.ui_mode == "elements":
+                invoice = await _switch_now(
+                    db, plan, customer_id, price_id, metadata, tax, return_invoice=True,
+                )
+                return await _elements_invoice_response(invoice, customer_id, public_key)
             url = await _switch_now(db, plan, customer_id, price_id, metadata, tax)
             return CheckoutResponse(checkout_url=url)
 
@@ -671,6 +701,8 @@ async def create_checkout(
             cancel_url=f"{WEB_APP_URL}/dashboard/billing",
             trial_end=_trial_end(plan),
             tax=tax,
+            **(dict(ui_mode="elements", profile_key=repr(billing_profile(ctx.user).model_dump()))
+               if body.ui_mode == "elements" else {}),
         )
     except HTTPException:
         raise
@@ -684,6 +716,8 @@ async def create_checkout(
         raise HTTPException(status_code=502, detail=_STRIPE_ERROR) from exc
 
     await db.commit()
+    if body.ui_mode == "elements":
+        return CheckoutResponse(client_secret=url, publishable_key=public_key, payment_kind="checkout")
     return CheckoutResponse(checkout_url=url)
 
 

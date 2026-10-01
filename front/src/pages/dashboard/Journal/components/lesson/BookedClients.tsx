@@ -1,8 +1,9 @@
 // Записанные на занятие: кто, чем платит, пришёл ли, что сказал о занятии.
 // Строка открывает карточку клиента; справа — две отметки иконками: «Оплата»
 // (пока есть долг — открывает окно оплаты, оплачено — галочка) и «Посещение»
-// (нажали — клиент пришёл, галочка). У группового занятия ещё и снятие с
-// занятия; индивидуальную запись отменяют удалением в подвале попапа.
+// (по умолчанию «пришёл»: до начала — выбор, после — переключение, см.
+// AttendMark). У группового занятия ещё и снятие с занятия; индивидуальную
+// запись отменяют удалением в подвале попапа.
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as Icons from '../../../../../components/Icons';
@@ -13,6 +14,7 @@ import type { useJournalMutations } from '../../hooks/useJournalMutations';
 import { ReservationPayModal } from './ReservationPayModal';
 import { FundingChips, type Funding } from './FundingChips';
 import { AttendMark, PayMark } from './VisitMarks';
+import { attendanceOf } from '../../utils';
 import './lessonCard.css';
 
 interface Props {
@@ -20,8 +22,9 @@ interface Props {
   canEdit: boolean;
   /** Снять человека с занятия (групповое). У индивидуальной записи — нет. */
   removable: boolean;
-  /** Занятие закончилось: неотмеченный приход — уже неявка. */
-  over: boolean;
+  /** Занятие началось: неотмеченный уже считается пришедшим, а отметка
+   *  переключается нажатием без выбора. */
+  started: boolean;
   currency?: string;
   /** Цена занятия — от неё считаются скидки в чипах. */
   price: number;
@@ -41,7 +44,7 @@ const CHANNELS = new Set(['online', 'telegram', 'web', 'miniapp']);
 const initials = (c: BookedClient) =>
   [c.name, c.last_name].filter(Boolean).map(n => n![0]).join('').toUpperCase();
 
-export function BookedClients({ clients, canEdit, removable, over, currency, price, lessonLabel, mutations, patch, reload, showToast, onPeek, onRemove }: Props) {
+export function BookedClients({ clients, canEdit, removable, started, currency, price, lessonLabel, mutations, patch, reload, showToast, onPeek, onRemove }: Props) {
   const { t } = useTranslation('journal');
   const toast = useToast();
   // Кому сейчас принимаем оплату.
@@ -56,12 +59,21 @@ export function BookedClients({ clients, canEdit, removable, over, currency, pri
       .catch((e: unknown) => toast.error(errorMessage(e, t)));
   };
 
-  // «Пришёл» — только отметка: об оплате спрашивает своя кнопка рядом.
-  const attend = (c: BookedClient) => {
-    if (c.status === 'attended') return;
-    mutations.attendReservation(c.reservation_id)
-      .then(() => { setStatus(c.reservation_id, 'attended'); showToast(t('toasts.attendanceMarked')); })
-      .catch((e: unknown) => toast.error(errorMessage(e, t)));
+  // Пришёл / не пришёл. Отметка меняется сразу; после ответа сервера занятие
+  // перечитывается: после занятия за отметкой идут деньги (долг проведён
+  // наличными или автозачисление откатилось). Отказ — отметка возвращается.
+  const mark = (c: BookedClient, attended: boolean) => {
+    const before = { status: c.status, no_show: c.no_show };
+    const put = (next: Pick<BookedClient, 'status' | 'no_show'>) =>
+      patch(list => list.map(x => x.reservation_id === c.reservation_id ? { ...x, ...next } : x));
+    put(attended ? { status: 'attended', no_show: false } : { status: 'active', no_show: true });
+    mutations.setAttendance(c.reservation_id, attended)
+      .then(() => {
+        showToast(attended ? t('toasts.attendanceMarked')
+          : c.auto_paid ? t('toasts.autoPaidReversed') : t('toasts.noShowMarked'));
+        reload();
+      })
+      .catch((e: unknown) => { put(before); toast.error(errorMessage(e, t)); });
   };
 
   const paid = (total: number) => {
@@ -81,7 +93,7 @@ export function BookedClients({ clients, canEdit, removable, over, currency, pri
         {clients.map(c => (
           <div
             key={c.reservation_id}
-            className={`lc-person${c.status === 'attended' ? ' is-attended' : ''}`}
+            className={`lc-person${attendanceOf(c, started) === 'came' ? ' is-attended' : ''}`}
             role="button"
             tabIndex={0}
             title={t('bookingPopup.openClient')}
@@ -121,7 +133,8 @@ export function BookedClients({ clients, canEdit, removable, over, currency, pri
               ) : (
                 <>
                   <PayMark client={c} canPay={canEdit} onPay={() => setPaying(c)} />
-                  <AttendMark attended={c.status === 'attended'} missed={over} onAttend={canEdit ? () => attend(c) : undefined} />
+                  <AttendMark state={attendanceOf(c, started)} started={started}
+                              onSet={canEdit ? attended => mark(c, attended) : undefined} />
                 </>
               )}
               {canEdit && (removable || c.status === 'pending') && (

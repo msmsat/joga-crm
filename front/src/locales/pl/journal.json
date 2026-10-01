@@ -170,7 +170,9 @@
     },
     "repriced": "Rezerwacja kosztuje teraz {{price}}",
     "repricedRefund": "Klient zapłacił {{paid}}, cena wynosi teraz {{price}} — zwróć {{diff}}",
-    "repricedTopUp": "Klient zapłacił {{paid}}, cena wynosi teraz {{price}} — dopłata {{diff}}"
+    "repricedTopUp": "Klient zapłacił {{paid}}, cena wynosi teraz {{price}} — dopłata {{diff}}",
+    "noShowMarked": "Oznaczono: nie przyszedł",
+    "autoPaidReversed": "Nie przyszedł — automatyczna płatność cofnięta, dług znów jest otwarty"
   },
   "loadError": {
     "title": "Nie udało się wczytać",
@@ -443,7 +445,9 @@
     "card": "Kartą",
     "paid": "Opłacone",
     "attend": "Obecność",
-    "notMarked": "Nie oznaczono"
+    "notMarked": "Nie oznaczono",
+    "waiting": "Czekamy",
+    "choose": "Oznacz obecność"
   },
   "scheduleBlocks": {
     "day_off": "Dzień wolny",

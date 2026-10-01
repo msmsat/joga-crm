@@ -125,8 +125,6 @@
       "categoryCreate": "Създаване на категория",
       "categoryNewPlaceholder": "Например Подстригване",
       "type": "Тип",
-      "typeGroup": "Групова",
-      "typeIndividual": "Индивидуална",
       "price": "Цена, {{currency}}",
       "pricePlaceholder": "1200",
       "duration": "Продължителност, мин",
@@ -150,9 +148,6 @@
       "bookingModeResource": "Изберете час",
       "bookingModeEventHint": "Клиентите се записват за занятие, което вече сте насрочили.",
       "bookingModeResourceHint": "Клиентът избира специалист и свободен час; интервалът {{offering}} се създава при потвърждение.",
-      "bookable": "Налично за записване",
-      "bookableOn": "Да",
-      "bookableOff": "Не",
       "bufferBefore": "Буфер преди",
       "bufferAfter": "Буфер след"
     },

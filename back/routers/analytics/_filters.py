@@ -154,9 +154,14 @@ def op_conds(f: ReportFilters, sid: int) -> list:
 
 
 def noshow_cond():
-    """Активная бронь на занятие, которое уже закончилось — клиент не пришёл."""
+    """Неявка: бронь отмечена «не пришёл», и занятие уже закончилось.
+
+    Только явная отметка (services/attendance): посещение по умолчанию
+    «пришёл», и неотмеченную бронь система по окончании занятия сама
+    отмечает визитом. Прошлое до этого правила миграция перевела в no_show.
+    """
     end_time = Lesson.start_time + func.make_interval(0, 0, 0, 0, 0, Lesson.duration_min)
-    return (Reservation.status == "active") & (end_time < func.now())
+    return (Reservation.status == "active") & Reservation.no_show.is_(True) & (end_time < func.now())
 
 
 def occupied_expr():

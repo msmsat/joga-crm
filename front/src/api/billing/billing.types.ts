@@ -188,6 +188,12 @@ export interface CheckoutRequest {
 export interface CheckoutResponse {
   /** null — платить нечего: переход уже применён, вести владельца некуда. */
   checkout_url: string | null
+  client_secret: string | null
+  publishable_key: string | null
+  payment_kind: 'checkout' | 'invoice' | null
+  amount_due: number | null
+  tax_amount: number | null
+  currency: string | null
 }
 
 /** Расчёт для модалки оплаты: что спишется и что при этом теряется.

@@ -170,7 +170,9 @@
     },
     "repriced": "Цена записи теперь {{price}}",
     "repricedRefund": "Клиент заплатил {{paid}}, цена теперь {{price}} — верните ему {{diff}}",
-    "repricedTopUp": "Клиент заплатил {{paid}}, цена теперь {{price}} — доплата {{diff}}"
+    "repricedTopUp": "Клиент заплатил {{paid}}, цена теперь {{price}} — доплата {{diff}}",
+    "noShowMarked": "Отмечено: не пришёл",
+    "autoPaidReversed": "Не пришёл — автозачисление отменено, долг снова открыт"
   },
   "loadError": {
     "title": "Не удалось загрузить",
@@ -443,7 +445,9 @@
     "card": "Картой",
     "paid": "Оплачено",
     "attend": "Посещение",
-    "notMarked": "Не отмечено"
+    "notMarked": "Не отмечено",
+    "waiting": "Ждём",
+    "choose": "Отметить посещение"
   },
   "scheduleBlocks": {
     "day_off": "Выходной",

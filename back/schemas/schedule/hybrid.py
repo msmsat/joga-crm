@@ -163,6 +163,28 @@ class PaymentPreviewRequest(PaymentCodes):
     pass
 
 
+class ClientPaymentCodes(HybridSchema):
+    """Коды клиента в мини-приложении: те же, что у шага оплаты Журнала, но без
+    ручной скидки — давать себе скидку клиенту нечем."""
+    promo_code: Optional[str] = Field(default=None, max_length=64)
+    certificate_code: Optional[str] = Field(default=None, max_length=64)
+    use_bonuses: bool = False
+    use_deposit: bool = False
+
+
+class ClientConfirmPayment(ClientPaymentCodes):
+    # Итог из чека, который видел клиент. Сервер считает заново и при
+    # расхождении не записывает (AMOUNT_CHANGED). Способ оплаты (на месте или
+    # картой) назван в quote, здесь его второй раз не спрашивают.
+    expected_total: int = Field(ge=0)
+
+
+class ClientConfirmRequest(ConfirmRequest):
+    """Подтверждение из мини-приложения. `payment` — коды, которые бронь будет
+    держать до оплаты (services/held_codes); без него — запись как прежде."""
+    payment: Optional[ClientConfirmPayment] = None
+
+
 class ConfirmPayment(PaymentCodes):
     # Итог, который видел администратор. Сервер считает заново и при
     # расхождении не записывает ни брони, ни денег: принять наличными не ту
@@ -287,6 +309,10 @@ class CrmAvailabilityQuery(AvailabilityQuery):
     # обратную сторону — прятал минуты, которые сервер на самом деле примет.
     # Только CRM: у клиента экрана переноса с предпросмотром слотов нет.
     exclude_lesson_id: Optional[int] = Field(default=None, gt=0)
+
+
+class PublicServicesDayQuery(ServicesDayQuery):
+    studio_id: Optional[str] = None
 
 
 class PublicAvailabilityQuery(AvailabilityQuery):

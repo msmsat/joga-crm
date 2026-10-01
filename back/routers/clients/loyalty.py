@@ -177,6 +177,47 @@ async def register_purchase(db: AsyncSession, studio_id: int, client_id: int, am
     await fire_referral(db, studio_id, client_id, "first_payment")
 
 
+async def revert_purchase(db: AsyncSession, studio_id: int, client_id: int, amount: int,
+                          description: str = "Возврат оплаты") -> None:
+    """Обратное к accrue_points + register_purchase: снять баллы и сумму покупок,
+    начисленные оплатой, которой больше нет (возврат по карте, отменённое
+    автозачисление). Не коммитит.
+
+    Баллы считаем той же формулой, что и начисление, и ОБРЕЗАЕМ по остатку:
+    клиент мог их уже потратить, а уводить баланс в минус нельзя —
+    apply_points_change на это отвечает 400 и уронил бы весь откат. Снимаем
+    через apply_points_change, а не правкой баланса: сгорание баллов
+    (expire_points) считает по журналу транзакций.
+
+    ponytail: если ставку начисления или кэшбек поменяли между оплатой и
+    откатом, снимется по новой ставке. Точный откат требует ссылки на
+    начисляющие транзакции — заводить её ради редкого случая не стали.
+    """
+    from routers.loyalty.cards import _get_or_create_levels, _level_for  # ponytail: локальный импорт разрывает цикл (как в register_purchase)
+
+    card = await _get_or_create_card(client_id, studio_id, db)
+
+    points = 0
+    loyalty_cfg = (await db.execute(
+        select(StudioLoyaltyConfig).where(StudioLoyaltyConfig.studio_id == studio_id)
+    )).scalar_one_or_none()
+    if loyalty_cfg is not None and loyalty_cfg.is_enabled and loyalty_cfg.points_exchange_rate > 0:
+        points += amount // loyalty_cfg.points_exchange_rate
+
+    discount_cfg = (await db.execute(
+        select(StudioDiscountConfig).where(StudioDiscountConfig.studio_id == studio_id)
+    )).scalar_one_or_none()
+    if discount_cfg is not None and discount_cfg.is_enabled and discount_cfg.discount_type == "cashback":
+        points += amount * discount_cfg.discount_value // 100
+
+    points = min(points, card.points_balance)
+    if points > 0:
+        await apply_points_change(client_id, studio_id, -points, description, db)
+
+    card.total_spent = max(0, card.total_spent - amount)
+    card.level_id = _level_for(card.total_spent, await _get_or_create_levels(studio_id, db))
+
+
 async def apply_deposit_change(
     client_id: int, studio_id: int, amount: int, description: str, db: AsyncSession
 ) -> ClientLoyaltyCard:

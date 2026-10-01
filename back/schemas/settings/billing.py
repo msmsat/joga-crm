@@ -246,6 +246,7 @@ class CheckoutRequest(BaseModel):
     # с ней включается обязательство платить процент с оборота, на которое сервер
     # требует записанного согласия (checkout.create_checkout).
     combo: bool = False
+    ui_mode: Literal["hosted", "elements"] = "hosted"
     # Поля `apply` тут больше нет: переход ВСЕГДА немедленный, с зачётом остатка
     # текущего периода (routers/billing/checkout._switch_now). Отложенный переход
     # «с начала следующего периода» убран — владелец не различал два поведения
@@ -258,6 +259,12 @@ class CheckoutResponse(BaseModel):
     # Раньше сюда подставлялся адрес самой страницы биллинга, и вместо результата
     # человек получал перезагрузку — а с боевым WEB_APP_URL ещё и уход на прод.
     checkout_url: str | None = None
+    client_secret: str | None = None
+    publishable_key: str | None = None
+    payment_kind: Literal["checkout", "invoice"] | None = None
+    amount_due: int | None = None
+    tax_amount: int | None = None
+    currency: str | None = None
 
 
 class CheckoutPreviewRead(BaseSchema):

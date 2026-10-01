@@ -53,6 +53,11 @@ export const scheduleApi = {
   attendReservation: (id: number) =>
     client.patch<Reservation>(`/schedule/reservations/${id}/attend`, {}),
 
+  // Пришёл / не пришёл. Деньги следуют за отметкой сами: «пришёл» после
+  // занятия проводит долг наличными, «не пришёл» откатывает автозачисление.
+  setAttendance: (id: number, attended: boolean) =>
+    client.patch<Reservation>(`/schedule/reservations/${id}/attendance`, { attended }),
+
   // Одобрить бронь, ждущую подтверждения (настройка «Подтверждение тренером»
   // в Онлайн-записи). Отклонение — обычный cancelReservation.
   confirmReservation: (id: number) =>

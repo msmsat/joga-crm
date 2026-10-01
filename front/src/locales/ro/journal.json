@@ -167,7 +167,9 @@
     },
     "repriced": "Programarea costă acum {{price}}",
     "repricedRefund": "Clientul a plătit {{paid}}, prețul este acum {{price}} — returnați {{diff}}",
-    "repricedTopUp": "Clientul a plătit {{paid}}, prețul este acum {{price}} — încasați încă {{diff}}"
+    "repricedTopUp": "Clientul a plătit {{paid}}, prețul este acum {{price}} — încasați încă {{diff}}",
+    "noShowMarked": "Marcat: nu a venit",
+    "autoPaidReversed": "Nu a venit — plata automată a fost anulată, datoria este din nou deschisă"
   },
   "loadError": {
     "title": "Încărcarea a eșuat",
@@ -439,7 +441,9 @@
     "card": "Card",
     "paid": "Plătit",
     "attend": "Prezență",
-    "notMarked": "Nemarcat"
+    "notMarked": "Nemarcat",
+    "waiting": "Așteptăm",
+    "choose": "Marchează prezența"
   },
   "scheduleBlocks": {
     "day_off": "Zi liberă",

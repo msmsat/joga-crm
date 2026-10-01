@@ -45,7 +45,7 @@ async def _seed() -> tuple[int, int, int]:
         db.add_all([
             Reservation(client_id=cid, lesson_id=lid, spot_number=1, status="attended"),
             Reservation(client_id=cid, lesson_id=lid, spot_number=2, status="attended"),
-            Reservation(client_id=cid, lesson_id=lid, spot_number=3, status="active"),  # noshow: lesson ended
+            Reservation(client_id=cid, lesson_id=lid, spot_number=3, status="active", no_show=True),  # noshow: lesson ended
         ])
         await db.commit()
         return sid, hid, lid
@@ -153,8 +153,8 @@ async def _seed_losses() -> tuple[int, int, int]:
         db.add_all([lesson_a, lesson_b, lesson_c]); await db.flush()
 
         db.add_all([
-            Reservation(client_id=cid, lesson_id=lesson_c.id, spot_number=1, status="active"),
-            Reservation(client_id=cid, lesson_id=lesson_c.id, spot_number=2, status="active"),
+            Reservation(client_id=cid, lesson_id=lesson_c.id, spot_number=1, status="active", no_show=True),
+            Reservation(client_id=cid, lesson_id=lesson_c.id, spot_number=2, status="active", no_show=True),
             Reservation(client_id=cid, lesson_id=lesson_c.id, spot_number=3, status="attended"),
         ])
         await db.commit()

@@ -24,13 +24,20 @@ HISTORY_LIMIT = 12
 REVIEWS_LIMIT = 5
 
 
-def _status(reservation_status: str, start, now) -> str:
+def _status(reservation_status: str, start, now, no_show: bool = False) -> str:
     if reservation_status == "attended":
         return "attended"
     if reservation_status == "cancelled":
         return "cancelled"
-    # Записан, но так и не отмечен: занятие прошло — неявка, впереди — ждём.
-    return "upcoming" if start >= now else "missed"
+    # Неявка — только отмеченная (services/attendance): посещение по умолчанию
+    # «пришёл». Впереди — ждём; началось и не отмечено «не пришёл» — пришёл
+    # (по окончании занятия система отметит это и в статусе брони).
+    if no_show:
+        return "missed"
+    if start >= now:
+        return "upcoming"
+    # Неподтверждённая студией заявка визитом не становится — как и раньше.
+    return "attended" if reservation_status == "active" else "missed"
 
 
 @router.get("/{client_id}/digest", response_model=ClientDigest)
@@ -50,7 +57,7 @@ async def get_client_digest(
 
     rows = (await db.execute(
         select(
-            Reservation.id, Reservation.status, Reservation.rating, Reservation.review_text,
+            Reservation.id, Reservation.status, Reservation.no_show, Reservation.rating, Reservation.review_text,
             Reservation.is_trial, Lesson.id.label("lesson_id"), Lesson.name, Lesson.start_time,
             Lesson.teacher_name, Lesson.status.label("lesson_status"),
             # Как записан и чем закрыт — то же, что у строки записанного в Журнале.
@@ -75,7 +82,7 @@ async def get_client_digest(
     visits = []
     for r in rows:
         # Отменённое студией занятие — не отмена и не неявка клиента.
-        status = "cancelled" if r["lesson_status"] == "cancelled" else _status(r["status"], r["start_time"], now)
+        status = "cancelled" if r["lesson_status"] == "cancelled" else _status(r["status"], r["start_time"], now, r["no_show"])
         visits.append({
             "reservation_id": r["id"], "lesson_id": r["lesson_id"], "name": r["name"],
             "start_time": r["start_time"], "teacher_name": r["teacher_name"] or None,

@@ -125,8 +125,6 @@
       "categoryCreate": "Stvori kategoriju",
       "categoryNewPlaceholder": "Npr. Šišanje",
       "type": "Vrsta",
-      "typeGroup": "Grupna",
-      "typeIndividual": "Individualna",
       "price": "Cijena, {{currency}}",
       "pricePlaceholder": "1200",
       "duration": "Trajanje, min",
@@ -150,9 +148,6 @@
       "bookingModeResource": "Odaberi vrijeme",
       "bookingModeEventHint": "Klijenti se prijavljuju na sat koji ste već zakazali.",
       "bookingModeResourceHint": "Klijent bira stručnjaka i slobodno vrijeme; interval {{offering}} stvara se pri potvrdi.",
-      "bookable": "Dostupno za rezervaciju",
-      "bookableOn": "Da",
-      "bookableOff": "Ne",
       "bufferBefore": "Međuvrijeme prije",
       "bufferAfter": "Međuvrijeme nakon"
     },

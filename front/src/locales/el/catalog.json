@@ -125,8 +125,6 @@
       "categoryCreate": "Δημιουργία κατηγορίας",
       "categoryNewPlaceholder": "Π.χ. Κούρεμα",
       "type": "Τύπος",
-      "typeGroup": "Ομαδική",
-      "typeIndividual": "Ατομική",
       "price": "Τιμή, {{currency}}",
       "pricePlaceholder": "1200",
       "duration": "Διάρκεια, λεπτά",
@@ -150,9 +148,6 @@
       "bookingModeResource": "Επιλογή ώρας",
       "bookingModeEventHint": "Οι πελάτες εγγράφονται σε μάθημα που έχετε ήδη προγραμματίσει.",
       "bookingModeResourceHint": "Ο πελάτης επιλέγει έναν ειδικό και ελεύθερη ώρα· το διάστημα {{offering}} δημιουργείται κατά την επιβεβαίωση.",
-      "bookable": "Διαθέσιμο για κράτηση",
-      "bookableOn": "Ναι",
-      "bookableOff": "Όχι",
       "bufferBefore": "Χρόνος πριν",
       "bufferAfter": "Χρόνος μετά"
     },

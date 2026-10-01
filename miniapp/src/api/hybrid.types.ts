@@ -70,3 +70,34 @@ export interface BookingTerms {
   booking_config_version: number; cancellation_deadline_min: number; payment_method: 'venue' | 'card'; spot_number: number | null;
 }
 export interface QuoteRead { quote_id: string; expires_at: string; booking_mode: BookingMode; terms: BookingTerms; next_action: NextAction; reservation_id: number | null }
+
+/** Свободные начала одной индивидуальной услуги в одном филиале за день —
+ *  минутами от местной полуночи (`GET /global/availability/services`).
+ *  `free_by_teacher` — то же по каждому мастеру; ключ — его `users.id`. */
+export interface ServiceDayRow {
+  service_id: number; branch_id: number; reason: string | null;
+  free: number[]; free_by_teacher: Record<string, number[]>;
+}
+export interface ServicesDayRead { services: ServiceDayRow[] }
+
+/** Чем клиент платит помимо денег — коды шага оплаты. Ручной скидки у клиента нет. */
+export interface ClientPaymentCodes {
+  promo_code?: string | null; certificate_code?: string | null;
+  use_bonuses?: boolean; use_deposit?: boolean;
+}
+/** Коды, которые бронь держит до оплаты, и итог, который видел клиент. */
+export interface ClientConfirmPayment extends ClientPaymentCodes { expected_total: number }
+
+export type PaymentDiscountKind = 'studio' | 'offer' | 'promo' | 'referral' | 'first_lesson' | 'manual';
+/** Чек записи (`POST /global/booking-quotes/{id}/payment-preview`). Суммы — числом в валюте студии. */
+export interface PaymentPreviewRead {
+  currency: string; base_price: number;
+  covered_by: 'subscription' | 'trial' | 'free' | null;
+  discounts: { kind: PaymentDiscountKind; amount: number }[];
+  promo_valid: boolean | null; promo_outweighed: boolean;
+  certificate_error: string | null; certificate_amount: number; certificate_applied: number;
+  bonuses_available: number; bonuses_applied: number; bonuses_value: number; point_value: number;
+  deposit_available: number; deposit_applied: number;
+  points_to_earn: number;
+  total: number;
+}

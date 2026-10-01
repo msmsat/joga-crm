@@ -21,6 +21,19 @@ type Props = {
   /** Шаг назад внутри листа (время → услуга). Нет — кнопки нет. */
   onBack?: () => void;
   backLabel?: string;
+  /**
+   * Неподвижная полоса между шапкой и контентом — вкладки разделов. Живёт ВНЕ
+   * прокрутки, а не `sticky` внутри неё: у прокрутки есть верхний отступ, и
+   * липкая полоса вставала на 24px ниже края — в эту щель над вкладками
+   * выезжали строки, которые человек листал.
+   */
+  toolbar?: ReactNode;
+  /**
+   * Колонка слева на десктопе. Есть — лист становится широкой консолью во всю
+   * высоту окна: колонка держит контекст (что уже выбрано), справа — шапка,
+   * контент и подвал. На телефоне колонка не рисуется вовсе.
+   */
+  aside?: ReactNode;
 };
 
 // Листов может быть два один над другим (оплата поверх абонементов), поэтому
@@ -73,10 +86,13 @@ export function Sheet({
   layer = 0,
   onBack,
   backLabel = 'Back',
+  toolbar,
+  aside,
 }: Props) {
   const { vibrateLight } = useTelegram();
   const isDesktop = useIsDesktop();
   const dragControls = useDragControls();
+  const wide = isDesktop && aside !== undefined;
 
   /** Тянуть лист — да; нажимать крестик — нет. Без этой отсечки жест начинался
    *  бы прямо на кнопке закрытия и съедал бы у неё клик. */
@@ -117,6 +133,123 @@ export function Sheet({
     };
   }, [isOpen, onClose, isDesktop]);
 
+  // Шапка, вкладки, контент и подвал. В консоли (десктоп + `aside`) они живут
+  // правой колонкой, в обычном листе — прямо в панели.
+  const column = (
+    <>
+      {/* Тёплое свечение под шапкой: лист не должен читаться белым листом
+          бумаги — это единственное место, где акцент разлит пятном. */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-0 h-40"
+        style={{
+          background:
+            'radial-gradient(ellipse 90% 100% at 50% 0%, var(--v-brand-light)26 0%, transparent 70%)',
+        }}
+      />
+
+      <div
+        className="relative shrink-0 px-6 pt-3"
+        /* touch-action только здесь, а не на всей панели: `none` гасит
+           собственное панорамирование браузера ровно в полосе шапки, и
+           контент листа ниже остаётся обычной прокручиваемой областью. */
+        style={isDesktop ? undefined : { touchAction: 'none' }}
+        onPointerDown={isDesktop ? undefined : startDrag}
+      >
+        {/* Ручка смахивания — жест только пальцем: мышью тянуть нечего,
+            а полоска без функции читается как мусор в макете. */}
+        <div
+          className="mx-auto h-1 w-10 cursor-grab rounded-full bg-foreground/12 dt:hidden"
+          aria-hidden="true"
+        />
+
+        <motion.button
+          type="button"
+          onClick={onClose}
+          whileTap={{ scale: 0.9 }}
+          aria-label="Close"
+          className="absolute right-5 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-muted text-muted-foreground transition-colors duration-200 dt:hover:bg-foreground dt:hover:text-background"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.2"
+            strokeLinecap="round"
+            className="h-[17px] w-[17px]"
+          >
+            <path d="M18 6L6 18M6 6l12 12" />
+          </svg>
+        </motion.button>
+
+        {/* Назад — зеркально крестику и того же размера: шаг внутри
+            листа, а не закрытие. Под пальцем левого края на телефоне. */}
+        {onBack && (
+          <motion.button
+            type="button"
+            onClick={onBack}
+            whileTap={{ scale: 0.9 }}
+            aria-label={backLabel}
+            className="absolute left-5 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-muted text-muted-foreground"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round" className="h-[17px] w-[17px]">
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
+          </motion.button>
+        )}
+
+        {(kicker || title || subtitle) && (
+          <div className="pr-12 pt-5">
+            {kicker && (
+              <div className={`text-[10.5px] font-extrabold uppercase tracking-[0.22em] text-brand ${onBack ? 'pl-10' : ''}`}>
+                {kicker}
+              </div>
+            )}
+            {title && (
+              <h2 className="mt-2 text-[27px] font-extrabold leading-[1.05] tracking-[-0.035em] text-card-foreground">
+                {title}
+              </h2>
+            )}
+            {subtitle && (
+              <p className="mt-1.5 text-[12.5px] font-medium leading-relaxed text-muted-foreground">
+                {subtitle}
+              </p>
+            )}
+          </div>
+        )}
+      </div>
+
+      {toolbar && <div className="relative shrink-0 px-6 pt-5">{toolbar}</div>}
+
+      {/* Под вкладками контент не обрезается ножом, а тает: маска гасит
+          верхние 16px области — в покое это её собственный отступ, и
+          затухание видно только у того, что уехало под полосу. */}
+      <div
+        className={`relative flex-1 overflow-y-auto overscroll-contain px-6 ${
+          toolbar ? 'pt-4 [mask-image:linear-gradient(to_bottom,transparent,#000_16px)]' : 'pt-6'
+        }`}
+      >
+        {children}
+        {/* Хвост: последняя карточка не должна липнуть к краю листа. */}
+        <div className={footer ? 'h-4' : 'h-6'} />
+      </div>
+
+      {/* Отступ снизу — ОДНИМ объявлением: собственные 20px плюс
+          безопасная зона. Пара `pb-safe pb-5` здесь не работает — это два
+          padding-bottom на одном элементе, в собранном CSS `.pb-safe`
+          стоит ниже и молча съедал 20px, оставляя кнопки на кромке листа
+          (на ПК безопасная зона равна нулю). Зона — `--safe-bottom`, а не
+          голый env(): в вебвью Telegram тот ноль, и кнопки ложились на
+          полоску жестов. */}
+      {footer && (
+        <div className="relative shrink-0 px-6 pb-[calc(1.25rem_+_var(--safe-bottom))] pt-5">
+          {footer}
+        </div>
+      )}
+      {!footer && <div className="pb-safe" />}
+    </>
+  );
+
   return createPortal(
     <AnimatePresence>
       {isOpen && (
@@ -126,7 +259,7 @@ export function Sheet({
              браузера, и кнопка в подвале ездила бы вместе с нижней панелью
              Instagram ровно так же, как ездило меню. На десктопе класс пустой,
              работает `inset-0`. */
-          className="app-sheet fixed inset-0 flex items-end justify-center dt:items-center dt:p-8"
+          className={`app-sheet fixed inset-0 flex items-end justify-center dt:items-center ${wide ? 'dt:p-6' : 'dt:p-8'}`}
           style={{ zIndex: 200 + layer * 10 }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -164,112 +297,27 @@ export function Sheet({
             className={[
               'relative flex w-full max-w-[520px] flex-col overflow-hidden bg-card',
               'rounded-t-[28px] shadow-[0_-16px_48px_-12px_rgba(26,26,26,0.28)]',
-              'dt:max-w-[560px] dt:rounded-[28px] dt:shadow-[0_32px_80px_-24px_rgba(26,26,26,0.45)]',
-              // Проценты от подложки, а не dvh: подложке рост уже отмерен, а
-              // dvh переспросил бы браузер про низ экрана — и на телефоне снова
-              // поехал бы за его панелью. На десктопе dvh честный, там оставлен.
-              tall ? 'h-[92%] dt:h-[78dvh]' : 'max-h-[88%] dt:max-h-[82dvh]',
+              'dt:rounded-[28px] dt:shadow-[0_32px_80px_-24px_rgba(26,26,26,0.45)]',
+              wide
+                // Консоль берёт окно целиком (до разумного предела): на 1280×720
+                // диалог 560×560 оставлял под варианты меньше половины высоты.
+                ? 'dt:h-full dt:max-h-[880px] dt:max-w-[1080px] dt:flex-row'
+                // Проценты от подложки, а не dvh: подложке рост уже отмерен, а
+                // dvh переспросил бы браузер про низ экрана — и на телефоне снова
+                // поехал бы за его панелью. На десктопе dvh честный, там оставлен.
+                : `dt:max-w-[560px] ${tall ? 'h-[92%] dt:h-[78dvh]' : 'max-h-[88%] dt:max-h-[82dvh]'}`,
             ].join(' ')}
           >
-            {/* Тёплое свечение под шапкой: лист не должен читаться белым листом
-                бумаги — это единственное место, где акцент разлит пятном. */}
-            <div
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-x-0 top-0 h-40"
-              style={{
-                background:
-                  'radial-gradient(ellipse 90% 100% at 50% 0%, var(--v-brand-light)26 0%, transparent 70%)',
-              }}
-            />
-
-            <div
-              className="relative shrink-0 px-6 pt-3"
-              /* touch-action только здесь, а не на всей панели: `none` гасит
-                 собственное панорамирование браузера ровно в полосе шапки, и
-                 контент листа ниже остаётся обычной прокручиваемой областью. */
-              style={isDesktop ? undefined : { touchAction: 'none' }}
-              onPointerDown={isDesktop ? undefined : startDrag}
-            >
-              {/* Ручка смахивания — жест только пальцем: мышью тянуть нечего,
-                  а полоска без функции читается как мусор в макете. */}
-              <div
-                className="mx-auto h-1 w-10 cursor-grab rounded-full bg-foreground/12 dt:hidden"
-                aria-hidden="true"
-              />
-
-              <motion.button
-                type="button"
-                onClick={onClose}
-                whileTap={{ scale: 0.9 }}
-                aria-label="Close"
-                className="absolute right-5 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-muted text-muted-foreground"
-              >
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.2"
-                  strokeLinecap="round"
-                  className="h-[17px] w-[17px]"
-                >
-                  <path d="M18 6L6 18M6 6l12 12" />
-                </svg>
-              </motion.button>
-
-              {/* Назад — зеркально крестику и того же размера: шаг внутри
-                  листа, а не закрытие. Под пальцем левого края на телефоне. */}
-              {onBack && (
-                <motion.button
-                  type="button"
-                  onClick={onBack}
-                  whileTap={{ scale: 0.9 }}
-                  aria-label={backLabel}
-                  className="absolute left-5 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-muted text-muted-foreground"
-                >
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round" className="h-[17px] w-[17px]">
-                    <polyline points="15 18 9 12 15 6" />
-                  </svg>
-                </motion.button>
-              )}
-
-              {(kicker || title || subtitle) && (
-                <div className="pr-12 pt-5">
-                  {kicker && (
-                    <div className={`text-[10.5px] font-extrabold uppercase tracking-[0.22em] text-brand ${onBack ? 'pl-10' : ''}`}>
-                      {kicker}
-                    </div>
-                  )}
-                  {title && (
-                    <h2 className="mt-2 text-[27px] font-extrabold leading-[1.05] tracking-[-0.035em] text-card-foreground">
-                      {title}
-                    </h2>
-                  )}
-                  {subtitle && (
-                    <p className="mt-1.5 text-[12.5px] font-medium leading-relaxed text-muted-foreground">
-                      {subtitle}
-                    </p>
-                  )}
-                </div>
-              )}
-            </div>
-
-            <div className="relative flex-1 overflow-y-auto overscroll-contain px-6 pt-6">
-              {children}
-              {/* Хвост: последняя карточка не должна липнуть к краю листа. */}
-              <div className={footer ? 'h-4' : 'h-6'} />
-            </div>
-
-            {/* Отступ снизу — ОДНИМ объявлением: собственные 20px плюс
-                безопасная зона. Пара `pb-safe pb-5` здесь не работает — это два
-                padding-bottom на одном элементе, в собранном CSS `.pb-safe`
-                стоит ниже и молча съедал 20px, оставляя кнопки на кромке листа
-                (на ПК безопасная зона равна нулю). */}
-            {footer && (
-              <div className="relative shrink-0 px-6 pb-[calc(1.25rem_+_env(safe-area-inset-bottom,0px))] pt-5">
-                {footer}
-              </div>
+            {wide ? (
+              <>
+                <aside className="relative flex w-[clamp(260px,30%,316px)] shrink-0 flex-col overflow-y-auto bg-background">
+                  {aside}
+                </aside>
+                <div className="relative flex min-w-0 flex-1 flex-col">{column}</div>
+              </>
+            ) : (
+              column
             )}
-            {!footer && <div className="pb-safe" />}
           </motion.div>
         </motion.div>
       )}

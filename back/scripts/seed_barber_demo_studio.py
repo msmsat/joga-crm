@@ -290,7 +290,7 @@ async def seed() -> dict[str, int]:
             session.add(StudioBookingSettings(
                 studio_id=studio.id,
                 booking_active=True,
-                prefill_on_booking=True,
+                prefill_on_booking=False,
                 min_booking_advance_min=60,
                 booking_window_days=21,
                 cancellation_deadline_min=120,

@@ -758,6 +758,36 @@ async def attend(db: AsyncSession, *, studio_id: int, reservation_id: int) -> Re
     return Result(Outcome.OK, reservation.id, "attended")
 
 
+async def unattend(db: AsyncSession, *, studio_id: int, reservation_id: int) -> Result:
+    """Клиент НЕ пришёл: визит обратно в бронь. Обратный переход к `attend`.
+
+    Нужен с тех пор, как посещение ставится по умолчанию (services/attendance):
+    система отмечает пришедшими всех неотмеченных, и ошибку обязана уметь
+    исправить студия. Бронь возвращается в `active` — место и списанное с
+    абонемента занятие при этом НЕ освобождаются: неявка — не отмена, и
+    правило «не пришёл — занятие сгорает» остаётся тем же, что было у
+    неотмеченной брони. Саму отметку «не пришёл» ставит вызывающий.
+
+    Идемпотентно: не-визит возвращается как есть.
+    """
+    await lock_studio(db, studio_id)
+    reservation = (await db.execute(
+        select(Reservation)
+        .join(Lesson, Lesson.id == Reservation.lesson_id)
+        .where(Reservation.id == reservation_id, Lesson.studio_id == studio_id)
+        .with_for_update(of=Reservation)
+        .execution_options(populate_existing=True)
+    )).scalar_one_or_none()
+    if reservation is None:
+        return Result(Outcome.NOT_FOUND)
+    if reservation.status == "cancelled":
+        return Result(Outcome.ALREADY_CANCELLED, reservation.id, "cancelled")
+    if reservation.status == "attended":
+        reservation.status = "active"
+        logger.info("booking_unattended studio_id=%s reservation_id=%s", studio_id, reservation_id)
+    return Result(Outcome.OK, reservation.id, reservation.status)
+
+
 async def approve(db: AsyncSession, *, studio_id: int, reservation_id: int,
                   actor: str, now: Optional[datetime] = None) -> Result:
     """Подтвердить ждущую бронь. Переход делает СТУДИЯ, не клиент.

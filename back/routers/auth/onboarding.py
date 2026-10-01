@@ -42,6 +42,7 @@ async def _create_studio_with_defaults(user: User, data: OnboardingRequest, db: 
     (_sub_gate) сам приводит на «Тариф и оплата», где то же предложение
     доступно кнопкой. Раньше триал начислялся молча прямо здесь, и
     «активировать» человеку было нечего."""
+    booking_mode = terminology.booking_mode_for_activities(data.activityType)
     new_studio = Studio(
         name=data.studioName.strip(),
         description=data.description,
@@ -57,6 +58,13 @@ async def _create_studio_with_defaults(user: User, data: OnboardingRequest, db: 
         # раз здесь — дальше это самостоятельное поле, которое владелец может
         # сменить в настройках, а не производное от business_subtype.
         terminology_profile=terminology.profile_for_activities(data.activityType),
+        # Механика записи — тоже от направления, чтобы барбершоп с первой
+        # минуты записывал «к мастеру на время», а не на занятие. Resource
+        # без строгого расписания сервер не продаёт (STRICT_SCHEDULE_REQUIRED),
+        # поэтому оно включается вместе с ней: у новой студии расписание пустое,
+        # и аудиту наследия проверять нечего.
+        booking_mode=booking_mode,
+        strict_schedule_enabled=booking_mode != "event",
         timezone=data.timezone,
         language=data.language,
         currency=data.currency,

@@ -125,8 +125,6 @@
       "categoryCreate": "Luo luokka",
       "categoryNewPlaceholder": "Esim. Hiustenleikkaus",
       "type": "Tyyppi",
-      "typeGroup": "Ryhmä",
-      "typeIndividual": "Yksilö",
       "price": "Hinta, {{currency}}",
       "pricePlaceholder": "1200",
       "duration": "Kesto, min",
@@ -150,9 +148,6 @@
       "bookingModeResource": "Valitse aika",
       "bookingModeEventHint": "Asiakkaat ilmoittautuvat jo kalenteriin merkittyyn tuntiin.",
       "bookingModeResourceHint": "Asiakas valitsee asiantuntijan ja vapaan ajan; {{offering}}-väli luodaan vahvistettaessa.",
-      "bookable": "Varattavissa",
-      "bookableOn": "Kyllä",
-      "bookableOff": "Ei",
       "bufferBefore": "Puskuri ennen",
       "bufferAfter": "Puskuri jälkeen"
     },

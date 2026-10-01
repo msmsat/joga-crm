@@ -164,7 +164,9 @@
     },
     "repriced": "Bookingen koster nu {{price}}",
     "repricedRefund": "Kunden har betalt {{paid}}, prisen er nu {{price}} — tilbagebetal {{diff}}",
-    "repricedTopUp": "Kunden har betalt {{paid}}, prisen er nu {{price}} — opkræv {{diff}} mere"
+    "repricedTopUp": "Kunden har betalt {{paid}}, prisen er nu {{price}} — opkræv {{diff}} mere",
+    "noShowMarked": "Markeret som udeblevet",
+    "autoPaidReversed": "Udeblevet — den automatiske betaling er tilbageført, og gælden er åben igen"
   },
   "loadError": {
     "title": "Kunne ikke indlæses",
@@ -435,7 +437,9 @@
     "card": "Kort",
     "paid": "Betalt",
     "attend": "Fremmøde",
-    "notMarked": "Ikke markeret"
+    "notMarked": "Ikke markeret",
+    "waiting": "Venter",
+    "choose": "Markér fremmøde"
   },
   "scheduleBlocks": {
     "day_off": "Fridag",

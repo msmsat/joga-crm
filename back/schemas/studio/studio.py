@@ -183,7 +183,9 @@ class ServiceCreate(BaseSchema):
     service_type: Optional[str] = None
     color: Optional[str] = None
     max_clients: Optional[int] = None
-    booking_mode: ServiceBookingMode = "event"
+    # Не задана — механику решает студия (`terminology.default_service_mode`):
+    # форма Каталога её больше не спрашивает, кроме смешанной студии.
+    booking_mode: Optional[ServiceBookingMode] = None
     buffer_before_min: int = Field(0, ge=0, le=240)
     buffer_after_min: int = Field(0, ge=0, le=240)
     is_bookable: bool = True

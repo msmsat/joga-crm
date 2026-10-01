@@ -254,7 +254,11 @@ def test_client_digest_counts_visits_no_shows_and_reviews():
                 db.add_all([
                     Reservation(client_id=ids["client"], lesson_id=attended.id, spot_number=1,
                                 status="attended", rating=5, review_text="Отлично"),
-                    Reservation(client_id=ids["client"], lesson_id=missed.id, spot_number=1, status="active"),
+                    # Неявка — явная отметка (services/attendance): неотмеченная
+                    # бронь прошедшего занятия считается визитом, а прошлое до
+                    # этого правила миграция перевела в no_show.
+                    Reservation(client_id=ids["client"], lesson_id=missed.id, spot_number=1, status="active",
+                                no_show=True),
                 ])
                 await db.commit()
 

@@ -125,8 +125,6 @@
       "categoryCreate": "Criar categoria",
       "categoryNewPlaceholder": "Por exemplo, Corte de cabelo",
       "type": "Tipo",
-      "typeGroup": "Grupo",
-      "typeIndividual": "Individual",
       "price": "Preço, {{currency}}",
       "pricePlaceholder": "1200",
       "duration": "Duração, min",
@@ -150,9 +148,6 @@
       "bookingModeResource": "Escolher hora",
       "bookingModeEventHint": "Os clientes inscrevem-se numa aula já agendada.",
       "bookingModeResourceHint": "O cliente escolhe um especialista e um horário livre; o intervalo de {{offering}} é criado na confirmação.",
-      "bookable": "Disponível para reserva",
-      "bookableOn": "Sim",
-      "bookableOff": "Não",
       "bufferBefore": "Margem antes",
       "bufferAfter": "Margem depois"
     },

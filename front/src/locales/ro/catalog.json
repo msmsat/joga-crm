@@ -125,8 +125,6 @@
       "categoryCreate": "Creează categorie",
       "categoryNewPlaceholder": "De exemplu, Tuns",
       "type": "Tip",
-      "typeGroup": "Grup",
-      "typeIndividual": "Individual",
       "price": "Preț, {{currency}}",
       "pricePlaceholder": "1200",
       "duration": "Durată, min",
@@ -150,9 +148,6 @@
       "bookingModeResource": "Alege o oră",
       "bookingModeEventHint": "Clienții se înscriu la un curs pe care l-ați programat deja.",
       "bookingModeResourceHint": "Clientul alege un specialist și o oră liberă; intervalul {{offering}} este creat la confirmare.",
-      "bookable": "Disponibil pentru rezervare",
-      "bookableOn": "Da",
-      "bookableOff": "Nu",
       "bufferBefore": "Interval înainte",
       "bufferAfter": "Interval după"
     },

@@ -236,6 +236,7 @@ export const lessonToBooking = (l: Lesson, halls: Hall[], colorByTeacher: Map<nu
     hall: halls.find(h => h.id === l.hall_id)?.name ?? '',
     clients: l.booked_count ?? 0,
     attended: l.attended_count ?? 0,
+    noShows: l.no_show_count ?? 0,
     maxClients: l.total_spots,
     color: (l.teacher_id != null ? colorByTeacher.get(l.teacher_id) : undefined) ?? STAFF_PALETTE[0],
     status: l.status,
@@ -263,12 +264,32 @@ export const isLessonOver = (b: Pick<Booking, 'date' | 'timeEnd'>, now = new Dat
   return end <= now;
 };
 
-/** Неявка: индивидуальная запись закончилась, а «пришёл» так и не отметили.
- *  Сетка рисует её красной с крестиком. Групповое занятие неявкой не
- *  становится: там приходят не все, и это норма. */
-export const isNoShow = (b: Booking, now = new Date()) =>
+/** Занятие началось — с этого момента неотмеченный считается пришедшим, а
+ *  отметка переключается одним нажатием, без выбора. */
+export const isLessonStarted = (b: Pick<Booking, 'date' | 'timeStart'>, now = new Date()) => {
+  if (!b.date) return false;
+  const start = new Date(`${b.date}T00:00:00`);
+  start.setMinutes(Math.round((b.timeStart + 7) * 60));
+  return start <= now;
+};
+
+/** Посещение записанного: ждём (до начала), пришёл, не пришёл.
+ *  По умолчанию — пришёл: неявкой бывает только отмеченная «не пришёл»
+ *  (back/services/attendance.py), а с начала занятия неотмеченный считается
+ *  пришедшим, по окончании система отметит это и в брони. */
+export type Attendance = 'waiting' | 'came' | 'missed';
+export const attendanceOf = (c: { status: string; no_show?: boolean }, started: boolean): Attendance =>
+  c.no_show ? 'missed'
+    : c.status === 'attended' || (started && c.status === 'active') ? 'came'
+    // Заявка, ждущая студии, и неоплаченная карточная бронь визитом не становятся.
+    : 'waiting';
+
+/** Неявка в сетке: индивидуальную запись отметили «не пришёл». Красная, с
+ *  крестиком — в том числе заранее, если клиент предупредил. Групповое
+ *  занятие неявкой не становится: там приходят не все, и это норма. */
+export const isNoShow = (b: Booking) =>
   b.bookingMode === 'resource' && b.status !== 'cancelled' && b.clients > 0
-  && (b.attended ?? 0) === 0 && isLessonOver(b, now);
+  && (b.noShows ?? 0) >= b.clients;
 
 // Обратный переходник: дата + индекс сетки → naive ISO (для create/update занятия)
 export const indexToDateTime = (dateStr: string, idx: number) => {

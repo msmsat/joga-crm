@@ -697,9 +697,16 @@ async def pay_link(db: AsyncSession, *, studio_id: int, reservation_id: int,
     # ЦЕНА КЛИЕНТА, ОДНИМ ИСТОЧНИКОМ С ПРЕДЛОЖЕНИЕМ. Прайс занятия здесь не
     # годится: у человека может быть скидка, и взять с него полную цену значит
     # взять лишнее. Считает `booking.client_price` — тот же расчёт, что у кассы.
-    amount = await booking.client_price(
-        db, studio_id=studio_id, client_id=client_id, base_price=int(lesson.price or 0),
-        first_lesson_percent=trial_percent(reservation))
+    if reservation.held_codes:
+        # Клиент назвал при записи промокод, ваучер, баллы или депозит: форма
+        # Stripe — на остаток, тем же расчётом кассы, каким его проведёт
+        # вебхук (`record_income` → `perform_pay` берёт коды с брони сам).
+        from services import booking_checkout
+        amount = await booking_checkout.held_total(db, studio_id, reservation)
+    else:
+        amount = await booking.client_price(
+            db, studio_id=studio_id, client_id=client_id, base_price=int(lesson.price or 0),
+            first_lesson_percent=trial_percent(reservation))
     if amount <= 0:
         return Payable(PayOutcome.STALE)
 

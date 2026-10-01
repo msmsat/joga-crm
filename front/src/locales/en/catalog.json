@@ -125,8 +125,6 @@
       "categoryCreate": "Create category",
       "categoryNewPlaceholder": "e.g. Haircut",
       "type": "Type",
-      "typeGroup": "Group",
-      "typeIndividual": "Individual",
       "price": "Price, {{currency}}",
       "pricePlaceholder": "1200",
       "duration": "Duration, min",
@@ -150,9 +148,6 @@
       "bookingModeResource": "Pick a time",
       "bookingModeEventHint": "Clients sign up for a class you have already scheduled.",
       "bookingModeResourceHint": "The client picks a specialist and a free time; the {{offering}} interval is created on confirmation.",
-      "bookable": "Available for booking",
-      "bookableOn": "Yes",
-      "bookableOff": "No",
       "bufferBefore": "Buffer before",
       "bufferAfter": "Buffer after"
     },

@@ -1,441 +1,116 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useServicePrice } from '../hooks/useServicePrice';
-import HomeGreeting, { type Daypart } from '../components/home/HomeGreeting';
-import StudioRail from '../components/home/StudioRail';
-import StudioStrip from '../components/home/StudioStrip';
-import StudioSheet from '../components/home/StudioSheet';
-import StudioPickerSheet from '../components/home/StudioPickerSheet';
-import NextLessonCard from '../components/home/NextLessonCard';
-import DirectionsRail from '../components/home/DirectionsRail';
-import ServiceScheduleSheet from '../components/schedule/ServiceScheduleSheet';
-import ResourceBookingSheet from '../components/booking/ResourceBookingSheet';
-import { SectionLabel } from '../components/ui/SectionLabel';
-import { ListSkeleton } from '../components/ui/ListSkeleton';
-import { Badge } from '../components/ui/Badge';
-import { Press } from '../components/ui/Press';
-import BookingModal from '../components/modals/BookingModal';
-import PhoneSheet from '../components/modals/PhoneSheet';
-import SubscriptionSheet from '../components/modals/SubscriptionSheet';
-import SuccessModal from '../components/modals/SuccessModal';
-import CoffeeModal from '../components/modals/CoffeeModal';
-import { getLiked, toggleLiked } from '../lib/likes';
-import { bumpLessons, useLessonsVersion } from '../lib/revision';
+import HomeHero, { type BookingStart } from '../components/home/HomeHero';
+import PickSheet, { Initials, type PickItem } from '../components/home/PickSheet';
+import BookingWizardSheet from '../components/wizard/BookingWizardSheet';
+import { STEP_ICONS } from '../components/wizard/stepIcons';
 import { type UserResponse } from '../api/auth';
-import {
-  getMyLessons,
-  getNextLesson,
-  type LessonResponse,
-  type UpcomingLessonResponse,
-} from '../api/lessons';
-import type { Studio, StudioCatalog, StudioService } from '../api/studio';
-import { useTelegram } from '../hooks/useTelegram';
-import { useLessonBooking } from '../hooks/useLessonBooking';
-import { useResourceBooking } from '../hooks/useResourceBooking';
+import type { StudioCatalog } from '../api/studio';
+import { useBookingWizard } from '../hooks/useBookingWizard';
+
+/** Расписание групп, открытое с главной: без фильтра, по мастеру или по услуге. */
+export type ScheduleFilter = { teacher?: number; service?: number };
 
 interface HomeProps {
   user: UserResponse | null;
   catalog: StudioCatalog | null;
-  /**
-   * Номер открытия раздела (App). Уходит ключом в шапку: раздел остаётся
-   * смонтированным при переключении вкладок, а приветствие обязано здороваться
-   * заново при каждом возвращении — иначе «Доброе утро» человек видит один раз
-   * за запуск. Ключ пересобирает ровно шапку, не трогая ни списки, ни запросы.
-   */
-  visitKey: number;
-  /** Переход в другой раздел кабинета — пустая главная должна куда-то вести. */
+  /** Переход в другой раздел кабинета. */
   onNavigate: (tab: string) => void;
   /** Отказ 402 ведёт в покупку абонемента — она живёт во вкладке профиля. */
   onBuySubscription: () => void;
   /** Бронь гостя: поднять существующий вход и продолжить ту же запись. */
   onNeedAuth: (retry: () => void) => void;
+  /** Групповые занятия: вкладка расписания с фильтром. */
+  onOpenSchedule: (filter: ScheduleFilter) => void;
 }
 
-export default function Home({
-  user,
-  catalog,
-  visitKey,
-  onNavigate,
-  onBuySubscription,
-  onNeedAuth,
-}: HomeProps) {
-  const branches = catalog?.branches ?? [];
-  // Филиалов несколько — карточка студии становится выбором (лента с
-  // примагничиванием), один — просто местом. Счётчик у метки нужен только в
-  // первом случае: «1» рядом со «Студії» ничего не считает.
-  const isMultiStudio = branches.length > 1;
-  const isAuthed = Boolean(user);
+/**
+ * Главная: название студии и три входа в запись — время, мастер, услуга.
+ *
+ * Куда ведёт вход, решает механика студии:
+ *   resource — мастер записи (время, услуга и мастер в любом порядке, итог, оплата);
+ *   event    — расписание групп: «время» — вся неделя, «мастер» и «услуга» —
+ *              сначала выбор из списка, потом то же расписание только с ним;
+ *   hybrid   — сначала вопрос «индивидуально или в группе», дальше — как выше.
+ */
+export default function Home({ user, catalog, onNavigate, onBuySubscription, onNeedAuth, onOpenSchedule }: HomeProps) {
+  const { t } = useTranslation();
+  const mode = catalog?.booking_capabilities.booking_mode ?? 'event';
+  const wizard = useBookingWizard({ catalog, onNeedAuth });
+  // Гибридная студия: вход выбран, ждём ответа «индивидуально или в группе».
+  const [asking, setAsking] = useState<BookingStart | null>(null);
+  // Группы: список мастеров или услуг перед расписанием.
+  const [groupPick, setGroupPick] = useState<'master' | 'service' | null>(null);
 
-  const [activeStudioId, setActiveStudioId] = useState<number | null>(branches[0]?.id ?? null);
-  const [liked, setLiked] = useState<number[]>(getLiked);
+  const group = (start: BookingStart) => {
+    if (start === 'time') onOpenSchedule({});
+    else setGroupPick(start);
+  };
 
-  // Лист выбора филиала. Открывается только из направления: клиент уже выбрал,
-  // ЧТО, осталось решить где. Отдельного входа «посмотреть все студии» нет —
-  // для этого есть карточка студии выше, тап по ней открывает саму студию.
-  const [pendingService, setPendingService] = useState<StudioService | null>(null);
-  const [openedStudio, setOpenedStudio] = useState<Studio | null>(null);
-  // HB-19: выбранная услуга хранится ЦЕЛИКОМ — нужен и числовой ID для отбора,
-  // и название для подписи. Смена филиала обязана сбросить выбор: расписание
-  // прошлого филиала не должно оставаться на экране как текущее.
-  const [schedule, setSchedule] = useState<{ service: StudioService; studio: Studio | null } | null>(null);
+  const start = (choice: BookingStart) => {
+    if (mode === 'resource') wizard.open(choice);
+    else if (mode === 'event') group(choice);
+    else setAsking(choice);
+  };
 
-  // Два источника главной карточки: ближайшее занятие студии (предложение,
-  // видно и гостю) и ближайшая СВОЯ бронь клиента. Своя сильнее — см. `hero`.
-  const [studioNext, setStudioNext] = useState<LessonResponse | null>(null);
-  const [myNext, setMyNext] = useState<UpcomingLessonResponse | null>(null);
-  const [isHeroLoading, setIsHeroLoading] = useState(true);
-  // Раздел остаётся смонтированным при переключении вкладок, поэтому о чужих
-  // записях он узнаёт из общей версии, а не из повторного монтирования.
-  const lessonsVersion = useLessonsVersion();
-
-  const { vibrateMedium, vibrateLight } = useTelegram();
-  const { t, i18n } = useTranslation();
-
-  const priceOf = useServicePrice();
-  // Оба запроса разом и один флаг загрузки на двоих: иначе карточка успевала
-  // показать предложение записаться и через мгновение подменялась своей бронью.
-  // Ошибка любого из них — не экран ошибки, а просто отсутствие карточки: без
-  // ближайшего занятия главная показывает вход в расписание.
-  //
-  // Скелет показывается только в первый раз: при перечитывании после записи
-  // карточка остаётся на месте и меняется, когда данные пришли. Мигать скелетом
-  // на экране, который человек уже видит, — худшее из обоих состояний.
-  useEffect(() => {
-    let cancelled = false;
-
-    Promise.all([
-      getNextLesson().catch((err) => {
-        console.error('Не вдалося завантажити найближче заняття:', err);
-        return null;
-      }),
-      // Своих занятий у гостя нет — и ручка ответила бы ему 401.
-      user
-        ? getMyLessons()
-            .then((data) => data.upcoming[0] ?? null)
-            .catch((err) => {
-              console.error('Не вдалося завантажити мої заняття:', err);
-              return null;
-            })
-        : Promise.resolve(null),
-    ]).then(([next, mine]) => {
-      if (cancelled) return;
-      setStudioNext(next);
-      setMyNext(mine);
-      setIsHeroLoading(false);
+  const groupServices = (catalog?.services ?? []).filter((service) => service.booking_mode === 'event');
+  const groupItems: PickItem[] = groupPick === 'master'
+    ? (catalog?.staff ?? []).map((member) => ({ id: member.id, title: member.name, lead: <Initials text={member.name} /> }))
+    : groupServices.map((service) => {
+      const title = t(`lesson.name.${service.name}`, { defaultValue: service.name });
+      return { id: service.id, title, hint: service.price_str, lead: <Initials text={title} /> };
     });
 
-    return () => {
-      cancelled = true;
-    };
-  }, [user, lessonsVersion]);
-
-  // Запись и отмена — общие с расписанием (useLessonBooking). Перечитать после
-  // них и «ближайшее занятие», и открытый лист услуги хук просит сам, подняв
-  // версию: обе величины уже висят на ней.
-  const resource = useResourceBooking({ onNeedAuth, catalog });
-  const booking = useLessonBooking({
-    messages: {
-      bookError: t('home.booking_error'),
-      cancelError: t('home.cancel_booking_error'),
-      cancelSuccess: t('home.cancel_booking_success'),
+  const modeItems: PickItem[] = [
+    {
+      id: 'resource', title: t('hero.mode.resource'), hint: t('hero.mode.resourceHint'),
+      lead: <span className="flex h-12 w-12 items-center justify-center rounded-full bg-brand p-3 text-brand-foreground">{STEP_ICONS.master}</span>,
     },
-    onNeedAuth,
-  });
-
-  // Часть дня, а не готовая строка: шапке нужно и слово, и глиф рядом с ним —
-  // солнце над горизонтом, солнце или месяц. Порог один на двоих.
-  const hour = new Date().getHours();
-  const daypart: Daypart = hour < 12 ? 'morning' : hour < 18 ? 'afternoon' : 'evening';
-
-  const handleLike = (id: number) => {
-    setLiked(toggleLiked(id));
-    vibrateLight();
-  };
-
-  // Направление ведёт в расписание услуги. Студию спрашиваем только тогда,
-  // когда их правда несколько — иначе вопрос без выбора.
-  // HB-20: механика услуги решает, КУДА ведёт направление. Событие открывает
-  // расписание, индивидуальная услуга — выбор времени. Определяется полем
-  // `booking_mode` с сервера, а не по `service_type` и не по вместимости.
-  const openService = (service: StudioService, studio: Studio | null) => {
-    if (service.booking_mode === 'resource') {
-      // Мастера тут ещё не выбирали — в шапке листа стоит диапазон «от–до».
-      // Как только он выберется, сумма станет его (QuoteStep считает её на
-      // сервере, а не здесь).
-      resource.open({ ...service, price_str: priceOf(service, null) },
-                    studio?.id ?? branches[0]?.id ?? null);
-    } else {
-      setSchedule({ service, studio });
-    }
-  };
-
-  const openDirection = (service: StudioService) => {
-    vibrateMedium();
-    if (isMultiStudio) {
-      setPendingService(service);
-    } else {
-      openService(service, branches[0] ?? null);
-    }
-  };
-
-  const pickStudio = (studio: Studio) => {
-    if (!pendingService) return;
-
-    setActiveStudioId(studio.id);
-    openService(pendingService, studio);
-    setPendingService(null);
-  };
-
-  /**
-   * «Сьогодні», «Завтра» — дальше сама дата.
-   *
-   * Раньше здесь стояла проверка «не сегодня → завтра», и занятие через шесть
-   * дней подписывалось «Завтра». Сравниваем календарные дни, а не часы: занятие
-   * в 09:00 завтра отстоит меньше чем на сутки, но это всё равно завтра.
-   */
-  const whenLabel = (startTime: string) => {
-    const start = new Date(startTime);
-    const startDay = new Date(start.getFullYear(), start.getMonth(), start.getDate());
-    const now = new Date();
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const days = Math.round((startDay.getTime() - today.getTime()) / 86_400_000);
-
-    if (days <= 0) return t('home.today');
-    if (days === 1) return t('home.tomorrow');
-    return start.toLocaleDateString(i18n.language, {
-      weekday: 'long',
-      day: 'numeric',
-      month: 'long',
-    });
-  };
-
-  // Своя бронь важнее предложения студии: клиенту нужно его собственное
-  // ближайшее занятие, а не витрина. Гостю выбирать не из чего — у него всегда
-  // предложение. Две карточки подряд намеренно не показываем: главная перестаёт
-  // быть главной, как только на ней два одинаково громких объекта.
-  const hero = myNext ?? studioNext;
-  const isMine = myNext !== null;
-
-  const heroMeta = hero
-    ? [
-        hero.teacher,
-        `${hero.duration_min} ${t('common.minutes')}`,
-        // У своей брони третьим числом идёт коврик — место уже занято, и
-        // свободные места клиента больше не касаются. У предложения — сколько
-        // мест осталось: total_spots минус занятые, а не «всего в зале».
-        isMine && myNext
-          ? t('mylessons.mat_label', { spot: myNext.spot_number })
-          : `${Math.max(0, hero.total_spots - hero.taken_spots.length)} ${t('home.spots')}`,
-      ].join(' · ')
-    : '';
-
-  const heroBadge = isMine ? (
-    myNext?.status === 'pending' ? (
-      <Badge tone="warning">{t('mylessons.awaiting_confirmation')}</Badge>
-    ) : (
-      <Badge tone="success">{t('schedule.booked')}</Badge>
-    )
-  ) : undefined;
-
-  /* Главное занятие экрана: своя бронь, предложение студии или — если ни того,
-     ни другого нет — вход в расписание. Пустое состояние стоит на том же месте
-     и ведёт туда же, куда вела бы карточка: главная без занятия обязана
-     предлагать записаться, а не сообщать, что записей нет. */
-  const lessonBlock = isHeroLoading ? (
-    <>
-      <SectionLabel>{t('home.next_lesson')}</SectionLabel>
-      <ListSkeleton rows={1} />
-    </>
-  ) : hero ? (
-    <>
-      <SectionLabel>{isMine ? t('home.your_lesson') : t('home.next_lesson')}</SectionLabel>
-      <NextLessonCard
-        dayLabel={whenLabel(hero.start_time)}
-        time={hero.time}
-        title={t(`lesson.name.${hero.name}`, { defaultValue: hero.name })}
-        meta={heroMeta}
-        startTime={hero.start_time}
-        badge={heroBadge}
-        onClick={() => booking.openModal(hero)}
-      />
-    </>
-  ) : (
-    <>
-      <SectionLabel>{t('home.no_next_lesson')}</SectionLabel>
-      <div className="px-5">
-        <Press
-          onClick={() => onNavigate('sched')}
-          role="button"
-          tabIndex={0}
-          className="group flex cursor-pointer items-center gap-4 rounded-[22px] bg-card p-5 shadow-soft ring-1 ring-inset ring-brand/25 transition-shadow duration-300 dt:rounded-[26px] dt:p-7 dt:hover:shadow-lift"
-        >
-          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-brand/10 dt:h-12 dt:w-12">
-            <svg viewBox="0 0 24 24" fill="none" stroke="var(--v-brand)" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
-              <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-              <line x1="16" y1="2" x2="16" y2="6" />
-              <line x1="8" y1="2" x2="8" y2="6" />
-              <line x1="3" y1="10" x2="21" y2="10" />
-            </svg>
-          </span>
-
-          <span className="min-w-0 flex-1 text-[14.5px] font-extrabold leading-snug tracking-[-0.01em] text-card-foreground dt:text-[16px]">
-            {t('home.book_now')}
-          </span>
-
-          <svg viewBox="0 0 24 24" fill="none" stroke="var(--v-brand)" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 shrink-0 transition-transform duration-300 dt:group-hover:translate-x-1">
-            <polyline points="9 18 15 12 9 6" />
-          </svg>
-        </Press>
-      </div>
-    </>
-  );
-
-  /* Направления — над ближайшим занятием: сначала «что здесь бывает», потом
-     «ближайшее из этого». Метка без чипов читалась бы поломкой, поэтому у
-     студии без единой услуги блока нет вовсе. */
-  const directionsBlock = (catalog?.services.length ?? 0) > 0 && (
-    <>
-      <SectionLabel>{t('home.directions')}</SectionLabel>
-      <DirectionsRail services={catalog?.services ?? []} onSelect={openDirection} />
-    </>
-  );
-
-  /* Студия у гостя и у клиента весит по-разному. Гостю она отвечает на «что это
-     за место» — значит кадр, название и часы. Клиенту, который сюда ходит, всё
-     это уже известно: ему хватает строки с состоянием, а подробности остались
-     за тем же тапом. Выбор филиала (когда их несколько) остаётся лентой в обоих
-     случаях — это выбор, а не витрина. */
-  const studioBlock =
-    branches.length === 0 ? null : isAuthed && !isMultiStudio ? (
-      <div className="pt-4 dt:pt-8">
-        <StudioStrip
-          studio={branches[0]}
-          onOpen={() => setOpenedStudio(branches[0])}
-          accentColor={catalog?.studio.accent_color ?? '#F9A08B'}
-        />
-      </div>
-    ) : (
-      <>
-        {isMultiStudio ? (
-          <SectionLabel trailing={`${branches.length}`}>{t('home.studios')}</SectionLabel>
-        ) : (
-          <div className="pt-4 dt:pt-8" />
-        )}
-
-        <StudioRail
-          studios={branches}
-          activeId={activeStudioId ?? branches[0]?.id ?? 0}
-          onSelect={setActiveStudioId}
-          liked={liked}
-          onOpen={setOpenedStudio}
-          onToggleLike={handleLike}
-          accentColor={catalog?.studio.accent_color ?? '#F9A08B'}
-        />
-      </>
-    );
+    {
+      id: 'event', title: t('hero.mode.event'), hint: t('hero.mode.eventHint'),
+      lead: <span className="flex h-12 w-12 items-center justify-center rounded-full bg-foreground p-3 text-background">{STEP_ICONS.time}</span>,
+    },
+  ];
 
   return (
     <div className="relative">
-      {/* Один порядок блоков на всех ширинах, но разный у гостя и у клиента:
-          гость читает студию → направления → занятие, клиент — направления →
-          своё занятие → студию. Раскладывать блоки по колонкам на десктопе
-          оказалось хуже: блок без данных повисал в строке с именем клиента, а
-          глазу приходилось читать экран зигзагом вместо сверху вниз. */}
-      <HomeGreeting
-        key={visitKey}
-        greeting={t(`home.greeting_${daypart}`)}
-        daypart={daypart}
-        name={user?.name ?? ''}
-        isGuest={!isAuthed}
+      <HomeHero catalog={catalog} name={user?.name ?? ''} onStart={start} />
+
+      <PickSheet
+        isOpen={asking !== null}
+        onClose={() => setAsking(null)}
+        kicker={catalog?.studio.name}
+        title={t('hero.mode.title')}
+        items={modeItems}
+        empty=""
+        onPick={(id) => {
+          const choice = asking;
+          setAsking(null);
+          if (!choice) return;
+          if (id === 'resource') wizard.open(choice);
+          else group(choice);
+        }}
       />
 
-      {isAuthed ? (
-        <>
-          {directionsBlock}
-          {lessonBlock}
-          {studioBlock}
-        </>
-      ) : (
-        <>
-          {studioBlock}
-          {directionsBlock}
-          {lessonBlock}
-        </>
-      )}
-
-      <StudioPickerSheet
-        isOpen={pendingService !== null}
-        onClose={() => setPendingService(null)}
-        studios={branches}
-        activeId={activeStudioId ?? branches[0]?.id ?? 0}
-        onPick={pickStudio}
+      <PickSheet
+        isOpen={groupPick !== null}
+        onClose={() => setGroupPick(null)}
+        kicker={t('hero.mode.event')}
+        title={groupPick === 'master' ? t('hero.pickMaster') : t('hero.pickService')}
+        items={groupItems}
+        empty={groupPick === 'master' ? t('wizard.noMasters') : t('booking.reason.no_services')}
+        onPick={(id) => {
+          const kind = groupPick;
+          setGroupPick(null);
+          onOpenSchedule(kind === 'master' ? { teacher: Number(id) } : { service: Number(id) });
+        }}
       />
 
-      <StudioSheet
-        isOpen={openedStudio !== null}
-        onClose={() => setOpenedStudio(null)}
-        studio={openedStudio}
-        services={catalog?.services ?? []}
-        isLiked={openedStudio ? liked.includes(openedStudio.id) : false}
-        onToggleLike={() => openedStudio && handleLike(openedStudio.id)}
-        onServicePick={(service) => openService(service, openedStudio)}
-      />
-
-      <ServiceScheduleSheet
-        isOpen={schedule !== null}
-        onClose={() => setSchedule(null)}
-        serviceId={schedule?.service.id ?? null}
-        serviceName={schedule ? t(`lesson.name.${schedule.service.name}`, { defaultValue: schedule.service.name }) : null}
-        studio={schedule?.studio ?? null}
-        refreshKey={lessonsVersion}
-        onLessonPick={booking.openModal}
-      />
-
-      <ResourceBookingSheet flow={resource} layer={2} />
-
-      <BookingModal
-        isOpen={booking.isModalOpen}
-        onClose={booking.closeModal}
-        layer={2}
-        selectedSpot={booking.selectedSpot}
-        onSpotSelect={booking.setSelectedSpot}
-        isProcessing={booking.isProcessing}
-        onPay={booking.pay}
-        onCancel={booking.cancelBooking}
-        lesson={booking.activeLesson}
-        allowRepeat={Boolean(catalog?.rules.repeat_booking_allowed)}
-      />
-
-      <PhoneSheet
-        isOpen={booking.needsPhone}
-        onClose={booking.closePhone}
-        onSaved={booking.retryAfterPhone}
-        layer={3}
-      />
-
-      <SubscriptionSheet
-        isOpen={booking.needsSubscription !== null}
-        onClose={booking.closeSubscription}
-        message={booking.needsSubscription}
-        onBuy={() => { booking.closeSubscription(); onBuySubscription(); }}
-        layer={3}
-      />
-
-      <SuccessModal
-        isOpen={booking.isSuccessOpen}
-        onClose={booking.closeSuccess}
-        lesson={booking.activeLesson}
-        awaitingConfirmation={Boolean(catalog?.rules.confirmation_required)}
-        layer={3}
-      />
-
-      <CoffeeModal
-        isOpen={booking.isCoffeeOpen}
-        onClose={booking.closeCoffee}
-        lessonId={booking.activeLesson?.id ?? null}
-        coffee={booking.coffee}
-        onJoined={bumpLessons}
-        layer={3}
+      <BookingWizardSheet
+        flow={wizard}
+        catalog={catalog}
+        onBuySubscription={onBuySubscription}
+        onMyLessons={() => onNavigate('my')}
       />
     </div>
   );

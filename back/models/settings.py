@@ -425,7 +425,12 @@ class StudioBookingSettings(Base):
     studio_id: Mapped[int] = mapped_column(ForeignKey("studios.id", ondelete="CASCADE"), unique=True, index=True)
 
     booking_active: Mapped[bool] = mapped_column(Boolean, default=True)
-    prefill_on_booking: Mapped[bool] = mapped_column(Boolean, default=True)
+    # «Предоплата при записи». Выключена по умолчанию (решение владельца
+    # продукта, 01.10.2026): включённая, она без подключённой онлайн-оплаты
+    # пускала к записи только с абонементом, и новый клиент новой студии
+    # упирался в «Оформить абонемент» вместо записи. Выключенная — клиент
+    # записывается и платит онлайн или на месте.
+    prefill_on_booking: Mapped[bool] = mapped_column(Boolean, default=False)
     trainer_confirmation_required: Mapped[bool] = mapped_column(Boolean, default=False)
     repeat_booking_allowed: Mapped[bool] = mapped_column(Boolean, default=False)
 

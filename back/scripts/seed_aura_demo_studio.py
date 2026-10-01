@@ -210,7 +210,7 @@ async def seed() -> dict[str, int]:
                 StudioBookingSettings(
                     studio_id=studio.id,
                     booking_active=True,
-                    prefill_on_booking=True,
+                    prefill_on_booking=False,
                     booking_window_days=21,
                     cancellation_deadline_min=180,
                     widget_accent_color="#DFA67B",

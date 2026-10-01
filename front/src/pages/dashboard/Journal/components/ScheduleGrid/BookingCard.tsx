@@ -3,7 +3,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import * as Icons from '../../../../../components/Icons';
 import type { Booking } from '../../types';
-import { formatIndexToTimeStr, isNoShow, type BookingLayout } from '../../utils';
+import { formatIndexToTimeStr, isLessonStarted, isNoShow, type BookingLayout } from '../../utils';
 import type { DragState } from '../../hooks/useDragAndDrop';
 import { bufferStyle, CARD_RADIUS } from './bufferStyle';
 
@@ -80,10 +80,12 @@ export const BookingCard: React.FC<BookingCardProps> = ({
 
   const isSelected = popupBooking?.id === b.id;
   const isDragging = drag?.id === b.id && drag.isDragging;
-  // Индивидуальная запись прошла, а «пришёл» не отметили — неявка: карточка
-  // пыльно-розовая с крестиком. Отмеченная — с галочкой.
+  // Отметили «не пришёл» — неявка: карточка пыльно-розовая с крестиком.
+  // Пришёл — галочка: отмеченный или, с начала занятия, неотмеченный (посещение
+  // по умолчанию «пришёл», utils.attendanceOf).
   const missed = isNoShow(b);
-  const came = isResource && (b.attended ?? 0) > 0;
+  const came = isResource && !missed && b.clients > 0
+    && ((b.attended ?? 0) > 0 || isLessonStarted(b));
   const tone = missed ? NO_SHOW : b.color;
 
   // Буферы услуги — время подготовки и уборки. Мастер в нём занят, хотя

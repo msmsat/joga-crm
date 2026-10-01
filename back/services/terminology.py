@@ -47,6 +47,18 @@ PROFILE_ACTIVITIES = {
     "other": ("other",),
 }
 
+# Направления, где клиент выбирает мастера и свободное время (resource), а не
+# записывается на занятие из расписания (event). Механику студии выставляет
+# онбординг — владелец её не выбирает: стрижку или депиляцию группой не
+# делают, а групповую йогу не бронируют окном у мастера. Всё, чего здесь нет,
+# — event (и `other`: так студия жила до этого правила).
+RESOURCE_ACTIVITIES = frozenset({
+    "personal_training",
+    *PROFILE_ACTIVITIES["beauty"],
+    *PROFILE_ACTIVITIES["recovery"],
+    *PROFILE_ACTIVITIES["relax"],
+})
+
 # Имена профилей до шести разделов (HB-14). Нужны миграции и коду, который
 # может встретить старое значение в уже выданном токене или кэше клиента.
 # generic → other и fitness → sport сохраняют слова буква в букву: generic и
@@ -130,6 +142,29 @@ def profile_for_activities(subtype):
             if activity in items:
                 return profile
     return FALLBACK_PROFILE
+
+
+def booking_mode_for_activities(subtype):
+    """Механика записи студии по направлениям онбординга.
+
+    Все известные направления resource → resource, все event → event,
+    вперемешку («зал + персональные тренировки») → hybrid: тогда механику
+    выбирают у каждой услуги. Неизвестные значения не голосуют; без единого
+    известного — event."""
+    known = [a.strip() for a in (subtype or "").split(",")
+             if any(a.strip() in items for items in PROFILE_ACTIVITIES.values())]
+    modes = {"resource" if a in RESOURCE_ACTIVITIES else "event" for a in known}
+    if len(modes) == 2:
+        return "hybrid"
+    return modes.pop() if modes else "event"
+
+
+def default_service_mode(studio_mode, service_type=None):
+    """Механика новой услуги, когда её не назвали явно: у студии с одной
+    механикой — она же; у смешанной — по формату (индивидуальная → resource)."""
+    if studio_mode in {"event", "resource"}:
+        return studio_mode
+    return "resource" if service_type == "individual" else "event"
 
 
 def space_is_axis(profile, override=None):

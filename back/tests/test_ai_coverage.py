@@ -29,6 +29,8 @@ UI_ONLY: dict[str, str] = {
     # Quotes are bound to the authenticated human and expire after five minutes.
     # Existing AI event commands remain on their own guarded domain entry points.
     "POST /global/booking-quotes": "персональный предпросмотр условий самим клиентом",
+    "POST /global/booking-quotes/{quote_id}/payment-preview": "чек клиента с его кодами в мини-приложении — "
+                                                              "чтение, а не действие",
     "POST /global/bookings": "клиент подтверждает показанные ему условия quote",
     "POST /global/bookings/{reservation_id}/cancel": "клиент отменяет выбранную конкретную бронь",
     "POST /global/bookings/{reservation_id}/rate": "оценка конкретной брони — мнение клиента",
@@ -131,6 +133,7 @@ UI_ONLY: dict[str, str] = {
     # ── Журнал: правка и отметки делаются кликом по карточке занятия
     "PATCH /schedule/lessons/{lesson_id}/cancel": "отмена занятия задевает всех записанных — только руками",
     "PATCH /schedule/reservations/{reservation_id}/attend": "отметка прихода — клик по клиенту в карточке занятия",
+    "PATCH /schedule/reservations/{reservation_id}/attendance": "пришёл/не пришёл — клик по отметке в карточке занятия",
     "PATCH /schedule/reservations/{reservation_id}/confirm": "подтверждение записи — клик в карточке занятия",
 
     # ── Клиенты: связь с человеком, деньги и правка задним числом

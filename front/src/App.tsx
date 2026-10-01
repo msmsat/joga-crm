@@ -28,6 +28,7 @@ import Notifications from './pages/dashboard/Notifications/Notifications';
 import Loyalty from './pages/dashboard/Loyalty/Loyalty';
 import Settings from './pages/dashboard/Settings/Settings';
 import Billing from './pages/dashboard/Billing/Billing';
+import CheckoutPage from './pages/dashboard/Billing/CheckoutPage';
 import PaymentsHistory from './pages/dashboard/Billing/PaymentsHistory';
 import Journal from './pages/dashboard/Journal/Journal';
 import Profile from './pages/dashboard/Profile';
@@ -117,6 +118,10 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+
+        <Route path="/dashboard/billing/checkout" element={
+          <ProtectedRoute requireOnboarding={true}><OwnerRoute><CheckoutPage /></OwnerRoute></ProtectedRoute>
+        } />
 
         {/* 🚀 ДАШБОРД (Каркас + Вложенные страницы) */}
         <Route 

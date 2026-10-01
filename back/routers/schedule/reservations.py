@@ -1,7 +1,7 @@
-from datetime import date, datetime
+from datetime import datetime
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy import func, select, update
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_db
@@ -11,16 +11,16 @@ from models import Client, ClientPayment, Reservation, Studio, User
 from routers.checkout.router import perform_pay
 from schemas.checkout import CheckoutPayRequest
 from schemas.schedule.reservations import (
-    ReservationCreate, ReservationPaymentOptions, ReservationPaymentPreview, ReservationPayRequest,
-    ReservationRead,
+    AttendanceUpdate, ReservationCreate, ReservationPaymentOptions, ReservationPaymentPreview,
+    ReservationPayRequest, ReservationRead,
 )
-from services import booking, reservation_payment
+from services import attendance, booking, reservation_payment
 from services.booking_access import assert_can_book
 from services.booking_http import reject
-from services.booking_rules import assert_staff_bookable, load_rules
+from services.booking_rules import assert_staff_bookable
 from services.notifier import lesson_context, notify
 from services.subscription_charge import (
-    activate_pending_after_visit, notify_subscription_remaining,
+    notify_subscription_remaining,
 )
 from services.schedule_guard import lock_studio
 
@@ -214,79 +214,49 @@ async def confirm_reservation(
     return ReservationRead.model_validate(reservation)
 
 
-@router.patch("/reservations/{reservation_id}/attend", response_model=ReservationRead)
-async def attend_reservation(
+@router.patch("/reservations/{reservation_id}/attendance", response_model=ReservationRead)
+async def set_attendance(
     reservation_id: int,
+    body: AttendanceUpdate,
     ctx: StudioContext = Depends(get_studio_context),
     db: AsyncSession = Depends(get_db),
 ):
-    """Отметить, что клиент пришёл: status=attended + Client.last_visit_date.
+    """Пришёл / не пришёл — отметка студии в карточке занятия.
 
-    Остаток занятий здесь не меняется: занятие списывается в момент записи и
-    возвращается при отмене (services/subscription_charge.py). Но именно приход
-    запускает срок абонемента из очереди — купленный поверх незаконченного ждёт
-    первого реального визита (activate_pending_after_visit).
+    До начала занятия — выбор из двух; после — переключение. Деньги следуют
+    за отметкой сами (services/attendance.mark): «пришёл» после занятия
+    проводит долг наличными, «не пришёл» откатывает автозачисление.
 
     Скоуп занятия (404 чужая студия / 403 тренер на чужом) — get_scoped_lesson.
-    Повторная отметка идемпотентна: статус уже attended — просто возвращаем запись.
     """
     reservation = (await db.execute(
         select(Reservation).where(Reservation.id == reservation_id)
     )).scalar_one_or_none()
     if reservation is None:
         raise HTTPException(status_code=404, detail="Запись не найдена")
-
     lesson = await get_scoped_lesson(reservation.lesson_id, ctx, db)  # 404/403 по студии/роли
+    studio = await db.get(Studio, ctx.studio_id)
+    marked = await attendance.mark(db, studio=studio, lesson=lesson, reservation_id=reservation_id,
+                                   attended=body.attended, role=ctx.role)
+    return ReservationRead.model_validate(marked)
 
-    # ПЕРЕХОД ДЕЛАЕТ ДОМЕН — он же берёт замок студии и знает, из каких
-    # состояний визит вообще возможен: отменённую бронь нельзя воскресить
-    # посещением, а неоплаченный `hold` нельзя объявить состоявшимся визитом
-    # (§4.2). Раньше эта строка стояла здесь голым присваиванием.
-    was_attended = reservation.status == "attended"
-    result = await booking.attend(db, studio_id=ctx.studio_id, reservation_id=reservation_id)
-    if result.outcome is booking.Outcome.ALREADY_CANCELLED:
-        raise HTTPException(status_code=409, detail="Запись отменена — отметить посещение нельзя")
-    if result.outcome is booking.Outcome.PAYMENT_REQUIRED:
-        raise HTTPException(
-            status_code=409,
-            detail="Бронь ждёт оплаты картой — отметить посещение можно после подтверждения оплаты",
-        )
-    if result.outcome is not booking.Outcome.OK:
-        raise HTTPException(status_code=404, detail="Запись не найдена")
 
-    if not was_attended:
-        # last_visit_date нужен retention/рефералке (Эпик 3/4). Обновляем только при
-        # переходе — повторная отметка ничего не трогает (идемпотентность).
-        await db.execute(
-            update(Client)
-            .where(Client.id == reservation.client_id)
-            .values(last_visit_date=date.today())
-        )
-        await activate_pending_after_visit(db, reservation)
-        debt = await _open_debt_of(db, reservation)
+@router.patch("/reservations/{reservation_id}/attend", response_model=ReservationRead)
+async def attend_reservation(
+    reservation_id: int,
+    ctx: StudioContext = Depends(get_studio_context),
+    db: AsyncSession = Depends(get_db),
+):
+    """Отметить, что клиент пришёл. Прежний адрес той же отметки — для старых
+    клиентов API; правила одни (services/attendance.mark).
 
-        await db.commit()
-        await db.refresh(reservation)
-
-        # «Запрос отзыва» — тумблер на странице «Онлайн-запись»: студия может
-        # не хотеть дёргать клиента после каждого визита.
-        if (await load_rules(db, ctx.studio_id)).review_request:
-            await notify(db, ctx.studio_id, "client", "c8",
-                         {"client_id": reservation.client_id, "lesson_name": lesson.name})
-
-        # Клиент пришёл, а занятие не оплачено — момент, когда долг перестаёт
-        # быть бумажным: деньги должны были перейти из рук в руки. Тумблера у
-        # c10 нет отдельного от матрицы уведомлений — владелец гасит его там,
-        # если не хочет напоминать клиентам о деньгах письмом.
-        if debt is not None:
-            await notify(db, ctx.studio_id, "client", "c10", {
-                "client_id": reservation.client_id,
-                "lesson_name": lesson.name,
-                # Число, а не строка: валюту подставляет сам шаблон
-                # (services/notifier._render → _fmt_amount).
-                "amount": debt.amount,
-            })
-    return ReservationRead.model_validate(reservation)
+    Остаток занятий здесь не меняется: занятие списывается в момент записи и
+    возвращается при отмене (services/subscription_charge.py). Но именно приход
+    запускает срок абонемента из очереди — купленный поверх незаконченного ждёт
+    первого реального визита (activate_pending_after_visit).
+    Повторная отметка идемпотентна.
+    """
+    return await set_attendance(reservation_id, AttendanceUpdate(attended=True), ctx, db)
 
 
 async def _open_debt_of(db: AsyncSession, reservation: Reservation) -> ClientPayment | None:

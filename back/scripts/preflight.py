@@ -494,6 +494,42 @@ async def check_stripe_payment_methods() -> None:
             )
 
 
+async def check_billing_checkout() -> None:
+    """Velora branding and a dedicated wallet configuration, in the current key mode."""
+    import stripe
+    from services import stripe_connect, stripe_checkout_branding as branding, stripe_env
+
+    configuration = os.getenv("BILLING_PAYMENT_METHOD_CONFIGURATION", "").strip()
+    if not configuration:
+        _warn("BILLING_PAYMENT_METHOD_CONFIGURATION не задан — подготовьте оплату командой python -m scripts.configure_billing_checkout --apply")
+        return
+    if not os.getenv("BILLING_CHECKOUT_LOGO_FILE", "").strip():
+        _warn("логотип Velora для Checkout не загружен — BILLING_CHECKOUT_LOGO_FILE не задан")
+    if not stripe_connect.configured():
+        return
+    try:
+        config = await asyncio.to_thread(stripe.PaymentMethodConfiguration.retrieve, configuration)
+    except Exception:
+        _err("конфигурация оплаты Velora недоступна текущему ключу Stripe — запустите configure_billing_checkout в нужном test/live режиме")
+        return
+    expected = stripe_env.expects_livemode()
+    if expected is not None and config.livemode != expected:
+        _err("конфигурация оплаты Velora относится к другому режиму Stripe")
+    if not config.active:
+        _err("конфигурация оплаты Velora выключена")
+    if config.card.display_preference.value != "on" or not config.card.available:
+        _err("в конфигурации оплаты Velora выключены карты")
+    if config.link.display_preference.value != "off":
+        _err("в конфигурации оплаты Velora включён Link — запустите configure_billing_checkout --apply")
+    for method in ("apple_pay", "google_pay"):
+        item = getattr(config, method)
+        if item.display_preference.value != "on" or not item.available:
+            _warn(f"{method} недоступен конфигурации Velora — проверьте Payment methods в Stripe")
+    if not config.paypal.available:
+        message = "PayPal ещё не активирован: Settings → Payment methods → PayPal; для подписок нужны recurring payments"
+        (_err if branding.paypal_invoices_enabled() else _warn)(message)
+
+
 async def check_tax_mode() -> None:
     """Ручной налоговый режим: готова ли политика и заведены ли ставки.
 
@@ -1264,6 +1300,7 @@ async def main(sync: bool) -> int:
     await check_ai_credits()
     await check_stripe_account()
     await check_stripe_payment_methods()
+    await check_billing_checkout()
     await check_tax_mode()
     await check_stripe_tax()
     await check_tax_registrations()

@@ -111,11 +111,21 @@ class ReservationCreate(BaseSchema):
     lesson_id: int
 
 
+class AttendanceUpdate(BaseSchema):
+    """Отметка студии: пришёл (true) или не пришёл (false). Деньги следуют за
+    ней сами (services/attendance.mark)."""
+    attended: bool
+
+
 class ReservationRead(BaseSchema):
     id: int
     client_id: int
     lesson_id: int
     spot_number: Optional[int] = None
     status: str
+    # Явная отметка «не пришёл» (статус при ней остаётся active).
+    no_show: bool = False
+    # Долг погашен системой по окончании занятия — «не пришёл» откатит его сам.
+    auto_paid: bool = False
     booking_channel: Optional[str] = None
     created_at: datetime

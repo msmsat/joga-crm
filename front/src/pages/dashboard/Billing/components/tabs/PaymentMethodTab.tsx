@@ -1,11 +1,10 @@
 import { useTranslation } from 'react-i18next';
 import '../../Billing.module.css';
 import type {
-  BillingPlan, PaymentCard, AutopaySettings, BillingProfile, BillingProfileInput,
+  BillingPlan, PaymentCard, AutopaySettings,
 } from '../../../../../api/billing/billing.types';
 import { Button, Switch } from '../../../../../components/ui/index';
 import { CheckIcon, ShieldIcon, CreditCardIcon, BankIcon } from '../ui/BillingIcons';
-import BillingProfileCard from '../sections/BillingProfileCard';
 
 const SECURITY_KEYS = ['pciDss', 'secure3d', 'noStorage', 'autoLink'] as const;
 const AUTOPAY_FIELDS = [
@@ -20,24 +19,13 @@ interface Props {
   loaded: boolean;
   plan: BillingPlan | null;
   setAutopay: (field: keyof AutopaySettings, value: boolean) => void;
-  /** Портал Stripe: фактуры и способ оплаты. Реквизиты теперь наши, см. profile. */
+  /** Портал Stripe: фактуры и способ оплаты. */
   openPortal: () => void;
   portalBusy: boolean;
-  /** Реквизиты плательщика с аккаунта — общие для всех студий владельца. */
-  profile: BillingProfile | null;
-  profileSaving: boolean;
-  saveProfile: (body: BillingProfileInput) => Promise<unknown>;
 }
 
-// Реквизиты плательщика собирает НАША форма (BillingProfileCard) и хранит на
-// АККАУНТЕ: у второй студии того же владельца адрес тот же. Отсюда они уезжают в
-// Stripe Customer при оформлении (checkout._ensure_customer), и страница оплаты
-// показывает их готовыми — номер НДС она не спрашивает вовсе, иначе там можно
-// было бы вписать любой мимо нашей сверки с VIES. Кнопка в портал Stripe
-// осталась, но уже только для фактур и способа оплаты.
 export default function PaymentMethodTab({
   cards, loaded, plan, setAutopay, openPortal, portalBusy,
-  profile, profileSaving, saveProfile,
 }: Props) {
   const { t, i18n } = useTranslation('billing');
   const dateLocale = i18n.language || 'en';
@@ -118,12 +106,6 @@ export default function PaymentMethodTab({
           </div>
         </div>
 
-        {/* Реквизиты плательщика — НАШИ, с аккаунта: адрес и VAT вводятся в форме
-            перед первой оплатой и правятся здесь же. */}
-        <BillingProfileCard profile={profile} saving={profileSaving} save={saveProfile} />
-
-        {/* Портал Stripe остаётся, но уже как второстепенная ссылка: там живут
-            фактуры и способ оплаты, а не реквизиты. */}
         <div style={{ marginTop: '12px', padding: '18px 22px', background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap' }}>
           <div style={{ minWidth: 0, flex: '1 1 320px', fontSize: '12px', color: 'var(--muted)', lineHeight: 1.6 }}>
             {t('method.portal.subtitle')}

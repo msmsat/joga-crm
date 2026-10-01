@@ -22,6 +22,10 @@
  */
 const KEY = 'velora.session';
 const ACCOUNTS = 'velora.accounts';
+// Человек сам вышел из аккаунта. В Telegram без этой отметки приложение на
+// следующем же старте вошло бы снова молча (подпись initData — тот же человек),
+// и кнопка «Выйти» выглядела бы сломанной.
+const SIGNED_OUT = 'velora.signedOut';
 
 export type Session = {
   token: string;
@@ -127,6 +131,8 @@ function announceSessionChange() {
 /** Вход или переключение: сессия становится активной и поднимается в списке. */
 export function saveSession(session: Session) {
   localStorage.setItem(KEY, JSON.stringify(session));
+  // Любой вход — и почтой, и кнопкой Telegram — отменяет прошлый выход.
+  localStorage.removeItem(SIGNED_OUT);
   announceSessionChange();
   const id = accountId(session.token);
   writeAccounts([session, ...getAccounts().filter((a) => accountId(a.token) !== id)]);
@@ -144,4 +150,28 @@ export function clearSession() {
     const id = accountId(active.token);
     writeAccounts(getAccounts().filter((a) => accountId(a.token) !== id));
   }
+}
+
+/** Человек вышел сам — молчаливый вход через Telegram ждёт его явного «Войти». */
+export const isSignedOut = (): boolean => localStorage.getItem(SIGNED_OUT) === '1';
+
+/**
+ * «Выйти» из профиля и меню аккаунта. Аккаунт уходит с устройства совсем.
+ *
+ * Остался другой аккаунт ЭТОЙ студии — кабинет продолжается под ним, и это не
+ * выход из приложения: экран входа не нужен. Карточка чужой студии на эту роль
+ * не годится — в текущей студии она не действует. `studioId` неизвестен
+ * (каталог ещё не пришёл) — годится любой оставшийся, как и раньше.
+ *
+ * Возвращает true, если кабинет продолжился под другим аккаунтом.
+ */
+export function signOut(studioId?: number): boolean {
+  clearSession();
+  const next = getAccounts().find((account) => studioId === undefined || studioOf(account.token) === studioId);
+  if (next) {
+    saveSession(next);
+    return true;
+  }
+  localStorage.setItem(SIGNED_OUT, '1');
+  return false;
 }

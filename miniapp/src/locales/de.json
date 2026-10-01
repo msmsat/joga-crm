@@ -14,7 +14,9 @@
     "change_email": "E-Mail ändern",
     "cancel": "Abbrechen",
     "code_send_error": "Der Code konnte nicht gesendet werden",
-    "code_invalid": "Falscher Code"
+    "code_invalid": "Falscher Code",
+    "telegram": "Mit Telegram anmelden",
+    "or_email": "oder per E-Mail"
   },
   "studio": {
     "open": "Geöffnet",
@@ -109,7 +111,9 @@
     "used_classes": "{{used}} von {{total}} genutzt",
     "left_classes": "Noch {{left}} von {{total}}",
     "expires": "läuft ab am {{date}}",
-    "frozen": "Pausiert · bis {{date}}"
+    "frozen": "Pausiert · bis {{date}}",
+    "logout_title": "Abmelden?",
+    "logout_hint": "Ihre Buchungen und Ihr Abo bleiben im Studio — Sie können sich jederzeit wieder anmelden."
   },
   "mylessons": {
     "title": "Meine Kurse",
@@ -489,7 +493,10 @@
       "VERSION_CONFLICT": "Die Buchung wurde gerade geändert. Bitte öffnen Sie sie erneut.",
       "NOT_FOUND": "Diese Leistung oder Buchung wurde nicht gefunden. Bitte laden Sie die Seite neu.",
       "BOOKING_CLOSED": "Die Online-Buchung ist gerade geschlossen.",
-      "UNKNOWN": "Die Buchung konnte nicht erstellt werden. Bitte erneut versuchen."
+      "UNKNOWN": "Die Buchung konnte nicht erstellt werden. Bitte erneut versuchen.",
+      "AMOUNT_CHANGED": "Der Betrag hat sich geändert — prüfen Sie den Beleg und bestätigen Sie erneut.",
+      "NOTHING_TO_PAY": "Online gibt es nichts zu zahlen — buchen Sie mit Zahlung vor Ort.",
+      "PHONE_REQUIRED": "Geben Sie Ihre Telefonnummer an, um zu buchen."
     }
   },
   "units": {
@@ -533,5 +540,99 @@
       "event": "Gruppenplan"
     },
     "priceRange": "von {{from}} bis {{to}}"
+  },
+  "wizard": {
+    "title": "Buchung",
+    "hint": "Wählen Sie Zeit, Leistung und Spezialist — in beliebiger Reihenfolge",
+    "tabs": {
+      "time": "Zeit",
+      "service": "Leistung",
+      "master": "Spezialist",
+      "summary": "Übersicht"
+    },
+    "titles": {
+      "time": "Wann passt es Ihnen?",
+      "service": "Welche Leistung?",
+      "master": "Zu wem?",
+      "summary": "Buchung prüfen"
+    },
+    "loadError": "Daten konnten nicht geladen werden",
+    "nextDay": "Nächster Tag",
+    "freeAt": "Frei um {{time}}",
+    "noServicesAt": "Um {{time}} sind keine Leistungen frei",
+    "otherTime": "Andere Zeit wählen",
+    "noMasters": "Kein Spezialist verfügbar",
+    "anyMaster": "Beliebiger Spezialist",
+    "anyMasterHint": "Wir wählen den ersten freien",
+    "notChosen": "Nicht gewählt",
+    "change": "Ändern",
+    "choose": "Wählen",
+    "chooseAll": "Zeit, Leistung und Spezialist wählen",
+    "book": "Buchen",
+    "doneTitle": "Fertig",
+    "toMyLessons": "Meine Buchungen",
+    "chooseBranch": "Standort wählen",
+    "available": "frei: {{count}}",
+    "remaining": "noch offen: {{count}}",
+    "ready": "Alles ausgewählt",
+    "until": "bis {{time}}",
+    "earlier": "Früher",
+    "later": "Später"
+  },
+  "hero": {
+    "kicker": "Online-Buchung",
+    "welcome": "Willkommen",
+    "welcomeBack": "Willkommen zurück, {{name}}",
+    "branches": "Studios: {{count}}",
+    "chooseHow": "Womit beginnen wir die Buchung?",
+    "start": {
+      "time": "Zeit",
+      "master": "Spezialist",
+      "service": "Leistung"
+    },
+    "startHint": {
+      "time": "Passenden Tag und Uhrzeit finden",
+      "master": "Bei Ihrem Spezialisten buchen",
+      "service": "Auswählen, worauf Sie Lust haben"
+    },
+    "mode": {
+      "title": "Wie möchten Sie trainieren?",
+      "resource": "Einzeln",
+      "resourceHint": "Nur Sie und der Spezialist",
+      "event": "In der Gruppe",
+      "eventHint": "Kurse laut Stundenplan"
+    },
+    "pickMaster": "Spezialist wählen",
+    "pickService": "Kurs wählen"
+  },
+  "pay": {
+    "kicker": "Zahlung",
+    "title": "Wie möchten Sie zahlen?",
+    "payAmount": "Bezahlen",
+    "venue": "Vor Ort",
+    "venueHint": "Bar oder mit Karte im Studio",
+    "online": "Online",
+    "onlineHint": "Jetzt per Karte, über Stripe",
+    "onlineUnavailable": "Das Studio nimmt noch keine Online-Zahlungen an",
+    "nothingOnline": "Nichts zu zahlen — alles gedeckt",
+    "codes": "Rabatte und Prämien",
+    "voucherPlaceholder": "Gutschein oder Geschenkkarte",
+    "promoOutweighed": "Der Promo-Code ist gültig, aber Sie haben bereits einen besseren Rabatt — Rabatte sind nicht kombinierbar",
+    "useBonuses": "Punkte einlösen · {{value}}",
+    "useDeposit": "Guthaben nutzen: {{value}}",
+    "pointsToEarn": "Punkte, die Sie erhalten: {{count}}",
+    "venueNote": "Rabatte bleiben an der Buchung — im Studio zahlen Sie nur den Endbetrag.",
+    "confirm": "Buchen",
+    "confirmVenue": "Buchen · {{amount}} vor Ort",
+    "goToPayment": "Zur Zahlung · {{amount}}",
+    "discount": {
+      "studio": "Studio-Rabatt",
+      "offer": "Persönliches Angebot",
+      "promo": "Promo-Code",
+      "referral": "Empfehlungsrabatt",
+      "first_lesson": "Erste Stunde",
+      "manual": "Rabatt"
+    },
+    "prepayOnly": "Das Studio bittet um Vorauszahlung"
   }
 }

@@ -98,6 +98,7 @@ EXPECTED: dict[tuple[str, str], tuple[str, ...]] = {
     ("POST", "/schedule/reservations"): ("*studio",),                  # тело: тренеру 403
     ("PATCH", "/schedule/reservations/{reservation_id}/cancel"): ("*studio",),  # тело: тренеру 403
     ("PATCH", "/schedule/reservations/{reservation_id}/attend"): ("*studio",),  # тренер отмечает приход на СВОЁМ
+    ("PATCH", "/schedule/reservations/{reservation_id}/attendance"): ("*studio",),  # пришёл/не пришёл на СВОЁМ; снять автозачисление тренеру 403
     ("PATCH", "/schedule/reservations/{reservation_id}/confirm"): ("*studio",),  # одобрение заявки из мини-аппа
     ("POST", "/schedule/reservations/{reservation_id}/pay"): ("*studio",),     # тело: тренеру 403 — кассу он не ведёт
 

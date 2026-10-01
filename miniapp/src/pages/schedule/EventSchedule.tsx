@@ -72,13 +72,16 @@ interface EventScheduleProps {
   focusServiceId?: number;
   /** Тренер из QR-кода студии: расписание сразу отфильтровано по нему. */
   focusStaffId?: number;
+  /** Выбор с главной: мастер или услуга (или ничего — всё расписание). `nonce`
+   *  растёт с каждым выбором — тот же мастер, выбранный снова, снова применяется. */
+  homeFilter?: { teacher?: number; service?: number; nonce: number };
 }
 
 /**
  * Расписание групповых занятий по дням (booking_mode `event`, и групповой
  * раздел `hybrid`). Индивидуальная запись живёт отдельно — pages/booking.
  */
-export default function EventSchedule({ catalog, onBuySubscription, onNeedAuth, segment, focusLesson, focusServiceId, focusStaffId }: EventScheduleProps) {
+export default function EventSchedule({ catalog, onBuySubscription, onNeedAuth, segment, focusLesson, focusServiceId, focusStaffId, homeFilter }: EventScheduleProps) {
   const branches = catalog?.branches ?? [];
   const isMultiStudio = branches.length > 1;
   const rules = catalog?.rules ?? null;
@@ -143,6 +146,14 @@ export default function EventSchedule({ catalog, onBuySubscription, onNeedAuth, 
     focusedStaff.current = true;
     setFilters((current) => ({ ...current, teacher: focusStaffId }));
   }, [focusStaffId]);
+  // Выбор с главной заменяет фильтр мастера и услуги целиком: человек выбрал
+  // «к Анне» — расписание только её, без прошлой услуги в фильтре. Правка
+  // состояния в рендере: фильтр обязан совпасть с выбором в первом же кадре.
+  const [appliedHome, setAppliedHome] = useState(0);
+  if (homeFilter && homeFilter.nonce !== appliedHome) {
+    setAppliedHome(homeFilter.nonce);
+    setFilters({ ...filters, service: homeFilter.service ?? null, teacher: homeFilter.teacher ?? null });
+  }
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   // Каталог мог перечитаться без одного из филиалов — выбранным он не считается.
   const studioIds = knownBranches(filters.studioIds, branches.map((branch) => branch.id));

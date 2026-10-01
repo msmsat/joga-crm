@@ -8,6 +8,7 @@ import type { BookedClient, LessonDetail } from '../../../../../api/schedule/sch
 import { formatMoney } from '../../../../../lib/money';
 import { useRoleLabel } from '../../../../../hooks/useBusinessTerms';
 import type { Booking } from '../../types';
+import { attendanceOf, isLessonStarted } from '../../utils';
 import './lessonCard.css';
 import { MasterCompensation } from './MasterCompensation';
 
@@ -88,15 +89,17 @@ export function LessonFacts({ booking, detail, booked, trainerName, currency }: 
         </div>
       )}
 
-      {booked && booked.length > 0 && <MoneyStrip booked={booked} currency={currency} />}
+      {booked && booked.length > 0 && <MoneyStrip booked={booked} started={isLessonStarted(booking)} currency={currency} />}
     </div>
   );
 }
 
 /** Пришли, оплачено, долг — по записанным на это занятие. */
-function MoneyStrip({ booked, currency }: { booked: BookedClient[]; currency?: string }) {
+function MoneyStrip({ booked, started, currency }: { booked: BookedClient[]; started: boolean; currency?: string }) {
   const { t } = useTranslation('journal');
-  const attended = booked.filter(c => c.status === 'attended').length;
+  // Пришёл — по той же отметке, что у строки записанного: с начала занятия
+  // неотмеченный считается пришедшим (utils.attendanceOf).
+  const attended = booked.filter(c => attendanceOf(c, started) === 'came').length;
   const paid = booked.reduce((sum, c) => sum + (c.paid_amount ?? 0), 0);
   const debt = booked.reduce((sum, c) => sum + c.debt, 0);
   return (

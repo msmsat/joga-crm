@@ -2,7 +2,7 @@ import BusinessTermsProvider from './components/BusinessTermsProvider';
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import Home from './pages/home';
+import Home, { type ScheduleFilter } from './pages/home';
 import Shedule from './pages/shedule';
 import MyLessons from './pages/mylessons';
 import Profile from './pages/profile';
@@ -19,7 +19,7 @@ import { useIsDesktop } from './hooks/useIsDesktop';
 import { visibleNavItems } from './components/navItems';
 import { readDeepLink, readEntry, readTab, rememberStudio, setStudioRef, type DeepLink } from './lib/entry';
 import { applyBranding, applyDefaultLanguage } from './lib/branding';
-import { getSession, saveSession, clearSession, reconcileSession } from './lib/session';
+import { getSession, saveSession, clearSession, reconcileSession, isSignedOut } from './lib/session';
 import { startPresence } from './lib/presence';
 import './App.css';
 
@@ -74,9 +74,6 @@ export default function App() {
   // анимаций входа: тап по меню на секунду превращался в мигание. Списком, а не
   // Set: он попадает в разметку, и React нужен стабильный порядок ключей.
   const [visited, setVisited] = useState<string[]>(() => [activeTab]);
-  // Сколько раз раздел открывали. Нужен ровно одному месту — шапке главной,
-  // которая здоровается заново на каждом возвращении (см. `switchTab`).
-  const [visits, setVisits] = useState<Record<string, number>>({});
   // Код сертификата, с которым пришли из Клуба. Профиль забирает его, открывает
   // покупку и сбрасывает — иначе тот же сертификат подставился бы и в следующий
   // раз, когда клиент просто зашёл купить абонемент.
@@ -194,9 +191,11 @@ export default function App() {
         setNoStudio(true);
         setIsLoading(false);
         return;
-      } else if (tg?.initData) {
+      } else if (tg?.initData && !isSignedOut()) {
         // Telegram — молчаливый вход: подпись initData уже доказала личность,
         // спрашивать почту сверху было бы лишним экраном на ровном месте.
+        // Кроме случая, когда человек сам вышел: тогда он гость, пока не
+        // нажмёт «Войти через Telegram» на экране входа.
         try {
           const { token, user: authedUser } = await authTelegram({
             init_data: tg.initData,
@@ -225,13 +224,6 @@ export default function App() {
   const switchTab = (tab: string) => {
     if (tg) tg.HapticFeedback.impactOccurred('light');
     setActiveTab(tab);
-    // Счётчик открытий этого раздела. Разделы остаются смонтированными, а
-    // приветствие на главной обязано здороваться заново на каждом возвращении —
-    // номер открытия уходит вниз ключом и пересобирает одну только шапку.
-    // Растёт ровно у того раздела, который открывают, и ровно в тот момент,
-    // когда он становится видимым: подними счётчик у спрятанного — и анимация
-    // проиграется в display:none, то есть в никуда.
-    setVisits((counts) => ({ ...counts, [tab]: (counts[tab] ?? 0) + 1 }));
     // Новый раздел иначе открывался бы на той же высоте, где бросили прошлый.
     // Прокручиваемое — разное: на десктопе документ, на телефоне оболочка
     // (`.app-scroll`, см. index.css). Зовём оба: лишний вызов — пустой ход,
@@ -262,6 +254,13 @@ export default function App() {
   /** Бронь гостя упёрлась во вход. Продолжение кладём в состояние — обёртка
    *  обязательна, иначе setState принял бы функцию за апдейтер. */
   const requireAuth = (retry: () => void) => setPendingBooking(() => retry);
+
+  /** Групповые занятия с главной: расписание с выбранным мастером или услугой. */
+  const [homeFilter, setHomeFilter] = useState<(ScheduleFilter & { nonce: number }) | undefined>();
+  const openSchedule = (filter: ScheduleFilter) => {
+    setHomeFilter((current) => ({ ...filter, nonce: (current?.nonce ?? 0) + 1 }));
+    switchTab('sched');
+  };
 
   // 4️⃣ ПОКА ИДЕТ ЗАПРОС К БАЗЕ ДАННЫХ — ПОКАЗЫВАЕМ ЗАГЛУШКУ-ЛОАДЕР
   if (isLoading) {
@@ -360,10 +359,10 @@ export default function App() {
       <Home
         user={user}
         catalog={catalog}
-        visitKey={visits.home ?? 0}
         onNavigate={switchTab}
         onBuySubscription={goBuySubscription}
         onNeedAuth={requireAuth}
+        onOpenSchedule={openSchedule}
       />
     ),
     sched: (
@@ -374,6 +373,7 @@ export default function App() {
         focusLesson={deepLink.lessonId != null ? { id: deepLink.lessonId, date: deepLink.date } : undefined}
         focusServiceId={deepLink.serviceId}
         focusStaffId={deepLink.staffId}
+        homeFilter={homeFilter}
       />
     ),
     my: <MyLessons catalog={catalog} />,
@@ -446,20 +446,19 @@ export default function App() {
               занимал около секунды видимого движения, и это читалось как
               подтормаживание, а не как переход. Открытые разделы теперь просто
               остаются в DOM (`visited`), а вместе с ними остаются на местах уже
-              загруженные списки. Проигрывать анимацию входа заново стоит только
-              тому, ради чего она написана: приветствие главной здоровается на
-              каждом возвращении (`visits` → ключ шапки), списки — нет.
+              загруженные списки.
 
               Одна колонка сверху вниз. На десктопе у неё есть потолок ширины и
               она стоит по центру: карточка в 1600px — это строка текста,
               прижатая к левому краю, с полем пустоты справа. Нижний отступ на
               телефоне — под плавающую капсулу меню, иначе про неё обязан
-              помнить каждый экран. */}
+              помнить каждый экран. Величина — `--nav-clearance` (index.css):
+              высота капсулы, её подъём и безопасная зона снизу. */}
           {visited.map((tab) => (
             <div
               key={tab}
               hidden={tab !== screenTab}
-              className="mx-auto w-full pb-32 dt:max-w-[980px] dt:px-8 dt:pb-20"
+              className="mx-auto w-full pb-[var(--nav-clearance)] dt:max-w-[980px] dt:px-8 dt:pb-20"
             >
               {screens[tab]}
             </div>

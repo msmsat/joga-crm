@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import {
-  accountId, clearSession, getAccounts, getSession, saveSession, studioOf, type Session,
+  accountId, getAccounts, getSession, saveSession, signOut, studioOf, type Session,
 } from '../lib/session';
 import { cn } from '../lib/utils';
 
@@ -74,13 +74,11 @@ export default function AccountMenu({ userName, onAddAccount, studioId }: Props)
     window.location.reload();
   };
 
+  // Остались другие аккаунты ЭТОЙ студии — кабинет продолжается под следующим
+  // (lib/session.signOut). Перезагрузка в обоих случаях: кабинет загружен под
+  // прежний токен.
   const logout = () => {
-    clearSession();
-    // Остались другие аккаунты ЭТОЙ студии — выход из этого не должен выкидывать
-    // на экран входа: кабинет продолжается под следующим. Карточка чужой студии
-    // на эту роль не годится — в текущей студии она не действует.
-    const next = getAccounts().find(here);
-    if (next) saveSession(next);
+    signOut(studioId);
     window.location.reload();
   };
 

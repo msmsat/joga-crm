@@ -139,6 +139,19 @@ def test_create_studio_with_defaults_does_not_touch_is_onboarded_or_commit():
     assert not [x for x in db.added if type(x).__name__ == "StudioBillingPlan"]
 
 
+def test_activity_sets_booking_mode_and_strict_schedule():
+    """Механику записи владелец не выбирает: её задаёт направление. Resource
+    без строгого расписания сервер не продаёт — поэтому оно включается тут же."""
+    cases = {
+        "yoga,pilates": ("event", False),
+        "barbershop": ("resource", True),
+        "gym,personal_training": ("hybrid", True),
+    }
+    for activity, (mode, strict) in cases.items():
+        studio = _run(O._create_studio_with_defaults(_User(), _onboarding_data(activityType=activity), _DB()))
+        assert (studio.booking_mode, studio.strict_schedule_enabled) == (mode, strict), activity
+
+
 # ─── POST /auth/studios ────────────────────────────────────────────────────
 
 def test_onboarding_creates_first_catalog_branch_with_contacts_and_hours():
@@ -286,6 +299,7 @@ def test_run_studio_onboarding():
     test_validate_rejects_missing_region_settings()
     test_validate_accepts_well_formed_data()
     test_create_studio_with_defaults_does_not_touch_is_onboarded_or_commit()
+    test_activity_sets_booking_mode_and_strict_schedule()
     test_create_studio_endpoint_works_even_when_not_yet_onboarded()
     test_create_studio_endpoint_works_when_already_onboarded()
     test_list_studios_marks_current_and_defaults_missing_counts_to_zero()

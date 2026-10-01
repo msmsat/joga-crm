@@ -431,7 +431,7 @@ export default function Journal() {
       // «Создать услугу?» закрывались на первом же mousedown в любом месте:
       // попап исчезал вместе с ними, и кнопка не успевала получить click —
       // «нажал скопировать, окно закрылось, ничего не скопировалось».
-      if (target.closest('.v-overlay, .modal-overlay')) return;
+      if (target.closest('.v-overlay, .modal-overlay, .lc-attend-pop')) return;
 
       // 2. Если кликнули по любой карточке занятия — игнорируем! 
       if (target.closest('.booking-card')) return;

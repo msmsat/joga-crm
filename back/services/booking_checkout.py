@@ -17,7 +17,7 @@
 from fastapi import HTTPException
 
 from models import ClientPayment, Reservation
-from services import booking, booking_quotes as quotes, reservation_payment
+from services import booking, booking_quotes as quotes, held_codes, reservation_payment
 
 
 def _code(value):
@@ -41,7 +41,7 @@ async def _quote(db, actor, terms, domain, codes, certificate_code):
     )
     return await price(db, actor.studio_id, actor.client_id, package, "lesson",
                        _code(codes.promo_code), codes.use_bonuses, codes.use_deposit, certificate_code,
-                       manual_percent=codes.manual_discount_percent)
+                       manual_percent=getattr(codes, "manual_discount_percent", None))
 
 
 async def preview(db, actor: quotes.Actor, quote_id: str, codes) -> dict:
@@ -85,7 +85,8 @@ async def preview(db, actor: quotes.Actor, quote_id: str, codes) -> dict:
     return {
         **result,
         **await reservation_payment.check_lines(
-            db, actor.studio_id, actor.client_id, quote, manual_percent=codes.manual_discount_percent,
+            db, actor.studio_id, actor.client_id, quote,
+            manual_percent=getattr(codes, "manual_discount_percent", None),
             promo_code=_code(codes.promo_code), certificate_error=certificate_error),
     }
 
@@ -149,3 +150,87 @@ async def pay_cash(db, actor: quotes.Actor, booked: dict, payment) -> None:
         if isinstance(exc.detail, dict) and exc.detail.get("code") == "checkout.amount_changed":
             quotes.reject("AMOUNT_CHANGED")
         raise
+
+
+async def _lesson_quote(db, studio_id: int, reservation: Reservation, codes: held_codes.Codes):
+    """Касса над уже созданной бронью: цена занятия этому клиенту с его кодами."""
+    from routers.checkout.router import _get_client_package, _quote as price
+
+    await db.flush()
+    _client, package = await _get_client_package(
+        db, studio_id, reservation.client_id, reservation.lesson_id, "lesson",
+        reservation_id=reservation.id)
+    return await price(db, studio_id, reservation.client_id, package, "lesson",
+                       codes.promo_code, codes.use_bonuses, codes.use_deposit, codes.certificate_code,
+                       hold_owner=reservation.id)
+
+
+async def held_total(db, studio_id: int, reservation: Reservation) -> int:
+    """Сумма формы Stripe за бронь, которая держит коды (services/booking_payment.pay_link)."""
+    quote = await _lesson_quote(db, studio_id, reservation, held_codes.codes_of(reservation))
+    return quote.total_price
+
+
+async def hold(db, actor: quotes.Actor, booked: dict, payment) -> None:
+    """Запись клиента из мини-приложения с промокодом, ваучером, баллами, депозитом.
+
+    Деньги ещё не взяты, поэтому коды не гасятся, а держатся на брони
+    (services/held_codes): долг «оплата на месте» заводится уже с ними, сумма
+    формы Stripe считается с ними же, а погасит их оплата брони. Способ оплаты
+    назвал quote: бронь в `hold` — платят картой, иначе на месте.
+
+    `payment.expected_total` — итог, который клиент видел в чеке. Сервер считает
+    заново; разошлось — AMOUNT_CHANGED и откат брони: записать человека на одну
+    сумму, показав другую, нельзя.
+
+    Коды покрыли всё при оплате на месте — платить у стойки нечего, и оплата
+    (на ноль) проводится сразу той же кассой: коды гасятся, долг закрывается.
+    Не коммитит, кроме этого случая (`perform_pay` коммитит сам).
+    """
+    from routers.checkout.router import perform_pay, reject_dead_promo
+    from schemas.checkout import CheckoutPayRequest
+
+    reservation = await db.get(Reservation, booked["reservation_id"])
+    if reservation.held_codes is not None or reservation.payment_breakdown is not None:
+        # Повтор того же подтверждения: коды уже держатся или оплата прошла.
+        return
+    codes = held_codes.Codes(
+        promo_code=_code(payment.promo_code), certificate_code=_code(payment.certificate_code),
+        use_bonuses=payment.use_bonuses, use_deposit=payment.use_deposit)
+    card = reservation.status == "hold"
+    debt = (await db.get(ClientPayment, reservation.debt_payment_id)
+            if reservation.debt_payment_id is not None else None)
+    if not card and (debt is None or debt.status != "pending"):
+        # Платить нечего: абонемент, бесплатное первое занятие. Коды не нужны.
+        if payment.expected_total != 0:
+            quotes.reject("AMOUNT_CHANGED")
+        return
+
+    quote = await _lesson_quote(db, actor.studio_id, reservation, codes)
+    reject_dead_promo(codes.promo_code, quote)
+    if quote.total_price != payment.expected_total:
+        quotes.reject("AMOUNT_CHANGED")
+
+    if card:
+        if quote.total_price <= 0:
+            # Коды покрыли всё — платить картой нечего; экран в этом случае
+            # предлагает только «на месте».
+            quotes.reject("NOTHING_TO_PAY")
+        if codes.any():
+            held_codes.hold(reservation, codes, quote)
+        return
+
+    if quote.total_price == 0:
+        await perform_pay(
+            db, actor.studio_id, actor.actor_user_id,
+            CheckoutPayRequest(
+                client_id=actor.client_id, product_id=reservation.lesson_id, product_type="lesson",
+                promo_code=codes.promo_code, certificate_code=codes.certificate_code,
+                use_bonuses=codes.use_bonuses, use_deposit=codes.use_deposit, payment_method="cash",
+            ),
+            method="cash", debt=debt, reservation_id=reservation.id, expected_total=0,
+        )
+        return
+    debt.amount = quote.total_price
+    if codes.any():
+        held_codes.hold(reservation, codes, quote)

@@ -14,7 +14,9 @@
     "change_email": "Změnit e-mail",
     "cancel": "Zrušit",
     "code_send_error": "Kód se nepodařilo odeslat",
-    "code_invalid": "Nesprávný kód"
+    "code_invalid": "Nesprávný kód",
+    "telegram": "Přihlásit přes Telegram",
+    "or_email": "nebo e-mailem"
   },
   "studio": {
     "open": "Otevřeno",
@@ -109,7 +111,9 @@
     "used_classes": "Využito {{used}} z {{total}}",
     "left_classes": "Zbývá {{left}} z {{total}}",
     "expires": "platí do {{date}}",
-    "frozen": "Zmrazeno · platí do {{date}}"
+    "frozen": "Zmrazeno · platí do {{date}}",
+    "logout_title": "Odhlásit se?",
+    "logout_hint": "Rezervace a permanentka zůstanou ve studiu — přihlásit se můžete kdykoli znovu."
   },
   "mylessons": {
     "title": "Moje lekce",
@@ -489,7 +493,10 @@
       "VERSION_CONFLICT": "Rezervace byla právě změněna. Otevřete ji znovu.",
       "NOT_FOUND": "Tuto službu nebo rezervaci se nepodařilo najít. Obnovte stránku.",
       "BOOKING_CLOSED": "Online rezervace jsou teď uzavřeny.",
-      "UNKNOWN": "Rezervaci se nepodařilo vytvořit. Zkuste to znovu."
+      "UNKNOWN": "Rezervaci se nepodařilo vytvořit. Zkuste to znovu.",
+      "AMOUNT_CHANGED": "Částka se změnila — zkontrolujte účet a potvrďte znovu.",
+      "NOTHING_TO_PAY": "Online není co platit — rezervujte s platbou na místě.",
+      "PHONE_REQUIRED": "Pro rezervaci zadejte telefon."
     }
   },
   "units": {
@@ -533,5 +540,99 @@
       "event": "Rozvrh skupin"
     },
     "priceRange": "od {{from}} do {{to}}"
+  },
+  "wizard": {
+    "title": "Rezervace",
+    "hint": "Vyberte čas, službu a specialistu — v libovolném pořadí",
+    "tabs": {
+      "time": "Čas",
+      "service": "Služba",
+      "master": "Specialista",
+      "summary": "Souhrn"
+    },
+    "titles": {
+      "time": "Kdy se vám hodí?",
+      "service": "Jakou službu?",
+      "master": "Ke komu?",
+      "summary": "Zkontrolujte rezervaci"
+    },
+    "loadError": "Data se nepodařilo načíst",
+    "nextDay": "Další den",
+    "freeAt": "Volno v {{time}}",
+    "noServicesAt": "V {{time}} nejsou volné žádné služby",
+    "otherTime": "Vybrat jiný čas",
+    "noMasters": "Žádný volný specialista",
+    "anyMaster": "Kdokoli",
+    "anyMasterHint": "Vybereme prvního volného",
+    "notChosen": "Nevybráno",
+    "change": "Změnit",
+    "choose": "Vybrat",
+    "chooseAll": "Vyberte čas, službu a specialistu",
+    "book": "Rezervovat",
+    "doneTitle": "Hotovo",
+    "toMyLessons": "Moje rezervace",
+    "chooseBranch": "Vyberte pobočku",
+    "available": "volno: {{count}}",
+    "remaining": "zbývá vybrat: {{count}}",
+    "ready": "Vše vybráno",
+    "until": "do {{time}}",
+    "earlier": "Dříve",
+    "later": "Později"
+  },
+  "hero": {
+    "kicker": "Online rezervace",
+    "welcome": "Vítejte",
+    "welcomeBack": "Vítejte zpět, {{name}}",
+    "branches": "Studia: {{count}}",
+    "chooseHow": "Čím začneme rezervaci?",
+    "start": {
+      "time": "Čas",
+      "master": "Specialista",
+      "service": "Služba"
+    },
+    "startHint": {
+      "time": "Najít vhodný den a hodinu",
+      "master": "Objednat se ke svému specialistovi",
+      "service": "Vybrat, na co máte chuť"
+    },
+    "mode": {
+      "title": "Jak chcete cvičit?",
+      "resource": "Individuálně",
+      "resourceHint": "Jen vy a specialista",
+      "event": "Ve skupině",
+      "eventHint": "Lekce podle rozvrhu"
+    },
+    "pickMaster": "Vyberte specialistu",
+    "pickService": "Vyberte lekci"
+  },
+  "pay": {
+    "kicker": "Platba",
+    "title": "Jak zaplatit?",
+    "payAmount": "Zaplatit",
+    "venue": "Na místě",
+    "venueHint": "Hotově nebo kartou ve studiu",
+    "online": "Online",
+    "onlineHint": "Kartou hned, přes Stripe",
+    "onlineUnavailable": "Studio zatím nepřijímá online platby",
+    "nothingOnline": "Není co platit — vše je pokryto",
+    "codes": "Slevy a odměny",
+    "voucherPlaceholder": "Voucher nebo dárkový poukaz",
+    "promoOutweighed": "Promo kód platí, ale už máte výhodnější slevu — slevy se nesčítají",
+    "useBonuses": "Použít body · {{value}}",
+    "useDeposit": "Použít zálohu: {{value}}",
+    "pointsToEarn": "Body, které získáte: {{count}}",
+    "venueNote": "Slevy zůstanou u rezervace — ve studiu zaplatíte jen výslednou částku.",
+    "confirm": "Rezervovat",
+    "confirmVenue": "Rezervovat · {{amount}} na místě",
+    "goToPayment": "Přejít k platbě · {{amount}}",
+    "discount": {
+      "studio": "Sleva studia",
+      "offer": "Osobní nabídka",
+      "promo": "Promo kód",
+      "referral": "Sleva za pozvání",
+      "first_lesson": "První lekce",
+      "manual": "Sleva"
+    },
+    "prepayOnly": "Studio žádá platbu předem"
   }
 }

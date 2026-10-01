@@ -198,6 +198,24 @@ class Reservation(Base):
     # скидкой, а оплата позже берёт её сама, если кассир не назвал другую
     # (services/reservation_payment.manual_of). NULL — скидки не давали.
     manual_discount_percent: Mapped[Optional[int]] = mapped_column(SmallInteger, nullable=True)
+    # Коды, которые клиент назвал при записи из мини-приложения, пока деньги
+    # ещё не взяты (services/held_codes.py): промокод, ваучер, сколько баллов и
+    # депозита ушло на эту бронь. Не гасятся, а держатся — второй раз их не
+    # применить, пока бронь жива; погасит их оплата брони. NULL — кодов нет
+    # или оплата уже прошла (тогда всё в `payment_breakdown`).
+    held_codes: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
+    # Посещение по умолчанию — «пришёл» (services/attendance.py): до начала
+    # бронь ждёт, по окончании занятия система сама отмечает неотмеченных и
+    # проводит долг наличными. `no_show` — явная отметка «не пришёл»: статус
+    # при ней остаётся `active`, и отчёты видят запись без визита так же, как
+    # раньше видели неотмеченную.
+    no_show: Mapped[bool] = mapped_column(Boolean, default=False, server_default="false", nullable=False)
+    # Бронь закрыта системой по окончании занятия: отметка, запрос отзыва,
+    # деньги. Закрытую автоматика больше не трогает. Naive UTC.
+    closed_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=False), nullable=True)
+    # Долг погашен системой, а не кассиром. Только такой платёж «не пришёл»
+    # откатывает сам: принятые у стойки деньги — факт, а не предположение.
+    auto_paid: Mapped[bool] = mapped_column(Boolean, default=False, server_default="false", nullable=False)
 
     client: Mapped["Client"] = relationship(back_populates="reservations")
     lesson: Mapped["Lesson"] = relationship(back_populates="reservations")

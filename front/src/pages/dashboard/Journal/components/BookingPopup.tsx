@@ -9,7 +9,7 @@ import type { BookedClient, EligibleClient, LessonDetail } from '../../../../api
 import { AddClientModal as NewClientModal } from '../../Clients/components/modals/AddClientModal';
 import { scheduleApi } from '../../../../api/schedule';
 import { errorMessage } from '../../../../api/errorMessage';
-import { formatIndexToTimeStr, parseTimeToIndex, generateTimeIntervals, isLessonOver, MIN_TIME_INDEX, MAX_TIME_INDEX } from '../utils';
+import { formatIndexToTimeStr, parseTimeToIndex, generateTimeIntervals, isLessonStarted, MIN_TIME_INDEX, MAX_TIME_INDEX } from '../utils';
 import { useServiceOptions, CREATE_SERVICE_OPTION } from '../hooks/useServiceOptions';
 import { MoveBookingModal } from './modals/MoveBookingModal';
 import { ClientQuickCard } from './ClientQuickCard';
@@ -531,7 +531,7 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
                 clients={bookedClients}
                 canEdit={canEdit}
                 removable={!isResource}
-                over={isLessonOver(popupBooking)}
+                started={isLessonStarted(popupBooking)}
                 currency={currency}
                 price={popupBooking.price}
                 lessonLabel={lessonLabel}

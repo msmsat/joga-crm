@@ -22,6 +22,8 @@ interface SheduleProps {
   focusServiceId?: number;
   /** Сотрудник из QR-кода студии: запись к нему либо расписание по нему. */
   focusStaffId?: number;
+  /** Групповые занятия, выбранные на главной: открыть расписание групп с фильтром. */
+  homeFilter?: { teacher?: number; service?: number; nonce: number };
 }
 
 /**
@@ -35,7 +37,7 @@ interface SheduleProps {
  * Оба раздела гибридной студии остаются смонтированными и прячутся атрибутом:
  * переключение не теряет ни выбранного мастера, ни пролистанную неделю.
  */
-export default function Shedule({ catalog, onBuySubscription, onNeedAuth, focusLesson, focusServiceId, focusStaffId }: SheduleProps) {
+export default function Shedule({ catalog, onBuySubscription, onNeedAuth, focusLesson, focusServiceId, focusStaffId, homeFilter }: SheduleProps) {
   const { t } = useTranslation();
   const mode = catalog?.booking_capabilities.booking_mode ?? 'event';
   // Ссылка на УСЛУГУ сама говорит, какой это раздел, — но не словом в адресе, а
@@ -61,7 +63,13 @@ export default function Shedule({ catalog, onBuySubscription, onNeedAuth, focusL
   // `null` — «ещё не переключал»: тогда раздел называет ссылка, а по умолчанию
   // открыта индивидуальная запись. Ссылка на занятие — всегда групповой раздел:
   // индивидуальная запись идёт от мастера, занятия с номером там нет.
-  const [picked, setPicked] = useState<ScheduleView | null>(focusLesson ? 'event' : null);
+  const [picked, setPicked] = useState<ScheduleView | null>(focusLesson || homeFilter ? 'event' : null);
+  // Групповой выбор с главной у гибридной студии открывает раздел групп.
+  const [homeNonce, setHomeNonce] = useState(homeFilter?.nonce ?? 0);
+  if (homeFilter && homeFilter.nonce !== homeNonce) {
+    setHomeNonce(homeFilter.nonce);
+    setPicked('event');
+  }
   const view: ScheduleView = picked
     ?? (focusMode === 'event' ? 'event' : 'resource');
   const showResource = mode === 'resource' || (mode === 'hybrid' && view === 'resource');
@@ -99,6 +107,7 @@ export default function Shedule({ catalog, onBuySubscription, onNeedAuth, focusL
             focusLesson={focusLesson}
             focusServiceId={focusMode === 'event' ? focusServiceId : undefined}
             focusStaffId={staffSection === 'event' ? focusStaffId : undefined}
+            homeFilter={homeFilter}
           />
         </div>
       )}

@@ -19,7 +19,7 @@ const store = new Map<string, string>();
 // должен существовать хотя бы формально — модуль проверяет его сам.
 (globalThis as Record<string, unknown>).window = undefined;
 
-const { accountId, detachSession, getAccounts, getSession, reconcileSession, saveSession, studioOf } =
+const { accountId, detachSession, getAccounts, getSession, isSignedOut, reconcileSession, saveSession, signOut, studioOf } =
   await import('./session.ts');
 
 /** Токен без подписи: проверять её тут некому, а payload читается как в бою. */
@@ -78,5 +78,24 @@ reset();
 console.assert(reconcileSession(10) === false, 'гостю нечего сводить');
 detachSession(); // не должен падать на пустом хранилище
 console.assert(getSession() === null, 'пусто так пусто');
+
+// ── Выход: аккаунт уходит с устройства, Telegram не впускает молча ─────────
+reset();
+saveSession(inA);
+console.assert(signOut(10) === false, 'другого аккаунта этой студии нет — человек вышел');
+console.assert(getSession() === null && getAccounts().length === 0, 'аккаунт удалён с устройства');
+console.assert(isSignedOut(), 'отметка «вышел» стоит — молчаливый вход Telegram её уважает');
+saveSession(inA);
+console.assert(!isSignedOut(), 'любой вход снимает отметку');
+
+// ── Выход при втором аккаунте той же студии: кабинет продолжается под ним ──
+reset();
+const secondInA = { token: token(5, 10), name: 'Оля' };
+saveSession(secondInA);
+saveSession(inB);
+saveSession(inA);
+console.assert(signOut(10) === true, 'есть второй аккаунт студии — кабинет продолжается');
+console.assert(getSession()?.token === secondInA.token, 'активным стал аккаунт ЭТОЙ студии, не чужой');
+console.assert(!isSignedOut(), 'это не выход из приложения — отметки нет');
 
 console.log('ALL PASS — активна только карточка показанной студии');

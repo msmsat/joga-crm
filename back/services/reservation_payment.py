@@ -16,6 +16,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
 from models import ClientPayment, Lesson, Reservation, Studio, StudioDiscountConfig, StudioLoyaltyConfig
+from services import held_codes
 
 _DISCOUNTS = (
     ("first_lesson", "first_lesson_discount_applied"),
@@ -109,8 +110,11 @@ async def discount_debt(db: AsyncSession, studio_id: int, reservation: Reservati
     _client, package = await _get_client_package(
         db, studio_id, reservation.client_id, reservation.lesson_id, "lesson", reservation_id=reservation.id,
     )
-    quote = await _quote(db, studio_id, reservation.client_id, package, "lesson", None, False,
-                         manual_percent=percent)
+    # Коды, которые бронь держит с записи, остаются в долге и со скидкой.
+    codes = held_codes.codes_of(reservation)
+    quote = await _quote(db, studio_id, reservation.client_id, package, "lesson", codes.promo_code,
+                         codes.use_bonuses, codes.use_deposit, codes.certificate_code,
+                         manual_percent=percent, hold_owner=reservation.id)
     if quote.total_price > 0:
         debt.amount = quote.total_price
     else:
@@ -141,12 +145,16 @@ async def preview(
     offered_percent = package.first_lesson_percent
     if not first_lesson:
         package = replace(package, first_lesson_percent=None)
-    promo_code, certificate_code = code_of(promo_code), code_of(certificate_code)
+    # Коды, названные клиентом при записи, подставляются сами (held_codes):
+    # администратор видит сумму к оплате уже с ними.
+    codes = held_codes.merged(reservation, promo_code=promo_code, certificate_code=certificate_code,
+                              use_bonuses=use_bonuses, use_deposit=use_deposit)
+    promo_code, certificate_code = codes.promo_code, codes.certificate_code
 
     async def quote_with(certificate: str | None):
         return await _quote(
-            db, studio_id, reservation.client_id, package, "lesson", promo_code, use_bonuses,
-            use_deposit, certificate, manual_percent=manual_percent,
+            db, studio_id, reservation.client_id, package, "lesson", promo_code, codes.use_bonuses,
+            codes.use_deposit, certificate, manual_percent=manual_percent, hold_owner=reservation.id,
         )
 
     # Ошибку сертификата (не найден, погашен, истёк) отдаём полем, а не

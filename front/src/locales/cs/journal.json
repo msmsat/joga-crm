@@ -167,7 +167,9 @@
     },
     "repriced": "Rezervace teď stojí {{price}}",
     "repricedRefund": "Klient zaplatil {{paid}}, cena je teď {{price}} — vraťte mu {{diff}}",
-    "repricedTopUp": "Klient zaplatil {{paid}}, cena je teď {{price}} — doplatek {{diff}}"
+    "repricedTopUp": "Klient zaplatil {{paid}}, cena je teď {{price}} — doplatek {{diff}}",
+    "noShowMarked": "Označeno: nepřišel",
+    "autoPaidReversed": "Nepřišel — automatická platba zrušena, dluh je opět otevřený"
   },
   "loadError": {
     "title": "Načtení se nezdařilo",
@@ -439,7 +441,9 @@
     "card": "Kartou",
     "paid": "Zaplaceno",
     "attend": "Docházka",
-    "notMarked": "Neoznačeno"
+    "notMarked": "Neoznačeno",
+    "waiting": "Čekáme",
+    "choose": "Označit docházku"
   },
   "scheduleBlocks": {
     "day_off": "Volný den",

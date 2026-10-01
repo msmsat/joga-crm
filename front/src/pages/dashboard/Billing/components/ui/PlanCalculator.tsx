@@ -1,10 +1,12 @@
-import type { CSSProperties } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { PlanType, PlanPeriod } from '../../types';
 import type { PlanInfo } from '../../hooks/useBillingCalculator';
 import { formatMoney } from '../../../../../lib/money';
 import { planSeats } from '../../../../../lib/plan';
-import { ZapIcon } from './BillingIcons';
+import AnimatedPayButton from './AnimatedPayButton';
+import CheckoutDetails from './CheckoutDetails';
+import type { CheckoutPreview } from '../../../../../api/billing/billing.types';
 import styles from '../../Billing.module.css';
 
 interface Props {
@@ -14,6 +16,11 @@ interface Props {
   selected: PlanType;
   onSelect: (plan: PlanType) => void;
   currency?: string;
+  payBusy: boolean;
+  preview: CheckoutPreview | null;
+  previewBusy: boolean;
+  payDisabled: boolean;
+  checkoutTerms?: ReactNode;
   selectedPeriod: PlanPeriod;
   setSelectedPeriod: (period: PlanPeriod) => void;
   periodDiscounts: Record<number, number>;
@@ -25,7 +32,7 @@ interface Props {
   savedTotal: number;
   /** Сумма за весь период — её и спишут. */
   totalToPay: number;
-  /** Открывает расчёт и оплату (единственная кнопка платежа на вкладке). */
+  /** Открывает Stripe (единственная кнопка платежа на вкладке). */
   onPay: () => void;
   /** Ступень, за которую студия платит сейчас, — бейджем «Текущий». */
   currentPlanId: PlanType | null;
@@ -42,11 +49,16 @@ interface Props {
  * второй прайс-лист на фронте пережил бы правку plans.py и обещал бы неправду.
  */
 export default function PlanCalculator({
-  planIds, plans, selected, onSelect, currency,
+  planIds, plans, selected, onSelect, currency, payBusy, preview, previewBusy, payDisabled, checkoutTerms,
   selectedPeriod, setSelectedPeriod, periodDiscounts,
   monthly, fullMonthly, savedTotal, totalToPay, onPay, currentPlanId,
 }: Props) {
   const { t, i18n } = useTranslation('billing');
+  const quote = preview?.currency.toUpperCase() === currency?.toUpperCase() ? preview : null;
+  const outcome = quote?.tax_outcome ?? 'stripe_auto';
+  const checkoutTotal = quote ? (outcome === 'taxable' ? quote.total_with_tax : quote.total) / 100 : totalToPay;
+  const taxNote = outcome === 'stripe_auto' || outcome === 'requires_review'
+    ? 'paymentSchedule.vatNote' : 'payModal.taxServerNote';
 
   const seats = planSeats(selected);
   const info = plans[selected];
@@ -141,7 +153,7 @@ export default function PlanCalculator({
             className={styles.calcRange}
             style={{ '--fill': `${fill}%` } as CSSProperties}
             // Ступени ещё не приехали с сервера — двигать нечего.
-            disabled={last === 0}
+            disabled={payBusy || last === 0}
           />
           {/* Подписи концов линии — из каталога; пока он не приехал, подписывать
               нечего (вышло бы «До 0 сотрудников»). */}
@@ -211,6 +223,7 @@ export default function PlanCalculator({
                 <button
                   key={period}
                   type="button"
+                  disabled={payBusy}
                   onClick={() => setSelectedPeriod(period)}
                   aria-pressed={selectedPeriod === period}
                   className={styles.calcPeriod}
@@ -229,12 +242,14 @@ export default function PlanCalculator({
 
         {/* ── Итог: что стоит выбранная ступень ── */}
         <div className={styles.calcPanel}>
-          <span className={styles.calcEyebrow}>{t('planCards.yourPrice')}</span>
+          <div className={styles.calcPriceHeading}>
+            <span className={styles.calcEyebrow}>{t('planCards.yourPrice')}</span>
+          </div>
 
           <div className={styles.calcPrice}>
             {/* key — чтобы CSS-анимация проигрывалась заново на каждой новой
                 сумме: цифра приподнимается, а не подменяется втихую. */}
-            <span key={monthly} className={styles.calcPriceNum}>{formatMoney(monthly, currency)}</span>
+            <span key={`${monthly}:${currency}`} className={styles.calcPriceNum}>{formatMoney(monthly, currency)}</span>
             <span className={styles.calcPriceUnit}>{t('planCards.perMonth')}</span>
           </div>
 
@@ -271,20 +286,24 @@ export default function PlanCalculator({
             ))}
           </div>
 
+          <CheckoutDetails preview={quote} />
+          {checkoutTerms}
+
           {/* Итог и оплата. Класс bl-pay-cta глобальный: на телефоне этот же
               узел становится полосой над нижней панелью (Billing.module.css). */}
           <div className={`${styles.calcCta} bl-pay-cta`}>
             <div className={styles.calcTotal}>
-              <span className={styles.calcTotalLabel}>{t('paymentSchedule.total')}</span>
-              <span key={totalToPay} className={styles.calcTotalValue}>{formatMoney(totalToPay, currency)}</span>
+              <span className={styles.calcTotalLabel}>{t(outcome === 'taxable' ? 'payModal.totalWithTax' : 'paymentSchedule.total')}</span>
+              <span key={`${checkoutTotal}:${currency}`} className={styles.calcTotalValue}>{formatMoney(checkoutTotal, currency)}</span>
             </div>
             {/* Цены в каталоге без НДС (stripe_catalog.TAX_BEHAVIOR = "exclusive"),
                 налог Stripe Tax накидывает сверху на своей странице. Без этой
                 строки итог в счёте оказывался бы заметно больше показанного. */}
-            <p className={styles.calcVat}>{t('paymentSchedule.vatNote')}</p>
-            <button type="button" onClick={onPay} className={styles.calcPay}>
-              <ZapIcon /> {selectedPeriod > 1 ? t('paymentSchedule.payFor', { count: selectedPeriod }) : t('pay')}
-            </button>
+            <p className={styles.calcVat}>{t(taxNote)}</p>
+            <AnimatedPayButton onClick={onPay} className={styles.calcPay} loading={payBusy}
+              disabled={payDisabled || previewBusy || !info || outcome === 'requires_review'}>
+              {selectedPeriod > 1 ? t('paymentSchedule.payFor', { count: selectedPeriod }) : t('pay')}
+            </AnimatedPayButton>
           </div>
         </div>
       </div>

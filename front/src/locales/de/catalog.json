@@ -125,8 +125,6 @@
       "categoryCreate": "Kategorie erstellen",
       "categoryNewPlaceholder": "z. B. Haarschnitt",
       "type": "Art",
-      "typeGroup": "Gruppe",
-      "typeIndividual": "Einzel",
       "price": "Preis, {{currency}}",
       "pricePlaceholder": "1200",
       "duration": "Dauer, Min.",
@@ -150,9 +148,6 @@
       "bookingModeResource": "Zeit wählen",
       "bookingModeEventHint": "Kundinnen melden sich zu einem Kurs an, den Sie bereits geplant haben.",
       "bookingModeResourceHint": "Die Kundin wählt Fachkraft und freie Zeit; das Intervall ({{offering}}) entsteht bei der Bestätigung.",
-      "bookable": "Buchbar",
-      "bookableOn": "Ja",
-      "bookableOff": "Nein",
       "bufferBefore": "Puffer davor",
       "bufferAfter": "Puffer danach"
     },

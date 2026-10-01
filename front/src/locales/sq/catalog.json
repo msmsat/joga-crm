@@ -125,8 +125,6 @@
       "categoryCreate": "Krijo kategori",
       "categoryNewPlaceholder": "P.sh. Prerje flokësh",
       "type": "Lloji",
-      "typeGroup": "Në grup",
-      "typeIndividual": "Individual",
       "price": "Çmimi, {{currency}}",
       "pricePlaceholder": "1200",
       "duration": "Kohëzgjatja, min",
@@ -150,9 +148,6 @@
       "bookingModeResource": "Zgjidhni një orë",
       "bookingModeEventHint": "Klientët regjistrohen për një klasë që e keni planifikuar tashmë.",
       "bookingModeResourceHint": "Klienti zgjedh një specialist dhe një orar të lirë; intervali {{offering}} krijohet në konfirmim.",
-      "bookable": "I disponueshëm për rezervim",
-      "bookableOn": "Po",
-      "bookableOff": "Jo",
       "bufferBefore": "Hapësirë para",
       "bufferAfter": "Hapësirë pas"
     },

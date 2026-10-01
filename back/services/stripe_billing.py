@@ -45,7 +45,7 @@ from urllib.parse import urlparse
 import stripe
 from dotenv import load_dotenv
 
-from services import stripe_env, tax_policy
+from services import stripe_env, tax_policy, stripe_checkout_branding
 from services.tax_rates import TaxApplication
 
 load_dotenv()
@@ -162,7 +162,8 @@ INVOICE_PAYMENT_OPTIONS = {
 def invoice_payment_settings() -> dict:
     """`payment_settings` для наших счетов: карта (с кошельками) + перевод."""
     return {
-        "payment_method_types": list(INVOICE_PAYMENT_METHODS),
+        "payment_method_types": ["card", "paypal", "customer_balance"]
+        if stripe_checkout_branding.paypal_invoices_enabled() else list(INVOICE_PAYMENT_METHODS),
         "payment_method_options": INVOICE_PAYMENT_OPTIONS,
     }
 
@@ -444,6 +445,8 @@ async def create_subscription_checkout(
     *,
     trial_end: int | None = None,
     tax: TaxApplication | None = None,
+    ui_mode: str = "hosted",
+    profile_key: str = "",
 ) -> tuple[str, str]:
     """Страница оплаты подписки картой → (session_id, url).
 
@@ -489,6 +492,22 @@ async def create_subscription_checkout(
     if tax is not None and tax.manual:
         subscription_data["default_tax_rates"] = list(tax.rate_ids)
 
+    if ui_mode not in ("hosted", "elements"):
+        raise ValueError("Unknown checkout UI mode")
+    ui_params = (
+        {"ui_mode": "elements", "return_url": success_url}
+        if ui_mode == "elements" else {
+            "branding_settings": stripe_checkout_branding.branding_settings(),
+            "success_url": success_url, "cancel_url": cancel_url,
+        }
+    )
+    # Separate hosted/Elements requests and profile revisions: Stripe rejects
+    # an idempotency key reused with different request parameters.
+    key = f"cs:{customer_id}:{price_id}:{int(time.time() // IDEMPOTENCY_WINDOW)}"
+    if ui_mode == "elements":
+        import hashlib
+        key += ":elements:" + hashlib.sha256(profile_key.encode()).hexdigest()[:16]
+
     session = await asyncio.to_thread(
         stripe.checkout.Session.create,
         mode="subscription",
@@ -496,18 +515,46 @@ async def create_subscription_checkout(
         line_items=[{"price": price_id, "quantity": 1}],
         subscription_data=subscription_data,
         metadata=metadata,
-        automatic_tax={"enabled": tax is None or tax.automatic},
+        **tax_params(tax),
+        **ui_params,
+        **stripe_checkout_branding.payment_method_params(),
         customer_update={"address": "auto", "name": "auto"},
-        success_url=success_url,
-        cancel_url=cancel_url,
         # 10-минутная корзина: двойной клик по «Оплатить» или ретрай после таймаута
         # не должны заводить студии вторую Checkout Session. ВАЖНО: всё, что уходит
         # в теле, обязано быть постоянным внутри окна — Stripe отвечает
         # IdempotencyError на повтор ключа с другими параметрами. Отсюда же
         # округление trial_end по этой сетке (checkout._trial_end).
-        idempotency_key=f"cs:{customer_id}:{price_id}:{int(time.time() // IDEMPOTENCY_WINDOW)}",
+        idempotency_key=key,
     )
-    return session.id, session.url
+    return session.id, session.client_secret if ui_mode == "elements" else session.url
+
+
+def elements_publishable_key() -> str:
+    """Only the matching public key may leave the authenticated billing API."""
+    key = os.getenv("STRIPE_PUBLISHABLE_KEY", "")
+    expected = "pk_live_" if stripe_env.key_mode(stripe.api_key) == "live" else "pk_test_"
+    if not key.startswith(expected):
+        raise ValueError("Stripe publishable key is missing or has a different mode")
+    return key
+
+
+async def invoice_elements_data(invoice_id: str, customer_id: str):
+    """Pay an existing invoice's PaymentIntent; never create a duplicate invoice."""
+    invoice = await asyncio.to_thread(
+        stripe.Invoice.retrieve, invoice_id, expand=["confirmation_secret"],
+    )
+    customer = getattr(invoice, "customer", None)
+    if getattr(customer, "id", customer) != customer_id:
+        raise ValueError("Invoice customer does not match billing customer")
+    currency = str(invoice.currency).upper()
+    if invoice.status == "paid":
+        return None, 0, currency
+    if invoice.status != "open":
+        raise ValueError("Invoice is not payable")
+    secret = getattr(getattr(invoice, "confirmation_secret", None), "client_secret", None)
+    if not secret:
+        raise ValueError("Invoice has no payment confirmation secret")
+    return secret, invoice.amount_remaining, currency
 
 
 async def subscription_exists(subscription_id: str) -> bool:

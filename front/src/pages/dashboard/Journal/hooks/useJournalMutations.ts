@@ -164,13 +164,28 @@ export function useJournalMutations(lessonsKey: readonly unknown[]) {
 
   // ── Отметить посещение: не меняет счётчик мест сетки — список записанных
   // клиентов живёт отдельным локальным стейтом попапа (BookingPopup). Но
-  // сетка рисует неявку прошедшей индивидуальной записи (utils.isNoShow) по
-  // числу отмеченных — после отметки занятия перечитываются.
+  // сетка рисует отметки на карточке (utils.isNoShow) — после отметки
+  // занятия перечитываются.
   const attendMut = useMutation({
     mutationFn: (reservationId: number) => scheduleApi.attendReservation(reservationId),
     onSettled: () => { qc.invalidateQueries({ queryKey: queryKeys.journalLessonsAll }); },
   });
   const attendReservation = (reservationId: number) => attendMut.mutateAsync(reservationId);
+
+  // ── Пришёл / не пришёл. После занятия за отметкой идут деньги (долг
+  // проводится наличными или автозачисление откатывается), поэтому, кроме
+  // сетки, перечитываются клиенты и Финансы — как у приёма оплаты ниже.
+  const attendanceMut = useMutation({
+    mutationFn: ({ reservationId, attended }: { reservationId: number; attended: boolean }) =>
+      scheduleApi.setAttendance(reservationId, attended),
+    onSettled: () => {
+      qc.invalidateQueries({ queryKey: queryKeys.journalLessonsAll });
+      qc.invalidateQueries({ queryKey: ['clients'] });
+      qc.invalidateQueries({ queryKey: ['finances'] });
+    },
+  });
+  const setAttendance = (reservationId: number, attended: boolean) =>
+    attendanceMut.mutateAsync({ reservationId, attended });
 
   // ── Подтвердить бронь: место уже занято при её создании, счётчик сетки не
   // меняется — как и attend, только сам запрос.
@@ -208,6 +223,7 @@ export function useJournalMutations(lessonsKey: readonly unknown[]) {
     addReservation,
     cancelReservation,
     attendReservation,
+    setAttendance,
     confirmReservation,
     payReservation,
     patchLocalCancelled,

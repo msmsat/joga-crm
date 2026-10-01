@@ -167,7 +167,9 @@
     },
     "repriced": "Termin sada košta {{price}}",
     "repricedRefund": "Klijent je platio {{paid}}, cijena je sada {{price}} — vratite mu {{diff}}",
-    "repricedTopUp": "Klijent je platio {{paid}}, cijena je sada {{price}} — naplatite još {{diff}}"
+    "repricedTopUp": "Klijent je platio {{paid}}, cijena je sada {{price}} — naplatite još {{diff}}",
+    "noShowMarked": "Označeno: nije došao",
+    "autoPaidReversed": "Nije došao — automatsko plaćanje je poništeno, dug je ponovno otvoren"
   },
   "loadError": {
     "title": "Učitavanje nije uspjelo",
@@ -439,7 +441,9 @@
     "card": "Karticom",
     "paid": "Plaćeno",
     "attend": "Dolazak",
-    "notMarked": "Nije označeno"
+    "notMarked": "Nije označeno",
+    "waiting": "Čekamo",
+    "choose": "Označi dolazak"
   },
   "scheduleBlocks": {
     "day_off": "Neradni dan",

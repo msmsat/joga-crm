@@ -11,7 +11,8 @@
     а после включения — сохраняются;
   * `booking_config_version` растёт только при изменении относящихся к
     записи настроек — смена логотипа/цвета/цены её не трогает;
-  * каталог отклоняет null/неизвестный режим, буфер вне диапазона,
+  * каталог отклоняет неизвестный режим (null — «механику решает студия»,
+    её выводит create_service), буфер вне диапазона,
     resource+group и resource с недопустимой длительностью — и на create,
     и на partial-update (эффективная комбинация после мерджа с текущей
     строкой, не только присланные в PATCH поля);
@@ -253,7 +254,8 @@ async def _version_bumps_on_service_relevant_changes_only(studio_id: int) -> Non
 # ─── Каталог: null/неизвестный режим, буферы, resource+group, длительность ───
 
 def _service_create_validation() -> None:
-    for bad in (None, "bogus", "individual"):
+    # None — не ошибка: механику тогда решает студия (default_service_mode).
+    for bad in ("bogus", "individual"):
         try:
             ServiceCreate(name="X", price=100, duration_min=60, booking_mode=bad)
             raise AssertionError(f"{bad!r} должен быть отклонён")

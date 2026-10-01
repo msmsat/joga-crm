@@ -32,7 +32,7 @@ from services import lesson_time
 @dataclass(frozen=True)
 class BookingRules:
     booking_active: bool = True
-    prefill_on_booking: bool = True
+    prefill_on_booking: bool = False  # умолчание — как у колонки (models/settings.py)
     trainer_confirmation_required: bool = False
     repeat_booking_allowed: bool = False
     reminder_24h: bool = True
