@@ -53,14 +53,14 @@
   "header": {
     "eyebrow": "Velora · Abrechnung",
     "title": "Tarife und Abrechnung",
-    "subtitle": "Verwalten Sie Abo, Zahlungsmethoden und Zahlungsverlauf",
+    "subtitle": "Verwalten Sie Tarif, Zahlungsmethoden und Zahlungsverlauf",
     "totalSpent": "Insgesamt ausgegeben",
     "monthsWithUs": "Monate bei uns",
     "saved": "Gespart",
     "nextCharge": "Nächste Abbuchung",
     "currentPlan": "AKTUELLER TARIF",
     "noPlanName": "Kein Tarif",
-    "noPlan": "Kein aktives Abo",
+    "noPlan": "Kein aktiver Tarif",
     "active": "Aktiv",
     "activeUntil": "Aktiv · bis {{date}}",
     "trialPlanName": "Testtarif",
@@ -76,18 +76,18 @@
   },
   "mode": {
     "title": "Abrechnungsmodell",
-    "subscription": "Festes Abo",
+    "subscription": "Zeitraum kaufen",
     "percent": "% vom Umsatz",
     "combo": "Fix + % kombiniert",
     "short": {
-      "subscription": "Fix",
+      "subscription": "Zeitraum",
       "percent": "Prozent",
       "combo": "Kombi"
     },
     "descriptions": {
-      "subscription": "Ein Betrag pro Monat. Planbar und günstig.",
+      "subscription": "Einmalige Zahlung für den gewählten Zeitraum. Verlängerung manuell.",
       "percent": "Keine Grundgebühr: {{rate}} % von jedem Verkauf, Bargeld inklusive.",
-      "combo": "Halbes Abo + {{rate}} % von jedem Verkauf, Bargeld inklusive."
+      "combo": "Die Hälfte des festen Preises für den Zeitraum + {{rate}} % von jedem Verkauf, Bargeld inklusive."
     },
     "badges": {
       "popular": "Beliebt",
@@ -106,7 +106,7 @@
     "activateError": "Das Abrechnungsmodell konnte nicht geändert werden",
     "alreadyActive": "Dieses Abrechnungsmodell ist bereits aktiv — unten können Sie den Tarif verlängern oder wechseln",
     "confirmSwitchTitle": "Abrechnungsmodell wechseln?",
-    "confirmSwitchMessage": "Ihr Abo ist aktiv. Der Wechsel gilt sofort und der Rest des bezahlten Zeitraums VERFÄLLT vollständig: Die ungenutzten Tage werden weder erstattet noch übertragen.",
+    "confirmSwitchMessage": "Ihr bezahlter Tarif ist aktiv. Der Wechsel gilt sofort und der Rest des bezahlten Zeitraums VERFÄLLT vollständig: Die ungenutzten Tage werden weder erstattet noch übertragen.",
     "termsTitle": "Tarifbedingungen bestätigen",
     "termsMessage": "In diesem Tarif behält die Plattform {{rate}} % von jedem Verkauf ein.\n\nBei Online-Zahlungen wird die Gebühr automatisch im Moment der Zahlung einbehalten. Bei Bargeld, Terminal und Guthabenaufladungen wird sie NICHT sofort einbehalten — sie läuft auf, und Sie erhalten einmal im Monat eine separate Rechnung.\n\nSie haben {{days}} Tage Zeit, diese Rechnung zu bezahlen. Wird sie nicht rechtzeitig beglichen, wird der Zugang zum CRM und zur Kunden-Mini-App gesperrt, bis sie bezahlt ist.\n\nDen aktuellen offenen Betrag sehen Sie unter Abrechnung; Sie können jederzeit zahlen, auch vorzeitig.",
     "termsConfirm": "Ich akzeptiere die Bedingungen",
@@ -312,8 +312,7 @@
     "burnWarning": "Ein Wechsel auf einen anderen Tarif startet den Zeitraum neu: Der Rest Ihres {{plan}}-Tarifs VERFÄLLT — er wird weder erstattet noch übertragen. Beim Verlängern desselben Tarifs bleibt er erhalten.",
     "switched": "Tarif gewechselt: nichts zu zahlen — der Wechsel wurde durch den Rest des laufenden Zeitraums gedeckt.",
     "renewNote": "Das verlängert denselben Tarif: Die gekauften Monate werden zu Ihrem aktuellen bezahlten Zeitraum addiert. Nichts verfällt.",
-    "cardNote": "Kartenzahlung auf der sicheren Stripe-Seite · Rückerstattung binnen 7 Tagen",
-    "freeUntil": "Bis {{date}} wird nichts abgebucht: Sie haben noch {{count}} Tag(e) aus Ihrem bereits bezahlten Zeitraum. Die Abrechnung beginnt an diesem Datum.",
+    "cardNote": "Einmalige Zahlung über das sichere Stripe-Formular",
     "taxLabel": "USt.",
     "taxLine": "USt. {{rate}} %",
     "reverseCharge": "Reverse charge",
@@ -376,20 +375,29 @@
       "cityPlaceholder": "Prag",
       "vat": "USt-IdNr. — optional",
       "vatPlaceholder": "{{prefix}}12345678",
-      "vatHint": "Nur für Unternehmen. Die Nummer wird beim Speichern gegen das EU-Register (VIES) geprüft — ungeprüfte akzeptieren wir nicht. Mit gültiger Nummer wird einem Unternehmen aus einem anderen EU-Land ohne Steuer fakturiert (Reverse Charge). Privatpersonen haben keine — einfach leer lassen.",
+      "vatHint": "Geben Sie als Unternehmen Ihre USt-IdNr. an. Wir prüfen sie über VIES. Eine tschechische Nummer hebt die tschechische MwSt. nicht auf; für ein geprüftes Unternehmen in einem anderen EU-Land kann Reverse Charge gelten.",
       "countrySearch": "Namen eingeben",
       "countryNotFound": "Kein Land gefunden",
-      "vatOutsideEu": "Wir fragen keine USt-IdNr. ab: Außerhalb der EU bestimmt das Land des Zahlenden die Steuer, nicht seine Nummer — für die Rechnung macht sie also keinen Unterschied.",
-      "vatPending": "Ihre Nummer ist gespeichert, aber das EU-Register war gerade nicht erreichbar, daher ist sie noch nicht bestätigt und Ihre nächste Rechnung enthält die volle MwSt. Sie müssen sie nicht neu eingeben: Wir prüfen weiter, und sobald das Register antwortet, entfällt die Steuer. Für eine bereits bezahlte Rechnung erstattet der Support die Steuer."
+      "vatOutsideEu": "VIES prüft nur USt-IdNr. der EU. Außerhalb der EU wird die steuerliche Behandlung gesondert nach Land und Käuferstatus bestimmt.",
+      "vatPending": "Ihre USt-IdNr. ist gespeichert, aber von VIES noch nicht bestätigt. Bis zur Prüfung gilt kein Reverse Charge. Wir wiederholen die Prüfung automatisch.",
+      "legalName": "Name / rechtlicher Firmenname",
+      "legalNamePlaceholder": "Vollständiger Name oder eingetragener Firmenname",
+      "registrationId": "Register-Nr. — optional",
+      "registrationIdCz": "IČO — optional",
+      "registrationIdPlaceholder": "Optional"
     },
     "errors": {
-      "required": "Dieses Feld ist erforderlich"
+      "required": "Dieses Feld ist erforderlich",
+      "legalNameRequired": "Geben Sie Ihren Namen oder den rechtlichen Firmennamen ein",
+      "legalNameTooLong": "Höchstens 200 Zeichen",
+      "registrationIdTooLong": "Höchstens 40 Zeichen"
     },
     "preview": {
       "invoice": "Rechnung",
       "billTo": "Rechnungsempfänger",
       "note": "So erscheinen Ihre Daten auf jeder Rechnung. Sie können sie jederzeit unter Tarif und Abrechnung → Zahlungsmethode ändern."
-    }
+    },
+    "registrationNumber": "Register-Nr.: {{number}}"
   },
   "checkout": {
     "secureStripe": "Zahlungen über Stripe",
@@ -416,16 +424,13 @@
     "paymentPlaceholder": "Karte und digitale Wallets",
     "paymentHint": "Verfügbare Zahlungsmethoden erscheinen nach dem Speichern Ihrer Rechnungsdaten.",
     "orderDetails": "Bestelldetails",
-    "subscription": "Velora Abonnement",
     "tax": "MwSt.",
-    "taxAtPayment": "Wird bei Zahlung berechnet",
+    "taxAtPayment": "Vor der Zahlung anhand der Rechnungsdaten berechnet",
     "reverseCharge": "Der Käufer führt die Steuer ab (Reverse Charge).",
     "total": "Gesamtbetrag",
     "dueToday": "Heute fällig",
-    "nextCharge": "Nächste Zahlung: {{amount}} am {{date}}.",
     "switchWarning": "Der neue Tarif beginnt sofort. Die Restlaufzeit Ihres aktuellen Tarifs verfällt.",
     "pay": "{{amount}} bezahlen",
-    "confirmSubscription": "Abonnement bestätigen",
     "secure": "Sichere Zahlung über Stripe",
     "agreement": "Durch Fortfahren akzeptieren Sie",
     "loading": "Ihre Daten werden geladen…",
@@ -440,6 +445,20 @@
     "changePlan": "Ändern",
     "addVat": "USt-IdNr. hinzufügen",
     "savedForNextTime": "Daten für die nächste Zahlung speichern",
-    "closeCountries": "Länderliste schließen"
+    "closeCountries": "Länderliste schließen",
+    "purchase": "Velora-Zugang für diesen Zeitraum",
+    "taxWithRate": "MwSt. {{rate}} %",
+    "taxReview": "Die steuerliche Behandlung muss geprüft werden",
+    "taxExempt": "Nach den geltenden Regeln von der MwSt. befreit.",
+    "taxOutOfScope": "Außerhalb des EU-MwSt.-Geltungsbereichs; örtliche Steuerpflichten können bestehen.",
+    "accessPeriod": "Zugang: {{start}} – {{end}}.",
+    "accessUntil": "Zugang bis {{date}}.",
+    "noAutoRenewal": "Einmalige Zahlung für den gewählten Zeitraum. Keine automatischen Abbuchungen.",
+    "invalidPaymentAmount": "Der Zahlbetrag ist ungültig. Öffnen Sie die Zahlung erneut, um ihn zu aktualisieren.",
+    "vatNumber": "USt-IdNr.: {{number}}",
+    "vatIdHint": "Geben Sie als Unternehmen Ihre USt-IdNr. an. Wir prüfen sie über VIES. Eine tschechische Nummer hebt die tschechische MwSt. nicht auf; für ein geprüftes Unternehmen in einem anderen EU-Land kann Reverse Charge gelten.",
+    "vatPending": "Ihre USt-IdNr. ist gespeichert, aber von VIES noch nicht bestätigt. Bis zur Prüfung gilt kein Reverse Charge. Wir wiederholen die Prüfung automatisch.",
+    "accessUntilLabel": "Zugang bis",
+    "notificationSettings": "Benachrichtigungseinstellungen"
   }
 }

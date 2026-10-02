@@ -210,7 +210,7 @@ def _row(**kw):
 # Отдельная проверка отказа — test_percent_needs_billing_details_first ниже.
 _USER = SimpleNamespace(
     id=1, name="O", last_name="", email="o@studio.cz",
-    billing_country="CZ", billing_line1="Radlická 1", billing_line2=None,
+    billing_legal_name="Test Legal Buyer", billing_country="CZ", billing_line1="Radlická 1", billing_line2=None,
     billing_postal_code="15000", billing_city="Praha",
     billing_vat_id=None, billing_vat_verified=False,
 )

@@ -53,14 +53,14 @@
   "header": {
     "eyebrow": "Velora · Laskutus",
     "title": "Paketit ja laskutus",
-    "subtitle": "Hallitse tilaustasi, maksutapoja ja maksuhistoriaa",
+    "subtitle": "Manage your plan, payment methods and payment history",
     "totalSpent": "Käytetty yhteensä",
     "monthsWithUs": "Kuukautta kanssamme",
     "saved": "Säästetty",
     "nextCharge": "Seuraava veloitus",
     "currentPlan": "NYKYINEN PAKETTI",
     "noPlanName": "Ei pakettia",
-    "noPlan": "Ei aktiivista tilausta",
+    "noPlan": "No active plan",
     "active": "Aktiivinen",
     "activeUntil": "Aktiivinen · {{date}} asti",
     "trialPlanName": "Kokeilupaketti",
@@ -76,18 +76,18 @@
   },
   "mode": {
     "title": "Maksumalli",
-    "subscription": "Kiinteä tilaus",
+    "subscription": "Period purchase",
     "percent": "% myynnistä",
     "combo": "Kiinteä + % -yhdistelmä",
     "short": {
-      "subscription": "Kiinteä",
+      "subscription": "Period",
       "percent": "Prosentti",
       "combo": "Yhdistelmä"
     },
     "descriptions": {
-      "subscription": "Maksa yksi summa kuukaudessa. Ennustettava ja kustannustehokas.",
+      "subscription": "One payment for the selected period. Renew manually.",
       "percent": "Ei kiinteää maksua: {{rate}}% jokaisesta myynnistä, myös käteisestä.",
-      "combo": "Puolet tilauksesta + {{rate}}% jokaisesta myynnistä, myös käteisestä."
+      "combo": "Half the fixed period price + {{rate}}% of every sale, cash included."
     },
     "badges": {
       "popular": "Suosittu",
@@ -106,7 +106,7 @@
     "activateError": "Maksumallin päivitys epäonnistui",
     "alreadyActive": "Tämä maksumalli on jo aktiivinen — voit uusia tai vaihtaa paketin alla",
     "confirmSwitchTitle": "Vaihdetaanko maksumallia?",
-    "confirmSwitchMessage": "Tilauksesi on aktiivinen. Mallin vaihto tulee voimaan heti, ja maksetun kauden loppuosa MENETETÄÄN KOKONAAN: käyttämättömiä päiviä ei palauteta eikä siirretä.",
+    "confirmSwitchMessage": "Your paid plan is active. Switching models takes effect immediately and the remainder of the paid period IS FORFEITED entirely: the unused days are not refunded and do not carry over.",
     "termsTitle": "Vahvista paketin ehdot",
     "termsMessage": "Tässä paketissa alusta pidättää {{rate}}% jokaisesta myynnistä.\n\nVerkkomaksuissa maksu pidätetään automaattisesti maksun hetkellä. Käteisestä, päätteestä ja talletusten lisäyksistä sitä EI pidätetä heti — se kertyy, ja saat erillisen laskun kerran kuussa.\n\nSinulla on {{days}} päivää aikaa maksaa lasku. Jos sitä ei makseta ajoissa, pääsy CRM:ään ja asiakkaan minisovellukseen keskeytetään, kunnes lasku on maksettu.\n\nNykyinen maksettava määrä näkyy Laskutuksessa; voit maksaa milloin tahansa, myös etukäteen.",
     "termsConfirm": "Hyväksyn ehdot",
@@ -312,8 +312,7 @@
     "burnWarning": "Toiseen pakettiin vaihtaminen aloittaa kauden alusta: {{plan}}-pakettisi loppuosa MENETETÄÄN — sitä ei palauteta eikä siirretä. Saman paketin uusiminen säilyttää sen.",
     "switched": "Paketti vaihdettu: ei maksettavaa — vaihto katettiin nykyisen kauden jäljellä olevalla osalla.",
     "renewNote": "Tämä uusii saman paketin: ostamasi kuukaudet lisätään nykyiseen maksettuun kauteen. Mitään ei menetetä.",
-    "cardNote": "Korttimaksu Stripen suojatulla sivulla · 7 päivän palautus",
-    "freeUntil": "Mitään ei veloiteta ennen {{date}}: maksetusta kaudestasi on jäljellä {{count}} päivää. Laskutus alkaa sinä päivänä.",
+    "cardNote": "One-time payment through Stripe’s secure form",
     "taxLabel": "ALV",
     "taxLine": "ALV {{rate}}%",
     "reverseCharge": "Käännetty verovelvollisuus",
@@ -376,20 +375,29 @@
       "cityPlaceholder": "Praha",
       "vat": "ALV-numero — valinnainen",
       "vatPlaceholder": "{{prefix}}12345678",
-      "vatHint": "Vain yrityksille. Numero tarkistetaan EU-rekisteristä (VIES) tallennushetkellä — emme hyväksy vahvistamattomia numeroita. Kelvollisella numerolla toisessa EU-maassa oleva yritys laskutetaan ilman veroa (käännetty verovelvollisuus). Yksityishenkilöillä ei ole sitä — jätä kenttä tyhjäksi.",
+      "vatHint": "For a business, enter your VAT ID. We verify it through VIES. A Czech VAT ID does not remove Czech VAT; reverse charge may apply to a verified business in another EU country.",
       "countrySearch": "Aloita nimen kirjoittaminen",
       "countryNotFound": "Maata ei löytynyt",
-      "vatOutsideEu": "Emme pyydä ALV-numeroa: EU:n ulkopuolella vero määräytyy maksajan maan, ei numeron mukaan, joten sillä ei ole vaikutusta laskuun.",
-      "vatPending": "Numerosi on tallennettu, mutta EU-rekisteri ei ollut tuolloin käytettävissä, joten sitä ei ole vielä vahvistettu ja seuraava laskusi sisältää täyden ALV:n. Sinun ei tarvitse syöttää sitä uudelleen: tarkistamme edelleen, ja kun rekisteri vastaa, veroa ei enää veloiteta. Tuki palauttaa veron jo maksetusta laskusta."
+      "vatOutsideEu": "VIES verifies EU VAT IDs only. Outside the EU, tax treatment must be determined separately from your country and business status.",
+      "vatPending": "Your VAT ID is saved but is not yet verified by VIES. No reverse-charge treatment is applied until verification. We retry the check automatically.",
+      "legalName": "Legal name / company name",
+      "legalNamePlaceholder": "Full name or registered company name",
+      "registrationId": "Business ID — optional",
+      "registrationIdCz": "IČO — optional",
+      "registrationIdPlaceholder": "Optional"
     },
     "errors": {
-      "required": "Tämä kenttä on pakollinen"
+      "required": "Tämä kenttä on pakollinen",
+      "legalNameRequired": "Enter your legal name or registered company name",
+      "legalNameTooLong": "Use up to 200 characters",
+      "registrationIdTooLong": "Use up to 40 characters"
     },
     "preview": {
       "invoice": "Lasku",
       "billTo": "Laskutusosoite",
       "note": "Näin tietosi näkyvät jokaisessa laskussa. Voit muuttaa niitä milloin tahansa kohdassa Paketit ja laskutus → Maksutapa."
-    }
+    },
+    "registrationNumber": "Business ID: {{number}}"
   },
   "checkout": {
     "secureStripe": "Maksut Stripen kautta",
@@ -416,16 +424,13 @@
     "paymentPlaceholder": "Card and digital wallets",
     "paymentHint": "Available payment methods appear after you save your billing details.",
     "orderDetails": "Order details",
-    "subscription": "Velora subscription",
     "tax": "VAT",
-    "taxAtPayment": "Calculated at payment",
+    "taxAtPayment": "Calculated from your billing details before payment",
     "reverseCharge": "VAT is accounted for by the buyer (reverse charge).",
     "total": "Total due",
     "dueToday": "Due today",
-    "nextCharge": "Next payment: {{amount}} on {{date}}.",
     "switchWarning": "The new plan starts now. The remaining time on your current plan will be lost.",
     "pay": "Pay {{amount}}",
-    "confirmSubscription": "Confirm subscription",
     "secure": "Secure payment with Stripe",
     "agreement": "By continuing, you accept",
     "loading": "Loading your details…",
@@ -440,6 +445,20 @@
     "changePlan": "Change",
     "addVat": "Add VAT number",
     "savedForNextTime": "Saved for your next payment",
-    "closeCountries": "Close country list"
+    "closeCountries": "Close country list",
+    "purchase": "Velora access for this period",
+    "taxWithRate": "VAT {{rate}}%",
+    "taxReview": "Tax treatment needs verification",
+    "taxExempt": "Exempt from VAT under the applicable rules.",
+    "taxOutOfScope": "Outside the scope of EU VAT; local tax obligations may apply.",
+    "accessPeriod": "Access: {{start}} – {{end}}.",
+    "accessUntil": "Access until {{date}}.",
+    "noAutoRenewal": "One payment for the selected period. No automatic charges.",
+    "invalidPaymentAmount": "The payment amount is invalid. Reopen checkout to refresh it.",
+    "vatNumber": "VAT ID: {{number}}",
+    "vatIdHint": "For a business, enter your VAT ID. We verify it through VIES. A Czech VAT ID does not remove Czech VAT; reverse charge may apply to a verified business in another EU country.",
+    "vatPending": "Your VAT ID is saved but is not yet verified by VIES. No reverse-charge treatment is applied until verification. We retry the check automatically.",
+    "accessUntilLabel": "Access ends",
+    "notificationSettings": "Notification settings"
   }
 }

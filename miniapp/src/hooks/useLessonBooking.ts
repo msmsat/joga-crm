@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { bookLesson, cancelLesson } from '../api/user';
 import type { CoffeeState, LessonResponse } from '../api/lessons';
@@ -17,6 +17,8 @@ interface Options {
    * повторяет ту же бронь после него — тем же приёмом, что и `retryAfterPhone`.
    */
   onNeedAuth?: (retry: () => void) => void;
+  /** Бронь прошла — до листа успеха. Мастер записи с главной закрывает себя. */
+  onBooked?: () => void;
 }
 
 /**
@@ -40,7 +42,7 @@ interface Options {
  * вообще: бронь с главной меняет и расписание, и «мои занятия», а те со времён
  * постоянно смонтированных разделов сами о ней не узнают.
  */
-export function useLessonBooking({ messages, onNeedAuth }: Options) {
+export function useLessonBooking({ messages, onNeedAuth, onBooked }: Options) {
   const { t } = useTranslation();
   const { tg, vibrateMedium } = useTelegram();
 
@@ -58,6 +60,9 @@ export function useLessonBooking({ messages, onNeedAuth }: Options) {
   // сделан ДО записи, и счётчик успевал устареть.
   const [isCoffeeOpen, setIsCoffeeOpen] = useState(false);
   const [coffee, setCoffee] = useState<CoffeeState | null>(null);
+  // Повтор после телефона — та самая попытка, а не «текущий лист»: мастер
+  // записи держит занятие и коврик у себя, а не в этом хуке.
+  const retry = useRef<(() => void) | null>(null);
 
   const openModal = (lesson: LessonResponse | null) => {
     setSelectedSpot(null);
@@ -78,28 +83,32 @@ export function useLessonBooking({ messages, onNeedAuth }: Options) {
     if (coffee?.enabled) setIsCoffeeOpen(true);
   };
 
-  const pay = async () => {
-    if (!activeLesson || !selectedSpot) return;
-
+  /** Записать на занятие и коврик. Лист брони расписания зовёт её через `pay`,
+   *  мастер записи с главной — напрямую, со своим занятием и ковриком. */
+  const book = async (lesson: LessonResponse, spot: number) => {
     // Момент, ради которого регистрацию и отодвигали: до него занятие можно
     // было и посмотреть, и выбрать. Лист брони при этом не закрываем — занятие
     // и коврик обязаны дождаться человека с той стороны входа.
     if (!getSession() && onNeedAuth) {
-      onNeedAuth(() => void pay());
+      onNeedAuth(() => void book(lesson, spot));
       return;
     }
 
+    retry.current = () => void book(lesson, spot);
+    // Лист успеха и кофе называют занятие по нему.
+    setActiveLesson(lesson);
     setIsProcessing(true);
     try {
       const reservation = await bookLesson({
-        lesson_id: activeLesson.id,
-        spot_number: selectedSpot,
+        lesson_id: lesson.id,
+        spot_number: spot,
       });
 
       setCoffee(reservation.coffee);
       bumpLessons();
       setIsProcessing(false);
       closeModal();
+      onBooked?.();
       setIsSuccessOpen(true);
       spawnPetals();
 
@@ -122,12 +131,15 @@ export function useLessonBooking({ messages, onNeedAuth }: Options) {
     }
   };
 
-  const cancelBooking = async () => {
-    if (!activeLesson) return;
+  const pay = async () => {
+    if (!activeLesson || !selectedSpot) return;
+    await book(activeLesson, selectedSpot);
+  };
 
+  const cancel = async (lesson: LessonResponse) => {
     setIsProcessing(true);
     try {
-      await cancelLesson(activeLesson.id);
+      await cancelLesson(lesson.id);
 
       bumpLessons();
       setIsProcessing(false);
@@ -143,6 +155,11 @@ export function useLessonBooking({ messages, onNeedAuth }: Options) {
     }
   };
 
+  const cancelBooking = async () => {
+    if (!activeLesson) return;
+    await cancel(activeLesson);
+  };
+
   return {
     activeLesson,
     selectedSpot,
@@ -152,13 +169,15 @@ export function useLessonBooking({ messages, onNeedAuth }: Options) {
     closeModal,
     isProcessing,
     pay,
+    book,
     cancelBooking,
+    cancel,
     needsPhone,
     closePhone: () => setNeedsPhone(false),
     /** Номер сохранён — повторяем ту же бронь. */
     retryAfterPhone: () => {
       setNeedsPhone(false);
-      void pay();
+      retry.current?.();
     },
     needsSubscription,
     closeSubscription: () => setNeedsSubscription(null),

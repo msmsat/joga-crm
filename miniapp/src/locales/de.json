@@ -567,7 +567,11 @@
     "notChosen": "Nicht gewählt",
     "change": "Ändern",
     "choose": "Wählen",
-    "chooseAll": "Zeit, Leistung und Spezialist wählen",
+    "go": {
+      "time": "Uhrzeit wählen",
+      "service": "Leistung wählen",
+      "master": "Spezialist wählen"
+    },
     "book": "Buchen",
     "doneTitle": "Fertig",
     "toMyLessons": "Meine Buchungen",
@@ -578,6 +582,26 @@
     "until": "bis {{time}}",
     "earlier": "Früher",
     "later": "Später"
+  },
+  "groupWizard": {
+    "hint": "Wählen Sie Tag und Uhrzeit — Kurs und Trainer lassen sich eingrenzen",
+    "titles": {
+      "service": "Welcher Kurs?",
+      "master": "Mit wem möchten Sie trainieren?"
+    },
+    "lessonsAt": "Kurse: {{count}}",
+    "full": "Ausgebucht",
+    "closed": "Buchung geschlossen",
+    "noLessons": "An diesem Tag gibt es keine freien Kurse",
+    "at": "Kurse um {{time}}",
+    "noneAt": "Um {{time}} gibt es keine passenden Kurse",
+    "notThisDay": "Nicht an diesem Tag",
+    "go": {
+      "service": "Kurs eingrenzen",
+      "master": "Trainer eingrenzen"
+    },
+    "nearestDay": "Nächster Tag mit Kursen",
+    "several": "Um {{time}} gibt es mehrere Kurse"
   },
   "hero": {
     "kicker": "Online-Buchung",

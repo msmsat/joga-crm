@@ -1,40 +1,16 @@
-"""Подписка на Velora через Stripe Subscriptions — на платформенный аккаунт.
+"""Платформенные платежи Velora через Stripe, отдельно от Connect.
 
-Это НЕ Connect: деньги идут Velora, а не студии, поэтому `stripe_account` здесь
-не передаётся никуда. Приём оплат клиентов студии живёт в `stripe_connect.py` и
-пересекается с этим модулем только общим секретным ключом платформы.
+Новая покупка срока — Checkout Session mode=payment без recurring Price,
+subscription_data, invoice_creation и setup_future_usage. Stripe подтверждает
+платёж, а приложение выдаёт конечный оплаченный срок без автопродления.
 
-Источник истины о подписке — Stripe. Срок, статус, повторные попытки списания и
-рассылка счетов на его стороне; наша БД только зеркалит состояние из вебхука.
-Своей арифметики периодов в проекте больше нет.
+Реквизиты и номер НДС собирает форма Velora; проверенный номер передаётся в
+Customer. Налоговые параметры приходят из общего billing_tax: ручные Tax Rates
+или настроенный automatic_tax. Платные Tax Calculation API здесь не вызываются.
 
-ПЕРВАЯ покупка идёт только картой: Checkout Session mode=subscription,
-charge_automatically. Своей формы банковских реквизитов у нас нет и не будет —
-именно ради этого перевод убран с первой покупки: там негде спросить адрес и номер
-НДС, а Checkout спрашивает их сам.
-
-Дальше, на УЖЕ заведённом Customer (адрес и VAT у него есть), счёт открывается
-хостед-страницей Stripe, и она принимает и карту — вместе с Apple Pay и Google Pay,
-— и банковский перевод: список задаёт `invoice_payment_settings()` на каждом нашем
-счёте. Легаси-подписки на `send_invoice` продолжают жить: способ доставки счёта
-берётся у подписки (checkout._renewal_invoice), а способы ОПЛАТЫ — уже наши.
-
-Реквизиты плательщика (страна, индекс, адрес, VAT ID, название компании) СВОЕЙ
-формой не спрашиваются и у нас не хранятся: их собирает страница Checkout
-(`billing_address_collection` + `tax_id_collection`) и пишет обратно в Customer,
-а ставку налога и reverse charge считает по ним Stripe Tax. Он же сверяет номер с
-VIES асинхронно и присылает `customer.tax_id.updated`; фиктивный номер снимает
-`delete_tax_id` из обработчика этого события.
-
-Смена тарифа посреди периода ВСЕГДА немедленная и БЕЗ зачёта остатка
-(`proration_behavior="none"` + `billing_cycle_anchor="now"`): новый период платится
-целиком, неиспользованный остаток прежнего сгорает. Отложенного перехода «с
-начала следующего периода» больше нет — вместе с ним ушли SubscriptionSchedule
-для НОВЫХ переходов; `release_schedule` остался, потому что у студий, успевших
-запланировать переход по старой схеме, расписание всё ещё висит и блокирует
-`Subscription.modify`.
-
-Прямой модуль без абстракций — тот же паттерн, что `stripe_connect.py`.
+Методы Stripe Subscriptions/Invoice оставлены для исторических подписок,
+комиссионных документов, возвратов и сверки. Их наличие не означает, что новая
+покупка периода создаёт подписку или разрешение на будущее списание.
 """
 import asyncio
 import logging
@@ -527,6 +503,59 @@ async def create_subscription_checkout(
         idempotency_key=key,
     )
     return session.id, session.client_secret if ui_mode == "elements" else session.url
+
+
+async def create_period_checkout(
+    customer_id: str, amount: int, name: str, metadata: dict,
+    success_url: str, cancel_url: str, *, tax: TaxApplication | None = None,
+    ui_mode: str = "hosted", idempotency_key: str,
+):
+    """One payment for a finite access period; no subscription or saved mandate."""
+    stripe_env.guard_write("создание Checkout Session разовой покупки периода")
+    if ui_mode not in ("hosted", "elements") or amount <= 0:
+        raise ValueError("Invalid prepaid Checkout parameters")
+    item = {
+        "price_data": {"currency": CURRENCY, "unit_amount": amount,
+                       "tax_behavior": TAX_BEHAVIOR,
+                       "product_data": {"name": name}},
+        "quantity": 1,
+    }
+    params = tax_params(tax)
+    if tax is not None and tax.manual:
+        item["tax_rates"] = list(tax.rate_ids)
+    else:
+        item["price_data"]["product_data"]["tax_code"] = TAX_CODE
+    ui = ({"ui_mode": "elements", "return_url": success_url}
+          if ui_mode == "elements" else {
+              "branding_settings": stripe_checkout_branding.branding_settings(),
+              "success_url": success_url, "cancel_url": cancel_url,
+          })
+    return await asyncio.to_thread(
+        stripe.checkout.Session.create,
+        mode="payment", customer=customer_id, line_items=[item], metadata=metadata,
+        adaptive_pricing={"enabled": False},  # The catalog and fiscal amounts are EUR only.
+        payment_intent_data={"metadata": metadata},
+        customer_update={"address": "auto", "name": "auto"},
+        **params, **ui, **stripe_checkout_branding.payment_method_params(),
+        idempotency_key=idempotency_key,
+    )
+
+
+async def fetch_checkout_session(session_id: str):
+    return await asyncio.to_thread(stripe.checkout.Session.retrieve, session_id)
+
+
+async def expire_checkout_session(session_id: str):
+    stripe_env.guard_write("закрытие неоплаченной Checkout Session")
+    return await asyncio.to_thread(stripe.checkout.Session.expire, session_id)
+
+
+async def fetch_payment_intent(intent_id: str | None, charge_id: str | None = None):
+    if not intent_id and charge_id:
+        charge = await asyncio.to_thread(stripe.Charge.retrieve, charge_id)
+        intent = getattr(charge, "payment_intent", None)
+        intent_id = intent if isinstance(intent, str) else getattr(intent, "id", None)
+    return await asyncio.to_thread(stripe.PaymentIntent.retrieve, intent_id) if intent_id else None
 
 
 def elements_publishable_key() -> str:

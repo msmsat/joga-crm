@@ -8,7 +8,8 @@ import { branchChoices, type WizardStep } from '../../lib/wizard';
 import { cn } from '../../lib/utils';
 import { STEP_ICONS } from './stepIcons';
 
-function SummaryRow({ step, label, value, onChange }: {
+/** Строка итога: что выбрано в разделе и переход в него. Общая с групповым итогом. */
+export function SummaryRow({ step, label, value, onChange }: {
   step: WizardStep; label: string; value: string | null; onChange: () => void;
 }) {
   const { t } = useTranslation();

@@ -1,5 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { addDays, formatDay, upperFirst } from '../../lib/slots';
 import { freeTimes, groupMinutes, hhmm } from '../../lib/wizard';
@@ -7,30 +6,7 @@ import { cn } from '../../lib/utils';
 import type { BookingWizardFlow } from '../../hooks/useBookingWizard';
 import { WizardEmpty } from './WizardRow';
 import type { Preview } from './WizardChoices';
-
-/** Стрелка ленты дней — только у мыши: пальцем ленту листают, а колесом вбок нет. */
-function StripArrow({ side, onClick }: { side: 'left' | 'right'; onClick: () => void }) {
-  const { t } = useTranslation();
-  return (
-    <motion.button
-      type="button"
-      onClick={onClick}
-      initial={{ opacity: 0, scale: 0.8 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.8 }}
-      whileTap={{ scale: 0.9 }}
-      aria-label={t(side === 'left' ? 'wizard.earlier' : 'wizard.later')}
-      className={cn(
-        'absolute top-1/2 z-10 hidden h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-card text-foreground shadow-lift transition-colors duration-200 hover:bg-foreground hover:text-background dt:flex',
-        side === 'left' ? 'left-0' : 'right-0',
-      )}
-    >
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
-        <polyline points={side === 'left' ? '15 18 9 12 15 6' : '9 18 15 12 9 6'} />
-      </svg>
-    </motion.button>
-  );
-}
+import DayStrip from './DayStrip';
 
 /**
  * Раздел «Время»: лента дней и свободные часы выбранного дня по частям дня.
@@ -42,37 +18,7 @@ function StripArrow({ side, onClick }: { side: 'left' | 'right'; onClick: () => 
  */
 export default function WizardTime({ flow, onPreview }: { flow: BookingWizardFlow; onPreview?: Preview }) {
   const { t, i18n } = useTranslation();
-  const track = useRef<HTMLDivElement>(null);
-  const [edges, setEdges] = useState({ left: false, right: false });
   const { pick } = flow;
-
-  // Есть ли куда листать — стрелка, которой некуда вести, не рисуется.
-  const measure = useCallback(() => {
-    const strip = track.current;
-    if (!strip) return;
-    setEdges({ left: strip.scrollLeft > 4, right: strip.scrollLeft + strip.clientWidth < strip.scrollWidth - 4 });
-  }, []);
-
-  useEffect(() => {
-    const strip = track.current;
-    const button = strip?.querySelector<HTMLElement>(`[data-day="${pick.day}"]`);
-    if (!strip || !button) return;
-    strip.scrollTo({ left: button.offsetLeft - (strip.clientWidth - button.clientWidth) / 2, behavior: 'smooth' });
-  }, [pick.day]);
-
-  // Первый замер приходит от самого наблюдателя: он зовёт колбэк сразу после observe.
-  useEffect(() => {
-    const strip = track.current;
-    if (!strip) return;
-    const observer = new ResizeObserver(measure);
-    observer.observe(strip);
-    return () => observer.disconnect();
-  }, [measure]);
-
-  const page = (sign: 1 | -1) => {
-    const strip = track.current;
-    if (strip) strip.scrollBy({ left: sign * strip.clientWidth * 0.75, behavior: 'smooth' });
-  };
 
   const times = flow.rows ? freeTimes(flow.rows, pick) : [];
   const groups = groupMinutes(times);
@@ -81,45 +27,7 @@ export default function WizardTime({ flow, onPreview }: { flow: BookingWizardFlo
 
   return (
     <div>
-      <div className="relative">
-        <div ref={track} onScroll={measure} data-noswipe className="-mx-6 flex gap-2 overflow-x-auto overscroll-x-contain px-6 pb-1">
-          {flow.days.map((day) => {
-            const active = day === pick.day;
-            return (
-              <motion.button
-                key={day}
-                type="button"
-                data-day={day}
-                onClick={() => flow.pickDay(day)}
-                whileTap={{ scale: 0.93 }}
-                aria-pressed={active}
-                aria-label={formatDay(day, i18n.language, { weekday: 'long', day: 'numeric', month: 'long' })}
-                className={cn(
-                  'flex h-[70px] w-[54px] shrink-0 flex-col items-center justify-center gap-0.5 rounded-[16px] transition-colors duration-200',
-                  active ? 'bg-foreground text-background' : 'bg-background text-foreground dt:hover:bg-muted',
-                )}
-              >
-                <span className={cn(
-                  'text-[10px] font-extrabold uppercase tracking-[0.06em]',
-                  active ? 'text-background/75' : day === flow.today ? 'text-brand' : 'text-muted-foreground',
-                )}>
-                  {formatDay(day, i18n.language, { weekday: 'short' }).replace('.', '').slice(0, 3)}
-                </span>
-                <span className="text-[18px] font-extrabold leading-none tabular-nums tracking-[-0.03em]">
-                  {Number(day.slice(8, 10))}
-                </span>
-                <span className={cn('text-[9.5px] font-bold', active ? 'text-background/60' : 'text-muted-foreground')}>
-                  {formatDay(day, i18n.language, { month: 'short' }).replace('.', '')}
-                </span>
-              </motion.button>
-            );
-          })}
-        </div>
-        <AnimatePresence initial={false}>
-          {edges.left && <StripArrow key="left" side="left" onClick={() => page(-1)} />}
-          {edges.right && <StripArrow key="right" side="right" onClick={() => page(1)} />}
-        </AnimatePresence>
-      </div>
+      <DayStrip days={flow.days} today={flow.today} value={pick.day} onPick={flow.pickDay} />
 
       <div className="pt-5 text-[15px] font-extrabold tracking-[-0.015em] text-card-foreground">
         {upperFirst(formatDay(pick.day, i18n.language, { weekday: 'long', day: 'numeric', month: 'long' }))}

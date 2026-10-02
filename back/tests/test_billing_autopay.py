@@ -143,39 +143,26 @@ def test_stripe_failure_leaves_db_untouched():
 
 
 def test_autopay_blocked_without_card_when_no_subscription():
-    """Живой подписки нет, включают автосписание без карты → 400, как и раньше.
-
-    Отменять тут нечего, флаг остаётся обычной настройкой, и старое правило
-    «автосписание доступно только при оплате картой» продолжает действовать.
-    """
-    plan = _Plan(subscription_id=None)
-    db = _DB([plan, None])  # 1) подписка найдена, 2) карты нет
-    with _Stripe() as stripe_calls:
-        try:
-            asyncio.run(update_autopay(AutopaySettingsUpdate(auto_renewal=True), _ctx(), db))
-            assert False, "должен был бросить 400"
-        except Exception as e:
-            assert getattr(e, "status_code", None) == 400
-    assert not stripe_calls.calls, "без подписки в Stripe ходить незачем"
-    assert plan.auto_renewal is False
-    assert db.committed is False
+    _assert_prepaid_rejects_renewal(None)
 
 
 def test_autopay_saved_with_card():
-    """Без подписки, но с картой → сохраняется; непереданные поля не трогаются."""
+    _assert_prepaid_rejects_renewal(_Card("card"))
+
+
+def _assert_prepaid_rejects_renewal(card):
     plan = _Plan(subscription_id=None)
-    # Третий ответ — поиск оплаченного счёта: без живой подписки ответ читает
-    # его, чтобы посчитать trial_available (router._trial_available).
-    db = _DB([plan, _Card("card"), None])
-    body = AutopaySettingsUpdate(auto_renewal=True, notify_before_autocharge=False)
+    db = _DB([plan, card, None])
     with _Stripe() as stripe_calls:
-        res = asyncio.run(update_autopay(body, _ctx(), db))
+        try:
+            asyncio.run(update_autopay(AutopaySettingsUpdate(auto_renewal=True), _ctx(), db))
+            assert False, "prepaid access cannot enable automatic renewal"
+        except Exception as error:
+            assert getattr(error, "status_code", None) == 409
+            assert error.detail["code"] == "billing.prepaid_no_autorenewal"
     assert not stripe_calls.calls
-    assert plan.auto_renewal is True
-    assert plan.notify_before_autocharge is False
-    assert plan.sms_notification_enabled is False   # не передано в body — не тронуто
-    assert db.committed is True
-    assert res.auto_renewal is True
+    assert plan.auto_renewal is False
+    assert db.committed is False
 
 
 def test_autopay_partial_update_skips_stripe_and_card_check():

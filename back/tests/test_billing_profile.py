@@ -34,7 +34,7 @@ def _user(**billing) -> SimpleNamespace:
 
 
 _FULL = dict(
-    billing_country="CZ", billing_line1="Hlavni 1",
+    billing_legal_name="Test Buyer", billing_country="CZ", billing_line1="Hlavni 1",
     billing_postal_code="11000", billing_city="Praha",
 )
 
@@ -52,7 +52,7 @@ def test_second_address_line_is_optional():
     assert billing_profile(_user(**_FULL, billing_line2=None)).filled is True
 
 
-@pytest.mark.parametrize("missing", ["billing_country", "billing_line1", "billing_postal_code", "billing_city"])
+@pytest.mark.parametrize("missing", ["billing_legal_name", "billing_country", "billing_line1", "billing_postal_code", "billing_city"])
 def test_every_other_field_is_required(missing):
     """Частичный адрес хуже пустого: Stripe примет его как полный, впишет в фактуру
     и посчитает по нему налог, а переспрашивать уже не станет."""

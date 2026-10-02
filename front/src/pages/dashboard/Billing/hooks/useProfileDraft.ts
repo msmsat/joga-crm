@@ -80,7 +80,7 @@ export const vatPrefix = (country: string) => (country === 'GR' ? 'EL' : country
 export const isEuVatCountry = (country: string | null | undefined) =>
   !!country && EU_VAT_COUNTRIES.has(country);
 
-type Draft = Record<'country' | 'line1' | 'line2' | 'postal_code' | 'city' | 'vat_id', string>;
+type Draft = Record<'legal_name' | 'registration_id' | 'country' | 'line1' | 'line2' | 'postal_code' | 'city' | 'vat_id', string>;
 
 /**
  * Черновик формы реквизитов: значения, ошибки и «показывать ли их».
@@ -88,11 +88,14 @@ type Draft = Record<'country' | 'line1' | 'line2' | 'postal_code' | 'city' | 'va
  * Отдельным хуком, потому что форм две — модалка перед оплатой и режим правки во
  * вкладке «Способ оплаты», — а правила обязательности обязаны быть одни. Список
  * обязательных полей тут повторяет back/routers/billing/checkout._PROFILE_REQUIRED:
- * VAT и вторая строка адреса необязательны (у физлица номера НДС нет вовсе).
+ * Юридическое имя обязательно до оплаты; регистрационный номер, VAT и вторая
+ * строка адреса необязательны (у физлица номера компании и НДС нет).
  */
 export function useProfileDraft(initial: BillingProfile | null) {
   const { t } = useTranslation('billing');
   const [values, setValues] = useState<Draft>({
+    legal_name: initial?.legal_name ?? '',
+    registration_id: initial?.registration_id ?? '',
     country: initial?.country ?? '',
     line1: initial?.line1 ?? '',
     line2: initial?.line2 ?? '',
@@ -125,6 +128,9 @@ export function useProfileDraft(initial: BillingProfile | null) {
 
   const required = t('profile.errors.required');
   const errors: Partial<Record<keyof Draft, string>> = {
+    legal_name: !values.legal_name.trim() ? t('profile.errors.legalNameRequired')
+      : values.legal_name.trim().length > 200 ? t('profile.errors.legalNameTooLong') : undefined,
+    registration_id: values.registration_id.trim().length > 40 ? t('profile.errors.registrationIdTooLong') : undefined,
     country: values.country ? undefined : required,
     line1: values.line1.trim().length >= 2 ? undefined : required,
     postal_code: values.postal_code.trim().length >= 2 ? undefined : required,
@@ -133,6 +139,8 @@ export function useProfileDraft(initial: BillingProfile | null) {
   const invalid = Object.values(errors).some(Boolean);
 
   const payload = (): BillingProfileInput => ({
+    legal_name: values.legal_name.trim(),
+    registration_id: values.registration_id.trim() || null,
     country: values.country,
     line1: values.line1.trim(),
     line2: values.line2.trim() || null,

@@ -53,14 +53,14 @@
   "header": {
     "eyebrow": "Velora · Faturimi",
     "title": "Planet dhe faturimi",
-    "subtitle": "Menaxhoni abonimin, mënyrat e pagesës dhe historinë e pagesave",
+    "subtitle": "Manage your plan, payment methods and payment history",
     "totalSpent": "Totali i shpenzuar",
     "monthsWithUs": "Muaj me ne",
     "saved": "Kursyer",
     "nextCharge": "Tarifa e ardhshme",
     "currentPlan": "PLANI AKTUAL",
     "noPlanName": "Pa plan",
-    "noPlan": "Pa abonim aktiv",
+    "noPlan": "No active plan",
     "active": "Aktiv",
     "activeUntil": "Aktiv · deri më {{date}}",
     "trialPlanName": "Plan provues",
@@ -76,18 +76,18 @@
   },
   "mode": {
     "title": "Modeli i pagesës",
-    "subscription": "Abonim fiks",
+    "subscription": "Period purchase",
     "percent": "% e shitjeve",
     "combo": "Kombinim fiks + %",
     "short": {
-      "subscription": "Fiks",
+      "subscription": "Period",
       "percent": "Përqindje",
       "combo": "Kombinuar"
     },
     "descriptions": {
-      "subscription": "Paguani një shumë çdo muaj. E parashikueshme dhe me kosto të leverdishme.",
+      "subscription": "One payment for the selected period. Renew manually.",
       "percent": "Pa tarifë fikse: {{rate}}% e çdo shitjeje, përfshirë paratë në dorë.",
-      "combo": "Gjysma e abonimit + {{rate}}% e çdo shitjeje, përfshirë paratë në dorë."
+      "combo": "Half the fixed period price + {{rate}}% of every sale, cash included."
     },
     "badges": {
       "popular": "Popullor",
@@ -106,7 +106,7 @@
     "activateError": "Nuk u përditësua dot modeli i pagesës",
     "alreadyActive": "Ky model pagese është tashmë aktiv — më poshtë mund të rinovoni ose ndryshoni planin",
     "confirmSwitchTitle": "Të ndryshojmë modelin e pagesës?",
-    "confirmSwitchMessage": "Abonimi juaj është aktiv. Ndryshimi i modelit hyn në fuqi menjëherë dhe pjesa e mbetur e periudhës së paguar HUMB PLOTËSISHT: ditët e papërdorura nuk rimbursohen dhe nuk kalohen përpara.",
+    "confirmSwitchMessage": "Your paid plan is active. Switching models takes effect immediately and the remainder of the paid period IS FORFEITED entirely: the unused days are not refunded and do not carry over.",
     "termsTitle": "Konfirmoni kushtet e planit",
     "termsMessage": "Në këtë plan platforma mban {{rate}}% të çdo shitjeje.\n\nPër pagesat online tarifa mbahet automatikisht në çastin e pagesës. Për paratë në dorë, terminal dhe rimbushje depozitash NUK mbahet menjëherë — grumbullohet dhe merrni një faturë të veçantë një herë në muaj.\n\nKeni {{days}} ditë për të paguar faturën. Nëse nuk paguhet në kohë, qasja te CRM-ja dhe mini-aplikacioni i klientëve pezullohet derisa të shlyhet.\n\nShuma aktuale për t’u paguar shfaqet te Faturimi; mund ta paguani në çdo kohë, edhe paraprakisht.",
     "termsConfirm": "Pranoj kushtet",
@@ -312,8 +312,7 @@
     "burnWarning": "Kalimi në një plan tjetër rinis periudhën: pjesa e mbetur e planit tuaj {{plan}} HUMB — nuk rimbursohet dhe nuk kalon përpara. Rinovimi i të njëjtit plan e ruan.",
     "switched": "Plani ndryshoi: nuk ka asgjë për të paguar — ndryshimi u mbulua nga pjesa e mbetur e periudhës aktuale.",
     "renewNote": "Kjo rinovon të njëjtin plan: muajt që blini i shtohen periudhës aktuale të paguar. Asgjë nuk humbet.",
-    "cardNote": "Pagesë me kartë në faqen e sigurt të Stripe · rimbursim brenda 7 ditësh",
-    "freeUntil": "Asgjë nuk tarifohet deri më {{date}}: ju kanë mbetur {{count}} ditë nga periudha e paguar. Faturimi fillon në atë datë.",
+    "cardNote": "One-time payment through Stripe’s secure form",
     "taxLabel": "TVSH",
     "taxLine": "TVSH {{rate}}%",
     "reverseCharge": "Ngarkesë e kundërt",
@@ -376,20 +375,29 @@
       "cityPlaceholder": "Pragë",
       "vat": "Numri i TVSH-së — opsional",
       "vatPlaceholder": "{{prefix}}12345678",
-      "vatHint": "Vetëm për biznese. Numri kontrollohet në regjistrin e BE-së (VIES) kur e ruani — nuk pranojmë numra të paverifikuar. Me një numër të vlefshëm, një kompani në një vend tjetër të BE-së faturohet pa tatim (ngarkesë e kundërt). Individët nuk e kanë — lëreni bosh.",
+      "vatHint": "For a business, enter your VAT ID. We verify it through VIES. A Czech VAT ID does not remove Czech VAT; reverse charge may apply to a verified business in another EU country.",
       "countrySearch": "Filloni të shkruani emrin",
       "countryNotFound": "Nuk u gjet vend",
-      "vatOutsideEu": "Nuk kërkojmë numër TVSH-je: jashtë BE-së tatimi caktohet nga vendi i paguesit, jo nga numri, prandaj nuk ndikon në faturë.",
-      "vatPending": "Numri juaj është ruajtur, por regjistri i BE-së nuk ishte i disponueshëm atë çast, ndaj ende nuk është konfirmuar dhe fatura juaj e ardhshme do të përfshijë TVSH të plotë. Nuk duhet ta fusni përsëri: vazhdojmë ta kontrollojmë dhe sapo regjistri të përgjigjet, tatimi nuk tarifohet më. Për një faturë tashmë të paguar, mbështetja do ta rimbursojë tatimin."
+      "vatOutsideEu": "VIES verifies EU VAT IDs only. Outside the EU, tax treatment must be determined separately from your country and business status.",
+      "vatPending": "Your VAT ID is saved but is not yet verified by VIES. No reverse-charge treatment is applied until verification. We retry the check automatically.",
+      "legalName": "Legal name / company name",
+      "legalNamePlaceholder": "Full name or registered company name",
+      "registrationId": "Business ID — optional",
+      "registrationIdCz": "IČO — optional",
+      "registrationIdPlaceholder": "Optional"
     },
     "errors": {
-      "required": "Kjo fushë kërkohet"
+      "required": "Kjo fushë kërkohet",
+      "legalNameRequired": "Enter your legal name or registered company name",
+      "legalNameTooLong": "Use up to 200 characters",
+      "registrationIdTooLong": "Use up to 40 characters"
     },
     "preview": {
       "invoice": "Faturë",
       "billTo": "Faturohet për",
       "note": "Kështu shfaqen të dhënat tuaja në çdo faturë. Mund t’i ndryshoni kurdo te Plani dhe faturimi → Mënyra e pagesës."
-    }
+    },
+    "registrationNumber": "Business ID: {{number}}"
   },
   "checkout": {
     "secureStripe": "Pagesa përmes Stripe",
@@ -416,16 +424,13 @@
     "paymentPlaceholder": "Card and digital wallets",
     "paymentHint": "Available payment methods appear after you save your billing details.",
     "orderDetails": "Order details",
-    "subscription": "Velora subscription",
     "tax": "VAT",
-    "taxAtPayment": "Calculated at payment",
+    "taxAtPayment": "Calculated from your billing details before payment",
     "reverseCharge": "VAT is accounted for by the buyer (reverse charge).",
     "total": "Total due",
     "dueToday": "Due today",
-    "nextCharge": "Next payment: {{amount}} on {{date}}.",
     "switchWarning": "The new plan starts now. The remaining time on your current plan will be lost.",
     "pay": "Pay {{amount}}",
-    "confirmSubscription": "Confirm subscription",
     "secure": "Secure payment with Stripe",
     "agreement": "By continuing, you accept",
     "loading": "Loading your details…",
@@ -440,6 +445,20 @@
     "changePlan": "Change",
     "addVat": "Add VAT number",
     "savedForNextTime": "Saved for your next payment",
-    "closeCountries": "Close country list"
+    "closeCountries": "Close country list",
+    "purchase": "Velora access for this period",
+    "taxWithRate": "VAT {{rate}}%",
+    "taxReview": "Tax treatment needs verification",
+    "taxExempt": "Exempt from VAT under the applicable rules.",
+    "taxOutOfScope": "Outside the scope of EU VAT; local tax obligations may apply.",
+    "accessPeriod": "Access: {{start}} – {{end}}.",
+    "accessUntil": "Access until {{date}}.",
+    "noAutoRenewal": "One payment for the selected period. No automatic charges.",
+    "invalidPaymentAmount": "The payment amount is invalid. Reopen checkout to refresh it.",
+    "vatNumber": "VAT ID: {{number}}",
+    "vatIdHint": "For a business, enter your VAT ID. We verify it through VIES. A Czech VAT ID does not remove Czech VAT; reverse charge may apply to a verified business in another EU country.",
+    "vatPending": "Your VAT ID is saved but is not yet verified by VIES. No reverse-charge treatment is applied until verification. We retry the check automatically.",
+    "accessUntilLabel": "Access ends",
+    "notificationSettings": "Notification settings"
   }
 }

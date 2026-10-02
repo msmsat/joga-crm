@@ -65,6 +65,18 @@ os.environ["STRIPE_PUBLISHABLE_KEY"] = "pk_test_not_a_real_key_pytest"
 os.environ["STRIPE_WEBHOOK_SECRET"] = "whsec_not_a_real_secret_pytest"
 os.environ["STRIPE_BILLING_WEBHOOK_SECRET"] = "whsec_not_a_real_billing_secret_pytest"
 
+# Billing tax fixtures must not inherit the seller's private local VAT settings.
+# Manual-tax tests explicitly monkeypatch their own confirmed seller facts.
+os.environ.update({
+    "BILLING_TAX_MODE": "stripe_auto", "BILLING_TAX_POLICY_CONFIRMED": "",
+    "BILLING_SELLER_LEGAL_NAME": "", "BILLING_SELLER_REGISTRATION_ID": "",
+    "BILLING_SELLER_ADDRESS_LINE1": "", "BILLING_SELLER_ADDRESS_POSTAL_CODE": "",
+    "BILLING_SELLER_ADDRESS_CITY": "",
+    "BILLING_SELLER_COUNTRY": "", "BILLING_SELLER_VAT_REGISTERED": "",
+    "BILLING_SELLER_VAT_ID": "", "BILLING_EU_B2C_SCHEME": "",
+    "BILLING_NON_EU_SUPPLY_CONFIRMED": "false", "BILLING_TAX_MIGRATE_EXISTING": "false",
+})
+
 # LLM (эпик AI-5): боевой ключ затирается заведомо нерабочим адресом, а не
 # пустой строкой. Пустая означала бы «провайдер не настроен» — ассистент ушёл бы
 # в заглушку, и агентный цикл в тестах не выполнялся бы ни разу. Нерабочий

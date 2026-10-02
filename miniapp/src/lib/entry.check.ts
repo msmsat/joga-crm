@@ -22,7 +22,7 @@ let url = { pathname: '/', search: '' };
   },
 };
 
-const { readEntry, rememberStudio } = await import('./entry.ts');
+const { readEntry, rememberStudio, wizardFocusOf } = await import('./entry.ts');
 
 const at = (pathname: string, search = '') => {
   url = { pathname, search };
@@ -70,6 +70,19 @@ check('код студии без реферального хвоста', readEn
 store.set('velora.studio', 'не код');
 at('/');
 check('битая память — как будто её нет', readEntry(undefined, false).studioRef, null);
+
+// QR-коды студии ведут в мастера записи на главной — отдельных экранов записи
+// больше нет. Механику услуги называет каталог, сотрудника — режим студии.
+const modes: Record<number, string> = { 5: 'resource', 6: 'event' };
+const modeOf = (id: number) => modes[id];
+check('индивидуальная услуга — в индивидуальную запись', wizardFocusOf({ serviceId: 5 }, 'hybrid', modeOf), { kind: 'resource', serviceId: 5 });
+check('групповая услуга — в групповую', wizardFocusOf({ serviceId: 6 }, 'hybrid', modeOf), { kind: 'event', serviceId: 6 });
+check('удалённая услуга — никуда', wizardFocusOf({ serviceId: 9 }, 'resource', modeOf), null);
+check('мастер индивидуальной студии — в индивидуальную', wizardFocusOf({ staffId: 42 }, 'resource', modeOf), { kind: 'resource', master: 42 });
+check('тренер студии групп — в групповую', wizardFocusOf({ staffId: 42 }, 'event', modeOf), { kind: 'event', teacherId: 42 });
+check('групповая услуга с тренером — оба выбраны', wizardFocusOf({ serviceId: 6, staffId: 42 }, 'hybrid', modeOf), { kind: 'event', serviceId: 6, teacherId: 42 });
+check('занятие — групповая, с днём', wizardFocusOf({ lessonId: 3, date: '2026-10-05' }, 'hybrid', modeOf), { kind: 'event', lessonId: 3, date: '2026-10-05' });
+check('без услуги и мастера — ничего', wizardFocusOf({ packageId: 1 }, 'resource', modeOf), null);
 
 // Падаем throw'ом, а не process.exit: в tsconfig приложения только
 // браузерные типы, и `process` для tsc не существует (см. booking.check.ts).

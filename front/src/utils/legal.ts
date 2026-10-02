@@ -22,7 +22,7 @@ export const SUPPORT_EMAIL = 'smat5302@gmail.com'
 // Реквизиты предпринимателя. § 435 občanského zákoníku требует имя, адрес и IČO
 // на веб-странице предпринимателя — они стоят в подвале лендинга и совпадают с
 // шапкой back/static/terms.html. На язык не переводятся: это данные реестра.
-export const LEGAL_ENTITY = 'Andrii Sadovskyi · IČO 14390345 · DIČ CZ7607311668 · Radlická 333/150, 150 57 Praha 5, Česká republika'
+export const LEGAL_ENTITY = 'PE SADOVSKYI ANDRII · IČO 14390345 · DIČ CZ7607311668 · Olgy Havlove 2930/35, 130 00 Prague 3 – Zizkov, Czech Republic'
 
 // Единственный канал связи в интерфейсе. wa.me хочет номер без «+», пробелов
 // и скобок — иначе ссылка открывает пустой WhatsApp без диалога.

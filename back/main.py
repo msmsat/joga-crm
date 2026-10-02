@@ -17,6 +17,7 @@ from services.scenario_runner import start_scenario_loop
 from services.daily_notify import start_daily_notify_loop
 from services.offline_fee_billing import start_offline_fee_billing_loop
 from services.attendance import start_attendance_loop
+from services.billing_tax_documents import start_tax_document_loop
 
 from routers.auth import router as auth_router
 from routers.studio import router as studio_router, onboarding_router as studio_onboarding_router
@@ -66,6 +67,7 @@ async def lifespan(app: FastAPI):
     offline_fee_task = start_offline_fee_billing_loop(async_session_maker)
     # Посещение по окончании занятия: отметка, отзыв, долг наличными (services/attendance).
     attendance_task = start_attendance_loop(async_session_maker)
+    tax_document_task = start_tax_document_loop(async_session_maker)
     # Работы агента здесь НЕ исполняются: это отдельный процесс
     # (`python -m workers.main`, P0.3). Web заканчивается на коммите приёма —
     # иначе деплой web обрывал бы ход агента на полуслове.
@@ -76,6 +78,7 @@ async def lifespan(app: FastAPI):
         daily_notify_task.cancel()
         offline_fee_task.cancel()
         attendance_task.cancel()
+        tax_document_task.cancel()
 
 
 app = FastAPI(title="Velora CRM API", lifespan=lifespan)

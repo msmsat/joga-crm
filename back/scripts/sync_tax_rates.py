@@ -19,7 +19,10 @@
 """
 import argparse
 import asyncio
+import os
 import sys
+
+import stripe
 from datetime import date
 
 from dotenv import load_dotenv
@@ -62,7 +65,13 @@ def _needed() -> list[TaxDecision]:
 
 
 async def main(apply: bool) -> int:
-    print(f"Режим ключа Stripe: {stripe_env.key_mode(__import__('os').getenv('STRIPE_SECRET_KEY'))}, "
+    # This CLI intentionally does not import stripe_billing. Configure the SDK
+    # after dotenv loading, so standalone dry-runs use the selected account.
+    stripe.api_key = os.getenv("STRIPE_SECRET_KEY", "")
+    if not stripe.api_key:
+        print("STRIPE_SECRET_KEY не задан — список ставок не запрашивается.")
+        return 1
+    print(f"Режим ключа Stripe: {stripe_env.key_mode(stripe.api_key)}, "
           f"окружение: {stripe_env.app_env()}")
     print(f"Набор правил: {tax_policy.RULESET_VERSION}")
 

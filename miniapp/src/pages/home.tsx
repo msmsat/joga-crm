@@ -1,16 +1,14 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import HomeHero, { type BookingStart } from '../components/home/HomeHero';
-import PickSheet, { Initials, type PickItem } from '../components/home/PickSheet';
-import BookingWizardSheet from '../components/wizard/BookingWizardSheet';
+import PickSheet, { type PickItem } from '../components/home/PickSheet';
+import {
+  BookingWizardHost, GroupWizardHost, type BookingWizardHandle, type GroupWizardHandle,
+} from '../components/wizard/WizardHosts';
 import { STEP_ICONS } from '../components/wizard/stepIcons';
 import { type UserResponse } from '../api/auth';
 import type { StudioCatalog } from '../api/studio';
-import { useBookingWizard } from '../hooks/useBookingWizard';
-
-/** Расписание групп, открытое с главной: без фильтра, по мастеру или по услуге —
- *  и в выбранном на главной филиале (`branch` не задан — во всех). */
-export type ScheduleFilter = { teacher?: number; service?: number; branch?: number };
+import type { WizardFocus } from '../lib/entry';
 
 interface HomeProps {
   user: UserResponse | null;
@@ -21,51 +19,53 @@ interface HomeProps {
   onBuySubscription: () => void;
   /** Бронь гостя: поднять существующий вход и продолжить ту же запись. */
   onNeedAuth: (retry: () => void) => void;
-  /** Групповые занятия: вкладка расписания с фильтром. */
-  onOpenSchedule: (filter: ScheduleFilter) => void;
+  /** QR-код студии: открыть нужный мастер записи с тем, что в нём названо (`wizardFocusOf`). */
+  focus: WizardFocus | null;
+  onFocusUsed: () => void;
 }
 
 /**
  * Главная: название студии и три входа в запись — время, мастер, услуга.
  *
- * Куда ведёт вход, решает механика студии:
- *   resource — мастер записи (время, услуга и мастер в любом порядке, итог, оплата);
- *   event    — расписание групп: «время» — вся неделя, «мастер» и «услуга» —
- *              сначала выбор из списка, потом то же расписание только с ним;
+ * Вход открывает мастер записи прямо здесь, листом поверх главной, — с
+ * вкладками «Время · Услуга · Мастер · Итог» в любом порядке. Каким, решает
+ * механика студии:
+ *   resource — индивидуальный (окна мастеров, итог, оплата);
+ *   event    — групповой (занятия дня, итог с ковриком);
  *   hybrid   — сначала вопрос «индивидуально или в группе», дальше — как выше.
+ *
+ * Сами мастера живут в своих компонентах (`WizardHosts`): главная держит
+ * только пульт, и выбор внутри листа не перерисовывает её.
  */
-export default function Home({ user, catalog, onNavigate, onBuySubscription, onNeedAuth, onOpenSchedule }: HomeProps) {
+export default function Home({ user, catalog, onNavigate, onBuySubscription, onNeedAuth, focus, onFocusUsed }: HomeProps) {
   const { t } = useTranslation();
   const mode = catalog?.booking_capabilities.booking_mode ?? 'event';
-  const wizard = useBookingWizard({ catalog, onNeedAuth });
-  // Гибридная студия: вход выбран, ждём ответа «индивидуально или в группе».
-  const [asking, setAsking] = useState<BookingStart | null>(null);
-  // Группы: список мастеров или услуг перед расписанием.
-  const [groupPick, setGroupPick] = useState<'master' | 'service' | null>(null);
   // Филиал с главной — на весь сеанс, открывается на «Все». Каталог мог
   // перечитаться без выбранного адреса: тогда снова «все», а не пустая запись.
   const [branchPick, setBranchPick] = useState<number | null>(null);
   const branch = catalog?.branches.some((row) => row.id === branchPick) ? branchPick : null;
-  const inBranch = branch ?? undefined;
+  const wizard = useRef<BookingWizardHandle>(null);
+  const groupWizard = useRef<GroupWizardHandle>(null);
+  // Гибридная студия: вход выбран, ждём ответа «индивидуально или в группе».
+  const [asking, setAsking] = useState<BookingStart | null>(null);
 
-  const group = (start: BookingStart) => {
-    if (start === 'time') onOpenSchedule({ branch: inBranch });
-    else setGroupPick(start);
-  };
+  // QR-код студии — запись с тем, что он назвал, со «Времени»: остальное код
+  // назвал. Занятие групповой мастер сам уведёт на итог, когда придёт его день.
+  // Один раз — дальше выбор человека.
+  useEffect(() => {
+    if (!focus) return;
+    if (focus.kind === 'resource') wizard.current?.open('time', null, focus);
+    else groupWizard.current?.open('time', null, focus);
+    onFocusUsed();
+    // Ссылка разбирается один раз; `onFocusUsed` пересоздаётся каждым рендером App.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [focus]);
 
   const start = (choice: BookingStart) => {
-    if (mode === 'resource') wizard.open(choice, branch);
-    else if (mode === 'event') group(choice);
+    if (mode === 'resource') wizard.current?.open(choice, branch);
+    else if (mode === 'event') groupWizard.current?.open(choice, branch);
     else setAsking(choice);
   };
-
-  const groupServices = (catalog?.services ?? []).filter((service) => service.booking_mode === 'event');
-  const groupItems: PickItem[] = groupPick === 'master'
-    ? (catalog?.staff ?? []).map((member) => ({ id: member.id, title: member.name, lead: <Initials text={member.name} /> }))
-    : groupServices.map((service) => {
-      const title = t(`lesson.name.${service.name}`, { defaultValue: service.name });
-      return { id: service.id, title, hint: service.price_str, lead: <Initials text={title} /> };
-    });
 
   const modeItems: PickItem[] = [
     {
@@ -99,32 +99,28 @@ export default function Home({ user, catalog, onNavigate, onBuySubscription, onN
           const choice = asking;
           setAsking(null);
           if (!choice) return;
-          if (id === 'resource') wizard.open(choice, branch);
-          else group(choice);
+          if (id === 'resource') wizard.current?.open(choice, branch);
+          else groupWizard.current?.open(choice, branch);
         }}
       />
 
-      <PickSheet
-        isOpen={groupPick !== null}
-        onClose={() => setGroupPick(null)}
-        kicker={t('hero.mode.event')}
-        title={groupPick === 'master' ? t('hero.pickMaster') : t('hero.pickService')}
-        items={groupItems}
-        empty={groupPick === 'master' ? t('wizard.noMasters') : t('booking.reason.no_services')}
-        onPick={(id) => {
-          const kind = groupPick;
-          setGroupPick(null);
-          onOpenSchedule(kind === 'master'
-            ? { teacher: Number(id), branch: inBranch }
-            : { service: Number(id), branch: inBranch });
-        }}
-      />
-
-      <BookingWizardSheet
-        flow={wizard}
+      <BookingWizardHost
+        ref={wizard}
         catalog={catalog}
+        onNeedAuth={onNeedAuth}
         onBuySubscription={onBuySubscription}
         onMyLessons={() => onNavigate('my')}
+      />
+
+      {/* Групповой мастер берёт сводку дней и первый день заранее — под филиал,
+          выбранный здесь, — чтобы лист открывался сразу на нужном дне. */}
+      <GroupWizardHost
+        ref={groupWizard}
+        catalog={catalog}
+        onNeedAuth={onNeedAuth}
+        onBuySubscription={onBuySubscription}
+        enabled={mode !== 'resource'}
+        branch={branch}
       />
     </div>
   );

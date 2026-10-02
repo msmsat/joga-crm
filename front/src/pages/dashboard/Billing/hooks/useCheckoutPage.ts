@@ -37,7 +37,7 @@ export function useCheckoutPage() {
       const result = await billingApi.checkout(plan.id, period, combo, 'elements');
       if (!result.client_secret) { navigate('/dashboard/billing?payment=return', { replace: true }); return; }
       setSession(result);
-    } catch (err) { setError(errorMessage(err, t)); }
+    } catch (err) { setError(errorMessage(err, t)); throw err; }
     finally { pending.current = false; setBusy(false); }
   };
   return {

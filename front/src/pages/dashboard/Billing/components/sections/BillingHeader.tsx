@@ -46,7 +46,9 @@ export default function BillingHeader({ currency, activeTab, setActiveTab, anima
     { label: t('header.totalSpent'),  target: (stats?.total_spent ?? 0) / 100, prefix: currencySymbol, suffix: '',                Icon: CreditCardIcon },
     { label: t('header.monthsWithUs'), target: stats?.months_with_us ?? 0,     prefix: '',             suffix: '',                Icon: CalendarIcon   },
     { label: t('header.saved'),       target: (stats?.saved ?? 0) / 100,       prefix: currencySymbol, suffix: '',                Icon: TrendingIcon   },
-    { label: t('header.nextCharge'),  target: (stats?.next_charge ?? 0) / 100, prefix: currencySymbol, suffix: '',                Icon: ZapIcon        },
+    { label: t('header.nextCharge'), target: (stats?.next_charge ?? 0) / 100, prefix: currencySymbol, suffix: '', Icon: ZapIcon,
+      value: !plan?.has_live_subscription ? (plan?.expires_at ? new Date(plan.expires_at).toLocaleDateString(i18n.language) : '—') : undefined,
+      displayLabel: !plan?.has_live_subscription ? t('checkout.accessUntilLabel') : undefined },
   ];
 
   // Текущая подписка студии: имя тарифа — из каталога (в БД лежит id), срок и цена — из подписки.
@@ -138,9 +140,9 @@ export default function BillingHeader({ currency, activeTab, setActiveTab, anima
               </div>
               <div>
                 <div style={{ fontSize: '18px', fontWeight: 800, color: 'var(--onyx)', letterSpacing: '-0.4px' }}>
-                  <AnimatedCounter target={stat.target} prefix={stat.prefix} suffix={stat.suffix} currency={currency} />
+                  {stat.value ?? <AnimatedCounter target={stat.target} prefix={stat.prefix} suffix={stat.suffix} currency={currency} />}
                 </div>
-                <div style={{ fontSize: '11px', color: 'var(--muted)', marginTop: '1px' }}>{stat.label}</div>
+                <div style={{ fontSize: '11px', color: 'var(--muted)', marginTop: '1px' }}>{stat.displayLabel ?? stat.label}</div>
               </div>
             </div>
           ))}

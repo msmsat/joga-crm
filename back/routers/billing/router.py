@@ -416,7 +416,7 @@ async def get_billing_stats(
     # Следующее списание: срок и сумму знает Stripe, но для плашки хватает каталога —
     # налог и прорейтинг в неё не входят, это ориентир, а не счёт.
     next_charge = 0
-    if plan and plan.status in ("active", "past_due"):
+    if plan and _has_live_subscription(plan) and plan.auto_renewal and plan.status in ("active", "past_due"):
         if plan.billing_mode == "combo":
             next_charge = plan.fixed_base_amount or 0
         elif plan.billing_mode == "subscription" and canon(plan.plan_name) in PLANS:
@@ -424,10 +424,10 @@ async def get_billing_stats(
             # счёт за комиссию всегда месячный (period_months=1), и студия,
             # перешедшая с «процента» на подписку, видела бы в плашке месячную
             # цену вместо годовой — ровно за тот период, который сама и оплатила.
-            months = next(
+            period_months = next(
                 (inv.period_months for inv in reversed(paid) if inv.kind == "subscription"), 1,
             )
-            next_charge = amount_for(canon(plan.plan_name), months)
+            next_charge = amount_for(canon(plan.plan_name), period_months)
         # percent: фикса нет, списывать по расписанию нечего — остаётся 0
 
     return BillingStatsRead(
@@ -435,7 +435,7 @@ async def get_billing_stats(
         months_with_us=months,
         saved=saved,
         next_charge=next_charge,
-        next_charge_at=plan.expires_at.isoformat() if plan and plan.expires_at else None,
+        next_charge_at=plan.expires_at.isoformat() if next_charge and plan and plan.expires_at else None,
     )
 
 
@@ -806,11 +806,10 @@ async def update_autopay(
 
     live = _has_live_subscription(row)
     if body.auto_renewal and not live:
-        card = (await db.execute(select(PaymentCard).where(
-            PaymentCard.user_id == ctx.user.id, PaymentCard.method_type == "card"
-        ))).scalar_one_or_none()
-        if card is None:
-            raise HTTPException(status_code=400, detail="Автосписание доступно только при оплате картой")
+        raise HTTPException(status_code=409, detail={
+            "code": "billing.prepaid_no_autorenewal",
+            "message": "Доступ покупается на выбранный период. Автоматическое продление не используется",
+        })
 
     for field in ("auto_renewal", "email_receipt_enabled", "notify_before_autocharge", "sms_notification_enabled"):
         value = getattr(body, field)
@@ -921,6 +920,16 @@ async def sync_invoice(
     ))).scalar_one_or_none()
     if inv is None:
         raise HTTPException(status_code=404, detail="Счёт не найден")
+    if (inv.order_id or "").startswith("cs_") and not inv.stripe_invoice_id:
+        from .prepaid_webhook import handle_session
+        try:
+            session = await stripe_billing.fetch_checkout_session(inv.order_id)
+        except Exception:
+            logger.exception("Сверка разовой оплаты не удалась, счёт %s", inv.id)
+            raise HTTPException(status_code=502, detail="Платёжный сервис недоступен")
+        await handle_session(db, "checkout.session.completed", session)
+        await db.refresh(inv)
+        return _to_invoice_read(inv)
     if not inv.stripe_invoice_id:
         raise HTTPException(status_code=409, detail="У счёта нет платёжного заказа")
 
@@ -1033,16 +1042,26 @@ async def export_invoices_csv(
             # налог считал Stripe. Подставлять туда сегодняшнее правило нельзя —
             # это переписывание истории, а не заполнение пробела.
             tax_amount = inv.tax_amount
+            # Paid prepaid orders store the gross amount collected by Stripe.
+            # Pending orders and historical documents retain their original convention.
+            prepaid_paid = (
+                inv.kind == "subscription"
+                and not inv.stripe_invoice_id
+                and (inv.order_id or "").startswith("cs_")
+                and inv.status in ("paid", "refunded")
+            )
+            net_amount = inv.amount - (tax_amount or 0) if prepaid_paid else inv.amount
+            total_amount = inv.amount if prepaid_paid else inv.amount + (tax_amount or 0)
             yield [
                 inv.paid_at.strftime("%d.%m.%Y") if inv.paid_at else "",
                 inv.plan_name,
                 inv.period_months,
-                f"{inv.amount / 100:.2f}",
+                f"{net_amount / 100:.2f}",
                 pick(_EXPORT_METHOD, lang).get(inv.payment_method, inv.payment_method or ""),
                 pick(_EXPORT_STATUS, lang).get(inv.status, inv.status),
                 f"{inv.tax_rate_percent:g}" if inv.tax_rate_percent is not None else "",
                 f"{tax_amount / 100:.2f}" if tax_amount is not None else "",
-                f"{(inv.amount + tax_amount) / 100:.2f}" if tax_amount is not None else "",
+                f"{total_amount / 100:.2f}" if tax_amount is not None else "",
                 pick(_EXPORT_TAX_OUTCOME, lang).get(inv.tax_outcome, inv.tax_outcome or ""),
                 inv.tax_jurisdiction or "",
             ]
@@ -1060,37 +1079,15 @@ async def get_receipt(
     ctx: StudioContext = Depends(require_role("owner")),
     db: AsyncSession = Depends(get_db),
 ):
-    """Фактура по оплаченному счёту своей студии — редирект на документ Stripe.
-
-    Раньше здесь рисовался собственный PDF: «Amount: 39.00» без валюты, без НДС, без
-    продавца, без номера — латиницей, потому что base-14 Helvetica не несёт кириллицы.
-    Выглядел он как документ, но им не был, и всплывал ровно там, где фактуры Stripe
-    ещё нет: студия принимала эрзац за налоговый документ и клала его в учёт.
-
-    Налоговый документ в этой схеме РОВНО ОДИН — фактура Stripe: у неё есть номер из
-    сквозной нумерации, НДС, реквизиты обеих сторон и IČO студии. Второй, слабее,
-    только путает, поэтому мы его больше не выпускаем, а ведём к настоящему.
-
-    Фактуры ещё нет (легаси-счёт разовой оплаты, усечённое событие) — 409 с внятной
-    причиной, а не выдуманный PDF. 404 остаётся на чужой/несуществующий/неоплаченный:
-    состояние чужой студии не палим.
-    """
+    """Serve the paid purchase's frozen fiscal PDF within the owner's studio."""
     inv = (await db.execute(select(BillingInvoice).where(
         BillingInvoice.id == invoice_id,
         BillingInvoice.studio_id == ctx.studio_id,
     ))).scalar_one_or_none()
-    if inv is None or inv.status != "paid":
-        raise HTTPException(status_code=404, detail="Чек доступен только для оплаченных счетов")
-
-    url = inv.pdf_url or inv.hosted_invoice_url
-    if not url:
-        raise HTTPException(status_code=409, detail={
-            "code": "billing.invoice_not_ready",
-            "message": "Фактура ещё формируется — обновите страницу через минуту",
-        })
-    # 307, а не 302: метод и тело сохраняются, а кэш промежуточных прокси не
-    # приклеивает ссылку навсегда — ссылки Stripe на PDF ограничены по времени.
-    return RedirectResponse(url, status_code=307)
+    if inv is None or inv.status not in ("paid", "refunded"):
+        raise HTTPException(status_code=404, detail="Документ доступен только после оплаты")
+    from services.billing_receipts import fiscal_receipt
+    return await fiscal_receipt(db, inv)
 
 
 @router.get("/cards", response_model=list[PaymentCardRead])
@@ -1202,6 +1199,8 @@ async def save_billing_profile(
         # None (реестр молчит) → verified=False: номер сохранён, но не работает.
         verified = valid is True
 
+    user.billing_legal_name = body.legal_name
+    user.billing_registration_id = body.registration_id
     user.billing_country = body.country
     user.billing_line1 = body.line1
     user.billing_line2 = body.line2

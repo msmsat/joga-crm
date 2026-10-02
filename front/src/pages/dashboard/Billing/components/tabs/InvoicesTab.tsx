@@ -94,10 +94,10 @@ export default function InvoicesTab({ currency, invoices, loaded, syncInvoice }:
   };
 
   const handleOpenReceipt = async (inv: Invoice) => {
-    if (openingReceiptId !== null) return;
+    if (openingReceiptId !== null || !FINAL_STATUSES.includes(inv.status)) return;
     setOpeningReceiptId(inv.id);
     try {
-      await billingApi.openReceipt(inv.id, inv.pdf_url);
+      await billingApi.openReceipt(inv.id, inv.status === 'refunded' ? null : inv.pdf_url);
     } catch {
       toast.error(t('invoices.receiptError'));
     } finally {
@@ -194,9 +194,9 @@ export default function InvoicesTab({ currency, invoices, loaded, syncInvoice }:
                   />
                 </div>
                 <div>
-                  {/* Чек есть у любого оплаченного счёта: есть pdf_url — открываем
-                      фактуру Stripe, нет — наш /receipt.pdf (billingApi.openReceipt). */}
-                  {inv.status === 'paid' ? (
+                  {/* После оплаты доступен оригинал. После полного возврата сервер
+                      добавляет корректирующий документ, поэтому Stripe URL обходим. */}
+                  {FINAL_STATUSES.includes(inv.status) ? (
                     <button
                       onClick={() => handleOpenReceipt(inv)}
                       disabled={openingReceiptId === inv.id}

@@ -36,7 +36,7 @@ const FALLBACK_WINDOW_DAYS = 60;
 export function studioToday(timeZone: string | null | undefined, now: Date = new Date()): IsoDay {
   if (timeZone) {
     try {
-      const parts = new Intl.DateTimeFormat('en-CA', {
+      const parts = formatter('en-CA', {
         timeZone, year: 'numeric', month: '2-digit', day: '2-digit',
       }).formatToParts(now);
       const part = (type: string) => parts.find((item) => item.type === type)?.value;
@@ -62,10 +62,32 @@ export const daysBetween = (from: IsoDay, to: IsoDay): number => Math.round((noo
 /** Дата для Intl-подписи. Форматировать ОБЯЗАТЕЛЬНО с `timeZone: 'UTC'`. */
 export const dayDate = (day: IsoDay): Date => new Date(noon(day));
 
+/**
+ * Форматтеры дат — по одному на язык и набор полей, на весь сеанс.
+ *
+ * Создание `Intl.DateTimeFormat` дорогое (он грузит данные локали), а само
+ * `format` — дешёвое. Лента дней зовёт подписи по три-четыре на плитку, и при
+ * окне записи в месяц это больше сотни форматтеров в одном рендере: замерено
+ * 430 мс на открытии листа записи при CPU ×4 — больше, чем вся анимация.
+ * Незнакомая локаль или зона бросает RangeError прямо в конструкторе — он
+ * пролетает наружу, кэшируются только удачные.
+ */
+const formatters = new Map<string, Intl.DateTimeFormat>();
+
+function formatter(locale: string, options: Intl.DateTimeFormatOptions): Intl.DateTimeFormat {
+  const key = `${locale}|${JSON.stringify(options)}`;
+  let found = formatters.get(key);
+  if (!found) {
+    found = new Intl.DateTimeFormat(locale, options);
+    formatters.set(key, found);
+  }
+  return found;
+}
+
 /** Подпись дня на языке интерфейса. Зона UTC обязательна: `dayDate` — полдень UTC. */
 export const formatDay = (day: IsoDay, locale: string, options: Intl.DateTimeFormatOptions): string => {
   try {
-    return new Intl.DateTimeFormat(locale, { ...options, timeZone: 'UTC' }).format(dayDate(day));
+    return formatter(locale, { ...options, timeZone: 'UTC' }).format(dayDate(day));
   } catch {
     return day;
   }

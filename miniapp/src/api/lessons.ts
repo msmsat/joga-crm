@@ -139,6 +139,23 @@ export const getLessonsByDate = (
   return apiGet(`/global/lessons/date/${targetDate}${qs ? `?${qs}` : ''}`);
 };
 
+/** День ленты мастера записи: во сколько в нём есть занятия, куда можно записаться. */
+export interface LessonDay {
+  day: string;    // YYYY-MM-DD
+  times: string[]; // "HH:MM" по часам студии, по возрастанию
+}
+
+/**
+ * Сводка расписания по дням — одним запросом на всю ленту, а не по запросу
+ * на день. Дней без занятий, куда можно записаться, в ответе нет.
+ * Ендпоінт: GET /global/lessons/days?date_from=&date_to=&branch_id=
+ */
+export const getLessonDays = (dateFrom: string, dateTo: string, branchId?: number | null): Promise<LessonDay[]> => {
+  const params = new URLSearchParams({ date_from: dateFrom, date_to: dateTo });
+  if (branchId != null) params.append('branch_id', String(branchId));
+  return apiGet(`/global/lessons/days?${params.toString()}`);
+};
+
 /**
  * Отримує списки майбутніх і минулих занять поточного клієнта (з токена).
  * Ендпоінт: GET /global/lessons/my

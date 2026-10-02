@@ -53,14 +53,14 @@
   "header": {
     "eyebrow": "Velora · Számlázás",
     "title": "Csomagok és számlázás",
-    "subtitle": "Kezelje előfizetését, fizetési módjait és fizetési előzményeit",
+    "subtitle": "Manage your plan, payment methods and payment history",
     "totalSpent": "Összes költés",
     "monthsWithUs": "Velünk töltött hónapok",
     "saved": "Megtakarítás",
     "nextCharge": "Következő terhelés",
     "currentPlan": "JELENLEGI CSOMAG",
     "noPlanName": "Nincs csomag",
-    "noPlan": "Nincs aktív előfizetés",
+    "noPlan": "No active plan",
     "active": "Aktív",
     "activeUntil": "Aktív · {{date}} napjáig",
     "trialPlanName": "Próbacsomag",
@@ -76,18 +76,18 @@
   },
   "mode": {
     "title": "Fizetési modell",
-    "subscription": "Fix előfizetés",
+    "subscription": "Period purchase",
     "percent": "% az értékesítésből",
     "combo": "Fix + % kombináció",
     "short": {
-      "subscription": "Fix",
+      "subscription": "Period",
       "percent": "Százalék",
       "combo": "Kombinált"
     },
     "descriptions": {
-      "subscription": "Havonta egy összeget fizet. Kiszámítható és költséghatékony.",
+      "subscription": "One payment for the selected period. Renew manually.",
       "percent": "Nincs fix díj: minden értékesítés {{rate}}%-a, a készpénzt is beleértve.",
-      "combo": "Fél előfizetés + minden értékesítés {{rate}}%-a, a készpénzt is beleértve."
+      "combo": "Half the fixed period price + {{rate}}% of every sale, cash included."
     },
     "badges": {
       "popular": "Népszerű",
@@ -106,7 +106,7 @@
     "activateError": "A fizetési modell nem frissíthető",
     "alreadyActive": "Ez a fizetési modell már aktív — alább megújíthatja vagy módosíthatja a csomagot",
     "confirmSwitchTitle": "Fizetési modell váltása?",
-    "confirmSwitchMessage": "Előfizetése aktív. A modellváltás azonnal életbe lép, és a fizetett időszak hátralévő része TELJES EGÉSZÉBEN ELVÉSZ: a fel nem használt napok nem visszatéríthetők és nem vihetők át.",
+    "confirmSwitchMessage": "Your paid plan is active. Switching models takes effect immediately and the remainder of the paid period IS FORFEITED entirely: the unused days are not refunded and do not carry over.",
     "termsTitle": "Csomagfeltételek megerősítése",
     "termsMessage": "Ebben a csomagban a platform minden értékesítés {{rate}}%-át visszatartja.\n\nOnline fizetésnél a díjat automatikusan a fizetéskor vonjuk le. Készpénz, terminál és előlegfeltöltés esetén NEM vonjuk le azonnal — felhalmozódik, és havonta külön számlát kap.\n\n{{days}} napja van a számla kifizetésére. Ha nem fizeti ki időben, a CRM-hez és az ügyfél miniapphoz való hozzáférés a rendezésig fel lesz függesztve.\n\nAz aktuális esedékes összeg a Számlázásban látható; bármikor fizethet, akár előre is.",
     "termsConfirm": "Elfogadom a feltételeket",
@@ -312,8 +312,7 @@
     "burnWarning": "Másik csomagra váltáskor az időszak újraindul: a(z) {{plan}} csomag hátralévő része ELVÉSZ — nem visszatéríthető és nem vihető át. Ugyanazon csomag megújítása megtartja.",
     "switched": "A csomag megváltozott: nincs fizetnivaló — a váltást a jelenlegi időszak hátralévő része fedezte.",
     "renewNote": "Ez ugyanazt a csomagot újítja meg: a megvásárolt hónapok hozzáadódnak a jelenlegi fizetett időszakhoz. Semmi sem vész el.",
-    "cardNote": "Kártyás fizetés a Stripe biztonságos oldalán · 7 napos visszatérítés",
-    "freeUntil": "{{date}} napjáig nincs terhelés: már fizetett időszakából még {{count}} nap maradt. A számlázás azon a napon kezdődik.",
+    "cardNote": "One-time payment through Stripe’s secure form",
     "taxLabel": "ÁFA",
     "taxLine": "ÁFA {{rate}}%",
     "reverseCharge": "Fordított adózás",
@@ -376,20 +375,29 @@
       "cityPlaceholder": "Prága",
       "vat": "ÁFA-szám — opcionális",
       "vatPlaceholder": "{{prefix}}12345678",
-      "vatHint": "Csak vállalkozásoknak. A számot mentéskor az EU-nyilvántartás (VIES) ellenőrzi — nem fogadunk el nem ellenőrzött számot. Érvényes számmal egy másik EU-országban lévő vállalat adó nélkül kap számlát (fordított adózás). Magánszemélyeknek nincs ilyenük — hagyja üresen.",
+      "vatHint": "For a business, enter your VAT ID. We verify it through VIES. A Czech VAT ID does not remove Czech VAT; reverse charge may apply to a verified business in another EU country.",
       "countrySearch": "Kezdjen el nevet gépelni",
       "countryNotFound": "Nem található ország",
-      "vatOutsideEu": "Nem kérünk ÁFA-számot: az EU-n kívül az adót a fizető országa, nem a száma határozza meg, így az nem változtat a számlán.",
-      "vatPending": "A száma el van mentve, de az EU-nyilvántartás akkor nem volt elérhető, ezért még nincs megerősítve, és a következő számlája teljes ÁFÁ-t tartalmaz. Nem kell újra megadnia: továbbra is ellenőrizzük, és amikor a nyilvántartás válaszol, az adót többé nem számítjuk fel. Már kifizetett számlánál az ügyfélszolgálat visszatéríti az adót."
+      "vatOutsideEu": "VIES verifies EU VAT IDs only. Outside the EU, tax treatment must be determined separately from your country and business status.",
+      "vatPending": "Your VAT ID is saved but is not yet verified by VIES. No reverse-charge treatment is applied until verification. We retry the check automatically.",
+      "legalName": "Legal name / company name",
+      "legalNamePlaceholder": "Full name or registered company name",
+      "registrationId": "Business ID — optional",
+      "registrationIdCz": "IČO — optional",
+      "registrationIdPlaceholder": "Optional"
     },
     "errors": {
-      "required": "Ez a mező kötelező"
+      "required": "Ez a mező kötelező",
+      "legalNameRequired": "Enter your legal name or registered company name",
+      "legalNameTooLong": "Use up to 200 characters",
+      "registrationIdTooLong": "Use up to 40 characters"
     },
     "preview": {
       "invoice": "Számla",
       "billTo": "Számlázva erre",
       "note": "Így jelennek meg az adatai minden számlán. Bármikor módosíthatja őket a Csomagok és számlázás → Fizetési mód résznél."
-    }
+    },
+    "registrationNumber": "Business ID: {{number}}"
   },
   "checkout": {
     "secureStripe": "Fizetés a Stripe-on keresztül",
@@ -416,16 +424,13 @@
     "paymentPlaceholder": "Card and digital wallets",
     "paymentHint": "Available payment methods appear after you save your billing details.",
     "orderDetails": "Order details",
-    "subscription": "Velora subscription",
     "tax": "VAT",
-    "taxAtPayment": "Calculated at payment",
+    "taxAtPayment": "Calculated from your billing details before payment",
     "reverseCharge": "VAT is accounted for by the buyer (reverse charge).",
     "total": "Total due",
     "dueToday": "Due today",
-    "nextCharge": "Next payment: {{amount}} on {{date}}.",
     "switchWarning": "The new plan starts now. The remaining time on your current plan will be lost.",
     "pay": "Pay {{amount}}",
-    "confirmSubscription": "Confirm subscription",
     "secure": "Secure payment with Stripe",
     "agreement": "By continuing, you accept",
     "loading": "Loading your details…",
@@ -440,6 +445,20 @@
     "changePlan": "Change",
     "addVat": "Add VAT number",
     "savedForNextTime": "Saved for your next payment",
-    "closeCountries": "Close country list"
+    "closeCountries": "Close country list",
+    "purchase": "Velora access for this period",
+    "taxWithRate": "VAT {{rate}}%",
+    "taxReview": "Tax treatment needs verification",
+    "taxExempt": "Exempt from VAT under the applicable rules.",
+    "taxOutOfScope": "Outside the scope of EU VAT; local tax obligations may apply.",
+    "accessPeriod": "Access: {{start}} – {{end}}.",
+    "accessUntil": "Access until {{date}}.",
+    "noAutoRenewal": "One payment for the selected period. No automatic charges.",
+    "invalidPaymentAmount": "The payment amount is invalid. Reopen checkout to refresh it.",
+    "vatNumber": "VAT ID: {{number}}",
+    "vatIdHint": "For a business, enter your VAT ID. We verify it through VIES. A Czech VAT ID does not remove Czech VAT; reverse charge may apply to a verified business in another EU country.",
+    "vatPending": "Your VAT ID is saved but is not yet verified by VIES. No reverse-charge treatment is applied until verification. We retry the check automatically.",
+    "accessUntilLabel": "Access ends",
+    "notificationSettings": "Notification settings"
   }
 }

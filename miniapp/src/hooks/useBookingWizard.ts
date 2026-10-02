@@ -7,6 +7,7 @@ import type {
 } from '../api/hybrid.types';
 import type { StudioCatalog } from '../api/studio';
 import { ANY, isBookableResource, offeredServices } from '../lib/bookingPage';
+import type { ResourceFocus } from '../lib/entry';
 import { bumpLessons } from '../lib/revision';
 import { spawnPetals } from '../lib/petals';
 import { getSession } from '../lib/session';
@@ -142,10 +143,16 @@ export function useBookingWizard({ catalog, onNeedAuth }: Options) {
   };
 
   /** `branch` — филиал с главной: выбор открывается уже в нём (`rowsFor`
-   *  отсекает окна других адресов), `null` — во всех. */
-  const open = (first: WizardStep, branch: number | null = null) => {
+   *  отсекает окна других адресов), `null` — во всех. `preset` — услуга и
+   *  мастер, уже названные QR-кодом студии (`lib/entry.wizardFocusOf`). */
+  const open = (first: WizardStep, branch: number | null = null, preset: ResourceFocus = {}) => {
     setScope(branch);
-    setPick({ ...emptyPick(today), branchId: branch });
+    setPick({
+      ...emptyPick(today),
+      branchId: branch,
+      serviceId: preset.serviceId ?? null,
+      master: preset.master ?? null,
+    });
     setQuoted(null);
     setBooking(null);
     setNotice(null);

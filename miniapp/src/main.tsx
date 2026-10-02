@@ -16,6 +16,7 @@ import './index.css'
 import './lib/appHeight'
 import App from './App.tsx'
 import './i18n';
+import { warmFontsWhenIdle } from './lib/fontWarmup'
 
 // reducedMotion="user" — один переключатель на все анимации приложения:
 // у кого в системе включено «уменьшить движение», тот получает смену
@@ -28,3 +29,7 @@ createRoot(document.getElementById('root')!).render(
     </MotionConfig>
   </StrictMode>,
 )
+
+// Начертания, которых главная не показывает, готовятся заранее, а не в момент
+// открытия листа записи (см. lib/fontWarmup.ts).
+warmFontsWhenIdle()

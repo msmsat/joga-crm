@@ -53,14 +53,14 @@
   "header": {
     "eyebrow": "Velora · Fakturace",
     "title": "Tarify a fakturace",
-    "subtitle": "Spravujte předplatné, platební metody a historii plateb",
+    "subtitle": "Spravujte tarif, platební metody a historii plateb",
     "totalSpent": "Celkem utraceno",
     "monthsWithUs": "Měsíců s námi",
     "saved": "Ušetřeno",
     "nextCharge": "Další platba",
     "currentPlan": "AKTUÁLNÍ TARIF",
     "noPlanName": "Bez tarifu",
-    "noPlan": "Žádné aktivní předplatné",
+    "noPlan": "Žádný aktivní tarif",
     "active": "Aktivní",
     "activeUntil": "Aktivní · do {{date}}",
     "trialPlanName": "Zkušební tarif",
@@ -76,18 +76,18 @@
   },
   "mode": {
     "title": "Model platby",
-    "subscription": "Pevné předplatné",
+    "subscription": "Nákup období",
     "percent": "% z tržeb",
     "combo": "Pevná část + %",
     "short": {
-      "subscription": "Pevný",
+      "subscription": "Období",
       "percent": "Procenta",
       "combo": "Kombi"
     },
     "descriptions": {
-      "subscription": "Platíte jednu částku měsíčně. Předvídatelné a výhodné.",
+      "subscription": "Jedna platba za zvolené období. Prodloužení ručně.",
       "percent": "Bez pevného poplatku: {{rate}} % z každé tržby, včetně hotovosti.",
-      "combo": "Poloviční předplatné + {{rate}} % z každé tržby, včetně hotovosti."
+      "combo": "Polovina pevné ceny za období + {{rate}} % z každé tržby, včetně hotovosti."
     },
     "badges": {
       "popular": "Oblíbené",
@@ -106,7 +106,7 @@
     "activateError": "Model platby se nepodařilo změnit",
     "alreadyActive": "Tento model platby už je aktivní — níže můžete tarif obnovit nebo změnit",
     "confirmSwitchTitle": "Změnit model platby?",
-    "confirmSwitchMessage": "Vaše předplatné je aktivní. Změna modelu platí okamžitě a zbytek zaplaceného období PROPADÁ celý: nevyužité dny se nevracejí ani nepřenášejí.",
+    "confirmSwitchMessage": "Váš zaplacený tarif je aktivní. Změna modelu platí okamžitě a zbytek zaplaceného období PROPADÁ celý: nevyužité dny se nevracejí ani nepřenášejí.",
     "termsTitle": "Potvrďte podmínky tarifu",
     "termsMessage": "V tomto tarifu si platforma sráží {{rate}} % z každé tržby.\n\nU online plateb se poplatek strhává automaticky v okamžiku platby. U hotovosti, terminálu a dobití vkladu se NESTRHÁVÁ hned — načítá se a jednou měsíčně dostanete samostatnou fakturu.\n\nNa její zaplacení máte {{days}} dní. Pokud nebude uhrazena včas, přístup do CRM i do klientské mini-aplikace se pozastaví, dokud ji nezaplatíte.\n\nAktuální dlužnou částku vidíte ve Fakturaci; zaplatit můžete kdykoli, i předem.",
     "termsConfirm": "Souhlasím s podmínkami",
@@ -314,8 +314,7 @@
     "burnWarning": "Přechod na jiný tarif restartuje období: zbytek tarifu {{plan}} PROPADÁ — nevrací se ani nepřenáší. Obnovení stejného tarifu ho zachová.",
     "switched": "Tarif změněn: není co platit — přechod pokryl zbytek aktuálního období.",
     "renewNote": "Jde o obnovení stejného tarifu: zakoupené měsíce se přičtou k aktuálnímu zaplacenému období. Nic nepropadá.",
-    "cardNote": "Platba kartou na zabezpečené stránce Stripe · vrácení do 7 dnů",
-    "freeUntil": "Do {{date}} se nic nestrhává: zbývá vám {{count}} dní už zaplaceného období. Fakturace začne tímto dnem.",
+    "cardNote": "Jednorázová platba přes zabezpečený formulář Stripe",
     "taxLabel": "DPH",
     "taxLine": "DPH {{rate}} %",
     "reverseCharge": "Reverse charge",
@@ -378,20 +377,29 @@
       "cityPlaceholder": "Praha",
       "vat": "DIČ — nepovinné",
       "vatPlaceholder": "{{prefix}}12345678",
-      "vatHint": "Jen pro firmy. Číslo se při uložení ověřuje v registru EU (VIES) — neověřená nepřijímáme. S platným číslem se firmě z jiné země EU fakturuje bez daně (reverse charge). Fyzické osoby ho nemají — nechte prázdné.",
+      "vatHint": "Pro firmu zadejte DIČ. Ověříme ho ve VIES. České DIČ neruší českou DPH; u ověřené firmy v jiné zemi EU se může uplatnit reverse charge.",
       "countrySearch": "Začněte psát název",
       "countryNotFound": "Země nenalezena",
-      "vatOutsideEu": "DIČ nepožadujeme: mimo EU určuje daň země plátce, ne jeho číslo, takže na fakturu to nemá vliv.",
-      "vatPending": "Vaše číslo je uloženo, ale registr EU byl v tu chvíli nedostupný, takže zatím není potvrzeno a na další faktuře bude plná DPH. Nemusíte ho zadávat znovu: ověřujeme dál a jakmile registr odpoví, daň se přestane účtovat. U už zaplacené faktury vám daň vrátí podpora."
+      "vatOutsideEu": "VIES ověřuje pouze DIČ v EU. Mimo EU se daňový režim určuje zvlášť podle země a postavení kupujícího.",
+      "vatPending": "DIČ je uloženo, ale VIES ho zatím nepotvrdil. Do ověření se reverse charge neuplatňuje. Kontrolu automaticky zopakujeme.",
+      "legalName": "Jméno / právní název společnosti",
+      "legalNamePlaceholder": "Celé jméno nebo registrovaný název firmy",
+      "registrationId": "Reg. číslo — nepovinné",
+      "registrationIdCz": "IČO — nepovinné",
+      "registrationIdPlaceholder": "Nepovinné"
     },
     "errors": {
-      "required": "Toto pole je povinné"
+      "required": "Toto pole je povinné",
+      "legalNameRequired": "Zadejte své celé jméno nebo právní název společnosti",
+      "legalNameTooLong": "Nejvýše 200 znaků",
+      "registrationIdTooLong": "Nejvýše 40 znaků"
     },
     "preview": {
       "invoice": "Faktura",
       "billTo": "Odběratel",
       "note": "Takto se vaše údaje objeví na každé faktuře. Můžete je kdykoli změnit v Tarif a platba → Způsob platby."
-    }
+    },
+    "registrationNumber": "Reg. číslo: {{number}}"
   },
   "checkout": {
     "secureStripe": "Platby přes Stripe",
@@ -419,16 +427,13 @@
     "paymentPlaceholder": "Karta a digitální peněženky",
     "paymentHint": "Dostupné způsoby platby se zobrazí po uložení fakturačních údajů.",
     "orderDetails": "Podrobnosti objednávky",
-    "subscription": "Předplatné Velora",
     "tax": "DPH",
-    "taxAtPayment": "Vypočítá se při platbě",
+    "taxAtPayment": "Vypočteme z fakturačních údajů před platbou",
     "reverseCharge": "Daň odvádí zákazník (reverse charge).",
     "total": "Celkem k úhradě",
     "dueToday": "Dnes k úhradě",
-    "nextCharge": "Další platba: {{amount}} dne {{date}}.",
     "switchWarning": "Nový tarif začíná nyní. Zbývající čas aktuálního tarifu propadne.",
     "pay": "Zaplatit {{amount}}",
-    "confirmSubscription": "Potvrdit předplatné",
     "secure": "Bezpečná platba přes Stripe",
     "agreement": "Pokračováním přijímáte",
     "loading": "Načítáme vaše údaje…",
@@ -444,6 +449,20 @@
     "changePlan": "Změnit",
     "addVat": "Přidat DIČ",
     "savedForNextTime": "Údaje uložíme pro příští platbu",
-    "closeCountries": "Zavřít seznam zemí"
+    "closeCountries": "Zavřít seznam zemí",
+    "purchase": "Přístup do Velora na zvolené období",
+    "taxWithRate": "DPH {{rate}} %",
+    "taxReview": "Daňový režim vyžaduje ověření",
+    "taxExempt": "Osvobozeno od DPH podle příslušných pravidel.",
+    "taxOutOfScope": "Mimo působnost DPH EU; mohou vzniknout místní daňové povinnosti.",
+    "accessPeriod": "Přístup: {{start}} – {{end}}.",
+    "accessUntil": "Přístup do {{date}}.",
+    "noAutoRenewal": "Jednorázová platba za zvolené období. Bez automatického strhávání.",
+    "invalidPaymentAmount": "Částka platby není správná. Pro obnovení částky otevřete platbu znovu.",
+    "vatNumber": "DIČ: {{number}}",
+    "vatIdHint": "Pro firmu zadejte DIČ. Ověříme ho ve VIES. České DIČ neruší českou DPH; u ověřené firmy v jiné zemi EU se může uplatnit reverse charge.",
+    "vatPending": "DIČ je uloženo, ale VIES ho zatím nepotvrdil. Do ověření se reverse charge neuplatňuje. Kontrolu automaticky zopakujeme.",
+    "accessUntilLabel": "Přístup do",
+    "notificationSettings": "Nastavení oznámení"
   }
 }

@@ -257,21 +257,18 @@ check('свежий список мастеров не показывает ис
 });
 
 // ─── 10. Постоянного календаря над списком мастеров нет ───────────────────────
-check('экран индивидуальной записи не рисует ленту недели', () => {
+// Экрана «Записаться» больше нет — индивидуальная запись живёт мастером на
+// главной (components/wizard). Лист переноса в «Моих записях» остался.
+check('индивидуальная запись не рисует ленту недели', () => {
   const read = (path: string) => readFileSync(new URL(path, import.meta.url), 'utf8');
   for (const path of [
-    '../pages/booking/BookingPage.tsx',
-    '../pages/booking/components/ServiceFilter.tsx',
-    '../pages/booking/components/MasterCard.tsx',
-    '../pages/booking/components/BookingSheet.tsx',
     '../components/booking/ResourceBookingSheet.tsx',
     '../components/booking/TimeStep.tsx',
   ]) {
     assert.doesNotMatch(read(path), /WeekRail/, `${path} снова тянет WeekRail`);
   }
-  const schedule = read('../pages/shedule.tsx');
-  assert.doesNotMatch(schedule, /WeekRail/, 'лента недели живёт только в EventSchedule');
-  assert.match(read('../pages/schedule/EventSchedule.tsx'), /<WeekRail/, 'у групп расписание по дням осталось');
+  // Дни у мастеров записи на главной — лента `DayStrip`, а не неделя расписания.
+  assert.match(read('../components/wizard/GroupTime.tsx'), /<DayStrip/, 'групповая запись выбирает день лентой');
 });
 
 // ─── Время — строкой студии, не часовым поясом телефона ───────────────────────

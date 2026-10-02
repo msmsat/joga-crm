@@ -53,14 +53,14 @@
   "header": {
     "eyebrow": "Velora · Χρέωση",
     "title": "Προγράμματα και χρέωση",
-    "subtitle": "Διαχειριστείτε τη συνδρομή, τους τρόπους πληρωμής και το ιστορικό πληρωμών",
+    "subtitle": "Manage your plan, payment methods and payment history",
     "totalSpent": "Συνολική δαπάνη",
     "monthsWithUs": "Μήνες μαζί μας",
     "saved": "Εξοικονομήθηκαν",
     "nextCharge": "Επόμενη χρέωση",
     "currentPlan": "ΤΡΕΧΟΝ ΠΡΟΓΡΑΜΜΑ",
     "noPlanName": "Χωρίς πρόγραμμα",
-    "noPlan": "Δεν υπάρχει ενεργή συνδρομή",
+    "noPlan": "No active plan",
     "active": "Ενεργό",
     "activeUntil": "Ενεργό · έως {{date}}",
     "trialPlanName": "Δοκιμαστικό πρόγραμμα",
@@ -76,18 +76,18 @@
   },
   "mode": {
     "title": "Μοντέλο πληρωμής",
-    "subscription": "Σταθερή συνδρομή",
+    "subscription": "Period purchase",
     "percent": "% των πωλήσεων",
     "combo": "Συνδυασμός σταθερού + %",
     "short": {
-      "subscription": "Σταθερό",
+      "subscription": "Period",
       "percent": "Ποσοστό",
       "combo": "Συνδυαστικό"
     },
     "descriptions": {
-      "subscription": "Πληρώστε ένα ποσό τον μήνα. Προβλέψιμο και οικονομικό.",
+      "subscription": "One payment for the selected period. Renew manually.",
       "percent": "Χωρίς σταθερή χρέωση: {{rate}}% από κάθε πώληση, συμπεριλαμβανομένων των μετρητών.",
-      "combo": "Μισή συνδρομή + {{rate}}% από κάθε πώληση, συμπεριλαμβανομένων των μετρητών."
+      "combo": "Half the fixed period price + {{rate}}% of every sale, cash included."
     },
     "badges": {
       "popular": "Δημοφιλές",
@@ -106,7 +106,7 @@
     "activateError": "Δεν ήταν δυνατή η ενημέρωση του μοντέλου πληρωμής",
     "alreadyActive": "Αυτό το μοντέλο πληρωμής είναι ήδη ενεργό — παρακάτω μπορείτε να ανανεώσετε ή να αλλάξετε πρόγραμμα",
     "confirmSwitchTitle": "Αλλαγή μοντέλου πληρωμής;",
-    "confirmSwitchMessage": "Η συνδρομή σας είναι ενεργή. Η αλλαγή ισχύει αμέσως και το υπόλοιπο της πληρωμένης περιόδου ΧΑΝΕΤΑΙ ΟΛΟΚΛΗΡΩΤΙΚΑ: οι αχρησιμοποίητες ημέρες δεν επιστρέφονται ούτε μεταφέρονται.",
+    "confirmSwitchMessage": "Your paid plan is active. Switching models takes effect immediately and the remainder of the paid period IS FORFEITED entirely: the unused days are not refunded and do not carry over.",
     "termsTitle": "Επιβεβαιώστε τους όρους προγράμματος",
     "termsMessage": "Σε αυτό το πρόγραμμα η πλατφόρμα παρακρατεί {{rate}}% από κάθε πώληση.\n\nΣτις ηλεκτρονικές πληρωμές η χρέωση παρακρατείται αυτόματα τη στιγμή της πληρωμής. Για μετρητά, τερματικό και αναπληρώσεις καταθέσεων ΔΕΝ παρακρατείται αμέσως — συσσωρεύεται και λαμβάνετε ξεχωριστό τιμολόγιο μία φορά τον μήνα.\n\nΈχετε {{days}} ημέρες για να πληρώσετε το τιμολόγιο. Αν δεν πληρωθεί εγκαίρως, η πρόσβαση στο CRM και τη μίνι εφαρμογή πελατών αναστέλλεται έως την εξόφληση.\n\nΤο τρέχον οφειλόμενο ποσό εμφανίζεται στη Χρέωση· μπορείτε να πληρώσετε οποτεδήποτε, ακόμη και νωρίτερα.",
     "termsConfirm": "Αποδέχομαι τους όρους",
@@ -312,8 +312,7 @@
     "burnWarning": "Η μετάβαση σε άλλο πρόγραμμα επανεκκινεί την περίοδο: το υπόλοιπο του προγράμματός σας {{plan}} ΧΑΝΕΤΑΙ — δεν επιστρέφεται ούτε μεταφέρεται. Η ανανέωση του ίδιου προγράμματος το διατηρεί.",
     "switched": "Το πρόγραμμα άλλαξε: δεν υπάρχει πληρωμή — η αλλαγή καλύφθηκε από το υπόλοιπο της τρέχουσας περιόδου.",
     "renewNote": "Αυτό ανανεώνει το ίδιο πρόγραμμα: οι μήνες που αγοράζετε προστίθενται στην τρέχουσα πληρωμένη περίοδο. Τίποτα δεν χάνεται.",
-    "cardNote": "Πληρωμή κάρτας στην ασφαλή σελίδα Stripe · επιστροφή εντός 7 ημερών",
-    "freeUntil": "Δεν χρεώνεται τίποτα έως {{date}}: σας απομένουν {{count}} ημέρες από την ήδη πληρωμένη περίοδο. Η χρέωση αρχίζει εκείνη την ημερομηνία.",
+    "cardNote": "One-time payment through Stripe’s secure form",
     "taxLabel": "ΦΠΑ",
     "taxLine": "ΦΠΑ {{rate}}%",
     "reverseCharge": "Αντίστροφη χρέωση",
@@ -376,20 +375,29 @@
       "cityPlaceholder": "Πράγα",
       "vat": "Αριθμός ΦΠΑ — προαιρετικό",
       "vatPlaceholder": "{{prefix}}12345678",
-      "vatHint": "Μόνο για επιχειρήσεις. Ο αριθμός ελέγχεται στο μητρώο της ΕΕ (VIES) τη στιγμή της αποθήκευσης — δεν δεχόμαστε μη επιβεβαιωμένους αριθμούς. Με έγκυρο αριθμό, εταιρεία σε άλλη χώρα της ΕΕ τιμολογείται χωρίς φόρο (αντίστροφη χρέωση). Τα φυσικά πρόσωπα δεν έχουν — αφήστε το κενό.",
+      "vatHint": "For a business, enter your VAT ID. We verify it through VIES. A Czech VAT ID does not remove Czech VAT; reverse charge may apply to a verified business in another EU country.",
       "countrySearch": "Αρχίστε να πληκτρολογείτε όνομα",
       "countryNotFound": "Δεν βρέθηκε χώρα",
-      "vatOutsideEu": "Δεν ζητάμε αριθμό ΦΠΑ: εκτός ΕΕ ο φόρος ορίζεται από τη χώρα του πληρωτή, όχι από τον αριθμό του, οπότε δεν αλλάζει το τιμολόγιο.",
-      "vatPending": "Ο αριθμός σας έχει αποθηκευτεί, αλλά το μητρώο της ΕΕ δεν ήταν διαθέσιμο τότε, επομένως δεν έχει επιβεβαιωθεί ακόμη και το επόμενο τιμολόγιό σας θα περιλαμβάνει πλήρη ΦΠΑ. Δεν χρειάζεται να τον εισαγάγετε ξανά: συνεχίζουμε να ελέγχουμε και, μόλις απαντήσει το μητρώο, ο φόρος σταματά να χρεώνεται. Για ήδη πληρωμένο τιμολόγιο, η υποστήριξη θα επιστρέψει τον φόρο."
+      "vatOutsideEu": "VIES verifies EU VAT IDs only. Outside the EU, tax treatment must be determined separately from your country and business status.",
+      "vatPending": "Your VAT ID is saved but is not yet verified by VIES. No reverse-charge treatment is applied until verification. We retry the check automatically.",
+      "legalName": "Legal name / company name",
+      "legalNamePlaceholder": "Full name or registered company name",
+      "registrationId": "Business ID — optional",
+      "registrationIdCz": "IČO — optional",
+      "registrationIdPlaceholder": "Optional"
     },
     "errors": {
-      "required": "Αυτό το πεδίο είναι υποχρεωτικό"
+      "required": "Αυτό το πεδίο είναι υποχρεωτικό",
+      "legalNameRequired": "Enter your legal name or registered company name",
+      "legalNameTooLong": "Use up to 200 characters",
+      "registrationIdTooLong": "Use up to 40 characters"
     },
     "preview": {
       "invoice": "Τιμολόγιο",
       "billTo": "Χρέωση προς",
       "note": "Έτσι εμφανίζονται τα στοιχεία σας σε κάθε τιμολόγιο. Μπορείτε να τα αλλάξετε οποτεδήποτε στις ενότητες Προγράμματα και χρέωση → Τρόπος πληρωμής."
-    }
+    },
+    "registrationNumber": "Business ID: {{number}}"
   },
   "checkout": {
     "secureStripe": "Πληρωμές μέσω Stripe",
@@ -416,16 +424,13 @@
     "paymentPlaceholder": "Card and digital wallets",
     "paymentHint": "Available payment methods appear after you save your billing details.",
     "orderDetails": "Order details",
-    "subscription": "Velora subscription",
     "tax": "VAT",
-    "taxAtPayment": "Calculated at payment",
+    "taxAtPayment": "Calculated from your billing details before payment",
     "reverseCharge": "VAT is accounted for by the buyer (reverse charge).",
     "total": "Total due",
     "dueToday": "Due today",
-    "nextCharge": "Next payment: {{amount}} on {{date}}.",
     "switchWarning": "The new plan starts now. The remaining time on your current plan will be lost.",
     "pay": "Pay {{amount}}",
-    "confirmSubscription": "Confirm subscription",
     "secure": "Secure payment with Stripe",
     "agreement": "By continuing, you accept",
     "loading": "Loading your details…",
@@ -440,6 +445,20 @@
     "changePlan": "Change",
     "addVat": "Add VAT number",
     "savedForNextTime": "Saved for your next payment",
-    "closeCountries": "Close country list"
+    "closeCountries": "Close country list",
+    "purchase": "Velora access for this period",
+    "taxWithRate": "VAT {{rate}}%",
+    "taxReview": "Tax treatment needs verification",
+    "taxExempt": "Exempt from VAT under the applicable rules.",
+    "taxOutOfScope": "Outside the scope of EU VAT; local tax obligations may apply.",
+    "accessPeriod": "Access: {{start}} – {{end}}.",
+    "accessUntil": "Access until {{date}}.",
+    "noAutoRenewal": "One payment for the selected period. No automatic charges.",
+    "invalidPaymentAmount": "The payment amount is invalid. Reopen checkout to refresh it.",
+    "vatNumber": "VAT ID: {{number}}",
+    "vatIdHint": "For a business, enter your VAT ID. We verify it through VIES. A Czech VAT ID does not remove Czech VAT; reverse charge may apply to a verified business in another EU country.",
+    "vatPending": "Your VAT ID is saved but is not yet verified by VIES. No reverse-charge treatment is applied until verification. We retry the check automatically.",
+    "accessUntilLabel": "Access ends",
+    "notificationSettings": "Notification settings"
   }
 }

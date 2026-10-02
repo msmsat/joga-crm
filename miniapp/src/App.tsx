@@ -2,8 +2,7 @@ import BusinessTermsProvider from './components/BusinessTermsProvider';
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import Home, { type ScheduleFilter } from './pages/home';
-import Shedule from './pages/shedule';
+import Home from './pages/home';
 import MyLessons from './pages/mylessons';
 import Profile from './pages/profile';
 import Club from './pages/club';
@@ -17,46 +16,41 @@ import { getLoyalty, type LoyaltyOverview } from './api/loyalty';
 import { useTelegram } from './hooks/useTelegram';
 import { useIsDesktop } from './hooks/useIsDesktop';
 import { visibleNavItems } from './components/navItems';
-import { readDeepLink, readEntry, readTab, rememberStudio, setStudioRef, type DeepLink } from './lib/entry';
+import {
+  readDeepLink, readEntry, readTab, rememberStudio, setStudioRef, wizardFocusOf, type DeepLink, type WizardFocus,
+} from './lib/entry';
 import { applyBranding, applyDefaultLanguage } from './lib/branding';
 import { getSession, saveSession, clearSession, reconcileSession, isSignedOut } from './lib/session';
 import { startPresence } from './lib/presence';
 import './App.css';
 
 /**
- * Разделы, открытые до входа. Витрина студии — расписание и главная — видна
+ * Разделы, открытые до входа. Витрина студии — главная с записью — видна
  * гостю целиком: занятие выбирают ДО регистрации, иначе форма входа стоит
  * поперёк единственного, зачем человек пришёл. Остальное — кабинет: там нужен
  * токен, и вместо 401 гость получает вход (см. `authGate`).
  */
-const GUEST_TABS = ['home', 'sched'];
+const GUEST_TABS = ['home'];
 
 /**
- * Раздел, с которого открывается приложение, — главная.
+ * Раздел, с которого открывается приложение, — главная: студия, в которую
+ * человек пришёл, и запись. Отдельной вкладки расписания больше нет — запись
+ * живёт мастерами на главной, и QR-коды занятий, услуг и сотрудников
+ * открывают их здесь же (`wizardFocusOf`).
  *
- * Главная — витрина студии целиком: приветствие, ближайшая запись, направления
- * и переход в расписание одним нажатием. Открывать сразу расписание значит
- * показывать человеку список дней вместо студии, в которую он пришёл, — и
- * прятать всё остальное за пунктом меню, о котором он ещё не знает.
- *
- * `?tab=` из ссылки сильнее — QR на занятие (`tab=sched`) и письмо про запись
- * (`tab=my`) обязаны открыть именно свой раздел.
+ * `?tab=` из ссылки сильнее — письмо про запись (`tab=my`) обязано открыть
+ * именно свой раздел.
  */
 const DEFAULT_TAB = 'home';
 
 /**
- * Раздел, которого требует сама ссылка. QR-коды студии печатаются с явным
- * `?tab=` (front/src/lib/miniapp.ts), но ссылку пересылают и правят руками, а
- * теперь по умолчанию открывается главная: адрес с занятием без `tab` иначе
- * молча привёл бы не туда — занятие ждало бы в расписании, которого никто не
- * открыл. Номер занятия значит расписание, номер абонемента — покупку.
+ * Раздел, которого требует сама ссылка. Ссылку пересылают и правят руками, и
+ * адрес с абонементом без `tab` иначе молча привёл бы не туда — покупка ждала
+ * бы в профиле, которого никто не открыл. Номер абонемента значит покупку;
+ * занятие, услуга и сотрудник — главную, она открывается и так.
  */
-const deepLinkTab = (link: DeepLink): string | undefined => {
-  if (link.lessonId != null) return 'sched';
-  if (link.staffId != null) return 'sched';
-  if (link.packageId != null) return 'prof';
-  return undefined;
-};
+const deepLinkTab = (link: DeepLink): string | undefined =>
+  link.packageId != null ? 'prof' : undefined;
 
 export default function App() {
   const { t } = useTranslation();
@@ -255,12 +249,23 @@ export default function App() {
    *  обязательна, иначе setState принял бы функцию за апдейтер. */
   const requireAuth = (retry: () => void) => setPendingBooking(() => retry);
 
-  /** Групповые занятия с главной: расписание с выбранным мастером или услугой. */
-  const [homeFilter, setHomeFilter] = useState<(ScheduleFilter & { nonce: number }) | undefined>();
-  const openSchedule = (filter: ScheduleFilter) => {
-    setHomeFilter((current) => ({ ...filter, nonce: (current?.nonce ?? 0) + 1 }));
-    switchTab('sched');
-  };
+  /**
+   * QR-код студии (занятие, услуга, сотрудник) ведёт в мастер записи на главной
+   * (`wizardFocusOf`): отдельных экранов записи больше нет. `undefined` — ссылка
+   * ещё не разобрана: механику услуги называет каталог, а он приходит позже
+   * первого кадра. Разбор правкой в рендере, а не эффектом: лист записи обязан
+   * открыться поверх главной сразу, без кадра другого раздела под ним.
+   */
+  const [linkFocus, setLinkFocus] = useState<WizardFocus | null | undefined>(undefined);
+  if (linkFocus === undefined && catalog) {
+    const focus = wizardFocusOf(
+      deepLink,
+      catalog.booking_capabilities.booking_mode,
+      (id) => catalog.services.find((service) => service.id === id)?.booking_mode,
+    );
+    setLinkFocus(focus);
+    if (focus) setActiveTab('home');
+  }
 
   // 4️⃣ ПОКА ИДЕТ ЗАПРОС К БАЗЕ ДАННЫХ — ПОКАЗЫВАЕМ ЗАГЛУШКУ-ЛОАДЕР
   if (isLoading) {
@@ -345,6 +350,7 @@ export default function App() {
   // у разделов кабинета. Отдельного флага под это нет — это следствие текущего
   // состояния, а не решение, принятое где-то раньше и способное с ним разойтись.
   const authGate = !user && (pendingBooking !== null || !GUEST_TABS.includes(activeTab));
+  const navItems = visibleNavItems(Boolean(loyalty?.enabled));
   // Гость остаётся на витрине, даже если ссылка вела в кабинет (`?tab=my`):
   // намерение живёт в activeTab и откроется само, как только появится токен.
   const screenTab = user || GUEST_TABS.includes(activeTab) ? activeTab : DEFAULT_TAB;
@@ -362,18 +368,8 @@ export default function App() {
         onNavigate={switchTab}
         onBuySubscription={goBuySubscription}
         onNeedAuth={requireAuth}
-        onOpenSchedule={openSchedule}
-      />
-    ),
-    sched: (
-      <Shedule
-        catalog={catalog}
-        onBuySubscription={goBuySubscription}
-        onNeedAuth={requireAuth}
-        focusLesson={deepLink.lessonId != null ? { id: deepLink.lessonId, date: deepLink.date } : undefined}
-        focusServiceId={deepLink.serviceId}
-        focusStaffId={deepLink.staffId}
-        homeFilter={homeFilter}
+        focus={linkFocus ?? null}
+        onFocusUsed={() => setLinkFocus(null)}
       />
     ),
     my: <MyLessons catalog={catalog} />,
@@ -390,9 +386,6 @@ export default function App() {
     ),
     club: <Club data={loyalty} onUseCertificate={useCertificate} />,
   };
-
-  const navItems = visibleNavItems(
-    Boolean(loyalty?.enabled), catalog?.booking_capabilities.booking_mode);
 
   // 5️⃣ КОГДА ДАННЫЕ ПОЛУЧЕНЫ — ЗАПУСКАЕМ НАШЕ ПРИЛОЖЕНИЕ И ПЕРЕДАЕМ ЮЗЕРА В HOME
   //

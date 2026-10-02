@@ -15,11 +15,24 @@ type Props = {
  * Разделы записи кнопками: и прогресс, и переход. Сделанное — с галочкой,
  * текущее — подложкой, переезжающей между кнопками. Порядок не обязателен:
  * тап открывает любой раздел, свайп по листу листает их по очереди.
+ *
+ * Подложка — один элемент, который едет CSS-переходом, а не `layoutId`
+ * framer. Общая раскладка framer при появлении заставляет его перемерять
+ * дерево и читать прокрутку предков — синхронной перекладкой страницы в момент
+ * открытия листа: замерено около 490 мс при CPU ×4, лист вставал с рывком.
+ * Сетка известна заранее (четыре равные колонки, зазор 4 px, поле 4 px), так
+ * что место подложки — арифметика, а не замер.
  */
 export default function WizardTabs({ current, done, onPick, disabled }: Props) {
   const { t } = useTranslation();
+  const index = STEPS.indexOf(current);
   return (
-    <nav className="grid grid-cols-4 gap-1 rounded-[20px] bg-background p-1" aria-label={t('wizard.title')}>
+    <nav className="relative grid grid-cols-4 gap-1 rounded-[20px] bg-background p-1" aria-label={t('wizard.title')}>
+      <span
+        aria-hidden="true"
+        className="absolute bottom-1 left-1 top-1 w-[calc((100%-20px)/4)] rounded-[16px] bg-card shadow-soft transition-transform duration-300 ease-[cubic-bezier(0.22,1.2,0.36,1)] motion-reduce:transition-none"
+        style={{ transform: `translateX(calc(${index} * (100% + 4px)))` }}
+      />
       {STEPS.map((step) => {
         const active = step === current;
         const ready = done(step);
@@ -32,13 +45,6 @@ export default function WizardTabs({ current, done, onPick, disabled }: Props) {
             onClick={() => !active && onPick(step)}
             className="relative flex min-h-[58px] flex-col items-center justify-center gap-1 rounded-[16px]"
           >
-            {active && (
-              <motion.span
-                layoutId="wizard-tab"
-                transition={{ type: 'spring', stiffness: 420, damping: 34 }}
-                className="absolute inset-0 rounded-[16px] bg-card shadow-soft"
-              />
-            )}
             <span className={cn('relative h-[19px] w-[19px]', active ? 'text-brand' : ready ? 'text-foreground' : 'text-muted-foreground')}>
               {STEP_ICONS[step]}
               {ready && (

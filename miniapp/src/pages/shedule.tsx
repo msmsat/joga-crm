@@ -1,13 +1,4 @@
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import PhoneSheet from '../components/modals/PhoneSheet';
-import SubscriptionSheet from '../components/modals/SubscriptionSheet';
-import ModeSwitch, { type ScheduleView } from '../components/schedule/ModeSwitch';
-import BookingClosedNotice from '../components/schedule/BookingClosedNotice';
-import { ScreenHeader } from '../components/ui/ScreenHeader';
-import BookingPage from './booking/BookingPage';
 import EventSchedule from './schedule/EventSchedule';
-import { useResourceBooking } from '../hooks/useResourceBooking';
 import type { StudioCatalog } from '../api/studio';
 
 interface SheduleProps {
@@ -18,113 +9,40 @@ interface SheduleProps {
   onNeedAuth: (retry: () => void) => void;
   /** Занятие из QR-кода студии: открыть его день и сам лист брони. */
   focusLesson?: { id: number; date?: string };
-  /** Услуга из QR-кода студии: открыть раздел с уже выбранной услугой. */
+  /** Услуга из QR-кода студии: расписание с ней в фильтре. */
   focusServiceId?: number;
-  /** Сотрудник из QR-кода студии: запись к нему либо расписание по нему. */
+  /** Сотрудник из QR-кода студии: расписание с ним в фильтре. */
   focusStaffId?: number;
-  /** Групповые занятия, выбранные на главной: открыть расписание групп с фильтром. */
-  homeFilter?: { teacher?: number; service?: number; branch?: number; nonce: number };
 }
 
 /**
- * Вкладка записи. Режим студии решает, ЧТО это за экран (MA-01, §4.4).
+ * Вкладка «Расписание» — групповые занятия по дням.
  *
- * `event` — расписание занятий по дням, как и было. `resource` — запись к
- * мастеру: услуги-фильтр и мастера, без календаря над ними (pages/booking).
- * `hybrid` — оба раздела под переключателем: индивидуальная запись первой,
- * потому что записаться — действие, а расписание групп — справка.
+ * Она есть ровно у студий, у которых есть расписание групп (`event` и
+ * `hybrid`, см. `visibleNavItems`). Индивидуальная запись живёт только мастером
+ * на главной: прежний экран «Записаться» со списком мастеров повторял его
+ * «Мастер» и «Услугу», и у человека было два способа сделать одно и то же.
  *
- * Оба раздела гибридной студии остаются смонтированными и прячутся атрибутом:
- * переключение не теряет ни выбранного мастера, ни пролистанную неделю.
+ * QR-коды делятся так же (`lib/entry.wizardFocusOf`): занятие, групповая
+ * услуга и тренер студии групп — сюда; мастер и индивидуальная услуга — в
+ * мастер записи на главной.
  */
-export default function Shedule({ catalog, onBuySubscription, onNeedAuth, focusLesson, focusServiceId, focusStaffId, homeFilter }: SheduleProps) {
-  const { t } = useTranslation();
+export default function Shedule({ catalog, onBuySubscription, onNeedAuth, focusLesson, focusServiceId, focusStaffId }: SheduleProps) {
   const mode = catalog?.booking_capabilities.booking_mode ?? 'event';
-  // Ссылка на УСЛУГУ сама говорит, какой это раздел, — но не словом в адресе, а
-  // механикой услуги в каталоге: напечатанный код переживает превращение услуги
-  // из групповой в индивидуальную. Каталог приезжает позже первого кадра,
-  // поэтому раздел ВЫЧИСЛЯЕТСЯ, а не выставляется эффектом.
-  const focusMode = focusServiceId != null
-    ? catalog?.services.find((service) => service.id === focusServiceId)?.booking_mode
-    : undefined;
-
-  // Ссылка на СОТРУДНИКА — то же правило, но спросить некого: услуга знает свою
-  // механику, человек не знает, он может и вести группы, и принимать
-  // индивидуально. Поэтому раздел называет режим студии, а не режим чего-то
-  // внутри неё: `event` — расписание с фильтром по тренеру, иначе — запись к
-  // мастеру. Именно режим, а не текущий `view`: раздел выбирается один раз,
-  // и переключение вкладки руками не должно потом открывать лист брони само.
-  // ponytail: в гибридной студии код тренера, который ведёт ТОЛЬКО группы,
-  // откроет индивидуальную запись, где его нет; если такие студии появятся —
-  // спрашивать у /booking/staff, числится ли он мастером.
-  const staffSection = focusStaffId != null && mode === 'event' ? 'event' : 'resource';
-
-  // Выбор человека сильнее ссылки — но только после того, как он его сделал.
-  // `null` — «ещё не переключал»: тогда раздел называет ссылка, а по умолчанию
-  // открыта индивидуальная запись. Ссылка на занятие — всегда групповой раздел:
-  // индивидуальная запись идёт от мастера, занятия с номером там нет.
-  const [picked, setPicked] = useState<ScheduleView | null>(focusLesson || homeFilter ? 'event' : null);
-  // Групповой выбор с главной у гибридной студии открывает раздел групп.
-  const [homeNonce, setHomeNonce] = useState(homeFilter?.nonce ?? 0);
-  if (homeFilter && homeFilter.nonce !== homeNonce) {
-    setHomeNonce(homeFilter.nonce);
-    setPicked('event');
-  }
-  const view: ScheduleView = picked
-    ?? (focusMode === 'event' ? 'event' : 'resource');
-  const showResource = mode === 'resource' || (mode === 'hybrid' && view === 'resource');
-  const rules = catalog?.rules ?? null;
-
-  // Расчёт, quote и подтверждение — тот же домен, что у записи с главной и
-  // переноса в «Моих записях»: экран добавляет шаги ДО выбора времени, а не
-  // вторую механику брони.
-  const resource = useResourceBooking({ onNeedAuth, catalog });
-  const segment = mode === 'hybrid' ? <ModeSwitch value={view} onChange={setPicked} /> : null;
+  // Механику услуги называет каталог, а не ссылка: напечатанный код переживает
+  // превращение услуги из групповой в индивидуальную. Каталог к этому моменту
+  // уже загружен — App не рисует разделы до него.
+  const isGroupService = focusServiceId != null
+    && catalog?.services.find((service) => service.id === focusServiceId)?.booking_mode === 'event';
 
   return (
-    <>
-      {mode !== 'event' && (
-        <div hidden={!showResource}>
-          <ScreenHeader kicker={catalog?.studio.name} title={t('booking.title')} />
-          {segment}
-          {rules && !rules.booking_active && <BookingClosedNotice />}
-          <BookingPage
-            catalog={catalog}
-            resource={resource}
-            focusServiceId={focusMode === 'resource' ? focusServiceId : undefined}
-            focusStaffId={staffSection === 'resource' ? focusStaffId : undefined}
-          />
-        </div>
-      )}
-
-      {mode !== 'resource' && (
-        <div hidden={showResource}>
-          <EventSchedule
-            catalog={catalog}
-            onBuySubscription={onBuySubscription}
-            onNeedAuth={onNeedAuth}
-            segment={segment}
-            focusLesson={focusLesson}
-            focusServiceId={focusMode === 'event' ? focusServiceId : undefined}
-            focusStaffId={staffSection === 'event' ? focusStaffId : undefined}
-            homeFilter={homeFilter}
-          />
-        </div>
-      )}
-
-      <PhoneSheet
-        isOpen={resource.needsPhone}
-        onClose={resource.closePhone}
-        onSaved={resource.retryAfterPhone}
-        layer={3}
-      />
-
-      <SubscriptionSheet
-        isOpen={resource.needsSubscription !== null}
-        onClose={resource.closeSubscription}
-        message={resource.needsSubscription}
-        onBuy={() => { resource.closeSubscription(); onBuySubscription(); }}
-      />
-    </>
+    <EventSchedule
+      catalog={catalog}
+      onBuySubscription={onBuySubscription}
+      onNeedAuth={onNeedAuth}
+      focusLesson={focusLesson}
+      focusServiceId={isGroupService ? focusServiceId : undefined}
+      focusStaffId={mode === 'event' ? focusStaffId : undefined}
+    />
   );
 }

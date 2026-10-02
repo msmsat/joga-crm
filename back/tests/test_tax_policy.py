@@ -73,6 +73,17 @@ def test_seller_without_country_blocks():
     assert d.basis == "seller_country_missing"
 
 
+@pytest.mark.parametrize("vat_id", [None, "", "   "])
+@pytest.mark.parametrize("country", ["CZ", "DE", "US"])
+def test_registered_seller_without_vat_id_blocks_document(vat_id, country):
+    seller = _seller(vat_id=vat_id, non_eu_confirmed=True)
+    buyer = _customer(country)
+    decision = TP.decide(seller, buyer, SAAS, AT)
+    assert decision.outcome == TP.REQUIRES_REVIEW
+    assert decision.basis == "seller_vat_id_missing"
+    assert not decision.charges_tax
+
+
 def test_seller_not_registered_is_exempt_not_taxable_zero():
     """Не плательщик — это EXEMPT с основанием, а не ставка 0 %.
 
@@ -157,38 +168,41 @@ def test_pending_vat_check_is_not_reverse_charge_and_not_taxable_guess():
     assert d.basis == "customer_vat_pending"
 
 
-def test_registry_unavailable_falls_back_to_full_tax_not_to_zero():
-    """Реестр молчит → обкладываем как B2C, то есть ошибаемся в сторону ПЕРЕПЛАТЫ.
-
-    Обратная ошибка (принять номер на веру) — это недобор налога, и снимают его
-    с платформы, а не со студии.
-    """
-    d = TP.decide(_seller(), _customer("DE", TP.VAT_REGISTRY_UNAVAILABLE, "DE811907980"), SAAS, AT)
-    assert d.outcome == TP.TAXABLE
-    assert d.rate_percent == Decimal("21")
-    assert d.evidence.get("fallback") == "registry_unavailable_treated_as_b2c"
+def test_registry_unavailable_requires_review_without_guessing_customer_status():
+    """Supplied VAT ID with no registry result cannot become a B2C sale."""
+    buyer = _customer("DE", TP.VAT_REGISTRY_UNAVAILABLE, "DE811907980")
+    decision = TP.decide(_seller(), buyer, SAAS, AT)
+    assert decision.outcome == TP.REQUIRES_REVIEW
+    assert decision.basis == "customer_vat_registry_unavailable"
+    assert not decision.charges_tax
 
 
-def test_invalid_vat_is_treated_as_b2c_not_as_reverse_charge():
-    d = TP.decide(_seller(), _customer("DE", TP.VAT_INVALID, "DE000000000"), SAAS, AT)
-    assert d.outcome == TP.TAXABLE
-    assert d.basis == "eu_b2c_domestic_rate_under_threshold"
+@pytest.mark.parametrize("state", [TP.VAT_ABSENT, TP.VAT_INVALID])
+@pytest.mark.parametrize("country", ["DE", "FR"])
+def test_supplied_unverified_foreign_eu_vat_id_requires_review(state, country):
+    buyer = _customer(country, state, country + "000000000")
+    decision = TP.decide(_seller(), buyer, SAAS, AT)
+    assert decision.outcome == TP.REQUIRES_REVIEW
+    assert decision.basis == "customer_vat_unverified"
+    assert not decision.charges_tax
 
 
-def test_three_vat_states_give_three_different_answers():
-    """Сводный: verified / pending / registry_unavailable не должны совпасть.
+def test_domestic_unverified_buyer_vat_id_keeps_czech_rate():
+    buyer = _customer("CZ", TP.VAT_REGISTRY_UNAVAILABLE, "CZ12345678")
+    decision = TP.decide(_seller(), buyer, SAAS, AT)
+    assert decision.outcome == TP.TAXABLE
+    assert decision.rate_percent == Decimal("21")
 
-    Схлопывание любых двух из них — это либо потерянный налог, либо выставленный
-    без права документ.
-    """
-    outcomes = {
-        state: TP.decide(_seller(), _customer("DE", state, "DE811907980"), SAAS, AT).outcome
+
+def test_vat_verification_states_keep_distinct_reasons():
+    decisions = {
+        state: TP.decide(_seller(), _customer("DE", state, "DE811907980"), SAAS, AT)
         for state in (TP.VAT_VERIFIED, TP.VAT_PENDING, TP.VAT_REGISTRY_UNAVAILABLE)
     }
-    assert outcomes[TP.VAT_VERIFIED] == TP.REVERSE_CHARGE
-    assert outcomes[TP.VAT_PENDING] == TP.REQUIRES_REVIEW
-    assert outcomes[TP.VAT_REGISTRY_UNAVAILABLE] == TP.TAXABLE
-    assert len(set(outcomes.values())) == 3
+    assert decisions[TP.VAT_VERIFIED].outcome == TP.REVERSE_CHARGE
+    assert decisions[TP.VAT_PENDING].outcome == TP.REQUIRES_REVIEW
+    assert decisions[TP.VAT_REGISTRY_UNAVAILABLE].outcome == TP.REQUIRES_REVIEW
+    assert len({decision.basis for decision in decisions.values()}) == 3
 
 
 # --- 5. неполные и противоречивые данные ---------------------------------------
@@ -343,3 +357,45 @@ def test_readiness_lists_what_is_missing(monkeypatch):
     monkeypatch.setenv("BILLING_SELLER_VAT_ID", "CZ00000019")
     monkeypatch.setenv("BILLING_EU_B2C_SCHEME", TP.B2C_DOMESTIC_UNDER_THRESHOLD)
     assert TP.readiness() == []
+
+
+def test_missing_seller_vat_id_blocks_readiness_and_document(monkeypatch):
+    monkeypatch.setenv("BILLING_TAX_POLICY_CONFIRMED", TP.RULESET_VERSION)
+    monkeypatch.setenv("BILLING_SELLER_COUNTRY", "CZ")
+    monkeypatch.setenv("BILLING_SELLER_VAT_REGISTERED", "true")
+    monkeypatch.setenv("BILLING_EU_B2C_SCHEME", TP.B2C_DOMESTIC_UNDER_THRESHOLD)
+    monkeypatch.delenv("BILLING_SELLER_VAT_ID", raising=False)
+    assert any("BILLING_SELLER_VAT_ID" in gap for gap in TP.readiness())
+    decision = TP.decide(TP.seller_profile(), _customer("CZ"), SAAS, AT)
+    assert decision.outcome == TP.REQUIRES_REVIEW
+    assert decision.basis == "seller_vat_id_missing"
+
+
+def test_review_only_b2c_policy_preserves_confirmed_domestic_and_business_rules():
+    seller = _seller(eu_b2c_scheme="review")
+    domestic = TP.decide(seller, _customer("CZ"), SAAS, AT)
+    business = TP.decide(seller, _customer("DE", TP.VAT_VERIFIED, "DE811907980"), SAAS, AT)
+    assert domestic.outcome == TP.TAXABLE
+    assert domestic.rate_percent == Decimal("21")
+    assert business.outcome == TP.REVERSE_CHARGE
+
+
+def test_review_only_b2c_policy_blocks_foreign_consumers_without_guessing_rate():
+    decision = TP.decide(_seller(eu_b2c_scheme="review"), _customer("DE"), SAAS, AT)
+    assert decision.outcome == TP.REQUIRES_REVIEW
+    assert decision.basis == "b2c_tax_review_required"
+    assert not decision.charges_tax
+
+
+def test_explicit_b2c_review_mode_is_ready_without_asserting_threshold_eligibility(monkeypatch):
+    monkeypatch.setenv("BILLING_TAX_POLICY_CONFIRMED", TP.RULESET_VERSION)
+    monkeypatch.setenv("BILLING_SELLER_COUNTRY", "CZ")
+    monkeypatch.setenv("BILLING_SELLER_VAT_REGISTERED", "true")
+    monkeypatch.setenv("BILLING_SELLER_VAT_ID", "CZ00000019")
+    monkeypatch.setenv("BILLING_EU_B2C_SCHEME", " review ")
+    seller = TP.seller_profile()
+    assert seller.eu_b2c_scheme == "review"
+    assert TP.readiness() == []
+    decision = TP.decide(seller, _customer("DE"), SAAS, AT)
+    assert decision.outcome == TP.REQUIRES_REVIEW
+    assert decision.basis == "b2c_tax_review_required"

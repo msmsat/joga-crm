@@ -417,6 +417,78 @@ async def lessons_by_date(
     ]
 
 
+class LessonDay(BaseSchema):
+    """День ленты мастера записи: во сколько в нём есть занятия, куда можно записаться."""
+    day: date
+    # "HH:MM" по часам студии — по возрастанию, без повторов.
+    times: list[str]
+
+
+# Потолок диапазона. Окно записи студии — до пары месяцев, шире лента не
+# листается; без потолка запрос стал бы выгрузкой всего расписания студии.
+DAYS_LIMIT = 62
+
+
+@router.get("/lessons/days", response_model=list[LessonDay])
+async def lessons_days(
+    date_from: date,
+    date_to: date,
+    viewer: Viewer = Depends(get_viewer),
+    db: AsyncSession = Depends(get_db),
+    branch_id: Annotated[Optional[list[int]], Query()] = None,
+):
+    """Сводка расписания по дням — одной операцией над диапазоном.
+
+    Лента дней мастера записи с главной отмечает дни, в которых есть куда
+    записаться, и рисует в них ритм «утро · день · вечер». Спрашивать ради
+    этого `/lessons/date` по разу на каждый день ленты — 14–60 запросов на
+    одно открытие листа. Здесь их три: занятия диапазона, брони к ним, правила.
+
+    «Куда записаться» — то же правило, что у мастера записи на клиенте
+    (miniapp/src/lib/groupWizard.isOffered): правила студии пускают и есть
+    свободный коврик; своя бронь считается всегда — у неё отмена или второй
+    коврик. Дни без таких занятий в ответ не попадают вовсе.
+
+    Токен не обязателен — по той же причине, что у расписания дня: занятие
+    выбирают до регистрации.
+    """
+    if date_to < date_from:
+        raise HTTPException(status_code=422, detail="date_to earlier than date_from")
+    if (date_to - date_from).days >= DAYS_LIMIT:
+        raise HTTPException(status_code=422, detail=f"range is limited to {DAYS_LIMIT} days")
+
+    client_id = viewer.client.id if viewer.client else None
+    start, _ = lesson_time.local_day_bounds(date_from)
+    _, end = lesson_time.local_day_bounds(date_to)
+    conditions = catalog.visible_lessons(viewer.studio_id, start, end)
+    branches = [branch_id] if isinstance(branch_id, int) else branch_id
+    if branches:
+        conditions.append(Lesson.branch_id.in_(branches))
+
+    lessons = (await db.execute(
+        select(Lesson).where(*conditions).order_by(Lesson.start_time)
+    )).scalars().all()
+    if not lessons:
+        return []
+
+    taken, booked = await _reservations_map(db, [l.id for l in lessons])
+    rules = await load_rules(db, viewer.studio_id)
+    now = datetime.now()
+
+    days: dict[date, list[str]] = {}
+    for lesson in lessons:
+        mine = client_id in booked.get(lesson.id, set())
+        free = lesson.total_spots - len(taken.get(lesson.id, []))
+        if not mine and not (free > 0 and is_bookable(rules, lesson, now)):
+            continue
+        times = days.setdefault(lesson.start_time.date(), [])
+        stamp = lesson.start_time.strftime("%H:%M")
+        # Занятия отсортированы по началу — повтор может быть только последним.
+        if not times or times[-1] != stamp:
+            times.append(stamp)
+    return [LessonDay(day=day, times=times) for day, times in sorted(days.items())]
+
+
 @router.get("/lessons/next", response_model=Optional[MiniappLesson])
 async def next_lesson(
     response: Response,

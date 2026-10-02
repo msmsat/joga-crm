@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef, type ReactNode } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import BookingModal from '../../components/modals/BookingModal';
@@ -64,25 +64,19 @@ interface EventScheduleProps {
   onBuySubscription: () => void;
   /** Бронь гостя: поднять существующий вход и продолжить ту же запись. */
   onNeedAuth: (retry: () => void) => void;
-  /** Переключатель разделов гибридной студии — под шапкой, над лентой недели. */
-  segment?: ReactNode;
   /** Занятие из QR-кода студии: открыть его день и сам лист брони. */
   focusLesson?: { id: number; date?: string };
   /** Групповая услуга из QR-кода студии: расписание сразу отфильтровано по ней. */
   focusServiceId?: number;
   /** Тренер из QR-кода студии: расписание сразу отфильтровано по нему. */
   focusStaffId?: number;
-  /** Выбор с главной: мастер или услуга (или ничего — всё расписание) и филиал
-   *  (не задан — все). `nonce` растёт с каждым выбором — тот же мастер,
-   *  выбранный снова, снова применяется. */
-  homeFilter?: { teacher?: number; service?: number; branch?: number; nonce: number };
 }
 
 /**
  * Расписание групповых занятий по дням (booking_mode `event`, и групповой
- * раздел `hybrid`). Индивидуальная запись живёт отдельно — pages/booking.
+ * раздел `hybrid`). Индивидуальная запись живёт мастером на главной (components/wizard).
  */
-export default function EventSchedule({ catalog, onBuySubscription, onNeedAuth, segment, focusLesson, focusServiceId, focusStaffId, homeFilter }: EventScheduleProps) {
+export default function EventSchedule({ catalog, onBuySubscription, onNeedAuth, focusLesson, focusServiceId, focusStaffId }: EventScheduleProps) {
   const branches = catalog?.branches ?? [];
   const isMultiStudio = branches.length > 1;
   const rules = catalog?.rules ?? null;
@@ -147,19 +141,6 @@ export default function EventSchedule({ catalog, onBuySubscription, onNeedAuth, 
     focusedStaff.current = true;
     setFilters((current) => ({ ...current, teacher: focusStaffId }));
   }, [focusStaffId]);
-  // Выбор с главной заменяет фильтр целиком: человек выбрал «к Анне» —
-  // расписание только её, без прошлой услуги в фильтре. Филиал — тоже: капсула
-  // на главной стоит на виду, и «Все» там значит все и здесь. Правка
-  // состояния в рендере: фильтр обязан совпасть с выбором в первом же кадре.
-  const [appliedHome, setAppliedHome] = useState(0);
-  if (homeFilter && homeFilter.nonce !== appliedHome) {
-    setAppliedHome(homeFilter.nonce);
-    setFilters({
-      studioIds: homeFilter.branch != null ? [homeFilter.branch] : ALL_BRANCHES,
-      service: homeFilter.service ?? null,
-      teacher: homeFilter.teacher ?? null,
-    });
-  }
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   // Каталог мог перечитаться без одного из филиалов — выбранным он не считается.
   const studioIds = knownBranches(filters.studioIds, branches.map((branch) => branch.id));
@@ -335,8 +316,6 @@ export default function EventSchedule({ catalog, onBuySubscription, onNeedAuth, 
           ) : undefined
         }
       />
-
-      {segment}
 
       {/* Лента недели не тянется во всю колонку: семь клеток на 1160px стали бы
           широкими прямоугольниками, а дата — это число, а не панель. Мера у

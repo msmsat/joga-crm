@@ -91,6 +91,8 @@ class User(Base):
     # заново на каждой новой студии значило бы спрашивать одно и то же дважды.
     # Заполняются один раз перед первой оплатой (модалка биллинга) и правятся во
     # вкладке «Способ оплаты»; отсюда уезжают в Stripe Customer при оформлении.
+    billing_legal_name: Mapped[Optional[str]] = mapped_column(String(200), nullable=True)
+    billing_registration_id: Mapped[Optional[str]] = mapped_column(String(40), nullable=True)
     billing_country: Mapped[Optional[str]] = mapped_column(String(2), nullable=True)
     billing_line1: Mapped[Optional[str]] = mapped_column(String(200), nullable=True)
     billing_line2: Mapped[Optional[str]] = mapped_column(String(200), nullable=True)

@@ -24,6 +24,7 @@
 import asyncio
 import inspect
 from types import SimpleNamespace
+from datetime import datetime, timedelta
 
 import pytest
 
@@ -177,7 +178,7 @@ def _plan_row(**kw):
         "stripe_customer_id": "cus_1",
         # Читает _trial_end: превью без подписки называет дату, до которой ещё
         # действует уже оплаченный остаток.
-        "expires_at": None, **kw,
+        "expires_at": datetime.utcnow() + timedelta(days=30), **kw,
     })
 
 
@@ -296,23 +297,15 @@ def test_preview_without_a_subscription_is_the_plain_catalog_price(monkeypatch):
     assert res.total == res.gross > 0
 
 
-def test_preview_names_the_date_billing_actually_starts(monkeypatch):
-    """Оплаченный остаток (триал, прежний период) не сгорает: подписка стартует
-    бесплатно до его конца (_trial_end). Без этой строки модалка показывала сумму
-    так, будто спишут её сегодня, и владелец видел вторую оплату за уже
-    оплаченный месяц."""
-    from datetime import datetime, timedelta
-
+def test_prepaid_preview_charges_now_instead_of_scheduling_a_trial_debit(monkeypatch):
     res = _call_preview(
-        _plan_row(
-            stripe_subscription_id=None, status="active",
-            expires_at=datetime.utcnow() + timedelta(days=30),
-        ),
+        _plan_row(stripe_subscription_id=None, status="trial", plan_name="free_trial"),
         monkeypatch,
     )
     assert res.kind == "new"
-    assert res.free_until is not None
-    assert res.free_days == 30, "число дней разошлось с датой первого списания"
+    assert res.total == res.gross > 0
+    assert res.free_until is None and res.free_days == 0
+    assert res.access_starts_at is not None and res.access_until is not None
 
 
 def test_preview_without_a_paid_leftover_promises_nothing_free(monkeypatch):

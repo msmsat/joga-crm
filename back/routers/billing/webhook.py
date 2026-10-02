@@ -123,6 +123,17 @@ async def find_plan_by_subscription(
     # в мёртвую подписку (502) при том, что статус зеркалится уже с новой.
     # Живую (active/past_due) НЕ трогаем — иначе отставшее событие об отменённой
     # подписке перебило бы актуальную привязку.
+    # A late legacy subscription must not reattach itself to paid prepaid access.
+    # Invoice-only events still use the customer lookup for commission documents.
+    if (plan is not None and subscription_id and not plan.stripe_subscription_id
+            and getattr(plan, "auto_renewal", True) is False):
+        prepaid_paid = (await db.execute(select(BillingInvoice).where(
+            BillingInvoice.studio_id == plan.studio_id,
+            BillingInvoice.kind == "subscription", BillingInvoice.status == "paid",
+            BillingInvoice.stripe_invoice_id.is_(None), BillingInvoice.order_id.like("cs_%"),
+        ).limit(1))).scalars().first()
+        if prepaid_paid is not None:
+            return None
     stale = plan is not None and plan.status not in ("active", "past_due")
     if plan is not None and subscription_id and (not plan.stripe_subscription_id or stale):
         plan.stripe_subscription_id = subscription_id
@@ -459,12 +470,15 @@ async def stripe_webhook(request: Request):
 
     async with async_session_maker() as db:
         try:
-            if event_type.startswith("customer.subscription."):
+            if event_type.startswith("checkout.session."):
+                from .prepaid_webhook import handle_session
+                await handle_session(db, event_type, obj, event_created=getattr(event, 'created', None))
+            elif event_type.startswith("customer.subscription."):
                 await _handle_subscription(db, event_type, obj)
             elif event_type.startswith("invoice."):
                 await _handle_invoice(db, event_type, obj)
             elif event_type == "charge.refunded":
-                await _handle_refund(db, obj)
+                await _handle_refund(db, obj, event_created=getattr(event, 'created', None))
             elif event_type == "charge.dispute.closed":
                 await _handle_dispute(db, obj)
             elif event_type == "setup_intent.succeeded":
@@ -924,7 +938,7 @@ async def _handle_tax_id(db: AsyncSession, obj) -> None:
     await send_vat_rejected(db, studio.id, value)
 
 
-async def _handle_refund(db: AsyncSession, obj) -> None:
+async def _handle_refund(db: AsyncSession, obj, *, event_created=None) -> None:
     """Возврат. Полный — переводит счёт в refunded, частичный (или без сумм в
     событии) не трогает ни счёт, ни подписку.
 
@@ -959,7 +973,9 @@ async def _handle_refund(db: AsyncSession, obj) -> None:
         )
         return
 
-    await _reverse_invoice(db, invoice, "возврат")
+    from services.billing_payment_dates import reversal_at
+    refunded_at = reversal_at(obj, event_created=event_created)
+    await _reverse_invoice(db, invoice, "возврат", reversed_at=refunded_at)
 
 
 def _payment_ids(obj) -> tuple[str | None, str | None]:
@@ -1000,6 +1016,11 @@ async def _invoice_of_payment(db: AsyncSession, obj, what: str) -> BillingInvoic
     )
     intent_id, charge_id = _payment_ids(obj)
     if not stripe_invoice_id:
+        from .prepaid_webhook import order_for_payment
+        prepaid = await order_for_payment(db, intent_id, charge_id)
+        if prepaid is not None:
+            return prepaid
+    if not stripe_invoice_id:
         # Ни счёта, ни платёжного намерения, ни списания — обратный поиск начать
         # не с чего. Это НЕ «платёж не наш»: чужой платёж мы узнаём, спросив
         # Stripe и получив пустой ответ. Здесь спросить нечем, а тихий выход
@@ -1024,7 +1045,7 @@ async def _invoice_of_payment(db: AsyncSession, obj, what: str) -> BillingInvoic
     return invoice
 
 
-async def _reverse_invoice(db: AsyncSession, invoice: BillingInvoice, what: str) -> None:
+async def _reverse_invoice(db: AsyncSession, invoice: BillingInvoice, what: str, *, reversed_at=None) -> None:
     """Деньги ушли обратно: счёт в refunded, тариф отозвать. Общее для возврата и
     проигранного чарджбэка.
 
@@ -1043,6 +1064,11 @@ async def _reverse_invoice(db: AsyncSession, invoice: BillingInvoice, what: str)
     поверх возврата и возврат поверх чарджбэка ничего не удваивают — ни
     компенсирующую строку в леджере, ни отмену подписки.
     """
+    from .prepaid_webhook import is_prepaid, reverse_prepaid
+    if is_prepaid(invoice):
+        await reverse_prepaid(db, invoice, refunded_at=reversed_at,
+                              fiscal_reason='full_refund' if what == 'возврат' else None)
+        return
     if not await apply_status(db, invoice, "refunded"):
         logger.info(
             "Stripe billing: счёт %s уже в статусе %s — %s повторно не применяем",

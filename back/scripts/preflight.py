@@ -888,6 +888,11 @@ async def check_stripe_catalog(sync: bool) -> None:
 #
 # Биллинг платформы (routers/billing/webhook.stripe_webhook):
 _BILLING_EVENTS = {
+    # Finite period purchases are Checkout payments, not Stripe subscriptions.
+    "checkout.session.completed",
+    "checkout.session.async_payment_succeeded",
+    "checkout.session.async_payment_failed",
+    "checkout.session.expired",
     "customer.subscription.created",
     "customer.subscription.updated",
     "customer.subscription.deleted",
@@ -1325,8 +1330,11 @@ async def main(sync: bool) -> int:
         "\nПодписка эндпоинтов на события теперь проверяется автоматически "
         "(check_webhook_endpoints). Руками остаётся одно — флаг «events on "
         "connected accounts», через API он не читается:\n"
-        "  * /billing/webhook/stripe  — события customer.subscription.*, invoice.*,\n"
-        "    charge.refunded, setup_intent.succeeded, customer.tax_id.updated.\n"
+        "  * /billing/webhook/stripe — checkout.session.completed/expired/\n"
+        "    async_payment_succeeded/async_payment_failed для разовой покупки периода.\n"
+        "    customer.subscription.*, invoice.* сохраняются для старых подписок.\n"
+        "    charge.refunded, charge.dispute.closed, setup_intent.succeeded,\n"
+        "    customer.tax_id.updated.\n"
         "    Последнее — сверка VAT ID с VIES: без подписки на него фиктивный номер\n"
         "    НДС так и продолжит обнулять налог за счёт платформы.\n"
         "    «Events on connected accounts» ВЫКЛ.\n"

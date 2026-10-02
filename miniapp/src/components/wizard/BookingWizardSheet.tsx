@@ -5,7 +5,7 @@ import type { StudioCatalog } from '../../api/studio';
 import type { BookingWizardFlow } from '../../hooks/useBookingWizard';
 import { useIsDesktop } from '../../hooks/useIsDesktop';
 import { formatDay, relativeDay } from '../../lib/slots';
-import { hhmm, isChosen, isComplete, STEPS, type WizardPick, type WizardStep } from '../../lib/wizard';
+import { hhmm, isChosen, STEPS, type WizardPick, type WizardStep } from '../../lib/wizard';
 import { Sheet, SheetAction } from '../ui/Sheet';
 import PhoneSheet from '../modals/PhoneSheet';
 import SubscriptionSheet from '../modals/SubscriptionSheet';
@@ -83,8 +83,14 @@ export default function BookingWizardSheet({ flow, catalog, onBuySubscription, o
     flow.close();
   };
 
+  // Не выбрано — кнопка ведёт в первый невыбранный раздел, а не перечисляет,
+  // чего не хватает. Филиал — исключение: его чипы стоят тут же, на итоге.
+  const missing = (['time', 'service', 'master'] as const).find((s) => !isChosen(pick, s));
+
   const footer = booking ? (
     <SheetAction onClick={() => { close(); onMyLessons(); }}>{t('wizard.toMyLessons')}</SheetAction>
+  ) : step === 'summary' && missing ? (
+    <SheetAction onClick={() => flow.goTo(missing)}>{t(`wizard.go.${missing}`)}</SheetAction>
   ) : step === 'summary' ? (
     <SheetAction
       disabled={!flow.complete || flow.quoting || flow.saving}
@@ -95,7 +101,7 @@ export default function BookingWizardSheet({ flow, catalog, onBuySubscription, o
       }}
     >
       {flow.saving ? t('resource.confirming')
-        : !flow.complete ? (isComplete(pick) ? t('wizard.chooseBranch') : t('wizard.chooseAll'))
+        : !flow.complete ? t('wizard.chooseBranch')
         : quote && mustPay ? t('pay.payAmount')
         : t('wizard.book')}
     </SheetAction>

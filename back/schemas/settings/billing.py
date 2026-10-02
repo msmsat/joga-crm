@@ -177,6 +177,8 @@ class BillingProfileRead(BaseSchema):
     Отдаются как есть плюс `filled`: считать «заполнено ли» на фронте значит
     повторять там список обязательных полей, а он ровно один — здесь.
     """
+    legal_name: Optional[str] = None
+    registration_id: Optional[str] = None
     country: Optional[str] = None      # ISO 3166-1 alpha-2
     line1: Optional[str] = None
     line2: Optional[str] = None
@@ -200,6 +202,9 @@ class BillingProfileUpdate(BaseModel):
     """
     # Код страны, а не название: в Stripe уезжает именно он, а названия у нас
     # переводятся на двух языках и в БД разъехались бы.
+    # Optional for existing clients saving an older form; checkout requires it.
+    legal_name: OptTrimmed = Field(default=None, max_length=200)
+    registration_id: OptTrimmed = Field(default=None, max_length=40)
     country: str
     line1: str = Field(min_length=2, max_length=200)
     line2: OptTrimmed = Field(default=None, max_length=200)
@@ -266,17 +271,18 @@ class CheckoutResponse(BaseModel):
     payer_email: str | None = None
     amount_due: int | None = None
     tax_amount: int | None = None
+    tax_rate_percent: float | None = None
     currency: str | None = None
 
 
 class CheckoutPreviewRead(BaseSchema):
-    """Что спишется за выбранный тариф — расчёт для модалки оплаты, ДО платежа.
+    """Цена выбранного периода и налог до подтверждения разовой оплаты.
 
     Суммы в младших единицах и БЕЗ налога: цены каталога заданы
     `tax_behavior="exclusive"`, а ставку считает Stripe Tax по стране и статусу
     плательщика уже на своей странице.
     """
-    # new — подписки нет; renewal — тот же тариф, месяцы прибавляются к сроку;
+    # new — первая покупка/конверсия триала; renewal — продление оплаченного срока;
     # switch — смена тарифа: новый период платится целиком, остаток прежнего
     # СГОРАЕТ (checkout._switch_now). Полей зачёта тут нет по этой же причине.
     kind: Literal["new", "renewal", "switch"]
@@ -284,16 +290,12 @@ class CheckoutPreviewRead(BaseSchema):
     gross: int      # полная цена выбранного тарифа за период
     total: int      # к оплате сейчас; зачёта нет, поэтому всегда равен gross
     currency: str
-    # До какой даты новая подписка НЕ БЕРЁТ денег (ISO). Это не подарок платформы,
-    # а уже оплаченный студией остаток — триала или прежнего периода: подписка
-    # стартует бесплатно до его конца (checkout._trial_end), и только потом биллит.
-    # Без этой строки модалка показывала сумму так, будто спишут её сегодня, и
-    # владелец не понимал, за что платит второй раз. None — платится сразу.
+    # Legacy response compatibility; prepaid checkout leaves both empty/zero.
     free_until: Optional[str] = None
-    # Сколько дней осталось до первого списания. Считает сервер — тем же часами,
-    # которыми выбрана сама дата: на фронте это была бы арифметика от Date.now()
-    # в рендере, то есть значение, меняющееся между перерисовками.
     free_days: int = 0
+    # Prepaid period dates; no automatic charge occurs on access_until.
+    access_starts_at: Optional[str] = None
+    access_until: Optional[str] = None
 
     # --- Налог -------------------------------------------------------------
     # Считает СЕРВЕР тем же решением, которым потом выставится счёт

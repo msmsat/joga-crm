@@ -85,3 +85,4 @@ py3langid==0.3.0
 # Страна посетителя по IP → язык лендинга (services/geo_locale.py). Читает
 # офлайн-базу DB-IP, которую кладёт scripts/fetch_geoip.py: IP никуда не уходит.
 maxminddb==3.2.0
+reportlab==4.4.9

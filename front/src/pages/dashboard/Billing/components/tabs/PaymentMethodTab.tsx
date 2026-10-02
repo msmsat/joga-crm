@@ -119,17 +119,17 @@ export default function PaymentMethodTab({
         <div style={{ marginTop: '12px', padding: '24px 28px', background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '20px', boxShadow: 'var(--shadow)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px' }}>
             <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M11 2L3 11H10L9 18L17 9H10L11 2Z" fill="var(--peach)" fillOpacity="0.2" stroke="var(--peach)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-            <span style={{ fontSize: '15px', fontWeight: 700, color: 'var(--onyx)' }}>{t('method.autopayTitle')}</span>
+            <span style={{ fontSize: '15px', fontWeight: 700, color: 'var(--onyx)' }}>{t(plan?.has_live_subscription ? 'method.autopayTitle' : 'checkout.notificationSettings')}</span>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(200px, 100%), 1fr))', gap: '12px' }}>
-            {AUTOPAY_FIELDS.map(({ key, field }) => {
+            {AUTOPAY_FIELDS.filter(({ field }) => plan?.has_live_subscription || (field !== 'auto_renewal' && field !== 'notify_before_autocharge')).map(({ key, field }) => {
               // Автопродление — это отмена подписки (бэк уводит его в
               // cancel_at_period_end), и запирать её за наличием карты нельзя:
               // студия на IBAN платит по счёту, карты у неё нет никогда, а Условия
               // обещают отмену «в любой момент со страницы оплаты». Остальные
               // тумблеры про автосписание и остаются на прежнем правиле.
               const cancelSwitch = field === 'auto_renewal';
-              const disabled = !plan || (!canAutopay && !(cancelSwitch && plan.has_live_subscription));
+              const disabled = !plan || (cancelSwitch && !plan.has_live_subscription) || (field === "notify_before_autocharge" && !canAutopay);
               const off = cancelSwitch && plan && !plan.auto_renewal;
               return (
                 <div key={key} style={{ padding: '16px 18px', background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>

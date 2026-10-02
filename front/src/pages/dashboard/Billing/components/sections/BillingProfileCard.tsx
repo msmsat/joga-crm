@@ -126,7 +126,10 @@ export default function BillingProfileCard({ profile, saving, save }: Props) {
             gap: '18px 24px', padding: '18px 20px',
             background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: '14px',
           }}>
+            <Row label={t('profile.fields.legalName')} value={profile.legal_name || t('profile.vatNone')} />
             <Row label={t('profile.fields.country')} value={countryName} />
+            {profile.registration_id && <Row label={t(profile.country === 'CZ'
+              ? 'profile.fields.registrationIdCz' : 'profile.fields.registrationId')} value={profile.registration_id} mono />}
             <Row label={t('profile.fields.address')} value={address} />
             {/* Вне ЕС номера НДС у плательщика нет как поля — строка «Не указан»
                 там обещала бы, что его можно заполнить. */}

@@ -567,7 +567,11 @@
     "notChosen": "Not chosen",
     "change": "Change",
     "choose": "Choose",
-    "chooseAll": "Pick a time, service and specialist",
+    "go": {
+      "time": "Choose a time",
+      "service": "Choose a service",
+      "master": "Choose a specialist"
+    },
     "book": "Book",
     "doneTitle": "Done",
     "toMyLessons": "My bookings",
@@ -578,6 +582,26 @@
     "until": "until {{time}}",
     "earlier": "Earlier",
     "later": "Later"
+  },
+  "groupWizard": {
+    "hint": "Pick a day and time — narrow it down by class or trainer if you like",
+    "titles": {
+      "service": "Which class?",
+      "master": "Who would you like to train with?"
+    },
+    "lessonsAt": "Classes: {{count}}",
+    "full": "Full",
+    "closed": "Booking closed",
+    "noLessons": "No open classes on this day",
+    "at": "Classes at {{time}}",
+    "noneAt": "No matching classes at {{time}}",
+    "notThisDay": "Not on this day",
+    "go": {
+      "service": "Narrow down the class",
+      "master": "Narrow down the trainer"
+    },
+    "nearestDay": "Nearest day with classes",
+    "several": "Several classes at {{time}}"
   },
   "hero": {
     "kicker": "Online booking",

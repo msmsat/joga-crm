@@ -33,6 +33,7 @@ from .settings import (
     UserSession,
     StudioIntegration,
 )
+from .billing_tax_document import BillingTaxDocument
 from .staff import StaffWorkingHours, StaffDayOverride, StaffBranchAssignment, StaffBusyInterval
 from .finances import (
     Account,
@@ -104,6 +105,7 @@ __all__ = [
     "StudioBillingPlan",
     "PaymentCard",
     "BillingInvoice",
+    "BillingTaxDocument",
     "FxRate",
     "OfflineTransactionFee",
     "PlatformRevenueLedger",

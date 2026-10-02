@@ -1,4 +1,4 @@
-import { useContext, useRef } from 'react';
+import { useContext, useRef, useState } from 'react';
 import { ArrowLeft, CreditCard, LockKeyhole } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useCheckoutPage } from './hooks/useCheckoutPage';
@@ -13,6 +13,7 @@ function CheckoutContent({ h }: { h: ReturnType<typeof useCheckoutPage> }) {
   const { t } = useTranslation('billing');
   const payment = useContext(PaymentContext);
   const profileForm = useRef<HTMLFormElement>(null);
+  const [draftDirty, setDraftDirty] = useState(false);
   const available = !!h.catalog.data && !!h.profile.data && !h.catalog.isError && !h.profile.isError;
   return <>
     <header className={styles.header}>
@@ -32,7 +33,7 @@ function CheckoutContent({ h }: { h: ReturnType<typeof useCheckoutPage> }) {
               <div className={styles.profileCard}>
                 <h2 className={styles.sectionTitle}>{t('checkout.billingDetails')}</h2>
                 <CheckoutProfile key={h.profile.dataUpdatedAt} profile={h.profile.data} locked={!!h.session}
-                  formRef={profileForm} busy={h.busy || !!payment?.busy} onSave={h.prepare} onEdit={h.editProfile} />
+                  formRef={profileForm} busy={h.busy || !!payment?.busy} onDirty={() => setDraftDirty(true)} onSave={async input => { await h.prepare(input); setDraftDirty(false); }} onEdit={h.editProfile} />
               </div>
               {h.error && !h.session && <p className={styles.error} role="alert">{h.error}</p>}
               <div className={styles.paymentCard}>
@@ -43,7 +44,7 @@ function CheckoutContent({ h }: { h: ReturnType<typeof useCheckoutPage> }) {
             </>}
         </section>
         {h.plan && <CheckoutSummary plan={h.plan} period={h.period} preview={h.preview.data}
-          payment={payment} error={h.session ? h.error : ''} currency={h.catalog.data?.currency ?? 'EUR'}
+          payment={payment} taxPending={draftDirty} error={h.session ? h.error : ''} currency={h.catalog.data?.currency ?? 'EUR'}
           preparing={h.busy} canPrepare={available} onPrepare={() => profileForm.current?.requestSubmit()} onBack={h.back} />}
       </div>
     </main>

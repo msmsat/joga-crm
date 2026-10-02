@@ -4,6 +4,7 @@ from sqlalchemy import (
     BigInteger, CheckConstraint, Integer, SmallInteger, String, Float, Boolean, DateTime, ForeignKey,
     Index, JSON, Text, UniqueConstraint, func, text,
 )
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base import Base
@@ -633,6 +634,8 @@ class BillingInvoice(Base):
         DateTime(timezone=False), nullable=True, index=True,
     )
     paid_at: Mapped[datetime] = mapped_column(DateTime(timezone=False), server_default=func.now())
+    # Delivery/grant time can differ from payment's tax date after webhook delay.
+    access_granted_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=False), nullable=True)
     status: Mapped[str] = mapped_column(String(20), default="pending")
     pdf_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
     # Зеркало счёта Stripe. stripe_invoice_id — ключ идемпотентности: ретрай вебхука
@@ -659,13 +662,15 @@ class BillingInvoice(Base):
     # taxable / reverse_charge / exempt / out_of_scope — исходы решения. Ноль в
     # tax_amount сам по себе ничего не объясняет: у reverse_charge и у освобождения
     # он одинаковый, а основания разные, и в фактуре они выглядят по-разному.
+    # Freeze the legal parties and purchase terms before any Stripe charge.
+    billing_details_snapshot: Mapped[Optional[dict]] = mapped_column(JSONB, nullable=True)
     tax_outcome: Mapped[Optional[str]] = mapped_column(String(24), nullable=True)
     # Машинный код правила: domestic_standard_rate, eu_b2b_reverse_charge и т.д.
     tax_basis: Mapped[Optional[str]] = mapped_column(String(48), nullable=True)
     tax_rate_percent: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
-    # Налог в МЛАДШИХ единицах tax_currency. Сумма счёта (amount) остаётся НЕТТО:
-    # цены каталога заданы без налога, и смешивать их значило бы менять смысл поля,
-    # на которое смотрит вся остальная бухгалтерия.
+    # Налог в младших единицах tax_currency. Pending prepaid amount хранит
+    # ожидаемое нетто для сверки; после оплаты amount — реально полученное
+    # брутто, как у прежних зеркал оплаченных счетов Stripe.
     tax_amount: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
     tax_currency: Mapped[Optional[str]] = mapped_column(String(3), nullable=True)
     tax_jurisdiction: Mapped[Optional[str]] = mapped_column(String(8), nullable=True)

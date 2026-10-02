@@ -44,7 +44,7 @@ from decimal import ROUND_HALF_UP, Decimal
 
 # Версия набора правил. Меняется вместе с ЛЮБОЙ правкой таблиц ниже; строка уезжает
 # в снимок операции и в метаданные Tax Rate, поэтому формат менять нельзя.
-RULESET_VERSION = "eu-cz-2026.09"
+RULESET_VERSION = "eu-cz-2026.10"
 
 # Исходы решения.
 TAXABLE = "taxable"
@@ -97,6 +97,8 @@ VAT_REGISTRY_UNAVAILABLE = "registry_unavailable"   # реестр не отве
 # и обязано быть подтверждено бухгалтером — вывести его из данных нельзя.
 B2C_DOMESTIC_UNDER_THRESHOLD = "domestic_under_threshold"
 B2C_OSS = "oss"
+# Неизвестные иностранные B2C-продажи требуют проверки; остальные правила работают.
+B2C_REVIEW = "review"
 
 
 @dataclass(frozen=True)
@@ -204,6 +206,12 @@ def decide(
             evidence={"seller_country": seller.country.upper()},
         )
 
+    if not (seller.vat_id or "").strip():
+        return _review(
+            "не указан номер НДС продавца — налоговый документ нельзя оформить",
+            "seller_vat_id_missing",
+        )
+
     # 3. Что именно продаём. Неописанный вид услуги не получает ставку «как у всего
     #    остального».
     if supply not in SUPPORTED_SUPPLIES:
@@ -253,11 +261,20 @@ def decide(
                 **evidence,
             )
         if customer.vat_state == VAT_REGISTRY_UNAVAILABLE:
-            # Реестр молчит — это НЕ «номер недействителен». Ошибаемся в сторону
-            # переплаты налога: обкладываем как B2C. Ветка ниже сама решит, умеем ли
-            # мы это сделать подтверждённым правилом.
-            evidence["fallback"] = "registry_unavailable_treated_as_b2c"
-        # Номера нет, он недействителен или реестр молчал — обращаемся как с B2C.
+            # Недоступный реестр не подтверждает и не опровергает статус бизнеса.
+            # Указанный номер нельзя автоматически превратить в B2C или в 0 %.
+            return _review(
+                "реестр НДС недоступен — статус плательщика требует проверки",
+                "customer_vat_registry_unavailable",
+                **evidence,
+            )
+        if customer.vat_id:
+            return _review(
+                "номер НДС плательщика не подтверждён — проверьте номер или реквизиты",
+                "customer_vat_unverified",
+                **evidence,
+            )
+        # Номер не сообщён: применяем только подтверждённое правило B2C.
         return _eu_b2c(seller, seller_country, customer_country, at, evidence)
 
     # 7. За пределами ЕС. Европейский НДС не применяется, но обязанностей в стране
@@ -303,7 +320,7 @@ def _eu_b2c(
     seller: SellerProfile, seller_country: str, customer_country: str,
     at: date, evidence: dict,
 ) -> TaxDecision:
-    """Физлицо (или бизнес без подтверждённого номера) в другой стране ЕС.
+    """Покупатель без сообщённого номера НДС в другой стране ЕС.
 
     Развилка одна, и разрешить её данными из CRM нельзя. Либо продавец имеет право
     на домашнюю ставку — а это зависит от порога 10 000 €, считаемого по ВСЕМУ
@@ -311,6 +328,12 @@ def _eu_b2c(
     ставку страны покупателя. Ответ приходит конфигурацией, подтверждённой человеком.
     """
     scheme = seller.eu_b2c_scheme
+    if scheme == B2C_REVIEW:
+        return _review(
+            "НДС для покупателя в другой стране ЕС требует отдельной проверки",
+            "b2c_tax_review_required",
+            **evidence,
+        )
     if scheme == B2C_DOMESTIC_UNDER_THRESHOLD:
         decision = _taxable(seller_country, at, "eu_b2c_domestic_rate_under_threshold", evidence)
         return decision
@@ -405,7 +428,7 @@ def seller_profile() -> SellerProfile:
     confirmed = (os.getenv("BILLING_TAX_POLICY_CONFIRMED") or "").strip() == RULESET_VERSION
     country = (os.getenv("BILLING_SELLER_COUNTRY") or "").strip().upper() or None
     scheme = (os.getenv("BILLING_EU_B2C_SCHEME") or "").strip().lower() or None
-    if scheme not in (B2C_DOMESTIC_UNDER_THRESHOLD, B2C_OSS, None):
+    if scheme not in (B2C_DOMESTIC_UNDER_THRESHOLD, B2C_OSS, B2C_REVIEW, None):
         scheme = None
     return SellerProfile(
         country=country,
@@ -419,7 +442,7 @@ def seller_profile() -> SellerProfile:
 
 
 def readiness() -> list[str]:
-    """Чего не хватает, чтобы включить ручной режим. Пустой список = готово.
+    """Чего не хватает для поддержанных ручных правил; review блокирует B2C.
 
     Используется `scripts.preflight` и диагностикой. Проверяет ТОЛЬКО налоговую
     политику: наличие ставок в Stripe проверяет services/tax_rates.
@@ -440,7 +463,7 @@ def readiness() -> list[str]:
     if seller.vat_registered and not seller.eu_b2c_scheme:
         gaps.append(
             "BILLING_EU_B2C_SCHEME не задан — не решено, как облагаются продажи "
-            "физлицам в другие страны ЕС (домашняя ставка до порога 10 000 € или OSS)"
+            "физлицам в другие страны ЕС (домашняя ставка до порога 10 000 €, OSS или явная проверка review)"
         )
     if seller.vat_registered and not seller.vat_id:
         gaps.append("BILLING_SELLER_VAT_ID не задан — на фактуре не будет номера продавца")

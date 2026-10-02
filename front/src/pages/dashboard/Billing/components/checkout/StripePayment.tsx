@@ -1,4 +1,5 @@
 import { useMemo, useRef, useState, type ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import { loadStripe } from '@stripe/stripe-js/pure';
 import type { Appearance, StripeExpressCheckoutElementConfirmEvent } from '@stripe/stripe-js';
 import { CheckoutElementsProvider, useCheckoutElements, PaymentElement as CheckoutPaymentElement,
@@ -7,10 +8,11 @@ import { Elements, PaymentElement, ExpressCheckoutElement, useElements, useStrip
 import type { BillingProfile, CheckoutResponse } from '../../../../../api/billing/billing.types';
 import styles from './CheckoutPage.module.css';
 import { PaymentContext } from './PaymentContext';
+import { hasPayableTotal, uniformTaxRate, type PaymentAmounts } from './checkoutAmounts';
 
-export interface PaymentUi {
+export interface PaymentUi extends PaymentAmounts {
   fields: ReactNode; submit: () => void; busy: boolean; ready: boolean;
-  error: string; total: number | null; tax: number | null;
+  error: string;
 }
 interface Props {
   session: CheckoutResponse; profile: BillingProfile;
@@ -35,7 +37,7 @@ const appearance: Appearance = {
 };
 const walletOptions = {
   buttonHeight: 50,
-  buttonType: { applePay: 'subscribe' as const, googlePay: 'subscribe' as const, paypal: 'pay' as const },
+  buttonType: { applePay: 'buy' as const, googlePay: 'buy' as const, paypal: 'pay' as const },
   paymentMethodOrder: ['paypal', 'apple_pay', 'google_pay'],
   buttonTheme: { applePay: 'white' as const, googlePay: 'white' as const, paypal: 'gold' as const },
   paymentMethods: { applePay: 'auto' as const, googlePay: 'auto' as const, paypal: 'auto' as const,
@@ -53,6 +55,7 @@ const address = (p: BillingProfile) => ({
 });
 
 function SessionPayment(props: Props) {
+  const { t } = useTranslation('billing');
   const result = useCheckoutElements();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
@@ -60,6 +63,9 @@ function SessionPayment(props: Props) {
   const pending = useRef(false);
   const confirm = async (event?: StripeExpressCheckoutElementConfirmEvent) => {
     if (result.type !== 'success' || pending.current) return;
+    if (!hasPayableTotal(result.checkout.total.total.minorUnitsAmount)) {
+      setError(t('checkout.invalidPaymentAmount')); event?.paymentFailed({ reason: 'fail' }); return;
+    }
     pending.current = true; setBusy(true); setError('');
     try {
       const confirmation = await result.checkout.confirm({
@@ -81,14 +87,18 @@ function SessionPayment(props: Props) {
       <CheckoutPaymentElement options={paymentOptions} />
     </div>,
     submit: () => { void confirm(); }, busy,
-    ready: result.type === 'success' && result.checkout.canConfirm,
+    ready: result.type === 'success' && result.checkout.canConfirm && hasPayableTotal(result.checkout.total.total.minorUnitsAmount),
     error: result.type === 'error' ? result.error.message : error,
+    net: result.type === 'success' ? result.checkout.total.subtotal.minorUnitsAmount : null,
+    taxRate: result.type === 'success' && result.checkout.tax.status === 'ready' ? uniformTaxRate(result.checkout.taxAmounts) : null,
     total: result.type === 'success' ? result.checkout.total.total.minorUnitsAmount : null,
-    tax: result.type === 'success' ? result.checkout.total.taxExclusive.minorUnitsAmount + result.checkout.total.taxInclusive.minorUnitsAmount : null,
+    tax: result.type === 'success' && result.checkout.tax.status === 'ready'
+      ? result.checkout.total.taxExclusive.minorUnitsAmount + result.checkout.total.taxInclusive.minorUnitsAmount : null,
   }}>{props.children}</PaymentContext.Provider>;
 }
 
 function InvoicePayment(props: Props) {
+  const { t } = useTranslation('billing');
   const stripe = useStripe();
   const elements = useElements();
   const [busy, setBusy] = useState(false);
@@ -98,6 +108,9 @@ function InvoicePayment(props: Props) {
   const pending = useRef(false);
   const confirm = async (event?: StripeExpressCheckoutElementConfirmEvent) => {
     if (!stripe || !elements || pending.current) return;
+    if (!hasPayableTotal(props.session.amount_due)) {
+      setError(t('checkout.invalidPaymentAmount')); event?.paymentFailed({ reason: 'fail' }); return;
+    }
     pending.current = true; setBusy(true); setError('');
     try {
       const validation = await elements.submit();
@@ -124,8 +137,11 @@ function InvoicePayment(props: Props) {
           address: 'never', name: props.session.payer_name ? 'never' : 'auto',
           email: props.session.payer_email ? 'never' : 'auto',
         } } }} onChange={e => setComplete(e.complete)} />
-    </div>, submit: () => { void confirm(); }, busy, ready: !!stripe && complete,
+    </div>, submit: () => { void confirm(); }, busy, ready: !!stripe && complete && hasPayableTotal(props.session.amount_due),
     error, total: props.session.amount_due ?? null, tax: props.session.tax_amount ?? null,
+    net: props.session.amount_due != null && props.session.tax_amount != null
+      ? props.session.amount_due - props.session.tax_amount : null,
+    taxRate: props.session.tax_rate_percent ?? null,
   }}>{props.children}</PaymentContext.Provider>;
 }
 

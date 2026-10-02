@@ -567,7 +567,11 @@
     "notChosen": "Nevybráno",
     "change": "Změnit",
     "choose": "Vybrat",
-    "chooseAll": "Vyberte čas, službu a specialistu",
+    "go": {
+      "time": "Vybrat čas",
+      "service": "Vybrat službu",
+      "master": "Vybrat specialistu"
+    },
     "book": "Rezervovat",
     "doneTitle": "Hotovo",
     "toMyLessons": "Moje rezervace",
@@ -578,6 +582,26 @@
     "until": "do {{time}}",
     "earlier": "Dříve",
     "later": "Později"
+  },
+  "groupWizard": {
+    "hint": "Vyberte den a čas — lekci a trenéra můžete upřesnit",
+    "titles": {
+      "service": "Jaká lekce?",
+      "master": "S kým chcete cvičit?"
+    },
+    "lessonsAt": "Lekcí: {{count}}",
+    "full": "Obsazeno",
+    "closed": "Rezervace uzavřena",
+    "noLessons": "V tento den nejsou volné lekce",
+    "at": "Lekce v {{time}}",
+    "noneAt": "V {{time}} nejsou vhodné lekce",
+    "notThisDay": "V tento den ne",
+    "go": {
+      "service": "Upřesnit lekci",
+      "master": "Upřesnit trenéra"
+    },
+    "nearestDay": "Nejbližší den s lekcemi",
+    "several": "V {{time}} je více lekcí"
   },
   "hero": {
     "kicker": "Online rezervace",

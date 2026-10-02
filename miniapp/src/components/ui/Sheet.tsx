@@ -1,4 +1,4 @@
-import { useEffect, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react';
+import { useEffect, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { AnimatePresence, motion, useDragControls } from 'framer-motion';
 import { useTelegram } from '../../hooks/useTelegram';
@@ -34,6 +34,13 @@ type Props = {
    * контент и подвал. На телефоне колонка не рисуется вовсе.
    */
   aside?: ReactNode;
+  /**
+   * Держать лист собранным и закрытым — спрятанным под краем экрана, — а не
+   * размонтировать. Открытие тогда — только выезд готового листа, без сборки
+   * содержимого в том же кадре. Для тяжёлых листов, которые открывают часто
+   * (мастер записи на главной); включать, когда приложение уже простаивает.
+   */
+  keepMounted?: boolean;
 };
 
 // Листов может быть два один над другим (оплата поверх абонементов), поэтому
@@ -88,11 +95,34 @@ export function Sheet({
   backLabel = 'Back',
   toolbar,
   aside,
+  keepMounted = false,
 }: Props) {
   const { vibrateLight } = useTelegram();
   const isDesktop = useIsDesktop();
   const dragControls = useDragControls();
   const wide = isDesktop && aside !== undefined;
+  // Смахивание включается, когда лист встал, а не вместе с ним. Подключаясь,
+  // drag framer сразу замеряет раскладку (`updateScroll` → чтение прокрутки
+  // документа), и на открытии этот замер шёл синхронно, посреди вставки всего
+  // содержимого листа, — отсюда был рывок в первом кадре. После выезда
+  // раскладка уже готова, и тот же замер почти ничего не стоит. Тянуть лист,
+  // который ещё едет, всё равно некуда.
+  const [settled, setSettled] = useState(false);
+  if (!isOpen && settled) setSettled(false);
+  // Конец выезда собранного листа — таймером по длительности перехода, а не
+  // `transitionend`: при «уменьшить движение» перехода нет, и событие не
+  // пришло бы никогда — лист остался бы без смахивания.
+  useEffect(() => {
+    if (!keepMounted || !isOpen) return;
+    const id = window.setTimeout(() => setSettled(true), 440);
+    return () => window.clearTimeout(id);
+  }, [keepMounted, isOpen]);
+  // Собранный лист оживает (`inert` снят), когда встал, а не в кадре тапа.
+  // `inert` наследуется, и его снятие пересчитывает стили всего листа —
+  // замерено ~100 мс при CPU ×4: в кадре тапа это задерживало старт, через
+  // пару кадров — роняло кадры выезда. Тапнуть по едущему листу всё равно
+  // не успеть. Закрывается лист сразу: уходящий не должен ловить касания.
+  const awake = !keepMounted || settled;
 
   /** Тянуть лист — да; нажимать крестик — нет. Без этой отсечки жест начинался
    *  бы прямо на кнопке закрытия и съедал бы у неё клик. */
@@ -250,78 +280,123 @@ export function Sheet({
     </>
   );
 
-  return createPortal(
-    <AnimatePresence>
-      {isOpen && (
-        <motion.div
-          /* `app-sheet` задаёт на телефоне ту же замороженную высоту, что у
-             рамы приложения (index.css). Без неё низ листа привязан к окну
-             браузера, и кнопка в подвале ездила бы вместе с нижней панелью
-             Instagram ровно так же, как ездило меню. На десктопе класс пустой,
-             работает `inset-0`. */
-          className={`app-sheet fixed inset-0 flex items-end justify-center dt:items-center ${wide ? 'dt:p-6' : 'dt:p-8'}`}
-          style={{ zIndex: 200 + layer * 10 }}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.22 }}
-          onClick={onClose}
-        >
-          <div className="absolute inset-0 bg-[#1A1A1A]/45" />
+  // Куда лист выезжает и куда уходит. В обычном режиме это вход и выход
+  // AnimatePresence; у собранного (`keepMounted`) — два состояния одного и того
+  // же смонтированного листа.
+  const enterFrom = isDesktop ? { opacity: 0, scale: 0.96, y: 10 } : { y: '100%' };
+  const shown = isDesktop ? { opacity: 1, scale: 1, y: 0 } : { y: 0 };
+  const leave = isDesktop
+    ? { opacity: 0, scale: 0.97, transition: { duration: 0.16 } }
+    : { y: '100%', transition: { duration: 0.22, ease: [0.4, 0, 1, 1] as const } };
+  const asleep = keepMounted && !awake;
+  // Выезд собранного листа: свойства `translate` и `scale` (Tailwind v4 пишет
+  // в них, а не в `transform`) — отдельные от `transform`, которым framer
+  // тянет лист пальцем, поэтому жест смахивания с ними складывается. Кривая —
+  // как у системных листов iOS: быстро стартует, мягко садится.
+  //
+  // Закрытый собранный лист не прячется (`visibility`), а стоит за нижним
+  // краем: спрятанный пришлось бы отрисовывать целиком в первом кадре
+  // открытия (замерено ~70 мс при CPU ×4), а стоящий за краем браузер рисует
+  // заранее. Запас в 4rem — под тень над верхней кромкой листа: без него она
+  // темнела бы полоской у нижнего края экрана. Касания и фокус закрытому
+  // листу закрыты (`inert`, `pointer-events`), озвучка — `aria-hidden`.
+  const slide = [
+    // Слой касаний не ловит (см. ниже) — лист возвращает их себе явно.
+    'pointer-events-auto will-change-transform motion-reduce:transition-none',
+    'transition-[translate] dt:transition-[translate,scale,opacity]',
+    isOpen
+      ? 'translate-y-0 duration-[420ms] ease-[cubic-bezier(0.32,0.72,0,1)] dt:scale-100 dt:opacity-100 dt:duration-[260ms]'
+      : 'translate-y-[calc(100%+4rem)] duration-[220ms] ease-[cubic-bezier(0.4,0,1,1)] dt:translate-y-[10px] dt:scale-[0.97] dt:opacity-0 dt:duration-[160ms]',
+  ].join(' ');
 
-          <motion.div
-            onClick={(e) => e.stopPropagation()}
-            initial={isDesktop ? { opacity: 0, scale: 0.96, y: 10 } : { y: '100%' }}
-            animate={isDesktop ? { opacity: 1, scale: 1, y: 0 } : { y: 0 }}
-            exit={
-              isDesktop
-                ? { opacity: 0, scale: 0.97, transition: { duration: 0.16 } }
-                : { y: '100%', transition: { duration: 0.22, ease: [0.4, 0, 1, 1] } }
-            }
-            transition={
-              isDesktop
-                ? { type: 'spring', stiffness: 460, damping: 36 }
-                : { type: 'spring', stiffness: 330, damping: 34, mass: 0.9 }
-            }
-            drag={isDesktop ? false : 'y'}
-            dragListener={false}
-            dragControls={dragControls}
-            dragConstraints={{ top: 0, bottom: 0 }}
-            dragElastic={{ top: 0, bottom: 0.5 }}
-            onDragEnd={(_, info) => {
-              if (info.offset.y > 110 || info.velocity.y > 700) {
-                vibrateLight();
-                onClose();
-              }
-            }}
-            className={[
-              'relative flex w-full max-w-[520px] flex-col overflow-hidden bg-card',
-              'rounded-t-[28px] shadow-[0_-16px_48px_-12px_rgba(26,26,26,0.28)]',
-              'dt:rounded-[28px] dt:shadow-[0_32px_80px_-24px_rgba(26,26,26,0.45)]',
-              wide
-                // Консоль берёт окно целиком (до разумного предела): на 1280×720
-                // диалог 560×560 оставлял под варианты меньше половины высоты.
-                ? 'dt:h-full dt:max-h-[880px] dt:max-w-[1080px] dt:flex-row'
-                // Проценты от подложки, а не dvh: подложке рост уже отмерен, а
-                // dvh переспросил бы браузер про низ экрана — и на телефоне снова
-                // поехал бы за его панелью. На десктопе dvh честный, там оставлен.
-                : `dt:max-w-[560px] ${tall ? 'h-[92%] dt:h-[78dvh]' : 'max-h-[88%] dt:max-h-[82dvh]'}`,
-            ].join(' ')}
-          >
-            {wide ? (
-              <>
-                <aside className="relative flex w-[clamp(260px,30%,316px)] shrink-0 flex-col overflow-y-auto bg-background">
-                  {aside}
-                </aside>
-                <div className="relative flex min-w-0 flex-1 flex-col">{column}</div>
-              </>
-            ) : (
-              column
-            )}
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>,
+  const sheet = (
+    <motion.div
+      /* `app-sheet` задаёт на телефоне ту же замороженную высоту, что у
+         рамы приложения (index.css). Без неё низ листа привязан к окну
+         браузера, и кнопка в подвале ездила бы вместе с нижней панелью
+         Instagram ровно так же, как ездило меню. На десктопе класс пустой,
+         работает `inset-0`. */
+      className={`app-sheet fixed inset-0 flex items-end justify-center dt:items-center ${wide ? 'dt:p-6' : 'dt:p-8'}`}
+      // Касания собранного листа ловят затемнение (только у открытого) и сам
+      // лист — закрытый стоит за краем экрана. Сам слой их не ловит никогда:
+      // `pointer-events` наследуется, и переключать его на слое значило бы
+      // пересчитывать стили всего листа в кадре открытия.
+      style={{ zIndex: 200 + layer * 10, ...(keepMounted ? { pointerEvents: 'none' } : null) }}
+      inert={asleep || undefined}
+      aria-hidden={asleep || undefined}
+      initial={keepMounted ? false : { opacity: 0 }}
+      animate={keepMounted ? undefined : { opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.22 }}
+      onClick={onClose}
+    >
+      {/* Затемнение собранного листа — своим переходом прозрачности: всё
+          окно с opacity 0 браузер не рисовал бы, и заготовка пропала бы. */}
+      <div
+        className={`absolute inset-0 bg-[#1A1A1A]/45 ${keepMounted
+          ? `transition-opacity duration-[220ms] motion-reduce:transition-none ${isOpen ? 'pointer-events-auto opacity-100' : 'opacity-0'}`
+          : ''}`}
+      />
+
+      <motion.div
+        onClick={(e) => e.stopPropagation()}
+        // Собранный лист едет CSS-переходом (`slide` ниже), не framer: тот
+        // двигает `y` из JS покадрово, и каждый кадр выезда стоил пересчёта
+        // стилей и перерисовки листа — 40–60 мс на кадр при CPU ×4, лист шёл
+        // рывками. Переход свойства `translate` идёт на видеокарте.
+        initial={keepMounted ? false : enterFrom}
+        animate={keepMounted ? undefined : shown}
+        exit={leave}
+        transition={
+          isDesktop
+            ? { type: 'spring', stiffness: 460, damping: 36 }
+            : { type: 'spring', stiffness: 330, damping: 34, mass: 0.9 }
+        }
+        onAnimationComplete={keepMounted ? undefined : () => { if (isOpen) setSettled(true); }}
+        drag={isDesktop || !settled ? false : 'y'}
+        dragListener={false}
+        // И пульт — тоже после: framer включает drag уже от одного
+        // `dragControls`, даже при `drag={false}`, и замер шёл бы как раньше.
+        dragControls={!isDesktop && settled ? dragControls : undefined}
+        dragConstraints={{ top: 0, bottom: 0 }}
+        dragElastic={{ top: 0, bottom: 0.5 }}
+        onDragEnd={(_, info) => {
+          if (info.offset.y > 110 || info.velocity.y > 700) {
+            vibrateLight();
+            onClose();
+          }
+        }}
+        className={[
+          'relative flex w-full max-w-[520px] flex-col overflow-hidden bg-card',
+          'rounded-t-[28px] shadow-[0_-16px_48px_-12px_rgba(26,26,26,0.28)]',
+          'dt:rounded-[28px] dt:shadow-[0_32px_80px_-24px_rgba(26,26,26,0.45)]',
+          keepMounted ? slide : '',
+          wide
+            // Консоль берёт окно целиком (до разумного предела): на 1280×720
+            // диалог 560×560 оставлял под варианты меньше половины высоты.
+            ? 'dt:h-full dt:max-h-[880px] dt:max-w-[1080px] dt:flex-row'
+            // Проценты от подложки, а не dvh: подложке рост уже отмерен, а
+            // dvh переспросил бы браузер про низ экрана — и на телефоне снова
+            // поехал бы за его панелью. На десктопе dvh честный, там оставлен.
+            : `dt:max-w-[560px] ${tall ? 'h-[92%] dt:h-[78dvh]' : 'max-h-[88%] dt:max-h-[82dvh]'}`,
+        ].join(' ')}
+      >
+        {wide ? (
+          <>
+            <aside className="relative flex w-[clamp(260px,30%,316px)] shrink-0 flex-col overflow-y-auto bg-background">
+              {aside}
+            </aside>
+            <div className="relative flex min-w-0 flex-1 flex-col">{column}</div>
+          </>
+        ) : (
+          column
+        )}
+      </motion.div>
+    </motion.div>
+  );
+
+  return createPortal(
+    keepMounted ? sheet : <AnimatePresence>{isOpen && sheet}</AnimatePresence>,
     document.body,
   );
 }

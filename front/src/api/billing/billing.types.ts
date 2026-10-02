@@ -140,6 +140,8 @@ export interface InvoicesPage {
 /** Реквизиты плательщика. Лежат на АККАУНТЕ, а не на студии: у второй студии
  *  того же владельца адрес тот же, и спрашивать его заново незачем. */
 export interface BillingProfile {
+  legal_name: string | null   // Имя плательщика / юридическое название, введённое им самим
+  registration_id: string | null   // IČO или другой регистрационный номер компании
   country: string | null       // ISO 3166-1 alpha-2
   line1: string | null
   line2: string | null
@@ -157,6 +159,8 @@ export interface BillingProfile {
 
 /** Тело формы: обязательно всё, кроме второй строки адреса и номера НДС. */
 export interface BillingProfileInput {
+  legal_name?: string | null
+  registration_id?: string | null
   country: string
   line1: string
   line2?: string | null
@@ -195,6 +199,7 @@ export interface CheckoutResponse {
   payer_email: string | null
   amount_due: number | null
   tax_amount: number | null
+  tax_rate_percent: number | null
   currency: string | null
 }
 
@@ -203,7 +208,7 @@ export interface CheckoutResponse {
  *  `total_with_tax` — с налогом, посчитанным СЕРВЕРОМ тем же решением, которым
  *  потом выставится счёт. */
 export interface CheckoutPreview {
-  /** new — подписки нет; renewal — тот же тариф, месяцы прибавляются к сроку;
+  /** new — доступ ещё не куплен; renewal — тот же тариф, месяцы прибавляются к сроку;
    *  switch — смена тарифа: новый период платится целиком, остаток прежнего
    *  СГОРАЕТ. Полей зачёта поэтому нет ни одного. */
   kind: 'new' | 'renewal' | 'switch'
@@ -211,11 +216,13 @@ export interface CheckoutPreview {
   gross: number     // полная цена выбранного тарифа за период
   total: number     // к оплате сейчас; зачёта нет, поэтому всегда равен gross
   currency: string
-  /** До какой даты подписка не берёт денег (ISO): уже оплаченный остаток триала
-   *  или прежнего периода. null — списывают сразу. */
+  /** Устаревшие поля прежних подписок. Не определяют сумму покупки или дату списания. */
   free_until: string | null
-  /** Сколько дней до первого списания — считает сервер, теми же часами. */
+  /** Устаревшая длина отсрочки; деньги за новый период платятся сейчас. */
   free_days: number
+  /** Купленный доступ: даты рассчитывает сервер, деньги платятся сразу. */
+  access_starts_at?: string | null
+  access_until?: string | null
 
   /** Исход налогового решения СЕРВЕРА (services/tax_policy). Своей налоговой
    *  арифметики на фронте нет и быть не должно: разошедшиеся цифры в модалке и в
@@ -226,7 +233,7 @@ export interface CheckoutPreview {
    *  stripe_auto — прежний режим, ставку определит страница Stripe. */
   tax_outcome: 'taxable' | 'reverse_charge' | 'exempt' | 'out_of_scope'
     | 'requires_review' | 'stripe_auto'
-  tax_rate_percent: number
+  tax_rate_percent: number | null
   tax_amount: number
   /** Итог с налогом. Равен total, когда налога нет или его считает Stripe. */
   total_with_tax: number

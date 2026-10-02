@@ -1,20 +1,14 @@
-"""Создание оплаты тарифа: выбор тарифа/периода → подписка Stripe.
+"""Разовая покупка периода доступа Velora.
 
-Подписка у студии ОДНА. Первый платёж её создаёт, последующие меняют её позицию
-(тариф/период), а не заводят вторую. Сумму и срок считает Stripe по Price из
-services/stripe_catalog.py — фронту и своим расчётам тут не доверяем.
+Новые оплаты идут через Checkout Session mode=payment: списывается полная
+стоимость выбранного периода сейчас, а paid webhook выдаёт доступ до даты.
+Тот же оплаченный тариф продлевает остаток; другой начинает новый период.
+Пробный период не создаёт нулевой платёж с будущим списанием.
 
-Способ оплаты один — КАРТА, и нажатие «Оплатить» ведёт прямо на страницу Stripe.
-Выбора способа, отдельного шага реквизитов и оплаты переводом больше нет.
-
-Переход на другой тариф ВСЕГДА немедленный и БЕЗ зачёта: новый период платится
-целиком, а неиспользованный остаток прежнего СГОРАЕТ (см. `_switch_now`). Покупка
-ТОГО ЖЕ тарифа — не переход, а продление: месяцы прибавляются к сроку и не сгорает
-ничего. Отложенный переход «с начала следующего периода» убран целиком: два
-поведения у одной кнопки владелец не различал.
-
-Деньги идут на платформенный аккаунт Velora (services/stripe_billing.py), а не на
-аккаунт студии — приём оплат клиентов студии живёт отдельно, в кассе.
+Вспомогательные функции подписок сохранены для прежних объектов и сверки.
+Студия с живой подпиской Stripe требует отдельного переноса перед покупкой,
+чтобы старая подписка не списала деньги и не перезаписала предоплаченный срок.
+Деньги идут на платформенный аккаунт Velora, отдельно от Stripe Connect.
 """
 import logging
 import os
@@ -120,7 +114,8 @@ async def _get_or_create_plan(db: AsyncSession, studio_id: int) -> StudioBilling
 # форму перед оплатой» (фронт читает `filled`), и «слать ли адрес в Stripe»
 # считаются по нему. Вторая строка адреса и VAT сюда не входят: у физлица номера
 # НДС нет вовсе, и требовать его значило бы закрыть оплату всем, кроме компаний.
-_PROFILE_REQUIRED = ("country", "line1", "postal_code", "city")
+_ADDRESS_REQUIRED = ("country", "line1", "postal_code", "city")
+_PROFILE_REQUIRED = ("legal_name", *_ADDRESS_REQUIRED)
 
 
 def billing_profile(user: User) -> BillingProfileRead:
@@ -130,6 +125,8 @@ def billing_profile(user: User) -> BillingProfileRead:
     а эндпоинты /billing/profile его только отдают наружу.
     """
     profile = BillingProfileRead(
+        legal_name=getattr(user, "billing_legal_name", None),
+        registration_id=getattr(user, "billing_registration_id", None),
         country=user.billing_country,
         line1=user.billing_line1,
         line2=user.billing_line2,
@@ -196,10 +193,11 @@ async def _ensure_customer(
         select(Studio).where(Studio.id == ctx.studio_id)
     )).scalar_one()
     profile = billing_profile(ctx.user)
+    address_filled = all(getattr(profile, field) for field in _ADDRESS_REQUIRED)
 
     customer_id = await stripe_billing.ensure_customer(
         plan.stripe_customer_id,
-        name=studio.name,
+        name=profile.legal_name or studio.name,
         email=studio.email or ctx.user.email,
         studio_id=ctx.studio_id,
         **(dict(
@@ -208,9 +206,9 @@ async def _ensure_customer(
             city=profile.city,
             line1=profile.line1,
             line2=profile.line2,
-        ) if profile.filled else {}),
+        ) if address_filled else {}),
     )
-    if profile.filled and profile.vat_id and profile.vat_verified:
+    if address_filled and profile.vat_id and profile.vat_verified:
         # Не роняем оплату: номер — не обязательное поле, а Stripe отбивает
         # неизвестный ему формат 400-й ошибкой. Без номера счёт выпишется с НДС,
         # что чинится порталом; сорванная оплата не чинится ничем.
@@ -625,12 +623,10 @@ async def create_checkout(
     ctx: StudioContext = Depends(require_role("owner")),
     db: AsyncSession = Depends(get_db),
 ):
-    """Оплата тарифа картой. Три ветки, и ни в одной нет выбора «когда применить»:
+    """Разовая покупка выбранного периода; доступ выдаёт только paid webhook.
 
-    * подписки нет → страница Stripe Checkout, тариф начинается сразу;
-    * тот же тариф → ПРОДЛЕНИЕ: счёт на N месяцев, срок прибавляется к текущему,
-      ничего не сгорает (`_is_renewal`);
-    * другой тариф → немедленный переход, остаток прежнего сгорает (`_switch_now`).
+    Прежняя живая подписка требует отдельного переноса, чтобы старый Stripe
+    объект не списал деньги и не перезаписал новый оплаченный срок.
     """
     if not stripe_billing.configured():
         raise HTTPException(status_code=503, detail=_NOT_CONFIGURED)
@@ -642,11 +638,15 @@ async def create_checkout(
             public_key = stripe_billing.elements_publishable_key()
         except ValueError as exc:
             raise HTTPException(status_code=503, detail=_NOT_CONFIGURED) from exc
-        if not billing_profile(ctx.user).filled:
-            raise HTTPException(status_code=422, detail={
-                "code": "billing.billing_profile_required",
-                "message": "Заполните реквизиты плательщика",
-            })
+    # Hosted and Elements both use the explicit legal buyer identity. The
+    # studio display name is not a payer's name on a fiscal document.
+    if not billing_profile(ctx.user).filled:
+        raise HTTPException(status_code=422, detail={
+            "code": "billing.billing_profile_required",
+            "message": "Заполните имя или юридическое название и реквизиты плательщика",
+        })
+    from services.billing_document_snapshot import require_seller_details
+    require_seller_details()
 
     plan = await _get_or_create_plan(db, ctx.studio_id)
     combo = _is_combo(plan, body.combo)
@@ -672,7 +672,9 @@ async def create_checkout(
     customer_id = await _ensure_customer(db, ctx, plan)
     await _forget_dead_subscription(db, plan)
 
-    metadata = _metadata(ctx, body.plan, body.period_months, "combo" if combo else "subscription")
+    if plan.stripe_subscription_id:
+        from .prepaid import MIGRATION_REQUIRED
+        raise HTTPException(status_code=409, detail=MIGRATION_REQUIRED)
 
     # Налог решаем ДО первого обращения к Stripe и один раз на всю ветку: три пути
     # ниже (страница Checkout, счёт продления, смена тарифа) обязаны получить одно и
@@ -684,80 +686,17 @@ async def create_checkout(
     except (TaxReviewRequired, TaxRateMissing) as exc:
         raise _tax_http_error(exc) from exc
 
+    from .prepaid import create_payment
     try:
-        if body.ui_mode == "elements":
-            invoice = await _reusable_elements_invoice(
-                db, ctx.studio_id, customer_id, body.plan, body.period_months, combo,
-            )
-            if invoice is not None:
-                from .webhook import apply_status, mirror_invoice
-                row = await mirror_invoice(db, plan, invoice)
-                if invoice.status == "paid":
-                    await apply_status(db, row, "paid")
-                await db.commit()
-                return await _elements_invoice_response(invoice, customer_id, public_key)
-        price_id = await stripe_catalog.price_id(body.plan, body.period_months, combo)
-        if _is_renewal(plan, body.plan, await _live_plan_name(plan)) and combo == (
-            plan.billing_mode == "combo"
-        ):
-            # Продление своего же тарифа В ТОЙ ЖЕ МОДЕЛИ: выставляем счёт, подписку
-            # не трогаем. Смена модели на том же тарифе продлением НЕ является —
-            # у комбо другой Price, и его надо именно переставить (_switch_now).
-            stripe_invoice = await _renewal_invoice(
-                db, ctx, plan, customer_id, body.plan, body.period_months, combo, tax,
-            )
-            from .webhook import mirror_invoice
-
-            await mirror_invoice(db, plan, stripe_invoice)
-            await db.commit()
-            if body.ui_mode == "elements":
-                return await _elements_invoice_response(stripe_invoice, customer_id, public_key)
-            # Ссылка на счёт, а не на Checkout Session: платить нужно именно его, а
-            # у автосписания страница ещё и покажет результат списания.
-            return CheckoutResponse(
-                checkout_url=getattr(stripe_invoice, "hosted_invoice_url", None)
-                or f"{WEB_APP_URL}/dashboard/billing",
-            )
-
-        if _has_live_subscription(plan):
-            # url = None значит «доплачивать нечего»: смена уже применена, счёта
-            # для оплаты нет. Подставлять сюда адрес своей же страницы нельзя —
-            # это была бы перезагрузка вместо результата (и уход на боевой домен,
-            # когда WEB_APP_URL смотрит на прод).
-            if body.ui_mode == "elements":
-                invoice = await _switch_now(
-                    db, plan, customer_id, price_id, metadata, tax, return_invoice=True,
-                )
-                return await _elements_invoice_response(invoice, customer_id, public_key)
-            url = await _switch_now(db, plan, customer_id, price_id, metadata, tax)
-            return CheckoutResponse(checkout_url=url)
-
-        session_id, url = await stripe_billing.create_subscription_checkout(
-            customer_id=customer_id,
-            price_id=price_id,
-            metadata=metadata,
-            success_url=_RETURN_URL,
-            cancel_url=f"{WEB_APP_URL}/dashboard/billing",
-            trial_end=_trial_end(plan),
-            tax=tax,
-            **(dict(ui_mode="elements", profile_key=repr(billing_profile(ctx.user).model_dump()))
-               if body.ui_mode == "elements" else {}),
+        return await create_payment(
+            db, ctx, plan, customer_id, body, tax, billing_profile(ctx.user),
+            public_key, _RETURN_URL, f"{WEB_APP_URL}/dashboard/billing",
         )
     except HTTPException:
         raise
     except Exception as exc:
-        # studio_id в строке: без него в логе видно «оплата не создана» и трейс, но
-        # не у кого именно она не создалась — а искать это приходится под жалобу.
-        logger.exception(
-            "Stripe billing: оплата картой не создана (студия %s, тариф %s/%s мес.)",
-            ctx.studio_id, body.plan, body.period_months,
-        )
+        logger.exception("Stripe: разовая оплата периода не создана (студия %s)", ctx.studio_id)
         raise HTTPException(status_code=502, detail=_STRIPE_ERROR) from exc
-
-    await db.commit()
-    if body.ui_mode == "elements":
-        return CheckoutResponse(client_secret=url, publishable_key=public_key, payment_kind="checkout")
-    return CheckoutResponse(checkout_url=url)
 
 
 @router.get("/checkout/preview", response_model=CheckoutPreviewRead)
@@ -775,23 +714,10 @@ async def preview_checkout(
     ctx: StudioContext = Depends(require_role("owner")),
     db: AsyncSession = Depends(get_db),
 ):
-    """Что спишется за переход на выбранный тариф — ДО нажатия «Оплатить».
+    """Цена покупки сейчас и оплачиваемый период, без будущего автосписания.
 
-    Три исхода, и сумма во всех трёх одна — каталожная цена выбранного периода:
-
-    * `new`     — подписки нет. Уже оплаченный остаток (триал, прежний период) не
-                  пропадает: списывать начнут с `free_until` (`_trial_end`);
-    * `renewal` — тот же тариф в той же модели. Месяцы ПРИБАВЛЯЮТСЯ к сроку;
-    * `switch`  — другой тариф или другая модель. Остаток прежнего СГОРАЕТ, и
-                  модалка обязана предупредить об этом до нажатия «Оплатить».
-
-    Суммы БЕЗ налога — как и весь остальной интерфейс: цены каталога заданы
-    `tax_behavior="exclusive"`, а ставку знает только Stripe Tax по стране и
-    статусу плательщика (у бизнеса из другой страны ЕС это вовсе 0 %).
-
-    В Stripe за расчётом больше не ходим: с тех пор как переход перестал зачитывать
-    остаток (`_switch_now`), считать нечего — цена известна из каталога, который
-    её же и выставит.
+    Триал не превращает покупку в нулевой платёж: оплаченный период начнётся
+    после подтверждения оплаты. Тот же оплаченный тариф продлевает остаток.
     """
     _validate(plan, period_months)
     row = await _get_or_create_plan(db, ctx.studio_id)
@@ -811,48 +737,18 @@ async def preview_checkout(
         tax_review_reason=tax_view.review_reason,
     )
 
-    if not stripe_billing.configured() or not _has_live_subscription(row):
-        # Подписки нет — но оплаченный остаток (триал, прежний период) может быть, и
-        # тогда списывать начнут не сегодня: `_trial_end` даёт новой подписке
-        # бесплатный старт до его конца. Считаем ТЕМ ЖЕ вызовом, что и оформление,
-        # иначе модалка однажды пообещает дату, отличную от настоящей.
-        starts_at = _trial_end(row)
-        free_at = datetime.utcfromtimestamp(starts_at) if starts_at else None
-        return CheckoutPreviewRead(
-            kind="new", gross=gross, total=gross, currency=currency, **tax_fields,
-            free_until=free_at.isoformat() if free_at else None,
-            # Вверх по календарю: пока дата не наступила, «остался 1 день» честнее нуля.
-            free_days=(
-                -((-(free_at - datetime.utcnow()).total_seconds()) // 86400)
-                if free_at else 0
-            ),
-        )
-
-    # Тариф ЖИВОЙ подписки, а не наше зеркало: и решение «продление или смена», и
-    # подпись «Ваш тариф X — зачёт» должны совпадать с тем, за что Stripe считает
-    # деньги. Иначе отставший вебхук показывает зачёт остатка Business, а списывает
-    # полную цену Pro (жалоба 13.08.2026).
-    current_name = await _live_plan_name(row)
-
-    # Тот же тариф, но ДРУГАЯ модель — это смена, а не продление: у комбо свой
-    # Price. Условие обязано совпадать с create_checkout, иначе модалка обещает
-    # продление, а списывается переход.
-    if _is_renewal(row, plan, current_name) and combo == (row.billing_mode == "combo"):
-        # Продление: зачитывать нечего и сжигать нечего — купленные месяцы
-        # прибавляются к оплаченному сроку.
-        return CheckoutPreviewRead(
-            kind="renewal", current_plan=current_name, gross=gross,
-            total=gross, currency=currency, **tax_fields,
-        )
-
-    # Смена тарифа: новый период оплачивается ЦЕЛИКОМ, остаток прежнего сгорает
-    # (`_switch_now`). Считать тут нечего и спрашивать Stripe не о чем — сумма та
-    # же каталожная, что и у первой покупки. Ходить за превью-счётом ради цифры,
-    # которую мы уже знаем, значило бы завести второй источник истины о цене и
-    # лишний способ сорвать открытие модалки.
+    from .prepaid import period_window
+    if _has_live_subscription(row):
+        # Existing recurring accounts keep their legacy quote semantics until an
+        # explicit migration; create_checkout blocks another prepaid charge.
+        import copy
+        row = copy.copy(row)
+        row.plan_name = await _live_plan_name(row)
+    kind, starts, until = period_window(row, plan, period_months, combo)
     return CheckoutPreviewRead(
-        kind="switch", current_plan=current_name, gross=gross,
-        total=gross, currency=currency, **tax_fields,
+        kind=kind, current_plan=row.plan_name if kind != "new" else None,
+        gross=gross, total=gross, currency=currency, **tax_fields,
+        access_starts_at=starts.isoformat(), access_until=until.isoformat(),
     )
 
 

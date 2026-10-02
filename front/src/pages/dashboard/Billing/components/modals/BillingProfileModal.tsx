@@ -25,23 +25,39 @@ export function BillingProfileFields(
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-      <div>
-        <label style={labelStyle}>{t('profile.fields.country')}</label>
-        {/* searchable — список полный (250 стран), листать его бессмысленно. */}
-        <Select
-          value={values.country}
-          options={countries}
-          onChange={set('country')}
-          placeholder={t('profile.fields.countryPlaceholder')}
-          searchable
-          searchPlaceholder={t('profile.fields.countrySearch')}
-          emptyText={t('profile.fields.countryNotFound')}
+      <Input
+        label={t('profile.fields.legalName')}
+        value={values.legal_name}
+        onChange={set('legal_name')}
+        placeholder={t('profile.fields.legalNamePlaceholder')}
+        error={err('legal_name')}
+      />
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.1fr) minmax(0, .9fr)', gap: '14px', alignItems: 'end' }}>
+        <div>
+          <label style={labelStyle}>{t('profile.fields.country')}</label>
+          {/* searchable — список полный (250 стран), листать его бессмысленно. */}
+          <Select
+            value={values.country}
+            options={countries}
+            onChange={set('country')}
+            placeholder={t('profile.fields.countryPlaceholder')}
+            searchable
+            searchPlaceholder={t('profile.fields.countrySearch')}
+            emptyText={t('profile.fields.countryNotFound')}
+          />
+          {err('country') && (
+            <div style={{ fontSize: '11.5px', color: '#D88C9A', fontWeight: 600, marginTop: '6px' }}>
+              {err('country')}
+            </div>
+          )}
+        </div>
+        <Input
+          label={t(values.country === 'CZ' ? 'profile.fields.registrationIdCz' : 'profile.fields.registrationId')}
+          value={values.registration_id}
+          onChange={set('registration_id')}
+          placeholder={t('profile.fields.registrationIdPlaceholder')}
+          error={err('registration_id')}
         />
-        {err('country') && (
-          <div style={{ fontSize: '11.5px', color: '#D88C9A', fontWeight: 600, marginTop: '6px' }}>
-            {err('country')}
-          </div>
-        )}
       </div>
 
       <Input
@@ -128,6 +144,7 @@ function InvoicePreview({ draft }: { draft: ProfileDraft }) {
   const countryName = useCountryName(values.country);
 
   const lines = [
+    values.legal_name.trim(),
     values.line1.trim(),
     values.line2.trim(),
     [values.postal_code.trim(), values.city.trim()].filter(Boolean).join(' '),
@@ -180,13 +197,16 @@ function InvoicePreview({ draft }: { draft: ProfileDraft }) {
             )}
           </div>
 
+          {values.registration_id.trim() && <div style={{ marginTop: '10px', fontSize: '11.5px', color: 'var(--muted)' }}>
+            {t('profile.registrationNumber', { number: values.registration_id.trim() })}
+          </div>}
           {values.vat_id.trim() && (
             <div style={{
               marginTop: '12px', paddingTop: '12px', borderTop: '1px dashed var(--border, #F0EDE8)',
               fontSize: '11.5px', color: 'var(--muted, #666)',
               fontFamily: "'SF Mono', 'Consolas', monospace",
             }}>
-              VAT {values.vat_id.trim()}
+              {t('checkout.vatNumber', { number: values.vat_id.trim() })}
             </div>
           )}
         </div>

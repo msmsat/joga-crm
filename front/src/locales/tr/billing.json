@@ -53,14 +53,14 @@
   "header": {
     "eyebrow": "Velora · Faturalandırma",
     "title": "Planlar ve faturalandırma",
-    "subtitle": "Aboneliğinizi, ödeme yöntemlerinizi ve ödeme geçmişinizi yönetin",
+    "subtitle": "Manage your plan, payment methods and payment history",
     "totalSpent": "Toplam harcama",
     "monthsWithUs": "Bizimle geçen aylar",
     "saved": "Tasarruf",
     "nextCharge": "Sonraki tahsilat",
     "currentPlan": "GEÇERLİ PLAN",
     "noPlanName": "Plan yok",
-    "noPlan": "Etkin abonelik yok",
+    "noPlan": "No active plan",
     "active": "Etkin",
     "activeUntil": "Etkin · {{date}} tarihine kadar",
     "trialPlanName": "Deneme planı",
@@ -76,18 +76,18 @@
   },
   "mode": {
     "title": "Ödeme modeli",
-    "subscription": "Sabit abonelik",
+    "subscription": "Period purchase",
     "percent": "Satışların %’si",
     "combo": "Sabit + % birleşimi",
     "short": {
-      "subscription": "Sabit",
+      "subscription": "Period",
       "percent": "Yüzde",
       "combo": "Karma"
     },
     "descriptions": {
-      "subscription": "Her ay sabit bir tutar ödeyin. Öngörülebilir ve avantajlıdır.",
+      "subscription": "One payment for the selected period. Renew manually.",
       "percent": "Sabit ücret yok: nakit dahil her satışın %{{rate}}’i.",
-      "combo": "Yarım abonelik + nakit dahil her satışın %{{rate}}’i."
+      "combo": "Half the fixed period price + {{rate}}% of every sale, cash included."
     },
     "badges": {
       "popular": "Popüler",
@@ -106,7 +106,7 @@
     "activateError": "Ödeme modeli güncellenemedi",
     "alreadyActive": "Bu ödeme modeli zaten etkin — aşağıdan planı yenileyebilir veya değiştirebilirsiniz",
     "confirmSwitchTitle": "Ödeme modeli değiştirilsin mi?",
-    "confirmSwitchMessage": "Aboneliğiniz etkin. Değişiklik hemen geçerli olur ve ödenmiş dönemin kalan kısmı TAMAMEN KAYBOLUR: kullanılmayan günler iade edilmez veya aktarılmaz.",
+    "confirmSwitchMessage": "Your paid plan is active. Switching models takes effect immediately and the remainder of the paid period IS FORFEITED entirely: the unused days are not refunded and do not carry over.",
     "termsTitle": "Plan koşullarını onaylayın",
     "termsMessage": "Bu planda platform her satışın %{{rate}}’ini alır.\n\nÇevrimiçi ödemelerde ücret ödeme anında otomatik olarak kesilir. Nakit, terminal ve depozito yüklemelerinde HEMEN kesilmez — birikir ve ayda bir kez ayrı fatura alırsınız.\n\nFaturayı ödemek için {{days}} gününüz vardır. Zamanında ödenmezse CRM ve müşteri mini uygulamasına erişim ödenene kadar askıya alınır.\n\nGüncel ödenecek tutar Faturalandırma’da gösterilir; istediğiniz zaman, hatta önceden ödeme yapabilirsiniz.",
     "termsConfirm": "Koşulları kabul ediyorum",
@@ -312,8 +312,7 @@
     "burnWarning": "Başka bir plana geçmek dönemi yeniden başlatır: {{plan}} planınızın kalan kısmı KAYBOLUR — iade edilmez veya aktarılmaz. Aynı planı yenilemek onu korur.",
     "switched": "Plan değiştirildi: ödenecek bir şey yok — değişiklik mevcut dönemin kalan kısmıyla karşılandı.",
     "renewNote": "Bu, aynı planı yeniler: satın aldığınız aylar mevcut ödenmiş döneme eklenir. Hiçbir şey kaybolmaz.",
-    "cardNote": "Stripe’ın güvenli sayfasında kartla ödeme · 7 gün içinde iade",
-    "freeUntil": "{{date}} tarihine kadar hiçbir ücret alınmaz: ödenmiş dönemden {{count}} gününüz kaldı. Faturalandırma o tarihte başlar.",
+    "cardNote": "One-time payment through Stripe’s secure form",
     "taxLabel": "KDV",
     "taxLine": "%{{rate}} KDV",
     "reverseCharge": "Ters vergilendirme",
@@ -376,20 +375,29 @@
       "cityPlaceholder": "Prag",
       "vat": "KDV numarası — isteğe bağlı",
       "vatPlaceholder": "{{prefix}}12345678",
-      "vatHint": "Yalnızca işletmeler için. Numara kaydederken AB sicilinde (VIES) doğrulanır — doğrulanmamış numaraları kabul etmeyiz. Geçerli numarayla başka bir AB ülkesindeki şirket vergisiz faturalandırılır (ters vergilendirme). Bireysel müşterilerin numarası yoktur — alanı boş bırakın.",
+      "vatHint": "For a business, enter your VAT ID. We verify it through VIES. A Czech VAT ID does not remove Czech VAT; reverse charge may apply to a verified business in another EU country.",
       "countrySearch": "Bir ad yazmaya başlayın",
       "countryNotFound": "Ülke bulunamadı",
-      "vatOutsideEu": "KDV numarası istemiyoruz: AB dışında vergi numaraya değil, ödeyenin ülkesine göre belirlenir; bu nedenle faturayı etkilemez.",
-      "vatPending": "Numaranız kaydedildi ancak AB sicili o anda kullanılamıyordu; bu yüzden henüz onaylanmadı ve sonraki faturanız tam KDV içerir. Tekrar girmeniz gerekmez: kontrol etmeye devam edeceğiz ve sicil yanıt verir vermez vergi alınmayacaktır. Önceden ödenmiş bir fatura için destek vergiyi iade eder."
+      "vatOutsideEu": "VIES verifies EU VAT IDs only. Outside the EU, tax treatment must be determined separately from your country and business status.",
+      "vatPending": "Your VAT ID is saved but is not yet verified by VIES. No reverse-charge treatment is applied until verification. We retry the check automatically.",
+      "legalName": "Legal name / company name",
+      "legalNamePlaceholder": "Full name or registered company name",
+      "registrationId": "Business ID — optional",
+      "registrationIdCz": "IČO — optional",
+      "registrationIdPlaceholder": "Optional"
     },
     "errors": {
-      "required": "Bu alan zorunludur"
+      "required": "Bu alan zorunludur",
+      "legalNameRequired": "Enter your legal name or registered company name",
+      "legalNameTooLong": "Use up to 200 characters",
+      "registrationIdTooLong": "Use up to 40 characters"
     },
     "preview": {
       "invoice": "Fatura",
       "billTo": "Fatura adresi",
       "note": "Bilgileriniz her faturada böyle görünür. Bunları istediğiniz zaman Plan ve faturalandırma → Ödeme yöntemi bölümünden değiştirebilirsiniz."
-    }
+    },
+    "registrationNumber": "Business ID: {{number}}"
   },
   "checkout": {
     "secureStripe": "Stripe üzerinden ödeme",
@@ -416,16 +424,13 @@
     "paymentPlaceholder": "Card and digital wallets",
     "paymentHint": "Available payment methods appear after you save your billing details.",
     "orderDetails": "Order details",
-    "subscription": "Velora subscription",
     "tax": "VAT",
-    "taxAtPayment": "Calculated at payment",
+    "taxAtPayment": "Calculated from your billing details before payment",
     "reverseCharge": "VAT is accounted for by the buyer (reverse charge).",
     "total": "Total due",
     "dueToday": "Due today",
-    "nextCharge": "Next payment: {{amount}} on {{date}}.",
     "switchWarning": "The new plan starts now. The remaining time on your current plan will be lost.",
     "pay": "Pay {{amount}}",
-    "confirmSubscription": "Confirm subscription",
     "secure": "Secure payment with Stripe",
     "agreement": "By continuing, you accept",
     "loading": "Loading your details…",
@@ -440,6 +445,20 @@
     "changePlan": "Change",
     "addVat": "Add VAT number",
     "savedForNextTime": "Saved for your next payment",
-    "closeCountries": "Close country list"
+    "closeCountries": "Close country list",
+    "purchase": "Velora access for this period",
+    "taxWithRate": "VAT {{rate}}%",
+    "taxReview": "Tax treatment needs verification",
+    "taxExempt": "Exempt from VAT under the applicable rules.",
+    "taxOutOfScope": "Outside the scope of EU VAT; local tax obligations may apply.",
+    "accessPeriod": "Access: {{start}} – {{end}}.",
+    "accessUntil": "Access until {{date}}.",
+    "noAutoRenewal": "One payment for the selected period. No automatic charges.",
+    "invalidPaymentAmount": "The payment amount is invalid. Reopen checkout to refresh it.",
+    "vatNumber": "VAT ID: {{number}}",
+    "vatIdHint": "For a business, enter your VAT ID. We verify it through VIES. A Czech VAT ID does not remove Czech VAT; reverse charge may apply to a verified business in another EU country.",
+    "vatPending": "Your VAT ID is saved but is not yet verified by VIES. No reverse-charge treatment is applied until verification. We retry the check automatically.",
+    "accessUntilLabel": "Access ends",
+    "notificationSettings": "Notification settings"
   }
 }
