@@ -397,8 +397,8 @@
     "secureStripe": "Platby přes Stripe",
     "back": "Zpět k tarifům",
     "secureCheckout": "Zabezpečená platba",
-    "title": "Více možností s Velora",
-    "subtitle": "Tarif pro váš tým. Vše pro každodenní práci a růst podnikání.",
+    "title": "Dokončení platby",
+    "subtitle": "Tarif je vybraný. Doplňte fakturační údaje a zaplaťte.",
     "planDetails": "Váš tarif",
     "team": "Tým",
     "unlimitedDescription": "Místo pro každého",
@@ -433,6 +433,17 @@
     "agreement": "Pokračováním přijímáte",
     "loading": "Načítáme vaše údaje…",
     "loadError": "Platbu se nepodařilo načíst. Zkuste to znovu.",
-    "retry": "Zkusit znovu"
+    "retry": "Zkusit znovu",
+    "totalBeforeTax": "Celkem bez DPH",
+    "unlimited": "Neomezený",
+    "solo": "Pro sebe",
+    "members_one": "{{count}} člen týmu",
+    "members_few": "{{count}} členové týmu",
+    "members_other": "{{count}} členů týmu",
+    "selectedPlan": "Vybraný tarif",
+    "changePlan": "Změnit",
+    "addVat": "Přidat DIČ",
+    "savedForNextTime": "Údaje uložíme pro příští platbu",
+    "closeCountries": "Zavřít seznam zemí"
   }
 }

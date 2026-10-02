@@ -191,6 +191,8 @@ export interface CheckoutResponse {
   client_secret: string | null
   publishable_key: string | null
   payment_kind: 'checkout' | 'invoice' | null
+  payer_name: string | null
+  payer_email: string | null
   amount_due: number | null
   tax_amount: number | null
   currency: string | null

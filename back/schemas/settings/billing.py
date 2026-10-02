@@ -262,6 +262,8 @@ class CheckoutResponse(BaseModel):
     client_secret: str | None = None
     publishable_key: str | None = None
     payment_kind: Literal["checkout", "invoice"] | None = None
+    payer_name: str | None = None
+    payer_email: str | None = None
     amount_due: int | None = None
     tax_amount: int | None = None
     currency: str | None = None

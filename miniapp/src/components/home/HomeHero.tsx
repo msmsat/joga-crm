@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import type { StudioCatalog } from '../../api/studio';
 import { STEP_ICONS } from '../wizard/stepIcons';
 import LanguagePopover from '../profile/LanguagePopover';
+import BranchPicker from './BranchPicker';
 
 /** С чего человек начинает запись. */
 export type BookingStart = 'time' | 'master' | 'service';
@@ -13,6 +14,9 @@ type Props = {
   catalog: StudioCatalog | null;
   /** Имя клиента; гость — пусто. */
   name: string;
+  /** Филиал, выбранный на главной; `null` — все. */
+  branch: number | null;
+  onBranch: (id: number | null) => void;
   onStart: (start: BookingStart) => void;
 };
 
@@ -29,16 +33,19 @@ const ease = [0.16, 1, 0.3, 1] as const;
  * раздела. Свет за ним — фирменный цвет студии (как и у всего приложения),
  * кольца — тонкие, чтобы сцена не превращалась в баннер.
  */
-export default function HomeHero({ catalog, name, onStart }: Props) {
+export default function HomeHero({ catalog, name, branch, onBranch, onStart }: Props) {
   const { t } = useTranslation();
   const reduce = useReducedMotion();
   const [brokenLogo, setBrokenLogo] = useState(false);
   const studio = catalog?.studio;
   const branches = catalog?.branches ?? [];
   const words = (studio?.name ?? '').split(/\s+/).filter(Boolean);
-  const place = branches.length > 1
-    ? t('hero.branches', { count: branches.length })
-    : [branches[0]?.city, branches[0]?.address].filter(Boolean).join(', ');
+  // Под названием — адрес, куда человек идёт: выбранного филиала, а пока
+  // выбраны все — их число. Один филиал выводится сам.
+  const here = branches.length === 1 ? branches[0] : branches.find((row) => row.id === branch);
+  const place = here
+    ? [here.city, here.address].filter(Boolean).join(', ')
+    : branches.length > 1 ? t('hero.branches', { count: branches.length }) : '';
   const logo = !brokenLogo ? studio?.logo_url : null;
   const monogram = words.map((word) => word[0]).join('').slice(0, 2).toUpperCase();
 
@@ -105,14 +112,33 @@ export default function HomeHero({ catalog, name, onStart }: Props) {
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5 shrink-0">
               <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" /><circle cx="12" cy="10" r="3" />
             </svg>
-            <span className="truncate">{place}</span>
+            {/* Ключ — сам адрес: смена филиала проявляет новый, а не
+                подменяет буквы на месте. */}
+            <motion.span
+              key={place}
+              initial={reduce ? false : { opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.35, ease }}
+              className="truncate"
+            >
+              {place}
+            </motion.span>
           </motion.div>
         )}
       </div>
 
       <div className="relative pb-4">
-        <motion.div {...rise(0.34)} className="pb-3 text-[11px] font-extrabold uppercase tracking-[0.2em] text-muted-foreground">
-          {t('hero.chooseHow')}
+        {/* Филиал — справа от вопроса, а не отдельным шагом: он сужает все три
+            входа сразу, и спрашивать его в каждом было бы трижды одно и то же. */}
+        <motion.div {...rise(0.34)} className="flex items-center justify-between gap-3 pb-3">
+          <span className="min-w-0 text-[11px] font-extrabold uppercase leading-snug tracking-[0.2em] text-muted-foreground">
+            {t('hero.chooseHow')}
+          </span>
+          {branches.length > 1 && (
+            <div className="min-w-0 max-w-[58%] shrink-0">
+              <BranchPicker branches={branches} value={branch} onChange={onBranch} />
+            </div>
+          )}
         </motion.div>
         <div className="flex flex-col gap-2.5 dt:grid dt:grid-cols-3 dt:gap-4">
           {STARTS.map((start, index) => (

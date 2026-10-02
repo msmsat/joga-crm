@@ -395,8 +395,8 @@
     "secureStripe": "Pagos a través de Stripe",
     "back": "Back to plans",
     "secureCheckout": "Secure checkout",
-    "title": "Your next chapter with Velora",
-    "subtitle": "A plan that fits your team. Everything you need to keep your business moving.",
+    "title": "Complete your payment",
+    "subtitle": "Your plan is ready. Add your billing details and pay securely.",
     "planDetails": "Your plan",
     "team": "Team",
     "unlimitedDescription": "Room for everyone",
@@ -430,6 +430,16 @@
     "agreement": "By continuing, you accept",
     "loading": "Loading your details…",
     "loadError": "Could not load checkout. Try again.",
-    "retry": "Try again"
+    "retry": "Try again",
+    "totalBeforeTax": "Total before VAT",
+    "unlimited": "Unlimited",
+    "solo": "Solo",
+    "members_one": "{{count}} team member",
+    "members_other": "{{count}} team members",
+    "selectedPlan": "Selected plan",
+    "changePlan": "Change",
+    "addVat": "Add VAT number",
+    "savedForNextTime": "Saved for your next payment",
+    "closeCountries": "Close country list"
   }
 }

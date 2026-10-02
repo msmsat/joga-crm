@@ -114,7 +114,7 @@
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 /* Touch devices animate without focus or hover; only transforms and opacity move. */
-@media (hover: none), (pointer: coarse) {
+@media (hover: none), (pointer: coarse), (max-width: 600px) {
   .slot:not([data-inactive]) .aura { opacity: 0.35; animation-play-state: running; }
   .slot:not([data-inactive]) :is(.flow, .shimmer) { opacity: 0.85; animation-play-state: running; }
   .slot:not([data-inactive]) .spark { animation-play-state: running; }

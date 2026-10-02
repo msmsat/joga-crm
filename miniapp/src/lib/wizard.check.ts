@@ -73,6 +73,16 @@ check('филиал выводится сам, когда он один, и сп
   assert.equal(branchOf(rows, one), 1);
   assert.equal(branchOf(rows, { ...one, branchId: 2 }), 1, 'неподходящий филиал не держится');
 });
+check('филиал с главной: время, услуги и мастера — только его', () => {
+  // Филиал 2 — только Борис со стрижкой в 09:00 и 11:00.
+  const inSecond = at({ branchId: 2 });
+  assert.deepEqual(freeTimes(rows, inSecond).map(hhmm), ['09:00', '11:00'], 'окна других адресов не предлагаются');
+  const at11 = at({ branchId: 2, time: minutesOf('11:00') });
+  assert.deepEqual(serviceChoices([1, 2], staff, rows, at11), [1], 'борода в филиале 2 не делается');
+  assert.deepEqual(masterChoices(staff, rows, at11).map((m) => m.teacher_id), [20], 'Анна во втором филиале не принимает');
+  // Тот же час есть и в филиале 1, но выбор уже сделан — запись идёт во второй.
+  assert.equal(branchOf(rows, { ...at11, serviceId: 1, master: 20 }), 2);
+});
 check('после выбора лист ведёт в ближайший невыбранный раздел', () => {
   assert.equal(nextStep(at({ time: 600 }), 'time'), 'service');
   assert.equal(nextStep(at({ master: 10 }), 'master'), 'time');

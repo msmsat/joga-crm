@@ -574,14 +574,42 @@ async def _switch_now(
     return invoice if return_invoice else getattr(invoice, "hosted_invoice_url", None)
 
 
+async def _reusable_elements_invoice(db, studio_id, customer_id, plan_id, months, combo):
+    """A reopened unpaid switch must not be treated as another renewal."""
+    await db.execute(select(StudioBillingPlan).where(
+        StudioBillingPlan.studio_id == studio_id,
+    ).with_for_update().execution_options(populate_existing=True))
+    rows = (await db.execute(select(BillingInvoice).where(
+        BillingInvoice.studio_id == studio_id,
+        BillingInvoice.kind == "subscription",
+        BillingInvoice.status == "pending",
+        BillingInvoice.plan_name == plan_id,
+        BillingInvoice.period_months == months,
+        BillingInvoice.stripe_invoice_id.is_not(None),
+    ).order_by(BillingInvoice.id.desc()).limit(10))).scalars().all()
+    mode = "combo" if combo else "subscription"
+    for row in rows:
+        invoice = await stripe_billing.fetch_invoice(row.stripe_invoice_id)
+        meta = getattr(invoice, "metadata", None) or {}
+        customer = getattr(invoice, "customer", None)
+        if (getattr(customer, "id", customer) == customer_id
+                and invoice.status in ("open", "paid")
+                and meta.get("billing_mode", "subscription") == mode
+                and meta.get("plan") == plan_id and meta.get("period_months") == str(months)):
+            return invoice
+    return None
+
+
 async def _elements_invoice_response(invoice, customer_id: str, public_key: str):
     if invoice is None:
         return CheckoutResponse()
     secret, amount, currency = await stripe_billing.invoice_elements_data(invoice.id, customer_id)
     return CheckoutResponse(
         client_secret=secret, publishable_key=public_key, payment_kind="invoice",
+        payer_name=getattr(invoice, "customer_name", None),
+        payer_email=getattr(invoice, "customer_email", None),
         amount_due=amount, currency=currency,
-        tax_amount=sum(getattr(t, "amount", 0) for t in getattr(invoice, "total_taxes", [])),
+        tax_amount=sum(getattr(t, "amount", 0) for t in (getattr(invoice, "total_taxes", None) or [])),
     )
 
 
@@ -657,6 +685,17 @@ async def create_checkout(
         raise _tax_http_error(exc) from exc
 
     try:
+        if body.ui_mode == "elements":
+            invoice = await _reusable_elements_invoice(
+                db, ctx.studio_id, customer_id, body.plan, body.period_months, combo,
+            )
+            if invoice is not None:
+                from .webhook import apply_status, mirror_invoice
+                row = await mirror_invoice(db, plan, invoice)
+                if invoice.status == "paid":
+                    await apply_status(db, row, "paid")
+                await db.commit()
+                return await _elements_invoice_response(invoice, customer_id, public_key)
         price_id = await stripe_catalog.price_id(body.plan, body.period_months, combo)
         if _is_renewal(plan, body.plan, await _live_plan_name(plan)) and combo == (
             plan.billing_mode == "combo"

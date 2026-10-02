@@ -9,7 +9,7 @@ import { errorMessage } from '../../../../api/errorMessage';
 export function useCheckoutPage() {
   const { t } = useTranslation('billing');
   const navigate = useNavigate();
-  const [params, setParams] = useSearchParams();
+  const [params] = useSearchParams();
   const catalog = useQuery({ queryKey: ['billing', 'catalog'], queryFn: billingApi.getPlans });
   const profile = useQuery({ queryKey: ['billing', 'profile'], queryFn: billingApi.getBillingProfile });
   const plans = catalog.data?.plans ?? [];
@@ -27,11 +27,6 @@ export function useCheckoutPage() {
     queryFn: () => billingApi.previewCheckout(plan!.id, period, combo),
     enabled: !!plan,
   });
-  const change = (id: string, months = period) => {
-    if (session || busy) return;
-    setError('');
-    setParams({ plan: id, period: String(months), combo: String(combo) }, { replace: true });
-  };
   const prepare = async (input: BillingProfileInput) => {
     if (pending.current || !plan) return;
     pending.current = true;
@@ -47,7 +42,7 @@ export function useCheckoutPage() {
   };
   return {
     catalog, profile, preview, plan, period, combo, session, busy, error,
-    change, prepare, back: () => navigate('/dashboard/billing'),
+    prepare, back: () => navigate('/dashboard/billing'),
     editProfile: () => { if (!busy) { setSession(null); setError(''); } },
     completed: () => navigate('/dashboard/billing?payment=return', { replace: true }),
     returnUrl: `${window.location.origin}/dashboard/billing?payment=return`,

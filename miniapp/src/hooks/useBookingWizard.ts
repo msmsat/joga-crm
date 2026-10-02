@@ -62,6 +62,9 @@ export function useBookingWizard({ catalog, onNeedAuth }: Options) {
   // Куда листнули: 1 — вперёд по вкладкам, -1 — назад. Раздел въезжает с этой стороны.
   const [dir, setDir] = useState(1);
   const [pick, setPick] = useState<WizardPick>(() => emptyPick(today));
+  // Филиал, выбранный на главной до открытия листа; `null` — все. Он не
+  // первый шаг, а рамка: время ищется только в нём, мастера — только его.
+  const [scope, setScope] = useState<number | null>(null);
   const [staff, setStaff] = useState<ResourceStaffMember[] | null>(null);
   const [staffError, setStaffError] = useState(false);
   const [byDay, setByDay] = useState<Record<IsoDay, Day>>({});
@@ -107,7 +110,13 @@ export function useBookingWizard({ catalog, onNeedAuth }: Options) {
   }, [isOpen, pick.day, dayState]);
 
   const rows = dayState?.rows ?? null;
-  const members = useMemo(() => staff ?? [], [staff]);
+  // Мастера филиала — сужением уже полученного списка, а не вторым запросом:
+  // `branch_ids` в ответе есть у каждого, а смена филиала на главной не
+  // должна стоить скелета в листе.
+  const members = useMemo(
+    () => (staff ?? []).filter((row) => scope === null || row.branch_ids.includes(scope)),
+    [staff, scope],
+  );
   const services = useMemo(
     () => offeredServices(members, (catalog?.services ?? []).filter(isBookableResource)),
     [members, catalog?.services],
@@ -132,8 +141,11 @@ export function useBookingWizard({ catalog, onNeedAuth }: Options) {
     goTo(nextStep(next, from));
   };
 
-  const open = (first: WizardStep) => {
-    setPick(emptyPick(today));
+  /** `branch` — филиал с главной: выбор открывается уже в нём (`rowsFor`
+   *  отсекает окна других адресов), `null` — во всех. */
+  const open = (first: WizardStep, branch: number | null = null) => {
+    setScope(branch);
+    setPick({ ...emptyPick(today), branchId: branch });
     setQuoted(null);
     setBooking(null);
     setNotice(null);
@@ -277,6 +289,8 @@ export function useBookingWizard({ catalog, onNeedAuth }: Options) {
       return next;
     }),
     services, service, master, branchId, complete,
+    /** Филиал задан на главной — в итоге его уже не выбирают. */
+    scope,
     quote: quote?.data ?? null, quoting, requestQuote, defaultMethod,
     /** На месте записать нельзя — только онлайн (предоплата студии). */
     venueAllowed: !prepay,

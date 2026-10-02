@@ -28,6 +28,9 @@ const appearance: Appearance = {
     '.Label': { color: '#CBC6C2', fontWeight: '500', marginBottom: '8px' },
     '.Tab': { backgroundColor: '#202020', borderColor: '#363330', boxShadow: 'none' },
     '.Tab--selected': { borderColor: '#FCAE91', backgroundColor: '#2D2521' },
+    '.TabLabel': { color: '#CBC6C2' },
+    '.TabLabel--selected': { color: '#FCAE91' },
+    '.TabIcon--selected': { color: '#FCAE91' },
   },
 };
 const walletOptions = {
@@ -100,7 +103,10 @@ function InvoicePayment(props: Props) {
       const validation = await elements.submit();
       if (validation.error) { setError(validation.error.message || 'Payment failed'); event?.paymentFailed({ reason: 'fail' }); return; }
       const result = await stripe.confirmPayment({ elements, clientSecret: props.session.client_secret!,
-        confirmParams: { return_url: props.returnUrl, payment_method_data: { billing_details: { address: address(props.profile) } } },
+        confirmParams: { return_url: props.returnUrl, payment_method_data: { billing_details: { address: address(props.profile),
+          ...(props.session.payer_name ? { name: props.session.payer_name } : {}),
+          ...(props.session.payer_email ? { email: props.session.payer_email } : {}),
+        } } },
         redirect: 'if_required',
       });
       if (result.error) { setError(result.error.message || 'Payment failed'); event?.paymentFailed({ reason: 'fail' }); }
@@ -114,7 +120,10 @@ function InvoicePayment(props: Props) {
         <ExpressCheckoutElement options={walletOptions} onConfirm={confirm}
           onReady={e => setWallets(!!e.availablePaymentMethods && Object.values(e.availablePaymentMethods).some(Boolean))} />
       </div>
-      <PaymentElement options={paymentOptions} onChange={e => setComplete(e.complete)} />
+      <PaymentElement options={{ ...paymentOptions, fields: { billingDetails: {
+          address: 'never', name: props.session.payer_name ? 'never' : 'auto',
+          email: props.session.payer_email ? 'never' : 'auto',
+        } } }} onChange={e => setComplete(e.complete)} />
     </div>, submit: () => { void confirm(); }, busy, ready: !!stripe && complete,
     error, total: props.session.amount_due ?? null, tax: props.session.tax_amount ?? null,
   }}>{props.children}</PaymentContext.Provider>;

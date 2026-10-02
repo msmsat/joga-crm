@@ -76,6 +76,15 @@
   --v-shadow-danger: 0 10px 26px -8px rgba(216, 140, 154, 0.55);
   --v-shadow-danger-lift: 0 0 0 1px rgba(216, 140, 154, 0.30), 0 18px 40px -12px rgba(216, 140, 154, 0.55);
 
+  /* Выпуклая капсула-переключатель (выбор филиала на главной): поверхность
+     чуть светлеет кверху, по верхней кромке — блик, по нижней — тень. Так
+     предмет читается нажимаемым без цветной заливки: персик в этом ряду уже
+     у первой карточки, второй цветной объект спорил бы с ней. Нажатая —
+     та же капсула, утопленная: блик гаснет, тень уходит внутрь. */
+  --v-surface-raised: linear-gradient(180deg, #FFFFFF 0%, #F9F7F4 100%);
+  --v-shadow-button: inset 0 1px 0 rgba(255, 255, 255, 0.95), inset 0 -1px 0 rgba(26, 26, 26, 0.04), 0 0 0 1px rgba(26, 26, 26, 0.07), 0 1px 2px rgba(26, 26, 26, 0.06), 0 8px 18px -8px rgba(26, 26, 26, 0.20);
+  --v-shadow-button-press: inset 0 1px 3px rgba(26, 26, 26, 0.10), 0 0 0 1px rgba(26, 26, 26, 0.08);
+
   /* Нижняя безопасная зона — ОДНА на всё приложение: меню, подвалы листов, `pb-safe`.
      Голого `env(safe-area-inset-bottom)` мало: вебвью Telegram (iOS, Android в
      режиме «от края до края») отдаёт в нём ноль, хотя низ окна лежит под
@@ -133,6 +142,11 @@
   --v-shadow-hover: 0 0 0 1px rgba(255, 255, 255, 0.08), 0 28px 60px -16px rgba(0, 0, 0, 0.65);
   --v-shadow-danger: 0 12px 28px -8px rgba(216, 140, 154, 0.30);
   --v-shadow-danger-lift: 0 0 0 1px rgba(216, 140, 154, 0.28), 0 20px 44px -12px rgba(216, 140, 154, 0.34);
+
+  /* Блик на графите — едва заметный: белая кромка в 95% светилась бы полосой. */
+  --v-surface-raised: linear-gradient(180deg, #2A2A2A 0%, #1F1F1F 100%);
+  --v-shadow-button: inset 0 1px 0 rgba(255, 255, 255, 0.07), 0 0 0 1px rgba(255, 255, 255, 0.08), 0 8px 18px -8px rgba(0, 0, 0, 0.65);
+  --v-shadow-button-press: inset 0 1px 3px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.08);
 }
 
 /* Проброс в утилиты Tailwind: bg-brand, text-muted-foreground, shadow-lift, … */
@@ -167,6 +181,8 @@
   --shadow-hover: var(--v-shadow-hover);
   --shadow-danger: var(--v-shadow-danger);
   --shadow-danger-lift: var(--v-shadow-danger-lift);
+  --shadow-button: var(--v-shadow-button);
+  --shadow-button-press: var(--v-shadow-button-press);
 }
 
 /* Ширина, с которой кабинет перестаёт быть телефонным: боковое меню вместо

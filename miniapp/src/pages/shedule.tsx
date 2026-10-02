@@ -23,7 +23,7 @@ interface SheduleProps {
   /** Сотрудник из QR-кода студии: запись к нему либо расписание по нему. */
   focusStaffId?: number;
   /** Групповые занятия, выбранные на главной: открыть расписание групп с фильтром. */
-  homeFilter?: { teacher?: number; service?: number; nonce: number };
+  homeFilter?: { teacher?: number; service?: number; branch?: number; nonce: number };
 }
 
 /**

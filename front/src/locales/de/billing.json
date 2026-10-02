@@ -395,8 +395,8 @@
     "secureStripe": "Zahlungen über Stripe",
     "back": "Zurück zu den Tarifen",
     "secureCheckout": "Sichere Zahlung",
-    "title": "Mehr Möglichkeiten mit Velora",
-    "subtitle": "Ein Tarif für Ihr Team. Alles für den Alltag und das Wachstum Ihres Unternehmens.",
+    "title": "Zahlung abschließen",
+    "subtitle": "Ihr Tarif ist ausgewählt. Ergänzen Sie die Rechnungsdaten und bezahlen Sie.",
     "planDetails": "Ihr Tarif",
     "team": "Team",
     "unlimitedDescription": "Platz für alle",
@@ -430,6 +430,16 @@
     "agreement": "Durch Fortfahren akzeptieren Sie",
     "loading": "Ihre Daten werden geladen…",
     "loadError": "Zahlung konnte nicht geladen werden. Versuchen Sie es erneut.",
-    "retry": "Erneut versuchen"
+    "retry": "Erneut versuchen",
+    "totalBeforeTax": "Gesamt ohne MwSt.",
+    "unlimited": "Unbegrenzt",
+    "solo": "Solo",
+    "members_one": "{{count}} Teammitglied",
+    "members_other": "{{count}} Teammitglieder",
+    "selectedPlan": "Ausgewählter Tarif",
+    "changePlan": "Ändern",
+    "addVat": "USt-IdNr. hinzufügen",
+    "savedForNextTime": "Daten für die nächste Zahlung speichern",
+    "closeCountries": "Länderliste schließen"
   }
 }

@@ -8,8 +8,9 @@ import { type UserResponse } from '../api/auth';
 import type { StudioCatalog } from '../api/studio';
 import { useBookingWizard } from '../hooks/useBookingWizard';
 
-/** Расписание групп, открытое с главной: без фильтра, по мастеру или по услуге. */
-export type ScheduleFilter = { teacher?: number; service?: number };
+/** Расписание групп, открытое с главной: без фильтра, по мастеру или по услуге —
+ *  и в выбранном на главной филиале (`branch` не задан — во всех). */
+export type ScheduleFilter = { teacher?: number; service?: number; branch?: number };
 
 interface HomeProps {
   user: UserResponse | null;
@@ -41,14 +42,19 @@ export default function Home({ user, catalog, onNavigate, onBuySubscription, onN
   const [asking, setAsking] = useState<BookingStart | null>(null);
   // Группы: список мастеров или услуг перед расписанием.
   const [groupPick, setGroupPick] = useState<'master' | 'service' | null>(null);
+  // Филиал с главной — на весь сеанс, открывается на «Все». Каталог мог
+  // перечитаться без выбранного адреса: тогда снова «все», а не пустая запись.
+  const [branchPick, setBranchPick] = useState<number | null>(null);
+  const branch = catalog?.branches.some((row) => row.id === branchPick) ? branchPick : null;
+  const inBranch = branch ?? undefined;
 
   const group = (start: BookingStart) => {
-    if (start === 'time') onOpenSchedule({});
+    if (start === 'time') onOpenSchedule({ branch: inBranch });
     else setGroupPick(start);
   };
 
   const start = (choice: BookingStart) => {
-    if (mode === 'resource') wizard.open(choice);
+    if (mode === 'resource') wizard.open(choice, branch);
     else if (mode === 'event') group(choice);
     else setAsking(choice);
   };
@@ -74,7 +80,13 @@ export default function Home({ user, catalog, onNavigate, onBuySubscription, onN
 
   return (
     <div className="relative">
-      <HomeHero catalog={catalog} name={user?.name ?? ''} onStart={start} />
+      <HomeHero
+        catalog={catalog}
+        name={user?.name ?? ''}
+        branch={branch}
+        onBranch={setBranchPick}
+        onStart={start}
+      />
 
       <PickSheet
         isOpen={asking !== null}
@@ -87,7 +99,7 @@ export default function Home({ user, catalog, onNavigate, onBuySubscription, onN
           const choice = asking;
           setAsking(null);
           if (!choice) return;
-          if (id === 'resource') wizard.open(choice);
+          if (id === 'resource') wizard.open(choice, branch);
           else group(choice);
         }}
       />
@@ -102,7 +114,9 @@ export default function Home({ user, catalog, onNavigate, onBuySubscription, onN
         onPick={(id) => {
           const kind = groupPick;
           setGroupPick(null);
-          onOpenSchedule(kind === 'master' ? { teacher: Number(id) } : { service: Number(id) });
+          onOpenSchedule(kind === 'master'
+            ? { teacher: Number(id), branch: inBranch }
+            : { service: Number(id), branch: inBranch });
         }}
       />
 

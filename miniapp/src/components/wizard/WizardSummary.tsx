@@ -48,12 +48,14 @@ export function WizardNotice({ flow }: { flow: BookingWizardFlow }) {
   );
 }
 
-/** Филиал — чипами, когда окно есть в нескольких. Один — выбирать нечего. */
+/** Филиал — чипами, когда окно есть в нескольких. Один — выбирать нечего.
+ *  Выбран на главной — тоже: человек уже ответил, куда идёт, и время ему
+ *  показано только там. */
 export function WizardBranches({ flow, catalog }: { flow: BookingWizardFlow; catalog: StudioCatalog | null }) {
   const { t } = useTranslation();
   const branches = flow.rows ? branchChoices(flow.rows, flow.pick) : [];
   const branchList = (catalog?.branches ?? []).filter((branch) => branches.includes(branch.id));
-  if (branchList.length < 2) return null;
+  if (flow.scope !== null || branchList.length < 2) return null;
 
   return (
     <div>

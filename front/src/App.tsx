@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, useSearchParams } from 'react-router-dom';
-import { type ReactNode } from 'react';
+import { lazy, Suspense, type ReactNode } from 'react';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from './api/queryClient';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -28,7 +28,7 @@ import Notifications from './pages/dashboard/Notifications/Notifications';
 import Loyalty from './pages/dashboard/Loyalty/Loyalty';
 import Settings from './pages/dashboard/Settings/Settings';
 import Billing from './pages/dashboard/Billing/Billing';
-import CheckoutPage from './pages/dashboard/Billing/CheckoutPage';
+const CheckoutPage = lazy(() => import('./pages/dashboard/Billing/CheckoutPage'));
 import PaymentsHistory from './pages/dashboard/Billing/PaymentsHistory';
 import Journal from './pages/dashboard/Journal/Journal';
 import Profile from './pages/dashboard/Profile';
@@ -120,7 +120,7 @@ export default function App() {
         />
 
         <Route path="/dashboard/billing/checkout" element={
-          <ProtectedRoute requireOnboarding={true}><OwnerRoute><CheckoutPage /></OwnerRoute></ProtectedRoute>
+          <ProtectedRoute requireOnboarding={true}><OwnerRoute><Suspense fallback={<div style={{ minHeight: '100dvh', background: '#121212' }} />}><CheckoutPage /></Suspense></OwnerRoute></ProtectedRoute>
         } />
 
         {/* 🚀 ДАШБОРД (Каркас + Вложенные страницы) */}
