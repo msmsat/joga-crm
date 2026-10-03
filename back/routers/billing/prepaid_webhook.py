@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 def _metadata(obj):
-    return dict(getattr(obj, 'metadata', None) or {})
+    return stripe_billing.metadata_dict(obj)
 
 
 def is_prepaid(invoice):

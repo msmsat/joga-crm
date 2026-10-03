@@ -47,24 +47,16 @@ stripe_env.log_status()
 # значение одно и то же.
 stripe.api_key = os.getenv("STRIPE_SECRET_KEY", "")
 
-# Отдельный эндпоинт вебхука — отдельная подпись. Локально `stripe listen` выдаёт
-# один секрет на всю сессию, поэтому без своего значения берём общий: иначе на
-# деве пришлось бы держать два туннеля ради одного прогона.
-#
-# Секрет эндпоинта — это граница между деньгами студий (касса, Connect) и деньгами
-# Velora (тариф): общий секрет делает подпись одного эндпоинта годной для другого.
-# Сам по себе подмену уже не даёт — событие подключённого аккаунта отбрасывается в
-# routers/billing/webhook.py по полю `account`, — но на публичном адресе это
-# лишний общий секрет, поэтому кричим на старте. Ронять приложение нельзя: живой
-# вебхук оплаты тарифа умер бы молча вместе с продлениями.
-WEBHOOK_SECRET = os.getenv("STRIPE_BILLING_WEBHOOK_SECRET") or os.getenv("STRIPE_WEBHOOK_SECRET", "")
+# Billing and Connect have separate webhook trust boundaries. Missing billing
+# configuration must fail closed instead of accepting the checkout signature.
+WEBHOOK_SECRET = os.getenv("STRIPE_BILLING_WEBHOOK_SECRET", "")
 
 if not os.getenv("STRIPE_BILLING_WEBHOOK_SECRET") and stripe.api_key and urlparse(
     os.getenv("BACKEND_URL", "http://localhost:8000")
 ).hostname not in ("localhost", "127.0.0.1"):
     logger.error(
         "Stripe billing: STRIPE_BILLING_WEBHOOK_SECRET не задан — /billing/webhook/stripe "
-        "проверяет подпись общим с кассой секретом. Заведите эндпоинту свой секрет "
+        "отбрасывает все события. Заведите эндпоинту свой секрет "
         "в дашборде Stripe (и НЕ включайте ему 'events on connected accounts')."
     )
 
@@ -539,6 +531,14 @@ async def create_period_checkout(
         **params, **ui, **stripe_checkout_branding.payment_method_params(),
         idempotency_key=idempotency_key,
     )
+
+
+def metadata_dict(obj) -> dict:
+    """StripeObject metadata is not a Python mapping in stripe-python 15+."""
+    metadata = getattr(obj, 'metadata', None) or {}
+    if hasattr(metadata, 'to_dict'):
+        metadata = metadata.to_dict()
+    return dict(metadata)
 
 
 async def fetch_checkout_session(session_id: str):

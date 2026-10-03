@@ -123,13 +123,14 @@ async def find_plan_by_subscription(
     # в мёртвую подписку (502) при том, что статус зеркалится уже с новой.
     # Живую (active/past_due) НЕ трогаем — иначе отставшее событие об отменённой
     # подписке перебило бы актуальную привязку.
-    # A late legacy subscription must not reattach itself to paid prepaid access.
+    # A late legacy subscription must not reattach after a prepaid purchase,
+    # including a refunded purchase whose terminal access must stay revoked.
     # Invoice-only events still use the customer lookup for commission documents.
     if (plan is not None and subscription_id and not plan.stripe_subscription_id
             and getattr(plan, "auto_renewal", True) is False):
         prepaid_paid = (await db.execute(select(BillingInvoice).where(
             BillingInvoice.studio_id == plan.studio_id,
-            BillingInvoice.kind == "subscription", BillingInvoice.status == "paid",
+            BillingInvoice.kind == "subscription", BillingInvoice.status.in_(("paid", "refunded")),
             BillingInvoice.stripe_invoice_id.is_(None), BillingInvoice.order_id.like("cs_%"),
         ).limit(1))).scalars().first()
         if prepaid_paid is not None:

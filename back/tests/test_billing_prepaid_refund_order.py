@@ -103,3 +103,68 @@ def test_lost_dispute_before_paid_event_retains_original_and_no_access(monkeypat
     assert db.document.snapshot['tax']['total_minor'] == 5445
     assert db.document.correction_snapshot is None
     assert vars(db.plan) == previous_plan and db.invoice.access_granted_at is None and mails == []
+
+
+@pytest.mark.parametrize('status', ['paid', 'refunded'])
+def test_paid_or_refunded_prepaid_purchase_blocks_late_legacy_subscription(status):
+    invoice, plan = _invoice(), _plan()
+    invoice.status = status
+    async def execute(query):
+        entity = query.column_descriptions[0]['entity']
+        params = query.compile().params
+        if entity is StudioBillingPlan:
+            value = None if 'stripe_subscription_id_1' in params else plan
+        else:
+            statuses = params['status_1']
+            statuses = [statuses] if isinstance(statuses, str) else statuses
+            value = invoice if invoice.status in statuses else None
+        return NS(scalar_one_or_none=lambda: value,
+                  scalars=lambda: NS(first=lambda: value))
+    db = NS(execute=execute)
+    assert asyncio.run(webhook.find_plan_by_subscription(db, 'sub_old', 'cus_test')) is None
+    assert plan.stripe_subscription_id is None and plan.auto_renewal is False
+
+
+def test_commission_invoice_event_still_uses_customer_lookup_after_prepaid_refund():
+    plan = _plan()
+    async def execute(query):
+        assert query.column_descriptions[0]['entity'] is StudioBillingPlan
+        return NS(scalar_one_or_none=lambda: plan)
+    assert asyncio.run(webhook.find_plan_by_subscription(NS(execute=execute), None, 'cus_test')) is plan
+    assert plan.stripe_subscription_id is None
+
+
+def test_sdk_payment_objects_activate_and_reverse_the_exact_order_once(monkeypatch):
+    import stripe
+
+    db, session_fields, ledger, mails = setup(monkeypatch)
+    db.plan.plan_name, db.plan.status = 'free_trial', 'trial'
+    values = vars(session_fields).copy()
+    values['total_details'] = vars(session_fields.total_details)
+    session = stripe.checkout.Session.construct_from(values, 'sk_test_fixture')
+    intent = stripe.PaymentIntent.construct_from({
+        'id': 'pi_test', 'status': 'succeeded', 'metadata': values['metadata'],
+    }, 'sk_test_fixture')
+    charge = stripe.Charge.construct_from({
+        'id': 'ch_test', 'object': 'charge', 'payment_intent': 'pi_test',
+        'amount': 5445, 'amount_refunded': 5445,
+    }, 'sk_test_fixture')
+    async def fetch(_id): return session
+    async def payment(*args): return intent
+    monkeypatch.setattr(route.stripe_billing, 'fetch_checkout_session', fetch)
+    monkeypatch.setattr(route.stripe_billing, 'fetch_payment_intent', payment)
+
+    assert asyncio.run(route.handle_session(db, 'checkout.session.completed', session,
+                                           now=datetime(2026, 10, 2))) is True
+    assert db.invoice.status == 'paid' and db.invoice.amount == 5445
+    assert db.plan.expires_at == datetime(2026, 11, 2)
+    assert ledger == [(5445, 'cs:cs_test')] and len(mails) == 2
+    refund_proof = int(datetime(2026, 10, 2, 12, tzinfo=timezone.utc).timestamp())
+    asyncio.run(webhook._handle_refund(db, charge, event_created=refund_proof))
+    assert db.invoice.status == 'refunded' and db.plan.status == 'expired'
+    assert ledger == [(5445, 'cs:cs_test'), (-5445, 'rev:cs:cs_test')]
+    assert db.document.correction_snapshot['refund_minor'] == 5445
+    expires = db.plan.expires_at
+    asyncio.run(route.handle_session(db, 'checkout.session.completed', session))
+    asyncio.run(webhook._handle_refund(db, charge, event_created=refund_proof))
+    assert db.plan.expires_at == expires and len(ledger) == 2 and len(mails) == 2

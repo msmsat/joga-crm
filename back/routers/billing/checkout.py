@@ -681,7 +681,7 @@ async def create_checkout(
     # то же решение, иначе один и тот же плательщик в один и тот же день увидит счёт
     # с налогом и счёт без него.
     try:
-        tax = await billing_tax.application(db, ctx.studio_id, "subscription")
+        tax = await billing_tax.application(db, ctx.studio_id, "subscription", payer=ctx.user)
         await billing_tax.sync_customer_exempt(customer_id, tax)
     except (TaxReviewRequired, TaxRateMissing) as exc:
         raise _tax_http_error(exc) from exc
@@ -728,7 +728,9 @@ async def preview_checkout(
     # Налог — тем же решением, которым выставится счёт. Ни один платный вызов сюда
     # не приходит: в ручном режиме считаем сами, в автоматическом честно отвечаем,
     # что ставку определит страница Stripe.
-    tax_view = await billing_tax.preview(db, ctx.studio_id, "subscription", gross, currency)
+    tax_view = await billing_tax.preview(
+        db, ctx.studio_id, "subscription", gross, currency, payer=ctx.user,
+    )
     tax_fields = dict(
         tax_outcome=tax_view.outcome,
         tax_rate_percent=tax_view.rate_percent,
@@ -748,7 +750,8 @@ async def preview_checkout(
     return CheckoutPreviewRead(
         kind=kind, current_plan=row.plan_name if kind != "new" else None,
         gross=gross, total=gross, currency=currency, **tax_fields,
-        access_starts_at=starts.isoformat(), access_until=until.isoformat(),
+        access_starts_at=starts.replace(tzinfo=timezone.utc).isoformat(),
+        access_until=until.replace(tzinfo=timezone.utc).isoformat(),
     )
 
 

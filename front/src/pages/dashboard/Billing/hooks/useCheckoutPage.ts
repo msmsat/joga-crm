@@ -6,6 +6,12 @@ import { billingApi } from '../../../../api/billing/billing.api';
 import type { BillingProfileInput, CheckoutResponse } from '../../../../api/billing/billing.types';
 import { errorMessage } from '../../../../api/errorMessage';
 
+const paymentReturnPath = (invoiceId?: number | null) => {
+  const params = new URLSearchParams({ payment: 'return' });
+  if (invoiceId != null) params.set('invoice_id', String(invoiceId));
+  return `/dashboard/billing?${params}`;
+};
+
 export function useCheckoutPage() {
   const { t } = useTranslation('billing');
   const navigate = useNavigate();
@@ -35,7 +41,7 @@ export function useCheckoutPage() {
       await billingApi.saveBillingProfile(input);
       await profile.refetch();
       const result = await billingApi.checkout(plan.id, period, combo, 'elements');
-      if (!result.client_secret) { navigate('/dashboard/billing?payment=return', { replace: true }); return; }
+      if (!result.client_secret) { navigate(paymentReturnPath(result.invoice_id), { replace: true }); return; }
       setSession(result);
     } catch (err) { setError(errorMessage(err, t)); throw err; }
     finally { pending.current = false; setBusy(false); }
@@ -44,7 +50,7 @@ export function useCheckoutPage() {
     catalog, profile, preview, plan, period, combo, session, busy, error,
     prepare, back: () => navigate('/dashboard/billing'),
     editProfile: () => { if (!busy) { setSession(null); setError(''); } },
-    completed: () => navigate('/dashboard/billing?payment=return', { replace: true }),
-    returnUrl: `${window.location.origin}/dashboard/billing?payment=return`,
+    completed: () => navigate(paymentReturnPath(session?.invoice_id), { replace: true }),
+    returnUrl: `${window.location.origin}${paymentReturnPath(session?.invoice_id)}`,
   };
 }

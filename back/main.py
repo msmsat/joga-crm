@@ -12,6 +12,7 @@ from slowapi import _rate_limit_exceeded_handler
 from ratelimit import limiter
 from database import async_session_maker, engine
 from services.schema_readiness import ensure_database_schema
+from services.legal_pages import register_legal_pages
 from services.alerts import alert_on_server_error, install as install_alerts
 from services.scenario_runner import start_scenario_loop
 from services.daily_notify import start_daily_notify_loop
@@ -151,6 +152,9 @@ app.include_router(admin_router, prefix="/adm/api", tags=["Admin"])
 # Маяк лендинга — публичный и БЕЗ префикса админки: его зовёт браузер
 # анонимного посетителя, а /adm/api закрыт токеном целиком.
 app.include_router(landing_collect_router, tags=["Admin"])
+
+# Legal release pages precede the persistent static uploads mount.
+register_legal_pages(app)
 
 try:
     os.makedirs("static/logos", exist_ok=True)

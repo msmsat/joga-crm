@@ -204,11 +204,13 @@ def test_paid_quote_has_no_future_automatic_debit(monkeypatch):
     from routers.billing import checkout as CO
     from services.billing_tax import TaxPreview
     plan = _plan('free_trial', 'trial')
-    async def tax_preview(*args):
+    current_payer = NS(id=2)
+    async def tax_preview(*args, payer):
+        assert payer is current_payer
         return TaxPreview('taxable', 21, 4500, 945, 5445, 'EUR', 'domestic_standard_rate', None)
     monkeypatch.setattr(CO.billing_tax, 'preview', tax_preview)
     fn = getattr(CO.preview_checkout, '__wrapped__', CO.preview_checkout)
-    preview = asyncio.run(fn(None, 's5', 1, False, NS(studio_id=7), _DB(_invoice(), plan)))
+    preview = asyncio.run(fn(None, 's5', 1, False, NS(studio_id=7, user=current_payer), _DB(_invoice(), plan)))
     assert preview.total == 4500 and preview.total_with_tax == 5445
     assert preview.free_until is None and preview.free_days == 0
     assert preview.access_starts_at and preview.access_until

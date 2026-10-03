@@ -190,6 +190,8 @@ export interface CheckoutRequest {
 }
 
 export interface CheckoutResponse {
+  /** Identifies the exact owner invoice to reconcile after payment. */
+  invoice_id: number | null
   /** null — платить нечего: переход уже применён, вести владельца некуда. */
   checkout_url: string | null
   client_secret: string | null

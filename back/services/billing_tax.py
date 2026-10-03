@@ -72,8 +72,15 @@ async def _owner(db: AsyncSession, studio_id: int) -> User | None:
     )).scalars().first()
 
 
-async def customer_profile(db: AsyncSession, studio_id: int) -> CustomerProfile:
-    """Данные плательщика для налогового решения."""
+async def customer_profile(
+    db: AsyncSession, studio_id: int, *, payer: User | None = None,
+) -> CustomerProfile:
+    """Use the explicit checkout payer; unattended billing keeps its owner fallback."""
+    if payer is not None:
+        return CustomerProfile(
+            country=payer.billing_country, vat_id=payer.billing_vat_id,
+            vat_state=_vat_state(payer),
+        )
     owner = await _owner(db, studio_id)
     if owner is not None and owner.billing_country:
         return CustomerProfile(
@@ -101,7 +108,9 @@ def decide_for(customer: CustomerProfile, kind: str) -> TaxDecision:
     )
 
 
-async def application(db: AsyncSession, studio_id: int, kind: str) -> TaxApplication:
+async def application(
+    db: AsyncSession, studio_id: int, kind: str, *, payer: User | None = None,
+) -> TaxApplication:
     """Главный вход: студия и вид счёта → параметры Stripe.
 
     В режиме `stripe_auto` (по умолчанию) возвращает прежнее поведение — считает
@@ -110,7 +119,7 @@ async def application(db: AsyncSession, studio_id: int, kind: str) -> TaxApplica
     """
     if not tax_policy.manual_mode():
         return tax_rates.automatic_application()
-    decision = decide_for(await customer_profile(db, studio_id), kind)
+    decision = decide_for(await customer_profile(db, studio_id, payer=payer), kind)
     if decision.needs_review:
         logger.warning(
             "Налог: студия %s, вид %s — решение требует проверки (%s: %s)",
@@ -204,7 +213,10 @@ class TaxPreview:
     review_reason: str | None
 
 
-async def preview(db: AsyncSession, studio_id: int, kind: str, net_minor: int, currency: str) -> TaxPreview:
+async def preview(
+    db: AsyncSession, studio_id: int, kind: str, net_minor: int, currency: str,
+    *, payer: User | None = None,
+) -> TaxPreview:
     """Расчёт для модалки оплаты. Тем же решением, каким потом выставится счёт.
 
     В Stripe за расчётом не ходим ни в каком режиме: в ручном считаем сами, в
@@ -217,7 +229,7 @@ async def preview(db: AsyncSession, studio_id: int, kind: str, net_minor: int, c
             gross=net_minor, currency=currency.upper(),
             basis="stripe_automatic_tax", review_reason=None,
         )
-    decision = decide_for(await customer_profile(db, studio_id), kind)
+    decision = decide_for(await customer_profile(db, studio_id, payer=payer), kind)
     tax_minor, gross = tax_policy.apply(net_minor, decision)
     return TaxPreview(
         outcome=decision.outcome,

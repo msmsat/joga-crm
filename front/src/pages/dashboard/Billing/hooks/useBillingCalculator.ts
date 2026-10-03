@@ -13,6 +13,7 @@ import { billingApi } from '../../../../api/billing/billing.api';
 import { errorMessage } from '../../../../api/errorMessage';
 import { queryKeys } from '../../../../api/queryKeys';
 import { useToast } from '../../../../components/ui/index';
+import { usePaymentReturn } from './usePaymentReturn';
 
 // Лимиты ступени — те же, что считает plans._limits на сервере: их показывает
 // панель итога («обращений к Velora AI»). null = безлимит. Клиентов тут нет:
@@ -90,9 +91,7 @@ export function useBillingCalculator() {
   // Возврат с оплаты Stripe (?payment=return). Истина о платеже — вебхук, он мог
   // ещё не дойти; поэтому не рисуем подписку локально, а перезапрашиваем план.
   // Флаг читаем из URL лениво (setState в эффекте даёт каскадный рендер).
-  const [paymentReturn] = useState(
-    () => new URLSearchParams(window.location.search).get('payment') === 'return',
-  );
+  const { paymentReturn, paymentInvoice, paymentStatus, recordPaymentInvoice } = usePaymentReturn();
   const { data: plan = null } = useQuery({
     queryKey: queryKeys.billingPlan,
     queryFn: () => billingApi.getPlan(),
@@ -152,11 +151,13 @@ export function useBillingCalculator() {
   // а не рисует подписку локально — поэтому тоже просто перезапрашивает все три источника.
   useEffect(() => {
     loadPlan(); loadInvoices(); loadCards(); loadStats();
-    if (paymentReturn) {
-      // Убираем ?payment=return из URL, чтобы обновление страницы не показало баннер снова.
-      window.history.replaceState(null, '', window.location.pathname);
-    }
   }, [paymentReturn, loadPlan]);
+
+  useEffect(() => {
+    if (paymentInvoice && ['paid', 'failed', 'refunded'].includes(paymentInvoice.status)) {
+      loadPlan(); loadInvoices(); loadStats();
+    }
+  }, [paymentInvoice, loadPlan]);
 
   // ponytail: фокус-рефетч, а не polling (React Query не вводим, §3.2) — добавить
   // setInterval, если понадобится live-обновление при постоянно открытой вкладке.
@@ -265,6 +266,7 @@ export function useBillingCalculator() {
   // подписку на сервере — поэтому вместе со строкой освежаем план и плашки шапки.
   const syncInvoice = (id: number) =>
     billingApi.syncInvoice(id).then(fresh => {
+      recordPaymentInvoice(fresh);
       setInvoices(list => list.map(i => (i.id === fresh.id ? fresh : i)));
       loadPlan(); loadStats();
       return fresh;
@@ -340,7 +342,7 @@ export function useBillingCalculator() {
     payBusy,
     openPortal, portalBusy,
     preview: preview?.key === previewKey ? preview.data : null, previewBusy,
-    paymentReturn, plan,
+    paymentReturn, paymentInvoice, paymentStatus, plan,
     invoices, invoicesLoaded, cards, cardsLoaded, setAutopay,
     stats, syncInvoice,
   };

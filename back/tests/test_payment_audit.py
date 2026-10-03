@@ -73,7 +73,7 @@ def _run(coro):
 def _invoice(status, **kw):
     return SimpleNamespace(**{
         "id": 5, "status": status, "kind": "subscription", "studio_id": 7,
-        "stripe_invoice_id": None, "amount": 9900, "plan_name": "s15",
+        "stripe_invoice_id": None, "order_id": None, "amount": 9900, "plan_name": "s15",
         "period": None, "period_months": 12, "paid_at": None,
         "payment_method": "card", "pdf_url": None, "hosted_invoice_url": None,
         **kw,
@@ -244,6 +244,7 @@ _CTX = SimpleNamespace(
     studio_id=7,
     user=SimpleNamespace(
         id=1, name="Owner", last_name="One", email="o@x.com",
+        billing_legal_name="Owner One", billing_registration_id=None,
         billing_country="CZ", billing_line1="Ulice 1", billing_line2=None,
         billing_postal_code="11000", billing_city="Praha",
         billing_vat_id=None, billing_vat_verified=False,
@@ -309,15 +310,40 @@ def test_without_a_live_subscription_there_is_nothing_to_gift(monkeypatch):
     assert reconciled == [True]
 
 
-def test_the_refusal_leads_to_the_paid_path_not_to_a_dead_end():
-    """`POST /billing/checkout` с combo=false — это смена тарифа за полную цену
-    периода (checkout._switch_now), и режим поднимает уже оплата
-    (webhook._apply_paid_mode). Отказ обязан вести именно туда."""
-    from routers.billing.checkout import create_checkout
+def test_the_refusal_leads_to_the_paid_path_not_to_a_dead_end(monkeypatch):
+    """A migrated combo studio can buy the full fixed plan without a free switch."""
+    from routers.billing import checkout as CO, prepaid
+    from schemas.settings.billing import CheckoutRequest, CheckoutResponse
 
-    assert "_switch_now" in inspect.getsource(create_checkout)
+    row = _plan_row(stripe_subscription_id=None)
+    before, purchases = dict(vars(row)), []
+    tax = object()
+    async def no_debt(*args): return False
+    async def customer(*args): return 'cus_1'
+    async def no_subscription(*args): pass
+    async def application(*args, **kwargs): return tax
+    async def no_tax_update(*args): pass
+    async def purchase(db, ctx, plan, customer_id, body, applied, profile, *urls):
+        purchases.append((body.plan, body.period_months, body.combo))
+        assert ctx is _CTX and plan is row and customer_id == 'cus_1'
+        assert applied is tax and profile.legal_name == 'Owner One'
+        return CheckoutResponse(checkout_url='https://checkout.test/prepaid')
+
+    monkeypatch.setattr(SB, 'configured', lambda: True)
+    monkeypatch.setattr(CO.offline_fee_billing, 'has_unsettled_commission', no_debt)
+    monkeypatch.setattr(CO, '_ensure_customer', customer)
+    monkeypatch.setattr(CO, '_forget_dead_subscription', no_subscription)
+    monkeypatch.setattr(CO.billing_tax, 'application', application)
+    monkeypatch.setattr(CO.billing_tax, 'sync_customer_exempt', no_tax_update)
+    monkeypatch.setattr('services.billing_document_snapshot.require_seller_details', lambda: {})
+    monkeypatch.setattr(prepaid, 'create_payment', purchase)
+    body = CheckoutRequest(plan='s15', period_months=12, combo=False)
+    fn = getattr(CO.create_checkout, '__wrapped__', CO.create_checkout)
+    response = _run(fn(SimpleNamespace(), body, _CTX, _PlanDB(row)))
+    assert response.checkout_url == 'https://checkout.test/prepaid'
+    assert purchases == [('s15', 12, False)]
+    assert vars(row) == before, 'A Checkout link must not grant the paid plan'
     assert "Оплатить" in BR.COMBO_SWITCH_REQUIRES_PAYMENT["message"]
-
 
 # ─── 4. баллы, депозит и сертификат тратятся один раз ─────────────────────────
 

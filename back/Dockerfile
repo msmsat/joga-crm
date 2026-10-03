@@ -7,6 +7,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
+# Legal releases must not be hidden by an existing /app/static upload volume.
+COPY static/terms.html static/privacy.html static/cookies.html static/terms-2026-09-14.2.html /app/assets/legal/
+
 # База «IP → страна» для языка сайта по стране посетителя (services/geo_locale.py).
 # Качается на каждой сборке, поэтому обновляется вместе с деплоем. Не скачалась
 # (сеть, сайт DB-IP) — образ всё равно собирается: сайт откроется по-английски.

@@ -117,6 +117,11 @@ def _stub_stripe(monkeypatch, *, invoice_id="in_1", cancelled=None, raises=None)
     async def fake_cancel(subscription_id):
         cancelled.append(subscription_id)
 
+    async def legacy_intent(payment_intent=None, charge_id=None):
+        return SimpleNamespace(id=payment_intent, metadata={})
+
+    # Legacy payments have no prepaid metadata; the invoice fallback remains real.
+    monkeypatch.setattr(SB, "fetch_payment_intent", legacy_intent)
     monkeypatch.setattr(SB, "invoice_id_for_payment", fake_lookup)
     monkeypatch.setattr(SB, "cancel_subscription", fake_cancel)
     return cancelled
@@ -314,6 +319,7 @@ def test_a_dead_subscription_does_not_break_the_revocation(monkeypatch):
     """Подписка уже отменена — Stripe ответит ошибкой, но счёт к этому моменту
     переведён и закоммичен. Ронять обработку значит получить ретрай применённого
     события."""
+    _stub_stripe(monkeypatch)
     async def boom(_sub_id):
         raise RuntimeError("No such subscription")
 

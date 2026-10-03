@@ -42,7 +42,7 @@ const walletOptions = {
   buttonTheme: { applePay: 'white' as const, googlePay: 'white' as const, paypal: 'gold' as const },
   paymentMethods: { applePay: 'auto' as const, googlePay: 'auto' as const, paypal: 'auto' as const,
     link: 'never' as const, amazonPay: 'never' as const, klarna: 'never' as const },
-  layout: { maxColumns: 2, maxRows: 2, overflow: 'never' as const },
+  layout: { maxColumns: 2, maxRows: 2, overflow: 'auto' as const },
 };
 const paymentOptions = {
   layout: 'tabs' as const, paymentMethodOrder: ['card', 'paypal'],

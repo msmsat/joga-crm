@@ -14,7 +14,7 @@ from sqlalchemy.future import select
 from database import async_session_maker, get_db
 from dependencies import StudioContext, get_current_user, oauth2_scheme, require_otp, require_role
 from models import (
-    Client, ClientSubscription, FinDocument, GiftCertificate, Lesson, Operation, ReferralRecord,
+    BillingTaxDocument, Client, ClientSubscription, FinDocument, GiftCertificate, Lesson, Operation, ReferralRecord,
     Reservation, Studio, StudioBillingPlan, StudioMember, User, UserSession,
 )
 from schemas.settings.security import (
@@ -23,7 +23,7 @@ from schemas.settings.security import (
 )
 from services.email_layout import button
 from services.exporter import csv_stream
-from services.i18n import pick
+from services.i18n import pick, resolve
 from services.mailer import send_email
 from services.notifier import _studio_prefs
 from services.sessions import hash_token, revoke_sessions
@@ -305,7 +305,7 @@ async def delete_account(
     _otp: None = Depends(require_otp("delete_account")),
 ):
     await lock_studio(db, ctx.studio_id)
-    await _check_confirm_name(db, ctx.studio_id, body.confirm_name)
+    studio = await _check_confirm_name(db, ctx.studio_id, body.confirm_name)
 
     other_owner = (await db.execute(
         select(StudioMember).where(
@@ -325,6 +325,23 @@ async def delete_account(
     )).scalar_one_or_none()
     if plan is not None and plan.status == "active":
         raise HTTPException(status_code=409, detail="Сначала отмените подписку")
+
+    retained = (await db.execute(
+        select(BillingTaxDocument.id).where(
+            BillingTaxDocument.studio_id == ctx.studio_id,
+        ).limit(1)
+    )).scalar_one_or_none()
+    if retained is not None:
+        raise HTTPException(status_code=409, detail={
+            "code": "settings.accounting_records_retained",
+            "message": pick({
+                "en": "This account has accounting and tax records that must be retained. Contact support to close the account while preserving these records.",
+                "ru": "В аккаунте есть бухгалтерские и налоговые документы, которые необходимо хранить. Обратитесь в поддержку для закрытия аккаунта с сохранением этих документов.",
+                "uk": "В акаунті є бухгалтерські та податкові документи, які необхідно зберігати. Зверніться до підтримки для закриття акаунта зі збереженням цих документів.",
+                "cs": "Účet obsahuje účetní a daňové doklady, které je nutné uchovat. Pro uzavření účtu při zachování těchto dokladů kontaktujte podporu.",
+                "de": "Dieses Konto enthält Buchhaltungs- und Steuerunterlagen, die aufbewahrt werden müssen. Wenden Sie sich an den Support, um das Konto unter Aufbewahrung dieser Unterlagen zu schließen.",
+            }, resolve(studio.language)),
+        })
 
     # Все сессии, включая текущую — студии, из которой они выданы, больше
     # не будет; ответ на этот запрос всё равно уйдёт (отзыв не рвёт текущее

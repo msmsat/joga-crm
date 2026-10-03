@@ -3,6 +3,7 @@ import hashlib
 import json
 import uuid
 from datetime import datetime
+from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 from fastapi import HTTPException
 from sqlalchemy import or_
@@ -46,19 +47,28 @@ def _fingerprint(profile, tax, body, combo, net):
 
 
 def _meta(session):
-    return dict(getattr(session, 'metadata', None) or {})
+    return stripe_billing.metadata_dict(session)
+
+
+def _invoice_return_url(url: str, invoice_id: int) -> str:
+    parts = urlsplit(url)
+    query = [(key, value) for key, value in parse_qsl(parts.query, keep_blank_values=True)
+             if key != 'invoice_id']
+    query.append(('invoice_id', str(invoice_id)))
+    return urlunsplit(parts._replace(query=urlencode(query)))
 
 
 async def _response(db, session, row, body, public_key):
     if getattr(session, 'payment_status', None) == 'paid':
         from .prepaid_webhook import handle_session
         await handle_session(db, 'checkout.session.completed', session)
-        return CheckoutResponse(amount_due=0, currency=stripe_billing.CURRENCY.upper())
+        return CheckoutResponse(invoice_id=row.id, amount_due=0, currency=stripe_billing.CURRENCY.upper())
     secret = getattr(session, 'client_secret', None) if body.ui_mode == 'elements' else None
     total = getattr(session, 'amount_total', None)
     details = getattr(session, 'total_details', None)
     tax = getattr(details, 'amount_tax', None)
     return CheckoutResponse(
+        invoice_id=row.id,
         checkout_url=getattr(session, 'url', None) if body.ui_mode == 'hosted' else None,
         client_secret=secret, publishable_key=public_key, payment_kind='checkout',
         amount_due=total, currency=stripe_billing.CURRENCY.upper(), tax_amount=tax,
@@ -100,7 +110,7 @@ async def create_payment(db, ctx, plan, customer_id, body, tax, profile,
             if getattr(session, 'payment_status', None) == 'paid':
                 await _response(db, session, candidate, body, public_key)
                 if same:
-                    return CheckoutResponse(amount_due=0, currency=stripe_billing.CURRENCY.upper())
+                    return CheckoutResponse(invoice_id=candidate.id, amount_due=0, currency=stripe_billing.CURRENCY.upper())
             elif getattr(session, 'status', None) == 'open':
                 if same:
                     await db.commit()
@@ -156,7 +166,7 @@ async def create_payment(db, ctx, plan, customer_id, body, tax, profile,
     }
     session = await stripe_billing.create_period_checkout(
         customer_id, net, f'Velora {PLANS[body.plan]["name"]} · {body.period_months} мес.',
-        metadata, return_url, cancel_url, tax=tax, ui_mode=body.ui_mode,
+        metadata, _invoice_return_url(return_url, row.id), cancel_url, tax=tax, ui_mode=body.ui_mode,
         idempotency_key=f'prepaid:{row.id}',
     )
     row.order_id = session.id
