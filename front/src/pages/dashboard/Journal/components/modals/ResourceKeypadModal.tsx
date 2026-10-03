@@ -28,7 +28,6 @@ type Props = {
   defaultServiceId?: number;
   /** Шаг сетки журнала (мин): по нему строится выпадающий список времени. */
   timeStep: number;
-  newFormPos: { x: number; y: number };
   modalRef: React.RefObject<HTMLDivElement | null>;
   onClose: () => void;
   onCreated: (date?: string) => void;
@@ -54,7 +53,7 @@ type Props = {
  */
 export function ResourceKeypadModal({
   trainers, teacherId: initialTeacherId, defaultTime = '', defaultDate, defaultServiceId, timeStep, clientId = null,
-  newFormPos, modalRef, onClose, onCreated, onDateChange, onPreview,
+  modalRef, onClose, onCreated, onDateChange, onPreview,
 }: Props) {
   const { t } = useTranslation(['journal', 'common']);
   const terms = useBusinessTerms('resource');
@@ -139,7 +138,7 @@ export function ResourceKeypadModal({
     <>
       <div className="kp-backdrop" style={{ position: 'fixed', inset: 0, zIndex: 200 }}
            onMouseDown={() => { if (!saving && !past.offered) onClose(); }} />
-      <div className="kp-anchor" style={{ position: 'fixed', left: newFormPos.x, top: newFormPos.y, zIndex: 210 }}
+      <div className="kp-anchor" style={{ position: 'fixed', left: 0, top: 0, zIndex: 210 }}
            onMouseDown={e => e.stopPropagation()}>
         <div className="keypad-modal" ref={modalRef}>
           <div className="kp-head">

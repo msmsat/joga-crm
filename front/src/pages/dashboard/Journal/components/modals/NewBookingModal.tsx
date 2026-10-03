@@ -27,7 +27,6 @@ interface NewBookingModalProps {
   setNewBookingSlot: React.Dispatch<React.SetStateAction<{ trainer: number; timeStart: number; timeEnd: number } | null>>;
   newForm: NewBookingForm;
   setNewForm: React.Dispatch<React.SetStateAction<NewBookingForm>>;
-  newFormPos: { x: number; y: number };
   modalRef: React.RefObject<HTMLDivElement | null>;
   timeStep: number;
   closeNewForm: () => void;
@@ -67,7 +66,6 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({
   setNewBookingSlot,
   newForm,
   setNewForm,
-  newFormPos,
   modalRef,
   timeStep,
   closeNewForm,
@@ -263,7 +261,7 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({
       />
       <div
         className="kp-anchor"
-        style={{ position: 'fixed', left: newFormPos.x, top: newFormPos.y, zIndex: 210 }}
+        style={{ position: 'fixed', left: 0, top: 0, zIndex: 210 }}
         onMouseDown={e => e.stopPropagation()}
       >
         <div className="keypad-modal" ref={modalRef}>
