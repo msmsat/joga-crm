@@ -56,7 +56,7 @@ export default function HomeHero({ catalog, name, branch, onBranch, onStart }: P
   });
 
   return (
-    <section className="relative flex min-h-[calc(var(--app-h,100dvh)-var(--nav-clearance))] flex-col overflow-hidden px-5 pt-[calc(1rem+env(safe-area-inset-top,0px))] dt:min-h-[calc(100dvh-5rem)] dt:px-0 dt:pt-10">
+    <section className="home-hero relative flex min-h-[calc(var(--app-h,100dvh)-var(--nav-clearance))] flex-col overflow-hidden px-5 pt-[calc(1rem+env(safe-area-inset-top,0px))] dt:min-h-[calc(100dvh-5rem)] dt:px-0 dt:pt-10">
       {/* Кольца за названием — свет студии, а не картинка. */}
       <div aria-hidden="true" className="pointer-events-none absolute -right-28 top-10 h-[360px] w-[360px] dt:-right-10 dt:h-[520px] dt:w-[520px]">
         {[0, 1, 2].map((ring) => (
@@ -90,15 +90,15 @@ export default function HomeHero({ catalog, name, branch, onBranch, onStart }: P
         </motion.div>
       </div>
 
-      <div className="relative flex flex-1 flex-col justify-center py-10">
+      <div className="relative flex flex-1 flex-col justify-center py-[var(--home-stage-padding)] dt:py-10">
         <motion.div {...rise(0.08)} className="text-[12px] font-extrabold uppercase tracking-[0.24em] text-brand">
           {name ? t('hero.welcomeBack', { name }) : t('hero.welcome')}
         </motion.div>
-        <h1 className="mt-4 text-[46px] font-extrabold leading-[0.95] tracking-[-0.05em] text-foreground dt:text-[72px]">
+        <h1 className="mt-[var(--home-title-gap)] text-[length:var(--home-title-size)] font-extrabold leading-[0.95] tracking-[-0.05em] text-foreground dt:mt-4 dt:text-[72px]">
           {words.map((word, index) => (
             <motion.span
               key={`${word}-${index}`}
-              className="mr-[0.22em] inline-block"
+              className="mr-[0.22em] inline-block max-w-full [overflow-wrap:anywhere]"
               initial={reduce ? false : { opacity: 0, y: 24, filter: 'blur(6px)' }}
               animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
               transition={{ duration: 0.8, delay: 0.14 + index * 0.08, ease }}
@@ -108,7 +108,7 @@ export default function HomeHero({ catalog, name, branch, onBranch, onStart }: P
           ))}
         </h1>
         {place && (
-          <motion.div {...rise(0.3)} className="mt-4 flex items-center gap-1.5 text-[13.5px] font-semibold text-muted-foreground">
+          <motion.div {...rise(0.3)} className="mt-[var(--home-title-gap)] flex items-center gap-1.5 text-[13.5px] font-semibold text-muted-foreground dt:mt-4">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5 shrink-0">
               <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" /><circle cx="12" cy="10" r="3" />
             </svg>
@@ -140,7 +140,7 @@ export default function HomeHero({ catalog, name, branch, onBranch, onStart }: P
             </div>
           )}
         </motion.div>
-        <div className="flex flex-col gap-2.5 dt:grid dt:grid-cols-3 dt:gap-4">
+        <div className="flex flex-col gap-[var(--home-cards-gap)] dt:grid dt:grid-cols-3 dt:gap-4">
           {STARTS.map((start, index) => (
             <motion.button
               key={start}
@@ -151,16 +151,16 @@ export default function HomeHero({ catalog, name, branch, onBranch, onStart }: P
               transition={{ duration: 0.6, delay: 0.4 + index * 0.08, ease }}
               whileTap={{ scale: 0.975 }}
               whileHover={{ y: -2 }}
-              className="group flex items-center gap-4 rounded-[24px] bg-card p-4 text-left shadow-soft ring-1 ring-inset ring-border/60 transition-shadow duration-300 dt:flex-col dt:items-start dt:p-6 dt:hover:shadow-lift"
+              className="home-start group flex items-center gap-[var(--home-card-gap)] rounded-[24px] bg-card p-[var(--home-card-padding)] text-left shadow-soft ring-1 ring-inset ring-border/60 transition-shadow duration-300 dt:flex-col dt:items-start dt:gap-4 dt:p-6 dt:hover:shadow-lift"
             >
-              <span className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-[16px] p-3 ${
+              <span className={`flex h-[var(--home-icon-size)] w-[var(--home-icon-size)] shrink-0 items-center justify-center rounded-[16px] p-[var(--home-icon-padding)] dt:h-12 dt:w-12 dt:p-3 ${
                 index === 0 ? 'bg-brand text-brand-foreground shadow-brand' : 'bg-brand/12 text-brand'
               }`}>
                 {STEP_ICONS[start]}
               </span>
               <span className="min-w-0 flex-1">
-                <span className="block text-[17px] font-extrabold tracking-[-0.02em] text-card-foreground">{t(`hero.start.${start}`)}</span>
-                <span className="mt-0.5 block text-[12.5px] font-semibold leading-snug text-muted-foreground">{t(`hero.startHint.${start}`)}</span>
+                <span className="block text-[length:var(--home-card-title-size)] font-extrabold tracking-[-0.02em] text-card-foreground dt:text-[17px]">{t(`hero.start.${start}`)}</span>
+                <span className="mt-0.5 block text-[length:var(--home-hint-size)] font-semibold leading-snug text-muted-foreground dt:text-[12.5px]">{t(`hero.startHint.${start}`)}</span>
               </span>
               <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-background text-foreground transition-transform duration-300 group-hover:translate-x-0.5 dt:hidden">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">

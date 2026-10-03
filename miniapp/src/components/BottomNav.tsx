@@ -33,10 +33,10 @@ export default function BottomNav({ active, onSelect, items }: Props) {
     /* absolute, а не fixed: `fixed` привязывает низ капсулы к ОКНУ БРАУЗЕРА, а
        окно меняет высоту каждый раз, когда Safari или вебвью Instagram прячет
        и показывает свою нижнюю панель, — капсула ездила вслед за ней на каждом
-       жесте. Здесь низ отмеряется от неподвижной рамы `.app-shell` (App.tsx)
-       ростом в замороженное окно (lib/appHeight.ts): панель может ездить
-       сколько угодно, капсула стоит. Рама лежит СНАРУЖИ прокрутки, поэтому
-       вверх вместе с содержимым капсула тоже не уедет. */
+       жесте. Здесь низ отмеряется от рамы `.app-shell` (App.tsx), которая
+       следует за доступной высотой (lib/appHeight.ts) и сохраняется при
+       клавиатуре. Рама лежит СНАРУЖИ прокрутки, поэтому вверх вместе
+       с содержимым капсула не уедет. */
     /* Отступ снизу одним объявлением: `pb-safe` рядом с `pb-4` перебивал его
        и капсула ложилась на самую кромку экрана. Сам расчёт — `--nav-offset`
        в index.css: зазор плюс безопасная зона, в том числе та, что сообщает
@@ -55,7 +55,7 @@ export default function BottomNav({ active, onSelect, items }: Props) {
               onClick={() => onSelect(item.id)}
               whileTap={{ scale: 0.93 }}
               transition={{ type: 'spring', stiffness: 500, damping: 32 }}
-              className="relative flex min-h-[54px] flex-1 flex-col items-center justify-center gap-1 rounded-full"
+              className="relative flex min-h-[var(--nav-button-h)] flex-1 flex-col items-center justify-center gap-1 rounded-full"
             >
               {isActive && (
                 <motion.span

@@ -1,5 +1,6 @@
 // src/components/modals/BookingPopup.tsx
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -8,8 +9,10 @@ import type { Booking, Trainer } from '../types';
 import type { BookedClient, EligibleClient, LessonDetail } from '../../../../api/schedule/schedule.types';
 import { AddClientModal as NewClientModal } from '../../Clients/components/modals/AddClientModal';
 import { scheduleApi } from '../../../../api/schedule';
+import { useSheetDrag } from '../../../../components/ui/modal';
+import { cachedLessonDetail, dropLessonDetail, fetchLessonDetail } from '../hooks/useLessonDetail';
 import { errorMessage } from '../../../../api/errorMessage';
-import { formatIndexToTimeStr, parseTimeToIndex, generateTimeIntervals, isLessonStarted, MIN_TIME_INDEX, MAX_TIME_INDEX } from '../utils';
+import { formatDate, formatIndexToTimeStr, parseTimeToIndex, generateTimeIntervals, isLessonStarted, MIN_TIME_INDEX, MAX_TIME_INDEX } from '../utils';
 import { useServiceOptions, CREATE_SERVICE_OPTION } from '../hooks/useServiceOptions';
 import { MoveBookingModal } from './modals/MoveBookingModal';
 import { ClientQuickCard } from './ClientQuickCard';
@@ -23,6 +26,8 @@ import { miniappLink } from '../../../../lib/miniapp';
 import { useStudioCurrency, useStudioSettings } from '../../../../hooks/useStudioCurrency';
 
 const MIN_TIME_IDX = MIN_TIME_INDEX;
+/** Больше строк скелета не нужно: дальше попап всё равно прокручивается. */
+const SKELETON_ROWS = 6;
 const MAX_TIME_IDX = MAX_TIME_INDEX;
 const EMPTY_CLIENTS: EligibleClient[] = [];
 
@@ -33,7 +38,8 @@ interface BookingPopupProps {
   halls: string[];
   popupBooking: Booking;
   popupRef: React.RefObject<HTMLDivElement | null>;
-  popupPos: { x: number; y: number };
+  /** Попап уже закрыт и доигрывает уход: ничего не нажимается, данные не тянутся. */
+  leaving?: boolean;
   canEdit: boolean;
   timeStep: number;
   setPopupBooking: (b: Booking | null) => void;
@@ -56,7 +62,7 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
   halls,
   popupBooking,
   popupRef,
-  popupPos,
+  leaving = false,
   canEdit,
   timeStep,
   setPopupBooking,
@@ -115,7 +121,7 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
   const canShareQr = !isCancelled && !isResource && Boolean(studio?.miniapp_url);
   const qrSubtitle = [
     popupBooking.date
-      ? new Date(`${popupBooking.date}T00:00:00`).toLocaleDateString(i18n.language, {
+      ? formatDate(new Date(`${popupBooking.date}T00:00:00`), i18n.language, {
           weekday: 'short', day: 'numeric', month: 'long',
         })
       : null,
@@ -154,22 +160,46 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
 
   // Полные данные занятия: записанные (с оплатой и отзывами), адрес, уровень,
   // инвентарь. lessonId в состоянии переживает смену занятия без reset-эффекта.
-  const [loaded, setLoaded] = useState<{ lessonId: number; detail: LessonDetail | null; clients: BookedClient[] } | null>(null);
+  // Подтянутое заранее (наведение или касание карточки, useLessonDetail) берём
+  // с первого кадра: попап открывается сразу целиком, а не дорастает на глазах.
+  const qc = useQueryClient();
+  const [loaded, setLoaded] = useState<{ lessonId: number; detail: LessonDetail | null; clients: BookedClient[] } | null>(() => {
+    const cached = cachedLessonDetail(qc, popupBooking);
+    return cached ? { lessonId: popupBooking.id, detail: cached, clients: cached.booked_clients } : null;
+  });
   const current = loaded?.lessonId === popupBooking.id ? loaded : null;
   const bookedClients = current?.clients ?? null;
   const detail = current?.detail ?? null;
 
-  const loadLesson = (stale: () => boolean = () => false) =>
-    scheduleApi.getLesson(popupBooking.id)
-      .then(d => { if (!stale()) setLoaded({ lessonId: popupBooking.id, detail: d, clients: d.booked_clients }); })
+  // fresh — мимо кэша: после оплаты, отметки, записи данные уже другие.
+  const loadLesson = (stale: () => boolean = () => false, fresh = true) =>
+    fetchLessonDetail(qc, popupBooking, fresh)
+      .then(d => {
+        if (stale()) return;
+        // Тот же ответ, что уже на экране (взят из кэша при открытии), — без
+        // лишней перерисовки попапа.
+        setLoaded(prev => (prev?.lessonId === popupBooking.id && prev.detail === d
+          ? prev : { lessonId: popupBooking.id, detail: d, clients: d.booked_clients }));
+      })
       .catch(() => { if (!stale()) setLoaded({ lessonId: popupBooking.id, detail: null, clients: [] }); });
 
   useEffect(() => {
     let stale = false;
-    loadLesson(() => stale);
+    loadLesson(() => stale, false);
     return () => { stale = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [popupBooking.id, popupBooking.price, popupBooking.timeStart, popupBooking.timeEnd, popupBooking.trainer, popupBooking.clients, popupBooking.status]);
+
+  // Закрыли — подтянутое о занятии больше не годится: всё, что в нём меняется,
+  // меняется при открытом попапе, и следующее открытие спросит сервер заново.
+  const lessonId = popupBooking.id;
+  useEffect(() => () => dropLessonDetail(qc, lessonId), [qc, lessonId]);
+
+  // Телефон: попап — шит снизу, и рука закрывает его смахиванием, как модалки
+  // кита (useSheetDrag). Ссылка на закрытие стабильная: смена её посреди жеста
+  // переподписала бы слушатели и оставила шит висеть под пальцем.
+  const close = useCallback(() => setPopupBooking(null), [setPopupBooking]);
+  useSheetDrag(popupRef, close, !leaving);
 
   const clientsLoaded = eligible?.lessonId === popupBooking.id;
   const clientsList = clientsLoaded ? eligible!.clients : EMPTY_CLIENTS;
@@ -256,9 +286,11 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
     <>
     <div
       ref={popupRef}
-      className="booking-popup"
-      style={{ left: popupPos.x, top: popupPos.y }}
+      className={`booking-popup${leaving ? ' is-leaving' : ''}`}
+      aria-hidden={leaving || undefined}
     >
+      {/* Ручка шита: на телефоне подсказывает, что его можно смахнуть вниз. */}
+      <div className="bp-grabber" aria-hidden />
       <div style={{
         position: 'absolute', top: -30, left: -30, right: -30, height: 160,
         background: `radial-gradient(ellipse at top, ${popupBooking.color}35 0%, transparent 65%)`,
@@ -515,7 +547,8 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
         /* ОБЫЧНЫЙ РЕЖИМ ПРОСМОТРА: всё о занятии, заметка, записанные */
         ) : (
           <>
-            <LessonFacts booking={popupBooking} detail={detail} booked={bookedClients} trainerName={trainerName} currency={currency} />
+            <LessonFacts booking={popupBooking} detail={detail} booked={bookedClients} trainerName={trainerName} currency={currency}
+                         loading={!current} />
 
             {/* Заметка занятия — ДО списка записанных: это про само занятие,
                 а не про конкретного человека. */}
@@ -525,6 +558,12 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
               mutations={mutations}
               onSaved={setPopupBooking}
             />
+
+            {/* Пока записанные едут с сервера — их силуэты в том же количестве:
+                попап сразу нужной высоты и не дорастает, когда придёт ответ. */}
+            {!bookedClients && popupBooking.clients > 0 && (
+              <RosterSkeleton count={popupBooking.clients} />
+            )}
 
             {bookedClients && bookedClients.length > 0 && (
               <BookedClients
@@ -729,3 +768,17 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
     document.body
   );
 };
+
+/** Силуэты строк записанных — на время, пока список едет с сервера. */
+function RosterSkeleton({ count }: { count: number }) {
+  return (
+    <div className="lc-roster lc-roster-skeleton" aria-hidden>
+      <div className="lc-eyebrow lc-skel-line" />
+      <div className="lc-roster-list">
+        {Array.from({ length: Math.min(count, SKELETON_ROWS) }, (_, i) => (
+          <div key={i} className="lc-person lc-skel-person" />
+        ))}
+      </div>
+    </div>
+  );
+}

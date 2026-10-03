@@ -557,9 +557,15 @@
   border-color: transparent transparent transparent var(--onyx);
 }
 
+/* Превью нового занятия в сетке (NewBookingPreview): проявляется на слоте
+   без пружины и без размытия — blur пересчитывался каждый кадр анимации. */
+.j-new-preview {
+  transform-origin: top center;
+  animation: preview-drop 0.26s cubic-bezier(0.22, 1, 0.36, 1);
+}
 @keyframes preview-drop {
-  from { opacity: 0; transform: scaleY(0.6) translateY(-8px); filter: blur(4px); }
-  to   { opacity: 1; transform: scaleY(1)   translateY(0);    filter: blur(0);   }
+  from { opacity: 0; transform: scaleY(0.9) translateY(-4px); }
+  to   { opacity: 1; transform: none; }
 }
 @keyframes preview-pulse {
   0%, 100% { opacity: 1; }
@@ -739,14 +745,30 @@
      за собой карточку занятия, попап перепозиционируется следом — и выглядит
      это так, будто прокрутка не работает вовсе. */
   overscroll-behavior: contain;
-  animation: popup-in 0.35s cubic-bezier(0.34,1.56,0.64,1);
+  /* До первой расстановки (usePopupPosition пишет left/top прямо в DOM). */
+  left: 0;
+  top: 0;
+  /* Мягкое проявление без пружины: прежний отскок (scale 0.92 → 1 с
+     перелётом) читался как рывок, особенно когда попап открывают подряд. */
+  animation: popup-in 0.24s cubic-bezier(0.22, 1, 0.36, 1);
   display: flex;
   flex-direction: column;
 }
 @keyframes popup-in {
-  from { opacity: 0; transform: scale(0.92) translateY(12px); }
-  to { opacity: 1; transform: scale(1) translateY(0); }
+  from { opacity: 0; transform: translateY(6px) scale(0.98); }
+  to { opacity: 1; transform: none; }
 }
+/* Уход: попап закрыли, а он ещё доигрывает (Journal держит его POPUP_EXIT_MS).
+   Раньше он исчезал в тот же кадр — резче всего остального в журнале. */
+.booking-popup.is-leaving {
+  pointer-events: none;
+  animation: popup-out 0.16s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+@keyframes popup-out {
+  to { opacity: 0; transform: translateY(4px) scale(0.98); }
+}
+/* Ручка шита — только на телефоне (там попап смахивают вниз). */
+.bp-grabber { display: none; }
 
 /* Мало места — попап прокручивается, а не ужимает содержимое. Flex-элементы
    по умолчанию сжимаются: шапка, строки и блок заметки теряли высоту и
@@ -779,8 +801,8 @@
   border-radius: 14px; font-size: 13.5px; font-weight: 700; font-family: var(--font);
   cursor: pointer; border: none; outline: none;
   white-space: nowrap;
-  /* Анимируем только transform/shadow — работает на GPU, без лагов */
-  will-change: transform, box-shadow;
+  /* Анимируем только transform/shadow. Без постоянного will-change: он
+     держал отдельный слой видеопамяти под каждую кнопку попапа. */
   transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
               box-shadow 0.3s ease,
               background-color 0.3s ease,
@@ -2482,6 +2504,25 @@ button.kp-trainer:disabled { cursor: default; opacity: 0.6; }
     border-radius: 22px 22px 0 0;
     animation: popup-sheet-in 0.32s cubic-bezier(0.32, 0.72, 0, 1);
   }
+  /* Уход шитом — вниз за край, как его и смахивают. После смахивания край
+     уже уезжает инлайном (useSheetDrag, !important) — тогда отсюда работает
+     только проявление. */
+  .booking-popup.is-leaving {
+    animation: popup-sheet-out 0.24s cubic-bezier(0.4, 0, 1, 1) forwards;
+  }
+  .bp-grabber {
+    display: block;
+    position: absolute;
+    top: 7px;
+    left: 50%;
+    width: 36px;
+    height: 4px;
+    margin-left: -18px;
+    border-radius: 2px;
+    background: rgba(var(--ink), 0.16);
+    z-index: 2;
+    pointer-events: none;
+  }
   /* Шапка попапа: заголовок — статус — крестик в одну строку. Общее правило
      переноса из App.css уводило крестик на отдельную строку под время, где он
      читался как случайная кнопка. min-width:0 у заголовка — чтобы длинное
@@ -2683,6 +2724,9 @@ button.kp-trainer:disabled { cursor: default; opacity: 0.6; }
 @keyframes popup-sheet-in {
   from { opacity: 0; transform: translateY(28px); }
   to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes popup-sheet-out {
+  to { opacity: 0.6; transform: translateY(100%); }
 }
 
 /* Телефон: шаг сетки и отмена были скрыты и раньше (жили в сводке дня), а

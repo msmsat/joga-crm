@@ -1,23 +1,15 @@
 /**
- * Проверка того, что раскладка на телефоне НЕ зависит от нижней панели браузера.
+ * Проверка рамы мини-приложения: панель браузера, клавиатура, масштабирование.
  *
  *   cd miniapp && node scroll.check.ts
  *
- * Зачем отдельная проверка. Safari и вебвью Instagram прячут и показывают свою
- * нижнюю панель, окно при этом меняет высоту, и всё, что привязано к окну
- * (`position: fixed`, `dvh`, `svh`), ездит вслед за ней на каждом жесте. Ломается
- * это молча: ни сборка, ни линтер не видят разницы между `absolute` и `fixed`,
- * а увидеть последствия можно только на живом телефоне. В App.tsx когда-то стоял
- * комментарий, объяснявший ровно обратное решение, — вернуть его случайно легко.
+ * Документ на телефоне не прокручивается; прокрутка живёт внутри .app-scroll.
+ * Рама следует за доступным окном в обе стороны, чтобы после сворачивания
+ * панели Instagram под меню не оставалась пустая полоса. Клавиатура и
+ * пинч-зум не должны схлопывать основную раскладку. Меню и лист остаются
+ * привязанными к раме, а не к прокручиваемому содержимому.
  *
- * Три опоры, и проверяются все три:
- *   1) документ непрокручиваем — Safari нечего сворачивать;
- *   2) высота рамы заморожена (lib/appHeight.ts), а не взята в dvh/svh —
- *      единицы окна во встроенных браузерах ездят вместе с панелью;
- *   3) меню и лист висят на раме, а не на окне.
- *
- * Лежит вне src намеренно (как session.check.ts): tsconfig собирает только src,
- * поэтому файл не попадает ни в сборку, ни в бандл.
+ * Проверка вне src не попадает в сборку и не требует браузерных зависимостей.
  */
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
@@ -49,14 +41,14 @@ assert.match(
   'прокручивается .app-scroll — область внутри рамы',
 );
 
-// ─── 2. Рама стоит на замороженной высоте, а не на единицах окна ───────────────
+// ─── 2. Рама стоит на измеренной высоте, а не на единицах окна ────────────────
 
 for (const rule of ['.app-shell', '.app-sheet']) {
   const block = phone.slice(phone.indexOf(rule));
   assert.match(
     block.slice(0, block.indexOf('}')),
     /height:\s*var\(--app-h,\s*100dvh\)/,
-    `${rule} обязан брать замороженную --app-h; dvh/svh во встроенных браузерах ездят за панелью`,
+    `${rule} обязан брать общую измеренную --app-h, чтобы не расходиться с доступным окном`,
   );
 }
 
@@ -139,12 +131,16 @@ assert.doesNotMatch(
 assert.match(sheet, /classList\.add\('is-locked'\)/, 'лист вешает is-locked при открытии');
 assert.match(sheet, /classList\.remove\('is-locked'\)/, 'и снимает его при закрытии');
 
-// ─── 4. Сама заморозка высоты ──────────────────────────────────────────────────
+// ─── 4. Доступная высота окна и клавиатура ──────────────────────────────────────
 
 let width = 390;
 let height = 800;
+let visibleHeight = 800;
+let scale = 1;
+let editableFocused = false;
 let cssVar = '';
 let onResize = () => {};
+let onVisibleResize = () => {};
 
 Object.assign(globalThis, {
   window: {
@@ -154,54 +150,119 @@ Object.assign(globalThis, {
     get innerHeight() {
       return height;
     },
+    visualViewport: {
+      get height() { return visibleHeight; },
+      get scale() { return scale; },
+      addEventListener: (event: string, handler: () => void) => {
+        if (event === 'resize') onVisibleResize = handler;
+      },
+    },
     addEventListener: (event: string, handler: () => void) => {
       if (event === 'resize') onResize = handler;
     },
   },
   document: {
+    get activeElement() {
+      return editableFocused ? { matches: () => true } : null;
+    },
     documentElement: {
-      style: { setProperty: (_name: string, value: string) => (cssVar = value) },
+      style: { setProperty: (name: string, value: string) => {
+        if (name === '--app-h') cssVar = value;
+      } },
     },
   },
 });
 
 await import('./src/lib/appHeight.ts');
 
-assert.equal(cssVar, '800px', 'первый замер уходит в --app-h сразу, до первого кадра');
+assert.equal(cssVar, '800px', 'первый замер уходит в --app-h до первого кадра');
 
-// Панель браузера уехала — окно выросло. Раму НЕ трогаем: внизу просто
-// открывается полоса фона, и ничего не двигается. Ради этого всё и затевалось.
-height = 856;
+height = visibleHeight = 856;
 onResize();
-assert.equal(cssVar, '800px', 'рост окна (панель спряталась) раму не двигает');
+assert.equal(cssVar, '856px', 'рост окна убирает пустую полосу под меню Instagram');
 
-// Панель вернулась.
-height = 800;
+height = visibleHeight = 800;
 onResize();
-assert.equal(cssVar, '800px', 'возврат панели раму тоже не двигает');
+assert.equal(cssVar, '800px', 'возврат панели уменьшает раму до доступного окна');
 
-// Вебвью открылся с уже спрятанной панелью: первый замер завышен, её появление
-// обязано поправить раму один раз — иначе меню осталось бы под панелью.
-height = 764;
-onResize();
-assert.equal(cssVar, '764px', 'появление панели поправляет завышенный первый замер');
+// Некоторые iOS-вебвью меняют только VisualViewport, сохраняя innerHeight.
+visibleHeight = 764;
+onVisibleResize();
+assert.equal(cssVar, '764px', 'рама учитывает видимую высоту, когда innerHeight не меняется');
 
-// Клавиатура забирает пол-экрана. Принять это за панель нельзя: рама схлопнулась
-// бы вдвое и такой осталась до конца сеанса.
+visibleHeight = 800;
+onVisibleResize();
+assert.equal(cssVar, '800px', 'рост VisualViewport тоже возвращает меню к низу окна');
+
+visibleHeight = 856;
+onVisibleResize();
+assert.equal(cssVar, '856px', 'рост видимой области не ограничен устаревшим innerHeight');
+
+visibleHeight = 800;
+onVisibleResize();
+
+// Клавиатура сначала может поменять только VisualViewport, затем innerHeight.
+editableFocused = true;
+visibleHeight = 750;
+onVisibleResize();
+assert.equal(cssVar, '800px', 'первые кадры открытия клавиатуры не уменьшают раму');
+visibleHeight = 420;
+onVisibleResize();
+assert.equal(cssVar, '800px', 'клавиатура в iOS не схлопывает основную раму');
+
 height = 420;
 onResize();
-assert.equal(cssVar, '764px', 'клавиатура — не панель браузера, раму не трогает');
+assert.equal(cssVar, '800px', 'клавиатура в Android не схлопывает основную раму');
 
-// Поворот экрана: меняется ШИРИНА, прежний замер к новой ориентации отношения
-// не имеет — меряем заново, в том числе в бо́льшую сторону.
-width = 844;
-height = 390;
+// blur может прийти до анимации скрытия клавиатуры.
+editableFocused = false;
+height = 760;
 onResize();
-assert.equal(cssVar, '390px', 'поворот экрана меряет окно заново');
+assert.equal(cssVar, '800px', 'ранний blur не принимает ещё открытую клавиатуру за окно');
+
+editableFocused = true;
+visibleHeight = 760;
+onVisibleResize();
+assert.equal(cssVar, '760px', 'закрытие клавиатуры возвращает высоту даже с фокусом в поле');
+editableFocused = false;
+
+height = visibleHeight = 500;
+onResize();
+assert.equal(cssVar, '500px', 'реальное уменьшение окна без ввода не путается с клавиатурой');
+
+width = 844;
+height = visibleHeight = 390;
+onResize();
+assert.equal(cssVar, '390px', 'поворот экрана измеряет доступную высоту заново');
+
+scale = 2;
+visibleHeight = 195;
+onVisibleResize();
+assert.equal(cssVar, '390px', 'пинч-зум не перестраивает рамку и не отключён');
+
+scale = 1;
+visibleHeight = 390;
+onVisibleResize();
+assert.equal(cssVar, '390px', 'возврат масштаба оставляет корректную высоту');
 
 width = 390;
-height = 800;
+height = visibleHeight = 800;
 onResize();
-assert.equal(cssVar, '800px', 'поворот обратно тоже меряет заново, а не держит альбомный рост');
+assert.equal(cssVar, '800px', 'поворот обратно восстанавливает портретную высоту');
 
-console.log('OK: раскладка не зависит от нижней панели браузера');
+Object.assign(window, { visualViewport: null });
+height = 744;
+onResize();
+assert.equal(cssVar, '744px', 'старые браузеры без VisualViewport измеряют innerHeight');
+
+editableFocused = true;
+height = 420;
+onResize();
+assert.equal(cssVar, '744px', 'клавиатура не схлопывает раму и без VisualViewport');
+
+editableFocused = false;
+height = 744;
+onResize();
+assert.equal(cssVar, '744px', 'закрытие клавиатуры работает без VisualViewport');
+
+console.log('OK: рама следует за доступным окном и остаётся стабильной при клавиатуре');

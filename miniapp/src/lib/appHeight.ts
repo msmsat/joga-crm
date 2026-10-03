@@ -1,58 +1,75 @@
 /**
- * Высота окна, замороженная на весь сеанс, — в переменной `--app-h`.
+ * Доступная высота окна в `--app-h`, измеренная до первого кадра.
  *
- * Зачем не `dvh` и не `svh`. Единицы окна во встроенных браузерах (Instagram,
- * Facebook, LinkedIn) считаются нештатно: `svh` там ведёт себя как `dvh`, то
- * есть меняется на каждом кадре, пока вебвью прячет и показывает свою нижнюю
- * панель. Собственный документ мы уже сделали непрокручиваемым (index.css) —
- * это вылечило Safari, но панель Instagram ездит не от прокрутки документа, и
- * остановить её страница не может. Значит, раскладка обязана перестать зависеть
- * от того, где сейчас низ окна.
- *
- * Приём известный: замерить окно один раз и НЕ следовать за панелью дальше.
- * Когда панель уезжает, окно становится выше — мы этого роста не берём, и внизу
- * просто открывается полоса фона страницы. Ничего не двигается: это и есть то
- * «оставленное пространство», ради которого всё затевалось.
- *
- * Растём мы только в одном случае — поворот экрана; его выдаёт смена ШИРИНЫ.
- * А вот уменьшение берём: если вебвью открылся с уже спрятанной панелью, первый
- * замер оказался завышенным, и её появление обязано подвинуть раму один раз —
- * лучше одна поправка, чем меню под панелью до конца сеанса.
+ * Документ не прокручивается: внутри рамы прокручивается только .app-scroll.
+ * При сворачивании панели вебвью рама теперь растёт вместе с видимой областью:
+ * заморозка первого замера оставляла пустую полосу под меню в Instagram.
+ * Клавиатура и масштабирование не должны менять основную раскладку.
  */
 
-/** Перепад, выше которого высота падает уже не из-за панели браузера.
- *  Панели вебвью — 40–110px; клавиатура забирает от 250px, и принимать её
- *  за панель нельзя: рама схлопнулась бы до половины экрана и такой осталась. */
+// При закрытии клавиатуры фокус может исчезнуть раньше, чем она уедет.
+// Обычная панель браузера забирает значительно меньше места.
 const CHROME_MAX = 160;
 
 let width = window.innerWidth;
-let locked = window.innerHeight;
+let keyboardOpen = false;
+let keyboardContracted = false;
 
-const apply = () => {
-  document.documentElement.style.setProperty('--app-h', `${Math.round(locked)}px`);
+const availableHeight = () => {
+  const viewport = window.visualViewport;
+  // visualViewport учитывает панели iOS-вебвью, которые не меняют innerHeight.
+  // Без него (старые браузеры) сохраняется обычный замер окна.
+  const visible = viewport && viewport.height > 0 ? viewport.height : window.innerHeight;
+  return Math.round(visible);
 };
 
+let height = availableHeight();
+
+const apply = () => {
+  document.documentElement.style.setProperty('--app-h', `${height}px`);
+};
+
+const isEditing = () => Boolean(document.activeElement?.matches(
+  'textarea, input:not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]), [contenteditable]:not([contenteditable="false"])',
+));
+
 const measure = () => {
-  const height = window.innerHeight;
+  const viewport = window.visualViewport;
+  // Пинч-зум уменьшает видимую область, но не размер макета. Масштабирование
+  // остаётся доступным; меню не сдвигается вслед за увеличенным фрагментом.
+  if (viewport && Math.abs(viewport.scale - 1) > 0.01) return;
+
+  const nextHeight = availableHeight();
 
   if (window.innerWidth !== width) {
-    // Поворот экрана: прежний замер к новой ориентации отношения не имеет.
     width = window.innerWidth;
-    locked = height;
-  } else if (height < locked && locked - height <= CHROME_MAX) {
-    // Панель браузера выехала — низ окна поднялся, рама идёт за ним.
-    locked = height;
+    keyboardOpen = false;
+    keyboardContracted = false;
   } else {
-    // Окно выросло (панель уехала) или это клавиатура — раму не трогаем.
-    return;
+    const reduction = height - nextHeight;
+    if (isEditing() && reduction > 0) {
+      if (reduction > CHROME_MAX) keyboardContracted = true;
+      // Начальные кадры клавиатуры тоже не уменьшают раму. После полного
+      // открытия её закрытие можно распознать, даже если поле держит фокус.
+      if (!keyboardContracted || reduction > CHROME_MAX) {
+        keyboardOpen = true;
+        return;
+      }
+    }
+    if (keyboardOpen && reduction > CHROME_MAX) return;
+    keyboardOpen = false;
+    keyboardContracted = false;
   }
 
+  if (nextHeight === height) return;
+  height = nextHeight;
   apply();
 };
 
 apply();
 window.addEventListener('resize', measure);
+window.addEventListener('focusout', measure);
+window.visualViewport?.addEventListener('resize', measure);
 
-/** Экспорт только для проверки (scroll.check.ts): в приложении модуль работает
- *  сам, его импортируют ради побочного эффекта. */
+/** Экспорт для проверки; приложение импортирует модуль ради побочного эффекта. */
 export { measure as __measure };

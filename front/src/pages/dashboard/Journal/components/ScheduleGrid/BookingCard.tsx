@@ -14,26 +14,39 @@ const DRAG_SLOP_PX = 6;
 /** Статус «ошибка» дизайн-системы (пыльная роза) — цвет неявки. */
 const NO_SHOW = '#D88C9A';
 
-interface BookingCardProps {
-  booking: Booking;
-  layout: BookingLayout;
-  drag: DragState | null;
+/** Общее для всех карточек сетки — один стабильный объект на сетку, чтобы
+ *  мемоизированная карточка не перерисовывалась из-за новых ссылок. */
+export interface BookingCardActions {
   canEdit: boolean;
   /** Тащить и растягивать можно (ноутбук, планшет). На телефоне — нет. */
   gestures: boolean;
-  popupBooking: Booking | null;
   wasDragging: boolean;
   initDrag: (e: React.PointerEvent, id: number, type: 'move' | 'resize-top' | 'resize-bottom', booking?: Booking) => void;
   setPopupBooking: (b: Booking | null) => void;
   openBookingPopup: (e: React.MouseEvent, b: Booking) => void;
   showToast: (msg: string) => void;
+  /** Подтянуть подробности занятия заранее — к клику попап откроется сразу
+   *  целиком, а не дорастёт на глазах, когда придёт ответ сервера. */
+  prefetch: (b: Booking | null, now?: boolean) => void;
+}
+
+interface BookingCardProps {
+  booking: Booking;
+  layout: BookingLayout;
+  /** Перетаскивание ЭТОЙ карточки; чужое сюда не приходит. */
+  drag: DragState | null;
+  /** Карточка открыта попапом. */
+  selected: boolean;
+  actions: BookingCardActions;
   editDraft: { bookingId: number; title: string; timeStart: number; timeEnd: number } | null;
 }
 
-export const BookingCard: React.FC<BookingCardProps> = ({
-  booking: b, layout, drag, canEdit, gestures, popupBooking, wasDragging,
-  initDrag, setPopupBooking, openBookingPopup, showToast, editDraft
-}) => {
+// memo: карточка перерисовывается, только когда меняется она сама, её
+// выделение или перетаскивание — а не на каждый рендер журнала.
+export const BookingCard = React.memo(function BookingCard({
+  booking: b, layout, drag, selected, actions, editDraft
+}: BookingCardProps) {
+  const { canEdit, gestures, wasDragging, initDrag, setPopupBooking, openBookingPopup, showToast, prefetch } = actions;
   const { t } = useTranslation('journal');
 
   // Роль без права правки: нажатие — это ещё не перетаскивание, по клику карточка
@@ -78,7 +91,7 @@ export const BookingCard: React.FC<BookingCardProps> = ({
   const fillRatio = !isResource && b.maxClients > 0 ? b.clients / b.maxClients : 0;
   const isFull = fillRatio >= 1;
 
-  const isSelected = popupBooking?.id === b.id;
+  const isSelected = selected;
   const isDragging = drag?.id === b.id && drag.isDragging;
   // Отметили «не пришёл» — неявка: карточка пыльно-розовая с крестиком.
   // Пришёл — галочка: отмеченный или, с начала занятия, неотмеченный (посещение
@@ -106,7 +119,10 @@ export const BookingCard: React.FC<BookingCardProps> = ({
     <div
       data-booking-id={b.id}
       className={`booking-card ${b.status} ${layout.isTracked ? 'is-tracked' : ''} ${layout.isCascade ? 'is-cascade' : ''} ${isSelected ? 'is-selected' : ''} ${isDragging ? 'is-dragging' : ''} ${missed ? 'is-missed' : ''}`}
+      onPointerEnter={e => { if (e.pointerType === 'mouse') prefetch(b); }}
+      onPointerLeave={e => { if (e.pointerType === 'mouse') prefetch(null); }}
       onPointerDown={e => {
+        prefetch(b, true);
         // Телефон: палец только листает расписание. Ни переноса, ни
         // предупреждений на «попытку» — движение пальца по карточке там почти
         // всегда прокрутка, и сообщение «так нельзя» читалось как «листать
@@ -123,7 +139,7 @@ export const BookingCard: React.FC<BookingCardProps> = ({
       onClick={e => {
         e.stopPropagation();
         if (wasDragging) return; 
-        if (popupBooking?.id === b.id) setPopupBooking(null);
+        if (isSelected) setPopupBooking(null);
         else openBookingPopup(e, b);
       }}
       style={{
@@ -208,4 +224,4 @@ export const BookingCard: React.FC<BookingCardProps> = ({
       )}
     </div>
   );
-};
+});

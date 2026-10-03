@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import type { Trainer } from '../types';
 
 const PHONE = '(max-width: 767px)';
@@ -57,13 +57,20 @@ export function useTrainerPages(trainers: Trainer[]) {
 
   // Выбор хранит id, а список тренеров меняется по дням. Выбранный, которого
   // в этом дне нет, не в счёт; если не осталось никого — показываем всех.
-  const chosen = selectedIds ? trainers.filter(t => selectedIds.includes(t.id)) : trainers;
-  const shown = isPhone && chosen.length > 0 ? chosen : trainers;
+  const shown = useMemo(() => {
+    const chosen = selectedIds ? trainers.filter(t => selectedIds.includes(t.id)) : trainers;
+    return isPhone && chosen.length > 0 ? chosen : trainers;
+  }, [trainers, selectedIds, isPhone]);
 
   const pageCount = isPhone ? Math.max(1, Math.ceil(shown.length / perPage)) : 1;
   const safePage = Math.min(page, pageCount - 1);
   const start = Math.max(0, Math.min(safePage * perPage, shown.length - perPage));
-  const pageTrainers = isPhone ? shown.slice(start, start + perPage) : trainers;
+  // Одна и та же ссылка, пока страница не сменилась: по ней сетка решает,
+  // пересчитывать ли раскладку колонок.
+  const pageTrainers = useMemo(
+    () => (isPhone ? shown.slice(start, start + perPage) : trainers),
+    [isPhone, shown, start, perPage, trainers],
+  );
 
   return {
     isPhone,

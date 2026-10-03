@@ -1,4 +1,6 @@
 export { ModalShell, useModalClose } from './ModalShell';
+export { useSheetDrag } from './sheetDrag';
+export { glide, useGlideOnGrow } from './glide';
 export { ModalHeader, ModalBody, ModalFooter, GhostButton, PrimaryButton } from './ModalParts';
 export { Input } from './Input';
 export { ColorPicker } from './ColorPicker';

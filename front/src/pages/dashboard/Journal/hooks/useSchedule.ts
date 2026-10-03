@@ -17,6 +17,7 @@ const EMPTY_BLOCKS: StaffScheduleBlock[] = [];
 const EMPTY_STAFF: StaffListItem[] = [];
 const EMPTY_HALLS: Hall[] = [];
 const EMPTY_BOOKINGS: Booking[] = [];
+const EMPTY_DAYS: string[] = [];
 
 // Диапазон видимых дат: день / неделя (Пн–Вс)
 export function visibleRange(
@@ -202,5 +203,7 @@ export function useJournalDays(calYear: number, calMonth: number, hiddenTeacherI
     staleTime: 5 * 60_000,
     placeholderData: keepPreviousData,
   });
-  return data ?? [];
+  // Одна и та же пустая ссылка: календарь под memo, новый [] на каждый рендер
+  // перерисовывал бы его зря.
+  return data ?? EMPTY_DAYS;
 }

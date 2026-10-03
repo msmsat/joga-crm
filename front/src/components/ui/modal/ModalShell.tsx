@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { submitOnEnter } from '../../../lib/submitOnEnter';
 import { useSheetDrag } from './sheetDrag';
+import { useGlideOnGrow } from './glide';
 
 export interface ModalShellProps {
   onClose: () => void;
@@ -67,6 +68,9 @@ export function ModalShell({ onClose, children, size = 'sm', left, leftStyle, le
   // обязан остаться на экране). Тот же requestClose, что у крестика.
   const cardRef = useRef<HTMLDivElement>(null);
   useSheetDrag(cardRef, requestClose, dismissible);
+  // Догрузилось содержимое (чек оплаты, карточка клиента) — окно доезжает до
+  // новой высоты плавно, а не прыгает краем.
+  useGlideOnGrow(cardRef);
 
   return createPortal(
     <div

@@ -8,7 +8,7 @@ import type { BookedClient, LessonDetail } from '../../../../../api/schedule/sch
 import { formatMoney } from '../../../../../lib/money';
 import { useRoleLabel } from '../../../../../hooks/useBusinessTerms';
 import type { Booking } from '../../types';
-import { attendanceOf, isLessonStarted } from '../../utils';
+import { attendanceOf, formatDate, isLessonStarted } from '../../utils';
 import './lessonCard.css';
 import { MasterCompensation } from './MasterCompensation';
 
@@ -18,11 +18,13 @@ interface Props {
   booked: BookedClient[] | null;
   trainerName?: string;
   currency?: string;
+  /** Записанные ещё едут с сервера — на месте сводки по деньгам её силуэт. */
+  loading?: boolean;
 }
 
 const durationOf = (b: Booking) => Math.round((b.timeEnd - b.timeStart) * 60);
 
-export function LessonFacts({ booking, detail, booked, trainerName, currency }: Props) {
+export function LessonFacts({ booking, detail, booked, trainerName, currency, loading = false }: Props) {
   const { t, i18n } = useTranslation('journal');
   const roleLabel = useRoleLabel();
   const location = detail?.location ?? null;
@@ -33,7 +35,7 @@ export function LessonFacts({ booking, detail, booked, trainerName, currency }: 
   const mapUrl = street ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(street)}` : null;
   const minutes = durationOf(booking);
   const date = booking.date
-    ? new Date(`${booking.date}T00:00:00`).toLocaleDateString(i18n.language, { weekday: 'long', day: 'numeric', month: 'long' })
+    ? formatDate(new Date(`${booking.date}T00:00:00`), i18n.language, { weekday: 'long', day: 'numeric', month: 'long' })
     : null;
   const level = detail?.level?.trim();
   const equipment = detail?.equipment?.trim();
@@ -90,6 +92,11 @@ export function LessonFacts({ booking, detail, booked, trainerName, currency }: 
       )}
 
       {booked && booked.length > 0 && <MoneyStrip booked={booked} started={isLessonStarted(booking)} currency={currency} />}
+      {!booked && loading && booking.clients > 0 && (
+        <div className="lc-money lc-money-skeleton" aria-hidden>
+          <div className="lc-money-cell" /><div className="lc-money-cell" /><div className="lc-money-cell" />
+        </div>
+      )}
     </div>
   );
 }

@@ -1,5 +1,5 @@
 // src/hooks/useDragAndDrop.ts
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Booking, JournalColumn, Trainer } from '../types';
 import { toDateStr } from '../utils';
@@ -29,6 +29,11 @@ interface UseDragAndDropProps {
   calendarView?: 'day' | 'week';
   onCommit: (prev: Booking, next: Booking) => void; // сохранение на сервер после дропа
 }
+
+// Порог удержания для пальца. 420мс — заметно дольше тапа (открыть карточку)
+// и короче, чем ощущается как «зависло».
+const TOUCH_HOLD_MS = 420;
+const TOUCH_SLOP_PX = 8;
 
 export function useDragAndDrop({
   bookings,
@@ -206,12 +211,9 @@ export function useDragAndDrop({
     };
   }, [drag, viewMode, calendarView, columns, bookings, timeStep, showToast, onCommit, t]); // 🔥 Добавили calendarView в зависимости
 
-  // Порог удержания для пальца. 420мс — заметно дольше тапа (открыть карточку)
-  // и короче, чем ощущается как «зависло».
-  const TOUCH_HOLD_MS = 420;
-  const TOUCH_SLOP_PX = 8;
-
-  const initDrag = (
+  // Стабильная ссылка: функция уходит в каждую карточку сетки, а карточки
+  // мемоизированы — новая функция на каждый рендер перерисовывала бы их все.
+  const initDrag = useCallback((
     e: React.PointerEvent,
     id: number,
     type: 'move' | 'resize-top' | 'resize-bottom',
@@ -273,7 +275,7 @@ export function useDragAndDrop({
     document.addEventListener('pointermove', onMove);
     document.addEventListener('pointerup', cleanup);
     document.addEventListener('pointercancel', cleanup);
-  };
+  }, []);
 
   return { drag, wasDragging, initDrag };
 }

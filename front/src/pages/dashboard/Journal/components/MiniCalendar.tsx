@@ -16,7 +16,7 @@ interface MiniCalendarProps {
   eventDays: string[];
 }
 
-export const MiniCalendar: React.FC<MiniCalendarProps> = ({ calMonth, calYear, selectedDay, today, changeMonth, setSelectedDay, calendarView, eventDays }) => {
+export const MiniCalendar = React.memo(function MiniCalendar({ calMonth, calYear, selectedDay, today, changeMonth, setSelectedDay, calendarView, eventDays }: MiniCalendarProps) {
   const { i18n } = useTranslation('journal');
   const firstDayOffset = () => {
     const d = new Date(calYear, calMonth, 1).getDay();
@@ -145,4 +145,4 @@ export const MiniCalendar: React.FC<MiniCalendarProps> = ({ calMonth, calYear, s
         </div>
       </div>
   );
-};
+});

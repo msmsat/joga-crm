@@ -1,4 +1,4 @@
-import type { CSSProperties } from 'react';
+import { memo, type CSSProperties } from 'react';
 import { Coffee, Moon, Clock3, CalendarOff } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { StaffScheduleBlock } from '../../../../../api/schedule';
@@ -6,7 +6,9 @@ import './StaffBlockCard.css';
 
 const time = (m: number) => `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`;
 
-export function StaffBlockCard({ block, top, height, name, style }: {
+// memo: перерыв или выходной мастера не меняется от открытия карточки занятия,
+// а иконки и подписи блоков заметно дороже соседних клеток.
+export const StaffBlockCard = memo(function StaffBlockCard({ block, top, height, name, style }: {
   block: StaffScheduleBlock; top: number; height: number; name?: string; style?: CSSProperties;
 }) {
   const { t } = useTranslation('journal');
@@ -33,4 +35,4 @@ export function StaffBlockCard({ block, top, height, name, style }: {
       </div>
     </div>
   </div>;
-}
+});

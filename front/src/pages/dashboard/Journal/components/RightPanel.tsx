@@ -3,7 +3,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import * as Icons from '../../../../components/Icons';
 import type { Booking, Trainer, Hall } from '../types';
-import { formatIndexToTimeStr, monthName } from '../utils';
+import { formatDate, formatIndexToTimeStr, monthName } from '../utils';
 import { MiniCalendar } from './MiniCalendar';
 
 // ─── 2. МИКРО-КОМПОНЕНТ: ФИЛЬТР ЗАЛОВ ────────────────────────────────────────
@@ -127,15 +127,17 @@ interface RightPanelProps {
   spaceIsAxis?: boolean;
 }
 
-export const RightPanel: React.FC<RightPanelProps> = ({
+// memo: панель зависит только от дня и данных расписания. Без него она
+// перерисовывалась на каждое открытие карточки занятия и каждую букву в форме.
+export const RightPanel = React.memo(function RightPanel({
   trainers, halls, calMonth, calYear, selectedDay, today, activeHalls, activeBookings, filteredBookings,
   changeMonth, setSelectedDay, toggleHall, calendarView, eventDays, // 🔥 Вытащили пропс
   spaceIsAxis,
-}) => {
+}: RightPanelProps) {
   const { i18n } = useTranslation('journal');
 
   const dateObj = new Date(calYear, calMonth, selectedDay);
-  const dayName = dateObj.toLocaleDateString(i18n.language, { weekday: 'long' });
+  const dayName = formatDate(dateObj, i18n.language, { weekday: 'long' });
   const capitalizedDay = dayName.charAt(0).toUpperCase() + dayName.slice(1);
 
   return (
@@ -173,4 +175,4 @@ export const RightPanel: React.FC<RightPanelProps> = ({
       />
     </>
   );
-};
+});

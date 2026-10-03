@@ -1,6 +1,7 @@
 // src/hooks/usePopupPosition.ts
-import { useState, useRef, useCallback, useEffect, useLayoutEffect } from 'react';
+import { useRef, useCallback, useLayoutEffect } from 'react';
 import type { Booking } from '../types';
+import { glide } from '../../../../components/ui/modal/glide';
 
 /** Ниже этих порогов геометрию задаёт CSS: форма нового занятия центрируется
  *  по экрану, попап занятия на телефоне становится нижним шитом. Инлайновая
@@ -25,6 +26,16 @@ const fitHeight = (el: HTMLElement | null, available: number, cssOwnsSize: strin
   if (!el) return;
   const value = window.matchMedia(cssOwnsSize).matches ? '' : `${Math.round(available)}px`;
   if (el.style.maxHeight !== value) el.style.maxHeight = value;
+};
+
+/** Позиция окна пишется прямо в DOM, а не в состояние журнала: раньше каждое
+ *  событие прокрутки сетки и каждый ResizeObserver попапа перерисовывали
+ *  журнал целиком — сетку, правую панель, тулбар — ради двух чисел. */
+const place = (el: HTMLElement, x: number, y: number) => {
+  const left = `${Math.round(x)}px`;
+  const top = `${Math.round(y)}px`;
+  if (el.style.left !== left) el.style.left = left;
+  if (el.style.top !== top) el.style.top = top;
 };
 
 interface UsePopupPositionProps {
@@ -52,9 +63,9 @@ export function usePopupPosition({
   const gridWrapperRef = useRef<HTMLDivElement>(null);
   const popupRef = useRef<HTMLDivElement>(null);
 
-  // 2. Стейты координат
-  const [newFormPos, setNewFormPos] = useState({ x: 0, y: 0 });
-  const [popupPos, setPopupPos] = useState({ x: 0, y: 0 });
+  // 2. Где попап стоял в прошлый раз — чтобы смену высоты (догрузились
+  // записанные, открылась правка) провести плавно, а не прыжком.
+  const placedRef = useRef<{ id: number; top: number } | null>(null);
 
   const MODAL_W = 580;
   const MODAL_H = 480;
@@ -121,11 +132,14 @@ export function usePopupPosition({
     }
 
     fitHeight(modalRef.current, available, KP_CSS_SIZE);
-    setNewFormPos({ x: finalX, y: finalY });
+    // Якорь — родитель формы (.kp-anchor): форма и её фон живут в портале.
+    const anchor = modalRef.current?.parentElement;
+    if (anchor) place(anchor, finalX, finalY);
   }, [newBookingSlot, getZoneRect]);
 
-  // 4. Высчитываем popup карточки
-  const recalcPopupPos = useCallback(() => {
+  // 4. Высчитываем popup карточки. glides — можно ли провести сдвиг плавно:
+  // при прокрутке попап обязан идти за карточкой след в след.
+  const recalcPopupPos = useCallback((glides = false) => {
     if (!popupBooking || !popupRef.current) return;
 
     const activeCard = document.querySelector(`[data-booking-id="${popupBooking.id}"]`);
@@ -173,46 +187,59 @@ export function usePopupPosition({
     }
 
     fitHeight(popupRef.current, available, POPUP_CSS_SIZE);
-    setPopupPos({ x: finalX, y: finalY });
+    place(popup, finalX, finalY);
+
+    // Попап поднялся — вырос (на телефоне шит растёт вверх от нижнего края)
+    // или упёрся в низ экрана. Край доезжает до места, а не прыгает.
+    const top = popup.offsetTop;
+    const placed = placedRef.current;
+    if (glides && placed?.id === popupBooking.id && top < placed.top) glide(popup, placed.top - top);
+    placedRef.current = { id: popupBooking.id, top };
   }, [popupBooking, getZoneRect]);
 
   // 5. Подписки на скролл, ресайз и DOM изменения
   useLayoutEffect(() => {
     if (!popupBooking) return;
-    recalcPopupPos(); 
-    
+    // Первая расстановка нового занятия — без сдвига: попап появляется на
+    // месте. Повторная (правка, смена времени) — плавно, как рост.
+    recalcPopupPos(true);
+
     const wrapper = gridWrapperRef.current;
     const popupEl = popupRef.current;
-    
-    if (wrapper) wrapper.addEventListener('scroll', recalcPopupPos);
-    window.addEventListener('resize', recalcPopupPos);
-    
+    const follow = () => recalcPopupPos(false);
+    const grow = () => recalcPopupPos(true);
+
+    if (wrapper) wrapper.addEventListener('scroll', follow, { passive: true });
+    window.addEventListener('resize', follow);
+
     let ro: ResizeObserver | null = null;
     if (popupEl) {
-      ro = new ResizeObserver(() => recalcPopupPos());
+      ro = new ResizeObserver(grow);
       ro.observe(popupEl);
     }
-    
+
     return () => {
-      if (wrapper) wrapper.removeEventListener('scroll', recalcPopupPos);
-      window.removeEventListener('resize', recalcPopupPos);
-      if (ro && popupEl) ro.unobserve(popupEl);
+      if (wrapper) wrapper.removeEventListener('scroll', follow);
+      window.removeEventListener('resize', follow);
+      ro?.disconnect();
     };
   }, [popupBooking, isEditingBooking, editFormTimeStart, editFormTimeEnd, editFormHall, recalcPopupPos]);
 
-  useEffect(() => {
+  // Форма встаёт на место ДО первой отрисовки (layout-эффект): прежний
+  // setTimeout давал кадр, где форма стояла там, где её открывали в прошлый
+  // раз, и только потом прыгала к новому слоту.
+  useLayoutEffect(() => {
     if (!showNewForm) return;
-    
-    const timer = setTimeout(recalcModalPos, 0);
+
+    recalcModalPos();
     const wrapper = gridWrapperRef.current;
-    
-    if (wrapper) wrapper.addEventListener('scroll', recalcModalPos);
+
+    if (wrapper) wrapper.addEventListener('scroll', recalcModalPos, { passive: true });
     window.addEventListener('resize', recalcModalPos);
-    
+
     return () => {
       if (wrapper) wrapper.removeEventListener('scroll', recalcModalPos);
       window.removeEventListener('resize', recalcModalPos);
-      clearTimeout(timer);
     };
   }, [showNewForm, recalcModalPos]);
 
@@ -222,7 +249,5 @@ export function usePopupPosition({
     modalRef,
     gridWrapperRef,
     popupRef,
-    newFormPos,
-    popupPos
   };
 }

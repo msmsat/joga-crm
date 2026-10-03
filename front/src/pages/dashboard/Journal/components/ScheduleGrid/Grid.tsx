@@ -1,15 +1,14 @@
 // src/components/ScheduleGrid/Grid.tsx
-import React from 'react';
+import React, { useCallback, useLayoutEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { StaffBlockCard } from './StaffBlockCard';
 import type { StaffScheduleBlock } from '../../../../../api/schedule';
-import { toDateStr } from '../../utils';
-import { BookingCard } from './BookingCard';
-import { bufferStyle, CARD_RADIUS } from './bufferStyle';
 import type { Booking, JournalColumn, Trainer } from '../../types';
-import { NO_HALL_COLUMN, TIMES } from '../../constants';
-import { getBookingLayouts, formatIndexToTimeStr, weekdayShort } from '../../utils';
+import { TIMES } from '../../constants';
 import type { DragState } from '../../hooks/useDragAndDrop';
+import { useGridColumns } from '../../hooks/useGridColumns';
+import { ColumnHeader } from './ColumnHeader';
+import { GridCell, type EditDraft } from './GridCell';
+import type { BookingCardActions } from './BookingCard';
 
 interface GridProps {
   isTransitioning?: boolean; // Стейт для запуска анимации свайпа
@@ -21,8 +20,6 @@ interface GridProps {
   staffBlocks: StaffScheduleBlock[];
   dayDate: string;
   visibleTrainers: Trainer[];
-  hoveredSlot: string | null;
-  setHoveredSlot: (slot: string | null) => void;
   canEdit: boolean;
   /** Тащить и растягивать занятия пальцем или мышью. На телефоне — нет:
    *  палец там листает расписание, а время меняется в карточке занятия. */
@@ -39,32 +36,62 @@ interface GridProps {
   setPopupBooking: (b: Booking | null) => void;
   openBookingPopup: (e: React.MouseEvent, b: Booking) => void;
   showToast: (msg: string) => void;
-  editDraft: { bookingId: number; title: string; timeStart: number; timeEnd: number } | null;
+  prefetchLesson: (b: Booking | null, now?: boolean) => void;
+  editDraft: EditDraft | null;
   /** Страницы тренеров на телефоне: точки в пустом углу над колонкой времени. */
   pages?: { count: number; index: number };
 }
 
 export const Grid: React.FC<GridProps> = ({
   isTransitioning, transitionReason, calendarView,
-  columns, viewMode, filteredBookings, staffBlocks, dayDate, visibleTrainers, hoveredSlot, setHoveredSlot,
+  columns, viewMode, filteredBookings, staffBlocks, dayDate, visibleTrainers,
   canEdit, gestures, showNewForm, popupBooking, drag, wasDragging,
   openNewSlot, newBookingSlot, newForm, previewRef,
-  initDrag, setPopupBooking, openBookingPopup, showToast, editDraft, pages
+  initDrag, setPopupBooking, openBookingPopup, showToast, prefetchLesson, editDraft, pages
 }) => {
-  const { t, i18n } = useTranslation('journal');
+  const { t } = useTranslation('journal');
   const weekTrainer = calendarView === 'week' ? visibleTrainers[0] : undefined;
 
   // Ни одного тренера/зала: от сетки оставался голый столбик часов без строк.
   // null — колонка-заглушка: день рисуется как обычное, просто пустое расписание.
-  const cols: (JournalColumn | null)[] = columns.length ? columns : [null];
+  const cols = useMemo<(JournalColumn | null)[]>(() => (columns.length ? columns : [null]), [columns]);
+  const data = useGridColumns({ cols, filteredBookings, viewMode, calendarView, staffBlocks, dayDate, visibleTrainers });
 
-  const gridStart = Number(TIMES[0].slice(0, 2)) * 60;
-  const gridEnd = gridStart + TIMES.length * 60;
-  const columnBlocks = (col: JournalColumn) => {
-    if (viewMode !== 'trainers') return [];
-    if (calendarView === 'week') return staffBlocks.filter(b => b.date === toDateStr(col as Date) && visibleTrainers.some(s => s.id === b.staff_id));
-    return staffBlocks.filter(b => b.date === dayDate && b.staff_id === (col as Trainer).id);
-  };
+  // Общее для всех карточек — одним объектом: меняется редко (конец
+  // перетаскивания), и только тогда карточки перерисовываются все разом.
+  const actions = useMemo<BookingCardActions>(() => ({
+    canEdit, gestures, wasDragging, initDrag, setPopupBooking, openBookingPopup, showToast, prefetch: prefetchLesson,
+  }), [canEdit, gestures, wasDragging, initDrag, setPopupBooking, openBookingPopup, showToast, prefetchLesson]);
+
+  // Нажатие на пустую клетку решает по СВЕЖИМ данным журнала, но сама функция
+  // одна на всё время жизни сетки: иначе каждая клетка перерисовывалась бы на
+  // каждое открытие попапа ради новой ссылки на обработчик.
+  const latest = useRef({ canEdit, showNewForm, popupBooking, drag, wasDragging, viewMode, cols, openNewSlot, showToast });
+  useLayoutEffect(() => {
+    latest.current = { canEdit, showNewForm, popupBooking, drag, wasDragging, viewMode, cols, openNewSlot, showToast };
+  });
+  const onSlotMouseDown = useCallback((e: React.MouseEvent, ti: number, ci: number, blocked: boolean) => {
+    const now = latest.current;
+    if (!now.canEdit || now.showNewForm || now.popupBooking || now.drag || now.wasDragging) return;
+    // Тап по карточке занятия не должен создавать новое занятие.
+    // На тач-экране mousedown синтезируется уже ПОСЛЕ pointerup, когда
+    // drag снят и wasDragging сброшен, — все проверки выше проходят,
+    // и вместо занятия открывалась модалка создания. На мыши это не
+    // видно: там pointerdown идёт до mousedown и drag уже выставлен.
+    if ((e.target as HTMLElement).closest('.booking-card')) return;
+    e.stopPropagation();
+    if (blocked) { now.showToast(t('scheduleBlocks.unavailable')); return; }
+    const col = now.cols[ci];
+    const trainerIdx = now.viewMode === 'trainers' ? (col as Trainer).id : 0;
+    now.openNewSlot(trainerIdx, ti, ci);
+  }, [t]);
+
+  const avoidHeaderAnimation = calendarView === 'week' && transitionReason === 'mode';
+  const headerAnim = avoidHeaderAnimation ? '' : (isTransitioning ? 'slide-out-left' : 'slide-in-right');
+  const popupId = popupBooking?.id ?? null;
+  // Метка «куда упадёт» при переносе: её рисует первая клетка колонки под пальцем.
+  const marker = drag?.isDragging && drag.previewStart !== undefined && drag.previewEnd !== undefined
+    ? { column: drag.previewColumnIndex, start: drag.previewStart, end: drag.previewEnd } : null;
 
   return (
     <div
@@ -90,7 +117,8 @@ export const Grid: React.FC<GridProps> = ({
 
       {/* Заголовки колонок */}
       {cols.map((col, ci) => {
-        if (col === null) return (
+        const column = data[ci];
+        if (col === null || !column) return (
           <div
             key={ci}
             className="j-col-header"
@@ -101,155 +129,18 @@ export const Grid: React.FC<GridProps> = ({
             </div>
           </div>
         );
-
-        const isTrainerMode = viewMode === 'trainers';
-        const trainer = isTrainerMode ? (col as Trainer) : null;
-        const hallName = !isTrainerMode ? (col as string) : null;
-        const dayOff = isTrainerMode && calendarView === 'day' ? columnBlocks(col).find(b => b.kind === 'day_off') : undefined;
-        
-        const colBookings = filteredBookings.filter(b => {
-            if (calendarView === 'week') {
-                const dateObj = col as Date;
-                const dateStr = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`;
-                const bDate = b.date || `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}-${String(new Date().getDate()).padStart(2, '0')}`;
-
-                return bDate === dateStr;
-            }
-            return isTrainerMode ? b.trainer === (trainer!.id) : (b.hall || NO_HALL_COLUMN) === hallName;
-        });
-
-        const avoidHeaderAnimation = calendarView === 'week' && transitionReason === 'mode';
-        const animClass = avoidHeaderAnimation ? '' : (isTransitioning ? 'slide-out-left' : 'slide-in-right');
-
         return (
-          <div
+          <ColumnHeader
             key={ci}
-            className="j-col-header"
-            style={{
-              borderRight: ci < cols.length - 1 ? '1px solid var(--border)' : 'none',
-              overflow: 'hidden',
-              height: 'var(--j-header-h, 94px)', // 🔥 ЖЕСТКАЯ ФИКСАЦИЯ ВЫСОТЫ: ряд одного размера; на компактных экранах сжимается при скролле
-              padding: '0 18px', // Убрали вертикальный padding, чтобы flex-центрирование работало чисто
-              display: 'flex',
-              alignItems: 'center',
-              boxSizing: 'border-box'
-            }}
-          >
-            {/* Цвет мастера — полоской по верху колонки (Journal.css, .j-hdr-stripe).
-                span, а не div: прямые div-потомки шапки уезжают анимацией свайпа. */}
-            {trainer && calendarView !== 'week' && (
-              <span className="j-hdr-stripe" aria-hidden style={{ background: trainer.color }} />
-            )}
-            {/* Обертка с анимацией для шапки */}
-            <div 
-              className={`header-content-anim ${animClass}`}
-              style={{ 
-                height: '100%', 
-                width: '100%',
-                justifyContent: 'center', 
-                alignItems: 'center',
-                // Убрали transform: 'translateZ(0)', который ломал CSS свайп, 
-                // и добавили willChange для плавности:
-                willChange: 'transform, opacity', 
-                WebkitFontSmoothing: 'antialiased' 
-              }}
-            >
-              {calendarView === 'week' ? (() => {
-                const dateObj = col as Date;
-                const isToday = dateObj.getDate() === new Date().getDate() && dateObj.getMonth() === new Date().getMonth();
-                
-                // Расчет статистики для конкретного дня недели
-                const colClients = colBookings.reduce((s, b) => s + b.clients, 0);
-                const colLoad = colBookings.length > 0
-                  ? Math.round(colBookings.reduce((s, b) => s + (b.maxClients > 0 ? b.clients / b.maxClients : 0), 0) / colBookings.length * 100)
-                  : 0;
-
-                return (
-                  <div className="j-hdr-weekwrap" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '2px 0', width: '100%' }}>
-                    {/* Уменьшили день недели */}
-                    <div className="j-hdr-wday" style={{ fontSize: 10, color: isToday ? 'var(--peach)' : 'var(--muted)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                      {weekdayShort(ci, i18n.language)}
-                    </div>
-
-                    {/* Уменьшили и жестко зафиксировали размеры кружка даты */}
-                    <div className="j-hdr-date" style={{
-                      fontSize: 15, fontWeight: 900, marginTop: 3,
-                      color: isToday ? 'white' : 'var(--onyx)', 
-                      background: isToday ? 'var(--peach)' : 'transparent',
-                      width: 30, height: 30, borderRadius: '20%',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      boxShadow: isToday ? '0 4px 10px rgba(249,160,139,0.25)' : 'none',
-                      flexShrink: 0,
-                      boxSizing: 'border-box'
-                    }}>
-                      {dateObj.getDate()}
-                    </div>
-
-                    {/* Микро-виджет статистики дня (зан., чел., % загрузки) */}
-                    <div className="j-hdr-stats" style={{
-                      fontSize: 10.5,
-                      color: 'var(--muted)',
-                      fontWeight: 600,
-                      marginTop: 6,
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center',
-                      gap: 1,
-                      whiteSpace: 'nowrap'
-                    }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                        <span style={{ display: 'inline-block', width: 5, height: 5, borderRadius: '50%', background: colBookings.length > 0 ? 'var(--peach)' : 'var(--border)' }} />
-                        {colBookings.length} {t('grid.classesShort')} · {colClients} {t('grid.peopleShort')}
-                      </div>
-                      <div style={{ fontSize: 9.5, fontWeight: 700, color: colBookings.length > 0 ? 'var(--onyx)' : 'var(--muted)', opacity: 0.8 }}>
-                        {t('grid.loadPercent', { percent: colLoad })}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })() : (
-                  trainer ? (() => {
-                      const singleColumn = cols.length === 1;
-                      return (
-                  <>
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: singleColumn ? 'center' : 'flex-start', gap: 12, width: '100%' }}>
-                      <div className="j-hdr-avatar" style={{
-                          width: 38, height: 38, borderRadius: '12px',
-                          // Сплошной цвет мастера — тот же, что у его занятий в сетке.
-                          background: trainer.color,
-                          display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          fontSize: 13, fontWeight: 800, color: '#fff', flexShrink: 0,
-                          boxShadow: `0 4px 12px ${trainer.color}40`
-                      }}>
-                          {trainer.initials}
-                      </div>
-                      <div className="j-hdr-namewrap" style={singleColumn ? { textAlign: 'center' } : undefined}>
-                          <div className="j-hdr-name" style={{ fontSize: 13.5, fontWeight: 800, color: 'var(--onyx)', letterSpacing: '-0.2px' }}>
-                            {/* На телефоне колонка ~65px: там «Анна С.» вместо полного имени */}
-                            <span className="j-name-full">{trainer.full}</span>
-                            <span className="j-name-short">{trainer.name}</span>
-                          </div>
-                          {dayOff ? <div className="j-hdr-off-tag" title={dayOff.label || t('scheduleBlocks.day_off')}>{dayOff.label || t('scheduleBlocks.day_off')}</div>
-                            : <div className="j-hdr-sub" style={{ fontSize: 11, color: 'var(--muted)', fontWeight: 600, marginTop: 1 }}>{trainer.role}</div>}
-                      </div>
-                      </div>
-                      <div className="j-hdr-stats" style={{ fontSize: 10.5, color: 'var(--muted)', fontWeight: 600, marginTop: 4, display: 'flex', alignItems: 'center', justifyContent: singleColumn ? 'center' : 'flex-start', gap: 6, width: '100%' }}>
-                      <span className="j-hdr-dot" style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: colBookings.length > 0 ? 'var(--peach)' : 'var(--border)' }} />
-                      <span>
-                        {colBookings.length} {t('grid.classes')}
-                        <span className="j-hdr-people"> · {colBookings.reduce((s, b) => s + b.clients, 0)} {t('grid.peopleShort')}</span>
-                      </span>
-                      </div>
-                  </>
-                      );
-                  })() : (
-                  <>
-                      <div className="j-hdr-name" style={{ fontSize: 14, fontWeight: 800, color: 'var(--onyx)' }}>{hallName === NO_HALL_COLUMN ? t('toolbar.noHall') : hallName}</div>
-                      <div className="j-hdr-sub" style={{ fontSize: 11, color: 'var(--muted)', fontWeight: 600 }}>{colBookings.length} {t('grid.classesToday')}</div>
-                  </>
-              ))}
-            </div>
-          </div>
+            col={col}
+            ci={ci}
+            colCount={cols.length}
+            viewMode={viewMode}
+            calendarView={calendarView}
+            colBookings={column.bookings}
+            dayOff={column.dayOff}
+            animClass={headerAnim}
+          />
         );
       })}
 
@@ -258,161 +149,36 @@ export const Grid: React.FC<GridProps> = ({
         <React.Fragment key={ti}>
           <div className="j-time-cell">{timeLabel}</div>
           {cols.map((col, ci) => {
+            const column = data[ci];
             // Колонка-заглушка (тренеров/залов нет): только геометрия ряда.
             // pointerEvents гасит и курсор-палец, и hover-рамку «создать занятие»:
             // записывать занятие некому.
-            if (col === null) return <div key={ci} className="j-empty-slot" style={{ pointerEvents: 'none' }} />;
+            if (col === null || !column) return <div key={ci} className="j-empty-slot" style={{ pointerEvents: 'none' }} />;
 
-            const isTrainerMode = viewMode === 'trainers';
-            const trainer = isTrainerMode ? (col as Trainer) : null;
-            const hallName = !isTrainerMode ? (col as string) : null;
-
-            // Исправленная фильтрация ячеек времени для корректной работы недельного вида
-            const colBookings = filteredBookings.filter(b => {
-              if (calendarView === 'week') {
-                const dateObj = col as Date;
-                const dateStr = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`;
-                const bDate = b.date || `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}-${String(new Date().getDate()).padStart(2, '0')}`;
-                return bDate === dateStr;
-              }
-              return isTrainerMode ? b.trainer === trainer!.id : (b.hall || NO_HALL_COLUMN) === hallName;
-            });
-
-            const layouts = getBookingLayouts(colBookings);
-            const hourBookings = colBookings.filter(b => b.timeStart >= ti && b.timeStart < ti + 1);
-            const blocks = columnBlocks(col);
-            const unavailableHere = blocks.filter(b => b.start_minute < gridStart + (ti + 1) * 60 && b.end_minute > gridStart + ti * 60);
-            const blocked = calendarView === 'week'
-              ? visibleTrainers.length > 0 && visibleTrainers.every(s => unavailableHere.some(b => b.staff_id === s.id))
-              : unavailableHere.length > 0;
-            const canBook = !blocked && !colBookings.some(b => b.timeStart < ti + 1 && b.timeEnd > ti);
+            const hour = column.hours[ti];
+            const has = (id: number | null | undefined) => id != null && hour.bookings.some(b => b.id === id);
+            const preview = showNewForm && newBookingSlot && newBookingSlot.columnIndex === ci
+              && newBookingSlot.timeStart >= ti && newBookingSlot.timeStart < ti + 1 ? newBookingSlot : null;
 
             return (
-              <div
+              <GridCell
                 key={ci}
-                data-ti={ti}
-                data-ci={ci}
-                className={`j-empty-slot ${blocked ? 'j-slot-unavailable' : ''} ${hoveredSlot === `${ti}-${ci}` && canBook && canEdit ? 'is-targeted' : ''}`}
-                onMouseEnter={() => {
-                  if (canBook && !showNewForm && !popupBooking && canEdit) setHoveredSlot(`${ti}-${ci}`);
-                }}
-                onMouseLeave={() => setHoveredSlot(null)}
-                style={{
-                  borderRight: ci < cols.length - 1 ? '1px solid var(--border2)' : 'none',
-                  borderRadius: '10px',
-                  zIndex: 'auto',
-                  overflow: isTransitioning ? 'hidden' : 'visible'
-                }}
-                onMouseDown={(e) => {
-                  if (!canEdit || showNewForm || popupBooking || drag || wasDragging) return;
-                  // Тап по карточке занятия не должен создавать новое занятие.
-                  // На тач-экране mousedown синтезируется уже ПОСЛЕ pointerup, когда
-                  // drag снят и wasDragging сброшен, — все проверки выше проходят,
-                  // и вместо занятия открывалась модалка создания. На мыши это не
-                  // видно: там pointerdown идёт до mousedown и drag уже выставлен.
-                  if ((e.target as HTMLElement).closest('.booking-card')) return;
-                  e.stopPropagation();
-                  if (blocked) { showToast(t('scheduleBlocks.unavailable')); return; }
-                  const trainerIdx = isTrainerMode ? trainer!.id : 0;
-                  openNewSlot(trainerIdx, ti, ci);
-                }}
-              >
-                {blocks.filter(b => Math.max(b.start_minute, gridStart) < Math.min(b.end_minute, gridEnd)
-                  && Math.floor((Math.max(b.start_minute, gridStart) - gridStart) / 60) === ti).map((block, i) => {
-                  const start = Math.max(block.start_minute, gridStart), end = Math.min(block.end_minute, gridEnd);
-                  const lanes = calendarView === 'week' ? visibleTrainers.length : 1;
-                  const lane = visibleTrainers.findIndex(s => s.id === block.staff_id);
-                  return <StaffBlockCard key={`${block.staff_id}-${i}`} block={block}
-                    top={(start - gridStart - ti * 60) / 60 * 72 + 2} height={(end - start) / 60 * 72 - 4}
-                    name={calendarView === 'week' ? visibleTrainers.find(s => s.id === block.staff_id)?.name : undefined}
-                    style={lanes > 1 ? { left: `${lane / lanes * 100}%`, right: `${(lanes - lane - 1) / lanes * 100}%` } : undefined} />;
-                })}
-                {/* Обертка для карточек с анимацией */}
-                {/* Без z-index/transform на обертке: иначе stacking context запирает
-                    карточку в её часовой строке и клики по нижней части перехватывают
-                    ячейки ниже. Карточки поднимаются через layout.zIndex. */}
-                <div
-                  className={`cell-content-anim ${isTransitioning ? 'slide-out-left' : 'slide-in-right'}`}
-                >
-                  {hourBookings.map(booking => (
-                    <div key={booking.id} style={{ pointerEvents: 'auto' }}>
-                      <BookingCard
-                        booking={booking}
-                        layout={layouts.get(booking.id)!}
-                        drag={drag}
-                        canEdit={canEdit}
-                        gestures={gestures}
-                        popupBooking={popupBooking}
-                        wasDragging={wasDragging}
-                        initDrag={initDrag}
-                        setPopupBooking={setPopupBooking}
-                        openBookingPopup={openBookingPopup}
-                        showToast={showToast}
-                        editDraft={editDraft?.bookingId === booking.id ? editDraft : null}
-                      />
-                    </div>
-                  ))}
-                </div>
-
-                {/* Живое превью новой записи (drag колонки) */}
-                {ti === 0 && drag?.isDragging && drag.previewColumnIndex === ci && drag.previewStart !== undefined && drag.previewEnd !== undefined && (
-                  <div className="drag-column-marker" style={{ top: drag.previewStart * 72, height: (drag.previewEnd - drag.previewStart) * 72 }}>
-                    <div className="drag-col-tooltip start">{formatIndexToTimeStr(drag.previewStart)}</div>
-                    <div className="drag-col-tooltip end">{formatIndexToTimeStr(drag.previewEnd)}</div>
-                  </div>
-                )}
-
-                {/* Буфер после новой записи — тем же тоном, что у карточек
-                    (BookingCard): мастер будет занят и на уборку. */}
-                {newBookingSlot && newBookingSlot.columnIndex === ci && showNewForm
-                  && newBookingSlot.timeStart >= ti && newBookingSlot.timeStart < ti + 1
-                  && (newBookingSlot.bufferAfter ?? 0) * 72 >= 4 && (
-                  <div className="booking-buffer" aria-hidden style={{
-                    ...bufferStyle('#F9A08B', 'after', (newBookingSlot.bufferAfter ?? 0) * 72),
-                    left: 0, right: 28, zIndex: 9998,
-                    top: (newBookingSlot.timeEnd - ti) * 72 - 1 - CARD_RADIUS,
-                  }} />
-                )}
-
-                {/* Живое превью новой записи (модалка) */}
-                {newBookingSlot && newBookingSlot.columnIndex === ci && // 🔥 ТЕПЕРЬ СМОТРИМ ТОЛЬКО НА КОЛОНКУ
-                  newBookingSlot.timeStart >= ti && newBookingSlot.timeStart < ti + 1 && showNewForm && (
-                  <div
-                    ref={previewRef}
-                    style={{
-                      position: 'absolute', left: 0, right: 28,
-                      top: (newBookingSlot.timeStart - ti) * 72,
-                      height: (newBookingSlot.timeEnd - newBookingSlot.timeStart) * 72 - 1,
-                      borderRadius: '10px', boxSizing: 'border-box', pointerEvents: 'none',
-                      zIndex: 9999, overflow: 'hidden',
-                      animation: 'preview-drop 0.35s cubic-bezier(0.34,1.6,0.64,1)',
-                      background: 'var(--bg-card)', 
-                      boxShadow: `0 0 0 1.5px rgba(249,160,139,0.7), 0 16px 40px -4px rgba(26,26,26,0.15), 0 4px 12px rgba(249,160,139,0.2)`
-                    }}
-                  >
-                    <div style={{
-                      position: 'absolute', inset: 0,
-                      background: 'linear-gradient(135deg, rgba(249,160,139,0.18) 0%, rgba(249,160,139,0.04) 60%, rgba(255,200,180,0.10) 100%)',
-                      animation: 'preview-pulse 2.4s ease-in-out infinite',
-                    }} />
-                    <div style={{
-                      position: 'absolute', top: 8, right: 8, width: 6, height: 6, borderRadius: '50%',
-                      background: 'var(--peach)', boxShadow: '0 0 0 3px rgba(249,160,139,0.25)',
-                      animation: 'live-dot 1.4s ease-in-out infinite',
-                    }} />
-                    <div style={{ position: 'relative', zIndex: 1, padding: '8px 18px 8px 12px', display: 'flex', flexDirection: 'column', justifyContent: 'center', height: '100%' }}>
-                      <div style={{ fontSize: '11.5px', fontWeight: 800, color: 'var(--onyx)', lineHeight: 1.2, letterSpacing: '-0.2px' }}>
-                        {newForm.title || t('grid.newLessonPreview')}
-                      </div>
-                      {(newBookingSlot.timeEnd - newBookingSlot.timeStart) * 72 > 36 && (
-                        <div style={{ fontSize: '10px', fontWeight: 600, color: 'var(--peach)', marginTop: 3, opacity: 0.9 }}>
-                          {formatIndexToTimeStr(newBookingSlot.timeStart)} – {formatIndexToTimeStr(newBookingSlot.timeEnd)}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
+                ti={ti}
+                ci={ci}
+                hour={hour}
+                layouts={column.layouts}
+                last={ci === cols.length - 1}
+                isTransitioning={isTransitioning}
+                actions={actions}
+                selectedId={has(popupId) ? popupId : null}
+                drag={has(drag?.id) ? drag : null}
+                dragMarker={ti === 0 && marker?.column === ci ? marker : null}
+                editDraft={has(editDraft?.bookingId) ? editDraft : null}
+                preview={preview}
+                previewTitle={preview ? newForm.title : ''}
+                previewRef={previewRef}
+                onSlotMouseDown={onSlotMouseDown}
+              />
             );
           })}
         </React.Fragment>

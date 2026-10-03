@@ -53,12 +53,22 @@ function glue(symbol: string): string {
 // они есть: половинная цена комбо (39/2 = 19.5) иначе выводилась дефолтным
 // форматом как «19,5», а с minimumFractionDigits: 2 целые тарифы превратились
 // бы в «39,00». Дробное → две цифры, целое → без хвоста.
+//
+// Форматтер кэшируется: toLocaleString с опциями строит новый Intl.NumberFormat
+// на каждый вызов, а суммы печатаются десятками за рендер (чек оплаты, строки
+// записанных, сводка занятия) — на телефоне это заметная доля кадра.
+const amountFormats = new Map<string, Intl.NumberFormat>();
+
 export function formatAmount(amount: number, currency = 'EUR'): string {
   const digits = Number.isInteger(amount) ? 0 : 2;
-  return amount.toLocaleString(localeForCurrency(currency), {
-    minimumFractionDigits: digits,
-    maximumFractionDigits: digits,
-  });
+  const locale = localeForCurrency(currency);
+  const key = `${locale}|${digits}`;
+  let format = amountFormats.get(key);
+  if (!format) {
+    format = new Intl.NumberFormat(locale, { minimumFractionDigits: digits, maximumFractionDigits: digits });
+    amountFormats.set(key, format);
+  }
+  return format.format(amount);
 }
 
 // amount — в основной единице (уже /100). currency — код валюты студии (useStudioCurrency).

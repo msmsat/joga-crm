@@ -1,7 +1,9 @@
 import type { ReactNode } from 'react';
 import type { WizardStep } from '../../lib/wizard';
 
+// Intrinsic size prevents WebKit flex layouts from collapsing these SVGs.
 const SVG = {
+  width: 24, height: 24, className: 'block h-full w-full shrink-0',
   viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.8,
   strokeLinecap: 'round', strokeLinejoin: 'round', 'aria-hidden': true,
 } as const;

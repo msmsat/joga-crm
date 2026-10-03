@@ -128,6 +128,24 @@
   overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
 }
 
+/* Пришедшие с сервера записанные и сводка проявляются, а не выскакивают. */
+.lc-roster, .lc-money { animation: lc-fade-in 0.24s ease both; }
+@keyframes lc-fade-in { from { opacity: 0; } }
+
+/* Силуэты на время загрузки записанных (BookingPopup): та же высота, что у
+   настоящих строк, — попап открывается сразу своего роста. */
+.lc-skel-line,
+.lc-person.lc-skel-person,
+.lc-money-skeleton .lc-money-cell {
+  background: linear-gradient(90deg, rgba(var(--ink),0.03), rgba(var(--ink),0.07), rgba(var(--ink),0.03));
+  background-size: 200% 100%;
+  animation: lc-shimmer 1.2s ease-in-out infinite;
+}
+.lc-roster-skeleton { pointer-events: none; }
+.lc-skel-line { width: 96px; height: 13px; border-radius: 6px; }
+.lc-person.lc-skel-person { height: 62px; cursor: default; }
+.lc-money-skeleton .lc-money-cell { height: 50px; }
+
 .lc-person-actions { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
 .lc-act {
   width: 30px; height: 30px; border-radius: 10px; border: none; cursor: pointer;
@@ -426,6 +444,7 @@ a.cq-contact-value:hover { color: var(--peach); }
   .rp-foot { flex-direction: column-reverse; }
   .rp-methods { flex: none; }
   .lc-person-name { padding-top: 9px; }
+  .lc-person.lc-skel-person { height: 66px; }
   .lc-avatar { width: 36px; height: 36px; font-size: 12px; }
   .rp-chip { height: 40px; padding: 0 14px; font-size: 13.5px; }
   .rp-chip-input input { font-size: 16px; }  /* меньше 16px — iOS зумит страницу на фокусе */

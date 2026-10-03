@@ -4,15 +4,30 @@ import type { StaffListItem } from '../../../api/staff/staff.types';
 import { TIMES } from './constants';
 import { STAFF_PALETTE, staffColor } from '../../../lib/staffColors';
 
+// Дата словами на выбранном языке. Форматтер кэшируется: toLocaleDateString с
+// опциями строит новый Intl.DateTimeFormat на каждый вызов, а мини-календарь,
+// шапки недели и карточка занятия зовут его десятками за рендер.
+const dateFormats = new Map<string, Intl.DateTimeFormat>();
+
+export function formatDate(date: Date, lang: string, options: Intl.DateTimeFormatOptions) {
+  const key = `${lang}|${JSON.stringify(options)}`;
+  let format = dateFormats.get(key);
+  if (!format) {
+    format = new Intl.DateTimeFormat(lang, options);
+    dateFormats.set(key, format);
+  }
+  return format.format(date);
+}
+
 // Название месяца/дня недели на выбранном языке — нативный Intl вместо
 // захардкоженных русских массивов (месяцы i18next переводить не надо).
 export const monthName = (month: number, lang: string, year = 2024) =>
-  new Date(year, month, 1).toLocaleDateString(lang, { month: 'long' });
+  formatDate(new Date(year, month, 1), lang, { month: 'long' });
 
 // Понедельник = индекс 0 (бизнес-решение, не зависит от локали) — 2024-01-01
 // это понедельник, отсюда и старт диапазона.
 export const weekdayShort = (dayIdx: number, lang: string) =>
-  new Date(2024, 0, 1 + dayIdx).toLocaleDateString(lang, { weekday: 'short' });
+  formatDate(new Date(2024, 0, 1 + dayIdx), lang, { weekday: 'short' });
 
 // ─── АЛГОРИТМ РАСПРЕДЕЛЕНИЯ (КЛАСТЕРЫ + УМНЫЕ ТРЕКИ) ──────────────
 // Геометрия карточки внутри колонки: CSS-строки left/width считаются в calc(),
