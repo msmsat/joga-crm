@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useRef, useEffect, useLayoutEffect, useCallback, useMemo } from 'react';
 import { useAiEntity } from '../../../hooks/useAiEntity';
 import { useTranslation } from 'react-i18next';
 import './Journal.css';
@@ -272,6 +272,26 @@ export default function Journal() {
     newBookingSlot
   });
 
+  // Уход попапа — классом прямо в DOM, без перерисовки самого попапа (он под
+  // memo и на время ухода заморожен): перерисовка ~400 элементов ради класса
+  // стоила бы кадра в самом начале анимации. Клики по уходящему попапу
+  // гасятся перехватом, а не наследуемым pointer-events — тот заставил бы
+  // браузер пересчитать стили всех его элементов в тот же кадр.
+  useLayoutEffect(() => {
+    const el = popupRef.current;
+    if (!closingPopup || !el) return;
+    const swallow = (e: Event) => { e.stopPropagation(); e.preventDefault(); };
+    const blocked = ['click', 'mousedown', 'pointerdown', 'touchstart'] as const;
+    el.classList.add('is-leaving');
+    el.setAttribute('aria-hidden', 'true');
+    blocked.forEach(type => el.addEventListener(type, swallow, true));
+    return () => {
+      el.classList.remove('is-leaving');
+      el.removeAttribute('aria-hidden');
+      blocked.forEach(type => el.removeEventListener(type, swallow, true));
+    };
+  }, [closingPopup, popupRef]);
+
   const withAnimation = (reason: 'date' | 'mode' | 'view', action: () => void) => {
     setTransitionReason(reason);
     setIsTransitioning(true);
@@ -315,6 +335,9 @@ export default function Journal() {
 
   const liveBookings = useMemo(() => filteredBookings.filter(b => b.status !== 'cancelled'), [filteredBookings]);
 
+  // Форма создания уходит анимацией (useLeave) — превью в сетке гаснет вместе
+  // с ней, а не исчезает рывком, когда форма уже ушла.
+  const fadeNewPreview = () => previewRef.current?.classList.add('is-leaving');
   const closeNewForm = () => {
     setShowNewForm(false);
     setKeypadResource(null);
@@ -859,7 +882,11 @@ export default function Journal() {
     <>
 
       {/* Стало: */}
-      <div className={`j-root ${drag ? 'is-dragging-global' : ''}`}>
+      {/* Класс — только когда карточку уже тащат, а не на каждое нажатие:
+          он висит на корне и через `.is-dragging-global *` пересчитывал
+          стили всей страницы дважды на любой клик по занятию (нажали —
+          повесили, отпустили — сняли). Это и было главным тормозом открытия. */}
+      <div className={`j-root ${drag?.isDragging ? 'is-dragging-global' : ''}`}>
         <div className="j-main">
 
           {/* ── ТУЛБАР ── */}
@@ -1057,6 +1084,7 @@ export default function Journal() {
           timeStep={timeStep}
           modalRef={modalRef}
           onClose={closeNewForm}
+          onLeaving={fadeNewPreview}
           onCreated={bookingCreated}
           onDateChange={showBookingDate}
           onPreview={previewResource}
@@ -1073,6 +1101,7 @@ export default function Journal() {
           modalRef={modalRef}
           timeStep={timeStep}
           closeNewForm={closeNewForm}
+          onLeaving={fadeNewPreview}
           onCreate={createLessonFromModal}
           spaceIsAxis={spaceIsAxis}
           notBefore={slotNotBefore()}

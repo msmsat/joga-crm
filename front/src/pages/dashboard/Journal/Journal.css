@@ -468,7 +468,8 @@
    ════════════════════════════════════════════════════════════ */
 /* touch-action — на время переноса пальцем: прокрутка расписания под карточкой
    перехватила бы жест. Ставится только когда перенос уже начался (класс висит
-   на .j-root, пока drag активен), поэтому обычный скролл сетки не страдает. */
+   на .j-root, пока drag.isDragging), поэтому обычный скролл сетки не страдает,
+   а простой клик по занятию не пересчитывает стили всей страницы. */
 .is-dragging-global { user-select: none !important; -webkit-user-select: none !important; touch-action: none; }
 .is-dragging-global * { cursor: grabbing !important; }
 .is-dragging-global .j-empty-slot { z-index: auto !important; }
@@ -563,6 +564,9 @@
   transform-origin: top center;
   animation: preview-drop 0.26s cubic-bezier(0.22, 1, 0.36, 1);
 }
+/* Форма ушла — превью гаснет вместе с ней (useLeave → onLeaving). Если
+   занятие создано, под ним уже стоит настоящая карточка: выходит перетекание. */
+.j-new-preview.is-leaving { animation: kp-fade-out 0.2s ease forwards; }
 @keyframes preview-drop {
   from { opacity: 0; transform: scaleY(0.9) translateY(-4px); }
   to   { opacity: 1; transform: none; }
@@ -761,7 +765,9 @@
 /* Уход: попап закрыли, а он ещё доигрывает (Journal держит его POPUP_EXIT_MS).
    Раньше он исчезал в тот же кадр — резче всего остального в журнале. */
 .booking-popup.is-leaving {
-  pointer-events: none;
+  /* Без pointer-events: none — он наследуется, и в кадр клика браузер
+     пересчитывал бы стили всех ~400 элементов попапа. Клики во время ухода
+     гасит сам BookingPopup (перехват событий). */
   animation: popup-out 0.16s cubic-bezier(0.4, 0, 1, 1) forwards;
 }
 @keyframes popup-out {
@@ -1217,6 +1223,15 @@
   overscroll-behavior: contain;
   animation: modal-in 0.3s ease;
 }
+/* Затемнение под формой проявляется, а не включается щелчком. */
+.kp-backdrop { animation: overlay-in 0.2s ease both; }
+/* Уход формы (useLeave): гаснет за доли секунды вместо исчезновения в тот же
+   кадр. Пока доигрывает — ничего не нажимается. */
+.kp-backdrop.is-leaving { animation: kp-fade-out 0.2s ease forwards; pointer-events: none; }
+.kp-anchor.is-leaving { pointer-events: none; }
+.kp-anchor.is-leaving .keypad-modal { animation: kp-out 0.18s cubic-bezier(0.4, 0, 1, 1) forwards; }
+@keyframes kp-fade-out { to { opacity: 0; } }
+@keyframes kp-out { to { opacity: 0; transform: translateY(6px) scale(0.98); } }
 .kp-head {
   padding: 24px 24px 16px;
   display: flex; justify-content: space-between; align-items: center;
@@ -2502,13 +2517,13 @@ button.kp-trainer:disabled { cursor: default; opacity: 0.6; }
     width: 100%;
     max-height: 88dvh;
     border-radius: 22px 22px 0 0;
-    animation: popup-sheet-in 0.32s cubic-bezier(0.32, 0.72, 0, 1);
+    animation: popup-sheet-in 0.42s cubic-bezier(0.32, 0.72, 0, 1);
   }
   /* Уход шитом — вниз за край, как его и смахивают. После смахивания край
      уже уезжает инлайном (useSheetDrag, !important) — тогда отсюда работает
      только проявление. */
   .booking-popup.is-leaving {
-    animation: popup-sheet-out 0.24s cubic-bezier(0.4, 0, 1, 1) forwards;
+    animation: popup-sheet-out 0.25s cubic-bezier(0.4, 0, 1, 1) forwards;
   }
   .bp-grabber {
     display: block;
@@ -2574,8 +2589,10 @@ button.kp-trainer:disabled { cursor: default; opacity: 0.6; }
        журнала на телефоне обязаны появляться одинаково. */
     max-height: 88dvh;
     border-radius: 22px 22px 0 0;
-    animation: popup-sheet-in 0.32s cubic-bezier(0.32, 0.72, 0, 1);
+    animation: popup-sheet-in 0.42s cubic-bezier(0.32, 0.72, 0, 1);
   }
+  /* Уход листом — вниз за край, как у карточки занятия. */
+  .kp-anchor.is-leaving .keypad-modal { animation: popup-sheet-out 0.24s cubic-bezier(0.4, 0, 1, 1) forwards; }
   /* Шапка и подвал липнут к краям формы, прокручивается только середина:
      «Создать» обязан быть под пальцем всегда, а не после догадки долистать
      форму до конца. Прокрутку по-прежнему ведёт сама .keypad-modal — новый
@@ -2721,8 +2738,10 @@ button.kp-trainer:disabled { cursor: default; opacity: 0.6; }
   to   { opacity: 1; transform: translateY(0); }
 }
 @keyframes jf-fade { from { opacity: 0; } to { opacity: 1; } }
+/* Листы журнала на телефоне (карточка занятия, формы записи) выезжают из-за
+   нижнего края целиком и туда же уходят — как шиты кита (App.css, v-sheet-in). */
 @keyframes popup-sheet-in {
-  from { opacity: 0; transform: translateY(28px); }
+  from { opacity: 0.6; transform: translateY(100%); }
   to   { opacity: 1; transform: translateY(0); }
 }
 @keyframes popup-sheet-out {

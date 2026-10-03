@@ -100,13 +100,16 @@ def check_environment_split() -> None:
     «явно заданное назначение». Хост базы — дополнительный признак: localhost под
     боевым ключом это разработка, что бы ни было написано в APP_ENV.
     """
-    env = (os.getenv("APP_ENV") or "").strip().lower()
+    from services import stripe_env
+
+    declared = (os.getenv("APP_ENV") or "").strip()
+    env = stripe_env.app_env() if declared else ""
     secret = os.getenv("STRIPE_SECRET_KEY", "")
     live = secret.startswith("sk_live_") or secret.startswith("rk_live_")
     db_url = os.getenv("DATABASE_URL")
     db_local = _is_local(db_url)
 
-    if env not in ("dev", "prod"):
+    if env not in (stripe_env.ENV_DEVELOPMENT, stripe_env.ENV_PRODUCTION):
         _warn(
             f"APP_ENV={os.getenv('APP_ENV') or '(не задан)'} — назначение окружения не "
             "объявлено; проверить связку «ключ ↔ база» можно только по косвенным признакам"
@@ -118,18 +121,18 @@ def check_environment_split() -> None:
             "под настоящий ключ (сентябрь 2026: заявки acct_test и тревоги раз в час). "
             "Либо ключ тестовый, либо база не локальная"
         )
-    if env == "dev" and live:
+    if env == stripe_env.ENV_DEVELOPMENT and live:
         _err("APP_ENV=dev с боевым ключом Stripe — в разработке нужен sk_test_")
-    if env == "prod" and db_local:
+    if env == stripe_env.ENV_PRODUCTION and db_local:
         _err(f"APP_ENV=prod, а DATABASE_URL смотрит на localhost ({db_url})")
 
     test_db = os.getenv("TEST_DATABASE_URL")
-    if not test_db:
+    if not test_db and env != stripe_env.ENV_PRODUCTION:
         _warn(
             "TEST_DATABASE_URL не задан — pytest не запустится (database.py), "
             "а без своей базы тесты писали бы в базу приложения"
         )
-    elif _db_target(test_db) == _db_target(db_url):
+    elif test_db and _db_target(test_db) == _db_target(db_url):
         _err(
             "TEST_DATABASE_URL и DATABASE_URL — одна и та же база: тесты затрут "
             "данные приложения"
@@ -361,14 +364,16 @@ def check_legal_docs() -> None:
     сохранённое согласие непроверяемым — в БД одна версия, в тексте другая.
     """
     import re
-    from pathlib import Path
 
     import legal
+    from services.legal_pages import legal_document_root
 
-    static = Path(__file__).resolve().parent.parent / "static"
+    # The upload volume can contain old documents; public routes serve the
+    # bundled release in production. Audit that same release, including fees.
+    static = legal_document_root()
     for name in ("terms.html", "privacy.html", "cookies.html"):
         path = static / name
-        if not path.exists():
+        if not path.is_file():
             _err(f"static/{name} отсутствует — ссылка из формы регистрации ведёт в 404")
             continue
 
@@ -393,7 +398,7 @@ def check_legal_docs() -> None:
     from services.offline_fee_billing import GRACE_DAYS
 
     terms = (static / "terms.html")
-    if terms.exists():
+    if terms.is_file():
         text = terms.read_text(encoding="utf-8")
         # `%g` убирает хвост у целых (3.0 → «3»), а полуторапроцентная ставка
         # остаётся «1.5» — ровно так они и написаны в документе.
@@ -526,7 +531,7 @@ async def check_billing_checkout() -> None:
         if item.display_preference.value != "on" or not item.available:
             _warn(f"{method} недоступен конфигурации Velora — проверьте Payment methods в Stripe")
     if not config.paypal.available:
-        message = "PayPal ещё не активирован: Settings → Payment methods → PayPal; для подписок нужны recurring payments"
+        message = "PayPal ещё не активирован: Settings → Payment methods → PayPal; завершите подключение аккаунта для разовых оплат периода"
         (_err if branding.paypal_invoices_enabled() else _warn)(message)
 
 
@@ -730,7 +735,9 @@ async def check_invoice_tax_id() -> None:
 
 
 async def check_tax_registrations() -> None:
-    """Страны, в которых Stripe Tax реально начисляет налог.
+    """Страны начисления автоматического Stripe Tax.
+
+    Ручной режим проверяется check_tax_mode, а не регистрациями Stripe Tax.
 
     Без единой регистрации Stripe Tax не начисляет ничего: счета уходят с нулевым
     НДС, и это не reverse charge, а необложенная продажа — недобор ложится на
@@ -745,12 +752,14 @@ async def check_tax_registrations() -> None:
     Предупреждаем не про ноль, а про порог: домашняя ставка правомерна, пока продажи
     не-плательщикам НДС по ЕС не превысили 10 000 € в год. После порога нужен OSS, и
     ставка обязана стать местной для каждой страны. Отследить порог по этим данным
-    нельзя — сумма продаж живёт в Stripe (он же и мониторит), поэтому это вопрос к
-    бухгалтеру, а не проверка.
+    нельзя — требуется учёт всего оборота бизнеса и подтверждённая политика,
+    поэтому это вопрос к бухгалтеру, а не проверка.
     """
     import stripe
-    from services import stripe_connect
+    from services import stripe_connect, tax_policy
 
+    if tax_policy.manual_mode():
+        return
     if not stripe_connect.configured():
         return
 
@@ -773,7 +782,7 @@ async def check_tax_registrations() -> None:
             f"Stripe Tax зарегистрирован только в {home} — покупателю из другой страны ЕС без "
             f"номера НДС уходит ДОМАШНЯЯ ставка {home}, а не 0 %. Это правомерно, пока продажи "
             f"не-плательщикам НДС по ЕС не превысили 10 000 € в год; после порога нужен OSS и "
-            f"местная ставка каждой страны. Вопрос к бухгалтеру, порог отслеживает Stripe"
+            f"местная ставка каждой страны. Применимость режима и общий оборот бизнеса подтвердите с бухгалтером"
         )
 
 
@@ -843,11 +852,11 @@ async def check_db_stripe_links() -> None:
 
 
 async def check_stripe_catalog(sync: bool) -> None:
-    """Каталог цен на ЖИВОМ аккаунте.
+    """Каталог цен старых автоподписок на текущем аккаунте.
 
-    Prices из тестового режима в боевой не переносятся. Недостающий Price теперь
-    заводится на месте при первой оплате (stripe_catalog.price_id), так что это не
-    блокер — но лучше увидеть каталог заранее, чем во время первой продажи.
+    Новая разовая покупка периода использует inline price_data; этот каталог
+    нужен только оставшимся subscription-путям. --sync сохраняет явную
+    административную команду подготовки старого каталога.
     """
     from routers.billing.plans import PERIOD_DISCOUNTS, PLANS
     from services import stripe_catalog
@@ -878,7 +887,9 @@ async def check_stripe_catalog(sync: bool) -> None:
     if missing:
         _warn(
             f"в Stripe нет {len(missing)} из {len(PLANS) * len(PERIOD_DISCOUNTS) * 2} Price "
-            f"(заведутся сами при первой оплате; залить сразу: python -m scripts.preflight --sync)"
+            f"старого каталога автоподписок; новой разовой покупке периода они не нужны. "
+            f"Для старых подписок создаются при обращении к stripe_catalog; "
+            f"явная подготовка каталога: python -m scripts.preflight --sync"
         )
 
 

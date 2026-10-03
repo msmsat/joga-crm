@@ -16,6 +16,7 @@ import { usePhone } from '../../../../../hooks/usePhone';
 import { useStudioCurrency } from '../../../../../hooks/useStudioCurrency';
 import { formatMoney } from '../../../../../lib/money';
 import { useDurationLabel } from '../../../../../hooks/useDurationLabel';
+import { useLeave } from '../../hooks/useLeave';
 
 /** С этого числа тренеров список получает поиск: глазами по длинному уже не ищут. */
 const TRAINER_SEARCH_FROM = 8;
@@ -47,6 +48,8 @@ interface NewBookingModalProps {
   date?: string;
   onDateChange?: (date: string) => void;
   onTimeChange?: (time: string) => void;
+  /** Окно начало уходить — превью в сетке гаснет вместе с ним. */
+  onLeaving?: () => void;
 }
 
 export interface NewBookingForm {
@@ -76,6 +79,7 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({
   date,
   onDateChange,
   onTimeChange,
+  onLeaving,
 }) => {
   const { t } = useTranslation('journal');
   // Филиалы нужны только форме без мест — там они единственный источник
@@ -101,7 +105,9 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({
   const [notes, setNotes] = useState('');
   const [saving, setSaving] = useState(false);
   const savingRef = useRef(false);
-  const dismiss = () => { if (!savingRef.current) closeNewForm(); };
+  // Закрытие доигрывает уход (окно гаснет, а не пропадает в тот же кадр).
+  const [leaving, leave] = useLeave(closeNewForm, onLeaving);
+  const dismiss = () => { if (!savingRef.current) leave(); };
   const notePhotos = useNotePhotos();
   const navigate = useNavigate();
   // На телефоне поля времени только показывают время и открывают список: набор
@@ -245,7 +251,7 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({
         photos: notePhotos.photos,
         price: lessonPrice ?? 0,
       });
-      if (created) closeNewForm();
+      if (created) leave();
     } finally {
       savingRef.current = false;
       setSaving(false);
@@ -255,12 +261,15 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({
   return createPortal(
     <>
       <div
-        className="kp-backdrop"
+        className={`kp-backdrop${leaving ? ' is-leaving' : ''}`}
         style={{ position: 'fixed', inset: 0, zIndex: 200 }}
         onMouseDown={dismiss}
       />
+      {/* Место у слота пишет usePopupPosition прямо в DOM, до первой
+          отрисовки: через состояние журнала каждая прокрутка сетки
+          перерисовывала бы весь журнал. */}
       <div
-        className="kp-anchor"
+        className={`kp-anchor${leaving ? ' is-leaving' : ''}`}
         style={{ position: 'fixed', left: 0, top: 0, zIndex: 210 }}
         onMouseDown={e => e.stopPropagation()}
       >

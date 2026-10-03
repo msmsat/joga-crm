@@ -24,6 +24,8 @@ export function ReservationPayModal({ booked, lessonLabel, mutations, onPaid, on
   const toast = useToast();
   const payment = useReservationPayment(booked.reservation_id, booked.manual_discount_percent);
   const [sending, setSending] = useState(false);
+  // Оплата прошла: окно доигрывает уход, а onClose придёт после него.
+  const [done, setDone] = useState(false);
   const name = [booked.name, booked.last_name].filter(Boolean).join(' ');
 
   const accept = (method: PayMethod) => {
@@ -31,7 +33,7 @@ export function ReservationPayModal({ booked, lessonLabel, mutations, onPaid, on
     if (!payment.ready || !preview) return;
     setSending(true);
     mutations.payReservation(booked.reservation_id, method, payment.payRequest())
-      .then(() => onPaid(preview.total))
+      .then(() => { setDone(true); onPaid(preview.total); })
       .catch((e: unknown) => {
         // Итог разошёлся с пересчётом (баллы потратили в другом окне, скидку
         // поменяли) — денег не приняли; показываем новый чек.
@@ -48,6 +50,7 @@ export function ReservationPayModal({ booked, lessonLabel, mutations, onPaid, on
       title={t('journal:lessonPay.title')}
       subtitle={`${name} · ${lessonLabel}`}
       sending={sending}
+      done={done}
       onPay={accept}
       cancelLabel={t('common:buttons.cancel')}
       onClose={onClose}

@@ -12,6 +12,7 @@ import { ResourceClientPicker } from './ResourceClientPicker';
 import { ResourceTimeField } from '../ResourceTimeField';
 import { BookingPayment } from '../BookingPayment';
 import { useResourceBooking } from '../../hooks/useResourceBooking';
+import { useLeave } from '../../hooks/useLeave';
 import { confirmLabel } from '../../hooks/useBookingPayment';
 import { PastBookingPrompt } from './PastBookingPrompt';
 import { usePastBooking } from './usePastBooking';
@@ -34,6 +35,8 @@ type Props = {
   onDateChange?: (date: string) => void;
   /** Превью в сетке следует за выбором: название услуги и взятое время. */
   onPreview: (preview: { title: string; start?: number; end?: number; bufferAfter?: number }) => void;
+  /** Окно начало уходить — превью в сетке гаснет вместе с ним. */
+  onLeaving?: () => void;
 };
 
 /**
@@ -53,12 +56,14 @@ type Props = {
  */
 export function ResourceKeypadModal({
   trainers, teacherId: initialTeacherId, defaultTime = '', defaultDate, defaultServiceId, timeStep, clientId = null,
-  modalRef, onClose, onCreated, onDateChange, onPreview,
+  modalRef, onClose, onCreated, onDateChange, onPreview, onLeaving,
 }: Props) {
   const { t } = useTranslation(['journal', 'common']);
   const terms = useBusinessTerms('resource');
+  // Закрытие (крестик, мимо, «Отмена», запись создана) доигрывает уход окна.
+  const [leaving, leave] = useLeave(onClose, onLeaving);
   const booking = useResourceBooking({
-    onClose, onCreated, onDateChange, defaultDate, defaultServiceId, teacherId: initialTeacherId, clientId,
+    onClose: leave, onCreated, onDateChange, defaultDate, defaultServiceId, teacherId: initialTeacherId, clientId,
   });
   const { choice, serviceId, branchId, teacherId, chosenService, loadingChoice, quote, quoting, saving, slots, reason } = booking;
   const quotedTime = quote?.terms.domain.local_start.slice(11, 16);
@@ -136,9 +141,12 @@ export function ResourceKeypadModal({
 
   return createPortal(
     <>
-      <div className="kp-backdrop" style={{ position: 'fixed', inset: 0, zIndex: 200 }}
-           onMouseDown={() => { if (!saving && !past.offered) onClose(); }} />
-      <div className="kp-anchor" style={{ position: 'fixed', left: 0, top: 0, zIndex: 210 }}
+      <div className={`kp-backdrop${leaving ? ' is-leaving' : ''}`} style={{ position: 'fixed', inset: 0, zIndex: 200 }}
+           onMouseDown={() => { if (!saving && !past.offered) leave(); }} />
+      {/* Место у слота пишет usePopupPosition прямо в DOM, до первой
+          отрисовки: через состояние журнала каждая прокрутка сетки
+          перерисовывала бы весь журнал. */}
+      <div className={`kp-anchor${leaving ? ' is-leaving' : ''}`} style={{ position: 'fixed', left: 0, top: 0, zIndex: 210 }}
            onMouseDown={e => e.stopPropagation()}>
         <div className="keypad-modal" ref={modalRef}>
           <div className="kp-head">
@@ -151,7 +159,7 @@ export function ResourceKeypadModal({
                 </div>
               </div>
             </div>
-            <button type="button" className="btn-icon" onClick={onClose} disabled={saving}><Icons.X /></button>
+            <button type="button" className="btn-icon" onClick={leave} disabled={saving}><Icons.X /></button>
           </div>
 
           <div className="kp-grid">
@@ -273,7 +281,7 @@ export function ResourceKeypadModal({
                 {quote.terms.duration_min} {t('common:units.min')}
               </span>
             )}
-            <button type="button" className="btn-ghost-sm" disabled={saving} onClick={onClose}>
+            <button type="button" className="btn-ghost-sm" disabled={saving} onClick={leave}>
               {t('common:buttons.cancel')}
             </button>
             <button type="button" className="btn-primary-sm"

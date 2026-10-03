@@ -76,10 +76,11 @@ export function BookedClients({ clients, canEdit, removable, started, currency, 
       .catch((e: unknown) => { put(before); toast.error(errorMessage(e, t)); });
   };
 
+  // Окно оплаты закрывается само, своей анимацией (PaySheet, done) — здесь
+  // только то, что изменилось у записанного.
   const paid = (total: number) => {
     if (!paying) return;
     const client = paying;
-    setPaying(null);
     patch(list => list.map(x => x.reservation_id === client.reservation_id
       ? { ...x, debt: 0, paid_amount: total } : x));
     showToast(t('toasts.paymentAccepted'));

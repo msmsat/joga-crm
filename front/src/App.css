@@ -2271,16 +2271,23 @@
   animation: v-tint-in 0.22s ease both;
 }
 .v-overlay.is-leaving::before { animation: v-tint-out 0.2s ease both; }
+/* Пока окно уходит, второй клик по нему ничего не нажимает. */
+.v-overlay.is-leaving { pointer-events: none; }
 @keyframes v-tint-in  { from { opacity: 0 } to { opacity: 1 } }
 @keyframes v-tint-out { from { opacity: 1 } to { opacity: 0 } }
 
 /* Карточка модалки внутри .v-overlay.
-   Появление — чистое проявление, без масштаба и сдвига: карточка «проступает»
-   из размытия, а не выезжает откуда-то. Анимируется только opacity — самое
-   дешёвое, что есть у композитора, поэтому кадры не рвутся даже на тяжёлых
-   страницах. Кривая и длительность общие для всех модалок приложения. */
-.v-modal { animation: v-modal-in 0.3s ease both; will-change: opacity; }
-.v-overlay.is-leaving .v-modal { animation: v-modal-out 0.2s ease both; }
+   Появление — мягкий подъём с едва заметным масштабом: одно проявление
+   читалось как «окно просто возникло» (жалоба на «опля — и всё»). Анимируются
+   только opacity и transform — оба считает композитор, кадры не рвутся и на
+   тяжёлых страницах. Кривая без перелёта: окно тормозит на месте, а не
+   пружинит. Высоту при догрузке содержимого ведёт useSmoothHeight. */
+.v-modal { animation: v-modal-in 0.32s cubic-bezier(0.22, 1, 0.36, 1) both; will-change: opacity, transform; }
+.v-overlay.is-leaving .v-modal { animation: v-modal-out 0.2s cubic-bezier(0.4, 0, 1, 1) both; }
+/* Отклик на нажатие у кнопок кита: кнопка чуть проседает под пальцем.
+   !important — размеры и подъём кнопка задаёт инлайном (Button.tsx), а
+   transition там уже 'all', так что проседание идёт плавно. */
+.v-btn:not(:disabled):active { transform: scale(0.97) !important; }
 
 /* ── Двухколоночная модалка (size="lg"): превью слева, форма справа ────────
    grid-template-rows: minmax(0,1fr) — ключевая строка. С дефолтным auto-треком
@@ -2432,8 +2439,8 @@
    чтобы медиазапросы выше доставали и до них. */
 .v-modal-wizard { height: min(var(--vm-wizard-h, 600px), calc(100dvh - 32px)); }
 @media (max-height: 700px) { .v-modal-wizard { height: calc(100dvh - 20px); } }
-@keyframes v-modal-in  { from { opacity: 0 } to { opacity: 1 } }
-@keyframes v-modal-out { from { opacity: 1 } to { opacity: 0 } }
+@keyframes v-modal-in  { from { opacity: 0; transform: translateY(14px) scale(0.97) } to { opacity: 1; transform: none } }
+@keyframes v-modal-out { from { opacity: 1; transform: none } to { opacity: 0; transform: translateY(8px) scale(0.98) } }
 
 /* Спиннер и скроллбар модалок кита (были инлайновыми <style> — вставка тега
    в DOM на каждом открытии заставляла браузер пересчитывать стили всего
@@ -3600,9 +3607,9 @@
        (useSheetDrag) физически не могло её сдвинуть — жест отрабатывал, шит
        стоял. Кадр `to` и так совпадает с обычным состоянием (opacity: 1,
        transform: none), поэтому заливка вперёд тут ничего не держала. */
-    animation: v-sheet-in 0.32s cubic-bezier(0.32, 0.72, 0, 1) backwards !important;
+    animation: v-sheet-in 0.42s cubic-bezier(0.32, 0.72, 0, 1) backwards !important;
   }
-  .v-overlay.is-leaving .v-modal { animation: v-sheet-out 0.22s ease both !important; }
+  .v-overlay.is-leaving .v-modal { animation: v-sheet-out 0.26s cubic-bezier(0.4, 0, 1, 1) both !important; }
 
   /* Одна колонка: превью-панель скрыта ещё на 920px, здесь схлопывается
      остаток.
@@ -3623,8 +3630,11 @@
     --vm-foot-pad: 12px 18px calc(12px + env(safe-area-inset-bottom, 0px));
   }
 }
-@keyframes v-sheet-in  { from { opacity: 0; transform: translateY(24px) } to { opacity: 1; transform: none } }
-@keyframes v-sheet-out { from { opacity: 1; transform: none } to { opacity: 0; transform: translateY(24px) } }
+/* Шит выезжает из-за нижнего края целиком и туда же уходит — как лист в
+   системе телефона. Прозрачность — только в начале пути: лист выезжает, а не
+   проступает. */
+@keyframes v-sheet-in  { from { opacity: 0.6; transform: translateY(100%) } to { opacity: 1; transform: none } }
+@keyframes v-sheet-out { from { opacity: 1; transform: none } to { opacity: 0.6; transform: translateY(100%) } }
 
 /* Плашка cookie на телефоне (components/cookies/CookieBanner): во всю ширину
    над краем экрана, а в кабинете — над нижней панелью: навигацию до выбора

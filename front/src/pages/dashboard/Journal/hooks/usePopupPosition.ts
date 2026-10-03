@@ -1,7 +1,6 @@
 // src/hooks/usePopupPosition.ts
 import { useRef, useCallback, useLayoutEffect } from 'react';
 import type { Booking } from '../types';
-import { glide } from '../../../../components/ui/modal/glide';
 
 /** Ниже этих порогов геометрию задаёт CSS: форма нового занятия центрируется
  *  по экрану, попап занятия на телефоне становится нижним шитом. Инлайновая
@@ -63,9 +62,6 @@ export function usePopupPosition({
   const gridWrapperRef = useRef<HTMLDivElement>(null);
   const popupRef = useRef<HTMLDivElement>(null);
 
-  // 2. Где попап стоял в прошлый раз — чтобы смену высоты (догрузились
-  // записанные, открылась правка) провести плавно, а не прыжком.
-  const placedRef = useRef<{ id: number; top: number } | null>(null);
 
   const MODAL_W = 580;
   const MODAL_H = 480;
@@ -137,9 +133,8 @@ export function usePopupPosition({
     if (anchor) place(anchor, finalX, finalY);
   }, [newBookingSlot, getZoneRect]);
 
-  // 4. Высчитываем popup карточки. glides — можно ли провести сдвиг плавно:
-  // при прокрутке попап обязан идти за карточкой след в след.
-  const recalcPopupPos = useCallback((glides = false) => {
+  // 4. Высчитываем popup карточки
+  const recalcPopupPos = useCallback(() => {
     if (!popupBooking || !popupRef.current) return;
 
     const activeCard = document.querySelector(`[data-booking-id="${popupBooking.id}"]`);
@@ -188,39 +183,30 @@ export function usePopupPosition({
 
     fitHeight(popupRef.current, available, POPUP_CSS_SIZE);
     place(popup, finalX, finalY);
-
-    // Попап поднялся — вырос (на телефоне шит растёт вверх от нижнего края)
-    // или упёрся в низ экрана. Край доезжает до места, а не прыгает.
-    const top = popup.offsetTop;
-    const placed = placedRef.current;
-    if (glides && placed?.id === popupBooking.id && top < placed.top) glide(popup, placed.top - top);
-    placedRef.current = { id: popupBooking.id, top };
   }, [popupBooking, getZoneRect]);
 
   // 5. Подписки на скролл, ресайз и DOM изменения
   useLayoutEffect(() => {
     if (!popupBooking) return;
-    // Первая расстановка нового занятия — без сдвига: попап появляется на
-    // месте. Повторная (правка, смена времени) — плавно, как рост.
-    recalcPopupPos(true);
+    recalcPopupPos();
 
     const wrapper = gridWrapperRef.current;
     const popupEl = popupRef.current;
-    const follow = () => recalcPopupPos(false);
-    const grow = () => recalcPopupPos(true);
 
-    if (wrapper) wrapper.addEventListener('scroll', follow, { passive: true });
-    window.addEventListener('resize', follow);
+    if (wrapper) wrapper.addEventListener('scroll', recalcPopupPos, { passive: true });
+    window.addEventListener('resize', recalcPopupPos);
 
+    // Попап меняет высоту плавно (useSmoothHeight) — позиция идёт за ним
+    // покадрово, и у нижнего края экрана он поднимается, а не прыгает.
     let ro: ResizeObserver | null = null;
     if (popupEl) {
-      ro = new ResizeObserver(grow);
+      ro = new ResizeObserver(() => recalcPopupPos());
       ro.observe(popupEl);
     }
 
     return () => {
-      if (wrapper) wrapper.removeEventListener('scroll', follow);
-      window.removeEventListener('resize', follow);
+      if (wrapper) wrapper.removeEventListener('scroll', recalcPopupPos);
+      window.removeEventListener('resize', recalcPopupPos);
       ro?.disconnect();
     };
   }, [popupBooking, isEditingBooking, editFormTimeStart, editFormTimeEnd, editFormHall, recalcPopupPos]);

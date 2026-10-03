@@ -71,6 +71,8 @@ async function desktopForm(onCreate, photoState = { photos: [], pending: [], add
     useStudioCurrency: { useStudioCurrency: () => 'EUR' },
     money: { formatMoney: (amount, currency) => `${amount} ${currency}` },
     useDurationLabel: { useDurationLabel: () => duration => `${duration} min` },
+    // Уход окна (анимация) — граница DOM: здесь закрытие сразу, как и было.
+    useLeave: { useLeave: close => [false, close] },
   };
   const mod = await loadModule('../src/pages/dashboard/Journal/components/modals/NewBookingModal.tsx', dependencies, context);
   await mod.evaluate();
@@ -82,7 +84,7 @@ async function desktopForm(onCreate, photoState = { photos: [], pending: [], add
     newForm: { serviceId: 3, title: 'Pilates', hall: 'Main', maxClients: '8', branchId: null },
     setNewBookingSlot(value) { props.newBookingSlot = typeof value === 'function' ? value(props.newBookingSlot) : value; },
     setNewForm(value) { props.newForm = typeof value === 'function' ? value(props.newForm) : value; },
-    newFormPos: { x: 0, y: 0 }, modalRef: { current: null }, timeStep: 15,
+    modalRef: { current: null }, timeStep: 15,
     closeNewForm: () => closed.push('closed'), onCreate, spaceIsAxis: true,
     date: '2026-10-03', onDateChange: date => dates.push(date),
   };

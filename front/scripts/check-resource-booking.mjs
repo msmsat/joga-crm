@@ -82,6 +82,8 @@ async function setup(file, api = {}, { phone = false, now } = {}) {
   };
   for (const name of ['Select', 'ModalShell', 'ModalHeader', 'ModalBody', 'ModalFooter', 'GhostButton', 'PrimaryButton', 'ResourceClientPicker', 'ResourceKeypadModal', 'ResourceTimeField', 'BookingPayment', 'BookingWizard', 'ConfirmModal', 'NotePhotos', 'NoteDropZone']) other[name] = name;
   other.usePhone = () => phone;
+  // Уход окна (анимация) — граница DOM: здесь закрытие сразу, как и было.
+  other.useLeave = close => [false, close];
   // Follow the extracted production hooks and pure time utilities as real modules.
   // Stubbing useResourceBooking here would only test our imitation of the form.
   async function load(url) {
@@ -348,7 +350,7 @@ test('desktop sheet asks about a past date and applies the offered day without s
   assert.deepEqual(dates, ['2026-05-25']);
 });
 
-const keypadProps = { ...props, teacherId: 7, trainers: [], timeStep: 15, newFormPos: { x: 100, y: 100 },
+const keypadProps = { ...props, teacherId: 7, trainers: [], timeStep: 15,
   modalRef: { current: null }, onPreview() {} };
 
 test('desktop keypad manual past time asks and acceptance keeps that hour on the offered day', async () => {

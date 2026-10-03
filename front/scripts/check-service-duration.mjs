@@ -37,6 +37,8 @@ async function setup(file) {
     DoneStep: 'DoneStep', QuoteStep: 'QuoteStep',
     useServiceOptions: () => ({ services: [], options: [], priceFor: () => 100 }),
     useStudioCurrency: () => 'EUR', usePhone: () => false,
+    // Уход окна (анимация) — граница DOM: здесь закрытие сразу.
+    useLeave: close => [false, close],
     useNotePhotos: () => ({ photos: [], pending: [], add() {}, remove() {} }),
     queryKeys: { branches: ['branches'] }, studioApi: {}, TIMES: [],
     formatIndexToTimeStr: n => `${n}:00`, generateTimeIntervals: () => [], parseTimeToIndex: Number,
@@ -132,7 +134,7 @@ test('group form displays the duration it will actually save', async () => {
   const render = await setup('../src/pages/dashboard/Journal/components/modals/NewBookingModal.tsx');
   const props = { trainers: [], halls: [], newBookingSlot: { trainer: 1, timeStart: 10, timeEnd: 11.5 },
     newForm: { serviceId: 1, title: 'Group', maxClients: '5', hall: '', branchId: null },
-    newFormPos: { x: 0, y: 0 }, modalRef: { current: null }, timeStep: 15,
+    modalRef: { current: null }, timeStep: 15,
     setNewBookingSlot() {}, setNewForm() {}, closeNewForm() {}, onCreate() {} };
   const tree = render('NewBookingModal', props);
   const label = nodes(tree, n => n.props?.className === 'kp-price-v')[0];

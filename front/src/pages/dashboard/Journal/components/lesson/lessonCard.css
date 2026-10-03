@@ -95,6 +95,7 @@
   transition: background 0.15s, transform 0.15s;
 }
 .lc-person:hover { background: rgba(var(--ink), 0.05); }
+.lc-person:active { transform: scale(0.99); }
 .lc-person:focus-visible { outline: 2px solid var(--peach); outline-offset: 1px; }
 .lc-person.is-attended { background: rgba(163,201,168,0.10); }
 .lc-avatar {
@@ -296,9 +297,11 @@
   border: 1.5px solid rgba(var(--ink), 0.08); background: var(--bg-card);
   font: 800 12.5px/1 var(--font-main); color: var(--onyx);
   display: inline-flex; align-items: center; gap: 4px;
-  transition: border-color 0.15s, background 0.15s, color 0.15s, box-shadow 0.15s;
+  transition: border-color 0.18s, background 0.18s, color 0.18s, box-shadow 0.18s, transform 0.15s;
 }
 .rp-chip:hover { border-color: rgba(249,160,139,0.5); }
+/* Нажатие чипа скидки — чип проседает под пальцем, а не просто перекрашивается. */
+.rp-chip:not(:disabled):not(.rp-chip-input):active { transform: scale(0.95); }
 .rp-chip.is-on { background: var(--peach); border-color: var(--peach); color: #fff; box-shadow: 0 6px 16px -8px rgba(249,160,139,0.9); }
 .rp-chip:disabled { opacity: 0.5; cursor: not-allowed; }
 .rp-chip-input { cursor: text; padding: 0 10px; }
@@ -310,6 +313,10 @@
 }
 .rp-chip-input span { color: var(--muted); }
 .rp-line { display: flex; justify-content: space-between; gap: 12px; font-size: 13px; font-weight: 600; color: var(--muted); }
+/* Строки чека (скидка, баллы, депозит) проявляются при пересчёте, а не
+   выскакивают; высоту окна при этом ведёт useSmoothHeight. */
+.rp-line, .rp-earn, .rp-receipt .rp-note { animation: rp-in 0.26s cubic-bezier(0.22, 1, 0.36, 1) both; }
+@keyframes rp-in { from { opacity: 0; transform: translateY(-4px); } }
 .rp-line > span:last-child { font-weight: 800; color: var(--onyx); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .rp-line .rp-gain { color: #6E9D76; }
 .rp-total {
@@ -334,7 +341,13 @@
 .rp-methods > * { flex: 1; min-width: 0; }
 .rp-link { border: none; background: none; padding: 0; font: inherit; color: var(--peach); font-weight: 800; cursor: pointer; text-decoration: underline; }
 .rp-skeleton { height: 150px; border-radius: 14px; background: linear-gradient(90deg, rgba(var(--ink),0.03), rgba(var(--ink),0.07), rgba(var(--ink),0.03)); background-size: 200% 100%; animation: lc-shimmer 1.2s ease-in-out infinite; }
-.rp-receipt[aria-busy="true"] .rp-total strong { opacity: 0.45; transition: opacity 0.2s; }
+/* Итог пересчитывается — притухает и проявляется новым числом. transition на
+   самом числе, а не только в состоянии «занят»: иначе обратно оно
+   вспыхивало бы без перехода. */
+.rp-total strong { transition: opacity 0.2s; }
+.rp-total strong.rp-total-num { animation: rp-num 0.3s cubic-bezier(0.22, 1, 0.36, 1); }
+@keyframes rp-num { from { opacity: 0.35; transform: translateY(3px); } }
+.rp-receipt[aria-busy="true"] .rp-total strong { opacity: 0.45; }
 @keyframes lc-shimmer { from { background-position: 100% 0; } to { background-position: -100% 0; } }
 
 /* ── Карточка клиента ────────────────────────────────────────── */

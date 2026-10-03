@@ -5,11 +5,12 @@
 // промокод, ваучер), справа — чек. Внизу две кнопки способа: наличными или
 // картой. Считает сервер (usePaymentCheck), здесь только выбор.
 // На телефоне колонки складываются в одну, окно — шит снизу (ModalShell).
+import { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { clientsApi } from '../../../../../api/clients/clients.api';
 import { queryKeys } from '../../../../../api/queryKeys';
-import { Button, Dialog, GhostButton, ModalBody, ModalFooter, ModalHeader } from '../../../../../components/ui/index';
+import { Button, Dialog, GhostButton, ModalBody, ModalFooter, ModalHeader, useModalClose } from '../../../../../components/ui/index';
 import * as Icons from '../../../../../components/Icons';
 import { formatMoney } from '../../../../../lib/money';
 import { useStudioCurrency } from '../../../../../hooks/useStudioCurrency';
@@ -34,6 +35,8 @@ interface Props {
   /** Способ, выбранный раньше (итог записи) — его кнопка отмечена. */
   chosen?: PayMethod | null;
   sending?: boolean;
+  /** Деньги приняты — окно уходит своей анимацией и только потом зовёт onClose. */
+  done?: boolean;
   onPay: (method: PayMethod) => void;
   /** Левая кнопка подвала: «Отмена» или «Не оплачивать сейчас». */
   cancelLabel: string;
@@ -41,7 +44,7 @@ interface Props {
   onClose: () => void;
 }
 
-export function PaySheet({ payment, clientId, title, subtitle, deferred, chosen, sending = false, onPay, cancelLabel, onCancel, onClose }: Props) {
+export function PaySheet({ payment, clientId, title, subtitle, deferred, chosen, sending = false, done = false, onPay, cancelLabel, onCancel, onClose }: Props) {
   const { t } = useTranslation(['journal', 'common']);
   const { data: profile } = useQuery({
     queryKey: queryKeys.client(clientId),
@@ -54,6 +57,7 @@ export function PaySheet({ payment, clientId, title, subtitle, deferred, chosen,
 
   return (
     <Dialog onClose={onClose} zIndex={FLOOR} maxWidth="760px">
+      <CloseWhen when={done} />
       <ModalHeader title={title} subtitle={subtitle} />
       <ModalBody>
         <div className="rp-grid">
@@ -125,7 +129,8 @@ export function PaySheet({ payment, clientId, title, subtitle, deferred, chosen,
                 {payment.failed && <FailedNote onRetry={payment.retry} />}
                 <div className="rp-total">
                   <span>{t('journal:lessonPay.total')}</span>
-                  <strong>{money(preview.total)}</strong>
+                  {/* key — новое число проявляется (rp-num), а не подменяется. */}
+                  <strong key={preview.total} className="rp-total-num">{money(preview.total)}</strong>
                 </div>
                 {preview.points_to_earn > 0 && (
                   <div className="rp-earn">{t('journal:lessonPay.willEarn', { points: preview.points_to_earn })}</div>
@@ -159,6 +164,13 @@ export function PaySheet({ payment, clientId, title, subtitle, deferred, chosen,
       </ModalFooter>
     </Dialog>
   );
+}
+
+/** Закрыть окно его же анимацией ухода (ModalShell), когда дело сделано. */
+function CloseWhen({ when }: { when: boolean }) {
+  const close = useModalClose();
+  useEffect(() => { if (when) close(); }, [when, close]);
+  return null;
 }
 
 function MethodButton({ method, chosen, disabled, sending, onPay, label }: {

@@ -9,7 +9,7 @@ import type { Booking, Trainer } from '../types';
 import type { BookedClient, EligibleClient, LessonDetail } from '../../../../api/schedule/schedule.types';
 import { AddClientModal as NewClientModal } from '../../Clients/components/modals/AddClientModal';
 import { scheduleApi } from '../../../../api/schedule';
-import { useSheetDrag } from '../../../../components/ui/modal';
+import { useSheetDrag, useSmoothHeight } from '../../../../components/ui/modal';
 import { cachedLessonDetail, dropLessonDetail, fetchLessonDetail } from '../hooks/useLessonDetail';
 import { errorMessage } from '../../../../api/errorMessage';
 import { formatDate, formatIndexToTimeStr, parseTimeToIndex, generateTimeIntervals, isLessonStarted, MIN_TIME_INDEX, MAX_TIME_INDEX } from '../utils';
@@ -38,7 +38,8 @@ interface BookingPopupProps {
   halls: string[];
   popupBooking: Booking;
   popupRef: React.RefObject<HTMLDivElement | null>;
-  /** Попап уже закрыт и доигрывает уход: ничего не нажимается, данные не тянутся. */
+  /** Попап уже закрыт и доигрывает уход. Он не перерисовывается вовсе (см.
+   *  memo ниже), класс ухода и гашение кликов вешает Journal прямо в DOM. */
   leaving?: boolean;
   canEdit: boolean;
   timeStep: number;
@@ -57,7 +58,7 @@ interface BookingPopupProps {
   pushHistoryEntry: (entry: HistoryEntry) => void;
 }
 
-export const BookingPopup: React.FC<BookingPopupProps> = ({
+const BookingPopupView: React.FC<BookingPopupProps> = ({
   trainers,
   halls,
   popupBooking,
@@ -200,6 +201,9 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
   // переподписала бы слушатели и оставила шит висеть под пальцем.
   const close = useCallback(() => setPopupBooking(null), [setPopupBooking]);
   useSheetDrag(popupRef, close, !leaving);
+  // Догрузились записанные, открылась правка или поиск клиента — попап
+  // доезжает до новой высоты, а не прыгает.
+  useSmoothHeight(popupRef, !leaving);
 
   const clientsLoaded = eligible?.lessonId === popupBooking.id;
   const clientsList = clientsLoaded ? eligible!.clients : EMPTY_CLIENTS;
@@ -286,8 +290,7 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
     <>
     <div
       ref={popupRef}
-      className={`booking-popup${leaving ? ' is-leaving' : ''}`}
-      aria-hidden={leaving || undefined}
+      className="booking-popup"
     >
       {/* Ручка шита: на телефоне подсказывает, что его можно смахнуть вниз. */}
       <div className="bp-grabber" aria-hidden />
@@ -768,6 +771,14 @@ export const BookingPopup: React.FC<BookingPopupProps> = ({
     document.body
   );
 };
+
+/**
+ * Уходящий попап (leaving) не перерисовывается: его закрыли, и всё, что ему
+ * осталось, — доиграть анимацию. Перерисовка ~400 элементов ради одного
+ * класса стоила бы кадра ровно в начале этой анимации — уход начинался с
+ * запинки. Класс и гашение кликов ставит Journal прямо в DOM.
+ */
+export const BookingPopup = React.memo(BookingPopupView, (_prev, next) => next.leaving === true);
 
 /** Силуэты строк записанных — на время, пока список едет с сервера. */
 function RosterSkeleton({ count }: { count: number }) {

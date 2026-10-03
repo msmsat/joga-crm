@@ -15,9 +15,22 @@ export interface ConfirmModalProps {
 // Общая модалка подтверждения на всё приложение (замена window.confirm).
 // Пока onConfirm летит — кнопка в состоянии загрузки, модалка не закрывается;
 // закрывается по успешному завершению, остаётся открытой при ошибке (тост покажет).
-export function ConfirmModal({ title, message, confirmText, cancelText, danger = false, onConfirm, onClose }: ConfirmModalProps) {
+/** Уход доигрывается целиком — то же время, что у ModalShell (EXIT_MS). */
+const EXIT_MS = 260;
+
+export function ConfirmModal({ title, message, confirmText, cancelText, danger = false, onConfirm, onClose: close }: ConfirmModalProps) {
   const { t } = useTranslation('common');
   const [busy, setBusy] = useState(false);
+  // Закрытие проигрывает уход окна (как у ModalShell), а не обрывает его в
+  // тот же кадр. Вызывающий получает onClose, когда окно уже ушло.
+  const [leaving, setLeaving] = useState(false);
+  const leftRef = useRef(false);
+  const onClose = () => {
+    if (leftRef.current) return;
+    leftRef.current = true;
+    setLeaving(true);
+    window.setTimeout(close, EXIT_MS);
+  };
 
   const handleConfirm = async () => {
     if (busy) return;
@@ -41,9 +54,10 @@ export function ConfirmModal({ title, message, confirmText, cancelText, danger =
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-    // handleConfirm пересоздаётся каждый рендер — в зависимостях достаточно busy.
+    // handleConfirm и onClose пересоздаются каждый рендер — в зависимостях
+    // достаточно busy и того, что передал вызывающий.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [busy, onClose]);
+  }, [busy, close]);
 
   // Текст согласия может быть длиннее экрана и тогда прокручивается. Чтобы
   // обрезанная кромкой строка не читалась как «текст кончился», край гасится
@@ -82,7 +96,7 @@ export function ConfirmModal({ title, message, confirmText, cancelText, danger =
 
   return createPortal(
     <div
-      className="v-overlay"
+      className={leaving ? 'v-overlay is-leaving' : 'v-overlay'}
       onClick={() => { if (!busy) onClose(); }}
       style={{ zIndex: 9999 }}
     >

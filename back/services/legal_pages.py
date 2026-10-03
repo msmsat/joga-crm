@@ -10,6 +10,15 @@ LEGAL_FILENAMES = (
 _BASE = Path(__file__).resolve().parents[1]
 
 
+def legal_document_root(
+    *, bundle_dir: Path | None = None, source_dir: Path | None = None,
+) -> Path:
+    """The exact legal release used by both public routes and readiness checks."""
+    bundle = Path(bundle_dir) if bundle_dir is not None else _BASE / "assets/legal"
+    source = Path(source_dir) if source_dir is not None else _BASE / "static"
+    return bundle if bundle.is_dir() else source
+
+
 def register_legal_pages(
     app: FastAPI, *, bundle_dir: Path | None = None, source_dir: Path | None = None,
 ) -> None:
@@ -21,7 +30,7 @@ def register_legal_pages(
         async def legal_page():
             # Local source checkouts have no image bundle. A deployed bundle
             # never falls back to an outdated legal page in the upload volume.
-            root = bundle if bundle.is_dir() else source
+            root = legal_document_root(bundle_dir=bundle, source_dir=source)
             path = root / filename
             if not path.is_file():
                 raise HTTPException(status_code=404, detail="Legal document not found")

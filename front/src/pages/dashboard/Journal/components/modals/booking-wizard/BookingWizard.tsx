@@ -20,6 +20,7 @@ import { formatMoney } from '../../../../../../lib/money';
 import { NewClientStep } from './NewClientStep';
 import { WizardTabs } from './WizardTabs';
 import { ConfirmModal } from '../../../../../../components/ui/index';
+import { useLeave } from '../../../hooks/useLeave';
 
 const TITLES = ['wizard.when', 'wizard.client', 'wizard.service', 'wizard.master', 'wizard.summary'] as const;
 /** Касания, которые не листают разделы: ряды, что сами едут вбок, и поля ввода. */
@@ -27,10 +28,12 @@ const NO_SWIPE = '.jf-chips, .bw-days, input, textarea, select';
 
 export function BookingWizard(props: WizardOptions) {
   const { t, i18n } = useTranslation(['journal', 'common', 'clients']);
-  const w = useBookingWizard(props);
+  // Закрытие (крестик, мимо, Escape, запись подтверждена) доигрывает уход
+  // листа вниз, а не обрывает его в тот же кадр.
+  const [leaving, onClose] = useLeave(props.onClose);
+  const w = useBookingWizard({ ...props, onClose });
   // «+ Новый клиент»: лист показывает форму клиента вместо списка.
   const [creating, setCreating] = useState(false);
-  const { onClose } = props;
   const { saving } = w;
   // Поверх записи открыт вопрос про прошедшее время или окно оплаты — Escape их.
   const asking = w.pastAsk != null || w.settle.open;
@@ -80,9 +83,9 @@ export function BookingWizard(props: WizardOptions) {
 
   return createPortal(
     <>
-      <div className="kp-backdrop bw-backdrop" style={{ position: 'fixed', inset: 0, zIndex: 200 }}
-           onMouseDown={() => { if (!w.saving) props.onClose(); }} />
-      <div className="kp-anchor bw-anchor" style={{ position: 'fixed', zIndex: 210 }} onMouseDown={e => e.stopPropagation()}>
+      <div className={`kp-backdrop bw-backdrop${leaving ? ' is-leaving' : ''}`} style={{ position: 'fixed', inset: 0, zIndex: 200 }}
+           onMouseDown={() => { if (!w.saving) onClose(); }} />
+      <div className={`kp-anchor bw-anchor${leaving ? ' is-leaving' : ''}`} style={{ position: 'fixed', zIndex: 210 }} onMouseDown={e => e.stopPropagation()}>
         <div className="keypad-modal bw-sheet" ref={sheetRef}>
           <div className="kp-head bw-head">
             <div className="kp-head-l">
@@ -106,7 +109,7 @@ export function BookingWizard(props: WizardOptions) {
                 )}
               </div>
             </div>
-            <button type="button" className="btn-icon" onClick={props.onClose} disabled={w.saving}
+            <button type="button" className="btn-icon" onClick={onClose} disabled={w.saving}
                     aria-label={t('common:buttons.close')}><Icons.X /></button>
           </div>
 

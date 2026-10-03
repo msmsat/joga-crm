@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { submitOnEnter } from '../../../lib/submitOnEnter';
 import { useSheetDrag } from './sheetDrag';
-import { useGlideOnGrow } from './glide';
+import { useSmoothHeight } from './smoothHeight';
 
 export interface ModalShellProps {
   onClose: () => void;
@@ -24,7 +24,9 @@ export interface ModalShellProps {
   enterSubmits?: boolean;
 }
 
-const EXIT_MS = 200;
+// Уход доигрывается целиком: на телефоне шит уезжает за край 0.26 с (App.css,
+// v-sheet-out) — размонтирование раньше обрывало его на трёх четвертях пути.
+const EXIT_MS = 260;
 
 // Анимированное закрытие доступно детям (крестик в Header, «Отмена» в Footer),
 // чтобы любая кнопка закрытия проигрывала exit-анимацию, а не рвала модалку.
@@ -68,9 +70,9 @@ export function ModalShell({ onClose, children, size = 'sm', left, leftStyle, le
   // обязан остаться на экране). Тот же requestClose, что у крестика.
   const cardRef = useRef<HTMLDivElement>(null);
   useSheetDrag(cardRef, requestClose, dismissible);
-  // Догрузилось содержимое (чек оплаты, карточка клиента) — окно доезжает до
-  // новой высоты плавно, а не прыгает краем.
-  useGlideOnGrow(cardRef);
+  // Догрузилось содержимое (чек оплаты, карточка клиента), появилась строка
+  // скидки или ошибка — окно доезжает до новой высоты, а не прыгает.
+  useSmoothHeight(cardRef);
 
   return createPortal(
     <div
