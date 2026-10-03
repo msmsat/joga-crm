@@ -12,7 +12,7 @@
   "hero": {
     "badge": "Nowy standard CRM na 2026 rok",
     "title": "CRM, którego\\\n*polubisz* używać",
-    "lead": "Premium B2B CRM dla studiów jogi i pilatesu. Rezerwacje, klienci, zespół i finanse w jednym miejscu. Bez zbędnych kliknięć i zamieszania.",
+    "lead": "Premium B2B CRM dla studiów, klubów fitness, salonów urody i spa. Rezerwacje, klienci, zespół i finanse w jednym miejscu. Bez zbędnych kliknięć i zamieszania.",
     "cta": "Wypróbuj bezpłatnie przez 30 dni",
     "perks": [
       "30 dni za darmo",
@@ -308,7 +308,7 @@
     "title": "Velorę tworzą ludzie,\\\nktórzy sami prowadzili studia",
     "lead": "Nie budujemy „CRM dla wszystkich”. Budujemy narzędzie do konkretnej pracy — harmonogramu, klientów, pieniędzy i komunikacji — i sami odpowiadamy na pytania zamiast wysyłać gotowe odpowiedzi.",
     "p1": "Klienci studia pozostają jego klientami. Velora nie tworzy wspólnego katalogu, nie pokazuje Twoim klientom reklam innych firm i nie pobiera prowizji, gdy ktoś do Ciebie wraca.",
-    "p2": "Obecnie produkt jest zbudowany dla studiów jogi i pilatesu — dla sposobu, w jaki naprawdę działają ich harmonogramy, karnety i trenerzy. Inne branże pojawią się z taką samą uważnością."
+    "p2": "Velora powstała dla firm, które działają na zapisy: joga i pilates, fitness i taniec, salony urody i barber shopy, masaż i spa. Harmonogramy, karnety oraz praca trenerów i specjalistów działają tak, jak naprawdę wygląda to w każdej branży."
   },
   "cta": {
     "eyebrow": "Zacznij dziś",
@@ -319,7 +319,7 @@
     "whatsapp": "Napisz do nas na WhatsAppie"
   },
   "footer": {
-    "tagline": "Premium CRM dla studiów jogi i pilatesu. Rezerwacje, klienci, pieniądze i AI w jednym miejscu.",
+    "tagline": "Premium CRM dla studiów, klubów fitness, salonów urody i spa. Rezerwacje, klienci, pieniądze i AI w jednym miejscu.",
     "columns": {
       "product": {
         "title": "Produkt",

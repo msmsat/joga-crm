@@ -12,7 +12,7 @@
   "hero": {
     "badge": "Il nuovo standard CRM nel 2026",
     "title": "Un CRM che\n*amerai* usare",
-    "lead": "Un CRM B2B premium per studi di yoga e pilates. Prenotazioni, clienti, team e finanze in un unico posto. Nessun clic superfluo, nessuna complicazione.",
+    "lead": "Un CRM B2B premium per studi, palestre, centri estetici e spa. Prenotazioni, clienti, team e finanze in un unico posto. Nessun clic superfluo, nessuna complicazione.",
     "cta": "Prova gratis per 30 giorni",
     "perks": [
       "30 giorni gratuiti",
@@ -307,7 +307,7 @@
     "title": "Velora è creata da persone\nche hanno gestito studi in prima persona",
     "lead": "Non stiamo creando un «CRM per tutti». Stiamo creando uno strumento per un lavoro specifico — calendario, clienti, denaro, comunicazione — e rispondiamo noi alle domande invece di inviare risposte preconfezionate.",
     "p1": "I clienti di uno studio restano clienti di quello studio. Velora non crea un catalogo condiviso, non mostra ai tuoi clienti le pubblicità di altri e non trattiene una commissione perché una persona torna da te.",
-    "p2": "Al momento il prodotto è pensato per studi di yoga e pilates, per come funzionano davvero i loro calendari, abbonamenti e istruttori. Seguiranno altri settori, con la stessa cura."
+    "p2": "Velora è pensata per le attività che lavorano su appuntamento: yoga e pilates, fitness e danza, centri estetici e barberie, massaggi e spa. Calendari, abbonamenti e il lavoro di istruttori e professionisti funzionano come accade davvero in ciascun settore."
   },
   "cta": {
     "eyebrow": "Inizia oggi",
@@ -318,7 +318,7 @@
     "whatsapp": "Scrivici su WhatsApp"
   },
   "footer": {
-    "tagline": "Un CRM premium per studi di yoga e pilates. Prenotazioni, clienti, finanze e IA in un unico posto.",
+    "tagline": "Un CRM premium per studi, palestre, centri estetici e spa. Prenotazioni, clienti, finanze e IA in un unico posto.",
     "columns": {
       "product": {
         "title": "Prodotto",

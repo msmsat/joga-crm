@@ -12,7 +12,7 @@
   "hero": {
     "badge": "O novo padrão de CRM em 2026",
     "title": "Um CRM que vai\n*adorar* usar",
-    "lead": "Um CRM B2B premium para estúdios de ioga e pilates. Marcações, clientes, equipa e finanças num só lugar. Sem cliques extra, sem complicações.",
+    "lead": "Um CRM B2B premium para estúdios, ginásios, salões de beleza e spas. Marcações, clientes, equipa e finanças num só lugar. Sem cliques extra, sem complicações.",
     "cta": "Experimente 30 dias grátis",
     "perks": [
       "30 dias grátis",
@@ -307,7 +307,7 @@
     "title": "A Velora é criada por pessoas\nque geriram estúdios",
     "lead": "Não estamos a criar um «CRM para todos». Estamos a criar uma ferramenta para um trabalho específico — agenda, clientes, dinheiro, comunicação — e respondemos nós às perguntas em vez de enviar respostas pré-formatadas.",
     "p1": "Os clientes de um estúdio continuam a ser clientes desse estúdio. A Velora não cria um catálogo partilhado, não mostra aos seus clientes anúncios de outras pessoas e não cobra uma comissão porque alguém volta até si.",
-    "p2": "Neste momento o produto é criado para estúdios de ioga e pilates — para a forma como realmente funcionam as suas agendas, planos de aulas e treinadores. Outros setores seguir-se-ão com a mesma intenção."
+    "p2": "A Velora foi criada para negócios que trabalham por marcação: ioga e pilates, fitness e dança, salões de beleza e barbearias, massagem e spa. Agendas, planos de aulas e o trabalho de treinadores e profissionais funcionam como realmente acontece em cada setor."
   },
   "cta": {
     "eyebrow": "Comece hoje",
@@ -318,7 +318,7 @@
     "whatsapp": "Envie-nos mensagem no WhatsApp"
   },
   "footer": {
-    "tagline": "Um CRM premium para estúdios de ioga e pilates. Marcações, clientes, dinheiro e IA num só lugar.",
+    "tagline": "Um CRM premium para estúdios, ginásios, salões de beleza e spas. Marcações, clientes, dinheiro e IA num só lugar.",
     "columns": {
       "product": {
         "title": "Produto",

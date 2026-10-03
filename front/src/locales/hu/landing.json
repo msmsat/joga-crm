@@ -12,7 +12,7 @@
   "hero": {
     "badge": "A 2026-os év új CRM-szabványa",
     "title": "CRM, amelyet\\\n*öröm* használni",
-    "lead": "Prémium B2B CRM jóga- és pilatesstúdióknak. Foglalások, ügyfelek, csapat és pénzügyek egy helyen. Felesleges kattintások és zűrzavar nélkül.",
+    "lead": "Prémium B2B CRM stúdióknak, edzőtermeknek, szépségszalonoknak és wellnessközpontoknak. Foglalások, ügyfelek, csapat és pénzügyek egy helyen. Felesleges kattintások és zűrzavar nélkül.",
     "cta": "Próbálja ki ingyen 30 napig",
     "perks": [
       "30 nap ingyen",
@@ -307,7 +307,7 @@
     "title": "A Velorát olyan emberek építik,\\\nakik maguk is vezettek stúdiókat",
     "lead": "Nem „CRM-et építünk mindenkinek”. Egy konkrét munkához készítünk eszközt — naptárhoz, ügyfelekhez, pénzhez, kommunikációhoz — és a kérdésekre magunk válaszolunk sablonválaszok helyett.",
     "p1": "Egy stúdió ügyfelei a stúdió ügyfelei maradnak. A Velora nem épít közös katalógust, nem mutat mások hirdetéseit az ügyfeleinek, és nem kér százalékot, amikor valaki visszatér Önhöz.",
-    "p2": "Jelenleg a termék jóga- és pilatesstúdiókra készült — arra, ahogyan a naptáruk, bérleteik és oktatóik valóban működnek. Más ágazatok ugyanolyan körültekintéssel következnek."
+    "p2": "A Velora időpontfoglalással működő vállalkozásoknak készült: jóga és pilates, fitnesz és tánc, szépségszalonok és borbélyok, masszázs és spa. A naptár, a bérletek, valamint az edzők és szakemberek munkája úgy működik, ahogyan az egyes ágazatokban valóban zajlik."
   },
   "cta": {
     "eyebrow": "Kezdje még ma",
@@ -318,7 +318,7 @@
     "whatsapp": "Írjon nekünk WhatsAppon"
   },
   "footer": {
-    "tagline": "Prémium CRM jóga- és pilatesstúdióknak. Foglalások, ügyfelek, pénz és AI egy helyen.",
+    "tagline": "Prémium CRM stúdióknak, edzőtermeknek, szépségszalonoknak és wellnessközpontoknak. Foglalások, ügyfelek, pénz és AI egy helyen.",
     "columns": {
       "product": {
         "title": "Termék",

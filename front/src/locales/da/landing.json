@@ -12,7 +12,7 @@
   "hero": {
     "badge": "Den nye CRM-standard i 2026",
     "title": "Et CRM, du vil\n*elske* at bruge",
-    "lead": "Et premium B2B-CRM til yoga- og pilatesstudier. Bookinger, kunder, team og økonomi ét sted. Ingen ekstra klik, intet besvær.",
+    "lead": "Et premium B2B-CRM til studier, fitnesscentre, skønhedssaloner og spa. Bookinger, kunder, team og økonomi ét sted. Ingen ekstra klik, intet besvær.",
     "cta": "Prøv gratis i 30 dage",
     "perks": [
       "30 dage gratis",
@@ -307,7 +307,7 @@
     "title": "Velora bygges af mennesker\nder selv har drevet studier",
     "lead": "Vi laver ikke et „CRM for alle“. Vi laver et værktøj til et bestemt arbejde — kalender, kunder, penge, kommunikation — og svarer selv på spørgsmål i stedet for at sende standardsvar.",
     "p1": "Et studies kunder forbliver studiets kunder. Velora opbygger ikke et fælles katalog, viser ikke dine kunder andres reklamer og tager ikke en andel, fordi en person kommer tilbage til dig.",
-    "p2": "Lige nu er produktet bygget til yoga- og pilatesstudier — sådan som deres kalendere, medlemskaber og trænere faktisk fungerer. Andre brancher kommer senere, lige så bevidst."
+    "p2": "Velora er bygget til virksomheder, der lever af bookinger: yoga og pilates, fitness og dans, skønhedssaloner og barbershops, massage og spa. Kalender, medlemskaber og trænernes og behandlernes arbejde fungerer, som det faktisk foregår i hver branche."
   },
   "cta": {
     "eyebrow": "Start i dag",
@@ -318,7 +318,7 @@
     "whatsapp": "Skriv til os på WhatsApp"
   },
   "footer": {
-    "tagline": "Et premium-CRM til yoga- og pilatesstudier. Bookinger, kunder, penge og AI ét sted.",
+    "tagline": "Et premium-CRM til studier, fitnesscentre, skønhedssaloner og spa. Bookinger, kunder, penge og AI ét sted.",
     "columns": {
       "product": {
         "title": "Produkt",

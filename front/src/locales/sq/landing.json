@@ -12,7 +12,7 @@
   "hero": {
     "badge": "Standardi i ri CRM për vitin 2026",
     "title": "Një CRM që do ta\\\n*donit* ta përdornit",
-    "lead": "CRM premium B2B për studio yoga dhe pilates. Rezervime, klientë, ekip dhe financa në një vend. Pa klikime të panevojshme, pa ngatërresë.",
+    "lead": "CRM premium B2B për studio, palestra, salone bukurie dhe spa. Rezervime, klientë, ekip dhe financa në një vend. Pa klikime të panevojshme, pa ngatërresë.",
     "cta": "Provojeni falas për 30 ditë",
     "perks": [
       "30 ditë falas",
@@ -307,7 +307,7 @@
     "title": "Velora ndërtohet nga njerëz\\\nqë vetë kanë drejtuar studio",
     "lead": "Nuk po ndërtojmë „CRM për të gjithë”. Po ndërtojmë një mjet për një punë të caktuar — orar, klientë, para, komunikim — dhe u përgjigjemi vetë pyetjeve në vend që të dërgojmë përgjigje të gatshme.",
     "p1": "Klientët e një studioje mbeten klientët e saj. Velora nuk ndërton një katalog të përbashkët, nuk u shfaq klientëve tuaj reklama të të tjerëve dhe nuk merr përqindje kur një person kthehet te ju.",
-    "p2": "Tani për tani produkti është krijuar për studio yoga dhe pilates — për mënyrën si funksionojnë vërtet oraret, anëtarësimet dhe trajnerët e tyre. Industri të tjera do të vijnë me të njëjtën kujdes."
+    "p2": "Velora është krijuar për biznese që punojnë me rezervime: yoga dhe pilates, fitnes dhe vallëzim, salone bukurie dhe berberë, masazh dhe spa. Oraret, anëtarësimet dhe puna e trajnerëve e specialistëve funksionojnë ashtu siç ndodh vërtet në çdo fushë."
   },
   "cta": {
     "eyebrow": "Filloni sot",
@@ -318,7 +318,7 @@
     "whatsapp": "Na shkruani në WhatsApp"
   },
   "footer": {
-    "tagline": "CRM premium për studio yoga dhe pilates. Rezervime, klientë, para dhe AI në një vend.",
+    "tagline": "CRM premium për studio, palestra, salone bukurie dhe spa. Rezervime, klientë, para dhe AI në një vend.",
     "columns": {
       "product": {
         "title": "Produkti",

@@ -12,7 +12,7 @@
   "hero": {
     "badge": "Novi CRM standard za 2026.",
     "title": "CRM koji ćete\\\n*voljeti* koristiti",
-    "lead": "Premium B2B CRM za studije joge i pilatesa. Rezervacije, klijenti, tim i financije na jednom mjestu. Bez dodatnih klikova i zbrke.",
+    "lead": "Premium B2B CRM za studije, teretane, salone ljepote i spa centre. Rezervacije, klijenti, tim i financije na jednom mjestu. Bez dodatnih klikova i zbrke.",
     "cta": "Isprobajte besplatno 30 dana",
     "perks": [
       "30 dana besplatno",
@@ -308,7 +308,7 @@
     "title": "Veloru grade ljudi\\\nkoji su i sami vodili studije",
     "lead": "Ne gradimo „CRM za sve”. Gradimo alat za određeni posao — raspored, klijente, novac, komunikaciju — i sami odgovaramo na pitanja umjesto da šaljemo gotove odgovore.",
     "p1": "Klijenti jednog studija ostaju klijenti tog studija. Velora ne stvara zajednički katalog, ne prikazuje vašim klijentima tuđe oglase i ne uzima postotak kada vam se osoba vrati.",
-    "p2": "Trenutačno je proizvod izgrađen za studije joge i pilatesa — za način na koji zaista funkcioniraju njihovi rasporedi, članarine i treneri. Druge će djelatnosti slijediti s istom pažnjom."
+    "p2": "Velora je izgrađena za djelatnosti koje rade po rezervaciji: joga i pilates, fitness i ples, saloni ljepote i brijačnice, masaža i spa. Rasporedi, članarine i rad trenera i stručnjaka funkcioniraju onako kako se to u svakom području zaista odvija."
   },
   "cta": {
     "eyebrow": "Počnite danas",
@@ -319,7 +319,7 @@
     "whatsapp": "Pišite nam na WhatsAppu"
   },
   "footer": {
-    "tagline": "Premium CRM za studije joge i pilatesa. Rezervacije, klijenti, novac i AI na jednom mjestu.",
+    "tagline": "Premium CRM za studije, teretane, salone ljepote i spa centre. Rezervacije, klijenti, novac i AI na jednom mjestu.",
     "columns": {
       "product": {
         "title": "Proizvod",

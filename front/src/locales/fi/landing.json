@@ -12,7 +12,7 @@
   "hero": {
     "badge": "Uusi CRM-standardi vuonna 2026",
     "title": "CRM, jota\n*rakastat* käyttää",
-    "lead": "Premium-tason B2B-CRM jooga- ja pilatesstudioille. Varaukset, asiakkaat, tiimisi ja taloutesi samassa paikassa. Ei ylimääräisiä klikkauksia eikä vaivaa.",
+    "lead": "Premium-tason B2B-CRM studioille, kuntosaleille, kauneushoitoloille ja hyvinvointipalveluille. Varaukset, asiakkaat, tiimisi ja taloutesi samassa paikassa. Ei ylimääräisiä klikkauksia eikä vaivaa.",
     "cta": "Kokeile 30 päivää maksutta",
     "perks": [
       "30 päivää maksutta",
@@ -307,7 +307,7 @@
     "title": "Veloran tekevät ihmiset,\njotka ovat itse pyörittäneet studioita",
     "lead": "Emme tee ”CRM:ää kaikille”. Teemme työkalua tiettyyn työhön — aikatauluun, asiakkaisiin, rahaan ja viestintään — ja vastaamme kysymyksiin itse valmiin vastauksen lähettämisen sijaan.",
     "p1": "Studion asiakkaat pysyvät studion asiakkaina. Velora ei rakenna yhteistä luetteloa, ei näytä asiakkaillesi muiden mainoksia eikä ota osuutta siksi, että henkilö palaa luoksesi.",
-    "p2": "Tuote on tällä hetkellä tehty jooga- ja pilatesstudioille — niiden aikataulujen, jäsenyyksien ja valmentajien todelliseen toimintatapaan. Muut alat seuraavat yhtä harkitusti."
+    "p2": "Velora on tehty ajanvarauksella toimiville yrityksille: jooga ja pilates, kuntoilu ja tanssi, kauneushoitolat ja parturit, hieronta ja spa. Aikataulut, jäsenyydet sekä valmentajien ja ammattilaisten työ toimivat niin kuin ne kullakin alalla todella toimivat."
   },
   "cta": {
     "eyebrow": "Aloita tänään",
@@ -318,7 +318,7 @@
     "whatsapp": "Lähetä viesti WhatsAppissa"
   },
   "footer": {
-    "tagline": "Premium-CRM jooga- ja pilatesstudioille. Varaukset, asiakkaat, raha ja tekoäly samassa paikassa.",
+    "tagline": "Premium-CRM studioille, kuntosaleille, kauneushoitoloille ja hyvinvointipalveluille. Varaukset, asiakkaat, raha ja tekoäly samassa paikassa.",
     "columns": {
       "product": {
         "title": "Tuote",

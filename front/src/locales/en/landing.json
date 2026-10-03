@@ -12,7 +12,7 @@
   "hero": {
     "badge": "The new CRM standard in 2026",
     "title": "A CRM you'll\n*love* using",
-    "lead": "A premium B2B CRM for yoga and pilates studios. Bookings, clients, your team and your money in one place. No extra clicks, no pain.",
+    "lead": "A premium B2B CRM for studios, gyms, beauty salons and spas. Bookings, clients, your team and your money in one place. No extra clicks, no pain.",
     "cta": "Try 30 days free",
     "perks": [
       "30 days free",
@@ -307,7 +307,7 @@
     "title": "Velora is built by people\nwho ran studios themselves",
     "lead": "We are not making a “CRM for everyone”. We are making a tool for a specific job — schedule, clients, money, communication — and we answer questions ourselves instead of sending a templated reply.",
     "p1": "A studio's clients stay the studio's clients. Velora does not build a shared catalogue, does not show your clients someone else's ads and does not take a cut because a person came back to you.",
-    "p2": "Right now the product is built for yoga and pilates studios — for how their schedule, memberships and trainers actually work. Other verticals will follow, and just as deliberately."
+    "p2": "Velora is built for businesses that run on appointments: yoga and pilates, fitness and dance, beauty salons and barbershops, massage and spa. Schedules, memberships and the work of trainers and specialists follow how each of these businesses actually operates."
   },
   "cta": {
     "eyebrow": "Start today",
@@ -318,7 +318,7 @@
     "whatsapp": "Message us on WhatsApp"
   },
   "footer": {
-    "tagline": "A premium CRM for yoga and pilates studios. Bookings, clients, money and AI in one place.",
+    "tagline": "A premium CRM for studios, gyms, beauty salons and spas. Bookings, clients, money and AI in one place.",
     "columns": {
       "product": {
         "title": "Product",

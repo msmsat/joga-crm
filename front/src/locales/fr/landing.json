@@ -12,7 +12,7 @@
   "hero": {
     "badge": "La nouvelle référence CRM en 2026",
     "title": "Un CRM que vous\n*aimerez* utiliser",
-    "lead": "Un CRM B2B haut de gamme pour les studios de yoga et de Pilates. Réservations, clients, équipe et finances au même endroit. Sans clics inutiles ni complications.",
+    "lead": "Un CRM B2B haut de gamme pour les studios, salles de sport, instituts de beauté et spas. Réservations, clients, équipe et finances au même endroit. Sans clics inutiles ni complications.",
     "cta": "Essayer 30 jours gratuitement",
     "perks": [
       "30 jours gratuits",
@@ -307,7 +307,7 @@
     "title": "Velora est conçue par des personnes\nqui ont elles-mêmes géré des studios",
     "lead": "Nous ne créons pas un « CRM pour tous ». Nous créons un outil pour un travail précis — planning, clients, finances, communication — et répondons nous-mêmes aux questions au lieu d’envoyer une réponse toute faite.",
     "p1": "Les clients d’un studio restent ses clients. Velora ne crée pas de catalogue partagé, ne montre pas à vos clients les publicités d’autrui et ne prélève pas de commission parce qu’une personne revient chez vous.",
-    "p2": "Le produit est aujourd’hui conçu pour les studios de yoga et de Pilates — selon le fonctionnement réel de leur planning, de leurs abonnements et de leurs coachs. D’autres secteurs suivront, avec la même attention."
+    "p2": "Velora est conçue pour les entreprises qui travaillent sur rendez-vous : yoga et Pilates, fitness et danse, instituts de beauté et barbiers, massage et spa. Planning, abonnements et travail des coachs et des praticiens suivent le fonctionnement réel de chaque métier."
   },
   "cta": {
     "eyebrow": "Commencez aujourd’hui",
@@ -318,7 +318,7 @@
     "whatsapp": "Nous écrire sur WhatsApp"
   },
   "footer": {
-    "tagline": "Un CRM haut de gamme pour les studios de yoga et de Pilates. Réservations, clients, finances et IA au même endroit.",
+    "tagline": "Un CRM haut de gamme pour les studios, salles de sport, instituts de beauté et spas. Réservations, clients, finances et IA au même endroit.",
     "columns": {
       "product": {
         "title": "Produit",

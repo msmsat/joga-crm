@@ -12,7 +12,7 @@
   "hero": {
     "badge": "Nový standard CRM v roce 2026",
     "title": "CRM, které vás\n*baví* používat",
-    "lead": "Prémiové B2B CRM pro studia jógy a pilates. Rezervace, klienti, tým a peníze na jednom místě. Bez zbytečných kliknutí, bez bolesti.",
+    "lead": "Prémiové B2B CRM pro studia, fitness centra, salony krásy a wellness. Rezervace, klienti, tým a peníze na jednom místě. Bez zbytečných kliknutí, bez bolesti.",
     "cta": "Vyzkoušet 30 dní zdarma",
     "perks": [
       "30 dní zdarma",
@@ -312,7 +312,7 @@
     "title": "Za Velorou stojí lidé,\nkteří sami vedli studia",
     "lead": "Neděláme „CRM pro všechny“. Děláme nástroj pro konkrétní práci: rozvrh, klienti, peníze, komunikace — a na otázky odpovídáme sami, ne šablonou.",
     "p1": "Klienti studia zůstávají klienty studia. Velora nestaví společný katalog, neukazuje vašim klientům cizí reklamu a nebere provizi za to, že se k vám člověk vrátil.",
-    "p2": "Produkt je teď zaměřený na studia jógy a pilates — na to, jak v nich rozvrh, permanentky a práce trenérů skutečně fungují. Další obory přibudou později a stejně cíleně."
+    "p2": "Velora je stavěná pro podniky, které fungují na rezervace: jóga a pilates, fitness a tanec, salony krásy a barbershopy, masáže a wellness. Rozvrh, permanentky i práce trenérů a specialistů v ní fungují tak, jak to v těchto oborech skutečně chodí."
   },
   "cta": {
     "eyebrow": "Začněte dnes",
@@ -323,7 +323,7 @@
     "whatsapp": "Napsat na WhatsApp"
   },
   "footer": {
-    "tagline": "Prémiové CRM pro studia jógy a pilates. Rezervace, klienti, peníze a AI na jednom místě.",
+    "tagline": "Prémiové CRM pro studia, fitness centra, salony krásy a wellness. Rezervace, klienti, peníze a AI na jednom místě.",
     "columns": {
       "product": {
         "title": "Produkt",

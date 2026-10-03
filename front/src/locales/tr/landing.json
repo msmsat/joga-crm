@@ -12,7 +12,7 @@
   "hero": {
     "badge": "2026'nın yeni CRM standardı",
     "title": "Kullanmaktan\\\n*keyif* alacağınız CRM",
-    "lead": "Yoga ve pilates stüdyoları için premium B2B CRM. Rezervasyonlar, müşteriler, ekip ve finans tek yerde. Ekstra tıklama yok, karmaşa yok.",
+    "lead": "Stüdyolar, spor kulüpleri, güzellik salonları ve spa merkezleri için premium B2B CRM. Rezervasyonlar, müşteriler, ekip ve finans tek yerde. Ekstra tıklama yok, karmaşa yok.",
     "cta": "30 gün ücretsiz deneyin",
     "perks": [
       "30 gün ücretsiz",
@@ -307,7 +307,7 @@
     "title": "Velora, kendileri de stüdyo işletmiş\\\ninsanlar tarafından geliştiriliyor",
     "lead": "“Herkes için CRM” yapmıyoruz. Belirli bir iş için — takvim, müşteriler, para, iletişim — araç geliştiriyor; ezber cevaplar göndermek yerine soruları kendimiz yanıtlıyoruz.",
     "p1": "Bir stüdyonun müşterileri o stüdyonun müşterileri olarak kalır. Velora ortak bir katalog kurmaz, müşterilerinize başkalarının reklamlarını göstermez ve bir kişi size geri döndüğünde komisyon almaz.",
-    "p2": "Şu anda ürün yoga ve pilates stüdyoları için; takvimlerinin, üyeliklerinin ve eğitmenlerinin gerçekten çalışma biçimi için tasarlandı. Diğer sektörler de aynı özenle sonra gelecek."
+    "p2": "Velora randevuyla çalışan işletmeler için yapıldı: yoga ve pilates, fitness ve dans, güzellik salonları ve berberler, masaj ve spa. Takvimler, üyelikler, eğitmenlerin ve uzmanların çalışması her sektörde gerçekte nasıl işliyorsa öyle kurgulandı."
   },
   "cta": {
     "eyebrow": "Bugün başlayın",
@@ -318,7 +318,7 @@
     "whatsapp": "WhatsApp'tan bize yazın"
   },
   "footer": {
-    "tagline": "Yoga ve pilates stüdyoları için premium CRM. Rezervasyonlar, müşteriler, para ve AI tek yerde.",
+    "tagline": "Stüdyolar, spor kulüpleri, güzellik salonları ve spa merkezleri için premium CRM. Rezervasyonlar, müşteriler, para ve AI tek yerde.",
     "columns": {
       "product": {
         "title": "Ürün",
