@@ -2471,11 +2471,12 @@ async def clear_schedule(ctx: StudioContext, db: AsyncSession, args: ClearSchedu
 @tool(
     mutating=True, roles=("owner", "admin"), endpoint="POST /schedule/reservations",
     summary="Записать на занятие: {client_id} → {lesson_id}",
-    effect="Занятие спишется с абонемента клиента, ему уйдёт подтверждение записи, тренеру и администратору — уведомление о новой записи.",
+    effect="Занятие спишется с абонемента клиента, а без абонемента запишется с оплатой на месте — долгом клиента. Ему уйдёт подтверждение записи, тренеру и администратору — уведомление о новой записи.",
 )
 async def book_client(ctx: StudioContext, db: AsyncSession, args: BookClientArgs) -> dict:
-    """Записать клиента студии на занятие. Списывает занятие с абонемента и
-    отправляет подтверждения — как запись из Журнала."""
+    """Записать клиента студии на занятие — как запись из Журнала. Списывает
+    занятие с абонемента; без абонемента и первого занятия запись встаёт долгом
+    «оплата на месте». Отправляет подтверждения."""
     reservation = await _r_create_reservation(
         body=ReservationCreate(client_id=args.client_id, lesson_id=args.lesson_id), ctx=ctx, db=db,
     )

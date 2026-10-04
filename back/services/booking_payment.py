@@ -55,7 +55,7 @@ from models import (
 )
 from services import booking
 from services.booking import Terms
-from services.booking_access import trial_percent
+from services.booking_access import trial_discount
 
 logger = logging.getLogger(__name__)
 
@@ -706,7 +706,7 @@ async def pay_link(db: AsyncSession, *, studio_id: int, reservation_id: int,
     else:
         amount = await booking.client_price(
             db, studio_id=studio_id, client_id=client_id, base_price=int(lesson.price or 0),
-            first_lesson_percent=trial_percent(reservation))
+            first_lesson=trial_discount(reservation))
     if amount <= 0:
         return Payable(PayOutcome.STALE)
 

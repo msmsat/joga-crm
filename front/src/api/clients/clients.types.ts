@@ -89,6 +89,7 @@ export interface DigestVisit {
   booked_at: string | null
   price: number
   trial_discount_percent: number | null
+  trial_discount_amount: number | null
   subscription_name: string | null
   debt: number
   paid_amount: number

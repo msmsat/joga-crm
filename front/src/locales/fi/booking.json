@@ -35,7 +35,8 @@
         "label": "Alennus ensimmäisestä tunnista",
         "free": "Uuden asiakkaan ensimmäinen tunti on ilmainen.",
         "percent": "Uuden asiakkaan ensimmäinen tunti on {{percent}} % halvempi.",
-        "change": "Prosentti asetetaan kohdassa ”Kanta-asiakkuus”"
+        "amount": "Uuden asiakkaan ensimmäinen tunti on {{amount}} halvempi.",
+        "change": "Alennus asetetaan kohdassa ”Kanta-asiakkuus”"
       },
       "trainerConfirm": {
         "label": "Ohjaajan vahvistus",

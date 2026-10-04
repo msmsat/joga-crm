@@ -172,6 +172,8 @@
       "percent": "Descuento, %",
       "freeHint": "La primera clase es un regalo: el cliente no paga nada.",
       "payHint": "El cliente paga el {{rest}} % del precio de la primera clase.",
+      "amount": "Descuento, {{currency}}",
+      "amountHint": "Se descuentan {{amount}} del precio de la primera clase. Si la clase cuesta menos, es gratis.",
       "howTitle": "Cómo funciona",
       "how": {
         "who": "El descuento se aplica solo a la primera reserva de un cliente nuevo: en la Agenda, la miniapp y el widget de reservas.",

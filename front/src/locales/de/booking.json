@@ -35,7 +35,8 @@
         "label": "Rabatt auf den ersten Kurs",
         "free": "Der erste Kurs neuer Kunden ist gratis.",
         "percent": "Der erste Kurs neuer Kunden ist {{percent}} % günstiger.",
-        "change": "Prozentsatz im „Treueprogramm“ festlegen"
+        "amount": "Der erste Kurs neuer Kunden ist {{amount}} günstiger.",
+        "change": "Rabatthöhe im „Treueprogramm“ festlegen"
       },
       "trainerConfirm": {
         "label": "Bestätigung durch Trainer",

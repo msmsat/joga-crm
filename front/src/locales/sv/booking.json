@@ -35,7 +35,8 @@
         "label": "Rabatt på första passet",
         "free": "En ny kunds första pass är gratis.",
         "percent": "En ny kunds första pass får {{percent}} % rabatt.",
-        "change": "Procentsatsen ställs in under ”Lojalitet”"
+        "amount": "En ny kunds första pass får {{amount}} rabatt.",
+        "change": "Rabatten ställs in under ”Lojalitet”"
       },
       "trainerConfirm": {
         "label": "Bekräftelse av instruktör",

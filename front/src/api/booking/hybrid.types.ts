@@ -89,8 +89,9 @@ export interface BookingTerms {
   buffer_before_min: number; buffer_after_min: number; lesson_version: number;
   booking_config_version: number; cancellation_deadline_min: number; payment_method: 'venue' | 'card'; spot_number: number | null;
   /** Скидка на первое занятие: просили ли её (эхо выключателя), положена ли она клиенту
-   *  и сколько процентов даёт (100 — бесплатно). Применена = положена и не выключена. */
+   *  и сколько даёт — процентом (100 — бесплатно) или суммой. Применена = положена и не выключена. */
   first_lesson: boolean; first_lesson_offered: boolean; first_lesson_percent: number | null;
+  first_lesson_amount?: number | null;
 }
 export interface QuoteRead { quote_id: string; expires_at: string; booking_mode: BookingMode; terms: BookingTerms; next_action: NextAction; reservation_id: number | null }
 /** Промокод, ваучер (подарочный сертификат) и ручная скидка администратора

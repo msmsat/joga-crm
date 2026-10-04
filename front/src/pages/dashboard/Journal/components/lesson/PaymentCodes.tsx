@@ -4,19 +4,21 @@
 import { useTranslation } from 'react-i18next';
 import { Input, Switch } from '../../../../../components/ui/index';
 import type { PaymentCheck } from '../../hooks/usePaymentCheck';
+import { firstLessonOff } from '../../firstLesson';
 
 export function FirstLessonTile({ payment, disabled }: { payment: PaymentCheck; disabled: boolean }) {
   const { t } = useTranslation('journal');
   const { preview } = payment;
   if (!preview?.first_lesson_offered) return null;
-  const percent = preview.first_lesson_percent ?? 100;
   // Засчитано, но выгоднее другая скидка: они не суммируются — строки нет.
   const outweighed = preview.first_lesson_applied && !preview.discounts.some(d => d.kind === 'first_lesson');
   return (
     <div className={`rp-tile${payment.firstLesson ? ' is-on' : ''}`}>
       <div className="rp-tile-head">
         <span className="rp-tile-title">{t('payment.firstLesson')}</span>
-        <span className="rp-tile-value">{percent >= 100 ? t('payment.free') : `−${percent}%`}</span>
+        <span className="rp-tile-value">
+          {firstLessonOff(preview.first_lesson_percent, preview.first_lesson_amount, preview.currency, t('payment.free'))}
+        </span>
       </div>
       <label className="rp-switch">
         <Switch checked={payment.firstLesson} onChange={payment.setFirstLesson} disabled={disabled} />

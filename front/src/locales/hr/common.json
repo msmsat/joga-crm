@@ -150,7 +150,8 @@
     "loyalty": {
       "cert_not_found": "Poklon-bon nije pronađen",
       "cert_used": "Poklon-bon je već iskorišten ili nije važeći",
-      "cert_expired": "Poklon-bon je istekao"
+      "cert_expired": "Poklon-bon je istekao",
+      "first_lesson_amount_required": "Unesite iznos popusta za prvi termin"
     },
     "notifications": {
       "critical_locked": "Ova se obavijest ne može isključiti",

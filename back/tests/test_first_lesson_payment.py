@@ -42,6 +42,7 @@ from routers.schedule.router import router as schedule_router
 from schemas.loyalty import FirstLessonConfigUpdate
 from services import booking, booking_quotes
 from services.booking import Actor, FundingKind, Outcome
+from services.discounts import FirstLessonDiscount
 from services.pricing import resolve_price
 
 enabled = resource.enabled
@@ -54,14 +55,16 @@ def frozen_clock(monkeypatch):
     monkeypatch.setattr(booking_quotes, "utcnow", lambda now=None: moment(now or resource.NOW))
 
 
-async def _seed(percent=50, on=True, prefill=False):
+async def _seed(percent=50, on=True, prefill=False, amount=None):
+    """`amount` — скидка первого занятия суммой вместо процента."""
     ids = await resource.seed(price=PRICE)
     await crm._owner(ids)
     async with async_session_maker() as db:
         await db.execute(update(StudioBookingSettings)
                          .where(StudioBookingSettings.studio_id == ids["studio"])
                          .values(trial_lesson_free=on, trial_discount_percent=percent,
-                                 prefill_on_booking=prefill))
+                                 trial_discount_type="amount" if amount else "percent",
+                                 trial_discount_amount=amount, prefill_on_booking=prefill))
         await db.commit()
     return ids
 
@@ -130,7 +133,8 @@ def test_engine_takes_the_best_discount_and_stacks_only_when_allowed():
         ids = await _seed()
         try:
             async with async_session_maker() as db:
-                alone = await resolve_price(db, ids["studio"], ids["client"], PRICE, first_lesson_percent=50)
+                alone = await resolve_price(db, ids["studio"], ids["client"], PRICE,
+                                            first_lesson=FirstLessonDiscount(percent=50))
                 assert (alone.final_price, alone.first_lesson_discount_applied) == (500, 500)
 
                 # Персональный оффер 70 % выгоднее первого занятия 50 % — без стека
@@ -138,14 +142,16 @@ def test_engine_takes_the_best_discount_and_stacks_only_when_allowed():
                 db.add(ClientOffer(studio_id=ids["studio"], client_id=ids["client"], discount_type="percent",
                                    value=70, reason="manual", scope="renewal"))
                 await db.flush()
-                best = await resolve_price(db, ids["studio"], ids["client"], PRICE, first_lesson_percent=50)
+                best = await resolve_price(db, ids["studio"], ids["client"], PRICE,
+                                           first_lesson=FirstLessonDiscount(percent=50))
                 assert best.final_price == 300 and best.first_lesson_discount_applied == 0, best
 
                 # Студия разрешила складывать скидки — складываются все.
                 db.add(StudioDiscountConfig(studio_id=ids["studio"], is_enabled=True, discount_type="fixed",
                                             discount_value=100, stackable=True))
                 await db.flush()
-                stacked = await resolve_price(db, ids["studio"], ids["client"], PRICE, first_lesson_percent=10)
+                stacked = await resolve_price(db, ids["studio"], ids["client"], PRICE,
+                                              first_lesson=FirstLessonDiscount(percent=10))
                 assert stacked.final_price == PRICE - 100 - 700 - 100, stacked
                 await db.rollback()
         finally:

@@ -18,12 +18,23 @@ from fastapi import HTTPException
 
 from models import ClientPayment, Reservation
 from services import booking, booking_quotes as quotes, held_codes, reservation_payment
+from services.discounts import FirstLessonDiscount
 
 
 def _code(value):
     """Пустое поле ввода — это «кода нет», а не код из пустой строки."""
     value = (value or "").strip()
     return value or None
+
+
+def _first_lesson(terms) -> FirstLessonDiscount | None:
+    """Скидка первого занятия из снимка условий: сумма, если она задана, иначе
+    процент. None — клиенту она не положена."""
+    if terms.get("first_lesson_amount") is not None:
+        return FirstLessonDiscount(amount=terms["first_lesson_amount"])
+    if terms.get("first_lesson_percent") is not None:
+        return FirstLessonDiscount(percent=terms["first_lesson_percent"])
+    return None
 
 
 async def _quote(db, actor, terms, domain, codes, certificate_code):
@@ -37,7 +48,7 @@ async def _quote(db, actor, terms, domain, codes, certificate_code):
     package = ServiceAsProduct(
         id=0, name=domain.service_name, price=domain.base_price,
         per_visit_price=domain.base_price, service_id=terms.get("service_id"),
-        first_lesson_percent=terms.get("first_lesson_percent") if applied else None,
+        first_lesson=_first_lesson(terms) if applied else None,
     )
     return await price(db, actor.studio_id, actor.client_id, package, "lesson",
                        _code(codes.promo_code), codes.use_bonuses, codes.use_deposit, certificate_code,
@@ -66,6 +77,7 @@ async def preview(db, actor: quotes.Actor, quote_id: str, codes) -> dict:
         first_lesson_offered=offered,
         first_lesson_applied=offered and bool(terms.get("first_lesson", True)),
         first_lesson_percent=terms.get("first_lesson_percent"),
+        first_lesson_amount=terms.get("first_lesson_amount"),
     )
     if funding.kind is not booking.FundingKind.PAY:
         # Абонемент, бесплатное первое занятие или скидка на всю сумму: платить

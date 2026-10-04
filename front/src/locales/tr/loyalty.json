@@ -172,6 +172,8 @@
       "percent": "İndirim, %",
       "freeHint": "İlk ders hediye — müşteri hiçbir şey ödemez.",
       "payHint": "Müşteri ilk ders fiyatının %{{rest}} kadarını öder.",
+      "amount": "İndirim, {{currency}}",
+      "amountHint": "İlk ders fiyatından {{amount}} düşülür. Ders daha ucuzsa ücretsizdir.",
       "howTitle": "Nasıl çalışır",
       "how": {
         "who": "İndirim, yeni müşterinin ilk rezervasyonuna kendiliğinden uygulanır — Takvim'de, mini uygulamada ve rezervasyon widget'ında.",

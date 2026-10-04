@@ -1,0 +1,66 @@
+/* Строка окна «Добавить клиента» (EligibleClientRow). */
+.ec-row {
+  display: flex; align-items: center; gap: 10px; width: 100%;
+  padding: 8px 10px; border: none; border-radius: 12px;
+  background: rgba(var(--ink), 0.03); color: var(--onyx);
+  font-family: var(--font); text-align: left; cursor: pointer;
+  transition: background-color 0.15s ease, box-shadow 0.15s ease;
+}
+.ec-row:hover { background: rgba(var(--ink), 0.06); }
+.ec-row.is-selected { background: rgba(249,160,139,0.14); box-shadow: inset 0 0 0 1px rgba(249,160,139,0.45); }
+.ec-row:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--peach-glow), inset 0 0 0 1px var(--peach); }
+
+.ec-avatar {
+  position: relative; width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 800; color: var(--ec-tint);
+  overflow: hidden; isolation: isolate;
+}
+/* Подложка — тот же цвет клиента, приглушённый: инициалы остаются читаемыми. */
+.ec-avatar::before { content: ''; position: absolute; inset: 0; background: var(--ec-tint); opacity: 0.16; z-index: -1; }
+
+.ec-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.ec-name { font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ec-phone { font-size: 11px; font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Чем покрыта запись. Цвет — по смыслу: зелёный оплачено заранее, персик —
+   подарок студии, нейтральный — заплатит на месте. */
+.ec-badge {
+  flex-shrink: 0; max-width: 46%;
+  height: 22px; padding: 0 8px; border-radius: 999px;
+  display: inline-flex; align-items: center;
+  font-size: 11px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  font-variant-numeric: tabular-nums;
+}
+.ec-badge.is-subscription { background: rgba(163,201,168,0.2); color: #5E8F66; }
+.ec-badge.is-trial { background: rgba(249,160,139,0.16); color: #C9694F; }
+.ec-badge.is-free { background: rgba(var(--ink), 0.06); color: var(--onyx); }
+.ec-badge.is-pay { box-shadow: inset 0 0 0 1px rgba(var(--ink), 0.12); color: var(--muted); }
+.dark .ec-badge.is-subscription { color: #B5D6B9; }
+.dark .ec-badge.is-trial { color: #FCAE91; }
+
+/* Галочка видна всегда: выбор множественный, и пустой кружок говорит об этом
+   ещё до первого нажатия. */
+.ec-check {
+  width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: inset 0 0 0 1.5px rgba(var(--ink), 0.18); color: #fff;
+  transition: background-color 0.15s ease, box-shadow 0.15s ease;
+}
+.ec-check svg { width: 12px; height: 12px; }
+.ec-row.is-selected .ec-check { background: var(--peach); box-shadow: none; }
+
+/* Пока список едет с сервера — силуэты строк, а не «Клиенты не найдены». */
+.ec-skeleton {
+  height: 48px; border-radius: 12px;
+  background: linear-gradient(90deg, rgba(var(--ink),0.03), rgba(var(--ink),0.07), rgba(var(--ink),0.03));
+  background-size: 200% 100%;
+  animation: lc-shimmer 1.2s ease-in-out infinite;
+}
+.ec-empty { padding: 20px 8px; text-align: center; font-size: 12.5px; font-weight: 600; color: var(--muted); line-height: 1.5; }
+.ec-empty button { margin-top: 10px; }
+
+@media (max-width: 767px) {
+  .ec-row { padding: 10px 12px; }
+  .ec-avatar { width: 36px; height: 36px; font-size: 12px; }
+}

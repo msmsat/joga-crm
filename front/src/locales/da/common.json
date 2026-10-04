@@ -150,7 +150,8 @@
     "loyalty": {
       "cert_not_found": "Gavekortet blev ikke fundet",
       "cert_used": "Gavekortet er allerede indløst eller ugyldigt",
-      "cert_expired": "Gavekortet er udløbet"
+      "cert_expired": "Gavekortet er udløbet",
+      "first_lesson_amount_required": "Angiv rabatbeløbet for første hold"
     },
     "notifications": {
       "critical_locked": "Denne notifikation kan ikke slås fra",

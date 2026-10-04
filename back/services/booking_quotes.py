@@ -24,22 +24,24 @@ class Actor:
         return booking.Actor.STAFF if self.actor_user_id is not None else booking.Actor.CLIENT
 
 
-def funding_rule(actor: "Actor", payment_method: str, booking_mode: str) -> bool | None:
+def funding_rule(actor: "Actor", payment_method: str) -> bool | None:
     """Чем эта запись считает бронь без абонемента (см. booking._check).
 
     Одно правило на quote и confirm: разойдись они — условия показали бы
     «оплата на месте», а подтверждение отказало бы «нет абонемента».
 
     * карта — покрытие не нужно: платёж и есть покрытие;
-    * индивидуальную услугу записывает СОТРУДНИК — тоже не нужно: «Предоплата
-      при записи» — правило самостоятельной записи клиента, а стойка записывает
-      как веб-виджет, с оплатой на месте (долг клиента, open_debt). Иначе
-      администратор не мог записать ни одного клиента без абонемента;
+    * записывает СОТРУДНИК — тоже не нужно, и на индивидуальную услугу, и на
+      групповое занятие: «Предоплата при записи» — правило самостоятельной
+      записи клиента, а стойка записывает как веб-виджет, с оплатой на месте
+      (долг клиента, open_debt). Иначе администратор не мог записать ни одного
+      клиента без абонемента. Тем же правилом пишет запись из Журнала и
+      карточки клиента (`require_funding=False` в их роутерах);
     * остальное (клиент в мини-приложении) — по настройке студии.
     """
     if payment_method == "card":
         return False
-    if actor.domain is booking.Actor.STAFF and booking_mode == "resource":
+    if actor.domain is booking.Actor.STAFF:
         return False
     return None
 
@@ -103,12 +105,14 @@ def _snapshot(lesson, terms, studio, rules, payment_method, *, starts_at=None, s
         "payment_method": payment_method, "spot_number": spot_number,
         # Скидка первого занятия: просил ли её администратор (эхо запроса —
         # по нему подтверждение пересчитывает то же самое), положена ли она
-        # клиенту вообще и сколько процентов даёт. Процент — и при выключенном
-        # выключателе: окно подписывает им выключатель («−50 %»), чтобы было
-        # видно, от чего отказываются. Применена = положена И не выключена.
+        # клиенту вообще и сколько даёт — процентом или суммой. Размер — и при
+        # выключенном выключателе: окно подписывает им выключатель («−50 %»,
+        # «−300 Kč»), чтобы было видно, от чего отказываются. Применена =
+        # положена И не выключена.
         "first_lesson": first_lesson.get("requested", True),
         "first_lesson_offered": first_lesson.get("offered", False),
         "first_lesson_percent": first_lesson.get("percent"),
+        "first_lesson_amount": first_lesson.get("amount"),
     }
 
 
@@ -121,8 +125,10 @@ async def _first_lesson(db, actor, rules, *, requested, covered_by_subscription)
     не предлагаем вовсе.
     """
     offered = not covered_by_subscription and await trial_applies(db, actor.client_id, rules)
+    discount = rules.first_lesson if offered else None
     return {"requested": requested, "offered": offered,
-            "percent": (rules.trial_discount_percent or 100) if offered else None}
+            "percent": discount.percent if discount is not None else None,
+            "amount": discount.amount if discount is not None else None}
 
 
 async def calculate(db, actor: Actor, request, *, now=None, hall_id=None,
@@ -147,7 +153,7 @@ async def calculate(db, actor: Actor, request, *, now=None, hall_id=None,
             reject("MODE_DISABLED")
         quoted = await booking.quote(db, studio_id=actor.studio_id, client_id=actor.client_id,
             lesson_id=request.lesson_id, actor=actor.domain, now=moment,
-            require_funding=funding_rule(actor, request.payment_method, "event"),
+            require_funding=funding_rule(actor, request.payment_method),
             allow_trial=allow_trial)
         if quoted.outcome is not booking.Outcome.OK:
             reject(quoted.outcome.value.upper(), 402 if quoted.outcome is booking.Outcome.NO_FUNDING else 409)
@@ -197,7 +203,7 @@ async def calculate(db, actor: Actor, request, *, now=None, hall_id=None,
     if funding is None:
         funding, subscription, _ = await booking.resolve_funding(
             db, studio=studio, client_id=actor.client_id, lesson=candidate, rules=rules,
-            require_funding=funding_rule(actor, request.payment_method, "resource"),
+            require_funding=funding_rule(actor, request.payment_method),
             allow_trial=allow_trial)
         if funding is not None:
             first = await _first_lesson(db, actor, rules, requested=allow_trial,

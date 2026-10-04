@@ -172,6 +172,8 @@
       "percent": "Kedvezmény, %",
       "freeHint": "Az első óra ajándék — az ügyfél nem fizet semmit.",
       "payHint": "Az ügyfél az első óra árának {{rest}}%-át fizeti.",
+      "amount": "Kedvezmény, {{currency}}",
+      "amountHint": "Az első óra árából {{amount}} levonásra kerül. Ha az óra ennél olcsóbb, ingyenes.",
       "howTitle": "Hogyan működik",
       "how": {
         "who": "A kedvezmény magától érvényesül az új ügyfél első foglalásánál — a Naplóban, a miniappban és a foglalási widgetben.",

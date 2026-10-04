@@ -150,7 +150,8 @@
     "loyalty": {
       "cert_not_found": "Certificate not found",
       "cert_used": "Certificate has already been redeemed or is invalid",
-      "cert_expired": "Certificate has expired"
+      "cert_expired": "Certificate has expired",
+      "first_lesson_amount_required": "Enter the first class discount amount"
     },
     "notifications": {
       "critical_locked": "This notification cannot be turned off",

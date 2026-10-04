@@ -30,6 +30,11 @@ const cases: Case[] = [
     { action: 'book', showGrid: true },
   ],
   [
+    'первое занятие со скидкой суммой — тоже не подарок',
+    lesson({ first_lesson_discount_amount_str: '300 Kč', first_lesson_price_str: '700 Kč' }), false,
+    { action: 'book', showGrid: true },
+  ],
+  [
     'уже записан, повтор выключен — только отмена, сетки нет',
     lesson({ is_booked_by_user: true }), false, { action: 'cancel_booking', showGrid: false },
   ],

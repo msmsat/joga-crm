@@ -150,7 +150,8 @@
     "loyalty": {
       "cert_not_found": "Bon cadeau introuvable",
       "cert_used": "Le bon cadeau a déjà été utilisé ou n'est pas valable",
-      "cert_expired": "Le bon cadeau a expiré"
+      "cert_expired": "Le bon cadeau a expiré",
+      "first_lesson_amount_required": "Indiquez le montant de la remise sur le premier cours"
     },
     "notifications": {
       "critical_locked": "Cette notification ne peut pas être désactivée",

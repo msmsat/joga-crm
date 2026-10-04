@@ -35,7 +35,8 @@
         "label": "Zbritje për mësimin e parë",
         "free": "Mësimi i parë i një klienti të ri është falas.",
         "percent": "Mësimi i parë i një klienti të ri ka {{percent}}% zbritje.",
-        "change": "Përqindja caktohet te «Besnikëria»"
+        "amount": "Mësimi i parë i një klienti të ri ka {{amount}} zbritje.",
+        "change": "Zbritja caktohet te «Besnikëria»"
       },
       "trainerConfirm": {
         "label": "Konfirmim nga trajneri",

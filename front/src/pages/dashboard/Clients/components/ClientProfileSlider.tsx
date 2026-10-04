@@ -9,6 +9,11 @@ import { InlineEdit } from './InlineEdit';
 import ClientOffersPanel from './ClientOffersPanel';
 import { ClientProducts } from './ClientProducts';
 import { WalletTab } from './WalletTab';
+import { BumpixHistory } from '../bumpix/BumpixHistory';
+import { BumpixProfileData } from '../bumpix/BumpixProfileData';
+import { ProtectedPhotos } from '../bumpix/ProtectedPhotos';
+import { useBumpixProfiles } from '../bumpix/useBumpix';
+import { getActiveContextKey } from '../../../../utils/auth';
 import { ClientEventDates } from './ClientEventDates';
 import { useClientEvents, useClientNotes, useClientActivity, useClientInviteCode, useReferralEnabled, useFreezeEnabled } from '../hooks/useClientsList';
 import { formatDate, formatMoney, getAvatarColor, getInitials } from '../utils/mapClient';
@@ -398,12 +403,17 @@ function ActivityChart({ clientId, c, clientName }: { clientId: number; c: strin
 }
 
 // ─── CLIENT PANEL ─────────────────────────────────────────────────────────────
-function ClientPanel({ client, profile, onClose, onDelete }: {
+function ClientPanel({ client, profile, onClose, onDelete, enabled }: {
   client: ClientData;
   profile?: ClientProfile | null;
+  enabled: boolean;
   onClose: () => void;
   onDelete: (id: number) => void;
 }) {
+  const bumpix = useBumpixProfiles(client.id, enabled);
+  const imported = bumpix.data ?? [];
+  const avatar = imported.find(p => p.avatar)?.avatar;
+  const showBumpix = imported.length > 0 || bumpix.isError;
   void profile;
   const { t, i18n: i18nInstance } = useTranslation('clients');
   // Тренер карточку своего клиента читает, но не правит: все мутации клиента —
@@ -414,7 +424,7 @@ function ClientPanel({ client, profile, onClose, onDelete }: {
   const canEdit = role !== 'trainer';
   const isOwner = role === 'owner';
   const currency = getCurrencySymbol(useStudioCurrency());
-  const [activeTab,    setActiveTab]    = useState<'info' | 'events' | 'notes' | 'wallet'>('info');
+  const [activeTab,    setActiveTab]    = useState<'info' | 'events' | 'notes' | 'wallet' | 'bumpix'>('info');
   const [bookingOpen,  setBookingOpen]  = useState(false);
   const [tagInput,     setTagInput]     = useState('');
   const [regValue,     setRegValue]     = useState(client.registration_date ?? '');
@@ -475,7 +485,8 @@ function ClientPanel({ client, profile, onClose, onDelete }: {
       <div style={{ padding: '20px 20px 0', borderBottom: '1px solid var(--border)', background: 'var(--bg)', flexShrink: 0 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
           <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-            <div style={{ width: '52px', height: '52px', borderRadius: '14px', background: `linear-gradient(135deg,${color},${color}bb)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', fontWeight: 800, color: '#fff', boxShadow: `0 8px 20px -4px ${color}55`, flexShrink: 0 }}>{getInitials(client.name, client.last_name)}</div>
+            <ProtectedPhotos key={`${getActiveContextKey()}:${client.id}:${avatar?.id ?? ''}:${enabled}`} clientId={client.id}
+              photos={avatar ? [avatar] : []} enabled={enabled} avatar fallback={<div style={{ width: '52px', height: '52px', borderRadius: '14px', background: `linear-gradient(135deg,${color},${color}bb)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', fontWeight: 800, color: '#fff', boxShadow: `0 8px 20px -4px ${color}55`, flexShrink: 0 }}>{getInitials(client.name, client.last_name)}</div>}/>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                 <div style={{ fontSize: '16px', fontWeight: 800, color: 'var(--text)', letterSpacing: '-0.3px' }}>{client.name}{client.last_name ? ' ' + client.last_name : ''}</div>
@@ -569,8 +580,8 @@ function ClientPanel({ client, profile, onClose, onDelete }: {
 
         {/* ── TABS ── */}
         <div style={{ display: 'flex' }}>
-          {(['info','events','notes','wallet'] as const).map(tab => (
-            <button key={tab} onClick={() => setActiveTab(tab)} style={{ flex: 1, padding: '9px 8px', fontSize: '12px', fontWeight: 700, border: 'none', background: 'transparent', cursor: 'pointer', fontFamily: 'Manrope', color: activeTab === tab ? 'var(--peach)' : 'var(--text3)', borderBottom: `2px solid ${activeTab === tab ? 'var(--peach)' : 'transparent'}`, transition: 'all 0.2s' }}>{t(`panel.tabs.${tab}`)}</button>
+          {(['info','events','notes','wallet', ...(showBumpix ? ['bumpix'] as const : [])] as const).map(tab => (
+            <button key={tab} onClick={() => setActiveTab(tab)} style={{ flex: 1, padding: '9px 8px', fontSize: '12px', fontWeight: 700, border: 'none', background: 'transparent', cursor: 'pointer', fontFamily: 'Manrope', color: activeTab === tab ? 'var(--peach)' : 'var(--text3)', borderBottom: `2px solid ${activeTab === tab ? 'var(--peach)' : 'transparent'}`, transition: 'all 0.2s' }}>{tab === 'bumpix' ? t('bumpix:tab') : t(`panel.tabs.${tab}`)}</button>
           ))}
         </div>
       </div>
@@ -657,6 +668,8 @@ function ClientPanel({ client, profile, onClose, onDelete }: {
                 </div>
               </div>
             )}
+
+            <BumpixProfileData profiles={imported} error={bumpix.isError} retry={() => { void bumpix.refetch(); }}/>
 
             {/* Stats grid */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px', marginBottom: '14px' }}>
@@ -747,6 +760,10 @@ function ClientPanel({ client, profile, onClose, onDelete }: {
             </div>}
           </div>
         )}
+
+        {enabled && showBumpix && activeTab === 'bumpix' && (bumpix.isError
+          ? <BumpixProfileData profiles={[]} error retry={() => { void bumpix.refetch(); }}/>
+          : <BumpixHistory key={`${getActiveContextKey()}:${client.id}`} clientId={client.id} profiles={imported}/>)}
 
         {/* П.8 — EVENTS TAB */}
         {activeTab === 'events' && (
@@ -975,7 +992,7 @@ export function ClientProfileSlider({ client, profile, isOpen, onClose, onDelete
       `}</style>
       <div className={`right-panel-wrapper ${isOpen ? 'is-open' : ''}`}>
         <div className="right-panel-inner">
-          {client && <ClientPanel client={client} profile={profile} onClose={onClose} onDelete={onDelete}/>}
+          {client && <ClientPanel client={client} profile={profile} onClose={onClose} onDelete={onDelete} enabled={isOpen}/>}
         </div>
       </div>
     </>

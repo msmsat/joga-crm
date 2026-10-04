@@ -150,7 +150,8 @@
     "loyalty": {
       "cert_not_found": "Gutschein nicht gefunden",
       "cert_used": "Der Gutschein wurde bereits eingelöst oder ist ungültig",
-      "cert_expired": "Der Gutschein ist abgelaufen"
+      "cert_expired": "Der Gutschein ist abgelaufen",
+      "first_lesson_amount_required": "Geben Sie den Rabattbetrag für den ersten Kurs an"
     },
     "notifications": {
       "critical_locked": "Diese Benachrichtigung kann nicht deaktiviert werden",

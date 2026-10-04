@@ -48,6 +48,7 @@ from services.booking_rules import (
     BookingRules, booking_window, lesson_finished, load_rules, within_widget_hours,
 )
 from services.catalog import OCCUPIES_SPOT
+from services.discounts import FirstLessonDiscount
 from services.subscription_charge import (
     charge_reservation, clear_debt, open_debt, refund_reservation,
 )
@@ -247,8 +248,9 @@ class _Checked:
     terms: Optional[Terms] = None
     spot: Optional[int] = None
     subscription = None
-    # Процент скидки первого занятия, положенной этой брони; None — не положена.
-    trial_percent: Optional[int] = None
+    # Скидка первого занятия (процент или сумма), положенная этой брони;
+    # None — не положена.
+    trial: Optional[FirstLessonDiscount] = None
 
 
 async def _check(db: AsyncSession, *, studio_id: int, client_id: int, lesson_id: int,
@@ -350,7 +352,7 @@ async def _check(db: AsyncSession, *, studio_id: int, client_id: int, lesson_id:
     )
     checked = _Checked(Outcome.OK, lesson, rules, terms, spot)
     checked.subscription = subscription
-    checked.trial_percent = trial
+    checked.trial = trial
     return checked
 
 
@@ -363,19 +365,20 @@ async def resolve_funding(db: AsyncSession, *, studio, client_id: int, lesson,
     The candidate needs service_id/start_time/price, not a database Lesson ID.
     Does not debit subscriptions or create a reservation.
 
-    Третий элемент — процент скидки первого занятия, положенной этой брони
-    (None — не положена): его бронь запоминает как обещание (`trial_discount_percent`).
+    Третий элемент — скидка первого занятия (процент или сумма), положенная
+    этой брони (None — не положена): её бронь запоминает как обещание
+    (`trial_discount_percent` / `trial_discount_amount`).
     `allow_trial=False` — администратор выключил скидку первого занятия для
     этой записи (шаг оплаты индивидуальной записи в Журнале).
     """
     studio_id = studio.id
     subscription, is_trial = await resolve_coverage(db, client_id, lesson, rules,
                                                     lock=lock, allow_trial=allow_trial)
-    trial = (rules.trial_discount_percent or 100) if is_trial else None
+    trial = rules.first_lesson if is_trial else None
     currency = studio.currency or "RUB"
     if subscription is not None:
         funding = Funding(FundingKind.SUBSCRIPTION, subscription.id, 0, currency)
-    elif trial is not None and trial >= 100:
+    elif trial is not None and trial.gift:
         funding = Funding(FundingKind.TRIAL, None, 0, currency)
     elif lesson.price <= 0:
         funding = Funding(FundingKind.FREE, None, 0, currency)
@@ -395,7 +398,7 @@ async def resolve_funding(db: AsyncSession, *, studio, client_id: int, lesson,
         # новичка и скидка первого занятия — часть договора; взять с человека
         # полную цену, когда у него есть скидка, значит взять лишнее.
         payable = await client_price(db, studio_id=studio_id, client_id=client_id,
-                                     base_price=lesson.price, first_lesson_percent=trial)
+                                     base_price=lesson.price, first_lesson=trial)
         if payable <= 0:
             # Скидка покрыла занятие целиком. Платить нечего — значит и
             # платёжного пути нет: ни формы, ни долга.
@@ -407,7 +410,7 @@ async def resolve_funding(db: AsyncSession, *, studio, client_id: int, lesson,
 
 
 async def client_price(db: AsyncSession, *, studio_id: int, client_id: int,
-                       base_price: int, first_lesson_percent: Optional[int] = None) -> int:
+                       base_price: int, first_lesson: Optional[FirstLessonDiscount] = None) -> int:
     """Сколько это занятие стоит ИМЕННО ЭТОМУ клиенту. Только чтение.
 
     ЕДИНСТВЕННЫЙ ОТВЕТ НА ВОПРОС «сколько человек согласился заплатить».
@@ -425,12 +428,12 @@ async def client_price(db: AsyncSession, *, studio_id: int, client_id: int,
     Ничего не помечает использованным: одноразовые скидки гасит `consume_quote`
     в момент состоявшейся продажи. Предложение — ещё не продажа.
 
-    `first_lesson_percent` — скидка первого занятия, положенная этой брони:
+    `first_lesson` — скидка первого занятия, положенная этой брони:
     при записи — по правилам студии, у уже записанной — снимок на брони
-    (`booking_access.trial_percent`).
+    (`booking_access.trial_discount`).
     """
     resolved = await pricing.resolve_price(db, studio_id, client_id, base_price,
-                                           first_lesson_percent=first_lesson_percent)
+                                           first_lesson=first_lesson)
     return resolved.final_price
 
 
@@ -548,8 +551,9 @@ async def create(db: AsyncSession, *, studio_id: int, client_id: int, lesson_id:
         spot_number=checked.spot,
         status=status,
         booking_channel=source,
-        is_trial=checked.trial_percent is not None,
-        trial_discount_percent=checked.trial_percent,
+        is_trial=checked.trial is not None,
+        trial_discount_percent=checked.trial.percent if checked.trial is not None else None,
+        trial_discount_amount=checked.trial.amount if checked.trial is not None else None,
     )
     db.add(reservation)
     remaining = await charge_reservation(db, studio_id, reservation, checked.subscription)

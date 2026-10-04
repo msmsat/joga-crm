@@ -172,6 +172,8 @@
       "percent": "Zbritje, %",
       "freeHint": "Mësimi i parë është dhuratë — klienti nuk paguan asgjë.",
       "payHint": "Klienti paguan {{rest}}% të çmimit të mësimit të parë.",
+      "amount": "Zbritje, {{currency}}",
+      "amountHint": "Nga çmimi i mësimit të parë zbriten {{amount}}. Nëse mësimi kushton më pak, është falas.",
       "howTitle": "Si funksionon",
       "how": {
         "who": "Zbritja zbatohet vetë në rezervimin e parë të një klienti të ri — në Ditar, në mini-aplikacion dhe në widget-in e rezervimit.",

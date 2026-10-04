@@ -79,9 +79,10 @@ export interface BookedClient {
   // Первое занятие клиента («Скидка на первое занятие»). Бесплатное — денег не
   // ждём; со скидкой — остаток висит долгом, как любая оплата на месте.
   is_trial: boolean
-  // Процент скидки, обещанный при записи (100 — бесплатно; null у старых
-  // пробных броней — это были подарки).
+  // Скидка, обещанная при записи: процент (100 — бесплатно; null у старых
+  // пробных броней — это были подарки) или сумма — тогда процента нет.
   trial_discount_percent?: number | null
+  trial_discount_amount?: number | null
   // Долг за занятие (оплата на месте). 0 — покрыто абонементом, подарено или
   // уже оплачено.
   debt: number
@@ -187,7 +188,9 @@ export interface PaymentCheckPreview {
   /** Бронь пробная — у чека есть выключатель «Первое занятие». */
   first_lesson_offered: boolean
   first_lesson_applied: boolean
+  /** Размер скидки первого занятия: процент ИЛИ сумма — второе поле null. */
   first_lesson_percent: number | null
+  first_lesson_amount: number | null
   /** null — промокод не вводили, false — не принят. */
   promo_valid: boolean | null
   promo_outweighed: boolean
@@ -216,13 +219,22 @@ export interface ReservationPaymentPreview extends PaymentCheckPreview {
 
 // Клиент, которого можно записать на занятие (CL-6.4) — уже прошёл проверку
 // доступа на бэке (assert_can_book), фронт только отображает.
+/** Чем будет покрыта запись клиента, если записать его сейчас: те же
+ *  основания, что у back/services/booking.FundingKind. */
+export type EligibleFunding = 'subscription' | 'trial' | 'free' | 'pay'
+
 export interface EligibleClient {
   id: number
   name: string
   last_name: string | null
   phone: string | null
   avatar_color: string | null
-  subscription_hint: string | null
+  funding: EligibleFunding
+  /** Остаток занятий абонемента до этой записи — только у `subscription`. */
+  classes_left: number | null
+  /** Скидка первого занятия: процент (100 — бесплатно) или сумма. Только у `trial`. */
+  trial_percent: number | null
+  trial_amount: number | null
 }
 
 // Ответ GET /schedule/lessons/days — точки мини-календаря Журнала (даты месяца

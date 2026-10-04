@@ -34,6 +34,10 @@ export interface SelectProps {
   creatable?: boolean;
   createLabel?: string;
   createPlaceholder?: string;
+  /** Этаж (z-index) панели списка. По умолчанию 1200 — над карточками и
+   *  модалками кита. Селект внутри слоя выше (попап занятия в Журнале — 9000)
+   *  обязан встать над ним, иначе список открывается ПОД окном и его не видно. */
+  layer?: number;
 }
 
 interface TriggerRect { top: number; left: number; width: number; up: boolean; offset: number; maxH: number; }
@@ -53,11 +57,13 @@ const BOX: React.CSSProperties = {
 // закрытие по Esc и клику мимо. Мультивыбора нет (YAGNI), поиск — по флагу
 // `searchable`: он появился ради списка стран, где 250 строк листать бессмысленно.
 // Список рендерится в портал с position: fixed — иначе его обрезает overflow:hidden
-// родителя (карточка, модалка), как у Tooltip/InfoHint.
+// родителя (карточка, модалка), как у Tooltip/InfoHint. Панель помечена классом
+// `v-select-panel`: окну, которое закрывается кликом мимо себя, она — часть
+// его самого, хотя и живёт в портале (Journal, закрытие попапа занятия).
 export function Select({
   value, options, onChange, placeholder, disabled,
   searchable, searchPlaceholder, emptyText, onSearchChange, loading = false,
-  creatable, createLabel, createPlaceholder,
+  creatable, createLabel, createPlaceholder, layer = 1200,
 }: SelectProps) {
   const [open, setOpen] = useState(false);
   const [highlight, setHighlight] = useState(0);
@@ -294,10 +300,11 @@ export function Select({
       {open && trigger && createPortal(
         <div
           ref={listRef}
+          className="v-select-panel"
           style={{
             position: 'fixed',
             ...(trigger.up ? { bottom: `${trigger.offset}px` } : { top: `${trigger.offset}px` }),
-            left: `${trigger.left}px`, width: `${trigger.width}px`, zIndex: 1200,
+            left: `${trigger.left}px`, width: `${trigger.width}px`, zIndex: layer,
             background: 'var(--bg-card, #FFFFFF)', borderRadius: '12px',
             border: '1px solid rgba(var(--ink),0.08)',
             boxShadow: '0 12px 32px -8px rgba(26,26,26,0.18), 0 4px 12px -4px rgba(26,26,26,0.08)',

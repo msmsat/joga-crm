@@ -49,11 +49,18 @@ export function validateConfig(
   }
 
   if (key === 'first_lesson') {
-    // Скидка 0 % — это выключенная программа, а не настройка: для неё есть
-    // «Отключить» на карточке. Тот же предел, что на сервере (1–100).
+    // Скидка 0 — это выключенная программа, а не настройка: для неё есть
+    // «Отключить» на карточке. Те же пределы, что на сервере: процент 1–100,
+    // сумма — целая, от 1. Проверяется только выбранный вид — второй хранится,
+    // но не действует.
     const c = configs.first_lesson;
-    const value = c?.discount_percent ?? 100;
-    if (!Number.isInteger(value) || value < 1 || value > 100) errors.discount_percent = t('validation.range1to100');
+    if (c?.discount_type === 'amount') {
+      const amount = c.discount_amount;
+      if (amount == null || !Number.isInteger(amount) || amount < 1) errors.discount_amount = t('validation.minOne');
+    } else {
+      const value = c?.discount_percent ?? 100;
+      if (!Number.isInteger(value) || value < 1 || value > 100) errors.discount_percent = t('validation.range1to100');
+    }
   }
 
   return errors;

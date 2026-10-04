@@ -35,7 +35,8 @@
         "label": "Descuento en la primera clase",
         "free": "La primera clase de un cliente nuevo es gratis.",
         "percent": "La primera clase de un cliente nuevo tiene un {{percent}} % de descuento.",
-        "change": "El porcentaje se ajusta en «Fidelización»"
+        "amount": "La primera clase de un cliente nuevo tiene {{amount}} de descuento.",
+        "change": "El descuento se ajusta en «Fidelización»"
       },
       "trainerConfirm": {
         "label": "Confirmación del monitor",

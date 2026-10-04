@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional
+from typing import Literal, Optional
 
 from pydantic import Field
 
@@ -227,16 +227,25 @@ class ReferralConfigUpdate(BaseSchema):
 
 # --- First lesson discount ---
 # Отдельной таблицы нет: это те же колонки правил записи (trial_lesson_free,
-# trial_discount_percent), что показывает «Онлайн-запись». Здесь — в словах
-# программы лояльности: «включена» и «сколько процентов».
+# trial_discount_*), что показывает «Онлайн-запись». Здесь — в словах
+# программы лояльности: «включена» и «сколько снимает» — процентом или суммой.
+
+FirstLessonDiscountType = Literal["percent", "amount"]
 
 
 class FirstLessonConfigRead(BaseSchema):
     is_enabled: bool
+    # Чем задана скидка сейчас. Оба значения хранятся: переключение вида не
+    # стирает другое.
+    discount_type: FirstLessonDiscountType = "percent"
     # 100 — занятие бесплатно.
     discount_percent: int
+    # Сумма в валюте студии; None — суммой скидку ещё не задавали.
+    discount_amount: Optional[int] = None
 
 
 class FirstLessonConfigUpdate(BaseSchema):
     is_enabled: Optional[bool] = None
+    discount_type: Optional[FirstLessonDiscountType] = None
     discount_percent: Optional[int] = Field(default=None, ge=1, le=100)
+    discount_amount: Optional[int] = Field(default=None, ge=1, le=100_000_000)

@@ -57,6 +57,9 @@ export function PayMark({ client: c, canPay, onPay, tile }: {
     return <VisitMark icon={<Icons.CardIcon />} state="due" label={label} hint={t('mark.unpaid')}
                       onClick={canPay ? onPay : undefined} tile={tile} />;
   }
+  if (c.booking_channel === 'bumpix' && !c.payment && !c.by_subscription && !(c.paid_amount > 0)) {
+    return <VisitMark icon={<Icons.CardIcon />} state="idle" label={label} hint={t('bumpix:journal.paymentUnknown')} tile={tile}/>;
+  }
   const method = c.payment?.method;
   const hint = c.by_subscription ? t('payment.coveredBy.subscription')
     : c.paid_amount > 0 || c.payment ? (method === 'cash' ? t('mark.cash') : method ? t('mark.card') : t('mark.paid'))

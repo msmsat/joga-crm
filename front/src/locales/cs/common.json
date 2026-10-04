@@ -150,7 +150,8 @@
     "loyalty": {
       "cert_not_found": "Poukaz nenalezen",
       "cert_used": "Poukaz už byl uplatněn nebo je neplatný",
-      "cert_expired": "Platnost poukazu vypršela"
+      "cert_expired": "Platnost poukazu vypršela",
+      "first_lesson_amount_required": "Zadejte výši slevy na první lekci"
     },
     "notifications": {
       "critical_locked": "Toto oznámení nelze vypnout",

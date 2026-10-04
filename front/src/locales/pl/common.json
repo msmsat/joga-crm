@@ -150,7 +150,8 @@
     "loyalty": {
       "cert_not_found": "Nie znaleziono bonu",
       "cert_used": "Bon został już wykorzystany albo jest nieważny",
-      "cert_expired": "Bon stracił ważność"
+      "cert_expired": "Bon stracił ważność",
+      "first_lesson_amount_required": "Podaj kwotę rabatu na pierwsze zajęcia"
     },
     "notifications": {
       "critical_locked": "Tego powiadomienia nie można wyłączyć",

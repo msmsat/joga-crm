@@ -44,6 +44,7 @@ async function setup(file) {
     formatIndexToTimeStr: n => `${n}:00`, generateTimeIntervals: () => [], parseTimeToIndex: Number,
     CREATE_SERVICE_OPTION: '__create_service__', Select: 'Select', ConfirmModal: 'ConfirmModal',
     NotePhotos: 'NotePhotos', NoteDropZone: 'NoteDropZone', Plus: 'Plus', X: 'X', Check: 'Check',
+    SpotsField: 'SpotsField',
   };
   const context = vm.createContext({ document: { body: {} }, console });
   const code = ts.transpileModule(await readFile(new URL(file, import.meta.url), 'utf8'), {

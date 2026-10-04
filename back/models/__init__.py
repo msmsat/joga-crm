@@ -4,6 +4,7 @@ from .studio_branch import StudioBranch, BranchWorkingHours
 from .studio_member import StudioMember
 from .user import User, UserConsent
 from .client import Client, ClientEmailOtp, ClientSubscription, ClientPayment, ClientNote, StudioClientSegmentConfig
+from .bumpix import BumpixClient, BumpixSnapshot, BumpixJournalLink, BumpixEvent, BumpixMedia
 from .identity import CustomerIdentity
 from .proposal import ActionProposal
 from .schedule import Hall, Lesson, Reservation
@@ -73,6 +74,7 @@ from .analytics import DailyMetricSnapshot
 from .platform import LandingVisit
 
 __all__ = [
+    'BumpixClient', 'BumpixSnapshot', 'BumpixJournalLink', 'BumpixEvent', 'BumpixMedia',
     "Base",
     "user_services",
     "Studio",

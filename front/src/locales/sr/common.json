@@ -150,7 +150,8 @@
     "loyalty": {
       "cert_not_found": "Ваучер није пронађен",
       "cert_used": "Ваучер је већ искоришћен или није важећи",
-      "cert_expired": "Ваучер је истекао"
+      "cert_expired": "Ваучер је истекао",
+      "first_lesson_amount_required": "Унесите износ попуста за први термин"
     },
     "notifications": {
       "critical_locked": "Ово обавештење се не може искључити",

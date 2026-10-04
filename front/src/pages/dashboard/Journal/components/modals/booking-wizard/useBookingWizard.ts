@@ -84,6 +84,12 @@ export const isTime = (v: string) => /^([01]\d|2[0-3]):[0-5]\d$/.test(v);
  * людей в группу записывают потом, раздела «Клиент» у неё нет. Исключение —
  * запись из карточки клиента: её затеяли ради этого человека, и он
  * записывается в уже стоящее занятие этой услуги у мастера либо в новое.
+ *
+ * «Индивидуальное» (кнопка в разделе «Услуга») — та же групповая услуга, но
+ * занятие на одно место и для одного человека: раздел «Клиент» появляется и
+ * у записи из журнала, а в стоящую группу клиент не подсаживается — у мастера
+ * в это время занятие, значит, время занято. На индивидуальную услугу кнопка
+ * не влияет: та и так на одного.
  */
 export function useBookingWizard(o: WizardOptions) {
   const { t } = useTranslation(['journal', 'common']);
@@ -119,6 +125,8 @@ export function useBookingWizard(o: WizardOptions) {
   /** Клиент, заведённый прямо в мастере: стоит первым в списке, пока открыт мастер. */
   const [fresh, setFresh] = useState<{ id: number; name: string; hint?: string } | null>(null);
   const [service, setServiceState] = useState<ServiceRead | null>(null);
+  /** «Индивидуальное»: групповая услуга занятием на одного клиента. */
+  const [solo, setSolo] = useState(false);
   const [teacherId, setTeacherState] = useState<number | null>(o.defaultTeacherId);
   /** Мастер выбран на своём шаге (у индивидуальной «любой» — тоже выбор, id null)
       или пришёл с колонки журнала, по которой тапнули. */
@@ -156,6 +164,9 @@ export function useBookingWizard(o: WizardOptions) {
   const { data: resourceStaff, isFetched: staffReady } = useQuery({ queryKey: queryKeys.resourceStaff, queryFn: hybridApi.resourceStaff });
   const serviceList = useMemo(() => services.filter(s => s.booking_mode === 'resource'
     ? resourceStaff?.staff.some(m => m.service_ids.includes(s.id)) : true), [services, resourceStaff]);
+  /** «Индивидуальное» есть смысл предлагать, только если в каталоге есть групповые. */
+  const canSolo = serviceList.some(s => s.booking_mode !== 'resource');
+  const soloLesson = solo && !!service && !isResource;
 
   const masters: WizardMaster[] = useMemo(() => {
     if (!service) return trainers.map(tr => ({ id: tr.id, name: tr.full }));
@@ -181,7 +192,8 @@ export function useBookingWizard(o: WizardOptions) {
   const nowMin = now.getHours() * 60 + now.getMinutes();
   const availability = useWizardAvailability({
     services: serviceList, trainers, date, time, lessons: dayLessons, lessonsReady: lessonsReady && !lessonsLoading,
-    joinable: o.clientId != null,
+    // Индивидуальное в стоящую группу не встаёт: её время для него занято.
+    joinable: o.clientId != null && !solo,
     notBefore: date < toDateStr(now) ? 1440 : isToday ? nowMin : null,
     serviceId: service?.id ?? null, teacherId: masterChosen ? teacherId : null, step: timeStep,
   });
@@ -196,8 +208,9 @@ export function useBookingWizard(o: WizardOptions) {
       индивидуальных нет вовсе (студия пилатеса), клиента нет с самого начала;
       пока каталог грузится — раздел на месте, чтобы не мигал. */
   const noResource = servicesReady && staffReady && !serviceList.some(s => s.booking_mode === 'resource');
+  // Индивидуальное — занятие для конкретного человека: его и спрашиваем.
   const needsClientFor = (s: ServiceRead | null) =>
-    o.clientId != null || (s ? s.booking_mode === 'resource' : !noResource);
+    o.clientId != null || solo || (s ? s.booking_mode === 'resource' : !noResource);
   const stepsFor = (v: Snapshot) => needsClientFor(v.service) ? ALL_STEPS : ALL_STEPS.filter(s => s !== CLIENT_STEP);
   const needsClient = needsClientFor(service);
   const steps = stepsFor(current);
@@ -321,7 +334,9 @@ export function useBookingWizard(o: WizardOptions) {
   }), [service, isResource, teacherId, dayLessons, services, own, isToday, nowMin]);
   // Записаться в стоящее занятие можно только клиентом. Без клиента занятие в
   // это время у мастера — просто занятое время: второе поверх не ставится.
-  const joined = service && !isResource && needsClient ? lessonToJoin(dayLessons, service.id, teacherId, time) : undefined;
+  // Индивидуальное — тоже: в чужую группу его не подсаживаем.
+  const joined = service && !isResource && needsClient && !solo
+    ? lessonToJoin(dayLessons, service.id, teacherId, time) : undefined;
   const slotAtTime = resource.slots.find(s => s.local_start.slice(11, 16) === time);
   /** Выбранный мастер в это время занят — итог это показывает и не записывает. */
   const busy = isTime(time) && masterChosen && !!service && (isResource
@@ -368,7 +383,7 @@ export function useBookingWizard(o: WizardOptions) {
           branch_id: noHall ? branch : null,
           start_time: `${date}T${time}:00`,
           duration_min: own ?? service!.duration_min,
-          total_spots: service!.max_clients ?? undefined,
+          total_spots: solo ? 1 : service!.max_clients ?? undefined,
           ...(hasNote ? note : {}),
         });
         target = lesson.id;
@@ -414,6 +429,7 @@ export function useBookingWizard(o: WizardOptions) {
 
   return {
     steps, step, dir, goTo, advance, swipe, done, conflict, availability, timeStep, setTimeStep,
+    solo, toggleSolo: () => setSolo(v => !v), canSolo, soloLesson,
     clientName, priceText, durationMin, joined, busy, needsClient, client, fresh, service, teacherId, masterChosen, date, time,
     hallId, setHallId, branches, branch, setBranchId, noHall, isResource, serviceList, services, masters,
     serviceStates, masterStates, trainers, halls, resource, ready, saving: saving || resource.saving,

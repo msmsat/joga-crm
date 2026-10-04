@@ -35,7 +35,8 @@
         "label": "Remise sur le premier cours",
         "free": "Le premier cours d'un nouveau client est offert.",
         "percent": "Le premier cours d'un nouveau client bénéficie de {{percent}} % de remise.",
-        "change": "Le pourcentage se règle dans « Fidélité »"
+        "amount": "Le premier cours d'un nouveau client bénéficie de {{amount}} de remise.",
+        "change": "La remise se règle dans « Fidélité »"
       },
       "trainerConfirm": {
         "label": "Confirmation du coach",

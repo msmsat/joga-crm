@@ -35,7 +35,8 @@
         "label": "Popust na prvi termin",
         "free": "Prvi termin novog klijenta je besplatan.",
         "percent": "Prvi termin novog klijenta ima {{percent}} % popusta.",
-        "change": "Postotak se postavlja u „Vjernost”"
+        "amount": "Prvi termin novog klijenta ima {{amount}} popusta.",
+        "change": "Iznos popusta postavlja se u „Vjernost”"
       },
       "trainerConfirm": {
         "label": "Potvrda trenera",

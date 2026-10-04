@@ -172,6 +172,8 @@
       "percent": "Rabat, %",
       "freeHint": "Første hold er en gave — kunden betaler intet.",
       "payHint": "Kunden betaler {{rest}} % af prisen for første hold.",
+      "amount": "Rabat, {{currency}}",
+      "amountHint": "{{amount}} trækkes fra prisen for første hold. Koster holdet mindre, er det gratis.",
       "howTitle": "Sådan virker det",
       "how": {
         "who": "Rabatten gælder automatisk for en ny kundes første booking — i Kalender, mini-appen og bookingwidgetten.",

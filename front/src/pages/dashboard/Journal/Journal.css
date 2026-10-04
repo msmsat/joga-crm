@@ -1278,13 +1278,70 @@
 .kp-note-input:focus { border-color: var(--peach); box-shadow: 0 0 0 4px rgba(249,160,139,0.12); }
 .kp-section { display: flex; flex-direction: column; gap: 8px; }
 
-.kp-limit {
-  display: flex; align-items: center; justify-content: space-between;
-  background: var(--bg); padding: 0 6px 0 14px; border-radius: 10px;
-  height: 40px; box-sizing: border-box;
+/* Места занятия (SpotsField): слева — «Индивидуальное», справа — число со
+   степпером. Один ряд, потому что это одно решение: сколько людей придёт.
+   Степпер и отступы ужаты под самую длинную подпись — русское
+   «Индивидуальное» в колонке 237px (окно 520px на 1280×600). Ряд —
+   контейнер: где колонка ещё уже, кнопка оставляет одну иконку, а не
+   обрезает подпись на полуслове. */
+.kp-spots {
+  display: flex; align-items: center; justify-content: space-between; gap: 6px;
+  container-type: inline-size;
 }
-.kp-limit-label { font-size: 12px; font-weight: 700; color: var(--muted); }
-.kp-limit-input { width: 56px; height: 28px; }
+.kp-solo {
+  flex: 1 1 auto; min-width: 0; height: 40px; box-sizing: border-box;
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 0 10px; border-radius: 10px;
+  border: 1px solid var(--border); background: var(--bg);
+  font-family: var(--font); font-size: 12.5px; font-weight: 700; color: var(--onyx);
+  cursor: pointer; user-select: none;
+  transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+}
+.kp-solo svg { flex-shrink: 0; color: var(--muted); transition: color 0.2s ease; }
+.kp-solo:hover { border-color: var(--peach); color: var(--peach); }
+.kp-solo:hover svg, .kp-solo.is-on svg { color: var(--peach); }
+.kp-solo:active { transform: scale(0.98); }
+/* Нажата — мягкая персиковая подложка, а не заливка: персик в форме один,
+   у главной кнопки «Создать занятие». */
+.kp-solo.is-on {
+  border-color: var(--peach); background: rgba(249,160,139,0.1); color: var(--accent2);
+  box-shadow: 0 4px 12px rgba(249,160,139,0.14);
+}
+.kp-solo:focus-visible { outline: none; border-color: var(--peach); box-shadow: 0 0 0 3px var(--peach-glow); }
+.kp-solo-label { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+@container (max-width: 216px) {
+  .kp-solo { flex: 0 0 auto; padding: 0 12px; }
+  .kp-solo-label { display: none; }
+}
+
+.kp-stepper {
+  flex-shrink: 0; display: flex; align-items: center; gap: 2px;
+  height: 40px; padding: 0 4px; box-sizing: border-box;
+  border: 1px solid var(--border); border-radius: 10px; background: var(--bg);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+/* Свечение — когда печатают число или ходят клавиатурой, а не после щелчка
+   мышью по «+»: :focus-within держал бы его на кнопке до клика мимо. */
+.kp-stepper:has(:focus-visible) { border-color: var(--peach); box-shadow: 0 0 0 3px var(--peach-glow); }
+.kp-stepper.is-invalid { border-color: var(--error); }
+.kp-step {
+  width: 28px; height: 28px; flex-shrink: 0; padding: 0;
+  display: flex; align-items: center; justify-content: center;
+  border: none; border-radius: 8px; background: transparent; color: var(--onyx);
+  cursor: pointer; transition: background-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
+}
+.kp-step svg { width: 14px; height: 14px; }
+.kp-step:hover:not(:disabled) { background: rgba(249,160,139,0.12); color: var(--peach); }
+.kp-step:active:not(:disabled) { transform: scale(0.9); }
+.kp-step:disabled { color: var(--muted); opacity: 0.35; cursor: default; }
+.kp-step:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--peach); }
+/* Число — моноширинными цифрами: 9 → 10 не сдвигает кнопки. */
+.kp-step-value {
+  width: 28px; height: 28px; margin: 0; padding: 0; box-sizing: border-box;
+  border: none; outline: none; background: transparent;
+  font-family: var(--font); font-size: 14px; font-weight: 800; color: var(--onyx);
+  text-align: center; font-variant-numeric: tabular-nums;
+}
 
 /* Потолок списка посчитан от соседней колонки МИНУС блок заметки под ним:
    тренеры забирают всё место до заметки, дальше скроллятся сами (с восьми
@@ -1501,12 +1558,13 @@ button.kp-trainer:disabled { cursor: default; opacity: 0.6; }
   .kp-halls, .kp-times { gap: 6px; }
 
   .kp-chip { height: 34px; padding: 0; font-size: 12px; }
-  .kp-time-input, .kp-limit { height: 34px; }
+  .kp-time-input, .kp-solo, .kp-stepper { height: 34px; }
   .kp-note-input { min-height: 60px; padding: 10px 12px; font-size: 12.5px; }
   .kp-trainer-search { height: 32px; font-size: 12px; }
-  .kp-limit { padding: 0 5px 0 10px; }
-  .kp-limit-label { font-size: 11px; }
-  .kp-limit-input { width: 46px; height: 24px; }
+  .kp-solo { padding: 0 8px; gap: 5px; font-size: 12px; }
+  .kp-stepper { padding: 0 3px; }
+  .kp-step { width: 24px; height: 24px; }
+  .kp-step-value { width: 26px; height: 24px; font-size: 13px; }
 
   /* Экран низкий — и колонка, от которой считается потолок, короче */
   .kp-trainers { gap: 6px; max-height: 190px; }
@@ -2625,13 +2683,16 @@ button.kp-trainer:disabled { cursor: default; opacity: 0.6; }
      заданы блоком «тесный экран» (ноут 1366×768), где целятся мышью. */
   .kp-halls, .kp-times { gap: 8px; }
   .kp-chip { height: 48px; font-size: 13.5px; }
-  .kp-time-input, .kp-limit { height: 48px; }
+  .kp-time-input, .kp-solo, .kp-stepper { height: 48px; }
   /* 16px у полей ввода — порог, ниже которого Safari зумит страницу на
      фокусе и обратно уже не отпускает. */
   .kp-time-input { font-size: 16px; }
-  .kp-limit { padding: 0 8px 0 14px; }
-  .kp-limit-label { font-size: 12.5px; }
-  .kp-limit-input { width: 72px; height: 36px; font-size: 16px; }
+  .kp-solo { padding: 0 14px; font-size: 13.5px; border-radius: 12px; }
+  .kp-solo svg { width: 16px; height: 16px; }
+  .kp-stepper { padding: 0 4px; border-radius: 12px; }
+  .kp-step { width: 40px; height: 40px; border-radius: 10px; }
+  .kp-step svg { width: 16px; height: 16px; }
+  .kp-step-value { width: 40px; height: 40px; font-size: 16px; }
   .kp-time-item { padding: 12px 0; font-size: 14px; }
   .kp-trainer-search { height: 44px; font-size: 16px; }
   .kp-note-input { min-height: 84px; padding: 12px 14px; font-size: 16px; }
@@ -2802,6 +2863,28 @@ button.kp-trainer:disabled { cursor: default; opacity: 0.6; }
 .bw-filter-toggle { align-self: flex-start; background: none; border: 0; padding: 6px 0;
   color: var(--onyx); font: 600 12px var(--font); text-decoration: underline; cursor: pointer; }
 .bw-unavailable { color: var(--error); font-size: 11px; max-width: 110px; }
+/* «Индивидуальное» в разделе «Услуга» — справа от «Показать все», чипом той
+   же высоты, что направления ниже. Нажато — персиковая подложка, как у
+   такой же кнопки в окне «Новое занятие» (.kp-solo). */
+.bw-tools-end > .bw-filter-toggle { align-self: center; }
+.bw-solo {
+  flex-shrink: 0; height: 36px; padding: 0 12px; box-sizing: border-box;
+  display: inline-flex; align-items: center; gap: 6px;
+  border: 1px solid var(--border); border-radius: 10px; background: var(--bg);
+  font: 700 13px var(--font); color: var(--onyx); white-space: nowrap; cursor: pointer;
+  transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+.bw-solo svg { width: 15px; height: 15px; flex-shrink: 0; color: var(--muted); transition: color 0.2s ease; }
+.bw-solo.is-on {
+  border-color: var(--peach); background: rgba(249,160,139,0.1); color: var(--accent2);
+  box-shadow: 0 4px 12px rgba(249,160,139,0.14);
+}
+.bw-solo.is-on svg { color: var(--peach); }
+.bw-solo:focus-visible { outline: none; border-color: var(--peach); box-shadow: 0 0 0 3px var(--peach-glow); }
+@media (hover: hover) {
+  .bw-solo:not(.is-on):hover { border-color: rgba(249,160,139,0.5); color: var(--peach); }
+  .bw-solo:not(.is-on):hover svg { color: var(--peach); }
+}
 
 /* Раздел «Время»: шаг сетки — капсула справа от своего времени; смена дня —
    сетка въезжает со стороны шага по ленте, плитки проявляются волной, число

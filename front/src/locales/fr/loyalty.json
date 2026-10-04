@@ -172,6 +172,8 @@
       "percent": "Remise, %",
       "freeHint": "Le premier cours est offert : le client ne paie rien.",
       "payHint": "Le client paie {{rest}} % du prix du premier cours.",
+      "amount": "Remise, {{currency}}",
+      "amountHint": "{{amount}} sont déduits du prix du premier cours. S'il coûte moins, il est gratuit.",
       "howTitle": "Comment ça marche",
       "how": {
         "who": "La remise s'applique automatiquement à la première réservation d'un nouveau client, dans le Journal, la mini-app et le widget de réservation.",

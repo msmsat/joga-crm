@@ -62,7 +62,8 @@ async def get_client_digest(
             Lesson.teacher_name, Lesson.status.label("lesson_status"),
             # Как записан и чем закрыт — то же, что у строки записанного в Журнале.
             Reservation.created_at.label("booked_at"), Lesson.price,
-            Reservation.trial_discount_percent, Reservation.payment_breakdown.label("payment"),
+            Reservation.trial_discount_percent, Reservation.trial_discount_amount,
+            Reservation.payment_breakdown.label("payment"),
             ClientSubscription.type.label("subscription_name"),
             func.coalesce(case((ClientPayment.status == "pending", ClientPayment.amount), else_=0), 0).label("debt"),
             func.coalesce(case((ClientPayment.status == "success", ClientPayment.amount), else_=0), 0).label("paid_amount"),
@@ -89,6 +90,7 @@ async def get_client_digest(
             "status": status, "rating": r["rating"], "review_text": r["review_text"],
             "is_trial": r["is_trial"], "booked_at": r["booked_at"], "price": r["price"],
             "trial_discount_percent": r["trial_discount_percent"],
+            "trial_discount_amount": r["trial_discount_amount"],
             "subscription_name": r["subscription_name"], "debt": r["debt"],
             "paid_amount": r["paid_amount"], "payment": r["payment"],
         })

@@ -1,3 +1,4 @@
+import type { SourceJournalItem } from './bumpix/types';
 import type { Lesson, Hall, Reservation } from '../../../api/schedule/schedule.types';
 import type { ClientListItem } from '../../../api/clients/clients.types';
 export type { Lesson, Hall, Reservation, ClientListItem };
@@ -18,6 +19,8 @@ export interface Trainer {
 export type JournalColumn = Trainer | string | Date;
 
 export interface Booking {
+  /** Imported immutable snapshot, never a native lesson ID. */
+  source?: SourceJournalItem;
   id: number;
   trainer: number;
   timeStart: number;

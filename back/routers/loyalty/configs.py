@@ -9,7 +9,7 @@
 """
 from typing import Type, TypeVar
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
@@ -136,7 +136,7 @@ async def update_referral_config(
 
 # ─── Первое занятие ─────────────────────────────────────────────────────────────
 # Своей таблицы у программы нет: это правило записи (trial_lesson_free и
-# trial_discount_percent в studio_booking_settings), и тумблер его показывает
+# trial_discount_* в studio_booking_settings), и тумблер его показывает
 # ещё «Онлайн-запись». Пишет обе стороны один писатель — booking_rules.save_settings:
 # с замком студии и ростом версии правил, иначе выданные пять минут назад
 # условия записи подтвердились бы со скидкой, которую владелец уже выключил.
@@ -146,8 +146,7 @@ async def get_first_lesson_config(
     db: AsyncSession = Depends(get_db),
 ):
     rules = await load_rules(db, ctx.studio_id)
-    return FirstLessonConfigRead(is_enabled=rules.trial_lesson_free,
-                                 discount_percent=rules.trial_discount_percent)
+    return _first_lesson_read(rules)
 
 
 @router.patch("/first-lesson", response_model=FirstLessonConfigRead)
@@ -161,6 +160,23 @@ async def update_first_lesson_config(
         changes["trial_lesson_free"] = body.is_enabled
     if body.discount_percent is not None:
         changes["trial_discount_percent"] = body.discount_percent
+    if body.discount_amount is not None:
+        changes["trial_discount_amount"] = body.discount_amount
+    if body.discount_type is not None:
+        changes["trial_discount_type"] = body.discount_type
+    if body.discount_type == "amount" and body.discount_amount is None             and (await load_rules(db, ctx.studio_id)).trial_discount_amount is None:
+        # Суммой скидку ещё не задавали: «скидка суммой» без суммы — не настройка.
+        raise HTTPException(status_code=422, detail={
+            "code": "loyalty.first_lesson_amount_required",
+            "message": "Укажите сумму скидки на первое занятие",
+        })
     row = await save_settings(db, ctx.studio_id, changes)
-    return FirstLessonConfigRead(is_enabled=row.trial_lesson_free,
-                                 discount_percent=row.trial_discount_percent)
+    return _first_lesson_read(row)
+
+
+def _first_lesson_read(source) -> FirstLessonConfigRead:
+    """Одинаковый ответ из правил записи и из только что сохранённой строки."""
+    return FirstLessonConfigRead(is_enabled=source.trial_lesson_free,
+                                 discount_type=source.trial_discount_type,
+                                 discount_percent=source.trial_discount_percent,
+                                 discount_amount=source.trial_discount_amount)

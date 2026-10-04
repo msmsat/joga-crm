@@ -150,7 +150,8 @@
     "loyalty": {
       "cert_not_found": "Lahjakorttia ei löytynyt",
       "cert_used": "Lahjakortti on jo käytetty tai se ei kelpaa",
-      "cert_expired": "Lahjakortti on vanhentunut"
+      "cert_expired": "Lahjakortti on vanhentunut",
+      "first_lesson_amount_required": "Anna ensimmäisen tunnin alennuksen summa"
     },
     "notifications": {
       "critical_locked": "Tätä ilmoitusta ei voi ottaa pois käytöstä",

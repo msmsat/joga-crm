@@ -29,10 +29,13 @@
     "check:client-event-dates": "node --experimental-vm-modules scripts/check-client-event-dates.mjs",
     "check:lesson-compensation": "node --experimental-vm-modules scripts/check-lesson-compensation.mjs",
     "check:lesson-funding": "node --experimental-vm-modules scripts/check-lesson-funding.mjs",
+    "check:lesson-editor": "node --experimental-vm-modules scripts/check-lesson-editor.mjs",
     "check:service-duration": "node --experimental-vm-modules scripts/check-service-duration.mjs",
     "check:scenes": "node scripts/check-scenes.mjs",
     "check:staff-hours": "node scripts/check-staff-hours.mjs",
-    "check:staff-schedule-sync": "node --experimental-vm-modules scripts/check-staff-schedule-sync.mjs"
+    "check:staff-schedule-sync": "node --experimental-vm-modules scripts/check-staff-schedule-sync.mjs",
+    "check:bumpix": "node --experimental-vm-modules scripts/check-bumpix.mjs",
+    "check:bumpix-journal": "node --experimental-vm-modules scripts/check-bumpix-journal.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",

@@ -62,9 +62,16 @@ async function desktopForm(onCreate, photoState = { photos: [], pending: [], add
     'studio.api': { studioApi: {} },
     queryKeys: { queryKeys: { branches: ['branches'] } },
     useServiceOptions: { CREATE_SERVICE_OPTION: '__create_service__', useServiceOptions: () => ({
-      services: [{ id: 3, name: 'Pilates', booking_mode: 'event' }],
-      options: [{ value: '3', label: 'Pilates' }], priceFor: () => 75,
+      services: [
+        { id: 3, name: 'Pilates', booking_mode: 'event' },
+        { id: 4, name: 'Yoga', booking_mode: 'event', max_clients: 15 },
+        { id: 5, name: 'Private', booking_mode: 'event', max_clients: 1 },
+      ],
+      options: [{ value: '3', label: 'Pilates' }, { value: '4', label: 'Yoga' }, { value: '5', label: 'Private' }],
+      priceFor: () => 75,
     }) },
+    // Поле мест проверяется отдельно (spotsField ниже); форме оно — граница.
+    SpotsField: { SpotsField: 'SpotsField' },
     index: { Select: 'Select', ConfirmModal: 'ConfirmModal', NotePhotos: 'NotePhotos', NoteDropZone: 'NoteDropZone' },
     useNotePhotos: { useNotePhotos: () => photoState },
     usePhone: { usePhone: () => false },
@@ -200,6 +207,107 @@ test('an end time clamped to its unchanged minimum still displays the actual dra
   assert.equal(app.props.newBookingSlot.timeEnd, 4.75);
   const end = nodes(app.render(), 'input').filter(input => input.className?.includes('kp-time-input'))[1];
   assert.equal(end.value, '11:45');
+});
+
+test('an individual lesson survives a change of service and is created with one spot', async () => {
+  const submitted = [];
+  const app = await desktopForm(async form => { submitted.push(plain(form)); return true; });
+  let tree = app.render();
+  assert.equal(nodes(tree, 'SpotsField')[0].serviceSpots, null);
+  // «Индивидуальное» нажато: поле мест отдаёт форме одно место.
+  nodes(tree, 'SpotsField')[0].onChange('1');
+  tree = app.render();
+  nodes(tree, 'Select')[0].onChange('4');
+  assert.equal(app.props.newForm.serviceId, 4);
+  assert.equal(app.props.newForm.maxClients, '1');
+  tree = app.render();
+  assert.equal(nodes(tree, 'SpotsField')[0].serviceSpots, 15);
+  app.create(tree).onMouseDown(event());
+  await settle();
+  assert.equal(submitted[0].serviceId, 4);
+  assert.equal(submitted[0].maxClients, 1);
+});
+
+test('one spot inherited from a private service gives way to the next service capacity', async () => {
+  const app = await desktopForm(async () => true);
+  nodes(app.render(), 'Select')[0].onChange('4');
+  assert.equal(app.props.newForm.maxClients, '15');
+  nodes(app.render(), 'Select')[0].onChange('5');
+  assert.equal(app.props.newForm.maxClients, '1');
+  // Одно место пришло с услугой, человек его не выбирал.
+  nodes(app.render(), 'Select')[0].onChange('4');
+  assert.equal(app.props.newForm.maxClients, '15');
+});
+
+async function spotsField(initial) {
+  let cursor = 0;
+  const state = [];
+  const react = {
+    useState(value) {
+      const index = cursor++;
+      if (!(index in state)) state[index] = value;
+      return [state[index], next => { state[index] = typeof next === 'function' ? next(state[index]) : next; }];
+    },
+  };
+  const jsx = (type, props) => ({ type, props });
+  const context = vm.createContext({ console });
+  const dependencies = {
+    react: { ...react, default: react },
+    'react/jsx-runtime': { jsx, jsxs: jsx, Fragment: 'fragment' },
+    'react-i18next': { useTranslation: () => ({ t: key => key }) },
+    Icons: { User: 'User', Minus: 'Minus', Plus: 'Plus' },
+    MatsCapacity: { MAX_SPOTS: 50 },
+  };
+  const mod = await loadModule('../src/pages/dashboard/Journal/components/SpotsField.tsx', dependencies, context);
+  await mod.evaluate();
+  const props = { serviceSpots: null, ...initial, onChange(value) { props.value = value; } };
+  const render = () => { cursor = 0; return mod.namespace.SpotsField(props); };
+  const solo = () => nodes(render(), 'button').find(button => button.className.startsWith('kp-solo'));
+  const steps = () => nodes(render(), 'button').filter(button => button.className === 'kp-step');
+  const input = () => nodes(render(), 'input')[0];
+  return { props, solo, steps, input };
+}
+
+test('«Individual» sets one spot and its second press returns the group size it replaced', async () => {
+  const field = await spotsField({ value: '12', serviceSpots: 15 });
+  assert.equal(field.solo()['aria-pressed'], false);
+  field.solo().onClick();
+  assert.equal(field.props.value, '1');
+  assert.equal(field.solo()['aria-pressed'], true);
+  assert.equal(field.solo().className, 'kp-solo is-on');
+  field.solo().onClick();
+  assert.equal(field.props.value, '12');
+});
+
+test('after a change of service the released «Individual» returns that service capacity', async () => {
+  const field = await spotsField({ value: '12', serviceSpots: 15 });
+  field.solo().onClick();
+  field.props.serviceSpots = 20;
+  field.solo().onClick();
+  assert.equal(field.props.value, '20');
+  // Услуга сама на одно место: вернуть нечего, кроме размера группы по умолчанию.
+  const single = await spotsField({ value: '1', serviceSpots: 1 });
+  assert.equal(single.solo()['aria-pressed'], true);
+  single.solo().onClick();
+  assert.equal(single.props.value, '8');
+});
+
+test('the stepper stays within 1–50 and the field accepts digits only', async () => {
+  const field = await spotsField({ value: '' });
+  field.steps()[1].onClick();
+  assert.equal(field.props.value, '1');
+  assert.equal(field.steps()[0].disabled, true);
+  field.props.value = '50';
+  assert.equal(field.steps()[1].disabled, true);
+  field.props.value = '99';
+  field.steps()[0].onClick();
+  assert.equal(field.props.value, '50');
+  field.input().onChange({ target: { value: '1a2' } });
+  assert.equal(field.props.value, '12');
+  field.input().onKeyDown({ key: 'ArrowUp', preventDefault() {} });
+  assert.equal(field.props.value, '13');
+  field.input().onKeyDown({ key: 'ArrowDown', preventDefault() {} });
+  assert.equal(field.props.value, '12');
 });
 
 async function mutationHarness(createApi) {

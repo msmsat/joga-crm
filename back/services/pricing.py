@@ -16,7 +16,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
 from models import ClientOffer, ReferralRecord, StudioDiscountConfig, StudioPromoCode, StudioReferralConfig
-from services.discounts import apply_discount
+from services.discounts import FirstLessonDiscount, apply_discount
 
 # StudioDiscountConfig использует свой словарь ключей (задача 5), ClientOffer
 # и промокод — 'percent'/'amount'. Приводим к общему виду перед apply_discount.
@@ -72,7 +72,7 @@ async def resolve_price(
     base_price: int,
     promo: Optional[StudioPromoCode] = None,
     *,
-    first_lesson_percent: Optional[int] = None,
+    first_lesson: Optional[FirstLessonDiscount] = None,
     manual_percent: Optional[int] = None,
 ) -> ResolvedPrice:
     """`promo` — уже найденный и провалидированный промокод (find_valid_promo),
@@ -83,10 +83,10 @@ async def resolve_price(
     «10 %» от администратора складывалось бы с «50 %» первого занятия, хотя
     скидки в продукте не суммируются.
 
-    `first_lesson_percent` — скидка первого занятия, если она положена ЭТОЙ
-    продаже. Решает вызывающий, а не движок: при записи — по правилам студии
-    (`booking.resolve_funding`), при оплате уже записанного занятия — по снимку
-    на брони (`booking_access.trial_percent`). Сам движок не знает, что продаёт
+    `first_lesson` — скидка первого занятия (процент или сумма), если она
+    положена ЭТОЙ продаже. Решает вызывающий, а не движок: при записи — по
+    правилам студии (`booking.resolve_funding`), при оплате уже записанного
+    занятия — по снимку на брони (`booking_access.trial_discount`). Сам движок не знает, что продаёт
     — занятие или абонемент, — и угадывать это по цене нельзя.
     """
     from routers.loyalty.offers import find_active_offer  # ponytail: локальный импорт разрывает цикл
@@ -138,8 +138,8 @@ async def resolve_price(
             if amount > 0:
                 candidates.append(("referral", amount, referral))
 
-    if first_lesson_percent:
-        amount = apply_discount(_AsDiscount("percent", first_lesson_percent), base_price)
+    if first_lesson is not None:
+        amount = apply_discount(first_lesson, base_price)
         if amount > 0:
             candidates.append(("first_lesson", amount, None))
 

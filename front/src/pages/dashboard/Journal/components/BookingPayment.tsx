@@ -11,6 +11,7 @@ import * as Icons from '../../../../components/Icons';
 import { formatMoney } from '../../../../lib/money';
 import type { PaymentDiscountKind, PaymentPreview } from '../../../../api/booking/hybrid.types';
 import type { BookingPayment as Payment, PaymentCode, PaymentCodeKind } from '../hooks/useBookingPayment';
+import { firstLessonOff } from '../firstLesson';
 import './BookingPayment.css';
 
 type Props = {
@@ -55,7 +56,6 @@ export function BookingPayment({ payment, firstLesson, onFirstLesson, busy = fal
 
   const money = (value: number) => formatMoney(value, preview.currency);
   const covered = preview.covered_by;
-  const percent = preview.first_lesson_percent ?? 100;
   // Бесплатное первое занятие приходит «покрытым» — скидкой строки чека оно
   // не числится, и сколько оно дарит, говорит цена занятия.
   const firstAmount = covered === 'trial' ? preview.base_price : amountOf(preview, 'first_lesson');
@@ -82,7 +82,7 @@ export function BookingPayment({ payment, firstLesson, onFirstLesson, busy = fal
               <span className="bpay-label">
                 {t('journal:payment.firstLesson')}
                 <span className="bpay-tag">
-                  {percent >= 100 ? t('journal:payment.free') : `−${percent}%`}
+                  {firstLessonOff(preview.first_lesson_percent, preview.first_lesson_amount, preview.currency, t('journal:payment.free'))}
                 </span>
               </span>
             </label>

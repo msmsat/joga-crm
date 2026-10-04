@@ -150,7 +150,8 @@
     "loyalty": {
       "cert_not_found": "Certifikata nuk u gjet",
       "cert_used": "Certifikata është përdorur tashmë ose është e pavlefshme",
-      "cert_expired": "Certifikata ka skaduar"
+      "cert_expired": "Certifikata ka skaduar",
+      "first_lesson_amount_required": "Vendosni shumën e zbritjes për mësimin e parë"
     },
     "notifications": {
       "critical_locked": "Ky njoftim nuk mund të çaktivizohet",

@@ -35,7 +35,8 @@
         "label": "Rabat na pierwsze zajęcia",
         "free": "Pierwsze zajęcia nowego klienta są za darmo.",
         "percent": "Pierwsze zajęcia nowego klienta są tańsze o {{percent}}%.",
-        "change": "Procent ustawia się w sekcji „Lojalność”"
+        "amount": "Pierwsze zajęcia nowego klienta są tańsze o {{amount}}.",
+        "change": "Wysokość rabatu ustawia się w sekcji „Lojalność”"
       },
       "trainerConfirm": {
         "label": "Potwierdzenie trenera",

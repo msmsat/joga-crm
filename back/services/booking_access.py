@@ -16,6 +16,7 @@ from fastapi import HTTPException
 from models import Client, ClientSubscription, Lesson, Reservation, SubscriptionPackage
 from services.booking_rules import BookingRules
 from services.catalog import OCCUPIES_SPOT
+from services.discounts import FirstLessonDiscount
 
 
 async def next_free_spot(db: AsyncSession, lesson: Lesson) -> Optional[int]:
@@ -56,51 +57,46 @@ async def commit_reservation(db: AsyncSession, *, conflict_detail: str) -> None:
         raise HTTPException(status_code=409, detail=conflict_detail)
 
 
-async def find_eligible_subscription(
-    db: AsyncSession, client_id: int, lesson: Lesson
-) -> Optional[ClientSubscription]:
-    """Незамороженный абонемент клиента с остатком, подходящий под тип занятия
-    lesson. Возвращает первый подходящий или None.
+def _usable_subscriptions():
+    """Абонементы, по которым вообще можно записываться: идущие или в очереди,
+    не замороженные, с остатком. Срок и тип занятия проверяют функции ниже."""
+    return select(ClientSubscription).where(
+        ClientSubscription.status.in_(("active", "pending")),
+        ClientSubscription.is_frozen == False,
+        ClientSubscription.used_classes < ClientSubscription.total_classes,
+    )
 
-    Порядок: сначала идущие (status="active") по expires_at — с абонемента
-    списывается занятие при записи (services/subscription_charge.py), и тратить
-    надо тот, что сгорит раньше. Потом очередь (status="pending") по порядку
-    покупки: она уже оплачена, поэтому записываться по ней можно, но свой срок
-    такой абонемент начнёт только когда занятие реально пройдёт
-    (subscription_charge.activate_pending_after_visit).
-    """
-    subs = (await db.execute(
-        select(ClientSubscription).where(
-            ClientSubscription.client_id == client_id,
-            ClientSubscription.status.in_(("active", "pending")),
-            ClientSubscription.is_frozen == False,
-            ClientSubscription.used_classes < ClientSubscription.total_classes,
-        )
-    )).scalars().all()
+
+def _alive_in_order(subs, lesson: Lesson) -> list[ClientSubscription]:
+    """Абонементы, доживающие до занятия, в порядке списания."""
     # Идущий абонемент годится, только если доживает до занятия: сгорающий 20-го
     # не даёт записаться на 25-е, а купленный поверх, до 30-го, — даёт. Дата
     # включительно, как везде в проекте (expires_at >= today). Очередь под это
     # правило не попадает: её срок ещё не начался и стартует с реального визита.
     lesson_date = lesson.start_time.date()
-    subs = [s for s in subs if s.status == "pending" or s.expires_at >= lesson_date]
-    if not subs:
-        return None
-
+    alive = [s for s in subs if s.status == "pending" or s.expires_at >= lesson_date]
     # date.max для очереди: её провизорный expires_at сравнивать не с чем.
-    subs.sort(key=lambda s: (
+    alive.sort(key=lambda s: (
         s.status != "active",
         s.expires_at if s.status == "active" else date.max,
         s.id,
     ))
+    return alive
 
+
+async def _packages_of(db: AsyncSession, subs) -> dict:
     package_ids = {sub.package_id for sub in subs if sub.package_id is not None}
-    packages_by_id = {}
-    if package_ids:
-        packages = (await db.execute(
-            select(SubscriptionPackage).where(SubscriptionPackage.id.in_(package_ids))
-        )).scalars().all()
-        packages_by_id = {pkg.id: pkg for pkg in packages}
+    if not package_ids:
+        return {}
+    packages = (await db.execute(
+        select(SubscriptionPackage).where(SubscriptionPackage.id.in_(package_ids))
+    )).scalars().all()
+    return {pkg.id: pkg for pkg in packages}
 
+
+def _matching(subs, packages_by_id: dict, lesson: Lesson) -> Optional[ClientSubscription]:
+    """Первый абонемент, чей пакет пускает на услугу занятия. Одна функция на
+    одиночную и массовую проверку — второй копии правил нет."""
     for sub in subs:
         # package_id is null (старые абонементы до V5-4) — считаем универсальным,
         # чтобы не ломать их ретроактивно.
@@ -114,6 +110,48 @@ async def find_eligible_subscription(
         if not package.service_ids or lesson.service_id in package.service_ids:
             return sub
     return None
+
+
+async def find_eligible_subscription(
+    db: AsyncSession, client_id: int, lesson: Lesson
+) -> Optional[ClientSubscription]:
+    """Незамороженный абонемент клиента с остатком, подходящий под тип занятия
+    lesson. Возвращает первый подходящий или None.
+
+    Порядок: сначала идущие (status="active") по expires_at — с абонемента
+    списывается занятие при записи (services/subscription_charge.py), и тратить
+    надо тот, что сгорит раньше. Потом очередь (status="pending") по порядку
+    покупки: она уже оплачена, поэтому записываться по ней можно, но свой срок
+    такой абонемент начнёт только когда занятие реально пройдёт
+    (subscription_charge.activate_pending_after_visit).
+    """
+    subs = _alive_in_order((await db.execute(
+        _usable_subscriptions().where(ClientSubscription.client_id == client_id)
+    )).scalars().all(), lesson)
+    if not subs:
+        return None
+    return _matching(subs, await _packages_of(db, subs), lesson)
+
+
+async def eligible_subscriptions(
+    db: AsyncSession, client_ids: list[int], lesson: Lesson
+) -> dict[int, ClientSubscription]:
+    """`find_eligible_subscription` для многих клиентов сразу — двумя запросами.
+
+    Окно «Добавить клиента» в Журнале показывает у каждого, чем будет покрыта
+    его запись. Поштучно это N×2 запросов на одно открытие окна.
+    """
+    if not client_ids:
+        return {}
+    by_client: dict[int, list[ClientSubscription]] = {}
+    for sub in (await db.execute(
+        _usable_subscriptions().where(ClientSubscription.client_id.in_(client_ids))
+    )).scalars().all():
+        by_client.setdefault(sub.client_id, []).append(sub)
+    alive = {cid: _alive_in_order(own, lesson) for cid, own in by_client.items()}
+    packages_by_id = await _packages_of(db, [sub for own in alive.values() for sub in own])
+    picked = {cid: _matching(own, packages_by_id, lesson) for cid, own in alive.items()}
+    return {cid: sub for cid, sub in picked.items() if sub is not None}
 
 
 async def coverage_gap(
@@ -178,8 +216,8 @@ async def assert_can_book(
     )
 
 
-def trial_percent(reservation: Reservation) -> Optional[int]:
-    """Процент скидки первого занятия, обещанный ЭТОЙ броне, или None.
+def trial_discount(reservation: Reservation) -> Optional[FirstLessonDiscount]:
+    """Скидка первого занятия (процент или сумма), обещанная ЭТОЙ броне, или None.
 
     Одно чтение снимка на все пути, где цену занятия считают повторно: касса
     при погашении долга, оплата картой по ссылке, перенос к мастеру с другой
@@ -190,7 +228,9 @@ def trial_percent(reservation: Reservation) -> Optional[int]:
     """
     if not reservation.is_trial:
         return None
-    return reservation.trial_discount_percent or 100
+    if reservation.trial_discount_amount is not None:
+        return FirstLessonDiscount(amount=reservation.trial_discount_amount)
+    return FirstLessonDiscount(percent=reservation.trial_discount_percent or 100)
 
 
 async def trial_applies(
@@ -217,6 +257,22 @@ async def trial_applies(
         ).limit(1)
     )).scalar_one_or_none()
     return booked is None
+
+
+async def trial_eligible(
+    db: AsyncSession, client_ids: list[int], rules: BookingRules
+) -> set[int]:
+    """`trial_applies` для многих клиентов сразу — одним запросом: те из
+    `client_ids`, кому положено первое занятие. Условие то же самое."""
+    if not rules.trial_lesson_free or not client_ids:
+        return set()
+    booked = set((await db.execute(
+        select(Reservation.client_id).where(
+            Reservation.client_id.in_(client_ids),
+            Reservation.status != "cancelled",
+        ).distinct()
+    )).scalars().all())
+    return set(client_ids) - booked
 
 
 async def lock_client(db: AsyncSession, client_id: int) -> bool:
@@ -276,12 +332,3 @@ async def resolve_coverage(
     if sub is not None:
         return sub, False
     return None, allow_trial and await trial_applies(db, client_id, rules)
-
-
-async def can_book(db: AsyncSession, client_id: int, lesson: Lesson) -> bool:
-    """Булева версия для массовых проверок (CL-6.4: eligible-clients) — без
-    исключений в цикле."""
-    if lesson.status == "cancelled":
-        return False
-    sub = await find_eligible_subscription(db, client_id, lesson)
-    return sub is not None

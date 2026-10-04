@@ -69,7 +69,7 @@ async def confirm(db, quote_id: str, actor: quotes.Actor, *, now=None):
         result = await booking.create(db, studio_id=actor.studio_id, client_id=actor.client_id,
             lesson_id=lesson.id, source=actor.surface, actor=actor.domain, now=moment, shown=terms,
             spot_number=current["spot_number"], allow_payment=not card, hold_for_payment=card,
-            require_funding=quotes.funding_rule(actor, current["payment_method"], row.booking_mode),
+            require_funding=quotes.funding_rule(actor, current["payment_method"]),
             _resource=row.booking_mode == "resource",
             # Выключенная на шаге оплаты скидка первого занятия остаётся
             # выключенной и в самой записи — иначе бронь получила бы то, от

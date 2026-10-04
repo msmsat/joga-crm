@@ -68,10 +68,12 @@ export interface LessonResponse {
    */
   trial_available: boolean;
   /**
-   * Первое занятие СО СКИДКОЙ (не подарок): процент 1–99 и цена после неё.
-   * 0 / пустая строка — скидки нет. Остаток клиент платит на месте.
+   * Первое занятие СО СКИДКОЙ (не подарок): процент 1–99 или сумма скидки
+   * строкой («300 Kč») — смотря как её задала студия, — и цена после неё.
+   * 0 / пустые строки — скидки нет. Остаток клиент платит на месте.
    */
   first_lesson_discount?: number;
+  first_lesson_discount_amount_str?: string;
   first_lesson_price_str?: string;
   coffee: CoffeeState;
 }

@@ -35,7 +35,8 @@
         "label": "Desconto na primeira aula",
         "free": "A primeira aula de um novo cliente é grátis.",
         "percent": "A primeira aula de um novo cliente tem {{percent}}% de desconto.",
-        "change": "A percentagem define-se em «Fidelização»"
+        "amount": "A primeira aula de um novo cliente tem {{amount}} de desconto.",
+        "change": "O desconto define-se em «Fidelização»"
       },
       "trainerConfirm": {
         "label": "Confirmação do instrutor",

@@ -172,6 +172,8 @@
       "percent": "Sleva, %",
       "freeHint": "První lekce je dárek — klient nic neplatí.",
       "payHint": "Klient zaplatí {{rest}} % ceny první lekce.",
+      "amount": "Sleva, {{currency}}",
+      "amountHint": "Z ceny první lekce se odečte {{amount}}. Pokud lekce stojí méně, je zdarma.",
       "howTitle": "Jak to funguje",
       "how": {
         "who": "Sleva se sama použije na první rezervaci nového klienta — v Deníku, mini aplikaci i rezervačním widgetu.",

@@ -65,7 +65,8 @@ export function SummaryStep({ w }: { w: BookingWizardState }) {
       {w.needsClient && (
         <SummaryRow label={t('journal:resourceBooking.client')} value={w.clientName} onChange={() => w.goTo(CLIENT_STEP)} />
       )}
-      <SummaryRow label={t('journal:resourceBooking.service')} value={w.service?.name ?? ''} onChange={() => w.goTo(SERVICE_STEP)} />
+      <SummaryRow label={t('journal:resourceBooking.service')} value={w.service?.name ?? ''}
+                  hint={w.soloLesson ? t('journal:newBooking.individual') : undefined} onChange={() => w.goTo(SERVICE_STEP)} />
       <SummaryRow label={t('journal:resourceBooking.staff')} value={master ?? ''} onChange={() => w.goTo(MASTER_STEP)} />
       {/* Время сменили после выбора мастера — и он в него оказался занят. */}
       {w.conflict && <div className="kp-error bw-sum-error" role="alert">{t('journal:wizard.selectionConflict')}</div>}

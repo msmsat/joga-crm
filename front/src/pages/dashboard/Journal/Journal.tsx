@@ -1,3 +1,6 @@
+import { SourceJournalModal } from './bumpix/SourceJournalModal';
+import { inGrid } from './bumpix/model';
+import type { SourceJournalItem } from './bumpix/types';
 import React, { useState, useRef, useEffect, useLayoutEffect, useCallback, useMemo } from 'react';
 import { useAiEntity } from '../../../hooks/useAiEntity';
 import { useTranslation } from 'react-i18next';
@@ -28,6 +31,7 @@ import { Grid } from './components/ScheduleGrid/Grid';
 import { GridSkeleton } from './components/ScheduleGrid/GridSkeleton';
 import { LoadError } from './components/LoadError';
 import { BookingPopup } from './components/BookingPopup';
+import type { LessonDraft } from './components/lesson/editor/editorModel';
 import { NO_HALL_COLUMN } from './constants';
 import { useServiceOptions } from './hooks/useServiceOptions';
 import { NewBookingModal } from './components/modals/NewBookingModal';
@@ -37,7 +41,7 @@ import { isPastSlot, nextSameTime } from './components/modals/booking-wizard/pas
 import { ResourceKeypadModal } from './components/modals/ResourceKeypadModal';
 import { usePhone } from '../../../hooks/usePhone';
 import { AddClientModal } from './components/modals/AddClientModal';
-import { useToast, ConfirmModal } from '../../../components/ui/index';
+import { useToast, ConfirmModal, Button } from '../../../components/ui/index';
 import { getUserRoleFromToken } from '../../../utils/auth';
 import { useAiIntent } from '../../../hooks/useAiIntent';
 import { useBusinessTerms } from '../../../hooks/useBusinessTerms';
@@ -94,6 +98,7 @@ export default function Journal() {
   // колонками, которых уже не выбрать обратно.
   const viewMode = calendarView === 'week' || spaceIsAxis === false ? 'trainers' : pickedViewMode;
   const setViewMode = setPickedViewMode;
+  const [sourceModal, setSourceModal] = useState<{initial?: SourceJournalItem} | null>(null);
   const [popupBooking, setPopupBooking] = useState<Booking | null>(null);
   // Ассистенту: какое занятие открыто — «сколько здесь мест» в журнале
   // спрашивают про занятие, а в каталоге про зал.
@@ -117,7 +122,7 @@ export default function Journal() {
     return () => window.clearTimeout(timer);
   }, [closingPopup]);
   const shownPopup = popupBooking ?? closingPopup?.booking ?? null;
-  const [editForm, setEditForm] = useState({ serviceId: null as number | null, title: '', hall: '', maxClients: '8', timeStart: 0, timeEnd: 0 });
+  const [editForm, setEditForm] = useState<LessonDraft>({ serviceId: null, title: '', hall: '', maxClients: '8', timeStart: 0, timeEnd: 0, date: '', trainer: 0 });
   const [showAddModal, setShowAddModal] = useState(false);
   const [addModalBooking] = useState<Booking | null>(null);
   const [newBookingSlot, setNewBookingSlot] = useState<{ trainer: number; timeStart: number; timeEnd: number; columnIndex?: number; bufferAfter?: number } | null>(null);
@@ -176,7 +181,7 @@ export default function Journal() {
   const showToast = React.useCallback((msg: string) => toast.info(msg), [toast]);
 
   // Реальные данные: тренеры (Сотрудники), залы, занятия за видимый диапазон
-  const { trainers, staffBlocks, dateFrom, halls, bookings, isFirstLoad, lessonsKey, loadError, isFirstLoadError, refetchAll } =
+  const { trainers, sourceItems, staffBlocks, dateFrom, halls, bookings, isFirstLoad, lessonsKey, loadError, isFirstLoadError, refetchAll } =
     useSchedule(calYear, calMonth, selectedDay, calendarView);
   const weekSchedule = React.useMemo(
     () => selectWeekSchedule(trainers, bookings, staffBlocks, weekTrainerId),
@@ -321,7 +326,7 @@ export default function Journal() {
   // Живые занятия (без отменённых) — считаются в сводке дня и правой панели;
   // сетка (Grid) рисует всё подряд через filteredBookings, отменённые остаются на месте.
   const activeBookings = useMemo(
-    () => (calendarView === 'week' ? weekSchedule.bookings : bookings).filter(b => b.status !== 'cancelled'),
+    () => (calendarView === 'week' ? weekSchedule.bookings : bookings).filter(b => !b.source && b.status !== 'cancelled'),
     [calendarView, weekSchedule.bookings, bookings],
   );
 
@@ -333,7 +338,7 @@ export default function Journal() {
     return !hiddenHalls.includes(b.hall);
   })), [calendarView, weekSchedule.bookings, bookings, hallFilter, serviceFilter, viewMode, hiddenTrainers, hiddenHalls]);
 
-  const liveBookings = useMemo(() => filteredBookings.filter(b => b.status !== 'cancelled'), [filteredBookings]);
+  const liveBookings = useMemo(() => filteredBookings.filter(b => !b.source && b.status !== 'cancelled'), [filteredBookings]);
 
   // Форма создания уходит анимацией (useLeave) — превью в сетке гаснет вместе
   // с ней, а не исчезает рывком, когда форма уже ушла.
@@ -362,6 +367,9 @@ export default function Journal() {
     setCalYear(year); setCalMonth(month - 1); setSelectedDay(day);
     if (showDay) setCalendarView('day');
   }, [setCalendarView]);
+  // Занятие перенесли на другой день из его карточки — журнал идёт следом,
+  // не меняя вида (неделя остаётся неделей).
+  const showLessonDate = React.useCallback((date: string) => showBookingDate(date, false), [showBookingDate]);
   const bookingCreated = (date?: string) => {
     if (date) showBookingDate(date);
     mutations.invalidate();
@@ -400,6 +408,7 @@ export default function Journal() {
       date: toDateStr(column instanceof Date ? column : new Date(calYear, calMonth, selectedDay)),
       time: formatIndexToTimeStr(timeIdx),
     };
+    if (scope.trainer < 0) return;
     requestWhen(scope.date, scope.time,
       when => openCreation({ ...scope, ...when }),
       () => openCreation({ ...scope, date: toDateStr(new Date()) }, true));
@@ -483,7 +492,9 @@ export default function Journal() {
       // «Создать услугу?» закрывались на первом же mousedown в любом месте:
       // попап исчезал вместе с ними, и кнопка не успевала получить click —
       // «нажал скопировать, окно закрылось, ничего не скопировалось».
-      if (target.closest('.v-overlay, .modal-overlay, .lc-attend-pop')) return;
+      // Так же и список кита (`Select`, портал на <body>): выбор услуги в окне
+      // правки закрывал бы весь попап раньше, чем дойдёт до click.
+      if (target.closest('.v-overlay, .modal-overlay, .lc-attend-pop, .v-select-panel')) return;
 
       // 2. Если кликнули по любой карточке занятия — игнорируем! 
       if (target.closest('.booking-card')) return;
@@ -654,6 +665,8 @@ export default function Journal() {
   // Стабильные ссылки: обе уходят в каждую карточку сетки (они мемоизированы).
   const openBookingPopup = useCallback((e: React.MouseEvent, booking: Booking) => {
     e.stopPropagation();
+    if (booking.source) { setPopupBooking(null); setSourceModal({initial:booking.source}); return; }
+    setSourceModal(null);
     setPopupBooking(booking);
   }, []);
   const prefetchLesson = usePrefetchLesson();
@@ -971,6 +984,16 @@ export default function Journal() {
             ) : undefined}
           />
 
+      {sourceItems && sourceItems.length > 0 && <div style={{padding:'8px 0',display:'flex',justifyContent:'flex-end'}}>
+        <Button variant="dark" size="sm" onClick={()=>{setPopupBooking(null);setSourceModal({});}}>{t('bumpix:journal.range', {count:sourceItems.length})}</Button>
+      </div>}
+
+          {filteredBookings.some(b=>!b.source && !inGrid(b)) && <div style={{display:'flex',gap:8,flexWrap:'wrap',padding:'8px 0'}}>
+            <span>{t('bumpix:journal.outside')}</span>
+            {filteredBookings.filter(b=>!b.source && !inGrid(b)).map(b=><div key={b.id} data-booking-id={b.id}>
+              <Button variant="ghost" size="sm" onClick={()=>{setSourceModal(null);setPopupBooking(b);}}>{b.date} · {formatIndexToTimeStr(b.timeStart)} · {b.title}</Button>
+            </div>)}
+          </div>}
           {/* ── СЕТКА ── */}
           <div className="j-layout">
             <div
@@ -1000,7 +1023,7 @@ export default function Journal() {
                   calendarView={calendarView}
                   columns={columns}
                   viewMode={viewMode}
-                  filteredBookings={filteredBookings}
+                  filteredBookings={filteredBookings.filter(inGrid)}
                   staffBlocks={calendarView === 'week' ? weekSchedule.staffBlocks : staffBlocks}
                   dayDate={dateFrom}
                   visibleTrainers={visibleTrainers}
@@ -1048,12 +1071,16 @@ export default function Journal() {
         </div>
       </div>
 
+      {sourceModal && <SourceJournalModal items={sourceItems ?? []} initial={sourceModal.initial} onClose={()=>setSourceModal(null)}/>}
+
       {/* ── ПРЕМИАЛЬНЫЙ POPUP КАРТОЧКИ ЗАПИСИ ── */}
       {shownPopup && (
         <BookingPopup
           key={shownPopup.id}
-          trainers={trainers}
-          halls={hallNames}
+          trainers={trainers.filter(tr=>tr.role !== 'Bumpix')}
+          halls={halls}
+          spaceIsAxis={spaceIsAxis}
+          onShowDate={showLessonDate}
           popupBooking={shownPopup}
           popupRef={popupRef}
           leaving={!popupBooking}
@@ -1076,7 +1103,7 @@ export default function Journal() {
       {/* ── ФОРМА НОВОГО ЗАНЯТИЯ (PREMIUM KEYPAD) ── */}
       {showNewForm && newBookingSlot && keypadResource && (
         <ResourceKeypadModal
-          trainers={trainers}
+          trainers={trainers.filter(tr=>tr.role !== 'Bumpix')}
           teacherId={keypadResource.teacherId}
           defaultTime={keypadResource.time}
           defaultDate={keypadResource.date}
@@ -1092,7 +1119,7 @@ export default function Journal() {
       )}
       {showNewForm && newBookingSlot && !keypadResource && (
         <NewBookingModal
-          trainers={trainers}
+          trainers={trainers.filter(tr=>tr.role !== 'Bumpix')}
           halls={hallNames}
           newBookingSlot={newBookingSlot}
           setNewBookingSlot={setNewBookingSlot}

@@ -172,6 +172,7 @@ export function BookedClients({ clients, canEdit, removable, started, currency, 
 const fundingOf = (c: BookedClient, price: number): Funding => ({
   price,
   trialPercent: c.trial_discount_percent ?? null,
+  trialAmount: c.trial_discount_amount ?? null,
   manualPercent: c.manual_discount_percent ?? null,
   isTrial: c.is_trial,
   subscriptionName: c.subscription_name ?? null,

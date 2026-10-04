@@ -30,6 +30,8 @@
 // пол-приложения через useStudioCurrency), смена тарифа — billingPlan и billingInvoicesAll.
 // Очередь миграции (по мере аудитов): Сотрудники.
 export const queryKeys = {
+  bumpixProfile: (id: number, scope: string) => ['bumpix-profile', scope, id] as const,
+  bumpixEvents: (id: number, filter: string, scope: string) => ['bumpix-events', scope, id, filter] as const,
   branches: ['branches'] as const,
   branch: (id: number) => ['branch', id] as const,
   services: ['services'] as const,

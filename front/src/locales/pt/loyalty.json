@@ -172,6 +172,8 @@
       "percent": "Desconto, %",
       "freeHint": "A primeira aula é oferta: o cliente não paga nada.",
       "payHint": "O cliente paga {{rest}}% do preço da primeira aula.",
+      "amount": "Desconto, {{currency}}",
+      "amountHint": "São descontados {{amount}} do preço da primeira aula. Se a aula custar menos, é gratuita.",
       "howTitle": "Como funciona",
       "how": {
         "who": "O desconto aplica-se automaticamente à primeira marcação de um novo cliente — na Agenda, na mini-app e no widget de marcação.",

@@ -125,11 +125,12 @@ async def discount_debt(db: AsyncSession, studio_id: int, reservation: Reservati
 def forget_first_lesson(reservation: Reservation) -> None:
     """Администратор не засчитал первое занятие: бронь больше не пробная.
 
-    Касса берёт скидку со снимка на брони (`booking_access.trial_percent`) —
+    Касса берёт скидку со снимка на брони (`booking_access.trial_discount`) —
     сняв снимок, оплата посчитает полную цену тем же ядром, что и чек. Так же
     выглядит индивидуальная запись, у которой «Первое занятие» выключили."""
     reservation.is_trial = False
     reservation.trial_discount_percent = None
+    reservation.trial_discount_amount = None
 
 
 async def preview(
@@ -142,9 +143,9 @@ async def preview(
     _client, package = await _get_client_package(
         db, studio_id, reservation.client_id, lesson.id, "lesson", reservation_id=reservation.id,
     )
-    offered_percent = package.first_lesson_percent
+    offered = package.first_lesson
     if not first_lesson:
-        package = replace(package, first_lesson_percent=None)
+        package = replace(package, first_lesson=None)
     # Коды, названные клиентом при записи, подставляются сами (held_codes):
     # администратор видит сумму к оплате уже с ними.
     codes = held_codes.merged(reservation, promo_code=promo_code, certificate_code=certificate_code,
@@ -172,9 +173,10 @@ async def preview(
     return {
         "currency": (studio.currency if studio is not None else None) or "CZK",
         "debt": debt.amount,
-        "first_lesson_offered": offered_percent is not None,
-        "first_lesson_applied": offered_percent is not None and first_lesson,
-        "first_lesson_percent": offered_percent,
+        "first_lesson_offered": offered is not None,
+        "first_lesson_applied": offered is not None and first_lesson,
+        "first_lesson_percent": offered.percent if offered is not None else None,
+        "first_lesson_amount": offered.amount if offered is not None else None,
         "manual_discount_percent": manual_percent,
         **await check_lines(db, studio_id, reservation.client_id, quote,
                             manual_percent=manual_percent, promo_code=promo_code,

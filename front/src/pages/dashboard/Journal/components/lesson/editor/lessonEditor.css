@@ -1,0 +1,208 @@
+/* Окно «Изменить занятие» (LessonEditor) — тело попапа журнала в режиме правки.
+   Поверхности те же, что у плиток карточки занятия (lessonCard.css): лёгкая
+   подложка без рамок, персик — только для выбранного и изменённого. */
+
+/* Две колонки на десктопе: в 400px правка шла одним столбом, шесть залов
+   сжимались в кнопки с названием в две строки, а число мест вылезало из поля. */
+.booking-popup.is-editing { width: min(640px, calc(100vw - 24px)); }
+
+/* Прокручивается тело, а подвал с кнопками всегда на виду: на экране
+   1280×720 и на телефоне окно правки выше остатка экрана, и «Сохранить»
+   уезжала за край. Липкий подвал не годился — тело попапа стоит слоем выше
+   (z-index 10, ради выпадающих списков) и просвечивало бы сквозь кнопки.
+   Жест смахивания шита ищет ближайшую прокручиваемую область сам
+   (components/ui/modal/sheetDrag.ts) — тело ею и становится. */
+.booking-popup.is-editing { overflow-y: hidden; }
+.booking-popup.is-editing > .bp-body {
+  flex: 1 1 auto; min-height: 0;
+  overflow-y: auto; overscroll-behavior: contain;
+}
+.booking-popup.is-editing .bp-actions { flex-wrap: wrap; padding-top: 12px; }
+
+.le {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 14px 24px;
+  margin: 0; padding: 0; border: 0; min-width: 0;
+  animation: fade-in 0.2s ease;
+}
+.le:disabled .le-col { opacity: 0.55; }
+.le-col { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.le-field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.le-label {
+  display: flex; align-items: center; gap: 7px;
+  font-size: 12px; font-weight: 700; color: var(--muted);
+}
+/* Поле изменено этой правкой. */
+.le-changed {
+  width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
+  background: var(--peach); box-shadow: 0 0 0 3px var(--peach-glow);
+}
+.le-error { font-size: 11.5px; font-weight: 600; color: var(--error); line-height: 1.4; }
+.le-caption { display: flex; flex-wrap: wrap; gap: 4px 10px; font-size: 12px; font-weight: 600; color: var(--muted); }
+.le-caption-warn { color: #C98A3A; }
+
+/* Кнопка-иконка: шаг времени, мест, недели. Под палец — на телефоне ниже. */
+.le-icon-btn {
+  width: 32px; height: 32px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  border: none; border-radius: 10px; background: transparent; color: var(--onyx);
+  cursor: pointer; transition: background-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
+}
+.le-icon-btn:hover:not(:disabled) { background: rgba(var(--ink), 0.06); }
+.le-icon-btn:active:not(:disabled) { transform: scale(0.9); }
+.le-icon-btn:disabled { color: var(--muted); opacity: 0.35; cursor: default; }
+.le-icon-btn:focus-visible, .le-day:focus-visible, .le-trainer:focus-visible, .le-hall:focus-visible {
+  outline: none; box-shadow: 0 0 0 3px var(--peach-glow), 0 0 0 1px var(--peach);
+}
+
+/* ── День: лента недели ─────────────────────────────────────────── */
+.le-week { padding: 6px 6px 8px; border-radius: 14px; background: rgba(var(--ink), 0.035); }
+.le-week-head { display: flex; align-items: center; gap: 2px; padding: 0 0 4px 8px; }
+.le-week-title { flex: 1; min-width: 0; font-size: 12.5px; font-weight: 800; color: var(--onyx); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.le-week-head .le-icon-btn { width: 28px; height: 28px; border-radius: 9px; }
+.le-days { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 2px; }
+.le-day {
+  position: relative;
+  display: flex; flex-direction: column; align-items: center; gap: 1px;
+  padding: 6px 0 9px; border: none; border-radius: 10px; background: transparent;
+  font-family: var(--font); cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+.le-day-wd { font-size: 10.5px; font-weight: 700; color: var(--muted); text-transform: lowercase; }
+.le-day-num { font-size: 15px; font-weight: 800; color: var(--onyx); font-variant-numeric: tabular-nums; }
+.le-day:hover:not(:disabled):not(.is-selected) { background: rgba(var(--ink), 0.05); }
+.le-day.is-selected { background: var(--onyx); }
+.le-day.is-selected .le-day-wd { color: var(--bg); opacity: 0.7; }
+.le-day.is-selected .le-day-num { color: var(--bg); }
+/* Сегодня — точкой под числом; прежний день занятия после переноса — обводкой. */
+.le-day.is-today::after {
+  content: ''; position: absolute; bottom: 3px; left: 50%;
+  width: 4px; height: 4px; margin-left: -2px; border-radius: 50%; background: var(--peach);
+}
+.le-day.is-original { box-shadow: inset 0 0 0 1.5px rgba(249,160,139,0.55); }
+.le-day:disabled { cursor: default; }
+.le-day:disabled .le-day-wd, .le-day:disabled .le-day-num { opacity: 0.32; }
+
+/* ── Время: начало и длительность ──────────────────────────────── */
+.le-time { padding: 2px 4px 8px 14px; border-radius: 14px; background: rgba(var(--ink), 0.035); }
+.le-time.is-invalid { box-shadow: inset 0 0 0 1.5px rgba(216,140,154,0.6); }
+.le-step-row { display: flex; align-items: center; gap: 8px; min-height: 40px; }
+.le-step-name { flex: 1; min-width: 0; font-size: 13px; font-weight: 700; color: var(--onyx); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.le-stepper { display: flex; align-items: center; gap: 2px; flex-shrink: 0; }
+/* Число не вылезает из поля: ширина под самое длинное значение, цифры моноширинные. */
+.le-value {
+  min-width: 68px; height: 32px; padding: 0 4px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font); font-size: 15px; font-weight: 800; color: var(--onyx);
+  font-variant-numeric: tabular-nums; white-space: nowrap; text-align: center;
+}
+input.le-value {
+  width: 68px; margin: 0; border: none; border-radius: 9px; background: transparent;
+  outline: none; box-shadow: none; cursor: pointer;
+  transition: background-color 0.15s ease, box-shadow 0.15s ease;
+}
+input.le-value:hover { background: rgba(var(--ink), 0.05); }
+input.le-value:focus { cursor: text; background: var(--bg-card); box-shadow: 0 0 0 3px var(--peach-glow), 0 0 0 1px var(--peach); }
+.le-time-box { position: relative; }
+/* Список времени — шире поля, по центру под ним. */
+.le-time-list { left: 50%; right: auto; width: 96px; margin-left: -48px; }
+.le-time-end { padding: 2px 0 0; font-size: 12px; font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+/* ── Кто ведёт: лента аватаров ─────────────────────────────────── */
+/* position: relative — лента сама точка отсчёта для offsetLeft аватара:
+   иначе им был попап, и выбранный тренер при открытии уезжал за край ленты. */
+.le-trainers {
+  position: relative;
+  display: flex; gap: 4px; overflow-x: auto; overscroll-behavior-x: contain;
+  margin: 0 -4px; padding: 2px 4px 2px; scrollbar-width: none;
+  scroll-snap-type: x proximity;
+}
+.le-trainers::-webkit-scrollbar { display: none; }
+.le-trainer {
+  flex: 0 0 68px; min-width: 0;
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  padding: 6px 0 5px; border: none; border-radius: 12px; background: transparent;
+  font-family: var(--font); cursor: pointer; scroll-snap-align: start;
+  transition: background-color 0.15s ease;
+}
+.le-trainer:hover:not(.is-selected) { background: rgba(var(--ink), 0.05); }
+.le-trainer-av {
+  width: 38px; height: 38px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 800; color: var(--t-color); background: var(--t-bg);
+  transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+.le-trainer.is-selected .le-trainer-av {
+  color: #fff; background: var(--t-color);
+  box-shadow: 0 0 0 2px var(--popup-glass, var(--bg)), 0 0 0 4px var(--t-color);
+}
+.le-trainer-name {
+  max-width: 100%; padding: 0 3px;
+  font-size: 11px; font-weight: 700; color: var(--muted);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.le-trainer.is-selected .le-trainer-name { color: var(--onyx); }
+
+/* ── Где: залы ────────────────────────────────────────────────── */
+.le-halls { display: flex; flex-wrap: wrap; gap: 6px; }
+.le-hall {
+  display: inline-flex; align-items: center; gap: 7px; max-width: 100%;
+  height: 32px; padding: 0 11px; border: none; border-radius: 10px;
+  background: rgba(var(--ink), 0.035); color: var(--onyx);
+  font-family: var(--font); font-size: 12.5px; font-weight: 700; cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+.le-hall:hover:not(.is-selected) { background: rgba(var(--ink), 0.07); }
+.le-hall.is-selected { background: var(--onyx); color: var(--bg); }
+.le-hall-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.le-hall-name { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* ── Места: коврики ───────────────────────────────────────────── */
+.le-cap-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 32px; }
+input.le-cap-input { width: 48px; min-width: 48px; font-size: 17px; }
+input.le-cap-input.is-invalid { box-shadow: 0 0 0 1.5px rgba(216,140,154,0.7); }
+.le-mats {
+  display: flex; flex-wrap: wrap; gap: 4px;
+  padding: 10px 12px; border-radius: 14px; background: rgba(var(--ink), 0.035);
+}
+/* Коврик сверху: узкий прямоугольник со скруглением. Двадцать в ряд —
+   обычная группа помещается в одну строку. */
+.le-mat {
+  width: 9px; height: 22px; border-radius: 3.5px;
+  box-shadow: inset 0 0 0 1.5px rgba(var(--ink), 0.16);
+  transition: background-color 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease, transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.le-mat.is-booked { background: var(--peach); box-shadow: none; }
+.le-mat.is-new { box-shadow: inset 0 0 0 1.5px var(--peach); animation: le-mat-in 0.28s cubic-bezier(0.34, 1.56, 0.64, 1) backwards; }
+.le-mat.is-removed { opacity: 0.3; transform: scale(0.82); box-shadow: inset 0 0 0 1.5px rgba(var(--ink), 0.3); }
+@keyframes le-mat-in { from { transform: scale(0.4); opacity: 0; } }
+
+/* ── Последствия и запрет ─────────────────────────────────────── */
+.le-notice, .le-consequence {
+  display: flex; align-items: flex-start; gap: 10px;
+  font-size: 12.5px; font-weight: 600; line-height: 1.45;
+}
+.le-notice { grid-column: 1 / -1; padding: 12px 14px; border-radius: 12px; background: rgba(var(--ink), 0.05); color: var(--onyx); }
+.le-notice svg { flex-shrink: 0; margin-top: 1px; color: var(--muted); }
+/* Последствие — в подвале над кнопками: его читают в момент «Сохранить». */
+.le-consequence { flex: 1 0 100%; color: var(--muted); }
+.le-consequence svg { flex-shrink: 0; margin-top: 3px; color: var(--peach); }
+
+@media (prefers-reduced-motion: reduce) {
+  .le, .le-mat, .le-mat.is-new { animation: none; transition: none; }
+}
+
+/* ── ТЕЛЕФОН: последним блоком (см. CLAUDE.md, «Адаптив») ───────── */
+@media (max-width: 767px) {
+  /* Попап здесь — шит во всю ширину (Journal.css); правило выше с двумя
+     классами перебило бы его ширину. */
+  .booking-popup.is-editing { width: 100%; }
+  .le { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  .le-col { gap: 16px; }
+  .le-icon-btn { width: 40px; height: 40px; }
+  .le-week-head .le-icon-btn { width: 36px; height: 36px; }
+  .le-day { padding: 8px 0 11px; }
+  .le-hall { height: 40px; }
+  .le-value { height: 40px; }
+}

@@ -172,6 +172,8 @@
       "percent": "Reducere, %",
       "freeHint": "Prima ședință e cadou — clientul nu plătește nimic.",
       "payHint": "Clientul plătește {{rest}}% din prețul primei ședințe.",
+      "amount": "Reducere, {{currency}}",
+      "amountHint": "Din prețul primei ședințe se scad {{amount}}. Dacă ședința costă mai puțin, este gratuită.",
       "howTitle": "Cum funcționează",
       "how": {
         "who": "Reducerea se aplică automat la prima rezervare a unui client nou — în Jurnal, în mini-aplicație și în widgetul de rezervare.",

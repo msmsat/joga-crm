@@ -31,6 +31,12 @@ test('unpaid manual discount explains the missing 125 with its source and percen
 test('first lesson discount includes the saved percentage and money saved', () => {
   assert.match(render({ isTrial: true, trialPercent: 50 }), /Первое занятие −50% · −125 EUR/);
 });
+test('first lesson discount by amount names the money and its share of the price', () => {
+  assert.match(render({ isTrial: true, trialPercent: null, trialAmount: 100, debt: 150 }), /Первое занятие −40% · −100 EUR/);
+});
+test('first lesson amount above the price is capped at the price', () => {
+  assert.match(render({ isTrial: true, trialPercent: null, trialAmount: 400, debt: 0 }), /Первое занятие −100% · −250 EUR/);
+});
 test('paid receipt takes precedence over the booking discount', () => {
   const html = render({ manualPercent: 50, debt: 0, paidAmount: 200, payment: { base_price: 250, discounts: [{ kind: 'promo', amount: 50 }], promo_code: 'SUMMER', bonuses_value: 0, deposit_applied: 0, certificate_applied: 0, total: 200, method: 'cash' } });
   assert.match(html, /SUMMER −20% · −50 EUR/);

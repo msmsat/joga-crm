@@ -150,7 +150,8 @@
     "loyalty": {
       "cert_not_found": "Az utalvány nem található",
       "cert_used": "Az utalványt már beváltották, vagy érvénytelen",
-      "cert_expired": "Az utalvány lejárt"
+      "cert_expired": "Az utalvány lejárt",
+      "first_lesson_amount_required": "Adja meg az első óra kedvezményének összegét"
     },
     "notifications": {
       "critical_locked": "Ezt az értesítést nem lehet kikapcsolni",

@@ -150,7 +150,8 @@
     "loyalty": {
       "cert_not_found": "Buono regalo non trovato",
       "cert_used": "Il buono regalo è già stato usato oppure non è valido",
-      "cert_expired": "Il buono regalo è scaduto"
+      "cert_expired": "Il buono regalo è scaduto",
+      "first_lesson_amount_required": "Indica l'importo dello sconto sulla prima lezione"
     },
     "notifications": {
       "critical_locked": "Questa notifica non può essere disattivata",

@@ -268,6 +268,95 @@ test('joining an existing lesson appends the note and reports the date of the se
   assert.deepEqual(created, [w.date, 'closed']);
 });
 
+// «Индивидуальное»: групповая услуга занятием на одного клиента.
+const GROUP_ONLY = { services: [{ id: 1, booking_mode: 'event', masters: [] }], resourceStaff: { staff: [] } };
+const capturedAvailability = sink => ({ './useWizardAvailability': { useWizardAvailability: options => {
+  sink.options = options;
+  return { serviceStates: new Map(), masterStates: new Map(), times: [], loading: false, conflict: false, branchFor: () => undefined };
+} } });
+
+test('«Individual» from the journal asks for a client, skips an open group and creates a one-spot lesson', async () => {
+  const calls = [];
+  const scheduleApi = {
+    createLesson: async body => { calls.push(['create', body]); return { id: 50 }; },
+    createReservation: async (client, lesson) => { calls.push(['reserve', client, lesson]); },
+    updateLesson: async id => { calls.push(['update', id]); },
+  };
+  const render = (await navigation({
+    schedule: { scheduleApi },
+    // У мастера в это время стоит группа с местами — индивидуальное в неё не встаёт.
+    './masterAvailability': { lessonToJoin: () => ({ id: 9, notes: '', photos: [] }) },
+  }, GROUP_ONLY))({ defaultDate: '2099-05-12', defaultTime: '10:00', defaultTeacherId: 7 });
+  assert.equal(render().canSolo, true);
+  assert.equal(render().steps.includes(1), false);
+  render().toggleSolo();
+  assert.equal(render().solo, true);
+  assert.equal(render().needsClient, true);
+  assert.deepEqual(Array.from(render().steps), [0, 1, 2, 3, 4]);
+  render().pickService({ id: 1, booking_mode: 'event', masters: [], duration_min: 60, max_clients: 12 });
+  assert.equal(render().ready, false);
+  render().pickClient(3, 'Anna');
+  const w = render();
+  assert.equal(w.joined, undefined);
+  assert.equal(w.soloLesson, true);
+  assert.equal(w.ready, true);
+  await w.submit();
+  assert.equal(calls.find(c => c[0] === 'create')[1].total_spots, 1);
+  assert.deepEqual(calls.find(c => c[0] === 'reserve'), ['reserve', 3, 50]);
+  assert.equal(calls.some(c => c[0] === 'update'), false);
+});
+
+test('released «Individual» returns the group: no client section and the service capacity', async () => {
+  let body;
+  const render = (await navigation({ schedule: { scheduleApi: { createLesson: async b => { body = b; return { id: 50 }; } } } },
+    GROUP_ONLY))({ defaultDate: '2099-05-12', defaultTime: '10:00', defaultTeacherId: 7 });
+  render().toggleSolo();
+  render().toggleSolo();
+  render().pickService({ id: 1, booking_mode: 'event', masters: [], duration_min: 60, max_clients: 12 });
+  const w = render();
+  assert.equal(w.needsClient, false);
+  assert.equal(w.soloLesson, false);
+  await w.submit();
+  assert.equal(body.total_spots, 12);
+});
+
+test('from the client card «Individual» stops offering open groups as free time', async () => {
+  const seen = {};
+  const render = (await navigation(capturedAvailability(seen), GROUP_ONLY))({ clientId: 5, defaultDate: '2099-05-12' });
+  render();
+  assert.equal(seen.options.joinable, true);
+  render().toggleSolo();
+  render();
+  assert.equal(seen.options.joinable, false);
+});
+
+test('a catalog without group services offers no «Individual»', async () => {
+  assert.equal((await navigation())()().canSolo, false);
+});
+
+test('the service section shows «Individual» next to the filter and toggles it', async () => {
+  const app = await harness(`${base}WizardSteps.tsx`, {
+    useClientsList: { useClientsList: () => ({}), useClientCategories: () => [] },
+    mapClient: { getAvatarColor: () => '', getInitials: () => '', nameInitials: () => '' },
+    usePriceLabel: { usePriceLabel: () => () => '' },
+    useDurationLabel: { useDurationLabel: () => () => '' },
+    './WizardParts': { WizardChips: 'chips', WizardEmpty: 'empty', WizardRow: 'row', WizardSearch: 'search' },
+    '../../../../../../components/Icons': { User: 'user', Plus: 'plus', Check: 'check', Clock: 'clock' },
+  });
+  const w = { serviceList: [], serviceStates: new Map(), service: null, time: '', availability: { loading: false },
+    canSolo: true, solo: false };
+  w.toggleSolo = () => { w.solo = !w.solo; };
+  const solo = () => nodes(app.render('ServiceStep', { w, when: null }), 'button')
+    .find(button => button.className?.startsWith('bw-solo'));
+  assert.equal(solo()['aria-pressed'], false);
+  assert.equal(solo().title, 'journal:newBooking.individualHint');
+  solo().onClick();
+  assert.equal(w.solo, true);
+  assert.equal(solo().className, 'bw-solo is-on');
+  w.canSolo = false;
+  assert.equal(solo(), undefined);
+});
+
 test('manual date and time, available time, and a master time notify the journal of the selected day', async () => {
   const days = [];
   const render = (await navigation())({ defaultDate: '2099-05-12', onDateChange: date => days.push(date) });

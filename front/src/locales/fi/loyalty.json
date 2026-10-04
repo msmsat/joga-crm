@@ -172,6 +172,8 @@
       "percent": "Alennus, %",
       "freeHint": "Ensimmäinen tunti on lahja — asiakas ei maksa mitään.",
       "payHint": "Asiakas maksaa {{rest}} % ensimmäisen tunnin hinnasta.",
+      "amount": "Alennus, {{currency}}",
+      "amountHint": "Ensimmäisen tunnin hinnasta vähennetään {{amount}}. Jos tunti maksaa vähemmän, se on ilmainen.",
       "howTitle": "Näin se toimii",
       "how": {
         "who": "Alennus tulee automaattisesti uuden asiakkaan ensimmäiseen varaukseen — Päiväkirjassa, minisovelluksessa ja varauswidgetissä.",

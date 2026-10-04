@@ -27,7 +27,8 @@ from schemas.checkout import (
     CheckoutServiceMasterOut, CheckoutServiceOut,
 )
 from services import platform_fee, stripe_connect
-from services.booking_access import trial_percent
+from services.booking_access import trial_discount
+from services.discounts import FirstLessonDiscount
 from services.members import member_name
 from services.notifier import notify_payment
 from services.points import client_point_value, redeem_points
@@ -139,7 +140,7 @@ async def _quote(
     # занятие, у абонемента такого поля нет вовсе.
     resolved = await resolve_price(
         db, studio_id, client_id, base_price, promo,
-        first_lesson_percent=getattr(package, "first_lesson_percent", None),
+        first_lesson=getattr(package, "first_lesson", None),
         manual_percent=manual_percent,
     )
     discount = base_price - resolved.final_price
@@ -341,11 +342,11 @@ class ServiceAsProduct:
     per_visit_price: int
     service_id: Optional[int] = None
     is_active: bool = True
-    # Скидка первого занятия, обещанная при записи на ЭТО занятие (снимок на
-    # брони, services/booking_access.trial_percent). Только у "lesson": цену
-    # занятия касса пересчитывает при оплате, и без снимка клиент, записанный
-    # со скидкой, заплатил бы полную цену.
-    first_lesson_percent: Optional[int] = None
+    # Скидка первого занятия (процент или сумма), обещанная при записи на ЭТО
+    # занятие (снимок на брони, services/booking_access.trial_discount). Только
+    # у "lesson": цену занятия касса пересчитывает при оплате, и без снимка
+    # клиент, записанный со скидкой, заплатил бы полную цену.
+    first_lesson: Optional[FirstLessonDiscount] = None
 
 
 async def _get_client_package(
@@ -416,7 +417,7 @@ async def _get_client_package(
         return client, ServiceAsProduct(
             id=lesson.id, name=lesson.name, price=lesson.price,
             per_visit_price=lesson.price, service_id=lesson.service_id,
-            first_lesson_percent=trial_percent(reservation) if reservation is not None else None,
+            first_lesson=trial_discount(reservation) if reservation is not None else None,
         )
 
     package = (await db.execute(

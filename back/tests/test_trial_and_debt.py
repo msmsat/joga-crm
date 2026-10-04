@@ -24,12 +24,13 @@ class _Lesson:
 
 class _Res:
     def __init__(self, subscription_id=None, is_trial=False, debt_payment_id=None,
-                 trial_discount_percent=None):
+                 trial_discount_percent=None, trial_discount_amount=None):
         self.client_id = 1
         self.subscription_id = subscription_id
         self.is_trial = is_trial
         self.debt_payment_id = debt_payment_id
         self.trial_discount_percent = trial_discount_percent
+        self.trial_discount_amount = trial_discount_amount
 
 
 class _R:
@@ -106,6 +107,13 @@ res_half = _Res(is_trial=True, trial_discount_percent=50)
 half = _run(open_debt(db_half, res_half, _Lesson(price=500), amount=250))
 assert half is not None and half.amount == 250, "долг — на сумму со скидкой, а не на прайс"
 assert res_half.debt_payment_id == half.id
+
+# Скидка суммой — тоже не подарок, даже большая: покроет ли она занятие, решает
+# цена, и долг заводится на то, что посчитала запись.
+res_off = _Res(is_trial=True, trial_discount_amount=300)
+off = _run(open_debt(_DB(), res_off, _Lesson(price=500), amount=200))
+assert off is not None and off.amount == 200, "долг — на цену минус сумма скидки"
+assert _run(open_debt(_DB(), _Res(is_trial=True, trial_discount_amount=900), _Lesson(price=500), amount=0)) is None,     "сумма покрыла занятие — платить нечего"
 
 # ─── Повторный вызов не плодит второй долг (идемпотентность) ─────────────────
 db_twice = _DB()

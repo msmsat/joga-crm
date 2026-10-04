@@ -7,7 +7,7 @@ from sqlalchemy import case, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import async_session_maker, get_db
-from dependencies import get_scoped_lesson, get_studio_context, StudioContext
+from dependencies import get_scoped_lesson, get_studio_context, require_role, StudioContext
 from services import lesson_time, studio_time
 from services.lesson_compensation import calculate_compensation
 from models import (
@@ -19,7 +19,8 @@ from schemas.schedule.lessons import (
     LessonRead, LessonUpdateRequest,
 )
 from services import gcal
-from services.booking_access import can_book
+from services.booking_access import eligible_subscriptions, trial_eligible
+from services.booking_rules import load_rules
 from services.members import full_name, is_specialist_clause
 from services.notifier import lesson_context, notify
 from services import booking, schedule_guard, service_pricing
@@ -222,6 +223,7 @@ async def get_lesson(
             Reservation.status,
             Reservation.is_trial,
             Reservation.trial_discount_percent,
+            Reservation.trial_discount_amount,
             # Долг показываем только непогашенный: после оплаты строка платежа
             # остаётся в истории клиента, но плашке «Не оплачено» в Журнале там
             # уже не место. Внешним соединением, потому что у большинства броней
@@ -296,17 +298,36 @@ async def _lesson_location(db: AsyncSession, lesson: Lesson) -> dict:
 @router.get("/lessons/{lesson_id}/eligible-clients", response_model=List[EligibleClient])
 async def get_eligible_clients(
     lesson_id: int,
-    ctx: StudioContext = Depends(get_studio_context),
+    # Только владелец и администратор. Список — вся клиентская база студии с
+    # телефонами, а тренер видит лишь своих клиентов (routers/clients/_scope)
+    # и записывать никого не может (POST /schedule/reservations отвечает ему
+    # 403). Открытый тренеру, этот список выдавал бы ему базу целиком через
+    # любое своё занятие.
+    ctx: StudioContext = Depends(require_role("owner", "admin")),
     db: AsyncSession = Depends(get_db),
 ):
-    """Клиенты студии, которых можно записать на это занятие (CL-6.4) — только те,
-    для кого пройдёт assert_can_book (право по абонементу, ядро — CL-6.1). Zero
-    Trust: фронт не решает, кто подходит, только рисует то, что вернул бэк.
+    """Клиенты студии, которых администратор может записать на это занятие, и
+    чем будет покрыта запись каждого. Zero Trust: фронт не решает, кто подходит
+    и почём, — только рисует то, что вернул бэк.
 
-    Доступ через get_scoped_lesson: не своя студия — 404, тренер на чужом — 403.
+    Записать за стойкой можно любого активного клиента (POST /schedule/reservations):
+    без абонемента и первого занятия запись встаёт долгом «оплата на месте», как
+    у индивидуальной записи. Раньше здесь были только владельцы подходящего
+    абонемента, и у студии, ещё не продавшей ни одного, окно было пустым при
+    десятках клиентов в базе.
+
+    Основание считается в том же порядке, что `booking.resolve_funding`:
+    абонемент → первое занятие → бесплатное по прайсу → оплата на месте. Сумму
+    к оплате список не называет: цена клиента складывается из его скидок
+    (`booking.client_price`), а считать их на каждого — запросы на каждого.
+    Долг с точной суммой появляется в строке записанного.
+
+    Не своя студия — 404 (get_scoped_lesson), тренер — 403 (require_role).
     Уже записанные на это занятие (кроме отменённых) в список не попадают.
     """
     lesson = await get_scoped_lesson(lesson_id, ctx, db)
+    if lesson.status == "cancelled":
+        return []
 
     already_booked = (await db.execute(
         select(Reservation.client_id).where(
@@ -315,26 +336,47 @@ async def get_eligible_clients(
         )
     )).scalars().all()
 
+    # Неактивного клиента домен записи не пускает (CLIENT_UNAVAILABLE) — и в
+    # списке ему не место.
     clients = (await db.execute(
         select(Client).where(
             Client.studio_id == ctx.studio_id,
+            Client.is_active.is_(True),
             Client.id.notin_(already_booked) if already_booked else True,
-        )
+        ).order_by(Client.name, Client.last_name, Client.id)
     )).scalars().all()
 
-    # ponytail: N клиентов × запрос абонементов — приемлемо для MVP-объёмов;
-    # при росте — один JOIN. Ядро гейта (find_eligible_subscription) переиспользуется
-    # как булева-проверка can_book, без исключений в цикле.
+    ids = [client.id for client in clients]
+    subscriptions = await eligible_subscriptions(db, ids, lesson)
+    rules = await load_rules(db, ctx.studio_id)
+    trial = await trial_eligible(db, ids, rules)
+
     eligible = []
     for client in clients:
-        if await can_book(db, client.id, lesson):
-            eligible.append(EligibleClient(
-                id=client.id,
-                name=client.name,
-                last_name=client.last_name,
-                phone=client.phone,
-                avatar_color=client.avatar_color,
-            ))
+        sub = subscriptions.get(client.id)
+        if sub is not None:
+            funding = "subscription"
+        elif client.id in trial:
+            funding = "trial"
+        elif lesson.price <= 0:
+            funding = "free"
+        else:
+            funding = "pay"
+        eligible.append(EligibleClient(
+            id=client.id,
+            name=client.name,
+            last_name=client.last_name,
+            phone=client.phone,
+            avatar_color=client.avatar_color,
+            funding=funding,
+            classes_left=sub.total_classes - sub.used_classes if sub is not None else None,
+            trial_percent=rules.first_lesson.percent if funding == "trial" else None,
+            trial_amount=rules.first_lesson.amount if funding == "trial" else None,
+        ))
+    # Покрытые — первыми: администратор чаще всего ищет постоянных, и им запись
+    # ничего не стоит. Внутри группы порядок по имени, как пришёл из базы.
+    order = {"subscription": 0, "trial": 1, "free": 2, "pay": 2}
+    eligible.sort(key=lambda c: order[c.funding])
     return eligible
 
 

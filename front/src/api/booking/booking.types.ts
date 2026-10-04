@@ -27,8 +27,11 @@ export interface BookingSettings {
   widget_work_end: string
   /** «Скидка на первое занятие»: первая бронь нового клиента — со скидкой студии. */
   trial_lesson_free: boolean
-  /** Процент этой скидки (1–100; 100 — бесплатно). Меняется в Лояльности. */
+  /** Чем задана эта скидка, её процент (1–100; 100 — бесплатно) и сумма.
+   *  Меняется в Лояльности. */
+  trial_discount_type: 'percent' | 'amount'
   trial_discount_percent: number
+  trial_discount_amount: number | null
   /** «Кофе после занятия» в мини-приложении: спрашивать ли и куда звать. */
   coffee_enabled: boolean
   coffee_spots: CoffeeSpot[]

@@ -58,14 +58,19 @@ export function LessonBookingBody({ lesson, selectedSpot, onSpotSelect, allowRep
       label: t('bookingModal.price'),
       // Подарок студии виден там же, где обычно стоит цена: иначе человек
       // выбирает коврик, глядя на сумму, которую с него не возьмут. Скидка на
-      // первое занятие — так же: цена уже с ней и сколько процентов снято.
+      // первое занятие — так же: цена уже с ней и сколько снято — процентом
+      // или суммой, как задала студия.
       value: lesson?.trial_available
         ? t('bookingModal.free')
         : lesson?.first_lesson_discount && lesson.first_lesson_price_str
           ? t('bookingModal.first_lesson_price', {
               price: lesson.first_lesson_price_str, percent: lesson.first_lesson_discount,
             })
-          : lesson?.price_str ?? '—',
+          : lesson?.first_lesson_discount_amount_str && lesson.first_lesson_price_str
+            ? t('bookingModal.first_lesson_price_amount', {
+                price: lesson.first_lesson_price_str, amount: lesson.first_lesson_discount_amount_str,
+              })
+            : lesson?.price_str ?? '—',
     },
   ];
 

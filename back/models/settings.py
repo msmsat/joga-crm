@@ -420,6 +420,12 @@ class StudioBookingSettings(Base):
     __table_args__ = (
         CheckConstraint("trial_discount_percent >= 1 AND trial_discount_percent <= 100",
                         name="check_booking_settings_trial_percent"),
+        CheckConstraint("trial_discount_type IN ('percent', 'amount')",
+                        name="check_booking_settings_trial_type"),
+        CheckConstraint("trial_discount_amount IS NULL OR trial_discount_amount >= 1",
+                        name="check_booking_settings_trial_amount"),
+        CheckConstraint("trial_discount_type = 'percent' OR trial_discount_amount IS NOT NULL",
+                        name="check_booking_settings_trial_amount_set"),
     )
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
@@ -472,6 +478,11 @@ class StudioBookingSettings(Base):
     # Сколько процентов снимает первое занятие. 100 — бесплатно (прежний подарок,
     # и умолчание: после наката у всех студий ничего не поменялось).
     trial_discount_percent: Mapped[int] = mapped_column(SmallInteger, default=100, server_default="100")
+    # Чем скидка задана: 'percent' — процентом выше, 'amount' — суммой в валюте
+    # студии ниже («−300 Kč»). Оба значения хранятся, переключатель вида в
+    # Лояльности не стирает другое.
+    trial_discount_type: Mapped[str] = mapped_column(String(10), default="percent", server_default="percent")
+    trial_discount_amount: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
     coffee_enabled: Mapped[bool] = mapped_column(Boolean, default=True, server_default="true")
     # До 3 мест рядом со студией: [{"name": ..., "address": ..., "url": ...}].
     # Владелец выбирает их сам — внешнего справочника мест в продукте нет.

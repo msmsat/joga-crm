@@ -119,9 +119,10 @@ export const BookingCard = React.memo(function BookingCard({
     <div
       data-booking-id={b.id}
       className={`booking-card ${b.status} ${layout.isTracked ? 'is-tracked' : ''} ${layout.isCascade ? 'is-cascade' : ''} ${isSelected ? 'is-selected' : ''} ${isDragging ? 'is-dragging' : ''} ${missed ? 'is-missed' : ''}`}
-      onPointerEnter={e => { if (e.pointerType === 'mouse') prefetch(b); }}
+      onPointerEnter={e => { if (!b.source && e.pointerType === 'mouse') prefetch(b); }}
       onPointerLeave={e => { if (e.pointerType === 'mouse') prefetch(null); }}
       onPointerDown={e => {
+        if (b.source) return;
         prefetch(b, true);
         // Телефон: палец только листает расписание. Ни переноса, ни
         // предупреждений на «попытку» — движение пальца по карточке там почти
@@ -148,7 +149,7 @@ export const BookingCard = React.memo(function BookingCard({
         background: layout.isCascade ? 'var(--bg-card)' : `${tone}${missed ? '24' : '12'}`,
         border: editDraft ? '2px dashed var(--peach)' : `2px solid ${tone}`,
         color: tone,
-        cursor: b.status === 'cancelled' || !gestures ? 'pointer' : (canEdit ? 'grab' : 'pointer'),
+        cursor: b.source || b.status === 'cancelled' || !gestures ? 'pointer' : (canEdit ? 'grab' : 'pointer'),
         ...(isDragging && drag.type === 'move' ? {
            transform: `translate(${drag.deltaX}px, ${drag.deltaY}px) scale(1.02)`,
         } : {})
@@ -173,8 +174,9 @@ export const BookingCard = React.memo(function BookingCard({
         {editDraft?.title || b.title}
       </div>
       
+      {b.source && <div style={{fontSize:10,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{b.source.client_name} · {b.source.master_name || b.source.event.master_source_id} · {t(`bumpix:status.${b.source.event.status}`)}</div>}
       <div className="b-meta">
-        {b.status === 'cancelled' ? (
+        {b.source ? <span style={{fontSize:10}}>Bumpix</span> : b.status === 'cancelled' ? (
           <span className="b-cancelled-badge">{t('grid.cancelled')}</span>
         ) : (
           // Заполненность видна и тренеру: это его занятие, сколько человек
@@ -189,7 +191,7 @@ export const BookingCard = React.memo(function BookingCard({
         )}
       </div>
 
-      {b.status !== 'cancelled' && b.maxClients > 0 && height > 40 && (
+      {!b.source && b.status !== 'cancelled' && b.maxClients > 0 && height > 40 && (
         <div className="b-progress" style={{ position: 'absolute', bottom: 6, left: 8, right: 8, height: 2, background: `${b.color}25`, borderRadius: 1 }}>
           <div style={{ height: '100%', width: `${fillRatio * 100}%`, background: b.color, borderRadius: 1, transition: 'width 0.5s ease' }} />
         </div>
@@ -210,7 +212,7 @@ export const BookingCard = React.memo(function BookingCard({
 
       {/* Ручки растягивания — у группового и индивидуального одинаково. На
           телефоне их нет: длительность меняют в карточке занятия. */}
-      {isSelected && !isDragging && canEdit && gestures && b.status !== 'cancelled' && (
+      {!b.source && isSelected && !isDragging && canEdit && gestures && b.status !== 'cancelled' && (
         <>
           <div 
             style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 24, cursor: 'ns-resize', zIndex: 1000 }} 

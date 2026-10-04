@@ -12,3 +12,6 @@ router.include_router(hybrid_router)
 
 from .staff_blocks import router as staff_blocks_router
 router.include_router(staff_blocks_router)
+
+from .bumpix import router as bumpix_router
+router.include_router(bumpix_router)

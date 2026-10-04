@@ -93,9 +93,20 @@ export function ServiceStep({ w, when }: StepProps) {
           <WizardSearch value={search} onChange={setSearch} placeholder={t('journal:wizard.searchService')} />
           {when}
         </div>
-        <button type="button" className="bw-filter-toggle" aria-pressed={showAll} onClick={() => setShowAll(v => !v)}>
-          {t(showAll ? 'journal:wizard.onlyAvailable' : 'journal:wizard.showAll')}
-        </button>
+        {/* «Индивидуальное» — формат занятия, а не фильтр: список услуг тот же,
+            групповая встанет занятием на одного клиента. */}
+        <div className="bw-tools-row bw-tools-end">
+          <button type="button" className="bw-filter-toggle" aria-pressed={showAll} onClick={() => setShowAll(v => !v)}>
+            {t(showAll ? 'journal:wizard.onlyAvailable' : 'journal:wizard.showAll')}
+          </button>
+          {w.canSolo && (
+            <button type="button" className={`bw-solo${w.solo ? ' is-on' : ''}`} aria-pressed={w.solo}
+                    title={t('journal:newBooking.individualHint')} onClick={w.toggleSolo}>
+              <Icons.User />
+              <span className="bw-solo-label">{t('journal:newBooking.individual')}</span>
+            </button>
+          )}
+        </div>
         <WizardChips value={category} onPick={setCategory}
                      options={[{ value: '', label: t('journal:toolbar.all') }, ...categories.map(c => ({ value: c, label: c }))]} />
       </div>

@@ -35,7 +35,8 @@
         "label": "Kedvezmény az első órára",
         "free": "Az új ügyfél első órája ingyenes.",
         "percent": "Az új ügyfél első órája {{percent}}% kedvezménnyel jár.",
-        "change": "A százalék a „Hűségprogram” menüben állítható"
+        "amount": "Az új ügyfél első órája {{amount}} kedvezménnyel jár.",
+        "change": "A kedvezmény a „Hűségprogram” menüben állítható"
       },
       "trainerConfirm": {
         "label": "Oktatói megerősítés",

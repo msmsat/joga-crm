@@ -150,7 +150,8 @@
     "loyalty": {
       "cert_not_found": "Voucherul nu a fost găsit",
       "cert_used": "Voucherul a fost deja folosit sau este invalid",
-      "cert_expired": "Voucherul a expirat"
+      "cert_expired": "Voucherul a expirat",
+      "first_lesson_amount_required": "Introduceți valoarea reducerii pentru prima ședință"
     },
     "notifications": {
       "critical_locked": "Această notificare nu poate fi dezactivată",

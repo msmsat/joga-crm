@@ -150,7 +150,8 @@
     "loyalty": {
       "cert_not_found": "Hediye çeki bulunamadı",
       "cert_used": "Hediye çeki zaten kullanılmış ya da geçersiz",
-      "cert_expired": "Hediye çekinin süresi doldu"
+      "cert_expired": "Hediye çekinin süresi doldu",
+      "first_lesson_amount_required": "İlk ders indirim tutarını girin"
     },
     "notifications": {
       "critical_locked": "Bu bildirim kapatılamaz",

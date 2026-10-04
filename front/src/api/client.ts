@@ -67,6 +67,7 @@ function detailCode(data: unknown): string | undefined {
 
 interface RequestOptions {
   body?: unknown
+  responseType?: 'blob'
   form?: FormData
   auth?: boolean
   signal?: AbortSignal
@@ -163,6 +164,8 @@ async function request<T>(method: string, path: string, options: RequestOptions 
     if (!res.ok) throw new ApiError(res.status, 'Ошибка запроса')
     return undefined as T
   }
+
+  if (res.ok && options.responseType === 'blob') return await res.blob() as T
 
   const data: unknown = await res.json()
 
@@ -286,6 +289,9 @@ export function patchKeepalive(path: string, body: unknown): void {
 }
 
 export const client = {
+  blob: (path: string, options?: { signal?: AbortSignal }) =>
+    request<Blob>('GET', path, { ...options, responseType: 'blob' }),
+
   get: <T>(path: string, options?: { auth?: boolean; signal?: AbortSignal; headers?: Record<string, string>; allowUnauthorized?: boolean }) =>
     request<T>('GET', path, options),
 

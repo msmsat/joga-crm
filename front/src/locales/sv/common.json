@@ -150,7 +150,8 @@
     "loyalty": {
       "cert_not_found": "Presentkortet hittades inte",
       "cert_used": "Presentkortet är redan använt eller ogiltigt",
-      "cert_expired": "Presentkortet har gått ut"
+      "cert_expired": "Presentkortet har gått ut",
+      "first_lesson_amount_required": "Ange rabattbeloppet för första passet"
     },
     "notifications": {
       "critical_locked": "Den här aviseringen går inte att stänga av",

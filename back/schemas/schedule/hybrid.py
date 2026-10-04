@@ -224,7 +224,9 @@ class PaymentPreviewRead(HybridSchema):
     discounts: list[PaymentDiscount] = []
     first_lesson_offered: bool = False
     first_lesson_applied: bool = False
+    # Размер скидки первого занятия: процент ИЛИ сумма — второе поле пустое.
     first_lesson_percent: Optional[int] = None
+    first_lesson_amount: Optional[int] = None
     promo_valid: Optional[bool] = None
     # Промокод действует, но выгоднее оказалась другая скидка: скидки не
     # суммируются, и молчать об этом значит оставить кассира гадать.

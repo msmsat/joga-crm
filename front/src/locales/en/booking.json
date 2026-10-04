@@ -35,7 +35,8 @@
         "label": "First class discount",
         "free": "A new client's first class is free.",
         "percent": "A new client's first class is {{percent}}% off.",
-        "change": "Set the percentage in Loyalty"
+        "amount": "A new client's first class is {{amount}} off.",
+        "change": "Set the discount in Loyalty"
       },
       "trainerConfirm": {
         "label": "Trainer confirmation",

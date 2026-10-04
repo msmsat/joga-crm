@@ -35,7 +35,8 @@
         "label": "İlk ders indirimi",
         "free": "Yeni müşterinin ilk dersi ücretsizdir.",
         "percent": "Yeni müşterinin ilk dersi %{{percent}} indirimlidir.",
-        "change": "Oran “Sadakat” bölümünden ayarlanır"
+        "amount": "Yeni müşterinin ilk dersi {{amount}}indirimlidir.",
+        "change": "İndirim “Sadakat” bölümünden ayarlanır"
       },
       "trainerConfirm": {
         "label": "Eğitmen onayı",

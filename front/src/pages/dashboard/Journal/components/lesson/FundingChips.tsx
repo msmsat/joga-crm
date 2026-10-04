@@ -11,6 +11,8 @@ import './lessonCard.css';
 export interface Funding {
   price: number;
   trialPercent: number | null;
+  /** Скидка первого занятия суммой — тогда процента у брони нет. */
+  trialAmount?: number | null;
   manualPercent?: number | null;
   isTrial: boolean;
   subscriptionName: string | null;
@@ -72,12 +74,19 @@ export function FundingChips({ funding, currency }: { funding: Funding; currency
     // сохранённые скидки, которые объясняют фактическую сумму: программы
     // могут выбирать лучшую скидку или складывать их. Чек выше приоритетнее.
     if (!bySubscription) {
+      // Скидка суммой — та же формула, что у сервера (apply_discount): не
+      // больше цены; процент для подписи считается от неё, как у чека выше.
+      const byAmount = (amount: number) => {
+        const off = Math.min(amount, funding.price);
+        return { amount: off, percent: funding.price > 0 ? Math.round(off / funding.price * 100) : 0 };
+      };
+      const byPercent = (percent: number) => ({ percent, amount: Math.floor(funding.price * percent / 100) });
+      const firstLesson = !funding.isTrial ? null
+        : funding.trialAmount != null ? byAmount(funding.trialAmount) : byPercent(funding.trialPercent ?? 100);
       const candidates = [
-        { kind: 'first_lesson', percent: funding.isTrial ? funding.trialPercent ?? 100 : 0 },
-        { kind: 'manual', percent: funding.manualPercent ?? 0 },
-      ].filter(d => d.percent > 0).map(d => ({
-        ...d, amount: Math.floor(funding.price * d.percent / 100),
-      }));
+        { kind: 'first_lesson', ...(firstLesson ?? byPercent(0)) },
+        { kind: 'manual', ...byPercent(funding.manualPercent ?? 0) },
+      ].filter(d => d.percent > 0 || d.amount > 0);
       const reduction = funding.price - funding.debt - funding.paidAmount;
       const single = candidates.find(d => d.amount === reduction);
       const discounts = single ? [single]

@@ -35,7 +35,8 @@
         "label": "Reducere la prima ședință",
         "free": "Prima ședință a unui client nou este gratuită.",
         "percent": "Prima ședință a unui client nou are o reducere de {{percent}}%.",
-        "change": "Procentul se setează în „Fidelizare”"
+        "amount": "Prima ședință a unui client nou are o reducere de {{amount}}.",
+        "change": "Reducerea se setează în „Fidelizare”"
       },
       "trainerConfirm": {
         "label": "Confirmare de la antrenor",

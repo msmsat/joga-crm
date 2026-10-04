@@ -15,7 +15,6 @@
 ними и мини-приложением означает разъехавшиеся остатки абонементов.
 """
 from datetime import date, datetime, timedelta, timezone
-from types import SimpleNamespace
 from typing import Annotated, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response
@@ -30,7 +29,7 @@ from schemas._base import BaseSchema
 from services import booking
 from services.booking_access import coverage_gap, trial_applies
 from services.booking_http import reject
-from services.discounts import apply_discount
+from services.discounts import FirstLessonDiscount, apply_discount
 from services import catalog, lesson_time
 from services.booking_rules import (
     BookingRules, assert_bookable, booking_window, is_bookable, load_rules,
@@ -121,9 +120,11 @@ class MiniappLesson(BaseSchema):
     # полей ниже, по этому флагу пишут «Бесплатно», и скидку −50 % им отдавать
     # под ним нельзя.
     trial_available: bool = False
-    # Первое занятие СО СКИДКОЙ: процент (1–99) и цена после него. 0 и пустая
-    # строка — скидки нет (или занятие бесплатно — тогда см. trial_available).
+    # Первое занятие СО СКИДКОЙ: процент (1–99) или сумма скидки строкой
+    # («300 Kč»), и цена после неё. 0 и пустые строки — скидки нет (или
+    # занятие бесплатно — тогда см. trial_available).
     first_lesson_discount: int = 0
+    first_lesson_discount_amount_str: str = ""
     first_lesson_price_str: str = ""
     coffee: CoffeeState = CoffeeState()
 
@@ -173,8 +174,9 @@ def _badge(total_spots: int, taken: int) -> str:
     return "open"
 
 
-async def _first_lesson(db: AsyncSession, client_id: Optional[int], rules: BookingRules) -> Optional[int]:
-    """Процент скидки первого занятия, если она положена клиенту; иначе None.
+async def _first_lesson(db: AsyncSession, client_id: Optional[int],
+                        rules: BookingRules) -> Optional[FirstLessonDiscount]:
+    """Скидка первого занятия (процент или сумма), если она положена клиенту; иначе None.
 
     Одним запросом на весь список, а не на карточку: признак клиентский, у всех
     занятий списка он одинаковый. Абонемент её перекроет — это решится при
@@ -182,7 +184,7 @@ async def _first_lesson(db: AsyncSession, client_id: Optional[int], rules: Booki
     """
     if client_id is None or not await trial_applies(db, client_id, rules):
         return None
-    return rules.trial_discount_percent or 100
+    return rules.first_lesson
 
 
 def _lesson_fields(
@@ -193,15 +195,19 @@ def _lesson_fields(
     hall_colors: dict[int, str],
     rules: BookingRules,
     coffee: Optional[dict] = None,
-    first_lesson: Optional[int] = None,
+    first_lesson: Optional[FirstLessonDiscount] = None,
 ) -> dict:
-    """`first_lesson` — процент скидки первого занятия, положенной клиенту
+    """`first_lesson` — скидка первого занятия, положенная клиенту
     (`_first_lesson`); None — не положена."""
     color = DEFAULT_HALL_COLOR
     if lesson.hall_id is not None:
         color = hall_colors.get(lesson.hall_id) or DEFAULT_HALL_COLOR
-    free = first_lesson is not None and first_lesson >= 100
-    partial = first_lesson if first_lesson is not None and not free and lesson.price > 0 else 0
+    # Та же формула, что у движка цены (services/discounts.apply_discount):
+    # показанная на карточке сумма обязана совпасть с той, что запишут.
+    off = apply_discount(first_lesson, lesson.price) if first_lesson is not None and lesson.price > 0 else 0
+    # Бесплатно — подарок целиком или сумма, которая покрывает цену занятия.
+    free = first_lesson is not None and (first_lesson.gift or (lesson.price > 0 and off >= lesson.price))
+    partial = 0 < off < lesson.price and not free
     return dict(
         id=lesson.id,
         name=lesson.name,
@@ -225,13 +231,10 @@ def _lesson_fields(
         # два изменения в одном релизе.
         bookable=is_bookable(rules, lesson, datetime.now()),
         trial_available=free,
-        first_lesson_discount=partial,
-        # Та же формула, что у движка цены (services/discounts.apply_discount):
-        # показанная на карточке сумма обязана совпасть с той, что запишут.
-        first_lesson_price_str=_fmt_amount(
-            lesson.price - apply_discount(SimpleNamespace(discount_type="percent", value=partial),
-                                          lesson.price),
-            currency) if partial else "",
+        first_lesson_discount=first_lesson.percent if partial and first_lesson.amount is None else 0,
+        first_lesson_discount_amount_str=(_fmt_amount(first_lesson.amount, currency)
+                                          if partial and first_lesson.amount is not None else ""),
+        first_lesson_price_str=_fmt_amount(lesson.price - off, currency) if partial else "",
         # Пустой словарь схема развернёт в CoffeeState() с enabled=False —
         # ровно то, что нужно студии с выключенной механикой.
         #

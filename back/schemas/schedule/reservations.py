@@ -65,7 +65,9 @@ class ReservationPaymentPreview(BaseSchema):
     # Бронь записана пробной — у чека есть выключатель «Первое занятие».
     first_lesson_offered: bool = False
     first_lesson_applied: bool = False
+    # Размер скидки первого занятия: процент ИЛИ сумма — второе поле пустое.
     first_lesson_percent: Optional[int] = None
+    first_lesson_amount: Optional[int] = None
     # Промокод: None — не вводили, False — не принят; принят, но проиграл
     # более выгодной скидке — promo_outweighed.
     promo_valid: Optional[bool] = None

@@ -17,6 +17,7 @@ import { useStudioCurrency } from '../../../../../hooks/useStudioCurrency';
 import { formatMoney } from '../../../../../lib/money';
 import { useDurationLabel } from '../../../../../hooks/useDurationLabel';
 import { useLeave } from '../../hooks/useLeave';
+import { SpotsField } from '../SpotsField';
 
 /** С этого числа тренеров список получает поиск: глазами по длинному уже не ищут. */
 const TRAINER_SEARCH_FROM = 8;
@@ -157,12 +158,20 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({
       onResourceBooking?.(service.id);
       return;
     }
-    setNewForm(f => ({
-      ...f,
-      serviceId: service.id,
-      title: service.name,
-      maxClients: service.max_clients != null ? String(service.max_clients) : f.maxClients,
-    }));
+    setNewForm(f => {
+      // «Индивидуальное» переживает смену услуги: формат занятия человек
+      // выбрал сам. Одно место, пришедшее с прошлой услугой, — не выбор, а её
+      // вместимость, и его сменяет вместимость новой.
+      const prev = services.find(s => s.id === f.serviceId);
+      const keepSolo = Number(f.maxClients) === 1 && prev?.max_clients !== 1;
+      return {
+        ...f,
+        serviceId: service.id,
+        title: service.name,
+        maxClients: keepSolo ? f.maxClients
+          : service.max_clients != null ? String(service.max_clients) : f.maxClients,
+      };
+    });
   };
 
   // Синхронизация инпутов с текущим слотом — прямо в рендере (документированный
@@ -427,16 +436,12 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({
 
               <div className="kp-section">
                 <div className="kp-section-title">{t('newBooking.groupLimit')}</div>
-                <div className="kp-limit" style={{ border: `1px solid ${maxClientsError ? 'var(--error)' : 'var(--border)'}` }}>
-                  <span className="kp-limit-label">{t('newBooking.maxSpots')}</span>
-                  <input
-                    className="modal-input kp-limit-input"
-                    type="number" min="1" max="50"
-                    style={{ margin: 0, textAlign: 'center', padding: 0, background: 'var(--bg-card)', border: `1px solid ${maxClientsError ? 'var(--error)' : 'var(--border)'}`, borderRadius: '6px', fontWeight: 700 }}
-                    value={newForm.maxClients}
-                    onChange={e => setNewForm(f => ({ ...f, maxClients: e.target.value }))}
-                  />
-                </div>
+                <SpotsField
+                  value={newForm.maxClients}
+                  onChange={maxClients => setNewForm(f => ({ ...f, maxClients }))}
+                  serviceSpots={services.find(s => s.id === newForm.serviceId)?.max_clients ?? null}
+                  invalid={!!maxClientsError}
+                />
                 {maxClientsError && <div style={{ fontSize: 11, color: 'var(--error)', fontWeight: 600, marginTop: 4 }}>{maxClientsError}</div>}
               </div>
             </div>

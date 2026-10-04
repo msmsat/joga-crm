@@ -27,6 +27,7 @@ from sqlalchemy.future import select
 
 from models import Lesson, StudioBookingSettings
 from services import lesson_time
+from services.discounts import FirstLessonDiscount
 
 
 @dataclass(frozen=True)
@@ -50,8 +51,12 @@ class BookingRules:
     # «Скидка на первое занятие». Живёт здесь, потому что решение о ней
     # принимают все четыре точки записи (services/booking_access.trial_applies),
     # а не только мини-приложение. Процент 100 — бесплатно (прежний подарок).
+    # Скидка бывает процентом или суммой (`trial_discount_type`); каждое
+    # значение хранится своё, чтобы переключение вида не стирало другое.
     trial_lesson_free: bool = False
+    trial_discount_type: str = "percent"
     trial_discount_percent: int = 100
+    trial_discount_amount: int | None = None
     # «Кофе после занятия» (см. models/settings.py). Читают мини-приложение и
     # рассыльщик — поэтому живут здесь, рядом с остальными правилами записи.
     coffee_enabled: bool = True
@@ -73,6 +78,14 @@ class BookingRules:
         нельзя — иначе клиент увидит приглашение, на которое сервер ответит 403.
         """
         return self.coffee_enabled and bool(self.coffee_spots)
+
+    @property
+    def first_lesson(self) -> FirstLessonDiscount:
+        """Скидка первого занятия по правилам студии — тем видом, который
+        выбран сейчас. Положена ли она клиенту, решает `trial_applies`."""
+        if self.trial_discount_type == "amount" and self.trial_discount_amount:
+            return FirstLessonDiscount(amount=self.trial_discount_amount)
+        return FirstLessonDiscount(percent=self.trial_discount_percent or 100)
 
 
 _FIELDS = tuple(BookingRules.__dataclass_fields__)

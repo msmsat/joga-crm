@@ -172,6 +172,8 @@
       "percent": "Sconto, %",
       "freeHint": "La prima lezione è in regalo: il cliente non paga nulla.",
       "payHint": "Il cliente paga il {{rest}}% del prezzo della prima lezione.",
+      "amount": "Sconto, {{currency}}",
+      "amountHint": "Dal prezzo della prima lezione si sottraggono {{amount}}. Se la lezione costa meno, è gratuita.",
       "howTitle": "Come funziona",
       "how": {
         "who": "Lo sconto si applica da solo alla prima prenotazione di un nuovo cliente: nell'Agenda, nella mini-app e nel widget di prenotazione.",

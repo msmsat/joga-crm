@@ -20,7 +20,7 @@ from models import (
     Client, ClientLoyaltyCard, ClientPayment, ClientSubscription, Lesson, Reservation,
     StudioSubscriptionProgramConfig, SubscriptionPackage,
 )
-from services.booking_access import trial_percent
+from services.booking_access import trial_discount
 from services.notifier import notify
 from services.pricing import resolve_price
 
@@ -122,7 +122,8 @@ async def open_debt(
     платит на месте, и долг заводится на сумму со скидкой (`amount`).
     Не коммитит.
     """
-    if reservation.subscription_id is not None or (trial_percent(reservation) or 0) >= 100:
+    trial = trial_discount(reservation)
+    if reservation.subscription_id is not None or (trial is not None and trial.gift):
         return None
     # `amount` — цена ЭТОГО КЛИЕНТА (services/booking.client_price). Без неё
     # берётся прайс, как было до появления скидок на этом пути. Ноль означает

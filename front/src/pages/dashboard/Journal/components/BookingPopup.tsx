@@ -1,41 +1,50 @@
+import { NativeSourceDetails } from '../bumpix/NativeSourceDetails';
 // src/components/modals/BookingPopup.tsx
-import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import * as Icons from '../../../../components/Icons';
-import type { Booking, Trainer } from '../types';
+import type { Booking, Hall, Trainer } from '../types';
 import type { BookedClient, EligibleClient, LessonDetail } from '../../../../api/schedule/schedule.types';
 import { AddClientModal as NewClientModal } from '../../Clients/components/modals/AddClientModal';
 import { scheduleApi } from '../../../../api/schedule';
 import { useSheetDrag, useSmoothHeight } from '../../../../components/ui/modal';
 import { cachedLessonDetail, dropLessonDetail, fetchLessonDetail } from '../hooks/useLessonDetail';
 import { errorMessage } from '../../../../api/errorMessage';
-import { formatDate, formatIndexToTimeStr, parseTimeToIndex, generateTimeIntervals, isLessonStarted, MIN_TIME_INDEX, MAX_TIME_INDEX } from '../utils';
+import { formatDate, formatIndexToTimeStr, isLessonStarted } from '../utils';
 import { useServiceOptions, CREATE_SERVICE_OPTION } from '../hooks/useServiceOptions';
 import { MoveBookingModal } from './modals/MoveBookingModal';
 import { ClientQuickCard } from './ClientQuickCard';
 import { LessonNotes } from './LessonNotes';
 import { LessonFacts } from './lesson/LessonFacts';
 import { BookedClients } from './lesson/BookedClients';
+import { EligibleClientRow } from './lesson/EligibleClientRow';
+import { EditorConsequence, LessonEditor } from './lesson/LessonEditor';
+import { useLessonEditor } from './lesson/editor/useLessonEditor';
+import type { LessonDraft } from './lesson/editor/editorModel';
 import type { useJournalMutations } from '../hooks/useJournalMutations';
 import type { HistoryEntry } from '../hooks/useUndoHistory';
-import { useToast, Select, ConfirmModal, QrShareModal } from '../../../../components/ui/index';
+import { useToast, ConfirmModal, QrShareModal } from '../../../../components/ui/index';
 import { miniappLink } from '../../../../lib/miniapp';
 import { useStudioCurrency, useStudioSettings } from '../../../../hooks/useStudioCurrency';
 
-const MIN_TIME_IDX = MIN_TIME_INDEX;
 /** Больше строк скелета не нужно: дальше попап всё равно прокручивается. */
 const SKELETON_ROWS = 6;
-const MAX_TIME_IDX = MAX_TIME_INDEX;
 const EMPTY_CLIENTS: EligibleClient[] = [];
-
-interface EditForm { serviceId: number | null; title: string; hall: string; maxClients: string; timeStart: number; timeEnd: number }
+/** Столько строк «Добавить клиента» рисуется сразу. В списке вся база студии,
+ *  и тысяча строк в попапе тормозила бы; поиск идёт по всем. */
+const CLIENT_ROWS_LIMIT = 100;
 
 interface BookingPopupProps {
   trainers: Trainer[];
-  halls: string[];
+  halls: Hall[];
+  /** Участвует ли место в расписании: где нет (кресло барбершопа), правка
+   *  занятия не предлагает сменить место — как и окно «Новое занятие». */
+  spaceIsAxis?: boolean;
+  /** Занятие перенесли на другой день — журнал показывает этот день. */
+  onShowDate?: (date: string) => void;
   popupBooking: Booking;
   popupRef: React.RefObject<HTMLDivElement | null>;
   /** Попап уже закрыт и доигрывает уход. Он не перерисовывается вовсе (см.
@@ -46,8 +55,8 @@ interface BookingPopupProps {
   setPopupBooking: (b: Booking | null) => void;
   isEditingBooking: boolean;
   setIsEditingBooking: React.Dispatch<React.SetStateAction<boolean>>;
-  editForm: EditForm;
-  setEditForm: React.Dispatch<React.SetStateAction<EditForm>>;
+  editForm: LessonDraft;
+  setEditForm: React.Dispatch<React.SetStateAction<LessonDraft>>;
   mutations: ReturnType<typeof useJournalMutations>;
   /** Сохранить правку. Индивидуальная запись отвечает, удался ли перенос:
    *  окно «Изменить время» по нему решает, закрываться ли. */
@@ -61,6 +70,8 @@ interface BookingPopupProps {
 const BookingPopupView: React.FC<BookingPopupProps> = ({
   trainers,
   halls,
+  spaceIsAxis,
+  onShowDate,
   popupBooking,
   popupRef,
   leaving = false,
@@ -84,10 +95,10 @@ const BookingPopupView: React.FC<BookingPopupProps> = ({
   const isCancelled = popupBooking.status === 'cancelled';
   const isResource = popupBooking.bookingMode === 'resource';
 
-  // Стейты редактирования
-  const [editStartInput, setEditStartInput] = useState('');
-  const [editEndInput, setEditEndInput] = useState('');
-  const [editActiveDropdown, setEditActiveDropdown] = useState<'start' | 'end' | null>(null);
+  // Правка занятия: черновик живёт в Journal (сетка рисует его живьём), здесь —
+  // что в нём изменилось, что неверно и идёт ли сохранение.
+  const editor = useLessonEditor(popupBooking, editForm);
+  const [savingEdit, setSavingEdit] = useState(false);
   const [showCatalogConfirm, setShowCatalogConfirm] = useState(false);
   const [showQr, setShowQr] = useState(false);
   const [showMove, setShowMove] = useState(false);
@@ -105,9 +116,6 @@ const BookingPopupView: React.FC<BookingPopupProps> = ({
   const [creatingClient, setCreatingClient] = useState(false);
   const [freshClient, setFreshClient] = useState<{ lessonId: number; client: EligibleClient } | null>(null);
   const fresh = freshClient?.lessonId === popupBooking.id ? freshClient.client : null;
-
-  const startScrollRef = useRef<HTMLDivElement>(null);
-  const endScrollRef = useRef<HTMLDivElement>(null);
 
   // QR занятия: ссылка мини-приложения студии с номером занятия. Плакат и
   // картинку для сторис рисует общая модалка кита — здесь только что на них
@@ -135,7 +143,6 @@ const BookingPopupView: React.FC<BookingPopupProps> = ({
   // Подпись занятия в окне оплаты: «Хатха · 10:00».
   const lessonLabel = `${popupBooking.title} · ${formatIndexToTimeStr(popupBooking.timeStart)}`;
 
-  const KP_INTERVALS = useMemo(() => generateTimeIntervals(timeStep), [timeStep]);
   const { services, options: serviceOptions } = useServiceOptions();
 
   const handleServiceChange = (value: string) => {
@@ -148,16 +155,47 @@ const BookingPopupView: React.FC<BookingPopupProps> = ({
     setEditForm(f => ({ ...f, serviceId: service.id, title: service.name }));
   };
 
-  // Валидация редактирования
-  const editServiceError = !editForm.serviceId ? t('bookingPopup.errors.selectService') : null;
-  const editMaxClientsNum = Number(editForm.maxClients);
-  const editMaxClientsError = !Number.isInteger(editMaxClientsNum) || editMaxClientsNum < 1 || editMaxClientsNum > 50
-    ? t('bookingPopup.errors.range')
-    : editMaxClientsNum < popupBooking.clients
-      ? t('bookingPopup.errors.minBooked', { count: popupBooking.clients })
-      : null;
-  const editTimeError = editForm.timeEnd <= editForm.timeStart ? t('bookingPopup.errors.endAfterStart') : null;
-  const hasEditErrors = !!(editServiceError || editMaxClientsError || editTimeError);
+  const startEditing = () => {
+    setEditForm({
+      serviceId: popupBooking.serviceId,
+      title: popupBooking.title, hall: popupBooking.hall,
+      maxClients: String(popupBooking.maxClients),
+      timeStart: popupBooking.timeStart, timeEnd: popupBooking.timeEnd,
+      date: popupBooking.date ?? '', trainer: popupBooking.trainer,
+    });
+    setIsEditingBooking(true);
+  };
+
+  // Сохранение ждёт сервер: отказ (занято, поздно, не тот тренер) оставляет
+  // черновик в окне, а не откатывает молча уже закрытую правку. Занятие,
+  // уехавшее на другой день или к другому тренеру, со своего места в сетке
+  // пропадает — попап закрывается, журнал показывает новый день.
+  const saveEdit = async () => {
+    if (!editor.canSave || savingEdit) return;
+    const next: Booking = {
+      ...popupBooking,
+      title: editForm.title,
+      hall: editForm.hall,
+      maxClients: Number(editForm.maxClients),
+      timeStart: editForm.timeStart,
+      timeEnd: editForm.timeEnd,
+      serviceId: editForm.serviceId,
+      date: editForm.date || popupBooking.date,
+      trainer: editForm.trainer,
+    };
+    setSavingEdit(true);
+    const saved = await onSave(popupBooking, next);
+    setSavingEdit(false);
+    if (saved === false) return;
+    setIsEditingBooking(false);
+    const movedDay = editor.changes.includes('date');
+    if (movedDay || editor.changes.includes('trainer')) {
+      setPopupBooking(null);
+      if (movedDay && next.date) onShowDate?.(next.date);
+    } else {
+      setPopupBooking(next);
+    }
+  };
 
   // Полные данные занятия: записанные (с оплатой и отзывами), адрес, уровень,
   // инвентарь. lessonId в состоянии переживает смену занятия без reset-эффекта.
@@ -207,19 +245,23 @@ const BookingPopupView: React.FC<BookingPopupProps> = ({
 
   const clientsLoaded = eligible?.lessonId === popupBooking.id;
   const clientsList = clientsLoaded ? eligible!.clients : EMPTY_CLIENTS;
+  // Список не пришёл — говорим об этом и даём повторить; раньше окно молча
+  // показывало «Клиенты не найдены».
+  const [eligibleFailed, setEligibleFailed] = useState<number | null>(null);
+  const loadFailed = eligibleFailed === popupBooking.id;
 
-  // Загружаем клиентов, когда открываем режим добавления. Источник — не все
-  // клиенты студии, а только те, кого можно записать на это занятие (право по
-  // абонементу проверяет бэк, CL-6.1/6.4) — Zero Trust, фронт не решает сам.
-  // lessonId в состоянии (образец — booked/bookedClients выше) переживает смену
-  // занятия без отдельного reset-эффекта.
+  // Загружаем клиентов, когда открываем режим добавления. Кого можно записать
+  // и чем покрыта запись каждого (абонемент, первое занятие, оплата на
+  // месте), решает бэк — Zero Trust, фронт только рисует. lessonId в
+  // состоянии (образец — booked/bookedClients выше) переживает смену занятия
+  // без отдельного reset-эффекта.
   useEffect(() => {
-    if (isAddingClient && !clientsLoaded) {
+    if (isAddingClient && !clientsLoaded && !loadFailed) {
       scheduleApi.getEligibleClients(popupBooking.id)
         .then(list => setEligible({ lessonId: popupBooking.id, clients: list }))
-        .catch(err => console.error('Не удалось загрузить клиентов', err));
+        .catch(() => setEligibleFailed(popupBooking.id));
     }
-  }, [isAddingClient, clientsLoaded, popupBooking.id]);
+  }, [isAddingClient, clientsLoaded, loadFailed, popupBooking.id]);
 
   const patchBooked = (fn: (list: BookedClient[]) => BookedClient[]) =>
     setLoaded(b => b && { ...b, clients: fn(b.clients) });
@@ -245,52 +287,25 @@ const BookingPopupView: React.FC<BookingPopupProps> = ({
       .catch((e: unknown) => toast.error(errorMessage(e, t)));
   };
 
-  // Мемоизация поиска клиентов. Список уже отфильтрован бэком по праву записи
-  // и по «не записан на это занятие» (getEligibleClients) — тут только поиск.
+  // Мемоизация поиска клиентов. Список уже отфильтрован бэком — без
+  // записанных на это занятие (getEligibleClients) — тут только поиск.
+  // Только что заведённый — первым; основание его записи приезжает со
+  // следующей загрузкой списка, до неё строка без подписи.
+  const freshRow = fresh ? clientsList.find(c => c.id === fresh.id) ?? null : null;
   const filteredClients = useMemo(() => {
     const q = searchQuery.toLowerCase();
     const found = clientsList.filter(c => c.id !== fresh?.id && (
       `${c.name} ${c.last_name ?? ''}`.toLowerCase().includes(q) ||
       (c.phone ?? '').includes(searchQuery)
     ));
-    return fresh ? [fresh, ...found] : found;
-  }, [clientsList, searchQuery, fresh]);
-
-  // Текстовые поля времени — зеркало числовых индексов. Синхронизируем прямо в
-  // рендере (документированный React-паттерн): эффект давал кадр со старым текстом.
-  const editTimesKey = `${isEditingBooking}|${editForm.timeStart}|${editForm.timeEnd}`;
-  const [syncedEditTimes, setSyncedEditTimes] = useState<string | null>(null);
-  if (syncedEditTimes !== editTimesKey) {
-    setSyncedEditTimes(editTimesKey);
-    if (isEditingBooking) {
-      setEditStartInput(formatIndexToTimeStr(editForm.timeStart));
-      setEditEndInput(formatIndexToTimeStr(editForm.timeEnd));
-    }
-  }
-
-  useEffect(() => {
-    if (editActiveDropdown === 'start' && startScrollRef.current) {
-      setTimeout(() => startScrollRef.current?.querySelector('.active-time-item')?.scrollIntoView({ block: 'center' }), 0);
-    }
-    if (editActiveDropdown === 'end' && endScrollRef.current) {
-      setTimeout(() => endScrollRef.current?.querySelector('.active-time-item')?.scrollIntoView({ block: 'center' }), 0);
-    }
-  }, [editActiveDropdown]);
-
-  useEffect(() => {
-    const closeAllDps = (e: MouseEvent) => {
-      if ((e.target as HTMLElement)?.closest('.kp-time-container')) return;
-      setEditActiveDropdown(null);
-    };
-    document.addEventListener('click', closeAllDps);
-    return () => document.removeEventListener('click', closeAllDps);
-  }, []);
+    return fresh ? [freshRow ?? fresh, ...found] : found;
+  }, [clientsList, searchQuery, fresh, freshRow]);
 
   return createPortal(
     <>
     <div
       ref={popupRef}
-      className="booking-popup"
+      className={`booking-popup${isEditingBooking ? ' is-editing' : ''}`}
     >
       {/* Ручка шита: на телефоне подсказывает, что его можно смахнуть вниз. */}
       <div className="bp-grabber" aria-hidden />
@@ -378,174 +393,67 @@ const BookingPopupView: React.FC<BookingPopupProps> = ({
               <Icons.Plus /> <span className="bp-new-client-label">{t('clients:addModal.title')}</span>
             </button>
             </div>
-            <div style={{ maxHeight: 220, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 4, paddingRight: 4 }}>
-              {filteredClients.length === 0 ? (
-                <div style={{ textAlign: 'center', padding: '24px 0' }}>
-                  <Icons.Icon.Profile size={40} color="var(--border)" className="empty-float" />
-                  <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 8 }}>
-                    {clientsLoaded && clientsList.length === 0
-                      ? t('bookingPopup.noEligibleClients')
-                      : t('bookingPopup.noClientsFound')}
+            <div style={{ maxHeight: 260, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 4, paddingRight: 4 }}>
+              {loadFailed ? (
+                <div className="ec-empty">
+                  {t('common:errors.loadFailed')}
+                  <div>
+                    <button type="button" className="btn-ghost-sm" onClick={e => { e.stopPropagation(); setEligibleFailed(null); }}>
+                      {t('common:errors.retry')}
+                    </button>
                   </div>
                 </div>
+              ) : !clientsLoaded && !fresh ? (
+                Array.from({ length: 4 }, (_, i) => <div key={i} className="ec-skeleton" aria-hidden />)
+              ) : filteredClients.length === 0 ? (
+                <div className="ec-empty">
+                  {/* Пустой без поиска — значит, записывать некого вовсе: все
+                      уже на занятии или база ещё пуста. С поиском — не нашлось. */}
+                  {searchQuery
+                    ? t('bookingPopup.noClientsFound')
+                    : popupBooking.clients > 0 ? t('bookingPopup.allBooked') : t('bookingPopup.noClientsYet')}
+                </div>
               ) : (
-                filteredClients.map(c => {
-                  const isSelected = selectedClients.includes(c.id);
-                  return (
-                    <div
-                      key={c.id}
-                      style={{
-                        display: 'flex', alignItems: 'center', gap: 10, padding: '8px 10px',
-                        borderRadius: 10, cursor: 'pointer', transition: 'background 0.15s',
-                        background: isSelected ? 'var(--peach-soft)' : 'var(--bg)',
-                      }}
-                      onClick={() => setSelectedClients(prev =>
-                        isSelected ? prev.filter(x => x !== c.id) : [...prev, c.id]
-                      )}
-                    >
-                      <div style={{
-                        width: 32, height: 32, borderRadius: '50%', background: 'var(--peach-soft)',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        fontSize: 10, fontWeight: 800, color: 'var(--peach)', flexShrink: 0
-                      }}>
-                        {[c.name, c.last_name].filter(Boolean).map(n => n![0]).join('')}
-                      </div>
-                      <div style={{ flex: 1 }}>
-                        <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--onyx)' }}>{c.name} {c.last_name ?? ''}</div>
-                        <div style={{ fontSize: 11, color: 'var(--muted)' }}>{c.phone ?? ''}{c.subscription_hint ? ` · ${c.subscription_hint}` : ''}</div>
-                      </div>
-                      {isSelected && (
-                        <div style={{ color: 'var(--peach)' }}><Icons.Check /></div>
-                      )}
+                <>
+                  {filteredClients.slice(0, CLIENT_ROWS_LIMIT).map(c => {
+                    const isSelected = selectedClients.includes(c.id);
+                    return (
+                      <EligibleClientRow
+                        key={c.id}
+                        client={c}
+                        selected={isSelected}
+                        pending={c === fresh}
+                        currency={currency}
+                        onToggle={() => setSelectedClients(prev =>
+                          isSelected ? prev.filter(x => x !== c.id) : [...prev, c.id]
+                        )}
+                      />
+                    );
+                  })}
+                  {filteredClients.length > CLIENT_ROWS_LIMIT && (
+                    <div className="ec-empty">
+                      {t('bookingPopup.moreClients', { rest: filteredClients.length - CLIENT_ROWS_LIMIT })}
                     </div>
-                  );
-                })
+                  )}
+                </>
               )}
             </div>
           </div>
 
         /* РЕЖИМ РЕДАКТИРОВАНИЯ ЗАНЯТИЯ */
         ) : isEditingBooking ? (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', animation: 'fade-in 0.2s ease' }}>
-            <Select
-              value={editForm.serviceId != null ? String(editForm.serviceId) : ''}
-              options={serviceOptions}
-              onChange={handleServiceChange}
-              placeholder={t('bookingPopup.errors.selectService')}
-            />
-            {editServiceError && <div style={{ fontSize: 11, color: 'var(--error)', fontWeight: 600 }}>{editServiceError}</div>}
-
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-              <div className="kp-time-container" style={{ position: 'relative' }}>
-                <div style={{ display: 'flex', alignItems: 'center', background: 'var(--bg)', border: `1.5px solid ${editActiveDropdown === 'start' ? 'var(--peach)' : editTimeError ? 'var(--error)' : 'var(--border)'}`, borderRadius: '12px', padding: '0 12px', height: '42px', transition: 'border-color 0.2s', cursor: 'text' }}>
-                  <span style={{ fontSize: '11px', color: 'var(--muted)', fontWeight: 800, textTransform: 'uppercase', marginRight: '6px' }}>{t('bookingPopup.from')}</span>
-                  <input
-                    type="text"
-                    style={{ margin: 0, padding: 0, border: 'none', background: 'transparent', height: '100%', width: '100%', fontSize: '14px', fontWeight: 800, color: 'var(--onyx)', textAlign: 'center', outline: 'none', boxShadow: 'none' }}
-                    value={editStartInput}
-                    onFocus={(e) => { e.target.select(); setEditActiveDropdown('start'); }}
-                    onChange={e => setEditStartInput(e.target.value)}
-                    onBlur={(e) => {
-                      const idx = parseTimeToIndex(e.target.value);
-                      setEditForm(f => ({ ...f, timeStart: idx, timeEnd: Math.max(f.timeEnd, idx + 0.25) }));
-                      setEditActiveDropdown(null);
-                    }}
-                    onKeyDown={e => { if (e.key === 'Enter') e.currentTarget.blur(); }}
-                  />
-                </div>
-                {editActiveDropdown === 'start' && (
-                  <div className="kp-time-dropdown" ref={startScrollRef}>
-                    {KP_INTERVALS.map(t => (
-                      <div
-                        key={`s-${t}`}
-                        className={`kp-time-item ${formatIndexToTimeStr(editForm.timeStart) === t ? 'active-time-item' : ''}`}
-                        onMouseDown={(e) => {
-                          e.preventDefault(); 
-                          const idx = parseTimeToIndex(t);
-                          setEditForm(f => ({ ...f, timeStart: idx, timeEnd: Math.max(f.timeEnd, idx + 0.25) }));
-                          setEditActiveDropdown(null);
-                        }}
-                      >
-                        {t}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              <div className="kp-time-container" style={{ position: 'relative' }}>
-                <div style={{ display: 'flex', alignItems: 'center', background: 'var(--bg)', border: `1.5px solid ${editActiveDropdown === 'end' ? 'var(--peach)' : editTimeError ? 'var(--error)' : 'var(--border)'}`, borderRadius: '12px', padding: '0 12px', height: '42px', transition: 'border-color 0.2s', cursor: 'text' }}>
-                  <span style={{ fontSize: '11px', color: 'var(--muted)', fontWeight: 800, textTransform: 'uppercase', marginRight: '6px' }}>{t('bookingPopup.to')}</span>
-                  <input
-                    type="text"
-                    style={{ margin: 0, padding: 0, border: 'none', background: 'transparent', height: '100%', width: '100%', fontSize: '14px', fontWeight: 800, color: 'var(--onyx)', textAlign: 'center', outline: 'none', boxShadow: 'none' }}
-                    value={editEndInput}
-                    onFocus={(e) => { e.target.select(); setEditActiveDropdown('end'); }}
-                    onChange={e => setEditEndInput(e.target.value)}
-                    onBlur={(e) => {
-                      let idx = parseTimeToIndex(e.target.value);
-                      if (idx <= editForm.timeStart) idx = editForm.timeStart + 0.25;
-                      setEditForm(f => ({ ...f, timeEnd: idx }));
-                      setEditActiveDropdown(null);
-                    }}
-                    onKeyDown={e => { if (e.key === 'Enter') e.currentTarget.blur(); }}
-                  />
-                </div>
-                {editActiveDropdown === 'end' && (
-                  <div className="kp-time-dropdown" ref={endScrollRef}>
-                    {KP_INTERVALS.map(t => {
-                      const idx = parseTimeToIndex(t);
-                      if (idx <= editForm.timeStart) return null;
-                      return (
-                        <div
-                          key={`e-${t}`}
-                          className={`kp-time-item ${formatIndexToTimeStr(editForm.timeEnd) === t ? 'active-time-item' : ''}`}
-                          onMouseDown={(e) => {
-                            e.preventDefault();
-                            setEditForm(f => ({ ...f, timeEnd: idx }));
-                            setEditActiveDropdown(null);
-                          }}
-                        >
-                          {t}
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-            </div>
-            {editTimeError && <div style={{ fontSize: 11, color: 'var(--error)', fontWeight: 600 }}>{editTimeError}</div>}
-
-            <div style={{ display: 'flex', gap: '8px' }}>
-              <div style={{ display: 'flex', gap: '4px', flex: 1 }}>
-                {halls.map(h => (
-                  <div
-                    key={h}
-                    className={`kp-chip ${editForm.hall === h ? 'active' : ''}`}
-                    style={{
-                      flex: 1, height: '42px', padding: 0, margin: 0,
-                      fontSize: '11px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      ...(editForm.hall === h ? { background: 'var(--onyx)', borderColor: 'var(--onyx)', color: 'var(--bg)', boxShadow: '0 4px 12px rgba(26,26,26,0.12)' } : {})
-                    }}
-                    onClick={(e) => { e.stopPropagation(); setEditForm(f => ({ ...f, hall: h })); }}
-                  >
-                    {h.replace('Зал ', 'Зал ')}
-                  </div>
-                ))}
-              </div>
-
-              <div style={{ width: '80px', display: 'flex', alignItems: 'center', background: 'var(--bg)', border: `1.5px solid ${editMaxClientsError ? 'var(--error)' : 'var(--border)'}`, borderRadius: '10px', padding: '0 8px', height: '42px', boxSizing: 'border-box' }}>
-                <span style={{ color: 'var(--muted)', display: 'flex', transform: 'scale(0.9)' }}><Icons.Users /></span>
-                <input
-                  type="number" min="1"
-                  style={{ width: '100%', height: '100%', border: 'none', background: 'transparent', outline: 'none', fontSize: '14px', fontWeight: 800, color: 'var(--onyx)', textAlign: 'center', padding: 0 }}
-                  value={editForm.maxClients}
-                  onChange={e => setEditForm(f => ({ ...f, maxClients: e.target.value }))}
-                />
-              </div>
-            </div>
-            {editMaxClientsError && <div style={{ fontSize: 11, color: 'var(--error)', fontWeight: 600, textAlign: 'right' }}>{editMaxClientsError}</div>}
-          </div>
+          <LessonEditor
+            booking={popupBooking}
+            draft={editForm}
+            setDraft={setEditForm}
+            state={editor}
+            trainers={trainers}
+            halls={halls}
+            showHalls={spaceIsAxis !== false}
+            timeStep={timeStep}
+            serviceOptions={serviceOptions}
+            onServiceChange={handleServiceChange}
+          />
           
         /* ОБЫЧНЫЙ РЕЖИМ ПРОСМОТРА: всё о занятии, заметка, записанные */
         ) : (
@@ -561,6 +469,8 @@ const BookingPopupView: React.FC<BookingPopupProps> = ({
               mutations={mutations}
               onSaved={setPopupBooking}
             />
+
+            <NativeSourceDetails lessonId={popupBooking.id}/>
 
             {/* Пока записанные едут с сервера — их силуэты в том же количестве:
                 попап сразу нужной высоты и не дорастает, когда придёт ответ. */}
@@ -619,37 +529,20 @@ const BookingPopupView: React.FC<BookingPopupProps> = ({
           </>
         ) : isEditingBooking ? (
           <>
-            <button className="bp-btn ghost text-btn" onClick={(e) => { e.stopPropagation(); setIsEditingBooking(false); }}>
+            {editor.notifies && <EditorConsequence booked={popupBooking.clients} />}
+            <button className="bp-btn ghost text-btn" disabled={savingEdit}
+                    onClick={(e) => { e.stopPropagation(); setIsEditingBooking(false); }}>
               {t('bookingPopup.cancel')}
             </button>
 
+            {/* Нечего сохранять — кнопка спит: «Сохранить» без изменений
+                отправил бы пустую правку и показал «Занятие обновлено». */}
             <button
               className="bp-btn primary text-btn"
-              disabled={hasEditErrors}
-              style={{ opacity: hasEditErrors ? 0.5 : 1, cursor: hasEditErrors ? 'not-allowed' : 'pointer' }}
-              onClick={(e) => {
-                e.stopPropagation();
-                if (hasEditErrors) return;
-                const timeStart = Math.min(Math.max(editForm.timeStart, MIN_TIME_IDX), MAX_TIME_IDX - 0.25);
-                const timeEnd = Math.min(Math.max(editForm.timeEnd, timeStart + 0.25), MAX_TIME_IDX);
-
-                const next: Booking = {
-                  ...popupBooking,
-                  title: editForm.title,
-                  hall: editForm.hall,
-                  maxClients: editMaxClientsNum,
-                  timeStart,
-                  timeEnd,
-                  serviceId: editForm.serviceId,
-                };
-
-                setPopupBooking(next);
-                onSave(popupBooking, next);
-
-                setIsEditingBooking(false);
-              }}
+              disabled={!editor.canSave || savingEdit}
+              onClick={(e) => { e.stopPropagation(); void saveEdit(); }}
             >
-              {t('bookingPopup.save')}
+              {savingEdit ? t('common:buttons.saving') : t('bookingPopup.save')}
             </button>
           </>
         ) : (
@@ -669,13 +562,7 @@ const BookingPopupView: React.FC<BookingPopupProps> = ({
                   aria-label={t('bookingPopup.edit')}
                   onClick={(e) => {
                     e.stopPropagation();
-                    setEditForm({
-                      serviceId: popupBooking.serviceId,
-                      title: popupBooking.title, hall: popupBooking.hall,
-                      maxClients: String(popupBooking.maxClients),
-                      timeStart: popupBooking.timeStart, timeEnd: popupBooking.timeEnd
-                    });
-                    setIsEditingBooking(true);
+                    startEditing();
                   }}
                 >
                   <Icons.Edit />
@@ -760,10 +647,14 @@ const BookingPopupView: React.FC<BookingPopupProps> = ({
     <div onMouseDown={e => e.stopPropagation()} onClick={e => e.stopPropagation()} onPointerDown={e => e.stopPropagation()}>
       <NewClientModal isOpen={creatingClient} layer={10050} onClose={() => setCreatingClient(false)}
         onSuccess={(form, id) => {
+          // Строка-заглушка до ответа сервера: чем покрыта запись нового
+          // клиента (первое занятие или оплата на месте), решает он, поэтому
+          // список тут же перезагружается.
           setFreshClient({ lessonId: popupBooking.id, client: {
             id, name: form.name.trim(), last_name: null, phone: form.phone || null,
-            avatar_color: null, subscription_hint: null,
+            avatar_color: null, funding: 'pay', classes_left: null, trial_percent: null, trial_amount: null,
           } });
+          setEligible(null);
           setSelectedClients(prev => [id, ...prev.filter(x => x !== id)]);
         }} />
     </div>

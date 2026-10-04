@@ -1,3 +1,6 @@
+import { getActiveContextKey } from '../../../../utils/auth';
+import { sourceRange, sourceDays } from '../bumpix/api';
+import { sourceBooking } from '../bumpix/model';
 import { useEffect, useMemo } from 'react';
 import { useQuery, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 import { scheduleApi } from '../../../../api/schedule';
@@ -121,6 +124,12 @@ export function useSchedule(
     refetchInterval: 60_000,
   });
 
+  const sourceQuery = useQuery({
+    queryKey: ['bumpixJournal', getActiveContextKey(), dateFrom, dateTo],
+    queryFn: ({signal}) => sourceRange(dateFrom, dateTo, signal), retry: false, refetchInterval: 60_000,
+  });
+  const mergedBookings = useMemo(() => [...cachedBookings, ...(sourceQuery.data ?? []).map(sourceBooking)], [cachedBookings, sourceQuery.data]);
+
   // Цвет мастера накладываем ещё и при чтении, а не только в fetchBookings:
   // кэш занятий живёт своей жизнью, и цвет, сменённый в карточке сотрудника,
   // иначе доехал бы до сетки лишь со следующей перезагрузкой занятий. Ничего
@@ -128,26 +137,26 @@ export function useSchedule(
   const bookings = useMemo(() => {
     const colorOf = new Map(staff.map(s => [s.id, staffColor(s)]));
     let changed = false;
-    const recolored = cachedBookings.map(b => {
+    const recolored = mergedBookings.map(b => {
       const color = colorOf.get(b.trainer);
       if (!color || color === b.color) return b;
       changed = true;
       return { ...b, color };
     });
-    return changed ? recolored : cachedBookings;
-  }, [cachedBookings, staff]);
+    return changed ? recolored : mergedBookings;
+  }, [mergedBookings, staff]);
 
   // Первая загрузка «с нуля»: кэш этого ключа пуст, данных ни своих, ни
   // предыдущих ещё нет — именно в этот момент показываем скелетон.
   // keepPreviousData гарантирует, что при листании (ключ уже видел данные
   // раньше) isPending не взводится повторно.
-  const isFirstLoad = !staffLoaded || !hallsLoaded || bookingsPending || blocksPending;
+  const isFirstLoad = !staffLoaded || !hallsLoaded || bookingsPending || blocksPending || sourceQuery.isPending;
 
   // Ошибка первой загрузки (сетки ещё нет — показываем плашку вместо неё) vs
   // фоновая (данные в кэше уже есть, просто не удалось обновить — только тост).
-  const loadError = staffError ?? hallsError ?? bookingsError ?? blocksError ?? null;
-  const isFirstLoadError = isFirstLoad && loadError != null;
-  const refetchAll = () => { refetchStaff(); refetchHalls(); refetchBookings(); refetchBlocks(); };
+  const loadError = staffError ?? hallsError ?? bookingsError ?? blocksError ?? sourceQuery.error ?? null;
+  const isFirstLoadError = (isFirstLoad && loadError != null) || (sourceQuery.isError && !sourceQuery.data);
+  const refetchAll = () => { refetchStaff(); refetchHalls(); refetchBookings(); refetchBlocks(); sourceQuery.refetch(); };
 
   // Префетч соседних дней/недель: после успешной загрузки текущего диапазона
   // тянем −1 и +1 заранее — листание вперёд-назад почти всегда без сети.
@@ -167,13 +176,22 @@ export function useSchedule(
   // остаться без колонки.
   const trainers = useMemo(() => {
     const teacherIdsWithLessons = new Set(bookings.map(b => b.trainer));
-    return staff
+    const result = staff
       .filter(s => s.is_specialist || teacherIdsWithLessons.has(s.id))
       .map(staffToTrainer);
+    const available = new Set(result.map(t=>t.id));
+    const absent = bookings.filter(b=>b.source && !available.has(b.trainer));
+    for (const b of absent) {
+      if (available.has(b.trainer)) continue;
+      available.add(b.trainer);
+      result.push({id:b.trainer, name:b.trainer === -1 ? 'Bumpix' : b.source!.master_name || 'Bumpix', full:b.trainer === -1 ? 'Bumpix' : b.source!.master_name || 'Bumpix', role:'Bumpix',color:'#A087A9',bg:'#A087A912',initials:'B'});
+    }
+    return result;
   }, [staff, bookings]);
 
   return {
     trainers,
+    sourceItems: sourceQuery.data,
     staffBlocks,
     dateFrom,
     halls,
@@ -199,7 +217,10 @@ export function useJournalDays(calYear: number, calMonth: number, hiddenTeacherI
   const exclude = [...hiddenTeacherIds].sort((a, b) => a - b);
   const { data } = useQuery({
     queryKey: queryKeys.journalDays(month, exclude.join(',')),
-    queryFn: () => scheduleApi.getLessonDays(month, exclude).then(res => res.days),
+    queryFn: async ({signal}) => {
+      const [native, source] = await Promise.all([scheduleApi.getLessonDays(month, exclude.filter(id=>id>0)), sourceDays(month, exclude, signal)]);
+      return [...new Set([...native.days, ...source])].sort();
+    },
     staleTime: 5 * 60_000,
     placeholderData: keepPreviousData,
   });

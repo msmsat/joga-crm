@@ -150,7 +150,8 @@
     "loyalty": {
       "cert_not_found": "Vale-oferta não encontrado",
       "cert_used": "O vale-oferta já foi utilizado ou não é válido",
-      "cert_expired": "O vale-oferta expirou"
+      "cert_expired": "O vale-oferta expirou",
+      "first_lesson_amount_required": "Indique o valor do desconto da primeira aula"
     },
     "notifications": {
       "critical_locked": "Esta notificação não pode ser desativada",

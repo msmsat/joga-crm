@@ -6,9 +6,11 @@
 другое, а какая-нибудь ручка рано или поздно забудет сузиться и отдаст тренеру
 всю базу студии.
 """
-from sqlalchemy import select
+from sqlalchemy import select, or_
 
 from models import Client, Lesson, Reservation
+from models.bumpix import BumpixEvent
+from services.bumpix_import.reading import conditions
 
 
 def client_scope(ctx) -> list:
@@ -17,9 +19,11 @@ def client_scope(ctx) -> list:
     if ctx.role == "trainer":
         # Бронь любого статуса, включая отменённую: на ростере тренера человек
         # всё равно был, и терять из-за отмены доступ к его карточке незачем.
-        conds.append(Client.id.in_(
+        conds.append(or_(Client.id.in_(
             select(Reservation.client_id)
             .join(Lesson, Reservation.lesson_id == Lesson.id)
             .where(Lesson.studio_id == ctx.studio_id, Lesson.teacher_id == ctx.user.id)
-        ))
+        ), Client.id.in_(select(BumpixEvent.client_id).where(
+            *conditions(ctx)
+        ))))
     return conds

@@ -172,6 +172,8 @@
       "percent": "Rabatt, %",
       "freeHint": "Der erste Kurs ist ein Geschenk — der Kunde zahlt nichts.",
       "payHint": "Der Kunde zahlt {{rest}} % des Preises für den ersten Kurs.",
+      "amount": "Rabatt, {{currency}}",
+      "amountHint": "Vom Preis des ersten Kurses werden {{amount}} abgezogen. Kostet der Kurs weniger, ist er kostenlos.",
       "howTitle": "So funktioniert es",
       "how": {
         "who": "Der Rabatt gilt automatisch für die erste Buchung neuer Kunden — im Journal, in der Mini-App und im Buchungs-Widget.",

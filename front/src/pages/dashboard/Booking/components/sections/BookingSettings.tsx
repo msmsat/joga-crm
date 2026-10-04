@@ -6,6 +6,8 @@ import { ADVANCE_OPTS, WINDOW_OPTS, CANCEL_OPTS, LANG_OPTS, TIME_OPTS } from '..
 import { studioApi } from '../../../../../api/studio/studio.api'
 import { resolveImageUrl } from '../../../../../api/client'
 import { useToast } from '../../../../../components/ui/Toast'
+import { useStudioCurrency } from '../../../../../hooks/useStudioCurrency'
+import { formatMoney } from '../../../../../lib/money'
 
 type Props = ReturnType<typeof useBookingSettings>
 
@@ -13,6 +15,7 @@ export function BookingSettings(s: Props) {
   const fileRef = useRef<HTMLInputElement>(null)
   const [uploading, setUploading] = useState(false)
   const toast = useToast()
+  const currency = useStudioCurrency()
   const { settings, patch, t } = s
 
   if (!settings) return <div className="card" style={{ opacity: 0.6 }}>{t('loading')}</div>
@@ -76,14 +79,17 @@ export function BookingSettings(s: Props) {
 
         {/* Сразу под «Предоплатой при записи»: первое занятие её и отменяет —
             первая бронь нового клиента проходит без абонемента. Здесь только
-            вкл/выкл; процент живёт в Лояльности (та же настройка, не копия). */}
+            вкл/выкл; размер скидки — процент или сумма — живёт в Лояльности
+            (та же настройка, не копия). */}
         <div className="settings-row">
           <div>
             <div className="label">{t('sections.main.trialLesson.label')}</div>
             <div className="sub">
-              {(settings.trial_discount_percent ?? 100) >= 100
-                ? t('sections.main.trialLesson.free')
-                : t('sections.main.trialLesson.percent', { percent: settings.trial_discount_percent })}{' '}
+              {settings.trial_discount_type === 'amount' && settings.trial_discount_amount != null
+                ? t('sections.main.trialLesson.amount', { amount: formatMoney(settings.trial_discount_amount, currency) })
+                : (settings.trial_discount_percent ?? 100) >= 100
+                  ? t('sections.main.trialLesson.free')
+                  : t('sections.main.trialLesson.percent', { percent: settings.trial_discount_percent })}{' '}
               <Link to="/dashboard/loyalty?tab=first_lesson&ai=loyalty.program" className="settings-link">
                 {t('sections.main.trialLesson.change')}
               </Link>

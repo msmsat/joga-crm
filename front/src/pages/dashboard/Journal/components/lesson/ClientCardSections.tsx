@@ -209,7 +209,8 @@ export function ClientHistory({ digest, currency }: { digest: ClientDigest | nul
                   </div>
                   {v.status !== 'cancelled' && (
                     <FundingChips currency={currency} funding={{
-                      price: v.price, trialPercent: v.trial_discount_percent, isTrial: v.is_trial,
+                      price: v.price, trialPercent: v.trial_discount_percent,
+                      trialAmount: v.trial_discount_amount, isTrial: v.is_trial,
                       subscriptionName: v.subscription_name, bySubscription: Boolean(v.subscription_name),
                       debt: v.debt, paidAmount: v.paid_amount, payment: v.payment,
                     }} />

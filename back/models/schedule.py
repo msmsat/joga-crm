@@ -131,6 +131,9 @@ class Reservation(Base):
             "trial_discount_percent IS NULL OR (trial_discount_percent >= 1 AND trial_discount_percent <= 100)",
             name="check_reservation_trial_percent"),
         CheckConstraint(
+            "trial_discount_amount IS NULL OR (trial_discount_amount >= 1 AND trial_discount_percent IS NULL)",
+            name="check_reservation_trial_amount"),
+        CheckConstraint(
             "manual_discount_percent IS NULL OR (manual_discount_percent >= 1 AND manual_discount_percent <= 100)",
             name="check_reservation_manual_percent"),
         # Один коврик — один человек. Частичный: отменённые брони копятся на том
@@ -177,6 +180,10 @@ class Reservation(Base):
     # а не по нынешней настройке студии: владелец мог поменять процент или
     # выключить программу после записи, а договор с клиентом уже заключён.
     trial_discount_percent: Mapped[Optional[int]] = mapped_column(SmallInteger, nullable=True)
+    # То же обещание суммой в валюте студии («−300 Kč»), если скидка задана
+    # суммой; тогда процента на брони нет. Читается вместе с процентом одним
+    # местом — booking_access.trial_discount.
+    trial_discount_amount: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
     # Долг за эту бронь: ClientPayment в статусе pending (оплата на месте).
     # Ссылка на брони, а не reservation_id на платеже: при включённой «Повторной
     # записи» у клиента бывает две брони на одно занятие, и по паре

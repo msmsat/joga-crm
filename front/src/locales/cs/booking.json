@@ -35,7 +35,8 @@
         "label": "Sleva na první lekci",
         "free": "První lekce nového klienta je zdarma.",
         "percent": "První lekce nového klienta je se slevou {{percent}} %.",
-        "change": "Procento se nastavuje v sekci „Věrnost“"
+        "amount": "První lekce nového klienta je se slevou {{amount}}.",
+        "change": "Výše slevy se nastavuje v sekci „Věrnost“"
       },
       "trainerConfirm": {
         "label": "Potvrzení trenérem",

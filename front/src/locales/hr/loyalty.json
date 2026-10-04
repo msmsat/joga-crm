@@ -172,6 +172,8 @@
       "percent": "Popust, %",
       "freeHint": "Prvi termin je poklon — klijent ne plaća ništa.",
       "payHint": "Klijent plaća {{rest}} % cijene prvog termina.",
+      "amount": "Popust, {{currency}}",
+      "amountHint": "Od cijene prvog termina oduzima se {{amount}}. Ako termin košta manje, besplatan je.",
       "howTitle": "Kako funkcionira",
       "how": {
         "who": "Popust se sam primjenjuje na prvu rezervaciju novog klijenta — u Dnevniku, mini aplikaciji i widgetu za rezervacije.",

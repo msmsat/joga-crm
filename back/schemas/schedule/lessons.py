@@ -102,9 +102,11 @@ class BookedClient(BaseSchema):
     # Первое занятие клиента — в Журнале помечается «Пробное». За бесплатное
     # денег никто не ждёт; у первого занятия со скидкой рядом стоит её процент.
     is_trial: bool = False
-    # Процент скидки первого занятия, обещанный при записи (100 — бесплатно).
-    # У старых пробных броней снимка нет — это были подарки, то есть 100.
+    # Скидка первого занятия, обещанная при записи: процент (100 — бесплатно)
+    # или сумма — тогда процента нет. У старых пробных броней снимка нет — это
+    # были подарки, то есть 100 %.
     trial_discount_percent: Optional[int] = None
+    trial_discount_amount: Optional[int] = None
     # Сколько клиент должен за это занятие («оплата на месте»). 0 — покрыто
     # абонементом, подарено или уже оплачено.
     debt: int = 0
@@ -160,13 +162,21 @@ class LessonDetail(LessonRead):
 
 
 class EligibleClient(BaseSchema):
-    """Клиент, которого можно записать на занятие (CL-6.4) — прошёл assert_can_book."""
+    """Клиент, которого администратор может записать на занятие, и чем будет
+    покрыта его запись — те же основания, что у `services/booking.FundingKind`:
+    абонемент, первое занятие, бесплатное по прайсу или оплата на месте."""
     id: int
     name: str
     last_name: Optional[str] = None
     phone: Optional[str] = None
     avatar_color: Optional[str] = None
-    subscription_hint: Optional[str] = None
+    funding: Literal["subscription", "trial", "free", "pay"]
+    # Сколько занятий останется на абонементе ДО этой записи.
+    classes_left: Optional[int] = None
+    # Скидка первого занятия: процент (100 — бесплатно, меньше — остаток
+    # платится на месте) или сумма в валюте студии.
+    trial_percent: Optional[int] = None
+    trial_amount: Optional[int] = None
 
 
 class LessonCreate(BaseSchema):

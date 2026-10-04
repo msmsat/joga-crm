@@ -35,7 +35,8 @@
         "label": "Sconto sulla prima lezione",
         "free": "La prima lezione di un nuovo cliente è gratuita.",
         "percent": "La prima lezione di un nuovo cliente è scontata del {{percent}}%.",
-        "change": "La percentuale si imposta in «Fidelizzazione»"
+        "amount": "La prima lezione di un nuovo cliente è scontata di {{amount}}.",
+        "change": "Lo sconto si imposta in «Fidelizzazione»"
       },
       "trainerConfirm": {
         "label": "Conferma dell'istruttore",

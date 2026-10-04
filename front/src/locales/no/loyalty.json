@@ -172,6 +172,8 @@
       "percent": "Rabatt, %",
       "freeHint": "Første økt er en gave — kunden betaler ingenting.",
       "payHint": "Kunden betaler {{rest}} % av prisen for første økt.",
+      "amount": "Rabatt, {{currency}}",
+      "amountHint": "{{amount}} trekkes fra prisen for første økt. Koster økten mindre, er den gratis.",
       "howTitle": "Slik fungerer det",
       "how": {
         "who": "Rabatten gjelder automatisk for en ny kundes første booking — i Timeplan, miniappen og bookingwidgeten.",

@@ -61,9 +61,12 @@ class BookingSettingsRead(BaseSchema):
     widget_work_start: str
     widget_work_end: str
     trial_lesson_free: bool = False
-    # Процент скидки первого занятия; 100 — бесплатно. Меняется в Лояльности,
-    # «Онлайн-запись» его только называет рядом с тумблером.
+    # Скидка первого занятия: процент (100 — бесплатно) или сумма — смотря что
+    # выбрано в `trial_discount_type`. Меняется в Лояльности, «Онлайн-запись»
+    # её только называет рядом с тумблером.
+    trial_discount_type: str = "percent"
     trial_discount_percent: int = 100
+    trial_discount_amount: Optional[int] = None
     coffee_enabled: bool = True
     coffee_spots: list[CoffeeSpotInput] = []
     # Публичная ссылка на мини-приложение студии. Не колонка — считается из

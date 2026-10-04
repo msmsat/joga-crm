@@ -172,6 +172,8 @@
       "percent": "Discount, %",
       "freeHint": "The first class is on the house — the client pays nothing.",
       "payHint": "The client pays {{rest}}% of the first class price.",
+      "amount": "Discount, {{currency}}",
+      "amountHint": "{{amount}} is taken off the first class price. If the class costs less, it's free.",
       "howTitle": "How it works",
       "how": {
         "who": "Applies automatically to a new client's first booking — in the Journal, the mini app and the booking widget.",

@@ -23,6 +23,7 @@ class DigestVisit(BaseSchema):
     booked_at: Optional[datetime] = None
     price: int = 0
     trial_discount_percent: Optional[int] = None
+    trial_discount_amount: Optional[int] = None
     subscription_name: Optional[str] = None
     debt: int = 0
     paid_amount: int = 0

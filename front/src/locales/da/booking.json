@@ -35,7 +35,8 @@
         "label": "Rabat på første hold",
         "free": "En ny kundes første hold er gratis.",
         "percent": "En ny kundes første hold får {{percent}} % rabat.",
-        "change": "Procentsatsen indstilles under »Loyalitet«"
+        "amount": "En ny kundes første hold får {{amount}} rabat.",
+        "change": "Rabatten indstilles under »Loyalitet«"
       },
       "trainerConfirm": {
         "label": "Bekræftelse fra underviser",

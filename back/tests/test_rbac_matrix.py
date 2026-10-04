@@ -90,7 +90,8 @@ EXPECTED: dict[tuple[str, str], tuple[str, ...]] = {
     ("GET", "/schedule/lessons"): ("*studio",),
     ("GET", "/schedule/lessons/days"): ("*studio",),
     ("GET", "/schedule/lessons/{lesson_id}"): ("*studio",),
-    ("GET", "/schedule/lessons/{lesson_id}/eligible-clients"): ("*studio",),
+    # /schedule/lessons/{id}/eligible-clients — только владелец и админ: это вся
+    # клиентская база с телефонами, тренер видит лишь своих клиентов.
     ("POST", "/schedule/lessons"): ("*studio",),                       # тело: тренеру 403
     ("PATCH", "/schedule/lessons/{lesson_id}"): ("*studio",),          # тело: тренеру 403
     ("DELETE", "/schedule/lessons/{lesson_id}"): ("*studio",),         # тело: тренеру 403

@@ -172,6 +172,8 @@
       "percent": "Rabat, %",
       "freeHint": "Pierwsze zajęcia są w prezencie — klient nic nie płaci.",
       "payHint": "Klient płaci {{rest}}% ceny pierwszych zajęć.",
+      "amount": "Rabat, {{currency}}",
+      "amountHint": "Od ceny pierwszych zajęć odejmuje się {{amount}}. Jeśli zajęcia kosztują mniej, są bezpłatne.",
       "howTitle": "Jak to działa",
       "how": {
         "who": "Rabat nalicza się sam przy pierwszej rezerwacji nowego klienta — w Grafiku, mini aplikacji i widżecie rezerwacji.",
