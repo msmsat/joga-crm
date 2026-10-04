@@ -93,7 +93,11 @@
       "instagram": "Instagram",
       "birthDate": "Data e lindjes",
       "city": "Qyteti",
-      "copyHint": " · klikoni për të kopjuar"
+      "copyHint": " · klikoni për të kopjuar",
+      "phone2": "Telefoni i dytë",
+      "address": "Adresa",
+      "balance": "Gjendja para transferimit",
+      "discount": "Zbritja"
     },
     "debt": "{{amount}} të papaguara për seanca — pranoni pagesën te Ditari",
     "stats": {
@@ -285,7 +289,8 @@
         "booking": "Rezervimet",
         "cancel": "Anulimet",
         "bonus": "Bonuset",
-        "freeze": "Ngrirjet"
+        "freeze": "Ngrirjet",
+        "completed": "Të përfunduara"
       },
       "empty": "Nuk ka ngjarje"
     },

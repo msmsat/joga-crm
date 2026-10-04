@@ -113,12 +113,20 @@
   .summary { padding: 20px; }
 }
 @media (max-width: 800px) {
-  .header { height: 59px; padding: 0 19px; }
+  :global(html):has(.page), :global(body):has(.page), :global(#root):has(.page) {
+    height: 100%; min-height: 0; overflow: hidden; overscroll-behavior: none;
+  }
+  .page { position: relative; display: flex; flex-direction: column; height: 100vh; height: 100svh;
+    min-height: 0; overflow: hidden; }
+  .header { height: 59px; flex-shrink: 0; padding: 0 19px; }
   .headerSecure { display: none; }
   .brand { font-size: 21px; gap: 8px; }
   .brand img { width: 23px; height: 23px; }
   .header > button { font-size: 11px; }
-  .layout { width: min(500px, calc(100% - 32px)); padding: 21px 0 160px; }
+  .layout { width: min(500px, calc(100% - 32px)); flex: 1; min-height: 0;
+    margin: 0 auto var(--checkout-keyboard-inset, 0px); padding: 21px 0 calc(var(--checkout-footer-height, 160px) + 20px);
+    overflow-y: auto; overscroll-behavior-y: contain; -webkit-overflow-scrolling: touch;
+    scroll-padding: 16px 0 calc(var(--checkout-footer-height, 160px) + 20px); }
   .intro { margin-bottom: 15px; }
   .intro h1 { font-size: 23px; letter-spacing: -.6px; margin: 0; }
   .intro p { display: none; }
@@ -131,7 +139,7 @@
   .payerIdentity { grid-template-columns: minmax(0, 1fr); gap: 11px; }
   .field input { font-size: 16px; height: 43px; }
   .editButton span { display: none; }
-  .summary { display: contents; }
+  .summary { display: contents; position: static; }
   .summaryHeading { order: -1; width: 100%; margin: 0; border: 1px solid #493b32; background: #211c18; padding: 14px 16px; border-radius: 14px; }
   .summaryHeading .artwork { display: none; }
   .planMiniMark { display: grid; place-items: center; width: 39px; height: 39px; border: 1px solid #fcae9120;
@@ -150,8 +158,9 @@
   .receiptRow { margin-bottom: 9px; }
   .total { padding-top: 12px; margin-top: 12px; }
   .total strong { font-size: 23px; }
-  .summaryFooter { position: fixed; z-index: 30; bottom: 0; left: 0; right: 0; padding: 12px 19px max(12px, env(safe-area-inset-bottom));
+  .summaryFooter { position: absolute; z-index: 30; bottom: 0; left: 0; right: 0; padding: 12px 19px max(12px, env(safe-area-inset-bottom));
     background: #1a1816f5; backdrop-filter: blur(18px); border-top: 1px solid #59423666; box-shadow: 0 -10px 35px #0003; }
+  .page[data-keyboard-open] .summaryFooter { visibility: hidden; pointer-events: none; }
   .mobileTotal { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; max-width: 462px; margin: 0 auto 10px;
     font-size: 10px; color: #b6a596; }
   .mobileTotal strong { color: #f4e8df; font-size: 19px; font-weight: 600; letter-spacing: -.5px; }
@@ -159,6 +168,9 @@
   .secure { font-size: 8px; }
   .legal { width: 100%; margin: 0; text-align: left; font-size: 9px; }
   .profileHint { font-size: 9px; margin-top: 10px; }
+}
+@media (any-pointer: coarse) {
+  .field input { font-size: 16px; }
 }
 @media (max-width: 360px) {
   .header { padding: 0 15px; }

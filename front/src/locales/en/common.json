@@ -238,7 +238,8 @@
     "add": "Photo",
     "remove": "Remove photo",
     "alt": "Note photo",
-    "drop": "Drop to attach"
+    "drop": "Drop to attach",
+    "retry": "Photos could not load. Try again"
   },
   "loading": "Loading…",
   "actions": {
@@ -258,5 +259,9 @@
     "durationInherited": "Catalog duration",
     "durationAria": "Duration of {{service}}, minutes",
     "durationInvalid": "Duration must be a whole number of minutes from 1 to {{max}}. The previous value is kept"
+  },
+  "records": {
+    "paymentUnknown": "Payment unconfirmed",
+    "attendanceUnknown": "Attendance unconfirmed"
   }
 }

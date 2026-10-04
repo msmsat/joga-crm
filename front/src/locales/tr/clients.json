@@ -93,7 +93,11 @@
       "instagram": "Instagram",
       "birthDate": "Doğum tarihi",
       "city": "Şehir",
-      "copyHint": " · kopyalamak için tıklayın"
+      "copyHint": " · kopyalamak için tıklayın",
+      "phone2": "İkinci telefon",
+      "address": "Adres",
+      "balance": "Aktarım öncesi bakiye",
+      "discount": "İndirim"
     },
     "debt": "Dersler için {{amount}} ödenmemiş — ödemeyi Günlükte alın",
     "stats": {
@@ -285,7 +289,8 @@
         "booking": "Rezervasyonlar",
         "cancel": "İptaller",
         "bonus": "Bonuslar",
-        "freeze": "Dondurmalar"
+        "freeze": "Dondurmalar",
+        "completed": "Tamamlanan"
       },
       "empty": "Etkinlik yok"
     },

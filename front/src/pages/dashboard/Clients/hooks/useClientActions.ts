@@ -179,7 +179,7 @@ export function useClientActions(clientId: number) {
     eventFilter, setEventFilter,
     copyToClipboard, openWhatsApp,
     remindAboutSubscription,
-    updateField: (field: 'phone' | 'email' | 'instagram' | 'birth_date' | 'city', value: string | null) =>
+    updateField: (field: 'phone' | 'email' | 'instagram' | 'birth_date' | 'city' | 'phone2' | 'address', value: string | null) =>
       mutations.update(clientId, { [field]: value } as ClientUpdate).catch((e: Error) => toast.error(errorMessage(e, t))),
     updateRegistrationDate: (date: string) => mutations.updateRegistrationDate(clientId, date).catch((e: Error) => toast.error(errorMessage(e, t))),
   };

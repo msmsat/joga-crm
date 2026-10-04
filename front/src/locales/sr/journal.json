@@ -335,6 +335,8 @@
     "onlyAvailable": "Само доступни",
     "clientOptional": "Необавезно: клијента можете додати касније на картици термина — или ће се сам пријавити онлајн.",
     "withoutClient": "Настави без клијента",
+    "payAfter": "Наплата одмах након заказивања",
+    "confirmAndPay": "Закажи и наплати",
     "unavailable": "Недоступно уз овај избор",
     "selectionConflict": "Изабрани параметри се не уклапају. Изаберите слободно време или промените услугу или стручњака.",
     "availabilityError": "Could not load availability. Please try again.",

@@ -238,7 +238,8 @@
     "add": "Fotoğraf",
     "remove": "Fotoğrafı kaldır",
     "alt": "Not fotoğrafı",
-    "drop": "Eklemek için bırakın"
+    "drop": "Eklemek için bırakın",
+    "retry": "Fotoğraflar yüklenemedi. Yeniden dene"
   },
   "loading": "Yükleniyor…",
   "actions": {
@@ -258,5 +259,9 @@
     "durationInherited": "Katalogdaki süre",
     "durationAria": "{{service}} süresi, dakika",
     "durationInvalid": "Süre 1 ile {{max}} arasında tam sayı dakika olmalıdır. Önceki değer korunur"
+  },
+  "records": {
+    "paymentUnknown": "Ödeme onaylanmadı",
+    "attendanceUnknown": "Katılım onaylanmadı"
   }
 }

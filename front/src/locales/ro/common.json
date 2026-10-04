@@ -238,7 +238,8 @@
     "add": "Foto",
     "remove": "Elimină fotografia",
     "alt": "Fotografia notei",
-    "drop": "Eliberaţi pentru a ataşa"
+    "drop": "Eliberaţi pentru a ataşa",
+    "retry": "Fotografiile nu s-au încărcat. Reîncearcă"
   },
   "loading": "Se încarcă…",
   "actions": {
@@ -258,5 +259,9 @@
     "durationInherited": "Durată din Catalog",
     "durationAria": "Durata {{service}}, minute",
     "durationInvalid": "Durata trebuie să fie un număr întreg de minute între 1 și {{max}}. Valoarea anterioară se păstrează"
+  },
+  "records": {
+    "paymentUnknown": "Plată neconfirmată",
+    "attendanceUnknown": "Prezență neconfirmată"
   }
 }

@@ -292,9 +292,10 @@ export const isLessonStarted = (b: Pick<Booking, 'date' | 'timeStart'>, now = ne
  *  По умолчанию — пришёл: неявкой бывает только отмеченная «не пришёл»
  *  (back/services/attendance.py), а с начала занятия неотмеченный считается
  *  пришедшим, по окончании система отметит это и в брони. */
-export type Attendance = 'waiting' | 'came' | 'missed';
-export const attendanceOf = (c: { status: string; no_show?: boolean }, started: boolean): Attendance =>
-  c.no_show ? 'missed'
+export type Attendance = 'waiting' | 'came' | 'missed' | 'unknown';
+export const attendanceOf = (c: { status: string; no_show?: boolean; attendance_known?: boolean }, started: boolean): Attendance =>
+  c.attendance_known === false ? 'unknown'
+    : c.no_show ? 'missed'
     : c.status === 'attended' || (started && c.status === 'active') ? 'came'
     // Заявка, ждущая студии, и неоплаченная карточная бронь визитом не становятся.
     : 'waiting';

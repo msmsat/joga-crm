@@ -115,6 +115,8 @@ async function navigation(overrides = {}, catalog = MIXED) {
     'hybrid.api': { hybridApi: {} },
     useNotePhotos: { useNotePhotos: () => ({ photos: [], pending: [], add: noop, remove: noop }) },
     useWizardSettle: { useWizardSettle: () => ({ ready: true, settle: () => ({ payment: null }) }) },
+    // Касса — владельцу и администратору; роль подменяют отдельные тесты.
+    auth: { getUserRoleFromToken: () => 'owner' },
     ...overrides,
   });
   return (extra = {}) => {
@@ -367,6 +369,124 @@ test('from the client card «Individual» stops offering open groups as free tim
   render().toggleSolo();
   render();
   assert.equal(seen.options.joinable, false);
+});
+
+// «Оплата» на итоге «Индивидуального»: по желанию, окно — сразу после записи.
+async function soloPayment({ debt = 500, bySubscription = false, role = 'owner' } = {}) {
+  const calls = [];
+  const events = [];
+  const toasts = [];
+  const scheduleApi = {
+    createLesson: async body => { calls.push(['create', body]); return { id: 50 }; },
+    createReservation: async (client, lesson) => { calls.push(['reserve', client, lesson]); return { id: 77 }; },
+    getLesson: async id => {
+      calls.push(['detail', id]);
+      return { booked_clients: [{ reservation_id: 77, client_id: 3, debt, by_subscription: bySubscription }] };
+    },
+  };
+  const render = (await navigation({
+    schedule: { scheduleApi },
+    index: { useToast: () => ({ info: text => toasts.push(text), error: text => toasts.push(['error', text]) }) },
+    auth: { getUserRoleFromToken: () => role },
+  }, GROUP_ONLY))({ defaultDate: '2099-05-12', defaultTime: '10:00', defaultTeacherId: 7,
+    onCreated: date => events.push(['created', date]), onClose: () => events.push('closed') });
+  render().toggleSolo();
+  render().pickService(GROUP_SERVICE);
+  return { calls, events, toasts, render };
+}
+
+test('«Payment» is optional and offered only once a client is chosen', async () => {
+  const { render } = await soloPayment();
+  assert.equal(render().canPayNow, false);
+  render().goTo(1);
+  render().pickClient(3, 'Anna');
+  assert.equal(render().canPayNow, true);
+  assert.equal(render().payNow, false);
+  assert.equal(render().ready, true);
+  render().togglePay();
+  assert.equal(render().payNow, true);
+  render().togglePay();
+  assert.equal(render().payNow, false);
+  // Отметка — под клиента: другой человек — решать заново.
+  render().togglePay();
+  render().goTo(1);
+  render().pickClient(4, 'Boris');
+  assert.equal(render().payNow, false);
+});
+
+test('with «Payment» the reservation debt opens right after booking; the wizard waits for it', async () => {
+  const { calls, events, toasts, render } = await soloPayment();
+  render().goTo(1);
+  render().pickClient(3, 'Anna');
+  render().togglePay();
+  await render().submit();
+  assert.deepEqual(calls.map(c => c[0]), ['create', 'reserve', 'detail']);
+  assert.equal(calls[0][1].total_spots, 1);
+  assert.deepEqual(calls[2], ['detail', 50]);
+  assert.equal(render().paying.reservation_id, 77);
+  assert.deepEqual(events, [['created', '2099-05-12']]);
+  render().paid();
+  assert.equal(toasts.at(-1), 'journal:toasts.paymentAccepted');
+  render().finishPay();
+  assert.equal(render().paying, null);
+  assert.equal(events.at(-1), 'closed');
+});
+
+test('nothing to pay (subscription) — no payment window, the wizard just closes', async () => {
+  const { events, toasts, render } = await soloPayment({ debt: 0, bySubscription: true });
+  render().goTo(1);
+  render().pickClient(3, 'Anna');
+  render().togglePay();
+  await render().submit();
+  assert.equal(render().paying, null);
+  assert.equal(toasts.at(-1), 'journal:payment.coveredBy.subscription');
+  assert.equal(events.at(-1), 'closed');
+});
+
+test('without «Payment» booking does not look at the debt', async () => {
+  const { calls, events, render } = await soloPayment();
+  render().goTo(1);
+  render().pickClient(3, 'Anna');
+  await render().submit();
+  assert.equal(calls.some(c => c[0] === 'detail'), false);
+  assert.equal(events.at(-1), 'closed');
+});
+
+test('a trainer is not offered «Payment»: the till is closed to them', async () => {
+  const { render } = await soloPayment({ role: 'trainer' });
+  render().goTo(1);
+  render().pickClient(3, 'Anna');
+  assert.equal(render().canPayNow, false);
+  render().togglePay();
+  assert.equal(render().payNow, false);
+});
+
+test('the summary shows an optional «Payment» tile for «Individual» with a client', async () => {
+  const app = await harness(`${base}SummaryStep.tsx`, {
+    './useBookingWizard': { TIME_STEP: 0, CLIENT_STEP: 1, SERVICE_STEP: 2, MASTER_STEP: 3, isTime: v => /^\d\d:\d\d$/.test(v) },
+    index: { NotePhotos: 'NotePhotos', NoteDropZone: 'NoteDropZone' },
+    './WizardParts': { WizardChips: 'chips' },
+    './SettleBlock': { SettleBlock: 'settle' },
+    VisitMarks: { VisitMark: 'VisitMark' },
+    '../../../../../../components/Icons': { CardIcon: 'card' },
+  });
+  let toggled = 0;
+  const w = { masterChosen: true, teacherId: 7, masters: [{ id: 7, name: 'Alex' }], resource: { quote: null, choice: { branchOptions: [] } },
+    date: '2099-05-12', time: '10:00', joined: undefined, needsClient: true, clientName: 'Anna', clientOptional: false,
+    client: { id: 3 }, service: { name: 'Yoga' }, soloLesson: true, conflict: false, isResource: false, noHall: true,
+    branches: [], halls: [], durationMin: 60, priceText: '20 EUR', notes: '', saving: false,
+    notePhotos: { photos: [], pending: [], add() {}, remove() {} }, setNotes() {}, goTo() {},
+    canPayNow: true, payNow: false, togglePay: () => { toggled++; } };
+  const tile = () => nodes(app.render('SummaryStep', { w }), 'VisitMark')[0];
+  assert.equal(tile().state, 'due');
+  assert.equal(tile().hint, 'journal:mark.unpaid');
+  tile().onClick();
+  assert.equal(toggled, 1);
+  w.payNow = true;
+  assert.equal(tile().state, 'done');
+  assert.equal(tile().hint, 'journal:wizard.payAfter');
+  w.canPayNow = false;
+  assert.equal(tile(), undefined);
 });
 
 test('a catalog without group services offers no «Individual»', async () => {

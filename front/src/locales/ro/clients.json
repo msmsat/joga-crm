@@ -93,7 +93,11 @@
       "instagram": "Instagram",
       "birthDate": "Data nașterii",
       "city": "Oraș",
-      "copyHint": " · faceți clic pentru copiere"
+      "copyHint": " · faceți clic pentru copiere",
+      "phone2": "Al doilea telefon",
+      "address": "Adresă",
+      "balance": "Sold înainte de transfer",
+      "discount": "Reducere"
     },
     "debt": "{{amount}} neachitați pentru ședințe — acceptați plata în Jurnal",
     "stats": {
@@ -289,7 +293,8 @@
         "booking": "Rezervări",
         "cancel": "Anulări",
         "bonus": "Bonusuri",
-        "freeze": "Înghețări"
+        "freeze": "Înghețări",
+        "completed": "Finalizate"
       },
       "empty": "Nu există evenimente"
     },

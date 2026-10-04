@@ -93,7 +93,11 @@
       "instagram": "Instagram",
       "birthDate": "Fecha de nacimiento",
       "city": "Ciudad",
-      "copyHint": " · haz clic para copiar"
+      "copyHint": " · haz clic para copiar",
+      "phone2": "Segundo teléfono",
+      "address": "Dirección",
+      "balance": "Saldo antes de la transferencia",
+      "discount": "Descuento"
     },
     "debt": "{{amount}} pendientes de clases — acepta el pago en el Diario",
     "stats": {
@@ -285,7 +289,8 @@
         "booking": "Reservas",
         "cancel": "Cancelaciones",
         "bonus": "Bonus",
-        "freeze": "Congelaciones"
+        "freeze": "Congelaciones",
+        "completed": "Finalizadas"
       },
       "empty": "No hay eventos"
     },

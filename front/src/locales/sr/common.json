@@ -238,7 +238,8 @@
     "add": "Фотографија",
     "remove": "Уклони фотографију",
     "alt": "Фотографија белешке",
-    "drop": "Пустите да приложите"
+    "drop": "Пустите да приложите",
+    "retry": "Фотографије нису учитане. Покушајте поново"
   },
   "loading": "Учитавање…",
   "actions": {
@@ -258,5 +259,9 @@
     "durationInherited": "Trajanje iz Kataloga",
     "durationAria": "Trajanje usluge {{service}}, minuti",
     "durationInvalid": "Trajanje mora biti ceo broj minuta od 1 do {{max}}. Prethodna vrednost je sačuvana"
+  },
+  "records": {
+    "paymentUnknown": "Плаћање није потврђено",
+    "attendanceUnknown": "Долазак није потврђен"
   }
 }

@@ -238,7 +238,8 @@
     "add": "Foto",
     "remove": "Quitar foto",
     "alt": "Foto de la nota",
-    "drop": "Suelta para adjuntar"
+    "drop": "Suelta para adjuntar",
+    "retry": "No se pudieron cargar las fotos. Reintentar"
   },
   "loading": "Cargando…",
   "actions": {
@@ -258,5 +259,9 @@
     "durationInherited": "Duración del Catálogo",
     "durationAria": "Duración de {{service}}, minutos",
     "durationInvalid": "La duración debe ser un número entero de minutos entre 1 y {{max}}. Se mantiene el valor anterior"
+  },
+  "records": {
+    "paymentUnknown": "Pago sin confirmar",
+    "attendanceUnknown": "Asistencia sin confirmar"
   }
 }

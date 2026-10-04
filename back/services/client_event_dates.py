@@ -26,14 +26,18 @@ def lesson_stamp(lesson):
 def reservation_event(reservation, kind, studio):
     lesson = reservation.lesson
     scheduled = lesson_stamp(lesson)
-    occurred = (scheduled if kind == "visit" else
+    occurred = (scheduled if kind in ("visit", "completed") else
                 action_stamp(reservation.cancelled_at if kind == "cancel" else reservation.created_at, studio))
-    prefixes = {"booking": "Запись: ", "cancel": "Отмена: ", "visit": ""}
+    prefixes = {"booking": "Запись: ", "cancel": "Отмена: ", "visit": "", "completed": ""}
     return EventRecordOut(
-        date=scheduled if kind in ("booking", "visit") else occurred,
+        date=scheduled if kind in ("booking", "visit", "completed") else occurred,
         occurred_at=occurred, scheduled_at=scheduled,
         type=kind, title=prefixes[kind] + (lesson.name if lesson else "Занятие"),
         trainer=lesson.teacher_name if lesson else None,
+        lesson_id=getattr(lesson, 'id', None),
+        notes=getattr(lesson, 'notes', None),
+        photos=getattr(lesson, 'photos', None) or [],
+        status=getattr(lesson, 'source_status', None),
     )
 
 

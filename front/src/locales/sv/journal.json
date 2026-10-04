@@ -331,6 +331,8 @@
     "onlyAvailable": "Endast lediga",
     "clientOptional": "Valfritt: du kan lägga till en kund senare från passets kort – eller så bokar kunden själv online.",
     "withoutClient": "Fortsätt utan kund",
+    "payAfter": "Tas emot direkt efter bokningen",
+    "confirmAndPay": "Boka och ta betalt",
     "unavailable": "Inte tillgänglig med det här valet",
     "selectionConflict": "Valet går inte ihop. Välj en ledig tid eller byt tjänst eller specialist.",
     "availabilityError": "Could not load availability. Please try again.",

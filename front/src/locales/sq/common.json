@@ -238,7 +238,8 @@
     "add": "Foto",
     "remove": "Hiq foton",
     "alt": "Foto e shënimit",
-    "drop": "Lëshoni për ta bashkëngjitur"
+    "drop": "Lëshoni për ta bashkëngjitur",
+    "retry": "Fotot nuk u ngarkuan. Provo përsëri"
   },
   "loading": "Po ngarkohet…",
   "actions": {
@@ -258,5 +259,9 @@
     "durationInherited": "Kohëzgjatja nga Katalogu",
     "durationAria": "Kohëzgjatja e {{service}}, minuta",
     "durationInvalid": "Kohëzgjatja duhet të jetë numër i plotë minutash nga 1 deri në {{max}}. Vlera e mëparshme ruhet"
+  },
+  "records": {
+    "paymentUnknown": "Pagesa nuk është konfirmuar",
+    "attendanceUnknown": "Pjesëmarrja nuk është konfirmuar"
   }
 }

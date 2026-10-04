@@ -35,7 +35,8 @@
     "check:staff-hours": "node scripts/check-staff-hours.mjs",
     "check:staff-schedule-sync": "node --experimental-vm-modules scripts/check-staff-schedule-sync.mjs",
     "check:bumpix": "node --experimental-vm-modules scripts/check-bumpix.mjs",
-    "check:bumpix-journal": "node --experimental-vm-modules scripts/check-bumpix-journal.mjs"
+    "check:bumpix-journal": "node --experimental-vm-modules scripts/check-bumpix-journal.mjs",
+    "check:native-media": "node --experimental-vm-modules scripts/check-native-media.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",

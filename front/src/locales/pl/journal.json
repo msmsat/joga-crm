@@ -339,6 +339,8 @@
     "onlyAvailable": "Tylko dostępne",
     "clientOptional": "Opcjonalnie: klienta możesz dodać później w karcie zajęć — albo zapisze się sam online.",
     "withoutClient": "Kontynuuj bez klienta",
+    "payAfter": "Przyjmiemy zaraz po zapisie",
+    "confirmAndPay": "Zapisz i przyjmij płatność",
     "unavailable": "Niedostępne przy tym wyborze",
     "selectionConflict": "Wybrane parametry do siebie nie pasują. Wybierz dostępną godzinę albo zmień usługę lub specjalistę.",
     "availabilityError": "Could not load availability. Please try again.",

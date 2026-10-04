@@ -331,6 +331,8 @@
     "onlyAvailable": "Kun ledige",
     "clientOptional": "Valgfrit: du kan tilføje en kunde senere fra holdets kort — eller kunden kan selv booke online.",
     "withoutClient": "Fortsæt uden kunde",
+    "payAfter": "Modtages lige efter bookingen",
+    "confirmAndPay": "Book og modtag betaling",
     "unavailable": "Ikke tilgængelig med dette valg",
     "selectionConflict": "Valget passer ikke sammen. Vælg en ledig tid, eller skift ydelse eller specialist.",
     "availabilityError": "Could not load availability. Please try again.",

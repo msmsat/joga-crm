@@ -4,7 +4,8 @@
 // пустое здесь — «Не выбрано» с кнопкой «Выбрать». Место (зал нового занятия,
 // филиал) выбирается прямо здесь: своего раздела у него нет. Записывает кнопка
 // «Подтвердить» в подвале (BookingWizard). У индивидуальной записи перед
-// заметкой — цена, своя скидка и отметки «Оплата» / «Посещение» (SettleBlock).
+// заметкой — цена, своя скидка и отметки «Оплата» / «Посещение» (SettleBlock);
+// у «Индивидуального» с клиентом — необязательная «Оплата» после записи.
 // Последним — заметка к записи: текст
 // и снимки (кнопкой «Фото», перетаскиванием, Ctrl+V); ложится в занятие записи.
 import { useTranslation } from 'react-i18next';
@@ -14,6 +15,8 @@ import {
 import { NotePhotos, NoteDropZone } from '../../../../../../components/ui/index';
 import { WizardChips } from './WizardParts';
 import { SettleBlock } from './SettleBlock';
+import { VisitMark } from '../../lesson/VisitMarks';
+import * as Icons from '../../../../../../components/Icons';
 
 export function SummaryRow({ label, value, hint, onChange }: {
   label: string; value: string; hint?: string; onChange?: () => void;
@@ -90,10 +93,21 @@ export function SummaryStep({ w }: { w: BookingWizardState }) {
           <SettleBlock w={w} />
         </>
       ) : (
-        <div className="bw-sum-total">
-          <span>{w.durationMin ? `${w.durationMin} ${t('common:units.min')}` : ''}</span>
-          <span className="bw-sum-price">{w.priceText}</span>
-        </div>
+        <>
+          <div className="bw-sum-total">
+            <span>{w.durationMin ? `${w.durationMin} ${t('common:units.min')}` : ''}</span>
+            <span className="bw-sum-price">{w.priceText}</span>
+          </div>
+          {/* «Индивидуальное» с клиентом: «Оплата» по желанию — отмечена,
+              окно оплаты откроется сразу после записи (useBookingWizard). */}
+          {w.canPayNow && (
+            <div className="bw-settle-marks">
+              <VisitMark tile icon={<Icons.CardIcon />} state={w.payNow ? 'done' : 'due'} label={t('journal:mark.pay')}
+                         hint={w.payNow ? t('journal:wizard.payAfter') : t('journal:mark.unpaid')}
+                         disabled={w.saving} onClick={w.togglePay} />
+            </div>
+          )}
+        </>
       )}
       <div className="bw-field bw-sum-note">
         <span className="jf-title">{t('journal:lessonNotes.short')}</span>

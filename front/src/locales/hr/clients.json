@@ -93,7 +93,11 @@
       "instagram": "Instagram",
       "birthDate": "Datum rođenja",
       "city": "Grad",
-      "copyHint": " · kliknite za kopiranje"
+      "copyHint": " · kliknite za kopiranje",
+      "phone2": "Drugi telefon",
+      "address": "Adresa",
+      "balance": "Stanje prije prijenosa",
+      "discount": "Popust"
     },
     "debt": "{{amount}} neplaćeno za termine — prihvatite uplatu u Dnevniku",
     "stats": {
@@ -289,7 +293,8 @@
         "booking": "Rezervacije",
         "cancel": "Otkazivanja",
         "bonus": "Bonusi",
-        "freeze": "Zamrzavanja"
+        "freeze": "Zamrzavanja",
+        "completed": "Završene"
       },
       "empty": "Nema događaja"
     },

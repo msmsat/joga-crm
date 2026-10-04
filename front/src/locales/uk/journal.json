@@ -339,6 +339,8 @@
     "onlyAvailable": "Лише доступні",
     "clientOptional": "Необов’язково: клієнта можна додати пізніше в картці заняття — або він запишеться онлайн сам.",
     "withoutClient": "Продовжити без клієнта",
+    "payAfter": "Приймемо одразу після запису",
+    "confirmAndPay": "Записати й прийняти оплату",
     "unavailable": "Недоступно за цього вибору",
     "selectionConflict": "Вибрані параметри несумісні. Виберіть доступний час або змініть послугу чи фахівця.",
     "availabilityError": "Could not load availability. Please try again.",

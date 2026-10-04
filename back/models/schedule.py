@@ -58,7 +58,7 @@ class Lesson(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     studio_id: Mapped[int] = mapped_column(ForeignKey("studios.id", ondelete="CASCADE"), index=True)
-    name: Mapped[str] = mapped_column(String(100))
+    name: Mapped[str] = mapped_column(String(150))
     teacher_name: Mapped[str] = mapped_column(String(100))
     teacher_id: Mapped[Optional[int]] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True)
     hall_id: Mapped[Optional[int]] = mapped_column(ForeignKey("halls.id", ondelete="SET NULL"), nullable=True, index=True)
@@ -92,6 +92,8 @@ class Lesson(Base):
     # карточке клиента (ClientNote), и фото в ней те же: пути /static/notes/.
     notes: Mapped[str] = mapped_column(Text, default="", server_default="", nullable=False)
     photos: Mapped[list] = mapped_column(JSON, default=list, server_default="[]", nullable=False)
+    source_status: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
+    source_details: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
     clients_notified: Mapped[bool] = mapped_column(Boolean, default=False)
     gcal_event_id: Mapped[Optional[str]] = mapped_column(String(120), nullable=True, index=True)
 

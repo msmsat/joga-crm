@@ -238,7 +238,8 @@
     "add": "Zdjęcie",
     "remove": "Usuń zdjęcie",
     "alt": "Zdjęcie notatki",
-    "drop": "Upuść, aby dodać"
+    "drop": "Upuść, aby dodać",
+    "retry": "Nie udało się wczytać zdjęć. Spróbuj ponownie"
   },
   "loading": "Wczytywanie…",
   "actions": {
@@ -258,5 +259,9 @@
     "durationInherited": "Czas trwania z Katalogu",
     "durationAria": "Czas trwania {{service}}, minuty",
     "durationInvalid": "Czas trwania musi być liczbą całkowitą minut od 1 do {{max}}. Poprzednia wartość została zachowana"
+  },
+  "records": {
+    "paymentUnknown": "Płatność niepotwierdzona",
+    "attendanceUnknown": "Obecność niepotwierdzona"
   }
 }

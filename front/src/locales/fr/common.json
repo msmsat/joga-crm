@@ -238,7 +238,8 @@
     "add": "Photo",
     "remove": "Supprimer la photo",
     "alt": "Photo de la note",
-    "drop": "Déposez pour joindre"
+    "drop": "Déposez pour joindre",
+    "retry": "Impossible de charger les photos. Réessayer"
   },
   "loading": "Chargement…",
   "actions": {
@@ -258,5 +259,9 @@
     "durationInherited": "Durée du Catalogue",
     "durationAria": "Durée de {{service}}, minutes",
     "durationInvalid": "La durée doit être un nombre entier de minutes entre 1 et {{max}}. La valeur précédente est conservée"
+  },
+  "records": {
+    "paymentUnknown": "Paiement non confirmé",
+    "attendanceUnknown": "Présence non confirmée"
   }
 }

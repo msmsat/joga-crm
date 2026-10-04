@@ -87,4 +87,16 @@ class BumpixJournalLink(Base):
     event_id: Mapped[int] = mapped_column(ForeignKey('bumpix_events.id', ondelete='CASCADE'), unique=True)
     lesson_id: Mapped[Optional[int]] = mapped_column(ForeignKey('lessons.id', ondelete='SET NULL'), nullable=True, unique=True)
     reservation_id: Mapped[Optional[int]] = mapped_column(ForeignKey('reservations.id', ondelete='SET NULL'), nullable=True, unique=True)
+    note_id: Mapped[Optional[int]] = mapped_column(ForeignKey('client_notes.id', ondelete='SET NULL'), nullable=True, unique=True)
+    managed_values: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
+
+
+class BumpixServiceLink(Base):
+    __tablename__ = 'bumpix_service_links'
+    __table_args__ = (UniqueConstraint('studio_id', 'account_key', 'source_key', name='uq_bumpix_service_source'),)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    studio_id: Mapped[int] = mapped_column(ForeignKey('studios.id', ondelete='CASCADE'), index=True)
+    account_key: Mapped[str] = mapped_column(String(64))
+    source_key: Mapped[str] = mapped_column(Text)
+    service_id: Mapped[Optional[int]] = mapped_column(ForeignKey('services.id', ondelete='SET NULL'), nullable=True)

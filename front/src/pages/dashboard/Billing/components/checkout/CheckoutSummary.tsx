@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type RefCallback } from 'react';
 import { ChevronDown, ShieldCheck } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { planSeats } from '../../../../../lib/plan';
@@ -11,7 +11,8 @@ import { checkoutAmounts } from './checkoutAmounts';
 import CheckoutArtwork from './CheckoutArtwork';
 import styles from './CheckoutPage.module.css';
 
-export default function CheckoutSummary({ plan, period, preview, payment, error, currency, preparing, canPrepare, onPrepare, onBack, taxPending = false }: {
+export default function CheckoutSummary({ plan, period, preview, payment, error, currency, preparing, canPrepare, onPrepare, onBack, taxPending = false, footerRef }: {
+  footerRef?: RefCallback<HTMLDivElement>;
   plan: Plan; period: number; preview: CheckoutPreview | undefined; payment?: PaymentUi;
   taxPending?: boolean; error: string; currency: string; preparing: boolean; canPrepare: boolean; onPrepare: () => void; onBack: () => void;
 }) {
@@ -56,7 +57,7 @@ export default function CheckoutSummary({ plan, period, preview, payment, error,
       <p className={styles.hint}>{t('checkout.noAutoRenewal')}</p>
       {preview?.kind === 'switch' && <p className={styles.warning}>{t('checkout.switchWarning')}</p>}
     </div>
-    <div className={styles.summaryFooter}>
+    <div ref={footerRef} className={styles.summaryFooter}>
       {paymentError && <p className={styles.error} role="alert">{paymentError}</p>}
       <div className={styles.mobileTotal}><span>{totalLabel}</span><strong>{displayedTotal}</strong></div>
       <div className={styles.payArea}><AnimatedPayButton onClick={payment?.submit ?? onPrepare}

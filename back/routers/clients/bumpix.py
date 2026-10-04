@@ -54,6 +54,7 @@ async def events(client_id: int, status: BumpixFilter = 'all', offset: int = Que
         raise HTTPException(404, 'Клиент не найден') from exc
 
 
+@router.get('/{client_id}/media/{media_id}')
 @router.get('/{client_id}/bumpix/media/{media_id}')
 async def media(client_id: int, media_id: int, ctx: StudioContext = Depends(staff), db: AsyncSession = Depends(get_db)):
     try:
@@ -61,12 +62,12 @@ async def media(client_id: int, media_id: int, ctx: StudioContext = Depends(staf
         by_id = {b.id: b for b in bindings}
         photo = await db.scalar(select(BumpixMedia).where(
             BumpixMedia.id == media_id, BumpixMedia.studio_id == ctx.studio_id,
-            BumpixMedia.binding_id.in_(by_id), BumpixMedia.is_current.is_(True)))
+            BumpixMedia.binding_id.in_(by_id)))
         if not photo:
             raise ValueError('Photo not found')
         if photo.kind == 'event':
             event = await db.scalar(select(BumpixEvent).where(
-                *conditions(ctx, client_id), BumpixEvent.id == photo.event_id, BumpixEvent.binding_id == photo.binding_id))
+                *conditions(ctx, client_id, include_history=True), BumpixEvent.id == photo.event_id, BumpixEvent.binding_id == photo.binding_id))
             if not event or event.source_event_id != photo.source_owner_id:
                 raise ValueError('Photo not found')
         binding = by_id[photo.binding_id]

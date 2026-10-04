@@ -63,10 +63,10 @@ export function BookedClients({ clients, canEdit, removable, started, currency, 
   // перечитывается: после занятия за отметкой идут деньги (долг проведён
   // наличными или автозачисление откатилось). Отказ — отметка возвращается.
   const mark = (c: BookedClient, attended: boolean) => {
-    const before = { status: c.status, no_show: c.no_show };
-    const put = (next: Pick<BookedClient, 'status' | 'no_show'>) =>
+    const before = { status: c.status, no_show: c.no_show, attendance_known: c.attendance_known };
+    const put = (next: Pick<BookedClient, 'status' | 'no_show' | 'attendance_known'>) =>
       patch(list => list.map(x => x.reservation_id === c.reservation_id ? { ...x, ...next } : x));
-    put(attended ? { status: 'attended', no_show: false } : { status: 'active', no_show: true });
+    put(attended ? { status: 'attended', no_show: false, attendance_known: true } : { status: 'active', no_show: true, attendance_known: true });
     mutations.setAttendance(c.reservation_id, attended)
       .then(() => {
         showToast(attended ? t('toasts.attendanceMarked')

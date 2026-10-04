@@ -40,6 +40,8 @@ class ClientUpdate(BaseSchema):
     birth_date: Optional[date] = None
     city: Optional[str] = None
     source: Optional[str] = None
+    phone2: Optional[str] = Field(default=None, max_length=100)
+    address: Optional[str] = Field(default=None, max_length=2000)
 
 
 class ClientFreezeUpdate(BaseSchema):

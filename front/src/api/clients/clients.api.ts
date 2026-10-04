@@ -82,7 +82,7 @@ export const clientsApi = {
     client.get<InviteCode>(`/clients/${id}/invite-code`),
 
   // ─── EVENTS & ACTIVITY ────────────────────────────────────────────────────
-  getEvents: (id: number, eventType?: 'payment' | 'visit' | 'booking' | 'cancel' | 'bonus' | 'freeze' | 'all') =>
+  getEvents: (id: number, eventType?: 'payment' | 'visit' | 'completed' | 'booking' | 'cancel' | 'bonus' | 'freeze' | 'all') =>
     client.get<EventRecord[]>(
       `/clients/${id}/events${eventType ? `?event_type=${eventType}` : ''}`,
     ),

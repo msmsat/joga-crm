@@ -93,7 +93,11 @@
       "instagram": "Instagram",
       "birthDate": "Datum narození",
       "city": "Město",
-      "copyHint": " · klikněte pro zkopírování"
+      "copyHint": " · klikněte pro zkopírování",
+      "phone2": "Druhý telefon",
+      "address": "Adresa",
+      "balance": "Zůstatek před převodem",
+      "discount": "Sleva"
     },
     "debt": "{{amount}} nezaplaceno za lekce — přijměte platbu v Rozvrhu",
     "stats": {
@@ -281,7 +285,8 @@
         "booking": "Rezervace",
         "cancel": "Zrušení",
         "bonus": "Bonusy",
-        "freeze": "Zmrazení"
+        "freeze": "Zmrazení",
+        "completed": "Dokončené"
       },
       "empty": "Žádné události"
     },

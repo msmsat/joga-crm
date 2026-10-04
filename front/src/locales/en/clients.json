@@ -93,7 +93,11 @@
       "instagram": "Instagram",
       "birthDate": "Birth date",
       "city": "City",
-      "copyHint": " · click to copy"
+      "copyHint": " · click to copy",
+      "phone2": "Second phone",
+      "address": "Address",
+      "balance": "Balance before transfer",
+      "discount": "Discount"
     },
     "debt": "{{amount}} unpaid for classes — accept payment in the Journal",
     "stats": {
@@ -281,7 +285,8 @@
         "booking": "Bookings",
         "cancel": "Cancellations",
         "bonus": "Bonuses",
-        "freeze": "Freezes"
+        "freeze": "Freezes",
+        "completed": "Completed"
       },
       "empty": "No events"
     },

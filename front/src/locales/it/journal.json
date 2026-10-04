@@ -331,6 +331,8 @@
     "onlyAvailable": "Solo disponibili",
     "clientOptional": "Facoltativo: puoi aggiungere il cliente più tardi dalla scheda della lezione, oppure prenoterà da solo online.",
     "withoutClient": "Continua senza cliente",
+    "payAfter": "Incasso subito dopo la prenotazione",
+    "confirmAndPay": "Prenota e incassa",
     "unavailable": "Non disponibile con questa scelta",
     "selectionConflict": "La selezione non è compatibile. Scegli un orario disponibile o cambia servizio o professionista.",
     "availabilityError": "Could not load availability. Please try again.",

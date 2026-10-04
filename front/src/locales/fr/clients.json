@@ -93,7 +93,11 @@
       "instagram": "Instagram",
       "birthDate": "Date de naissance",
       "city": "Ville",
-      "copyHint": " · cliquez pour copier"
+      "copyHint": " · cliquez pour copier",
+      "phone2": "Deuxième téléphone",
+      "address": "Adresse",
+      "balance": "Solde avant transfert",
+      "discount": "Remise"
     },
     "debt": "{{amount}} impayés pour des cours — acceptez le paiement dans le Journal",
     "stats": {
@@ -285,7 +289,8 @@
         "booking": "Réservations",
         "cancel": "Annulations",
         "bonus": "Bonus",
-        "freeze": "Gels"
+        "freeze": "Gels",
+        "completed": "Terminées"
       },
       "empty": "Aucun événement"
     },

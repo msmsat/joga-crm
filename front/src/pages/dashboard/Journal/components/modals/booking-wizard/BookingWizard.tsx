@@ -4,8 +4,9 @@
 // последовательность, подогнанная под курсор (Journal.css, раздел 14b).
 // Разделы открываются кнопками в шапке (WizardTabs) в любом порядке, а свайп
 // по листу листает их по очереди. Логика — useBookingWizard.
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import * as Icons from '../../../../../../components/Icons';
 import {
@@ -21,6 +22,9 @@ import { NewClientStep } from './NewClientStep';
 import { WizardTabs } from './WizardTabs';
 import { ConfirmModal } from '../../../../../../components/ui/index';
 import { useLeave } from '../../../hooks/useLeave';
+import { scheduleApi } from '../../../../../../api/schedule';
+import { ReservationPayModal } from '../../lesson/ReservationPayModal';
+import type { PayMethod } from '../../lesson/PaySheet';
 
 const TITLES = ['wizard.when', 'wizard.client', 'wizard.service', 'wizard.master', 'wizard.summary'] as const;
 /** Касания, которые не листают разделы: ряды, что сами едут вбок, и поля ввода. */
@@ -36,7 +40,17 @@ export function BookingWizard(props: WizardOptions) {
   const [creating, setCreating] = useState(false);
   const { saving } = w;
   // Поверх записи открыт вопрос про прошедшее время или окно оплаты — Escape их.
-  const asking = w.pastAsk != null || w.settle.open;
+  const asking = w.pastAsk != null || w.settle.open || w.paying != null;
+  // Оплата новой брони «Индивидуального» — тем же запросом, что в карточке
+  // занятия; долг и доход видны в карточке клиента и Финансах — их перечитать.
+  const qc = useQueryClient();
+  const payMutations = useMemo(() => ({
+    payReservation: (id: number, method: PayMethod, options?: Parameters<typeof scheduleApi.payReservation>[2]) =>
+      scheduleApi.payReservation(id, method, options).finally(() => {
+        void qc.invalidateQueries({ queryKey: ['clients'] });
+        void qc.invalidateQueries({ queryKey: ['finances'] });
+      }),
+  }), [qc]);
   // Escape — как у остальных окон: из формы клиента — назад к списку; пока
   // запись уходит, окно не закрывается. Пока открыт вопрос про прошедшее
   // время, Escape — его ответ «Выбрать своё», а не закрытие записи.
@@ -139,7 +153,7 @@ export function BookingWizard(props: WizardOptions) {
                             style={{ opacity: !confirmable || w.saving ? 0.5 : 1 }} onClick={() => void w.submit()}>
                       {w.isResource && w.settle.amount
                         ? t('journal:payment.confirmAndPay', { amount: formatMoney(w.settle.amount, w.settle.check.preview?.currency ?? '') })
-                        : t('journal:wizard.confirm')}
+                        : w.payNow ? t('journal:wizard.confirmAndPay') : t('journal:wizard.confirm')}
                     </button>
                   ) : (
                     <button type="button" className="btn-primary-sm" disabled={!canContinue}
@@ -157,6 +171,13 @@ export function BookingWizard(props: WizardOptions) {
           )}
         </div>
       </div>
+      {/* Запись «Индивидуального» сделана, на итоге отмечена «Оплата» — то же
+          окно, что у записанного в карточке занятия. Закрылось — закрывается
+          и мастер: запись уже есть, оплатить можно и потом в карточке. */}
+      {w.paying && (
+        <ReservationPayModal booked={w.paying} lessonLabel={w.payLabel} mutations={payMutations}
+                             onPaid={w.paid} onClose={w.finishPay} />
+      )}
       {w.pastAsk && (
         <ConfirmModal
           title={t('journal:wizard.past.title')}

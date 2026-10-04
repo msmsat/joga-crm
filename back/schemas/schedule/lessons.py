@@ -32,6 +32,7 @@ class LessonRead(BaseSchema):
     # ни одним каналом — ни в мини-приложение, ни в напоминания.
     notes: str = ""
     photos: List[str] = []
+    source_status: Optional[str] = None
     clients_notified: bool = False
     # HB-02/04: снимок механики и филиала. `branch_id` синхронизируется с
     # Hall.branch_id роутером при создании/переносе (routers/schedule/lessons.py)
@@ -99,6 +100,8 @@ class BookedClient(BaseSchema):
     avatar_color: Optional[str] = None
     spot_number: Optional[int] = None
     status: str
+    # Imported historical completion does not establish attendance.
+    attendance_known: bool = True
     # Первое занятие клиента — в Журнале помечается «Пробное». За бесплатное
     # денег никто не ждёт; у первого занятия со скидкой рядом стоит её процент.
     is_trial: bool = False

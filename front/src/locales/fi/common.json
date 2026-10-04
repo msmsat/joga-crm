@@ -238,7 +238,8 @@
     "add": "Kuva",
     "remove": "Poista kuva",
     "alt": "Muistiinpanon kuva",
-    "drop": "Pudota liittääksesi"
+    "drop": "Pudota liittääksesi",
+    "retry": "Kuvia ei voitu ladata. Yritä uudelleen"
   },
   "loading": "Ladataan…",
   "actions": {
@@ -258,5 +259,9 @@
     "durationInherited": "Kesto Luettelosta",
     "durationAria": "Palvelun {{service}} kesto, minuuttia",
     "durationInvalid": "Keston on oltava kokonaisluku minuutteina välillä 1–{{max}}. Edellinen arvo säilyy"
+  },
+  "records": {
+    "paymentUnknown": "Maksua ei vahvistettu",
+    "attendanceUnknown": "Osallistumista ei vahvistettu"
   }
 }

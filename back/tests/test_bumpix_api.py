@@ -50,6 +50,7 @@ class ApiTests(unittest.IsolatedAsyncioTestCase):
         await self.build()
         response = await self.http.get(self.url)
         self.assertEqual(response.status_code, 200)
+
         profile = response.json()[0]
         self.assertEqual(profile['profile']['comment'], 'Profile note')
         self.assertEqual(profile['counts']['all'], 3)
@@ -67,6 +68,19 @@ class ApiTests(unittest.IsolatedAsyncioTestCase):
             self.assertEqual(response.headers['cache-control'], 'private, no-store')
         self.assertEqual((await self.http.get(self.url + '/events?limit=201')).status_code, 422)
         self.assertEqual((await self.http.get(self.url + '/events?status=invalid')).status_code, 422)
+
+    async def test_native_photo_route_retains_originals_for_edited_notes(self):
+        await self.build()
+        async with self.sessions.begin() as db:
+            photo = await db.scalar(select(self.models[4]).where(self.models[4].kind == 'avatar'))
+            photo.is_current = False
+            photo_id = photo.id
+        with patch.dict('os.environ', {'BUMPIX_STORAGE_ROOT': str(self.root / 'uploads')}):
+            response = await self.http.get(f'/clients/{self.cid}/media/{photo_id}')
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.headers['cache-control'], 'private, no-store')
+            self.ctx.studio_id = 2
+            self.assertEqual((await self.http.get(f'/clients/{self.cid}/media/{photo_id}')).status_code, 404)
 
     async def test_other_studio_or_nonstaff_cannot_access_profile_events_or_photos(self):
         await self.build()

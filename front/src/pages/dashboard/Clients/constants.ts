@@ -11,7 +11,7 @@ export const STATUS_COLORS: Record<string, string> = {
   frozen:   '#7b6cd4',
 };
 
-export const EVENT_FILTER_TABS = ['all', 'payment', 'visit', 'booking', 'cancel', 'bonus', 'freeze'] as const;
+export const EVENT_FILTER_TABS = ['all', 'payment', 'visit', 'completed', 'booking', 'cancel', 'bonus', 'freeze'] as const;
 
 export const BONUS_OPTION_IDS = ['p200', 'p500', 'p1000'] as const;
 

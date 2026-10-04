@@ -32,14 +32,21 @@
   border: 1px solid #ffffff09; border-radius: 5px; font-size: 9px; color: #b5a59a; }
 .empty { padding: 14px 9px; color: #a59b93; font-size: 12px; }
 @keyframes countryIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: none; } }
-@media (max-width: 700px) {
-  .backdrop { display: block; position: fixed; inset: 0; z-index: 79; border: 0; background: #0009;
-    backdrop-filter: blur(5px); cursor: default; }
-  .popup { position: fixed; top: auto; left: 12px; bottom: max(12px, env(safe-area-inset-bottom)); width: calc(100% - 24px);
-    border-radius: 22px; padding: 16px; animation: countryIn .22s ease-out; }
-  .top { font-size: 14px; padding-bottom: 14px; }
-  .list { max-height: min(46dvh, 340px); }
+@media (max-width: 800px) {
+  .backdrop { display: block; position: fixed; inset: 0; z-index: 79; border: 0; background: #0009; cursor: default; }
+  .popup { position: fixed; top: calc(var(--country-viewport-top, 0px) + max(12px, env(safe-area-inset-top))); left: 12px; bottom: auto;
+    width: calc(100% - 24px); min-width: 0;
+    height: calc(min(100svh, var(--country-viewport-height, 100svh)) - max(12px, env(safe-area-inset-top)) - max(12px, env(safe-area-inset-bottom)));
+    display: flex; flex-direction: column; overflow: hidden; border-radius: 18px; padding: 12px;
+    animation: countryMobileIn .18s ease-out; }
+  .top { position: absolute; top: 12px; right: 12px; padding: 0; }
+  .top > span { display: none; }
+  .top button { width: 44px; height: 44px; border: 1px solid #51443b; border-radius: 9px; }
+  .search { flex-shrink: 0; margin-right: 52px; }
+  .list { flex: 1; min-height: 0; max-height: none; margin-top: 12px; -webkit-overflow-scrolling: touch; }
   .list button { min-height: 44px; font-size: 14px; }
-  .search input { font-size: 16px; height: 44px !important; }
+  .search input { height: 44px !important; }
 }
+@media (max-width: 800px), (pointer: coarse) { .search input { font-size: 16px; } }
+@keyframes countryMobileIn { from { opacity: 0; } to { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .popup { animation: none; } .trigger { transition: none; } }

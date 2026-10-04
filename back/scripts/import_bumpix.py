@@ -22,6 +22,8 @@ def parser():
     selection.add_argument('--limit', type=int, help='First N packages in the verified index')
     selection.add_argument('--client-ids', nargs='+', help='Exact string IDs, e.g. 1.10 1.100')
     p.add_argument('--mapping', help='JSON with explicit clients and masters mappings')
+    p.add_argument('--timezone', help='Confirmed source IANA timezone; must match target studio')
+    p.add_argument('--currency', help='Confirmed source currency; must match target studio')
     p.add_argument('--storage-root', default='uploads', help='Persistent private root, same as API BUMPIX_STORAGE_ROOT')
     p.add_argument('--report', help='Private JSON report path')
     return p
@@ -46,7 +48,8 @@ async def database_run(export, args, mapping):
     # Deliberately lazy: --help and --verify-only do not load .env or create an engine.
     from database import async_session_maker, engine
     from services.bumpix_import.service import Importer
-    importer = Importer(async_session_maker, Path(args.storage_root).resolve())
+    importer = Importer(async_session_maker, Path(args.storage_root).resolve(), native=True,
+        native_options={'timezone': args.timezone, 'currency': args.currency})
     try:
         if args.apply:
             return await importer.apply(export, args.studio_id, args.owner_email, args.account_key, mapping,

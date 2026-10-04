@@ -93,7 +93,11 @@
       "instagram": "Instagram",
       "birthDate": "Fødselsdato",
       "city": "By",
-      "copyHint": " · klikk for å kopiere"
+      "copyHint": " · klikk for å kopiere",
+      "phone2": "Andre telefonnummer",
+      "address": "Adresse",
+      "balance": "Saldo før overføring",
+      "discount": "Rabatt"
     },
     "debt": "{{amount}} ubetalt for timer — ta imot betaling i Journalen",
     "stats": {
@@ -285,7 +289,8 @@
         "booking": "Bestillinger",
         "cancel": "Avbestillinger",
         "bonus": "Bonus",
-        "freeze": "Frysinger"
+        "freeze": "Frysinger",
+        "completed": "Fullførte"
       },
       "empty": "Ingen hendelser"
     },

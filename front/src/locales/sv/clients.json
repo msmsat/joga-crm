@@ -93,7 +93,11 @@
       "instagram": "Instagram",
       "birthDate": "Födelsedatum",
       "city": "Ort",
-      "copyHint": " · klicka för att kopiera"
+      "copyHint": " · klicka för att kopiera",
+      "phone2": "Andra telefonnumret",
+      "address": "Adress",
+      "balance": "Saldo före överföring",
+      "discount": "Rabatt"
     },
     "debt": "{{amount}} obetalt för lektioner — ta emot betalningen i Journalen",
     "stats": {
@@ -285,7 +289,8 @@
         "booking": "Bokningar",
         "cancel": "Avbokningar",
         "bonus": "Bonus",
-        "freeze": "Frysningar"
+        "freeze": "Frysningar",
+        "completed": "Avslutade"
       },
       "empty": "Inga händelser"
     },

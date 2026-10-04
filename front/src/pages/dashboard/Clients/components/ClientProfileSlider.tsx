@@ -9,11 +9,7 @@ import { InlineEdit } from './InlineEdit';
 import ClientOffersPanel from './ClientOffersPanel';
 import { ClientProducts } from './ClientProducts';
 import { WalletTab } from './WalletTab';
-import { BumpixHistory } from '../bumpix/BumpixHistory';
-import { BumpixProfileData } from '../bumpix/BumpixProfileData';
-import { ProtectedPhotos } from '../bumpix/ProtectedPhotos';
-import { useBumpixProfiles } from '../bumpix/useBumpix';
-import { getActiveContextKey } from '../../../../utils/auth';
+import { ClientAvatar } from '../../../../components/ui/ClientAvatar';
 import { ClientEventDates } from './ClientEventDates';
 import { useClientEvents, useClientNotes, useClientActivity, useClientInviteCode, useReferralEnabled, useFreezeEnabled } from '../hooks/useClientsList';
 import { formatDate, formatMoney, getAvatarColor, getInitials } from '../utils/mapClient';
@@ -145,6 +141,7 @@ const IconSnow = () => (
 function EventIcon({ type, c }: { type: EventRecord['type']; c: string }) {
   const cfg = {
     payment: { bg: 'rgba(91,171,114,0.12)', color: '#5BAB72', icon: <IconCoin/> },
+    completed: { bg: `${c}18`, color: c, icon: <IconCheck/> },
     visit:   { bg: `${c}18`,                color: c,          icon: <IconCheck/> },
     booking: { bg: 'rgba(155,181,216,0.15)', color: '#4A80C4', icon: <IconPlus/> },
     cancel:  { bg: 'rgba(216,140,154,0.12)', color: '#D88C9A', icon: <IconClose/> },
@@ -403,18 +400,13 @@ function ActivityChart({ clientId, c, clientName }: { clientId: number; c: strin
 }
 
 // ─── CLIENT PANEL ─────────────────────────────────────────────────────────────
-function ClientPanel({ client, profile, onClose, onDelete, enabled }: {
+function ClientPanel({ client, onClose, onDelete }: {
   client: ClientData;
   profile?: ClientProfile | null;
   enabled: boolean;
   onClose: () => void;
   onDelete: (id: number) => void;
 }) {
-  const bumpix = useBumpixProfiles(client.id, enabled);
-  const imported = bumpix.data ?? [];
-  const avatar = imported.find(p => p.avatar)?.avatar;
-  const showBumpix = imported.length > 0 || bumpix.isError;
-  void profile;
   const { t, i18n: i18nInstance } = useTranslation('clients');
   // Тренер карточку своего клиента читает, но не правит: все мутации клиента —
   // owner+admin на сервере, и кнопка, которая гарантированно вернёт 403, хуже
@@ -424,7 +416,7 @@ function ClientPanel({ client, profile, onClose, onDelete, enabled }: {
   const canEdit = role !== 'trainer';
   const isOwner = role === 'owner';
   const currency = getCurrencySymbol(useStudioCurrency());
-  const [activeTab,    setActiveTab]    = useState<'info' | 'events' | 'notes' | 'wallet' | 'bumpix'>('info');
+  const [activeTab,    setActiveTab]    = useState<'info' | 'events' | 'notes' | 'wallet'>('info');
   const [bookingOpen,  setBookingOpen]  = useState(false);
   const [tagInput,     setTagInput]     = useState('');
   const [regValue,     setRegValue]     = useState(client.registration_date ?? '');
@@ -485,8 +477,8 @@ function ClientPanel({ client, profile, onClose, onDelete, enabled }: {
       <div style={{ padding: '20px 20px 0', borderBottom: '1px solid var(--border)', background: 'var(--bg)', flexShrink: 0 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
           <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-            <ProtectedPhotos key={`${getActiveContextKey()}:${client.id}:${avatar?.id ?? ''}:${enabled}`} clientId={client.id}
-              photos={avatar ? [avatar] : []} enabled={enabled} avatar fallback={<div style={{ width: '52px', height: '52px', borderRadius: '14px', background: `linear-gradient(135deg,${color},${color}bb)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', fontWeight: 800, color: '#fff', boxShadow: `0 8px 20px -4px ${color}55`, flexShrink: 0 }}>{getInitials(client.name, client.last_name)}</div>}/>
+            <ClientAvatar url={client.avatar_url} initials={getInitials(client.name, client.last_name)}
+              style={{ width: '52px', height: '52px', borderRadius: '14px', background: `linear-gradient(135deg,${color},${color}bb)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', fontWeight: 800, color: '#fff', boxShadow: `0 8px 20px -4px ${color}55` }}/>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                 <div style={{ fontSize: '16px', fontWeight: 800, color: 'var(--text)', letterSpacing: '-0.3px' }}>{client.name}{client.last_name ? ' ' + client.last_name : ''}</div>
@@ -580,8 +572,8 @@ function ClientPanel({ client, profile, onClose, onDelete, enabled }: {
 
         {/* ── TABS ── */}
         <div style={{ display: 'flex' }}>
-          {(['info','events','notes','wallet', ...(showBumpix ? ['bumpix'] as const : [])] as const).map(tab => (
-            <button key={tab} onClick={() => setActiveTab(tab)} style={{ flex: 1, padding: '9px 8px', fontSize: '12px', fontWeight: 700, border: 'none', background: 'transparent', cursor: 'pointer', fontFamily: 'Manrope', color: activeTab === tab ? 'var(--peach)' : 'var(--text3)', borderBottom: `2px solid ${activeTab === tab ? 'var(--peach)' : 'transparent'}`, transition: 'all 0.2s' }}>{tab === 'bumpix' ? t('bumpix:tab') : t(`panel.tabs.${tab}`)}</button>
+          {(['info','events','notes','wallet'] as const).map(tab => (
+            <button key={tab} onClick={() => setActiveTab(tab)} style={{ flex: 1, padding: '9px 8px', fontSize: '12px', fontWeight: 700, border: 'none', background: 'transparent', cursor: 'pointer', fontFamily: 'Manrope', color: activeTab === tab ? 'var(--peach)' : 'var(--text3)', borderBottom: `2px solid ${activeTab === tab ? 'var(--peach)' : 'transparent'}`, transition: 'all 0.2s' }}>{t(`panel.tabs.${tab}`)}</button>
           ))}
         </div>
       </div>
@@ -599,13 +591,17 @@ function ClientPanel({ client, profile, onClose, onDelete, enabled }: {
               {(() => {
                 const phoneDigits = client.phone ? client.phone.replace(/\D/g, '') : '';
                 // П.3.2 — edit: ключ ClientUpdate + тип инпута; ссылка — по значению, карандаш — редактирование
-                const rows: { icon: JSX.Element; val: string; sub: string; href: string | null; copyValue: string | null; edit?: { key: 'phone' | 'email' | 'instagram' | 'birth_date' | 'city'; type: 'tel' | 'email' | 'date' | 'text' } }[] = [
+                const rows: { icon: JSX.Element; val: string; sub: string; href: string | null; copyValue: string | null; edit?: { key: 'phone' | 'email' | 'instagram' | 'birth_date' | 'city' | 'phone2' | 'address'; type: 'tel' | 'email' | 'date' | 'text' } }[] = [
                   { icon: <IconPhone/>,    val: client.phone ?? '—',      sub: t('panel.contacts.phone'),     href: client.phone ? `tel:${phoneDigits}` : null,             copyValue: client.phone ?? null, edit: { key: 'phone', type: 'tel' } },
                   { icon: <IconMail/>,     val: client.email ?? '—',      sub: t('panel.contacts.email'),     href: client.email ? `mailto:${client.email}` : null,          copyValue: client.email ?? null, edit: { key: 'email', type: 'email' } },
                   { icon: <IconInstagram/>, val: client.instagram ? `@${client.instagram}` : '—', sub: t('panel.contacts.instagram'), href: client.instagram ? `https://instagram.com/${client.instagram}` : null, copyValue: client.instagram ? `@${client.instagram}` : null, edit: { key: 'instagram', type: 'text' } },
                   { icon: <IconCalendar/>, val: client.birth_date ?? '—', sub: t('panel.contacts.birthDate'), href: null, copyValue: null, edit: { key: 'birth_date', type: 'date' } },
                   { icon: <IconLocation/>, val: client.city ?? '—',       sub: t('panel.contacts.city'),      href: null, copyValue: null, edit: { key: 'city', type: 'text' } },
                 ];
+                if (client.phone2) rows.push({ icon: <IconPhone/>, val: client.phone2, sub: t('panel.contacts.phone2'), href: `tel:${client.phone2.replace(/\D/g, '')}`, copyValue: client.phone2, edit: { key: 'phone2', type: 'tel' } });
+                if (client.address) rows.push({ icon: <IconLocation/>, val: client.address, sub: t('panel.contacts.address'), href: null, copyValue: client.address, edit: { key: 'address', type: 'text' } });
+                if (client.balance && Number(client.balance) !== 0) rows.push({ icon: <IconCoin/>, val: `${currency}${client.balance}`, sub: t('panel.contacts.balance'), href: null, copyValue: client.balance });
+                if (client.discount && Number(client.discount) !== 0) rows.push({ icon: <IconGift/>, val: `${client.discount}%`, sub: t('panel.contacts.discount'), href: null, copyValue: client.discount });
                 return rows.map(({ icon, val, sub, href, copyValue, edit }) => {
                   const display = href ? (
                     <a href={href} target={href.startsWith('https://') ? '_blank' : undefined} rel={href.startsWith('https://') ? 'noopener' : undefined} className="cl-contact-link" style={{ textDecoration: 'none', flex: 1, minWidth: 0 }}>
@@ -669,7 +665,6 @@ function ClientPanel({ client, profile, onClose, onDelete, enabled }: {
               </div>
             )}
 
-            <BumpixProfileData profiles={imported} error={bumpix.isError} retry={() => { void bumpix.refetch(); }}/>
 
             {/* Stats grid */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px', marginBottom: '14px' }}>
@@ -761,9 +756,6 @@ function ClientPanel({ client, profile, onClose, onDelete, enabled }: {
           </div>
         )}
 
-        {enabled && showBumpix && activeTab === 'bumpix' && (bumpix.isError
-          ? <BumpixProfileData profiles={[]} error retry={() => { void bumpix.refetch(); }}/>
-          : <BumpixHistory key={`${getActiveContextKey()}:${client.id}`} clientId={client.id} profiles={imported}/>)}
 
         {/* П.8 — EVENTS TAB */}
         {activeTab === 'events' && (
@@ -789,6 +781,10 @@ function ClientPanel({ client, profile, onClose, onDelete, enabled }: {
                   <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{ev.title}</div>
                   {ev.trainer && <div style={{ fontSize: '11px', color: 'var(--text3)', marginTop: '2px' }}>{ev.trainer}</div>}
                   <ClientEventDates event={ev}/>
+                  {ev.type === 'completed' && <div style={{ fontSize: '10px', color: 'var(--text3)', marginTop: '4px' }}>{t('panel.events.filterTabs.completed')}</div>}
+                  {ev.notes && <div style={{ fontSize: '12px', whiteSpace: 'pre-wrap', overflowWrap: 'anywhere', marginTop: '8px', lineHeight: 1.6 }}>{ev.notes}</div>}
+                  <NotePhotos photos={ev.photos ?? []}/>
+
                 </div>
                 <div style={{ fontSize: '12px', fontWeight: 700, color: ev.type === 'payment' ? '#5BAB72' : ev.type === 'freeze' ? '#4a7ca8' : ev.type === 'bonus' ? '#F9A08B' : 'var(--text3)', flexShrink: 0, whiteSpace: 'nowrap' }}>
                   {ev.paid ?? ev.amount}

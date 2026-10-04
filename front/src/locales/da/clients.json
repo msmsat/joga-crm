@@ -93,7 +93,11 @@
       "instagram": "Instagram",
       "birthDate": "Fødselsdato",
       "city": "By",
-      "copyHint": " · klik for at kopiere"
+      "copyHint": " · klik for at kopiere",
+      "phone2": "Andet telefonnummer",
+      "address": "Adresse",
+      "balance": "Saldo før overførsel",
+      "discount": "Rabat"
     },
     "debt": "{{amount}} ubetalt for lektioner — modtag betalingen i Journalen",
     "stats": {
@@ -285,7 +289,8 @@
         "booking": "Bookinger",
         "cancel": "Annulleringer",
         "bonus": "Bonuspoint",
-        "freeze": "Pauser"
+        "freeze": "Pauser",
+        "completed": "Afsluttede"
       },
       "empty": "Ingen hændelser"
     },

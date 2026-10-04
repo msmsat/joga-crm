@@ -238,7 +238,8 @@
     "add": "Foto",
     "remove": "Odebrat fotku",
     "alt": "Fotka poznámky",
-    "drop": "Pusťte a přiložíme"
+    "drop": "Pusťte a přiložíme",
+    "retry": "Fotografie se nepodařilo načíst. Zkusit znovu"
   },
   "loading": "Načítání…",
   "actions": {
@@ -258,5 +259,9 @@
     "durationInherited": "Délka z Katalogu",
     "durationAria": "Délka služby {{service}}, minuty",
     "durationInvalid": "Délka musí být celé číslo minut od 1 do {{max}}. Předchozí hodnota zůstává"
+  },
+  "records": {
+    "paymentUnknown": "Platba není potvrzena",
+    "attendanceUnknown": "Účast není potvrzena"
   }
 }

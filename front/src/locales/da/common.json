@@ -238,7 +238,8 @@
     "add": "Foto",
     "remove": "Fjern foto",
     "alt": "Notefoto",
-    "drop": "Slip for at vedhæfte"
+    "drop": "Slip for at vedhæfte",
+    "retry": "Billederne kunne ikke indlæses. Prøv igen"
   },
   "loading": "Indlæser…",
   "actions": {
@@ -258,5 +259,9 @@
     "durationInherited": "Varighed fra Kataloget",
     "durationAria": "Varighed af {{service}}, minutter",
     "durationInvalid": "Varigheden skal være et helt antal minutter fra 1 til {{max}}. Den tidligere værdi bevares"
+  },
+  "records": {
+    "paymentUnknown": "Betaling ikke bekræftet",
+    "attendanceUnknown": "Fremmøde ikke bekræftet"
   }
 }

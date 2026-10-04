@@ -1,9 +1,10 @@
 import { useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { resolveImageUrl } from '../../api/client';
 import { Lightbox } from './Lightbox';
 import { photoLayoutId } from './photoLayoutId';
+import { ownedMediaPath } from './mediaPaths';
+import { useMediaSources } from './useMediaSources';
 
 const IconPlus = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
@@ -33,7 +34,7 @@ const IconX = () => (
 // В href/src уходит только путь нашей загрузки — вторым слоем к проверке на
 // сервере (schemas/clients/notes.py). Чужая схема (javascript:, data:) в ссылку
 // не попадает, даже если в базе она как-то окажется.
-const own = (url: string) => url.startsWith('/static/notes/');
+const own = ownedMediaPath;
 
 const VISIBLE = 5;   // дальше последняя плитка берёт на себя счётчик «+N»
 
@@ -59,10 +60,13 @@ export function NotePhotos({
 }) {
   const { t } = useTranslation('common');
   const inputRef = useRef<HTMLInputElement>(null);
-  const [open, setOpen] = useState<number | null>(null);
+  const [openPath, setOpenPath] = useState<string | null>(null);
   const [hover, setHover] = useState<string | null>(null);
 
   const safe = photos.filter(own);
+  const { ref: galleryRef, sources, failed, retry } = useMediaSources(safe);
+  const loaded = safe.filter(path => sources.get(path));
+  const open = openPath && loaded.includes(openPath) ? loaded.indexOf(openPath) : null;
   const editing = Boolean(onRemove);
   const size = compact ? 44 : editing ? 62 : 72;
 
@@ -72,9 +76,9 @@ export function NotePhotos({
   const hidden = safe.length - shown.length;
 
   return (
-    <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: compact ? '6px' : '8px', marginTop: compact ? 0 : '10px' }}>
+    <div ref={galleryRef} style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: compact ? '6px' : '8px', marginTop: compact ? 0 : '10px' }}>
       {shown.map((url, i) => {
-        const src = resolveImageUrl(url);
+        const src = sources.get(url);
         const isLast = i === shown.length - 1;
         const more = hidden > 0 && isLast;
         return (
@@ -83,8 +87,9 @@ export function NotePhotos({
             type="button"
             // Пока кадр открыт, id носит он один: два живых элемента с общим
             // layoutId — состояние, где framer выбирает победителя сам.
-            layoutId={open === i ? undefined : photoLayoutId(src ?? url)}
-            onClick={() => setOpen(i)}
+            layoutId={openPath === url ? undefined : photoLayoutId(src ?? url)}
+            onClick={() => { if (src) setOpenPath(url); }}
+            disabled={!src && !onRemove}
             onMouseEnter={() => setHover(url)}
             onMouseLeave={() => setHover(null)}
             aria-label={t('notePhotos.alt')}
@@ -99,7 +104,8 @@ export function NotePhotos({
               transitionProperty: 'box-shadow', transitionDuration: '0.2s',
             }}
           >
-            <img src={src} alt="" loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}/>
+            {src ? <img src={src} alt="" loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}/>
+              : <span style={{ fontSize: '10px', color: 'var(--muted)' }}>{t('loading')}</span>}
             {/* Подсказка «откроется целиком» — только под курсором и только там,
                 где счётчик не занял плитку собой. */}
             <div style={{
@@ -190,7 +196,9 @@ export function NotePhotos({
 
       {/* В просмотр уходят ВСЕ снимки, даже те, что не влезли в строку: плитка
           «+N» открывает их с того же места, откуда строка оборвалась. */}
-      <Lightbox photos={safe.map(u => resolveImageUrl(u) ?? u)} index={open} onIndex={setOpen} zIndex={zIndex}/>
+      {failed > 0 && <button type="button" onClick={retry} style={{ border: 'none', background: 'transparent', color: 'var(--peach)', cursor: 'pointer' }}>{t('notePhotos.retry')}</button>}
+      <Lightbox photos={loaded.map(u => sources.get(u)!)} index={open}
+        onIndex={index => setOpenPath(index === null ? null : loaded[index])} zIndex={zIndex}/>
     </div>
   );
 }

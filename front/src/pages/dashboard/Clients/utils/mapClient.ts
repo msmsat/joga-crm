@@ -7,7 +7,8 @@ import i18n from '../../../../i18n'
 export const DEFAULT_COLORS = ['#E8825A', '#5BAA8C', '#C4975A', '#6B8CC4', '#C47888', '#8878B8']
 
 export function getInitials(name: string, lastName?: string | null): string {
-  return ((name[0] ?? '') + ((lastName ?? '')[0] ?? '')).toUpperCase() || '?'
+  const words = name.trim().split(/\s+/);
+  return ((words[0]?.[0] ?? '') + ((lastName || words[1] || '')[0] ?? '')).toUpperCase() || '?'
 }
 
 /** Инициалы из того, что набрано в поле имени: «Анна Смирнова» → «АС», пусто → ''. */

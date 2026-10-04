@@ -34,8 +34,10 @@ def teacher_scope(ctx):
     return or_(and_(~linked, BumpixEvent.teacher_user_id == ctx.user.id), current)
 
 
-def conditions(ctx, client_id=None, category='all'):
-    cond = [BumpixEvent.studio_id == ctx.studio_id, BumpixEvent.is_current.is_(True)]
+def conditions(ctx, client_id=None, category='all', *, include_history=False):
+    cond = [BumpixEvent.studio_id == ctx.studio_id]
+    if not include_history:
+        cond.append(BumpixEvent.is_current.is_(True))
     if client_id is not None:
         cond.append(BumpixEvent.client_id == client_id)
     if ctx.role == 'trainer':

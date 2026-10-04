@@ -335,6 +335,8 @@
     "onlyAvailable": "Jen dostupné",
     "clientOptional": "Nepovinné: klienta můžete přidat později v kartě lekce — nebo se přihlásí online sám.",
     "withoutClient": "Pokračovat bez klienta",
+    "payAfter": "Přijmeme hned po rezervaci",
+    "confirmAndPay": "Rezervovat a přijmout platbu",
     "unavailable": "Při tomto výběru nedostupné",
     "selectionConflict": "Vybrané parametry k sobě nesedí. Vyberte dostupný čas nebo změňte službu či specialistu.",
     "availabilityError": "Could not load availability. Please try again.",

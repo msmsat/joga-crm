@@ -59,6 +59,7 @@ class ClientListItemOut(BaseSchema):
     phone: Optional[str] = None
     email: Optional[str] = None
     avatar_color: Optional[str] = None
+    avatar_url: Optional[str] = None
     status: str
     tags: List[str] = []
     visit_count: int
@@ -75,6 +76,10 @@ class ClientListItemOut(BaseSchema):
 
 
 class ClientProfileOut(ClientListItemOut):
+    phone2: Optional[str] = None
+    address: Optional[str] = None
+    balance: Optional[str] = None
+    discount: Optional[str] = None
     subscription_alert: Optional[ActiveSubscriptionOut] = None
     # Голый ник без «@» — ссылку карточка собирает сама.
     instagram: Optional[str] = None
@@ -105,6 +110,10 @@ class EventRecordOut(BaseSchema):
     trainer: Optional[str] = None
     paid: Optional[str] = None
     amount: Optional[str] = None
+    lesson_id: Optional[int] = None
+    notes: Optional[str] = None
+    photos: List[str] = []
+    status: Optional[str] = None
 
 
 class ActivityPointOut(BaseSchema):

@@ -1,7 +1,8 @@
 import { useCallback, useLayoutEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { ClientData } from '../types';
-import { getInitials, formatDate, formatMoney } from '../utils/mapClient';
+import { ClientAvatar } from '../../../../components/ui/ClientAvatar';
+import { getInitials, getAvatarColor, formatDate, formatMoney } from '../utils/mapClient';
 import { useStudioCurrency } from '../../../../hooks/useStudioCurrency';
 import { getCurrencySymbol } from '../../../../components/UI';
 
@@ -240,7 +241,7 @@ export function ClientsTable({ clients, activeClientId, isPanelOpen, onSelect, r
       <div className="client-grid-wrap" style={{ minWidth: 0 }}>
         <div className="ct2-grid" ref={gridRef}>
           {clients.map(cl => {
-            const color    = cl.avatar_color ?? '#999';
+            const color    = getAvatarColor(cl.id, cl.avatar_color);
             const hasSub   = cl.active_subscription != null;
             const abUsed   = cl.active_subscription?.used ?? 0;
             const abTotal  = cl.active_subscription?.total ?? 0;
@@ -266,15 +267,13 @@ export function ClientsTable({ clients, activeClientId, isPanelOpen, onSelect, r
                 onClick={() => onSelect(cl)}
               >
                 <div className="ct2-header">
-                  <div
+                  <ClientAvatar url={cl.avatar_url} initials={getInitials(cl.name, cl.last_name)}
                     className="ct2-avatar"
                     style={{
                       background: `linear-gradient(135deg, ${color}, ${color}cc)`,
                       boxShadow: `0 4px 12px -4px ${color}60`,
                     }}
-                  >
-                    {getInitials(cl.name, cl.last_name)}
-                  </div>
+                  />
                   <div className="ct2-info">
                     <div className="ct2-name">{cl.name}{cl.last_name ? ' ' + cl.last_name : ''}</div>
                     <div className="ct2-meta">

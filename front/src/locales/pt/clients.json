@@ -93,7 +93,11 @@
       "instagram": "Instagram",
       "birthDate": "Data de nascimento",
       "city": "Cidade",
-      "copyHint": " · clique para copiar"
+      "copyHint": " · clique para copiar",
+      "phone2": "Segundo telefone",
+      "address": "Morada",
+      "balance": "Saldo antes da transferência",
+      "discount": "Desconto"
     },
     "debt": "{{amount}} em aulas por pagar — aceite o pagamento no Diário",
     "stats": {
@@ -285,7 +289,8 @@
         "booking": "Reservas",
         "cancel": "Cancelamentos",
         "bonus": "Bónus",
-        "freeze": "Congelamentos"
+        "freeze": "Congelamentos",
+        "completed": "Concluídas"
       },
       "empty": "Não há eventos"
     },

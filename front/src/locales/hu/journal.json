@@ -331,6 +331,8 @@
     "onlyAvailable": "Csak a szabadok",
     "clientOptional": "Nem kötelező: az ügyfelet később is hozzáadhatja az óra kártyáján — vagy ő maga foglal online.",
     "withoutClient": "Folytatás ügyfél nélkül",
+    "payAfter": "Fizetés közvetlenül a foglalás után",
+    "confirmAndPay": "Foglalás és fizetés",
     "unavailable": "Ezzel a választással nem elérhető",
     "selectionConflict": "A választás nem illik össze. Válasszon szabad időpontot, vagy módosítsa a szolgáltatást vagy a szakembert.",
     "availabilityError": "Could not load availability. Please try again.",

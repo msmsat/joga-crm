@@ -331,6 +331,8 @@
     "onlyAvailable": "Disponibles uniquement",
     "clientOptional": "Facultatif : vous pouvez ajouter le client plus tard depuis la fiche du cours, ou il réservera lui-même en ligne.",
     "withoutClient": "Continuer sans client",
+    "payAfter": "Encaissé juste après la réservation",
+    "confirmAndPay": "Réserver et encaisser",
     "unavailable": "Indisponible avec ce choix",
     "selectionConflict": "La sélection n'est pas compatible. Choisissez un créneau disponible ou changez de prestation ou de spécialiste.",
     "availabilityError": "Could not load availability. Please try again.",

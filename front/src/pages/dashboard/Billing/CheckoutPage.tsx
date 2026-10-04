@@ -1,7 +1,8 @@
-import { useContext, useRef, useState } from 'react';
+import { useContext, useRef, useState, type RefCallback } from 'react';
 import { ArrowLeft, CreditCard, LockKeyhole } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useCheckoutPage } from './hooks/useCheckoutPage';
+import { useCheckoutViewport } from './hooks/useCheckoutViewport';
 import CheckoutBrand from './components/checkout/CheckoutBrand';
 import CheckoutProfile from './components/checkout/CheckoutProfile';
 import CheckoutSummary from './components/checkout/CheckoutSummary';
@@ -9,7 +10,7 @@ import StripePayment from './components/checkout/StripePayment';
 import { PaymentContext } from './components/checkout/PaymentContext';
 import styles from './components/checkout/CheckoutPage.module.css';
 
-function CheckoutContent({ h }: { h: ReturnType<typeof useCheckoutPage> }) {
+function CheckoutContent({ h, footerRef }: { h: ReturnType<typeof useCheckoutPage>; footerRef: RefCallback<HTMLDivElement> }) {
   const { t, i18n } = useTranslation('billing');
   const payment = useContext(PaymentContext);
   const profileForm = useRef<HTMLFormElement>(null);
@@ -56,7 +57,7 @@ function CheckoutContent({ h }: { h: ReturnType<typeof useCheckoutPage> }) {
               </div>
             </>}
         </section>
-        {h.plan && <CheckoutSummary plan={h.plan} period={h.period} preview={h.preview.data}
+        {h.plan && <CheckoutSummary footerRef={footerRef} plan={h.plan} period={h.period} preview={h.preview.data}
           payment={payment} taxPending={draftDirty} error={h.session ? h.error : ''} currency={h.catalog.data?.currency ?? 'EUR'}
           preparing={h.busy} canPrepare={available} onPrepare={() => profileForm.current?.requestSubmit()} onBack={h.back} />}
       </div>
@@ -66,10 +67,11 @@ function CheckoutContent({ h }: { h: ReturnType<typeof useCheckoutPage> }) {
 
 export default function CheckoutPage() {
   const h = useCheckoutPage();
-  return <div className={styles.page}>
+  const { pageRef, footerRef } = useCheckoutViewport();
+  return <div ref={pageRef} className={styles.page}>
     {h.session?.client_secret && h.session.publishable_key && h.profile.data
       ? <StripePayment key={h.session.client_secret} session={h.session} profile={h.profile.data}
-          returnUrl={h.returnUrl} onComplete={h.completed}><CheckoutContent h={h} /></StripePayment>
-      : <CheckoutContent h={h} />}
+          returnUrl={h.returnUrl} onComplete={h.completed}><CheckoutContent h={h} footerRef={footerRef} /></StripePayment>
+      : <CheckoutContent h={h} footerRef={footerRef} />}
   </div>;
 }

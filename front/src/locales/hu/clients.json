@@ -93,7 +93,11 @@
       "instagram": "Instagram",
       "birthDate": "Születési dátum",
       "city": "Város",
-      "copyHint": " · kattintson a másoláshoz"
+      "copyHint": " · kattintson a másoláshoz",
+      "phone2": "Második telefonszám",
+      "address": "Cím",
+      "balance": "Átvitel előtti egyenleg",
+      "discount": "Kedvezmény"
     },
     "debt": "{{amount}} kifizetetlen az alkalmakért — fogadja el a fizetést a Naplóban",
     "stats": {
@@ -285,7 +289,8 @@
         "booking": "Foglalások",
         "cancel": "Lemondások",
         "bonus": "Bónuszok",
-        "freeze": "Felfüggesztések"
+        "freeze": "Felfüggesztések",
+        "completed": "Befejezettek"
       },
       "empty": "Nincsenek események"
     },

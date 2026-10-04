@@ -11,7 +11,8 @@ import { useResourceBooking } from '../../../hooks/useResourceBooking';
 import { useBusinessTerms } from '../../../../../../hooks/useBusinessTerms';
 import { staffApi } from '../../../../../../api/staff';
 import { clientsApi } from '../../../../../../api/clients/clients.api';
-import type { Lesson } from '../../../../../../api/schedule/schedule.types';
+import type { BookedClient, Lesson } from '../../../../../../api/schedule/schedule.types';
+import { getUserRoleFromToken } from '../../../../../../utils/auth';
 import { formatMoney } from '../../../../../../lib/money';
 import { useStudioCurrency } from '../../../../../../hooks/useStudioCurrency';
 import { staffToTrainer } from '../../../utils';
@@ -381,8 +382,36 @@ export function useBookingWizard(o: WizardOptions) {
   /** Снимок ещё летит на сервер — записывать рано: он бы потерялся. */
   const notePending = notePhotos.pending.length > 0;
 
+  // «Оплата» на итоге «Индивидуального» с клиентом — по желанию. Отмечена —
+  // после записи открывается то же окно оплаты, что у записанного в карточке
+  // занятия (ReservationPayModal): над долгом новой брони, его считает
+  // сервер. До записи брони нет, и чек посчитать не над чем — поэтому окно
+  // после, а не на итоге, как у индивидуальной услуги. Деньги берут владелец
+  // и администратор (тренеру касса закрыта). Отметка — под клиента: сменили
+  // человека — решать заново.
+  const canPayNow = soloLesson && client != null && getUserRoleFromToken() !== 'trainer';
+  const [payFor, setPayFor] = useState<number | null>(null);
+  const payNow = canPayNow && payFor === client!.id;
+  const togglePay = () => { if (canPayNow) setPayFor(payNow ? null : client!.id); };
+  /** Записанный, чей долг сейчас оплачивают; null — окна оплаты нет. */
+  const [paying, setPaying] = useState<BookedClient | null>(null);
+  /** Открыть окно оплаты новой брони. false — открывать нечего, мастер закрывается. */
+  const openPayment = async (lessonId: number, reservationId: number) => {
+    try {
+      const detail = await scheduleApi.getLesson(lessonId);
+      const booked = detail.booked_clients.find(b => b.reservation_id === reservationId);
+      if (booked && booked.debt > 0) { setPaying(booked); return true; }
+      // Долга нет — платить нечего: занятие ушло с абонемента или бесплатно.
+      toast.info(t(booked?.by_subscription ? 'journal:payment.coveredBy.subscription' : 'journal:payment.coveredBy.free'));
+    } catch {
+      // Запись уже есть — оплату примут в карточке занятия.
+      toast.error(t('journal:payment.loadFailed'));
+    }
+    return false;
+  };
+
   const submit = async () => {
-    if (!ready || saving || notePending) return;
+    if (!ready || saving || notePending || paying) return;
     if (isResource) { await resource.confirm(note, settle.settle()); return; }
     setSaving(true);
     try {
@@ -408,7 +437,7 @@ export function useBookingWizard(o: WizardOptions) {
         o.onClose();
         return;
       }
-      await scheduleApi.createReservation(client!.id, target);
+      const reservation = await scheduleApi.createReservation(client!.id, target);
       // Запись в уже стоящее занятие: у него своя заметка, общая на всех, —
       // дописываем к ней с именем клиента, а не затираем.
       if (joined && hasNote) {
@@ -425,6 +454,8 @@ export function useBookingWizard(o: WizardOptions) {
       }
       toast.info(t('journal:toasts.clientsBooked', { count: 1 }));
       o.onCreated(date);
+      // Окно оплаты открылось — мастер ждёт его и закроется вместе с ним (finishPay).
+      if (payNow && await openPayment(target, reservation.id)) return;
       o.onClose();
     } catch (err) {
       toast.error(errorMessage(err, t));
@@ -444,6 +475,12 @@ export function useBookingWizard(o: WizardOptions) {
   return {
     steps, step, dir, goTo, advance, swipe, done, conflict, availability, timeStep, setTimeStep,
     solo, toggleSolo: () => setSolo(v => !v), canSolo, soloLesson, clientOptional,
+    canPayNow, payNow, togglePay, paying,
+    /** Долг новой брони оплачен: журнал перечитает её отметку «Оплата». */
+    paid: () => { toast.info(t('journal:toasts.paymentAccepted')); o.onCreated(date); },
+    /** Окно оплаты закрылось (оплатили или отказались) — запись уже есть, мастер закрывается. */
+    finishPay: () => { setPaying(null); o.onClose(); },
+    payLabel: [service?.name, time].filter(Boolean).join(' · '),
     clientName, priceText, durationMin, joined, busy, needsClient, client, fresh, service, teacherId, masterChosen, date, time,
     hallId, setHallId, branches, branch, setBranchId, noHall, isResource, serviceList, services, masters,
     serviceStates, masterStates, trainers, halls, resource, ready, saving: saving || resource.saving,

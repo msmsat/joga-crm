@@ -67,7 +67,11 @@ export interface EventRecord {
   occurred_at?: string | null
   scheduled_at?: string | null
   recorded_at?: string | null
-  type: 'payment' | 'visit' | 'booking' | 'cancel' | 'bonus' | 'freeze'
+  type: 'payment' | 'visit' | 'completed' | 'booking' | 'cancel' | 'bonus' | 'freeze'
+  lesson_id?: number | null
+  notes?: string | null
+  photos?: string[]
+  status?: string | null
   title: string
   trainer: string | null
   paid: string | null
@@ -149,6 +153,7 @@ export interface ClientListItem {
   phone: string | null
   email: string | null
   avatar_color: string | null
+  avatar_url?: string | null
   status: 'new' | 'active' | 'vip' | 'inactive' | 'frozen'
   tags: string[]
   visit_count: number
@@ -163,6 +168,10 @@ export interface ClientListItem {
 }
 
 export interface ClientProfile extends ClientListItem {
+  phone2?: string | null
+  address?: string | null
+  balance?: string | null
+  discount?: string | null
   subscription_alert: ActiveSubscription | null
   /** Ник в Instagram без «@» — ссылку карточка собирает сама. */
   instagram: string | null
@@ -203,6 +212,8 @@ export interface InviteCode {
 }
 
 export interface ClientUpdate {
+  phone2?: string | null
+  address?: string | null
   name?: string
   last_name?: string | null
   phone?: string | null

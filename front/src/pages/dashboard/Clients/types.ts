@@ -6,6 +6,11 @@ export interface ClientData {
   name: string;
   last_name?: string;
   avatar_color?: string;
+  avatar_url?: string | null;
+  phone2?: string | null;
+  address?: string | null;
+  balance?: string | null;
+  discount?: string | null;
   status: string;
   tags: string[];
   visit_count: number;
@@ -38,4 +43,4 @@ export interface ClientData {
 
 export type { EventRecord } from '../../../api/clients/clients.types';
 
-export type EventFilterTab = 'all' | 'payment' | 'visit' | 'booking' | 'cancel' | 'bonus' | 'freeze';
+export type EventFilterTab = 'all' | 'payment' | 'visit' | 'completed' | 'booking' | 'cancel' | 'bonus' | 'freeze';

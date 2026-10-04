@@ -331,6 +331,8 @@
     "onlyAvailable": "Yalnızca uygun olanlar",
     "clientOptional": "İsteğe bağlı: müşteriyi daha sonra ders kartından ekleyebilirsiniz — ya da kendisi çevrim içi kayıt olur.",
     "withoutClient": "Müşteri olmadan devam et",
+    "payAfter": "Kayıttan hemen sonra tahsil edilir",
+    "confirmAndPay": "Kaydet ve ödemeyi al",
     "unavailable": "Bu seçimle uygun değil",
     "selectionConflict": "Seçim uyumlu değil. Uygun bir saat seçin ya da hizmeti veya uzmanı değiştirin.",
     "availabilityError": "Could not load availability. Please try again.",

@@ -1,4 +1,3 @@
-import { NativeSourceDetails } from '../bumpix/NativeSourceDetails';
 // src/components/modals/BookingPopup.tsx
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
@@ -470,7 +469,6 @@ const BookingPopupView: React.FC<BookingPopupProps> = ({
               onSaved={setPopupBooking}
             />
 
-            <NativeSourceDetails lessonId={popupBooking.id}/>
 
             {/* Пока записанные едут с сервера — их силуэты в том же количестве:
                 попап сразу нужной высоты и не дорастает, когда придёт ответ. */}

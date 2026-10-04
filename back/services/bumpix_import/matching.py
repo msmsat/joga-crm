@@ -1,5 +1,7 @@
 import re
 import unicodedata
+from datetime import date, datetime, timedelta, timezone
+from decimal import Decimal, InvalidOperation
 from contact_format import to_e164
 
 
@@ -41,9 +43,50 @@ def native_values(profile):
     if email and (len(email) > 255 or not re.fullmatch(r'[^\s@]+@[^\s@]+\.[^\s@]+', email)):
         email = None
         warnings.append('Invalid email kept only in source profile')
-    if profile.get('birthday'):
-        warnings.append('Birthday kept in source profile; source date format has not been confirmed')
-    return {'name': name, 'phone': phone, 'email': email}, warnings
+    raw_phone2 = str(profile.get('phone2') or '').strip()
+    digits2 = phone_key(raw_phone2)
+    phone2 = '+' + digits2 if raw_phone2.startswith('+') and re.fullmatch('[1-9][0-9]{7,14}', digits2) else None
+    if raw_phone2 and not phone2:
+        warnings.append('Secondary phone retained as text; international format is not confirmed')
+    birthday = None
+    raw_birthday = profile.get('birthday')
+    # dialog_client_profile.php explicitly treats 1 as "not set" and formats
+    # all real birthdays using moment(milliseconds).utc().
+    if raw_birthday not in (None, '', 0, '0', 1, '1'):
+        try:
+            if isinstance(raw_birthday, str) and re.fullmatch(r'\d{4}-\d{2}-\d{2}', raw_birthday):
+                parsed = date.fromisoformat(raw_birthday)
+            elif type(raw_birthday) is int or (isinstance(raw_birthday, str) and re.fullmatch(r'-?\d+', raw_birthday)):
+                parsed = (datetime(1970, 1, 1, tzinfo=timezone.utc) + timedelta(milliseconds=int(raw_birthday))).date()
+            else:
+                raise ValueError('Unsupported birthday')
+            if not date(1800, 1, 1) <= parsed <= date.today():
+                raise ValueError('Birthday outside valid range')
+            birthday = parsed.isoformat()
+        except (ValueError, OverflowError):
+            warnings.append('Invalid birthday retained in original data')
+    numeric = {}
+    for field in ('balance', 'discount'):
+        try:
+            number = Decimal(str(profile.get(field) or '0'))
+            if not number.is_finite():
+                raise ValueError('Nonfinite amount')
+            numeric[field] = format(number, 'f')
+        except (ValueError, InvalidOperation):
+            numeric[field] = None
+            warnings.append('Invalid ' + field + ' retained in original data')
+    return {'name': name, 'phone': phone, 'email': email, 'birth_date': birthday,
+            'phone2': phone2 or raw_phone2 or None, 'address': str(profile.get('address') or '') or None,
+            **numeric}, warnings
+
+
+def native_field(value):
+    """JSON-safe baseline for native typed values."""
+    return value.isoformat() if isinstance(value, (date, datetime)) else value
+
+
+def native_kwargs(values):
+    return {k: date.fromisoformat(v) if k == 'birth_date' and v else v for k, v in values.items()}
 
 
 def candidates(profile, clients):

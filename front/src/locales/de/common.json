@@ -238,7 +238,8 @@
     "add": "Foto",
     "remove": "Foto entfernen",
     "alt": "Foto zur Notiz",
-    "drop": "Loslassen zum Anhängen"
+    "drop": "Loslassen zum Anhängen",
+    "retry": "Fotos konnten nicht geladen werden. Erneut versuchen"
   },
   "loading": "Wird geladen…",
   "actions": {
@@ -258,5 +259,9 @@
     "durationInherited": "Dauer aus dem Katalog",
     "durationAria": "Dauer von {{service}}, Minuten",
     "durationInvalid": "Die Dauer muss eine ganze Zahl von 1 bis {{max}} Minuten sein. Der vorherige Wert bleibt erhalten"
+  },
+  "records": {
+    "paymentUnknown": "Zahlung nicht bestätigt",
+    "attendanceUnknown": "Teilnahme nicht bestätigt"
   }
 }

@@ -238,7 +238,8 @@
     "add": "Bilde",
     "remove": "Fjern bilde",
     "alt": "Notatbilde",
-    "drop": "Slipp for å legge ved"
+    "drop": "Slipp for å legge ved",
+    "retry": "Bildene kunne ikke lastes. Prøv igjen"
   },
   "loading": "Laster…",
   "actions": {
@@ -258,5 +259,9 @@
     "durationInherited": "Varighet fra Katalogen",
     "durationAria": "Varighet for {{service}}, minutter",
     "durationInvalid": "Varigheten må være et helt antall minutter fra 1 til {{max}}. Den forrige verdien beholdes"
+  },
+  "records": {
+    "paymentUnknown": "Betaling ikke bekreftet",
+    "attendanceUnknown": "Oppmøte ikke bekreftet"
   }
 }

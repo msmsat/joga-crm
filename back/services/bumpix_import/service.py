@@ -7,15 +7,18 @@ from sqlalchemy import select, update
 from sqlalchemy.exc import SQLAlchemyError
 from models import Client, ClientNote, Studio, StudioMember, User
 from models.bumpix import BumpixClient, BumpixEvent, BumpixMedia, BumpixSnapshot
-from .matching import candidates, native_values, shares_identity
+from .matching import candidates, native_values, shares_identity, native_field, native_kwargs
 from .media import store_photos
 from .validation import event_times, identity, photo_key, sha
+from .native_profile import profile_values, profile_note
 
 
 class Importer:
-    def __init__(self, sessions, storage_root):
+    def __init__(self, sessions, storage_root, *, native=False, native_options=None):
         self.sessions = sessions
         self.storage_root = storage_root
+        self.native = native
+        self.native_options = native_options or {}
 
     async def _authorize(self, db, studio_id, owner_email):
         if type(studio_id) is not int or studio_id < 1:
@@ -28,8 +31,10 @@ class Importer:
         return owner
 
     async def _mapping(self, db, export, studio_id, mapping):
-        if not isinstance(mapping, dict) or set(mapping) - {'clients', 'masters'}:
-            raise ValueError('Mapping may contain only clients and masters')
+        if not isinstance(mapping, dict) or set(mapping) - {'clients', 'masters', 'services'}:
+            raise ValueError('Mapping may contain only clients, masters and services')
+        if not isinstance(mapping.get('services', {}), dict):
+            raise ValueError('Service mapping must be an object')
         client_map, masters = mapping.get('clients', {}), mapping.get('masters', {})
         if not isinstance(client_map, dict) or not isinstance(masters, dict):
             raise ValueError('Mapping clients/masters must be objects')
@@ -75,11 +80,13 @@ class Importer:
             if target is not None and target != client.id:
                 item['errors'].append('An existing source ID cannot be rebound to another CRM card')
             if binding.managed_values:
-                values, warnings = native_values(profile)
+                values, warnings = profile_values(package.snapshot, allow_existing_name='name' not in binding.managed_values or target == client.id)
                 item['warnings'].extend(warnings)
                 proposed = {}
                 for field, old in binding.managed_values.items():
-                    new, current = values[field], getattr(client, field)
+                    if field.startswith('_'):
+                        continue
+                    new, current = values.get(field, old), native_field(getattr(client, field))
                     if current not in (old, new) and new != old:
                         item['errors'].append('Source and CRM both changed field: ' + field)
                     if current == old and current != new:
@@ -93,11 +100,11 @@ class Importer:
                                                  for c in others if c.id in item['candidates']]
                     if item['candidates'] and target != client.id:
                         item['errors'].append('Updated contact/name matches another CRM card; map this source ID to its current CRM ID to acknowledge')
-            old_comment = str(binding.payload['profile'].get('comment') or '')
-            new_comment = str(profile.get('comment') or '')
+            old_comment = profile_note(binding.payload) if binding.managed_values.get('_profile_note_format') == 2 else str(binding.payload['profile'].get('comment') or '')
+            new_comment = profile_note(package.snapshot)
             note = await db.get(ClientNote, binding.note_id) if binding.note_id else None
-            if old_comment and (not note or note.client_id != client.id or note.studio_id != studio_id):
-                item['errors'].append('Imported profile note was removed or reassigned in CRM')
+            if note and (note.client_id != client.id or note.studio_id != studio_id):
+                item['errors'].append('Imported profile note was reassigned in CRM')
             elif note and new_comment != old_comment and note.text not in (old_comment, new_comment):
                 item['errors'].append('Source and CRM both changed the profile note')
         else:
@@ -116,7 +123,7 @@ class Importer:
                     item['client_id'], item['action'] = target, 'link'
             else:
                 try:
-                    _, item['warnings'] = native_values(profile)
+                    _, item['warnings'] = profile_values(package.snapshot)
                 except ValueError as exc:
                     item['errors'].append(str(exc))
                 if item['candidates'] and target != 'create':
@@ -163,6 +170,15 @@ class Importer:
                     item['errors'].append('Prior master mappings disagree; supply explicit masters mapping')
                     item['action'] = 'conflict'
             master_names = {m.get('0'): m.get('2', '') for p in export.packages for m in p.snapshot['lookups'].get('masters', []) if isinstance(m, dict)}
+            if self.native:
+                from .native_planning import plan_native
+                native_errors, native_counts = await plan_native(db, export, studio_id, mapped,
+                    self.native_options, mapping.get('services', {}))
+                for item in items:
+                    item['errors'].extend(native_errors.get(item['source_client_id'], []))
+                    item['native_events'] = native_counts.get(item['source_client_id'], {})
+                    if item['errors']:
+                        item['action'] = 'conflict'
             team = (await db.scalars(select(StudioMember).where(StudioMember.studio_id == studio_id,
                 StudioMember.status == 'active', StudioMember.role.in_(['owner', 'admin', 'trainer'])))).all()
             return {'format': 1, 'mode': 'preview', 'ready': all(not i['errors'] for i in items),
@@ -191,41 +207,59 @@ class Importer:
         binding = await db.scalar(select(BumpixClient).where(
             BumpixClient.studio_id == studio_id, BumpixClient.account_key == account,
             BumpixClient.source_client_id == package.client_id))
-        values, _ = native_values(data['profile']) if plan['action'] == 'create' or (binding and binding.managed_values) else ({}, [])
+        values, _ = profile_values(data, allow_existing_name=plan['action'] == 'link' or bool(binding and ('name' not in binding.managed_values or client_map.get(package.client_id) == binding.client_id))) if plan['action'] in ('create', 'link') or (binding and binding.managed_values) else ({}, [])
         if not binding:
+            filled = {}
             if plan['action'] == 'link':
                 client = await db.get(Client, plan['client_id'])
+                for field, value in values.items():
+                    current = getattr(client, field)
+                    if current is None or field == 'tags' and not current:
+                        setattr(client, field, native_kwargs({field: value})[field])
+                        filled[field] = value
             else:
-                client = Client(studio_id=studio_id, **values, source='bumpix', notifs_enabled=False, reminders_enabled=False)
+                palette = ['#FCAE91', '#A3C9A8', '#D88C9A', '#9BB5D8', '#C8A8D8', '#D8C8A8']
+                client = Client(studio_id=studio_id, **native_kwargs(values), source='bumpix',
+                                avatar_color=palette[int(package.snapshot_id[:8], 16) % len(palette)],
+                                notifs_enabled=False, reminders_enabled=False)
                 db.add(client)
                 await db.flush()
             binding = BumpixClient(studio_id=studio_id, account_key=account, source_client_id=package.client_id,
                                    client_id=client.id, snapshot_id=package.snapshot_id, payload=data,
-                                   managed_values=values if plan['action'] == 'create' else {})
+                                   managed_values=values if plan['action'] == 'create' else filled)
             db.add(binding)
             await db.flush()
             old_comment = ''
         else:
             client = await db.get(Client, binding.client_id)
-            old_comment = str(binding.payload['profile'].get('comment') or '')
+            old_comment = profile_note(binding.payload) if binding.managed_values.get('_profile_note_format') == 2 else str(binding.payload['profile'].get('comment') or '')
             for field, old in binding.managed_values.items():
-                if getattr(client, field) == old:
-                    setattr(client, field, values[field])
+                if field.startswith('_'):
+                    continue
+                if native_field(getattr(client, field)) == old:
+                    setattr(client, field, native_kwargs({field: values.get(field, old)})[field])
+            # Old imports only managed name/phone/email. Populate newly supported
+            # empty fields once; an existing manual value stays authoritative.
             if binding.managed_values:
-                binding.managed_values = values
-        comment = str(data['profile'].get('comment') or '')
+                for field, value in values.items():
+                    if field not in binding.managed_values and getattr(client, field) is None:
+                        setattr(client, field, native_kwargs({field: value})[field])
+            if binding.managed_values:
+                binding.managed_values = dict(binding.managed_values, **values)
+        comment = profile_note(data)
         if comment or binding.note_id:
             if binding.note_id:
                 note = await db.get(ClientNote, binding.note_id)
-                if note.text == old_comment:
+                if note and note.text == old_comment:
                     note.text = comment
                     if comment != old_comment:
                         note.updated_at = datetime.now(timezone.utc).replace(tzinfo=None)
-            elif comment:
+            elif comment and not old_comment and not binding.managed_values.get('_profile_note_created'):
                 note = ClientNote(client_id=client.id, studio_id=studio_id, author_id=owner_id, text=comment, photos=[])
                 db.add(note)
                 await db.flush()
                 binding.note_id = note.id
+            binding.managed_values = dict(binding.managed_values, _profile_note_created=True, _profile_note_format=2)
         if not await db.scalar(select(BumpixSnapshot.id).where(
                 BumpixSnapshot.binding_id == binding.id, BumpixSnapshot.snapshot_id == package.snapshot_id)):
             db.add(BumpixSnapshot(binding_id=binding.id, snapshot_id=package.snapshot_id, payload=data))
@@ -233,7 +267,7 @@ class Importer:
         # A source master is an account-wide identity. An explicit remapping
         # updates all its imported visits under the same studio transaction,
         # including visits outside the selected client subset.
-        for mid, teacher in masters.items():
+        for mid, teacher in ({} if self.native else masters).items():
             await db.execute(update(BumpixEvent).where(BumpixEvent.studio_id == studio_id,
                 BumpixEvent.account_key == account, BumpixEvent.master_source_id == mid
                 ).values(teacher_user_id=teacher).execution_options(synchronize_session=False))
@@ -284,6 +318,11 @@ class Importer:
             photo.event_id = by_id[source['owner_id']].id if source['kind'] == 'event' else None
             photo.path, photo.sha256, photo.bytes, photo.is_current = paths[source['path']], source['sha256'], source['bytes'], True
         await db.flush()
+        if self.native:
+            from .native_projection import synchronize_native
+            current_photos = (await db.scalars(select(BumpixMedia).where(BumpixMedia.binding_id == binding.id))).all()
+            await synchronize_native(db, binding, client, list(by_id.values()), current_photos,
+                self.native_options, getattr(self, '_service_decisions', {}))
         plan['client_id'] = client.id
         plan['committed'] = True
         return plan
@@ -295,6 +334,7 @@ class Importer:
         report['mode'] = 'apply'
         if not report['ready']:
             return report
+        self._service_decisions = (mapping or {}).get('services', {})
         completed = []
         for package in export.packages:
             try:
@@ -304,6 +344,13 @@ class Importer:
                     await db.scalar(select(Studio).where(Studio.id == studio_id).with_for_update())
                     owner = await self._authorize(db, studio_id, owner_email)
                     client_map, masters = await self._mapping(db, export, studio_id, mapping or {})
+                    if self.native:
+                        from .native_planning import plan_native
+                        mapped = {m['source_master_id']: m['teacher_user_id'] for m in report['masters']}
+                        problems, _ = await plan_native(db, export, studio_id, mapped,
+                            self.native_options, self._service_decisions, locking=True, client_id=package.client_id)
+                        if problems.get(package.client_id):
+                            raise ValueError('Database changed since preview: ' + '; '.join(problems[package.client_id]))
                     saved = await self._save(db, package, studio_id, account_key, owner.id, client_map, masters, paths)
                 completed.append(saved)
                 if progress:

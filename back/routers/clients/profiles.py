@@ -32,6 +32,7 @@ from services.client_segments import (
 )
 from services.contacts import contact_taken, ensure_client_contacts_free
 from services.client_search import client_search_condition
+from services.bumpix_import.note_access import visible_notes
 from services.referral import fire_referral
 from services.subscription_charge import notify_subscription_remaining
 from schemas import (
@@ -175,6 +176,7 @@ def _client_list_item(
         phone=client.phone,
         email=client.email,
         avatar_color=client.avatar_color,
+        avatar_url=client.avatar_url,
         # Статус выводится из данных (регистрация/визиты/оплаты), а не берётся из
         # колонки — см. services/client_segments.
         status=resolve_status(client, visit_count=visit_count, total_spent=total_spent, rules=rules),
@@ -493,6 +495,8 @@ async def get_client(
             ClientPayment.client_id == client_id, ClientPayment.status == "pending",
         )
     )).scalar() or 0
+    recent_notes = (await db.scalars(select(ClientNote).where(ClientNote.client_id == client_id,
+        *visible_notes(ctx)).order_by(ClientNote.created_at.desc()).limit(3))).all()
     return ClientProfileOut(
         **base.model_dump(),
         debt=debt,
@@ -504,6 +508,7 @@ async def get_client(
             type=subscription_alert.type,
         ) if subscription_alert else None,
         instagram=client.instagram,
+        phone2=client.phone2, address=client.address, balance=client.balance, discount=client.discount,
         birth_date=client.birth_date.isoformat() if client.birth_date else None,
         city=client.city,
         source=client.source,
@@ -518,7 +523,7 @@ async def get_client(
                 created_at=n.created_at.isoformat(),
                 updated_at=n.updated_at.isoformat() if n.updated_at else None,
             )
-            for n in sorted(client.notes, key=lambda x: x.created_at, reverse=True)[:3]
+            for n in recent_notes
         ],
     )
 
@@ -538,7 +543,7 @@ async def get_client_events(
 
     studio = await db.get(Studio, studio_id)
     events: list[EventRecordOut] = []
-    for kind, state in (("visit", "attended"), ("booking", None), ("cancel", "cancelled")):
+    for kind, state in (("visit", "attended"), ("completed", None), ("booking", None), ("cancel", "cancelled")):
         if event_type and event_type not in ("all", kind):
             continue
         stmt = (select(Reservation).join(Lesson, Lesson.id == Reservation.lesson_id)
@@ -547,6 +552,12 @@ async def get_client_events(
                 .options(selectinload(Reservation.lesson)))
         if state:
             stmt = stmt.where(Reservation.status == state)
+        if ctx.role == 'trainer':
+            stmt = stmt.where(Lesson.teacher_id == ctx.user.id)
+        if kind == 'completed':
+            stmt = stmt.where(Lesson.source_status == 'completed', Reservation.status != 'attended', Lesson.status != 'cancelled')
+        elif kind == 'booking':
+            stmt = stmt.where(or_(Lesson.source_status.is_(None), Lesson.source_status == 'new'))
         rows = (await db.execute(stmt)).scalars().all()
         events.extend(reservation_event(r, kind, studio) for r in rows)
 
@@ -606,7 +617,7 @@ async def get_client_notes(
 
     notes = (await db.execute(
         select(ClientNote)
-        .where(ClientNote.client_id == client_id)
+        .where(ClientNote.client_id == client_id, *visible_notes(ctx))
         .order_by(ClientNote.created_at.desc())
     )).scalars().all()
 

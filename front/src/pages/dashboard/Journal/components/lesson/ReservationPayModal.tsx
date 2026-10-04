@@ -14,7 +14,9 @@ import { PaySheet, type PayMethod } from './PaySheet';
 interface Props {
   booked: BookedClient;
   lessonLabel: string;
-  mutations: ReturnType<typeof useJournalMutations>;
+  /** Только проведение оплаты: окно открывают и карточка занятия, и мастер
+   *  записи сразу после записи «Индивидуального» (там своих мутаций журнала нет). */
+  mutations: Pick<ReturnType<typeof useJournalMutations>, 'payReservation'>;
   onPaid: (total: number) => void;
   onClose: () => void;
 }

@@ -36,6 +36,12 @@ class Client(Base):
     birth_date: Mapped[Optional[date]] = mapped_column(Date, nullable=True)
     city: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
     avatar_color: Mapped[Optional[str]] = mapped_column(String(7), nullable=True)
+    avatar_url: Mapped[Optional[str]] = mapped_column(String(300), nullable=True)
+    phone2: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    address: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    # Exact imported account values, distinct from cash receipts and deposits.
+    balance: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    discount: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
     status: Mapped[str] = mapped_column(String(20), default="new")
     tags: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
     last_visit_date: Mapped[Optional[date]] = mapped_column(Date, nullable=True)
@@ -132,6 +138,7 @@ class ClientNote(Base):
     client_id: Mapped[int] = mapped_column(ForeignKey("clients.id", ondelete="CASCADE"), index=True)
     studio_id: Mapped[int] = mapped_column(ForeignKey("studios.id", ondelete="CASCADE"), index=True)
     author_id: Mapped[Optional[int]] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
+    lesson_id: Mapped[Optional[int]] = mapped_column(ForeignKey('lessons.id', ondelete='SET NULL'), nullable=True, index=True)
     text: Mapped[str] = mapped_column(Text)
     # Пути вида /static/notes/<uuid>.jpg — сами файлы лежат рядом с логотипами и
     # фото залов, кладёт их тот же save_image. В заметке только ссылки: base64 в

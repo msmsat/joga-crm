@@ -93,7 +93,11 @@
       "instagram": "Instagram",
       "birthDate": "Syntymäaika",
       "city": "Kaupunki",
-      "copyHint": " · kopioi napsauttamalla"
+      "copyHint": " · kopioi napsauttamalla",
+      "phone2": "Toinen puhelin",
+      "address": "Osoite",
+      "balance": "Saldo ennen siirtoa",
+      "discount": "Alennus"
     },
     "debt": "{{amount}} maksamatta tunneista — vastaanota maksu Päiväkirjassa",
     "stats": {
@@ -285,7 +289,8 @@
         "booking": "Varaukset",
         "cancel": "Peruutukset",
         "bonus": "Bonukset",
-        "freeze": "Jäädytykset"
+        "freeze": "Jäädytykset",
+        "completed": "Päättyneet"
       },
       "empty": "Ei tapahtumia"
     },

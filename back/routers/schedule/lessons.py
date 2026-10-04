@@ -42,7 +42,7 @@ _LESSON_FIELDS = (
     "duration_min", "price", "level", "equipment", "total_spots",
     "service_id", "status", "cancel_reason", "clients_notified",
     # Заметка студии о занятии и снимки к ней (для своих, клиенту не уходят).
-    "notes", "photos",
+    "notes", "photos", "source_status",
     # HB-04: branch_id/booking_mode/tz_iana — уже есть на модели (HB-02), но
     # без этой строки они не долетали бы до ответа: _lesson_read собирает
     # dict по явному списку, а не ORM-объект целиком.
@@ -221,6 +221,10 @@ async def get_lesson(
             Reservation.client_id,
             Reservation.spot_number,
             Reservation.status,
+            case((
+                Reservation.booking_channel.in_(['import', 'bumpix']) &
+                Reservation.closed_at.is_not(None) & (Reservation.status != 'attended') &
+                Reservation.no_show.is_(False), False), else_=True).label('attendance_known'),
             Reservation.is_trial,
             Reservation.trial_discount_percent,
             Reservation.trial_discount_amount,

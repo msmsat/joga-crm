@@ -23,7 +23,7 @@ const appearance: Appearance = {
   theme: 'night',
   variables: { colorPrimary: '#FCAE91', colorBackground: '#171717', colorText: '#F7F4F2',
     colorTextSecondary: '#A4A09D', colorDanger: '#D88C9A', fontFamily: 'Manrope, Inter, sans-serif',
-    borderRadius: '10px', spacingUnit: '4px', fontSizeBase: '14px' },
+    borderRadius: '10px', spacingUnit: '4px', fontSizeBase: '16px' },
   rules: {
     '.Input': { border: '1px solid #363330', boxShadow: 'none', padding: '14px' },
     '.Input:focus': { borderColor: '#FCAE91', boxShadow: '0 0 0 3px rgba(252,174,145,.12)' },

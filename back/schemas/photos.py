@@ -9,7 +9,7 @@ from pydantic import AfterValidator
 # каждого открывшего) или схему вроде javascript:/data:, безопасную сегодня лишь
 # по случайности вёрстки. Путь не выбирают — его возвращает загрузка файла
 # (POST /studio/upload-note-photo).
-_PHOTO_PATH = re.compile(r"^/static/notes/[0-9a-f]{32}\.(jpg|jpeg|png|webp|gif)$")
+_PHOTO_PATH = re.compile(r"^(?:/static/notes/[0-9a-f]{32}\.(?:jpg|jpeg|png|webp|gif)|/clients/[1-9][0-9]*/media/[1-9][0-9]*)$")
 
 
 def _issued_by_upload(photos: List[str]) -> List[str]:

@@ -331,6 +331,8 @@
     "onlyAvailable": "Vetëm të lirat",
     "clientOptional": "Opsionale: klientin mund ta shtoni më vonë te karta e mësimit — ose ai do të rezervojë vetë online.",
     "withoutClient": "Vazhdo pa klient",
+    "payAfter": "Arkëtohet menjëherë pas rezervimit",
+    "confirmAndPay": "Rezervo dhe arkëto",
     "unavailable": "Nuk disponohet me këtë zgjedhje",
     "selectionConflict": "Zgjedhja nuk përputhet. Zgjidhni një orë të lirë ose ndryshoni shërbimin ose specialistin.",
     "availabilityError": "Could not load availability. Please try again.",

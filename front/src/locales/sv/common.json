@@ -238,7 +238,8 @@
     "add": "Foto",
     "remove": "Ta bort foto",
     "alt": "Anteckningsbild",
-    "drop": "Släpp för att bifoga"
+    "drop": "Släpp för att bifoga",
+    "retry": "Bilderna kunde inte laddas. Försök igen"
   },
   "loading": "Laddar…",
   "actions": {
@@ -258,5 +259,9 @@
     "durationInherited": "Längd från Katalogen",
     "durationAria": "Längd för {{service}}, minuter",
     "durationInvalid": "Längden måste vara ett helt antal minuter från 1 till {{max}}. Det tidigare värdet behålls"
+  },
+  "records": {
+    "paymentUnknown": "Betalning inte bekräftad",
+    "attendanceUnknown": "Närvaro inte bekräftad"
   }
 }

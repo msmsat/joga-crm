@@ -57,8 +57,8 @@ export function PayMark({ client: c, canPay, onPay, tile }: {
     return <VisitMark icon={<Icons.CardIcon />} state="due" label={label} hint={t('mark.unpaid')}
                       onClick={canPay ? onPay : undefined} tile={tile} />;
   }
-  if (c.booking_channel === 'bumpix' && !c.payment && !c.by_subscription && !(c.paid_amount > 0)) {
-    return <VisitMark icon={<Icons.CardIcon />} state="idle" label={label} hint={t('bumpix:journal.paymentUnknown')} tile={tile}/>;
+  if (['import', 'bumpix'].includes(c.booking_channel ?? '') && !c.payment && !c.by_subscription && !(c.paid_amount > 0)) {
+    return <VisitMark icon={<Icons.CardIcon />} state="idle" label={label} hint={t('common:records.paymentUnknown')} tile={tile}/>;
   }
   const method = c.payment?.method;
   const hint = c.by_subscription ? t('payment.coveredBy.subscription')
@@ -79,7 +79,8 @@ export function AttendMark({ state, started, onSet, tile }: {
   const [anchor, setAnchor] = useState<HTMLElement | null>(null);
   const mark: MarkState = state === 'came' ? 'done' : state === 'missed' ? 'missed' : 'idle';
   const hint = state === 'came' ? t('clientCard.status.attended')
-    : state === 'missed' ? t('clientCard.status.missed') : t('mark.waiting');
+    : state === 'missed' ? t('clientCard.status.missed')
+    : state === 'unknown' ? t('common:records.attendanceUnknown') : t('mark.waiting');
 
   const press = (el: HTMLButtonElement) => {
     if (!onSet) return;
@@ -96,7 +97,7 @@ export function AttendMark({ state, started, onSet, tile }: {
         <AttendChoice
           anchor={anchor}
           current={state}
-          onPick={attended => { setAnchor(null); if ((state === 'came') !== attended || state === 'waiting') onSet?.(attended); }}
+          onPick={attended => { setAnchor(null); if ((state === 'came') !== attended || state === 'waiting' || state === 'unknown') onSet?.(attended); }}
           onClose={() => setAnchor(null)}
         />
       )}
