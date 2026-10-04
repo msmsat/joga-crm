@@ -15,6 +15,10 @@
     "changeNumber": "Endre nummer",
     "gotIt": "Forstått"
   },
+  "fields": {
+    "required": "Påkrevd",
+    "optional": "Valgfritt"
+  },
   "steps": {
     "identity": {
       "title": "Om studioet",
@@ -44,15 +48,20 @@
     "uploadLogo": "Last opp logo",
     "removeLogo": "Fjern",
     "logoHint": "JPG, PNG, WEBP opptil 5 MB",
+    "logoLabel": "Logo",
+    "logoWhy": "Kundene ser den ved nettbooking",
     "nameLabel": "Navn på studio eller selskap",
     "namePlaceholder": "F.eks.: Studio Forma",
+    "nameWhy": "Slik ser kundene studioet ditt — i booking, e-post og påminnelser",
     "descriptionLabel": "Beskrivelse",
     "descriptionPlaceholder": "Noen ord om studioet ditt, arbeidsstilen, det som er spesielt...",
+    "descriptionWhy": "Noen ord om deg — assistenten bruker dem til å svare kunder i meldingsapper",
     "newBadge": "NY"
   },
   "activity": {
     "title": "Type virksomhet",
     "subtitle": "Merk alt dere tilbyr — innenfor én seksjon",
+    "requiredWhy": "Minst én — vi tilpasser timeplanen og nettbookingen etter den",
     "comingSoon": "Kommer snart: barbershop, trening, dans og mer",
     "types": {
       "yoga": "Yoga",
@@ -100,24 +109,30 @@
     "title": "Kontaktopplysninger",
     "subtitle": "Kundene ser disse opplysningene ved nettbooking",
     "phoneLabel": "Studioets telefon",
+    "phoneWhy": "Kundene kan ringe deg med ett trykk rett fra nettbookingen",
     "checkingPhone": "Sjekker nummeret...",
     "addressLabel": "Adresse",
     "addressPlaceholder": "350 Fifth Ave, New York",
+    "addressWhy": "Slik at kundene lett finner fram til deg",
     "emailLabel": "E-post",
+    "emailWhy": "For spørsmål og meldinger fra kunder",
     "websiteLabel": "Nettsted",
-    "note": "Alle felt bortsett fra telefon er valgfrie. Du kan fylle dem ut senere i innstillingene."
+    "websiteWhy": "Kundene kan lese mer om deg",
+    "note": "Valgfrie felt kan du fylle ut senere — i studioinnstillingene."
   },
   "settings": {
     "title": "Regionale innstillinger",
     "subtitle": "Kan endres senere i studioinnstillingene",
     "timezoneLabel": "Tidssone",
     "timezonePlaceholder": "Velg tidssone",
+    "timezoneWhy": "Brukes til tidspunkter for økter og påminnelser til kunder",
     "languageLabel": "Språk",
     "languagePlaceholder": "Språk",
     "currencyLabel": "Valuta",
     "currencyPlaceholder": "Valuta",
     "currencySearch": "Valuta eller kode",
     "currencyNotFound": "Fant ingen valuta",
+    "currencyWhy": "Brukes til priser, medlemskap og økonomirapporter",
     "dateFormatLabel": "Datoformat",
     "dateFormatPlaceholder": "Format",
     "currencies": {
@@ -239,6 +254,7 @@
     "title": "Åpningstider",
     "subtitle": "Angi dagene og timene studioet ditt er åpent",
     "scheduleLabel": "Studioets åpningstider",
+    "scheduleWhy": "Typiske åpningstider er allerede satt — tilpass dem. Økter og nettbooking holder seg innenfor disse tidene",
     "dayOff": "Stengt"
   },
   "illustration": {

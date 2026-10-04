@@ -25,6 +25,9 @@ export interface OnboardingData {
   workingHours: WorkingDay[];
 }
 
+/** Короче названия шаг 1 не пройти — и пометка «Обязательно» у поля не зеленеет. */
+export const STUDIO_NAME_MIN = 2;
+
 export const DEFAULT_WORKING_HOURS: WorkingDay[] = [
   { dayOfWeek: 0, isOpen: true,  openTime: "09:00", closeTime: "21:00" },
   { dayOfWeek: 1, isOpen: true,  openTime: "09:00", closeTime: "21:00" },

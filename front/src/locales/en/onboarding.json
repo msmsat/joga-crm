@@ -15,6 +15,10 @@
     "changeNumber": "Change number",
     "gotIt": "Got it"
   },
+  "fields": {
+    "required": "Required",
+    "optional": "Optional"
+  },
   "steps": {
     "identity": {
       "title": "About the studio",
@@ -44,15 +48,20 @@
     "uploadLogo": "Upload logo",
     "removeLogo": "Remove",
     "logoHint": "JPG, PNG, WEBP up to 5 MB",
+    "logoLabel": "Logo",
+    "logoWhy": "Clients will see it in online booking",
     "nameLabel": "Studio or company name",
     "namePlaceholder": "E.g.: Studio Forma",
+    "nameWhy": "This is how clients see your studio — in booking, emails and reminders",
     "descriptionLabel": "Description",
     "descriptionPlaceholder": "A short note about your studio, style of work, features...",
+    "descriptionWhy": "A few words about you — the assistant uses them to answer clients in messengers",
     "newBadge": "NEW"
   },
   "activity": {
     "title": "Type of activity",
     "subtitle": "Tick everything you do — all within one section",
+    "requiredWhy": "At least one — we'll set up the journal and online booking around it",
     "comingSoon": "Coming soon: barbershop, fitness, dance, and more",
     "types": {
       "yoga": "Yoga",
@@ -100,24 +109,30 @@
     "title": "Contact details",
     "subtitle": "Clients will see this information when booking online",
     "phoneLabel": "Studio phone",
+    "phoneWhy": "Clients can call you in one tap, right from online booking",
     "checkingPhone": "Checking number...",
     "addressLabel": "Address",
     "addressPlaceholder": "350 Fifth Ave, New York",
+    "addressWhy": "So clients can easily find their way to you",
     "emailLabel": "Email",
+    "emailWhy": "For questions and messages from clients",
     "websiteLabel": "Website",
-    "note": "All fields except phone are optional. You can fill them in later in settings."
+    "websiteWhy": "Lets clients learn more about you",
+    "note": "Optional fields can be filled in later — in studio settings."
   },
   "settings": {
     "title": "Regional settings",
     "subtitle": "Can be changed later in studio settings",
     "timezoneLabel": "Timezone",
     "timezonePlaceholder": "Select timezone",
+    "timezoneWhy": "Used for lesson times and client reminders",
     "languageLabel": "Language",
     "languagePlaceholder": "Language",
     "currencyLabel": "Currency",
     "currencyPlaceholder": "Currency",
     "currencySearch": "Currency or code",
     "currencyNotFound": "No currency found",
+    "currencyWhy": "Used for prices, memberships and financial reports",
     "dateFormatLabel": "Date format",
     "dateFormatPlaceholder": "Format",
     "currencies": {
@@ -239,6 +254,7 @@
     "title": "Working hours",
     "subtitle": "Set the days and hours your studio operates",
     "scheduleLabel": "Studio schedule",
+    "scheduleWhy": "Typical hours are already set — adjust them to fit. Lessons and online booking will stay within these hours",
     "dayOff": "Day off"
   },
   "illustration": {

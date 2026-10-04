@@ -53,7 +53,9 @@ export function WizardTabs({ w, payable }: { w: BookingWizardState; payable: boo
   });
   const tabs: BookingTab[] = [
     step(TIME_STEP, 'time', w.done(TIME_STEP)),
-    step(CLIENT_STEP, 'client', w.done(CLIENT_STEP)),
+    // Галочка — только у выбранного человека: необязательный клиент
+    // «Индивидуального» разделу сделанный и без выбора, но не выбран.
+    step(CLIENT_STEP, 'client', w.client != null),
     step(SERVICE_STEP, 'service', w.done(SERVICE_STEP)),
     step(MASTER_STEP, 'master', w.done(MASTER_STEP)),
     step(SUMMARY_STEP, 'summary', payable),

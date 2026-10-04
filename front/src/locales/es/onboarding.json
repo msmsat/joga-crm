@@ -15,6 +15,10 @@
     "changeNumber": "Cambiar número",
     "gotIt": "Entendido"
   },
+  "fields": {
+    "required": "Obligatorio",
+    "optional": "Opcional"
+  },
   "steps": {
     "identity": {
       "title": "Sobre el estudio",
@@ -44,15 +48,20 @@
     "uploadLogo": "Subir logo",
     "removeLogo": "Quitar",
     "logoHint": "JPG, PNG, WEBP hasta 5 MB",
+    "logoLabel": "Logo",
+    "logoWhy": "Tus clientes lo verán en la reserva online",
     "nameLabel": "Nombre del estudio o de la empresa",
     "namePlaceholder": "Ej.: Studio Forma",
+    "nameWhy": "Así verán tu estudio los clientes — en la reserva, los emails y los recordatorios",
     "descriptionLabel": "Descripción",
     "descriptionPlaceholder": "Unas líneas sobre tu estudio, tu forma de trabajar, lo que os distingue...",
+    "descriptionWhy": "Unas palabras sobre ti — el asistente las usa para responder a clientes en mensajería",
     "newBadge": "NUEVO"
   },
   "activity": {
     "title": "Tipo de actividad",
     "subtitle": "Marca todo lo que ofreces — dentro de una sola sección",
+    "requiredWhy": "Elige al menos una opción — con ella ajustamos la agenda y la reserva online",
     "comingSoon": "Próximamente: barbería, fitness, danza y más",
     "types": {
       "yoga": "Yoga",
@@ -100,24 +109,30 @@
     "title": "Datos de contacto",
     "subtitle": "Los clientes verán esta información al reservar online",
     "phoneLabel": "Teléfono del estudio",
+    "phoneWhy": "Tus clientes te llamarán con un toque desde la reserva online",
     "checkingPhone": "Comprobando el número...",
     "addressLabel": "Dirección",
     "addressPlaceholder": "350 Fifth Ave, New York",
+    "addressWhy": "Para que los clientes lleguen a ti sin perderse",
     "emailLabel": "Correo",
+    "emailWhy": "Para preguntas y mensajes de clientes",
     "websiteLabel": "Sitio web",
-    "note": "Todos los campos salvo el teléfono son opcionales. Puedes rellenarlos más tarde en los ajustes."
+    "websiteWhy": "Tus clientes podrán saber más de ti",
+    "note": "Los campos opcionales puedes rellenarlos más tarde, en los ajustes del estudio."
   },
   "settings": {
     "title": "Ajustes regionales",
     "subtitle": "Se pueden cambiar después en los ajustes del estudio",
     "timezoneLabel": "Zona horaria",
     "timezonePlaceholder": "Selecciona la zona horaria",
+    "timezoneWhy": "Con ella calculamos los horarios de las clases y los recordatorios",
     "languageLabel": "Idioma",
     "languagePlaceholder": "Idioma",
     "currencyLabel": "Moneda",
     "currencyPlaceholder": "Moneda",
     "currencySearch": "Moneda o código",
     "currencyNotFound": "No se encontró ninguna moneda",
+    "currencyWhy": "En ella van los precios, los bonos y los informes financieros",
     "dateFormatLabel": "Formato de fecha",
     "dateFormatPlaceholder": "Formato",
     "currencies": {
@@ -239,6 +254,7 @@
     "title": "Horario",
     "subtitle": "Indica los días y las horas en que abre tu estudio",
     "scheduleLabel": "Horario del estudio",
+    "scheduleWhy": "Ya hay un horario típico — ajústalo a tu medida. Las clases y la reserva online no saldrán de estas horas",
     "dayOff": "Cerrado"
   },
   "illustration": {

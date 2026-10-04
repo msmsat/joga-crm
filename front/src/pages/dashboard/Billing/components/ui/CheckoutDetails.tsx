@@ -20,7 +20,7 @@ export default function CheckoutDetails({ preview }: { preview: CheckoutPreview 
         </div>
       )}
       {preview?.tax_outcome === 'reverse_charge' && <p className={styles.note}>{t('payModal.reverseCharge')}</p>}
-      {preview?.tax_outcome === 'requires_review' && <p className={styles.notice} role="status">{t('payModal.taxReview')}</p>}
+      {preview?.tax_outcome === 'requires_review' && <p className={styles.note} role="status">{t('checkout.subtitle')}</p>}
       {preview?.kind === 'switch' && preview.current_plan && (
         <p className={styles.notice}>{t('payModal.burnWarning', { plan: planLabel(preview.current_plan, t) })}</p>
       )}

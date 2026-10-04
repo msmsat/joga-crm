@@ -333,6 +333,8 @@
     "timeStep": "Krok",
     "showAll": "Zobrazit vše",
     "onlyAvailable": "Jen dostupné",
+    "clientOptional": "Nepovinné: klienta můžete přidat později v kartě lekce — nebo se přihlásí online sám.",
+    "withoutClient": "Pokračovat bez klienta",
     "unavailable": "Při tomto výběru nedostupné",
     "selectionConflict": "Vybrané parametry k sobě nesedí. Vyberte dostupný čas nebo změňte službu či specialistu.",
     "availabilityError": "Could not load availability. Please try again.",

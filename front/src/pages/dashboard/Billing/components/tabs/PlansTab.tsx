@@ -12,7 +12,6 @@ import {
   CheckIcon, StarIcon, ZapIcon, ShieldIcon, CreditCardIcon, PercentIcon,
 } from '../ui/BillingIcons';
 import PlanCalculator from '../ui/PlanCalculator';
-import checkoutStyles from '../ui/CheckoutDetails.module.css';
 
 interface Props {
   currency?: string;
@@ -36,7 +35,7 @@ interface Props {
   totalToPay: number;
   /** Выгода предоплаты за весь период — считает хук, второй формулы тут нет. */
   savedTotal: number;
-  /** Переходит на страницу Stripe по ссылке от сервера. */
+  /** Переходит на страницу реквизитов выбранного тарифа. */
   startCheckout: () => void;
   activateModel: (body: ActivateModelRequest, onDone?: () => void) => void;
   modelBusy: boolean;
@@ -82,9 +81,6 @@ export default function PlansTab({
   // выставляется счётом постфактум, и за неоплату доступ блокируется. Бэк без
   // accept_offline_terms отвечает 422 — модалку нельзя обойти, это не только UI.
   const [pendingTerms, setPendingTerms] = useState<ActivateModelRequest | null>(null);
-  const [acceptedComboRate, setAcceptedComboRate] = useState<number | null>(null);
-  const comboNeedsConsent = billingMode === 'fixed' && plan?.billing_mode !== 'combo';
-  const comboAccepted = acceptedComboRate === terms.combo_rate;
   const requestActivate = (body: ActivateModelRequest) => {
     // Модель УЖЕ работает — менять нечего. Раньше запрос уходил на сервер, тот
     // честно отвечал 200, и владелец получал «Модель оплаты обновлена» на кнопку,
@@ -101,15 +97,10 @@ export default function PlansTab({
     else activateModel(body);
   };
 
-  // Combo consent is accepted inline. Activation records the agreement;
-  // the paid model and its limits are still applied only after Stripe payment.
+  // Opening checkout needs no payer details or consent API call.
+  // Combo terms are confirmed there, after the payer can fill their details.
   const payFixed = () => {
     if (modelBusy || payBusy) return;
-    if (comboNeedsConsent) {
-      if (!comboAccepted) return;
-      activateModel({ mode: 'combo', accept_offline_terms: true }, startCheckout);
-      return;
-    }
     startCheckout();
   };
 
@@ -218,22 +209,6 @@ export default function PlansTab({
           payBusy={payBusy || modelBusy}
           preview={preview}
           previewBusy={previewBusy}
-          payDisabled={comboNeedsConsent && !comboAccepted}
-          checkoutTerms={comboNeedsConsent ? (
-            <div className={checkoutStyles.terms}>
-              <details>
-                <summary>{t('mode.termsTitle')}</summary>
-                <p className={checkoutStyles.termsText}>{t('mode.termsMessage', {
-                  rate: rate(terms.combo_rate), days: terms.grace_days,
-                })}</p>
-              </details>
-              <label className={checkoutStyles.accept}>
-                <input type="checkbox" checked={comboAccepted} disabled={payBusy || modelBusy}
-                  onChange={event => setAcceptedComboRate(event.target.checked ? terms.combo_rate : null)} />
-                {t('mode.termsConfirm')}
-              </label>
-            </div>
-          ) : undefined}
           selectedPeriod={selectedPeriod}
           setSelectedPeriod={setSelectedPeriod}
           periodDiscounts={periodDiscounts}

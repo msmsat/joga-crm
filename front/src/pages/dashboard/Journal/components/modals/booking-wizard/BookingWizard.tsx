@@ -144,7 +144,9 @@ export function BookingWizard(props: WizardOptions) {
                   ) : (
                     <button type="button" className="btn-primary-sm" disabled={!canContinue}
                             style={{ opacity: canContinue ? 1 : 0.5 }} onClick={w.advance}>
-                      {t('common:buttons.continue')}
+                      {/* Необязательный клиент не выбран — кнопка так и говорит. */}
+                      {w.step === CLIENT_STEP && w.clientOptional && w.client == null
+                        ? t('journal:wizard.withoutClient') : t('common:buttons.continue')}
                       {/* На «Времени» кнопка называет время — это и есть «подтвердить» выбранное тапом. */}
                       {w.step === TIME_STEP && <span className="bw-foot-time">{w.time}</span>}
                     </button>

@@ -15,6 +15,10 @@
     "changeNumber": "Změnit číslo",
     "gotIt": "Rozumím"
   },
+  "fields": {
+    "required": "Povinné",
+    "optional": "Nepovinné"
+  },
   "steps": {
     "identity": {
       "title": "O studiu",
@@ -44,15 +48,20 @@
     "uploadLogo": "Nahrát logo",
     "removeLogo": "Odebrat",
     "logoHint": "JPG, PNG, WEBP do 5 MB",
+    "logoLabel": "Logo",
+    "logoWhy": "Klienti ho uvidí v online rezervaci",
     "nameLabel": "Název studia nebo firmy",
     "namePlaceholder": "Např.: Studio Forma",
+    "nameWhy": "Takhle studio uvidí klienti — v rezervaci, e-mailech a připomínkách",
     "descriptionLabel": "Popis",
     "descriptionPlaceholder": "Krátce o vašem studiu, stylu práce, zvláštnostech...",
+    "descriptionWhy": "Pár slov o vás — podle nich asistent odpoví klientům v messengerech",
     "newBadge": "NOVÉ"
   },
   "activity": {
     "title": "Typ činnosti",
     "subtitle": "Označte vše, čemu se věnujete — v rámci jedné sekce",
+    "requiredWhy": "Aspoň jedno zaměření — podle něj nastavíme deník a online rezervace",
     "comingSoon": "Již brzy: barbershop, fitness, tanec a další",
     "types": {
       "yoga": "Jóga",
@@ -100,24 +109,30 @@
     "title": "Kontaktní údaje",
     "subtitle": "Klienti tyto údaje uvidí při online rezervaci",
     "phoneLabel": "Telefon studia",
+    "phoneWhy": "Klienti vám zavolají jedním klepnutím přímo z online rezervace",
     "checkingPhone": "Kontrola čísla...",
     "addressLabel": "Adresa",
     "addressPlaceholder": "Národní 25, Praha 1",
+    "addressWhy": "Aby k vám klienti snadno trefili",
     "emailLabel": "E-mail",
+    "emailWhy": "Pro dotazy a zprávy od klientů",
     "websiteLabel": "Web",
-    "note": "Všechna pole kromě telefonu jsou nepovinná. Doplnit je můžete později v nastavení."
+    "websiteWhy": "Klienti se o vás dozvědí víc",
+    "note": "Nepovinná pole můžete doplnit později — v nastavení studia."
   },
   "settings": {
     "title": "Regionální nastavení",
     "subtitle": "Lze změnit později v nastavení studia",
     "timezoneLabel": "Časové pásmo",
     "timezonePlaceholder": "Vyberte časové pásmo",
+    "timezoneWhy": "Podle něj počítáme časy lekcí a připomínky klientům",
     "languageLabel": "Jazyk",
     "languagePlaceholder": "Jazyk",
     "currencyLabel": "Měna",
     "currencyPlaceholder": "Měna",
     "currencySearch": "Měna nebo kód",
     "currencyNotFound": "Žádná měna nenalezena",
+    "currencyWhy": "V ní budou ceny, permanentky a finanční přehledy",
     "dateFormatLabel": "Formát data",
     "dateFormatPlaceholder": "Formát",
     "currencies": {
@@ -239,6 +254,7 @@
     "title": "Provozní doba",
     "subtitle": "Nastavte dny a hodiny, kdy vaše studio funguje",
     "scheduleLabel": "Rozvrh studia",
+    "scheduleWhy": "Běžný rozvrh už je nastavený — upravte si ho. Lekce a online rezervace nepřekročí tyto hodiny",
     "dayOff": "Zavřeno"
   },
   "illustration": {

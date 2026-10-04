@@ -329,6 +329,8 @@
     "timeStep": "Step",
     "showAll": "Show all",
     "onlyAvailable": "Available only",
+    "clientOptional": "Optional: you can add a client later from the lesson card — or they can book online themselves.",
+    "withoutClient": "Continue without a client",
     "unavailable": "Unavailable for this selection",
     "selectionConflict": "The selection does not match. Choose an available time or change the service or specialist.",
     "availabilityError": "Could not load availability. Please try again.",

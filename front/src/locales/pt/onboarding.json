@@ -15,6 +15,10 @@
     "changeNumber": "Alterar número",
     "gotIt": "Entendido"
   },
+  "fields": {
+    "required": "Obrigatório",
+    "optional": "Opcional"
+  },
   "steps": {
     "identity": {
       "title": "Sobre o estúdio",
@@ -44,15 +48,20 @@
     "uploadLogo": "Carregar logótipo",
     "removeLogo": "Remover",
     "logoHint": "JPG, PNG, WEBP até 5 MB",
+    "logoLabel": "Logótipo",
+    "logoWhy": "Os clientes vão vê-lo na marcação online",
     "nameLabel": "Nome do estúdio ou da empresa",
     "namePlaceholder": "Ex.: Studio Forma",
+    "nameWhy": "É assim que os clientes verão o seu estúdio — na marcação, nos emails e nos lembretes",
     "descriptionLabel": "Descrição",
     "descriptionPlaceholder": "Umas linhas sobre o seu estúdio, a forma de trabalhar, o que o distingue...",
+    "descriptionWhy": "Algumas palavras sobre si — o assistente usa-as para responder aos clientes nas apps de mensagens",
     "newBadge": "NOVO"
   },
   "activity": {
     "title": "Tipo de atividade",
     "subtitle": "Marque tudo o que faz — dentro de uma só secção",
+    "requiredWhy": "Pelo menos uma — com base nela ajustamos a agenda e a marcação online",
     "comingSoon": "Em breve: barbearia, fitness, dança e mais",
     "types": {
       "yoga": "Yoga",
@@ -100,24 +109,30 @@
     "title": "Dados de contacto",
     "subtitle": "Os clientes veem esta informação ao marcar online",
     "phoneLabel": "Telefone do estúdio",
+    "phoneWhy": "Os clientes ligam-lhe com um toque, diretamente da marcação online",
     "checkingPhone": "A verificar o número...",
     "addressLabel": "Morada",
     "addressPlaceholder": "350 Fifth Ave, New York",
+    "addressWhy": "Para que os clientes o encontrem facilmente",
     "emailLabel": "Email",
+    "emailWhy": "Para perguntas e mensagens dos clientes",
     "websiteLabel": "Site",
-    "note": "Todos os campos exceto o telefone são opcionais. Pode preenchê-los mais tarde nas definições."
+    "websiteWhy": "Os clientes ficam a saber mais sobre si",
+    "note": "Os campos opcionais podem ser preenchidos mais tarde — nas definições do estúdio."
   },
   "settings": {
     "title": "Definições regionais",
     "subtitle": "Podem ser alteradas depois nas definições do estúdio",
     "timezoneLabel": "Fuso horário",
     "timezonePlaceholder": "Selecione o fuso horário",
+    "timezoneWhy": "Serve para calcular os horários das aulas e os lembretes aos clientes",
     "languageLabel": "Idioma",
     "languagePlaceholder": "Idioma",
     "currencyLabel": "Moeda",
     "currencyPlaceholder": "Moeda",
     "currencySearch": "Moeda ou código",
     "currencyNotFound": "Nenhuma moeda encontrada",
+    "currencyWhy": "Serve para preços, pacotes e relatórios financeiros",
     "dateFormatLabel": "Formato da data",
     "dateFormatPlaceholder": "Formato",
     "currencies": {
@@ -239,6 +254,7 @@
     "title": "Horário de funcionamento",
     "subtitle": "Defina os dias e as horas em que o seu estúdio funciona",
     "scheduleLabel": "Horário do estúdio",
+    "scheduleWhy": "Já há um horário típico definido — ajuste-o a si. As aulas e a marcação online não sairão destas horas",
     "dayOff": "Encerrado"
   },
   "illustration": {

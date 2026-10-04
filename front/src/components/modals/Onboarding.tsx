@@ -15,7 +15,7 @@ import StepContact from "./onboarding/StepContact";
 import StepSettings from "./onboarding/StepSettings";
 import StepSchedule from "./onboarding/StepSchedule";
 import type { OnboardingData } from "./onboarding/types";
-import { DEFAULT_WORKING_HOURS } from "./onboarding/types";
+import { DEFAULT_WORKING_HOURS, STUDIO_NAME_MIN } from "./onboarding/types";
 import { chosenLang, initialLang, rememberLang } from "../../utils/lang";
 import { FALLBACK_CURRENCY, currencyForCountry, timezoneForCountry } from "../../utils/geo";
 import { setActiveToken } from '../../utils/auth';
@@ -214,7 +214,7 @@ export default function OnboardingPage() {
     return () => window.removeEventListener("keydown", onKey);
   }, [errorModal.visible]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const canProceed1 = data.studioName.trim().length >= 2;
+  const canProceed1 = data.studioName.trim().length >= STUDIO_NAME_MIN;
   const canProceed2 = data.activityTypes.length > 0;
   const canProceed3 = !!data.phone && isValidPhoneNumber(data.phone);
   const canProceed4 = !!(data.timezone && data.language && data.currency);

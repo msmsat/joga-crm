@@ -63,7 +63,9 @@ export function SummaryStep({ w }: { w: BookingWizardState }) {
       <SummaryRow label={t('journal:wizard.when')} value={isTime(w.time) ? `${day}, ${w.time}` : ''}
            hint={w.joined ? t('journal:wizard.existing') : undefined} onChange={() => w.goTo(TIME_STEP)} />
       {w.needsClient && (
-        <SummaryRow label={t('journal:resourceBooking.client')} value={w.clientName} onChange={() => w.goTo(CLIENT_STEP)} />
+        <SummaryRow label={t('journal:resourceBooking.client')} value={w.clientName}
+                    hint={w.clientOptional && w.client == null ? t('journal:wizard.clientOptional') : undefined}
+                    onChange={() => w.goTo(CLIENT_STEP)} />
       )}
       <SummaryRow label={t('journal:resourceBooking.service')} value={w.service?.name ?? ''}
                   hint={w.soloLesson ? t('journal:newBooking.individual') : undefined} onChange={() => w.goTo(SERVICE_STEP)} />

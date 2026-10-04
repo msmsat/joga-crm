@@ -15,6 +15,10 @@
     "changeNumber": "Changer de numéro",
     "gotIt": "J'ai compris"
   },
+  "fields": {
+    "required": "Obligatoire",
+    "optional": "Facultatif"
+  },
   "steps": {
     "identity": {
       "title": "À propos du studio",
@@ -44,15 +48,20 @@
     "uploadLogo": "Téléverser un logo",
     "removeLogo": "Supprimer",
     "logoHint": "JPG, PNG, WEBP jusqu'à 5 Mo",
+    "logoLabel": "Logo",
+    "logoWhy": "Vos clients le verront dans la réservation en ligne",
     "nameLabel": "Nom du studio ou de la société",
     "namePlaceholder": "Ex. : Studio Forma",
+    "nameWhy": "C'est ainsi que vos clients verront votre studio — réservation, e-mails et rappels",
     "descriptionLabel": "Description",
     "descriptionPlaceholder": "Quelques mots sur votre studio, votre façon de travailler, vos spécificités...",
+    "descriptionWhy": "Quelques mots sur vous — l'assistant s'en sert pour répondre aux clients sur les messageries",
     "newBadge": "NOUVEAU"
   },
   "activity": {
     "title": "Type d'activité",
     "subtitle": "Cochez tout ce que vous proposez — dans une seule section",
+    "requiredWhy": "Au moins une — nous adaptons le journal et la réservation en ligne en conséquence",
     "comingSoon": "Bientôt : barbier, fitness, danse et plus encore",
     "types": {
       "yoga": "Yoga",
@@ -100,24 +109,30 @@
     "title": "Coordonnées",
     "subtitle": "Les clients verront ces informations lors de la réservation en ligne",
     "phoneLabel": "Téléphone du studio",
+    "phoneWhy": "Vos clients vous appellent en un geste, directement depuis la réservation en ligne",
     "checkingPhone": "Vérification du numéro...",
     "addressLabel": "Adresse",
     "addressPlaceholder": "350 Fifth Ave, New York",
+    "addressWhy": "Pour que vos clients trouvent facilement le chemin",
     "emailLabel": "E-mail",
+    "emailWhy": "Pour les questions et messages de vos clients",
     "websiteLabel": "Site web",
-    "note": "Tous les champs sauf le téléphone sont facultatifs. Vous pourrez les compléter plus tard dans les paramètres."
+    "websiteWhy": "Vos clients pourront en savoir plus sur vous",
+    "note": "Les champs facultatifs peuvent être complétés plus tard — dans les paramètres du studio."
   },
   "settings": {
     "title": "Paramètres régionaux",
     "subtitle": "Modifiables plus tard dans les paramètres du studio",
     "timezoneLabel": "Fuseau horaire",
     "timezonePlaceholder": "Choisir le fuseau horaire",
+    "timezoneWhy": "Il sert à calculer les horaires des cours et les rappels clients",
     "languageLabel": "Langue",
     "languagePlaceholder": "Langue",
     "currencyLabel": "Devise",
     "currencyPlaceholder": "Devise",
     "currencySearch": "Devise ou code",
     "currencyNotFound": "Aucune devise trouvée",
+    "currencyWhy": "Elle sert aux prix, abonnements et rapports financiers",
     "dateFormatLabel": "Format de date",
     "dateFormatPlaceholder": "Format",
     "currencies": {
@@ -239,6 +254,7 @@
     "title": "Horaires d'ouverture",
     "subtitle": "Indiquez les jours et heures d'ouverture de votre studio",
     "scheduleLabel": "Horaires du studio",
+    "scheduleWhy": "Des horaires types sont déjà définis — ajustez-les. Les cours et la réservation en ligne resteront dans ces horaires",
     "dayOff": "Fermé"
   },
   "illustration": {

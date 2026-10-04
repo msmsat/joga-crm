@@ -1,6 +1,8 @@
 import { useTranslation } from "react-i18next";
 import type { Country } from "react-phone-number-input";
+import { isValidPhoneNumber } from "react-phone-number-input";
 import { InputField, PhoneField } from "../../UI";
+import { FieldHint, FieldLabel } from "./FieldMeta";
 import type { OnboardingData } from "./types";
 
 interface Props {
@@ -47,37 +49,53 @@ export default function StepContact({ data, onChange, country }: Props) {
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-        <PhoneField
-          label={t("onboarding:contact.phoneLabel")}
-          value={data.phone}
-          defaultCountry={country}
-          onChange={(v) => onChange({ phone: v || "" })}
-        />
+        <div>
+          <PhoneField
+            label={
+              <FieldLabel required done={!!data.phone && isValidPhoneNumber(data.phone)}>
+                {t("onboarding:contact.phoneLabel")}
+              </FieldLabel>
+            }
+            value={data.phone}
+            defaultCountry={country}
+            onChange={(v) => onChange({ phone: v || "" })}
+          />
+          <FieldHint>{t("onboarding:contact.phoneWhy")}</FieldHint>
+        </div>
 
-        <InputField
-          label={t("onboarding:contact.addressLabel")}
-          placeholder={t("onboarding:contact.addressPlaceholder")}
-          value={data.address}
-          onChange={(v: string) => onChange({ address: v })}
-          icon={<IconPin />}
-        />
+        <div>
+          <InputField
+            label={<FieldLabel>{t("onboarding:contact.addressLabel")}</FieldLabel>}
+            placeholder={t("onboarding:contact.addressPlaceholder")}
+            value={data.address}
+            onChange={(v: string) => onChange({ address: v })}
+            icon={<IconPin />}
+          />
+          <FieldHint>{t("onboarding:contact.addressWhy")}</FieldHint>
+        </div>
 
-        <InputField
-          label={t("onboarding:contact.emailLabel")}
-          type="email"
-          placeholder="studio@example.com"
-          value={data.email}
-          onChange={(v: string) => onChange({ email: v })}
-          icon={<IconEmail />}
-        />
+        <div>
+          <InputField
+            label={<FieldLabel>{t("onboarding:contact.emailLabel")}</FieldLabel>}
+            type="email"
+            placeholder="studio@example.com"
+            value={data.email}
+            onChange={(v: string) => onChange({ email: v })}
+            icon={<IconEmail />}
+          />
+          <FieldHint>{t("onboarding:contact.emailWhy")}</FieldHint>
+        </div>
 
-        <InputField
-          label={t("onboarding:contact.websiteLabel")}
-          placeholder="https://your-studio.com"
-          value={data.website}
-          onChange={(v: string) => onChange({ website: v })}
-          icon={<IconGlobe />}
-        />
+        <div>
+          <InputField
+            label={<FieldLabel>{t("onboarding:contact.websiteLabel")}</FieldLabel>}
+            placeholder="https://your-studio.com"
+            value={data.website}
+            onChange={(v: string) => onChange({ website: v })}
+            icon={<IconGlobe />}
+          />
+          <FieldHint>{t("onboarding:contact.websiteWhy")}</FieldHint>
+        </div>
       </div>
 
       <div style={{

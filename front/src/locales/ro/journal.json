@@ -333,6 +333,8 @@
     "timeStep": "Pas",
     "showAll": "Arată tot",
     "onlyAvailable": "Doar disponibile",
+    "clientOptional": "Opțional: puteți adăuga clientul mai târziu din fișa ședinței — sau se va programa singur online.",
+    "withoutClient": "Continuă fără client",
     "unavailable": "Indisponibil pentru această alegere",
     "selectionConflict": "Selecția nu se potrivește. Alegeți o oră disponibilă sau schimbați serviciul ori specialistul.",
     "availabilityError": "Could not load availability. Please try again.",

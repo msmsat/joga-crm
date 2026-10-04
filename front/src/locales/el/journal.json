@@ -329,6 +329,8 @@
     "timeStep": "Βήμα",
     "showAll": "Εμφάνιση όλων",
     "onlyAvailable": "Μόνο διαθέσιμα",
+    "clientOptional": "Προαιρετικό: μπορείτε να προσθέσετε πελάτη αργότερα από την κάρτα του μαθήματος — ή θα κλείσει μόνος του online.",
+    "withoutClient": "Συνέχεια χωρίς πελάτη",
     "unavailable": "Μη διαθέσιμο με αυτή την επιλογή",
     "selectionConflict": "Οι επιλογές δεν ταιριάζουν. Επιλέξτε διαθέσιμη ώρα ή αλλάξτε υπηρεσία ή ειδικό.",
     "availabilityError": "Could not load availability. Please try again.",

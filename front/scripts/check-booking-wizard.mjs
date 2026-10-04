@@ -275,7 +275,7 @@ const capturedAvailability = sink => ({ './useWizardAvailability': { useWizardAv
   return { serviceStates: new Map(), masterStates: new Map(), times: [], loading: false, conflict: false, branchFor: () => undefined };
 } } });
 
-test('«Individual» from the journal asks for a client, skips an open group and creates a one-spot lesson', async () => {
+async function soloBooking(extra = {}) {
   const calls = [];
   const scheduleApi = {
     createLesson: async body => { calls.push(['create', body]); return { id: 50 }; },
@@ -286,24 +286,63 @@ test('«Individual» from the journal asks for a client, skips an open group and
     schedule: { scheduleApi },
     // У мастера в это время стоит группа с местами — индивидуальное в неё не встаёт.
     './masterAvailability': { lessonToJoin: () => ({ id: 9, notes: '', photos: [] }) },
-  }, GROUP_ONLY))({ defaultDate: '2099-05-12', defaultTime: '10:00', defaultTeacherId: 7 });
+  }, GROUP_ONLY))({ defaultDate: '2099-05-12', defaultTime: '10:00', defaultTeacherId: 7, ...extra });
+  return { calls, render };
+}
+const GROUP_SERVICE = { id: 1, booking_mode: 'event', masters: [], duration_min: 60, max_clients: 12 };
+
+test('«Individual» from the journal: the client section is optional and skipped, the lesson gets one spot', async () => {
+  const { calls, render } = await soloBooking();
   assert.equal(render().canSolo, true);
   assert.equal(render().steps.includes(1), false);
   render().toggleSolo();
   assert.equal(render().solo, true);
   assert.equal(render().needsClient, true);
+  assert.equal(render().clientOptional, true);
   assert.deepEqual(Array.from(render().steps), [0, 1, 2, 3, 4]);
-  render().pickService({ id: 1, booking_mode: 'event', masters: [], duration_min: 60, max_clients: 12 });
-  assert.equal(render().ready, false);
-  render().pickClient(3, 'Anna');
+  render().pickService(GROUP_SERVICE);
+  // Необязательный клиент не держит: со всем выбранным — сразу итог.
   const w = render();
+  assert.equal(w.step, 4);
+  assert.equal(w.client, null);
+  assert.equal(w.done(1), true);
   assert.equal(w.joined, undefined);
   assert.equal(w.soloLesson, true);
   assert.equal(w.ready, true);
   await w.submit();
   assert.equal(calls.find(c => c[0] === 'create')[1].total_spots, 1);
+  // Без клиента — только занятие: его добавят из карточки занятия или он запишется онлайн.
+  assert.equal(calls.some(c => c[0] === 'reserve' || c[0] === 'update'), false);
+});
+
+test('«Individual» with a client books them into the new lesson, not into the open group', async () => {
+  const { calls, render } = await soloBooking();
+  render().toggleSolo();
+  render().pickService(GROUP_SERVICE);
+  render().goTo(1);
+  render().pickClient(3, 'Anna');
+  const w = render();
+  assert.equal(w.joined, undefined);
+  await w.submit();
+  assert.equal(calls.find(c => c[0] === 'create')[1].total_spots, 1);
   assert.deepEqual(calls.find(c => c[0] === 'reserve'), ['reserve', 3, 50]);
   assert.equal(calls.some(c => c[0] === 'update'), false);
+});
+
+test('an optional client can be removed again; a required one cannot', async () => {
+  const { render } = await soloBooking();
+  render().toggleSolo();
+  render().pickService(GROUP_SERVICE);
+  render().pickClient(3, 'Anna');
+  render().clearClient();
+  assert.equal(render().client, null);
+  assert.equal(render().ready, true);
+  // Из карточки клиента человек обязателен — снять его нельзя.
+  const card = (await soloBooking({ clientId: 5 })).render;
+  card().toggleSolo();
+  card().clearClient();
+  assert.equal(card().client.id, 5);
+  assert.equal(card().clientOptional, false);
 });
 
 test('released «Individual» returns the group: no client section and the service capacity', async () => {
@@ -355,6 +394,46 @@ test('the service section shows «Individual» next to the filter and toggles it
   assert.equal(solo().className, 'bw-solo is-on');
   w.canSolo = false;
   assert.equal(solo(), undefined);
+});
+
+test('the optional client section says so, and tapping the chosen client removes them', async () => {
+  const app = await harness(`${base}WizardSteps.tsx`, {
+    useClientsList: { useClientsList: () => ({ clients: [{ id: 3, name: 'Anna', last_name: null, phone: null }],
+      rawSearch: '', setRawSearch() {}, hasMore: false, isLoading: false }), useClientCategories: () => [] },
+    mapClient: { getAvatarColor: () => '', getInitials: () => '', nameInitials: () => '' },
+    usePriceLabel: { usePriceLabel: () => () => '' },
+    useDurationLabel: { useDurationLabel: () => () => '' },
+    './WizardParts': { WizardChips: 'chips', WizardEmpty: 'empty', WizardRow: 'row', WizardSearch: 'search' },
+    '../../../../../../components/Icons': { User: 'user', Plus: 'plus', Check: 'check', Clock: 'clock' },
+  });
+  const events = [];
+  const w = { clientOptional: true, client: { id: 3, name: 'Anna' }, fresh: null,
+    clearClient: () => events.push('clear'), pickClient: id => events.push(['pick', id]) };
+  const tree = () => app.render('ClientStep', { w, when: null, onCreate() {} });
+  const note = nodes(tree(), 'p').find(p => p.className === 'bw-optional');
+  assert.equal(note.children, 'journal:wizard.clientOptional');
+  nodes(tree(), 'row')[0].onClick();
+  assert.deepEqual(events, ['clear']);
+  // Обязательный клиент повторным касанием не снимается — выбор остаётся выбором.
+  w.clientOptional = false;
+  nodes(tree(), 'row')[0].onClick();
+  assert.deepEqual(events, ['clear', ['pick', 3]]);
+  assert.equal(nodes(tree(), 'p').length, 0);
+});
+
+test('the client tab is ticked only when a person is actually chosen', async () => {
+  const app = await harness(`${base}WizardTabs.tsx`, {
+    '../../../../../../components/Icons': { Check: 'check' },
+    './useBookingWizard': { TIME_STEP: 0, CLIENT_STEP: 1, SERVICE_STEP: 2, MASTER_STEP: 3, SUMMARY_STEP: 4 },
+  });
+  // Необязательный клиент разделу «сделано» и без выбора — галочки при этом нет.
+  const w = { conflict: false, step: 4, saving: false, steps: [0, 1, 2, 3, 4], done: () => true,
+    client: null, service: { id: 1 }, masterChosen: true, goTo() {} };
+  const clientTab = () => nodes(app.render('WizardTabs', { w, payable: true }), 'button')
+    .find(button => JSON.stringify(button).includes('wizard.tabs.client'));
+  assert.equal(clientTab().className.includes('done'), false);
+  w.client = { id: 3, name: 'Anna' };
+  assert.equal(clientTab().className.includes('done'), true);
 });
 
 test('manual date and time, available time, and a master time notify the journal of the selected day', async () => {

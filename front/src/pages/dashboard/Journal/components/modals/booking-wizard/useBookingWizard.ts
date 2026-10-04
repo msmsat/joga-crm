@@ -86,10 +86,12 @@ export const isTime = (v: string) => /^([01]\d|2[0-3]):[0-5]\d$/.test(v);
  * записывается в уже стоящее занятие этой услуги у мастера либо в новое.
  *
  * «Индивидуальное» (кнопка в разделе «Услуга») — та же групповая услуга, но
- * занятие на одно место и для одного человека: раздел «Клиент» появляется и
- * у записи из журнала, а в стоящую группу клиент не подсаживается — у мастера
- * в это время занятие, значит, время занято. На индивидуальную услугу кнопка
- * не влияет: та и так на одного.
+ * занятие на одно место. Раздел «Клиент» у записи из журнала появляется, но
+ * НЕОБЯЗАТЕЛЕН: человека можно назвать сразу, добавить потом из карточки
+ * занятия, как в группу, — или он запишется онлайн сам. Навигация раздел
+ * пропускает, подтверждать можно и без клиента. В стоящую группу клиент не
+ * подсаживается — у мастера в это время занятие, значит, время занято. На
+ * индивидуальную услугу кнопка не влияет: та и так на одного.
  */
 export function useBookingWizard(o: WizardOptions) {
   const { t } = useTranslation(['journal', 'common']);
@@ -208,15 +210,21 @@ export function useBookingWizard(o: WizardOptions) {
       индивидуальных нет вовсе (студия пилатеса), клиента нет с самого начала;
       пока каталог грузится — раздел на месте, чтобы не мигал. */
   const noResource = servicesReady && staffReady && !serviceList.some(s => s.booking_mode === 'resource');
-  // Индивидуальное — занятие для конкретного человека: его и спрашиваем.
-  const needsClientFor = (s: ServiceRead | null) =>
-    o.clientId != null || solo || (s ? s.booking_mode === 'resource' : !noResource);
+  /** Без клиента записать нельзя: индивидуальная услуга или карточка клиента. */
+  const requiresClientFor = (s: ServiceRead | null) =>
+    o.clientId != null || (s ? s.booking_mode === 'resource' : !noResource);
+  /** Раздел «Клиент» есть: обязательный — или необязательный у «Индивидуального». */
+  const needsClientFor = (s: ServiceRead | null) => requiresClientFor(s) || solo;
   const stepsFor = (v: Snapshot) => needsClientFor(v.service) ? ALL_STEPS : ALL_STEPS.filter(s => s !== CLIENT_STEP);
   const needsClient = needsClientFor(service);
+  const clientOptional = needsClient && !requiresClientFor(service);
   const steps = stepsFor(current);
+  // Необязательный клиент разделу «сделано» и без выбора: навигация его
+  // пропускает, а «Продолжить» на нём ведёт дальше без клиента. Галочку на
+  // кнопке раздела ставит только выбранный человек (WizardTabs).
   const done = (s: number, v: Snapshot = current) =>
     s === TIME_STEP ? isTime(v.time)
-    : s === CLIENT_STEP ? v.client != null
+    : s === CLIENT_STEP ? v.client != null || !requiresClientFor(v.service)
     : s === SERVICE_STEP ? v.service != null
     : s === MASTER_STEP ? v.masterChosen
     : false;
@@ -285,6 +293,10 @@ export function useBookingWizard(o: WizardOptions) {
     setClientState({ id, name });
     resource.setClient(id);
     goTo(nextAfter(CLIENT_STEP, { ...current, client: id }));
+  };
+  /** Необязательного клиента снимают повторным касанием — занятие останется без него. */
+  const clearClient = () => {
+    if (clientOptional) setClientState(null);
   };
   /** Клиент заведён в мастере: встаёт первым и выбранным, дальше — «Продолжить». */
   const addFreshClient = (id: number, name: string, hint?: string) => {
@@ -362,7 +374,7 @@ export function useBookingWizard(o: WizardOptions) {
   const ready = !conflict && !busy && !availability.loading && isTime(time) && !isPastSlot(date, time, now)
     && masterChosen && (isResource
     ? !!resource.quote && quotedTime === time && !quoting
-    : (!needsClient || client != null) && service != null && masterChosen && teacherId != null && isTime(time) && !busy);
+    : (!needsClient || clientOptional || client != null) && service != null && masterChosen && teacherId != null && isTime(time) && !busy);
 
   const note = { notes: notes.trim(), photos: notePhotos.photos };
   const hasNote = note.notes !== '' || note.photos.length > 0;
@@ -388,7 +400,9 @@ export function useBookingWizard(o: WizardOptions) {
         });
         target = lesson.id;
       }
-      if (!needsClient) {
+      // Без клиента — только занятие: в индивидуальное его добавят потом
+      // из карточки занятия или он запишется онлайн сам.
+      if (!needsClient || client == null) {
         toast.info(t('journal:toasts.lessonAdded'));
         o.onCreated(date);
         o.onClose();
@@ -429,12 +443,12 @@ export function useBookingWizard(o: WizardOptions) {
 
   return {
     steps, step, dir, goTo, advance, swipe, done, conflict, availability, timeStep, setTimeStep,
-    solo, toggleSolo: () => setSolo(v => !v), canSolo, soloLesson,
+    solo, toggleSolo: () => setSolo(v => !v), canSolo, soloLesson, clientOptional,
     clientName, priceText, durationMin, joined, busy, needsClient, client, fresh, service, teacherId, masterChosen, date, time,
     hallId, setHallId, branches, branch, setBranchId, noHall, isResource, serviceList, services, masters,
     serviceStates, masterStates, trainers, halls, resource, ready, saving: saving || resource.saving,
     dayLessons, lessonsReady: lessonsReady && !lessonsLoading, notBefore: isToday ? nowMin : null,
-    pickClient, addFreshClient, pickService, pickMaster, setWhen, pickTime, submit, pastAsk, acceptPast, choosePastOwn,
+    pickClient, clearClient, addFreshClient, pickService, pickMaster, setWhen, pickTime, submit, pastAsk, acceptPast, choosePastOwn,
     notes, setNotes, notePhotos, notePending, settle,
   };
 }

@@ -15,6 +15,10 @@
     "changeNumber": "Vaihda numero",
     "gotIt": "Selvä"
   },
+  "fields": {
+    "required": "Pakollinen",
+    "optional": "Vapaaehtoinen"
+  },
   "steps": {
     "identity": {
       "title": "Tietoa studiosta",
@@ -44,15 +48,20 @@
     "uploadLogo": "Lataa logo",
     "removeLogo": "Poista",
     "logoHint": "JPG, PNG, WEBP enintään 5 Mt",
+    "logoLabel": "Logo",
+    "logoWhy": "Asiakkaat näkevät sen verkkovarauksessa",
     "nameLabel": "Studion tai yrityksen nimi",
     "namePlaceholder": "Esim.: Studio Forma",
+    "nameWhy": "Tällä nimellä asiakkaat näkevät studiosi — varauksessa, sähköposteissa ja muistutuksissa",
     "descriptionLabel": "Kuvaus",
     "descriptionPlaceholder": "Lyhyt kuvaus studiostasi, työtavastasi, erityispiirteistä...",
+    "descriptionWhy": "Muutama sana sinusta — avustaja vastaa niiden avulla asiakkaille viestisovelluksissa",
     "newBadge": "UUSI"
   },
   "activity": {
     "title": "Toiminnan tyyppi",
     "subtitle": "Merkitse kaikki, mitä teette — yhden osion sisällä",
+    "requiredWhy": "Valitse vähintään yksi — sen mukaan säädämme päiväkirjan ja verkkovarauksen",
     "comingSoon": "Pian: parturi, kuntosali, tanssi ja muuta",
     "types": {
       "yoga": "Jooga",
@@ -100,24 +109,30 @@
     "title": "Yhteystiedot",
     "subtitle": "Asiakkaat näkevät nämä tiedot varatessaan verkossa",
     "phoneLabel": "Studion puhelin",
+    "phoneWhy": "Asiakkaat soittavat sinulle yhdellä napautuksella suoraan verkkovarauksesta",
     "checkingPhone": "Tarkistetaan numeroa...",
     "addressLabel": "Osoite",
     "addressPlaceholder": "350 Fifth Ave, New York",
+    "addressWhy": "Jotta asiakkaat löytävät luoksesi helposti",
     "emailLabel": "Sähköposti",
+    "emailWhy": "Asiakkaiden kysymyksille ja viesteille",
     "websiteLabel": "Verkkosivusto",
-    "note": "Kaikki kentät puhelinta lukuun ottamatta ovat vapaaehtoisia. Voit täyttää ne myöhemmin asetuksissa."
+    "websiteWhy": "Asiakkaat voivat lukea sinusta lisää",
+    "note": "Vapaaehtoiset kentät voit täyttää myöhemmin — studion asetuksissa."
   },
   "settings": {
     "title": "Alueelliset asetukset",
     "subtitle": "Voi muuttaa myöhemmin studion asetuksista",
     "timezoneLabel": "Aikavyöhyke",
     "timezonePlaceholder": "Valitse aikavyöhyke",
+    "timezoneWhy": "Sen mukaan lasketaan tuntien ajat ja asiakasmuistutukset",
     "languageLabel": "Kieli",
     "languagePlaceholder": "Kieli",
     "currencyLabel": "Valuutta",
     "currencyPlaceholder": "Valuutta",
     "currencySearch": "Valuutta tai koodi",
     "currencyNotFound": "Valuuttaa ei löytynyt",
+    "currencyWhy": "Hinnat, sarjakortit ja talousraportit ovat tässä valuutassa",
     "dateFormatLabel": "Päivämäärän muoto",
     "dateFormatPlaceholder": "Muoto",
     "currencies": {
@@ -239,6 +254,7 @@
     "title": "Aukioloajat",
     "subtitle": "Aseta päivät ja kellonajat, jolloin studiosi on auki",
     "scheduleLabel": "Studion aukiolo",
+    "scheduleWhy": "Tyypilliset aukioloajat on jo asetettu — muokkaa niitä. Tunnit ja verkkovaraus pysyvät näiden aikojen sisällä",
     "dayOff": "Suljettu"
   },
   "illustration": {

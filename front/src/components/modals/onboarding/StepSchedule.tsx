@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import { FieldHint, FieldLabel } from "./FieldMeta";
 import type { OnboardingData, WorkingDay } from "./types";
 
 const DOW_TO_DAY_KEY = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
@@ -59,7 +60,11 @@ export default function StepSchedule({ data, onChange }: Props) {
       </div>
 
       <div>
-        <label style={labelStyle}>{t("onboarding:schedule.scheduleLabel")}</label>
+        {/* «Необязательно»: типовой график уже стоит, и шаг проходится без
+            единой правки — пометка говорит ровно это. */}
+        <label style={labelStyle}>
+          <FieldLabel>{t("onboarding:schedule.scheduleLabel")}</FieldLabel>
+        </label>
         <div style={{
           background: "var(--bg-card)", border: "1.5px solid #EEEBE6",
           borderRadius: "14px", overflow: "hidden",
@@ -129,6 +134,7 @@ export default function StepSchedule({ data, onChange }: Props) {
             </div>
           ))}
         </div>
+        <FieldHint>{t("onboarding:schedule.scheduleWhy")}</FieldHint>
       </div>
     </div>
   );

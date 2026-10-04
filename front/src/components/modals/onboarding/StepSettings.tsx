@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { PremiumSelect, TIMEZONES } from "../../UI";
 import { currencyOptionsFor } from "../../../utils/currencyOptions";
+import { FieldHint, FieldLabel } from "./FieldMeta";
 import type { OnboardingData } from "./types";
 
 interface Props {
@@ -36,18 +37,25 @@ export default function StepSettings({ data, onChange }: Props) {
           длинные («UTC+1 · Prague, Berlin, Paris», «Чешская крона (CZK)»), и в
           половине ширины их резало многоточием ровно там, где начинается
           отличие одного варианта от другого. */}
+      {/* Оба поля обычно уже заполнены (страна визита, пояс устройства) —
+          пометка встречает человека зелёной: менять можно, но не нужно. */}
       <div>
-        <label style={labelStyle}>{t("onboarding:settings.timezoneLabel")}</label>
+        <label style={labelStyle}>
+          <FieldLabel required done={!!data.timezone}>{t("onboarding:settings.timezoneLabel")}</FieldLabel>
+        </label>
         <PremiumSelect
           value={data.timezone}
           onChange={v => onChange({ timezone: v })}
           options={TIMEZONES}
           placeholder={t("onboarding:settings.timezonePlaceholder")}
         />
+        <FieldHint>{t("onboarding:settings.timezoneWhy")}</FieldHint>
       </div>
 
       <div>
-        <label style={labelStyle}>{t("onboarding:settings.currencyLabel")}</label>
+        <label style={labelStyle}>
+          <FieldLabel required done={!!data.currency}>{t("onboarding:settings.currencyLabel")}</FieldLabel>
+        </label>
         <PremiumSelect
           value={data.currency}
           onChange={v => onChange({ currency: v })}
@@ -57,6 +65,7 @@ export default function StepSettings({ data, onChange }: Props) {
           searchPlaceholder={t("onboarding:settings.currencySearch")}
           emptyText={t("onboarding:settings.currencyNotFound")}
         />
+        <FieldHint>{t("onboarding:settings.currencyWhy")}</FieldHint>
       </div>
 
       {/* «Первый день недели» отсюда убран: поле никто не читает — ни один

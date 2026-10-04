@@ -10,7 +10,7 @@ import { PaymentContext } from './components/checkout/PaymentContext';
 import styles from './components/checkout/CheckoutPage.module.css';
 
 function CheckoutContent({ h }: { h: ReturnType<typeof useCheckoutPage> }) {
-  const { t } = useTranslation('billing');
+  const { t, i18n } = useTranslation('billing');
   const payment = useContext(PaymentContext);
   const profileForm = useRef<HTMLFormElement>(null);
   const [draftDirty, setDraftDirty] = useState(false);
@@ -33,7 +33,20 @@ function CheckoutContent({ h }: { h: ReturnType<typeof useCheckoutPage> }) {
               <div className={styles.profileCard}>
                 <h2 className={styles.sectionTitle}>{t('checkout.billingDetails')}</h2>
                 <CheckoutProfile key={h.profile.dataUpdatedAt} profile={h.profile.data} locked={!!h.session}
-                  formRef={profileForm} busy={h.busy || !!payment?.busy} onDirty={() => setDraftDirty(true)} onSave={async input => { await h.prepare(input); setDraftDirty(false); }} onEdit={h.editProfile} />
+                  formRef={profileForm} busy={h.busy || !!payment?.busy} onDirty={() => setDraftDirty(true)} onSave={async input => { await h.prepare(input); setDraftDirty(false); }} onEdit={h.editProfile}>
+                  {h.combo && !h.session && h.catalog.data && <div className={styles.comboTerms}>
+                    <details><summary>{t('mode.termsTitle')}</summary>
+                      <p>{t('mode.termsMessage', {
+                        rate: h.catalog.data.combo_rate.toLocaleString(i18n.language), days: h.catalog.data.grace_days,
+                      })}</p>
+                    </details>
+                    <label className={styles.comboAccept}>
+                      <input type="checkbox" required checked={h.comboAccepted} disabled={h.busy}
+                        onChange={event => h.setComboAccepted(event.target.checked)} />
+                      {t('mode.termsConfirm')}
+                    </label>
+                  </div>}
+                </CheckoutProfile>
               </div>
               {h.error && !h.session && <p className={styles.error} role="alert">{h.error}</p>}
               <div className={styles.paymentCard}>

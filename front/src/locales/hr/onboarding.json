@@ -15,6 +15,10 @@
     "changeNumber": "Promijeni broj",
     "gotIt": "Razumijem"
   },
+  "fields": {
+    "required": "Obavezno",
+    "optional": "Neobavezno"
+  },
   "steps": {
     "identity": {
       "title": "O studiju",
@@ -44,15 +48,20 @@
     "uploadLogo": "Učitaj logotip",
     "removeLogo": "Ukloni",
     "logoHint": "JPG, PNG, WEBP do 5 MB",
+    "logoLabel": "Logotip",
+    "logoWhy": "Klijenti će ga vidjeti u online rezervaciji",
     "nameLabel": "Naziv studija ili tvrtke",
     "namePlaceholder": "Npr.: Studio Forma",
+    "nameWhy": "Tako će klijenti vidjeti vaš studio — u rezervaciji, e-porukama i podsjetnicima",
     "descriptionLabel": "Opis",
     "descriptionPlaceholder": "Kratka bilješka o studiju, načinu rada, posebnostima...",
+    "descriptionWhy": "Nekoliko riječi o vama — po njima asistent odgovara klijentima u messengerima",
     "newBadge": "NOVO"
   },
   "activity": {
     "title": "Vrsta djelatnosti",
     "subtitle": "Označite sve čime se bavite — unutar jednog odjeljka",
+    "requiredWhy": "Barem jedno područje — prema njemu prilagodit ćemo dnevnik i online rezervacije",
     "comingSoon": "Uskoro: brijačnica, fitnes, ples i još",
     "types": {
       "yoga": "Joga",
@@ -100,24 +109,30 @@
     "title": "Kontakt podaci",
     "subtitle": "Klijenti će vidjeti ove podatke pri online rezervaciji",
     "phoneLabel": "Telefon studija",
+    "phoneWhy": "Klijenti vas mogu nazvati jednim dodirom izravno iz online rezervacije",
     "checkingPhone": "Provjera broja...",
     "addressLabel": "Adresa",
     "addressPlaceholder": "350 Fifth Ave, New York",
+    "addressWhy": "Kako bi vas klijenti lako pronašli",
     "emailLabel": "E-pošta",
+    "emailWhy": "Za pitanja i poruke klijenata",
     "websiteLabel": "Web stranica",
-    "note": "Sva su polja osim telefona neobavezna. Možete ih ispuniti kasnije u postavkama."
+    "websiteWhy": "Klijenti će saznati više o vama",
+    "note": "Neobavezna polja možete ispuniti kasnije — u postavkama studija."
   },
   "settings": {
     "title": "Regionalne postavke",
     "subtitle": "Mogu se promijeniti kasnije u postavkama studija",
     "timezoneLabel": "Vremenska zona",
     "timezonePlaceholder": "Odaberite vremensku zonu",
+    "timezoneWhy": "Po njoj računamo vrijeme termina i podsjetnike klijentima",
     "languageLabel": "Jezik",
     "languagePlaceholder": "Jezik",
     "currencyLabel": "Valuta",
     "currencyPlaceholder": "Valuta",
     "currencySearch": "Valuta ili kôd",
     "currencyNotFound": "Nema pronađene valute",
+    "currencyWhy": "U njoj su cijene, članarine i financijska izvješća",
     "dateFormatLabel": "Format datuma",
     "dateFormatPlaceholder": "Format",
     "currencies": {
@@ -239,6 +254,7 @@
     "title": "Radno vrijeme",
     "subtitle": "Postavite dane i sate kada studio radi",
     "scheduleLabel": "Raspored studija",
+    "scheduleWhy": "Tipično radno vrijeme već je postavljeno — prilagodite ga. Termini i online rezervacije neće izlaziti iz tih sati",
     "dayOff": "Neradni dan"
   },
   "illustration": {

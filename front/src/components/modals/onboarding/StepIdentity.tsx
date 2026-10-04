@@ -1,7 +1,9 @@
 import React, { useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { InputField } from "../../UI";
+import { FieldHint, FieldLabel } from "./FieldMeta";
 import type { OnboardingData } from "./types";
+import { STUDIO_NAME_MIN } from "./types";
 
 interface Props {
   data: OnboardingData;
@@ -72,8 +74,11 @@ export default function StepIdentity({ data, onChange }: Props) {
           )}
         </div>
         <input ref={fileRef} type="file" accept="image/jpeg, image/png, image/webp" style={{ display: "none" }} onChange={handleFile} />
-        <div>
-          <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px" }}>
+        <div style={{ flex: "1 1 200px", minWidth: 0 }}>
+          <div className="input-label" style={{ color: "var(--muted)", marginBottom: "8px" }}>
+            <FieldLabel>{t("onboarding:identity.logoLabel")}</FieldLabel>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
             <button
               type="button"
               onClick={() => fileRef.current?.click()}
@@ -107,21 +112,32 @@ export default function StepIdentity({ data, onChange }: Props) {
               </button>
             )}
           </div>
-          <span style={{ fontSize: "11px", color: "#BBBBBB" }}>{t("onboarding:identity.logoHint")}</span>
+          <FieldHint>{t("onboarding:identity.logoWhy")}</FieldHint>
+          <span style={{ display: "block", marginTop: "2px", marginLeft: "2px", fontSize: "11px", color: "#BBBBBB" }}>{t("onboarding:identity.logoHint")}</span>
         </div>
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
-        <InputField
-          label={t("onboarding:identity.nameLabel")}
-          placeholder={t("onboarding:identity.namePlaceholder")}
-          value={data.studioName}
-          onChange={(v: string) => onChange({ studioName: v })}
-        />
+        <div>
+          <InputField
+            label={
+              <FieldLabel required done={data.studioName.trim().length >= STUDIO_NAME_MIN}>
+                {t("onboarding:identity.nameLabel")}
+              </FieldLabel>
+            }
+            placeholder={t("onboarding:identity.namePlaceholder")}
+            value={data.studioName}
+            onChange={(v: string) => onChange({ studioName: v })}
+          />
+          <FieldHint>{t("onboarding:identity.nameWhy")}</FieldHint>
+        </div>
 
         <div>
-          <label style={{ display: "block", fontSize: "12px", fontWeight: 700, color: "var(--muted)", letterSpacing: "0.5px", textTransform: "uppercase", marginBottom: "8px" }}>
-            {t("onboarding:identity.descriptionLabel")}
+          {/* Подпись в том же виде, что у логотипа и названия (.input-label):
+              раньше «ОПИСАНИЕ» капсом стояло среди обычных подписей шага, и
+              рядом с пометками разнобой стал бросаться в глаза. */}
+          <label className="input-label" style={{ display: "block", color: "var(--muted)", marginBottom: "6px" }}>
+            <FieldLabel>{t("onboarding:identity.descriptionLabel")}</FieldLabel>
           </label>
           <textarea
             placeholder={t("onboarding:identity.descriptionPlaceholder")}
@@ -139,8 +155,13 @@ export default function StepIdentity({ data, onChange }: Props) {
             onFocus={e => { e.target.style.border = "1.5px solid #FCAE91"; e.target.style.boxShadow = "0 0 0 4px rgba(252,174,145,0.1)"; }}
             onBlur={e => { e.target.style.border = "1.5px solid transparent"; e.target.style.boxShadow = "none"; }}
           />
-          <div style={{ textAlign: "right", fontSize: "11px", color: "#CCCCCC", marginTop: "4px" }}>
-            {data.description.length}/300
+          {/* Пояснение и счётчик — одной строкой: счётчик прижат вправо и
+              по базовой линии стоит вровень с первой строкой пояснения. */}
+          <div style={{ display: "flex", alignItems: "baseline", gap: "12px" }}>
+            <FieldHint>{t("onboarding:identity.descriptionWhy")}</FieldHint>
+            <span style={{ marginLeft: "auto", flexShrink: 0, fontSize: "11px", color: "#CCCCCC" }}>
+              {data.description.length}/300
+            </span>
           </div>
         </div>
 

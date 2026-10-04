@@ -333,6 +333,8 @@
     "timeStep": "Korak",
     "showAll": "Prikaži sve",
     "onlyAvailable": "Samo dostupni",
+    "clientOptional": "Neobavezno: klijenta možete dodati kasnije na kartici termina — ili će se sam prijaviti online.",
+    "withoutClient": "Nastavi bez klijenta",
     "unavailable": "Nedostupno uz ovaj odabir",
     "selectionConflict": "Odabrani parametri nisu usklađeni. Odaberite slobodno vrijeme ili promijenite uslugu ili stručnjaka.",
     "availabilityError": "Could not load availability. Please try again.",

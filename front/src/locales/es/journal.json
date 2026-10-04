@@ -329,6 +329,8 @@
     "timeStep": "Intervalo",
     "showAll": "Mostrar todo",
     "onlyAvailable": "Solo disponibles",
+    "clientOptional": "Opcional: puedes añadir el cliente más tarde desde la ficha de la clase, o reservará él mismo en línea.",
+    "withoutClient": "Continuar sin cliente",
     "unavailable": "No disponible con esta selección",
     "selectionConflict": "La selección no es compatible. Elige un horario disponible o cambia el servicio o el profesional.",
     "availabilityError": "Could not load availability. Please try again.",

@@ -329,6 +329,8 @@
     "timeStep": "Стъпка",
     "showAll": "Покажи всички",
     "onlyAvailable": "Само наличните",
+    "clientOptional": "По избор: клиент може да се добави по-късно от картата на занятието — или той сам ще се запише онлайн.",
+    "withoutClient": "Продължи без клиент",
     "unavailable": "Недостъпно при този избор",
     "selectionConflict": "Избраните параметри са несъвместими. Изберете свободен час или сменете услугата или специалиста.",
     "availabilityError": "Could not load availability. Please try again.",

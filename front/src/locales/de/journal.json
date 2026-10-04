@@ -329,6 +329,8 @@
     "timeStep": "Raster",
     "showAll": "Alle anzeigen",
     "onlyAvailable": "Nur verfügbare",
+    "clientOptional": "Optional: Sie können den Kunden später in der Kurskarte hinzufügen – oder er bucht selbst online.",
+    "withoutClient": "Ohne Kunden fortfahren",
     "unavailable": "Bei dieser Auswahl nicht verfügbar",
     "selectionConflict": "Die Auswahl passt nicht zusammen. Wählen Sie eine freie Zeit oder ändern Sie die Leistung oder die Fachkraft.",
     "availabilityError": "Could not load availability. Please try again.",

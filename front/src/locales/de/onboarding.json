@@ -15,6 +15,10 @@
     "changeNumber": "Nummer ändern",
     "gotIt": "Verstanden"
   },
+  "fields": {
+    "required": "Erforderlich",
+    "optional": "Optional"
+  },
   "steps": {
     "identity": {
       "title": "Über das Studio",
@@ -44,15 +48,20 @@
     "uploadLogo": "Logo hochladen",
     "removeLogo": "Entfernen",
     "logoHint": "JPG, PNG, WEBP bis 5 MB",
+    "logoLabel": "Logo",
+    "logoWhy": "Kunden sehen es bei der Online-Buchung",
     "nameLabel": "Name des Studios oder Unternehmens",
     "namePlaceholder": "z. B.: Studio Forma",
+    "nameWhy": "So sehen Kunden Ihr Studio — bei der Buchung, in E-Mails und Erinnerungen",
     "descriptionLabel": "Beschreibung",
     "descriptionPlaceholder": "Ein paar Worte zu Ihrem Studio, Ihrer Arbeitsweise, Besonderheiten...",
+    "descriptionWhy": "Ein paar Worte über Sie — damit beantwortet der Assistent Kundenfragen im Messenger",
     "newBadge": "NEU"
   },
   "activity": {
     "title": "Art der Tätigkeit",
     "subtitle": "Markieren Sie alles, was Sie anbieten — innerhalb eines Bereichs",
+    "requiredWhy": "Mindestens eine Richtung — danach richten wir Journal und Online-Buchung aus",
     "comingSoon": "Demnächst: Barbershop, Fitness, Tanz und mehr",
     "types": {
       "yoga": "Yoga",
@@ -100,24 +109,30 @@
     "title": "Kontaktdaten",
     "subtitle": "Kunden sehen diese Angaben bei der Online-Buchung",
     "phoneLabel": "Telefon des Studios",
+    "phoneWhy": "Kunden rufen Sie mit einem Tipp direkt aus der Online-Buchung an",
     "checkingPhone": "Nummer wird geprüft...",
     "addressLabel": "Adresse",
     "addressPlaceholder": "Friedrichstraße 43, Berlin",
+    "addressWhy": "Damit Kunden den Weg zu Ihnen leicht finden",
     "emailLabel": "E-Mail",
+    "emailWhy": "Für Fragen und Nachrichten von Kunden",
     "websiteLabel": "Website",
-    "note": "Alle Felder außer dem Telefon sind optional. Sie können sie später in den Einstellungen ergänzen."
+    "websiteWhy": "Kunden erfahren dort mehr über Sie",
+    "note": "Optionale Felder können Sie später ergänzen — in den Studio-Einstellungen."
   },
   "settings": {
     "title": "Regionaleinstellungen",
     "subtitle": "Später in den Studioeinstellungen änderbar",
     "timezoneLabel": "Zeitzone",
     "timezonePlaceholder": "Zeitzone wählen",
+    "timezoneWhy": "Danach richten sich Kurszeiten und Erinnerungen an Kunden",
     "languageLabel": "Sprache",
     "languagePlaceholder": "Sprache",
     "currencyLabel": "Währung",
     "currencyPlaceholder": "Währung",
     "currencySearch": "Währung oder Code",
     "currencyNotFound": "Keine Währung gefunden",
+    "currencyWhy": "Für Preise, Abos und Finanzberichte",
     "dateFormatLabel": "Datumsformat",
     "dateFormatPlaceholder": "Format",
     "currencies": {
@@ -239,6 +254,7 @@
     "title": "Öffnungszeiten",
     "subtitle": "Legen Sie fest, an welchen Tagen und Stunden Ihr Studio geöffnet ist",
     "scheduleLabel": "Studio-Öffnungszeiten",
+    "scheduleWhy": "Typische Öffnungszeiten sind schon eingetragen — passen Sie sie an. Kurse und Online-Buchung bleiben innerhalb dieser Zeiten",
     "dayOff": "Geschlossen"
   },
   "illustration": {

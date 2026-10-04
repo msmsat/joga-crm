@@ -15,6 +15,10 @@
     "changeNumber": "Ndrysho numrin",
     "gotIt": "E kuptova"
   },
+  "fields": {
+    "required": "E detyrueshme",
+    "optional": "Opsionale"
+  },
   "steps": {
     "identity": {
       "title": "Rreth studios",
@@ -44,15 +48,20 @@
     "uploadLogo": "Ngarko logon",
     "removeLogo": "Hiq",
     "logoHint": "JPG, PNG, WEBP deri në 5 MB",
+    "logoLabel": "Logo",
+    "logoWhy": "Klientët do ta shohin te rezervimi online",
     "nameLabel": "Emri i studios ose i kompanisë",
     "namePlaceholder": "P.sh.: Studio Forma",
+    "nameWhy": "Kështu do ta shohin klientët studion — në rezervim, email dhe kujtesa",
     "descriptionLabel": "Përshkrimi",
     "descriptionPlaceholder": "Një shënim i shkurtër për studion, stilin e punës, veçoritë...",
+    "descriptionWhy": "Disa fjalë për ju — asistenti i përdor për t'u përgjigjur klientëve në aplikacionet e mesazheve",
     "newBadge": "I RI"
   },
   "activity": {
     "title": "Lloji i veprimtarisë",
     "subtitle": "Shënoni gjithçka që bëni — brenda një seksioni të vetëm",
+    "requiredWhy": "Të paktën një — sipas saj përshtatim ditarin dhe rezervimin online",
     "comingSoon": "Së shpejti: berber, fitnes, vallëzim e më shumë",
     "types": {
       "yoga": "Joga",
@@ -100,24 +109,30 @@
     "title": "Të dhënat e kontaktit",
     "subtitle": "Klientët do t'i shohin këto të dhëna kur rezervojnë online",
     "phoneLabel": "Telefoni i studios",
+    "phoneWhy": "Klientët ju telefonojnë me një prekje, direkt nga rezervimi online",
     "checkingPhone": "Duke kontrolluar numrin...",
     "addressLabel": "Adresa",
     "addressPlaceholder": "350 Fifth Ave, New York",
+    "addressWhy": "Që klientët t'ju gjejnë lehtë",
     "emailLabel": "Email",
+    "emailWhy": "Për pyetje dhe mesazhe nga klientët",
     "websiteLabel": "Faqja e internetit",
-    "note": "Të gjitha fushat përveç telefonit janë opsionale. Mund t'i plotësoni më vonë te cilësimet."
+    "websiteWhy": "Klientët mund të mësojnë më shumë për ju",
+    "note": "Fushat opsionale mund t'i plotësoni më vonë — te cilësimet e studios."
   },
   "settings": {
     "title": "Cilësimet rajonale",
     "subtitle": "Mund të ndryshohen më vonë te cilësimet e studios",
     "timezoneLabel": "Zona kohore",
     "timezonePlaceholder": "Zgjidhni zonën kohore",
+    "timezoneWhy": "Sipas saj llogarisim oraret e seancave dhe kujtesat për klientët",
     "languageLabel": "Gjuha",
     "languagePlaceholder": "Gjuha",
     "currencyLabel": "Monedha",
     "currencyPlaceholder": "Monedha",
     "currencySearch": "Monedha ose kodi",
     "currencyNotFound": "Nuk u gjet asnjë monedhë",
+    "currencyWhy": "Në të janë çmimet, abonimet dhe raportet financiare",
     "dateFormatLabel": "Formati i datës",
     "dateFormatPlaceholder": "Formati",
     "currencies": {
@@ -239,6 +254,7 @@
     "title": "Orari i punës",
     "subtitle": "Vendosni ditët dhe orët kur punon studioja juaj",
     "scheduleLabel": "Orari i studios",
+    "scheduleWhy": "Një orar tipik është vendosur tashmë — përshtateni. Seancat dhe rezervimi online nuk do të dalin jashtë këtyre orëve",
     "dayOff": "Ditë pushimi"
   },
   "illustration": {

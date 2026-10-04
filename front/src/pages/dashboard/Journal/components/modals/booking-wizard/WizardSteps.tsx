@@ -25,6 +25,9 @@ export function ClientStep({ w, when, onCreate }: StepProps & { onCreate: () => 
     const el = e.currentTarget;
     if (list.hasMore && !list.isLoading && el.scrollTop + el.clientHeight > el.scrollHeight - 200) void list.loadMore();
   };
+  // Необязательного клиента повторное касание снимает — занятие останется без него.
+  const choose = (id: number, name: string) =>
+    w.clientOptional && w.client?.id === id ? w.clearClient() : w.pickClient(id, name);
   return (
     <>
       <div className="bw-tools">
@@ -33,6 +36,7 @@ export function ClientStep({ w, when, onCreate }: StepProps & { onCreate: () => 
                         placeholder={t('journal:resourceBooking.searchClient')} />
           {when}
         </div>
+        {w.clientOptional && <p className="bw-optional">{t('journal:wizard.clientOptional')}</p>}
         <WizardChips value={list.category || 'all'} onPick={list.setCategory}
                      options={categories.map(c => ({
                        value: c.key,
@@ -49,13 +53,13 @@ export function ClientStep({ w, when, onCreate }: StepProps & { onCreate: () => 
           <WizardRow key={`fresh-${w.fresh.id}`} active={w.client?.id === w.fresh.id}
                      avatar={nameInitials(w.fresh.name)} color={getAvatarColor(w.fresh.id, null)}
                      title={w.fresh.name} hint={w.fresh.hint}
-                     onClick={() => w.pickClient(w.fresh!.id, w.fresh!.name)} />
+                     onClick={() => choose(w.fresh!.id, w.fresh!.name)} />
         )}
         {list.clients.filter(c => c.id !== w.fresh?.id).map(c => (
           <WizardRow key={c.id} active={w.client?.id === c.id}
                      avatar={getInitials(c.name, c.last_name)} color={getAvatarColor(c.id, c.avatar_color)}
                      title={`${c.name} ${c.last_name ?? ''}`.trim()} hint={c.phone ?? c.email}
-                     onClick={() => w.pickClient(c.id, `${c.name} ${c.last_name ?? ''}`.trim())} />
+                     onClick={() => choose(c.id, `${c.name} ${c.last_name ?? ''}`.trim())} />
         ))}
         {list.clients.length === 0 && !w.fresh && (
           <WizardEmpty>{list.isLoading ? t('common:loading') : t('journal:resourceBooking.noClients')}</WizardEmpty>

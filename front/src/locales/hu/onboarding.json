@@ -15,6 +15,10 @@
     "changeNumber": "Szám módosítása",
     "gotIt": "Értem"
   },
+  "fields": {
+    "required": "Kötelező",
+    "optional": "Nem kötelező"
+  },
   "steps": {
     "identity": {
       "title": "A stúdióról",
@@ -44,15 +48,20 @@
     "uploadLogo": "Logó feltöltése",
     "removeLogo": "Eltávolítás",
     "logoHint": "JPG, PNG, WEBP legfeljebb 5 MB",
+    "logoLabel": "Logó",
+    "logoWhy": "Az ügyfelek az online foglalásnál látják",
     "nameLabel": "A stúdió vagy cég neve",
     "namePlaceholder": "Pl.: Studio Forma",
+    "nameWhy": "Így látják az ügyfelek a stúdiót — foglaláskor, e-mailekben és emlékeztetőkben",
     "descriptionLabel": "Leírás",
     "descriptionPlaceholder": "Néhány szó a stúdióról, a munkastílusról, a különlegességekről...",
+    "descriptionWhy": "Pár szó Önről — ezek alapján válaszol az asszisztens az ügyfeleknek üzenetküldőkben",
     "newBadge": "ÚJ"
   },
   "activity": {
     "title": "Tevékenység típusa",
     "subtitle": "Jelöljön meg mindent, amivel foglalkoznak — egyetlen szakaszon belül",
+    "requiredWhy": "Legalább egy terület — ehhez igazítjuk a naplót és az online foglalást",
     "comingSoon": "Hamarosan: borbély, fitnesz, tánc és még több",
     "types": {
       "yoga": "Jóga",
@@ -100,24 +109,30 @@
     "title": "Elérhetőségi adatok",
     "subtitle": "Az ügyfelek ezeket az adatokat látják online foglaláskor",
     "phoneLabel": "A stúdió telefonszáma",
+    "phoneWhy": "Az ügyfelek egy koppintással hívhatják az online foglalásból",
     "checkingPhone": "Szám ellenőrzése...",
     "addressLabel": "Cím",
     "addressPlaceholder": "350 Fifth Ave, New York",
+    "addressWhy": "Hogy az ügyfelek könnyen odataláljanak",
     "emailLabel": "E-mail",
+    "emailWhy": "Az ügyfelek kérdéseihez és üzeneteihez",
     "websiteLabel": "Weboldal",
-    "note": "A telefonszámon kívül minden mező opcionális. Később is kitöltheti a beállításokban."
+    "websiteWhy": "Az ügyfelek többet megtudhatnak Önről",
+    "note": "A nem kötelező mezőket később is kitöltheti — a stúdió beállításaiban."
   },
   "settings": {
     "title": "Regionális beállítások",
     "subtitle": "Később módosítható a stúdió beállításaiban",
     "timezoneLabel": "Időzóna",
     "timezonePlaceholder": "Válasszon időzónát",
+    "timezoneWhy": "Ez alapján számoljuk az órák időpontját és az ügyfélemlékeztetőket",
     "languageLabel": "Nyelv",
     "languagePlaceholder": "Nyelv",
     "currencyLabel": "Pénznem",
     "currencyPlaceholder": "Pénznem",
     "currencySearch": "Pénznem vagy kód",
     "currencyNotFound": "Nincs ilyen pénznem",
+    "currencyWhy": "Ebben lesznek az árak, bérletek és pénzügyi jelentések",
     "dateFormatLabel": "Dátumformátum",
     "dateFormatPlaceholder": "Formátum",
     "currencies": {
@@ -239,6 +254,7 @@
     "title": "Nyitvatartás",
     "subtitle": "Állítsa be, mely napokon és órákban tart nyitva a stúdiója",
     "scheduleLabel": "A stúdió nyitvatartása",
+    "scheduleWhy": "Egy szokásos nyitvatartás már be van állítva — igazítsa magához. Az órák és az online foglalás nem lépik túl ezeket az időket",
     "dayOff": "Zárva"
   },
   "illustration": {

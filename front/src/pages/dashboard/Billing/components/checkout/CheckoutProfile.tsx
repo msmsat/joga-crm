@@ -1,4 +1,4 @@
-import { type RefObject } from 'react';
+import { type ReactNode, type RefObject } from 'react';
 import { Check, MapPin, Pencil } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useCountryName, useCountryOptions, useProfileDraft, vatErrorOf, vatPrefix } from '../../hooks/useProfileDraft';
@@ -6,10 +6,10 @@ import type { BillingProfile, BillingProfileInput } from '../../../../../api/bil
 import CheckoutCountry from './CheckoutCountry';
 import styles from './CheckoutPage.module.css';
 
-export default function CheckoutProfile({ profile, locked, busy, onSave, onEdit, formRef, onDirty }: {
+export default function CheckoutProfile({ profile, locked, busy, onSave, onEdit, formRef, onDirty, children }: {
   profile: BillingProfile | undefined; locked: boolean; busy: boolean;
   onSave: (input: BillingProfileInput) => Promise<void>; onEdit: () => void;
-  formRef: RefObject<HTMLFormElement | null>; onDirty: () => void;
+  formRef: RefObject<HTMLFormElement | null>; onDirty: () => void; children?: ReactNode;
 }) {
   const { t } = useTranslation('billing');
   const draft = useProfileDraft(profile ?? null);
@@ -67,6 +67,7 @@ export default function CheckoutProfile({ profile, locked, busy, onSave, onEdit,
       {draft.vatAsked && <p id="checkout-vat-hint" className={`${styles.profileHint} ${styles.wideField}`}>
         {t(vatPending ? 'checkout.vatPending' : 'checkout.vatIdHint')}</p>}
     </div>
+    {children}
     <p className={styles.profileHint}><Check size={13} />{t('checkout.savedForNextTime')}</p>
   </form>;
 }

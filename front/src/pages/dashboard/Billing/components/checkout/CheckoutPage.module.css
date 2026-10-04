@@ -87,6 +87,12 @@
 .deferred, .warning { margin: 13px 0 0; font-size: 11px; line-height: 1.7; color: #b7a599; }
 .warning { color: #e0b898; }
 .hint { color: #a79b91; font-size: 11px; line-height: 1.6; margin: 12px 0; }
+.comboTerms { margin-top: 15px; padding: 13px; border: 1px solid #51443c; border-radius: 12px;
+  color: #b7a599; font-size: 11px; line-height: 1.6; }
+.comboTerms summary { cursor: pointer; font-weight: 600; color: #dbd1c9; }
+.comboTerms p { margin: 10px 0; white-space: pre-line; }
+.comboAccept { display: flex; align-items: center; gap: 9px; margin-top: 10px; cursor: pointer; color: #fcae91; font-weight: 600; }
+.comboAccept input { width: 18px; height: 18px; margin: 0; flex-shrink: 0; accent-color: #fcae91; }
 .error { font-size: 12px; line-height: 1.6; color: #e7a2af; margin: 12px 0 0; }
 .page button:focus-visible, .page a:focus-visible { outline: 2px solid #fcae91; outline-offset: 4px; }
 .page button:disabled { cursor: not-allowed; }

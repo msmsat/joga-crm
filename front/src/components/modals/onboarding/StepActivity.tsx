@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ACTIVITY_SECTIONS, sectionOfActivity } from "../../UI";
+import { FieldTag } from "./FieldMeta";
 import type { OnboardingData } from "./types";
 
 interface Props {
@@ -105,6 +106,12 @@ export default function StepActivity({ data, onChange }: Props) {
         <p style={{ fontSize: "13px", color: "var(--text3)", margin: 0, lineHeight: "1.6" }}>
           {t("onboarding:activity.subtitle")}
         </p>
+        {/* Поле здесь одно — весь список, поэтому пометка стоит под
+            заголовком шага, а не у отдельного раздела. */}
+        <div style={{ display: "flex", alignItems: "flex-start", gap: "10px", marginTop: "14px" }}>
+          <span style={{ display: "flex", flexShrink: 0 }}><FieldTag required done={data.activityTypes.length > 0} /></span>
+          <span className="ob-hint" style={{ margin: "1px 0 0", minWidth: 0 }}>{t("onboarding:activity.requiredWhy")}</span>
+        </div>
       </div>
 
       {ACTIVITY_SECTIONS.map((section) => {

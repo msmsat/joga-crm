@@ -2885,6 +2885,15 @@ button.kp-trainer:disabled { cursor: default; opacity: 0.6; }
   .bw-solo:not(.is-on):hover { border-color: rgba(249,160,139,0.5); color: var(--peach); }
   .bw-solo:not(.is-on):hover svg { color: var(--peach); }
 }
+/* Клиент «Индивидуального» необязателен — так прямо и написано над списком
+   (и под строкой «Клиент» на итоге): кого записать, можно решить потом. */
+.bw-optional {
+  margin: 0; padding: 10px 12px; border-radius: 12px;
+  background: rgba(249,160,139,0.08); border: 1px solid rgba(249,160,139,0.22);
+  font: 600 12.5px/1.45 var(--font); color: var(--text2);
+}
+/* Подписи на итоге — целиком, а не обрезанными: там есть место на вторую строку. */
+.bw-sum-text .bw-row-hint { white-space: normal; overflow-wrap: anywhere; line-height: 1.4; }
 
 /* Раздел «Время»: шаг сетки — капсула справа от своего времени; смена дня —
    сетка въезжает со стороны шага по ленте, плитки проявляются волной, число

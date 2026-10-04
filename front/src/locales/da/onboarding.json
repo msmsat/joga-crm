@@ -15,6 +15,10 @@
     "changeNumber": "Skift nummer",
     "gotIt": "Forstået"
   },
+  "fields": {
+    "required": "Påkrævet",
+    "optional": "Valgfrit"
+  },
   "steps": {
     "identity": {
       "title": "Om studiet",
@@ -44,15 +48,20 @@
     "uploadLogo": "Upload logo",
     "removeLogo": "Fjern",
     "logoHint": "JPG, PNG, WEBP op til 5 MB",
+    "logoLabel": "Logo",
+    "logoWhy": "Kunderne ser det ved onlinebooking",
     "nameLabel": "Navn på studie eller virksomhed",
     "namePlaceholder": "F.eks.: Studio Forma",
+    "nameWhy": "Sådan ser kunderne dit studie — ved booking, i e-mails og påmindelser",
     "descriptionLabel": "Beskrivelse",
     "descriptionPlaceholder": "En kort note om dit studie, arbejdsstil, særkender...",
+    "descriptionWhy": "Et par ord om dig — assistenten bruger dem til at svare kunder i beskedapps",
     "newBadge": "NY"
   },
   "activity": {
     "title": "Type af aktivitet",
     "subtitle": "Markér alt, I tilbyder — inden for én sektion",
+    "requiredWhy": "Mindst én — vi indretter kalenderen og onlinebookingen efter den",
     "comingSoon": "Snart: barbershop, fitness, dans og mere",
     "types": {
       "yoga": "Yoga",
@@ -100,24 +109,30 @@
     "title": "Kontaktoplysninger",
     "subtitle": "Kunderne ser disse oplysninger ved onlinebooking",
     "phoneLabel": "Studiets telefon",
+    "phoneWhy": "Kunderne kan ringe til dig med ét tryk direkte fra onlinebookingen",
     "checkingPhone": "Kontrollerer nummer...",
     "addressLabel": "Adresse",
     "addressPlaceholder": "350 Fifth Ave, New York",
+    "addressWhy": "Så kunderne nemt finder vej til dig",
     "emailLabel": "E-mail",
+    "emailWhy": "Til spørgsmål og beskeder fra kunder",
     "websiteLabel": "Websted",
-    "note": "Alle felter undtagen telefon er valgfrie. Du kan udfylde dem senere i indstillingerne."
+    "websiteWhy": "Kunderne kan læse mere om dig",
+    "note": "Valgfrie felter kan du udfylde senere — i studiets indstillinger."
   },
   "settings": {
     "title": "Regionale indstillinger",
     "subtitle": "Kan ændres senere i studiets indstillinger",
     "timezoneLabel": "Tidszone",
     "timezonePlaceholder": "Vælg tidszone",
+    "timezoneWhy": "Bruges til holdtider og påmindelser til kunder",
     "languageLabel": "Sprog",
     "languagePlaceholder": "Sprog",
     "currencyLabel": "Valuta",
     "currencyPlaceholder": "Valuta",
     "currencySearch": "Valuta eller kode",
     "currencyNotFound": "Ingen valuta fundet",
+    "currencyWhy": "Bruges til priser, medlemskaber og økonomirapporter",
     "dateFormatLabel": "Datoformat",
     "dateFormatPlaceholder": "Format",
     "currencies": {
@@ -239,6 +254,7 @@
     "title": "Åbningstider",
     "subtitle": "Angiv de dage og timer, dit studie har åbent",
     "scheduleLabel": "Studiets åbningstider",
+    "scheduleWhy": "Typiske åbningstider er allerede sat — tilpas dem. Hold og onlinebooking holder sig inden for disse tider",
     "dayOff": "Lukket"
   },
   "illustration": {

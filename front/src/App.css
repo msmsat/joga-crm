@@ -1892,6 +1892,41 @@
   box-shadow: 0 8px 20px -10px rgba(var(--ink),0.9);
 }
 
+/* ── Пометка поля мастера: «Обязательно» / «Необязательно» ─────────────────
+   (onboarding/FieldMeta.tsx). Обязательное — персиковая капсула с точкой;
+   заполнили — фисташковая с галочкой. Необязательное — пунктирный контур без
+   заливки: оно не спорит за внимание с тем, без чего дальше не пройти.
+   Регистр и разрядка сброшены явно: подписи у селектов набраны капсом, и
+   капсула унаследовала бы их. */
+.ob-field-label { display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.ob-tag {
+  display: inline-flex; align-items: center; gap: 5px;
+  height: 20px; padding: 0 8px; border-radius: 99px;
+  border: 1px solid transparent;
+  font-size: 10.5px; font-weight: 700; letter-spacing: 0.1px; line-height: 1;
+  text-transform: none; white-space: nowrap;
+  transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+.ob-tag-mark { display: inline-flex; align-items: center; justify-content: center; width: 8px; height: 8px; }
+.ob-tag-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: #F9A08B; box-shadow: 0 0 0 3px rgba(249,160,139,0.2);
+}
+.ob-tag.is-required { background: rgba(252,174,145,0.13); border-color: rgba(252,174,145,0.32); color: #C2764F; }
+.ob-tag.is-done { background: rgba(163,201,168,0.16); border-color: rgba(163,201,168,0.42); color: #5A8A60; }
+.ob-tag.is-done .ob-tag-mark { animation: obTagCheck 0.34s cubic-bezier(0.34,1.5,0.64,1); }
+.ob-tag.is-optional { border: 1px dashed rgba(var(--ink),0.2); color: var(--text3); }
+@keyframes obTagCheck { from { transform: scale(0.2); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+/* «Зачем это» под полем. Верхний отступ равен gap у .input-wrapper — строка
+   стоит под InputField/PhoneField на том же расстоянии, что подпись над ним.
+   Тон светлее подписи (--muted): в том же сером пояснение спорило с ней за
+   первое прочтение. */
+.ob-hint {
+  display: block; margin: 6px 0 0 2px;
+  font-size: 12px; font-weight: 500; line-height: 1.5; color: rgba(var(--ink),0.5);
+}
+
 /* ── Сегментный прогресс (шапка узкого экрана) ─────────────────────────── */
 .ob-mbar { display: flex; align-items: center; gap: 5px; }
 .ob-mseg {

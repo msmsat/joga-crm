@@ -329,6 +329,8 @@
     "timeStep": "Intervall",
     "showAll": "Vis alle",
     "onlyAvailable": "Bare ledige",
+    "clientOptional": "Valgfritt: du kan legge til en kunde senere fra øktkortet – eller kunden kan bestille selv på nett.",
+    "withoutClient": "Fortsett uten kunde",
     "unavailable": "Ikke tilgjengelig med dette valget",
     "selectionConflict": "Valget passer ikke sammen. Velg en ledig tid, eller endre tjeneste eller spesialist.",
     "availabilityError": "Could not load availability. Please try again.",

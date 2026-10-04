@@ -329,6 +329,8 @@
     "timeStep": "Väli",
     "showAll": "Näytä kaikki",
     "onlyAvailable": "Vain vapaat",
+    "clientOptional": "Valinnainen: asiakkaan voi lisätä myöhemmin tunnin kortilta – tai hän varaa itse verkossa.",
+    "withoutClient": "Jatka ilman asiakasta",
     "unavailable": "Ei saatavilla tällä valinnalla",
     "selectionConflict": "Valinnat eivät sovi yhteen. Valitse vapaa aika tai vaihda palvelu tai ammattilainen.",
     "availabilityError": "Could not load availability. Please try again.",

@@ -15,6 +15,10 @@
     "changeNumber": "Schimbă numărul",
     "gotIt": "Am înțeles"
   },
+  "fields": {
+    "required": "Obligatoriu",
+    "optional": "Opțional"
+  },
   "steps": {
     "identity": {
       "title": "Despre studio",
@@ -44,15 +48,20 @@
     "uploadLogo": "Încarcă logo-ul",
     "removeLogo": "Elimină",
     "logoHint": "JPG, PNG, WEBP până la 5 MB",
+    "logoLabel": "Logo",
+    "logoWhy": "Clienții îl vor vedea la rezervarea online",
     "nameLabel": "Numele studioului sau al firmei",
     "namePlaceholder": "De ex.: Studio Forma",
+    "nameWhy": "Așa vor vedea clienții studioul — la rezervare, în e-mailuri și mementouri",
     "descriptionLabel": "Descriere",
     "descriptionPlaceholder": "Câteva rânduri despre studio, stilul de lucru, particularități...",
+    "descriptionWhy": "Câteva cuvinte despre dvs. — asistentul le folosește ca să răspundă clienților pe messenger",
     "newBadge": "NOU"
   },
   "activity": {
     "title": "Tipul de activitate",
     "subtitle": "Bifați tot ce faceți — în cadrul unei singure secțiuni",
+    "requiredWhy": "Măcar una — după ea configurăm jurnalul și rezervarea online",
     "comingSoon": "În curând: frizerie, fitness, dans și altele",
     "types": {
       "yoga": "Yoga",
@@ -100,24 +109,30 @@
     "title": "Date de contact",
     "subtitle": "Clienții vor vedea aceste date la rezervarea online",
     "phoneLabel": "Telefonul studioului",
+    "phoneWhy": "Clienții vă sună dintr-o atingere, direct din rezervarea online",
     "checkingPhone": "Se verifică numărul...",
     "addressLabel": "Adresă",
     "addressPlaceholder": "350 Fifth Ave, New York",
+    "addressWhy": "Ca să vă găsească ușor clienții",
     "emailLabel": "Email",
+    "emailWhy": "Pentru întrebări și mesaje de la clienți",
     "websiteLabel": "Site web",
-    "note": "Toate câmpurile în afară de telefon sunt opționale. Le puteți completa mai târziu în setări."
+    "websiteWhy": "Clienții pot afla mai multe despre dvs.",
+    "note": "Câmpurile opționale le puteți completa mai târziu — în setările studioului."
   },
   "settings": {
     "title": "Setări regionale",
     "subtitle": "Pot fi modificate ulterior în setările studioului",
     "timezoneLabel": "Fus orar",
     "timezonePlaceholder": "Alegeți fusul orar",
+    "timezoneWhy": "După el calculăm orele ședințelor și mementourile pentru clienți",
     "languageLabel": "Limbă",
     "languagePlaceholder": "Limbă",
     "currencyLabel": "Monedă",
     "currencyPlaceholder": "Monedă",
     "currencySearch": "Monedă sau cod",
     "currencyNotFound": "Nicio monedă găsită",
+    "currencyWhy": "În ea sunt prețurile, abonamentele și rapoartele financiare",
     "dateFormatLabel": "Format dată",
     "dateFormatPlaceholder": "Format",
     "currencies": {
@@ -239,6 +254,7 @@
     "title": "Program de lucru",
     "subtitle": "Setați zilele și orele în care studioul funcționează",
     "scheduleLabel": "Programul studioului",
+    "scheduleWhy": "Un program obișnuit e deja setat — ajustați-l. Ședințele și rezervarea online nu vor ieși din aceste ore",
     "dayOff": "Închis"
   },
   "illustration": {

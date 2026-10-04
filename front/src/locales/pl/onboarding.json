@@ -15,6 +15,10 @@
     "changeNumber": "Zmień numer",
     "gotIt": "Rozumiem"
   },
+  "fields": {
+    "required": "Wymagane",
+    "optional": "Opcjonalne"
+  },
   "steps": {
     "identity": {
       "title": "O studiu",
@@ -44,15 +48,20 @@
     "uploadLogo": "Prześlij logo",
     "removeLogo": "Usuń",
     "logoHint": "JPG, PNG, WEBP do 5 MB",
+    "logoLabel": "Logo",
+    "logoWhy": "Klienci zobaczą je w rezerwacji online",
     "nameLabel": "Nazwa studia lub firmy",
     "namePlaceholder": "Np.: Studio Forma",
+    "nameWhy": "Tak klienci zobaczą twoje studio — w rezerwacji, e-mailach i przypomnieniach",
     "descriptionLabel": "Opis",
     "descriptionPlaceholder": "Krótko o studiu, stylu pracy, tym, co wyróżnia...",
+    "descriptionWhy": "Kilka słów o tobie — na ich podstawie asystent odpowie klientom w komunikatorach",
     "newBadge": "NOWE"
   },
   "activity": {
     "title": "Rodzaj działalności",
     "subtitle": "Zaznacz wszystko, czym się zajmujesz — w obrębie jednej sekcji",
+    "requiredWhy": "Przynajmniej jeden kierunek — pod niego ustawimy grafik i rezerwację online",
     "comingSoon": "Wkrótce: barbershop, fitness, taniec i więcej",
     "types": {
       "yoga": "Joga",
@@ -100,24 +109,30 @@
     "title": "Dane kontaktowe",
     "subtitle": "Klienci zobaczą te dane przy rezerwacji online",
     "phoneLabel": "Telefon studia",
+    "phoneWhy": "Klienci zadzwonią do ciebie jednym dotknięciem prosto z rezerwacji online",
     "checkingPhone": "Sprawdzanie numeru...",
     "addressLabel": "Adres",
     "addressPlaceholder": "350 Fifth Ave, New York",
+    "addressWhy": "Żeby klienci łatwo do ciebie trafili",
     "emailLabel": "E-mail",
+    "emailWhy": "Na pytania i wiadomości od klientów",
     "websiteLabel": "Strona internetowa",
-    "note": "Wszystkie pola poza telefonem są opcjonalne. Możesz je uzupełnić później w ustawieniach."
+    "websiteWhy": "Klienci dowiedzą się o tobie więcej",
+    "note": "Pola opcjonalne możesz uzupełnić później — w ustawieniach studia."
   },
   "settings": {
     "title": "Ustawienia regionalne",
     "subtitle": "Można zmienić później w ustawieniach studia",
     "timezoneLabel": "Strefa czasowa",
     "timezonePlaceholder": "Wybierz strefę czasową",
+    "timezoneWhy": "Według niej liczymy godziny zajęć i przypomnienia dla klientów",
     "languageLabel": "Język",
     "languagePlaceholder": "Język",
     "currencyLabel": "Waluta",
     "currencyPlaceholder": "Waluta",
     "currencySearch": "Waluta lub kod",
     "currencyNotFound": "Nie znaleziono waluty",
+    "currencyWhy": "W niej będą ceny, karnety i raporty finansowe",
     "dateFormatLabel": "Format daty",
     "dateFormatPlaceholder": "Format",
     "currencies": {
@@ -239,6 +254,7 @@
     "title": "Godziny otwarcia",
     "subtitle": "Ustaw dni i godziny pracy studia",
     "scheduleLabel": "Grafik studia",
+    "scheduleWhy": "Typowy grafik jest już ustawiony — dopasuj go do siebie. Zajęcia i rezerwacja online nie wyjdą poza te godziny",
     "dayOff": "Zamknięte"
   },
   "illustration": {

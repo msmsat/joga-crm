@@ -15,6 +15,10 @@
     "changeNumber": "Byt nummer",
     "gotIt": "Uppfattat"
   },
+  "fields": {
+    "required": "Obligatoriskt",
+    "optional": "Valfritt"
+  },
   "steps": {
     "identity": {
       "title": "Om studion",
@@ -44,15 +48,20 @@
     "uploadLogo": "Ladda upp logotyp",
     "removeLogo": "Ta bort",
     "logoHint": "JPG, PNG, WEBP upp till 5 MB",
+    "logoLabel": "Logotyp",
+    "logoWhy": "Kunderna ser den vid onlinebokning",
     "nameLabel": "Studions eller företagets namn",
     "namePlaceholder": "T.ex.: Studio Forma",
+    "nameWhy": "Så ser kunderna din studio — i bokningen, mejl och påminnelser",
     "descriptionLabel": "Beskrivning",
     "descriptionPlaceholder": "Några rader om din studio, hur ni jobbar, vad som utmärker er...",
+    "descriptionWhy": "Några ord om dig — assistenten använder dem för att svara kunder i meddelandeappar",
     "newBadge": "NY"
   },
   "activity": {
     "title": "Typ av verksamhet",
     "subtitle": "Markera allt ni erbjuder — inom ett och samma avsnitt",
+    "requiredWhy": "Minst en — vi anpassar schemat och onlinebokningen efter den",
     "comingSoon": "Snart: barbershop, träning, dans och mer",
     "types": {
       "yoga": "Yoga",
@@ -100,24 +109,30 @@
     "title": "Kontaktuppgifter",
     "subtitle": "Kunderna ser de här uppgifterna vid onlinebokning",
     "phoneLabel": "Studions telefon",
+    "phoneWhy": "Kunderna ringer dig med ett tryck direkt från onlinebokningen",
     "checkingPhone": "Kontrollerar numret...",
     "addressLabel": "Adress",
     "addressPlaceholder": "350 Fifth Ave, New York",
+    "addressWhy": "Så att kunderna lätt hittar till dig",
     "emailLabel": "E-post",
+    "emailWhy": "För frågor och meddelanden från kunder",
     "websiteLabel": "Webbplats",
-    "note": "Alla fält utom telefon är valfria. Du kan fylla i dem senare i inställningarna."
+    "websiteWhy": "Kunderna kan läsa mer om dig",
+    "note": "Valfria fält kan du fylla i senare — i studioinställningarna."
   },
   "settings": {
     "title": "Regionala inställningar",
     "subtitle": "Kan ändras senare i studions inställningar",
     "timezoneLabel": "Tidszon",
     "timezonePlaceholder": "Välj tidszon",
+    "timezoneWhy": "Används för passtider och påminnelser till kunder",
     "languageLabel": "Språk",
     "languagePlaceholder": "Språk",
     "currencyLabel": "Valuta",
     "currencyPlaceholder": "Valuta",
     "currencySearch": "Valuta eller kod",
     "currencyNotFound": "Ingen valuta hittades",
+    "currencyWhy": "Används för priser, kort och ekonomirapporter",
     "dateFormatLabel": "Datumformat",
     "dateFormatPlaceholder": "Format",
     "currencies": {
@@ -239,6 +254,7 @@
     "title": "Öppettider",
     "subtitle": "Ange vilka dagar och tider din studio har öppet",
     "scheduleLabel": "Studions öppettider",
+    "scheduleWhy": "Typiska öppettider är redan inlagda — anpassa dem. Pass och onlinebokning håller sig inom dessa tider",
     "dayOff": "Stängt"
   },
   "illustration": {

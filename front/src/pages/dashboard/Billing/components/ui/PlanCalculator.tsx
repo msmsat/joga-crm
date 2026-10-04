@@ -1,4 +1,4 @@
-import type { CSSProperties, ReactNode } from 'react';
+import type { CSSProperties } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { PlanType, PlanPeriod } from '../../types';
 import type { PlanInfo } from '../../hooks/useBillingCalculator';
@@ -19,8 +19,6 @@ interface Props {
   payBusy: boolean;
   preview: CheckoutPreview | null;
   previewBusy: boolean;
-  payDisabled: boolean;
-  checkoutTerms?: ReactNode;
   selectedPeriod: PlanPeriod;
   setSelectedPeriod: (period: PlanPeriod) => void;
   periodDiscounts: Record<number, number>;
@@ -32,7 +30,7 @@ interface Props {
   savedTotal: number;
   /** Сумма за весь период — её и спишут. */
   totalToPay: number;
-  /** Открывает Stripe (единственная кнопка платежа на вкладке). */
+  /** Открывает страницу реквизитов; сам платёж готовится на следующем шаге. */
   onPay: () => void;
   /** Ступень, за которую студия платит сейчас, — бейджем «Текущий». */
   currentPlanId: PlanType | null;
@@ -49,7 +47,7 @@ interface Props {
  * второй прайс-лист на фронте пережил бы правку plans.py и обещал бы неправду.
  */
 export default function PlanCalculator({
-  planIds, plans, selected, onSelect, currency, payBusy, preview, previewBusy, payDisabled, checkoutTerms,
+  planIds, plans, selected, onSelect, currency, payBusy, preview, previewBusy,
   selectedPeriod, setSelectedPeriod, periodDiscounts,
   monthly, fullMonthly, savedTotal, totalToPay, onPay, currentPlanId,
 }: Props) {
@@ -287,21 +285,19 @@ export default function PlanCalculator({
           </div>
 
           <CheckoutDetails preview={quote} />
-          {checkoutTerms}
 
           {/* Итог и оплата. Класс bl-pay-cta глобальный: на телефоне этот же
               узел становится полосой над нижней панелью (Billing.module.css). */}
           <div className={`${styles.calcCta} bl-pay-cta`}>
-            <div className={styles.calcTotal}>
-              <span className={styles.calcTotalLabel}>{t(outcome === 'taxable' ? 'payModal.totalWithTax' : 'paymentSchedule.total')}</span>
+            <div className={styles.calcTotal} aria-busy={previewBusy}>
+              <span className={styles.calcTotalLabel}>{t(outcome === 'taxable' ? 'payModal.totalWithTax' : outcome === 'stripe_auto' || outcome === 'requires_review' ? 'checkout.totalBeforeTax' : 'paymentSchedule.total')}</span>
               <span key={`${checkoutTotal}:${currency}`} className={styles.calcTotalValue}>{formatMoney(checkoutTotal, currency)}</span>
             </div>
-            {/* Цены в каталоге без НДС (stripe_catalog.TAX_BEHAVIOR = "exclusive"),
-                налог Stripe Tax накидывает сверху на своей странице. Без этой
-                строки итог в счёте оказывался бы заметно больше показанного. */}
+            {/* Налог определяется по реквизитам на следующем шаге.
+                Отсутствие предварительного расчёта не блокирует переход к форме. */}
             <p className={styles.calcVat}>{t(taxNote)}</p>
             <AnimatedPayButton onClick={onPay} className={styles.calcPay} loading={payBusy}
-              disabled={payDisabled || previewBusy || !info || outcome === 'requires_review'}>
+              disabled={!info}>
               {selectedPeriod > 1 ? t('paymentSchedule.payFor', { count: selectedPeriod }) : t('pay')}
             </AnimatedPayButton>
           </div>

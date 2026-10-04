@@ -15,6 +15,10 @@
     "changeNumber": "Numarayı değiştir",
     "gotIt": "Anladım"
   },
+  "fields": {
+    "required": "Zorunlu",
+    "optional": "İsteğe bağlı"
+  },
   "steps": {
     "identity": {
       "title": "Stüdyo hakkında",
@@ -44,15 +48,20 @@
     "uploadLogo": "Logo yükle",
     "removeLogo": "Kaldır",
     "logoHint": "JPG, PNG, WEBP en fazla 5 MB",
+    "logoLabel": "Logo",
+    "logoWhy": "Müşteriler online randevuda görecek",
     "nameLabel": "Stüdyo veya şirket adı",
     "namePlaceholder": "Örn.: Studio Forma",
+    "nameWhy": "Müşteriler stüdyonuzu böyle görecek — randevuda, e-postalarda ve hatırlatmalarda",
     "descriptionLabel": "Açıklama",
     "descriptionPlaceholder": "Stüdyonuz, çalışma tarzınız ve farkınız hakkında kısa bir not...",
+    "descriptionWhy": "Kendiniz hakkında birkaç söz — asistan bunlarla müşterilere mesajlaşma uygulamalarında yanıt verir",
     "newBadge": "YENİ"
   },
   "activity": {
     "title": "Faaliyet türü",
     "subtitle": "Yaptığınız her şeyi işaretleyin — tek bir bölüm içinde",
+    "requiredWhy": "En az bir alan — takvimi ve online randevuyu buna göre ayarlarız",
     "comingSoon": "Yakında: berber, fitness, dans ve daha fazlası",
     "types": {
       "yoga": "Yoga",
@@ -100,24 +109,30 @@
     "title": "İletişim bilgileri",
     "subtitle": "Müşteriler online randevu alırken bu bilgileri görecek",
     "phoneLabel": "Stüdyo telefonu",
+    "phoneWhy": "Müşteriler online randevudan tek dokunuşla sizi arayabilir",
     "checkingPhone": "Numara kontrol ediliyor...",
     "addressLabel": "Adres",
     "addressPlaceholder": "350 Fifth Ave, New York",
+    "addressWhy": "Müşteriler size kolayca ulaşabilsin diye",
     "emailLabel": "E-posta",
+    "emailWhy": "Müşterilerin soruları ve mesajları için",
     "websiteLabel": "Web sitesi",
-    "note": "Telefon dışındaki tüm alanlar isteğe bağlıdır. Daha sonra ayarlardan doldurabilirsiniz."
+    "websiteWhy": "Müşteriler sizi daha yakından tanıyabilir",
+    "note": "İsteğe bağlı alanları daha sonra doldurabilirsiniz — stüdyo ayarlarından."
   },
   "settings": {
     "title": "Bölgesel ayarlar",
     "subtitle": "Daha sonra stüdyo ayarlarından değiştirilebilir",
     "timezoneLabel": "Saat dilimi",
     "timezonePlaceholder": "Saat dilimi seçin",
+    "timezoneWhy": "Ders saatleri ve müşteri hatırlatmaları buna göre hesaplanır",
     "languageLabel": "Dil",
     "languagePlaceholder": "Dil",
     "currencyLabel": "Para birimi",
     "currencyPlaceholder": "Para birimi",
     "currencySearch": "Para birimi veya kod",
     "currencyNotFound": "Para birimi bulunamadı",
+    "currencyWhy": "Fiyatlar, paketler ve finans raporları bu para biriminde olur",
     "dateFormatLabel": "Tarih biçimi",
     "dateFormatPlaceholder": "Biçim",
     "currencies": {
@@ -239,6 +254,7 @@
     "title": "Çalışma saatleri",
     "subtitle": "Stüdyonuzun açık olduğu gün ve saatleri belirleyin",
     "scheduleLabel": "Stüdyo programı",
+    "scheduleWhy": "Tipik bir çalışma saati zaten ayarlı — kendinize göre düzenleyin. Dersler ve online randevu bu saatlerin dışına çıkmaz",
     "dayOff": "Kapalı"
   },
   "illustration": {
