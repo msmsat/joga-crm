@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 from types import SimpleNamespace as NS
 
 import pytest
+import stripe
 
 from models import BillingInvoice, BillingTaxDocument, StudioBillingPlan
 from routers.billing import prepaid_webhook as route, webhook
@@ -49,6 +50,10 @@ def setup(monkeypatch, **session_fields):
     async def mail(*args): mails.append(args)
     monkeypatch.setattr(route.stripe_billing, 'fetch_checkout_session', fetch)
     monkeypatch.setattr(route.stripe_billing, 'fetch_payment_intent', intent)
+    monkeypatch.setattr(stripe.Charge, 'retrieve', lambda _id: NS(
+        object='charge', id=_id, payment_intent='pi_test', amount=session.amount_total))
+    monkeypatch.setattr(stripe.Refund, 'list', lambda **kw: NS(data=[NS(
+        id='re_test', amount=session.amount_total, status='succeeded', created=1790942400)], has_more=False))
     monkeypatch.setattr('services.billing_payment_dates.received_at', received)
     monkeypatch.setattr('services.platform_fee.record_revenue', revenue)
     monkeypatch.setattr('services.billing_mail.send_receipt', mail)
@@ -61,7 +66,8 @@ def test_refund_before_paid_event_records_gross_original_and_correction_once(mon
     previous_plan = deepcopy(vars(db.plan))
     original = deepcopy(db.invoice.billing_details_snapshot)
     charge = NS(object='charge', id='ch_test', payment_intent='pi_test',
-                amount=5445, amount_refunded=5445)
+                amount=5445, amount_refunded=5445,
+                refunds=NS(data=[NS(id='re_test', amount=5445, status='succeeded')]))
     refunded_at = int(datetime(2026, 10, 2, 12, tzinfo=timezone.utc).timestamp())
     asyncio.run(webhook._handle_refund(db, charge, event_created=refunded_at))
     assert db.invoice.status == 'refunded' and db.invoice.amount == 5445
@@ -153,6 +159,7 @@ def test_sdk_payment_objects_activate_and_reverse_the_exact_order_once(monkeypat
     async def payment(*args): return intent
     monkeypatch.setattr(route.stripe_billing, 'fetch_checkout_session', fetch)
     monkeypatch.setattr(route.stripe_billing, 'fetch_payment_intent', payment)
+    monkeypatch.setattr(stripe.Charge, 'retrieve', lambda _id: charge)
 
     assert asyncio.run(route.handle_session(db, 'checkout.session.completed', session,
                                            now=datetime(2026, 10, 2))) is True

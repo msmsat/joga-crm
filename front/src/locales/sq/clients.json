@@ -273,46 +273,68 @@
       "delete": "Fshi"
     },
     "events": {
-      "dates": {
-        "lesson": "Takimi",
-        "bookingCreated": "Rezervimi u krijua",
-        "visit": "Vizita",
-        "cancel": "Anuluar",
-        "payment": "Paguar",
-        "event": "Data e ngjarjes",
-        "recorded": "Pagesa u krijua",
-        "paymentUnknown": "Data e pagesës nuk është ruajtur",
-        "unknown": "Data nuk është ruajtur"
-      },
-      "filterTabs": {
+      "tabs": {
         "all": "Të gjitha",
-        "payment": "Pagesat",
-        "visit": "Vizitat",
-        "booking": "Rezervimet",
-        "cancel": "Anulimet",
-        "bonus": "Bonuset",
-        "freeze": "Ngrirjet",
-        "completed": "Të përfunduara"
+        "visits": "Takimet",
+        "payments": "Pagesat",
+        "bonuses": "Bonuset"
       },
-      "empty": "Nuk ka ngjarje",
-      "statuses": {
-        "appointment": {
-          "upcoming": "Në vijim",
-          "ongoing": "Në vazhdim",
-          "completed": "Përfunduar",
-          "cancelled": "Anuluar"
+      "ahead": "Në vijim",
+      "state": {
+        "upcoming": "Planifikuar",
+        "ongoing": "Në vazhdim",
+        "attended": "Prani",
+        "missed": "Mungesë",
+        "done": "Përfunduar",
+        "cancelled": "Anuluar",
+        "payment": "Pagesë",
+        "bonusIn": "Pikë të shtuara",
+        "bonusOut": "Pikë të përdorura",
+        "freeze": "Ngrirje",
+        "unfreeze": "Çngrirje"
+      },
+      "pay": {
+        "paid": "Paguar",
+        "unpaid": "Pa paguar",
+        "subscription": "Me abonim",
+        "free": "Falas"
+      },
+      "noMark": "Prania nuk është shënuar",
+      "frozenClient": "Klienti u ngri",
+      "unfrozenClient": "Klienti u çngri",
+      "points_one": "{{sign}}{{count}} pikë",
+      "points_other": "{{sign}}{{count}} pikë",
+      "dates": {
+        "unknown": "Data nuk është ruajtur",
+        "paymentUnknown": "Data e pagesës nuk është ruajtur",
+        "recorded": "Pagesa u krijua më {{date}}",
+        "forLesson": "Për takimin e {{date}}",
+        "cancelledAt": "Rezervimi u anulua më {{date}}",
+        "cancelUnknown": "Data e anulimit nuk është ruajtur",
+        "bookedAt": "Rezervuar më {{date}}"
+      },
+      "summary": {
+        "visits": "Prania",
+        "paidTotal": "Paguar gjithsej",
+        "earned": "Pikë të shtuara",
+        "spent": "Pikë të përdorura"
+      },
+      "empty": {
+        "all": {
+          "title": "Ende pa histori",
+          "text": "Këtu do të shfaqen rezervimet, pagesat dhe bonuset e klientit."
         },
-        "attendance": {
-          "attended": "Erdhi",
-          "missed": "Nuk erdhi",
-          "unknown": "Pjesëmarrja e pakonfirmuar"
+        "visits": {
+          "title": "Ende pa takime",
+          "text": "Këtu do të shfaqen takimet e planifikuara, të kryera dhe të anuluara."
         },
-        "payment": {
-          "paid": "E paguar",
-          "unpaid": "E papaguar",
-          "subscription": "Abonim",
-          "free": "Falas",
-          "unknown": "Pagesë e panjohur"
+        "payments": {
+          "title": "Ende pa pagesa",
+          "text": "Këtu do të shfaqen blerjet e abonimeve dhe pagesat e takimeve."
+        },
+        "bonuses": {
+          "title": "Ende pa bonuse",
+          "text": "Këtu do të shfaqen pikët e shtuara dhe të përdorura."
         }
       }
     },

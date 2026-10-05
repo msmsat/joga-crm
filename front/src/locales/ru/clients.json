@@ -269,46 +269,70 @@
       "delete": "Удалить"
     },
     "events": {
-      "dates": {
-        "lesson": "Занятие",
-        "bookingCreated": "Запись создана",
-        "visit": "Визит",
-        "cancel": "Отменено",
-        "payment": "Оплачено",
-        "event": "Дата события",
-        "recorded": "Платёж создан",
-        "paymentUnknown": "Дата оплаты не сохранена",
-        "unknown": "Дата не сохранена"
-      },
-      "filterTabs": {
+      "tabs": {
         "all": "Все",
-        "payment": "Оплаты",
-        "visit": "Посещения",
-        "booking": "Записи",
-        "cancel": "Отмены",
-        "bonus": "Бонусы",
-        "freeze": "Заморозки",
-        "completed": "Завершённые"
+        "visits": "Записи",
+        "payments": "Оплаты",
+        "bonuses": "Бонусы"
       },
-      "empty": "Нет событий",
-      "statuses": {
-        "appointment": {
-          "upcoming": "Впереди",
-          "ongoing": "Идёт",
-          "completed": "Завершено",
-          "cancelled": "Отменено"
+      "ahead": "Впереди",
+      "state": {
+        "upcoming": "Запланировано",
+        "ongoing": "Идёт сейчас",
+        "attended": "Посещено",
+        "missed": "Пропущено",
+        "done": "Завершено",
+        "cancelled": "Отменено",
+        "payment": "Оплата",
+        "bonusIn": "Начислены баллы",
+        "bonusOut": "Списаны баллы",
+        "freeze": "Заморозка",
+        "unfreeze": "Разморозка"
+      },
+      "pay": {
+        "paid": "Оплачено",
+        "unpaid": "Не оплачено",
+        "subscription": "По абонементу",
+        "free": "Бесплатно"
+      },
+      "noMark": "Явка не отмечена",
+      "frozenClient": "Клиент заморожен",
+      "unfrozenClient": "Клиент разморожен",
+      "points_one": "{{sign}}{{count}} балл",
+      "points_few": "{{sign}}{{count}} балла",
+      "points_many": "{{sign}}{{count}} баллов",
+      "points_other": "{{sign}}{{count}} балла",
+      "dates": {
+        "unknown": "Дата не сохранена",
+        "paymentUnknown": "Дата оплаты не сохранена",
+        "recorded": "Платёж создан {{date}}",
+        "forLesson": "За занятие {{date}}",
+        "cancelledAt": "Запись отменена {{date}}",
+        "cancelUnknown": "Дата отмены не сохранена",
+        "bookedAt": "Запись создана {{date}}"
+      },
+      "summary": {
+        "visits": "Посещаемость",
+        "paidTotal": "Оплачено за всё время",
+        "earned": "Начислено баллов",
+        "spent": "Списано баллов"
+      },
+      "empty": {
+        "all": {
+          "title": "Истории пока нет",
+          "text": "Здесь появятся записи на занятия, оплаты и бонусы клиента."
         },
-        "attendance": {
-          "attended": "Пришёл",
-          "missed": "Не пришёл",
-          "unknown": "Посещение не подтверждено"
+        "visits": {
+          "title": "Записей пока нет",
+          "text": "Запланированные, посещённые и отменённые занятия появятся здесь."
         },
-        "payment": {
-          "paid": "Оплачено",
-          "unpaid": "Не оплачено",
-          "subscription": "Абонемент",
-          "free": "Бесплатно",
-          "unknown": "Оплата неизвестна"
+        "payments": {
+          "title": "Оплат пока нет",
+          "text": "Покупки абонементов и оплаты занятий появятся здесь."
+        },
+        "bonuses": {
+          "title": "Бонусов пока нет",
+          "text": "Начисленные и списанные баллы появятся здесь."
         }
       }
     },

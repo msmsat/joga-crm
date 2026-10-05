@@ -130,8 +130,7 @@ INVOICE_PAYMENT_OPTIONS = {
 def invoice_payment_settings() -> dict:
     """`payment_settings` для наших счетов: карта (с кошельками) + перевод."""
     return {
-        "payment_method_types": ["card", "paypal", "customer_balance"]
-        if stripe_checkout_branding.paypal_invoices_enabled() else list(INVOICE_PAYMENT_METHODS),
+        "payment_method_types": list(INVOICE_PAYMENT_METHODS),
         "payment_method_options": INVOICE_PAYMENT_OPTIONS,
     }
 
@@ -543,6 +542,21 @@ def metadata_dict(obj) -> dict:
 
 async def fetch_checkout_session(session_id: str):
     return await asyncio.to_thread(stripe.checkout.Session.retrieve, session_id)
+
+
+async def fetch_charge_refunds(charge_id: str):
+    """Read current platform refund statuses, including every pagination page."""
+    charge = await asyncio.to_thread(stripe.Charge.retrieve, charge_id)
+    refunds = []
+    params = {"charge": charge.id, "limit": 100}
+    while True:
+        page = await asyncio.to_thread(stripe.Refund.list, **params)
+        refunds.extend(page.data)
+        if not page.has_more:
+            return charge, refunds
+        if not page.data:
+            raise ValueError("Stripe refunds pagination has no continuation")
+        params["starting_after"] = page.data[-1].id
 
 
 async def expire_checkout_session(session_id: str):

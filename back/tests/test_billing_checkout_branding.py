@@ -47,22 +47,50 @@ def test_manual_checkout_without_tax_decision_never_calls_stripe(monkeypatch):
     assert called == []
 
 
-def test_paypal_invoice_is_opt_in_after_account_activation(monkeypatch):
-    monkeypatch.delenv("BILLING_PAYPAL_ENABLED", raising=False)
-    assert billing.invoice_payment_settings()["payment_method_types"] == ["card", "customer_balance"]
-    monkeypatch.setenv("BILLING_PAYPAL_ENABLED", "true")
-    assert billing.invoice_payment_settings()["payment_method_types"] == ["card", "paypal", "customer_balance"]
-    assert "link" not in billing.invoice_payment_settings()["payment_method_types"]
+@pytest.mark.parametrize("legacy_flag", [None, "false", "true", "1", "yes"])
+def test_invoice_payment_settings_exclude_paypal_even_with_stale_opt_in(monkeypatch, legacy_flag):
+    if legacy_flag is None:
+        monkeypatch.delenv("BILLING_PAYPAL_ENABLED", raising=False)
+    else:
+        monkeypatch.setenv("BILLING_PAYPAL_ENABLED", legacy_flag)
+    settings = billing.invoice_payment_settings()
+    assert settings["payment_method_types"] == ["card", "customer_balance"]
+    assert settings["payment_method_options"]["customer_balance"]["funding_type"] == "bank_transfer"
+    assert branding.paypal_invoices_enabled() is False
+
+
+def test_configuration_dry_run_plans_revolut_without_writing_stripe(monkeypatch):
+    from scripts import configure_billing_checkout as setup
+
+    monkeypatch.setattr(stripe.PaymentMethodConfiguration, "list", lambda **kwargs: SimpleNamespace(data=[]))
+
+    def unexpected_write(*args, **kwargs):
+        pytest.fail("Dry run must not change Stripe objects or upload branding")
+
+    monkeypatch.setattr(stripe.PaymentMethodConfiguration, "create", unexpected_write)
+    monkeypatch.setattr(stripe.PaymentMethodConfiguration, "modify", unexpected_write)
+    monkeypatch.setattr(stripe.Account, "modify", unexpected_write)
+    monkeypatch.setattr(setup, "upload_asset", unexpected_write)
+    result = setup.configure(False)
+    assert result["configuration"] is None
+    assert result["requested_methods"] == {
+        "card": "on", "paypal": "off", "apple_pay": "on", "google_pay": "on",
+        "revolut_pay": "on", "link": "off",
+    }
 
 
 @pytest.mark.parametrize("paypal_available", [True, False])
-def test_configuration_survives_dashboard_only_account_branding(monkeypatch, paypal_available):
+@pytest.mark.parametrize("revolut_available", [True, False])
+def test_configuration_survives_dashboard_only_account_branding(monkeypatch, paypal_available, revolut_available):
     from scripts import configure_billing_checkout as setup
 
     methods = {
-        name: SimpleNamespace(available=paypal_available if name == "paypal" else name != "link",
-                              display_preference=SimpleNamespace(value="off" if name == "link" else "on"))
-        for name in ("card", "paypal", "apple_pay", "google_pay", "link")
+        name: SimpleNamespace(
+            available=(paypal_available if name == "paypal" else
+                       revolut_available if name == "revolut_pay" else name != "link"),
+            display_preference=SimpleNamespace(value="off" if name in ("link", "paypal") else "on"),
+        )
+        for name in ("card", "paypal", "apple_pay", "google_pay", "revolut_pay", "link")
     }
     configuration = SimpleNamespace(id="pmc_velora", name="Velora Billing", **methods)
     monkeypatch.setattr(stripe.PaymentMethodConfiguration, "list", lambda **kwargs: SimpleNamespace(data=[configuration]))
@@ -86,7 +114,14 @@ def test_configuration_survives_dashboard_only_account_branding(monkeypatch, pay
     assert result["invoice_branding"]["status"] == "dashboard_required"
     assert result["environment"]["BILLING_PAYMENT_METHOD_CONFIGURATION"] == "pmc_velora"
     assert result["environment"]["BILLING_CHECKOUT_LOGO_FILE"] == "file_velora-wordmark-light.png"
-    assert result["environment"]["BILLING_PAYPAL_ENABLED"] == str(paypal_available).lower()
-    assert updates["link"]["display_preference"]["preference"] == "off"
-    assert all(updates[name]["display_preference"]["preference"] == "on"
-               for name in ("card", "paypal", "apple_pay", "google_pay"))
+    assert result["environment"]["BILLING_PAYPAL_ENABLED"] == "false"
+    assert updates == {
+        "active": True,
+        "card": {"display_preference": {"preference": "on"}},
+        "paypal": {"display_preference": {"preference": "off"}},
+        "apple_pay": {"display_preference": {"preference": "on"}},
+        "google_pay": {"display_preference": {"preference": "on"}},
+        "revolut_pay": {"display_preference": {"preference": "on"}},
+        "link": {"display_preference": {"preference": "off"}},
+    }
+    assert result["methods"]["revolut_pay"] == {"available": revolut_available, "preference": "on"}

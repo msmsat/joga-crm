@@ -273,46 +273,68 @@
       "delete": "Poista"
     },
     "events": {
-      "dates": {
-        "lesson": "Ajanvaraus",
-        "bookingCreated": "Varaus luotu",
-        "visit": "Käynti",
-        "cancel": "Peruttu",
-        "payment": "Maksettu",
-        "event": "Tapahtuman päivämäärä",
-        "recorded": "Maksu luotu",
-        "paymentUnknown": "Maksupäivää ei tallennettu",
-        "unknown": "Päivämäärää ei tallennettu"
-      },
-      "filterTabs": {
+      "tabs": {
         "all": "Kaikki",
-        "payment": "Maksut",
-        "visit": "Käynnit",
-        "booking": "Varaukset",
-        "cancel": "Peruutukset",
-        "bonus": "Bonukset",
-        "freeze": "Jäädytykset",
-        "completed": "Päättyneet"
+        "visits": "Käynnit",
+        "payments": "Maksut",
+        "bonuses": "Bonukset"
       },
-      "empty": "Ei tapahtumia",
-      "statuses": {
-        "appointment": {
-          "upcoming": "Tulossa",
-          "ongoing": "Käynnissä",
-          "completed": "Valmis",
-          "cancelled": "Peruttu"
+      "ahead": "Tulossa",
+      "state": {
+        "upcoming": "Suunniteltu",
+        "ongoing": "Käynnissä nyt",
+        "attended": "Osallistui",
+        "missed": "Ei saapunut",
+        "done": "Päättynyt",
+        "cancelled": "Peruttu",
+        "payment": "Maksu",
+        "bonusIn": "Pisteitä lisätty",
+        "bonusOut": "Pisteitä käytetty",
+        "freeze": "Jäädytys",
+        "unfreeze": "Jäädytys poistettu"
+      },
+      "pay": {
+        "paid": "Maksettu",
+        "unpaid": "Maksamatta",
+        "subscription": "Sarjakortilla",
+        "free": "Maksuton"
+      },
+      "noMark": "Läsnäoloa ei merkitty",
+      "frozenClient": "Asiakas jäädytetty",
+      "unfrozenClient": "Asiakkaan jäädytys poistettu",
+      "points_one": "{{sign}}{{count}} piste",
+      "points_other": "{{sign}}{{count}} pistettä",
+      "dates": {
+        "unknown": "Päivämäärää ei tallennettu",
+        "paymentUnknown": "Maksupäivää ei tallennettu",
+        "recorded": "Maksu luotu {{date}}",
+        "forLesson": "Käynti {{date}}",
+        "cancelledAt": "Varaus peruttu {{date}}",
+        "cancelUnknown": "Peruutuspäivää ei tallennettu",
+        "bookedAt": "Varattu {{date}}"
+      },
+      "summary": {
+        "visits": "Läsnäolo",
+        "paidTotal": "Maksettu yhteensä",
+        "earned": "Pisteitä lisätty",
+        "spent": "Pisteitä käytetty"
+      },
+      "empty": {
+        "all": {
+          "title": "Ei vielä historiaa",
+          "text": "Asiakkaan varaukset, maksut ja bonukset näkyvät täällä."
         },
-        "attendance": {
-          "attended": "Saapui",
-          "missed": "Ei saapunut",
-          "unknown": "Osallistumista ei vahvistettu"
+        "visits": {
+          "title": "Ei vielä käyntejä",
+          "text": "Suunnitellut, toteutuneet ja perutut käynnit näkyvät täällä."
         },
-        "payment": {
-          "paid": "Maksettu",
-          "unpaid": "Maksamatta",
-          "subscription": "Sarjakortti",
-          "free": "Ilmainen",
-          "unknown": "Maksu tuntematon"
+        "payments": {
+          "title": "Ei vielä maksuja",
+          "text": "Sarjakorttien ostot ja käyntien maksut näkyvät täällä."
+        },
+        "bonuses": {
+          "title": "Ei vielä bonuksia",
+          "text": "Lisätyt ja käytetyt pisteet näkyvät täällä."
         }
       }
     },

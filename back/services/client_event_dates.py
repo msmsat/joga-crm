@@ -34,6 +34,7 @@ def reservation_event(reservation, kind, studio, *, debt_status=None):
         date=scheduled if kind in ("booking", "visit", "completed") else occurred,
         occurred_at=occurred, scheduled_at=scheduled,
         type=kind, title=prefixes[kind] + (lesson.name if lesson else "Занятие"),
+        subject=lesson.name if lesson else None,
         trainer=lesson.teacher_name if lesson else None,
         lesson_id=getattr(lesson, 'id', None),
         notes=getattr(lesson, 'notes', None),

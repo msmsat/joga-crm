@@ -273,46 +273,68 @@
       "delete": "Törlés"
     },
     "events": {
-      "dates": {
-        "lesson": "Időpont",
-        "bookingCreated": "Foglalás létrehozva",
-        "visit": "Látogatás",
-        "cancel": "Lemondva",
-        "payment": "Kifizetve",
-        "event": "Esemény dátuma",
-        "recorded": "Fizetés létrehozva",
-        "paymentUnknown": "A fizetés dátuma nincs rögzítve",
-        "unknown": "A dátum nincs rögzítve"
-      },
-      "filterTabs": {
+      "tabs": {
         "all": "Összes",
-        "payment": "Fizetések",
-        "visit": "Látogatások",
-        "booking": "Foglalások",
-        "cancel": "Lemondások",
-        "bonus": "Bónuszok",
-        "freeze": "Felfüggesztések",
-        "completed": "Befejezettek"
+        "visits": "Alkalmak",
+        "payments": "Fizetések",
+        "bonuses": "Bónuszok"
       },
-      "empty": "Nincsenek események",
-      "statuses": {
-        "appointment": {
-          "upcoming": "Közelgő",
-          "ongoing": "Folyamatban",
-          "completed": "Befejezve",
-          "cancelled": "Lemondva"
+      "ahead": "Közelgő",
+      "state": {
+        "upcoming": "Ütemezve",
+        "ongoing": "Folyamatban",
+        "attended": "Részt vett",
+        "missed": "Nem jelent meg",
+        "done": "Befejeződött",
+        "cancelled": "Lemondva",
+        "payment": "Fizetés",
+        "bonusIn": "Pont jóváírva",
+        "bonusOut": "Pont felhasználva",
+        "freeze": "Felfüggesztés",
+        "unfreeze": "Feloldás"
+      },
+      "pay": {
+        "paid": "Fizetve",
+        "unpaid": "Nincs fizetve",
+        "subscription": "Bérlettel",
+        "free": "Ingyenes"
+      },
+      "noMark": "Részvétel nincs jelölve",
+      "frozenClient": "Ügyfél felfüggesztve",
+      "unfrozenClient": "Ügyfél felfüggesztése feloldva",
+      "points_one": "{{sign}}{{count}} pont",
+      "points_other": "{{sign}}{{count}} pont",
+      "dates": {
+        "unknown": "A dátum nincs rögzítve",
+        "paymentUnknown": "A fizetés dátuma nincs rögzítve",
+        "recorded": "Fizetés létrehozva: {{date}}",
+        "forLesson": "Alkalom: {{date}}",
+        "cancelledAt": "Foglalás lemondva: {{date}}",
+        "cancelUnknown": "A lemondás dátuma nincs rögzítve",
+        "bookedAt": "Foglalva: {{date}}"
+      },
+      "summary": {
+        "visits": "Részvétel",
+        "paidTotal": "Összesen fizetve",
+        "earned": "Jóváírt pontok",
+        "spent": "Felhasznált pontok"
+      },
+      "empty": {
+        "all": {
+          "title": "Még nincs előzmény",
+          "text": "Itt jelennek meg az ügyfél foglalásai, fizetései és bónuszai."
         },
-        "attendance": {
-          "attended": "Eljött",
-          "missed": "Nem jött el",
-          "unknown": "Részvétel nincs megerősítve"
+        "visits": {
+          "title": "Még nincsenek alkalmak",
+          "text": "Itt jelennek meg az ütemezett, teljesített és lemondott alkalmak."
         },
-        "payment": {
-          "paid": "Fizetve",
-          "unpaid": "Nincs fizetve",
-          "subscription": "Bérlet",
-          "free": "Ingyenes",
-          "unknown": "Fizetés ismeretlen"
+        "payments": {
+          "title": "Még nincsenek fizetések",
+          "text": "Itt jelennek meg a bérletvásárlások és az alkalmak fizetései."
+        },
+        "bonuses": {
+          "title": "Még nincsenek bónuszok",
+          "text": "Itt jelennek meg a jóváírt és felhasznált pontok."
         }
       }
     },

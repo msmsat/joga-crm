@@ -6,7 +6,6 @@ import { catalogApi } from '../../../../api/catalog/catalog.api';
 import { loyaltyApi } from '../../../../api/loyalty/loyalty.api';
 import { queryKeys } from '../../../../api/queryKeys';
 import { mapListItem } from '../utils/mapClient';
-import type { EventFilterTab } from '../types';
 
 const PAGE_SIZE = 40;
 const SEARCH_DEBOUNCE_MS = 300;
@@ -100,13 +99,15 @@ export function useClientProfile(clientId: number | null) {
   return { profile, isLoading };
 }
 
-export function useClientEvents(clientId: number, filter: EventFilterTab, enabled: boolean) {
-  const { data: events = [] } = useQuery({
-    queryKey: queryKeys.clientEvents(clientId, filter),
-    queryFn: () => clientsApi.getEvents(clientId, filter),
+/** Вся история клиента одним запросом: вкладки «Событий» делят её на клиенте —
+ * переключение без ожидания, и счётчики на вкладках сходятся со списком. */
+export function useClientEvents(clientId: number, enabled: boolean) {
+  const { data: events = [], isPending, isError, isFetching, refetch } = useQuery({
+    queryKey: queryKeys.clientEvents(clientId, 'all'),
+    queryFn: () => clientsApi.getEvents(clientId, 'all'),
     enabled,
   });
-  return events;
+  return { events, isLoading: enabled && isPending, isError, isFetching, refetch };
 }
 
 /** Активные и архивные продукты клиента (вкладка «Кошелёк», CL-6.6). */

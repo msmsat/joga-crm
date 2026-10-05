@@ -273,46 +273,68 @@
       "delete": "Slett"
     },
     "events": {
-      "dates": {
-        "lesson": "Avtale",
-        "bookingCreated": "Bestilling opprettet",
-        "visit": "Besøk",
-        "cancel": "Avbestilt",
-        "payment": "Betalt",
-        "event": "Hendelsesdato",
-        "recorded": "Betaling opprettet",
-        "paymentUnknown": "Betalingsdato ikke registrert",
-        "unknown": "Dato ikke registrert"
-      },
-      "filterTabs": {
+      "tabs": {
         "all": "Alle",
-        "payment": "Betalinger",
-        "visit": "Besøk",
-        "booking": "Bestillinger",
-        "cancel": "Avbestillinger",
-        "bonus": "Bonus",
-        "freeze": "Frysinger",
-        "completed": "Fullførte"
+        "visits": "Timer",
+        "payments": "Betalinger",
+        "bonuses": "Bonus"
       },
-      "empty": "Ingen hendelser",
-      "statuses": {
-        "appointment": {
-          "upcoming": "Kommende",
-          "ongoing": "Pågår",
-          "completed": "Fullført",
-          "cancelled": "Avlyst"
+      "ahead": "Kommende",
+      "state": {
+        "upcoming": "Planlagt",
+        "ongoing": "Pågår nå",
+        "attended": "Møtte opp",
+        "missed": "Uteble",
+        "done": "Fullført",
+        "cancelled": "Avlyst",
+        "payment": "Betaling",
+        "bonusIn": "Poeng lagt til",
+        "bonusOut": "Poeng brukt",
+        "freeze": "Frysing",
+        "unfreeze": "Frysing opphevet"
+      },
+      "pay": {
+        "paid": "Betalt",
+        "unpaid": "Ikke betalt",
+        "subscription": "Klippekort",
+        "free": "Gratis"
+      },
+      "noMark": "Oppmøte ikke registrert",
+      "frozenClient": "Kunden er fryst",
+      "unfrozenClient": "Frysingen er opphevet",
+      "points_one": "{{sign}}{{count}} poeng",
+      "points_other": "{{sign}}{{count}} poeng",
+      "dates": {
+        "unknown": "Dato ikke registrert",
+        "paymentUnknown": "Betalingsdato ikke registrert",
+        "recorded": "Betaling opprettet {{date}}",
+        "forLesson": "For timen {{date}}",
+        "cancelledAt": "Bestilling avlyst {{date}}",
+        "cancelUnknown": "Avlysningsdato ikke registrert",
+        "bookedAt": "Bestilt {{date}}"
+      },
+      "summary": {
+        "visits": "Oppmøte",
+        "paidTotal": "Betalt totalt",
+        "earned": "Poeng lagt til",
+        "spent": "Poeng brukt"
+      },
+      "empty": {
+        "all": {
+          "title": "Ingen historikk ennå",
+          "text": "Kundens bestillinger, betalinger og bonuser vises her."
         },
-        "attendance": {
-          "attended": "Møtt",
-          "missed": "Møtte ikke",
-          "unknown": "Oppmøte ikke bekreftet"
+        "visits": {
+          "title": "Ingen timer ennå",
+          "text": "Planlagte, fullførte og avlyste timer vises her."
         },
-        "payment": {
-          "paid": "Betalt",
-          "unpaid": "Ikke betalt",
-          "subscription": "Klippekort",
-          "free": "Gratis",
-          "unknown": "Betaling ukjent"
+        "payments": {
+          "title": "Ingen betalinger ennå",
+          "text": "Kjøp av klippekort og betalinger for timer vises her."
+        },
+        "bonuses": {
+          "title": "Ingen bonuser ennå",
+          "text": "Poeng lagt til og brukt vises her."
         }
       }
     },

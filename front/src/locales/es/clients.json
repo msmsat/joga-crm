@@ -273,46 +273,68 @@
       "delete": "Eliminar"
     },
     "events": {
-      "dates": {
-        "lesson": "Cita",
-        "bookingCreated": "Reserva creada",
-        "visit": "Visita",
-        "cancel": "Cancelado",
-        "payment": "Pagado",
-        "event": "Fecha del evento",
-        "recorded": "Pago creado",
-        "paymentUnknown": "Fecha de pago no registrada",
-        "unknown": "Fecha no registrada"
-      },
-      "filterTabs": {
+      "tabs": {
         "all": "Todos",
-        "payment": "Pagos",
-        "visit": "Visitas",
-        "booking": "Reservas",
-        "cancel": "Cancelaciones",
-        "bonus": "Bonus",
-        "freeze": "Congelaciones",
-        "completed": "Finalizadas"
+        "visits": "Citas",
+        "payments": "Pagos",
+        "bonuses": "Bonus"
       },
-      "empty": "No hay eventos",
-      "statuses": {
-        "appointment": {
-          "upcoming": "Próxima",
-          "ongoing": "En curso",
-          "completed": "Finalizado",
-          "cancelled": "Cancelado"
+      "ahead": "Próximas",
+      "state": {
+        "upcoming": "Programada",
+        "ongoing": "En curso",
+        "attended": "Asistencia",
+        "missed": "Ausencia",
+        "done": "Finalizada",
+        "cancelled": "Cancelada",
+        "payment": "Pago",
+        "bonusIn": "Puntos sumados",
+        "bonusOut": "Puntos canjeados",
+        "freeze": "Congelación",
+        "unfreeze": "Descongelación"
+      },
+      "pay": {
+        "paid": "Pagado",
+        "unpaid": "Sin pagar",
+        "subscription": "Con bono",
+        "free": "Gratis"
+      },
+      "noMark": "Asistencia sin marcar",
+      "frozenClient": "Cliente congelado",
+      "unfrozenClient": "Cliente descongelado",
+      "points_one": "{{sign}}{{count}} punto",
+      "points_other": "{{sign}}{{count}} puntos",
+      "dates": {
+        "unknown": "Fecha no registrada",
+        "paymentUnknown": "Fecha de pago no registrada",
+        "recorded": "Pago creado el {{date}}",
+        "forLesson": "Por la cita del {{date}}",
+        "cancelledAt": "Reserva cancelada el {{date}}",
+        "cancelUnknown": "Fecha de cancelación no registrada",
+        "bookedAt": "Reservada el {{date}}"
+      },
+      "summary": {
+        "visits": "Asistencia",
+        "paidTotal": "Pagado en total",
+        "earned": "Puntos sumados",
+        "spent": "Puntos canjeados"
+      },
+      "empty": {
+        "all": {
+          "title": "Aún no hay historial",
+          "text": "Aquí aparecerán las citas, pagos y bonus del cliente."
         },
-        "attendance": {
-          "attended": "Asistió",
-          "missed": "No vino",
-          "unknown": "Asistencia sin confirmar"
+        "visits": {
+          "title": "Aún no hay citas",
+          "text": "Aquí aparecerán las citas programadas, asistidas y canceladas."
         },
-        "payment": {
-          "paid": "Pagado",
-          "unpaid": "Sin pagar",
-          "subscription": "Bono",
-          "free": "Gratis",
-          "unknown": "Pago desconocido"
+        "payments": {
+          "title": "Aún no hay pagos",
+          "text": "Aquí aparecerán las compras de bonos y los pagos de citas."
+        },
+        "bonuses": {
+          "title": "Aún no hay bonus",
+          "text": "Aquí aparecerán los puntos sumados y canjeados."
         }
       }
     },

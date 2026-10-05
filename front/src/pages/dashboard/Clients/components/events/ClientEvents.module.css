@@ -1,0 +1,264 @@
+/*
+ * Вкладка «События» карточки клиента: переключатель, сводка вкладки и лента.
+ * Цвет — смысл, а не украшение: у каждого состояния свой тон (подпись строки,
+ * кружок со значком, сегмент полосы и точка легенды берут его из --tone).
+ * Тёмная тема переопределяет только сами тона: подложки смешиваются из них.
+ */
+
+.root {
+  --c-attended: #3D8150;
+  --c-upcoming: #3B6FB0;
+  --c-missed: #94661A;
+  --c-cancelled: #B0566B;
+  --c-payment: #21776A;
+  --c-bonus: #8A6B1C;
+  --c-freeze: #3E6D99;
+  --c-neutral: var(--text2);
+  /* Заливки (полоса, точки легенды) — мягкие в обеих темах: тёмные тона
+     текста полосой на светлом фоне читались почти чёрными. */
+  --f-attended: #8CC79B;
+  --f-upcoming: #8DB3E2;
+  --f-missed: #E0B566;
+  --f-cancelled: #E59AAB;
+  --f-neutral: #CBCBCB;
+  min-width: 0;
+}
+:global(:root.dark) .root {
+  --c-attended: #8CC79B;
+  --c-upcoming: #8DB3E2;
+  --c-missed: #E0B566;
+  --c-cancelled: #E59AAB;
+  --c-payment: #7CC6B8;
+  --c-bonus: #E2C46E;
+  --c-freeze: #93B5D8;
+  --f-neutral: #6B6B6B;
+}
+
+.attended { --tone: var(--c-attended); --fill: var(--f-attended); }
+.upcoming, .ongoing { --tone: var(--c-upcoming); --fill: var(--f-upcoming); }
+.missed { --tone: var(--c-missed); --fill: var(--f-missed); }
+.cancelled { --tone: var(--c-cancelled); --fill: var(--f-cancelled); }
+.done, .bonusOut { --tone: var(--c-neutral); --fill: var(--f-neutral); }
+.payment { --tone: var(--c-payment); }
+.bonusIn { --tone: var(--c-bonus); }
+.freeze, .unfreeze { --tone: var(--c-freeze); }
+
+/* ── Переключатель: прилипает к верху, пока листается длинная история ── */
+.tabs {
+  position: sticky;
+  top: -16px;              /* паддинг тела панели: прилипает вплотную к шапке */
+  z-index: 2;
+  margin: -16px 0 0;
+  padding: 16px 0 16px;
+  background: var(--bg-card);
+}
+
+.pane { animation: paneIn 0.22s ease both; }
+@keyframes paneIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+/* ── Сводка вкладки ── */
+.summary {
+  padding: 14px 14px 12px;
+  border-radius: 14px;
+  background: rgba(var(--ink), 0.03);
+  margin-bottom: 22px;
+}
+.summaryTitle { font-size: 12px; font-weight: 700; color: var(--text2); margin-bottom: 10px; }
+
+.bar {
+  display: flex;
+  gap: 3px;
+  height: 8px;
+  margin-bottom: 12px;
+}
+.barPart {
+  min-width: 6px;
+  border-radius: 99px;
+  background: var(--fill);
+  transform-origin: left center;
+}
+
+/* Легенда переносится строкой, а не режется колонками: подписи на 22 языках
+   разной длины, а «Явка не отмечена» в полколонки уже не помещалась. */
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px 14px;
+}
+.legendRow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text2);
+  white-space: nowrap;
+}
+.legendDot { width: 8px; height: 8px; flex-shrink: 0; border-radius: 50%; background: var(--fill); }
+.legendCount {
+  font-weight: 800;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.figure { font-size: 24px; font-weight: 800; letter-spacing: -0.6px; color: var(--tone); line-height: 1.1; font-variant-numeric: tabular-nums; }
+.figures { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.figureLabel { font-size: 12px; font-weight: 600; color: var(--text3); margin-top: 4px; }
+
+/* ── Группы ленты ── */
+.group + .group { margin-top: 8px; }
+.groupTitle {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 0 0 14px;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: -0.1px;
+  color: var(--text);
+}
+.groupCount { font-size: 12px; font-weight: 700; color: var(--text3); font-variant-numeric: tabular-nums; }
+
+/* Будущее — на своей подложке: его не спутать с историей ниже. */
+.ahead {
+  padding: 14px 12px 2px;
+  margin: 0 -2px 24px;
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--c-upcoming) 7%, transparent);
+}
+.ahead .groupTitle { color: var(--c-upcoming); }
+
+/* ── Событие ── */
+.list { list-style: none; margin: 0; padding: 0; }
+.item {
+  position: relative;
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr);
+  column-gap: 12px;
+  padding-bottom: 18px;
+}
+/* Нить ленты: от кружка до следующего события. */
+.item::before {
+  content: '';
+  position: absolute;
+  left: 14px;
+  top: 36px;
+  bottom: 4px;
+  width: 2px;
+  border-radius: 2px;
+  background: rgba(var(--ink), 0.07);
+}
+.item:last-child::before { display: none; }
+
+.node {
+  position: relative;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: var(--tone);
+  background: color-mix(in srgb, var(--tone) 14%, transparent);
+}
+/* «Идёт сейчас» — единственное, что шевелится в ленте. */
+.ongoing .node::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  border: 2px solid var(--tone);
+  animation: pulse 1.8s ease-out infinite;
+}
+@keyframes pulse { from { opacity: 0.7; transform: scale(0.9); } to { opacity: 0; transform: scale(1.25); } }
+
+.body { min-width: 0; padding-top: 1px; }
+.line {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+.state { font-size: 11.5px; font-weight: 800; color: var(--tone); overflow-wrap: anywhere; }
+.when {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--text3);
+  overflow-wrap: anywhere;
+  font-variant-numeric: tabular-nums;
+}
+.title {
+  flex: 1 1 120px;
+  margin-top: 2px;
+  font-size: 13.5px;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+.cancelled .title {
+  color: var(--text2);
+  text-decoration: line-through;
+  text-decoration-color: color-mix(in srgb, var(--c-cancelled) 55%, transparent);
+  text-decoration-thickness: 1.5px;
+}
+.value {
+  flex-shrink: 0;
+  font-size: 13.5px;
+  font-weight: 800;
+  color: var(--tone);
+  font-variant-numeric: tabular-nums;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px 8px;
+  margin-top: 5px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text3);
+}
+.metaNote { display: block; margin-top: 3px; font-size: 12px; color: var(--text3); line-height: 1.45; }
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 7px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text2);
+  background: rgba(var(--ink), 0.05);
+}
+.chipGood { color: var(--c-attended); background: color-mix(in srgb, var(--c-attended) 12%, transparent); }
+.chipBad { color: var(--c-cancelled); background: color-mix(in srgb, var(--c-cancelled) 13%, transparent); }
+
+.note {
+  margin-top: 8px;
+  padding: 9px 11px;
+  border-radius: 10px;
+  background: rgba(var(--ink), 0.035);
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--text2);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* ── Загрузка: те же размеры, что у строки, — лента не прыгает ── */
+.skeleton { composes: item; }
+.skelNode, .skelLine {
+  background: rgba(var(--ink), 0.06);
+  animation: shimmer 1.2s ease-in-out infinite alternate;
+}
+.skelNode { width: 30px; height: 30px; border-radius: 50%; }
+.skelLine { height: 10px; border-radius: 6px; margin-top: 4px; }
+@keyframes shimmer { from { opacity: 0.55; } to { opacity: 1; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .pane, .barPart, .skelNode, .skelLine, .ongoing .node::after { animation: none; }
+}

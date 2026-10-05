@@ -107,6 +107,12 @@ class EventRecordOut(BaseSchema):
     recorded_at: Optional[str] = None
     type: str
     title: str
+    # What the event is about, without the timeline prefix of `title`
+    # («Запись: …»): the lesson name or the subscription. The card names the
+    # kind of event itself, in the viewer's language.
+    subject: Optional[str] = None
+    # Freeze rows only: the same type covers both directions.
+    freeze_action: Optional[Literal["freeze", "unfreeze"]] = None
     trainer: Optional[str] = None
     paid: Optional[str] = None
     amount: Optional[str] = None

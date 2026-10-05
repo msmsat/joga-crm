@@ -169,20 +169,119 @@ def test_automatic_tax_still_requires_a_stripe_tax_registration(monkeypatch):
     assert any("ни одной активной" in error for error in preflight._ERRORS)
 
 
-def test_unavailable_paypal_warning_describes_one_time_payments(monkeypatch):
+@pytest.fixture
+def billing_checkout(monkeypatch):
     monkeypatch.setenv("BILLING_PAYMENT_METHOD_CONFIGURATION", "pmc_fake")
     monkeypatch.setenv("BILLING_CHECKOUT_LOGO_FILE", "file_fake")
     monkeypatch.setenv("BILLING_PAYPAL_ENABLED", "false")
     monkeypatch.setattr(stripe_connect, "configured", lambda: True)
     methods = {
         method: NS(available=method not in ("paypal", "link"),
-                   display_preference=NS(value="off" if method == "link" else "on"))
-        for method in ("card", "paypal", "apple_pay", "google_pay", "link")
+                   display_preference=NS(value="off" if method in ("paypal", "link") else "on"))
+        for method in ("card", "paypal", "apple_pay", "google_pay", "revolut_pay", "link")
     }
     configuration = NS(livemode=False, active=True, **methods)
-    monkeypatch.setattr(stripe.PaymentMethodConfiguration, "retrieve", lambda _: configuration)
+
+    def retrieve(configuration_id):
+        assert configuration_id == "pmc_fake"
+        return configuration
+
+    def unexpected_write(*args, **kwargs):
+        pytest.fail("Checkout preflight must be read-only")
+
+    monkeypatch.setattr(stripe.PaymentMethodConfiguration, "retrieve", retrieve)
+    monkeypatch.setattr(stripe.PaymentMethodConfiguration, "create", unexpected_write)
+    monkeypatch.setattr(stripe.PaymentMethodConfiguration, "modify", unexpected_write)
+    monkeypatch.setattr(stripe.Account, "modify", unexpected_write)
+    return configuration
+
+
+@pytest.mark.parametrize("legacy_flag", ["false", "true"])
+def test_unavailable_paypal_is_ready_when_intentionally_disabled(monkeypatch, billing_checkout, legacy_flag):
+    monkeypatch.setenv("BILLING_PAYPAL_ENABLED", legacy_flag)
     asyncio.run(preflight.check_billing_checkout())
     assert preflight._ERRORS == []
-    paypal = next(message for message in preflight._WARNINGS if "PayPal" in message)
-    assert "recurring" not in paypal
-    assert "подписок" not in paypal
+    assert preflight._WARNINGS == []
+
+
+def test_checkout_preflight_blocks_accidentally_enabled_paypal(billing_checkout):
+    billing_checkout.paypal.available = True
+    billing_checkout.paypal.display_preference.value = "on"
+    asyncio.run(preflight.check_billing_checkout())
+    assert len(preflight._ERRORS) == 1
+    assert "PayPal" in preflight._ERRORS[0]
+    assert preflight._WARNINGS == []
+
+
+@pytest.mark.parametrize("available,preference", [(False, "on"), (True, "off")])
+def test_revolut_readiness_warning_preserves_card_and_wallet_checkout(billing_checkout, available, preference):
+    billing_checkout.revolut_pay.available = available
+    billing_checkout.revolut_pay.display_preference.value = preference
+    asyncio.run(preflight.check_billing_checkout())
+    assert preflight._ERRORS == []
+    assert len(preflight._WARNINGS) == 1
+    assert "Revolut Pay" in preflight._WARNINGS[0]
+
+
+def test_missing_revolut_option_is_a_readiness_warning(billing_checkout):
+    del billing_checkout.revolut_pay
+    asyncio.run(preflight.check_billing_checkout())
+    assert preflight._ERRORS == []
+    assert len(preflight._WARNINGS) == 1
+    assert "Revolut Pay" in preflight._WARNINGS[0]
+
+
+@pytest.mark.parametrize("available,preference", [(False, "on"), (True, "off")])
+def test_checkout_preflight_still_blocks_unusable_cards(billing_checkout, available, preference):
+    billing_checkout.card.available = available
+    billing_checkout.card.display_preference.value = preference
+    asyncio.run(preflight.check_billing_checkout())
+    assert len(preflight._ERRORS) == 1
+    assert "карт" in preflight._ERRORS[0]
+    assert preflight._WARNINGS == []
+
+
+def test_checkout_preflight_still_blocks_enabled_link(billing_checkout):
+    billing_checkout.link.display_preference.value = "on"
+    asyncio.run(preflight.check_billing_checkout())
+    assert len(preflight._ERRORS) == 1
+    assert "Link" in preflight._ERRORS[0]
+    assert preflight._WARNINGS == []
+
+
+@pytest.mark.parametrize("missing", ["refund.created", "refund.updated", "refund.failed"])
+def test_platform_webhook_missing_refund_finality_event_is_a_blocker(monkeypatch, missing):
+    billing_events = {
+        "checkout.session.completed", "checkout.session.async_payment_succeeded",
+        "checkout.session.async_payment_failed", "checkout.session.expired",
+        "customer.subscription.created", "customer.subscription.updated",
+        "customer.subscription.deleted", "invoice.paid", "invoice.payment_failed",
+        "charge.refunded", "charge.dispute.closed", "setup_intent.succeeded",
+        "customer.tax_id.updated", "refund.created", "refund.updated", "refund.failed",
+    }
+    billing_events.remove(missing)
+    endpoints = [
+        NS(url="https://api.velora.test/billing/webhook/stripe", status="enabled",
+           enabled_events=list(billing_events)),
+        NS(url="https://api.velora.test/checkout/webhook/stripe", status="enabled",
+           enabled_events=["*"]),
+    ]
+    monkeypatch.setattr(stripe.WebhookEndpoint, "list", lambda **kwargs: NS(data=endpoints))
+    asyncio.run(preflight.check_webhook_endpoints())
+    assert len(preflight._ERRORS) == 1
+    assert missing in preflight._ERRORS[0]
+
+
+def test_refund_finality_events_are_not_required_from_studio_checkout(monkeypatch):
+    endpoints = [
+        NS(url="https://api.velora.test/billing/webhook/stripe", status="enabled",
+           enabled_events=["*"]),
+        NS(url="https://api.velora.test/checkout/webhook/stripe", status="enabled",
+           enabled_events=["checkout.session.completed", "checkout.session.expired",
+                           "checkout.session.async_payment_succeeded",
+                           "checkout.session.async_payment_failed", "charge.refunded",
+                           "charge.dispute.created", "charge.dispute.closed"]),
+    ]
+    monkeypatch.setattr(stripe.WebhookEndpoint, "list", lambda **kwargs: NS(data=endpoints))
+    asyncio.run(preflight.check_webhook_endpoints())
+    assert preflight._ERRORS == []

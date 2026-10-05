@@ -600,14 +600,15 @@ async def get_client_events(
         for sub in rows:
             occurred = action_stamp(sub.frozen_at, studio)
             events.append(EventRecordOut(date=occurred, occurred_at=occurred,
-                type="freeze", title=f"Заморозка: {sub.type}"))
+                type="freeze", title=f"Заморозка: {sub.type}", subject=sub.type, freeze_action="freeze"))
         logs = (await db.execute(select(ActivityLog).where(
             ActivityLog.studio_id == studio_id, ActivityLog.entity_type == "client",
             ActivityLog.entity_id == client_id, ActivityLog.event_type.in_(("freeze", "unfreeze")),
         ))).scalars().all()
         for log in logs:
             occurred = action_stamp(log.created_at, studio)
-            events.append(EventRecordOut(date=occurred, occurred_at=occurred, type="freeze", title=log.title))
+            events.append(EventRecordOut(date=occurred, occurred_at=occurred, type="freeze", title=log.title,
+                freeze_action=log.event_type))
 
     events.sort(key=lambda event: event_order(event, studio), reverse=True)
     return events

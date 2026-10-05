@@ -4,7 +4,7 @@ import type { ReactNode } from 'react';
 export interface EmptyStateProps {
   title: string;
   text?: string;
-  icon?: 'chart' | 'clients' | 'calendar' | 'money' | 'search';
+  icon?: 'chart' | 'clients' | 'calendar' | 'money' | 'gift' | 'search';
   action?: ReactNode;
   size?: 'sm' | 'lg';
 }
@@ -31,6 +31,12 @@ const ICON_PATHS: Record<NonNullable<EmptyStateProps['icon']>, ReactNode> = {
     <>
       <circle cx="12" cy="12" r="7" />
       <path d="M12 8.3v7.4M14.2 10c-.3-.8-1-1.2-2-1.2-1.2 0-2 .6-2 1.5s.8 1.2 2 1.4c1.3.2 2.1.6 2.1 1.6 0 .9-.9 1.5-2.1 1.5-1 0-1.8-.4-2.1-1.2" />
+    </>
+  ),
+  gift: (
+    <>
+      <rect x="5.5" y="10" width="13" height="8.5" rx="1.5" />
+      <path d="M4.5 7.5h15v2.5h-15zM12 7.5v11M12 7.5c-1-2.4-4.2-2.8-4.2-.9 0 .9 1.3.9 4.2.9zM12 7.5c1-2.4 4.2-2.8 4.2-.9 0 .9-1.3.9-4.2.9z" />
     </>
   ),
   search: (

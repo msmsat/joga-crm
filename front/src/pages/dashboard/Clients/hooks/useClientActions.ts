@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import type { EventFilterTab } from '../types';
+import type { EventTab } from '../utils/clientEvents';
 import type { ClientUpdate } from '../../../../api/clients/clients.types';
 import { queryKeys } from '../../../../api/queryKeys';
 import { useToast } from '../../../../components/ui/Toast';
@@ -32,7 +32,7 @@ export function useClientActions(clientId: number) {
   const [notePhotos, setNotePhotos]       = useState<string[]>([]);
   const [showBonus, setShowBonus]         = useState(false);
   const [selectedBonus, setSelectedBonus] = useState<string | null>(null);
-  const [eventFilter, setEventFilter]     = useState<EventFilterTab>('all');
+  const [eventFilter, setEventFilter]     = useState<EventTab>('all');
 
   // Панель больше не перемонтируется при смене клиента (без миганий/скачков) —
   // закрываем открытые подпанели вручную вместо остатка со старого клиента.

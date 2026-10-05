@@ -76,6 +76,10 @@ export interface EventRecord {
   attendance_status?: 'expected' | 'attended' | 'missed' | 'unknown' | 'cancelled' | null
   payment_status?: 'paid' | 'unpaid' | 'subscription' | 'free' | 'unknown' | null
   title: string
+  /** Lesson or subscription name without the «Запись: »-style prefix of title. */
+  subject?: string | null
+  /** Freeze rows only: the same type covers freezing and unfreezing. */
+  freeze_action?: 'freeze' | 'unfreeze' | null
   trainer: string | null
   paid: string | null
   amount: string | null

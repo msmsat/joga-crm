@@ -273,46 +273,68 @@
       "delete": "Sil"
     },
     "events": {
-      "dates": {
-        "lesson": "Randevu",
-        "bookingCreated": "Rezervasyon oluşturuldu",
-        "visit": "Ziyaret",
-        "cancel": "İptal edildi",
-        "payment": "Ödendi",
-        "event": "Etkinlik tarihi",
-        "recorded": "Ödeme oluşturuldu",
-        "paymentUnknown": "Ödeme tarihi kaydedilmedi",
-        "unknown": "Tarih kaydedilmedi"
-      },
-      "filterTabs": {
+      "tabs": {
         "all": "Tümü",
-        "payment": "Ödemeler",
-        "visit": "Ziyaretler",
-        "booking": "Rezervasyonlar",
-        "cancel": "İptaller",
-        "bonus": "Bonuslar",
-        "freeze": "Dondurmalar",
-        "completed": "Tamamlanan"
+        "visits": "Seanslar",
+        "payments": "Ödemeler",
+        "bonuses": "Bonuslar"
       },
-      "empty": "Etkinlik yok",
-      "statuses": {
-        "appointment": {
-          "upcoming": "Yaklaşan",
-          "ongoing": "Devam ediyor",
-          "completed": "Tamamlandı",
-          "cancelled": "İptal edildi"
+      "ahead": "Yaklaşan",
+      "state": {
+        "upcoming": "Planlandı",
+        "ongoing": "Şu an sürüyor",
+        "attended": "Katıldı",
+        "missed": "Gelmedi",
+        "done": "Tamamlandı",
+        "cancelled": "İptal edildi",
+        "payment": "Ödeme",
+        "bonusIn": "Puan eklendi",
+        "bonusOut": "Puan kullanıldı",
+        "freeze": "Dondurma",
+        "unfreeze": "Dondurma kaldırıldı"
+      },
+      "pay": {
+        "paid": "Ödendi",
+        "unpaid": "Ödenmedi",
+        "subscription": "Üyelikle",
+        "free": "Ücretsiz"
+      },
+      "noMark": "Katılım işaretlenmedi",
+      "frozenClient": "Müşteri donduruldu",
+      "unfrozenClient": "Müşterinin dondurması kaldırıldı",
+      "points_one": "{{sign}}{{count}} puan",
+      "points_other": "{{sign}}{{count}} puan",
+      "dates": {
+        "unknown": "Tarih kaydedilmedi",
+        "paymentUnknown": "Ödeme tarihi kaydedilmedi",
+        "recorded": "Ödeme oluşturuldu: {{date}}",
+        "forLesson": "Seans: {{date}}",
+        "cancelledAt": "Rezervasyon iptal edildi: {{date}}",
+        "cancelUnknown": "İptal tarihi kaydedilmedi",
+        "bookedAt": "Rezervasyon: {{date}}"
+      },
+      "summary": {
+        "visits": "Katılım",
+        "paidTotal": "Toplam ödenen",
+        "earned": "Eklenen puan",
+        "spent": "Kullanılan puan"
+      },
+      "empty": {
+        "all": {
+          "title": "Henüz geçmiş yok",
+          "text": "Müşterinin rezervasyonları, ödemeleri ve bonusları burada görünecek."
         },
-        "attendance": {
-          "attended": "Geldi",
-          "missed": "Gelmedi",
-          "unknown": "Katılım doğrulanmadı"
+        "visits": {
+          "title": "Henüz seans yok",
+          "text": "Planlanan, katılınan ve iptal edilen seanslar burada görünecek."
         },
-        "payment": {
-          "paid": "Ödendi",
-          "unpaid": "Ödenmedi",
-          "subscription": "Üyelik",
-          "free": "Ücretsiz",
-          "unknown": "Ödeme bilinmiyor"
+        "payments": {
+          "title": "Henüz ödeme yok",
+          "text": "Üyelik satın alımları ve seans ödemeleri burada görünecek."
+        },
+        "bonuses": {
+          "title": "Henüz bonus yok",
+          "text": "Eklenen ve kullanılan puanlar burada görünecek."
         }
       }
     },

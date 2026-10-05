@@ -273,46 +273,68 @@
       "delete": "Ta bort"
     },
     "events": {
-      "dates": {
-        "lesson": "Bokning",
-        "bookingCreated": "Bokning skapad",
-        "visit": "Besök",
-        "cancel": "Avbokat",
-        "payment": "Betalt",
-        "event": "Händelsedatum",
-        "recorded": "Betalning skapad",
-        "paymentUnknown": "Betalningsdatum inte registrerat",
-        "unknown": "Datum inte registrerat"
-      },
-      "filterTabs": {
+      "tabs": {
         "all": "Alla",
-        "payment": "Betalningar",
-        "visit": "Besök",
-        "booking": "Bokningar",
-        "cancel": "Avbokningar",
-        "bonus": "Bonus",
-        "freeze": "Frysningar",
-        "completed": "Avslutade"
+        "visits": "Besök",
+        "payments": "Betalningar",
+        "bonuses": "Bonus"
       },
-      "empty": "Inga händelser",
-      "statuses": {
-        "appointment": {
-          "upcoming": "Kommande",
-          "ongoing": "Pågår",
-          "completed": "Avslutad",
-          "cancelled": "Avbokad"
+      "ahead": "Kommande",
+      "state": {
+        "upcoming": "Planerat",
+        "ongoing": "Pågår nu",
+        "attended": "Närvarade",
+        "missed": "Uteblev",
+        "done": "Avslutat",
+        "cancelled": "Avbokat",
+        "payment": "Betalning",
+        "bonusIn": "Poäng tillagda",
+        "bonusOut": "Poäng använda",
+        "freeze": "Frysning",
+        "unfreeze": "Upptining"
+      },
+      "pay": {
+        "paid": "Betalt",
+        "unpaid": "Obetalt",
+        "subscription": "Med klippkort",
+        "free": "Gratis"
+      },
+      "noMark": "Närvaro inte markerad",
+      "frozenClient": "Kunden fryst",
+      "unfrozenClient": "Kunden upptinad",
+      "points_one": "{{sign}}{{count}} poäng",
+      "points_other": "{{sign}}{{count}} poäng",
+      "dates": {
+        "unknown": "Datum inte registrerat",
+        "paymentUnknown": "Betalningsdatum inte registrerat",
+        "recorded": "Betalning skapad {{date}}",
+        "forLesson": "För besöket {{date}}",
+        "cancelledAt": "Bokning avbokad {{date}}",
+        "cancelUnknown": "Avbokningsdatum inte registrerat",
+        "bookedAt": "Bokat {{date}}"
+      },
+      "summary": {
+        "visits": "Närvaro",
+        "paidTotal": "Betalt totalt",
+        "earned": "Poäng tillagda",
+        "spent": "Poäng använda"
+      },
+      "empty": {
+        "all": {
+          "title": "Ingen historik än",
+          "text": "Kundens bokningar, betalningar och bonusar visas här."
         },
-        "attendance": {
-          "attended": "Kom",
-          "missed": "Kom inte",
-          "unknown": "Närvaro ej bekräftad"
+        "visits": {
+          "title": "Inga besök än",
+          "text": "Planerade, genomförda och avbokade besök visas här."
         },
-        "payment": {
-          "paid": "Betald",
-          "unpaid": "Obetald",
-          "subscription": "Klippkort",
-          "free": "Gratis",
-          "unknown": "Betalning okänd"
+        "payments": {
+          "title": "Inga betalningar än",
+          "text": "Köp av klippkort och betalningar för besök visas här."
+        },
+        "bonuses": {
+          "title": "Inga bonusar än",
+          "text": "Tillagda och använda poäng visas här."
         }
       }
     },

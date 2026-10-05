@@ -21,8 +21,8 @@ def branding_settings() -> dict:
 
 
 def payment_method_params() -> dict:
-    # The dedicated configuration enables card, Apple Pay, Google Pay and PayPal,
-    # with Link off. Stripe checks eligibility, including recurring PayPal approval.
+    # The dedicated configuration enables card, Apple Pay, Google Pay and Revolut Pay,
+    # with PayPal and Link off. Stripe checks account and customer eligibility.
     configuration = (os.getenv("BILLING_PAYMENT_METHOD_CONFIGURATION") or "").strip()
     if configuration:
         return {"payment_method_configuration": configuration}
@@ -31,6 +31,5 @@ def payment_method_params() -> dict:
 
 
 def paypal_invoices_enabled() -> bool:
-    # Set only after the account's PayPal integration is approved. Explicitly
-    # adding an unavailable payment method would prevent invoice finalization.
-    return (os.getenv("BILLING_PAYPAL_ENABLED") or "").strip().lower() in ("1", "true", "yes")
+    """PayPal is disabled for Velora invoices; legacy environment flags are ignored."""
+    return False

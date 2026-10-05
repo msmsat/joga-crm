@@ -42,5 +42,3 @@ export interface ClientData {
 }
 
 export type { EventRecord } from '../../../api/clients/clients.types';
-
-export type EventFilterTab = 'all' | 'payment' | 'visit' | 'completed' | 'cancel' | 'bonus';

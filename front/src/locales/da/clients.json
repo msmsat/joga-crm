@@ -273,46 +273,68 @@
       "delete": "Slet"
     },
     "events": {
-      "dates": {
-        "lesson": "Aftale",
-        "bookingCreated": "Reservation oprettet",
-        "visit": "Besøg",
-        "cancel": "Annulleret",
-        "payment": "Betalt",
-        "event": "Hændelsesdato",
-        "recorded": "Betaling oprettet",
-        "paymentUnknown": "Betalingsdato ikke registreret",
-        "unknown": "Dato ikke registreret"
-      },
-      "filterTabs": {
+      "tabs": {
         "all": "Alle",
-        "payment": "Betalinger",
-        "visit": "Besøg",
-        "booking": "Bookinger",
-        "cancel": "Annulleringer",
-        "bonus": "Bonuspoint",
-        "freeze": "Pauser",
-        "completed": "Afsluttede"
+        "visits": "Besøg",
+        "payments": "Betalinger",
+        "bonuses": "Bonus"
       },
-      "empty": "Ingen hændelser",
-      "statuses": {
-        "appointment": {
-          "upcoming": "Kommende",
-          "ongoing": "I gang",
-          "completed": "Afsluttet",
-          "cancelled": "Aflyst"
+      "ahead": "Kommende",
+      "state": {
+        "upcoming": "Planlagt",
+        "ongoing": "I gang",
+        "attended": "Fremmødt",
+        "missed": "Udeblevet",
+        "done": "Afsluttet",
+        "cancelled": "Aflyst",
+        "payment": "Betaling",
+        "bonusIn": "Point tilføjet",
+        "bonusOut": "Point brugt",
+        "freeze": "Pause",
+        "unfreeze": "Genaktivering"
+      },
+      "pay": {
+        "paid": "Betalt",
+        "unpaid": "Ikke betalt",
+        "subscription": "Klippekort",
+        "free": "Gratis"
+      },
+      "noMark": "Fremmøde ikke registreret",
+      "frozenClient": "Kunden er sat på pause",
+      "unfrozenClient": "Kunden er genaktiveret",
+      "points_one": "{{sign}}{{count}} point",
+      "points_other": "{{sign}}{{count}} point",
+      "dates": {
+        "unknown": "Dato ikke registreret",
+        "paymentUnknown": "Betalingsdato ikke registreret",
+        "recorded": "Betaling oprettet {{date}}",
+        "forLesson": "For besøget {{date}}",
+        "cancelledAt": "Booking aflyst {{date}}",
+        "cancelUnknown": "Aflysningsdato ikke registreret",
+        "bookedAt": "Booket {{date}}"
+      },
+      "summary": {
+        "visits": "Fremmøde",
+        "paidTotal": "Betalt i alt",
+        "earned": "Point tilføjet",
+        "spent": "Point brugt"
+      },
+      "empty": {
+        "all": {
+          "title": "Ingen historik endnu",
+          "text": "Kundens bookinger, betalinger og bonusser vises her."
         },
-        "attendance": {
-          "attended": "Mødt",
-          "missed": "Udeblev",
-          "unknown": "Fremmøde ikke bekræftet"
+        "visits": {
+          "title": "Ingen besøg endnu",
+          "text": "Planlagte, gennemførte og aflyste besøg vises her."
         },
-        "payment": {
-          "paid": "Betalt",
-          "unpaid": "Ikke betalt",
-          "subscription": "Klippekort",
-          "free": "Gratis",
-          "unknown": "Betaling ukendt"
+        "payments": {
+          "title": "Ingen betalinger endnu",
+          "text": "Køb af klippekort og betalinger for besøg vises her."
+        },
+        "bonuses": {
+          "title": "Ingen bonusser endnu",
+          "text": "Tilføjede og brugte point vises her."
         }
       }
     },

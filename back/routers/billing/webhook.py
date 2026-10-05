@@ -478,7 +478,7 @@ async def stripe_webhook(request: Request):
                 await _handle_subscription(db, event_type, obj)
             elif event_type.startswith("invoice."):
                 await _handle_invoice(db, event_type, obj)
-            elif event_type == "charge.refunded":
+            elif event_type in ("charge.refunded", "refund.created", "refund.updated", "refund.failed"):
                 await _handle_refund(db, obj, event_created=getattr(event, 'created', None))
             elif event_type == "charge.dispute.closed":
                 await _handle_dispute(db, obj)
@@ -940,8 +940,9 @@ async def _handle_tax_id(db: AsyncSession, obj) -> None:
 
 
 async def _handle_refund(db: AsyncSession, obj, *, event_created=None) -> None:
-    """Возврат. Полный — переводит счёт в refunded, частичный (или без сумм в
-    событии) не трогает ни счёт, ни подписку.
+    """Только полный успешно завершённый возврат отзывает оплаченный доступ.
+    Текущие Refund, а не агрегат Charge из события, подтверждают завершение:
+    Асинхронный возврат может оставаться pending после charge.refunded.
 
     Подписку отменяет только возврат счёта ЗА ТАРИФ. Комиссию с офлайн-продаж и
     минимальный месячный платёж самообслуживание возвращать не даёт вовсе
@@ -957,25 +958,34 @@ async def _handle_refund(db: AsyncSession, obj, *, event_created=None) -> None:
     `customer.subscription.deleted` — сами его тут не проставляем, чтобы переход был
     один и тот же независимо от того, откуда пришёл возврат.
     """
-    invoice = await _invoice_of_payment(db, obj, "возврат")
-    if invoice is None:
-        return
-
-    # Сумму сверяем ДО перевода счёта в refunded — он конечный (apply_status), и
-    # частичный возврат не должен НЕОБРАТИМО потерять счёт. Событие без сумм
-    # (amount=0, дефолт getattr) тоже не читаем как «вернули всё»: 0 < 0 иначе
-    # ложно попадает в ветку полного возврата и отменяет платящую студию.
-    amount = getattr(obj, "amount", 0) or 0
-    refunded = getattr(obj, "amount_refunded", 0) or 0
+    _intent_id, charge_id = _payment_ids(obj)
+    _require(charge_id, "возврат", obj, "в событии нет charge")
+    # Read failures propagate to the webhook's 500/retry path. Old/failed events
+    # reconcile current success without ever restoring terminal refunded access.
+    charge, refunds = await stripe_billing.fetch_charge_refunds(charge_id)
+    amount = getattr(charge, "amount", 0) or 0
+    succeeded = [refund for refund in refunds if refund.status == "succeeded"]
+    refunded = sum(refund.amount for refund in succeeded)
     if not amount or refunded < amount:
         logger.info(
-            "Stripe billing: частичный или без сумм возврат по счёту %s, счёт и подписку не трогаем",
-            invoice.id,
+            "Stripe billing: нет полного успешного возврата по %s, доступ не трогаем",
+            charge_id,
         )
         return
 
+    invoice = await _invoice_of_payment(db, charge, "возврат")
+    if invoice is None:
+        return
     from services.billing_payment_dates import reversal_at
-    refunded_at = reversal_at(obj, event_created=event_created)
+    # A replayed pending/failed event and Refund.created are request dates, not
+    # completion evidence. Missing final-event proof leaves the fiscal date for review.
+    event_refunds = ([obj] if getattr(obj, "object", None) == "refund" else
+                     getattr(getattr(obj, "refunds", None), "data", None) or [])
+    current = {refund.id: refund.amount for refund in succeeded}
+    proved = sum(refund.amount for refund in event_refunds
+                 if getattr(refund, "status", None) == "succeeded"
+                 and current.get(refund.id) == refund.amount)
+    refunded_at = reversal_at(None, event_created=event_created if proved >= amount else None)
     await _reverse_invoice(db, invoice, "возврат", reversed_at=refunded_at)
 
 

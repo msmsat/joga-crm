@@ -40,6 +40,10 @@ def test_booking_primary_date_is_lesson_not_created_date(monkeypatch):
     assert event.date.startswith('2026-09-28T10:00')
     assert event.scheduled_at.startswith('2026-09-28T10:00')
     assert event.occurred_at.startswith('2026-09-26T12:00')
+    # The timeline prefix stays in title (the assistant reads it); the card
+    # names the kind of event itself and takes the bare lesson name.
+    assert event.title == 'Запись: Service'
+    assert event.subject == 'Service'
 
 
 def test_visit_keeps_studio_wall_clock(monkeypatch):
@@ -86,10 +90,13 @@ def test_bonus_near_midnight_uses_studio_calendar_day(monkeypatch):
 
 def test_freezes_and_logs_preserve_local_timestamp(monkeypatch):
     sub = NS(frozen_at=datetime(2026, 9, 27, 22, 30), type='Package')
-    log = NS(created_at=datetime(2026, 9, 28, 8), title='Unfreeze')
+    log = NS(created_at=datetime(2026, 9, 28, 8), title='Unfreeze', event_type='unfreeze')
     events = request(monkeypatch, 'freeze', [[sub], [log]])
     assert events[0].date.startswith('2026-09-28T11:00')
     assert events[1].date.startswith('2026-09-28T01:30')
+    # One event type covers both directions — the card needs to tell them apart.
+    assert events[0].freeze_action == 'unfreeze'
+    assert (events[1].freeze_action, events[1].subject) == ('freeze', 'Package')
 
 
 def test_timeline_orders_actions_not_future_appointment_dates(monkeypatch):

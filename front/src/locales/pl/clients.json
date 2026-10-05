@@ -277,46 +277,70 @@
       "delete": "Usuń"
     },
     "events": {
-      "dates": {
-        "lesson": "Wizyta",
-        "bookingCreated": "Rezerwacja utworzona",
-        "visit": "Wizyta",
-        "cancel": "Anulowano",
-        "payment": "Opłacono",
-        "event": "Data zdarzenia",
-        "recorded": "Płatność utworzona",
-        "paymentUnknown": "Data płatności nie została zapisana",
-        "unknown": "Data nie została zapisana"
-      },
-      "filterTabs": {
+      "tabs": {
         "all": "Wszystkie",
-        "payment": "Płatności",
-        "visit": "Wizyty",
-        "booking": "Rezerwacje",
-        "cancel": "Anulowania",
-        "bonus": "Bonusy",
-        "freeze": "Zamrożenia",
-        "completed": "Zakończone"
+        "visits": "Wizyty",
+        "payments": "Płatności",
+        "bonuses": "Bonusy"
       },
-      "empty": "Brak zdarzeń",
-      "statuses": {
-        "appointment": {
-          "upcoming": "Nadchodzące",
-          "ongoing": "W trakcie",
-          "completed": "Zakończono",
-          "cancelled": "Anulowano"
+      "ahead": "Nadchodzące",
+      "state": {
+        "upcoming": "Zaplanowano",
+        "ongoing": "Trwa teraz",
+        "attended": "Obecność",
+        "missed": "Nieobecność",
+        "done": "Zakończono",
+        "cancelled": "Anulowano",
+        "payment": "Płatność",
+        "bonusIn": "Dodano punkty",
+        "bonusOut": "Wykorzystano punkty",
+        "freeze": "Zamrożenie",
+        "unfreeze": "Odmrożenie"
+      },
+      "pay": {
+        "paid": "Opłacono",
+        "unpaid": "Nieopłacone",
+        "subscription": "Z karnetu",
+        "free": "Bezpłatnie"
+      },
+      "noMark": "Obecność nieoznaczona",
+      "frozenClient": "Klient zamrożony",
+      "unfrozenClient": "Klient odmrożony",
+      "points_one": "{{sign}}{{count}} punkt",
+      "points_few": "{{sign}}{{count}} punkty",
+      "points_many": "{{sign}}{{count}} punktów",
+      "points_other": "{{sign}}{{count}} punktu",
+      "dates": {
+        "unknown": "Data nie została zapisana",
+        "paymentUnknown": "Data płatności nie została zapisana",
+        "recorded": "Płatność utworzona {{date}}",
+        "forLesson": "Za wizytę {{date}}",
+        "cancelledAt": "Rezerwacja anulowana {{date}}",
+        "cancelUnknown": "Data anulowania nie została zapisana",
+        "bookedAt": "Zarezerwowano {{date}}"
+      },
+      "summary": {
+        "visits": "Frekwencja",
+        "paidTotal": "Zapłacono łącznie",
+        "earned": "Dodane punkty",
+        "spent": "Wykorzystane punkty"
+      },
+      "empty": {
+        "all": {
+          "title": "Brak historii",
+          "text": "Tu pojawią się rezerwacje, płatności i bonusy klienta."
         },
-        "attendance": {
-          "attended": "Przyszedł",
-          "missed": "Nie przyszedł",
-          "unknown": "Obecność niepotwierdzona"
+        "visits": {
+          "title": "Brak wizyt",
+          "text": "Tu pojawią się zaplanowane, odbyte i anulowane wizyty."
         },
-        "payment": {
-          "paid": "Opłacone",
-          "unpaid": "Nieopłacone",
-          "subscription": "Karnet",
-          "free": "Za darmo",
-          "unknown": "Płatność nieznana"
+        "payments": {
+          "title": "Brak płatności",
+          "text": "Tu pojawią się zakupy karnetów i płatności za wizyty."
+        },
+        "bonuses": {
+          "title": "Brak bonusów",
+          "text": "Tu pojawią się dodane i wykorzystane punkty."
         }
       }
     },

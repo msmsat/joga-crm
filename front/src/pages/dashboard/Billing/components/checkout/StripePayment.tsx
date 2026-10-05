@@ -37,15 +37,15 @@ const appearance: Appearance = {
 };
 const walletOptions = {
   buttonHeight: 50,
-  buttonType: { applePay: 'buy' as const, googlePay: 'buy' as const, paypal: 'pay' as const },
-  paymentMethodOrder: ['paypal', 'apple_pay', 'google_pay'],
-  buttonTheme: { applePay: 'white' as const, googlePay: 'white' as const, paypal: 'gold' as const },
-  paymentMethods: { applePay: 'auto' as const, googlePay: 'auto' as const, paypal: 'auto' as const,
+  buttonType: { applePay: 'buy' as const, googlePay: 'buy' as const },
+  paymentMethodOrder: ['apple_pay', 'google_pay'],
+  buttonTheme: { applePay: 'white' as const, googlePay: 'white' as const },
+  paymentMethods: { applePay: 'auto' as const, googlePay: 'auto' as const, paypal: 'never' as const,
     link: 'never' as const, amazonPay: 'never' as const, klarna: 'never' as const },
   layout: { maxColumns: 2, maxRows: 2, overflow: 'auto' as const },
 };
 const paymentOptions = {
-  layout: 'tabs' as const, paymentMethodOrder: ['card', 'paypal'],
+  layout: 'tabs' as const, paymentMethodOrder: ['card', 'revolut_pay'],
   fields: { billingDetails: { name: 'never' as const, email: 'never' as const, address: 'never' as const } },
   wallets: { applePay: 'never' as const, googlePay: 'never' as const },
 };
@@ -82,8 +82,8 @@ function SessionPayment(props: Props) {
     fields: result.type === 'error' ? null : <div className={styles.stripeFields} aria-busy={result.type === 'loading'}>
       <div className={styles.wallets} data-hidden={!wallets || undefined}>
         <CheckoutExpress options={walletOptions} onConfirm={confirm}
-          onReady={e => setWallets(!!e.availablePaymentMethods && Object.values(e.availablePaymentMethods).some(Boolean))}
-          onAvailablePaymentMethodsChange={e => setWallets(!!e.paymentMethods && Object.values(e.paymentMethods).some(method => method?.available))} />
+          onReady={e => setWallets(!!(e.availablePaymentMethods?.applePay || e.availablePaymentMethods?.googlePay))}
+          onAvailablePaymentMethodsChange={e => setWallets(!!(e.paymentMethods?.applePay?.available || e.paymentMethods?.googlePay?.available))} />
       </div>
       <CheckoutPaymentElement options={paymentOptions} />
     </div>,
@@ -132,8 +132,8 @@ function InvoicePayment(props: Props) {
     fields: <div className={styles.stripeFields}>
       <div className={styles.wallets} data-hidden={!wallets || undefined}>
         <ExpressCheckoutElement options={walletOptions} onConfirm={confirm}
-          onReady={e => setWallets(!!e.availablePaymentMethods && Object.values(e.availablePaymentMethods).some(Boolean))}
-          onAvailablePaymentMethodsChange={e => setWallets(!!e.paymentMethods && Object.values(e.paymentMethods).some(method => method?.available))} />
+          onReady={e => setWallets(!!(e.availablePaymentMethods?.applePay || e.availablePaymentMethods?.googlePay))}
+          onAvailablePaymentMethodsChange={e => setWallets(!!(e.paymentMethods?.applePay?.available || e.paymentMethods?.googlePay?.available))} />
       </div>
       <PaymentElement options={{ ...paymentOptions, fields: { billingDetails: {
           address: 'never', name: props.session.payer_name ? 'never' : 'auto',

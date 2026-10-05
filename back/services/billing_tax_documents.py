@@ -105,8 +105,19 @@ async def repair_pending_date(db, invoice, *, paid_at):
 async def queue_correction(db, invoice, *, refunded_at, reason='full_refund'):
     from models import BillingTaxDocument
     document = (await db.execute(select(BillingTaxDocument).where(
-        BillingTaxDocument.invoice_id == invoice.id).with_for_update())).scalar_one_or_none()
-    if document is None or document.correction_snapshot is not None:
+        BillingTaxDocument.invoice_id == invoice.id).with_for_update()
+        .execution_options(populate_existing=True))).scalar_one_or_none()
+    if document is None:
+        return None
+    correction = document.correction_snapshot
+    if correction is not None:
+        if (invoice.status == 'refunded' and reason == 'full_refund'
+                and correction.get('status') == 'pending' and not correction.get('refunded_at')
+                and correction.get('reason') == 'full_refund'
+                and correction.get('refund_minor') == invoice.amount and refunded_at is not None):
+            # A later verified final event can complete pending fiscal evidence;
+            # known dates and issued credit notes remain immutable.
+            document.correction_snapshot = {**correction, 'refunded_at': _utc(refunded_at).isoformat()}
         return document
     if invoice.status != 'refunded' or reason != 'full_refund':
         raise ValueError('Only a confirmed full refund creates an automatic credit note')

@@ -269,46 +269,69 @@
       "delete": "Smazat"
     },
     "events": {
-      "dates": {
-        "lesson": "Lekce",
-        "bookingCreated": "Rezervace vytvořena",
-        "visit": "Návštěva",
-        "cancel": "Zrušeno",
-        "payment": "Zaplaceno",
-        "event": "Datum události",
-        "recorded": "Platba vytvořena",
-        "paymentUnknown": "Datum platby nebylo zaznamenáno",
-        "unknown": "Datum nebylo zaznamenáno"
-      },
-      "filterTabs": {
+      "tabs": {
         "all": "Vše",
-        "payment": "Platby",
-        "visit": "Návštěvy",
-        "booking": "Rezervace",
-        "cancel": "Zrušení",
-        "bonus": "Bonusy",
-        "freeze": "Zmrazení",
-        "completed": "Dokončené"
+        "visits": "Návštěvy",
+        "payments": "Platby",
+        "bonuses": "Bonusy"
       },
-      "empty": "Žádné události",
-      "statuses": {
-        "appointment": {
-          "upcoming": "Nadcházející",
-          "ongoing": "Probíhá",
-          "completed": "Dokončeno",
-          "cancelled": "Zrušeno"
+      "ahead": "Nadcházející",
+      "state": {
+        "upcoming": "Naplánováno",
+        "ongoing": "Právě probíhá",
+        "attended": "Navštíveno",
+        "missed": "Zameškáno",
+        "done": "Dokončeno",
+        "cancelled": "Zrušeno",
+        "payment": "Platba",
+        "bonusIn": "Připsány body",
+        "bonusOut": "Uplatněny body",
+        "freeze": "Zmrazení",
+        "unfreeze": "Rozmrazení"
+      },
+      "pay": {
+        "paid": "Zaplaceno",
+        "unpaid": "Nezaplaceno",
+        "subscription": "Z permanentky",
+        "free": "Zdarma"
+      },
+      "noMark": "Účast neoznačena",
+      "frozenClient": "Klient zmrazen",
+      "unfrozenClient": "Klient rozmrazen",
+      "points_one": "{{sign}}{{count}} bod",
+      "points_few": "{{sign}}{{count}} body",
+      "points_other": "{{sign}}{{count}} bodů",
+      "dates": {
+        "unknown": "Datum nebylo zaznamenáno",
+        "paymentUnknown": "Datum platby nebylo zaznamenáno",
+        "recorded": "Platba vytvořena {{date}}",
+        "forLesson": "Za lekci {{date}}",
+        "cancelledAt": "Rezervace zrušena {{date}}",
+        "cancelUnknown": "Datum zrušení nebylo zaznamenáno",
+        "bookedAt": "Rezervováno {{date}}"
+      },
+      "summary": {
+        "visits": "Docházka",
+        "paidTotal": "Zaplaceno celkem",
+        "earned": "Připsáno bodů",
+        "spent": "Uplatněno bodů"
+      },
+      "empty": {
+        "all": {
+          "title": "Zatím žádná historie",
+          "text": "Zde se objeví rezervace, platby a bonusy klienta."
         },
-        "attendance": {
-          "attended": "Přišel",
-          "missed": "Nepřišel",
-          "unknown": "Účast nepotvrzena"
+        "visits": {
+          "title": "Zatím žádné návštěvy",
+          "text": "Naplánované, navštívené i zrušené lekce se objeví zde."
         },
-        "payment": {
-          "paid": "Zaplaceno",
-          "unpaid": "Nezaplaceno",
-          "subscription": "Permanentka",
-          "free": "Zdarma",
-          "unknown": "Platba neznámá"
+        "payments": {
+          "title": "Zatím žádné platby",
+          "text": "Nákupy permanentek a platby za lekce se objeví zde."
+        },
+        "bonuses": {
+          "title": "Zatím žádné bonusy",
+          "text": "Připsané a uplatněné body se objeví zde."
         }
       }
     },

@@ -273,46 +273,68 @@
       "delete": "Elimina"
     },
     "events": {
-      "dates": {
-        "lesson": "Appuntamento",
-        "bookingCreated": "Prenotazione creata",
-        "visit": "Visita",
-        "cancel": "Annullato",
-        "payment": "Pagato",
-        "event": "Data evento",
-        "recorded": "Pagamento creato",
-        "paymentUnknown": "Data del pagamento non registrata",
-        "unknown": "Data non registrata"
-      },
-      "filterTabs": {
+      "tabs": {
         "all": "Tutti",
-        "payment": "Pagamenti",
-        "visit": "Visite",
-        "booking": "Prenotazioni",
-        "cancel": "Annullamenti",
-        "bonus": "Bonus",
-        "freeze": "Sospensioni",
-        "completed": "Completate"
+        "visits": "Visite",
+        "payments": "Pagamenti",
+        "bonuses": "Bonus"
       },
-      "empty": "Nessun evento",
-      "statuses": {
-        "appointment": {
-          "upcoming": "In arrivo",
-          "ongoing": "In corso",
-          "completed": "Completato",
-          "cancelled": "Annullato"
+      "ahead": "In arrivo",
+      "state": {
+        "upcoming": "Programmato",
+        "ongoing": "In corso",
+        "attended": "Presenza",
+        "missed": "Assenza",
+        "done": "Concluso",
+        "cancelled": "Annullato",
+        "payment": "Pagamento",
+        "bonusIn": "Punti aggiunti",
+        "bonusOut": "Punti usati",
+        "freeze": "Sospensione",
+        "unfreeze": "Riattivazione"
+      },
+      "pay": {
+        "paid": "Pagato",
+        "unpaid": "Non pagato",
+        "subscription": "Con abbonamento",
+        "free": "Gratuito"
+      },
+      "noMark": "Presenza non segnata",
+      "frozenClient": "Cliente sospeso",
+      "unfrozenClient": "Cliente riattivato",
+      "points_one": "{{sign}}{{count}} punto",
+      "points_other": "{{sign}}{{count}} punti",
+      "dates": {
+        "unknown": "Data non registrata",
+        "paymentUnknown": "Data di pagamento non registrata",
+        "recorded": "Pagamento creato il {{date}}",
+        "forLesson": "Per la visita del {{date}}",
+        "cancelledAt": "Prenotazione annullata il {{date}}",
+        "cancelUnknown": "Data di annullamento non registrata",
+        "bookedAt": "Prenotato il {{date}}"
+      },
+      "summary": {
+        "visits": "Presenze",
+        "paidTotal": "Pagato in totale",
+        "earned": "Punti aggiunti",
+        "spent": "Punti usati"
+      },
+      "empty": {
+        "all": {
+          "title": "Ancora nessuno storico",
+          "text": "Qui compariranno prenotazioni, pagamenti e bonus del cliente."
         },
-        "attendance": {
-          "attended": "Presente",
-          "missed": "Assente",
-          "unknown": "Presenza non confermata"
+        "visits": {
+          "title": "Ancora nessuna visita",
+          "text": "Qui compariranno le visite programmate, svolte e annullate."
         },
-        "payment": {
-          "paid": "Pagato",
-          "unpaid": "Non pagato",
-          "subscription": "Abbonamento",
-          "free": "Gratuito",
-          "unknown": "Pagamento sconosciuto"
+        "payments": {
+          "title": "Ancora nessun pagamento",
+          "text": "Qui compariranno gli acquisti di abbonamenti e i pagamenti delle visite."
+        },
+        "bonuses": {
+          "title": "Ancora nessun bonus",
+          "text": "Qui compariranno i punti aggiunti e usati."
         }
       }
     },

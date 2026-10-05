@@ -1,0 +1,47 @@
+.header {
+  --whatsapp-text: #258047;
+  padding: 20px 20px 0;
+  flex-shrink: 0;
+  min-width: 0;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-card);
+}
+:global(:root.dark) .header { --whatsapp-text: #8CC79B; }
+.identity { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 16px; }
+.avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--avatar-tint);
+  color: white;
+  font-size: 18px;
+  font-weight: 800;
+}
+.heading { flex: 1; min-width: 0; }
+.name { margin: 0; color: var(--text); font-size: 18px; font-weight: 800; line-height: 1.35; letter-spacing: -0.4px; overflow-wrap: anywhere; }
+.meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 6px; }
+.status { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; color: var(--text2); }
+.status::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--client-state); }
+.since { display: flex; align-items: center; gap: 4px; margin-top: 2px; font-size: 11px; color: var(--text2); }
+.actions { display: flex; align-items: stretch; gap: 6px; margin-bottom: 8px; }
+.actions > button { flex: 1; min-width: 0; }
+.actions > button svg { flex-shrink: 0; }
+.identity > :global(.v-btn) { padding: 0 !important; }
+.identity > :global(.v-btn) svg { flex-shrink: 0; }
+.header :global(.vk-seg--line) { margin-top: 4px; }
+.header :global(.vk-seg-btn) { color: var(--text2); }
+.header :global(.vk-seg-btn.is-on) { color: var(--text); border-bottom-color: var(--peach); }
+.header :global(.vk-seg-text) { white-space: normal; line-height: 1.4; overflow-wrap: anywhere; }
+@media (max-height: 720px) {
+  .header { padding: 12px 16px 0; }
+  .identity { align-items: center; margin-bottom: 10px; gap: 8px; }
+  .avatar, .meta, .since { display: none; }
+  .name { font-size: 17px; }
+  .header :global(.vk-seg-btn) { padding-top: 10px; padding-bottom: 10px; }
+}
+@media (max-width: 767px) {
+  .actions > :global(.v-btn) { padding: 9px 4px !important; font-size: 11px !important; gap: 5px !important; }
+}

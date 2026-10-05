@@ -122,6 +122,10 @@ def _stub_stripe(monkeypatch, *, invoice_id="in_1", cancelled=None, raises=None)
 
     # Legacy payments have no prepaid metadata; the invoice fallback remains real.
     monkeypatch.setattr(SB, "fetch_payment_intent", legacy_intent)
+    monkeypatch.setattr(stripe.Charge, "retrieve", lambda _id: _charge())
+    monkeypatch.setattr(stripe.Refund, "list", lambda **kw: SimpleNamespace(
+        data=[SimpleNamespace(id="re_1", amount=9900, status="succeeded", created=1790942400)],
+        has_more=False))
     monkeypatch.setattr(SB, "invoice_id_for_payment", fake_lookup)
     monkeypatch.setattr(SB, "cancel_subscription", fake_cancel)
     return cancelled
@@ -195,6 +199,8 @@ def test_a_broken_lookup_is_not_swallowed(monkeypatch):
 def test_a_partial_refund_still_does_not_revoke(monkeypatch):
     """Частичный возврат — не повод отобрать оплаченный период."""
     cancelled = _stub_stripe(monkeypatch)
+    monkeypatch.setattr(stripe.Refund, "list", lambda **kw: SimpleNamespace(
+        data=[SimpleNamespace(id="re_partial", amount=1000, status="succeeded")], has_more=False))
     invoice = _invoice()
     db = _DB(invoice=invoice, plan=SimpleNamespace(studio_id=7, stripe_subscription_id="sub_1"))
     _run(WH._handle_refund(db, _charge(amount_refunded=1000)))

@@ -269,46 +269,70 @@
       "delete": "Видалити"
     },
     "events": {
-      "dates": {
-        "lesson": "Заняття",
-        "bookingCreated": "Запис створено",
-        "visit": "Візит",
-        "cancel": "Скасовано",
-        "payment": "Оплачено",
-        "event": "Дата події",
-        "recorded": "Платіж створено",
-        "paymentUnknown": "Дату оплати не збережено",
-        "unknown": "Дату не збережено"
-      },
-      "filterTabs": {
+      "tabs": {
         "all": "Усі",
-        "payment": "Оплати",
-        "visit": "Візити",
-        "booking": "Записи",
-        "cancel": "Скасування",
-        "bonus": "Бонуси",
-        "freeze": "Заморозки",
-        "completed": "Завершені"
+        "visits": "Записи",
+        "payments": "Оплати",
+        "bonuses": "Бонуси"
       },
-      "empty": "Подій немає",
-      "statuses": {
-        "appointment": {
-          "upcoming": "Попереду",
-          "ongoing": "Триває",
-          "completed": "Завершено",
-          "cancelled": "Скасовано"
+      "ahead": "Попереду",
+      "state": {
+        "upcoming": "Заплановано",
+        "ongoing": "Йде зараз",
+        "attended": "Відвідано",
+        "missed": "Пропущено",
+        "done": "Завершено",
+        "cancelled": "Скасовано",
+        "payment": "Оплата",
+        "bonusIn": "Нараховано бали",
+        "bonusOut": "Списано бали",
+        "freeze": "Заморозка",
+        "unfreeze": "Розморозка"
+      },
+      "pay": {
+        "paid": "Оплачено",
+        "unpaid": "Не оплачено",
+        "subscription": "За абонементом",
+        "free": "Безкоштовно"
+      },
+      "noMark": "Явку не відмічено",
+      "frozenClient": "Клієнта заморожено",
+      "unfrozenClient": "Клієнта розморожено",
+      "points_one": "{{sign}}{{count}} бал",
+      "points_few": "{{sign}}{{count}} бали",
+      "points_many": "{{sign}}{{count}} балів",
+      "points_other": "{{sign}}{{count}} бала",
+      "dates": {
+        "unknown": "Дату не збережено",
+        "paymentUnknown": "Дату оплати не збережено",
+        "recorded": "Платіж створено {{date}}",
+        "forLesson": "За заняття {{date}}",
+        "cancelledAt": "Запис скасовано {{date}}",
+        "cancelUnknown": "Дату скасування не збережено",
+        "bookedAt": "Запис створено {{date}}"
+      },
+      "summary": {
+        "visits": "Відвідуваність",
+        "paidTotal": "Оплачено за весь час",
+        "earned": "Нараховано балів",
+        "spent": "Списано балів"
+      },
+      "empty": {
+        "all": {
+          "title": "Історії поки немає",
+          "text": "Тут з'являться записи на заняття, оплати й бонуси клієнта."
         },
-        "attendance": {
-          "attended": "Прийшов",
-          "missed": "Не прийшов",
-          "unknown": "Відвідування не підтверджено"
+        "visits": {
+          "title": "Записів поки немає",
+          "text": "Заплановані, відвідані й скасовані заняття з'являться тут."
         },
-        "payment": {
-          "paid": "Оплачено",
-          "unpaid": "Не оплачено",
-          "subscription": "Абонемент",
-          "free": "Безкоштовно",
-          "unknown": "Оплата невідома"
+        "payments": {
+          "title": "Оплат поки немає",
+          "text": "Покупки абонементів і оплати занять з'являться тут."
+        },
+        "bonuses": {
+          "title": "Бонусів поки немає",
+          "text": "Нараховані й списані бали з'являться тут."
         }
       }
     },

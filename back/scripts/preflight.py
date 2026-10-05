@@ -502,7 +502,7 @@ async def check_stripe_payment_methods() -> None:
 async def check_billing_checkout() -> None:
     """Velora branding and a dedicated wallet configuration, in the current key mode."""
     import stripe
-    from services import stripe_connect, stripe_checkout_branding as branding, stripe_env
+    from services import stripe_connect, stripe_env
 
     configuration = os.getenv("BILLING_PAYMENT_METHOD_CONFIGURATION", "").strip()
     if not configuration:
@@ -530,9 +530,13 @@ async def check_billing_checkout() -> None:
         item = getattr(config, method)
         if item.display_preference.value != "on" or not item.available:
             _warn(f"{method} недоступен конфигурации Velora — проверьте Payment methods в Stripe")
-    if not config.paypal.available:
-        message = "PayPal ещё не активирован: Settings → Payment methods → PayPal; завершите подключение аккаунта для разовых оплат периода"
-        (_err if branding.paypal_invoices_enabled() else _warn)(message)
+    paypal = getattr(config, "paypal", None)
+    if getattr(getattr(paypal, "display_preference", None), "value", None) != "off":
+        _err("в конфигурации оплаты Velora включён PayPal — запустите configure_billing_checkout --apply")
+    revolut = getattr(config, "revolut_pay", None)
+    if (getattr(getattr(revolut, "display_preference", None), "value", None) != "on"
+            or not getattr(revolut, "available", False)):
+        _warn("Revolut Pay недоступен конфигурации Velora — проверьте Payment methods в Stripe; остальные включённые способы оплаты работают")
 
 
 async def check_tax_mode() -> None:
@@ -910,6 +914,10 @@ _BILLING_EVENTS = {
     "invoice.paid",
     "invoice.payment_failed",
     "charge.refunded",
+    # Refund creation can remain pending; status events reconcile final access.
+    "refund.created",
+    "refund.updated",
+    "refund.failed",
     # Чарджбэк по оплате ТАРИФА. Без него выигранный владельцем спор оставляет
     # ему и деньги, и доступ: `charge.refunded` при чарджбэке не приходит вовсе.
     "charge.dispute.closed",

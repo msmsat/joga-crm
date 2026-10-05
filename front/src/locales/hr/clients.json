@@ -277,46 +277,69 @@
       "delete": "Izbriši"
     },
     "events": {
-      "dates": {
-        "lesson": "Termin",
-        "bookingCreated": "Rezervacija kreirana",
-        "visit": "Posjet",
-        "cancel": "Otkazano",
-        "payment": "Plaćeno",
-        "event": "Datum događaja",
-        "recorded": "Plaćanje kreirano",
-        "paymentUnknown": "Datum plaćanja nije zabilježen",
-        "unknown": "Datum nije zabilježen"
-      },
-      "filterTabs": {
+      "tabs": {
         "all": "Svi",
-        "payment": "Plaćanja",
-        "visit": "Posjeti",
-        "booking": "Rezervacije",
-        "cancel": "Otkazivanja",
-        "bonus": "Bonusi",
-        "freeze": "Zamrzavanja",
-        "completed": "Završene"
+        "visits": "Termini",
+        "payments": "Plaćanja",
+        "bonuses": "Bonusi"
       },
-      "empty": "Nema događaja",
-      "statuses": {
-        "appointment": {
-          "upcoming": "Predstoji",
-          "ongoing": "U tijeku",
-          "completed": "Završeno",
-          "cancelled": "Otkazano"
+      "ahead": "Nadolazeće",
+      "state": {
+        "upcoming": "Zakazano",
+        "ongoing": "Upravo traje",
+        "attended": "Posjećeno",
+        "missed": "Propušteno",
+        "done": "Završeno",
+        "cancelled": "Otkazano",
+        "payment": "Plaćanje",
+        "bonusIn": "Dodani bodovi",
+        "bonusOut": "Iskorišteni bodovi",
+        "freeze": "Zamrzavanje",
+        "unfreeze": "Odmrzavanje"
+      },
+      "pay": {
+        "paid": "Plaćeno",
+        "unpaid": "Nije plaćeno",
+        "subscription": "Članarinom",
+        "free": "Besplatno"
+      },
+      "noMark": "Dolazak nije označen",
+      "frozenClient": "Klijent zamrznut",
+      "unfrozenClient": "Klijent odmrznut",
+      "points_one": "{{sign}}{{count}} bod",
+      "points_few": "{{sign}}{{count}} boda",
+      "points_other": "{{sign}}{{count}} bodova",
+      "dates": {
+        "unknown": "Datum nije zabilježen",
+        "paymentUnknown": "Datum plaćanja nije zabilježen",
+        "recorded": "Plaćanje kreirano {{date}}",
+        "forLesson": "Za termin {{date}}",
+        "cancelledAt": "Rezervacija otkazana {{date}}",
+        "cancelUnknown": "Datum otkazivanja nije zabilježen",
+        "bookedAt": "Rezervirano {{date}}"
+      },
+      "summary": {
+        "visits": "Dolasci",
+        "paidTotal": "Ukupno plaćeno",
+        "earned": "Dodani bodovi",
+        "spent": "Iskorišteni bodovi"
+      },
+      "empty": {
+        "all": {
+          "title": "Još nema povijesti",
+          "text": "Ovdje će se prikazati rezervacije, plaćanja i bonusi klijenta."
         },
-        "attendance": {
-          "attended": "Došao",
-          "missed": "Nije došao",
-          "unknown": "Dolazak nije potvrđen"
+        "visits": {
+          "title": "Još nema termina",
+          "text": "Zakazani, posjećeni i otkazani termini prikazat će se ovdje."
         },
-        "payment": {
-          "paid": "Plaćeno",
-          "unpaid": "Nije plaćeno",
-          "subscription": "Članarina",
-          "free": "Besplatno",
-          "unknown": "Plaćanje nepoznato"
+        "payments": {
+          "title": "Još nema plaćanja",
+          "text": "Kupnje članarina i plaćanja termina prikazat će se ovdje."
+        },
+        "bonuses": {
+          "title": "Još nema bonusa",
+          "text": "Dodani i iskorišteni bodovi prikazat će se ovdje."
         }
       }
     },

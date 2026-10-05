@@ -43,7 +43,7 @@ def configure(apply: bool) -> dict:
         "mode": stripe_env.key_mode(stripe.api_key), "apply": apply,
         "configuration": current.id if current else None,
         "branding": branding.branding_settings(),
-        "requested_methods": {"card": "on", "paypal": "on", "apple_pay": "on", "google_pay": "on", "link": "off"},
+        "requested_methods": {"card": "on", "paypal": "off", "apple_pay": "on", "google_pay": "on", "revolut_pay": "on", "link": "off"},
     }
     if not apply:
         return result
@@ -87,7 +87,7 @@ def configure(apply: bool) -> dict:
     result.update({"configuration": current.id, "methods": methods, "environment": {
         "BILLING_PAYMENT_METHOD_CONFIGURATION": current.id,
         "BILLING_CHECKOUT_LOGO_FILE": light,
-        "BILLING_PAYPAL_ENABLED": "true" if methods["paypal"]["available"] else "false",
+        "BILLING_PAYPAL_ENABLED": "false",
     }})
     return result
 

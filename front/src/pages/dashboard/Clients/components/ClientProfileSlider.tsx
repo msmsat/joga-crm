@@ -1,22 +1,18 @@
-import { useState } from 'react';
-import { CircleCheck, Coins, Gift, List, UserCheck, CircleX } from 'lucide-react';
-import { AdaptiveFilters } from './AdaptiveFilters';
-import { ClientEventStatus } from './ClientEventStatus';
-import type { EventFilterTab } from '../types';
+import { useId, useState } from 'react';
 import type { JSX } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { ClientData, EventRecord } from '../types';
+import type { ClientData } from '../types';
 import type { ClientLoyaltyLevel, ClientProfile } from '../../../../api/clients/clients.types';
-import { STATUS_COLORS, EVENT_FILTER_TABS, BONUS_OPTION_IDS, BONUS_POINTS } from '../constants';
+import { BONUS_OPTION_IDS, BONUS_POINTS } from '../constants';
 import { useClientActions, type NoteItem } from '../hooks/useClientActions';
 import { InlineEdit } from './InlineEdit';
 import ClientOffersPanel from './ClientOffersPanel';
 import { ClientProducts } from './ClientProducts';
 import { WalletTab } from './WalletTab';
-import { ClientAvatar } from '../../../../components/ui/ClientAvatar';
-import { ClientEventDates } from './ClientEventDates';
-import { useClientEvents, useClientNotes, useClientActivity, useClientInviteCode, useReferralEnabled, useFreezeEnabled } from '../hooks/useClientsList';
-import { formatDate, formatMoney, getAvatarColor, getInitials } from '../utils/mapClient';
+import { ClientPanelHeader, type ProfileTab } from './ClientPanelHeader';
+import { ClientEventsTab } from './events/ClientEventsTab';
+import { useClientNotes, useClientActivity, useClientInviteCode, useReferralEnabled, useFreezeEnabled } from '../hooks/useClientsList';
+import { formatMoney } from '../utils/mapClient';
 import { useStudioCurrency } from '../../../../hooks/useStudioCurrency';
 import { getStudioRole } from '../../../../utils/auth';
 import { getCurrencySymbol } from '../../../../components/UI';
@@ -109,20 +105,6 @@ const IconHistory = () => (
     <polyline points="12 7 12 12 16 14"/>
   </svg>
 );
-const IconWhatsApp = () => (
-  <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.71.306 1.263.489 1.695.625.712.227 1.36.195 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413"/></svg>
-);
-const IconTrendUp = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
-    <polyline points="17 6 23 6 23 12"/>
-  </svg>
-);
-const IconCheck = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
-    <polyline points="20 6 9 17 4 12"/>
-  </svg>
-);
 const IconCoin = () => (
   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
     <circle cx="12" cy="12" r="10"/>
@@ -130,35 +112,14 @@ const IconCoin = () => (
     <path d="M15 9H10.5a2.5 2.5 0 0 0 0 5h3a2.5 2.5 0 0 1 0 5H9"/>
   </svg>
 );
-const IconSnow = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-    <line x1="12" y1="2" x2="12" y2="22"/>
-    <path d="M17 7l-5 5-5-5"/>
-    <path d="M17 17l-5-5-5 5"/>
-    <path d="M2 12h20"/>
-    <path d="M7 7l-5 5 5 5"/>
-    <path d="M17 7l5 5-5 5"/>
+const IconTrendUp = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>
   </svg>
 );
-
-// ─── EVENT ICON ───────────────────────────────────────────────────────────────
-function EventIcon({ type, c }: { type: EventRecord['type']; c: string }) {
-  const cfg = {
-    payment: { bg: 'rgba(91,171,114,0.12)', color: '#5BAB72', icon: <IconCoin/> },
-    completed: { bg: `${c}18`, color: c, icon: <IconCheck/> },
-    visit:   { bg: `${c}18`,                color: c,          icon: <IconCheck/> },
-    booking: { bg: 'rgba(155,181,216,0.15)', color: '#4A80C4', icon: <IconPlus/> },
-    cancel:  { bg: 'rgba(216,140,154,0.12)', color: '#D88C9A', icon: <IconClose/> },
-    bonus:   { bg: 'rgba(252,174,145,0.15)', color: '#F9A08B', icon: <IconGift/> },
-    freeze:  { bg: 'rgba(147,181,216,0.15)', color: '#4a7ca8', icon: <IconSnow/> },
-  }[type];
-  return (
-    <div style={{ width: '34px', height: '34px', borderRadius: '9px', background: cfg.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: cfg.color }}>
-      {cfg.icon}
-    </div>
-  );
-}
-
+const IconCheck = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+);
 // ─── LOYALTY ILLUS ────────────────────────────────────────────────────────────
 /**
  * Уровень клиента и что он ему даёт.
@@ -420,19 +381,16 @@ function ClientPanel({ client, onClose, onDelete }: {
   const canEdit = role !== 'trainer';
   const isOwner = role === 'owner';
   const currency = getCurrencySymbol(useStudioCurrency());
-  const [activeTab,    setActiveTab]    = useState<'info' | 'events' | 'notes' | 'wallet'>('info');
+  const [activeTab,    setActiveTab]    = useState<ProfileTab>('info');
   const [bookingOpen,  setBookingOpen]  = useState(false);
   const [tagInput,     setTagInput]     = useState('');
-  const [regValue,     setRegValue]     = useState(client.registration_date ?? '');
-  const [editingReg,   setEditingReg]   = useState(false);
-  const status = client.status;
   const frozen = client.frozen ?? false;
   const freezeEnabled = useFreezeEnabled(canEdit);
   const freezeBlocked = !frozen && !freezeEnabled;
   const displaySubscription = client.active_subscription ?? client.subscription_alert;
   const tags = client.tags;
-  const color = getAvatarColor(client.id, client.avatar_color);
-  const sc = STATUS_COLORS[status] || '#999';
+  const tabsId = useId();
+  const panelId = `${tabsId}-panel`;
 
   // Полный список (профиль отдаёт только 3 последних) — грузим при открытии вкладки.
   const fullNotes = useClientNotes(client.id, activeTab === 'notes');
@@ -454,145 +412,34 @@ function ClientPanel({ client, onClose, onDelete }: {
     setSyncedClientId(client.id);
     setActiveTab('info');
     setTagInput('');
-    setRegValue(client.registration_date ?? '');
-    setEditingReg(false);
     setBookingOpen(false);
   }
-
-  const apiEvents = useClientEvents(client.id, actions.eventFilter, activeTab === 'events');
-
 
   return (
     <div style={{ flex: 1, background: 'var(--bg-card)', height: '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
       <style>{`
         @keyframes fadeSlide { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
         @keyframes panelSlideIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
-        .cl-profile-heading { min-width: 0; flex: 1; }
-        .cl-profile-name { min-width: 0; overflow-wrap: anywhere; }
-        @media (max-height: 720px) {
-          .cl-profile-header { padding: 12px 16px 0 !important; }
-          .cl-profile-identity { margin-bottom: 8px !important; }
-          .cl-profile-avatar, .cl-profile-meta, .cl-profile-id { display: none !important; }
-          .cl-profile-actions { margin-bottom: 8px !important; }
-          .cl-profile-actions .cl-action-btn { flex-direction: row !important; padding: 7px 4px !important; }
-        }
         .cl-contact-link:hover .cl-cv { color: var(--peach) !important; }
         .cl-contact-link:hover .cl-cv-sub { color: var(--peach) !important; opacity: 0.6; }
         .cl-copy-btn:hover { background: rgba(var(--ink),0.06) !important; color: var(--peach) !important; }
         .cl-tag-suggest:hover { border-color: var(--peach) !important; color: var(--peach) !important; background: rgba(249,160,139,0.07) !important; }
         .cl-action-btn:hover { transform: translateY(-1px); }
         .cl-action-btn:active { transform: scale(0.94); }
-        .cl-ev-row:hover { border-color: rgba(0,0,0,0.1) !important; background: rgba(var(--ink),0.01) !important; }
         .cl-bonus-opt:hover { border-color: var(--peach) !important; background: rgba(249,160,139,0.06) !important; }
       `}</style>
 
-      {/* ── HEADER ── */}
-      <div className="cl-profile-header" style={{ padding: '20px 20px 0', borderBottom: '1px solid var(--border)', background: 'var(--bg)', flexShrink: 0 }}>
-        <div className="cl-profile-identity" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px', gap: '8px' }}>
-          <div className="cl-profile-heading" style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-            <div className="cl-profile-avatar" style={{flexShrink: 0}}><ClientAvatar url={client.avatar_url} initials={getInitials(client.name, client.last_name)}
-              style={{ width: '52px', height: '52px', borderRadius: '14px', background: `linear-gradient(135deg,${color},${color}bb)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', fontWeight: 800, color: '#fff', boxShadow: `0 8px 20px -4px ${color}55` }}/></div>
-            <div style={{minWidth: 0}}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                <div className="cl-profile-name" style={{ fontSize: '16px', fontWeight: 800, color: 'var(--text)', letterSpacing: '-0.3px' }}>{client.name}{client.last_name ? ' ' + client.last_name : ''}</div>
-                {/* Номер клиента в студии: главный идентификатор — контакты необязательны. */}
-                <button
-                  type="button" className="cl-profile-id"
-                  onClick={() => actions.copyToClipboard(`#${client.id}`)}
-                  title={`#${client.id}${t('panel.contacts.copyHint')}`}
-                  style={{ fontSize: '11px', fontWeight: 700, padding: '2px 8px', borderRadius: '20px', border: 'none', background: 'rgba(var(--ink),0.06)', color: 'var(--text2)', cursor: 'pointer', fontFamily: 'Manrope', fontVariantNumeric: 'tabular-nums' }}
-                >
-                  #{client.id}
-                </button>
-                {frozen && (
-                  <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 8px', borderRadius: '20px', background: 'rgba(147,181,216,0.18)', color: '#4a7ca8', border: '1px solid rgba(147,181,216,0.3)', whiteSpace: 'nowrap' }}>
-                    ❄ {t('status.frozen')}
-                  </span>
-                )}
-              </div>
-              <div className="cl-profile-meta" style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px' }}>
-                {/* Статус только показываем: он считается из данных (регистрация,
-                    визиты, оплаты), пороги правятся в панели «О фильтрах». */}
-                <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 8px', borderRadius: '20px', border: `1px solid ${sc}44`, background: `${sc}18`, color: sc, display: 'flex', alignItems: 'center', gap: '4px', fontFamily: 'Manrope' }}>
-                  <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: sc, display: 'inline-block' }}/>
-                  {t(`status.${status}`, { defaultValue: status })}
-                </span>
-                <span style={{ fontSize: '10px', color: 'var(--text3)' }}>·</span>
-                {editingReg ? (
-                  <input
-                    autoFocus
-                    value={regValue}
-                    onChange={e => setRegValue(e.target.value)}
-                    onBlur={() => { setEditingReg(false); actions.updateRegistrationDate(regValue); }}
-                    onKeyDown={e => { if (e.key === 'Enter' || e.key === 'Escape') setEditingReg(false); }}
-                    style={{ fontSize: '11px', color: 'var(--peach)', background: 'transparent', border: 'none', borderBottom: '1px solid rgba(249,160,139,0.5)', outline: 'none', fontFamily: 'Manrope', fontWeight: 600, width: '120px', padding: '0 2px' }}
-                  />
-                ) : canEdit ? (
-                  <span
-                    onClick={() => setEditingReg(true)}
-                    title={t('panel.editDateHint')}
-                    style={{ fontSize: '11px', color: 'var(--text3)', cursor: 'pointer' }}
-                    onMouseEnter={e => { e.currentTarget.style.color='var(--peach)'; e.currentTarget.style.textDecoration='underline dotted'; }}
-                    onMouseLeave={e => { e.currentTarget.style.color='var(--text3)'; e.currentTarget.style.textDecoration='none'; }}
-                  >{t('panel.since', { date: formatDate(regValue) || regValue })}</span>
-                ) : (
-                  <span style={{ fontSize: '11px', color: 'var(--text3)' }}>
-                    {t('panel.since', { date: formatDate(regValue) || regValue })}
-                  </span>
-                )}
-              </div>
-            </div>
-          </div>
-          <button aria-label={t('common:buttons.close')} onClick={onClose} style={{ width: '30px', height: '30px', borderRadius: '8px', border: '1px solid var(--border)', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text3)', transition: 'all 0.2s', flexShrink: 0 }} onMouseEnter={e => { e.currentTarget.style.background='rgba(var(--ink),0.06)'; e.currentTarget.style.color='var(--text)'; }} onMouseLeave={e => { e.currentTarget.style.background='transparent'; e.currentTarget.style.color='var(--text3)'; }}>
-            <IconClose/>
-          </button>
-        </div>
-
-        {/* ── QUICK ACTIONS ── */}
-        <div className="cl-profile-actions" style={{ display: 'flex', gap: '6px', marginBottom: '14px' }}>
-          {/* П.11/12 — WhatsApp (заменяет «Позвонить»/«Сообщение», как на странице Сотрудники) */}
-          <button
-            className="cl-action-btn"
-            onClick={() => actions.openWhatsApp(client.phone ?? '')}
-            style={{ flex: 1, padding: '8px 4px', borderRadius: '10px', fontSize: '10px', fontWeight: 700, border: '1px solid var(--border)', background: 'transparent', color: '#1FA855', cursor: 'pointer', fontFamily: 'Manrope', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', transition: 'all 0.22s cubic-bezier(0.34,1.56,0.64,1)' }}
-            onMouseEnter={e => { e.currentTarget.style.background='rgba(31,168,85,0.1)'; e.currentTarget.style.borderColor='#1FA855'; }}
-            onMouseLeave={e => { e.currentTarget.style.background='transparent'; e.currentTarget.style.borderColor='var(--border)'; }}
-          >
-            <IconWhatsApp/>WhatsApp
-          </button>
-          {/* П.13 — Записать: сразу мастер записи с этим клиентом — тот же, что на
-              телефоне открывается из журнала, только шаг выбора клиента пропущен. */}
-          {canEdit && <button
-            className="cl-action-btn"
-            onClick={() => setBookingOpen(true)}
-            style={{ flex: 1, padding: '8px 4px', borderRadius: '10px', fontSize: '10px', fontWeight: 700, border: `1px solid ${bookingOpen ? 'var(--peach)' : 'rgba(249,160,139,0.4)'}`, background: bookingOpen ? 'rgba(249,160,139,0.12)' : 'rgba(249,160,139,0.06)', color: 'var(--peach)', cursor: 'pointer', fontFamily: 'Manrope', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', transition: 'all 0.22s cubic-bezier(0.34,1.56,0.64,1)' }}
-            onMouseEnter={e => { e.currentTarget.style.background='rgba(249,160,139,0.14)'; e.currentTarget.style.borderColor='var(--peach)'; }}
-            onMouseLeave={e => { if (!bookingOpen) { e.currentTarget.style.background='rgba(249,160,139,0.06)'; e.currentTarget.style.borderColor='rgba(249,160,139,0.4)'; } }}
-          >
-            <IconCalendar/>{t('panel.actions.book')}
-          </button>}
-          {/* П.14 — Бонус */}
-          {canEdit && <button
-            className="cl-action-btn"
-            onClick={actions.toggleBonus}
-            style={{ flex: 1, padding: '8px 4px', borderRadius: '10px', fontSize: '10px', fontWeight: 700, border: `1px solid ${actions.showBonus ? '#f0c040' : 'var(--border)'}`, background: actions.showBonus ? 'rgba(240,192,64,0.1)' : 'transparent', color: '#c8a84b', cursor: 'pointer', fontFamily: 'Manrope', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', transition: 'all 0.22s cubic-bezier(0.34,1.56,0.64,1)' }}
-            onMouseEnter={e => { e.currentTarget.style.background='rgba(240,192,64,0.1)'; e.currentTarget.style.borderColor='#f0c040'; }}
-            onMouseLeave={e => { if (!actions.showBonus) { e.currentTarget.style.background='transparent'; e.currentTarget.style.borderColor='var(--border)'; } }}
-          >
-            <IconGift/>{t('panel.actions.bonus')}
-          </button>}
-        </div>
-
-        {/* ── TABS ── */}
-        <div style={{ display: 'flex' }}>
-          {(['info','events','notes','wallet'] as const).map(tab => (
-            <button key={tab} onClick={() => setActiveTab(tab)} style={{ flex: 1, padding: '9px 8px', fontSize: '12px', fontWeight: 700, border: 'none', background: 'transparent', cursor: 'pointer', fontFamily: 'Manrope', color: activeTab === tab ? 'var(--peach)' : 'var(--text3)', borderBottom: `2px solid ${activeTab === tab ? 'var(--peach)' : 'transparent'}`, transition: 'all 0.2s' }}>{t(`panel.tabs.${tab}`)}</button>
-          ))}
-        </div>
-      </div>
+      <ClientPanelHeader
+        client={client} canEdit={canEdit} tab={activeTab} tabsId={tabsId} panelId={panelId}
+        onTabChange={setActiveTab} onClose={onClose}
+        onBook={() => setBookingOpen(true)} onBonus={actions.toggleBonus}
+        onWhatsApp={() => actions.openWhatsApp(client.phone ?? '')}
+        onCopyId={() => actions.copyToClipboard(`#${client.id}`)}
+        onRegistrationDate={actions.updateRegistrationDate}
+      />
 
       {/* ── BODY ── */}
-      <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', padding: '16px 20px', minWidth: 0 }}>
+      <div id={panelId} role="tabpanel" aria-labelledby={`${tabsId}-${activeTab}`} style={{ flex: 1, minHeight: 0, overflowY: 'auto', overflowX: 'hidden', padding: '16px 20px', minWidth: 0 }}>
 
         {/* INFO TAB */}
         {activeTab === 'info' && (
@@ -770,39 +617,18 @@ function ClientPanel({ client, onClose, onDelete }: {
         )}
 
 
-        {/* П.8 — EVENTS TAB */}
+        {/* П.8 — EVENTS TAB: лента своим модулем (components/events) */}
         {activeTab === 'events' && (
-          <div style={{ animation: 'fadeSlide 0.2s ease both', minWidth: 0, maxWidth: '100%', overflowX: 'hidden' }}>
-            <div style={{ marginBottom: '14px', borderBottom: '1px solid var(--border)' }}>
-              <AdaptiveFilters active={actions.eventFilter} onChange={tab => actions.setEventFilter(tab as EventFilterTab)}
-                label={t('panel.tabs.events')} items={EVENT_FILTER_TABS.map(tab => {
-                  const Icon = {all: List, payment: Coins, visit: UserCheck, completed: CircleCheck, cancel: CircleX, bonus: Gift}[tab];
-                  return {key: tab, label: t(`panel.events.filterTabs.${tab}`), icon: <Icon size={15}/>};
-                })}/>
-            </div>
-
-            {apiEvents.length === 0 && (
-              <div style={{ textAlign: 'center', padding: '32px 0', color: 'var(--text3)', fontSize: '13px' }}>{t('panel.events.empty')}</div>
-            )}
-
-            {apiEvents.map((ev, i) => (
-              <div key={i} className="cl-ev-row" style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '11px 12px', borderRadius: '10px', marginBottom: '4px', border: '1px solid var(--border)', background: 'var(--bg-card)', transition: 'all 0.15s', cursor: 'default', minWidth: 0 }}>
-                <EventIcon type={ev.type} c={color}/>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{ev.title}</div>
-                  {ev.trainer && <div style={{ fontSize: '11px', color: 'var(--text3)', marginTop: '2px' }}>{ev.trainer}</div>}
-                  <ClientEventDates event={ev}/>
-                  <ClientEventStatus event={ev}/>
-                  {ev.notes && <div style={{ fontSize: '12px', whiteSpace: 'pre-wrap', overflowWrap: 'anywhere', marginTop: '8px', lineHeight: 1.6 }}>{ev.notes}</div>}
-                  <NotePhotos photos={ev.photos ?? []}/>
-
-                </div>
-                <div style={{ fontSize: '12px', fontWeight: 700, color: ev.type === 'payment' ? '#5BAB72' : ev.type === 'freeze' ? '#4a7ca8' : ev.type === 'bonus' ? '#F9A08B' : 'var(--text3)', flexShrink: 0, whiteSpace: 'nowrap' }}>
-                  {ev.paid ?? ev.amount}
-                </div>
-              </div>
-            ))}
-          </div>
+          <ClientEventsTab
+            clientId={client.id}
+            tab={actions.eventFilter}
+            onTabChange={actions.setEventFilter}
+            actions={canEdit ? {
+              onBook: () => setBookingOpen(true),
+              onBuy: () => setActiveTab('wallet'),
+              onBonus: () => { if (!actions.showBonus) actions.toggleBonus(); },
+            } : null}
+          />
         )}
 
         {/* П.9 + П.10 — NOTES TAB */}

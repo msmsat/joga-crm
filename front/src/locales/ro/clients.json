@@ -277,46 +277,69 @@
       "delete": "Șterge"
     },
     "events": {
-      "dates": {
-        "lesson": "Programare",
-        "bookingCreated": "Rezervare creată",
-        "visit": "Vizită",
-        "cancel": "Anulat",
-        "payment": "Plătit",
-        "event": "Data evenimentului",
-        "recorded": "Plată creată",
-        "paymentUnknown": "Data plății nu a fost înregistrată",
-        "unknown": "Data nu a fost înregistrată"
-      },
-      "filterTabs": {
+      "tabs": {
         "all": "Toate",
-        "payment": "Plăți",
-        "visit": "Vizite",
-        "booking": "Rezervări",
-        "cancel": "Anulări",
-        "bonus": "Bonusuri",
-        "freeze": "Înghețări",
-        "completed": "Finalizate"
+        "visits": "Vizite",
+        "payments": "Plăți",
+        "bonuses": "Bonusuri"
       },
-      "empty": "Nu există evenimente",
-      "statuses": {
-        "appointment": {
-          "upcoming": "Urmează",
-          "ongoing": "În desfășurare",
-          "completed": "Finalizat",
-          "cancelled": "Anulat"
+      "ahead": "Urmează",
+      "state": {
+        "upcoming": "Programat",
+        "ongoing": "În desfășurare",
+        "attended": "Prezență",
+        "missed": "Absență",
+        "done": "Încheiat",
+        "cancelled": "Anulat",
+        "payment": "Plată",
+        "bonusIn": "Puncte adăugate",
+        "bonusOut": "Puncte folosite",
+        "freeze": "Înghețare",
+        "unfreeze": "Dezghețare"
+      },
+      "pay": {
+        "paid": "Plătit",
+        "unpaid": "Neplătit",
+        "subscription": "Cu abonament",
+        "free": "Gratuit"
+      },
+      "noMark": "Prezența nu e marcată",
+      "frozenClient": "Client înghețat",
+      "unfrozenClient": "Client dezghețat",
+      "points_one": "{{sign}}{{count}} punct",
+      "points_few": "{{sign}}{{count}} puncte",
+      "points_other": "{{sign}}{{count}} de puncte",
+      "dates": {
+        "unknown": "Data nu a fost înregistrată",
+        "paymentUnknown": "Data plății nu a fost înregistrată",
+        "recorded": "Plată creată la {{date}}",
+        "forLesson": "Pentru vizita din {{date}}",
+        "cancelledAt": "Rezervare anulată la {{date}}",
+        "cancelUnknown": "Data anulării nu a fost înregistrată",
+        "bookedAt": "Rezervat la {{date}}"
+      },
+      "summary": {
+        "visits": "Prezență",
+        "paidTotal": "Plătit în total",
+        "earned": "Puncte adăugate",
+        "spent": "Puncte folosite"
+      },
+      "empty": {
+        "all": {
+          "title": "Încă nu există istoric",
+          "text": "Aici vor apărea rezervările, plățile și bonusurile clientului."
         },
-        "attendance": {
-          "attended": "A venit",
-          "missed": "Nu a venit",
-          "unknown": "Prezență neconfirmată"
+        "visits": {
+          "title": "Încă nu există vizite",
+          "text": "Aici vor apărea vizitele programate, efectuate și anulate."
         },
-        "payment": {
-          "paid": "Plătit",
-          "unpaid": "Neplătit",
-          "subscription": "Abonament",
-          "free": "Gratuit",
-          "unknown": "Plată necunoscută"
+        "payments": {
+          "title": "Încă nu există plăți",
+          "text": "Aici vor apărea abonamentele cumpărate și plățile pentru vizite."
+        },
+        "bonuses": {
+          "title": "Încă nu există bonusuri",
+          "text": "Aici vor apărea punctele adăugate și folosite."
         }
       }
     },

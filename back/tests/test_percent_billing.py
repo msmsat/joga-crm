@@ -493,17 +493,21 @@ def _refund_cancels_subscription(kind: str) -> bool:
     async def fake_cancel(sub_id):
         cancelled.append(sub_id)
 
+    charge = SimpleNamespace(object="charge", id="ch_1", payment_intent="pi_1",
+                             invoice="in_1", amount=3900, amount_refunded=3900)
+    async def completed_refunds(_id):
+        return charge, [SimpleNamespace(id="re_1", amount=3900, status="succeeded")]
+    saved_refunds = WH.stripe_billing.fetch_charge_refunds
     saved_apply, saved_cancel = WH.apply_status, WH.stripe_billing.cancel_subscription
     WH.apply_status = fake_apply
     WH.stripe_billing.cancel_subscription = fake_cancel
+    WH.stripe_billing.fetch_charge_refunds = completed_refunds
     try:
-        # Полный возврат: amount == amount_refunded, иначе ветка вовсе не та.
-        charge = SimpleNamespace(
-            payment_intent="pi_1", invoice="in_1", amount=3900, amount_refunded=3900,
-        )
+        # Полный возврат подтверждён текущим успешным Refund.
         asyncio.run(WH._handle_refund(_SeqDB(), charge))
     finally:
         WH.apply_status, WH.stripe_billing.cancel_subscription = saved_apply, saved_cancel
+        WH.stripe_billing.fetch_charge_refunds = saved_refunds
     return bool(cancelled)
 
 

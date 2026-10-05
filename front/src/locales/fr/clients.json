@@ -273,46 +273,68 @@
       "delete": "Supprimer"
     },
     "events": {
-      "dates": {
-        "lesson": "Rendez-vous",
-        "bookingCreated": "Réservation créée",
-        "visit": "Visite",
-        "cancel": "Annulé",
-        "payment": "Payé",
-        "event": "Date de l’événement",
-        "recorded": "Paiement créé",
-        "paymentUnknown": "Date du paiement non enregistrée",
-        "unknown": "Date non enregistrée"
-      },
-      "filterTabs": {
+      "tabs": {
         "all": "Tous",
-        "payment": "Paiements",
-        "visit": "Visites",
-        "booking": "Réservations",
-        "cancel": "Annulations",
-        "bonus": "Bonus",
-        "freeze": "Gels",
-        "completed": "Terminées"
+        "visits": "Visites",
+        "payments": "Paiements",
+        "bonuses": "Bonus"
       },
-      "empty": "Aucun événement",
-      "statuses": {
-        "appointment": {
-          "upcoming": "À venir",
-          "ongoing": "En cours",
-          "completed": "Terminé",
-          "cancelled": "Annulé"
+      "ahead": "À venir",
+      "state": {
+        "upcoming": "Prévu",
+        "ongoing": "En cours",
+        "attended": "Présence",
+        "missed": "Absence",
+        "done": "Terminé",
+        "cancelled": "Annulé",
+        "payment": "Paiement",
+        "bonusIn": "Points ajoutés",
+        "bonusOut": "Points utilisés",
+        "freeze": "Gel",
+        "unfreeze": "Dégel"
+      },
+      "pay": {
+        "paid": "Payé",
+        "unpaid": "Non payé",
+        "subscription": "Avec abonnement",
+        "free": "Gratuit"
+      },
+      "noMark": "Présence non marquée",
+      "frozenClient": "Client gelé",
+      "unfrozenClient": "Client dégelé",
+      "points_one": "{{sign}}{{count}} point",
+      "points_other": "{{sign}}{{count}} points",
+      "dates": {
+        "unknown": "Date non enregistrée",
+        "paymentUnknown": "Date de paiement non enregistrée",
+        "recorded": "Paiement créé le {{date}}",
+        "forLesson": "Pour la séance du {{date}}",
+        "cancelledAt": "Réservation annulée le {{date}}",
+        "cancelUnknown": "Date d'annulation non enregistrée",
+        "bookedAt": "Réservé le {{date}}"
+      },
+      "summary": {
+        "visits": "Assiduité",
+        "paidTotal": "Payé au total",
+        "earned": "Points ajoutés",
+        "spent": "Points utilisés"
+      },
+      "empty": {
+        "all": {
+          "title": "Pas encore d'historique",
+          "text": "Les réservations, paiements et bonus du client apparaîtront ici."
         },
-        "attendance": {
-          "attended": "Présent",
-          "missed": "Absent",
-          "unknown": "Présence non confirmée"
+        "visits": {
+          "title": "Pas encore de visites",
+          "text": "Les séances prévues, suivies et annulées apparaîtront ici."
         },
-        "payment": {
-          "paid": "Payé",
-          "unpaid": "Non payé",
-          "subscription": "Abonnement",
-          "free": "Gratuit",
-          "unknown": "Paiement inconnu"
+        "payments": {
+          "title": "Pas encore de paiements",
+          "text": "Les achats d'abonnements et paiements de séances apparaîtront ici."
+        },
+        "bonuses": {
+          "title": "Pas encore de bonus",
+          "text": "Les points ajoutés et utilisés apparaîtront ici."
         }
       }
     },

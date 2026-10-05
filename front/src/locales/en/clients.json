@@ -269,46 +269,68 @@
       "delete": "Delete"
     },
     "events": {
-      "dates": {
-        "lesson": "Appointment",
-        "bookingCreated": "Booking created",
-        "visit": "Visit",
-        "cancel": "Cancelled",
-        "payment": "Paid",
-        "event": "Event date",
-        "recorded": "Payment created",
-        "paymentUnknown": "Payment date not recorded",
-        "unknown": "Date not recorded"
-      },
-      "filterTabs": {
+      "tabs": {
         "all": "All",
-        "payment": "Payments",
-        "visit": "Visits",
-        "booking": "Bookings",
-        "cancel": "Cancellations",
-        "bonus": "Bonuses",
-        "freeze": "Freezes",
-        "completed": "Completed"
+        "visits": "Bookings",
+        "payments": "Payments",
+        "bonuses": "Bonuses"
       },
-      "empty": "No events",
-      "statuses": {
-        "appointment": {
-          "upcoming": "Upcoming",
-          "ongoing": "In progress",
-          "completed": "Completed",
-          "cancelled": "Cancelled"
+      "ahead": "Coming up",
+      "state": {
+        "upcoming": "Scheduled",
+        "ongoing": "In progress",
+        "attended": "Attended",
+        "missed": "Missed",
+        "done": "Completed",
+        "cancelled": "Cancelled",
+        "payment": "Payment",
+        "bonusIn": "Points added",
+        "bonusOut": "Points spent",
+        "freeze": "Freeze",
+        "unfreeze": "Unfreeze"
+      },
+      "pay": {
+        "paid": "Paid",
+        "unpaid": "Unpaid",
+        "subscription": "Membership",
+        "free": "Free"
+      },
+      "noMark": "Attendance not marked",
+      "frozenClient": "Client frozen",
+      "unfrozenClient": "Client unfrozen",
+      "points_one": "{{sign}}{{count}} point",
+      "points_other": "{{sign}}{{count}} points",
+      "dates": {
+        "unknown": "Date not recorded",
+        "paymentUnknown": "Payment date not recorded",
+        "recorded": "Payment created {{date}}",
+        "forLesson": "For the class on {{date}}",
+        "cancelledAt": "Booking cancelled {{date}}",
+        "cancelUnknown": "Cancellation date not recorded",
+        "bookedAt": "Booked {{date}}"
+      },
+      "summary": {
+        "visits": "Attendance",
+        "paidTotal": "Paid in total",
+        "earned": "Points added",
+        "spent": "Points spent"
+      },
+      "empty": {
+        "all": {
+          "title": "No history yet",
+          "text": "Bookings, payments and bonuses for this client will appear here."
         },
-        "attendance": {
-          "attended": "Came",
-          "missed": "No-show",
-          "unknown": "Attendance unconfirmed"
+        "visits": {
+          "title": "No bookings yet",
+          "text": "Scheduled, attended and cancelled classes will appear here."
         },
-        "payment": {
-          "paid": "Paid",
-          "unpaid": "Unpaid",
-          "subscription": "Membership",
-          "free": "Free",
-          "unknown": "Payment unknown"
+        "payments": {
+          "title": "No payments yet",
+          "text": "Membership purchases and class payments will appear here."
+        },
+        "bonuses": {
+          "title": "No bonuses yet",
+          "text": "Points added and spent will appear here."
         }
       }
     },

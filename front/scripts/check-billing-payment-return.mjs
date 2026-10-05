@@ -303,13 +303,15 @@ async function checkoutReturn(clientSecret = 'cs_secret') {
     useRef(value) { const slot = index++; state[slot] ??= { current: value }; return state[slot]; },
   });
   const profile = { legal_name: 'Alice Example', country: 'CZ', line1: 'Prague 1', postal_code: '11000', city: 'Prague' };
-  mock('@tanstack/react-query', { useQuery: ({ queryKey }) => queryKey[1] === 'catalog'
+  mock('@tanstack/react-query', { useQueryClient: () => ({ cancelQueries: async () => {}, setQueryData() {}, invalidateQueries: async () => {} }),
+    useQuery: ({ queryKey }) => queryKey[1] === 'catalog'
     ? { data: { plans: [{ id: 's7' }], period_discounts: { 1: 0, 3: 0.2 } } }
     : { data: profile, refetch: async () => ({ data: profile }) } });
   mock('react-router-dom', { useNavigate: () => path => routes.push(path),
     useSearchParams: () => [new URLSearchParams('plan=s7&period=3&combo=true')] });
   mock('react-i18next', { useTranslation: () => ({ t: key => key }) });
   mock('../../../../api/billing/billing.api', { billingApi: {
+    activateModel: async () => {},
     saveBillingProfile: async () => profile,
     checkout: async (...args) => { requests.push(args); return { invoice_id: 42, client_secret: clientSecret }; },
   } });
@@ -321,6 +323,7 @@ async function checkoutReturn(clientSecret = 'cs_secret') {
   await module.link(name => { assert.ok(modules.has(name), `Unexpected checkout dependency: ${name}`); return modules.get(name); });
   await module.evaluate();
   const render = () => { index = 0; return module.namespace.useCheckoutPage(); };
+  render().setComboAccepted(true);
   await render().prepare(profile);
   return { hook: render(), routes, requests };
 }

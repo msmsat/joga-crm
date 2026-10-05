@@ -269,46 +269,68 @@
       "delete": "Löschen"
     },
     "events": {
-      "dates": {
-        "lesson": "Termin",
-        "bookingCreated": "Buchung erstellt",
-        "visit": "Besuch",
-        "cancel": "Storniert",
-        "payment": "Bezahlt",
-        "event": "Ereignisdatum",
-        "recorded": "Zahlung erstellt",
-        "paymentUnknown": "Zahlungsdatum nicht gespeichert",
-        "unknown": "Datum nicht gespeichert"
-      },
-      "filterTabs": {
+      "tabs": {
         "all": "Alle",
-        "payment": "Zahlungen",
-        "visit": "Besuche",
-        "booking": "Buchungen",
-        "cancel": "Stornierungen",
-        "bonus": "Boni",
-        "freeze": "Einfrierungen",
-        "completed": "Abgeschlossen"
+        "visits": "Termine",
+        "payments": "Zahlungen",
+        "bonuses": "Boni"
       },
-      "empty": "Keine Ereignisse",
-      "statuses": {
-        "appointment": {
-          "upcoming": "Bevorstehend",
-          "ongoing": "Läuft",
-          "completed": "Abgeschlossen",
-          "cancelled": "Abgesagt"
+      "ahead": "Demnächst",
+      "state": {
+        "upcoming": "Geplant",
+        "ongoing": "Läuft gerade",
+        "attended": "Besucht",
+        "missed": "Verpasst",
+        "done": "Abgeschlossen",
+        "cancelled": "Abgesagt",
+        "payment": "Zahlung",
+        "bonusIn": "Punkte gutgeschrieben",
+        "bonusOut": "Punkte eingelöst",
+        "freeze": "Einfrieren",
+        "unfreeze": "Auftauen"
+      },
+      "pay": {
+        "paid": "Bezahlt",
+        "unpaid": "Unbezahlt",
+        "subscription": "Über Abo",
+        "free": "Kostenlos"
+      },
+      "noMark": "Anwesenheit nicht erfasst",
+      "frozenClient": "Kunde eingefroren",
+      "unfrozenClient": "Kunde aufgetaut",
+      "points_one": "{{sign}}{{count}} Punkt",
+      "points_other": "{{sign}}{{count}} Punkte",
+      "dates": {
+        "unknown": "Datum nicht gespeichert",
+        "paymentUnknown": "Zahlungsdatum nicht gespeichert",
+        "recorded": "Zahlung erstellt am {{date}}",
+        "forLesson": "Für den Termin am {{date}}",
+        "cancelledAt": "Buchung storniert am {{date}}",
+        "cancelUnknown": "Stornodatum nicht gespeichert",
+        "bookedAt": "Gebucht am {{date}}"
+      },
+      "summary": {
+        "visits": "Anwesenheit",
+        "paidTotal": "Insgesamt bezahlt",
+        "earned": "Punkte gutgeschrieben",
+        "spent": "Punkte eingelöst"
+      },
+      "empty": {
+        "all": {
+          "title": "Noch kein Verlauf",
+          "text": "Hier erscheinen Termine, Zahlungen und Boni dieses Kunden."
         },
-        "attendance": {
-          "attended": "Gekommen",
-          "missed": "Nicht erschienen",
-          "unknown": "Teilnahme unbestätigt"
+        "visits": {
+          "title": "Noch keine Termine",
+          "text": "Geplante, besuchte und abgesagte Termine erscheinen hier."
         },
-        "payment": {
-          "paid": "Bezahlt",
-          "unpaid": "Unbezahlt",
-          "subscription": "Abo",
-          "free": "Kostenlos",
-          "unknown": "Zahlung unbekannt"
+        "payments": {
+          "title": "Noch keine Zahlungen",
+          "text": "Abo-Käufe und Terminzahlungen erscheinen hier."
+        },
+        "bonuses": {
+          "title": "Noch keine Boni",
+          "text": "Gutgeschriebene und eingelöste Punkte erscheinen hier."
         }
       }
     },
