@@ -61,7 +61,9 @@
   },
   "toolbar": {
     "searchPlaceholder": "Søg efter kunde…",
-    "addClient": "Tilføj kunde"
+    "addClient": "Tilføj kunde",
+    "moreFilters": "Flere",
+    "filters": "Filtre"
   },
   "table": {
     "visits": "besøg",
@@ -292,7 +294,27 @@
         "freeze": "Pauser",
         "completed": "Afsluttede"
       },
-      "empty": "Ingen hændelser"
+      "empty": "Ingen hændelser",
+      "statuses": {
+        "appointment": {
+          "upcoming": "Kommende",
+          "ongoing": "I gang",
+          "completed": "Afsluttet",
+          "cancelled": "Aflyst"
+        },
+        "attendance": {
+          "attended": "Mødt",
+          "missed": "Udeblev",
+          "unknown": "Fremmøde ikke bekræftet"
+        },
+        "payment": {
+          "paid": "Betalt",
+          "unpaid": "Ikke betalt",
+          "subscription": "Klippekort",
+          "free": "Gratis",
+          "unknown": "Betaling ukendt"
+        }
+      }
     },
     "notes": {
       "title": "Administrationsnoter",

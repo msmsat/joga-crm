@@ -2,18 +2,19 @@ import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import type { BillingMode, PlanType, PlanPeriod, BillingTab, BillingPlan, Invoice } from '../types';
+import type { PlanType, BillingTab, BillingPlan, Invoice } from '../types';
 import type {
-  ActivateModelRequest, AutopaySettings, PaymentCard, BillingStats, CheckoutPreview,
-  Plan,
+  ActivateModelRequest, AutopaySettings, PaymentCard, BillingStats,
 } from '../../../../api/billing/billing.types';
-import { DEFAULT_PLAN_ID, PERIOD_DISCOUNTS_FALLBACK } from '../constants';
-import { planLabel, planSeats } from '../../../../lib/plan';
+import { planLabel } from '../../../../lib/plan';
 import { billingApi } from '../../../../api/billing/billing.api';
 import { errorMessage } from '../../../../api/errorMessage';
 import { queryKeys } from '../../../../api/queryKeys';
 import { useToast } from '../../../../components/ui/index';
 import { usePaymentReturn } from './usePaymentReturn';
+import { useBillingChoice } from './useBillingChoice';
+import { useBillingCatalog } from './useBillingCatalog';
+import { useCheckoutQuotes } from './useCheckoutQuotes';
 
 // Лимиты ступени — те же, что считает plans._limits на сервере: их показывает
 // панель итога («обращений к Velora AI»). null = безлимит. Клиентов тут нет:
@@ -23,80 +24,38 @@ export type PlanInfo = {
   staffLimit: number | null; ai: number | null;
 };
 
-// Режим тарифа в БД ↔ плитка в интерфейсе. Комбо на сервере зовётся "combo",
-// а плитка исторически называется 'fixed' — без этой пары UI и БД молча
-// расходятся, а цену подписки определяет именно БД (checkout._is_combo).
-const MODE_FROM_SERVER: Record<string, BillingMode> = {
-  subscription: 'subscription', percent: 'percent', combo: 'fixed',
-};
-
 // Деньги считаем в евро с копейками: скидка 30% от 39 € даёт 27,30, и Math.round
 // до целых занижал итог на вкладке оплаты (27 × 12 = 324 € вместо 327,60 €,
 // которые реально спишет Stripe по amount_for из routers/billing/plans.py).
 const round2 = (value: number) => Math.round(value * 100) / 100;
-
-// Выбор тарифа и периода — СВОЙ у каждой модели оплаты. Подписка и комбо это
-// разные продукты: у комбо свой Price в Stripe и половинная цена, поэтому «Старт»,
-// выбранный в комбо, ничего не говорит о выборе в подписке. Одно состояние на обе
-// плитки молча переносило выбор между ними (жалоба 14.08.2026).
-type Choice = { plan: PlanType; period: PlanPeriod };
-const DEFAULT_CHOICE: Choice = { plan: DEFAULT_PLAN_ID, period: 1 };
 
 export function useBillingCalculator() {
   const { t } = useTranslation('billing');
   const navigate = useNavigate();
   const toast = useToast();
   const qc = useQueryClient();
-  const [billingMode, setBillingMode] = useState<BillingMode>('subscription');
-  const [choice, setChoice] = useState<Record<BillingMode, Choice>>({
-    subscription: DEFAULT_CHOICE, percent: DEFAULT_CHOICE, fixed: DEFAULT_CHOICE,
-  });
-  const { plan: selectedPlan, period: selectedPeriod } = choice[billingMode];
-  const setSelectedPlan = (plan: PlanType) =>
-    setChoice(c => ({ ...c, [billingMode]: { ...c[billingMode], plan } }));
-  const setSelectedPeriod = (period: PlanPeriod) =>
-    setChoice(c => ({ ...c, [billingMode]: { ...c[billingMode], period } }));
   const [modelBusy, setModelBusy] = useState(false);
   const [activeTab, setActiveTab] = useState<BillingTab>('plans');
   const [animateCards, setAnimateCards] = useState(false);
 
-  // Каталог с сервера — источник истины о ступенях и ценах (правило 6 эпика).
-  // Держим его КАК ПРИЕХАЛ: ступеней два десятка, и своего списка id у фронта
-  // быть не должно — линия мест рисуется ровно по нему.
-  const [catalog, setCatalog] = useState<Plan[]>([]);
-  const [periodDiscounts, setPeriodDiscounts] = useState<Record<number, number>>(PERIOD_DISCOUNTS_FALLBACK);
-  // Валюта тарифов — из каталога (BILLING_CURRENCY Stripe-аккаунта), а не валюта кассы
-  // студии: списывают всегда евро, чем бы студия ни торговала у себя.
-  const [currency, setCurrency] = useState('EUR');
-  // Минимальный месячный платёж процентного тарифа — из каталога, не константой:
-  // владелец подтверждает в модалке КОНКРЕТНУЮ цифру, и разъехаться с сервером
-  // (plans.MIN_MONTHLY_FEE) она не должна. 0 — каталог ещё не загружен.
-  const [minMonthly, setMinMonthly] = useState(0);
-  // Условия постоплаты с сервера. Дефолты — текущие значения каталога: каталог
-  // может не успеть загрузиться к моменту, когда владелец жмёт плитку модели, а
-  // модалка согласия без цифр бессмысленна. Сервер всё равно главнее — он же
-  // и отвергнет активацию без accept_offline_terms.
-  const [terms, setTerms] = useState({ percent_rate: 3, combo_rate: 1.5, grace_days: 7 });
+  const { catalog, periodDiscounts, currency, minMonthly, terms, catalogReady } = useBillingCatalog();
   const [payBusy, setPayBusy] = useState(false);
   const checkoutPending = useRef(false);
-  // Расчёт перехода: зачёт остатка, итог к оплате, что сгорит. Считает сервер тем
-  // же вызовом Stripe, которым потом выставит счёт (GET /billing/checkout/preview),
-  // поэтому своей арифметики остатка здесь нет и быть не должно.
-  //
-  // Хранится ВМЕСТЕ с ключом «для чего посчитан». Так «идёт загрузка» становится
-  // производным (ключ расчёта ≠ текущий выбор), а не вторым состоянием, которое
-  // пришлось бы поднимать синхронно внутри эффекта. Побочно это закрывает и гонку:
-  // ответ на устаревший запрос не совпадёт ключом и не подменит показанные цифры.
-  const [preview, setPreview] = useState<{ key: string; data: CheckoutPreview | null } | null>(null);
   // Возврат с оплаты Stripe (?payment=return). Истина о платеже — вебхук, он мог
   // ещё не дойти; поэтому не рисуем подписку локально, а перезапрашиваем план.
   // Флаг читаем из URL лениво (setState в эффекте даёт каскадный рендер).
   const { paymentReturn, paymentInvoice, paymentStatus, recordPaymentInvoice } = usePaymentReturn();
-  const { data: plan = null } = useQuery({
+  const { data: plan = null, status: planStatus } = useQuery({
     queryKey: queryKeys.billingPlan,
     queryFn: () => billingApi.getPlan(),
   });
   const setPlan = (next: BillingPlan) => qc.setQueryData(queryKeys.billingPlan, next);
+  const {
+    billingMode, setBillingMode,
+    selectedPlan, setSelectedPlan,
+    selectedPeriod, setSelectedPeriod,
+  } = useBillingChoice(plan, catalog, periodDiscounts);
+  const { quoteFor, quotesReady } = useCheckoutQuotes(plan);
   // Инвойсы и карты (эпик B6) — единый источник в хуке вместо локальных фетчей в табах,
   // чтобы фокус-рефетч и возврат с оплаты освежали оба таба, даже если открыт третий.
   const [invoices, setInvoices] = useState<Invoice[]>([]);
@@ -106,33 +65,12 @@ export function useBillingCalculator() {
   // Плашки шапки: суммы считает сервер по оплаченным счетам (GET /billing/stats).
   const [stats, setStats] = useState<BillingStats | null>(null);
 
-  // Линия мест открывается на DEFAULT_PLAN_ID — верно для студии без подписки, но у
-  // студии с активным тарифом ползунок должен сразу стоять на ЕЁ ступени, а не
-  // расходиться с бейджем «Текущий». Синхронизируем один раз при первой загрузке
-  // плана (planSyncedRef, не state — иначе setState синхронно внутри effect);
-  // дальше выбор ступени — за пользователем.
-  const planSyncedRef = useRef(false);
-  const modeSyncedRef = useRef(false);
+  // Свежий план ложится в кэш react-query; выбор на странице из него выводится
+  // сам (useBillingChoice), своей синхронизации тут не нужно.
   const loadPlan = useCallback(() => qc.fetchQuery({
     queryKey: queryKeys.billingPlan,
     queryFn: () => billingApi.getPlan(),
     staleTime: 0,
-  }).then(p => {
-    // Оплаченная модель. Подставлять тариф надо ИМЕННО в неё, а не в открытую
-    // сейчас плитку: комбо «Старт» не делает «Старт» выбранным и в подписке.
-    const paidMode = p?.billing_mode ? MODE_FROM_SERVER[p.billing_mode] : undefined;
-    if (!planSyncedRef.current && paidMode && p.status === 'active' && planSeats(p.plan_name) !== undefined) {
-      setChoice(c => ({ ...c, [paidMode]: { ...c[paidMode], plan: p.plan_name as PlanType } }));
-      planSyncedRef.current = true;
-    }
-    // Плитку режима тоже ставим на то, что реально лежит в БД, и тоже один раз.
-    // Без этого студия на комбо открывала страницу с выбранной «Подпиской» и
-    // видела полную цену, тогда как Stripe списал бы половинную: сумму берёт
-    // сервер из billing_mode, а не из выбора во фронте.
-    if (!modeSyncedRef.current && paidMode) {
-      setBillingMode(paidMode);
-      modeSyncedRef.current = true;
-    }
   }).catch(() => {}), [qc]);
   // /dashboard/billing показывает всю историю без своей пагинации — берём верхнюю
   // границу бэка (задача 3, ?limit=999999 → 422), не 12-строчный дефолт вкладки Настроек.
@@ -223,21 +161,13 @@ export function useBillingCalculator() {
   // Плитка 'fixed' — это и есть комбо (см. MODE_FROM_SERVER выше).
   const comboRequested = billingMode === 'fixed';
 
-  // Quote the selection on the page, before checkout. Debounce the seats slider
-  // and ignore responses for a selection the owner has already changed.
-  const previewKey = `${selectedPlan}:${selectedPeriod}:${comboRequested}:${plan?.plan_name}:${plan?.billing_mode}:${plan?.status}:${plan?.expires_at}:${plan?.has_live_subscription}`;
-  const previewEnabled = activeTab === 'plans' && billingMode !== 'percent' && catalog.length > 0;
-  const previewBusy = previewEnabled && preview?.key !== previewKey;
-  useEffect(() => {
-    if (!previewEnabled) return;
-    let current = true;
-    const timer = window.setTimeout(() => {
-      billingApi.previewCheckout(selectedPlan, selectedPeriod, comboRequested)
-        .then(data => { if (current) setPreview({ key: previewKey, data }); })
-        .catch(() => { if (current) setPreview({ key: previewKey, data: null }); });
-    }, 180);
-    return () => { current = false; window.clearTimeout(timer); };
-  }, [previewEnabled, previewKey, selectedPlan, selectedPeriod, comboRequested]);
+  // Расчёт выбранной пары — из готового набора (useCheckoutQuotes), без запроса.
+  const preview = billingMode === 'percent' ? null : quoteFor(comboRequested, selectedPlan, selectedPeriod);
+  // Пока не приехали план (от него зависит, где стоит выбор), каталог и набор
+  // расчётов, панель цены рисуется заглушкой той же высоты: иначе на входе
+  // мелькали €0, затем цена без налога и только потом итог с налогом.
+  const pricingPending = planStatus === 'pending' || !catalogReady
+    || (billingMode !== 'percent' && !quotesReady(comboRequested));
 
   // Opening the custom page does not issue an invoice. Payment preparation
   // starts only after the payer has saved their billing details there.
@@ -282,24 +212,6 @@ export function useBillingCalculator() {
       .catch(() => { setPlan(prev); toast.error(t('method.autopayError')); });
   };
 
-  useEffect(() => {
-    billingApi.getPlans().then(cat => {
-      setCatalog(cat.plans);
-      setPeriodDiscounts(cat.period_discounts);
-      if (cat.currency) setCurrency(cat.currency);
-      if (cat.min_monthly) setMinMonthly(cat.min_monthly / 100);
-      if (cat.percent_rate) {
-        setTerms({
-          percent_rate: cat.percent_rate,
-          combo_rate: cat.combo_rate,
-          grace_days: cat.grace_days,
-        });
-      }
-      // cat.vat_rate намеренно не используем: интерфейс нигде не показывает сумму с
-      // налогом — ставку знает только Stripe Tax по стране и статусу плательщика.
-    }).catch(() => { /* нули остаются — не роняем страницу */ });
-  }, []);
-
   // Подписи ступеней — из i18n по числу мест: каталог отдаёт имена только на
   // русском, а интерфейс мультиязычный. Цены и id по-прежнему диктует сервер
   // (CLAUDE.md §8). Цены приходят в центах — делим на 100 один раз тут.
@@ -341,7 +253,7 @@ export function useBillingCalculator() {
     activateModel, modelBusy,
     payBusy,
     openPortal, portalBusy,
-    preview: preview?.key === previewKey ? preview.data : null, previewBusy,
+    preview, pricingPending,
     paymentReturn, paymentInvoice, paymentStatus, plan,
     invoices, invoicesLoaded, cards, cardsLoaded, setAutopay,
     stats, syncInvoice,

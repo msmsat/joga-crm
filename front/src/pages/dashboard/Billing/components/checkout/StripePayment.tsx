@@ -82,7 +82,8 @@ function SessionPayment(props: Props) {
     fields: result.type === 'error' ? null : <div className={styles.stripeFields} aria-busy={result.type === 'loading'}>
       <div className={styles.wallets} data-hidden={!wallets || undefined}>
         <CheckoutExpress options={walletOptions} onConfirm={confirm}
-          onReady={e => setWallets(!!e.availablePaymentMethods && Object.values(e.availablePaymentMethods).some(Boolean))} />
+          onReady={e => setWallets(!!e.availablePaymentMethods && Object.values(e.availablePaymentMethods).some(Boolean))}
+          onAvailablePaymentMethodsChange={e => setWallets(!!e.paymentMethods && Object.values(e.paymentMethods).some(method => method?.available))} />
       </div>
       <CheckoutPaymentElement options={paymentOptions} />
     </div>,
@@ -131,7 +132,8 @@ function InvoicePayment(props: Props) {
     fields: <div className={styles.stripeFields}>
       <div className={styles.wallets} data-hidden={!wallets || undefined}>
         <ExpressCheckoutElement options={walletOptions} onConfirm={confirm}
-          onReady={e => setWallets(!!e.availablePaymentMethods && Object.values(e.availablePaymentMethods).some(Boolean))} />
+          onReady={e => setWallets(!!e.availablePaymentMethods && Object.values(e.availablePaymentMethods).some(Boolean))}
+          onAvailablePaymentMethodsChange={e => setWallets(!!e.paymentMethods && Object.values(e.paymentMethods).some(method => method?.available))} />
       </div>
       <PaymentElement options={{ ...paymentOptions, fields: { billingDetails: {
           address: 'never', name: props.session.payer_name ? 'never' : 'auto',

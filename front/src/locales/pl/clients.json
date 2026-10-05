@@ -61,7 +61,9 @@
   },
   "toolbar": {
     "searchPlaceholder": "Szukaj klienta…",
-    "addClient": "Dodaj klienta"
+    "addClient": "Dodaj klienta",
+    "moreFilters": "Więcej",
+    "filters": "Filtry"
   },
   "table": {
     "visits": "wizyt",
@@ -296,7 +298,27 @@
         "freeze": "Zamrożenia",
         "completed": "Zakończone"
       },
-      "empty": "Brak zdarzeń"
+      "empty": "Brak zdarzeń",
+      "statuses": {
+        "appointment": {
+          "upcoming": "Nadchodzące",
+          "ongoing": "W trakcie",
+          "completed": "Zakończono",
+          "cancelled": "Anulowano"
+        },
+        "attendance": {
+          "attended": "Przyszedł",
+          "missed": "Nie przyszedł",
+          "unknown": "Obecność niepotwierdzona"
+        },
+        "payment": {
+          "paid": "Opłacone",
+          "unpaid": "Nieopłacone",
+          "subscription": "Karnet",
+          "free": "Za darmo",
+          "unknown": "Płatność nieznana"
+        }
+      }
     },
     "notes": {
       "title": "Notatki administratora",

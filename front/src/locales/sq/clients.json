@@ -61,7 +61,9 @@
   },
   "toolbar": {
     "searchPlaceholder": "Kërko klient…",
-    "addClient": "Shto klient"
+    "addClient": "Shto klient",
+    "moreFilters": "Më shumë",
+    "filters": "Filtra"
   },
   "table": {
     "visits": "vizita",
@@ -292,7 +294,27 @@
         "freeze": "Ngrirjet",
         "completed": "Të përfunduara"
       },
-      "empty": "Nuk ka ngjarje"
+      "empty": "Nuk ka ngjarje",
+      "statuses": {
+        "appointment": {
+          "upcoming": "Në vijim",
+          "ongoing": "Në vazhdim",
+          "completed": "Përfunduar",
+          "cancelled": "Anuluar"
+        },
+        "attendance": {
+          "attended": "Erdhi",
+          "missed": "Nuk erdhi",
+          "unknown": "Pjesëmarrja e pakonfirmuar"
+        },
+        "payment": {
+          "paid": "E paguar",
+          "unpaid": "E papaguar",
+          "subscription": "Abonim",
+          "free": "Falas",
+          "unknown": "Pagesë e panjohur"
+        }
+      }
     },
     "notes": {
       "title": "Shënime të administratorit",

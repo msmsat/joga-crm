@@ -168,7 +168,15 @@
     "newLessonPreview": "Nová lekce",
     "cancelled": "Zrušeno",
     "noTrainers": "Žádní trenéři",
-    "noHalls": "Žádné {{spacePlural}}"
+    "noHalls": "Žádné {{spacePlural}}",
+    "card": {
+      "unpaid": "Nezaplaceno",
+      "paid": "Zaplaceno",
+      "unpaidCount": "Nezaplatili: {{n}}",
+      "missedCount": "Nepřišli: {{n}}",
+      "cameCount": "Přišlo {{n}} z {{total}}",
+      "spots": "Přihlášeno {{n}} z {{total}}"
+    }
   },
   "createService": "+ Vytvořit službu",
   "invalidDateFormat": "Neplatný formát data",

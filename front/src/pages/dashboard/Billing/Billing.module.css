@@ -162,48 +162,60 @@
 }
 .calcPeriod[aria-pressed='true'] .calcBest { background: #fff; color: #f9a08b; }
 
-/* Левая колонка — flex, чтобы столбики прайса внизу забрали ровно тот остаток
-   высоты, который остаётся от панели итога справа (она выше). */
+/* Левая колонка — flex, чтобы команда внизу забрала ровно тот остаток высоты,
+   который остаётся от панели итога справа (она выше). */
 .calcPick { display: flex; flex-direction: column; }
 
-/* ── Блок выгоды ──────────────────────────────────────────────────────────
-   Два столбца настоящими деньгами: тот же срок помесячно против выбранного
-   периода, разница высот — экономия. Занимает всю ширину колонки: узкие
-   столбики читались как случайная декорация сбоку. Тянется по остатку высоты
-   (flex: 1), поэтому плитки периода прижаты к низу колонки. */
-.calcGain { display: flex; flex-direction: column; flex: 1; min-height: 150px; margin-top: 26px; }
-.calcGainBars { display: flex; align-items: stretch; gap: 14px; flex: 1; margin-top: 12px; }
-.calcGainCol {
-  display: grid;
-  /* Средняя строка — дорожка столбца: её высоту задаёт 1fr, от неё и считается
-     процент самого столбца. */
-  grid-template-rows: auto minmax(56px, 1fr) auto;
-  gap: 7px;
-  flex: 1;
-  min-width: 0;
+/* ── Команда фигурками (TeamLineup) ───────────────────────────────────────
+   SVG вписывается в остаток высоты колонки по центру (preserveAspectRatio
+   xMidYMid meet): на широком экране группа не раздувается, а встаёт посередине. */
+.calcTeam { position: relative; flex: 1; min-height: 150px; margin-top: 18px; }
+.teamArt { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.teamSeat { cursor: pointer; }
+.teamArt[data-disabled='true'] .teamSeat { cursor: default; }
+
+/* Свободное место — пунктирный силуэт: видно, сколько ещё людей влезет.
+   Заливка непрозрачная (тон карточки чуть светлее фона): ближний силуэт обязан
+   закрывать дальний, иначе пунктиры трёх рядов сплетаются в сетку. */
+.teamGhost {
+  fill: #272727;
+  stroke: rgba(255, 255, 255, 0.2);
+  stroke-width: 1.2;
+  stroke-dasharray: 3 3.5;
+  vector-effect: non-scaling-stroke;
+  transition: opacity 0.3s ease var(--d, 0ms), stroke 0.2s ease;
 }
-.calcGainSum { font-size: 15px; font-weight: 800; color: rgba(255, 255, 255, 0.5); font-variant-numeric: tabular-nums; }
-.calcGainSumOn { color: #fff; }
-.calcGainTrack { display: flex; align-items: flex-end; }
-.calcGainBar {
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  width: 100%;
-  min-height: 10px;
-  padding-top: 7px;
-  border-radius: 10px 10px 3px 3px;
-  background: rgba(255, 255, 255, 0.09);
-  transition: height 0.5s cubic-bezier(0.34, 1.1, 0.64, 1);
+.teamSeat[data-on='true'] .teamGhost { opacity: 0; }
+
+/* Человек встаёт на место с отскоком снизу. --d — очередь внутри одного
+   изменения (считает компонент): новые встают от центра к краям, уходящие —
+   с краёв к центру. */
+.teamPerson {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  transform: translateY(10px) scale(0.35);
+  opacity: 0;
+  transition:
+    transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) var(--d, 0ms),
+    opacity 0.22s ease var(--d, 0ms),
+    filter 0.2s ease;
 }
-.calcGainBarOn {
-  background: linear-gradient(180deg, #fcae91 0%, #f9a08b 100%);
-  box-shadow: 0 8px 22px rgba(249, 160, 139, 0.35);
+.teamSeat[data-on='true'] .teamPerson { transform: none; opacity: 1; }
+.teamArt[data-disabled='false'] .teamSeat:hover .teamGhost { stroke: #fcae91; }
+.teamArt[data-disabled='false'] .teamSeat:hover .teamPerson { filter: brightness(1.12); }
+
+/* Свечение под группой растёт вместе с ней (--k — доля занятых мест). */
+.teamFloor {
+  transform-box: fill-box;
+  transform-origin: center;
+  transform: scaleX(var(--k, 0));
+  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
 }
-/* Скидка печатается ВНУТРИ столбца — рядом с высотой, которую она и объясняет. */
-.calcGainTag { font-size: 13px; font-weight: 800; letter-spacing: 0.02em; color: #fff; }
-.calcGainCap { font-size: 11px; font-weight: 600; color: rgba(255, 255, 255, 0.35); }
-.calcGainNote { margin: 12px 0 0; font-size: 11.5px; line-height: 1.5; color: rgba(255, 255, 255, 0.45); }
+
+/* Безлимит: за краями рядов проступают ещё люди — группа уходит за кадр
+   (растворяет их маска по краям SVG). */
+.teamExtra { opacity: 0; pointer-events: none; transition: opacity 0.5s ease; }
+.teamArt[data-unlimited='true'] .teamExtra { opacity: 1; transition-delay: 0.3s; }
 
 .calcPanel {
   /* Колонка с равномерным разбросом остатка: если выше окажется левая колонка,
@@ -229,6 +241,7 @@
 .calcPriceUnit { font-size: 13px; color: rgba(255, 255, 255, 0.4); }
 .calcOld { display: flex; align-items: center; gap: 8px; margin-top: 12px; font-size: 12px; min-height: 20px; }
 .calcOldPrice { color: rgba(255, 255, 255, 0.3); text-decoration: line-through; }
+.calcOldNote { color: rgba(255, 255, 255, 0.3); }
 .calcOff { padding: 2px 8px; border-radius: 100px; background: rgba(163, 201, 168, 0.15); color: var(--pistachio); font-weight: 700; }
 
 /* Новая сумма приподнимается снизу вместо тихой подмены. Проигрывается заново
@@ -237,7 +250,7 @@
   from { opacity: 0; transform: translateY(7px); }
   to { opacity: 1; transform: none; }
 }
-.calcPriceNum, .calcTotalValue, .calcGainSum { animation: calcBump 0.3s cubic-bezier(0.22, 1, 0.36, 1); }
+.calcPriceNum, .calcTotalValue { animation: calcBump 0.3s cubic-bezier(0.22, 1, 0.36, 1); }
 
 /* Полоса «сколько платите / сколько экономите»: доли едут шириной, поэтому
    разница между 3 и 12 месяцами читается движением, а не сравнением чисел.
@@ -281,14 +294,37 @@
 .calcTotal { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
 .calcTotalLabel { font-size: 12.5px; color: rgba(255, 255, 255, 0.4); }
 .calcTotalValue { font-size: 20px; font-weight: 800; color: #fff; font-variant-numeric: tabular-nums; }
-.calcVat { margin: 6px 0 0; font-size: 11px; line-height: 1.5; color: rgba(255, 255, 255, 0.35); }
+/* Две строки места всегда: текст под итогом зависит от налогового режима, и
+   по-чешски «до НДС» умещается в строку, а «с НДС» — нет. Без запаса панель
+   меняла высоту, едва приезжал расчёт, и дёргала за собой всю карточку. */
+.calcVat { margin: 6px 0 0; min-height: 3em; font-size: 11px; line-height: 1.5; color: rgba(255, 255, 255, 0.35); }
 .calcPriceHeading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .calcPay { margin-top: 16px; }
 
+/* ── Цены ещё едут (data-pending) ─────────────────────────────────────────
+   Числа, которых пока нет, держат место: текст остаётся в разметке — размеры
+   те же, что будут с ответом, — но прозрачный, а поверх мерцает заглушка.
+   Раньше на входе мелькали €0, потом цена без налога, потом итог с налогом,
+   и панель вырастала посреди этого. Ползунку пока стоять негде: без бегунка. */
+@keyframes calcShimmer { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+.calcCard[data-pending] .calcFill {
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  border-color: transparent;
+  border-radius: 8px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.05) 25%, rgba(255, 255, 255, 0.11) 50%, rgba(255, 255, 255, 0.05) 75%) 0 0 / 200% 100%;
+  text-decoration: none;
+  animation: calcShimmer 1.4s ease-in-out infinite;
+}
+.calcCard[data-pending] .calcRange { cursor: default; }
+.calcCard[data-pending] .calcRange::-webkit-slider-thumb { opacity: 0; }
+.calcCard[data-pending] .calcRange::-moz-range-thumb { opacity: 0; }
+
 /* «Уменьшить движение» в системе — оставляем только смену цифр. */
 @media (prefers-reduced-motion: reduce) {
-  .calcPriceNum, .calcTotalValue, .calcGainSum { animation: none; }
-  .calcMeterPaid, .calcMeterSaved, .calcGainBar,
+  .calcPriceNum, .calcTotalValue, .calcCard[data-pending] .calcFill { animation: none; }
+  .calcMeterPaid, .calcMeterSaved,
+  .teamGhost, .teamPerson, .teamFloor, .teamExtra,
   .calcRange::-webkit-slider-thumb { transition: none; }
 }
 
@@ -409,10 +445,10 @@
   .calcPeriod { padding: 11px 3px; border-radius: 12px; }
   .calcPeriodName { font-size: 12px; }
   .calcPeriodOff { font-size: 10px; }
-  /* Блок выгоды на телефоне не рисуем: заполнять там нечего (колонка одна), а
-     экран и без него держит ползунок, четыре плитки, панель цены и полосу
-     оплаты. Экономия остаётся строкой в панели. */
-  .calcGain { display: none; }
+  /* Команду фигурками на телефоне не рисуем: заполнять там нечего (колонка
+     одна), а экран и без неё держит ползунок, четыре плитки, панель цены и
+     полосу оплаты. */
+  .calcTeam { display: none; }
   .calcPanel { padding: 15px 16px; border-radius: 16px; }
   .calcPriceNum { font-size: 36px; }
   .calcRows { margin-top: 16px; }
@@ -472,7 +508,7 @@
   }
   /* Итог — строкой слева, налоговая сноска под ним, кнопка справа во всю высоту. */
   .calcTotal { grid-area: 1 / 1; justify-content: flex-start; gap: 8px; }
-  .calcVat { grid-area: 2 / 1; margin-top: 1px; font-size: 10px; }
+  .calcVat { grid-area: 2 / 1; margin-top: 1px; min-height: 0; font-size: 10px; }
   .calcPay { grid-area: 1 / 2 / 3 / 3; width: auto; margin: 0; max-width: 190px; }
   /* Место под панель — только когда она есть: у процентной модели её не рисуют.
      К этим 44px снизу добавляются 60px самой страницы (Billing.tsx) — вместе

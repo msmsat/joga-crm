@@ -166,7 +166,15 @@
     "newLessonPreview": "Nova aula",
     "cancelled": "Cancelada",
     "noTrainers": "Sem instrutores",
-    "noHalls": "{{spacePlural, capitalize}}: ainda não há"
+    "noHalls": "{{spacePlural, capitalize}}: ainda não há",
+    "card": {
+      "unpaid": "Não pago",
+      "paid": "Pago",
+      "unpaidCount": "Não pagaram: {{n}}",
+      "missedCount": "Faltaram: {{n}}",
+      "cameCount": "Vieram {{n}} de {{total}}",
+      "spots": "Inscritos {{n}} de {{total}}"
+    }
   },
   "createService": "+ Criar serviço",
   "invalidDateFormat": "Formato de data inválido",

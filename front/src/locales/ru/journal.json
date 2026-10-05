@@ -170,7 +170,15 @@
     "newLessonPreview": "Новое занятие",
     "cancelled": "Отменено",
     "noTrainers": "Нет тренеров",
-    "noHalls": "{{spacePlural, capitalize}} не заведены"
+    "noHalls": "{{spacePlural, capitalize}} не заведены",
+    "card": {
+      "unpaid": "Не оплачено",
+      "paid": "Оплачено",
+      "unpaidCount": "Не оплатили: {{n}}",
+      "missedCount": "Не пришли: {{n}}",
+      "cameCount": "Пришли {{n}} из {{total}}",
+      "spots": "Записано {{n}} из {{total}}"
+    }
   },
   "createService": "+ Создать услугу",
   "invalidDateFormat": "Неверный формат даты",

@@ -166,7 +166,15 @@
     "newLessonPreview": "Neuer Kurs",
     "cancelled": "Storniert",
     "noTrainers": "Keine Trainer",
-    "noHalls": "Keine {{spacePlural}}"
+    "noHalls": "Keine {{spacePlural}}",
+    "card": {
+      "unpaid": "Nicht bezahlt",
+      "paid": "Bezahlt",
+      "unpaidCount": "Nicht bezahlt: {{n}}",
+      "missedCount": "Nicht erschienen: {{n}}",
+      "cameCount": "{{n}} von {{total}} erschienen",
+      "spots": "{{n}} von {{total}} gebucht"
+    }
   },
   "createService": "+ Leistung erstellen",
   "invalidDateFormat": "Ungültiges Datumsformat",

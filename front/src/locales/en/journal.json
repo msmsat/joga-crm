@@ -166,7 +166,15 @@
     "newLessonPreview": "New lesson",
     "cancelled": "Cancelled",
     "noTrainers": "No trainers",
-    "noHalls": "No {{spacePlural}} yet"
+    "noHalls": "No {{spacePlural}} yet",
+    "card": {
+      "unpaid": "Unpaid",
+      "paid": "Paid",
+      "unpaidCount": "Unpaid: {{n}}",
+      "missedCount": "No-shows: {{n}}",
+      "cameCount": "{{n}} of {{total}} came",
+      "spots": "{{n}} of {{total}} booked"
+    }
   },
   "createService": "+ Create service",
   "invalidDateFormat": "Invalid date format",

@@ -96,7 +96,14 @@ async def list_lessons(
             # рисует неявку. Неотмеченный с начала занятия считается пришедшим,
             # и «кончилось, а отметки нет» неявкой больше не является.
             func.count(case((Reservation.no_show.is_(True), 1))).label("no_show_count"),
+            # Кто ещё должен: долг «оплата на месте» не погашен либо место
+            # держится под карточную оплату, которая не прошла (hold). Карточка
+            # в сетке помечает их, не открывая занятие.
+            func.count(case((
+                or_(ClientPayment.status == "pending", Reservation.status == "hold"), 1,
+            ))).label("unpaid_count"),
         )
+        .outerjoin(ClientPayment, ClientPayment.id == Reservation.debt_payment_id)
         .where(Reservation.status != "cancelled")
         .group_by(Reservation.lesson_id)
         .subquery()
@@ -122,6 +129,7 @@ async def list_lessons(
             func.coalesce(booked_sq.c.booked_count, 0).label("booked_count"),
             func.coalesce(booked_sq.c.attended_count, 0).label("attended_count"),
             func.coalesce(booked_sq.c.no_show_count, 0).label("no_show_count"),
+            func.coalesce(booked_sq.c.unpaid_count, 0).label("unpaid_count"),
         )
         .outerjoin(booked_sq, booked_sq.c.lesson_id == Lesson.id)
         .outerjoin(Service, Service.id == Lesson.service_id)
@@ -138,7 +146,29 @@ async def list_lessons(
         stmt = stmt.where(Lesson.teacher_id == ctx.user.id)
 
     rows = (await db.execute(stmt)).mappings().all()
-    return [LessonRead.model_validate(row) for row in rows]
+    clients = await _solo_clients(db, [r["id"] for r in rows if r["booking_mode"] == "resource"])
+    return [LessonRead.model_validate({**row, **clients.get(row["id"], {})}) for row in rows]
+
+
+async def _solo_clients(db: AsyncSession, lesson_ids: List[int]) -> dict:
+    """Клиент индивидуальной записи — по имени его ищут в сетке, а не по
+    услуге. Один запрос на всё окно, а не по запросу на карточку. Броней на
+    такой записи одна; если их несколько, берётся первая."""
+    if not lesson_ids:
+        return {}
+    rows = (await db.execute(
+        select(Reservation.lesson_id, Client.name, Client.last_name, Client.avatar_color)
+        .join(Client, Client.id == Reservation.client_id)
+        .where(Reservation.lesson_id.in_(lesson_ids), Reservation.status != "cancelled")
+        .order_by(Reservation.lesson_id, Reservation.id)
+    )).all()
+    found: dict = {}
+    for lesson_id, name, last_name, color in rows:
+        found.setdefault(lesson_id, {
+            "client_name": " ".join(filter(None, (name, last_name))) or None,
+            "client_color": color,
+        })
+    return found
 
 
 @router.get("/lessons/days", response_model=LessonDaysResponse)

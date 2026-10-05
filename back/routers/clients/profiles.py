@@ -22,7 +22,8 @@ from routers.clients._scope import client_scope
 from routers.clients.loyalty import expire_points
 from routers.clients.subscriptions import attach_subscription
 from routers.finances.accounts import get_or_create_default_account
-from services import booking, geo_locale
+from services import booking, geo_locale, studio_time
+from services.client_visits import visit_summary, visit_condition, appointment_state
 from services.client_event_dates import action_stamp, event_order, payment_event, reservation_event
 from services.booking_access import assert_can_book
 from services.booking_http import reject
@@ -160,9 +161,14 @@ def _client_level(client: Client, levels: list) -> ClientLoyaltyLevelOut | None:
 
 
 def _client_list_item(
-    client: Client, rules: SegmentRules = DEFAULT_RULES, levels: list | None = None,
+    client: Client, rules: SegmentRules = DEFAULT_RULES, levels: list | None = None, studio=None,
 ) -> ClientListItemOut:
-    visit_count = sum(1 for r in client.reservations if r.status == "attended")
+    today = studio_time.today(studio)
+    visit_count, last_visit = visit_summary(
+        (r for r in client.reservations if r.lesson and r.lesson.studio_id == client.studio_id), studio,
+    )
+    stored_visit = client.last_visit_date if client.last_visit_date and client.last_visit_date <= today else None
+    last_visit = max(filter(None, (last_visit, stored_visit)), default=None)
     total_spent = sum(p.amount for p in client.payments if p.status == "success")
     products = _live_products(client)
     # Для таблицы клиентов — первый в том же порядке (ближайший к сгоранию),
@@ -179,7 +185,7 @@ def _client_list_item(
         avatar_url=client.avatar_url,
         # Статус выводится из данных (регистрация/визиты/оплаты), а не берётся из
         # колонки — см. services/client_segments.
-        status=resolve_status(client, visit_count=visit_count, total_spent=total_spent, rules=rules),
+        status=resolve_status(client, visit_count=visit_count, total_spent=total_spent, rules=rules, last_visit=last_visit, today=today),
         tags=client.tags or [],
         visit_count=visit_count,
         total_spent=total_spent,
@@ -192,7 +198,7 @@ def _client_list_item(
         products=[_product_out(s) for s in products],
         loyalty_points=loyalty_points,
         loyalty_level=_client_level(client, levels or []),
-        last_visit_date=client.last_visit_date.isoformat() if client.last_visit_date else None,
+        last_visit_date=last_visit.isoformat() if last_visit else None,
         registration_date=client.registration_date.date().isoformat() if client.registration_date else None,
     )
 
@@ -239,7 +245,7 @@ async def _get_client_or_404(
         q = q.options(
             selectinload(Client.subscriptions),
             selectinload(Client.payments),
-            selectinload(Client.reservations),
+            selectinload(Client.reservations).selectinload(Reservation.lesson),
             selectinload(Client.loyalty_card),
             selectinload(Client.notes),
         )
@@ -304,7 +310,7 @@ async def list_clients(
         .options(
             selectinload(Client.subscriptions),
             selectinload(Client.payments),
-            selectinload(Client.reservations),
+            selectinload(Client.reservations).selectinload(Reservation.lesson),
             selectinload(Client.loyalty_card),
         )
         .order_by(Client.registration_date.desc())
@@ -315,8 +321,9 @@ async def list_clients(
     # Лестница одна на студию — грузим её раз на страницу, а не на клиента:
     # иначе таблица на 50 строк дала бы 50 одинаковых запросов.
     levels = await _studio_levels(db, ctx.studio_id)
+    studio = await db.get(Studio, studio_id)
     return Page(
-        items=[_client_list_item(c, rules, levels) for c in clients],
+        items=[_client_list_item(c, rules, levels, studio) for c in clients],
         total=total,
         offset=offset,
         limit=limit,
@@ -348,7 +355,7 @@ async def get_categories(
     db: AsyncSession = Depends(get_db),
 ):
     studio_id = ctx.studio_id
-    today = date.today()
+    today = studio_time.today(await db.get(Studio, studio_id))
     rules = await get_segment_rules(db, studio_id)
     base = client_scope(ctx)   # счётчики табов считаем по тому же срезу, что и список
 
@@ -486,6 +493,7 @@ async def get_client(
         await db.commit()
     base = _client_list_item(
         client, await get_segment_rules(db, studio_id), await _studio_levels(db, studio_id),
+        await db.get(Studio, studio_id),
     )
     subscription_alert = _subscription_for_reminder(client)
     # Неоплаченные занятия («оплата на месте»). Сумма, а не список: карточке
@@ -536,30 +544,32 @@ async def get_client_events(
     ctx: StudioContext = Depends(require_role("owner", "admin", "trainer")),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-    event_type: Optional[str] = Query(None, description="payment | visit | booking | cancel | bonus | freeze"),
+    event_type: Optional[str] = Query(None, description="all | payment | visit (all appointments) | completed | cancel | bonus"),
 ):
     studio_id = ctx.studio_id
     await _get_client_or_404(client_id, ctx, db)
 
     studio = await db.get(Studio, studio_id)
     events: list[EventRecordOut] = []
-    for kind, state in (("visit", "attended"), ("completed", None), ("booking", None), ("cancel", "cancelled")):
-        if event_type and event_type not in ("all", kind):
-            continue
-        stmt = (select(Reservation).join(Lesson, Lesson.id == Reservation.lesson_id)
-                .where(Reservation.client_id == client_id, Lesson.studio_id == studio_id,
-                       Reservation.status != "hold")
-                .options(selectinload(Reservation.lesson)))
-        if state:
-            stmt = stmt.where(Reservation.status == state)
+    # Fetch an appointment once. The Visit tab is the full appointment history;
+    # Completed/Cancellations are subsets, not extra copies in All.
+    if not event_type or event_type in ("all", "visit", "completed", "booking", "cancel"):
+        stmt = (select(Reservation, ClientPayment.status)
+            .join(Lesson, Lesson.id == Reservation.lesson_id)
+            .outerjoin(ClientPayment, ClientPayment.id == Reservation.debt_payment_id)
+            .where(Reservation.client_id == client_id, Lesson.studio_id == studio_id,
+                   Reservation.status != "hold")
+            .options(selectinload(Reservation.lesson)))
         if ctx.role == 'trainer':
             stmt = stmt.where(Lesson.teacher_id == ctx.user.id)
-        if kind == 'completed':
-            stmt = stmt.where(Lesson.source_status == 'completed', Reservation.status != 'attended', Lesson.status != 'cancelled')
-        elif kind == 'booking':
-            stmt = stmt.where(or_(Lesson.source_status.is_(None), Lesson.source_status == 'new'))
-        rows = (await db.execute(stmt)).scalars().all()
-        events.extend(reservation_event(r, kind, studio) for r in rows)
+        rows = (await db.execute(stmt)).all()
+        for reservation, debt_status in rows:
+            state = appointment_state(reservation, studio)
+            if event_type == "completed" and state != "completed": continue
+            if event_type == "cancel" and state != "cancelled": continue
+            if event_type == "booking" and state not in ("upcoming", "ongoing"): continue
+            kind = "cancel" if state == "cancelled" else "completed" if state == "completed" else "booking"
+            events.append(reservation_event(reservation, kind, studio, debt_status=debt_status))
 
     if not event_type or event_type in ("all", "payment"):
         rows = (await db.execute(
@@ -653,12 +663,14 @@ async def get_client_activity(
         select(
             extract("year", Lesson.start_time).label("yr"),
             extract("month", Lesson.start_time).label("mo"),
-            func.count(Reservation.id).label("cnt"),
+            func.count(func.distinct(Reservation.lesson_id)).label("cnt"),
         )
         .join(Lesson, Reservation.lesson_id == Lesson.id)
         .where(
             Reservation.client_id == client_id,
-            Reservation.status == "attended",
+            visit_condition(),
+            Lesson.studio_id == studio_id,
+            *([Lesson.teacher_id == ctx.user.id] if ctx.role == "trainer" else []),
             Lesson.start_time >= datetime(cutoff.year, cutoff.month, 1),
         )
         .group_by("yr", "mo")

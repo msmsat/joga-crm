@@ -61,7 +61,9 @@
   },
   "toolbar": {
     "searchPlaceholder": "Søk etter kunde…",
-    "addClient": "Legg til kunde"
+    "addClient": "Legg til kunde",
+    "moreFilters": "Flere",
+    "filters": "Filtre"
   },
   "table": {
     "visits": "besøk",
@@ -292,7 +294,27 @@
         "freeze": "Frysinger",
         "completed": "Fullførte"
       },
-      "empty": "Ingen hendelser"
+      "empty": "Ingen hendelser",
+      "statuses": {
+        "appointment": {
+          "upcoming": "Kommende",
+          "ongoing": "Pågår",
+          "completed": "Fullført",
+          "cancelled": "Avlyst"
+        },
+        "attendance": {
+          "attended": "Møtt",
+          "missed": "Møtte ikke",
+          "unknown": "Oppmøte ikke bekreftet"
+        },
+        "payment": {
+          "paid": "Betalt",
+          "unpaid": "Ikke betalt",
+          "subscription": "Klippekort",
+          "free": "Gratis",
+          "unknown": "Betaling ukjent"
+        }
+      }
     },
     "notes": {
       "title": "Administrasjonsnotater",

@@ -61,7 +61,9 @@
   },
   "toolbar": {
     "searchPlaceholder": "Search client...",
-    "addClient": "Add client"
+    "addClient": "Add client",
+    "moreFilters": "More",
+    "filters": "Filters"
   },
   "table": {
     "visits": "visits",
@@ -288,7 +290,27 @@
         "freeze": "Freezes",
         "completed": "Completed"
       },
-      "empty": "No events"
+      "empty": "No events",
+      "statuses": {
+        "appointment": {
+          "upcoming": "Upcoming",
+          "ongoing": "In progress",
+          "completed": "Completed",
+          "cancelled": "Cancelled"
+        },
+        "attendance": {
+          "attended": "Came",
+          "missed": "No-show",
+          "unknown": "Attendance unconfirmed"
+        },
+        "payment": {
+          "paid": "Paid",
+          "unpaid": "Unpaid",
+          "subscription": "Membership",
+          "free": "Free",
+          "unknown": "Payment unknown"
+        }
+      }
     },
     "notes": {
       "title": "Admin notes",

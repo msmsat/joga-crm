@@ -3,6 +3,14 @@
 .tax strong { color: #fff; font-variant-numeric: tabular-nums; }
 .note { margin: 10px 0; color: rgb(255 255 255 / 65%); }
 .notice { margin: 10px 0; padding: 10px 12px; border: 1px solid rgb(252 174 145 / 25%); border-radius: 10px; background: rgb(252 174 145 / 8%); color: #ffd2b8; }
+/* Заглушка строки, пока расчёт едет: та же высота, что у настоящей строки. */
+@keyframes shimmer { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+.skeleton {
+  border-radius: 6px;
+  background: linear-gradient(90deg, rgb(255 255 255 / 5%) 25%, rgb(255 255 255 / 11%) 50%, rgb(255 255 255 / 5%) 75%) 0 0 / 200% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) { .skeleton { animation: none; } }
 .secure { display: flex; align-items: center; gap: 6px; margin: 12px 0 0; color: rgb(255 255 255 / 45%); }
 .terms { margin-top: 16px; padding: 12px; border-radius: 12px; border: 1px solid rgb(255 255 255 / 12%); color: rgb(255 255 255 / 70%); font-size: 11px; line-height: 1.6; }
 .terms summary { cursor: pointer; font-weight: 600; }

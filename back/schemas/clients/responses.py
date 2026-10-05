@@ -114,6 +114,9 @@ class EventRecordOut(BaseSchema):
     notes: Optional[str] = None
     photos: List[str] = []
     status: Optional[str] = None
+    appointment_status: Optional[Literal["upcoming", "ongoing", "completed", "cancelled"]] = None
+    attendance_status: Optional[Literal["expected", "attended", "missed", "unknown", "cancelled"]] = None
+    payment_status: Optional[Literal["paid", "unpaid", "subscription", "free", "unknown"]] = None
 
 
 class ActivityPointOut(BaseSchema):

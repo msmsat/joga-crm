@@ -1,0 +1,666 @@
+/* ════════════════════════════════════════════════════════════
+   КАРТОЧКА ЗАНЯТИЯ В СЕТКЕ ЖУРНАЛА
+   Оболочка (.booking-card) — геометрия, перенос, выделение. Лицо (.jc-face) —
+   текст и знаки. Цвет мастера приходит одной переменной --tone; фон, кант,
+   чернила и тень смешиваются из неё — и в светлой, и в тёмной теме.
+
+   Карточка — контейнер запросов по РАЗМЕРУ: высота решает, сколько строк
+   поместится (15 минут — одна строка, час — четыре), ширина — что из строки
+   останется (узкая дорожка, неделя на телефоне). Ступени высоты по
+   внутренней высоте карточки (минуты × 1,2 − 4px):
+     A  < 30px   до 25 минут  — одна строка
+     B  < 48px   30–40 минут  — две строки
+     C1 < 64px   45–55 минут  — три строки
+     C2 < 96px   60–75 минут  — четыре строки, заполненность / оплата
+     D  ≥ 96px   от 85 минут  — плюс мастер или зал, название в две строки
+   ════════════════════════════════════════════════════════════ */
+.booking-card {
+  /* Радиус и рамка — переменными: по ним полоса буфера (bufferStyle.ts)
+     заходит под край карточки и закрывает её уголки ровно по дуге. */
+  --card-r: 10px;
+  --card-bw: 1px;
+  --tone: #F9A08B;
+  --jc-surface: color-mix(in srgb, var(--tone) 15%, var(--bg-card));
+  --jc-line: color-mix(in srgb, var(--tone) 50%, transparent);
+  --jc-ink: color-mix(in oklab, var(--tone) 34%, var(--onyx));
+  --jc-soft: color-mix(in oklab, var(--tone) 42%, var(--muted));
+  --jc-due: #B5566B;
+  --jc-due-bg: color-mix(in srgb, #D88C9A 24%, var(--bg-card));
+  --jc-ok: #4F7F57;
+  --jc-ok-bg: color-mix(in srgb, #A3C9A8 40%, var(--bg-card));
+  container: jcard / size;
+  position: absolute;
+  border-radius: var(--card-r);
+  border: var(--card-bw) solid var(--jc-line);
+  background: var(--jc-surface);
+  color: var(--jc-ink);
+  cursor: grab;
+  overflow: visible; /* drag-tooltip и полосы буфера живут за краем */
+  /* Кольцо цвета фона отделяет соседние карточки друг от друга. */
+  box-shadow: 0 0 0 1.5px var(--bg-card);
+  user-select: none;
+  -webkit-user-select: none;
+  /* Анимируем только геометрию: transform/width/left/min-height/box-shadow.
+     background-color и z-index намеренно исключены — иначе при смене
+     состояния карточка на миг становится прозрачной. */
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+              width 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+              left 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+              min-height 0.22s cubic-bezier(0.2, 0.8, 0.2, 1),
+              box-shadow 0.35s ease;
+}
+:root.dark .booking-card {
+  --jc-surface: color-mix(in srgb, var(--tone) 20%, var(--bg-card));
+  --jc-line: color-mix(in srgb, var(--tone) 55%, transparent);
+  --jc-due: #EBA9B6;
+  --jc-due-bg: color-mix(in srgb, #D88C9A 30%, var(--bg-card));
+  --jc-ok: #B5D6B9;
+  --jc-ok-bg: color-mix(in srgb, #A3C9A8 26%, var(--bg-card));
+}
+.booking-card:active { cursor: grabbing; }
+.booking-card:hover {
+  transform: translateY(-2px);
+  /* Тень окрашена цветом мастера: карточка парит над своей колонкой. */
+  box-shadow: 0 12px 26px -10px color-mix(in srgb, var(--tone) 55%, rgba(26,26,26,0.35)),
+              0 0 0 1.5px var(--bg-card);
+}
+
+/* ── Фазы дня ───────────────────────────────────────────────────────────
+   Прошедшее отступает, чтобы глаз шёл к тому, что впереди; идущее —
+   в сплошном канте цвета мастера, с ходом времени внутри. */
+.booking-card.is-done {
+  --jc-surface: color-mix(in srgb, var(--tone) 8%, var(--bg-card));
+  --jc-line: color-mix(in srgb, var(--tone) 30%, transparent);
+}
+:root.dark .booking-card.is-done {
+  --jc-surface: color-mix(in srgb, var(--tone) 11%, var(--bg-card));
+}
+.booking-card.is-live {
+  --jc-line: var(--tone);
+  box-shadow: 0 0 0 1.5px var(--bg-card),
+              0 0 0 4px color-mix(in srgb, var(--tone) 22%, transparent);
+}
+
+/* Неявка индивидуальной записи: тон — пыльная роза (--tone приходит ею). */
+.booking-card.is-missed { --jc-surface: color-mix(in srgb, var(--tone) 22%, var(--bg-card)); }
+
+/* Ждёт подтверждения: штрих сверху, как у неоплаченного счёта. */
+.booking-card.pending { opacity: 0.75; border-style: dashed; }
+.booking-card.pending::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: repeating-linear-gradient(90deg, var(--tone) 0, var(--tone) 4px, transparent 4px, transparent 8px);
+  opacity: 0.5;
+}
+
+/* Отменённое: серое, бледное, без hover-подъёма и без ручек resize. */
+.booking-card.cancelled { filter: grayscale(1); opacity: 0.45; cursor: default; }
+.booking-card.cancelled:hover { transform: none; box-shadow: 0 0 0 1.5px var(--bg-card); }
+.booking-card.cancelled .jc-title { text-decoration: line-through; text-decoration-thickness: 1px; }
+
+/* Черновик правки: попап открыт, время или название меняются на глазах. */
+.booking-card.is-draft { border: 1.5px dashed var(--peach); }
+
+/* Карточки внахлёст («лесенка»): тень влево отделяет слои. */
+.booking-card.is-cascade {
+  box-shadow: -4px 4px 12px rgba(26,26,26,0.06), 0 0 0 1px var(--bg-card);
+}
+
+/* От карточки под соседней видна полоска слева — в ней время и название,
+   а счёт, подписи и полоса мест торчали бы обрывками из-под соседа. */
+.booking-card.is-cascade-under:not(:hover):not(.is-selected) .jc-face > :not(.jc-time):not(.jc-title):not(.jc-elapsed):not(.jc-rail) {
+  display: none;
+}
+
+/* В полёте при перетаскивании. */
+.booking-card.is-dragging {
+  transition: none !important;
+  z-index: 99999 !important;
+  opacity: 0.92;
+  box-shadow: 0 32px 80px rgba(26,26,26,0.25), 0 0 0 2px var(--bg-card) !important;
+  cursor: grabbing !important;
+  pointer-events: none !important; /* пропускаем клик сквозь карточку к сетке */
+}
+
+/* Открытая карточка: белая, с персиковым кольцом, над всеми. */
+.booking-card.is-selected {
+  --jc-surface: var(--bg-card);
+  z-index: 9999 !important;
+  transform: none !important;
+  box-shadow: 0 16px 40px -8px rgba(26,26,26,0.3), 0 0 0 2px var(--peach) !important;
+}
+.booking-card.is-selected .jc-elapsed { opacity: 0.5; }
+
+/* ── Подсмотр короткой карточки ─────────────────────────────────────────
+   В 15–40 минутах видно одну-две строки. Задержался мышью — карточка на миг
+   вырастает до часовой и показывает всё: время, клиента, оплату, кто пришёл.
+   Растёт сам контейнер, поэтому раскладка внутри перестраивается теми же
+   запросами, что и у длинного занятия. Задержка — чтобы мышь, идущая мимо к
+   пустой клетке, не раскрывала всё подряд. */
+@media (hover: hover) and (pointer: fine) {
+  .booking-card.is-peek:hover:not(.is-selected):not(.is-dragging) {
+    min-height: 74px;
+    z-index: 9000 !important;
+    transition-delay: 0s, 0s, 0s, 0.28s, 0s;
+  }
+  .is-dragging-global .booking-card.is-peek:hover { min-height: 0; }
+}
+
+/* ════════════════════════════════════════════════════════════
+   ЛИЦО КАРТОЧКИ
+   ════════════════════════════════════════════════════════════ */
+.jc-face {
+  position: absolute;
+  inset: 0;
+  border-radius: calc(var(--card-r) - var(--card-bw));
+  overflow: hidden;
+  isolation: isolate;
+  display: grid;
+  align-content: start;
+  column-gap: 0;
+  row-gap: 1px;
+  padding: 6px 8px 7px 9px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Базовая раскладка — ступень C2 (час): время, название, подпись, низ. */
+.jc-face[data-kind="group"] {
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: auto auto auto 1fr;
+  grid-template-areas:
+    "time  flags"
+    "title title"
+    "sub   sub"
+    "meter count";
+}
+.jc-face[data-kind="solo"] {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-rows: auto auto auto 1fr;
+  grid-template-areas:
+    "time time  flags"
+    "av   title title"
+    "av   sub   sub"
+    "pay  pay   pay";
+}
+
+.jc-time    { grid-area: time; }
+.jc-title   { grid-area: title; }
+.jc-sub     { grid-area: sub; }
+.jc-extra   { grid-area: extra; display: none; }
+.jc-flags   { grid-area: flags; }
+.jc-count   { grid-area: count; }
+.jc-meter   { grid-area: meter; }
+.jc-avatar  { grid-area: av; }
+.jc-pay     { grid-area: pay; }
+
+.jc-time, .jc-title, .jc-sub, .jc-extra, .jc-pay {
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.jc-time {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  font-size: 10px;
+  line-height: 13px;
+  font-weight: 600;
+  color: var(--jc-soft);
+  letter-spacing: 0.01em;
+}
+.jc-title {
+  /* Строку названия сетка не сжимает: при нехватке места пусть уходит
+     подпись под ним, а не половина названия. */
+  min-height: min-content;
+  font-size: 12px;
+  line-height: 15px;
+  font-weight: 750;
+  letter-spacing: -0.15px;
+  color: var(--jc-ink);
+}
+.jc-sub, .jc-extra {
+  font-size: 10.5px;
+  line-height: 13px;
+  font-weight: 600;
+  color: var(--jc-soft);
+}
+
+/* Идёт сейчас: точка у времени дышит, как запись на диктофоне. */
+.jc-live {
+  flex: none;
+  width: 6px; height: 6px;
+  margin-right: 5px;
+  border-radius: 50%;
+  background: var(--tone);
+  box-shadow: 0 0 0 0 color-mix(in srgb, var(--tone) 55%, transparent);
+  animation: jc-breathe 2.4s ease-out infinite;
+}
+@keyframes jc-breathe {
+  0%   { box-shadow: 0 0 0 0 color-mix(in srgb, var(--tone) 55%, transparent); }
+  70%  { box-shadow: 0 0 0 5px color-mix(in srgb, var(--tone) 0%, transparent); }
+  100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--tone) 0%, transparent); }
+}
+
+/* Ход занятия: пройденная часть чуть подкрашена, а у левого края растёт рельс
+   — столбик времени, как шкала сетки слева. Черта поперёк карточки читалась
+   зачёркиванием текста, рельс текста не касается. Двигается transform'ом,
+   а не высотой — на композиторе, без перерасчёта раскладки. */
+.jc-elapsed {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: color-mix(in srgb, var(--tone) 9%, transparent);
+  transition-property: transform;
+  transition-timing-function: linear;
+}
+.jc-rail {
+  position: absolute;
+  left: 3px; top: 4px; bottom: 4px;
+  width: 3px;
+  border-radius: 2px;
+  overflow: hidden;
+  pointer-events: none;
+  background: color-mix(in srgb, var(--tone) 24%, transparent);
+}
+.jc-rail > i {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--tone);
+  transform-origin: top;
+  transition-property: transform;
+  transition-timing-function: linear;
+}
+.booking-card.is-live .jc-face { padding-left: 12px; }
+
+/* Аватар клиента: инициалы на его цвете, знак посещения — на плече. */
+.jc-avatar {
+  --av: var(--tone);
+  position: relative;
+  align-self: center;
+  width: 24px; height: 24px;
+  margin-right: 7px;
+  border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: color-mix(in srgb, var(--av) 82%, var(--bg-card));
+  color: color-mix(in oklab, var(--av) 22%, #1A1A1A);
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  box-shadow: 0 0 0 1.5px var(--bg-card);
+}
+:root.dark .jc-avatar {
+  background: color-mix(in srgb, var(--av) 34%, var(--bg-card));
+  color: color-mix(in oklab, var(--av) 55%, #FFFFFF);
+}
+.jc-badge {
+  position: absolute;
+  right: -4px; bottom: -3px;
+  width: 13px; height: 13px;
+  border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  box-shadow: 0 0 0 1.5px var(--bg-card);
+}
+.jc-badge svg { width: 9px; height: 9px; }
+.jc-badge.is-came { background: #A3C9A8; color: #FFFFFF; }
+.jc-badge.is-miss { background: #D88C9A; color: #FFFFFF; }
+
+/* Значки состояния — капсулы справа сверху. */
+.jc-flags {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 3px;
+  margin-left: 6px;
+  min-width: 0;
+}
+.jc-flags:empty { display: none; }
+.jc-flag {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  height: 15px;
+  padding: 0 4px;
+  border-radius: 8px;
+  font-size: 9.5px;
+  line-height: 1;
+  font-weight: 750;
+  white-space: nowrap;
+}
+.jc-flag.is-due, .jc-flag.is-miss { color: var(--jc-due); background: var(--jc-due-bg); }
+.jc-flag.is-came { color: var(--jc-ok); background: var(--jc-ok-bg); }
+.jc-flag.is-off { color: var(--muted); background: rgba(var(--ink), 0.07); padding: 0 6px; }
+/* Посещение индивидуальной записи живёт на аватаре; капсула — запасной путь. */
+.jc-visit { display: none; }
+
+/* Значки: штрих, а не заливка — чтобы читались и в 9px. */
+.jc-face svg {
+  flex: none;
+  width: 10px; height: 10px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.jc-flag svg { width: 9.5px; height: 9.5px; stroke-width: 1.7; }
+
+/* Заполненность группы: счёт и полоса мест. */
+.jc-count {
+  align-self: end;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  margin-left: 7px;
+  font-size: 10px;
+  line-height: 12px;
+  font-weight: 700;
+  color: var(--jc-soft);
+  white-space: nowrap;
+}
+.jc-count.is-full { color: var(--jc-ink); }
+.jc-meter {
+  align-self: end;
+  position: relative;
+  height: 4px;
+  margin-bottom: 4px;
+  border-radius: 2px;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--tone) 20%, transparent);
+}
+.jc-meter::before,
+.jc-meter::after {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0;
+}
+.jc-meter::before { left: 0; width: calc(var(--fill) * 100%); background: var(--tone); }
+.jc-meter::after {
+  left: calc(var(--fill) * 100%);
+  width: calc(var(--miss) * 100%);
+  background: #D88C9A;
+}
+/* До 24 мест полоса делится на места — видно, сколько ковриков свободно. */
+.jc-meter.is-seats {
+  border-radius: 1px;
+  -webkit-mask: repeating-linear-gradient(90deg, #000 0 calc(100% / var(--seats) - 1.5px), transparent 0 calc(100% / var(--seats)));
+          mask: repeating-linear-gradient(90deg, #000 0 calc(100% / var(--seats) - 1.5px), transparent 0 calc(100% / var(--seats)));
+}
+
+/* Оплата индивидуальной записи — строкой внизу. */
+.jc-pay {
+  align-self: end;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  line-height: 13px;
+  font-weight: 700;
+  color: var(--jc-soft);
+}
+.jc-pay.is-due { color: var(--jc-due); }
+.jc-pay.is-paid { color: var(--jc-ok); }
+
+/* ════════════════════════════════════════════════════════════
+   СТУПЕНИ ВЫСОТЫ
+   ════════════════════════════════════════════════════════════ */
+
+/* D — от 85 минут: мастер или зал отдельной строкой, название в две. */
+@container jcard (height >= 96px) {
+  .jc-face { padding: 8px 9px 8px 10px; row-gap: 2px; }
+  .jc-face[data-kind="group"] {
+    grid-template-rows: auto auto auto auto 1fr;
+    grid-template-areas:
+      "time  flags"
+      "title title"
+      "sub   sub"
+      "extra extra"
+      "meter count";
+  }
+  .jc-face[data-kind="solo"] {
+    grid-template-rows: auto auto auto auto 1fr;
+    grid-template-areas:
+      "time time  flags"
+      "av   title title"
+      "av   sub   sub"
+      ".    extra extra"
+      "pay  pay   pay";
+  }
+  .jc-extra { display: block; }
+  .jc-face[data-kind="group"] .jc-title {
+    white-space: normal;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+  .jc-time { margin-bottom: 1px; }
+}
+
+/* C1 — 45–55 минут: группа поднимает счёт наверх, полоса мест уходит;
+   у индивидуальной уходит строка оплаты (капсула долга остаётся). */
+@container jcard (height < 64px) {
+  .jc-face { padding: 5px 8px 5px 9px; row-gap: 0; }
+  .jc-face[data-kind="group"] {
+    grid-template-rows: auto auto auto;
+    grid-template-areas:
+      "time  flags"
+      "title title"
+      "sub   count";
+  }
+  .jc-face[data-kind="solo"] {
+    grid-template-rows: auto auto auto;
+    grid-template-areas:
+      "time time  flags"
+      "av   title title"
+      "av   sub   sub";
+  }
+  .jc-meter, .jc-pay { display: none; }
+  .jc-count { align-self: center; }
+  .jc-avatar { width: 22px; height: 22px; font-size: 9px; }
+}
+
+/* B — 30–40 минут: две строки. Название — первая, время и подпись — вторая. */
+@container jcard (height < 48px) {
+  .jc-face { align-content: center; padding: 3px 7px 3px 8px; }
+  .jc-face[data-kind="group"] {
+    grid-template-columns: auto minmax(0, 1fr) auto auto;
+    grid-template-rows: auto auto;
+    grid-template-areas:
+      "title title count flags"
+      "time  sub   sub   sub";
+  }
+  .jc-face[data-kind="solo"] {
+    grid-template-columns: auto auto minmax(0, 1fr) auto;
+    grid-template-rows: auto auto;
+    grid-template-areas:
+      "av title title flags"
+      "av time  sub   sub";
+  }
+  .jc-title { font-size: 11.5px; line-height: 14px; }
+  .jc-time { color: var(--jc-ink); opacity: 0.8; }
+  .jc-time-end { display: none; }
+  .jc-sub { margin-left: 6px; }
+  .jc-avatar { width: 22px; height: 22px; margin-right: 6px; }
+  .jc-badge { width: 12px; height: 12px; right: -3px; bottom: -2px; }
+}
+
+/* A — до 25 минут: одна строка. Время — только начало, справа от названия. */
+@container jcard (height < 30px) {
+  .jc-face { align-content: center; padding: 0 6px 0 8px; }
+  .jc-face[data-kind="group"] {
+    grid-template-columns: minmax(0, 1fr) auto auto auto;
+    grid-template-rows: auto;
+    grid-template-areas: "title time count flags";
+  }
+  .jc-face[data-kind="solo"] {
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    grid-template-rows: auto;
+    grid-template-areas: "title time flags";
+  }
+  .jc-title { font-size: 11px; line-height: 13px; }
+  .jc-time { margin-left: 5px; font-weight: 600; color: var(--jc-soft); opacity: 1; }
+  .jc-sub, .jc-avatar { display: none; }
+  .jc-visit { display: inline-flex; }
+  .jc-count { align-self: center; margin-left: 5px; }
+  .jc-count svg { display: none; }
+  .jc-flags { margin-left: 4px; }
+  .jc-flag { height: 13px; padding: 0 3px; }
+}
+/* 15 минут: строка в 14px — шрифт под неё. */
+@container jcard (height < 18px) {
+  .jc-title { font-size: 10.5px; line-height: 12px; }
+  .jc-time, .jc-count { font-size: 9.5px; line-height: 12px; }
+  .jc-flag { height: 11px; padding: 0 2px; border-radius: 6px; }
+  .jc-flag svg { width: 8px; height: 8px; }
+  .jc-live { width: 5px; height: 5px; margin-right: 3px; }
+}
+
+/* ════════════════════════════════════════════════════════════
+   СТУПЕНИ ШИРИНЫ — после высоты: узкое перебивает высокое
+   ════════════════════════════════════════════════════════════ */
+
+/* Конец занятия — только там, где ему есть место. */
+@container jcard (width < 132px) {
+  .jc-time-end { display: none; }
+}
+/* Узкая полоса мест на ковриках не делится — сплошная. */
+@container jcard (width < 110px) {
+  .jc-meter.is-seats { -webkit-mask: none; mask: none; border-radius: 2px; }
+}
+
+/* Узкая дорожка (две-три карточки рядом, колонка телефона): аватар и
+   подписи уходят, название переносится по строкам вместо «Хат…». Сколько
+   строк названия — по высоте: строка обрезается целиком, не посередине. */
+@container jcard (width < 84px) {
+  .jc-face { padding: 5px 5px 5px 6px; }
+  .jc-face[data-kind] {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: auto auto auto 1fr;
+    grid-template-areas:
+      "time  flags"
+      "title title"
+      "count count"
+      "meter meter";
+  }
+  .jc-avatar, .jc-sub, .jc-extra, .jc-pay, .jc-meter { display: none; }
+  .jc-visit { display: inline-flex; }
+  .jc-title {
+    font-size: 11.5px;
+    line-height: 14px;
+    white-space: normal;
+    /* Слово длиннее колонки обрывается многоточием, а не рвётся посередине:
+       «Reform…» читается, «Reform / er» — нет. */
+    overflow-wrap: normal;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+  .jc-count { margin-left: 0; align-self: start; }
+  .jc-time { padding-right: 16px; }
+  /* Что занятие идёт, видно по рельсу; точке у времени тут не место. */
+  .jc-live { display: none; }
+  .booking-card.is-live .jc-face { padding-left: 10px; }
+  /* Капсулы со счётом не помещаются — состояние точками в правом углу. */
+  .jc-flags {
+    position: absolute;
+    top: 5px; right: 4px;
+    margin: 0;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .jc-flag { width: 6px; height: 6px; padding: 0; border-radius: 50%; }
+  .jc-flag > * { display: none; }
+  .jc-flag.is-due, .jc-flag.is-miss { background: #D88C9A; }
+  .jc-flag.is-came { background: #A3C9A8; }
+  .jc-flag.is-off { display: none; }
+}
+/* От 85 минут: третья строка названия и полоса мест. */
+@container jcard (width < 84px) and (height >= 96px) {
+  .jc-face[data-kind] {
+    grid-template-rows: auto auto auto auto 1fr;
+    grid-template-areas:
+      "time  flags"
+      "title title"
+      "sub   sub"
+      "count count"
+      "meter meter";
+  }
+  .jc-title { -webkit-line-clamp: 3; }
+  .jc-sub { display: block; }
+  .jc-meter { display: block; margin-top: 3px; }
+}
+/* 45–55 минут: название наверх, под ним одна строка — у группы счёт, у
+   индивидуальной время. Вдвоём в узкую строку они не помещаются. */
+@container jcard (width < 84px) and (height < 64px) {
+  .jc-face { padding-top: 3px; padding-bottom: 3px; align-content: center; }
+  .jc-face[data-kind] {
+    grid-template-rows: auto auto;
+    grid-template-areas:
+      "title title"
+      "time  time";
+  }
+  .jc-face[data-kind="group"] {
+    grid-template-areas:
+      "title title"
+      "count count";
+  }
+  .jc-face[data-kind="group"] .jc-time { display: none; }
+  .jc-title { padding-right: 9px; }
+  .jc-time { padding-right: 0; }
+  .jc-count { align-self: center; }
+}
+/* 30–40 минут: только название в две строки. */
+@container jcard (width < 84px) and (height < 48px) {
+  .jc-face[data-kind] { grid-template-rows: auto; grid-template-areas: "title flags"; }
+  .jc-time, .jc-count { display: none; }
+  .jc-title { font-size: 11px; line-height: 13px; }
+}
+/* До 25 минут: одна строка. */
+@container jcard (width < 84px) and (height < 30px) {
+  .jc-face { padding-top: 0; padding-bottom: 0; }
+  .jc-title { -webkit-line-clamp: 1; padding-right: 16px; }
+  .jc-flags { flex-direction: row; top: 50%; transform: translateY(-50%); }
+}
+
+/* Колонка недели на телефоне и третья дорожка (~45px): только название по
+   строкам, как в календаре телефона; состояние — точкой в углу. Остальное —
+   по тапу. Строк столько, сколько целиком влезает в высоту. */
+@container jcard (width < 50px) {
+  .jc-face { padding: 3px 3px 2px 4px; align-content: start; }
+  .jc-face[data-kind] {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto;
+    grid-template-areas: "title";
+  }
+  .jc-time, .jc-count, .jc-meter, .jc-sub { display: none; }
+  /* Слово, длиннее колонки, обрывается многоточием, а не рвётся посередине:
+     «Скульп…» читается, «Скульп / т» — нет. */
+  .jc-title {
+    font-size: 9.5px;
+    line-height: 11px;
+    padding-right: 5px;
+    -webkit-line-clamp: 2;
+    overflow-wrap: normal;
+    hyphens: manual;
+  }
+  .jc-flags { top: 2px; right: 2px; transform: none; }
+}
+@container jcard (width < 50px) and (height < 25px) { .jc-title { -webkit-line-clamp: 1; } }
+/* Третья-четвёртая дорожка на телефоне — уже пальца: буквы «B / S / R»
+   ничего не говорят. Остаётся цветная полоска мастера и точки состояния. */
+@container jcard (width < 28px) { .jc-title { display: none; } }
+@container jcard (width < 50px) and (height >= 38px) { .jc-title { -webkit-line-clamp: 3; } }
+@container jcard (width < 50px) and (height >= 50px) { .jc-title { -webkit-line-clamp: 4; } }
+@container jcard (width < 50px) and (height >= 64px) { .jc-title { -webkit-line-clamp: 5; } }
+@container jcard (width < 50px) and (height >= 96px) { .jc-title { -webkit-line-clamp: 8; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .jc-live { animation: none; }
+  .jc-elapsed, .jc-rail > i { transition: none; }
+  .booking-card { transition: none; }
+}

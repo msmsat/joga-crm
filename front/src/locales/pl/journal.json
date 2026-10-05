@@ -170,7 +170,15 @@
     "newLessonPreview": "Nowe zajęcia",
     "cancelled": "Odwołane",
     "noTrainers": "Brak trenerów",
-    "noHalls": "{{spacePlural, capitalize}}: jeszcze brak"
+    "noHalls": "{{spacePlural, capitalize}}: jeszcze brak",
+    "card": {
+      "unpaid": "Nieopłacone",
+      "paid": "Opłacone",
+      "unpaidCount": "Nie zapłacili: {{n}}",
+      "missedCount": "Nie przyszli: {{n}}",
+      "cameCount": "Przyszło {{n}} z {{total}}",
+      "spots": "Zapisanych {{n}} z {{total}}"
+    }
   },
   "createService": "+ Utwórz usługę",
   "invalidDateFormat": "Nieprawidłowy format daty",

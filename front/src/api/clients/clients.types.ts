@@ -72,6 +72,9 @@ export interface EventRecord {
   notes?: string | null
   photos?: string[]
   status?: string | null
+  appointment_status?: 'upcoming' | 'ongoing' | 'completed' | 'cancelled' | null
+  attendance_status?: 'expected' | 'attended' | 'missed' | 'unknown' | 'cancelled' | null
+  payment_status?: 'paid' | 'unpaid' | 'subscription' | 'free' | 'unknown' | null
   title: string
   trainer: string | null
   paid: string | null

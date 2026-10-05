@@ -168,7 +168,15 @@
     "newLessonPreview": "Нови термин",
     "cancelled": "Отказано",
     "noTrainers": "Нема тренера",
-    "noHalls": "{{spacePlural, capitalize}}: још нема"
+    "noHalls": "{{spacePlural, capitalize}}: још нема",
+    "card": {
+      "unpaid": "Није плаћено",
+      "paid": "Плаћено",
+      "unpaidCount": "Нису платили: {{n}}",
+      "missedCount": "Нису дошли: {{n}}",
+      "cameCount": "Дошло {{n}} од {{total}}",
+      "spots": "Пријављено {{n}} од {{total}}"
+    }
   },
   "createService": "+ Креирај услугу",
   "invalidDateFormat": "Неисправан формат датума",

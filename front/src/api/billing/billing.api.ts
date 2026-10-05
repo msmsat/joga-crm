@@ -1,7 +1,7 @@
 import { client, downloadFile, openFile } from '../client'
 import type {
   PlansCatalog, BillingPlan, Invoice, InvoicesPage, PaymentCard, BillingStats,
-  CheckoutRequest, CheckoutResponse, CheckoutPreview,
+  CheckoutRequest, CheckoutResponse, CheckoutPreview, CheckoutQuotes,
   ActivateModelRequest, AutopaySettings, OfflineFeeStatus,
   BillingProfile, BillingProfileInput,
 } from './billing.types'
@@ -104,6 +104,11 @@ export const billingApi = {
   ) => client.get<CheckoutPreview>(
     `/billing/checkout/preview?plan=${plan}&period_months=${period_months}&combo=${combo}`,
   ),
+
+  // Тот же расчёт сразу для каждой ступени и каждого периода модели — страница
+  // тарифа берёт его один раз и на смену места или периода сервер не спрашивает.
+  getCheckoutQuotes: (combo: boolean) =>
+    client.get<CheckoutQuotes>(`/billing/checkout/quotes?combo=${combo}`),
 
   // Продления нет: подписку продлевает Stripe, POST /billing/renew отвечает 410.
 

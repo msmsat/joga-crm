@@ -166,7 +166,15 @@
     "newLessonPreview": "Uusi tunti",
     "cancelled": "Peruttu",
     "noTrainers": "Ei ohjaajia",
-    "noHalls": "{{spacePlural, capitalize}}: ei vielä yhtään"
+    "noHalls": "{{spacePlural, capitalize}}: ei vielä yhtään",
+    "card": {
+      "unpaid": "Maksamatta",
+      "paid": "Maksettu",
+      "unpaidCount": "Maksamatta: {{n}}",
+      "missedCount": "Ei saapunut: {{n}}",
+      "cameCount": "Saapui {{n}}/{{total}}",
+      "spots": "Varattu {{n}}/{{total}}"
+    }
   },
   "createService": "+ Luo palvelu",
   "invalidDateFormat": "Virheellinen päivämäärän muoto",

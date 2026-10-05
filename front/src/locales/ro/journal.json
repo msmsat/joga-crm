@@ -168,7 +168,15 @@
     "newLessonPreview": "Ședință nouă",
     "cancelled": "Anulată",
     "noTrainers": "Fără antrenori",
-    "noHalls": "{{spacePlural, capitalize}}: încă nu există"
+    "noHalls": "{{spacePlural, capitalize}}: încă nu există",
+    "card": {
+      "unpaid": "Neplătit",
+      "paid": "Plătit",
+      "unpaidCount": "Neplătiți: {{n}}",
+      "missedCount": "Absenți: {{n}}",
+      "cameCount": "Au venit {{n}} din {{total}}",
+      "spots": "Înscriși {{n}} din {{total}}"
+    }
   },
   "createService": "+ Creează serviciu",
   "invalidDateFormat": "Format de dată invalid",

@@ -1,11 +1,13 @@
 // src/components/ScheduleGrid/BookingCard.tsx
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import * as Icons from '../../../../../components/Icons';
 import type { Booking } from '../../types';
-import { formatIndexToTimeStr, isLessonStarted, isNoShow, type BookingLayout } from '../../utils';
+import { formatIndexToTimeStr, isNoShow, type BookingLayout } from '../../utils';
 import type { DragState } from '../../hooks/useDragAndDrop';
+import { useLessonPhase } from '../../hooks/useLessonPhase';
 import { bufferStyle, CARD_RADIUS } from './bufferStyle';
+import { LessonCardFace } from './LessonCardFace';
+import './BookingCard.css';
 
 // Порог, после которого нажатие считается попыткой перетащить, а не кликом.
 // Столько же «люфта» даёт клику браузер на тач-экране — палец никогда не стоит
@@ -13,6 +15,9 @@ import { bufferStyle, CARD_RADIUS } from './bufferStyle';
 const DRAG_SLOP_PX = 6;
 /** Статус «ошибка» дизайн-системы (пыльная роза) — цвет неявки. */
 const NO_SHOW = '#D88C9A';
+/** Карточка ниже этого (внутренняя высота, px) показывает одну-две строки и
+ *  по задержке наведения раскрывается до полной — BookingCard.css, «подсмотр». */
+const PEEK_BELOW_PX = 48;
 
 /** Общее для всех карточек сетки — один стабильный объект на сетку, чтобы
  *  мемоизированная карточка не перерисовывалась из-за новых ссылок. */
@@ -20,6 +25,9 @@ export interface BookingCardActions {
   canEdit: boolean;
   /** Тащить и растягивать можно (ноутбук, планшет). На телефоне — нет. */
   gestures: boolean;
+  /** Колонка — не мастер занятия (залы, неделя на нескольких мастеров):
+   *  карточка подписывает мастера сама. */
+  showMaster: boolean;
   wasDragging: boolean;
   initDrag: (e: React.PointerEvent, id: number, type: 'move' | 'resize-top' | 'resize-bottom', booking?: Booking) => void;
   setPopupBooking: (b: Booking | null) => void;
@@ -46,7 +54,7 @@ interface BookingCardProps {
 export const BookingCard = React.memo(function BookingCard({
   booking: b, layout, drag, selected, actions, editDraft
 }: BookingCardProps) {
-  const { canEdit, gestures, wasDragging, initDrag, setPopupBooking, openBookingPopup, showToast, prefetch } = actions;
+  const { canEdit, gestures, showMaster, wasDragging, initDrag, setPopupBooking, openBookingPopup, showToast, prefetch } = actions;
   const { t } = useTranslation('journal');
 
   // Роль без права правки: нажатие — это ещё не перетаскивание, по клику карточка
@@ -84,22 +92,23 @@ export const BookingCard = React.memo(function BookingCard({
   const top = startOffset + 1; 
   const height = (activeEnd - activeStart) * 72 - 2;
   
-  // HB-22: у индивидуальной записи участник ровно один, и счётчик «1/1»
-  // сообщает не заполненность, а шум. Определяется механикой с сервера,
-  // а не вместимостью: событие на одно место остаётся событием.
-  const isResource = b.bookingMode === 'resource';
-  const fillRatio = !isResource && b.maxClients > 0 ? b.clients / b.maxClients : 0;
-  const isFull = fillRatio >= 1;
-
   const isSelected = selected;
   const isDragging = drag?.id === b.id && drag.isDragging;
-  // Отметили «не пришёл» — неявка: карточка пыльно-розовая с крестиком.
-  // Пришёл — галочка: отмеченный или, с начала занятия, неотмеченный (посещение
-  // по умолчанию «пришёл», utils.attendanceOf).
+  // Отметили «не пришёл» — неявка: карточка пыльно-розовая. Остальное о
+  // посещении и оплате рисует лицо карточки (LessonCardFace).
   const missed = isNoShow(b);
-  const came = isResource && !missed && b.clients > 0
-    && ((b.attended ?? 0) > 0 || isLessonStarted(b));
   const tone = missed ? NO_SHOW : b.color;
+  const phase = useLessonPhase(b);
+  const cancelled = b.status === 'cancelled';
+  // Подсмотр короткой карточки: не во время переноса и не у открытой — у неё
+  // ручки растягивания стоят по настоящим краям занятия.
+  const peek = !cancelled && height - 2 < PEEK_BELOW_PX;
+  // Пока карточку растягивают или правят время в попапе, её время на лице
+  // идёт за мышью. Новый объект — только тогда: лицо мемоизировано.
+  const shown = useMemo(
+    () => (activeStart === b.timeStart && activeEnd === b.timeEnd ? b : { ...b, timeStart: activeStart, timeEnd: activeEnd }),
+    [b, activeStart, activeEnd],
+  );
 
   // Буферы услуги — время подготовки и уборки. Мастер в нём занят, хотя
   // занятия нет: без полосы администратор видел бы «свободно» там, куда
@@ -107,7 +116,7 @@ export const BookingCard = React.memo(function BookingCard({
   // штриховкой — чтобы не спорить с самой карточкой. Полоса — ребёнок
   // карточки: встаёт поверх её кольца-обводки вплотную к краю и едет вместе
   // с ней на hover.
-  const showBuffers = b.status !== 'cancelled' && !isDragging;
+  const showBuffers = !cancelled && !isDragging;
   const before = showBuffers ? ((b.bufferBefore ?? 0) / 60) * 72 : 0;
   const after = showBuffers ? ((b.bufferAfter ?? 0) / 60) * 72 : 0;
   // Абсолютный ребёнок отсчитывается от внутреннего края рамки, полоса же
@@ -118,7 +127,14 @@ export const BookingCard = React.memo(function BookingCard({
   return (
     <div
       data-booking-id={b.id}
-      className={`booking-card ${b.status} ${layout.isTracked ? 'is-tracked' : ''} ${layout.isCascade ? 'is-cascade' : ''} ${isSelected ? 'is-selected' : ''} ${isDragging ? 'is-dragging' : ''} ${missed ? 'is-missed' : ''}`}
+      className={[
+        'booking-card', b.status, b.bookingMode === 'resource' || b.source ? 'kind-solo' : 'kind-group',
+        layout.isTracked && 'is-tracked', layout.isCascade && 'is-cascade', isSelected && 'is-selected',
+        // В «лесенке» от карточки под соседней видна полоска слева.
+        layout.isCascade && layout.trackIdx < layout.totalTracks - 1 && 'is-cascade-under',
+        isDragging && 'is-dragging', missed && 'is-missed', editDraft && 'is-draft', peek && 'is-peek',
+        !cancelled && phase === 'live' && 'is-live', !cancelled && phase === 'done' && 'is-done',
+      ].filter(Boolean).join(' ')}
       onPointerEnter={e => { if (!b.source && e.pointerType === 'mouse') prefetch(b); }}
       onPointerLeave={e => { if (e.pointerType === 'mouse') prefetch(null); }}
       onPointerDown={e => {
@@ -128,7 +144,7 @@ export const BookingCard = React.memo(function BookingCard({
         // предупреждений на «попытку» — движение пальца по карточке там почти
         // всегда прокрутка, и сообщение «так нельзя» читалось как «листать
         // нельзя». Время на телефоне меняют в карточке занятия, по тапу.
-        if (!gestures || b.status === 'cancelled') return;
+        if (!gestures || cancelled) return;
         if (!canEdit) {
           warnOnDragAttempt(e, t('toasts.noPermission'));
           return;
@@ -146,10 +162,10 @@ export const BookingCard = React.memo(function BookingCard({
       style={{
         top, height, left: layout.left, width: layout.width,
         zIndex: isDragging ? 99999 : (isSelected ? 9999 : layout.zIndex),
-        background: layout.isCascade ? 'var(--bg-card)' : `${tone}${missed ? '24' : '12'}`,
-        border: editDraft ? '2px dashed var(--peach)' : `2px solid ${tone}`,
-        color: tone,
-        cursor: b.source || b.status === 'cancelled' || !gestures ? 'pointer' : (canEdit ? 'grab' : 'pointer'),
+        // Цвет мастера — переменной: из неё BookingCard.css смешивает фон,
+        // кант, чернила и тень карточки под обе темы.
+        '--tone': tone,
+        cursor: b.source || cancelled || !gestures ? 'pointer' : (canEdit ? 'grab' : 'pointer'),
         ...(isDragging && drag.type === 'move' ? {
            transform: `translate(${drag.deltaX}px, ${drag.deltaY}px) scale(1.02)`,
         } : {})
@@ -163,39 +179,7 @@ export const BookingCard = React.memo(function BookingCard({
         <div className="booking-buffer" aria-hidden
           style={{ ...bufferStyle(b.color, 'after', after), left: side, right: side, top: tuck }} />
       )}
-      {(missed || came) && (
-        <span className={`b-visit ${missed ? 'is-missed' : 'is-came'}`}
-              title={missed ? t('clientCard.status.missed') : t('clientCard.status.attended')}
-              aria-label={missed ? t('clientCard.status.missed') : t('clientCard.status.attended')}>
-          {missed ? <Icons.X /> : <Icons.Check />}
-        </span>
-      )}
-      <div className="b-title" style={{ fontSize: '11px', fontWeight: 800, lineHeight: 1.2, marginBottom: 3 }}>
-        {editDraft?.title || b.title}
-      </div>
-      
-      {b.source && <div style={{fontSize:10,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{b.source.client_name} · {b.source.master_name || b.source.event.master_source_id} · {t(`bumpix:status.${b.source.event.status}`)}</div>}
-      <div className="b-meta">
-        {b.source ? <span style={{fontSize:10}}>Bumpix</span> : b.status === 'cancelled' ? (
-          <span className="b-cancelled-badge">{t('grid.cancelled')}</span>
-        ) : (
-          // Заполненность видна и тренеру: это его занятие, сколько человек
-          // придёт — первое, что он смотрит в сетке.
-          height > 36 && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: '10px', opacity: 0.75 }}>
-              <Icons.Users />
-              <span>{isResource ? '' : `${b.clients}${b.maxClients > 0 ? `/${b.maxClients}` : ''}`}</span>
-              {isFull && <span style={{ marginLeft: 2, fontSize: 9, fontWeight: 700, background: b.color, color: 'white', borderRadius: 4, padding: '1px 4px' }}>FULL</span>}
-            </div>
-          )
-        )}
-      </div>
-
-      {!b.source && b.status !== 'cancelled' && b.maxClients > 0 && height > 40 && (
-        <div className="b-progress" style={{ position: 'absolute', bottom: 6, left: 8, right: 8, height: 2, background: `${b.color}25`, borderRadius: 1 }}>
-          <div style={{ height: '100%', width: `${fillRatio * 100}%`, background: b.color, borderRadius: 1, transition: 'width 0.5s ease' }} />
-        </div>
-      )}
+      <LessonCardFace booking={shown} phase={phase} showMaster={showMaster} title={editDraft?.title} />
 
       {isResize && isDragging && (
         <div style={{ position: 'absolute', top: 0, left: 0, bottom: 0, width: '100%', pointerEvents: 'none', zIndex: 10000 }}>
@@ -212,7 +196,7 @@ export const BookingCard = React.memo(function BookingCard({
 
       {/* Ручки растягивания — у группового и индивидуального одинаково. На
           телефоне их нет: длительность меняют в карточке занятия. */}
-      {!b.source && isSelected && !isDragging && canEdit && gestures && b.status !== 'cancelled' && (
+      {!b.source && isSelected && !isDragging && canEdit && gestures && !cancelled && (
         <>
           <div 
             style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 24, cursor: 'ns-resize', zIndex: 1000 }} 

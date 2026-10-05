@@ -166,7 +166,15 @@
     "newLessonPreview": "Yeni ders",
     "cancelled": "İptal edildi",
     "noTrainers": "Eğitmen yok",
-    "noHalls": "{{spacePlural, capitalize}}: henüz yok"
+    "noHalls": "{{spacePlural, capitalize}}: henüz yok",
+    "card": {
+      "unpaid": "Ödenmedi",
+      "paid": "Ödendi",
+      "unpaidCount": "Ödemeyen: {{n}}",
+      "missedCount": "Gelmeyen: {{n}}",
+      "cameCount": "{{total}} kişiden {{n}} geldi",
+      "spots": "{{total}} yerden {{n}} dolu"
+    }
   },
   "createService": "+ Hizmet oluştur",
   "invalidDateFormat": "Geçersiz tarih biçimi",

@@ -203,8 +203,9 @@ export function useJournalMutations(lessonsKey: readonly unknown[]) {
     }) => scheduleApi.payReservation(reservationId, method, options),
     // Префиксы, а не точные ключи: долг виден в карточке клиента, а доход — во
     // всех срезах Финансов, и перечислять их фильтры отсюда значило бы дублировать
-    // их список в Журнале.
+    // их список в Журнале. Сетка — тоже: карточка занятия помечает неоплативших.
     onSettled: () => {
+      qc.invalidateQueries({ queryKey: queryKeys.journalLessonsAll });
       qc.invalidateQueries({ queryKey: ['clients'] });
       qc.invalidateQueries({ queryKey: ['finances'] });
     },

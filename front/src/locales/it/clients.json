@@ -61,7 +61,9 @@
   },
   "toolbar": {
     "searchPlaceholder": "Cerca cliente…",
-    "addClient": "Aggiungi cliente"
+    "addClient": "Aggiungi cliente",
+    "moreFilters": "Altro",
+    "filters": "Filtri"
   },
   "table": {
     "visits": "visite",
@@ -292,7 +294,27 @@
         "freeze": "Sospensioni",
         "completed": "Completate"
       },
-      "empty": "Nessun evento"
+      "empty": "Nessun evento",
+      "statuses": {
+        "appointment": {
+          "upcoming": "In arrivo",
+          "ongoing": "In corso",
+          "completed": "Completato",
+          "cancelled": "Annullato"
+        },
+        "attendance": {
+          "attended": "Presente",
+          "missed": "Assente",
+          "unknown": "Presenza non confermata"
+        },
+        "payment": {
+          "paid": "Pagato",
+          "unpaid": "Non pagato",
+          "subscription": "Abbonamento",
+          "free": "Gratuito",
+          "unknown": "Pagamento sconosciuto"
+        }
+      }
     },
     "notes": {
       "title": "Note amministrative",

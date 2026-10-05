@@ -25,7 +25,9 @@ from sqlalchemy import and_, extract, func, not_, or_
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
-from models import Client, ClientPayment, ClientSubscription, Reservation, StudioClientSegmentConfig
+from models import Client, ClientPayment, ClientSubscription, Lesson, Reservation, StudioClientSegmentConfig
+
+from services.client_visits import visit_condition
 
 # Дефолты — они же значения server_default в таблице studio_client_segment_configs.
 # VIP_MIN_SPENT — в валюте студии: ClientPayment.amount хранится в основных
@@ -88,9 +90,11 @@ def vip_cond(rules: SegmentRules = DEFAULT_RULES):
     )
     visits = (
         select(Reservation.client_id)
-        .where(Reservation.status == "attended")
+        .join(Lesson, Lesson.id == Reservation.lesson_id)
+        .join(Client, Client.id == Reservation.client_id)
+        .where(visit_condition(), Lesson.studio_id == Client.studio_id)
         .group_by(Reservation.client_id)
-        .having(func.count(Reservation.id) >= rules.vip_min_visits)
+        .having(func.count(func.distinct(Reservation.lesson_id)) >= rules.vip_min_visits)
     )
     return or_(
         Client.status == "vip",
@@ -107,10 +111,16 @@ def _new_cond(today: date, rules: SegmentRules):
 def _active_cond(today: date, rules: SegmentRules):
     # is_not(None) обязателен: без него NOT (NULL >= cutoff) даёт NULL, и клиенты
     # без единого визита выпали бы и из «активных», и из «неактивных».
-    return and_(
-        Client.last_visit_date.is_not(None),
-        Client.last_visit_date >= today - timedelta(days=rules.active_within_days),
+    historical = (
+        select(Reservation.client_id).join(Lesson, Lesson.id == Reservation.lesson_id)
+        .join(Client, Client.id == Reservation.client_id)
+        .where(visit_condition(), Lesson.studio_id == Client.studio_id,
+               Lesson.start_time >= datetime.combine(today - timedelta(days=rules.active_within_days), datetime.min.time()))
     )
+    return or_(and_(Client.last_visit_date.is_not(None),
+                   Client.last_visit_date >= today - timedelta(days=rules.active_within_days),
+                   Client.last_visit_date <= today),
+               Client.id.in_(historical))
 
 
 def _has_subscription_cond(today: date):
@@ -175,7 +185,8 @@ def category_condition(key: str, today: date | None = None,
 # ─── Статус для карточки ──────────────────────────────────────────────────────
 
 def resolve_status(client: Client, *, visit_count: int, total_spent: int,
-                   today: date | None = None, rules: SegmentRules = DEFAULT_RULES) -> str:
+                   today: date | None = None, rules: SegmentRules = DEFAULT_RULES,
+                   last_visit: date | None = None) -> str:
     """Тот же приоритет, что и в category_condition — бейдж совпадает с фильтром."""
     today = today or date.today()
 
@@ -185,6 +196,7 @@ def resolve_status(client: Client, *, visit_count: int, total_spent: int,
         return "vip"
     if client.registration_date and client.registration_date.date() >= today - timedelta(days=rules.new_client_days):
         return "new"
-    if client.last_visit_date and client.last_visit_date >= today - timedelta(days=rules.active_within_days):
+    last_visit = last_visit or client.last_visit_date
+    if last_visit and today - timedelta(days=rules.active_within_days) <= last_visit <= today:
         return "active"
     return "inactive"

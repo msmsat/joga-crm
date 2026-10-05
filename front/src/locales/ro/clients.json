@@ -61,7 +61,9 @@
   },
   "toolbar": {
     "searchPlaceholder": "Caută client…",
-    "addClient": "Adaugă client"
+    "addClient": "Adaugă client",
+    "moreFilters": "Mai multe",
+    "filters": "Filtre"
   },
   "table": {
     "visits": "vizite",
@@ -296,7 +298,27 @@
         "freeze": "Înghețări",
         "completed": "Finalizate"
       },
-      "empty": "Nu există evenimente"
+      "empty": "Nu există evenimente",
+      "statuses": {
+        "appointment": {
+          "upcoming": "Urmează",
+          "ongoing": "În desfășurare",
+          "completed": "Finalizat",
+          "cancelled": "Anulat"
+        },
+        "attendance": {
+          "attended": "A venit",
+          "missed": "Nu a venit",
+          "unknown": "Prezență neconfirmată"
+        },
+        "payment": {
+          "paid": "Plătit",
+          "unpaid": "Neplătit",
+          "subscription": "Abonament",
+          "free": "Gratuit",
+          "unknown": "Plată necunoscută"
+        }
+      }
     },
     "notes": {
       "title": "Note administrator",

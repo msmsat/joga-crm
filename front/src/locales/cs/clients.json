@@ -61,7 +61,9 @@
   },
   "toolbar": {
     "searchPlaceholder": "Hledat klienta...",
-    "addClient": "Přidat klienta"
+    "addClient": "Přidat klienta",
+    "moreFilters": "Další",
+    "filters": "Filtry"
   },
   "table": {
     "visits": "návštěv",
@@ -288,7 +290,27 @@
         "freeze": "Zmrazení",
         "completed": "Dokončené"
       },
-      "empty": "Žádné události"
+      "empty": "Žádné události",
+      "statuses": {
+        "appointment": {
+          "upcoming": "Nadcházející",
+          "ongoing": "Probíhá",
+          "completed": "Dokončeno",
+          "cancelled": "Zrušeno"
+        },
+        "attendance": {
+          "attended": "Přišel",
+          "missed": "Nepřišel",
+          "unknown": "Účast nepotvrzena"
+        },
+        "payment": {
+          "paid": "Zaplaceno",
+          "unpaid": "Nezaplaceno",
+          "subscription": "Permanentka",
+          "free": "Zdarma",
+          "unknown": "Platba neznámá"
+        }
+      }
     },
     "notes": {
       "title": "Poznámky administrátora",

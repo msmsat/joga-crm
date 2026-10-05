@@ -166,7 +166,15 @@
     "newLessonPreview": "Nyt hold",
     "cancelled": "Aflyst",
     "noTrainers": "Ingen undervisere",
-    "noHalls": "{{spacePlural, capitalize}}: ingen endnu"
+    "noHalls": "{{spacePlural, capitalize}}: ingen endnu",
+    "card": {
+      "unpaid": "Ikke betalt",
+      "paid": "Betalt",
+      "unpaidCount": "Ikke betalt: {{n}}",
+      "missedCount": "Udeblevet: {{n}}",
+      "cameCount": "{{n}} af {{total}} mødte op",
+      "spots": "{{n}} af {{total}} tilmeldt"
+    }
   },
   "createService": "+ Opret ydelse",
   "invalidDateFormat": "Ugyldigt datoformat",

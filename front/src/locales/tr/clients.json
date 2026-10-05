@@ -61,7 +61,9 @@
   },
   "toolbar": {
     "searchPlaceholder": "Müşteri ara…",
-    "addClient": "Müşteri ekle"
+    "addClient": "Müşteri ekle",
+    "moreFilters": "Diğer",
+    "filters": "Filtreler"
   },
   "table": {
     "visits": "ziyaret",
@@ -292,7 +294,27 @@
         "freeze": "Dondurmalar",
         "completed": "Tamamlanan"
       },
-      "empty": "Etkinlik yok"
+      "empty": "Etkinlik yok",
+      "statuses": {
+        "appointment": {
+          "upcoming": "Yaklaşan",
+          "ongoing": "Devam ediyor",
+          "completed": "Tamamlandı",
+          "cancelled": "İptal edildi"
+        },
+        "attendance": {
+          "attended": "Geldi",
+          "missed": "Gelmedi",
+          "unknown": "Katılım doğrulanmadı"
+        },
+        "payment": {
+          "paid": "Ödendi",
+          "unpaid": "Ödenmedi",
+          "subscription": "Üyelik",
+          "free": "Ücretsiz",
+          "unknown": "Ödeme bilinmiyor"
+        }
+      }
     },
     "notes": {
       "title": "Yönetici notları",

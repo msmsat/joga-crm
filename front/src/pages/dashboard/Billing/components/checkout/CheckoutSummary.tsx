@@ -17,7 +17,8 @@ export default function CheckoutSummary({ plan, period, preview, payment, error,
   taxPending?: boolean; error: string; currency: string; preparing: boolean; canPrepare: boolean; onPrepare: () => void; onBack: () => void;
 }) {
   const { t, i18n } = useTranslation('billing');
-  const [expanded, setExpanded] = useState(false);
+  // Открыто сразу: на шаге оплаты человек должен видеть, за что платит, без лишнего нажатия.
+  const [expanded, setExpanded] = useState(true);
   const money = (amount: number) => formatMoney(amount / 100, currency);
   const amounts = checkoutAmounts(preview, payment, taxPending);
   const displayedTotal = amounts.total != null ? money(amounts.total) : '—';
@@ -31,7 +32,7 @@ export default function CheckoutSummary({ plan, period, preview, payment, error,
   const seats = planSeats(plan.id);
   const planName = seats === null ? t('checkout.unlimited') : seats === 1 ? t('checkout.solo') : t('checkout.members', { count: seats });
   const paymentError = error || payment?.error || (amounts.invalidPayment ? t('checkout.invalidPaymentAmount') : '');
-  return <aside className={styles.summary} aria-label={t('checkout.orderDetails')} data-expanded={expanded || undefined}>
+  return <aside className={styles.summary} aria-label={t('checkout.paymentDetails')} data-expanded={expanded || undefined}>
     <div className={styles.summaryHeading}>
       <CheckoutArtwork />
       <div className={styles.selectedPlan}><span className={styles.planMiniMark}><img src="/favicon.svg" alt="" /></span>
@@ -42,7 +43,7 @@ export default function CheckoutSummary({ plan, period, preview, payment, error,
     </div>
     <div className={styles.summaryDetails}>
       <button className={styles.orderToggle} type="button" aria-expanded={expanded} onClick={() => setExpanded(!expanded)}>
-        {t('checkout.orderDetails')}<ChevronDown size={14} /></button>
+        {t('checkout.paymentDetails')}<ChevronDown size={14} /></button>
       <div className={styles.receipt}>
         <div className={styles.receiptRow}><span>{t('checkout.purchase')}</span><strong>{amounts.net != null ? money(amounts.net) : '—'}</strong></div>
         <div className={styles.receiptRow}><span>{taxLabel}</span><span>{amounts.tax != null ? money(amounts.tax)

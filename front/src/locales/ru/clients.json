@@ -61,7 +61,9 @@
   },
   "toolbar": {
     "searchPlaceholder": "Поиск клиента...",
-    "addClient": "Добавить клиента"
+    "addClient": "Добавить клиента",
+    "moreFilters": "Ещё",
+    "filters": "Фильтры"
   },
   "table": {
     "visits": "визитов",
@@ -288,7 +290,27 @@
         "freeze": "Заморозки",
         "completed": "Завершённые"
       },
-      "empty": "Нет событий"
+      "empty": "Нет событий",
+      "statuses": {
+        "appointment": {
+          "upcoming": "Впереди",
+          "ongoing": "Идёт",
+          "completed": "Завершено",
+          "cancelled": "Отменено"
+        },
+        "attendance": {
+          "attended": "Пришёл",
+          "missed": "Не пришёл",
+          "unknown": "Посещение не подтверждено"
+        },
+        "payment": {
+          "paid": "Оплачено",
+          "unpaid": "Не оплачено",
+          "subscription": "Абонемент",
+          "free": "Бесплатно",
+          "unknown": "Оплата неизвестна"
+        }
+      }
     },
     "notes": {
       "title": "Заметки администратора",

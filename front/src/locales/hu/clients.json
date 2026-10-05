@@ -61,7 +61,9 @@
   },
   "toolbar": {
     "searchPlaceholder": "Ügyfél keresése…",
-    "addClient": "Ügyfél hozzáadása"
+    "addClient": "Ügyfél hozzáadása",
+    "moreFilters": "Továbbiak",
+    "filters": "Szűrők"
   },
   "table": {
     "visits": "látogatás",
@@ -292,7 +294,27 @@
         "freeze": "Felfüggesztések",
         "completed": "Befejezettek"
       },
-      "empty": "Nincsenek események"
+      "empty": "Nincsenek események",
+      "statuses": {
+        "appointment": {
+          "upcoming": "Közelgő",
+          "ongoing": "Folyamatban",
+          "completed": "Befejezve",
+          "cancelled": "Lemondva"
+        },
+        "attendance": {
+          "attended": "Eljött",
+          "missed": "Nem jött el",
+          "unknown": "Részvétel nincs megerősítve"
+        },
+        "payment": {
+          "paid": "Fizetve",
+          "unpaid": "Nincs fizetve",
+          "subscription": "Bérlet",
+          "free": "Ingyenes",
+          "unknown": "Fizetés ismeretlen"
+        }
+      }
     },
     "notes": {
       "title": "Adminisztrátori jegyzetek",

@@ -166,7 +166,15 @@
     "newLessonPreview": "Nytt pass",
     "cancelled": "Inställt",
     "noTrainers": "Inga instruktörer",
-    "noHalls": "{{spacePlural, capitalize}}: inga än"
+    "noHalls": "{{spacePlural, capitalize}}: inga än",
+    "card": {
+      "unpaid": "Obetald",
+      "paid": "Betald",
+      "unpaidCount": "Obetalda: {{n}}",
+      "missedCount": "Uteblev: {{n}}",
+      "cameCount": "{{n}} av {{total}} kom",
+      "spots": "{{n}} av {{total}} bokade"
+    }
   },
   "createService": "+ Skapa tjänst",
   "invalidDateFormat": "Ogiltigt datumformat",

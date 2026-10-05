@@ -61,7 +61,9 @@
   },
   "toolbar": {
     "searchPlaceholder": "Sök kund…",
-    "addClient": "Lägg till kund"
+    "addClient": "Lägg till kund",
+    "moreFilters": "Fler",
+    "filters": "Filter"
   },
   "table": {
     "visits": "besök",
@@ -292,7 +294,27 @@
         "freeze": "Frysningar",
         "completed": "Avslutade"
       },
-      "empty": "Inga händelser"
+      "empty": "Inga händelser",
+      "statuses": {
+        "appointment": {
+          "upcoming": "Kommande",
+          "ongoing": "Pågår",
+          "completed": "Avslutad",
+          "cancelled": "Avbokad"
+        },
+        "attendance": {
+          "attended": "Kom",
+          "missed": "Kom inte",
+          "unknown": "Närvaro ej bekräftad"
+        },
+        "payment": {
+          "paid": "Betald",
+          "unpaid": "Obetald",
+          "subscription": "Klippkort",
+          "free": "Gratis",
+          "unknown": "Betalning okänd"
+        }
+      }
     },
     "notes": {
       "title": "Administratörsanteckningar",

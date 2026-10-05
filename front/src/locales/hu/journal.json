@@ -166,7 +166,15 @@
     "newLessonPreview": "Új óra",
     "cancelled": "Lemondva",
     "noTrainers": "Nincs oktató",
-    "noHalls": "{{spacePlural, capitalize}}: még nincs"
+    "noHalls": "{{spacePlural, capitalize}}: még nincs",
+    "card": {
+      "unpaid": "Nincs fizetve",
+      "paid": "Fizetve",
+      "unpaidCount": "Nem fizetett: {{n}}",
+      "missedCount": "Nem jött el: {{n}}",
+      "cameCount": "{{total}} főből {{n}} jött el",
+      "spots": "{{total}} helyből {{n}} foglalt"
+    }
   },
   "createService": "+ Szolgáltatás létrehozása",
   "invalidDateFormat": "Érvénytelen dátumformátum",

@@ -43,6 +43,7 @@ async function harness(file, overrides = {}) {
     PlanCalculator: { default: 'PlanCalculator' },
     AnimatedPayButton: { default: 'PayButton' },
     CheckoutDetails: { default: 'CheckoutDetails' },
+    TeamLineup: { default: 'TeamLineup' },
     CheckoutArtwork: { default: 'CheckoutArtwork' },
     'lucide-react': { ChevronDown: 'ChevronDown', ShieldCheck: 'ShieldCheck' },
     legal: { LEGAL_LINK_PROPS: {}, PRIVACY_URL: '/privacy', TERMS_URL: '/terms' },
@@ -80,12 +81,12 @@ const planInfo = { name: 'Solo', monthly: 20, staffLimit: 1, ai: 500 };
 const quote = tax_outcome => ({ currency: 'EUR', total: 2000, total_with_tax: 2420, tax_amount: 420, tax_rate_percent: 21, tax_outcome });
 const calculatorProps = () => ({
   planIds: ['s1'], plans: { s1: planInfo }, selected: 's1', onSelect: noop, currency: 'EUR',
-  payBusy: false, preview: quote('taxable'), previewBusy: false, payDisabled: false,
+  payBusy: false, preview: quote('taxable'), pending: false, payDisabled: false,
   selectedPeriod: 1, setSelectedPeriod: noop, periodDiscounts: { 1: 0, 12: 0.3 },
   monthly: 20, fullMonthly: 20, savedTotal: 0, totalToPay: 20, onPay: noop, currentPlanId: null,
 });
 
-for (const [label, preview, previewBusy] of [
+for (const [label, preview, pending] of [
   ['payer details require tax review', quote('requires_review'), false],
   ['quote is still loading', null, true],
   ['quote request failed', null, false],
@@ -93,7 +94,7 @@ for (const [label, preview, previewBusy] of [
   test(`plan Pay enters payer details when ${label}`, async () => {
     const app = await harness('components/ui/PlanCalculator.tsx');
     let entered = 0;
-    const button = nodes(app.render({ ...calculatorProps(), preview, previewBusy, onPay: () => { entered++; } }), 'PayButton')[0];
+    const button = nodes(app.render({ ...calculatorProps(), preview, pending, onPay: () => { entered++; } }), 'PayButton')[0];
     assert.equal(Boolean(button.disabled), false, 'tax preview must not prevent entering the checkout form');
     button.onClick();
     assert.equal(entered, 1);
@@ -106,7 +107,7 @@ test('plan Pay stays unavailable if the selected plan is missing from the catalo
 });
 
 const tabProps = overrides => ({
-  currency: 'EUR', payBusy: false, preview: quote('requires_review'), previewBusy: false,
+  currency: 'EUR', payBusy: false, preview: quote('requires_review'), pending: false,
   billingMode: 'fixed', setBillingMode: noop, selectedPlan: 's1', setSelectedPlan: noop,
   selectedPeriod: 1, setSelectedPeriod: noop, periodDiscounts: { 1: 0 },
   plans: { s1: planInfo }, planIds: ['s1'], currentMonthly: 10, discountedPrice: 10,

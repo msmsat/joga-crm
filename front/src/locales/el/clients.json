@@ -61,7 +61,9 @@
   },
   "toolbar": {
     "searchPlaceholder": "Αναζήτηση πελάτη…",
-    "addClient": "Προσθήκη πελάτη"
+    "addClient": "Προσθήκη πελάτη",
+    "moreFilters": "Περισσότερα",
+    "filters": "Φίλτρα"
   },
   "table": {
     "visits": "επισκέψεις",
@@ -292,7 +294,27 @@
         "freeze": "Αναστολές",
         "completed": "Ολοκληρωμένες"
       },
-      "empty": "Δεν υπάρχουν συμβάντα"
+      "empty": "Δεν υπάρχουν συμβάντα",
+      "statuses": {
+        "appointment": {
+          "upcoming": "Επερχόμενο",
+          "ongoing": "Σε εξέλιξη",
+          "completed": "Ολοκληρώθηκε",
+          "cancelled": "Ακυρώθηκε"
+        },
+        "attendance": {
+          "attended": "Ήρθε",
+          "missed": "Δεν ήρθε",
+          "unknown": "Η παρουσία δεν επιβεβαιώθηκε"
+        },
+        "payment": {
+          "paid": "Πληρώθηκε",
+          "unpaid": "Απλήρωτο",
+          "subscription": "Συνδρομή",
+          "free": "Δωρεάν",
+          "unknown": "Άγνωστη πληρωμή"
+        }
+      }
     },
     "notes": {
       "title": "Σημειώσεις διαχειριστή",

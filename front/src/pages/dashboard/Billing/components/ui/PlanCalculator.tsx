@@ -6,6 +6,7 @@ import { formatMoney } from '../../../../../lib/money';
 import { planSeats } from '../../../../../lib/plan';
 import AnimatedPayButton from './AnimatedPayButton';
 import CheckoutDetails from './CheckoutDetails';
+import TeamLineup from './TeamLineup';
 import type { CheckoutPreview } from '../../../../../api/billing/billing.types';
 import styles from '../../Billing.module.css';
 
@@ -18,7 +19,8 @@ interface Props {
   currency?: string;
   payBusy: boolean;
   preview: CheckoutPreview | null;
-  previewBusy: boolean;
+  /** Цены и расчёты ещё едут: числа держат место заглушкой, команда ждёт. */
+  pending: boolean;
   selectedPeriod: PlanPeriod;
   setSelectedPeriod: (period: PlanPeriod) => void;
   periodDiscounts: Record<number, number>;
@@ -47,7 +49,7 @@ interface Props {
  * второй прайс-лист на фронте пережил бы правку plans.py и обещал бы неправду.
  */
 export default function PlanCalculator({
-  planIds, plans, selected, onSelect, currency, payBusy, preview, previewBusy,
+  planIds, plans, selected, onSelect, currency, payBusy, preview, pending,
   selectedPeriod, setSelectedPeriod, periodDiscounts,
   monthly, fullMonthly, savedTotal, totalToPay, onPay, currentPlanId,
 }: Props) {
@@ -62,7 +64,7 @@ export default function PlanCalculator({
   const info = plans[selected];
   const index = Math.max(planIds.indexOf(selected), 0);
   const last = Math.max(planIds.length - 1, 0);
-  const fill = last ? (index / last) * 100 : 0;
+  const fill = last && !pending ? (index / last) * 100 : 0;
   const base = plans[planIds[0]]?.monthly ?? 0;
   // Шаг берём в КОНЦЕ линии мест, а не в её начале: вход одиночки (s1) лежит
   // ниже линии, и разность первых двух ступеней обещала бы +10 € вместо +5 €.
@@ -80,22 +82,14 @@ export default function PlanCalculator({
 
   const count = (value: number) => value.toLocaleString(i18n.language || 'en');
 
-  // Сравнение для блока выгоды: тот же срок помесячно против выбранного периода.
-  // Разница — это ровно savedTotal из хука, второй арифметики тут нет.
-  const fullTotal = Math.round(fullMonthly * selectedPeriod * 100) / 100;
-  // Сколько месяцев покрывает сэкономленное — только если хотя бы один (без фейка).
-  const freeMonths = monthly > 0 ? Math.floor(savedTotal / monthly) : 0;
-  const gainNote = savedTotal <= 0
-    // Выгоды пока нет — вместо «вы сэкономили 0» подсказка, где она начинается.
-    ? t('savings.emptyState')
-    : freeMonths >= 1
-      ? t('savings.freeMonths', { count: freeMonths })
-      : t('savings.youSave', { amount: formatMoney(savedTotal, currency), months: selectedPeriod });
   // Прочерк вместо пропущенной строки: набор строк в панели ВСЕГДА один и тот
   // же. Иначе панель прыгала на каждом переключении периода — появлялась
   // экономия, исчезала цена за место на безлимите, — и кнопка оплаты уезжала
   // из-под пальца ровно в тот момент, когда на неё целятся.
   const DASH = '—';
+  // Число, которого ещё нет, держит своё место мерцающей заглушкой: текст
+  // остаётся в разметке (размеры те же), но не виден — см. .calcFill.
+  const fillCls = (cls: string) => `${cls} ${styles.calcFill}`;
 
   const rows: { label: string; value: string; accent?: boolean }[] = [
     // Цена за место — то, ради чего линия и существует: ступень выше стоит
@@ -124,7 +118,7 @@ export default function PlanCalculator({
   ];
 
   return (
-    <div className={styles.calcCard}>
+    <div className={styles.calcCard} data-pending={pending || undefined} aria-busy={pending}>
       <div className={styles.calcGrid}>
 
         {/* ── Выбор: места и период ── */}
@@ -132,11 +126,11 @@ export default function PlanCalculator({
           <span className={styles.calcEyebrow}>{t('seats.title')}</span>
 
           <div className={styles.calcSeats}>
-            <span className={styles.calcSeatsNum}>{seats === null ? '∞' : seats}</span>
-            <span className={styles.calcSeatsLabel}>
+            <span className={fillCls(styles.calcSeatsNum)}>{seats === null ? '∞' : seats}</span>
+            <span className={fillCls(styles.calcSeatsLabel)}>
               {seats === null ? t('planCards.staffUnlimited') : t('planCards.staffLimit', { count: seats })}
             </span>
-            {currentPlanId === selected && <span className={styles.calcBadge}>{t('planCards.current')}</span>}
+            {!pending && currentPlanId === selected && <span className={styles.calcBadge}>{t('planCards.current')}</span>}
           </div>
 
           <input
@@ -151,18 +145,20 @@ export default function PlanCalculator({
             className={styles.calcRange}
             style={{ '--fill': `${fill}%` } as CSSProperties}
             // Ступени ещё не приехали с сервера — двигать нечего.
-            disabled={payBusy || last === 0}
+            disabled={payBusy || pending || last === 0}
           />
           {/* Подписи концов линии — из каталога; пока он не приехал, подписывать
-              нечего (вышло бы «До 0 сотрудников»). */}
-          {last > 0 && (
-            <div className={styles.calcTicks}>
-              <span>{t('planCards.staffLimit', { count: planSeats(planIds[0]) ?? 0 })}</span>
-              <span>∞ {t('planCards.staffUnlimited')}</span>
-            </div>
-          )}
+              нечего (вышло бы «До 0 сотрудников»), но строка держит место. */}
+          <div className={styles.calcTicks}>
+            {last > 0 ? (
+              <>
+                <span>{t('planCards.staffLimit', { count: planSeats(planIds[0]) ?? 0 })}</span>
+                <span>∞ {t('planCards.staffUnlimited')}</span>
+              </>
+            ) : <span>&nbsp;</span>}
+          </div>
 
-          <p className={styles.calcHint}>
+          <p className={fillCls(styles.calcHint)}>
             {t('seats.hint', { amount: formatMoney(base, currency) })}
             {' · '}
             {seats === null
@@ -170,46 +166,13 @@ export default function PlanCalculator({
               : t('seats.stepNote', { amount: formatMoney(step, currency) })}
           </p>
 
-          {/* ── Выгода: два столбца настоящими деньгами ──
-              Слева — во сколько обойдётся тот же срок помесячно, справа — во
-              сколько он обходится на выбранном периоде; разница между их
-              высотами и есть экономия. Тянется по остатку высоты (flex: 1),
-              поэтому плитки периода прижаты к низу колонки. На телефоне блока
-              нет: там и без него хватает деталей на экран. */}
-          <div className={styles.calcGain}>
-            <span className={styles.calcEyebrow}>{t('savings.title')}</span>
-
-            <div className={styles.calcGainBars}>
-              <div className={styles.calcGainCol}>
-                <span key={fullTotal} className={styles.calcGainSum}>{formatMoney(fullTotal, currency)}</span>
-                <div className={styles.calcGainTrack}>
-                  <div className={styles.calcGainBar} style={{ height: '100%' }} />
-                </div>
-                <span className={styles.calcGainCap}>{t('period.noDiscount')}</span>
-              </div>
-
-              <div className={styles.calcGainCol}>
-                <span key={totalToPay} className={`${styles.calcGainSum} ${styles.calcGainSumOn}`}>
-                  {formatMoney(totalToPay, currency)}
-                </span>
-                <div className={styles.calcGainTrack}>
-                  <div
-                    className={`${styles.calcGainBar} ${styles.calcGainBarOn}`}
-                    style={{ height: `${(1 - discount) * 100}%` }}
-                  >
-                    {/* Процент — внутри столбца: снаружи он висел непонятно к
-                        чему относящейся подписью. */}
-                    {discount > 0 && (
-                      <span className={styles.calcGainTag}>−{Math.round(discount * 100)}%</span>
-                    )}
-                  </div>
-                </div>
-                <span className={styles.calcGainCap}>{t(`period.${selectedPeriod}`)}</span>
-              </div>
-            </div>
-
-            <p className={styles.calcGainNote}>{gainNote}</p>
-          </div>
+          {/* ── Команда фигурками ──
+              Экономию здесь больше не рисуем: её трижды показывает панель цены
+              (зачёркнутая цена, полоса, строка «Ваша экономия»), а два широких
+              столбца с суммами за период только повторяли её. Блок тянется по
+              остатку высоты (flex: 1), поэтому плитки периода прижаты к низу
+              колонки. На телефоне его нет: там и без него хватает деталей. */}
+          <TeamLineup planIds={planIds} selected={selected} onSelect={onSelect} disabled={payBusy} pending={pending} />
 
           <div className={styles.calcRule} />
 
@@ -247,7 +210,7 @@ export default function PlanCalculator({
           <div className={styles.calcPrice}>
             {/* key — чтобы CSS-анимация проигрывалась заново на каждой новой
                 сумме: цифра приподнимается, а не подменяется втихую. */}
-            <span key={`${monthly}:${currency}`} className={styles.calcPriceNum}>{formatMoney(monthly, currency)}</span>
+            <span key={`${monthly}:${currency}`} className={fillCls(styles.calcPriceNum)}>{formatMoney(monthly, currency)}</span>
             <span className={styles.calcPriceUnit}>{t('planCards.perMonth')}</span>
           </div>
 
@@ -257,11 +220,12 @@ export default function PlanCalculator({
           <div className={styles.calcOld}>
             {discount > 0 ? (
               <>
-                <span className={styles.calcOldPrice}>{formatMoney(fullMonthly, currency)}</span>
-                <span className={styles.calcOff}>−{Math.round(discount * 100)}%</span>
+                <span className={fillCls(styles.calcOldPrice)}>{formatMoney(fullMonthly, currency)}</span>
+                <span className={fillCls(styles.calcOff)}>−{Math.round(discount * 100)}%</span>
               </>
             ) : (
-              <span className={styles.calcOldPrice}>{t('period.noDiscount')}</span>
+              // Не зачёркнуто: зачёркнутое «Без скидки» читалось как «скидка есть».
+              <span className={fillCls(styles.calcOldNote)}>{t('period.noDiscount')}</span>
             )}
           </div>
 
@@ -277,25 +241,25 @@ export default function PlanCalculator({
             {rows.map(row => (
               <div key={row.label} className={styles.calcRow}>
                 <span className={styles.calcRowLabel}>{row.label}</span>
-                <span className={`${styles.calcRowValue} ${row.accent ? styles.calcRowAccent : ''}`}>
+                <span className={fillCls(`${styles.calcRowValue} ${row.accent ? styles.calcRowAccent : ''}`)}>
                   {row.value}
                 </span>
               </div>
             ))}
           </div>
 
-          <CheckoutDetails preview={quote} />
+          <CheckoutDetails preview={quote} pending={pending} />
 
           {/* Итог и оплата. Класс bl-pay-cta глобальный: на телефоне этот же
               узел становится полосой над нижней панелью (Billing.module.css). */}
           <div className={`${styles.calcCta} bl-pay-cta`}>
-            <div className={styles.calcTotal} aria-busy={previewBusy}>
-              <span className={styles.calcTotalLabel}>{t(outcome === 'taxable' ? 'payModal.totalWithTax' : outcome === 'stripe_auto' || outcome === 'requires_review' ? 'checkout.totalBeforeTax' : 'paymentSchedule.total')}</span>
-              <span key={`${checkoutTotal}:${currency}`} className={styles.calcTotalValue}>{formatMoney(checkoutTotal, currency)}</span>
+            <div className={styles.calcTotal}>
+              <span className={fillCls(styles.calcTotalLabel)}>{t(outcome === 'taxable' ? 'payModal.totalWithTax' : outcome === 'stripe_auto' || outcome === 'requires_review' ? 'checkout.totalBeforeTax' : 'paymentSchedule.total')}</span>
+              <span key={`${checkoutTotal}:${currency}`} className={fillCls(styles.calcTotalValue)}>{formatMoney(checkoutTotal, currency)}</span>
             </div>
             {/* Налог определяется по реквизитам на следующем шаге.
                 Отсутствие предварительного расчёта не блокирует переход к форме. */}
-            <p className={styles.calcVat}>{t(taxNote)}</p>
+            <p className={fillCls(styles.calcVat)}>{t(taxNote)}</p>
             <AnimatedPayButton onClick={onPay} className={styles.calcPay} loading={payBusy}
               disabled={!info}>
               {selectedPeriod > 1 ? t('paymentSchedule.payFor', { count: selectedPeriod }) : t('pay')}

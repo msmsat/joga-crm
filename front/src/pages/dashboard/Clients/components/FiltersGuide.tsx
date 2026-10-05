@@ -261,6 +261,7 @@ export function FiltersGuide({ categories, activeCatKey, onCatChange }: FiltersG
       <button
         ref={buttonRef}
         type="button"
+        aria-label={t('filtersGuide.trigger')} title={t('filtersGuide.trigger')}
         className={`fg-trigger${open ? ' open' : ''}`}
         onClick={() => setOpen(o => !o)}
       >

@@ -61,7 +61,9 @@
   },
   "toolbar": {
     "searchPlaceholder": "Hae asiakasta…",
-    "addClient": "Lisää asiakas"
+    "addClient": "Lisää asiakas",
+    "moreFilters": "Lisää",
+    "filters": "Suodattimet"
   },
   "table": {
     "visits": "käyntiä",
@@ -292,7 +294,27 @@
         "freeze": "Jäädytykset",
         "completed": "Päättyneet"
       },
-      "empty": "Ei tapahtumia"
+      "empty": "Ei tapahtumia",
+      "statuses": {
+        "appointment": {
+          "upcoming": "Tulossa",
+          "ongoing": "Käynnissä",
+          "completed": "Valmis",
+          "cancelled": "Peruttu"
+        },
+        "attendance": {
+          "attended": "Saapui",
+          "missed": "Ei saapunut",
+          "unknown": "Osallistumista ei vahvistettu"
+        },
+        "payment": {
+          "paid": "Maksettu",
+          "unpaid": "Maksamatta",
+          "subscription": "Sarjakortti",
+          "free": "Ilmainen",
+          "unknown": "Maksu tuntematon"
+        }
+      }
     },
     "notes": {
       "title": "Ylläpidon muistiinpanot",

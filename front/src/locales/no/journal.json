@@ -166,7 +166,15 @@
     "newLessonPreview": "Ny økt",
     "cancelled": "Avlyst",
     "noTrainers": "Ingen instruktører",
-    "noHalls": "{{spacePlural, capitalize}}: ingen ennå"
+    "noHalls": "{{spacePlural, capitalize}}: ingen ennå",
+    "card": {
+      "unpaid": "Ikke betalt",
+      "paid": "Betalt",
+      "unpaidCount": "Ikke betalt: {{n}}",
+      "missedCount": "Uteble: {{n}}",
+      "cameCount": "{{n}} av {{total}} møtte",
+      "spots": "{{n}} av {{total}} påmeldt"
+    }
   },
   "createService": "+ Opprett tjeneste",
   "invalidDateFormat": "Ugyldig datoformat",

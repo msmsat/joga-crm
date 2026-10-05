@@ -333,135 +333,8 @@
 }
 
 /* ════════════════════════════════════════════════════════════
-   5. КАРТОЧКА ЗАПИСИ
+   5. КАРТОЧКА ЗАПИСИ — components/ScheduleGrid/BookingCard.css
    ════════════════════════════════════════════════════════════ */
-.booking-card {
-  /* Радиус и рамка — переменными: по ним полоса буфера (bufferStyle.ts)
-     заходит под край карточки и закрывает её уголки ровно по дуге. */
-  --card-r: 10px;
-  --card-bw: 2px;
-  position: absolute;
-  border-radius: var(--card-r);
-  padding: 8px 10px;
-  cursor: grab;
-  overflow: visible; /* чтобы drag-tooltip/drag-line не обрезались */
-  box-shadow: 0 0 0 2px var(--bg-card);
-  user-select: none;
-  -webkit-user-select: none;
-  /* Анимируем только геометрию: transform/width/left/box-shadow.
-     background-color и z-index намеренно исключены — иначе при
-     смене состояния карточка на миг становится прозрачной. */
-  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
-              width 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
-              left 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
-              box-shadow 0.35s ease;
-}
-.booking-card:active { cursor: grabbing; }
-.booking-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 24px rgba(26,26,26,0.12);
-}
-
-.booking-card .b-title {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  transition: all 0.2s ease;
-}
-.booking-card .b-meta,
-.booking-card .b-progress {
-  transition: opacity 0.2s ease;
-}
-
-.booking-card.pending { opacity: 0.75; }
-.booking-card.pending::after {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 2px;
-  background: repeating-linear-gradient(90deg, currentColor 0, currentColor 4px, transparent 4px, transparent 8px);
-  opacity: 0.5;
-}
-
-/* Отменённое занятие: серое, бледное, без hover-подъёма и без ручек resize */
-.booking-card.cancelled { filter: grayscale(1); opacity: 0.45; cursor: default; }
-.booking-card.cancelled:hover { transform: none; box-shadow: none; }
-.booking-card .b-cancelled-badge {
-  display: inline-flex;
-  align-items: center;
-  font-size: 10px;
-  font-weight: 700;
-  padding: 2px 6px;
-  border-radius: 6px;
-  background: rgba(var(--ink),0.06);
-  color: var(--muted);
-}
-
-/* Прячем доп. инфу в узких карточках «лесенки», пока не кликнули */
-.booking-card.is-tracked:not(.is-selected) .b-meta,
-.booking-card.is-tracked:not(.is-selected) .b-progress {
-  opacity: 0;
-}
-
-/* Карточки внахлёст («лесенка») */
-.booking-card.is-cascade {
-  box-shadow: -4px 4px 12px rgba(26,26,26,0.06), 0 0 0 1px var(--bg-card);
-}
-.booking-card.is-cascade::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: var(--card-color);
-  opacity: 0.12;
-  pointer-events: none;
-  z-index: 0;
-}
-.booking-card.is-cascade > :not(.booking-buffer) { position: relative; z-index: 1; }
-
-/* В полёте при перетаскивании */
-.booking-card.is-dragging {
-  transition: none !important;
-  z-index: 99999 !important;
-  opacity: 0.9;
-  box-shadow: 0 32px 80px rgba(26,26,26,0.25), 0 0 0 2px var(--bg-card) !important;
-  cursor: grabbing !important;
-  pointer-events: none !important; /* пропускаем клик сквозь карточку к сетке */
-}
-
-/* Выделенная карточка после клика — фиксируем размер и поднимаем над всеми */
-.booking-card.is-selected {
-  z-index: 9999 !important;
-  background: var(--bg-card) !important;
-  transform: none !important;
-  box-shadow: 0 16px 40px -8px rgba(26,26,26,0.3), 0 0 0 2px var(--peach) !important;
-}
-.booking-card.is-cascade.is-selected { transform: none !important; }
-.booking-card.is-selected .b-meta,
-.booking-card.is-selected .b-progress {
-  opacity: 1 !important;
-}
-.booking-card.is-selected .b-title {
-  white-space: normal !important;
-}
-
-/* Посещение индивидуальной записи: неявка (прошла без отметки «пришёл») —
-   крестик в пыльно-розовом кружке, отмеченная — галочка фисташкой. Кружок в
-   правом верхнем углу, название под ним не прячется (отступ справа). */
-.booking-card .b-visit,
-.booking-card.is-cascade > .b-visit {
-  position: absolute;
-  top: 6px; right: 6px;
-  width: 16px; height: 16px;
-  border-radius: 50%;
-  display: inline-flex; align-items: center; justify-content: center;
-  z-index: 2;
-  pointer-events: none;
-}
-.booking-card .b-visit svg { width: 10px; height: 10px; stroke-width: 3; }
-.booking-card .b-visit.is-missed { background: #D88C9A; color: #FFFFFF; }
-.booking-card .b-visit.is-came { background: rgba(163,201,168,0.45); color: #4F7F57; }
-.dark .booking-card .b-visit.is-came { color: #B5D6B9; }
-.booking-card:has(> .b-visit) .b-title { padding-right: 16px; }
 
 /* ════════════════════════════════════════════════════════════
    6. ПЕРЕТАСКИВАНИЕ (DRAG & DROP)
@@ -2502,18 +2375,8 @@ button.kp-trainer:disabled { cursor: default; opacity: 0.6; }
   .j-col-header { padding: 10px 8px; }
   .j-row-sep { min-width: var(--j-col-min, 0px); }
 
-  /* Карточка в колонке 65–110px: название в две строки вместо «Хатх…»,
-     иконка людей уходит — «3/10» читается и без неё. */
-  .booking-card { padding: 6px 7px; }
-  .booking-card .b-title {
-    white-space: normal;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    font-size: 10.5px !important;
-    overflow-wrap: anywhere;
-  }
-  .booking-card .b-meta svg { display: none; }
+  /* Карточка в колонке 65–110px перестраивается сама — по своей ширине
+     (запросы к контейнеру в ScheduleGrid/BookingCard.css). */
 
   /* ── Неделя: все семь дней в ширину экрана, без листания вбок ────────────
      Как в календаре телефона: сверху день недели, под ним число, сегодня —
@@ -2540,30 +2403,10 @@ button.kp-trainer:disabled { cursor: default; opacity: 0.6; }
   .j-hdr-compact .j-grid-week .j-hdr-weekwrap { flex-direction: column !important; gap: 0; }
   /* Карточка занятия во всю колонку: из подписей помещается только название,
      и оно переносится по строкам, как в календаре телефона. Заполненность и
-     время — в карточке по тапу. */
+     время — в карточке по тапу. Что именно остаётся, решает ширина карточки
+     (ScheduleGrid/BookingCard.css). */
   .j-grid-week { --j-card-gap: 3px; }
-  .j-grid-week .booking-card {
-    --card-r: 7px;
-    --card-bw: 1.5px;
-    padding: 4px 3px;
-    border-width: var(--card-bw) !important;
-  }
-  /* Обрезается название, а не карточка: полоса буфера живёт внутри карточки
-     и выходит за её край — overflow: hidden на карточке срезал бы её целиком. */
-  .j-grid-week .booking-card .b-title {
-    max-height: 100%;
-    overflow: hidden;
-    display: block;
-    -webkit-line-clamp: unset;
-    font-size: 9.5px !important;
-    line-height: 1.15 !important;
-    white-space: normal;
-    overflow-wrap: anywhere;
-    hyphens: auto;
-    margin-bottom: 0 !important;
-  }
-  .j-grid-week .booking-card .b-meta,
-  .j-grid-week .booking-card .b-progress { display: none; }
+  .j-grid-week .booking-card { --card-r: 7px; }
 
   /* Попап записи — шит снизу: карточка «рядом со слотом» на телефоне всё
      равно оказывается посреди экрана, а до её кнопок надо тянуться вверх. */

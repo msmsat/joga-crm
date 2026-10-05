@@ -166,7 +166,15 @@
     "newLessonPreview": "Mësim i ri",
     "cancelled": "Anuluar",
     "noTrainers": "Pa trajnerë",
-    "noHalls": "{{spacePlural, capitalize}}: ende asnjë"
+    "noHalls": "{{spacePlural, capitalize}}: ende asnjë",
+    "card": {
+      "unpaid": "E papaguar",
+      "paid": "E paguar",
+      "unpaidCount": "Pa paguar: {{n}}",
+      "missedCount": "Nuk erdhën: {{n}}",
+      "cameCount": "Erdhën {{n}} nga {{total}}",
+      "spots": "Të regjistruar {{n}} nga {{total}}"
+    }
   },
   "createService": "+ Krijo shërbim",
   "invalidDateFormat": "Format date i pavlefshëm",

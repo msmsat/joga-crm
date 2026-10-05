@@ -61,7 +61,9 @@
   },
   "toolbar": {
     "searchPlaceholder": "Пошук клієнта...",
-    "addClient": "Додати клієнта"
+    "addClient": "Додати клієнта",
+    "moreFilters": "Ще",
+    "filters": "Фільтри"
   },
   "table": {
     "visits": "візитів",
@@ -288,7 +290,27 @@
         "freeze": "Заморозки",
         "completed": "Завершені"
       },
-      "empty": "Подій немає"
+      "empty": "Подій немає",
+      "statuses": {
+        "appointment": {
+          "upcoming": "Попереду",
+          "ongoing": "Триває",
+          "completed": "Завершено",
+          "cancelled": "Скасовано"
+        },
+        "attendance": {
+          "attended": "Прийшов",
+          "missed": "Не прийшов",
+          "unknown": "Відвідування не підтверджено"
+        },
+        "payment": {
+          "paid": "Оплачено",
+          "unpaid": "Не оплачено",
+          "subscription": "Абонемент",
+          "free": "Безкоштовно",
+          "unknown": "Оплата невідома"
+        }
+      }
     },
     "notes": {
       "title": "Нотатки адміністратора",

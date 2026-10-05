@@ -61,7 +61,9 @@
   },
   "toolbar": {
     "searchPlaceholder": "Търсене на клиент…",
-    "addClient": "Добави клиент"
+    "addClient": "Добави клиент",
+    "moreFilters": "Още",
+    "filters": "Филтри"
   },
   "table": {
     "visits": "посещения",
@@ -292,7 +294,27 @@
         "freeze": "Замразявания",
         "completed": "Завършени"
       },
-      "empty": "Няма събития"
+      "empty": "Няма събития",
+      "statuses": {
+        "appointment": {
+          "upcoming": "Предстои",
+          "ongoing": "В ход",
+          "completed": "Завършено",
+          "cancelled": "Отменено"
+        },
+        "attendance": {
+          "attended": "Дойде",
+          "missed": "Не дойде",
+          "unknown": "Посещението не е потвърдено"
+        },
+        "payment": {
+          "paid": "Платено",
+          "unpaid": "Неплатено",
+          "subscription": "Карта",
+          "free": "Безплатно",
+          "unknown": "Плащането е неизвестно"
+        }
+      }
     },
     "notes": {
       "title": "Бележки на администратора",

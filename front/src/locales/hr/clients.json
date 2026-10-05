@@ -61,7 +61,9 @@
   },
   "toolbar": {
     "searchPlaceholder": "Pretraži klijenta…",
-    "addClient": "Dodaj klijenta"
+    "addClient": "Dodaj klijenta",
+    "moreFilters": "Više",
+    "filters": "Filtri"
   },
   "table": {
     "visits": "posjeta",
@@ -296,7 +298,27 @@
         "freeze": "Zamrzavanja",
         "completed": "Završene"
       },
-      "empty": "Nema događaja"
+      "empty": "Nema događaja",
+      "statuses": {
+        "appointment": {
+          "upcoming": "Predstoji",
+          "ongoing": "U tijeku",
+          "completed": "Završeno",
+          "cancelled": "Otkazano"
+        },
+        "attendance": {
+          "attended": "Došao",
+          "missed": "Nije došao",
+          "unknown": "Dolazak nije potvrđen"
+        },
+        "payment": {
+          "paid": "Plaćeno",
+          "unpaid": "Nije plaćeno",
+          "subscription": "Članarina",
+          "free": "Besplatno",
+          "unknown": "Plaćanje nepoznato"
+        }
+      }
     },
     "notes": {
       "title": "Bilješke administratora",

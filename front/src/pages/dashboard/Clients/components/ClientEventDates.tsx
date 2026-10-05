@@ -22,7 +22,7 @@ export function ClientEventDates({ event }: { event: EventRecord }) {
   const rows: [string, string | null | undefined][] = [];
   if (event.type === 'booking' && event.scheduled_at) {
     rows.push(['lesson', event.scheduled_at], ['bookingCreated', event.occurred_at]);
-  } else if (event.type === 'visit' && event.scheduled_at) {
+  } else if ((event.type === 'visit' || event.type === 'completed') && event.scheduled_at) {
     rows.push(['visit', event.scheduled_at]);
   } else if (event.type === 'cancel' && (event.occurred_at || event.scheduled_at)) {
     rows.push(['cancel', event.occurred_at]);

@@ -27,6 +27,7 @@ from models.studio import Studio
 from models.user import User
 from schemas.settings.billing import (
     CheckoutRequest, CheckoutResponse, CheckoutPreviewRead, BillingProfileRead,
+    CheckoutQuoteRead, CheckoutQuotesRead,
 )
 from services import billing_tax, offline_fee_billing, stripe_billing, stripe_catalog
 from services.tax_rates import TaxRateMissing, TaxReviewRequired
@@ -699,9 +700,52 @@ async def create_checkout(
         raise HTTPException(status_code=502, detail=_STRIPE_ERROR) from exc
 
 
+async def _quote_plan(db: AsyncSession, studio_id: int) -> StudioBillingPlan:
+    """Строка тарифа, от которой считаются расчёты покупки."""
+    row = await _get_or_create_plan(db, studio_id)
+    if _has_live_subscription(row):
+        # Existing recurring accounts keep their legacy quote semantics until an
+        # explicit migration; create_checkout blocks another prepaid charge.
+        import copy
+        row = copy.copy(row)
+        row.plan_name = await _live_plan_name(row)
+    return row
+
+
+async def _quote(
+    db: AsyncSession, ctx: StudioContext, row: StudioBillingPlan,
+    plan: str, period_months: int, combo: bool, now: datetime | None = None,
+) -> dict:
+    """Расчёт одной пары «ступень × период». ОДИН на одиночный расчёт и на набор
+    страницы тарифа: две копии разошлись бы, и страница обещала бы не ту сумму,
+    которую выставит счёт."""
+    gross = (combo_amount_for if combo else amount_for)(plan, period_months)
+    currency = stripe_billing.CURRENCY.upper()
+
+    # Налог — тем же решением, которым выставится счёт. Ни один платный вызов сюда
+    # не приходит: в ручном режиме считаем сами, в автоматическом честно отвечаем,
+    # что ставку определит страница Stripe.
+    tax_view = await billing_tax.preview(
+        db, ctx.studio_id, "subscription", gross, currency, payer=ctx.user,
+    )
+    from .prepaid import period_window
+    kind, starts, until = period_window(row, plan, period_months, combo, now)
+    return dict(
+        kind=kind, current_plan=row.plan_name if kind != "new" else None,
+        gross=gross, total=gross, currency=currency,
+        tax_outcome=tax_view.outcome,
+        tax_rate_percent=tax_view.rate_percent,
+        tax_amount=tax_view.tax,
+        total_with_tax=tax_view.gross,
+        tax_review_reason=tax_view.review_reason,
+        access_starts_at=starts.replace(tzinfo=timezone.utc).isoformat(),
+        access_until=until.replace(tzinfo=timezone.utc).isoformat(),
+    )
+
+
 @router.get("/checkout/preview", response_model=CheckoutPreviewRead)
-# Каждый вызов — запрос к Stripe. Фронт зовёт его при открытии модалки и при смене
-# тарифа/периода внутри неё, то есть единицы раз, а не потоком.
+# В Stripe ходит только у студии с живой подпиской (_live_plan_name). Зовёт его
+# страница оплаты — по разу на открытие, а не потоком.
 @limiter.limit("30/minute")
 async def preview_checkout(
     request: Request,
@@ -720,39 +764,34 @@ async def preview_checkout(
     после подтверждения оплаты. Тот же оплаченный тариф продлевает остаток.
     """
     _validate(plan, period_months)
-    row = await _get_or_create_plan(db, ctx.studio_id)
+    row = await _quote_plan(db, ctx.studio_id)
     combo = _is_combo(row, combo)
-    gross = (combo_amount_for if combo else amount_for)(plan, period_months)
-    currency = stripe_billing.CURRENCY.upper()
+    return CheckoutPreviewRead(**await _quote(db, ctx, row, plan, period_months, combo))
 
-    # Налог — тем же решением, которым выставится счёт. Ни один платный вызов сюда
-    # не приходит: в ручном режиме считаем сами, в автоматическом честно отвечаем,
-    # что ставку определит страница Stripe.
-    tax_view = await billing_tax.preview(
-        db, ctx.studio_id, "subscription", gross, currency, payer=ctx.user,
-    )
-    tax_fields = dict(
-        tax_outcome=tax_view.outcome,
-        tax_rate_percent=tax_view.rate_percent,
-        tax_amount=tax_view.tax,
-        total_with_tax=tax_view.gross,
-        tax_review_reason=tax_view.review_reason,
-    )
 
-    from .prepaid import period_window
-    if _has_live_subscription(row):
-        # Existing recurring accounts keep their legacy quote semantics until an
-        # explicit migration; create_checkout blocks another prepaid charge.
-        import copy
-        row = copy.copy(row)
-        row.plan_name = await _live_plan_name(row)
-    kind, starts, until = period_window(row, plan, period_months, combo)
-    return CheckoutPreviewRead(
-        kind=kind, current_plan=row.plan_name if kind != "new" else None,
-        gross=gross, total=gross, currency=currency, **tax_fields,
-        access_starts_at=starts.replace(tzinfo=timezone.utc).isoformat(),
-        access_until=until.replace(tzinfo=timezone.utc).isoformat(),
-    )
+@router.get("/checkout/quotes", response_model=CheckoutQuotesRead)
+# Набор на всю страницу тарифа: страница берёт его при открытии (по разу на
+# модель) и дальше на смену места или периода не спрашивает сервер вовсе.
+@limiter.limit("30/minute")
+async def checkout_quotes(
+    request: Request,
+    combo: bool = Query(False),
+    ctx: StudioContext = Depends(require_role("owner")),
+    db: AsyncSession = Depends(get_db),
+):
+    """Расчёты для каждой ступени и каждого периода выбранной модели.
+
+    Тот же `_quote`, что у одиночного расчёта, — суммы совпадают до копейки.
+    Одно «сейчас» на весь набор: иначе даты доступа соседних пар разъезжались
+    бы на время, пока считается набор.
+    """
+    row = await _quote_plan(db, ctx.studio_id)
+    combo = _is_combo(row, combo)
+    now = datetime.utcnow()
+    return CheckoutQuotesRead(quotes=[
+        CheckoutQuoteRead(plan=plan, period_months=months, **await _quote(db, ctx, row, plan, months, combo, now))
+        for plan in PLANS for months in PERIOD_DISCOUNTS
+    ])
 
 
 @router.post("/payment-method/setup", response_model=CheckoutResponse)

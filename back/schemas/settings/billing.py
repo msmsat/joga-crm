@@ -320,5 +320,21 @@ class CheckoutPreviewRead(BaseSchema):
     tax_review_reason: Optional[str] = None
 
 
+class CheckoutQuoteRead(CheckoutPreviewRead):
+    """Расчёт одной пары «ступень × период» из общего набора."""
+    plan: str
+    period_months: int
+
+
+class CheckoutQuotesRead(BaseSchema):
+    """Расчёты для КАЖДОЙ ступени и КАЖДОГО периода одной модели оплаты.
+
+    Страница тарифа держит набор у себя и на смену места или периода берёт
+    готовую сумму. Запрос на каждый клик показывал сначала сумму без налога,
+    а через ответ сервера — с налогом: цифры и раскладка панели прыгали дважды.
+    """
+    quotes: list[CheckoutQuoteRead]
+
+
 class RenewResponse(BaseModel):
     invoice_id: int

@@ -26,6 +26,12 @@ export interface Lesson {
   /** Сколько отмечены «не пришёл» — только по ним сетка рисует неявку:
    *  посещение по умолчанию «пришёл» (back/services/attendance.py). */
   no_show_count?: number
+  /** Сколько записанных ещё должны (долг на месте или неоплаченная карта) —
+   *  только в списке занятий. */
+  unpaid_count?: number
+  /** Клиент индивидуальной записи — только в списке; у группы null. */
+  client_name?: string | null
+  client_color?: string | null
   status: 'confirmed' | 'pending' | 'cancelled'
   level: string | null
   cancel_reason: string | null

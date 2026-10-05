@@ -6,15 +6,16 @@ import ts from 'typescript';
 
 // Exercise the real billing controller and banner; only browser/React boundaries
 // and HTTP responses are replaced so webhook timing is deterministic.
-async function setup({ search = '?payment=return&invoice_id=42', statuses = ['pending'], returnedId = 42 } = {}) {
+async function setup({ search = '?payment=return&invoice_id=42', statuses = ['pending'], returnedId = 42,
+  scope = '', localStorage, catalog = { plans: [], period_discounts: { 1: 0 } }, quotes = { quotes: [] }, loading = [] } = {}) {
   let index = 0, changed = false, latest, now = 0, nextTimer = 1;
-  const state = [], effects = [], timers = new Map(), syncs = [], navigations = [];
+  const state = [], effects = [], timers = new Map(), syncs = [], navigations = [], previews = [];
   const activePlan = { plan_name: 'free_trial', status: 'active', billing_mode: 'subscription',
     expires_at: '2099-01-01T00:00:00Z', has_live_subscription: false, trial_available: false };
   const invoice = status => ({ id: returnedId, plan_name: 's7', period_months: 3, amount: 5445,
     payment_method: 'card', paid_at: status === 'paid' ? '2026-10-03T00:00:00Z' : null,
     status, pdf_url: null });
-  const context = vm.createContext({ console, URLSearchParams,
+  const context = vm.createContext({ console, URLSearchParams, localStorage,
     window: { location: { search, pathname: '/dashboard/billing' },
       history: { replaceState() {} }, addEventListener() {}, removeEventListener() {},
       setTimeout: (callback, delay) => { const id = nextTimer++; timers.set(id, { callback, at: now + delay }); return id; },
@@ -39,20 +40,26 @@ async function setup({ search = '?payment=return&invoice_id=42', statuses = ['pe
     useEffect(callback, deps) { const slot = index++; if (!equal(state[slot]?.deps, deps)) {
       state[slot]?.cleanup?.(); state[slot] = { deps }; effects.push(() => { state[slot].cleanup = callback(); }); } },
   });
-  const qc = { fetchQuery: async () => activePlan, setQueryData() {} };
-  mock('@tanstack/react-query', { useQuery: () => ({ data: activePlan }), useQueryClient: () => qc });
+  const qc = { fetchQuery: async () => activePlan, setQueryData() {}, invalidateQueries() {} };
+  // Ответы кэша по ключу: план, каталог и наборы расчётов (одинаковые для обеих моделей).
+  const cached = { plan: activePlan, plans: catalog, quotes };
+  mock('@tanstack/react-query', { useQuery: ({ queryKey }) => loading.includes(queryKey[1])
+    ? { data: undefined, status: 'pending' } : { data: cached[queryKey[1]], status: 'success' }, useQueryClient: () => qc });
   mock('react-router-dom', { useNavigate: () => path => navigations.push(path) });
   mock('react-i18next', { useTranslation: () => ({ t: (key, values) => key + (values?.plan ? `:${values.plan}` : '') }) });
-  const api = { getPlan: async () => activePlan, getPlans: async () => ({ plans: [], period_discounts: { 1: 0 } }),
+  const api = { getPlan: async () => activePlan, getPlans: async () => catalog,
     getInvoices: async () => ({ items: [invoice('pending')], total: 1, limit: 100, offset: 0 }),
     getPaymentCards: async () => [], getStats: async () => ({ total_spent: 0 }),
+    previewCheckout: async (...args) => { previews.push(args); return null; },
     syncInvoice: async id => { syncs.push(id); const outcome = await statuses[Math.min(syncs.length - 1, statuses.length - 1)];
       if (outcome instanceof Error) throw outcome; return invoice(outcome); } };
   mock('../../../../api/billing/billing.api', { billingApi: api });
   mock('../constants', { DEFAULT_PLAN_ID: 's1', PERIOD_DISCOUNTS_FALLBACK: { 1: 0 } });
   mock('../../../../lib/plan', { planLabel: name => name, planSeats: () => 1 });
   mock('../../../../api/errorMessage', { errorMessage: error => error.message });
-  mock('../../../../api/queryKeys', { queryKeys: { billingPlan: ['billing', 'plan'] } });
+  mock('../../../../api/queryKeys', { queryKeys: { billingPlan: ['billing', 'plan'], billingPlans: ['billing', 'plans'],
+    billingQuotes: combo => ['billing', 'quotes', combo], billingQuotesAll: ['billing', 'quotes'] } });
+  mock('../../../../utils/auth', { getActiveContextKey: () => scope });
   mock('../../../../components/ui/index', { useToast: () => ({ error() {}, success() {} }) });
   mock('../../../lib/plan', { planLabel: name => name });
   mock('../../../utils/legal', { LEGAL_LINK_PROPS: {}, PRIVACY_URL: '/privacy', TERMS_URL: '/terms' });
@@ -70,6 +77,9 @@ async function setup({ search = '?payment=return&invoice_id=42', statuses = ['pe
     await module.link(async name => {
       if (modules.has(name)) return modules.get(name);
       if (name === './usePaymentReturn') return source('hooks/usePaymentReturn.ts');
+      if (name === './useBillingChoice') return source('hooks/useBillingChoice.ts');
+      if (name === './useBillingCatalog') return source('hooks/useBillingCatalog.ts');
+      if (name === './useCheckoutQuotes') return source('hooks/useCheckoutQuotes.ts');
       assert.fail(`Unexpected dependency: ${name}`);
     });
     await module.evaluate(); return module;
@@ -93,7 +103,7 @@ async function setup({ search = '?payment=return&invoice_id=42', statuses = ['pe
     return value && typeof value === 'object' ? strings(value.props?.children) : [];
   }
   await settle();
-  return { syncs, settle, latest: () => latest, text: () => strings(tree).join(' '),
+  return { syncs, previews, settle, latest: () => latest, text: () => strings(tree).join(' '),
     async tick() { const soonest = [...timers.entries()].sort((a, b) => a[1].at - b[1].at)[0];
       if (!soonest) return; timers.delete(soonest[0]); now = soonest[1].at; soonest[1].callback(); await settle(); },
     async manualSync() { await latest.syncInvoice(42); await settle(); },
@@ -220,6 +230,62 @@ test('leaving the page discards late replies and cancels further automatic check
   ui.cleanup(); release('paid'); await ui.settle();
   assert.ok(!ui.text().includes('paymentReturn.done'));
   await ui.tick(); assert.deepEqual(ui.syncs, [42]);
+});
+
+test('the chosen model, seats and period survive leaving the page, per studio', async () => {
+  const saved = new Map();
+  const localStorage = { getItem: key => saved.get(key) ?? null, setItem: (key, value) => saved.set(key, String(value)) };
+  const tier = id => ({ id, price: 1000, limits: { staff: 1, ai_requests: 10 } });
+  const catalog = { plans: [tier('s1'), tier('s12')], period_discounts: { 1: 0, 12: 0.3 } };
+  const open = scope => setup({ search: '', scope, localStorage, catalog });
+  const choice = ui => { const h = ui.latest(); return [h.billingMode, h.selectedPlan, h.selectedPeriod]; };
+
+  const first = await open('7:1:owner');
+  const fresh = choice(first);
+  first.latest().setBillingMode('fixed'); await first.settle();
+  first.latest().setSelectedPlan('s12'); await first.settle();
+  first.latest().setSelectedPeriod(12); await first.settle();
+  first.cleanup();
+
+  const again = await open('7:1:owner');
+  assert.deepEqual(choice(again), ['fixed', 's12', 12]);
+  again.cleanup();
+
+  const otherStudio = await open('8:1:owner');
+  assert.deepEqual(choice(otherStudio), fresh);
+  otherStudio.cleanup();
+
+  // A tier removed from the catalog must not stick: the slider has nowhere to stand.
+  catalog.plans = [tier('s1')];
+  const stale = await open('7:1:owner');
+  assert.equal(stale.latest().billingMode, 'fixed');
+  assert.notEqual(stale.latest().selectedPlan, 's12');
+  stale.cleanup();
+});
+
+test('a seat or period change shows its ready quote with tax at once and asks the server nothing', async () => {
+  const quote = (plan, period_months, total) => ({ plan, period_months, kind: 'new', current_plan: null,
+    gross: total, total, currency: 'EUR', tax_outcome: 'taxable', tax_rate_percent: 21,
+    tax_amount: total * 0.21, total_with_tax: total * 1.21, tax_review_reason: null, free_until: null, free_days: 0 });
+  const tier = id => ({ id, price: 1000, limits: { staff: 1, ai_requests: 10 } });
+  const ui = await setup({ search: '', catalog: { plans: [tier('s1'), tier('s12')], period_discounts: { 1: 0, 12: 0.3 } },
+    quotes: { quotes: [quote('s1', 1, 1000), quote('s12', 1, 6000), quote('s12', 12, 50400)] } });
+  assert.equal(ui.latest().pricingPending, false);
+  ui.latest().setSelectedPlan('s12'); await ui.settle();
+  assert.equal(ui.latest().preview.total_with_tax, 6000 * 1.21);
+  ui.latest().setSelectedPeriod(12); await ui.settle();
+  assert.equal(ui.latest().preview.total_with_tax, 50400 * 1.21);
+  for (let i = 0; i < 5; i++) await ui.tick();
+  assert.deepEqual(ui.previews, [], 'no per-click quote requests');
+  ui.cleanup();
+});
+
+test('until prices and quotes arrive the panel is pending instead of showing a price without tax', async () => {
+  for (const key of ['plans', 'quotes', 'plan']) {
+    const ui = await setup({ search: '', loading: [key] });
+    assert.equal(ui.latest().pricingPending, true, `${key} still loading`);
+    ui.cleanup();
+  }
 });
 async function checkoutReturn(clientSecret = 'cs_secret') {
   const state = [], routes = [], requests = [];

@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import type { Dispatch, SetStateAction } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { BillingMode, PlanType, PlanPeriod, BillingPlan } from '../../types';
 import type { PlanInfo } from '../../hooks/useBillingCalculator';
@@ -17,11 +16,12 @@ interface Props {
   currency?: string;
   payBusy: boolean;
   preview: CheckoutPreview | null;
-  previewBusy: boolean;
+  /** Цены и расчёты ещё едут — панель рисуется заглушкой той же высоты. */
+  pending: boolean;
   billingMode: BillingMode;
-  setBillingMode: Dispatch<SetStateAction<BillingMode>>;
-  // Сеттеры пишут в выбор ТЕКУЩЕЙ модели (useBillingCalculator), поэтому обычные
+  // Сеттеры пишут в запомненный выбор (useBillingChoice), поэтому обычные
   // колбэки, а не Dispatch: updater-форма тут смысла не имеет.
+  setBillingMode: (mode: BillingMode) => void;
   selectedPlan: PlanType;
   setSelectedPlan: (plan: PlanType) => void;
   selectedPeriod: PlanPeriod;
@@ -49,7 +49,7 @@ interface Props {
 }
 
 export default function PlansTab({
-  currency, payBusy, preview, previewBusy,
+  currency, payBusy, preview, pending,
   billingMode, setBillingMode,
   selectedPlan, setSelectedPlan,
   selectedPeriod, setSelectedPeriod,
@@ -208,7 +208,7 @@ export default function PlansTab({
           currency={currency}
           payBusy={payBusy || modelBusy}
           preview={preview}
-          previewBusy={previewBusy}
+          pending={pending}
           selectedPeriod={selectedPeriod}
           setSelectedPeriod={setSelectedPeriod}
           periodDiscounts={periodDiscounts}

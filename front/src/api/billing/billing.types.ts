@@ -242,3 +242,13 @@ export interface CheckoutPreview {
   /** Короткая причина, если решения нет. Показывается вместо итоговой суммы. */
   tax_review_reason: string | null
 }
+
+/** Расчёт одной пары «ступень × период» из общего набора (GET /billing/checkout/quotes). */
+export interface CheckoutQuote extends CheckoutPreview {
+  plan: string
+  period_months: number
+}
+
+export interface CheckoutQuotes {
+  quotes: CheckoutQuote[]
+}

@@ -67,7 +67,7 @@ export default function Billing() {
           startCheckout={h.startCheckout}
           payBusy={h.payBusy}
           preview={h.preview}
-          previewBusy={h.previewBusy}
+          pending={h.pricingPending}
           activateModel={h.activateModel}
           modelBusy={h.modelBusy}
           plan={h.plan}

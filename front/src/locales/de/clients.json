@@ -61,7 +61,9 @@
   },
   "toolbar": {
     "searchPlaceholder": "Kunde suchen...",
-    "addClient": "Kunde hinzufügen"
+    "addClient": "Kunde hinzufügen",
+    "moreFilters": "Mehr",
+    "filters": "Filter"
   },
   "table": {
     "visits": "Besuche",
@@ -288,7 +290,27 @@
         "freeze": "Einfrierungen",
         "completed": "Abgeschlossen"
       },
-      "empty": "Keine Ereignisse"
+      "empty": "Keine Ereignisse",
+      "statuses": {
+        "appointment": {
+          "upcoming": "Bevorstehend",
+          "ongoing": "Läuft",
+          "completed": "Abgeschlossen",
+          "cancelled": "Abgesagt"
+        },
+        "attendance": {
+          "attended": "Gekommen",
+          "missed": "Nicht erschienen",
+          "unknown": "Teilnahme unbestätigt"
+        },
+        "payment": {
+          "paid": "Bezahlt",
+          "unpaid": "Unbezahlt",
+          "subscription": "Abo",
+          "free": "Kostenlos",
+          "unknown": "Zahlung unbekannt"
+        }
+      }
     },
     "notes": {
       "title": "Notizen der Administration",

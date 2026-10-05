@@ -128,6 +128,9 @@ export const queryKeys = {
   billingPlan: ['billing', 'plan'] as const,
   billingOfflineFees: ['billing', 'offlineFees'] as const,
   billingPlans: ['billing', 'plans'] as const,
+  // Расчёты покупки на всю страницу тарифа — по набору на модель (комбо или нет).
+  billingQuotes: (combo: boolean) => ['billing', 'quotes', combo] as const,
+  billingQuotesAll: ['billing', 'quotes'] as const, // префикс: инвалидация обеих моделей
   billingCards: ['billing', 'cards'] as const,
   billingInvoices: (limit: number) => ['billing', 'invoices', limit] as const,
   billingInvoicesAll: ['billing', 'invoices'] as const, // префикс: инвалидация всех limit разом

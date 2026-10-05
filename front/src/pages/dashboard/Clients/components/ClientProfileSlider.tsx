@@ -1,4 +1,8 @@
 import { useState } from 'react';
+import { CircleCheck, Coins, Gift, List, UserCheck, CircleX } from 'lucide-react';
+import { AdaptiveFilters } from './AdaptiveFilters';
+import { ClientEventStatus } from './ClientEventStatus';
+import type { EventFilterTab } from '../types';
 import type { JSX } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { ClientData, EventRecord } from '../types';
@@ -463,6 +467,15 @@ function ClientPanel({ client, onClose, onDelete }: {
       <style>{`
         @keyframes fadeSlide { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
         @keyframes panelSlideIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+        .cl-profile-heading { min-width: 0; flex: 1; }
+        .cl-profile-name { min-width: 0; overflow-wrap: anywhere; }
+        @media (max-height: 720px) {
+          .cl-profile-header { padding: 12px 16px 0 !important; }
+          .cl-profile-identity { margin-bottom: 8px !important; }
+          .cl-profile-avatar, .cl-profile-meta, .cl-profile-id { display: none !important; }
+          .cl-profile-actions { margin-bottom: 8px !important; }
+          .cl-profile-actions .cl-action-btn { flex-direction: row !important; padding: 7px 4px !important; }
+        }
         .cl-contact-link:hover .cl-cv { color: var(--peach) !important; }
         .cl-contact-link:hover .cl-cv-sub { color: var(--peach) !important; opacity: 0.6; }
         .cl-copy-btn:hover { background: rgba(var(--ink),0.06) !important; color: var(--peach) !important; }
@@ -474,17 +487,17 @@ function ClientPanel({ client, onClose, onDelete }: {
       `}</style>
 
       {/* ── HEADER ── */}
-      <div style={{ padding: '20px 20px 0', borderBottom: '1px solid var(--border)', background: 'var(--bg)', flexShrink: 0 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
-          <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-            <ClientAvatar url={client.avatar_url} initials={getInitials(client.name, client.last_name)}
-              style={{ width: '52px', height: '52px', borderRadius: '14px', background: `linear-gradient(135deg,${color},${color}bb)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', fontWeight: 800, color: '#fff', boxShadow: `0 8px 20px -4px ${color}55` }}/>
-            <div>
+      <div className="cl-profile-header" style={{ padding: '20px 20px 0', borderBottom: '1px solid var(--border)', background: 'var(--bg)', flexShrink: 0 }}>
+        <div className="cl-profile-identity" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px', gap: '8px' }}>
+          <div className="cl-profile-heading" style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+            <div className="cl-profile-avatar" style={{flexShrink: 0}}><ClientAvatar url={client.avatar_url} initials={getInitials(client.name, client.last_name)}
+              style={{ width: '52px', height: '52px', borderRadius: '14px', background: `linear-gradient(135deg,${color},${color}bb)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', fontWeight: 800, color: '#fff', boxShadow: `0 8px 20px -4px ${color}55` }}/></div>
+            <div style={{minWidth: 0}}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                <div style={{ fontSize: '16px', fontWeight: 800, color: 'var(--text)', letterSpacing: '-0.3px' }}>{client.name}{client.last_name ? ' ' + client.last_name : ''}</div>
+                <div className="cl-profile-name" style={{ fontSize: '16px', fontWeight: 800, color: 'var(--text)', letterSpacing: '-0.3px' }}>{client.name}{client.last_name ? ' ' + client.last_name : ''}</div>
                 {/* Номер клиента в студии: главный идентификатор — контакты необязательны. */}
                 <button
-                  type="button"
+                  type="button" className="cl-profile-id"
                   onClick={() => actions.copyToClipboard(`#${client.id}`)}
                   title={`#${client.id}${t('panel.contacts.copyHint')}`}
                   style={{ fontSize: '11px', fontWeight: 700, padding: '2px 8px', borderRadius: '20px', border: 'none', background: 'rgba(var(--ink),0.06)', color: 'var(--text2)', cursor: 'pointer', fontFamily: 'Manrope', fontVariantNumeric: 'tabular-nums' }}
@@ -497,7 +510,7 @@ function ClientPanel({ client, onClose, onDelete }: {
                   </span>
                 )}
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px' }}>
+              <div className="cl-profile-meta" style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px' }}>
                 {/* Статус только показываем: он считается из данных (регистрация,
                     визиты, оплаты), пороги правятся в панели «О фильтрах». */}
                 <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 8px', borderRadius: '20px', border: `1px solid ${sc}44`, background: `${sc}18`, color: sc, display: 'flex', alignItems: 'center', gap: '4px', fontFamily: 'Manrope' }}>
@@ -530,13 +543,13 @@ function ClientPanel({ client, onClose, onDelete }: {
               </div>
             </div>
           </div>
-          <button onClick={onClose} style={{ width: '30px', height: '30px', borderRadius: '8px', border: '1px solid var(--border)', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text3)', transition: 'all 0.2s', flexShrink: 0 }} onMouseEnter={e => { e.currentTarget.style.background='rgba(var(--ink),0.06)'; e.currentTarget.style.color='var(--text)'; }} onMouseLeave={e => { e.currentTarget.style.background='transparent'; e.currentTarget.style.color='var(--text3)'; }}>
+          <button aria-label={t('common:buttons.close')} onClick={onClose} style={{ width: '30px', height: '30px', borderRadius: '8px', border: '1px solid var(--border)', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text3)', transition: 'all 0.2s', flexShrink: 0 }} onMouseEnter={e => { e.currentTarget.style.background='rgba(var(--ink),0.06)'; e.currentTarget.style.color='var(--text)'; }} onMouseLeave={e => { e.currentTarget.style.background='transparent'; e.currentTarget.style.color='var(--text3)'; }}>
             <IconClose/>
           </button>
         </div>
 
         {/* ── QUICK ACTIONS ── */}
-        <div style={{ display: 'flex', gap: '6px', marginBottom: '14px' }}>
+        <div className="cl-profile-actions" style={{ display: 'flex', gap: '6px', marginBottom: '14px' }}>
           {/* П.11/12 — WhatsApp (заменяет «Позвонить»/«Сообщение», как на странице Сотрудники) */}
           <button
             className="cl-action-btn"
@@ -760,14 +773,12 @@ function ClientPanel({ client, onClose, onDelete }: {
         {/* П.8 — EVENTS TAB */}
         {activeTab === 'events' && (
           <div style={{ animation: 'fadeSlide 0.2s ease both', minWidth: 0, maxWidth: '100%', overflowX: 'hidden' }}>
-            <div style={{ display: 'flex', gap: '0', marginBottom: '14px', borderBottom: '1px solid var(--border)' }}>
-              {EVENT_FILTER_TABS.map(tab => (
-                <button
-                  key={tab}
-                  onClick={() => actions.setEventFilter(tab)}
-                  style={{ padding: '6px 10px', fontSize: '11px', fontWeight: actions.eventFilter === tab ? 700 : 500, color: actions.eventFilter === tab ? 'var(--peach)' : 'var(--text3)', background: 'transparent', border: 'none', cursor: 'pointer', fontFamily: 'Manrope', borderBottom: `2px solid ${actions.eventFilter === tab ? 'var(--peach)' : 'transparent'}`, marginBottom: '-1px', transition: 'all 0.2s' }}
-                >{t(`panel.events.filterTabs.${tab}`)}</button>
-              ))}
+            <div style={{ marginBottom: '14px', borderBottom: '1px solid var(--border)' }}>
+              <AdaptiveFilters active={actions.eventFilter} onChange={tab => actions.setEventFilter(tab as EventFilterTab)}
+                label={t('panel.tabs.events')} items={EVENT_FILTER_TABS.map(tab => {
+                  const Icon = {all: List, payment: Coins, visit: UserCheck, completed: CircleCheck, cancel: CircleX, bonus: Gift}[tab];
+                  return {key: tab, label: t(`panel.events.filterTabs.${tab}`), icon: <Icon size={15}/>};
+                })}/>
             </div>
 
             {apiEvents.length === 0 && (
@@ -781,7 +792,7 @@ function ClientPanel({ client, onClose, onDelete }: {
                   <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{ev.title}</div>
                   {ev.trainer && <div style={{ fontSize: '11px', color: 'var(--text3)', marginTop: '2px' }}>{ev.trainer}</div>}
                   <ClientEventDates event={ev}/>
-                  {ev.type === 'completed' && <div style={{ fontSize: '10px', color: 'var(--text3)', marginTop: '4px' }}>{t('panel.events.filterTabs.completed')}</div>}
+                  <ClientEventStatus event={ev}/>
                   {ev.notes && <div style={{ fontSize: '12px', whiteSpace: 'pre-wrap', overflowWrap: 'anywhere', marginTop: '8px', lineHeight: 1.6 }}>{ev.notes}</div>}
                   <NotePhotos photos={ev.photos ?? []}/>
 

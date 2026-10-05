@@ -25,6 +25,11 @@ class Rows:
 
 def request(monkeypatch, kind, batches):
     monkeypatch.setattr(profiles, '_get_client_or_404', AsyncMock(return_value=NS(id=2)))
+    if kind in ('visit', 'completed', 'booking', 'cancel'):
+        batches = [[(r, None) for r in rows] for rows in batches]
+        # These tests verify timestamp formatting; freeze classification so old
+        # fixture dates do not move from Booking to Completed as time passes.
+        monkeypatch.setattr(profiles, 'appointment_state', lambda r, studio: 'upcoming' if kind == 'booking' else 'cancelled' if kind == 'cancel' else 'completed')
     db = NS(execute=AsyncMock(side_effect=[Rows(rows) for rows in batches]),
             get=AsyncMock(return_value=NS(tz_iana='Europe/Kyiv', timezone='UTC+3')))
     return asyncio.run(profiles.get_client_events(2, NS(studio_id=3, role='owner'), NS(id=5), db, kind))

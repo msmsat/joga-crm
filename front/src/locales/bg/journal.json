@@ -166,7 +166,15 @@
     "newLessonPreview": "Ново занятие",
     "cancelled": "Отменено",
     "noTrainers": "Няма треньори",
-    "noHalls": "{{spacePlural, capitalize}}: все още няма"
+    "noHalls": "{{spacePlural, capitalize}}: все още няма",
+    "card": {
+      "unpaid": "Неплатено",
+      "paid": "Платено",
+      "unpaidCount": "Неплатили: {{n}}",
+      "missedCount": "Не дойдоха: {{n}}",
+      "cameCount": "Дойдоха {{n}} от {{total}}",
+      "spots": "Записани {{n}} от {{total}}"
+    }
   },
   "createService": "+ Създай услуга",
   "invalidDateFormat": "Невалиден формат на датата",

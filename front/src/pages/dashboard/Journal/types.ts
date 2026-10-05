@@ -32,6 +32,13 @@ export interface Booking {
   attended?: number;
   /** Сколько отмечены «не пришёл» — по ним сетка рисует неявку (utils.isNoShow). */
   noShows?: number;
+  /** Сколько записанных ещё не заплатили. Нет у оптимистичной карточки. */
+  unpaid?: number;
+  /** Мастер занятия «Анна Новикова» — подпись карточки там, где колонка не мастер. */
+  trainerName?: string;
+  /** Клиент индивидуальной записи: карточка подписана им, а не услугой. */
+  clientName?: string;
+  clientColor?: string;
   maxClients: number;
   color: string;
   status: 'confirmed' | 'pending' | 'cancelled';

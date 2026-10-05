@@ -166,7 +166,15 @@
     "newLessonPreview": "Νέο μάθημα",
     "cancelled": "Ακυρωμένο",
     "noTrainers": "Χωρίς εκπαιδευτές",
-    "noHalls": "{{spacePlural, capitalize}}: δεν υπάρχουν ακόμα"
+    "noHalls": "{{spacePlural, capitalize}}: δεν υπάρχουν ακόμα",
+    "card": {
+      "unpaid": "Απλήρωτο",
+      "paid": "Πληρωμένο",
+      "unpaidCount": "Απλήρωτοι: {{n}}",
+      "missedCount": "Δεν ήρθαν: {{n}}",
+      "cameCount": "Ήρθαν {{n}} από {{total}}",
+      "spots": "Κρατήσεις {{n}} από {{total}}"
+    }
   },
   "createService": "+ Δημιουργία υπηρεσίας",
   "invalidDateFormat": "Μη έγκυρη μορφή ημερομηνίας",

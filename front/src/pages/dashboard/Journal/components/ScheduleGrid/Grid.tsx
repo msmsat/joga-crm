@@ -59,9 +59,12 @@ export const Grid: React.FC<GridProps> = ({
 
   // Общее для всех карточек — одним объектом: меняется редко (конец
   // перетаскивания), и только тогда карточки перерисовываются все разом.
+  // Мастера карточка подписывает сама, только когда колонка — не он: в залах и
+  // в неделе на нескольких мастеров. В колонке мастера это был бы повтор шапки.
+  const showMaster = viewMode === 'halls' || (calendarView === 'week' && visibleTrainers.length > 1);
   const actions = useMemo<BookingCardActions>(() => ({
-    canEdit, gestures, wasDragging, initDrag, setPopupBooking, openBookingPopup, showToast, prefetch: prefetchLesson,
-  }), [canEdit, gestures, wasDragging, initDrag, setPopupBooking, openBookingPopup, showToast, prefetchLesson]);
+    canEdit, gestures, showMaster, wasDragging, initDrag, setPopupBooking, openBookingPopup, showToast, prefetch: prefetchLesson,
+  }), [canEdit, gestures, showMaster, wasDragging, initDrag, setPopupBooking, openBookingPopup, showToast, prefetchLesson]);
 
   // Нажатие на пустую клетку решает по СВЕЖИМ данным журнала, но сама функция
   // одна на всё время жизни сетки: иначе каждая клетка перерисовывалась бы на
