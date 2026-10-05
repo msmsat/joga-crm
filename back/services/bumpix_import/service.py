@@ -32,8 +32,10 @@ class Importer:
         return owner
 
     async def _mapping(self, db, export, studio_id, mapping):
-        if not isinstance(mapping, dict) or set(mapping) - {'clients', 'masters', 'services', 'event_masters'}:
-            raise ValueError('Mapping may contain only clients, masters, services and event_masters')
+        if not isinstance(mapping, dict) or set(mapping) - {'clients', 'masters', 'services', 'event_masters', 'accepted_overlaps'}:
+            raise ValueError('Mapping may contain only clients, masters, services, event_masters and accepted_overlaps')
+        if mapping.get('accepted_overlaps') and not self.native:
+            raise ValueError('Accepted schedule overlaps require native import')
         if not isinstance(mapping.get('services', {}), dict):
             raise ValueError('Service mapping must be an object')
         client_map, masters = mapping.get('clients', {}), mapping.get('masters', {})
@@ -189,7 +191,8 @@ class Importer:
             if self.native:
                 from .native_planning import plan_native
                 native_errors, native_counts = await plan_native(db, export, studio_id, mapped,
-                    self.native_options, mapping.get('services', {}), event_masters=overrides)
+                    self.native_options, mapping.get('services', {}), event_masters=overrides,
+                    accepted_overlaps=mapping.get('accepted_overlaps', []))
                 for item in items:
                     item['errors'].extend(native_errors.get(item['source_client_id'], []))
                     item['native_events'] = native_counts.get(item['source_client_id'], {})
@@ -405,7 +408,7 @@ class Importer:
                         mapped = {m['source_master_id']: m['teacher_user_id'] for m in report['masters']}
                         problems, _ = await plan_native(db, export, studio_id, mapped,
                             self.native_options, self._service_decisions, locking=True, client_id=package.client_id,
-                            event_masters=overrides)
+                            event_masters=overrides, accepted_overlaps=(mapping or {}).get('accepted_overlaps', []))
                         if problems.get(package.client_id):
                             raise ValueError('Database changed since preview: ' + '; '.join(problems[package.client_id]))
                     saved = await self._save(db, package, studio_id, account_key, owner.id, client_map, masters, overrides, paths)

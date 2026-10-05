@@ -10,6 +10,7 @@ from .journal import instant
 from .native_catalog import key_for
 from .matching import native_field
 from .native_guards import check_booking_change, check_retirement
+from .schedule_exceptions import validated_acceptances, permits_overlap
 
 
 def appointment_values(source, teacher, timezone_name):
@@ -32,8 +33,10 @@ def appointment_values(source, teacher, timezone_name):
             'notes': str(view.get('comment') or '')}
 
 
-async def plan_native(db, export, studio_id, masters, options, services, *, locking=False, client_id=None, event_masters=None):
+async def plan_native(db, export, studio_id, masters, options, services, *, locking=False, client_id=None, event_masters=None, accepted_overlaps=None):
     event_masters = event_masters or {}
+    accepted = validated_acceptances(export, accepted_overlaps if accepted_overlaps is not None else [],
+                                    masters, event_masters, options.get('timezone'))
     packages = [p for p in export.packages if client_id is None or p.client_id == client_id]
     rows = (await db.execute(select(BumpixEvent, BumpixJournalLink, Lesson, BumpixClient.source_client_id)
         .join(BumpixJournalLink, BumpixJournalLink.event_id == BumpixEvent.id)
@@ -50,6 +53,7 @@ async def plan_native(db, export, studio_id, masters, options, services, *, lock
     members = {m.user_id: m for m in (await db.scalars(select(StudioMember).where(
         StudioMember.studio_id == studio_id, StudioMember.status == 'active'))).all()}
     linked = {event.source_event_id: (link, lesson) for event, link, lesson, _ in rows}
+    source_for_lesson = {lesson.id: event.source_event_id for event, _, lesson, _ in rows if lesson}
     previous_keys = {event.source_event_id: key_for(event.payload) for event, _, _, _ in rows}
     rids = [link.reservation_id for _, link, _, _ in rows if link.reservation_id]
     rq = select(Reservation).where(Reservation.id.in_(rids)).order_by(Reservation.id)
@@ -151,6 +155,9 @@ async def plan_native(db, export, studio_id, masters, options, services, *, lock
                         left = instant(lesson.start_time, lesson_zone) - timedelta(minutes=lesson.buffer_before_min or 0)
                         right = instant(lesson.start_time + timedelta(minutes=lesson.duration_min), lesson_zone) + timedelta(minutes=lesson.buffer_after_min or 0)
                         if start_utc < right and end_utc > left:
+                            if permits_overlap(accepted, eid, (teacher, start_utc, end_utc),
+                                    source_for_lesson.get(lesson.id), (lesson.teacher_id, left, right)):
+                                continue
                             raise ValueError(f'Future appointment overlaps native lesson {lesson.id}')
                     from services import booking_time
                     for block in busy:
@@ -162,9 +169,12 @@ async def plan_native(db, export, studio_id, masters, options, services, *, lock
                                 raise ValueError(f'Staff block {block.id} has unknown timezone')
                         elif start_utc < interval[1].replace(tzinfo=timezone.utc) and end_utc > interval[0].replace(tzinfo=timezone.utc):
                             raise ValueError(f'Future appointment overlaps staff block {block.id}')
-                    if any(mid == teacher and start_utc < stop and end_utc > first for mid, first, stop in batch):
+                    if any(mid == teacher and start_utc < stop and end_utc > first
+                           and not permits_overlap(accepted, eid, (teacher, start_utc, end_utc),
+                                                   other_id, (mid, first, stop))
+                           for mid, first, stop, other_id in batch):
                         raise ValueError('Future source appointments overlap for the same master')
-                    batch.append((teacher, start_utc, end_utc))
+                    batch.append((teacher, start_utc, end_utc, eid))
                 actions.append('update' if eid in linked else 'create')
             except ValueError as exc:
                 problems.append(f'Appointment {eid}: {exc}')

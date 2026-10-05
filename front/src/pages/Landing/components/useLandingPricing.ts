@@ -30,7 +30,10 @@ export function useLandingPricing() {
     queryFn: billingApi.getPlan, enabled: auth.signedIn && auth.owner && auth.hasStudio,
     staleTime: 0, retry: false,
   });
-  // No promotion is promised to an existing payer while eligibility is unknown.
-  const promoAvailable = !auth.signedIn || (auth.owner && auth.hasStudio && eligibility.data?.first_payment_promo_available === true);
+  // Cached eligibility is unverified during a refresh or after a failed request.
+  const promoAvailable = !auth.signedIn || (
+    auth.owner && auth.hasStudio && eligibility.isSuccess && eligibility.fetchStatus === 'idle'
+    && eligibility.data?.first_payment_promo_available === true
+  );
   return { catalog, signedIn: auth.signedIn, promo: promoAvailable ? catalog.data?.first_payment_promo : undefined };
 }

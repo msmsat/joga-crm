@@ -14,11 +14,13 @@ from sqlalchemy import select
 from services.bumpix_import.archive import open_export
 from services.bumpix_import.media import atomic_write
 from services.bumpix_import.staff_mapping import staff_by_service_category
+from services.bumpix_import.schedule_exceptions import acceptance_for
 from scripts.import_bumpix import select_export
 
 ACCOUNT = 'c5f239a251e13cc1712e0818648b5591fd810e5191777db329dc2990499da52e'
 REVIEWED_FINGERPRINT = '1fda50747be940ba3c11977c15971313b62e7aa887b8b96e1bb735421cd8a3ae'
 REVIEWED_CATEGORIES = {'1.1': 'Лазерна епіляція Меліта', '2.4': 'Лазерна епіляція Анастасія'}
+APPROVED_OVERLAP = ('4.3995', '4.4003')  # Owner approved preserving both on 2026-10-06.
 
 
 def validate_reviewed_source(export):
@@ -107,6 +109,12 @@ async def prepare(args, export):
         export, overrides = select_staff_scope(export, overrides, args.limit)
         mapping = {'masters': defaults, 'event_masters': overrides,
                    'clients': {p.client_id: bound.get(p.client_id, 'create') for p in export.packages}}
+        ids = {e['view']['id'] for p in export.packages for e in p.snapshot['events']}
+        if set(APPROVED_OVERLAP) <= ids:
+            # reviewed_plan verified the immutable account/fingerprint above.
+            # Only this confirmed pair, with exact source times and target staff.
+            mapping['accepted_overlaps'] = [acceptance_for(
+                export, APPROVED_OVERLAP, defaults, overrides, 'Europe/Prague')]
         path = Path(args.mapping)
         atomic_write(path.resolve(), (json.dumps(mapping, ensure_ascii=False, indent=2) + '\n').encode('utf-8'))
         path.chmod(0o600)
@@ -141,6 +149,7 @@ async def prepare(args, export):
         print('Preview:', report_path.resolve())
         print('Result:', report['counts'])
         print('Native appointments:', dict(native_counts))
+        print('Preserved source schedule overlaps:', len(mapping.get('accepted_overlaps', [])))
         if report.get('historical_cash'):
             print('Historical cash:', report['historical_cash'])
         print('READY FOR REVIEW' if report['ready'] else 'STOPPED: read preview errors')
