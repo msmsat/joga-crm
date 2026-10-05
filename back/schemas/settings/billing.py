@@ -39,9 +39,15 @@ class PlanRead(BaseSchema):
     limits: PlanLimits
 
 
+class FirstPaymentPromoRead(BaseSchema):
+    code: str
+    percent: float
+
+
 class PlansCatalogRead(BaseSchema):
     """Каталог тарифов — единственный источник истины о ценах и лимитах."""
     plans: list[PlanRead]
+    first_payment_promo: FirstPaymentPromoRead | None = None
     period_discounts: dict[int, float]   # {1: 0, 3: 0.20, 6: 0.25, 12: 0.30}
     # Валюта подписки (BILLING_CURRENCY), а НЕ валюта кассы студии: тарифы всегда
     # списываются в валюте Stripe-аккаунта, чем бы студия ни торговала у себя.
@@ -103,6 +109,7 @@ class BillingPlanRead(BaseSchema):
     # кнопка и эндпоинт разошлись бы, и владелец жал бы то, что вернёт 409.
     # Закрывается первой оплатой и самой выдачей триала, навсегда.
     trial_available: bool = False
+    first_payment_promo_available: bool = False
 
 
 class AutopaySettingsUpdate(BaseModel):
@@ -271,6 +278,11 @@ class CheckoutResponse(BaseModel):
     payer_name: str | None = None
     payer_email: str | None = None
     amount_due: int | None = None
+    promo_code: str | None = None
+    promo_discount_percent: float | None = None
+    promo_discount_amount: int | None = None
+    amount_before_promo: int | None = None
+    net_amount: int | None = None
     tax_amount: int | None = None
     tax_rate_percent: float | None = None
     currency: str | None = None
@@ -289,7 +301,12 @@ class CheckoutPreviewRead(BaseSchema):
     kind: Literal["new", "renewal", "switch"]
     current_plan: Optional[str] = None
     gross: int      # полная цена выбранного тарифа за период
-    total: int      # к оплате сейчас; зачёта нет, поэтому всегда равен gross
+    total: int      # net tariff price after the automatic first-payment promo
+    net_amount: int = 0
+    amount_before_promo: int = 0
+    promo_code: str | None = None
+    promo_discount_percent: float = 0
+    promo_discount_amount: int = 0
     currency: str
     # Legacy response compatibility; prepaid checkout leaves both empty/zero.
     free_until: Optional[str] = None

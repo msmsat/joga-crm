@@ -5,7 +5,7 @@ import logging
 from sqlalchemy.future import select
 
 from models import BillingInvoice, StudioBillingPlan
-from services import stripe_billing
+from services import billing_pricing, stripe_billing
 from .plans import PLANS, PERIOD_DISCOUNTS, COMBO_FIXED, COMBO_PERCENT_RATE
 
 logger = logging.getLogger(__name__)
@@ -39,6 +39,11 @@ def validate_identity(session, invoice, plan):
     valid = valid and (order == session.id or order.startswith('prepaid:'))
     if not valid:
         raise ValueError('Prepaid Checkout does not match the local order')
+    original = getattr(invoice, 'billing_details_snapshot', None) or {}
+    promo = original.get('promo')
+    if promo and any(meta.get(key) != (str(value) if value is not None else '')
+                    for key, value in promo.items()):
+        raise ValueError('Prepaid promotion does not match the order snapshot')
     return meta
 
 
@@ -56,6 +61,13 @@ def validate_session(session, invoice, plan):
     if invoice.tax_amount is not None and tax != invoice.tax_amount:
         raise ValueError('Prepaid tax does not match the tax snapshot')
     return tax, meta['billing_mode']
+
+
+async def validate_promo_redemption(db, invoice, plan):
+    original = getattr(invoice, 'billing_details_snapshot', None) or {}
+    if original.get('promo', {}).get('promo_code') == billing_pricing.PROMO_CODE:
+        if not await billing_pricing.first_payment_available(db, plan, excluding_invoice_id=invoice.id):
+            raise ValueError('First payment promotion was already used')
 
 
 async def _record_paid_payment(db, invoice, session, tax, *, paid_at, now,
@@ -95,14 +107,21 @@ async def handle_session(db, event_type, obj, *, now=None, event_created=None):
         invoice_id = int(meta['invoice_id'])
     except (KeyError, TypeError, ValueError) as exc:
         raise ValueError('Prepaid Session has no valid local order') from exc
+    try:
+        studio_id = int(meta['studio_id'])
+    except (KeyError, TypeError, ValueError) as exc:
+        raise ValueError('Prepaid Session has no valid studio') from exc
+    # All first-payment transitions take plan -> invoice locks. Checkout holds
+    # the plan lock while reconciling an earlier Session; reverse order here
+    # would deadlock with its paid webhook.
+    plan = (await db.execute(select(StudioBillingPlan).where(
+        StudioBillingPlan.studio_id == studio_id,
+    ).with_for_update().execution_options(populate_existing=True))).scalar_one_or_none()
     invoice = (await db.execute(select(BillingInvoice).where(
         BillingInvoice.id == invoice_id,
     ).with_for_update().execution_options(populate_existing=True))).scalar_one_or_none()
     if invoice is None:
         raise ValueError('Prepaid local order was not persisted')
-    plan = (await db.execute(select(StudioBillingPlan).where(
-        StudioBillingPlan.studio_id == invoice.studio_id,
-    ).with_for_update().execution_options(populate_existing=True))).scalar_one_or_none()
     if plan is None:
         raise ValueError('Prepaid order has no studio plan')
     validate_identity(session, invoice, plan)
@@ -132,6 +151,7 @@ async def handle_session(db, event_type, obj, *, now=None, event_created=None):
             await db.commit()
         return False
     tax, mode = validate_session(session, invoice, plan)
+    await validate_promo_redemption(db, invoice, plan)
     if plan.stripe_subscription_id:
         raise ValueError('Recurring subscription must be migrated before prepaid activation')
     from .prepaid import period_window
@@ -185,6 +205,9 @@ async def order_for_payment(db, intent_id, charge_id):
 
 async def reverse_prepaid(db, invoice, *, refunded_at=None, fiscal_reason=None):
     """A full refund/lost dispute reverses the ledger and paid access once."""
+    plan = (await db.execute(select(StudioBillingPlan).where(
+        StudioBillingPlan.studio_id == invoice.studio_id,
+    ).with_for_update().execution_options(populate_existing=True))).scalar_one_or_none()
     invoice = (await db.execute(select(BillingInvoice).where(
         BillingInvoice.id == invoice.id,
     ).with_for_update().execution_options(populate_existing=True))).scalar_one_or_none()
@@ -196,9 +219,6 @@ async def reverse_prepaid(db, invoice, *, refunded_at=None, fiscal_reason=None):
             await queue_correction(db, invoice, refunded_at=refunded_at, reason=fiscal_reason)
             await db.commit()
         return False
-    plan = (await db.execute(select(StudioBillingPlan).where(
-        StudioBillingPlan.studio_id == invoice.studio_id,
-    ).with_for_update().execution_options(populate_existing=True))).scalar_one_or_none()
     access_was_granted = invoice.status == 'paid'
     if not access_was_granted:
         # Stripe can deliver a full refund/lost dispute before the paid event.
@@ -209,6 +229,7 @@ async def reverse_prepaid(db, invoice, *, refunded_at=None, fiscal_reason=None):
         if getattr(session, 'payment_status', None) != 'paid':
             raise ValueError('Prepaid reversal has no confirmed paid Session')
         tax, _mode = validate_session(session, invoice, plan)
+        await validate_promo_redemption(db, invoice, plan)
         from services.billing_payment_dates import received_at
         paid_at = await received_at(session)
         await _record_paid_payment(db, invoice, session, tax, paid_at=paid_at,

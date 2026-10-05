@@ -398,6 +398,16 @@
     },
     "registrationNumber": "Business ID: {{number}}"
   },
+  "promo": {
+    "title": "Pierwsza płatność",
+    "applied": "Zastosowano automatycznie",
+    "description": "Na stałą kwotę planu po rabacie za okres.",
+    "priceLabel": "Cena pierwszego okresu",
+    "combinedDiscount": "Łącznie −{{percent}}%",
+    "nextPurchase": "Kolejny zakup w obecnych cenach: {{amount}} / mies. bez VAT.",
+    "savings": "Rabat na pierwszą płatność · {{percent}}%",
+    "discountedNet": "Po rabatach"
+  },
   "checkout": {
     "secureStripe": "Płatności przez Stripe",
     "back": "Back to plans",

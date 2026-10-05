@@ -405,6 +405,9 @@ async def update_operation(
     )).scalar_one_or_none()
     if op is None:
         raise HTTPException(status_code=404, detail="Операция не найдена")
+    from services.bumpix_import.historical_cash import linked_receipt_operation
+    if await linked_receipt_operation(db, ctx.studio_id, op.id):
+        raise HTTPException(status_code=409, detail="Ця оплата пов’язана з історією відвідування. Потрібне узгоджене виправлення запису та оплати.")
 
     fields = body.model_dump(exclude_unset=True)
 
@@ -474,6 +477,9 @@ async def delete_operation(
     )).scalar_one_or_none()
     if op is None:
         raise HTTPException(status_code=404, detail="Операция не найдена")
+    from services.bumpix_import.historical_cash import linked_receipt_operation
+    if await linked_receipt_operation(db, ctx.studio_id, op.id):
+        raise HTTPException(status_code=409, detail="Ця оплата пов’язана з історією відвідування. Потрібне узгоджене виправлення запису та оплати.")
 
     if op.account_id is not None:
         account = (await db.execute(

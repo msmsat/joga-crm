@@ -90,11 +90,16 @@ function SessionPayment(props: Props) {
     submit: () => { void confirm(); }, busy,
     ready: result.type === 'success' && result.checkout.canConfirm && hasPayableTotal(result.checkout.total.total.minorUnitsAmount),
     error: result.type === 'error' ? result.error.message : error,
-    net: result.type === 'success' ? result.checkout.total.subtotal.minorUnitsAmount : null,
+    net: result.type === 'success' ? result.checkout.total.subtotal.minorUnitsAmount - result.checkout.total.discount.minorUnitsAmount
+      : props.session.net_amount ?? null,
+    amount_before_promo: props.session.amount_before_promo,
+    promo_discount_amount: props.session.promo_discount_amount,
+    promo_discount_percent: props.session.promo_discount_percent,
+    promo_code: props.session.promo_code,
     taxRate: result.type === 'success' && result.checkout.tax.status === 'ready' ? uniformTaxRate(result.checkout.taxAmounts) : null,
-    total: result.type === 'success' ? result.checkout.total.total.minorUnitsAmount : null,
+    total: result.type === 'success' ? result.checkout.total.total.minorUnitsAmount : props.session.amount_due ?? null,
     tax: result.type === 'success' && result.checkout.tax.status === 'ready'
-      ? result.checkout.total.taxExclusive.minorUnitsAmount + result.checkout.total.taxInclusive.minorUnitsAmount : null,
+      ? result.checkout.total.taxExclusive.minorUnitsAmount + result.checkout.total.taxInclusive.minorUnitsAmount : props.session.tax_amount ?? null,
   }}>{props.children}</PaymentContext.Provider>;
 }
 
@@ -144,6 +149,10 @@ function InvoicePayment(props: Props) {
     net: props.session.amount_due != null && props.session.tax_amount != null
       ? props.session.amount_due - props.session.tax_amount : null,
     taxRate: props.session.tax_rate_percent ?? null,
+    amount_before_promo: props.session.amount_before_promo,
+    promo_discount_amount: props.session.promo_discount_amount,
+    promo_discount_percent: props.session.promo_discount_percent,
+    promo_code: props.session.promo_code,
   }}>{props.children}</PaymentContext.Provider>;
 }
 

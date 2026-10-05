@@ -396,6 +396,16 @@
     },
     "registrationNumber": "Business ID: {{number}}"
   },
+  "promo": {
+    "title": "Første betaling",
+    "applied": "Brukes automatisk",
+    "description": "På abonnementets faste beløp etter perioderabatten.",
+    "priceLabel": "Pris for første periode",
+    "combinedDiscount": "−{{percent}}% totalt",
+    "nextPurchase": "Neste kjøp til dagens priser: {{amount}} / måned ekskl. mva.",
+    "savings": "Rabatt på første betaling · {{percent}}%",
+    "discountedNet": "Etter rabatter"
+  },
   "checkout": {
     "secureStripe": "Betalinger via Stripe",
     "back": "Back to plans",

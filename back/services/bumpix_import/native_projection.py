@@ -107,6 +107,12 @@ async def synchronize_native(db, binding, client, events, photos, options, decis
         imported_reservation = reservation.booking_channel in ('import', 'bumpix') and not has_financial_state(reservation)
         desired_status = 'cancelled' if proposed['status'] == 'cancelled' else 'active'
         ended_at = event.end_time.replace(tzinfo=ZoneInfo(options['timezone'])).astimezone(timezone.utc)
+        # Keep the explicitly confirmed historical attendance on later ordinary
+        # imports. Manual no-show/cancellation remains authoritative.
+        if (old_values.get('historical_cash') and event.status == 'completed'
+                and ended_at <= datetime.now(timezone.utc) and not reservation.no_show
+                and desired_status != 'cancelled'):
+            desired_status = 'attended'
         desired_closed = ended_at.replace(tzinfo=None) if ended_at <= datetime.now(timezone.utc) or event.status != 'new' else None
         if imported_reservation:
             old_status = old_values.get('reservation_status', 'active')
@@ -144,6 +150,6 @@ async def synchronize_native(db, binding, client, events, photos, options, decis
             db.add(note)
             await db.flush()
             link.note_id = note.id
-        link.managed_values = {'lesson': proposed, 'note': {'text': note_text, 'photos': photo_refs}, 'note_created': True,
+        link.managed_values = {**old_values, 'lesson': proposed, 'note': {'text': note_text, 'photos': photo_refs}, 'note_created': True,
             'reservation_status': desired_status, 'reservation_closed_at': native_field(desired_closed)}
     await db.flush()

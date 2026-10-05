@@ -26,6 +26,9 @@ function invoiceQuery(params?: InvoiceListParams): string {
 }
 
 export const billingApi = {
+  getPublicPlans: () =>
+    client.get<PlansCatalog>('/billing/plans/public', { auth: false }),
+
   getPlans: () =>
     client.get<PlansCatalog>('/billing/plans'),
 

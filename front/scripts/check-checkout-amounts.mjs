@@ -102,3 +102,49 @@ test('Russian checkout copy names VAT and one-time access without an automatic n
   const source = await readFile(new URL('../src/pages/dashboard/Billing/components/checkout/CheckoutSummary.tsx', import.meta.url), 'utf8');
   assert.ok(!source.includes('free_until') && !source.includes('nextCharge') && !source.includes('confirmSubscription'));
 });
+
+test('first-payment receipt preserves the period amount and shows the automatic promotion before VAT', () => {
+  const amounts = checkoutAmounts(quote({ gross: 3600, amount_before_promo: 3600,
+    promo_code: 'WELCOME30', promo_discount_percent: 30, promo_discount_amount: 1080,
+    total: 2520, tax_amount: 529, total_with_tax: 3049 }));
+  assert.equal(amounts.amountBeforePromo, 3600);
+  assert.equal(amounts.promoDiscount, 1080);
+  assert.equal(amounts.promoPercent, 30);
+  assert.equal(amounts.promoCode, 'WELCOME30');
+  assert.equal(amounts.net, 2520);
+  assert.equal(amounts.tax, 529);
+  assert.equal(amounts.total, 3049);
+});
+
+test('a prepared payment replaces an expired first-payment offer in a stale quote', () => {
+  const amounts = checkoutAmounts(quote({ gross: 3600, amount_before_promo: 3600,
+    promo_code: 'WELCOME30', promo_discount_percent: 30, promo_discount_amount: 1080,
+    total: 2520, tax_amount: 529, total_with_tax: 3049 }), {
+    net: 3600, total: 4356, tax: 756, taxRate: 21,
+    amount_before_promo: 3600, promo_code: null, promo_discount_percent: 0, promo_discount_amount: 0,
+  });
+  assert.equal(amounts.promoDiscount, 0);
+  assert.equal(amounts.promoCode, null);
+  assert.equal(amounts.amountBeforePromo, 3600);
+  assert.equal(amounts.net, 3600);
+  assert.equal(amounts.total, 4356);
+});
+
+test('a prepared payment with confirmed tax supersedes an earlier tax-review quote', () => {
+  const amounts = checkoutAmounts(quote({ tax_outcome: 'requires_review' }), {
+    net: 4500, total: 5445, tax: 945, taxRate: 21,
+  });
+  assert.equal(amounts.requiresReview, false);
+  assert.equal(amounts.taxKnown, true);
+  assert.equal(amounts.total, 5445);
+});
+
+test('a payment with a changed net never borrows promotional savings from an older quote', () => {
+  const amounts = checkoutAmounts(quote({ gross: 3600, amount_before_promo: 3600,
+    promo_code: 'WELCOME30', promo_discount_percent: 30, promo_discount_amount: 1080,
+    total: 2520, tax_amount: 529, total_with_tax: 3049 }), {
+    net: 3600, total: 4356, tax: 756, taxRate: 21,
+  });
+  assert.equal(amounts.promoDiscount, 0);
+  assert.equal(amounts.promoCode, null);
+});

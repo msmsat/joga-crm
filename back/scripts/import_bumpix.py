@@ -24,6 +24,8 @@ def parser():
     p.add_argument('--mapping', help='JSON with explicit clients, masters, event_masters and services mappings')
     p.add_argument('--timezone', help='Confirmed source IANA timezone; must match target studio')
     p.add_argument('--currency', help='Confirmed source currency; must match target studio')
+    p.add_argument('--historical-cash', action='store_true',
+                   help='Owner-confirmed past completed visits: attended, paid cash at source amount/date')
     p.add_argument('--storage-root', default='uploads', help='Persistent private root, same as API BUMPIX_STORAGE_ROOT')
     p.add_argument('--report', help='Private JSON report path')
     return p
@@ -49,7 +51,8 @@ async def database_run(export, args, mapping):
     from database import async_session_maker, engine
     from services.bumpix_import.service import Importer
     importer = Importer(async_session_maker, Path(args.storage_root).resolve(), native=True,
-        native_options={'timezone': args.timezone, 'currency': args.currency})
+        native_options={'timezone': args.timezone, 'currency': args.currency,
+                        'historical_cash': args.historical_cash})
     try:
         if args.apply:
             return await importer.apply(export, args.studio_id, args.owner_email, args.account_key, mapping,
@@ -88,6 +91,8 @@ def main(argv=None):
         print('Report:', report_path.resolve())
         print('Source account key:', report['account_key'])
         print('Result:', report.get('counts', {k: report[k] for k in ('clients', 'events', 'photos') if k in report}))
+        if report.get('historical_cash'):
+            print('Historical cash:', report.get('historical_cash_applied', report['historical_cash']))
         if report.get('unmapped_masters'):
             print('Masters retained by source ID; not assigned to CRM staff:', ', '.join(report['unmapped_masters']))
         good = report['complete'] if args.apply or args.verify_only else report['ready']

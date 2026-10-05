@@ -221,8 +221,8 @@
   },
   "pricing": {
     "label": "precios",
-    "title": "Tu plan depende\ndel tamaño de tu equipo",
-    "lead": "20 € para una persona, 30 € para dos personas, +5 € por cada plaza adicional, ilimitado: 150 €. Los 16 módulos y Velora AI están en todos los niveles: pagas por el tamaño de tu equipo, no por desbloquear botones. Elige entre tres modelos de pago y consigue hasta un 30 % de descuento al pagar por adelantado.",
+    "title": "Tu estudio.\nTu forma de pagar.",
+    "lead": "Una tarifa fija, un porcentaje de las ventas o ambos. Todos los módulos están incluidos; el tamaño del equipo determina solo la parte fija.",
     "team": "equipo",
     "seats_one": "persona",
     "seats_other": "personas",
@@ -267,7 +267,36 @@
         "desc": "La mitad de la suscripción más un pequeño porcentaje: un punto medio entre ambos modelos."
       }
     ],
-    "footnote": "La prueba no requiere tarjeta. El modelo de pago y el número de plazas se pueden cambiar en la aplicación en cualquier momento. Los precios no incluyen IVA: el impuesto se calcula al pagar según tu país."
+    "footnote": "La prueba no requiere tarjeta. El modelo de pago y el número de plazas se pueden cambiar en la aplicación en cualquier momento. Los precios no incluyen IVA: el impuesto se calcula al pagar según tu país.",
+    "choiceLabel": "Elige cómo pagar",
+    "promoTitle": "{{percent}} % de descuento en el primer pago del plan",
+    "promoApplied": "{{code}} se aplica automáticamente",
+    "promoDetail": "Después del descuento por período. Solo en la parte fija; la comisión por ventas no cambia.",
+    "firstPayment": "Primer pago por {{period}}",
+    "regularPayment": "Próxima compra por {{period}}",
+    "periodSaving": "Descuento por período −{{percent}} %",
+    "promoSaving": "{{code}} −{{percent}} %",
+    "variableFee": "Más el {{rate}} % de las ventas del estudio",
+    "minimum": "Mínimo {{amount}} al mes",
+    "percentDetail": "{{rate}} % de cada venta, incluido el efectivo. Al final del mes solo pagas la diferencia hasta el mínimo.",
+    "unlimitedTeam": "Personal ilimitado",
+    "percentPromo": "Este modelo no tiene pago anticipado. {{code}} se aplica a la primera compra de un plan con parte fija.",
+    "taxNote": "Sin IVA. El impuesto se calcula al pagar.",
+    "noAutoRenewal": "Un pago, sin renovación automática.",
+    "choosePaid": "Elegir plan",
+    "catalogHint": "{{solo}} para una persona, {{two}} para dos, después +{{step}} por plaza.",
+    "loadError": "Los precios no están disponibles temporalmente.",
+    "retry": "Recargar precios",
+    "fromPrice": "desde {{amount}}",
+    "paymentModels": {
+      "subscription": "Tarifa fija",
+      "percent": "Porcentaje",
+      "combo": "Combinado",
+      "fixedDescription": "Paga el período elegido por adelantado. El precio depende del tamaño del equipo.",
+      "ofSales": "de las ventas",
+      "percentDescription": "Sin pago anticipado. Mínimo {{amount}} al mes.",
+      "comboDescription": "La mitad de la tarifa fija mensual más un porcentaje de cada venta."
+    }
   },
   "faq": {
     "label": "preguntas",

@@ -398,6 +398,16 @@
     },
     "registrationNumber": "Business ID: {{number}}"
   },
+  "promo": {
+    "title": "Prima plată",
+    "applied": "Aplicată automat",
+    "description": "La suma fixă a planului, după reducerea pentru perioadă.",
+    "priceLabel": "Prețul primei perioade",
+    "combinedDiscount": "−{{percent}}% în total",
+    "nextPurchase": "Următoarea achiziție la prețurile actuale: {{amount}} / lună fără TVA.",
+    "savings": "Reducere la prima plată · {{percent}}%",
+    "discountedNet": "După reduceri"
+  },
   "checkout": {
     "secureStripe": "Plăți prin Stripe",
     "back": "Back to plans",

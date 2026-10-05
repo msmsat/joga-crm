@@ -396,6 +396,16 @@
     },
     "registrationNumber": "Business ID: {{number}}"
   },
+  "promo": {
+    "title": "Ensimmäinen maksu",
+    "applied": "Käytössä automaattisesti",
+    "description": "Paketin kiinteästä hinnasta kausialennuksen jälkeen.",
+    "priceLabel": "Ensimmäisen kauden hinta",
+    "combinedDiscount": "Yhteensä −{{percent}}%",
+    "nextPurchase": "Seuraava osto nykyhinnoin: {{amount}} / kuukausi ilman ALV:tä.",
+    "savings": "Ensimmäisen maksun alennus · {{percent}}%",
+    "discountedNet": "Alennusten jälkeen"
+  },
   "checkout": {
     "secureStripe": "Maksut Stripen kautta",
     "back": "Back to plans",

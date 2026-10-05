@@ -29,7 +29,7 @@ from schemas.settings.billing import (
     CheckoutRequest, CheckoutResponse, CheckoutPreviewRead, BillingProfileRead,
     CheckoutQuoteRead, CheckoutQuotesRead,
 )
-from services import billing_tax, offline_fee_billing, stripe_billing, stripe_catalog
+from services import billing_pricing, billing_tax, offline_fee_billing, stripe_billing, stripe_catalog
 from services.tax_rates import TaxRateMissing, TaxReviewRequired
 from .plans import (
     PLANS, PERIOD_DISCOUNTS, COMBO_PERCENT_RATE, amount_for, combo_amount_for, tier,
@@ -715,24 +715,28 @@ async def _quote_plan(db: AsyncSession, studio_id: int) -> StudioBillingPlan:
 async def _quote(
     db: AsyncSession, ctx: StudioContext, row: StudioBillingPlan,
     plan: str, period_months: int, combo: bool, now: datetime | None = None,
+    *, promo_available: bool | None = None,
 ) -> dict:
     """Расчёт одной пары «ступень × период». ОДИН на одиночный расчёт и на набор
     страницы тарифа: две копии разошлись бы, и страница обещала бы не ту сумму,
     которую выставит счёт."""
-    gross = (combo_amount_for if combo else amount_for)(plan, period_months)
+    if promo_available is None:
+        promo_available = await billing_pricing.first_payment_available(db, row)
+    price = billing_pricing.period_price(plan, period_months, combo, promo_available)
     currency = stripe_billing.CURRENCY.upper()
 
     # Налог — тем же решением, которым выставится счёт. Ни один платный вызов сюда
     # не приходит: в ручном режиме считаем сами, в автоматическом честно отвечаем,
     # что ставку определит страница Stripe.
     tax_view = await billing_tax.preview(
-        db, ctx.studio_id, "subscription", gross, currency, payer=ctx.user,
+        db, ctx.studio_id, "subscription", price.net_amount, currency, payer=ctx.user,
     )
     from .prepaid import period_window
     kind, starts, until = period_window(row, plan, period_months, combo, now)
     return dict(
         kind=kind, current_plan=row.plan_name if kind != "new" else None,
-        gross=gross, total=gross, currency=currency,
+        gross=price.amount_before_promo, total=price.net_amount, currency=currency,
+        **price.fields(),
         tax_outcome=tax_view.outcome,
         tax_rate_percent=tax_view.rate_percent,
         tax_amount=tax_view.tax,
@@ -788,8 +792,9 @@ async def checkout_quotes(
     row = await _quote_plan(db, ctx.studio_id)
     combo = _is_combo(row, combo)
     now = datetime.utcnow()
+    promo_available = await billing_pricing.first_payment_available(db, row)
     return CheckoutQuotesRead(quotes=[
-        CheckoutQuoteRead(plan=plan, period_months=months, **await _quote(db, ctx, row, plan, months, combo, now))
+        CheckoutQuoteRead(plan=plan, period_months=months, **await _quote(db, ctx, row, plan, months, combo, now, promo_available=promo_available))
         for plan in PLANS for months in PERIOD_DISCOUNTS
     ])
 

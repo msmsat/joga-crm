@@ -75,6 +75,7 @@
 .receiptRow { display: flex; justify-content: space-between; gap: 12px; font-size: 11px; line-height: 1.6; color: #a8978a; margin-bottom: 12px; }
 .receiptRow > strong { font-weight: 500; color: #dbd1c9; white-space: nowrap; }
 .receiptRow > span:last-child { text-align: right; }
+.receiptPromo > span, .receiptPromo > strong { color: var(--peach); }
 .total { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-top: 19px;
   padding-top: 17px; border-top: 1px solid #ffffff0a; font-size: 12px; color: #c9bdb4; }
 .total strong { font-size: 28px; font-weight: 600; letter-spacing: -.9px; color: #f7eee8; white-space: nowrap; }

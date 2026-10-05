@@ -5,7 +5,6 @@ import { useDurationLabel } from '../../../../hooks/useDurationLabel';
 import { checkoutApi } from '../../../../api/checkout';
 import type { CheckoutProductType, CheckoutSessionResult } from '../../../../api/checkout';
 import { StripeCheckoutModal } from './modals/StripeCheckoutModal';
-import { financesApi } from '../../../../api/finances/finances.api';
 import { errorMessage } from '../../../../api/errorMessage';
 import { queryKeys } from '../../../../api/queryKeys';
 import { Button, Card, Input, ConfirmModal, InfoHint, Select, Switch, useToast } from '../../../../components/ui/index';
@@ -78,16 +77,9 @@ export function WalletPOS({ clientId, productId, productType, onBack, onPaid }: 
     }),
   });
 
-  const { data: accounts = [] } = useQuery({
-    queryKey: queryKeys.finAccounts,
-    queryFn: () => financesApi.getAccounts(),
-  });
-  // Счетов нет → account_id не шлём, бэк сам создаст «Основная касса» (V5-6, 2.1).
-  const cashAccount = accounts.find(a => a.type === 'cash') ?? accounts[0];
-  // Оплата картой на счёт кассы НЕ ложится: онлайн-деньги приходят выплатой от
-  // Stripe, а наличные пересчитываются в кассе — на одном счёте не сходится ни
-  // один из двух остатков. Счёт для карты выбирает бэк (resolve_account →
-  // default_type="online"), поэтому здесь его просто не шлём.
+  // Кассир здесь не выбирает счёт: сервер определяет кассу по способу оплаты
+  // и исключает исторические счета. Первый счёт в списке может хранить только
+  // старую выручку и не должен автоматически получать новые продажи.
   // Пока мастер не выбран, у услуги нет одной цены: сервер посчитал расчёт
   // предварительно по Каталогу, а по этой цене, возможно, не работает никто.
   // Показать её кассиру — назвать клиенту не ту сумму, поэтому разбивку и итог
@@ -106,7 +98,6 @@ export function WalletPOS({ clientId, productId, productType, onBack, onPaid }: 
   const payload = {
     client_id: clientId, product_id: productId, product_type: productType,
     teacher_id: teacherId,
-    account_id: viaStripe ? undefined : cashAccount?.id,
     promo_code: promoCode || undefined,
     use_bonuses: useBonuses, use_deposit: useDeposit, certificate_code: certCode || undefined,
   };

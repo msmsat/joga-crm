@@ -221,8 +221,8 @@
   },
   "pricing": {
     "label": "priser",
-    "title": "Din plan afhænger\naf dit teams størrelse",
-    "lead": "20 € for én person, 30 € for to personer, +5 € for hver næste plads, ubegrænset — 150 €. Alle 16 moduler og Velora AI er med på alle niveauer: Du betaler for teamets størrelse, ikke for at låse knapper op. Vælg mellem tre betalingsmodeller og få op til 30 % rabat ved forudbetaling.",
+    "title": "Dit studie.\nDin måde at betale på.",
+    "lead": "En fast pris, en andel af salget eller begge dele. Alle moduler er inkluderet; teamets størrelse bestemmer kun den faste del.",
     "team": "team",
     "seats_one": "person",
     "seats_other": "personer",
@@ -267,7 +267,36 @@
         "desc": "Halvdelen af abonnementet plus en lille procentdel — en mellemvej mellem de to modeller."
       }
     ],
-    "footnote": "Prøveperioden kræver intet kort. Betalingsmodel og antal pladser kan ændres i appen når som helst. Priser er ekskl. moms: skat beregnes ved betaling for dit land."
+    "footnote": "Prøveperioden kræver intet kort. Betalingsmodel og antal pladser kan ændres i appen når som helst. Priser er ekskl. moms: skat beregnes ved betaling for dit land.",
+    "choiceLabel": "Vælg betalingsmodel",
+    "promoTitle": "{{percent}} % rabat på din første tarifbetaling",
+    "promoApplied": "{{code}} anvendes automatisk",
+    "promoDetail": "Efter perioderabatten. Kun på den faste del; salgsprovisionen ændres ikke.",
+    "firstPayment": "Første betaling for {{period}}",
+    "regularPayment": "Næste køb for {{period}}",
+    "periodSaving": "Perioderabat −{{percent}} %",
+    "promoSaving": "{{code}} −{{percent}} %",
+    "variableFee": "Plus {{rate}} % af studiets salg",
+    "minimum": "Mindst {{amount}} om måneden",
+    "percentDetail": "{{rate}} % af hvert salg, også kontant. Ved månedens slutning betaler du kun forskellen op til minimumsbeløbet.",
+    "unlimitedTeam": "Ubegrænset antal medarbejdere",
+    "percentPromo": "Denne model har ingen forudbetaling. {{code}} gælder dit første tarifkøb med en fast del.",
+    "taxNote": "Ekskl. moms. Skat beregnes ved betaling.",
+    "noAutoRenewal": "Én betaling uden automatisk fornyelse.",
+    "choosePaid": "Vælg tarif",
+    "catalogHint": "{{solo}} for én, {{two}} for to, derefter +{{step}} pr. plads.",
+    "loadError": "Priserne er midlertidigt utilgængelige.",
+    "retry": "Genindlæs priser",
+    "fromPrice": "fra {{amount}}",
+    "paymentModels": {
+      "subscription": "Fast pris",
+      "percent": "Procent",
+      "combo": "Kombi",
+      "fixedDescription": "Betal forud for den valgte periode. Prisen afhænger af teamets størrelse.",
+      "ofSales": "af salget",
+      "percentDescription": "Ingen forudbetaling. Mindst {{amount}} om måneden.",
+      "comboDescription": "Halvdelen af den faste månedspris plus en andel af hvert salg."
+    }
   },
   "faq": {
     "label": "spørgsmål",

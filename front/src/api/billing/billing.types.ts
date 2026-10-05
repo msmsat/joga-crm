@@ -15,6 +15,7 @@ export interface Plan {
 
 export interface PlansCatalog {
   plans: Plan[]
+  first_payment_promo?: { code: string; percent: number }
   period_discounts: Record<number, number>   // {1: 0, 3: 0.15, 6: 0.25, 12: 0.40}
   currency: string                           // валюта подписки (EUR), не валюта кассы студии
   // Минимальный месячный платёж тарифа «только процент», в копейках. Месяц, в
@@ -64,6 +65,8 @@ export interface BillingPlan {
    *  Stripe уводит статус в pending/expired ещё до всякой оплаты, и кнопка
    *  пропадала у того, кто просто открыл оформление и передумал. */
   trial_available: boolean
+  /** Single-use welcome discount eligibility, determined per studio by the server. */
+  first_payment_promo_available: boolean
 }
 
 /** Длина пробного периода в днях — только для текста «N дней бесплатно».
@@ -190,6 +193,12 @@ export interface CheckoutRequest {
 }
 
 export interface CheckoutResponse {
+  /** Authoritative prepared purchase breakdown; absent on legacy/setup paths. */
+  promo_code?: string | null
+  promo_discount_percent?: number | null
+  promo_discount_amount?: number | null
+  amount_before_promo?: number | null
+  net_amount?: number | null
   /** Identifies the exact owner invoice to reconcile after payment. */
   invoice_id: number | null
   /** null — платить нечего: переход уже применён, вести владельца некуда. */
@@ -215,8 +224,13 @@ export interface CheckoutPreview {
    *  СГОРАЕТ. Полей зачёта поэтому нет ни одного. */
   kind: 'new' | 'renewal' | 'switch'
   current_plan: string | null
-  gross: number     // полная цена выбранного тарифа за период
-  total: number     // к оплате сейчас; зачёта нет, поэтому всегда равен gross
+  gross: number     // period amount after its period discount, before the welcome promotion
+  total: number     // discounted net payable now, before tax
+  net_amount: number
+  promo_code: string | null
+  promo_discount_percent: number
+  promo_discount_amount: number
+  amount_before_promo: number
   currency: string
   /** Устаревшие поля прежних подписок. Не определяют сумму покупки или дату списания. */
   free_until: string | null

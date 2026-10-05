@@ -221,8 +221,8 @@
   },
   "pricing": {
     "label": "çmimet",
-    "title": "Plani juaj varet nga\\\nmadhësia e ekipit",
-    "lead": "20 € për një person, 30 € për dy persona, +5 € për çdo vend tjetër, pa kufi — 150 €. Të 16 modulet dhe Velora AI përfshihen në çdo nivel: paguani për madhësinë e ekipit, jo për të zhbllokuar butona. Tre modele pagese për të zgjedhur dhe deri në 30% ulje me pagesë paraprake.",
+    "title": "Studioja juaj.\nMënyra juaj e pagesës.",
+    "lead": "Tarifë fikse, përqindje nga shitjet ose të dyja. Të gjitha modulet përfshihen; madhësia e ekipit përcakton vetëm pjesën fikse.",
     "team": "ekip",
     "seats_one": "person",
     "seats_other": "persona",
@@ -267,7 +267,36 @@
         "desc": "Gjysma e abonimit plus një përqindje e vogël — ekuilibër mes dy modeleve."
       }
     ],
-    "footnote": "Prova nuk kërkon kartë. Modeli i pagesës dhe numri i vendeve mund të ndryshohen në aplikacion kurdoherë. Çmimet nuk përfshijnë TVSH-në: taksa llogaritet në pagesë për vendin tuaj."
+    "footnote": "Prova nuk kërkon kartë. Modeli i pagesës dhe numri i vendeve mund të ndryshohen në aplikacion kurdoherë. Çmimet nuk përfshijnë TVSH-në: taksa llogaritet në pagesë për vendin tuaj.",
+    "choiceLabel": "Zgjidhni modelin e pagesës",
+    "promoTitle": "{{percent}}% ulje në pagesën e parë të tarifës",
+    "promoApplied": "{{code}} zbatohet automatikisht",
+    "promoDetail": "Pas uljes për periudhën. Vetëm për pjesën fikse; komisioni nga shitjet nuk ndryshon.",
+    "firstPayment": "Pagesa e parë për {{period}}",
+    "regularPayment": "Blerja e ardhshme për {{period}}",
+    "periodSaving": "Ulje për periudhën −{{percent}}%",
+    "promoSaving": "{{code}} −{{percent}}%",
+    "variableFee": "Plus {{rate}}% e shitjeve të studios",
+    "minimum": "Të paktën {{amount}} në muaj",
+    "percentDetail": "{{rate}}% nga çdo shitje, përfshirë paratë në dorë. Në fund të muajit paguani vetëm diferencën deri te minimumi.",
+    "unlimitedTeam": "Punonjës pa kufizim",
+    "percentPromo": "Ky model nuk ka parapagim. {{code}} vlen për blerjen e parë të tarifës me pjesë fikse.",
+    "taxNote": "Pa TVSH. Tatimi llogaritet gjatë pagesës.",
+    "noAutoRenewal": "Një pagesë, pa rinovim automatik.",
+    "choosePaid": "Zgjidhni tarifën",
+    "catalogHint": "{{solo}} për një, {{two}} për dy, pastaj +{{step}} për vend.",
+    "loadError": "Çmimet janë përkohësisht të padisponueshme.",
+    "retry": "Ringarkoni çmimet",
+    "fromPrice": "nga {{amount}}",
+    "paymentModels": {
+      "subscription": "Tarifë fikse",
+      "percent": "Përqindje",
+      "combo": "Kombinim",
+      "fixedDescription": "Paguani paraprakisht periudhën e zgjedhur. Çmimi varet nga madhësia e ekipit.",
+      "ofSales": "nga shitjet",
+      "percentDescription": "Pa parapagim. Të paktën {{amount}} në muaj.",
+      "comboDescription": "Gjysma e tarifës fikse mujore plus pjesë nga çdo shitje."
+    }
   },
   "faq": {
     "label": "pyetje",

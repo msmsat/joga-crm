@@ -38,7 +38,7 @@ export function useCheckoutQuotes(plan: BillingPlan | null) {
   // сменился (оплата, смена модели, сверка счёта) — набор пересчитывается.
   // Первую загрузку плана не считаем: набор и так запрошен с тем же состоянием.
   const signature = plan
-    ? [plan.plan_name, plan.billing_mode, plan.status, plan.expires_at, plan.has_live_subscription].join('|')
+    ? [plan.plan_name, plan.billing_mode, plan.status, plan.expires_at, plan.has_live_subscription, plan.first_payment_promo_available].join('|')
     : null;
   const seen = useRef(signature);
   useEffect(() => {

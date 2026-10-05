@@ -396,6 +396,16 @@
     },
     "registrationNumber": "Business ID: {{number}}"
   },
+  "promo": {
+    "title": "İlk ödeme",
+    "applied": "Otomatik uygulandı",
+    "description": "Dönem indiriminden sonra planın sabit tutarına uygulanır.",
+    "priceLabel": "İlk dönem fiyatı",
+    "combinedDiscount": "Toplam −%{{percent}}",
+    "nextPurchase": "Bugünkü fiyatlarla sonraki satın alma: {{amount}} / ay, KDV hariç.",
+    "savings": "İlk ödeme indirimi · %{{percent}}",
+    "discountedNet": "İndirimlerden sonra"
+  },
   "checkout": {
     "secureStripe": "Stripe üzerinden ödeme",
     "back": "Back to plans",

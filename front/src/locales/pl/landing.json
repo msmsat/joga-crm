@@ -221,8 +221,8 @@
   },
   "pricing": {
     "label": "cennik",
-    "title": "Twój plan zależy od\\\nwielkości zespołu",
-    "lead": "20 € za jedną osobę, 30 € za dwie osoby, +5 € za każde kolejne miejsce, bez limitu — 150 €. Wszystkie 16 modułów i Velora AI są na każdym poziomie: płacisz za wielkość zespołu, a nie za odblokowywanie przycisków. Do wyboru są trzy modele płatności oraz do 30% zniżki przy przedpłacie.",
+    "title": "Twoje studio.\nTwój sposób płatności.",
+    "lead": "Stała opłata, procent od sprzedaży lub ich połączenie. Wszystkie moduły są w cenie; wielkość zespołu określa tylko część stałą.",
     "team": "zespół",
     "seats_one": "osoba",
     "seats_few": "osoby",
@@ -268,7 +268,36 @@
         "desc": "Połowa subskrypcji plus niewielki procent — równowaga między dwoma modelami."
       }
     ],
-    "footnote": "Okres próbny nie wymaga karty. Model płatności i liczbę miejsc możesz zmienić w aplikacji w każdej chwili. Ceny nie zawierają VAT: podatek jest obliczany przy płatności dla Twojego kraju."
+    "footnote": "Okres próbny nie wymaga karty. Model płatności i liczbę miejsc możesz zmienić w aplikacji w każdej chwili. Ceny nie zawierają VAT: podatek jest obliczany przy płatności dla Twojego kraju.",
+    "choiceLabel": "Wybierz model płatności",
+    "promoTitle": "{{percent}}% rabatu na pierwszą płatność za plan",
+    "promoApplied": "{{code}} nalicza się automatycznie",
+    "promoDetail": "Po rabacie za okres. Tylko od części stałej; prowizja od sprzedaży nie zmienia się.",
+    "firstPayment": "Pierwsza płatność za {{period}}",
+    "regularPayment": "Następny zakup za {{period}}",
+    "periodSaving": "Rabat za okres −{{percent}}%",
+    "promoSaving": "{{code}} −{{percent}}%",
+    "variableFee": "Plus {{rate}}% sprzedaży studia",
+    "minimum": "Minimum {{amount}} miesięcznie",
+    "percentDetail": "{{rate}}% każdej sprzedaży, także gotówkowej. Na koniec miesiąca dopłacasz tylko różnicę do minimum.",
+    "unlimitedTeam": "Nieograniczona liczba pracowników",
+    "percentPromo": "Ten model nie ma opłaty z góry. {{code}} dotyczy pierwszego zakupu planu z częścią stałą.",
+    "taxNote": "Bez VAT. Podatek obliczamy przy płatności.",
+    "noAutoRenewal": "Jedna płatność, bez automatycznego odnowienia.",
+    "choosePaid": "Wybierz plan",
+    "catalogHint": "{{solo}} za jedną osobę, {{two}} za dwie, następnie +{{step}} za miejsce.",
+    "loadError": "Ceny są chwilowo niedostępne.",
+    "retry": "Wczytaj ceny ponownie",
+    "fromPrice": "od {{amount}}",
+    "paymentModels": {
+      "subscription": "Stała opłata",
+      "percent": "Procent",
+      "combo": "Kombi",
+      "fixedDescription": "Opłać wybrany okres z góry. Cena zależy od wielkości zespołu.",
+      "ofSales": "od sprzedaży",
+      "percentDescription": "Bez opłaty z góry. Minimum {{amount}} miesięcznie.",
+      "comboDescription": "Połowa stałej opłaty miesięcznej plus procent każdej sprzedaży."
+    }
   },
   "faq": {
     "label": "pytania",

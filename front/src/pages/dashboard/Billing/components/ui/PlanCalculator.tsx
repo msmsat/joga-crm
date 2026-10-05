@@ -7,6 +7,8 @@ import { planSeats } from '../../../../../lib/plan';
 import AnimatedPayButton from './AnimatedPayButton';
 import CheckoutDetails from './CheckoutDetails';
 import TeamLineup from './TeamLineup';
+import FirstPaymentPromo from './FirstPaymentPromo';
+import { checkoutAmounts } from '../checkout/checkoutAmounts';
 import type { CheckoutPreview } from '../../../../../api/billing/billing.types';
 import styles from '../../Billing.module.css';
 
@@ -55,6 +57,10 @@ export default function PlanCalculator({
 }: Props) {
   const { t, i18n } = useTranslation('billing');
   const quote = preview?.currency.toUpperCase() === currency?.toUpperCase() ? preview : null;
+  const amounts = checkoutAmounts(quote ?? undefined);
+  const promo = !pending && amounts.promoDiscount > 0;
+  const savingShare = fullMonthly > 0 ? Math.max(0, Math.min(1, savedTotal / (fullMonthly * selectedPeriod))) : 0;
+  const savingPercent = new Intl.NumberFormat(i18n.language, { maximumFractionDigits: 1 }).format(savingShare * 100);
   const outcome = quote?.tax_outcome ?? 'stripe_auto';
   const checkoutTotal = quote ? (outcome === 'taxable' ? quote.total_with_tax : quote.total) / 100 : totalToPay;
   const taxNote = outcome === 'stripe_auto' || outcome === 'requires_review'
@@ -78,7 +84,6 @@ export default function PlanCalculator({
   // правку и обещали скидку, которой сервер уже не даёт.
   const periods = Object.keys(periodDiscounts).map(Number).sort((a, b) => a - b);
   const best = periods.reduce((a, b) => (periodDiscounts[b] > periodDiscounts[a] ? b : a), periods[0]);
-  const discount = periodDiscounts[selectedPeriod] || 0;
 
   const count = (value: number) => value.toLocaleString(i18n.language || 'en');
 
@@ -203,8 +208,9 @@ export default function PlanCalculator({
 
         {/* ── Итог: что стоит выбранная ступень ── */}
         <div className={styles.calcPanel}>
+          {promo && <FirstPaymentPromo code={amounts.promoCode!} percent={amounts.promoPercent} />}
           <div className={styles.calcPriceHeading}>
-            <span className={styles.calcEyebrow}>{t('planCards.yourPrice')}</span>
+            <span className={styles.calcEyebrow}>{t(promo ? 'promo.priceLabel' : 'planCards.yourPrice')}</span>
           </div>
 
           <div className={styles.calcPrice}>
@@ -218,10 +224,10 @@ export default function PlanCalculator({
               процент, без скидки «Без скидки». Прятать её значило бы двигать
               всё, что ниже, при каждом переключении периода. */}
           <div className={styles.calcOld}>
-            {discount > 0 ? (
+            {savedTotal > 0 ? (
               <>
                 <span className={fillCls(styles.calcOldPrice)}>{formatMoney(fullMonthly, currency)}</span>
-                <span className={fillCls(styles.calcOff)}>−{Math.round(discount * 100)}%</span>
+                <span className={fillCls(styles.calcOff)}>{t('promo.combinedDiscount', { percent: savingPercent })}</span>
               </>
             ) : (
               // Не зачёркнуто: зачёркнутое «Без скидки» читалось как «скидка есть».
@@ -233,11 +239,18 @@ export default function PlanCalculator({
               поэтому разница между 3 и 12 месяцами видна движением, а не
               сравнением двух чисел. */}
           <div className={styles.calcMeter} aria-hidden>
-            <div className={styles.calcMeterPaid} style={{ width: `${(1 - discount) * 100}%` }} />
-            <div className={styles.calcMeterSaved} style={{ width: `${discount * 100}%` }} />
+            <div className={styles.calcMeterPaid} style={{ width: `${(1 - savingShare) * 100}%` }} />
+            <div className={styles.calcMeterSaved} style={{ width: `${savingShare * 100}%` }} />
           </div>
 
+          {promo && <p className={styles.calcNextPrice}>{t('promo.nextPurchase', {
+            amount: formatMoney(amounts.amountBeforePromo! / 100 / selectedPeriod, currency),
+          })}</p>}
           <div className={styles.calcRows}>
+            {promo && <div className={styles.calcRow}>
+              <span className={styles.calcRowLabel}>{t('promo.savings', { percent: amounts.promoPercent })}</span>
+              <span className={`${styles.calcRowValue} ${styles.calcPromoSaving}`}>−{formatMoney(amounts.promoDiscount / 100, currency)}</span>
+            </div>}
             {rows.map(row => (
               <div key={row.label} className={styles.calcRow}>
                 <span className={styles.calcRowLabel}>{row.label}</span>

@@ -300,6 +300,8 @@
 .calcVat { margin: 6px 0 0; min-height: 3em; font-size: 11px; line-height: 1.5; color: rgba(255, 255, 255, 0.35); }
 .calcPriceHeading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .calcPay { margin-top: 16px; }
+.calcNextPrice { margin: 12px 0 0; color: rgb(255 255 255 / 65%); font-size: 11px; line-height: 1.6; }
+.calcPromoSaving { color: var(--peach); }
 
 /* ── Цены ещё едут (data-pending) ─────────────────────────────────────────
    Числа, которых пока нет, держат место: текст остаётся в разметке — размеры

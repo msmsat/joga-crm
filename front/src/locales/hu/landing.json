@@ -221,8 +221,8 @@
   },
   "pricing": {
     "label": "árak",
-    "title": "Az Ön csomagja a\\\ncsapat méretétől függ",
-    "lead": "20 € egy főre, 30 € két főre, +5 € minden további helyért, korlátlan — 150 €. Mind a 16 modul és a Velora AI minden szinten benne van: a csapat méretéért fizet, nem a gombok feloldásáért. Három fizetési modell közül választhat, előrefizetéssel akár 30% kedvezménnyel.",
+    "title": "Az Ön stúdiója.\nAz Ön fizetési módja.",
+    "lead": "Fix díj, a bevétel százaléka vagy a kettő együtt. Minden modul benne van; a csapat mérete csak a fix részt határozza meg.",
     "team": "csapat",
     "seats_one": "fő",
     "seats_other": "fő",
@@ -267,7 +267,36 @@
         "desc": "Az előfizetés fele plusz egy kis százalék — egyensúly a két modell között."
       }
     ],
-    "footnote": "A próbaidőszakhoz nem kell bankkártya. A fizetési modell és a helyek száma az alkalmazásban bármikor módosítható. Az árak nem tartalmazzák az áfát: az adó az Ön országára a pénztárnál számolódik."
+    "footnote": "A próbaidőszakhoz nem kell bankkártya. A fizetési modell és a helyek száma az alkalmazásban bármikor módosítható. Az árak nem tartalmazzák az áfát: az adó az Ön országára a pénztárnál számolódik.",
+    "choiceLabel": "Válasszon fizetési modellt",
+    "promoTitle": "{{percent}}% kedvezmény az első tarifafizetésből",
+    "promoApplied": "A {{code}} automatikusan érvényesül",
+    "promoDetail": "Az időszakkedvezmény után. Csak a fix részből; az értékesítési jutalék nem változik.",
+    "firstPayment": "Első fizetés: {{period}}",
+    "regularPayment": "Következő vásárlás: {{period}}",
+    "periodSaving": "Időszakkedvezmény −{{percent}}%",
+    "promoSaving": "{{code}} −{{percent}}%",
+    "variableFee": "Plusz a stúdió bevételének {{rate}}%-a",
+    "minimum": "Legalább {{amount}} havonta",
+    "percentDetail": "Minden eladás {{rate}}%-a, a készpénzes eladásokat is beleértve. A hónap végén csak a minimumig hiányzó különbözetet fizeti.",
+    "unlimitedTeam": "Korlátlan számú munkatárs",
+    "percentPromo": "Ebben a modellben nincs előrefizetés. A {{code}} az első, fix részt tartalmazó tarifavásárlásra érvényes.",
+    "taxNote": "Áfa nélkül. Az adót fizetéskor számítjuk ki.",
+    "noAutoRenewal": "Egyszeri fizetés, automatikus megújítás nélkül.",
+    "choosePaid": "Tarifa kiválasztása",
+    "catalogHint": "{{solo}} egy főre, {{two}} két főre, majd +{{step}} helyenként.",
+    "loadError": "Az árak átmenetileg nem érhetők el.",
+    "retry": "Árak újratöltése",
+    "fromPrice": "{{amount}}-tól",
+    "paymentModels": {
+      "subscription": "Fix díj",
+      "percent": "Százalék",
+      "combo": "Kombinált",
+      "fixedDescription": "Fizesse ki előre a kiválasztott időszakot. Az ár a csapat méretétől függ.",
+      "ofSales": "a bevételből",
+      "percentDescription": "Előrefizetés nélkül. Legalább {{amount}} havonta.",
+      "comboDescription": "A havi fix díj fele és minden eladás egy része."
+    }
   },
   "faq": {
     "label": "kérdések",

@@ -396,6 +396,16 @@
     },
     "registrationNumber": "Business ID: {{number}}"
   },
+  "promo": {
+    "title": "Primo pagamento",
+    "applied": "Applicato automaticamente",
+    "description": "Sull’importo fisso del piano, dopo lo sconto sul periodo.",
+    "priceLabel": "Prezzo del primo periodo",
+    "combinedDiscount": "−{{percent}}% in totale",
+    "nextPurchase": "Prossimo acquisto ai prezzi attuali: {{amount}} / mese, IVA esclusa.",
+    "savings": "Sconto sul primo pagamento · {{percent}}%",
+    "discountedNet": "Dopo gli sconti"
+  },
   "checkout": {
     "secureStripe": "Pagamenti tramite Stripe",
     "back": "Back to plans",

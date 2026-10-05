@@ -221,8 +221,8 @@
   },
   "pricing": {
     "label": "priser",
-    "title": "Din plan beror på\nstorleken på ditt team",
-    "lead": "20 € för en person, 30 € för två personer, +5 € för varje nästa plats, obegränsat — 150 €. Alla 16 moduler och Velora AI ingår på varje nivå: du betalar för teamets storlek, inte för att låsa upp knappar. Tre betalningsmodeller att välja mellan och upp till 30 % rabatt när du betalar i förskott.",
+    "title": "Din studio.\nDitt sätt att betala.",
+    "lead": "En fast avgift, en andel av försäljningen eller båda. Alla moduler ingår; teamets storlek styr endast den fasta delen.",
     "team": "team",
     "seats_one": "person",
     "seats_other": "personer",
@@ -267,7 +267,36 @@
         "desc": "Hälften av prenumerationen plus en liten procentsats — en medelväg mellan de två modellerna."
       }
     ],
-    "footnote": "Provet kräver inget kort. Betalningsmodell och antal platser kan ändras i appen när som helst. Priserna är exklusive moms: skatten beräknas i kassan för ditt land."
+    "footnote": "Provet kräver inget kort. Betalningsmodell och antal platser kan ändras i appen när som helst. Priserna är exklusive moms: skatten beräknas i kassan för ditt land.",
+    "choiceLabel": "Välj betalningsmodell",
+    "promoTitle": "{{percent}} % rabatt på den första tariffbetalningen",
+    "promoApplied": "{{code}} används automatiskt",
+    "promoDetail": "Efter periodrabatten. Endast på den fasta delen; försäljningsprovisionen är oförändrad.",
+    "firstPayment": "Första betalningen för {{period}}",
+    "regularPayment": "Nästa köp för {{period}}",
+    "periodSaving": "Periodrabatt −{{percent}} %",
+    "promoSaving": "{{code}} −{{percent}} %",
+    "variableFee": "Plus {{rate}} % av studions försäljning",
+    "minimum": "Minst {{amount}} per månad",
+    "percentDetail": "{{rate}} % av varje försäljning, även kontant. Vid månadens slut betalar du bara mellanskillnaden upp till minimum.",
+    "unlimitedTeam": "Obegränsat antal medarbetare",
+    "percentPromo": "Den här modellen har ingen förskottsbetalning. {{code}} gäller det första tariffköpet med en fast del.",
+    "taxNote": "Exklusive moms. Skatten beräknas vid betalning.",
+    "noAutoRenewal": "En betalning utan automatisk förnyelse.",
+    "choosePaid": "Välj tariff",
+    "catalogHint": "{{solo}} för en, {{two}} för två, sedan +{{step}} per plats.",
+    "loadError": "Priserna är tillfälligt otillgängliga.",
+    "retry": "Ladda om priser",
+    "fromPrice": "från {{amount}}",
+    "paymentModels": {
+      "subscription": "Fast avgift",
+      "percent": "Procent",
+      "combo": "Kombi",
+      "fixedDescription": "Betala den valda perioden i förskott. Priset följer teamets storlek.",
+      "ofSales": "av försäljningen",
+      "percentDescription": "Ingen förskottsbetalning. Minst {{amount}} per månad.",
+      "comboDescription": "Halva den fasta månadsavgiften plus en andel av varje försäljning."
+    }
   },
   "faq": {
     "label": "frågor",
@@ -291,7 +320,7 @@
       },
       {
         "q": "Finns mörkt tema och andra språk?",
-      "a": "Ja, gränssnittet växlar mellan ljust och mörkt och har stöd för 22 språk, bland annat engelska, ryska, ukrainska, tjeckiska och tyska. Tidszon, valuta och språk väljs under introduktionen."
+        "a": "Ja, gränssnittet växlar mellan ljust och mörkt och har stöd för 22 språk, bland annat engelska, ryska, ukrainska, tjeckiska och tyska. Tidszon, valuta och språk väljs under introduktionen."
       },
       {
         "q": "Vad händer med min data om jag bestämmer mig för att lämna?",

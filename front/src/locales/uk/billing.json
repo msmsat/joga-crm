@@ -400,6 +400,16 @@
     },
     "registrationNumber": "Рег. номер: {{number}}"
   },
+  "promo": {
+    "title": "Перша оплата",
+    "applied": "Застосовано автоматично",
+    "description": "На фіксовану частину тарифу після знижки за період.",
+    "priceLabel": "Ціна першого періоду",
+    "combinedDiscount": "−{{percent}}% загалом",
+    "nextPurchase": "Наступна покупка за поточними цінами: {{amount}} / міс. без ПДВ.",
+    "savings": "Знижка на першу оплату · {{percent}}%",
+    "discountedNet": "Після знижок"
+  },
   "checkout": {
     "secureStripe": "Оплата через Stripe",
     "back": "До тарифів",

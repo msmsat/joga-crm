@@ -396,6 +396,16 @@
     },
     "registrationNumber": "Business ID: {{number}}"
   },
+  "promo": {
+    "title": "Első fizetés",
+    "applied": "Automatikusan érvényesítve",
+    "description": "A csomag fix díjára, az időszaki kedvezmény után.",
+    "priceLabel": "Az első időszak ára",
+    "combinedDiscount": "Összesen −{{percent}}%",
+    "nextPurchase": "Következő vásárlás a mai árakon: {{amount}} / hó, áfa nélkül.",
+    "savings": "Első fizetési kedvezmény · {{percent}}%",
+    "discountedNet": "Kedvezmények után"
+  },
   "checkout": {
     "secureStripe": "Fizetés a Stripe-on keresztül",
     "back": "Back to plans",

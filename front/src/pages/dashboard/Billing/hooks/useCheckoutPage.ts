@@ -52,6 +52,10 @@ export function useCheckoutPage() {
       const result = await billingApi.checkout(plan.id, period, combo, 'elements');
       if (!result.client_secret) { navigate(paymentReturnPath(result.invoice_id), { replace: true }); return; }
       setSession(result);
+      // Another tab may have completed the first purchase while this quote was open.
+      void queryClient.invalidateQueries({ queryKey: ['billing', 'quotes'] });
+      void queryClient.invalidateQueries({ queryKey: ['billing', 'plan'] });
+      void queryClient.invalidateQueries({ queryKey: ['billing', 'checkout-quote'] });
     } catch (err) { setError(errorMessage(err, t)); throw err; }
     finally { pending.current = false; setBusy(false); }
   };

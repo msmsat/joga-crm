@@ -396,6 +396,16 @@
     },
     "registrationNumber": "Business ID: {{number}}"
   },
+  "promo": {
+    "title": "Πρώτη πληρωμή",
+    "applied": "Εφαρμόστηκε αυτόματα",
+    "description": "Στο σταθερό ποσό του προγράμματος μετά την έκπτωση περιόδου.",
+    "priceLabel": "Τιμή πρώτης περιόδου",
+    "combinedDiscount": "−{{percent}}% συνολικά",
+    "nextPurchase": "Επόμενη αγορά με τις σημερινές τιμές: {{amount}} / μήνα χωρίς ΦΠΑ.",
+    "savings": "Έκπτωση πρώτης πληρωμής · {{percent}}%",
+    "discountedNet": "Μετά τις εκπτώσεις"
+  },
   "checkout": {
     "secureStripe": "Πληρωμές μέσω Stripe",
     "back": "Back to plans",

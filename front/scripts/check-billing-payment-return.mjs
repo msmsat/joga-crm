@@ -340,3 +340,39 @@ test('reopening a purchase already paid returns to the same exact invoice withou
   const ui = await checkoutReturn(null);
   assert.deepEqual(ui.routes, ['/dashboard/billing?payment=return&invoice_id=42']);
 });
+test('the calculator uses the welcome quote for the first period and all savings', async () => {
+  const ui = await setup({ search: '', catalog: { currency: 'EUR', plans: [{ id: 's1', price: 2000, limits: { staff: 1, ai_requests: 150 } }], period_discounts: { 1: 0, 3: 0.2 } },
+    quotes: { quotes: [{ plan: 's1', period_months: 3, currency: 'EUR', gross: 4800, amount_before_promo: 4800,
+      total: 3360, promo_code: 'WELCOME30', promo_discount_percent: 30, promo_discount_amount: 1440 }] } });
+  ui.latest().setSelectedPlan('s1'); await ui.settle();
+  ui.latest().setSelectedPeriod(3); await ui.settle();
+  assert.equal(ui.latest().currentMonthly, 20);
+  assert.equal(ui.latest().discountedPrice, 11.2);
+  assert.equal(ui.latest().totalToPay, 33.6);
+  assert.equal(ui.latest().savedTotal, 26.4);
+  ui.cleanup();
+});
+
+test('a rounded monthly average never changes the authoritative period total', async () => {
+  const ui = await setup({ search: '', catalog: { currency: 'EUR', plans: [{ id: 's1', price: 1000, limits: { staff: 1, ai_requests: 150 } }], period_discounts: { 1: 0, 3: 0.2 } },
+    quotes: { quotes: [{ plan: 's1', period_months: 3, currency: 'EUR', gross: 1430, amount_before_promo: 1430,
+      total: 1001, promo_code: 'WELCOME30', promo_discount_percent: 30, promo_discount_amount: 429 }] } });
+  ui.latest().setSelectedPlan('s1'); await ui.settle();
+  ui.latest().setSelectedPeriod(3); await ui.settle();
+  assert.equal(ui.latest().totalToPay, 10.01);
+  assert.equal(ui.latest().savedTotal, 19.99);
+  assert.ok(Math.abs(ui.latest().discountedPrice - 3.3366666666666664) < 0.0000001);
+  ui.cleanup();
+});
+
+test('a combo quote discounts only its fixed half and keeps the fixed baseline', async () => {
+  const ui = await setup({ search: '', catalog: { currency: 'EUR', plans: [{ id: 's1', price: 2000, limits: { staff: 1, ai_requests: 150 } }], period_discounts: { 1: 0 } },
+    quotes: { quotes: [{ plan: 's1', period_months: 1, currency: 'EUR', gross: 1000, amount_before_promo: 1000,
+      total: 700, promo_code: 'WELCOME30', promo_discount_percent: 30, promo_discount_amount: 300 }] } });
+  ui.latest().setBillingMode('fixed'); await ui.settle();
+  assert.equal(ui.latest().currentMonthly, 10);
+  assert.equal(ui.latest().discountedPrice, 7);
+  assert.equal(ui.latest().totalToPay, 7);
+  assert.equal(ui.latest().savedTotal, 3);
+  ui.cleanup();
+});

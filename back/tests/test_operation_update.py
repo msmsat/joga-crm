@@ -65,6 +65,11 @@ class _DB:
     async def execute(self, _q):
         return _R(self._seq.pop(0) if self._seq else None)
 
+    async def scalar(self, _q):
+        # These arithmetic fixtures represent ordinary manual operations with
+        # no linked historical receipts. Receipt protection has integration tests.
+        return None
+
 
 def test_amount_change_moves_balance_by_delta():
     op = _Operation(amount=100, account_id=1)

@@ -396,6 +396,16 @@
     },
     "registrationNumber": "Business ID: {{number}}"
   },
+  "promo": {
+    "title": "Första betalningen",
+    "applied": "Tillämpas automatiskt",
+    "description": "På abonnemangets fasta belopp efter periodrabatten.",
+    "priceLabel": "Pris för första perioden",
+    "combinedDiscount": "−{{percent}}% totalt",
+    "nextPurchase": "Nästa köp till dagens priser: {{amount}} / månad exkl. moms.",
+    "savings": "Rabatt på första betalningen · {{percent}}%",
+    "discountedNet": "Efter rabatter"
+  },
   "checkout": {
     "secureStripe": "Betalningar via Stripe",
     "back": "Back to plans",

@@ -9,6 +9,7 @@ import AnimatedPayButton from '../ui/AnimatedPayButton';
 import type { PaymentUi } from './StripePayment';
 import { checkoutAmounts } from './checkoutAmounts';
 import CheckoutArtwork from './CheckoutArtwork';
+import FirstPaymentPromo from '../ui/FirstPaymentPromo';
 import styles from './CheckoutPage.module.css';
 
 export default function CheckoutSummary({ plan, period, preview, payment, error, currency, preparing, canPrepare, onPrepare, onBack, taxPending = false, footerRef }: {
@@ -45,7 +46,12 @@ export default function CheckoutSummary({ plan, period, preview, payment, error,
       <button className={styles.orderToggle} type="button" aria-expanded={expanded} onClick={() => setExpanded(!expanded)}>
         {t('checkout.paymentDetails')}<ChevronDown size={14} /></button>
       <div className={styles.receipt}>
-        <div className={styles.receiptRow}><span>{t('checkout.purchase')}</span><strong>{amounts.net != null ? money(amounts.net) : '—'}</strong></div>
+        {amounts.promoDiscount > 0 && <FirstPaymentPromo code={amounts.promoCode!} percent={amounts.promoPercent} compact />}
+        <div className={styles.receiptRow}><span>{t('checkout.purchase')}</span><strong>{amounts.amountBeforePromo != null ? money(amounts.amountBeforePromo) : '—'}</strong></div>
+        {amounts.promoDiscount > 0 && <>
+          <div className={`${styles.receiptRow} ${styles.receiptPromo}`}><span>{t('promo.savings', { percent: amounts.promoPercent })}</span><strong>−{money(amounts.promoDiscount)}</strong></div>
+          <div className={styles.receiptRow}><span>{t('promo.discountedNet')}</span><strong>{money(amounts.net!)}</strong></div>
+        </>}
         <div className={styles.receiptRow}><span>{taxLabel}</span><span>{amounts.tax != null ? money(amounts.tax)
           : t(amounts.requiresReview ? 'checkout.taxReview' : 'checkout.taxAtPayment')}</span></div>
         {amounts.taxReason && <p className={styles.hint}>{t(`checkout.${amounts.taxReason === 'reverse_charge'

@@ -195,9 +195,28 @@ class Importer:
                     item['native_events'] = native_counts.get(item['source_client_id'], {})
                     if item['errors']:
                         item['action'] = 'conflict'
+            cash_report = None
+            if self.native and not self.native_options.get('historical_cash'):
+                from .historical_cash import validate_saved_receipts
+                saved_errors = await validate_saved_receipts(db, export, studio_id, self.native_options)
+                for item in items:
+                    item['errors'].extend(saved_errors.get(item['source_client_id'], []))
+                    if item['errors']:
+                        item['action'] = 'conflict'
+            if self.native and self.native_options.get('historical_cash'):
+                from .historical_cash import plan_historical_cash, summary
+                cash_errors, cash_plans = await plan_historical_cash(db, export, studio_id, self.native_options)
+                for item in items:
+                    cid = item['source_client_id']
+                    item['errors'].extend(cash_errors.get(cid, []))
+                    item['historical_cash'] = cash_plans.get(cid, [])
+                    if item['errors']:
+                        item['action'] = 'conflict'
+                cash_report = summary([state for states in cash_plans.values() for state in states],
+                                      self.native_options.get('currency'))
             team = (await db.scalars(select(StudioMember).where(StudioMember.studio_id == studio_id,
                 StudioMember.status == 'active', StudioMember.role.in_(['owner', 'admin', 'trainer'])))).all()
-            return {'format': 1, 'mode': 'preview', 'ready': all(not i['errors'] for i in items),
+            report = {'format': 1, 'mode': 'preview', 'ready': all(not i['errors'] for i in items),
                     'complete': False, 'studio_id': studio_id, 'owner_id': owner.id,
                     'account_key': export.account_key, 'fingerprint': export.fingerprint,
                     'mapping': mapping, 'event_staff_counts': dict(Counter(
@@ -208,6 +227,9 @@ class Importer:
                     'masters': [{'source_master_id': mid, 'source_name': master_names.get(mid, ''), 'teacher_user_id': mapped.get(mid)} for mid in mids],
                     'target_team': [{'user_id': m.user_id, 'name': m.name, 'role': m.role} for m in team],
                     'items': items, 'counts': dict(Counter(i['action'] for i in items))}
+            if cash_report is not None:
+                report['historical_cash'] = cash_report
+            return report
 
     async def _save(self, db, package, studio_id, account, owner_id, client_map, masters, overrides, paths):
         # Native note edits do not acquire the studio lock. Lock their row before
@@ -351,6 +373,12 @@ class Importer:
             current_photos = (await db.scalars(select(BumpixMedia).where(BumpixMedia.binding_id == binding.id))).all()
             await synchronize_native(db, binding, client, list(by_id.values()), current_photos,
                 self.native_options, getattr(self, '_service_decisions', {}))
+            from .historical_cash import synchronize_historical_cash
+            if self.native_options.get('historical_cash') or any(
+                    e.is_current for e in by_id.values()):
+                cash_result = await synchronize_historical_cash(db, list(by_id.values()), self.native_options)
+                if self.native_options.get('historical_cash'):
+                    plan['historical_cash_result'] = cash_result
         plan['client_id'] = client.id
         plan['committed'] = True
         return plan
@@ -392,4 +420,13 @@ class Importer:
         report['items'] = completed + [i for i in report['items'] if i['source_client_id'] not in {c['source_client_id'] for c in completed}]
         report['counts'] = dict(Counter(i['action'] for i in completed))
         report['complete'] = len(completed) == len(export.packages) and not report.get('error')
+        if self.native_options.get('historical_cash'):
+            cash_counts = Counter()
+            amount = 0
+            for item in completed:
+                cash = item.get('historical_cash_result', {})
+                cash_counts.update(cash.get('counts', {}))
+                amount += cash.get('create_amount', 0)
+            report['historical_cash_applied'] = {'counts': dict(cash_counts), 'created_amount': amount,
+                                                'currency': self.native_options.get('currency')}
         return report

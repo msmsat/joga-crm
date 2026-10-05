@@ -221,8 +221,8 @@
   },
   "pricing": {
     "label": "hinnat",
-    "title": "Pakettisi määräytyy\ntiimisi koon mukaan",
-    "lead": "20 € yhdestä henkilöstä, 30 € kahdesta henkilöstä, +5 € jokaisesta seuraavasta paikasta, rajaton — 150 €. Kaikki 16 moduulia ja Velora AI sisältyvät joka tasoon: maksat tiimisi koosta, et painikkeiden avaamisesta. Valittavana on kolme maksutapaa ja ennakkoon maksaessa jopa 30 % alennus.",
+    "title": "Sinun studiosi.\nSinun maksutapasi.",
+    "lead": "Kiinteä maksu, osuus myynnistä tai molemmat. Kaikki moduulit sisältyvät; tiimin koko määrää vain kiinteän osuuden.",
     "team": "tiimi",
     "seats_one": "henkilö",
     "seats_other": "henkilöä",
@@ -267,7 +267,36 @@
         "desc": "Puolet tilauksesta plus pieni prosentti — keskitie kahden mallin välillä."
       }
     ],
-    "footnote": "Kokeilu ei vaadi korttia. Maksumallia ja paikkojen määrää voi muuttaa sovelluksessa milloin tahansa. Hinnat eivät sisällä arvonlisäveroa: vero lasketaan maksussa maasi mukaan."
+    "footnote": "Kokeilu ei vaadi korttia. Maksumallia ja paikkojen määrää voi muuttaa sovelluksessa milloin tahansa. Hinnat eivät sisällä arvonlisäveroa: vero lasketaan maksussa maasi mukaan.",
+    "choiceLabel": "Valitse maksutapa",
+    "promoTitle": "{{percent}} % alennus ensimmäisestä pakettimaksusta",
+    "promoApplied": "{{code}} lisätään automaattisesti",
+    "promoDetail": "Jaksoalennuksen jälkeen. Vain kiinteästä osuudesta; myyntiprovisio ei muutu.",
+    "firstPayment": "Ensimmäinen maksu: {{period}}",
+    "regularPayment": "Seuraava osto: {{period}}",
+    "periodSaving": "Jaksoalennus −{{percent}} %",
+    "promoSaving": "{{code}} −{{percent}} %",
+    "variableFee": "Lisäksi {{rate}} % studion myynnistä",
+    "minimum": "Vähintään {{amount}} kuukaudessa",
+    "percentDetail": "{{rate}} % jokaisesta myynnistä, myös käteismyynnistä. Kuukauden lopussa maksat vain erotuksen vähimmäissummaan.",
+    "unlimitedTeam": "Rajattomasti työntekijöitä",
+    "percentPromo": "Tässä mallissa ei ole ennakkomaksua. {{code}} koskee ensimmäistä pakettiostoa, jossa on kiinteä osuus.",
+    "taxNote": "Ei sisällä ALV:tä. Vero lasketaan maksettaessa.",
+    "noAutoRenewal": "Yksi maksu, ei automaattista uusimista.",
+    "choosePaid": "Valitse paketti",
+    "catalogHint": "{{solo}} yhdelle, {{two}} kahdelle, sitten +{{step}} paikkaa kohti.",
+    "loadError": "Hinnat eivät ole tilapäisesti saatavilla.",
+    "retry": "Lataa hinnat uudelleen",
+    "fromPrice": "alkaen {{amount}}",
+    "paymentModels": {
+      "subscription": "Kiinteä maksu",
+      "percent": "Prosentti",
+      "combo": "Yhdistelmä",
+      "fixedDescription": "Maksa valittu jakso etukäteen. Hinta riippuu tiimin koosta.",
+      "ofSales": "myynnistä",
+      "percentDescription": "Ei ennakkomaksua. Vähintään {{amount}} kuukaudessa.",
+      "comboDescription": "Puolet kiinteästä kuukausimaksusta sekä osuus jokaisesta myynnistä."
+    }
   },
   "faq": {
     "label": "kysymykset",

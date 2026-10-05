@@ -400,6 +400,16 @@
     },
     "registrationNumber": "Рег. номер: {{number}}"
   },
+  "promo": {
+    "title": "Первая оплата",
+    "applied": "Применена автоматически",
+    "description": "На фиксированную часть тарифа после скидки за период.",
+    "priceLabel": "Цена первого периода",
+    "combinedDiscount": "−{{percent}}% всего",
+    "nextPurchase": "Следующая покупка по текущим ценам: {{amount}} / мес. без НДС.",
+    "savings": "Скидка на первую оплату · {{percent}}%",
+    "discountedNet": "После скидок"
+  },
   "checkout": {
     "secureStripe": "Оплата через Stripe",
     "back": "К тарифам",

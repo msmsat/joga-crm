@@ -236,9 +236,12 @@ export function useBillingCalculator() {
   // график платежей обещал бы полную цену там, где Stripe спишет половинную.
   const comboHalf = billingMode === 'fixed' ? 0.5 : 1;
   const currentMonthly = round2((plans[selectedPlan]?.monthly ?? 0) * comboHalf);
-  const discountedPrice = round2(getPrice(selectedPlan, selectedPeriod) * comboHalf);
-  const totalToPay = round2(discountedPrice * selectedPeriod);
-  const savedTotal = round2(currentMonthly * selectedPeriod - totalToPay);
+  const quote = preview?.currency.toUpperCase() === currency.toUpperCase() ? preview : null;
+  // Keep the server's integer period amount; never multiply a rounded monthly average.
+  const totalCents = quote?.total ?? Math.round(getPrice(selectedPlan, selectedPeriod) * comboHalf * selectedPeriod * 100);
+  const totalToPay = totalCents / 100;
+  const discountedPrice = totalCents / selectedPeriod / 100;
+  const savedTotal = (Math.round(currentMonthly * selectedPeriod * 100) - totalCents) / 100;
 
   return {
     currency,

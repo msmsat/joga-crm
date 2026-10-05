@@ -398,6 +398,16 @@
     },
     "registrationNumber": "Business ID: {{number}}"
   },
+  "promo": {
+    "title": "Прво плаћање",
+    "applied": "Примењено аутоматски",
+    "description": "На фиксни износ тарифе након попуста за период.",
+    "priceLabel": "Цена првог периода",
+    "combinedDiscount": "Укупно −{{percent}}%",
+    "nextPurchase": "Следећа куповина по данашњим ценама: {{amount}} / месец без ПДВ-а.",
+    "savings": "Попуст за прво плаћање · {{percent}}%",
+    "discountedNet": "Након попуста"
+  },
   "checkout": {
     "secureStripe": "Плаћање преко Stripe-а",
     "back": "Back to plans",

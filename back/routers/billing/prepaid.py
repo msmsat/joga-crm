@@ -11,8 +11,8 @@ from sqlalchemy.future import select
 
 from models import BillingInvoice, StudioBillingPlan
 from schemas.settings.billing import CheckoutResponse
-from services import billing_tax, stripe_billing
-from .plans import PLANS, amount_for, canon, combo_amount_for
+from services import billing_pricing, billing_tax, stripe_billing
+from .plans import PLANS, canon
 
 MIGRATION_REQUIRED = {
     'code': 'billing.prepaid_migration_required',
@@ -62,13 +62,15 @@ async def _response(db, session, row, body, public_key):
     if getattr(session, 'payment_status', None) == 'paid':
         from .prepaid_webhook import handle_session
         await handle_session(db, 'checkout.session.completed', session)
-        return CheckoutResponse(invoice_id=row.id, amount_due=0, currency=stripe_billing.CURRENCY.upper())
+        return CheckoutResponse(invoice_id=row.id, amount_due=0, currency=stripe_billing.CURRENCY.upper(),
+                                **billing_pricing.invoice_price_fields(row))
     secret = getattr(session, 'client_secret', None) if body.ui_mode == 'elements' else None
     total = getattr(session, 'amount_total', None)
     details = getattr(session, 'total_details', None)
     tax = getattr(details, 'amount_tax', None)
     return CheckoutResponse(
         invoice_id=row.id,
+        **billing_pricing.invoice_price_fields(row),
         checkout_url=getattr(session, 'url', None) if body.ui_mode == 'hosted' else None,
         client_secret=secret, publishable_key=public_key, payment_kind='checkout',
         amount_due=total, currency=stripe_billing.CURRENCY.upper(), tax_amount=tax,
@@ -90,7 +92,9 @@ async def create_payment(db, ctx, plan, customer_id, body, tax, profile,
             raise HTTPException(status_code=409, detail=MIGRATION_REQUIRED)
 
     combo = bool(body.combo) if body.combo is not None else plan.billing_mode == 'combo'
-    net = (combo_amount_for if combo else amount_for)(body.plan, body.period_months)
+    price = billing_pricing.period_price(body.plan, body.period_months, combo,
+        await billing_pricing.first_payment_available(db, plan))
+    net = price.net_amount
     fingerprint = _fingerprint(profile, tax, body, combo, net)
     pending = (await db.execute(select(BillingInvoice).where(
         BillingInvoice.studio_id == ctx.studio_id,
@@ -108,9 +112,14 @@ async def create_payment(db, ctx, plan, customer_id, body, tax, profile,
                     and candidate.period_months == body.period_months
                     and meta.get('billing_mode') == ('combo' if combo else 'subscription'))
             if getattr(session, 'payment_status', None) == 'paid':
-                await _response(db, session, candidate, body, public_key)
+                response = await _response(db, session, candidate, body, public_key)
                 if same:
-                    return CheckoutResponse(invoice_id=candidate.id, amount_due=0, currency=stripe_billing.CURRENCY.upper())
+                    return response
+                # Reconciliation just consumed the first payment. Re-lock and
+                # recalculate, otherwise a different choice keeps stale promo
+                # eligibility after its predecessor has already been paid.
+                return await create_payment(db, ctx, plan, customer_id, body, tax,
+                                            profile, public_key, return_url, cancel_url)
             elif getattr(session, 'status', None) == 'open':
                 if same:
                     await db.commit()
@@ -144,6 +153,8 @@ async def create_payment(db, ctx, plan, customer_id, body, tax, profile,
         _kind, starts, until = period_window(plan, body.plan, body.period_months, combo)
         details = purchase_snapshot(profile, tax, body.plan, body.period_months,
                                     net, stripe_billing.CURRENCY, starts, until)
+        details["promo"] = price.fields()
+        details["item"]["billing_mode"] = "combo" if combo else "subscription"
         row = BillingInvoice(
             studio_id=ctx.studio_id, user_id=ctx.user.id, kind='subscription',
             status='pending', plan_name=body.plan, period_months=body.period_months,
@@ -158,11 +169,20 @@ async def create_payment(db, ctx, plan, customer_id, body, tax, profile,
     # invoice_id resolvable even if the paid webhook arrives before this response.
     await db.execute(select(BillingInvoice).where(BillingInvoice.id == row.id)
                      .with_for_update().execution_options(populate_existing=True))
+    # Another retry may already have attached or paid this Session while this
+    # request waited for the invoice lock. Reuse its immutable purchase facts.
+    if row.order_id.startswith('cs_'):
+        session = await stripe_billing.fetch_checkout_session(row.order_id)
+        await db.commit()
+        return await _response(db, session, row, body, public_key)
+    frozen = billing_pricing.invoice_price_fields(row)
+    net = frozen['net_amount']
     metadata = {
         'billing_kind': 'prepaid', 'invoice_id': str(row.id),
         'studio_id': str(ctx.studio_id), 'user_id': str(ctx.user.id),
         'plan': body.plan, 'period_months': str(body.period_months),
         'billing_mode': 'combo' if combo else 'subscription', 'profile_hash': fingerprint,
+        **{key: str(value) if value is not None else '' for key, value in frozen.items()},
     }
     session = await stripe_billing.create_period_checkout(
         customer_id, net, f'Velora {PLANS[body.plan]["name"]} · {body.period_months} мес.',

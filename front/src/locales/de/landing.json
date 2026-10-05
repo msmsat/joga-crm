@@ -221,8 +221,8 @@
   },
   "pricing": {
     "label": "preise",
-    "title": "Der Tarif ist\nIhre Teamgröße",
-    "lead": "20 € für eine Person, 30 € für zwei Personen, jeder weitere Platz +5 €, unbegrenzt — 150 €. Alle 16 Module und Velora AI sind in jeder Stufe enthalten: Sie zahlen für die Größe Ihres Teams, nicht für freigeschaltete Knöpfe. Drei Zahlungsmodelle zur Auswahl, bei Vorauszahlung bis zu 30 % Rabatt.",
+    "title": "Ihr Studio.\nIhre Zahlungsart.",
+    "lead": "Festpreis, Umsatzanteil oder beides. Alle Module sind enthalten; die Teamgröße bestimmt nur den festen Anteil.",
     "team": "team",
     "seats_one": "Person",
     "seats_other": "Personen",
@@ -268,7 +268,36 @@
         "desc": "Halbes Abonnement plus ein kleiner Prozentsatz — ein Kompromiss zwischen beiden Modellen."
       }
     ],
-    "footnote": "Die Testphase läuft ohne Karte. Zahlungsmodell und Platzanzahl lassen sich jederzeit in der App ändern. Preise ohne MwSt.: Die Steuer wird bei der Zahlung nach Ihrem Land berechnet."
+    "footnote": "Die Testphase läuft ohne Karte. Zahlungsmodell und Platzanzahl lassen sich jederzeit in der App ändern. Preise ohne MwSt.: Die Steuer wird bei der Zahlung nach Ihrem Land berechnet.",
+    "choiceLabel": "Zahlungsmodell wählen",
+    "promoTitle": "{{percent}} % Rabatt auf die erste Tarifzahlung",
+    "promoApplied": "{{code}} wird automatisch angewendet",
+    "promoDetail": "Nach dem Laufzeitrabatt. Nur auf den festen Anteil; die Umsatzprovision bleibt gleich.",
+    "firstPayment": "Erste Zahlung für {{period}}",
+    "regularPayment": "Nächster Kauf für {{period}}",
+    "periodSaving": "Laufzeitrabatt −{{percent}} %",
+    "promoSaving": "{{code}} −{{percent}} %",
+    "variableFee": "Zusätzlich {{rate}} % des Studioumsatzes",
+    "minimum": "Mindestens {{amount}} pro Monat",
+    "percentDetail": "{{rate}} % jedes Verkaufs, einschließlich Bargeld. Am Monatsende zahlen Sie nur die Differenz zum Mindestbetrag.",
+    "unlimitedTeam": "Unbegrenzte Mitarbeiterzahl",
+    "percentPromo": "Dieses Modell hat keine Vorauszahlung. {{code}} gilt für den ersten Tarifkauf mit festem Anteil.",
+    "taxNote": "Ohne MwSt. Die Steuer wird bei der Zahlung berechnet.",
+    "noAutoRenewal": "Einmalige Zahlung ohne automatische Verlängerung.",
+    "choosePaid": "Tarif wählen",
+    "catalogHint": "{{solo}} für eine Person, {{two}} für zwei, danach +{{step}} pro Platz.",
+    "loadError": "Preise sind vorübergehend nicht verfügbar.",
+    "retry": "Preise neu laden",
+    "fromPrice": "ab {{amount}}",
+    "paymentModels": {
+      "subscription": "Festpreis",
+      "percent": "Prozent",
+      "combo": "Kombi",
+      "fixedDescription": "Gewählten Zeitraum im Voraus bezahlen. Der Preis richtet sich nach der Teamgröße.",
+      "ofSales": "vom Umsatz",
+      "percentDescription": "Keine Vorauszahlung. Mindestens {{amount}} pro Monat.",
+      "comboDescription": "Halber monatlicher Festpreis plus ein Anteil an jedem Verkauf."
+    }
   },
   "faq": {
     "label": "fragen",

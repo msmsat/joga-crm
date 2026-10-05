@@ -252,6 +252,10 @@ class _CreateDB:
     async def execute(self, query):
         entity = query.column_descriptions[0]['entity']
         value = self.plan if entity is StudioBillingPlan else self.rows[-1] if self.rows else None
+        if query.column_descriptions[0]['expr'] is BillingInvoice.id:
+            # Pricing asks for completed monetary history, not the pending row.
+            value = next((row.id for row in self.rows if row.kind == 'subscription'
+                          and row.status in ('paid', 'refunded') and row.amount > 0), None)
         return NS(scalar_one_or_none=lambda: value,
                   scalars=lambda: NS(all=lambda: [row for row in self.rows if row.status == 'pending']))
     async def commit(self):

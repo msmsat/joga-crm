@@ -64,9 +64,11 @@ async def get_or_create_default_account(
     bank — заводить им рядом вторую кассу и разносить туда часть наличных значит
     задним числом разорвать их историю.
     """
+    from services.bumpix_import.historical_cash import historical_account_ids
+    live_accounts = Account.id.not_in(historical_account_ids(studio_id))
     account = (await db.execute(
         select(Account)
-        .where(Account.studio_id == studio_id, Account.type == account_type)
+        .where(Account.studio_id == studio_id, Account.type == account_type, live_accounts)
         .order_by(Account.id).limit(1)
     )).scalar_one_or_none()
     if account is not None:
@@ -74,7 +76,7 @@ async def get_or_create_default_account(
 
     if account_type == "cash":
         account = (await db.execute(
-            select(Account).where(Account.studio_id == studio_id).order_by(Account.id).limit(1)
+            select(Account).where(Account.studio_id == studio_id, live_accounts).order_by(Account.id).limit(1)
         )).scalar_one_or_none()
         if account is not None:
             return account
@@ -96,6 +98,13 @@ async def _get_account_or_404(account_id: int, studio_id: int, db: AsyncSession)
     if acc is None:
         raise HTTPException(status_code=404, detail="Счёт не найден")
     return acc
+
+
+async def _is_historical_account(account_id: int, studio_id: int, db: AsyncSession) -> bool:
+    from services.bumpix_import.historical_cash import historical_account_ids
+    return (await db.scalar(select(Account.id).where(
+        Account.studio_id == studio_id, Account.id == account_id,
+        Account.id.in_(historical_account_ids(studio_id))))) is not None
 
 
 @router.get("/accounts", response_model=list[AccountRead])
@@ -138,7 +147,12 @@ async def update_account(
     db: AsyncSession = Depends(get_db),
 ):
     acc = await _get_account_or_404(account_id, ctx.studio_id, db)
-    for field, value in body.model_dump(exclude_unset=True).items():
+    changes = body.model_dump(exclude_unset=True)
+    if any(field in changes and changes[field] != getattr(acc, field) for field in ('balance', 'type')):
+        if await _is_historical_account(account_id, ctx.studio_id, db):
+            raise HTTPException(status_code=409,
+                detail="Баланс і тип цього рахунку пов’язані з історичними оплатами. Потрібне узгоджене виправлення.")
+    for field, value in changes.items():
         setattr(acc, field, value)
     await db.commit()
     await db.refresh(acc)
@@ -153,5 +167,8 @@ async def delete_account(
     db: AsyncSession = Depends(get_db),
 ):
     acc = await _get_account_or_404(account_id, ctx.studio_id, db)
+    if await _is_historical_account(account_id, ctx.studio_id, db):
+        raise HTTPException(status_code=409,
+            detail="Цей рахунок містить пов’язані історичні оплати. Потрібне узгоджене виправлення записів та оплат.")
     await db.delete(acc)
     await db.commit()

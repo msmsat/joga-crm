@@ -398,6 +398,16 @@
     },
     "registrationNumber": "Reg. číslo: {{number}}"
   },
+  "promo": {
+    "title": "První platba",
+    "applied": "Uplatněno automaticky",
+    "description": "Na pevnou část tarifu po slevě za období.",
+    "priceLabel": "Cena prvního období",
+    "combinedDiscount": "−{{percent}}% celkem",
+    "nextPurchase": "Další nákup za dnešní ceny: {{amount}} / měsíc bez DPH.",
+    "savings": "Sleva na první platbu · {{percent}}%",
+    "discountedNet": "Po slevách"
+  },
   "checkout": {
     "secureStripe": "Platby přes Stripe",
     "back": "Zpět k tarifům",

@@ -221,8 +221,8 @@
   },
   "pricing": {
     "label": "ceník",
-    "title": "Tarif je\nvelikost týmu",
-    "lead": "20 € pro jednoho, 30 € za dva lidi, každé další místo +5 €, neomezeně — 150 €. Všech 16 modulů i Velora AI patří ke každému stupni: platíte za velikost týmu, ne za odemykání tlačítek. Tři modely platby na výběr, při platbě dopředu sleva až 30 %.",
+    "title": "Vaše studio.\nVáš způsob platby.",
+    "lead": "Pevná cena, podíl z tržeb nebo jejich kombinace. Všechny moduly jsou zahrnuty; velikost týmu určuje jen pevnou část.",
     "team": "tým",
     "seats_one": "člověk",
     "seats_few": "lidé",
@@ -272,7 +272,36 @@
         "desc": "Polovina předplatného plus malé procento — kompromis mezi oběma modely."
       }
     ],
-    "footnote": "Zkušební období je bez karty. Model platby i počet míst lze kdykoli změnit v aplikaci. Ceny jsou bez DPH: daň se počítá při platbě podle vaší země."
+    "footnote": "Zkušební období je bez karty. Model platby i počet míst lze kdykoli změnit v aplikaci. Ceny jsou bez DPH: daň se počítá při platbě podle vaší země.",
+    "choiceLabel": "Vyberte způsob platby",
+    "promoTitle": "Sleva {{percent}} % na první platbu tarifu",
+    "promoApplied": "{{code}} se uplatní automaticky",
+    "promoDetail": "Po slevě za období. Pouze na pevnou část; provize z tržeb se nemění.",
+    "firstPayment": "První platba za {{period}}",
+    "regularPayment": "Další nákup na {{period}}",
+    "periodSaving": "Sleva za období −{{percent}} %",
+    "promoSaving": "{{code}} −{{percent}} %",
+    "variableFee": "Plus {{rate}} % z tržeb studia",
+    "minimum": "Minimálně {{amount}} měsíčně",
+    "percentDetail": "{{rate}} % z každé tržby včetně hotovosti. Na konci měsíce doplatíte pouze rozdíl do minima.",
+    "unlimitedTeam": "Neomezený počet zaměstnanců",
+    "percentPromo": "Tento model nemá platbu předem. {{code}} platí na první nákup tarifu s pevnou částí.",
+    "taxNote": "Bez DPH. Daň se vypočítá při platbě.",
+    "noAutoRenewal": "Jednorázová platba bez automatického obnovení.",
+    "choosePaid": "Vybrat tarif",
+    "catalogHint": "{{solo}} za jednoho, {{two}} za dva, dále +{{step}} za místo.",
+    "loadError": "Ceny jsou dočasně nedostupné.",
+    "retry": "Načíst ceny",
+    "fromPrice": "od {{amount}}",
+    "paymentModels": {
+      "subscription": "Pevná cena",
+      "percent": "Procento",
+      "combo": "Kombinace",
+      "fixedDescription": "Zaplaťte zvolené období předem. Cena závisí na velikosti týmu.",
+      "ofSales": "z tržeb",
+      "percentDescription": "Bez platby předem. Minimálně {{amount}} měsíčně.",
+      "comboDescription": "Polovina měsíční pevné ceny plus podíl z každé tržby."
+    }
   },
   "faq": {
     "label": "otázky",

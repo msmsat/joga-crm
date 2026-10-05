@@ -111,7 +111,8 @@ async def prepare(args, export):
         atomic_write(path.resolve(), (json.dumps(mapping, ensure_ascii=False, indent=2) + '\n').encode('utf-8'))
         path.chmod(0o600)
         importer = Importer(async_session_maker, Path('uploads').resolve(), native=True,
-                            native_options={'timezone': 'Europe/Prague', 'currency': 'CZK'})
+                            native_options={'timezone': 'Europe/Prague', 'currency': 'CZK',
+                                            'historical_cash': args.historical_cash})
         report = await importer.preview(export, studio.id, args.owner_email, mapping)
         report['staff_assignment_basis'] = {
             'source_account_master': '1.1', 'default_teacher_id': owner.user_id,
@@ -140,6 +141,8 @@ async def prepare(args, export):
         print('Preview:', report_path.resolve())
         print('Result:', report['counts'])
         print('Native appointments:', dict(native_counts))
+        if report.get('historical_cash'):
+            print('Historical cash:', report['historical_cash'])
         print('READY FOR REVIEW' if report['ready'] else 'STOPPED: read preview errors')
         return 0 if report['ready'] else 1
     finally:
@@ -151,6 +154,8 @@ def main():
     parser.add_argument('--input', default='/app/uploads/bumpix/incoming/source.zip')
     parser.add_argument('--owner-email', required=True)
     parser.add_argument('--limit', type=int, help='First N clients in the reviewed archive, including already imported ones')
+    parser.add_argument('--historical-cash', action='store_true',
+                        help='Confirm past completed visits as attended and paid in cash')
     parser.add_argument('--mapping', default='/app/uploads/bumpix/mapping-real-staff.json')
     parser.add_argument('--report', default='/app/uploads/bumpix/reports/preview-real-staff.json')
     args = parser.parse_args()

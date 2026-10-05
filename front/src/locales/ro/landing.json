@@ -221,8 +221,8 @@
   },
   "pricing": {
     "label": "prețuri",
-    "title": "Planul dvs. depinde de\\\ndimensiunea echipei",
-    "lead": "20 € pentru o persoană, 30 € pentru două persoane, +5 € pentru fiecare loc următor, nelimitat — 150 €. Toate cele 16 module și Velora AI sunt incluse la fiecare nivel: plătiți pentru mărimea echipei, nu pentru deblocarea butoanelor. Trei modele de plată la alegere și până la 30% reducere la plata în avans.",
+    "title": "Studioul tău.\nModul tău de plată.",
+    "lead": "O sumă fixă, un procent din vânzări sau ambele. Toate modulele sunt incluse; mărimea echipei determină doar partea fixă.",
     "team": "echipă",
     "seats_one": "persoană",
     "seats_few": "persoane",
@@ -268,7 +268,36 @@
         "desc": "Jumătate din abonament plus un procent mic — un echilibru între cele două modele."
       }
     ],
-    "footnote": "Perioada de probă nu necesită card. Modelul de plată și numărul de locuri pot fi schimbate oricând în aplicație. Prețurile nu includ TVA: taxa este calculată la plată pentru țara dvs."
+    "footnote": "Perioada de probă nu necesită card. Modelul de plată și numărul de locuri pot fi schimbate oricând în aplicație. Prețurile nu includ TVA: taxa este calculată la plată pentru țara dvs.",
+    "choiceLabel": "Alege modelul de plată",
+    "promoTitle": "{{percent}}% reducere la prima plată a tarifului",
+    "promoApplied": "{{code}} se aplică automat",
+    "promoDetail": "După reducerea pentru perioadă. Doar la partea fixă; comisionul din vânzări nu se schimbă.",
+    "firstPayment": "Prima plată pentru {{period}}",
+    "regularPayment": "Următoarea achiziție pentru {{period}}",
+    "periodSaving": "Reducere pentru perioadă −{{percent}}%",
+    "promoSaving": "{{code}} −{{percent}}%",
+    "variableFee": "Plus {{rate}}% din vânzările studioului",
+    "minimum": "Minimum {{amount}} pe lună",
+    "percentDetail": "{{rate}}% din fiecare vânzare, inclusiv numerar. La sfârșitul lunii plătești doar diferența până la minimum.",
+    "unlimitedTeam": "Număr nelimitat de angajați",
+    "percentPromo": "Acest model nu are plată în avans. {{code}} se aplică primei achiziții a unui tarif cu parte fixă.",
+    "taxNote": "Fără TVA. Taxa se calculează la plată.",
+    "noAutoRenewal": "O plată, fără reînnoire automată.",
+    "choosePaid": "Alege tariful",
+    "catalogHint": "{{solo}} pentru o persoană, {{two}} pentru două, apoi +{{step}} pe loc.",
+    "loadError": "Prețurile sunt temporar indisponibile.",
+    "retry": "Reîncarcă prețurile",
+    "fromPrice": "de la {{amount}}",
+    "paymentModels": {
+      "subscription": "Sumă fixă",
+      "percent": "Procent",
+      "combo": "Combinat",
+      "fixedDescription": "Plătește în avans perioada aleasă. Prețul depinde de mărimea echipei.",
+      "ofSales": "din vânzări",
+      "percentDescription": "Fără plată în avans. Minimum {{amount}} pe lună.",
+      "comboDescription": "Jumătate din suma fixă lunară plus un procent din fiecare vânzare."
+    }
   },
   "faq": {
     "label": "întrebări",

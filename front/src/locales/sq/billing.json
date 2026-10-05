@@ -396,6 +396,16 @@
     },
     "registrationNumber": "Business ID: {{number}}"
   },
+  "promo": {
+    "title": "Pagesa e parë",
+    "applied": "Zbatohet automatikisht",
+    "description": "Mbi shumën fikse të planit, pas uljes për periudhën.",
+    "priceLabel": "Çmimi i periudhës së parë",
+    "combinedDiscount": "−{{percent}}% gjithsej",
+    "nextPurchase": "Blerja tjetër me çmimet e sotme: {{amount}} / muaj pa TVSH.",
+    "savings": "Ulje për pagesën e parë · {{percent}}%",
+    "discountedNet": "Pas uljeve"
+  },
   "checkout": {
     "secureStripe": "Pagesa përmes Stripe",
     "back": "Back to plans",

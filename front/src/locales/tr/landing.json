@@ -221,8 +221,8 @@
   },
   "pricing": {
     "label": "fiyatlandırma",
-    "title": "Planınız ekip\\\nbüyüklüğünüze bağlıdır",
-    "lead": "Tek kişi için 20 €, iki kişi için 30 €, her ek koltuk için +5 €, sınırsız — 150 €. Tüm 16 modül ve Velora AI her seviyeye dahildir: düğmeleri açmak için değil, ekip büyüklüğü için ödeme yaparsınız. Seçebileceğiniz üç ödeme modeli ve peşin ödemede %30'a varan indirim.",
+    "title": "Sizin stüdyonuz.\nSizin ödeme şekliniz.",
+    "lead": "Sabit ücret, satışlardan pay veya ikisi birden. Tüm modüller dahildir; ekip büyüklüğü yalnızca sabit kısmı belirler.",
     "team": "ekip",
     "seats_one": "kişi",
     "seats_other": "kişi",
@@ -267,7 +267,36 @@
         "desc": "Aboneliğin yarısı artı küçük bir yüzde — iki model arasında denge."
       }
     ],
-    "footnote": "Deneme için kart gerekmez. Ödeme modeli ve koltuk sayısı uygulamada istediğiniz zaman değiştirilebilir. Fiyatlara KDV dahil değildir: vergi ülkeniz için ödeme sırasında hesaplanır."
+    "footnote": "Deneme için kart gerekmez. Ödeme modeli ve koltuk sayısı uygulamada istediğiniz zaman değiştirilebilir. Fiyatlara KDV dahil değildir: vergi ülkeniz için ödeme sırasında hesaplanır.",
+    "choiceLabel": "Ödeme modelini seçin",
+    "promoTitle": "İlk tarife ödemenizde %{{percent}} indirim",
+    "promoApplied": "{{code}} otomatik uygulanır",
+    "promoDetail": "Dönem indiriminden sonra. Yalnızca sabit kısımda; satış komisyonu değişmez.",
+    "firstPayment": "{{period}} için ilk ödeme",
+    "regularPayment": "{{period}} için sonraki satın alma",
+    "periodSaving": "Dönem indirimi −%{{percent}}",
+    "promoSaving": "{{code}} −%{{percent}}",
+    "variableFee": "Artı stüdyo satışlarının %{{rate}} oranı",
+    "minimum": "Aylık en az {{amount}}",
+    "percentDetail": "Nakit dahil her satışın %{{rate}} oranı. Ay sonunda yalnızca minimum tutara kadar olan farkı ödersiniz.",
+    "unlimitedTeam": "Sınırsız çalışan",
+    "percentPromo": "Bu modelde peşin ödeme yoktur. {{code}}, sabit kısım içeren ilk tarife satın alımında geçerlidir.",
+    "taxNote": "KDV hariç. Vergi ödeme sırasında hesaplanır.",
+    "noAutoRenewal": "Tek ödeme, otomatik yenileme yok.",
+    "choosePaid": "Tarife seçin",
+    "catalogHint": "Bir kişi {{solo}}, iki kişi {{two}}, ardından koltuk başına +{{step}}.",
+    "loadError": "Fiyatlar geçici olarak kullanılamıyor.",
+    "retry": "Fiyatları yeniden yükleyin",
+    "fromPrice": "{{amount}} tutarından başlayan",
+    "paymentModels": {
+      "subscription": "Sabit ücret",
+      "percent": "Yüzde",
+      "combo": "Karma",
+      "fixedDescription": "Seçtiğiniz dönemi peşin ödeyin. Fiyat ekip büyüklüğüne bağlıdır.",
+      "ofSales": "satışlardan",
+      "percentDescription": "Peşin ödeme yok. Aylık en az {{amount}}.",
+      "comboDescription": "Aylık sabit ücretin yarısı ve her satıştan bir pay."
+    }
   },
   "faq": {
     "label": "sorular",

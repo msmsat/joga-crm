@@ -396,6 +396,16 @@
     },
     "registrationNumber": "Business ID: {{number}}"
   },
+  "promo": {
+    "title": "Premier paiement",
+    "applied": "Appliquée automatiquement",
+    "description": "Sur le montant fixe du forfait, après la remise de période.",
+    "priceLabel": "Prix de la première période",
+    "combinedDiscount": "−{{percent}}% au total",
+    "nextPurchase": "Prochain achat aux tarifs actuels : {{amount}} / mois hors TVA.",
+    "savings": "Remise du premier paiement · {{percent}}%",
+    "discountedNet": "Après remises"
+  },
   "checkout": {
     "secureStripe": "Paiements via Stripe",
     "back": "Back to plans",

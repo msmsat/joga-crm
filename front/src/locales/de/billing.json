@@ -396,6 +396,16 @@
     },
     "registrationNumber": "Register-Nr.: {{number}}"
   },
+  "promo": {
+    "title": "Erste Zahlung",
+    "applied": "Automatisch angewendet",
+    "description": "Auf den Festpreis des Tarifs nach dem Laufzeitrabatt.",
+    "priceLabel": "Preis des ersten Zeitraums",
+    "combinedDiscount": "−{{percent}}% insgesamt",
+    "nextPurchase": "Nächster Kauf zu heutigen Preisen: {{amount}} / Monat ohne MwSt.",
+    "savings": "Rabatt auf die erste Zahlung · {{percent}}%",
+    "discountedNet": "Nach Rabatten"
+  },
   "checkout": {
     "secureStripe": "Zahlungen über Stripe",
     "back": "Zurück zu den Tarifen",

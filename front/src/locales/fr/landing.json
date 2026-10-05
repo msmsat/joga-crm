@@ -221,8 +221,8 @@
   },
   "pricing": {
     "label": "tarifs",
-    "title": "Votre offre dépend\nde la taille de votre équipe",
-    "lead": "20 € pour une personne, 30 € pour deux personnes, puis +5 € par place supplémentaire, illimité — 150 €. Les 16 modules et Velora AI sont inclus à chaque niveau : vous payez la taille de votre équipe, pas pour débloquer des boutons. Trois modèles de paiement au choix et jusqu’à 30 % de réduction en payant à l’avance.",
+    "title": "Votre studio.\nVotre mode de paiement.",
+    "lead": "Un prix fixe, une part des ventes ou les deux. Tous les modules sont inclus ; la taille de l’équipe détermine seulement la part fixe.",
     "team": "équipe",
     "seats_one": "personne",
     "seats_other": "personnes",
@@ -267,7 +267,36 @@
         "desc": "La moitié de l’abonnement plus un petit pourcentage — un juste milieu entre les deux modèles."
       }
     ],
-    "footnote": "L’essai ne requiert pas de carte. Le modèle de paiement et le nombre de places peuvent être modifiés à tout moment dans l’application. Les prix s’entendent hors TVA : la taxe est calculée au paiement selon votre pays."
+    "footnote": "L’essai ne requiert pas de carte. Le modèle de paiement et le nombre de places peuvent être modifiés à tout moment dans l’application. Les prix s’entendent hors TVA : la taxe est calculée au paiement selon votre pays.",
+    "choiceLabel": "Choisissez votre mode de paiement",
+    "promoTitle": "{{percent}} % de remise sur le premier paiement du forfait",
+    "promoApplied": "{{code}} s’applique automatiquement",
+    "promoDetail": "Après la remise de durée. Sur la part fixe uniquement ; la commission sur les ventes reste inchangée.",
+    "firstPayment": "Premier paiement pour {{period}}",
+    "regularPayment": "Prochain achat pour {{period}}",
+    "periodSaving": "Remise de durée −{{percent}} %",
+    "promoSaving": "{{code}} −{{percent}} %",
+    "variableFee": "Plus {{rate}} % des ventes du studio",
+    "minimum": "Minimum {{amount}} par mois",
+    "percentDetail": "{{rate}} % de chaque vente, espèces comprises. En fin de mois, vous payez uniquement la différence jusqu’au minimum.",
+    "unlimitedTeam": "Personnel illimité",
+    "percentPromo": "Ce modèle n’a pas de paiement anticipé. {{code}} s’applique au premier achat d’un forfait avec une part fixe.",
+    "taxNote": "Hors TVA. La taxe est calculée au paiement.",
+    "noAutoRenewal": "Un paiement, sans renouvellement automatique.",
+    "choosePaid": "Choisir un forfait",
+    "catalogHint": "{{solo}} pour une personne, {{two}} pour deux, puis +{{step}} par place.",
+    "loadError": "Les prix sont temporairement indisponibles.",
+    "retry": "Recharger les prix",
+    "fromPrice": "dès {{amount}}",
+    "paymentModels": {
+      "subscription": "Prix fixe",
+      "percent": "Pourcentage",
+      "combo": "Combiné",
+      "fixedDescription": "Payez la période choisie à l’avance. Le prix dépend de la taille de l’équipe.",
+      "ofSales": "des ventes",
+      "percentDescription": "Sans paiement anticipé. Minimum {{amount}} par mois.",
+      "comboDescription": "La moitié du prix fixe mensuel plus une part de chaque vente."
+    }
   },
   "faq": {
     "label": "questions",

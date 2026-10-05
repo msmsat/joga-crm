@@ -32,7 +32,7 @@ from .plans import (
     MIN_MONTHLY_FEE, TRIAL_DAYS, TRIAL_PLAN, amount_for, canon, tier,
 )
 from services.tax_rates import TaxRateMissing, TaxReviewRequired
-from services import billing_tax, offline_fee_billing, platform_fee, stripe_billing, stripe_catalog, vies
+from services import billing_pricing, billing_tax, offline_fee_billing, platform_fee, stripe_billing, stripe_catalog, vies
 from activity import log_activity
 from services.exporter import csv_stream
 from services.i18n import pick
@@ -97,7 +97,18 @@ async def get_plans_catalog(
     ctx: StudioContext = Depends(require_role("owner")),
 ):
     """Каталог тарифов со скидками периодов. Статичен, но за require_role — как вся страница."""
+    return _plans_catalog()
+
+
+@router.get("/plans/public", response_model=PlansCatalogRead)
+async def get_public_plans_catalog():
+    """Public pricing uses exactly the same catalog as the owner checkout."""
+    return _plans_catalog()
+
+
+def _plans_catalog():
     return PlansCatalogRead(
+        first_payment_promo={"code": billing_pricing.PROMO_CODE, "percent": billing_pricing.PROMO_PERCENT},
         plans=[
             PlanRead(id=pid, name=p["name"], price=p["price"], limits=PlanLimits(**p["limits"]))
             for pid, p in PLANS.items()
@@ -206,7 +217,9 @@ async def _plan_response(db: AsyncSession, row: StudioBillingPlan) -> BillingPla
     """`_to_plan_read` + доступность триала. Отдельной обёрткой, потому что за
     доступностью надо в базу, а `_to_plan_read` синхронный и зовётся из мест,
     где строку уже держат в руках."""
-    return _to_plan_read(row, trial_available=await _trial_available(db, row))
+    response = _to_plan_read(row, trial_available=await _trial_available(db, row))
+    response.first_payment_promo_available = await billing_pricing.first_payment_available(db, row)
+    return response
 
 
 # Когда по студии последний раз сверяли тариф с подпиской Stripe (unix-время).
@@ -289,6 +302,8 @@ async def get_current_plan(
         return BillingPlanRead(
             plan_name="none", billing_cycle="monthly", status="none",
             expires_at=None, max_staff=0, auto_renewal=False, trial_available=True,
+            first_payment_promo_available=await billing_pricing.first_payment_available(
+                db, SimpleNamespace(studio_id=ctx.studio_id, stripe_subscription_id=None)),
         )
     # Вся страница тарифа (карточка, «текущий» в списке, баннер, предвыбор в
     # калькуляторе) читает ступень отсюда — выравниваем в одном месте, а не в
@@ -385,6 +400,21 @@ def _period_saving(plan_name: str, period_months: int) -> int:
     return amount_for(plan_name, 1) * period_months - amount_for(plan_name, period_months)
 
 
+def _invoice_saving(invoice):
+    """Net savings use frozen promo amounts, independently of collected tax."""
+    original = getattr(invoice, 'billing_details_snapshot', None) or {}
+    promo = original.get('promo')
+    if not promo:
+        return _period_saving(invoice.plan_name, invoice.period_months)
+    period_saving = 0
+    if invoice.plan_name in PLANS and invoice.period_months in PERIOD_DISCOUNTS:
+        undiscounted = amount_for(invoice.plan_name, 1) * invoice.period_months
+        if original.get('item', {}).get('billing_mode') == 'combo':
+            undiscounted //= 2
+        period_saving = max(0, undiscounted - promo['amount_before_promo'])
+    return period_saving + promo['promo_discount_amount']
+
+
 def _months_between(start: datetime, end: datetime) -> int:
     """Полных месяцев между датами (неполный месяц не считаем). Без dateutil."""
     months = (end.year - start.year) * 12 + end.month - start.month
@@ -406,7 +436,7 @@ async def get_billing_stats(
     )).scalars().all()
 
     total_spent = sum(inv.amount for inv in paid)
-    saved = sum(_period_saving(inv.plan_name, inv.period_months) for inv in paid if inv.kind == "subscription")
+    saved = sum(_invoice_saving(inv) for inv in paid if inv.kind == "subscription")
     months = _months_between(paid[0].paid_at, datetime.utcnow()) if paid else 0
 
     plan = (await db.execute(

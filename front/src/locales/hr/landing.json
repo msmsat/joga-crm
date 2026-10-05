@@ -221,8 +221,8 @@
   },
   "pricing": {
     "label": "cijene",
-    "title": "Vaš plan ovisi o\\\nveličini tima",
-    "lead": "20 € za jednu osobu, 30 € za dvije osobe, +5 € za svako sljedeće mjesto, neograničeno — 150 €. Svih 16 modula i Velora AI uključeni su na svakoj razini: plaćate veličinu tima, a ne otključavanje gumba. Tri modela plaćanja po izboru i do 30 % popusta pri uplati unaprijed.",
+    "title": "Vaš studio.\nVaš način plaćanja.",
+    "lead": "Fiksna cijena, udio u prodaji ili kombinacija. Svi moduli su uključeni; veličina tima određuje samo fiksni dio.",
     "team": "tim",
     "seats_one": "osoba",
     "seats_few": "osobe",
@@ -268,7 +268,36 @@
         "desc": "Polovica pretplate plus mali postotak — ravnoteža između dva modela."
       }
     ],
-    "footnote": "Probno razdoblje ne zahtijeva karticu. Model plaćanja i broj mjesta možete promijeniti u aplikaciji bilo kada. Cijene su bez PDV-a: porez se izračunava pri naplati za vašu zemlju."
+    "footnote": "Probno razdoblje ne zahtijeva karticu. Model plaćanja i broj mjesta možete promijeniti u aplikaciji bilo kada. Cijene su bez PDV-a: porez se izračunava pri naplati za vašu zemlju.",
+    "choiceLabel": "Odaberite model plaćanja",
+    "promoTitle": "{{percent}}% popusta na prvo plaćanje tarife",
+    "promoApplied": "{{code}} se primjenjuje automatski",
+    "promoDetail": "Nakon popusta za razdoblje. Samo na fiksni dio; provizija na prodaju ostaje ista.",
+    "firstPayment": "Prvo plaćanje za {{period}}",
+    "regularPayment": "Sljedeća kupnja za {{period}}",
+    "periodSaving": "Popust za razdoblje −{{percent}}%",
+    "promoSaving": "{{code}} −{{percent}}%",
+    "variableFee": "Plus {{rate}}% prodaje studija",
+    "minimum": "Najmanje {{amount}} mjesečno",
+    "percentDetail": "{{rate}}% svake prodaje, uključujući gotovinu. Na kraju mjeseca plaćate samo razliku do minimuma.",
+    "unlimitedTeam": "Neograničen broj zaposlenika",
+    "percentPromo": "Ovaj model nema plaćanje unaprijed. {{code}} vrijedi za prvu kupnju tarife s fiksnim dijelom.",
+    "taxNote": "Bez PDV-a. Porez se obračunava pri plaćanju.",
+    "noAutoRenewal": "Jednokratno plaćanje bez automatskog produljenja.",
+    "choosePaid": "Odaberite tarifu",
+    "catalogHint": "{{solo}} za jednu osobu, {{two}} za dvije, zatim +{{step}} po mjestu.",
+    "loadError": "Cijene su privremeno nedostupne.",
+    "retry": "Učitajte cijene",
+    "fromPrice": "od {{amount}}",
+    "paymentModels": {
+      "subscription": "Fiksna cijena",
+      "percent": "Postotak",
+      "combo": "Kombinacija",
+      "fixedDescription": "Platite odabrano razdoblje unaprijed. Cijena ovisi o veličini tima.",
+      "ofSales": "od prodaje",
+      "percentDescription": "Bez plaćanja unaprijed. Najmanje {{amount}} mjesečno.",
+      "comboDescription": "Polovica mjesečne fiksne cijene plus udio u svakoj prodaji."
+    }
   },
   "faq": {
     "label": "pitanja",

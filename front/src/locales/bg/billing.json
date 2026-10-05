@@ -396,6 +396,16 @@
     },
     "registrationNumber": "Business ID: {{number}}"
   },
+  "promo": {
+    "title": "Първо плащане",
+    "applied": "Приложено автоматично",
+    "description": "Върху фиксираната част на плана след отстъпката за периода.",
+    "priceLabel": "Цена за първия период",
+    "combinedDiscount": "Общо −{{percent}}%",
+    "nextPurchase": "Следваща покупка по текущи цени: {{amount}} / месец без ДДС.",
+    "savings": "Отстъпка за първо плащане · {{percent}}%",
+    "discountedNet": "След отстъпките"
+  },
   "checkout": {
     "secureStripe": "Плащания чрез Stripe",
     "back": "Back to plans",

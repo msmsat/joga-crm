@@ -221,8 +221,8 @@
   },
   "pricing": {
     "label": "pricing",
-    "title": "Your plan is\nyour team size",
-    "lead": "€20 for one person, €30 for two people, every next seat +€5, unlimited — €150. All 16 modules and Velora AI are in every step: you pay for the size of your team, not to unlock buttons. Three payment models to choose from, and up to 30% off when you pay ahead.",
+    "title": "Your studio.\nYour way to pay.",
+    "lead": "A fixed fee, a share of sales or a mix of both. All modules are included; team size sets only the fixed fee.",
     "team": "team",
     "seats_one": "person",
     "seats_other": "people",
@@ -267,7 +267,36 @@
         "desc": "Half the subscription plus a small percentage — a middle ground between the two models."
       }
     ],
-    "footnote": "The trial needs no card. The payment model and the number of seats can be changed in the app at any time. Prices exclude VAT: tax is calculated at checkout for your country."
+    "footnote": "The trial needs no card. The payment model and the number of seats can be changed in the app at any time. Prices exclude VAT: tax is calculated at checkout for your country.",
+    "choiceLabel": "Choose how to pay",
+    "promoTitle": "{{percent}}% off your first tariff payment",
+    "promoApplied": "{{code}} applies automatically",
+    "promoDetail": "After the period discount. Fixed fee only; sales commission stays unchanged.",
+    "firstPayment": "First payment for {{period}}",
+    "regularPayment": "Next purchase for {{period}}",
+    "periodSaving": "Period discount −{{percent}}%",
+    "promoSaving": "{{code}} −{{percent}}%",
+    "variableFee": "Plus {{rate}}% of studio sales",
+    "minimum": "At least {{amount}} per month",
+    "percentDetail": "{{rate}}% of every sale, cash included. At month end, pay only the shortfall below the minimum.",
+    "unlimitedTeam": "Unlimited team members",
+    "percentPromo": "No upfront purchase on this model. {{code}} applies to your first tariff purchase with a fixed fee.",
+    "taxNote": "Excluding VAT. Tax is calculated at checkout.",
+    "noAutoRenewal": "One payment, no automatic renewal.",
+    "choosePaid": "Choose a tariff",
+    "catalogHint": "{{solo}} for one, {{two}} for two, then +{{step}} per seat.",
+    "loadError": "Prices are temporarily unavailable.",
+    "retry": "Reload prices",
+    "fromPrice": "from {{amount}}",
+    "paymentModels": {
+      "subscription": "Fixed fee",
+      "percent": "Percentage",
+      "combo": "Combo",
+      "fixedDescription": "Pay ahead for your chosen period. The price follows your team size.",
+      "ofSales": "of sales",
+      "percentDescription": "No upfront payment. At least {{amount}} per month.",
+      "comboDescription": "Half the monthly fixed fee plus a share of every sale."
+    }
   },
   "faq": {
     "label": "questions",
