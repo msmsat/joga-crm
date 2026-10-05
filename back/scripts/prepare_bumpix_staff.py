@@ -9,10 +9,12 @@ import asyncio
 import json
 from pathlib import Path
 from collections import Counter
+from types import SimpleNamespace
 from sqlalchemy import select
 from services.bumpix_import.archive import open_export
 from services.bumpix_import.media import atomic_write
 from services.bumpix_import.staff_mapping import staff_by_service_category
+from scripts.import_bumpix import select_export
 
 ACCOUNT = 'c5f239a251e13cc1712e0818648b5591fd810e5191777db329dc2990499da52e'
 REVIEWED_FINGERPRINT = '1fda50747be940ba3c11977c15971313b62e7aa887b8b96e1bb735421cd8a3ae'
@@ -33,7 +35,13 @@ def validate_reviewed_source(export):
                 raise ValueError('Source category differs from the reviewed definition')
 
 
-def reviewed_plan(export, owner_id, trainer_id):
+def select_staff_scope(export, overrides, limit=None):
+    selected = select_export(export, SimpleNamespace(limit=limit, client_ids=None))
+    event_ids = {e['view']['id'] for p in selected.packages for e in p.snapshot['events']}
+    return selected, {eid: uid for eid, uid in overrides.items() if eid in event_ids}
+
+
+def reviewed_plan(export, owner_id, trainer_id, limit=None):
     validate_reviewed_source(export)
     defaults = {'1.1': owner_id}
     if {e['view']['master_id'] for p in export.packages for e in p.snapshot['events']} != {'1.1'}:
@@ -41,6 +49,7 @@ def reviewed_plan(export, owner_id, trainer_id):
     overrides = staff_by_service_category(export, defaults, {'2.4': trainer_id})
     if len(export.packages) != 1056 or sum(len(p.snapshot['events']) for p in export.packages) != 2949 or len(overrides) != 917:
         raise ValueError('Source counts differ from the reviewed archive')
+    export, overrides = select_staff_scope(export, overrides, limit)
     counts, review = Counter(), []
     for package in export.packages:
         services = {s['0']: s for s in package.snapshot['lookups']['services']}
@@ -93,7 +102,9 @@ async def prepare(args, export):
             studio, owner, trainer = await target_staff(db, args.owner_email)
             bound = dict((await db.execute(select(BumpixClient.source_client_id, BumpixClient.client_id).where(
                 BumpixClient.studio_id == studio.id, BumpixClient.account_key == export.account_key))).all())
-        defaults, overrides, evidence_counts, review = reviewed_plan(export, owner.user_id, trainer.user_id)
+        full_fingerprint, source_clients = export.fingerprint, len(export.packages)
+        defaults, overrides, evidence_counts, review = reviewed_plan(export, owner.user_id, trainer.user_id, args.limit)
+        export, overrides = select_staff_scope(export, overrides, args.limit)
         mapping = {'masters': defaults, 'event_masters': overrides,
                    'clients': {p.client_id: bound.get(p.client_id, 'create') for p in export.packages}}
         path = Path(args.mapping)
@@ -108,18 +119,27 @@ async def prepare(args, export):
             'uncategorized_add_ons': 'inherit the single named category; do not add another performer'}
         report['staff_assignment_evidence_counts'] = evidence_counts
         report['staff_assignment_review'] = review
+        report['selection'] = {'source_clients': source_clients, 'selected_clients': len(export.packages),
+                               'limit': args.limit, 'source_fingerprint': full_fingerprint}
+        native_counts = Counter()
+        for item in report['items']:
+            native_counts.update(item.get('native_events', {}))
+        report['native_event_counts'] = dict(native_counts)
         report_path = Path(args.report)
         atomic_write(report_path.resolve(), (json.dumps(report, ensure_ascii=False, indent=2) + '\n').encode('utf-8'))
         report_path.chmod(0o600)
         print('Studio:', studio.id, studio.name)
-        print('Melita -> owner:', owner.user_id, owner.name, '(2032 appointments)')
-        print('Anastasia -> trainer:', trainer.user_id, trainer.name, '(917 appointments)')
+        print('Clients selected:', len(export.packages), 'of', source_clients)
+        print('Melita -> owner:', owner.user_id, owner.name,
+              '(' + str(report['event_staff_counts'].get(str(owner.user_id), 0)) + ' appointments)')
+        print('Anastasia -> trainer:', trainer.user_id, trainer.name,
+              '(' + str(report['event_staff_counts'].get(str(trainer.user_id), 0)) + ' appointments)')
         print('Assignment evidence:', evidence_counts)
-        print('Review: 137 old appointments keep the source owner without a named category;')
-        print('2 Anastasia-category appointments mention Melita in comments (3.1597, 5.3634).')
+        print('Assignments to review:', len(review), '(details in staff_assignment_review)')
         print('Mapping:', path.resolve())
         print('Preview:', report_path.resolve())
         print('Result:', report['counts'])
+        print('Native appointments:', dict(native_counts))
         print('READY FOR REVIEW' if report['ready'] else 'STOPPED: read preview errors')
         return 0 if report['ready'] else 1
     finally:
@@ -130,6 +150,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--input', default='/app/uploads/bumpix/incoming/source.zip')
     parser.add_argument('--owner-email', required=True)
+    parser.add_argument('--limit', type=int, help='First N clients in the reviewed archive, including already imported ones')
     parser.add_argument('--mapping', default='/app/uploads/bumpix/mapping-real-staff.json')
     parser.add_argument('--report', default='/app/uploads/bumpix/reports/preview-real-staff.json')
     args = parser.parse_args()

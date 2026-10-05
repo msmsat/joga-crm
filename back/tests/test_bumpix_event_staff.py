@@ -7,6 +7,22 @@ from services.bumpix_import.staff_mapping import staff_by_service_category
 
 
 class CategoryStaffTests(unittest.TestCase):
+    def test_limited_scope_keeps_index_order_and_only_selected_event_overrides(self):
+        from scripts.prepare_bumpix_staff import select_staff_scope
+        from services.bumpix_import.archive import ExportSet
+        packages = [SimpleNamespace(client_id=cid, snapshot_id='snapshot-' + cid,
+            snapshot={'events': [{'view': {'id': eid}}]})
+            for cid, eid in [('1.10', '3.1'), ('1.100', '3.2'), ('1.2', '3.3')]]
+        source = ExportSet('account', 'full-fingerprint', packages)
+        selected, overrides = select_staff_scope(source, {'3.1': 7, '3.3': 7}, 2)
+        self.assertEqual([p.client_id for p in selected.packages], ['1.10', '1.100'])
+        self.assertEqual(overrides, {'3.1': 7})
+        self.assertNotEqual(selected.fingerprint, source.fingerprint)
+        self.assertEqual(len(source.packages), 3)
+        for limit in (0, -1, 4):
+            with self.subTest(limit=limit), self.assertRaises(ValueError):
+                select_staff_scope(source, {}, limit)
+
     def test_reviewed_archive_without_category_labels_is_supported(self):
         from scripts.prepare_bumpix_staff import ACCOUNT, REVIEWED_FINGERPRINT, validate_reviewed_source
         export = SimpleNamespace(account_key=ACCOUNT, fingerprint=REVIEWED_FINGERPRINT,
@@ -58,6 +74,44 @@ class EventStaffTests(unittest.IsolatedAsyncioTestCase):
     export = native_fixtures.NativeImportTests.export
     apply = native_fixtures.NativeImportTests.apply
     data = native_fixtures.NativeImportTests.data
+
+    async def test_expanding_batch_updates_old_appointments_adds_missing_clients_and_repeats(self):
+        from contextlib import ExitStack
+        from models import Client, Lesson, ClientNote
+        from models.bumpix import BumpixClient, BumpixEvent
+        from bumpix_fixtures import snapshot, write_package
+        from services.bumpix_import.archive import ExportSet, open_export
+        from scripts.prepare_bumpix_staff import select_staff_scope
+        with ExitStack() as contexts:
+            first = contexts.enter_context(self.export(self.data()))
+            self.assertTrue((await self.apply(first, {'masters': {'1.1': 1}}))['complete'])
+            async with self.sessions() as db:
+                old_id = await db.scalar(select(Client.id))
+            packages = list(first.packages)
+            for cid in ('1.101', '1.102'):
+                path, _ = write_package(self.root, snapshot(cid, name='New ' + cid, with_events=False))
+                packages.extend(contexts.enter_context(open_export(path)).packages)
+            eid = first.packages[0].snapshot['events'][1]['view']['id']
+            selected, overrides = select_staff_scope(ExportSet(first.account_key, 'full', packages), {eid: 2}, 2)
+            mapping = {'masters': {'1.1': 1}, 'event_masters': overrides,
+                       'clients': {'1.100': old_id, '1.101': 'create'}}
+            preview = await self.importer.preview(selected, 1, 'owner@example.test', mapping)
+            self.assertTrue(preview['ready'], preview)
+            self.assertEqual(preview['counts'], {'skip': 1, 'create': 1})
+            self.assertEqual(preview['items'][0]['native_events'], {'update': 3})
+            result = await self.apply(selected, mapping)
+            self.assertTrue(result['complete'], result)
+            async with self.sessions() as db:
+                note_count = await db.scalar(select(func.count()).select_from(ClientNote))
+            again = await self.apply(selected, mapping)
+            self.assertTrue(again['complete'], again)
+        async with self.sessions() as db:
+            self.assertEqual(await db.scalar(select(func.count()).select_from(Client)), 2)
+            self.assertEqual(await db.scalar(select(func.count()).select_from(Lesson)), 3)
+            self.assertEqual(await db.scalar(select(func.count()).select_from(ClientNote)), note_count)
+            self.assertEqual(await db.scalar(select(BumpixClient.client_id).where(BumpixClient.source_client_id == '1.100')), old_id)
+            self.assertIsNone(await db.scalar(select(BumpixClient.id).where(BumpixClient.source_client_id == '1.102')))
+            self.assertEqual(await db.scalar(select(BumpixEvent.teacher_user_id).where(BumpixEvent.source_event_id == eid)), 2)
 
     async def test_explicit_event_staff_keeps_original_master_and_native_media(self):
         from models import ClientNote, Lesson

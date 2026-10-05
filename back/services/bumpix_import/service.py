@@ -49,6 +49,18 @@ class Importer:
                 targets.append(target)
         if len(targets) != len(set(targets)):
             raise ValueError('Two source clients cannot be mapped to one CRM card')
+        # A saved create decision is satisfied by its source binding on resume.
+        # Reuse only the same studio/account/source ID; never match by name.
+        client_map = dict(client_map)
+        pending = [cid for cid, target in client_map.items() if target == 'create']
+        if pending:
+            bound = (await db.execute(select(BumpixClient.source_client_id, BumpixClient.client_id).where(
+                BumpixClient.studio_id == studio_id, BumpixClient.account_key == export.account_key,
+                BumpixClient.source_client_id.in_(pending)))).all()
+            client_map.update(dict(bound))
+            resolved_targets = [target for target in client_map.values() if type(target) is int]
+            if len(resolved_targets) != len(set(resolved_targets)):
+                raise ValueError('Two source clients cannot be mapped to one CRM card')
         available_masters = {e['view']['master_id'] for p in export.packages for e in p.snapshot['events']}
         for mid, user_id in masters.items():
             identity(mid)
