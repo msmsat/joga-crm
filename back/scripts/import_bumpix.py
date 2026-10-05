@@ -21,7 +21,7 @@ def parser():
     selection = p.add_mutually_exclusive_group()
     selection.add_argument('--limit', type=int, help='First N packages in the verified index')
     selection.add_argument('--client-ids', nargs='+', help='Exact string IDs, e.g. 1.10 1.100')
-    p.add_argument('--mapping', help='JSON with explicit clients and masters mappings')
+    p.add_argument('--mapping', help='JSON with explicit clients, masters, event_masters and services mappings')
     p.add_argument('--timezone', help='Confirmed source IANA timezone; must match target studio')
     p.add_argument('--currency', help='Confirmed source currency; must match target studio')
     p.add_argument('--storage-root', default='uploads', help='Persistent private root, same as API BUMPIX_STORAGE_ROOT')

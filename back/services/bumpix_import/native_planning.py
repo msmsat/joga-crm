@@ -32,7 +32,8 @@ def appointment_values(source, teacher, timezone_name):
             'notes': str(view.get('comment') or '')}
 
 
-async def plan_native(db, export, studio_id, masters, options, services, *, locking=False, client_id=None):
+async def plan_native(db, export, studio_id, masters, options, services, *, locking=False, client_id=None, event_masters=None):
+    event_masters = event_masters or {}
     packages = [p for p in export.packages if client_id is None or p.client_id == client_id]
     rows = (await db.execute(select(BumpixEvent, BumpixJournalLink, Lesson, BumpixClient.source_client_id)
         .join(BumpixJournalLink, BumpixJournalLink.event_id == BumpixEvent.id)
@@ -61,10 +62,11 @@ async def plan_native(db, export, studio_id, masters, options, services, *, lock
     replaced_ids = {l.id for _, _, l, cid in rows if cid in selected_packages and l}
     selected = {p.client_id for p in export.packages}
     # Master remapping must cover all its clients to avoid contradictory identities.
-    prior = (await db.execute(select(BumpixEvent.master_source_id, BumpixEvent.teacher_user_id, BumpixClient.source_client_id)
+    prior = (await db.execute(select(BumpixEvent.master_source_id, BumpixEvent.teacher_user_id, BumpixClient.source_client_id, BumpixEvent.source_event_id)
         .join(BumpixClient, BumpixClient.id == BumpixEvent.binding_id)
         .where(BumpixEvent.studio_id == studio_id, BumpixEvent.account_key == export.account_key))).all()
-    if any(mid in masters and teacher != masters[mid] and cid not in selected for mid, teacher, cid in prior):
+    if any(mid in masters and teacher != masters[mid] and cid not in selected and eid not in event_masters
+           for mid, teacher, cid, eid in prior):
         raise ValueError('Changing a source master requires selecting all of that master\'s imported clients')
     catalogue = {s.id: s for s in (await db.scalars(select(Service).where(Service.studio_id == studio_id))).all()}
     service_links = {l.source_key: l.service_id for l in (await db.scalars(select(BumpixServiceLink).where(
@@ -82,7 +84,7 @@ async def plan_native(db, export, studio_id, masters, options, services, *, lock
         for source in package.snapshot['events']:
             view, eid = source['view'], source['view']['id']
             try:
-                teacher = masters.get(view['master_id'])
+                teacher = event_masters.get(eid, masters.get(view['master_id']))
                 member = members.get(teacher)
                 if not member or member.role not in ('owner', 'trainer'):
                     raise ValueError('Map every source master to an active owner/master or trainer')

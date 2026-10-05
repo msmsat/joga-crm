@@ -11,6 +11,7 @@ from .matching import candidates, native_values, shares_identity, native_field, 
 from .media import store_photos
 from .validation import event_times, identity, photo_key, sha
 from .native_profile import profile_values, profile_note
+from .staff_mapping import event_staff_mapping
 
 
 class Importer:
@@ -31,8 +32,8 @@ class Importer:
         return owner
 
     async def _mapping(self, db, export, studio_id, mapping):
-        if not isinstance(mapping, dict) or set(mapping) - {'clients', 'masters', 'services'}:
-            raise ValueError('Mapping may contain only clients, masters and services')
+        if not isinstance(mapping, dict) or set(mapping) - {'clients', 'masters', 'services', 'event_masters'}:
+            raise ValueError('Mapping may contain only clients, masters, services and event_masters')
         if not isinstance(mapping.get('services', {}), dict):
             raise ValueError('Service mapping must be an object')
         client_map, masters = mapping.get('clients', {}), mapping.get('masters', {})
@@ -58,7 +59,8 @@ class Importer:
                 StudioMember.status == 'active', StudioMember.role.in_(['owner', 'admin', 'trainer'])))
             if member is None:
                 raise ValueError('Mapped master is not an active staff member of the target studio')
-        return client_map, masters
+        overrides = await event_staff_mapping(db, export, studio_id, mapping, native=self.native)
+        return client_map, masters, overrides
 
     async def _plan(self, db, package, studio_id, account, client_map):
         cid, profile = package.client_id, package.snapshot['profile']
@@ -145,7 +147,7 @@ class Importer:
         mapping = mapping or {}
         async with self.sessions() as db:
             owner = await self._authorize(db, studio_id, owner_email)
-            client_map, masters = await self._mapping(db, export, studio_id, mapping)
+            client_map, masters, overrides = await self._mapping(db, export, studio_id, mapping)
             items = [await self._plan(db, p, studio_id, export.account_key, client_map) for p in export.packages]
             # Detect ambiguities within the incoming batch before the first insert.
             for index, item in enumerate(items):
@@ -161,6 +163,8 @@ class Importer:
                 BumpixEvent.teacher_user_id.is_not(None)))).all()
             ambiguous_masters = set()
             for event in existing:
+                if event.source_event_id in overrides:
+                    continue  # An explicit performer is not the account's default master.
                 if event.master_source_id in mapped and mapped[event.master_source_id] != event.teacher_user_id and event.master_source_id not in masters:
                     ambiguous_masters.add(event.master_source_id)
                 mapped.setdefault(event.master_source_id, event.teacher_user_id)
@@ -173,7 +177,7 @@ class Importer:
             if self.native:
                 from .native_planning import plan_native
                 native_errors, native_counts = await plan_native(db, export, studio_id, mapped,
-                    self.native_options, mapping.get('services', {}))
+                    self.native_options, mapping.get('services', {}), event_masters=overrides)
                 for item in items:
                     item['errors'].extend(native_errors.get(item['source_client_id'], []))
                     item['native_events'] = native_counts.get(item['source_client_id'], {})
@@ -184,12 +188,16 @@ class Importer:
             return {'format': 1, 'mode': 'preview', 'ready': all(not i['errors'] for i in items),
                     'complete': False, 'studio_id': studio_id, 'owner_id': owner.id,
                     'account_key': export.account_key, 'fingerprint': export.fingerprint,
-                    'mapping': mapping, 'unmapped_masters': [mid for mid in mids if mid not in mapped],
+                    'mapping': mapping, 'event_staff_counts': dict(Counter(
+                        str(overrides.get(e['view']['id'], mapped.get(e['view']['master_id'])))
+                        for p in export.packages for e in p.snapshot['events'])),
+                    'unmapped_masters': sorted({e['view']['master_id'] for p in export.packages for e in p.snapshot['events']
+                        if e['view']['id'] not in overrides and e['view']['master_id'] not in mapped}),
                     'masters': [{'source_master_id': mid, 'source_name': master_names.get(mid, ''), 'teacher_user_id': mapped.get(mid)} for mid in mids],
                     'target_team': [{'user_id': m.user_id, 'name': m.name, 'role': m.role} for m in team],
                     'items': items, 'counts': dict(Counter(i['action'] for i in items))}
 
-    async def _save(self, db, package, studio_id, account, owner_id, client_map, masters, paths):
+    async def _save(self, db, package, studio_id, account, owner_id, client_map, masters, overrides, paths):
         # Native note edits do not acquire the studio lock. Lock their row before
         # reading the three-way baseline, so an edit committed first is observed.
         locked = await db.scalar(select(BumpixClient).where(
@@ -269,15 +277,18 @@ class Importer:
         # including visits outside the selected client subset.
         for mid, teacher in ({} if self.native else masters).items():
             await db.execute(update(BumpixEvent).where(BumpixEvent.studio_id == studio_id,
-                BumpixEvent.account_key == account, BumpixEvent.master_source_id == mid
+                BumpixEvent.account_key == account, BumpixEvent.master_source_id == mid,
+                BumpixEvent.source_event_id.not_in(list(overrides))
                 ).values(teacher_user_id=teacher).execution_options(synchronize_session=False))
         events = (await db.scalars(select(BumpixEvent).where(BumpixEvent.binding_id == binding.id))).all()
         by_id = {e.source_event_id: e for e in events}
-        mapped_events = (await db.execute(select(BumpixEvent.master_source_id, BumpixEvent.teacher_user_id).where(
+        mapped_events = (await db.execute(select(BumpixEvent.master_source_id, BumpixEvent.teacher_user_id, BumpixEvent.source_event_id).where(
             BumpixEvent.studio_id == studio_id, BumpixEvent.account_key == account,
             BumpixEvent.teacher_user_id.is_not(None)))).all()
         persisted_masters = {}
-        for mid, teacher in mapped_events:
+        for mid, teacher, eid in mapped_events:
+            if eid in overrides:
+                continue
             if mid in persisted_masters and persisted_masters[mid] != teacher and mid not in masters:
                 raise ValueError('Conflicting prior master mappings; provide an explicit masters mapping')
             persisted_masters[mid] = teacher
@@ -293,7 +304,7 @@ class Importer:
                 db.add(event)
                 by_id[eid] = event
             event.master_source_id = view['master_id']
-            event.teacher_user_id = masters.get(view['master_id'], persisted_masters.get(view['master_id']))
+            event.teacher_user_id = overrides.get(eid, masters.get(view['master_id'], persisted_masters.get(view['master_id'])))
             event.start_time, event.end_time = event_times(view)
             event.status, event.payload, event.is_current = view['status'], source, True
             event.groups = [key for key, ids in data['groups'].items() if eid in ids]
@@ -301,6 +312,11 @@ class Importer:
                 event.groups = event.groups + ['history']
             event.group_mask = sum(mask for label, mask in {'t1': 1, 't2': 2, 't3': 4, 't4': 8, 't5': 16, 'history': 32}.items() if label in event.groups)
             event.income, event.outlay = str(view.get('income') or '0'), str(view.get('outlay') or '0')
+        if any(source['view']['id'] in overrides for source in data['events']):
+            decisions = dict(binding.managed_values.get('_event_masters', {}))
+            decisions.update({source['view']['id']: overrides[source['view']['id']]
+                              for source in data['events'] if source['view']['id'] in overrides})
+            binding.managed_values = dict(binding.managed_values, _event_masters=decisions)
         await db.flush()
         photos = (await db.scalars(select(BumpixMedia).where(BumpixMedia.binding_id == binding.id))).all()
         photos_by_key = {(p.kind, p.source_owner_id, p.image_id, p.revision): p for p in photos}
@@ -343,15 +359,16 @@ class Importer:
                     # Same studio lock as native booking mutation paths; uniqueness is the second guard.
                     await db.scalar(select(Studio).where(Studio.id == studio_id).with_for_update())
                     owner = await self._authorize(db, studio_id, owner_email)
-                    client_map, masters = await self._mapping(db, export, studio_id, mapping or {})
+                    client_map, masters, overrides = await self._mapping(db, export, studio_id, mapping or {})
                     if self.native:
                         from .native_planning import plan_native
                         mapped = {m['source_master_id']: m['teacher_user_id'] for m in report['masters']}
                         problems, _ = await plan_native(db, export, studio_id, mapped,
-                            self.native_options, self._service_decisions, locking=True, client_id=package.client_id)
+                            self.native_options, self._service_decisions, locking=True, client_id=package.client_id,
+                            event_masters=overrides)
                         if problems.get(package.client_id):
                             raise ValueError('Database changed since preview: ' + '; '.join(problems[package.client_id]))
-                    saved = await self._save(db, package, studio_id, account_key, owner.id, client_map, masters, paths)
+                    saved = await self._save(db, package, studio_id, account_key, owner.id, client_map, masters, overrides, paths)
                 completed.append(saved)
                 if progress:
                     progress(completed[-1], len(completed), len(export.packages))
